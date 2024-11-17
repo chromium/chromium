@@ -26,6 +26,7 @@
 #include "chrome/browser/web_applications/commands/web_app_uninstall_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/isolated_web_apps/remove_isolated_web_app_data.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/browser/web_applications/jobs/uninstall/remove_web_app_job.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
@@ -82,24 +83,24 @@ MATCHER_P(IsApproximately, approximate_value, "") {
 class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
  protected:
   IsolatedWebAppUrlInfo InstallIsolatedWebApp() {
-    server_ =
-        CreateAndStartServer(FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
-    web_app::IsolatedWebAppUrlInfo url_info =
-        InstallDevModeProxyIsolatedWebApp(server_->GetOrigin());
-    return url_info;
+    std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> app =
+        web_app::IsolatedWebAppBuilder(
+            web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+                blink::mojom::PermissionsPolicyFeature::kControlledFrame))
+            .BuildBundle();
+    app->TrustSigningKey();
+    return app->InstallChecked(profile());
   }
-
-  net::EmbeddedTestServer* dev_server() { return server_.get(); }
 
   WebAppProvider& web_app_provider() {
     return CHECK_DEREF(WebAppProvider::GetForTest(profile()));
   }
 
   int64_t GetIwaUsage(const IsolatedWebAppUrlInfo& url_info) {
-    base::test::TestFuture<base::flat_map<url::Origin, int64_t>> future;
+    base::test::TestFuture<base::flat_map<url::Origin, uint64_t>> future;
     web_app_provider().scheduler().GetIsolatedWebAppBrowsingData(
         future.GetCallback());
-    base::flat_map<url::Origin, int64_t> result = future.Get();
+    base::flat_map<url::Origin, uint64_t> result = future.Get();
     return result.contains(url_info.origin()) ? result.at(url_info.origin())
                                               : 0;
   }
@@ -169,7 +170,6 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
  private:
   base::test::ScopedFeatureList scoped_feature_list_{
       blink::features::kControlledFrame};
-  std::unique_ptr<net::EmbeddedTestServer> server_;
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataTest,
@@ -186,9 +186,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataTest,
   EXPECT_THAT(GetIwaUsage(url_info), IsApproximately(1000));
 
   // Create a persisted <controlledframe>, add some usage to it.
-  ASSERT_TRUE(CreateControlledFrame(web_contents,
-                                    dev_server()->GetURL("/empty_title.html"),
-                                    "persist:partition_name"));
+  ASSERT_TRUE(CreateControlledFrame(
+      web_contents,
+      https_server()->GetURL("/web_apps/simple_isolated_app/empty_title.html"),
+      "persist:partition_name"));
   std::vector<extensions::WebViewGuest*> guests =
       GetWebViewGuests(web_contents);
   ASSERT_EQ(1UL, guests.size());
@@ -196,9 +197,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataTest,
   EXPECT_THAT(GetIwaUsage(url_info), IsApproximately(2000));
 
   // Create another persisted <controlledframe> with a different partition name.
-  ASSERT_TRUE(CreateControlledFrame(web_contents,
-                                    dev_server()->GetURL("/empty_title.html"),
-                                    "persist:partition_name_2"));
+  ASSERT_TRUE(CreateControlledFrame(
+      web_contents,
+      https_server()->GetURL("/web_apps/simple_isolated_app/empty_title.html"),
+      "persist:partition_name_2"));
   guests = GetWebViewGuests(web_contents);
   ASSERT_EQ(2UL, guests.size());
   AddLocalStorageIfMissing(guests[0]);
@@ -207,7 +209,9 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataTest,
 
   // Create an in-memory <controlledframe> that won't count towards IWA usage.
   ASSERT_TRUE(CreateControlledFrame(
-      web_contents, dev_server()->GetURL("/empty_title.html"), "unpersisted"));
+      web_contents,
+      https_server()->GetURL("/web_apps/simple_isolated_app/empty_title.html"),
+      "unpersisted"));
   guests = GetWebViewGuests(web_contents);
   ASSERT_EQ(3UL, guests.size());
   AddLocalStorageIfMissing(guests[0]);
@@ -377,9 +381,10 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
   AddLocalStorageIfMissing(web_contents2);
   EXPECT_THAT(GetIwaUsage(url_info2), IsApproximately(1000));
 
-  ASSERT_TRUE(CreateControlledFrame(web_contents2,
-                                    dev_server()->GetURL("/empty_title.html"),
-                                    "persist:partition_name"));
+  ASSERT_TRUE(CreateControlledFrame(
+      web_contents2,
+      https_server()->GetURL("/web_apps/simple_isolated_app/empty_title.html"),
+      "persist:partition_name"));
   std::vector<extensions::WebViewGuest*> guests =
       GetWebViewGuests(web_contents2);
   ASSERT_EQ(1UL, guests.size());
@@ -403,15 +408,20 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CacheCleared) {
   content::WebContents* web_contents =
       browser->tab_strip_model()->GetActiveWebContents();
 
-  // Create both a persistent and a non-persistent partitions.
-  ASSERT_TRUE(CreateControlledFrame(
-      web_contents,
-      cache_test_server->GetURL("/page_with_cached_subresource.html"),
-      "persist:partition_name_0"));
-  ASSERT_TRUE(CreateControlledFrame(
-      web_contents,
-      cache_test_server->GetURL("/page_with_cached_subresource.html"),
-      "partition_name_1"));
+  // Load a cached resource in an iframe to put something in the IWA main
+  // StoragePartition cache.
+  GURL cache_url = https_server()->GetURL(
+      "/set-header?"
+      "Cache-Control: max-age=60&"
+      "Cross-Origin-Resource-Policy: cross-origin");
+  CreateIframe(web_contents->GetPrimaryMainFrame(), "child", cache_url,
+               /*permissions_policy=*/"");
+
+  // Create both a persistent and a non-persistent Controlled Frame partitions.
+  ASSERT_TRUE(CreateControlledFrame(web_contents, cache_url,
+                                    "persist:partition_name_0"));
+  ASSERT_TRUE(
+      CreateControlledFrame(web_contents, cache_url, "partition_name_1"));
 
   std::vector<content::StoragePartitionConfig> storage_partition_configs{
       url_info.storage_partition_config(profile()),
@@ -446,12 +456,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest, CookieCleared) {
       browser->tab_strip_model()->GetActiveWebContents();
 
   // Create both a persistent and a non-persistent partitions.
-  ASSERT_TRUE(CreateControlledFrame(web_contents,
-                                    dev_server()->GetURL("/empty_title.html"),
-                                    "persist:partition_name_0"));
-  ASSERT_TRUE(CreateControlledFrame(web_contents,
-                                    dev_server()->GetURL("/empty_title.html"),
-                                    "partition_name_1"));
+  ASSERT_TRUE(CreateControlledFrame(
+      web_contents,
+      https_server()->GetURL("/web_apps/simple_isolated_app/empty_title.html"),
+      "persist:partition_name_0"));
+  ASSERT_TRUE(CreateControlledFrame(
+      web_contents,
+      https_server()->GetURL("/web_apps/simple_isolated_app/empty_title.html"),
+      "partition_name_1"));
 
   std::vector<content::StoragePartitionConfig> storage_partition_configs{
       url_info.storage_partition_config(profile()),
@@ -503,12 +515,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
       browser->tab_strip_model()->GetActiveWebContents();
 
   // Create both a persistent and a non-persistent partitions.
-  ASSERT_TRUE(CreateControlledFrame(web_contents,
-                                    dev_server()->GetURL("/empty_title.html"),
-                                    "persist:partition_name_0"));
-  ASSERT_TRUE(CreateControlledFrame(web_contents,
-                                    dev_server()->GetURL("/empty_title.html"),
-                                    "partition_name_1"));
+  ASSERT_TRUE(CreateControlledFrame(
+      web_contents,
+      https_server()->GetURL("/web_apps/simple_isolated_app/empty_title.html"),
+      "persist:partition_name_0"));
+  ASSERT_TRUE(CreateControlledFrame(
+      web_contents,
+      https_server()->GetURL("/web_apps/simple_isolated_app/empty_title.html"),
+      "partition_name_1"));
 
   std::vector<content::StoragePartitionConfig> storage_partition_configs{
       url_info.storage_partition_config(profile()),
@@ -570,30 +584,32 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
   Browser* browser1 = LaunchWebAppBrowserAndWait(url_info1.app_id());
   content::WebContents* web_contents1 =
       browser1->tab_strip_model()->GetActiveWebContents();
-  // Create both a persistent and a non-persistent partitions.
-  ASSERT_TRUE(CreateControlledFrame(
-      web_contents1,
-      cache_test_server->GetURL("/page_with_cached_subresource.html"),
-      "persist:partition_name_0"));
-  ASSERT_TRUE(CreateControlledFrame(
-      web_contents1,
-      cache_test_server->GetURL("/page_with_cached_subresource.html"),
-      "partition_name_1"));
+  // Create cache data in the IWA's main, persistent, and non-persistent
+  // Controlled Frame StoragePartition.
+  GURL cache_url = https_server()->GetURL(
+      "/set-header?"
+      "Cache-Control: max-age=60&"
+      "Cross-Origin-Resource-Policy: cross-origin");
+  CreateIframe(web_contents1->GetPrimaryMainFrame(), "child", cache_url,
+               /*permissions_policy=*/"");
+  ASSERT_TRUE(CreateControlledFrame(web_contents1, cache_url,
+                                    "persist:partition_name_0"));
+  ASSERT_TRUE(
+      CreateControlledFrame(web_contents1, cache_url, "partition_name_1"));
 
   // Set up IWA 2.
   IsolatedWebAppUrlInfo url_info2 = InstallIsolatedWebApp();
   Browser* browser2 = LaunchWebAppBrowserAndWait(url_info2.app_id());
   content::WebContents* web_contents2 =
       browser2->tab_strip_model()->GetActiveWebContents();
-  // Create both a persistent and a non-persistent partitions.
-  ASSERT_TRUE(CreateControlledFrame(
-      web_contents2,
-      cache_test_server->GetURL("/page_with_cached_subresource.html"),
-      "persist:partition_name_0"));
-  ASSERT_TRUE(CreateControlledFrame(
-      web_contents2,
-      cache_test_server->GetURL("/page_with_cached_subresource.html"),
-      "partition_name_1"));
+  // Create cache data in the IWA's main, persistent, and non-persistent
+  // Controlled Frame StoragePartition.
+  CreateIframe(web_contents2->GetPrimaryMainFrame(), "child", cache_url,
+               /*permissions_policy=*/"");
+  ASSERT_TRUE(CreateControlledFrame(web_contents2, cache_url,
+                                    "persist:partition_name_0"));
+  ASSERT_TRUE(
+      CreateControlledFrame(web_contents2, cache_url, "partition_name_1"));
   // Making IWA 2 a stub.
   {
     ScopedRegistryUpdate update =
@@ -652,6 +668,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
     // Each partition should have 2 cookies.
     ASSERT_EQ(GetAllCookies(partition).size(), 2UL);
     // Each partition should have cache.
+
     ASSERT_GT(GetCacheSize(partition), 0);
   }
 

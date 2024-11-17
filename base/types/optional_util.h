@@ -10,6 +10,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/types/expected.h"
 
 namespace base {
@@ -44,12 +45,12 @@ namespace base {
 // `base/types/optional_ref.h` for an alternative approach to
 // `const std::optional<T>&` that does not require the use of raw pointers.
 template <class T>
-const T* OptionalToPtr(const std::optional<T>& optional) {
+const T* OptionalToPtr(const std::optional<T>& optional LIFETIME_BOUND) {
   return optional.has_value() ? &optional.value() : nullptr;
 }
 
 template <class T>
-T* OptionalToPtr(std::optional<T>& optional) {
+T* OptionalToPtr(std::optional<T>& optional LIFETIME_BOUND) {
   return optional.has_value() ? &optional.value() : nullptr;
 }
 

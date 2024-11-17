@@ -271,7 +271,9 @@ public class BottomAttachedUiObserver
             // a page preview / web content.
             return mBottomSheetColor;
         }
-        if (mOverlayPanelVisible) {
+        if (mOverlayPanelVisible
+                && (mOverlayPanelStateProvider.isFullWidthSizePanel()
+                        || !EdgeToEdgeUtils.isEnabled())) {
             // Return null if the overlay panel is visible but not peeked - the overlay panel's
             // content will be "bottom attached".
             return mOverlayPanelPeeked ? mOverlayPanelColor : null;
@@ -290,7 +292,7 @@ public class BottomAttachedUiObserver
         if (mBottomSheetVisible) {
             return !mBottomSheetController.isFullWidth() && !EdgeToEdgeUtils.isEnabled();
         }
-        if (mOverlayPanelVisible) {
+        if (mOverlayPanelVisible && !EdgeToEdgeUtils.isEnabled()) {
             return !mOverlayPanelStateProvider.isFullWidthSizePanel();
         }
         if (mSnackbarVisible) {

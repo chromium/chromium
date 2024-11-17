@@ -5,7 +5,7 @@
 import 'chrome://history/history.js';
 
 import type {ProductSpecificationsItemElement} from 'chrome://history/history.js';
-import {ShoppingBrowserProxyImpl} from 'chrome://history/history.js';
+import {ProductSpecificationsBrowserProxyImpl} from 'chrome://history/history.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {pressAndReleaseKeyOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -16,7 +16,8 @@ import {shiftPointerClick} from './test_util.js';
 
 
 suite('ProductSpecificationsItemTest', () => {
-  const shoppingServiceApi = TestMock.fromClass(ShoppingBrowserProxyImpl);
+  const productSpecificationsProxy =
+      TestMock.fromClass(ProductSpecificationsBrowserProxyImpl);
   let productSpecificationsItem: ProductSpecificationsItemElement;
 
   function createProductSpecsItem() {
@@ -95,10 +96,11 @@ suite('ProductSpecificationsItemTest', () => {
     assertEquals('menu', elements[2]!.id);
   });
 
-  suite('Tests using ShoppingServiceApi', () => {
+  suite('Tests using product specifications proxy', () => {
     suiteSetup(() => {
-      shoppingServiceApi.reset();
-      ShoppingBrowserProxyImpl.setInstance(shoppingServiceApi);
+      productSpecificationsProxy.reset();
+      ProductSpecificationsBrowserProxyImpl.setInstance(
+          productSpecificationsProxy);
     });
 
     test('link click shows product specs table', async () => {
@@ -106,23 +108,25 @@ suite('ProductSpecificationsItemTest', () => {
 
       assertEquals(
           1,
-          shoppingServiceApi.getCallCount(
+          productSpecificationsProxy.getCallCount(
               'showProductSpecificationsSetForUuid'));
       assertDeepEquals(
           [{value: 'ex1'}, true],
-          shoppingServiceApi.getArgs('showProductSpecificationsSetForUuid')[0]);
+          productSpecificationsProxy.getArgs(
+              'showProductSpecificationsSetForUuid')[0]);
     });
 
     test('link enter key shows product specs table', async () => {
-      shoppingServiceApi.reset();
+      productSpecificationsProxy.reset();
       pressAndReleaseKeyOn(productSpecificationsItem.$.link, 13, [], 'Enter');
       assertEquals(
           1,
-          shoppingServiceApi.getCallCount(
+          productSpecificationsProxy.getCallCount(
               'showProductSpecificationsSetForUuid'));
       assertDeepEquals(
           [{value: 'ex1'}, true],
-          shoppingServiceApi.getArgs('showProductSpecificationsSetForUuid')[0]);
+          productSpecificationsProxy.getArgs(
+              'showProductSpecificationsSetForUuid')[0]);
     });
   });
 

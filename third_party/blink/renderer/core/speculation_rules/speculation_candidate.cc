@@ -20,7 +20,7 @@ SpeculationCandidate::SpeculationCandidate(
     network::mojom::blink::NoVarySearchPtr no_vary_search,
     mojom::blink::SpeculationInjectionType injection_type,
     SpeculationRuleSet* rule_set,
-    HTMLAnchorElement* anchor)
+    HTMLAnchorElementBase* anchor)
     : url_(url),
       action_(action),
       referrer_(std::move(referrer)),

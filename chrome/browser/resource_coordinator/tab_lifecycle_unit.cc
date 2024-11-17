@@ -21,6 +21,8 @@
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit.h"
+#include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
@@ -76,9 +78,6 @@ bool IsValidStateChange(LifecycleUnitState from,
           return false;
       }
     }
-    case LifecycleUnitState::THROTTLED: {
-      return false;
-    }
     case LifecycleUnitState::FROZEN: {
       switch (to) {
         // The renderer notifies the browser that the page was unfrozen after
@@ -116,55 +115,14 @@ StateChangeReason DiscardReasonToStateChangeReason(
     case LifecycleUnitDiscardReason::URGENT:
       return StateChangeReason::SYSTEM_MEMORY_PRESSURE;
     case LifecycleUnitDiscardReason::PROACTIVE:
-      return StateChangeReason::BROWSER_INITIATED;
     case LifecycleUnitDiscardReason::SUGGESTED:
+    case LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY:
       return StateChangeReason::BROWSER_INITIATED;
   }
 }
 
 }  // namespace
 
-class TabLifecycleUnitExternalImpl : public TabLifecycleUnitExternal {
- public:
-  explicit TabLifecycleUnitExternalImpl(
-      TabLifecycleUnitSource::TabLifecycleUnit* tab_lifecycle_unit)
-      : tab_lifecycle_unit_(tab_lifecycle_unit) {}
-
-  // TabLifecycleUnitExternal:
-
-  content::WebContents* GetWebContents() const override {
-    return tab_lifecycle_unit_->web_contents();
-  }
-
-  bool IsAutoDiscardable() const override {
-    return tab_lifecycle_unit_->IsAutoDiscardable();
-  }
-
-  void SetAutoDiscardable(bool auto_discardable) override {
-    tab_lifecycle_unit_->SetAutoDiscardable(auto_discardable);
-  }
-
-  bool DiscardTab(LifecycleUnitDiscardReason reason,
-                  uint64_t memory_footprint_estimate) override {
-    return tab_lifecycle_unit_->Discard(reason, memory_footprint_estimate);
-  }
-
-  bool IsDiscarded() const override {
-    return tab_lifecycle_unit_->GetState() == LifecycleUnitState::DISCARDED;
-  }
-
-  int GetDiscardCount() const override {
-    return tab_lifecycle_unit_->GetDiscardCount();
-  }
-
-  base::Time GetLastFocusedTime() const override {
-    return tab_lifecycle_unit_->GetLastFocusedTime();
-  }
-
- private:
-  raw_ptr<TabLifecycleUnitSource::TabLifecycleUnit> tab_lifecycle_unit_ =
-      nullptr;
-};
 
 TabLifecycleUnitSource::TabLifecycleUnit::TabLifecycleUnit(
     TabLifecycleUnitSource* source,
@@ -237,7 +195,16 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetFocused(bool focused) {
       // might not be if this is invoked as part of reloading the tab explicitly
       // and we haven't been notified of the ongoing load yet
       // (crbug.com/40075246).
-      if (web_contents()->WasDiscarded()) {
+      //
+      // With "WebContentsDiscard", loading on activation occurs from:
+      //     content::NavigationControllerImpl::SetActive
+      //     content::WebContentsImpl::UpdateVisibilityAndNotifyPageAndView
+      //     content::WebContentsImpl::UpdateWebContentsVisibility
+      // With `content::NavigationControllerImpl::needs_reload_` having been
+      // set from `content::FrameTree::Discard`. So it is undesired to trigger
+      // it explicitly from here.
+      if (web_contents()->WasDiscarded() &&
+          !base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
         bool loaded = Load();
         DCHECK(loaded);
       }
@@ -273,18 +240,14 @@ void TabLifecycleUnitSource::TabLifecycleUnit::UpdateLifecycleState(
     }
 
     default: {
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
   }
 }
 
 TabLifecycleUnitExternal*
 TabLifecycleUnitSource::TabLifecycleUnit::AsTabLifecycleUnitExternal() {
-  // Create an impl the first time this is called.
-  if (!external_impl_)
-    external_impl_ = std::make_unique<TabLifecycleUnitExternalImpl>(this);
-  return external_impl_.get();
+  return this;
 }
 
 std::u16string TabLifecycleUnitSource::TabLifecycleUnit::GetTitle() const {
@@ -494,7 +457,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetAutoDiscardable(
       web_contents(), auto_discardable_);
 
   for (auto& observer : *observers_)
-    observer.OnAutoDiscardableStateChange(web_contents(), auto_discardable_);
+    observer.OnTabAutoDiscardableStateChange(web_contents(), auto_discardable_);
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
@@ -650,6 +613,22 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
   return true;
 }
 
+content::WebContents* TabLifecycleUnitSource::TabLifecycleUnit::GetWebContents()
+    const {
+  return web_contents();
+}
+
+bool TabLifecycleUnitSource::TabLifecycleUnit::DiscardTab(
+    mojom::LifecycleUnitDiscardReason reason,
+    uint64_t memory_footprint_estimate) {
+  return Discard(reason, memory_footprint_estimate);
+}
+
+mojom::LifecycleUnitState
+TabLifecycleUnitSource::TabLifecycleUnit::GetTabState() const {
+  return GetState();
+}
+
 TabLifecycleUnitSource* TabLifecycleUnitSource::TabLifecycleUnit::GetTabSource()
     const {
   return static_cast<TabLifecycleUnitSource*>(GetSource());
@@ -713,14 +692,16 @@ void TabLifecycleUnitSource::TabLifecycleUnit::OnLifecycleUnitStateChanged(
       << "Cannot transition TabLifecycleUnit state from " << last_state
       << " to " << GetState() << " with reason " << reason;
 
-  // Invoke OnDiscardedStateChange() if necessary.
-  const bool was_discarded = last_state == LifecycleUnitState::DISCARDED;
-  const bool is_discarded = GetState() == LifecycleUnitState::DISCARDED;
-  if (was_discarded != is_discarded) {
-    for (auto& observer : *observers_) {
-      observer.OnDiscardedStateChange(web_contents(), GetDiscardReason(),
-                                      is_discarded);
-    }
+  // Populate `discard_reason` if the last or current state is `DISCARDED`.
+  std::optional<LifecycleUnitDiscardReason> discard_reason;
+  if (last_state == LifecycleUnitState::DISCARDED ||
+      GetState() == LifecycleUnitState::DISCARDED) {
+    discard_reason = discard_reason_;
+  }
+
+  for (auto& observer : *observers_) {
+    observer.OnTabLifecycleStateChange(web_contents(), last_state, GetState(),
+                                       discard_reason);
   }
 }
 
@@ -741,12 +722,14 @@ void TabLifecycleUnitSource::TabLifecycleUnit::CheckDeviceUsage(
     DecisionDetails* decision_details) const {
   DCHECK(decision_details);
 
-  if (web_contents()->IsConnectedToUsbDevice()) {
+  if (web_contents()->IsCapabilityActive(
+          content::WebContents::CapabilityType::kUSB)) {
     decision_details->AddReason(
         DecisionFailureReason::LIVE_STATE_USING_WEB_USB);
   }
 
-  if (web_contents()->IsConnectedToBluetoothDevice()) {
+  if (web_contents()->IsCapabilityActive(
+          content::WebContents::CapabilityType::kBluetoothConnected)) {
     decision_details->AddReason(
         DecisionFailureReason::LIVE_STATE_USING_BLUETOOTH);
   }

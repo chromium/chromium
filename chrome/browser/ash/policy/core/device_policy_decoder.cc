@@ -129,8 +129,7 @@ std::optional<PolicyLevel> GetPolicyLevel(
     case em::PolicyOptions::UNSET:
       return std::nullopt;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 void SetJsonDevicePolicy(const std::string& policy_name,
@@ -2227,6 +2226,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       policies->Set(policy::key::kDeviceSwitchFunctionKeysBehaviorEnabled,
                     POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                     POLICY_SOURCE_CLOUD, base::Value(container.enabled()),
+                    nullptr);
+    }
+  }
+
+  if (policy.has_devicenativeclientforceallowed()) {
+    const em::BooleanPolicyProto& container(
+        policy.devicenativeclientforceallowed());
+    if (container.has_value()) {
+      policies->Set(policy::key::kDeviceNativeClientForceAllowed,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.value()),
                     nullptr);
     }
   }

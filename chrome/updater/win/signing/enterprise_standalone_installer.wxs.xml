@@ -41,7 +41,7 @@
     <?ifdef ProductIcon ?>
       <!-- If var.ProductIcon is defined, use that as an icon in the ARP
            dialog, otherwise rely on the ARP dialog's heuristics:
-           http://blogs.msdn.com/oldnewthing/archive/2004/07/09/178342.aspx -->
+           https://devblogs.microsoft.com/oldnewthing/20040709-00/?p=38493 -->
       <Icon Id="icon.ico" SourceFile="$(var.ProductIcon)"/>
       <Property Id="ARPPRODUCTICON" Value="icon.ico"/>
     <?endif?>

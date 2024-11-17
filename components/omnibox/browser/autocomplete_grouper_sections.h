@@ -102,6 +102,18 @@ class AndroidNonZPSSection : public Section {
   static size_t num_visible_matches_;
 };
 
+// Android prefix section for Hub search (ZPS).
+class AndroidHubZPSSection : public Section {
+ public:
+  explicit AndroidHubZPSSection(omnibox::GroupConfigMap& group_configs);
+};
+
+// Android prefix section for Hub search (non-ZPS).
+class AndroidHubNonZPSSection : public Section {
+ public:
+  explicit AndroidHubNonZPSSection(omnibox::GroupConfigMap& group_configs);
+};
+
 // Section expressing the Android ZPS limits and grouping for the NTP.
 // - up to 15 + `max_related_queries` + `max_trending_queries` suggestions
 //   total.
@@ -255,13 +267,24 @@ class IOSWebZpsSection : public ZpsSectionWithMVTiles {
   explicit IOSWebZpsSection(omnibox::GroupConfigMap& group_configs);
 };
 
+// Section expressing the iOS ZPS limits and grouping for the Lens mutimodal
+// searchbox.
+// - up to 10 suggestions total.
+//  - up to 10 search suggestions.
+class IOSLensMultimodalZpsSection : public ZpsSection {
+ public:
+  explicit IOSLensMultimodalZpsSection(omnibox::GroupConfigMap& group_configs);
+};
+
 // Section expressing the iPad ZPS limits and grouping for the NTP.
 // - up to 10 suggestions total.
 //  - up to 1 clipboard suggestion.
 //  - up to 10 personalized suggestions.
 class IOSIpadNTPZpsSection : public ZpsSection {
  public:
-  explicit IOSIpadNTPZpsSection(omnibox::GroupConfigMap& group_configs);
+  explicit IOSIpadNTPZpsSection(size_t trends_count,
+                                size_t total_count,
+                                omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the iPad ZPS limits and grouping for the SRP.
@@ -273,7 +296,8 @@ class IOSIpadNTPZpsSection : public ZpsSection {
 //  - up to 10 personalized suggestions.
 class IOSIpadSRPZpsSection : public ZpsSectionWithMVTiles {
  public:
-  explicit IOSIpadSRPZpsSection(omnibox::GroupConfigMap& group_configs);
+  explicit IOSIpadSRPZpsSection(size_t total_count,
+                                omnibox::GroupConfigMap& group_configs);
 };
 
 // Section expressing the iPad ZPS limits and grouping for the Web.
@@ -285,7 +309,8 @@ class IOSIpadSRPZpsSection : public ZpsSectionWithMVTiles {
 //  - up to 10 personalized suggestions.
 class IOSIpadWebZpsSection : public ZpsSectionWithMVTiles {
  public:
-  explicit IOSIpadWebZpsSection(omnibox::GroupConfigMap& group_configs);
+  explicit IOSIpadWebZpsSection(size_t total_count,
+                                omnibox::GroupConfigMap& group_configs);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_AUTOCOMPLETE_GROUPER_SECTIONS_H_

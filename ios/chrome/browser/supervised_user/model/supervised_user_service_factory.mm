@@ -32,20 +32,6 @@ class FilterDelegateImpl
 
 }  // namespace
 
-namespace supervised_user {
-bool ShouldShowFirstTimeBanner(ProfileIOS* profile) {
-  // We perceive the current user as an existing one if there is an existing
-  // preference file, except on first run, because the installer may create a
-  // preference file.
-  // This implementation mimics `Profile::IsNewProfile()`, used in native.
-  if (FirstRun::IsChromeFirstRun()) {
-    return false;
-  }
-  return profile->GetPrefs()->GetInitializationStatus() !=
-         PrefService::INITIALIZATION_STATUS_CREATED_NEW_PREF_STORE;
-}
-}  // namespace supervised_user
-
 // static
 supervised_user::SupervisedUserService*
 SupervisedUserServiceFactory::GetForProfile(ProfileIOS* profile) {
@@ -74,10 +60,8 @@ SupervisedUserServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<supervised_user::SupervisedUserService>(
       IdentityManagerFactory::GetForProfile(profile),
       profile->GetSharedURLLoaderFactory(), CHECK_DEREF(profile->GetPrefs()),
-      CHECK_DEREF(
-          SupervisedUserSettingsServiceFactory::GetForBrowserState(profile)),
-      &CHECK_DEREF(SyncServiceFactory::GetForBrowserState(profile)),
+      CHECK_DEREF(SupervisedUserSettingsServiceFactory::GetForProfile(profile)),
+      &CHECK_DEREF(SyncServiceFactory::GetForProfile(profile)),
       std::make_unique<FilterDelegateImpl>(),
-      std::make_unique<SupervisedUserServicePlatformDelegate>(profile),
-      supervised_user::ShouldShowFirstTimeBanner(profile));
+      std::make_unique<SupervisedUserServicePlatformDelegate>(profile));
 }

@@ -50,8 +50,6 @@
 
 namespace {
 
-using UpdateClientEvents = update_client::UpdateClient::Observer::Events;
-
 class FakeUpdateClient : public update_client::UpdateClient {
  public:
   FakeUpdateClient();
@@ -110,7 +108,7 @@ class FakeUpdateClient : public update_client::UpdateClient {
                       CrxStateChangeCallback crx_state_change_callback,
                       bool is_foreground,
                       update_client::Callback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   bool GetCrxUpdateState(

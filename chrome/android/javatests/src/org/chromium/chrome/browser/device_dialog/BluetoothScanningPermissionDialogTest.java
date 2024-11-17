@@ -25,7 +25,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -56,8 +55,6 @@ public class BluetoothScanningPermissionDialogTest {
     public final BlankCTATabInitialStateRule mInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     private int mFinishedEventType = -1;
 
     private ActivityWindowAndroid mWindowAndroid;
@@ -73,8 +70,7 @@ public class BluetoothScanningPermissionDialogTest {
 
     @Before
     public void setUp() throws Exception {
-        mocker.mock(
-                BluetoothScanningPermissionDialogJni.TEST_HOOKS,
+        BluetoothScanningPermissionDialogJni.setInstanceForTesting(
                 new TestBluetoothScanningPermissionDialogJni());
         mPermissionDialog = createDialog();
     }

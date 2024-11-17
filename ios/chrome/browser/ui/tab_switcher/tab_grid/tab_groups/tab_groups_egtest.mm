@@ -21,7 +21,9 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_traits_overrider.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
@@ -136,6 +138,18 @@ void AddTabAtIndexToGroupWithTitle(int tab_cell_index, NSString* title) {
                                           title)] performAction:grey_tap()];
 }
 
+// Moves a grouped tab to another group.
+void MoveTabToGroup(int tab_cell_index, NSString* title) {
+  DisplayContextMenuForTabCellAtIndex(tab_cell_index);
+  id<GREYMatcher> moveTabToGroupMenuItem =
+      ContextMenuItemWithAccessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_MOVETABTOGROUP));
+  [[EarlGrey selectElementWithMatcher:moveTabToGroupMenuItem]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:ContextMenuItemWithAccessibilityLabel(
+                                          title)] performAction:grey_tap()];
+}
+
 // Opens the tab group at `group_cell_index`.
 void OpenTabGroupAtIndex(int group_cell_index) {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGridGroupCellAtIndex(
@@ -174,6 +188,8 @@ void RenameGroupAtIndex(int group_cell_index, NSString* title) {
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupCreationView()];
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:title flags:0];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_textFieldValue(title)];
   [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey
@@ -214,6 +230,24 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       grey_kindOfClassName(@"PinnedCell"), grey_sufficientlyVisible(), nil);
 }
 
+// Identifier for the cell at the given `index` in the grid.
+NSString* IdentifierForGridCellAtIndex(unsigned int index) {
+  return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
+}
+
+// Get the top presented view controller, in this case the bottom sheet view
+// controller.
+UIViewController* TopPresentedViewController() {
+  UIViewController* topController =
+      chrome_test_util::GetAnyKeyWindow().rootViewController;
+  for (UIViewController* controller = [topController presentedViewController];
+       controller && ![controller isBeingDismissed];
+       controller = [controller presentedViewController]) {
+    topController = controller;
+  }
+  return topController;
+}
+
 }  // namespace
 
 // Test Tab Groups feature.
@@ -230,10 +264,10 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       resetDataForLocalStatePref:prefs::kIncognitoAuthenticationSetting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kIncognitoAuthenticationSetting];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -264,6 +298,18 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       selectElementWithMatcher:grey_allOf(TabGridCell(),
                                           TabGridCellAtIndex(expectedCount),
                                           nil)] assertWithMatcher:grey_nil()];
+}
+
+// Waits for the expected tab count.
+- (void)waitForTabCount:(NSUInteger)tabCount incognito:(BOOL)incognito {
+  if (incognito) {
+    [ChromeEarlGrey waitForIncognitoTabCount:tabCount];
+  } else {
+    [ChromeEarlGrey waitForMainTabCount:tabCount];
+    NSString* tabCountString = [NSString stringWithFormat:@"%@", @(tabCount)];
+    [[EarlGrey selectElementWithMatcher:TabGridTabCount(tabCountString)]
+        assertWithMatcher:grey_notNil()];
+  }
 }
 
 // Tests that creates a tab group and opens the grouped tab.
@@ -337,9 +383,25 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
                                           1)] assertWithMatcher:grey_notNil()];
 }
 
-// Tests the group creation based on the context menu a tab cell in the grid.
-- (void)testGroupCreationUsingTabContextMenuInGrid {
+// Tests the group creation based on the context menu a tab cell in the regular
+// grid.
+- (void)testGroupCreationUsingTabContextMenuInRegularGrid {
+  [self testGroupCreationUsingTabContextMenuInGrid:/*incognito*/ NO];
+}
+
+// Tests the group creation based on the context menu a tab cell in the
+// incognito grid.
+- (void)testGroupCreationUsingTabContextMenuInIncognitoGrid {
+  [self testGroupCreationUsingTabContextMenuInGrid:/*incognito*/ YES];
+}
+
+// Tests the group creation based on the context menu a tab cell in one of the
+// grids.
+- (void)testGroupCreationUsingTabContextMenuInGrid:(BOOL)incognito {
   // Create a tab cell with `Tab 1` as its title.
+  if (incognito) {
+    [ChromeEarlGrey openNewIncognitoTab];
+  }
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
 
@@ -363,7 +425,11 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       performAction:grey_tap()];
 
   // Create a tab cell with `Tab 2` as its title.
-  [ChromeEarlGrey openNewTab];
+  if (incognito) {
+    [ChromeEarlGrey openNewIncognitoTab];
+  } else {
+    [ChromeEarlGrey openNewTab];
+  }
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
   [ChromeEarlGreyUI openTabGrid];
 
@@ -380,17 +446,32 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests adding a tab to a group from the tab's context menu.
-- (void)testAddingTabToGroupUsingTabContextMenu {
+// Tests adding a tab to a group from the tab's context menu in the regular
+// grid.
+- (void)testAddingTabToGroupUsingTabContextMenuInRegularGrid {
+  [self testAddingTabToGroupUsingTabContextMenuInGrid:/*incognito*/ NO];
+}
+
+// Tests adding a tab to a group from the tab's context menu in the incognito
+// grid.
+- (void)testAddingTabToGroupUsingTabContextMenuInIncognitoGrid {
+  [self testAddingTabToGroupUsingTabContextMenuInGrid:/*incognito*/ YES];
+}
+
+// Tests adding a tab to a group from the tab's context menu in one of the
+// grids.
+- (void)testAddingTabToGroupUsingTabContextMenuInGrid:(BOOL)incognito {
   // Create a tab cell with `Tab 1` as its title.
+  if (incognito) {
+    [ChromeEarlGrey openNewIncognitoTab];
+  }
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
 
   // Check for the presence of the tab cell with the title `Tab 1` in the grid.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:TabGridTabCount(@"1")]
-      assertWithMatcher:grey_notNil()];
+  [self waitForTabCount:1 incognito:incognito];
 
   CreateDefaultFirstGroupFromTabCellAtIndex(0);
 
@@ -399,11 +480,14 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       assertWithMatcher:grey_nil()];
 
   // Create a tab cell with `Tab 2` as its title.
-  [ChromeEarlGrey openNewTab];
+  if (incognito) {
+    [ChromeEarlGrey openNewIncognitoTab];
+  } else {
+    [ChromeEarlGrey openNewTab];
+  }
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
   [ChromeEarlGreyUI openTabGrid];
-  [[EarlGrey selectElementWithMatcher:TabGridTabCount(@"2")]
-      assertWithMatcher:grey_notNil()];
+  [self waitForTabCount:2 incognito:incognito];
 
   AddTabAtIndexToGroupWithTitle(
       1, l10n_util::GetPluralNSStringF(IDS_IOS_TAB_GROUP_TABS_NUMBER, 1));
@@ -411,8 +495,7 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
   // `Tab 2` tab cell no longer present in the grid.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
       assertWithMatcher:grey_nil()];
-  [[EarlGrey selectElementWithMatcher:TabGridTabCount(@"2")]
-      assertWithMatcher:grey_notNil()];
+  [self waitForTabCount:2 incognito:incognito];
 
   OpenTabGroupAtIndex(0);
 
@@ -428,9 +511,22 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       assertWithMatcher:grey_nil()];
 }
 
-// Tests the group renaming from the group's context menu in the grid.
-- (void)testRenamingGroupUsingGridContextMenu {
+// Tests the group renaming from the group's context menu in the regular grid.
+- (void)testRenamingGroupUsingGridContextMenuInRegularGrid {
+  [self testRenamingGroupUsingGridContextMenuInGrid:/*incognito*/ NO];
+}
+
+// Tests the group renaming from the group's context menu in the incognito grid.
+- (void)testRenamingGroupUsingGridContextMenuInIncognitoGrid {
+  [self testRenamingGroupUsingGridContextMenuInGrid:/*incognito*/ YES];
+}
+
+// Tests the group renaming from the group's context menu in one of the grids.
+- (void)testRenamingGroupUsingGridContextMenuInGrid:(BOOL)incognito {
   // Create a tab cell with `Tab 1` as its title.
+  if (incognito) {
+    [ChromeEarlGrey openNewIncognitoTab];
+  }
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
 
@@ -451,9 +547,22 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       assertWithMatcher:grey_notNil()];
 }
 
-// Tests the ungrouping of a group from its context menu in the grid.
-- (void)testUngroupingGroupUsingGridContextMenu {
+// Tests the ungrouping of a group from its context menu in the regular grid.
+- (void)testUngroupingGroupUsingGridContextMenuInRegularGrid {
+  [self testUngroupingGroupUsingGridContextMenuInGrid:/*incognito*/ NO];
+}
+
+// Tests the ungrouping of a group from its context menu in the incognito grid.
+- (void)testUngroupingGroupUsingGridContextMenuInIncognitoGrid {
+  [self testUngroupingGroupUsingGridContextMenuInGrid:/*incognito*/ YES];
+}
+
+// Tests the ungrouping of a group from its context menu in one of the grids.
+- (void)testUngroupingGroupUsingGridContextMenuInGrid:(BOOL)incognito {
   // Create a tab cell with `Tab 1` as its title.
+  if (incognito) {
+    [ChromeEarlGrey openNewIncognitoTab];
+  }
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
 
@@ -473,8 +582,8 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
                                           1)] assertWithMatcher:grey_nil()];
 }
 
-// Tests the group deletion from the group's context menu in the grid.
-- (void)testDeletingGroupUsingGridContextMenu {
+// Tests the group deletion from the group's context menu in the regular grid.
+- (void)testDeletingGroupUsingGridContextMenuInRegularGrid {
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -496,9 +605,41 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       assertWithMatcher:grey_nil()];
 }
 
-// Tests closing a group from the group's context menu action in the grid.
-- (void)testClosingGroupUsingGridContextMenu {
+// Tests the group deletion from the group's context menu in the incognito grid
+// is not available.
+- (void)testDeletingGroupUsingGridContextMenuInIncognitoGrid {
   // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey openNewIncognitoTab];
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Check there is no Delete group option.
+  DisplayContextMenuForGroupCellAtIndex(0);
+  [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests closing a group from the group's context menu action in the regular
+// grid.
+- (void)testClosingGroupUsingGridContextMenuInRegularGrid {
+  [self testClosingGroupUsingGridContextMenuInGrid:/*incognito*/ NO];
+}
+
+// Tests closing a group from the group's context menu action in the incognito
+// grid.
+- (void)testClosingGroupUsingGridContextMenuInIncognitoGrid {
+  [self testClosingGroupUsingGridContextMenuInGrid:/*incognito*/ YES];
+}
+
+// Tests closing a group from the group's context menu action in one of the
+// grids.
+- (void)testClosingGroupUsingGridContextMenuInGrid:(BOOL)incognito {
+  // Create a tab cell with `Tab 1` as its title.
+  if (incognito) {
+    [ChromeEarlGrey openNewIncognitoTab];
+  }
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
 
@@ -514,9 +655,86 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
                                               IDS_IOS_TAB_GROUP_TABS_NUMBER, 1),
                                           1)] assertWithMatcher:grey_nil()];
 
-  // Check that the snackbar is displayed.
-  [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  if (incognito) {
+    // Check that no tab bar appears in Incognito.
+    [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
+        assertWithMatcher:grey_nil()];
+  } else {
+    // Check that the snackbar is displayed.
+    [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+  }
+}
+
+// TODO(crbug.com/378900884): Flaky on ios simulator.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testMovingBetweenGroupsUsingGridContextMenuInRegularGrid \
+  DISABLED_testMovingBetweenGroupsUsingGridContextMenuInRegularGrid
+#else
+#define MAYBE_testMovingBetweenGroupsUsingGridContextMenuInRegularGrid \
+  testMovingBetweenGroupsUsingGridContextMenuInRegularGrid
+#endif
+- (void)MAYBE_testMovingBetweenGroupsUsingGridContextMenuInRegularGrid {
+  [self testMovingBetweenGroupsUsingGridContextMenuInGrid:/*incognito*/ NO];
+}
+
+// TODO(crbug.com/377475535): Deflake and re-enable.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid \
+  DISABLED_testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid
+#else
+#define MAYBE_testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid \
+  testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid
+#endif
+- (void)MAYBE_testMovingBetweenGroupsUsingGridContextMenuInIncognitoGrid {
+  [self testMovingBetweenGroupsUsingGridContextMenuInGrid:/*incognito*/ YES];
+}
+
+- (void)testMovingBetweenGroupsUsingGridContextMenuInGrid:(BOOL)incognito {
+  // Create a tab cell with `Tab 1` as its title.
+  if (incognito) {
+    [ChromeEarlGrey openNewIncognitoTab];
+  }
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  // Check for the presence of the tab cell with the title `Tab 1` in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_notNil()];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+  RenameGroupAtIndex(0, kGroup1Name);
+
+  // `Tab 1` tab cell no longer present in the grid.
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab1Title)]
+      assertWithMatcher:grey_nil()];
+
+  OpenTabGroupAtIndex(0);
+
+  // Create a tab cell with `Tab 2` as its title.
+  if (incognito) {
+    [ChromeEarlGrey openNewIncognitoTab];
+  } else {
+    [ChromeEarlGrey openNewTab];
+  }
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateAdditionalDefaultGroupFromTabCellAtIndex(1);
+  RenameGroupAtIndex(1, kGroup2Name);
+
+  OpenTabGroupAtIndex(1);
+
+  // Move `Tab 2` tab cell to the first group.
+  MoveTabToGroup(0, kGroup1Name);
+
+  // Check that the second group disappeared and `Tab 2` is in the first group.
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup2Name, 1)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 2)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabWithTitle(kTab2Title)]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests ungrouping of a group from the overflow menu in the group view.
@@ -915,6 +1133,36 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
       performAction:grey_tap()];
 }
 
+// Tests drag and drop the last tab from a group to another window.
+- (void)testDragAndDropLastTabToOtherWindow {
+  if (![ChromeEarlGrey areMultipleWindowsSupported]) {
+    EARL_GREY_TEST_SKIPPED(@"Multiple windows can't be opened.");
+  }
+
+  // Create a group and open it.
+  [ChromeEarlGreyUI openTabGrid];
+  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
+  SetTabGroupCreationName(kGroup1Name);
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
+      performAction:grey_tap()];
+
+  // Open tab grid on second window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitUntilReadyWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+  [EarlGrey setRootMatcherForSubsequentInteractions:WindowWithNumber(1)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  GREYAssert(chrome_test_util::LongPressCellAndDragToOffsetOf(
+                 IdentifierForGridCellAtIndex(0), 0,
+                 IdentifierForGridCellAtIndex(0), 1, CGVectorMake(0.5, 0.5)),
+             @"Failed to DND cell on window");
+}
+
 // Tests re-opening a group from Search in another window.
 - (void)testReopenGroupFromAnotherWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported]) {
@@ -1142,12 +1390,6 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
 // Ensures inactive tabs are moved correctly when creating a group from search
 // result.
 - (void)testCreateGroupFromInactiveTab {
-  // This test is not relevant on iPads because there is no inactive tabs in
-  // iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
-  }
-
   std::string URL1 = "chrome://version";
   std::string content1 = "Revision";
 
@@ -1165,10 +1407,9 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
 
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kTabInactivityThreshold.name) + ":" +
-      kTabInactivityThresholdParameterName + "/" +
-      kTabInactivityThresholdImmediateDemoParam);
+  config.features_enabled.push_back(kInactiveTabsIPadFeature);
+  config.additional_args.push_back("-InactiveTabsTestMode");
+  config.additional_args.push_back("true");
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [ChromeEarlGreyUI openTabGrid];
@@ -1401,6 +1642,66 @@ id<GREYMatcher> GetMatcherForPinnedCellWithTitle(NSString* title) {
 
   // Make sure that the tab grid is empty.
   [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
+}
+
+// Tests renaming a group from the overflow menu in the group view.
+- (void)testRenamingGroupFromGroupView {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Open the group view.
+  OpenTabGroupAtIndex(0);
+
+  // Display the tab group overflow menu.
+  [[EarlGrey selectElementWithMatcher:TabGroupOverflowMenuButton()]
+      performAction:grey_tap()];
+
+  // Tap the rename group button.
+  [[EarlGrey selectElementWithMatcher:RenameGroupButton()]
+      performAction:grey_tap()];
+
+  // Rename the group.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupCreationView()];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:kGroup1Name flags:0];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:grey_textFieldValue(kGroup1Name)];
+  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
+
+  // Check that the group name has been updated.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kTabGroupViewTitleIdentifier)]
+      assertWithMatcher:grey_accessibilityLabel(kGroup1Name)];
+}
+
+// Tests that the group colored dot is present even when the Dynamic Font is set
+// to a large Accessibility size.
+- (void)testColoredDotPresent {
+  // Create a tab cell with `Tab 1` as its title.
+  [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
+  [ChromeEarlGreyUI openTabGrid];
+
+  CreateDefaultFirstGroupFromTabCellAtIndex(0);
+
+  // Check that the dot is visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kGroupGridCellColoredDotIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Change trait collection to use accessibility large content size.
+  ScopedTraitOverrider overrider(TopPresentedViewController());
+  overrider.SetContentSizeCategory(UIContentSizeCategoryAccessibilityLarge);
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Check that the dot is still visible.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kGroupGridCellColoredDotIdentifier)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

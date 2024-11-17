@@ -139,5 +139,10 @@ TEST(ProtoEnumConversionsTest, GetContactInfoAddressType) {
   TestEnumStringsNonEmpty(sync_pb::ContactInfoSpecifics::AddressType);
 }
 
+TEST(ProtoEnumConversionsTest, GetCardInfoRetrievalEnrollmentStateString) {
+  TestEnumStringsNonEmpty(
+      sync_pb::WalletMaskedCreditCard::CardInfoRetrievalEnrollmentState);
+}
+
 }  // namespace
 }  // namespace syncer

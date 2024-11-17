@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normaal</translation>
 <translation id="1591562245178063882">Deze maand</translation>
 <translation id="1637811476055996098">Bestanden kiezen</translation>
-<translation id="1680090928918677457">Camera gebruiken</translation>
 <translation id="1729654308190250600">Geef een e-mailadres op.</translation>
 <translation id="1758486001363313524">Anders...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Kort deze tekst in tot <ph name="MAX_CHARACTERS" /> tekens of minder (je gebruikt momenteel <ph name="CURRENT_LENGTH" /> tekens).</translation>
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Track <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Camera en microfoon toegestaan</translation>
 <translation id="2507943997699731163">Vul dit veld in.</translation>
 <translation id="2613802280814924224">Geef een geldige waarde op. De dichtstbijzijnde geldige waarde is <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Verzenden</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Breid deze tekst uit tot <ph name="MIN_CHARACTERS" /> tekens of meer (je gebruikt momenteel <ph name="CURRENT_LENGTH" /> tekens).</translation>
 <translation id="383465348367842624">Het naamgedeelte vóór '<ph name="ATSIGN" />' mag niet het teken '<ph name="INVALIDCHARACTER" />' bevatten.</translation>
 <translation id="3846214748874656680">Volledig scherm sluiten</translation>
-<translation id="4031179711345676612">Microfoon toegestaan</translation>
 <translation id="4360991593054037559">Geef een geldige waarde op. De twee dichtstbijzijnde geldige waarden zijn <ph name="VALID_VALUE_LOW" /> en <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Details</translation>
-<translation id="4663373278480897665">Camera toegestaan</translation>
 <translation id="4664250907885839816">Het adresgedeelte na '<ph name="ATSIGN" />' mag niet het teken '<ph name="INVALIDCHARACTER" />' bevatten.</translation>
 <translation id="4718048029184481307">Beeld-in-beeld afspelen</translation>
-<translation id="4792862212177489858">Locatie delen</translation>
 <translation id="4812940957355064477">Voer een getal in.</translation>
-<translation id="49269513399674318">Microfoon gebruiken</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> geselecteerd</translation>
 <translation id="4992066212339426712">Geluid aanzetten</translation>
 <translation id="49969490063480558">Geef een adresgedeelte op na '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' is onvolledig.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Kan plug-in niet laden.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Breid deze tekst uit tot <ph name="MIN_CHARACTERS" /> tekens of meer (je gebruikt momenteel één teken).</translation>
-<translation id="7080893216867146095">Locatie delen toegestaan</translation>
 <translation id="709897737746224366">Zorg dat de indeling voldoet aan de gevraagde indeling.</translation>
-<translation id="7134810312945846184">Microfoon en camera gebruiken</translation>
 <translation id="7263440858009898357">Selecteer een item in de lijst.</translation>
 <translation id="7364796246159120393">Bestand kiezen</translation>
 <translation id="739024184232394898">Anders...</translation>

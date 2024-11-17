@@ -16,6 +16,7 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/attribution_scopes_set.h"
@@ -101,7 +102,9 @@ TEST(SourceRegistrationTest, Parse) {
               Field(&SourceRegistration::aggregatable_debug_reporting_config,
                     SourceAggregatableDebugReportingConfig()),
               Field(&SourceRegistration::attribution_scopes_data, std::nullopt),
-              Field(&SourceRegistration::destination_limit_priority, 0))),
+              Field(&SourceRegistration::destination_limit_priority, 0),
+              Field(&SourceRegistration::aggregatable_named_budget_defs,
+                    AggregatableNamedBudgetDefs()))),
       },
       {
           "source_event_id_valid",
@@ -494,9 +497,6 @@ TEST(SourceRegistrationTest, ToJson) {
 }
 
 TEST(SourceRegistrationTest, ParseDestinationLimitPriority) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionSourceDestinationLimit);
-
   const struct {
     const char* desc;
     const char* json;
@@ -552,9 +552,6 @@ TEST(SourceRegistrationTest, ParseDestinationLimitPriority) {
 }
 
 TEST(SourceRegistrationTest, SerializeDestinationLimit) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      features::kAttributionSourceDestinationLimit);
-
   const DestinationSet destination = *DestinationSet::Create(
       {net::SchemefulSite::Deserialize("https://d.example")});
 
@@ -806,6 +803,119 @@ TEST(SourceRegistrationTest, ParseAttributionScopesConfig) {
           "Conversions.ScopesPerSourceRegistration",
           source->attribution_scopes_data.has_value() ? 1 : 0, 1);
     }
+  }
+}
+
+TEST(SourceRegistrationTest, ParseAggregatableNamedBudgetDefs) {
+  const struct {
+    const char* desc;
+    const char* json;
+    ::testing::Matcher<
+        base::expected<SourceRegistration, SourceRegistrationError>>
+        matches;
+  } kTestCases[] = {
+      {
+          "aggregatable_named_budget_defs_valid",
+          R"json({
+            "named_budgets":{"a":65536},
+            "destination":"https://d.example"
+          })json",
+          ValueIs(Field(
+              &SourceRegistration::aggregatable_named_budget_defs,
+              *AggregatableNamedBudgetDefs::FromBudgetMap({{"a", 65536}}))),
+      },
+      {
+          "no_budgets",
+          R"json({
+            "destination":"https://d.example"
+          })json",
+          ValueIs(Field(&SourceRegistration::aggregatable_named_budget_defs,
+                        *AggregatableNamedBudgetDefs::FromBudgetMap({}))),
+      },
+      {
+          "aggregatable_named_budget_defs_invalid",
+          R"json({
+            "named_budgets":{"a":65537},
+            "destination":"https://d.example"
+          })json",
+          ErrorIs(
+              SourceRegistrationError::kAggregatableNamedBudgetsValueInvalid),
+      },
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAttributionAggregatableNamedBudgets);
+
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+    SCOPED_TRACE(test_case.desc);
+
+    auto source =
+        SourceRegistration::Parse(test_case.json, SourceType::kNavigation);
+    EXPECT_THAT(source, test_case.matches);
+    if (source.has_value()) {
+      histograms.ExpectUniqueSample(
+          "Conversions.NamedBudgetsPerSourceRegistration",
+          source->aggregatable_named_budget_defs.budgets().size(), 1);
+    }
+  }
+}
+
+TEST(SourceRegistrationTest, SerializeAggregatableNamedBudgetDefs) {
+  const DestinationSet destination = *DestinationSet::Create(
+      {net::SchemefulSite::Deserialize("https://d.example")});
+  const struct {
+    SourceRegistration input;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          SourceRegistration(destination),
+          R"json({
+            "aggregatable_report_window": 2592000,
+            "debug_reporting": false,
+            "destination":"https://d.example",
+            "event_level_epsilon": 14.0,
+            "expiry": 2592000,
+            "max_event_level_reports": 0,
+            "priority": "0",
+            "source_event_id": "0",
+            "trigger_data_matching": "modulus",
+            "trigger_specs": [],
+            "destination_limit_priority": "0"
+          })json",
+      },
+      {
+          SourceRegistrationWith(
+              destination,
+              [](SourceRegistration& r) {
+                r.aggregatable_named_budget_defs =
+                    *AggregatableNamedBudgetDefs::FromBudgetMap({{"a", 65536}});
+              }),
+          R"json({
+            "aggregatable_report_window": 2592000,
+            "debug_reporting": false,
+            "destination":"https://d.example",
+            "event_level_epsilon": 14.0,
+            "expiry": 2592000,
+            "max_event_level_reports": 0,
+            "priority": "0",
+            "source_event_id": "0",
+            "trigger_data_matching": "modulus",
+            "trigger_specs": [],
+            "destination_limit_priority": "0",
+            "named_budgets": {
+              "a": 65536
+            }
+          })json",
+      },
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAttributionAggregatableNamedBudgets);
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_THAT(test_case.input.ToJson(),
+                base::test::IsJson(test_case.expected_json));
   }
 }
 

@@ -23,7 +23,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/common/material_timing.h"
@@ -109,14 +109,6 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
                         completion:nil];
 }
 
-- (void)setTabGridButtonIPHHighlighted:(BOOL)iphHighlighted {
-  self.view.tabGridButton.iphHighlighted = iphHighlighted;
-}
-
-- (void)setNewTabButtonIPHHighlighted:(BOOL)iphHighlighted {
-  self.view.openNewTabButton.iphHighlighted = iphHighlighted;
-}
-
 - (void)showPrerenderingAnimation {
   __weak __typeof__(self) weakSelf = self;
   [self.view.progressBar setProgress:0];
@@ -184,27 +176,32 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
   [self.view.collapsedToolbarButton
       addGestureRecognizer:hoverGestureRecognizer];
 
-  [self traitCollectionDidChange:nil];
+  [self updateUIOnTraitChange:nil];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+      UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class,
+      UITraitPreferredContentSizeCategory.class
+    ]);
+    __weak __typeof(self) weakSelf = self;
+    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                     UITraitCollection* previousCollection) {
+      [weakSelf updateUIOnTraitChange:previousCollection];
+    };
+    [self registerForTraitChanges:traits withHandler:handler];
+  }
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-
-  // Progress bar and buttons visibility.
-  [self updateAllButtonsVisibility];
-  if (IsRegularXRegularSizeClass(self)) {
-    [self.view.progressBar setHidden:YES animated:NO completion:nil];
-  } else if (self.loading && self.hasOmnibox) {
-    [self.view.progressBar setHidden:NO animated:NO completion:nil];
+  if (@available(iOS 17, *)) {
+    return;
   }
 
-  // Restore locationBarContainer height with previous fullscreen progress.
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self updateLocationBarHeightForFullscreenProgress:
-              self.previousFullscreenProgress];
-  }
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
@@ -353,8 +350,8 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
   [self updateBackgroundColor];
 }
 
-- (void)setTabGridButtonStyle:(ToolbarTabGridButtonStyle)tabGridButtonStyle {
-  [self.view setTabGridButtonStyle:tabGridButtonStyle];
+- (void)updateTabGroupState:(ToolbarTabGroupState)tabGroupState {
+  [self.view updateTabGroupState:tabGroupState];
 }
 
 #pragma mark - NewTabPageControllerDelegate
@@ -525,7 +522,7 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
     base::RecordAction(base::UserMetricsAction("MobileToolbarNewTabShortcut"));
     base::RecordAction(base::UserMetricsAction("MobileTabNewTab"));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -569,6 +566,24 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 // Exits fullscreen.
 - (void)exitFullscreen {
   [self.adaptiveDelegate exitFullscreen];
+}
+
+// Modifies the UI based on the UITraits that changed on the device.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  // Progress bar and buttons visibility.
+  [self updateAllButtonsVisibility];
+  if (IsRegularXRegularSizeClass(self)) {
+    [self.view.progressBar setHidden:YES animated:NO completion:nil];
+  } else if (self.loading && self.hasOmnibox) {
+    [self.view.progressBar setHidden:NO animated:NO completion:nil];
+  }
+
+  // Restore locationBarContainer height with previous fullscreen progress.
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    [self updateLocationBarHeightForFullscreenProgress:
+              self.previousFullscreenProgress];
+  }
 }
 
 @end

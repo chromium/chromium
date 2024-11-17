@@ -26,6 +26,7 @@
 #include "chrome/browser/extensions/convert_user_script.h"
 #include "chrome/browser/extensions/extension_assets_manager.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/forced_extensions/install_stage_tracker.h"
 #include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
@@ -72,7 +73,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/user_manager/user_manager.h"
 #endif
 
@@ -199,7 +200,7 @@ void CrxInstaller::InstallCrxFile(const CRXFileInfo& source_file) {
   if (!GetUnpackerTaskRunner()->PostTask(
           FROM_HERE, base::BindOnce(&SandboxedUnpacker::StartWithCrx, unpacker,
                                     source_file))) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -222,7 +223,7 @@ void CrxInstaller::InstallUnpackedCrx(const ExtensionId& extension_id,
           FROM_HERE,
           base::BindOnce(&SandboxedUnpacker::StartWithDirectory, unpacker,
                          extension_id, public_key, unpacked_dir))) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -239,7 +240,7 @@ void CrxInstaller::InstallUserScript(const base::FilePath& source_file,
           FROM_HERE,
           base::BindOnce(&CrxInstaller::ConvertUserScriptOnSharedFileThread,
                          this)))
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 }
 
 void CrxInstaller::ConvertUserScriptOnSharedFileThread() {
@@ -497,7 +498,7 @@ void CrxInstaller::GetContentVerifierKey(
   if (!content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&CrxInstaller::GetContentVerifierKeyOnUI,
                                     this, std::move(callback)))) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -509,7 +510,7 @@ void CrxInstaller::ShouldComputeHashesForOffWebstoreExtension(
           FROM_HERE,
           base::BindOnce(&CrxInstaller::ShouldComputeHashesOnUI, this,
                          std::move(extension), std::move(callback)))) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -518,7 +519,7 @@ void CrxInstaller::OnUnpackFailure(const CrxInstallError& error) {
   if (!content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&CrxInstaller::ReportFailureFromUIThread,
                                     this, error))) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -582,7 +583,7 @@ void CrxInstaller::OnUnpackSuccessOnSharedFileThread(
     delete_source_ = false;
     if (!content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE, std::move(expectations_verified_callback_))) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -594,8 +595,9 @@ void CrxInstaller::OnUnpackSuccessOnSharedFileThread(
   }
 
   if (!content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&CrxInstaller::CheckInstall, this)))
-    NOTREACHED_IN_MIGRATION();
+          FROM_HERE, base::BindOnce(&CrxInstaller::CheckInstall, this))) {
+    NOTREACHED();
+  }
 }
 
 void CrxInstaller::OnStageChanged(InstallationStage stage) {
@@ -715,8 +717,10 @@ void CrxInstaller::OnInstallChecksComplete(const PreloadCheck::Errors& errors) {
       ReportFailureFromUIThread(CrxInstallError(
           CrxInstallErrorType::DECLINED,
           CrxInstallErrorDetail::EXTENSION_IS_BLOCKLISTED,
-          l10n_util::GetStringFUTF16(IDS_EXTENSION_IS_BLOCKLISTED,
-                                     base::UTF8ToUTF16(extension()->name()))));
+          l10n_util::GetStringFUTF16(
+              IDS_EXTENSION_IS_BLOCKLISTED,
+              extensions::util::GetFixupExtensionNameForUIDisplay(
+                  extension()->name()))));
       UMA_HISTOGRAM_ENUMERATION("ExtensionBlacklist.BlockCRX",
                                 extension()->location());
       return;
@@ -750,7 +754,7 @@ void CrxInstaller::ConfirmInstall() {
 
   if (KioskModeInfo::IsKioskOnly(extension())) {
     bool in_kiosk_mode = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
     in_kiosk_mode = user_manager && user_manager->IsLoggedInAsKioskApp();
 #endif
@@ -897,7 +901,7 @@ void CrxInstaller::UpdateCreationFlagsAndCompleteInstall(
           FROM_HERE,
           base::BindOnce(&CrxInstaller::CompleteInstall, this,
                          updates_from_webstore_or_empty_update_url))) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -967,7 +971,7 @@ void CrxInstaller::ReportFailureFromSharedFileThread(
   if (!content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE, base::BindOnce(&CrxInstaller::ReportFailureFromUIThread,
                                     this, error))) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -1004,8 +1008,9 @@ void CrxInstaller::ReportSuccessFromSharedFileThread() {
 
   if (!content::GetUIThreadTaskRunner({})->PostTask(
           FROM_HERE,
-          base::BindOnce(&CrxInstaller::ReportSuccessFromUIThread, this)))
-    NOTREACHED_IN_MIGRATION();
+          base::BindOnce(&CrxInstaller::ReportSuccessFromUIThread, this))) {
+    NOTREACHED();
+  }
 
   // Delete temporary files.
   CleanupTempFiles();
@@ -1049,7 +1054,7 @@ void CrxInstaller::ReportInstallationStage(InstallationStage stage) {
     if (!content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE, base::BindOnce(&CrxInstaller::ReportInstallationStage,
                                       this, stage))) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     return;
   }
@@ -1108,8 +1113,7 @@ void CrxInstaller::NotifyCrxInstallComplete(
             error->detail());
         break;
       case CrxInstallErrorType::NONE:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -1128,7 +1132,7 @@ void CrxInstaller::CleanupTempFiles() {
   if (!shared_file_task_runner_->RunsTasksInCurrentSequence()) {
     if (!shared_file_task_runner_->PostTask(
             FROM_HERE, base::BindOnce(&CrxInstaller::CleanupTempFiles, this))) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     return;
   }
@@ -1220,7 +1224,7 @@ void CrxInstaller::RunInstallerCallbacks(
   for (InstallerResultCallback& callback : installer_callbacks_) {
     if (!content::GetUIThreadTaskRunner({})->PostTask(
             FROM_HERE, base::BindOnce(std::move(callback), error))) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
   installer_callbacks_.clear();

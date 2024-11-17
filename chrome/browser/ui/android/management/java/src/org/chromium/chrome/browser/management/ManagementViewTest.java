@@ -19,7 +19,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -38,8 +37,6 @@ public class ManagementViewTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock NativePageHost mMockNativePageHost;
     @Mock ManagedBrowserUtils.Natives mMockManagedBrowserUtilNatives;
 
@@ -55,8 +52,8 @@ public class ManagementViewTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mJniMocker.mock(ManagedBrowserUtilsJni.TEST_HOOKS, mMockManagedBrowserUtilNatives);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsNatives);
+        ManagedBrowserUtilsJni.setInstanceForTesting(mMockManagedBrowserUtilNatives);
+        UserPrefsJni.setInstanceForTesting(mMockUserPrefsNatives);
         doReturn(mMockPrefService).when(mMockUserPrefsNatives).get(mMockProfile);
 
         mActivityScenarioRule

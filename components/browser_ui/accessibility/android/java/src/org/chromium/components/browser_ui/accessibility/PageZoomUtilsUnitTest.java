@@ -12,14 +12,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.content.browser.HostZoomMapImpl;
 import org.chromium.content.browser.HostZoomMapImplJni;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -55,8 +53,6 @@ public class PageZoomUtilsUnitTest {
     private static final String SHOULD_SHOW_ZOOM_MENU_ITEM_FAILURE_EXPECTED_FALSE =
             "Failure in should show zoom menu item method. Expected false but returned true.";
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private WebContents mWebContentsMock;
 
     @Mock private HostZoomMapImpl.Natives mHostZoomMapMock;
@@ -69,7 +65,7 @@ public class PageZoomUtilsUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mJniMocker.mock(HostZoomMapImplJni.TEST_HOOKS, mHostZoomMapMock);
+        HostZoomMapImplJni.setInstanceForTesting(mHostZoomMapMock);
     }
 
     @Test

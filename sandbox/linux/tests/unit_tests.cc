@@ -241,7 +241,8 @@ void UnitTests::DeathSuccess(int status, const std::string& msg, const void*) {
   ASSERT_TRUE(subprocess_terminated_normally) << details;
   int subprocess_exit_status = WEXITSTATUS(status);
   ASSERT_EQ(kExpectedValue, subprocess_exit_status) << details;
-#if !defined(LEAK_SANITIZER)
+// TODO(crbug.com/375489584): re-enable the test for UBSan.
+#if !defined(LEAK_SANITIZER) && !defined(UNDEFINED_SANITIZER)
   // LSan may print warnings to stdout, breaking this expectation.
   bool subprocess_exited_but_printed_messages = !msg.empty();
   EXPECT_FALSE(subprocess_exited_but_printed_messages) << details;

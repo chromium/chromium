@@ -18,10 +18,10 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 
 import {SixPackKey, SixPackShortcutModifier} from './input_device_settings_types.js';
 import {getTemplate} from './keyboard_six_pack_key_row.html.js';

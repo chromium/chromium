@@ -70,6 +70,8 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
 
     using OnChangesCallback = base::RepeatingCallback<void(
         const std::optional<std::list<Change>>& changes_or_error)>;
+    using OnUsageChangesCallback = FilePathWatcher::UsageChangeCallback;
+
     Observation(FileSystemAccessWatcherManager* watcher_manager,
                 FileSystemAccessWatchScope scope,
                 base::PassKey<FileSystemAccessWatcherManager> pass_key);
@@ -79,16 +81,25 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
     // It is illegal to call this method more than once.
     void SetCallback(OnChangesCallback on_change_callback);
 
+    // Set the callback to which usage changes will be reported.
+    // It is illegal to call this method more than once.
+    void SetUsageCallback(OnUsageChangesCallback on_usage_change_callback);
+
     const FileSystemAccessWatchScope& scope() const { return scope_; }
 
     void NotifyOfChanges(
         const std::optional<std::list<Change>>& changes_or_error,
         base::PassKey<FileSystemAccessWatcherManager> pass_key);
 
+    void NotifyOfUsageChange(size_t old_usage, size_t new_usage);
+
    private:
     SEQUENCE_CHECKER(sequence_checker_);
 
     OnChangesCallback on_change_callback_ GUARDED_BY_CONTEXT(sequence_checker_);
+
+    OnUsageChangesCallback on_usage_change_callback_
+        GUARDED_BY_CONTEXT(sequence_checker_);
 
     const FileSystemAccessWatchScope scope_;
     base::ScopedObservation<FileSystemAccessWatcherManager, Observation> obs_
@@ -133,6 +144,9 @@ class CONTENT_EXPORT FileSystemAccessWatcherManager
                    bool error,
                    const FileSystemAccessChangeSource::ChangeInfo& change_info,
                    const FileSystemAccessWatchScope& scope) override;
+  void OnUsageChange(size_t old_usage,
+                     size_t new_usage,
+                     const FileSystemAccessWatchScope& scope) override;
   void OnSourceBeingDestroyed(FileSystemAccessChangeSource* source) override;
 
   // Subscriber this instance to raw changes from `source`.

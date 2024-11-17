@@ -21,9 +21,9 @@
 namespace variations {
 class VariationsIdsProviderTest : public ::testing::Test {
  public:
-  VariationsIdsProviderTest() {}
+  VariationsIdsProviderTest() = default;
 
-  ~VariationsIdsProviderTest() override {}
+  ~VariationsIdsProviderTest() override = default;
 
   void TearDown() override { testing::ClearAllVariationIDs(); }
 

@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/internal_app/internal_app_metadata.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_shelf_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -196,7 +197,7 @@ void ShelfContextMenu::ExecuteCommand(int command_id, int event_flags) {
       UninstallApp(controller_->profile(), item_.id.app_id);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -232,13 +233,10 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
       return gfx::kNoneIcon;
     case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
-      NOTREACHED_IN_MIGRATION();
-      return gfx::kNoneIcon;
+      NOTREACHED();
     case ash::NOTIFICATION_CONTAINER:
-      NOTREACHED_IN_MIGRATION()
-          << "NOTIFICATION_CONTAINER does not have an icon, and it is "
-             "added to the model by NotificationMenuController.";
-      return gfx::kNoneIcon;
+      NOTREACHED() << "NOTIFICATION_CONTAINER does not have an icon, and it is "
+                      "added to the model by NotificationMenuController.";
     case ash::SHUTDOWN_GUEST_OS:
       return kShutdownGuestOsIcon;
     case ash::SHUTDOWN_BRUSCHETTA_OS:
@@ -253,11 +251,9 @@ const gfx::VectorIcon& ShelfContextMenu::GetCommandIdVectorIcon(
     case ash::LAUNCH_APP_SHORTCUT_FIRST:
     case ash::LAUNCH_APP_SHORTCUT_LAST:
     case ash::COMMAND_ID_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      return gfx::kNoneIcon;
+      NOTREACHED();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return gfx::kNoneIcon;
+      NOTREACHED();
   }
 }
 
@@ -277,18 +273,21 @@ void ShelfContextMenu::AddPinMenu(ui::SimpleMenuModel* menu_model) {
     case AppListControllerDelegate::NO_PIN:
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   AddContextMenuOption(menu_model, ash::TOGGLE_PIN, menu_pin_string_id);
 }
 
 bool ShelfContextMenu::ExecuteCommonCommand(int command_id, int event_flags) {
   switch (command_id) {
-    case ash::LAUNCH_NEW:
-      ash::full_restore::FullRestoreService::MaybeCloseNotification(
-          controller()->profile());
+    case ash::LAUNCH_NEW: {
+      if (auto* full_restore_service =
+              ash::full_restore::FullRestoreServiceFactory::GetForProfile(
+                  controller()->profile())) {
+        full_restore_service->MaybeCloseNotification();
+      }
       [[fallthrough]];
+    }
     case ash::MENU_CLOSE:
     case ash::TOGGLE_PIN:
     case ash::SWAP_WITH_NEXT:
@@ -325,9 +324,8 @@ void ShelfContextMenu::AddContextMenuOption(ui::SimpleMenuModel* menu_model,
   }
   // NOTIFICATION_CONTAINER is added by NotificationMenuController.
   if (type == ash::NOTIFICATION_CONTAINER) {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "NOTIFICATION_CONTAINER is added by NotificationMenuController.";
-    return;
   }
   menu_model->AddItemWithStringId(type, string_id);
 }

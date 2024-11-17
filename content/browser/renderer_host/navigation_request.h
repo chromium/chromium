@@ -1160,6 +1160,14 @@ class CONTENT_EXPORT NavigationRequest
   // BrowsingInstance swap. Used only in tests.
   bool force_new_browsing_instance() { return force_new_browsing_instance_; }
 
+  // Marks this navigation as requiring a new compositor (RenderWidgetHost).
+  void set_force_new_compositor(bool force_new_compositor) {
+    force_new_compositor_ = force_new_compositor;
+  }
+
+  // True if this navigation requires a new compositor (RenderWidgetHost).
+  bool force_new_compositor() { return force_new_compositor_; }
+
   const scoped_refptr<NavigationOrDocumentHandle>&
   navigation_or_document_handle() {
     return navigation_or_document_handle_;
@@ -1371,6 +1379,10 @@ class CONTENT_EXPORT NavigationRequest
   NavigationDiscardReason GetTypeForNavigationDiscardReason();
 
   void set_force_no_https_upgrade() { force_no_https_upgrade_ = true; }
+
+  bool was_reset_for_cross_document_restart() const {
+    return was_reset_for_cross_document_restart_;
+  }
 
  private:
   friend class NavigationRequestTest;
@@ -2691,6 +2703,11 @@ class CONTENT_EXPORT NavigationRequest
   // reset.
   bool force_new_browsing_instance_ = false;
 
+  // Indicates this navigation should use a new compositor. This is used by web
+  // tests to ensure that input state is fully reset between tests. See comments
+  // at RenderFrameHostImpl::must_be_replaced().
+  bool force_new_compositor_ = false;
+
   // Whether the ongoing navigation resource request is eligible for topics
   // calculation. This is set before the initial request and each subsequent
   // redirect. If `topics_eligible_` is true, the request headers will contain
@@ -2923,6 +2940,11 @@ class CONTENT_EXPORT NavigationRequest
 
   // The initial request method of the request, before any redirects.
   std::string request_method_;
+
+  // Set to true if `this` started as a same-document navigation but couldn't
+  // commit, and was restarted as a cross-document navigation. See
+  // `blink::mojom::CommitResult::RestartCrossDocument`.
+  bool was_reset_for_cross_document_restart_ = false;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

@@ -25,7 +25,7 @@ ContentCaptureSender::ContentCaptureSender(
       &ContentCaptureSender::BindPendingReceiver, base::Unretained(this)));
 }
 
-ContentCaptureSender::~ContentCaptureSender() {}
+ContentCaptureSender::~ContentCaptureSender() = default;
 
 void ContentCaptureSender::BindPendingReceiver(
     mojo::PendingAssociatedReceiver<mojom::ContentCaptureSender>

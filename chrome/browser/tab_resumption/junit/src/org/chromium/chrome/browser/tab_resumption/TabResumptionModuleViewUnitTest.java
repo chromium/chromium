@@ -52,7 +52,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ClickInfo;
@@ -77,7 +76,6 @@ import java.util.List;
 @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
 public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Mock UrlUtilities.Natives mUrlUtilitiesJniMock;
 
@@ -115,7 +113,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
 
     @Before
     public void setUp() {
-        mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
+        UrlUtilitiesJni.setInstanceForTesting(mUrlUtilitiesJniMock);
 
         mContext = ApplicationProvider.getApplicationContext();
         mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
@@ -712,8 +710,7 @@ public class TabResumptionModuleViewUnitTest extends TestSupportExtended {
         TabResumptionTileView tile1 = (TabResumptionTileView) mTileContainerView.getChildAt(0);
         Assert.assertEquals(View.GONE, tile1.findViewById(R.id.tile_pre_info_text).getVisibility());
         ChipView chipView = (ChipView) tile1.findViewById(R.id.tile_app_chip);
-        var chipText =
-                mContext.getResources().getString(R.string.history_app_attribution, appLabel);
+        var chipText = mContext.getString(R.string.history_app_attribution, appLabel);
         Assert.assertEquals("ChipView is not visible", View.VISIBLE, chipView.getVisibility());
         Assert.assertEquals(chipText, chipView.getPrimaryTextView().getText());
         Assert.assertEquals(

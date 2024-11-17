@@ -37,6 +37,10 @@
   UIView* _separatorView;
   // Button used to display the menu.
   UIButton* _menuButton;
+  // Whether the share option is available.
+  BOOL _shareAvailable;
+  // Whether the group is shared.
+  BOOL _shared;
 }
 
 - (instancetype)init {
@@ -74,6 +78,16 @@
   [self setGroupTitle:groupTitle];
   [self setGroupColor:groupColor];
   [self updateVisibility];
+}
+
+- (void)setShareAvailable:(BOOL)shareAvailable {
+  _shareAvailable = shareAvailable;
+  [self configureMenuButton];
+}
+
+- (void)setShared:(BOOL)shared {
+  _shared = shared;
+  [self configureMenuButton];
 }
 
 #pragma mark - Private
@@ -160,31 +174,74 @@
       [[ActionFactory alloc] initWithScenario:scenario];
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
-  [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
-                  [weakSelf.mutator showTabGroupEdition];
-                }]];
-  [menuElements addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{
-                  [weakSelf.mutator addNewTabInGroup];
-                }]];
-  [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
-                  [weakSelf.mutator unGroupWithConfirmation:YES];
-                }]];
-  if (IsTabGroupSyncEnabled()) {
-    [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
-                    [weakSelf.mutator closeGroup];
-                  }]];
-    if (!_incognito) {
-      [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                      [weakSelf.mutator deleteGroupWithConfirmation:YES];
-                    }]];
-    }
-  } else {
-    [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                    [weakSelf.mutator deleteGroupWithConfirmation:NO];
-                  }]];
+
+  // Shared actions.
+  NSMutableArray<UIAction*>* sharedActions = [[NSMutableArray alloc] init];
+  if (_shared) {
+    [sharedActions addObject:[actionFactory actionToManageTabGroupWithBlock:^{
+                     [weakSelf.mutator manageGroup];
+                   }]];
+    [sharedActions addObject:[actionFactory actionToShowRecentActivity:^{
+                     [weakSelf.mutator showRecentActivity];
+                   }]];
+  } else if (_shareAvailable) {
+    [sharedActions addObject:[actionFactory actionToShareTabGroupWithBlock:^{
+                     [weakSelf.mutator shareGroup];
+                   }]];
+  }
+  if ([sharedActions count] > 0) {
+    [menuElements addObject:[UIMenu menuWithTitle:@""
+                                            image:nil
+                                       identifier:nil
+                                          options:UIMenuOptionsDisplayInline
+                                         children:[sharedActions copy]]];
   }
 
-  _menuButton.menu = [UIMenu menuWithChildren:menuElements];
+  // Edit actions.
+  NSMutableArray<UIAction*>* editActions = [[NSMutableArray alloc] init];
+  [editActions addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
+                 [weakSelf.mutator showTabGroupEdition];
+               }]];
+  [editActions addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{
+                 [weakSelf.mutator addNewTabInGroup];
+               }]];
+  if (!_shared) {
+    [editActions addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
+                   [weakSelf.mutator unGroupWithConfirmation:YES];
+                 }]];
+  }
+  [menuElements addObject:[UIMenu menuWithTitle:@""
+                                          image:nil
+                                     identifier:nil
+                                        options:UIMenuOptionsDisplayInline
+                                       children:[editActions copy]]];
+
+  // Destructive actions.
+  NSMutableArray<UIAction*>* destructiveActions = [[NSMutableArray alloc] init];
+  if (IsTabGroupSyncEnabled()) {
+    [destructiveActions
+        addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
+          [weakSelf.mutator closeGroup];
+        }]];
+    if (!_incognito) {
+      [destructiveActions
+          addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+            [weakSelf.mutator deleteGroupWithConfirmation:YES];
+          }]];
+    }
+  } else {
+    [destructiveActions
+        addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+          [weakSelf.mutator deleteGroupWithConfirmation:NO];
+        }]];
+  }
+  [menuElements addObject:[UIMenu menuWithTitle:@""
+                                          image:nil
+                                     identifier:nil
+                                        options:UIMenuOptionsDisplayInline
+                                       children:[destructiveActions copy]]];
+
+  _menuButton.menu = [UIMenu menuWithChildren:[menuElements copy]];
 }
 
 // Sets the constraints of the view.

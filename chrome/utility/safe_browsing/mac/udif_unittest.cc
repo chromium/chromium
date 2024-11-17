@@ -55,7 +55,8 @@ struct UDIFTestCase {
   // The disk image file to open.
   const char* file_name;
 
-  base::span<const std::string_view> expected_partitions;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION base::span<const std::string_view> expected_partitions;
 
   // A bitmask of ExpectedResults. As the parser currently only supports
   // certain UDIF features, this is used to properly test expectations.

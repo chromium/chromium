@@ -37,18 +37,18 @@ ASH_EXPORT std::vector<Image> GetImagesFromApiImages(
 
 // Gets `Playlist` from API playlist. When `playlist` is null, it returns
 // nullopt.
-ASH_EXPORT std::optional<Playlist> GetPlaylistFromApiPlaylist(
-    const google_apis::youtube_music::Playlist* playlist);
+ASH_EXPORT Playlist GetPlaylistFromApiPlaylist(
+    const google_apis::youtube_music::Playlist& playlist);
 
 // Gets a vector of `Playlist` from API top level music recommendations.
-ASH_EXPORT std::optional<std::vector<Playlist>>
+ASH_EXPORT std::vector<Playlist>
 GetPlaylistsFromApiTopLevelMusicRecommendations(
-    const google_apis::youtube_music::TopLevelMusicRecommendations*
+    const google_apis::youtube_music::TopLevelMusicRecommendations&
         top_level_music_recommendations);
 
 // Gets `PlaybackContext` from API queue.
-ASH_EXPORT std::optional<PlaybackContext> GetPlaybackContextFromApiQueue(
-    const google_apis::youtube_music::Queue* queue);
+ASH_EXPORT PlaybackContext
+GetPlaybackContextFromApiQueue(const google_apis::youtube_music::Queue& queue);
 
 // Returns the best image to use. It uses the smallest qualified image possible;
 // if no qualified images, it uses the biggest image.

@@ -29,7 +29,7 @@ namespace safe_browsing {
 namespace {
 
 // The maximum amount of bytes that can be reported as modified by VerifyModule.
-const size_t kMaxModuleModificationBytes = 256;
+constexpr size_t kMaxModuleModificationBytes = 256;
 
 struct Export {
   Export(const void* addr, const std::string& name);
@@ -171,7 +171,7 @@ int ExamineByteRangeDiff(base::span<const uint8_t> disk_data,
     bytes_different += bytes_in_modification;
     modification->set_byte_count(bytes_in_modification);
     base::span<const uint8_t> modification_data = mem_data.subspan(
-        range_start - mem_data.begin(),
+        static_cast<size_t>(range_start - mem_data.begin()),
         std::min(bytes_in_modification, kMaxModuleModificationBytes));
     modification->set_modified_bytes(modification_data.data(),
                                      modification_data.size());
@@ -222,15 +222,11 @@ bool EnumRelocsCallback(const base::win::PEImage& mem_peimage,
         // other than the rebase, extend the verification range to include those
         // bytes since they are considered part of a modification.
         uint32_t relocated = *reinterpret_cast<uint32_t*>(ptr);
-        intptr_t original = relocated + state->image_base_delta;
+        uint32_t original = relocated + state->image_base_delta;
+        base::span<const uint8_t> original_reloc_bytes =
+            base::byte_span_from_ref(original);
 
         // Cast to intprt_t to allow arithmetic on the pointers
-        ptrdiff_t mem_reloc_offset =
-            original - reinterpret_cast<intptr_t>(
-                           base::to_address(state->mem_code_data.begin()));
-        base::span<const uint8_t>::iterator original_reloc_bytes =
-            state->mem_code_data.begin() + mem_reloc_offset;
-
         ptrdiff_t disk_reloc_offset =
             state->code_section_delta + reinterpret_cast<intptr_t>(address) -
             reinterpret_cast<intptr_t>(

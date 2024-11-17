@@ -9,6 +9,7 @@
 #import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/browsing_data/core/pref_names.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/sync/base/command_line_switches.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -39,6 +40,11 @@ using chrome_test_util::ClearBrowsingHistoryButton;
 using chrome_test_util::ClearCacheButton;
 using chrome_test_util::ClearCookiesButton;
 using chrome_test_util::ClearSavedPasswordsButton;
+using chrome_test_util::ContainsPartialText;
+using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
+
+// GURL inserted into the history service to mock history entries.
+const GURL kMockURL("http://not-a-real-site.test/");
 
 // Returns a matcher for the title of the Quick Delete Browsing Data page.
 id<GREYMatcher> quickDeleteBrowsingDataPageTitleMatcher() {
@@ -73,6 +79,20 @@ id<GREYMatcher> SignOutLinkMatcher() {
       // element in the label with attributed string.
       grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
       grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
+}
+
+// Returns a matcher for the actual button with the `timeRange` inside the time
+// range popup row.
+id<GREYMatcher> PopupCellWithTimeRange(NSString* timeRange) {
+  return grey_allOf(grey_accessibilityID(kQuickDeletePopUpButtonIdentifier),
+                    grey_text(timeRange), nil);
+}
+
+// Returns a matcher for the row with the `timeRange` on the popup menu.
+id<GREYMatcher> PopupCellMenuItemWithTimeRange(NSString* timeRange) {
+  return grey_allOf(
+      grey_not(grey_accessibilityID(kQuickDeletePopUpButtonIdentifier)),
+      ContextMenuItemWithAccessibilityLabel(timeRange), nil);
 }
 
 // Asserts if the Privacy.DeleteBrowsingData.Dialog histogram for bucket of
@@ -120,14 +140,14 @@ void NoDeleteBrowsingDataDialogHistogram(
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey resetBrowsingDataPrefs];
   // Close any open UI to avoid test flakiness.
   [ChromeTestCase removeAnyOpenMenusAndInfoBars];
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -146,7 +166,7 @@ void NoDeleteBrowsingDataDialogHistogram(
   [[EarlGrey
       selectElementWithMatcher:ButtonWithAccessibilityLabel(
                                    l10n_util::GetNSString(
-                                       IDS_IOS_CLEAR_BROWSING_DATA_TITLE))]
+                                       IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA))]
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:BrowsingDataButtonMatcher()]
@@ -164,8 +184,8 @@ void NoDeleteBrowsingDataDialogHistogram(
   // negativity visibility computation. Therefore, using the function below
   // solves that issue.
   chrome_test_util::TapAtOffsetOf(
-      l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE), windowNumber,
-      CGVectorMake(0.0, 0.0));
+      l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA),
+      windowNumber, CGVectorMake(0.0, 0.0));
 
   [[EarlGrey selectElementWithMatcher:BrowsingDataButtonMatcher()]
       performAction:grey_tap()];
@@ -626,6 +646,82 @@ void NoDeleteBrowsingDataDialogHistogram(
   // when the selection is saved.
   ExpectDeleteBrowsingDataDialogHistogram(
       DeleteBrowsingDataDialogAction::kBrowsingHistoryToggledOn);
+}
+
+// Tests if the selected time range in the UI is used for the browsing data
+// page instead of the time range saved in the pref.
+- (void)testSelectedTimeRangeUsed {
+  // Set pref to the last hour.
+  [ChromeEarlGrey
+      setIntegerValue:static_cast<int>(browsing_data::TimePeriod::LAST_HOUR)
+          forUserPref:browsing_data::prefs::kDeleteTimePeriod];
+
+  // Create an entry in History which took place half an hour ago on `URL`.
+  const base::Time halfAnHourAgo = base::Time::Now() - base::Minutes(30);
+  [ChromeEarlGrey addHistoryServiceTypedURL:kMockURL
+                             visitTimestamp:halfAnHourAgo];
+
+  // Open Quick Delete.
+  [ChromeEarlGreyUI openToolsMenu];
+  [[EarlGrey
+      selectElementWithMatcher:ButtonWithAccessibilityLabel(
+                                   l10n_util::GetNSString(
+                                       IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA))]
+      performAction:grey_tap()];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:ClearBrowsingDataView()]
+      assertWithMatcher:grey_notNil()];
+
+  // Check that the correct time range, last hour, is selected.
+  [[EarlGrey selectElementWithMatcher:
+                 PopupCellWithTimeRange(l10n_util::GetNSString(
+                     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_PAST_HOUR))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the browsing data summary shows there is an history entry in
+  // scope of the deletion.
+  [[EarlGrey selectElementWithMatcher:
+                 ContainsPartialText(l10n_util::GetPluralNSStringF(
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 1))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Tap on the time range button and tap on the last 15 minutes option on the
+  // popup menu.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_text(l10n_util::GetNSString(
+                     IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE))]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:
+          PopupCellMenuItemWithTimeRange(l10n_util::GetNSString(
+              IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_OPTION_LAST_15_MINUTES))]
+      performAction:grey_tap()];
+
+  // Confirm that the browsing data summary no longer shows any history in scope
+  // of the deletion.
+  [[EarlGrey selectElementWithMatcher:
+                 ContainsPartialText(l10n_util::GetPluralNSStringF(
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES, 1))]
+      assertWithMatcher:grey_nil()];
+
+  // Go to the browsing data page.
+  [[EarlGrey selectElementWithMatcher:BrowsingDataButtonMatcher()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      quickDeleteBrowsingDataPageTitleMatcher()];
+
+  // Confirm that the history row also shows no entries in scope of the
+  // deletion.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_ancestor(ClearBrowsingHistoryButton()),
+                                   ContainsPartialText(
+                                       l10n_util::GetPluralNSStringF(
+                                           IDS_DEL_BROWSING_HISTORY_COUNTER,
+                                           0)),
+                                   nil)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 @end

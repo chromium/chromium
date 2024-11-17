@@ -198,8 +198,7 @@ inline void SetDeviceCapabilityState(GLenum cap, bool enable) {
       enable_flags.cached_sample_alpha_to_one_ext = enable;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   if (enable)
     api()->glEnableFn(cap);

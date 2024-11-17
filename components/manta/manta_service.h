@@ -35,8 +35,10 @@ enum class FeatureSupportStatus {
 class AnchovyProvider;
 class MahiProvider;
 class OrcaProvider;
+class ScannerProvider;
 class SnapperProvider;
 class SparkyProvider;
+class WalrusProvider;
 
 // The MantaService class is a KeyedService for the Chrome/ChromeOS Manta
 // project. It serves two main functions:
@@ -68,8 +70,10 @@ class COMPONENT_EXPORT(MANTA) MantaService : public KeyedService {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Virtual for testing.
   virtual std::unique_ptr<MahiProvider> CreateMahiProvider();
+  virtual std::unique_ptr<WalrusProvider> CreateWalrusProvider();
 
   std::unique_ptr<OrcaProvider> CreateOrcaProvider();
+  std::unique_ptr<ScannerProvider> CreateScannerProvider();
   virtual std::unique_ptr<SnapperProvider> CreateSnapperProvider();
   std::unique_ptr<SparkyProvider> CreateSparkyProvider(
       std::unique_ptr<SparkyDelegate> sparky_delegate,

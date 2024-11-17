@@ -40,6 +40,16 @@
     padding-inline-start: 0;
   }
 
+  .sub-item {
+    padding-inline-start: var(--cr-section-indent-width);
+    margin-bottom: 8px;
+  }
+
+  .audio-info-icon {
+    margin-inline-end: 4px;
+    --iron-icon-fill-color: var(--cros-color-prominent);
+  }
+
   :host([is-output-muted_]) #outputVolumeSlider {
     --cr-slider-active-color: var(--cros-slider-color-inactive);
     --cr-slider-container-color: var(--cros-slider-track-color-inactive);
@@ -136,6 +146,18 @@
         </cr-slider>
       </div>
     </div>
+    <div id="audioOutputSpatialAudioSubsection" class="settings-box"
+      hidden="[[!showSpatialAudio]]"
+      on-click="onSpatialAudioRowClicked_" actionable-row>
+      <div id="audioOutputSpatialAudioLabel" class="settings-box-text start">
+        $i18n{audioOutputSpatialAudioTitle}
+      </div>
+      <cr-toggle id="audioOutputSpatialAudioToggle"
+          checked="{{isSpatialAudioEnabled_}}"
+          aria-labelledby="audioOutputSpatialAudioLabel"
+          on-change="toggleSpatialAudioEnabled_">
+      </cr-toggle>
+    </div>
   </div>
 </div>
 <!--TODO(b/260277007): Replace placeholder text when localization strings
@@ -191,38 +213,59 @@
         </cr-slider>
       </div>
     </div>
-    <div id="audioInputStyleTransferSubsection" class="settings-box"
-        hidden="[[!isStyleTransferSupported_]]"
-        on-click="onStyleTransferRowClicked_" actionable-row>
-      <div id="audioInputStyleTransferLabel"
-          class="settings-box-text start" aria-hidden="true">
-        $i18n{audioInputStyleTransferTitle}
-        <div class="secondary">
-          <localized-link
-              on-link-clicked="onStyleTransferLearnMoreLinkClicked_"
-              id="styleTransferSecondary"
-              localized-string="$i18n{audioInputStyleTransferDescription}">
-          </localized-link>
-        </div>
+    <settings-toggle-button id="audioInputVoiceIsolationToggleSection"
+        hidden="[[!showVoiceIsolationSubsection_]]"
+        pref="{{prefs.ash.input_voice_isolation_enabled}}"
+        label="[[getVoiceIsolationToggleTitle_(audioSystemProperties_.voiceIsolationUiAppearance)]]"
+        sub-label="[[getVoiceIsolationToggleDescription_(audioSystemProperties_.voiceIsolationUiAppearance)]]"
+        learn-more-url="$i18n{voiceIsolationLearnMoreLink}"
+        on-change="onVoiceIsolationRowClicked_">
+    </settings-toggle-button>
+    <template is="dom-if" if="[[shouldShowVoiceIsolationEffectModeOptions_(
+          audioSystemProperties_.voiceIsolationUiAppearance.effectModeOptions,
+          prefs.ash.input_voice_isolation_enabled.value
+        )]]">
+      <div class="sub-item">
+        <span>
+          $i18n{audioInputEffectMode}
+        </span>
+        <settings-radio-group id="voiceIsolationEffectModeOptions"
+            pref="{{prefs.ash.input_voice_isolation_preferred_effect}}"
+            on-change="onVoiceIsolationEffectModeChanged_">
+          <controlled-radio-button
+              id="voiceIsolationEffectModeStyleTransfer"
+              name="[[voiceIsolationEffectModePrefValues_.STYLE_TRANSFER]]"
+              pref="[[prefs.ash.input_voice_isolation_preferred_effect]]"
+              label="$i18n{audioInputEffectModeStyleTransferTitle}"
+              aria-description="$i18n{audioInputEffectModeStyleTransferDescription}">
+            <div class="cr-secondary-text">
+              <span>$i18n{audioInputEffectModeStyleTransferDescription}</span>
+            </div>
+          </controlled-radio-button>
+          <controlled-radio-button
+              id="voiceIsolationEffectModeBeamforming"
+              name="[[voiceIsolationEffectModePrefValues_.BEAMFORMING]]"
+              pref="[[prefs.ash.input_voice_isolation_preferred_effect]]"
+              label="$i18n{audioInputBeamformingTitle}"
+              aria-description="$i18n{audioInputBeamformingDescription}">
+            <div class="cr-secondary-text">
+              <span>$i18n{audioInputBeamformingDescription}</span>
+            </div>
+          </controlled-radio-button>
+        </settings-radio-group>
       </div>
-      <cr-toggle id="audioInputStyleTransferToggle"
-          checked="{{isStyleTransferEnabled_}}"
-          aria-labelledby="audioInputStyleTransferLabel"
-          on-change="toggleStyleTransferEnabled_">
-      </cr-toggle>
-    </div>
-    <div id="audioInputNoiseCancellationSubsection" class="settings-box"
-        hidden="[[!isNoiseCancellationSupported_]]"
-        on-click="onNoiseCancellationRowClicked_" actionable-row>
-      <div id="audioInputNoiseCancellationLabel"
-          class="settings-box-text start" aria-hidden="true">
-        $i18n{audioInputNoiseCancellationTitle}
-      </div>
-      <cr-toggle id="audioInputNoiseCancellationToggle"
-          checked="{{isNoiseCancellationEnabled_}}"
-          aria-labelledby="audioInputNoiseCancellationLabel"
-          on-change="toggleNoiseCancellationEnabled_">
-      </cr-toggle>
+    </template>
+    <div id="voiceIsolationEffectFallbackMessageSection" class="sub-item"
+        hidden="[[!shouldShowVoiceIsolationFallbackMessage_(
+          audioSystemProperties_.voiceIsolationUiAppearance.showEffectFallbackMessage,
+          prefs.ash.input_voice_isolation_enabled.value
+        )]]">
+      <iron-icon class="audio-info-icon" tabindex="0" icon="cr:info-outline"
+          aria-labelledby="voiceIsolationEffectFallbackMessage">
+      </iron-icon>
+      <span id="voiceIsolationEffectFallbackMessage">
+        $i18n{audioInputVoiceIsolationEffectFallbackMessage}
+      </span>
     </div>
     <div id="audioInputAllowAGCSubsection" class="settings-box"
         hidden="[[!showAllowAGC]]">
@@ -230,7 +273,8 @@
         $i18n{audioInputAllowAGCTitle}
       </div>
       <cr-toggle id="audioInputAllowAGCToggle"
-          checked="{{isAllowAGCEnabled}}">
+          checked="{{isAllowAGCEnabled}}"
+          on-change="toggleAllowAgcEnabled_">
       </cr-toggle>
     </div>
     <div id="audioInputHfpMicSrSubsection" class="settings-box"

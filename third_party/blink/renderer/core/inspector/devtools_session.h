@@ -132,7 +132,8 @@ class CORE_EXPORT DevToolsSession : public GarbageCollected<DevToolsSession>,
 
   // Converts to JSON if requested by the client.
   blink::mojom::blink::DevToolsMessagePtr FinalizeMessage(
-      std::vector<uint8_t> message) const;
+      std::vector<uint8_t> message,
+      std::optional<int> call_id) const;
 
   template <typename T>
   bool IsDomainAvailableToUntrustedClient() {

@@ -71,7 +71,7 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 
 @implementation SettingsTestCase
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // It is possible for a test to fail with a menu visible, which can cause
   // future tests to fail.
 
@@ -99,7 +99,7 @@ id<GREYMatcher> ClearBrowsingDataCell() {
   // clearing browsing history.
   [ChromeEarlGrey killWebKitNetworkProcess];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -275,11 +275,16 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 // Tests that clearing the cookies through the UI does clear all of them. Use a
 // local server to navigate to a page that sets then tests a cookie, and then
 // clears the cookie and tests it is not set.
-- (void)testClearCookies {
+// TODO(crbug.com/378085824): Reenable the test.
+- (void)DISABLED_testClearCookies {
   // Set pref to the last hour.
   [ChromeEarlGrey
       setIntegerValue:static_cast<int>(browsing_data::TimePeriod::LAST_HOUR)
           forUserPref:browsing_data::prefs::kDeleteTimePeriod];
+
+  // Disable closing tabs as it's on by default in delete browsing data.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 

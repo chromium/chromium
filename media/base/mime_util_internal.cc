@@ -266,7 +266,7 @@ SupportsType MimeUtil::AreSupportedCodecs(
           // Nothing to do for AAC; no notion of profile / level to guess.
           break;
         default:
-          NOTREACHED_IN_MIGRATION()
+          NOTREACHED()
               << "Only VP9, H264, and AAC codec strings can be ambiguous.";
       }
     }
@@ -411,7 +411,7 @@ void MimeUtil::AddSupportedMediaFormats() {
   bool can_play_hls = false;
 #endif
 #if BUILDFLAG(IS_ANDROID)
-  can_play_hls |= base::FeatureList::IsEnabled(kHlsPlayer);
+  can_play_hls = true;
 #endif
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
   can_play_hls |= base::FeatureList::IsEnabled(kBuiltInHlsPlayer);
@@ -548,9 +548,7 @@ SupportsType MimeUtil::IsSupportedMediaFormat(
   }
 
   if (parsed_results.empty()) {
-    NOTREACHED_IN_MIGRATION()
-        << __func__ << " Successful parsing should output results.";
-    return SupportsType::kNotSupported;
+    NOTREACHED() << __func__ << " Successful parsing should output results.";
   }
 
   // We get here if the mime type expects to get a codecs parameter
@@ -729,10 +727,8 @@ bool MimeUtil::ParseCodecStrings(
       // Determine implied codec for mime type.
       ParsedCodecResult implied_result = MakeDefaultParsedCodecResult();
       if (!GetDefaultCodec(mime_type_lower_case, &implied_result.codec)) {
-        NOTREACHED_IN_MIGRATION()
-            << " Mime types must offer a default codec if no explicit "
-               "codecs are expected";
-        return false;
+        NOTREACHED() << " Mime types must offer a default codec if no explicit "
+                        "codecs are expected";
       }
       out_results->push_back(implied_result);
       return true;
@@ -960,7 +956,7 @@ SupportsType MimeUtil::IsCodecSupported(std::string_view mime_type_lower_case,
         break;
       // Only supported on some hardware and via ffmpeg.
       case H264PROFILE_HIGH10PROFILE:
-        if (IsBuiltInVideoCodec(VideoCodec::kH264)) {
+        if (IsDecoderBuiltInVideoCodec(VideoCodec::kH264)) {
           // FFmpeg is not generally used for encrypted videos, so we do not
           // know whether 10-bit is supported.
           ambiguous_platform_support = is_encrypted;
@@ -978,12 +974,13 @@ SupportsType MimeUtil::IsCodecSupported(std::string_view mime_type_lower_case,
     if (codec == MPEG4_XHE_AAC)
       audio_profile = AudioCodecProfile::kXHE_AAC;
 
-    if (!IsSupportedAudioType({audio_codec, audio_profile, false}))
+    if (!IsDecoderSupportedAudioType({audio_codec, audio_profile, false})) {
       return SupportsType::kNotSupported;
+    }
   }
 
   if (video_codec != VideoCodec::kUnknown) {
-    if (!IsSupportedVideoType(
+    if (!IsDecoderSupportedVideoType(
             {video_codec, video_profile, video_level, color_space})) {
       return SupportsType::kNotSupported;
     }
@@ -991,7 +988,7 @@ SupportsType MimeUtil::IsCodecSupported(std::string_view mime_type_lower_case,
 
 #if BUILDFLAG(IS_ANDROID)
   // TODO(chcunningham): Delete this. Android platform support should be
-  // handled by (android specific) media::IsSupportedVideoType() above.
+  // handled by (android specific) media::IsDecoderSupportedVideoType() above.
   if (!IsCodecSupportedOnAndroid(codec, mime_type_lower_case, is_encrypted,
                                  video_profile, platform_info_)) {
     return SupportsType::kNotSupported;

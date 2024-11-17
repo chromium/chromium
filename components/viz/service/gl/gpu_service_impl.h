@@ -50,6 +50,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "services/viz/privileged/mojom/gl/gpu_host.mojom.h"
 #include "services/viz/privileged/mojom/gl/gpu_service.mojom.h"
+#include "services/viz/privileged/mojom/viz_main.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "skia/buildflags.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
@@ -149,9 +150,12 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
       mojo::PendingRemote<mojom::GpuHost> gpu_host,
       gpu::GpuProcessShmCount use_shader_cache_shm_count,
       scoped_refptr<gl::GLSurface> default_offscreen_surface,
+      mojom::GpuServiceCreationParamsPtr creation_params,
+#if BUILDFLAG(IS_ANDROID)
       gpu::SyncPointManager* sync_point_manager = nullptr,
       gpu::SharedImageManager* shared_image_manager = nullptr,
       gpu::Scheduler* scheduler = nullptr,
+#endif
       base::WaitableEvent* shutdown_event = nullptr);
   void Bind(mojo::PendingReceiver<mojom::GpuService> pending_receiver);
 
@@ -666,6 +670,13 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   base::RepeatingClosure wake_up_closure_;
 
   std::string shader_prefix_key_;
+
+  // This is flag is controlled by the finch experiment
+  // ClearGrShaderDiskCacheOnInvalidPrefix. Earlier this flag was assigned in
+  // ::LoadedBlob() instead of the constructor which was causing users to fall
+  // out of the finch experiment as ::LoadedBlob() is not called in the next
+  // browser start after the disk cache is cleared.
+  const bool clear_shader_cache_;
 
   base::WeakPtr<GpuServiceImpl> weak_ptr_;
   base::WeakPtrFactory<GpuServiceImpl> weak_ptr_factory_{this};

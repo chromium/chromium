@@ -11,7 +11,8 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import '/shared/settings/prefs/prefs.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import '../controls/settings_toggle_button.js';
 import '../icons.html.js';
 import '../settings_columned_section.css.js';
@@ -19,12 +20,17 @@ import '../settings_shared.css.js';
 import '../simple_confirmation_dialog.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
+import {HelpBubbleMixin} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {routes} from '../route.js';
+import {Router} from '../router.js';
 import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmation_dialog.js';
 
 import {getTemplate} from './autofill_prediction_improvements_section.html.js';
@@ -33,14 +39,19 @@ import {UserAnnotationsManagerProxyImpl} from './user_annotations_manager_proxy.
 
 type UserAnnotationsEntry = chrome.autofillPrivate.UserAnnotationsEntry;
 
+// browser_element_identifiers constants
+const PREDICTION_IMPROVEMENTS_HEADER_ELEMENT_ID =
+    'SettingsUI::kAutofillPredictionImprovementsHeaderElementId';
+
 export interface SettingsAutofillPredictionImprovementsSectionElement {
   $: {
-    prefToggle: HTMLElement,
+    prefToggle: SettingsToggleButtonElement,
+    entriesHeaderTitle: HTMLElement,
   };
 }
 
 const SettingsAutofillPredictionImprovementsSectionElementBase =
-    I18nMixin(PolymerElement);
+    HelpBubbleMixin(PrefsMixin(I18nMixin(PolymerElement)));
 
 export class SettingsAutofillPredictionImprovementsSectionElement extends
     SettingsAutofillPredictionImprovementsSectionElementBase {
@@ -54,9 +65,9 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
 
   static get properties() {
     return {
-      prefs: {
-        type: Object,
-        notify: true,
+      disabled: {
+        type: Boolean,
+        reflectToAttribute: true,
       },
 
       entryToDelete_: Object,
@@ -73,8 +84,8 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
     };
   }
 
-  prefs: {[key: string]: any};
-  private userAnnotationsEntries_: UserAnnotationsEntry[];
+  disabled: boolean = false;
+  private userAnnotationsEntries_: UserAnnotationsEntry[] = [];
   private userAnnotationsManager_: UserAnnotationsManagerProxy =
       UserAnnotationsManagerProxyImpl.getInstance();
   private entryToDelete_?: UserAnnotationsEntry;
@@ -86,13 +97,46 @@ export class SettingsAutofillPredictionImprovementsSectionElement extends
 
     this.userAnnotationsManager_.getEntries().then(
         (entries: UserAnnotationsEntry[]) => {
+          if (this.disabled && entries.length === 0) {
+            Router.getInstance().navigateTo(routes.AUTOFILL);
+          }
           this.userAnnotationsEntries_ = entries;
         });
+
+    this.registerHelpBubble(
+        PREDICTION_IMPROVEMENTS_HEADER_ELEMENT_ID, this.$.entriesHeaderTitle);
   }
 
   private onToggleSubLabelLinkClick_(): void {
     OpenWindowProxyImpl.getInstance().openUrl(
-        loadTimeData.getString('addressesAndPaymentMethodsLearnMoreURL'));
+        loadTimeData.getString('autofillPredictionImprovementsLearnMoreURL'));
+  }
+
+  private onPrefToggleChanged_() {
+    this.userAnnotationsManager_.predictionImprovementsIphFeatureUsed();
+
+    this.maybeTriggerBootstrapping_();
+  }
+
+  private async maybeTriggerBootstrapping_() {
+    const bootstrappingDisabled =
+        !loadTimeData.getBoolean('autofillPredictionBootstrappingEnabled');
+    const toggleDisabled = !this.$.prefToggle.checked;
+    const hasEntries = await this.userAnnotationsManager_.hasEntries();
+    // Only trigger bootstrapping if the pref was just enabled and there are no
+    // entries yet.
+    if (bootstrappingDisabled || this.disabled || toggleDisabled ||
+        hasEntries) {
+      return;
+    }
+
+    const entriesAdded =
+        await this.userAnnotationsManager_.triggerBootstrapping();
+    // Refresh the list if bootstrapping resulted in new entries being added.
+    if (entriesAdded) {
+      this.userAnnotationsEntries_ =
+          await this.userAnnotationsManager_.getEntries();
+    }
   }
 
   private onDeleteEntryCick_(e: DomRepeatEvent<UserAnnotationsEntry>): void {

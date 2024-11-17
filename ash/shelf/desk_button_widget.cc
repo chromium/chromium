@@ -4,7 +4,7 @@
 
 #include "ash/shelf/desk_button_widget.h"
 
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/public/cpp/shelf_prefs.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/screen_util.h"
@@ -363,6 +363,10 @@ void DeskButtonWidget::MaybeFocusOut(bool reverse) {
     return;
   }
   views[next]->RequestFocus();
+}
+
+void DeskButtonWidget::InitializeAccessibleProperties() {
+  delegate_view()->desk_button_container()->InitializeAccessibleProperties();
 }
 
 bool DeskButtonWidget::OnNativeWidgetActivationChanged(bool active) {

@@ -14,13 +14,13 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/ime/input_method.h"
@@ -28,6 +28,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
@@ -58,6 +59,8 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "ui/aura/input_state_lookup.h"
+#include "ui/aura/test/env_test_helper.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/views/win/hwnd_util.h"
@@ -246,26 +249,9 @@ class DragView : public View, public DragController {
                             const gfx::Point& press_pt,
                             ui::OSExchangeData* data) override {
     data->provider().SetString(u"test");
-
-    // Without this, Lacros won't add the chromium/x-data-transfer-endpoint MIME
-    // type to the list of available types, and without that Exo won't start a
-    // drag session.
-    data->SetSource(
-        std::make_unique<ui::DataTransferEndpoint>(ui::EndpointType::kDefault));
   }
 
   // View:
-
-  // See the comment for `received_drag_event_` for why this is Lacros-only.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnMouseEvent(ui::MouseEvent* event) override {
-    if (event->type() == ui::EventType::kMouseDragged) {
-      received_drag_event_ = true;
-    }
-    View::OnMouseEvent(event);
-  }
-#endif
-
   bool GetDropFormats(
       int* formats,
       std::set<ui::ClipboardFormatType>* format_types) override {
@@ -294,26 +280,11 @@ class DragView : public View, public DragController {
   }
 
   void OnMouseExited(const ui::MouseEvent& event) override {
-    // Depending on the initial mouse position and the timing when the OS
-    // informs us about it, we might get an extra mouse exit event that is
-    // unrelated to DnD.
-    if (received_drag_event_ && on_mouse_exit_) {
+    if (on_mouse_exit_) {
       std::move(on_mouse_exit_).Run();
     }
   }
 
-  // Whether we've received an EventType::kMouseDragged event yet.
-  //
-  // This is needed on Lacros, where we sometimes get an EventType::kMouseExited
-  // event that's unrelated to DnD. To prevent that from messing up the test
-  // flow, we ignore all such events until we receive an
-  // EventType::kMouseDragged event. On all other platforms, initializing it to
-  // true disables this workaround.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool received_drag_event_ = false;
-#else
-  bool received_drag_event_ = true;
-#endif
   base::OnceClosure on_drag_enter_, on_drag_exit_, on_capture_lost_,
       on_mouse_exit_;
 };
@@ -322,16 +293,82 @@ BEGIN_METADATA(DragView)
 END_METADATA
 #endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)
 
-ui::WindowShowState GetWidgetShowState(const Widget* widget) {
+// A root view that tracks mouse events.
+class MouseEventRootView : public internal::RootView {
+  METADATA_HEADER(MouseEventRootView, View)
+
+ public:
+  using RootView::RootView;
+
+  MouseEventRootView(const MouseEventRootView&) = delete;
+  MouseEventRootView& operator=(const MouseEventRootView&) = delete;
+
+  ~MouseEventRootView() override = default;
+
+  bool OnMouseDragged(const ui::MouseEvent& event) override {
+    ++dragged_;
+    return internal::RootView::OnMouseDragged(event);
+  }
+
+  void OnMouseMoved(const ui::MouseEvent& event) override {
+    ++moved_;
+    internal::RootView::OnMouseMoved(event);
+  }
+
+  int moved() const { return moved_; }
+  int dragged() const { return dragged_; }
+  void reset_counts() {
+    moved_ = 0;
+    dragged_ = 0;
+  }
+
+ private:
+  int dragged_ = 0;
+  int moved_ = 0;
+};
+
+BEGIN_METADATA(MouseEventRootView)
+END_METADATA
+
+// A widget that uses MouseEventRootView to track mouse events.
+class MouseEventWidget : public Widget {
+  METADATA_HEADER(MouseEventWidget, Widget)
+
+ public:
+  MouseEventWidget() = default;
+
+  MouseEventWidget(const MouseEventWidget&) = delete;
+  MouseEventWidget& operator=(const MouseEventWidget&) = delete;
+
+  ~MouseEventWidget() override = default;
+
+  MouseEventRootView* root_view() { return root_view_; }
+
+ private:
+  // Widget:
+  internal::RootView* CreateRootView() override {
+    // The parent class owns and destroys the view.
+    root_view_ = new MouseEventRootView(this);
+    return root_view_;
+  }
+
+  raw_ptr<MouseEventRootView> root_view_;
+};
+
+BEGIN_METADATA(MouseEventWidget)
+END_METADATA
+
+ui::mojom::WindowShowState GetWidgetShowState(const Widget* widget) {
   // Use IsMaximized/IsMinimized/IsFullScreen instead of GetWindowPlacement
   // because the former is implemented on all platforms but the latter is not.
   if (widget->IsFullscreen())
-    return ui::SHOW_STATE_FULLSCREEN;
+    return ui::mojom::WindowShowState::kFullscreen;
   if (widget->IsMaximized())
-    return ui::SHOW_STATE_MAXIMIZED;
+    return ui::mojom::WindowShowState::kMaximized;
   if (widget->IsMinimized())
-    return ui::SHOW_STATE_MINIMIZED;
-  return widget->IsActive() ? ui::SHOW_STATE_NORMAL : ui::SHOW_STATE_INACTIVE;
+    return ui::mojom::WindowShowState::kMinimized;
+  return widget->IsActive() ? ui::mojom::WindowShowState::kNormal
+                            : ui::mojom::WindowShowState::kInactive;
 }
 
 // Give the OS an opportunity to process messages for an activation change, when
@@ -1051,7 +1088,7 @@ TEST_F(DesktopWidgetTestInteractive, WindowModalWindowDestroyedActivationTest) {
   auto top_level_widget = std::make_unique<Widget>();
   Widget::InitParams init_params = CreateParams(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
-  init_params.show_state = ui::SHOW_STATE_NORMAL;
+  init_params.show_state = ui::mojom::WindowShowState::kNormal;
   gfx::Rect initial_bounds(0, 0, 500, 500);
   init_params.bounds = initial_bounds;
   top_level_widget->Init(std::move(init_params));
@@ -1201,7 +1238,8 @@ TEST_F(WidgetTestInteractive, ShowCreatesActiveWindow) {
       CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
 
   ShowSync(widget.get());
-  EXPECT_EQ(GetWidgetShowState(widget.get()), ui::SHOW_STATE_NORMAL);
+  EXPECT_EQ(GetWidgetShowState(widget.get()),
+            ui::mojom::WindowShowState::kNormal);
 }
 
 TEST_F(WidgetTestInteractive, ShowInactive) {
@@ -1210,7 +1248,8 @@ TEST_F(WidgetTestInteractive, ShowInactive) {
       CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
 
   ShowInactiveSync(widget.get());
-  EXPECT_EQ(GetWidgetShowState(widget.get()), ui::SHOW_STATE_INACTIVE);
+  EXPECT_EQ(GetWidgetShowState(widget.get()),
+            ui::mojom::WindowShowState::kInactive);
 }
 
 TEST_F(WidgetTestInteractive, InactiveBeforeShow) {
@@ -1245,7 +1284,8 @@ TEST_F(WidgetTestInteractive, ShowInactiveAfterShow) {
   ShowInactiveSync(widget.get());
   EXPECT_TRUE(widget->IsActive());
   EXPECT_FALSE(widget2->IsActive());
-  EXPECT_EQ(GetWidgetShowState(widget.get()), ui::SHOW_STATE_NORMAL);
+  EXPECT_EQ(GetWidgetShowState(widget.get()),
+            ui::mojom::WindowShowState::kNormal);
 }
 
 TEST_F(WidgetTestInteractive, ShowAfterShowInactive) {
@@ -1254,7 +1294,8 @@ TEST_F(WidgetTestInteractive, ShowAfterShowInactive) {
 
   ShowInactiveSync(widget.get());
   ShowSync(widget.get());
-  EXPECT_EQ(GetWidgetShowState(widget.get()), ui::SHOW_STATE_NORMAL);
+  EXPECT_EQ(GetWidgetShowState(widget.get()),
+            ui::mojom::WindowShowState::kNormal);
 }
 
 TEST_F(WidgetTestInteractive, WidgetShouldBeActiveWhenShow) {
@@ -1276,7 +1317,8 @@ TEST_F(WidgetTestInteractive, InactiveWidgetDoesNotGrabActivation) {
   std::unique_ptr<Widget> widget = base::WrapUnique(
       CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
   ShowSync(widget.get());
-  EXPECT_EQ(GetWidgetShowState(widget.get()), ui::SHOW_STATE_NORMAL);
+  EXPECT_EQ(GetWidgetShowState(widget.get()),
+            ui::mojom::WindowShowState::kNormal);
 
   auto widget2 = std::make_unique<Widget>();
   Widget::InitParams params = CreateParams(
@@ -1285,8 +1327,10 @@ TEST_F(WidgetTestInteractive, InactiveWidgetDoesNotGrabActivation) {
   widget2->Show();
   RunPendingMessagesForActiveStatusChange();
 
-  EXPECT_EQ(GetWidgetShowState(widget2.get()), ui::SHOW_STATE_INACTIVE);
-  EXPECT_EQ(GetWidgetShowState(widget.get()), ui::SHOW_STATE_NORMAL);
+  EXPECT_EQ(GetWidgetShowState(widget2.get()),
+            ui::mojom::WindowShowState::kInactive);
+  EXPECT_EQ(GetWidgetShowState(widget.get()),
+            ui::mojom::WindowShowState::kNormal);
 }
 #endif  // BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_MAC)
 
@@ -1309,27 +1353,35 @@ TEST_F(WidgetTestInteractive, MAYBE_ExitFullscreenRestoreState) {
   RunPendingMessages();
 
   // This should be a normal state window.
-  EXPECT_EQ(ui::SHOW_STATE_NORMAL, GetWidgetShowState(toplevel.get()));
+  EXPECT_EQ(ui::mojom::WindowShowState::kNormal,
+            GetWidgetShowState(toplevel.get()));
 
   toplevel->SetFullscreen(true);
-  EXPECT_EQ(ui::SHOW_STATE_FULLSCREEN, GetWidgetShowState(toplevel.get()));
+  EXPECT_EQ(ui::mojom::WindowShowState::kFullscreen,
+            GetWidgetShowState(toplevel.get()));
   toplevel->SetFullscreen(false);
-  EXPECT_NE(ui::SHOW_STATE_FULLSCREEN, GetWidgetShowState(toplevel.get()));
+  EXPECT_NE(ui::mojom::WindowShowState::kFullscreen,
+            GetWidgetShowState(toplevel.get()));
 
   // And it should still be in normal state after getting out of full screen.
-  EXPECT_EQ(ui::SHOW_STATE_NORMAL, GetWidgetShowState(toplevel.get()));
+  EXPECT_EQ(ui::mojom::WindowShowState::kNormal,
+            GetWidgetShowState(toplevel.get()));
 
   // Now, make it maximized.
   toplevel->Maximize();
-  EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED, GetWidgetShowState(toplevel.get()));
+  EXPECT_EQ(ui::mojom::WindowShowState::kMaximized,
+            GetWidgetShowState(toplevel.get()));
 
   toplevel->SetFullscreen(true);
-  EXPECT_EQ(ui::SHOW_STATE_FULLSCREEN, GetWidgetShowState(toplevel.get()));
+  EXPECT_EQ(ui::mojom::WindowShowState::kFullscreen,
+            GetWidgetShowState(toplevel.get()));
   toplevel->SetFullscreen(false);
-  EXPECT_NE(ui::SHOW_STATE_FULLSCREEN, GetWidgetShowState(toplevel.get()));
+  EXPECT_NE(ui::mojom::WindowShowState::kFullscreen,
+            GetWidgetShowState(toplevel.get()));
 
   // And it stays maximized after getting out of full screen.
-  EXPECT_EQ(ui::SHOW_STATE_MAXIMIZED, GetWidgetShowState(toplevel.get()));
+  EXPECT_EQ(ui::mojom::WindowShowState::kMaximized,
+            GetWidgetShowState(toplevel.get()));
 }
 
 // Testing initial focus is assigned properly for normal top-level widgets,
@@ -2039,7 +2091,7 @@ TEST_F(WidgetCaptureTest, GrabUngrab) {
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_SystemModalWindowReleasesCapture \
   DISABLED_SystemModalWindowReleasesCapture
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
 // Investigate enabling for Chrome OS. It probably requires help from the window
 // service.
 #define MAYBE_SystemModalWindowReleasesCapture \
@@ -2057,7 +2109,7 @@ TEST_F(WidgetCaptureTest, MAYBE_SystemModalWindowReleasesCapture) {
   auto top_level_widget = std::make_unique<Widget>();
   Widget::InitParams init_params = CreateParams(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
-  init_params.show_state = ui::SHOW_STATE_NORMAL;
+  init_params.show_state = ui::mojom::WindowShowState::kNormal;
   gfx::Rect initial_bounds(0, 0, 500, 500);
   init_params.bounds = initial_bounds;
   top_level_widget->Init(std::move(init_params));
@@ -2087,7 +2139,7 @@ TEST_F(WidgetCaptureTest, MAYBE_SystemModalWindowReleasesCapture) {
 // Regression test for http://crbug.com/382421 (Linux-Aura issue).
 // TODO(pkotwicz): Make test pass on CrOS and Windows.
 // TODO(tapted): Investigate for toolkit-views on Mac http;//crbug.com/441064.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_MouseExitOnCaptureGrab DISABLED_MouseExitOnCaptureGrab
 #else
 #define MAYBE_MouseExitOnCaptureGrab MouseExitOnCaptureGrab
@@ -2140,7 +2192,9 @@ namespace {
 // Widget observer which grabs capture when the widget is activated.
 class CaptureOnActivationObserver : public WidgetObserver {
  public:
-  CaptureOnActivationObserver() = default;
+  explicit CaptureOnActivationObserver(Widget* widget) {
+    widget_observation_.Observe(widget);
+  }
 
   CaptureOnActivationObserver(const CaptureOnActivationObserver&) = delete;
   CaptureOnActivationObserver& operator=(const CaptureOnActivationObserver&) =
@@ -2160,6 +2214,7 @@ class CaptureOnActivationObserver : public WidgetObserver {
 
  private:
   bool activation_observed_ = false;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 }  // namespace
@@ -2182,8 +2237,7 @@ TEST_F(WidgetCaptureTest, SetCaptureToNonToplevel) {
   child_params.context = toplevel->GetNativeWindow();
   child->Init(std::move(child_params));
 
-  CaptureOnActivationObserver observer;
-  child->AddObserver(&observer);
+  CaptureOnActivationObserver observer(child.get());
   child->Show();
 
 #if BUILDFLAG(IS_MAC)
@@ -2196,8 +2250,6 @@ TEST_F(WidgetCaptureTest, SetCaptureToNonToplevel) {
 
   EXPECT_TRUE(observer.activation_observed());
   EXPECT_TRUE(child->HasCapture());
-
-  child->RemoveObserver(&observer);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -2297,8 +2349,9 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
   }
 
   void TearDown() override {
-    if (deactivate_widget_)
+    if (deactivate_widget_) {
       deactivate_widget_->CloseNow();
+    }
     DesktopWidgetTestInteractive::TearDown();
   }
 
@@ -2501,15 +2554,17 @@ class DesktopWidgetDragTestInteractive : public DesktopWidgetTestInteractive,
                   base::OnceClosure on_capture_lost) {
     widget->AddObserver(this);
 
-    Widget::InitParams params = CreateParams(Widget::InitParams::TYPE_WINDOW);
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
     params.native_widget = new DesktopNativeWidgetAura(widget);
     params.bounds = bounds;
     widget->Init(std::move(params));
 
-    // On X11 and Lacros, we need another mouse event after the drag has started
-    // for `DragView::OnDragEntered()` to be called. The best way to wait for
-    // the drag to start seems to be to wait for `DragView::OnMouseExited()`,
-    // which on these platforms happens only after the drag has started.
+    // On X11, we need another mouse event after the drag has started for
+    // `DragView::OnDragEntered()` to be called. The best way to wait for the
+    // drag to start seems to be to wait for `DragView::OnMouseExited()`, which
+    // on these platforms happens only after the drag has started.
     auto on_mouse_exit = base::BindLambdaForTesting([]() {
       gfx::Point target_location =
           aura::Env::GetInstance()->last_mouse_location();
@@ -2566,7 +2621,14 @@ class DesktopWidgetDragTestInteractive : public DesktopWidgetTestInteractive,
 };
 
 // Cancels a DnD session started by `RunShellDrag()`.
-TEST_F(DesktopWidgetDragTestInteractive, CancelShellDrag) {
+//
+// TODO(crbug.com/332944429): Re-enable on Windows AMR64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_CancelShellDrag DISABLED_CancelShellDrag
+#else
+#define MAYBE_CancelShellDrag CancelShellDrag
+#endif
+TEST_F(DesktopWidgetDragTestInteractive, MAYBE_CancelShellDrag) {
   WidgetAutoclosePtr widget(new Widget);
 
   auto cancel = [&]() {
@@ -2601,6 +2663,76 @@ TEST_F(DesktopWidgetDragTestInteractive, CancelShellDrag) {
   // Wait for the drag to be cancelled by `DragView::OnDragEntered()` /
   // `DragView::OnMouseCaptureLost()`.
   WaitForDragEnd();
+}
+
+// Tests that mouse movements made after a drag ends will be handled as
+// moves instead of drags.
+// TODO(crbug.com/375959961): On X11, the native widget's mouse button state is
+// not updated when the mouse button is released to end a drag.
+#if BUILDFLAG(IS_OZONE_X11)
+#define MAYBE_RunShellDragUpdatesMouseButtonState \
+  DISABLED_RunShellDragUpdatesMouseButtonState
+#else
+#define MAYBE_RunShellDragUpdatesMouseButtonState \
+  RunShellDragUpdatesMouseButtonState
+#endif
+TEST_F(DesktopWidgetDragTestInteractive,
+       MAYBE_RunShellDragUpdatesMouseButtonState) {
+#if BUILDFLAG(IS_WIN)
+  // The test base (views::ViewsTestBase) removes input state lookup.
+  // Windows depends on it for getting the correct mouse button state during
+  // drags.
+  aura::test::EnvTestHelper(aura::Env::GetInstance())
+      .SetInputStateLookup(aura::InputStateLookup::Create());
+#endif
+
+  auto widget = std::make_unique<MouseEventWidget>();
+
+  // Release the mouse button when we enter drag. This should end the drag.
+  auto on_enter = [&]() {
+    drag_entered_ = true;
+
+    EXPECT_TRUE(ui_controls::SendMouseEvents(
+        ui_controls::MouseButton::LEFT, ui_controls::MouseButtonState::UP));
+  };
+
+#if BUILDFLAG(IS_WIN)
+  // Additional mouse movement is needed on Windows before the "OnDragEnter"
+  // is triggered.
+  base::OnceClosure on_capture_lost = base::BindLambdaForTesting([&] {
+    gfx::Point target_location =
+        aura::Env::GetInstance()->last_mouse_location();
+    target_location += gfx::Vector2d(1, 1);
+    EXPECT_TRUE(
+        ui_controls::SendMouseMove(target_location.x(), target_location.y()));
+  });
+#else
+  base::OnceClosure on_capture_lost = base::DoNothing();
+#endif  // BUILDFLAG(IS_WIN)
+
+  InitWidget(widget.get(), base::BindLambdaForTesting(on_enter),
+             base::DoNothing(), std::move(on_capture_lost));
+
+  StartDrag();
+
+  // Wait for the the mouse to be released by `DragView::OnDragEntered()`.
+  WaitForDragEnd();
+
+  MouseEventRootView* root = widget->root_view();
+  root->reset_counts();
+
+  // Further mouse movement should be handled by the widget as movements rather
+  // than drags.
+  widget->native_widget_private()->SetCapture();
+  gfx::Point target_location = aura::Env::GetInstance()->last_mouse_location();
+  target_location += gfx::Vector2d(10, 10);
+  base::RunLoop move_loop;
+  EXPECT_TRUE(ui_controls::SendMouseMoveNotifyWhenDone(
+      target_location.x(), target_location.y(), move_loop.QuitClosure()));
+  move_loop.Run();
+
+  EXPECT_EQ(0, root->dragged());
+  EXPECT_EQ(1, root->moved());
 }
 
 #endif  // BUILDFLAG(ENABLE_DESKTOP_AURA)

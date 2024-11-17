@@ -144,7 +144,8 @@ TEST_F(IdentityTestEnvironmentTest, TriggerListAccount) {
                       .set_cookie = true});
   ASSERT_EQ(identity_test_environment->identity_manager()
                 ->GetAccountsInCookieJar()
-                .signed_in_accounts.size(),
+                .GetPotentiallyInvalidSignedInAccounts()
+                .size(),
             1u);
 
   {
@@ -156,7 +157,8 @@ TEST_F(IdentityTestEnvironmentTest, TriggerListAccount) {
 
     const AccountsInCookieJarInfo& observed_cookie_jar =
         observer.AccountsInfoFromAccountsInCookieUpdatedCallback();
-    auto signed_in_accounts = observed_cookie_jar.signed_in_accounts;
+    auto signed_in_accounts =
+        observed_cookie_jar.GetPotentiallyInvalidSignedInAccounts();
     ASSERT_EQ(signed_in_accounts.size(), 1u);
     EXPECT_EQ(signed_in_accounts[0].email, kPrimaryEmail);
   }
@@ -175,7 +177,8 @@ TEST_F(IdentityTestEnvironmentTest, TriggerListAccount) {
 
     const AccountsInCookieJarInfo& observed_cookie_jar =
         observer.AccountsInfoFromAccountsInCookieUpdatedCallback();
-    auto signed_in_accounts = observed_cookie_jar.signed_in_accounts;
+    auto signed_in_accounts =
+        observed_cookie_jar.GetPotentiallyInvalidSignedInAccounts();
     ASSERT_EQ(signed_in_accounts.size(), 2u);
     EXPECT_EQ(signed_in_accounts[0].email, kPrimaryEmail);
     EXPECT_EQ(signed_in_accounts[1].email, secondary_email);

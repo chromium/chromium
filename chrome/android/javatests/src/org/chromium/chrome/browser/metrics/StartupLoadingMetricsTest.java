@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.metrics;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
 import androidx.test.core.app.ApplicationProvider;
@@ -27,7 +28,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.LauncherShortcutActivity;
 import org.chromium.chrome.browser.base.ColdStartTracker;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -67,14 +69,16 @@ public class StartupLoadingMetricsTest {
             "Startup.Android.Cold.TimeToFirstVisibleContent";
     private static final String FIRST_VISIBLE_CONTENT_HISTOGRAM2 =
             "Startup.Android.Cold.TimeToFirstVisibleContent2";
-    private static final String FIRST_VISIBLE_CONTENT_COLD_HISTOGRAM3 =
-            "Startup.Android.Cold.TimeToFirstVisibleContent3";
+    private static final String FIRST_VISIBLE_CONTENT_COLD_HISTOGRAM4 =
+            "Startup.Android.Cold.TimeToFirstVisibleContent4";
     private static final String VISIBLE_CONTENT_HISTOGRAM =
             "Startup.Android.Cold.TimeToVisibleContent";
     private static final String FIRST_COMMIT_COLD_HISTOGRAM3 =
             "Startup.Android.Cold.TimeToFirstNavigationCommit3";
     private static final String MAIN_INTENT_COLD_START_HISTOGRAM =
             "Startup.Android.MainIntentIsColdStart";
+    private static final String MAIN_INTENT_TIME_TO_FIRST_DRAW_WARM_MS_HISTOGRAM =
+            "Startup.Android.Warm.MainIntentTimeToFirstDraw";
 
     private CustomTabsConnection mConnectionToCleanup;
 
@@ -86,8 +90,6 @@ public class StartupLoadingMetricsTest {
             new ChromeTabbedActivityTestRule();
 
     @Rule public WebApkActivityTestRule mWebApkActivityTestRule = new WebApkActivityTestRule();
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -103,7 +105,7 @@ public class StartupLoadingMetricsTest {
     @After
     public void tearDown() {
         if (mConnectionToCleanup != null) {
-            CustomTabsTestUtils.cleanupSessions(mConnectionToCleanup);
+            CustomTabsTestUtils.cleanupSessions();
         }
     }
 
@@ -158,10 +160,10 @@ public class StartupLoadingMetricsTest {
                 isTabbedSuffix ? expectedCount : 0,
                 RecordHistogram.getHistogramTotalCountForTesting(FIRST_COMMIT_HISTOGRAM2));
 
-        int coldStartFirstCommit3Samples =
+        int coldStartFirstCommit4Samples =
                 RecordHistogram.getHistogramTotalCountForTesting(
                         FIRST_COMMIT_COLD_HISTOGRAM3 + histogramSuffix);
-        Assert.assertTrue(coldStartFirstCommit3Samples < 2);
+        Assert.assertTrue(coldStartFirstCommit4Samples < 2);
 
         int coldStartFirstContentfulPaintSamples =
                 RecordHistogram.getHistogramTotalCountForTesting(FIRST_CONTENTFUL_PAINT_HISTOGRAM3);
@@ -208,9 +210,9 @@ public class StartupLoadingMetricsTest {
                     RecordHistogram.getHistogramTotalCountForTesting(
                             FIRST_VISIBLE_CONTENT_HISTOGRAM2));
             Assert.assertEquals(
-                    coldStartFirstCommit3Samples,
+                    coldStartFirstCommit4Samples,
                     RecordHistogram.getHistogramTotalCountForTesting(
-                            FIRST_VISIBLE_CONTENT_COLD_HISTOGRAM3));
+                            FIRST_VISIBLE_CONTENT_COLD_HISTOGRAM4));
         }
     }
 
@@ -232,6 +234,63 @@ public class StartupLoadingMetricsTest {
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mTabbedActivityTestRule.startMainActivityFromIntent(intent, null));
         assertMainIntentLaunchColdStartHistogramRecorded(1);
+    }
+
+    /**
+     * Tests warm start metric for main icon launches recorded correctly. Minimum SDK Level is P+
+     * due to how ColdStartTracker determines a cold start. The mechanism is time-based prior to P
+     * and is therefore less robust.
+     */
+    @Test
+    @LargeTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.P)
+    public void testWarmStartMainIntentTimeToFirstDrawRecordedCorrectly() throws Exception {
+        // No records made for main intent cold starts.
+        HistogramWatcher histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectNoRecords(MAIN_INTENT_TIME_TO_FIRST_DRAW_WARM_MS_HISTOGRAM)
+                        .build();
+
+        runAndWaitForPageLoadMetricsRecorded(
+                () -> {
+                    mTabbedActivityTestRule.startMainActivityFromLauncher();
+                    ChromeApplicationTestUtils.fireHomeScreenIntent(
+                            mTabbedActivityTestRule.getActivity());
+                });
+        histogramWatcher.assertExpected();
+
+        // Expect two records for two main intent warm starts.
+        histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecordTimes(MAIN_INTENT_TIME_TO_FIRST_DRAW_WARM_MS_HISTOGRAM, 2)
+                        .build();
+        runAndWaitForPageLoadMetricsRecorded(
+                () -> {
+                    ChromeApplicationTestUtils.fireHomeScreenIntent(
+                            mTabbedActivityTestRule.getActivity());
+                    try {
+                        mTabbedActivityTestRule.resumeMainActivityFromLauncher();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+        runAndWaitForPageLoadMetricsRecorded(
+                () -> {
+                    ChromeApplicationTestUtils.fireHomeScreenIntent(
+                            mTabbedActivityTestRule.getActivity());
+                    try {
+                        mTabbedActivityTestRule.resumeMainActivityFromLauncher();
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+
+        // Go to home screen one more time since the metric is recorded during onPause()
+        runAndWaitForPageLoadMetricsRecorded(
+                () ->
+                        ChromeApplicationTestUtils.fireHomeScreenIntent(
+                                mTabbedActivityTestRule.getActivity()));
+        histogramWatcher.assertExpected();
     }
 
     /**

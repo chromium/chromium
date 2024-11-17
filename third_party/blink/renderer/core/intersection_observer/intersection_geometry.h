@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/transform.h"
@@ -53,6 +54,9 @@ class CORE_EXPORT IntersectionGeometry {
     kRootIsImplicit = 1 << 9,
     kDidComputeGeometry = 1 << 10,
     kIsVisible = 1 << 11,
+
+    // These flags to expose extra information of occluded state
+    kShouldExposeOccluderNodeId = 1 << 12,
   };
 
   struct RootGeometry {
@@ -138,6 +142,7 @@ class CORE_EXPORT IntersectionGeometry {
   bool DidComputeGeometry() const { return flags_ & kDidComputeGeometry; }
   bool IsIntersecting() const { return threshold_index_ > 0; }
   bool IsVisible() const { return flags_ & kIsVisible; }
+  DOMNodeId occluder_node_id() const { return occluder_node_id_; }
 
   bool CanUseCachedRectsForTesting() const { return ShouldUseCachedRects(); }
 
@@ -239,6 +244,7 @@ class CORE_EXPORT IntersectionGeometry {
   unsigned flags_;
   double intersection_ratio_ = 0;
   wtf_size_t threshold_index_ = 0;
+  DOMNodeId occluder_node_id_ = kInvalidDOMNodeId;
 };
 
 }  // namespace blink

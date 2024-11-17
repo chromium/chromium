@@ -257,11 +257,7 @@ AutofillProfile CreateStarterProfile(
 AutofillProfile::AutofillProfile(const std::string& guid,
                                  RecordType record_type,
                                  AddressCountryCode country_code)
-    : AutofillDataModel(/*usage_history_size=*/
-                        base::FeatureList::IsEnabled(
-                            features::kAutofillTrackMultipleUseDates)
-                            ? 3
-                            : 1),
+    : AutofillDataModel(/*usage_history_size=*/3),
       guid_(guid),
       phone_number_(this),
       address_(country_code),
@@ -493,8 +489,7 @@ bool AutofillProfile::IsPresentButInvalid(FieldType type) const {
       return !IsValidEmailAddress(data);
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -507,6 +502,9 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
                                 NAME_LAST_FIRST,
                                 NAME_LAST_SECOND,
                                 NAME_LAST_CONJUNCTION,
+                                ALTERNATIVE_FULL_NAME,
+                                ALTERNATIVE_GIVEN_NAME,
+                                ALTERNATIVE_FAMILY_NAME,
                                 COMPANY_NAME,
                                 ADDRESS_HOME_STREET_ADDRESS,
                                 ADDRESS_HOME_DEPENDENT_LOCALITY,
@@ -537,7 +535,7 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
 
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 163,
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 166,
                 "New field type needs to be reviewed for inclusion in the "
                 "profile comparison logic.");
 
@@ -1137,8 +1135,7 @@ FormGroup* AutofillProfile::MutableFormGroupForType(FieldType type) {
     case FieldTypeGroup::kPredictionImprovements:
       return nullptr;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool AutofillProfile::EqualsSansGuid(const AutofillProfile& profile) const {
@@ -1190,6 +1187,14 @@ AutofillProfile AutofillProfile::ConvertToAccountProfile() const {
   // Initial creator and last modifier are unused for kLocalOrSyncable profiles.
   account_profile.initial_creator_id_ = kInitialCreatorOrModifierChrome;
   account_profile.last_modifier_id_ = kInitialCreatorOrModifierChrome;
+  return account_profile;
+}
+
+AutofillProfile AutofillProfile::DowngradeToAccountProfile() const {
+  CHECK(record_type() == RecordType::kAccountHome ||
+        record_type() == RecordType::kAccountWork);
+  AutofillProfile account_profile = *this;
+  account_profile.record_type_ = RecordType::kAccount;
   return account_profile;
 }
 

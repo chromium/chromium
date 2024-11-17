@@ -137,7 +137,6 @@ FragmentItem::FragmentItem(const PhysicalSize& size,
       is_dirty_(false),
       is_last_for_node_(true) {
   DCHECK(!IsFormattingContextRoot());
-  DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
 }
 
 FragmentItem::FragmentItem(const PhysicalBoxFragment& box,
@@ -203,8 +202,7 @@ FragmentItem::FragmentItem(LogicalLineItem&& line_item,
   }
 
   // CanCreateFragmentItem()
-  NOTREACHED_IN_MIGRATION();
-  CHECK(false);
+  NOTREACHED();
 }
 
 FragmentItem::FragmentItem(const FragmentItem& source)
@@ -309,7 +307,7 @@ bool FragmentItem::IsInlineBox() const {
     if (const PhysicalBoxFragment* box = BoxFragment()) {
       return box->IsInlineBox();
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return false;
 }
@@ -398,10 +396,23 @@ gfx::RectF FragmentItem::ObjectBoundingBox(const FragmentItems& items) const {
     ink_bounds.Offset(0.0f, font_data->GetFontMetrics().FloatAscent());
   ink_bounds.Scale(GetSvgFragmentData()->length_adjust_scale, 1.0f);
   const gfx::RectF& scaled_rect = GetSvgFragmentData()->rect;
-  if (!IsHorizontal()) {
-    ink_bounds =
-        gfx::RectF(scaled_rect.width() - ink_bounds.bottom(), ink_bounds.x(),
-                   ink_bounds.height(), ink_bounds.width());
+  // Convert a logical ink_bounds to physical. We don't use WiringModeConverter,
+  // which has no ToPhysical() for gfx::RectF.
+  switch (GetWritingMode()) {
+    case WritingMode::kHorizontalTb:
+      break;
+    case WritingMode::kVerticalLr:
+    case WritingMode::kVerticalRl:
+    case WritingMode::kSidewaysRl:
+      ink_bounds =
+          gfx::RectF(scaled_rect.width() - ink_bounds.bottom(), ink_bounds.x(),
+                     ink_bounds.height(), ink_bounds.width());
+      break;
+    case WritingMode::kSidewaysLr:
+      ink_bounds =
+          gfx::RectF(ink_bounds.y(), scaled_rect.height() - ink_bounds.right(),
+                     ink_bounds.height(), ink_bounds.width());
+      break;
   }
   ink_bounds.Offset(scaled_rect.OffsetFromOrigin());
   ink_bounds.Union(scaled_rect);
@@ -549,8 +560,7 @@ const ShapeResultView* FragmentItem::TextShapeResult() const {
     return text_.shape_result.Get();
   if (Type() == kGeneratedText)
     return generated_text_.shape_result.Get();
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 TextOffsetRange FragmentItem::TextOffset() const {
@@ -558,8 +568,7 @@ TextOffsetRange FragmentItem::TextOffset() const {
     return text_.text_offset;
   if (Type() == kGeneratedText)
     return {0, generated_text_.text.length()};
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 unsigned FragmentItem::StartOffsetInContainer(
@@ -578,7 +587,8 @@ unsigned FragmentItem::StartOffsetInContainer(
     if (current->Type() == kBox && !current->IsInlineBox())
       break;
   }
-  NOTREACHED_IN_MIGRATION();
+  // No such text fragment.  We don't know how to reproduce this.
+  // See crbug.com/372586875.
   return 0;
 }
 
@@ -589,8 +599,7 @@ StringView FragmentItem::Text(const FragmentItems& items) const {
   }
   if (Type() == kGeneratedText)
     return GeneratedText();
-  NOTREACHED_IN_MIGRATION();
-  return StringView();
+  NOTREACHED();
 }
 
 TextFragmentPaintInfo FragmentItem::TextPaintInfo(
@@ -603,8 +612,7 @@ TextFragmentPaintInfo FragmentItem::TextPaintInfo(
     return {generated_text_.text, 0, generated_text_.text.length(),
             generated_text_.shape_result.Get()};
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 TextDirection FragmentItem::BaseDirection() const {
@@ -670,6 +678,9 @@ AffineTransform FragmentItem::BuildSvgTransformForLengthAdjust() const {
       scale_transform.SetMatrix(
           scale, 0, 0, 1, with_text_path_transform ? 0 : x - scale * x, 0);
     } else {
+      // svg_data.rect is a physical bounding rectangle including lengthAdjust
+      // scaling.  So all vertical writing modes including sideways-lr need the
+      // same transform.
       float y = svg_data.rect.y();
       scale_transform.SetMatrix(1, 0, 0, scale, 0,
                                 with_text_path_transform ? 0 : y - scale * y);
@@ -698,12 +709,22 @@ AffineTransform FragmentItem::BuildSvgTransformForTextPath(
   // PositionOnPath()|.
   float x = svg_data.rect.x();
   float y = svg_data.rect.y();
-  if (IsHorizontal()) {
-    y += font_data->GetFontMetrics().FixedAscent(font_baseline);
-    transform.Translate(-svg_data.rect.width() / 2, svg_data.baseline_shift);
-  } else {
-    x += font_data->GetFontMetrics().FixedDescent(font_baseline);
-    transform.Translate(svg_data.baseline_shift, -svg_data.rect.height() / 2);
+  switch (GetWritingMode()) {
+    case WritingMode::kHorizontalTb:
+      y += font_data->GetFontMetrics().FixedAscent(font_baseline);
+      transform.Translate(-svg_data.rect.width() / 2, svg_data.baseline_shift);
+      break;
+    case WritingMode::kVerticalLr:
+    case WritingMode::kVerticalRl:
+    case WritingMode::kSidewaysRl:
+      x += font_data->GetFontMetrics().FixedDescent(font_baseline);
+      transform.Translate(svg_data.baseline_shift, -svg_data.rect.height() / 2);
+      break;
+    case WritingMode::kSidewaysLr:
+      x += font_data->GetFontMetrics().FixedAscent(font_baseline);
+      y = svg_data.rect.bottom();
+      transform.Translate(-svg_data.baseline_shift, svg_data.rect.height() / 2);
+      break;
   }
   transform.PreConcat(length_adjust);
   transform.SetE(transform.E() + x);
@@ -870,8 +891,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
   if (IsLayoutObjectDestroyedOrMoved()) [[unlikely]] {
     // TODO(crbug.com/1099613): This should not happen, as long as it is really
     // layout-clean. It looks like there are cases where the layout is dirty.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (IsText()) {
@@ -966,7 +986,7 @@ void FragmentItem::RecalcInkOverflow(const InlineCursor& cursor,
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 PhysicalRect FragmentItem::RecalcInkOverflowForDescendantsOf(
@@ -1120,8 +1140,7 @@ PhysicalRect FragmentItem::LocalRect(StringView text,
     case WritingMode::kSidewaysLr:
       return {LayoutUnit(), height - end_position, width, inline_size};
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 PhysicalRect FragmentItem::ComputeTextBoundsRectForHitTest(
@@ -1260,8 +1279,11 @@ std::ostream& operator<<(std::ostream& ostream, const FragmentItem& item) {
     case StyleVariant::kFirstLine:
       ostream << "FirstLine";
       break;
-    case StyleVariant::kEllipsis:
-      ostream << "Ellipsis";
+    case StyleVariant::kStandardEllipsis:
+      ostream << "StandardEllipsis";
+      break;
+    case StyleVariant::kFirstLineEllipsis:
+      ostream << "FirstLineEllipsis";
       break;
   }
   return ostream << "}";

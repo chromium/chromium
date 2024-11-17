@@ -12,8 +12,9 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/app_restore",
   "+chrome/browser/ash/system_web_apps",
-  "+chrome/browser/profiles/profile_manager.h",
+  "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/birch",
+  "+chrome/browser/ui/ash/desks",
   "+chrome/browser/ui/ash/new_window",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/browser.h",
@@ -27,4 +28,5 @@ include_rules = [
   "+chrome/browser/ui/views/frame",
   "+chrome/browser/ui/views/tabs",
   "+chrome/test",
+  "+gmock/gmock.h",
 ]

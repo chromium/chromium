@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/saved_tab_groups/messaging",
+  "+ios/chrome/browser/collaboration/model/features.h",
+  "+ios/chrome/browser/data_sharing/model",
+]

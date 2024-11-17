@@ -121,6 +121,32 @@ void GpuChannelHost::CopyToGpuMemoryBufferAsync(
       mailbox, std::move(sync_token_dependencies), release_count,
       std::move(callback));
 }
+
+void GpuChannelHost::CopyNativeGmbToSharedMemorySync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    bool* status) {
+  GetGpuChannel().CopyNativeGmbToSharedMemorySync(
+      std::move(buffer_handle), std::move(memory_region), status);
+}
+
+void GpuChannelHost::CopyNativeGmbToSharedMemoryAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    base::OnceCallback<void(bool)> callback) {
+  // Some callers block on callback execution to map synchronously.
+  // However, the callback will be executed on the IO thread.
+  // So no Mapping call should be made from IO thread because it may
+  // lead to a deadlock: the thread will wait for the callback to execute,
+  // but the callback will be scheduled on the very same thread.
+  CHECK(!io_thread_->BelongsToCurrentThread());
+  GetGpuChannel().CopyNativeGmbToSharedMemoryAsync(
+      std::move(buffer_handle), std::move(memory_region), std::move(callback));
+}
+
+bool GpuChannelHost::IsConnected() {
+  return static_cast<bool>(gpu_channel_);
+}
 #endif
 
 void GpuChannelHost::EnsureFlush(uint32_t deferred_message_id) {

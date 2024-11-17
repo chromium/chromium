@@ -6,11 +6,11 @@
 import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsMv2DeprecationPanelElement} from 'chrome://extensions/extensions.js';
+import {Mv2ExperimentStage} from 'chrome://extensions/extensions.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {createExtensionInfo} from './test_util.js';
@@ -29,12 +29,11 @@ suite('ExtensionsMV2DeprecationPanel_DisabledStage', function() {
       isAffectedByMV2Deprecation: true,
       mustRemainInstalled: false,
     })];
-    // Stage 2 represents Mv2ExperimentStage.DISABLE_WITH_REENABLE.
-    panelElement.mv2ExperimentStage = 2;
+    panelElement.mv2ExperimentStage = Mv2ExperimentStage.DISABLE_WITH_REENABLE;
     panelElement.delegate = mockDelegate;
     document.body.appendChild(panelElement);
 
-    return flushTasks();
+    return microtasksFinished();
   });
 
   /**
@@ -68,11 +67,14 @@ suite('ExtensionsMV2DeprecationPanel_DisabledStage', function() {
     assertEquals('Extension A', infoA.textContent!.trim());
 
     // Add a new extension to the panel.
-    panelElement.push('extensions', createExtensionInfo({
-                        name: 'Extension B',
-                        isAffectedByMV2Deprecation: true,
-                      }));
-    await flushTasks();
+    panelElement.extensions = [
+      ...panelElement.extensions,
+      createExtensionInfo({
+        name: 'Extension B',
+        isAffectedByMV2Deprecation: true,
+      }),
+    ];
+    await microtasksFinished();
 
     // Verify there are two extension rows.
     extensionRows =
@@ -130,12 +132,12 @@ suite('ExtensionsMV2DeprecationPanel_DisabledStage', function() {
             mockDelegate.getArgs('deleteItem'));
 
         // Set the extension property to be force installed.
-        panelElement.set('extensions.0', createExtensionInfo({
-                           name: 'Extension A new',
-                           id: 'a'.repeat(32),
-                           mustRemainInstalled: true,
-                         }));
-        await flushTasks();
+        panelElement.extensions = [createExtensionInfo({
+          name: 'Extension A new',
+          id: 'a'.repeat(32),
+          mustRemainInstalled: true,
+        })];
+        await microtasksFinished();
 
         // Remove button is hidden when the extension must remain installed.
         assertFalse(isVisible(removeButton));
@@ -164,13 +166,13 @@ suite('ExtensionsMV2DeprecationPanel_DisabledStage', function() {
         const recommendationsUrl =
             `https://chromewebstore.google.com/detail/${id}` +
             `/related-recommendations`;
-        panelElement.set('extensions.0', createExtensionInfo({
-                           name: 'Extension A',
-                           id,
-                           isAffectedByMV2Deprecation: true,
-                           recommendationsUrl,
-                         }));
-        await flushTasks();
+        panelElement.extensions = [createExtensionInfo({
+          name: 'Extension A',
+          id,
+          isAffectedByMV2Deprecation: true,
+          recommendationsUrl,
+        })];
+        await microtasksFinished();
 
         // Reopen the extension's action menu.
         extension = getExtension();
@@ -178,6 +180,7 @@ suite('ExtensionsMV2DeprecationPanel_DisabledStage', function() {
             extension.querySelector<CrIconButtonElement>('#actionMenuButton');
         assertTrue(!!actionButton);
         actionButton.click();
+        await microtasksFinished();
 
         // Find alternative action is visible when the extension has a
         // recommendations url.

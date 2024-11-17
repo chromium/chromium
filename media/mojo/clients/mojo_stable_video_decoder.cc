@@ -432,11 +432,9 @@ void MojoStableVideoDecoder::OnFrameResourceDecoded(
   // buffer once the decoded frame is no longer needed.
   auto client_shared_image = shared_image->client_shared_image();
   auto sync_token = shared_image->GenUnverifiedSyncToken();
-  auto texture_target = shared_image->texture_target();
 
   scoped_refptr<VideoFrame> mailbox_frame = VideoFrame::WrapSharedImage(
       frame_resource->format(), std::move(client_shared_image), sync_token,
-      texture_target,
       /*mailbox_holders_release_cb=*/
       base::DoNothingWithBoundArgs(std::move(shared_image), frame_resource),
       /*coded_size=*/GetRectSizeFromOrigin(frame_resource->visible_rect()),
@@ -450,8 +448,6 @@ void MojoStableVideoDecoder::OnFrameResourceDecoded(
   mailbox_frame->set_color_space(frame_resource->ColorSpace());
   mailbox_frame->set_hdr_metadata(frame_resource->hdr_metadata());
   mailbox_frame->set_metadata(frame_resource->metadata());
-  mailbox_frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormatExternalSampler);
   mailbox_frame->metadata().read_lock_fences_enabled = true;
   mailbox_frame->metadata().is_webgpu_compatible =
       frame_resource->metadata().is_webgpu_compatible;

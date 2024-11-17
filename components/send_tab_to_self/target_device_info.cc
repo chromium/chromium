@@ -72,7 +72,7 @@ TargetDeviceInfo::TargetDeviceInfo(
       last_updated_timestamp(last_updated_timestamp) {}
 
 TargetDeviceInfo::TargetDeviceInfo(const TargetDeviceInfo& other) = default;
-TargetDeviceInfo::~TargetDeviceInfo() {}
+TargetDeviceInfo::~TargetDeviceInfo() = default;
 
 bool TargetDeviceInfo::operator==(const TargetDeviceInfo& rhs) const {
   return this->full_name == rhs.full_name &&

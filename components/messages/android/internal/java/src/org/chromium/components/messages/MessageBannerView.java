@@ -427,7 +427,7 @@ public class MessageBannerView extends BoundedLinearLayout {
         return super.onTouchEvent(event);
     }
 
-    private class MessageSwipeGestureListener extends SwipeGestureListener {
+    private static class MessageSwipeGestureListener extends SwipeGestureListener {
         public MessageSwipeGestureListener(Context context, SwipeHandler handler) {
             super(context, handler);
         }

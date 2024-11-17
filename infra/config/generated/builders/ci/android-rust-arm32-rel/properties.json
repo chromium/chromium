@@ -50,7 +50,8 @@
           "builder": "android-rust-arm32-rel",
           "group": "tryserver.chromium.rust"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-rust-arm32-rel/targets"
     }
   },
   "$build/reclient": {

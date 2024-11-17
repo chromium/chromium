@@ -9,12 +9,16 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "base/time/time.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/highlight_border.h"
+
+class PrefService;
 
 namespace aura {
 class Window;
@@ -48,6 +52,8 @@ namespace ash {
 class StopRecordingButtonTray;
 
 namespace capture_mode_util {
+
+ASH_EXPORT PrefService* GetActiveUserPrefService();
 
 // Returns true if the capture mode feature is enabled and capture mode is
 // active. This method allows callers to avoid including the full header for
@@ -235,6 +241,21 @@ ASH_EXPORT gfx::Rect GetCaptureWindowConfineBounds(aura::Window* window);
 gfx::Rect GetEffectivePartialRegionBounds(
     const gfx::Rect& partial_region_bounds,
     aura::Window* root_window);
+
+// TODO(http://b/368674223): Add some type of ordering mechanism to the API.
+// Adds a new action button to a sunfish capture session if the session is
+// active.
+ASH_EXPORT void AddActionButton(views::Button::PressedCallback callback,
+                                std::u16string text,
+                                const gfx::VectorIcon* icon,
+                                const ActionButtonRank rank,
+                                ActionButtonViewID id);
+
+ASH_EXPORT void AnimateToOpacity(
+    ui::Layer* layer,
+    const float opacity,
+    const base::TimeDelta duration =
+        capture_mode::kCaptureUIOpacityChangeDuration);
 
 }  // namespace capture_mode_util
 

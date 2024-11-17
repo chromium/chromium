@@ -12,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "content/common/content_export.h"
@@ -193,7 +194,7 @@ class CONTENT_EXPORT FirstPartySetsHandler {
   // This may invoke `callback` synchronously.
   virtual void ComputeFirstPartySetMetadata(
       const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site,
+      base::optional_ref<const net::SchemefulSite> top_frame_site,
       const net::FirstPartySetsContextConfig& config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) = 0;
 

@@ -126,12 +126,7 @@ void InvalidateContext(v8::Local<v8::Context> context) {
 }
 
 std::string GetPlatformString() {
-// TODO(crbug.com/40118868): For readability, this should become
-// BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_LACROS). The second
-// conditional should be BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(IS_CHROMEOS_ASH).
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return "lacros";
-#elif BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS)
   return "chromeos";
 #elif BUILDFLAG(IS_LINUX)
   return "linux";
@@ -144,8 +139,7 @@ std::string GetPlatformString() {
 #elif BUILDFLAG(IS_DESKTOP_ANDROID)
   return "desktop_android";
 #else
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 #endif
 }
 

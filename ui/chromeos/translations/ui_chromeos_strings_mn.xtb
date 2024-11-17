@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Хангыль Ahnmatae горим</translation>
 <translation id="1155759005174418845">Каталан</translation>
 <translation id="1168100932582989117">Google-н нэрийн сервер</translation>
+<translation id="1170788066030116158">Зураг авсан огноо</translation>
 <translation id="1172970565351728681">Ойролцоогоор <ph name="REMAINING_TIME" /> үлдсэн</translation>
 <translation id="1173894706177603556">Нэр солих</translation>
 <translation id="1173916544412572294">Сүлжээ: <ph name="NETWORK_COUNT" />-н <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, дохионы хүч <ph name="SIGNAL_STRENGTH" />%, утасны батарей <ph name="BATTERY_STATUS" />%, дэлгэрэнгүй мэдээлэл</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Баталгаажуулах сертификатыг алсаас цуцалсан байна.</translation>
 <translation id="4394214039309501350">Гадаад холбоос</translation>
 <translation id="4394980935660306080">Энэ долоо хоногийн эхээр</translation>
+<translation id="4397435965699247285">OneDrive нь офлайн байхад боломжгүй</translation>
 <translation id="4398096759193130964">Зүйлсийг сэргээх эсвэл тэдгээрийг хогийн савнаас гадагш шинэ фолдер луу чирнэ үү</translation>
 <translation id="4401287888955153199">Бүгдийг задлах</translation>
 <translation id="4410695710508688828">Задлах үйл ажиллагаа амжилтгүй боллоо. <ph name="ERROR_MESSAGE" /></translation>

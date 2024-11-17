@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/check_op.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
@@ -1049,7 +1048,7 @@ void UpdateServiceProxyImpl::RunInstaller(
 
 scoped_refptr<UpdateService> CreateUpdateServiceProxy(
     UpdaterScope updater_scope,
-    const base::TimeDelta& /*get_version_timeout*/) {
+    base::TimeDelta /*get_version_timeout*/) {
   return base::MakeRefCounted<UpdateServiceProxy>(
       base::MakeRefCounted<UpdateServiceProxyImpl>(updater_scope));
 }

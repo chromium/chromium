@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/common/content_plugin_info.h"
 #include "url/origin.h"
@@ -75,7 +76,7 @@ class PepperPluginRegistry {
   // appear in this list.
   using NonOwningModuleMap =
       std::map<std::pair<base::FilePath, std::optional<url::Origin>>,
-               PluginModule*>;
+               raw_ptr<PluginModule, CtnExperimental>>;
   NonOwningModuleMap live_modules_;
 };
 

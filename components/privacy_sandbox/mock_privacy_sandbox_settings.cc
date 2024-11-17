@@ -9,10 +9,4 @@ namespace privacy_sandbox_test_util {
 MockPrivacySandboxSettings::MockPrivacySandboxSettings() = default;
 MockPrivacySandboxSettings::~MockPrivacySandboxSettings() = default;
 
-void MockPrivacySandboxSettings::SetUpDefaultResponse() {
-  ON_CALL(*this, IsPrivacySandboxRestricted).WillByDefault([]() {
-    return false;
-  });
-}
-
 }  // namespace privacy_sandbox_test_util

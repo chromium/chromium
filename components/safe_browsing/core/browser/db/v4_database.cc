@@ -228,8 +228,7 @@ void V4Database::ApplyUpdate(
                                       std::move(store_ready_callback)));
       }
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << "Got update for unexpected identifier: " << identifier;
+      NOTREACHED() << "Got update for unexpected identifier: " << identifier;
     }
   }
 
@@ -381,24 +380,6 @@ void V4Database::RecordFileSizeHistograms() {
                              50);
 }
 
-HashPrefixMap::MigrateResult V4Database::GetMigrateResult() {
-  HashPrefixMap::MigrateResult final_result =
-      HashPrefixMap::MigrateResult::kUnknown;
-  for (const auto& store_map_iter : *store_map_) {
-    auto result = store_map_iter.second->migrate_result();
-    if (result == HashPrefixMap::MigrateResult::kFailure) {
-      return result;
-    }
-
-    if (final_result == HashPrefixMap::MigrateResult::kUnknown) {
-      final_result = result;
-    } else if (result != final_result) {
-      return HashPrefixMap::MigrateResult::kUnknown;
-    }
-  }
-  return final_result;
-}
-
 void V4Database::RecordDatabaseUpdateLatency() {
   if (!last_update_.is_null())
     UmaHistogramCustomTimes(kV4DatabaseUpdateLatency,
@@ -433,6 +414,6 @@ ListInfo::ListInfo(const bool fetch_updates,
   DCHECK_NE(SBThreatType::SB_THREAT_TYPE_SAFE, sb_threat_type_);
 }
 
-ListInfo::~ListInfo() {}
+ListInfo::~ListInfo() = default;
 
 }  // namespace safe_browsing

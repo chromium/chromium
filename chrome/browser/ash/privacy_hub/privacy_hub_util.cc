@@ -385,8 +385,7 @@ void OpenSystemSettings(ContentType type) {
     }
     default: {
       // This should only be called for camera, microphone, or geolocation.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
   }
 

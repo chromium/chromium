@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
 import androidx.viewpager2.widget.ViewPager2;
 
@@ -20,19 +19,25 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.settings.SettingsActivity;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 
 /**
  * Fragment with a {@link TabLayout} containing a basic and an advanced version of the CBD dialog.
  */
-public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDependentSetting {
+public class ClearBrowsingDataTabsFragment extends Fragment
+        implements ProfileDependentSetting, EmbeddableSettingsPage {
     public static final int CBD_TAB_COUNT = 2;
 
     private Profile mProfile;
     private ClearBrowsingDataFetcher mFetcher;
+
+    private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -43,6 +48,8 @@ public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDe
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mPageTitle.set(getString(R.string.clear_browsing_data_title));
+
         if (savedInstanceState == null) {
             mFetcher = new ClearBrowsingDataFetcher();
             mFetcher.fetchImportantSites(mProfile);
@@ -66,10 +73,7 @@ public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDe
         ViewPager2 viewPager = view.findViewById(R.id.clear_browsing_data_viewpager);
         viewPager.setAdapter(
                 new ClearBrowsingDataPagerAdapter(
-                        mFetcher,
-                        getFragmentManager(),
-                        (FragmentActivity) getActivity(),
-                        referrer));
+                        mFetcher, (FragmentActivity) getActivity(), referrer));
 
         // Give the TabLayout the ViewPager.
         TabLayout tabLayout = view.findViewById(R.id.clear_browsing_data_tabs);
@@ -119,6 +123,11 @@ public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDe
     }
 
     @Override
+    public ObservableSupplier<String> getPageTitle() {
+        return mPageTitle;
+    }
+
+    @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // mFetcher acts as a cache for important sites and history data. If the activity gets
@@ -137,10 +146,7 @@ public class ClearBrowsingDataTabsFragment extends Fragment implements ProfileDe
         private final String mReferrer;
 
         ClearBrowsingDataPagerAdapter(
-                ClearBrowsingDataFetcher fetcher,
-                FragmentManager fm,
-                FragmentActivity activity,
-                String referrer) {
+                ClearBrowsingDataFetcher fetcher, FragmentActivity activity, String referrer) {
             super(activity);
             mFetcher = fetcher;
             mReferrer = referrer;

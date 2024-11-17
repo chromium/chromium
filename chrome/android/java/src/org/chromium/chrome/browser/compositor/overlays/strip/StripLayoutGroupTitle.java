@@ -124,8 +124,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     @Override
     public boolean hasLongClickAction() {
-        // TODO(https://crbug.com/333777015): Implement long press to drag tab group.
-        return false;
+        return ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_GROUP_CONTEXT_MENU);
     }
 
     /**
@@ -209,7 +208,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
 
     /**
      * @param rootId The tab group's new rootId. Should be synced with the {@link
-     *     org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter}.
+     *     org.chromium.chrome.browser.tabmodel.TabGroupModelFilter}.
      */
     protected void updateRootId(int rootId) {
         mRootId = rootId;

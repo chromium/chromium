@@ -58,6 +58,10 @@ bool CSSPathValue::Equals(const CSSPathValue& other) const {
   return ByteStream() == other.ByteStream();
 }
 
+unsigned CSSPathValue::CustomHash() const {
+  return ByteStream().Hash();
+}
+
 void CSSPathValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   CSSValue::TraceAfterDispatch(visitor);
 }

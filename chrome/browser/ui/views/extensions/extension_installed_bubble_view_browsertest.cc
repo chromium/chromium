@@ -5,7 +5,6 @@
 #include <algorithm>
 
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/extensions/extension_install_ui.h"
@@ -89,7 +88,7 @@ void ExtensionInstalledBubbleViewsBrowserTest::WaitForUserDismissal() {
   observer.Wait();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // None of these tests work when run under Ash, because they need an
 // AuraTestHelper constructed at an inconvenient time in test setup, which
 // InProcessBrowserTest is not equipped to handle.

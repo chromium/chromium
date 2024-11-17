@@ -38,6 +38,7 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/function_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -77,6 +78,7 @@
 #include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 #include "third_party/blink/renderer/core/editing/ime/stylus_writing_gesture.h"
+#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
@@ -96,6 +98,7 @@
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/document_fenced_frames.h"
 #include "third_party/blink/renderer/core/html/fenced_frame/html_fenced_frame_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
@@ -112,7 +115,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/page/context_menu_controller.h"
@@ -139,6 +141,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositor_mutator_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint_worklet_paint_dispatcher.h"
 #include "third_party/blink/renderer/platform/heap/cross_thread_handle.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
@@ -152,8 +155,13 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink-forward.h"
 #include "ui/base/mojom/window_show_state.mojom-blink.h"
 #include "ui/gfx/geometry/point_conversions.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "components/stylus_handwriting/win/features.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_MAC)
 #include "third_party/blink/renderer/core/editing/substring_util.h"
@@ -271,6 +279,59 @@ bool& InputDisabledPerBrowsingContextGroup(
   return values[token];
 }
 
+// Get the root editable HTMLElement container that supports stylus handwriting.
+Element* GetStylusHandwritingControlFromNode(const Node* node) {
+  if (!node) {
+    return nullptr;
+  }
+  Element* editable_control = EnclosingTextControl(node);
+  if (!editable_control) {
+    editable_control = RootEditableElement(*node);
+  }
+  if (!editable_control) {
+    return nullptr;
+  }
+  const TouchAction effective_touch_action =
+      touch_action_util::ComputeEffectiveTouchAction(*editable_control);
+  if ((effective_touch_action & TouchAction::kInternalNotWritable) !=
+      TouchAction::kInternalNotWritable) {
+    return editable_control;
+  }
+  return nullptr;
+}
+
+#if BUILDFLAG(IS_WIN)
+// Compute a PlainTextRange contained by `scope` relative to `pivot_position`
+// that at most contains 2x `proximate_character_half_limit` characters.
+// The range will be clamped, but may conceptually be represented with the
+// following range notation:
+//   [pivot_position - proximate_character_half_limit,
+//    pivot_position + proximate_character_half_limit)
+PlainTextRange ShellHandwritingProximateTextRange(
+    const ContainerNode& scope,
+    const Position& pivot_position,
+    wtf_size_t proximate_character_half_limit) {
+  CHECK(!pivot_position.IsNull());
+  CHECK(proximate_character_half_limit);
+  const EphemeralRange scope_range = EphemeralRange::RangeOfContents(scope);
+  if (scope_range.IsCollapsed()) {
+    return PlainTextRange();
+  }
+
+  const PlainTextRange pivot_to_end_text_range = PlainTextRange::Create(
+      scope, EphemeralRange(pivot_position, scope_range.EndPosition()));
+
+  const PlainTextRange result(
+      base::ClampSub(pivot_to_end_text_range.Start(),
+                     proximate_character_half_limit),
+      base::ClampMin(base::ClampAdd(pivot_to_end_text_range.Start(),
+                                    proximate_character_half_limit),
+                     pivot_to_end_text_range.End()));
+  CHECK_LE(result.length(), proximate_character_half_limit * 2);
+  return result;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace
 
 // WebFrameWidget ------------------------------------------------------------
@@ -361,7 +422,10 @@ bool WebFrameWidgetImpl::ForTopMostMainFrame() const {
   return ForMainFrame() && !main_data().is_for_nested_main_frame;
 }
 
-void WebFrameWidgetImpl::Close() {
+void WebFrameWidgetImpl::Close(DetachReason detach_reason) {
+  TRACE_EVENT0("navigation", "WebFrameWidgetImpl::Close");
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.WebFrameWidgetImpl.Close");
   // TODO(bokan): This seems wrong since the page may have other still-active
   // frame widgets. See also: https://crbug.com/1344531.
   GetPage()->WillStopCompositing();
@@ -379,7 +443,15 @@ void WebFrameWidgetImpl::Close() {
 
   mutator_dispatcher_ = nullptr;
   local_root_ = nullptr;
-  widget_base_->Shutdown();
+  // Shut down the widget, but potentially delay the release of the resources
+  // for LayerTreeView if we're closing because of a navigation. This is to
+  // prevent delaying the navigation commit, as releasing the LayerTreeView
+  // resources blocks on the compositor thread.
+  bool delay_release =
+      (base::FeatureList::IsEnabled(
+           blink::features::kDelayLayerTreeViewDeletionOnLocalSwap) &&
+       detach_reason == DetachReason::kNavigation);
+  widget_base_->Shutdown(delay_release);
   widget_base_.reset();
   // These WeakPtrs must be invalidated for WidgetInputHandlerManager at the
   // same time as the WidgetBase is.
@@ -600,39 +672,65 @@ gfx::Rect WebFrameWidgetImpl::GetAbsoluteCaretBounds() {
 }
 
 void WebFrameWidgetImpl::OnStartStylusWriting(
+#if BUILDFLAG(IS_WIN)
+    const gfx::Rect& focus_rect_in_widget,
+#endif  // BUILDFLAG(IS_WIN)
     OnStartStylusWritingCallback callback) {
+  mojom::blink::StylusWritingFocusResultPtr focus_result;
   // Focus the stylus writable element for current touch sequence as we have
   // detected writing has started.
   LocalFrame* frame = LocalRootImpl()->GetFrame();
   if (!frame) {
-    std::move(callback).Run(std::nullopt, std::nullopt);
+    std::move(callback).Run(std::move(focus_result));
     return;
   }
 
-  Element* stylus_writable_element =
-      frame->GetEventHandler().CurrentTouchDownElement();
-  if (!stylus_writable_element) {
-    std::move(callback).Run(std::nullopt, std::nullopt);
+  Element* stylus_writable_container = nullptr;
+#if BUILDFLAG(IS_WIN)
+  PositionWithAffinity proximate_pivot_position;
+  if (!focus_rect_in_widget.IsEmpty()) {
+    // TODO(crbug.com/355578906): Hit test using `focus_rect_in_widget` rather
+    // than its CenterPoint(). The size of the rect will include the
+    // "target screen area" inflated with "distance threshold" from
+    // ITfFocusHandwritingTargetArgs::GetPointerTargetInfo.
+    gfx::PointF frame_point =
+        frame->GetPage()->GetVisualViewport().ViewportToRootFrame(
+            gfx::PointF(focus_rect_in_widget.CenterPoint()));
+    proximate_pivot_position =
+        frame->PositionForPoint(PhysicalOffset::FromPointFFloor(frame_point));
+    stylus_writable_container = GetStylusHandwritingControlFromNode(
+        proximate_pivot_position.AnchorNode());
+  }
+#endif  // BUILDFLAG(IS_WIN)
+  if (!stylus_writable_container) {
+    stylus_writable_container = GetStylusHandwritingControlFromNode(
+        frame->GetEventHandler().CurrentTouchDownElement());
+    // TODO(crbug.com/355578906): Set `proximate_pivot_position` relative to
+    // the touch down point that assigned `CurrentTouchDownElement()`.
+  }
+  if (!stylus_writable_container) {
+    std::move(callback).Run(std::move(focus_result));
     return;
   }
 
-  if (auto* text_control = EnclosingTextControl(stylus_writable_element)) {
-    text_control->Focus(FocusParams(FocusTrigger::kUserGesture));
-  } else if (auto* root_editable_html_element = DynamicTo<HTMLElement>(
-                 RootEditableElement(*stylus_writable_element))) {
-    root_editable_html_element->Focus(FocusParams(FocusTrigger::kUserGesture));
-  }
+  // TODO(crbug.com/355578906): If the element wasn't focused already, ensure
+  // the caret position is set to `proximate_pivot_position`.
+  stylus_writable_container->Focus(FocusParams(FocusTrigger::kUserGesture));
   Element* focused_element = FocusedElement();
   // Since the element can change after it gets focused, we just verify if
   // the focused element is editable to continue writing.
   if (IsElementNotNullAndEditable(focused_element)) {
-    std::move(callback).Run(
-        focused_element->BoundsInWidget(),
-        frame->View()->FrameToViewport(GetAbsoluteCaretBounds()));
-    return;
+    focus_result = mojom::blink::StylusWritingFocusResult::New();
+    focus_result->focused_edit_bounds = focused_element->BoundsInWidget();
+    focus_result->caret_bounds =
+        frame->View()->FrameToViewport(GetAbsoluteCaretBounds());
+#if BUILDFLAG(IS_WIN)
+    focus_result->proximate_bounds =
+        ComputeProximateCharacterBounds(proximate_pivot_position);
+#endif  // BUILDFLAG(IS_WIN)
   }
 
-  std::move(callback).Run(std::nullopt, std::nullopt);
+  std::move(callback).Run(std::move(focus_result));
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1160,7 +1258,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleGestureEvent(
           frame->GetEventHandler().HandleGestureEvent(targeted_event);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   DidHandleGestureEvent(event);
   return event_result;
@@ -1302,7 +1400,7 @@ void WebFrameWidgetImpl::SendOverscrollEventFromImplSide(
   }
 }
 
-void WebFrameWidgetImpl::SendEndOfScrollEvents(
+void WebFrameWidgetImpl::SendEndOfScrollEventsDeprecated(
     bool affects_outer_viewport,
     bool affects_inner_viewport,
     cc::ElementId scroll_latched_element_id) {
@@ -1317,9 +1415,10 @@ void WebFrameWidgetImpl::SendEndOfScrollEvents(
     scrollable_area->SetImplSnapStrategy(nullptr);
   }
 
-  if (auto* anchor_element_interaction_tracker =
-          target_node->GetDocument().GetAnchorElementInteractionTracker()) {
-    anchor_element_interaction_tracker->OnScrollEnd();
+  if (auto* viewport_position_tracker =
+          AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(
+              target_node->GetDocument())) {
+    viewport_position_tracker->OnScrollEnd();
   }
 
   if (RuntimeEnabledFeatures::ScrollEndEventsEnabled()) {
@@ -1335,6 +1434,55 @@ void WebFrameWidgetImpl::SendEndOfScrollEvents(
     // not receive a scrollend event.
     if (affects_outer_viewport || target_node != document_node) {
       target_node->GetDocument().EnqueueScrollEndEventForNode(target_node);
+    }
+  }
+}
+
+void WebFrameWidgetImpl::SendEndOfScrollEvents(
+    const cc::CompositorCommitData& commit_data) {
+  HeapHashSet<Member<AnchorElementViewportPositionTracker>> handled_trackers;
+  for (const cc::ElementId& id : commit_data.scroll_end_data.done_containers) {
+    Node* target_node = View()->FindNodeFromScrollableCompositorElementId(id);
+    if (!target_node) {
+      continue;
+    }
+
+    if (auto* viewport_position_tracker =
+            AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(
+                target_node->GetDocument())) {
+      if (!handled_trackers.Contains(viewport_position_tracker)) {
+        viewport_position_tracker->OnScrollEnd();
+        handled_trackers.insert(viewport_position_tracker);
+      }
+    }
+
+    if (ScrollableArea* scrollable_area =
+            ScrollableArea::GetForScrolling(target_node->GetLayoutBox())) {
+      scrollable_area->UpdateSnappedTargetsAndEnqueueScrollSnapChange();
+      scrollable_area->SetImplSnapStrategy(nullptr);
+    }
+
+    if (RuntimeEnabledFeatures::ScrollEndEventsEnabled()) {
+      if (GetPage()->GetVisualViewport().GetScrollElementId() == id) {
+        target_node->GetDocument().EnqueueVisualViewportScrollEndEvent();
+      } else {
+        target_node->GetDocument().EnqueueScrollEndEventForNode(target_node);
+      }
+    }
+  }
+}
+
+void WebFrameWidgetImpl::HandleScrollMarkerUpdates(
+    const cc::CompositorCommitData& commit_data) {
+  for (const auto& scroll : commit_data.scrolls) {
+    Node* node =
+        View()->FindNodeFromScrollableCompositorElementId(scroll.element_id);
+    if (!node) {
+      continue;
+    }
+    if (ScrollableArea* scrollable_area =
+            ScrollableArea::GetForScrolling(node->GetLayoutBox())) {
+      scrollable_area->UpdateScrollMarkers(scrollable_area->GetScrollOffset());
     }
   }
 }
@@ -1363,27 +1511,37 @@ void WebFrameWidgetImpl::UpdateCompositorScrollState(
 
   RecordManipulationTypeCounts(commit_data.manipulation_info);
 
-  if (commit_data.scroll_latched_element_id == cc::ElementId())
-    return;
-
-  if (commit_data.snap_strategy) {
-    SendScrollSnapChangingEventIfNeeded(commit_data);
+  if (commit_data.scroll_latched_element_id != cc::ElementId()) {
+    if (commit_data.snap_strategy) {
+      SendScrollSnapChangingEventIfNeeded(commit_data);
+    }
+    if (!commit_data.overscroll_delta.IsZero()) {
+      SendOverscrollEventFromImplSide(commit_data.overscroll_delta,
+                                      commit_data.scroll_latched_element_id);
+    }
   }
 
-  if (!commit_data.overscroll_delta.IsZero()) {
-    SendOverscrollEventFromImplSide(commit_data.overscroll_delta,
-                                    commit_data.scroll_latched_element_id);
-  }
+  HandleScrollMarkerUpdates(commit_data);
 
   // TODO(bokan): If a scroll ended and a new one began in the same Blink frame
   // (e.g. during a long running main thread task), this will erroneously
   // dispatch the scroll end to the latter (still-scrolling) element.
   // https://crbug.com/1116780.
-  if (commit_data.scroll_end_data.scroll_gesture_did_end) {
-    SendEndOfScrollEvents(
-        commit_data.scroll_end_data.gesture_affects_outer_viewport_scroll,
-        commit_data.scroll_end_data.gesture_affects_inner_viewport_scroll,
-        commit_data.scroll_latched_element_id);
+  // With MultiImplyOnlyScrollAnimations support, a non-latched scroll
+  // container might have finished its snap animation, so we don't check that we
+  // have a latched id.
+  if (::features::MultiImplOnlyScrollAnimationsSupported()) {
+    if (commit_data.scroll_end_data.done_containers.size()) {
+      SendEndOfScrollEvents(commit_data);
+    }
+  } else {
+    if (commit_data.scroll_latched_element_id != cc::ElementId() &&
+        commit_data.scroll_end_data.scroll_gesture_did_end) {
+      SendEndOfScrollEventsDeprecated(
+          commit_data.scroll_end_data.gesture_affects_outer_viewport_scroll,
+          commit_data.scroll_end_data.gesture_affects_inner_viewport_scroll,
+          commit_data.scroll_latched_element_id);
+    }
   }
 }
 
@@ -2078,7 +2236,7 @@ void WebFrameWidgetImpl::PointerLockMouseEvent(
       // because pointer lost messaging happens on separate mojo channel.
       return;
     default:
-      NOTREACHED_IN_MIGRATION() << input_event.GetType();
+      NOTREACHED() << input_event.GetType();
   }
 
   if (GetPage()) {
@@ -2226,9 +2384,6 @@ void WebFrameWidgetImpl::SetZoomInternal(double zoom_level,
           if (ForTopMostMainFrame()) {
             // Zoom levels are the exponent in the calculation of zoom. The zoom
             // factor is the value shown to the user (e.g. 50% to 300%).
-            // Note: On Android, when the AccessibilityPageZoom feature is
-            // disabled, this histogrm should only include samples at 100% zoom
-            // factor.
             UMA_HISTOGRAM_CUSTOM_EXACT_LINEAR(
                 "Accessibility.Android.PageZoom.MainFrameZoomFactor",
                 layout_zoom_factor * 100, 50, 300, 52);
@@ -3026,7 +3181,7 @@ WebInputEventResult WebFrameWidgetImpl::HandleCapturedMouseEvent(
       event_type = event_type_names::kMouseup;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   WebMouseEvent transformed_event =
@@ -3949,6 +4104,16 @@ void WebFrameWidgetImpl::NotifyAutoscrollForSelectionInMainFrame(
               ->GetWidgetInputHandlerHost()) {
     host->SetAutoscrollSelectionActiveInMainFrame(autoscroll_selection);
   }
+
+  if (!autoscroll_selection) {
+    LocalFrame* local_root_frame = LocalRootImpl()->GetFrame();
+    CHECK(local_root_frame);
+    if (LocalDOMWindow* current_window = local_root_frame->DomWindow()) {
+      WindowPerformance* window_performance =
+          DOMWindowPerformance::performance(*current_window);
+      window_performance->ResetAutoscroll();
+    }
+  }
 }
 
 gfx::Range WebFrameWidgetImpl::CompositionRange() {
@@ -4665,6 +4830,62 @@ void WebFrameWidgetImpl::EnqueueMoveEvent() {
 
   document->EnqueueMoveEvent();
 }
+
+#if BUILDFLAG(IS_WIN)
+mojom::blink::ProximateCharacterRangeBoundsPtr
+WebFrameWidgetImpl::ComputeProximateCharacterBounds(
+    const PositionWithAffinity& pivot_position) const {
+  TRACE_EVENT("ime", "WebFrameWidgetImpl::ComputeProximateCharacterBounds");
+  if (pivot_position.IsNull() ||
+      !stylus_handwriting::win::IsStylusHandwritingWinEnabled()) {
+    return nullptr;
+  }
+  // The amount of text to collect in each direction relative to the character
+  // offset pivot position `x` derived by `point_in_widget`. Collects character
+  // bounds for offsets [x - half_limit, x + half_limit).
+  const wtf_size_t half_limit =
+      stylus_handwriting::win::ProximateBoundsCollectionHalfLimit();
+  if (!half_limit) {
+    return nullptr;
+  }
+  Element* root_editable_element =
+      RootEditableElement(*pivot_position.AnchorNode());
+  if (!root_editable_element) {
+    return nullptr;
+  }
+
+  // `CreateVisiblePosition` and `FirstRectForRange` requires clean layout.
+  root_editable_element->GetDocument().UpdateStyleAndLayout(
+      DocumentUpdateReason::kEditing);
+
+  // Compute a PlainTextRange for a subset of text around `pivot_position`.
+  const PlainTextRange text_range = ShellHandwritingProximateTextRange(
+      *root_editable_element, pivot_position.GetPosition(), half_limit);
+  if (text_range.IsNull()) {
+    return nullptr;
+  }
+
+  // Compute the DIP space bounding box for each character in `text_range`
+  // relative to the root editable Element containing `pivot_position`.
+  WTF::Vector<gfx::Rect> character_bounds;
+  character_bounds.reserve(text_range.length());
+  for (wtf_size_t i = text_range.Start(); i < text_range.End(); ++i) {
+    gfx::Rect rect = FirstRectForRange(
+        PlainTextRange(i, i + 1U).CreateRange(*root_editable_element));
+    // Convert rect coordinates to be relative to the root editable frame.
+    LocalFrame* editable_frame =
+        root_editable_element->GetDocument().GetFrame();
+    rect = editable_frame->View()->ConvertToRootFrame(rect);
+    rect = gfx::ScaleToRoundedRect(
+        rect, editable_frame->GetPage()->PageScaleFactor());
+    character_bounds.emplace_back(widget_base_->BlinkSpaceToEnclosedDIPs(rect));
+  }
+
+  return mojom::blink::ProximateCharacterRangeBounds::New(
+      gfx::Range(text_range.Start(), text_range.End()),
+      std::move(character_bounds));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 void WebFrameWidgetImpl::OrientationChanged() {
   local_root_->SendOrientationChangeEvent();

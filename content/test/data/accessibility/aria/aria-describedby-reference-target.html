@@ -1,0 +1,20 @@
+<!--
+@BLINK-ALLOW:descri*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <input type="text" id="username" aria-describedby="username-tip" />
+  <x-description id="username-tip">
+    <template shadowrootmode="open" shadowrootreferencetarget="target">
+      <div role="tooltip" id="target">Your username should be your email id</div>
+    </template>
+  </x-description>
+  <x-description id="date-desc" style="display:none">
+    <template shadowrootmode="open" shadowrootreferencetarget="target">
+      <div id="target" aria-label="mmddyy"></div>
+    </template>
+  </x-description>
+  <input type="text" aria-describedby="date-desc" />
+</body>
+</html>

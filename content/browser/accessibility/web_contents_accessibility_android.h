@@ -21,7 +21,7 @@
 namespace ui {
 class MotionEventAndroid;
 struct AXTreeUpdate;
-}
+}  // namespace ui
 
 namespace content {
 
@@ -228,6 +228,11 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
                               jint old_unique_id,
                               jint new_unique_id);
 
+  // Sets the sequential focus starting point. This sends a message to the
+  // renderer. The sequential focus starting point sets the node on which
+  // tab/shift tab should continue without actually changing input focus.
+  void SetSequentialFocusStartingPoint(JNIEnv* env, jint unique_id);
+
   // Returns true if the object is a slider.
   bool IsSlider(JNIEnv* env, jint id);
 
@@ -262,6 +267,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   // Request loading inline text boxes for a given node.
   void LoadInlineTextBoxes(JNIEnv* env, jint id);
+  void RecordInlineTextBoxMetrics(bool from_focus);
 
   // Get the bounds of each character for a given static text node,
   // starting from index |start| with length |len|. The resulting array
@@ -369,7 +375,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
   void HandleClicked(int32_t unique_id);
   void HandleScrollPositionChanged(int32_t unique_id);
   void HandleScrolledToAnchor(int32_t unique_id);
-  void HandleDialogModalOpened(int32_t unique_id);
+  void HandlePaneOpened(int32_t unique_id);
   void AnnounceLiveRegionText(const std::u16string& text);
   void HandleTextContentChanged(int32_t unique_id);
   void HandleTextSelectionChanged(int32_t unique_id);

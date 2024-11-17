@@ -150,12 +150,12 @@ class ImageFetcherParams {
 // callback will be called on the thread which initiated the fetch.
 class ImageFetcher {
  public:
-  ImageFetcher() {}
+  ImageFetcher() = default;
 
   ImageFetcher(const ImageFetcher&) = delete;
   ImageFetcher& operator=(const ImageFetcher&) = delete;
 
-  virtual ~ImageFetcher() {}
+  virtual ~ImageFetcher() = default;
 
   // Fetch an image and optionally decode it. |image_data_callback| is called
   // when the image fetch completes, but |image_data_callback| may be empty.

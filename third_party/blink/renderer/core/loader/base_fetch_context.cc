@@ -62,9 +62,9 @@ BaseFetchContext::CanRequestBasedOnSubresourceFilterOnly(
     base::optional_ref<const ResourceRequest::RedirectInfo> redirect_info)
     const {
   auto* subresource_filter = GetSubresourceFilter();
-  if (subresource_filter &&
-      !subresource_filter->AllowLoad(url, resource_request.GetRequestContext(),
-                                     reporting_disposition)) {
+  if (subresource_filter && !subresource_filter->AllowLoad(
+                                url, resource_request.GetRequestDestination(),
+                                reporting_disposition)) {
     if (reporting_disposition == ReportingDisposition::kReport) {
       DispatchDidBlockRequest(resource_request, options,
                               ResourceRequestBlockedReason::kSubresourceFilter,
@@ -87,12 +87,13 @@ bool BaseFetchContext::CalculateIfAdSubresource(
   const KURL& url = alias_url.has_value() ? alias_url.value() : request.Url();
 
   return request.IsAdResource() ||
-         (filter && filter->IsAdResource(url, request.GetRequestContext()));
+         (filter && filter->IsAdResource(url, request.GetRequestDestination()));
 }
 
 void BaseFetchContext::PrintAccessDeniedMessage(const KURL& url) const {
-  if (url.IsNull())
+  if (url.IsNull()) {
     return;
+  }
 
   String message;
   if (Url().IsNull()) {
@@ -185,8 +186,9 @@ BaseFetchContext::CanRequestInternal(
     }
   }
 
-  if (ShouldBlockRequestByInspector(resource_request.Url()))
+  if (ShouldBlockRequestByInspector(resource_request.Url())) {
     return ResourceRequestBlockedReason::kInspector;
+  }
 
   scoped_refptr<const SecurityOrigin> origin =
       resource_request.RequestorOrigin();
@@ -263,8 +265,9 @@ BaseFetchContext::CanRequestInternal(
 
   // SVG images/resource documents have unique security rules that prevent all
   // subresource requests except for data urls.
-  if (IsIsolatedSVGChromeClient() && !url.ProtocolIsData())
+  if (IsIsolatedSVGChromeClient() && !url.ProtocolIsData()) {
     return ResourceRequestBlockedReason::kOrigin;
+  }
 
   // data: URL is deprecated in SVGUseElement.
   if (RuntimeEnabledFeatures::RemoveDataUrlInSvgUseEnabled() &&
@@ -289,8 +292,9 @@ BaseFetchContext::CanRequestInternal(
   const SecurityOrigin* embedding_origin =
       fetch_client_settings_object.GetSecurityOrigin();
   DCHECK(embedding_origin);
-  if (ShouldBlockFetchAsCredentialedSubresource(resource_request, url))
+  if (ShouldBlockFetchAsCredentialedSubresource(resource_request, url)) {
     return ResourceRequestBlockedReason::kOrigin;
+  }
 
   // Check for mixed content. We do this second-to-last so that when folks block
   // mixed content via CSP, they don't get a mixed content warning, but a CSP
@@ -310,7 +314,7 @@ BaseFetchContext::CanRequestInternal(
   // Let the client have the final say into whether or not the load should
   // proceed.
   if (GetSubresourceFilter()) {
-    if (!GetSubresourceFilter()->AllowLoad(url, request_context,
+    if (!GetSubresourceFilter()->AllowLoad(url, request_destination,
                                            reporting_disposition)) {
       return ResourceRequestBlockedReason::kSubresourceFilter;
     }

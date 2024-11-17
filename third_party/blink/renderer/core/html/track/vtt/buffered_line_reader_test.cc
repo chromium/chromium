@@ -276,7 +276,7 @@ TEST(BufferedLineReaderTest, BufferBoundaryInCRLF_2) {
 TEST(BufferedLineReaderTest, NormalizedNUL) {
   test::TaskEnvironment task_environment;
   BufferedLineReader reader;
-  reader.Append(String("X\0Y\n", 4u));
+  reader.Append(String(base::span_from_cstring("X\0Y\n")));
   String line;
   ASSERT_TRUE(reader.GetLine(line));
   ASSERT_EQ(line[1], kReplacementCharacter);

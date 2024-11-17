@@ -1,0 +1,10 @@
+include_rules = [
+  "+chrome/install_static",
+  "+chrome/windows_services/service_program",
+  "+components/tracing/common/etw_system_data_source_win.h",
+  "+components/tracing/tracing_service_idl.h",
+  "+mojo/core/embedder",
+  "+mojo/public/cpp",
+  "+services/tracing/public/cpp",
+  "+services/tracing/public/mojom",
+]

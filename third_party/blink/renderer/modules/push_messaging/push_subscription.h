@@ -26,6 +26,7 @@ namespace blink {
 class PushSubscriptionOptions;
 class ServiceWorkerRegistration;
 class ScriptState;
+class V8PushEncryptionKeyName;
 
 class MODULES_EXPORT PushSubscription final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -50,7 +51,7 @@ class MODULES_EXPORT PushSubscription final : public ScriptWrappable {
 
   PushSubscriptionOptions* options() const { return options_.Get(); }
 
-  DOMArrayBuffer* getKey(const AtomicString& name) const;
+  DOMArrayBuffer* getKey(const V8PushEncryptionKeyName& name) const;
   ScriptPromise<IDLBoolean> unsubscribe(ScriptState* script_state);
 
   ScriptValue toJSONForBinding(ScriptState* script_state);

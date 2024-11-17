@@ -14,6 +14,7 @@
 
 #include "base/functional/callback.h"
 #include "pdf/buildflags.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-forward.h"
 #include "ui/base/window_open_disposition.h"
@@ -141,15 +142,16 @@ class PDFiumEngineClient {
   // Returns the current V8 isolate, if any.
   virtual v8::Isolate* GetIsolate() = 0;
 
-  // Searches the given string for "term" and returns the results.  Unicode-
-  // aware.
+  // Searches for `needle` in `haystack` and returns the results.
+  // Unicode-aware.
   struct SearchStringResult {
     int start_index;
     int length;
   };
-  virtual std::vector<SearchStringResult> SearchString(const char16_t* string,
-                                                       const char16_t* term,
-                                                       bool case_sensitive) = 0;
+  virtual std::vector<SearchStringResult> SearchString(
+      const std::u16string& needle,
+      const std::u16string& haystack,
+      bool case_sensitive) = 0;
 
   // Notifies the client that the document has finished loading.
   virtual void DocumentLoadComplete() {}
@@ -201,6 +203,14 @@ class PDFiumEngineClient {
   // Returns true if the client is in annotation mode.
   virtual bool IsInAnnotationMode() const = 0;
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // See the comment for `OnSearchifyStateChange` in pdf/pdfium/pdfium_engine.h.
+  virtual void OnSearchifyStateChange(bool busy) = 0;
+
+  // Notifies that at least one page is searchified.
+  virtual void OnHasSearchifyText() = 0;
+#endif
 };
 
 }  // namespace chrome_pdf

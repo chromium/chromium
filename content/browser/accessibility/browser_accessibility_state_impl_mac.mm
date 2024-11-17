@@ -35,10 +35,8 @@ void SetUpAccessibilityNotifications() {
                    queue:nil
               usingBlock:^(NSNotification* notification) {
                 gfx::Animation::UpdatePrefersReducedMotion();
-                for (WebContentsImpl* wc :
-                     WebContentsImpl::GetAllWebContents()) {
-                  wc->OnWebPreferencesChanged();
-                }
+                BrowserAccessibilityStateImpl::GetInstance()
+                    ->NotifyWebContentsPreferencesChanged();
               }];
 
   if (base::mac::MacOSVersion() >= 14'00'00 &&

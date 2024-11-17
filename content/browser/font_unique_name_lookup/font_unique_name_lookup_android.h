@@ -5,14 +5,15 @@
 #ifndef CONTENT_BROWSER_FONT_UNIQUE_NAME_LOOKUP_FONT_UNIQUE_NAME_LOOKUP_ANDROID_H_
 #define CONTENT_BROWSER_FONT_UNIQUE_NAME_LOOKUP_FONT_UNIQUE_NAME_LOOKUP_ANDROID_H_
 
+#include <string>
+#include <utility>
+
 #include "base/files/file_path.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/mojom/font_unique_name_lookup/font_unique_name_lookup.mojom.h"
-
-#include <string>
 
 static_assert(BUILDFLAG(IS_ANDROID), "This implementation only works safely "
               "on Android due to the way it assumes font files to be "
@@ -83,9 +84,8 @@ class CONTENT_EXPORT FontUniqueNameLookup {
 
   // Override the internal font files enumeration with an explicit set of fonts
   // to be scanned in |font_file_paths|. Only used for testing.
-  void SetFontFilePathsForTesting(
-      const std::vector<base::FilePath> font_file_paths) {
-    font_file_paths_for_testing_ = font_file_paths;
+  void SetFontFilePathsForTesting(std::vector<base::FilePath> font_file_paths) {
+    font_file_paths_for_testing_ = std::move(font_file_paths);
   }
 
   // Override the Android build fingerprint for testing.

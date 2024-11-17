@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/platform/image-decoders/gif/gif_image_decoder.h"
 
-#include "third_party/blink/renderer/platform/image-decoders/segment_stream.h"
 #include "third_party/skia/include/codec/SkEncodedImageFormat.h"
 #include "third_party/skia/include/codec/SkGifDecoder.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -44,7 +43,7 @@ const AtomicString& GIFImageDecoder::MimeType() const {
 }
 
 std::unique_ptr<SkCodec> GIFImageDecoder::OnCreateSkCodec(
-    std::unique_ptr<SegmentStream> stream,
+    std::unique_ptr<SkStream> stream,
     SkCodec::Result* result) {
   std::unique_ptr<SkCodec> codec =
       SkGifDecoder::Decode(std::move(stream), result);

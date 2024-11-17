@@ -18,87 +18,59 @@ group("unit_tests") {
   deps = [
     "//chrome/browser/chromeos/app_mode:unit_tests",
     "//chrome/browser/chromeos/arc:unit_tests",
-    "//chrome/browser/chromeos/container_app:unit_tests",
     "//chrome/browser/chromeos/drivefs:unit_tests",
     "//chrome/browser/chromeos/extensions/contact_center_insights:unit_tests",
     "//chrome/browser/chromeos/extensions/desk_api:unit_tests",
     "//chrome/browser/chromeos/extensions/file_system_provider:unit_tests",
+    "//chrome/browser/chromeos/extensions/login_screen/login:unit_tests",
+    "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:unit_tests",
+    "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_done:unit_tests",
     "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_request:unit_tests",
+    "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage:unit_tests",
     "//chrome/browser/chromeos/extensions/login_screen/login_state:unit_tests",
     "//chrome/browser/chromeos/extensions/odfs_config_private:unit_tests",
     "//chrome/browser/chromeos/extensions/telemetry:unit_tests",
-    "//chrome/browser/chromeos/launcher_search:unit_tests",
-    "//chrome/browser/chromeos/mahi:unit_tests",
+    "//chrome/browser/chromeos/gemini_app:unit_tests",
     "//chrome/browser/chromeos/office_web_app:unit_tests",
     "//chrome/browser/chromeos/policy/dlp:unit_tests",
     "//chrome/browser/chromeos/printing/print_preview:unit_tests",
     "//chrome/browser/chromeos/reporting:unit_tests",
     "//chrome/browser/chromeos/reporting/network:unit_tests",
     "//chrome/browser/chromeos/reporting/websites:unit_tests",
+    "//chrome/browser/chromeos/tablet_mode:unit_tests",
     "//chrome/browser/chromeos/tast_support:unit_tests",
     "//chrome/browser/chromeos/video_conference:unit_tests",
   ]
 
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/chromeos/extensions/login_screen/login:unit_tests",
-      "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:unit_tests",
-      "//chrome/browser/chromeos/extensions/login_screen/login/external_logout_done:unit_tests",
-      "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage:unit_tests",
-      "//chrome/browser/chromeos/tablet_mode:unit_tests",
-    ]
-
-    if (use_cups) {
-      deps +=
-          [ "//chrome/browser/chromeos/extensions/printing_metrics:unit_tests" ]
-    }
+  if (use_cups) {
+    deps +=
+        [ "//chrome/browser/chromeos/extensions/printing_metrics:unit_tests" ]
   }
 }
 
 group("browser_tests") {
   testonly = true
 
-  deps = [ "//chrome/browser/chromeos/extensions/system_log:browser_tests" ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/chromeos/extensions/action_handlers:browser_tests",
-      "//chrome/browser/chromeos/extensions/contact_center_insights:browser_tests",
-      "//chrome/browser/chromeos/extensions/echo_private:browser_tests",
-      "//chrome/browser/chromeos/extensions/file_system_provider:browser_tests",
-      "//chrome/browser/chromeos/extensions/login_screen/login:browser_tests",
-      "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:browser_tests",
-      "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage:browser_tests",
-      "//chrome/browser/chromeos/extensions/login_screen/login_state:browser_tests",
-      "//chrome/browser/chromeos/extensions/odfs_config_private:browser_tests",
-      "//chrome/browser/chromeos/mahi:browser_tests",
-      "//chrome/browser/chromeos/network:browser_tests",
-      "//chrome/browser/chromeos/policy:browser_tests",
-      "//chrome/browser/chromeos/policy/dlp:browser_tests",
-      "//chrome/browser/chromeos/printing/print_preview:browser_tests",
-      "//chrome/browser/chromeos/reporting/network:browser_tests",
-      "//chrome/browser/chromeos/reporting/websites:browser_tests",
-      "//chrome/browser/chromeos/smart_reader:browser_tests",
-      "//chrome/browser/chromeos/video_conference:browser_tests",
-    ]
-  }
-}
-
-if (is_chromeos_lacros) {
-  group("lacros_chrome_browsertests") {
-    testonly = true
-
-    deps = [
-      "//chrome/browser/chromeos/extensions/contact_center_insights:lacros_chrome_browsertests",
-      "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage:lacros_chrome_browsertests",
-      "//chrome/browser/chromeos/extensions/odfs_config_private:lacros_chrome_browsertests",
-      "//chrome/browser/chromeos/network:lacros_chrome_browsertests",
-      "//chrome/browser/chromeos/policy/dlp:lacros_chrome_browsertests",
-      "//chrome/browser/chromeos/printing/print_preview:lacros_chrome_browsertests",
-      "//chrome/browser/chromeos/reporting/network:lacros_chrome_browsertests",
-      "//chrome/browser/chromeos/tablet_mode:lacros_chrome_browsertests",
-    ]
-  }
+  deps = [
+    "//chrome/browser/chromeos/extensions/action_handlers:browser_tests",
+    "//chrome/browser/chromeos/extensions/contact_center_insights:browser_tests",
+    "//chrome/browser/chromeos/extensions/echo_private:browser_tests",
+    "//chrome/browser/chromeos/extensions/file_system_provider:browser_tests",
+    "//chrome/browser/chromeos/extensions/login_screen/login:browser_tests",
+    "//chrome/browser/chromeos/extensions/login_screen/login/cleanup:browser_tests",
+    "//chrome/browser/chromeos/extensions/login_screen/login_screen_storage:browser_tests",
+    "//chrome/browser/chromeos/extensions/login_screen/login_state:browser_tests",
+    "//chrome/browser/chromeos/extensions/odfs_config_private:browser_tests",
+    "//chrome/browser/chromeos/extensions/system_log:browser_tests",
+    "//chrome/browser/chromeos/network:browser_tests",
+    "//chrome/browser/chromeos/policy:browser_tests",
+    "//chrome/browser/chromeos/policy/dlp:browser_tests",
+    "//chrome/browser/chromeos/printing/print_preview:browser_tests",
+    "//chrome/browser/chromeos/reporting/network:browser_tests",
+    "//chrome/browser/chromeos/reporting/websites:browser_tests",
+    "//chrome/browser/chromeos/smart_reader:browser_tests",
+    "//chrome/browser/chromeos/video_conference:browser_tests",
+  ]
 }
 
 if (!is_chromeos_device) {

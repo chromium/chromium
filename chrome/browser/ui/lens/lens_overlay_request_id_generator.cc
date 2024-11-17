@@ -22,29 +22,37 @@ LensOverlayRequestIdGenerator::~LensOverlayRequestIdGenerator() = default;
 
 void LensOverlayRequestIdGenerator::ResetRequestId() {
   uuid_ = base::RandUint64();
-  sequence_id_ = 1;
+  sequence_id_ = 0;
   image_sequence_id_ = 0;
-  CreateNewAnalyticsId();
-}
-
-void LensOverlayRequestIdGenerator::CreateNewAnalyticsId() {
   analytics_id_ = base::RandBytesAsString(kAnalyticsIdBytesSize);
 }
 
-void LensOverlayRequestIdGenerator::IncrementImageSequenceId() {
-  image_sequence_id_++;
-}
-
 std::unique_ptr<lens::LensOverlayRequestId>
-LensOverlayRequestIdGenerator::GetNextRequestId() {
+LensOverlayRequestIdGenerator::GetNextRequestId(
+    RequestIdUpdateMode update_mode) {
+  bool increment_image_sequence =
+      update_mode == RequestIdUpdateMode::kFullImageRequest;
+  bool increment_sequence = update_mode != RequestIdUpdateMode::kNone;
+  bool create_analytics_id =
+      update_mode == RequestIdUpdateMode::kFullImageRequest ||
+      update_mode == RequestIdUpdateMode::kInteractionRequest;
+  if (increment_image_sequence) {
+    image_sequence_id_++;
+  }
+
+  if (increment_sequence) {
+    sequence_id_++;
+  }
+
+  if (create_analytics_id) {
+    analytics_id_ = base::RandBytesAsString(kAnalyticsIdBytesSize);
+  }
+
   auto request_id = std::make_unique<lens::LensOverlayRequestId>();
   request_id->set_uuid(uuid_);
   request_id->set_sequence_id(sequence_id_);
   request_id->set_analytics_id(analytics_id_);
   request_id->set_image_sequence_id(image_sequence_id_);
-
-  // Increment the sequence id for the next request.
-  sequence_id_++;
   return request_id;
 }
 

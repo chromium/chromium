@@ -1,0 +1,41 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
+
+static_library("cpp") {
+  sources = [
+    "proto_http_stream_parser.cc",
+    "proto_http_stream_parser.h",
+    "tachyon_parsing_service.cc",
+    "tachyon_parsing_service.h",
+  ]
+  public_deps = [ "//chromeos/ash/services/boca/babelorca/mojom" ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/boca/babelorca/proto",
+    "//net",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "proto_http_stream_parser_unittest.cc",
+    "tachyon_parsing_service_unittest.cc",
+  ]
+
+  deps = [
+    ":cpp",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/ash/components/boca/babelorca/proto",
+    "//chromeos/ash/components/boca/babelorca/proto:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -247,8 +247,11 @@ void StubNotificationDisplayService::ProcessNotificationOperation(
     const std::string& notification_id,
     const std::optional<int>& action_index,
     const std::optional<std::u16string>& reply,
-    const std::optional<bool>& by_user) {
+    const std::optional<bool>& by_user,
+    base::OnceClosure on_complete_cb) {
   if (process_notification_operation_delegate_) {
+    // TODO(b/375547360): run `on_complete_cb` when notification processing
+    // finishes.
     process_notification_operation_delegate_.Run(operation, notification_type,
                                                  origin, notification_id,
                                                  action_index, reply, by_user);
@@ -257,7 +260,7 @@ void StubNotificationDisplayService::ProcessNotificationOperation(
 
   NotificationDisplayServiceImpl::ProcessNotificationOperation(
       operation, notification_type, origin, notification_id, action_index,
-      reply, by_user);
+      reply, by_user, std::move(on_complete_cb));
 }
 
 StubNotificationDisplayService::NotificationData::NotificationData(

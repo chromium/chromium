@@ -4,7 +4,7 @@
 
 #include "ash/shelf/shelf_navigation_widget.h"
 
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/back_button.h"

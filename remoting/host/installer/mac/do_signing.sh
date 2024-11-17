@@ -40,6 +40,7 @@ setup() {
   # Binaries/bundles to sign.
   ME2ME_HOST="PrivilegedHelperTools/${HOST_BUNDLE_NAME}"
   ME2ME_EXE_DIR="${ME2ME_HOST}/Contents/MacOS/"
+  ME2ME_AGENT_PROCESS_BROKER="${ME2ME_EXE_DIR}/remoting_agent_process_broker"
   ME2ME_LAUNCHD_SERVICE="${ME2ME_EXE_DIR}/remoting_me2me_host_service"
   ME2ME_NM_HOST="${ME2ME_EXE_DIR}/${NATIVE_MESSAGING_HOST_BUNDLE_NAME}/"
   IT2ME_NM_HOST="${ME2ME_EXE_DIR}/${REMOTE_ASSISTANCE_HOST_BUNDLE_NAME}/"
@@ -152,6 +153,7 @@ sign_binaries() {
   local id="${3}"
 
   local binaries=(\
+    "${ME2ME_AGENT_PROCESS_BROKER}" \
     "${ME2ME_LAUNCHD_SERVICE}" \
     "${ME2ME_NM_HOST}" \
     "${IT2ME_NM_HOST}" \

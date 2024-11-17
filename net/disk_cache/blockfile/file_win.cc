@@ -117,8 +117,10 @@ bool File::Init(const base::FilePath& name) {
   if (!base_file_.IsValid())
     return false;
 
-  base::CurrentIOThread::Get()->RegisterIOHandler(base_file_.GetPlatformFile(),
-                                                  CompletionHandler::Get());
+  if (!base::CurrentIOThread::Get()->RegisterIOHandler(
+          base_file_.GetPlatformFile(), CompletionHandler::Get())) {
+    return false;
+  }
 
   init_ = true;
   sync_base_file_ = base::File(CreateFile(name.value().c_str(), access, sharing,

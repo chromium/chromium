@@ -7,6 +7,7 @@
 
 #include "base/check.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -43,8 +44,8 @@ class DependencyBase {
   bool DependsOn(ComponentBase* component);
 
  protected:
-  ComponentBase* const dependent_;
-  ComponentBase* dependency_;
+  const raw_ptr<ComponentBase> dependent_;
+  raw_ptr<ComponentBase> dependency_;
 
  private:
   friend class DependencyCount;
@@ -82,7 +83,7 @@ class ScopedReferenceBase {
   ~ScopedReferenceBase();
 
   const scoped_refptr<DependencyCount> counter_;
-  ComponentBase* dependency_;
+  raw_ptr<ComponentBase> dependency_;
 };
 
 // This class is not intended to be long-lived, and should not be declared as

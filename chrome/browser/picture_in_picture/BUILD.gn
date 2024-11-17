@@ -21,6 +21,7 @@ source_set("picture_in_picture") {
 
   if (!is_android) {
     sources += [
+      "auto_picture_in_picture_safe_browsing_checker_client.h",
       "auto_picture_in_picture_tab_helper.h",
       "auto_picture_in_picture_tab_strip_observer_helper.h",
       "auto_pip_setting_helper.h",
@@ -34,6 +35,9 @@ source_set("picture_in_picture") {
     ]
     public_deps += [
       "//chrome/browser/ui/tabs:tab_strip_model_observer",
+      "//components/safe_browsing/core/browser/db:database_manager",
+      "//components/safe_browsing/core/browser/db:util",
+      "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
       "//ui/views",
     ]
   }
@@ -63,6 +67,7 @@ source_set("impl") {
 
   if (!is_android) {
     sources += [
+      "auto_picture_in_picture_safe_browsing_checker_client.cc",
       "auto_picture_in_picture_tab_helper.cc",
       "auto_picture_in_picture_tab_strip_observer_helper.cc",
       "auto_pip_setting_helper.cc",
@@ -76,10 +81,13 @@ source_set("impl") {
     ]
     deps += [
       "//chrome/app:generated_resources",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/permissions",
       "//chrome/browser/picture_in_picture",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/safe_browsing:safe_browsing",
       "//chrome/browser/ui/color:color_headers",
       "//components/content_settings/core/browser",
       "//components/permissions",
@@ -114,12 +122,17 @@ source_set("unit_tests") {
 
   if (!is_android) {
     sources += [
+      "auto_picture_in_picture_safe_browsing_checker_client_unittest.cc",
       "auto_pip_setting_helper_unittest.cc",
       "auto_pip_setting_overlay_view_unittest.cc",
       "auto_pip_setting_view_unittest.cc",
       "picture_in_picture_occlusion_tracker_unittest.cc",
     ]
-    deps += [ "//ui/events:test_support" ]
+    deps += [
+      "//chrome/browser",
+      "//chrome/browser/ui/safety_hub:test_support",
+      "//ui/events:test_support",
+    ]
   }
 }
 
@@ -143,6 +156,7 @@ if (!is_android) {
       "//base/test:test_support",
       "//build:chromeos_buildflags",
       "//chrome/browser",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
@@ -165,6 +179,7 @@ if (!is_android) {
       "//testing/gtest",
       "//third_party/blink/public/common:headers",
       "//ui/base:hit_test",
+      "//ui/base/mojom:ui_base_types",
       "//ui/compositor:test_support",
       "//ui/display",
       "//ui/events:test_support",
@@ -196,6 +211,7 @@ if (!is_android) {
     ]
     deps = [
       "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//content/public/browser",
       "//content/test:test_support",
     ]

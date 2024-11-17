@@ -90,7 +90,14 @@ TEST_F(PenIdHandlerTest, GetGuidMapping) {
 // std::nullopt.
 // Ultimately TryGetPenUniqueId should return null.
 TEST_F(PenIdHandlerTest, PenDeviceStaticsFailedToSet) {
-  views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(nullptr);
+  auto* null_lambda = static_cast<Microsoft::WRL::ComPtr<
+      ABI::Windows::Devices::Input::IPenDeviceStatics> (*)()>(
+      []() -> Microsoft::WRL::ComPtr<
+               ABI::Windows::Devices::Input::IPenDeviceStatics> {
+        return nullptr;
+      });
+  views::PenIdHandler::ScopedPenIdStaticsForTesting scoper(null_lambda);
+
   PenIdHandler pen_id_handler;
   EXPECT_EQ(pen_id_handler.TryGetGuid(kPointerId1), std::nullopt);
   EXPECT_EQ(pen_id_handler.TryGetPenUniqueId(kPointerId1), std::nullopt);

@@ -24,9 +24,9 @@ import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUkmRecorder;
 import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.metrics.LegacyTabStartupMetricsTracker;
@@ -52,29 +52,27 @@ public class WebApkActivityLifecycleUmaTracker
 
     @Inject
     public WebApkActivityLifecycleUmaTracker(
-            Activity activity,
-            BrowserServicesIntentDataProvider intentDataProvider,
+            BaseCustomTabActivity activity,
             SplashController splashController,
-            ActivityLifecycleDispatcher lifecycleDispatcher,
             WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
             Lazy<LegacyTabStartupMetricsTracker> legacyStartupMetricsTracker,
             Lazy<StartupMetricsTracker> startupMetricsTracker,
             @Named(SAVED_INSTANCE_SUPPLIER) Supplier<Bundle> savedInstanceStateSupplier) {
         mActivity = activity;
-        mIntentDataProvider = intentDataProvider;
+        mIntentDataProvider = activity.getIntentDataProvider();
         mSplashController = splashController;
         mLegacyTabStartupMetricsTracker = legacyStartupMetricsTracker;
         mStartupMetricsTracker = startupMetricsTracker;
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;
 
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
         ApplicationStatus.registerStateListenerForActivity(this, mActivity);
 
         // Add UMA recording task at the front of the deferred startup queue as it has a higher
         // priority than other deferred startup tasks like checking for a WebAPK update.
         deferredStartupWithStorageHandler.addTaskToFront(
                 (storage, didCreateStorage) -> {
-                    if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
+                    if (activity.getLifecycleDispatcher().isActivityFinishingOrDestroyed()) return;
 
                     WebApkExtras webApkExtras = mIntentDataProvider.getWebApkExtras();
                     WebApkUmaRecorder.recordShellApkVersion(

@@ -34,8 +34,7 @@ namespace {
 // Set when the default factory is overridden.
 AudioDeviceFactory* g_factory_override = nullptr;
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Due to driver deadlock issues on Windows (http://crbug/422522) there is a
 // chance device authorization response is never received from the browser side.
 // In this case we will time out, to avoid renderer hang forever waiting for
@@ -119,8 +118,7 @@ media::AudioLatency::Type AudioDeviceFactory::GetSourceLatencyType(
     case blink::WebAudioDeviceSourceType::kWebAudioExact:
       return media::AudioLatency::Type::kExactMS;
   }
-  NOTREACHED_IN_MIGRATION();
-  return media::AudioLatency::Type::kUnknown;
+  NOTREACHED();
 }
 
 scoped_refptr<media::AudioRendererSink>

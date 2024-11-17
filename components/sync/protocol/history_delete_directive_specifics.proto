@@ -35,7 +35,7 @@ message GlobalIdDirective {
 
   // Time range for searching for navigations to delete. Client should delete
   // all navigations to a URL between [start_time_usec, end_time_usec]
-  // if one of them matches a |global_id|.
+  // if one of them matches a `global_id`.
   optional int64 start_time_usec = 2;
   optional int64 end_time_usec = 3;
 }

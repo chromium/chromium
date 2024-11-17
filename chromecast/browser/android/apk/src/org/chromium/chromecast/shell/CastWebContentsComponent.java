@@ -174,14 +174,22 @@ public class CastWebContentsComponent {
     private final boolean mTurnOnScreen;
     private final boolean mKeepScreenOn;
 
-    public CastWebContentsComponent(String sessionId,
+    public CastWebContentsComponent(
+            String sessionId,
             OnComponentClosedHandler onComponentClosedHandler,
-            SurfaceEventHandler surfaceEventHandler, boolean enableTouchInput, boolean turnOnScreen,
+            SurfaceEventHandler surfaceEventHandler,
+            boolean enableTouchInput,
+            boolean turnOnScreen,
             boolean keepScreenOn) {
         if (DEBUG) {
-            Log.d(TAG,
-                    "New CastWebContentsComponent. Instance ID: " + sessionId
-                            + "; enableTouchInput:" + enableTouchInput);
+            Log.d(
+                    TAG,
+                    "New CastWebContentsComponent: sid=%s, touchInput=%b, turnOnScreen=%b,"
+                            + " keepScreenOn=%b",
+                    sessionId,
+                    enableTouchInput,
+                    turnOnScreen,
+                    keepScreenOn);
         }
 
         mComponentClosedHandler = onComponentClosedHandler;

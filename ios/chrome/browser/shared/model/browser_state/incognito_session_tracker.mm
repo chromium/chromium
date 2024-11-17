@@ -15,9 +15,9 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
-// Observer used to track the state of an individual ChromeBrowserState
+// Observer used to track the state of an individual Profile
 // and inform the IncognitoSessionTracker when the state of the incognito
-// session for that ChromeBrowserState changes.
+// session for that Profile changes.
 class IncognitoSessionTracker::Observer final : public BrowserListObserver,
                                                 public WebStateListObserver {
  public:
@@ -193,7 +193,7 @@ void IncognitoSessionTracker::OnProfileManagerDestroyed(
 }
 
 void IncognitoSessionTracker::OnProfileCreated(ProfileManagerIOS* manager,
-                                               ChromeBrowserState* profile) {
+                                               ProfileIOS* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The Profile is still not fully loaded, so the KeyedService cannot be
   // accessed (and it may be destroyed before the load complete). Wait until the
@@ -201,7 +201,7 @@ void IncognitoSessionTracker::OnProfileCreated(ProfileManagerIOS* manager,
 }
 
 void IncognitoSessionTracker::OnProfileLoaded(ProfileManagerIOS* manager,
-                                              ChromeBrowserState* profile) {
+                                              ProfileIOS* profile) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // The Profile is fully loaded, we can access its BrowserList and register an
   // Observer. The use of `base::Unretained(this)` is safe as the
@@ -209,7 +209,7 @@ void IncognitoSessionTracker::OnProfileLoaded(ProfileManagerIOS* manager,
   // outlive `this`.
   auto [_, inserted] = observers_.insert(std::make_pair(
       profile, std::make_unique<Observer>(
-                   BrowserListFactory::GetForBrowserState(profile),
+                   BrowserListFactory::GetForProfile(profile),
                    base::BindRepeating(
                        &IncognitoSessionTracker::OnIncognitoSessionStateChanged,
                        base::Unretained(this)))));

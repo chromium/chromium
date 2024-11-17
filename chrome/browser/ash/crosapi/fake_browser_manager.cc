@@ -65,41 +65,6 @@ FakeBrowserManager::FakeBrowserManager()
 
 FakeBrowserManager::~FakeBrowserManager() = default;
 
-void FakeBrowserManager::SetGetFeedbackDataResponse(
-    base::Value::Dict response) {
-  feedback_response_ = std::move(response);
-}
-
-void FakeBrowserManager::SignalMojoDisconnected() {
-  OnMojoDisconnected();
-}
-
-void FakeBrowserManager::StartRunning() {
-  SetState(State::RUNNING);
-}
-
-void FakeBrowserManager::StopRunning() {
-  SetState(State::STOPPED);
-}
-
-void FakeBrowserManager::NewFullscreenWindow(
-    const GURL& url,
-    BrowserManager::NewFullscreenWindowCallback callback) {
-  std::move(callback).Run(new_fullscreen_window_creation_result_);
-}
-
-void FakeBrowserManager::GetFeedbackData(GetFeedbackDataCallback callback) {
-  // Run |callback| with the pre-set |feedback_responses_|, unless testing
-  // client requests waiting for crosapi mojo disconnected event being observed.
-  if (!wait_for_mojo_disconnect_) {
-    std::move(callback).Run(std::move(feedback_response_));
-  }
-}
-
-void FakeBrowserManager::InitializeAndStartIfNeeded() {
-  StartRunning();
-}
-
 void FakeBrowserManager::OnSessionStateChanged() {}
 
 }  // namespace crosapi

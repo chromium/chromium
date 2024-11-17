@@ -29,9 +29,6 @@ class GuestOsService : public KeyedService {
   explicit GuestOsService(Profile* profile);
   ~GuestOsService() override;
 
-  // Helper method to get the service instance for the given profile.
-  static GuestOsService* GetForProfile(Profile* profile);
-
   GuestOsMountProviderRegistry* MountProviderRegistry();
   GuestOsTerminalProviderRegistry* TerminalProviderRegistry();
 

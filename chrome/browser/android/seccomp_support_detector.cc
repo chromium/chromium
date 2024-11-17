@@ -30,26 +30,8 @@ void ReportKernelVersion() {
   }
 }
 
-// Per the comment in base/cpu.cc's ParseProcCpu(), unfortunately there is not
-// a universally reliable way to examine the CPU part information for all
-// cores, so the sampling effect of data collection via UMA will have to
-// suffice.
-void ReportArmCpu() {
-#if defined(ARCH_CPU_ARM_FAMILY)
-  base::CPU cpu;
-
-  // Compose the implementer (8 bits) and the part number (12 bits) into a
-  // single 20-bit number that can be recorded via UMA.
-  uint32_t composed = cpu.implementer();
-  composed <<= 12;
-  composed |= cpu.part_number();
-  base::UmaHistogramSparse("Android.ArmCpuPart", composed);
-#endif
-}
-
 }  // namespace
 
 void ReportSeccompSupport() {
   ReportKernelVersion();
-  ReportArmCpu();
 }

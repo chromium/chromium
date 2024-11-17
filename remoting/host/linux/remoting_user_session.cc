@@ -104,8 +104,7 @@ void PrintUsage() {
 // Shell-escapes a single argument in a way that is compatible with various
 // different shells. Returns nullopt when argument contains a newline, which
 // can't be represented in a cross-shell fashion.
-std::optional<std::string> ShellEscapeArgument(
-    const std::string_view argument) {
+std::optional<std::string> ShellEscapeArgument(std::string_view argument) {
   std::string result;
   for (char character : argument) {
     // csh in particular doesn't provide a good way to handle this

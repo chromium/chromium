@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_css_math_operator.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_variadic.h"
 
@@ -31,7 +32,9 @@ class CORE_EXPORT CSSMathMin final : public CSSMathVariadic {
   CSSMathMin(const CSSMathMin&) = delete;
   CSSMathMin& operator=(const CSSMathMin&) = delete;
 
-  String getOperator() const final { return "min"; }
+  V8CSSMathOperator getOperator() const final {
+    return V8CSSMathOperator(V8CSSMathOperator::Enum::kMin);
+  }
 
   // From CSSStyleValue.
   StyleValueType GetType() const final { return CSSStyleValue::kMinType; }

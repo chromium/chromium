@@ -5,19 +5,19 @@
 // background.js: test loading the [piexwasm] module in chrome extension.
 //
 window.onload = () => {
-  console.log('[piexwasm] window.onload');
+  console.info('[piexwasm] window.onload');
 
   const script = document.createElement('script');
   document.head.appendChild(script);
 
   script.onerror = (error) => {
-    console.log('[piexwasm] failed loading script:', script.src);
+    console.info('[piexwasm] failed loading script:', script.src);
   };
 
   script.onload = () => {
-    console.log('[piexwasm] wrapper loaded');
+    console.info('[piexwasm] wrapper loaded');
     createPiexModule().then(module => {
-      console.log('[piexwasm] module initialized', module);
+      console.info('[piexwasm] module initialized', module);
     });
   };
 

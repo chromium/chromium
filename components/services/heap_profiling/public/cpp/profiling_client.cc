@@ -125,7 +125,7 @@ void InitAllocationRecorder(mojom::ProfilingParamsPtr params) {
 
   if (params->stack_mode == mojom::StackMode::NATIVE_WITH_THREAD_NAMES) {
     g_include_thread_names = true;
-    base::SamplingHeapProfiler::Get()->SetRecordThreadNames(true);
+    base::SamplingHeapProfiler::Get()->EnableRecordThreadNames();
   }
 
   switch (params->stack_mode) {
@@ -154,8 +154,7 @@ mojom::AllocatorType ConvertType(AllocationSubsystem type) {
     case AllocationSubsystem::kPartitionAllocator:
       return mojom::AllocatorType::kPartitionAlloc;
     case AllocationSubsystem::kManualForTesting:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::AllocatorType::kMalloc;
+      NOTREACHED();
   }
 }
 
@@ -231,20 +230,19 @@ void ProfilingClient::RetrieveHeapProfile(
 
 void ProfilingClient::AddHeapProfileToTrace(
     AddHeapProfileToTraceCallback callback) {
+#if BUILDFLAG(IS_IOS)
+  // Tracing is not supported in iOS.
+  NOTREACHED();
+#else
   auto* profiler = base::SamplingHeapProfiler::Get();
   std::vector<base::SamplingHeapProfiler::Sample> samples =
       profiler->GetSamples(/*profile_id=*/0);
 
-#if !BUILDFLAG(IS_IOS)
   bool success =
       HeapProfilingTraceSource::GetInstance()->AddToTraceIfEnabled(samples);
-#else
-  bool success = false;
-  // Tracing is not supported in iOS.
-  NOTREACHED_IN_MIGRATION();
-#endif
 
   std::move(callback).Run(success);
+#endif
 }
 
 }  // namespace heap_profiling

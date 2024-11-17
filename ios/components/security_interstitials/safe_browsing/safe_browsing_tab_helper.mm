@@ -90,7 +90,7 @@ void RecordTotalDelay2MetricForNavigation(
       performed_check_str = ".HashPrefixRealTimeCheck";
       break;
     case SafeBrowsingUrlCheckerImpl::PerformedCheck::kUnknown:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   base::UmaHistogramTimes("SafeBrowsing.IOS.TotalDelay2" + performed_check_str,
@@ -349,7 +349,19 @@ void SafeBrowsingTabHelper::PolicyDecider::ShouldAllowResponse(
         web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
 
-  DCHECK(pending_main_frame_query_);
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
+    if (!pending_main_frame_query_) {
+      base::UmaHistogramBoolean("SafeBrowsing.IOS.RepeatedResponseCalled",
+                                true);
+      return std::move(callback).Run(
+          web::WebStatePolicyDecider::PolicyDecision::Allow());
+    }
+  } else {
+    DCHECK(pending_main_frame_query_);
+  }
+  base::UmaHistogramBoolean("SafeBrowsing.IOS.RepeatedResponseCalled", false);
+
   // When there's a server redirect, a ShouldAllowRequest call sometimes
   // doesn't happen for the target of the redirection. This seems to be fixed
   // in trunk WebKit.
@@ -417,7 +429,7 @@ SafeBrowsingTabHelper::PolicyDecider::GetOldestPendingMainFrameQuery(
 SafeBrowsingTabHelper::PolicyDecider::MainFrameUrlQuery*
 SafeBrowsingTabHelper::PolicyDecider::GetOldestPendingMainFrameQuery(
     const SafeBrowsingQueryManager::QueryData& query_data) {
-  const GURL& url = query_data.query.url;
+  const GURL& url = query_data.query->url;
 
   MainFrameUrlQuery* redirect_chain_query = GetUnansweredQueryForRedirectChain(
       RedirectChain::kPendingMainFrame, query_data);
@@ -460,7 +472,7 @@ SafeBrowsingTabHelper::PolicyDecider::MainFrameUrlQuery*
 SafeBrowsingTabHelper::PolicyDecider::GetUnansweredQueryForRedirectChain(
     RedirectChain redirect_chain,
     const SafeBrowsingQueryManager::QueryData& query_data) {
-  const GURL& url = query_data.query.url;
+  const GURL& url = query_data.query->url;
   std::list<MainFrameUrlQuery>* selected_redirect_chain = nullptr;
 
   switch (redirect_chain) {
@@ -529,7 +541,7 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlQueryDecided(
 void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlSyncQueryDecided(
     const SafeBrowsingQueryManager::QueryData& query_data,
     web::WebStatePolicyDecider::PolicyDecision decision) {
-  const GURL& url = query_data.query.url;
+  const GURL& url = query_data.query->url;
   SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check =
       query_data.performed_check;
   MainFrameUrlQuery* query = GetOldestPendingMainFrameQuery(query_data);
@@ -576,7 +588,7 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlSyncQueryDecided(
 void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlAsyncQueryDecided(
     const SafeBrowsingQueryManager::QueryData& query_data,
     web::WebStatePolicyDecider::PolicyDecision decision) {
-  const GURL& url = query_data.query.url;
+  const GURL& url = query_data.query->url;
   MainFrameUrlQuery* committed_query =
       GetOldestPendingCommittedQuery(query_data);
   if (committed_query) {
@@ -808,8 +820,8 @@ void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingSyncQueryFinished(
   }
 
   web::WebStatePolicyDecider::PolicyDecision policy_decision =
-      policy_decider_->CreatePolicyDecision(query_data.query, query_data.result,
-                                            web_state_);
+      policy_decider_->CreatePolicyDecision(*query_data.query,
+                                            *query_data.result, web_state_);
   policy_decider_->HandlePolicyDecision(query_data, policy_decision);
 }
 
@@ -820,8 +832,8 @@ void SafeBrowsingTabHelper::QueryObserver::SafeBrowsingAsyncQueryFinished(
   }
 
   web::WebStatePolicyDecider::PolicyDecision policy_decision =
-      policy_decider_->CreatePolicyDecision(query_data.query, query_data.result,
-                                            web_state_);
+      policy_decider_->CreatePolicyDecision(*query_data.query,
+                                            *query_data.result, web_state_);
   policy_decider_->HandlePolicyDecision(query_data, policy_decision);
 }
 

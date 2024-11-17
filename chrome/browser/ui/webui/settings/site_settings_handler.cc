@@ -14,6 +14,7 @@
 #include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/to_value_list.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -49,6 +50,10 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/smart_card/smart_card_permission_context.h"
+#include "chrome/browser/smart_card/smart_card_permission_context_factory.h"
+#endif
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
@@ -69,6 +74,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/browsing_topics/browsing_topics_service.h"
+#include "components/content_settings/core/browser/content_settings_uma_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
@@ -106,6 +112,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -146,7 +153,7 @@ constexpr char kNumCookies[] = "numCookies";
 constexpr char kHasPermissionSettings[] = "hasPermissionSettings";
 constexpr char kHasInstalledPWA[] = "hasInstalledPWA";
 constexpr char kIsInstalled[] = "isInstalled";
-constexpr char kRwsOwner[] = "fpsOwner";
+constexpr char kRwsOwner[] = "rwsOwner";
 constexpr char kRwsNumMembers[] = "rwsNumMembers";
 constexpr char kRwsEnterpriseManaged[] = "rwsEnterpriseManaged";
 constexpr char kZoom[] = "zoom";
@@ -444,7 +451,7 @@ std::map<std::string, std::pair<std::string, int>> GetRwsMap(
       std::string etld_plus1 = GetEtldPlusOneForHost(
           BrowsingDataModel::GetHost(entry.data_owner.get()));
       auto schemeful_site = ConvertEtldToSchemefulSite(etld_plus1);
-      auto rws_owner = privacy_sandbox_service->GetFirstPartySetOwner(
+      auto rws_owner = privacy_sandbox_service->GetRelatedWebsiteSetOwner(
           schemeful_site.GetURL());
       if (rws_owner.has_value()) {
         rws_owner_to_members[rws_owner->GetURL().host()].insert(etld_plus1);
@@ -545,7 +552,7 @@ void ConvertSiteGroupMapToList(
       site_group.Set(kRwsNumMembers, rws_map[*etld_plus1].second);
       auto schemeful_site = ConvertEtldToSchemefulSite(*etld_plus1);
       site_group.Set(kRwsEnterpriseManaged,
-                     privacy_sandbox_service->IsPartOfManagedFirstPartySet(
+                     privacy_sandbox_service->IsPartOfManagedRelatedWebsiteSet(
                          schemeful_site));
     }
     list_value->Append(std::move(site_group));
@@ -715,6 +722,20 @@ void SiteSettingsHandler::RegisterMessages() {
       "revokeFileSystemGrants",
       base::BindRepeating(&SiteSettingsHandler::HandleRevokeFileSystemGrants,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getSmartCardReaderGrants",
+      base::BindRepeating(&SiteSettingsHandler::HandleGetSmartCardReaderGrants,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "revokeAllSmartCardReadersGrants",
+      base::BindRepeating(
+          &SiteSettingsHandler::HandleRevokeAllSmartCardReaderGrants,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "revokeSmartCardReaderGrant",
+      base::BindRepeating(
+          &SiteSettingsHandler::HandleRevokeSmartCardReaderGrant,
+          base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getChooserExceptionList",
       base::BindRepeating(&SiteSettingsHandler::HandleGetChooserExceptionList,
@@ -890,7 +911,7 @@ void SiteSettingsHandler::OnGetUsageInfo() {
                 IDS_SETTINGS_SITE_SETTINGS_RELATED_WEBSITE_SETS_MEMBERSHIP_LABEL),
             "MEMBERS", static_cast<int>(rws_map[etld_plus1].second),
             "RWS_OWNER", rws_map[etld_plus1].first));
-    rwsPolicy = privacy_sandbox_service->IsPartOfManagedFirstPartySet(
+    rwsPolicy = privacy_sandbox_service->IsPartOfManagedRelatedWebsiteSet(
         ConvertEtldToSchemefulSite(etld_plus1));
   }
 
@@ -1545,6 +1566,73 @@ void SiteSettingsHandler::HandleRevokeFileSystemGrants(
   permission_context->RevokeGrants(origin);
 }
 
+void SiteSettingsHandler::HandleGetSmartCardReaderGrants(
+    const base::Value::List& args) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kSmartCard));
+
+  CHECK_EQ(1U, args.size());
+  AllowJavascript();
+
+  const base::Value& callback_id = args[0];
+  base::Value::List reader_names;
+#if BUILDFLAG(IS_CHROMEOS)
+  SmartCardPermissionContext& permission_context =
+      SmartCardPermissionContextFactory::GetForProfile(*profile_);
+
+  reader_names = base::ToValueList(
+      permission_context.GetPersistentReaderGrants(),
+      [this](const SmartCardPermissionContext::ReaderGrants& reader_grant) {
+        return base::Value::Dict()
+            .Set(site_settings::kReaderName, reader_grant.reader_name)
+            .Set(site_settings::kOrigins,
+                 base::ToValueList(
+                     reader_grant.origins, [this](const url::Origin& origin) {
+                       return base::Value::Dict()
+                           .Set(site_settings::kOrigin, origin.Serialize())
+                           .Set(site_settings::kDisplayName,
+                                site_settings::GetUrlIdentityForGURL(
+                                    profile_, origin.GetURL(),
+                                    /*hostname_only=*/false)
+                                    .name);
+                     }));
+      });
+#endif
+  ResolveJavascriptCallback(callback_id, reader_names);
+}
+
+void SiteSettingsHandler::HandleRevokeAllSmartCardReaderGrants(
+    const base::Value::List& args) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kSmartCard));
+
+  CHECK(args.empty());
+  AllowJavascript();
+#if BUILDFLAG(IS_CHROMEOS)
+  SmartCardPermissionContext& permission_context =
+      SmartCardPermissionContextFactory::GetForProfile(*profile_);
+
+  permission_context.RevokeAllPermissions();
+#endif
+}
+
+void SiteSettingsHandler::HandleRevokeSmartCardReaderGrant(
+    const base::Value::List& args) {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kSmartCard));
+
+  CHECK_EQ(2U, args.size());
+  AllowJavascript();
+#if BUILDFLAG(IS_CHROMEOS)
+
+  auto reader_name = args[0].GetString();
+  auto url = GURL(args[1].GetString());
+  DCHECK(url.is_valid());
+  const url::Origin& origin = url::Origin::Create(url);
+
+  SmartCardPermissionContext& permission_context =
+      SmartCardPermissionContextFactory::GetForProfile(*profile_);
+  permission_context.RevokePersistentPermission(reader_name, origin);
+#endif
+}
+
 void SiteSettingsHandler::HandleSetOriginPermissions(
     const base::Value::List& args) {
   CHECK_EQ(3U, args.size());
@@ -1840,6 +1928,22 @@ void SiteSettingsHandler::HandleSetCategoryPermissionForPattern(
   map->SetContentSettingCustomScope(primary_pattern, secondary_pattern,
                                     content_type, setting);
 
+  // Record which type of exception pattern was entered.
+  if (primary_pattern == ContentSettingsPattern::Wildcard() ||
+      secondary_pattern == ContentSettingsPattern::Wildcard()) {
+    // Skipping two-pattern exceptions.
+    ContentSettingsPattern::Scope content_setting_pattern_scope =
+        primary_pattern != ContentSettingsPattern::Wildcard()
+            ? primary_pattern.GetScope()
+            : secondary_pattern.GetScope();
+    base::UmaHistogramEnumeration("Privacy.SiteExceptionsAdded.ScopeType",
+                                  content_setting_pattern_scope);
+  }
+
+  // Record which content setting type is created.
+  content_settings_uma_util::RecordContentSettingsHistogram(
+      "Privacy.SiteExceptionsAdded.ContentSettingType", content_type);
+
   if (content_type == ContentSettingsType::SOUND) {
     ContentSetting default_setting =
         map->GetDefaultContentSetting(ContentSettingsType::SOUND, nullptr);
@@ -2025,7 +2129,7 @@ void SiteSettingsHandler::SendZoomLevels() {
         // start. Therefore, we don't care for them.
         continue;
       case content::HostZoomMap::ZOOM_CHANGED_TEMPORARY_ZOOM:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -2171,6 +2275,16 @@ void SiteSettingsHandler::ObserveSourcesForProfile(Profile* profile) {
           file_system_access_permission_context);
     }
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(blink::features::kSmartCard)) {
+    auto& smart_card_context =
+        SmartCardPermissionContextFactory::GetForProfile(*profile);
+    if (!chooser_observations_.IsObservingSource(&smart_card_context)) {
+      chooser_observations_.AddObservation(&smart_card_context);
+    }
+  }
+#endif
   observed_profiles_.AddObservation(profile);
 }
 
@@ -2506,10 +2620,10 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
 
     // Populate the `file_system_permission_grant` object with allowed
     // permissions.
-    for (auto& file_path : grantObj.directory_write_grants) {
+    for (auto& path_info : grantObj.directory_write_grants) {
       base::Value::Dict directory_write_grant;
       const std::string file_path_string =
-          FilePathToValue(file_path).GetString();
+          FilePathToValue(path_info.path).GetString();
       directory_write_grant.Set(site_settings::kOrigin, origin_string);
       directory_write_grant.Set(site_settings::kFileSystemFilePath,
                                 file_path_string);
@@ -2519,9 +2633,9 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
       edit_grants.Append(std::move(directory_write_grant));
     }
 
-    for (auto& file_path : grantObj.directory_read_grants) {
+    for (auto& path_info : grantObj.directory_read_grants) {
       const std::string file_path_string =
-          FilePathToValue(file_path).GetString();
+          FilePathToValue(path_info.path).GetString();
       if (base::Contains(directory_edit_grants_file_paths, file_path_string)) {
         continue;
       }
@@ -2534,10 +2648,10 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
       view_grants.Append(std::move(directory_read_grant));
     }
 
-    for (auto& file_path : grantObj.file_write_grants) {
+    for (auto& path_info : grantObj.file_write_grants) {
       base::Value::Dict file_write_grant;
       const std::string file_path_string =
-          FilePathToValue(file_path).GetString();
+          FilePathToValue(path_info.path).GetString();
       file_write_grant.Set(site_settings::kOrigin, origin_string);
       file_write_grant.Set(site_settings::kFileSystemFilePath,
                            file_path_string);
@@ -2547,9 +2661,9 @@ base::Value::List SiteSettingsHandler::PopulateFileSystemGrantData() {
       edit_grants.Append(std::move(file_write_grant));
     }
 
-    for (auto& file_path : grantObj.file_read_grants) {
+    for (auto& path_info : grantObj.file_read_grants) {
       const std::string file_path_string =
-          FilePathToValue(file_path).GetString();
+          FilePathToValue(path_info.path).GetString();
       if (base::Contains(file_edit_grants_file_paths, file_path_string)) {
         continue;
       }

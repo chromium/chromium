@@ -244,6 +244,19 @@ pp_set.add_printer('absl::optional', '^absl::optional<.*>$',
                    AbslOptionalPrinter)
 
 
+class StdOptionalPrinter(Printer):
+
+  def to_string(self):
+    if self.val['__engaged_']:
+      return "%s: %s" % (str(self.val.type.tag), self.val['__val_'])
+    else:
+      return "%s: is empty" % str(self.val.type.tag)
+
+
+pp_set.add_printer('std::optional', '^std::__Cr::optional<.*>$',
+                   StdOptionalPrinter)
+
+
 class ClampedNumericPrinter(Printer):
   type_re = r'^base::internal::ClampedNumeric<(.*)>$'
 

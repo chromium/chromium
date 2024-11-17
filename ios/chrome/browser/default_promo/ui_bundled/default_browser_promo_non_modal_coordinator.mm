@@ -133,17 +133,16 @@
 
 - (CGFloat)infobarModalHeightForWidth:(CGFloat)width {
   // The non-modal promo should never have a modal.
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 #pragma mark - private
 
 // Records that a default browser promo has been shown.
 - (void)recordDefaultBrowserPromoShown {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   LogToFETDefaultBrowserPromoShown(
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
+      feature_engagement::TrackerFactory::GetForProfile(profile));
 }
 
 @end

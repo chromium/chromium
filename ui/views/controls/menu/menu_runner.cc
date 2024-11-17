@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_runner_handler.h"
@@ -40,7 +41,7 @@ void MenuRunner::RunMenuAt(
     MenuButtonController* button_controller,
     const gfx::Rect& bounds,
     MenuAnchorPosition anchor,
-    ui::MenuSourceType source_type,
+    ui::mojom::MenuSourceType source_type,
     gfx::NativeView native_view_for_gestures,
     std::optional<gfx::RoundedCornersF> corners,
     std::optional<std::string> show_menu_host_duration_histogram) {
@@ -74,13 +75,13 @@ void MenuRunner::RunMenuAt(
 
   if ((run_types_ & CONTEXT_MENU) && !(run_types_ & FIXED_ANCHOR)) {
     switch (source_type) {
-      case ui::MENU_SOURCE_NONE:
-      case ui::MENU_SOURCE_KEYBOARD:
-      case ui::MENU_SOURCE_MOUSE:
+      case ui::mojom::MenuSourceType::kNone:
+      case ui::mojom::MenuSourceType::kKeyboard:
+      case ui::mojom::MenuSourceType::kMouse:
         anchor = MenuAnchorPosition::kTopLeft;
         break;
-      case ui::MENU_SOURCE_TOUCH:
-      case ui::MENU_SOURCE_TOUCH_EDIT_MENU:
+      case ui::mojom::MenuSourceType::kTouch:
+      case ui::mojom::MenuSourceType::kTouchEditMenu:
         anchor = MenuAnchorPosition::kBottomCenter;
         break;
       default:

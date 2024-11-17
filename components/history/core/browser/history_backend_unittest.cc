@@ -359,6 +359,7 @@ class HistoryBackendTestBase : public testing::Test {
           HistoryBackend::IsTypedIncrement(visit.second),
           /*opener_visit=*/0,
           /*consider_for_ntp_most_visited=*/true,
+          /*is_ephemeral=*/false,
           /*local_navigation_id=*/std::nullopt);
     }
   }
@@ -554,10 +555,10 @@ class HistoryBackendTest : public HistoryBackendTestBase {
     redirects.push_back(url2);
     ui::PageTransition redirect_transition = ui::PageTransitionFromInt(
         ui::PAGE_TRANSITION_FORM_SUBMIT | ui::PAGE_TRANSITION_SERVER_REDIRECT);
-    HistoryAddPageArgs request(url2, time, dummy_context_id, 0, std::nullopt,
-                               url1, redirects, redirect_transition, false,
-                               SOURCE_BROWSED, did_replace, true,
-                               std::optional<std::u16string>(page2_title));
+    HistoryAddPageArgs request(
+        url2, time, dummy_context_id, 0, std::nullopt, url1, redirects,
+        redirect_transition, false, SOURCE_BROWSED, did_replace, true,
+        /*is_ephemeral=*/false, std::optional<std::u16string>(page2_title));
     backend_->AddPage(request);
 
     transition1 = GetTransition(url1);
@@ -1223,7 +1224,7 @@ TEST_F(HistoryBackendTest, OpenerWithRedirect) {
       client_redirect_url, base::Time::Now() - base::Seconds(1), context_id2, 0,
       std::nullopt, GURL(),
       /*redirects=*/{server_redirect_url, client_redirect_url},
-      ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true,
+      ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true, false,
       std::nullopt, /*top_level_url*/ std::nullopt,
       Opener(context_id1, nav_entry_id, initial_url));
   backend_->AddPage(request);
@@ -1274,10 +1275,10 @@ TEST_F(HistoryBackendTest, FormSubmitRedirect) {
 
   // User goes to form page.
   GURL url_a("http://www.google.com/a");
-  HistoryAddPageArgs request(url_a, base::Time::Now(), 0, 0, std::nullopt,
-                             GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
-                             false, SOURCE_BROWSED, false, true,
-                             std::optional<std::u16string>(page1_title));
+  HistoryAddPageArgs request(
+      url_a, base::Time::Now(), 0, 0, std::nullopt, GURL(), RedirectList(),
+      ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true,
+      /*is_ephemeral=*/false, std::optional<std::u16string>(page1_title));
   backend_->AddPage(request);
 
   // Check that URL was added.
@@ -1410,8 +1411,8 @@ TEST_F(HistoryBackendTest, ImportedFaviconsTest) {
   data.push_back('1');
   favicon_base::FaviconID favicon1 = favicon_db()->AddFavicon(
       favicon_url1, IconType::kFavicon,
-      base::RefCountedBytes::TakeVector(&data), FaviconBitmapType::ON_VISIT,
-      base::Time::Now(), gfx::Size());
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(data)),
+      FaviconBitmapType::ON_VISIT, base::Time::Now(), gfx::Size());
   URLRow row1(GURL("http://www.google.com/"));
   row1.set_visit_count(1);
   row1.set_last_visit(base::Time::Now());
@@ -2643,8 +2644,8 @@ TEST_F(HistoryBackendTest, FaviconChangedNotificationIconMappingChanged) {
 
   SkBitmap bitmap = gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE);
   std::vector<SkBitmap> bitmaps = {bitmap};
-  std::vector<unsigned char> png_bytes;
-  ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_bytes));
+  std::optional<std::vector<uint8_t>> png_bytes =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
 
   // Setup
   {
@@ -2668,8 +2669,9 @@ TEST_F(HistoryBackendTest, FaviconChangedNotificationIconMappingChanged) {
   ClearBroadcastedNotifications();
 
   // MergeFavicon()
-  backend_->MergeFavicon(page_url1, icon_url1, IconType::kFavicon,
-                         new base::RefCountedBytes(png_bytes), kSmallSize);
+  backend_->MergeFavicon(
+      page_url1, icon_url1, IconType::kFavicon,
+      new base::RefCountedBytes(std::move(png_bytes).value()), kSmallSize);
   EXPECT_THAT(favicon_changed_notifications_page_urls(),
               ElementsAre(page_url1));
   EXPECT_EQ(0u, favicon_changed_notifications_icon_urls().size());
@@ -2698,9 +2700,6 @@ TEST_F(HistoryBackendTest,
   GURL icon_url("http://www.google.com/favicon.ico");
 
   SkBitmap bitmap = gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE);
-  std::vector<unsigned char> png_bytes;
-  ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_bytes));
-
   // Setup
   {
     std::vector<SkBitmap> bitmaps = {bitmap};
@@ -2833,8 +2832,8 @@ TEST_F(HistoryBackendTest, NoFaviconChangedNotifications) {
 
   SkBitmap bitmap = gfx::test::CreateBitmap(kSmallEdgeSize, SK_ColorBLUE);
   std::vector<SkBitmap> bitmaps = {bitmap};
-  std::vector<unsigned char> png_bytes;
-  ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_bytes));
+  std::optional<std::vector<uint8_t>> png_bytes =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
 
   // Setup
   backend_->SetFavicons({page_url}, IconType::kFavicon, icon_url, bitmaps);
@@ -2844,8 +2843,9 @@ TEST_F(HistoryBackendTest, NoFaviconChangedNotifications) {
   backend_->SetFavicons({page_url}, IconType::kFavicon, icon_url, bitmaps);
 
   // MergeFavicon()
-  backend_->MergeFavicon(page_url, icon_url, IconType::kFavicon,
-                         new base::RefCountedBytes(png_bytes), kSmallSize);
+  backend_->MergeFavicon(
+      page_url, icon_url, IconType::kFavicon,
+      new base::RefCountedBytes(std::move(png_bytes).value()), kSmallSize);
 
   // UpdateFaviconMappingsAndFetch()
   {
@@ -3971,7 +3971,8 @@ TEST_F(HistoryBackendTest, AddPageWithContextAnnotations) {
       /*referrer=*/GURL(), RedirectList(), ui::PAGE_TRANSITION_TYPED,
       /*hidden=*/false, SOURCE_BROWSED,
       /*did_replace_entry=*/false, /*consider_for_ntp_most_visited=*/true,
-      /*title=*/std::nullopt, /*top_level_url*/ std::nullopt,
+      /*is_ephemeral=*/false, /*title=*/std::nullopt,
+      /*top_level_url*/ std::nullopt,
       /*opener=*/std::nullopt,
       /*bookmark_id=*/std::nullopt, /*app_id=*/std::nullopt,
       context_annotations);
@@ -5706,6 +5707,7 @@ class HistoryBackendTestForVisitedLinks
                        /*should_increment_typed_count=*/false,
                        /*opener_visit=*/kInvalidVisitID,
                        /*consider_for_ntp_most_visited=*/true,
+                       /*is_ephemeral=*/false,
                        /*local_navigation_id=*/std::nullopt,
                        /*title=*/std::nullopt, top_level_url, frame_url)
         .second;
@@ -5723,7 +5725,7 @@ class HistoryBackendTestForVisitedLinks
                        /*hidden=*/false, SOURCE_BROWSED,
                        /*should_increment_typed_count=*/false,
                        /*opener_visit=*/kInvalidVisitID,
-                       /*consider_for_ntp_most_visited=*/true,
+                       /*consider_for_ntp_most_visited=*/true, is_ephemeral,
                        /*local_navigation_id=*/std::nullopt,
                        /*title=*/std::nullopt, top_level_url, frame_url,
                        /*app_id=*/std::nullopt,
@@ -5732,7 +5734,7 @@ class HistoryBackendTestForVisitedLinks
                        /*originator_visit_id=*/std::nullopt,
                        /*originator_referring_visit=*/std::nullopt,
                        /*originator_opener_visit=*/std::nullopt,
-                       /*is_known_to_sync=*/false, is_ephemeral)
+                       /*is_known_to_sync=*/false)
         .second;
   }
 
@@ -5904,7 +5906,7 @@ TEST_P(HistoryBackendTestForVisitedLinks, AddWholeRedirectChain) {
       std::nullopt, frame_url,
       /*redirects=*/{server_redirect_url, client_redirect_url},
       ui::PAGE_TRANSITION_LINK, false, SOURCE_BROWSED, false, true,
-      std::nullopt, top_level_url);
+      /*is_ephemeral=*/false, std::nullopt, top_level_url);
   backend_->AddPage(request);
 
   VisitVector visits;
@@ -6074,11 +6076,11 @@ TEST_P(HistoryBackendTestForVisitedLinks, NotifyVisitedLinksAdded) {
   const GURL top_level_url("https://local2.url");
   const GURL frame_url("https://local3.url");
   const ContextID context_id1 = 1;
-  HistoryAddPageArgs request(link_url, base::Time::Now() - base::Seconds(1),
-                             context_id1, 0, std::nullopt, frame_url,
-                             /*redirects=*/{}, link_transition_, false,
-                             SOURCE_BROWSED, false, true, std::nullopt,
-                             top_level_url);
+  HistoryAddPageArgs request(
+      link_url, base::Time::Now() - base::Seconds(1), context_id1, 0,
+      std::nullopt, frame_url,
+      /*redirects=*/{}, link_transition_, false, SOURCE_BROWSED, false, true,
+      /*is_ephemeral=*/false, std::nullopt, top_level_url);
 
   // Notify the HistoryBackend of our mock navigation.
   backend_->AddPage(request);

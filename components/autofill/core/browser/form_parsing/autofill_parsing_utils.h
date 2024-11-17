@@ -58,7 +58,12 @@ enum class RegexFeature : uint8_t {
   // features are added and removed.
   kUnusedDummyFeature = 0,
   kAutofillGreekRegexes = 1,
-  kMaxValue = kAutofillGreekRegexes
+  kAutofillUseITAddressModel = 2,
+  kAutofillUsePLAddressModel = 3,
+  kAutofillUseFRAddressModel = 4,
+  kAutofillSupportPhoneticNameForJP = 5,
+  kAutofillUseNLAddressModel = 6,
+  kMaxValue = kAutofillUseNLAddressModel
 };
 
 // Returns a `DenseSet` containing all `RegexFeature`s whose corresponding

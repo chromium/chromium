@@ -439,10 +439,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   // ExecutionContext subclasses are usually the V8 global object, which means
   // they are also a ScriptWrappable. This casts the ExecutionContext to a
   // ScriptWrappable if possible.
-  virtual ScriptWrappable* ToScriptWrappable() {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  virtual ScriptWrappable* ToScriptWrappable() { NOTREACHED(); }
 
   bool has_filed_shared_array_buffer_creation_issue() const {
     return has_filed_shared_array_buffer_creation_issue_;

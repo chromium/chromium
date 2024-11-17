@@ -44,7 +44,7 @@ public class AutofillImageFetcher {
      * Fetches images for the passed in URLs and stores them in cache.
      *
      * @param urls The URLs to fetch the images.
-     * @param imageSize The list of image sizes that should be fetched for each of the above URLs.
+     * @param imageSizes The list of image sizes that should be fetched for each of the above URLs.
      */
     @CalledByNative
     void prefetchImages(

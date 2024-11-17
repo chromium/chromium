@@ -31,6 +31,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -60,7 +61,7 @@ import java.util.concurrent.TimeoutException;
 public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
 
     /** Custom mock for TrainingInfo. */
-    class FakeTrainingInfo extends TrainingInfo {
+    static class FakeTrainingInfo extends TrainingInfo {
         public String recordHistory = "";
 
         FakeTrainingInfo(SuggestionEntry entry, long requestId) {
@@ -131,8 +132,8 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
                             ++mReloadSessionCounter;
                             mReloadSessionCallbackHelper.notifyCalled();
                         },
-                        /* statusChangedCallback= */ () -> {},
-                        /* seeMoreLinkClickCallback= */ () -> {},
+                        /* statusChangedCallback= */ CallbackUtils.emptyRunnable(),
+                        /* seeMoreLinkClickCallback= */ CallbackUtils.emptyRunnable(),
                         /* suggestionClickCallback= */ mClickCallback);
         mMediator.startSession(mDataProvider);
 
@@ -526,7 +527,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupportExtended {
             shadowOf(getMainLooper()).idle();
             mReloadSessionCallbackHelper.waitForNext();
         } catch (TimeoutException e) {
-            Assert.fail("Timed out waiting for reload callback.");
+            throw new AssertionError("Timed out waiting for reload callback.", e);
         }
         Assert.assertEquals(1, mReloadSessionCounter);
 

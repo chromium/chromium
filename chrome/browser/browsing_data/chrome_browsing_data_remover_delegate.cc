@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/barrier_closure.h"
+#include "base/check_deref.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -41,8 +42,8 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/crash_upload_list/crash_upload_list.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
-#include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/dips/dips_service_factory.h"
+#include "chrome/browser/dips/chrome_dips_delegate.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/downgrade/user_data_downgrade.h"
@@ -74,6 +75,7 @@
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/verdict_cache_manager_factory.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/share/share_history.h"
 #include "chrome/browser/share/share_ranking.h"
@@ -131,6 +133,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/gaia_id_hash.h"
@@ -148,6 +151,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browsing_data_filter_builder.h"
+#include "content/public/browser/dips_delegate.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "content/public/browser/prefetch_service_delegate.h"
@@ -184,7 +188,7 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
-#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
+#include "chrome/browser/user_education/browser_user_education_storage_service.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -195,10 +199,13 @@
 #include "content/public/browser/storage_partition_config.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/activity_log/activity_log.h"
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/activity_log/activity_log.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -251,7 +258,7 @@ bool DoesOriginMatchEmbedderMask(uint64_t origin_type_mask,
       << "|origin_type_mask| can only contain origin types defined in "
       << "the embedder.";
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   // Packaged apps and extensions match iff EXTENSION.
   if ((origin.scheme() == extensions::kExtensionScheme) &&
       (origin_type_mask & constants::ORIGIN_TYPE_EXTENSION)) {
@@ -276,7 +283,8 @@ ChromeBrowsingDataRemoverDelegate::ChromeBrowsingDataRemoverDelegate(
       webapp_registry_(std::make_unique<WebappRegistry>())
 #endif
       ,
-      credential_store_(MakeCredentialStore()) {
+      credential_store_(MakeCredentialStore()),
+      dips_delegate_(ChromeDipsDelegate::Create()) {
   domain_reliability_clearer_ = base::BindRepeating(
       [](BrowserContext* browser_context,
          content::BrowsingDataFilterBuilder* filter_builder,
@@ -386,7 +394,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     base::RecordAction(
         UserMetricsAction("ClearBrowsingData_MaskContainsProtectedWeb"));
   }
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   if (origin_type_mask & constants::ORIGIN_TYPE_EXTENSION) {
     base::RecordAction(
         UserMetricsAction("ClearBrowsingData_MaskContainsExtension"));
@@ -397,7 +405,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   static_assert(
       constants::ALL_ORIGIN_TYPES ==
           (content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
            constants::ORIGIN_TYPE_EXTENSION |
 #endif
            content::BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB),
@@ -609,7 +617,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     // Clear any stored User Education session data. Note that we can't clear a
     // specific date range, as this is used for longitudinal metrics reporting,
     // so selectively deleting entries would make the telemetry invalid.
-    BrowserFeaturePromoStorageService::ClearUsageHistory(profile_);
+    BrowserUserEducationStorageService::ClearUsageHistory(profile_);
 #endif
 
     // Cleared for DATA_TYPE_HISTORY, DATA_TYPE_COOKIES and DATA_TYPE_PASSWORDS.
@@ -894,15 +902,19 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
   DIPSEventRemovalType dips_mask = DIPSEventRemovalType::kNone;
   if ((remove_mask & content::BrowsingDataRemover::DATA_TYPE_COOKIES) &&
       !filter_builder->PartitionedCookiesOnly()) {
-    dips_mask |= DIPSEventRemovalType::kStorage;
+    // If there's no delegate, delete everything whenever the user is deleting
+    // cookies.
+    dips_mask |= dips_delegate_ ? DIPSEventRemovalType::kStorage
+                                : DIPSEventRemovalType::kAll;
   }
-  if (remove_mask & constants::DATA_TYPE_HISTORY) {
+  // If there's a delegate, ask it whether to delete DIPS history.
+  if (dips_delegate_ &&
+      dips_delegate_->ShouldDeleteInteractionRecords(remove_mask)) {
     dips_mask |= DIPSEventRemovalType::kHistory;
   }
 
   if (dips_mask != DIPSEventRemovalType::kNone) {
-    auto* dips_service = DIPSServiceFactory::GetForBrowserContext(profile_);
-    if (dips_service) {
+    if (DIPSServiceImpl* dips_service = DIPSServiceImpl::Get(profile_)) {
       dips_service->RemoveEvents(delete_begin_, delete_end_,
                                  filter_builder->BuildNetworkServiceFilter(),
                                  dips_mask);
@@ -1479,6 +1491,28 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
                        });
           });
     }
+  }
+
+  if (remove_mask & constants::DATA_TYPE_SEARCH_ENGINE_CHOICE) {
+    // Clear the search engine choice prefs.
+    // TODO(b/312180262): Consider clearing other Guest preferences as well.
+    // TODO(crbug.com/369959287): Delete the Guest OTR profile object instead of
+    // wiping it.
+
+    search_engines::WipeSearchEngineChoicePrefs(
+        // For Guest profiles, the OTR is the one that gets wiped, but the
+        // choice prefs get set on the parent profile. For other OTR profiles,
+        // we don't want to automatically forward to the original profile, the
+        // choice made is still relevant there. This method is also called for
+        // regular profiles, when they are deleted. We don't really care about
+        // resetting the pref in that case, because the full directory will be
+        // deleted anyway.
+        CHECK_DEREF((profile_->IsGuestSession() ? profile_->GetOriginalProfile()
+                                                : profile_.get())
+                        ->GetPrefs()),
+        search_engines::WipeSearchEngineChoiceReason::kProfileWipe);
+    search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile_)
+        ->ResetState();
   }
 }
 

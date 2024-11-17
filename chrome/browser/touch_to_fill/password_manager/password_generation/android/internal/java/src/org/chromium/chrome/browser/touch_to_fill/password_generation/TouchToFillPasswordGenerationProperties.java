@@ -4,21 +4,21 @@
 
 package org.chromium.chrome.browser.touch_to_fill.password_generation;
 
-import org.chromium.base.Callback;
+import org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.GenerationCallback;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 
 /**
- *  Properties defined here reflect the visible state of the TouchToFillPasswordGeneration
- * component.
+ * Properties defined here reflect the visible state of the TouchToFillPasswordGeneration component.
  */
 class TouchToFillPasswordGenerationProperties {
+
     public static final ReadableObjectPropertyKey<String> ACCOUNT_EMAIL =
             new ReadableObjectPropertyKey<>();
     public static final ReadableObjectPropertyKey<String> GENERATED_PASSWORD =
             new ReadableObjectPropertyKey<>();
 
-    public static final ReadableObjectPropertyKey<Callback<String>> PASSWORD_ACCEPTED_CALLBACK =
+    public static final ReadableObjectPropertyKey<GenerationCallback> PASSWORD_ACCEPTED_CALLBACK =
             new ReadableObjectPropertyKey<>();
 
     public static final ReadableObjectPropertyKey<Runnable> PASSWORD_REJECTED_CALLBACK =

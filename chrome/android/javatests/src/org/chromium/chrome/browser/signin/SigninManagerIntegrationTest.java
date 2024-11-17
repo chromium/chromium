@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
 import org.chromium.components.signin.AccountManagerFacade;
@@ -45,6 +44,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 import java.util.Arrays;
@@ -64,12 +64,6 @@ public class SigninManagerIntegrationTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    private static final String TEST_ACCOUNT1 = "foo@gmail.com";
-    private static final String TEST_ACCOUNT2 = "bar@gmail.com";
-
-    private CoreAccountInfo mTestAccount1;
-    private CoreAccountInfo mTestAccount2;
-
     private IdentityManager mIdentityManager;
     private AccountManagerFacade mAccountManagerFacade;
     private SigninManager mSigninManager;
@@ -78,9 +72,6 @@ public class SigninManagerIntegrationTest {
 
     @Before
     public void setUp() {
-        mTestAccount1 = mSigninTestRule.toCoreAccountInfo(TEST_ACCOUNT1);
-        mTestAccount2 = mSigninTestRule.toCoreAccountInfo(TEST_ACCOUNT2);
-
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -114,7 +105,7 @@ public class SigninManagerIntegrationTest {
     @Test
     @MediumTest
     public void testUpdateAccountListOneAccountsRegisteredAndNoSignedInUser() {
-        mSigninTestRule.addAccount(TEST_ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -128,14 +119,13 @@ public class SigninManagerIntegrationTest {
     @Test
     @MediumTest
     public void testUpdateAccountListOneAccountsRegisteredSignedIn() {
-        mSigninTestRule.addAccount(TEST_ACCOUNT1);
-        SigninTestUtil.signin(mTestAccount1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertArrayEquals(
                             "Signed in: one account should be available",
-                            new CoreAccountInfo[] {mTestAccount1},
+                            new CoreAccountInfo[] {TestAccounts.ACCOUNT1},
                             mIdentityManager.getAccountsWithRefreshTokens());
                 });
     }
@@ -143,25 +133,25 @@ public class SigninManagerIntegrationTest {
     @Test
     @MediumTest
     public void testUpdateAccountListSingleAccountThenAddOne() {
-        mSigninTestRule.addAccount(TEST_ACCOUNT1);
-        SigninTestUtil.signin(mTestAccount1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertArrayEquals(
                             "Signed in and one account available",
-                            new CoreAccountInfo[] {mTestAccount1},
+                            new CoreAccountInfo[] {TestAccounts.ACCOUNT1},
                             mIdentityManager.getAccountsWithRefreshTokens());
                 });
 
         // Add another account.
-        mSigninTestRule.addAccount(TEST_ACCOUNT2);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             "Signed in and two accounts available",
-                            new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
+                            new HashSet<>(
+                                    Arrays.asList(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2)),
                             new HashSet<>(
                                     Arrays.asList(
                                             mIdentityManager.getAccountsWithRefreshTokens())));
@@ -172,27 +162,27 @@ public class SigninManagerIntegrationTest {
     @MediumTest
     public void testUpdateAccountListTwoAccountsThenRemoveOne() {
         // Add accounts.
-        mSigninTestRule.addAccount(TEST_ACCOUNT1);
-        SigninTestUtil.signin(mTestAccount1);
-        mSigninTestRule.addAccount(TEST_ACCOUNT2);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             "Signed in and two accounts available",
-                            new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
+                            new HashSet<>(
+                                    Arrays.asList(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2)),
                             new HashSet<>(
                                     Arrays.asList(
                                             mIdentityManager.getAccountsWithRefreshTokens())));
                 });
 
-        mSigninTestRule.removeAccount(mTestAccount2.getId());
+        mSigninTestRule.removeAccount(TestAccounts.ACCOUNT2.getId());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertArrayEquals(
                             "Only one account available, account2 should not be returned anymore",
-                            new CoreAccountInfo[] {mTestAccount1},
+                            new CoreAccountInfo[] {TestAccounts.ACCOUNT1},
                             mIdentityManager.getAccountsWithRefreshTokens());
                 });
     }
@@ -201,23 +191,23 @@ public class SigninManagerIntegrationTest {
     @MediumTest
     public void testUpdateAccountListTwoAccountsThenRemoveAll() {
         // Add accounts.
-        mSigninTestRule.addAccount(TEST_ACCOUNT1);
-        mSigninTestRule.addAccount(TEST_ACCOUNT2);
-        SigninTestUtil.signin(mTestAccount1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             "Signed in and two accounts available",
-                            new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
+                            new HashSet<>(
+                                    Arrays.asList(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2)),
                             new HashSet<>(
                                     Arrays.asList(
                                             mIdentityManager.getAccountsWithRefreshTokens())));
                 });
 
         // Remove all.
-        mSigninTestRule.removeAccount(mTestAccount1.getId());
-        mSigninTestRule.removeAccount(mTestAccount2.getId());
+        mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+        mSigninTestRule.removeAccount(TestAccounts.ACCOUNT2.getId());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -232,23 +222,23 @@ public class SigninManagerIntegrationTest {
     @MediumTest
     public void testUpdateAccountListTwoAccountsThenRemoveAllSignOut() {
         // Add accounts.
-        mSigninTestRule.addAccount(TEST_ACCOUNT1);
-        mSigninTestRule.addAccount(TEST_ACCOUNT2);
-        SigninTestUtil.signin(mTestAccount1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             "Signed in and two accounts available",
-                            new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
+                            new HashSet<>(
+                                    Arrays.asList(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2)),
                             new HashSet<>(
                                     Arrays.asList(
                                             mIdentityManager.getAccountsWithRefreshTokens())));
                 });
 
         mSigninTestRule.signOut();
-        mSigninTestRule.removeAccount(mTestAccount1.getId());
-        mSigninTestRule.removeAccount(mTestAccount2.getId());
+        mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
+        mSigninTestRule.removeAccount(TestAccounts.ACCOUNT2.getId());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -263,15 +253,15 @@ public class SigninManagerIntegrationTest {
     @MediumTest
     public void testUpdateAccountListTwoAccountsRegisteredAndOneSignedIn() {
         // Add accounts.
-        mSigninTestRule.addAccount(TEST_ACCOUNT1);
-        mSigninTestRule.addAccount(TEST_ACCOUNT2);
-        SigninTestUtil.signin(mTestAccount1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT2);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertEquals(
                             "Signed in and two accounts available",
-                            new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
+                            new HashSet<>(
+                                    Arrays.asList(TestAccounts.ACCOUNT1, TestAccounts.ACCOUNT2)),
                             new HashSet<>(
                                     Arrays.asList(
                                             mIdentityManager.getAccountsWithRefreshTokens())));
@@ -282,17 +272,17 @@ public class SigninManagerIntegrationTest {
     @MediumTest
     @DisableFeatures(SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF)
     public void testPrimaryAccountRemoval_signsOut() {
-        mSigninTestRule.addAccount(TEST_ACCOUNT1);
-        SigninTestUtil.signinAndEnableSync(mTestAccount1, null);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        SigninTestUtil.signinAndEnableSync(TestAccounts.ACCOUNT1, /* syncService= */ null);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
                             SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail(),
-                            mTestAccount1.getEmail());
+                            TestAccounts.ACCOUNT1.getEmail());
                 });
 
-        mSigninTestRule.removeAccount(mTestAccount1.getId());
+        mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -306,20 +296,21 @@ public class SigninManagerIntegrationTest {
     @MediumTest
     @DisableFeatures(SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF)
     public void testPrimaryAccountRenaming_updatesLegacySyncAccountEmail() {
-        mSigninTestRule.addAccount(TEST_ACCOUNT1);
-        SigninTestUtil.signinAndEnableSync(mTestAccount1, null);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        SigninTestUtil.signinAndEnableSync(TestAccounts.ACCOUNT1, /* syncService= */ null);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
                             SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail(),
-                            mTestAccount1.getEmail());
+                            TestAccounts.ACCOUNT1.getEmail());
                 });
 
         AccountInfo renamedAccount =
-                new AccountInfo.Builder("renamed@gmail.com", mTestAccount1.getGaiaId()).build();
+                new AccountInfo.Builder("renamed@gmail.com", TestAccounts.ACCOUNT1.getGaiaId())
+                        .build();
         try (var ignored = mSigninTestRule.blockGetCoreAccountInfosUpdate(true)) {
-            mSigninTestRule.removeAccount(mTestAccount1.getId());
+            mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
             mSigninTestRule.addAccount(renamedAccount);
         }
 
@@ -338,13 +329,13 @@ public class SigninManagerIntegrationTest {
     @MediumTest
     @EnableFeatures({SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF})
     public void testSignInAndSignOut_updateLegacySyncAccountEmail() {
-        mSigninTestRule.addAccountThenSignin(SigninTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
                             SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail(),
-                            SigninTestRule.TEST_ACCOUNT_1.getEmail());
+                            TestAccounts.ACCOUNT1.getEmail());
                 });
 
         mSigninTestRule.signOut();
@@ -360,22 +351,21 @@ public class SigninManagerIntegrationTest {
     @MediumTest
     @EnableFeatures({SigninFeatures.USE_CONSENT_LEVEL_SIGNIN_FOR_LEGACY_ACCOUNT_EMAIL_PREF})
     public void testPrimaryAccountRenaming_updatesLegacySyncAccountEmail_whenSignedIn() {
-        mSigninTestRule.addAccountThenSignin(SigninTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     assertEquals(
                             SigninPreferencesManager.getInstance().getLegacyPrimaryAccountEmail(),
-                            SigninTestRule.TEST_ACCOUNT_1.getEmail());
+                            TestAccounts.ACCOUNT1.getEmail());
                 });
 
         AccountInfo renamedAccount =
-                new AccountInfo.Builder(
-                                "renamed@gmail.com", SigninTestRule.TEST_ACCOUNT_1.getGaiaId())
+                new AccountInfo.Builder("renamed@gmail.com", TestAccounts.ACCOUNT1.getGaiaId())
                         .build();
 
         try (var ignored = mSigninTestRule.blockGetCoreAccountInfosUpdate(true)) {
-            mSigninTestRule.removeAccount(SigninTestRule.TEST_ACCOUNT_1.getId());
+            mSigninTestRule.removeAccount(TestAccounts.ACCOUNT1.getId());
             mSigninTestRule.addAccount(renamedAccount);
         }
 
@@ -464,8 +454,8 @@ public class SigninManagerIntegrationTest {
     @Test
     @MediumTest
     public void testSignInWithoutSync_waitForPrefCommit() {
-        CoreAccountInfo coreAccountInfo = mSigninTestRule.addAccount(TEST_ACCOUNT1);
-        SigninTestUtil.signinAndWaitForPrefsCommit(coreAccountInfo);
+        mSigninTestRule.addAccount(TestAccounts.ACCOUNT1);
+        SigninTestUtil.signinAndWaitForPrefsCommit(TestAccounts.ACCOUNT1);
 
         Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
         verify(mSignInStateObserverMock, timeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL).times(1))
@@ -477,7 +467,7 @@ public class SigninManagerIntegrationTest {
     public void testSignoutWhenAccountsNotAvailable() {
         HistogramWatcher signoutWatcher =
                 HistogramWatcher.newSingleRecordWatcher("Signin.SignOut.Completed");
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         // Blocks updated the accounts list and ensures that {@link #getCoreAccountInfos} returns an
         // unfulfilled promise.
         FakeAccountManagerFacade.UpdateBlocker blocker =
@@ -488,7 +478,7 @@ public class SigninManagerIntegrationTest {
                     Assert.assertTrue(mIdentityManager.hasPrimaryAccount(ConsentLevel.SIGNIN));
                     Assert.assertFalse(mAccountManagerFacade.getCoreAccountInfos().isFulfilled());
                     Assert.assertEquals(
-                            List.of(AccountManagerTestRule.TEST_ACCOUNT_1),
+                            List.of(TestAccounts.ACCOUNT1),
                             Arrays.asList(mIdentityManager.getAccountsWithRefreshTokens()));
 
                     // Sign-out should be allowed even if the list of accounts isn't available yet.

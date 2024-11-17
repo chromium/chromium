@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_rule_list.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/css_starting_style_rule.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
@@ -41,6 +42,7 @@
 #include "third_party/blink/renderer/core/inspector/protocol/css.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "third_party/blink/renderer/platform/heap/weak_cell.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -66,6 +68,7 @@ class Element;
 class FontCustomPlatformData;
 class FontFace;
 class InspectedFrames;
+class InspectorGhostRules;
 class InspectorNetworkAgent;
 class InspectorResourceContainer;
 class InspectorResourceContentLoader;
@@ -271,6 +274,8 @@ class CORE_EXPORT InspectorCSSAgent final
   protocol::Response stopRuleUsageTracking(
       std::unique_ptr<protocol::Array<protocol::CSS::RuleUsage>>* result)
       override;
+  protocol::Response trackComputedStyleUpdatesForNode(
+      protocol::Maybe<int> node_id) override;
   protocol::Response trackComputedStyleUpdates(
       std::unique_ptr<protocol::Array<protocol::CSS::CSSComputedStyleProperty>>
           properties_to_track) override;
@@ -399,6 +404,7 @@ class CORE_EXPORT InspectorCSSAgent final
   BuildArrayForMatchedRuleList(
       RuleIndexList*,
       Element*,
+      const InspectorGhostRules&,
       PseudoId pseudo_id = kPseudoIdNone,
       const AtomicString& pseudo_argument = g_null_atom);
   std::unique_ptr<protocol::CSS::CSSStyle> BuildObjectForAttributesStyle(
@@ -434,6 +440,14 @@ class CORE_EXPORT InspectorCSSAgent final
                              protocol::Array<protocol::CSS::CSSLayer>*,
                              protocol::Array<protocol::CSS::CSSRuleType>*);
 
+  // Starting Style at-rule implementation
+  std::unique_ptr<protocol::CSS::CSSStartingStyle> BuildStartingStyleObject(
+      CSSStartingStyleRule* rule);
+  void CollectStartingStylesFromRule(
+      CSSRule*,
+      protocol::Array<protocol::CSS::CSSStartingStyle>*,
+      protocol::Array<protocol::CSS::CSSRuleType>*);
+
   void FillAncestorData(CSSRule* rule, protocol::CSS::CSSRule* result);
 
   // Scope at-rule implementation
@@ -454,6 +468,8 @@ class CORE_EXPORT InspectorCSSAgent final
 
   void IncrementFocusedCountForAncestors(Element*);
   void DecrementFocusedCountForAncestors(Element*);
+
+  void NotifyComputedStyleUpdatedForNode(int node_id);
 
   Member<InspectorDOMAgent> dom_agent_;
   Member<InspectedFrames> inspected_frames_;
@@ -496,6 +512,19 @@ class CORE_EXPORT InspectorCSSAgent final
   std::unique_ptr<TakeComputedStyleUpdatesCallback>
       computed_style_updated_callback_;
   HashSet<int> computed_style_updated_node_ids_;
+
+  // Keeps track of the node ids that has an active
+  // computedStyleUpdatedForNode task
+  HashSet<int> notify_computed_style_updated_node_ids_;
+  WeakCellFactory<InspectorCSSAgent> weak_factory_{this};
+
+  // True while InspectorGhostRules is modifying a stylesheet. We don't
+  // need to respond to such mutations, because we're guaranteed to undo them.
+  bool ignore_stylesheet_mutation_ = false;
+
+  // Node to be tracked for `ComputedStyleUpdated` events.
+  // This is set via `trackComputedStyleUpdatesForNode` call.
+  std::optional<int> node_id_for_computed_style_updated_events_;
 
   friend class InspectorResourceContentLoaderCallback;
   friend class StyleSheetBinder;

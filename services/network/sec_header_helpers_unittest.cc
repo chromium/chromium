@@ -4,7 +4,10 @@
 
 #include "services/network/sec_header_helpers.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "net/cookies/cookie_util.h"
+#include "net/http/http_request_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
@@ -14,6 +17,7 @@
 #include "services/network/public/mojom/cors_origin_pattern.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "url/gurl.h"
@@ -29,6 +33,7 @@ constexpr char kKnownSecFetchSiteHeader[] = "Sec-Fetch-Site";
 constexpr char kKnownSecFetchModeHeader[] = "Sec-Fetch-Mode";
 constexpr char kKnownSecFetchUserHeader[] = "Sec-Fetch-User";
 constexpr char kKnownSecFetchDestHeader[] = "Sec-Fetch-Dest";
+constexpr char kKnownSecFetchStorageAccessHeader[] = "Sec-Fetch-Storage-Access";
 constexpr char kOtherSecHeader[] = "sec-other-info-header";
 constexpr char kOtherHeader[] = "Other-Header";
 
@@ -37,6 +42,8 @@ constexpr char kHeaderValue[] = "testdata";
 }  // namespace
 
 namespace network {
+
+using testing::UnorderedElementsAreArray;
 
 class SecHeaderHelpersTest : public PlatformTest {
  public:
@@ -82,18 +89,14 @@ TEST_F(SecHeaderHelpersTest, SecHeadersRemovedOnDowngrade) {
                                     .size()));
 
   MaybeRemoveSecHeaders(current_url_request, GURL(kInsecureSite));
-  ASSERT_EQ(2, static_cast<int>(current_url_request->extra_request_headers()
-                                    .GetHeaderVector()
-                                    .size()));
 
-  ASSERT_FALSE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecChHeader));
-  ASSERT_FALSE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchSiteHeader));
-  ASSERT_TRUE(
-      current_url_request->extra_request_headers().GetHeader(kOtherSecHeader));
-  ASSERT_TRUE(
-      current_url_request->extra_request_headers().GetHeader(kOtherHeader));
+  EXPECT_THAT(current_url_request->extra_request_headers().GetHeaderVector(),
+              UnorderedElementsAreArray({
+                  net::HttpRequestHeaders::HeaderKeyValuePair{kOtherSecHeader,
+                                                              kHeaderValue},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{kOtherHeader,
+                                                              kHeaderValue},
+              }));
 }
 
 // Validate that if no downgrade occurs any Sec- prefixed headers remain on the
@@ -116,18 +119,19 @@ TEST_F(SecHeaderHelpersTest, SecHeadersRemainOnSecureRedirect) {
                                     .GetHeaderVector()
                                     .size()));
 
-  ASSERT_EQ(4, static_cast<int>(current_url_request->extra_request_headers()
-                                    .GetHeaderVector()
-                                    .size()));
+  MaybeRemoveSecHeaders(current_url_request, GURL(kSecureSite));
 
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecChHeader));
-  ASSERT_TRUE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchSiteHeader));
-  ASSERT_TRUE(
-      current_url_request->extra_request_headers().GetHeader(kOtherSecHeader));
-  ASSERT_TRUE(
-      current_url_request->extra_request_headers().GetHeader(kOtherHeader));
+  EXPECT_THAT(current_url_request->extra_request_headers().GetHeaderVector(),
+              UnorderedElementsAreArray({
+                  net::HttpRequestHeaders::HeaderKeyValuePair{kKnownSecChHeader,
+                                                              kHeaderValue},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchSiteHeader, kHeaderValue},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{kOtherSecHeader,
+                                                              kHeaderValue},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{kOtherHeader,
+                                                              kHeaderValue},
+              }));
 }
 
 // Validate that if Sec- headers exist as the first or last entries we properly
@@ -148,22 +152,20 @@ TEST_F(SecHeaderHelpersTest, SecHeadersRemoveFirstLast) {
                                     .size()));
 
   MaybeRemoveSecHeaders(current_url_request, GURL(kInsecureSite));
-  ASSERT_EQ(1, static_cast<int>(current_url_request->extra_request_headers()
-                                    .GetHeaderVector()
-                                    .size()));
 
-  ASSERT_FALSE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecFetchSiteHeader));
-  ASSERT_TRUE(
-      current_url_request->extra_request_headers().GetHeader(kOtherHeader));
-  ASSERT_FALSE(current_url_request->extra_request_headers().GetHeader(
-      kKnownSecChHeader));
+  EXPECT_THAT(current_url_request->extra_request_headers().GetHeaderVector(),
+              UnorderedElementsAreArray({
+                  net::HttpRequestHeaders::HeaderKeyValuePair{kOtherHeader,
+                                                              kHeaderValue},
+              }));
 }
 
 // Validate Sec-Fetch-Site and Sec-Fetch-Mode are set correctly with
 // unprivileged requests from chrome extension background page.
 TEST_F(SecHeaderHelpersTest, UnprivilegedRequestOnExtension) {
   net::URLRequest* current_url_request = url_request();
+  url_request()->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kNone);
   GURL url = GURL(kSecureSite);
 
   network::mojom::URLLoaderFactoryParams params;
@@ -171,31 +173,30 @@ TEST_F(SecHeaderHelpersTest, UnprivilegedRequestOnExtension) {
 
   cors::OriginAccessList origin_access_list;  // empty in this test
 
-  SetFetchMetadataHeaders(current_url_request,
-                          network::mojom::RequestMode::kCors, false,
-                          network::mojom::RequestDestination::kIframe, &url,
-                          params, origin_access_list);
-  ASSERT_EQ(3, static_cast<int>(current_url_request->extra_request_headers()
-                                    .GetHeaderVector()
-                                    .size()));
+  SetFetchMetadataHeaders(
+      current_url_request, network::mojom::RequestMode::kCors, false,
+      network::mojom::RequestDestination::kIframe, &url, params,
+      origin_access_list, mojom::CredentialsMode::kInclude);
 
-  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
-                kKnownSecFetchSiteHeader),
-            "cross-site");
-
-  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
-                kKnownSecFetchModeHeader),
-            "cors");
-
-  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
-                kKnownSecFetchDestHeader),
-            "iframe");
+  EXPECT_THAT(current_url_request->extra_request_headers().GetHeaderVector(),
+              UnorderedElementsAreArray({
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchSiteHeader, "cross-site"},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchModeHeader, "cors"},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchDestHeader, "iframe"},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchStorageAccessHeader, "none"},
+              }));
 }
 
 // Validate Sec-Fetch-Site and Sec-Fetch-Mode are set correctly with privileged
 // requests from chrome extension background page.
 TEST_F(SecHeaderHelpersTest, PrivilegedRequestOnExtension) {
   net::URLRequest* current_url_request = url_request();
+  current_url_request->set_storage_access_status(
+      net::cookie_util::StorageAccessStatus::kNone);
   GURL url = GURL(kSecureSite);
 
   network::mojom::URLLoaderFactoryParams params;
@@ -211,30 +212,144 @@ TEST_F(SecHeaderHelpersTest, PrivilegedRequestOnExtension) {
       mojom::CorsPortMatchMode::kAllowAnyPort,
       mojom::CorsOriginAccessMatchPriority::kDefaultPriority);
 
-  SetFetchMetadataHeaders(current_url_request,
-                          network::mojom::RequestMode::kCors, true,
-                          network::mojom::RequestDestination::kEmbed, &url,
-                          params, origin_access_list);
+  SetFetchMetadataHeaders(
+      current_url_request, network::mojom::RequestMode::kCors, true,
+      network::mojom::RequestDestination::kEmbed, &url, params,
+      origin_access_list, mojom::CredentialsMode::kInclude);
 
-  ASSERT_EQ(4, static_cast<int>(current_url_request->extra_request_headers()
-                                    .GetHeaderVector()
-                                    .size()));
-
-  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
-                kKnownSecFetchSiteHeader),
-            "none");
-
-  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
-                kKnownSecFetchModeHeader),
-            "cors");
-
-  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
-                kKnownSecFetchUserHeader),
-            "?1");
-
-  ASSERT_EQ(current_url_request->extra_request_headers().GetHeader(
-                kKnownSecFetchDestHeader),
-            "embed");
+  EXPECT_THAT(current_url_request->extra_request_headers().GetHeaderVector(),
+              UnorderedElementsAreArray({
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchSiteHeader, "none"},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchModeHeader, "cors"},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchUserHeader, "?1"},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchDestHeader, "embed"},
+                  net::HttpRequestHeaders::HeaderKeyValuePair{
+                      kKnownSecFetchStorageAccessHeader, "none"},
+              }));
 }
+
+struct StorageAccessTestData {
+  std::optional<net::cookie_util::StorageAccessStatus> status;
+  mojom::CredentialsMode credentials_mode;
+  std::optional<std::string> expected_value;
+  net::cookie_util::SecFetchStorageAccessOutcome expected_sample;
+};
+
+class StorageAccessSecHeaderHelpersTest
+    : public SecHeaderHelpersTest,
+      public testing::WithParamInterface<StorageAccessTestData> {};
+
+TEST_P(StorageAccessSecHeaderHelpersTest, Serialization) {
+  const StorageAccessTestData& test_data = GetParam();
+  net::URLRequest* current_url_request = url_request();
+  url_request()->set_storage_access_status(test_data.status);
+  GURL url = GURL(kSecureSite);
+
+  base::HistogramTester histogram_tester;
+  SetFetchMetadataHeaders(
+      current_url_request, network::mojom::RequestMode::kCors,
+      /*has_user_activation=*/false,
+      network::mojom::RequestDestination::kIframe, &url, {},
+      /*origin_access_list=*/{}, test_data.credentials_mode);
+
+  EXPECT_EQ(current_url_request->extra_request_headers().GetHeader(
+                kKnownSecFetchStorageAccessHeader),
+            test_data.expected_value);
+  histogram_tester.ExpectUniqueSample(
+      "API.StorageAccessHeader.SecFetchStorageAccessOutcome",
+      /*sample=*/
+      test_data.expected_sample,
+      /*expected_bucket_count=*/1);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    StorageAccessSecHeaderHelpersTest,
+    testing::Values(
+        StorageAccessTestData{
+            std::nullopt,
+            mojom::CredentialsMode::kOmit,
+            std::nullopt,
+            net::cookie_util::SecFetchStorageAccessOutcome::
+                kOmittedStatusMissing,
+        },
+        StorageAccessTestData{
+            std::nullopt,
+            mojom::CredentialsMode::kSameOrigin,
+            std::nullopt,
+            net::cookie_util::SecFetchStorageAccessOutcome::
+                kOmittedStatusMissing,
+        },
+        StorageAccessTestData{
+            std::nullopt,
+            mojom::CredentialsMode::kInclude,
+            std::nullopt,
+            net::cookie_util::SecFetchStorageAccessOutcome::
+                kOmittedStatusMissing,
+        },
+        StorageAccessTestData{
+            net::cookie_util::StorageAccessStatus::kNone,
+            mojom::CredentialsMode::kOmit,
+            std::nullopt,
+            net::cookie_util::SecFetchStorageAccessOutcome::
+                kOmittedRequestOmitsCredentials,
+        },
+        StorageAccessTestData{
+            net::cookie_util::StorageAccessStatus::kNone,
+            mojom::CredentialsMode::kSameOrigin,
+            std::nullopt,
+            net::cookie_util::SecFetchStorageAccessOutcome::
+                kOmittedRequestOmitsCredentials,
+        },
+        StorageAccessTestData{
+            net::cookie_util::StorageAccessStatus::kNone,
+            mojom::CredentialsMode::kInclude,
+            "none",
+            net::cookie_util::SecFetchStorageAccessOutcome::kValueNone,
+        },
+        StorageAccessTestData{
+            net::cookie_util::StorageAccessStatus::kInactive,
+            mojom::CredentialsMode::kOmit,
+            std::nullopt,
+            net::cookie_util::SecFetchStorageAccessOutcome::
+                kOmittedRequestOmitsCredentials,
+        },
+        StorageAccessTestData{
+            net::cookie_util::StorageAccessStatus::kInactive,
+            mojom::CredentialsMode::kSameOrigin,
+            std::nullopt,
+            net::cookie_util::SecFetchStorageAccessOutcome::
+                kOmittedRequestOmitsCredentials,
+        },
+        StorageAccessTestData{
+            net::cookie_util::StorageAccessStatus::kInactive,
+            mojom::CredentialsMode::kInclude,
+            "inactive",
+            net::cookie_util::SecFetchStorageAccessOutcome::kValueInactive,
+        },
+        StorageAccessTestData{
+            net::cookie_util::StorageAccessStatus::kActive,
+            mojom::CredentialsMode::kOmit,
+            std::nullopt,
+            net::cookie_util::SecFetchStorageAccessOutcome::
+                kOmittedRequestOmitsCredentials,
+        },
+        StorageAccessTestData{
+            net::cookie_util::StorageAccessStatus::kActive,
+            mojom::CredentialsMode::kSameOrigin,
+            std::nullopt,
+            net::cookie_util::SecFetchStorageAccessOutcome::
+                kOmittedRequestOmitsCredentials,
+        },
+        StorageAccessTestData{
+            net::cookie_util::StorageAccessStatus::kActive,
+            mojom::CredentialsMode::kInclude,
+            "active",
+            net::cookie_util::SecFetchStorageAccessOutcome::kValueActive,
+        }));
 
 }  // namespace network

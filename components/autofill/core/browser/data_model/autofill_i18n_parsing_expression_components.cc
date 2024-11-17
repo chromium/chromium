@@ -62,7 +62,7 @@ std::optional<base::flat_map<std::string, std::string>> ParseUsingRegex(
     matches.emplace_back(parsed_name, results[index - 1]);
   }
 
-  return base::MakeFlatMap<std::string, std::string>(std::move(matches));
+  return base::flat_map<std::string, std::string>(std::move(matches));
 }
 
 // Check that the condition regex is matched if exist.

@@ -24,7 +24,7 @@ static_library("fatal_crash") {
     "//ash",
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/ash/policy/reporting/event_based_logs",
+    "//chrome/browser/ash/policy/reporting/event_based_logs:utils",
     "//chrome/browser/ash/policy/reporting/event_based_logs/event_observers",
     "//chromeos/ash/services/cros_healthd/public/cpp",
     "//chromeos/ash/services/cros_healthd/public/mojom",

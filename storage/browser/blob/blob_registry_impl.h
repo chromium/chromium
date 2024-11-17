@@ -64,9 +64,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
       mojo::PendingAssociatedRemote<blink::mojom::ProgressClient>
           progress_client,
       RegisterFromStreamCallback callback) override;
-  void GetBlobFromUUID(mojo::PendingReceiver<blink::mojom::Blob> blob,
-                       const std::string& uuid,
-                       GetBlobFromUUIDCallback callback) override;
 
   size_t BlobsUnderConstructionForTesting() const {
     return blobs_under_construction_.size();

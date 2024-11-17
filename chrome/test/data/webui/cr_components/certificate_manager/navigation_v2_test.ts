@@ -46,6 +46,7 @@ suite('NavigationV2Test', () => {
     checkPathAndParsing(Page.ADMIN_CERTS);
     checkPathAndParsing(Page.PLATFORM_CERTS);
     checkPathAndParsing(Page.PLATFORM_CLIENT_CERTS);
+    checkPathAndParsing(Page.USER_CERTS);
   });
 
   test('navigating notifies observers', function() {

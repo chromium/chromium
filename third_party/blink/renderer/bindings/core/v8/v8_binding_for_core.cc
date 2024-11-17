@@ -736,6 +736,7 @@ v8::Local<v8::Context> ToV8ContextEvenIfDetached(LocalFrame* frame,
   // introduced due to crbug.com/1037985 .  Remove this temporary fix once
   // the root cause is fixed.
   if (!frame->IsDetached() && frame->IsProvisional()) {
+    DCHECK(false);
     base::debug::DumpWithoutCrashing();
     return v8::Local<v8::Context>();
   }
@@ -751,6 +752,7 @@ v8::Local<v8::Context> ToV8ContextMaybeEmpty(LocalFrame* frame,
   // introduced due to crbug.com/1037985 .  Remove this temporary fix once
   // the root cause is fixed.
   if (frame->IsProvisional()) {
+    DCHECK(false);
     base::debug::DumpWithoutCrashing();
     return v8::Local<v8::Context>();
   }
@@ -885,21 +887,12 @@ v8::Isolate* ToIsolate(const LocalFrame* frame) {
   return frame->GetWindowProxyManager()->GetIsolate();
 }
 
-v8::Local<v8::Value> FromJSONString(v8::Isolate* isolate,
-                                    v8::Local<v8::Context> context,
-                                    const String& stringified_json,
-                                    ExceptionState& exception_state) {
-  TryRethrowScope rethrow_scope(isolate, exception_state);
-  return FromJSONString(isolate, context, stringified_json, rethrow_scope);
-}
-
-v8::Local<v8::Value> FromJSONString(v8::Isolate* isolate,
-                                    v8::Local<v8::Context> context,
-                                    const String& stringified_json,
-                                    TryRethrowScope&) {
+v8::Local<v8::Value> FromJSONString(ScriptState* script_state,
+                                    const String& stringified_json) {
+  auto v8_string = V8String(script_state->GetIsolate(), stringified_json);
   v8::Local<v8::Value> parsed;
-  std::ignore = v8::JSON::Parse(context, V8String(isolate, stringified_json))
-                    .ToLocal(&parsed);
+  std::ignore =
+      v8::JSON::Parse(script_state->GetContext(), v8_string).ToLocal(&parsed);
   return parsed;
 }
 
@@ -961,11 +954,33 @@ bool IsInParallelAlgorithmRunnable(ExecutionContext* execution_context,
 void ApplyContextToException(ScriptState* script_state,
                              v8::Local<v8::Value> exception,
                              const ExceptionContext& exception_context) {
-  v8::Isolate* isolate = script_state->GetIsolate();
-  auto* dom_exception = V8DOMException::ToWrappable(isolate, exception);
-  // TODO(crbug.com/328104148): Support errors besides DOMExceptions.
-  CHECK(dom_exception);
-  dom_exception->AddContextToMessages(exception_context);
+  ApplyContextToException(
+      script_state->GetIsolate(), script_state->GetContext(), exception,
+      exception_context.GetType(), exception_context.GetClassName(),
+      exception_context.GetPropertyName());
+}
+
+void ApplyContextToException(v8::Isolate* isolate,
+                             v8::Local<v8::Context> context,
+                             v8::Local<v8::Value> exception,
+                             v8::ExceptionContext type,
+                             const char* class_name,
+                             const String& property_name) {
+  if (auto* dom_exception = V8DOMException::ToWrappable(isolate, exception)) {
+    dom_exception->AddContextToMessages(type, class_name, property_name);
+  } else if (exception->IsObject()) {
+    v8::TryCatch try_catch(isolate);
+    v8::Local<v8::String> message_key = V8String(isolate, "message");
+    auto exception_object = exception.As<v8::Object>();
+    String updated_message = ExceptionMessages::AddContextToMessage(
+        type, class_name, property_name,
+        ToCoreString(isolate, exception_object->Get(context, message_key)
+                                  .ToLocalChecked()
+                                  ->ToString(context)
+                                  .ToLocalChecked()));
+    std::ignore = exception_object->CreateDataProperty(
+        context, message_key, V8String(isolate, updated_message));
+  }
 }
 
 }  // namespace blink

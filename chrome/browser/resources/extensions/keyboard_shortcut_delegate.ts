@@ -26,3 +26,17 @@ export interface KeyboardShortcutDelegate {
       extensionId: string, commandName: string,
       scope: chrome.developerPrivate.CommandScope): void;
 }
+
+class DummyKeyboardShortcutDelegate implements KeyboardShortcutDelegate {
+  setShortcutHandlingSuspended(_isCapturing: boolean) {}
+  updateExtensionCommandKeybinding(
+      _extensionId: string, _commandName: string, _keybinding: string) {}
+  updateExtensionCommandScope(
+      _extensionId: string, _commandName: string,
+      _scope: chrome.developerPrivate.CommandScope) {}
+}
+
+export function createDummyKeyboardShortcutDelegate():
+    KeyboardShortcutDelegate {
+  return new DummyKeyboardShortcutDelegate();
+}

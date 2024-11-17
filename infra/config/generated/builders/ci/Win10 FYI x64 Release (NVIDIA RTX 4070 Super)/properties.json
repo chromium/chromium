@@ -69,7 +69,8 @@
           "builder": "gpu-fyi-try-win10-nvidia-4070-rel-64",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Win10 FYI x64 Release (NVIDIA RTX 4070 Super)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

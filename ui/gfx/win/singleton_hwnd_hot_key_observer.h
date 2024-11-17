@@ -5,8 +5,8 @@
 #ifndef UI_GFX_WIN_SINGLETON_HWND_HOT_KEY_OBSERVER_H_
 #define UI_GFX_WIN_SINGLETON_HWND_HOT_KEY_OBSERVER_H_
 
+#include "base/component_export.h"
 #include "base/win/windows_types.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
 
 namespace gfx {
@@ -19,7 +19,7 @@ namespace gfx {
 // This class should always be used instead of directly registering hot keys on
 // the SingletonHwnd with a SingletonHwndObserver in order to prevent duplicate
 // hot key IDs.
-class GFX_EXPORT SingletonHwndHotKeyObserver {
+class COMPONENT_EXPORT(GFX) SingletonHwndHotKeyObserver {
  public:
   // Registers a hot key with the given |key_code| and |modifiers| and returns
   // a SingletonHwndHotKeyObserver if successful. Returns null if the hot key

@@ -32,7 +32,7 @@ class MockInputRouter : public InputRouter {
   MockInputRouter(const MockInputRouter&) = delete;
   MockInputRouter& operator=(const MockInputRouter&) = delete;
 
-  ~MockInputRouter() override {}
+  ~MockInputRouter() override = default;
 
   // InputRouter:
   void SendMouseEvent(const MouseEventWithLatencyInfo& mouse_event,

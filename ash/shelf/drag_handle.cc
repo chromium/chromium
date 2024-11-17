@@ -111,8 +111,11 @@ DragHandle::DragHandle(float drag_handle_corner_radius, Shelf* shelf)
 
   Shell::Get()->accessibility_controller()->AddObserver(this);
   shelf_->AddObserver(this);
+  GetViewAccessibility().SetRole(ax::mojom::Role::kPopUpButton);
   OnAccessibilityStatusChanged();
+  UpdateAccessibleName();
   UpdateExpandedCollapsedAccessibleState();
+  UpdateAccessiblePreviousAndNextFocus();
 }
 
 DragHandle::~DragHandle() {
@@ -279,45 +282,6 @@ gfx::Rect DragHandle::GetAnchorBoundsInScreen() const {
   return anchor_bounds;
 }
 
-void DragHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // TODO(b/262424972): Remove unwanted ", window" string from the announcement.
-  Button::GetAccessibleNodeData(node_data);
-  GetViewAccessibility().SetRole(ax::mojom::Role::kPopUpButton);
-
-  std::u16string accessible_name = std::u16string();
-  switch (shelf_->shelf_layout_manager()->hotseat_state()) {
-    case HotseatState::kNone:
-    case HotseatState::kShownClamshell:
-    case HotseatState::kShownHomeLauncher:
-      break;
-    case HotseatState::kHidden:
-      accessible_name = l10n_util::GetStringUTF16(
-          IDS_ASH_DRAG_HANDLE_HOTSEAT_ACCESSIBLE_NAME);
-
-      // When the hotseat is kHidden, the focus traversal should go to the
-      // status area as the next focus and the navigation area as the previous
-      // focus.
-      GetViewAccessibility().SetNextFocus(shelf_->GetStatusAreaWidget());
-      GetViewAccessibility().SetPreviousFocus(
-          shelf_->shelf_widget()->navigation_widget());
-      break;
-    case HotseatState::kExtended:
-      // When the hotseat is kExtended, the focus traversal should go to the
-      // hotseat as both the next and previous focus.
-      GetViewAccessibility().SetNextFocus(shelf_->hotseat_widget());
-      GetViewAccessibility().SetPreviousFocus(shelf_->hotseat_widget());
-
-      // The name should be empty when the hotseat is extended but we cannot
-      // hide it.
-      if (force_show_hotseat_resetter_) {
-        accessible_name = l10n_util::GetStringUTF16(
-            IDS_ASH_DRAG_HANDLE_HOTSEAT_ACCESSIBLE_NAME);
-      }
-      break;
-  }
-  node_data->SetName(accessible_name);
-}
-
 void DragHandle::OnThemeChanged() {
   views::Button::OnThemeChanged();
   layer()->SetColor(
@@ -353,7 +317,9 @@ void DragHandle::OnHotseatStateChanged(HotseatState old_state,
     force_show_hotseat_resetter_.RunAndReset();
   }
 
+  UpdateAccessibleName();
   UpdateExpandedCollapsedAccessibleState();
+  UpdateAccessiblePreviousAndNextFocus();
 }
 
 void DragHandle::OnAccessibilityStatusChanged() {
@@ -376,6 +342,7 @@ void DragHandle::ButtonPressed() {
   // The accessibility focus order depends on the hotseat state, and pressing
   // the drag handle changes the hotseat state. So, send an accessibility
   // notification in order to recompute the focus order.
+  UpdateAccessibleName();
   UpdateExpandedCollapsedAccessibleState();
 }
 
@@ -520,7 +487,7 @@ void DragHandle::StopDragHandleNudgeShowTimer() {
   overview_observation_.Reset();
 }
 
-void DragHandle::UpdateExpandedCollapsedAccessibleState() const {
+void DragHandle::UpdateExpandedCollapsedAccessibleState() {
   if (!shelf_ || !shelf_->shelf_layout_manager()) {
     return;
   }
@@ -533,6 +500,68 @@ void DragHandle::UpdateExpandedCollapsedAccessibleState() const {
     GetViewAccessibility().SetIsCollapsed();
   } else {
     GetViewAccessibility().RemoveExpandCollapseState();
+  }
+}
+
+void DragHandle::UpdateAccessibleName() {
+  if (!shelf_ || !shelf_->shelf_layout_manager()) {
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+    return;
+  }
+
+  std::u16string accessible_name = std::u16string();
+  switch (shelf_->shelf_layout_manager()->hotseat_state()) {
+    case HotseatState::kNone:
+    case HotseatState::kShownClamshell:
+    case HotseatState::kShownHomeLauncher:
+      break;
+    case HotseatState::kHidden:
+      accessible_name = l10n_util::GetStringUTF16(
+          IDS_ASH_DRAG_HANDLE_HOTSEAT_ACCESSIBLE_NAME);
+      break;
+    case HotseatState::kExtended:
+      // The name should be empty when the hotseat is extended but we cannot
+      // hide it.
+      if (force_show_hotseat_resetter_) {
+        accessible_name = l10n_util::GetStringUTF16(
+            IDS_ASH_DRAG_HANDLE_HOTSEAT_ACCESSIBLE_NAME);
+      }
+      break;
+  }
+
+  if (accessible_name.empty()) {
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  } else {
+    GetViewAccessibility().SetName(accessible_name);
+  }
+}
+
+void DragHandle::UpdateAccessiblePreviousAndNextFocus() {
+  if (!shelf_ || !shelf_->shelf_layout_manager()) {
+    return;
+  }
+
+  switch (shelf_->shelf_layout_manager()->hotseat_state()) {
+    case HotseatState::kNone:
+    case HotseatState::kShownClamshell:
+    case HotseatState::kShownHomeLauncher:
+      break;
+    case HotseatState::kHidden:
+      // When the hotseat is kHidden, the focus traversal should go to the
+      // status area as the next focus and the navigation area as the previous
+      // focus.
+      GetViewAccessibility().SetNextFocus(shelf_->GetStatusAreaWidget());
+      GetViewAccessibility().SetPreviousFocus(
+          shelf_->shelf_widget()->navigation_widget());
+      break;
+    case HotseatState::kExtended:
+      // When the hotseat is kExtended, the focus traversal should go to the
+      // hotseat as both the next and previous focus.
+      GetViewAccessibility().SetNextFocus(shelf_->hotseat_widget());
+      GetViewAccessibility().SetPreviousFocus(shelf_->hotseat_widget());
+      break;
   }
 }
 

@@ -29,37 +29,35 @@
 @property(nonatomic, strong) ReadingListSpotlightManager* readingListManager;
 @property(nonatomic, strong) OpenTabsSpotlightManager* openTabsManager;
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-    NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithProfile:(ProfileIOS*)profile NS_DESIGNATED_INITIALIZER;
 
 @end
 
 @implementation SpotlightManager
 
-+ (SpotlightManager*)spotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState {
++ (SpotlightManager*)spotlightManagerWithProfile:(ProfileIOS*)profile {
   if (spotlight::IsSpotlightAvailable()) {
-    return [[SpotlightManager alloc] initWithBrowserState:browserState];
+    return [[SpotlightManager alloc] initWithProfile:profile];
   }
   return nil;
 }
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
-  DCHECK(browserState);
+- (instancetype)initWithProfile:(ProfileIOS*)profile {
+  DCHECK(profile);
   DCHECK(spotlight::IsSpotlightAvailable());
   self = [super init];
   if (self) {
     _templateURLService =
-        ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
-    _topSitesManager = [TopSitesSpotlightManager
-        topSitesSpotlightManagerWithBrowserState:browserState];
+        ios::TemplateURLServiceFactory::GetForProfile(profile);
+    _topSitesManager =
+        [TopSitesSpotlightManager topSitesSpotlightManagerWithProfile:profile];
     _bookmarkManager = [BookmarksSpotlightManager
-        bookmarksSpotlightManagerWithBrowserState:browserState];
+        bookmarksSpotlightManagerWithProfile:profile];
     _actionsManager = [ActionsSpotlightManager actionsSpotlightManager];
     _readingListManager = [ReadingListSpotlightManager
-        readingListSpotlightManagerWithBrowserState:browserState];
-    _openTabsManager = [OpenTabsSpotlightManager
-        openTabsSpotlightManagerWithBrowserState:browserState];
+        readingListSpotlightManagerWithProfile:profile];
+    _openTabsManager =
+        [OpenTabsSpotlightManager openTabsSpotlightManagerWithProfile:profile];
   }
   return self;
 }

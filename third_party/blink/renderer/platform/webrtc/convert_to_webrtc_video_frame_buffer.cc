@@ -183,8 +183,7 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> MakeFrameAdapter(
       return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
           new rtc::RefCountedObject<NV12FrameAdapter>(std::move(video_frame)));
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -273,7 +272,7 @@ bool CanConvertToWebRtcVideoFrameBuffer(const media::VideoFrame* frame) {
                          frame->format())) ||
          frame->storage_type() ==
              media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER ||
-         frame->HasTextures();
+         frame->HasSharedImage();
 }
 
 // static
@@ -296,6 +295,9 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
       << video_frame->AsHumanReadableString();
 
   auto create_placeholder_frame = [](const media::VideoFrame& frame) {
+    LOG(ERROR)
+        << "Mapping frame failed. Generating black frame instead. Frame: "
+        << frame.AsHumanReadableString();
     return MakeFrameAdapter(media::VideoFrame::CreateColorFrame(
         frame.natural_size(), 0u, 0x80, 0x80, frame.timestamp()));
   };
@@ -312,7 +314,7 @@ rtc::scoped_refptr<webrtc::VideoFrameBuffer> ConvertToWebRtcVideoFrameBuffer(
       return create_placeholder_frame(*video_frame);
     }
     return MakeFrameAdapter(std::move(converted_frame));
-  } else if (video_frame->HasTextures()) {
+  } else if (video_frame->HasSharedImage()) {
     auto converted_frame =
         shared_resources
             ? shared_resources->ConstructVideoFrameFromTexture(video_frame)
@@ -445,8 +447,7 @@ scoped_refptr<media::VideoFrame> ConvertFromMappedWebRtcVideoFrameBuffer(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
   if (!video_frame) {
     return nullptr;

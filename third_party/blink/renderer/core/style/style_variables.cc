@@ -51,14 +51,14 @@ bool StyleVariables::operator==(const StyleVariables& other) const {
   other.equality_cache_partner_ = this;
 
   for (const auto& pair : data_) {
-    if (!IsEqual(GetData(pair.key), other.GetData(pair.key))) {
+    if (!IsEqual(pair.value, other.GetData(pair.key))) {
       equality_cached_result_ = other.equality_cached_result_ = false;
       return false;
     }
   }
 
   for (const auto& pair : values_) {
-    if (!IsEqual(GetValue(pair.key), other.GetValue(pair.key))) {
+    if (!IsEqual(pair.value, other.GetValue(pair.key))) {
       equality_cached_result_ = other.equality_cached_result_ = false;
       return false;
     }

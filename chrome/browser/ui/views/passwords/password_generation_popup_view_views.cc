@@ -311,7 +311,7 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
   DCHECK(!password_label_);
   password_label_ = AddChildView(std::make_unique<views::Label>(
       controller_->password(), views::style::CONTEXT_DIALOG_BODY_TEXT,
-      STYLE_SECONDARY_MONOSPACED));
+      views::style::STYLE_SECONDARY_MONOSPACED));
   layout->SetFlexForView(password_label_, 1);
   UpdateAccessibleNameAndDescription();
 }
@@ -556,6 +556,20 @@ PasswordGenerationPopupView* PasswordGenerationPopupView::Create(
 const views::ViewAccessibility&
 PasswordGenerationPopupViewViews::GetPasswordViewViewAccessibilityForTest() {
   return password_view_->GetViewAccessibility();
+}
+
+const views::ViewAccessibility&
+PasswordGenerationPopupViewViews::GetAcceptButtonViewAccessibilityForTest() {
+  return static_cast<NudgePasswordButtons*>(nudge_password_buttons_view_)
+      ->GetAcceptButton()
+      ->GetViewAccessibility();
+}
+
+const views::ViewAccessibility&
+PasswordGenerationPopupViewViews::GetCancelButtonViewAccessibilityForTest() {
+  return static_cast<NudgePasswordButtons*>(nudge_password_buttons_view_)
+      ->GetCancelButton()
+      ->GetViewAccessibility();
 }
 
 BEGIN_METADATA(PasswordGenerationPopupViewViews)

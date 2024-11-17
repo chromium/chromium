@@ -21,7 +21,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
@@ -82,7 +82,7 @@ public class ActivityProfileProviderTest {
     }
 
     @Test
-    public void testIncognito_NoOTRProfileID() {
+    public void testIncognito_NoOtrProfileId() {
         ActivityProfileProvider providerSupplier =
                 new ActivityProfileProvider(mLifecycleDispatcher);
 
@@ -93,27 +93,27 @@ public class ActivityProfileProviderTest {
         Assert.assertNotNull(provider);
 
         provider.hasOffTheRecordProfile();
-        verify(mOriginalProfile).hasPrimaryOTRProfile();
+        verify(mOriginalProfile).hasPrimaryOtrProfile();
 
         provider.getOffTheRecordProfile(false);
-        verify(mOriginalProfile).getPrimaryOTRProfile(eq(false));
+        verify(mOriginalProfile).getPrimaryOtrProfile(eq(false));
 
         provider.getOffTheRecordProfile(true);
-        verify(mOriginalProfile).getPrimaryOTRProfile(eq(true));
+        verify(mOriginalProfile).getPrimaryOtrProfile(eq(true));
     }
 
     @Test
-    public void testIncognito_WithOTRProfileID() {
-        OTRProfileID otrProfileID = new OTRProfileID("blah");
-        CallbackHelper otrProfileIDHelper = new CallbackHelper();
+    public void testIncognito_WithOtrProfileId() {
+        OtrProfileId otrProfileId = new OtrProfileId("blah");
+        CallbackHelper otrProfileIdHelper = new CallbackHelper();
 
         ActivityProfileProvider providerSupplier =
                 new ActivityProfileProvider(mLifecycleDispatcher) {
                     @Nullable
                     @Override
-                    protected OTRProfileID createOffTheRecordProfileID() {
-                        otrProfileIDHelper.notifyCalled();
-                        return otrProfileID;
+                    protected OtrProfileId createOffTheRecordProfileId() {
+                        otrProfileIdHelper.notifyCalled();
+                        return otrProfileId;
                     }
                 };
 
@@ -124,17 +124,17 @@ public class ActivityProfileProviderTest {
         Assert.assertNotNull(provider);
 
         provider.getOriginalProfile();
-        Assert.assertEquals(0, otrProfileIDHelper.getCallCount());
+        Assert.assertEquals(0, otrProfileIdHelper.getCallCount());
 
         provider.hasOffTheRecordProfile();
-        verify(mOriginalProfile).hasOffTheRecordProfile(eq(otrProfileID));
+        verify(mOriginalProfile).hasOffTheRecordProfile(eq(otrProfileId));
 
         provider.getOffTheRecordProfile(false);
-        verify(mOriginalProfile).getOffTheRecordProfile(eq(otrProfileID), eq(false));
+        verify(mOriginalProfile).getOffTheRecordProfile(eq(otrProfileId), eq(false));
 
         provider.getOffTheRecordProfile(true);
-        verify(mOriginalProfile).getOffTheRecordProfile(eq(otrProfileID), eq(true));
-        Assert.assertEquals(1, otrProfileIDHelper.getCallCount());
+        verify(mOriginalProfile).getOffTheRecordProfile(eq(otrProfileId), eq(true));
+        Assert.assertEquals(1, otrProfileIdHelper.getCallCount());
     }
 
     private static class TestActivityLifecycleDispatcherImpl

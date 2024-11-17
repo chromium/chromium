@@ -473,8 +473,12 @@ class PLATFORM_EXPORT GraphicsContext {
   SkSamplingOptions ComputeSamplingOptions(Image& image,
                                            const gfx::RectF& dest,
                                            const gfx::RectF& src) const {
+    cc::PaintFlags::ScalingOperation scale =
+        (dest.width() > src.width() && dest.height() > src.height())
+            ? cc::PaintFlags::ScalingOperation::kUpscale
+            : cc::PaintFlags::ScalingOperation::kUnknown;
     return cc::PaintFlags::FilterQualityToSkSamplingOptions(
-        ComputeFilterQuality(image, dest, src));
+        ComputeFilterQuality(image, dest, src), scale);
   }
 
   // Sets target URL of a clickable area.

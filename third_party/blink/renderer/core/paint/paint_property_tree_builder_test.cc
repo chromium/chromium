@@ -37,7 +37,7 @@ void PaintPropertyTreeBuilderTest::LoadTestData(const char* file_name) {
   full_path.Append("/renderer/core/paint/test_data/");
   full_path.Append(file_name);
   const Vector<char> input_buffer = *test::ReadFromFile(full_path.ToString());
-  SetBodyInnerHTML(String(input_buffer.data(), input_buffer.size()));
+  SetBodyInnerHTML(String(input_buffer));
 }
 
 const TransformPaintPropertyNode*
@@ -77,6 +77,17 @@ const ScrollPaintPropertyNode* PaintPropertyTreeBuilderTest::DocScroll(
   return document->GetLayoutView()->FirstFragment().PaintProperties()->Scroll();
 }
 
+const EffectPaintPropertyNode* PaintPropertyTreeBuilderTest::DocEffect(
+    const Document* document) {
+  if (!document) {
+    document = &GetDocument();
+  }
+  return document->GetLayoutView()
+      ->FirstFragment()
+      .PaintProperties()
+      ->ViewTransitionEffect();
+}
+
 const ObjectPaintProperties*
 PaintPropertyTreeBuilderTest::PaintPropertiesForElement(const char* name) {
   return GetDocument()
@@ -100,7 +111,7 @@ void PaintPropertyTreeBuilderTest::SetUp() {
 #define CHECK_VISUAL_RECT(expected, source_object, ancestor, slop_factor)      \
   do {                                                                         \
     if ((source_object)->HasLayer() && (ancestor)->HasLayer()) {               \
-      auto actual = (source_object)->LocalVisualRect();                        \
+      auto actual = LocalVisualRect(*(source_object));                         \
       (source_object)                                                          \
           ->MapToVisualRectInAncestorSpace(ancestor, actual,                   \
                                            kUseGeometryMapper);                \
@@ -110,7 +121,7 @@ void PaintPropertyTreeBuilderTest::SetUp() {
                                                                                \
     if (slop_factor == LayoutUnit::Max())                                      \
       break;                                                                   \
-    auto slow_path_rect = (source_object)->LocalVisualRect();                  \
+    auto slow_path_rect = LocalVisualRect(*(source_object));                   \
     (source_object)->MapToVisualRectInAncestorSpace(ancestor, slow_path_rect); \
     if (slop_factor) {                                                         \
       auto inflated_expected = expected;                                       \
@@ -1047,8 +1058,7 @@ TEST_P(PaintPropertyTreeBuilderTest, EffectNodesInSVG) {
       PaintPropertiesForElement("groupWithOpacity");
   EXPECT_EQ(0.6f, group_with_opacity_properties->Effect()->Opacity());
   EXPECT_EQ(svg_clip, group_with_opacity_properties->Effect()->OutputClip());
-  EXPECT_EQ(&EffectPaintPropertyNode::Root(),
-            group_with_opacity_properties->Effect()->Parent());
+  EXPECT_EQ(DocEffect(), group_with_opacity_properties->Effect()->Parent());
 
   EXPECT_EQ(nullptr, PaintPropertiesForElement("rectWithoutOpacity"));
 
@@ -1315,6 +1325,37 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootLocalToBorderBoxTransformNode) {
             rect_properties->Transform()->Get2dTranslation());
   EXPECT_EQ(svg_properties->ReplacedContentTransform(),
             rect_properties->Transform()->Parent());
+}
+
+TEST_P(PaintPropertyTreeBuilderTest, SVGRootLocalToBorderBoxSnappingScale) {
+  ScopedSvgInlineRootPixelSnappingScaleAdjustmentForTest snapscale_enabled(
+      true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      svg {
+        height: 99.99px;
+        position: absolute;
+        top: 0.5px;
+        width: 100px;
+      }
+    </style>
+    <div style="position: relative">
+      <svg id="svg">
+        <circle cx="50" cy="50" r="50"/>
+      </svg>
+    </div>
+  )HTML");
+
+  const LayoutObject& svg = *GetLayoutObjectByElementId("svg");
+  const ObjectPaintProperties* svg_properties =
+      svg.FirstFragment().PaintProperties();
+  EXPECT_EQ(gfx::Vector2dF(8, 9),
+            svg_properties->PaintOffsetTranslation()->Get2dTranslation());
+  const float snapped_height = 99;
+  const float unsnapped_height = LayoutUnit(99.99f).ToFloat();
+  ASSERT_NE(svg_properties->ReplacedContentTransform(), nullptr);
+  EXPECT_TRANSFORM_EQ(MakeScaleMatrix(snapped_height / unsnapped_height),
+                      svg_properties->ReplacedContentTransform()->Matrix());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, SVGNestedViewboxTransforms) {
@@ -3928,14 +3969,10 @@ TEST_P(PaintPropertyTreeBuilderTest, OverflowHiddenScrollProperties) {
   ASSERT_NE(nullptr, scroll_translation);
   EXPECT_EQ(gfx::Vector2dF(0, -37), scroll_translation->Get2dTranslation());
   auto* scroll = scroll_translation->ScrollNode();
-  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
-    ASSERT_NE(nullptr, scroll);
-    EXPECT_EQ(scroll, overflow_hidden_scroll_properties->Scroll());
-    EXPECT_FALSE(scroll->UserScrollableHorizontal());
-    EXPECT_FALSE(scroll->UserScrollableVertical());
-  } else {
-    EXPECT_EQ(nullptr, scroll);
-  }
+  ASSERT_NE(nullptr, scroll);
+  EXPECT_EQ(scroll, overflow_hidden_scroll_properties->Scroll());
+  EXPECT_FALSE(scroll->UserScrollableHorizontal());
+  EXPECT_FALSE(scroll->UserScrollableVertical());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, FrameOverflowHiddenScrollProperties) {
@@ -4263,7 +4300,7 @@ TEST_P(PaintPropertyTreeBuilderTest, MainThreadScrollReasonsWithoutScrolling) {
     <div class='forceScroll'></div>
   )HTML");
   Element* overflow = GetDocument().getElementById(AtomicString("overflow"));
-  EXPECT_TRUE(DocScroll()->HasBackgroundAttachmentFixedDescendants());
+  EXPECT_TRUE(DocScroll()->RequiresMainThreadForBackgroundAttachmentFixed());
   // No scroll node is needed.
   EXPECT_EQ(overflow->GetLayoutObject()
                 ->FirstFragment()
@@ -4725,7 +4762,7 @@ TEST_P(PaintPropertyTreeBuilderTest, Reflection) {
             filter_properties->PaintOffsetTranslation()->Parent());
   EXPECT_EQ(gfx::Vector2dF(8, 8),
             filter_properties->PaintOffsetTranslation()->Get2dTranslation());
-  EXPECT_TRUE(filter_properties->Filter()->Parent()->IsRoot());
+  EXPECT_EQ(filter_properties->Filter()->Parent(), DocEffect());
   EXPECT_EQ(filter_properties->PaintOffsetTranslation(),
             &filter_properties->Filter()->LocalTransformSpace());
   EXPECT_EQ(DocContentClip(), filter_properties->Filter()->OutputClip());
@@ -4738,7 +4775,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SimpleFilter) {
   const ObjectPaintProperties* filter_properties =
       GetLayoutObjectByElementId("filter")->FirstFragment().PaintProperties();
   EXPECT_FALSE(filter_properties->PaintOffsetTranslation());
-  EXPECT_TRUE(filter_properties->Filter()->Parent()->IsRoot());
+  EXPECT_EQ(filter_properties->Filter()->Parent(), DocEffect());
   EXPECT_FALSE(filter_properties->PixelMovingFilterClipExpander());
   EXPECT_EQ(DocScrollTranslation(),
             &filter_properties->Filter()->LocalTransformSpace());
@@ -4755,7 +4792,7 @@ TEST_P(PaintPropertyTreeBuilderTest, PixelMovingFilter) {
 
   auto* filter = filter_properties->Filter();
   ASSERT_TRUE(filter);
-  EXPECT_TRUE(filter->Parent()->IsRoot());
+  EXPECT_EQ(filter->Parent(), DocEffect());
   EXPECT_TRUE(filter->HasFilterThatMovesPixels());
   EXPECT_EQ(DocScrollTranslation(), &filter->LocalTransformSpace());
   EXPECT_EQ(DocContentClip(), filter->OutputClip());
@@ -4810,7 +4847,7 @@ TEST_P(PaintPropertyTreeBuilderTest, FilterReparentClips) {
       GetLayoutObjectByElementId("clip")->FirstFragment().PaintProperties();
   const ObjectPaintProperties* filter_properties =
       GetLayoutObjectByElementId("filter")->FirstFragment().PaintProperties();
-  EXPECT_TRUE(filter_properties->Filter()->Parent()->IsRoot());
+  EXPECT_TRUE(DocEffect());
   EXPECT_EQ(clip_properties->OverflowClip(),
             filter_properties->Filter()->OutputClip());
   EXPECT_EQ(DocScrollTranslation(),
@@ -5052,7 +5089,7 @@ TEST_P(PaintPropertyTreeBuilderTest, MaskSimple) {
 
   EXPECT_EQ(properties->Effect(),
             &target->FirstFragment().LocalBorderBoxProperties().Effect());
-  EXPECT_TRUE(properties->Effect()->Parent()->IsRoot());
+  EXPECT_TRUE(DocEffect());
   EXPECT_EQ(SkBlendMode::kSrcOver, properties->Effect()->BlendMode());
   EXPECT_EQ(mask_clip->Parent(), properties->Effect()->OutputClip());
 
@@ -5081,7 +5118,7 @@ TEST_P(PaintPropertyTreeBuilderTest, MaskWithOutset) {
 
   EXPECT_EQ(properties->Effect(),
             &target->FirstFragment().LocalBorderBoxProperties().Effect());
-  EXPECT_TRUE(properties->Effect()->Parent()->IsRoot());
+  EXPECT_TRUE(DocEffect());
   EXPECT_EQ(SkBlendMode::kSrcOver, properties->Effect()->BlendMode());
   EXPECT_EQ(mask_clip->Parent(), properties->Effect()->OutputClip());
 
@@ -5135,7 +5172,7 @@ TEST_P(PaintPropertyTreeBuilderTest, MaskEscapeClip) {
 
   EXPECT_EQ(target_properties->Effect(),
             &target->FirstFragment().LocalBorderBoxProperties().Effect());
-  EXPECT_TRUE(target_properties->Effect()->Parent()->IsRoot());
+  EXPECT_TRUE(DocEffect());
   EXPECT_EQ(SkBlendMode::kSrcOver, target_properties->Effect()->BlendMode());
   EXPECT_EQ(nullptr, target_properties->Effect()->OutputClip());
 
@@ -5178,7 +5215,7 @@ TEST_P(PaintPropertyTreeBuilderTest, MaskInline) {
 
   EXPECT_EQ(properties->Effect(),
             &target->FirstFragment().LocalBorderBoxProperties().Effect());
-  EXPECT_TRUE(properties->Effect()->Parent()->IsRoot());
+  EXPECT_TRUE(DocEffect());
   EXPECT_EQ(SkBlendMode::kSrcOver, properties->Effect()->BlendMode());
   EXPECT_EQ(mask_clip->Parent(), properties->Effect()->OutputClip());
 
@@ -5279,8 +5316,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGBlending) {
   ASSERT_TRUE(svg_root_properties->Effect());
   EXPECT_EQ(SkBlendMode::kSrcOver, svg_root_properties->Effect()->BlendMode());
 
-  EXPECT_EQ(&EffectPaintPropertyNode::Root(),
-            svg_root_properties->Effect()->Parent());
+  EXPECT_EQ(DocEffect(), svg_root_properties->Effect()->Parent());
   EXPECT_EQ(svg_root_properties->Effect(), rect_properties->Effect()->Parent());
 }
 
@@ -5302,8 +5338,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootBlending) {
   ASSERT_TRUE(svg_root_properties->Effect());
   EXPECT_EQ(SkBlendMode::kMultiply, svg_root_properties->Effect()->BlendMode());
 
-  EXPECT_EQ(&EffectPaintPropertyNode::Root(),
-            html_properties->Effect()->Parent());
+  EXPECT_EQ(DocEffect(), html_properties->Effect()->Parent());
   EXPECT_EQ(html_properties->Effect(), svg_root_properties->Effect()->Parent());
 }
 
@@ -6218,39 +6253,24 @@ TEST_P(PaintPropertyTreeBuilderTest, StickyUnderOverflowHidden) {
                   ->RequiresCompositingForStickyPosition());
   EXPECT_EQ(gfx::Vector2dF(0, 60),
             outer_properties->StickyTranslation()->Get2dTranslation());
-  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
-    EXPECT_NE(nullptr,
-              outer_properties->StickyTranslation()->GetStickyConstraint());
-  } else {
-    EXPECT_EQ(nullptr,
-              outer_properties->StickyTranslation()->GetStickyConstraint());
-  }
+  EXPECT_NE(nullptr,
+            outer_properties->StickyTranslation()->GetStickyConstraint());
 
   ASSERT_TRUE(middle_properties && middle_properties->StickyTranslation());
   EXPECT_TRUE(middle_properties->StickyTranslation()
                   ->RequiresCompositingForStickyPosition());
   EXPECT_EQ(gfx::Vector2dF(0, 15),
             middle_properties->StickyTranslation()->Get2dTranslation());
-  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
-    EXPECT_NE(nullptr,
-              middle_properties->StickyTranslation()->GetStickyConstraint());
-  } else {
-    EXPECT_EQ(nullptr,
-              middle_properties->StickyTranslation()->GetStickyConstraint());
-  }
+  EXPECT_NE(nullptr,
+            middle_properties->StickyTranslation()->GetStickyConstraint());
 
   ASSERT_TRUE(inner_properties && inner_properties->StickyTranslation());
   EXPECT_TRUE(inner_properties->StickyTranslation()
                   ->RequiresCompositingForStickyPosition());
   EXPECT_EQ(gfx::Vector2dF(0, 20),
             inner_properties->StickyTranslation()->Get2dTranslation());
-  if (RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled()) {
-    EXPECT_NE(nullptr,
-              inner_properties->StickyTranslation()->GetStickyConstraint());
-  } else {
-    EXPECT_EQ(nullptr,
-              inner_properties->StickyTranslation()->GetStickyConstraint());
-  }
+  EXPECT_NE(nullptr,
+            inner_properties->StickyTranslation()->GetStickyConstraint());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, StickyUnderScrollerWithoutOverflow) {
@@ -6434,7 +6454,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootCompositedClipPathSimple) {
 
   const auto* effect = properties->Effect();
   ASSERT_NE(nullptr, effect);
-  EXPECT_EQ(&EffectPaintPropertyNode::Root(), effect->Parent());
+  EXPECT_EQ(DocEffect(), effect->Parent());
   EXPECT_EQ(transform, &effect->LocalTransformSpace());
   EXPECT_EQ(clip_path_clip, effect->OutputClip());
   EXPECT_EQ(SkBlendMode::kSrcOver, effect->BlendMode());
@@ -6472,7 +6492,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGRootCompositedClipPathComplex) {
   const auto* effect = properties->Effect();
   ASSERT_NE(nullptr, effect);
   EXPECT_TRUE(effect->HasDirectCompositingReasons());
-  EXPECT_EQ(&EffectPaintPropertyNode::Root(), effect->Parent());
+  EXPECT_EQ(DocEffect(), effect->Parent());
   EXPECT_EQ(transform, &effect->LocalTransformSpace());
   EXPECT_EQ(clip_path_clip, effect->OutputClip());
   EXPECT_EQ(SkBlendMode::kSrcOver, effect->BlendMode());

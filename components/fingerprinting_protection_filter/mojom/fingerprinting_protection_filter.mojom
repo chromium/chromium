@@ -21,6 +21,14 @@ interface FingerprintingProtectionHost {
   // recently committed document load in a frame. It is used to trigger a UI
   // prompt to inform the user and allow them to turn off filtering.
   DidDisallowFirstSubresource();
+
+  // This is sent to a RenderFrameHost in the browser when a document load is
+  // finished, just before the DidFinishLoad message, and contains statistics
+  // collected by the DocumentSubresourceFilter up until that point: the number
+  // of subresources evaluated/disallowed/etc, and total time spent on
+  // evaluating subresource loads in its allowLoad method. The time metrics are
+  // equal to zero if performance measurements were disabled for the load.
+  SetDocumentLoadStatistics(subresource_filter.mojom.DocumentLoadStatistics statistics);
 };
 
 // Receiver on the renderer for Fingerprinting Protection rulesets (such as
@@ -29,5 +37,5 @@ interface FingerprintingProtectionRulesetObserver {
   // Sends a read-only mode file handle with the ruleset data to a renderer
   // process, containing the filtering rules to be consulted for all
   // subsequent document loads that have filtering activated.
-  SetRulesetForProcess(mojo_base.mojom.File ruleset_file);
+  SetRulesetForProcess(mojo_base.mojom.ReadOnlyFile ruleset_file);
 };

@@ -742,7 +742,7 @@ String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
       // TODO(mek): When this lived in content it used to do a "lenient"
       // conversion, while this is a strict conversion. Figure out if that
       // difference actually matters in practice.
-      result = String::FromUTF8(input.data(), input_size);
+      result = String::FromUTF8(base::span(input));
       if (result.IsNull()) {
         corrupt = true;
         break;
@@ -764,8 +764,7 @@ String CachedStorageArea::Uint8VectorToString(const Vector<uint8_t>& input,
           break;
         }
         case StorageFormat::Latin1:
-          result = String(reinterpret_cast<const char*>(input.data() + 1),
-                          payload_size);
+          result = String(base::span(input).subspan(1));
           break;
         default:
           corrupt = true;
@@ -790,7 +789,9 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
   switch (format_option) {
     case FormatOption::kSessionStorageForceUTF16: {
       Vector<uint8_t> result(input.length() * sizeof(UChar));
-      input.CopyTo(reinterpret_cast<UChar*>(result.data()), 0, input.length());
+      input.CopyTo(
+          base::span(reinterpret_cast<UChar*>(result.data()), input.length()),
+          0);
       return result;
     }
     case FormatOption::kSessionStorageForceUTF8: {
@@ -809,18 +810,13 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
         if (length > std::numeric_limits<unsigned>::max() / 3)
           return Vector<uint8_t>();
         Vector<uint8_t> buffer_vector(length * 3);
-        uint8_t* buffer = buffer_vector.data();
-        const LChar* characters = input.Characters8();
 
         WTF::unicode::ConversionResult result =
-            WTF::unicode::ConvertLatin1ToUTF8(
-                &characters, characters + length,
-                reinterpret_cast<char**>(&buffer),
-                reinterpret_cast<char*>(buffer + buffer_vector.size()));
+            WTF::unicode::ConvertLatin1ToUTF8(input.Span8(),
+                                              base::span(buffer_vector));
         // (length * 3) should be sufficient for any conversion
-        DCHECK_NE(result, WTF::unicode::kTargetExhausted);
-        buffer_vector.Shrink(
-            static_cast<wtf_size_t>(buffer - buffer_vector.data()));
+        DCHECK_NE(result.status, WTF::unicode::kTargetExhausted);
+        buffer_vector.Shrink(static_cast<wtf_size_t>(result.converted.size()));
         return buffer_vector;
       }
 
@@ -853,7 +849,7 @@ Vector<uint8_t> CachedStorageArea::StringToUint8Vector(
       return result;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CachedStorageArea::EvictCachedData() {

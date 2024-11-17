@@ -1,0 +1,29 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+package google.internal.remoting.cloud.v1alpha;
+
+option optimize_for = LITE_RUNTIME;
+
+// //third_party/protobuf/src/google/protobuf/duration.proto cannot be
+// directly imported because it is not in the `protobuf_lite` source and the
+// `protobuf_full` source cannot be included because of its large size.
+// Therefore, we copy the single proto we need from protobuf_full which is small
+// (and stable), this is commonly done in other Chromium directories.
+message Duration {
+  // Signed seconds of the span of time. Must be from -315,576,000,000
+  // to +315,576,000,000 inclusive. Note: these bounds are computed from:
+  // 60 sec/min * 60 min/hr * 24 hr/day * 365.25 days/year * 10000 years
+  int64 seconds = 1;
+
+  // Signed fractions of a second at nanosecond resolution of the span
+  // of time. Durations less than one second are represented with a 0
+  // `seconds` field and a positive or negative `nanos` field. For durations
+  // of one second or more, a non-zero value for the `nanos` field must be
+  // of the same sign as the `seconds` field. Must be from -999,999,999
+  // to +999,999,999 inclusive.
+  int32 nanos = 2;
+}

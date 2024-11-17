@@ -5,6 +5,7 @@
 module ash.recorder_app.mojom;
 
 import "chromeos/services/machine_learning/public/mojom/soda.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
 import "services/on_device_model/public/mojom/on_device_model.mojom";
 import "services/on_device_model/public/mojom/on_device_model_service.mojom";
@@ -49,6 +50,15 @@ interface ModelStateMonitor {
   Update(ModelState state);
 };
 
+// Information of an on-device model.
+struct ModelInfo {
+  // Associated DownLoadable Content (DLC) id. Id is used for requesting DLC
+  // service to download corresponding system feature on-demand at run-time.
+  mojo_base.mojom.Uuid model_id;
+  // The maximum input token size.
+  uint32 input_token_limit;
+};
+
 // Retrieved information for a microphone.
 struct MicrophoneInfo {
   // Whether the microphone is the system default microphone.
@@ -66,8 +76,26 @@ interface QuietModeMonitor {
   Update(bool in_quiet_mode);
 };
 
+// Information for a SODA language pack.
+struct LangPackInfo {
+  // Localized language in BCP-47 format e.g. "en-US".
+  string language_code;
+  // Language name in the application locale.
+  mojo_base.mojom.String16 display_name;
+  // Whether the language is supported by summarization and title suggestion.
+  bool is_gen_ai_supported;
+  // Whether the language is supported by speaker labeling. False if large SODA
+  // model, which supports speaker label, is unavailable on the device.
+  bool is_speaker_label_supported;
+};
+
 // Primary interface for the chrome://recorder-app WebUI.
 interface PageHandler {
+  // Returns model information of the given format feature type.
+  // `feature` should be either `kAudioTitle` or `kAudioSummary`.
+  GetModelInfo(on_device_model.mojom.FormatFeature feature)
+      => (ModelInfo model_info);
+
   // Binds a new OnDeviceModel interface if possible using model from DLC
   // specified by `model_id`.
   // The list of possible IDs are listed in core/platform_handler.ts, and
@@ -104,16 +132,22 @@ interface PageHandler {
                   pending_remote<ModelStateMonitor> monitor)
       => (ModelState state);
 
-  // Adds a new monitor for SODA state change.
+  // Returns available language information.
+  GetAvailableLangPacks() => (array<LangPackInfo> lang_packs);
+
+  // Adds a new monitor for SODA state change. `language` is a localized
+  // language in BCP-47 format e.g. "en-US".
   // Returns the current state.
-  AddSodaMonitor(pending_remote<ModelStateMonitor> monitor)
+  AddSodaMonitor(string language, pending_remote<ModelStateMonitor> monitor)
       => (ModelState state);
 
-  // Requests installation for SODA.
-  InstallSoda() => ();
+  // Requests installation for SODA library and the language pack. `language` is
+  // a localized language in BCP-47 format e.g. "en-US".
+  InstallSoda(string language) => ();
 
   // Loads speech recognizer with the given SodaClient and SodaRecognizer
-  // interface. Returns false when there's error loading the speech recognizer.
+  // interface. `language` is a localized language in BCP-47 format e.g.
+  // "en-US". Returns false when there's error loading the speech recognizer.
   //
   // SODA should be installed before calling this, otherwise false will be
   // returned.
@@ -124,9 +158,8 @@ interface PageHandler {
   // TODO(pihsun): Move the enum to a separate mojom file and return the full
   // enum, or have our own enum if different error needs to be treated
   // differently in frontend.
-  // TODO(pihsun): i18n for selecting the model language. It's always en-US
-  // now.
   LoadSpeechRecognizer(
+      string language,
       pending_remote<chromeos.machine_learning.mojom.SodaClient> soda_client,
       pending_receiver<chromeos.machine_learning.mojom.SodaRecognizer>
           soda_recognizer) => (bool result);
@@ -147,12 +180,12 @@ interface PageHandler {
   // Sets the system quiet mode.
   SetQuietMode(bool quiet_mode);
 
-  // Gets whether speaker label can be used for current profile.
-  // Note that there are some other requirements for speaker label (SODA is
-  // downloaded and installed, the language pack supports it, ...), but this
-  // method specifically only query if the current profile has the capabilities
-  // needed to use speaker label.
-  CanUseSpeakerLabelForCurrentProfile() => (bool supported);
+  // Gets whether speaker label can be used.
+  // Note that this method specifically only query if the current profile has
+  // the capabilities needed to use speaker label, and the device supports SODA
+  // language pack that supports speaker label, but the caller still need to
+  // ensure that SODA is available and installed to use speaker label.
+  CanUseSpeakerLabel() => (bool supported);
 
   // Records the consent of speaker label from user.
   // Since the frontend doesn't have info about resource ID, the given

@@ -8,8 +8,8 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.View;
 
-import org.chromium.chrome.browser.user_education.IPHCommand;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommand;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -51,22 +51,21 @@ public class TabGroupSyncIphController {
         if (mTracker == null) {
             return;
         }
-        if (!mTracker.wouldTriggerHelpUI(FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE)) {
+        if (!mTracker.wouldTriggerHelpUi(FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE)) {
             return;
         }
-        IPHCommand iphCommand =
-                new IPHCommandBuilder(
+        IphCommand iphCommand =
+                new IphCommandBuilder(
                                 mResources,
                                 FeatureConstants.TAB_GROUP_SYNC_ON_STRIP_FEATURE,
                                 mStringId,
                                 mStringId)
                         .setAnchorView(view)
-                        .setInsetRect(
-                                new Rect((int) (left), (int) top, (int) (right), (int) bottom))
+                        .setInsetRect(new Rect((int) left, (int) top, (int) right, (int) bottom))
                         .setViewRectProvider(new ViewRectProvider(view))
                         .setDismissOnTouch(true)
                         .build();
-        mUserEducationHelper.requestShowIPH(iphCommand);
+        mUserEducationHelper.requestShowIph(iphCommand);
     }
 
     public void dismissTextBubble() {

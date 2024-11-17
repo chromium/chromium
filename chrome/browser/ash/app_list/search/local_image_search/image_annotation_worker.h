@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/image_content_annotator.h"
+#include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 
 class Profile;
@@ -69,6 +70,10 @@ class ImageAnnotationWorker {
     image_processing_delay_for_test_ = image_processing_delay;
   }
 
+  void set_indexing_source_for_testing(IndexingSource indexing_source) {
+    source_for_test_ = indexing_source;
+  }
+
  private:
   void OnFileChange(const base::FilePath& path, bool error);
 
@@ -103,7 +108,7 @@ class ImageAnnotationWorker {
   void RemoveOldDirectory();
 
   // Removes deleted images from the annotation storage.
-  void FindAndRemoveDeletedFiles(const std::vector<base::FilePath> images);
+  void FindAndRemoveDeletedFiles(std::vector<base::FilePath> images);
 
   // For testing. File name annotator.
   void RunFakeImageAnnotator(ImageInfo image_info);
@@ -154,6 +159,9 @@ class ImageAnnotationWorker {
   // Fake delay for image processing callback. Used in tests only.
   std::optional<base::TimeDelta> image_processing_delay_for_test_ =
       std::nullopt;
+  // Simulate the source for annotation indexing in tests, as we cannot run the
+  // actual models in unit tests. Use OCR by default.
+  IndexingSource source_for_test_ = IndexingSource::kOcr;
 
   base::OneShotTimer timeout_timer_;
   base::TimeTicks queue_processing_start_time_;

@@ -78,6 +78,8 @@ source_set("test_support") {
   sources = [
     "fake_url_loading_browser_agent.h",
     "fake_url_loading_browser_agent.mm",
+    "fake_url_loading_delegate.h",
+    "fake_url_loading_delegate.mm",
     "test_scene_url_loading_service.h",
     "test_scene_url_loading_service.mm",
   ]

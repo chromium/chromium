@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/input_method/editor_switch.h"
 #include "chrome/browser/ash/input_method/editor_system_actuator.h"
 #include "chrome/browser/ash/input_method/editor_text_query_provider.h"
+#include "chrome/browser/ash/input_method/editor_transition_enums.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/mako/mako_bubble_coordinator.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -109,7 +110,7 @@ class EditorMediator : public EditorContext::Observer,
   // KeyedService overrides
   void Shutdown() override;
 
-  void ShowNotice();
+  void ShowNotice(EditorNoticeTransitionAction transition_action);
 
   // Checks if the feature should be visible.
   bool IsAllowedForUse();

@@ -176,7 +176,7 @@ void MathUnderOverLayoutAlgorithm::GatherChildren(BlockNode* base,
         *over = block_child;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }

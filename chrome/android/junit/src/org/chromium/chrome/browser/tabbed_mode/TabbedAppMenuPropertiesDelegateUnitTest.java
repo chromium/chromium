@@ -25,7 +25,6 @@ import android.widget.PopupMenu;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -37,7 +36,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -64,9 +63,9 @@ import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
@@ -74,10 +73,14 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.accessibility.PageZoomCoordinator;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.user_prefs.UserPrefs;
+import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.AppBannerManagerJni;
 import org.chromium.content_public.browser.NavigationController;
@@ -86,6 +89,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /** Unit tests for {@link TabbedAppMenuPropertiesDelegate}. */
@@ -111,8 +115,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     private static final boolean MOVE_YES = true; // show 'move to other window'
     private static final boolean MOVE_NO = false;
     private static final Boolean X____ = null; // do not care
-
-    @Rule public JniMocker jniMocker = new JniMocker();
     @Mock private ActivityTabProvider mActivityTabProvider;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
@@ -133,13 +135,15 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private SigninManager mSigninManager;
     @Mock private IdentityManager mIdentityManager;
     @Mock private IdentityServicesProvider mIdentityService;
-    @Mock private TabModelFilterProvider mTabModelFilterProvider;
-    @Mock private TabModelFilter mTabModelFilter;
+    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock public WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock private IncognitoReauthController mIncognitoReauthControllerMock;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private ShoppingService mShoppingService;
     @Mock private AppBannerManager.Natives mAppBannerManagerJniMock;
     @Mock private ReadAloudController mReadAloudController;
+    @Mock private UserPrefs.Natives mUserPrefsNatives;
     @Mock private PrefService mPrefService;
     @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
@@ -176,26 +180,30 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         when(mWebContents.getNavigationController()).thenReturn(mNavigationController);
         when(mNavigationController.getUseDesktopUserAgent()).thenReturn(false);
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
-        when(mTabModelSelector.getModel(false)).thenReturn((mTabModel));
+        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.isIncognito()).thenReturn(false);
-        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
-        when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mTabModelFilter);
-        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mTabGroupModelFilterProvider);
+        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilter())
+                .thenReturn(mTabGroupModelFilter);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getProfile()).thenReturn(mProfile);
-        jniMocker.mock(ManagedBrowserUtilsJni.TEST_HOOKS, mManagedBrowserUtilsJniMock);
+        ManagedBrowserUtilsJni.setInstanceForTesting(mManagedBrowserUtilsJniMock);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        jniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeJniMock);
         OfflinePageUtils.setInstanceForTesting(mOfflinePageUtils);
         when(mIdentityService.getSigninManager(any(Profile.class))).thenReturn(mSigninManager);
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
         IdentityServicesProvider.setInstanceForTests(mIdentityService);
         PageZoomCoordinator.setShouldShowMenuItemForTesting(false);
         FeedFeatures.setFakePrefsForTest(mPrefService);
-        jniMocker.mock(AppBannerManagerJni.TEST_HOOKS, mAppBannerManagerJniMock);
+        AppBannerManagerJni.setInstanceForTesting(mAppBannerManagerJniMock);
         Mockito.when(mAppBannerManagerJniMock.getInstallableWebAppManifestId(any()))
                 .thenReturn(null);
-        jniMocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJniMock);
+        WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
         when(mWebFeedBridgeJniMock.isWebFeedEnabled()).thenReturn(true);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
+        when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
 
         Context context =
                 new ContextThemeWrapper(
@@ -224,6 +232,7 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         ChromeSharedPreferences.getInstance()
                 .removeKeysWithPrefix(ChromePreferenceKeys.MULTI_INSTANCE_TAB_COUNT);
 
+        CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
         ShoppingServiceFactory.setShoppingServiceForTesting(mShoppingService);
     }
 
@@ -235,31 +244,36 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         Menu menu = createTestMenu();
         mTabbedAppMenuPropertiesDelegate.prepareMenu(menu, null);
 
-        Integer[] expectedItems = {
-            R.id.icon_row_menu_id,
-            R.id.new_tab_menu_id,
-            R.id.new_incognito_tab_menu_id,
-            R.id.divider_line_id,
-            R.id.open_history_menu_id,
-            R.id.quick_delete_menu_id,
-            R.id.quick_delete_divider_line_id,
-            R.id.downloads_menu_id,
-            R.id.all_bookmarks_menu_id,
-            R.id.recent_tabs_menu_id,
-            R.id.divider_line_id,
-            R.id.translate_id,
-            R.id.share_row_menu_id,
-            R.id.find_in_page_id,
-            R.id.universal_install,
-            R.id.request_desktop_site_row_menu_id,
-            R.id.auto_dark_web_contents_row_menu_id,
-            R.id.divider_line_id,
-            R.id.preferences_id,
-            R.id.help_id,
-            R.id.managed_by_divider_line_id,
-            R.id.managed_by_menu_id
-        };
-        assertMenuItemsAreEqual(menu, expectedItems);
+        ArrayList<Integer> expectedItems =
+                new ArrayList<>(
+                        Arrays.asList(
+                                R.id.icon_row_menu_id,
+                                R.id.new_tab_menu_id,
+                                R.id.new_incognito_tab_menu_id,
+                                R.id.divider_line_id,
+                                R.id.open_history_menu_id,
+                                R.id.quick_delete_menu_id,
+                                R.id.quick_delete_divider_line_id,
+                                R.id.downloads_menu_id,
+                                R.id.all_bookmarks_menu_id,
+                                R.id.recent_tabs_menu_id,
+                                R.id.divider_line_id,
+                                R.id.translate_id,
+                                R.id.share_row_menu_id,
+                                R.id.find_in_page_id,
+                                R.id.universal_install,
+                                R.id.auto_dark_web_contents_row_menu_id,
+                                R.id.divider_line_id,
+                                R.id.preferences_id,
+                                R.id.help_id,
+                                R.id.managed_by_divider_line_id,
+                                R.id.managed_by_menu_id));
+
+        if (!BuildConfig.IS_DESKTOP_ANDROID) {
+            expectedItems.add(R.id.request_desktop_site_row_menu_id);
+        }
+
+        assertMenuItemsAreEqual(menu, expectedItems.toArray(new Integer[0]));
     }
 
     @Test

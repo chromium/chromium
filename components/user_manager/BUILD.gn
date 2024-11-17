@@ -64,8 +64,8 @@ component("user_manager") {
       "user_image/user_image.h",
       "user_manager.cc",
       "user_manager.h",
-      "user_manager_base.cc",
-      "user_manager_base.h",
+      "user_manager_impl.cc",
+      "user_manager_impl.h",
     ]
 
     deps += [

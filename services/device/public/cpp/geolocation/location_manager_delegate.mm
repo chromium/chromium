@@ -5,6 +5,7 @@
 #include "services/device/public/cpp/geolocation/location_manager_delegate.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "components/device_event_log/device_event_log.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source_apple.h"
 
 @implementation LocationManagerDelegate
@@ -63,6 +64,12 @@
   position.speed = location.speed;
   position.heading = location.course;
 
+  // Records the accuracy value (in meters) of a valid Geoposition.
+  // Values above 10000 meters are considered very inaccurate and are
+  // categorized into the overflow bucket. This cap prioritizes accuracy
+  // resolution in the lower range.
+  base::UmaHistogramCounts10000("Geolocation.CoreLocationProvider.Accuracy",
+                                static_cast<int>(position.accuracy));
   _manager->PositionUpdated(position);
 }
 
@@ -70,6 +77,10 @@
        didFailWithError:(NSError*)error {
   base::UmaHistogramSparse("Geolocation.CoreLocationProvider.ErrorCode",
                            static_cast<int>(error.code));
+  GEOLOCATION_LOG(ERROR)
+      << "CLLocationManager::didFailWithError invoked with error code: "
+      << static_cast<int>(error.code);
+
   device::mojom::GeopositionError position_error;
   switch (error.code) {
     case kCLErrorDenied:

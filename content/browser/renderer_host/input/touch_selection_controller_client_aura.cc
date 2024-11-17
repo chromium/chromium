@@ -20,13 +20,14 @@
 #include "ui/aura/window.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/pointer/touch_editing_controller.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 #include "ui/touch_selection/touch_handle_drawable_aura.h"
 #include "ui/touch_selection/touch_selection_magnifier_aura.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
@@ -145,8 +146,8 @@ void TouchSelectionControllerClientAura::OnScrollCompleted() {
 
 bool TouchSelectionControllerClientAura::HandleContextMenu(
     const ContextMenuParams& params) {
-  if ((params.source_type == ui::MENU_SOURCE_LONG_PRESS ||
-       params.source_type == ui::MENU_SOURCE_LONG_TAP) &&
+  if ((params.source_type == ui::mojom::MenuSourceType::kLongPress ||
+       params.source_type == ui::mojom::MenuSourceType::kLongTap) &&
       params.is_editable && params.selection_text.empty() &&
       IsQuickMenuAvailable()) {
     quick_menu_requested_ = true;
@@ -155,8 +156,8 @@ bool TouchSelectionControllerClientAura::HandleContextMenu(
   }
 
   if (::features::IsTouchTextEditingRedesignEnabled() &&
-      params.source_type == ui::MENU_SOURCE_TOUCH && params.is_editable &&
-      params.selection_text.empty()) {
+      params.source_type == ui::mojom::MenuSourceType::kTouch &&
+      params.is_editable && params.selection_text.empty()) {
     if (IsQuickMenuAvailable()) {
       // The selection controller might have been reset between the last
       // selection bound update and the current context menu event (e.g. if
@@ -177,9 +178,10 @@ bool TouchSelectionControllerClientAura::HandleContextMenu(
     return true;
   }
 
-  const bool from_touch = params.source_type == ui::MENU_SOURCE_LONG_PRESS ||
-                          params.source_type == ui::MENU_SOURCE_LONG_TAP ||
-                          params.source_type == ui::MENU_SOURCE_TOUCH;
+  const bool from_touch =
+      params.source_type == ui::mojom::MenuSourceType::kLongPress ||
+      params.source_type == ui::mojom::MenuSourceType::kLongTap ||
+      params.source_type == ui::mojom::MenuSourceType::kTouch;
   if (from_touch && !params.selection_text.empty())
     return true;
 
@@ -367,16 +369,15 @@ bool TouchSelectionControllerClientAura::SupportsAnimation() const {
 
 bool TouchSelectionControllerClientAura::InternalClient::SupportsAnimation()
     const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void TouchSelectionControllerClientAura::SetNeedsAnimate() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TouchSelectionControllerClientAura::InternalClient::SetNeedsAnimate() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TouchSelectionControllerClientAura::MoveCaret(
@@ -465,7 +466,7 @@ void TouchSelectionControllerClientAura::OnSelectionEvent(
 
 void TouchSelectionControllerClientAura::InternalClient::OnSelectionEvent(
     ui::SelectionEventType event) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TouchSelectionControllerClientAura::OnDragUpdate(
@@ -475,7 +476,7 @@ void TouchSelectionControllerClientAura::OnDragUpdate(
 void TouchSelectionControllerClientAura::InternalClient::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::unique_ptr<ui::TouchHandleDrawable>
@@ -491,8 +492,7 @@ void TouchSelectionControllerClientAura::DidScroll() {}
 
 std::unique_ptr<ui::TouchHandleDrawable>
 TouchSelectionControllerClientAura::InternalClient::CreateDrawable() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // Since the top-level client can only ever have its selection position changed
@@ -569,8 +569,7 @@ void TouchSelectionControllerClientAura::ExecuteCommand(int command_id,
           /*should_show_context_menu=*/false);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -581,7 +580,7 @@ void TouchSelectionControllerClientAura::RunContextMenu() {
       gfx::PointF(anchor_rect.CenterPoint().x(), anchor_rect.y());
   RenderWidgetHostImpl* host = rwhva_->host();
   host->ShowContextMenuAtPoint(gfx::ToRoundedPoint(anchor_point),
-                               ui::MENU_SOURCE_TOUCH_EDIT_MENU);
+                               ui::mojom::MenuSourceType::kTouchEditMenu);
 
   // Hide selection handles after getting rect-between-bounds from touch
   // selection controller; otherwise, rect would be empty and the above

@@ -77,7 +77,6 @@ class GuestOsSharePath : public KeyedService,
     std::vector<std::string> launch_args;
   };
 
-  static GuestOsSharePath* GetForProfile(Profile* profile);
   explicit GuestOsSharePath(Profile* profile);
 
   GuestOsSharePath(const GuestOsSharePath&) = delete;

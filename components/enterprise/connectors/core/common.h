@@ -9,13 +9,16 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/files/file_path.h"
 #include "base/supports_user_data.h"
 #include "build/blink_buildflags.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/connectors/core/reporting_constants.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
 
@@ -36,59 +39,102 @@ using TriggeredRule = ContentAnalysisResponse::Result::TriggeredRule;
 using SourceDestinationStringPair = std::pair<std::string, std::string>;
 
 // Keys used to read a connector's policy values.
-constexpr char kKeyServiceProvider[] = "service_provider";
-constexpr char kKeyLinuxVerification[] = "verification.linux";
-constexpr char kKeyMacVerification[] = "verification.mac";
-constexpr char kKeyWindowsVerification[] = "verification.windows";
-constexpr char kKeyEnable[] = "enable";
-constexpr char kKeyDisable[] = "disable";
-constexpr char kKeyUrlList[] = "url_list";
-constexpr char kKeySourceDestinationList[] = "source_destination_list";
-constexpr char kKeyTags[] = "tags";
-constexpr char kKeyBlockUntilVerdict[] = "block_until_verdict";
-constexpr char kKeyBlockPasswordProtected[] = "block_password_protected";
-constexpr char kKeyBlockLargeFiles[] = "block_large_files";
-constexpr char kKeyMinimumDataSize[] = "minimum_data_size";
-constexpr char kKeyEnabledEventNames[] = "enabled_event_names";
-constexpr char kKeyCustomMessages[] = "custom_messages";
-constexpr char kKeyRequireJustificationTags[] = "require_justification_tags";
-constexpr char kKeyCustomMessagesTag[] = "tag";
-constexpr char kKeyCustomMessagesMessage[] = "message";
-constexpr char kKeyCustomMessagesLearnMoreUrl[] = "learn_more_url";
-constexpr char kKeyMimeTypes[] = "mime_types";
-constexpr char kKeyEnterpriseId[] = "enterprise_id";
-constexpr char kKeyDefaultAction[] = "default_action";
-constexpr char kKeyDomain[] = "domain";
-constexpr char kKeyEnabledOptInEvents[] = "enabled_opt_in_events";
-constexpr char kKeyOptInEventName[] = "name";
-constexpr char kKeyOptInEventUrlPatterns[] = "url_patterns";
+inline constexpr char kKeyServiceProvider[] = "service_provider";
+inline constexpr char kKeyLinuxVerification[] = "verification.linux";
+inline constexpr char kKeyMacVerification[] = "verification.mac";
+inline constexpr char kKeyWindowsVerification[] = "verification.windows";
+inline constexpr char kKeyEnable[] = "enable";
+inline constexpr char kKeyDisable[] = "disable";
+inline constexpr char kKeyUrlList[] = "url_list";
+inline constexpr char kKeySourceDestinationList[] = "source_destination_list";
+inline constexpr char kKeyTags[] = "tags";
+inline constexpr char kKeyBlockUntilVerdict[] = "block_until_verdict";
+inline constexpr char kKeyBlockPasswordProtected[] = "block_password_protected";
+inline constexpr char kKeyBlockLargeFiles[] = "block_large_files";
+inline constexpr char kKeyMinimumDataSize[] = "minimum_data_size";
+inline constexpr char kKeyEnabledEventNames[] = "enabled_event_names";
+inline constexpr char kKeyCustomMessages[] = "custom_messages";
+inline constexpr char kKeyRequireJustificationTags[] =
+    "require_justification_tags";
+inline constexpr char kKeyCustomMessagesTag[] = "tag";
+inline constexpr char kKeyCustomMessagesMessage[] = "message";
+inline constexpr char kKeyCustomMessagesLearnMoreUrl[] = "learn_more_url";
+inline constexpr char kKeyMimeTypes[] = "mime_types";
+inline constexpr char kKeyEnterpriseId[] = "enterprise_id";
+inline constexpr char kKeyDefaultAction[] = "default_action";
+inline constexpr char kKeyDomain[] = "domain";
+inline constexpr char kKeyEnabledOptInEvents[] = "enabled_opt_in_events";
+inline constexpr char kKeyOptInEventName[] = "name";
+inline constexpr char kKeyOptInEventUrlPatterns[] = "url_patterns";
 
 // Available tags.
-constexpr char kDlpTag[] = "dlp";
-constexpr char kMalwareTag[] = "malware";
+inline constexpr char kDlpTag[] = "dlp";
+inline constexpr char kMalwareTag[] = "malware";
 
 // A MIME type string that matches all MIME types.
-constexpr char kWildcardMimeType[] = "*";
+inline constexpr char kWildcardMimeType[] = "*";
 
 // The reporting connector subdirectory in User_Data_Directory
-constexpr base::FilePath::CharType RC_BASE_DIR[] =
+inline constexpr base::FilePath::CharType RC_BASE_DIR[] =
     FILE_PATH_LITERAL("Enterprise/ReportingConnector/");
 
-enum class ReportingConnector {
-  SECURITY_EVENT,
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Keep this enum in sync with
+// EnterpriseReportingEventType in enums.xml.
+enum class EnterpriseReportingEventType {
+  kUnknownEvent = 0,
+  kPasswordReuseEvent = 1,
+  kPasswordChangedEvent = 2,
+  kDangerousDownloadEvent = 3,
+  kInterstitialEvent = 4,
+  kSensitiveDataEvent = 5,
+  kUnscannedFileEvent = 6,
+  kLoginEvent = 7,
+  kPasswordBreachEvent = 8,
+  kUrlFilteringInterstitialEvent = 9,
+  kExtensionInstallEvent = 10,
+  kBrowserCrashEvent = 11,
+  kExtensionTelemetryEvent = 12,
+  kMaxValue = kExtensionTelemetryEvent,
 };
+
+// Mapping from event name to UMA enum for logging histogram.
+inline constexpr auto kEventNameToUmaEnumMap =
+    base::MakeFixedFlatMap<std::string_view, EnterpriseReportingEventType>({
+        {kKeyPasswordReuseEvent,
+         EnterpriseReportingEventType::kPasswordReuseEvent},
+        {kKeyPasswordChangedEvent,
+         EnterpriseReportingEventType::kPasswordChangedEvent},
+        {kKeyDangerousDownloadEvent,
+         EnterpriseReportingEventType::kDangerousDownloadEvent},
+        {kKeyInterstitialEvent,
+         EnterpriseReportingEventType::kInterstitialEvent},
+        {kKeySensitiveDataEvent,
+         EnterpriseReportingEventType::kSensitiveDataEvent},
+        {kKeyUnscannedFileEvent,
+         EnterpriseReportingEventType::kUnscannedFileEvent},
+        {kKeyLoginEvent, EnterpriseReportingEventType::kLoginEvent},
+        {kKeyPasswordBreachEvent,
+         EnterpriseReportingEventType::kPasswordBreachEvent},
+        {kKeyUrlFilteringInterstitialEvent,
+         EnterpriseReportingEventType::kUrlFilteringInterstitialEvent},
+        {kExtensionInstallEvent,
+         EnterpriseReportingEventType::kExtensionInstallEvent},
+        {kBrowserCrashEvent, EnterpriseReportingEventType::kBrowserCrashEvent},
+        {kExtensionTelemetryEvent,
+         EnterpriseReportingEventType::kExtensionTelemetryEvent},
+    });
 
 // Struct holding the necessary data to tweak the behavior of the reporting
 // Connector.
 struct ReportingSettings {
   ReportingSettings();
-  ReportingSettings(GURL url, const std::string& dm_token, bool per_profile);
+  ReportingSettings(const std::string& dm_token, bool per_profile);
   ReportingSettings(ReportingSettings&&);
   ReportingSettings(const ReportingSettings&);
   ReportingSettings& operator=(ReportingSettings&&);
   ~ReportingSettings();
 
-  GURL reporting_url;
   std::set<std::string> enabled_event_names;
   std::map<std::string, std::vector<std::string>> enabled_opt_in_events;
   std::string dm_token;
@@ -236,6 +282,9 @@ enum class DataRegion { NO_PREFERENCE = 0, UNITED_STATES = 1, EUROPE = 2 };
 GURL GetRegionalizedEndpoint(base::span<const char* const> region_urls,
                              DataRegion data_region);
 DataRegion ChromeDataRegionSettingToEnum(int chrome_data_region_setting);
+
+EnterpriseReportingEventType GetUmaEnumFromEventName(
+    std::string_view eventName);
 
 }  // namespace enterprise_connectors
 

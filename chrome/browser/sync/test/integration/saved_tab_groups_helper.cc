@@ -8,10 +8,10 @@
 
 #include "base/uuid.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
-#include "components/saved_tab_groups/features.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
@@ -357,6 +357,16 @@ bool ServerSavedTabGroupMatchChecker::IsExitConditionSatisfied(
   std::vector<sync_pb::SavedTabGroupSpecifics> entities =
       SyncEntitiesToSavedTabGroupSpecifics(
           fake_server()->GetSyncEntitiesByDataType(syncer::SAVED_TAB_GROUP));
+
+  for (const sync_pb::SavedTabGroupSpecifics& specifics : entities) {
+    *os << "Entity GUID: " << specifics.guid() << ", ";
+    if (specifics.has_group()) {
+      *os << "group title: " << specifics.group().title() << ". ";
+    } else if (specifics.has_tab()) {
+      *os << "tab title: " << specifics.tab().title()
+          << ", URL: " << specifics.tab().url() << ". ";
+    }
+  }
 
   testing::StringMatchResultListener result_listener;
   const bool matches =

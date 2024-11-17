@@ -188,6 +188,7 @@ chromium-metrics-reviews@google.com.
   <int value="134" label="TilingWindowResizeUp"/>
   <int value="135" label="TilingWindowResizeDown"/>
   <int value="136" label="ToggleMouseKeys"/>
+  <int value="137" label="ResizePipWindow"/>
   <int value="9000" label="DebugClearUseKMeansPref"/>
   <int value="9001" label="DebugKeyboardBacklightToggle"/>
   <int value="9002" label="DebugMicrophoneMuteToggle"/>
@@ -1417,6 +1418,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
 <enum name="MahiFeature">
   <int value="0" label="Summary"/>
   <int value="1" label="QA"/>
+  <int value="2" label="Elucidation"/>
 </enum>
 
 <enum name="MahiMenuButton">
@@ -1425,6 +1427,7 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="2" label="Submit Question Button"/>
   <int value="3" label="Condensed Menu Button"/>
   <int value="4" label="Settings Button"/>
+  <int value="5" label="Elucidation Button"/>
 </enum>
 
 <enum name="MahiProviderCreationStatus">
@@ -1454,6 +1457,37 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="2" label="HasButtonConfig"/>
 </enum>
 
+<enum name="MicrophoneMuteToggleDevices">
+  <int value="0" label="System Microphone Mute Jabra"/>
+  <int value="1" label="System Microphone Mute Logitech"/>
+  <int value="2" label="System Microphone Mute Poly"/>
+  <int value="3" label="System Microphone Mute Sony"/>
+  <int value="4" label="System Microphone Mute Google"/>
+  <int value="5" label="System Microphone Mute Other Has Keyboard"/>
+  <int value="6" label="System Microphone Mute Other Not Keyboard"/>
+  <int value="7" label="Phone Mute Jabra"/>
+  <int value="8" label="Phone Mute Logitech"/>
+  <int value="9" label="Phone Mute Poly"/>
+  <int value="10" label="Phone Mute Sony"/>
+  <int value="11" label="Phone Mute Google"/>
+  <int value="12" label="Phone Mute Other Has Keyboard"/>
+  <int value="13" label="Phone Mute Other Not Keyboard"/>
+  <int value="14" label="Start or Stop Microphone Capture Jabra"/>
+  <int value="15" label="Start or Stop Microphone Capture Logitech"/>
+  <int value="16" label="Start or Stop Microphone Capture Poly"/>
+  <int value="17" label="Start or Stop Microphone Capture Sony"/>
+  <int value="18" label="Start or Stop Microphone Capture Google"/>
+  <int value="19" label="Start or Stop Microphone Capture Other Has Keyboard"/>
+  <int value="20" label="Start or Stop Microphone Capture Other Not Keyboard"/>
+  <int value="21" label="Other Microphone Scan Code Jabra"/>
+  <int value="22" label="Other Microphone Scan Code Logitech"/>
+  <int value="23" label="Other Microphone Scan Code Poly"/>
+  <int value="24" label="Other Microphone Scan Code Sony"/>
+  <int value="25" label="Other Microphone Scan Code Google"/>
+  <int value="26" label="Other Microphone Scan Code Other Has Keyboard"/>
+  <int value="27" label="Other Microphone Scan Code Other Not Keyboard"/>
+</enum>
+
 <enum name="ModeEntryMetric">
   <int value="0" label="Unknown"/>
   <int value="1" label="Not supported"/>
@@ -1479,6 +1513,26 @@ chromeos/ash/components/language/language_packs/language_pack_manager.h -->
   <int value="9" label="Backspace"/>
   <int value="10" label="Escape"/>
   <int value="11" label="Assistant"/>
+</enum>
+
+<enum name="NetworkAnnotationHashCodes">
+  <summary>
+    Hash codes mapping to Chrome Network Annotation IDs. More info can be found
+    at tools/traffic_annotation/scripts/auditor/README.md.
+  </summary>
+  <int value="4306022" label="safe_browsing_binary_upload_app"/>
+  <int value="24186190" label="webrtc_event_log_uploader"/>
+  <int value="28498700" label="chrome_plugin_vm_api"/>
+  <int value="46208118" label="quick_answers_loader"/>
+  <int value="50127013" label="wallpaper_download_google_photo"/>
+  <int value="62443804" label="webrtc_log_upload"/>
+  <int value="86429515" label="calendar_get_events"/>
+  <int value="88863520" label="autofill_query"/>
+  <int value="99742369" label="remoting_log_to_server"/>
+  <int value="104798869" label="autofill_upload"/>
+  <int value="108804096" label="domain_reliability_report_upload"/>
+  <int value="108903331" label="signed_in_profile_avatar"/>
+  <int value="134729048" label="chrome_feedback_report_app"/>
 </enum>
 
 <enum name="OptInCardAction">
@@ -1902,6 +1956,14 @@ https://chromium.googlesource.com/chromiumos/platform2/+/main/secagentd/proto/se
       label="Memfd execution attempt detected in the audit log file."/>
 </enum>
 
+<enum name="SelectedTextState">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Eligible"/>
+  <int value="2" label="Empty"/>
+  <int value="3" label="Too short"/>
+  <int value="4" label="Too long"/>
+</enum>
+
 <enum name="SimulateRightClickModifier">
   <int value="0" label="None"/>
   <int value="1" label="Alt"/>
@@ -1929,13 +1991,6 @@ https://chromium.googlesource.com/chromiumos/platform2/+/main/secagentd/proto/se
   <int value="5" label="NetworkBandwidth"/>
   <int value="6" label="CameraFrameAnalysis"/>
   <int value="7" label="KeyboardBacklight"/>
-</enum>
-
-<enum name="UmaInitParamsResult">
-  <int value="0" label="Client ID and entropy sources were found"/>
-  <int value="1" label="Only the client ID was found"/>
-  <int value="2" label="Only entropy sources were found"/>
-  <int value="3" label="Neither the client ID nor entropy sources were found"/>
 </enum>
 
 <enum name="WebApkInstallResultChromeOS">

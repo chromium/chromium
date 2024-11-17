@@ -426,9 +426,8 @@ void InSessionPasswordChangeManager::OnPasswordUpdateSuccess(
   DismissExpiryNotification();
   PasswordChangeDialog::Dismiss();
   ConfirmPasswordChangeDialog::Dismiss();
-  if (features::IsSamlNotificationOnPasswordChangeSuccessEnabled()) {
-    PasswordChangeSuccessNotification::Show(primary_profile_);
-  }
+  PasswordChangeSuccessNotification::Show(primary_profile_);
+
   // We request a new sync token. It will be updated locally and signal the fact
   // of password change to other devices owned by the user.
   CreateTokenAsync();

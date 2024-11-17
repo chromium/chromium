@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/gamepad/gamepad_comparisons.h"
 
 #include "third_party/blink/renderer/modules/gamepad/gamepad.h"
@@ -21,32 +16,14 @@ namespace {
 // position.
 const double kButtonActivationThreshold = 0.9;
 
-template <typename Collection>
-bool HasSameNumberofElements(const Collection* lhs, const Collection* rhs) {
-  return lhs->length() == rhs->length();
-}
-
-bool HasSameNumberofElements(const GamepadTouchVector* lhs,
-                             const GamepadTouchVector* rhs) {
-  return lhs->size() == rhs->size();
-}
-
 template <typename T>
-auto Begin(const T* col) {
-  return col->Data();
+auto AsSpan(const T& collection) {
+  return collection.AsSpan();
 }
 
-template <typename T>
-auto End(const T* col) {
-  return col->Data() + col->length();
-}
-
-auto Begin(const GamepadTouchVector* col) {
-  return col->begin();
-}
-
-auto End(const GamepadTouchVector* col) {
-  return col->end();
+base::span<const GamepadTouchVector::ValueType> AsSpan(
+    const GamepadTouchVector& collection) {
+  return base::span(collection);
 }
 
 template <typename Collection,
@@ -56,16 +33,7 @@ bool Compare(const Collection* old_array,
              Pred pred = Pred{}) {
   if (old_array && new_array) {
     // Both arrays are non-null.
-    // Compare length
-    if (!HasSameNumberofElements(old_array, new_array)) {
-      return true;
-    }
-
-    // Compare elements until a difference is found.
-    bool is_equal =
-        std::equal(Begin(old_array), End(old_array), Begin(new_array), pred);
-
-    return !is_equal;
+    return !std::ranges::equal(AsSpan(*old_array), AsSpan(*new_array), pred);
   } else if (old_array != new_array) {
     // Exactly one array is non-null.
     return true;

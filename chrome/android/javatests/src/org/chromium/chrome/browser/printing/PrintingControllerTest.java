@@ -29,6 +29,8 @@ import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -227,8 +229,14 @@ public class PrintingControllerTest {
                 () -> {
                     printingController.setPendingPrint(
                             new TabPrinter(currentTab), mockPrintManagerDelegate, -1, -1);
-                    TabModelUtils.closeCurrentTab(
-                            mActivityTestRule.getActivity().getCurrentTabModel());
+                    TabModel currentModel = mActivityTestRule.getActivity().getCurrentTabModel();
+                    Tab tab = TabModelUtils.getCurrentTab(currentModel);
+                    Assert.assertNotNull(tab);
+                    currentModel
+                            .getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                    /* allowDialog= */ false);
                     Assert.assertFalse(
                             "currentTab should be closed already.", currentTab.isInitialized());
                     printingController.startPendingPrint();
@@ -273,8 +281,15 @@ public class PrintingControllerTest {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         // Close tab.
-                        TabModelUtils.closeCurrentTab(
-                                mActivityTestRule.getActivity().getCurrentTabModel());
+                        TabModel currentModel =
+                                mActivityTestRule.getActivity().getCurrentTabModel();
+                        Tab tab = TabModelUtils.getCurrentTab(currentModel);
+                        Assert.assertNotNull(tab);
+                        currentModel
+                                .getTabRemover()
+                                .closeTabs(
+                                        TabClosureParams.closeTab(tab).allowUndo(false).build(),
+                                        /* allowDialog= */ false);
                         Assert.assertFalse(
                                 "currentTab should be closed already.", currentTab.isInitialized());
 

@@ -136,6 +136,8 @@ public abstract class TouchToFillViewBase implements BottomSheetContent {
                     }
                 });
 
+        mContentView.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
+
         // Apply RTL layout changes.
         int layoutDirection =
                 LocalizationUtils.isLayoutRtl()

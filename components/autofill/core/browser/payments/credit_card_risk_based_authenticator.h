@@ -10,7 +10,7 @@
 
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 
 namespace autofill {
 
@@ -90,8 +90,7 @@ class CreditCardRiskBasedAuthenticator {
     // handling logic with OnRiskBasedAuthenticationResponseReceived().
     virtual void OnVirtualCardRiskBasedAuthenticationResponseReceived(
         payments::PaymentsAutofillClient::PaymentsRpcResult result,
-        const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
-            response_details) = 0;
+        const payments::UnmaskResponseDetails& response_details) = 0;
   };
 
   explicit CreditCardRiskBasedAuthenticator(AutofillClient* client);
@@ -119,8 +118,7 @@ class CreditCardRiskBasedAuthenticator {
 
   void OnUnmaskResponseReceivedForTesting(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
-          response_details) {
+      const payments::UnmaskResponseDetails& response_details) {
     OnUnmaskResponseReceived(result, response_details);
   }
 
@@ -131,8 +129,7 @@ class CreditCardRiskBasedAuthenticator {
   // Callback function invoked when an unmask response has been received.
   void OnUnmaskResponseReceived(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
-          response_details);
+      const payments::UnmaskResponseDetails& response_details);
 
   // Reset the authenticator to its initial state.
   virtual void Reset();
@@ -148,8 +145,7 @@ class CreditCardRiskBasedAuthenticator {
 
   // This contains the details of the card unmask request to be sent to the
   // server.
-  std::unique_ptr<payments::PaymentsNetworkInterface::UnmaskRequestDetails>
-      unmask_request_details_;
+  std::unique_ptr<payments::UnmaskRequestDetails> unmask_request_details_;
 
   // The timestamp when the unmask request is sent. Used for logging.
   std::optional<base::TimeTicks> unmask_card_request_timestamp_;

@@ -46,7 +46,8 @@
           "builder": "mac-rel-cft",
           "group": "tryserver.chromium.cft"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac-rel-cft/targets"
     }
   },
   "$build/reclient": {

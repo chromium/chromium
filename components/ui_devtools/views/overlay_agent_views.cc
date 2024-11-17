@@ -383,7 +383,7 @@ OverlayAgentViews::OverlayAgentViews(DOMAgent* dom_agent)
       show_size_on_canvas_(false),
       highlight_rect_config_(HighlightRectsConfiguration::NO_DRAW) {}
 
-OverlayAgentViews::~OverlayAgentViews() {}
+OverlayAgentViews::~OverlayAgentViews() = default;
 
 void OverlayAgentViews::SetPinnedNodeId(int node_id) {
   pinned_id_ = node_id;
@@ -467,7 +467,7 @@ void OverlayAgentViews::ShowDistancesInHighlightOverlay(int pinned_id,
     } else if (r1.Intersects(r2)) {
       highlight_rect_config_ = HighlightRectsConfiguration::R1_INTERSECTS_R2;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   } else {
     highlight_rect_config_ = HighlightRectsConfiguration::NO_DRAW;
@@ -709,8 +709,7 @@ void OverlayAgentViews::OnPaintLayer(const ui::PaintContext& context) {
       DrawRectGuideLinesOnCanvas(screen_bounds, hovered_rect_f, flags, canvas);
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 

@@ -1,0 +1,15 @@
+Document
+++Edit AriaProperties='expanded=false;multiline=false;multiselectable=false;required=false;hasactions=true' Value.Value='your-file-name.pdf EditOpenClose'
+++++Text Name='your-file-name.pdf '
+++++Button Name='Edit'
+++++Button Name='Open'
+++++Button Name='Close'
+++Button Name='Delete'
+=== Start Continuation ===
+Document Name='change-aria-action-id'
+++Edit AriaProperties='expanded=false;multiline=false;multiselectable=false;required=false;hasactions=true' Value.Value='your-file-name.pdf EditOpenClose'
+++++Text Name='your-file-name.pdf '
+++++Button Name='Edit'
+++++Button Name='Open'
+++++Button Name='Close'
+++Button Name='Delete'

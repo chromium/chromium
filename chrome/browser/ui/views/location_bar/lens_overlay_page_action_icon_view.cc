@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/lens_overlay_page_action_icon_view.h"
 
+#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -14,12 +15,14 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party_ui.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/grit/branded_strings.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_metrics.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_controller.h"
@@ -191,12 +194,30 @@ void LensOverlayPageActionIconView::UpdateImpl() {
 
 void LensOverlayPageActionIconView::OnExecuting(
     PageActionIconView::ExecuteSource source) {
+  // If the user entered Lens through the keyboard, we want to open Lens Web
+  // in a new tab.
+  if (source == PageActionIconView::EXECUTE_SOURCE_KEYBOARD) {
+    if (!lens_region_search_controller_) {
+      lens_region_search_controller_ =
+          std::make_unique<lens::LensRegionSearchController>();
+    }
+    lens_region_search_controller_->Start(
+        GetWebContents(), /*use_fullscreen_capture=*/true,
+        /*force_open_in_new_tab=*/true,
+        /*is_google_default_search_provider=*/true,
+        lens::AmbientSearchEntryPoint::
+            LENS_OVERLAY_LOCATION_BAR_ACCESSIBILITY_FALLBACK);
+    return;
+  }
+
   LensOverlayController* const controller =
       LensOverlayController::GetController(GetWebContents());
   CHECK(controller);
 
+  lens::RecordAmbientSearchQuery(
+      lens::AmbientSearchEntryPoint::LENS_OVERLAY_LOCATION_BAR);
   controller->ShowUI(lens::LensOverlayInvocationSource::kOmnibox);
-  UserEducationService::MaybeNotifyPromoFeatureUsed(
+  UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
       GetWebContents()->GetBrowserContext(), lens::features::kLensOverlay);
 }
 

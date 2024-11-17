@@ -23,6 +23,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -37,7 +38,6 @@ import org.chromium.content_public.browser.LoadCommittedDetails;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.common.ContentFeatures;
-import org.chromium.ui.base.MenuSourceType;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragStateTracker;
@@ -46,6 +46,7 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 
 import java.lang.annotation.Retention;
@@ -138,7 +139,7 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                         && ContextMenuUtils.usePopupContextMenuForContext(activity);
         final boolean isPopup =
                 isDragDropEnabled
-                        || params.getSourceType() == MenuSourceType.MENU_SOURCE_MOUSE
+                        || params.getSourceType() == MenuSourceType.MOUSE
                         || params.getOpenedFromHighlight();
         final float density = activity.getResources().getDisplayMetrics().density;
         final float touchPointXPx = params.getTriggeringTouchXDp() * density;
@@ -259,12 +260,9 @@ public class ContextMenuCoordinator implements ContextMenuUi {
 
                     @Override
                     public boolean isEnabled(int position) {
-                        if (getItemViewType(position) == ListItemType.CONTEXT_MENU_ITEM
+                        return getItemViewType(position) == ListItemType.CONTEXT_MENU_ITEM
                                 || getItemViewType(position)
-                                        == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
-                            return ((ListItem) getItem(position)).model.get(ENABLED);
-                        }
-                        return false;
+                                        == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON;
                     }
 
                     @Override
@@ -301,8 +299,12 @@ public class ContextMenuCoordinator implements ContextMenuUi {
         mListView.setOnItemClickListener(
                 (p, v, pos, id) -> {
                     assert id != INVALID_ITEM_ID;
-
-                    clickItem((int) id, activity, onItemClicked);
+                    ListItem item = findItem((int) id);
+                    clickItem(
+                            (int) id,
+                            activity,
+                            onItemClicked,
+                            item == null ? true : item.model.get(ENABLED));
                 });
         // Set the fading edge for context menu. This is guarded by drag and drop feature flag, but
         // ideally this could be enabled for all forms of context menu.
@@ -325,17 +327,24 @@ public class ContextMenuCoordinator implements ContextMenuUi {
 
     /**
      * Execute an action for the selected item and close the menu.
+     *
      * @param id The id of the item.
      * @param activity The current activity.
      * @param onItemClicked The callback to take action with the given id.
+     * @param enabled Whether the item is enabled.
      */
-    private void clickItem(int id, Activity activity, Callback<Integer> onItemClicked) {
+    private void clickItem(
+            int id, Activity activity, Callback<Integer> onItemClicked, boolean enabled) {
         // Do not start any action when the activity is on the way to destruction.
         // See https://crbug.com/990987
         if (activity.isFinishing() || activity.isDestroyed()) return;
 
-        onItemClicked.onResult((int) id);
-        dismissDialog();
+        onItemClicked.onResult(id);
+
+        // Dismiss the dialog if the item is enabled.
+        if (enabled) {
+            dismissDialog();
+        }
     }
 
     /**
@@ -346,18 +355,18 @@ public class ContextMenuCoordinator implements ContextMenuUi {
      * @param layout The inflated context menu layout that will house the context menu.
      * @param menuView The inflated view that contains the list view.
      * @param isPopup Whether the context menu is being shown in a {@link AnchoredPopupWindow}.
-     * @param topMarginPx An explicit top margin for the dialog, or -1 to use default
-     *                    defined in XML.
-     * @param bottomMarginPx An explicit bottom margin for the dialog, or -1 to use default
-     *                       defined in XML.
+     * @param topMarginPx An explicit top margin for the dialog, or -1 to use default defined in
+     *     XML.
+     * @param bottomMarginPx An explicit bottom margin for the dialog, or -1 to use default defined
+     *     in XML.
      * @param popupMargin The margin for the popup window.
      * @param desiredPopupContentWidth The desired width for the content of the context menu.
      * @param dragDispatchingTargetView The view presented behind the context menu. If provided,
-     *         drag event happened outside of ContextMenu will be dispatched into this View.
+     *     drag event happened outside of ContextMenu will be dispatched into this View.
      * @param rect Rect location where context menu is triggered. If this menu is a popup, the
-     *             coordinates are expected to be screen coordinates.
-     * @return Returns a final dialog that does not have a background can be displayed using
-     *         {@link AlertDialog#show()}.
+     *     coordinates are expected to be screen coordinates.
+     * @return Returns a final dialog that does not have a background can be displayed using {@link
+     *     AlertDialog#show()}.
      */
     @VisibleForTesting
     static ContextMenuDialog createContextMenuDialog(
@@ -441,7 +450,12 @@ public class ContextMenuCoordinator implements ContextMenuUi {
             if (item.type == ListItemType.CONTEXT_MENU_ITEM_WITH_ICON_BUTTON) {
                 item.model.set(
                         BUTTON_CLICK_LISTENER,
-                        (v) -> clickItem(item.model.get(BUTTON_MENU_ID), activity, onItemClicked));
+                        (v) ->
+                                clickItem(
+                                        item.model.get(BUTTON_MENU_ID),
+                                        activity,
+                                        onItemClicked,
+                                        item.model.get(ENABLED)));
             }
         }
 
@@ -478,29 +492,26 @@ public class ContextMenuCoordinator implements ContextMenuUi {
     void simulateShoppyImageClassificationForTesting() {
         // Don't need to initialize controller because that should be triggered by
         // forcing feature flags.
-        mChipController.setFakeLensQueryResultForTesting(); // IN-TEST
         ChipRenderParams chipRenderParamsForTesting = new ChipRenderParams();
         chipRenderParamsForTesting.titleResourceId =
                 R.string.contextmenu_shop_image_with_google_lens;
-        chipRenderParamsForTesting.onClickCallback = () -> {};
+        chipRenderParamsForTesting.onClickCallback = CallbackUtils.emptyRunnable();
         mChipController.showChip(chipRenderParamsForTesting);
     }
 
     void simulateTranslateImageClassificationForTesting() {
         // Don't need to initialize controller because that should be triggered by
         // forcing feature flags.
-        mChipController.setFakeLensQueryResultForTesting(); // IN-TEST
         ChipRenderParams chipRenderParamsForTesting = new ChipRenderParams();
         chipRenderParamsForTesting.titleResourceId =
                 R.string.contextmenu_translate_image_with_google_lens;
-        chipRenderParamsForTesting.onClickCallback = () -> {};
+        chipRenderParamsForTesting.onClickCallback = CallbackUtils.emptyRunnable();
         mChipController.showChip(chipRenderParamsForTesting);
     }
 
     ChipRenderParams simulateImageClassificationForTesting() {
         // Don't need to initialize controller because that should be triggered by
         // forcing feature flags.
-        mChipController.setFakeLensQueryResultForTesting(); // IN-TEST
         ChipRenderParams chipRenderParamsForTesting = new ChipRenderParams();
         return chipRenderParamsForTesting;
     }

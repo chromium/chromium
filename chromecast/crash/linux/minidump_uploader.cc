@@ -12,6 +12,7 @@
 #include <fstream>
 #include <list>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <vector>
 
@@ -177,30 +178,35 @@ bool MinidumpUploader::DoWork() {
 
     LOG(INFO) << "OptInStats is true, uploading crash dump";
 
-    int64_t size;
-    if (!dump_path.empty() && !base::GetFileSize(dump_path, &size)) {
-      // either the file does not exist, or there was an error logging its
-      // path, or settings its permission; regardless, we can't upload it.
-      for (const auto& attachment : attachments) {
-        base::FilePath attachment_path(attachment);
-        if (attachment_path.DirName() == dump_path.DirName()) {
-          base::DeleteFile(attachment_path);
+    if (!dump_path.empty()) {
+      std::optional<int64_t> size = base::GetFileSize(dump_path);
+      if (!size.has_value()) {
+        // either the file does not exist, or there was an error logging its
+        // path, or settings its permission; regardless, we can't upload it.
+        for (const auto& attachment : attachments) {
+          base::FilePath attachment_path(attachment);
+          if (attachment_path.DirName() == dump_path.DirName()) {
+            base::DeleteFile(attachment_path);
+          }
         }
+        dumps.erase(dumps.begin());
+        continue;
       }
-      dumps.erase(dumps.begin());
-      continue;
     }
 
     std::stringstream comment;
     if (log_path.empty()) {
       comment << "Log file not specified. ";
-    } else if (!base::GetFileSize(log_path, &size)) {
-      comment << "Can't get size of " << log_path.value() << ": "
-              << strerror(errno);
-      // if we can't find the log file, don't upload the log
-      log_path.clear();
     } else {
-      comment << "Log size is " << size << ". ";
+      std::optional<int64_t> size = base::GetFileSize(log_path);
+      if (!size.has_value()) {
+        comment << "Can't get size of " << log_path.value() << ": "
+                << strerror(errno);
+        // if we can't find the log file, don't upload the log
+        log_path.clear();
+      } else {
+        comment << "Log size is " << size.value() << ". ";
+      }
     }
 
     std::stringstream uptime_stream;

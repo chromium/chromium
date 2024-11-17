@@ -34,7 +34,8 @@ GlobalErrorServiceFactory::GlobalErrorServiceFactory()
 
 GlobalErrorServiceFactory::~GlobalErrorServiceFactory() = default;
 
-KeyedService* GlobalErrorServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+GlobalErrorServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
-  return new GlobalErrorService();
+  return std::make_unique<GlobalErrorService>();
 }

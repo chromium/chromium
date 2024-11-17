@@ -71,7 +71,7 @@ class FailsTestCertVerifier : public CertVerifier {
 class MockRequireCTDelegate : public TransportSecurityState::RequireCTDelegate {
  public:
   MOCK_METHOD3(IsCTRequiredForHost,
-               CTRequirementLevel(const std::string& host,
+               CTRequirementLevel(std::string_view host,
                                   const X509Certificate* chain,
                                   const HashValueVector& hashes));
 };

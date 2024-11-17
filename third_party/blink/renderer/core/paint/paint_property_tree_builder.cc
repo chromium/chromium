@@ -76,6 +76,7 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/graphics/paint/effect_paint_property_node.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/skia/include/core/SkRRect.h"
 #include "ui/gfx/geometry/outsets_f.h"
@@ -85,6 +86,15 @@
 namespace blink {
 
 namespace {
+
+// This function is for convenience of debugging. For example, we can set a
+// breakpoint at the assignment to track new property changes.
+void UpdatePropertyChange(PaintPropertyChangeType& target,
+                          PaintPropertyChangeType new_change) {
+  if (target < new_change) {
+    target = new_change;
+  }
+}
 
 bool AreSubtreeUpdateReasonsIsolationPiercing(unsigned reasons) {
   // This is written to mean that if we have any reason other than the specified
@@ -110,14 +120,6 @@ PaintPropertyTreeBuilderFragmentContext::
   current.scroll = absolute_position.scroll = fixed_position.scroll =
       &ScrollPaintPropertyNode::Root();
 }
-
-PaintPropertyTreeBuilderContext::PaintPropertyTreeBuilderContext()
-    : force_subtree_update_reasons(0),
-      has_svg_hidden_container_ancestor(false),
-      was_layout_shift_root(false),
-      global_main_thread_scrolling_reasons(0),
-      composited_scrolling_preference(
-          static_cast<unsigned>(CompositedScrollingPreference::kDefault)) {}
 
 void VisualViewportPaintPropertyTreeBuilder::Update(
     LocalFrameView& main_frame_view,
@@ -275,6 +277,9 @@ class FragmentPaintPropertyTreeBuilder {
   ALWAYS_INLINE void UpdatePerspective();
   ALWAYS_INLINE void UpdateReplacedContentTransform();
   ALWAYS_INLINE void UpdateScrollAndScrollTranslation();
+  ALWAYS_INLINE void UpdateScrollNode();
+  ALWAYS_INLINE void UpdateScrollTranslation();
+  ALWAYS_INLINE void UpdateOverflowControlEffects();
   ALWAYS_INLINE void UpdateOutOfFlowContext();
   // See core/paint/README.md for the description of isolation nodes.
   ALWAYS_INLINE void UpdateTransformIsolationNode();
@@ -348,53 +353,48 @@ class FragmentPaintPropertyTreeBuilder {
 
   void OnUpdateTransform(PaintPropertyChangeType change) {
     if (change != PaintPropertyChangeType::kUnchanged) {
-      properties_changed_.transform_changed =
-          std::max(properties_changed_.transform_changed, change);
+      UpdatePropertyChange(properties_changed_.transform_changed, change);
       properties_changed_.transform_change_is_scroll_translation_only = false;
     }
   }
   void OnUpdateScrollTranslation(PaintPropertyChangeType change) {
-    properties_changed_.transform_changed =
-        std::max(properties_changed_.transform_changed, change);
+    UpdatePropertyChange(properties_changed_.transform_changed, change);
   }
   void OnClearTransform(bool cleared) {
     if (cleared) {
-      properties_changed_.transform_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.transform_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
       properties_changed_.transform_change_is_scroll_translation_only = false;
     }
   }
 
   void OnUpdateClip(PaintPropertyChangeType change) {
-    properties_changed_.clip_changed =
-        std::max(properties_changed_.clip_changed, change);
+    UpdatePropertyChange(properties_changed_.clip_changed, change);
   }
   void OnClearClip(bool cleared) {
     if (cleared) {
-      properties_changed_.clip_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.clip_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
   }
 
   void OnUpdateEffect(PaintPropertyChangeType change) {
-    properties_changed_.effect_changed =
-        std::max(properties_changed_.effect_changed, change);
+    UpdatePropertyChange(properties_changed_.effect_changed, change);
   }
   void OnClearEffect(bool cleared) {
     if (cleared) {
-      properties_changed_.effect_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.effect_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
   }
 
   void OnUpdateScroll(PaintPropertyChangeType change) {
-    properties_changed_.scroll_changed =
-        std::max(properties_changed_.scroll_changed, change);
+    UpdatePropertyChange(properties_changed_.scroll_changed, change);
   }
   void OnClearScroll(bool cleared) {
     if (cleared) {
-      properties_changed_.scroll_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.scroll_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
   }
 
@@ -404,7 +404,7 @@ class FragmentPaintPropertyTreeBuilder {
                                                  namespace_id);
   }
 
-  MainThreadScrollingReasons GetMainThreadScrollingReasons(
+  MainThreadScrollingReasons GetMainThreadRepaintReasonsForScroll(
       bool user_scrollable) const;
 
   const LayoutObject& object_;
@@ -423,13 +423,10 @@ class FragmentPaintPropertyTreeBuilder {
   std::optional<gfx::RectF> clip_path_bounding_box_;
 };
 
-// True if a scroll translation is needed for static scroll offset (e.g.,
-// overflow hidden with scroll), or if a scroll node is needed for composited
-// scrolling.
-static bool NeedsScrollOrScrollTranslation(
+// True if a scroll node and a ScrollTranslation transform node are needed.
+static bool NeedsScrollAndScrollTranslation(
     const LayoutObject& object,
-    CompositingReasons direct_compositing_reasons,
-    bool allow_scrolled_overflow_hidden = true) {
+    CompositingReasons direct_compositing_reasons) {
   if (!object.IsScrollContainer()) {
     return false;
   }
@@ -442,19 +439,13 @@ static bool NeedsScrollOrScrollTranslation(
   if (scrollable_area->ScrollsOverflow()) {
     return true;
   }
-  if (allow_scrolled_overflow_hidden &&
-      (!scrollable_area->ScrollPosition().IsOrigin() ||
-       !scrollable_area->GetScrollOffset().IsZero())) {
+  // ScrollsOverflow is false for overflow:hidden, so we additionally check
+  // if the offset/position is non-zero.
+  if (!scrollable_area->ScrollPosition().IsOrigin() ||
+      !scrollable_area->GetScrollOffset().IsZero()) {
     return true;
   }
   return false;
-}
-
-static bool NeedsScrollNode(const LayoutObject& object,
-                            CompositingReasons direct_compositing_reasons) {
-  return NeedsScrollOrScrollTranslation(
-      object, direct_compositing_reasons,
-      RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled());
 }
 
 static bool NeedsReplacedContentTransform(const LayoutObject& object) {
@@ -549,8 +540,9 @@ static bool NeedsPaintOffsetTranslation(
 
   if (box_model.HasTransform())
     return true;
-  if (NeedsScrollOrScrollTranslation(object, direct_compositing_reasons))
+  if (NeedsScrollAndScrollTranslation(object, direct_compositing_reasons)) {
     return true;
+  }
   if (NeedsStickyTranslation(object))
     return true;
   if (NeedsAnchorPositionScrollTranslation(object)) {
@@ -764,10 +756,11 @@ void FragmentPaintPropertyTreeBuilder::UpdateStickyTranslation() {
                 ->GetLayoutObject()
                 .FirstFragment()
                 .PaintProperties();
-        // A scroll node is created conditionally (see NeedsScrollNode),
-        // while sticky position attaches to anything that clips overflow.
-        // No need to (actually can't) setup composited sticky constraint if
-        // the clipping ancestor we attach to doesn't have a scroll node.
+        // A scroll node is created conditionally (see
+        // NeedsScrollAndScrollTranslation), while sticky position attaches to
+        // anything that clips overflow. No need to (actually can't) setup
+        // composited sticky constraint if the clipping ancestor we attach to
+        // doesn't have a scroll node.
         bool scroll_container_scrolls =
             scroll_container_properties &&
             scroll_container_properties->Scroll() == context_.current.scroll;
@@ -1421,8 +1414,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
 static bool NeedsClipPathClipOrMask(const LayoutObject& object) {
   // We only apply clip-path if the LayoutObject has a layer or is an SVG
   // child. See NeedsEffect() for additional information on the former.
-  return !object.IsText() && object.StyleRef().HasClipPath() &&
-         (object.HasLayer() || object.IsSVGChild());
+  return !object.IsText() &&
+         (ClipPathClipper::HasCompositeClipPathAnimation(object) ||
+          (object.StyleRef().HasClipPath() &&
+           (object.HasLayer() || object.IsSVGChild())));
 }
 
 static bool NeedsEffectForViewTransition(const LayoutObject& object) {
@@ -1839,25 +1834,32 @@ void FragmentPaintPropertyTreeBuilder::UpdateViewTransitionEffect() {
         properties_->ViewTransitionEffect()
             ->SelfOrAncestorParticipatesInViewTransition();
 
-    const bool needs_view_transition_effect =
+    const bool is_view_transition_element =
         full_context_.direct_compositing_reasons &
         CompositingReason::kViewTransitionElement;
+
+    const bool needs_view_transition_effect =
+        is_view_transition_element ||
+        (object_.IsLayoutView() && !IsInLocalSubframe(object_) &&
+         !object_.GetDocument().IsSVGDocument());
 
     if (needs_view_transition_effect) {
       auto* transition =
           ViewTransitionUtils::GetTransition(object_.GetDocument());
-      DCHECK(transition);
+      DCHECK(!is_view_transition_element || transition);
 
       EffectPaintPropertyNode::State state;
-      state.direct_compositing_reasons =
-          CompositingReason::kViewTransitionElement;
       state.local_transform_space = context_.current.transform;
       state.output_clip = context_.current.clip;
       state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
           object_.UniqueId(),
           CompositorElementIdNamespace::kViewTransitionElement);
-      state.view_transition_element_resource_id =
-          transition->GetSnapshotId(object_);
+      if (is_view_transition_element) {
+        state.direct_compositing_reasons =
+            CompositingReason::kViewTransitionElement;
+        state.view_transition_element_resource_id =
+            transition->GetSnapshotId(object_);
+      }
 
       // The value isn't set on the root, since clipping rules are different for
       // the root view transition element.
@@ -2070,8 +2072,9 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
 
   if (properties_->Filter()) {
     context_.current_effect = properties_->Filter();
-    if (const auto* input_clip = properties_->PixelMovingFilterClipExpander())
+    if (const auto* input_clip = properties_->PixelMovingFilterClipExpander()) {
       context_.current.clip = input_clip;
+    }
   } else {
     DCHECK(!properties_->PixelMovingFilterClipExpander());
   }
@@ -2138,10 +2141,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
   if (NeedsPaintPropertyUpdate()) {
     DCHECK(!clip_path_bounding_box_.has_value());
     if (NeedsClipPathClipOrMask(object_)) {
-      // Recalc the composited clip path paint status, which depends on whether
-      // we are in a block fragmentation
-      ClipPathClipper::ResolveClipPathStatus(
-          object_, context_.current.is_in_block_fragmentation);
       clip_path_bounding_box_ =
           ClipPathClipper::LocalClipPathBoundingBox(object_);
       if (clip_path_bounding_box_) {
@@ -2279,17 +2278,17 @@ void FragmentPaintPropertyTreeBuilder::UpdateLocalBorderBoxContext() {
   }
 
   if (old_transform != new_transform) {
-    properties_changed_.transform_changed =
-        PaintPropertyChangeType::kNodeAddedOrRemoved;
+    UpdatePropertyChange(properties_changed_.transform_changed,
+                         PaintPropertyChangeType::kNodeAddedOrRemoved);
     properties_changed_.transform_change_is_scroll_translation_only = false;
   }
   if (old_clip != new_clip) {
-    properties_changed_.clip_changed =
-        PaintPropertyChangeType::kNodeAddedOrRemoved;
+    UpdatePropertyChange(properties_changed_.clip_changed,
+                         PaintPropertyChangeType::kNodeAddedOrRemoved);
   }
   if (old_effect != new_effect) {
-    properties_changed_.effect_changed =
-        PaintPropertyChangeType::kNodeAddedOrRemoved;
+    UpdatePropertyChange(properties_changed_.effect_changed,
+                         PaintPropertyChangeType::kNodeAddedOrRemoved);
   }
 }
 
@@ -2640,13 +2639,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
 }
 
 MainThreadScrollingReasons
-FragmentPaintPropertyTreeBuilder::GetMainThreadScrollingReasons(
+FragmentPaintPropertyTreeBuilder::GetMainThreadRepaintReasonsForScroll(
     bool user_scrollable) const {
   DCHECK(IsA<LayoutBox>(object_));
   auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea();
   DCHECK(scrollable_area);
-  MainThreadScrollingReasons reasons =
-      full_context_.global_main_thread_scrolling_reasons;
+  MainThreadScrollingReasons reasons = 0;
+  if (full_context_.requires_main_thread_for_background_attachment_fixed) {
+    reasons |=
+        cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
+  }
   if (scrollable_area->BackgroundNeedsRepaintOnScroll()) {
     reasons |= cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll;
   }
@@ -2661,6 +2663,7 @@ FragmentPaintPropertyTreeBuilder::GetMainThreadScrollingReasons(
   if (!user_scrollable) {
     reasons |= cc::MainThreadScrollingReason::kPreferNonCompositedScrolling;
   }
+  DCHECK(cc::MainThreadScrollingReason::AreRepaintReasons(reasons));
   return reasons;
 }
 
@@ -2668,216 +2671,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
   DCHECK(properties_);
 
   if (NeedsPaintPropertyUpdate()) {
-    if (NeedsScrollNode(object_, full_context_.direct_compositing_reasons)) {
-      const auto& box = To<LayoutBox>(object_);
-      PaintLayerScrollableArea* scrollable_area = box.GetScrollableArea();
-      ScrollPaintPropertyNode::State state;
-
-      PhysicalRect clip_rect =
-          box.OverflowClipRect(context_.current.paint_offset);
-      state.container_rect = ToPixelSnappedRect(clip_rect);
-      state.contents_size =
-          scrollable_area->PixelSnappedContentsSize(clip_rect.offset);
-      state.overflow_clip_node = properties_->OverflowClip();
-      state.user_scrollable_horizontal =
-          scrollable_area->UserInputScrollable(kHorizontalScrollbar);
-      state.user_scrollable_vertical =
-          scrollable_area->UserInputScrollable(kVerticalScrollbar);
-      state.composited_scrolling_preference =
-          static_cast<CompositedScrollingPreference>(
-              full_context_.composited_scrolling_preference);
-      state.main_thread_scrolling_reasons = GetMainThreadScrollingReasons(
-          state.user_scrollable_horizontal || state.user_scrollable_vertical);
-
-      state.compositor_element_id = scrollable_area->GetScrollElementId();
-
-      state.overscroll_behavior =
-          cc::OverscrollBehavior(static_cast<cc::OverscrollBehavior::Type>(
-                                     box.StyleRef().OverscrollBehaviorX()),
-                                 static_cast<cc::OverscrollBehavior::Type>(
-                                     box.StyleRef().OverscrollBehaviorY()));
-
-      state.snap_container_data =
-          box.GetScrollableArea() &&
-                  box.GetScrollableArea()->GetSnapContainerData()
-              ? std::optional<cc::SnapContainerData>(
-                    *box.GetScrollableArea()->GetSnapContainerData())
-              : std::nullopt;
-
-      OnUpdateScroll(properties_->UpdateScroll(*context_.current.scroll,
-                                               std::move(state)));
-
-      // While in a view transition, page content is painted into a "snapshot"
-      // surface by creating a new effect node to force a separate surface.
-      // e.g.:
-      //    #Root
-      //      +--ViewTransitionEffect
-      //         +--PageContentEffect
-      //            +--...
-      // However, frame scrollbars paint after all other content so the paint
-      // chunks look like this:
-      // [
-      //    ...
-      //    FrameBackground (effect: ViewTransitionEffect),
-      //    PageContent (effect: PageContentEffect),
-      //    FrameScrollbar (effect ViewTransitionEffect),
-      //    ...
-      // ]
-      // The non-contiguous node causes the creation of two compositor effect
-      // nodes from this one paint effect node which isn't supported by view
-      // transitions. Create a separate effect node, a child of the root, for
-      // any frame scrollbars so that:
-      // 1) they don't cause multiple compositor effect nodes for a view
-      //    transition
-      // 2) scrollbars aren't captured in the root snapshot.
-      bool transition_forces_scrollbar_effect_nodes =
-          object_.IsLayoutView() &&
-          ViewTransitionUtils::GetTransition(object_.GetDocument());
-
-      // Overflow controls are not clipped by InnerBorderRadiusClip or
-      // OverflowClip, so the output clip should skip them.
-      const auto* overflow_control_effect_output_clip = context_.current.clip;
-      if (const auto* clip_to_skip = properties_->InnerBorderRadiusClip()
-                                         ? properties_->InnerBorderRadiusClip()
-                                         : properties_->OverflowClip()) {
-        overflow_control_effect_output_clip = clip_to_skip->Parent();
-      }
-
-      auto setup_scrollbar_effect_node =
-          [this, scrollable_area, transition_forces_scrollbar_effect_nodes,
-           overflow_control_effect_output_clip](
-              ScrollbarOrientation orientation) {
-            Scrollbar* scrollbar = scrollable_area->GetScrollbar(orientation);
-
-            bool scrollbar_is_overlay =
-                scrollbar && scrollbar->IsOverlayScrollbar();
-
-            bool needs_effect_node =
-                scrollbar && (transition_forces_scrollbar_effect_nodes ||
-                              scrollbar_is_overlay);
-
-            if (needs_effect_node) {
-              EffectPaintPropertyNode::State effect_state;
-              effect_state.local_transform_space = context_.current.transform;
-              effect_state.output_clip = overflow_control_effect_output_clip;
-              effect_state.compositor_element_id =
-                  scrollable_area->GetScrollbarElementId(orientation);
-
-              if (scrollbar_is_overlay) {
-                effect_state.direct_compositing_reasons =
-                    CompositingReason::kActiveOpacityAnimation;
-              }
-
-              const EffectPaintPropertyNodeOrAlias* parent =
-                  transition_forces_scrollbar_effect_nodes
-                      ? &EffectPaintPropertyNode::Root()
-                      : context_.current_effect;
-
-              PaintPropertyChangeType change_type =
-                  orientation == ScrollbarOrientation::kHorizontalScrollbar
-                      ? properties_->UpdateHorizontalScrollbarEffect(
-                            *parent, std::move(effect_state))
-                      : properties_->UpdateVerticalScrollbarEffect(
-                            *parent, std::move(effect_state));
-              OnUpdateEffect(change_type);
-            } else {
-              bool result =
-                  orientation == ScrollbarOrientation::kHorizontalScrollbar
-                      ? properties_->ClearHorizontalScrollbarEffect()
-                      : properties_->ClearVerticalScrollbarEffect();
-              OnClearEffect(result);
-            }
-          };
-
-      setup_scrollbar_effect_node(ScrollbarOrientation::kVerticalScrollbar);
-      setup_scrollbar_effect_node(ScrollbarOrientation::kHorizontalScrollbar);
-
-      bool has_scroll_corner =
-          scrollable_area->HorizontalScrollbar() &&
-          scrollable_area->VerticalScrollbar() &&
-          !scrollable_area->VerticalScrollbar()->IsOverlayScrollbar();
-      DCHECK(!has_scroll_corner ||
-             !scrollable_area->HorizontalScrollbar()->IsOverlayScrollbar());
-
-      if (transition_forces_scrollbar_effect_nodes && has_scroll_corner) {
-        // The scroll corner needs to paint with the scrollbars during a
-        // transition, for the same reason as explained above. Scroll corners
-        // are only painted for non-overlay scrollbars.
-        EffectPaintPropertyNode::State effect_state;
-        effect_state.local_transform_space = context_.current.transform;
-        effect_state.output_clip = overflow_control_effect_output_clip;
-        effect_state.compositor_element_id =
-            scrollable_area->GetScrollCornerElementId();
-        OnUpdateEffect(properties_->UpdateScrollCornerEffect(
-            EffectPaintPropertyNode::Root(), std::move(effect_state)));
-      } else {
-        OnClearEffect(properties_->ClearScrollCornerEffect());
-      }
+    if (NeedsScrollAndScrollTranslation(
+            object_, full_context_.direct_compositing_reasons)) {
+      UpdateScrollNode();
+      UpdateOverflowControlEffects();
+      UpdateScrollTranslation();
     } else {
       OnClearScroll(properties_->ClearScroll());
       OnClearEffect(properties_->ClearVerticalScrollbarEffect());
       OnClearEffect(properties_->ClearHorizontalScrollbarEffect());
       OnClearEffect(properties_->ClearScrollCornerEffect());
-    }
-
-    // A scroll translation node is created for static offset (e.g., overflow
-    // hidden with scroll offset) or cases that scroll and have a scroll node.
-    if (NeedsScrollOrScrollTranslation(
-            object_, full_context_.direct_compositing_reasons)) {
-      const auto& box = To<LayoutBox>(object_);
-      DCHECK(box.GetScrollableArea());
-
-      gfx::PointF scroll_position = box.GetScrollableArea()->ScrollPosition();
-      TransformPaintPropertyNode::State state{{gfx::Transform::MakeTranslation(
-          -scroll_position.OffsetFromOrigin())}};
-      if (!box.GetScrollableArea()->PendingScrollAnchorAdjustment().IsZero()) {
-        context_.current.pending_scroll_anchor_adjustment +=
-            box.GetScrollableArea()->PendingScrollAnchorAdjustment();
-        box.GetScrollableArea()->ClearPendingScrollAnchorAdjustment();
-      }
-      state.flattens_inherited_transform =
-          context_.should_flatten_inherited_transform;
-      state.rendering_context_id = context_.rendering_context_id;
-      state.direct_compositing_reasons =
-          full_context_.direct_compositing_reasons &
-          CompositingReason::kDirectReasonsForScrollTranslationProperty;
-      state.scroll = properties_->Scroll();
-
-      // The scroll translation node always inherits backface visibility, which
-      // means if scroll and transform are both present, we will use the
-      // transform property tree node to determine visibility of the scrolling
-      // contents.
-      DCHECK_EQ(state.backface_visibility,
-                TransformPaintPropertyNode::BackfaceVisibility::kInherited);
-
-      auto effective_change_type = properties_->UpdateScrollTranslation(
-          *context_.current.transform, std::move(state));
-      // Even if effective_change_type is kUnchanged, we might still need to
-      // DirectlyUpdateScrollOffsetTransform, in case the cc::TransformNode
-      // was also updated in LayerTreeHost::ApplyCompositorChanges.
-      if (effective_change_type <=
-              PaintPropertyChangeType::kChangedOnlySimpleValues &&
-          // In platform code, only scroll translations with scroll nodes are
-          // treated as scroll translations with overlap testing treatment.
-          // A scroll translation without a scroll node (see NeedsScrollNode)
-          // needs full PaintArtifactCompositor update on scroll.
-          properties_->Scroll()) {
-        if (auto* paint_artifact_compositor =
-                object_.GetFrameView()->GetPaintArtifactCompositor()) {
-          bool updated =
-              paint_artifact_compositor->DirectlyUpdateScrollOffsetTransform(
-                  *properties_->ScrollTranslation());
-          if (updated &&
-              effective_change_type ==
-                  PaintPropertyChangeType::kChangedOnlySimpleValues) {
-            effective_change_type =
-                PaintPropertyChangeType::kChangedOnlyCompositedValues;
-            properties_->ScrollTranslation()->CompositorSimpleValuesUpdated();
-          }
-        }
-      }
-      OnUpdateScrollTranslation(effective_change_type);
-    } else {
       OnClearTransform(properties_->ClearScrollTranslation());
     }
   }
@@ -2897,6 +2700,224 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
         scroll_translation->Get2dTranslation() -
         full_context_.old_scroll_offset;
   }
+}
+
+void FragmentPaintPropertyTreeBuilder::UpdateScrollNode() {
+  DCHECK(NeedsPaintPropertyUpdate());
+  DCHECK(NeedsScrollAndScrollTranslation(
+      object_, full_context_.direct_compositing_reasons));
+
+  const auto& box = To<LayoutBox>(object_);
+  PaintLayerScrollableArea* scrollable_area = box.GetScrollableArea();
+  ScrollPaintPropertyNode::State state;
+
+  PhysicalRect clip_rect = box.OverflowClipRect(context_.current.paint_offset);
+  state.container_rect = ToPixelSnappedRect(clip_rect);
+  state.contents_size =
+      scrollable_area->PixelSnappedContentsSize(clip_rect.offset);
+  state.overflow_clip_node = properties_->OverflowClip();
+  state.user_scrollable_horizontal =
+      scrollable_area->UserInputScrollable(kHorizontalScrollbar);
+  state.user_scrollable_vertical =
+      scrollable_area->UserInputScrollable(kVerticalScrollbar);
+
+  if (!RuntimeEnabledFeatures::UnifiedScrollableAreasEnabled()) {
+    if (state.user_scrollable_horizontal || state.user_scrollable_vertical) {
+      object_.GetFrameView()->AddUserScrollableArea(*scrollable_area);
+    } else {
+      object_.GetFrameView()->RemoveUserScrollableArea(*scrollable_area);
+    }
+  }
+
+  state.composited_scrolling_preference =
+      static_cast<CompositedScrollingPreference>(
+          full_context_.composited_scrolling_preference);
+  state.main_thread_repaint_reasons = GetMainThreadRepaintReasonsForScroll(
+      state.user_scrollable_horizontal || state.user_scrollable_vertical);
+
+  state.compositor_element_id = scrollable_area->GetScrollElementId();
+
+  state.overscroll_behavior =
+      cc::OverscrollBehavior(static_cast<cc::OverscrollBehavior::Type>(
+                                 box.StyleRef().OverscrollBehaviorX()),
+                             static_cast<cc::OverscrollBehavior::Type>(
+                                 box.StyleRef().OverscrollBehaviorY()));
+
+  if (auto* data = scrollable_area->GetSnapContainerData()) {
+    state.snap_container_data = *data;
+  }
+
+  OnUpdateScroll(
+      properties_->UpdateScroll(*context_.current.scroll, std::move(state)));
+}
+
+void FragmentPaintPropertyTreeBuilder::UpdateOverflowControlEffects() {
+  DCHECK(NeedsPaintPropertyUpdate());
+  DCHECK(NeedsScrollAndScrollTranslation(
+      object_, full_context_.direct_compositing_reasons));
+
+  // While in a view transition, page content is painted into a "snapshot"
+  // surface by creating a new effect node to force a separate surface.
+  // e.g.:
+  //    #Root
+  //      +--ViewTransitionEffect
+  //         +--PageContentEffect
+  //            +--...
+  // However, frame scrollbars paint after all other content so the paint
+  // chunks look like this:
+  // [
+  //    ...
+  //    FrameBackground (effect: ViewTransitionEffect),
+  //    PageContent (effect: PageContentEffect),
+  //    FrameScrollbar (effect ViewTransitionEffect),
+  //    ...
+  // ]
+  // The non-contiguous node causes the creation of two compositor effect
+  // nodes from this one paint effect node which isn't supported by view
+  // transitions. Create a separate effect node, a child of the root, for
+  // any frame scrollbars so that:
+  // 1) they don't cause multiple compositor effect nodes for a view
+  //    transition
+  // 2) scrollbars aren't captured in the root snapshot.
+  bool transition_forces_scrollbar_effect_nodes =
+      object_.IsLayoutView() &&
+      ViewTransitionUtils::GetTransition(object_.GetDocument());
+
+  // Overflow controls are not clipped by InnerBorderRadiusClip or
+  // OverflowClip, so the output clip should skip them.
+  const auto* output_clip = context_.current.clip;
+  if (const auto* clip_to_skip = properties_->InnerBorderRadiusClip()
+                                     ? properties_->InnerBorderRadiusClip()
+                                     : properties_->OverflowClip()) {
+    output_clip = clip_to_skip->Parent();
+  }
+
+  auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea();
+  auto setup_scrollbar_effect_node = [this, scrollable_area,
+                                      transition_forces_scrollbar_effect_nodes,
+                                      output_clip](
+                                         ScrollbarOrientation orientation) {
+    Scrollbar* scrollbar = scrollable_area->GetScrollbar(orientation);
+
+    bool scrollbar_is_overlay = scrollbar && scrollbar->IsOverlayScrollbar();
+
+    bool needs_effect_node =
+        scrollbar &&
+        (transition_forces_scrollbar_effect_nodes || scrollbar_is_overlay);
+
+    if (needs_effect_node) {
+      EffectPaintPropertyNode::State effect_state;
+      effect_state.local_transform_space = context_.current.transform;
+      effect_state.output_clip = output_clip;
+      effect_state.compositor_element_id =
+          scrollable_area->GetScrollbarElementId(orientation);
+
+      if (scrollbar_is_overlay) {
+        effect_state.direct_compositing_reasons =
+            CompositingReason::kActiveOpacityAnimation;
+      }
+
+      const EffectPaintPropertyNodeOrAlias* parent =
+          transition_forces_scrollbar_effect_nodes
+              ? &EffectPaintPropertyNode::Root()
+              : context_.current_effect;
+
+      PaintPropertyChangeType change_type =
+          orientation == ScrollbarOrientation::kHorizontalScrollbar
+              ? properties_->UpdateHorizontalScrollbarEffect(
+                    *parent, std::move(effect_state))
+              : properties_->UpdateVerticalScrollbarEffect(
+                    *parent, std::move(effect_state));
+      OnUpdateEffect(change_type);
+    } else {
+      bool result = orientation == ScrollbarOrientation::kHorizontalScrollbar
+                        ? properties_->ClearHorizontalScrollbarEffect()
+                        : properties_->ClearVerticalScrollbarEffect();
+      OnClearEffect(result);
+    }
+  };
+
+  setup_scrollbar_effect_node(ScrollbarOrientation::kVerticalScrollbar);
+  setup_scrollbar_effect_node(ScrollbarOrientation::kHorizontalScrollbar);
+
+  bool has_scroll_corner =
+      scrollable_area->HorizontalScrollbar() &&
+      scrollable_area->VerticalScrollbar() &&
+      !scrollable_area->VerticalScrollbar()->IsOverlayScrollbar();
+  DCHECK(!has_scroll_corner ||
+         !scrollable_area->HorizontalScrollbar()->IsOverlayScrollbar());
+
+  if (transition_forces_scrollbar_effect_nodes && has_scroll_corner) {
+    // The scroll corner needs to paint with the scrollbars during a
+    // transition, for the same reason as explained above. Scroll corners
+    // are only painted for non-overlay scrollbars.
+    EffectPaintPropertyNode::State effect_state;
+    effect_state.local_transform_space = context_.current.transform;
+    effect_state.output_clip = output_clip;
+    effect_state.compositor_element_id =
+        scrollable_area->GetScrollCornerElementId();
+    OnUpdateEffect(properties_->UpdateScrollCornerEffect(
+        EffectPaintPropertyNode::Root(), std::move(effect_state)));
+  } else {
+    OnClearEffect(properties_->ClearScrollCornerEffect());
+  }
+}
+
+void FragmentPaintPropertyTreeBuilder::UpdateScrollTranslation() {
+  DCHECK(NeedsPaintPropertyUpdate());
+  DCHECK(NeedsScrollAndScrollTranslation(
+      object_, full_context_.direct_compositing_reasons));
+
+  auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea();
+  gfx::PointF scroll_position = scrollable_area->ScrollPosition();
+  TransformPaintPropertyNode::State state{
+      {gfx::Transform::MakeTranslation(-scroll_position.OffsetFromOrigin())}};
+  if (!scrollable_area->PendingScrollAnchorAdjustment().IsZero()) {
+    context_.current.pending_scroll_anchor_adjustment +=
+        scrollable_area->PendingScrollAnchorAdjustment();
+    scrollable_area->ClearPendingScrollAnchorAdjustment();
+  }
+  state.flattens_inherited_transform =
+      context_.should_flatten_inherited_transform;
+  state.rendering_context_id = context_.rendering_context_id;
+  state.direct_compositing_reasons =
+      full_context_.direct_compositing_reasons &
+      CompositingReason::kDirectReasonsForScrollTranslationProperty;
+  state.scroll = properties_->Scroll();
+
+  // The scroll translation node always inherits backface visibility, which
+  // means if scroll and transform are both present, we will use the
+  // transform property tree node to determine visibility of the scrolling
+  // contents.
+  DCHECK_EQ(state.backface_visibility,
+            TransformPaintPropertyNode::BackfaceVisibility::kInherited);
+
+  auto effective_change_type = properties_->UpdateScrollTranslation(
+      *context_.current.transform, std::move(state));
+  // Even if effective_change_type is kUnchanged, we might still need to
+  // DirectlyUpdateScrollOffsetTransform, in case the cc::TransformNode
+  // was also updated in LayerTreeHost::ApplyCompositorChanges.
+  if (effective_change_type <=
+          PaintPropertyChangeType::kChangedOnlySimpleValues &&
+      // In platform code, only scroll translations with scroll nodes are
+      // treated as scroll translations with overlap testing treatment.
+      // A scroll translation without a scroll node (see NeedsScrollNode)
+      // needs full PaintArtifactCompositor update on scroll.
+      properties_->Scroll()) {
+    if (auto* paint_artifact_compositor =
+            object_.GetFrameView()->GetPaintArtifactCompositor()) {
+      bool updated =
+          paint_artifact_compositor->DirectlyUpdateScrollOffsetTransform(
+              *properties_->ScrollTranslation());
+      if (updated && effective_change_type ==
+                         PaintPropertyChangeType::kChangedOnlySimpleValues) {
+        effective_change_type =
+            PaintPropertyChangeType::kChangedOnlyCompositedValues;
+        properties_->ScrollTranslation()->CompositorSimpleValuesUpdated();
+      }
+    }
+  }
+  OnUpdateScrollTranslation(effective_change_type);
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateOutOfFlowContext() {
@@ -3026,7 +3047,7 @@ void FragmentPaintPropertyTreeBuilder::UpdatePaintOffset() {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -3154,10 +3175,6 @@ void FragmentPaintPropertyTreeBuilder::UpdateForObjectLocation(
       if (auto* scrollable_area = To<LayoutBox>(object_).GetScrollableArea())
         scrollable_area->PositionOverflowControls();
     }
-    if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-      object_.GetMutableForPainting()
-          .InvalidateIntersectionObserverCachedRects();
-    }
   }
 
   if (paint_offset_translation)
@@ -3247,12 +3264,29 @@ void FragmentPaintPropertyTreeBuilder::UpdateForSelf() {
     }
     UpdateElementCaptureEffect();
     UpdateViewTransitionSubframeRootEffect();
-    UpdateViewTransitionEffect();
-    UpdateViewTransitionClip();
+
+    // When layered capture is enabled (see the inverse condition below), the
+    // effects (clip/clip-path/opacity/mask/filter) are rendered in an ancestor
+    // of the view transition capture. The corresponding CSS is copied to the
+    // view-transition pseudo-elements instead of being captured into the
+    // texture as content.
+
+    const bool delegate_effects_to_view_transition = ViewTransitionUtils::
+        ShouldDelegateEffectsAndBoxDecorationsToViewTransitionGroup(object_);
+    if (!delegate_effects_to_view_transition) {
+      UpdateViewTransitionEffect();
+      UpdateViewTransitionClip();
+    }
     UpdateClipPathClip();
     UpdateEffect();
     UpdateCssClip();
     UpdateFilter();
+
+    // See comment above in inverse condition.
+    if (delegate_effects_to_view_transition) {
+      UpdateViewTransitionEffect();
+      UpdateViewTransitionClip();
+    }
     UpdateOverflowControlsClip();
     UpdateBackgroundClip();
   } else if (!object_.IsAnonymous()) {
@@ -3371,8 +3405,8 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
        NeedsBackgroundClip(object_) || NeedsInnerBorderRadiusClip(object_) ||
        NeedsOverflowClip(object_) || NeedsPerspective(object_) ||
        NeedsReplacedContentTransform(object_) ||
-       NeedsScrollOrScrollTranslation(object_,
-                                      context_.direct_compositing_reasons));
+       NeedsScrollAndScrollTranslation(object_,
+                                       context_.direct_compositing_reasons));
 
   // If the object is a text, none of the above function should return true.
   DCHECK(!needs_paint_properties || !object_.IsText());
@@ -3411,21 +3445,21 @@ void PaintPropertyTreeBuilder::InitPaintProperties() {
     fragment.EnsurePaintProperties();
   } else if (auto* properties = fragment.PaintProperties()) {
     if (properties->HasTransformNode()) {
-      properties_changed_.transform_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.transform_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
       properties_changed_.transform_change_is_scroll_translation_only = false;
     }
     if (properties->HasClipNode()) {
-      properties_changed_.clip_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.clip_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
     if (properties->HasEffectNode()) {
-      properties_changed_.effect_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.effect_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
     if (properties->Scroll()) {
-      properties_changed_.scroll_changed =
-          PaintPropertyChangeType::kNodeAddedOrRemoved;
+      UpdatePropertyChange(properties_changed_.scroll_changed,
+                           PaintPropertyChangeType::kNodeAddedOrRemoved);
     }
     fragment.ClearPaintProperties();
   }
@@ -3543,7 +3577,7 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
       IsLayoutShiftRoot(object_, object_.FirstFragment());
 
   if (IsA<LayoutView>(object_)) {
-    UpdateGlobalMainThreadScrollingReasons();
+    UpdateGlobalMainThreadRepaintReasonsForScroll();
   }
 
   context_.old_scroll_offset = gfx::Vector2dF();
@@ -3553,6 +3587,16 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
       context_.old_scroll_offset = old_scroll_translation->Get2dTranslation();
     }
   }
+
+  // Resolve the current composited clip path animation status. This is needed
+  // to determine whether we need to initialize paint properties for this
+  // object.
+  const bool is_in_fragment_container =
+      pre_paint_info_ &&
+      pre_paint_info_->fragmentainer_is_oof_containing_block &&
+      IsA<LayoutBox>(object_) &&
+      (To<LayoutBox>(object_).PhysicalFragmentCount() > 1);
+  ClipPathClipper::ResolveClipPathStatus(object_, is_in_fragment_container);
 
   UpdatePaintingLayer();
   UpdateFragmentData();
@@ -3569,33 +3613,20 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
   }
 }
 
-void PaintPropertyTreeBuilder::UpdateGlobalMainThreadScrollingReasons() {
+void PaintPropertyTreeBuilder::UpdateGlobalMainThreadRepaintReasonsForScroll() {
   DCHECK(IsA<LayoutView>(object_));
 
   if (object_.GetFrameView()
           ->RequiresMainThreadScrollingForBackgroundAttachmentFixed()) {
-    context_.global_main_thread_scrolling_reasons |=
-        cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects;
+    context_.requires_main_thread_for_background_attachment_fixed = true;
   }
 
-  if (!RuntimeEnabledFeatures::ExcludePopupMainThreadScrollingReasonEnabled() &&
-      !object_.GetFrame()->Client()->GetWebFrame()) {
-    // If there's no WebFrame, then there's no WebFrameWidget, and we can't do
-    // threaded scrolling.  This currently only happens in a WebPagePopup.
-    context_.global_main_thread_scrolling_reasons |=
-        cc::MainThreadScrollingReason::kPopupNoThreadedInput;
-  }
-
-  constexpr auto kGlobalReasons =
-      PaintPropertyTreeBuilderContext::kGlobalMainThreadScrollingReasons;
-  DCHECK_EQ(context_.global_main_thread_scrolling_reasons & ~kGlobalReasons,
-            0u);
   if (auto* properties = object_.FirstFragment().PaintProperties()) {
     if (auto* scroll = properties->Scroll()) {
-      if ((scroll->GetMainThreadScrollingReasons() & kGlobalReasons) !=
-          context_.global_main_thread_scrolling_reasons) {
-        // The changed global_main_thread_scrolling_reasons needs to propagate
-        // to all scroll nodes in this view.
+      if (scroll->RequiresMainThreadForBackgroundAttachmentFixed() !=
+          context_.requires_main_thread_for_background_attachment_fixed) {
+        // The changed requires_main_thread_for_background_attachment_fixed
+        // needs to propagate to all scroll nodes in this view.
         context_.force_subtree_update_reasons |=
             PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
       }
@@ -3647,14 +3678,13 @@ void PaintPropertyTreeBuilder::UpdateForChildren() {
     }
   }
 
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
-      (properties_changed_.transform_changed >
-           (properties_changed_.transform_change_is_scroll_translation_only
-                ? PaintPropertyChangeType::kChangedOnlySimpleValues
-                : PaintPropertyChangeType::kUnchanged) ||
-       properties_changed_.clip_changed > PaintPropertyChangeType::kUnchanged ||
-       properties_changed_.scroll_changed >
-           PaintPropertyChangeType::kUnchanged)) {
+  if (properties_changed_.transform_changed >
+          (properties_changed_.transform_change_is_scroll_translation_only
+               ? PaintPropertyChangeType::kChangedOnlySimpleValues
+               : PaintPropertyChangeType::kUnchanged) ||
+      properties_changed_.clip_changed > PaintPropertyChangeType::kUnchanged ||
+      properties_changed_.scroll_changed >
+          PaintPropertyChangeType::kUnchanged) {
     object_.GetFrameView()->SetIntersectionObservationState(
         LocalFrameView::kDesired);
   }
@@ -3746,8 +3776,7 @@ void PaintPropertyTreeBuilder::DirectlyUpdateTransformMatrix(
       std::move(transform_and_origin), animation_state);
   DirectlyUpdateCcTransform(*transform, object, effective_change_type);
 
-  if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled() &&
-      effective_change_type > PaintPropertyChangeType::kUnchanged) {
+  if (effective_change_type > PaintPropertyChangeType::kUnchanged) {
     object.GetFrameView()->SetIntersectionObservationState(
         LocalFrameView::kDesired);
   }

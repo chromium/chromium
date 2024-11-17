@@ -113,8 +113,7 @@ class JavaScriptConsoleFeatureTest : public PlatformTest {
     web_state_->SetKeepRenderProcessAlive(true);
 
     JavaScriptConsoleFeature* feature =
-        JavaScriptConsoleFeatureFactory::GetInstance()->GetForProfile(
-            profile_.get());
+        JavaScriptConsoleFeatureFactory::GetForProfile(profile_.get());
     feature->SetDelegate(&delegate_);
     GetWebClient()->SetJavaScriptFeatures({feature});
   }

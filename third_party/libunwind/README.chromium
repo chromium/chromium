@@ -1,6 +1,7 @@
 Name: libunwind
 URL: https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libunwind.git
-Version: unknown
+Version: N/A
+Revision: DEPS
 License: MIT, University of Illinois/NCSA Open Source License
 License File: src/LICENSE.TXT
 Security Critical: yes

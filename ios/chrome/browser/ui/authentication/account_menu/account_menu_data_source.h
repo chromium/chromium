@@ -7,16 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
-#import <vector>
-
 @class AccountErrorUIInfo;
-enum class IdentityAvatarSize;
-@class LegacyAccountsTableViewController;
 struct ManagementState;
-@protocol SystemIdentity;
-@class TableViewAccountItem;
 
-// Identity data source for AccountMenuTableViewController instance, to
+// Identity data source for AccountMenuViewController instance, to
 // manage the model.
 @protocol AccountMenuDataSource <NSObject>
 
@@ -26,22 +20,22 @@ struct ManagementState;
 // The gaia ids of the secondary accounts.
 @property(nonatomic, readonly) NSArray<NSString*>* secondaryAccountsGaiaIDs;
 
-// The email of the primary account.
+// The email of the primary account. Not nil.
 @property(nonatomic, readonly) NSString* primaryAccountEmail;
 
-// The avatar of the primary account.
+// The avatar of the primary account. Not nil.
 @property(nonatomic, readonly) UIImage* primaryAccountAvatar;
 
-// The user full name of the primary account.
+// The user full name of the primary account. May be nil.
 @property(nonatomic, readonly) NSString* primaryAccountUserFullName;
 
 // The management state of this browser and profile.
 @property(nonatomic, readonly) ManagementState managementState;
 
-// The identity for the user with `gaiaID`.
+// The full name for the user with `gaiaID`.
 - (NSString*)nameForGaiaID:(NSString*)gaiaID;
 
-// The identity for the user with `gaiaID`.
+// The email for the user with `gaiaID`.
 - (NSString*)emailForGaiaID:(NSString*)gaiaID;
 
 // The image for the user with `gaiaID`.

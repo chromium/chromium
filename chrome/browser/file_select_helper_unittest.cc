@@ -22,12 +22,15 @@
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/models/dialog_model.h"
+#include "ui/base/test/test_dialog_model_host.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 
 using blink::mojom::FileChooserParams;
@@ -72,7 +75,8 @@ void PrepareContentAnalysisCompletionCallbackArgs(
     for (auto& path : paths) {
       orig_files->push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
           blink::mojom::NativeFileInfo::New(path,
-                                            path.BaseName().AsUTF16Unsafe())));
+                                            path.BaseName().AsUTF16Unsafe(),
+                                            std::vector<std::u16string>())));
     }
   }
 
@@ -97,8 +101,34 @@ class FileSelectHelperTest : public testing::Test {
     ASSERT_TRUE(base::PathExists(data_dir_));
   }
 
+  std::unique_ptr<ui::TestDialogModelHost> CreateDialogHost(
+      scoped_refptr<FileSelectHelper> file_select_helper) {
+    base::FilePath dir(FILE_PATH_LITERAL("dir"));
+    base::FilePath file1(FILE_PATH_LITERAL("file1"));
+    base::FilePath file2(FILE_PATH_LITERAL("file2"));
+    std::vector<blink::mojom::FileChooserFileInfoPtr> selected_files;
+    std::vector<std::u16string> base_subdirs;
+    selected_files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
+        blink::mojom::NativeFileInfo::New(file1, u"file1", base_subdirs)));
+    selected_files.push_back(blink::mojom::FileChooserFileInfo::NewNativeFile(
+        blink::mojom::NativeFileInfo::New(file2, u"file2", base_subdirs)));
+
+    auto model = file_select_helper->CreateConfirmationDialog(
+        u"dir", std::move(selected_files),
+        base::BindLambdaForTesting(
+            [&](std::vector<blink::mojom::FileChooserFileInfoPtr>
+                    selected_files) {
+              ++callback_count_;
+              selected_files_ = std::move(selected_files);
+            }));
+    return std::make_unique<ui::TestDialogModelHost>(std::move(model));
+  }
+
   // The path to input data used in tests.
   base::FilePath data_dir_;
+
+  std::vector<blink::mojom::FileChooserFileInfoPtr> selected_files_;
+  int callback_count_ = 0;
 };
 
 TEST_F(FileSelectHelperTest, IsAcceptTypeValid) {
@@ -541,6 +571,7 @@ TEST_F(FileSelectHelperTest,
   // Files should be cleared.
   EXPECT_EQ(0u, files.size());
 }
+#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 
 TEST_F(FileSelectHelperTest, GetFileTypesFromAcceptType) {
   content::BrowserTaskEnvironment task_environment;
@@ -606,4 +637,31 @@ TEST_F(FileSelectHelperTest, MultipleFileExtensionsForMime) {
 }
 #endif
 
-#endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
+TEST_F(FileSelectHelperTest, ConfirmationDialog) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  scoped_refptr<FileSelectHelper> file_select_helper =
+      new FileSelectHelper(&profile);
+
+  // Cancel should be initially focused.
+  auto host = CreateDialogHost(file_select_helper);
+  EXPECT_EQ(host->GetInitiallyFocusedField(),
+            host->GetId(ui::TestDialogModelHost::ButtonId::kCancel));
+
+  // Accept should run callback with all files.
+  ui::TestDialogModelHost::Accept(std::move(host));
+  EXPECT_EQ(callback_count_, 1);
+  EXPECT_EQ(selected_files_.size(), 2u);
+
+  // Cancel should run callback with no files.
+  host = CreateDialogHost(file_select_helper);
+  ui::TestDialogModelHost::Cancel(std::move(host));
+  EXPECT_EQ(callback_count_, 2);
+  EXPECT_EQ(selected_files_.size(), 0u);
+
+  // Closing should invokes cancel.
+  host = CreateDialogHost(file_select_helper);
+  ui::TestDialogModelHost::Close(std::move(host));
+  EXPECT_EQ(callback_count_, 3);
+  EXPECT_EQ(selected_files_.size(), 0u);
+}

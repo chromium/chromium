@@ -152,9 +152,6 @@ void BluetoothSerialDeviceEnumerator::AdapterHelper::OpenPort(
 
 BluetoothSerialDeviceEnumerator::BluetoothSerialDeviceEnumerator(
     scoped_refptr<base::SingleThreadTaskRunner> adapter_runner) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kEnableBluetoothSerialPortProfileInSerialApi));
-
   helper_ = base::SequenceBound<AdapterHelper>(
       std::move(adapter_runner), weak_ptr_factory_.GetWeakPtr(),
       base::SequencedTaskRunner::GetCurrentDefault());

@@ -149,24 +149,35 @@ public class UrlUtilities {
         return isSchemeHttpOrHttps(Uri.parse(url).getScheme());
     }
 
+    /**
+     * @param url A URL.
+     * @return Whether the URL's scheme is HTTPS.
+     */
+    public static boolean isHttps(@NonNull String url) {
+        return isSchemeHttps(Uri.parse(url).getScheme());
+    }
+
+    private static boolean isSchemeHttps(String scheme) {
+        return UrlConstants.HTTPS_SCHEME.equals(scheme);
+    }
+
     private static boolean isSchemeHttpOrHttps(String scheme) {
-        return UrlConstants.HTTP_SCHEME.equals(scheme) || UrlConstants.HTTPS_SCHEME.equals(scheme);
+        return UrlConstants.HTTP_SCHEME.equals(scheme) || isSchemeHttps(scheme);
     }
 
     /**
-     * Determines whether or not the given URLs belong to the same broad domain or host.
-     * "Broad domain" is defined as the TLD + 1 or the host.
+     * Determines whether or not the given URLs belong to the same broad domain or host. "Broad
+     * domain" is defined as the TLD + 1 or the host.
      *
-     * For example, the TLD + 1 for http://news.google.com would be "google.com" and would be shared
-     * with other Google properties like http://finance.google.com.
+     * <p>For example, the TLD + 1 for http://news.google.com would be "google.com" and would be
+     * shared with other Google properties like http://finance.google.com.
      *
-     * If {@code includePrivateRegistries} is marked as true, then private domain registries (like
-     * appspot.com) are considered "effective TLDs" -- all subdomains of appspot.com would be
-     * considered distinct (effective TLD = ".appspot.com" + 1).
-     * This means that http://chromiumreview.appspot.com and http://example.appspot.com would not
-     * belong to the same host.
-     * If {@code includePrivateRegistries} is false, all subdomains of appspot.com
-     * would be considered to be the same domain (TLD = ".com" + 1).
+     * <p>If {@code includePrivateRegistries} is marked as true, then private domain registries
+     * (like appspot.com) are considered "effective TLDs" -- all subdomains of appspot.com would be
+     * considered distinct (effective TLD = ".appspot.com" + 1). This means that
+     * http://chromiumreview.appspot.com and http://example.appspot.com would not belong to the same
+     * host. If {@code includePrivateRegistries} is false, all subdomains of appspot.com would be
+     * considered to be the same domain (TLD = ".com" + 1).
      *
      * @param primaryUrl First URL
      * @param secondaryUrl Second URL
@@ -183,7 +194,6 @@ public class UrlUtilities {
      * Returns a new URL without the port in the hostname if it was present.
      *
      * @param url The url to process.
-     * @return
      */
     // TODO(crbug.com/40549331): Expose GURL::Replacements to Java.
     public static GURL clearPort(GURL url) {

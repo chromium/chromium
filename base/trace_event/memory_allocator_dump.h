@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/unguessable_token.h"
@@ -37,10 +38,10 @@ class TracedValue;
 class BASE_EXPORT MemoryAllocatorDump {
  public:
   enum Flags {
-    DEFAULT = 0,
+    kDefault = 0,
 
     // A dump marked weak will be discarded by TraceViewer.
-    WEAK = 1 << 0,
+    kWeak = 1 << 0,
   };
 
   // In the TraceViewer UI table each MemoryAllocatorDump becomes
@@ -104,7 +105,9 @@ class BASE_EXPORT MemoryAllocatorDump {
   void AddString(const char* name, const char* units, const std::string& value);
 
   // Absolute name, unique within the scope of an entire ProcessMemoryDump.
-  const std::string& absolute_name() const { return absolute_name_; }
+  const std::string& absolute_name() const LIFETIME_BOUND {
+    return absolute_name_;
+  }
 
   // Called at trace generation time to populate the TracedValue.
   void AsValueInto(TracedValue* value) const;
@@ -131,9 +134,9 @@ class BASE_EXPORT MemoryAllocatorDump {
   // cross process sharing. See crbug.com/492102 for design docs.
   // Subsequent MemoryAllocatorDump(s) with the same |absolute_name| are
   // expected to have the same guid.
-  const MemoryAllocatorDumpGuid& guid() const { return guid_; }
+  const MemoryAllocatorDumpGuid& guid() const LIFETIME_BOUND { return guid_; }
 
-  const std::vector<Entry>& entries() const { return entries_; }
+  const std::vector<Entry>& entries() const LIFETIME_BOUND { return entries_; }
 
   // Only for mojo serialization, which can mutate the collection.
   std::vector<Entry>* mutable_entries_for_serialization() const {

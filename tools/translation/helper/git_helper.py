@@ -21,9 +21,14 @@ def list_grds_in_repository(repo_path):
   #               translate.py.
   if os.getcwd().startswith('/google/cog/cloud'):
     files = []
-    for _, _, filenames in os.walk(repo_path):
-      files.extend([f for f in filenames if f.endswith('.grd')])
+    for dirpath, _, filenames in os.walk(repo_path):
+      files.extend([
+          os.path.relpath(os.path.join(dirpath, f), start=repo_path)
+          for f in filenames
+          if f.endswith('.grd')
+      ])
     return files
+
   output = subprocess.check_output([GIT, 'ls-files', '--', '*.grd'],
                                    cwd=repo_path)
   # Need to decode because Python3 returns subprocess output as bytes.

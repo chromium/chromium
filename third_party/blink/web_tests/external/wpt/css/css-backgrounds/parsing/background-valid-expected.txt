@@ -4,7 +4,7 @@ This is a testharness.js-based test.
 [FAIL] e.style['background'] = "none" should set background-clip
   assert_equals: background-clip should be canonical expected "border-box" but got "initial"
 [FAIL] e.style['background'] = "none" should set background-color
-  assert_equals: background-color should be canonical expected "transparent" but got "initial"
+  assert_equals: background-color should be canonical expected "rgba(0, 0, 0, 0)" but got "initial"
 [FAIL] e.style['background'] = "none" should set background-origin
   assert_equals: background-origin should be canonical expected "padding-box" but got "initial"
 [FAIL] e.style['background'] = "none" should set background-position

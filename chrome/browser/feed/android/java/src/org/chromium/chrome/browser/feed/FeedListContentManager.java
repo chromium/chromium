@@ -296,11 +296,12 @@ public class FeedListContentManager implements ListContentManager {
      * Replaces content in the range [index, index+count) with the content in {@code
      * newContentList}. For content that already exists in the range, it is moved rather than
      * removed and then inserted.
-     * @param index Index of first item to replace.
+     *
+     * @param rangeStart Index of first item to replace.
      * @param count Number of items to replace.
      * @param newContentList List of content to insert.
      * @return Whether content has changed. Returns false if the new content matches the replaced
-     *         content.
+     *     content.
      */
     public boolean replaceRange(int rangeStart, int count, List<FeedContent> newContentList) {
         boolean hasContentChange = false;

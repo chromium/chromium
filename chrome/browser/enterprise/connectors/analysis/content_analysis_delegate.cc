@@ -284,13 +284,11 @@ void ContentAnalysisDelegate::Cancel(bool warning) {
 std::optional<std::u16string> ContentAnalysisDelegate::GetCustomMessage()
     const {
   // Rule-based custom messages take precedence over policy-based.
-  if (IsDialogCustomRuleMessageEnabled()) {
-    std::u16string custom_rule_message =
-        GetCustomRuleString(custom_rule_message_);
-    if (!custom_rule_message.empty()) {
-      return l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
-                                        custom_rule_message);
-    }
+  std::u16string custom_rule_message =
+      GetCustomRuleString(custom_rule_message_);
+  if (!custom_rule_message.empty()) {
+    return l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
+                                      custom_rule_message);
   }
 
   auto element = data_.settings.tags.find(final_result_tag_);

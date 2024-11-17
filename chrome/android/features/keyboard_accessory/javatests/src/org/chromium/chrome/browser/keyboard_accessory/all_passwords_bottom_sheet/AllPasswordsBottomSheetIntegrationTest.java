@@ -22,7 +22,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -80,14 +81,12 @@ public class AllPasswordsBottomSheetIntegrationTest {
 
     private BottomSheetController mBottomSheetController;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Mock private AllPasswordsBottomSheetCoordinator.Delegate mDelegate;
-
-    public AllPasswordsBottomSheetIntegrationTest() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Before
     public void setUp() {

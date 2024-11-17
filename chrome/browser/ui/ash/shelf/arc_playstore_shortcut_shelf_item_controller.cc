@@ -6,14 +6,15 @@
 
 #include <utility>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_launcher.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/image/image_skia.h"
 

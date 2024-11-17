@@ -1,0 +1,98 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("login") {
+  sources = [
+    "http_auth_coordinator.h",
+    "login_handler.h",
+    "login_navigation_throttle.h",
+    "login_tab_helper.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/browser:password_form",
+    "//content/public/browser",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "http_auth_coordinator.cc",
+    "login_handler.cc",
+    "login_navigation_throttle.cc",
+    "login_tab_helper.cc",
+  ]
+
+  deps = [
+    ":login",
+    "//components/autofill/core/browser",
+    "//components/no_state_prefetch/browser",
+    "//components/strings:components_strings",
+    "//components/url_formatter",
+    "//extensions/buildflags",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//third_party/blink/public/common:headers",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+  if (!is_android) {
+    deps += [
+      "//components/guest_view/browser",
+      "//components/web_modal",
+      "//extensions/browser",
+      "//extensions/common:mojom",
+    ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "login_handler_browsertest.cc" ]
+    deps = [
+      ":login",
+      "//base/test:test_support",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/common:chrome_features",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/content_settings/core/common:features",
+      "//components/no_state_prefetch/browser",
+      "//components/omnibox/browser:location_bar",
+      "//components/prefs",
+      "//components/security_interstitials/content:security_interstitial_page",
+      "//components/ukm:test_support",
+      "//content/test:test_support",
+      "//extensions/browser",
+      "//extensions/common",
+      "//net:test_support",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+      "//url",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "login_handler_unittest.cc" ]
+  deps = [
+    ":login",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+  ]
+}

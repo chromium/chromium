@@ -25,7 +25,7 @@ class GuestOsUrlHandler {
   static std::optional<GuestOsUrlHandler> GetForUrl(Profile* profile,
                                                     const GURL& url);
 
-  GuestOsUrlHandler(const std::string_view name, const HandlerCallback handler);
+  GuestOsUrlHandler(std::string_view name, const HandlerCallback handler);
   GuestOsUrlHandler(const GuestOsUrlHandler& other);
   ~GuestOsUrlHandler();
 

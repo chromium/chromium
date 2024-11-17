@@ -37,7 +37,7 @@ template("domatolpm") {
   }
   proto_library(_gen_target_name) {
     testonly = true
-    deps = [ ":${_script_target_name}" ]
+    proto_deps = [ ":${_script_target_name}" ]
     sources = [
       "${_gen_file_format}.proto",
       "${_gen_file_format}_sub.proto",

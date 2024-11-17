@@ -64,7 +64,7 @@ class MEDIA_EXPORT BoxByteStream {
   // when the `BoxByteStream` is created with `moof` box.
   void FlushCurrentOffset();
 
-  // Validates whether there is a open box or not.
+  // Validates whether there is an open box or not.
   bool has_open_boxes() const { return !size_offsets_.empty(); }
 
   // Returns size of the top level box size until this point.

@@ -26,6 +26,12 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="CustomTabsAuthScheme">
+  <int value="0" label="Other/Custom"/>
+  <int value="1" label="HTTP"/>
+  <int value="2" label="HTTPS"/>
+</enum>
+
 <enum name="CustomTabsBrandingAppIdType">
   <summary>Used by CustomTabs.Branding.AppIdType</summary>
   <int value="0" label="INVALID"/>
@@ -120,6 +126,13 @@ chromium-metrics-reviews@google.com.
   <int value="57"
       label="Google bottom bar buttons EXTRA_GOOGLE_BOTTOM_BAR_BUTTONS"/>
   <int value="58" label="Support multi-network EXTRA_NETWORK"/>
+  <int value="59" label="Auth Tab EXTRA_LAUNCH_AUTH_TAB"/>
+  <int value="60"
+      label="Auth Tab custom redirect scheme EXTRA_REDIRECT_SCHEME"/>
+  <int value="61"
+      label="Auth Tab https redirect host EXTRA_HTTPS_REDIRECT_HOST"/>
+  <int value="62"
+      label="Auth Tab https redirect path EXTRA_HTTPS_REDIRECT_PATH"/>
 </enum>
 
 <enum name="CustomTabsMinimizedEvents">

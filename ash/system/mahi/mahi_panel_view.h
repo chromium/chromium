@@ -31,7 +31,7 @@ class IconButton;
 class MahiContentSourceButton;
 class MahiQuestionAnswerView;
 class MahiUiUpdate;
-class SummaryOutlinesSection;
+class SummaryOutlinesElucidationSection;
 enum class VisibilityState;
 
 // The code for Mahi main panel view. This view is placed within
@@ -49,6 +49,9 @@ class ASH_EXPORT MahiPanelView : public SystemPanelView,
 
   // Shows the pop in animation for the panel.
   void AnimatePopIn(const gfx::Rect& start_bounds);
+
+  // SystemPanelView:
+  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
 
  private:
   // views::TextfieldController:
@@ -86,7 +89,8 @@ class ASH_EXPORT MahiPanelView : public SystemPanelView,
   raw_ptr<views::View> back_button_ = nullptr;
   raw_ptr<MahiContentSourceButton> content_source_button_ = nullptr;
   raw_ptr<MahiQuestionAnswerView> question_answer_view_ = nullptr;
-  raw_ptr<SummaryOutlinesSection> summary_outlines_section_ = nullptr;
+  raw_ptr<SummaryOutlinesElucidationSection> summary_outlines_section_ =
+      nullptr;
   raw_ptr<views::Textfield> question_textfield_ = nullptr;
   raw_ptr<IconButton> send_button_ = nullptr;
   raw_ptr<IconButton> thumbs_up_button_ = nullptr;

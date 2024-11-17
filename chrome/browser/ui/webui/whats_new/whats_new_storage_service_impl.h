@@ -27,17 +27,17 @@ class WhatsNewStorageServiceImpl : public WhatsNewStorageService {
   const base::Value::List& ReadModuleData() const override;
   const base::Value::Dict& ReadEditionData() const override;
 
-  int GetModuleQueuePosition(const std::string_view module_name) const override;
+  int GetModuleQueuePosition(std::string_view module_name) const override;
   std::optional<int> GetUsedVersion(
-      const std::string_view edition_name) const override;
+      std::string_view edition_name) const override;
   std::optional<std::string_view> FindEditionForCurrentVersion() const override;
-  bool IsUsedEdition(const std::string_view edition_name) const override;
+  bool IsUsedEdition(std::string_view edition_name) const override;
 
-  void SetModuleEnabled(const std::string_view module_name) override;
-  void ClearModule(const std::string_view module_name) override;
+  void SetModuleEnabled(std::string_view module_name) override;
+  void ClearModule(std::string_view module_name) override;
 
-  void SetEditionUsed(const std::string_view edition_name) override;
-  void ClearEdition(const std::string_view edition_name) override;
+  void SetEditionUsed(std::string_view edition_name) override;
+  void ClearEdition(std::string_view edition_name) override;
 
   void Reset() override;
 

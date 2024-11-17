@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1/#scroll-snap-type" />
+    <script src="../../resources/testharness.js"></script>
+    <script src="../../resources/testharnessreport.js"></script>
+    <script src="../../resources/testdriver.js"></script>
+    <script src="../../resources/testdriver-actions.js"></script>
+    <script src="../../resources/testdriver-vendor.js"></script>
+    <script src="../../resources/gesture-util.js"></script>
+  </head>
+  <body>
+    <style>
+      .scroller {
+        height: 200px;
+        width: 200px;
+        border: solid 1px black;
+        overflow-y: scroll;
+        scroll-snap-type: y proximity;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+      }
+      .space {
+        height: 100%;
+        width: 100%;
+        content: "before";
+        margin-bottom: 200%;
+      }
+      .target {
+        scroll-snap-align: start;
+        background-color: turquoise;
+        height: 50px;
+        width: 50px;
+      }
+    </style>
+    <div id="scroller" class="scroller">
+      <div class="target"></div>
+      <div class="space"></div>
+    </div>
+    <p id="scrolltop"></p>
+
+    <script>
+      const scroller = document.getElementById("scroller");
+
+      // Based on kProximityRatio as defined in
+      // third_party/blink/renderer/core/page/scrolling/snap_coordinator.cc
+      const proximity_ratio = 1 / 3;
+      const proximity_range = scroller.clientHeight * proximity_ratio;
+
+      let max_observed_offset = -1;
+      const observe_max_scroll_offset = () => {
+        max_observed_offset = Math.max(scroller.scrollTop, max_observed_offset);
+      };
+      promise_test(async (t) => {
+        await waitForScrollReset(scroller);
+        await waitForCompositorCommit();
+
+        let scrollend_promise = waitForScrollendEvent(scroller);
+        scroller.addEventListener("scroll", observe_max_scroll_offset);
+        await touchDrag(0, 0, 0, -proximity_range,
+          {
+            origin: scroller,
+            prevent_fling_pause_ms: 0 // Induce fling.
+          }
+        );
+        await scrollend_promise;
+        // Ideally, we only do the if-case assert (i.e. we didn't snap back to
+        // 0). However, the touch-drag gesture doesn't always result in a fling
+        // that goes past the proximity range on some platforms, perhaps due to
+        // touch slop. In such cases the correct behavior is to snap back to 0.
+        if (max_observed_offset > proximity_range) {
+          assert_greater_than(scroller.scrollTop, 0,
+          "scroller is not snapped to target since fling exceeded " +
+          "proximity range");
+        } else {
+          assert_equals(scroller.scrollTop, 0,
+          "scroller snapped to target since fling did not exceed " +
+          "proximity range");
+        }
+        scroller.removeEventListener("scroll", observe_max_scroll_offset);
+      }, "scroller settles unsnapped when scrolled outside proximity range");
+
+      promise_test(async (t) => {
+        await waitForScrollReset(scroller);
+        await waitForCompositorCommit();
+        assert_equals(scroller.scrollTop, 0, "scroller is reset");
+
+        let scrollend_promise = waitForScrollendEvent(scroller);
+        await touchDrag(0, 0, 0, -proximity_range,
+          {
+            origin: scroller,
+            prevent_fling_pause_ms: 100 // Prevent fling.
+          }
+        );
+        await scrollend_promise;
+        assert_equals(scroller.scrollTop, 0, "scroller is snapped to target");
+      }, "scroller snaps when scrolled within proximity range");
+    </script>
+  </body>
+</html>

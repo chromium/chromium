@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 
+class SkStream;
+
 namespace blink {
 
 class SegmentStream;
@@ -18,9 +20,15 @@ class SegmentStream;
 // Base class for implementing a `blink::ImageDecoder` on top of an `SkCodec`.
 class PLATFORM_EXPORT SkiaImageDecoderBase : public ImageDecoder {
  public:
+  static constexpr wtf_size_t kNoReadingOffset = 0;
+
   SkiaImageDecoderBase(AlphaOption,
                        ColorBehavior,
-                       wtf_size_t max_decoded_bytes);
+                       wtf_size_t max_decoded_bytes,
+                       wtf_size_t reading_offset = kNoReadingOffset,
+                       HighBitDepthDecodingOption bit_depth_option =
+                           HighBitDepthDecodingOption::kDefaultBitDepth);
+
   SkiaImageDecoderBase(const SkiaImageDecoderBase&) = delete;
   SkiaImageDecoderBase& operator=(const SkiaImageDecoderBase&) = delete;
   ~SkiaImageDecoderBase() override;
@@ -38,13 +46,13 @@ class PLATFORM_EXPORT SkiaImageDecoderBase : public ImageDecoder {
 
  protected:
   // OnCreateSkCodec needs to read enough of the image to get the image size.
-  virtual std::unique_ptr<SkCodec> OnCreateSkCodec(
-      std::unique_ptr<SegmentStream>,
-      SkCodec::Result* result) = 0;
+  virtual std::unique_ptr<SkCodec> OnCreateSkCodec(std::unique_ptr<SkStream>,
+                                                   SkCodec::Result* result) = 0;
 
  private:
   // ImageDecoder:
   void DecodeSize() final {}
+  bool ImageIsHighBitDepth() final;
   wtf_size_t DecodeFrameCount() final;
   void InitializeNewFrame(wtf_size_t) final;
   void Decode(wtf_size_t) final;
@@ -77,6 +85,12 @@ class PLATFORM_EXPORT SkiaImageDecoderBase : public ImageDecoder {
   mutable int repetition_count_ = kAnimationLoopOnce;
   int prior_frame_ = SkCodec::kNoFrame;
   base::flat_set<wtf_size_t> decode_failed_frames_;
+
+  // Offset inside `segment_stream_` where `this` decoder should start decoding
+  // an image.  This is useful in scenarios where we want an `SkCodec` to decode
+  // an image embedded in a middle of another data stream - one specific example
+  // is PNG images embedded inside ICO or BMP images.
+  const wtf_size_t reading_offset_ = 0;
 };
 
 }  // namespace blink

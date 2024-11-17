@@ -52,11 +52,11 @@ class QrCodeShareMediator {
 
     /**
      * The QrCodeScanMediator constructor.
+     *
      * @param context The context to use.
      * @param propertyModel The property model to use to communicate with views.
      * @param closeDialog The {@link Runnable} to close the dialog.
      * @param url The url to create the QRCode.
-     * @param permissionDelegate The delegate to help with downloading QRCode.
      */
     QrCodeShareMediator(
             Context context,
@@ -82,7 +82,7 @@ class QrCodeShareMediator {
         if (TextUtils.isEmpty(data)) {
             mPropertyModel.set(
                     QrCodeShareViewProperties.ERROR_STRING,
-                    mContext.getResources().getString(R.string.qr_code_error_unknown));
+                    mContext.getString(R.string.qr_code_error_unknown));
             return;
         }
 
@@ -93,11 +93,9 @@ class QrCodeShareMediator {
         }
         String errorMessage;
         if (data != null && data.length() > MAX_URL_LENGTH) {
-            errorMessage =
-                    mContext.getResources()
-                            .getString(R.string.qr_code_error_too_long, MAX_URL_LENGTH);
+            errorMessage = mContext.getString(R.string.qr_code_error_too_long, MAX_URL_LENGTH);
         } else {
-            errorMessage = mContext.getResources().getString(R.string.qr_code_error_unknown);
+            errorMessage = mContext.getString(R.string.qr_code_error_unknown);
         }
         mPropertyModel.set(QrCodeShareViewProperties.ERROR_STRING, errorMessage);
     }
@@ -225,7 +223,7 @@ class QrCodeShareMediator {
     }
 
     // Helps to limit number of text lines and shows ellipsis for only the last line.
-    class FixedLineCountLayout extends DynamicLayout {
+    static class FixedLineCountLayout extends DynamicLayout {
         int mMaxLines;
 
         FixedLineCountLayout(

@@ -21,17 +21,12 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/screen_ai/public/mojom/screen_ai_factory.mojom.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "services/screen_ai/screen_ai_library_wrapper.h"
 
 namespace ui {
 class AXTree;
-}
-
-namespace ukm {
-class UkmRecorder;
 }
 
 namespace screen_ai {
@@ -54,11 +49,6 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
   ScreenAIService(const ScreenAIService&) = delete;
   ScreenAIService& operator=(const ScreenAIService&) = delete;
   ~ScreenAIService() override;
-
-  static void RecordMetrics(ukm::SourceId ukm_source_id,
-                            ukm::UkmRecorder* ukm_recorder,
-                            base::TimeDelta elapsed_time,
-                            bool success);
 
   static ui::AXNodeID ComputeMainNodeForTesting(
       const ui::AXTree* tree,
@@ -84,7 +74,6 @@ class ScreenAIService : public mojom::ScreenAIServiceFactory,
 
   // mojom::Screen2xMainContentExtractor:
   void ExtractMainContent(const ui::AXTreeUpdate& snapshot,
-                          ukm::SourceId ukm_source_id,
                           ExtractMainContentCallback callback) override;
   void ExtractMainNode(const ui::AXTreeUpdate& snapshot,
                        ExtractMainNodeCallback callback) override;

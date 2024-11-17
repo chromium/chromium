@@ -27,6 +27,7 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/concierge/fake_concierge_client.h"
@@ -88,7 +89,7 @@ class BorealisInstallerTest : public testing::Test,
 
     FakeDlcserviceClient()->set_install_error(dlcservice::kErrorNone);
     guest_os::GuestId id{guest_os::VmType::BOREALIS, "borealis", "penguin"};
-    guest_os::GuestOsSessionTracker::GetForProfile(&profile_)
+    guest_os::GuestOsSessionTrackerFactory::GetForProfile(&profile_)
         ->AddGuestForTesting(id);
 
     vm_tools::concierge::ListVmDisksResponse resp;

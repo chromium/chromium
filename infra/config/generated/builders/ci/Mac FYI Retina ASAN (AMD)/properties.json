@@ -69,7 +69,8 @@
           "builder": "gpu-fyi-try-mac-amd-retina-asan",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Mac FYI Retina ASAN (AMD)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

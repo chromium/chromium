@@ -1,10 +1,10 @@
 UNKNOWN_TYPE | idioma | Idioma: | es | -default
 UNKNOWN_TYPE | noConsecutivoInterno | Consecutivo: |  | -default
 UNKNOWN_TYPE | numero_pasaporte | Número de pasaporte: |  | -default
-NAME_FIRST | nombres | Nombre(s): |  | -default
-NAME_LAST | apellidos | Apellido(s): |  | -default
+UNKNOWN_TYPE | nombres | Nombre(s): |  | -default
+UNKNOWN_TYPE | apellidos | Apellido(s): |  | -default
 UNKNOWN_TYPE | nacionalidad | Nacionalidad: |  | -default
-UNKNOWN_TYPE | fecha_nacimiento | Fecha de nacimiento: |  | fecha_nacimiento_1
+UNKNOWN_TYPE | fecha_nacimiento | Fecha de nacimiento: |  | -default
 UNKNOWN_TYPE | sexo_pago | Sexo: |  | -default
 UNKNOWN_TYPE | sexo | Sexo: |  | -default
 UNKNOWN_TYPE | monto_tramite | Monto trámite: | 558.00 | -default
@@ -22,7 +22,7 @@ NAME_LAST | apellidos | Surname(s) |  | internacion_1
 UNKNOWN_TYPE | sexo | Gender | 0 | internacion_1
 UNKNOWN_TYPE | fechaNacimiento | Date of birth |  | internacion_1
 ADDRESS_HOME_COUNTRY | nacionalidad | Nationality (Country) | 0 | internacion_1
-ADDRESS_HOME_STATE | paisNacimiento | Country of birth | 0 | internacion_1
+ADDRESS_HOME_COUNTRY | paisNacimiento | Country of birth | 0 | internacion_1
 UNKNOWN_TYPE | tipoDocumento | Type of document | 0 | internacion_1
 UNKNOWN_TYPE | numeroDocumento | Document number |  | internacion_1
 UNKNOWN_TYPE | confirmarNumeroDocumento | Document number (Confirmation) |  | internacion_1

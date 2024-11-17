@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_tab_group_coordinator.h"
 
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -35,7 +36,7 @@
   // List of tabs to add to the tab group.
   std::set<web::WebStateID> _identifiers;
   // Tab group to edit.
-  const TabGroup* _tabGroup;
+  raw_ptr<const TabGroup> _tabGroup;
   // Transition delegate for the animation to show/hide.
   CreateTabGroupTransitionDelegate* _transitionDelegate;
 }
@@ -95,10 +96,9 @@
 
 - (void)start {
   Browser* browser = self.browser;
-  ChromeBrowserState* browserState = browser->GetBrowserState();
+  ProfileIOS* profile = browser->GetProfile();
   BOOL editMode = _tabGroup != nullptr;
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   BOOL tabSynced =
       syncService && syncService->GetUserSettings()->GetSelectedTypes().Has(
                          syncer::UserSelectableType::kTabs);

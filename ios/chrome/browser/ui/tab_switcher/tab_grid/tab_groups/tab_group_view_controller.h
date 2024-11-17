@@ -25,11 +25,15 @@ class TabGroup;
 // The embedded grid view controller.
 @property(nonatomic, readonly) TabGroupGridViewController* gridViewController;
 
+// The face pile view controller to display the share button or the face pile.
+@property(nonatomic, strong) UIViewController* facePile;
+
 // Initiates a TabGroupViewController with `handler` to handle user action,
-// `incognito` to YES to have a dark theme, `tabGroup` to get tab group
-// information.
+// `incognito` to YES to have a dark theme, `shared` to YES when this group is
+// shared with other users, `tabGroup` to get tab group information.
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
                       incognito:(BOOL)incognito
+                         shared:(BOOL)shared
                        tabGroup:(const TabGroup*)tabGroup;
 
 // Let this view controller know that its content will appear.

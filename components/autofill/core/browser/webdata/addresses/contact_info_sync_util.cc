@@ -210,15 +210,13 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   specifics.set_use_count(profile.use_count());
   specifics.set_use_date_unix_epoch_seconds(
       (profile.use_date() - base::Time::UnixEpoch()).InSeconds());
-  if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
-    if (auto use_date2 = profile.use_date(2)) {
-      specifics.set_use_date2_unix_epoch_seconds(
-          (*use_date2 - base::Time::UnixEpoch()).InSeconds());
-    }
-    if (auto use_date3 = profile.use_date(3)) {
-      specifics.set_use_date3_unix_epoch_seconds(
-          (*use_date3 - base::Time::UnixEpoch()).InSeconds());
-    }
+  if (auto use_date2 = profile.use_date(2)) {
+    specifics.set_use_date2_unix_epoch_seconds(
+        (*use_date2 - base::Time::UnixEpoch()).InSeconds());
+  }
+  if (auto use_date3 = profile.use_date(3)) {
+    specifics.set_use_date3_unix_epoch_seconds(
+        (*use_date3 - base::Time::UnixEpoch()).InSeconds());
   }
   specifics.set_date_modified_unix_epoch_seconds(
       (profile.modification_date() - base::Time::UnixEpoch()).InSeconds());
@@ -237,6 +235,14 @@ sync_pb::ContactInfoSpecifics ContactInfoSpecificsFromAutofillProfile(
   s.Set(specifics.mutable_name_last_conjunction(), NAME_LAST_CONJUNCTION);
   s.Set(specifics.mutable_name_last_second(), NAME_LAST_SECOND);
   s.Set(specifics.mutable_name_full(), NAME_FULL);
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    // Set alternative name related values and statues.
+    s.Set(specifics.mutable_alternative_family_name(), ALTERNATIVE_FAMILY_NAME);
+    s.Set(specifics.mutable_alternative_given_name(), ALTERNATIVE_GIVEN_NAME);
+    s.Set(specifics.mutable_alternative_full_name(), ALTERNATIVE_FULL_NAME);
+  }
 
   // Set address-related values and statuses.
   s.Set(specifics.mutable_address_city(), ADDRESS_HOME_CITY);
@@ -339,19 +345,17 @@ std::optional<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   profile.set_use_count(specifics.use_count());
   profile.set_use_date(base::Time::UnixEpoch() +
                        base::Seconds(specifics.use_date_unix_epoch_seconds()));
-  if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
-    if (specifics.has_use_date2_unix_epoch_seconds()) {
-      profile.set_use_date(
-          base::Time::UnixEpoch() +
-              base::Seconds(specifics.use_date2_unix_epoch_seconds()),
-          2);
-    }
-    if (specifics.has_use_date3_unix_epoch_seconds()) {
-      profile.set_use_date(
-          base::Time::UnixEpoch() +
-              base::Seconds(specifics.use_date3_unix_epoch_seconds()),
-          3);
-    }
+  if (specifics.has_use_date2_unix_epoch_seconds()) {
+    profile.set_use_date(
+        base::Time::UnixEpoch() +
+            base::Seconds(specifics.use_date2_unix_epoch_seconds()),
+        2);
+  }
+  if (specifics.has_use_date3_unix_epoch_seconds()) {
+    profile.set_use_date(
+        base::Time::UnixEpoch() +
+            base::Seconds(specifics.use_date3_unix_epoch_seconds()),
+        3);
   }
   profile.set_modification_date(
       base::Time::UnixEpoch() +
@@ -370,6 +374,14 @@ std::optional<AutofillProfile> CreateAutofillProfileFromContactInfoSpecifics(
   s.Set(specifics.name_last_conjunction(), NAME_LAST_CONJUNCTION);
   s.Set(specifics.name_last_second(), NAME_LAST_SECOND);
   s.Set(specifics.name_full(), NAME_FULL);
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    // Set alternative name related values and statues.
+    s.Set(specifics.alternative_family_name(), ALTERNATIVE_FAMILY_NAME);
+    s.Set(specifics.alternative_given_name(), ALTERNATIVE_GIVEN_NAME);
+    s.Set(specifics.alternative_full_name(), ALTERNATIVE_FULL_NAME);
+  }
 
   // Set address-related values and statuses.
   s.Set(specifics.address_city(), ADDRESS_HOME_CITY);
@@ -427,10 +439,8 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   trimmed_specifics.clear_address_type();
   trimmed_specifics.clear_use_count();
   trimmed_specifics.clear_use_date_unix_epoch_seconds();
-  if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
-    trimmed_specifics.clear_use_date2_unix_epoch_seconds();
-    trimmed_specifics.clear_use_date3_unix_epoch_seconds();
-  }
+  trimmed_specifics.clear_use_date2_unix_epoch_seconds();
+  trimmed_specifics.clear_use_date3_unix_epoch_seconds();
   trimmed_specifics.clear_date_modified_unix_epoch_seconds();
   trimmed_specifics.clear_language_code();
   trimmed_specifics.clear_profile_label();
@@ -460,6 +470,21 @@ sync_pb::ContactInfoSpecifics TrimContactInfoSpecificsDataForCaching(
   if (d.Delete(trimmed_specifics.mutable_name_full())) {
     trimmed_specifics.clear_name_full();
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    // Delete alternative name related values and statues.
+    if (d.Delete(trimmed_specifics.mutable_alternative_family_name())) {
+      trimmed_specifics.clear_alternative_family_name();
+    }
+    if (d.Delete(trimmed_specifics.mutable_alternative_given_name())) {
+      trimmed_specifics.clear_alternative_given_name();
+    }
+    if (d.Delete(trimmed_specifics.mutable_alternative_full_name())) {
+      trimmed_specifics.clear_alternative_full_name();
+    }
+  }
+
   // Delete address-related values and statuses.;
   if (d.Delete(trimmed_specifics.mutable_address_city())) {
     trimmed_specifics.clear_address_city();

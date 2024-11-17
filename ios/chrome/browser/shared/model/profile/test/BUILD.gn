@@ -7,7 +7,6 @@ source_set("test") {
   sources = [
     "test_profile_ios.h",
     "test_profile_ios.mm",
-    "test_profile_ios_forward.h",
     "test_profile_manager_ios.h",
     "test_profile_manager_ios.mm",
   ]
@@ -30,6 +29,7 @@ source_set("test") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/supervised_user/model:sync_settings_factory",
     "//ios/chrome/test:test_support",
     "//ios/web/public/thread",

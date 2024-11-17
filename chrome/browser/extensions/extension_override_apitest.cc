@@ -264,14 +264,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabIncognito) {
 // Check that when an overridden new tab page has focus, a subframe navigation
 // on that page does not steal the focus away by focusing the omnibox.
 // See https://crbug.com/700124.
-// Flaky, http://crbug.com/1269169.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/40804036): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_SubframeNavigationInOverridenNTPDoesNotAffectFocus \
   DISABLED_SubframeNavigationInOverridenNTPDoesNotAffectFocus
 #else
 #define MAYBE_SubframeNavigationInOverridenNTPDoesNotAffectFocus \
   SubframeNavigationInOverridenNTPDoesNotAffectFocus
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_F(
     ExtensionOverrideTest,
     MAYBE_SubframeNavigationInOverridenNTPDoesNotAffectFocus) {

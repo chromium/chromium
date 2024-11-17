@@ -97,6 +97,11 @@ extern const BASE_EXPORT base::FeatureParam<int>
     kPartitionAllocSchedulerLoopQuarantineBranchCapacity;
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocZappingByFreeFlags);
+
+// Eventually zero out most PartitionAlloc memory. This is not meant as a
+// security guarantee, but to increase the compression ratio of PartitionAlloc's
+// fragmented super pages.
+BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocEventuallyZeroFreedMemory);
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 using BackupRefPtrEnabledProcesses = internal::PAFeatureEnabledProcesses;
@@ -132,24 +137,6 @@ enum class BucketDistributionMode : uint8_t {
   kDefault,
   kDenser,
 };
-
-// Parameter for 'kPartitionAllocMakeFreeNoOpOnShutdown' feature which
-// controls when free() becomes a no-op during Shutdown()
-enum class WhenFreeBecomesNoOp {
-  kBeforePreShutdown,
-  kBeforeHaltingStartupTracingController,
-  kBeforeShutDownThreads,
-  kInShutDownThreads,
-  kAfterShutDownThreads,
-};
-
-// Inserts a no-op on 'free()' allocator shim at the front of the
-// dispatch chain if called from the appropriate callsite.
-BASE_EXPORT void MakeFreeNoOp(WhenFreeBecomesNoOp callsite);
-
-BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocMakeFreeNoOpOnShutdown);
-extern const BASE_EXPORT base::FeatureParam<WhenFreeBecomesNoOp>
-    kPartitionAllocMakeFreeNoOpOnShutdownParam;
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kPartitionAllocBackupRefPtr);
 extern const BASE_EXPORT base::FeatureParam<BackupRefPtrEnabledProcesses>

@@ -12,11 +12,10 @@
 
 namespace blink {
 
-SizesAttributeParser::SizesAttributeParser(
-    MediaValues* media_values,
-    const String& attribute,
-    const ExecutionContext* execution_context,
-    const HTMLImageElement* img)
+SizesAttributeParser::SizesAttributeParser(MediaValues* media_values,
+                                           const String& attribute,
+                                           ExecutionContext* execution_context,
+                                           const HTMLImageElement* img)
     : media_values_(media_values),
       execution_context_(execution_context),
       img_(img) {

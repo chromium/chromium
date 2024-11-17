@@ -17,15 +17,6 @@
 
 namespace media {
 
-// Kill switches in case things explode. Remove after M132.
-// TODO(crbug.com/355485812): Re-enable this flag.
-BASE_FEATURE(kAllowOnlyAudioCodecsDuringDemuxing,
-             "AllowOnlyAudioCodecsDuringDemuxing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kForbidH264ParsingDuringDemuxing,
-             "ForbidH264ParsingDuringDemuxing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Internal buffer size used by AVIO for reading.
 // TODO(dalecurtis): Experiment with this buffer size and measure impact on
 // performance.  Currently we want to use 32kb to preserve existing behavior
@@ -66,7 +57,7 @@ static int64_t AVIOSeekOperation(void* opaque, int64_t offset, int whence) {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return new_offset;
 }
@@ -120,9 +111,7 @@ FFmpegGlue::FFmpegGlue(FFmpegURLProtocol* protocol) {
 
   // We don't allow H.264 parsing during demuxing since we have our own parser
   // and the ffmpeg one increases memory usage unnecessarily.
-  if (base::FeatureList::IsEnabled(kForbidH264ParsingDuringDemuxing)) {
-    format_context_->flags |= AVFMT_FLAG_NOH264PARSE;
-  }
+  format_context_->flags |= AVFMT_FLAG_NOH264PARSE;
 
   // Ensures format parsing errors will bail out. From an audit on 11/2017, all
   // instances were real failures. Solves bugs like http://crbug.com/710791.
@@ -130,29 +119,20 @@ FFmpegGlue::FFmpegGlue(FFmpegURLProtocol* protocol) {
 
   format_context_->pb = avio_context_.get();
 
-  if (base::FeatureList::IsEnabled(kFFmpegAllowLists)) {
-    // Enhance security by forbidding ffmpeg from decoding / demuxing codecs and
-    // containers which should be unsupported.
-    //
-    // Normally these aren't even compiled in, but during codec/container
-    // deprecations and when an external ffmpeg is used this adds extra
-    // security.
-    static const base::NoDestructor<std::string> kCombinedCodecList([]() {
-      if (base::FeatureList::IsEnabled(kAllowOnlyAudioCodecsDuringDemuxing)) {
-        // We also don't allow ffmpeg to use any video decoders during demuxing
-        // since it's unnecessary for the codecs we use and just increases
-        // memory usage.
-        return std::string(GetAllowedAudioDecoders());
-      }
-
-      return base::JoinString(
-          {GetAllowedAudioDecoders(), GetAllowedVideoDecoders()}, ",");
-    }());
-
-    // Note: FFmpeg will try to free these strings, so we must duplicate them.
-    format_context_->codec_whitelist = av_strdup(kCombinedCodecList->c_str());
-    format_context_->format_whitelist = av_strdup(GetAllowedDemuxers());
-  }
+  // Enhance security by forbidding ffmpeg from decoding / demuxing codecs and
+  // containers which should be unsupported.
+  //
+  // Normally these aren't even compiled in, but during codec/container
+  // deprecations and when an external ffmpeg is used this adds extra
+  // security.
+  //
+  // We also don't allow ffmpeg to use any video decoders during demuxing
+  // since it's unnecessary for the codecs we use and just increases
+  // memory usage.
+  //
+  // Note: FFmpeg will try to free these strings, so we must duplicate them.
+  format_context_->codec_whitelist = av_strdup(GetAllowedAudioDecoders());
+  format_context_->format_whitelist = av_strdup(GetAllowedDemuxers());
 }
 
 // static
@@ -174,7 +154,7 @@ const char* FFmpegGlue::GetAllowedAudioDecoders() {
 const char* FFmpegGlue::GetAllowedVideoDecoders() {
   // This should match the configured lists in //third_party/ffmpeg.
 #if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
-  return IsBuiltInVideoCodec(VideoCodec::kH264) ? "h264" : "";
+  return "h264";
 #else
   return "";
 #endif

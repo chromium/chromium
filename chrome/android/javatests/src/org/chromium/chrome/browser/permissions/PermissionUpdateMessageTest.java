@@ -148,7 +148,6 @@ public class PermissionUpdateMessageTest {
      * @param windowAndroid The WindowAndroid to get the messages from.
      * @return The {@link PropertyModel} of an enqueued permission update message, null if the
      *     message is not present.
-     * @throws ExecutionException
      */
     public static PropertyModel getPermissionUpdateMessage(WindowAndroid windowAndroid)
             throws ExecutionException {

@@ -23,9 +23,7 @@
 
 namespace partition_alloc::internal {
 
-namespace {
 using PoolInfo = PartitionAddressSpace::PoolInfo;
-}
 
 class PoolOffsetFreelistEntry;
 

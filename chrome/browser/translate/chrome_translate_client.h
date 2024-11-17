@@ -105,9 +105,6 @@ class ChromeTranslateClient
   std::unique_ptr<translate::TranslatePrefs> GetTranslatePrefs() override;
   language::AcceptLanguagesService* GetAcceptLanguagesService() override;
 #if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<infobars::InfoBar> CreateInfoBar(
-      std::unique_ptr<translate::TranslateInfoBarDelegate> delegate)
-      const override;
   // Trigger a manual translation when the necessary state (e.g. source
   // language) is ready.
   void ManualTranslateWhenReady();

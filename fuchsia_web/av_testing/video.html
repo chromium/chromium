@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <video id="video" height="720" width="1024" onclick="this.play()" />
+
+  <script>
+    let params = new URLSearchParams(window.location.search);
+    let file = params.get("file");
+    if (file == null) {
+      file = "video.webm";
+    }
+    let tag = document.getElementById("video");
+    if (params.has("local")) {
+      tag.src = file;
+      tag.playbackRate = 16
+    } else {
+      tag.src = "http://172.31.186.18/test_site/mediaFiles/videostack/" + file;
+    }
+  </script>
+</html>

@@ -55,11 +55,11 @@ int FakeSyncManager::GetInvalidationCount(DataType type) const {
 }
 
 void FakeSyncManager::WaitForSyncThread() {
-  // Post a task to |sync_task_runner_| and block until it runs.
+  // Post a task to `sync_task_runner_` and block until it runs.
   base::RunLoop run_loop;
   if (!sync_task_runner_->PostTaskAndReply(FROM_HERE, base::DoNothing(),
                                            run_loop.QuitClosure())) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   run_loop.Run();
 }

@@ -549,8 +549,9 @@ class CupsPrintersManagerImpl
                           PrinterStatusCallback cb) override {
     std::optional<Printer> printer = GetPrinter(printer_id);
     if (!printer) {
-      PRINTER_LOG(ERROR) << "Unable to complete printer status request. "
-                         << "Printer not found. Printer id: " << printer_id;
+      PRINTER_LOG(ERROR) << printer_id
+                         << ": Unable to complete printer status request: "
+                         << "GetPrinter failed.";
       CupsPrinterStatus printer_status(printer_id);
       printer_status.AddStatusReason(
           CupsPrinterStatus::CupsPrinterStatusReason::Reason::
@@ -583,9 +584,11 @@ class CupsPrintersManagerImpl
 
     // Behavior for querying a non-IPP uri is undefined and disallowed.
     if (!IsIppUri(printer->uri())) {
-      PRINTER_LOG(DEBUG) << "Unable to complete printer status request. "
-                         << "Printer uri is invalid. Printer id: "
-                         << printer_id;
+      PRINTER_LOG(DEBUG) << printer_id
+                         << ": Cannot send status request to non-IPP URI for "
+                         << printer->make_and_model() << ": "
+                         << printer->uri().GetNormalized(
+                                /*always_include_port=*/true);
       CupsPrinterStatus printer_status(printer_id);
       printer_status.AddStatusReason(
           CupsPrinterStatus::CupsPrinterStatusReason::Reason::kUnknownReason,
@@ -595,6 +598,10 @@ class CupsPrintersManagerImpl
       return;
     }
 
+    PRINTER_LOG(DEBUG) << printer_id << ": Sending status request for "
+                       << printer->make_and_model() << ": "
+                       << printer->uri().GetNormalized(
+                              /*always_include_port=*/true);
     QueryIppPrinter(
         printer->uri().GetHostEncoded(), printer->uri().GetPort(),
         printer->uri().GetPathEncodedAsString(),
@@ -656,8 +663,11 @@ class CupsPrintersManagerImpl
       case PrinterQueryResult::kHostnameResolution:
       case PrinterQueryResult::kUnreachable: {
         PRINTER_LOG(ERROR)
-            << "Printer status request failed. Could not reach printer "
-            << printer_id;
+            << printer_id
+            << ": Printer status request failed. Could not reach printer: "
+            << (result == PrinterQueryResult::kHostnameResolution
+                    ? "hostname resolution failed"
+                    : "device unreachable");
         CupsPrinterStatus error_printer_status(printer_id);
         error_printer_status.AddStatusReason(
             CupsPrinterStatus::CupsPrinterStatusReason::Reason::
@@ -668,9 +678,9 @@ class CupsPrintersManagerImpl
         break;
       }
       case PrinterQueryResult::kUnknownFailure: {
-        PRINTER_LOG(ERROR) << "Printer status request failed. Unknown failure "
-                              "trying to reach printer "
-                           << printer_id;
+        PRINTER_LOG(ERROR) << printer_id
+                           << ": Printer status request failed. Unknown "
+                              "failure trying to reach printer";
         CupsPrinterStatus error_printer_status(printer_id);
         error_printer_status.AddStatusReason(
             CupsPrinterStatus::CupsPrinterStatusReason::Reason::kUnknownReason,
@@ -1021,7 +1031,8 @@ class CupsPrintersManagerImpl
     if (code == PpdProvider::SUCCESS) {
       ppd_resolution_tracker_.MarkResolutionSuccessful(printer_id, ref);
     } else {
-      LOG(WARNING) << "Failed to resolve PPD reference for " << printer_id;
+      LOG(WARNING) << printer_id << ": Failed to resolve PPD reference: "
+                   << PpdProvider::CallbackResultCodeName(code);
       ppd_resolution_tracker_.MarkResolutionFailed(printer_id);
       if (!usb_manufacturer.empty()) {
         ppd_resolution_tracker_.SetManufacturer(printer_id, usb_manufacturer);

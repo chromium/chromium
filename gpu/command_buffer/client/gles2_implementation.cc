@@ -171,15 +171,15 @@ GLES2Implementation::GLStaticState::~GLStaticState() = default;
 
 GLES2Implementation::DeferErrorCallbacks::DeferErrorCallbacks(
     GLES2Implementation* gles2_implementation)
-    : gles2_implementation_(gles2_implementation) {
-  DCHECK_EQ(false, gles2_implementation_->deferring_error_callbacks_);
-  gles2_implementation_->deferring_error_callbacks_ = true;
+    : gles2_implementation_(*gles2_implementation) {
+  DCHECK_EQ(false, gles2_implementation_.deferring_error_callbacks_);
+  gles2_implementation_.deferring_error_callbacks_ = true;
 }
 
 GLES2Implementation::DeferErrorCallbacks::~DeferErrorCallbacks() {
-  DCHECK_EQ(true, gles2_implementation_->deferring_error_callbacks_);
-  gles2_implementation_->deferring_error_callbacks_ = false;
-  gles2_implementation_->CallDeferredErrorCallbacks();
+  DCHECK_EQ(true, gles2_implementation_.deferring_error_callbacks_);
+  gles2_implementation_.deferring_error_callbacks_ = false;
+  gles2_implementation_.CallDeferredErrorCallbacks();
 }
 
 GLES2Implementation::DeferredErrorCallback::DeferredErrorCallback(
@@ -326,6 +326,9 @@ gpu::ContextResult GLES2Implementation::Initialize(
 }
 
 GLES2Implementation::~GLES2Implementation() {
+  // Assure no DeferErrorCallbacks instances are loose in the wild.
+  CHECK(!deferring_error_callbacks_);
+
   // Make sure the queries are finished otherwise we'll delete the
   // shared memory (mapped_memory_) which will free the memory used
   // by the queries. The GPU process when validating that memory is still
@@ -472,7 +475,7 @@ void GLES2Implementation::OnGpuControlReturnData(
     } break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -623,7 +626,7 @@ GLenum GLES2Implementation::GetGLError() {
 #if defined(GL_CLIENT_FAIL_GL_ERRORS)
 void GLES2Implementation::FailGLError(GLenum error) {
   if (error != GL_NO_ERROR) {
-    NOTREACHED_IN_MIGRATION() << "Error";
+    NOTREACHED() << "Error";
   }
 }
 // NOTE: Calling GetGLError overwrites data in the result buffer.
@@ -2328,8 +2331,7 @@ void GLES2Implementation::PixelStorei(GLenum pname, GLint param) {
       unpack_skip_images_ = param;
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   helper_->PixelStorei(pname, param);
   CheckGLError();
@@ -7096,49 +7098,43 @@ bool GLES2Implementation::ThreadsafeDiscardableTextureIsDeletedForTracing(
 }
 
 void* GLES2Implementation::MapTransferCacheEntry(uint32_t serialized_size) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void GLES2Implementation::UnmapAndCreateTransferCacheEntry(uint32_t type,
                                                            uint32_t id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool GLES2Implementation::ThreadsafeLockTransferCacheEntry(uint32_t type,
                                                            uint32_t id) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void GLES2Implementation::UnlockTransferCacheEntries(
     const std::vector<std::pair<uint32_t, uint32_t>>& entries) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void GLES2Implementation::DeleteTransferCacheEntry(uint32_t type, uint32_t id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 unsigned int GLES2Implementation::GetTransferBufferFreeSize() const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 bool GLES2Implementation::IsJpegDecodeAccelerationSupported() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool GLES2Implementation::IsWebPDecodeAccelerationSupported() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool GLES2Implementation::CanDecodeWithHardwareAcceleration(
     const cc::ImageHeaderMetadata* image_metadata) const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool GLES2Implementation::ValidateSize(const char* func, GLsizeiptr size) {

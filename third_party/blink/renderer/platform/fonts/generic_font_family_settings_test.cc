@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/generic_font_family_settings.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
 namespace blink {
 
 TEST(GenericFontFamilySettingsTest, FirstAvailableFontFamily) {
@@ -100,9 +100,6 @@ TEST(GenericFontFamilySettingsTest, TestAllNames) {
 }
 
 TEST(GenericFontFamilySettingsTest, TestSettingNotChanged) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(blink::kGenericFontSettingCache);
-
   GenericFontFamilySettings settings;
 
   ASSERT_TRUE(settings.Standard(USCRIPT_ARABIC).empty());
@@ -168,9 +165,6 @@ TEST(GenericFontFamilySettingsTest, TestSettingNotChanged) {
 }
 
 TEST(GenericFontFamilySettingsTest, TestFontListNotChanged) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(blink::kGenericFontSettingCache);
-
   GenericFontFamilySettings settings;
 
   EXPECT_TRUE(settings.Standard().empty());

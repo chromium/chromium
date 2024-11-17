@@ -14,7 +14,7 @@
 
 namespace guest_os {
 
-GuestOsUrlHandler::GuestOsUrlHandler(const std::string_view name,
+GuestOsUrlHandler::GuestOsUrlHandler(std::string_view name,
                                      const HandlerCallback handler)
     : name_(name), handler_(handler) {}
 

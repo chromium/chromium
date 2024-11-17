@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -22,10 +23,6 @@ class TabStripModel;
 
 namespace content {
 class WebContents;
-}
-
-namespace tabs {
-class TabModel;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -75,16 +72,20 @@ class TabStripModelChange {
     RemovedTab(content::WebContents* contents,
                int index,
                RemoveReason remove_reason,
-               std::optional<SessionID> session_id);
+               tabs::TabInterface::DetachReason tab_detach_reason,
+               std::optional<SessionID> session_id,
+               tabs::TabInterface* tab);
     virtual ~RemovedTab();
     RemovedTab(RemovedTab&& other);
 
     void WriteIntoTrace(perfetto::TracedValue context) const;
 
-    raw_ptr<content::WebContents, DanglingUntriaged> contents;
+    raw_ptr<content::WebContents> contents;
     int index;
     RemoveReason remove_reason;
+    tabs::TabInterface::DetachReason tab_detach_reason;
     std::optional<SessionID> session_id;
+    raw_ptr<tabs::TabInterface> tab;
   };
 
   struct ContentsWithIndex {
@@ -390,7 +391,7 @@ class TabStripModelObserver {
   // Called when the tab at |index| is added to the group with id |group|.
   virtual void TabGroupedStateChanged(
       std::optional<tab_groups::TabGroupId> group,
-      tabs::TabModel* tab,
+      tabs::TabInterface* tab,
       int index);
 
   // The TabStripModel now no longer has any tabs. The implementer may

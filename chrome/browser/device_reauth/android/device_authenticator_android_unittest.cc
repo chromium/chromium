@@ -185,3 +185,46 @@ TEST_F(DeviceAuthenticatorAndroidTest, TriggersAuthIfPreviousFailed) {
                          1),
                   Bucket(static_cast<int>(DeviceAuthFinalResult::kFailed), 1)));
 }
+
+TEST_F(DeviceAuthenticatorAndroidTest, GetBiometricAvailabilityStatusRequired) {
+  EXPECT_CALL(bridge(), CanAuthenticateWithBiometric)
+      .WillOnce(Return(BiometricsAvailability::kRequired));
+  EXPECT_EQ(device_reauth::BiometricStatus::kRequired,
+            authenticator()->GetBiometricAvailabilityStatus());
+}
+
+TEST_F(DeviceAuthenticatorAndroidTest,
+       GetBiometricAvailabilityStatusRequiredButHasErrors) {
+  EXPECT_CALL(bridge(), CanAuthenticateWithBiometric)
+      .WillOnce(Return(BiometricsAvailability::kRequiredButHasError));
+  EXPECT_EQ(device_reauth::BiometricStatus::kRequired,
+            authenticator()->GetBiometricAvailabilityStatus());
+}
+
+TEST_F(DeviceAuthenticatorAndroidTest,
+       GetBiometricAvailabilityStatusAvailable) {
+  EXPECT_CALL(bridge(), CanAuthenticateWithBiometric)
+      .WillOnce(Return(BiometricsAvailability::kAvailable));
+  EXPECT_EQ(device_reauth::BiometricStatus::kBiometricsAvailable,
+            authenticator()->GetBiometricAvailabilityStatus());
+}
+
+TEST_F(DeviceAuthenticatorAndroidTest,
+       GetBiometricAvailabilityStatusLSKFAvailable) {
+  EXPECT_CALL(bridge(), CanAuthenticateWithBiometric)
+      .WillOnce(Return(BiometricsAvailability::kNotEnrolled));
+  EXPECT_CALL(bridge(), CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(true));
+  EXPECT_EQ(device_reauth::BiometricStatus::kOnlyLskfAvailable,
+            authenticator()->GetBiometricAvailabilityStatus());
+}
+
+TEST_F(DeviceAuthenticatorAndroidTest,
+       GetBiometricAvailabilityStatusUnavailable) {
+  EXPECT_CALL(bridge(), CanAuthenticateWithBiometric)
+      .WillOnce(Return(BiometricsAvailability::kNotEnrolled));
+  EXPECT_CALL(bridge(), CanAuthenticateWithBiometricOrScreenLock)
+      .WillOnce(Return(false));
+  EXPECT_EQ(device_reauth::BiometricStatus::kUnavailable,
+            authenticator()->GetBiometricAvailabilityStatus());
+}

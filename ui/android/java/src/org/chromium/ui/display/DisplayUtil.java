@@ -23,7 +23,6 @@ import androidx.annotation.Nullable;
  * DisplayAndroid class.
  */
 public abstract class DisplayUtil {
-    private static final float UI_SCALING_FACTOR_FOR_AUTOMOTIVE = 1.34f;
     private static @Nullable Float sUiScalingFactorForAutomotiveOverride;
 
     /** Change the UI scaling factor on automotive devices for testing. */

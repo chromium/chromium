@@ -5,7 +5,7 @@
 import './base_page.js';
 import './icons.html.js';
 import './shimless_rma_shared.css.js';
-import './strings.m.js';
+import '/strings.m.js';
 import 'chrome://resources/ash/common/network/network_config.js';
 import 'chrome://resources/ash/common/network/network_list.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
@@ -13,22 +13,21 @@ import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
-import {assert} from 'chrome://resources/js/assert.js';
-import {NetworkConfigElement} from 'chrome://resources/ash/common/network/network_config.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-
+import {NetworkConfigElement} from 'chrome://resources/ash/common/network/network_config.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {CrosNetworkConfigInterface as NetworkConfigServiceInterface, FilterType, NetworkStateProperties, NetworkFilter, NO_LIMIT, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {CrosNetworkConfigInterface as NetworkConfigServiceInterface, FilterType, NetworkFilter, NetworkStateProperties, NO_LIMIT, StartConnectResult} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {createCustomEvent, SET_NEXT_BUTTON_LABEL, SetNextButtonLabelEvent} from './events.js';
 import {getNetworkConfigService, getShimlessRmaService} from './mojo_interface_provider.js';
 import {getTemplate} from './onboarding_network_page.html.js';
 import {ShimlessRmaServiceInterface, StateResult} from './shimless_rma.mojom-webui.js';
 import {enableNextButton, focusPageTitle} from './shimless_rma_util.js';
-import {createCustomEvent, SetNextButtonLabelEvent, SET_NEXT_BUTTON_LABEL} from './events.js';
 
 declare global {
   interface HTMLElementEventMap {

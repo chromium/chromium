@@ -7,9 +7,9 @@
 
 namespace send_tab_to_self {
 
-SendTabToSelfModel::SendTabToSelfModel() {}
+SendTabToSelfModel::SendTabToSelfModel() = default;
 
-SendTabToSelfModel::~SendTabToSelfModel() {}
+SendTabToSelfModel::~SendTabToSelfModel() = default;
 
 // Observer methods.
 void SendTabToSelfModel::AddObserver(SendTabToSelfModelObserver* observer) {

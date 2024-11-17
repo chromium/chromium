@@ -241,7 +241,7 @@ class MemoryDumpManagerTest : public testing::Test {
     mdm_->SetupForTracing(TraceConfig::MemoryDumpConfig());
   }
 
-  void EnableForTracingWithTraceConfig(const std::string trace_config_string) {
+  void EnableForTracingWithTraceConfig(const std::string& trace_config_string) {
     TraceConfig trace_config(trace_config_string);
     mdm_->SetupForTracing(trace_config.memory_dump_config());
   }
@@ -781,8 +781,9 @@ TEST_F(MemoryDumpManagerTest, UnregisterAndDeleteDumpProviderSoon) {
   for (int i = 0; i < kNumProviders; ++i) {
     std::unique_ptr<MockMemoryDumpProvider> mdp(new MockMemoryDumpProvider);
     mdp->enable_mock_destructor = true;
-    EXPECT_CALL(*mdp, Destructor())
-        .WillOnce(Invoke([&dtor_count]() { dtor_count++; }));
+    EXPECT_CALL(*mdp, Destructor()).WillOnce(Invoke([&dtor_count] {
+      dtor_count++;
+    }));
     RegisterDumpProvider(mdp.get(), nullptr, kDefaultOptions);
     mdps.push_back(std::move(mdp));
   }
@@ -821,11 +822,9 @@ TEST_F(MemoryDumpManagerTest, UnregisterAndDeleteDumpProviderSoonDuringDump) {
   EXPECT_CALL(*mdp, OnMemoryDump(_, _))
       .Times(1)
       .WillOnce(Invoke(self_unregister_from_another_thread));
-  EXPECT_CALL(*mdp, Destructor())
-      .Times(1)
-      .WillOnce(Invoke([&thread_ref]() {
-        EXPECT_EQ(thread_ref, PlatformThread::CurrentRef());
-      }));
+  EXPECT_CALL(*mdp, Destructor()).Times(1).WillOnce(Invoke([&thread_ref] {
+    EXPECT_EQ(thread_ref, PlatformThread::CurrentRef());
+  }));
 
   EnableForTracing();
   for (int i = 0; i < 2; ++i) {

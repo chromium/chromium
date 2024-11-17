@@ -56,6 +56,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/base_type_conversion.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/clip_recorder.h"
 #include "ui/compositor/compositor.h"
@@ -2013,7 +2014,7 @@ void View::set_context_menu_controller(ContextMenuController* menu_controller) {
 }
 
 void View::ShowContextMenu(const gfx::Point& p,
-                           ui::MenuSourceType source_type) {
+                           ui::mojom::MenuSourceType source_type) {
   if (!context_menu_controller_) {
     return;
   }
@@ -2155,7 +2156,7 @@ bool View::HandleAccessibleAction(const ui::AXActionData& action_data) {
       return true;
     case ax::mojom::Action::kShowContextMenu:
       ShowContextMenu(GetBoundsInScreen().CenterPoint(),
-                      ui::MENU_SOURCE_KEYBOARD);
+                      ui::mojom::MenuSourceType::kKeyboard);
       return true;
     default:
       // Some actions are handled by subclasses of View.
@@ -2629,7 +2630,6 @@ void View::Focus() {
 
   // Update tooltip after scrolling view to place tooltip according to the new
   // position.
-  // TODO(crbug.com/40285437) - Get this working on Lacros as well.
   UpdateTooltipForFocus();
 
   observers_.Notify(&ViewObserver::OnViewFocused, this);
@@ -2966,11 +2966,11 @@ void View::AddChildViewAtImpl(View* view, size_t index) {
   // inherit the visibility of the owner View.
   view->UpdateLayerVisibility();
 
-  // TODO(https://crbug.com/325137417): We should only complete the
-  // initialization of the accessible cache when we know an accessibility API
-  // client fetches information from the browser. Add a condition for the
-  // kNativeAPIs mode after doing some testing.
-  view->GetViewAccessibility().CompleteCacheInitialization();
+  // We initialize any attributes in the accessible cache that might be
+  // expensive to compute so we only compute them when accessibility is enabled.
+  if (GetViewAccessibility().IsAccessibilityEnabled()) {
+    view->GetViewAccessibility().CompleteCacheInitialization();
+  }
 
   // Make sure that the accessible focusable state of the descendants of the
   // `view` is correct, and make sure they are ready to send event
@@ -3528,7 +3528,7 @@ bool View::ProcessMousePressed(const ui::MouseEvent& event) {
     if (HitTestPoint(event.location())) {
       gfx::Point location(event.location());
       ConvertPointToScreen(this, &location);
-      ShowContextMenu(location, ui::MENU_SOURCE_MOUSE);
+      ShowContextMenu(location, ui::mojom::MenuSourceType::kMouse);
       return true;
     }
   }
@@ -3578,7 +3578,7 @@ void View::ProcessMouseReleased(const ui::MouseEvent& event) {
     OnMouseReleased(event);
     if (HitTestPoint(location)) {
       ConvertPointToScreen(this, &location);
-      ShowContextMenu(location, ui::MENU_SOURCE_MOUSE);
+      ShowContextMenu(location, ui::mojom::MenuSourceType::kMouse);
     }
   } else {
     OnMouseReleased(event);

@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Valoarea introdusă pentru cheia privată trebuie să fie o cale validă.</translation>
 <translation id="388442998277590542">Nu se poate încărca pagina cu opțiuni „<ph name="OPTIONS_PAGE" />”.</translation>
 <translation id="3984413272403535372">Eroare la semnarea extensiei.</translation>
-<translation id="4115165561519362854">Administratorul acestui computer solicită ca versiunea minimă pentru <ph name="EXTENSION_NAME" /> să fie <ph name="EXTENSION_VERSION" />. Extensia poate fi activată doar după actualizarea la acea versiune (sau una superioară).</translation>
 <translation id="4233778200880751280">Pagina informativă „<ph name="ABOUT_PAGE" />” nu s-a putut încărca.</translation>
 <translation id="471800408830181311">Cheia privată nu poate fi generată.</translation>
 <translation id="4811956658694082538">Pachetul nu a fost instalat, deoarece un proces al unui program utilitar s-a blocat. Încearcă să repornești Chrome și încearcă din nou.</translation>

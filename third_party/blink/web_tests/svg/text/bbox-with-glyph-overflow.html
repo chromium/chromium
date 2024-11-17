@@ -20,6 +20,14 @@
     writing-mode: vertical-lr;
     font-size: 80px;
   }
+  #simpleTextSidewaysRl {
+    writing-mode: sideways-rl;
+    font-size: 80px;
+  }
+  #simpleTextSidewaysLr {
+    writing-mode: sideways-lr;
+    font-size: 80px;
+  }
 </style>
 No glyphs should extend outside the rects.<br>
 <svg id="svg" width="700" height="500">
@@ -28,12 +36,15 @@ No glyphs should extend outside the rects.<br>
   <text id="textWithDifferentSizes" x="50" y="250"><tspan font-size="30px">ffffff</tspan><tspan font-size="80px">ffffff</tspan></text>
   <text id="rotatedText" x="50" y="350" rotate="20, 40, 60, 80, 100, 120, 140, 160, 180, 200, 220, 240, 260, 280, 300, 320, 340, 360, 380">fffffffffffffffffff</text>
   <text id="middleGlyphOverhang" x="50" y="475">'faQ'</text>
-  <text id="simpleTextVerticalRl" x="350" y="30">ffffffff</text>
-  <text id="simpleTextVerticalLr" x="500" y="30">ffffffff</text>
+  <text id="simpleTextVerticalRl" x="300" y="30">ffffffff</text>
+  <text id="simpleTextVerticalLr" x="400" y="30">ffffffff</text>
+  <text id="simpleTextSidewaysRl" x="500" y="30">ffffffff</text>
+  <text id="simpleTextSidewaysLr" x="660" y="220">ffffffff</text>
 </svg>
 <script>
   [simpleText, textWithSpan, textWithDifferentSizes, rotatedText,
-   middleGlyphOverhang, simpleTextVerticalRl, simpleTextVerticalLr].forEach(function (textElement) {
+   middleGlyphOverhang, simpleTextVerticalRl, simpleTextVerticalLr,
+   simpleTextSidewaysRl, simpleTextSidewaysLr].forEach(function (textElement) {
     var rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
     rect.setAttribute('x', textElement.getBBox().x);
     rect.setAttribute('y', textElement.getBBox().y);

@@ -56,7 +56,7 @@ void SoundSectionView::UpdateContents(
   for (size_t i = 0; i < kFocusModePlaylistViewsNum; ++i) {
     const auto& playlist_data = data.at(i);
     auto* playlist_view = playlist_view_list_.at(i);
-    playlist_view->UpdateContents(*playlist_data);
+    playlist_view->UpdateContents(i, *playlist_data);
   }
 
   UpdateStateForSelectedPlaylist(FocusModeController::Get()

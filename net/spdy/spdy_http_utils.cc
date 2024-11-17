@@ -227,7 +227,6 @@ void CreateSpdyHeadersFromHttpRequest(const HttpRequestInfo& info,
   // quic helpers but the header values for HTTP extensible priorities are
   // independent of quic.
   if (priority &&
-      base::FeatureList::IsEnabled(net::features::kPriorityHeader) &&
       headers->find(kHttp2PriorityHeader) == headers->end()) {
     uint8_t urgency = ConvertRequestPriorityToQuicPriority(priority.value());
     bool incremental = info.priority_incremental;

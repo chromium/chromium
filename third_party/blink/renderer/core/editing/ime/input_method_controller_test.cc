@@ -119,7 +119,7 @@ void InputMethodControllerTest::CreateHTMLWithCompositionEndEventListener(
           "});");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   GetDocument().body()->AppendChild(script);
   UpdateAllLifecyclePhasesForTest();

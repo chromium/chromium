@@ -65,5 +65,6 @@ source_set("feature") {
     "//components/commerce/core:shopping_service",
     "//ios/chrome/browser/commerce/model:shopping_service",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
   ]
 }

@@ -31,8 +31,7 @@ double ClampParameter(double value, FilterOperation::OperationType type) {
       return value;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -79,7 +78,7 @@ InterpolableNumber* CreateDefaultValue(CSSValueID type) {
       return MakeGarbageCollected<InterpolableNumber>(
           0, CSSPrimitiveValue::UnitType::kDegrees);
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -138,8 +137,7 @@ InterpolableFilter* InterpolableFilter::MaybeCreate(
       return nullptr;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 
   if (!value)
@@ -187,8 +185,7 @@ InterpolableFilter* InterpolableFilter::MaybeConvertCSSValue(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 
   if (!value)
@@ -230,8 +227,7 @@ InterpolableFilter* InterpolableFilter::CreateInitialValue(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 
   return MakeGarbageCollected<InterpolableFilter>(value, type);
@@ -275,8 +271,7 @@ FilterOperation* InterpolableFilter::CreateFilterOperation(
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

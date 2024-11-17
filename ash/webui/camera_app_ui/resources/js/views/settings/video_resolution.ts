@@ -33,7 +33,7 @@ export class VideoResolutionSettings extends BaseSettings {
     super(ViewName.VIDEO_RESOLUTION_SETTINGS);
 
     this.menu = dom.getFrom(this.root, 'div.menu', HTMLDivElement);
-    cameraManager.registerCameraUI({
+    cameraManager.registerCameraUi({
       onCameraUnavailable: () => {
         for (const input of dom.getAllFrom(
                  this.menu, 'input', HTMLInputElement)) {
@@ -53,7 +53,7 @@ export class VideoResolutionSettings extends BaseSettings {
 
     expert.addObserver(
         expert.ExpertOption.ENABLE_FPS_PICKER_FOR_BUILTIN,
-        () => this.toggleFPSPickerVisiblity);
+        () => this.toggleFpsPickerVisiblity);
   }
 
   private onOptionsUpdate(groups: VideoResolutionOptionGroup[]): void {
@@ -179,13 +179,13 @@ export class VideoResolutionSettings extends BaseSettings {
     }
   }
 
-  private toggleFPSPickerVisiblity(): void {
-    const isFPSEnabled =
+  private toggleFpsPickerVisiblity(): void {
+    const isFpsEnabled =
         expert.isEnabled(expert.ExpertOption.ENABLE_FPS_PICKER_FOR_BUILTIN);
     const fpsButtons =
         dom.getAllFrom(this.menu, '.fps-buttons button', HTMLButtonElement);
     for (const fpsButton of fpsButtons) {
-      fpsButton.hidden = !isFPSEnabled;
+      fpsButton.hidden = !isFpsEnabled;
     }
   }
 }

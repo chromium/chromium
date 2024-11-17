@@ -15,7 +15,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -33,6 +32,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
@@ -297,8 +297,13 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
   auto* provider = SystemWebAppManager::GetWebAppProvider(profile);
   DCHECK(provider);
 
-  if (!provider->registrar_unsafe().IsInstalled(app_id.value()))
+  if (!provider->registrar_unsafe().IsInstallState(
+          app_id.value(),
+          {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+           web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+           web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return nullptr;
+  }
 
   // Look through all the windows, find a browser for this app. Prefer the most
   // recently active app window.

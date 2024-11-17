@@ -10,7 +10,7 @@ MockPrefChangeCallback::MockPrefChangeCallback(PrefService* prefs)
     : prefs_(prefs) {
 }
 
-MockPrefChangeCallback::~MockPrefChangeCallback() {}
+MockPrefChangeCallback::~MockPrefChangeCallback() = default;
 
 PrefChangeRegistrar::NamedChangeCallback MockPrefChangeCallback::GetCallback() {
   return base::BindRepeating(&MockPrefChangeCallback::OnPreferenceChanged,

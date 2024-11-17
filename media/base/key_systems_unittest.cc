@@ -172,8 +172,9 @@ class TestMediaClient : public MediaClient {
   ~TestMediaClient() override;
 
   // MediaClient implementation.
-  bool IsSupportedAudioType(const AudioType& type) final;
-  bool IsSupportedVideoType(const VideoType& type) final;
+  bool IsDecoderSupportedAudioType(const AudioType& type) final;
+  bool IsDecoderSupportedVideoType(const VideoType& type) final;
+  bool IsEncoderSupportedVideoType(const VideoType& type) final;
   bool IsSupportedBitstreamAudioCodec(AudioCodec codec) final;
   ExternalMemoryAllocator* GetMediaAllocator() final;
 
@@ -206,11 +207,15 @@ TestMediaClient::GetSupportedKeySystems(GetSupportedKeySystemsCB cb) {
   return nullptr;
 }
 
-bool TestMediaClient::IsSupportedAudioType(const AudioType& type) {
+bool TestMediaClient::IsDecoderSupportedAudioType(const AudioType& type) {
   return true;
 }
 
-bool TestMediaClient::IsSupportedVideoType(const VideoType& type) {
+bool TestMediaClient::IsDecoderSupportedVideoType(const VideoType& type) {
+  return true;
+}
+
+bool TestMediaClient::IsEncoderSupportedVideoType(const VideoType& type) {
   return true;
 }
 

@@ -44,7 +44,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }  // namespace
 
 @interface BandwidthManagementTableViewController () <PrefObserverDelegate> {
-  raw_ptr<ChromeBrowserState> _browserState;  // weak
+  raw_ptr<ProfileIOS> _profile;  // weak
 
   // Pref observer to track changes to prefs.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
@@ -59,13 +59,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @implementation BandwidthManagementTableViewController
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
+- (instancetype)initWithProfile:(ProfileIOS*)profile {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
     self.title = l10n_util::GetNSString(IDS_IOS_BANDWIDTH_MANAGEMENT_SETTINGS);
-    _browserState = browserState;
+    _profile = profile;
 
-    _prefChangeRegistrarApplicationContext.Init(_browserState->GetPrefs());
+    _prefChangeRegistrarApplicationContext.Init(_profile->GetPrefs());
     _prefObserverBridge.reset(new PrefObserverBridge(self));
     // Register to observe any changes on Perf backed values displayed by the
     // screen.
@@ -134,7 +134,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     NSString* preloadTitle =
         l10n_util::GetNSString(IDS_IOS_OPTIONS_PRELOAD_WEBPAGES);
     UIViewController* controller = [[DataplanUsageTableViewController alloc]
-        initWithPrefs:_browserState->GetPrefs()
+        initWithPrefs:_profile->GetPrefs()
           settingPref:prefs::kNetworkPredictionSetting
                 title:preloadTitle];
     [self.navigationController pushViewController:controller animated:YES];
@@ -146,7 +146,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
   if (preferenceName == prefs::kNetworkPredictionSetting) {
     NSString* detailText = [DataplanUsageTableViewController
-        currentLabelForPreference:_browserState->GetPrefs()
+        currentLabelForPreference:_profile->GetPrefs()
                       settingPref:prefs::kNetworkPredictionSetting];
 
     _preloadWebpagesDetailItem.detailText = detailText;
@@ -161,7 +161,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 // menu.
 - (TableViewDetailIconItem*)preloadWebpagesItem {
   NSString* detailText = [DataplanUsageTableViewController
-      currentLabelForPreference:_browserState->GetPrefs()
+      currentLabelForPreference:_profile->GetPrefs()
                     settingPref:prefs::kNetworkPredictionSetting];
   _preloadWebpagesDetailItem =
       [[TableViewDetailIconItem alloc] initWithType:ItemTypePreload];

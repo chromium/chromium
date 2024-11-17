@@ -14,7 +14,7 @@
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
-              "builder_group": "chromium.android.fyi",
+              "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
                 "config": "main_builder"
@@ -45,7 +45,8 @@
           "builder": "android-mte-arm64-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/android-mte-arm64-rel/targets"
     }
   },
   "$build/reclient": {
@@ -55,11 +56,15 @@
   },
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "remote-link"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
+    "output_local_strategy": "greedy",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": 150
   },

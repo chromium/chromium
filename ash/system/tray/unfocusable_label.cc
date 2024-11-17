@@ -10,12 +10,11 @@
 
 namespace ash {
 
-UnfocusableLabel::~UnfocusableLabel() = default;
-
-void UnfocusableLabel::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Label::GetAccessibleNodeData(node_data);
-  node_data->RemoveState(ax::mojom::State::kFocusable);
+UnfocusableLabel::UnfocusableLabel() {
+  SetFocusBehavior(View::FocusBehavior::NEVER);
 }
+
+UnfocusableLabel::~UnfocusableLabel() = default;
 
 BEGIN_METADATA(UnfocusableLabel)
 END_METADATA

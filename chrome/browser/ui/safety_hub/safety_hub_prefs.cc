@@ -15,7 +15,10 @@ void RegisterSafetyHubProfilePrefs(PrefRegistrySimple* registry) {
 #else  // BUILDFLAG(IS_ANDROID)
   // TODO(sideyilmaz): Move kBreachedCredentialsCount to safety_hub_prefs.h
   registry->RegisterIntegerPref(prefs::kBreachedCredentialsCount, -1);
-#endif
+
+  registry->RegisterIntegerPref(safety_hub_prefs::kWeakCredentialsCount, -1);
+  registry->RegisterIntegerPref(safety_hub_prefs::kReusedCredentialsCount, -1);
+#endif  // !BUILDFLAG(IS_ANDROID)
   registry->RegisterDictionaryPref(
       safety_hub_prefs::kMenuNotificationsPrefsKey);
   registry->RegisterBooleanPref(

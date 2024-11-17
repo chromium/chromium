@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
@@ -216,8 +217,7 @@ WebString GetDisplaySurfaceString(
     case media::mojom::DisplayCaptureSurfaceType::BROWSER:
       return WebString::FromUTF8("browser");
   }
-  NOTREACHED_IN_MIGRATION();
-  return WebString();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -312,8 +312,7 @@ String MediaStreamTrackImpl::kind() const {
       return video_kind;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return audio_kind;
+  NOTREACHED();
 }
 
 String MediaStreamTrackImpl::id() const {
@@ -387,11 +386,11 @@ void MediaStreamTrackImpl::SetContentHint(const String& hint) {
   component_->SetContentHint(translated_hint);
 }
 
-String MediaStreamTrackImpl::readyState() const {
+V8MediaStreamTrackState MediaStreamTrackImpl::readyState() const {
   if (Ended()) {
-    return "ended";
+    return V8MediaStreamTrackState(V8MediaStreamTrackState::Enum::kEnded);
   }
-  return ReadyStateToString(ready_state_);
+  return ReadyStateToV8TrackState(ready_state_);
 }
 
 void MediaStreamTrackImpl::setReadyState(
@@ -400,7 +399,7 @@ void MediaStreamTrackImpl::setReadyState(
       ready_state_ != ready_state) {
     ready_state_ = ready_state;
     SendLogMessage(String::Format("%s({ready_state=%s})", __func__,
-                                  readyState().Utf8().c_str()));
+                                  readyState().AsCStr()));
 
     // Observers may dispatch events which create and add new Observers;
     // take a snapshot so as to safely iterate.
@@ -483,10 +482,6 @@ MediaTrackCapabilities* MediaStreamTrackImpl::getCapabilities() const {
       voice_isolation.push_back(value);
     }
     capabilities->setVoiceIsolation(voice_isolation);
-    Vector<String> echo_cancellation_type;
-    for (String value : platform_capabilities.echo_cancellation_type) {
-      echo_cancellation_type.push_back(value);
-    }
     // Sample size.
     if (platform_capabilities.sample_size.size() == 2) {
       LongRange* sample_size = LongRange::Create();
@@ -1119,7 +1114,7 @@ void MediaStreamTrackImpl::SendLogMessage(const WTF::String& message) {
           "readyState: %s, remote=%s]",
           message.Utf8().c_str(), kind().Utf8().c_str(), id().Utf8().c_str(),
           label().Utf8().c_str(), enabled() ? "true" : "false",
-          muted() ? "true" : "false", readyState().Utf8().c_str(),
+          muted() ? "true" : "false", readyState().AsCStr(),
           component_->Remote() ? "true" : "false")
           .Utf8());
 }

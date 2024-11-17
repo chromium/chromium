@@ -54,8 +54,8 @@ class TrackedShortcut : public ui::TrackedElement {
       // contents is not an atomic operation, so sometimes an empty file can be
       // observed.
       base::ScopedAllowBlockingForTesting allow_io;
-      int64_t file_size = 0;
-      if (!base::GetFileSize(path_, &file_size) || file_size == 0) {
+      std::optional<int64_t> file_size = base::GetFileSize(path_);
+      if (file_size.value_or(0) == 0) {
         // If the file isn't already being watched, start watching it. We can't
         // just piggy-back of the FilePathWatcher in ShortcutTracker, as on
         // macOS FilePathWatcher on a directory does not monitor changes to

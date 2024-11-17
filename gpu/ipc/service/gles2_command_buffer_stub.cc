@@ -30,7 +30,6 @@
 #include "gpu/command_buffer/service/memory_tracking.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
-#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
 #include "gpu/config/gpu_crash_keys.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -131,9 +130,9 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
       this, command_buffer_.get(), manager->outputter(), context_group_.get());
   set_decoder_context(std::unique_ptr<DecoderContext>(gles2_decoder_));
 
-  sync_point_client_state_ =
-      channel_->sync_point_manager()->CreateSyncPointClientState(
-          CommandBufferNamespace::GPU_IO, command_buffer_id_, sequence_id_);
+  scoped_sync_point_client_state_ =
+      channel_->scheduler()->CreateSyncPointClientState(
+          sequence_id_, CommandBufferNamespace::GPU_IO, command_buffer_id_);
 
   // TODO(crbug.com/40198488): Remove this after testing.
   // Only enable multiple displays on ANGLE/Metal and only behind a feature.

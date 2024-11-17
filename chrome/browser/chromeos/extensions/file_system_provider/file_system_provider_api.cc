@@ -86,8 +86,7 @@ crosapi::mojom::FSPChangeType ParseChangeType(
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return crosapi::mojom::FSPChangeType::kChanged;
+  NOTREACHED();
 }
 
 crosapi::mojom::CloudFileInfoPtr ParseCloudFileInfo(

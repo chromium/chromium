@@ -57,7 +57,7 @@ class ShowDialogAction : public Action {
  public:
   explicit ShowDialogAction(base::flat_set<ActionType> action_types)
       : Action(static_cast<int>(ActionType::kShowDialog)),
-        action_types_(action_types) {}
+        action_types_(std::move(action_types)) {}
 
   void Run(Profile* profile, Continuation continuation) override {
     base::TimeDelta timeout =
@@ -79,9 +79,7 @@ class ShowDialogAction : public Action {
   }
 
   bool ShouldNotifyUserOfPendingDestructiveAction(Profile* profile) override {
-    NOTREACHED_IN_MIGRATION();  // Should only be called in
-                                // ActionFactory::Build().
-    return false;
+    NOTREACHED();  // Should only be called in ActionFactory::Build().
   }
 
  private:
@@ -176,7 +174,7 @@ class ClearBrowsingDataAction : public Action,
       base::flat_set<ActionType> action_types,
       content::BrowsingDataRemover* browsing_data_remover_for_testing)
       : Action(static_cast<int>(ActionType::kClearBrowsingHistory)),
-        action_types_(action_types),
+        action_types_(std::move(action_types)),
         browsing_data_remover_for_testing_(browsing_data_remover_for_testing) {}
 
   ~ClearBrowsingDataAction() override = default;
@@ -415,7 +413,7 @@ ActionFactory::ActionQueue ActionFactory::Build(
 
       default:
         // TODO(crbug.com/40222234): Perform validation in the `PolicyHandler`.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

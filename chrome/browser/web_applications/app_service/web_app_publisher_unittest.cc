@@ -24,8 +24,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/web_app_id_constants.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/url_constants.h"
@@ -105,46 +105,5 @@ class WebAppPublisherTest : public testing::Test {
   std::unique_ptr<LoopbackCrosapiAppServiceProxy> loopback_crosapi_ = nullptr;
 #endif
 };
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-class WebAppPublisherTest_Mall : public WebAppPublisherTest {
- public:
-  WebAppPublisherTest_Mall() : WebAppPublisherTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{chromeos::features::kCrosMall},
-        /*disabled_features=*/{chromeos::features::kCrosMallSwa});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-  ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-};
-
-// Verifies that when the `kCrosMall` feature is enabled, launches of the Mall
-// app have a "context" URL parameter appended.
-TEST_F(WebAppPublisherTest_Mall, LaunchMallAppWithContext) {
-  CreateWebApp(GURL(chromeos::kAppMallBaseUrl), "Mall");
-
-  auto* provider = WebAppProvider::GetForTest(profile());
-
-  base::test::TestFuture<apps::AppLaunchParams,
-                         web_app::LaunchWebAppWindowSetting>
-      app_launch_future;
-  static_cast<web_app::FakeWebAppUiManager*>(&provider->ui_manager())
-      ->SetOnLaunchWebAppCallback(app_launch_future.GetRepeatingCallback());
-
-  proxy()->Launch(kMallAppId, 0, apps::LaunchSource::kFromTest);
-  auto [params, setting] = app_launch_future.Take();
-
-  ASSERT_TRUE(params.intent->url.has_value());
-
-  std::string context_value;
-  ASSERT_TRUE(net::GetValueForKeyInQuery(*params.intent->url, "context",
-                                         &context_value));
-  ASSERT_FALSE(context_value.empty());
-}
-
-#endif
 
 }  // namespace web_app

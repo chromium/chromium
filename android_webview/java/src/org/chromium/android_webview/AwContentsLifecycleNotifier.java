@@ -9,9 +9,8 @@ import android.os.Build;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 
-import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
-import org.chromium.android_webview.metrics.TrackExitReasonsOfInterest;
+import org.chromium.android_webview.metrics.TrackExitReasons;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 
@@ -99,17 +98,15 @@ public class AwContentsLifecycleNotifier {
         ThreadUtils.assertOnUiThread();
         mAppState = appState;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_EXIT_REASON_METRIC)) {
-            TrackExitReasonsOfInterest.writeLastWebViewState();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            TrackExitReasons.updateAppState();
         }
     }
 
     @CalledByNative
     public static void initialize() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R
-                && AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_EXIT_REASON_METRIC)) {
-            TrackExitReasonsOfInterest.init(AwContentsLifecycleNotifier.getInstance()::getAppState);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            TrackExitReasons.finishTrackingStartup(getInstance()::getAppState);
         }
     }
 }

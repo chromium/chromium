@@ -29,7 +29,7 @@ void GeminiIntroScreenHandler::DeclareLocalizedValues(
   if (base::FeatureList::IsEnabled(
       features::kFeatureManagementOobeGeminiIntro)) {
     auto product_name =
-        ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
             IDR_CROS_OOBE_PRODUCT_NAME);
     product_name = base::TrimWhitespaceASCII(product_name, base::TRIM_TRAILING);
     builder->AddF("geminiIntroScreenTitle", IDS_GEMINI_INTRO_TITLE,

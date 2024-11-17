@@ -36,28 +36,31 @@ enum class CodecType {
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
 // GENERATED_JAVA_PREFIX_TO_STRIP: MEDIA_CODEC_
+// These enums are also reported to UMA so values should not be renumbered or
+// reused.
 enum MediaCodecStatus {
-  MEDIA_CODEC_OK,
-  MEDIA_CODEC_TRY_AGAIN_LATER,
-  MEDIA_CODEC_OUTPUT_BUFFERS_CHANGED,
-  MEDIA_CODEC_OUTPUT_FORMAT_CHANGED,
-  MEDIA_CODEC_NO_KEY,
-  MEDIA_CODEC_ERROR,
-  MEDIA_CODEC_KEY_EXPIRED,
-  MEDIA_CODEC_RESOURCE_BUSY,
-  MEDIA_CODEC_INSUFFICIENT_OUTPUT_PROTECTION,
-  MEDIA_CODEC_SESSION_NOT_OPENED,
-  MEDIA_CODEC_UNSUPPORTED_OPERATION,
-  MEDIA_CODEC_INSUFFICIENT_SECURITY,
-  MEDIA_CODEC_FRAME_TOO_LARGE,
-  MEDIA_CODEC_LOST_STATE,
-  MEDIA_CODEC_GENERIC_OEM,
-  MEDIA_CODEC_GENERIC_PLUGIN,
-  MEDIA_CODEC_LICENSE_PARSE,
-  MEDIA_CODEC_MEDIA_FRAMEWORK,
-  MEDIA_CODEC_ZERO_SUBSAMPLES,
-  MEDIA_CODEC_UNKNOWN_CIPHER_MODE,
-  MEDIA_CODEC_PATTERN_ENCRYPTION_NOT_SUPPORTED,
+  MEDIA_CODEC_OK = 0,
+  MEDIA_CODEC_TRY_AGAIN_LATER = 1,
+  MEDIA_CODEC_OUTPUT_BUFFERS_CHANGED = 2,
+  MEDIA_CODEC_OUTPUT_FORMAT_CHANGED = 3,
+  MEDIA_CODEC_NO_KEY = 4,
+  MEDIA_CODEC_ERROR = 5,
+  MEDIA_CODEC_KEY_EXPIRED = 6,
+  MEDIA_CODEC_RESOURCE_BUSY = 7,
+  MEDIA_CODEC_INSUFFICIENT_OUTPUT_PROTECTION = 8,
+  MEDIA_CODEC_SESSION_NOT_OPENED = 9,
+  MEDIA_CODEC_UNSUPPORTED_OPERATION = 10,
+  MEDIA_CODEC_INSUFFICIENT_SECURITY = 11,
+  MEDIA_CODEC_FRAME_TOO_LARGE = 12,
+  MEDIA_CODEC_LOST_STATE = 13,
+  MEDIA_CODEC_GENERIC_OEM = 14,
+  MEDIA_CODEC_GENERIC_PLUGIN = 15,
+  MEDIA_CODEC_LICENSE_PARSE = 16,
+  MEDIA_CODEC_MEDIA_FRAMEWORK = 17,
+  MEDIA_CODEC_ZERO_SUBSAMPLES = 18,
+  MEDIA_CODEC_UNKNOWN_CIPHER_MODE = 19,
+  MEDIA_CODEC_PATTERN_ENCRYPTION_NOT_SUPPORTED = 20,
+  MEDIA_CODEC_MAX = MEDIA_CODEC_PATTERN_ENCRYPTION_NOT_SUPPORTED,
 };
 
 struct MediaCodecResultTraits {
@@ -130,12 +133,16 @@ class MEDIA_EXPORT MediaCodecBridge {
                                           gfx::Size* encoded_size) = 0;
 
   // Submits a byte array to the given input buffer. Call this after getting an
-  // available buffer from DequeueInputBuffer(). If |data| is NULL, it assumes
-  // the input buffer has already been populated (but still obeys |size|).
-  // |data_size| must be less than kint32max (because Java).
+  // available buffer from DequeueInputBuffer(). `data` will be copied into the
+  // input buffer.
   virtual MediaCodecResult QueueInputBuffer(
       int index,
-      const uint8_t* data,
+      base::span<const uint8_t> data,
+      base::TimeDelta presentation_time) = 0;
+  // Similar to QueueInputBuffer() but submits the input buffer referenced by
+  // `index` assuming it has already been filled.
+  virtual MediaCodecResult QueueFilledInputBuffer(
+      int index,
       size_t data_size,
       base::TimeDelta presentation_time) = 0;
 
@@ -149,8 +156,7 @@ class MEDIA_EXPORT MediaCodecBridge {
   // whole buffer is encrypted.
   virtual MediaCodecResult QueueSecureInputBuffer(
       int index,
-      const uint8_t* data,
-      size_t data_size,
+      base::span<const uint8_t> data,
       const std::string& key_id,
       const std::string& iv,
       const std::vector<SubsampleEntry>& subsamples,
@@ -187,21 +193,20 @@ class MEDIA_EXPORT MediaCodecBridge {
   virtual void ReleaseOutputBuffer(int index, bool render) = 0;
 
   // Returns an input buffer's base pointer and capacity.
-  virtual MediaCodecResult GetInputBuffer(int input_buffer_index,
-                                          uint8_t** data,
-                                          size_t* capacity) = 0;
+  virtual base::span<uint8_t> GetInputBuffer(int input_buffer_index) = 0;
 
   // Copies |num| bytes from output buffer |index|'s |offset| into the memory
-  // region pointed to by |dst|. To avoid overflows, the size of both source
-  // and destination must be at least |num| bytes, and should not overlap.
-  // Returns kError if an error occurs, or kOk otherwise.
+  // region pointed to by |dst|. Returns kError if an error occurs, or kOk
+  // otherwise.
   virtual MediaCodecResult CopyFromOutputBuffer(int index,
                                                 size_t offset,
-                                                void* dst,
-                                                size_t num) = 0;
+                                                base::span<uint8_t> dst) = 0;
 
   // Gets the component name. Before API level 18 this returns an empty string.
   virtual std::string GetName() = 0;
+
+  // Returns whether the media codec implementation is software codec.
+  virtual bool IsSoftwareCodec() = 0;
 
   // Changes the output surface for the MediaCodec. May only be used on API
   // level 23 and higher (Marshmallow).

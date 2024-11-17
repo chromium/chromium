@@ -4,7 +4,6 @@
 
 package org.chromium.content_public.browser;
 
-import android.content.Intent;
 import android.view.ActionMode;
 import android.view.textclassifier.TextClassifier;
 
@@ -46,13 +45,6 @@ public interface SelectionPopupController {
      */
     static SelectionPopupController fromWebContentsNoCreate(WebContents webContents) {
         return SelectionPopupControllerImpl.fromWebContentsNoCreate(webContents);
-    }
-
-    /**
-     * Makes {@link SelectionPopupcontroller} only use the WebContents context when inflating menus.
-     */
-    static void setMustUseWebContentsContext() {
-        SelectionPopupControllerImpl.setMustUseWebContentsContext();
     }
 
     /**
@@ -118,12 +110,10 @@ public interface SelectionPopupController {
     void clearSelection();
 
     /**
-     * Called when the processed text is replied from an activity that supports
-     * Intent.ACTION_PROCESS_TEXT.
-     * @param resultCode the code that indicates if the activity successfully processed the text
-     * @param data the reply that contains the processed text.
+     * Replaces the current selection in editable field.
+     * @param text String with which current selection need to be replaced.
      */
-    void onReceivedProcessTextResult(int resultCode, Intent data);
+    void handleTextReplacementAction(String text);
 
     /** Sets the given {@link SelectionClient} in the selection popup controller. */
     void setSelectionClient(SelectionClient selectionClient);
@@ -168,4 +158,12 @@ public interface SelectionPopupController {
      * modifying menu items.
      */
     void setSelectionActionMenuDelegate(@Nullable SelectionActionMenuDelegate delegate);
+
+    /**
+     * Returns the {@link SelectionActionMenuDelegate} used by {@link SelectionPopupController}
+     * while modifying menu items.
+     *
+     * @return SelectionActionMenuDelegate instance if available, Otherwise Null.
+     */
+    SelectionActionMenuDelegate getSelectionActionMenuDelegate();
 }

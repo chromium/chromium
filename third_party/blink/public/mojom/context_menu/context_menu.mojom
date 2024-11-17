@@ -8,7 +8,7 @@ import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/referrer_policy.mojom";
 import "third_party/blink/public/mojom/conversions/conversions.mojom";
 import "third_party/blink/public/mojom/forms/form_control_type.mojom";
-import "ui/base/mojom/ui_base_types.mojom";
+import "ui/base/mojom/menu_source_type.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
@@ -45,6 +45,13 @@ enum CustomContextMenuItemType {
   kSubMenu
 };
 
+// Container for information about a context menu item shortcut
+struct Accelerator {
+  uint16 key_code;
+  int32 modifiers;
+};
+
+
 // Container for information about the form renderer id from where the context
 // menu was triggered.
 // autofill::FormRendererId
@@ -65,14 +72,19 @@ struct FieldRendererId {
 // popup_menu.mojom.
 struct CustomContextMenuItem {
   mojo_base.mojom.String16 label;
+  Accelerator? accelerator;
   mojo_base.mojom.String16 icon;
   mojo_base.mojom.String16 tool_tip;
   CustomContextMenuItemType type;
   int32 action;
+  bool is_experimental_feature;
   bool rtl;
   bool has_directional_override;
   bool enabled;
   bool checked;
+  // The flag can be used to show accelerators in Mac menus. Any usage of this
+  // should be after consulting with the Mac team.
+  bool force_show_accelerator_for_item;
   array<CustomContextMenuItem> submenu;
 };
 
@@ -207,10 +219,6 @@ struct UntrustworthyContextMenuParams {
   // associated.
   // See `autofill::FormRendererId` for the semantics of renderer IDs.
   FormRendererId form_renderer_id;
-
-  // True iff a field's type is plain text but heuristics (e.g. the name attribute
-  // contains 'password' as a substring) recognize it as a password field.
-  bool is_password_type_by_heuristics;
 };
 
 // Defines methods for Context menu to commnicate from the renderer to the

@@ -7,13 +7,14 @@
 #import <optional>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_file_util.h"
 #import "base/uuid.h"
-#import "components/saved_tab_groups/fake_tab_group_sync_service.h"
-#import "components/saved_tab_groups/saved_tab_group.h"
-#import "components/saved_tab_groups/saved_tab_group_tab.h"
+#import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/tab_groups/tab_group_color.h"
 #import "components/tab_groups/tab_group_id.h"
@@ -138,7 +139,8 @@ class TabsCloserTest : public PlatformTest {
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(
         SessionRestorationServiceFactory::GetInstance(),
         TestSessionRestorationService::GetTestingFactory());
@@ -151,10 +153,6 @@ class TabsCloserTest : public PlatformTest {
 
     fake_tab_group_service_ = static_cast<tab_groups::FakeTabGroupSyncService*>(
         tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_.get()));
-
-    // Initialize the AuthenticationService.
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        profile_.get(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     scene_state_ = OCMClassMock([SceneState class]);
     OCMStub([scene_state_ sceneSessionID]).andReturn(@(kSceneSessionID));
@@ -210,7 +208,7 @@ class TabsCloserTest : public PlatformTest {
   std::unique_ptr<ProfileIOS> profile_;
   __strong SceneState* scene_state_;
   std::unique_ptr<Browser> browser_;
-  tab_groups::FakeTabGroupSyncService* fake_tab_group_service_;
+  raw_ptr<tab_groups::FakeTabGroupSyncService> fake_tab_group_service_;
 };
 
 // Tests how a TabsCloser behaves when presented with a Browser containing

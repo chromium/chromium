@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {ReadonlySignal} from '../reactive/signal.js';
+import {LanguageCode} from '../soda/language_info.js';
 
 /**
  * Model installation state.
@@ -28,6 +29,9 @@ export type ModelState = {
 export enum ModelResponseError {
   // General error.
   GENERAL = 'GENERAL',
+
+  // The transcription language is not supported.
+  UNSUPPORTED_LANGUAGE = 'UNSUPPORTED_LANGUAGE',
 
   // The transcription word count is less than the minimum length.
   UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT =
@@ -75,7 +79,8 @@ export abstract class ModelLoader<T> {
   /**
    * Loads the model and execute it on an input.
    */
-  abstract loadAndExecute(content: string): Promise<ModelResponse<T>>;
+  abstract loadAndExecute(content: string, language: LanguageCode):
+    Promise<ModelResponse<T>>;
 
   /**
    * Requests download of the given model.

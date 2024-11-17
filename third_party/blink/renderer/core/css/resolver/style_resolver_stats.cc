@@ -37,7 +37,6 @@ namespace blink {
 void StyleResolverStats::Reset() {
   matched_property_apply = 0;
   matched_property_cache_hit = 0;
-  matched_property_cache_inherited_hit = 0;
   matched_property_cache_added = 0;
   rules_fast_rejected = 0;
   rules_rejected = 0;
@@ -57,8 +56,6 @@ std::unique_ptr<TracedValue> StyleResolverStats::ToTracedValue() const {
   traced_value->SetInteger("matchedPropertyApply", matched_property_apply);
   traced_value->SetInteger("matchedPropertyCacheHit",
                            matched_property_cache_hit);
-  traced_value->SetInteger("matchedPropertyCacheInheritedHit",
-                           matched_property_cache_inherited_hit);
   traced_value->SetInteger("matchedPropertyCacheAdded",
                            matched_property_cache_added);
   traced_value->SetInteger("rulesRejected", rules_rejected);

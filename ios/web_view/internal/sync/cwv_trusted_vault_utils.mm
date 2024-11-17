@@ -41,6 +41,7 @@ CWVConvertTrustedVaultState(CWVTrustedVaultState state) {
 
 + (void)logTrustedVaultDidUpdateState:(CWVTrustedVaultState)state {
   trusted_vault::RecordTrustedVaultDeviceRegistrationState(
+      trusted_vault::SecurityDomainId::kChromeSync,
       CWVConvertTrustedVaultState(state));
 }
 

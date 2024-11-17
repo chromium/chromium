@@ -49,7 +49,7 @@ async_test(function(t) {
             // because a rendering mode was fixed.
             verifyContextLost(false);
 
-            internals.forceLoseCanvasContext(canvas, "2d");
+            internals.forceLoseCanvasContext(ctx);
             if (!ctx.isContextLost()) {
                 assert_true(false, "canvas context is not lost properly. This is expected if canvas is not accelerated.");
             } else {

@@ -38,9 +38,6 @@ extern const wchar_t kRegValueChromeStatsSample[];
 // https://crbug.com/604923
 // Unify these constants with env_vars.h.
 extern const wchar_t kHeadless[];
-extern const wchar_t kShowRestart[];
-extern const wchar_t kRestartInfo[];
-extern const wchar_t kRtlLocale[];
 
 // TODO(ananta)
 // https://crbug.com/604923
@@ -114,6 +111,12 @@ const CLSID& GetElevatorClsid();
 const IID& GetElevatorIid();
 std::wstring GetElevationServiceName();
 std::wstring GetElevationServiceDisplayName();
+
+// Returns the Tracing Service CLSID, IID, Name, and Display Name respectively.
+const CLSID& GetTracingServiceClsid();
+const IID& GetTracingServiceIid();
+std::wstring GetTracingServiceName();
+std::wstring GetTracingServiceDisplayName();
 
 // Returns the unsuffixed application name of this program. This is the base of
 // the name registered with Default Programs. IMPORTANT: This must only be
@@ -292,19 +295,21 @@ std::optional<std::wstring> GetCommandLineSwitch(
     const std::wstring& command_line,
     std::wstring_view switch_name);
 
-// Convenience version of the above which returns the value of a switch in the
-// current process command line.
-std::optional<std::wstring> GetCommandLineSwitch(std::wstring_view switch_name);
-
 // Returns the value of the specified switch or an empty string if there is no
-// such switch in the current process command line or the switch has no value.
-std::wstring GetCommandLineSwitchValue(std::wstring_view switch_name);
+// such switch in |command_line| or the switch has no value.
+std::wstring GetCommandLineSwitchValue(const std::wstring& command_line,
+                                       std::wstring_view switch_name);
 
 // Ensures that the given |full_path| exists, and that the tail component is a
 // directory. If the directory does not already exist, it will be created.
 // Returns false if the final component exists but is not a directory, or on
 // failure to create a directory.
 bool RecursiveDirectoryCreate(const std::wstring& full_path);
+
+// Creates a new directory with the unique name in the format of
+// <prefix>[Chrome|Chromium]<random number> in the default %TEMP% folder.
+// If the directory cannot be created, returns an empty string.
+std::wstring CreateUniqueTempDirectory(std::wstring_view prefix);
 
 struct DetermineChannelResult {
   std::wstring channel_name;

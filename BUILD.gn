@@ -14,7 +14,6 @@ import("//build/config/compiler/compiler.gni")
 import("//build/config/cronet/config.gni")
 import("//build/config/dcheck_always_on.gni")
 import("//build/config/features.gni")
-import("//build/config/ios/config.gni")
 import("//build/config/rust.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
@@ -28,11 +27,13 @@ import("//extensions/buildflags/buildflags.gni")
 import("//gpu/vulkan/features.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
+import("//mojo/public/rust/rust.gni")
 import("//pdf/features.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//remoting/remoting_enable.gni")
 import("//services/on_device_model/on_device_model.gni")
+import("//skia/skia.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 import("//ui/base/ui_features.gni")
@@ -49,6 +50,10 @@ if (is_fuchsia) {
   import("//third_party/fuchsia-gn-sdk/src/package.gni")
 } else {
   import("//chrome/browser/buildflags.gni")
+}
+
+if (is_ios) {
+  import("//build/config/apple/mobile_config.gni")
 }
 
 if (is_linux) {
@@ -198,6 +203,7 @@ group("gn_all") {
         "//components/url_formatter/tools:format_url",
         "//components/viz:viz_perftests",
         "//components/viz:viz_unittests",
+        "//content/browser/interest_group/tools:adjustable_auction",
         "//content/shell:content_shell",
         "//content/test:content_browsertests",
         "//content/test:content_unittests",
@@ -353,6 +359,9 @@ group("gn_all") {
       deps += [
         "//chrome/credential_provider",
         "//chrome/credential_provider/test:gcp_unittests",
+
+        # TODO(grt): Remove when chrome depends on the service.
+        "//chrome/windows_services/elevated_tracing_service",
       ]
 
       if (enable_platform_experience) {
@@ -433,7 +442,10 @@ group("gn_all") {
       }
 
       if (enable_chrome_android_internal) {
-        deps += [ "//clank" ]
+        deps += [
+          "//clank",
+          "//tools/pgo:generate_profile_android_clank_trichrome_bundle",
+        ]
       }
     }
 
@@ -455,7 +467,6 @@ group("gn_all") {
         "//ash/webui:ash_webui_unittests",
         "//chrome/browser/ash/child_accounts/time_limit_consistency_test:usage_time_limit_unittests",
         "//chrome/browser/metrics/perf:profile_provider_unittest",
-        "//chrome/test:ash_crosapi_tests",
         "//chromeos/ash/components/proximity_auth:proximity_auth_unittests",
         "//chromeos/components:chromeos_components_unittests",
         "//components/exo/wayland:wayland_client_compatibility_tests",
@@ -786,6 +797,7 @@ group("gn_all") {
         ((is_win || is_mac) && use_fuzzing_engine)) {
       deps += [
         "//testing/libfuzzer/fuzzers",
+        "//testing/libfuzzer/research",
         "//third_party/freetype-testing:fuzzers",
         "//third_party/grpc:fuzzers",
         "//third_party/icu/fuzzers",
@@ -866,6 +878,10 @@ group("gn_all") {
   if (is_chrome_for_testing) {
     deps += [ "//chrome/browser/chrome_for_testing:chrome_for_testing" ]
   }
+
+  if (checkout_src_internal) {
+    deps += [ "//internal:all" ]
+  }
 }
 
 # All Rust targets. This is provided for convenience while developing Rust to
@@ -873,10 +889,12 @@ group("gn_all") {
 group("all_rust") {
   testonly = true
 
-  deps = [ ":rust_build_tests" ]
-
-  # There is rust stuff behind flags in here.
-  deps += [ "//base:base_unittests" ]
+  deps = [
+    ":rust_build_tests",
+    "//base:base_unittests",  # There is rust stuff in here.
+    "//testing/rust_gtest_interop:rust_gtest_interop_unittests",
+    "//third_party/cloud_authenticator/processor",
+  ]
 
   if (enable_rust_mojo) {
     deps += [
@@ -885,8 +903,8 @@ group("all_rust") {
       "//mojo/public/rust:mojo_rust_unittests",
     ]
   }
-  if (enable_rust_gtest_interop) {
-    deps += [ "//testing/rust_gtest_interop:rust_gtest_interop_unittests" ]
+  if (enable_rust_png) {
+    deps += [ "//skia" ]
   }
 }
 
@@ -905,7 +923,6 @@ if (enable_remoting && ((is_linux && ozone_platform_x11) ||
   group("traffic_annotation_auditor_dependencies") {
     deps = [
       "//chrome:chrome",
-      "//remoting/client",
       "//remoting/host:host",
       "//tools/traffic_annotation:annotations_xml",
     ]
@@ -1118,6 +1135,8 @@ if (use_blink && !is_cronet_build) {
   _common_web_test_options = [
     "--no-show-results",
     "--zero-tests-executed-ok",
+    "--build-directory",
+    "@WrappedPath(.)",
   ]
   if (is_debug) {
     _common_web_test_options += [ "--debug" ]
@@ -1146,15 +1165,6 @@ if (use_blink && !is_cronet_build) {
     _common_web_test_options += [
       "--out-dir",
       "@WrappedPath(.)",
-    ]
-  } else {
-    base_out_dir = rebase_path(get_path_info(root_build_dir, "dir"), ".")
-    out_dir = get_path_info(root_build_dir, "name")
-    _common_web_test_options += [
-      "--build-directory",
-      base_out_dir,
-      "--target",
-      out_dir,
     ]
   }
 
@@ -1287,7 +1297,7 @@ if (use_blink && !is_cronet_build) {
       "//testing/scripts/run_isolated_script_test.py",
       "//testing/xvfb.py",
       "//third_party/blink/tools/",
-      "//third_party/blink/web_tests/external/wpt/config.json",
+      "//third_party/blink/web_tests/external/wpt/.config.json",
       "//third_party/blink/web_tests/resources/",
       "//third_party/blink/web_tests/TestLists/",
       "//third_party/pywebsocket3/src/mod_pywebsocket/",
@@ -1367,6 +1377,8 @@ if (use_blink && !is_cronet_build) {
     "4",
     "--debug-rwt-logging",
     "--clobber-old-results",
+    "--build-directory",
+    "@WrappedPath(.)",
   ]
 
   # https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_tests.md

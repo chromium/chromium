@@ -7,13 +7,12 @@ package org.chromium.base.task;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -30,7 +29,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class SequencedTaskRunnerTaskMigrationTest {
-    @Rule public JniMocker mMocker = new JniMocker();
 
     // It might be tempting to use fake executor similar to Robolectric's scheduler that is driven
     // from the test's main thread. Unfortunately this approach means that only two states of the
@@ -62,13 +60,13 @@ public class SequencedTaskRunnerTaskMigrationTest {
         Executor noopExecutor = runnable -> {};
         FakeTaskRunnerImplNatives fakeTaskRunnerNatives =
                 new FakeTaskRunnerImplNatives(noopExecutor);
-        mMocker.mock(TaskRunnerImplJni.TEST_HOOKS, fakeTaskRunnerNatives);
+        TaskRunnerImplJni.setInstanceForTesting(fakeTaskRunnerNatives);
         BlockingTask preNativeTask = new BlockingTask();
         SequencedTaskRunnerImpl taskRunner = new SequencedTaskRunnerImpl(TaskTraits.USER_VISIBLE);
 
         taskRunner.execute(preNativeTask);
-        // Dummy task that is planned to be executed on native pool.
-        taskRunner.execute(() -> {});
+        // Empty task that is planned to be executed on native pool.
+        taskRunner.execute(CallbackUtils.emptyRunnable());
 
         // Ensure that first task is running on pre-native thread pool: avoid race between
         // starting the task and requesting native task runner's init.
@@ -84,7 +82,7 @@ public class SequencedTaskRunnerTaskMigrationTest {
     public void pendingTasksShouldBeExecutedOnNativeRunnerAfterInit() {
         FakeTaskRunnerImplNatives fakeTaskRunnerNatives =
                 new FakeTaskRunnerImplNatives(mConcurrentExecutor);
-        mMocker.mock(TaskRunnerImplJni.TEST_HOOKS, fakeTaskRunnerNatives);
+        TaskRunnerImplJni.setInstanceForTesting(fakeTaskRunnerNatives);
         BlockingTask preNativeTask = new BlockingTask();
         AwaitableTask nativeTask = new AwaitableTask();
         SequencedTaskRunnerImpl taskRunner = new SequencedTaskRunnerImpl(TaskTraits.USER_VISIBLE);
@@ -113,7 +111,7 @@ public class SequencedTaskRunnerTaskMigrationTest {
     public void taskPostedAfterNativeInitShouldRunInNativePool() {
         FakeTaskRunnerImplNatives fakeTaskRunnerNatives =
                 new FakeTaskRunnerImplNatives(mConcurrentExecutor);
-        mMocker.mock(TaskRunnerImplJni.TEST_HOOKS, fakeTaskRunnerNatives);
+        TaskRunnerImplJni.setInstanceForTesting(fakeTaskRunnerNatives);
 
         SequencedTaskRunnerImpl taskRunner = new SequencedTaskRunnerImpl(TaskTraits.USER_VISIBLE);
         taskRunner.initNativeTaskRunner();

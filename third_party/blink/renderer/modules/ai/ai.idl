@@ -12,6 +12,7 @@ enum AICapabilityAvailability {
 
 [
   Exposed=(Window,Worker),
+  SecureContext,
   RuntimeEnabled=BuiltInAIAPI
 ]
 interface AI {
@@ -19,7 +20,7 @@ interface AI {
     Measure,
     RuntimeEnabled=AIPromptAPI
   ]
-  readonly attribute AIAssistantFactory assistant;
+  readonly attribute AILanguageModelFactory languageModel;
   [
     Measure,
     RuntimeEnabled=AISummarizationAPI
@@ -37,4 +38,9 @@ interface AI {
     RuntimeEnabled=AIRewriterAPI
   ]
   readonly attribute AIRewriterFactory rewriter;
+
+  [
+    RuntimeEnabled=LanguageDetectionAPI
+  ]
+  readonly attribute AILanguageDetectorFactory languageDetector;
 };

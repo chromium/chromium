@@ -77,6 +77,14 @@ NotShared<DOMArrayBufferView> CreateDOMArrayBufferView(
           blink::DOMUint8Array::CreateOrNull(size));
       break;
     }
+    // Using DOMUint8Array for int4/uint4 is a workaround since
+    // TypedArray doesn't support int4/uint4.
+    case V8MLOperandDataType::Enum::kInt4:
+    case V8MLOperandDataType::Enum::kUint4: {
+      buffer_view = NotShared<DOMArrayBufferView>(
+          blink::DOMUint8Array::CreateOrNull(std::ceil(size / 2)));
+      break;
+    }
   }
   return buffer_view;
 }

@@ -118,8 +118,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       safeBrowsingState = safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   safe_browsing::SetSafeBrowsingState(self.userPrefService, safeBrowsingState);
 
@@ -132,8 +131,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (!_safeBrowsingItems) {
     NSMutableArray* items = [NSMutableArray array];
     NSInteger enhancedProtectionSummary;
-    enhancedProtectionSummary =
-        IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_FRIENDLIER_SUMMARY;
+    if (base::FeatureList::IsEnabled(safe_browsing::kEsbAiStringUpdate)) {
+      enhancedProtectionSummary =
+          IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY_UPDATED;
+
+    } else {
+      enhancedProtectionSummary =
+          IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_FRIENDLIER_SUMMARY;
+    }
     NSInteger standardProtectionSummary;
       standardProtectionSummary =
           IDS_IOS_PRIVACY_SAFE_BROWSING_STANDARD_PROTECTION_FRIENDLIER_SUMMARY;
@@ -254,8 +259,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       return safeBrowsingState ==
              safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return NO;
+      NOTREACHED();
   }
 }
 
@@ -344,8 +348,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.handler showSafeBrowsingStandardProtection];
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

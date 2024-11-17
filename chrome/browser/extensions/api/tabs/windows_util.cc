@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/api/tabs/windows_util.h"
+
 #include <string>
 #include <vector>
-
-#include "chrome/browser/extensions/api/tabs/windows_util.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
@@ -51,7 +52,7 @@ bool GetControllerFromWindowID(ExtensionFunction* function,
       return true;
     }
 
-    *error = extensions::tabs_constants::kNoCurrentWindowError;
+    *error = extensions::ExtensionTabUtil::kNoCurrentWindowError;
     return false;
   } else {
     if (extensions::WindowController* window_controller =
@@ -63,7 +64,7 @@ bool GetControllerFromWindowID(ExtensionFunction* function,
     }
 
     *error = extensions::ErrorUtils::FormatErrorMessage(
-        extensions::tabs_constants::kWindowNotFoundError,
+        extensions::ExtensionTabUtil::kWindowNotFoundError,
         base::NumberToString(window_id));
     return false;
   }
@@ -126,7 +127,7 @@ IncognitoResult ShouldOpenIncognitoWindow(Profile* profile,
   if (incognito_result && !profile->IsGuestSession()) {
     std::string first_url_erased;
     for (size_t i = 0; i < urls->size();) {
-      if (IsURLAllowedInIncognito((*urls)[i], profile)) {
+      if (IsURLAllowedInIncognito((*urls)[i])) {
         i++;
       } else {
         if (first_url_erased.empty())

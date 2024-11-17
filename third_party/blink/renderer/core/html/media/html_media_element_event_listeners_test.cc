@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/html/media/html_media_element.h"
-
 #include <algorithm>
 #include <memory>
 
@@ -18,6 +16,7 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
+#include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
 #include "third_party/blink/renderer/core/html/media/media_custom_controls_fullscreen_detector.h"
@@ -27,6 +26,7 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -45,7 +45,9 @@ class FakeWebMediaPlayer final : public EmptyWebMediaPlayer {
   FakeWebMediaPlayer(WebMediaPlayerClient* client,
                      ExecutionContext* context,
                      double duration)
-      : client_(client), context_(context), duration_(duration) {}
+      : client_(static_cast<MediaPlayerClient*>(client)),
+        context_(context),
+        duration_(duration) {}
 
   MOCK_METHOD1(SetIsEffectivelyFullscreen,
                void(blink::WebFullscreenVideoStatus));
@@ -127,7 +129,7 @@ class FakeWebMediaPlayer final : public EmptyWebMediaPlayer {
     context_->GetAgent()->event_loop()->PerformMicrotaskCheckpoint();
   }
 
-  WebMediaPlayerClient* client_;
+  MediaPlayerClient* client_;
   WeakPersistent<ExecutionContext> context_;
   mutable double current_time_ = 0;
   bool playing_ = false;
@@ -657,8 +659,8 @@ TEST_F(HTMLMediaElementWithMockSchedulerTest, CueEnterExitEventLatency) {
 
   // Create a text track, and fill it with cue data
   auto* text_track =
-      Video()->addTextTrack(AtomicString("subtitles"), g_empty_atom,
-                            g_empty_atom, ASSERT_NO_EXCEPTION);
+      Video()->addTextTrack(V8TextTrackKind(V8TextTrackKind::Enum::kSubtitles),
+                            g_empty_atom, g_empty_atom, ASSERT_NO_EXCEPTION);
 
   auto* listener = MakeGarbageCollected<CueEventListener>();
   for (auto cue_data : kTestCueData) {

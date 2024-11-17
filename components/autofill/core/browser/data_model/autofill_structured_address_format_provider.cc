@@ -8,6 +8,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/no_destructor.h"
+#include "components/autofill/core/browser/field_types.h"
 
 namespace autofill {
 
@@ -47,6 +48,14 @@ std::u16string GetFullNamePattern(bool name_has_cjk_characteristics) {
   return u"${NAME_FIRST} ${NAME_MIDDLE} ${NAME_LAST}";
 }
 
+std::u16string GetAlternativeFullNamePattern(
+    bool name_has_cjk_characteristics) {
+  if (name_has_cjk_characteristics) {
+    return u"${ALTERNATIVE_FAMILY_NAME}${ALTERNATIVE_GIVEN_NAME}";
+  }
+  return u"${ALTERNATIVE_GIVEN_NAME} ${ALTERNATIVE_FAMILY_NAME}";
+}
+
 }  // namespace
 
 StructuredAddressesFormatProvider::StructuredAddressesFormatProvider() =
@@ -69,6 +78,8 @@ std::u16string StructuredAddressesFormatProvider::GetPattern(
       return GetHomeStreetAddressPattern(country_code);
     case NAME_FULL:
       return GetFullNamePattern(info.name_has_cjk_characteristics);
+    case ALTERNATIVE_FULL_NAME:
+      return GetAlternativeFullNamePattern(info.name_has_cjk_characteristics);
     default:
       return u"";
   }

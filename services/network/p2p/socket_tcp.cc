@@ -304,8 +304,6 @@ bool P2PSocketTcpBase::HandleWriteResult(int result) {
   DCHECK(write_buffer_.buffer.get());
 
   if (result < 0) {
-    ReportSocketError(result, "WebRTC.ICE.TcpSocketWriteErrorCode");
-
     LOG(ERROR) << "Error when sending data in TCP socket: " << result;
     OnError();
     return false;
@@ -363,9 +361,7 @@ bool P2PSocketTcpBase::SendPacket(base::span<const uint8_t> data,
   // Renderer should use this socket only to send data to |remote_address_|.
   if (data.size() > kMaximumPacketSize ||
       !(packet_info.destination == remote_address_.ip_address)) {
-    NOTREACHED_IN_MIGRATION();
-    OnError();
-    return false;
+    NOTREACHED();
   }
 
   if (!connected_) {
@@ -413,8 +409,7 @@ void P2PSocketTcpBase::SetOption(P2PSocketOption option, int32_t value) {
     case P2P_SOCKET_OPT_RECV_ECN:
       return;  // For TCP sockets DSCP, ECN setting is not available.
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 
@@ -522,9 +517,7 @@ void P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,
   // Each packet is expected to have header (STUN/TURN ChannelData), where
   // header contains message type and and length of message.
   if (data.size() < kPacketHeaderSize + kPacketLengthOffset) {
-    NOTREACHED_IN_MIGRATION();
-    OnError();
-    return;
+    NOTREACHED();
   }
 
   int pad_bytes;
@@ -532,9 +525,7 @@ void P2PSocketStunTcp::DoSend(const net::IPEndPoint& to,
 
   // Accepts only complete STUN/TURN packets.
   if (data.size() != expected_len) {
-    NOTREACHED_IN_MIGRATION();
-    OnError();
-    return;
+    NOTREACHED();
   }
 
   // Add any pad bytes to the total size.

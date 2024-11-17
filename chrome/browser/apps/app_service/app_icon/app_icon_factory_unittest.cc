@@ -10,6 +10,7 @@
 
 #include "base/barrier_callback.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -38,6 +39,7 @@
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_service/app_icon/app_icon_decoder.h"
@@ -82,7 +84,7 @@ class AppIconFactoryTest : public testing::Test {
     return fallback_called;
   }
 
-  std::string GetPngData(const std::string file_name) {
+  std::string GetPngData(const std::string& file_name) {
     base::FilePath base_path;
     std::string png_data_as_string;
     CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_path));
@@ -98,7 +100,7 @@ class AppIconFactoryTest : public testing::Test {
     return png_data_as_string;
   }
 
-  void RunLoadIconFromCompressedData(const std::string png_data_as_string,
+  void RunLoadIconFromCompressedData(const std::string& png_data_as_string,
                                      apps::IconType icon_type,
                                      apps::IconEffects icon_effects,
                                      apps::IconValuePtr& output_icon) {
@@ -117,15 +119,12 @@ class AppIconFactoryTest : public testing::Test {
   void GenerateIconFromCompressedData(const std::string& compressed_icon,
                                       float scale,
                                       gfx::ImageSkia& output_image_skia) {
-    std::vector<uint8_t> compressed_data(compressed_icon.begin(),
-                                         compressed_icon.end());
-    SkBitmap decoded;
-    ASSERT_TRUE(gfx::PNGCodec::Decode(compressed_data.data(),
-                                      compressed_data.size(), &decoded));
+    SkBitmap decoded =
+        gfx::PNGCodec::Decode(base::as_byte_span(compressed_icon));
+    ASSERT_FALSE(decoded.isNull());
 
-    output_image_skia = gfx::ImageSkia::CreateFromBitmap(decoded, scale);
-
-    output_image_skia = apps::CreateStandardIconImage(output_image_skia);
+    output_image_skia = apps::CreateStandardIconImage(
+        gfx::ImageSkia::CreateFromBitmap(decoded, scale));
     EnsureRepresentationsLoaded(output_image_skia);
   }
 
@@ -180,7 +179,8 @@ TEST_F(AppIconFactoryTest, LoadFromFileSuccess) {
   gfx::ImageSkia image =
       gfx::ImageSkia(gfx::ImageSkiaRep(gfx::Size(20, 20), 0.0f));
   const SkBitmap* bitmap = image.bitmap();
-  cc::WritePNGFile(*bitmap, GetPath(), /*discard_transparency=*/false);
+  ASSERT_TRUE(
+      cc::WritePNGFile(*bitmap, GetPath(), /*discard_transparency=*/false));
 
   auto fallback_response = std::make_unique<apps::IconValue>();
   auto result = std::make_unique<apps::IconValue>();

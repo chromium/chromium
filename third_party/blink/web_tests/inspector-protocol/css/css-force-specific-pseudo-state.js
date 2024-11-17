@@ -1,8 +1,8 @@
 (async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
   const {session, dp} = await testRunner.startHTML(`
    <link rel='stylesheet' href='${testRunner.url('resources/css-force-specific-pseudo-state.css')}'/>
-    <div id="div">t1</div>
-    <div id="editableDiv" contenteditable="true">t2</div>`,
+    <div class="testcase" id="div">t1</div>
+    <div class="testcase" id="editableDiv" contenteditable="true">t2</div>`,
    'Test CSS.forcePseudoStates method for specific pseudo states');
 
   await dp.DOM.enable();

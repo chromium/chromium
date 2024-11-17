@@ -28,4 +28,16 @@ extern NSString* const kSettingsSafeBrowsingStandardProtectionCellId;
 // The accessibility identifier of the Safe Browsing No Protection cell.
 extern NSString* const kSettingsSafeBrowsingNoProtectionCellId;
 
+// The accessibility identifier of the Incognito lock cell.
+extern NSString* const kSettingsIncognitoLockCellId;
+
+// The accessibility identifier of the Incognito lock Do Not Hide cell.
+extern NSString* const kSettingsIncognitoLockDoNotHideCellId;
+
+// The accessibility identifier of the Incognito lock Hide with Soft Lock cell.
+extern NSString* const kSettingsIncognitoLockHideWithSoftLockCellId;
+
+// The accessibility identifier of the Incognito lock Hide with Reauth cell.
+extern NSString* const kSettingsIncognitoLockHideWithReauthCellId;
+
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PRIVACY_PRIVACY_CONSTANTS_H_

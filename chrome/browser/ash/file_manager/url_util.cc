@@ -12,7 +12,6 @@
 #include "base/json/json_writer.h"
 #include "base/strings/escape.h"
 #include "base/values.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 
 namespace file_manager {

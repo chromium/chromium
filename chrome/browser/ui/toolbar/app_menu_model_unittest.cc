@@ -128,6 +128,9 @@ class AppMenuModelTest : public BrowserWithTestWindowTest,
                                   ui::Accelerator* accelerator) const override {
     return false;
   }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class ExtensionsMenuModelTest : public AppMenuModelTest {
@@ -138,21 +141,6 @@ class ExtensionsMenuModelTest : public AppMenuModelTest {
   ExtensionsMenuModelTest& operator=(const ExtensionsMenuModelTest&) = delete;
 
   ~ExtensionsMenuModelTest() override = default;
-};
-
-class TestAppMenuModelCR2023 : public AppMenuModelTest {
- public:
-  TestAppMenuModelCR2023() {
-    feature_list_.InitWithFeatures({features::kTabOrganization}, {});
-  }
-
-  TestAppMenuModelCR2023(const TestAppMenuModelCR2023&) = delete;
-  TestAppMenuModelCR2023& operator=(const TestAppMenuModelCR2023&) = delete;
-
-  ~TestAppMenuModelCR2023() override = default;
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Copies parts of MenuModelTest::Delegate and combines them with the
@@ -296,7 +284,7 @@ TEST_F(AppMenuModelTest, GlobalError) {
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-TEST_F(TestAppMenuModelCR2023, DefaultBrowserPrompt) {
+TEST_F(AppMenuModelTest, DefaultBrowserPrompt) {
   feature_list_.Reset();
   feature_list_.InitAndEnableFeatureWithParameters(
       features::kDefaultBrowserPromptRefresh,
@@ -344,7 +332,7 @@ TEST_F(AppMenuModelTest, PerformanceItem) {
   EXPECT_TRUE(toolModel.IsEnabledAt(performance_index));
 }
 
-TEST_F(TestAppMenuModelCR2023, CustomizeChromeItem) {
+TEST_F(AppMenuModelTest, CustomizeChromeItem) {
   feature_list_.Reset();
   feature_list_.InitAndEnableFeature(features::kToolbarPinning);
   AppMenuModel model(this, browser());
@@ -358,7 +346,7 @@ TEST_F(TestAppMenuModelCR2023, CustomizeChromeItem) {
   EXPECT_TRUE(tool_model.IsEnabledAt(customize_chrome_index));
 }
 
-TEST_F(TestAppMenuModelCR2023, CustomizeChromeLogMetrics) {
+TEST_F(AppMenuModelTest, CustomizeChromeLogMetrics) {
   feature_list_.Reset();
   feature_list_.InitAndEnableFeature(features::kToolbarPinning);
 
@@ -368,7 +356,11 @@ TEST_F(TestAppMenuModelCR2023, CustomizeChromeLogMetrics) {
   EXPECT_EQ(1, model.log_metrics_count_);
 }
 
-TEST_F(TestAppMenuModelCR2023, OrganizeTabsItem) {
+TEST_F(AppMenuModelTest, OrganizeTabsItem) {
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures(
+      {features::kTabOrganization, features::kTabOrganizationAppMenuItem}, {});
+
   TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   AppMenuModel model(this, browser());
   model.Init();
@@ -378,12 +370,26 @@ TEST_F(TestAppMenuModelCR2023, OrganizeTabsItem) {
   EXPECT_TRUE(toolModel.IsEnabledAt(organize_tabs_index));
 }
 
-TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {
+TEST_F(AppMenuModelTest, DeclutterTabsItem) {
+  feature_list_.Reset();
+  feature_list_.InitAndEnableFeature(features::kTabstripDeclutter);
+  TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
+  TestLogMetricsAppMenuModel model(this, browser());
+  model.Init();
+  ToolsMenuModel toolModel(&model, browser());
+  size_t declutter_tabs_index =
+      toolModel.GetIndexOfCommandId(IDC_DECLUTTER_TABS).value();
+  EXPECT_TRUE(toolModel.IsEnabledAt(declutter_tabs_index));
+  model.ExecuteCommand(IDC_DECLUTTER_TABS, 0);
+  EXPECT_EQ(1, model.log_metrics_count_);
+}
+
+TEST_F(AppMenuModelTest, ModelHasIcons) {
   // Skip the items that are either not supposed to have an icon, or are not
   // ready to be tested. Remove items once they're ready for testing.
   static const std::vector<int> skip_commands = {
       IDC_RECENT_TABS_NO_DEVICE_TABS, IDC_ABOUT,
-      RecentTabsSubMenuModel::kDisabledRecentlyClosedHeaderCommandId,
+      RecentTabsSubMenuModel::GetDisabledRecentlyClosedHeaderCommandId(),
       IDC_EXTENSIONS_SUBMENU_VISIT_CHROME_WEB_STORE, IDC_TAKE_SCREENSHOT};
   AppMenuModel model(this, browser());
   model.Init();
@@ -426,14 +432,13 @@ TEST_F(TestAppMenuModelCR2023, ModelHasIcons) {
 
 // Profile row does not show on ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS)
-class TestAppMenuModelCR2023MetricsTest
-    : public TestAppMenuModelCR2023,
-      public testing::WithParamInterface<int> {
+class TestAppMenuModelMetricsTest : public AppMenuModelTest,
+                                    public testing::WithParamInterface<int> {
  public:
-  TestAppMenuModelCR2023MetricsTest() = default;
+  TestAppMenuModelMetricsTest() = default;
 };
 
-TEST_P(TestAppMenuModelCR2023MetricsTest, LogProfileMenuMetrics) {
+TEST_P(TestAppMenuModelMetricsTest, LogProfileMenuMetrics) {
   int command_id = GetParam();
   TestLogMetricsAppMenuModel model(this, browser());
   model.Init();
@@ -443,25 +448,24 @@ TEST_P(TestAppMenuModelCR2023MetricsTest, LogProfileMenuMetrics) {
 
 INSTANTIATE_TEST_SUITE_P(
     All,
-    TestAppMenuModelCR2023MetricsTest,
-    testing::Values(
-        IDC_MANAGE_GOOGLE_ACCOUNT,
-        IDC_CLOSE_PROFILE,
-        IDC_CUSTOMIZE_CHROME,
-        IDC_SHOW_SIGNIN_WHEN_PAUSED,
-        IDC_SHOW_SYNC_SETTINGS,
-        IDC_TURN_ON_SYNC,
-        IDC_OPEN_GUEST_PROFILE,
-        IDC_ADD_NEW_PROFILE,
-        IDC_MANAGE_CHROME_PROFILES,
-        IDC_READING_LIST_MENU_ADD_TAB,
-        IDC_READING_LIST_MENU_SHOW_UI,
-        IDC_SHOW_PASSWORD_MANAGER,
-        IDC_SHOW_PAYMENT_METHODS,
-        IDC_SHOW_ADDRESSES,
-        IDC_SHOW_SEARCH_COMPANION, AppMenuModel::kMinOtherProfileCommandId));
+    TestAppMenuModelMetricsTest,
+    testing::Values(IDC_MANAGE_GOOGLE_ACCOUNT,
+                    IDC_CLOSE_PROFILE,
+                    IDC_CUSTOMIZE_CHROME,
+                    IDC_SHOW_SIGNIN_WHEN_PAUSED,
+                    IDC_SHOW_SYNC_SETTINGS,
+                    IDC_TURN_ON_SYNC,
+                    IDC_OPEN_GUEST_PROFILE,
+                    IDC_ADD_NEW_PROFILE,
+                    IDC_MANAGE_CHROME_PROFILES,
+                    IDC_READING_LIST_MENU_ADD_TAB,
+                    IDC_READING_LIST_MENU_SHOW_UI,
+                    IDC_SHOW_PASSWORD_MANAGER,
+                    IDC_SHOW_PAYMENT_METHODS,
+                    IDC_SHOW_ADDRESSES,
+                    AppMenuModel::kMinOtherProfileCommandId));
 
-TEST_F(TestAppMenuModelCR2023, ProfileSyncOnTest) {
+TEST_F(AppMenuModelTest, ProfileSyncOnTest) {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(browser()->profile());
   signin::MakePrimaryAccountAvailable(identity_manager, "user@example.com",

@@ -25,7 +25,7 @@ use super::{
     KEY_PURPOSE_SECURITY_DOMAIN_SECRET, PUB_KEY, VAULT_HANDLE_WITHOUT_TYPE_KEY,
     WRAPPED_PIN_DATA_KEY, WRAPPED_SECRET_KEY,
 };
-use crate::pin;
+use crate::{pin, MetricsUpdate};
 use alloc::collections::BTreeMap;
 use alloc::string::String;
 use alloc::vec::Vec;
@@ -88,6 +88,7 @@ fn key(k: &str) -> MapKey {
 }
 
 pub(crate) fn do_assert(
+    metrics: &mut MetricsUpdate,
     auth: &Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
@@ -154,18 +155,18 @@ pub(crate) fn do_assert(
     ]);
     let mut response = BTreeMap::from([(key("response"), Value::Map(assertion_response_json))]);
 
-    if let Some(ref hmac_secret) = entity_secrets.hmac_secret {
-        if let Some(prf_result) =
-            handle_prf(webauthn_request, hmac_secret, Some(credential_id.as_ref()))?
-        {
-            response.insert(key(PRF), prf_result);
-        }
+    if let Some(prf_result) =
+        handle_prf(webauthn_request, &entity_secrets.hmac_secret, Some(credential_id.as_ref()))?
+    {
+        response.insert(key(PRF), prf_result);
     }
 
+    metrics.passkeys_assert += 1;
     Ok(Value::Map(response))
 }
 
 pub(crate) fn do_create(
+    metrics: &mut MetricsUpdate,
     auth: &Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
@@ -227,6 +228,7 @@ pub(crate) fn do_create(
     if let Some(prf_result) = handle_prf(webauthn_request, &hmac_secret, None)? {
         result.insert(MapKey::String(String::from(PRF)), prf_result);
     }
+    metrics.passkeys_create += 1;
     Ok(Value::Map(result))
 }
 
@@ -259,7 +261,7 @@ fn maybe_validate_pin_from_request(
 /// Contains the secrets from a specific passkey Sync entity.
 struct EntitySecrets {
     primary_key: EcdsaKeyPair,
-    hmac_secret: Option<[u8; 32]>,
+    hmac_secret: [u8; 32],
     // These fields are not yet implemented but are contained in the protobuf
     // definition.
     // cred_blob: Option<Vec<u8>>,
@@ -281,7 +283,8 @@ fn entity_secrets_from_proto(
             let plaintext = decrypt(ciphertext, security_domain_secret, PRIVATE_KEY_FIELD_AAD)?;
             let primary_key = EcdsaKeyPair::from_pkcs8(&plaintext)
                 .map_err(|_| RequestError::Debug("PKCS#8 parse failed"))?;
-            Ok(EntitySecrets { primary_key, hmac_secret: None })
+            let hmac_secret = derive_hmac_secret_from_private_key(&plaintext);
+            Ok(EntitySecrets { primary_key, hmac_secret })
         }
         EncryptedData::Encrypted(ciphertext) => {
             let plaintext = decrypt(ciphertext, security_domain_secret, ENCRYPTED_FIELD_AAD)?;
@@ -294,10 +297,26 @@ fn entity_secrets_from_proto(
             };
             let primary_key = EcdsaKeyPair::from_pkcs8(&private_key_bytes)
                 .map_err(|_| RequestError::Debug("PKCS#8 parse failed"))?;
-            let hmac_secret = encrypted.hmac_secret.and_then(|vec| vec.try_into().ok());
+            let hmac_secret = encrypted
+                .hmac_secret
+                .and_then(|vec| vec.try_into().ok())
+                .unwrap_or_else(|| derive_hmac_secret_from_private_key(&private_key_bytes));
             Ok(EntitySecrets { primary_key, hmac_secret })
         }
     }
+}
+
+/// Calculate an HMAC secret from a private key.
+///
+/// We want to support the PRF extension for credentials that were generated
+/// without PRF support being requested at creation time. To do so we derive an
+/// HMAC secret from the encoded private key.
+fn derive_hmac_secret_from_private_key(pkcs8_bytes: &[u8]) -> [u8; 32] {
+    let mut ret = [0u8; 32];
+    // unwrap: only fails if the output length is too long, but we know that
+    // `ret` is 32 bytes.
+    crypto::hkdf_sha256(pkcs8_bytes, &[], b"derived PRF HMAC secret", &mut ret).unwrap();
+    ret
 }
 
 /// Encrypt an entity secret using a security domain secret.
@@ -407,6 +426,7 @@ fn validate_pin(
 }
 
 pub(crate) fn do_wrap_pin(
+    metrics: &mut MetricsUpdate,
     auth: &Authentication,
     state: &mut DirtyFlag<ParsedState>,
     request: BTreeMap<MapKey, Value>,
@@ -458,6 +478,7 @@ pub(crate) fn do_wrap_pin(
             .try_into()
             .map_err(|_| RequestError::Debug("incorrect length vault handle"))?,
     };
+    metrics.passkeys_wrap_pin += 1;
     Ok(Value::from(pin_data.encrypt(&security_domain_secret)))
 }
 
@@ -599,9 +620,7 @@ pub mod tests {
 
         assert!(EcdsaKeyPair::from_pkcs8(&pkcs8).is_ok());
 
-        assert!(
-            decrypt(&[0u8; 8], SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(), &[]).is_err()
-        );
+        assert!(decrypt(&[0u8; 8], SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(), &[]).is_err());
     }
 
     #[test]
@@ -609,15 +628,29 @@ pub mod tests {
         let protobuf1: &WebauthnCredentialSpecifics = &PROTOBUF;
         let protobuf2: &WebauthnCredentialSpecifics = &PROTOBUF2;
 
-        for (n, proto) in [protobuf1, protobuf2].iter().enumerate() {
+        for proto in [protobuf1, protobuf2] {
             let result =
                 entity_secrets_from_proto(SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(), proto);
             assert!(result.is_ok(), "{:?}", proto);
-            let result = result.unwrap();
-
-            let should_have_hmac_secret = n == 1;
-            assert_eq!(matches!(result.hmac_secret, Some(_)), should_have_hmac_secret);
         }
+    }
+
+    #[test]
+    fn test_derived_hmac_secret() {
+        // This HMAC secret is derived.
+        let secrets =
+            entity_secrets_from_proto(SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(), &PROTOBUF)
+                .unwrap();
+        assert_eq!(&secrets.hmac_secret, b"\x78\xbd\x3f\x1a\xbb\x66\x52\xe3\x2d\xc1\x50\x7d\x75\x83\x73\xdc\xeb\xa5\x8a\x17\x02\x9c\xe5\x12\x73\xee\x3f\x85\xd6\xc9\x2e\x21");
+
+        // This protobuf has an explicit HMAC secret and so one must not be derived from
+        // the private key.
+        let secrets = entity_secrets_from_proto(
+            SAMPLE_SECURITY_DOMAIN_SECRET.try_into().unwrap(),
+            &PROTOBUF2,
+        )
+        .unwrap();
+        assert_eq!(&secrets.hmac_secret, b"\x08\xa2\xe8\x8e\xd3\x78\xbf\xcd\x82\x5f\x0b\x06\xde\xd5\x6d\x2d\x03\xa2\x47\xff\x34\xd0\x81\x40\x52\xec\x6d\xe5\x1a\x98\x22\x91");
     }
 
     #[test]

@@ -186,8 +186,8 @@ class MockInstallerPolicy : public ComponentInstallerPolicy {
 class MockUpdateScheduler : public UpdateScheduler {
  public:
   MOCK_METHOD4(Schedule,
-               void(const base::TimeDelta& initial_delay,
-                    const base::TimeDelta& delay,
+               void(base::TimeDelta initial_delay,
+                    base::TimeDelta delay,
                     const UserTask& user_task,
                     const OnStopTaskCallback& on_stop));
   MOCK_METHOD0(Stop, void());
@@ -215,8 +215,8 @@ class ComponentInstallerTest : public testing::Test {
 
  private:
   void UnpackComplete(const update_client::Unpacker::Result& result);
-  void Schedule(const base::TimeDelta& initial_delay,
-                const base::TimeDelta& delay,
+  void Schedule(base::TimeDelta initial_delay,
+                base::TimeDelta delay,
                 const UpdateScheduler::UserTask& user_task,
                 const UpdateScheduler::OnStopTaskCallback& on_stop);
 
@@ -277,8 +277,8 @@ void ComponentInstallerTest::UnpackComplete(
 }
 
 void ComponentInstallerTest::Schedule(
-    const base::TimeDelta& initial_delay,
-    const base::TimeDelta& delay,
+    base::TimeDelta initial_delay,
+    base::TimeDelta delay,
     const UpdateScheduler::UserTask& user_task,
     const UpdateScheduler::OnStopTaskCallback& on_stop) {
   user_task.Run(base::DoNothing());
@@ -566,7 +566,7 @@ TEST_F(ComponentInstallerTest, SelectComponentVersion) {
   ASSERT_TRUE(base::PathService::Get(DIR_COMPONENT_USER, &base_dir));
   base_dir = base_dir.AppendASCII("select_component_version_test");
 
-  for (const auto* n : {"1", "2", "3", "4", "5", "6", "7"}) {
+  for (const auto& n : {"1", "2", "3", "4", "5", "6", "7"}) {
     CreateComponentDirectory(base_dir, "test_component",
                              base::StrCat({n, ".0.0.0"}), "0.0.1");
   }

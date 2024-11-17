@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/login/oobe_metrics_helper.h"
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
+#include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/screens/osauth/recovery_eligibility_screen.h"
@@ -154,8 +155,7 @@ void SetGaiaInputMethods(const AccountId& account_id) {
 int ErrorToMessageId(SigninError error) {
   switch (error) {
     case SigninError::kCaptivePortalError:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
     case SigninError::kGoogleAccountNotAllowed:
       return IDS_LOGIN_ERROR_GOOGLE_ACCOUNT_NOT_ALLOWED;
     case SigninError::kOwnerRequired:
@@ -384,7 +384,9 @@ void LoginDisplayHostCommon::StartKiosk(const KioskAppId& kiosk_app_id,
           ? extensions::mojom::FeatureSessionType::kAutolaunchedKiosk
           : extensions::mojom::FeatureSessionType::kKiosk);
 
-  KioskController::Get().StartSession(kiosk_app_id, is_auto_launch, this);
+  KioskController::Get().StartSession(
+      kiosk_app_id, is_auto_launch, this,
+      GetWizardController()->GetScreen<AppLaunchSplashScreen>());
 }
 
 void LoginDisplayHostCommon::CompleteLogin(const UserContext& user_context) {
@@ -492,6 +494,10 @@ bool LoginDisplayHostCommon::HandleAccelerator(LoginAcceleratorAction action) {
   }
 
   return false;
+}
+
+void LoginDisplayHostCommon::SkipPostLoginScreensForDemoMode() {
+  wizard_context_->skip_post_login_screens_for_tests = true;
 }
 
 void LoginDisplayHostCommon::SetScreenAfterManagedTos(OobeScreenId screen_id) {

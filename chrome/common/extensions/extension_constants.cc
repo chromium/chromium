@@ -46,6 +46,9 @@ const char* const kBuiltInFirstPartyExtensionIds[] = {
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
     kReadingModeGDocsHelperExtensionId,
 #endif        // !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+    kTTSEngineExtensionId,
+#endif        // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     nullptr,  // Null-terminated array.
 };
 

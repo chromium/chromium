@@ -58,11 +58,13 @@ public class EmbeddedComponentLoaderTest extends AwParameterizedTest {
 
     private static final String TEST_COMPONENT_ID = "jebgalgnebhfojomionfpkfelancnnkf";
     private static final String MANIFEST_JSON_STRING =
-            "{"
-                    + "\n\"manifest_version\": 2,"
-                    + "\n\"name\": \"jebgalgnebhfojomionfpkfelancnnkf\","
-                    + "\n\"version\": \"123.456.789\""
-                    + "\n}";
+            """
+        {
+          "manifest_version": 2,
+          "name": "jebgalgnebhfojomionfpkfelancnnkf",
+          "version": "123.456.789"
+        }
+        """;
 
     // Use AwActivityTestRule to start a browser process and init native library.
     @Rule public AwActivityTestRule mActivityTestRule;

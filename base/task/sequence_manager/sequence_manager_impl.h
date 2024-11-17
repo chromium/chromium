@@ -16,6 +16,7 @@
 #include "base/atomic_sequence_num.h"
 #include "base/base_export.h"
 #include "base/callback_list.h"
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
@@ -191,7 +192,7 @@ class BASE_EXPORT SequenceManagerImpl
     return associated_thread_;
   }
 
-  const Settings& settings() const { return settings_; }
+  const Settings& settings() const LIFETIME_BOUND { return settings_; }
 
   WeakPtr<SequenceManagerImpl> GetWeakPtr();
 
@@ -489,7 +490,7 @@ class BASE_EXPORT SequenceManagerImpl
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
     return main_thread_only_;
   }
-  const MainThreadOnly& main_thread_only() const {
+  const MainThreadOnly& main_thread_only() const LIFETIME_BOUND {
     DCHECK_CALLED_ON_VALID_THREAD(associated_thread_->thread_checker);
     return main_thread_only_;
   }

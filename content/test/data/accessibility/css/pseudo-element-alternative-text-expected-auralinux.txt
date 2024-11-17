@@ -4,4 +4,3 @@
 ++++[static] name=' '
 ++++[static] name='DOM text'
 ++++[static] name=' '
-++++[image]

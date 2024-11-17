@@ -42,7 +42,7 @@ class UpdateServiceProxyImpl
  public:
   // Create an UpdateServiceProxyImpl which is not bound to a remote. It will
   // search for and establish a connection in a background sequence.
-  UpdateServiceProxyImpl(UpdaterScope scope, const base::TimeDelta& timeout);
+  UpdateServiceProxyImpl(UpdaterScope scope, base::TimeDelta timeout);
 
   // Create an UpdateServiceProxyImpl bound to the provided Mojo remote. The
   // lifetime of the connection to the remote process is handled by

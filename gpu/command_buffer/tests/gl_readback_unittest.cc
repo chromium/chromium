@@ -17,6 +17,7 @@
 #include <memory>
 
 #include "base/bit_cast.h"
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -289,11 +290,10 @@ TEST_F(GLReadbackTest, MAYBE_ReadPixelsFloat) {
 
         switch (read_type) {
           case GL_HALF_FLOAT_OES: {
-            std::unique_ptr<GLushort[]> buf(
-                new GLushort[kTextureSize * kTextureSize * read_comp_count]);
-            glReadPixels(
-                0, 0, kTextureSize, kTextureSize, read_format, read_type,
-                buf.get());
+            auto buf = base::HeapArray<GLushort>::Uninit(
+                kTextureSize * kTextureSize * read_comp_count);
+            glReadPixels(0, 0, kTextureSize, kTextureSize, read_format,
+                         read_type, buf.data());
             EXPECT_EQ(glGetError(), GLenum(GL_NO_ERROR));
             for (uint32_t jj = 0; jj < kTextureSize * kTextureSize; ++jj) {
               for (uint32_t kk = 0; kk < test_formats[ii].comp_count; ++kk) {
@@ -306,11 +306,10 @@ TEST_F(GLReadbackTest, MAYBE_ReadPixelsFloat) {
             break;
           }
           case GL_FLOAT: {
-            std::unique_ptr<GLfloat[]> buf(
-                new GLfloat[kTextureSize * kTextureSize * read_comp_count]);
-            glReadPixels(
-                0, 0, kTextureSize, kTextureSize, read_format, read_type,
-                buf.get());
+            auto buf = base::HeapArray<GLfloat>::Uninit(
+                kTextureSize * kTextureSize * read_comp_count);
+            glReadPixels(0, 0, kTextureSize, kTextureSize, read_format,
+                         read_type, buf.data());
             EXPECT_EQ(glGetError(), GLenum(GL_NO_ERROR));
             for (uint32_t jj = 0; jj < kTextureSize * kTextureSize; ++jj) {
               for (uint32_t kk = 0; kk < test_formats[ii].comp_count; ++kk) {

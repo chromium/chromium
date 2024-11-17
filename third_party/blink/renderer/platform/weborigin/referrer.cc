@@ -37,4 +37,10 @@ namespace blink {
 Referrer::Referrer()
     : referrer_policy(network::mojom::ReferrerPolicy::kDefault) {}
 
+const AtomicString& Referrer::ClientReferrerString() {
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(const AtomicString, client_referrer_string,
+                                  ("about:client"));
+  return client_referrer_string;
+}
+
 }  // namespace blink

@@ -3,18 +3,25 @@
 <translationbundle lang="pt-BR">
 <translation id="1444443021901415601">O Chrome registra temas do seu interesse com base no seu histórico de navegação recente</translation>
 <translation id="2252052615723281030">Essa configuração ajuda a proteger seu endereço IP quando sua conta está conectada ao Chrome. Se o navegador suspeitar que um site pode estar rastreando você, parte do seu tráfego poderá ser enviada pelos servidores de privacidade.</translation>
+<translation id="235789365079050412">Política de Privacidade do Google</translation>
 <translation id="2793385791865768072">O Chromium registra temas do seu interesse com base no seu histórico de navegação recente</translation>
+<translation id="2979365474350987274">Cookies de terceiros são limitados</translation>
 <translation id="33479675708419823">Essa configuração ajuda a proteger seu endereço IP quando sua conta está conectada ao Chrome. Se o navegador suspeitar que um site pode estar rastreando você, parte do seu tráfego poderá ser enviada pelos servidores de privacidade. Saiba mais sobre <ph name="LINK_BEGIN" />como a proteção de IP funciona<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Saiba mais sobre como ocultar seu endereço IP</translation>
+<translation id="385051799172605136">Voltar</translation>
 <translation id="4041687306270459969">Os temas de anúncios com mais de 4 semanas são excluídos automaticamente. Os temas incluem assuntos como Esportes, Vestuário e muito mais</translation>
 <translation id="4177501066905053472">Temas do anúncio</translation>
 <translation id="4301151630239508244">Os temas são apenas um dos vários recursos que um site pode usar para personalizar anúncios. Os sites ainda podem mostrar anúncios mesmo sem esse recurso, mas talvez eles não sejam tão personalizados. Aprenda a <ph name="BEGIN_LINK_1" />gerenciar a privacidade de anúncios<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Confira nossa <ph name="BEGIN_LINK" />Política de Privacidade<ph name="END_LINK" /> para saber como o Google protege seus dados.</translation>
 <translation id="453692855554576066">Você pode ver os temas de anúncios nas configurações do Chromium e bloquear os que não quer compartilhar com sites</translation>
 <translation id="4598427486995631491">Ocultar seu endereço IP</translation>
 <translation id="4692439979815346597">Você pode ver os temas de anúncios nas configurações do Chrome e bloquear os que não quer compartilhar com sites</translation>
 <translation id="5413586988657235240">Os sites que você visita podem pedir temas ao Chromium para mostrar anúncios relevantes e proteger seu histórico de navegação e sua identidade</translation>
+<translation id="6053735090575989697">Confira nossa Política de Privacidade para saber como o Google protege seus dados.</translation>
 <translation id="6186536480878693792">Os sites que você visita podem pedir temas ao Chrome para mostrar anúncios relevantes e proteger seu histórico de navegação e sua identidade</translation>
+<translation id="6195163219142236913">Cookies de terceiros limitados</translation>
 <translation id="6371812158043974664">Essa configuração ajuda a proteger seu endereço IP quando sua conta está conectada ao Chromium. Se o navegador suspeitar que um site pode estar rastreando você, parte do seu tráfego poderá ser enviada pelos servidores de privacidade. Saiba mais sobre <ph name="LINK_BEGIN" />como a proteção de IP funciona<ph name="LINK_END" /></translation>
+<translation id="6398358690696005758">Confira nossa <ph name="BEGIN_LINK1" />Política de Privacidade<ph name="LINK_END1" /> para saber como o Google protege seus dados.</translation>
 <translation id="7040031291654706261">Saiba <ph name="BEGIN_LINK" />como a proteção de IP funciona<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Revise a configuração de temas de anúncios</translation>
 </translationbundle>

@@ -15,6 +15,8 @@ class GPUTextureDescriptor;
 class GPUTextureView;
 class GPUTextureViewDescriptor;
 class StaticBitmapImage;
+class V8GPUTextureDimension;
+class V8GPUTextureFormat;
 class WebGPUMailboxTexture;
 
 class GPUTexture : public DawnObject<wgpu::Texture> {
@@ -50,8 +52,8 @@ class GPUTexture : public DawnObject<wgpu::Texture> {
   uint32_t depthOrArrayLayers() const;
   uint32_t mipLevelCount() const;
   uint32_t sampleCount() const;
-  String dimension() const;
-  String format() const;
+  V8GPUTextureDimension dimension() const;
+  V8GPUTextureFormat format() const;
   uint32_t usage() const;
 
   wgpu::TextureDimension Dimension() { return dimension_; }

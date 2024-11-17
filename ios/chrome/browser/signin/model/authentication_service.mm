@@ -18,11 +18,10 @@
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/gaia_id_hash.h"
 #import "components/signin/public/base/signin_pref_names.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #import "components/signin/public/identity_manager/primary_account_mutator.h"
-#import "components/sync/service/account_pref_utils.h"
+#import "components/sync/base/account_pref_utils.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "google_apis/gaia/gaia_auth_util.h"
@@ -39,7 +38,7 @@
 #import "ios/chrome/browser/signin/model/signin_util.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
-#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
+#import "ios/chrome/browser/signin/model/system_identity_util.h"
 
 namespace {
 
@@ -235,16 +234,16 @@ void AuthenticationService::OnApplicationWillEnterForeground() {
 }
 
 bool AuthenticationService::IsAccountSwitchInProgress() {
-  return accountSwitchInProgress_;
+  return account_switch_in_progress_;
 }
 
 base::ScopedClosureRunner
 AuthenticationService::DeclareAccountSwitchInProgress() {
-  CHECK(!accountSwitchInProgress_);
-  accountSwitchInProgress_ = true;
+  CHECK(!account_switch_in_progress_);
+  account_switch_in_progress_ = true;
   return base::ScopedClosureRunner(base::BindOnce(
       [](AuthenticationService* service) {
-        service->accountSwitchInProgress_ = false;
+        service->account_switch_in_progress_ = false;
       },
       this));
 }
@@ -291,18 +290,8 @@ bool AuthenticationService::ShouldClearDataForSignedInPeriodOnSignOut() const {
 
 id<SystemIdentity> AuthenticationService::GetPrimaryIdentity(
     signin::ConsentLevel consent_level) const {
-  // There is no authenticated identity if there is no signed in user or if the
-  // user signed in via the client login flow.
-  if (!identity_manager_->HasPrimaryAccount(consent_level)) {
-    return nil;
-  }
-
-  std::string authenticated_gaia_id =
-      identity_manager_->GetPrimaryAccountInfo(consent_level).gaia;
-  if (authenticated_gaia_id.empty())
-    return nil;
-
-  return account_manager_service_->GetIdentityWithGaiaID(authenticated_gaia_id);
+  return GetPrimarySystemIdentity(consent_level, identity_manager_,
+                                  account_manager_service_);
 }
 
 void AuthenticationService::SignIn(id<SystemIdentity> identity,
@@ -331,14 +320,13 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
       base::SysNSStringToUTF8(identity.userEmail));
 
   // Ensure that the account the user is trying to sign into has been loaded
-  // from the SSO library and that hosted_domain is set (should be the proper
-  // hosted domain or kNoHostedDomainFound that are both non-empty strings).
+  // from the SSO library.
   CHECK(identity_manager_->HasAccountWithRefreshToken(account_id));
   const AccountInfo account_info =
       identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
   CHECK(!account_info.IsEmpty());
 
-  // `PrimaryAccountManager::SetAuthenticatedAccountId` simply ignores the call
+  // `PrimaryAccountMutator::SetPrimaryAccount` simply ignores the call
   // if there is already a signed in user. Check that there is no signed in
   // account or that the new signed in account matches the old one to avoid a
   // mismatch between the old and the new authenticated accounts.
@@ -363,10 +351,12 @@ void AuthenticationService::SignIn(id<SystemIdentity> identity,
   CHECK(!primary_account.empty());
   CHECK_EQ(account_id, primary_account);
   pref_service_->SetTime(prefs::kLastSigninTimestamp, base::Time::Now());
-  pref_service_->SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,
-                         base::Time::Now());
-  pref_service_->SetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount,
-                            0);
+
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+  local_pref_service->SetTime(
+      prefs::kIdentityConfirmationSnackbarLastPromptTime, base::Time::Now());
+  local_pref_service->SetInteger(
+      prefs::kIdentityConfirmationSnackbarDisplayCount, 0);
   crash_keys::SetCurrentlySignedIn(true);
 }
 
@@ -387,6 +377,9 @@ void AuthenticationService::GrantSyncConsent(
   const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
       base::SysNSStringToUTF8(identity.gaiaID),
       base::SysNSStringToUTF8(identity.userEmail));
+  // Ensure that the account the user is trying to sign into has been loaded
+  // from the SSO library and that hosted_domain is set (should be the proper
+  // hosted domain or kNoHostedDomainFound that are both non-empty strings).
   const AccountInfo account_info =
       identity_manager_->FindExtendedAccountInfoByAccountId(account_id);
   CHECK(!account_info.IsEmpty());
@@ -516,17 +509,6 @@ void AuthenticationService::OnPrimaryAccountChanged(
 void AuthenticationService::OnIdentityListChanged() {
   ClearAccountSettingsPrefsOfRemovedAccounts();
 
-  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
-      !base::FeatureList::IsEnabled(switches::kAlwaysLoadDeviceAccounts)) {
-    // IdentityManager::HasPrimaryAccount() needs to be called instead of
-    // AuthenticationService::HasPrimaryIdentity() or
-    // AuthenticationService::GetPrimaryIdentity().
-    // If the primary identity has just been removed, GetPrimaryIdentity()
-    // would return NO (since this method tests if the primary identity exists
-    // in ChromeIdentityService).
-    // In this case, we do need to call ReloadCredentialsFromIdentities().
-    return;
-  }
   // The list of identities may change while in an authorized call. Signing out
   // the authenticated user at this time may lead to crashes (e.g.
   // http://crbug.com/398431 ).
@@ -578,6 +560,17 @@ void AuthenticationService::MDMErrorHandled(id<SystemIdentity> identity,
 
   SignOut(signin_metrics::ProfileSignout::kAbortSignin,
           /*force_clear_browsing_data*/ false, nil);
+}
+
+void AuthenticationService::OnRefreshTokenUpdated(id<SystemIdentity> identity) {
+  const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
+      base::SysNSStringToUTF8(identity.gaiaID),
+      base::SysNSStringToUTF8(identity.userEmail));
+  if (!identity_manager_->HasAccountWithRefreshToken(account_id)) {
+    return;
+  }
+  identity_manager_->GetDeviceAccountsSynchronizer()->ReloadAccountFromSystem(
+      account_id);
 }
 
 void AuthenticationService::OnAccessTokenRefreshFailed(
@@ -689,16 +682,13 @@ void AuthenticationService::HandleForgottenIdentity(
 }
 
 void AuthenticationService::ReloadCredentialsFromIdentities() {
-  if (is_reloading_credentials_)
+  if (is_reloading_credentials_) {
     return;
+  }
 
   base::AutoReset<bool> auto_reset(&is_reloading_credentials_, true);
 
   HandleForgottenIdentity(nil, /*device_restore=*/false);
-  if (!HasPrimaryIdentity(signin::ConsentLevel::kSignin) &&
-      !base::FeatureList::IsEnabled(switches::kAlwaysLoadDeviceAccounts)) {
-    return;
-  }
 
   identity_manager_->GetDeviceAccountsSynchronizer()
       ->ReloadAllAccountsFromSystemWithPrimaryAccount(

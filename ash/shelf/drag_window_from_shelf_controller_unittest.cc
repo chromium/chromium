@@ -464,6 +464,50 @@ TEST_F(DragWindowFromShelfControllerTest, RestoreWindowToOriginalBounds) {
   EXPECT_EQ(split_view_controller()->primary_window(), window.get());
 }
 
+// Test that sequence in b/368630347 doesn't crash.
+TEST_F(DragWindowFromShelfControllerTest,
+       RestoreWindowToOriginalBoundsInterruptedByHomeScreen) {
+  OverviewController* const overview_controller = OverviewController::Get();
+  UpdateDisplay("500x400");
+  const gfx::Rect shelf_bounds = GetShelfBounds();
+  auto window = CreateTestWindow();
+  const gfx::Rect display_bounds = display::Screen::GetScreen()
+                                       ->GetDisplayNearestWindow(window.get())
+                                       .bounds();
+
+  // Drag window enough distance to start overview, but not so much that it
+  // goes to its target location in the overview grid.
+  StartDrag(window.get(), shelf_bounds.CenterPoint());
+  Drag(gfx::Point(200, 200), 0.f, 1.f);
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  DragWindowFromShelfControllerTestApi().WaitUntilOverviewIsShown(
+      window_drag_controller());
+
+  // End drag. Window should be restored to its original bounds via a
+  // `WindowScaleAnimation`.
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  EndDrag(
+      gfx::Point(
+          200,
+          display_bounds.bottom() -
+              DragWindowFromShelfController::GetReturnToMaximizedThreshold() +
+              1),
+      std::nullopt);
+
+  // `WindowScaleAnimation` should be running, and while that's happening,
+  // user provides some input to go back to the home screen. This should
+  // immediately end the ongoing overview session.
+  ASSERT_TRUE(Shell::Get()->app_list_controller()->GoHome(
+      display::Screen::GetScreen()->GetPrimaryDisplay().id()));
+  ASSERT_FALSE(overview_controller->InOverviewSession());
+
+  // User then enters overview through some other method. This should destroy
+  // the ongoing `WindowScaleAnimation`.
+  ASSERT_TRUE(EnterOverview());
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+}
+
 // Test if overview is active and splitview is not active, fling in overview may
 // or may not head to the home screen.
 TEST_F(DragWindowFromShelfControllerTest, FlingInOverview) {

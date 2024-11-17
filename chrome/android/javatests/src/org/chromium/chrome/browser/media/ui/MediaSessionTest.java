@@ -118,8 +118,21 @@ public class MediaSessionTest {
         // Extended timeout to avoid flakiness https://crbug.com/1315419
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
-                    return MediaNotificationManager.getController(R.id.media_playback_notification)
-                            != null;
+                    if (MediaNotificationManager.getController(R.id.media_playback_notification)
+                            == null) {
+                        return false;
+                    }
+
+                    MediaNotificationController controller =
+                            MediaNotificationManager.getController(
+                                    R.id.media_playback_notification);
+                    controller.mPendingIntentActionSwipe =
+                            controller.createPendingIntent(
+                                    MediaNotificationController.ACTION_SWIPE);
+
+                    // After creating `mPendingIntentActionSwipe`, wait until the throttler exits
+                    // the throttled state.
+                    return controller.mThrottler.mThrottleTask == null;
                 },
                 LONG_TIMEOUT,
                 DEFAULT_POLL_INTERVAL);

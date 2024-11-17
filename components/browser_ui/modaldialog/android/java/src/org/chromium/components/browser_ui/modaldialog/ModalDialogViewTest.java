@@ -478,7 +478,7 @@ public class ModalDialogViewTest {
                                     sResources.getString(R.string.cancel))
                         }));
 
-        onView((withId(R.id.button_group))).check(matches(isDisplayed()));
+        onView(withId(R.id.button_group)).check(matches(isDisplayed()));
 
         onView(withText(R.string.ok)).check(matches(isDisplayed()));
         onView(withText(R.string.ok_got_it)).check(matches(isDisplayed()));
@@ -506,10 +506,10 @@ public class ModalDialogViewTest {
 
         // Check that the first button is visible.
         onView(
-                        (withTagValue(
+                        withTagValue(
                                 is(
                                         ModalDialogView.getTagForButtonType(
-                                                button_spec_list[0].getButtonType())))))
+                                                button_spec_list[0].getButtonType()))))
                 .check(matches(isDisplayed()));
 
         // Swipe up a few times.
@@ -524,10 +524,10 @@ public class ModalDialogViewTest {
 
         // Check that the first button is no longer visible.
         onView(
-                        (withTagValue(
+                        withTagValue(
                                 is(
                                         ModalDialogView.getTagForButtonType(
-                                                button_spec_list[0].getButtonType())))))
+                                                button_spec_list[0].getButtonType()))))
                 .check(matches(not(isDisplayed())));
     }
 

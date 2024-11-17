@@ -96,9 +96,8 @@ const CGFloat kSpinnerButtonPadding = 18;
   self.title = l10n_util::GetNSString(IDS_IOS_SYNC_ENTER_PASSPHRASE_TITLE);
   self.shouldHideDoneButton = YES;
 
-  ChromeBrowserState* browserState = _browser->GetBrowserState();
-  syncer::SyncService* service =
-      SyncServiceFactory::GetForBrowserState(browserState);
+  ProfileIOS* profile = _browser->GetProfile();
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile);
   // TODO(crbug.com/40765960): The reason this is an if and not a DCHECK is
   // because SyncCreatePassphraseTableViewController inherits from this class.
   // This should be changed, i.e. either extract the minimum common logic
@@ -108,7 +107,7 @@ const CGFloat kSpinnerButtonPadding = 18;
     base::Time passphraseTime =
         service->GetUserSettings()->GetExplicitPassphraseTime();
     NSString* userEmail =
-        AuthenticationServiceFactory::GetForBrowserState(browserState)
+        AuthenticationServiceFactory::GetForProfile(profile)
             ->GetPrimaryIdentity(signin::ConsentLevel::kSignin)
             .userEmail;
     DCHECK(userEmail);
@@ -125,7 +124,7 @@ const CGFloat kSpinnerButtonPadding = 18;
 
   _identityManagerObserver =
       std::make_unique<signin::IdentityManagerObserverBridge>(
-          IdentityManagerFactory::GetForProfile(browserState), self);
+          IdentityManagerFactory::GetForProfile(profile), self);
   return self;
 }
 
@@ -138,9 +137,8 @@ const CGFloat kSpinnerButtonPadding = 18;
     return nil;
   if (_syncErrorMessage)
     return _syncErrorMessage;
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  syncer::SyncService* service =
-      SyncServiceFactory::GetForBrowserState(browserState);
+  ProfileIOS* profile = self.browser->GetProfile();
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile);
   DCHECK(service);
 
   // Passphrase error directly set `_syncErrorMessage`.
@@ -149,7 +147,7 @@ const CGFloat kSpinnerButtonPadding = 18;
     return nil;
   }
 
-  return GetSyncErrorMessageForBrowserState(browserState);
+  return GetSyncErrorMessageForProfile(profile);
 }
 
 #pragma mark - View lifecycle
@@ -302,18 +300,17 @@ const CGFloat kSpinnerButtonPadding = 18;
 - (void)signInPressed {
   DCHECK(!_settingsAreDismissed);
   DCHECK([_passphrase text].length);
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
 
   if (!_syncObserver.get()) {
     _syncObserver.reset(new SyncObserverBridge(
-        self, SyncServiceFactory::GetForBrowserState(browserState)));
+        self, SyncServiceFactory::GetForProfile(profile)));
   }
 
   // Clear out the error message.
   self.syncErrorMessage = nil;
 
-  syncer::SyncService* service =
-      SyncServiceFactory::GetForBrowserState(browserState);
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile);
   DCHECK(service);
   // It is possible for a race condition to happen where a user is allowed
   // to call the backend with the passphrase before the backend is
@@ -501,9 +498,8 @@ const CGFloat kSpinnerButtonPadding = 18;
 
 - (void)onSyncStateChanged {
   DCHECK(!_settingsAreDismissed);
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  syncer::SyncService* service =
-      SyncServiceFactory::GetForBrowserState(browserState);
+  ProfileIOS* profile = self.browser->GetProfile();
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile);
 
   if (!service->IsEngineInitialized()) {
     return;
@@ -548,9 +544,9 @@ const CGFloat kSpinnerButtonPadding = 18;
 
 - (void)onEndBatchOfRefreshTokenStateChanges {
   DCHECK(!_settingsAreDismissed);
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  if (AuthenticationServiceFactory::GetForBrowserState(browserState)
-          ->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+  ProfileIOS* profile = self.browser->GetProfile();
+  if (AuthenticationServiceFactory::GetForProfile(profile)->HasPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
     return;
   }
   if (!self.presentModally) {

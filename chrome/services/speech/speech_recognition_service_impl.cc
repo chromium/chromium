@@ -51,10 +51,10 @@ void SpeechRecognitionServiceImpl::BindSpeechRecognitionContext(
 void SpeechRecognitionServiceImpl::SetSodaPaths(
     const base::FilePath& binary_path,
     const base::flat_map<std::string, base::FilePath>& config_paths,
-    const std::string& primary_language_name) {
+    const std::string& default_live_caption_language) {
   binary_path_ = binary_path;
   config_paths_ = config_paths;
-  primary_language_name_ = primary_language_name;
+  default_live_caption_language_ = default_live_caption_language;
 }
 
 void SpeechRecognitionServiceImpl::SetSodaParams(
@@ -139,7 +139,7 @@ void SpeechRecognitionServiceImpl::BindAudioSourceFetcher(
       std::move(fetcher_receiver),
       std::make_unique<SpeechRecognitionRecognizerImpl>(
           std::move(client), std::move(options), binary_path_, config_paths_,
-          primary_language_name_, mask_offensive_words_,
+          default_live_caption_language_, mask_offensive_words_,
           weak_factory_.GetWeakPtr()),
       is_multi_channel_supported, is_server_based);
   std::move(callback).Run(is_multi_channel_supported);
@@ -186,9 +186,12 @@ bool SpeechRecognitionServiceImpl::CreateRecognizer(
     return false;
   }
 
+  auto language = options->language.has_value()
+                      ? options->language.value()
+                      : default_live_caption_language_;
   SpeechRecognitionRecognizerImpl::Create(
       std::move(receiver), std::move(client), std::move(options), binary_path_,
-      config_paths_, primary_language_name_, mask_offensive_words_,
+      config_paths_, language, mask_offensive_words_,
       weak_factory_.GetWeakPtr());
 
   return true;

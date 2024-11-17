@@ -8,7 +8,7 @@
  * security site settings.
  */
 
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_expand_button/cr_expand_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
@@ -279,7 +279,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'privacy:notifications',
     },
     {
-      route: routes.SITE_SETTINGS_OFFER_WRITING_HELP,
+      route: routes.OFFER_WRITING_HELP,
       id: Id.OFFER_WRITING_HELP,
       label: 'siteSettingsOfferWritingHelp',
       icon: 'settings:compose',
@@ -444,14 +444,13 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       icon: 'privacy:zoom-in',
     },
   ];
-  if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+  if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled') &&
+      loadTimeData.getBoolean('isTrackingProtectionUxEnabled')) {
     categoryList.push({
       route: routes.TRACKING_PROTECTION,
       id: Id.COOKIES,
       label: 'trackingProtectionLinkRowLabel',
       icon: 'settings:visibility-off',
-      enabledLabel: 'siteSettingsCookiesAllowed',
-      disabledLabel: 'siteSettingsBlocked',
     });
   } else {
     categoryList.push({
@@ -459,8 +458,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       id: Id.COOKIES,
       label: 'thirdPartyCookiesLinkRowLabel',
       icon: 'privacy:cookie',
-      enabledLabel: 'trackingProtectionLinkRowSubLabel',
-      disabledLabel: 'trackingProtectionLinkRowSubLabel',
     });
   }
   categoryItemMap = new Map(categoryList.map(item => [item.id, item]));

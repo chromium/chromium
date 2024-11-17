@@ -5,7 +5,9 @@
  /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #import=//resources/cr_elements/cr_spinner_style_lit.css.js
  * #scheme=relative
+ * #include=cr-spinner-style-lit
  * #css_wrapper_metadata_end */
 
 :host {
@@ -55,18 +57,5 @@
 }
 
 .spinner {
-  --spinner-size: 20px;
-  mask-image: url(chrome://resources/images/throbber_small.svg);
-  mask-position: center;
-  mask-repeat: no-repeat;
-  background-color: var(--google-blue-500);
-  mask-size: var(--spinner-size) var(--spinner-size);
-  height: var(--spinner-size);
-  width: var(--spinner-size);
-}
-
-@media (prefers-color-scheme: dark) {
-  .spinner {
-    background-color: var(--google-blue-300);
-  }
+  --cr-spinner-size: 20px;
 }

@@ -27,11 +27,6 @@ public class FeedReliabilityLoggingBridge {
     private boolean mRenderingStarted;
     private DiscoverLaunchResult mLaunchResult;
 
-    public static org.jni_zero.JniStaticTestMocker<FeedReliabilityLoggingBridge.Natives>
-            getTestHooksForTesting() {
-        return FeedReliabilityLoggingBridgeJni.TEST_HOOKS;
-    }
-
     public FeedReliabilityLoggingBridge() {
         // mLaunchLogger should be null until FeedStream.bind() calls setLogger(). We don't expect
         // mLaunchLogger to be used until then.

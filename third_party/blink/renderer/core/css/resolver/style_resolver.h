@@ -208,6 +208,9 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
 
   static bool CanReuseBaseComputedStyle(const StyleResolverState& state);
 
+  // Return a computed value for the passed-in property:value pair in the
+  // context of the current ComputedStyle of the 'element'.
+  // Returns nullptr for custom property values that are IACVT.
   static const CSSValue* ComputeValue(Element* element,
                                       const CSSPropertyName&,
                                       const CSSValue&);
@@ -317,46 +320,25 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
     STACK_ALLOCATED();
 
    public:
-    bool is_inherited_cache_hit;
-    bool is_non_inherited_cache_hit;
+    bool is_hit;
     MatchedPropertiesCache::Key key;
-    const CachedMatchedProperties* cached_matched_properties;
+    const CachedMatchedProperties::Entry* cached_matched_properties;
 
-    CacheSuccess(bool is_inherited_cache_hit,
-                 bool is_non_inherited_cache_hit,
-                 MatchedPropertiesCache::Key key,
-                 const CachedMatchedProperties* cached_matched_properties)
-        : is_inherited_cache_hit(is_inherited_cache_hit),
-          is_non_inherited_cache_hit(is_non_inherited_cache_hit),
-          key(key),
-          cached_matched_properties(cached_matched_properties) {}
+    CacheSuccess(
+        MatchedPropertiesCache::Key key,
+        const CachedMatchedProperties::Entry* cached_matched_properties)
+        : key(key), cached_matched_properties(cached_matched_properties) {}
 
-    bool IsFullCacheHit() const {
-      return is_inherited_cache_hit && is_non_inherited_cache_hit;
-    }
-    bool ShouldApplyInheritedOnly() const {
-      return is_non_inherited_cache_hit && !is_inherited_cache_hit;
-    }
-    void SetFailed() {
-      is_inherited_cache_hit = false;
-      is_non_inherited_cache_hit = false;
-    }
-    bool EffectiveZoomChanged(const ComputedStyleBuilder&) const;
-    bool FontChanged(const ComputedStyleBuilder&) const;
-    bool InheritedVariablesChanged(const ComputedStyleBuilder&) const;
-    bool LineHeightChanged(const ComputedStyleBuilder&) const;
-    bool IsUsableAfterApplyInheritedOnly(const ComputedStyleBuilder&) const;
+    bool IsHit() const { return cached_matched_properties; }
   };
 
   CacheSuccess ApplyMatchedCache(StyleResolverState&,
                                  const StyleRequest&,
                                  const MatchResult&);
   void MaybeAddToMatchedPropertiesCache(StyleResolverState&,
-                                        const CacheSuccess&);
+                                        const MatchedPropertiesCache::Key&);
 
-  void ApplyPropertiesFromCascade(StyleResolverState&,
-                                  StyleCascade& cascade,
-                                  CacheSuccess cache_success);
+  void ApplyPropertiesFromCascade(StyleResolverState&, StyleCascade& cascade);
 
   bool ApplyAnimatedStyle(StyleResolverState&, StyleCascade&);
   void ApplyAnchorData(StyleResolverState&);

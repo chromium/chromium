@@ -10,6 +10,7 @@
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_test_base.h"
 #include "pdf/test/test_client.h"
+#include "pdf/text_search.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using testing::_;
@@ -31,30 +32,13 @@ class FindTextTestClient : public TestClient {
   MOCK_METHOD(void, NotifyNumberOfFindResultsChanged, (int, bool), (override));
   MOCK_METHOD(void, NotifySelectedFindResultChanged, (int, bool), (override));
 
-  std::vector<SearchStringResult> SearchString(const char16_t* string,
-                                               const char16_t* term,
+  std::vector<SearchStringResult> SearchString(const std::u16string& needle,
+                                               const std::u16string& haystack,
                                                bool case_sensitive) override {
-    EXPECT_EQ(case_sensitive, expected_case_sensitive_);
-    std::u16string haystack = std::u16string(string);
-    std::u16string needle = std::u16string(term);
-    EXPECT_FALSE(haystack.empty());
     EXPECT_FALSE(needle.empty());
-
-    std::vector<SearchStringResult> results;
-
-    size_t pos = 0;
-    while (true) {
-      pos = haystack.find(needle, pos);
-      if (pos == std::u16string::npos)
-        break;
-
-      SearchStringResult result;
-      result.length = needle.size();
-      result.start_index = pos;
-      results.push_back(result);
-      pos += needle.size();
-    }
-    return results;
+    EXPECT_FALSE(haystack.empty());
+    EXPECT_EQ(case_sensitive, expected_case_sensitive_);
+    return TextSearch(/*needle=*/needle, /*haystack=*/haystack, case_sensitive);
   }
 
  private:

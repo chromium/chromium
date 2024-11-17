@@ -225,7 +225,6 @@ _EXTENSIBLE_ENUMS_MISSING_DEFAULT = (
     'x:crosapi.mojom.GoogleServiceAuthError.State',
     'x:crosapi.mojom.IsInstallableResult',
     'x:crosapi.mojom.KeyTag',
-    'x:crosapi.mojom.KeystoreSigningAlgorithmName',
     'x:crosapi.mojom.KeystoreType',
     'x:crosapi.mojom.LacrosFeedbackSource',
     'x:crosapi.mojom.MemoryPressureLevel',

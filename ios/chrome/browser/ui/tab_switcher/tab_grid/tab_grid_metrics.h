@@ -21,7 +21,26 @@ enum class TabSwitcherPageChangeInteraction {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
+// Key of the UMA IOS.Incognito.GridStatus histogram.
+extern const char kUMAIncognitoGridStatusHistogram[];
+
+// Values of the UMA IOS.Incognito.GridStatus histogram.
+// LINT.IfChange
+enum class IncognitoGridStatus {
+  kEnabledForUnmanagedUser = 0,
+  kEnabledForSupervisedUser = 1,
+  kEnabledByEnterprisePolicies = 2,
+  kDisabledForUnmanagedUser = 3,
+  kDisabledForSupervisedUser = 4,
+  kDisabledByEnterprisePolicies = 5,
+  kMaxValue = kDisabledByEnterprisePolicies,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
+
 // Records the number of Tabs closed after a bulk or a "Close All" operation.
 void RecordTabGridCloseTabsCount(int count);
+
+// Records the status of the incognito tab grid.
+void RecordIncognitoGridStatus(IncognitoGridStatus status);
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GRID_METRICS_H_

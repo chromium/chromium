@@ -63,7 +63,7 @@ ScopedIPCSupport::~ScopedIPCSupport() {
   base::ScopedAllowBaseSyncPrimitives allow_io;
   shutdown_event.Wait();
 #else
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 #endif
 }
 

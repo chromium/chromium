@@ -9,6 +9,7 @@
 
 #include "content/browser/interest_group/ad_auction_service_impl.h"
 
+#include <cstddef>
 #include <map>
 #include <memory>
 #include <optional>
@@ -121,8 +122,7 @@ bool AreAllowedReportingOriginsAttested(
              ->browser()
              ->IsPrivacySandboxReportingDestinationAttested(
                  browser_context, origin,
-                 PrivacySandboxInvokingAPI::kProtectedAudience,
-                 /*post_impression_reporting=*/true)) {
+                 PrivacySandboxInvokingAPI::kProtectedAudience)) {
       return false;
     }
   }
@@ -177,6 +177,29 @@ void RecordBaDataConstructionResultMetric(size_t data_size,
                           /*sample=*/base::TimeTicks::Now() - start_time);
 }
 
+// Used to get a possible override to the user-agent string.
+std::optional<std::string> MaybeGetUserAgentOverride(
+    FrameTreeNode* frame_tree_node) {
+  if (base::FeatureList::IsEnabled(features::kFledgeEnableUserAgentOverrides)) {
+    if (frame_tree_node != nullptr) {
+      const bool override_user_agent =
+          frame_tree_node->navigator()
+              .GetDelegate()
+              ->ShouldOverrideUserAgentForRendererInitiatedNavigation();
+      if (override_user_agent) {
+        std::string maybe_user_agent = frame_tree_node->navigator()
+                                           .GetDelegate()
+                                           ->GetUserAgentOverride()
+                                           .ua_string_override;
+        if (!maybe_user_agent.empty()) {
+          return std::move(maybe_user_agent);
+        }
+      }
+    }
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 AdAuctionServiceImpl::BiddingAndAuctionDataConstructionState::
@@ -217,9 +240,7 @@ void AdAuctionServiceImpl::JoinInterestGroup(
 
   // If the group is allowed, we also do a permissions/attestation check on
   // trusted bidding signals URL, in case it's 3rd party.
-  if (!report_result_only && group.trusted_bidding_signals_url.has_value() &&
-      base::FeatureList::IsEnabled(
-          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
+  if (!report_result_only && group.trusted_bidding_signals_url.has_value()) {
     url::Origin trusted_bidding_signals_origin =
         url::Origin::Create(group.trusted_bidding_signals_url.value());
     if (!trusted_bidding_signals_origin.IsSameOriginWith(group.owner) &&
@@ -378,10 +399,13 @@ void AdAuctionServiceImpl::UpdateAdInterestGroups() {
     return;
   }
 
+  std::optional<std::string> user_agent_override =
+      MaybeGetUserAgentOverride(GetFrame()->frame_tree_node());
+
   // `base::Unretained` is safe here since the `BrowserContext` owns the
   // `StoragePartition` that owns the interest group manager.
   GetInterestGroupManager().UpdateInterestGroupsOfOwner(
-      origin(), GetClientSecurityState(),
+      origin(), GetClientSecurityState(), user_agent_override,
       base::BindRepeating(
           &AreAllowedReportingOriginsAttested,
           base::Unretained(render_frame_host().GetBrowserContext())));
@@ -449,13 +473,16 @@ void AdAuctionServiceImpl::RunAdAuction(
   // on-device auction.
   if (base::FeatureList::IsEnabled(features::kFledgeUsePreconnectCache) &&
       !config.server_response.has_value()) {
-    PreconnectToBuyerOrigins(config);
+    size_t n_owners_cached = PreconnectToBuyerOrigins(config);
     for (const blink::AuctionConfig& component_config :
          config.non_shared_params.component_auctions) {
       if (!component_config.server_response.has_value()) {
-        PreconnectToBuyerOrigins(component_config);
+        n_owners_cached += PreconnectToBuyerOrigins(component_config);
       }
     }
+    base::UmaHistogramCounts100(
+        "Ads.InterestGroup.Auction.NumOwnerOriginsCachedForPreconnect",
+        n_owners_cached);
   }
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
@@ -468,8 +495,9 @@ void AdAuctionServiceImpl::RunAdAuction(
       base::BindRepeating(
           &AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures,
           weak_ptr_factory_.GetWeakPtr()),
-      config, main_frame_origin_, origin(), GetClientSecurityState(),
-      GetRefCountedTrustedURLLoaderFactory(),
+      config, main_frame_origin_, origin(),
+      MaybeGetUserAgentOverride(GetFrame()->frame_tree_node()),
+      GetClientSecurityState(), GetRefCountedTrustedURLLoaderFactory(),
       base::BindRepeating(&AdAuctionServiceImpl::IsInterestGroupAPIAllowed,
                           base::Unretained(this)),
       base::BindRepeating(
@@ -700,9 +728,9 @@ void AdAuctionServiceImpl::PreconnectSocket(
   render_frame_host()
       .GetStoragePartition()
       ->GetNetworkContext()
-      ->PreconnectSockets(/*num_streams=*/1, url,
-                          network::mojom::CredentialsMode::kOmit,
-                          network_anonymization_key);
+      ->PreconnectSockets(
+          /*num_streams=*/1, url, network::mojom::CredentialsMode::kOmit,
+          network_anonymization_key, net::MutableNetworkTrafficAnnotationTag());
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -738,6 +766,14 @@ std::optional<std::string> AdAuctionServiceImpl::GetCookieDeprecationLabel() {
   } else {
     return std::nullopt;
   }
+}
+
+void AdAuctionServiceImpl::GetBiddingAndAuctionServerKey(
+    const std::optional<url::Origin>& coordinator,
+    base::OnceCallback<void(
+        base::expected<BiddingAndAuctionServerKey, std::string>)> callback) {
+  GetInterestGroupManager().GetBiddingAndAuctionServerKey(
+      std::move(coordinator), std::move(callback));
 }
 
 AdAuctionServiceImpl::AdAuctionServiceImpl(
@@ -862,8 +898,8 @@ bool AdAuctionServiceImpl::IsInterestGroupAPIAllowed(
         interest_group_api_operation,
     const url::Origin& origin) const {
   return GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-      &render_frame_host(), interest_group_api_operation, main_frame_origin_,
-      origin);
+      render_frame_host().GetBrowserContext(), &render_frame_host(),
+      interest_group_api_operation, main_frame_origin_, origin);
 }
 
 void AdAuctionServiceImpl::OnAuctionComplete(
@@ -1062,7 +1098,7 @@ void AdAuctionServiceImpl::MaybeLogPrivateAggregationFeatures(
 }
 
 void AdAuctionServiceImpl::ReturnEmptyGetInterestGroupAdAuctionDataCallback(
-    const std::string msg) {
+    const std::string& msg) {
   if (!ba_data_callbacks_.empty()) {
     BiddingAndAuctionDataConstructionState& state = ba_data_callbacks_.front();
 
@@ -1091,7 +1127,7 @@ void AdAuctionServiceImpl::LoadAuctionDataAndKeyForNextQueuedRequest() {
   // GetBiddingAndAuctionServerKey can call its callback synchronously, so we
   // need to call it last in case it invalidates `state`.
   GetInterestGroupManager().GetBiddingAndAuctionServerKey(
-      std::move(state.coordinator),
+      state.coordinator,
       base::BindOnce(&AdAuctionServiceImpl::OnGotBiddingAndAuctionServerKey,
                      weak_ptr_factory_.GetWeakPtr(), state.request_id));
 }
@@ -1176,7 +1212,8 @@ void AdAuctionServiceImpl::OnGotAuctionDataAndKey(base::Uuid request_id) {
           network::mojom::CredentialsMode::kInclude,
           render_frame_host()
               .GetIsolationInfoForSubresources()
-              .network_anonymization_key());
+              .network_anonymization_key(),
+          net::MutableNetworkTrafficAnnotationTag());
 
   AdAuctionPageData* ad_auction_page_data = GetAdAuctionPageData();
   if (!ad_auction_page_data) {
@@ -1249,11 +1286,12 @@ AdAuctionPageData* AdAuctionServiceImpl::GetAdAuctionPageData() {
       render_frame_host().GetPage());
 }
 
-void AdAuctionServiceImpl::PreconnectToBuyerOrigins(
+size_t AdAuctionServiceImpl::PreconnectToBuyerOrigins(
     const blink::AuctionConfig& config) {
   if (!config.non_shared_params.interest_group_buyers) {
-    return;
+    return 0;
   }
+  size_t n_owners_cached = 0;
   for (const auto& buyer : *config.non_shared_params.interest_group_buyers) {
     std::optional<url::Origin> signals_origin;
     if (GetInterestGroupManager().GetCachedOwnerAndSignalsOrigins(
@@ -1262,6 +1300,7 @@ void AdAuctionServiceImpl::PreconnectToBuyerOrigins(
           net::NetworkAnonymizationKey::CreateSameSite(
               net::SchemefulSite(buyer));
       PreconnectSocket(buyer.GetURL(), network_anonymization_key);
+      n_owners_cached += 1;
       if (signals_origin) {
         // We preconnect to the signals origin and not the full signals URL so
         // that we do not need to store the full URL in memory. Preconnecting
@@ -1271,6 +1310,7 @@ void AdAuctionServiceImpl::PreconnectToBuyerOrigins(
       }
     }
   }
+  return n_owners_cached;
 }
 
 }  // namespace content

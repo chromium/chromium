@@ -23,31 +23,34 @@ per-file color_conversions*=aaronhk@chromium.org
 per-file display*=oshima@chromium.org
 per-file screen*=oshima@chromium.org
 
-# Canvas painting.
-per-file canvas*=danakj@chromium.org
-
 # Overlay states, configurations, etc.
 per-file overlay*=spang@chromium.org
 
 # Transform, interpolated transform and transform util.
-per-file transform*=danakj@chromium.org
 per-file transform*=vollick@chromium.org
-per-file interpolated_transform*=danakj@chromium.org
 per-file interpolated_transform*=vollick@chromium.org
 
 # Skia geometry helpers.
-per-file skia_util*=danakj@chromium.org
-per-file skia_paint_util*=danakj@chromium.org
+per-file skia_util*=kylechar@chromium.org
+per-file skia_paint_util*=kylechar@chromium.org
 
-# GPU memory buffer and GpuFence interfaces.
-per-file gpu_fence*=dcastagna@chromium.org
+# Skia span helpers.
+per-file skia_span_util*=kylechar@chromium.org
+
+# GpuFence interfaces.
 per-file gpu_fence*=spang@chromium.org
-per-file gpu_memory_buffer*=dcastagna@chromium.org
-per-file gpu_memory_buffer*=spang@chromium.org
-per-file buffer_format*=dcastagna@chromium.org
-per-file buffer_format*=spang@chromium.org
-per-file *buffer_types.*=dcastagna@chromium.org
-per-file *buffer_types.*=spang@chromium.org
+
+# GPU memory buffer
+per-file gpu_memory_buffer*=blundell@chromium.org
+per-file gpu_memory_buffer*=vasilyt@chromium.org
+per-file gpu_memory_buffer*=vikassoni@chromium.org
+per-file buffer_format*=blundell@chromium.org
+per-file buffer_format*=vasilyt@chromium.org
+per-file buffer_format*=vikassoni@chromium.org
+per-file *buffer_types.*=blundell@chromium.org
+per-file *buffer_types.*=vasilyt@chromium.org
+per-file *buffer_types.*=vikassoni@chromium.org
+
 per-file *native_pixmap*=spang@chromium.org
 
 # Vector icons.

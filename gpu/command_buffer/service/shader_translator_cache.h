@@ -9,6 +9,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/shader_translator.h"
 #include "gpu/config/gpu_preferences.h"
@@ -90,7 +91,9 @@ class GPU_GLES2_EXPORT ShaderTranslatorCache
 
   const GpuPreferences gpu_preferences_;
 
-  typedef std::map<ShaderTranslatorInitParams, ShaderTranslator* > Cache;
+  typedef std::map<ShaderTranslatorInitParams,
+                   raw_ptr<ShaderTranslator, CtnExperimental>>
+      Cache;
   Cache cache_;
 };
 

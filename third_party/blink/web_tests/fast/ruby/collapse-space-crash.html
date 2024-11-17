@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<title>crbug.com/377943756</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style type="text/css">
+.CLASS2 { float:left; }
+.CLASS7 { font-size:larger; }
+.CLASS12 { float:right; }
+</style>
+<big>
+<ruby>
+<rb class="CLASS2"></rb>
+<rt class="CLASS7">
+<svg xmlns="http://www.w3.org/2000/svg"></svg>
+<textarea class="CLASS7" rows="100"></textarea>
+</ruby>
+<textarea class="CLASS12">AAB</textarea>
+</big>
+<script>
+test(() => {}, 'PASS if no crash in LineBreaker::RemoveTrailingCollapsibleSpace');
+</script>

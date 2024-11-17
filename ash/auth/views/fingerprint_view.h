@@ -11,10 +11,13 @@
 #include "ash/style/ash_color_id.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/lottie/animation_observer.h"
+#include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 
@@ -23,7 +26,8 @@ namespace ash {
 // FingerprintView is a view displaying a fingerprint icon and label,
 // dynamically adapting based on fingerprint availability,
 // authentication state, and the presence of a PIN.
-class ASH_EXPORT FingerprintView : public views::View {
+class ASH_EXPORT FingerprintView : public views::View,
+                                   public lottie::AnimationObserver {
   METADATA_HEADER(FingerprintView, views::View)
  public:
   class TestApi {
@@ -66,6 +70,9 @@ class ASH_EXPORT FingerprintView : public views::View {
   // Indicates if a PIN is set, potentially influencing the label text.
   void SetHasPin(bool has_pin);
 
+  // Triggers a brief animation to signal an authentication success.
+  void NotifyAuthSuccess(base::OnceClosure on_success_animation_finished);
+
   // Triggers a brief animation to signal an authentication failure.
   void NotifyAuthFailure();
 
@@ -73,6 +80,9 @@ class ASH_EXPORT FingerprintView : public views::View {
   // Calculates the preferred size of the view.
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
+
+  // lottie::AnimationObserver:
+  void AnimationCycleEnded(const lottie::Animation* animation) override;
 
  private:
   // Updates the visual elements to reflect the current state and PIN
@@ -85,10 +95,21 @@ class ASH_EXPORT FingerprintView : public views::View {
   ui::ColorId GetIconColorIdFromState() const;
   int GetTextIdFromState() const;
   int GetA11yTextIdFromState() const;
+  bool NeedA11yAlertFromState() const;
 
   // Visual components:
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<AnimatedRoundedImageView> icon_ = nullptr;
+
+  // A green checkmark animation shown when NotifyAuthSuccess called.
+  raw_ptr<views::AnimatedImageView> lottie_animation_view_;
+
+  base::ScopedObservation<lottie::Animation, lottie::AnimationObserver>
+      scoped_animation_observer_{this};
+
+  base::OnceClosure on_success_animation_finished_;
+
+  bool has_success_ = false;
 
   // State:
   FingerprintState state_ = FingerprintState::UNAVAILABLE;

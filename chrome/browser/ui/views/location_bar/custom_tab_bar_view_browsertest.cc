@@ -32,6 +32,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/clipboard/clipboard.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/button/image_button.h"
 
 namespace {
@@ -447,8 +448,8 @@ IN_PROC_BROWSER_TEST_F(CustomTabBarViewBrowserTest,
   EXPECT_TRUE(app_controller_->ShouldShowCustomTabBar());
 
   // Show the right-click context menu.
-  app_view->toolbar()->custom_tab_bar()->ShowContextMenu(gfx::Point(),
-                                                         ui::MENU_SOURCE_MOUSE);
+  app_view->toolbar()->custom_tab_bar()->ShowContextMenu(
+      gfx::Point(), ui::mojom::MenuSourceType::kMouse);
 
   content::BrowserTestClipboardScope test_clipboard_scope;
   // Activate the first and only context menu item: IDC_COPY_URL.

@@ -11,7 +11,7 @@ rootWebArea
 ++++++++++++++layoutTableCell name='2.'
 ++++++++++++++++staticText name='2.'
 ++++++++++++++++++inlineTextBox name='2.'
-++++++genericContainer name='3. 4.'
+++++++genericContainer
 ++++++++layoutTable
 ++++++++++genericContainer ignored
 ++++++++++++layoutTableRow

@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_CHROME_EXTENSION_TEST_NOTIFICATION_OBSERVER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+#include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/test/extension_test_notification_observer.h"
 
@@ -21,7 +21,7 @@ namespace extensions {
 // Test helper class for observing extension-related events.
 class ChromeExtensionTestNotificationObserver
     : public ExtensionTestNotificationObserver,
-      public ExtensionActionAPI::Observer {
+      public ExtensionActionDispatcher::Observer {
  public:
   explicit ChromeExtensionTestNotificationObserver(Browser* browser);
   explicit ChromeExtensionTestNotificationObserver(
@@ -37,9 +37,6 @@ class ChromeExtensionTestNotificationObserver
   // Waits for the number of visible page actions to change to |count|.
   bool WaitForPageActionVisibilityChangeTo(int count);
 
-  // Waits for all extension views to load.
-  bool WaitForExtensionViewsToLoad();
-
   // Waits for extension to be idle.
   bool WaitForExtensionIdle(const ExtensionId& extension_id);
 
@@ -49,7 +46,7 @@ class ChromeExtensionTestNotificationObserver
  private:
   content::BrowserContext* GetBrowserContext();
 
-  // ExtensionActionAPI::Observer:
+  // ExtensionActionDispatcher::Observer:
   void OnExtensionActionUpdated(
       ExtensionAction* extension_action,
       content::WebContents* web_contents,

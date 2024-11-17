@@ -93,7 +93,7 @@ DarkModeInversionAlgorithm GetMode(const SwitchParams& switch_params) {
     case ForceDarkInversionMethod::kRgbBased:
       return DarkModeInversionAlgorithm::kInvertBrightness;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 DarkModeImageClassifierPolicy GetImageClassifierPolicy(

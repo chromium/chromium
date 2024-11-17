@@ -7,26 +7,15 @@
 
 #import "ios/chrome/browser/infobars/model/infobar_type.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_delegate.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_delegate.h"
 
-@protocol ApplicationCommands;
-@protocol InfobarBadgeUIDelegate;
 @protocol InfobarBannerContained;
-
-@class InfobarBannerTransitionDriver;
-@class InfobarBannerViewController;
-@class InfobarModalTransitionDriver;
-@class InfobarModalViewController;
+class ProfileIOS;
 
 namespace infobars {
 class InfoBarDelegate;
 }
-
-namespace web {
-class WebState;
-}  // namespace web
 
 enum class InfobarBannerPresentationState;
 
@@ -46,19 +35,11 @@ enum class InfobarBannerPresentationState;
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
-    NS_UNAVAILABLE;
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
-                              browserState:(ChromeBrowserState*)browserState
-    NS_UNAVAILABLE;
-- (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser NS_UNAVAILABLE;
 
 // Present the InfobarBanner using `self.baseViewController`.
 - (void)presentInfobarBannerAnimated:(BOOL)animated
                           completion:(ProceduralBlock)completion;
-
-// Present the InfobarModal using `self.baseViewController`.
-- (void)presentInfobarModal;
 
 // Dismisses the InfobarBanner immediately, if none is being presented
 // `completion` will still run.
@@ -81,25 +62,15 @@ enum class InfobarBannerPresentationState;
 // ModalViewController owned by this Coordinator. Can be nil.
 @property(nonatomic, strong, readonly) UIViewController* modalViewController;
 
-// Handles any followup actions to Infobar UI events. Should be nil if the
-// Coordinator doesn't support a badge.
-@property(nonatomic, weak) id<InfobarBadgeUIDelegate> badgeDelegate;
-
 // The Browser owned by the Coordinator.
 // TODO(crbug.com/40611826): Once we create the coordinators in the UI Hierarchy
 // browser will be set on init.
 @property(nonatomic, assign, readwrite) Browser* browser;
 
-// The WebState that the InfobarCoordinator is associated with. Can be nil.
-@property(nonatomic, assign) web::WebState* webState;
-
-// The ChromeBrowserState owned by the Coordinator.
+// The ViewController owned by the Coordinator.
 // TODO(crbug.com/40611826): Once we create the coordinators in the UI Hierarchy
 // baseViewController will be set on init.
 @property(nonatomic, weak) UIViewController* baseViewController;
-
-// The commands handler for this Coordinator.
-@property(nonatomic, weak) id<ApplicationCommands> handler;
 
 // The InfobarBanner presentation state.
 @property(nonatomic, assign) InfobarBannerPresentationState infobarBannerState;

@@ -37,10 +37,8 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
     r.PRIVACY_SANDBOX = r.PRIVACY.createChild('/adPrivacy');
     r.PRIVACY_SANDBOX_TOPICS =
         r.PRIVACY_SANDBOX.createChild('/adPrivacy/interests');
-    if (loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled')) {
-      r.PRIVACY_SANDBOX_MANAGE_TOPICS =
-          r.PRIVACY_SANDBOX_TOPICS.createChild('/adPrivacy/interests/manage');
-    }
+    r.PRIVACY_SANDBOX_MANAGE_TOPICS =
+        r.PRIVACY_SANDBOX_TOPICS.createChild('/adPrivacy/interests/manage');
     r.PRIVACY_SANDBOX_FLEDGE =
         r.PRIVACY_SANDBOX.createChild('/adPrivacy/sites');
     r.PRIVACY_SANDBOX_AD_MEASUREMENT =
@@ -60,10 +58,12 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
 
   if (loadTimeData.getBoolean('enableSecurityKeysSubpage')) {
     r.SECURITY_KEYS = r.SECURITY.createChild('/securityKeys');
-    r.SECURITY_KEYS_PHONES =
-        r.SECURITY_KEYS.createChild('/securityKeys/phones');
+    if (loadTimeData.getBoolean('enableSecurityKeysManagePhones')) {
+      r.SECURITY_KEYS_PHONES =
+          r.SECURITY_KEYS.createChild('/securityKeys/phones');
+    }
     // <if expr="is_win">
-  } else {
+  } else if (loadTimeData.getBoolean('enableSecurityKeysManagePhones')) {
     r.SECURITY_KEYS_PHONES = r.SECURITY.createChild('/securityKeys/phones');
     // </if>
   }
@@ -95,9 +95,9 @@ function addPrivacyChildRoutes(r: Partial<SettingsRoutes>) {
   if (loadTimeData.getBoolean('privateStateTokensEnabled')) {
     r.SITE_SETTINGS_AUTO_VERIFY = r.SITE_SETTINGS.createChild('autoVerify');
   }
-  if (loadTimeData.getBoolean('enableComposeProactiveNudge')) {
-    r.SITE_SETTINGS_OFFER_WRITING_HELP =
-        r.SITE_SETTINGS.createChild('offerWritingHelp');
+  if (!loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
+      loadTimeData.getBoolean('enableComposeProactiveNudge')) {
+    r.OFFER_WRITING_HELP = r.SITE_SETTINGS.createChild('offerWritingHelp');
   }
   r.SITE_SETTINGS_BACKGROUND_SYNC =
       r.SITE_SETTINGS.createChild('backgroundSync');
@@ -197,7 +197,8 @@ function createRoutes(): SettingsRoutes {
     if (loadTimeData.getBoolean('enablePageContentSetting')) {
       r.PAGE_CONTENT = r.SYNC.createChild('/syncSetup/pageContent');
     }
-    if (loadTimeData.getBoolean('showHistorySearchControl')) {
+    if (!loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
+        loadTimeData.getBoolean('showHistorySearchControl')) {
       r.HISTORY_SEARCH = r.SYNC.createChild('/historySearch');
     }
   }
@@ -208,9 +209,19 @@ function createRoutes(): SettingsRoutes {
       loadTimeData.getBoolean('showAdvancedFeaturesMainControl')) {
     r.AI = r.BASIC.createSection(
         '/ai', 'ai', loadTimeData.getString('aiPageTitle'));
-    if (loadTimeData.getBoolean('enableAiSettingsPageRefresh') &&
-        loadTimeData.getBoolean('showTabOrganizationControl')) {
-      r.AI_TAB_ORGANIZATION = r.AI.createChild('/ai/tabOrganizer');
+    if (loadTimeData.getBoolean('enableAiSettingsPageRefresh')) {
+      if (loadTimeData.getBoolean('showTabOrganizationControl')) {
+        r.AI_TAB_ORGANIZATION = r.AI.createChild('/ai/tabOrganizer');
+      }
+      if (loadTimeData.getBoolean('showHistorySearchControl')) {
+        r.HISTORY_SEARCH = r.AI.createChild('/ai/historySearch');
+      }
+      if (loadTimeData.getBoolean('showComposeControl')) {
+        r.OFFER_WRITING_HELP = r.AI.createChild('/ai/helpMeWrite');
+      }
+      if (loadTimeData.getBoolean('showCompareControl')) {
+        r.COMPARE = r.AI.createChild('/ai/compareProducts');
+      }
     }
   }
 

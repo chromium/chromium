@@ -12,7 +12,6 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/apps/app_info_dialog.h"
 #include "chrome/browser/ui/browser.h"
@@ -45,7 +44,8 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/dialog_delegate.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -68,7 +68,7 @@ bool CanPlatformShowAppInfoDialog() {
 }
 
 bool CanShowAppInfoDialog(Profile* profile, const std::string& extension_id) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   auto* system_web_app_manager = ash::SystemWebAppManager::Get(profile);
   if (system_web_app_manager &&
       system_web_app_manager->IsSystemWebApp(extension_id)) {
@@ -135,7 +135,7 @@ AppInfoDialog::AppInfoDialog(Profile* profile, const extensions::Extension* app)
   dialog_body_contents->AddChildView(
       std::make_unique<AppInfoPermissionsPanel>(profile, app));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // When Google Play Store is enabled and the Settings app is available, show
   // the "Manage supported links" link for Chrome.
   if (app->id() == app_constants::kChromeAppId &&

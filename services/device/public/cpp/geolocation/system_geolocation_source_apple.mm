@@ -10,6 +10,7 @@
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
+#include "components/device_event_log/device_event_log.h"
 #include "services/device/public/cpp/geolocation/location_manager_delegate.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -66,6 +67,18 @@ void SystemGeolocationSourceApple::PermissionUpdated() {
 void SystemGeolocationSourceApple::PositionUpdated(
     const mojom::Geoposition& position) {
   CHECK(main_task_runner_->BelongsToCurrentThread());
+
+  // Record the time to first position update. This is only done once to capture
+  // the initial position acquisition time.
+  if (!position_received_) {
+    const base::TimeDelta time_to_first_position =
+        base::TimeTicks::Now() - watch_start_time_;
+    UmaHistogramCustomTimes(
+        "Geolocation.CoreLocationProvider.TimeToFirstPosition",
+        time_to_first_position, base::Milliseconds(1), base::Seconds(10), 100);
+    position_received_ = true;
+  }
+
   position_observers_->Notify(FROM_HERE, &PositionObserver::OnPositionUpdated,
                               position);
 }
@@ -73,10 +86,15 @@ void SystemGeolocationSourceApple::PositionUpdated(
 void SystemGeolocationSourceApple::PositionError(
     const mojom::GeopositionError& error) {
   CHECK(main_task_runner_->BelongsToCurrentThread());
+  if (!session_result_) {
+    session_result_ = CoreLocationSessionResult::kCoreLocationError;
+  }
   // If an error reported from `LocationManagerDelegate` when
   // network change timer is running. Stop the timer (which also cancel the
   // pending fallback) and report that error.
   if (network_changed_timer_.IsRunning()) {
+    GEOLOCATION_LOG(DEBUG) << "SystemGeolocationSourceApple::PositionError: "
+                              "Network status change timer is cancelled.";
     network_changed_timer_.Stop();
     net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
   }
@@ -87,6 +105,7 @@ void SystemGeolocationSourceApple::PositionError(
 void SystemGeolocationSourceApple::StartWatchingPositionInternal(
     bool high_accuracy) {
   CHECK(main_task_runner_->BelongsToCurrentThread());
+  watch_start_time_ = base::TimeTicks::Now();
   if (high_accuracy) {
     location_manager_.desiredAccuracy = kCLLocationAccuracyBest;
   } else {
@@ -111,9 +130,25 @@ void SystemGeolocationSourceApple::StopWatchingPositionInternal() {
   // If `StopWatchingPosition` is called for any reason, stop the network status
   // event timer (which also cancel the pending fallback).
   if (network_changed_timer_.IsRunning()) {
+    GEOLOCATION_LOG(DEBUG)
+        << "SystemGeolocationSourceApple::StopWatchingPositionInternal: "
+           "Network status change timer is cancelled.";
     network_changed_timer_.Stop();
     net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
   }
+
+  // Record the session result if either:
+  // 1. An error occurred (session_result_ is set).
+  // 2. At least one position update was received (position_received_ is true).
+  // This excludes short-lived sessions that start and stop immediately
+  // without obtaining any position updates.
+  if (session_result_ || position_received_) {
+    base::UmaHistogramSparse("Geolocation.CoreLocationProvider.SessionResult",
+                             static_cast<int>(session_result_.value_or(
+                                 CoreLocationSessionResult::kSuccess)));
+  }
+  session_result_.reset();
+  position_received_ = false;
 }
 
 void SystemGeolocationSourceApple::StopWatchingPosition() {
@@ -167,8 +202,15 @@ void SystemGeolocationSourceApple::OnNetworkChanged(
   // the network stabilizes, another network change event will be triggered
   // (potentially any connection type except
   // `net::NetworkChangeNotifier::CONNECTION_NONE`).
+  GEOLOCATION_LOG(DEBUG) << "SystemGeolocationSourceApple::OnNetworkChanged: "
+                            "Invoked with connection type = "
+                         << static_cast<int>(type);
   if (type != net::NetworkChangeNotifier::CONNECTION_NONE &&
       network_changed_timer_.IsRunning()) {
+    GEOLOCATION_LOG(DEBUG)
+        << "SystemGeolocationSourceApple::OnNetworkChanged: Network status is "
+           "settled, create error position with kWifiDisabled error code to "
+           "start fallback mechanism.";
     network_changed_timer_.Stop();
     net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
 
@@ -179,7 +221,8 @@ void SystemGeolocationSourceApple::OnNetworkChanged(
         device::mojom::kGeoPositionUnavailableErrorMessage;
     position_error.error_technical =
         "CoreLocationProvider: CoreLocation framework reported a "
-        "kCLErrorLocationUnknown failure.";
+        "kWifiDisabled error.";
+    session_result_ = CoreLocationSessionResult::kWifiDisabled;
     PositionError(position_error);
   }
 }
@@ -187,8 +230,14 @@ void SystemGeolocationSourceApple::OnNetworkChanged(
 void SystemGeolocationSourceApple::StartNetworkChangedTimer() {
   CHECK(main_task_runner_->BelongsToCurrentThread());
   if (network_changed_timer_.IsRunning()) {
+    GEOLOCATION_LOG(DEBUG)
+        << "SystemGeolocationSourceApple::StartNetworkChangedTimer: Network "
+           "status change timer is already running, ignore this call.";
     return;
   }
+  GEOLOCATION_LOG(DEBUG)
+      << "SystemGeolocationSourceApple::StartNetworkChangedTimer: Network "
+         "status change timer is started.";
 
   net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
 
@@ -204,6 +253,9 @@ void SystemGeolocationSourceApple::StartNetworkChangedTimer() {
 void SystemGeolocationSourceApple::OnNetworkChangedTimeout() {
   CHECK(main_task_runner_->BelongsToCurrentThread());
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
+  GEOLOCATION_LOG(DEBUG)
+      << "SystemGeolocationSourceApple::OnNetworkChangedTimeout: Network "
+         "status change timer timed out.";
 
   device::mojom::GeopositionError position_error;
   position_error.error_code =

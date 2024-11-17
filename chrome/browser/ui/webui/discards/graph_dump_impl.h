@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -172,7 +173,9 @@ class DiscardsGraphDumpImpl
 
   // The live nodes and their IDs.
   base::flat_map<const performance_manager::Node*, NodeId> node_ids_;
-  base::flat_map<NodeId, const performance_manager::Node*> nodes_by_id_;
+  base::flat_map<NodeId,
+                 raw_ptr<const performance_manager::Node, CtnExperimental>>
+      nodes_by_id_;
   NodeId::Generator node_id_generator_;
 
   // The current change subscriber to this dumper. This instance is subscribed

@@ -31,6 +31,7 @@ namespace policy {
 class CloudPolicyClient;
 class CloudPolicyStore;
 class RemoteCommandsFactory;
+enum class RemoteCommandsFetchReason;
 
 // Service class which will connect to a CloudPolicyClient in order to fetch
 // remote commands from DMServer and send results for executed commands
@@ -107,7 +108,7 @@ class POLICY_EXPORT RemoteCommandsService
   // immediately after the current ongoing request finishes.
   // Returns true if the new request was started immediately. Returns false if
   // another request was in progress already and the new request got enqueued.
-  bool FetchRemoteCommands();
+  bool FetchRemoteCommands(RemoteCommandsFetchReason reason);
 
   // Returns whether a command fetch request is in progress or not.
   bool IsCommandFetchInProgressForTesting() const {

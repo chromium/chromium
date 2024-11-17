@@ -20,6 +20,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "privacy_sandbox_survey_desktop_controller_factory.h"
+#include "privacy_sandbox_survey_factory.h"
 
 using ::testing::_;
 
@@ -61,6 +62,10 @@ class PrivacySandboxSurveyDesktopControllerTest : public InProcessBrowserTest {
         browser()->profile());
   }
 
+  PrivacySandboxSurveyService* survey_service() {
+    return PrivacySandboxSurveyFactory::GetForProfile(browser()->profile());
+  }
+
   PrefService* prefs() { return browser()->profile()->GetPrefs(); }
 
   raw_ptr<MockHatsService, DanglingUntriaged> mock_hats_service_;
@@ -77,11 +82,12 @@ class PrivacySandboxSurveyDesktopControllerLaunchSurveyTest
 };
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSurveyDesktopControllerLaunchSurveyTest,
-                       LaunchesSurveyOnNtp) {
+                       SurveyNotLaunchedOnFirstNtp) {
   EXPECT_CALL(*mock_hats_service_,
-              LaunchSurvey(GetSentimentSurveyTriggerId(), _, _, _, _));
+              LaunchSurvey(GetSentimentSurveyTriggerId(), _, _, _, _))
+      .Times(0);
 
-  // Navigation to NTP, triggering check for the sentiment survey.
+  // Navigation to the first NTP should not trigger the sentiment survey.
   browser()->window()->Activate();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL(chrome::kChromeUINewTabURL)));
@@ -89,20 +95,19 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSurveyDesktopControllerLaunchSurveyTest,
 }
 
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSurveyDesktopControllerLaunchSurveyTest,
-                       SurveyMarkedAsSeen) {
-  EXPECT_TRUE(
-      prefs()
-          ->FindPreference(prefs::kPrivacySandboxSentimentSurveyLastSeen)
-          ->IsDefaultValue());
+                       SurveyLaunchedOnSecondNtp) {
+  EXPECT_CALL(*mock_hats_service_,
+              LaunchSurvey(GetSentimentSurveyTriggerId(), _, _,
+                           survey_service()->GetSentimentSurveyPsb(), _));
 
-  // Simulate a call to the successful callback
-  OnSentimentSurveyShown();
-
-  // Expect that the survey was marked as seen.
-  EXPECT_FALSE(
-      prefs()
-          ->FindPreference(prefs::kPrivacySandboxSentimentSurveyLastSeen)
-          ->IsDefaultValue());
+  browser()->window()->Activate();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+  // Navigation to the 2nd instance of a NTP should trigger the sentiment
+  // survey.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL(chrome::kChromeUINewTabURL)));
+  testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
 }
 
 }  // namespace privacy_sandbox

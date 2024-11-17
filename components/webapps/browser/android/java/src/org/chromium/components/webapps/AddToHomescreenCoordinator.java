@@ -45,11 +45,7 @@ public class AddToHomescreenCoordinator {
         mWebContents = webContents;
     }
 
-    /**
-     * Starts and shows the add-to-homescreen UI component for the given {@link WebContents}.
-     *
-     * @return whether add-to-homescreen UI was started successfully.
-     */
+    /** Starts and shows the add-to-homescreen UI component for the given {@link WebContents}. */
     public static void showForAppMenu(
             Context activityContext,
             WindowAndroid windowAndroid,

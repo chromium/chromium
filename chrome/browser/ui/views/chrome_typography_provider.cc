@@ -135,8 +135,8 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetailsImpl(
     details.weight = gfx::Font::Weight::SEMIBOLD;
   }
 
-  if (style == STYLE_PRIMARY_MONOSPACED ||
-      style == STYLE_SECONDARY_MONOSPACED) {
+  if (style == views::style::STYLE_PRIMARY_MONOSPACED ||
+      style == views::style::STYLE_SECONDARY_MONOSPACED) {
 #if BUILDFLAG(IS_MAC)
     details.typeface = "Menlo";
 #elif BUILDFLAG(IS_WIN)
@@ -144,6 +144,10 @@ ui::ResourceBundle::FontDetails ChromeTypographyProvider::GetFontDetailsImpl(
 #else
     details.typeface = "DejaVu Sans Mono";
 #endif
+  }
+
+  if (style == STYLE_SMALL) {
+    details.size_delta -= 2;
   }
 
   return details;
@@ -157,9 +161,9 @@ ui::ColorId ChromeTypographyProvider::GetColorIdImpl(int context,
     context = views::style::CONTEXT_LABEL;
 
   // Monospaced styles have the same colors as their normal counterparts.
-  if (style == STYLE_PRIMARY_MONOSPACED) {
+  if (style == views::style::STYLE_PRIMARY_MONOSPACED) {
     style = views::style::STYLE_PRIMARY;
-  } else if (style == STYLE_SECONDARY_MONOSPACED) {
+  } else if (style == views::style::STYLE_SECONDARY_MONOSPACED) {
     style = views::style::STYLE_SECONDARY;
   }
 

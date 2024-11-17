@@ -69,8 +69,7 @@ std::array<uint8_t, SHA256_DIGEST_LENGTH> SHA256Spans(
 std::vector<uint8_t> Decrypt(base::span<const uint8_t> key,
                              base::span<const uint8_t> nonce_and_ciphertext) {
   CHECK_GE(nonce_and_ciphertext.size(), 12u);
-  base::span<const uint8_t> nonce = nonce_and_ciphertext.subspan(0, 12);
-  base::span<const uint8_t> ciphertext = nonce_and_ciphertext.subspan(12);
+  const auto [nonce, ciphertext] = nonce_and_ciphertext.split_at<12>();
 
   EVP_AEAD_CTX ctx;
   CHECK(EVP_AEAD_CTX_init(&ctx, EVP_aead_aes_256_gcm(), key.data(), key.size(),
@@ -152,7 +151,7 @@ std::optional<std::vector<uint8_t>> FakeMagicArch::RecoverWithPIN(
 
   const auto app_private_key =
       trusted_vault::SecureBoxPrivateKey::CreateByImport(
-          base::span<const uint8_t>(private_key_contents).subspan(0, 32));
+          base::span<const uint8_t>(private_key_contents).first<32>());
   CHECK_EQ(member_it->memberships().size(), 1);
   const trusted_vault_pb::SecurityDomainMember_SecurityDomainMembership&
       membership = member_it->memberships().at(0);

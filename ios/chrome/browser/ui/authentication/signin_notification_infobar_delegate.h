@@ -10,9 +10,9 @@
 
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/sync/service/sync_service_observer.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ui/gfx/image/image.h"
 
+class ProfileIOS;
 @protocol SettingsCommands;
 @class UIViewController;
 
@@ -27,7 +27,7 @@ class InfoBarManager;
 // Shows a sign-in notification in an infobar.
 class SigninNotificationInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
-  SigninNotificationInfoBarDelegate(ChromeBrowserState* browser_state,
+  SigninNotificationInfoBarDelegate(ProfileIOS* profile,
                                     id<SettingsCommands> dispatcher,
                                     UIViewController* view_controller);
 
@@ -40,7 +40,7 @@ class SigninNotificationInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Creates a sign-in notification infobar and adds it to `infobar_manager`.
   static bool Create(infobars::InfoBarManager* infobar_manager,
-                     ChromeBrowserState* browser_state,
+                     ProfileIOS* profile,
                      id<SettingsCommands> dispatcher,
                      UIViewController* view_controller);
 

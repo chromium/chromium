@@ -16,7 +16,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
-#include "base/ranges/algorithm.h"
 #include "build/build_config.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
@@ -57,8 +56,8 @@ std::vector<std::unique_ptr<PasswordForm>> ConvertToUniquePtr(
 template <typename Form>
 base::span<Form> NonFederatedSameSchemeMatches(base::span<Form> non_federated,
                                                PasswordForm::Scheme scheme) {
-  auto same_scheme_count = base::ranges::count_if(
-      non_federated, [scheme](auto& form) { return form.scheme == scheme; });
+  const auto same_scheme_count = static_cast<size_t>(
+      std::ranges::count(non_federated, scheme, &Form::scheme));
   return non_federated.subspan(0, same_scheme_count);
 }
 }  // namespace
@@ -352,7 +351,7 @@ void FormFetcherImpl::OnGetPasswordStoreResults(
   // This class overrides OnGetPasswordStoreResultsFrom() (the version of this
   // method that also receives the originating store), so the store-less version
   // never gets called.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FormFetcherImpl::OnGetPasswordStoreResultsFrom(

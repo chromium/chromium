@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
@@ -75,7 +77,7 @@ const char* PermissionFlagsToString(int flags, char permission_buf[4]) {
 class SymbolMap {
  public:
   struct Segment {
-    const void* addr = nullptr;
+    raw_ptr<const void> addr = nullptr;
     size_t relative_addr = 0;
     int permission_flags = 0;
     size_t size = 0;
@@ -86,7 +88,7 @@ class SymbolMap {
     // binaries have only 2-3 such segments.
     static constexpr size_t kMaxSegmentCount = 8;
 
-    const void* addr = nullptr;
+    raw_ptr<const void> addr = nullptr;
     std::array<Segment, kMaxSegmentCount> segments;
     size_t segment_count = 0;
     char name[ZX_MAX_NAME_LEN + 1] = {0};
@@ -165,7 +167,7 @@ void SymbolMap::Populate() {
 
       Segment segment;
       segment.addr =
-          reinterpret_cast<const char*>(next_entry.addr) + phdr.p_vaddr;
+          reinterpret_cast<const char*>(next_entry.addr.get()) + phdr.p_vaddr;
       segment.relative_addr = phdr.p_vaddr;
       segment.size = phdr.p_memsz;
       segment.permission_flags = static_cast<int>(phdr.p_flags);
@@ -214,7 +216,7 @@ bool ModuleContainsFrameAddress(const void* address,
   for (size_t i = 0; i < module_entry.segment_count; ++i) {
     const SymbolMap::Segment& segment = module_entry.segments[i];
     const void* segment_end = reinterpret_cast<const void*>(
-        reinterpret_cast<const char*>(segment.addr) + segment.size - 1);
+        reinterpret_cast<const char*>(segment.addr.get()) + segment.size - 1);
 
     if (address >= segment.addr && address <= segment_end) {
       return true;

@@ -46,10 +46,6 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
 
   gfx::Size SizeWithConfig(SizeConfig) const final;
 
-  virtual scoped_refptr<StaticBitmapImage> ConvertToColorSpace(
-      sk_sp<SkColorSpace>,
-      SkColorType = kN32_SkColorType) = 0;
-
   // Methods have common implementation for all sub-classes
   bool CurrentFrameIsComplete() override { return true; }
   void DestroyDecodedData() override {}
@@ -76,41 +72,26 @@ class PLATFORM_EXPORT StaticBitmapImage : public Image {
                              bool,
                              const gfx::Point&,
                              const gfx::Rect&) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
-
-  virtual bool CopyToResourceProvider(CanvasResourceProvider*) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   virtual bool CopyToResourceProvider(CanvasResourceProvider* resource_provider,
-                                      const gfx::Rect& copy_rect) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
+                                      const gfx::Rect& copy_rect) = 0;
 
-  virtual void EnsureSyncTokenVerified() { NOTREACHED_IN_MIGRATION(); }
-  virtual gpu::MailboxHolder GetMailboxHolder() const {
-    NOTREACHED_IN_MIGRATION();
-    return gpu::MailboxHolder();
-  }
+  virtual void EnsureSyncTokenVerified() { NOTREACHED(); }
+  virtual gpu::MailboxHolder GetMailboxHolder() const { NOTREACHED(); }
   virtual scoped_refptr<gpu::ClientSharedImage> GetSharedImage() const {
     NOTREACHED();
-    return nullptr;
   }
-  virtual void UpdateSyncToken(const gpu::SyncToken&) {
-    NOTREACHED_IN_MIGRATION();
+  virtual gpu::SyncToken GetSyncToken() const {
+    NOTREACHED();
   }
+  virtual void UpdateSyncToken(const gpu::SyncToken&) { NOTREACHED(); }
 
   // For gpu based images the Usage is a bitmap indicating set of API(s) and
   // underlying gpu::SharedImage may be used with.
   // The gpu::SharedImageInterface is using uint32_t directly.
-  virtual gpu::SharedImageUsageSet GetUsage() const {
-    NOTREACHED_IN_MIGRATION();
-    return gpu::SharedImageUsageSet();
-  }
+  virtual gpu::SharedImageUsageSet GetUsage() const { NOTREACHED(); }
   bool IsPremultiplied() const {
     return GetSkImageInfo().alphaType() == SkAlphaType::kPremul_SkAlphaType;
   }

@@ -9,17 +9,25 @@
 
 #include "ash/ash_export.h"
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/base/ime/text_input_client.h"
 #include "url/gurl.h"
 
 namespace ash {
 
-void ASH_EXPORT InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
+namespace {
+
+using StatusCallback = base::OnceCallback<void(bool)>;
+
+}  // namespace
+
+bool ASH_EXPORT InsertImageOrCopyToClipboard(ui::TextInputClient* input_client,
                                              const std::string& image_bytes);
 
 void ASH_EXPORT WriteImageToPath(const base::FilePath& path,
-                                 const std::string& image_bytes);
+                                 const std::string& image_bytes,
+                                 StatusCallback status_callback);
 
 }  // namespace ash
 

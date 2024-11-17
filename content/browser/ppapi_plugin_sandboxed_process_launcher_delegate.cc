@@ -11,46 +11,7 @@
 #include "content/public/common/content_switches.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "sandbox/policy/win/sandbox_win.h"
-#include "sandbox/win/src/process_mitigations.h"
-#include "sandbox/win/src/sandbox_policy.h"
-#include "ui/display/win/dpi.h"
-#include "ui/gfx/font_render_params.h"
-#endif
-
 namespace content {
-#if BUILDFLAG(IS_WIN)
-std::string PpapiPluginSandboxedProcessLauncherDelegate::GetSandboxTag() {
-  return sandbox::policy::SandboxWin::GetSandboxTagForDelegate(
-      "ppapi", GetSandboxType());
-}
-
-bool PpapiPluginSandboxedProcessLauncherDelegate::InitializeConfig(
-    sandbox::TargetConfig* config) {
-  DCHECK(!config->IsConfigured());
-
-  // The Pepper process is as locked-down as a renderer except that it can
-  // create the server side of Chrome pipes.
-  sandbox::ResultCode result;
-  result = sandbox::policy::SandboxWin::AddWin32kLockdownPolicy(config);
-  if (result != sandbox::SBOX_ALL_OK) {
-    return false;
-  }
-
-  // No plugins can generate executable code.
-  sandbox::MitigationFlags flags = config->GetDelayedProcessMitigations();
-  flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
-  if (sandbox::SBOX_ALL_OK != config->SetDelayedProcessMitigations(flags))
-    return false;
-
-  return true;
-}
-
-bool PpapiPluginSandboxedProcessLauncherDelegate::AllowWindowsFontsDir() {
-  return true;
-}
-#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(USE_ZYGOTE)
 ZygoteCommunication* PpapiPluginSandboxedProcessLauncherDelegate::GetZygote() {
@@ -66,7 +27,11 @@ ZygoteCommunication* PpapiPluginSandboxedProcessLauncherDelegate::GetZygote() {
 
 sandbox::mojom::Sandbox
 PpapiPluginSandboxedProcessLauncherDelegate::GetSandboxType() {
+#if BUILDFLAG(IS_WIN)
+  return sandbox::mojom::Sandbox::kNoSandbox;
+#else
   return sandbox::mojom::Sandbox::kPpapi;
+#endif
 }
 
 #if BUILDFLAG(IS_MAC)

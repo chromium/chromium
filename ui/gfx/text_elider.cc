@@ -115,11 +115,6 @@ bool GetDefaultWhitespaceElision(bool elide_in_middle,
 
 }  // namespace
 
-// U+2026 in utf8
-const char kEllipsis[] = "\xE2\x80\xA6";
-const char16_t kEllipsisUTF16[] = {0x2026, 0};
-const char16_t kForwardSlash = '/';
-
 StringSlicer::StringSlicer(const std::u16string& text,
                            const std::u16string& ellipsis,
                            bool elide_in_middle,
@@ -409,7 +404,7 @@ void RectangleString::AddString(const std::u16string& input) {
     while (lines.Advance())
       AddLine(lines.GetString());
   } else {
-    NOTREACHED_IN_MIGRATION() << "BreakIterator (lines) init failed";
+    NOTREACHED() << "BreakIterator (lines) init failed";
   }
 }
 
@@ -431,7 +426,7 @@ void RectangleString::AddLine(const std::u16string& line) {
       while (words.Advance())
         AddWord(words.GetString());
     } else {
-      NOTREACHED_IN_MIGRATION() << "BreakIterator (words) init failed";
+      NOTREACHED() << "BreakIterator (words) init failed";
     }
   }
   // Account for naturally-occuring newlines.
@@ -601,7 +596,7 @@ void RectangleText::AddString(const std::u16string& input) {
       AddLine(line);
     }
   } else {
-    NOTREACHED_IN_MIGRATION() << "BreakIterator (lines) init failed";
+    NOTREACHED() << "BreakIterator (lines) init failed";
   }
 }
 
@@ -649,7 +644,7 @@ void RectangleText::AddLine(const std::u16string& line) {
         }
       }
     } else {
-      NOTREACHED_IN_MIGRATION() << "BreakIterator (words) init failed";
+      NOTREACHED() << "BreakIterator (words) init failed";
     }
   }
   // Account for naturally-occuring newlines.

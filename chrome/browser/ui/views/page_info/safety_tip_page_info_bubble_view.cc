@@ -235,7 +235,7 @@ void ShowSafetyTipDialog(
 
   bubble_anchor_util::AnchorConfiguration configuration =
       bubble_anchor_util::GetPageInfoAnchorConfiguration(
-          browser, bubble_anchor_util::kLocationBar);
+          browser, bubble_anchor_util::Anchor::kLocationBar);
   gfx::Rect anchor_rect =
       configuration.anchor_view
           ? gfx::Rect()

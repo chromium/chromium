@@ -549,7 +549,7 @@ TEST(PaintOpHelperFilters, MergePaintFilter) {
           SkRect::MakeWH(100.f, 100.f), SkRect::MakeWH(100.f, 100.f),
           PaintFlags::FilterQuality::kNone),
       nullptr};
-  MergePaintFilter filter(filters, 2, &crop_rect);
+  MergePaintFilter filter(filters, &crop_rect);
   EXPECT_EQ(PaintOpHelper::ToString(filter),
             "MergePaintFilter(input_count=2, input=[ImagePaintFilter("
             "image=<paint image>, "

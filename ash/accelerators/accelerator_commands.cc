@@ -22,20 +22,20 @@
 #include "ash/display/display_move_window_util.h"
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/display/screen_orientation_controller.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/glanceables/glanceables_controller.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
-#include "ash/picker/picker_controller.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/annotator/annotator_controller_base.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/system/toast_data.h"
+#include "ash/quick_insert/quick_insert_controller.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/window_rotation.h"
 #include "ash/session/session_controller_impl.h"
@@ -68,6 +68,7 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
@@ -652,6 +653,10 @@ bool CanPerformMagnifierZoom() {
          Shell::Get()->docked_magnifier_controller()->GetEnabled();
 }
 
+bool CanResizePipWindow() {
+  return Shell::Get()->pip_controller()->CanResizePip();
+}
+
 bool CanScreenshot(bool take_screenshot) {
   // |AcceleratorAction::kTakeScreenshot| is allowed when user session is
   // blocked.
@@ -688,9 +693,6 @@ bool CanToggleFloatingWindow() {
 }
 
 bool CanToggleGameDashboard() {
-  if (!features::IsGameDashboardEnabled()) {
-    return false;
-  }
   aura::Window* window = GetTargetWindow();
   return window && GameDashboardController::ReadyForAccelerator(window);
 }
@@ -725,12 +727,6 @@ bool CanToggleOverview() {
       return false;
   }
   return true;
-}
-
-bool CanTogglePicker() {
-  CHECK(Shell::HasInstance());
-  return features::IsPickerUpdateEnabled() &&
-         Shell::Get()->picker_controller()->IsFeatureEnabled();
 }
 
 bool CanTogglePrivacyScreen() {
@@ -1155,6 +1151,10 @@ void ResetDisplayZoom() {
   display_manager->ResetDisplayZoom(display.id());
 }
 
+void ResizePipWindow() {
+  Shell::Get()->pip_controller()->HandleKeyboardShortcut();
+}
+
 void RestoreTab() {
   NewWindowDelegate::GetPrimary()->RestoreTab();
 }
@@ -1444,11 +1444,9 @@ void TogglePicker(base::TimeTicks accelerator_timestamp) {
     return;
   }
 
-  CHECK(Shell::Get()->picker_controller());
-  if (auto* picker_controller = Shell::Get()->picker_controller()) {
-    picker_controller->ToggleWidget(accelerator_timestamp);
-    RecordTogglePickerAcceleratorAction(TogglePickerAction::kTogglePicker);
-  }
+  CHECK(Shell::Get()->quick_insert_controller());
+  Shell::Get()->quick_insert_controller()->ToggleWidget(accelerator_timestamp);
+  RecordTogglePickerAcceleratorAction(TogglePickerAction::kTogglePicker);
 }
 
 void EnableSelectToSpeak() {
@@ -1554,14 +1552,11 @@ void ToggleFullscreenMagnifier() {
   if (!current_enabled && !dialog_ever_accepted) {
     // Enable fullscreen magnifier before showing the dialog, so that users
     // can see the dialog more clearly.
-    bool magnify_dialog =
-        ::features::IsAccessibilityMagnifyAcceleratorDialogEnabled();
     int title = IDS_ASH_SCREEN_MAGNIFIER_TITLE;
     std::u16string body =
         l10n_util::GetStringUTF16(IDS_ASH_SCREEN_MAGNIFIER_BODY);
     int cancel = IDS_APP_CANCEL;
     int confirm = IDS_ASH_CONTINUE_BUTTON;
-    if (magnify_dialog) {
       Shell::Get()->fullscreen_magnifier_controller()->SetEnabled(true);
       title = IDS_ASH_SCREEN_MAGNIFIER_DIALOG_TITLE;
       cancel = IDS_ASH_SCREEN_MAGNIFIER_DIALOG_TURN_OFF_BUTTON;
@@ -1575,15 +1570,6 @@ void ToggleFullscreenMagnifier() {
               AcceleratorAction::kMagnifierZoomOut);
       if (zoom_in_details.empty() || zoom_out_details.empty()) {
         body = l10n_util::GetStringUTF16(IDS_ASH_SCREEN_MAGNIFIER_DIALOG_BODY);
-      } else {
-        std::u16string zoom_in_text =
-            AcceleratorLookup::GetAcceleratorDetailsText(zoom_in_details[0]);
-        std::u16string zoom_out_text =
-            AcceleratorLookup::GetAcceleratorDetailsText(zoom_out_details[0]);
-        body = l10n_util::GetStringFUTF16(
-            IDS_ASH_SCREEN_MAGNIFIER_DIALOG_BODY_DYNAMIC, zoom_in_text,
-            zoom_out_text);
-      }
     }
     accessibility_controller->ShowConfirmationDialog(
         l10n_util::GetStringUTF16(title), body,
@@ -1612,7 +1598,6 @@ void ToggleFullscreenMagnifier() {
 }
 
 void ToggleGameDashboard() {
-  DCHECK(features::IsGameDashboardEnabled());
   aura::Window* window = GetTargetWindow();
   DCHECK(window);
   if (auto* context =

@@ -21,17 +21,6 @@ BASE_DECLARE_FEATURE(kPushSubscriptionWithExpirationTime);
 // corresponds to.
 BASE_DECLARE_FEATURE(kPushMessagingGcmEndpointEnvironment);
 
-#if BUILDFLAG(IS_ANDROID)
-// Feature flag to revoke site-level Notifications permissions and FCM
-// registration.
-BASE_DECLARE_FEATURE(kRevokeNotificationsPermissionIfDisabledOnAppLevel);
-
-// Name of the variation parameter that represents the grace period that will be
-// applied before site-level Notifications permissions will be revoked and FCM
-// unsubscribed. The default value is 3.
-extern const char kNotificationRevocationGracePeriodInDays[];
-#endif
-
 }  // namespace features
 
 #endif  // CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_FEATURES_H_

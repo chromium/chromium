@@ -85,6 +85,7 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
                               RankURLVisitAggregatesCallback callback) override;
   void DecorateURLVisitAggregates(
       const Config& config,
+      visited_url_ranking::URLVisitsMetadata url_visits_metadata,
       std::vector<URLVisitAggregate> visit_aggregates,
       DecorateURLVisitAggregatesCallback callback) override;
   void RecordAction(
@@ -113,9 +114,14 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
       std::queue<URLVisitAggregatesTransformType> transform_type_queue,
       URLVisitAggregatesTransformType transform_type,
       size_t previous_aggregates_count,
+      URLVisitsMetadata url_visits_metadata,
       base::Time start_time,
       URLVisitAggregatesTransformer::Status status,
       std::vector<URLVisitAggregate> aggregates);
+
+  // Returns true if the visit should be discarded from candidates based on
+  // threshold.
+  bool ShouldDiscardVisit(const URLVisitAggregate& visit);
 
   // Invoked to get the score (i.e. numeric result) for a given URL visit
   // aggregate.
@@ -154,6 +160,9 @@ class VisitedURLRankingServiceImpl : public VisitedURLRankingService {
   // Threshold for when the "You just visited" communication should be
   // displayed instead of relative time.
   const base::TimeDelta recently_visited_minutes_threshold_;
+
+  // Score thresholds for varying URL types.
+  std::map<URLVisitAggregate::URLType, double> score_thresholds_;
 
   // The helper used by the fetchers to deduplicate URLs.
   std::unique_ptr<url_deduplication::URLDeduplicationHelper>

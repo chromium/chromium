@@ -41,7 +41,6 @@
 #include "base/test/test_future.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_icon_source.h"
 #include "chrome/browser/apps/app_service/app_registry_cache_waiter.h"
@@ -159,26 +158,14 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_uninstall_dialog_view.h"
+#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #else
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
 #include "chrome/browser/ui/webui/app_home/app_home_page_handler.h"
 #include "chrome/browser/ui/webui/app_management/web_app_settings_page_handler.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/version.h"
-#include "chrome/browser/apps/app_service/app_service_proxy_lacros.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "chromeos/lacros/lacros_test_helper.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -558,29 +545,6 @@ class BrowserAddedWaiter final : public BrowserListObserver {
   raw_ptr<Browser> browser_added_ = nullptr;
 };
 
-class PageLoadWaiter final : public content::WebContentsObserver {
- public:
-  explicit PageLoadWaiter(content::WebContents* web_contents)
-      : WebContentsObserver(web_contents) {
-    CHECK(web_contents);
-  }
-  ~PageLoadWaiter() override = default;
-
-  void Wait() { run_loop_.Run(); }
-
-  void DocumentOnLoadCompletedInPrimaryMainFrame() override {
-    run_loop_.Quit();
-  }
-
-  void WebContentsDestroyed() override {
-    Observe(nullptr);
-    run_loop_.Quit();
-  }
-
- private:
-  base::RunLoop run_loop_;
-};
-
 Browser* GetAppBrowserForAppId(const Profile* profile,
                                const webapps::AppId& app_id) {
   const BrowserList* browser_list = BrowserList::GetInstance();
@@ -748,16 +712,6 @@ WebAppSettingsPageHandler CreateAppManagementPageHandler(Profile* profile) {
 }
 #endif
 
-void ActivateBrowserAndWait(Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  CHECK(browser);
-  ASSERT_TRUE(browser->window());
-  auto waiter = ui_test_utils::BrowserActivationWaiter(browser);
-  browser->window()->Activate();
-  waiter.WaitForActivation();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}
-
 void WaitForAndAcceptInstallDialogForSite(InstallableSite site) {
   std::string simple_dialog_name =
       base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)
@@ -771,28 +725,6 @@ void WaitForAndAcceptInstallDialogForSite(InstallableSite site) {
   views::Widget* widget = waiter.WaitIfNeededAndGet();
   views::test::AcceptDialog(widget);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-// Clear any apps that may have been left in the Ash App Service cache by
-// earlier tests.
-void ReinitializeAppService(Profile* profile) {
-  if (chromeos::IsAshVersionAtLeastForTesting(base::Version({108, 0, 5354}))) {
-    base::test::TestFuture<void> future;
-    chromeos::LacrosService::Get()
-        ->GetRemote<crosapi::mojom::TestController>()
-        ->ReinitializeAppService(future.GetCallback());
-    ASSERT_TRUE(future.Wait());
-
-    apps::AppServiceProxyFactory::GetForProfile(profile)
-        ->ReinitializeForTesting(profile);
-    apps::AppTypeInitializationWaiter(profile, apps::AppType::kWeb).Await();
-  } else {
-    LOG(ERROR) << "Cannot ReinitializeAppService - Unsupported ash version.";
-  }
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Determines whether, when attempting to load a path, we want to, instead of
 // using the regular handler, load it from a file on disk.
@@ -980,10 +912,6 @@ void WebAppIntegrationTestDriver::SetUpOnMainThread() {
     observation_.Observe(&provider()->install_manager());
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  ReinitializeAppService(browser()->profile());
-#endif
-
   // Add chrome://webapps_integration_tests/ date source.
   auto root_path = base::PathService::CheckedGet(chrome::DIR_TEST_DATA);
   content::WebUIDataSource* data_source =
@@ -1010,10 +938,18 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
   in_tear_down_ = true;
   LOG(INFO) << "TearDownOnMainThread: Start.";
   observation_.Reset();
+
+#if BUILDFLAG(IS_CHROMEOS)
   if (delegate_->IsSyncTest()) {
     SyncTurnOff();
   }
+#endif
   for (auto* profile : GetAllProfiles()) {
+#if !BUILDFLAG(IS_CHROMEOS)
+    if (delegate_->IsSyncTest()) {
+      delegate_->SyncSignOut(profile);
+    }
+#endif
     auto* provider = GetProviderForProfile(profile);
     if (!provider) {
       continue;
@@ -1321,7 +1257,6 @@ void WebAppIntegrationTestDriver::CreateShortcut(Site site,
     browser_added_waiter.Wait();
     app_browser_ = browser_added_waiter.browser_added();
     ASSERT_TRUE(app_browser_);
-    ActivateBrowserAndWait(app_browser_);
   }
   apps::AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
@@ -1349,7 +1284,6 @@ void WebAppIntegrationTestDriver::InstallMenuOption(InstallableSite site) {
   app_browser_ = browser_added_waiter.browser_added();
   ASSERT_TRUE(app_browser_);
   active_app_id_ = install_observer.Wait();
-  ActivateBrowserAndWait(app_browser_);
   apps::AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
@@ -1415,7 +1349,6 @@ void WebAppIntegrationTestDriver::InstallOmniboxIcon(InstallableSite site) {
   ASSERT_TRUE(app_browser_);
   active_app_id_ = install_observer.Wait();
   ASSERT_EQ(app_id, active_app_id_);
-  ActivateBrowserAndWait(app_browser_);
   apps::AppReadinessWaiter(profile(), active_app_id_).Await();
   AfterStateChangeAction();
 }
@@ -1834,7 +1767,6 @@ void WebAppIntegrationTestDriver::LaunchFromLaunchIcon(Site site) {
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
   ASSERT_TRUE(app_browser_);
-  ActivateBrowserAndWait(app_browser_);
   ASSERT_TRUE(app_browser_->is_type_app());
   ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser_, app_id));
   active_app_id_ = app_browser()->app_controller()->app_id();
@@ -1856,7 +1788,6 @@ void WebAppIntegrationTestDriver::LaunchFromMenuOption(Site site) {
   browser_added_waiter.Wait();
   app_browser_ = browser_added_waiter.browser_added();
   ASSERT_TRUE(app_browser_);
-  ActivateBrowserAndWait(app_browser_);
   active_app_id_ = app_id;
 
   ASSERT_TRUE(AppBrowserController::IsForWebApp(app_browser(), active_app_id_));
@@ -1922,7 +1853,6 @@ void WebAppIntegrationTestDriver::LaunchFromPlatformShortcut(Site site) {
     LaunchAppStartupBrowserCreator(app_id);
     browser_added_waiter.Wait();
     app_browser_ = browser_added_waiter.browser_added();
-    ActivateBrowserAndWait(app_browser_);
     active_app_id_ = app_id;
     EXPECT_TRUE(AppBrowserController::IsForWebApp(app_browser(), app_id));
   } else {
@@ -2189,7 +2119,9 @@ void WebAppIntegrationTestDriver::SyncAndInstallPreinstalledAppConfig(
       PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting();
   base::FilePath test_config_dir = GetResourceFile(
       FILE_PATH_LITERAL("webapps_integration/preinstalled_config_dir/"));
-  web_app::SetPreinstalledWebAppConfigDirForTesting(&test_config_dir);
+  auto config_auto_reset =
+      ::web_app::test::SetPreinstalledWebAppConfigDirForTesting(
+          test_config_dir);
 
   base::Value::List app_configs;
   auto json_parse_result =
@@ -2210,7 +2142,6 @@ void WebAppIntegrationTestDriver::SyncAndInstallPreinstalledAppConfig(
   provider()->preinstalled_web_app_manager().LoadAndSynchronizeForTesting(
       test_future.GetCallback());
   EXPECT_TRUE(test_future.Wait());
-  web_app::SetPreinstalledWebAppConfigDirForTesting(nullptr);
 }
 
 void WebAppIntegrationTestDriver::NavigateAppHome() {
@@ -2527,6 +2458,22 @@ void WebAppIntegrationTestDriver::SyncTurnOn() {
   AfterStateChangeAction();
 }
 
+void WebAppIntegrationTestDriver::SyncSignOut() {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  delegate_->SyncSignOut(active_profile_);
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::SyncSignIn() {
+  if (!BeforeStateChangeAction(__FUNCTION__)) {
+    return;
+  }
+  delegate_->SyncSignIn(active_profile_);
+  AfterStateChangeAction();
+}
+
 void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
   if (!BeforeStateChangeAction(__FUNCTION__)) {
     return;
@@ -2539,7 +2486,7 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
   extensions::ScopedTestDialogAutoConfirm auto_confirm(
       extensions::ScopedTestDialogAutoConfirm::ACCEPT);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   apps::AppServiceProxy* app_service_proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile());
   base::RunLoop run_loop;
@@ -2550,13 +2497,6 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
 
   ASSERT_NE(nullptr, AppUninstallDialogView::GetActiveViewForTesting());
   AppUninstallDialogView::GetActiveViewForTesting()->AcceptDialog();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The lacros implementation doesn't use a confirmation dialog so we can
-  // call the normal method.
-  apps::AppServiceProxy* app_service_proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile());
-  app_service_proxy->Uninstall(app_id, apps::UninstallSource::kAppList,
-                               nullptr);
 #else
   content::TestWebUI test_web_ui;
   content::WebContents* web_contents =
@@ -2566,6 +2506,7 @@ void WebAppIntegrationTestDriver::UninstallFromList(Site site) {
   auto app_home_page_handler = GetTestAppHomePageHandler(&test_web_ui);
   app_home_page_handler.UninstallApp(app_id);
 #endif
+
   uninstall_waiter.Wait();
   site_remember_deny_open_file_.erase(site);
 
@@ -3261,10 +3202,8 @@ void WebAppIntegrationTestDriver::CheckFilesLoadedInSite(
         continue;
       }
 
-      base::Value test_contents =
+      base::Value::List test_content_list =
           EvalJs(web_contents, "launchFinishedPromise").ExtractList();
-      auto& test_content_list = test_contents.GetList();
-
       for (const auto& test_content : test_content_list) {
         if (base::EndsWith(url_str, kFooHandler)) {
           found_foo_files.push_back(test_content.GetString());
@@ -3906,6 +3845,31 @@ void WebAppIntegrationTestDriver::CheckAppLoadedInTab(Site site) {
   AfterStateCheckAction();
 }
 
+void WebAppIntegrationTestDriver::CheckSiteLoadedInTab(Site site) {
+  if (!BeforeStateCheckAction(__FUNCTION__)) {
+    return;
+  }
+
+  GURL site_url = GetUrlForSite(site);
+  std::vector<std::string> found_urls;
+  auto* browser_list = BrowserList::GetInstance();
+  for (Browser* browser : *browser_list) {
+    // Bypass apps that open in standalone windows.
+    if (AppBrowserController::IsWebApp(browser)) {
+      continue;
+    }
+
+    for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
+      content::WebContents* web_contents =
+          browser->tab_strip_model()->GetWebContentsAt(i);
+      GURL committed_url = web_contents->GetLastCommittedURL();
+      found_urls.push_back(committed_url.possibly_invalid_spec());
+    }
+  }
+  EXPECT_THAT(found_urls, testing::Contains(site_url));
+  AfterStateCheckAction();
+}
+
 void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
     const webapps::AppId& app_id) {
   LOG(INFO) << "Manifest update received for " << app_id << ".";
@@ -4021,29 +3985,7 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
   FlushShortcutTasks();
   provider()->command_manager().AwaitAllCommandsCompleteForTesting();
   AwaitManifestSystemIdle();
-
-  auto get_first_loading_web_contents = []() -> content::WebContents* {
-    for (Browser* browser : *BrowserList::GetInstance()) {
-      for (int i = 0; i < browser->tab_strip_model()->GetTabCount(); i++) {
-        content::WebContents* web_contents =
-            browser->tab_strip_model()->GetWebContentsAt(i);
-        if (!web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
-          return web_contents;
-        }
-      }
-    }
-    return nullptr;
-  };
-
-  // In some circumstances, this loop could hang forever (if pages never
-  // complete loading, or if they cause reloads, etc). However, these
-  // tests only use static test pages that don't do that, so this should
-  // be safe.
-  while (content::WebContents* loading_web_content =
-             get_first_loading_web_contents()) {
-    PageLoadWaiter page_load_waiter(loading_web_content);
-    page_load_waiter.Wait();
-  }
+  web_app::test::CompletePageLoadForAllWebContents();
   after_state_change_action_state_ = ConstructStateSnapshot();
 }
 
@@ -4436,10 +4378,10 @@ void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(
   content::TestNavigationObserver url_observer(url);
   if (mode == NavigationMode::kNewTab) {
     url_observer.StartWatchingNewWebContents();
+    chrome::NewTab(browser());
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(), GURL(url), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_TAB |
-            ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+        browser(), GURL(url), WindowOpenDisposition::CURRENT_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   } else {
     url_observer.WatchExistingWebContents();
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
@@ -4781,13 +4723,16 @@ WebAppIntegrationTest::WebAppIntegrationTest() : helper_(this) {
   enabled_features.push_back(features::kIsolatedWebApps);
   enabled_features.push_back(features::kPwaUpdateDialogForIcon);
   enabled_features.push_back(features::kRecordWebAppDebugInfo);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+  enabled_features.push_back(features::kWebAppDontAddExistingAppsToSync);
+#if BUILDFLAG(IS_CHROMEOS)
   // WebAppIntegrationTest runs in Ash only when Lacros is disabled.
   // If Lacros is enabled, WebAppIntegrationTest runs in Lacros with crosapi
   // enabled.
+  //
+  // TODO(crbug.com/375937556): Revise this now that the Lacros support is
+  // removed.
   base::Extend(disabled_features, ash::standalone_browser::GetFeatureRefs());
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
+
   // TODO(crbug.com/40236806): Update test driver to work with new UI.
   enabled_features.push_back(apps::features::kLinkCapturingUiUpdate);
 #else
@@ -4844,6 +4789,12 @@ void WebAppIntegrationTest::SyncTurnOff() {
   NOTREACHED();
 }
 void WebAppIntegrationTest::SyncTurnOn() {
+  NOTREACHED();
+}
+void WebAppIntegrationTest::SyncSignOut(Profile*) {
+  NOTREACHED();
+}
+void WebAppIntegrationTest::SyncSignIn(Profile*) {
   NOTREACHED();
 }
 void WebAppIntegrationTest::AwaitWebAppQuiescence() {

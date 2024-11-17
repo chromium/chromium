@@ -49,3 +49,7 @@ bool JavaScriptTabModalDialogManagerDelegateIOS::IsWebContentsForemost() {
 bool JavaScriptTabModalDialogManagerDelegateIOS::IsApp() {
   return false;
 }
+
+bool JavaScriptTabModalDialogManagerDelegateIOS::CanShowModalUI() {
+  return true;
+}

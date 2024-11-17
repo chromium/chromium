@@ -35,9 +35,10 @@ void VideoCaptureGpuChannelHost::SetSharedImageInterface(
   shared_image_interface_ = std::move(shared_image_interface);
 }
 
-gpu::SharedImageInterface* VideoCaptureGpuChannelHost::SharedImageInterface() {
+scoped_refptr<gpu::SharedImageInterface>
+VideoCaptureGpuChannelHost::GetSharedImageInterface() {
   base::AutoLock lock(lock_);
-  return shared_image_interface_.get();
+  return shared_image_interface_;
 }
 
 void VideoCaptureGpuChannelHost::OnContextLost() {

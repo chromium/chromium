@@ -23,12 +23,6 @@
 
 // static
 safe_browsing::RealTimeUrlLookupService*
-RealTimeUrlLookupServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-safe_browsing::RealTimeUrlLookupService*
 RealTimeUrlLookupServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<safe_browsing::RealTimeUrlLookupService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
@@ -71,10 +65,20 @@ RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
                           SyncServiceFactory::GetForProfile(profile),
                           IdentityManagerFactory::GetForProfile(profile)),
       profile->IsOffTheRecord(),
-      GetApplicationContext()->GetVariationsService(),
+      base::BindRepeating(
+          &RealTimeUrlLookupServiceFactory::GetVariationsService),
+      // If referrer chains become supported, this callback will need to change
+      // to provide the minimum allowed timestamp instead.
+      /*min_allowed_timestamp_for_referrer_chains_getter=*/base::NullCallback(),
       // Referrer chain provider is currently not available on iOS. Once it
       // is implemented, inject it to enable referrer chain in real time
       // requests.
       /*referrer_chain_provider=*/nullptr,
       /*webui_delegate=*/nullptr);
+}
+
+// static
+variations::VariationsService*
+RealTimeUrlLookupServiceFactory::GetVariationsService() {
+  return GetApplicationContext()->GetVariationsService();
 }

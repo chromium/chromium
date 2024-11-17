@@ -48,8 +48,7 @@ class AndroidAutofillManager : public AutofillManager,
 
   void OnDidEndTextFieldEditingImpl() override {}
   void OnHidePopupImpl() override;
-  void OnSelectOrSelectListFieldOptionsDidChangeImpl(
-      const FormData& form) override {}
+  void OnSelectFieldOptionsDidChangeImpl(const FormData& form) override {}
 
   void ReportAutofillWebOTPMetrics(bool used_web_otp) override {}
 
@@ -57,8 +56,8 @@ class AndroidAutofillManager : public AutofillManager,
     return forms_with_server_predictions_.contains(form);
   }
 
-  FieldTypeGroup ComputeFieldTypeGroupForField(const FormData& form,
-                                               const FormFieldData& field);
+  FieldTypeGroup ComputeFieldTypeGroupForField(const FormGlobalId& form_id,
+                                               const FieldGlobalId& field_id);
 
   // Send the |form| to the renderer for the specified |action|.
   //
@@ -74,7 +73,6 @@ class AndroidAutofillManager : public AutofillManager,
   void Reset() override;
 
   void OnFormSubmittedImpl(const FormData& form,
-                           bool known_success,
                            mojom::SubmissionSource source) override;
 
   void OnCaretMovedInFormFieldImpl(const FormData& form,
@@ -123,9 +121,9 @@ class AndroidAutofillManager : public AutofillManager,
   // Records metrics for loggers and creates new logging session.
   void StartNewLoggingSession();
 
-  // Returns logger associated with the passed-in `form` and `field`.
-  AndroidFormEventLogger* GetEventFormLogger(const FormData& form,
-                                             const FormFieldData& field);
+  // Returns logger associated with the passed-in `form_id` and `field_id`.
+  AndroidFormEventLogger* GetEventFormLogger(const FormGlobalId& form_id,
+                                             const FieldGlobalId& field_id);
 
   // Returns logger associated with the passed-in `field_type_group`.
   AndroidFormEventLogger* GetEventFormLogger(FieldTypeGroup field_type_group);

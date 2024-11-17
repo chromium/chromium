@@ -5,9 +5,8 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_DUMP_ACCESSIBILITY_TREE_BROWSERTEST_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_DUMP_ACCESSIBILITY_TREE_BROWSERTEST_H_
 
-#include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
-
 #include "base/command_line.h"
+#include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/accessibility_switches.h"
@@ -15,7 +14,6 @@
 namespace content {
 
 constexpr const char kARIA[]{"aria"};
-constexpr const char kAOM[]{"aom"};
 constexpr const char kCSS[]{"css"};
 constexpr const char kFormControls[]{"form-controls"};
 constexpr const char kHTML[]{"html"};
@@ -61,10 +59,6 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
     RunTypedTest<kARIA>(file_path);
   }
 
-  void RunAomTest(const base::FilePath::CharType* file_path) {
-    RunTypedTest<kAOM>(file_path);
-  }
-
   void RunCSSTest(const base::FilePath::CharType* file_path) {
     RunTypedTest<kCSS>(file_path);
   }
@@ -83,10 +77,14 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   }
 
   // TODO(accessibility): Replace all tests using RunPopoverHintTest to just
-  // RunHtmlTest when Popover hints are enabled by default.
+  // RunHtmlTest when Popover hints and interest targets are enabled by default.
   void RunPopoverHintTest(const base::FilePath::CharType* file_path) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kEnableBlinkFeatures, "HTMLPopoverHint");
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kEnableBlinkFeatures, "HTMLInvokeTargetAttribute");
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kEnableBlinkFeatures, "HTMLInterestTargetAttribute");
     RunTypedTest<kHTML>(file_path);
   }
 

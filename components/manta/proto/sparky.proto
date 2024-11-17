@@ -108,25 +108,47 @@ message TextEntry {
   optional string text = 1;
 }
 
-// Press one key on the keyboard, possibly with modifiers.
 message KeyPress {
-  // A KeyboardEvent string from https://www.w3.org/TR/uievents-key/
   optional string key = 1;
 
-  // Which modifier keys should be held down while pressing `key`. Meta is
-  // skipped because it's missing on ChromeOS keyboards.
   optional bool control = 2;
   optional bool alt = 3;
   optional bool shift = 4;
 }
 
 message Click {
+  enum Button {
+    UNSPECIFIED = 0;
+    LEFT = 1;
+    RIGHT = 2;
+    MIDDLE = 3;
+  }
+
   optional int32 x_pos = 1;
   optional int32 y_pos = 2;
+  optional Button button = 3;
 }
 
-message FileAction {
+message Scroll {
+  enum Direction {
+    UNSPECIFIED = 0;
+    UP = 1;
+    DOWN = 2;
+    LEFT = 3;
+    RIGHT = 4;
+  }
+
+  optional Direction direction = 1;
+  optional int32 distance = 2;
+}
+
+message LaunchFile {
   optional string launch_file_path = 1;
+}
+
+message WriteFile {
+  optional string name = 1;
+  optional string file_bytes = 2;
 }
 
 message Action {
@@ -136,8 +158,10 @@ message Action {
     Click click = 3;
     TextEntry text_entry = 4;
     bool all_done = 5;
-    FileAction file_action = 6;
+    LaunchFile launch_file = 6;
     KeyPress key_press = 7;
+    Scroll scroll = 8;
+    WriteFile write_file = 9;
   }
 }
 

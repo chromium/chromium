@@ -24,6 +24,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_uma.h"
+#include "chrome/browser/ash/login/enrollment/timebound_user_context_holder.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ash/login/screens/error_screen.h"
@@ -179,32 +180,28 @@ EnrollmentScreen::~EnrollmentScreen() {
 void EnrollmentScreen::SetEnrollmentConfig(
     const policy::EnrollmentConfig& enrollment_config) {
   prescribed_config_ = enrollment_config;
-  switch (prescribed_config_.auth_mechanism) {
-    case EnrollmentConfig::AUTH_MECHANISM_INTERACTIVE:
+  if (prescribed_config_.is_mode_oauth()) {
+    current_auth_ = AUTH_OAUTH;
+    next_auth_ = AUTH_OAUTH;
+  } else if (prescribed_config_.is_mode_attestation()) {
+    if (TestForcesManualEnrollment()) {
       current_auth_ = AUTH_OAUTH;
       next_auth_ = AUTH_OAUTH;
-      break;
-    case EnrollmentConfig::AUTH_MECHANISM_ATTESTATION:
+    } else if (prescribed_config_.is_mode_with_manual_fallback()) {
+      current_auth_ = AUTH_ATTESTATION;
+      next_auth_ = AUTH_OAUTH;
+    } else {
       current_auth_ = AUTH_ATTESTATION;
       next_auth_ = AUTH_ATTESTATION;
-      break;
-    case EnrollmentConfig::AUTH_MECHANISM_ATTESTATION_PREFERRED:
-      if (TestForcesManualEnrollment()) {
-        current_auth_ = AUTH_OAUTH;
-        next_auth_ = AUTH_OAUTH;
-        break;
-      }
-      current_auth_ = AUTH_ATTESTATION;
-      next_auth_ = AUTH_OAUTH;
-      break;
-    case EnrollmentConfig::AUTH_MECHANISM_TOKEN_PREFERRED:
-      current_auth_ = AUTH_ENROLLMENT_TOKEN;
-      next_auth_ = AUTH_OAUTH;
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+    }
+  } else if (prescribed_config_.is_mode_token()) {
+    current_auth_ = AUTH_ENROLLMENT_TOKEN;
+    next_auth_ = AUTH_OAUTH;
+  } else {
+    NOTREACHED() << "EnrollmentConfig does not match any auth: "
+                 << prescribed_config_;
   }
+
   SetConfig();
 }
 
@@ -212,8 +209,7 @@ void EnrollmentScreen::SetConfig() {
   effective_config_ = prescribed_config_;
   if (current_auth_ == AUTH_OAUTH &&
       effective_config_.is_mode_with_manual_fallback()) {
-    effective_config_.mode =
-        policy::EnrollmentConfig::GetManualFallbackMode(effective_config_.mode);
+    effective_config_ = effective_config_.GetManualFallbackConfig();
   }
   // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
   // in the logs.
@@ -243,8 +239,7 @@ void EnrollmentScreen::CreateEnrollmentLauncher() {
   }
 }
 
-void EnrollmentScreen::ClearAuth(base::OnceClosure callback,
-                                 bool revoke_oauth2_tokens) {
+void EnrollmentScreen::ClearAuth(base::OnceClosure callback) {
   if (switches::IsTpmDynamic()) {
     wait_state_timer_.Stop();
     install_state_retries_ = 0;
@@ -254,6 +249,9 @@ void EnrollmentScreen::ClearAuth(base::OnceClosure callback,
     return;
   }
 
+  const bool revoke_oauth2_tokens =
+      !(features::IsOobeAddUserDuringEnrollmentEnabled() &&
+        context()->timebound_user_context_holder);
   enrollment_launcher_->ClearAuth(
       base::BindOnce(&EnrollmentScreen::OnAuthCleared,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
@@ -371,8 +369,7 @@ void EnrollmentScreen::ShowImpl() {
       AuthenticateUsingEnrollmentToken();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -415,7 +412,7 @@ void EnrollmentScreen::OnTpmStatusResponse(
       ClearAuth(base::BindOnce(exit_callback_, Result::TPM_DBUS_ERROR));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -457,7 +454,7 @@ void EnrollmentScreen::CheckInstallAttributesState() {
       ClearAuth(base::BindOnce(exit_callback_, Result::TPM_ERROR));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -606,18 +603,10 @@ void EnrollmentScreen::OnConfirmationClosed() {
   // in the logs.
   LOG(WARNING) << "Confirmation closed.";
 
-  bool revoke_oauth2_tokens = true;
-
-  if (MaybeStoreUserContextInWizardContext()) {
-    // Prevents the oauth2 tokens from being revoked.
-    revoke_oauth2_tokens = false;
-  }
-
   // The callback passed to ClearAuth is either called immediately or gets
   // wrapped in a callback bound to a weak pointer from `weak_ptr_factory_` - in
   // either case, passing exit_callback_ directly should be safe.
-  ClearAuth(base::BindRepeating(exit_callback_, Result::COMPLETED),
-            revoke_oauth2_tokens);
+  ClearAuth(base::BindRepeating(exit_callback_, Result::COMPLETED));
 }
 
 void EnrollmentScreen::OnAuthError(const GoogleServiceAuthError& error) {
@@ -673,6 +662,8 @@ void EnrollmentScreen::OnDeviceEnrolled() {
     view_->SetEnterpriseDomainInfo(GetEnterpriseDomainManager(),
                                    ui::GetChromeOSDeviceName());
   }
+
+  MaybeStoreUserContextInWizardContext();
 
   enrollment_launcher_->GetDeviceAttributeUpdatePermission();
 
@@ -876,8 +867,17 @@ bool EnrollmentScreen::ShouldAutoRetryOnError() const {
 }
 
 bool EnrollmentScreen::AutoCloseEnrollmentConfirmationOnSuccess() const {
-  return prescribed_config_.mode ==
-         policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED;
+  if (prescribed_config_.mode ==
+      policy::EnrollmentConfig::MODE_ATTESTATION_ROLLBACK_FORCED) {
+    return true;
+  }
+  const std::optional<bool> skip_enrollment_success_screen =
+      context()->configuration.FindBool(
+          configuration::kSkipEnrollmentSuccessScreen);
+  if (!skip_enrollment_success_screen.has_value()) {
+    return false;
+  }
+  return skip_enrollment_success_screen.value();
 }
 
 bool EnrollmentScreen::IsEnrollmentScreenHiddenByError() {
@@ -989,16 +989,16 @@ void EnrollmentScreen::HideOfflineMessage(NetworkStateInformer::State state,
   histogram_helper_.OnErrorHide();
 }
 
-bool EnrollmentScreen::MaybeStoreUserContextInWizardContext() {
+void EnrollmentScreen::MaybeStoreUserContextInWizardContext() {
   if (!features::IsOobeAddUserDuringEnrollmentEnabled() ||
       effective_config_.mode != policy::EnrollmentConfig::MODE_MANUAL) {
-    return false;
+    return;
   }
   // Technically this should be an invariant, but this feature is not crucial
   // and allows for an easy fallback to the normal flow. Because of this we use
   // soft checks in case of unforeseen flows that would cause a crash otherwise.
   if (!signin_artifacts_ || !enrollment_launcher_ || !enrollment_succeeded_) {
-    return false;
+    return;
   }
 
   const AccountId account_id = AccountId::FromNonCanonicalEmail(
@@ -1024,10 +1024,10 @@ bool EnrollmentScreen::MaybeStoreUserContextInWizardContext() {
   CHECK(wizard_context);
   // Make sure we aren't overwriting any existing information.
   CHECK(!wizard_context->user_context);
-  wizard_context->user_context = std::move(user_context);
-  wizard_context->add_user_from_cached_credentials = true;
+  wizard_context->timebound_user_context_holder =
+      std::make_unique<TimeboundUserContextHolder>(std::move(user_context));
 
-  return true;
+  return;
 }
 
 }  // namespace ash

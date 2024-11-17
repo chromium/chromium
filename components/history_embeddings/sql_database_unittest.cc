@@ -480,4 +480,37 @@ TEST_F(HistoryEmbeddingsSqlDatabaseTest, IterationSkipsAndReportsMismatches) {
       "History.Embeddings.DatabaseIterationYielded", 1, 1);
 }
 
+TEST_F(HistoryEmbeddingsSqlDatabaseTest, OldVisitsAreExpired) {
+  auto sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
+                                    GetEncryptorInstance());
+
+  // Write embeddings; one for an old visit, one for a new visit.
+  UrlPassagesEmbeddings url_datas[] = {
+      UrlPassagesEmbeddings(/*url_id=*/1, /*visit_id=*/1,
+                            base::Time::Now() - base::Days(100)),
+      UrlPassagesEmbeddings(/*url_id=*/2, /*visit_id=*/2, base::Time::Now()),
+  };
+  url_datas[0].url_passages.passages.add_passages("data 0 passage 0");
+  url_datas[0].url_embeddings.embeddings.push_back(FakeEmbedding());
+  url_datas[1].url_passages.passages.add_passages("data 1 passage 0");
+  url_datas[1].url_embeddings.embeddings.push_back(FakeEmbedding());
+  EXPECT_TRUE(sql_database->AddUrlData(url_datas[0]));
+  EXPECT_TRUE(sql_database->AddUrlData(url_datas[1]));
+
+  // Reset and reload.
+  sql_database.reset();
+  sql_database = std::make_unique<SqlDatabase>(history_dir_.GetPath());
+  sql_database->SetEmbedderMetadata({kEmbeddingsVersion, kEmbeddingsSize},
+                                    GetEncryptorInstance());
+
+  // Read embeddings; only last visit will be found because first expired.
+  EXPECT_FALSE(sql_database->GetUrlData(/*url_id=*/1).has_value());
+  EXPECT_TRUE(sql_database->GetUrlData(/*url_id=*/2).has_value());
+
+  sql_database.reset();
+  EXPECT_TRUE(
+      base::PathExists(history_dir_.GetPath().Append(kHistoryEmbeddingsName)));
+}
+
 }  // namespace history_embeddings

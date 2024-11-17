@@ -38,7 +38,7 @@ BASE_FEATURE(kEnableComposeSavedStateNudge,
 
 BASE_FEATURE(kEnableComposeProactiveNudge,
              "ComposeProactiveNudge",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableComposeSavedStateNotification,
              "EnableComposeSavedStateNotification",
@@ -46,7 +46,7 @@ BASE_FEATURE(kEnableComposeSavedStateNotification,
 
 BASE_FEATURE(kEnableComposeNudgeAtCursor,
              "EnableComposeNudgeAtCursor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableComposeSelectionNudge,
              "EnableComposeSelectionNudge",
@@ -71,10 +71,6 @@ BASE_FEATURE(kComposeUiParams,
 BASE_FEATURE(kComposeTextOutputAnimation,
              "ComposeTextOutputAnimation",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kComposeTextSelection,
-             "ComposeTextSelection",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kComposeRequestLatencyTimeout,
              "ComposeRequestLatencyTimeout",
@@ -102,6 +98,10 @@ BASE_FEATURE(kHappinessTrackingSurveysForComposeNudgeClose,
 
 BASE_FEATURE(kComposeAllowOnDeviceExecution,
              "ComposeAllowOnDeviceExecution",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kComposeUpfrontInputModes,
+             "ComposeUpfrontInputModes",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace compose::features

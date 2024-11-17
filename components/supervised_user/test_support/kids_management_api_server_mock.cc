@@ -16,8 +16,18 @@
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace supervised_user {
+
+const std::multimap<kidsmanagement::FamilyRole, std::string> kSimpsonFamily = {
+    {kidsmanagement::HEAD_OF_HOUSEHOLD, "marge@gmail.com"},
+    {kidsmanagement::PARENT, "homer@gmail.com"},
+    {kidsmanagement::MEMBER, "abraham@gmail.com"},
+    {kidsmanagement::CHILD, "lisa@gmail.com"},
+    {kidsmanagement::CHILD, "bart@gmail.com"},
+};
 
 namespace {
 
@@ -75,10 +85,6 @@ void KidsManagementApiServerMock::InstallOn(
       &KidsManagementApiServerMock::ClassifyUrl, base::Unretained(this)));
   test_server_.RegisterRequestHandler(base::BindRepeating(
       &KidsManagementApiServerMock::ListFamilyMembers, base::Unretained(this)));
-
-  test_server_.RegisterRequestMonitor(base::BindRepeating(
-      &KidsManagementApiServerMock::RequestMonitorDispatcher,
-      base::Unretained(this)));
 }
 
 // Return a default Simpson family.
@@ -90,17 +96,11 @@ KidsManagementApiServerMock::ListFamilyMembers(
   }
 
   kidsmanagement::ListMembersResponse response;
-  supervised_user::SetFamilyMemberAttributesForTesting(
-      response.add_members(), kidsmanagement::HEAD_OF_HOUSEHOLD,
-      "marge@gmail.com");
-  supervised_user::SetFamilyMemberAttributesForTesting(
-      response.add_members(), kidsmanagement::PARENT, "homer@gmail.com");
-  supervised_user::SetFamilyMemberAttributesForTesting(
-      response.add_members(), kidsmanagement::MEMBER, "abraham@gmail.com");
-  supervised_user::SetFamilyMemberAttributesForTesting(
-      response.add_members(), kidsmanagement::CHILD, "lisa@gmail.com");
-  supervised_user::SetFamilyMemberAttributesForTesting(
-      response.add_members(), kidsmanagement::CHILD, "bart@gmail.com");
+  for (const auto& [role, email] : kSimpsonFamily) {
+    supervised_user::SetFamilyMemberAttributesForTesting(response.add_members(),
+                                                         role, email);
+  }
+
   return FromProtoData(response.SerializeAsString());
 }
 
@@ -115,16 +115,6 @@ KidsManagementApiServerMock::ClassifyUrl(
   return FromProtoData(
       ClassifyUrlResponse(classify_url_mock_.ClassifyUrl(request))
           .SerializeAsString());
-}
-
-base::CallbackListSubscription KidsManagementApiServerMock::Subscribe(
-    base::RepeatingCallback<RequestMonitor> monitor) {
-  return request_monitors_.Add(monitor);
-}
-
-void KidsManagementApiServerMock::RequestMonitorDispatcher(
-    const net::test_server::HttpRequest& request) {
-  request_monitors_.Notify(request.GetURL().path(), request.content);
 }
 
 void KidsManagementApiServerMock::AllowSubsequentClassifyUrl() {

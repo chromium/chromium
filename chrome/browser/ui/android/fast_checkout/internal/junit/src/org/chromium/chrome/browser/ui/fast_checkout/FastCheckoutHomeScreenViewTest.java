@@ -143,7 +143,6 @@ public class FastCheckoutHomeScreenViewTest {
                 equalTo(
                         mHomeScreenView
                                 .getContext()
-                                .getResources()
                                 .getString(
                                         R.string
                                                 .fast_checkout_home_sheet_expand_icon_autofill_profile_description)));
@@ -152,7 +151,6 @@ public class FastCheckoutHomeScreenViewTest {
                 equalTo(
                         mHomeScreenView
                                 .getContext()
-                                .getResources()
                                 .getString(
                                         R.string
                                                 .fast_checkout_home_sheet_expand_icon_credit_card_description)));

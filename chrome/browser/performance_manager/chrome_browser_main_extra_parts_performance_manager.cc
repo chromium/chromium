@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/power_monitor/battery_state_sampler.h"
 #include "base/power_monitor/power_monitor_buildflags.h"
 #include "base/system/sys_info.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/performance_manager/metrics/metrics_provider_desktop.h"
 #include "chrome/browser/performance_manager/observers/page_load_metrics_observer.h"
 #include "chrome/browser/performance_manager/policies/background_tab_loading_policy.h"
+#include "chrome/browser/performance_manager/policies/frame_throttling_policy.h"
 #include "chrome/browser/performance_manager/policies/policy_features.h"
 #include "chrome/browser/performance_manager/policies/working_set_trimmer_policy.h"
 #include "chrome/browser/performance_manager/user_tuning/profile_discard_opt_out_list_helper.h"
@@ -37,6 +39,7 @@
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/metrics/page_resource_monitor.h"
+#include "components/performance_manager/public/scenarios/performance_scenarios.h"
 #include "components/performance_manager/public/user_tuning/tab_revisit_tracker.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -75,6 +78,7 @@
 #include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "components/performance_manager/freezing/freezer.h"
 #include "components/performance_manager/freezing/freezing_policy.h"
+#include "components/performance_manager/public/freezing/freezing.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
@@ -83,14 +87,47 @@
 #endif
 
 namespace {
+
 ChromeBrowserMainExtraPartsPerformanceManager* g_instance = nullptr;
-}
+
+#if !BUILDFLAG(IS_ANDROID)
+// Glue between the `PageDiscardingHelper` which is in
+// //chrome/browser/performance_manager/ and the `FreezingPolicy` which is in
+// `//components/performance_manager/`.
+//
+// TODO(crbug.com/347770670): This can be removed when discarding has fully
+// transitioned from a //chrome concept to a //content concept.
+class FreezingDiscarder : public performance_manager::freezing::Discarder {
+ public:
+  FreezingDiscarder() = default;
+  ~FreezingDiscarder() override = default;
+
+  // performance_manager::freezing::Discarder:
+  void DiscardPages(
+      performance_manager::Graph* graph,
+      std::vector<const performance_manager::PageNode*> page_nodes) override {
+    auto* const helper =
+        performance_manager::policies::PageDiscardingHelper::GetFromGraph(
+            graph);
+    CHECK(helper);
+    helper->ImmediatelyDiscardMultiplePages(
+        page_nodes,
+        ::mojom::LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY,
+        base::DoNothing());
+  }
+};
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+}  // namespace
 
 ChromeBrowserMainExtraPartsPerformanceManager::
     ChromeBrowserMainExtraPartsPerformanceManager()
     : feature_observer_client_(
           std::make_unique<
-              performance_manager::PerformanceManagerFeatureObserverClient>()) {
+              performance_manager::PerformanceManagerFeatureObserverClient>()),
+      global_performance_scenario_memory_(
+          std::make_unique<performance_manager::ScopedGlobalScenarioMemory>()) {
   DCHECK(!g_instance);
   g_instance = this;
 }
@@ -171,7 +208,8 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
   // The freezing policy isn't enabled on Android yet as it doesn't play well
   // with the freezing logic already in place in renderers. This logic should be
   // moved to PerformanceManager, this is tracked in https://crbug.com/1156803.
-  graph->PassToGraph(std::make_unique<performance_manager::FreezingPolicy>());
+  graph->PassToGraph(std::make_unique<performance_manager::FreezingPolicy>(
+      std::make_unique<FreezingDiscarder>()));
 
   graph->PassToGraph(
       std::make_unique<performance_manager::policies::MemorySaverModePolicy>());
@@ -179,6 +217,12 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
 
   graph->PassToGraph(
       std::make_unique<performance_manager::metrics::PageResourceMonitor>());
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kThrottleUnimportantFrameRate)) {
+    graph->PassToGraph(std::make_unique<
+                       performance_manager::policies::FrameThrottlingPolicy>());
+  }
 
   if (base::FeatureList::IsEnabled(
           performance_manager::features::kBFCachePerformanceManagerPolicy)) {

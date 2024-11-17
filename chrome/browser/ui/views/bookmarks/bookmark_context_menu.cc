@@ -15,6 +15,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -79,7 +80,7 @@ void BookmarkContextMenu::InstallPreRunCallback(base::OnceClosure callback) {
 }
 
 void BookmarkContextMenu::RunMenuAt(const gfx::Point& point,
-                                    ui::MenuSourceType source_type) {
+                                    ui::mojom::MenuSourceType source_type) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kKioskMode))
     return;
 

@@ -201,8 +201,7 @@ inline bool operator!=(const QualifiedName& q, const AtomicString& a) {
 }
 
 inline unsigned HashComponents(const QualifiedNameComponents& buf) {
-  return StringHasher::HashMemory<sizeof(QualifiedNameComponents)>(&buf) &
-         0xFFFFFF;
+  return StringHasher::HashMemory(base::byte_span_from_ref(buf)) & 0xFFFFFF;
 }
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&, const QualifiedName&);

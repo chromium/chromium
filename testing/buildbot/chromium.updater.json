@@ -395,7 +395,9 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "hard_timeout": 7200,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "updater_tests_system",
         "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"
@@ -433,7 +435,9 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "hard_timeout": 7200,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "updater_tests_system",
         "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"
@@ -471,7 +475,9 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "hard_timeout": 7200,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "updater_tests_system",
         "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"
@@ -546,7 +552,9 @@
             "os": "Windows-10-19045",
             "pool": "chromium.tests"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "hard_timeout": 7200,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "updater_tests_system",
         "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"
@@ -638,7 +646,7 @@
           "dimensions": {
             "cpu": "x86-64",
             "integrity": "high",
-            "os": "Windows-11-22000",
+            "os": "Windows-11-22000|Windows-11-22631",
             "pool": "chromium.tests"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
@@ -655,10 +663,12 @@
           "dimensions": {
             "cpu": "x86-64",
             "integrity": "high",
-            "os": "Windows-11-22000",
+            "os": "Windows-11-22000|Windows-11-22631",
             "pool": "chromium.tests"
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "hard_timeout": 7200,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "updater_tests_system",
         "test_id_prefix": "ninja://chrome/updater:updater_tests_system/"

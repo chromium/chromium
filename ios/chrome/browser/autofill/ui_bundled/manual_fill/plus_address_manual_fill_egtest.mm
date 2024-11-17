@@ -7,8 +7,8 @@
 #import "base/strings/escape.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
-#import "components/plus_addresses/fake_plus_address_service.h"
 #import "components/plus_addresses/features.h"
+#import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
@@ -23,7 +23,6 @@
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/default_handlers.h"
@@ -123,10 +122,6 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
   // Enable the Keyboard Accessory Upgrade feature.
   config.features_enabled_and_params.push_back(
       {kIOSKeyboardAccessoryUpgrade, {}});
-  config.features_enabled_and_params.push_back(
-      {plus_addresses::features::kPlusAddressIOSManualFallbackEnabled, {}});
-  config.additional_args.push_back(std::string("-") +
-                                   test_switches::kAddFakePlusAddressService);
 
   return config;
 }
@@ -147,11 +142,11 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
   [AutofillAppInterface saveExampleAccountProfile];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearProfilesStore];
   [SigninEarlGrey signOut];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Opens the expanded manual fill view for a given `dataType`. `fieldToFill` is
@@ -198,9 +193,8 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
                                   fieldToFill:kNameFieldID];
 
   [[EarlGrey
-      selectElementWithMatcher:
-          manual_fill::ChipButton(
-              plus_addresses::FakePlusAddressService::kFakePlusAddress16)]
+      selectElementWithMatcher:manual_fill::ChipButton(
+                                   plus_addresses::test::kFakePlusAddressU16)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Switch over to passwords.
@@ -208,13 +202,12 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
       selectElementWithMatcher:manual_fill::SegmentedControlPasswordTab()]
       performAction:grey_tap()];
   [[EarlGrey
-      selectElementWithMatcher:
-          manual_fill::ChipButton(
-              plus_addresses::FakePlusAddressService::kFakePlusAddress16)]
+      selectElementWithMatcher:manual_fill::ChipButton(
+                                   plus_addresses::test::kFakePlusAddressU16)]
       performAction:grey_tap()];
 
-  [self verifyFieldHasBeenFilledWithValue:
-            plus_addresses::FakePlusAddressService::kFakePlusAddress16];
+  [self verifyFieldHasBeenFilledWithValue:plus_addresses::test::
+                                              kFakePlusAddressU16];
 }
 
 // Tests that the plus address manage action are shown in the address and
@@ -280,8 +273,8 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
   [[EarlGrey selectElementWithMatcher:createPlusAddressBottomSheetButton]
       performAction:grey_tap()];
 
-  [self verifyFieldHasBeenFilledWithValue:
-            plus_addresses::FakePlusAddressService::kFakePlusAddress16];
+  [self verifyFieldHasBeenFilledWithValue:plus_addresses::test::
+                                              kFakePlusAddressU16];
 }
 
 // Tests that tapping on the create plus address action in the password manual
@@ -426,9 +419,8 @@ id<GREYMatcher> PlusAddressSelectActionMatcher() {
                                   fieldToFill:kNameFieldID];
 
   [[EarlGrey
-      selectElementWithMatcher:
-          manual_fill::ChipButton(
-              plus_addresses::FakePlusAddressService::kFakePlusAddress16)]
+      selectElementWithMatcher:manual_fill::ChipButton(
+                                   plus_addresses::test::kFakePlusAddressU16)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Tap the overflow menu button.

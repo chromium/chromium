@@ -44,7 +44,7 @@ SkColor GetCursorOutlineColor(SkColor color) {
 }  // namespace
 
 int CursorDiameterFromBrushSizeAndZoom(float brush_size, float zoom) {
-  PdfInkBrush::CheckToolSizeIsInRange(brush_size);
+  CHECK(PdfInkBrush::IsToolSizeInRange(brush_size));
 
   constexpr float kMinSize = 4;  // Cursor become very hard to see if smaller.
   float cursor_diameter = std::max(brush_size * zoom, kMinSize);

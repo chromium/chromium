@@ -324,7 +324,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
 
   // This is the window under test. We want to make sure
   // `-_rebuildOrderingGroup:` is called  during a child's `-orderOut:` or
-  // `-close`.
+  // `-close` or during the parent's `-removeChildWindow:`.
   RebuildOrderingGroupTestWindow* testWindow =
       [[RebuildOrderingGroupTestWindow alloc]
           initWithContentRect:NSMakeRect(0, 0, 300, 200)
@@ -363,7 +363,16 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerMacInteractiveTest,
   [popupWindow close];
   EXPECT_TRUE(testWindow->_orderingGroupRebuilt);
 
+  // Re-add the popup window as child of the test window, then ensure that the
+  // ordering group is rebuilt when the test window removes the popup window.
+  [testWindow addChildWindow:popupWindow ordered:NSWindowAbove];
+  EXPECT_TRUE(popupWindow.isVisible);
+  testWindow->_orderingGroupRebuilt = NO;
+  [testWindow removeChildWindow:popupWindow];
+  EXPECT_TRUE(testWindow->_orderingGroupRebuilt);
+
   // Cleanup
+  [popupWindow close];
   [testWindow close];
 }
 

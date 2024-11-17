@@ -37,24 +37,26 @@ import org.chromium.net.test.util.TestWebServer;
 @RequiresApi(Build.VERSION_CODES.P)
 public class AwDisplayCutoutTest extends AwParameterizedTest {
     private static final String TEST_HTML =
-            "<html><head><style>\n"
-                    + "body {\n"
-                    + " margin: 0;\n"
-                    + " padding: 0pt 0pt 0pt 0pt;\n"
-                    + "}\n"
-                    + "div {\n"
-                    + " margin: 0;\n"
-                    + " padding: env(safe-area-inset-top) "
-                    + "          env(safe-area-inset-right)"
-                    + "          env(safe-area-inset-bottom)"
-                    + "          env(safe-area-inset-left);\n"
-                    + "}\n"
-                    + "</style></head><body>\n"
-                    + "<div id='text'>"
-                    + "On notched phones, there should be enough padding on the top"
-                    + " to not have this text appear under the statusbar/notch.\n"
-                    + "</div>\n"
-                    + "</body></html>";
+            """
+        <html><head><style>
+        body {
+          margin: 0;
+          padding: 0pt 0pt 0pt 0pt;
+        }
+        div {
+          margin: 0;
+          padding: env(safe-area-inset-top)
+                   env(safe-area-inset-right)
+                   env(safe-area-inset-bottom)
+                   env(safe-area-inset-left);
+        }
+        </style></head><body>
+        <div id='text'>
+          On notched phones, there should be enough padding on the top
+          to not have this text appear under the statusbar/notch.
+        </div>
+        </body></html>
+        """;
 
     @Rule public AwActivityTestRule mActivityTestRule;
 
@@ -137,8 +139,10 @@ public class AwDisplayCutoutTest extends AwParameterizedTest {
                     mAwContents.getDisplayCutoutController().onApplyWindowInsetsInternal(insets);
                 });
         final String code =
-                "window.getComputedStyle(document.getElementById('text'))"
-                        + ".getPropertyValue('padding-top')";
+                """
+        window.getComputedStyle(document.getElementById('text'))
+              .getPropertyValue('padding-top')
+        """;
         Assert.assertEquals(
                 "\"0px\"",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(
@@ -157,8 +161,10 @@ public class AwDisplayCutoutTest extends AwParameterizedTest {
                     mAwContents.getDisplayCutoutController().onApplyWindowInsetsInternal(insets);
                 });
         final String code =
-                "window.getComputedStyle(document.getElementById('text'))"
-                        + ".getPropertyValue('padding-top')";
+                """
+        window.getComputedStyle(document.getElementById('text'))
+              .getPropertyValue('padding-top')
+        """;
         Assert.assertNotEquals(
                 "\"0px\"",
                 mActivityTestRule.executeJavaScriptAndWaitForResult(

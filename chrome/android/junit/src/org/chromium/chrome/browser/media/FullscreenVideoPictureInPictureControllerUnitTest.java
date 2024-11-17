@@ -203,6 +203,10 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
         // Un-stash while media is still paused.
         mController.onStashReported(false);
+        ShadowSystemClock.advanceBy(
+                FullscreenVideoPictureInPictureController.UNSTASH_DELAY_MILLIS + 10L,
+                TimeUnit.MILLISECONDS);
+        runUntilIdle();
         verify(mMediaSession, times(1)).resume();
     }
 
@@ -223,6 +227,10 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
         // Un-stash should also do nothing.
         mController.onStashReported(false);
+        ShadowSystemClock.advanceBy(
+                FullscreenVideoPictureInPictureController.UNSTASH_DELAY_MILLIS + 10L,
+                TimeUnit.MILLISECONDS);
+        runUntilIdle();
         verify(mMediaSession, times(0)).resume();
     }
 
@@ -242,6 +250,10 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
 
         // Un-stash should do nothing since there's nothing to do.
         mController.onStashReported(false);
+        ShadowSystemClock.advanceBy(
+                FullscreenVideoPictureInPictureController.UNSTASH_DELAY_MILLIS + 10L,
+                TimeUnit.MILLISECONDS);
+        runUntilIdle();
         verify(mMediaSession, times(0)).resume();
     }
 }

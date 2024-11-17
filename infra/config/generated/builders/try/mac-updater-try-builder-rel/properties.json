@@ -72,7 +72,8 @@
           "builder": "mac11-x64-updater-tester-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac-updater-try-builder-rel/targets"
     }
   },
   "$build/flakiness": {

@@ -88,6 +88,28 @@ class PaintManagerTest : public testing::Test {
     return saved_snapshot;
   }
 
+  // Generates the expectations for use with TestPaintImage().
+  //
+  // - `plugin_size`: The expected image size.
+  // - `paint_rect`: Expected to be painted white.
+  // - `overlapped_rect`: Expected to be painted red.
+  //                      May paint over `paint_rect`.
+  SkBitmap GeneratePaintImageExpectation(const gfx::Size& plugin_size,
+                                         const gfx::Rect& paint_rect,
+                                         const gfx::Rect& overlapped_rect) {
+    sk_sp<SkSurface> surface =
+        CreateSkiaSurfaceForTesting(plugin_size, SK_ColorMAGENTA);
+    SkCanvas* canvas = surface->getCanvas();
+    canvas->clipIRect(gfx::RectToSkIRect(paint_rect));
+    canvas->clear(SK_ColorWHITE);
+    canvas->clipIRect(gfx::RectToSkIRect(overlapped_rect));
+    canvas->clear(SK_ColorRED);
+
+    SkBitmap bitmap;
+    EXPECT_TRUE(surface->makeImageSnapshot()->asLegacyBitmap(&bitmap));
+    return bitmap;
+  }
+
   void TestPaintImage(const gfx::Size& plugin_size,
                       const gfx::Size& source_size,
                       const gfx::Rect& paint_rect,
@@ -105,7 +127,7 @@ class PaintManagerTest : public testing::Test {
         /*fake_pending=*/{});
     ASSERT_TRUE(snapshot);
 
-    // Check if snapshot has `overlapped_rect` painted red.
+    // Check if `snapshot` matches `expected_bitmap`.
     snapshot = snapshot->makeSubset(
         static_cast<GrDirectContext*>(nullptr),
         SkIRect::MakeWH(plugin_size.width(), plugin_size.height()));
@@ -114,16 +136,8 @@ class PaintManagerTest : public testing::Test {
     SkBitmap snapshot_bitmap;
     ASSERT_TRUE(snapshot->asLegacyBitmap(&snapshot_bitmap));
 
-    sk_sp<SkSurface> expected_surface =
-        CreateSkiaSurfaceForTesting(plugin_size, SK_ColorMAGENTA);
-    expected_surface->getCanvas()->clipIRect(
-        gfx::RectToSkIRect(overlapped_rect));
-    expected_surface->getCanvas()->clear(SK_ColorRED);
-
-    SkBitmap expected_bitmap;
-    ASSERT_TRUE(expected_surface->makeImageSnapshot()->asLegacyBitmap(
-        &expected_bitmap));
-
+    SkBitmap expected_bitmap =
+        GeneratePaintImageExpectation(plugin_size, paint_rect, overlapped_rect);
     EXPECT_TRUE(cc::MatchesBitmap(snapshot_bitmap, expected_bitmap,
                                   cc::ExactPixelComparator()));
   }

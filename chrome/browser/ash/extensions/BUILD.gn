@@ -49,6 +49,7 @@ static_library("extensions") {
 
   deps = [
     "//ash",
+    "//ash/components/arc:arc_app_constants",
     "//ash/constants",
     "//ash/public/cpp",
     "//ash/webui/mall:app_id",
@@ -74,6 +75,7 @@ static_library("extensions") {
     "//chrome/browser/ui/ash/multi_user",
     "//chrome/browser/web_applications",
     "//chrome/common",
+    "//chromeos/ash/components/file_manager:constants",
     "//chromeos/ash/components/language_packs",
     "//chromeos/ash/components/settings",
     "//chromeos/components/kiosk",

@@ -310,7 +310,6 @@ public class Toast {
             TextView textView = (TextView) inflater.inflate(R.layout.custom_toast_layout, null);
             if (mText != null) {
                 textView.setText(mText);
-                textView.announceForAccessibility(mText);
             }
             if (mBackgroundColor != null) {
                 textView.getBackground().setTint(mBackgroundColor);

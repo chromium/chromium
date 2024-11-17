@@ -4,9 +4,12 @@
 
 #include "components/invalidation/invalidation_listener_impl.h"
 
+#include <stdint.h>
+
 #include "base/containers/map_util.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id.h"
@@ -88,12 +91,15 @@ void Upsert(std::map<Topic, DirectInvalidation>& map,
 InvalidationListenerImpl::InvalidationListenerImpl(
     gcm::GCMDriver* gcm_driver,
     instance_id::InstanceIDDriver* instance_id_driver,
-    std::string project_number,
+    int64_t project_number,
     std::string log_prefix)
     : gcm_driver_(gcm_driver),
       instance_id_driver_(instance_id_driver),
-      project_number_(std::move(project_number)),
-      log_prefix_(log_prefix),
+      project_number_(project_number),
+      gcm_app_id_(
+          base::StrCat({kFmAppId, "-", base::NumberToString(project_number_)})),
+      log_prefix_(base::StrCat(
+          {log_prefix, "-", base::NumberToString(project_number_)})),
       registration_retry_backoff_(&kRegistrationRetryBackoffPolicy) {
   LOG(WARNING) << log_prefix_
                << " Created for project_number: " << project_number_;
@@ -145,7 +151,7 @@ void InvalidationListenerImpl::Start(
 
   // Note that `AddAppHandler()` causes an immediate replay of all received
   // invalidations in background on Android.
-  gcm_driver_->AddAppHandler(kFmAppId, this);
+  gcm_driver_->AddAppHandler(gcm_app_id_, this);
 
   registration_token_handler_ = registration_token_handler;
   FetchRegistrationToken();
@@ -157,7 +163,7 @@ void InvalidationListenerImpl::Shutdown() {
   CHECK(type_to_handler_.empty());
 
   registration_token_handler_ = nullptr;
-  gcm_driver_->RemoveAppHandler(kFmAppId);
+  gcm_driver_->RemoveAppHandler(gcm_app_id_);
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -166,6 +172,10 @@ void InvalidationListenerImpl::SetRegistrationUploadStatus(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   registration_upload_status_ = status;
   UpdateObserversExpectations();
+}
+
+int64_t InvalidationListenerImpl::project_number() const {
+  return project_number_;
 }
 
 // GCMAppHandler overrides.
@@ -183,7 +193,7 @@ void InvalidationListenerImpl::OnStoreReset() {
 void InvalidationListenerImpl::OnMessage(const std::string& app_id,
                                          const gcm::IncomingMessage& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK_EQ(app_id, kFmAppId);
+  CHECK_EQ(app_id, gcm_app_id_);
 
   LOG(WARNING) << log_prefix_ << " Message received";
   for (const auto& [key, value] : message.data) {
@@ -209,7 +219,7 @@ void InvalidationListenerImpl::OnMessage(const std::string& app_id,
 
 void InvalidationListenerImpl::OnMessagesDeleted(const std::string& app_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(app_id, kFmAppId);
+  DCHECK_EQ(app_id, gcm_app_id_);
 }
 
 void InvalidationListenerImpl::OnSendError(
@@ -227,12 +237,13 @@ void InvalidationListenerImpl::OnSendAcknowledged(
 }
 
 void InvalidationListenerImpl::FetchRegistrationToken() {
-  instance_id_driver_->GetInstanceID(kFmAppId)->GetToken(
-      project_number_, instance_id::kGCMScope,
-      /*time_to_live=*/kRegistrationTokenTimeToLive,
-      /*flags=*/{instance_id::InstanceID::Flags::kIsLazy},
-      base::BindOnce(&InvalidationListenerImpl::OnRegistrationTokenReceived,
-                     weak_ptr_factory_.GetWeakPtr()));
+  instance_id_driver_->GetInstanceID(gcm_app_id_)
+      ->GetToken(
+          base::NumberToString(project_number_), instance_id::kGCMScope,
+          /*time_to_live=*/kRegistrationTokenTimeToLive,
+          /*flags=*/{instance_id::InstanceID::Flags::kIsLazy},
+          base::BindOnce(&InvalidationListenerImpl::OnRegistrationTokenReceived,
+                         weak_ptr_factory_.GetWeakPtr()));
 }
 
 void InvalidationListenerImpl::OnRegistrationTokenReceived(

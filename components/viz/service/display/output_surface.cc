@@ -74,7 +74,7 @@ base::ScopedClosureRunner OutputSurface::GetCacheBackBufferCb() {
 void OutputSurface::InitDelegatedInkPointRendererReceiver(
     mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
         pending_receiver) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void OutputSurface::ReadbackForTesting(

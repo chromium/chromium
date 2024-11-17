@@ -94,7 +94,8 @@ else:
 
 SHARD_MAPS_DIR = CHROMIUM_SRC_DIR / 'tools/perf/core/shard_maps'
 CROSSBENCH_TOOL = CHROMIUM_SRC_DIR / 'third_party/crossbench/cb.py'
-ADB_TOOL = THIRD_PARTY_DIR / 'android_sdk/public/platform-tools/adb'
+ADB_TOOL = THIRD_PARTY_DIR / 'catapult/devil/bin/deps/linux2/x86_64/bin/adb'
+GSUTIL_DIR = THIRD_PARTY_DIR / 'catapult/third_party/gsutil'
 PAGE_SETS_DATA = CHROMIUM_SRC_DIR / 'tools/perf/page_sets/data'
 PERF_TOOLS = ['benchmarks', 'executables', 'crossbench']
 
@@ -716,19 +717,18 @@ class CrossbenchTest(object):
     self.is_android = self._is_android(browser_arg)
     self._find_browser(browser_arg)
     self.driver_path_arg = self._find_chromedriver(browser_arg)
-    self.network = self._get_network_arg(options.passthrough_args,
-                                         self.is_android)
+    self.network = self._get_network_arg(options.passthrough_args)
 
   def _get_browser_arg(self, args):
     browser_arg = self._get_arg(args, '--browser=', must_exists=True)
     return browser_arg.split('=', 1)[1]
 
-  def _get_network_arg(self, args, is_android):
+  def _get_network_arg(self, args):
     if _arg := self._get_arg(args, '--network='):
       return [_arg]
     if _arg := self._get_arg(args, '--fileserver'):
       return self._create_fileserver_network(_arg)
-    if is_android or self._get_arg(args, '--wpr'):
+    if self._get_arg(args, '--wpr'):
       return self._create_wpr_network(args)
     return []
 
@@ -740,16 +740,13 @@ class CrossbenchTest(object):
       if benchmark not in self.BENCHMARK_FILESERVERS:
         raise ValueError(f'fileserver does not support {benchmark}')
       fileserver_path = self.BENCHMARK_FILESERVERS.get(benchmark)
-    # The fileserver localhost port number is set to 8000. See:
-    # third_party/crossbench/crossbench/network/local_fileserver.py
-    http_port = 8000
     fileserver_relative_path = str(CHROMIUM_SRC_DIR / fileserver_path)
     # Replacing --fileserver with --network.
     self.options.passthrough_args.remove(arg)
     return [
         self._create_network_json('local',
                                   path=fileserver_relative_path,
-                                  url=f'http://localhost:{http_port}')
+                                  url='http://localhost:0')
     ]
 
   def _create_wpr_network(self, args):
@@ -860,6 +857,7 @@ class CrossbenchTest(object):
 
     env = os.environ.copy()
     env['CHROME_HEADLESS'] = '1'
+    env['PATH'] = f'{GSUTIL_DIR}:' + env['PATH']
 
     return_code = 1
     output_paths = OutputFilePaths(self.isolated_out_dir, display_name).SetUp()

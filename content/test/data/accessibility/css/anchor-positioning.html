@@ -1,0 +1,26 @@
+<!--
+@BLINK-ALLOW:details*
+@AURALINUX-ALLOW:details*
+@WIN-ALLOW:details*
+-->
+<html>
+<head><style>
+button {
+  anchor-name: --anchor-el;
+  margin: 60dvh;
+}
+
+div {
+  position: absolute;
+  position-anchor: --anchor-el;
+  bottom: anchor(top);
+  right: anchor(right);
+  background: skyblue;
+}
+
+</style></head>
+<body>
+  <div>target</div>
+  <button>anchor</button>
+</body>
+</html>

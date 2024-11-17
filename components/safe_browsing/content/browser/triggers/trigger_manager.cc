@@ -53,9 +53,8 @@ bool TriggerNeedsOptInForCollection(const TriggerType trigger_type) {
       return true;
     case TriggerType::DEPRECATED_AD_POPUP:
     case TriggerType::DEPRECATED_AD_REDIRECT:
-      NOTREACHED_IN_MIGRATION() << "These triggers have been handled in "
-                                   "CanStartDataCollectionWithReason()";
-      return true;
+      NOTREACHED() << "These triggers have been handled in "
+                      "CanStartDataCollectionWithReason()";
   }
   // By default, require opt-in for all triggers.
   return true;
@@ -63,17 +62,25 @@ bool TriggerNeedsOptInForCollection(const TriggerType trigger_type) {
 
 bool CanSendReport(const SBErrorOptions& error_display_options,
                    const TriggerType trigger_type) {
+  // SafeBrowsingExtendedReportingOptInAllowed policy was deprecated.
+  // trigger_manager will not depend on the is_extended_reporting_opt_in_allowed
+  // value when the extended reporting is deprecated. We will remove the feature
+  // flag check when the feature is fully rolled out.
+  bool is_extended_reporting_opt_in_allowed =
+      base::FeatureList::IsEnabled(kExtendedReportingRemovePrefDependency)
+          ? true
+          : error_display_options.is_extended_reporting_opt_in_allowed;
   // Reports are only sent for non-incoginito users who are allowed to modify
   // the Extended Reporting setting and have opted-in to Extended Reporting.
   return !error_display_options.is_off_the_record &&
-         error_display_options.is_extended_reporting_opt_in_allowed &&
+         is_extended_reporting_opt_in_allowed &&
          error_display_options.is_extended_reporting_enabled;
 }
 
 }  // namespace
 
-DataCollectorsContainer::DataCollectorsContainer() {}
-DataCollectorsContainer::~DataCollectorsContainer() {}
+DataCollectorsContainer::DataCollectorsContainer() = default;
+DataCollectorsContainer::~DataCollectorsContainer() = default;
 
 TriggerManager::FinishCollectingThreatDetailsResult::
     FinishCollectingThreatDetailsResult(bool should_send_report,
@@ -90,7 +97,7 @@ TriggerManager::TriggerManager(BaseUIManager* ui_manager,
     : ui_manager_(ui_manager),
       trigger_throttler_(new TriggerThrottler(local_state_prefs)) {}
 
-TriggerManager::~TriggerManager() {}
+TriggerManager::~TriggerManager() = default;
 
 void TriggerManager::set_trigger_throttler(TriggerThrottler* throttler) {
   trigger_throttler_.reset(throttler);
@@ -141,13 +148,21 @@ bool TriggerManager::CanStartDataCollectionWithReason(
   bool optin_required_check_ok =
       !TriggerNeedsOptInForCollection(trigger_type) ||
       error_display_options.is_extended_reporting_enabled;
-  // We start data collection as long as user is not incognito and is able to
-  // change the Extended Reporting opt-in, and the |trigger_type| has available
-  // quota. For some triggers we also require extended reporting opt-in in
-  // order to start data collection.
+
+  // SafeBrowsingExtendedReportingOptInAllowed policy was deprecated.
+  // trigger_manager will not depend on the is_extended_reporting_opt_in_allowed
+  // value when the extended reporting is deprecated. We will remove the feature
+  // flag check when the feature is fully rolled out.
+  bool is_extended_reporting_opt_in_allowed =
+      base::FeatureList::IsEnabled(kExtendedReportingRemovePrefDependency)
+          ? true
+          : error_display_options.is_extended_reporting_opt_in_allowed;
+
+  // We start data collection as long as user is not incognito, and the
+  // |trigger_type| has available quota. For some triggers we also require
+  // extended reporting opt-in in order to start data collection.
   if (!error_display_options.is_off_the_record &&
-      error_display_options.is_extended_reporting_opt_in_allowed &&
-      optin_required_check_ok) {
+      is_extended_reporting_opt_in_allowed && optin_required_check_ok) {
     bool quota_ok = trigger_throttler_->TriggerCanFire(trigger_type);
     if (!quota_ok)
       *out_reason = TriggerManagerReason::DAILY_QUOTA_EXCEEDED;
@@ -303,7 +318,7 @@ TriggerManagerWebContentsHelper::TriggerManagerWebContentsHelper(
           *web_contents),
       trigger_manager_(trigger_manager) {}
 
-TriggerManagerWebContentsHelper::~TriggerManagerWebContentsHelper() {}
+TriggerManagerWebContentsHelper::~TriggerManagerWebContentsHelper() = default;
 
 void TriggerManagerWebContentsHelper::WebContentsDestroyed() {
   trigger_manager_->WebContentsDestroyed(web_contents());

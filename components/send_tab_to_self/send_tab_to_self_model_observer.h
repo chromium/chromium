@@ -16,13 +16,13 @@ class SendTabToSelfEntry;
 // be taken to not modify the model.
 class SendTabToSelfModelObserver {
  public:
-  SendTabToSelfModelObserver() {}
+  SendTabToSelfModelObserver() = default;
 
   SendTabToSelfModelObserver(const SendTabToSelfModelObserver&) = delete;
   SendTabToSelfModelObserver& operator=(const SendTabToSelfModelObserver&) =
       delete;
 
-  virtual ~SendTabToSelfModelObserver() {}
+  virtual ~SendTabToSelfModelObserver() = default;
 
   // Invoked when the model has finished loading. Until this method is called it
   // is unsafe to use the model.

@@ -25,7 +25,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -84,12 +83,9 @@
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/public/cpp/window_properties.h"  // nogncheck
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/base/window_state_type.h"  // nogncheck
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/public/cpp/window_properties.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -123,7 +119,7 @@ namespace {
 // maximized size.
 constexpr int kMaximizedWindowInset = 10;  // DIPs.
 
-// Some platforms, such as Lacros and Desktop Linux with Wayland, disallow
+// Some platforms, such and Desktop Linux with Wayland, disallow
 // client applications to manipulate absolute screen positions, by design.
 // Preventing, for example, clients from programmatically positioning toplevel
 // windows using absolute coordinates. By default, this class assumes that the
@@ -415,7 +411,7 @@ TabDragController::Liveness TabDragController::Init(
   //     synchronous on desktop Linux, so use that.
   // - ChromeOS Ash
   //     Releasing capture on Ash cancels gestures so avoid it.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   ref->can_release_capture_ = false;
 #endif
   ref->start_point_in_screen_ =
@@ -444,11 +440,11 @@ TabDragController::Liveness TabDragController::Init(
   Browser* source_browser = BrowserView::GetBrowserViewForNativeWindow(
                                 source_context->GetWidget()->GetNativeWindow())
                                 ->browser();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (source_browser->IsLockedForOnTask()) {
     ref->detach_behavior_ = NOT_DETACHABLE;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   if (source_browser->app_controller() &&
       source_browser->app_controller()->has_tab_strip() &&
       web_app::HasPinnedHomeTab(source_browser->tab_strip_model())) {
@@ -1007,10 +1003,10 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
     // ReleaseCapture() is going to result in calling back to us (because it
     // results in a move). That'll cause all sorts of problems.  Reset the
     // observer so we don't get notified and process the event.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     widget_observation_.Reset();
     move_loop_widget_ = nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     views::Widget* browser_widget = GetAttachedBrowserWidget();
     // Disable animations so that we don't see a close animation on aero.
     browser_widget->SetVisibilityChangedAnimationsEnabled(false);
@@ -1019,9 +1015,7 @@ TabDragController::DragBrowserToNewTabStrip(TabDragContext* target_context,
     else
       SetCapture(target_context);
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_LINUX)
     // EndMoveLoop is going to snap the window back to its original location.
     // Hide it so users don't see this. Hiding a window in Linux aura causes
     // it to lose capture so skip it.
@@ -1617,8 +1611,7 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
 
     // If `attached_context_` received a gesture end event, it will have ended
     // the drag, destroying `this`. This shouldn't ever happen (preventing this
-    // scenario is why we pass kDontCancel above), but on Lacros it apparently
-    // sometimes can. See https://crbug.com/1350564.
+    // scenario is why we pass kDontCancel above) - https://crbug.com/1350564.
     CHECK(ref) << "Drag session was ended as part of transferring events to "
                   "the new browser. This should not happen.";
   }
@@ -1627,7 +1620,7 @@ void TabDragController::DetachIntoNewBrowserAndRunMoveLoop(
   dragged_widget->SetCanAppearInExistingFullscreenSpaces(true);
   dragged_widget->SetVisibilityChangedAnimationsEnabled(false);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, Detach should release capture; |can_release_capture_| is
   // false on ChromeOS because it can cancel touches, but for this cases
   // the touches are already transferred, so releasing is fine. Without
@@ -2175,7 +2168,7 @@ void TabDragController::MaximizeAttachedWindow() {
   if (was_source_fullscreen_)
     GetAttachedBrowserWidget()->SetFullscreen(true);
 #endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (was_source_fullscreen_) {
     // In fullscreen mode it is only possible to get here if the source
     // was in "immersive fullscreen" mode, so toggle it back on.
@@ -2183,7 +2176,8 @@ void TabDragController::MaximizeAttachedWindow() {
         GetAttachedBrowserWidget()->GetNativeWindow());
     DCHECK(browser_view);
     if (!browser_view->IsFullscreen())
-      chrome::ToggleFullscreenMode(browser_view->browser());
+      chrome::ToggleFullscreenMode(browser_view->browser(),
+                                   /*user_initiated=*/false);
   }
 #endif
 }
@@ -2269,22 +2263,6 @@ gfx::Rect TabDragController::CalculateDraggedBrowserBounds(
     new_bounds.set_width(std::max(max_size.width() / 2, new_bounds.width()));
     new_bounds.set_height(std::max(max_size.height() / 2, new_bounds.height()));
   }
-
-#if BUILDFLAG(IS_OZONE)
-  // On Wayland, coordinates are always relative to the window's origin, and the
-  // origin should always be (0, 0). Ensure we set the origin to (0, 0) in this
-  // case, or operations like finding the window under the cursor might not work
-  // as expected.
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_global_screen_coordinates) {
-    // `new_bounds` comes from window bounds, but in tests windows sometimes
-    // have a non-(0, 0) origin, so play it safe and explicitly set the origin.
-    new_bounds.set_origin({0, 0});
-    // The rest of this method only changes the origin, so return early here.
-    return new_bounds;
-  }
-#endif
 
   new_bounds.set_y(point_in_screen.y() - center.y());
   switch (GetDetachPosition(point_in_screen)) {
@@ -2378,8 +2356,17 @@ void TabDragController::AdjustBrowserAndTabBoundsForDrag(
                                       &cursor_offset_in_widget);
     gfx::Rect bounds = GetAttachedBrowserWidget()->GetWindowBoundsInScreen();
     bounds.set_x(point_in_screen.x() - cursor_offset_in_widget.x());
-    GetAttachedBrowserWidget()->SetBounds(bounds);
-    *drag_offset = point_in_screen - bounds.origin();
+
+    // This function is about horizontal alignment and assumes `drag_offset`'s Y
+    // was previously calculated and set, so only X is modified here.
+    drag_offset->set_x(point_in_screen.x() - bounds.x());
+
+    // Some platforms, such as Linux/Wayland, do not support window positioning
+    // using screen coordinates, in which case tab dragging is backed by system
+    // drag-and-drop instead.
+    if (PlatformProvidesAbsoluteWindowPositions()) {
+      GetAttachedBrowserWidget()->SetBounds(bounds);
+    }
   }
   attached_context_->SetBoundsForDrag(attached_views_, *drag_bounds);
 }
@@ -2426,6 +2413,16 @@ Browser* TabDragController::CreateBrowserForDrag(
   gfx::Rect new_bounds(
       CalculateDraggedBrowserBounds(source, point_in_screen, drag_bounds));
   *drag_offset = point_in_screen - new_bounds.origin();
+
+  // On Wayland, for example, coordinates are always relative to the window's
+  // origin, and the origin should always be (0, 0). Ensure we set the origin to
+  // (0, 0) in this case, or operations like finding the window under the cursor
+  // might not work as expected.
+  if (!PlatformProvidesAbsoluteWindowPositions()) {
+    // `new_bounds` comes from window bounds, but in tests windows sometimes
+    // have a non-(0, 0) origin, so play it safe and explicitly set the origin.
+    new_bounds.set_origin({0, 0});
+  }
 
   // Find if there's a controlling app, and thus we should open an app window.
   Browser* from_browser = BrowserView::GetBrowserViewForNativeWindow(
@@ -2529,9 +2526,8 @@ TabDragController::Liveness TabDragController::GetLocalProcessWindow(
     if (dragged_window)
       exclude.insert(dragged_window);
   }
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_LINUX)
   // Exclude windows which are pending deletion via Browser::TabStripEmpty().
   // These windows can be returned in the Linux Aura port because the browser
   // window which was used for dragging is not hidden once all of its tabs are
@@ -2548,7 +2544,7 @@ TabDragController::Liveness TabDragController::GetLocalProcessWindow(
 }
 
 void TabDragController::SetTabDraggingInfo() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   TabDragContext* dragged_context =
       attached_context_ ? attached_context_ : source_context_;
   DCHECK(dragged_context->IsDragSessionActive() &&
@@ -2561,7 +2557,7 @@ void TabDragController::SetTabDraggingInfo() {
 }
 
 void TabDragController::ClearTabDraggingInfo() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   TabDragContext* dragged_context =
       attached_context_ ? attached_context_ : source_context_;
   DCHECK(!dragged_context->IsDragSessionActive() ||

@@ -98,6 +98,11 @@ class MEDIA_EXPORT VideoDecoder : public Decoder {
   // |output_cb| must be called for each frame pending in the queue and
   // |decode_cb| must be called after that. Callers will not call Decode()
   // again until after the flush completes.
+  //
+  // If |buffer| is an EOS buffer with an attached VideoDecoderConfig, the
+  // decoder may choose to elide the flush if feasible. If so, it should reply
+  // to the |decode_cb| with kElidedEndOfStreamForConfigChange to avoid being
+  // reinitialized.
   virtual void Decode(scoped_refptr<DecoderBuffer> buffer,
                       DecodeCB decode_cb) = 0;
 

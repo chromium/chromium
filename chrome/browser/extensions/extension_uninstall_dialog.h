@@ -19,6 +19,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/uninstall_reason.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
@@ -34,6 +35,9 @@ class ExtensionUninstallDialog : public ChromeAppIconDelegate,
                                  public ExtensionRegistryObserver,
                                  public ProfileObserver {
  public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonElementId);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kOkButtonElementId);
+
   // The type of action the dialog took at close.
   // Do not reorder this enum as it is used in UMA histograms.
   enum CloseAction {

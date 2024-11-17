@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_service.h"
+#include "chrome/browser/ash/crostini/ansible/ansible_management_service_factory.h"
 #include "chrome/browser/ash/crostini/ansible/ansible_management_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -194,7 +195,7 @@ class CrostiniAnsibleSoftwareConfigViewBrowserTest
   base::RunLoop* run_loop() { return run_loop_.get(); }
 
   crostini::AnsibleManagementService* ansible_management_service() {
-    return crostini::AnsibleManagementService::GetForProfile(
+    return crostini::AnsibleManagementServiceFactory::GetForProfile(
         browser()->profile());
   }
 

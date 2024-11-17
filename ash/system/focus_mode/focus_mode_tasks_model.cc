@@ -113,7 +113,7 @@ void FocusModeTasksModel::RequestUpdate() {
   if (delegate_) {
     // If there is a currently selected task, we fetch the task to see if the
     // title was updated or if it has been completed.
-    if (selected_task_) {
+    if (selected_task_ && selected_task_->task_id.IsValid()) {
       delegate_->FetchTask(
           selected_task_->task_id,
           base::BindOnce(&FocusModeTasksModel::OnSelectedTaskFetched,
@@ -184,6 +184,17 @@ void FocusModeTasksModel::ClearSelectedTask() {
     selected_task_ = nullptr;
     NotifySelectedTask(observers_, nullptr);
   }
+
+  // If there is still a pending task, we clear it and also remove it from
+  // `tasks_` in order to prevent potentially having multiple pending tasks.
+  if (pending_task_) {
+    auto iter = base::ranges::find(tasks_, pending_task_->task_id,
+                                   &FocusModeTask::task_id);
+    CHECK(iter != tasks_.end());
+    pending_task_ = nullptr;
+    tasks_.erase(iter);
+    NotifyTaskListChanged(observers_, tasks_);
+  }
 }
 
 void FocusModeTasksModel::Reset() {
@@ -212,7 +223,7 @@ void FocusModeTasksModel::SetSelectedTaskFromPrefs(const TaskId& task_id) {
   pref_task_id_ = task_id;
   FocusModeTasksModel::Delegate::FetchTaskCallback callback = base::BindOnce(
       &FocusModeTasksModel::OnPrefTaskFetched, weak_ptr_factory_.GetWeakPtr());
-  if (delegate_) {
+  if (delegate_ && pref_task_id_->IsValid()) {
     delegate_->FetchTask(*pref_task_id_, std::move(callback));
   }
 }
@@ -331,6 +342,10 @@ const FocusModeTask* FocusModeTasksModel::selected_task() const {
   return selected_task_;
 }
 
+const FocusModeTask* FocusModeTasksModel::PendingTaskForTesting() const {
+  return pending_task_;
+}
+
 const TaskId& FocusModeTasksModel::PrefTaskIdForTesting() const {
   return *pref_task_id_;
 }
@@ -358,8 +373,12 @@ void FocusModeTasksModel::OnTaskAdded(
     NotifySelectedTask(observers_, selected_task_);
   }
 
-  // Clear the pending task.
+  // The pending task has now been successfully added, so we can clear
+  // `pending_task_` since it's updated in `tasks_`.
   pending_task_ = nullptr;
+
+  // Update the UI with the newly added task data.
+  NotifyTaskListChanged(observers_, tasks_);
 }
 
 void FocusModeTasksModel::OnPrefTaskFetched(

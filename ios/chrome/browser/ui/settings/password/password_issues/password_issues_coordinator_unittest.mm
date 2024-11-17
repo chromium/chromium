@@ -44,7 +44,7 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     // Add test password store. Used by the mediator.
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
@@ -59,16 +59,14 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-    browser_state_ = std::move(builder).Build();
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
     // Keep a scoped reference to IOSChromePasswordCheckManager until the test
     // finishes, otherwise it gets destroyed as soon as PasswordIssuesMediator
     // init goes out of scope.
     password_check_manager_ =
-        IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-            browser_state_.get());
+        IOSChromePasswordCheckManagerFactory::GetForProfile(profile_.get());
 
     // Mock ApplicationCommands. Since ApplicationCommands conforms to
     // SettingsCommands, it must be mocked as well.
@@ -144,7 +142,7 @@ class PasswordIssuesCoordinatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   // IOSChromePasswordCheckManager must be destroyed before browser otherwise it
   // crashes when unregistering itself as an observer of a keyed service.

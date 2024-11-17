@@ -1,3 +1,9 @@
 include_rules = [
   "+third_party/libei/cipd",
 ]
+
+specific_include_rules = {
+  "gdbus_connection_ref_unittest\.cc": [
+    "+dbus",
+  ],
+}

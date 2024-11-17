@@ -41,20 +41,22 @@ namespace enterprise_data_protection {
 
 namespace {
 
+// Returns an empty URL if `endpoint` doesn't hold a DTE, or a non-URL DTE.
+GURL GetUrlFromEndpoint(const content::ClipboardEndpoint& endpoint) {
+  if (!endpoint.data_transfer_endpoint() ||
+      !endpoint.data_transfer_endpoint()->IsUrlType() ||
+      !endpoint.data_transfer_endpoint()->GetURL()) {
+    return GURL();
+  }
+  return *endpoint.data_transfer_endpoint()->GetURL();
+}
+
 bool SkipDataControlOrContentAnalysisChecks(
     const content::ClipboardEndpoint& main_endpoint) {
   // Data Controls and content analysis copy/paste checks require an active tab
   // to be meaningful, so if it's gone they can be skipped.
   auto* web_contents = main_endpoint.web_contents();
   if (!web_contents) {
-    return true;
-  }
-
-  // Data Controls and content analysis copy/paste checks are only meaningful in
-  // Chrome tabs, so they should always be skipped for source-only checks (ex.
-  // copy prevention checks).
-  if (!main_endpoint.data_transfer_endpoint().has_value() ||
-      !main_endpoint.data_transfer_endpoint()->IsUrlType()) {
     return true;
   }
 
@@ -167,8 +169,7 @@ void PasteIfAllowedByContentAnalysis(
   enterprise_connectors::ContentAnalysisDelegate::Data dialog_data;
 
   if (!enterprise_connectors::ContentAnalysisDelegate::IsEnabled(
-          profile, *destination.data_transfer_endpoint()->GetURL(),
-          &dialog_data, connector)) {
+          profile, GetUrlFromEndpoint(destination), &dialog_data, connector)) {
     std::move(callback).Run(std::move(clipboard_paste_data));
     return;
   }
@@ -373,8 +374,7 @@ void IsCopyToOSClipboardRestricted(
 
   auto verdict = data_controls::ChromeRulesServiceFactory::GetInstance()
                      ->GetForBrowserContext(source.browser_context())
-                     ->GetCopyToOSClipboardVerdict(
-                         *source.data_transfer_endpoint()->GetURL());
+                     ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source));
 
   if (verdict.level() == data_controls::Rule::Level::kBlock) {
     // Before calling `callback`, we remember `data` will correspond to the next
@@ -420,8 +420,7 @@ void IsCopyRestrictedByDialog(
   auto source_only_verdict =
       data_controls::ChromeRulesServiceFactory::GetInstance()
           ->GetForBrowserContext(source.browser_context())
-          ->GetCopyRestrictedBySourceVerdict(
-              *source.data_transfer_endpoint()->GetURL());
+          ->GetCopyRestrictedBySourceVerdict(GetUrlFromEndpoint(source));
 
   auto* factory = GetDialogFactory();
   if (source_only_verdict.level() == data_controls::Rule::Level::kBlock) {
@@ -439,8 +438,7 @@ void IsCopyRestrictedByDialog(
   auto os_clipboard_verdict =
       data_controls::ChromeRulesServiceFactory::GetInstance()
           ->GetForBrowserContext(source.browser_context())
-          ->GetCopyToOSClipboardVerdict(
-              *source.data_transfer_endpoint()->GetURL());
+          ->GetCopyToOSClipboardVerdict(GetUrlFromEndpoint(source));
 
   if (source_only_verdict.level() == data_controls::Rule::Level::kWarn ||
       os_clipboard_verdict.level() == data_controls::Rule::Level::kWarn) {
@@ -508,24 +506,21 @@ void IsClipboardCopyAllowedByPolicy(
     const content::ClipboardMetadata& metadata,
     const content::ClipboardPasteData& data,
     content::ContentBrowserClient::IsClipboardCopyAllowedCallback callback) {
-  // TODO(crbug.com/362674391): Find a long term fix for this issue.
   if (SkipDataControlOrContentAnalysisChecks(source)) {
     std::move(callback).Run(metadata.format_type, data, std::nullopt);
     return;
   }
+
   DCHECK(source.web_contents());
   DCHECK(source.browser_context());
-  DCHECK(source.data_transfer_endpoint());
-  DCHECK(source.data_transfer_endpoint()->IsUrlType());
 
 #if !BUILDFLAG(IS_ANDROID)
-  const GURL& url = *source.data_transfer_endpoint()->GetURL();
-
   std::u16string replacement_data;
   ClipboardRestrictionService* service =
       ClipboardRestrictionServiceFactory::GetInstance()->GetForBrowserContext(
           source.browser_context());
-  if (!service->IsUrlAllowedToCopy(url, metadata.size.value_or(0),
+  if (!service->IsUrlAllowedToCopy(GetUrlFromEndpoint(source),
+                                   metadata.size.value_or(0),
                                    &replacement_data)) {
     std::move(callback).Run(metadata.format_type, data,
                             std::move(replacement_data));

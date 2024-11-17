@@ -186,7 +186,7 @@ class UrlConditionCaseTest {
                                                        lower_case_enforced)),
         url_(url) {}
 
-  ~UrlConditionCaseTest() {}
+  ~UrlConditionCaseTest() = default;
 
   // Match the condition against |url_|. Checks via EXPECT_* macros that
   // |expected_value_| matches always, and that |incorrect_case_value_| matches

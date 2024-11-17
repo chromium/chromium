@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.cookies;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -144,11 +145,15 @@ public class CookiesFetcher implements Destroyable {
      * If an incognito profile exists, synchronously fetch cookies from the file specified and
      * populate the incognito profile with it. Otherwise deletes the file and does not restore the
      * cookies.
+     *
+     * @param restoreCompletedAction Called when the restore action has been completed (regardless
+     *     of whether any cookies were in fact restored).
      */
-    public void restoreCookies() {
+    public void restoreCookies(@NonNull Runnable restoreCompletedAction) {
         ThreadUtils.assertOnUiThread();
         if (!mProfileProvider.hasOffTheRecordProfile()) {
             scheduleDeleteCookies();
+            restoreCompletedAction.run();
             return;
         }
         Profile offTheRecordProfile = mProfileProvider.getOffTheRecordProfile(false);
@@ -196,6 +201,7 @@ public class CookiesFetcher implements Destroyable {
             protected void onPostExecute(List<CanonicalCookie> cookies) {
                 // We can only access cookies and profiles on the UI thread.
                 if (offTheRecordProfile.shutdownStarted()) {
+                    restoreCompletedAction.run();
                     return;
                 }
                 for (CanonicalCookie cookie : cookies) {
@@ -223,6 +229,7 @@ public class CookiesFetcher implements Destroyable {
                 // The Cookie File should not be restored again. It'll be overwritten on the next
                 // onPause.
                 scheduleDeleteCookies();
+                restoreCompletedAction.run();
             }
         }.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }

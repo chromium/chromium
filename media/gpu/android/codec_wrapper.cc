@@ -29,7 +29,6 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
  public:
   CodecWrapperImpl(CodecSurfacePair codec_surface_pair,
                    CodecWrapper::OutputReleasedCB output_buffer_release_cb,
-                   scoped_refptr<base::SequencedTaskRunner> release_task_runner,
                    const gfx::Size& initial_expected_size,
                    const gfx::ColorSpace& config_color_space,
                    std::optional<gfx::Size> coded_size_alignment,
@@ -82,7 +81,7 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
 
   // |lock_| protects access to all member variables.
   mutable base::Lock lock_;
-  State state_;
+  State state_ = State::kFlushed;
   std::unique_ptr<MediaCodecBridge> codec_;
 
   // The currently configured surface.
@@ -90,7 +89,7 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
 
   // Buffer ids are unique for a given CodecWrapper and map to MediaCodec buffer
   // indices.
-  int64_t next_buffer_id_;
+  int64_t next_buffer_id_ = 0;
   base::flat_map<int64_t, int> buffer_ids_;
 
   // An input buffer that was dequeued but subsequently rejected from
@@ -104,7 +103,7 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
 
   // A callback that's called whenever an output buffer is released back to the
   // codec.
-  CodecWrapper::OutputReleasedCB output_buffer_release_cb_;
+  const CodecWrapper::OutputReleasedCB output_buffer_release_cb_;
 
   // Do we owe the client an EOS in DequeueOutput, due to an eos that we elided
   // while we're already flushed?
@@ -121,10 +120,6 @@ class CodecWrapperImpl : public base::RefCountedThreadSafe<CodecWrapperImpl> {
 
   // Enables Block Model (LinearBlock).
   const bool use_block_model_;
-
-  // Task runner on which we'll release codec buffers without rendering.  May be
-  // null to always do this on the calling task runner.
-  scoped_refptr<base::SequencedTaskRunner> release_task_runner_;
 };
 
 CodecOutputBuffer::CodecOutputBuffer(
@@ -184,21 +179,18 @@ gfx::Size CodecOutputBuffer::GuessCodedSize() const {
 CodecWrapperImpl::CodecWrapperImpl(
     CodecSurfacePair codec_surface_pair,
     CodecWrapper::OutputReleasedCB output_buffer_release_cb,
-    scoped_refptr<base::SequencedTaskRunner> release_task_runner,
     const gfx::Size& initial_expected_size,
     const gfx::ColorSpace& config_color_space,
     std::optional<gfx::Size> coded_size_alignment,
     bool use_block_model)
-    : state_(State::kFlushed),
-      codec_(std::move(codec_surface_pair.first)),
+    : codec_(std::move(codec_surface_pair.first)),
       surface_bundle_(std::move(codec_surface_pair.second)),
-      next_buffer_id_(0),
       size_(initial_expected_size),
       output_buffer_release_cb_(std::move(output_buffer_release_cb)),
       coded_size_alignment_(coded_size_alignment),
       config_color_space_(config_color_space),
-      use_block_model_(use_block_model),
-      release_task_runner_(std::move(release_task_runner)) {
+      use_block_model_(use_block_model) {
+  CHECK(codec_);
   DVLOG(2) << __func__;
 }
 
@@ -317,20 +309,17 @@ CodecWrapperImpl::QueueStatus CodecWrapperImpl::QueueInputBuffer(
   const DecryptConfig* decrypt_config = buffer.decrypt_config();
   MediaCodecResult result;
   if (decrypt_config) {
-    // TODO(crbug.com/40563697): Use encryption scheme settings from
-    // DecryptConfig.
     result = codec_->QueueSecureInputBuffer(
-        input_buffer, buffer.data(), buffer.size(), decrypt_config->key_id(),
-        decrypt_config->iv(), decrypt_config->subsamples(),
-        decrypt_config->encryption_scheme(),
+        input_buffer, buffer, decrypt_config->key_id(), decrypt_config->iv(),
+        decrypt_config->subsamples(), decrypt_config->encryption_scheme(),
         decrypt_config->encryption_pattern(), buffer.timestamp());
   } else {
     if (use_block_model_) {
-      result = codec_->QueueInputBlock(input_buffer, buffer.AsSpan(),
-                                       buffer.timestamp(), false);
+      result = codec_->QueueInputBlock(input_buffer, buffer, buffer.timestamp(),
+                                       false);
     } else {
-      result = codec_->QueueInputBuffer(input_buffer, buffer.data(),
-                                        buffer.size(), buffer.timestamp());
+      result =
+          codec_->QueueInputBuffer(input_buffer, buffer, buffer.timestamp());
     }
   }
 
@@ -476,65 +465,20 @@ scoped_refptr<CodecSurfaceBundle> CodecWrapperImpl::SurfaceBundle() {
 }
 
 bool CodecWrapperImpl::ReleaseCodecOutputBuffer(int64_t id, bool render) {
-  if (!render && release_task_runner_ &&
-      !release_task_runner_->RunsTasksInCurrentSequence()) {
-    // Note that this can only delay releases, but that won't ultimately change
-    // the ordering at the codec, assuming that releases / renders originate
-    // from the same thread.
-    //
-    // We know that a render call that happens before a release call will still
-    // run before the release's posted task, since it happens before we even
-    // post it.
-    //
-    // Similarly, renders are kept in order with each other.
-    //
-    // It is possible that a render happens before the posted task(s) of some
-    // earlier release(s) (with no intervening renders, since those are
-    // ordered).  In this case, though, the loop below will still release
-    // everything earlier than the rendered buffer, so the codec still sees the
-    // same sequence of calls -- some releases followed by a render.
-    //
-    // Of course, if releases and renders are posted from different threads,
-    // then it's unclear what the ordering was anyway.
-    release_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            base::IgnoreResult(&CodecWrapperImpl::ReleaseCodecOutputBuffer),
-            this, id, render));
-    return true;
-  }
-
   base::AutoLock l(lock_);
-
-  // Adding a scoped crash key here to detect the cause of gpu hang.
-  // crbug.com/1292936.
-  static auto* kCrashKey_1 = base::debug::AllocateCrashKeyString(
-      "acquired_lock_inside_codecwrapperimpl_releasecodecoutputbuffer",
-      base::debug::CrashKeySize::Size256);
-  base::debug::ScopedCrashKeyString scoped_crash_key_1(kCrashKey_1, "1");
-
-  if (!codec_ || state_ == State::kError)
+  if (!codec_ || state_ == State::kError) {
     return false;
+  }
 
   auto buffer_it = buffer_ids_.find(id);
   bool valid = buffer_it != buffer_ids_.end();
   DVLOG(2) << __func__ << " id=" << id << " render=" << render
            << " valid=" << valid;
-  if (!valid)
+  if (!valid) {
     return false;
-
-  int index = buffer_it->second;
-
-  {
-    // Adding another scoped crash key here to detect the cause of gpu hang.
-    // crbug.com/1292936.
-    static auto* kCrashKey_2 = base::debug::AllocateCrashKeyString(
-        "executing_mediacodec_releaseoutputbuffer",
-        base::debug::CrashKeySize::Size256);
-    base::debug::ScopedCrashKeyString scoped_crash_key_2(kCrashKey_2, "1");
-    codec_->ReleaseOutputBuffer(index, render);
   }
 
+  codec_->ReleaseOutputBuffer(buffer_it->second, render);
   buffer_ids_.erase(buffer_it);
   if (output_buffer_release_cb_) {
     output_buffer_release_cb_.Run(state_ == State::kDrained ||
@@ -547,14 +491,12 @@ bool CodecWrapperImpl::ReleaseCodecOutputBuffer(int64_t id, bool render) {
 CodecWrapper::CodecWrapper(
     CodecSurfacePair codec_surface_pair,
     OutputReleasedCB output_buffer_release_cb,
-    scoped_refptr<base::SequencedTaskRunner> release_task_runner,
     const gfx::Size& initial_expected_size,
     const gfx::ColorSpace& config_color_space,
     std::optional<gfx::Size> coded_size_alignment,
     bool use_block_model)
     : impl_(new CodecWrapperImpl(std::move(codec_surface_pair),
                                  std::move(output_buffer_release_cb),
-                                 std::move(release_task_runner),
                                  initial_expected_size,
                                  config_color_space,
                                  coded_size_alignment,

@@ -11,12 +11,16 @@
 #ifndef __XML_VALID_H__
 #define __XML_VALID_H__
 
+/** DOC_DISABLE */
 #include <libxml/xmlversion.h>
 #include <libxml/xmlerror.h>
+#define XML_TREE_INTERNALS
 #include <libxml/tree.h>
+#undef XML_TREE_INTERNALS
 #include <libxml/list.h>
 #include <libxml/xmlautomata.h>
 #include <libxml/xmlregexp.h>
+/** DOC_ENABLE */
 
 #ifdef __cplusplus
 extern "C" {
@@ -141,10 +145,8 @@ XMLPUBFUN xmlNotationPtr
 					 const xmlChar *name,
 					 const xmlChar *PublicID,
 					 const xmlChar *SystemID);
-#ifdef LIBXML_TREE_ENABLED
 XMLPUBFUN xmlNotationTablePtr
 		xmlCopyNotationTable	(xmlNotationTablePtr table);
-#endif /* LIBXML_TREE_ENABLED */
 XMLPUBFUN void
 		xmlFreeNotationTable	(xmlNotationTablePtr table);
 #ifdef LIBXML_OUTPUT_ENABLED
@@ -198,10 +200,8 @@ XMLPUBFUN xmlElementPtr
 					 const xmlChar *name,
 					 xmlElementTypeVal type,
 					 xmlElementContentPtr content);
-#ifdef LIBXML_TREE_ENABLED
 XMLPUBFUN xmlElementTablePtr
 		xmlCopyElementTable	(xmlElementTablePtr table);
-#endif /* LIBXML_TREE_ENABLED */
 XMLPUBFUN void
 		xmlFreeElementTable	(xmlElementTablePtr table);
 #ifdef LIBXML_OUTPUT_ENABLED
@@ -220,10 +220,8 @@ XMLPUBFUN xmlEnumerationPtr
 		xmlCreateEnumeration	(const xmlChar *name);
 XMLPUBFUN void
 		xmlFreeEnumeration	(xmlEnumerationPtr cur);
-#ifdef LIBXML_TREE_ENABLED
 XMLPUBFUN xmlEnumerationPtr
 		xmlCopyEnumeration	(xmlEnumerationPtr cur);
-#endif /* LIBXML_TREE_ENABLED */
 
 /* Attribute */
 XMLPUBFUN xmlAttributePtr
@@ -236,10 +234,8 @@ XMLPUBFUN xmlAttributePtr
 					 xmlAttributeDefault def,
 					 const xmlChar *defaultValue,
 					 xmlEnumerationPtr tree);
-#ifdef LIBXML_TREE_ENABLED
 XMLPUBFUN xmlAttributeTablePtr
 		xmlCopyAttributeTable  (xmlAttributeTablePtr table);
-#endif /* LIBXML_TREE_ENABLED */
 XMLPUBFUN void
 		xmlFreeAttributeTable  (xmlAttributeTablePtr table);
 #ifdef LIBXML_OUTPUT_ENABLED
@@ -384,15 +380,12 @@ XML_DEPRECATED
 XMLPUBFUN int
 		xmlValidateDocumentFinal(xmlValidCtxtPtr ctxt,
 					 xmlDocPtr doc);
-#endif /* LIBXML_VALID_ENABLED */
-
-#if defined(LIBXML_VALID_ENABLED) || defined(LIBXML_SCHEMAS_ENABLED)
 XML_DEPRECATED
 XMLPUBFUN int
 		xmlValidateNotationUse	(xmlValidCtxtPtr ctxt,
 					 xmlDocPtr doc,
 					 const xmlChar *notationName);
-#endif /* LIBXML_VALID_ENABLED or LIBXML_SCHEMAS_ENABLED */
+#endif /* LIBXML_VALID_ENABLED */
 
 XMLPUBFUN int
 		xmlIsMixedElement	(xmlDocPtr doc,

@@ -74,7 +74,8 @@
           "builder": "Win11 FYI arm64 Release (Qualcomm Adreno 690)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-win11-qualcomm-rel-64/targets"
     }
   },
   "$build/reclient": {

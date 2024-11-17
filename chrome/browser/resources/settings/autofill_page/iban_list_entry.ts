@@ -24,9 +24,15 @@ export type DotsIbanMenuClickEvent = CustomEvent<{
   anchorElement: HTMLElement,
 }>;
 
+export type RemoteIbanMenuClickEvent = CustomEvent<{
+  iban: chrome.autofillPrivate.IbanEntry,
+  anchorElement: HTMLElement,
+}>;
+
 declare global {
   interface HTMLElementEventMap {
     'dots-iban-menu-click': DotsIbanMenuClickEvent;
+    'remote-iban-menu-click': RemoteIbanMenuClickEvent;
   }
 }
 
@@ -87,6 +93,10 @@ export class SettingsIbanListEntryElement extends
     this.dispatchEvent(new CustomEvent('remote-iban-menu-click', {
       bubbles: true,
       composed: true,
+      detail: {
+        iban: this.iban,
+        anchorElement: this.dotsMenu,
+      },
     }));
   }
 

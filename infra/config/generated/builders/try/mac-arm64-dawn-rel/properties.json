@@ -83,7 +83,8 @@
           "builder": "Dawn Mac arm64 Release (Apple M2)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac-arm64-dawn-rel/targets"
     }
   },
   "$build/reclient": {

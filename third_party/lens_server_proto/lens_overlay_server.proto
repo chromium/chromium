@@ -11,6 +11,20 @@ package lens;
 import "lens_overlay_client_logs.proto";
 import "lens_overlay_service_deps.proto";
 
+// The cluster info request for a Lens Overlay session.
+message LensOverlayServerClusterInfoRequest {
+  // Whether to return a search session id alongside the server session id.
+  bool enable_search_session_id = 1;
+}
+
+message LensOverlayServerClusterInfoResponse {
+  // ID for subsequent server requests.
+  string server_session_id = 1;
+
+  // ID for subsequent search requests.
+  string search_session_id = 2;
+}
+
 // An error encountered while handling a request.
 // Next ID: 2
 message LensOverlayServerError {

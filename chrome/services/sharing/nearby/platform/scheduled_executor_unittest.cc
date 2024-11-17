@@ -14,8 +14,7 @@
 #include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -229,5 +228,5 @@ TEST_F(ScheduledExecutorTest, DestroyAllowExistingTaskToCompleteImmediately) {
   EXPECT_EQ(1u, GetSetSize());
   VerifySetContainsId(id);
 }
-}  // namespace chrome
-}  // namespace nearby
+
+}  // namespace nearby::chrome

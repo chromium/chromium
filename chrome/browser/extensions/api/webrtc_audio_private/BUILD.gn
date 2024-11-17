@@ -1,0 +1,33 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+
+source_set("webrtc_audio_private") {
+  sources = [
+    "webrtc_audio_private_api.cc",
+    "webrtc_audio_private_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/common/extensions/api",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//media",
+  ]
+
+  deps = [
+    "//chrome/browser/extensions",
+    "//chrome/browser/media/webrtc",
+    "//components/media_device_salt",
+    "//extensions/common",
+    "//third_party/blink/public/common:headers",
+    "//url",
+  ]
+}

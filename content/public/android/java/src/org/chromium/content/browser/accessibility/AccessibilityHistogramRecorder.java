@@ -94,6 +94,22 @@ public class AccessibilityHistogramRecorder {
     public static final String AUTO_DISABLE_ACCESSIBILITY_ENABLED_TIME_SUCCESSIVE =
             "Accessibility.Android.AutoDisableV2.EnabledTime.Successive";
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String ACCESSIBILITY_INLINE_TEXT_BOXES_BUNDLE =
+            "Accessibility.Android.InlineTextBoxes.Bundle.FromFocus";
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String ACCESSIBILITY_INLINE_TEXT_BOXES_COUNT =
+            "Accessibility.InlineTextBoxes.Count";
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String ACCESSIBILITY_INLINE_TEXT_BOXES_PRESENT_IN_UPDATE =
+            "Accessibility.InlineTextBoxes.PresentInUpdate";
+
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static final String ACCESSIBILITY_INLINE_TEXT_BOXES_DUPLICATE_REQUEST =
+            "Accessibility.Android.InlineTextBoxes.DuplicateRequest";
+
     private static final int EVENTS_DROPPED_HISTOGRAM_MIN_BUCKET = 1;
     private static final int EVENTS_DROPPED_HISTOGRAM_MAX_BUCKET = 10000;
     private static final int EVENTS_DROPPED_HISTOGRAM_BUCKET_COUNT = 100;
@@ -367,5 +383,16 @@ public class AccessibilityHistogramRecorder {
 
         // Reset values.
         mTimeOfFirstShown = -1;
+    }
+
+    /**
+     * Record UMA histograms for whether or not an explicit request for an inline text box was a
+     * duplicate request.
+     *
+     * @param isDuplicate True if this was a duplicate request.
+     */
+    public void recordInlineTextBoxesDuplicateRequestHistogram(boolean isDuplicate) {
+        RecordHistogram.recordBooleanHistogram(
+                ACCESSIBILITY_INLINE_TEXT_BOXES_DUPLICATE_REQUEST, isDuplicate);
     }
 }

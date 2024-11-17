@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Y mis hwn</translation>
 <translation id="1637811476055996098">Dewis Ffeiliau</translation>
-<translation id="1680090928918677457">Defnyddio'ch camera</translation>
 <translation id="1729654308190250600">Rhowch gyfeiriad e-bost nad yw'n wag.</translation>
 <translation id="1758486001363313524">Arall...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Mae angen cwtogi'r testun hwn i <ph name="MAX_CHARACTERS" /> o nodau neu lai (rydych yn defnyddio <ph name="CURRENT_LENGTH" /> nod ar hyn o bryd).</translation>
 <translation id="2247351761944213033">Wythnos <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Olrhain <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Caniateir y camera a'r meicroffon</translation>
 <translation id="2507943997699731163">Llenwch y maes hwn.</translation>
 <translation id="2613802280814924224">Rhowch werth dilys. Y gwerth dilys agosaf yw <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Danfon</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Estynnwch y testun hwn i <ph name="MIN_CHARACTERS" /> nod neu fwy (rydych yn defnyddio <ph name="CURRENT_LENGTH" /> nod ar hyn o bryd).</translation>
 <translation id="383465348367842624">Ni ddylai rhan sy'n dilyn '<ph name="ATSIGN" />' gynnwys y symbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Gadael y sgrîn lawn</translation>
-<translation id="4031179711345676612">Caniateir meicroffon</translation>
 <translation id="4360991593054037559">Rhowch werth dilys. Y ddau werth dilys agosaf yw <ph name="VALID_VALUE_LOW" /> a <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Manylion</translation>
-<translation id="4663373278480897665">Caniateir camera</translation>
 <translation id="4664250907885839816">Ni ddylai rhan sy'n dilyn '<ph name="ATSIGN" />' gynnwys y symbol '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Wrthi'n chwarae llun-mewn-llun</translation>
-<translation id="4792862212177489858">Rhannu lleoliad</translation>
 <translation id="4812940957355064477">Rhowch rif.</translation>
-<translation id="49269513399674318">Defnyddio'r meicroffon</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> wedi'i ddewis</translation>
 <translation id="4992066212339426712">Dad-dddistewi</translation>
 <translation id="49969490063480558">Rhowch ran yn dilyn '<ph name="ATSIGN" />'. Mae '<ph name="INVALIDADDRESS" />' yn anghyflawn.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Methu â llwytho'r ategyn.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">Estynnwch y testun hwn i <ph name="MIN_CHARACTERS" /> nod neu fwy (rydych yn defnyddio 1 nod ar hyn o bryd).</translation>
-<translation id="7080893216867146095">Caniateir rhannu lleoliad</translation>
 <translation id="709897737746224366">Defnyddiwch y fformat y gofynnwyd amdano.</translation>
-<translation id="7134810312945846184">Defnyddio'r meicroffon a'r camera</translation>
 <translation id="7263440858009898357">Dewiswch eitem yn y rhestr.</translation>
 <translation id="7364796246159120393">Dewis Ffeil</translation>
 <translation id="739024184232394898">Arall...</translation>

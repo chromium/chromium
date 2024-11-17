@@ -60,7 +60,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.AsyncInitTaskRunner;
@@ -122,8 +121,6 @@ public class ChromeBackupAgentTest {
             sDataChangedCalls++;
         }
     }
-
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
@@ -207,10 +204,10 @@ public class ChromeBackupAgentTest {
 
         MockitoAnnotations.initMocks(this);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        mocker.mock(ChromeBackupAgentImplJni.TEST_HOOKS, mChromeBackupAgentJniMock);
-        mocker.mock(DictPrefBackupSerializerJni.TEST_HOOKS, mDictPrefBackupSerializerJniMock);
+        ChromeBackupAgentImplJni.setInstanceForTesting(mChromeBackupAgentJniMock);
+        DictPrefBackupSerializerJni.setInstanceForTesting(mDictPrefBackupSerializerJniMock);
 
-        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
 
         IdentityServicesProvider identityServicesProvider = mock(IdentityServicesProvider.class);

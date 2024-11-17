@@ -42,7 +42,7 @@ ConvolverHandler::ConvolverHandler(AudioNode& node, float sample_rate)
 
   // Node-specific default mixing rules.
   channel_count_ = kDefaultNumberOfInputChannels;
-  SetInternalChannelCountMode(kClampedMax);
+  SetInternalChannelCountMode(V8ChannelCountMode::Enum::kClampedMax);
   SetInternalChannelInterpretation(AudioBus::kSpeakers);
 
   Initialize();
@@ -252,28 +252,27 @@ void ConvolverHandler::SetChannelCount(unsigned channel_count,
   }
 }
 
-void ConvolverHandler::SetChannelCountMode(const String& mode,
+void ConvolverHandler::SetChannelCountMode(V8ChannelCountMode::Enum mode,
                                            ExceptionState& exception_state) {
   DCHECK(IsMainThread());
   DeferredTaskHandler::GraphAutoLocker locker(Context());
 
-  ChannelCountMode old_mode = InternalChannelCountMode();
+  V8ChannelCountMode::Enum old_mode = InternalChannelCountMode();
 
   // The channelCountMode cannot be "max".  For a convolver node, the
   // number of input channels must be 1 or 2 (see
   // https://webaudio.github.io/web-audio-api/#audionode-channelcount-constraints)
   // and "max" would be incompatible with that.
-  if (mode == "max") {
+  if (mode == V8ChannelCountMode::Enum::kMax) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "ConvolverNode: channelCountMode cannot be changed to 'max'");
     new_channel_count_mode_ = old_mode;
-  } else if (mode == "explicit") {
-    new_channel_count_mode_ = kExplicit;
-  } else if (mode == "clamped-max") {
-    new_channel_count_mode_ = kClampedMax;
+  } else if (mode == V8ChannelCountMode::Enum::kExplicit ||
+             mode == V8ChannelCountMode::Enum::kClampedMax) {
+    new_channel_count_mode_ = mode;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   if (new_channel_count_mode_ != old_mode) {

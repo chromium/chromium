@@ -4961,10 +4961,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
   ASSERT_TRUE(NavigateToURLFromRenderer(inner_contents, url_b));
 
   // Intentionally exclude inner frame trees based on multi-WebContents.
-  web_contents->ForEachFrameTree(
-      base::BindLambdaForTesting([&](FrameTree& frame_tree) {
-        EXPECT_NE(&frame_tree, &inner_contents->GetPrimaryFrameTree());
-      }));
+  web_contents->ForEachFrameTree([&](FrameTree& frame_tree) {
+    EXPECT_NE(&frame_tree, &inner_contents->GetPrimaryFrameTree());
+  });
 }
 
 namespace {
@@ -6146,7 +6145,7 @@ class TestWebContentsDestructionObserver : public WebContentsObserver {
     // within a WebContentsDestroyed observer.  We want to verify that
     // this does not cause a crash.
     static_cast<WebContentsImpl*>(web_contents())
-        ->ForEachFrameTree(base::DoNothing());
+        ->ForEachFrameTree([](FrameTree& frame_tree) {});
   }
 };
 

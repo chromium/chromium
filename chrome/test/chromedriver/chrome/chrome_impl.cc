@@ -236,7 +236,11 @@ Status ChromeImpl::NewWindow(const std::string& target_id,
 
   base::Value::Dict params;
   params.Set("url", "about:blank");
-  params.Set("newWindow", type == WindowType::kWindow);
+  if (type == WindowType::kWindow) {
+    params.Set("newWindow", true);
+    // otherwise omit the parameter so that Incognito mode would create a new
+    // browser context automatically.
+  }
   params.Set("background", is_background);
   base::Value::Dict result;
   status = devtools_websocket_client_->SendCommandAndGetResult(

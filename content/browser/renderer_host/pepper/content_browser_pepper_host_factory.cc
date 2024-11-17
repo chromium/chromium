@@ -75,8 +75,7 @@ ContentBrowserPepperHostFactory::CreateResourceHost(
       PP_FileSystemType file_system_type;
       if (!ppapi::UnpackMessage<PpapiHostMsg_FileSystem_Create>(
               message, &file_system_type)) {
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
       }
       return std::unique_ptr<ppapi::host::ResourceHost>(
           new PepperFileSystemBrowserHost(host_, instance, resource,
@@ -102,8 +101,7 @@ ContentBrowserPepperHostFactory::CreateResourceHost(
       std::string internal_path;
       if (!ppapi::UnpackMessage<PpapiHostMsg_FileRef_CreateForFileAPI>(
               message, &file_system, &internal_path)) {
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
       }
       return std::unique_ptr<ppapi::host::ResourceHost>(new PepperFileRefHost(
           host_, instance, resource, file_system, internal_path));

@@ -243,7 +243,6 @@ VirtualTrackpadView::VirtualTrackpadView() {
             base::BindRepeating(&VirtualTrackpadView::OnFingerButtonPressed,
                                 base::Unretained(this), num_finger)));
   }
-  UpdateFingerButtonsColors();
 
   SetPaintToLayer();
   layer()->SetOpacity(kTrackpadContainerOpacity);
@@ -311,6 +310,10 @@ void VirtualTrackpadView::Toggle() {
   targeter->SetInsets(gfx::Insets(-chromeos::kResizeOutsideBoundsSize));
   g_fake_trackpad_widget->GetNativeWindow()->SetEventTargeter(
       std::move(targeter));
+}
+
+void VirtualTrackpadView::AddedToWidget() {
+  UpdateFingerButtonsColors();
 }
 
 void VirtualTrackpadView::Layout(PassKey) {

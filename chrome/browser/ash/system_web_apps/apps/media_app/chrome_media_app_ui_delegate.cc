@@ -71,7 +71,7 @@ std::optional<std::string> ChromeMediaAppUIDelegate::OpenFeedbackDialog() {
 void ChromeMediaAppUIDelegate::ToggleBrowserFullscreenMode() {
   Browser* browser = chrome::FindBrowserWithTab(web_ui_->GetWebContents());
   if (browser) {
-    chrome::ToggleFullscreenMode(browser);
+    chrome::ToggleFullscreenMode(browser, /*user_initiated=*/true);
   }
 }
 
@@ -149,7 +149,7 @@ void ChromeMediaAppUIDelegate::IsFileArcWritableImpl(
       std::move(is_file_arc_writable_callback).Run(false);
       return;
     case VolumeType::NUM_VOLUME_TYPE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

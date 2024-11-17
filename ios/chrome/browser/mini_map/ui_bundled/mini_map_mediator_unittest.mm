@@ -23,15 +23,14 @@
 class MiniMapMediatorTest : public PlatformTest {
  protected:
   MiniMapMediatorTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.SetPrefService(CreatePrefService());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     delegate_ = OCMStrictProtocolMock(@protocol(MiniMapMediatorDelegate));
 
-    mediator_ =
-        [[MiniMapMediator alloc] initWithPrefs:browser_state_->GetPrefs()
-                                      webState:nullptr];
+    mediator_ = [[MiniMapMediator alloc] initWithPrefs:profile_->GetPrefs()
+                                              webState:nullptr];
     mediator_.delegate = delegate_;
   }
 
@@ -39,7 +38,7 @@ class MiniMapMediatorTest : public PlatformTest {
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     user_prefs::PrefRegistrySyncable* registry = prefs->registry();
-    RegisterBrowserStatePrefs(registry);
+    RegisterProfilePrefs(registry);
     return prefs;
   }
 
@@ -50,7 +49,7 @@ class MiniMapMediatorTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   id delegate_;
   MiniMapMediator* mediator_;
 };
@@ -63,9 +62,8 @@ TEST_F(MiniMapMediatorTest, TestNoConsentNeeded) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
 
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
-                                         false);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   OCMExpect([delegate_ showMapWithIPH:NO]);
   [mediator_ userInitiatedMiniMapConsentRequired:NO];
 }
@@ -77,18 +75,16 @@ TEST_F(MiniMapMediatorTest, TestUserConsents) {
   }
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
-                                         false);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   OCMExpect([delegate_ showConsentInterstitial]);
   [mediator_ userInitiatedMiniMapConsentRequired:YES];
   OCMExpect([delegate_ showMapWithIPH:NO]);
   [mediator_ userConsented];
   environment_.RunUntilIdle();
   EXPECT_TRUE(
-      browser_state_->GetPrefs()->GetBoolean(prefs::kDetectAddressesAccepted));
-  EXPECT_TRUE(
-      browser_state_->GetPrefs()->GetBoolean(prefs::kDetectAddressesEnabled));
+      profile_->GetPrefs()->GetBoolean(prefs::kDetectAddressesAccepted));
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kDetectAddressesEnabled));
 }
 
 // Tests that settings are updated correctly after user declines.
@@ -98,18 +94,17 @@ TEST_F(MiniMapMediatorTest, TestUserDeclines) {
   }
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(web::features::kOneTapForMaps);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
-                                         false);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   OCMExpect([delegate_ showConsentInterstitial]);
   [mediator_ userInitiatedMiniMapConsentRequired:YES];
   OCMExpect([delegate_ dismissConsentInterstitialWithCompletion:[OCMArg any]]);
   [mediator_ userDeclined];
   environment_.RunUntilIdle();
   EXPECT_FALSE(
-      browser_state_->GetPrefs()->GetBoolean(prefs::kDetectAddressesAccepted));
+      profile_->GetPrefs()->GetBoolean(prefs::kDetectAddressesAccepted));
   EXPECT_FALSE(
-      browser_state_->GetPrefs()->GetBoolean(prefs::kDetectAddressesEnabled));
+      profile_->GetPrefs()->GetBoolean(prefs::kDetectAddressesEnabled));
 }
 
 // Tests that consent is presented if it is forced.
@@ -124,17 +119,16 @@ TEST_F(MiniMapMediatorTest, TestUserConsentForced) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       web::features::kOneTapForMaps, feature_parameters);
 
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, true);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   OCMExpect([delegate_ showConsentInterstitial]);
   [mediator_ userInitiatedMiniMapConsentRequired:YES];
   OCMExpect([delegate_ showMapWithIPH:NO]);
   [mediator_ userConsented];
   environment_.RunUntilIdle();
   EXPECT_TRUE(
-      browser_state_->GetPrefs()->GetBoolean(prefs::kDetectAddressesAccepted));
-  EXPECT_TRUE(
-      browser_state_->GetPrefs()->GetBoolean(prefs::kDetectAddressesEnabled));
+      profile_->GetPrefs()->GetBoolean(prefs::kDetectAddressesAccepted));
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kDetectAddressesEnabled));
 }
 
 // Tests that consent screen is not triggered but IPH is displayed.
@@ -149,17 +143,15 @@ TEST_F(MiniMapMediatorTest, TestConsentIPH) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       web::features::kOneTapForMaps, feature_parameters);
 
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
-                                         false);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   OCMExpect([delegate_ showMapWithIPH:YES]);
   [mediator_ userInitiatedMiniMapConsentRequired:YES];
 
   environment_.RunUntilIdle();
   EXPECT_TRUE(
-      browser_state_->GetPrefs()->GetBoolean(prefs::kDetectAddressesAccepted));
-  EXPECT_TRUE(
-      browser_state_->GetPrefs()->GetBoolean(prefs::kDetectAddressesEnabled));
+      profile_->GetPrefs()->GetBoolean(prefs::kDetectAddressesAccepted));
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(prefs::kDetectAddressesEnabled));
 }
 
 // Tests that consent screen is not triggered if not needed.
@@ -174,9 +166,8 @@ TEST_F(MiniMapMediatorTest, TestConsentDisabled) {
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       web::features::kOneTapForMaps, feature_parameters);
 
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted,
-                                         false);
-  browser_state_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesAccepted, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kDetectAddressesEnabled, true);
   OCMExpect([delegate_ showMapWithIPH:NO]);
   [mediator_ userInitiatedMiniMapConsentRequired:NO];
 }

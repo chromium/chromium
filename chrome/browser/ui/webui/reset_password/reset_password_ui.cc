@@ -20,6 +20,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/strings/grit/components_strings.h"
@@ -154,12 +155,16 @@ base::Value::Dict ResetPasswordUI::PopulateStrings() const {
                               ? IDS_RESET_PASSWORD_WARNING_HEADING
                               : IDS_RESET_PASSWORD_HEADING;
   std::u16string explanation_paragraph_string;
+  std::u16string formatted_org_name;
   if (org_name.empty()) {
     explanation_paragraph_string = l10n_util::GetStringUTF16(
         known_password_type ? IDS_RESET_PASSWORD_WARNING_EXPLANATION_PARAGRAPH
                             : IDS_RESET_PASSWORD_EXPLANATION_PARAGRAPH);
   } else {
-    std::u16string formatted_org_name = GetFormattedHostName(org_name);
+    formatted_org_name = base::FeatureList::IsEnabled(
+                             safe_browsing::kEnterprisePasswordReuseUiRefresh)
+                             ? base::UTF8ToUTF16(org_name)
+                             : GetFormattedHostName(org_name);
     explanation_paragraph_string = l10n_util::GetStringFUTF16(
         known_password_type
             ? IDS_RESET_PASSWORD_WARNING_EXPLANATION_PARAGRAPH_WITH_ORG_NAME
@@ -174,5 +179,23 @@ base::Value::Dict ResetPasswordUI::PopulateStrings() const {
   load_time_data.Set("primaryParagraph", explanation_paragraph_string);
   load_time_data.Set("primaryButtonText",
                      l10n_util::GetStringUTF16(IDS_RESET_PASSWORD_BUTTON));
+  load_time_data.Set("learnMore", u" ");
+  if (base::FeatureList::IsEnabled(
+          safe_browsing::kEnterprisePasswordReuseUiRefresh) &&
+      known_password_type) {
+    load_time_data.Set(
+        "heading",
+        org_name.empty()
+            ? l10n_util::GetStringUTF16(IDS_RESET_PASSWORD_WARNING_HEADING_V2)
+            : l10n_util::GetStringFUTF16(
+                  IDS_RESET_PASSWORD_WARNING_HEADING_WITH_ORG_NAME,
+                  formatted_org_name));
+    load_time_data.Set(
+        "primaryParagraph",
+        l10n_util::GetStringUTF16(
+            IDS_RESET_PASSWORD_WARNING_EXPLANATION_PARAGRAPH_V2));
+    load_time_data.Set(
+        "learnMore", l10n_util::GetStringUTF16(IDS_RESET_PASSWORD_LEARN_MORE));
+  }
   return load_time_data;
 }

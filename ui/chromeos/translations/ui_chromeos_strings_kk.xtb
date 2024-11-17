@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Ханғыл (Ahnmatae)</translation>
 <translation id="1155759005174418845">каталан</translation>
 <translation id="1168100932582989117">Google ат серверлері</translation>
+<translation id="1170788066030116158">Түсірілген уақыты</translation>
 <translation id="1172970565351728681">Шамамен <ph name="REMAINING_TIME" /> қалды.</translation>
 <translation id="1173894706177603556">Атын өзгерту</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />%, телефон батареясы: <ph name="BATTERY_STATUS" />%, мәліметтер</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Аутентификация сертификаты қашықтағы негізде қабылданбады</translation>
 <translation id="4394214039309501350">Сыртқы сілтеме</translation>
 <translation id="4394980935660306080">Осы аптаның басында</translation>
+<translation id="4397435965699247285">OneDrive офлайн режимде қолжетімді емес</translation>
 <translation id="4398096759193130964">Элементтерді қалпына келтіріңіз не себеттен жаңа қалтаға сүйреп апарыңыз.</translation>
 <translation id="4401287888955153199">Барлығын шығарып алу</translation>
 <translation id="4410695710508688828">Шығару мүмкін болмады. <ph name="ERROR_MESSAGE" /></translation>

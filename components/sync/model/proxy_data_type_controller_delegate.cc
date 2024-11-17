@@ -74,7 +74,7 @@ void ReportBridgeErrorOnModelThreadForTest(  // IN-TEST
 }
 
 // Rurns some task on the destination task runner (backend sequence), first
-// exercising |delegate_provider| *also* in the backend sequence.
+// exercising `delegate_provider` *also* in the backend sequence.
 void RunModelTask(
     const ProxyDataTypeControllerDelegate::DelegateProvider& delegate_provider,
     base::OnceCallback<void(base::WeakPtr<DataTypeControllerDelegate>)> task) {

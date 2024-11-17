@@ -421,6 +421,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // Returns the number of times retry has been attempted.
   virtual int GetNumRetries() const = 0;
 
+  // Returns a weak reference to this loader.
+  virtual base::WeakPtr<const SimpleURLLoader> GetWeakPtr() const = 0;
+
  protected:
   SimpleURLLoader();
 };

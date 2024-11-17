@@ -13,6 +13,8 @@ include_rules = [
   "+chrome/browser/ash/assistant",
   "+chrome/browser/ash/input_method",
   "+chrome/browser/ash/magic_boost",
+  "+chrome/browser/ash/lobster/lobster_service.h",
+  "+chrome/browser/ash/lobster/lobster_service_provider.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/search_engines",
   "+chrome/browser/ui/webui/ash/assistant_optin",

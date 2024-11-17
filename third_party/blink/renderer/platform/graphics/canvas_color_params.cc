@@ -35,7 +35,7 @@ gfx::ColorSpace PredefinedColorSpaceToGfxColorSpace(
     case PredefinedColorSpace::kSRGBLinear:
       return gfx::ColorSpace::CreateSRGBLinear();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 sk_sp<SkColorSpace> PredefinedColorSpaceToSkColorSpace(
@@ -71,8 +71,7 @@ SkColorType CanvasPixelFormatToSkColorType(CanvasPixelFormat pixel_format) {
     case CanvasPixelFormat::kUint8:
       return kN32_SkColorType;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kN32_SkColorType;
+  NOTREACHED();
 }
 
 CanvasColorParams::CanvasColorParams() = default;

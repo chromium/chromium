@@ -13,7 +13,7 @@
 #include "components/renderer_context_menu/render_view_context_menu_base.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "content/public/browser/context_menu_params.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace password_manager {
 class ContentPasswordManagerDriver;
@@ -22,7 +22,7 @@ class ContentPasswordManagerDriver;
 namespace autofill {
 
 class AutofillField;
-class AutofillPredictionImprovementsDelegate;
+class AutofillAiDelegate;
 class PersonalDataManager;
 
 // `AutofillContextMenuManager` is responsible for adding/executing Autofill
@@ -82,9 +82,8 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
       ContentAutofillDriver& autofill_driver);
 
   // Returns if the item to trigger prediction improvements should be added.
-  bool ShouldAddPredictionImprovementsItem(
-      AutofillPredictionImprovementsDelegate* delegate,
-      const GURL& url);
+  bool ShouldAddPredictionImprovementsItem(AutofillAiDelegate* delegate,
+                                           const GURL& url);
 
   // Checks if the manual fallback context menu entry can be shown for the
   // currently focused field.
@@ -169,14 +168,15 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   void ExecuteFallbackForAddressesCommand(
       ContentAutofillDriver& autofill_driver);
 
+  // Marks the last added menu item as a new feature, depending on the response
+  // from the `UserEducationService`.
+  void MaybeMarkLastItemAsNewFeature(const base::Feature& feature);
+
   // Gets the `AutofillField` described by the `params_` from the
   // `autofill_driver`'s manager.
   AutofillField* GetAutofillField(AutofillDriver& autofill_driver) const;
 
-  // Dangling on linux-lacros-rel in:
-  // AutofillContextMenuManagerFeedbackUILacrosBrowserTest
-  //   .CloseTabWhileUIIsOpenShouldNotCrash.
-  const raw_ptr<PersonalDataManager, DanglingUntriaged> personal_data_manager_;
+  const raw_ptr<PersonalDataManager> personal_data_manager_;
   const raw_ptr<ui::SimpleMenuModel> menu_model_;
   const raw_ptr<RenderViewContextMenuBase> delegate_;
   ui::SimpleMenuModel passwords_submenu_model_;

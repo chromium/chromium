@@ -154,8 +154,7 @@ void EmitHistogramWithTemperature(
     case UNDETERMINED_STARTUP_TEMPERATURE:
       break;
     case STARTUP_TEMPERATURE_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

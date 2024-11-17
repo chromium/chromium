@@ -8,31 +8,27 @@ import org.chromium.ui.base.LocalizationUtils;
 
 /**
  * A stacker that tells the {@link StripLayoutHelper} how to layer the views for the {@link
- * StaticLayout} when the available window width is < 600dp. Tabs will be stacked side by side and
- * the entire strip will scroll. Tabs will never completely overlap each other.
+ * StaticLayout}. Tabs will be stacked side by side and the entire strip will scroll. Tabs will
+ * never completely overlap each other.
  */
 public class ScrollingStripStacker extends StripStacker {
     @Override
     public void setViewOffsets(
-            StripLayoutView[] indexOrderedViews,
-            boolean tabClosing,
-            boolean groupTitleSlidingAnimRunning,
-            float cachedTabWidth) {
+            StripLayoutView[] indexOrderedViews, boolean tabClosing, float cachedTabWidth) {
         for (int i = 0; i < indexOrderedViews.length; i++) {
             StripLayoutView view = indexOrderedViews[i];
-            // When a tab is closed or group title sliding animation is running, drawX and width
-            // update will be animated so skip this.
-            if (!groupTitleSlidingAnimRunning) {
-                view.setDrawX(view.getIdealX() + view.getOffsetX());
 
-                // Properly animate container slide-out in RTL.
-                if (LocalizationUtils.isLayoutRtl()
-                        && !tabClosing
-                        && view instanceof StripLayoutTab tab) {
-                    tab.setDrawX(tab.getDrawX() + cachedTabWidth - tab.getWidth());
-                }
+            float newDrawX = view.getIdealX() + view.getOffsetX();
+            // Adjust the newDrawX to correctly animate container slide-out in RTL.
+            // TODO(crbug.com/375029950): Investigate if this is still needed.
+            if (LocalizationUtils.isLayoutRtl()
+                    && !tabClosing
+                    && view instanceof StripLayoutTab tab) {
+                newDrawX += (cachedTabWidth - tab.getWidth());
             }
+            view.setDrawX(newDrawX);
 
+            // TODO(crbug.com/375030505): Make generic.
             if (view instanceof StripLayoutTab tab) {
                 tab.setDrawY(tab.getOffsetY());
             }

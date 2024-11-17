@@ -63,7 +63,7 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   // events.
   class MachPortWatcher {
    public:
-    virtual ~MachPortWatcher() {}
+    virtual ~MachPortWatcher() = default;
     virtual void OnMachMessageReceived(mach_port_t port) = 0;
   };
 

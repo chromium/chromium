@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/icu_test_util.h"
+#include "base/test/run_until.h"
 #include "base/test/with_feature_override.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -337,18 +338,57 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionPacificTimeZoneJSTest,
 
 class PDFExtensionContentSettingJSTest : public PDFExtensionJSTest {
  protected:
-  // When blocking JavaScript, block the exact query from pdf/main.js while
-  // still allowing enough JavaScript to run in the extension for the test
-  // harness to complete its work.
   void SetPdfJavaScript(bool enabled) {
     auto* map =
         HostContentSettingsMapFactory::GetForProfile(browser()->profile());
     map->SetContentSettingCustomScope(
-        ContentSettingsPattern::Wildcard(),
-        ContentSettingsPattern::FromString(
-            "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai"),
+        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
         ContentSettingsType::JAVASCRIPT,
         enabled ? CONTENT_SETTING_ALLOW : CONTENT_SETTING_BLOCK);
+  }
+
+  // Uses a different mechanism than PDFExtensionTestBase::LoadPdfInNewTab to
+  // wait for tabs to load to support content setting tests.
+  bool LoadPdfAndWait(const GURL& url, bool new_tab) override {
+    if (new_tab) {
+      EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+          browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+          ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+    } else {
+      EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    }
+
+    content::WebContents* contents = GetActiveWebContents();
+
+    // Wait for the extension host to load.
+    bool result = base::test::RunUntil([&]() {
+      return pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
+    });
+    if (!result) {
+      return false;
+    }
+
+    // Wait for the extension to finish initializing.
+    content::RenderFrameHost* extension_host =
+        pdf_extension_test_util::GetOnlyPdfExtensionHost(contents);
+    static constexpr char kEnsurePdfHasLoadedScript[] = R"(
+       const viewer = document.body.querySelector('#viewer');
+
+       viewer !== null &&
+       typeof viewer.getLoadSucceededForTesting === 'function' &&
+       viewer.getLoadSucceededForTesting()
+    )";
+
+    while (true) {
+      // content::EvalJs uses a run loop internally.
+      auto js_result =
+          content::EvalJs(extension_host, kEnsurePdfHasLoadedScript);
+      // The dom can be in an unusable state during setup. If the EvalJs
+      // errors out tries again.
+      if (js_result.error.empty() && js_result.ExtractBool()) {
+        return true;
+      }
+    }
   }
 };
 
@@ -477,6 +517,9 @@ class PDFExtensionJSInk2Test : public PDFExtensionJSTest {
 };
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2) {
+  // One of the tests checks if the side panel is visible, so make the window
+  // wide enough.
+  GetActiveWebContents()->Resize({0, 0, 960, 100});
   RunTestsInJsModule("ink2_test.js", "test.pdf");
 }
 
@@ -484,8 +527,32 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2Save) {
   RunTestsInJsModule("ink2_save_test.js", "test.pdf");
 }
 
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2BottomToolbar) {
+  // The window must be smaller than 960px to show the bottom toolbar.
+  GetActiveWebContents()->Resize({0, 0, 959, 100});
+  RunTestsInJsModule("ink2_bottom_toolbar_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2BottomToolbarDropdown) {
+  RunTestsInJsModule("ink2_bottom_toolbar_dropdown_test.js", "test.pdf");
+}
+
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2SidePanel) {
+  // The window must be at least 960px to show the side panel.
+  GetActiveWebContents()->Resize({0, 0, 960, 100});
   RunTestsInJsModule("ink2_side_panel_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2BrushSelector) {
+  RunTestsInJsModule("ink2_brush_selector_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2ColorSelector) {
+  RunTestsInJsModule("ink2_color_selector_test.js", "test.pdf");
+}
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2SizeSelector) {
+  RunTestsInJsModule("ink2_size_selector_test.js", "test.pdf");
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSInk2Test, Ink2ViewerToolbar) {

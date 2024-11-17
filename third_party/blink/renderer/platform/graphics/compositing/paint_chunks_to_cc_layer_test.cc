@@ -1275,6 +1275,73 @@ TEST_P(PaintChunksToCcLayerTest, ScrollingContentsIntoDisplayItemList) {
 }
 
 TEST_P(PaintChunksToCcLayerTest,
+       ScrollingContentsIntoDisplayItemListOverflowClipInLayerState) {
+  if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    GTEST_SKIP();
+  }
+
+  auto scroll_state = CreateScrollTranslationState(
+      PropertyTreeState::Root(), -50, -60, gfx::Rect(5, 5, 20, 30),
+      gfx::Size(100, 200));
+  TestChunks chunks;
+  PropertyTreeState layer_state(t0(), scroll_state.Clip(), e0());
+  chunks.AddChunk(layer_state);
+  chunks.AddChunk(scroll_state);
+  chunks.AddChunk(layer_state);
+
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>();
+  PaintChunksToCcLayer::ConvertInto(chunks.Build(), layer_state,
+                                    gfx::Vector2dF(), nullptr, *cc_list);
+
+  EXPECT_THAT(cc_list->paint_op_buffer(),
+              ElementsAre(PaintOpIs<cc::DrawRecordOp>(),  // chunk 0
+                          PaintOpIs<cc::DrawScrollingContentsOp>(),
+                          PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
+  const auto& scrolling_contents_op =
+      static_cast<const cc::DrawScrollingContentsOp&>(
+          cc_list->paint_op_buffer().GetOpAtForTesting(1));
+  ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+            scrolling_contents_op.GetType());
+  EXPECT_THAT(scrolling_contents_op.display_item_list->paint_op_buffer(),
+              ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 1
+}
+
+TEST_P(PaintChunksToCcLayerTest,
+       ScrollingContentsIntoDisplayItemListOverflowClipInLayerStateWithEffect) {
+  if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    GTEST_SKIP();
+  }
+
+  auto* effect = CreateOpacityEffect(e0(), t0(), nullptr, 0.5f);
+  auto scroll_state = CreateScrollTranslationState(
+      PropertyTreeState(t0(), c0(), *effect), -50, -60, gfx::Rect(5, 5, 20, 30),
+      gfx::Size(100, 200));
+  TestChunks chunks;
+  PropertyTreeState layer_state(t0(), scroll_state.Clip(), e0());
+  chunks.AddChunk(layer_state);
+  chunks.AddChunk(scroll_state);
+  chunks.AddChunk(layer_state);
+
+  auto cc_list = base::MakeRefCounted<cc::DisplayItemList>();
+  PaintChunksToCcLayer::ConvertInto(chunks.Build(), layer_state,
+                                    gfx::Vector2dF(), nullptr, *cc_list);
+
+  EXPECT_THAT(cc_list->paint_op_buffer(),
+              ElementsAre(PaintOpIs<cc::DrawRecordOp>(),      // chunk 0
+                          PaintOpIs<cc::SaveLayerAlphaOp>(),  // <effect>
+                          PaintOpIs<cc::DrawScrollingContentsOp>(),
+                          PaintOpIs<cc::RestoreOp>(),       // </effect>
+                          PaintOpIs<cc::DrawRecordOp>()));  // chunk 2
+  const auto& scrolling_contents_op =
+      static_cast<const cc::DrawScrollingContentsOp&>(
+          cc_list->paint_op_buffer().GetOpAtForTesting(2));
+  ASSERT_EQ(cc::PaintOpType::kDrawScrollingContents,
+            scrolling_contents_op.GetType());
+  EXPECT_THAT(scrolling_contents_op.display_item_list->paint_op_buffer(),
+              ElementsAre(PaintOpIs<cc::DrawRecordOp>()));  // chunk 1
+}
+
+TEST_P(PaintChunksToCcLayerTest,
        ScrollingContentsIntoDisplayItemListStartingFromNestedState) {
   if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
     GTEST_SKIP();

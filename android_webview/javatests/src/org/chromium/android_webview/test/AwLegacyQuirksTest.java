@@ -71,7 +71,7 @@ public class AwLegacyQuirksTest extends AwParameterizedTest {
         int actualWidth = Integer.parseInt(mActivityTestRule.getTitleOnUiThread(awContents));
         Assert.assertEquals(displayAndroid.getDisplayWidth(), actualWidth, 10f);
 
-        float displayWidth = (displayAndroid.getDisplayWidth());
+        float displayWidth = displayAndroid.getDisplayWidth();
         float deviceDpi = 160f * displayAndroid.getDipScale();
 
         mActivityTestRule.loadDataSync(

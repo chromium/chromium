@@ -36,6 +36,7 @@
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations_mixin.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
@@ -74,6 +75,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -152,6 +154,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
                        CreateBrowserContextAcceptsProxyServer) {
+  ScopedAllowHttpForHostnamesForTesting allow_http(
+      {"this-page-does-not-exist.com"}, browser()->profile()->GetPrefs());
+
   AttachToBrowserTarget();
   embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
       [&](const net::test_server::HttpRequest& request)
@@ -924,6 +929,44 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UntrustedClient) {
       "Memory.prepareForLeakDetection"));        // Implemented in content
   EXPECT_FALSE(SendCommandSync("Cast.enable"));  // Implemented in content
   EXPECT_TRUE(SendCommandSync("Accessibility.enable"));
+}
+
+class DevToolsProtocolScreenshotTest : public DevToolsProtocolTest {
+ protected:
+  void SetUp() override {
+    EnablePixelOutput();
+    DevToolsProtocolTest::SetUp();
+  }
+
+  SkBitmap CaptureScreenshot() {
+    SendCommandSync("Page.captureScreenshot");
+    CHECK(!error());
+    const std::string* base64_data = result()->FindString("data");
+    CHECK(base64_data);
+    std::optional<std::vector<uint8_t>> png_data =
+        base::Base64Decode(*base64_data);
+    SkBitmap bitmap = gfx::PNGCodec::Decode(png_data.value());
+    CHECK(!bitmap.isNull());
+    return bitmap;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolScreenshotTest, ScreenshotInactiveTab) {
+  static constexpr char kBluePageURL[] =
+      R"(data:text/html,<body style="background-color: blue"></body>)";
+  static constexpr char kRedPageURL[] =
+      R"(data:text/html,<body style="background-color: red"></body>)";
+  ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+      browser(), GURL(kBluePageURL), 1);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  Attach();
+  constexpr int kIndex = 1;
+  ASSERT_TRUE(AddTabAtIndex(kIndex, GURL(kRedPageURL),
+                            ui::PageTransition::PAGE_TRANSITION_TYPED));
+
+  SkBitmap bitmap = CaptureScreenshot();
+  SkColor pixel_color = bitmap.getColor(100, 100);
+  EXPECT_EQ(SK_ColorBLUE, pixel_color);
 }
 
 class ExtensionProtocolTest : public DevToolsProtocolTest {

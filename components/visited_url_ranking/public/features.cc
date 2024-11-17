@@ -4,6 +4,8 @@
 
 #include "components/visited_url_ranking/public/features.h"
 
+#include <string>
+
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
@@ -18,6 +20,11 @@ constexpr base::FeatureParam<bool>
         &kVisitedURLRankingService,
         /*name=*/"history_fetcher_discard_zero_duration_visits",
         /*default_value=*/true};
+
+constexpr base::FeatureParam<std::string> kVisitedURLRankingResultTypesParam{
+    &kVisitedURLRankingService,
+    /*name=*/"visited_url_ranking_url_types",
+    /*default_value=*/""};
 
 const char kVisitedURLRankingFetchDurationInHoursParam[] =
     "VisitedURLRankingFetchDurationInHoursParam";
@@ -98,5 +105,37 @@ constexpr base::FeatureParam<int>
         &kVisitedURLRankingDecorations,
         /*name=*/"decorations_recently_visited_minutes_threshold",
         /*default_value=*/1};
+
+BASE_FEATURE(kVisitedURLRankingScoreThreshold,
+             "VisitedURLRankingScoreThreshold",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+constexpr base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdActiveLocalTab{
+        &kVisitedURLRankingScoreThreshold,
+        /*name=*/"active_local_tab_score_threshold",
+        /*default_value=*/0};
+
+constexpr base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdActiveRemoteTab{
+        &kVisitedURLRankingScoreThreshold,
+        /*name=*/"active_remote_tab_score_threshold",
+        /*default_value=*/0};
+
+constexpr base::FeatureParam<double> kVisitedURLRankingScoreThresholdLocalVisit{
+    &kVisitedURLRankingScoreThreshold,
+    /*name=*/"local_visit_score_threshold",
+    /*default_value=*/0};
+
+constexpr base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdRemoteVisit{
+        &kVisitedURLRankingScoreThreshold,
+        /*name=*/"remote_visit_score_threshold",
+        /*default_value=*/0};
+
+constexpr base::FeatureParam<double> kVisitedURLRankingScoreThresholdCCTVisit{
+    &kVisitedURLRankingScoreThreshold,
+    /*name=*/"cct_visit_score_threshold",
+    /*default_value=*/0};
 
 }  // namespace visited_url_ranking::features

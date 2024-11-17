@@ -39,9 +39,9 @@ class PasswordManagerAndroidBackendUtil {
                     .errorCode;
         }
         if (exception instanceof ApiException) {
-            return CredentialManagerError.API_ERROR;
+            return CredentialManagerError.API_EXCEPTION;
         }
-        return CredentialManagerError.UNCATEGORIZED;
+        return CredentialManagerError.OTHER_API_ERROR;
     }
 
     static int getApiErrorCode(Exception exception) {

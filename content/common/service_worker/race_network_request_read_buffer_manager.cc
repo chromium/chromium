@@ -13,7 +13,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
-#include "content/common/features.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/c/system/types.h"
 #include "net/base/io_buffer.h"
 #include "services/network/public/cpp/features.h"
@@ -99,6 +99,6 @@ base::span<const char> RaceNetworkRequestReadBufferManager::RemainingBuffer()
   // base::span with the actual data size. IOBuffer::span() returns the span
   // with the size of the whole buffer, even if data is partially consumed. So
   // subspan it with the remaining data size.
-  return base::as_chars(buffer_->span()).subspan(0, buffer_->BytesRemaining());
+  return base::as_chars(buffer_->span()).subspan(0, BytesRemaining());
 }
 }  // namespace content

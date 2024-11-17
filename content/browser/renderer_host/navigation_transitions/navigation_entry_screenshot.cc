@@ -56,10 +56,10 @@ void NavigationEntryScreenshot::SetDisableCompressionForTesting(bool disable) {
 
 NavigationEntryScreenshot::NavigationEntryScreenshot(
     const SkBitmap& bitmap,
-    int navigation_entry_id,
+    NavigationTransitionData::UniqueId unique_id,
     bool supports_etc_non_power_of_two)
     : bitmap_(cc::UIResourceBitmap(bitmap)),
-      navigation_entry_id_(navigation_entry_id),
+      unique_id_(unique_id),
       dimensions_without_compression_(bitmap_->GetSize()) {
   CHECK(NavigationTransitionConfig::AreBackForwardTransitionsEnabled());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -69,7 +69,7 @@ NavigationEntryScreenshot::NavigationEntryScreenshot(
 
 NavigationEntryScreenshot::~NavigationEntryScreenshot() {
   if (cache_) {
-    cache_->OnNavigationEntryGone(navigation_entry_id_);
+    cache_->OnNavigationEntryGone(unique_id_);
   }
 }
 
@@ -140,8 +140,7 @@ void NavigationEntryScreenshot::OnCompressionFinished(
   // may still be in use in the UI.
   if (cache_) {
     bitmap_.reset();
-    cache_->OnScreenshotCompressed(navigation_entry_id_,
-                                   GetBitmap().SizeInBytes());
+    cache_->OnScreenshotCompressed(unique_id_, GetBitmap().SizeInBytes());
   }
 }
 

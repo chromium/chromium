@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2244252133441425811">Уключыць сродак выбару частаты кадраў для відэа</translation>
 <translation id="2271433936731426666">Пры здымцы відэа рабіць фотаздымкі максімальна магчымага памеру</translation>
-<translation id="2281736597583450397">Дэталі большай рэзкасці з палепшаным маштабаваннем</translation>
 <translation id="2320741269052147773">Зрушыць улева</translation>
 <translation id="2360840973209616515">Праграмай камеры кіруе адміністратар.
         Звярніцеся да яго па дадатковую інфармацыю.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Паменшыць</translation>
 <translation id="5976160379964388480">Іншыя</translation>
 <translation id="6073451960410192870">Спыніць запіс</translation>
-<translation id="6165508094623778733">Даведацца больш</translation>
 <translation id="6197807149213783179">Захаваць метаданыя</translation>
 <translation id="6233780560267770709">3 на 3</translation>
 <translation id="6243827288366940320">Залатое сячэнне</translation>
@@ -122,7 +120,6 @@
 Калі ваш водгук тычыцца якасці відарыса або відэа, далучыце прыклад фота або відэа і апішыце праблему. (Напрыклад, калі фота занадта цёмнае, або прадмет размыты.)</translation>
 <translation id="6519884562954018934">Далучыцца да сеткі "<ph name="WIFINAME" />"</translation>
 <translation id="6527303717912515753">Абагуліць</translation>
-<translation id="6586509689874700895">Спачатку націсніце <ph name="BUTTON_NAME" />, каб павялічыць маштаб. Калі вы зробіце фота, на ім будуць бачныя ўсе дэталі.</translation>
 <translation id="659539649712855529">Скапіравана: <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Паказаць усе раздзяляльнасці</translation>
 <translation id="6631515515009660915">Рэжым люстэрка выключаны</translation>
@@ -168,7 +165,6 @@
 <translation id="8609951387004618906">Адкрыць <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Уключыць або выключыць мікрафон. Мікрафон выключаны</translation>
-<translation id="8712637175834984815">Зразумела</translation>
 <translation id="8730621377337864115">Гатова</translation>
 <translation id="8732462232047530626">Выканаць перадпрагляд метаданых</translation>
 <translation id="874854738381978209">Выяўлена сетка Wi-Fi</translation>

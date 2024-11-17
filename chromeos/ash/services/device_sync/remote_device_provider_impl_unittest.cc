@@ -247,40 +247,9 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
     RemoteDeviceV2LoaderImpl::Factory::SetFactoryForTesting(nullptr);
   }
 
-  // Set the v1 device manager's synced devices to correspond to the first
-  // |num_devices| of GetV1RemoteDevices().
-  void SetV1ManagerDevices(size_t num_devices) {
-    ASSERT_TRUE(features::ShouldUseV1DeviceSync());
-
-    static const base::NoDestructor<std::vector<cryptauth::ExternalDeviceInfo>>
-        device_info([] {
-          std::vector<cryptauth::ExternalDeviceInfo> device_info;
-          for (const auto& remote_device : GetV1RemoteDevices()) {
-            // Add an cryptauth::ExternalDeviceInfo with the same public key as
-            // the multidevice::RemoteDevice.
-            cryptauth::ExternalDeviceInfo info;
-            info.set_public_key(remote_device.public_key);
-            device_info.push_back(info);
-          }
-          return device_info;
-        }());
-
-    if (num_devices == 0) {
-      fake_device_manager_->synced_devices().clear();
-      return;
-    }
-
-    DCHECK_LE(num_devices, device_info->size());
-    fake_device_manager_->set_synced_devices(
-        std::vector<cryptauth::ExternalDeviceInfo>(
-            device_info->cbegin(), device_info->cbegin() + num_devices));
-  }
-
   // Set the v2 device manager's synced devices to correspond to the first
   // |num_devices| of GetV2RemoteDevices().
   void SetV2ManagerDevices(size_t num_devices) {
-    ASSERT_TRUE(features::ShouldUseV2DeviceSync());
-
     DCHECK_EQ(5u, GetV2RemoteDevices().size());
     static const CryptAuthDeviceRegistry::InstanceIdToDeviceMap
         cryptauth_devices{
@@ -310,33 +279,17 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
 
   void CreateRemoteDeviceProvider() {
     remote_device_provider_ = std::make_unique<RemoteDeviceProviderImpl>(
-        fake_device_manager_.get(), fake_v2_device_manager_.get(),
-        kTestUserEmail, kTestUserPrivateKey);
+        fake_v2_device_manager_.get(), kTestUserEmail, kTestUserPrivateKey);
     remote_device_provider_->AddObserver(test_observer_.get());
     EXPECT_EQ(0u, remote_device_provider_->GetSyncedDevices().size());
 
     // A new loader should be created to load the initial list of devices.
-    if (features::ShouldUseV2DeviceSync()) {
-      ++expected_v2_loader_count_;
-      EXPECT_EQ(expected_v2_loader_count_,
-                fake_remote_device_v2_loader_factory_->instances().size());
-    }
-  }
-
-  void NotifyV1SyncFinished(bool success, bool did_devices_change) {
-    ASSERT_TRUE(features::ShouldUseV1DeviceSync());
-
-    fake_device_manager_->NotifySyncFinished(
-        success ? CryptAuthDeviceManager::SyncResult::SUCCESS
-                : CryptAuthDeviceManager::SyncResult::FAILURE,
-        did_devices_change
-            ? CryptAuthDeviceManager::DeviceChangeResult::CHANGED
-            : CryptAuthDeviceManager::DeviceChangeResult::UNCHANGED);
+    ++expected_v2_loader_count_;
+    EXPECT_EQ(expected_v2_loader_count_,
+              fake_remote_device_v2_loader_factory_->instances().size());
   }
 
   void NotifyV2SyncFinished(bool success, bool did_devices_change) {
-    ASSERT_TRUE(features::ShouldUseV2DeviceSync());
-
     fake_v2_device_manager_->NotifyDeviceSyncFinished(CryptAuthDeviceSyncResult(
         success ? CryptAuthDeviceSyncResult::ResultCode::kSuccess
                 : CryptAuthDeviceSyncResult::ResultCode::
@@ -352,16 +305,7 @@ class DeviceSyncRemoteDeviceProviderImplTest : public ::testing::Test {
               fake_remote_device_v2_loader_factory_->instances().size());
   }
 
-  void RunV1RemoteDeviceLoader() {
-    ASSERT_TRUE(features::ShouldUseV1DeviceSync());
-    ASSERT_TRUE(test_device_loader_factory_->HasQueuedCallback());
-    test_device_loader_factory_->InvokeLastCallback(
-        fake_device_manager_->GetSyncedDevices());
-  }
-
   void RunV2RemoteDeviceLoader() {
-    ASSERT_TRUE(features::ShouldUseV2DeviceSync());
-
     FakeRemoteDeviceV2Loader* loader =
         fake_remote_device_v2_loader_factory_->instances().back();
     EXPECT_TRUE(loader->id_to_device_map());

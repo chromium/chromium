@@ -155,7 +155,8 @@
           "builder": "Win10 x64 Release (NVIDIA)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/win-rel/targets"
     }
   },
   "$build/code_coverage": {

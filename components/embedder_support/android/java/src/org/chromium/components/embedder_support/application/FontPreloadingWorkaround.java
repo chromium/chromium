@@ -66,7 +66,6 @@ public class FontPreloadingWorkaround {
 
             // Retrieve required classes, methods, and fields.
             Class<?> activityThreadClass = Class.forName("android.app.ActivityThread");
-            Method activityThreadGetter = activityThreadClass.getMethod("currentActivityThread");
             Method packageManagerGetter = activityThreadClass.getMethod("getPackageManager");
             Field packageManagerField = activityThreadClass.getDeclaredField("sPackageManager");
             packageManagerField.setAccessible(true);

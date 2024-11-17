@@ -33,6 +33,7 @@
 #import "components/metrics_services_manager/metrics_services_manager.h"
 #import "components/net_log/net_export_file_writer.h"
 #import "components/network_time/network_time_tracker.h"
+#import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "components/os_crypt/async/browser/os_crypt_async.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
@@ -85,6 +86,11 @@
 #import "services/network/public/cpp/network_connection_tracker.h"
 #import "services/network/public/mojom/network_service.mojom.h"
 #import "ui/base/resource/resource_bundle.h"
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+#import "components/optimization_guide/core/model_execution/on_device_model_component.h"  // nogncheck
+#import "ios/chrome/browser/optimization_guide/model/on_device_model_service_controller_ios.h"
+#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
 
 namespace {
 
@@ -209,7 +215,16 @@ void ApplicationContextImpl::StartTearDown() {
     safe_browsing_service_->ShutDown();
   }
 
-  // Need to clear profiles before the IO thread.
+  // Need to clear profiles before the IO thread. In detail:
+  // - First destroy the profiles, including their keyed services, which may
+  //   depend on the AccountProfileMapper.
+  // - Then destroy the AccountProfileMapper, which depends on the
+  //   ProfileManagerIOS.
+  // - Finally destroy the ProfileManagerIOS.
+  if (profile_manager_) {
+    profile_manager_->DestroyAllProfiles();
+  }
+  account_profile_mapper_.reset();
   profile_manager_.reset();
 
   // The policy providers managed by `browser_policy_connector_` need to shut
@@ -262,7 +277,21 @@ void ApplicationContextImpl::OnAppEnterBackground() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!tearing_down_);
 
-  OnAppEnterState(AppState::kBackground);
+  OnAppEnterState(AppState::kBackgroundFromActive);
+}
+
+void ApplicationContextImpl::OnAppStartedBackgroundProcessing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!tearing_down_);
+
+  OnAppEnterState(AppState::kBackgroundProcessing);
+}
+
+void ApplicationContextImpl::OnAppFinishedBackgroundProcessing() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(!tearing_down_);
+
+  OnAppEnterState(AppState::kBackgroundIdle);
 }
 
 bool ApplicationContextImpl::WasLastShutdownClean() {
@@ -513,8 +542,8 @@ SystemIdentityManager* ApplicationContextImpl::GetSystemIdentityManager() {
 AccountProfileMapper* ApplicationContextImpl::GetAccountProfileMapper() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!account_profile_mapper_) {
-    account_profile_mapper_ =
-        std::make_unique<AccountProfileMapper>(GetSystemIdentityManager());
+    account_profile_mapper_ = std::make_unique<AccountProfileMapper>(
+        GetSystemIdentityManager(), GetProfileManager());
   }
   return account_profile_mapper_.get();
 }
@@ -548,6 +577,22 @@ ApplicationContextImpl::GetAdditionalFeaturesController() {
   return additional_features_controller_.get();
 }
 
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+optimization_guide::OnDeviceModelServiceController*
+ApplicationContextImpl::GetOnDeviceModelServiceController(
+    base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+        on_device_component_manager) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!on_device_model_service_controller_) {
+    on_device_model_service_controller_ = base::MakeRefCounted<
+        optimization_guide::OnDeviceModelServiceControllerIOS>(
+        std::move(on_device_component_manager));
+    on_device_model_service_controller_->Init();
+  }
+  return on_device_model_service_controller_.get();
+}
+#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
+
 os_crypt_async::OSCryptAsync* ApplicationContextImpl::GetOSCryptAsync() {
   return os_crypt_async_.get();
 }
@@ -566,7 +611,18 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
           metrics_service->OnAppEnterForeground();
           break;
 
-        case AppState::kBackground:
+        case AppState::kBackgroundFromActive:
+          metrics_service->OnAppEnterBackground();
+          break;
+        case AppState::kBackgroundProcessing:
+          // Background processing should be tracked in metrcis, including
+          // specifically the clean exit beacon, as if it were foreground.
+          metrics_service->OnAppEnterForeground();
+          break;
+        case AppState::kBackgroundIdle:
+          // When background processing is complete, this state should be
+          // treated like normal backgrounding, including specifically the
+          // clean exit beacon.
           metrics_service->OnAppEnterBackground();
           break;
       }
@@ -579,7 +635,9 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
           variations_service->OnAppEnterForeground();
           break;
 
-        case AppState::kBackground:
+        case AppState::kBackgroundFromActive:
+        case AppState::kBackgroundProcessing:
+        case AppState::kBackgroundIdle:
           // Nothing to do for VariationsService when entering background.
           break;
       }
@@ -592,8 +650,11 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
           ukm_service->OnAppEnterForeground();
           break;
 
-        case AppState::kBackground:
+        case AppState::kBackgroundFromActive:
           ukm_service->OnAppEnterBackground();
+          break;
+        case AppState::kBackgroundProcessing:
+        case AppState::kBackgroundIdle:
           break;
       }
     }
@@ -609,12 +670,15 @@ void ApplicationContextImpl::OnAppEnterState(AppState app_state) {
           // Nothing extra to do when entering foreground.
           break;
 
-        case AppState::kBackground:
+        case AppState::kBackgroundFromActive:
           if (history::HistoryService* history_service =
                   ios::HistoryServiceFactory::GetForProfileIfExists(
                       profile, ServiceAccessType::EXPLICIT_ACCESS)) {
             history_service->HandleBackgrounding();
           }
+          break;
+        case AppState::kBackgroundProcessing:
+        case AppState::kBackgroundIdle:
           break;
       }
 

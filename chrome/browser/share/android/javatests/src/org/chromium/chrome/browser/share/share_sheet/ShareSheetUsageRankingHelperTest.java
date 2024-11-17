@@ -18,7 +18,6 @@ import android.view.View;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,7 +28,6 @@ import org.robolectric.annotation.LooperMode;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras.DetailedContentType;
@@ -59,8 +57,6 @@ import java.util.concurrent.atomic.AtomicReference;
 public class ShareSheetUsageRankingHelperTest {
     private static final String MOCK_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ShareSheetBottomSheetContent mBottomSheet;
@@ -80,7 +76,7 @@ public class ShareSheetUsageRankingHelperTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDistillerUrlUtilsJniMock);
+        DomDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
 
         mActivity = Robolectric.setupActivity(Activity.class);
         when(mWindow.getActivity()).thenReturn(new WeakReference<>(mActivity));

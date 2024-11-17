@@ -32,6 +32,7 @@
         "fuchsia.kernel.VmexResource",
         "fuchsia.logger.LogSink",
         "fuchsia.media.ProfileProvider",
+        "fuchsia.scheduler.RoleManager",
         "fuchsia.memorypressure.Provider",
         "fuchsia.process.Launcher",
         "fuchsia.settings.Display",

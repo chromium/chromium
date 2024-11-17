@@ -12,6 +12,7 @@
 #include "url/gurl.h"
 
 class PrefService;
+class Profile;
 
 // Helper for applying the HttpAllowlist enterprise policy. Checks if the
 // hostname of `url` matches any of the hostnames or hostname patterns in the
@@ -41,7 +42,8 @@ bool IsBalancedModeEnabled(PrefService* prefs);
 bool IsNewHttpsFirstModeInterstitialEnabled();
 
 // Returns true if the HTTPS-First Mode interstitial is enabled globally by the
-// UI pref or for this site through Site Engagement heuristic.
+// UI pref or by one of the Site Engagement and Typically Secure User
+// heuristics.
 bool IsInterstitialEnabled(
     const security_interstitials::https_only_mode::HttpInterstitialState&
         state);
@@ -64,6 +66,18 @@ bool ShouldExemptNonUniqueHostnames(
 bool ShouldExcludeUrlFromInterstitial(
     const security_interstitials::https_only_mode::HttpInterstitialState& state,
     const GURL& url);
+
+// Returns true if the Site Engagement heuristic for HTTPS-First Mode must be
+// disabled and not cause an interstitial. Other conditions such as relevant
+// prefs already having been set may also disable the heuristic on startup, but
+// this is the bare minimum that must be checked.
+bool MustDisableSiteEngagementHeuristic(Profile* profile);
+
+// Returns true if the Typically Secure User heuristic for HTTPS-First Mode must
+// be disabled and not cause an interstitial. Other conditions such as relevant
+// prefs already having been set may also disable the heuristic on startup, but
+// this is the bare minimum that must be checked.
+bool MustDisableTypicallySecureUserHeuristic(Profile* profile);
 
 // An instance of this class adds `hostnames` to the HttpAllowlist enterprise
 // policy for testing and clears the allowlist when it goes out of scope.

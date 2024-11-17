@@ -8,8 +8,7 @@
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -121,5 +120,4 @@ TEST_F(MutablePhoneModelTest, BrowserTabsModel) {
   EXPECT_EQ(2u, GetNumObserverCalls());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

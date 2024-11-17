@@ -4,12 +4,12 @@ rootWebArea
 ++++++paragraph
 ++++++++staticText name='My favorite browser is '
 ++++++++++inlineTextBox name='My favorite browser is '
-++++++++contentDeletion
+++++++++contentDeletion datetime='2015-02-14 20:00'
 ++++++++++staticText name='ABC'
 ++++++++++++inlineTextBox name='ABC'
 ++++++++staticText name=' '
 ++++++++++inlineTextBox name=' '
-++++++++contentInsertion
+++++++++contentInsertion datetime='2015-02-14 20:00'
 ++++++++++staticText name='Chrome'
 ++++++++++++inlineTextBox name='Chrome'
 ++++++++staticText name='!'

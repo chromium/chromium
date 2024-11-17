@@ -22,11 +22,4 @@ static_library("info_private") {
     "//base",
     "//build:chromeos_buildflags",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-    ]
-  }
 }

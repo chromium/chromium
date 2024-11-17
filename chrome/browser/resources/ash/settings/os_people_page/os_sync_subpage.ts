@@ -25,20 +25,22 @@ import './os_sync_encryption_options.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 
-import {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
+import type {CrInputElement} from '//resources/ash/common/cr_elements/cr_input/cr_input.js';
 import {WebUiListenerMixin} from '//resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assert, assertNotReached} from '//resources/js/assert.js';
-import {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
+import type {IronCollapseElement} from '//resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {PageStatus, SignedInState, StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import type {SyncBrowserProxy, SyncPrefs, SyncStatus} from '/shared/settings/people_page/sync_browser_proxy.js';
+import {PageStatus, SignedInState, StatusAction, SyncBrowserProxyImpl} from '/shared/settings/people_page/sync_browser_proxy.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
-import {OsSettingsPersonalizationOptionsElement} from './os_personalization_options.js';
-import {OsSettingsSyncEncryptionOptionsElement} from './os_sync_encryption_options.js';
+import type {OsSettingsPersonalizationOptionsElement} from './os_personalization_options.js';
+import type {OsSettingsSyncEncryptionOptionsElement} from './os_sync_encryption_options.js';
 import {getTemplate} from './os_sync_subpage.html.js';
 
 export interface OsSettingsSyncSubpageElement {

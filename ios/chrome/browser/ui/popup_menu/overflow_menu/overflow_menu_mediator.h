@@ -104,8 +104,8 @@ class WebStateList;
 // Readinglist model to know if model has finished loading.
 @property(nonatomic, assign) ReadingListModel* readingListModel;
 
-// Pref service to retrieve browser state preference values.
-@property(nonatomic, assign) PrefService* browserStatePrefs;
+// Pref service to retrieve profile preference values.
+@property(nonatomic, assign) PrefService* profilePrefs;
 
 // Pref service to retrieve local state preference values.
 @property(nonatomic, assign) PrefService* localStatePrefs;

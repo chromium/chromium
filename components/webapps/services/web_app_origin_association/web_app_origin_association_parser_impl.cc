@@ -20,9 +20,11 @@ WebAppOriginAssociationParserImpl::~WebAppOriginAssociationParserImpl() =
 
 void WebAppOriginAssociationParserImpl::ParseWebAppOriginAssociation(
     const std::string& raw_json,
+    const url::Origin& origin,
     ParseWebAppOriginAssociationCallback callback) {
   webapps::WebAppOriginAssociationParser parser;
-  mojom::WebAppOriginAssociationPtr association = parser.Parse(raw_json);
+  mojom::WebAppOriginAssociationPtr association =
+      parser.Parse(raw_json, origin);
   auto errors = parser.GetErrors();
   std::move(callback).Run(std::move(association), std::move(errors));
 }

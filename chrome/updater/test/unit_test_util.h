@@ -62,7 +62,7 @@ std::string GetTestName();
 // - the file does not exist.
 // - the directory is not empty.
 bool DeleteFileAndEmptyParentDirectories(
-    const std::optional<base::FilePath>& file_path);
+    std::optional<base::FilePath> file_path);
 
 // Fetches the path to the ${ISOLATED_OUTDIR} env var.
 // ResultDB reads logs and test artifacts info from there.

@@ -10,6 +10,7 @@
 #include "chrome/test/views/chrome_test_views_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/button_test_api.h"
 
 class ReloadButtonTest : public ChromeRenderViewHostTestHarness {
@@ -165,4 +166,19 @@ TEST_F(ReloadButtonTest, ResetOnTimer) {
   base::RunLoop().RunUntilIdle();
   CheckState(true, ReloadButton::Mode::kReload, ReloadButton::Mode::kReload,
              false, false);
+}
+
+TEST_F(ReloadButtonTest, AccessibleHasPopup) {
+  ui::AXNodeData button_data;
+
+  button_data = ui::AXNodeData();
+  reload()->GetViewAccessibility().GetAccessibleNodeData(&button_data);
+  EXPECT_FALSE(reload()->GetMenuEnabled());
+  EXPECT_EQ(ax::mojom::HasPopup::kNone, button_data.GetHasPopup());
+
+  button_data = ui::AXNodeData();
+  reload()->SetMenuEnabled(true);
+  reload()->GetViewAccessibility().GetAccessibleNodeData(&button_data);
+  EXPECT_TRUE(reload()->GetMenuEnabled());
+  EXPECT_EQ(ax::mojom::HasPopup::kMenu, button_data.GetHasPopup());
 }

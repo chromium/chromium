@@ -120,10 +120,13 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
        IDS_READING_MODE_LANGUAGE_MENU_VOICES_UNAVAILABLE},
       {"readingModeLanguageMenuNoInternet",
        IDS_READING_MODE_LANGUAGE_MENU_NO_INTERNET},
+      {"readingModeVoiceMenuNoInternet",
+       IDS_READING_MODE_VOICE_MENU_NO_INTERNET},
       {"readingModeLanguageMenuNoSpace",
        IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE},
       {"readingModeLanguageMenuNoSpaceButVoicesExist",
        IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE_BUT_VOICES_EXIST},
+      {"readingModeVoiceMenuNoSpace", IDS_READING_MODE_VOICE_MENU_NO_SPACE},
       {"previewVoiceAccessibilityLabel",
        IDS_READING_MODE_VOICE_MENU_PREVIEW_LANGUAGE},
       {"languageMenuNoResults", IDS_READING_MODE_LANGUAGE_MENU_NO_RESULTS},
@@ -136,8 +139,10 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"allocationError", IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE},
       {"allocationErrorHighQuality",
        IDS_READING_MODE_LANGUAGE_MENU_NO_SPACE_BUT_VOICES_EXIST},
+      {"allocationErrorNoVoices", IDS_READING_MODE_TOAST_NO_SPACE},
       {"languageMenuDownloadFailed",
        IDS_READING_MODE_LANGUAGE_MENU_DOWNLOAD_FAILED},
+      {"cantUseReadAloud", IDS_READING_MODE_CANT_USE_READ_ALOUD},
   };
   for (const auto& str : kLocalizedStrings) {
     webui::AddLocalizedString(source, str.name, str.id);
@@ -207,7 +212,8 @@ void ReadAnythingUntrustedUI::CreateUntrustedPageHandler(
   DCHECK(page);
   read_anything_untrusted_page_handler_ =
       std::make_unique<ReadAnythingUntrustedPageHandler>(
-          std::move(page), std::move(receiver), web_ui());
+          std::move(page), std::move(receiver), web_ui(),
+          /*use_screen_ai_service=*/true);
 
   // This code is called as part of a screen2x data generation workflow, where
   // the browser is opened by a CLI and the read-anything side panel is

@@ -25,7 +25,7 @@ class AppCapabilityAccessCacheWrapperTest
 
   void OnAppCapabilityAccessCacheWillBeDestroyed(
       AppCapabilityAccessCache* cache) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   static CapabilityAccessPtr MakeCapabilityAccess(

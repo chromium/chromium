@@ -92,23 +92,29 @@ class VideoEncodeAcceleratorAdapterTest
 
   scoped_refptr<VideoFrame> CreateGreenGpuFrame(gfx::Size size,
                                                 base::TimeDelta timestamp) {
-    auto gmb = gpu_factories_->CreateGpuMemoryBuffer(
-        size, gfx::BufferFormat::YUV_420_BIPLANAR,
+    // Define shared image usage for a mappable shared image.
+    constexpr auto si_usage = gpu::SHARED_IMAGE_USAGE_CPU_WRITE |
+                              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+    auto shared_image = sii_->CreateSharedImage(
+        {viz::MultiPlaneFormat::kNV12, size, kYUVColorSpace,
+         gpu::SharedImageUsageSet(si_usage),
+         "VideoEncodeAcceleratorAdapterTest"},
+        gpu::kNullSurfaceHandle,
         gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
-
-    if (!gmb || !gmb->Map())
+    if (!shared_image) {
       return nullptr;
+    }
+    auto scoped_mapping = shared_image->Map();
+    if (!scoped_mapping) {
+      return nullptr;
+    }
 
-    // Green NV12 frame (Y:0x96, U:0x40, V:0x40)
-    const auto gmb_size = gmb->GetSize();
-    memset(static_cast<uint8_t*>(gmb->memory(0)), 0x96,
-           gmb->stride(0) * gmb_size.height());
-    memset(static_cast<uint8_t*>(gmb->memory(1)), 0x28,
-           gmb->stride(1) * gmb_size.height() / 2);
-    gmb->Unmap();
+    std::ranges::fill(scoped_mapping->GetMemoryForPlane(0), 0x96);
+    std::ranges::fill(scoped_mapping->GetMemoryForPlane(1), 0x28);
 
-    auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
-        gfx::Rect(gmb_size), size, std::move(gmb), timestamp);
+    auto frame = VideoFrame::WrapMappableSharedImage(
+        std::move(shared_image), sii_->GenVerifiedSyncToken(),
+        base::NullCallback(), gfx::Rect(size), size, timestamp);
     frame->set_color_space(kYUVColorSpace);
     return frame;
   }
@@ -294,8 +300,6 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
           EXPECT_EQ(output.temporal_id, 2);
         else if (output.timestamp == base::Milliseconds(4))
           EXPECT_EQ(output.temporal_id, 2);
-        else
-          EXPECT_EQ(output.temporal_id, 2);
 
         EXPECT_EQ(output.color_space, expected_color_space);
         outputs_count++;
@@ -314,11 +318,8 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
           result.vp9 = Vp9Metadata();
           result.vp9->temporal_idx = 2;
         } else if (frame->timestamp() == base::Milliseconds(4)) {
-          result.av1 = Av1Metadata();
-          result.av1->temporal_idx = 2;
-        } else {
-          result.h265 = H265Metadata();
-          result.h265->temporal_idx = 2;
+          result.svc_generic = SVCGenericMetadata();
+          result.svc_generic->temporal_idx = 2;
         }
         return result;
       }));
@@ -333,8 +334,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
       CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(3));
   auto frame4 =
       CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(4));
-  auto frame5 =
-      CreateGreenFrame(options.frame_size, pixel_format, base::Milliseconds(5));
+
   adapter()->Encode(frame1, VideoEncoder::EncodeOptions(true),
                     ValidatingStatusCB());
   RunUntilIdle();
@@ -347,10 +347,7 @@ TEST_F(VideoEncodeAcceleratorAdapterTest, TemporalSvc) {
   adapter()->Encode(frame4, VideoEncoder::EncodeOptions(true),
                     ValidatingStatusCB());
   RunUntilIdle();
-  adapter()->Encode(frame5, VideoEncoder::EncodeOptions(true),
-                    ValidatingStatusCB());
-  RunUntilIdle();
-  EXPECT_EQ(outputs_count, 5);
+  EXPECT_EQ(outputs_count, 4);
 }
 
 TEST_F(VideoEncodeAcceleratorAdapterTest, FlushDuringInitialize) {

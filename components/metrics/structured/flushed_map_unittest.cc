@@ -145,9 +145,9 @@ TEST_F(FlushedMapTest, FlushFile) {
   const std::vector<FlushedKey>& keys = map.keys();
   EXPECT_EQ(keys.size(), 1ul);
 
-  int64_t file_size;
-  EXPECT_TRUE(base::GetFileSize(keys[0].path, &file_size));
-  EXPECT_EQ(keys[0].size, static_cast<int32_t>(file_size));
+  std::optional<int64_t> file_size = base::GetFileSize(keys[0].path);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(keys[0].size, static_cast<int32_t>(file_size.value()));
 }
 
 TEST_F(FlushedMapTest, ReadFile) {

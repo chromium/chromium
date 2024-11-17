@@ -112,9 +112,17 @@ crbug.com/1379766 [ mac ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
 # AVC, HEVC, and VP8 VBR seems to be unreliable on some Android devices
+crbug.com/1368785 [ android-pixel-6 arm renderer-skia-gl graphite-enabled target-cpu-64 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_* [ Failure ]
 crbug.com/1368785 [ android-pixel-6 arm renderer-skia-vulkan target-cpu-64 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-software_variable_* [ Failure ]
 crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-cpu-32 ] WebCodecs_EncodingRateControl_avc1.420034_prefer-hardware_variable_* [ Failure ]
 crbug.com/1368785 [ android-pixel-4 android-r qualcomm renderer-skia-gl target-cpu-32 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_variable_3000000 [ Failure ]
+
+# Platform API doesn't report correct 8k 30 framerate for vp09 coded on ChromeOS intel devices.
+crbug.com/373648897 [ chromeos intel angle-vulkan graphite-disabled ] WebCodecs_EncodingFramerateResolutions_7680x3840_30_vp09.00.62.08_prefer-hardware_quality [ Failure ]
+
+# MediaFoundation report `max_macroblocks_per_second=194400`, but only supports 1920x1080
+# up to 238fps instead of 240fps.
+crbug.com/373648897 [ win qualcomm ] WebCodecs_EncodingFramerateResolutions_1920x1080_240_hvc1.1.6.L186.B0_prefer-hardware_quality [ Failure ]
 
 # Looks like AMD RX 5500 XT can't control HEVC CBR bitrate well.
 crbug.com/1465531 [ win amd-0x7340 ] WebCodecs_EncodingRateControl_hvc1.1.6.L123.00_prefer-hardware_constant_* [ Failure ]
@@ -129,13 +137,9 @@ crbug.com/348632352 [ win qualcomm-0x41333430 ] WebCodecs_EncodingRateControl_hv
 crbug.com/1470336 [ android-oreo android-nexus-5x ] WebCodecs_EncodingRateControl_vp8_prefer-hardware_constant_3000000 [ Failure ]
 crbug.com/1474916 [ android-nexus-5x ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 
-crbug.com/1486660 [ chromeos chromeos-board-jacuzzi ] WebCodecs_EncodeColorSpace_avc1.42001E_prefer-hardware [ Failure ]
 
 crbug.com/1466102 [ nvidia-0x2184 nvidia_lt_31.0.15.4601 win ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Failure ]
 crbug.com/1517101 [ win amd-0x7340 ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_* [ Failure ]
-
-
-crbug.com/333426465 [ win intel-0x4680 ] WebCodecs_PerFrameQpEncoding_offscreen_avc1.42001E_prefer-hardware [ Failure ]
 
 crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release win ] WebCodecs_ContentHint_avc1.42001E_text [ Failure ]
 crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0.15.4601 passthrough release-x64 target-cpu-64 win ] WebCodecs_ContentHint_avc1.42001E_motion [ Failure ]
@@ -146,6 +150,14 @@ crbug.com/337665165 [ angle-d3d11 graphite-disabled nvidia-0x2184 nvidia_lt_31.0
 crbug.com/356565288 [ win nvidia-0x2783 ] WebCodecs_EncodeColorSpace_av01.0.04M.08_prefer-hardware [ Failure ]
 crbug.com/356565288 [ win nvidia-0x2783 ] WebCodecs_SVC_av01.0.04M.08_prefer-hardware_layers_2 [ Failure ]
 crbug.com/356565288 [ win nvidia-0x2783 ] WebCodecs_SVC_av01.0.04M.08_prefer-hardware_layers_3 [ Failure ]
+
+# Known issues with hvc1 variants with hvc1 + camera + prefers-software to reproduce
+crbug.com/371802469 [ mac intel ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
+crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-software [ Failure ]
+crbug.com/371802469 [ mac intel ] WebCodecs_FrameSizeChange_hvc1.1.6.L123.00_camera [ Failure ]
+# Same with prefer-hardware
+crbug.com/371802469 [ mac intel ] WebCodecs_EncodeDecode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
+crbug.com/371802469 [ mac intel ] WebCodecs_Encode_camera_hvc1.1.6.L123.00_prefer-hardware [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

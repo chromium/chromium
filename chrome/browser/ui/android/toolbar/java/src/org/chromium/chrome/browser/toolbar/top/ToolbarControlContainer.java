@@ -18,10 +18,12 @@ import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.content.res.ResourcesCompat;
 
 import org.chromium.base.Callback;
@@ -44,8 +46,8 @@ import org.chromium.chrome.browser.toolbar.ToolbarCaptureType;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar.DrawingInfo;
 import org.chromium.components.browser_ui.widget.ViewResourceFrameLayout;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener;
@@ -63,7 +65,7 @@ import java.util.function.BooleanSupplier;
 
 /** Layout for the browser controls (omnibox, menu, tab strip, etc..). */
 public class ToolbarControlContainer extends OptimizedFrameLayout
-        implements ControlContainer, DesktopWindowStateProvider.AppHeaderObserver {
+        implements ControlContainer, DesktopWindowStateManager.AppHeaderObserver {
     private boolean mIncognito;
     private boolean mMidVisibilityToggle;
     private boolean mIsCompositorInitialized;
@@ -76,6 +78,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     private OnDragListener mToolbarContainerDragListener;
 
     private boolean mIsAppInUnfocusedDesktopWindow;
+    private final int mToolbarLayoutHeight;
+
+    private View mToolbarHairline;
 
     /**
      * Constructs a new control container.
@@ -87,6 +92,14 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
      */
     public ToolbarControlContainer(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mToolbarLayoutHeight =
+                getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+    }
+
+    @Override
+    protected void onFinishInflate() {
+        super.onFinishInflate();
+        mToolbarHairline = findViewById(R.id.toolbar_hairline);
     }
 
     @Override
@@ -111,6 +124,17 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     public int getToolbarBackgroundColor() {
         if (mToolbar == null) return 0;
         return mToolbar.getPrimaryColor();
+    }
+
+    @Override
+    public int getToolbarHeight() {
+        return mToolbarLayoutHeight;
+    }
+
+    @Override
+    public int getToolbarHairlineHeight() {
+        assert mToolbarHairline != null;
+        return mToolbarHairline.getHeight();
     }
 
     @Override
@@ -150,6 +174,21 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     public void setCompositorBackgroundInitialized() {
         mIsCompositorInitialized = true;
         setBackgroundResource(0);
+    }
+
+    @Override
+    public CoordinatorLayout.LayoutParams mutateLayoutParams() {
+        CoordinatorLayout.LayoutParams layoutParams =
+                (CoordinatorLayout.LayoutParams) getLayoutParams();
+        setLayoutParams(layoutParams);
+        return layoutParams;
+    }
+
+    @Override
+    public FrameLayout.LayoutParams mutateHairlineLayoutParams() {
+        FrameLayout.LayoutParams hairlineParams = (LayoutParams) mToolbarHairline.getLayoutParams();
+        mToolbarHairline.setLayoutParams(hairlineParams);
+        return hairlineParams;
     }
 
     @Override
@@ -270,12 +309,9 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             // the rounding for dp -> px conversion can cause off-by-one error for the toolbar
             // hairline top margin, result in a sequence of top UI misalignment.
             // See https://crbug.com/40941027.
-            final int toolbarLayoutHeight =
-                    getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
-            View toolbarHairline = mToolbarContainer.findViewById(R.id.toolbar_hairline);
-            var lp = (MarginLayoutParams) toolbarHairline.getLayoutParams();
-            lp.topMargin = mToolbar.getTabStripHeight() + toolbarLayoutHeight;
-            toolbarHairline.setLayoutParams(lp);
+            var lp = (MarginLayoutParams) mToolbarHairline.getLayoutParams();
+            lp.topMargin = mToolbar.getTabStripHeight() + mToolbarLayoutHeight;
+            mToolbarHairline.setLayoutParams(lp);
         }
     }
 
@@ -415,7 +451,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 this::onCompositorInMotionChange;
 
         @Nullable private Toolbar mToolbar;
-        private int mTabStripHeightPx;
         @Nullable private ConstraintsChecker mConstraintsObserver;
         @Nullable private Supplier<Tab> mTabSupplier;
         @Nullable private ObservableSupplier<Boolean> mCompositorInMotionSupplier;
@@ -464,7 +499,6 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                 FullscreenManager fullscreenManager) {
             assert mToolbar == null;
             mToolbar = toolbar;
-            mTabStripHeightPx = mToolbar.getTabStripHeight();
 
             // These dependencies only matter when ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES is
             // enabled. Unfortunately this method is often called before native is initialized,
@@ -740,8 +774,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
      * @return Whether or not the toolbar container is fully visible on screen.
      */
     private boolean isToolbarContainerFullyVisible() {
-        return Float.compare(0f, getTranslationY()) == 0
-                && mToolbarContainer.getVisibility() == VISIBLE;
+        return mToolbarContainer.getVisibility() == VISIBLE;
     }
 
     private class SwipeGestureListenerImpl extends SwipeGestureListener {

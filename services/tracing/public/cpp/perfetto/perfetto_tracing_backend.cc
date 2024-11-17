@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/tracing/tracing_tls.h"
+#include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
@@ -96,7 +97,7 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
   void UpdateDataSource(
       const perfetto::DataSourceDescriptor& descriptor) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void UnregisterDataSource(const std::string& name) override {
@@ -203,13 +204,13 @@ class ProducerEndpoint : public perfetto::ProducerEndpoint,
   void ActivateTriggers(const std::vector<std::string>&) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // TODO(skyostil): Implement.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void Sync(std::function<void()> callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // TODO(skyostil): Implement.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // mojom::ProducerClient implementation.
@@ -392,7 +393,7 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
              perfetto::FlushFlags) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // TODO(skyostil): Implement flushing.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void ReadBuffers() override {
@@ -445,12 +446,12 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
 
   void Detach(const std::string& key) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    NOTREACHED_IN_MIGRATION() << "Detaching session not supported";
+    NOTREACHED() << "Detaching session not supported";
   }
 
   void Attach(const std::string& key) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    NOTREACHED_IN_MIGRATION() << "Attaching session not supported";
+    NOTREACHED() << "Attaching session not supported";
   }
 
   void GetTraceStats() override {
@@ -497,25 +498,51 @@ class ConsumerEndpoint : public perfetto::ConsumerEndpoint,
                          QueryServiceStateCallback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // TODO(skyostil): Implement service state querying.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void QueryCapabilities(QueryCapabilitiesCallback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // TODO(skyostil): Implement capability querying.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void SaveTraceForBugreport(SaveTraceForBugreportCallback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     // Not implemented yet.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
-  void CloneSession(perfetto::TracingSessionID, CloneSessionArgs) override {
+  void CloneSession(CloneSessionArgs args) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    // Not implemented yet.
-    NOTREACHED_IN_MIGRATION();
+    auto uuid =
+        base::UnguessableToken::DeserializeFromString(args.unique_session_name);
+    if (!uuid) {
+      consumer_->OnSessionCloned({
+          .success = false,
+          .error = "Session name is not an UnguessableToken",
+      });
+    }
+    consumer_host_->CloneSession(
+        tracing_session_host_.BindNewPipeAndPassReceiver(),
+        tracing_session_client_.BindNewPipeAndPassRemote(), *uuid,
+        base::BindOnce(
+            [](ConsumerEndpoint* endpoint, bool success,
+               const std::string& error, const base::Token& uuid) {
+              DCHECK_CALLED_ON_VALID_SEQUENCE(endpoint->sequence_checker_);
+
+              perfetto::Consumer::OnSessionClonedArgs args{
+                  .success = success,
+                  .error = std::move(error),
+                  .uuid = perfetto::base::Uuid(uuid.high(), uuid.low()),
+              };
+              endpoint->consumer_->OnSessionCloned(args);
+            },
+            base::Unretained(this)));
+    tracing_session_host_.set_disconnect_handler(base::BindOnce(
+        &ConsumerEndpoint::OnTracingFailed, base::Unretained(this)));
+    tracing_session_client_.set_disconnect_handler(base::BindOnce(
+        &ConsumerEndpoint::OnTracingFailed, base::Unretained(this)));
   }
 
   // tracing::mojom::TracingSessionClient implementation:

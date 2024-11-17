@@ -6,13 +6,12 @@ module crosapi.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
 
-[Stable]
 struct FileSystemAccessCloudIdentifier {
   string provider_name;
   string id;
 };
 
-[Stable, Extensible]
+[Extensible]
 enum HandleType {
   [Default] kUnknown,
   kFile,
@@ -21,7 +20,7 @@ enum HandleType {
 
 // This interface is implemented by ash-chrome. It allows lacros-chrome to
 // request cloud identifiers for cloud-synced files from ash-chrome.
-[Stable, Uuid="9924d5ed-ae68-49c1-b06a-4aa4ea185b61"]
+[Uuid="9924d5ed-ae68-49c1-b06a-4aa4ea185b61"]
 interface FileSystemAccessCloudIdentifierProvider {
   // Get cloud identifier for a given `virtual_path`.
   GetCloudIdentifier@0(mojo_base.mojom.FilePath virtual_path,

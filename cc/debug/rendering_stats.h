@@ -21,7 +21,10 @@ struct CC_DEBUG_EXPORT RenderingStats {
   class CC_DEBUG_EXPORT TimeDeltaList {
    public:
     TimeDeltaList();
-    TimeDeltaList(const TimeDeltaList& other);
+    TimeDeltaList(const TimeDeltaList& other) = delete;
+    TimeDeltaList(TimeDeltaList&& other);
+    TimeDeltaList& operator=(const TimeDeltaList& other) = delete;
+    TimeDeltaList& operator=(TimeDeltaList&& other);
     ~TimeDeltaList();
 
     void Append(base::TimeDelta value);
@@ -37,15 +40,15 @@ struct CC_DEBUG_EXPORT RenderingStats {
   };
 
   RenderingStats();
-  RenderingStats(const RenderingStats& other);
+  RenderingStats(const RenderingStats& other) = delete;
+  RenderingStats(RenderingStats&& other);
+  RenderingStats& operator=(const RenderingStats& other) = delete;
+  RenderingStats& operator=(RenderingStats&& other);
   ~RenderingStats();
 
   int64_t frame_count = 0;
   int64_t visible_content_area = 0;
   int64_t approximated_visible_content_area = 0;
-  int64_t checkerboarded_visible_content_area = 0;
-  int64_t checkerboarded_needs_record_content_area = 0;
-  int64_t checkerboarded_needs_raster_content_area = 0;
 
   TimeDeltaList draw_duration;
   TimeDeltaList draw_duration_estimate;

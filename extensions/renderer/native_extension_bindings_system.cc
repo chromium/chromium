@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
@@ -27,9 +28,11 @@
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/content_capabilities_handler.h"
 #include "extensions/common/manifest_handlers/externally_connectable.h"
+#include "extensions/common/mojom/api_permission_id.mojom.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/frame.mojom.h"
+#include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "extensions/common/utils/extension_utils.h"
 #include "extensions/renderer/api_activity_logger.h"
@@ -54,10 +57,15 @@
 #include "gin/data_object_builder.h"
 #include "gin/handle.h"
 #include "gin/per_context_data.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
+#include "third_party/blink/public/web/modules/ai/web_ai_features.h"
+#include "third_party/blink/public/web/modules/ai/web_ai_language_model.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_origin_trials.h"
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-object.h"
@@ -70,7 +78,10 @@ namespace extensions {
 
 namespace {
 
-const char kBindingsSystemPerContextKey[] = "extension_bindings_system";
+constexpr char kBindingsSystemPerContextKey[] = "extension_bindings_system";
+
+constexpr char kStringNameAIOriginTrial[] = "aiOriginTrial";
+constexpr char kStringNameLanguageModel[] = "languageModel";
 
 // Returns true if the given |api| is a "prefixed" api of the |root_api|; that
 // is, if the api begins with the root.
@@ -168,8 +179,7 @@ BindingsSystemPerContextData* GetBindingsDataFromContext(
       per_context_data->GetUserData(kBindingsSystemPerContextKey));
   CHECK(data);
   if (!data->bindings_system) {
-    NOTREACHED_IN_MIGRATION() << "Context outlived bindings system.";
-    return nullptr;
+    NOTREACHED() << "Context outlived bindings system.";
   }
 
   return data;
@@ -222,7 +232,6 @@ bool ArePromisesAllowed(v8::Local<v8::Context> context) {
     case mojom::ContextType::kUnspecified:
     case mojom::ContextType::kPrivilegedWebPage:
     case mojom::ContextType::kPrivilegedExtension:
-    case mojom::ContextType::kLockscreenExtension:
     case mojom::ContextType::kOffscreenExtension:
     case mojom::ContextType::kUnprivilegedExtension:
     case mojom::ContextType::kUserScript:
@@ -434,6 +443,12 @@ bool ShouldCollectJSStackTrace(const APIRequestHandler::Request& request) {
   return true;
 }
 
+bool IsPromptAPIEnabledForExtension(v8::Local<v8::Context> v8_context) {
+  return blink::WebAIFeatures::IsPromptAPIEnabledForExtension(v8_context) &&
+         base::FeatureList::IsEnabled(
+             blink::features::kEnableAIPromptAPIForExtension);
+}
+
 }  // namespace
 
 NativeExtensionBindingsSystem::NativeExtensionBindingsSystem(
@@ -503,6 +518,12 @@ void NativeExtensionBindingsSystem::DidCreateScriptContext(
   if (context->context_type() == mojom::ContextType::kContentScript) {
     SetScriptingParams(context);
   }
+
+  if (context->context_type() == mojom::ContextType::kPrivilegedExtension) {
+    if (IsPromptAPIEnabledForExtension(v8_context)) {
+      UpdateBindingsForPromptAPI(context);
+    }
+  }
 }
 
 void NativeExtensionBindingsSystem::WillReleaseScriptContext(
@@ -553,7 +574,6 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
       is_webpage = true;
       break;
     case mojom::ContextType::kPrivilegedExtension:
-    case mojom::ContextType::kLockscreenExtension:
     case mojom::ContextType::kOffscreenExtension:
     case mojom::ContextType::kUnprivilegedExtension:
     case mojom::ContextType::kUserScript:
@@ -866,8 +886,7 @@ void NativeExtensionBindingsSystem::GetInternalAPI(
   ScriptContext* script_context = GetScriptContextFromV8ContextChecked(context);
   if (!feature || !script_context->IsAnyFeatureAvailableToContext(
                       *feature, CheckAliasStatus::NOT_ALLOWED)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   CHECK(feature->IsInternal());
@@ -1075,6 +1094,43 @@ void NativeExtensionBindingsSystem::SetScriptingParams(ScriptContext* context) {
           gin::StringToSymbol(context->isolate(), "globalParams"),
           gin::DataObjectBuilder(context->isolate()).Build())
       .Check();
+}
+
+void NativeExtensionBindingsSystem::UpdateBindingsForPromptAPI(
+    ScriptContext* context) {
+  v8::Isolate* isolate = context->isolate();
+  v8::HandleScope handle_scope(isolate);
+  v8::Local<v8::Context> v8_context = context->v8_context();
+
+  // If the extension has requested for `kAILanguageModelOriginTrial`
+  // permission, we will set the `chrome.aiOriginTrial.languageModel` as a
+  // mirror of `self.ai.languageModel`.
+  if (!context->extension() ||
+      !context->extension()
+           ->permissions_data()
+           ->active_permissions()
+           .HasAPIPermission(
+               mojom::APIPermissionID::kAILanguageModelOriginTrial)) {
+    return;
+  }
+
+  v8::Local<v8::Object> chrome = GetOrCreateChrome(v8_context);
+
+  // Creates `chrome.aiOriginTrial`.
+  v8::Local<v8::Object> chrome_ai_object = v8::Object::New(isolate);
+  v8::Maybe<bool> success = chrome->CreateDataProperty(
+      v8_context, gin::StringToSymbol(isolate, kStringNameAIOriginTrial),
+      chrome_ai_object);
+  CHECK(success.IsJust() && success.FromJust());
+
+  // Set `chrome.aiOriginTrial.languageModel`.
+  v8::Local<v8::String> language_model_name =
+      gin::StringToSymbol(isolate, kStringNameLanguageModel);
+  v8::Local<v8::Value> language_model_value =
+      blink::WebAILanguageModel::GetAILanguageModelFactory(v8_context, isolate);
+  success = chrome_ai_object->CreateDataProperty(
+      v8_context, language_model_name, language_model_value);
+  CHECK(success.IsJust() && success.FromJust());
 }
 
 }  // namespace extensions

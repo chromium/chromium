@@ -81,7 +81,8 @@ void SegmentedString::Push(UChar c) {
     return;
   }
 
-  Prepend(SegmentedString(String(&c, 1u)), PrependType::kUnconsume);
+  Prepend(SegmentedString(String(base::span_from_ref(c))),
+          PrependType::kUnconsume);
 }
 
 void SegmentedString::Prepend(const SegmentedSubstring& s, PrependType type) {

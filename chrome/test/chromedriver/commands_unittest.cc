@@ -586,6 +586,7 @@ TEST(CommandsTest, FailedFindElements) {
 TEST(CommandsTest, SuccessfulFindChildElement) {
   FindElementWebView web_view(true, kElementExistsQueryTwice);
   Session session("id");
+  session.w3c_compliant = false;
   session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id3", std::string());
   base::Value::Dict params;
@@ -622,6 +623,7 @@ TEST(CommandsTest, FailedFindChildElement) {
 TEST(CommandsTest, SuccessfulFindChildElements) {
   FindElementWebView web_view(false, kElementExistsQueryTwice);
   Session session("id");
+  session.w3c_compliant = false;
   session.implicit_wait = base::Seconds(1);
   session.SwitchToSubFrame("frame_id4", std::string());
   base::Value::Dict params;
@@ -728,7 +730,7 @@ TEST(CommandsTest, FindElementWhileNavigating) {
   NavigatingWebView web_view("some_frame");
   web_view.initial_error_codes = {
       kNoSuchExecutionContext,
-      kNavigationDetectedByRemoteEnd,
+      kAbortedByNavigation,
   };
   web_view.SetUpToRespondWithSingleElement();
 
@@ -747,7 +749,7 @@ TEST(CommandsTest, FindElementWhileNavigating) {
 TEST(CommandsTest, FindElementWhileNavigatingTooLong) {
   NavigatingWebView web_view("some_frame");
   web_view.initial_error_codes = {
-      kNavigationDetectedByRemoteEnd,
+      kAbortedByNavigation,
       kNoSuchExecutionContext,
   };
   web_view.SetUpToRespondWithSingleElement();
@@ -768,7 +770,7 @@ TEST(CommandsTest, FindElementsWhileNavigating) {
   NavigatingWebView web_view("some_frame");
   web_view.initial_error_codes = {
       kNoSuchExecutionContext,
-      kNavigationDetectedByRemoteEnd,
+      kAbortedByNavigation,
   };
   web_view.SetUpToRespondWithMultipleElements();
 
@@ -787,7 +789,7 @@ TEST(CommandsTest, FindElementsWhileNavigating) {
 TEST(CommandsTest, FindElementsWhileNavigatingTooLong) {
   NavigatingWebView web_view("some_frame");
   web_view.initial_error_codes = {
-      kNavigationDetectedByRemoteEnd,
+      kAbortedByNavigation,
       kNoSuchExecutionContext,
   };
   web_view.SetUpToRespondWithMultipleElements();

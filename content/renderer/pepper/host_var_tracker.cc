@@ -134,8 +134,7 @@ void HostVarTracker::ForceReleaseV8Object(ppapi::V8ObjectVar* object_var) {
   object_var->InstanceDeleted();
   auto iter = live_vars_.find(object_var->GetExistingVarID());
   if (iter == live_vars_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   iter->second.ref_count = 0;
   DCHECK(iter->second.track_with_no_reference_count == 0);

@@ -229,6 +229,19 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
     _useNewBadgeForLensButton = useNewBadgeForLensButton;
     _lastAnimationPercent = 0;
     _currentHintLabelScale = 1;
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+        UITraitPreferredContentSizeCategory.class,
+        UITraitUserInterfaceStyle.class
+      ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateUIOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -257,16 +270,19 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.identityDiscView.translatesAutoresizingMaskIntoConstraints = NO;
   CGFloat dimension =
       ntp_home::kIdentityAvatarDimension + 2 * ntp_home::kHeaderIconMargin;
+  CGFloat identityAvatarPadding = ntp_home::kIdentityAvatarPadding;
   if (base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)) {
     // Add extra margin to show the error badge if any.
     dimension += ntp_home::kHeaderIconMargin;
+    // And remove the padding so that the disc does not move
+    identityAvatarPadding -= ntp_home::kHeaderIconMargin / 2;
   }
   [NSLayoutConstraint activateConstraints:@[
     [self.identityDiscView.heightAnchor constraintEqualToConstant:dimension],
     [self.identityDiscView.widthAnchor constraintEqualToConstant:dimension],
     [self.identityDiscView.trailingAnchor
         constraintEqualToAnchor:self.safeAreaLayoutGuide.trailingAnchor
-                       constant:-ntp_home::kIdentityAvatarPadding],
+                       constant:-identityAvatarPadding],
     [self.identityDiscView.centerYAnchor
         constraintEqualToAnchor:self.toolBarView.centerYAnchor],
   ]];
@@ -289,7 +305,8 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
       [[OmniboxContainerView alloc] initWithFrame:CGRectZero
                                         textColor:color
                                     textFieldTint:color
-                                         iconTint:color];
+                                         iconTint:color
+                                    isLensOverlay:NO];
   omnibox.textField.placeholder =
       l10n_util::GetNSString(IDS_OMNIBOX_EMPTY_HINT);
   [omnibox.textField setText:@""];
@@ -734,27 +751,17 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
 
 #pragma mark - UITraitEnvironment
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (previousTraitCollection.preferredContentSizeCategory !=
-      self.traitCollection.preferredContentSizeCategory) {
-    [self updateHintLabelFonts];
+  if (@available(iOS 17, *)) {
+    return;
   }
 
-  if (previousTraitCollection.userInterfaceStyle !=
-      self.traitCollection.userInterfaceStyle) {
-    // The fakebox background can be a blended color, which will not
-    // automatically update when dark/light mode is changed. It needs to be
-    // manually updated here.
-    [self setFakeboxBackgroundWithProgress:_lastAnimationPercent];
-
-    if (_accountDiscParticleBadgeImageView) {
-      _accountDiscParticleBadgeImageView.backgroundColor =
-          AccountParticleDiscBadgeBackgroundColor(
-              self.traitCollection.userInterfaceStyle);
-    }
-  }
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+
+#endif
 
 #pragma mark - Property accessors
 
@@ -936,6 +943,28 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   }
   // Common trailing space.
   return kEndButtonFakeboxTrailingSpace;
+}
+
+// Updates facets of the UI to reflect the change in the collection of UITraits.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if (previousTraitCollection.preferredContentSizeCategory !=
+      self.traitCollection.preferredContentSizeCategory) {
+    [self updateHintLabelFonts];
+  }
+
+  if (previousTraitCollection.userInterfaceStyle !=
+      self.traitCollection.userInterfaceStyle) {
+    // The fakebox background can be a blended color, which will not
+    // automatically update when dark/light mode is changed. It needs to be
+    // manually updated here.
+    [self setFakeboxBackgroundWithProgress:_lastAnimationPercent];
+
+    if (_accountDiscParticleBadgeImageView) {
+      _accountDiscParticleBadgeImageView.backgroundColor =
+          AccountParticleDiscBadgeBackgroundColor(
+              self.traitCollection.userInterfaceStyle);
+    }
+  }
 }
 
 @end

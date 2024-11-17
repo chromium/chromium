@@ -224,9 +224,9 @@ void DatabaseErrorCallback(sql::Database* db,
 
 }  // namespace
 
-FaviconDatabase::IconMappingEnumerator::IconMappingEnumerator() {}
+FaviconDatabase::IconMappingEnumerator::IconMappingEnumerator() = default;
 
-FaviconDatabase::IconMappingEnumerator::~IconMappingEnumerator() {}
+FaviconDatabase::IconMappingEnumerator::~IconMappingEnumerator() = default;
 
 bool FaviconDatabase::IconMappingEnumerator::GetNextIconMapping(
     IconMapping* icon_mapping) {
@@ -373,8 +373,8 @@ bool FaviconDatabase::GetFaviconBitmaps(
     std::vector<uint8_t> bitmap_data_blob;
     statement.ColumnBlobAsVector(2, &bitmap_data_blob);
     if (!bitmap_data_blob.empty()) {
-      favicon_bitmap.bitmap_data =
-          base::RefCountedBytes::TakeVector(&bitmap_data_blob);
+      favicon_bitmap.bitmap_data = base::MakeRefCounted<base::RefCountedBytes>(
+          std::move(bitmap_data_blob));
     }
     favicon_bitmap.pixel_size =
         gfx::Size(statement.ColumnInt(3), statement.ColumnInt(4));
@@ -408,7 +408,8 @@ bool FaviconDatabase::GetFaviconBitmap(
     std::vector<uint8_t> png_data_blob;
     statement.ColumnBlobAsVector(1, &png_data_blob);
     if (!png_data_blob.empty())
-      *png_icon_data = base::RefCountedBytes::TakeVector(&png_data_blob);
+      *png_icon_data =
+          base::MakeRefCounted<base::RefCountedBytes>(std::move(png_data_blob));
   }
 
   if (pixel_size) {

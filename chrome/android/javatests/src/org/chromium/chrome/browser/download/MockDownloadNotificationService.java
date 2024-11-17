@@ -12,7 +12,7 @@ import android.graphics.Bitmap;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.FailState;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
@@ -66,7 +66,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
             final String filePath,
             final String fileName,
             final long systemDownloadId,
-            final OTRProfileID otrProfileID,
+            final OtrProfileId otrProfileId,
             final boolean isSupportedMimeType,
             final boolean isOpenable,
             final Bitmap icon,
@@ -81,7 +81,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
                                 filePath,
                                 fileName,
                                 systemDownloadId,
-                                otrProfileID,
+                                otrProfileId,
                                 isSupportedMimeType,
                                 isOpenable,
                                 icon,
@@ -99,7 +99,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
             final long bytesReceived,
             final long timeRemainingInMillis,
             final long startTime,
-            final OTRProfileID otrProfileID,
+            final OtrProfileId otrProfileId,
             final boolean canDownloadWhileMetered,
             final boolean isTransient,
             final Bitmap icon,
@@ -114,7 +114,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
                                 bytesReceived,
                                 timeRemainingInMillis,
                                 startTime,
-                                otrProfileID,
+                                otrProfileId,
                                 canDownloadWhileMetered,
                                 isTransient,
                                 icon,
@@ -128,7 +128,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
             String fileName,
             boolean isResumable,
             boolean isAutoResumable,
-            OTRProfileID otrProfileID,
+            OtrProfileId otrProfileId,
             boolean isTransient,
             Bitmap icon,
             final GURL originalUrl,
@@ -143,7 +143,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
                                 fileName,
                                 isResumable,
                                 isAutoResumable,
-                                otrProfileID,
+                                otrProfileId,
                                 isTransient,
                                 icon,
                                 originalUrl,
@@ -160,7 +160,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
             final Bitmap icon,
             final GURL originalUrl,
             final boolean shouldPromoteOrigin,
-            OTRProfileID otrProfileID,
+            OtrProfileId otrProfileId,
             @FailState int failState) {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -170,7 +170,7 @@ public class MockDownloadNotificationService extends DownloadNotificationService
                                 icon,
                                 originalUrl,
                                 shouldPromoteOrigin,
-                                otrProfileID,
+                                otrProfileId,
                                 failState));
     }
 

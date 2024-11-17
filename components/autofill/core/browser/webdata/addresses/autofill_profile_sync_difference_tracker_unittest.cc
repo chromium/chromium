@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/geo/country_names.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -30,10 +29,11 @@ using testing::ElementsAre;
 using testing::IsEmpty;
 
 // Some guids for testing.
-const char kSmallerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
-const char kBiggerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
-const char kLocaleString[] = "en-US";
-const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
+constexpr char kSmallerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
+constexpr char kBiggerGuid[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
+constexpr char kLocaleString[] = "en-US";
+constexpr base::Time kJune2017 =
+    base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
 struct UpdatesToSync {
   std::vector<AutofillProfile> profiles_to_upload_to_sync;
@@ -53,7 +53,7 @@ class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
 
   void SetUp() override {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
-    test_clock_.SetNow(kJune2017);
+    task_environment_.AdvanceClock(kJune2017 - base::Time::Now());
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
@@ -98,9 +98,9 @@ class AutofillProfileSyncDifferenceTrackerTestBase : public testing::Test {
   AddressAutofillTable* table() { return &table_; }
 
  private:
-  autofill::TestAutofillClock test_clock_;
   base::ScopedTempDir temp_dir_;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   AddressAutofillTable table_;
   WebDatabase db_;
 };

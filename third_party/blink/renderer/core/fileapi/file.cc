@@ -162,7 +162,7 @@ File* File::CreateFromControlState(ExecutionContext* context,
   String relative_path = state[index++];
   if (relative_path.empty())
     return File::CreateForUserProvidedFile(context, path, name);
-  return File::CreateWithRelativePath(context, path, relative_path);
+  return File::CreateWithRelativePath(context, path, name, relative_path);
 }
 
 String File::PathFromControlState(const FormControlState& state,
@@ -178,9 +178,10 @@ String File::PathFromControlState(const FormControlState& state,
 
 File* File::CreateWithRelativePath(ExecutionContext* context,
                                    const String& path,
+                                   const String& name,
                                    const String& relative_path) {
-  File* file = MakeGarbageCollected<File>(context, path, File::kAllContentTypes,
-                                          File::kIsUserVisible);
+  File* file = MakeGarbageCollected<File>(
+      context, path, name, File::kAllContentTypes, File::kIsUserVisible);
   file->relative_path_ = relative_path;
   return file;
 }
@@ -190,8 +191,8 @@ File* File::CreateForFileSystemFile(ExecutionContext& context,
                                     const KURL& url,
                                     const FileMetadata& metadata,
                                     UserVisibility user_visibility) {
-  String content_type =
-      GetContentTypeFromFileName(url.GetPath(), File::kWellKnownContentTypes);
+  String content_type = GetContentTypeFromFileName(
+      url.GetPath().ToString(), File::kWellKnownContentTypes);
   // RegisterBlob doesn't take nullable strings.
   if (content_type.IsNull()) {
     content_type = g_empty_string;

@@ -7,25 +7,43 @@
 
 #include <memory>
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
-#include "chrome/browser/sync/glue/extensions_activity_monitor.h"
+#include "components/browser_sync/sync_engine_factory_impl.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/sync/service/local_data_description.h"
 #include "components/sync/service/sync_client.h"
 #include "extensions/buildflags/buildflags.h"
 
-class Profile;
+namespace supervised_user {
+class SupervisedUserSettingsService;
+}  // namespace supervised_user
+
+namespace syncer {
+class DataTypeStoreService;
+class DeviceInfoSyncService;
+}  // namespace syncer
+
+namespace trusted_vault {
+class TrustedVaultService;
+}  // namespace trusted_vault
 
 namespace browser_sync {
 
-class LocalDataQueryHelper;
-class LocalDataMigrationHelper;
-class SyncEngineFactoryImpl;
+class ExtensionsActivityMonitor;
 
 class ChromeSyncClient : public syncer::SyncClient {
  public:
-  explicit ChromeSyncClient(Profile* profile);
+  ChromeSyncClient(
+      const base::FilePath& profile_base_name,
+      PrefService* pref_service,
+      signin::IdentityManager* identity_manager,
+      trusted_vault::TrustedVaultService* trusted_vault_service,
+      syncer::SyncInvalidationsService* sync_invalidations_service,
+      syncer::DeviceInfoSyncService* device_info_sync_service,
+      syncer::DataTypeStoreService* data_type_store_service,
+      supervised_user::SupervisedUserSettingsService*
+          supervised_user_settings_service,
+      std::unique_ptr<ExtensionsActivityMonitor> extensions_activity_monitor);
 
   ChromeSyncClient(const ChromeSyncClient&) = delete;
   ChromeSyncClient& operator=(const ChromeSyncClient&) = delete;
@@ -47,29 +65,19 @@ class ChromeSyncClient : public syncer::SyncClient {
   void RegisterTrustedVaultAutoUpgradeSyntheticFieldTrial(
       const syncer::TrustedVaultAutoUpgradeSyntheticFieldTrialGroup& group)
       override;
-#if BUILDFLAG(IS_ANDROID)
-  void GetLocalDataDescriptions(
-      syncer::DataTypeSet types,
-      base::OnceCallback<void(
-          std::map<syncer::DataType, syncer::LocalDataDescription>)> callback)
-      override;
-  void TriggerLocalDataMigration(syncer::DataTypeSet types) override;
-#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
-  const raw_ptr<Profile> profile_;
-
-  // The sync engine factory in use by this client.
-  std::unique_ptr<browser_sync::SyncEngineFactoryImpl> engine_factory_;
-
-  // Generates and monitors the ExtensionsActivity object used by sync.
-  browser_sync::ExtensionsActivityMonitor extensions_activity_monitor_;
+  const base::FilePath profile_base_name_;
+  const raw_ptr<PrefService> pref_service_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<trusted_vault::TrustedVaultService> trusted_vault_service_;
+  const raw_ptr<syncer::SyncInvalidationsService> sync_invalidations_service_;
+  const raw_ptr<supervised_user::SupervisedUserSettingsService>
+      supervised_user_settings_service_;
+  const std::unique_ptr<ExtensionsActivityMonitor> extensions_activity_monitor_;
+  SyncEngineFactoryImpl engine_factory_;
 
 #if BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<browser_sync::LocalDataQueryHelper> local_data_query_helper_;
-  std::unique_ptr<browser_sync::LocalDataMigrationHelper>
-      local_data_migration_helper_;
-
   // Watches password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores.
   PrefChangeRegistrar upm_pref_change_registrar_;
 #endif  // BUILDFLAG(IS_ANDROID)

@@ -98,14 +98,80 @@ TEST_P(LayoutBoxModelObjectTest, LocalCaretRectForEmptyElementVertical) {
         To<LayoutInline>(GetLayoutObjectByElementId("target-inline-rl"));
     EXPECT_EQ(PhysicalRect(LayoutUnit(), kPaddingTop - kCaretWidth, kFontHeight,
                            kCaretWidth),
-              inline_rl->LocalCaretRect(0, nullptr));
+              inline_rl->LocalCaretRect(0));
   }
   {
     auto* inline_lr =
         To<LayoutInline>(GetLayoutObjectByElementId("target-inline-lr"));
     EXPECT_EQ(PhysicalRect(kFontHeight, kPaddingTop - kCaretWidth, kFontHeight,
                            kCaretWidth),
-              inline_lr->LocalCaretRect(0, nullptr));
+              inline_lr->LocalCaretRect(0));
+  }
+}
+
+TEST_P(LayoutBoxModelObjectTest, BorderAndPaddingLogicalLeftRight) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    .target {
+      border-color: red;
+      border-style: solid;
+      border-width: 2px 4px 11px 13px;
+      padding: 1px 3px 5px 7px;
+      block-size: 40px;
+      inline-size: 33px;
+    }
+    #target-htb {
+      writing-mode: horizontal-tb;
+    }
+    #target-vrl {
+      writing-mode: vertical-rl;
+    }
+    #target-vlr {
+      writing-mode: vertical-lr;
+    }
+    #target-srl {
+      writing-mode: sideways-rl;
+    }
+    #target-slr {
+      writing-mode: sideways-lr;
+    }
+    </style>
+    <div id='target-htb' class="target"></div>
+    <div id='target-vrl' class="target"></div>
+    <div id='target-vlr' class="target"></div>
+    <div id='target-srl' class="target"></div>
+    <div id='target-slr' class="target"></div>
+  })HTML");
+
+  constexpr LayoutUnit kTop = LayoutUnit(2 + 1);
+  constexpr LayoutUnit kRight = LayoutUnit(4 + 3);
+  constexpr LayoutUnit kBottom = LayoutUnit(11 + 5);
+  constexpr LayoutUnit kLeft = LayoutUnit(13 + 7);
+
+  {
+    auto* target = GetLayoutBoxByElementId("target-htb");
+    EXPECT_EQ(kLeft, target->BorderAndPaddingInlineStart());
+    EXPECT_EQ(kRight, target->BorderAndPaddingInlineEnd());
+  }
+  {
+    auto* target = GetLayoutBoxByElementId("target-vrl");
+    EXPECT_EQ(kTop, target->BorderAndPaddingInlineStart());
+    EXPECT_EQ(kBottom, target->BorderAndPaddingInlineEnd());
+  }
+  {
+    auto* target = GetLayoutBoxByElementId("target-vlr");
+    EXPECT_EQ(kTop, target->BorderAndPaddingInlineStart());
+    EXPECT_EQ(kBottom, target->BorderAndPaddingInlineEnd());
+  }
+  {
+    auto* target = GetLayoutBoxByElementId("target-srl");
+    EXPECT_EQ(kTop, target->BorderAndPaddingInlineStart());
+    EXPECT_EQ(kBottom, target->BorderAndPaddingInlineEnd());
+  }
+  {
+    auto* target = GetLayoutBoxByElementId("target-slr");
+    EXPECT_EQ(kBottom, target->BorderAndPaddingInlineStart());
+    EXPECT_EQ(kTop, target->BorderAndPaddingInlineEnd());
   }
 }
 

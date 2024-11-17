@@ -66,6 +66,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
   PasswordStoreInterface* GetProfilePasswordStore() const override;
   PasswordStoreInterface* GetAccountPasswordStore() const override;
   PasswordReuseManager* GetPasswordReuseManager() const override;
+  PasswordChangeServiceInterface* GetPasswordChangeService() const override;
   const PasswordManagerInterface* GetPasswordManager() const override;
   const GURL& GetLastCommittedURL() const override;
   url::Origin GetLastCommittedOrigin() const override;
@@ -102,6 +103,7 @@ class StubPasswordManagerClient : public PasswordManagerClient {
 #if BUILDFLAG(IS_ANDROID)
   FirstCctPageLoadPasswordsUkmRecorder* GetFirstCctPageLoadUkmRecorder()
       override;
+  void PotentialSaveFormSubmitted() override;
 #endif
   signin::IdentityManager* GetIdentityManager() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;

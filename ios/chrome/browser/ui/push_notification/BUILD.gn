@@ -3,10 +3,7 @@
 # found in the LICENSE file.
 
 source_set("presenters") {
-  sources = [
-    "notifications_alert_presenter.h",
-    "notifications_confirmation_presenter.h",
-  ]
+  sources = [ "notifications_alert_presenter.h" ]
   deps = [ "//base" ]
 }
 
@@ -17,6 +14,7 @@ source_set("opt_in_alert_coordinator") {
   ]
   deps = [
     ":metrics",
+    ":prominence_notification_setting_alert",
     "//components/sync_device_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
@@ -27,8 +25,10 @@ source_set("opt_in_alert_coordinator") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ui/base",
   ]
@@ -62,7 +62,10 @@ source_set("notifications_opt_in") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/ui/authentication/signin:constants",
     "//ios/chrome/common/ui/promo_style",
     "//ui/base",
@@ -91,6 +94,24 @@ source_set("notifications_opt_in_ui") {
   ]
 }
 
+source_set("prominence_notification_setting_alert") {
+  sources = [
+    "prominence_notification_setting_alert_coordinator.h",
+    "prominence_notification_setting_alert_coordinator.mm",
+    "prominence_notification_setting_alert_coordinator_delegate.h",
+  ]
+  deps = [
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/alert_view/ui_bundled",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/ui/push_notification/resources",
+    "//ui/base",
+  ]
+}
+
 source_set("metrics") {
   sources = [
     "metrics.h",
@@ -115,6 +136,7 @@ source_set("eg2_tests") {
   testonly = true
   sources = [
     "notifications_opt_in_egtest.mm",
+    "prominence_notification_setting_alert_egtest.mm",
     "push_notification_egtest.mm",
   ]
   deps = [
@@ -131,6 +153,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:eg_test_support+eg2",
     "//ios/chrome/browser/ui/content_suggestions/set_up_list:constants",
+    "//ios/chrome/browser/ui/settings/notifications:constants",
     "//ios/chrome/common/ui/promo_style:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
@@ -156,7 +179,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",

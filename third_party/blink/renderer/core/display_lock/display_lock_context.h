@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_DISPLAY_LOCK_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DISPLAY_LOCK_DISPLAY_LOCK_CONTEXT_H_
 
+#include <array>
 #include <utility>
 
 #include "third_party/blink/renderer/core/core_export.h"
@@ -400,8 +401,7 @@ class CORE_EXPORT DisplayLockContext final
     bool is_forced(ForcedPhase phase) const {
       switch (phase) {
         case ForcedPhase::kNone:
-          NOTREACHED_IN_MIGRATION();
-          return false;
+          NOTREACHED();
         case ForcedPhase::kStyleAndLayoutTree:
           return style_update_forced_ || layout_update_forced_ ||
                  prepaint_update_forced_;
@@ -514,8 +514,9 @@ class CORE_EXPORT DisplayLockContext final
   void NotifyRenderAffectingStateChanged();
   const char* RenderAffectingStateName(int state) const;
 
-  bool render_affecting_state_[static_cast<int>(
-      RenderAffectingState::kNumRenderAffectingStates)] = {false};
+  std::array<bool,
+             static_cast<int>(RenderAffectingState::kNumRenderAffectingStates)>
+      render_affecting_state_ = {false};
   int keep_unlocked_count_ = 0;
 
   bool had_lifecycle_update_since_last_unlock_ = false;

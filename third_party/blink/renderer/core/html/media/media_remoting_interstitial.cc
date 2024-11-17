@@ -84,7 +84,7 @@ void MediaRemotingInterstitial::Hide(int error_code) {
     return;
   if (toggle_interstitial_timer_.IsActive())
     toggle_interstitial_timer_.Stop();
-  if (error_code == WebMediaPlayerClient::kMediaRemotingStopNoText) {
+  if (error_code == MediaPlayerClient::kMediaRemotingStopNoText) {
     state_ = kHidden;
   } else {
     String stop_text =

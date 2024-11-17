@@ -20,6 +20,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/geometry/rect.h"
@@ -361,13 +362,14 @@ class ASH_EXPORT AppListItemView : public views::Button,
   // |AppListViewDelegate::GetContextMenuModel|.
   void OnContextMenuModelReceived(
       const gfx::Point& point,
-      ui::MenuSourceType source_type,
+      ui::mojom::MenuSourceType source_type,
       std::unique_ptr<ui::SimpleMenuModel> menu_model);
 
   // views::ContextMenuController overrides:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // views::Button overrides:
   bool ShouldEnterPushedState(const ui::Event& event) override;

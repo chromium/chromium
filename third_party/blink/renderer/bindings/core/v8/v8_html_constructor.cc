@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/html/custom/custom_element_construction_stack.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_registry.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
@@ -105,8 +104,6 @@ void V8HTMLConstructor::HtmlConstructor(
     }
   }
 
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kConstructor,
-                                 "HTMLElement");
   // 6. Let prototype be Get(NewTarget, "prototype"). Rethrow any exceptions.
   v8::Local<v8::Value> prototype;
   v8::Local<v8::String> prototype_string = V8AtomicString(isolate, "prototype");
@@ -145,7 +142,8 @@ void V8HTMLConstructor::HtmlConstructor(
       // During upgrade an element has invoked the same constructor
       // before calling 'super' and that invocation has poached the
       // element.
-      exception_state.ThrowTypeError("This instance is already constructed");
+      V8ThrowException::ThrowTypeError(isolate,
+                                       "This instance is already constructed");
       return;
     }
   }
@@ -169,8 +167,8 @@ void V8HTMLConstructor::HtmlConstructor(
   }
   if (!success) {
     // Likely, Reflect.preventExtensions() has been called on the element.
-    exception_state.ThrowTypeError(
-        "Unable to call SetPrototype on this element");
+    V8ThrowException::ThrowTypeError(
+        isolate, "Unable to call SetPrototype on this element");
     return;
   }
 }

@@ -8,15 +8,16 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.blink.mojom.FileChooserParams;
 import org.chromium.components.embedder_support.delegate.WebContentsDelegateAndroid;
 
 /**
- * WebView-specific WebContentsDelegate.
- * This file is the Java version of the native class of the same name.
- * It should contain abstract WebContentsDelegate methods to be implemented by the embedder.
- * These methods belong to WebView but are not shared with the Chromium Android port.
+ * WebView-specific WebContentsDelegate. This file is the Java version of the native class of the
+ * same name. It should contain abstract WebContentsDelegate methods to be implemented by the
+ * embedder. These methods belong to WebView but are not shared with the Chromium Android port.
  */
 @VisibleForTesting
 @JNINamespace("android_webview")
@@ -26,7 +27,8 @@ public abstract class AwWebContentsDelegate extends WebContentsDelegateAndroid {
     public abstract void runFileChooser(
             int processId,
             int renderId,
-            int modeFlags,
+            @JniType("blink::mojom::FileChooserParams::Mode") @FileChooserParams.Mode.EnumType
+                    int blinkFileChooserParamsMode,
             String acceptTypes,
             String title,
             String defaultFilename,

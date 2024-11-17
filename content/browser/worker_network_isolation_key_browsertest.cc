@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_P(
                 EXPECT_EQ(status.exists_in_cache,
                           test_same_network_isolation_key);
               } else {
-                NOTREACHED_IN_MIGRATION();
+                NOTREACHED();
               }
             }
             if (request_completed_count[import_script_url] == 2 &&
@@ -285,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(
                 EXPECT_TRUE(status.exists_in_cache);
                 cache_status_waiter.Quit();
               } else {
-                NOTREACHED_IN_MIGRATION();
+                NOTREACHED();
               }
             }
           }),
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(
                 EXPECT_FALSE(status.exists_in_cache);
                 cache_status_waiter.Quit();
               } else {
-                NOTREACHED_IN_MIGRATION();
+                NOTREACHED();
               }
             }
           }),

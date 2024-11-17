@@ -83,7 +83,7 @@ struct MockTouchToFillView : public TouchToFillView {
 
 struct MockJniDelegate : public NoPasskeysBottomSheetBridge::JniDelegate {
   ~MockJniDelegate() override = default;
-  MOCK_METHOD(void, Create, (ui::WindowAndroid*), (override));
+  MOCK_METHOD(void, Create, (ui::WindowAndroid&), (override));
   MOCK_METHOD(void, Show, (const std::string&), (override));
   MOCK_METHOD(void, Dismiss, (), (override));
 };

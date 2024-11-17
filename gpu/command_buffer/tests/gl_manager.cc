@@ -97,17 +97,11 @@ class GpuMemoryBufferImplTest : public gfx::GpuMemoryBuffer {
     DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
     return gfx::RowSizeForBufferFormat(size_.width(), format_, plane);
   }
-  gfx::GpuMemoryBufferId GetId() const override {
-    NOTREACHED_IN_MIGRATION();
-    return gfx::GpuMemoryBufferId(0);
-  }
+  gfx::GpuMemoryBufferId GetId() const override { NOTREACHED(); }
   gfx::GpuMemoryBufferType GetType() const override {
     return gfx::NATIVE_PIXMAP;
   }
-  gfx::GpuMemoryBufferHandle CloneHandle() const override {
-    NOTREACHED_IN_MIGRATION();
-    return gfx::GpuMemoryBufferHandle();
-  }
+  gfx::GpuMemoryBufferHandle CloneHandle() const override { NOTREACHED(); }
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
@@ -154,17 +148,11 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
     DCHECK_LT(plane, gfx::NumberOfPlanesForLinearBufferFormat(format_));
     return IOSurfaceGetWidthOfPlane(iosurface_.get(), plane);
   }
-  gfx::GpuMemoryBufferId GetId() const override {
-    NOTREACHED_IN_MIGRATION();
-    return gfx::GpuMemoryBufferId(0);
-  }
+  gfx::GpuMemoryBufferId GetId() const override { NOTREACHED(); }
   gfx::GpuMemoryBufferType GetType() const override {
     return gfx::IO_SURFACE_BUFFER;
   }
-  gfx::GpuMemoryBufferHandle CloneHandle() const override {
-    NOTREACHED_IN_MIGRATION();
-    return gfx::GpuMemoryBufferHandle();
-  }
+  gfx::GpuMemoryBufferHandle CloneHandle() const override { NOTREACHED(); }
   void OnMemoryDump(
       base::trace_event::ProcessMemoryDump* pmd,
       const base::trace_event::MemoryAllocatorDumpGuid& buffer_dump_guid,
@@ -249,8 +237,8 @@ std::unique_ptr<gfx::GpuMemoryBuffer> GLManager::CreateGpuMemoryBuffer(
         new IOSurfaceGpuMemoryBuffer(size, format));
   }
 #endif  // BUILDFLAG(IS_MAC)
-  std::vector<uint8_t> data(gfx::BufferSizeForBufferFormat(size, format), 0);
-  auto bytes = base::RefCountedBytes::TakeVector(&data);
+  auto bytes = base::MakeRefCounted<base::RefCountedBytes>(
+      gfx::BufferSizeForBufferFormat(size, format));
   return base::WrapUnique<gfx::GpuMemoryBuffer>(
       new GpuMemoryBufferImplTest(bytes.get(), size, format));
 }
@@ -532,29 +520,29 @@ const GLCapabilities& GLManager::GetGLCapabilities() const {
 }
 
 void GLManager::SignalQuery(uint32_t query, base::OnceClosure callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void GLManager::CancelAllQueries() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void GLManager::CreateGpuFence(uint32_t gpu_fence_id, ClientGpuFence source) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void GLManager::GetGpuFence(
     uint32_t gpu_fence_id,
     base::OnceCallback<void(std::unique_ptr<gfx::GpuFence>)> callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void GLManager::SetLock(base::Lock*) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void GLManager::EnsureWorkVisible() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 gpu::CommandBufferNamespace GLManager::GetNamespaceID() const {
@@ -566,31 +554,28 @@ CommandBufferId GLManager::GetCommandBufferID() const {
 }
 
 void GLManager::FlushPendingWork() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 uint64_t GLManager::GenerateFenceSyncRelease() {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 bool GLManager::IsFenceSyncReleased(uint64_t release) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void GLManager::SignalSyncToken(const gpu::SyncToken& sync_token,
                                 base::OnceClosure callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void GLManager::WaitSyncToken(const gpu::SyncToken& sync_token) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool GLManager::CanWaitUnverifiedSyncToken(const gpu::SyncToken& sync_token) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 ContextType GLManager::GetContextType() const {

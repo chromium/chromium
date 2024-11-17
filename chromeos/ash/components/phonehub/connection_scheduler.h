@@ -6,8 +6,8 @@
 #define CHROMEOS_ASH_COMPONENTS_PHONEHUB_CONNECTION_SCHEDULER_H_
 
 #include "chromeos/ash/components/phonehub/phone_hub_structured_metrics_logger.h"
-namespace ash {
-namespace phonehub {
+
+namespace ash::phonehub {
 
 // Responsible for requesting connection from the local device
 // (e.g. this chromebook) to the user's phone. Will also attempt to connect
@@ -26,7 +26,6 @@ class ConnectionScheduler {
   ConnectionScheduler() = default;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_CONNECTION_SCHEDULER_H_

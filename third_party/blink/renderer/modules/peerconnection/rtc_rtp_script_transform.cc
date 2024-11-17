@@ -11,6 +11,7 @@
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -55,8 +56,15 @@ Event* CreateRTCTransformEvent(
   return event;
 }
 
-bool IsValidReceiverDirection(const String& direction) {
-  return (direction == "sendrecv" || direction == "recvonly");
+bool IsValidReceiverDirection(
+    std::optional<V8RTCRtpTransceiverDirection> direction) {
+  if (!direction.has_value()) {
+    return false;
+  }
+  return direction.value().AsEnum() ==
+             V8RTCRtpTransceiverDirection::Enum::kSendrecv ||
+         direction.value().AsEnum() ==
+             V8RTCRtpTransceiverDirection::Enum::kRecvonly;
 }
 
 }  // namespace
@@ -65,8 +73,8 @@ RTCRtpScriptTransform* RTCRtpScriptTransform::Create(
     ScriptState* script_state,
     DedicatedWorker* worker,
     ExceptionState& exception_state) {
-  HeapVector<ScriptValue> transfer;
-  return Create(script_state, worker, ScriptValue(), transfer, exception_state);
+  return Create(script_state, worker, ScriptValue(), /* transfer= */ {},
+                exception_state);
 }
 
 RTCRtpScriptTransform* RTCRtpScriptTransform::Create(
@@ -74,15 +82,15 @@ RTCRtpScriptTransform* RTCRtpScriptTransform::Create(
     DedicatedWorker* worker,
     const ScriptValue& message,
     ExceptionState& exception_state) {
-  HeapVector<ScriptValue> transfer;
-  return Create(script_state, worker, message, transfer, exception_state);
+  return Create(script_state, worker, message, /* transfer= */ {},
+                exception_state);
 }
 
 RTCRtpScriptTransform* RTCRtpScriptTransform::Create(
     ScriptState* script_state,
     DedicatedWorker* worker,
     const ScriptValue& message,
-    HeapVector<ScriptValue>& transfer,
+    HeapVector<ScriptValue> transfer,
     ExceptionState& exception_state) {
   auto* transform = MakeGarbageCollected<RTCRtpScriptTransform>();
   worker->PostCustomEvent(
@@ -189,11 +197,13 @@ void RTCRtpScriptTransform::Detach() {
   encoded_video_transformer_ = nullptr;
   encoded_audio_transformer_ = nullptr;
   disconnect_callback_source_.Reset();
-  PostCrossThreadTask(
-      *rtp_transformer_task_runner_, FROM_HERE,
-      WTF::CrossThreadBindOnce(
-          &RTCRtpScriptTransformer::Clear,
-          MakeUnwrappingCrossThreadWeakHandle(*rtp_transformer_)));
+  if (rtp_transformer_) {
+    PostCrossThreadTask(
+        *rtp_transformer_task_runner_, FROM_HERE,
+        WTF::CrossThreadBindOnce(
+            &RTCRtpScriptTransformer::Clear,
+            MakeUnwrappingCrossThreadWeakHandle(*rtp_transformer_)));
+  }
 }
 
 RTCRtpScriptTransform::SendKeyFrameRequestResult
@@ -212,7 +222,8 @@ RTCRtpScriptTransform::HandleSendKeyFrameRequestResults() {
       !IsValidReceiverDirection(receiver_->TransceiverCurrentDirection())) {
     return SendKeyFrameRequestResult::kInvalidState;
   }
-  if (receiver_->track()->readyState() == "ended") {
+  if (receiver_->track()->readyState() ==
+      V8MediaStreamTrackState::Enum::kEnded) {
     return SendKeyFrameRequestResult::kTrackEnded;
   }
   MediaStreamVideoSource* video_source = MediaStreamVideoSource::GetVideoSource(

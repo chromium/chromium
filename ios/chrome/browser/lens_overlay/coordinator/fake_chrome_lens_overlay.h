@@ -29,6 +29,9 @@ class GURL;
 /// Simulates a selection update and generate new results.
 - (void)simulateSelectionUpdate;
 
+/// Simulates the successful fetch of suggest `signals` for the last selection.
+- (void)simulateSuggestSignalsUpdate:(NSData*)signals;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_COORDINATOR_FAKE_CHROME_LENS_OVERLAY_H_

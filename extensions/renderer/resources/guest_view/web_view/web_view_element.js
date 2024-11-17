@@ -14,12 +14,14 @@ class WebViewElement extends GuestViewContainerElement {}
 
 WebViewElement.prototype.addContentScripts = function(rules) {
   var internal = privates(this).internal;
-  return WebViewInternal.addContentScripts(internal.viewInstanceId, rules);
+  return WebViewInternal.addContentScripts(
+      internal.viewInstanceId, rules, () => {});
 };
 
 WebViewElement.prototype.removeContentScripts = function(names) {
   var internal = privates(this).internal;
-  return WebViewInternal.removeContentScripts(internal.viewInstanceId, names);
+  return WebViewInternal.removeContentScripts(
+      internal.viewInstanceId, names, () => {});
 };
 
 WebViewElement.prototype.insertCSS = function(var_args) {

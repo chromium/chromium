@@ -20,8 +20,8 @@ std::string Base64EncodeString(const std::string value) {
 
 class OfflinePageHeaderTest : public testing::Test {
  public:
-  OfflinePageHeaderTest() {}
-  ~OfflinePageHeaderTest() override {}
+  OfflinePageHeaderTest() = default;
+  ~OfflinePageHeaderTest() override = default;
 
   bool ParseFromHeaderValue(const std::string& header_value,
                             bool* need_to_persist,

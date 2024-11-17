@@ -38,7 +38,7 @@
 - (void)shutdownWithClosure:(base::OnceClosure)closure;
 
 // Saves the session (list of tabs) returned by `factory`. The save location
-// is derived from the scene identifier `sessionID` and the ChromeBrowserState
+// is derived from the scene identifier `sessionID` and the ProfileIOS
 // `directory`. If `immediately` is NO, the save is done after a fixed delay,
 // or ignored if another delayed save for the same location is still pending.
 // If `immediately` is YES, then the save is done immediately and any pending
@@ -50,7 +50,7 @@
         immediately:(BOOL)immediately;
 
 // Loads a session (list of tabs) from the save location derived from the scene
-// identifier `sessionID` and the ChromeBrowserState `directory`.
+// identifier `sessionID` and the ProfileIOS `directory`.
 - (SessionWindowIOS*)loadSessionWithSessionID:(NSString*)sessionID
                                     directory:(const base::FilePath&)directory;
 
@@ -59,7 +59,7 @@
 - (SessionWindowIOS*)loadSessionFromPath:(NSString*)sessionPath;
 
 // Schedule deletion of session directories with `sessionIDs` which resides in
-// a specific browser state `directory`.
+// a specific profile `directory`.
 - (void)deleteSessions:(NSArray<NSString*>*)sessionIDs
              directory:(const base::FilePath&)directory
             completion:(base::OnceClosure)callback;

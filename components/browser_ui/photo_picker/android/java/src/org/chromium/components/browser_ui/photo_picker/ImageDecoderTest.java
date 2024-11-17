@@ -42,7 +42,7 @@ public class ImageDecoderTest {
     // Flag indicating whether we are bound to the service.
     private boolean mBound;
 
-    private class DecoderServiceCallback extends IDecoderServiceCallback.Stub {
+    private static class DecoderServiceCallback extends IDecoderServiceCallback.Stub {
         // The returned bundle from the decoder.
         private Bundle mDecodedBundle;
 

@@ -37,13 +37,4 @@ base::FilePath TestSeaPenWallpaperManagerSessionDelegate::GetStorageDirectory(
       .Append(wallpaper_constants::kSeaPenWallpaperDirName);
 }
 
-PrefService* TestSeaPenWallpaperManagerSessionDelegate::GetPrefService(
-    const AccountId& account_id) {
-  auto [it, was_inserted] = pref_services_.try_emplace(account_id);
-  if (was_inserted) {
-    SeaPenWallpaperManager::RegisterProfilePrefs(it->second.registry());
-  }
-  return &it->second;
-}
-
 }  // namespace ash

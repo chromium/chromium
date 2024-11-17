@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/arc_util.h"
@@ -14,7 +15,6 @@
 #include "ash/components/arc/metrics/arc_metrics_service.h"
 #include "ash/components/arc/metrics/stability_metrics_manager.h"
 #include "ash/components/arc/session/arc_data_remover.h"
-#include "ash/components/arc/session/arc_dlc_installer.h"
 #include "ash/components/arc/session/arc_instance_mode.h"
 #include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/components/arc/session/arc_session.h"
@@ -50,7 +50,9 @@
 #include "chrome/browser/ash/arc/optin/arc_terms_of_service_oobe_negotiator.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/session/arc_provisioning_result.h"
+#include "chrome/browser/ash/arc/session/arc_reven_hardware_checker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -63,6 +65,7 @@
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog/diagnostics_dialog.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
 #include "components/account_id/account_id.h"
 #include "components/exo/wm_helper.h"
@@ -92,6 +95,11 @@ constexpr const char kArcSaltPath[] = "/var/lib/misc/arc_salt";
 
 constexpr const char kArcPrepareHostGeneratedDirJobName[] =
     "arc_2dprepare_2dhost_2dgenerated_2ddir";
+
+constexpr const char kArcvmBindMountDlcPath[] =
+    "arcvm_2dbind_2dmount_2ddlc_2dpath";
+
+constexpr const char kArcvmDlcId[] = "android-vm-dlc";
 
 // Maximum amount of time we'll wait for ARC to finish booting up. Once this
 // timeout expires, keep ARC running in case the user wants to file feedback,
@@ -370,14 +378,6 @@ ArcSessionManager::ExpansionResult ReadSaltInternal() {
   return ArcSessionManager::ExpansionResult{std::move(*salt), true};
 }
 
-// Checks whether ARC DLCs needs to be installed/uninstalled. Currently,
-// "houdini-rvc-dlc" is the only enabled DLC, so we only need to check
-// for the presence of kEnableHoudiniDlc flag in the command line.
-bool IsDlcRequired() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      ash::switches::kEnableHoudiniDlc);
-}
-
 // Inform ArcMetricsServices about the starting time of ARC provisioning.
 void ReportProvisioningStartTime(const base::TimeTicks& start_time,
                                  Profile* profile) {
@@ -529,12 +529,10 @@ ArcSessionManager::ArcSessionManager(
   }
   ResetStabilityMetrics();
   ash::ConciergeClient::Get()->AddVmObserver(this);
-  arc_dlc_installer_ = std::make_unique<ArcDlcInstaller>();
 }
 
 ArcSessionManager::~ArcSessionManager() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  arc_dlc_installer_.reset();
 
   ash::ConciergeClient::Get()->RemoveVmObserver(this);
 
@@ -595,10 +593,6 @@ void ArcSessionManager::OnSessionStopped(ArcStopReason reason,
   }
 
   MaybeStartArcDataRemoval();
-
-  if (!enable_requested_ && IsDlcRequired()) {
-    arc_dlc_installer_->RequestDisable();
-  }
 }
 
 void ArcSessionManager::OnSessionRestarting() {
@@ -900,6 +894,9 @@ void ArcSessionManager::Shutdown() {
     scoped_opt_in_tracker_->TrackShutdown();
     scoped_opt_in_tracker_.reset();
   }
+  for (auto& observer : observer_list_) {
+    observer.OnShutdown();
+  }
 }
 
 void ArcSessionManager::ShutdownSession() {
@@ -986,8 +983,7 @@ void ArcSessionManager::CancelAuthCode() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (state_ == State::NOT_INITIALIZED) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // If ARC failed to boot normally, stop ARC. Otherwise, ARC is booting
@@ -1017,10 +1013,6 @@ void ArcSessionManager::RequestEnable() {
   SetArcEnabledStateMetric(true);
 
   VLOG(1) << "ARC opt-in. Starting ARC session.";
-
-  if (IsDlcRequired()) {
-    arc_dlc_installer_->RequestEnable();
-  }
 
   // |skipped_terms_of_service_negotiation_| is reset only in case terms are shown.
   // In all other cases it is conidered as skipped.
@@ -1120,13 +1112,13 @@ void ArcSessionManager::OnVmStarted(
       // called (due to concierge crash etc.). Unregister the old instance
       // before registering a new one to prevent multiple registration like
       // b/279378611.
-      guest_os::GuestOsService::GetForProfile(profile())
+      guest_os::GuestOsServiceFactory::GetForProfile(profile())
           ->MountProviderRegistry()
           ->Unregister(*arcvm_mount_provider_id_);
     }
     arcvm_mount_provider_id_ =
         std::optional<guest_os::GuestOsMountProviderRegistry::Id>(
-            guest_os::GuestOsService::GetForProfile(profile())
+            guest_os::GuestOsServiceFactory::GetForProfile(profile())
                 ->MountProviderRegistry()
                 ->Register(std::make_unique<ArcMountProvider>(
                     profile(), vm_signal.vm_info().cid())));
@@ -1138,7 +1130,7 @@ void ArcSessionManager::OnVmStopped(
   // When ARCVM stops, unregister GuestOsMountProvider for Play files.
   if (vm_signal.name() == kArcVmName) {
     if (arcvm_mount_provider_id_.has_value()) {
-      guest_os::GuestOsService::GetForProfile(profile())
+      guest_os::GuestOsServiceFactory::GetForProfile(profile())
           ->MountProviderRegistry()
           ->Unregister(*arcvm_mount_provider_id_);
       arcvm_mount_provider_id_.reset();
@@ -1800,12 +1792,6 @@ void ArcSessionManager::StartMiniArc() {
 
 void ArcSessionManager::OnWindowClosed() {
   CancelAuthCode();
-
-  // If network-related error occurred, collect UMA stats on user action.
-  if (support_host_ && support_host_->GetShouldShowRunNetworkTests()) {
-    UpdateOptInNetworkErrorActionUMA(
-        arc::OptInNetworkErrorActionType::WINDOW_CLOSED);
-  }
 }
 
 void ArcSessionManager::OnRetryClicked() {
@@ -1844,29 +1830,14 @@ void ArcSessionManager::OnRetryClicked() {
     // TODO(hidehiko): consider removing this case after fixing the bug.
     MaybeStartTermsOfServiceNegotiation();
   }
-
-  // If network-related error occurred, collect UMA stats on user action.
-  if (support_host_ && support_host_->GetShouldShowRunNetworkTests()) {
-    UpdateOptInNetworkErrorActionUMA(arc::OptInNetworkErrorActionType::RETRY);
-  }
 }
 
 void ArcSessionManager::OnErrorPageShown(bool network_tests_shown) {
-  if (network_tests_shown) {
-    UpdateOptInNetworkErrorActionUMA(
-        arc::OptInNetworkErrorActionType::ERROR_SHOWN);
-  }
 }
 
 void ArcSessionManager::OnSendFeedbackClicked() {
   DCHECK(support_host_);
   chrome::OpenFeedbackDialog(nullptr, feedback::kFeedbackSourceArcApp);
-
-  // If network-related error occurred, collect UMA stats on user action.
-  if (support_host_->GetShouldShowRunNetworkTests()) {
-    UpdateOptInNetworkErrorActionUMA(
-        arc::OptInNetworkErrorActionType::SEND_FEEDBACK);
-  }
 }
 
 void ArcSessionManager::OnRunNetworkTestsClicked() {
@@ -1874,10 +1845,6 @@ void ArcSessionManager::OnRunNetworkTestsClicked() {
   ash::DiagnosticsDialog::ShowDialog(
       ash::DiagnosticsDialog::DiagnosticsPage::kConnectivity,
       support_host_->GetNativeWindow());
-
-  // Network-related error occurred so collect UMA stats on user action.
-  UpdateOptInNetworkErrorActionUMA(
-      arc::OptInNetworkErrorActionType::CHECK_NETWORK);
 }
 
 void ArcSessionManager::SetArcSessionRunnerForTesting(
@@ -1960,9 +1927,64 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
               UpstartOperation::JOB_STOP_AND_START,
               {std::string("IS_ARCVM=") + (is_arcvm ? "1" : "0")}},
   };
-  ConfigureUpstartJobs(std::move(jobs),
-                       base::BindOnce(&ArcSessionManager::OnExpandPropertyFiles,
-                                      weak_ptr_factory_.GetWeakPtr()));
+
+  if (!arc::IsArcVmDlcEnabled()) {
+    ConfigureUpstartJobs(
+        std::move(jobs),
+        base::BindOnce(&ArcSessionManager::OnExpandPropertyFiles,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+
+  // Only the reven board can install arcvm images from DLC. Other boards can
+  // implement their own checking logic after supporting DLC installation later.
+  if (ash::switches::IsRevenBranding() &&
+      ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+    // Check if the Reven device is compatible for ARC.
+    hardware_checker_->IsRevenDeviceCompatibleForArc(
+        base::BindOnce(&ArcSessionManager::OnEnableArcOnReven,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(jobs)));
+  } else {
+    VLOG(1) << "Reven device is not managed and cannot install arcvm images.";
+    OnExpandPropertyFilesAndReadSalt(
+        ArcSessionManager::ExpansionResult{{}, false});
+  }
+}
+
+void ArcSessionManager::OnEnableArcOnReven(std::deque<JobDesc> jobs,
+                                           bool is_compatible) {
+  if (is_compatible) {
+    VLOG(1) << "Reven device is compatible for ARC. Installing arcvm image "
+               "from DLC.";
+    dlcservice::InstallRequest install_request;
+    install_request.set_id(kArcvmDlcId);
+    ash::DlcserviceClient::Get()->Install(
+        install_request,
+        base::BindOnce(&ArcSessionManager::OnDlcInstalled,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(jobs)),
+        base::DoNothing());
+  } else {
+    VLOG(1) << "Reven device is not compatible for ARC.";
+    OnExpandPropertyFilesAndReadSalt(
+        ArcSessionManager::ExpansionResult{{}, false});
+  }
+}
+
+void ArcSessionManager::OnDlcInstalled(
+    std::deque<JobDesc> jobs,
+    const ash::DlcserviceClient::InstallResult& install_result) {
+  if (install_result.error == dlcservice::kErrorNone) {
+    jobs.emplace_front(JobDesc{
+        kArcvmBindMountDlcPath, UpstartOperation::JOB_STOP_AND_START, {}});
+    ConfigureUpstartJobs(
+        std::move(jobs),
+        base::BindOnce(&ArcSessionManager::OnExpandPropertyFiles,
+                       weak_ptr_factory_.GetWeakPtr()));
+  } else {
+    VLOG(1) << "Failed to install arcvm DLC: " << install_result.error;
+    OnExpandPropertyFilesAndReadSalt(
+        ArcSessionManager::ExpansionResult{{}, false});
+  }
 }
 
 void ArcSessionManager::OnExpandPropertyFiles(bool result) {
@@ -2062,10 +2084,7 @@ std::ostream& operator<<(std::ostream& os,
 
 #undef MAP_STATE
 
-  // Some compilers report an error even if all values of an enum-class are
-  // covered exhaustively in a switch statement.
-  NOTREACHED_IN_MIGRATION() << "Invalid value " << static_cast<int>(state);
-  return os;
+  NOTREACHED() << "Invalid value " << static_cast<int>(state);
 }
 
 }  // namespace arc

@@ -26,9 +26,9 @@ ZoomEventManager* ZoomEventManager::GetForBrowserContext(
       context->GetUserData(kBrowserZoomEventManager));
 }
 
-ZoomEventManager::ZoomEventManager() {}
+ZoomEventManager::ZoomEventManager() = default;
 
-ZoomEventManager::~ZoomEventManager() {}
+ZoomEventManager::~ZoomEventManager() = default;
 
 void ZoomEventManager::OnZoomLevelChanged(
     const content::HostZoomMap::ZoomLevelChange& change) {

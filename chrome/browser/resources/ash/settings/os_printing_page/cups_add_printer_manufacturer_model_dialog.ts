@@ -20,7 +20,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './cups_add_printer_manufacturer_model_dialog.html.js';
 import {getBaseName, getErrorText, isPPDInfoValid} from './cups_printer_dialog_util.js';
-import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl, ManufacturersInfo, ModelsInfo, PrinterSetupResult} from './cups_printers_browser_proxy.js';
+import type {CupsPrinterInfo, CupsPrintersBrowserProxy, ManufacturersInfo, ModelsInfo, PrinterSetupResult} from './cups_printers_browser_proxy.js';
+import {CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
 
 export class AddPrinterManufacturerModelDialogElement extends PolymerElement {
   static get is() {

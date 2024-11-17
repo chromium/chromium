@@ -26,19 +26,18 @@ struct TestCase {
 
 // Updates information about a Profile into `storage`.
 void UpdateProfileAuthInfo(ProfileAttributesStorageIOS* storage,
-                           const std::string& browser_state_name,
+                           const std::string& profile_name,
                            const std::string& gaia) {
   storage->UpdateAttributesForProfileWithName(
-      browser_state_name,
-      base::BindOnce(
-          [](const std::string& gaia, ProfileAttributesIOS attr) {
-            attr.SetAuthenticationInfo(gaia, std::string());
-            return attr;
-          },
-          gaia));
+      profile_name, base::BindOnce(
+                        [](const std::string& gaia, ProfileAttributesIOS attr) {
+                          attr.SetAuthenticationInfo(gaia, std::string());
+                          return attr;
+                        },
+                        gaia));
 }
 
-// Iterates through the testcases and creates a new BrowserState for each
+// Iterates through the testcases and creates a new Profile for each
 // testcase's gaia ID in storage and adds it to the AccountContextManager. In
 // addition, this function validates that the testcases were added to the
 // AccountContextManager.
@@ -47,11 +46,11 @@ void AddTestCasesToManagerAndValidate(
     PushNotificationAccountContextManager* manager,
     const TestCase (&test_cases)[N],
     ProfileAttributesStorageIOS* storage,
-    const std::string& browser_state_name) {
-  // Construct the BrowserStates with the given gaia id and add the gaia id into
+    const std::string& profile_name) {
+  // Construct the Profiles with the given gaia id and add the gaia id into
   // the AccountContextManager.
   for (const TestCase& test_case : test_cases) {
-    UpdateProfileAuthInfo(storage, browser_state_name, test_case.gaia);
+    UpdateProfileAuthInfo(storage, profile_name, test_case.gaia);
     [manager addAccount:test_case.gaia];
   }
 
@@ -73,8 +72,8 @@ void AddTestCasesToManagerAndValidate(
 class PushNotificationAccountContextManagerTest : public PlatformTest {
  public:
   PushNotificationAccountContextManagerTest() {
-    browser_state_ = profile_manager_.AddProfileWithBuilder(
-        TestChromeBrowserState::Builder());
+    profile_ =
+        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
 
     manager_ = [[PushNotificationAccountContextManager alloc]
         initWithProfileManager:&profile_manager_];
@@ -86,15 +85,13 @@ class PushNotificationAccountContextManagerTest : public PlatformTest {
         ->GetProfileAttributesStorage();
   }
 
-  const std::string& browser_state_name() const {
-    return browser_state_->GetProfileName();
-  }
+  const std::string& profile_name() const { return profile_->GetProfileName(); }
 
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   PushNotificationAccountContextManager* manager_;
 };
 
@@ -103,7 +100,7 @@ TEST_F(PushNotificationAccountContextManagerTest, AddAccount) {
   static const TestCase kTestCase[] = {{"0"}};
 
   AddTestCasesToManagerAndValidate(
-      manager_, kTestCase, profile_attributes_storage(), browser_state_name());
+      manager_, kTestCase, profile_attributes_storage(), profile_name());
 }
 
 // This test ensures that the AccountContextManager can store multiple new
@@ -112,7 +109,7 @@ TEST_F(PushNotificationAccountContextManagerTest, AddMultipleAccounts) {
   static const TestCase kTestCase[] = {{"0"}, {"1"}, {"2"}, {"3"}, {"4"}};
 
   AddTestCasesToManagerAndValidate(
-      manager_, kTestCase, profile_attributes_storage(), browser_state_name());
+      manager_, kTestCase, profile_attributes_storage(), profile_name());
 }
 
 // This test ensures that new entries in the context map are not added for
@@ -123,10 +120,10 @@ TEST_F(PushNotificationAccountContextManagerTest, AddDuplicates) {
   static const TestCase kNoDuplicatesTestCase[] = {{"1"}, {"2"}, {"2"}};
 
   AddTestCasesToManagerAndValidate(
-      manager_, kTestCase, profile_attributes_storage(), browser_state_name());
+      manager_, kTestCase, profile_attributes_storage(), profile_name());
 
   for (const TestCase& test_case : kNoDuplicatesTestCase) {
-    UpdateProfileAuthInfo(profile_attributes_storage(), browser_state_name(),
+    UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
                           test_case.gaia);
     [manager_ addAccount:test_case.gaia];
   }
@@ -156,10 +153,10 @@ TEST_F(PushNotificationAccountContextManagerTest, RemoveAccount) {
   const TestCase kRemovalTestCase = {"5"};
 
   AddTestCasesToManagerAndValidate(
-      manager_, kTestCase, profile_attributes_storage(), browser_state_name());
+      manager_, kTestCase, profile_attributes_storage(), profile_name());
 
   // Add the testcase we would like to check for its removal into the manager.
-  UpdateProfileAuthInfo(profile_attributes_storage(), browser_state_name(),
+  UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
                         kRemovalTestCase.gaia);
   [manager_ addAccount:kRemovalTestCase.gaia];
 
@@ -186,10 +183,10 @@ TEST_F(PushNotificationAccountContextManagerTest, RemoveMultipleAccounts) {
   static const TestCase kRemovalTestCase[] = {{"5"}, {"6"}, {"7"}};
 
   AddTestCasesToManagerAndValidate(
-      manager_, kTestCase, profile_attributes_storage(), browser_state_name());
+      manager_, kTestCase, profile_attributes_storage(), profile_name());
 
   for (const TestCase& test_case : kRemovalTestCase) {
-    UpdateProfileAuthInfo(profile_attributes_storage(), browser_state_name(),
+    UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
                           test_case.gaia);
     [manager_ addAccount:test_case.gaia];
   }
@@ -217,14 +214,14 @@ TEST_F(PushNotificationAccountContextManagerTest, AddDuplicateThenRemove) {
   static const TestCase kNoDuplicatesTestCase[] = {kRemovalTestCase};
 
   AddTestCasesToManagerAndValidate(
-      manager_, kTestCase, profile_attributes_storage(), browser_state_name());
+      manager_, kTestCase, profile_attributes_storage(), profile_name());
 
-  UpdateProfileAuthInfo(profile_attributes_storage(), browser_state_name(),
+  UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
                         kRemovalTestCase.gaia);
   [manager_ addAccount:kRemovalTestCase.gaia];
 
   for (const TestCase& test_case : kNoDuplicatesTestCase) {
-    UpdateProfileAuthInfo(profile_attributes_storage(), browser_state_name(),
+    UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
                           test_case.gaia);
     [manager_ addAccount:test_case.gaia];
   }
@@ -255,14 +252,14 @@ TEST_F(PushNotificationAccountContextManagerTest, UpdatePreferences) {
   static const TestCase kTestCase[] = {{"0"}, {"1"}, {"2"}, {"3"}, {"4"}};
 
   AddTestCasesToManagerAndValidate(
-      manager_, kTestCase, profile_attributes_storage(), browser_state_name());
+      manager_, kTestCase, profile_attributes_storage(), profile_name());
 
   static const TestCase kUpdateTestCase[] = {{"0"}, {"2"}, {"4"}};
 
   PushNotificationClientId clientID = PushNotificationClientId::kCommerce;
 
   for (const TestCase& test_case : kTestCase) {
-    UpdateProfileAuthInfo(profile_attributes_storage(), browser_state_name(),
+    UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
                           test_case.gaia);
     [manager_ enablePushNotification:clientID forAccount:test_case.gaia];
     ASSERT_EQ([manager_ isPushNotificationEnabledForClient:clientID
@@ -271,7 +268,7 @@ TEST_F(PushNotificationAccountContextManagerTest, UpdatePreferences) {
   }
 
   for (const TestCase& test_case : kUpdateTestCase) {
-    UpdateProfileAuthInfo(profile_attributes_storage(), browser_state_name(),
+    UpdateProfileAuthInfo(profile_attributes_storage(), profile_name(),
                           test_case.gaia);
     [manager_ disablePushNotification:clientID forAccount:test_case.gaia];
     ASSERT_EQ([manager_ isPushNotificationEnabledForClient:clientID

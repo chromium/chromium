@@ -15,7 +15,7 @@ namespace ash {
 std::unique_ptr<message_center::Notification>
 CreateNotificationFromArcNotificationData(
     const message_center::NotificationType notification_type,
-    const std::string notification_id,
+    const std::string& notification_id,
     ArcNotificationData* data,
     const message_center::NotifierId notifier_id,
     message_center::RichNotificationData rich_data,

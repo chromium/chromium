@@ -36,7 +36,6 @@ class DisplayDamageTrackerTest : public testing::Test {
       : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_)),
         resource_provider_(&shared_bitmap_manager_,
                            &shared_image_manager_,
-                           &sync_point_manager_,
                            &gpu_scheduler_),
         aggregator_(manager_.surface_manager(), &resource_provider_, false),
         root_client_(&manager_, kRootFrameSinkId),

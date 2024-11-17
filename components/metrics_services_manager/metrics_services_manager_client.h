@@ -30,7 +30,7 @@ namespace metrics_services_manager {
 // MetricsServicesManager to interact with its embedder.
 class MetricsServicesManagerClient {
  public:
-  virtual ~MetricsServicesManagerClient() {}
+  virtual ~MetricsServicesManagerClient() = default;
 
   // Methods that create the various services in the context of the embedder.
   virtual std::unique_ptr<variations::VariationsService>

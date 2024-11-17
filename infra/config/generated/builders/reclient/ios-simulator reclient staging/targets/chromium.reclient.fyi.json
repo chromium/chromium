@@ -1,0 +1,7 @@
+{
+  "ios-simulator reclient staging": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  }
+}

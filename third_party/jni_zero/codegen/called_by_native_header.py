@@ -8,17 +8,12 @@ from codegen import header_common
 import common
 
 
-def constants_enums(java_class, constant_fields):
-  if not constant_fields:
-    return ''
-  sb = common.StringBuilder()
-  sb(f'// Constants\n')
+def constants_enums(sb, java_class, constant_fields):
   sb(f'enum Java_{java_class.name}_constant_fields {{\n')
   with sb.indent(2):
     for c in constant_fields:
       sb(f'{c.name} = {c.value},\n')
   sb('};\n\n')
-  return sb.to_string()
 
 
 def _return_type_cpp(return_type):
@@ -73,7 +68,7 @@ def _jni_function_name(called_by_native):
   return f'Call{call}Method'
 
 
-def _single_method(sb, cbn):
+def method_definition(sb, cbn):
   java_class = cbn.java_class
   reciever_arg_is_class = cbn.static or cbn.is_constructor
   if cbn.is_constructor:
@@ -93,7 +88,7 @@ def _single_method(sb, cbn):
     plist.extend(f'{_param_type_cpp(p.java_type)} {p.cpp_name()}'
                  for p in cbn.params)
 
-  with sb.block():
+  with sb.block(after='\n'):
     sb('static std::atomic<jmethodID> cached_method_id(nullptr);\n')
     class_accessor = header_common.class_accessor_expression(java_class)
     receiver_arg = 'clazz' if reciever_arg_is_class else 'obj.obj()'
@@ -146,14 +141,3 @@ def _single_method(sb, cbn):
       with sb.statement():
         sb(f'return jni_zero::ScopedJavaLocalRef<{jobject_type}>(env, '
            f'{return_rvalue})')
-
-
-def methods(called_by_natives):
-  if not called_by_natives:
-    return ''
-  sb = common.StringBuilder()
-  sb('// Native to Java functions\n')
-  for called_by_native in called_by_natives:
-    _single_method(sb, called_by_native)
-    sb('\n')
-  return sb.to_string()

@@ -109,10 +109,15 @@ HibernatedCanvasMemoryDumpProvider::HibernatedCanvasMemoryDumpProvider() {
           MainThreadTaskRunnerRestricted()));
 }
 
+CanvasHibernationHandler::CanvasHibernationHandler(
+    CanvasResourceHost& resource_host)
+    : resource_host_(resource_host) {}
+
 CanvasHibernationHandler::~CanvasHibernationHandler() {
   DCheckInvariant();
   if (IsHibernating()) {
     HibernatedCanvasMemoryDumpProvider::GetInstance().Unregister(this);
+    ReportHibernationEvent(HibernationEvent::kHibernationEndedWithTeardown);
   }
 }
 

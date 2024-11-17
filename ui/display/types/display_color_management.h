@@ -19,7 +19,7 @@ namespace display {
 // channels.
 class DISPLAY_TYPES_EXPORT GammaCurve {
  public:
-  explicit GammaCurve(const std::vector<GammaRampRGBEntry>& lut);
+  explicit GammaCurve(std::vector<GammaRampRGBEntry>&& lut);
   GammaCurve();
   GammaCurve(const GammaCurve& other);
   GammaCurve(GammaCurve&& other);

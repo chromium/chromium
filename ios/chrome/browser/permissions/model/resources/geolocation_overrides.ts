@@ -7,36 +7,25 @@ import {sendWebKitMessage} from '//ios/web/public/js_messaging/resources/utils.j
 if (typeof navigator === 'object' && 'geolocation' in navigator) {
   if ('getCurrentPosition' in navigator.geolocation) {
     const originalFunc = navigator.geolocation.getCurrentPosition;
-    navigator.geolocation.getCurrentPosition = function() {
+    navigator.geolocation.getCurrentPosition = function(...args) {
       sendWebKitMessage(
           'GeolocationAPIAccessedHandler', {'api': 'getCurrentPosition'});
-      const originalArgs = arguments as
-          unknown as [successCallback: PositionCallback,
-                               errorCallback?: PositionErrorCallback|null|
-                               undefined,
-                               options?: PositionOptions|undefined];
-      return originalFunc.apply(this, originalArgs);
+      return originalFunc.apply(this, args);
     }
   }
   if ('watchPosition' in navigator.geolocation) {
     const originalFunc = navigator.geolocation.watchPosition;
-    navigator.geolocation.watchPosition = function() {
+    navigator.geolocation.watchPosition = function(...args) {
       sendWebKitMessage(
           'GeolocationAPIAccessedHandler', {'api': 'watchPosition'});
-      const originalArgs = arguments as
-          unknown as [successCallback: PositionCallback,
-                               errorCallback?: PositionErrorCallback|null|
-                               undefined,
-                               options?: PositionOptions|undefined];
-      return originalFunc.apply(this, originalArgs);
+      return originalFunc.apply(this, args);
     }
   }
   if ('clearWatch' in navigator.geolocation) {
     const originalFunc = navigator.geolocation.clearWatch;
-    navigator.geolocation.clearWatch = function() {
+    navigator.geolocation.clearWatch = function(...args) {
       sendWebKitMessage('GeolocationAPIAccessedHandler', {'api': 'clearWatch'});
-      const originalArgs = arguments as unknown as [watchId: number];
-      return originalFunc.apply(this, originalArgs);
+      return originalFunc.apply(this, args);
     }
   }
 }

@@ -530,52 +530,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientContactInfoManagedAccountTest,
   EXPECT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
 }
-
-// Tests the behavior for accounts under parental supervision, depending on
-// whether `kSyncEnableContactInfoDataTypeForChildUsers` is enabled.
-class SingleClientContactInfoChildAccountTest
-    : public SingleClientContactInfoSyncTest,
-      public testing::WithParamInterface<bool> {
- public:
-  SingleClientContactInfoChildAccountTest() {
-    feature_.InitWithFeatureState(
-        syncer::kSyncEnableContactInfoDataTypeForChildUsers, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_;
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         SingleClientContactInfoChildAccountTest,
-                         testing::Bool());
-
-// TODO(crbug.com/40265115): Enable this test on Android.
-IN_PROC_BROWSER_TEST_P(SingleClientContactInfoChildAccountTest,
-                       DisableForChildAccounts) {
-  ASSERT_TRUE(SetupClients());
-  // Sign in with a child account.
-  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount(signin::ConsentLevel::kSync));
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(GetProfile(0));
-  AccountInfo account = identity_manager->FindExtendedAccountInfo(
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync));
-  AccountCapabilitiesTestMutator mutator(&account.capabilities);
-  mutator.set_is_subject_to_parental_controls(true);
-  signin::UpdateAccountInfoForAccount(identity_manager, account);
-  ASSERT_TRUE(SetupSync());
-
-  EXPECT_EQ(GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO),
-            base::FeatureList::IsEnabled(
-                syncer::kSyncEnableContactInfoDataTypeForChildUsers));
-
-  // "Graduate" the account.
-  mutator.set_is_subject_to_parental_controls(false);
-  signin::UpdateAccountInfoForAccount(identity_manager, account);
-  EXPECT_TRUE(ContactInfoActiveChecker(GetSyncService(0),
-                                       /*expect_active=*/true)
-                  .Wait());
-}
 #endif
 
 }  // namespace

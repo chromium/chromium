@@ -148,7 +148,6 @@ source_set("wk_web_view_configuration_provider") {
     "//ios/web/js_messaging",
     "//ios/web/js_messaging:java_script_feature",
     "//ios/web/js_messaging:java_script_feature_util",
-    "//ios/web/navigation:session_restore_feature",
     "//ios/web/public",
     "//ios/web/webui",
   ]

@@ -73,7 +73,6 @@ export class RecorderApp extends ReactiveLitElement {
   override firstUpdated(): void {
     const summaryState = this.platformHandler.summaryModelLoader.state;
     const titleState = this.platformHandler.titleSuggestionModelLoader.state;
-    const sodaState = this.platformHandler.sodaState;
 
     function isAvailable(state: ModelState) {
       return state.kind !== 'unavailable' && state.kind !== 'error';
@@ -84,7 +83,7 @@ export class RecorderApp extends ReactiveLitElement {
       summaryAvailable: isAvailable(summaryState.value),
       summaryEnableState: settings.value.summaryEnabled,
       titleSuggestionAvailable: isAvailable(titleState.value),
-      transcriptionAvailable: isAvailable(sodaState.value),
+      transcriptionAvailable: this.platformHandler.isSodaAvailable(),
       transcriptionEnableState: settings.value.transcriptionEnabled,
     });
     this.platformHandler.perfLogger.finish('appStart');

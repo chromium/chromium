@@ -28,8 +28,7 @@ std::string EntryStateToHistogramSuffix(Entry::State state) {
     case Entry::State::COUNT:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Helper method to log the number of entries under a particular state.

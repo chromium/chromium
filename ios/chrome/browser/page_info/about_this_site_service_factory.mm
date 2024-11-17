@@ -58,7 +58,7 @@ AboutThisSiteServiceFactory::BuildServiceInstanceFor(
   }
 
   auto* template_service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(profile);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   // TemplateURLService may be null during testing.
   if (!template_service) {
     return nullptr;

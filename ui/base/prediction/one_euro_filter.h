@@ -6,7 +6,7 @@
 #define UI_BASE_PREDICTION_ONE_EURO_FILTER_H_
 
 #include "base/component_export.h"
-#include "third_party/one_euro_filter/src/one_euro_filter.h"
+#include "third_party/one_euro_filter/src/OneEuroFilter.h"
 #include "ui/base/prediction/input_filter.h"
 
 namespace ui {
@@ -43,8 +43,8 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) OneEuroFilter : public InputFilter {
   static constexpr char kParamMincutoff[] = "mincutoff";
 
  private:
-  std::unique_ptr<one_euro_filter::OneEuroFilter> x_filter_;
-  std::unique_ptr<one_euro_filter::OneEuroFilter> y_filter_;
+  std::unique_ptr<::OneEuroFilter> x_filter_;
+  std::unique_ptr<::OneEuroFilter> y_filter_;
 };
 
 }  // namespace ui

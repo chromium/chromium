@@ -83,7 +83,6 @@ build_webui_tests("build") {
     "crostini_page/test_crostini_browser_proxy.ts",
 
     "date_time_page/date_time_settings_card_test.ts",
-    "date_time_page/date_time_page_test.ts",
     "date_time_page/test_date_time_browser_proxy.ts",
     "date_time_page/timezone_selector_test.ts",
     "date_time_page/timezone_subpage_test.ts",
@@ -204,6 +203,7 @@ build_webui_tests("build") {
     "os_a11y_page/facegaze_actions_add_dialog_test.ts",
     "os_a11y_page/facegaze_subpage_test.ts",
     "os_a11y_page/display_and_magnification_subpage_test.ts",
+    "os_a11y_page/filter_keys_test.ts",
     "os_a11y_page/keyboard_and_text_input_page_test.ts",
     "os_a11y_page/live_caption_section_test.ts",
     "os_a11y_page/live_translate_section_test.ts",
@@ -306,6 +306,7 @@ build_webui_tests("build") {
     "os_people_page/add_user_dialog_test.ts",
     "os_people_page/additional_accounts_settings_card_test.ts",
     "os_people_page/fingerprint_list_subpage_test.ts",
+    "os_people_page/graduation_settings_card_test.ts",
     "os_people_page/os_people_page_test.ts",
     "os_people_page/os_sync_controls_subpage_test.ts",
     "os_people_page/personalization_options_test.ts",
@@ -319,6 +320,7 @@ build_webui_tests("build") {
     "os_people_page/test_os_sync_browser_proxy.ts",
     "os_people_page/test_parental_controls_browser_proxy.ts",
     "os_people_page/test_profile_info_browser_proxy.ts",
+    "os_people_page/test_graduation_handler_provider.ts",
 
     "os_printing_page/cups_print_server_test.ts",
     "os_printing_page/cups_printer_dialog_test.ts",
@@ -349,7 +351,6 @@ build_webui_tests("build") {
     "os_privacy_page/test_peripheral_data_access_browser_proxy.ts",
     "os_privacy_page/test_privacy_hub_browser_proxy.ts",
 
-    "os_reset_page/os_reset_page_test.ts",
     "os_reset_page/reset_settings_card_test.ts",
     "os_reset_page/test_os_reset_browser_proxy.ts",
 
@@ -370,6 +371,8 @@ build_webui_tests("build") {
     "os_settings_search_box/os_settings_search_box_test.ts",
     "os_settings_search_box/test_open_window_proxy.ts",
     "os_settings_search_box/test_os_settings_search_box_browser_proxy.ts",
+
+    "os_settings_subpage/os_settings_subpage_test.ts",
 
     "os_settings_ui/os_settings_ui_about_page_test.ts",
     "os_settings_ui/os_settings_ui_hats_test.ts",
@@ -416,7 +419,6 @@ build_webui_tests("build") {
     "//chrome/browser/resources/ash/settings:build_ts",
     "//chrome/test/data/webui/chromeos:build_ts",
     "//chrome/test/data/webui/chromeos/nearby_share:build_ts",
-    "//chrome/test/data/webui/cr_components/chromeos:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/js:build_ts",
@@ -435,10 +437,6 @@ build_webui_tests("build") {
     "chrome://webui-test/chromeos/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
                     target_gen_dir),
-    "chrome://webui-test/cr_components/chromeos/*|" +
-        rebase_path(
-            "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/tsc/*",
-            target_gen_dir),
     "chrome://webui-test/chromeos/nearby_share/*|" +
         rebase_path(
             "$root_gen_dir/chrome/test/data/webui/chromeos/nearby_share/tsc/*",

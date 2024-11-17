@@ -13,6 +13,7 @@
 
 #include "base/functional/bind.h"
 #include "mojo/public/tools/fuzzers/mojolpm.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 class RendererTestcase
     : public {{mojolpm_generator_classname}} {
@@ -21,7 +22,8 @@ class RendererTestcase
       std::unique_ptr<ProtoTestcase> testcase,
       const blink::BrowserInterfaceBrokerProxy* context_interface_broker_proxy,
       blink::ThreadSafeBrowserInterfaceBrokerProxy*
-          process_interface_broker_proxy);
+          process_interface_broker_proxy,
+      blink::AssociatedInterfaceProvider* associated_interface_provider);
   ~RendererTestcase() override;
 
   scoped_refptr<base::SequencedTaskRunner> GetFuzzerTaskRunner() override;
@@ -39,6 +41,12 @@ class RendererTestcase
       base::OnceClosure done_closure) override;
 {% endfor %}
 
+{% for interface in associated_interfaces %}
+  void HandleNew{{interface.identifier}}Action(
+      uint32_t id,
+      base::OnceClosure done_closure) override;
+{% endfor %}
+
  private:
   void SetUpOnFuzzerThread(base::OnceClosure done_closure);
   void TearDownOnFuzzerThread(base::OnceClosure done_closure);
@@ -47,6 +55,8 @@ class RendererTestcase
   void NewProcessInterface(uint32_t id, base::OnceClosure done_closure);
   template <typename T>
   void NewContextInterface(uint32_t id, base::OnceClosure done_closure);
+  template <typename T>
+  void NewAssociatedRemoteInterface(uint32_t id, base::OnceClosure done_closure);
 
   // This is different to the "normal" MojoLPM testcase model, since we need
   // to also own the lifetime of the protobuf object, when it's normally owned
@@ -58,6 +68,8 @@ class RendererTestcase
       context_interface_broker_proxy_;
   raw_ptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
       process_interface_broker_proxy_;
+  raw_ptr<blink::AssociatedInterfaceProvider>
+      associated_interface_provider_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -90,6 +102,13 @@ void RendererTestcase::HandleNew{{interface.identifier}}Action(
 }
 {% endfor %}
 
+{% for interface in associated_interfaces %}
+void RendererTestcase::HandleNew{{interface.identifier}}Action(
+    uint32_t id,
+    base::OnceClosure done_closure) {
+  NewAssociatedRemoteInterface<{{interface.namespace}}::{{interface.name}}>(id, std::move(done_closure));
+}
+{% endfor %}
 
 scoped_refptr<base::SequencedTaskRunner>
 RendererTestcase::GetFuzzerTaskRunner() {
@@ -100,11 +119,13 @@ RendererTestcase::RendererTestcase(
     std::unique_ptr<ProtoTestcase> testcase,
     const blink::BrowserInterfaceBrokerProxy* context_interface_broker_proxy,
     blink::ThreadSafeBrowserInterfaceBrokerProxy*
-        process_interface_broker_proxy)
+        process_interface_broker_proxy,
+    blink::AssociatedInterfaceProvider* associated_interface_provider)
     : {{mojolpm_generator_classname}}(*testcase.get()),
       proto_testcase_ptr_(std::move(testcase)),
       context_interface_broker_proxy_(context_interface_broker_proxy),
-      process_interface_broker_proxy_(process_interface_broker_proxy) {
+      process_interface_broker_proxy_(process_interface_broker_proxy),
+      associated_interface_provider_(associated_interface_provider) {
   // RendererTestcase is created on the main thread, but the actions that
   // we want to validate the sequencing of take place on the fuzzer sequence.
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -166,6 +187,19 @@ void RendererTestcase::NewContextInterface(uint32_t id,
   CHECK(remote.is_bound() && remote.is_connected());
 
   mojolpm::GetContext()->AddInstance(id, std::move(remote));
+
+  std::move(done_closure).Run();
+}
+
+template <typename T>
+void RendererTestcase::NewAssociatedRemoteInterface(uint32_t id,
+                                                    base::OnceClosure done_closure) {
+  mojo::AssociatedRemote<T> associated_remote;
+  auto receiver = associated_remote.BindNewEndpointAndPassReceiver();
+  associated_interface_provider_->GetInterface(std::move(receiver));
+
+  CHECK(associated_remote.is_bound() && associated_remote.is_connected());
+  mojolpm::GetContext()->AddInstance(id, std::move(associated_remote));
 
   std::move(done_closure).Run();
 }

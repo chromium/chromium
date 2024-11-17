@@ -364,8 +364,7 @@ const base::Value* PrefService::GetUserPrefValue(std::string_view path) const {
 
   const Preference* pref = FindPreference(path);
   if (!pref) {
-    NOTREACHED_IN_MIGRATION() << "Trying to get an unregistered pref: " << path;
-    return nullptr;
+    NOTREACHED() << "Trying to get an unregistered pref: " << path;
   }
 
   // Look for an existing preference in the user store. If it doesn't
@@ -420,9 +419,7 @@ void PrefService::ClearPref(std::string_view path) {
 
   const Preference* pref = FindPreference(path);
   if (!pref) {
-    NOTREACHED_IN_MIGRATION()
-        << "Trying to clear an unregistered pref: " << path;
-    return;
+    NOTREACHED() << "Trying to clear an unregistered pref: " << path;
   }
   user_pref_store_->RemoveValue(path, GetWriteFlags(pref));
 }
@@ -544,8 +541,7 @@ base::Value* PrefService::GetMutableUserPref(std::string_view path,
     return nullptr;
   }
   if (pref->GetType() != type) {
-    NOTREACHED_IN_MIGRATION() << "Wrong type for GetMutableValue: " << path;
-    return nullptr;
+    NOTREACHED() << "Wrong type for GetMutableValue: " << path;
   }
 
   // Look for an existing preference in the user store. Return it in case it
@@ -590,10 +586,8 @@ void PrefService::SetUserPrefValue(std::string_view path,
     return;
   }
   if (pref->GetType() != new_value.type()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Trying to set pref " << path << " of type " << pref->GetType()
-        << " to value of type " << new_value.type();
-    return;
+    NOTREACHED() << "Trying to set pref " << path << " of type "
+                 << pref->GetType() << " to value of type " << new_value.type();
   }
 
   user_pref_store_->SetValue(path, std::move(new_value), GetWriteFlags(pref));

@@ -6,7 +6,6 @@
 
 #include "base/no_destructor.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/dips/chrome_dips_delegate.h"
 #include "chrome/browser/dips/dips_service_factory.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -31,7 +30,6 @@ OpenerHeuristicServiceFactory::OpenerHeuristicServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "OpenerHeuristicService",
           BrowserContextDependencyManager::GetInstance()) {
-  DependsOn(CookieSettingsFactory::GetInstance());
   DependsOn(DIPSServiceFactory::GetInstance());
   DependsOn(TrackingProtectionSettingsFactory::GetInstance());
 }

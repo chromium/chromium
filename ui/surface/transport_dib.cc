@@ -93,7 +93,7 @@ bool TransportDIB::Map() {
   return true;
 }
 
-void* TransportDIB::memory() const {
+const void* TransportDIB::memory() const {
   return shm_mapping_.IsValid() ? shm_mapping_.memory() : nullptr;
 }
 

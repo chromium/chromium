@@ -64,8 +64,7 @@ CheckerImagingDecision GetAnimationDecision(const PaintImage& image) {
       return CheckerImagingDecision::kCanChecker;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return CheckerImagingDecision::kCanChecker;
+  NOTREACHED();
 }
 
 CheckerImagingDecision GetLoadDecision(const PaintImage& image) {
@@ -76,8 +75,7 @@ CheckerImagingDecision GetLoadDecision(const PaintImage& image) {
       return CheckerImagingDecision::kVetoedPartiallyLoadedImage;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return CheckerImagingDecision::kCanChecker;
+  NOTREACHED();
 }
 
 CheckerImagingDecision GetSizeDecision(const SkIRect& src_rect,

@@ -5,11 +5,9 @@
 // Safe archive file analyzer provided by the utility process and exposed
 // by mojo policy control to the chrome browser process when build flag
 // FULL_SAFE_BROWSING is enabled.
-
 module chrome.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 
 // SafeArchiveAnalyzer provides methods for extracting information about the
 // files contained in untrusted archives. It is intended to run in a utility

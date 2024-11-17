@@ -109,8 +109,8 @@ void CloseGroupAtIndex(int group_cell_index) {
 
 @implementation TabGroupSyncTestCase
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   // Delete all saved groups.
   [TabGroupSyncEarlGrey cleanup];
 }
@@ -301,9 +301,15 @@ void CloseGroupAtIndex(int group_cell_index) {
                   @"The number of saved tab groups should be 0.");
 }
 
+// TODO(crbug.com/376964632): Deflake test on simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testCloseGroupInTabGrid DISABLED_testCloseGroupInTabGrid
+#else
+#define MAYBE_testCloseGroupInTabGrid testCloseGroupInTabGrid
+#endif
 // Tests that closing a group in the tab grid reflects the change in the
 // Tab Groups panel.
-- (void)testCloseGroupInTabGrid {
+- (void)MAYBE_testCloseGroupInTabGrid {
   [ChromeEarlGreyUI openTabGrid];
 
   // Creates a tab group with an item at 0.

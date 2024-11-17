@@ -15,7 +15,7 @@
 
 class Browser;
 @protocol SigninPresenter;
-@class SyncErrorBrowserAgentAppStateObserver;
+@class SyncErrorBrowserAgentProfileStateObserver;
 @protocol SyncPresenter;
 
 // Browser agent that is responsible for displaying sync errors.
@@ -36,8 +36,8 @@ class SyncErrorBrowserAgent : public BrowserObserver,
   // Clears the UI providers.
   void ClearUIProviders();
 
-  // Called when the app state was updated to final stage.
-  void AppStateDidUpdateToFinalStage();
+  // Called when the profile state was updated to final stage.
+  void ProfileStateDidUpdateToFinalStage();
 
  private:
   friend class BrowserUserData<SyncErrorBrowserAgent>;
@@ -64,7 +64,7 @@ class SyncErrorBrowserAgent : public BrowserObserver,
   void TriggerInfobarOnAllWebStatesIfNeeded();
 
   // Returns the state of the Browser
-  ChromeBrowserState* GetBrowserState();
+  ProfileIOS* GetProfile();
 
   raw_ptr<Browser> browser_ = nullptr;
 
@@ -76,7 +76,8 @@ class SyncErrorBrowserAgent : public BrowserObserver,
   __weak id<SigninPresenter> signin_presenter_provider_;
   // Provider to a Sync presenter
   __weak id<SyncPresenter> sync_presenter_provider_;
-  __strong SyncErrorBrowserAgentAppStateObserver* app_state_observer_;
+  // Used to observe the ProfileState.
+  __strong SyncErrorBrowserAgentProfileStateObserver* profile_state_observer_;
 };
 
 #endif  // IOS_CHROME_BROWSER_SYNC_MODEL_SYNC_ERROR_BROWSER_AGENT_H_

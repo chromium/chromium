@@ -9,7 +9,6 @@
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_check_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -41,7 +40,7 @@
 class SafetyCheckMagicStackMediatorTest : public PlatformTest {
  public:
   void SetUp() override {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
 
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
@@ -49,24 +48,22 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
 
-    ChromeBrowserState* browser_state =
+    ProfileIOS* profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    pref_service_ = browser_state->GetPrefs();
+    pref_service_ = profile->GetPrefs();
 
     local_pref_service_ =
         TestingApplicationContext::GetGlobal()->GetLocalState();
 
     safety_check_manager_ =
-        IOSChromeSafetyCheckManagerFactory::GetForBrowserState(browser_state);
-
-    mock_app_state_ = OCMClassMock([AppState class]);
+        IOSChromeSafetyCheckManagerFactory::GetForProfile(profile);
 
     mediator_ = [[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:safety_check_manager_.get()
                         localState:local_pref_service_.get()
                          userState:pref_service_.get()
-                          appState:mock_app_state_];
+                      profileState:nil];
 
     safety_check_magic_stack_consumer_ =
         OCMProtocolMock(@protocol(SafetyCheckMagicStackConsumer));
@@ -74,6 +71,8 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
   }
 
   void TearDown() override {
+    [mediator_ disconnect];
+    mediator_ = nil;
     safety_check_manager_->StopSafetyCheck();
   }
 
@@ -82,7 +81,6 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  id mock_app_state_;
   raw_ptr<PrefService> pref_service_;
   raw_ptr<PrefService> local_pref_service_;
   SafetyCheckMagicStackMediator* mediator_;
@@ -93,6 +91,8 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
 // Tests the mediator's consumer is called with the correct Safety Check state
 // when the Safety Check is run.
 TEST_F(SafetyCheckMagicStackMediatorTest, CallsConsumerWithRunningState) {
+  safety_check_manager_->StopSafetyCheck();
+
   SafetyCheckState* expected = [[SafetyCheckState alloc]
       initWithUpdateChromeState:UpdateChromeSafetyCheckState::kRunning
                   passwordState:PasswordSafetyCheckState::kDefault

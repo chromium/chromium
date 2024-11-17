@@ -8,31 +8,19 @@
 #include <optional>
 #include <vector>
 
-#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
+#include "base/version_info/channel.h"
 #include "chrome/browser/ai/ai_data_keyed_service.h"
 #include "chrome/browser/ai/ai_data_keyed_service_factory.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/extensions/api/experimental_ai_data.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "content/public/browser/web_contents.h"
 
 namespace extensions {
-
-// Feature to add allow listed extensions remotely.
-BASE_FEATURE(kAllowlistedAiDataExtensions,
-             "AllowlistedAiDataExtensions",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-namespace {
-
-const base::FeatureParam<std::string> kAllowlistedExtensions{
-    &kAllowlistedAiDataExtensions, "allowlisted_extension_ids",
-    /*default_value=*/""};
-
-}  // namespace
 
 ExperimentalAiDataGetAiDataFunction::ExperimentalAiDataGetAiDataFunction() =
     default;
@@ -42,14 +30,19 @@ ExperimentalAiDataGetAiDataFunction::~ExperimentalAiDataGetAiDataFunction() =
 
 ExtensionFunction::ResponseAction ExperimentalAiDataGetAiDataFunction::Run() {
   // Check the allowlist and return an error if extension is not allow listed.
-  std::string allowlisted_extension_string = kAllowlistedExtensions.Get();
-  std::vector<std::string_view> allowlisted_extensions =
-      base::SplitStringPiece(allowlisted_extension_string, ",",
-                             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-
+  std::vector<std::string> allowlisted_extensions =
+      AiDataKeyedService::GetAllowlistedExtensions();
   if (std::find(allowlisted_extensions.begin(), allowlisted_extensions.end(),
                 extension_id()) == allowlisted_extensions.end()) {
     return RespondNow(Error("API access restricted for this extension."));
+  }
+
+  // In addition to the extension framework channel restriction, we make sure
+  // the API is not available on Stable. In particular,
+  // extension::switches::kEnableExperimentalExtensionApis allows ignoring those
+  // channel restrictions.
+  if (chrome::GetChannel() == version_info::Channel::STABLE) {
+    return RespondNow(Error("API access restricted to non-Stable channels."));
   }
 
   auto params = api::experimental_ai_data::GetAiData::Params::Create(args());

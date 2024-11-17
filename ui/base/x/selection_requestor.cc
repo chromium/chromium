@@ -103,7 +103,8 @@ SelectionData SelectionRequestor::RequestAndWaitForTypes(
     x11::Atom type = x11::Atom::None;
     if (PerformBlockingConvertSelection(selection, item, &data, &type) &&
         type == item) {
-      return SelectionData(type, base::RefCountedBytes::TakeVector(&data));
+      return SelectionData(
+          type, base::MakeRefCounted<base::RefCountedBytes>(std::move(data)));
     }
   }
 

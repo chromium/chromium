@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
@@ -33,6 +32,7 @@
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -230,6 +230,8 @@ FindBarView::FindBarView(FindBarHost* host) {
                   .SetController(this),
               views::Builder<FindBarMatchCountLabel>()
                   .CopyAddressTo(&match_count_text_)
+                  .SetBackgroundColorId(kColorFindBarBackground)
+                  .SetEnabledColorId(kColorFindBarMatchCount)
                   .SetCanProcessEventsWithinSubtree(false)
                   .SetProperty(views::kMarginsKey,
                                gfx::Insets(toast_label_vertical_margin +
@@ -281,11 +283,36 @@ FindBarView::FindBarView(FindBarHost* host) {
 
   main_container->SetFlexForView(find_text_, 1, true);
 
+  // Theme-aware image models.
+  views::SetImageFromVectorIconWithColorId(
+      find_previous_button_, kKeyboardArrowUpChromeRefreshIcon,
+      kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled);
+  views::SetImageFromVectorIconWithColorId(
+      find_next_button_, kKeyboardArrowDownChromeRefreshIcon,
+      kColorFindBarButtonIcon, kColorFindBarButtonIconDisabled);
+  views::SetImageFromVectorIconWithColorId(
+      close_button_, kCloseChromeRefreshIcon, kColorFindBarButtonIcon,
+      kColorFindBarButtonIconDisabled);
+
   SetOrientation(views::BoxLayout::Orientation::kVertical);
   SetHost(host);
   SetFlipCanvasOnPaintForRTLUI(true);
   SetProperty(views::kElementIdentifierKey, kElementId);
   AddChildView(std::move(main_container));
+
+  const float corner_radius = layout_provider->GetCornerRadiusMetric(
+      views::ShapeContextTokens::kFindBarViewRadius);
+  {
+    auto border = std::make_unique<views::BubbleBorder>(
+        views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
+        kColorFindBarBackground);
+    border->set_md_shadow_elevation(
+        layout_provider->GetCornerRadiusMetric(views::Emphasis::kHigh));
+    border->SetCornerRadius(corner_radius);
+
+    SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
+    SetBorder(std::move(border));
+  }
 
   if (lens::features::IsFindInPageEntryPointEnabled() &&
       host->browser_view()
@@ -306,6 +333,9 @@ FindBarView::FindBarView(FindBarHost* host) {
             .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
             .SetBorder(
                 views::CreateEmptyBorder(gfx::Insets::TLBR(12, 16, 12, 16)))
+            .SetBackground(views::CreateThemedRoundedRectBackground(
+                ui::kColorSysNeutralContainer,
+                {0, 0, corner_radius, corner_radius}))
             .AddChildren(
                 views::Builder<views::Label>()
                     .CopyAddressTo(&hint_text)
@@ -333,7 +363,7 @@ FindBarView::FindBarView(FindBarHost* host) {
 
                           controller->ShowUI(
                               lens::LensOverlayInvocationSource::kFindInPage);
-                          UserEducationService::MaybeNotifyPromoFeatureUsed(
+                          UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
                               web_contents->GetBrowserContext(),
                               lens::features::kLensOverlay);
 
@@ -360,8 +390,7 @@ FindBarView::FindBarView(FindBarHost* host) {
   SetCommonButtonAttributes(close_button_);
 }
 
-FindBarView::~FindBarView() {
-}
+FindBarView::~FindBarView() = default;
 
 void FindBarView::SetHost(FindBarHost* host) {
   find_bar_host_ = host;
@@ -583,46 +612,6 @@ void FindBarView::UpdateMatchCountAppearance(bool no_match) {
   bool enable_buttons = !find_text_->GetText().empty() && !no_match;
   find_previous_button_->SetEnabled(enable_buttons);
   find_next_button_->SetEnabled(enable_buttons);
-}
-
-void FindBarView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-  views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
-  auto border = std::make_unique<views::BubbleBorder>(
-      views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW,
-      kColorFindBarBackground);
-  const float corner_radius = layout_provider->GetCornerRadiusMetric(
-      views::ShapeContextTokens::kFindBarViewRadius);
-  border->set_md_shadow_elevation(
-      layout_provider->GetCornerRadiusMetric(views::Emphasis::kHigh));
-  border->SetCornerRadius(corner_radius);
-
-  SetBackground(std::make_unique<views::BubbleBackground>(border.get()));
-  SetBorder(std::move(border));
-
-  const ui::ColorProvider* color_provider = GetColorProvider();
-  match_count_text_->SetBackgroundColor(
-      color_provider->GetColor(kColorFindBarBackground));
-  match_count_text_->SetEnabledColor(
-      color_provider->GetColor(kColorFindBarMatchCount));
-
-  const SkColor fg_color = color_provider->GetColor(kColorFindBarButtonIcon);
-  const SkColor fg_disabled_color =
-      color_provider->GetColor(kColorFindBarButtonIconDisabled);
-  views::SetImageFromVectorIconWithColor(find_previous_button_,
-                                         kKeyboardArrowUpChromeRefreshIcon,
-                                         fg_color, fg_disabled_color);
-  views::SetImageFromVectorIconWithColor(find_next_button_,
-                                         kKeyboardArrowDownChromeRefreshIcon,
-                                         fg_color, fg_disabled_color);
-  views::SetImageFromVectorIconWithColor(close_button_, kCloseChromeRefreshIcon,
-                                         fg_color, fg_disabled_color);
-  if (lens_entrypoint_container_) {
-    lens_entrypoint_container_->SetBackground(
-        views::CreateRoundedRectBackground(
-            color_provider->GetColor(ui::kColorSysNeutralContainer),
-            {0, 0, corner_radius, corner_radius}));
-  }
 }
 
 void FindBarView::UpdateLensButtonVisibility(

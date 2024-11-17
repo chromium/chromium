@@ -98,6 +98,12 @@
   <message name="IDS_HISTORY_SEARCH_RESULTS" desc="Used when plural/multiple results are found.">
     search results
   </message>
+  <message name="IDS_HISTORY_SEARCH_EXACT_MATCH_RESULT" desc="Used when a single exact match result is found." translateable="false">
+    exact match
+  </message>
+  <message name="IDS_HISTORY_SEARCH_EXACT_MATCH_RESULTS" desc="Used when plural/multiple exact match results is found." translateable="false">
+    exact matches
+  </message>
   <if expr="not use_titlecase">
     <message name="IDS_HISTORY_SHOW_HISTORY" desc="The show history menu in the app menu">
       &amp;History
@@ -136,6 +142,12 @@
   <message name="IDS_HISTORY_EMBEDDINGS_PROMO_BODY" desc="On the history page, the body text of the promo for history search powered by AI." translateable="false">
     In a few words, describe what you’re looking for, like "comfortable walking shoes" or "vegetarian pasta recipes." As you visit more sites on this device, you’ll see more results powered by AI.
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWERS_PROMO_HEADING" desc="On the history page, the heading of the promo for history search powered by AI with answerer." translateable="false">
+    Get answers from your history, powered by AI
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWERS_PROMO_BODY" desc="On the history page, the body text of the promo for history search powered by AI with answerer." translateable="false">
+    You can ask questions like "what ingredients were in that pasta recipe?" Using question words like "what" or "where" helps Chrome give you better answers. Or describe what you're looking for in a few words. As you visit more sites, you'll see more AI-powered results.
+  </message>
   <message name="IDS_HISTORY_EMBEDDIGNS_PROMO_SETTINGS_LINK_TEXT" desc="On the history page, the text of the link to edit the user's history search setting." translateable="false">
     Manage your history search setting
   </message>
@@ -172,6 +184,9 @@
   <message name="IDS_HISTORY_EMBEDDINGS_HEADING_LOADING" desc="Heading for history search results powered by AI while loading.">
     Searching for "<ph name="SEARCH_QUERY"><ex>pizza</ex>$1</ph>"
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_WITH_ANSWERS_RESULTS_HEADING" desc="Heading for history search results powered by AI showing the best matches for a search query when answers are enabled." translateable="false">
+    Best matches from your history
+  </message>
   <message name="IDS_HISTORY_EMBEDDINGS_FOOTER" desc="Footer text for history search results powered by AI.">
     This is an experimental feature and won’t always get it right.
   </message>
@@ -187,8 +202,35 @@
   <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT" desc="Placeholder text/label for the search input field in the history page when history embeddings is enabled." translateable="false">
     In a few words, describe what you're searching for
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_1" desc="Alternative placeholder text/label for the search input field in the history page when ahistory embeddings answerer is enabled." translateable="false">
+    Try something like "what was that square pizza place in Chicago?"
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_2" desc="Alternative placeholder text/label for the search input field in the history page when ahistory embeddings answerer is enabled." translateable="false">
+    Try something like "what ingredients were in that pasta recipe?"
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_3" desc="Alternative placeholder text/label for the search input field in the history page when ahistory embeddings answerer is enabled." translateable="false">
+    Try something like "what was the time of the comedy show?"
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_ANSWERS_ALTERNATIVE_PROMPT_4" desc="Alternative placeholder text/label for the search input field in the history page when ahistory embeddings answerer is enabled." translateable="false">
+    Try something like "how much was the cargo bike?"
+  </message>
   <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING" desc="Heading for answer section in history search results." translateable="false">
     Summary
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_LOADING_HEADING" desc="Heading for answer section in history search results when the answer is loading." translateable="false">
+    Searching for a summary...
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_SOURCE_VISIT_DATE_LABEL" desc="Label for visited date for answer section in history search results." translateable="false">
+    Visited <ph name="DATE"><ex>Oct 4, 2024</ex>$1</ph>
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_UNANSWERABLE" desc="Error message for when history embeddings answerer determines a question cannot be answered." translateable="false">
+    Sorry, I can't help you with that.
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_MODEL_UNAVAILABLE" desc="Error message for when the files necessary for the history embeddings answerer to generate answers to questions are not yet available. User should be encouraged to try again later" translateable="false">
+    Preparing AI-powered summary...check back in a few minutes.
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWERER_ERROR_TRY_AGAIN" desc="Error message for when history embeddings answerer fails and the user can try again later." translateable="false">
+    Something went wrong. Please try again later.
   </message>
 
   <!-- For Compare -->

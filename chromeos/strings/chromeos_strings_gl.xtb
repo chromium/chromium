@@ -17,6 +17,7 @@
 <translation id="1059913517121127803">Non se puido iniciar o escaneamento</translation>
 <translation id="1061864016440983342">Usar sen localización</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
+<translation id="1069150558259542054">Inserción rápida non se pode usar cos atallos personalizados.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Detectouse un firewall</translation>
 <translation id="1075811647922107217">Tamaño da páxina</translation>
@@ -25,6 +26,7 @@
 <translation id="1100902271996134409">Creando imaxes...</translation>
 <translation id="1116694919640316211">Acerca de</translation>
 <translation id="1118572504348554005">Podemos compartir os comentarios que se envíen a través deste formulario cos nosos socios para solucionar erros e outros problemas dos que nos informes. Non inclúas información confidencial, como os contrasinais.</translation>
+<translation id="1119403468619527527">Non se pode simplificar o texto porque hai moi poucas palabras</translation>
 <translation id="1119447706177454957">Erro interno</translation>
 <translation id="1124772482545689468">Usuario</translation>
 <translation id="1128128132059598906">EAP-TTLS</translation>
@@ -43,10 +45,12 @@
 <translation id="11743817593307477">Usa as teclas de frecha para mover este control á acción do xogo que queiras. Utiliza a tecla Intro para colocalo. Utiliza a tecla Escape para cancelalo.</translation>
 <translation id="1175697296044146566">Este dispositivo (<ph name="DEVICE_TYPE" />) está xestionado por <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">Intermedia (<ph name="SIGNAL_STRENGTH" />)</translation>
+<translation id="1178581264944972037">Pausar</translation>
 <translation id="1180621378971766337">agradable</translation>
 <translation id="1181037720776840403">Eliminar</translation>
 <translation id="1191518099344003522">O APN está activado.</translation>
 <translation id="1195447618553298278">Erro descoñecido.</translation>
+<translation id="1196264380943975940">Non se pode facer o resumo. Proba cunha transcrición máis longa.</translation>
 <translation id="1196959502276349371">Versión <ph name="VERSION" /></translation>
 <translation id="1199355487114804640">Reproducir/Pór en pausa</translation>
 <translation id="1201402288615127009">Seguinte</translation>
@@ -79,6 +83,7 @@
 <translation id="1337912285145772892">Axustar á zona de escaneamento</translation>
 <translation id="1343442362630695901">lago de auga salgada</translation>
 <translation id="1348657754632799065">Barra de gravación</translation>
+<translation id="1350909945461913813">Non esquezas gardar o teu traballo</translation>
 <translation id="1367951781824006909">Selecciona un ficheiro</translation>
 <translation id="1371650399987522809">Comentarios sobre os fondos de pantalla coa tecnoloxía da IA de Google</translation>
 <translation id="1374385338586507108">Definir</translation>
@@ -134,6 +139,7 @@
 <translation id="1604959087182679653">Ocultar a transcrición</translation>
 <translation id="160633243685262989">Mostrar vista previa da imaxe</translation>
 <translation id="1611649489706141841">adiante</translation>
+<translation id="1615144046047995187">Non se puido realizar a descarga. Téntao de novo ou reinicia o Chromebook.</translation>
 <translation id="1615335640928990664">Uso de datos desde o <ph name="FRIENDLY_DATE" /></translation>
 <translation id="1618566998877964907">Usar un tema</translation>
 <translation id="1621067168122174824">Realizar proba de carga</translation>
@@ -217,6 +223,7 @@
 <translation id="1905710495812624430">Superouse o número máximo de intentos.</translation>
 <translation id="1908234395526491708">Erros nas solicitudes de UDP</translation>
 <translation id="1908394185991500139">frecha cara á esquerda</translation>
+<translation id="1914144885717544695">o venres</translation>
 <translation id="1923388006036088459">Cores para destacar</translation>
 <translation id="1945403655450283000">Gravadora</translation>
 <translation id="1947737735496445907">Impreso</translation>
@@ -237,6 +244,7 @@
 <translation id="2011174342667534258">Versión do SDK:</translation>
 <translation id="2016697457005847575">Probar os pasos para tentar solucionar o problema</translation>
 <translation id="202500043506723828">EID</translation>
+<translation id="2041627599411887437">Escolle un tema e despois selecciona as palabras subliñadas para personalizar as túas imaxes xeradas por IA.</translation>
 <translation id="2045814230297767491">cubertos</translation>
 <translation id="2047316797244836561">Para ver o protector de pantalla, conéctate a unha rede e volve cargar a páxina.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
@@ -244,10 +252,8 @@
 <translation id="2080070583977670716">Máis opcións de configuración</translation>
 <translation id="2082932131694554252">Tecla do teclado asignada</translation>
 <translation id="2085089206770112532">Reducir brillo da pantalla</translation>
-<translation id="2085876078937250610">Gardar…</translation>
 <translation id="2086091080968010660">Pode que os cambios baseados na hora non sexan precisos. Activa o acceso á localización do sistema na configuración.</translation>
 <translation id="2102231663024125441">Edición de texto</translation>
-<translation id="2102648867808308635">Axúdame a ler esta páxina</translation>
 <translation id="2105810540595158374">O dispositivo é un mando de xogos.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versión <ph name="MILESTONE_VERSION" /></translation>
 <translation id="2124643134650336457">Actualmente esta opción só está dispoñible en inglés (EUA)</translation>
@@ -256,9 +262,9 @@
 <translation id="2138109643290557664">Flotación</translation>
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2148716181193084225">Hoxe</translation>
+<translation id="215206000155329774"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
 <translation id="2154460308960858308">Borrar o texto de busca</translation>
-<translation id="2156072344042480449">As dúas solicitudes máis recentes. Só podes usar estas solicitudes cando estás nesta páxina.</translation>
 <translation id="2157660087437850958">selector de emojis</translation>
 <translation id="2157959690810728433">EN COLA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: tentar de novo</translation>
@@ -266,6 +272,7 @@
 <translation id="2161394479394250669">Cancelar traballo de impresión</translation>
 <translation id="2161656808144014275">Texto</translation>
 <translation id="2163937499206714165">Poñer modo escuro</translation>
+<translation id="2173302385160625112">Comproba a túa conexión a Internet</translation>
 <translation id="2180197493692062006">Produciuse un erro. Tenta volver abrir a aplicación.</translation>
 <translation id="2189104374785738357">Editar os detalles do APN</translation>
 <translation id="2195732836444333448">Está ao límite da súa capacidade. Volve probar dentro dun anaco.</translation>
@@ -301,6 +308,7 @@
 <translation id="2308243864813041101">Desconecta o cable USB do dispositivo (<ph name="DEVICE_NAME" />) para seguir co proceso de actualización</translation>
 <translation id="2320295602967756579">Activar tema claro</translation>
 <translation id="2323506179655536734">PROBA OMITIDA</translation>
+<translation id="2323755382216917952">Para completar a instalación desta actualización, é necesario que reinicies o ordenador. O proceso pode tardar uns minutos en finalizar. Mentres se actualiza o firmware, non desenchufes nin apagues o ordenador.</translation>
 <translation id="2324354238778375592">Flotante</translation>
 <translation id="2326139988748364651"><ph name="RESOLUTION_VALUE" /> ppp</translation>
 <translation id="2346474577291266260">Excelente (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -320,7 +328,9 @@
 <translation id="242825218556404975">Non se detectou ningunha voz</translation>
 <translation id="2446553403094072641">Precisión do punto flotante</translation>
 <translation id="2448312741937722512">Tipo</translation>
+<translation id="2468124392950503650">Selecciona unha solicitude para xerar contido ou consulta a <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guía de creación de solicitudes<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="2472215337771558851">Utiliza Axúdame a escribir, con tecnoloxía da IA de Google, para preparar borradores ou puír o traballo que xa teñas feito</translation>
+<translation id="2475982808118771221">Produciuse un erro</translation>
 <translation id="2480572840229215612">cangrexos</translation>
 <translation id="248546197012830854">O dispositivo non ten conexión. Conéctao á rede wifi para ver o contido de axuda.</translation>
 <translation id="2486301288428798846">madeira</translation>
@@ -352,6 +362,7 @@
 <translation id="2589921777872778654">Editar e eliminar o menú</translation>
 <translation id="2597774443162333062">Enviaranse os ficheiros a Google para proceder á depuración</translation>
 <translation id="2599691907981599502">{NUMBER_OF_PAGES,plural, =1{A operación rematou. Explorouse 1 páxina}other{A operación rematou. Exploráronse {NUMBER_OF_PAGES} páxinas}}</translation>
+<translation id="261322795497077164">Identificación de interlocutores</translation>
 <translation id="2617397783536231890">algodón</translation>
 <translation id="2618015542787108131">duna</translation>
 <translation id="2619761439309613843">Actualización diaria</translation>
@@ -372,6 +383,7 @@
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2715723665057727940">río</translation>
 <translation id="2717139507051041123">Activar modo de cores escuras</translation>
+<translation id="2726755229438917165">o luns</translation>
 <translation id="2728460467788544679">Borrar todo o historial de impresións</translation>
 <translation id="2731700343119398978">Agarda...</translation>
 <translation id="2740531572673183784">Aceptar</translation>
@@ -399,6 +411,7 @@
 <translation id="2888298276507578975">Escribe unha solicitude como "redacta unha nota de agradecemento"</translation>
 <translation id="2890557891229184386">illa tropical</translation>
 <translation id="2895772081848316509">escuros</translation>
+<translation id="2915996080311180594">Reiniciar máis tarde</translation>
 <translation id="2926057806159140518">Escribe o teu nome de usuario e contrasinal ou escanea o código QR</translation>
 <translation id="2940811910881150316">Non se puido realizar a proba do dispositivo. Abre a tapa de novo para realizala.</translation>
 <translation id="2941112035454246133">Baixa</translation>
@@ -414,6 +427,7 @@
 <translation id="3056720590588772262">Extremo</translation>
 <translation id="3060579846059757016">Esquemas</translation>
 <translation id="3061850252076394168">activar Escoitar selección</translation>
+<translation id="3066772729299747758">o martes</translation>
 <translation id="3069085583900247081">Produciuse un erro durante a proba</translation>
 <translation id="3078740164268491126">táboa</translation>
 <translation id="3081652522083185657">clara</translation>
@@ -421,6 +435,7 @@
 <translation id="3084958266922136097">Desactivar salvapantallas</translation>
 <translation id="3091839911843451378">Produciuse un erro: a impresora está detida</translation>
 <translation id="3102119246920354026">Caché</translation>
+<translation id="3112413615003385433">A persoa docente quitou contido de School Tools</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122614491980756867">estanques</translation>
 <translation id="3122883569442693641">Máis detalles</translation>
@@ -429,6 +444,7 @@
 <translation id="3140130301071865159">neve</translation>
 <translation id="3146655726035122603">Exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="315116470104423982">Datos móbiles</translation>
+<translation id="3153094818810437149">Podes cambiar esta opción máis tarde na configuración da gravadora</translation>
 <translation id="3156511682997763015">Avanzar 10 segundos</translation>
 <translation id="3156846309055100599">Escaneando páxina <ph name="PAGE_NUMBER" />…</translation>
 <translation id="315738237743207937">Detectouse un portal cativo</translation>
@@ -438,6 +454,7 @@
 <translation id="3178532070248519384">vangardista</translation>
 <translation id="3182676044300231689">Escribe unha solicitude como "dio con máis confianza"</translation>
 <translation id="3188257591659621405">Os meus ficheiros</translation>
+<translation id="3188931456353313123">O fabricante do dispositivo forneceu esta actualización, pero Google non a verificou.</translation>
 <translation id="319101249942218879">Modificouse a imaxe do avatar</translation>
 <translation id="3192947282887913208">Ficheiros de audio</translation>
 <translation id="3199982728237701504">Alimentador de documentos (a dúas caras)</translation>
@@ -454,12 +471,14 @@
 <translation id="3275729367986477355">Imaxe de avatar</translation>
 <translation id="3283504360622356314">{0,plural, =1{Editar ficheiro}other{Editar ficheiros}}</translation>
 <translation id="3286515922899063534"><ph name="CURRENT" /> GHz</translation>
+<translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="3291996639387199448">Dirección da clave</translation>
 <translation id="3294437725009624529">Invitado</translation>
 <translation id="3303855915957856445">Non se encontraron resultados da busca</translation>
 <translation id="3305294846493618482">máis</translation>
 <translation id="3310640316857623290">A latencia do DNS supera considerablemente o límite permitido</translation>
 <translation id="3321030238473337787">Velocidade de reprodución</translation>
+<translation id="3327613592010997943">Poderás usar este dispositivo de novo o seguinte día: <ph name="DAY" />, <ph name="TIME" />.</translation>
 <translation id="3328783797891415197">Proba en curso</translation>
 <translation id="3340011300870565703">Nivel de batería do auricular dereito do dispositivo: <ph name="BATTERY_PERCENTAGE" /> %.</translation>
 <translation id="3340978935015468852">configuración</translation>
@@ -469,6 +488,7 @@
 <translation id="3361618936611118375">sushi</translation>
 <translation id="3368922792935385530">Conectada</translation>
 <translation id="3369013195428705271">Seguro que queres borrar todo o historial de impresión? Non se borrarán os traballos de impresión en curso.</translation>
+<translation id="3369632935976756339"><ph name="INTENT" />; <ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="3373141842870501561">Fondo de pantalla Fluxo da Terra</translation>
 <translation id="33736539805963175">Fondo de cor <ph name="LETTERS_COLOR" /> coa letra <ph name="LETTERS_LETTER" /></translation>
 <translation id="3383623117265110236">Exclusivos</translation>
@@ -493,14 +513,15 @@
 <translation id="3488065109653206955">Activado parcialmente</translation>
 <translation id="3492882532495507361">Despacho de estilo <ph name="OFFICE_STYLE" /> con tons <ph name="OFFICE_COLOR" /></translation>
 <translation id="3493187369049186498">A medición dos datos provén do teu Chromebook. É posible que non coincidan cos datos do provedor.</translation>
+<translation id="349570724365779960">School Tools está conectado aos estudantes</translation>
 <translation id="3502426834823382181">mostra todas as aplicacións</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />datos de seguimento de rendemento<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Actualiz. Chrome OS</translation>
-<translation id="3522508178835057262">De momento, non se admiten as transcricións de máis de <ph name="MAX_WORD_LENGTH" /> palabras</translation>
 <translation id="3527036260304016759">Produciuse un erro descoñecido</translation>
 <translation id="353214771040290298">Edición feita</translation>
 <translation id="3532980081107202182">Quedan <ph name="MIN_REMAINING" /> minutos aproximadamente</translation>
 <translation id="3533790840489634638">estanque</translation>
+<translation id="3535802910192338629">A persoa docente engadiu novo contido a School Tools</translation>
 <translation id="3547264467365135390">Fórmula</translation>
 <translation id="3557205324756024651">Identidade local (opcional)</translation>
 <translation id="3565064564551103223">Enderezos IP permitidos</translation>
@@ -512,7 +533,6 @@
 <translation id="3588034708467091142">Asegúrate de ter conexión a Internet e téntao de novo.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> é o nome fácil de usar de <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Batería completa</translation>
-<translation id="3600063043775287169">Cando o audio do Chromebook está activado, a gravadora captura todo o audio que se reproduce no dispositivo. Debes ter a certeza de que queres que se graven todos os sons.</translation>
 <translation id="3600339377155080675">Proxectar pantalla</translation>
 <translation id="3602290021589620013">Previsualizar</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -521,6 +541,7 @@
 <translation id="3606583719724308068">Latencia alta en sitios web HTTPS</translation>
 <translation id="361575905210396100">Grazas polos teus comentarios</translation>
 <translation id="3621072146987826699">elefantes</translation>
+<translation id="3628462041319107639">Descargando modelo de transcrición…</translation>
 <translation id="3632040286124154621">Boa suxestión</translation>
 <translation id="3632579075709132555">Activar/Desactivar pantalla de privacidade</translation>
 <translation id="3639873154908477486">Nome (orde alfabética)</translation>
@@ -548,10 +569,12 @@
 <translation id="3785643128701396311">pixel art</translation>
 <translation id="3799381533888781854">DESACTIVADO: A persoa administradora xestiona esta opción de configuración.</translation>
 <translation id="380097101658023925">controis rgb</translation>
+<translation id="380493988330050229">Non se puido crear o resumo para este idioma de transcrición</translation>
 <translation id="38114475217616659">Borrar todo o historial</translation>
 <translation id="3820172043799983114">O PIN non é válido.</translation>
 <translation id="382043424867370667">Fondo de pantalla Solpor</translation>
 <translation id="3824259034819781947">Anexar ficheiros</translation>
+<translation id="383586991013681190">Selecciona o idioma de transcrición e descárgao desde Configuración</translation>
 <translation id="3836587210832263413">Activa só as extensións nas que confíes</translation>
 <translation id="3838338534323494292">Novo contrasinal</translation>
 <translation id="3845880861638660475">Preme <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />Escape<ph name="ESC_SHORTCUT_END" /> para pechar o cadro de diálogo.</translation>
@@ -571,9 +594,11 @@
 <translation id="3885327323343477505">Cambiar protector de pantalla</translation>
 <translation id="3889914174935857450">Restablecer data</translation>
 <translation id="3897092660631435901">Menú</translation>
+<translation id="3902271751020176019">Idioma da transcrición</translation>
 <translation id="391412459402535266">Non se puido realizar a proba do dispositivo. Cambia ao modo de ordenador portátil para realizala.</translation>
 <translation id="3916998944874125962">facer unha captura de pantalla</translation>
 <translation id="3923184630988645767">Uso de datos</translation>
+<translation id="3924445055519423964">Facer clic para resumir a páxina web ou o ficheiro PDF</translation>
 <translation id="3932043219784172185">Ningún dispositivo conectado</translation>
 <translation id="3934185438132762746"><ph name="CONTROL_TYPE" /> sen asignar</translation>
 <translation id="3941014780699102620">Produciuse un erro ao resolver o host</translation>
@@ -617,6 +642,8 @@
 <translation id="4130035430755296270">Pasa o cursor por enriba para ver máis opcións de deseño</translation>
 <translation id="4130750466177569591">Acepto</translation>
 <translation id="4131410914670010031">Branco e negro</translation>
+<translation id="4137700675046373159">o sábado</translation>
+<translation id="4139326893730851150">Actualizacións de firmware</translation>
 <translation id="4143226836069425823">Tocar outra tecla do teclado para substituíla</translation>
 <translation id="4145784616224233563">Firewall HTTP</translation>
 <translation id="4147897805161313378">Google Fotos</translation>
@@ -639,6 +666,7 @@
 <translation id="4227825898293920515">O contrasinal caduca en <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Non hai ningunha tarefa de impresión en curso</translation>
 <translation id="4239069858505860023">GPRS</translation>
+<translation id="4249717042534905822">o domingo</translation>
 <translation id="4250229828105606438">Captura de pantalla</translation>
 <translation id="4251839292699800785">Despacho elegante</translation>
 <translation id="4258281355379922695">Latencia de HTTP</translation>
@@ -652,12 +680,14 @@
 <translation id="4289849978083912975">Presentación</translation>
 <translation id="4297501883039923494">Detívose (produciuse un erro descoñecido)</translation>
 <translation id="4300073214558989"><ph name="IMAGE_COUNT" /> imaxes</translation>
+<translation id="4300272766492248925">Abrir aplicación</translation>
 <translation id="430786093962686457">gasa</translation>
 <translation id="4310735698903592804">Fondos de pantalla recentes con tecnoloxía da IA de Google</translation>
 <translation id="4320904097188876154">rosa fluorescente</translation>
 <translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> premida</translation>
 <translation id="4334293042716981313">Tamén podes <ph name="BEGIN_LINK_FREEFORM_SUBPAGE" />escribir unha solicitude<ph name="END_LINK_FREEFORM_SUBPAGE" /></translation>
 <translation id="4354430579665871434">tecla</translation>
+<translation id="4356100841225547054">Desactivar o volume</translation>
 <translation id="4361257691546579041">O APN é predeterminado.</translation>
 <translation id="437294888293595148">Restablecer todos os atallos</translation>
 <translation id="437477383107495720">coelliños</translation>
@@ -688,6 +718,8 @@
 <translation id="4474142134969976028">Non hai ningún resultado que coincida</translation>
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4483049906298469269">Produciuse un erro ao facer ping na pasarela de rede non predeterminada</translation>
+<translation id="4483498983731992167">Non se pode crear a transcrición</translation>
+<translation id="4486524074141928967">A sesión pecharase á/s <ph name="TIME" /></translation>
 <translation id="4500722292849917410">O atallo non está dispoñible. Preme un novo atallo usando unha tecla modificadora (Control, Alt, Maiúsculas ou <ph name="META_KEY" />).</translation>
 <translation id="4500966230243561393">Cor da interface</translation>
 <translation id="4503223151711056411">Frecha esquerda</translation>
@@ -712,7 +744,7 @@
 <translation id="458794348635939462">Produciuse un erro ao resolver todos os hosts</translation>
 <translation id="4593212453765072419">Requírese autenticación proxy</translation>
 <translation id="4594021849294327751">Crear transcrición</translation>
-<translation id="4602266091140407479">Micrófono</translation>
+<translation id="4594541568452132351">Selecciona o idioma de transcrición e descarga o modelo</translation>
 <translation id="4607282946861182308">Non se puideron crear imaxes disto. Proba con outra solicitude.</translation>
 <translation id="4609350030397390689">Reducir brillo do teclado</translation>
 <translation id="4623061655523261501">Nomes da gravación xerados</translation>
@@ -728,6 +760,7 @@
 <translation id="4665014895760275686">Fabricante</translation>
 <translation id="467510802200863975">Os contrasinais non coinciden</translation>
 <translation id="467715984478005772">Posible firewall</translation>
+<translation id="4678534708181186163">Non se pode facer o resumo. Proba cunha transcrición máis curta.</translation>
 <translation id="4683762547447150570">Tocar o botón para enfocar a asignación de tecla</translation>
 <translation id="4691278870498629773">Detívose (falta a bandexa)</translation>
 <translation id="469379815867856270">Intensidade do sinal</translation>
@@ -736,6 +769,7 @@
 <translation id="473775607612524610">Actualizar</translation>
 <translation id="4744944742468440486">Información relacionada coa túa selección</translation>
 <translation id="4771607256327216405">iluminación do teclado</translation>
+<translation id="4771923071974529837">mañá</translation>
 <translation id="4773299976671772492">Detido</translation>
 <translation id="4778082030331381943">ametista</translation>
 <translation id="4782311465517282004">Obtén definicións, traducións ou conversións de unidades cando fagas clic co botón dereito sobre un texto ou o manteñas premido</translation>
@@ -751,7 +785,6 @@
 <translation id="4809927044794281115">Tema claro</translation>
 <translation id="4813136279048157860">As miñas imaxes</translation>
 <translation id="4813345808229079766">Conexión</translation>
-<translation id="4824527342590024245">De momento, non se admiten as transcricións de menos de <ph name="MIN_WORD_LENGTH" /> palabras</translation>
 <translation id="4830894019733815633">canón</translation>
 <translation id="4832079907277790330">Seleccionar cartafol na aplicación Ficheiros…</translation>
 <translation id="4835901797422965222">Non hai ningunha rede activa</translation>
@@ -796,9 +829,11 @@
 <translation id="4988526792673242964">Páxinas</translation>
 <translation id="4989542687859782284">Experimentos non dispoñibles</translation>
 <translation id="4999333166442584738">Ocultar informe</translation>
+<translation id="5005695757087124131">Facer clic para simplificar o texto seleccionado</translation>
 <translation id="500920857929044050">Deter proba</translation>
 <translation id="5017508259293544172">LEAP</translation>
 <translation id="5035083460461104704">Cor do tema</translation>
+<translation id="5037240652947866174">hoxe</translation>
 <translation id="5038292761217083259">teclado multicolor</translation>
 <translation id="5039804452771397117">Permitir</translation>
 <translation id="5049856988445523908">SIM bloqueada (<ph name="LOCK_TYPE" />)</translation>
@@ -812,12 +847,13 @@
 <translation id="5089810972385038852">Estado</translation>
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5095761549884461003">Desconecta o cable USB do dispositivo (<ph name="DEVICE_NAME" />) e, a continuación, volve inserilo para seguir co proceso de actualización</translation>
-<translation id="5095864667399748231">Activar ou desactivar o son</translation>
 <translation id="5099354524039520280">arriba</translation>
 <translation id="5107243100836678918">Un atallo sen a tecla <ph name="META_KEY" /> podería entrar en conflito co atallo dalgunha aplicación. Preme este atallo de novo para seguir usándoo ou preme un novo que inclúa a tecla <ph name="KEY" />. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Similares:</translation>
+<translation id="5121677070210013200">Non se puido descargar o modelo de transcrición. Téntao de novo ou reinicia o Chromebook.</translation>
 <translation id="5130848777448318809">ponis</translation>
 <translation id="5137451382116112100">Completa</translation>
+<translation id="5140788690559353412">Cando perdas o acceso á túa conta de centro educativo, tampouco poderás acceder ao correo electrónico asociado nin aos ficheiros de Google Drive, como os de Gmail, Documentos ou Presentacións, entre outros.</translation>
 <translation id="5142961317498132443">Autenticación</translation>
 <translation id="5144311987923128508">O botón de confirmación xa está desactivado</translation>
 <translation id="5144887194300568405">Copiar a tradución</translation>
@@ -828,6 +864,7 @@
 <translation id="5168185087976003268">Estado da batería</translation>
 <translation id="5170568018924773124">Mostrar no cartafol</translation>
 <translation id="517075088756846356">Desconecta e volve conectar o cable de alimentación do dispositivo (<ph name="DEVICE_NAME" />) para seguir co proceso de actualización</translation>
+<translation id="5178021559562393163">Non se poden crear nomes. Proba cunha transcrición máis curta.</translation>
 <translation id="5180108905184566358">baobabs</translation>
 <translation id="5180712487038406644">Expresivo</translation>
 <translation id="5190187232518914472">Revive os teus recordos favoritos. Para engadir ou editar álbums, vai a <ph name="LINK_BEGIN" />Google Fotos<ph name="LINK_END" />.</translation>
@@ -862,6 +899,7 @@
 <translation id="5304899856529773394">EvDO</translation>
 <translation id="5315873049536339193">Identidade</translation>
 <translation id="5317780077021120954">Gardar</translation>
+<translation id="5318310531701770497">Non se poden crear nomes. Proba cunha transcrición máis longa.</translation>
 <translation id="5318334351163689047">Erros nas solicitudes de TCP</translation>
 <translation id="53196409393069519">Queres activar a transcrición?</translation>
 <translation id="5326394068492324457"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="COMPLETION_STATUS" /></translation>
@@ -895,6 +933,7 @@
 <translation id="550600468576850160">prado</translation>
 <translation id="551689408806449779">Desconectouse o dispositivo. Tenta conectalo de novo para facer a proba</translation>
 <translation id="5519195206574732858">LTE</translation>
+<translation id="5527146180235316490">Opcións do micrófono</translation>
 <translation id="5534900277405737921">Relevo</translation>
 <translation id="554067135846762198">coral e canela</translation>
 <translation id="5543701552415191873">con bloqueo</translation>
@@ -911,7 +950,10 @@
 <translation id="5595623927872580850">gris</translation>
 <translation id="5596627076506792578">Máis opcións</translation>
 <translation id="5600027863942488546">Tecla <ph name="KEY_NAME" /> probada</translation>
+<translation id="5606865426897221650">Tabulador</translation>
+<translation id="5613201299517339763">Pechouse a sesión</translation>
 <translation id="5620281292257375798">Só para uso interno</translation>
+<translation id="5628106863521633649">Idiomas dispoñibles</translation>
 <translation id="5630438231335788050">Bauhaus</translation>
 <translation id="5631759159893697722">resumo</translation>
 <translation id="5655283760733841251">Aumentar brillo do teclado</translation>
@@ -939,11 +981,11 @@
 <translation id="5760715441271661976">Estado do portal</translation>
 <translation id="5763838252932650682">Reiniciando e actualizando <ph name="APP_NAME" /></translation>
 <translation id="576835345334454681">Aumentar brillo da pantalla</translation>
+<translation id="5775340474232476653">A persoa que dá a clase finalizouna</translation>
 <translation id="5779818640587041940">Manter pantalla activada durante a gravación</translation>
 <translation id="57838592816432529">Silenciar</translation>
 <translation id="5784136236926853061">Latencia de HTTP alta</translation>
 <translation id="5790391387506209808">lapislázuli</translation>
-<translation id="5810692306010756935">Graduación</translation>
 <translation id="5816802250591013230">Non hai ningún atallo asignado</translation>
 <translation id="5826644637650799838">Acerca da imaxe</translation>
 <translation id="5832805196449965646">Engadir unha persoa</translation>
@@ -975,6 +1017,7 @@
 <translation id="5931523347251946569">Non se encontrou o ficheiro</translation>
 <translation id="5938286923316838007">Non se puido crear ningún nome de gravación para este contido</translation>
 <translation id="5939518447894949180">Restablecer</translation>
+<translation id="5942727615796467094">A persoa administradora de <ph name="MANAGER" /> configurou cando se pode usar este dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="594552776027197022">Xerar par de claves aleatorio</translation>
 <translation id="5946538341867151940">De momento, non tes conexión. Se o teu operador móbil recomenda usar un APN personalizado, selecciona a opción + Novo APN para engadir a información do APN</translation>
 <translation id="5947266287934282605">Os datos restableceranse o último día do mes se este cae antes desta data</translation>
@@ -1004,6 +1047,7 @@
 <translation id="6075872808778243331">(Android) latencia de HTTP</translation>
 <translation id="6078323886959318429">Engadir atallo</translation>
 <translation id="6091080061796993741">amarela</translation>
+<translation id="6093853427925392522">Usa a aplicación de transferencia de contido de Google para pasar os datos da túa conta de centro educativo á túa conta persoal antes de perder o acceso.</translation>
 <translation id="6104112872696127344">Cancelouse o escaneamento</translation>
 <translation id="6106186594183574873">Para finalizar, introduce o teu antigo contrasinal</translation>
 <translation id="6108689792487843350">Non se puido acceder á pasarela</translation>
@@ -1016,11 +1060,13 @@
 <translation id="6122191549521593678">Online</translation>
 <translation id="6122277663991249694">Servizo do método de introdución de texto de Chrome OS</translation>
 <translation id="6127426868813166163">branca</translation>
+<translation id="613049107179582049">Cando o audio do Chromebook está activado, a gravadora captura todo o audio que se reproduce no dispositivo</translation>
 <translation id="6136285399872347291">retroceso</translation>
 <translation id="6137614725462089991">ciberpunk</translation>
 <translation id="6137767437444130246">Certificado de usuario</translation>
 <translation id="6146993107019042706">Para finalizar, introduce o teu novo contrasinal</translation>
 <translation id="6147514244879357420">PNG</translation>
+<translation id="6149015141270619212">Non se pode establecer conexión con Internet</translation>
 <translation id="6156030503438652198">granates e rosas</translation>
 <translation id="6165508094623778733">Máis información</translation>
 <translation id="6184793017104303157">B4</translation>
@@ -1066,7 +1112,9 @@
 <translation id="6352210854422428614">planeta diferente</translation>
 <translation id="6359706544163531585">Desactivar o tema claro</translation>
 <translation id="6359919876285606596">Esta é unha acción permanente, polo que non se poderá desfacer</translation>
+<translation id="6368342879959028556">Ao seleccionar Crear con IA, escribe unha solicitude personalizada. Coa opción Fondos de pantalla xerados por IA podes escoller un tema e, a continuación, elixir as palabras subliñadas para personalizar un fondo de pantalla xerado por IA.</translation>
 <translation id="636850387210749493">Inscrición corporativa</translation>
+<translation id="6369221585240879141">Non se poden crear nomes de gravación para este idioma de transcrición</translation>
 <translation id="6373461326814131011">estanque</translation>
 <translation id="6379086450106841622">Pantalla táctil</translation>
 <translation id="6381741036071372448">Probar o teclado</translation>
@@ -1089,6 +1137,7 @@
 <translation id="6447630859861661624">Ir á configuración da conta</translation>
 <translation id="6462978824459367242">O botón para engadir APN agora está activado</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Queres volver escanear a páxina?}=1{Queres volver escanear a páxina {PAGE_NUMBER}?}other{Queres volver escanear a páxina {PAGE_NUMBER}?}}</translation>
+<translation id="6468146470109254228">As túas tres solicitudes e resultados máis recentes. Só poderás acceder a eles cando esteas usando a función Estilo e fondo de pantalla.</translation>
 <translation id="6472207088655375767">Contrasinal dun só uso</translation>
 <translation id="6472979596862005515">embarcacións</translation>
 <translation id="64778964625672495">vermella escura</translation>
@@ -1105,8 +1154,10 @@
 <translation id="6517239166834772319">Explorar</translation>
 <translation id="6526200165918397681">Combinar co fondo de pantalla</translation>
 <translation id="6527081081771465939">Descoñécese o protocolo de seguranza da wifi</translation>
+<translation id="6531528791584205545">inserción rápida</translation>
 <translation id="6535178685492749208">Estás sen conexión. Os comentarios enviaranse máis tarde.</translation>
 <translation id="6543412779435705598">tacos</translation>
+<translation id="6550369542114086980">o xoves</translation>
 <translation id="6551839203326557324">mazás</translation>
 <translation id="65526652485742171">O botón de confirmación xa está activado</translation>
 <translation id="6557784757915238407">APN é de tipo <ph name="ATTACH" />.</translation>
@@ -1132,11 +1183,21 @@
 <translation id="6650062777702288430">Alternar entre teclado de kana e alfanumérico</translation>
 <translation id="6657240842932274095">Queres permitir que os servizos do sistema usen a túa localización?</translation>
 <translation id="6657585470893396449">Contrasinal</translation>
-<translation id="6659594942844771486">Pestana</translation>
 <translation id="66621959568103627">rosa coral</translation>
+<translation id="6667885109186363316"><ph name="SEA_PEN_INTRO_FIRST_PARAGRAPH" />
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A opción Inspírame pode ofrecerche máis opcións de imaxes xeradas por IA únicas e variadas.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          Cando creas contido con IA, a solicitude envíase aos servidores de IA de Google para xerar imaxes e mellorar o produto, tal e como se establece na <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de privacidade de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
+          <ph name="LINE_BREAK" />
+          <ph name="LINE_BREAK" />
+          A IA xenerativa ten carácter experimental e aínda se está desenvolvendo, polo que actualmente ten dispoñibilidade limitada.</translation>
 <translation id="6673898378497337661">aumentar o brillo do teclado</translation>
 <translation id="6692996468359469499">Consultar a información relacionada coa túa selección</translation>
 <translation id="6694534975463174713">cadeado</translation>
+<translation id="6700703207451721535">Non se permite o acceso a esta ligazón. Pregúntalle a quen dá a clase se necesitas acceder a ela.</translation>
 <translation id="6704062477274546131">Resolución de DNS</translation>
 <translation id="6712933881624804031">val</translation>
 <translation id="6716013206176357696">amorodos</translation>
@@ -1192,20 +1253,11 @@
 <translation id="6961170852793647506">Para comezar, coloca o documento no escáner</translation>
 <translation id="6965382102122355670">Aceptar</translation>
 <translation id="6965978654500191972">Dispositivo</translation>
+<translation id="6972754398087986839">Introdución</translation>
 <translation id="6975620886940770104"><ph name="GLOWSCAPES_LANDSCAPE" /> con <ph name="GLOWSCAPES_FEATURE" /> brillantes</translation>
 <translation id="6975981640379148271">coalas</translation>
 <translation id="6977381486153291903">Revisión do firmware</translation>
 <translation id="6981982820502123353">Accesibilidade</translation>
-<translation id="698242338298293034">Escolle un tema e, a continuación, selecciona as palabras subliñadas para personalizar as túas imaxes de IA.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          A opción Inspírame pode ofrecerche máis opcións de imaxes de IA únicas e variadas.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Cando creas contido con IA, a solicitude envíase aos servidores de IA de Google para xerar imaxes e mellorar o produto, tal e como se establece na <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de privacidade de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          A IA xenerativa é experimental, está nas primeiras etapas de programación e actualmente ten dispoñibilidade limitada.</translation>
 <translation id="6982462588253070448">dunas</translation>
 <translation id="7005833343836210400">O dispositivo non ten conexión</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> xestiona este dispositivo e ten acceso a toda a actividade dos usuarios, como as páxinas web visitadas, os contrasinais e o correo electrónico.</translation>
@@ -1214,6 +1266,7 @@
 <translation id="7040729769968826896">Permitir a identificación de falantes</translation>
 <translation id="7041549558901442110">O dispositivo non está conectado.</translation>
 <translation id="7046522406494308071">Queres restablecer os valores predeterminados de todos os atallos?</translation>
+<translation id="7049916119678019302">Descarga o modelo de transcrición desde Configuración</translation>
 <translation id="7058278511608979688">Finalizar e gardar</translation>
 <translation id="7059230779847288458">Cargando (<ph name="TIME_VALUE" /> para completar a carga)</translation>
 <translation id="7066538517128343186">a tecla <ph name="KEY" /></translation>
@@ -1227,14 +1280,18 @@
 <translation id="710028965487274708">Produciuse un erro de autorización</translation>
 <translation id="7101959270679078188">Desbloquea o dispositivo (<ph name="DEVICE_NAME" />) para seguir co proceso de actualización</translation>
 <translation id="7103252855940681301">Dispositivo <ph name="INDEX" /> de <ph name="COUNT" />. Nome: <ph name="NAME" />.</translation>
+<translation id="7103793063702494489">Idioma seleccionado</translation>
 <translation id="7107255225945990211">Escoller o material gráfico exclusivo de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">intro</translation>
+<translation id="7117228822971127758">Téntao de novo máis tarde</translation>
 <translation id="7118522231018231199">Asegúrate de seleccionar os APN que forneza o teu operador móbil ou persoa administradora. Ao seleccionar un APN, desactivaranse os APN personalizados. Os APN non válidos poden provocar que se desconecte a conexión móbil.</translation>
 <translation id="7119389851461848805">alimentación</translation>
 <translation id="7129287270910503851">O teu uso de datos restablecerase este día de cada mes</translation>
 <translation id="7130438335435247835">Nome do punto de acceso (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de nomes}other{Servidores de nomes}}</translation>
 <translation id="7135814714616751706">Busca atallos</translation>
+<translation id="7138614237884624401">Texto simplificado</translation>
+<translation id="7141470099673912333">Transferencia de contido</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="7144878232160441200">Volver tentar</translation>
 <translation id="7144954474087165241">pagode</translation>
@@ -1251,6 +1308,7 @@
 <translation id="7180865173735832675">Personalizar</translation>
 <translation id="7182063559013288142">Zona wifi instantánea</translation>
 <translation id="7184043045742675738">Fai clic en calquera tecla para personalizar o botón. Cambia a tecla de posición co rato ou coas teclas de frecha.</translation>
+<translation id="7187669805838282391">o mércores</translation>
 <translation id="7206979415662233817">Condicións de servizo</translation>
 <translation id="7210635925306941239">ciano</translation>
 <translation id="7212547870105584639">Xestiona a configuración do APN da rede. Os APN establecen unha conexión entre unha rede de telefonía móbil e Internet. <ph name="BEGIN_LINK_LEARN_MORE" />Máis información<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -1266,6 +1324,7 @@
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
 <translation id="7281657306185710294">Brisa</translation>
 <translation id="7287310195820267359">Colección de fondos de pantalla</translation>
+<translation id="7293429513719260019">Seleccionar idioma</translation>
 <translation id="7297226631177386107">Non se puido establecer conexión con sitios web HTTPS a través do firewall</translation>
 <translation id="7297726121602187087">Verde escuro</translation>
 <translation id="7301262279595293068">Espera mentres se actualiza esta aplicación</translation>
@@ -1297,8 +1356,10 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7388959671917308825">Panel táctil integrado</translation>
 <translation id="7397270852490618635">Quitar tema claro</translation>
 <translation id="7401543881546089382">Eliminar atallo</translation>
+<translation id="7405493795721832710">Xa podes actualizar <ph name="DEVICE_NAME" /></translation>
 <translation id="741244894080940828">conversión</translation>
 <translation id="7415801143053185905">Latencia de HTTP moi alta</translation>
+<translation id="7418738250896500352">Non se pode simplificar o texto porque hai demasiadas palabras</translation>
 <translation id="7425037327577270384">Axúdame a escribir</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Non se puido desactivar ou quitar este APN. Asegúrate de que os APN <ph name="ATTACH" /> activados estean desactivados ou quitados.</translation>
@@ -1311,6 +1372,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7500205272584643581">Queres permitir que a gravadora detecte e etiquete as persoas que falen?</translation>
 <translation id="7501957181231305652">ou</translation>
 <translation id="7502658306369382406">Enderezo IPv6</translation>
+<translation id="7503342217608032738">Non se pode usar o dispositivo</translation>
 <translation id="7507061649493508884"><ph name="FLOWER_TYPE" /> radiante de cor <ph name="FLOWER_COLOR" /></translation>
 <translation id="7513770521371759388">parte inferior</translation>
 <translation id="7514365320538308">Descargar</translation>
@@ -1323,13 +1385,16 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7544853251252956727">Reprodución aleatoria</translation>
 <translation id="7550715992156305117">Rutinas de diagnóstico</translation>
 <translation id="7551123448725492271">O dispositivo é de audio.</translation>
+<translation id="7553913964854052228">School Tools está utilizando o teu micrófono</translation>
 <translation id="7559239713112547082">Mostrar vista previa da captura de pantalla</translation>
 <translation id="7561454561030345039">O teu administrador xestiona esta acción</translation>
+<translation id="7561759921596375678">Activar o volume</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7570674786725311828">Pantalla táctil con conexión por USB</translation>
 <translation id="757747079855995705">pedra</translation>
 <translation id="7590883480672980941">Configuración da introdución de texto</translation>
 <translation id="7595982850646262331">Tempo restante: <ph name="TIME_VALUE" /></translation>
+<translation id="7600430297804876776">A persoa administradora de <ph name="MANAGER" /> configurou cando se pode usar este dispositivo (<ph name="DEVICE_TYPE" />).</translation>
 <translation id="7613724632293948900">Cambia a posición co rato ou as teclas de frecha.</translation>
 <translation id="7618774594543487847">Neutra</translation>
 <translation id="7620771111601174153">Máis información no Centro de axuda</translation>
@@ -1383,7 +1448,9 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="785170686607360576">tulipán</translation>
 <translation id="7856267634822906833">Pantalla táctil con conexión por Bluetooth</translation>
 <translation id="7859006200041800233">flor do cacto</translation>
+<translation id="7865217133132122390">Activar o micrófono</translation>
 <translation id="7869143217755017858">Desactivar modo escuro</translation>
+<translation id="7878972877380405573">Resumir con Axúdame a ler</translation>
 <translation id="7881066108824108340">DNS</translation>
 <translation id="7882358943899516840">Tipo de fornecedor</translation>
 <translation id="7882501334836096755">Clave pública</translation>
@@ -1410,6 +1477,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="7983597390787556680">{NUM_ROOL_APPS,plural, =1{<ph name="APP_NAME_1" /> arrancou automaticamente}other{# aplicacións arrancaron automaticamente}}</translation>
 <translation id="7994702968232966508">Método EAP</translation>
 <translation id="8004582292198964060">Navegador</translation>
+<translation id="8010765388850538088">Máis información sobre a IA xenerativa</translation>
 <translation id="8017679124341497925">Editouse o atallo</translation>
 <translation id="802154636333426148">Produciuse un erro na descarga</translation>
 <translation id="8028993641010258682">Tamaño</translation>
@@ -1419,6 +1487,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8045012663542226664">Desactivar micrófono</translation>
 <translation id="8054112564438735763">beixe</translation>
 <translation id="8062968459344882447"><ph name="CHARACTERS_SUBJECTS" /> de cor <ph name="CHARACTERS_COLOR" /> nun fondo de cor <ph name="CHARACTERS_BACKGROUND" /></translation>
+<translation id="8064337065720789104"><ph name="QUERY_TEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="8067126283828232460">O APN está conectado.</translation>
 <translation id="8067208048261192356">marrón</translation>
 <translation id="8067224607978179455">Eliminar <ph name="ACTION_NAME" /></translation>
@@ -1431,6 +1500,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8088963492174775412">Preme para gravar</translation>
 <translation id="8094062939584182041">Permitir que Google che envíe correos electrónicos sobre este tema</translation>
 <translation id="8104083085214006426">Estás usando unha rede aberta e non segura</translation>
+<translation id="8110942816572072814">A persoa que dá a clase bloqueou a túa pantalla</translation>
 <translation id="811820734797650957">(Android) pódeselle facer ping á pasarela</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8131740175452115882">Confirmar</translation>
@@ -1447,13 +1517,12 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8183975772394450380">praia</translation>
 <translation id="819278132617411009">Usa a IA de Google para ser unha persoa máis produtiva</translation>
+<translation id="8200772114523450471">Retomar</translation>
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8208861521865154048">Vantaxes</translation>
 <translation id="8226628635270268143">Escolle as fotos e os álbums que máis che gustan</translation>
 <translation id="8227119283605456246">Anexar ficheiro</translation>
-<translation id="8227488649450500937">Proba con algunha destas ideas ou consulta a <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guía para a creación de solicitudes<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Produciuse un erro ao facer ping na pasarela de rede predeterminada</translation>
-<translation id="8236972776513018241">Transcrición</translation>
 <translation id="8238771987802558562">Escoller un APN</translation>
 <translation id="8246209727385807362">Operador descoñecido</translation>
 <translation id="8250926778281121244">óxido</translation>
@@ -1507,6 +1576,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8476942730579767658">Ventás e escritorios</translation>
 <translation id="8477536061607044749">deseño gráfico</translation>
 <translation id="8477551185774834963">A latencia do DNS supera lixeiramente o límite permitido</translation>
+<translation id="8482376765267780829">Seleccionar o texto para simplificalo</translation>
 <translation id="8483248364096924578">Enderezo IP</translation>
 <translation id="8491311378305535241">Non se puido establecer conexión con sitios web HTTP desde aplicacións para Android a través do firewall</translation>
 <translation id="8495070016475833911">feltro</translation>
@@ -1523,11 +1593,14 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8557447961879934694">WPA2</translation>
 <translation id="8575298406870537639">É posible que sexa obrigatorio activar esta opción para conectarte á rede do teu operador. Para obter máis detalles, ponte en contacto con el.</translation>
 <translation id="8576249514688522074">Non iniciada</translation>
+<translation id="8584654835905316966">É necesario reiniciar o dispositivo para completar a instalación da versión <ph name="VERSION" /> do firmware de <ph name="DEVICE_NAME" />. Pode que pareza que o teu ordenador se reinicia varias veces. É algo xa previsto.</translation>
 <translation id="8593058461203131755">pór en pausa o contido multimedia</translation>
+<translation id="8619169570378509764">School Tools</translation>
 <translation id="8620617069779373398">Estado de itinerancia</translation>
 <translation id="8626489604350149811">Máis accións para <ph name="APN_NAME" /></translation>
 <translation id="86356131183441916">Lila</translation>
 <translation id="8647595191512746911">Transcrición de audio</translation>
+<translation id="8650852232143958317">Leva os teus ficheiros de Gmail e Google Drive contigo</translation>
 <translation id="8651481478098336970">silencia</translation>
 <translation id="8655295600908251630">Canle</translation>
 <translation id="8655828773034788261">Compartir URL:</translation>
@@ -1579,10 +1652,10 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8864415976656252616">Non hai contido suxerido. Consulta o contido de axuda destacado.</translation>
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">O dispositivo é unha tableta.</translation>
-<translation id="8878117140814294155">Silenciar ou activar micrófono</translation>
 <translation id="8881098542468797602">Superouse a proba</translation>
 <translation id="8882789155418924367">mouchos</translation>
 <translation id="8892443466059986410">Cancelar a edición do atallo</translation>
+<translation id="8897043028305808902">Cambiouse o nome do ficheiro</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>
 <translation id="8909114361904403025">frecha cara arriba</translation>
 <translation id="8910721771319628100">A rede predeterminada supera o límite de latencia</translation>
@@ -1633,11 +1706,13 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="9082718469794970195">Usar este vídeo</translation>
 <translation id="9087578468327036362">Informar desta consulta</translation>
 <translation id="9088306295921699330">En uso</translation>
+<translation id="9088994563996376283">Simplificar</translation>
 <translation id="9095775724867566971">Pluginvm</translation>
 <translation id="909856219855259344">Máis información sobre a data de restablecemento</translation>
 <translation id="9100765901046053179">Configuración avanzada</translation>
 <translation id="910415269708673980">Actualiza o tícket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando páxina <ph name="PAGE_NUMBER" /></translation>
+<translation id="9108856746036501072">A gravadora pode crear transcricións de gravacións nas que se fale. No seguinte paso, terás que seleccionar o idioma da transcrición e descargar o modelo (pode ocupar ata 100 MB).</translation>
 <translation id="9111102763498581341">Desbloquear</translation>
 <translation id="9122492456897874028">Resume o contido, obtén definicións e moito máis</translation>
 <translation id="9122602430962285795">Para volver establecer conexión, vai a Configuración</translation>
@@ -1655,6 +1730,7 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="917720651393141712">Probar</translation>
 <translation id="9188992814426075118">O teclado pode combinar automaticamente co teu fondo de pantalla</translation>
 <translation id="9189000703457422362">Non se puido conectar con esta rede a través de ningún APN detectado automaticamente. Se necesitas máis información, ponte en contacto co teu operador móbil.</translation>
+<translation id="9190726385682694354"><ph name="QUERY_TEXT" />; <ph name="SUBTEXT" />; <ph name="RESULT_TEXT" /></translation>
 <translation id="9193744392140377127">APN*</translation>
 <translation id="9195918315673527512">As teclas seleccionadas da panca de control son <ph name="KEYS" />. Toca o botón para editar o control</translation>
 <translation id="9204237731135241582">Non se puido establecer contacto coa pasarela desde aplicacións para Android</translation>
@@ -1675,5 +1751,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="982713511914535780">Realizar proba de descarga</translation>
 <translation id="98515147261107953">Horizontal</translation>
 <translation id="987264212798334818">Xeral</translation>
+<translation id="994473081369871639">Desactivar o micrófono</translation>
 <translation id="995062385528875723">Non se poden usar letras con acentos, caracteres de alfabetos non latinos nin símbolos</translation>
 </translationbundle>

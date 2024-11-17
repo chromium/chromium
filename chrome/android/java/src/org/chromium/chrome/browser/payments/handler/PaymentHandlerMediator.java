@@ -286,11 +286,11 @@ import java.lang.annotation.RetentionPolicy;
 
     private void closeIfInsecure() {
         if (!SslValidityChecker.isValidPageInPaymentHandlerWindow(mPaymentHandlerWebContents)) {
-            closeUIForInsecureNavigation();
+            closeUiForInsecureNavigation();
         }
     }
 
-    private void closeUIForInsecureNavigation() {
+    private void closeUiForInsecureNavigation() {
         mHandler.post(
                 () -> {
                     mCloseReason = CloseReason.INSECURE_NAVIGATION;

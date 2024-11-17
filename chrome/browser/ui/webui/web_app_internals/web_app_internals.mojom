@@ -17,8 +17,15 @@ union InstallIsolatedWebAppResult {
   string error;
 };
 
+// Describes how a manifest-installed app should perform update checks.
+struct UpdateInfo {
+  url.mojom.Url update_manifest_url;
+  string update_channel;
+};
+
 // Dev mode IWAs are either installed from a proxy origin, or from a Web Bundle
-// file.
+// file, or via an update manifest url (the latter case is indicated by the
+// presence of `update_info` in IwaDevModeInfo).
 union IwaDevModeLocation {
   url.mojom.Origin proxy_origin;
   mojo_base.mojom.FilePath bundle_path;
@@ -29,6 +36,8 @@ struct IwaDevModeAppInfo {
   string name;
   IwaDevModeLocation location;
   string installed_version;
+
+  UpdateInfo? update_info;
 };
 
 // Mimics web_app::UpdateManifest::VersionEntry.
@@ -50,8 +59,7 @@ union ParseUpdateManifestFromUrlResult {
 // Parameters necessary for InstallIsolatedWebAppFromBundleUrl().
 struct InstallFromBundleUrlParams {
   url.mojom.Url web_bundle_url;
-
-  // TODO(crbug.com/358606568): support update_manifest_url and propagate it.
+  UpdateInfo update_info;
 };
 
 // Handles requests from chrome://web-app-internals.
@@ -88,6 +96,14 @@ interface WebAppInternalsHandler {
   // success or error message.
   SelectFileAndUpdateIsolatedWebAppFromDevBundle(string app_id) =>
       (string result);
+  // Triggers an update for a manifest-installed dev mode app.
+  // Returns a string containing a success or error message.
+  UpdateManifestInstalledIsolatedWebApp(string app_id) => (string result);
+
+  // Sets `web_app.isolation_data.update_channel` to `update_channel` for this
+  // `app_id`.
+  SetUpdateChannelForIsolatedWebApp(string app_id, string update_channel) =>
+      (bool success);
 
   // Triggers update discovery for installed non-dev-mode Isolated Web Apps.
   // Returns a string containing a success or error message.

@@ -61,8 +61,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Non-synced prefs. Used for per-device choices, e.g., signin promo.
   registry->RegisterBooleanPref(prefs::kAutofillCreditCardFidoAuthEnabled,
                                 false);
-  registry->RegisterBooleanPref(
-      prefs::kAutofillRanQuasiDuplicateExtraDeduplication, false);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(
       prefs::kAutofillCreditCardFidoAuthOfferCheckboxState, true);
@@ -106,6 +104,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterIntegerPref(
       prefs::kAutofillLastVersionDisusedCreditCardsDeleted, 0);
   registry->RegisterStringPref(kAutofillAblationSeedPref, "");
+  registry->RegisterBooleanPref(
+      prefs::kAutofillRanQuasiDuplicateExtraDeduplication, false);
 
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kAutofillUsingVirtualViewStructure,
@@ -137,6 +137,8 @@ void MigrateDeprecatedAutofillPrefs(PrefService* pref_service) {
   pref_service->ClearPref(prefs::kAutofillLastVersionDisusedCreditCardsDeleted);
   // Added 07/2024 (moved from profile pref to local state)
   pref_service->ClearPref(prefs::kAutofillAblationSeedPref);
+  // Added 10/2024
+  pref_service->ClearPref(prefs::kAutofillRanQuasiDuplicateExtraDeduplication);
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

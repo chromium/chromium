@@ -5,17 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_COORDINATOR_TAB_GROUP_INDICATOR_MEDIATOR_H_
 #define IOS_CHROME_BROWSER_UI_TOOLBAR_TAB_GROUPS_COORDINATOR_TAB_GROUP_INDICATOR_MEDIATOR_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_mutator.h"
 
 namespace tab_groups {
 class TabGroupSyncService;
 }  // namespace tab_groups
 
+@protocol ApplicationCommands;
+class ShareKitService;
 @protocol TabGroupIndicatorConsumer;
 @protocol TabGroupIndicatorMediatorDelegate;
+class UrlLoadingBrowserAgent;
 class WebStateList;
 
 // Mediator used to propagate tab group updates to the TabGroupIndicatorView.
@@ -24,12 +26,21 @@ class WebStateList;
 // Delegate for actions happening in the mediator.
 @property(nonatomic, weak) id<TabGroupIndicatorMediatorDelegate> delegate;
 
+// The view controller on which to present the share view.
+@property(nonatomic, strong) UIViewController* baseViewController;
+
+// Application commands handler.
+@property(nonatomic, weak) id<ApplicationCommands> applicationHandler;
+
 // Creates an instance of the mediator.
-- (instancetype)initWithProfile:(ProfileIOS*)profile
-            tabGroupSyncService:
-                (tab_groups::TabGroupSyncService*)tabGroupSyncService
-                       consumer:(id<TabGroupIndicatorConsumer>)consumer
-                   webStateList:(WebStateList*)webStateList;
+- (instancetype)initWithTabGroupSyncService:
+                    (tab_groups::TabGroupSyncService*)tabGroupSyncService
+                            shareKitService:(ShareKitService*)shareKitService
+                                   consumer:
+                                       (id<TabGroupIndicatorConsumer>)consumer
+                               webStateList:(WebStateList*)webStateList
+                                  URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                                  incognito:(BOOL)incognito;
 
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -4,8 +4,10 @@
 <translation id="1173075331199604451">תפריט ההפעלה הקולית</translation>
 <translation id="1178581264944972037">השהיה</translation>
 <translation id="1246424317317450637">מודגש</translation>
+<translation id="1483137792530497944">נהר</translation>
 <translation id="1586836055630070874">רגוע</translation>
 <translation id="1741047078107369903">חמים</translation>
+<translation id="1807863182207623884">רובי</translation>
 <translation id="1921351128855867012">הרצה <ph name="NUMBER_OF_SECONDS" /> שניות קדימה</translation>
 <translation id="1984328900355667246">ההקראה לא זמינה</translation>
 <translation id="2224347680315897176">יציב</translation>
@@ -15,28 +17,36 @@
 <translation id="385051799172605136">חזרה</translation>
 <translation id="3936324432406465283">מהירות ההפעלה</translation>
 <translation id="4020327272915390518">תפריט אפשרויות</translation>
+<translation id="4324337030608534091">לייק</translation>
 <translation id="4431240646217225907">הדגשת טקסט וגלילה אוטומטית</translation>
 <translation id="4494605076346185630">בינוני</translation>
+<translation id="4525525184005340968">דייל</translation>
 <translation id="4710974520964166851">נינוח</translation>
 <translation id="4773921449011281499">חסר דאגה</translation>
 <translation id="4872475766448853257">הרצה של <ph name="NUMBER_OF_SECONDS" /> שניות אחורה</translation>
+<translation id="4967513477347430212">קואסט</translation>
 <translation id="5026371835667036198">צלול</translation>
 <translation id="5234971936051226002">הנגן 'האזנה לדף הזה' ממוזער.</translation>
+<translation id="5251803541071282808">ענן</translation>
 <translation id="5596627076506792578">אפשרויות נוספות</translation>
 <translation id="5694491020339060116">תפריט מהירות ההפעלה</translation>
 <translation id="6315170314923504164">קול</translation>
+<translation id="6343633247422081848">מוס</translation>
 <translation id="6550675742724504774">אפשרויות</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />,‏ <ph name="TONE" /></translation>
 <translation id="6790428901817661496">הפעלה</translation>
 <translation id="6831043979455480757">תרגום</translation>
 <translation id="6846298663435243399">הטעינה מתבצעת...</translation>
 <translation id="6889157801232138307">הנגן 'האזנה לדף הזה'</translation>
+<translation id="7051308646573997571">אלמוג</translation>
 <translation id="7112750136794557642">אפשר להקיש כדי להגדיל את הנגן ולראות אפשרויות נוספות.</translation>
 <translation id="7221920857098237570">עדין</translation>
 <translation id="7237590978482584900">קליל</translation>
 <translation id="7282547042039404307">חלקה</translation>
 <translation id="7587250070160020374">‏בהאזנה לדף ב-Chrome</translation>
+<translation id="8004767876552422827">פילד</translation>
 <translation id="8136852699834914183">ההפעלה לא זמינה בדף הזה.</translation>
+<translation id="8198036737896977997">אייר</translation>
 <translation id="8264989794233974275">הגברה או הפחתה של המהירות פי <ph name="PLAYBACK_SPEED" />.</translation>
 <translation id="8407011429883244666">סגירת הנגן.</translation>
 <translation id="8481839122437406573">רגוע</translation>

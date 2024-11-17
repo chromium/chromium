@@ -404,7 +404,7 @@ public class CafBaseMediaRouteProviderTest {
         inOrder.verify(mSessionController).onSessionStarted();
         assertEquals(mProvider.mRoutes.size(), 1);
 
-        MediaRoute route = (MediaRoute) (mProvider.mRoutes.values().toArray()[0]);
+        MediaRoute route = (MediaRoute) mProvider.mRoutes.values().toArray()[0];
         assertEquals(route.sinkId, "cast-route");
         assertEquals(route.getSourceId(), "source-id");
         assertEquals(route.presentationId, "presentation-id");
@@ -450,7 +450,7 @@ public class CafBaseMediaRouteProviderTest {
         inOrder.verify(mSessionController).onSessionStarted();
         assertEquals(mProvider.mRoutes.size(), 1);
 
-        MediaRoute route = (MediaRoute) (mProvider.mRoutes.values().toArray()[0]);
+        MediaRoute route = (MediaRoute) mProvider.mRoutes.values().toArray()[0];
         assertEquals(route.sinkId, "cast-route");
         assertEquals(route.getSourceId(), "source-id");
         assertEquals(route.presentationId, "presentation-id");
@@ -463,7 +463,7 @@ public class CafBaseMediaRouteProviderTest {
         inOrder.verify(mSessionController, never()).onSessionStarted();
         assertEquals(mProvider.mRoutes.size(), 1);
 
-        route = (MediaRoute) (mProvider.mRoutes.values().toArray()[0]);
+        route = (MediaRoute) mProvider.mRoutes.values().toArray()[0];
         assertEquals(route.sinkId, "cast-route");
         assertEquals(route.getSourceId(), "source-id");
         assertEquals(route.presentationId, "presentation-id");

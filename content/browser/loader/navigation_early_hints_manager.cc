@@ -97,8 +97,7 @@ network::mojom::CSPDirectiveName LinkAsAttributeToCSPDirective(
     case network::mojom::LinkAsAttribute::kFetch:
       return network::mojom::CSPDirectiveName::ConnectSrc;
   }
-  NOTREACHED_IN_MIGRATION();
-  return network::mojom::CSPDirectiveName::Unknown;
+  NOTREACHED();
 }
 
 bool CheckContentSecurityPolicyForPreload(
@@ -175,8 +174,7 @@ network::mojom::RequestMode CalculateRequestMode(
     case network::mojom::CrossOriginAttribute::kUseCredentials:
       return network::mojom::RequestMode::kCors;
   }
-  NOTREACHED_IN_MIGRATION();
-  return network::mojom::RequestMode::kSameOrigin;
+  NOTREACHED();
 }
 
 network::mojom::CredentialsMode CalculateCredentialsMode(
@@ -195,8 +193,7 @@ network::mojom::CredentialsMode CalculateCredentialsMode(
     case network::mojom::CrossOriginAttribute::kAnonymous:
       return network::mojom::CredentialsMode::kSameOrigin;
   }
-  NOTREACHED_IN_MIGRATION();
-  return network::mojom::CredentialsMode::kOmit;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -327,7 +324,7 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
   void OnUploadProgress(int64_t current_position,
                         int64_t total_size,
                         OnUploadProgressCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override {
     network::RecordOnTransferSizeUpdatedUMA(
@@ -484,7 +481,9 @@ void NavigationEarlyHintsManager::MaybePreconnect(
       /*num_streams=*/1, link->href,
       allow_credentials ? network::mojom::CredentialsMode::kInclude
                         : network::mojom::CredentialsMode::kOmit,
-      isolation_info_.network_anonymization_key());
+      isolation_info_.network_anonymization_key(),
+      net::MutableNetworkTrafficAnnotationTag(
+          kEarlyHintsPreloadTrafficAnnotation));
   preconnect_entries_.insert(std::move(entry));
 }
 

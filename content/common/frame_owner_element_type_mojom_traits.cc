@@ -25,8 +25,7 @@ content::mojom::ChildFrameOwnerElementType EnumTraits<
       // represent child frames. The `input` must represent a child frame to be
       // serializable. See the definition of `ChildFrameOwnerElementType`
       // for details.
-      NOTREACHED_IN_MIGRATION();
-      return content::mojom::ChildFrameOwnerElementType::kIframe;
+      NOTREACHED();
   }
 }
 

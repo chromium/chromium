@@ -86,7 +86,7 @@ class ActiveSessionAuthControllerTest
   }
 
   void InitializeUserManager() {
-    user_manager::UserManagerBase::RegisterPrefs(local_state_.registry());
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_.registry());
     user_manager_ =
         std::make_unique<user_manager::FakeUserManager>(&local_state_);
     user_manager_->Initialize();
@@ -163,7 +163,8 @@ class ActiveSessionAuthControllerTest
       auto future = std::make_unique<TokenBasedCallback>();
 
       Shell::Get()->active_session_auth_controller()->ShowAuthDialog(
-          std::make_unique<PasswordManagerAuthRequest>(future->GetCallback()));
+          std::make_unique<PasswordManagerAuthRequest>(u"",
+                                                       future->GetCallback()));
 
       return OnAuthComplete{std::move(future)};
     };
@@ -527,6 +528,104 @@ TEST_P(ActiveSessionAuthControllerTest, OnAuthCancel) {
                    EXPECT_FALSE(callback->Get<bool>());
                    EXPECT_EQ(callback->Get<1>(), std::string{});
                  }),
+             future);
+}
+
+// Tests that the dialog is not shown if the user has no authentication factors.
+TEST_P(ActiveSessionAuthControllerTest, WithoutAnyFactor) {
+  auto account_identifier =
+        cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
+
+  FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(account_identifier);
+
+  auto future = ShowAuthDialogForVariant(GetParam());
+
+  base::RunLoop().RunUntilIdle();
+  std::visit(base::Overloaded([](auto&& arg) {
+               EXPECT_TRUE(arg->IsReady());
+               EXPECT_EQ(arg->template Get<bool>(), false);
+             }),
+             future);
+}
+
+// Validate PIN status with PIN only.
+TEST_P(ActiveSessionAuthControllerTest, PinOnlyLockoutMessage) {
+  auto account_identifier =
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
+
+  FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(account_identifier);
+
+  AddCryptohomePin(account_id_, kExpectedPin);
+  const std::string bad_pin = "bad_pin";
+
+  user_manager::KnownUser known_user(Shell::Get()->local_state());
+  known_user.SetStringPref(account_id_, prefs::kQuickUnlockPinSalt,
+                           kExpectedSalt);
+
+  auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
+      Shell::Get()->active_session_auth_controller());
+  auto test_api = ActiveSessionAuthControllerImpl::TestApi(controller);
+
+  ShowAuthDialogForVariant(GetParam());
+
+  // Await show.
+  ASSERT_TRUE(base::test::RunUntil([&]() { return controller->IsShown(); }));
+
+  const base::TimeDelta in_a_while = base::Seconds(60);
+  test_api.SetPinStatus(std::make_unique<cryptohome::PinStatus>(in_a_while));
+
+  EXPECT_EQ(
+      test_api.GetPinStatusMessage(),
+      l10n_util::GetStringFUTF16(IDS_ASH_IN_SESSION_AUTH_PIN_DELAY_REQUIRED,
+                                 u"1 minute, 0 seconds"));
+
+  test_api.SetPinStatus(
+      std::make_unique<cryptohome::PinStatus>(base::TimeDelta::Max()));
+  EXPECT_EQ(
+      test_api.GetPinStatusMessage(),
+      l10n_util::GetStringUTF16(IDS_ASH_IN_SESSION_AUTH_PIN_TOO_MANY_ATTEMPTS));
+}
+
+// Tests that the AuthenticateAuthFactor call to cryptohome includes the
+// correct account id and pin, and that the `OnAuthComplete` callback
+// is called with the correct credentials.
+TEST_P(ActiveSessionAuthControllerTest, PinOnlySubmit) {
+  auto account_identifier =
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
+
+  FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(account_identifier);
+
+  AddCryptohomePin(account_id_, kExpectedPin);
+
+  user_manager::KnownUser known_user(Shell::Get()->local_state());
+  known_user.SetStringPref(account_id_, prefs::kQuickUnlockPinSalt,
+                           kExpectedSalt);
+
+  auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
+      Shell::Get()->active_session_auth_controller());
+
+  auto future = ShowAuthDialogForVariant(GetParam());
+
+  // Await show.
+  base::RunLoop().RunUntilIdle();
+
+  ActiveSessionAuthControllerImpl::TestApi(controller).SubmitPin(kExpectedPin);
+
+  // Await authentication.
+  base::RunLoop().RunUntilIdle();
+
+  auto authenticate_auth_factor_request =
+      FakeUserDataAuthClient::Get()
+          ->GetLastRequest<
+              FakeUserDataAuthClient::Operation::kAuthenticateAuthFactor>();
+
+  EXPECT_EQ(authenticate_auth_factor_request.auth_input().pin_input().secret(),
+            HashPin(kExpectedPin));
+
+  std::visit(base::Overloaded([](auto&& arg) {
+               EXPECT_TRUE(arg->IsReady());
+               EXPECT_EQ(arg->template Get<bool>(), true);
+             }),
              future);
 }
 

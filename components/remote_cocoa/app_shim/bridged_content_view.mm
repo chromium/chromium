@@ -335,7 +335,23 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     event_location =
         MovePointToWindow(theEvent.locationInWindow, source, target);
   }
-  [self updateTooltipIfRequiredAt:event_location];
+
+  // The tooltip update event should be forwarded to the window where the event
+  // occurs. This is how it works with Aura, and the backend logic expects that
+  // the mouse location is in the coordinate system of the window from which the
+  // event originated.
+  auto* event_window =
+      base::apple::ObjCCast<NativeWidgetMacNSWindow>(theEvent.window);
+  remote_cocoa::NativeWidgetNSWindowBridge* event_bridge =
+      [event_window bridge];
+  if (event_bridge) {
+    gfx::Point location_in_source_content = MovePointToView(
+        theEvent.locationInWindow, source, event_bridge->ns_view());
+    [self updateTooltipIfRequiredAt:location_in_source_content
+                             bridge:event_bridge];
+  } else {
+    [self updateTooltipIfRequiredAt:event_location bridge:_bridge];
+  }
 
   if (isScrollEvent) {
     auto event =
@@ -350,10 +366,12 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   }
 }
 
-- (void)updateTooltipIfRequiredAt:(const gfx::Point&)locationInContent {
-  DCHECK(_bridge);
+- (void)updateTooltipIfRequiredAt:(const gfx::Point&)locationInContent
+                           bridge:(remote_cocoa::NativeWidgetNSWindowBridge*)
+                                      bridge {
+  DCHECK(bridge);
   __weak BridgedContentView* weakSelf = self;
-  _bridge->host()->GetTooltipTextAt(
+  bridge->host()->GetTooltipTextAt(
       locationInContent,
       base::BindOnce(
           [](__weak BridgedContentView* weakView,
@@ -662,7 +680,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
   // Aura updates tooltips with the help of aura::Window::AddPreTargetHandler().
   // Mac hooks in here.
-  [self updateTooltipIfRequiredAt:event->location()];
+  [self updateTooltipIfRequiredAt:event->location() bridge:_bridge];
   _bridge->host()->OnMouseEvent(std::move(event));
 }
 
@@ -873,7 +891,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
   // Aura updates tooltips with the help of aura::Window::AddPreTargetHandler().
   // Mac hooks in here.
-  [self updateTooltipIfRequiredAt:event->location()];
+  [self updateTooltipIfRequiredAt:event->location() bridge:_bridge];
   _bridge->host()->OnScrollEvent(std::move(event));
 }
 

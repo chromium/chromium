@@ -9,12 +9,10 @@
 
 #include "base/not_fatal_until.h"
 #include "base/observer_list.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/performance_manager/embedder/binders.h"
 #include "components/performance_manager/graph/page_node_impl.h"
 #include "components/performance_manager/graph/worker_node_impl.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
-#include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/performance_manager/public/performance_manager_main_thread_mechanism.h"
 #include "components/performance_manager/public/performance_manager_main_thread_observer.h"
@@ -124,6 +122,10 @@ PerformanceManagerRegistryImpl::GetRegisteredObject(uintptr_t type_id) {
   return pm_registered_.GetRegisteredObject(type_id);
 }
 
+Binders& PerformanceManagerRegistryImpl::GetBinders() {
+  return binders_;
+}
+
 void PerformanceManagerRegistryImpl::CreatePageNodeForWebContents(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -200,25 +202,13 @@ void PerformanceManagerRegistryImpl::NotifyBrowserContextAdded(
   DCHECK(inserted);
 }
 
-void PerformanceManagerRegistryImpl::
-    CreateProcessNodeAndExposeInterfacesToRendererProcess(
-        service_manager::BinderRegistry* registry,
-        content::RenderProcessHost* render_process_host) {
-  registry->AddInterface(base::BindRepeating(&BindProcessCoordinationUnit,
-                                             render_process_host->GetID()),
-                         base::SequencedTaskRunner::GetCurrentDefault());
-
+void PerformanceManagerRegistryImpl::CreateProcessNode(
+    content::RenderProcessHost* render_process_host) {
   // Ideally this would strictly be a "Create", but when a
   // RenderFrameHost is "resurrected" with a new process it will
   // already have user data attached. This will happen on renderer
   // crash.
   EnsureProcessNodeForRenderProcessHost(render_process_host);
-}
-
-void PerformanceManagerRegistryImpl::ExposeInterfacesToRenderFrame(
-    mojo::BinderMapWithContext<content::RenderFrameHost*>* map) {
-  map->Add<performance_manager::mojom::DocumentCoordinationUnit>(
-      base::BindRepeating(&BindDocumentCoordinationUnit));
 }
 
 void PerformanceManagerRegistryImpl::NotifyBrowserContextRemoved(
@@ -365,8 +355,7 @@ void PerformanceManagerRegistryImpl::OnRenderProcessHostCreated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Create the ProcessNode if it doesn't already exist. This is the case in
-  // web_tests and content_browsertests which do not invoke
-  // CreateProcessNodeAndExposeInterfacesToRendererProcess().
+  // web_tests and content_browsertests which do not invoke CreateProcessNode().
   EnsureProcessNodeForRenderProcessHost(host);
 
   // Notify the ProcessNode that its process was launched.

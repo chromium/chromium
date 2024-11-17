@@ -21,18 +21,16 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/filters/fe_color_matrix.h"
 
+#include <array>
+
+#include "base/containers/span.h"
 #include "base/types/optional_util.h"
 #include "cc/paint/color_filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -65,7 +63,8 @@ bool FEColorMatrix::SetValues(Vector<float> values) {
   return true;
 }
 
-static void SaturateMatrix(float s, float matrix[kColorMatrixSize]) {
+static void SaturateMatrix(float s,
+                           base::span<float, kColorMatrixSize> matrix) {
   matrix[0] = 0.213f + 0.787f * s;
   matrix[1] = 0.715f - 0.715f * s;
   matrix[2] = 0.072f - 0.072f * s;
@@ -83,7 +82,8 @@ static void SaturateMatrix(float s, float matrix[kColorMatrixSize]) {
   matrix[19] = 0;
 }
 
-static void HueRotateMatrix(float hue, float matrix[kColorMatrixSize]) {
+static void HueRotateMatrix(float hue,
+                            base::span<float, kColorMatrixSize> matrix) {
   const float hue_radians = Deg2rad(hue);
   const float cos_hue = cosf(hue_radians);
   const float sin_hue = sinf(hue_radians);
@@ -104,8 +104,8 @@ static void HueRotateMatrix(float hue, float matrix[kColorMatrixSize]) {
   matrix[19] = 0;
 }
 
-static void LuminanceToAlphaMatrix(float matrix[kColorMatrixSize]) {
-  memset(matrix, 0, kColorMatrixSize * sizeof(float));
+static void LuminanceToAlphaMatrix(base::span<float, kColorMatrixSize> matrix) {
+  std::ranges::fill(matrix, 0);
   matrix[15] = 0.2125f;
   matrix[16] = 0.7154f;
   matrix[17] = 0.0721f;
@@ -114,19 +114,20 @@ static void LuminanceToAlphaMatrix(float matrix[kColorMatrixSize]) {
 static sk_sp<cc::ColorFilter> CreateColorFilter(ColorMatrixType type,
                                                 const Vector<float>& values) {
   // Use defaults if values contains too few/many values.
-  float matrix[kColorMatrixSize];
-  memset(matrix, 0, kColorMatrixSize * sizeof(float));
+  std::array<float, kColorMatrixSize> matrix;
+  std::ranges::fill(matrix, 0);
   matrix[0] = matrix[6] = matrix[12] = matrix[18] = 1;
 
   switch (type) {
     case FECOLORMATRIX_TYPE_UNKNOWN:
       break;
-    case FECOLORMATRIX_TYPE_MATRIX:
-      if (values.size() == kColorMatrixSize) {
-        for (unsigned i = 0; i < kColorMatrixSize; ++i)
-          matrix[i] = values[i];
+    case FECOLORMATRIX_TYPE_MATRIX: {
+      if (auto maybe_matrix =
+              base::span(values).to_fixed_extent<kColorMatrixSize>()) {
+        base::span(matrix).copy_from(*maybe_matrix);
       }
       break;
+    }
     case FECOLORMATRIX_TYPE_SATURATE:
       if (values.size() == 1)
         SaturateMatrix(values[0], matrix);
@@ -139,7 +140,7 @@ static sk_sp<cc::ColorFilter> CreateColorFilter(ColorMatrixType type,
       LuminanceToAlphaMatrix(matrix);
       break;
   }
-  return cc::ColorFilter::MakeMatrix(matrix);
+  return cc::ColorFilter::MakeMatrix(matrix.data());
 }
 
 bool FEColorMatrix::AffectsTransparentPixels() const {
@@ -158,8 +159,8 @@ sk_sp<PaintFilter> FEColorMatrix::CreateImageFilter() {
                                             base::OptionalToPtr(crop_rect));
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const ColorMatrixType& type) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const ColorMatrixType& type) {
   switch (type) {
     case FECOLORMATRIX_TYPE_UNKNOWN:
       ts << "UNKNOWN";
@@ -193,25 +194,24 @@ static bool ValuesIsValidForType(ColorMatrixType type,
     case FECOLORMATRIX_TYPE_UNKNOWN:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
-WTF::TextStream& FEColorMatrix::ExternalRepresentation(WTF::TextStream& ts,
-                                                       int indent) const {
+StringBuilder& FEColorMatrix::ExternalRepresentation(StringBuilder& ts,
+                                                     wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feColorMatrix";
   FilterEffect::ExternalRepresentation(ts);
   ts << " type=\"" << type_ << "\"";
   if (!values_.empty() && ValuesIsValidForType(type_, values_)) {
     ts << " values=\"";
-    Vector<float>::const_iterator ptr = values_.begin();
-    const Vector<float>::const_iterator end = values_.end();
-    while (ptr < end) {
-      ts << *ptr;
-      ++ptr;
-      if (ptr < end)
+    bool first = true;
+    for (const auto value : values_) {
+      if (!first) {
         ts << " ";
+      }
+      ts << value;
+      first = false;
     }
     ts << "\"";
   }

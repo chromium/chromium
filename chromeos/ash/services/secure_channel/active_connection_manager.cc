@@ -28,12 +28,10 @@ void ActiveConnectionManager::AddActiveConnection(
 
   auto connection_state = GetConnectionState(connection_details);
   if (connection_state != ConnectionState::kNoConnectionExists) {
-    PA_LOG(ERROR) << "ActiveConnectionManager::AddActiveConnection(): Tried to "
-                  << "add new active channel, but the connection state was "
-                  << connection_state
-                  << ". Connection details: " << connection_details;
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED() << "ActiveConnectionManager::AddActiveConnection(): Tried to "
+                 << "add new active channel, but the connection state was "
+                 << connection_state
+                 << ". Connection details: " << connection_details;
   }
 
   PerformAddActiveConnection(std::move(authenticated_channel),
@@ -45,12 +43,10 @@ void ActiveConnectionManager::AddClientToChannel(
     const ConnectionDetails& connection_details) {
   auto connection_state = GetConnectionState(connection_details);
   if (connection_state != ConnectionState::kActiveConnectionExists) {
-    PA_LOG(ERROR) << "ActiveConnectionManager::AddClientToChannel(): Tried to "
-                  << "add new client to active channel, but the connection "
-                  << "state was " << connection_state << ". "
-                  << "Connection details: " << connection_details;
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED() << "ActiveConnectionManager::AddClientToChannel(): Tried to "
+                 << "add new client to active channel, but the connection "
+                 << "state was " << connection_state << ". "
+                 << "Connection details: " << connection_details;
   }
 
   PerformAddClientToChannel(std::move(client_connection_parameters),

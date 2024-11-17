@@ -86,12 +86,15 @@ void MahiUiController::RemoveDelegate(Delegate* delegate) {
 }
 
 void MahiUiController::OpenMahiPanel(int64_t display_id,
-                                     gfx::Rect mahi_menu_bounds) {
+                                     const gfx::Rect& mahi_menu_bounds,
+                                     bool elucidation_in_use) {
   // TODO(http://b/339250208): Use DCHECK instead of return early when
   // `IsEnabled()` is false.
   if (!chromeos::MahiManager::Get()->IsEnabled()) {
     return;
   }
+
+  elucidation_in_use_ = elucidation_in_use;
 
   mahi_panel_widget_ = MahiPanelWidget::CreateAndShowPanelWidget(
       display_id, mahi_menu_bounds, /*ui_controller=*/this);
@@ -114,19 +117,36 @@ void MahiUiController::NavigateToQuestionAnswerView() {
 
 void MahiUiController::NavigateToSummaryOutlinesSection() {
   SetVisibilityStateAndNotifyUiUpdate(
-      VisibilityState::kSummaryAndOutlines,
+      VisibilityState::kSummaryAndOutlinesAndElucidation,
       MahiUiUpdate(MahiUiUpdateType::kSummaryAndOutlinesSectionNavigated));
 }
 
 void MahiUiController::NotifyRefreshAvailabilityChanged(bool available) {
+  // Do not show the refresh banner when the elucidation panel is showing
+  // because the elucidation is based on user selected text, while clicking the
+  // banner refreshes summary of the new focused webpage/PDF file and doesn't
+  // make sense in such cases.
+  if (elucidation_in_use_) {
+    return;
+  }
+
   NotifyUiUpdate(
       MahiUiUpdate(MahiUiUpdateType::kRefreshAvailabilityUpdated, available));
+}
+
+void MahiUiController::NotifyPanelBoundsChanged(const gfx::Rect& panel_bounds) {
+  NotifyUiUpdate(
+      MahiUiUpdate(MahiUiUpdateType::kPanelBoundsChanged, panel_bounds));
 }
 
 void MahiUiController::RefreshContents() {
   most_recent_question_params_.reset();
   NavigateToSummaryOutlinesSection();
-  NotifyUiUpdate(MahiUiUpdate(MahiUiUpdateType::kContentsRefreshInitiated));
+  if (elucidation_in_use_) {
+    NotifyUiUpdate(MahiUiUpdate(MahiUiUpdateType::kElucidationRequested));
+  } else {
+    NotifyUiUpdate(MahiUiUpdate(MahiUiUpdateType::kContentsRefreshInitiated));
+  }
 }
 
 void MahiUiController::Retry(VisibilityState origin_state) {
@@ -140,11 +160,20 @@ void MahiUiController::Retry(VisibilityState origin_state) {
         LOG(ERROR) << "Tried to re-ask a non-existing question";
       }
       return;
-    case VisibilityState::kSummaryAndOutlines:
-      SetVisibilityStateAndNotifyUiUpdate(
-          origin_state,
-          MahiUiUpdate(MahiUiUpdateType::kSummaryAndOutlinesReloaded));
+    case VisibilityState::kSummaryAndOutlinesAndElucidation:
+      // TODO(crbug.com/375292907, crbug.com/375293412): retry is not robust
+      // enough, try fix.
+      if (elucidation_in_use_) {
+        SetVisibilityStateAndNotifyUiUpdate(
+            origin_state,
+            MahiUiUpdate(MahiUiUpdateType::kElucidationRequested));
+      } else {
+        SetVisibilityStateAndNotifyUiUpdate(
+            origin_state,
+            MahiUiUpdate(MahiUiUpdateType::kSummaryAndOutlinesReloaded));
+      }
       return;
+
     case VisibilityState::kError:
       NOTREACHED();
   }
@@ -193,6 +222,13 @@ void MahiUiController::UpdateSummaryAndOutlines() {
       &MahiUiController::OnSummaryLoaded, weak_ptr_factory_.GetWeakPtr()));
   chromeos::MahiManager::Get()->GetOutlines(base::BindOnce(
       &MahiUiController::OnOutlinesLoaded, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void MahiUiController::UpdateElucidation() {
+  InvalidatePendingRequests();
+
+  chromeos::MahiManager::Get()->GetElucidation(base::BindOnce(
+      &MahiUiController::OnElucidationLoaded, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void MahiUiController::OnSessionStateChanged(
@@ -286,7 +322,8 @@ void MahiUiController::OnOutlinesLoaded(
     chromeos::MahiResponseStatus status) {
   if (IsErrorStatus(status)) {
     HandleError(MahiUiError(
-        status, /*origin_state=*/VisibilityState::kSummaryAndOutlines));
+        status,
+        /*origin_state=*/VisibilityState::kSummaryAndOutlinesAndElucidation));
     return;
   }
 
@@ -297,11 +334,25 @@ void MahiUiController::OnSummaryLoaded(std::u16string summary_text,
                                        chromeos::MahiResponseStatus status) {
   if (IsErrorStatus(status)) {
     HandleError(MahiUiError(
-        status, /*origin_state=*/VisibilityState::kSummaryAndOutlines));
+        status,
+        /*origin_state=*/VisibilityState::kSummaryAndOutlinesAndElucidation));
     return;
   }
 
   NotifyUiUpdate(MahiUiUpdate(MahiUiUpdateType::kSummaryLoaded, summary_text));
+}
+
+void MahiUiController::OnElucidationLoaded(
+    std::u16string elucidation_text,
+    chromeos::MahiResponseStatus status) {
+  if (IsErrorStatus(status)) {
+    HandleError(MahiUiError(
+        status,
+        /*origin_state=*/VisibilityState::kSummaryAndOutlinesAndElucidation));
+    return;
+  }
+  NotifyUiUpdate(
+      MahiUiUpdate(MahiUiUpdateType::kElucidationLoaded, elucidation_text));
 }
 
 void MahiUiController::InvalidatePendingRequests() {

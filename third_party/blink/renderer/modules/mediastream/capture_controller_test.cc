@@ -482,8 +482,7 @@ TEST_F(CaptureControllerSetZoomLevelTest,
       MakeController(v8_scope.GetExecutionContext());
   // Test avoids calling CaptureController::SetIsBound().
 
-  const ScriptPromiseUntyped promise =
-      controller->setZoomLevel(v8_scope.GetScriptState(), 125);
+  const auto promise = controller->setZoomLevel(v8_scope.GetScriptState(), 125);
 
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
@@ -505,8 +504,7 @@ TEST_F(CaptureControllerSetZoomLevelTest,
   controller->SetIsBound(true);
   // Test avoids calling CaptureController::SetVideoTrack().
 
-  const ScriptPromiseUntyped promise =
-      controller->setZoomLevel(v8_scope.GetScriptState(), 125);
+  const auto promise = controller->setZoomLevel(v8_scope.GetScriptState(), 125);
 
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
@@ -529,8 +527,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsIfVideoTrackEnded) {
   controller->SetVideoTrack(track, "descriptor");
   track->stopTrack(v8_scope.GetExecutionContext());  // Ends the track.
 
-  const ScriptPromiseUntyped promise =
-      controller->setZoomLevel(v8_scope.GetScriptState(), 125);
+  const auto promise = controller->setZoomLevel(v8_scope.GetScriptState(), 125);
 
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
@@ -557,7 +554,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelSuccessIfSupportedValue) {
   for (int zoom_level : supported_levels) {
     EXPECT_CALL(DispatcherHost(), SetZoomLevel(_, zoom_level, _))
         .WillOnce(RunOnceCallback<2>(CscResult::kSuccess));
-    const ScriptPromiseUntyped promise =
+    const auto promise =
         controller->setZoomLevel(v8_scope.GetScriptState(), zoom_level);
 
     ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
@@ -574,7 +571,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsIfLevelTooLow) {
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
   controller->SetVideoTrack(track, "descriptor");
 
-  const ScriptPromiseUntyped promise = controller->setZoomLevel(
+  const auto promise = controller->setZoomLevel(
       v8_scope.GetScriptState(),
       controller->getSupportedZoomLevels().front() - 1);
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
@@ -596,7 +593,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsIfLevelTooHigh) {
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::BROWSER);
   controller->SetVideoTrack(track, "descriptor");
 
-  const ScriptPromiseUntyped promise =
+  const auto promise =
       controller->setZoomLevel(v8_scope.GetScriptState(),
                                controller->getSupportedZoomLevels().back() + 1);
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
@@ -628,7 +625,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsIfUnsupportedValue) {
   const int unsupported_level = (supported_levels[0] + supported_levels[1]) / 2;
   ASSERT_FALSE(supported_levels.Contains(unsupported_level));
 
-  const ScriptPromiseUntyped promise =
+  const auto promise =
       controller->setZoomLevel(v8_scope.GetScriptState(), unsupported_level);
 
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
@@ -652,8 +649,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsIfCapturingWindow) {
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::WINDOW);
   controller->SetVideoTrack(track, "descriptor");
 
-  const ScriptPromiseUntyped promise =
-      controller->setZoomLevel(v8_scope.GetScriptState(), 125);
+  const auto promise = controller->setZoomLevel(v8_scope.GetScriptState(), 125);
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(promise_tester.IsRejected());
@@ -676,8 +672,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsIfCapturingMonitor) {
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::MONITOR);
   controller->SetVideoTrack(track, "descriptor");
 
-  const ScriptPromiseUntyped promise =
-      controller->setZoomLevel(v8_scope.GetScriptState(), 125);
+  const auto promise = controller->setZoomLevel(v8_scope.GetScriptState(), 125);
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(promise_tester.IsRejected());
@@ -702,8 +697,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SimulatedFailureFromDispatcherHost) {
 
   EXPECT_CALL(DispatcherHost(), SetZoomLevel(_, _, _))
       .WillOnce(RunOnceCallback<2>(CscResult::kUnknownError));
-  const ScriptPromiseUntyped promise =
-      controller->setZoomLevel(v8_scope.GetScriptState(), 125);
+  const auto promise = controller->setZoomLevel(v8_scope.GetScriptState(), 125);
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(promise_tester.IsRejected());
@@ -726,8 +720,7 @@ TEST_F(CaptureControllerSetZoomLevelTest, SetZoomLevelFailsWithoutSessionId) {
       CaptureController::getSupportedZoomLevels()[0], /*use_session_id=*/false);
   controller->SetVideoTrack(track, "descriptor");
 
-  const ScriptPromiseUntyped promise =
-      controller->setZoomLevel(v8_scope.GetScriptState(), 100);
+  const auto promise = controller->setZoomLevel(v8_scope.GetScriptState(), 100);
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(promise_tester.IsRejected());
@@ -753,8 +746,8 @@ TEST_F(CaptureControllerScrollTest, SendWheelFailsIfCaptureControllerNotBound) {
       MakeController(v8_scope.GetExecutionContext());
   // Test avoids calling CaptureController::SetIsBound().
 
-  const ScriptPromiseUntyped promise = controller->sendWheel(
-      v8_scope.GetScriptState(), CapturedWheelAction::Create());
+  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
+                                             CapturedWheelAction::Create());
 
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
@@ -776,8 +769,8 @@ TEST_F(CaptureControllerScrollTest,
   controller->SetIsBound(true);
   // Test avoids calling CaptureController::SetVideoTrack().
 
-  const ScriptPromiseUntyped promise = controller->sendWheel(
-      v8_scope.GetScriptState(), CapturedWheelAction::Create());
+  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
+                                             CapturedWheelAction::Create());
 
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
@@ -800,8 +793,8 @@ TEST_F(CaptureControllerScrollTest, SendWheelFailsIfVideoTrackEnded) {
   controller->SetVideoTrack(track, "descriptor");
   track->stopTrack(v8_scope.GetExecutionContext());  // Ends the track.
 
-  const ScriptPromiseUntyped promise = controller->sendWheel(
-      v8_scope.GetScriptState(), CapturedWheelAction::Create());
+  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
+                                             CapturedWheelAction::Create());
 
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
@@ -826,8 +819,8 @@ TEST_F(CaptureControllerScrollTest, SendWheelSuccess) {
 
   EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _))
       .WillOnce(RunOnceCallback<2>(CscResult::kSuccess));
-  const ScriptPromiseUntyped promise = controller->sendWheel(
-      v8_scope.GetScriptState(), CapturedWheelAction::Create());
+  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
+                                             CapturedWheelAction::Create());
 
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
@@ -844,8 +837,8 @@ TEST_F(CaptureControllerScrollTest, SendWheelFailsIfCapturingWindow) {
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::WINDOW);
   controller->SetVideoTrack(track, "descriptor");
 
-  const ScriptPromiseUntyped promise = controller->sendWheel(
-      v8_scope.GetScriptState(), CapturedWheelAction::Create());
+  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
+                                             CapturedWheelAction::Create());
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(promise_tester.IsRejected());
@@ -868,8 +861,8 @@ TEST_F(CaptureControllerScrollTest, SendWheelFailsIfCapturingMonitor) {
   MediaStreamTrack* track = MakeTrack(v8_scope, SurfaceType::MONITOR);
   controller->SetVideoTrack(track, "descriptor");
 
-  const ScriptPromiseUntyped promise = controller->sendWheel(
-      v8_scope.GetScriptState(), CapturedWheelAction::Create());
+  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
+                                             CapturedWheelAction::Create());
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(promise_tester.IsRejected());
@@ -895,8 +888,8 @@ TEST_F(CaptureControllerScrollTest, SimulatedFailureFromDispatcherHost) {
 
   EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _))
       .WillOnce(RunOnceCallback<2>(CscResult::kUnknownError));
-  const ScriptPromiseUntyped promise = controller->sendWheel(
-      v8_scope.GetScriptState(), CapturedWheelAction::Create());
+  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
+                                             CapturedWheelAction::Create());
 
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
@@ -921,8 +914,8 @@ TEST_F(CaptureControllerScrollTest, SendWheelFailsBeforeReceivingFrames) {
   controller->SetVideoTrack(track, "descriptor");
   // Intentionally avoid calling SimulateFrameArrival().
 
-  const ScriptPromiseUntyped promise = controller->sendWheel(
-      v8_scope.GetScriptState(), CapturedWheelAction::Create());
+  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
+                                             CapturedWheelAction::Create());
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(promise_tester.IsRejected());
@@ -958,8 +951,7 @@ TEST_F(CaptureControllerScrollTest, SendWheelScalesCorrectly) {
   EXPECT_CALL(DispatcherHost(), SendWheel(_, _, _))
       .WillOnce(DoAll(SaveArgPointee<1>(&dispatcher_action),
                       RunOnceCallbackRepeatedly<2>(CscResult::kSuccess)));
-  const ScriptPromiseUntyped promise =
-      controller->sendWheel(v8_scope.GetScriptState(), action);
+  const auto promise = controller->sendWheel(v8_scope.GetScriptState(), action);
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(promise_tester.IsFulfilled());
@@ -980,8 +972,8 @@ TEST_F(CaptureControllerScrollTest, SendWheelFailsWithoutSessionId) {
   controller->SetVideoTrack(track, "descriptor");
   SimulateFrameArrival(track);
 
-  const ScriptPromiseUntyped promise = controller->sendWheel(
-      v8_scope.GetScriptState(), CapturedWheelAction::Create());
+  const auto promise = controller->sendWheel(v8_scope.GetScriptState(),
+                                             CapturedWheelAction::Create());
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(promise_tester.IsRejected());
@@ -1012,8 +1004,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, Success) {
   ScriptState::Scope scope(script_state);
   EXPECT_CALL(DispatcherHost(), RequestCapturedSurfaceControlPermission(_, _))
       .WillOnce(RunOnceCallback<1>(CscResult::kSuccess));
-  ScriptPromiseUntyped promise =
-      controller->captureWheel(script_state, element);
+  auto promise = controller->captureWheel(script_state, element);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
@@ -1084,8 +1075,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, SuccessWithNoElement) {
 
   EXPECT_CALL(DispatcherHost(), RequestCapturedSurfaceControlPermission(_, _))
       .Times(0);
-  ScriptPromiseUntyped promise =
-      controller->captureWheel(script_state, nullptr);
+  auto promise = controller->captureWheel(script_state, nullptr);
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
   EXPECT_TRUE(promise_tester.IsFulfilled());
@@ -1113,8 +1103,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, BackendError) {
         CscResult::kCapturerNotFocusedError}) {
     EXPECT_CALL(DispatcherHost(), RequestCapturedSurfaceControlPermission(_, _))
         .WillOnce(RunOnceCallback<1>(csc_error_result));
-    const ScriptPromiseUntyped promise =
-        controller->captureWheel(script_state, element);
+    const auto promise = controller->captureWheel(script_state, element);
 
     ScriptPromiseTester promise_tester(script_state, promise);
     promise_tester.WaitUntilSettled();
@@ -1145,8 +1134,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, NoSessionId) {
   ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
 
   ScriptState::Scope scope(script_state);
-  ScriptPromiseUntyped promise =
-      controller->captureWheel(script_state, element);
+  auto promise = controller->captureWheel(script_state, element);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
@@ -1170,8 +1158,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, NoTrack) {
   ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
 
   ScriptState::Scope scope(script_state);
-  ScriptPromiseUntyped promise =
-      controller->captureWheel(script_state, element);
+  auto promise = controller->captureWheel(script_state, element);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
@@ -1196,8 +1183,7 @@ TEST_F(CaptureConstrollerCaptureWheelTest, StoppedTrack) {
 
   ScriptState::Scope scope(script_state);
   track->stopTrack(GetDocument().GetExecutionContext());
-  ScriptPromiseUntyped promise =
-      controller->captureWheel(script_state, element);
+  auto promise = controller->captureWheel(script_state, element);
 
   ScriptPromiseTester promise_tester(script_state, promise);
   promise_tester.WaitUntilSettled();
@@ -1312,8 +1298,7 @@ TEST_P(CaptureControllerScrollParametersValidationTest, ValidateCoordinates) {
   action->setY(scroll_coordinates_.y());
   action->setWheelDeltaX(wheel_deltax_x());
   action->setWheelDeltaY(wheel_deltax_y());
-  const ScriptPromiseUntyped promise =
-      controller->sendWheel(v8_scope.GetScriptState(), action);
+  const auto promise = controller->sendWheel(v8_scope.GetScriptState(), action);
 
   ScriptPromiseTester promise_tester(v8_scope.GetScriptState(), promise);
   promise_tester.WaitUntilSettled();

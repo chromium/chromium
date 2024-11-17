@@ -283,10 +283,6 @@ TEST_F(OmniboxResultViewTest, AccessibleProperties) {
   result_view()->GetViewAccessibility().GetAccessibleNodeData(
       &result_node_data);
   EXPECT_EQ(result_node_data.role, ax::mojom::Role::kListBoxOption);
-  // TODO(tommycli) Find a way to test this.
-  // EXPECT_EQ(
-  //   result_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
-  //   u"Google https://google.com location from history");
   EXPECT_EQ(
       result_node_data.GetIntAttribute(ax::mojom::IntAttribute::kPosInSet),
       int{kTestResultViewIndex} + 1);

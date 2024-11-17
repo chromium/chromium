@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/ash/interactive/network/shill_service_util.h"
 
+#include <utility>
+
 #include "base/containers/contains.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ash/components/dbus/shill/fake_shill_profile_client.h"
@@ -14,18 +16,15 @@
 
 namespace ash {
 
-ShillServiceInfo::ShillServiceInfo(unsigned int id,
-                                   const std::string service_type)
+ShillServiceInfo::ShillServiceInfo(unsigned int id, std::string service_type)
     : service_name_(base::StringPrintf("service_name_%u", id)),
       service_path_(base::StringPrintf("service_path_%u", id)),
       service_guid_(base::StringPrintf("service_guid_%u", id)),
-      service_type_(service_type) {
+      service_type_(std::move(service_type)) {
   const std::array<std::string, 4> valid_service_types = {
       shill::kTypeWifi, shill::kTypeCellular, shill::kTypeEthernet,
       shill::kTypeVPN};
-  if (!base::Contains(valid_service_types, service_type)) {
-    NOTREACHED_NORETURN();
-  }
+  CHECK(base::Contains(valid_service_types, service_type_));
 }
 
 ShillServiceInfo::~ShillServiceInfo() = default;

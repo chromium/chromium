@@ -2,14 +2,18 @@
   #arrowRightIcon {
     background-color: var(--color-surface-container-highest-dark);
     display: block;
-    height: 16px;
+    height: 20px;
     flex-shrink: 0;
     margin-block: auto;
-    mask-image: url('bidirectional_arrow.svg');
+    mask-image: url('arrow_right.svg');
     mask-position: center;
     mask-repeat: no-repeat;
     mask-size: 100%;
     width: 20px;
+  }
+
+  :dir(rtl) #arrowRightIcon {
+    transform: scaleX(-1);
   }
 
   .button {
@@ -58,17 +62,25 @@
   }
 
   :host([is-translate-mode-enabled]) .language-picker-button {
-    max-width: 165px;
+    max-width: 220px;
     min-width: 77px;
     pointer-events: all;
     transform: scaleX(1);
     transition-delay: 33ms;
   }
 
+  :host([is-translate-mode-enabled][is-lens-overlay-contextual-searchbox-enabled]) .language-picker-button {
+    min-width: 104px;
+  }
+
   .language-picker-label {
     margin-block-start: 6px;
     margin-block-end: 6px;
     margin-inline-end: 16px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) .language-picker-label {
+    margin-inline-end: 12px;
   }
 
   .language-picker-menu {
@@ -85,6 +97,11 @@
     pointer-events: all;
     position: absolute;
     width: 100%;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) .language-picker-menu {
+    inset-inline-start: 0;
+    width: calc(100% - 56px);
   }
 
   .language-picker-menu::-webkit-scrollbar {
@@ -108,7 +125,9 @@
   }
 
   .language-picker-menu-back-button {
-    margin: 2px 0px 2px 10px;
+    --cr-icon-button-fill-color: var(--color-surface-container-highest-dark);
+    --cr-icon-button-size: 20px;
+    margin: 8px 8px 8px 0px;
   }
 
   .language-picker-menu-button {
@@ -148,6 +167,22 @@
     padding-inline-end: 16px;
   }
 
+  .language-picker-menu-search-button {
+    --cr-icon-button-fill-color: var(--color-surface-container-highest-dark);
+    inset-inline-end: 16px;
+    margin-block-end: 2px;
+    margin-block-start: 2px;
+    margin-inline-end: 0;
+    margin-inline-start: 0;
+    position: absolute;
+  }
+
+  :host(:not([should-fetch-supported-languages])) .language-picker-menu-search-button,
+  :host([is-source-language-searchbox-open]) .language-picker-menu-search-button,
+  :host([is-target-language-searchbox-open]) .language-picker-menu-search-button {
+    display: none;
+  }
+
   .language-picker-menu-section {
     display: flex;
     flex-direction: column;
@@ -163,8 +198,45 @@
     padding-inline-end: 2px;
   }
 
+  :host([is-source-language-searchbox-open]) .language-picker-menu-title,
+  :host([is-target-language-searchbox-open]) .language-picker-menu-title {
+    display: none;
+  }
+
   .language-picker-menu-title-section {
     display: flex;
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+
+  :host([is-source-language-searchbox-open]) .language-picker-menu-title-section,
+  :host([is-target-language-searchbox-open]) .language-picker-menu-title-section {
+    border-bottom: 1px solid rgba(31, 28, 14, 0.12);
+  }
+
+  .language-picker-searchbox {
+    border: none;
+    color: var(--color-surface-container-highest-dark);
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 22px;
+    outline: none;
+    width: 162px;
+  }
+
+  .language-picker-searchbox::placeholder {
+    font-family: inherit;
+    font-weight: 400;
+  }
+
+  :host(:not([is-source-language-searchbox-open])) #sourceLanguageSearchbox,
+  :host(:not([is-target-language-searchbox-open])) #targetLanguageSearchbox {
+    display: none;
+  }
+
+  .search-highlight {
+    font-weight: 700;
   }
 
   .translate-icon {
@@ -175,6 +247,19 @@
     mask-repeat: no-repeat;
     mask-size: 100%;
     width: 20px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) .translate-icon {
+    height: 24px;
+    width: 24px;
+  }
+
+  :host([searchbox-has-text]) #autoDetectLanguageSection,
+  :host([searchbox-has-text]) #recentSourceLanguagesSection,
+  :host([searchbox-has-text]) #recentTargetLanguagesSection,
+  :host([searchbox-has-text]) #allSourceLanguagesMenu,
+  :host([searchbox-has-text]) #allTargetLanguagesMenu  {
+    display: none;
   }
 
   #languagePicker {
@@ -191,14 +276,24 @@
     pointer-events: none;
   }
 
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #languagePicker {
+    background-color: white;
+    max-width: 0px;
+    min-width: 0px;
+  }
+
   :host([is-translate-mode-enabled]) #languagePicker {
     min-width: 197px;
-    max-width: 370px;
+    max-width: 500px;
     opacity: 1;
     pointer-events: all;
     transition: min-width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) 33ms,
                 max-width 200ms cubic-bezier(0.05, 0.7, 0.1, 1.0) 33ms,
                 opacity 100ms linear 33ms;
+  }
+
+  :host([is-translate-mode-enabled][is-lens-overlay-contextual-searchbox-enabled]) #languagePicker {
+    min-width: 250px;
   }
 
   #languagePickerMenuStarsIcon {
@@ -215,17 +310,38 @@
     width: 18px;
   }
 
+  :host(:not([should-show-recent-source-languages])) #recentSourceLanguagesSection,
+  :host(:not([should-show-recent-target-languages])) #recentTargetLanguagesSection,
+  #searchSourceLanguagePicker,
+  #searchTargetLanguagePicker {
+    display: none;
+  }
+
+  :host([searchbox-has-text]) #searchSourceLanguagePicker,
+  :host([searchbox-has-text]) #searchTargetLanguagePicker {
+    display: flex;
+  }
+
   #sourceLanguageButton {
     gap: 6px;
     margin-inline-start: 5px;
   }
 
-  :host(:not([should-show-stars-icon])) #sourceLanguageButton {
+  :host(:not([should-show-stars-icon])) #sourceLanguageButton,
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #sourceLanguageButton {
     gap: 0px;
   }
 
   :host(:not([should-show-stars-icon])) #sourceLanguageLabel {
     margin-inline-start: 16px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled][should-show-stars-icon]) #sourceLanguageLabel {
+    margin-inline-start: 2px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]:not([should-show-stars-icon])) #sourceLanguageLabel {
+    margin-inline-start: 12px;
   }
 
   #sourceAutoDetectButton {
@@ -250,11 +366,16 @@
   }
 
   #targetLanguageButton {
-    margin-inline-end: 6px;
+    margin-inline-end: 5px;
   }
 
   #targetLanguageLabel {
     margin-inline-start: 16px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #targetLanguageLabel {
+    margin-inline-end: 12px;
+    margin-inline-start: 12px;
   }
 
   #translateDisableButton {
@@ -279,17 +400,26 @@
     width: 38px;
   }
 
+  :host([is-translate-mode-enabled]):host([is-lens-overlay-contextual-searchbox-enabled]) #translateDisableButton {
+    height: 48px;
+    width: 48px;
+  }
+
   #translateEnableButton {
     background-color: var(--color-selection-element);
     height: 48px;
-    left: 50%;
     opacity: 1;
-    top: 50%;
-    transform: translate(-50%, -50%);
     transition: opacity 150ms linear 50ms;
     position: absolute;
-    width: 164px;
+    min-width: 164px;
+    width: max-content;
     z-index: 1;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #translateEnableButton {
+    min-width: 48px;
+    width: 48px;
+    gap: 0;
   }
 
   :host([is-translate-mode-enabled]) #translateEnableButton {
@@ -302,6 +432,11 @@
   #translateButtonLabel {
     color: var(--color-scrim);
     line-height: 50px;
+    margin-inline-end: 20px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #translateButtonLabel {
+    display: none;
   }
 
   #translateContainer {
@@ -310,6 +445,7 @@
     cursor: default;
     display: flex;
     flex-direction: row;
+    justify-content: flex-end;
     min-width: 164px;
     overflow: hidden;
     pointer-events: all;
@@ -319,14 +455,29 @@
     background-color: white;
   }
 
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #translateContainer {
+    background-color: transparent;
+    min-width: 48px;
+    border-radius: 48px;
+  }
+
   #translateDisableButtonContainer {
     display: grid;
-    height: 38px;
     margin-block-start: 5px;
     margin-block-end: 5px;
     margin-inline-end: 5px;
     place-items: center;
-    width: 38px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #translateDisableButtonContainer {
+    margin-block-start: 0px;
+    margin-inline-end: 0px;
+    margin-inline-start: 8px;
+  }
+
+  :host([target-language-menu-visible]:not([is-lens-overlay-contextual-searchbox-enabled])) #translateDisableButtonContainer,
+  :host([source-language-menu-visible]:not([is-lens-overlay-contextual-searchbox-enabled])) #translateDisableButtonContainer {
+    visibility: hidden;
   }
 
   #translateDisableIcon {
@@ -336,7 +487,6 @@
     position: absolute;
     opacity: 0;
     transition: opacity 1ms linear 15ms;
-    width: 20px;
   }
 
   :host([is-translate-mode-enabled]) #translateDisableIcon {
@@ -347,6 +497,11 @@
 
   #translateEnableIcon {
     background-color: var(--color-primary);
+    margin-inline-start: 15px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #translateEnableIcon {
+    margin-inline-start: 0px;
   }
 
   :host(:not([should-show-stars-icon])) #starsIcon {
@@ -361,7 +516,9 @@
 </style>
 <div id="translateContainer">
   <cr-button id="translateEnableButton" class="button"
-  on-click="onTranslateButtonClick">
+    on-click="onTranslateButtonClick" aria-hidden="[[isTranslateModeEnabled]]"
+    aria-label="$i18n{translateButtonLabel}"
+    tabindex$="[[getTabIndexForTranslateEntry(isTranslateModeEnabled)]]">
     <span id="translateEnableIcon" class="translate-icon" slot="prefix-icon">
     </span>
     <span id="translateButtonLabel" class="button-label">
@@ -370,38 +527,66 @@
   </cr-button>
   <div id="languagePicker">
     <cr-button id="sourceLanguageButton" class="button language-picker-button"
-        on-click="onSourceLanguageButtonClick">
+        on-click="onSourceLanguageButtonClick"
+        aria-hidden="[[!languagePickerButtonsVisible]]"
+        aria-label="[[getSourceLanguageButtonAriaLabel(sourceLanguage)]]"
+        tabindex$="[[getTabIndexForLanguagePickerButtons(isTranslateModeEnabled,
+                    sourceLanguageMenuVisible, targetLanguageMenuVisible)]]">
       <span id="starsIcon" slot="prefix-icon"></span>
       <span id="sourceLanguageLabel"
           class="button-label language-picker-label">
-        [[getSourceLanguageDisplayName(translateLanguageList,
+        [[getSourceLanguageDisplayName(sourceLanguageList,
             sourceLanguage, contentLanguage)]]
       </span>
     </cr-button>
     <span id="arrowRightIcon"></span>
     <cr-button id="targetLanguageButton" class="button language-picker-button"
-        on-click="onTargetLanguageButtonClick">
+        on-click="onTargetLanguageButtonClick"
+        aria-hidden="[[!languagePickerButtonsVisible]]"
+        aria-label="[[getTargetLanguageButtonAriaLabel(targetLanguage)]]"
+        tabindex$="[[getTabIndexForLanguagePickerButtons(isTranslateModeEnabled,
+                    sourceLanguageMenuVisible, targetLanguageMenuVisible)]]">
       <span id="targetLanguageLabel" class="button-label language-picker-label">
         [[getTargetLanguageDisplayName(targetLanguage)]]
       </span>
     </cr-button>
   </div>
-  <div id="translateDisableButtonContainer">
-    <cr-button id="translateDisableButton" class="button"
-    on-click="onTranslateButtonClick">
-    </cr-button>
-    <span id="translateDisableIcon" class="translate-icon"></span>
-  </div>
   <div id="sourceLanguagePickerMenu" class="language-picker-menu" role="menu"
-      aria-labelledby="sourceLanguageButton">
+      aria-label="$i18n{languagePickerAriaLabel}"
+      on-keydown="handleLanguagePickerKeyDown">
     <div class="language-picker-menu-title-section">
-      <cr-icon-button iron-icon="cr:arrow-back"
-          class="language-picker-menu-back-button" role="button"
-          aria-label="$i18n{backButton}" title="$i18n{backButton}"
-          on-click="hideLanguagePickerMenus"></cr-icon-button>
-      <div class="language-picker-menu-title">$i18n{translateFrom}</div>
+      <cr-icon-button id="sourceLanguagePickerBackButton"
+          iron-icon="cr:arrow-back" class="language-picker-menu-back-button"
+          role="button" aria-label="$i18n{backButton}" title="$i18n{backButton}"
+          on-click="handleBackButtonClick"></cr-icon-button>
+      <input id="sourceLanguageSearchbox" class="language-picker-searchbox"
+          type="text" placeholder="$i18n{translateFrom}"
+          on-input="onSourceSearchboxInputChange">
+      <div role="heading" aria-level="1" class="language-picker-menu-title">
+        $i18n{translateFrom}
+      </div>
+      <cr-icon-button id="sourceLanguageSearchButton"
+        iron-icon="cr:search" class="language-picker-menu-search-button"
+        role="button" aria-label="$i18n{searchButton}"
+        title="$i18n{searchButton}" on-click="openSourceLanguageSearchbox">
+      </cr-icon-button>
     </div>
-    <div class="language-picker-menu-section">
+    <div id="searchSourceLanguagePicker" class="language-picker-menu-section">
+      <template id="searchSourceLanguagesContainer" is="dom-repeat"
+          items="[[searchedLanguageList]]" as="language">
+        <cr-button class="button language-picker-menu-button"
+            on-click="onSourceSearchLanguageItemClick">
+          <cr-icon icon="cr:check" slot="prefix-icon"
+              class$="checked-icon [[getSearchedLanguageCheckedClass(
+              language, sourceLanguage)]]">
+          </cr-icon>
+          <span class="language-picker-menu-button-label">
+            [[language.beforeHighlightText]]<span class="search-highlight">[[language.searchHighlightText]]</span>[[language.afterHighlightText]]
+          </span>
+        </cr-button>
+      </template>
+    </div>
+    <div id="autoDetectLanguageSection" class="language-picker-menu-section">
       <cr-button id="sourceAutoDetectButton"
           class="button language-picker-menu-button"
           on-click="onAutoDetectMenuItemClick">
@@ -414,15 +599,35 @@
         <div id="menuDetectedLanguage"
             class="language-picker-menu-detected-language">
           [[getContentLanguageDisplayName(
-              translateLanguageList, contentLanguage)]]
+              sourceLanguageList, contentLanguage)]]
         </div>
         <span id="languagePickerMenuStarsIcon" slot="suffix-icon"></span>
       </cr-button>
     </div>
-    <div class="language-picker-menu-section">
-      <h3 class="language-picker-menu-header">$i18n{allLanguages}</h3>
+    <div id="recentSourceLanguagesSection" class="language-picker-menu-section">
+      <h3 role="heading" aria-level="2" class="language-picker-menu-header">
+        $i18n{recentLanguages}
+      </h3>
+      <template id="recentSourceLanguagesContainer" is="dom-repeat"
+        items="[[recentSourceLanguages]]" as="language">
+        <cr-button class="button language-picker-menu-button"
+            on-click="onRecentSourceLanguageClick">
+          <cr-icon icon="cr:check" slot="prefix-icon"
+              class$="checked-icon [[getLanguageCheckedClass(
+              language, sourceLanguage)]]">
+          </cr-icon>
+          <span class="language-picker-menu-button-label">
+            [[language.name]]
+          </span>
+        </cr-button>
+      </template>
+    </div>
+    <div id="allSourceLanguagesMenu" class="language-picker-menu-section">
+      <h3 role="heading" aria-level="2" class="language-picker-menu-header">
+        $i18n{allLanguages}
+      </h3>
       <template id="sourceLanguagePickerContainer" is="dom-repeat"
-          items="[[translateLanguageList]]" as="language">
+          items="[[sourceLanguageList]]" as="language">
         <cr-button class="button language-picker-menu-button"
             on-click="onSourceLanguageMenuItemClick">
           <cr-icon icon="cr:check" slot="prefix-icon"
@@ -430,25 +635,71 @@
               language, sourceLanguage)]]">
           </cr-icon>
           <span class="language-picker-menu-button-label">
-            [[language.displayName]]
+            [[language.name]]
           </span>
         </cr-button>
       </template>
     </div>
   </div>
   <div id="targetLanguagePickerMenu" class="language-picker-menu" role="menu"
-      aria-labelledby="targetLanguageButton">
+      aria-label="$i18n{languagePickerAriaLabel}"
+      on-keydown="handleLanguagePickerKeyDown">
     <div class="language-picker-menu-title-section">
-      <cr-icon-button iron-icon="cr:arrow-back"
-          class="language-picker-menu-back-button" role="button"
-          aria-label="$i18n{backButton}" title="$i18n{backButton}"
-          on-click="hideLanguagePickerMenus"></cr-icon-button>
-      <div class="language-picker-menu-title">$i18n{translateTo}</div>
+      <cr-icon-button id="targetLanguagePickerBackButton"
+          iron-icon="cr:arrow-back" class="language-picker-menu-back-button"
+          role="button" aria-label="$i18n{backButton}" title="$i18n{backButton}"
+          on-click="handleBackButtonClick"></cr-icon-button>
+      <input id="targetLanguageSearchbox" class="language-picker-searchbox"
+              type="text" placeholder="$i18n{translateTo}"
+              on-input="onTargetSearchboxInputChange">
+      <div role="heading" aria-level="1" class="language-picker-menu-title">
+        $i18n{translateTo}
+      </div>
+      <cr-icon-button id="targetLanguageSearchButton"
+        iron-icon="cr:search" class="language-picker-menu-search-button"
+        role="button" aria-label="$i18n{searchButton}"
+        title="$i18n{searchButton}" on-click="openTargetLanguageSearchbox">
+      </cr-icon-button>
     </div>
-    <div class="language-picker-menu-section">
-      <h3 class="language-picker-menu-header">$i18n{allLanguages}</h3>
+    <div id="searchTargetLanguagePicker" class="language-picker-menu-section">
+      <template id="searchTargetLanguagesContainer" is="dom-repeat"
+          items="[[searchedLanguageList]]" as="language">
+        <cr-button class="button language-picker-menu-button"
+            on-click="onTargetSearchLanguageItemClick">
+          <cr-icon icon="cr:check" slot="prefix-icon"
+              class$="checked-icon [[getSearchedLanguageCheckedClass(
+              language, targetLanguage)]]">
+          </cr-icon>
+          <span class="language-picker-menu-button-label">
+            [[language.beforeHighlightText]]<span class="search-highlight">[[language.searchHighlightText]]</span>[[language.afterHighlightText]]
+          </span>
+        </cr-button>
+      </template>
+    </div>
+    <div id="recentTargetLanguagesSection" class="language-picker-menu-section">
+      <h3 role="heading" aria-level="2" class="language-picker-menu-header">
+        $i18n{recentLanguages}
+      </h3>
+      <template id="recentTargetLanguagesContainer" is="dom-repeat"
+        items="[[recentTargetLanguages]]" as="language">
+        <cr-button class="button language-picker-menu-button"
+            on-click="onRecentTargetLanguageClick">
+          <cr-icon icon="cr:check" slot="prefix-icon"
+              class$="checked-icon [[getLanguageCheckedClass(
+              language, targetLanguage)]]">
+          </cr-icon>
+          <span class="language-picker-menu-button-label">
+            [[language.name]]
+          </span>
+        </cr-button>
+      </template>
+    </div>
+    <div id="allTargetLanguagesMenu" class="language-picker-menu-section">
+      <h3 role="heading" aria-level="2" class="language-picker-menu-header">
+        $i18n{allLanguages}
+      </h3>
       <template id="targetLanguagePickerContainer" is="dom-repeat"
-          items="[[translateLanguageList]]" as="language">
+          items="[[targetLanguageList]]" as="language">
         <cr-button class="button language-picker-menu-button"
             on-click="onTargetLanguageMenuItemClick">
           <cr-icon icon="cr:check" slot="prefix-icon"
@@ -456,10 +707,21 @@
               language, targetLanguage)]]">
           </cr-icon>
           <span class="language-picker-menu-button-label">
-            [[language.displayName]]
+            [[language.name]]
           </span>
         </cr-button>
       </template>
     </div>
+  </div>
+  <div id="translateDisableButtonContainer">
+    <cr-button id="translateDisableButton" class="button"
+      on-click="onTranslateButtonClick"
+      aria-hidden="[[!languagePickerButtonsVisible]]"
+      aria-label="$i18n{translateCloseAriaLabel}"
+      tabindex$="[[getTabIndexForTranslateExit(isTranslateModeEnabled,
+                  sourceLanguageMenuVisible, targetLanguageMenuVisible,
+                  isLensOverlayContextualSearchboxVisible)]]">
+    </cr-button>
+    <span id="translateDisableIcon" class="translate-icon"></span>
   </div>
 </div>

@@ -44,15 +44,15 @@ public abstract class ConnectedTask<T extends ChromeGoogleApiClient> implements 
 
     /**
      * Used for logging and tracing.
+     *
      * <ul>
-     * <li>Log format: "{logPrefix}| {{@link #getName()}} {message}"</li>
-     * <li>Trace format: "ConnectedTask:{logPrefix}:{traceEventName}"</li>
+     *   <li>Log format: "{logPrefix}| {{@link #getName()}} {message}"
+     *   <li>Trace format: "ConnectedTask:{logPrefix}:{traceEventName}"
      * </ul>
      */
     private final String mLogPrefix;
 
     /**
-     * @param client
      * @param logPrefix used for logging and tracing. Must be string literal.
      */
     public ConnectedTask(T client, String logPrefix) {

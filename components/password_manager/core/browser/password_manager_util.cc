@@ -130,7 +130,7 @@ void UserTriggeredManualGenerationFromContextMenu(
     autofill_client->HideAutofillSuggestions(
         autofill::SuggestionHidingReason::
             kOverlappingWithPasswordGenerationPopup);
-    autofill_client->HideAutofillFieldIphForManualFallbackFeature();
+    autofill_client->HideAutofillFieldIph();
   }
   if (!password_manager_client->GetPasswordFeatureManager()
            ->ShouldShowAccountStorageOptIn()) {
@@ -206,6 +206,12 @@ GetLoginMatchType GetMatchType(const password_manager::PasswordForm& form) {
   }
 
   NOTREACHED();
+}
+
+bool IsCredentialWeakMatch(const password_manager::PasswordForm& form) {
+  GetLoginMatchType match_type = GetMatchType(form);
+  return match_type == GetLoginMatchType::kPSL ||
+         match_type == GetLoginMatchType::kGrouped;
 }
 
 std::vector<PasswordForm> FindBestMatches(base::span<PasswordForm> matches) {
@@ -287,7 +293,7 @@ const PasswordForm* GetMatchForUpdating(
   const PasswordForm* username_match =
       FindFormByUsername(credentials, submitted_form.username_value);
   if (username_match) {
-    if (GetMatchType(*username_match) != GetLoginMatchType::kPSL) {
+    if (!IsCredentialWeakMatch(*username_match)) {
       return username_match;
     }
 
@@ -438,13 +444,14 @@ std::string GetSignonRealm(const GURL& url) {
 }
 
 #if BUILDFLAG(IS_IOS)
-bool IsCredentialProviderEnabledOnStartup(const PrefService* prefs) {
-  return prefs->GetBoolean(
+bool IsCredentialProviderEnabledOnStartup(const PrefService* local_state) {
+  return local_state->GetBoolean(
       password_manager::prefs::kCredentialProviderEnabledOnStartup);
 }
 
-void SetCredentialProviderEnabledOnStartup(PrefService* prefs, bool enabled) {
-  prefs->SetBoolean(
+void SetCredentialProviderEnabledOnStartup(PrefService* local_state,
+                                           bool enabled) {
+  local_state->SetBoolean(
       password_manager::prefs::kCredentialProviderEnabledOnStartup, enabled);
 }
 #endif
@@ -480,6 +487,22 @@ bool IsSingleUsernameType(autofill::FieldType type) {
           base::FeatureList::IsEnabled(
               password_manager::features::
                   kUsernameFirstFlowWithIntermediateValuesPredictions));
+}
+
+std::u16string GetHumanReadableRealm(const std::string& signon_realm) {
+  // For Android application realms, remove the hash component. Otherwise, make
+  // no changes.
+  affiliations::FacetURI maybe_facet_uri(
+      affiliations::FacetURI::FromPotentiallyInvalidSpec(signon_realm));
+  if (maybe_facet_uri.IsValidAndroidFacetURI()) {
+    return base::UTF8ToUTF16("android://" +
+                             maybe_facet_uri.android_package_name() + "/");
+  }
+  GURL realm(signon_realm);
+  if (realm.is_valid()) {
+    return base::UTF8ToUTF16(realm.host());
+  }
+  return base::UTF8ToUTF16(signon_realm);
 }
 
 }  // namespace password_manager_util

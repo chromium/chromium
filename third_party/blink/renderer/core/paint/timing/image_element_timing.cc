@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -156,19 +157,18 @@ void ImageElementTiming::NotifyImagePaintedInternal(
   DCHECK(context->GetSecurityOrigin());
   // It's ok to expose rendering timestamp for data URIs so exclude those from
   // the Timing-Allow-Origin check.
-  if (!url.ProtocolIsData()) {
-    if (!cached_image.GetResponse().TimingAllowPassed()) {
-      WindowPerformance* performance =
-          DOMWindowPerformance::performance(*GetSupplementable());
-      if (performance) {
-        // Create an entry with a |startTime| of 0.
-        performance->AddElementTiming(
-            ImagePaintString(), url.GetString(), intersection_rect,
-            base::TimeTicks(), load_time, attr,
-            cached_image.IntrinsicSize(respect_orientation), id, element);
-      }
-      return;
+  if (!url.ProtocolIsData() &&
+      !cached_image.GetResponse().TimingAllowPassed() &&
+      !RuntimeEnabledFeatures::ExposeCoarsenedRenderTimeEnabled()) {
+    if (WindowPerformance* performance =
+            DOMWindowPerformance::performance(*GetSupplementable())) {
+      // Create an entry with a |startTime| of 0.
+      performance->AddElementTiming(
+          ImagePaintString(), url.GetString(), intersection_rect,
+          base::TimeTicks(), load_time, attr,
+          cached_image.IntrinsicSize(respect_orientation), id, element);
     }
+    return;
   }
 
   // If the image URL is a data URL ("data:image/..."), then the |name| of the

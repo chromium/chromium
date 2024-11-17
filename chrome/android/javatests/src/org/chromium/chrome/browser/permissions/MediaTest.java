@@ -48,11 +48,7 @@ public class MediaTest {
         ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 
-    /**
-     * Verify asking for microphone creates a dialog and works when the permission is granted.
-     *
-     * @throws Exception
-     */
+    /** Verify asking for microphone creates a dialog and works when the permission is granted. */
     @Test
     @MediumTest
     @Feature({"MediaPermissions", "Main"})
@@ -64,8 +60,6 @@ public class MediaTest {
     /**
      * Verify asking for camera with no gesture creates a dialog and works when the permission is
      * granted.
-     *
-     * @throws Exception
      */
     @Test
     @MediumTest
@@ -78,8 +72,6 @@ public class MediaTest {
     /**
      * Verify asking for both mic and camera creates a combined dialog and works when the
      * permissions are granted.
-     *
-     * @throws Exception
      */
     @Test
     @MediumTest

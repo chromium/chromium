@@ -36,7 +36,7 @@ class FakeTask : public Task {
 
   int GetChildProcessUniqueID() const override { return 0; }
 
-  const Task* GetParentTask() const override { return nullptr; }
+  base::WeakPtr<Task> GetParentTask() const override { return nullptr; }
 
   SessionID GetTabId() const override { return SessionID::InvalidValue(); }
 

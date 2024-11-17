@@ -6,10 +6,11 @@ import 'chrome://history/strings.m.js';
 import 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
+import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
 import type {HistoryEmbeddingsElement} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
 import {AnswerStatus, PageHandlerRemote, UserFeedback} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
-import type {SearchQuery, SearchResultItem} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
+import type {SearchQuery, SearchResult, SearchResultItem} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -28,6 +29,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         url: {url: 'http://google.com'},
         urlForDisplay: 'google.com',
         relativeTime: '2 hours ago',
+        shortDateTime: 'Sept 2, 2022',
         sourcePassage: 'Google description',
         lastUrlVisitTimestamp: 1000,
         answerData: null,
@@ -37,6 +39,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         url: {url: 'http://youtube.com'},
         urlForDisplay: 'youtube.com',
         relativeTime: '4 hours ago',
+        shortDateTime: 'Sept 2, 2022',
         sourcePassage: 'Youtube description',
         lastUrlVisitTimestamp: 2000,
         answerData: null,
@@ -45,8 +48,10 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
     setup(async () => {
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
-      loadTimeData.overrideValues(
-          {enableHistoryEmbeddingsAnswers: enableAnswers});
+      loadTimeData.overrideValues({
+        enableHistoryEmbeddingsAnswers: enableAnswers,
+        enableHistoryEmbeddingsImages: true,
+      });
 
       handler = TestMock.fromClass(PageHandlerRemote);
 
@@ -69,6 +74,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       element = document.createElement('cr-history-embeddings');
       document.body.appendChild(element);
       element.overrideLoadingStateMinimumMsForTesting(0);
+      element.showMoreFromSiteMenuOption = true;
 
       element.numCharsForQuery = 21;
       element.searchQuery = 'some query';
@@ -92,6 +98,8 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
     test('DisplaysHeading', async () => {
       loadTimeData.overrideValues({
         historyEmbeddingsHeading: 'searched for "$1"',
+        historyEmbeddingsWithAnswersResultsHeading:
+            'searched with answers enabled',
         historyEmbeddingsHeadingLoading: 'loading results for "$1"',
       });
       element.searchQuery = 'my query';
@@ -101,23 +109,55 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
           'loading results for "my query"', headingEl.textContent!.trim());
       await handler.whenCalled('search');
       await flushTasks();
-      assertEquals('searched for "my query"', headingEl.textContent!.trim());
+      if (enableAnswers) {
+        assertEquals(
+            'searched with answers enabled', headingEl.textContent!.trim());
+      } else {
+        assertEquals('searched for "my query"', headingEl.textContent!.trim());
+      }
     });
 
     test('DisplaysLoading', async () => {
       element.overrideLoadingStateMinimumMsForTesting(100);
       element.searchQuery = 'my new query';
       await handler.whenCalled('search');
-      const loadingEl = element.shadowRoot!.querySelector('.loading');
-      assertTrue(!!loadingEl);
+      const loadingResultsEl =
+          element.shadowRoot!.querySelector('.loading-results');
+      assertTrue(!!loadingResultsEl);
       assertTrue(
-          isVisible(loadingEl),
+          isVisible(loadingResultsEl),
           'Loading state should be visible even if search immediately resolved');
 
       await new Promise(resolve => setTimeout(resolve, 100));
       assertFalse(
-          isVisible(loadingEl),
+          isVisible(loadingResultsEl),
           'Loading state should disappear once the minimum of 100ms is over');
+
+      if (enableAnswers) {
+        element.searchResultChangedForTesting({
+          query: 'my new query',
+          answerStatus: AnswerStatus.kLoading,
+          answer: '',
+          items: [...mockResults],
+        });
+        await flushTasks();
+        const loadingAnswersEl =
+            element.shadowRoot!.querySelector('.loading-answer');
+        assertTrue(!!loadingAnswersEl);
+        assertTrue(
+            isVisible(loadingAnswersEl), 'Answers should still be loading');
+
+        // Answer status changes to success, which should hide loading state.
+        element.searchResultChangedForTesting({
+          query: 'my new query',
+          answerStatus: AnswerStatus.kSuccess,
+          answer: 'some answer',
+          items: [...mockResults],
+        });
+        await flushTasks();
+        assertFalse(
+            isVisible(loadingAnswersEl), 'Answers should no longer be loading');
+      }
     });
 
     test('DisplaysResults', async () => {
@@ -138,12 +178,141 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       }
     });
 
+    // If this test is flaky, the order of search results being processed by
+    // the component is not correct. See crbug.com/371049023.
+    test('MultipleResultsAtTheSameTime', async () => {
+      element.overrideLoadingStateMinimumMsForTesting(100);
+
+      // Perform a new search.
+      element.searchQuery = 'my new query';
+      await flushTasks();
+
+      // Two search results immediately after each other will sometimes have
+      // the same value for `performance.now()`. In these cases, the results
+      // should still be processed in the same order and not result in the
+      // loading status being the last processed result.
+      element.searchResultChangedForTesting({
+        query: 'my new query',
+        answerStatus: AnswerStatus.kLoading,
+        answer: '',
+        items: [...mockResults],
+      });
+      element.searchResultChangedForTesting({
+        query: 'my new query',
+        answerStatus: AnswerStatus.kUnanswerable,
+        answer: '',
+        items: [...mockResults],
+      });
+
+      // Wait for all timeouts to flush.
+      await new Promise(resolve => setTimeout(resolve, 100));
+      await flushTasks();
+
+      const loadingAnswersEl =
+          element.shadowRoot!.querySelector('.loading-answer');
+      assertFalse(isVisible(loadingAnswersEl));
+    });
+
+    test('SwitchesDateFormat', async () => {
+      element.showRelativeTimes = false;
+      await flushTasks();
+      const times = getResultElements().map(
+          result => result.querySelector<HTMLElement>('.time'));
+      assertEquals(mockResults[0]!.shortDateTime, times[0]!.innerText);
+      assertEquals(mockResults[1]!.shortDateTime, times[1]!.innerText);
+
+      element.showRelativeTimes = true;
+      await flushTasks();
+      assertEquals(mockResults[0]!.relativeTime, times[0]!.innerText);
+      assertEquals(mockResults[1]!.relativeTime, times[1]!.innerText);
+    });
+
     test('FiresClick', async () => {
       const resultsElements = getResultElements();
       const resultClickEventPromise = eventToPromise('result-click', element);
-      resultsElements[0]!.dispatchEvent(new Event('click'));
+      // Prevent clicking from actually open in new tabs for native anchor tags.
+      resultsElements[0]!.addEventListener('click', (e) => e.preventDefault());
+      resultsElements[0]!.dispatchEvent(new MouseEvent('click', {
+        button: 1,
+        altKey: true,
+        metaKey: false,
+        shiftKey: true,
+        ctrlKey: false,
+        cancelable: true,
+      }));
       const resultClickEvent = await resultClickEventPromise;
-      assertEquals(mockResults[0], resultClickEvent.detail);
+      assertEquals(mockResults[0], resultClickEvent.detail.item);
+      assertEquals(true, resultClickEvent.detail.middleButton);
+      assertEquals(true, resultClickEvent.detail.altKey);
+      assertEquals(false, resultClickEvent.detail.ctrlKey);
+      assertEquals(false, resultClickEvent.detail.metaKey);
+      assertEquals(true, resultClickEvent.detail.shiftKey);
+    });
+
+    test('FiresContextMenu', async () => {
+      const resultsElements = getResultElements();
+      const resultContextMenuEventPromise =
+          eventToPromise('result-context-menu', element);
+      resultsElements[0]!.dispatchEvent(
+          new MouseEvent('contextmenu', {clientX: 50, clientY: 100}));
+      const resultContextMenuEvent = await resultContextMenuEventPromise;
+      assertEquals(mockResults[0], resultContextMenuEvent.detail.item);
+      assertEquals(50, resultContextMenuEvent.detail.x);
+      assertEquals(100, resultContextMenuEvent.detail.y);
+    });
+
+    test('FiresMouseEventsForAnswerLink', async () => {
+      if (!enableAnswers) {
+        return;
+      }
+
+      const resultWithAnswer = {
+        title: 'Website with answer',
+        url: {url: 'http://answer.com'},
+        urlForDisplay: 'Answer.com',
+        relativeTime: '2 months ago',
+        shortDateTime: 'Sept 2, 2022',
+        sourcePassage: 'Answer description',
+        lastUrlVisitTimestamp: 2000,
+        answerData: {answerTextDirectives: []},
+      };
+      element.searchResultChangedForTesting({
+        query: 'some query',
+        answerStatus: AnswerStatus.kSuccess,
+        answer: 'some answer',
+        items: [...mockResults, resultWithAnswer],
+      });
+      await flushTasks();
+
+      const answerLink = element.shadowRoot!.querySelector('.answer-link');
+      assertTrue(!!answerLink);
+      answerLink.addEventListener('click', (e) => e.preventDefault());
+      const answerClickEventPromise = eventToPromise('answer-click', element);
+      answerLink.dispatchEvent(new MouseEvent('click', {
+        button: 1,
+        altKey: true,
+        metaKey: false,
+        shiftKey: true,
+        ctrlKey: false,
+        cancelable: true,
+      }));
+      const answerClickEvent = await answerClickEventPromise;
+      assertEquals(resultWithAnswer, answerClickEvent.detail.item);
+      assertEquals(true, answerClickEvent.detail.middleButton);
+      assertEquals(true, answerClickEvent.detail.altKey);
+      assertEquals(false, answerClickEvent.detail.ctrlKey);
+      assertEquals(false, answerClickEvent.detail.metaKey);
+      assertEquals(true, answerClickEvent.detail.shiftKey);
+
+      const answerLinkContextMenuEventPromise =
+          eventToPromise('answer-context-menu', element);
+      answerLink.dispatchEvent(
+          new MouseEvent('contextmenu', {clientX: 50, clientY: 100}));
+      const answerLinkContextMenuEvent =
+          await answerLinkContextMenuEventPromise;
+      assertEquals(resultWithAnswer, answerLinkContextMenuEvent.detail.item);
+      assertEquals(50, answerLinkContextMenuEvent.detail.x);
+      assertEquals(100, answerLinkContextMenuEvent.detail.y);
     });
 
     test('FiresClickOnMoreActions', async () => {
@@ -312,6 +481,9 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
     });
 
     test('SendsQualityLogOnDisconnect', async () => {
+      if (!enableAnswers) {
+        return;
+      }
       element.remove();
       const [clickedIndices, numChars] =
           await handler.whenCalled('sendQualityLog');
@@ -320,6 +492,9 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
     });
 
     test('SendsQualityLogOnBeforeUnload', async () => {
+      if (!enableAnswers) {
+        return;
+      }
       window.dispatchEvent(new Event('beforeunload'));
       const [clickedIndices, numChars] =
           await handler.whenCalled('sendQualityLog');
@@ -327,7 +502,29 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       assertEquals(21, numChars);
     });
 
+    test('SendsQualityLogOnVisibilityChange', async () => {
+      if (!enableAnswers) {
+        return;
+      }
+      // Remove and re-add element to call connectedCallback again.
+      element.remove();
+      element.inSidePanel = true;
+      document.body.appendChild(element);
+      await flushTasks();
+
+      Object.defineProperty(
+          document, 'visibilityState', {value: 'hidden', writable: true});
+      document.dispatchEvent(new CustomEvent('visibilitychange'));
+      const [clickedIndices, numChars] =
+          await handler.whenCalled('sendQualityLog');
+      assertDeepEquals([], clickedIndices);
+      assertEquals(21, numChars);
+    });
+
     test('ForceFlushesQualityLogOnBeforeUnload', async () => {
+      if (!enableAnswers) {
+        return;
+      }
       handler.resetResolver('sendQualityLog');
       // Make the min age really long so we can test a beforeunload happening
       // before results are considered 'stable'.
@@ -366,15 +563,153 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
       assertEquals(0, handler.getCallCount('sendQualityLog'));
     });
 
-    test('ShowsAnswer', async () => {
+    test('RecordsMetrics', async () => {
+      // Clicking on a result sends metrics for the click.
+      const resultsElements = getResultElements();
+      resultsElements[0]!.dispatchEvent(new Event('click'));
+      assertDeepEquals(
+          [
+            /* nonEmptyResults= */ true,
+            /* userClickedResult= */ true,
+            /* answerShown= */ false,
+            /* answerCitationClicked= */ false,
+            /* otherHistoryResultClicked= */ false,
+            /* queryWordCount= */ 2,
+          ],
+          await handler.whenCalled('recordSearchResultsMetrics'));
+
+      async function resetAndUpdateResults(
+          resultOverrides: Partial<SearchResult>) {
+        handler.resetResolver('recordSearchResultsMetrics');
+        const newQuery = 'query ' + Math.random();
+        element.searchQuery = newQuery;
+        element.searchResultChangedForTesting(Object.assign(
+            {
+              query: newQuery,
+              answerStatus: AnswerStatus.kUnspecified,
+              answer: '',
+              items: [mockResults],
+            },
+            resultOverrides));
+        return flushTasks();
+      }
+
+      // Empty results sends metrics.
+      await resetAndUpdateResults({items: []});
+      window.dispatchEvent(new Event('beforeunload'));  // Flush metrics.
+      assertDeepEquals(
+          [
+            /* nonEmptyResults= */ false,
+            /* userClickedResult= */ false,
+            /* answerShown= */ false,
+            /* answerCitationClicked= */ false,
+            /* otherHistoryResultClicked= */ false,
+            /* queryWordCount= */ 2,
+          ],
+          await handler.whenCalled('recordSearchResultsMetrics'),
+          'Empty result set metrics are flushed.');
+
       if (!enableAnswers) {
         return;
       }
 
-      const answersSection =
+      // Result set with answer sends metrics.
+      const resultWithAnswer = Object.assign({}, mockResults[0], {
+        answerData: {answerTextDirectives: []},
+      });
+      await resetAndUpdateResults({
+        answerStatus: AnswerStatus.kSuccess,
+        answer: 'some answer',
+        items: [resultWithAnswer, ...mockResults],
+      });
+      window.dispatchEvent(new Event('beforeunload'));  // Flush metrics.
+      assertDeepEquals(
+          [
+            /* nonEmptyResults= */ true,
+            /* userClickedResult= */ false,
+            /* answerShown= */ true,
+            /* answerCitationClicked= */ false,
+            /* otherHistoryResultClicked= */ false,
+            /* queryWordCount= */ 2,
+          ],
+          await handler.whenCalled('recordSearchResultsMetrics'),
+          'Shown answers are recorded.');
+
+      // Non-embedding result clicks are recorded.
+      await resetAndUpdateResults({
+        answerStatus: AnswerStatus.kSuccess,
+        answer: 'some answer',
+        items: [resultWithAnswer, ...mockResults],
+      });
+      element.otherHistoryResultClicked = true;
+      window.dispatchEvent(new Event('beforeunload'));  // Flush metrics.
+      assertDeepEquals(
+          [
+            /* nonEmptyResults= */ true,
+            /* userClickedResult= */ false,
+            /* answerShown= */ true,
+            /* answerCitationClicked= */ false,
+            /* otherHistoryResultClicked= */ true,
+            /* queryWordCount= */ 2,
+          ],
+          await handler.whenCalled('recordSearchResultsMetrics'),
+          'Non-embedding result clicked is recorded.');
+
+      // Clicking answers is recorded.
+      await resetAndUpdateResults({
+        answerStatus: AnswerStatus.kSuccess,
+        answer: 'some answer',
+        items: [resultWithAnswer, ...mockResults],
+      });
+      element.otherHistoryResultClicked = false;
+      const answerLink =
+          element.shadowRoot!.querySelector<HTMLAnchorElement>('.answer-link');
+      assertTrue(!!answerLink);
+      answerLink.addEventListener('click', (e) => e.preventDefault());
+      answerLink.click();
+      window.dispatchEvent(new Event('beforeunload'));  // Flush metrics.
+      assertDeepEquals(
+          [
+            /* nonEmptyResults= */ true,
+            /* userClickedResult= */ false,
+            /* answerShown= */ true,
+            /* answerCitationClicked= */ true,
+            /* otherHistoryResultClicked= */ false,
+            /* queryWordCount= */ 2,
+          ],
+          await handler.whenCalled('recordSearchResultsMetrics'),
+          'Clicking answers is recorded.');
+    });
+
+    test('ShowsAnswerSection', async () => {
+      if (!enableAnswers) {
+        return;
+      }
+      loadTimeData.overrideValues({
+        historyEmbeddingsAnswerHeading: 'Answer section',
+        historyEmbeddingsAnswerLoadingHeading: 'Loading answer...',
+      });
+      const answerSectionElement =
           element.shadowRoot!.querySelector<HTMLElement>('.answer-section');
-      assertTrue(!!answersSection);
-      assertTrue(answersSection.hidden);
+      assertTrue(!!answerSectionElement);
+      assertFalse(
+          isVisible(answerSectionElement),
+          'Answer section should be hidden because the state is unspecified.');
+
+      element.searchResultChangedForTesting({
+        query: 'some query',
+        answerStatus: AnswerStatus.kLoading,
+        answer: '',
+        items: [...mockResults],
+      });
+      await flushTasks();
+      assertTrue(
+          isVisible(answerSectionElement),
+          'Answer should be visible to show loading state.');
+      const headingEl =
+          answerSectionElement.querySelector<HTMLElement>('.heading');
+      assertTrue(!!headingEl);
+      assertEquals('Loading answer...', headingEl.innerText.trim());
 
       element.searchResultChangedForTesting({
         query: 'some query',
@@ -383,10 +718,195 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         items: [...mockResults],
       });
       await flushTasks();
-      assertFalse(answersSection.hidden);
+      assertTrue(
+          isVisible(answerSectionElement),
+          'Answer should be visible to show answer.');
+      assertEquals('Answer section', headingEl.innerText.trim());
+
+      element.searchQuery = 'new query';
+      await flushTasks();
+      assertFalse(
+          isVisible(answerSectionElement),
+          'A new query should hide the previous answer.');
+
+      element.searchResultChangedForTesting({
+        query: 'new query',
+        answerStatus: AnswerStatus.kUnanswerable,
+        answer: '',
+        items: [...mockResults],
+      });
+      await flushTasks();
+      assertFalse(isVisible(answerSectionElement));
+
+      element.searchResultChangedForTesting({
+        query: 'new query',
+        answerStatus: AnswerStatus.kFiltered,
+        answer: '',
+        items: [...mockResults],
+      });
+      await flushTasks();
+      assertFalse(isVisible(answerSectionElement));
+    });
+
+    test('ShowsAnswer', async () => {
+      if (!enableAnswers) {
+        return;
+      }
+
+      const answerElement =
+          element.shadowRoot!.querySelector<HTMLElement>('.answer');
+      assertTrue(!!answerElement);
+      assertFalse(
+          isVisible(answerElement),
+          'Answer should not be visible since there is no answer yet.');
+
+      element.searchResultChangedForTesting({
+        query: 'some query',
+        answerStatus: AnswerStatus.kSuccess,
+        answer: 'some answer',
+        items: [...mockResults],
+      });
+      await flushTasks();
+      assertTrue(isVisible(answerElement));
+      assertFalse(answerElement.hasAttribute('is-error'));
+      assertEquals('some answer', answerElement!.innerText);
+    });
+
+    test('DisplaysAnswerSource', async () => {
+      if (!enableAnswers) {
+        return;
+      }
+
+      // Make the result at index 1 the result corresponding to the answer.
+      const resultWithAnswer = {
+        title: 'Website with answer',
+        url: {url: 'http://answer.com'},
+        urlForDisplay: 'Answer.com',
+        relativeTime: '2 months ago',
+        shortDateTime: 'Sept 2, 2022',
+        sourcePassage: 'Answer description',
+        lastUrlVisitTimestamp: 2000,
+        answerData: {answerTextDirectives: []},
+      };
+
+      element.searchResultChangedForTesting({
+        query: 'some query',
+        answerStatus: AnswerStatus.kSuccess,
+        answer: 'some answer',
+        items: [...mockResults, resultWithAnswer],
+      });
+      await flushTasks();
+
+      const answerSource = element.shadowRoot!.querySelector<HTMLAnchorElement>(
+          '.answer-source');
+      assertTrue(!!answerSource);
+      assertFalse(answerSource.hidden);
       assertEquals(
-          'some answer',
-          answersSection.querySelector<HTMLElement>('.answer')!.innerText);
+          'http://answer.com/',
+          answerSource.querySelector<HTMLAnchorElement>('.answer-link')!.href);
+
+      assertTrue(
+          answerSource.querySelector<HTMLElement>(
+                          '.result-url')!.innerText.includes('Answer.com'));
+      assertTrue(answerSource.querySelector<HTMLElement>(
+                                 '.time')!.innerText.includes('Sept 2, 2022'));
+      assertEquals(
+          getFaviconForPageURL('http://answer.com', true),
+          answerSource.querySelector<HTMLElement>(
+                          '.favicon')!.style.backgroundImage);
+    });
+
+    test('GetsAnswerSourceUrl', async () => {
+      if (!enableAnswers) {
+        return;
+      }
+
+      function sendAnswerWithTextDirectives(directives: string[] = []) {
+        const resultWithAnswer = {
+          title: 'Website with answer',
+          url: {url: 'http://answer.com'},
+          urlForDisplay: 'Answer.com',
+          relativeTime: '2 months ago',
+          shortDateTime: 'Jan 2, 2022',
+          sourcePassage: 'Answer description',
+          lastUrlVisitTimestamp: 2000,
+          answerData: {answerTextDirectives: directives},
+        };
+
+        element.searchResultChangedForTesting({
+          query: 'some query',
+          answerStatus: AnswerStatus.kSuccess,
+          answer: 'some answer',
+          items: [...mockResults, resultWithAnswer],
+        });
+
+        return flushTasks();
+      }
+
+      const answerLink =
+          element.shadowRoot!.querySelector<HTMLAnchorElement>('.answer-link');
+      assertTrue(!!answerLink);
+      await sendAnswerWithTextDirectives([]);
+      assertEquals('http://answer.com/', answerLink.href);
+
+      await sendAnswerWithTextDirectives(['start text']);
+      assertEquals(
+          'http://answer.com/#:~:text=start%20text', answerLink.href,
+          'should generate a link using the first directive');
+
+      await sendAnswerWithTextDirectives(['another start text', 'end text']);
+      assertEquals(
+          'http://answer.com/#:~:text=another%20start%20text', answerLink.href,
+          'should ignore other directives');
+    });
+
+    test('DisplaysFavicons', async () => {
+      if (!enableAnswers) {
+        // Favicons for without answers is embedded in a separate component.
+        return;
+      }
+
+      const favicons = element.shadowRoot!.querySelectorAll<HTMLElement>(
+          '.result-item .favicon');
+      assertEquals(2, favicons.length);
+      assertEquals(
+          getFaviconForPageURL(mockResults[0]!.url.url, true),
+          favicons[0]!.style.backgroundImage);
+      assertEquals(
+          getFaviconForPageURL(mockResults[1]!.url.url, true),
+          favicons[1]!.style.backgroundImage);
+    });
+
+    test('DisplaysAnswererErrors', async () => {
+      if (!enableAnswers) {
+        return;
+      }
+
+      loadTimeData.overrideValues({
+        historyEmbeddingsAnswererErrorModelUnavailable: 'model not available',
+        historyEmbeddingsAnswererErrorTryAgain: 'try again',
+      });
+
+      async function updateAnswerStatus(status: AnswerStatus) {
+        element.searchResultChangedForTesting({
+          query: 'some query',
+          answer: '',
+          answerStatus: status,
+          items: [...mockResults],
+        });
+        return flushTasks();
+      }
+
+      await updateAnswerStatus(AnswerStatus.kModelUnavailable);
+      const errorEl = element.shadowRoot!.querySelector<HTMLElement>('.answer');
+      assertTrue(!!errorEl);
+      assertTrue(isVisible(errorEl));
+      assertTrue(errorEl.hasAttribute('is-error'));
+      assertEquals('model not available', errorEl.innerText);
+
+      await updateAnswerStatus(AnswerStatus.kExecutionFailure);
+      assertTrue(isVisible(errorEl));
+      assertEquals('try again', errorEl.innerText);
     });
   });
 });

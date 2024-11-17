@@ -39,7 +39,7 @@
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/views/widget/any_widget_observer.h"
 
-#if !BUILDFLAG(ENABLE_DICE_SUPPORT) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
 #error Platform not supported
 #endif
 
@@ -55,19 +55,14 @@ using testing::AllOf;
 using testing::Contains;
 using testing::ElementsAre;
 
-// Configures the state of ::switches::kMinorModeRestrictionsForHistorySyncOptIn
-// that relies on can_show_history_sync_opt_ins_without_minor_mode_restrictions
-// capability.
-struct MinorModeRestrictions {
-  // Related capability value
-  signin::Tribool capability = signin::Tribool::kTrue;
-};
+// Configures the can_show_history_sync_opt_ins_without_minor_mode_restrictions
+// account capability, which determines minor mode restrictions status.
+using MinorModeRestrictions =
+    base::StrongAlias<class MinorModeRestrictionsTag, signin::Tribool>;
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
-constexpr MinorModeRestrictions kWithMinorModeRestrictionsWithUnrestrictedUser{
-    .capability = signin::Tribool::kTrue};
-constexpr MinorModeRestrictions kWithMinorModeRestrictionsWithRestrictedUser{
-    .capability = signin::Tribool::kFalse};
+constexpr MinorModeRestrictions kWithUnrestrictedUser(signin::Tribool::kTrue);
+constexpr MinorModeRestrictions kWithRestrictedUser(signin::Tribool::kFalse);
 #endif
 
 struct SyncConfirmationTestParam {
@@ -76,7 +71,7 @@ struct SyncConfirmationTestParam {
       AccountManagementStatus::kNonManaged;
   SyncConfirmationStyle sync_style = SyncConfirmationStyle::kWindow;
   bool is_sync_promo = false;
-  MinorModeRestrictions minor_mode_restrictions;
+  MinorModeRestrictions minor_mode_restrictions = kWithUnrestrictedUser;
 };
 
 // To be passed as 4th argument to `INSTANTIATE_TEST_SUITE_P()`, allows the test
@@ -102,10 +97,10 @@ const SyncConfirmationTestParam kWindowTestParams[] = {
     // Restricted mode is only implemented for these platforms.
     {.pixel_test_param = {.test_suffix =
                               "RegularWithRestrictionsWithUnrestrictedUser"},
-     .minor_mode_restrictions = kWithMinorModeRestrictionsWithUnrestrictedUser},
+     .minor_mode_restrictions = kWithUnrestrictedUser},
     {.pixel_test_param = {.test_suffix =
                               "RegularWithRestrictionsWithRestrictedUser"},
-     .minor_mode_restrictions = kWithMinorModeRestrictionsWithRestrictedUser},
+     .minor_mode_restrictions = kWithRestrictedUser},
 #endif
 
 };
@@ -113,12 +108,9 @@ const SyncConfirmationTestParam kWindowTestParams[] = {
 const SyncConfirmationTestParam kDialogTestParams[] = {
     {.pixel_test_param = {.test_suffix = "Regular"},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
-// The sign-in intercept feature isn't enabled on Lacros.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
     {.pixel_test_param = {.test_suffix = "SigninInterceptStyle"},
      .sync_style = SyncConfirmationStyle::kSigninInterceptModal,
      .is_sync_promo = true},
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
     {.pixel_test_param = {.test_suffix = "DarkTheme", .use_dark_theme = true},
      .sync_style = SyncConfirmationStyle::kDefaultModal},
     {.pixel_test_param = {.test_suffix = "Rtl",
@@ -136,11 +128,11 @@ const SyncConfirmationTestParam kDialogTestParams[] = {
     {.pixel_test_param = {.test_suffix =
                               "RegularWithRestrictionsWithUnrestrictedUser"},
      .sync_style = SyncConfirmationStyle::kDefaultModal,
-     .minor_mode_restrictions = kWithMinorModeRestrictionsWithUnrestrictedUser},
+     .minor_mode_restrictions = kWithUnrestrictedUser},
     {.pixel_test_param = {.test_suffix =
                               "RegularWithRestrictionsWithRestrictedUser"},
      .sync_style = SyncConfirmationStyle::kDefaultModal,
-     .minor_mode_restrictions = kWithMinorModeRestrictionsWithRestrictedUser},
+     .minor_mode_restrictions = kWithRestrictedUser},
 #endif
 
 };
@@ -210,7 +202,7 @@ class SyncConfirmationUIWindowPixelTest
 
     SignInWithAccount(GetParam().account_management_status,
                       signin::ConsentLevel::kSignin,
-                      GetParam().minor_mode_restrictions.capability);
+                      GetParam().minor_mode_restrictions.value());
     profile_picker_view_ = new ProfileManagementStepTestView(
         ProfilePicker::Params::ForFirstRun(browser()->profile()->GetPath(),
                                            base::DoNothing()),
@@ -279,7 +271,7 @@ class SyncConfirmationUIDialogPixelTest
 
     SignInWithAccount(GetParam().account_management_status,
                       signin::ConsentLevel::kSignin,
-                      GetParam().minor_mode_restrictions.capability);
+                      GetParam().minor_mode_restrictions.value());
     auto url = GURL(chrome::kChromeUISyncConfirmationURL);
     url = AppendSyncConfirmationQueryParams(url, GetParam().sync_style,
                                             GetParam().is_sync_promo);
@@ -345,7 +337,7 @@ class SyncConfirmationUITest
     }
     command_line->AppendSwitchASCII(switches::kLang, GetLanguage());
 
-    // On Linux & Lacros the command line switch has no effect, we need to use
+    // On Linux the command line switch has no effect, we need to use
     // environment variables to change the language.
     scoped_env_override_ =
         std::make_unique<base::ScopedEnvironmentVariableOverride>(
@@ -394,13 +386,9 @@ class SyncConfirmationUITest
   }
 
   int GetTitleId() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    return IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_LACROS;
-#else
     return IsSigninIntercept()
                ? IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE_SIGNIN_INTERCEPT_V2
                : IDS_SYNC_CONFIRMATION_TANGIBLE_SYNC_INFO_TITLE;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   int GetDescriptionId() {
@@ -464,12 +452,7 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     SyncConfirmationUITest,
     testing::Combine(
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-        // Sign-in intercept is not supported on Lacros.
-        testing::Values(false),
-#else
         testing::Bool(),
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
         testing::Values(SyncConfirmationUIAction::kTurnSyncOn,
                         SyncConfirmationUIAction::kGoToSettings),
         testing::Values("", "pl")),

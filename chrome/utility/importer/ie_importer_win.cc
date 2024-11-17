@@ -326,49 +326,52 @@ GURL ReadFaviconURLFromInternetShortcut(IUniformResourceLocator* url_locator) {
 
 // Reads the favicon imaga data in an NTFS alternate data stream. This is where
 // IE7 and above store the data.
-bool ReadFaviconDataFromInternetShortcut(const base::FilePath& file,
-                                         std::string* data) {
+std::optional<std::vector<uint8_t>> ReadFaviconDataFromInternetShortcut(
+    const base::FilePath& file) {
   // Do not use .Append() here, since we don't want a separator added into the
   // filename.
-  return base::ReadFileToString(
-      base::FilePath(file.value() + kFaviconStreamName), data);
+  return base::ReadFileToBytes(
+      base::FilePath(file.value() + kFaviconStreamName));
 }
 
 // Reads the favicon imaga data in the Internet cache. IE6 doesn't hold the data
 // explicitly, but it might be found in the cache.
-bool ReadFaviconDataFromCache(const GURL& favicon_url, std::string* data) {
+std::optional<std::vector<uint8_t>> ReadFaviconDataFromCache(
+    const GURL& favicon_url) {
   std::wstring url_wstring(base::UTF8ToWide(favicon_url.spec()));
   DWORD info_size = 0;
   GetUrlCacheEntryInfoEx(url_wstring.c_str(), NULL, &info_size, NULL, NULL,
                          NULL, 0);
-  if (GetLastError() != ERROR_INSUFFICIENT_BUFFER)
-    return false;
+  if (GetLastError() != ERROR_INSUFFICIENT_BUFFER) {
+    return std::nullopt;
+  }
 
   std::vector<char> buf(info_size);
   INTERNET_CACHE_ENTRY_INFO* cache =
       reinterpret_cast<INTERNET_CACHE_ENTRY_INFO*>(&buf[0]);
   if (!GetUrlCacheEntryInfoEx(url_wstring.c_str(), cache, &info_size, NULL,
                               NULL, NULL, 0)) {
-    return false;
+    return std::nullopt;
   }
-  return base::ReadFileToString(base::FilePath(cache->lpszLocalFileName), data);
+  return base::ReadFileToBytes(base::FilePath(cache->lpszLocalFileName));
 }
 
 // Reads the binary image data of favicon of an internet shortcut file |file|.
 // |favicon_url| read by ReadFaviconURLFromInternetShortcut is also needed to
 // examine the IE cache.
-bool ReadReencodedFaviconData(const base::FilePath& file,
-                              const GURL& favicon_url,
-                              std::vector<unsigned char>* data) {
-  std::string image_data;
-  if (!ReadFaviconDataFromInternetShortcut(file, &image_data) &&
-      !ReadFaviconDataFromCache(favicon_url, &image_data)) {
-    return false;
+std::optional<std::vector<uint8_t>> ReadReencodedFaviconData(
+    const base::FilePath& file,
+    const GURL& favicon_url) {
+  std::optional<std::vector<uint8_t>> image_data =
+      ReadFaviconDataFromInternetShortcut(file);
+  if (!image_data) {
+    image_data = ReadFaviconDataFromCache(favicon_url);
+    if (!image_data) {
+      return std::nullopt;
+    }
   }
 
-  const unsigned char* ptr =
-      reinterpret_cast<const unsigned char*>(image_data.c_str());
-  return importer::ReencodeFavicon(ptr, image_data.size(), data);
+  return importer::ReencodeFavicon(image_data.value());
 }
 
 // Loads favicon image data and registers to |favicon_map|.
@@ -388,8 +391,11 @@ void UpdateFaviconMap(
     it->second.urls.insert(url);
   } else {
     // New favicon URL. Read the image data and store.
-    favicon_base::FaviconUsageData usage;
-    if (ReadReencodedFaviconData(url_file, favicon_url, &usage.png_data)) {
+    std::optional<std::vector<uint8_t>> png_data =
+        ReadReencodedFaviconData(url_file, favicon_url);
+    if (png_data) {
+      favicon_base::FaviconUsageData usage;
+      usage.png_data = std::move(png_data).value();
       usage.favicon_url = favicon_url;
       usage.urls.insert(url);
       favicon_map->insert(std::make_pair(favicon_url, usage));

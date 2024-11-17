@@ -76,8 +76,7 @@ ControllerServiceWorkerConnector::GetControllerServiceWorker(
       DCHECK(!container_host_);
       return nullptr;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void ControllerServiceWorkerConnector::AddObserver(Observer* observer) {

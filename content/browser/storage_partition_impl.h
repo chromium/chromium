@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_STORAGE_PARTITION_IMPL_H_
 
 #include <stdint.h>
+
 #include <map>
 #include <memory>
 #include <set>
@@ -27,6 +28,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/content_index/content_index_context_impl.h"
 #include "content/browser/dom_storage/dom_storage_context_wrapper.h"
+#include "content/browser/locks/lock_manager.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/worker_host/dedicated_worker_service_impl.h"
@@ -102,7 +104,6 @@ class FontAccessManager;
 class GeneratedCodeCacheContext;
 class HostZoomLevelContext;
 class InterestGroupManagerImpl;
-class LockManager;
 class NavigationStateKeepAlive;
 class PaymentAppContextImpl;
 class PrivateAggregationDataModel;
@@ -112,7 +113,7 @@ class PushMessagingContext;
 class QuotaContext;
 class ReconnectableURLLoaderFactoryForIOThreadWrapper;
 class SharedStorageHeaderObserver;
-class SharedStorageWorkletHostManager;
+class SharedStorageRuntimeManager;
 class SharedWorkerServiceImpl;
 class SubresourceProxyingURLLoaderService;
 class NavigationOrDocumentHandle;
@@ -147,9 +148,9 @@ class CONTENT_EXPORT StoragePartitionImpl
       BackgroundSyncContextImpl* background_sync_context);
   void OverrideSharedWorkerServiceForTesting(
       std::unique_ptr<SharedWorkerServiceImpl> shared_worker_service);
-  void OverrideSharedStorageWorkletHostManagerForTesting(
-      std::unique_ptr<SharedStorageWorkletHostManager>
-          shared_storage_worklet_host_manager);
+  void OverrideSharedStorageRuntimeManagerForTesting(
+      std::unique_ptr<SharedStorageRuntimeManager>
+          shared_storage_runtime_manager);
   void OverrideSharedStorageHeaderObserverForTesting(
       std::unique_ptr<SharedStorageHeaderObserver>
           shared_storage_header_observer);
@@ -188,12 +189,12 @@ class CONTENT_EXPORT StoragePartitionImpl
   storage::DatabaseTracker* GetDatabaseTracker() override;
   DOMStorageContextWrapper* GetDOMStorageContext() override;
   storage::mojom::LocalStorageControl* GetLocalStorageControl() override;
-  LockManager* GetLockManager();  // override; TODO: Add to interface
+  LockManager<storage::BucketId>*
+  GetLockManager();  // override; TODO: Add to interface
   // TODO(crbug.com/40185706): Add this method to the StoragePartition
-  // interface, which would also require making SharedStorageWorkletHostManager
+  // interface, which would also require making SharedStorageRuntimeManager
   // an interface accessible in //content/public/.
-  SharedStorageWorkletHostManager*
-  GetSharedStorageWorkletHostManager();  // override;
+  SharedStorageRuntimeManager* GetSharedStorageRuntimeManager();  // override;
   storage::mojom::IndexedDBControl& GetIndexedDBControl() override;
   FileSystemAccessEntryFactory* GetFileSystemAccessEntryFactory() override;
   storage::mojom::CacheStorageControl* GetCacheStorageControl() override;
@@ -741,7 +742,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   scoped_refptr<storage::FileSystemContext> filesystem_context_;
   scoped_refptr<storage::DatabaseTracker> database_tracker_;
   scoped_refptr<DOMStorageContextWrapper> dom_storage_context_;
-  std::unique_ptr<LockManager> lock_manager_;
+  std::unique_ptr<LockManager<storage::BucketId>> lock_manager_;
   std::unique_ptr<indexed_db::IndexedDBControlWrapper>
       indexed_db_control_wrapper_;
   std::unique_ptr<CacheStorageControlWrapper> cache_storage_control_wrapper_;
@@ -791,10 +792,9 @@ class CONTENT_EXPORT StoragePartitionImpl
 
   // This needs to be declared after `shared_storage_manager_` because
   // `shared_storage_worklet_host` (managed by
-  // `shared_storage_worklet_host_manager_`) ultimately stores a raw pointer on
+  // `shared_storage_runtime_manager_`) ultimately stores a raw pointer on
   // it.
-  std::unique_ptr<SharedStorageWorkletHostManager>
-      shared_storage_worklet_host_manager_;
+  std::unique_ptr<SharedStorageRuntimeManager> shared_storage_runtime_manager_;
 
   // Owning pointer to the `SharedStorageHeaderObserver` for this partition.
   std::unique_ptr<SharedStorageHeaderObserver> shared_storage_header_observer_;

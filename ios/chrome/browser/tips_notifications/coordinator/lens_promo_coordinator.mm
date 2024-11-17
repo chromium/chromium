@@ -8,9 +8,12 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/tips_notifications/ui/lens_promo_instructions_view_controller.h"
 #import "ios/chrome/browser/tips_notifications/ui/lens_promo_view_controller.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface LensPromoCoordinator () <ConfirmationAlertActionHandler,
@@ -22,6 +25,7 @@
   LensPromoViewController* _viewController;
   LensPromoInstructionsViewController* _instructionsViewController;
   BOOL _presentBubbleOnDismiss;
+  BOOL _goToLensOnDismiss;
 }
 
 #pragma mark - ChromeCoordinator
@@ -38,15 +42,26 @@
                                       completion:nil];
   navigationController.presentationController.delegate = self;
   _presentBubbleOnDismiss = NO;
+  _goToLensOnDismiss = NO;
 }
 
 - (void)stop {
   _instructionsViewController.actionHandler = nil;
   _instructionsViewController = nil;
   ProceduralBlock completion = nil;
-  if (_presentBubbleOnDismiss) {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  if (_goToLensOnDismiss) {
+    OpenLensInputSelectionCommand* command =
+        [self openLensInputSelectionCommand];
+    id<LensCommands> handler = HandlerForProtocol(dispatcher, LensCommands);
     completion = ^{
-      [self presentBubble];
+      [handler openLensInputSelection:command];
+    };
+  } else if (_presentBubbleOnDismiss) {
+    id<NewTabPageCommands> handler =
+        HandlerForProtocol(dispatcher, NewTabPageCommands);
+    completion = ^{
+      [handler presentLensIconBubble];
     };
   }
   [_viewController.presentingViewController
@@ -58,7 +73,7 @@
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  _presentBubbleOnDismiss = YES;
+  _goToLensOnDismiss = YES;
   [self dismissScreen];
 }
 
@@ -73,13 +88,14 @@
 }
 
 - (void)didDismissViewController {
+  _presentBubbleOnDismiss = YES;
   [self dismissScreen];
 }
 
 #pragma mark - ConfirmationAlertPrimaryAction
 
 - (void)confirmationAlertPrimaryAction {
-  _presentBubbleOnDismiss = YES;
+  _goToLensOnDismiss = YES;
   [self dismissScreen];
 }
 
@@ -111,10 +127,15 @@
   [handler dismissLensPromo];
 }
 
-// Opens the NTP and displays an IPH bubble to call attention to the Lens icon.
-- (void)presentBubble {
-  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
-  [HandlerForProtocol(dispatcher, NewTabPageCommands) presentLensIconBubble];
+// Returns a command object used to open Lens.
+- (OpenLensInputSelectionCommand*)openLensInputSelectionCommand {
+  OpenLensInputSelectionCommand* command = [[OpenLensInputSelectionCommand
+      alloc]
+          initWithEntryPoint:LensEntrypoint::NewTabPage
+           presentationStyle:LensInputSelectionPresentationStyle::SlideFromRight
+      presentationCompletion:nil];
+  command.presentNTPLensIconBubbleOnDismiss = YES;
+  return command;
 }
 
 @end

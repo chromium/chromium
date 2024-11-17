@@ -76,7 +76,8 @@ class ObjectBackedNativeHandler : public NativeHandler {
   // with the |object|, it should be allowed.
   // TODO(devlin): It'd be nice to track down when when there's no ScriptContext
   // and remove |allow_null_context|.
-  static bool ContextCanAccessObject(const v8::Local<v8::Context>& context,
+  static bool ContextCanAccessObject(v8::Isolate* isolate,
+                                     const v8::Local<v8::Context>& context,
                                      const v8::Local<v8::Object>& object,
                                      bool allow_null_context);
 

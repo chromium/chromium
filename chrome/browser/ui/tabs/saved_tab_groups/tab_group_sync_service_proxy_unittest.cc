@@ -13,9 +13,10 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/tab_group_action_context_desktop.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
-#include "components/saved_tab_groups/features.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/types.h"
+#include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -103,9 +104,9 @@ class TabGroupSyncServiceProxyUnitTest
   const base::Uuid kFirstTabId = base::Uuid::GenerateRandomV4();
   const base::Uuid kSecondTabId = base::Uuid::GenerateRandomV4();
   const base::Uuid kThirdTabId = base::Uuid::GenerateRandomV4();
-  const LocalTabID kFirstTabToken = base::Token::CreateRandom();
-  const LocalTabID kSecondTabToken = base::Token::CreateRandom();
-  const LocalTabID kThirdTabToken = base::Token::CreateRandom();
+  const LocalTabID kFirstTabToken = test::GenerateRandomTabID();
+  const LocalTabID kSecondTabToken = test::GenerateRandomTabID();
+  const LocalTabID kThirdTabToken = test::GenerateRandomTabID();
   const std::u16string kFirstTabTitle = u"first tab";
   const std::u16string kSecondTabTitle = u"second tab";
   const std::u16string kThirdTabTitle = u"third tab";
@@ -313,7 +314,7 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, AddTab) {
 }
 
 // Verifies that we can update the title and url of a tab in a  saved group.
-TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateTab) {
+TEST_P(TabGroupSyncServiceProxyUnitTest, NavigateTab) {
   Browser* browser = AddBrowser();
   AddTabToBrowser(browser, 0);
 
@@ -333,10 +334,7 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateTab) {
   const std::u16string new_title = u"This is the new title";
   GURL new_url = GURL("https://not_first_tab.com");
 
-  SavedTabGroupTabBuilder tab_builder;
-  tab_builder.SetTitle(new_title);
-  tab_builder.SetURL(new_url);
-  service()->UpdateTab(local_id, tab_id, std::move(tab_builder));
+  service()->NavigateTab(local_id, tab_id, new_url, new_title);
   retrieved_group = service()->GetGroup(local_id);
   EXPECT_TRUE(retrieved_group.has_value());
   EXPECT_TRUE(retrieved_group->ContainsTab(sync_tab_id));
@@ -474,7 +472,8 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateLocalTabGroupMapping) {
   const base::Uuid sync_id = retrieved_group->saved_guid();
 
   tab_groups::TabGroupId new_local_id = tab_groups::TabGroupId::GenerateNew();
-  service()->UpdateLocalTabGroupMapping(sync_id, new_local_id);
+  service()->UpdateLocalTabGroupMapping(sync_id, new_local_id,
+                                        OpeningSource::kOpenedFromRevisitUi);
 
   retrieved_group = service()->GetGroup(sync_id);
   EXPECT_TRUE(retrieved_group.has_value());
@@ -495,7 +494,7 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, RemoveLocalTabGroupMapping) {
   EXPECT_EQ(1u, retrieved_group->saved_tabs().size());
 
   const base::Uuid sync_id = retrieved_group->saved_guid();
-  service()->RemoveLocalTabGroupMapping(local_id);
+  service()->RemoveLocalTabGroupMapping(local_id, ClosingSource::kClosedByUser);
 
   retrieved_group = service()->GetGroup(sync_id);
   EXPECT_TRUE(retrieved_group.has_value());
@@ -520,7 +519,7 @@ TEST_P(TabGroupSyncServiceProxyUnitTest, UpdateLocalTabId) {
   const base::Uuid tab_1_guid =
       retrieved_group->saved_tabs()[0].saved_tab_guid();
 
-  LocalTabID new_local_tab_id = base::Token::CreateRandom();
+  LocalTabID new_local_tab_id = test::GenerateRandomTabID();
   service()->UpdateLocalTabId(local_id, tab_1_guid, new_local_tab_id);
 
   retrieved_group = service()->GetGroup(local_id);

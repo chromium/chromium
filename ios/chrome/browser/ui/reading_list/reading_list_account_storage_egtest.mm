@@ -109,7 +109,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   GREYAssertNil([ReadingListAppInterface clearEntries],
                 @"Unable to clear Reading List entries");
 
@@ -140,7 +140,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   // Shutdown network process after tests run to avoid hanging from
   // clearing browsing history.
   [ChromeEarlGrey killWebKitNetworkProcess];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Sign-in promo and snackbar

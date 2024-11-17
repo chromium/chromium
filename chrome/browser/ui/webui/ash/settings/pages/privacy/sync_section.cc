@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/sync_section.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
-#include "base/no_destructor.h"
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/browser_process.h"
@@ -80,8 +82,8 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
           crosapi::browser_util::IsLacrosEnabled());
 }
 
-const std::vector<SearchConcept>& GetCategorizedSyncSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetCategorizedSyncSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_SYNC,
        mojom::kSyncSubpagePath,
        mojom::SearchResultIcon::kSync,
@@ -89,7 +91,7 @@ const std::vector<SearchConcept>& GetCategorizedSyncSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kSync}},
   });
-  return *tags;
+  return tags;
 }
 
 }  // namespace

@@ -8,6 +8,7 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -122,7 +123,7 @@ class AccessibilityBridgeFuchsiaTest : public ::testing::Test {
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO};
 
   std::unique_ptr<FakeAXPlatformNodeDelegate> mock_ax_platform_node_delegate_;
-  FakeSemanticProvider* mock_semantic_provider_;
+  raw_ptr<FakeSemanticProvider> mock_semantic_provider_;
   std::unique_ptr<AccessibilityBridgeFuchsiaImpl> accessibility_bridge_;
 };
 

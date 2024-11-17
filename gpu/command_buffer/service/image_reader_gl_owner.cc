@@ -47,11 +47,9 @@ bool IsSurfaceControl(TextureOwner::Mode mode) {
     case TextureOwner::Mode::kAImageReaderInsecure:
       return false;
     case TextureOwner::Mode::kSurfaceTextureInsecure:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // This should be as small as possible to limit the memory usage.
@@ -329,8 +327,7 @@ void ImageReaderGLOwner::UpdateTexImage() {
     default:
       LOG(ERROR) << "AImageReader: Unknown error: " << return_code;
       // No other error code should be returned.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   base::ScopedFD scoped_acquire_fence_fd(acquire_fence_fd);
 

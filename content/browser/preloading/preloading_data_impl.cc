@@ -358,6 +358,16 @@ void PreloadingDataImpl::RecordPreloadingAttemptPrecisionToUMA(
   }
 }
 
+// static
+bool PreloadingDataImpl::IsLinkClickNavigation(
+    NavigationHandle* navigation_handle) {
+  auto page_transition = navigation_handle->GetPageTransition();
+  return ui::PageTransitionCoreTypeIs(
+             page_transition, ui::PageTransition::PAGE_TRANSITION_LINK) &&
+         (page_transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT) == 0 &&
+         ui::PageTransitionIsNewNavigation(page_transition);
+}
+
 void PreloadingDataImpl::RecordPredictionPrecisionToUMA(
     const PreloadingPrediction& prediction) {
   bool is_true_positive = prediction.IsAccuratePrediction();

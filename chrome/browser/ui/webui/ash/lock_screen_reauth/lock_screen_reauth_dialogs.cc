@@ -229,6 +229,7 @@ void LockScreenStartReauthDialog::DismissLockScreenCaptivePortalDialog() {
 }
 
 void LockScreenStartReauthDialog::ShowLockScreenNetworkDialog() {
+  TerminateAutoReload();
   if (lock_screen_network_dialog_)
     return;
   DCHECK(profile_);
@@ -241,6 +242,7 @@ void LockScreenStartReauthDialog::ShowLockScreenNetworkDialog() {
 }
 
 void LockScreenStartReauthDialog::ShowLockScreenCaptivePortalDialog() {
+  TerminateAutoReload();
   if (!captive_portal_dialog_) {
     captive_portal_dialog_ = std::make_unique<LockScreenCaptivePortalDialog>();
     OnCaptivePortalDialogReadyForTesting();
@@ -302,6 +304,20 @@ void LockScreenStartReauthDialog::OnWebviewLoadAborted() {
   UpdateState(NetworkError::ERROR_REASON_FRAME_ERROR);
 }
 
+void LockScreenStartReauthDialog::TerminateAutoReload() {
+  LockScreenReauthHandler* reauth_handler =
+      static_cast<LockScreenStartReauthUI*>(webui()->GetController())
+          ->GetMainHandler();
+  reauth_handler->GetAutoReloadManager().Terminate();
+}
+
+void LockScreenStartReauthDialog::ReactivateAutoReload() {
+  LockScreenReauthHandler* reauth_handler =
+      static_cast<LockScreenStartReauthUI*>(webui()->GetController())
+          ->GetMainHandler();
+  reauth_handler->ActivateAutoReload();
+}
+
 void LockScreenStartReauthDialog::UpdateState(
     NetworkError::ErrorReason reason) {
   if (is_proxy_auth_in_progress_)
@@ -326,6 +342,9 @@ void LockScreenStartReauthDialog::UpdateState(
       should_reload_gaia_ = true;
     }
   } else {
+    if (state == NetworkStateInformer::ONLINE) {
+      ReactivateAutoReload();
+    }
     DismissLockScreenCaptivePortalDialog();
     DismissLockScreenNetworkDialog();
   }
@@ -335,7 +354,7 @@ void LockScreenStartReauthDialog::UpdateState(
         static_cast<LockScreenStartReauthUI*>(webui()->GetController())
             ->GetMainHandler();
     if (reauth_handler->IsAuthenticatorLoaded({})) {
-      reauth_handler->ReloadGaia();
+      reauth_handler->ReloadGaiaAuthenticator();
       should_reload_gaia_ = false;
     }
   }
@@ -429,6 +448,8 @@ void LockScreenStartReauthDialog::HttpAuthDialogShown(
     return;
   }
   is_proxy_auth_in_progress_ = true;
+
+  TerminateAutoReload();
 }
 
 void LockScreenStartReauthDialog::HttpAuthDialogCancelled(

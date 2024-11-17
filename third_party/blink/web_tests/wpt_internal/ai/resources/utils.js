@@ -64,20 +64,38 @@ const testPromptAPI = async () => {
   }
 
   try {
-    const capabilities = await ai.assistant.capabilities();
+    const capabilities = await ai.languageModel.capabilities();
     const status = capabilities.available;
-    if (status !== "readily") {
+    if (status === "no") {
       return {
         success: false,
         error: "cannot create text session"
       };
     }
 
-    const session = await ai.assistant.create({
+    isDownloadProgressEventTriggered = false;
+    let isWaitingForModelDownload = status === "after-download";
+
+    const session = await ai.languageModel.create({
       topK: 3,
       temperature: 0.8,
-      systemPrompt: "Let's talk about Mauritius."
+      systemPrompt: "Let's talk about Mauritius.",
+      monitor(m) {
+        m.addEventListener("downloadprogress", e => {
+          isDownloadProgressEventTriggered = true;
+        });
+      }
     });
+
+    if (isWaitingForModelDownload && !isDownloadProgressEventTriggered) {
+      return {
+        success: false,
+        error:
+          "when the status is 'after-download', the creation request " +
+          "should wait for the model download, and the `downloadprogress` " +
+          "event should be triggered."
+      };
+    }
     return testSession(session);
   } catch (e) {
     return {
@@ -86,3 +104,31 @@ const testPromptAPI = async () => {
     };
   }
 };
+
+// The method should take the AbortSignal as an option and return a promise.
+const testAbort = async (t, method) => {
+  // Test abort signal without custom error.
+  {
+    const controller = new AbortController();
+    const promise = method(controller.signal);
+    controller.abort();
+    await promise_rejects_dom(t, "AbortError", promise);
+
+    // Using the same aborted controller will get the `AbortError` as well.
+    const anotherPromise = method(controller.signal);
+    await promise_rejects_dom(t, "AbortError", anotherPromise);
+  }
+
+  // Test abort signal with custom error.
+  {
+    const err = new Error("test");
+    const controller = new AbortController();
+    const promise = method(controller.signal);
+    controller.abort(err);
+    await promise_rejects_exactly(t, err, promise);
+
+    // Using the same aborted controller will get the same error as well.
+    const anotherPromise = method(controller.signal);
+    await promise_rejects_exactly(t, err, anotherPromise);
+  }
+}

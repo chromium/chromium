@@ -70,6 +70,9 @@ class ArcSessionManagerObserver {
   virtual void OnArcSessionBlockedByArcVmDataMigration(
       bool auto_resume_enabled) {}
 
+  // Called when ARC session manager is shutting down.
+  virtual void OnShutdown() {}
+
  protected:
   virtual ~ArcSessionManagerObserver() = default;
 };

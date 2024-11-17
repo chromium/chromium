@@ -8,12 +8,15 @@ import sys
 
 from contextlib import AbstractContextManager
 
+from common import DIR_SRC_ROOT
+
 PROTO_DIR = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', 'util/lib/proto/'))
+    os.path.join(DIR_SRC_ROOT, 'build', 'util', 'lib', 'proto'))
 if os.path.isdir(PROTO_DIR):
     sys.path.append(PROTO_DIR)
     # pylint: disable=import-error, unused-import
-    from measures import average, count, data_points, dump, time_consumption
+    from measures import average, count, data_points, dump, tag, \
+            time_consumption
 else:
 
     class Dummy(AbstractContextManager):
@@ -55,3 +58,6 @@ else:
 
     def dump(*_) -> None:
         """Dummy implementation of measures.dump."""
+
+    def tag(*_) -> None:
+        """Dummy implementation of measures.tag."""

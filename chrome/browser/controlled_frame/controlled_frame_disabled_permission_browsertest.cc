@@ -4,13 +4,20 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/test_file_util.h"
+#include "base/threading/thread_restrictions.h"
 #include "chrome/browser/bluetooth/web_bluetooth_test_utils.h"
 #include "chrome/browser/controlled_frame/controlled_frame_permission_request_test_base.h"
 #include "chrome/browser/serial/serial_chooser_context.h"
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/views/file_system_access/file_system_access_test_utils.h"
 #include "chrome/browser/usb/usb_browser_test_utils.h"
 #include "chrome/browser/usb/usb_chooser_context.h"
 #include "chrome/browser/usb/usb_chooser_context_factory.h"
@@ -24,11 +31,13 @@
 #include "services/device/public/cpp/test/fake_usb_device_manager.h"
 #include "services/device/public/mojom/serial.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-forward.h"
+#include "ui/shell_dialogs/select_file_dialog.h"
 
 namespace {
 
 using testing::Return;
 
+constexpr char kSuccessResult[] = "SUCCESS";
 constexpr char kFailResult[] = "error";
 
 // USB
@@ -281,6 +290,85 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameDisabledPermissionWebBluetoothTest,
 INSTANTIATE_TEST_SUITE_P(/*no prefix*/
                          ,
                          ControlledFrameDisabledPermissionWebBluetoothTest,
+                         testing::ValuesIn(
+                             GetDefaultDisabledPermissionTestParams()),
+                         [](const testing::TestParamInfo<
+                             DisabledPermissionTestParam>& info) {
+                           return info.param.name;
+                         });
+
+class ControlledFrameDisabledPermissionFileSystemAccessTest
+    : public ControlledFrameDisabledPermissionTest {
+ public:
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(
+        temp_dir_.CreateUniqueTempDirUnderPath(base::GetTempDirForTesting()));
+    ControlledFrameDisabledPermissionTest::SetUpOnMainThread();
+  }
+
+  void TearDownOnMainThread() override {
+    ASSERT_TRUE(temp_dir_.Delete());
+    ControlledFrameDisabledPermissionTest::TearDownOnMainThread();
+  }
+
+  base::FilePath CreateTestFile() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath result;
+    EXPECT_TRUE(base::CreateTemporaryFileInDir(temp_dir_.GetPath(), &result));
+    return result;
+  }
+
+ private:
+  base::ScopedTempDir temp_dir_;
+};
+
+IN_PROC_BROWSER_TEST_P(ControlledFrameDisabledPermissionFileSystemAccessTest,
+                       FileSystemAccess) {
+  DisabledPermissionTestParam test_param = GetParam();
+  // Skips permissions-policy tests since FSA does not have a corresponding
+  // policy feature.
+  if (test_param.name == "BothFailsWhenPermissionsPolicyIsNotEnabled") {
+    return;
+  }
+
+  DisabledPermissionTestCase test_case;
+  test_case.request_script = content::JsReplace(R"(
+(async function() {
+  try {
+    const [handle] = await showOpenFilePicker({
+      types: [
+        {
+          description: 'All files',
+          accept: {
+            '*/*': ['.txt', '.pdf', '.jpg', '.png'],
+          },
+        },
+      ],
+    });
+    await handle.getFile();
+    return $1;
+  } catch (error) {
+    return $2;
+  }
+})();
+  )",
+                                                kSuccessResult, kFailResult);
+
+  test_case.success_result = kSuccessResult;
+  test_case.failure_result = kFailResult;
+
+  const base::FilePath test_file = CreateTestFile();
+
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<SelectPredeterminedFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}));
+
+  VerifyDisabledPermission(test_case, test_param);
+}
+
+INSTANTIATE_TEST_SUITE_P(/*no prefix*/
+                         ,
+                         ControlledFrameDisabledPermissionFileSystemAccessTest,
                          testing::ValuesIn(
                              GetDefaultDisabledPermissionTestParams()),
                          [](const testing::TestParamInfo<

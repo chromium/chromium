@@ -50,11 +50,6 @@ const base::FeatureParam<bool> kAppsCollectionsEnabledCounterfactually{
 const base::FeatureParam<bool> kAppsCollectionsEnabledWithModifiedOrder{
     &kAppsCollections, "is-modified-order", false};
 
-// Forces the user elegibility of the AppsCollections feature. When this is
-// enabled, the regular checks for the account are ignored and AppsCollection
-// show by default.
-ASH_PUBLIC_EXPORT BASE_DECLARE_FEATURE(kForceShowAppsCollections);
-
 ASH_PUBLIC_EXPORT bool IsAppReinstallZeroStateEnabled();
 ASH_PUBLIC_EXPORT bool IsAppListLaunchRecordingEnabled();
 ASH_PUBLIC_EXPORT bool IsExactMatchForNonLatinLocaleEnabled();
@@ -67,7 +62,6 @@ ASH_PUBLIC_EXPORT bool IsLauncherPlayStoreSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsAppsCollectionsEnabled();
 ASH_PUBLIC_EXPORT bool IsAppsCollectionsEnabledCounterfactually();
 ASH_PUBLIC_EXPORT bool IsAppsCollectionsEnabledWithModifiedOrder();
-ASH_PUBLIC_EXPORT bool IsForceShowAppsCollectionsEnabled();
 
 }  // namespace app_list_features
 

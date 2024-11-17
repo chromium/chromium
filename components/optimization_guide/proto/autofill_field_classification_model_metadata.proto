@@ -10,6 +10,91 @@ option java_outer_classname = "AutofillFieldClassificationModelMetadata";
 
 package optimization_guide.proto;
 
+message AutofillFieldClassificationEncodingParameters {
+  // Per-field features that can be included in the model input.
+  enum AutofillFieldClassificationFeature {
+    // Don't use.
+    FEATURE_UNKNOWN = 0;
+    // The label of the field.
+    FEATURE_LABEL = 1;
+    // The placeholder in the field.
+    FEATURE_PLACEHOLDER = 2;
+    // The autocomplete attribute of the field.
+    FEATURE_AUTOCOMPLETE = 3;
+    // The id attribute of the field.
+    FEATURE_ID = 4;
+    // The name attribute of the field (not FormFieldData::name() which falls
+    // back to the id attribute if the name attribute does not exist).
+    FEATURE_NAME = 5;
+    // The form control type attribute of the field.
+    FEATURE_TYPE = 6;
+  }
+
+  // Per-form features that can be included in the model input.
+  enum AutofillFieldClassificationFormLevelFeature {
+    // Don't use.
+    FORM_FEATURE_UNKNOWN = 0;
+    // The titles of <button> and <submit> elements in a form containing the
+    // field.
+    FEATURE_FORM_BUTTON_TITLES = 1;
+    // The id attribute of a form containing the field.
+    FEATURE_FORM_ID = 2;
+    // The name attribute of a form containing the field.
+    FEATURE_FORM_NAME = 3;
+    // The URL path of the frame containing the field.
+    FEATURE_FRAME_URL_PATH = 4;
+  }
+
+  // Maximum number of form fields for which the model can predict types.
+  // When calling the executor with a larger form, predictions are only returned
+  // for the first `maximum_number_of_fields` many fields.
+  int32 maximum_number_of_fields = 1;
+
+  // Max tokens per field per feature.
+  int32 max_tokens_per_feature = 2;
+
+  // The per-field features provided to the model in the order they are
+  // presented to the model.
+  repeated AutofillFieldClassificationFeature features = 3;
+
+  // Pre-processing of feature strings:
+  // labels, name, id attributes, etc. are preprocessed by the following steps:
+
+  // Split a camelCase or UpperCamelCase string into separate words with
+  // spaces in between.
+  bool split_on_camel_case = 4;
+
+  // If true, map the string to lowercase.
+  bool lowercase = 5;
+
+  // Replace all characters listed in `replace_chars_with_whitespace` with a
+  // single space. If empty, this step is skipped.
+  string replace_chars_with_whitespace = 6;
+
+  // Replace all characters listed in `remove_chars` with the empty string.
+  // If empty, this step is skipped.
+  string remove_chars = 7;
+
+  // The per-form features provided to the model in the order they are presented
+  // to the model.
+  repeated AutofillFieldClassificationFormLevelFeature form_features = 8;
+}
+
+message AutofillFieldClassificationPostprocessingParameters {
+  // If set, types are only assigned to fields that have predictions
+  // with at least the specified minimum confidence.
+  optional float confidence_threshold_per_field = 1;
+
+  // If set, the model returns predictions only if *all* fields have predictions
+  // with at least the specified minimum confidence.
+  optional float confidence_threshold_to_disable_all_predictions = 2;
+
+  // If true, the model is not allowed to return the same prediction for
+  // multiple fields in the form.
+  // TODO(crbug.com/371933424): Implement handling this.
+  optional bool disallow_same_type_predictions = 3;
+}
+
 // Metadata for OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION.
 message AutofillFieldClassificationModelMetadata {
   // The dictionary used for vectorization of the input labels. The strings
@@ -22,14 +107,17 @@ message AutofillFieldClassificationModelMetadata {
   // corresponding `autofill::FieldType`.
   repeated fixed32 output_type = 2;
 
-  // For every field, the model outputs a list of confidences for every
-  // `output_type`. If no `confidence_threshold` is specified, the final type
-  // prediction is simply the one with the highest confidence. If a threshold
-  // is specified and the highest confidence is below it, the prediction becomes
-  // UNKNOWN_TYPE instead.
-  optional float confidence_threshold = 3;
+  // Deprecated in M132.
+  reserved 3;
 
   // The version of the input, based on which the relevant model
   // version will be used from server.
   optional int64 input_version = 4;
+
+  // Encoding parameters, used for input versions >= 3.
+  AutofillFieldClassificationEncodingParameters encoding_parameters = 5;
+
+  // Output processing parameters.
+  AutofillFieldClassificationPostprocessingParameters
+      postprocessing_parameters = 6;
 }

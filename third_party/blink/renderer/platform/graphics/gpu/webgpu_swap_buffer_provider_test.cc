@@ -230,26 +230,19 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
         .backendType = wgpu::BackendType::Null,
     };
     instance_.RequestAdapter(
-        &options,
-        [](WGPURequestAdapterStatus status, WGPUAdapter cAdapter, const char*,
-           void* userdata) {
-          *static_cast<wgpu::Adapter*>(userdata) =
-              wgpu::Adapter::Acquire(cAdapter);
-        },
-        &adapter_);
+        &options, wgpu::CallbackMode::AllowSpontaneous,
+        [&](wgpu::RequestAdapterStatus status, wgpu::Adapter adapter,
+            wgpu::StringView) { adapter_ = std::move(adapter); });
     ASSERT_TRUE(c2s_serializer_.Flush());
     ASSERT_TRUE(s2c_serializer_.Flush());
     ASSERT_NE(adapter_, nullptr);
 
     wgpu::DeviceDescriptor deviceDesc = {};
     adapter_.RequestDevice(
-        &deviceDesc,
-        [](WGPURequestDeviceStatus, WGPUDevice cDevice, const char*,
-           void* userdata) {
-          *static_cast<wgpu::Device*>(userdata) =
-              wgpu::Device::Acquire(cDevice);
-        },
-        &device_);
+        &deviceDesc, wgpu::CallbackMode::AllowSpontaneous,
+        [&](wgpu::RequestDeviceStatus, wgpu::Device device, wgpu::StringView) {
+          device_ = std::move(device);
+        });
     ASSERT_TRUE(c2s_serializer_.Flush());
     ASSERT_TRUE(s2c_serializer_.Flush());
     ASSERT_NE(device_, nullptr);

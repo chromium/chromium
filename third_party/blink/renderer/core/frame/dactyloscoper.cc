@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/frame/dactyloscoper.h"
 
 #include "base/trace_event/typed_macros.h"
@@ -20,6 +15,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/svg/svg_string_list_tear_off.h"
+#include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
@@ -131,6 +127,18 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
 }
 
 // static
+void Dactyloscoper::RecordDirectSurface(
+    ExecutionContext* context,
+    WebFeature feature,
+    const bindings::EnumerationBase& value) {
+  if (!context || !ShouldSample(feature)) {
+    return;
+  }
+  Dactyloscoper::RecordDirectSurface(
+      context, feature, IdentifiabilitySensitiveStringToken(value.AsString()));
+}
+
+// static
 void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
                                         WebFeature feature,
                                         const Vector<String>& strs) {
@@ -151,8 +159,7 @@ void Dactyloscoper::RecordDirectSurface(ExecutionContext* context,
     return;
   IdentifiableTokenBuilder builder;
   if (buffer && buffer->byteLength() > 0) {
-    builder.AddBytes(base::make_span(
-        static_cast<uint8_t*>(buffer->BaseAddress()), buffer->byteLength()));
+    builder.AddBytes(buffer->ByteSpan());
   }
   Dactyloscoper::RecordDirectSurface(context, feature, builder.GetToken());
 }

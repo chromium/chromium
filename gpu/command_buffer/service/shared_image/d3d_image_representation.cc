@@ -186,6 +186,15 @@ void OverlayD3DImageRepresentation::EndReadAccess(
     gfx::GpuFenceHandle release_fence) {
   DCHECK(release_fence.is_null());
   static_cast<D3DImageBacking*>(backing())->EndAccessD3D11(d3d11_device_);
+
+#if DCHECK_IS_ON()
+  // Sanity check that we can get the availability fence, meaning that the
+  // texture is either immediately available or soon-to-be available. We
+  // should not cache this since the eventual wait may be one or more frames
+  // later and the fence becomes invalidated by DComp commit.
+  std::ignore = static_cast<D3DImageBacking*>(backing())
+                    ->GetDCompTextureAvailabilityFenceForCurrentFrame();
+#endif
 }
 
 std::optional<gl::DCLayerOverlayImage>

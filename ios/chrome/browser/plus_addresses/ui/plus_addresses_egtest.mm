@@ -5,13 +5,16 @@
 #import "base/strings/escape.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/common/autofill_features.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/plus_addresses/features.h"
+#import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/plus_addresses/ui/plus_address_app_interface.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -78,19 +81,7 @@ void ExpectModalTimeSample(
 
 - (void)setUp {
   [super setUp];
-  net::test_server::RegisterDefaultHandlers(self.testServer);
-  self.testServer->RegisterRequestHandler(base::BindRepeating(
-      &net::test_server::HandlePrefixedRequest, "/v1/profiles",
-      base::BindRepeating(
-          &plus_addresses::test::HandleRequestToPlusAddressWithSuccess)));
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
-
-  if ([self isRunningTest:@selector
-            (DISABLED_testConfirmPlusAddressUsingBottomSheet)] ||
-      [self isRunningTest:@selector(DISABLED_testRefresh)] ||
-      [self isRunningTest:@selector(DISABLED_testCreatePlusAddressIPH)]) {
-    [self relaunchAppAndSetConfiguration];
-  }
 
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Failed to set up histogram tester.");
@@ -100,42 +91,22 @@ void ExpectModalTimeSample(
   _fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey signinWithFakeIdentity:_fakeIdentity];
 
+  // To prevent any flakiness.
+  [PlusAddressAppInterface clearState];
+  [PlusAddressAppInterface setPlusAddressFillingEnabled:YES];
+
   [self loadPlusAddressEligiblePage];
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
 }
 
-- (void)relaunchAppAndSetConfiguration {
-  AppLaunchConfiguration config = self.appConfigurationForTestCase;
-
-  config.features_enabled_and_params.clear();
-  config.features_enabled_and_params.push_back(
-      {plus_addresses::features::kPlusAddressesEnabled,
-       {{{"server-url", {self.testServer->base_url().spec()}},
-         {"oauth-scope", {plus_addresses::test::kFakeOauthScope}},
-         {"manage-url", {plus_addresses::test::kFakeManagementUrl}},
-         {"error-report-url", {plus_addresses::test::kFakeErrorReportUrl}}}}});
-
-  if ([self isRunningTest:@selector(DISABLED_testCreatePlusAddressIPH)]) {
-    config.iph_feature_enabled =
-        feature_engagement::kIPHPlusAddressCreateSuggestionFeature.name;
-  }
-
-  // Relaunch the app to take the configuration into account.
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-}
-
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // Ensure the feature is enabled, including a required param.
-  // TODO(crbug.com/40276862): Set up fake responses via `self.testServer`, or
-  // use an app interface to force different states without a backend
-  // dependency. The `chrome://version` part in the `server-url` param is just
-  // to force an invalid response, and must not be used long-term.
+
   std::string fakeLocalUrl =
       base::EscapeQueryParamValue("chrome://version", /*use_plus=*/false);
   config.features_enabled_and_params.push_back(
@@ -144,6 +115,15 @@ void ExpectModalTimeSample(
            {"server-url", {fakeLocalUrl}},
            {"manage-url", {fakeLocalUrl}},
        }}});
+
+  if ([self isRunningTest:@selector(testCreatePlusAddressIPH)]) {
+    config.iph_feature_enabled =
+        feature_engagement::kIPHPlusAddressCreateSuggestionFeature.name;
+  }
+
+  config.features_disabled.push_back(
+      autofill::features::test::kAutofillServerCommunication);
+
   return config;
 }
 
@@ -158,6 +138,9 @@ void ExpectModalTimeSample(
 
 // Taps on the create plus address suggestion to open the bottom sheet.
 - (void)openCreatePlusAddressBottomSheet {
+  // So that, create is offered.
+  [PlusAddressAppInterface setShouldOfferPlusAddressCreation:YES];
+
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
@@ -174,18 +157,6 @@ void ExpectModalTimeSample(
 
   // Tapping it will trigger the UI.
   [[EarlGrey selectElementWithMatcher:userChip] performAction:grey_tap()];
-}
-
-id<GREYMatcher> GetMatcherForErrorReportLink() {
-  return grey_allOf(
-      // The link is within
-      // kPlusAddressModalErrorMessageAccessibilityIdentifier.
-      grey_ancestor(grey_accessibilityID(
-          kPlusAddressSheetErrorMessageAccessibilityIdentifier)),
-      // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
-      // element in the label with attributed string.
-      grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
-      grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
 }
 
 // Returns a matcher for the email description.
@@ -221,10 +192,9 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
 #pragma mark - Tests
 
-// TODO(crbug.com/364105204) Fix test failures.
 // Tests showing up a bottom sheet to confirm a plus address. Once, the plus
-// address is confirmed checks if it is filled in the file.d
-- (void)DISABLED_testConfirmPlusAddressUsingBottomSheet {
+// address is confirmed checks if it is filled in the file.
+- (void)testConfirmPlusAddressUsingBottomSheet {
   [self openCreatePlusAddressBottomSheet];
 
   id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
@@ -251,67 +221,6 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
   ExpectModalTimeSample(plus_addresses::metrics::
                             PlusAddressModalCompletionStatus::kModalConfirmed,
                         1);
-}
-
-// A basic test that simply opens the bottom sheet with an error and then
-// dismisses the bottom sheet.
-- (void)DISABLED_testShowPlusAddressBottomSheetWithError {
-  [self openCreatePlusAddressBottomSheet];
-
-  // The primary email address should be shown.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:GetMatcherForEmailDescription(
-                                              _fakeIdentity.userEmail)];
-
-  // The request to reserve a plus address is hitting the test server, and
-  // should fail immediately.
-  NSString* error_message = l10n_util::GetNSString(
-      IDS_PLUS_ADDRESS_BOTTOMSHEET_REPORT_ERROR_INSTRUCTION_IOS);
-  id<GREYMatcher> parsed_error_message =
-      grey_text(ParseStringWithLinks(error_message).string);
-  // Ensure error message with link is shown and correctly parsed.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:parsed_error_message];
-
-  // Ensure the cancel button is shown.
-  id<GREYMatcher> cancelButton =
-      chrome_test_util::ButtonWithAccessibilityLabelId(
-          IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT);
-
-  // Click the cancel button, dismissing the bottom sheet.
-  [[EarlGrey selectElementWithMatcher:cancelButton] performAction:grey_tap()];
-
-  ExpectModalHistogram(
-      plus_addresses::metrics::PlusAddressModalEvent::kModalShown, 1);
-  ExpectModalHistogram(
-      plus_addresses::metrics::PlusAddressModalEvent::kModalCanceled, 1);
-  // The test server currently only response with reserve error. Thus, closing
-  // status is recorded as `kReservePlusAddressError`.
-  // TODO(b/321072266) Expand coverage to other responses.
-  ExpectModalTimeSample(
-      plus_addresses::metrics::PlusAddressModalCompletionStatus::
-          kReservePlusAddressError,
-      1);
-}
-
-- (void)DISABLED_testPlusAddressBottomSheetErrorReportLink {
-  [self openCreatePlusAddressBottomSheet];
-
-  id<GREYMatcher> link_text = GetMatcherForErrorReportLink();
-
-  // Take note of how many tabs are open before clicking the link.
-  NSUInteger oldRegularTabCount = [ChromeEarlGrey mainTabCount];
-  NSUInteger oldIncognitoTabCount = [ChromeEarlGrey incognitoTabCount];
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:link_text];
-  [[EarlGrey selectElementWithMatcher:link_text] performAction:grey_tap()];
-
-  // A new tab should open after tapping the link.
-  [ChromeEarlGrey waitForMainTabCount:oldRegularTabCount + 1];
-  [ChromeEarlGrey waitForIncognitoTabCount:oldIncognitoTabCount];
-
-  // The bottom sheet should be dismissed.
-  [[EarlGrey selectElementWithMatcher:link_text]
-      assertWithMatcher:grey_notVisible()];
 }
 
 - (void)DISABLED_testSwipeToDismiss {
@@ -346,25 +255,8 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
       1);
 }
 
-// A test to ensure that a row in the settings view shows up for
-// plus_addresses, and that tapping it opens a new tab for its settings, which
-// are managed externally.
-- (void)testSettings {
-  [ChromeEarlGreyUI openSettingsMenu];
-  // Take note of how many tabs are open before clicking the link in settings,
-  // which should simply open a new tab.
-  NSUInteger oldRegularTabCount = [ChromeEarlGrey mainTabCount];
-  NSUInteger oldIncognitoTabCount = [ChromeEarlGrey incognitoTabCount];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:grey_accessibilityID(kSettingsPlusAddressesId)];
-
-  // A new tab should open after tapping the link.
-  [ChromeEarlGrey waitForMainTabCount:oldRegularTabCount + 1];
-  [ChromeEarlGrey waitForIncognitoTabCount:oldIncognitoTabCount];
-}
-
 // A test to check the refresh plus address functionality.
-- (void)DISABLED_testRefresh {
+- (void)testRefresh {
   [self openCreatePlusAddressBottomSheet];
 
   id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
@@ -393,7 +285,9 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 }
 
 // A test to check the plus address create suggestion IPH feature.
-- (void)DISABLED_testCreatePlusAddressIPH {
+- (void)testCreatePlusAddressIPH {
+  [PlusAddressAppInterface setShouldOfferPlusAddressCreation:YES];
+
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
@@ -402,6 +296,214 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
   // Ensure the plus_address suggestion IPH appears.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:iph_chip];
+}
+
+// Tests that an error alert is shown if the plus address quota has been reached
+// on confirming plus address.
+- (void)testQuotaErrorAlertOnConfirm {
+  [self openCreatePlusAddressBottomSheet];
+
+  // Set up after the reserve has been called so that it fails on confirm.
+  [PlusAddressAppInterface setShouldReturnQuotaError:YES];
+
+  id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
+      base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
+
+  id<GREYMatcher> confirmButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);
+
+  // Click the okay button, confirming the plus address.
+  [[EarlGrey selectElementWithMatcher:confirmButton] performAction:grey_tap()];
+
+  id<GREYMatcher> error_alert = grey_text(
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_MESSAGE_IOS));
+
+  // Ensure the error alert is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_OK)] performAction:grey_tap()];
+}
+
+// Tests that the alert is shown and filled when an affiliated site contains the
+// plus address during the creation.
+- (void)testAffiliationError {
+  [PlusAddressAppInterface setShouldReturnAffiliatedPlusProfileOnConfirm:YES];
+  [self openCreatePlusAddressBottomSheet];
+
+  id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
+      base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
+
+  id<GREYMatcher> confirmButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);
+
+  // Click the okay button, confirming the plus address.
+  [[EarlGrey selectElementWithMatcher:confirmButton] performAction:grey_tap()];
+
+  NSString* message = l10n_util::GetNSStringF(
+      IDS_PLUS_ADDRESS_AFFILIATION_ERROR_ALERT_MESSAGE_IOS,
+      plus_addresses::test::kAffiliatedFacetWithoutSchemeU16,
+      plus_addresses::test::kFakeAffiliatedPlusAddressU16);
+
+  // Ensure the error alert is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:grey_text(message)];
+
+  // Click on "Use existing" button.
+  id<GREYMatcher> useExitingButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_PLUS_ADDRESS_AFFILIATION_ERROR_PRIMARY_BUTTON_IOS);
+  [[EarlGrey selectElementWithMatcher:useExitingButton]
+      performAction:grey_tap()];
+
+  // Verify that the affiliated address has been filled.
+  [self verifyFieldWithIdHasBeenFilled:kEmailFieldId
+                                 value:base::SysUTF8ToNSString(
+                                           plus_addresses::test::
+                                               kFakeAffiliatedPlusAddress)];
+}
+
+// Tests that a generic alert is shown when the plus address is failed to
+// confirm.
+- (void)testGenericAlertOnConfirm {
+  [self openCreatePlusAddressBottomSheet];
+
+  id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
+      base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
+
+  // Set up after the reserve has been called so that it fails on confirm.
+  [PlusAddressAppInterface setShouldFailToConfirm:YES];
+
+  id<GREYMatcher> confirmButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);
+
+  // Click the okay button, confirming the plus address.
+  [[EarlGrey selectElementWithMatcher:confirmButton] performAction:grey_tap()];
+
+  id<GREYMatcher> error_alert = grey_text(
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS));
+
+  // Ensure the error alert is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
+
+  // Ensure that "Try again" is successful.
+  [PlusAddressAppInterface setShouldFailToConfirm:NO];
+
+  id<GREYMatcher> tryAgainButton = grey_text(l10n_util::GetNSString(
+      IDS_PLUS_ADDRESS_ERROR_TRY_AGAIN_PRIMARY_BUTTON_IOS));
+  [[EarlGrey selectElementWithMatcher:tryAgainButton] performAction:grey_tap()];
+
+  [self verifyFieldWithIdHasBeenFilled:kEmailFieldId
+                                 value:base::SysUTF8ToNSString(
+                                           plus_addresses::test::
+                                               kFakePlusAddress)];
+}
+
+// Tests that a timeout alert is shown when the plus address is failed to
+// confirm.
+- (void)testTimeOutAlertOnConfirm {
+  [self openCreatePlusAddressBottomSheet];
+
+  id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
+      base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
+
+  // Set up after the reserve has been called so that it fails on confirm.
+  [PlusAddressAppInterface setShouldReturnTimeoutError:YES];
+
+  id<GREYMatcher> confirmButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);
+
+  // Click the okay button, confirming the plus address.
+  [[EarlGrey selectElementWithMatcher:confirmButton] performAction:grey_tap()];
+
+  id<GREYMatcher> error_alert = grey_text(
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_TIMEOUT_ERROR_ALERT_MESSAGE_IOS));
+
+  // Ensure the error alert is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
+}
+
+// Tests that an error alert is shown if the plus address quota has been reached
+// on reserving plus address.
+- (void)testQuotaErrorAlertOnReserve {
+  [PlusAddressAppInterface setShouldReturnQuotaError:YES];
+
+  [self openCreatePlusAddressBottomSheet];
+
+  id<GREYMatcher> error_alert = grey_text(
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_MESSAGE_IOS));
+
+  // Ensure the error alert is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabelId(
+                                   IDS_OK)] performAction:grey_tap()];
+}
+
+// Tests that a timeout alert is shown when the plus address is failed to
+// reserve.
+- (void)testTimeoutErrorAlertOnReserve {
+  [PlusAddressAppInterface setShouldReturnTimeoutError:YES];
+
+  [self openCreatePlusAddressBottomSheet];
+
+  id<GREYMatcher> error_alert = grey_text(
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_TIMEOUT_ERROR_ALERT_MESSAGE_IOS));
+  // Ensure the error alert is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
+
+  // Click on "Try again".
+  id<GREYMatcher> tryAgainButton = grey_text(l10n_util::GetNSString(
+      IDS_PLUS_ADDRESS_ERROR_TRY_AGAIN_PRIMARY_BUTTON_IOS));
+  [[EarlGrey selectElementWithMatcher:tryAgainButton] performAction:grey_tap()];
+
+  // The error alert is shown again.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
+
+  // Clear out the error state.
+  [PlusAddressAppInterface setShouldReturnTimeoutError:NO];
+
+  // "Try again"
+  [[EarlGrey selectElementWithMatcher:tryAgainButton] performAction:grey_tap()];
+
+  // Plus address sheet is opened and label is shown.
+  id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
+      base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
+
+  id<GREYMatcher> confirmButton =
+      chrome_test_util::ButtonWithAccessibilityLabelId(
+          IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS);
+
+  // Click the okay button, confirming the plus address.
+  [[EarlGrey selectElementWithMatcher:confirmButton] performAction:grey_tap()];
+
+  [self verifyFieldWithIdHasBeenFilled:kEmailFieldId
+                                 value:base::SysUTF8ToNSString(
+                                           plus_addresses::test::
+                                               kFakePlusAddress)];
+}
+
+// Tests that a generic alert is shown when the plus address is failed to
+// reserve.
+- (void)testGenericAlertOnReserve {
+  [PlusAddressAppInterface setShouldFailToReserve:YES];
+  [self openCreatePlusAddressBottomSheet];
+
+  id<GREYMatcher> error_alert = grey_text(
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS));
+
+  // Ensure the error alert is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:error_alert];
 }
 
 @end

@@ -1,0 +1,102 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=./shared_style.css.js
+ * #include=shared-style
+ * #css_wrapper_metadata_end */
+
+.items-container,
+#content-wrapper {
+  --extensions-card-width: 400px;
+}
+
+#container {
+  box-sizing: border-box;
+  height: 100%;
+}
+
+#content-wrapper {
+  min-width: var(--extensions-card-width);
+  padding: 24px 60px 64px;
+}
+
+#content-wrapper:has(extensions-review-panel),
+#content-wrapper:has(extensions-mv2-deprecation-panel) {
+  padding-top: 14px;
+}
+
+.empty-list-message {
+  color: #6e6e6e;
+  font-size: 123%;  /* Should be 16px when 100% is 13px. */
+  font-weight: 500;
+  margin-top: 80px;
+  text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  .empty-list-message {
+    color: var(--cr-secondary-text-color);
+  }
+}
+
+.items-container {
+  --grid-gutter: 12px;
+  display: grid;
+  grid-column-gap: var(--grid-gutter);
+  grid-row-gap: var(--grid-gutter);
+  grid-template-columns: repeat(auto-fill, var(--extensions-card-width));
+  justify-content: center;
+  margin: auto;
+  max-width: calc(var(--extensions-card-width) * var(--max-columns) +
+      var(--grid-gutter) * var(--max-columns));
+}
+
+.items-container.panel :first-child {
+  max-width: calc(var(--extensions-card-width) * 2 + var(--grid-gutter) * 2);
+  grid-column: 1 / -1;
+}
+
+extensions-review-panel,
+extensions-mv2-deprecation-panel {
+  margin: 15px auto;
+  width: 100%;
+}
+
+#checkup-container {
+  grid-column: 1 / -1;
+  /* The checkup card should be at least as tall as an extensions item card.*/
+  min-height: var(--extensions-card-height);
+}
+
+extensions-item {
+  grid-column-start: auto;
+  grid-row-start: auto;
+}
+
+.section-header {
+  color: var(--cr-primary-text-color);
+  font-size: 123%;
+  font-weight: 400;
+  letter-spacing: .25px;
+  margin-bottom: 12px;
+  margin-top: 21px;
+  padding-bottom: 4px;
+  padding-top: 8px;
+}
+
+managed-footnote {
+  border-top: none;
+  /* #content-wrapper has a 24px margin-top. This overrides that
+   * margin-top, so the only space left is this element's 12px
+   * padding-bottom.
+   */
+  margin-bottom: -24px;
+  padding-bottom: 12px;
+   padding-top: 12px;
+  /* The next element spills over this element. This ensures the link
+   * is clickable. */
+  z-index: 1;
+}

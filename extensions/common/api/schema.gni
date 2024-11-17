@@ -8,7 +8,17 @@ import("//extensions/buildflags/buildflags.gni")
 # APIs and features included in both normal desktop builds and the experimental
 # desktop-android build.
 # TODO(https://crbug.com/356905053): Continue moving more here.
-extensions_api_schema_files_ = [ "test.json" ]
+extensions_api_schema_files_ = [
+  "alarms.idl",
+  "i18n.json",
+  "idle.json",
+  "offscreen.idl",
+  "runtime.json",
+  "storage.json",
+  "system_memory.idl",
+  "test.json",
+  "web_request.json",
+]
 
 # Schemas that should be used only to auto-generate the C++ types.
 # In many cases, this includes schemas used to generate types used in manifest
@@ -28,7 +38,6 @@ extensions_types_only_schema_files_ = [
 # APIs that are not currently supported on the experimental desktop-android.
 if (enable_extensions) {
   extensions_api_schema_files_ += [
-    "alarms.idl",
     "app_current_window_internal.idl",
     "app_runtime.idl",
     "app_view_guest_internal.json",
@@ -53,28 +62,22 @@ if (enable_extensions) {
     "guest_view_internal.json",
     "management.json",
     "hid.idl",
-    "i18n.json",
     "icon_variants.idl",
-    "idle.json",
     "metrics_private.json",
     "mime_handler_private.idl",
     "mime_handler_view_guest_internal.json",
     "mojo_private.idl",
     "networking_private.idl",
-    "offscreen.idl",
     "power.idl",
     "printer_provider.idl",
     "printer_provider_internal.idl",
-    "runtime.json",
     "serial.idl",
     "socket.idl",
     "sockets_tcp.idl",
     "sockets_tcp_server.idl",
     "sockets_udp.idl",
-    "storage.json",
     "system_cpu.idl",
     "system_display.idl",
-    "system_memory.idl",
     "system_network.idl",
     "system_storage.idl",
     "scripts_internal.idl",
@@ -83,14 +86,12 @@ if (enable_extensions) {
     "usb.idl",
     "virtual_keyboard.idl",
     "virtual_keyboard_private.json",
-    "web_request.json",
     "web_view_internal.json",
   ]
 
   if (is_chromeos_ash) {
     extensions_api_schema_files_ += [
       "diagnostics.idl",
-      "lock_screen_data.idl",
       "media_perception_private.idl",
     ]
   }
@@ -109,7 +110,6 @@ if (enable_desktop_android_extensions) {
     "declarative_net_request.idl",
     "scripts_internal.idl",
     "types.json",
-    "web_request.json",
     "extension_types.json",
     "usb.idl",
     "system_display.idl",
@@ -117,7 +117,6 @@ if (enable_desktop_android_extensions) {
     "events.json",
     "icon_variants.idl",
     "file_handlers.idl",
-    "storage.json",
     "virtual_keyboard.idl",
     "virtual_keyboard_private.json",
   ]

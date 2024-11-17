@@ -20,7 +20,6 @@
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "chrome/common/pref_names.h"
@@ -29,7 +28,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/shell.h"
 #include "ash/test/ash_test_helper.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -42,7 +41,7 @@
 #else
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using ::testing::_;
 using ::testing::Eq;
@@ -905,7 +904,7 @@ TEST_F(RelaunchNotificationControllerTest, NotifyAllWithShortestPeriod) {
   ::testing::Mock::VerifyAndClearExpectations(&mock_controller_delegate);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 class RelaunchNotificationControllerPlatformImplTest : public ::testing::Test {
  protected:
@@ -1122,7 +1121,7 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest,
             base::Seconds(1));
 }
 
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else  // BUILDFLAG(IS_CHROMEOS)
 
 class RelaunchNotificationControllerPlatformImplTest
     : public TestWithBrowserView {
@@ -1195,15 +1194,7 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest, MAYBE_DeferredDeadline) {
   // The query should happen once the notification is potentially seen.
   EXPECT_CALL(callback, Run()).WillOnce(Return(deadline));
   ASSERT_NO_FATAL_FAILURE(SetVisibility(true));
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // We should not depend on BrowserView::Show() (called by SetVisibility(true))
-  // to call BrowserList::SetLastActive() to set the associated browser to be
-  // last active one. We are planning to remove that call for Lacros to make
-  // updating of last active browser completely asynchronous (b/325634285).
-  // Therefore, for the unit test depending on browser() to be set as the last
-  // active one, we need to explicit set it as the last active one.
-  BrowserList::GetInstance()->SetLastActive(browser());
-#endif
+
   ::testing::Mock::VerifyAndClearExpectations(&callback);
 
   ASSERT_NO_FATAL_FAILURE(SetVisibility(false));
@@ -1218,4 +1209,4 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest, MAYBE_DeferredDeadline) {
   ::testing::Mock::VerifyAndClearExpectations(&callback);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

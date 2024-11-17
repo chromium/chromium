@@ -26,7 +26,8 @@
 #include "components/subresource_filter/content/mojom/subresource_filter.mojom.h"
 #include "components/subresource_filter/content/shared/browser/activation_state_computing_navigation_throttle.h"
 #include "components/subresource_filter/content/shared/browser/page_load_statistics.h"
-#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
+#include "components/subresource_filter/content/shared/browser/utils.h"
+#include "components/subresource_filter/content/shared/common/utils.h"
 #include "components/subresource_filter/core/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
@@ -155,7 +156,7 @@ void ContentSubresourceFilterThrottleManager::ReadyToCommitInFrameNavigation(
              base::Contains(
                  ad_frames_,
                  frame_host->GetParentOrOuterDocument()->GetFrameTreeNodeId()),
-             base::NotFatalUntil::M132);
+             base::NotFatalUntil::M134);
     ad_evidence.set_is_complete();
     ad_evidence_for_navigation = ad_evidence;
 
@@ -306,11 +307,11 @@ void ContentSubresourceFilterThrottleManager::DidFinishInFrameNavigation(
     // (regardless of the URL).
     CHECK(!(navigation_handle->GetURL().IsAboutBlank() &&
             EnsureFrameAdEvidence(navigation_handle).IndicatesAdFrame()),
-          base::NotFatalUntil::M132);
+          base::NotFatalUntil::M134);
   } else {
     CHECK(navigation_handle->IsInMainFrame() ||
               EnsureFrameAdEvidence(navigation_handle).is_complete(),
-          base::NotFatalUntil::M129);
+          base::NotFatalUntil::M134);
   }
 
   bool did_inherit_opener_activation;
@@ -441,7 +442,7 @@ ContentSubresourceFilterThrottleManager::FilterForFinishedNavigation(
     // used. See the AsyncDocumentSubresourceFilter constructor for details.
     filter = std::make_unique<AsyncDocumentSubresourceFilter>(
         EnsureRulesetHandle(), frame_host->GetLastCommittedOrigin(),
-        activation_to_inherit.value());
+        activation_to_inherit.value(), kSafeBrowsingRulesetConfig.uma_tag);
   }
 
   // Make sure `frame_host_filter_map_` is cleaned up if necessary. Otherwise,
@@ -559,7 +560,7 @@ void ContentSubresourceFilterThrottleManager::OnChildFrameNavigationEvaluated(
            base::Contains(ad_frames_,
                           navigation_handle->GetParentFrameOrOuterDocument()
                               ->GetFrameTreeNodeId()),
-           base::NotFatalUntil::M132);
+           base::NotFatalUntil::M134);
 
   ad_evidence.UpdateFilterListResult(
       InterpretLoadPolicyAsEvidence(load_policy));
@@ -664,7 +665,7 @@ ContentSubresourceFilterThrottleManager::
   // Subresource filter roots: create unconditionally.
   if (IsInSubresourceFilterRoot(navigation_handle)) {
     auto throttle = ActivationStateComputingNavigationThrottle::CreateForRoot(
-        navigation_handle);
+        navigation_handle, kSafeBrowsingRulesetConfig.uma_tag);
     if (base::FeatureList::IsEnabled(kAdTagging)) {
       mojom::ActivationState ad_tagging_state;
       ad_tagging_state.activation_level = mojom::ActivationLevel::kDryRun;
@@ -683,7 +684,7 @@ ContentSubresourceFilterThrottleManager::
   CHECK(ruleset_handle_, base::NotFatalUntil::M129);
   return ActivationStateComputingNavigationThrottle::CreateForChild(
       navigation_handle, ruleset_handle_.get(),
-      parent_filter->activation_state());
+      parent_filter->activation_state(), kSafeBrowsingRulesetConfig.uma_tag);
 }
 
 AsyncDocumentSubresourceFilter*
@@ -772,7 +773,7 @@ void ContentSubresourceFilterThrottleManager::SetIsAdFrame(
   CHECK(base::Contains(tracked_ad_evidence_, frame_tree_node_id),
         base::NotFatalUntil::M129);
   CHECK_EQ(tracked_ad_evidence_.at(frame_tree_node_id).IndicatesAdFrame(),
-           is_ad_frame, base::NotFatalUntil::M129);
+           is_ad_frame, base::NotFatalUntil::M134);
   CHECK(render_frame_host->GetParentOrOuterDocument(),
         base::NotFatalUntil::M129);
 

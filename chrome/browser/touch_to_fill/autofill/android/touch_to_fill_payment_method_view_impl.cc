@@ -87,13 +87,15 @@ bool TouchToFillPaymentMethodViewImpl::Show(
                 !suggestion.labels[1][0].value.empty()
             ? suggestion.labels[1][0].value
             : u"";
+    Suggestion::PaymentsPayload payments_payload =
+        suggestion.GetPayload<Suggestion::PaymentsPayload>();
     suggestions_array.push_back(
         Java_TouchToFillPaymentMethodViewBridge_createAutofillSuggestion(
             env, suggestion.main_text.value, suggestion.minor_text.value,
             suggestion.labels[0][0].value, secondarySubLabel,
-            suggestion.apply_deactivated_style,
-            suggestion.GetPayload<Suggestion::PaymentsPayload>()
-                .should_display_terms_available));
+            payments_payload.main_text_content_description,
+            suggestion.HasDeactivatedStyle(),
+            payments_payload.should_display_terms_available));
   }
   Java_TouchToFillPaymentMethodViewBridge_showSheet(
       env, java_object_, std::move(credit_cards_array),

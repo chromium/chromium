@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/crostini/crostini_section.h"
 
+#include <array>
+
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/settings/public/constants/routes.mojom-forward.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
@@ -57,8 +59,8 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetCrostiniOptedInSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetCrostiniOptedInSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_CROSTINI,
        mojom::kCrostiniDetailsSubpagePath,
        mojom::SearchResultIcon::kDeveloperTags,
@@ -107,34 +109,32 @@ const std::vector<SearchConcept>& GetCrostiniOptedInSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_CROSTINI_MIC_ACCESS_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetCrostiniOptedOutSearchConcepts(
-    mojom::Section section,
-    const char* section_path) {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetCrostiniOptedOutSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_CROSTINI,
-       section_path,
+       mojom::kAboutChromeOsSectionPath,
        mojom::SearchResultIcon::kDeveloperTags,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSection,
-       {.section = section},
+       {.section = mojom::Section::kAboutChromeOs},
        {IDS_OS_SETTINGS_TAG_CROSTINI_ALT1, IDS_OS_SETTINGS_TAG_CROSTINI_ALT2,
         SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_CROSTINI_SETUP,
-       section_path,
+       mojom::kAboutChromeOsSectionPath,
        mojom::SearchResultIcon::kDeveloperTags,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kSetUpCrostini},
        {IDS_OS_SETTINGS_TAG_CROSTINI_SETUP_ALT1, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetCrostiniExportImportSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetCrostiniExportImportSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_CROSTINI_BACKUP_RESTORE,
        mojom::kCrostiniBackupAndRestoreSubpagePath,
        mojom::SearchResultIcon::kPenguin,
@@ -144,11 +144,11 @@ const std::vector<SearchConcept>& GetCrostiniExportImportSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_CROSTINI_BACKUP_RESTORE_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetCrostiniAdbSideloadingSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetCrostiniAdbSideloadingSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_CROSTINI_ANDROID_APPS_ADB,
        mojom::kCrostiniDevelopAndroidAppsSubpagePath,
        mojom::SearchResultIcon::kDeveloperTags,
@@ -166,11 +166,11 @@ const std::vector<SearchConcept>& GetCrostiniAdbSideloadingSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_CROSTINI_ANDROID_APPS_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetCrostiniPortForwardingSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetCrostiniPortForwardingSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_CROSTINI_PORT_FORWARDING,
        mojom::kCrostiniPortForwardingSubpagePath,
        mojom::SearchResultIcon::kPenguin,
@@ -180,11 +180,11 @@ const std::vector<SearchConcept>& GetCrostiniPortForwardingSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_CROSTINI_PORT_FORWARDING_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetCrostiniContainerUpgradeSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetCrostiniContainerUpgradeSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_CROSTINI_CONTAINER_UPGRADE,
        mojom::kCrostiniDetailsSubpagePath,
        mojom::SearchResultIcon::kPenguin,
@@ -194,11 +194,11 @@ const std::vector<SearchConcept>& GetCrostiniContainerUpgradeSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_CROSTINI_CONTAINER_UPGRADE_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetCrostiniDiskResizingSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetCrostiniDiskResizingSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_CROSTINI_DISK_RESIZE,
        mojom::kCrostiniDetailsSubpagePath,
        mojom::SearchResultIcon::kPenguin,
@@ -208,7 +208,7 @@ const std::vector<SearchConcept>& GetCrostiniDiskResizingSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_CROSTINI_DISK_RESIZE_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
 bool IsProfileManaged(Profile* profile) {
@@ -583,9 +583,7 @@ int CrostiniSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section CrostiniSection::GetSection() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::Section::kAboutChromeOs
-             : mojom::Section::kCrostini;
+  return mojom::Section::kAboutChromeOs;
 }
 
 mojom::SearchResultIcon CrostiniSection::GetSectionIcon() const {
@@ -593,9 +591,7 @@ mojom::SearchResultIcon CrostiniSection::GetSectionIcon() const {
 }
 
 const char* CrostiniSection::GetSectionPath() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kAboutChromeOsSectionPath
-             : mojom::kCrostiniSectionPath;
+  return mojom::kAboutChromeOsSectionPath;
 }
 
 bool CrostiniSection::LogMetric(mojom::Setting setting,
@@ -725,8 +721,7 @@ void CrostiniSection::UpdateSearchTags() {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
   updater.RemoveSearchTags(GetCrostiniOptedInSearchConcepts());
-  updater.RemoveSearchTags(
-      GetCrostiniOptedOutSearchConcepts(GetSection(), GetSectionPath()));
+  updater.RemoveSearchTags(GetCrostiniOptedOutSearchConcepts());
   updater.RemoveSearchTags(GetCrostiniExportImportSearchConcepts());
   updater.RemoveSearchTags(GetCrostiniAdbSideloadingSearchConcepts());
   updater.RemoveSearchTags(GetCrostiniPortForwardingSearchConcepts());
@@ -735,8 +730,7 @@ void CrostiniSection::UpdateSearchTags() {
 
   if (!crostini::CrostiniFeatures::Get()->IsAllowedNow(profile_) ||
       !pref_service_->GetBoolean(crostini::prefs::kCrostiniEnabled)) {
-    updater.AddSearchTags(
-        GetCrostiniOptedOutSearchConcepts(GetSection(), GetSectionPath()));
+    updater.AddSearchTags(GetCrostiniOptedOutSearchConcepts());
     return;
   }
 

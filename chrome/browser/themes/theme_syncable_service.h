@@ -87,11 +87,13 @@ class ThemeSyncableService final : public syncer::SyncableService,
 
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
+  void WillStartInitialSync() override;
   std::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::DataType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor) override;
   void StopSyncing(syncer::DataType type) override;
+  void OnBrowserShutdown(syncer::DataType type) override;
   syncer::SyncDataList GetAllSyncDataForTesting(syncer::DataType type) const;
   std::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
@@ -114,16 +116,17 @@ class ThemeSyncableService final : public syncer::SyncableService,
   static bool HasNonDefaultTheme(
       const sync_pb::ThemeSpecifics& theme_specifics);
 
-  // Set theme from theme specifics in |sync_data| if it's different from
-  // |current_specs|. Returns the state of themes after the operation.
+  // Set theme from `new_specs` if it's different from `current_specs`. Returns
+  // the state of themes after the operation.
   ThemeSyncState MaybeSetTheme(const sync_pb::ThemeSpecifics& current_specs,
-                               const syncer::SyncData& sync_data);
+                               const sync_pb::ThemeSpecifics& new_specs);
 
-  // If the current theme is syncable, fills in the passed |theme_specifics|
-  // structure based on the currently applied theme and returns |true|.
-  // Otherwise returns |false|.
-  bool GetThemeSpecificsFromCurrentTheme(
-      sync_pb::ThemeSpecifics* theme_specifics) const;
+  // Returns a ThemeSpecifics based on the currently applied theme.
+  sync_pb::ThemeSpecifics GetThemeSpecificsFromCurrentTheme() const;
+
+  // Returns if the current theme is syncable. A theme can be unsyncable if, for
+  // example, it is set by an unsyncable extension or is set by policy.
+  bool IsCurrentThemeSyncable() const;
 
   // Updates theme specifics in sync to |theme_specifics|.
   std::optional<syncer::ModelError> ProcessNewTheme(
@@ -142,6 +145,9 @@ class ThemeSyncableService final : public syncer::SyncableService,
   // Persist use_system_theme_by_default for platforms that use it, even if
   // we're not on one.
   bool use_system_theme_by_default_;
+
+  // Tracks whether changes from the syncer are being processed.
+  bool processing_syncer_changes_ = false;
 
   // Captures the state of theme sync after initial data merge.
   std::optional<ThemeSyncState> startup_state_;

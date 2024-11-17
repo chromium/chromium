@@ -69,7 +69,7 @@ std::u16string MandatoryReauthConfirmationBubbleView::GetWindowTitle() const {
 void MandatoryReauthConfirmationBubbleView::WindowClosing() {
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        GetPaymentsUiClosedReasonFromWidget(GetWidget()));
     controller_ = nullptr;
   }
 }

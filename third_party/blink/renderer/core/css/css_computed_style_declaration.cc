@@ -300,7 +300,7 @@ void CSSComputedStyleDeclaration::UpdateStyleAndLayoutTreeIfNeeded(
   // property set by the UA stylesheet is queried.
   if (IsTransitionPseudoElement(styled_element->GetPseudoId())) {
     if (auto* view = document.View()) {
-      view->UpdateLifecycleToPrePaintClean(
+      view->UpdateAllLifecyclePhasesExceptPaint(
           DocumentUpdateReason::kComputedStyle);
     }
     return;
@@ -477,8 +477,7 @@ MutableCSSPropertyValueSet* CSSComputedStyleDeclaration::CopyPropertiesInSet(
       list.push_back(CSSPropertyValue(name, *value, false));
     }
   }
-  return MakeGarbageCollected<MutableCSSPropertyValueSet>(list.data(),
-                                                          list.size());
+  return MakeGarbageCollected<MutableCSSPropertyValueSet>(list);
 }
 
 CSSRule* CSSComputedStyleDeclaration::parentRule() const {
@@ -559,15 +558,13 @@ String CSSComputedStyleDeclaration::GetPropertyValueInternal(
 String CSSComputedStyleDeclaration::GetPropertyValueWithHint(
     const String& property_name,
     unsigned index) {
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 String CSSComputedStyleDeclaration::GetPropertyPriorityWithHint(
     const String& property_name,
     unsigned index) {
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 void CSSComputedStyleDeclaration::SetPropertyInternal(

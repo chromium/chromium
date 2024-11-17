@@ -52,7 +52,7 @@ enum class MimeType {
   kMaxValue = kTextVtt,  // For UMA histograms.
 };
 
-MimeType TranslateMimeTypeToHistogramEnum(const std::string_view mime_type) {
+MimeType TranslateMimeTypeToHistogramEnum(std::string_view mime_type) {
   constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
   if (base::StartsWith(mime_type, "application/dash+xml", kCaseInsensitive)) {
     return MimeType::kApplicationDashXml;
@@ -103,12 +103,10 @@ HlsFallbackImplementation SelectHlsFallbackImplementation() {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kHlsPlayer)) {
-    return HlsFallbackImplementation::kMediaPlayer;
-  }
-#endif
-
+  return HlsFallbackImplementation::kMediaPlayer;
+#else
   return HlsFallbackImplementation::kNone;
+#endif
 }
 
 #endif  // BUILDFLAG(ENABLE_HLS_DEMUXER) || BUILDFLAG(IS_ANDROID)
@@ -623,7 +621,12 @@ DemuxerManager::CreateHlsDemuxer() {
       data_source_info_ ? data_source_info_->WouldTaintOrigin() : false;
   auto engine = std::make_unique<HlsManifestDemuxerEngine>(
       client_->GetHlsDataSourceProvider(), media_task_runner_,
+      BindPostTaskToCurrentDefault(base::BindRepeating(
+          &DemuxerManager::AddMediaTrack, weak_factory_.GetWeakPtr())),
+      BindPostTaskToCurrentDefault(base::BindRepeating(
+          &DemuxerManager::RemoveMediaTrack, weak_factory_.GetWeakPtr())),
       would_taint_origin, loaded_url_, media_log_.get());
+
   raw_ptr<DataSourceInfo> datasource_info = engine.get();
   return std::make_tuple(
       datasource_info,
@@ -760,6 +763,15 @@ void DemuxerManager::OnFFmpegMediaTracksUpdated(
   }
 }
 #endif  // BUILDFLAG(ENABLE_FFMPEG)
+
+#if BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
+void DemuxerManager::AddMediaTrack(const media::MediaTrack& track) {
+  client_->AddMediaTrack(track);
+}
+void DemuxerManager::RemoveMediaTrack(const media::MediaTrack& track) {
+  client_->RemoveMediaTrack(track);
+}
+#endif  // BUILDFLAG(ENABLE_FFMPEG) || BUILDFLAG(ENABLE_HLS_DEMUXER)
 
 void DemuxerManager::DemuxerRequestsSeek(base::TimeDelta time) {
   if (!client_) {

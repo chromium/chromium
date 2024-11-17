@@ -14,13 +14,6 @@
 
 namespace variations::cros_early_boot::evaluate_seed {
 
-namespace {
-
-// All early-boot CrOS feature names must start with "CrOSEarlyBoot".
-constexpr char kEarlyBootFeaturePrefix[] = "CrOSEarlyBoot";
-
-}  // namespace
-
 EarlyBootFeatureVisitor::EarlyBootFeatureVisitor() = default;
 
 EarlyBootFeatureVisitor::~EarlyBootFeatureVisitor() = default;
@@ -31,11 +24,9 @@ void EarlyBootFeatureVisitor::Visit(
     const base::FieldTrialParams& params,
     const std::string& trial_name,
     const std::string& group_name) {
-  if (!base::StartsWith(feature_name, kEarlyBootFeaturePrefix)) {
-    // Do not store the feature and params if the feature name does not start
-    // with kEarlyBootFeaturePrefix.
-    return;
-  }
+  // The call to VisitFeaturesAndParams limits this visitor to feature names
+  // starting with EarlyBootFeatureVisitor::kPrefix.
+  CHECK(base::StartsWith(feature_name, kPrefix));
 
   featured::OverrideState feature_override_state;
   switch (override_state) {

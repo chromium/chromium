@@ -133,15 +133,13 @@ bool SOCKSClientSocket::WasEverUsed() const {
 NextProto SOCKSClientSocket::GetNegotiatedProtocol() const {
   if (transport_socket_)
     return transport_socket_->GetNegotiatedProtocol();
-  NOTREACHED_IN_MIGRATION();
-  return kProtoUnknown;
+  NOTREACHED();
 }
 
 bool SOCKSClientSocket::GetSSLInfo(SSLInfo* ssl_info) {
   if (transport_socket_)
     return transport_socket_->GetSSLInfo(ssl_info);
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 int64_t SOCKSClientSocket::GetTotalReceivedBytes() const {
@@ -279,9 +277,7 @@ int SOCKSClientSocket::DoLoop(int last_io_result) {
         rv = DoHandshakeReadComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_UNEXPECTED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE);
   return rv;

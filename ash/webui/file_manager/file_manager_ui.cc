@@ -41,8 +41,11 @@ namespace {
 bool IsKioskSession() {
   auto* session_controller = Shell::Get()->session_controller();
   auto account_id = session_controller->GetActiveAccountId();
-  const auto user_type =
-      session_controller->GetUserSessionByAccountId(account_id)->user_info.type;
+  auto* session = session_controller->GetUserSessionByAccountId(account_id);
+  if (!session) {
+    return false;
+  }
+  const auto user_type = session->user_info.type;
 
   switch (user_type) {
     case user_manager::UserType::kRegular:
@@ -52,6 +55,7 @@ bool IsKioskSession() {
       return false;
     case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
       return true;
   }
 }

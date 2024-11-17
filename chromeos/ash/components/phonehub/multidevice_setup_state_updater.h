@@ -12,8 +12,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 // This class waits until a multi-device host phone is verified before enabling
 // the Phone Hub feature. This intent to enable the feature is persisted across
@@ -58,7 +57,6 @@ class MultideviceSetupStateUpdater
   MultideviceFeatureAccessManager::AccessStatus camera_roll_access_status_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_MULTIDEVICE_SETUP_STATE_UPDATER_H_

@@ -63,8 +63,8 @@ public class MagnifierSurfaceControl implements MagnifierWrapper {
 
         createNativeIfNeeded();
         if (mSurfaceControl != null) {
-            x = x - mWidthPx / 2;
-            y = y - mHeightPx / 2;
+            x = x - mWidthPx / 2f;
+            y = y - mHeightPx / 2f;
             float readback_y = y;
             y = y + mVerticalOffsetPx;
 

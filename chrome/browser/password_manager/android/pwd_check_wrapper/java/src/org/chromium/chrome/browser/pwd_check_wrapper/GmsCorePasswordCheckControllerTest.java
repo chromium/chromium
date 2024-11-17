@@ -14,14 +14,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelper;
 import org.chromium.chrome.browser.password_manager.FakePasswordCheckupClientHelperFactoryImpl;
@@ -55,7 +53,6 @@ public class GmsCorePasswordCheckControllerTest {
     private static final String TEST_EMAIL_ADDRESS = "test@example.com";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private SyncService mSyncService;
     @Mock private PasswordStoreBridge mPasswordStoreBridge;
@@ -70,8 +67,6 @@ public class GmsCorePasswordCheckControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-
         setupUserProfileWithMockPrefService();
         configureMockSyncServiceToSyncPasswords();
         configurePasswordManagerBackendSupport();
@@ -85,9 +80,8 @@ public class GmsCorePasswordCheckControllerTest {
     }
 
     private void configurePasswordManagerBackendSupport() {
-        mJniMocker.mock(
-                PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
-        mJniMocker.mock(PasswordManagerHelperJni.TEST_HOOKS, mPasswordManagerHelperNativeMock);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
+        PasswordManagerHelperJni.setInstanceForTesting(mPasswordManagerHelperNativeMock);
         when(mPasswordManagerUtilBridgeNativeMock.shouldUseUpmWiring(mSyncService, mPrefService))
                 .thenReturn(true);
         when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
@@ -121,7 +115,7 @@ public class GmsCorePasswordCheckControllerTest {
 
     private void setupUserProfileWithMockPrefService() {
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
     }
 

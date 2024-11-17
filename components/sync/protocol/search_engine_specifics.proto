@@ -50,15 +50,15 @@ message SearchEngineSpecifics {
   // Do not write to this field in the future.  We preserve this for now so we
   // can read the field in order to migrate existing data that sets this bit.
   optional bool autogenerate_keyword = 12 [deprecated = true];
-  // ID 13 reserved - previously used by |logo_id|, now deprecated.
+  // ID 13 reserved - previously used by `logo_id`, now deprecated.
   optional string instant_url = 15 [deprecated = true];
-  // ID 16 reserved - previously used by |id|, now deprecated.
+  // ID 16 reserved - previously used by `id`, now deprecated.
   // The last time this entry was modified by a user. A UTC timestamp with units
   // in microseconds.
   optional int64 last_modified = 17;
   // The primary identifier of this search engine entry for Sync.
   optional string sync_guid = 18;
-  // A list of URL patterns that can be used, in addition to |url|, to extract
+  // A list of URL patterns that can be used, in addition to `url`, to extract
   // search terms from a URL.
   repeated string alternate_urls = 19;
   optional string search_terms_replacement_key = 20 [deprecated = true];

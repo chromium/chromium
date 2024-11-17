@@ -69,7 +69,7 @@ void DriveTabHelper::ResetSaveToDriveData(web::DownloadTask* task,
   if (!task || !identity) {
     return;
   }
-  DriveService* drive_service = DriveServiceFactory::GetForBrowserState(
+  DriveService* drive_service = DriveServiceFactory::GetForProfile(
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
   std::unique_ptr<DriveFileUploader> file_uploader =
       drive_service->CreateFileUploader(identity);

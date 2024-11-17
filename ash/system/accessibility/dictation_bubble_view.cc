@@ -111,6 +111,9 @@ class ASH_EXPORT TopRowView : public views::View {
         CreateLabelView(&label_, std::u16string(), kColorAshTextColorPrimary));
 
     GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
+    // Note: this static variable is used so that this view can be identified
+    // from tests. Do not change this, as it will cause test failures.
+    GetViewAccessibility().SetClassName("DictationBubbleView");
   }
 
   TopRowView(const TopRowView&) = delete;
@@ -139,15 +142,6 @@ class ASH_EXPORT TopRowView : public views::View {
     label_->SetVisible(text.has_value());
     label_->SetText(text.has_value() ? text.value() : std::u16string());
     SizeToPreferredSize();
-  }
-
-  // views::View:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    // Note: this static variable is used so that this view can be identified
-    // from tests. Do not change this, as it will cause test failures.
-    static constexpr char kDictationBubbleViewName[] = "DictationBubbleView";
-    node_data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
-                                  kDictationBubbleViewName);
   }
 
  private:

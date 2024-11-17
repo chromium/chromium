@@ -57,6 +57,7 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
 #include "third_party/blink/public/mojom/page/page.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/page_state/page_state.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/runtime_feature_state/runtime_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
@@ -141,6 +142,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
                                    public UseCounter,
                                    public WebNavigationBodyLoader::Client {
  public:
+  // Limit used for policies optimizing for LCP, e.g. font loading. Based on the
+  // "good" LCP value of 2500ms. See `RemainingTimeToLCPLimit()`.
+  static constexpr base::TimeDelta kLCPLimit = base::Milliseconds(2000);
+
   DocumentLoader(LocalFrame*,
                  WebNavigationType navigation_type,
                  std::unique_ptr<WebNavigationParams> navigation_params,
@@ -458,15 +463,6 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void MaybeRecordServiceWorkerFallbackMainResource(
       bool was_subresource_fetched_via_service_worker);
 
-  // (crbug.com/1371756) Returns the initial state of
-  // ControllerServiceWorkerMode in the document. We store this info to capture
-  // the case when the main document has installed ServiceWorker and the page is
-  // already controlled or not.
-  mojom::blink::ControllerServiceWorkerMode ServiceWorkerInitialControllerMode()
-      const {
-    return service_worker_initial_controller_mode_;
-  }
-
   // Starts loading the navigation body in a background thread.
   static void MaybeStartLoadingBodyInBackground(
       WebNavigationBodyLoader* body_loader,
@@ -576,11 +572,10 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   void StartLoadingInternal();
   void StartLoadingResponse();
   void FinishedLoading(base::TimeTicks finish_time);
-  void CancelLoadAfterCSPDenied(const ResourceResponse&);
 
   // Process a redirect to update the redirect chain, current URL, referrer,
   // etc.
-  void HandleRedirect(WebNavigationParams::RedirectInfo& redirect);
+  void HandleRedirect(const WebNavigationParams::RedirectInfo& redirect);
   void HandleResponse();
 
   void InitializeEmptyResponse();
@@ -879,6 +874,14 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // When document is fetched from service worker, we keep track of the body
   // size for reporting in Navigation Timing encodedBodySize/decodedBodySize.
   int64_t total_body_size_from_service_worker_ = 0;
+
+  // Map of permission statuses, snapshotting and propagated from browser before
+  // committing a navigation.
+  // Note: the permission statues will be only used as initial states of
+  // `CachedPermissionStatus`
+  std::optional<
+      HashMap<mojom::blink::PermissionName, mojom::blink::PermissionStatus>>
+      initial_permission_statuses_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

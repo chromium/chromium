@@ -107,7 +107,7 @@ TableTypes::Column TableTypes::CreateColumn(
   bool is_constrained = inline_size.has_value();
   if (percentage_inline_size && *percentage_inline_size == 0.0f)
     percentage_inline_size.reset();
-  bool is_collapsed = style.UsedVisibility() == EVisibility::kCollapse;
+  bool is_collapsed = style.Visibility() == EVisibility::kCollapse;
   if (is_table_fixed) {
     is_mergeable = false;
   } else {
@@ -328,7 +328,7 @@ TableGroupedChildren::TableGroupedChildren(const BlockNode& table)
             bodies.push_back(block_child);
           break;
         default:
-          NOTREACHED_IN_MIGRATION() << "unexpected table child";
+          NOTREACHED() << "unexpected table child";
       }
     }
   }
@@ -376,8 +376,7 @@ TableGroupedChildrenIterator& TableGroupedChildrenIterator::operator++() {
     case kEnd:
       break;
     case kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return *this;
 }
@@ -398,8 +397,7 @@ TableGroupedChildrenIterator& TableGroupedChildrenIterator::operator--() {
       AdvanceBackwardToNonEmptySection();
       break;
     case kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return *this;
 }
@@ -414,8 +412,7 @@ BlockNode TableGroupedChildrenIterator::operator*() const {
       return body_vector_->at(position_);
     case kEnd:
     case kNone:
-      NOTREACHED_IN_MIGRATION();
-      return BlockNode(nullptr);
+      NOTREACHED();
   }
 }
 
@@ -456,16 +453,14 @@ void TableGroupedChildrenIterator::AdvanceForwardToNonEmptySection() {
       current_section_ = kEnd;
       break;
     case kEnd:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
 void TableGroupedChildrenIterator::AdvanceBackwardToNonEmptySection() {
   switch (current_section_) {
     case kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case kHead:
       current_section_ = kNone;
       break;

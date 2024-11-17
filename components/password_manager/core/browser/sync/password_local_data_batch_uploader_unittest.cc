@@ -8,12 +8,17 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/to_string.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/sync/service/local_data_description.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -109,6 +114,8 @@ TEST_F(PasswordLocalDataBatchUploaderTest, DescriptionEmptyIfAccountStoreNull) {
   EXPECT_EQ(description.Get().item_count, 0u);
   EXPECT_EQ(description.Get().domain_count, 0u);
   EXPECT_EQ(description.Get().domains, std::vector<std::string>{});
+  EXPECT_EQ(description.Get().local_data_models,
+            std::vector<syncer::LocalDataItemModel>{});
 }
 
 // This should not happen outside of tests, it's just tested for symmetry with
@@ -126,6 +133,8 @@ TEST_F(PasswordLocalDataBatchUploaderTest, DescriptionEmptyIfProfileStoreNull) {
   EXPECT_EQ(description.Get().item_count, 0u);
   EXPECT_EQ(description.Get().domain_count, 0u);
   EXPECT_EQ(description.Get().domains, std::vector<std::string>{});
+  EXPECT_EQ(description.Get().local_data_models,
+            std::vector<syncer::LocalDataItemModel>{});
 }
 
 TEST_F(PasswordLocalDataBatchUploaderTest,
@@ -146,6 +155,8 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   EXPECT_EQ(description.Get().item_count, 0u);
   EXPECT_EQ(description.Get().domain_count, 0u);
   EXPECT_EQ(description.Get().domains, std::vector<std::string>{});
+  EXPECT_EQ(description.Get().local_data_models,
+            std::vector<syncer::LocalDataItemModel>{});
 }
 
 TEST_F(PasswordLocalDataBatchUploaderTest,
@@ -165,6 +176,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   EXPECT_EQ(description.Get().item_count, 1u);
   EXPECT_EQ(description.Get().domain_count, 1u);
   EXPECT_EQ(description.Get().domains, std::vector<std::string>{"local.com"});
+  EXPECT_EQ(description.Get().local_data_models.size(), 0u);
 }
 
 TEST_F(PasswordLocalDataBatchUploaderTest,
@@ -188,6 +200,7 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   EXPECT_EQ(first_description.Get().domain_count, 1u);
   EXPECT_EQ(first_description.Get().domains,
             std::vector<std::string>{"local.com"});
+  EXPECT_EQ(first_description.Get().local_data_models.size(), 0u);
   EXPECT_EQ(second_description.Get(), first_description.Get());
 }
 
@@ -473,6 +486,284 @@ TEST_F(PasswordLocalDataBatchUploaderTest,
   EXPECT_THAT(account_store()->stored_passwords(), SizeIs(3));
   histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 3, 1);
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+class PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest
+    : public PasswordLocalDataBatchUploaderTest {
+ public:
+  // Create `count` local passwords and returns them as a list.
+  std::vector<PasswordForm> CreatePasswordFormsInStore(
+      int count,
+      FakePasswordStore* store) {
+    base::test::TestFuture<void> wait_add;
+    std::vector<PasswordForm> passwords;
+    std::string store_string = store->IsAccountStore() ? "account" : "local";
+    for (int i = 0; i < count; ++i) {
+      PasswordForm password = CreatePasswordForm(
+          base::StringPrintf("http://%s%i.com", store_string, i));
+      passwords.push_back(password);
+      store->AddLogin(password, wait_add.GetCallback());
+      EXPECT_TRUE(wait_add.WaitAndClear());
+    }
+    return passwords;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kBatchUploadDesktop};
+};
+
+TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+       DescriptionContainsOnlyLocalPasswords) {
+  base::test::TestFuture<void> wait_add;
+  profile_store()->AddLogin(CreatePasswordForm("http://local.com"),
+                            wait_add.GetCallback());
+  ASSERT_TRUE(wait_add.WaitAndClear());
+  account_store()->AddLogin(CreatePasswordForm("http://account.com"),
+                            wait_add.GetCallback());
+  ASSERT_TRUE(wait_add.WaitAndClear());
+  PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
+  base::test::TestFuture<syncer::LocalDataDescription> description;
+
+  uploader.GetLocalDataDescription(description.GetCallback());
+
+  EXPECT_EQ(description.Get().item_count, 1u);
+  EXPECT_EQ(description.Get().domain_count, 1u);
+  EXPECT_EQ(description.Get().domains, std::vector<std::string>{"local.com"});
+  ASSERT_EQ(description.Get().local_data_models.size(), 1u);
+  EXPECT_EQ(description.Get().local_data_models[0].title, "local.com");
+  EXPECT_EQ(description.Get().local_data_models[0].subtitle, "username");
+}
+
+TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+       DescriptionCanBeQueriedBySimultaneousRequests) {
+  // Add one local password and one account password.
+  base::test::TestFuture<void> wait_add;
+  PasswordForm local_password = CreatePasswordForm("http://local.com");
+  profile_store()->AddLogin(local_password, wait_add.GetCallback());
+  ASSERT_TRUE(wait_add.WaitAndClear());
+  PasswordForm account_password = CreatePasswordForm("http://account.com");
+  account_store()->AddLogin(account_password, wait_add.GetCallback());
+  ASSERT_TRUE(wait_add.WaitAndClear());
+  PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
+  base::test::TestFuture<syncer::LocalDataDescription> first_description;
+  base::test::TestFuture<syncer::LocalDataDescription> second_description;
+
+  uploader.GetLocalDataDescription(first_description.GetCallback());
+  uploader.GetLocalDataDescription(second_description.GetCallback());
+
+  EXPECT_EQ(first_description.Get().item_count, 1u);
+  EXPECT_EQ(first_description.Get().domain_count, 1u);
+  EXPECT_EQ(first_description.Get().domains,
+            std::vector<std::string>{"local.com"});
+  ASSERT_EQ(first_description.Get().local_data_models.size(), 1u);
+  EXPECT_EQ(first_description.Get().local_data_models[0].title, "local.com");
+  EXPECT_EQ(first_description.Get().local_data_models[0].subtitle, "username");
+  EXPECT_EQ(second_description.Get(), first_description.Get());
+}
+
+TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+       MigrationUploadsEmptyKeys) {
+  base::HistogramTester histogram_tester;
+  std::vector<PasswordForm> passwords =
+      CreatePasswordFormsInStore(3, profile_store());
+  PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
+
+  // Trigger upload with an empty list.
+  uploader.TriggerLocalDataMigration({});
+  RunUntilIdle();
+
+  // All passwords still in profile store.
+  EXPECT_THAT(profile_store()->stored_passwords(), SizeIs(3));
+  // No password uploaded in account store.
+  EXPECT_THAT(account_store()->stored_passwords(), IsEmpty());
+  histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 0, 1);
+}
+
+TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+       MigrationUploadsPartialPasswordsAndRecordsMetricOnce) {
+  base::HistogramTester histogram_tester;
+  std::vector<PasswordForm> passwords =
+      CreatePasswordFormsInStore(3, profile_store());
+  PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
+
+  // Trigger upload for password 0 and 2.
+  uploader.TriggerLocalDataMigration({
+      PasswordFormUniqueKey(passwords[0]),
+      PasswordFormUniqueKey(passwords[2]),
+  });
+  RunUntilIdle();
+
+  // Password 1 still in profile_store.
+  EXPECT_THAT(profile_store()->stored_passwords(),
+              UnorderedElementsAre(
+                  Pair(passwords[1].signon_realm,
+                       UnorderedElementsAre(MatchesForm(passwords[1])))));
+  // Password 0 and 2 in account_store.
+  EXPECT_THAT(account_store()->stored_passwords(),
+              UnorderedElementsAre(
+                  Pair(passwords[0].signon_realm,
+                       UnorderedElementsAre(MatchesForm(passwords[0]))),
+                  Pair(passwords[2].signon_realm,
+                       UnorderedElementsAre(MatchesForm(passwords[2])))));
+  histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 2, 1);
+}
+
+TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+       MigrationUploadsAllPasswordsWithKeys) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> wait_add;
+  std::vector<PasswordForm> passwords =
+      CreatePasswordFormsInStore(3, profile_store());
+  PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
+
+  // Trigger upload for all passwords with their keys.
+  uploader.TriggerLocalDataMigration({PasswordFormUniqueKey(passwords[0]),
+                                      PasswordFormUniqueKey(passwords[1]),
+                                      PasswordFormUniqueKey(passwords[2])});
+  RunUntilIdle();
+
+  EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
+  EXPECT_THAT(account_store()->stored_passwords(),
+              UnorderedElementsAre(
+                  Pair(passwords[0].signon_realm,
+                       UnorderedElementsAre(MatchesForm(passwords[0]))),
+                  Pair(passwords[1].signon_realm,
+                       UnorderedElementsAre(MatchesForm(passwords[1]))),
+                  Pair(passwords[2].signon_realm,
+                       UnorderedElementsAre(MatchesForm(passwords[2])))));
+  histogram_tester.ExpectUniqueSample(kNumUploadsMetric, passwords.size(), 1);
+}
+
+TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+       MigrationUploadsPasswordsSameKey) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> wait_add;
+  std::vector<PasswordForm> passwords =
+      CreatePasswordFormsInStore(3, profile_store());
+  PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
+
+  // Trigger upload for the same key multiple times. Only password 0.
+  uploader.TriggerLocalDataMigration({PasswordFormUniqueKey(passwords[0]),
+                                      PasswordFormUniqueKey(passwords[0]),
+                                      PasswordFormUniqueKey(passwords[0])});
+  RunUntilIdle();
+
+  // Only password 0 should be uploaded.
+  EXPECT_THAT(profile_store()->stored_passwords(),
+              UnorderedElementsAre(
+                  Pair(passwords[1].signon_realm,
+                       UnorderedElementsAre(MatchesForm(passwords[1]))),
+                  Pair(passwords[2].signon_realm,
+                       UnorderedElementsAre(MatchesForm(passwords[2])))));
+  EXPECT_THAT(account_store()->stored_passwords(),
+              UnorderedElementsAre(
+                  Pair(passwords[0].signon_realm,
+                       UnorderedElementsAre(MatchesForm(passwords[0])))));
+  histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 1, 1);
+}
+
+TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+       MigrationUploadsPasswordsWithUnavailableKey) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> wait_add;
+  std::vector<PasswordForm> passwords =
+      CreatePasswordFormsInStore(3, profile_store());
+  PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
+
+  PasswordForm password_not_in_local_store =
+      CreatePasswordForm("http://password_not_local.com");
+  // Trigger upload for password 0 and a password not in profile store.
+  uploader.TriggerLocalDataMigration(
+      {PasswordFormUniqueKey(passwords[0]),
+       PasswordFormUniqueKey(password_not_in_local_store)});
+  RunUntilIdle();
+
+  // Only password 0 should be uploaded, `password_not_in_local_store` ignored.
+  EXPECT_THAT(profile_store()->stored_passwords(),
+              UnorderedElementsAre(
+                  Pair(passwords[1].signon_realm,
+                       UnorderedElementsAre(MatchesForm(passwords[1]))),
+                  Pair(passwords[2].signon_realm,
+                       UnorderedElementsAre(MatchesForm(passwords[2])))));
+  EXPECT_THAT(account_store()->stored_passwords(),
+              UnorderedElementsAre(
+                  Pair(passwords[0].signon_realm,
+                       UnorderedElementsAre(MatchesForm(passwords[0])))));
+  histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 1, 1);
+}
+
+TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+       MigrationUploadsPasswordsKeyAlreadyInAccountStore) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> wait_add;
+  std::vector<PasswordForm> local_passwords =
+      CreatePasswordFormsInStore(3, profile_store());
+  std::vector<PasswordForm> account_passwords =
+      CreatePasswordFormsInStore(3, account_store());
+  PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
+
+  // Trigger upload for local password 0 and a account password 0 already in
+  // account store.
+  uploader.TriggerLocalDataMigration(
+      {PasswordFormUniqueKey(local_passwords[0]),
+       PasswordFormUniqueKey(account_passwords[0])});
+  RunUntilIdle();
+
+  // Only password 0 should be uploaded, `account_passwords[0]` should not be
+  // duplicated and appear only once in account store.
+  EXPECT_THAT(profile_store()->stored_passwords(),
+              UnorderedElementsAre(
+                  Pair(local_passwords[1].signon_realm,
+                       UnorderedElementsAre(MatchesForm(local_passwords[1]))),
+                  Pair(local_passwords[2].signon_realm,
+                       UnorderedElementsAre(MatchesForm(local_passwords[2])))));
+  EXPECT_THAT(
+      account_store()->stored_passwords(),
+      UnorderedElementsAre(
+          Pair(local_passwords[0].signon_realm,
+               UnorderedElementsAre(MatchesForm(local_passwords[0]))),
+          Pair(account_passwords[0].signon_realm,
+               UnorderedElementsAre(MatchesForm(account_passwords[0]))),
+          Pair(account_passwords[1].signon_realm,
+               UnorderedElementsAre(MatchesForm(account_passwords[1]))),
+          Pair(account_passwords[2].signon_realm,
+               UnorderedElementsAre(MatchesForm(account_passwords[2])))));
+  histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 1, 1);
+}
+
+TEST_F(PasswordLocalDataBatchUploaderWithBatchUploadDesktopTest,
+       MigrationUploadsPasswordInAccountAndProfileStore) {
+  base::HistogramTester histogram_tester;
+  base::test::TestFuture<void> wait_add;
+  PasswordForm common_password = CreatePasswordForm("http://common.com");
+  profile_store()->AddLogin(common_password, wait_add.GetCallback());
+  ASSERT_TRUE(wait_add.WaitAndClear());
+  account_store()->AddLogin(common_password, wait_add.GetCallback());
+  ASSERT_TRUE(wait_add.WaitAndClear());
+  PasswordLocalDataBatchUploader uploader(profile_store(), account_store());
+
+  // Password to migrate already exists in the account store.
+  ASSERT_THAT(account_store()->stored_passwords(),
+              UnorderedElementsAre(
+                  Pair(common_password.signon_realm,
+                       UnorderedElementsAre(MatchesForm(common_password)))));
+
+  uploader.TriggerLocalDataMigration({PasswordFormUniqueKey(common_password)});
+  RunUntilIdle();
+
+  // Common password should be removed from the profile store and not duplicated
+  // in the account store.
+  EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
+  EXPECT_THAT(account_store()->stored_passwords(),
+              UnorderedElementsAre(
+                  Pair(common_password.signon_realm,
+                       UnorderedElementsAre(MatchesForm(common_password)))));
+  // No upload recorded.
+  histogram_tester.ExpectUniqueSample(kNumUploadsMetric, 0, 1);
+}
+
+#endif
 
 }  // namespace
 }  // namespace password_manager

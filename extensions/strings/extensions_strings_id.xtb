@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Nilai masukan untuk kunci pribadi harus jalur yang valid.</translation>
 <translation id="388442998277590542">Tidak dapat memuat halaman opsi '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">Kesalahan ketika menandai ekstensi.</translation>
-<translation id="4115165561519362854">Administrator perangkat ini mewajibkan <ph name="EXTENSION_NAME" /> untuk menjalankan versi minimum <ph name="EXTENSION_VERSION" />. Ekstensi tidak dapat diaktifkan sampai diperbarui ke versi tersebut (atau yang lebih tinggi).</translation>
 <translation id="4233778200880751280">Tidak dapat memuat halaman tentang '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">Gagal mengeluarkan kunci pribadi.</translation>
 <translation id="4811956658694082538">Tidak dapat memasang paket karena proses utilitas mogok. Mulai ulang Chrome dan coba lagi.</translation>

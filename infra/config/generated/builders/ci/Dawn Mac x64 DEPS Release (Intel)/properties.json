@@ -74,7 +74,8 @@
           "builder": "dawn-mac-x64-deps-rel",
           "group": "tryserver.chromium.dawn"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Dawn Mac x64 DEPS Release (Intel)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

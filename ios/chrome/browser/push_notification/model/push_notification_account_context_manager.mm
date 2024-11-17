@@ -37,7 +37,7 @@ struct PermissionsPref {
   raw_ptr<ProfileManagerIOS> _profileManager;
 
   // A dictionary that maps a user's GAIA ID to an unsigned integer representing
-  // the number of times the account is signed in across BrowserStates.
+  // the number of times the account is signed in across Profiles.
   std::map<std::string, size_t> _contextMap;
 }
 
@@ -74,10 +74,10 @@ struct PermissionsPref {
     // it was not removed.
     return NO;
   }
-  size_t& occurrencesAcrossBrowserStates = iterator->second;
+  size_t& occurrencesAcrossProfiles = iterator->second;
 
-  occurrencesAcrossBrowserStates--;
-  if (occurrencesAcrossBrowserStates > 0) {
+  occurrencesAcrossProfiles--;
+  if (occurrencesAcrossProfiles > 0) {
     return NO;
   }
 
@@ -128,15 +128,15 @@ struct PermissionsPref {
 
 - (NSDictionary<NSString*, NSNumber*>*)preferenceMapForAccount:
     (const std::string&)gaiaID {
-  ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
+  ProfileIOS* profile = [self profileFrom:gaiaID];
   NSMutableDictionary<NSString*, NSNumber*>* result =
       [[NSMutableDictionary alloc] init];
-  if (!browserState) {
+  if (!profile) {
     return result;
   }
 
-  const base::Value::Dict& pref = browserState->GetPrefs()->GetDict(
-      prefs::kFeaturePushNotificationPermissions);
+  const base::Value::Dict& pref =
+      profile->GetPrefs()->GetDict(prefs::kFeaturePushNotificationPermissions);
   for (const auto&& [key, value] : pref) {
     [result setObject:@(value.GetBool()) forKey:base::SysUTF8ToNSString(key)];
   }
@@ -159,14 +159,14 @@ struct PermissionsPref {
 
 #pragma mark - Private
 
-// Returns the ChromeBrowserState that has the given gaiaID set as the primary
+// Returns the ProfileIOS that has the given gaiaID set as the primary
 // account. TODO(crbug.com/40250402) Implement policy that computes correct
-// permission set. This function naively chooses the first ChromeBrowserState
+// permission set. This function naively chooses the first ProfileIOS
 // that is associated with the given gaiaID. In a multi-profile environment
 // where the given gaiaID is signed into multiple profiles, it is possible that
 // the push notification enabled features' permissions may be incorrectly
 // applied.
-- (ChromeBrowserState*)chromeBrowserStateFrom:(const std::string&)gaiaID {
+- (ProfileIOS*)profileFrom:(const std::string&)gaiaID {
   ProfileAttributesStorageIOS* storage =
       _profileManager->GetProfileAttributesStorage();
 
@@ -182,7 +182,7 @@ struct PermissionsPref {
 }
 
 // Returns the appropriate `PermissionsPref` for the given `clientID` and
-// `gaiaID`. This can be either BrowserState prefs or LocalState prefs.
+// `gaiaID`. This can be either profile prefs or LocalState prefs.
 - (PermissionsPref)prefsForClient:(PushNotificationClientId)clientID
                           account:(const std::string&)gaiaID {
   std::string clientKey =
@@ -192,15 +192,15 @@ struct PermissionsPref {
     case PushNotificationClientId::kContent:
     case PushNotificationClientId::kSports:
     case PushNotificationClientId::kSendTab: {
-      ChromeBrowserState* browserState = [self chromeBrowserStateFrom:gaiaID];
-      if (!browserState) {
+      ProfileIOS* profile = [self profileFrom:gaiaID];
+      if (!profile) {
         // TODO:(crbug.com/1445551) Restore to DCHECK when signing into Chrome
         // via ConsistencySigninPromo UI updates the
         // ProfileAttributesStorageIOS.
         return {nullptr, prefs::kFeaturePushNotificationPermissions, clientKey};
       }
-      return {browserState->GetPrefs(),
-              prefs::kFeaturePushNotificationPermissions, clientKey};
+      return {profile->GetPrefs(), prefs::kFeaturePushNotificationPermissions,
+              clientKey};
     }
     case PushNotificationClientId::kTips:
     case PushNotificationClientId::kSafetyCheck:

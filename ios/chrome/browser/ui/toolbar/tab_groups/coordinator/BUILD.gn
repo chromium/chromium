@@ -12,14 +12,16 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
-    "//components/saved_tab_groups:core",
+    "//components/data_sharing/public",
+    "//components/saved_tab_groups/public",
     "//ios/chrome/app/strings",
-    "//ios/chrome/browser/policy/model:policy_util",
+    "//ios/chrome/browser/data_sharing/model",
     "//ios/chrome/browser/saved_tab_groups/model",
+    "//ios/chrome/browser/share_kit/model",
+    "//ios/chrome/browser/share_kit/model:factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/profile:forward",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
@@ -28,9 +30,10 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/tab_switcher:tab_group_confirmation",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups:tab_group_creation",
     "//ios/chrome/browser/ui/toolbar/tab_groups/ui",
+    "//ios/chrome/browser/url_loading/model",
     "//ios/third_party/material_components_ios",
     "//ios/web/public",
-    "//ios/web/public/navigation",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

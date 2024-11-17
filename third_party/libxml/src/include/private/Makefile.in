@@ -89,14 +89,15 @@ build_triplet = @build@
 host_triplet = @host@
 subdir = include/private
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/m4/ac_try_compile2.m4 \
-	$(top_srcdir)/m4/ax_append_flag.m4 \
+am__aclocal_m4_deps = $(top_srcdir)/m4/ax_append_flag.m4 \
 	$(top_srcdir)/m4/ax_append_link_flags.m4 \
 	$(top_srcdir)/m4/ax_check_link_flag.m4 \
+	$(top_srcdir)/m4/ax_gcc_func_attribute.m4 \
 	$(top_srcdir)/m4/ax_require_defined.m4 \
 	$(top_srcdir)/m4/libtool.m4 $(top_srcdir)/m4/ltoptions.m4 \
 	$(top_srcdir)/m4/ltsugar.m4 $(top_srcdir)/m4/ltversion.m4 \
-	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/configure.ac
+	$(top_srcdir)/m4/lt~obsolete.m4 $(top_srcdir)/VERSION \
+	$(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 DIST_COMMON = $(srcdir)/Makefile.am $(am__DIST_COMMON)
@@ -136,7 +137,6 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-BASE_THREAD_LIBS = @BASE_THREAD_LIBS@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -158,6 +158,8 @@ EXEEXT = @EXEEXT@
 FGREP = @FGREP@
 FILECMD = @FILECMD@
 GREP = @GREP@
+HISTORY_CFLAGS = @HISTORY_CFLAGS@
+HISTORY_LIBS = @HISTORY_LIBS@
 ICONV_CFLAGS = @ICONV_CFLAGS@
 ICU_CFLAGS = @ICU_CFLAGS@
 ICU_DEFS = @ICU_DEFS@
@@ -191,7 +193,6 @@ MAKEINFO = @MAKEINFO@
 MANIFEST_TOOL = @MANIFEST_TOOL@
 MKDIR_P = @MKDIR_P@
 MODULE_EXTENSION = @MODULE_EXTENSION@
-MODULE_PLATFORM_LIBS = @MODULE_PLATFORM_LIBS@
 NM = @NM@
 NMEDIT = @NMEDIT@
 OBJDUMP = @OBJDUMP@
@@ -206,7 +207,6 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_URL = @PACKAGE_URL@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
-PERL = @PERL@
 PKG_CONFIG = @PKG_CONFIG@
 PKG_CONFIG_LIBDIR = @PKG_CONFIG_LIBDIR@
 PKG_CONFIG_PATH = @PKG_CONFIG_PATH@
@@ -221,7 +221,6 @@ PYTHON_VERSION = @PYTHON_VERSION@
 RANLIB = @RANLIB@
 RDL_CFLAGS = @RDL_CFLAGS@
 RDL_LIBS = @RDL_LIBS@
-RELDATE = @RELDATE@
 SED = @SED@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
@@ -252,7 +251,6 @@ WITH_SCHEMAS = @WITH_SCHEMAS@
 WITH_SCHEMATRON = @WITH_SCHEMATRON@
 WITH_THREADS = @WITH_THREADS@
 WITH_THREAD_ALLOC = @WITH_THREAD_ALLOC@
-WITH_TREE = @WITH_TREE@
 WITH_VALID = @WITH_VALID@
 WITH_WRITER = @WITH_WRITER@
 WITH_XINCLUDE = @WITH_XINCLUDE@
@@ -263,9 +261,9 @@ XML_CFLAGS = @XML_CFLAGS@
 XML_INCLUDEDIR = @XML_INCLUDEDIR@
 XML_LIBDIR = @XML_LIBDIR@
 XML_LIBS = @XML_LIBS@
-XML_LIBTOOLLIBS = @XML_LIBTOOLLIBS@
 XML_PRIVATE_CFLAGS = @XML_PRIVATE_CFLAGS@
 XML_PRIVATE_LIBS = @XML_PRIVATE_LIBS@
+XML_STATIC_CFLAGS = @XML_STATIC_CFLAGS@
 XSLTPROC = @XSLTPROC@
 Z_CFLAGS = @Z_CFLAGS@
 Z_LIBS = @Z_LIBS@
@@ -328,6 +326,7 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 EXTRA_DIST = \
 	buf.h \
+	cata.h \
 	dict.h \
 	enc.h \
 	entities.h \
@@ -339,6 +338,7 @@ EXTRA_DIST = \
 	parser.h \
 	regexp.h \
 	save.h \
+	shell.h \
 	string.h \
 	threads.h \
 	tree.h \

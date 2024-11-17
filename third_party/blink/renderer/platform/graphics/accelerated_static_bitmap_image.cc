@@ -60,29 +60,6 @@ void AcceleratedStaticBitmapImage::ReleaseTexture(void* ctx) {
 
 // static
 scoped_refptr<AcceleratedStaticBitmapImage>
-AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-    const gpu::Mailbox& mailbox,
-    const gpu::SyncToken& sync_token,
-    GLuint shared_image_texture_id,
-    const SkImageInfo& sk_image_info,
-    GLenum texture_target,
-    bool is_origin_top_left,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::PlatformThreadRef context_thread_ref,
-    scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-    viz::ReleaseCallback release_callback,
-    bool supports_display_compositing,
-    bool is_overlay_candidate) {
-  return base::AdoptRef(new AcceleratedStaticBitmapImage(
-      mailbox, sync_token, shared_image_texture_id, sk_image_info,
-      texture_target, is_origin_top_left, supports_display_compositing,
-      is_overlay_candidate, ImageOrientationEnum::kDefault,
-      std::move(context_provider_wrapper), context_thread_ref,
-      std::move(context_task_runner), std::move(release_callback)));
-}
-
-// static
-scoped_refptr<AcceleratedStaticBitmapImage>
 AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
@@ -167,40 +144,6 @@ AcceleratedStaticBitmapImage::CreateFromExternalMailbox(
 }
 
 AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
-    const gpu::Mailbox& mailbox,
-    const gpu::SyncToken& sync_token,
-    GLuint shared_image_texture_id,
-    const SkImageInfo& sk_image_info,
-    GLenum texture_target,
-    bool is_origin_top_left,
-    bool supports_display_compositing,
-    bool is_overlay_candidate,
-    const ImageOrientation& orientation,
-    base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
-    base::PlatformThreadRef context_thread_ref,
-    scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-    viz::ReleaseCallback release_callback)
-    : StaticBitmapImage(orientation),
-      mailbox_(mailbox),
-      sk_image_info_(sk_image_info),
-      texture_target_(texture_target),
-      is_origin_top_left_(is_origin_top_left),
-      supports_display_compositing_(supports_display_compositing),
-      is_overlay_candidate_(is_overlay_candidate),
-      context_provider_wrapper_(std::move(context_provider_wrapper)),
-      mailbox_ref_(
-          base::MakeRefCounted<MailboxRef>(sync_token,
-                                           context_thread_ref,
-                                           std::move(context_task_runner),
-                                           std::move(release_callback))),
-      paint_image_content_id_(cc::PaintImage::GetNextContentId()) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (shared_image_texture_id) {
-    InitializeTextureBacking(shared_image_texture_id);
-  }
-}
-
-AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     scoped_refptr<gpu::ClientSharedImage> shared_image,
     const gpu::SyncToken& sync_token,
     GLuint shared_image_texture_id,
@@ -216,7 +159,6 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     viz::ReleaseCallback release_callback)
     : StaticBitmapImage(orientation),
       shared_image_(std::move(shared_image)),
-      mailbox_(shared_image_->mailbox()),
       sk_image_info_(sk_image_info),
       texture_target_(texture_target),
       is_origin_top_left_(is_origin_top_left),
@@ -267,35 +209,26 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
   DCHECK(mailbox_ref_->is_cross_thread() ||
          dest_gl != ContextProvider()->ContextGL());
 
-  // Get a texture id that |destProvider| knows about and copy from it.
-  dest_gl->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
-  GLuint source_texture_id =
-      dest_gl->CreateAndTexStorage2DSharedImageCHROMIUM(mailbox_.name);
-  dest_gl->BeginSharedImageAccessDirectCHROMIUM(
-      source_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
+  // Create a texture that |destProvider| knows about and copy from it.
+  auto source_si_texture = shared_image_->CreateGLTexture(dest_gl);
+  auto source_scoped_si_access = source_si_texture->BeginAccess(
+      mailbox_ref_->sync_token(), /*readonly=*/true);
   dest_gl->CopySubTextureCHROMIUM(
-      source_texture_id, 0, dest_target, dest_texture_id, dest_level,
-      dest_point.x(), dest_point.y(), source_sub_rectangle.x(),
+      source_scoped_si_access->texture_id(), 0, dest_target, dest_texture_id,
+      dest_level, dest_point.x(), dest_point.y(), source_sub_rectangle.x(),
       source_sub_rectangle.y(), source_sub_rectangle.width(),
       source_sub_rectangle.height(), unpack_flip_y,
       /*unpack_premultiply_alpha=*/GL_FALSE,
       /*unpack_unmultiply_alpha=*/
       unpack_premultiply_alpha ? GL_FALSE : GL_TRUE);
-  dest_gl->EndSharedImageAccessDirectCHROMIUM(source_texture_id);
-  dest_gl->DeleteTextures(1, &source_texture_id);
+  auto sync_token = gpu::SharedImageTexture::ScopedAccess::EndAccess(
+      std::move(source_scoped_si_access));
 
   // We need to update the texture holder's sync token to ensure that when this
   // mailbox is recycled or deleted, it is done after the copy operation above.
-  gpu::SyncToken sync_token;
-  dest_gl->GenUnverifiedSyncTokenCHROMIUM(sync_token.GetData());
   mailbox_ref_->set_sync_token(sync_token);
 
   return true;
-}
-
-bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
-    CanvasResourceProvider* resource_provider) {
-  return CopyToResourceProvider(resource_provider, Rect());
 }
 
 bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
@@ -307,13 +240,9 @@ bool AcceleratedStaticBitmapImage::CopyToResourceProvider(
   if (!IsValid())
     return false;
 
-  const bool unpack_flip_y =
-      (IsOriginTopLeft() != resource_provider->IsOriginTopLeft());
-
   const gpu::SyncToken& ready_sync_token = mailbox_ref_->sync_token();
   gpu::SyncToken completion_sync_token;
-  if (!resource_provider->OverwriteImage(mailbox_, copy_rect, unpack_flip_y,
-                                         /*unpack_premultiply_alpha=*/false,
+  if (!resource_provider->OverwriteImage(shared_image_->mailbox(), copy_rect,
                                          ready_sync_token,
                                          completion_sync_token)) {
     return false;
@@ -414,7 +343,7 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
     DCHECK_EQ(shared_image_texture_id, 0u);
     skia_context_provider_wrapper_ = context_provider_wrapper;
     texture_backing_ = sk_make_sp<MailboxTextureBacking>(
-        mailbox_, mailbox_ref_, sk_image_info_,
+        shared_image_->mailbox(), mailbox_ref_, sk_image_info_,
         std::move(context_provider_wrapper));
     return;
   }
@@ -432,7 +361,7 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
     should_delete_texture_on_release = false;
   } else {
     shared_context_texture_id =
-        shared_ri->CreateAndConsumeForGpuRaster(mailbox_);
+        shared_ri->CreateAndConsumeForGpuRaster(shared_image_->mailbox());
     shared_ri->BeginSharedImageAccessDirectCHROMIUM(
         shared_context_texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
   }
@@ -493,11 +422,11 @@ void AcceleratedStaticBitmapImage::EnsureSyncTokenVerified() {
 }
 
 gpu::MailboxHolder AcceleratedStaticBitmapImage::GetMailboxHolder() const {
-  if (!IsValid())
+  if (!IsValid()) {
     return gpu::MailboxHolder();
-
-  return gpu::MailboxHolder(mailbox_, mailbox_ref_->sync_token(),
-                            texture_target_);
+  }
+  return gpu::MailboxHolder(shared_image_->mailbox(),
+                            mailbox_ref_->sync_token(), texture_target_);
 }
 
 scoped_refptr<gpu::ClientSharedImage>
@@ -505,8 +434,14 @@ AcceleratedStaticBitmapImage::GetSharedImage() const {
   if (!IsValid()) {
     return nullptr;
   }
-
   return shared_image_;
+}
+
+gpu::SyncToken AcceleratedStaticBitmapImage::GetSyncToken() const {
+  if (!IsValid()) {
+    return gpu::SyncToken();
+  }
+  return mailbox_ref_->sync_token();
 }
 
 void AcceleratedStaticBitmapImage::Transfer() {
@@ -523,51 +458,11 @@ bool AcceleratedStaticBitmapImage::CurrentFrameKnownToBeOpaque() {
   return sk_image_info_.isOpaque();
 }
 
-scoped_refptr<StaticBitmapImage>
-AcceleratedStaticBitmapImage::ConvertToColorSpace(
-    sk_sp<SkColorSpace> color_space,
-    SkColorType color_type) {
-  SkImageInfo image_info = PaintImageForCurrentFrame().GetSkImageInfo();
-  DCHECK(color_space);
-  DCHECK(color_type == kRGBA_F16_SkColorType ||
-         color_type == kRGBA_8888_SkColorType ||
-         color_type == image_info.colorType());
-
-  if (!ContextProviderWrapper())
-    return nullptr;
-
-  if (SkColorSpace::Equals(color_space.get(), image_info.colorSpace()) &&
-      color_type == image_info.colorType()) {
-    return this;
-  }
-  image_info = image_info.makeColorSpace(color_space)
-                   .makeColorType(color_type)
-                   .makeWH(Size().width(), Size().height());
-
-  const auto usage_flags = ContextProviderWrapper()
-                               ->ContextProvider()
-                               ->SharedImageInterface()
-                               ->UsageForMailbox(mailbox_);
-  auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      image_info, cc::PaintFlags::FilterQuality::kLow,
-      CanvasResourceProvider::ShouldInitialize::kNo, ContextProviderWrapper(),
-      RasterMode::kGPU, usage_flags);
-  if (!provider) {
-    return nullptr;
-  }
-
-  cc::PaintFlags paint;
-  paint.setBlendMode(SkBlendMode::kSrc);
-  provider->Canvas().drawImage(PaintImageForCurrentFrame(), 0, 0,
-                               SkSamplingOptions(), &paint);
-  return provider->Snapshot(FlushReason::kNon2DCanvas, orientation_);
-}
-
 gpu::SharedImageUsageSet AcceleratedStaticBitmapImage::GetUsage() const {
   return ContextProviderWrapper()
       ->ContextProvider()
       ->SharedImageInterface()
-      ->UsageForMailbox(mailbox_);
+      ->UsageForMailbox(shared_image_->mailbox());
 }
 
 }  // namespace blink

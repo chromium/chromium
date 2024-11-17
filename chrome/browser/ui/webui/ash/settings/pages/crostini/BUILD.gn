@@ -22,6 +22,7 @@ static_library("crostini") {
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/guest_os",
     "//chrome/browser/ash/plugin_vm",
+    "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/components/network",
     "//chromeos/ash/components/settings",

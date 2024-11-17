@@ -7,9 +7,9 @@
 #include "base/functional/callback_forward.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -51,6 +51,6 @@ void IsolatedWebAppInstallerContextMenu::ExecuteCommand(int command_id,
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }

@@ -8,6 +8,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 
 import {Authenticator} from '../gaia_auth_host/authenticator.js';
 
+import {getTemplate} from './gaia_action_buttons.html.js';
+
 /**
  * @typedef {{
  *    primaryActionButtonLabel: string,
@@ -36,14 +38,14 @@ export class GaiaActionButtonsElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
     return {
       /**
        * The authenticator instance.
-       * @type {?Authenticator}
+       * type {?Authenticator} (omitting @ on purpose since it breaks TS)
        */
       authenticator: {
         type: Object,

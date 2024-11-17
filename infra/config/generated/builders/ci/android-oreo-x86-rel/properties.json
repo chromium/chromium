@@ -53,7 +53,8 @@
           "builder": "android-x86-rel",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-oreo-x86-rel/targets"
     }
   },
   "$build/reclient": {

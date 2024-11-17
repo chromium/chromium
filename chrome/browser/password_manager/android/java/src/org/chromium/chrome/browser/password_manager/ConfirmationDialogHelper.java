@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.password_manager;
 import android.content.Context;
 import android.content.res.Resources;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -53,7 +54,12 @@ public class ConfirmationDialogHelper {
      */
     public void showConfirmation(
             String title, String message, int confirmButtonTextId, Runnable confirmedCallback) {
-        showConfirmation(title, message, confirmButtonTextId, confirmedCallback, () -> {});
+        showConfirmation(
+                title,
+                message,
+                confirmButtonTextId,
+                confirmedCallback,
+                CallbackUtils.emptyRunnable());
     }
 
     /**

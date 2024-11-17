@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 206 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 233 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] abs(1) should be used-value-equivalent to 1
   assert_not_equals: abs(1) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 [FAIL] sign(1) should be used-value-equivalent to 1
@@ -412,5 +412,59 @@ Found 206 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: sign(10px - 2em) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
 [FAIL] calc(sign(10%) * 100px) should be used-value-equivalent to 100px
   assert_not_equals: calc(sign(10%) * 100px) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] calc(2.5 - sign(41px - 2em) / 2) should be used-value-equivalent to 2
+  assert_not_equals: calc(2.5 - sign(41px - 2em) / 2) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(2.5 - sign(40px - 2em) / 2) should be used-value-equivalent to 2.5
+  assert_not_equals: calc(2.5 - sign(40px - 2em) / 2) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(2.5 - sign(39px - 2em) / 2) should be used-value-equivalent to 3
+  assert_not_equals: calc(2.5 - sign(39px - 2em) / 2) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(3 + sign(42px - 2em)) should be used-value-equivalent to 4
+  assert_not_equals: calc(3 + sign(42px - 2em)) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
+[FAIL] calc(3 + sign(40px - 2em)) should be used-value-equivalent to 3
+  assert_not_equals: calc(3 + sign(40px - 2em)) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
+[FAIL] calc(3 + sign(38px - 2em)) should be used-value-equivalent to 2
+  assert_not_equals: calc(3 + sign(38px - 2em)) isn't valid in 'z-index'; got the default value instead. got disallowed value "auto"
+[FAIL] calc(50px + 100px * sign(42px - 2em)) should be used-value-equivalent to 150px
+  assert_not_equals: calc(50px + 100px * sign(42px - 2em)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] calc(50px + 100px * sign(40px - 2em)) should be used-value-equivalent to 50px
+  assert_not_equals: calc(50px + 100px * sign(40px - 2em)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] calc(50px + 100px * sign(38px - 2em)) should be used-value-equivalent to -50px
+  assert_not_equals: calc(50px + 100px * sign(38px - 2em)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] calc(90deg + 30deg * sign(42px - 2em)) should be used-value-equivalent to 120deg
+  assert_not_equals: calc(90deg + 30deg * sign(42px - 2em)) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
+[FAIL] calc(90deg + 30deg * sign(40px - 2em)) should be used-value-equivalent to 90deg
+  assert_not_equals: calc(90deg + 30deg * sign(40px - 2em)) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
+[FAIL] calc(90deg + 30deg * sign(38px - 2em)) should be used-value-equivalent to 60deg
+  assert_not_equals: calc(90deg + 30deg * sign(38px - 2em)) isn't valid in 'rotate'; got the default value instead. got disallowed value "none"
+[FAIL] calc(5s + 15s * sign(42px - 2em)) should be used-value-equivalent to 20s
+  assert_not_equals: calc(5s + 15s * sign(42px - 2em)) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
+[FAIL] calc(5s + 15s * sign(40px - 2em)) should be used-value-equivalent to 5s
+  assert_not_equals: calc(5s + 15s * sign(40px - 2em)) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
+[FAIL] calc(5s + 15s * sign(38px - 2em)) should be used-value-equivalent to -10s
+  assert_not_equals: calc(5s + 15s * sign(38px - 2em)) isn't valid in 'transition-delay'; got the default value instead. got disallowed value "0s"
+[FAIL] calc(100dpi + 20dpi * sign(42px - 2em)) should be used-value-equivalent to 120dpi
+  assert_not_equals: calc(100dpi + 20dpi * sign(42px - 2em)) isn't valid in 'image-resolution'; got the default value instead. got disallowed value undefined
+[FAIL] calc(100dpi + 20dpi * sign(40px - 2em)) should be used-value-equivalent to 100dpi
+  assert_not_equals: calc(100dpi + 20dpi * sign(40px - 2em)) isn't valid in 'image-resolution'; got the default value instead. got disallowed value undefined
+[FAIL] calc(100dpi + 20dpi * sign(38px - 2em)) should be used-value-equivalent to 80dpi
+  assert_not_equals: calc(100dpi + 20dpi * sign(38px - 2em)) isn't valid in 'image-resolution'; got the default value instead. got disallowed value undefined
+[FAIL] calc(3fr + 1fr * sign(42px - 2em)) should be used-value-equivalent to 4fr
+  assert_not_equals: calc(3fr + 1fr * sign(42px - 2em)) isn't valid in 'grid-template-rows'; got the default value instead. got disallowed value "none"
+[FAIL] calc(3fr + 1fr * sign(40px - 2em)) should be used-value-equivalent to 3fr
+  assert_not_equals: calc(3fr + 1fr * sign(40px - 2em)) isn't valid in 'grid-template-rows'; got the default value instead. got disallowed value "none"
+[FAIL] calc(3fr + 1fr * sign(38px - 2em)) should be used-value-equivalent to 2fr
+  assert_not_equals: calc(3fr + 1fr * sign(38px - 2em)) isn't valid in 'grid-template-rows'; got the default value instead. got disallowed value "none"
+[FAIL] calc(2.5 - sign(33px - 2rem) / 2) should be used-value-equivalent to 2
+  assert_not_equals: calc(2.5 - sign(33px - 2rem) / 2) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(2.5 - sign(32px - 2rem) / 2) should be used-value-equivalent to 2.5
+  assert_not_equals: calc(2.5 - sign(32px - 2rem) / 2) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(2.5 - sign(31px - 2rem) / 2) should be used-value-equivalent to 3
+  assert_not_equals: calc(2.5 - sign(31px - 2rem) / 2) isn't valid in 'scale'; got the default value instead. got disallowed value "none"
+[FAIL] calc(50px + 100px * sign(34px - 2rem)) should be used-value-equivalent to 150px
+  assert_not_equals: calc(50px + 100px * sign(34px - 2rem)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] calc(50px + 100px * sign(32px - 2rem)) should be used-value-equivalent to 50px
+  assert_not_equals: calc(50px + 100px * sign(32px - 2rem)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
+[FAIL] calc(50px + 100px * sign(30px - 2rem)) should be used-value-equivalent to -50px
+  assert_not_equals: calc(50px + 100px * sign(30px - 2rem)) isn't valid in 'margin-left'; got the default value instead. got disallowed value "0px"
 Harness: the test ran to completion.
 

@@ -13,6 +13,7 @@
 #include <string_view>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -81,7 +82,7 @@ class BASE_EXPORT Uuid {
   // should not treat it as such. When the internal type of base::Uuid changes,
   // this will be a non-trivial converter. See the TODO above `lowercase_` for
   // more context.
-  const std::string& AsLowercaseString() const;
+  const std::string& AsLowercaseString() const LIFETIME_BOUND;
 
   // Invalid Uuids are equal.
   friend bool operator==(const Uuid&, const Uuid&) = default;

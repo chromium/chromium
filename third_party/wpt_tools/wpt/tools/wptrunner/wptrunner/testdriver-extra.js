@@ -43,10 +43,19 @@
         } else if (data.type === "testdriver-event") {
             const event_data = JSON.parse(data.message);
             const event_name = event_data.method;
-            const event = new Event(event_name);
-            event.payload = event_data.params;
-            event_target.dispatchEvent(event);
+            const testdriver_event = new Event(event_name);
+            testdriver_event.payload = event_data.params;
+            event_target.dispatchEvent(testdriver_event);
+        } else {
+            return;
         }
+
+        // Don't expose testdriver.js-internal messages to tests. Because
+        // `testdriver.js` precedes test scripts in the markup, this "message"
+        // listener should be registered and run first [0].
+        //
+        // [0]: https://html.spec.whatwg.org/multipage/webappapis.html#event-handler-attributes
+        event.stopImmediatePropagation();
     });
 
     function is_test_context() {
@@ -383,15 +392,15 @@
     };
 
     window.test_driver_internal.set_device_posture = function(posture, context=null) {
-        return create_context_action("set_device_posture", {posture, context});
+        return create_context_action("set_device_posture", context, {posture});
     };
 
     window.test_driver_internal.clear_device_posture = function(context=null) {
-        return create_context_action("clear_device_posture", {context});
+        return create_context_action("clear_device_posture", context, {});
     };
 
     window.test_driver_internal.run_bounce_tracking_mitigations = function (context = null) {
-        return create_action("run_bounce_tracking_mitigations", {context});
+        return create_context_action("run_bounce_tracking_mitigations", context, {});
     };
 
     window.test_driver_internal.create_virtual_pressure_source = function(source_type, metadata={}, context=null) {

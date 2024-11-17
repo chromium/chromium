@@ -39,8 +39,7 @@ using device::AuthenticatorType;
 constexpr base::TimeDelta kFlickerDuration = base::Milliseconds(300);
 
 bool IsGpmPasskeyAuthenticatorType(AuthenticatorType type) {
-  return type == AuthenticatorType::kEnclave ||
-         type == AuthenticatorType::kChromeOSPasskeys;
+  return type == AuthenticatorType::kEnclave;
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -57,7 +56,7 @@ ChromeWebAuthnCredentialsDelegate::ChromeWebAuthnCredentialsDelegate(
 ChromeWebAuthnCredentialsDelegate::~ChromeWebAuthnCredentialsDelegate() =
     default;
 
-void ChromeWebAuthnCredentialsDelegate::LaunchWebAuthnFlow() {
+void ChromeWebAuthnCredentialsDelegate::LaunchSecurityKeyOrHybridFlow() {
 #if !BUILDFLAG(IS_ANDROID)
   ChromeAuthenticatorRequestDelegate* authenticator_delegate =
       AuthenticatorRequestScheduler::GetRequestDelegate(web_contents_);
@@ -66,6 +65,11 @@ void ChromeWebAuthnCredentialsDelegate::LaunchWebAuthnFlow() {
   }
   authenticator_delegate->dialog_controller()
       ->TransitionToModalWebAuthnRequest();
+#else
+  if (WebAuthnRequestDelegateAndroid* delegate =
+          WebAuthnRequestDelegateAndroid::GetRequestDelegate(web_contents_)) {
+    delegate->ShowHybridSignIn();
+  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 }
 
@@ -151,9 +155,9 @@ void ChromeWebAuthnCredentialsDelegate::OnStepTransition() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-bool ChromeWebAuthnCredentialsDelegate::OfferPasskeysFromAnotherDeviceOption()
+bool ChromeWebAuthnCredentialsDelegate::IsSecurityKeyOrHybridFlowAvailable()
     const {
-  return offer_passkey_from_another_device_;
+  return security_key_or_hybrid_flow_available_.value();
 }
 
 void ChromeWebAuthnCredentialsDelegate::RetrievePasskeys(
@@ -171,9 +175,10 @@ void ChromeWebAuthnCredentialsDelegate::RetrievePasskeys(
 
 void ChromeWebAuthnCredentialsDelegate::OnCredentialsReceived(
     std::vector<PasskeyCredential> credentials,
-    bool offer_passkey_from_another_device) {
+    SecurityKeyOrHybridFlowAvailable security_key_or_hybrid_flow_available) {
   passkeys_ = std::move(credentials);
-  offer_passkey_from_another_device_ = offer_passkey_from_another_device;
+  security_key_or_hybrid_flow_available_ =
+      security_key_or_hybrid_flow_available;
   if (retrieve_passkeys_callback_) {
     RecordPasskeyRetrievalDelay();
     std::move(retrieve_passkeys_callback_).Run();
@@ -195,24 +200,6 @@ void ChromeWebAuthnCredentialsDelegate::NotifyWebAuthnRequestAborted() {
   authenticator_observation_.Reset();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void ChromeWebAuthnCredentialsDelegate::ShowAndroidHybridSignIn() {
-  if (WebAuthnRequestDelegateAndroid* delegate =
-          WebAuthnRequestDelegateAndroid::GetRequestDelegate(web_contents_)) {
-    delegate->ShowHybridSignIn();
-  }
-}
-
-bool ChromeWebAuthnCredentialsDelegate::IsAndroidHybridAvailable() const {
-  return android_hybrid_available_.value();
-}
-
-void ChromeWebAuthnCredentialsDelegate::SetAndroidHybridAvailable(
-    AndroidHybridAvailable available) {
-  android_hybrid_available_ = available;
-}
-#endif
 
 void ChromeWebAuthnCredentialsDelegate::RecordPasskeyRetrievalDelay() {
   if (passkey_retrieval_timer_) {

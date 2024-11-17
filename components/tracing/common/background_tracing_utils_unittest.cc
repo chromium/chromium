@@ -14,6 +14,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_proto_loader.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/tracing/common/background_tracing_state_manager.h"
+#include "components/tracing/common/pref_names.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "content/public/browser/background_tracing_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -76,7 +79,6 @@ std::string GetTracingRulesConfigFromText(const std::string& proto_text) {
 
 struct SetupModeParams {
   const char* enable_background_tracing = nullptr;
-  const char* enable_legacy_background_tracing = nullptr;
   BackgroundTracingSetupMode expected_mode;
 };
 
@@ -145,6 +147,11 @@ TEST(BackgroundTracingUtilsTest, SetupBackgroundTracingFromProtoConfigFile) {
 TEST(BackgroundTracingUtilsTest, SetupFieldTracingFromFieldTrialOutputPath) {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  auto pref_service = std::make_unique<TestingPrefServiceSimple>();
+  tracing::RegisterPrefs(pref_service->registry());
+  auto state_manager_ = tracing::BackgroundTracingStateManager::CreateInstance(
+      pref_service.get());
   auto background_tracing_manager =
       content::BackgroundTracingManager::CreateInstance();
 
@@ -175,24 +182,16 @@ TEST(BackgroundTracingUtilsTest, GetBackgroundTracingSetupMode) {
       content::BackgroundTracingManager::CreateInstance();
   const std::vector<SetupModeParams> kParams = {
       // No config file param.
-      {nullptr, nullptr, BackgroundTracingSetupMode::kFromFieldTrial},
+      {nullptr, BackgroundTracingSetupMode::kFromFieldTrial},
       // Empty config filename.
-      {"", nullptr, BackgroundTracingSetupMode::kDisabledInvalidCommandLine},
-      // Conflicting params.
-      {"config.pb", "config.json",
-       BackgroundTracingSetupMode::kDisabledInvalidCommandLine},
+      {"", BackgroundTracingSetupMode::kDisabledInvalidCommandLine},
       // file is valid for proto traces.
-      {"config.pb", nullptr, BackgroundTracingSetupMode::kFromProtoConfigFile},
-      // file is valid for proto traces.
-      {nullptr, "config.json", BackgroundTracingSetupMode::kFromJsonConfigFile},
+      {"config.pb", BackgroundTracingSetupMode::kFromProtoConfigFile},
   };
 
   for (const SetupModeParams& params : kParams) {
-    SCOPED_TRACE(::testing::Message()
-                 << "enable_background_tracing "
-                 << params.enable_background_tracing
-                 << "enable_legacy_background_tracing "
-                 << params.enable_legacy_background_tracing);
+    SCOPED_TRACE(::testing::Message() << "enable_background_tracing "
+                                      << params.enable_background_tracing);
     base::test::ScopedCommandLine scoped_command_line;
     base::CommandLine* command_line =
         scoped_command_line.GetProcessCommandLine();
@@ -200,28 +199,9 @@ TEST(BackgroundTracingUtilsTest, GetBackgroundTracingSetupMode) {
       command_line->AppendSwitchASCII(switches::kEnableBackgroundTracing,
                                       params.enable_background_tracing);
     }
-    if (params.enable_legacy_background_tracing) {
-      command_line->AppendSwitchASCII(switches::kEnableLegacyBackgroundTracing,
-                                      params.enable_legacy_background_tracing);
-    }
 
     EXPECT_EQ(tracing::GetBackgroundTracingSetupMode(), params.expected_mode);
   }
-}
-
-TEST_F(BackgroundTracingUtilTest,
-       SetupBackgroundTracingFromJsonConfigFileFailed) {
-  auto background_tracing_manager =
-      content::BackgroundTracingManager::CreateInstance();
-
-  base::test::ScopedCommandLine scoped_command_line;
-  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->AppendSwitchASCII(switches::kEnableLegacyBackgroundTracing, "");
-
-  ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
-            BackgroundTracingSetupMode::kDisabledInvalidCommandLine);
-  EXPECT_FALSE(
-      tracing::SetupBackgroundTracingFromJsonConfigFile(base::FilePath()));
 }
 
 TEST_F(BackgroundTracingUtilTest,
@@ -237,30 +217,6 @@ TEST_F(BackgroundTracingUtilTest,
             BackgroundTracingSetupMode::kDisabledInvalidCommandLine);
   EXPECT_FALSE(
       tracing::SetupBackgroundTracingFromProtoConfigFile(base::FilePath()));
-}
-
-TEST_F(BackgroundTracingUtilTest,
-       SetupBackgroundTracingFromJsonConfigFileInvalidConfig) {
-  auto background_tracing_manager =
-      content::BackgroundTracingManager::CreateInstance();
-
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-
-  base::FilePath config_file_path =
-      temp_dir.GetPath().AppendASCII("config.json");
-  base::WriteFile(config_file_path, kInvalidTracingConfig);
-
-  base::test::ScopedCommandLine scoped_command_line;
-  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->AppendSwitchPath(switches::kEnableLegacyBackgroundTracing,
-                                 config_file_path);
-
-  ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
-            BackgroundTracingSetupMode::kFromJsonConfigFile);
-
-  EXPECT_FALSE(
-      tracing::SetupBackgroundTracingFromJsonConfigFile(config_file_path));
 }
 
 TEST_F(BackgroundTracingUtilTest, SetupBackgroundTracingWithOutputPathFailed) {
@@ -296,25 +252,6 @@ TEST_F(BackgroundTracingUtilTest,
 
   EXPECT_FALSE(
       tracing::SetupBackgroundTracingFromProtoConfigFile(config_file_path));
-}
-
-TEST_F(BackgroundTracingUtilTest, SetupBackgroundTracingFromCommandLineConfig) {
-  auto background_tracing_manager =
-      content::BackgroundTracingManager::CreateInstance();
-  base::test::ScopedCommandLine scoped_command_line;
-  base::CommandLine* command_line = scoped_command_line.GetProcessCommandLine();
-  command_line->AppendSwitchASCII(switches::kEnableLegacyBackgroundTracing,
-                                  "config.json");
-  command_line->AppendSwitchASCII(switches::kBackgroundTracingOutputPath,
-                                  "test_trace.perfetto.gz");
-
-  EXPECT_TRUE(tracing::HasBackgroundTracingOutputPath());
-  EXPECT_TRUE(tracing::SetBackgroundTracingOutputPath());
-  ASSERT_EQ(tracing::GetBackgroundTracingSetupMode(),
-            BackgroundTracingSetupMode::kFromJsonConfigFile);
-  EXPECT_FALSE(tracing::SetupBackgroundTracingFromCommandLine());
-  EXPECT_FALSE(
-      content::BackgroundTracingManager::GetInstance().HasActiveScenario());
 }
 
 TEST_F(BackgroundTracingUtilTest,

@@ -33,6 +33,9 @@ declare global {
         NAME_MIDDLE_INITIAL,
         NAME_FULL,
         NAME_SUFFIX,
+        ALTERNATIVE_FULL_NAME,
+        ALTERNATIVE_GIVEN_NAME,
+        ALTERNATIVE_FAMILY_NAME,
         EMAIL_ADDRESS,
         PHONE_HOME_NUMBER,
         PHONE_HOME_CITY_CODE,
@@ -187,6 +190,7 @@ declare global {
 
       export interface IbanEntry {
         guid?: string;
+        instrumentId?: string;
         value?: string;
         nickname?: string;
         metadata?: AutofillMetadata;
@@ -229,10 +233,14 @@ declare global {
       export function checkIfDeviceAuthAvailable(): Promise<boolean>;
       export function bulkDeleteAllCvcs(): void;
       export function setAutofillSyncToggleEnabled(enabled: boolean): void;
+      export function hasUserAnnotationsEntries(): Promise<boolean>;
+      export function triggerAnnotationsBootstrapping(): Promise<boolean>;
+      export function isUserEligibleForAutofillImprovements(): Promise<boolean>;
       export function getUserAnnotationsEntries():
           Promise<UserAnnotationsEntry[]>;
       export function deleteUserAnnotationsEntry(entryId: number): void;
       export function deleteAllUserAnnotationsEntries(): void;
+      export function predictionImprovementsIphFeatureUsed(): void;
       export const onPersonalDataChanged: ChromeEvent<
           (addresses: AddressEntry[], creditCards: CreditCardEntry[],
            ibans: IbanEntry[], accountInfo?: AccountInfo) => void>;

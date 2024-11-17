@@ -85,6 +85,34 @@ class TestApp extends CrLitElement {
 
 customElements.define('test-app', TestApp);
 
+class TestDocumentTargetApp extends CrLitElement {
+  static get is() {
+    return 'test-document-target-app';
+  }
+
+  static override get properties() {
+    return {
+      listItems: {type: Array},
+      scrollOffset: {type: Number},
+    };
+  }
+
+  listItems: Array<{name: string}> = [];
+
+  override render() {
+    return html`
+    <cr-lazy-list .items="${this.listItems}"
+        .template=${(item: {name: string}, idx: number) => html`
+            <test-item name="${item.name}"
+                id="item-${idx}">
+            </test-item>
+          `}>
+    </lazy-list>`;
+  }
+}
+
+customElements.define('test-document-target-app', TestDocumentTargetApp);
+
 suite('CrLazyListTest', () => {
   let lazyList: CrLazyListElement;
   let testApp: TestApp;
@@ -127,7 +155,12 @@ suite('CrLazyListTest', () => {
       {name: 'Eleven'},
       {name: 'Twelve'},
     ];
-    return items.slice(0, count);
+    const returnVal = [];
+    while (returnVal.length < count) {
+      const toAdd = Math.min(items.length, count - returnVal.length);
+      returnVal.push(...items.slice(0, toAdd));
+    }
+    return returnVal;
   }
 
   test('Populates template parameters correctly', async () => {
@@ -257,5 +290,59 @@ suite('CrLazyListTest', () => {
     testApp.scrollTop = 0;
     await new Promise(resolve => setTimeout(resolve, 1));
     assertEquals(numItems, queryItems().length);
+  });
+
+  test('Default scroll target', async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const testDocumentTargetApp =
+        document.createElement('test-document-target-app') as
+        TestDocumentTargetApp;
+    testDocumentTargetApp.style.display = 'block';
+    testDocumentTargetApp.style.overflowY = 'auto';
+    testDocumentTargetApp.style.overflowX = 'hidden';
+    document.body.appendChild(testDocumentTargetApp);
+    testDocumentTargetApp.listItems = getTestItems(3);
+
+    lazyList = testDocumentTargetApp.shadowRoot!.querySelector('cr-lazy-list')!;
+    assertTrue(!!lazyList);
+    await eventToPromise('viewport-filled', lazyList);
+    await microtasksFinished();
+    assertEquals(3, queryItems().length);
+
+    // Put the app in an overflow state and verify that not all items are
+    // rendered.
+    const itemsInView = Math.ceil(window.innerHeight / SAMPLE_ITEM_HEIGHT);
+    const itemsInList = itemsInView * 2;
+    testDocumentTargetApp.listItems = getTestItems(itemsInList);
+    await eventToPromise('viewport-filled', lazyList);
+    await microtasksFinished();
+    assertTrue(itemsInView <= queryItems().length);
+    assertTrue(itemsInList > queryItems().length);
+
+    // Scroll the window and ensure items are now rendered.
+    window.scrollTo(0, itemsInList * SAMPLE_ITEM_HEIGHT - window.innerHeight);
+    await eventToPromise('viewport-filled', lazyList);
+    await microtasksFinished();
+    assertEquals(itemsInList, queryItems().length);
+  });
+
+  test('Throws an error if array length changes in place', async () => {
+    await setupTest(getTestItems(3));
+    assertEquals(3, queryItems().length);
+    let error = '';
+
+    try {
+      // Modify lazyList directly to make the error catchable.
+      lazyList.items.push(...getTestItems(3));
+      lazyList.requestUpdate();
+      await lazyList.updateComplete;
+    } catch (e) {
+      error = (e as Error).message;
+    }
+
+    assertEquals(
+        'Assertion failed: Items array changed in place; ' +
+            'rendered result may be incorrect.',
+        error);
   });
 });

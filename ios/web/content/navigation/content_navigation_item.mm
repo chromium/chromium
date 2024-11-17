@@ -64,9 +64,8 @@ ReferrerPolicy FromContentReferrerPolicy(
     case network::mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
       return ReferrerPolicyStrictOriginWhenCrossOrigin;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return ReferrerPolicyDefault;
 }
 
 NavigationItem* ContentNavigationItem::GetOrCreate(
@@ -84,7 +83,7 @@ int ContentNavigationItem::GetUniqueID() const {
 }
 
 void ContentNavigationItem::SetOriginalRequestURL(const GURL& url) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const GURL& ContentNavigationItem::GetOriginalRequestURL() const {
@@ -92,7 +91,7 @@ const GURL& ContentNavigationItem::GetOriginalRequestURL() const {
 }
 
 void ContentNavigationItem::SetURL(const GURL& url) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const GURL& ContentNavigationItem::GetURL() const {
@@ -100,7 +99,7 @@ const GURL& ContentNavigationItem::GetURL() const {
 }
 
 void ContentNavigationItem::SetReferrer(const Referrer& referrer) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const Referrer& ContentNavigationItem::GetReferrer() const {
@@ -111,7 +110,7 @@ const Referrer& ContentNavigationItem::GetReferrer() const {
 }
 
 void ContentNavigationItem::SetVirtualURL(const GURL& url) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const GURL& ContentNavigationItem::GetVirtualURL() const {
@@ -119,7 +118,7 @@ const GURL& ContentNavigationItem::GetVirtualURL() const {
 }
 
 void ContentNavigationItem::SetTitle(const std::u16string& title) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const std::u16string& ContentNavigationItem::GetTitle() const {
@@ -132,7 +131,7 @@ const std::u16string& ContentNavigationItem::GetTitleForDisplay() const {
 
 void ContentNavigationItem::SetTransitionType(
     ui::PageTransition transition_type) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ui::PageTransition ContentNavigationItem::GetTransitionType() const {
@@ -141,7 +140,7 @@ ui::PageTransition ContentNavigationItem::GetTransitionType() const {
 
 void ContentNavigationItem::SetFaviconStatus(
     const FaviconStatus& favicon_status) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const FaviconStatus& ContentNavigationItem::GetFaviconStatus() const {
@@ -173,7 +172,7 @@ SSLStatus& ContentNavigationItem::GetSSL() {
 }
 
 void ContentNavigationItem::SetTimestamp(base::Time timestamp) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 base::Time ContentNavigationItem::GetTimestamp() const {
@@ -194,7 +193,7 @@ bool ContentNavigationItem::HasPostData() const {
 
 void ContentNavigationItem::AddHttpRequestHeaders(
     HttpRequestHeaders* additional_headers) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 NavigationItem::HttpRequestHeaders*
@@ -216,7 +215,7 @@ ContentNavigationItem::GetHttpRequestHeaders() const {
 
 void ContentNavigationItem::SetHttpsUpgradeType(
     HttpsUpgradeType https_upgrade_type) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 HttpsUpgradeType ContentNavigationItem::GetHttpsUpgradeType() const {

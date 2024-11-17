@@ -11,6 +11,7 @@
 #include "base/no_destructor.h"
 #include "content/browser/browser_url_handler_impl.h"
 #include "content/browser/display_cutout/display_cutout_host_impl.h"
+#include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/cross_process_frame_connector.h"
@@ -477,13 +478,13 @@ FrameTreeNodeId TestWebContents::AddPrerender(const GURL& url) {
       /*embedder_histogram_suffix=*/"",
       blink::mojom::SpeculationTargetHint::kNoHint, Referrer(),
       blink::mojom::SpeculationEagerness::kEager,
-      /*no_vary_search_expected=*/std::nullopt, rfhi->GetLastCommittedOrigin(),
-      rfhi->GetProcess()->GetID(), GetWeakPtr(), rfhi->GetFrameToken(),
-      rfhi->GetFrameTreeNodeId(), rfhi->GetPageUkmSourceId(),
+      /*no_vary_search_expected=*/std::nullopt, rfhi, GetWeakPtr(),
       ui::PAGE_TRANSITION_LINK,
       /*should_warm_up_compositor=*/false,
+      /*should_prepare_paint_tree=*/false,
       /*url_match_predicate=*/{},
-      /*prerender_navigation_handle_callback=*/{}));
+      /*prerender_navigation_handle_callback=*/{},
+      base::MakeRefCounted<PreloadPipelineInfo>()));
 }
 
 TestRenderFrameHost* TestWebContents::AddPrerenderAndCommitNavigation(
@@ -597,6 +598,14 @@ void TestWebContents::SetMediaCaptureRawDeviceIdsOpened(
     blink::mojom::MediaStreamType type,
     std::vector<std::string> ids) {
   media_capture_raw_device_ids_opened_[type] = std::move(ids);
+}
+
+void TestWebContents::OnIgnoredUIEvent() {
+  ignored_ui_event_called_ = true;
+}
+
+bool TestWebContents::GetIgnoredUIEventCalled() const {
+  return ignored_ui_event_called_;
 }
 
 }  // namespace content

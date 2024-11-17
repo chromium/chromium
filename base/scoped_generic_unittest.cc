@@ -161,8 +161,9 @@ TEST(ScopedGenericTest, Receive) {
 namespace {
 
 struct TrackedIntTraits : public ScopedGenericOwnershipTracking {
-  using OwnerMap =
-      std::unordered_map<int, const ScopedGeneric<int, TrackedIntTraits>*>;
+  using OwnerMap = std::unordered_map<
+      int,
+      raw_ptr<const ScopedGeneric<int, TrackedIntTraits>, CtnExperimental>>;
   TrackedIntTraits(std::unordered_set<int>* freed, OwnerMap* owners)
       : freed(freed), owners(owners) {}
 

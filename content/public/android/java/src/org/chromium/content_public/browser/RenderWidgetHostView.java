@@ -37,4 +37,7 @@ public interface RenderWidgetHostView {
 
     /** Notifies that the Visual Viewport inset has changed its bottom value. */
     void onViewportInsetBottomChanged();
+
+    /** Notifies that the parent activity has moved into the foreground. */
+    void onResume();
 }

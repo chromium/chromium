@@ -247,7 +247,8 @@ ResourceRequest::WebBundleTokenParams::CloneHandle() const {
 
 ResourceRequest::ResourceRequest() = default;
 ResourceRequest::ResourceRequest(const ResourceRequest& request) {
-  TRACE_EVENT("loading", "ResourceRequest::ResourceRequest.copy_constructor");
+  TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("loading"),
+              "ResourceRequest::ResourceRequest.copy_constructor");
   *this = request;
 }
 ResourceRequest& ResourceRequest::operator=(const ResourceRequest& other) =
@@ -320,7 +321,8 @@ bool ResourceRequest::EqualsForTesting(const ResourceRequest& request) const {
                                             request.net_log_reference_info) &&
          target_ip_address_space == request.target_ip_address_space &&
          shared_dictionary_writer_enabled ==
-             request.shared_dictionary_writer_enabled;
+             request.shared_dictionary_writer_enabled &&
+         socket_tag == request.socket_tag;
 }
 
 bool ResourceRequest::SendsCookies() const {
@@ -356,8 +358,7 @@ net::ReferrerPolicy ReferrerPolicyForUrlRequest(
     case mojom::ReferrerPolicy::kStrictOriginWhenCrossOrigin:
       return net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN;
   }
-  NOTREACHED_IN_MIGRATION();
-  return net::ReferrerPolicy::CLEAR_ON_TRANSITION_FROM_SECURE_TO_INSECURE;
+  NOTREACHED();
 }
 
 namespace debug {

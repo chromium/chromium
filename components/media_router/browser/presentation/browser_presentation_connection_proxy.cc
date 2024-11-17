@@ -35,7 +35,8 @@ BrowserPresentationConnectionProxy::BrowserPresentationConnectionProxy(
       blink::mojom::PresentationConnectionState::CONNECTED);
 }
 
-BrowserPresentationConnectionProxy::~BrowserPresentationConnectionProxy() {}
+BrowserPresentationConnectionProxy::~BrowserPresentationConnectionProxy() =
+    default;
 
 void BrowserPresentationConnectionProxy::OnMessage(
     blink::mojom::PresentationConnectionMessagePtr message) {

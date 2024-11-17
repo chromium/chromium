@@ -173,8 +173,7 @@ std::u16string GetIOTaskMessage(Profile* profile,
     case OperationType::kEmptyTrash:
     case OperationType::kRestore:
     default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected operation type " << status.type;
-      return u"Unknown operation type";
+      NOTREACHED() << "Unexpected operation type " << status.type;
   }
 
   if (status.sources.size() > 1) {

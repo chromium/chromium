@@ -22,7 +22,7 @@
     Exposed=Window,
     HTMLConstructor
 ] interface HTMLScriptElement : HTMLElement {
-    [CEReactions, Reflect, URL, RaisesException=Setter] attribute ScriptURLString src;
+    [CEReactions, Reflect, URL] attribute ScriptURLString src;
     [CEReactions, Reflect] attribute DOMString type;
     [CEReactions, Reflect] attribute boolean noModule;
     [CEReactions, Reflect] attribute DOMString charset;

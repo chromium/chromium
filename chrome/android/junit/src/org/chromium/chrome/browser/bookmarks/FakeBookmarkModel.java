@@ -21,8 +21,8 @@ import java.util.stream.Collectors;
 
 /**
  * Fake {@link BookmarkModel} for use in tests. Instead of faking the BookmarkModel implementation
- * instead the BookmarkBridge.Natives interface is faked and substituted through TEST_HOOKS. This
- * allows the production BookmarkModel/Bridge to be used as-is.
+ * instead the BookmarkBridge.Natives interface is faked and substituted. This allows the production
+ * BookmarkModel/Bridge to be used as-is.
  */
 public class FakeBookmarkModel extends BookmarkModel {
     public static final String OTHER_FOLDER_TITLE = "Other bookmarks";
@@ -34,8 +34,7 @@ public class FakeBookmarkModel extends BookmarkModel {
     // Factory constructor for the FakeBoomkarkModel
     public static FakeBookmarkModel createModel() {
         // Temporary Jni mock.
-        BookmarkBridgeJni.TEST_HOOKS.setInstanceForTesting(
-                Mockito.mock(BookmarkBridge.Natives.class));
+        BookmarkBridgeJni.setInstanceForTesting(Mockito.mock(BookmarkBridge.Natives.class));
         FakeBookmarkModel fakeBookmarkModel = new FakeBookmarkModel();
         return fakeBookmarkModel;
     }
@@ -64,7 +63,7 @@ public class FakeBookmarkModel extends BookmarkModel {
         // The native bookmark bridge pointer will be ignored because the JNI is mocked by
         // BookmarkBridgeNatives.
         super(/* nativeBookmarkBridge= */ 1);
-        BookmarkBridgeJni.TEST_HOOKS.setInstanceForTesting(new BookmarkBridgeNatives());
+        BookmarkBridgeJni.setInstanceForTesting(new BookmarkBridgeNatives());
         setupTopLevelFolders();
         bookmarkModelLoaded();
     }

@@ -29,16 +29,15 @@ namespace {
 // Returns a ui::InputDeviceType given a Switch Access string device type.
 ui::InputDeviceType GetInputDeviceType(
     const std::string& switch_access_device_type) {
-  if (switch_access_device_type == kSwitchAccessInternalDevice)
+  if (switch_access_device_type == kSwitchAccessInternalDevice) {
     return ui::INPUT_DEVICE_INTERNAL;
-  if (switch_access_device_type == kSwitchAccessUsbDevice)
+  } else if (switch_access_device_type == kSwitchAccessUsbDevice) {
     return ui::INPUT_DEVICE_USB;
-  if (switch_access_device_type == kSwitchAccessBluetoothDevice)
+  } else if (switch_access_device_type == kSwitchAccessBluetoothDevice) {
     return ui::INPUT_DEVICE_BLUETOOTH;
-  // On Chrome OS emulated on Linux, the keyboard is always "UNKNOWN".
-  if (base::SysInfo::IsRunningOnChromeOS())
-    DUMP_WILL_BE_NOTREACHED();
-  return ui::INPUT_DEVICE_UNKNOWN;
+  } else {
+    return ui::INPUT_DEVICE_UNKNOWN;
+  }
 }
 }  // namespace
 

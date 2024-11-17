@@ -37,11 +37,6 @@ class WebState;
 - (instancetype)initWithWebState:(web::WebState*)webState
                        providers:(NSArray*)providers;
 
-// Finds a FormSuggestionProvider that can supply suggestions for the specified
-// form, requests them, and updates the view accordingly.
-- (void)retrieveSuggestionsForForm:(const autofill::FormActivityParams&)params
-                          webState:(web::WebState*)webState;
-
 // Instructs the controller to detach itself from the WebState.
 - (void)detachFromWebState;
 

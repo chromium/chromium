@@ -36,7 +36,7 @@
 #include "components/segmentation_platform/public/trigger.h"
 #include "components/segmentation_platform/public/types/processed_value.h"
 #include "components/ukm/test_ukm_recorder.h"
-#include "components/user_education/common/feature_promo_data.h"
+#include "components/user_education/common/user_education_data.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
@@ -198,12 +198,12 @@ class MLPromotionBrowserTest : public MLPromotionBrowserTestBase {
   void SetUserEducationSessionStartTime(base::Time time) {
     UserEducationService* edu_service =
         UserEducationServiceFactory::GetForBrowserContext(profile());
-    user_education::FeaturePromoSessionData session_data;
+    user_education::UserEducationSessionData session_data;
     session_data.start_time = time;
     session_data.most_recent_active_time = base::Time::Now();
-    edu_service->feature_promo_storage_service()
+    edu_service->user_education_storage_service()
         .set_profile_creation_time_for_testing(time);
-    edu_service->feature_promo_storage_service().SaveSessionData(session_data);
+    edu_service->user_education_storage_service().SaveSessionData(session_data);
   }
 
   GURL GetUrlWithFaviconsNoManifest() {
@@ -913,8 +913,7 @@ class MLPromotionInstallDialogBrowserTest
       case InstallDialogState::kDetailedInstallDialog:
         return "PWA Bottom Sheet";
       case InstallDialogState::kCreateShortcutDialog:
-        NOTREACHED_IN_MIGRATION();
-        return std::string();
+        NOTREACHED();
     }
   }
 

@@ -6,9 +6,13 @@
 #define COMPONENTS_USER_EDUCATION_COMMON_PRODUCT_MESSAGING_CONTROLLER_H_
 
 #include <map>
+#include <set>
 
+#include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "components/user_education/common/session/user_education_session_manager.h"
+#include "components/user_education/common/user_education_storage_service.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace user_education {
@@ -55,6 +59,12 @@ class [[nodiscard]] RequiredNoticePriorityHandle final {
 
   RequiredNoticeId notice_id() const { return notice_id_; }
 
+  // Set that the notice was actually shown. Cannot be called on a null handle
+  // or after releasing. Call to specify that the given notice was actually
+  // shown; if you discard or release the handle without calling this function,
+  // it is assumed that the notice was not shown.
+  void SetShown();
+
   // Release the handle, resetting to default (null/falsy) value.
   void Release();
 
@@ -64,6 +74,7 @@ class [[nodiscard]] RequiredNoticePriorityHandle final {
       RequiredNoticeId notice_id,
       base::WeakPtr<ProductMessagingController> controller);
 
+  bool shown_ = false;
   RequiredNoticeId notice_id_;
   base::WeakPtr<ProductMessagingController> controller_;
 };
@@ -87,9 +98,16 @@ class ProductMessagingController final {
   void operator=(const ProductMessagingController&) = delete;
   ~ProductMessagingController();
 
+  // Register the session provider which is used to clear the set of shown
+  // notices and the storage service used to retrieve shown promos.
+  void Init(UserEducationSessionProvider& session_provider,
+            UserEducationStorageService& storage_service);
+
   // Returns whether there are any notices queued or showing. This can be used
   // to prevent other, lower-priority User Education experiences from showing.
-  bool has_pending_notices() const { return current_notice_ || !data_.empty(); }
+  bool has_pending_notices() const {
+    return current_notice_ || !pending_notices_.empty();
+  }
 
   // Checks whether the given `notice_id` is queued.
   bool IsNoticeQueued(RequiredNoticeId notice_id) const;
@@ -101,6 +119,15 @@ class ProductMessagingController final {
   // If `always_show_after` is provided, then this notice is guaranteed to show
   // after the specified notices; otherwise the order of notices is not defined.
   //
+  // The `blocked_by` list is similar to `always_show_after`, but if one of the
+  // listed notices is successfully shown, this notice will not be shown this
+  // session. Be aware that specifying one or more notices on the `blocked_by`
+  // list may mean `ready_to_start_callback` is never called.
+  //
+  // Similarly, re-queueing a notice that is already showing or has been
+  // successfully shown will have no effect, and `ready_to_start_callback` will
+  // not be called.
+  //
   // The expectation is that all of the notices will be queued during browser
   // startup, so that even if A must show after B, but B requests to show just
   // before A, then they will still show in the correct order starting a frame
@@ -108,7 +135,8 @@ class ProductMessagingController final {
   void QueueRequiredNotice(
       RequiredNoticeId notice_id,
       RequiredNoticeShowCallback ready_to_start_callback,
-      std::initializer_list<RequiredNoticeId> always_show_after = {});
+      std::initializer_list<RequiredNoticeId> always_show_after = {},
+      std::initializer_list<RequiredNoticeId> blocked_by = {});
 
   // Removes `notice_id` from the queue, if it is queued.
   // Has no effect if the notice has already started to show.
@@ -122,26 +150,41 @@ class ProductMessagingController final {
   friend class RequiredNoticePriorityHandle;
   struct RequiredNoticeData;
 
-  bool ready_to_show() const { return !current_notice_ && !data_.empty(); }
+  bool ready_to_show() const {
+    CHECK(storage_service_) << "Must call Init() before queueing notices.";
+    return !current_notice_ && !pending_notices_.empty();
+  }
 
   // Called by RequiredNoticePriorityHandle when it is released. Clears the
   // current notice and maybe tries to start the next.
-  void ReleaseHandle(RequiredNoticeId notice_id);
+  void ReleaseHandle(RequiredNoticeId notice_id, bool notice_shown);
 
   // Shows the next notice, if one is eligible, by calling
   // `MaybeShowNextRequiredNoticeImpl()` on a fresh call stack.
   void MaybeShowNextRequiredNotice();
+
+  // Remove any queued notice that should not show.
+  //
+  // A notice is blocked if another notice in its `blocked_by` list has been
+  // shown, or if the same notice has already been shown this session.
+  void PurgeBlockedNotices();
 
   // Actually shows the next notice, if one is eligible. Must be called on a
   // fresh call stack, and should only be queued by
   // `MaybeShowNextRequiredNotice()`.
   void MaybeShowNextRequiredNoticeImpl();
 
-  // Describes the current contents of `data_` for debugging/error purposes.
+  // Do housekeeping associated with a new session.
+  void OnNewSession();
+
+  // Describes the current contents of `pending_notices_` for debugging/error
+  // purposes.
   std::string DumpData() const;
 
   RequiredNoticeId current_notice_;
-  std::map<RequiredNoticeId, RequiredNoticeData> data_;
+  raw_ptr<UserEducationStorageService> storage_service_ = nullptr;
+  std::map<RequiredNoticeId, RequiredNoticeData> pending_notices_;
+  base::CallbackListSubscription session_subscription_;
   base::WeakPtrFactory<ProductMessagingController> weak_ptr_factory_{this};
 };
 

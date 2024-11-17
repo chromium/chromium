@@ -1,0 +1,75 @@
+// Copyright 2024 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/explainers-by-googlers/prompt-api
+
+dictionary AILanguageModelCloneOptions {
+  AbortSignal signal;
+};
+
+dictionary AILanguageModelPromptOptions {
+  AbortSignal signal;
+};
+
+[
+  Exposed=(Window,Worker),
+  RuntimeEnabled=AIPromptAPI
+]
+interface AILanguageModel : EventTarget {
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<DOMString> prompt(
+    DOMString input,
+    optional AILanguageModelPromptOptions options = {}
+  );
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  ReadableStream promptStreaming(
+    DOMString input,
+    optional AILanguageModelPromptOptions options = {}
+  );
+
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<unsigned long long> countPromptTokens(
+    DOMString input,
+    optional AILanguageModelPromptOptions options = {}
+  );
+
+  [Measure]
+  readonly attribute unsigned long long maxTokens;
+  [Measure]
+  readonly attribute unsigned long long tokensSoFar;
+  [Measure]
+  readonly attribute unsigned long long tokensLeft;
+
+  [Measure]
+  readonly attribute unsigned long topK;
+  [Measure]
+  readonly attribute float temperature;
+
+  attribute EventHandler oncontextoverflow;
+
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<AILanguageModel> clone(optional AILanguageModelCloneOptions options = {});
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  void destroy();
+};

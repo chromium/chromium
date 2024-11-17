@@ -28,10 +28,10 @@ source_set("account_picker_confirmation") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/authentication/enterprise:enterprise_utils",
@@ -39,7 +39,9 @@ source_set("account_picker_confirmation") {
     "//ios/chrome/browser/ui/authentication/views",
     "//ios/chrome/browser/ui/settings/password:title_view",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
     "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/font:font_api",
     "//ui/base",
   ]
 }

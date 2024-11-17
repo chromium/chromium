@@ -299,7 +299,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 - (UIBarButtonItem*)confirmButton {
   UIBarButtonItem* confirmButton = [[UIBarButtonItem alloc]
       initWithTitle:l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_CONFIRM)
-              style:UIBarButtonItemStylePlain
+              style:UIBarButtonItemStyleDone
              target:self
              action:@selector(onConfirm:)];
   confirmButton.accessibilityIdentifier =
@@ -342,6 +342,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   cell.textLabel.text = title;
   // Placeholder description required by the constraint to avoid cell resize.
   cell.detailText = summary ? summary : @" ";
+  cell.detailTextNumberOfLines = 0;
   cell.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
   [cell setIconImage:icon
             tintColor:[UIColor colorNamed:kGrey500Color]

@@ -42,7 +42,8 @@
           "builder": "ios-simulator-full-configs",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/ios-simulator-full-configs/targets"
     }
   },
   "$build/code_coverage": {
@@ -82,5 +83,5 @@
   "builder_group": "tryserver.chromium.mac",
   "cq": "path-based",
   "recipe": "chromium_trybot",
-  "xcode_build_version": "16a242"
+  "xcode_build_version": "16b40"
 }

@@ -90,17 +90,17 @@ bool AreGoogleCookiesRebuiltAfterClearingWhenSignedIn(
 base::flat_set<std::string> GetAllGaiaIdsForKeyedPreferences(
     const IdentityManager* identity_manager,
     const AccountsInCookieJarInfo& accounts_in_cookie_jar_info) {
-  CHECK(accounts_in_cookie_jar_info.accounts_are_fresh);
+  CHECK(accounts_in_cookie_jar_info.AreAccountsFresh());
   // Get all accounts in Chrome; both signed in and signed out accounts in
   // cookies.
 
   // `base::flat_set` has an optimized constructor from a vector.
-  base::flat_set<std::string> gaia_ids(
-      base::ToVector(accounts_in_cookie_jar_info.signed_in_accounts,
-                     &gaia::ListedAccount::gaia_id));
+  base::flat_set<std::string> gaia_ids(base::ToVector(
+      accounts_in_cookie_jar_info.GetPotentiallyInvalidSignedInAccounts(),
+      &gaia::ListedAccount::gaia_id));
 
   for (const gaia::ListedAccount& account :
-       accounts_in_cookie_jar_info.signed_out_accounts) {
+       accounts_in_cookie_jar_info.GetSignedOutAccounts()) {
     gaia_ids.insert(account.gaia_id);
   }
 

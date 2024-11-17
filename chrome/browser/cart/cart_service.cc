@@ -72,8 +72,8 @@ std::string GetKeyForURL(const GURL& url) {
                                        : domain;
 }
 
-bool CompareTimeStampForProtoPair(const CartDB::KeyAndValue pair1,
-                                  CartDB::KeyAndValue pair2) {
+bool CompareTimeStampForProtoPair(const CartDB::KeyAndValue& pair1,
+                                  const CartDB::KeyAndValue& pair2) {
   return pair1.second.timestamp() > pair2.second.timestamp();
 }
 
@@ -903,7 +903,8 @@ void CartService::OnLoadCarts(CartDB::LoadCallback callback,
       merchants_to_erase.emplace(kv.second.key());
     }
   }
-  std::erase_if(proto_pairs, [merchants_to_erase](CartDB::KeyAndValue kv) {
+  std::erase_if(proto_pairs, [merchants_to_erase](
+                                 const CartDB::KeyAndValue& kv) {
     return kv.second.is_hidden() || kv.second.is_removed() ||
            merchants_to_erase.contains(kv.second.key());
   });
@@ -1212,12 +1213,10 @@ void CartService::CacheUsedDiscounts(
 
 void CartService::CleanUpDiscounts(cart_db::ChromeCartContentProto proto) {
   if (proto.merchant_cart_url().empty()) {
-    NOTREACHED_IN_MIGRATION() << "proto does not have merchant_cart_url";
-    return;
+    NOTREACHED() << "proto does not have merchant_cart_url";
   }
   if (!proto.has_discount_info()) {
-    NOTREACHED_IN_MIGRATION() << "proto does not have discount_info";
-    return;
+    NOTREACHED() << "proto does not have discount_info";
   }
 
   // Clean up the rule-based discounts.

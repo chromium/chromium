@@ -36,11 +36,11 @@
 
 - (void)start {
   HostContentSettingsMap* settingsMap =
-      ios::HostContentSettingsMapFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ios::HostContentSettingsMapFactory::GetForProfile(
+          self.browser->GetProfile());
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(
+          self.browser->GetProfile());
 
   self.mediator =
       [[DefaultPageModeMediator alloc] initWithSettingsMap:settingsMap

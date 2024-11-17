@@ -432,6 +432,51 @@ TEST_F(KeyboardBrightnessControllerTest,
             settings_brightness_change_percent);
 }
 
+TEST_F(KeyboardBrightnessControllerTest,
+       Prefs_OnLogin_DoNotSaveBrightnessWhenLidClosed) {
+  // Set initial brightness.
+  power_manager_client()->set_screen_brightness_percent(
+      kInitialKeyboardBrightness);
+
+  // Clear user sessions and reset to the primary login screen.
+  ClearLogin();
+
+  // Create a KnownUser for this Local State.
+  user_manager::KnownUser known_user(local_state());
+
+  // On the login screen, focus the user.
+  AccountId account_id = AccountId::FromUserEmail(kUserEmail);
+  LoginScreenFocusAccount(account_id);
+
+  // Verify no brightness preference exists yet
+  EXPECT_FALSE(HasKeyboardBrightnessPrefValue(known_user, account_id));
+
+  KeyboardBrightnessController* controller =
+      static_cast<KeyboardBrightnessController*>(
+          keyboard_brightness_control_delegate());
+
+  {
+    // Simulate lid closed and verify that brightness pref is not saved.
+    power_manager_client()->set_keyboard_brightness_percent(0.0);
+    controller->LidEventReceived(chromeos::PowerManagerClient::LidState::CLOSED,
+                                 base::TimeTicks::Now());
+    controller->OnActiveUserSessionChanged(account_id);
+    run_loop_.RunUntilIdle();
+    EXPECT_FALSE(HasKeyboardBrightnessPrefValue(known_user, account_id))
+        << "Brightness should not be saved to preferences when lid is closed";
+  }
+  {
+    // Simulate lid open and verify that brightness pref is saved.
+    power_manager_client()->set_keyboard_brightness_percent(60.0);
+    controller->LidEventReceived(chromeos::PowerManagerClient::LidState::OPEN,
+                                 base::TimeTicks::Now());
+    controller->OnActiveUserSessionChanged(account_id);
+    run_loop_.RunUntilIdle();
+    EXPECT_TRUE(HasKeyboardBrightnessPrefValue(known_user, account_id))
+        << "Brightness should be saved to preferences when lid is open";
+  }
+}
+
 TEST_F(KeyboardBrightnessControllerTest, SavePrefToKnownUserMultipleUser) {
   // Set initial brightness.
   power_manager_client()->set_screen_brightness_percent(

@@ -108,6 +108,34 @@ class CreditCard : public AutofillDataModel {
     kNetwork = 2,
   };
 
+  // Whether the card has been enrolled in the card info retrieval feature.
+  //
+  // 'CardInfoRetrieval' is a Payments server-side feature where some
+  // card information (such as card number, expiry, or CVC) may be
+  // dynamically retrieved from the card issuer during an unmasking call.
+  // From the Chrome client side this looks the same (the UnmaskCardRequest
+  // API call returns the full card number and CVC for use by the client),
+  // however whether or not a card is enrolled in this feature may affect
+  // some UX, authentication methods, feature offerings, user guidance, and
+  // logging.
+  //
+  // Local cards cannot be enrolled in `CardInfoRetrieval`, and always have
+  // their card information stored locally.
+  //
+  // This must stay in sync with the proto enum in autofill_specifics.proto.
+  // A java IntDef@ is generated from this.
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
+  enum class CardInfoRetrievalEnrollmentState {
+    // State unspecified. This is the default value of this enum.
+    kRetrievalUnspecified = 0,
+    // Card is enrolled for card info retrieval.
+    kRetrievalEnrolled = 1,
+    // Card is not enrolled and is not eligible for enrollment.
+    kRetrievalUnenrolledAndNotEligible = 2,
+    // Card is not enrolled but is eligible for enrollment.
+    kRetrievalUnenrolledAndEligible = 3,
+  };
+
   // Creates a copy of the passed in credit card, and sets its `record_type` to
   // `CreditCard::RecordType::kVirtualCard`. This is used to differentiate
   // virtual cards from their real counterpart on the UI layer.
@@ -227,7 +255,7 @@ class CreditCard : public AutofillDataModel {
   Issuer card_issuer() const { return card_issuer_; }
   void set_card_issuer(Issuer card_issuer) { card_issuer_ = card_issuer; }
   const std::string& issuer_id() const { return issuer_id_; }
-  void set_issuer_id(const std::string_view issuer_id) {
+  void set_issuer_id(std::string_view issuer_id) {
     issuer_id_ = std::string(issuer_id);
   }
 
@@ -480,6 +508,16 @@ class CreditCard : public AutofillDataModel {
     cvc_modification_date_ = date;
   }
 
+  CardInfoRetrievalEnrollmentState card_info_retrieval_enrollment_state()
+      const {
+    return card_info_retrieval_enrollment_state_;
+  }
+  void set_card_info_retrieval_enrollment_state(
+      CardInfoRetrievalEnrollmentState card_info_retrieval_enrollment_state) {
+    card_info_retrieval_enrollment_state_ =
+        card_info_retrieval_enrollment_state;
+  }
+
  private:
   friend class CreditCardTestApi;
 
@@ -611,6 +649,12 @@ class CreditCard : public AutofillDataModel {
   // CVCs can be updated independently of the card and track their modification
   // date independently. The timestamp `is_null()` for cards without CVC.
   base::Time cvc_modification_date_;
+
+  // The card info retrieval enrollment state of this card. Enrollment in
+  // 'CardInfoRetrieval' will enable runtime retrieval of card information from
+  // card issuer including card number, expiry and CVC.
+  CardInfoRetrievalEnrollmentState card_info_retrieval_enrollment_state_ =
+      CardInfoRetrievalEnrollmentState::kRetrievalUnspecified;
 };
 
 // So we can compare CreditCards with EXPECT_EQ().

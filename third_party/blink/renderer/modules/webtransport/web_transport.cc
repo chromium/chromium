@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/webtransport/web_transport.h"
 
 #include <stdint.h>
@@ -126,8 +121,7 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
           isolate, v8chunk, exception_state);
       if (exception_state.HadException())
         return EmptyPromise();
-      return SendDatagram(
-          {static_cast<const uint8_t*>(data->Data()), data->ByteLength()});
+      return SendDatagram(data->ByteSpan());
     }
 
     if (v8chunk->IsArrayBufferView()) {
@@ -136,9 +130,7 @@ class WebTransport::DatagramUnderlyingSink final : public UnderlyingSinkBase {
               isolate, v8chunk, exception_state);
       if (exception_state.HadException())
         return EmptyPromise();
-      return SendDatagram({static_cast<const uint8_t*>(data->buffer()->Data()) +
-                               data->byteOffset(),
-                           data->byteLength()});
+      return SendDatagram(data->ByteSpan());
     }
 
     exception_state.ThrowTypeError(
@@ -294,12 +286,11 @@ class WebTransport::DatagramUnderlyingSource final
     return ToResolvedUndefinedPromise(script_state_.Get());
   }
 
-  ScriptPromise<IDLUndefined> Cancel(ExceptionState& exception_state) override {
-    return Cancel(v8::Undefined(script_state_->GetIsolate()), exception_state);
+  ScriptPromise<IDLUndefined> Cancel() override {
+    return Cancel(v8::Undefined(script_state_->GetIsolate()));
   }
 
-  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason,
-                                     ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Cancel(v8::Local<v8::Value> reason) override {
     uint32_t code = 0;
     WebTransportError* exception =
         V8WebTransportError::ToWrappable(script_state_->GetIsolate(), reason);
@@ -577,8 +568,8 @@ class WebTransport::StreamVendingUnderlyingSource final
         script_state_(script_state),
         vendor_(vendor) {}
 
-  ScriptPromiseUntyped Pull(ScriptState* script_state,
-                            ExceptionState&) override {
+  ScriptPromise<IDLUndefined> Pull(ScriptState* script_state,
+                                   ExceptionState&) override {
     if (!is_opened_) {
       is_pull_waiting_ = true;
       return ToResolvedUndefinedPromise(script_state);
@@ -911,14 +902,14 @@ void WebTransport::close(WebTransportCloseInfo* close_info) {
     v8::Local<v8::Value> error =
         WebTransportError::Create(isolate, /*stream_error_code=*/std::nullopt,
                                   "close() is called while connecting.",
-                                  WebTransportError::Source::kSession);
+                                  V8WebTransportErrorSource::Enum::kSession);
     Cleanup(nullptr, error, /*abruptly=*/true);
     return;
   }
 
   v8::Local<v8::Value> error = WebTransportError::Create(
       isolate, /*stream_error_code=*/std::nullopt, "The session is closed.",
-      WebTransportError::Source::kSession);
+      V8WebTransportErrorSource::Enum::kSession);
 
   network::mojom::blink::WebTransportCloseInfoPtr close_info_to_pass;
   if (close_info) {
@@ -1032,7 +1023,7 @@ void WebTransport::OnHandshakeFailed(
   v8::Local<v8::Value> error_to_pass = WebTransportError::Create(
       script_state_->GetIsolate(),
       /*stream_error_code=*/std::nullopt, "Opening handshake failed.",
-      WebTransportError::Source::kSession);
+      V8WebTransportErrorSource::Enum::kSession);
   Cleanup(nullptr, error_to_pass, /*abruptly=*/true);
 }
 
@@ -1078,7 +1069,7 @@ void WebTransport::OnReceivedResetStream(uint32_t stream_id,
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Value> error = WebTransportError::Create(
       script_state_->GetIsolate(), stream_error_code, "Received RESET_STREAM.",
-      WebTransportError::Source::kStream);
+      V8WebTransportErrorSource::Enum::kStream);
   stream->Error(ScriptValue(script_state_->GetIsolate(), error));
 }
 
@@ -1096,7 +1087,7 @@ void WebTransport::OnReceivedStopSending(uint32_t stream_id,
   ScriptState::Scope scope(script_state_);
   v8::Local<v8::Value> error = WebTransportError::Create(
       script_state_->GetIsolate(), stream_error_code, "Received STOP_SENDING.",
-      WebTransportError::Source::kStream);
+      V8WebTransportErrorSource::Enum::kStream);
   stream->Error(ScriptValue(script_state_->GetIsolate(), error));
 }
 
@@ -1116,7 +1107,7 @@ void WebTransport::OnClosed(
 
   v8::Local<v8::Value> error = WebTransportError::Create(
       isolate, /*stream_error_code=*/std::nullopt, "The session is closed.",
-      WebTransportError::Source::kSession);
+      V8WebTransportErrorSource::Enum::kSession);
 
   Cleanup(idl_close_info, error, /*abruptly=*/false);
 }
@@ -1268,7 +1259,7 @@ void WebTransport::Init(const String& url_for_diagnostics,
             /*stream_error_code=*/std::nullopt,
             "Refused to connect to '" + url_.ElidedString() +
                 "' because it violates the document's Content Security Policy",
-            WebTransportError::Source::kSession));
+            V8WebTransportErrorSource::Enum::kSession));
 
     connection_pending_ = false;
     ready_->Reject(error);
@@ -1284,20 +1275,10 @@ void WebTransport::Init(const String& url_for_diagnostics,
       if (!hash->hasAlgorithm() || !hash->hasValue())
         continue;
       StringBuilder value_builder;
-      const uint8_t* data;
-      size_t size;
-      if (hash->value()->IsArrayBuffer()) {
-        const auto* value = hash->value()->GetAsArrayBuffer();
-        data = static_cast<const uint8_t*>(value->Data());
-        size = value->ByteLength();
-      } else {
-        DCHECK(hash->value()->IsArrayBufferView());
-        const auto* value = hash->value()->GetAsArrayBufferView().Get();
-        data = static_cast<const uint8_t*>(value->BaseAddress());
-        size = value->byteLength();
-      }
+      DOMArrayPiece array_piece(hash->value());
 
-      for (size_t i = 0; i < size; ++i) {
+      auto data = array_piece.ByteSpan();
+      for (size_t i = 0; i < data.size(); ++i) {
         if (i > 0) {
           value_builder.Append(":");
         }
@@ -1475,7 +1456,7 @@ void WebTransport::OnConnectionError() {
   v8::Local<v8::Value> error = WebTransportError::Create(
       isolate,
       /*stream_error_code=*/std::nullopt, "Connection lost.",
-      WebTransportError::Source::kSession);
+      V8WebTransportErrorSource::Enum::kSession);
 
   Cleanup(nullptr, error, /*abruptly=*/true);
 }

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -15,6 +16,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "ui/base/linux/linux_desktop.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/display.h"
 #include "ui/display/display_finder.h"
 #include "ui/display/display_list.h"
@@ -26,6 +28,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/linux/linux_ui.h"
 #include "ui/ozone/platform/wayland/host/dump_util.h"
 #include "ui/ozone/platform/wayland/host/org_kde_kwin_idle.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -38,16 +41,8 @@
 #include "ui/ozone/platform/wayland/host/wayland_zcr_color_manager.h"
 #include "ui/ozone/platform/wayland/host/zwp_idle_inhibit_manager.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/ui/base/display_util.h"
-#endif
-
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
 #include "ui/ozone/platform/wayland/host/org_gnome_mutter_idle_monitor.h"
-#endif
-
-#if BUILDFLAG(IS_LINUX)
-#include "ui/linux/linux_ui.h"
 #endif
 
 namespace ui {
@@ -72,8 +67,7 @@ display::Display::Rotation WaylandTransformToRotation(int32_t transform) {
       NOTIMPLEMENTED_LOG_ONCE();
       return display::Display::ROTATE_0;
   }
-  NOTREACHED_IN_MIGRATION();
-  return display::Display::ROTATE_0;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -92,18 +86,9 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
   for (const auto& buffer_format : buffer_formats) {
     auto format = buffer_format.first;
 
-    // TODO(crbug.com/1127822): Investigate a better fix for this.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-    // RGBA_8888 is the preferred format, except when running on ChromiumOS. See
-    // crbug.com/1127558.
+    // RGBA_8888 is the preferred format.
     if (format == gfx::BufferFormat::RGBA_8888)
       image_format_alpha_ = gfx::BufferFormat::RGBA_8888;
-
-      // TODO(crbug.com/40719968): |image_format_no_alpha_| should use RGBX_8888
-      // when it's available, but for some reason Chromium gets broken when it's
-      // used. Though,  we can import RGBX_8888 dma buffer to EGLImage
-      // successfully. Enable that back when the issue is resolved.
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
     if (format == gfx::BufferFormat::RGBA_F16)
       image_format_hdr_ = format;
@@ -114,8 +99,9 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
     if (!image_format_alpha_ && format == gfx::BufferFormat::BGRA_8888)
       image_format_alpha_ = gfx::BufferFormat::BGRA_8888;
 
-    if (image_format_alpha_ && image_format_no_alpha_)
+    if (image_format_alpha_ && image_format_hdr_) {
       break;
+    }
   }
 
   // If no buffer formats are found (neither wl_drm nor zwp_linux_dmabuf are
@@ -124,21 +110,21 @@ WaylandScreen::WaylandScreen(WaylandConnection* connection)
   // supported.
   if (!image_format_alpha_)
     image_format_alpha_ = gfx::BufferFormat::RGBA_8888;
-  if (!image_format_no_alpha_)
-    image_format_no_alpha_ = image_format_alpha_;
+
+  // TODO(crbug.com/40719968): |image_format_no_alpha_| should use RGBX_8888
+  // when it's available, but for some reason Chromium gets broken when it's
+  // used. Though, we can import RGBX_8888 dma buffer to EGLImage
+  // successfully. Enable that back when the issue is resolved.
+  DCHECK(!image_format_no_alpha_);
+  image_format_no_alpha_ = image_format_alpha_;
+
   if (!image_format_hdr_)
     image_format_hdr_ = image_format_alpha_;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  tablet_state_ = connection_->GetTabletState();
-#endif
-
-#if BUILDFLAG(IS_LINUX)
-  if (auto* linux_ui = ui::LinuxUi::instance()) {
+  if (connection_->IsUiScaleEnabled() && LinuxUi::instance()) {
     OnDeviceScaleFactorChanged();
-    display_scale_factor_observer_.Observe(linux_ui);
+    display_scale_factor_observer_.Observe(LinuxUi::instance());
   }
-#endif
 }
 
 WaylandScreen::~WaylandScreen() = default;
@@ -244,39 +230,6 @@ void WaylandScreen::AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics) {
   gfx::DisplayColorSpaces color_spaces;
   color_spaces.SetOutputBufferFormats(image_format_no_alpha_.value(),
                                       image_format_alpha_.value());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* wayland_output =
-      connection_->wayland_output_manager()->GetOutput(metrics.output_id);
-  auto* color_management_output =
-      wayland_output ? wayland_output->color_management_output() : nullptr;
-  auto srgb_hdr_supported =
-      connection_->zcr_color_manager()->GetVersion() >=
-      ZCR_COLOR_MANAGER_V1_EOTF_NAMES_SRGB_HDR_SINCE_VERSION;
-  if (srgb_hdr_supported && color_management_output &&
-      color_management_output->gfx_color_space() &&
-      color_management_output->gfx_color_space()->IsHDR()) {
-    // Only use display color space to determine if HDR is supported.
-    // LaCrOS will use generic color spaces for blending and compositing.
-    color_spaces.SetOutputColorSpaceAndBufferFormat(
-        gfx::ContentColorUsage::kHDR, true,
-        gfx::ColorSpace::CreateExtendedSRGB10Bit(), *image_format_hdr_);
-    color_spaces.SetOutputColorSpaceAndBufferFormat(
-        gfx::ContentColorUsage::kHDR, false,
-        gfx::ColorSpace::CreateExtendedSRGB10Bit(), *image_format_hdr_);
-    color_spaces.SetOutputColorSpaceAndBufferFormat(
-        gfx::ContentColorUsage::kWideColorGamut, true,
-        gfx::ColorSpace::CreateDisplayP3D65(), image_format_alpha_.value());
-    color_spaces.SetOutputColorSpaceAndBufferFormat(
-        gfx::ContentColorUsage::kWideColorGamut, false,
-        gfx::ColorSpace::CreateDisplayP3D65(), image_format_no_alpha_.value());
-    // While SRGB10bit is designed to have a relative luminance of 5x,
-    // Ash does not rely on this EOTF when finally composited. A value of 10x
-    // is consistent with what is used by Ash in display_util.cc
-    // CreateDisplayColorSpaces()
-    color_spaces.SetHDRMaxLuminanceRelative(10);
-  }
-#endif
-
   changed_display.SetColorSpaces(color_spaces);
 
   // There are 2 cases where |changed_display| must be set as primary:
@@ -306,11 +259,6 @@ void WaylandScreen::AddOrUpdateDisplay(const WaylandOutput::Metrics& metrics) {
   }
   display_id_map_[metrics.output_id] = metrics.display_id;
   display_list_.AddOrUpdateDisplay(changed_display, type);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  gfx::SetFontRenderParamsDeviceScaleFactor(
-      chromeos::GetRepresentativeDeviceScaleFactor(display_list_.displays()));
-#endif
 }
 
 WaylandOutput::Id WaylandScreen::GetOutputIdForDisplayId(int64_t display_id) {
@@ -384,8 +332,7 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
       return display;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return GetPrimaryDisplay();
+  NOTREACHED();
 }
 
 gfx::Point WaylandScreen::GetCursorScreenPoint() const {
@@ -521,7 +468,7 @@ base::TimeDelta WaylandScreen::CalculateIdleTime() const {
       return *idle_time;
   }
 
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
   // Try the org.gnome.Mutter.IdleMonitor D-Bus service (Mutter).
   if (!org_gnome_mutter_idle_monitor_)
     org_gnome_mutter_idle_monitor_ =
@@ -529,7 +476,7 @@ base::TimeDelta WaylandScreen::CalculateIdleTime() const {
   const auto idle_time = org_gnome_mutter_idle_monitor_->GetIdleTime();
   if (idle_time)
     return *idle_time;
-#endif  // defined(USE_DBUS)
+#endif  // BUILDFLAG(USE_DBUS)
 
   NOTIMPLEMENTED_LOG_ONCE();
 
@@ -563,29 +510,18 @@ base::Value::List WaylandScreen::GetGpuExtraInfo(
 
 std::optional<float> WaylandScreen::GetPreferredScaleFactorForAcceleratedWidget(
     gfx::AcceleratedWidget widget) const {
-  if (auto* window = connection_->window_manager()->GetWindow(widget)) {
-    return window->GetPreferredScaleFactor();
+  if (const auto* window = connection_->window_manager()->GetWindow(widget)) {
+    // Returning null while the preferred surface scale has not been received
+    // yet could lead to bugs in bounds change handling code, so default to
+    // `ui_scale` in that case. Context: client code could produce a wrongly
+    // scaled new frame (and commit the corresponding window state), by
+    // disregarding ui scale as this is the API responsible for providing the
+    // final window scale (ie: ui_scale * window_scale) to upper layers.
+    return window->GetPreferredScaleFactor().value_or(1.0f) *
+           window->applied_state().ui_scale;
   }
   return std::nullopt;
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {
-  tablet_state_ = tablet_state;
-
-  ui::TouchUiController::Get()->OnTabletModeToggled(
-      tablet_state == display::TabletState::kInTabletMode ||
-      tablet_state == display::TabletState::kEnteringTabletMode);
-
-  auto* observer_list = display_list_.observers();
-  for (auto& observer : *observer_list)
-    observer.OnDisplayTabletStateChanged(tablet_state);
-}
-
-display::TabletState WaylandScreen::GetTabletState() const {
-  return tablet_state_;
-}
-#endif
 
 bool WaylandScreen::VerifyOutputStateConsistentForTesting() const {
   // The number of displays tracked by the display_list_ and the display_id_map_
@@ -606,19 +542,13 @@ bool WaylandScreen::VerifyOutputStateConsistentForTesting() const {
   return true;
 }
 
-#if BUILDFLAG(IS_LINUX)
 void WaylandScreen::OnDeviceScaleFactorChanged() {
-  if (const auto* linux_ui = ui::LinuxUi::instance()) {
-    const float new_font_scale = linux_ui->display_config().font_scale;
-    if (new_font_scale != font_scale_) {
-      font_scale_ = new_font_scale;
-      for (auto* window : connection_->window_manager()->GetAllWindows()) {
-        window->OnFontScaleFactorChanged(new_font_scale);
-      }
-    }
-  }
+  CHECK(connection_->IsUiScaleEnabled());
+  CHECK(LinuxUi::instance());
+  const auto& linux_ui = *LinuxUi::instance();
+  connection_->window_manager()->SetFontScale(
+      linux_ui.display_config().font_scale);
 }
-#endif  // BUILDFLAG(IS_LINUX)
 
 void WaylandScreen::DumpState(std::ostream& out) const {
   out << "WaylandScreen:" << std::endl;
@@ -631,16 +561,6 @@ void WaylandScreen::DumpState(std::ostream& out) const {
     out << "[" << id_pair.second << ":" << id_pair.first << "] ";
   }
   out << std::endl;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  constexpr auto kTabletStateToStringMap =
-      base::MakeFixedFlatMap<display::TabletState, const char*>(
-          {{display::TabletState::kInClamshellMode, "clamshell"},
-           {display::TabletState::kEnteringTabletMode, "entering_tablet"},
-           {display::TabletState::kInTabletMode, "tablet"},
-           {display::TabletState::kExitingTabletMode, "exiting_tablet"}});
-  out << "  tablet_state="
-      << GetMapValueOrDefault(kTabletStateToStringMap, tablet_state_);
-#endif
   out << ", screen_saver_suspension_count=" << screen_saver_suspension_count_;
 }
 

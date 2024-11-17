@@ -17,9 +17,9 @@ namespace ash {
 class ArcWindowWatcher;
 class ActiveSessionFingerprintClient;
 class InSessionAuthTokenProviderImpl;
+class DemoLoginController;
 class MagicBoostStateAsh;
 class NetworkPortalNotificationController;
-class NewWindowDelegateProvider;
 class OobeDialogUtil;
 class PeripheralsAppDelegateImpl;
 class VideoConferenceTrayController;
@@ -62,17 +62,19 @@ class AshWebViewFactoryImpl;
 class CampaignsManagerClientImpl;
 class CampaignsManagerSession;
 class CastConfigControllerMediaRouter;
+class ChromeNewWindowClient;
 class DesksClient;
 class ExoParts;
 class ImeControllerClientImpl;
 class InSessionAuthDialogClient;
 class LoginScreenClientImpl;
+class ManagementDisclosureClientImpl;
 class MediaClientImpl;
 class MobileDataNotifications;
 class NetworkConnectDelegate;
-class PickerClientImpl;
 class ProjectorAppClientImpl;
 class ProjectorClientImpl;
+class QuickInsertClientImpl;
 class AnnotatorClientImpl;
 class ScreenOrientationDelegateChromeos;
 class SessionControllerClientImpl;
@@ -116,7 +118,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
 
   bool did_post_browser_start() const { return did_post_browser_start_; }
 
-  void ResetNewWindowDelegateProviderForTest();
+  void ResetChromeNewWindowClientForTesting();
 
  private:
   class UserProfileLoadedObserver;
@@ -135,7 +137,7 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
   std::unique_ptr<AccessibilityControllerClient>
       accessibility_controller_client_;
   std::unique_ptr<AppListClientImpl> app_list_client_;
-  std::unique_ptr<ash::NewWindowDelegateProvider> new_window_delegate_provider_;
+  std::unique_ptr<ChromeNewWindowClient> chrome_new_window_client_;
   std::unique_ptr<ash::ArcWindowWatcher> arc_window_watcher_;
   std::unique_ptr<ArcOpenUrlDelegateImpl> arc_open_url_delegate_impl_;
   std::unique_ptr<ash::boca::BocaAppClientImpl> boca_client_;
@@ -181,14 +183,16 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
 
   // Initialized in PostProfileInit in all configs:
   std::unique_ptr<LoginScreenClientImpl> login_screen_client_;
+  std::unique_ptr<ManagementDisclosureClientImpl> management_disclosure_client_;
   std::unique_ptr<MediaClientImpl> media_client_;
   std::unique_ptr<AppAccessNotifier> app_access_notifier_;
   std::unique_ptr<policy::DisplaySettingsHandler> display_settings_handler_;
   std::unique_ptr<AshWebViewFactoryImpl> ash_web_view_factory_;
-  std::unique_ptr<PickerClientImpl> picker_client_;
+  std::unique_ptr<QuickInsertClientImpl> quick_insert_client_;
   std::unique_ptr<ash::OobeDialogUtil> oobe_dialog_util_;
   std::unique_ptr<chromeos::ReadWriteCardsManager> read_write_cards_manager_;
   std::unique_ptr<ash::graduation::GraduationManager> graduation_manager_;
+  std::unique_ptr<ash::DemoLoginController> demo_login_controller_;
 
   // Initialized in PostBrowserStart in all configs:
   std::unique_ptr<MobileDataNotifications> mobile_data_notifications_;
@@ -198,6 +202,11 @@ class ChromeBrowserMainExtraPartsAsh : public ChromeBrowserMainExtraParts {
 
   // Callback invoked at the end of PostBrowserStart().
   base::OnceClosure post_browser_start_callback_;
+
+  // Once Sanitize is completed, ash is restarted. After ash has restarted, we
+  // should check if the restart has happened right after a sanitize. If that is
+  // the case, sanitize done dialog should be shown to the user.
+  void CheckIfSanitizeCompleted();
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_MAIN_EXTRA_PARTS_CHROME_BROWSER_MAIN_EXTRA_PARTS_ASH_H_

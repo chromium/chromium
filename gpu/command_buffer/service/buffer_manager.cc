@@ -277,8 +277,7 @@ bool Buffer::GetMaxValueForRange(
         primitive_restart_index = 0xFFFFFFFF;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();  // should never get here by validation.
-        break;
+        NOTREACHED();  // should never get here by validation.
     }
   }
 
@@ -350,8 +349,7 @@ bool Buffer::GetMaxValueForRange(
                                     primitive_restart_index);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();  // should never get here by validation.
-      break;
+      NOTREACHED();  // should never get here by validation.
   }
   range_set_.insert(std::make_pair(range, max_v));
   *max_value = max_v;
@@ -625,7 +623,7 @@ void BufferManager::ValidateAndDoGetBufferParameteri64v(
         break;
       }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -659,7 +657,7 @@ void BufferManager::ValidateAndDoGetBufferParameteriv(
       *params = buffer->GetMappedRange() == nullptr ? false : true;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -725,8 +723,7 @@ Buffer* BufferManager::GetBufferInfoForTarget(
     case GL_UNIFORM_BUFFER:
       return state->bound_uniform_buffer.get();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -743,8 +740,7 @@ void BufferManager::SetPrimitiveRestartFixedIndexIfNecessary(GLenum type) {
       index = 0xFFFFFFFF;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();  // should never get here by validation.
-      break;
+      NOTREACHED();  // should never get here by validation.
   }
   if (primitive_restart_fixed_index_ != index) {
     glPrimitiveRestartIndex(index);

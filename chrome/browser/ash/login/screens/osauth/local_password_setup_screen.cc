@@ -71,7 +71,13 @@ void LocalPasswordSetupScreen::ShowImpl() {
 }
 
 void LocalPasswordSetupScreen::DoShow() {
-  bool can_go_back = !context()->knowledge_factor_setup.local_password_forced;
+  // The user can go back in the flow, if:
+  // 1. They were presented the choice between local vs. online password on the
+  //    LocalPasswordSetup screen.
+  // 2. They clicked on 'Choose password instead' during main PIN setup.
+  bool can_go_back = !context()->knowledge_factor_setup.local_password_forced ||
+                     context()->knowledge_factor_setup.pin_setup_mode ==
+                         WizardContext::PinSetupMode::kUserChosePasswordInstead;
   bool is_recovery_flow = context()->knowledge_factor_setup.auth_setup_flow ==
                           WizardContext::AuthChangeFlow::kRecovery;
   view_->Show(/*can_go_back=*/can_go_back,
@@ -101,7 +107,7 @@ void LocalPasswordSetupScreen::OnUserAction(const base::Value::List& args) {
                            weak_factory_.GetWeakPtr()));
         break;
       case WizardContext::AuthChangeFlow::kReauthentication:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     return;
   } else if (action_id == kUserActionBack) {

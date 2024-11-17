@@ -103,10 +103,7 @@ public interface HybridListRenderer {
     /** Called when a manual refresh is initiated by the user. */
     default void onManualRefreshStarted() {}
 
-    /**
-     * Returns helper to manager the list layout.
-     * @return @{@link ListLayoutHelper} instance.
-     */
+    /** Returns helper to manager the list layout. @{@link ListLayoutHelper} instance. */
     default ListLayoutHelper getListLayoutHelper() {
         return null;
     }

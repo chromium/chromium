@@ -29,9 +29,9 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.theme.ThemeColorProvider.TintObserver;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 
 /** Unit tests for {@link AppThemeColorProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -40,7 +40,7 @@ public class AppThemeColorProviderUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock private DesktopWindowStateProvider mDesktopWindowStateProvider;
+    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private AppHeaderState mAppHeaderState;
     @Mock private TintObserver mTintObserver;
 
@@ -54,8 +54,8 @@ public class AppThemeColorProviderUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
 
-        when(mDesktopWindowStateProvider.getAppHeaderState()).thenReturn(mAppHeaderState);
-        when(mDesktopWindowStateProvider.isInUnfocusedDesktopWindow()).thenReturn(false);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
+        when(mDesktopWindowStateManager.isInUnfocusedDesktopWindow()).thenReturn(false);
     }
 
     @After
@@ -69,7 +69,7 @@ public class AppThemeColorProviderUnitTest {
     public void appStartsInUnfocusedDesktopWindow() {
         // Initialize.
         when(mAppHeaderState.isInDesktopWindow()).thenReturn(true);
-        when(mDesktopWindowStateProvider.isInUnfocusedDesktopWindow()).thenReturn(true);
+        when(mDesktopWindowStateManager.isInUnfocusedDesktopWindow()).thenReturn(true);
         initThemeColorProvider();
 
         // Simulate incognito state change that updates tint at startup.
@@ -160,7 +160,7 @@ public class AppThemeColorProviderUnitTest {
     private void initThemeColorProvider() {
         mAppThemeColorProvider =
                 new AppThemeColorProvider(
-                        mContext, mActivityLifecycleDispatcher, mDesktopWindowStateProvider);
+                        mContext, mActivityLifecycleDispatcher, mDesktopWindowStateManager);
         mAppThemeColorProvider.addTintObserver(mTintObserver);
 
         verify(mActivityLifecycleDispatcher).register(mAppThemeColorProvider);

@@ -8,11 +8,11 @@
 #include <memory>
 #import <optional>
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
-
 class PrefService;
+class ProfileIOS;
 class ProfileOAuth2TokenServiceDelegate;
 class ProfileOAuth2TokenService;
+class ShareKitService;
 class SystemIdentityManager;
 class TrustedVaultClientBackend;
 namespace drive {
@@ -112,7 +112,11 @@ std::unique_ptr<TrustedVaultClientBackend> CreateTrustedVaultClientBackend();
 // Allows overriding the TabGroupSyncService factory. The real factory will be
 // used if this hook returns null.
 std::unique_ptr<tab_groups::TabGroupSyncService> CreateTabGroupSyncService(
-    ChromeBrowserState* browser_state);
+    ProfileIOS* profile);
+
+// Allows overriding the ShareKitService factory. The real factory will be
+// used if this hook returns null.
+std::unique_ptr<ShareKitService> CreateShareKitService();
 
 // Returns a bulk leak check service that should be used when testing. The real
 // factory will be used if this hook returns a nullptr.
@@ -122,7 +126,7 @@ GetOverriddenBulkLeakCheckService();
 // Returns a plus address service that should be used when testing. The real
 // factory will be used if this hook returns a nullptr.
 std::unique_ptr<plus_addresses::PlusAddressService>
-GetOverriddenPlusAddressService(ProfileIOS* profile);
+GetOverriddenPlusAddressService();
 
 // Returns a recipients fetcher instance that should be used in EG tests. The
 // real instance will be used if this hook returns a nullptr.
@@ -159,6 +163,11 @@ std::unique_ptr<drive::DriveService> GetOverriddenDriveService();
 // override with a demo tracker that only enables that feature (use empty string
 // for a demo tracker that enables all features).
 std::optional<std::string> FETDemoModeOverride();
+
+// If the given argv contains `-EGTestWipeProfile`, deletes the
+// contents of the `Library` directory at the start of `main()`. This
+// simulates launching the application with a fresh profile.
+void WipeProfileIfRequested(int argc, char* argv[]);
 
 }  // namespace tests_hook
 

@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="de">
+<translation id="100421257800558142">Drücke die Rechtspfeiltaste</translation>
 <translation id="100506692671054486">Kein vorheriger Befehl</translation>
 <translation id="1009046985747440431">Aufwärts- oder Abwärtspfeil drücken, um Elemente auszuwählen, und die Auswahl mit der Eingabetaste bestätigen</translation>
 <translation id="1011903154582639569">Um auf die gewählte Taste zu tippen, hebe den Finger an</translation>
@@ -21,12 +22,14 @@
 <translation id="1120743664840974483">{"a": "Anton", "ä": "Ärger", "b": "Berta", "c": "Cäsar", "d": "Dora", "e": "Emil", "f": "Friedrich", "g": "Gustav", "h": "Heinrich", "i": "Ida", "j": "Julius", "k": "Kaufmann", "l": "Ludwig", "m": "Martha", "n": "Nordpol", "o": "Otto", "ö": "Ökonom", "p": "Paula", "q": "Quelle", "r": "Richard", "s": "Samuel", "ß": "Eszett", "t": "Theodor", "u": "Ulrich", "ü": "Übermut", "v": "Viktor", "w": "Wilhelm", "x": "Xanthippe", "y": "Ypsilon", "z": "Zacharias"}</translation>
 <translation id="1120938014254001895">Mit zwei Fingern nach oben wischen</translation>
 <translation id="1126928665165112660">Nicht kursiv</translation>
+<translation id="1133751489735776037">Mit der linken Maustaste dreimal klicken</translation>
 <translation id="113582498867142724"><ph name="TAG" />-Sammlung mit <ph name="NUM" /> Elementen</translation>
 <translation id="1146441463334103638">Display ein- oder ausschalten</translation>
 <translation id="1156488781945104845">Aktuelle Uhrzeit</translation>
 <translation id="1161762950103988776">Sprung</translation>
 <translation id="1164857107703583584">Mit Sprungbefehlen kannst du effizient zwischen den Elementen einer Webseite wechseln.</translation>
 <translation id="1175914831232945926">Ziffern</translation>
+<translation id="1186712907912748007">Drag‑and‑drop-Vorgang läuft. Zum Beenden <ph name="GESTURE" />. Andere Gesichtsbewegungen sind vorübergehend nicht verfügbar.</translation>
 <translation id="1188858454923323853">ergänzend</translation>
 <translation id="1189258430971676908">Übungsbereich: Drop-down-Listen</translation>
 <translation id="1195238899008218998">Nachwort</translation>
@@ -52,16 +55,19 @@
 <translation id="1243477406442346359">Kornblumenblau</translation>
 <translation id="1246424317317450637">Fett</translation>
 <translation id="1251750620252348585">Nächste Überschrift der Ebene 6</translation>
+<translation id="1264956950255940376">Linkes Auge zusammenkneifen</translation>
 <translation id="1268366246392928616">Kein vorheriger mathematischer Ausdruck</translation>
 <translation id="1275718070701477396">Ausgewählt</translation>
 <translation id="1284576163386164372">Du kannst die Anleitungen jederzeit wieder aufrufen. Tippe dazu einmal mit vier Fingern, um die Menüs zu öffnen. Aktiviere dann die Anleitung im Abschnitt „ChromeVox“.</translation>
 <translation id="1291286136605998134">Ein-/Aus-Schaltfläche</translation>
 <translation id="1299774449519412690">Helles Himmelblau</translation>
 <translation id="1303806948938513162">Tippe mit vier Fingern, um die ChromeVox-Menüs aufzurufen</translation>
+<translation id="1304162325618937178">Drücke die Leertaste</translation>
 <translation id="1313373992684326101">Zum vorherigen Bereich wechseln, beispielsweise zur Statusleiste oder zum Launcher.</translation>
 <translation id="1315077335264761176">Einführung in die Verwendung von Touch-Gesten</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, Optionsfeld für Menüpunkt, nicht ausgewählt</translation>
 <translation id="1325946044405407859">Gelbbraun</translation>
+<translation id="1328928545650070438">Augenbrauen senken</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> von <ph name="TOTAL" /></translation>
 <translation id="1334095593597963605">Zeichen- und Wortecho</translation>
 <translation id="1334570596456017464">Tiefgestellt</translation>
@@ -70,6 +76,7 @@
 <translation id="1346059596910821859">Trinkgeld</translation>
 <translation id="1354356357730355833">Kopieren</translation>
 <translation id="1360699455582016846">Klicke auf das Element unterhalb des Routing-Schlüssels <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1365650529628379165">Augenbrauen heben</translation>
 <translation id="1376703628032300005">zum nächsten Zeichen wechseln</translation>
 <translation id="1377925789329510816">Hierbei handelt es sich um die letzte Überschrift. Drücke „Suche + H“, um zur ersten Überschrift zu gelangen, oder „Suche + Umschalttaste + H“, um zur zweiten Überschrift auf dieser Seite zu springen.</translation>
 <translation id="138218114945450791">Hellblau</translation>
@@ -131,6 +138,7 @@
 <translation id="1771761307086386028">Nach rechts scrollen</translation>
 <translation id="1781173782405573156">Taste ignorieren</translation>
 <translation id="1787176709638001873">Text für Passwort bearbeiten</translation>
+<translation id="1795438342141780114">Cursor in die Mitte verschieben</translation>
 <translation id="180203835522132923">Suchtaste + O, anschließend W</translation>
 <translation id="1810107444790159527">Listenfeld</translation>
 <translation id="1812527064848182527">Querformat</translation>
@@ -148,6 +156,7 @@
 <translation id="1914424852593176649">Größe <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">Akkord mit <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Mittlere Orchideenfarbe</translation>
+<translation id="1926147969119007125">Mimik-Steuerung pausieren</translation>
 <translation id="1928932365747995741">Kein vorheriges bearbeitbares Textfeld</translation>
 <translation id="1964135212174907577">Nächstes Objekt</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -169,6 +178,7 @@
 <translation id="2121067395472282800">Zugriffsschlüssel: <ph name="KEY" /></translation>
 <translation id="2126597928985245619">Für dieses Element ist kein Text verfügbar</translation>
 <translation id="2127747486437921899">Kursiv</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Übungsbereich schließen</translation>
 <translation id="2163782704988363449">Druckfehler</translation>
 <translation id="2169714232367507776">Auf aktuelles Element klicken</translation>
@@ -178,9 +188,11 @@
 <translation id="2197863150503783129">Sattelbraun</translation>
 <translation id="2199994615414171367">Vorheriger mathematischer Ausdruck</translation>
 <translation id="2203046366315513658">Wert verringern</translation>
+<translation id="2206580811360135054">Fensterübersicht wird ein- oder ausgeblendet</translation>
 <translation id="2216790501338699346">Link-URL: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Ein Zeichen zurück</translation>
 <translation id="2220529011494928058">Problem melden</translation>
+<translation id="2239819015858077439">Drücke die Abwärtspfeiltaste</translation>
 <translation id="2243633977138166243">Mit Links- und Rechtspfeil navigieren; mit Eingabetaste aktivieren</translation>
 <translation id="224426591676115802">Für diese Sprache ist keine Stimme verfügbar: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Der Lernmodus wird beendet</translation>
@@ -188,6 +200,7 @@
 <translation id="2267538686624070261">Rechtschreibfehler wird verlassen</translation>
 <translation id="2267945578749931355">Nächstes Zeichen</translation>
 <translation id="2278490101488436824">Mit drei Fingern nach links wischen</translation>
+<translation id="228059581448666199">Mit der linken Maustaste klicken</translation>
 <translation id="2303873575703885770">Ein Element aktivieren</translation>
 <translation id="2305942658236913680">Keine nächste Überschrift</translation>
 <translation id="2311237334957139798">Zum vorherigen Detaillierungsgrad wechseln</translation>
@@ -197,6 +210,7 @@
 <translation id="2347456970887948350">Ein Link</translation>
 <translation id="2363753371702255035">Aufzählungszeichen</translation>
 <translation id="2365384324219615024">Du kannst zum Aktivieren von Elementen auch die Eingabetaste drücken. Die Eingabetaste kann beispielsweise verwendet werden, um Text in einem Formular abzusenden. Drücke zum Fortfahren die Eingabetaste.</translation>
+<translation id="2371402123699727805">Spracheingabe aktiv. Zum Beenden <ph name="GESTURE" />. Andere Gesichtsbewegungen sind vorübergehend nicht verfügbar.</translation>
 <translation id="2381733276052567791">Sprachausgabe aktivieren oder deaktivieren</translation>
 <translation id="2390264819538553347">Drücke die Eingabetaste, um zur nächsten Seite, oder die Rücktaste, um zur vorigen Seite zu gelangen.</translation>
 <translation id="2398579267367951220">Gib etwas ein, um die Seite zu durchsuchen. Drücke die Eingabetaste, um zu den Ergebnissen zu springen und drücke auf den Aufwärts- bzw. Abwärtspfeil, um zwischen den Ergebnissen hin- und herzuspringen. Außerdem kannst du noch mehr eingeben, um die Suche zu ändern, oder die Suche über die Esc-Taste abbrechen.</translation>
@@ -259,9 +273,11 @@
 <translation id="2723001399770238859">Audio</translation>
 <translation id="2737898226590637227">Keine nächste ARIA-Markierung</translation>
 <translation id="2749275490991666823">Aktiviert</translation>
+<translation id="2751454300227269244">Mund nach rechts bewegen</translation>
 <translation id="27527859628328957">Zum nächsten fokussierbaren Element springen</translation>
 <translation id="2756452585631602151">Benutzerdefiniertes Label eingeben</translation>
 <translation id="2766299274563946262">Keine Zelle links</translation>
+<translation id="2770947749427257887">Scrollmodus starten</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Du kannst auch mit einem Finger von rechts nach links wischen, um zum vorherigen Element zu gelangen. Probiere es jetzt aus.</translation>
 <translation id="280499067616661124">ChromeVox-Suche auf der Seite</translation>
@@ -272,6 +288,8 @@
 <translation id="2843432675592278677">Keine vorherige ARIA-Markierung</translation>
 <translation id="2843814945404750166">Dunkles Olivgrün</translation>
 <translation id="2843837985843789981">Vorherige Gruppe</translation>
+<translation id="2849035674501872372">Nachsehen</translation>
+<translation id="2860710618359053450">Kiefer nach rechts verschieben</translation>
 <translation id="2864481629947106776">Vorheriger Link</translation>
 <translation id="2867808975387772810">Bibliografie</translation>
 <translation id="2873259058405069099">Zum Anfang der Tabelle gehen</translation>
@@ -308,6 +326,7 @@
 <translation id="3060880924447482063">Wische nach links oder rechts, um dich von Element zu Element zu bewegen</translation>
 <translation id="3070245424257836917">Mit drei Fingern nach oben wischen</translation>
 <translation id="307516670110542567">Kurzanleitung</translation>
+<translation id="3077734595579995578">Umschalttaste</translation>
 <translation id="3078345202707391975">Nächste Überschrift der Ebene 2</translation>
 <translation id="3078740164268491126">Tabelle</translation>
 <translation id="3082249673510793544">Zurückscrollen</translation>
@@ -335,8 +354,10 @@
 <translation id="3153928844647607688">Tabelle <ph name="TABLENAME" />, <ph name="TABLEROWS" /> x <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Beige</translation>
 <translation id="316542773973815724">Navigation</translation>
+<translation id="3167446923957429259">Mund nach links bewegen</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{Leerzeichen}other{# Leerzeichen}}</translation>
 <translation id="3179119189286472195">Kein Link</translation>
+<translation id="3180990259147710757">Kiefer nach links verschieben</translation>
 <translation id="320041337977930740">Displaydarstellung in "Überlappen" ändern</translation>
 <translation id="3206698050650195442">Anleitung schließen</translation>
 <translation id="3208346789712025453">Kein weiteres Steuerelement</translation>
@@ -364,6 +385,7 @@
 <translation id="3322936298410871309">Vorherige Überschrift der Ebene 1</translation>
 <translation id="3323447499041942178">Textfeld</translation>
 <translation id="3324983252691184275">Purpur</translation>
+<translation id="334252345105450327">Screenshot erstellen</translation>
 <translation id="335581015389089642">Sprachausgabe</translation>
 <translation id="3356951775008366684">Phonetische Aussprache eines Worts ansagen</translation>
 <translation id="3359142382821736686">seprtr</translation>
@@ -372,6 +394,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{Pluszeichen}other{# Pluszeichen}}</translation>
 <translation id="338583716107319301">Trennzeichen</translation>
 <translation id="3389259863310851658">Vorheriges Formularfeld</translation>
+<translation id="3390740059150071453">Nach links blicken</translation>
 <translation id="3393605254399152980">Ziehe einen Finger, um zu hören, was du berührst</translation>
 <translation id="3406283310380167331">Formularliste anzeigen</translation>
 <translation id="3407726812456125464">Ausgewählten Text vorlesen lassen</translation>
@@ -385,6 +408,7 @@
 <translation id="3466530247399808663">Ein ungültiger Tastendruck</translation>
 <translation id="3468959318854349468">Kein Titel</translation>
 <translation id="3469413619751135069">Blassgrün</translation>
+<translation id="3473744269398144689">Spracheingabe starten</translation>
 <translation id="3490765818161916458">Listenraster</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{eckige Klammer rechts}other{# eckige Klammern rechts}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
@@ -426,6 +450,7 @@
 <translation id="3777255250339039212">h1</translation>
 <translation id="3777742246909257041">Schneeweiß</translation>
 <translation id="3781428340399460090">Dunkelrosa</translation>
+<translation id="3783640748446814672">Alt</translation>
 <translation id="3783725005098956899">Protokoll anzeigen</translation>
 <translation id="3801735343383419236">Liste der Autovervollständigungen</translation>
 <translation id="3806327402890551732">Zum nächsten oder vorherigen Element wechseln</translation>
@@ -440,6 +465,7 @@
 <translation id="3870295413168340326">Keine vorherige Überschrift der Ebene 3</translation>
 <translation id="3887399638190992181">Wichtige Tasten</translation>
 <translation id="3887576927692165210">ed</translation>
+<translation id="3896762831164962772">Mimik-Steuerung pausiert. Zum Fortfahren <ph name="GESTURE" />. Andere Gesichtsbewegungen sind vorübergehend nicht verfügbar.</translation>
 <translation id="3897092660631435901">Menü</translation>
 <translation id="3907138069015388678">Listenraster</translation>
 <translation id="3909320334364316587">Vorherige Überschrift der Ebene 6</translation>
@@ -471,6 +497,7 @@
 <translation id="409334809956508737">Vorheriges Objekt</translation>
 <translation id="4099274309791143834">mit Untermenü</translation>
 <translation id="4101527861445851766">Ein angeklicktes Kästchen</translation>
+<translation id="410225014223200513">Mit Lippen ein O machen</translation>
 <translation id="4115378294792113321">Magenta</translation>
 <translation id="4116415223832267137">Benachrichtigung</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{geschweifte Klammer rechts}other{# geschweifte Klammern rechts}}</translation>
@@ -498,6 +525,7 @@
 <translation id="4246217262268234757">Stahlblau</translation>
 <translation id="4253168017788158739">Notiz</translation>
 <translation id="4254798249533888099">Baumstruktur</translation>
+<translation id="4255016471934258618">Mund weit aufmachen</translation>
 <translation id="4259220820964911921">Gesichtssteuerung aktivieren?</translation>
 <translation id="4271220233568730077">Nächster mathematischer Ausdruck</translation>
 <translation id="4275397969489577657">Ereignisstream-Protokollierung aktivieren</translation>
@@ -506,9 +534,11 @@
 <translation id="4289540628985791613">Übersicht</translation>
 <translation id="4294967782363273192">Aufsteigend sortiert</translation>
 <translation id="4300318234632215983">URL hinter einem Link ansagen</translation>
+<translation id="4321179778687042513">Strg</translation>
 <translation id="4322625298640984693">Ocker</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{Punkt}=3{Auslassungspunkte}other{# Punkte}}</translation>
 <translation id="4352022650330571548">„<ph name="PHRASE" />“ eingeben</translation>
+<translation id="4360738659108163902">Mit der rechten Maustaste klicken</translation>
 <translation id="4372435075475052704">Mind.: <ph name="X" /></translation>
 <translation id="4372705107434148843">Sprachausgabe anhalten</translation>
 <translation id="4376316291247992553">Grafik als Braille anzeigen</translation>
@@ -518,9 +548,12 @@
 <translation id="4391478986194775161">cntntinfo</translation>
 <translation id="4402014469255336455">Tiefes Himmelblau</translation>
 <translation id="4406249099130339147">Satzzeichenecho:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Alle Zähne zeigen</translation>
 <translation id="4432457053224379116">Indischrot</translation>
 <translation id="4432896207833262240">Markierte Inhalte</translation>
 <translation id="4437615272777527928">Gib etwas ein, um die Menüs zu durchsuchen. Verwende die Nach-oben- und die Nach-unten-Taste, um die Ergebnisse durchzugehen. Verwende die Nach-links- und die Nach-rechts-Taste, um den Textcursor zu bewegen und zwischen Menüs zu wechseln.</translation>
+<translation id="4441677939526091190">Drücke die Aufwärtspfeiltaste</translation>
 <translation id="4453530046591759283">Du gelangst zu anderen Bildschirmbereichen, z. B. zu den Symbolleisten oder zur Taskleiste, indem du Strg + F1 drückst. Die Taste „F1“ befindet sich gleich rechts neben der Esc‑Taste.</translation>
 <translation id="4457472090507035117">Aktuelle Stimme auswählen:</translation>
 <translation id="4476183483923481720">Neue Zeile</translation>
@@ -538,6 +571,7 @@
 <translation id="4562381607973973258">Header-Element</translation>
 <translation id="4597532268155981612">Formular</translation>
 <translation id="4601367666219428522">Tab. <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Benutzerdefinierte Tastenkombination: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Nächster Tastenanschlag wird ignoriert.</translation>
 <translation id="4617384941327705512">Intelligenter fixierter Modus deaktiviert</translation>
 <translation id="4623097797855662355">Kolophon</translation>
@@ -566,6 +600,7 @@
 <translation id="4815668758102003883">Blasses Türkis</translation>
 <translation id="4826415162591436065">Vorwärts navigieren</translation>
 <translation id="4827410568042294688">nicht ausgewählt</translation>
+<translation id="4835598628985424375">Kussmund machen</translation>
 <translation id="4838490795649708173">Mit vier Fingern tippen</translation>
 <translation id="4839925464551908214">Zur vorherigen Zeile</translation>
 <translation id="4841614409681890122">Tiefrosa</translation>
@@ -574,6 +609,7 @@
 <translation id="4848993367330139335">tmr</translation>
 <translation id="4854380505292502090">Kein vorheriges Medien-Widget</translation>
 <translation id="4855927945655956315">Wichtige Tasten: Steuerung-Taste</translation>
+<translation id="485806788160414322">Medien wiedergeben oder pausieren</translation>
 <translation id="4862744964787595316">Nicht fett</translation>
 <translation id="4865995900839719272">zur vorherigen Zeile wechseln</translation>
 <translation id="4866956062845190338">rdmnuitm</translation>
@@ -620,6 +656,7 @@
 <translation id="5138912041966667164">Mittleres Schieferblau</translation>
 <translation id="5140016802771803559">Violett</translation>
 <translation id="5142101052131610456">Alle Lektionen</translation>
+<translation id="514387318601895731">Nach unten blicken</translation>
 <translation id="5158275234811857234">Titelseite</translation>
 <translation id="516076699907426116">Nutze „Tippen &amp; Entdecken“, um die Schaltfläche „Nächste Lektion“ zu finden. Anschließend kannst du durch Doppeltippen fortfahren.</translation>
 <translation id="5170206230005240598">Braille-Untertitel aktiviert</translation>
@@ -629,6 +666,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Ende</translation>
 <translation id="5290220123487191192">Fangen wir mit ein paar Touch-Gesten an, die du regelmäßig verwenden wirst. Wenn du zu einem Element gelangst, das du aktivieren möchtest, tippe mit einem Finger doppelt auf den Bildschirm. Tippe jetzt doppelt, um fortzufahren.</translation>
+<translation id="5291860916305032607">Mimik-Steuerung fortsetzen</translation>
 <translation id="5302089807023311274">Bibliografiereferenz</translation>
 <translation id="530391007967514163">Probiere die Tastenkombination aus: Bewege dich durch den untenstehenden Text, indem du von Überschrift zu Überschrift springst.</translation>
 <translation id="5304943142864553931">Tab "<ph name="TITLE" />"</translation>
@@ -654,6 +692,7 @@
 <translation id="5400836586163650660">Grau</translation>
 <translation id="5402367795255837559">Braille</translation>
 <translation id="5402791055281059602">Eine modale Benachrichtigung</translation>
+<translation id="5406272775687194041">Drag-and-drop starten</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{Strichpunkt}other{# Strichpunkte}}</translation>
 <translation id="5420259671171615858">In Menüs suchen</translation>
 <translation id="5435274640623994081">Earcon-Protokollierung aktivieren</translation>
@@ -663,6 +702,7 @@
 <translation id="5452267669091857717">Keine nächste Überschrift der Ebene 1</translation>
 <translation id="5455441614648621694">Ergänzend</translation>
 <translation id="5462510922370980473">Seitenliste</translation>
+<translation id="5489460663499094917">Scrollmodus aktiv. Zum Beenden <ph name="GESTURE" />. Andere Gesichtsbewegungen sind vorübergehend nicht verfügbar.</translation>
 <translation id="5495517933067991341">Wichtige Tasten: Umschalttaste</translation>
 <translation id="549602578321198708">Wort</translation>
 <translation id="5513242761114685513">Kontextmenü</translation>
@@ -695,6 +735,7 @@
 <translation id="5653397561111110475">Bedienungshilfen für den Chromebook-Touchscreen verwenden</translation>
 <translation id="5655682562155942719">Zwischen Befehlen wechseln</translation>
 <translation id="56637627897541303">Textbereich</translation>
+<translation id="5666746275818170484">Drücke die Linkspfeiltaste</translation>
 <translation id="5669637233317991674">Drücke „Suchtaste + Rechtspfeil“ oder „Suchtaste + Linkspfeil“, um dich durch diese Lektion zu bewegen</translation>
 <translation id="5677240841070992068">Aktueller Standort</translation>
 <translation id="5678161956734658133">mled</translation>
@@ -714,11 +755,13 @@
 <translation id="5776001898637896684">Erweiterung für die Sprachausgabe bei Google Enhanced Network</translation>
 <translation id="5783252477644995371">Mit der Gesichtssteuerung kannst du den Cursor mithilfe von Gesichtsbewegungen steuern und Aktionen ausführen, z. B. die linke Maustaste mit einem Lächeln betätigen</translation>
 <translation id="5805940204952508776">Mit zwei Fingern tippen</translation>
+<translation id="5807774529265708172">Bildschirmtastatur ein- oder ausblenden</translation>
 <translation id="5819072574982403430">Baumelement</translation>
 <translation id="5822819874379903994">Dunkles Türkis</translation>
 <translation id="5824976764713185207">Seite automatisch lesen, wenn sie vollständig geladen ist</translation>
 <translation id="5826479389509458994"><ph name="ROW" />. Zeile, <ph name="COL" />. Spalte</translation>
 <translation id="5833044594931167190">Keine ARIA-Markierungen</translation>
+<translation id="584044465500042213">Scrollmodus beenden</translation>
 <translation id="5842625257683688671">Keine nächste Grafik</translation>
 <translation id="5847883414085148048">Widmung</translation>
 <translation id="5850707923114094062">Nach hinten schwenken</translation>
@@ -739,6 +782,7 @@
 <translation id="5923780477617566089">Aktuelles Datum</translation>
 <translation id="5926889058434275234">Eine vollständige Liste mit Touch-Gesten findest du in der Hilfe.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{Gleichheitszeichen}other{# Gleichheitszeichen}}</translation>
+<translation id="5947651424015173580">Mit der linken Maustaste doppelklicken</translation>
 <translation id="5948123859135882163">Interpretation mathematischer Ausdrücke zwischen strukturell und semantisch umschalten</translation>
 <translation id="5955304353782037793">app</translation>
 <translation id="5956928062748260866">Dialogfeld</translation>
@@ -747,6 +791,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{mit # Element}other{mit # Elementen}}</translation>
 <translation id="5981446804259161541">Hellcyan</translation>
 <translation id="5983179082906765664">Navigationsgenauigkeit erhöhen</translation>
+<translation id="5988563937187882754">Nach rechts blicken</translation>
 <translation id="5992285135956208197">Grafikdokument</translation>
 <translation id="5999630716831179808">Stimmen</translation>
 <translation id="6006050241733874051">Formular</translation>
@@ -821,6 +866,7 @@
 <translation id="6584162722998608255">Als Nächstes erfährst du, wie du mit dem Bildschirm interagierst. Du kannst mit einem Finger von links nach rechts wischen, um zum nächsten Element zu wechseln. Probiere es aus, um mit dem nächsten Schritt fortzufahren.</translation>
 <translation id="6609828810966525877">Mehr Bewegungen kannst du im Lernmodus und in der Chromebook-Hilfe entdecken</translation>
 <translation id="6628427060004938651">Teil</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">log</translation>
 <translation id="6657128831881431364">Statusanzeige</translation>
 <translation id="667999046851023355">Dokument</translation>
@@ -885,6 +931,7 @@
 <translation id="7096001299300236431">Vorheriges Medium</translation>
 <translation id="7096668131290451939">Drücke noch einmal die Esc‑Taste, um den Lernmodus zu beenden</translation>
 <translation id="7116595520562830928">multln</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">Wortecho</translation>
 <translation id="7137397390322864165">Lachs</translation>
 <translation id="7140168702531682811">Hochgestellt</translation>
@@ -895,6 +942,7 @@
 <translation id="7161771961008409533">Pop-up-Schaltfläche</translation>
 <translation id="7167657087543110">Zeichenecho</translation>
 <translation id="7173102181852295013">Mitternachtsblau</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Erweitert</translation>
 <translation id="7209751026933045237">Kein nächster Schieberegler</translation>
 <translation id="7218782500591078391">Goldrute</translation>
@@ -915,6 +963,7 @@
 <translation id="7285387653379749618">Tabellen</translation>
 <translation id="7289186959554153431">Überschrift 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">Drag-and-drop beenden</translation>
 <translation id="7308519659008003150">Kein vorheriges Formularfeld</translation>
 <translation id="731121099745151312">tritm</translation>
 <translation id="7313717760367325059">Hilfe</translation>
@@ -973,6 +1022,7 @@
 <translation id="7701040980221191251">Keine</translation>
 <translation id="7701196182766842984">autolst</translation>
 <translation id="7714340021005120797">Kein nächstes Kombinationsfeld</translation>
+<translation id="7715455358521357192">Rechtes Auge zusammenkneifen</translation>
 <translation id="7724603315864178912">Ausschneiden</translation>
 <translation id="7731785449856576010">Kein weiteres Medien-Widget</translation>
 <translation id="7735498529470878067">Mit „Tippen &amp; Entdecken“ kannst du dir schnell einen Überblick über den Bildschirminhalt verschaffen.</translation>
@@ -1027,6 +1077,7 @@
 <translation id="8098587210054821856">Schiefergrau</translation>
 <translation id="8121539003537428024">Alle Ereignisfilter aktivieren</translation>
 <translation id="8123975449645947908">Zurückscrollen</translation>
+<translation id="8126355825906412872">Lächeln</translation>
 <translation id="8126386426083591964">Keine vorherige Überschrift der Ebene 5</translation>
 <translation id="812886159861361726">Download von "<ph name="FILE_NAME" />" angehalten</translation>
 <translation id="8129445297241948503">Keine Zelle oberhalb</translation>
@@ -1117,6 +1168,7 @@
 <translation id="8775203254697638994">Manchmal musst du ein Element in einer Drop-down-Liste auswählen. Erweitere dazu zuerst die Liste durch Drücken von „Suchtaste + Leertaste“. Verwende dann die Nach-unten- und die Nach-oben-Taste, um ein Element auszuwählen. Minimiere anschließend die Liste durch Drücken von „Suchtaste + Leertaste“.</translation>
 <translation id="8779057862865475116">Kein vorheriger Link</translation>
 <translation id="8796411681063377102">Nächste Überschrift der Ebene 3</translation>
+<translation id="8821891849214789910">Spracheingabe beenden</translation>
 <translation id="8823311177246872527">Seite <ph name="CURRENTPAGE" /> von <ph name="TOTALPAGES" /></translation>
 <translation id="8825828890761629845">bnr</translation>
 <translation id="8851136666856101339">main</translation>

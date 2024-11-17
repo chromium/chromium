@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 
+#include "components/autofill/core/browser/metrics/prediction_quality_metrics.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,8 +21,6 @@ using UkmSuggestionFilledType = ukm::builders::Autofill_SuggestionFilled;
 using UkmTextFieldDidChangeType = ukm::builders::Autofill_TextFieldDidChange;
 using UkmLogHiddenRepresentationalFieldSkipDecisionType =
     ukm::builders::Autofill_HiddenRepresentationalFieldSkipDecision;
-using UkmLogRepeatedServerTypePredictionRationalized =
-    ukm::builders::Autofill_RepeatedServerTypePredictionRationalized;
 using UkmFieldTypeValidationType = ukm::builders::Autofill_FieldTypeValidation;
 using UkmFieldFillStatusType = ukm::builders::Autofill_FieldFillStatus;
 using UkmFormEventType = ukm::builders::Autofill_FormEvent;
@@ -105,7 +104,7 @@ void AppendFieldFillStatusUkm(
     const FormData& form,
     std::vector<std::vector<ExpectedUkmMetricsPair>>* expected_metrics) {
   FormSignature form_signature = Collapse(CalculateFormSignature(form));
-  int64_t metric_type = static_cast<int64_t>(AutofillMetrics::TYPE_SUBMISSION);
+  int64_t metric_type = static_cast<int64_t>(TYPE_SUBMISSION);
   for (const FormFieldData& field : form.fields()) {
     FieldSignature field_signature =
         Collapse(CalculateFieldSignatureForField(field));
@@ -130,20 +129,18 @@ void AppendFieldTypeUkm(
   ASSERT_EQ(server_types.size(), form.fields().size());
   ASSERT_EQ(actual_types.size(), form.fields().size());
   FormSignature form_signature = Collapse(CalculateFormSignature(form));
-  int64_t metric_type = static_cast<int64_t>(AutofillMetrics::TYPE_SUBMISSION);
-  std::vector<int64_t> prediction_sources{
-      AutofillMetrics::PREDICTION_SOURCE_HEURISTIC,
-      AutofillMetrics::PREDICTION_SOURCE_SERVER,
-      AutofillMetrics::PREDICTION_SOURCE_OVERALL};
+  int64_t metric_type = static_cast<int64_t>(TYPE_SUBMISSION);
+  std::vector<int64_t> prediction_sources{PREDICTION_SOURCE_HEURISTIC,
+                                          PREDICTION_SOURCE_SERVER,
+                                          PREDICTION_SOURCE_OVERALL};
   for (size_t i = 0; i < form.fields().size(); ++i) {
     const FormFieldData& field = form.fields()[i];
     FieldSignature field_signature =
         Collapse(CalculateFieldSignatureForField(field));
     for (int64_t source : prediction_sources) {
       int64_t predicted_type = static_cast<int64_t>(
-          (source == AutofillMetrics::PREDICTION_SOURCE_SERVER
-               ? server_types
-               : heuristic_types)[i]);
+          (source == PREDICTION_SOURCE_SERVER ? server_types
+                                              : heuristic_types)[i]);
       int64_t actual_type = static_cast<int64_t>(actual_types[i]);
       expected_metrics->push_back(
           {{UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0},

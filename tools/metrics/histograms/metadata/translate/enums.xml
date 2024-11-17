@@ -76,6 +76,48 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Partial Translate error"/>
 </enum>
 
+<!-- LINT.IfChange(SupportedLanguage) -->
+
+<enum name="SupportedLanguage">
+  <int value="0" label="ar"/>
+  <int value="1" label="bg"/>
+  <int value="2" label="bn"/>
+  <int value="3" label="cs"/>
+  <int value="4" label="da"/>
+  <int value="5" label="de"/>
+  <int value="6" label="el"/>
+  <int value="7" label="en"/>
+  <int value="8" label="es"/>
+  <int value="9" label="fi"/>
+  <int value="10" label="fr"/>
+  <int value="11" label="hi"/>
+  <int value="12" label="hr"/>
+  <int value="13" label="hu"/>
+  <int value="14" label="id"/>
+  <int value="15" label="it"/>
+  <int value="16" label="iw"/>
+  <int value="17" label="ja"/>
+  <int value="18" label="ko"/>
+  <int value="19" label="lt"/>
+  <int value="20" label="nl"/>
+  <int value="21" label="no"/>
+  <int value="22" label="pl"/>
+  <int value="23" label="pt"/>
+  <int value="24" label="ro"/>
+  <int value="25" label="ru"/>
+  <int value="26" label="sk"/>
+  <int value="27" label="sl"/>
+  <int value="28" label="sv"/>
+  <int value="29" label="th"/>
+  <int value="30" label="tr"/>
+  <int value="31" label="uk"/>
+  <int value="32" label="vi"/>
+  <int value="33" label="zh"/>
+  <int value="34" label="zh-Hant"/>
+</enum>
+
+<!-- LINT.ThenChange(//tools/metrics/histograms/metadata/translate/histograms.xml:SupportedLanguage) -->
+
 <enum name="TranslateCompactUIEvent">
   <int value="0" label="Infobar impression"/>
   <int value="1" label="Translation accepted by clicking on tab language"/>

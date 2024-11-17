@@ -194,7 +194,7 @@ class InMemorySessionStorage : public SessionStorage {
       base::OnceCallback<void(std::optional<base::Value::Dict>)> on_done)
       override {
     if (session_.has_value()) {
-      std::move(on_done).Run(session_.value().Clone());
+      std::move(on_done).Run(session_->Clone());
     } else {
       std::move(on_done).Run(std::nullopt);
     }

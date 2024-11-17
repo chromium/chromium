@@ -4,9 +4,9 @@
 
 #include "content/browser/child_process_launcher_helper.h"
 
+#include "base/apple/mach_port_rendezvous.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
-#include "base/mac/mach_port_rendezvous.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/posix/global_descriptors.h"
@@ -114,6 +114,7 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
   options->disclaim_responsibility = delegate_->DisclaimResponsibility();
   options->enable_cpu_security_mitigations =
       delegate_->EnableCpuSecurityMitigations();
+  options->process_requirement = delegate_->GetProcessRequirement();
 
   auto sandbox_type =
       sandbox::policy::SandboxTypeFromCommandLine(*command_line_);
@@ -244,8 +245,7 @@ base::File OpenFileToShare(const base::FilePath& path,
                            base::MemoryMappedFile::Region* region) {
   // Not used yet (until required files are described in the service manifest on
   // Mac).
-  NOTREACHED_IN_MIGRATION();
-  return base::File();
+  NOTREACHED();
 }
 
 }  //  namespace internal

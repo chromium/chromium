@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
+import type {SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
 
 export interface KeyAssignment {
   key: string;

@@ -11,7 +11,8 @@
 #import "base/scoped_observation.h"
 #import "base/sequence_checker.h"
 #import "components/bookmarks/browser/base_bookmark_model_observer.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace bookmarks {
 class BookmarkModel;

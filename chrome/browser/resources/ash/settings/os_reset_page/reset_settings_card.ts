@@ -12,18 +12,20 @@ import './os_powerwash_dialog.js';
 import './os_sanitize_dialog.js';
 
 import {getEuicc, getNonPendingESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
-import {ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
+import type {ESimProfileRemote} from 'chrome://resources/mojo/chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled, isSanitizeAllowed} from '../common/load_time_booleans.js';
+import {isSanitizeAllowed} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
-import {OsResetBrowserProxy, OsResetBrowserProxyImpl} from './os_reset_browser_proxy.js';
+import type {OsResetBrowserProxy} from './os_reset_browser_proxy.js';
+import {OsResetBrowserProxyImpl} from './os_reset_browser_proxy.js';
 import {getTemplate} from './reset_settings_card.html.js';
 
 export interface ResetSettingsCardElement {
@@ -58,13 +60,6 @@ export class ResetSettingsCardElement extends ResetSettingsCardElementBase {
         },
       },
 
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value() {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
       isSanitizeAllowed_: {
         type: Boolean,
         value() {
@@ -88,7 +83,6 @@ export class ResetSettingsCardElement extends ResetSettingsCardElementBase {
 
   private osResetBrowserProxy_: OsResetBrowserProxy;
   private installedESimProfiles_: ESimProfileRemote[];
-  private readonly isRevampWayfindingEnabled_: boolean;
   private readonly isSanitizeAllowed_: boolean;
   private route_: Route;
   private showPowerwashDialog_: boolean;
@@ -96,8 +90,7 @@ export class ResetSettingsCardElement extends ResetSettingsCardElementBase {
   constructor() {
     super();
 
-    this.route_ = this.isRevampWayfindingEnabled_ ? routes.SYSTEM_PREFERENCES :
-                                                    routes.OS_RESET;
+    this.route_ = routes.SYSTEM_PREFERENCES;
     this.osResetBrowserProxy_ = OsResetBrowserProxyImpl.getInstance();
   }
 

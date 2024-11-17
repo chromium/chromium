@@ -139,8 +139,8 @@ public class LongScreenshotsMediator
             showAreaSelectionDialog(
                     Bitmap.createScaledBitmap(
                             entryBitmap,
-                            (int) (Math.round(entryBitmap.getWidth() / scale)),
-                            (int) (Math.round(entryBitmap.getHeight() / scale)),
+                            (int) Math.round(entryBitmap.getWidth() / scale),
+                            (int) Math.round(entryBitmap.getHeight() / scale),
                             true));
             mDidScaleForTesting = true;
         } else {

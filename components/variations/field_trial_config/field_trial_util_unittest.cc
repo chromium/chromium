@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/352691908 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/variations/field_trial_config/field_trial_util.h"
 
 #include <map>
@@ -35,30 +30,22 @@ namespace {
 
 class ExperimentBuilder {
  public:
-  ExperimentBuilder() {}
+  ExperimentBuilder() = default;
 
   FieldTrialTestingExperiment Build() const {
     return {
         name,
-        platforms.data(),
-        platforms.size(),
-        form_factors.data(),
-        form_factors.size(),
+        platforms,
+        form_factors,
         is_low_end_device,
         min_os_version,
-        params.data(),
-        params.size(),
-        enable_features.data(),
-        enable_features.size(),
-        disable_features.data(),
-        disable_features.size(),
+        params,
+        enable_features,
+        disable_features,
         forcing_flag,
-        override_ui_string.data(),
-        override_ui_string.size(),
-        hardware_classes.data(),
-        hardware_classes.size(),
-        exclude_hardware_classes.data(),
-        exclude_hardware_classes.size(),
+        override_ui_string,
+        hardware_classes,
+        exclude_hardware_classes,
     };
   }
 
@@ -88,7 +75,7 @@ class TestOverrideStringCallback {
   TestOverrideStringCallback& operator=(const TestOverrideStringCallback&) =
       delete;
 
-  virtual ~TestOverrideStringCallback() {}
+  virtual ~TestOverrideStringCallback() = default;
 
   const VariationsSeedProcessor::UIStringOverrideCallback& callback() const {
     return callback_;
@@ -139,7 +126,7 @@ class TestVariationsServiceClient : public VariationsServiceClient {
 
 class FieldTrialUtilTest : public ::testing::Test {
  public:
-  FieldTrialUtilTest() {}
+  FieldTrialUtilTest() = default;
 
   FieldTrialUtilTest(const FieldTrialUtilTest&) = delete;
   FieldTrialUtilTest& operator=(const FieldTrialUtilTest&) = delete;
@@ -208,11 +195,11 @@ TEST_F(FieldTrialUtilTest, AssociateParamsFromFieldTrialConfig) {
       study_1_experiment_1_builder.Build(),
   };
   const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
-      {"TestTrial1", array_kFieldTrialConfig_experiments_0, 1},
-      {"TestTrial2", array_kFieldTrialConfig_experiments_1, 2},
+      {"TestTrial1", array_kFieldTrialConfig_experiments_0},
+      {"TestTrial2", array_kFieldTrialConfig_experiments_1},
   };
   const FieldTrialTestingConfig kConfig = {
-      array_kFieldTrialConfig_studies, 2
+      array_kFieldTrialConfig_studies,
   };
 
   base::FeatureList feature_list;
@@ -306,18 +293,15 @@ TEST_F(FieldTrialUtilTest, FieldTrialConfigSkipOverridden) {
 
   const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
       {/*name=*/"TestTrial0",
-       /*experiments=*/array_kFieldTrialConfig_experiments_0,
-       /*experiments_size=*/1},
+       /*experiments=*/array_kFieldTrialConfig_experiments_0},
       {/*name=*/"TestTrial1",
-       /*experiments=*/array_kFieldTrialConfig_experiments_1,
-       /*experiments_size=*/1},
+       /*experiments=*/array_kFieldTrialConfig_experiments_1},
       {/*name=*/"TestTrial2",
-       /*experiments=*/array_kFieldTrialConfig_experiments_2,
-       /*experiments_size=*/1},
+       /*experiments=*/array_kFieldTrialConfig_experiments_2},
   };
 
   const FieldTrialTestingConfig kConfig = {
-      /*studies=*/array_kFieldTrialConfig_studies, /*studies_size=*/3};
+      /*studies=*/array_kFieldTrialConfig_studies};
 
   base::FeatureList feature_list;
   // Enable feature "A" and disable feature "B" as if they were enabled/disabled
@@ -360,8 +344,7 @@ TEST_F(FieldTrialUtilTest,
   const FieldTrialTestingExperimentParams array_kFieldTrialConfig_params[] =
       {{"x", "1"}, {"y", "2"}};
 
-  for (size_t i = 0; i < std::size(all_platforms); ++i) {
-    const Study::Platform platform = all_platforms[i];
+  for (Study::Platform platform : all_platforms) {
     ExperimentBuilder experiment_builder;
     experiment_builder.name = "TestGroup";
     experiment_builder.platforms = base::span_from_ref(platform);
@@ -370,10 +353,9 @@ TEST_F(FieldTrialUtilTest,
         experiment_builder.Build(),
     };
     const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
-        {"TestTrial", array_kFieldTrialConfig_experiments, 1}
-    };
+        {"TestTrial", array_kFieldTrialConfig_experiments}};
     const FieldTrialTestingConfig kConfig = {
-        array_kFieldTrialConfig_studies, 1
+        array_kFieldTrialConfig_studies,
     };
 
     base::FeatureList feature_list;
@@ -406,10 +388,9 @@ TEST_F(FieldTrialUtilTest,
   const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments[] = {
       experiment_builder.Build(),
   };
-  const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] =
-      {{"TestTrial", array_kFieldTrialConfig_experiments, 1}};
-  const FieldTrialTestingConfig kConfig =
-      {array_kFieldTrialConfig_studies, 1};
+  const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
+      {"TestTrial", array_kFieldTrialConfig_experiments}};
+  const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies};
 
   // The platforms don't match, so trial shouldn't be added.
   base::FeatureList feature_list;
@@ -439,10 +420,9 @@ TEST_F(FieldTrialUtilTest,
   const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments[] = {
       experiment_builder.Build(),
   };
-  const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] =
-      {{"TestTrial", array_kFieldTrialConfig_experiments, 1}};
-  const FieldTrialTestingConfig kConfig =
-      {array_kFieldTrialConfig_studies, 1};
+  const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
+      {"TestTrial", array_kFieldTrialConfig_experiments}};
+  const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies};
 
   // One of the platforms matches, so trial should be added.
   base::FeatureList feature_list;
@@ -482,10 +462,9 @@ TEST_F(FieldTrialUtilTest,
   const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments[] = {
       experiment_builder.Build(),
   };
-  const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] =
-      {{"TestTrial", array_kFieldTrialConfig_experiments, 1}};
-  const FieldTrialTestingConfig kConfig =
-      {array_kFieldTrialConfig_studies, 1};
+  const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
+      {"TestTrial", array_kFieldTrialConfig_experiments}};
+  const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies};
 
   // One of the form_factors matches, so trial should be added.
   base::FeatureList feature_list;
@@ -521,11 +500,8 @@ TEST_F(FieldTrialUtilTest,
       experiment_builder.Build(),
   };
   const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
-      {"TestTrial", array_kFieldTrialConfig_experiments, 1}
-  };
-  const FieldTrialTestingConfig kConfig = {
-      array_kFieldTrialConfig_studies, 1
-  };
+      {"TestTrial", array_kFieldTrialConfig_experiments}};
+  const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies};
 
   // One of the form_factors matches, so trial should be added.
   base::FeatureList feature_list;
@@ -569,10 +545,9 @@ TEST_F(FieldTrialUtilTest,
     const FieldTrialTestingExperiment array_kFieldTrialConfig_experiments[] = {
         experiment_builder.Build(),
     };
-    const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] =
-        {{"TestTrial", array_kFieldTrialConfig_experiments, 1}};
-    const FieldTrialTestingConfig kConfig =
-        {array_kFieldTrialConfig_studies, 1};
+    const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
+        {"TestTrial", array_kFieldTrialConfig_experiments}};
+    const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies};
 
     // The form factor don't match, so trial shouldn't be added.
     base::FeatureList feature_list;
@@ -620,13 +595,11 @@ TEST_F(FieldTrialUtilTest, AssociateFeaturesFromFieldTrialConfig) {
   };
 
   const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
-      {"TestTrial1", array_kFieldTrialConfig_experiments_0, 1},
-      {"TestTrial2", array_kFieldTrialConfig_experiments_1, 2},
+      {"TestTrial1", array_kFieldTrialConfig_experiments_0},
+      {"TestTrial2", array_kFieldTrialConfig_experiments_1},
   };
 
-  const FieldTrialTestingConfig kConfig = {
-      array_kFieldTrialConfig_studies, 2
-  };
+  const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies};
 
   std::unique_ptr<base::FeatureList> feature_list(new base::FeatureList);
   AssociateParamsFromFieldTrialConfig(
@@ -684,13 +657,11 @@ TEST_F(FieldTrialUtilTest, AssociateForcingFlagsFromFieldTrialConfig) {
       study_2_experiment_2_builder.Build(),
   };
   const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
-      {"TestTrial1", array_kFieldTrialConfig_experiments_0, 1},
-      {"TestTrial2", array_kFieldTrialConfig_experiments_1, 2},
-      {"TestTrial3", array_kFieldTrialConfig_experiments_2, 3},
+      {"TestTrial1", array_kFieldTrialConfig_experiments_0},
+      {"TestTrial2", array_kFieldTrialConfig_experiments_1},
+      {"TestTrial3", array_kFieldTrialConfig_experiments_2},
   };
-  const FieldTrialTestingConfig kConfig = {
-      array_kFieldTrialConfig_studies, 3
-  };
+  const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies};
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch("flag-2");
   base::CommandLine::ForCurrentProcess()->AppendSwitch("flag-3");
@@ -722,11 +693,8 @@ TEST_F(FieldTrialUtilTest,
       experiment_builder.Build(),
   };
   const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
-      {"TestTrial", array_kFieldTrialConfig_experiments, 1}
-  };
-  const FieldTrialTestingConfig kConfig = {
-      array_kFieldTrialConfig_studies, 1
-  };
+      {"TestTrial", array_kFieldTrialConfig_experiments}};
+  const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies};
 
   // One of the form_factors matches, so trial should be added.
   base::FeatureList feature_list;
@@ -767,8 +735,8 @@ TEST_F(FieldTrialUtilTest,
       experiment_builder.Build(),
   };
   const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
-      {"TestTrial", array_kFieldTrialConfig_experiments, 1}};
-  const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies, 1};
+      {"TestTrial", array_kFieldTrialConfig_experiments}};
+  const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies};
 
   // The is_low_end_device filter matches, so trial should be added.
   base::FeatureList feature_list;
@@ -802,8 +770,8 @@ TEST_F(FieldTrialUtilTest,
       experiment_builder.Build(),
   };
   const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
-      {"TestTrial", array_kFieldTrialConfig_experiments, 1}};
-  const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies, 1};
+      {"TestTrial", array_kFieldTrialConfig_experiments}};
+  const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies};
 
   // The is_low_end_device don't match, so trial shouldn't be added.
   base::FeatureList feature_list;
@@ -836,8 +804,8 @@ TEST_F(FieldTrialUtilTest,
       experiment_builder.Build(),
   };
   const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
-      {"TestTrial", array_kFieldTrialConfig_experiments, 1}};
-  const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies, 1};
+      {"TestTrial", array_kFieldTrialConfig_experiments}};
+  const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies};
 
   // The min_os_version filter matches, so trial should be added.
   base::FeatureList feature_list;
@@ -875,8 +843,8 @@ TEST_F(FieldTrialUtilTest,
       experiment_builder.Build(),
   };
   const FieldTrialTestingStudy array_kFieldTrialConfig_studies[] = {
-      {"TestTrial", array_kFieldTrialConfig_experiments, 1}};
-  const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies, 1};
+      {"TestTrial", array_kFieldTrialConfig_experiments}};
+  const FieldTrialTestingConfig kConfig = {array_kFieldTrialConfig_studies};
 
   // The min_os_version doesn't match, so trial shouldn't be added.
   base::FeatureList feature_list;
@@ -921,17 +889,15 @@ TEST_F(FieldTrialUtilTest,
   experiment_builder.name = "TestGroup";
   experiment_builder.platforms = base::span_from_ref(platform);
   experiment_builder.hardware_classes = classes;
-  FieldTrialTestingExperiment experiment = experiment_builder.Build();
+  FieldTrialTestingExperiment experiment[]{experiment_builder.Build()};
 
-  FieldTrialTestingStudy study = {
+  FieldTrialTestingStudy study[]{{
       /*name=*/"TestTrial",
-      /*experiments=*/&experiment,
-      /*experiments_size=*/1,
-  };
+      /*experiments=*/experiment,
+  }};
 
   FieldTrialTestingConfig config = {
-      /*studies=*/&study,
-      /*studies_size=*/1,
+      /*studies=*/study,
   };
 
   base::FeatureList feature_list;
@@ -955,17 +921,15 @@ TEST_F(FieldTrialUtilTest,
   experiment_builder.name = "TestGroup";
   experiment_builder.platforms = base::span_from_ref(platform);
   experiment_builder.hardware_classes = classes;
-  FieldTrialTestingExperiment experiment = experiment_builder.Build();
+  FieldTrialTestingExperiment experiment[]{experiment_builder.Build()};
 
-  FieldTrialTestingStudy study = {
+  FieldTrialTestingStudy study[]{{
       /*name=*/"TestTrial",
-      /*experiments=*/&experiment,
-      /*experiments_size=*/1,
-  };
+      /*experiments=*/experiment,
+  }};
 
   FieldTrialTestingConfig config = {
-      /*studies=*/&study,
-      /*studies_size=*/1,
+      /*studies=*/study,
   };
 
   base::FeatureList feature_list;
@@ -990,17 +954,15 @@ TEST_F(FieldTrialUtilTest,
   experiment_builder.name = "TestGroup";
   experiment_builder.platforms = base::span_from_ref(platform);
   experiment_builder.exclude_hardware_classes = classes;
-  FieldTrialTestingExperiment experiment = experiment_builder.Build();
+  FieldTrialTestingExperiment experiment[]{experiment_builder.Build()};
 
-  FieldTrialTestingStudy study = {
+  FieldTrialTestingStudy study[]{{
       /*name=*/"TestTrial",
-      /*experiments=*/&experiment,
-      /*experiments_size=*/1,
-  };
+      /*experiments=*/experiment,
+  }};
 
   FieldTrialTestingConfig config = {
-      /*studies=*/&study,
-      /*studies_size=*/1,
+      /*studies=*/study,
   };
 
   base::FeatureList feature_list;
@@ -1024,17 +986,15 @@ TEST_F(FieldTrialUtilTest,
   experiment_builder.name = "TestGroup";
   experiment_builder.platforms = base::span_from_ref(platform);
   experiment_builder.exclude_hardware_classes = classes;
-  FieldTrialTestingExperiment experiment = experiment_builder.Build();
+  FieldTrialTestingExperiment experiment[]{experiment_builder.Build()};
 
-  FieldTrialTestingStudy study = {
+  FieldTrialTestingStudy study[]{{
       /*name=*/"TestTrial",
-      /*experiments=*/&experiment,
-      /*experiments_size=*/1,
-  };
+      /*experiments=*/experiment,
+  }};
 
   FieldTrialTestingConfig config = {
-      /*studies=*/&study,
-      /*studies_size=*/1,
+      /*studies=*/study,
   };
 
   base::FeatureList feature_list;

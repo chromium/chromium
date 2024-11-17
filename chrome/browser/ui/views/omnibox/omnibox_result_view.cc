@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/location_bar/selected_keyword_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_local_answer_header_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_suggestion_button_row_view.h"
@@ -33,8 +34,6 @@
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_feature_configs.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_features.h"
@@ -65,8 +64,10 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/link.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
@@ -112,9 +113,9 @@ class OmniboxResultSelectionIndicator : public views::View {
  public:
   const int kStrokeThickness = 4;
 
-  explicit OmniboxResultSelectionIndicator(OmniboxResultView* result_view)
-      : result_view_(result_view) {
-    SetPreferredSize(gfx::Size(kStrokeThickness, 40));
+  OmniboxResultSelectionIndicator() {
+    // Height will automatically match the parent's height.
+    SetPreferredSize(gfx::Size(kStrokeThickness, 0));
   }
 
   // views::View:
@@ -129,9 +130,6 @@ class OmniboxResultSelectionIndicator : public views::View {
   }
 
  private:
-  // Pointer to the parent view.
-  const raw_ptr<OmniboxResultView> result_view_;
-
   // The focus bar is a straight vertical line with half-rounded endcaps. Since
   // this geometry is nontrivial to represent using primitives, it's instead
   // represented using a fill path. This matches the style and implementation
@@ -167,36 +165,74 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
                               base::Unretained(this))) {
   CHECK_GE(model_index, 0u);
 
+  // The view hierarchy is:
+  // OmniboxResultView (FillLayout)
+  //   selection_indicator_
+  //   local_answer_header_and_suggestion_and_buttons_ (BoxLayout vertical)
+  //     local_answer_header_ (added lazily)
+  //     suggestion_and_buttons (FlexLayout horizontal)
+  //       suggestion_and_button_row (FlexLayout horizontal)
+  //         suggestion_view_
+  //         button_row_
+  //       thumbs_up_button_
+  //       thumbs_down_button_
+  //       remove_suggestion_button_
+
+  // TODO(crbug.com/370088101): The division between `OmniboxResultView` and
+  //   `suggestion_view_` is not clear. Should we inline `suggestion_view_`'s
+  //   members in `OmniboxResultView`? Or should we move e.g. the thumb and
+  //   remove buttons into `suggestion_view_`? `suggestion_view_` currently uses
+  //   custom layout, so it's easier to add new views to `OmniboxResultView`
+  //   when possible.
+
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
-  auto* selection_indicator_container_ =
+  selection_indicator_ =
+      AddChildView(std::make_unique<OmniboxResultSelectionIndicator>());
+
+  local_answer_header_and_suggestion_and_buttons_ =
       AddChildView(std::make_unique<views::View>());
-  selection_indicator_container_->SetLayoutManager(
-      std::make_unique<views::FlexLayout>());
+  local_answer_header_and_suggestion_and_buttons_
+      ->SetLayoutManager(std::make_unique<views::BoxLayout>())
+      ->SetOrientation(views::LayoutOrientation::kVertical);
 
-  selection_indicator_ = selection_indicator_container_->AddChildView(
-      std::make_unique<OmniboxResultSelectionIndicator>(this));
-  selection_indicator_->SetProperty(views::kCrossAxisAlignmentKey,
-                                    views::LayoutAlignment::kStart);
-
-  auto* right = AddChildView(std::make_unique<views::View>());
-  right->SetLayoutManager(std::make_unique<views::FlexLayout>())
+  auto* suggestion_and_buttons =
+      local_answer_header_and_suggestion_and_buttons_->AddChildView(
+          std::make_unique<views::View>());
+  suggestion_and_buttons
+      ->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
-  views::View* suggestion_and_buttons =
-      right->AddChildView(std::make_unique<views::View>());
-  suggestion_and_buttons->SetLayoutManager(
+  views::View* suggestion_and_button_row =
+      suggestion_and_buttons->AddChildView(std::make_unique<views::View>());
+  suggestion_and_button_row->SetLayoutManager(
       std::make_unique<views::FlexLayout>());
-  suggestion_and_buttons->SetProperty(
+  suggestion_and_button_row->SetProperty(
       views::kFlexBehaviorKey,
+      // FlexSpecification has multiple constructors, and if no direction is
+      // specified, the settings will be used in both horizontal and vertical
+      // directions. Therefore, we must specify the horizontal direction.
+      // Otherwise, the vertical height will be stretched.
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
 
-  suggestion_view_ = suggestion_and_buttons->AddChildView(
+  suggestion_view_ = suggestion_and_button_row->AddChildView(
       std::make_unique<OmniboxMatchCellView>(this));
   suggestion_view_->iph_link_view()->SetCallback(base::BindRepeating(
       &OmniboxResultView::OpenIphLink, weak_factory_.GetWeakPtr()));
+
+  auto* const iph_link_focus_ring =
+      views::FocusRing::Get(suggestion_view_->iph_link_view());
+  iph_link_focus_ring->SetHasFocusPredicate(base::BindRepeating(
+      [](const OmniboxResultView* result_view, const View* view) {
+        return view->GetVisible() && result_view->GetMatchSelected() &&
+               result_view->popup_view_->GetSelection().state ==
+                   OmniboxPopupSelection::FOCUSED_IPH_LINK;
+      },
+      base::Unretained(this)));
+  iph_link_focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
+
   // Allocate space for the suggestion text only after accounting
   // for the space needed to render the inline action chip row.
   suggestion_view_->SetProperty(
@@ -207,14 +243,14 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
 
   // TODO(b/345536738): Move the common code for setting up instances of
   //  OmniboxResultViewButton to the constructor.
-  thumbs_up_button_ =
-      right->AddChildView(std::make_unique<OmniboxResultViewButton>(
+  thumbs_up_button_ = suggestion_and_buttons->AddChildView(
+      std::make_unique<OmniboxResultViewButton>(
           IDS_ACC_THUMBS_UP_SUGGESTION_BUTTON,
           base::BindRepeating(
               &OmniboxResultView::ButtonPressed, base::Unretained(this),
               OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP)));
   thumbs_up_button_->SetProperty(views::kMarginsKey,
-                                 gfx::Insets::TLBR(0, 0, 0, 16));
+                                 gfx::Insets::TLBR(0, 0, 0, 8));
   views::InstallCircleHighlightPathGenerator(thumbs_up_button_);
   thumbs_up_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_THUMBS_UP_SUGGESTION));
@@ -228,14 +264,14 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
       base::Unretained(this)));
   thumbs_up_focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
 
-  thumbs_down_button_ =
-      right->AddChildView(std::make_unique<OmniboxResultViewButton>(
+  thumbs_down_button_ = suggestion_and_buttons->AddChildView(
+      std::make_unique<OmniboxResultViewButton>(
           IDS_ACC_THUMBS_DOWN_SUGGESTION_BUTTON,
           base::BindRepeating(
               &OmniboxResultView::ButtonPressed, base::Unretained(this),
               OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_DOWN)));
   thumbs_down_button_->SetProperty(views::kMarginsKey,
-                                   gfx::Insets::TLBR(0, 0, 0, 16));
+                                   gfx::Insets::TLBR(0, 0, 0, 8));
   views::InstallCircleHighlightPathGenerator(thumbs_down_button_);
   thumbs_down_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_OMNIBOX_THUMBS_DOWN_SUGGESTION));
@@ -250,8 +286,8 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
       base::Unretained(this)));
   thumbs_down_focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
 
-  remove_suggestion_button_ =
-      right->AddChildView(std::make_unique<OmniboxResultViewButton>(
+  remove_suggestion_button_ = suggestion_and_buttons->AddChildView(
+      std::make_unique<OmniboxResultViewButton>(
           IDS_ACC_REMOVE_SUGGESTION_BUTTON,
           base::BindRepeating(
               &OmniboxResultView::ButtonPressed, base::Unretained(this),
@@ -270,7 +306,7 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
       base::Unretained(this)));
   remove_focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
 
-  button_row_ = suggestion_and_buttons->AddChildView(
+  button_row_ = suggestion_and_button_row->AddChildView(
       std::make_unique<OmniboxSuggestionButtonRowView>(popup_view_,
                                                        model_index));
   // If there's insufficient space for rendering both the suggestion text
@@ -284,6 +320,7 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
   mouse_enter_exit_handler_.ObserveMouseEnterExitOn(this);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kListBoxOption);
+  UpdateAccessibleName();
   GetViewAccessibility().SetPosInSet(model_index_ + 1);
 }
 
@@ -309,8 +346,8 @@ std::unique_ptr<views::Background> OmniboxResultView::GetPopupCellBackground(
         /*for_border_thickness=*/0);
   }
 
-  gfx::RoundedCornersF radii = {0, static_cast<float>(view->height()),
-                                static_cast<float>(view->height()), 0};
+  const float half_row_height = OmniboxMatchCellView::kRowHeight / 2;
+  gfx::RoundedCornersF radii = {0, half_row_height, half_row_height, 0};
   return views::CreateThemedRoundedRectBackground(
       GetOmniboxBackgroundColorId(part_state), radii);
 }
@@ -336,36 +373,25 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
         l10n_util::GetStringUTF16(IDS_ACC_REMOVE_SUGGESTION_BUTTON));
   }
 
-  suggestion_view_->content()->SetTextWithStyling(match_.contents,
-                                                  match_.contents_class);
-  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
-      match_.answer_template.has_value()) {
-    omnibox::AnswerData answer_data = match_.answer_template->answers(0);
-    suggestion_view_->content()->SetTextWithStyling(
-        /*formatted_string=*/answer_data.headline(), /*fragment_index=*/1u,
-        /*answer_type=*/match_.answer_type);
-    // The subhead text may be multiline.
-    suggestion_view_->description()->SetMultilineText(
-        /*formatted_string=*/answer_data.subhead(),
-        /*answer_type=*/match_.answer_type);
-  } else if (match_.answer) {
-    suggestion_view_->content()->AppendExtraText(match_.answer->first_line());
-    suggestion_view_->description()->SetTextWithStyling(
-        match_.answer->second_line(), false);
-  } else {
-    // Not all 2-line suggestions have deemphasized descriptions; specifically,
-    // calculator answers are 2-line but not deemphasized.
-    const bool deemphasize =
-        match_.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
-        OmniboxMatchCellView::ShouldDisplayImage(match_) &&
-        !OmniboxFieldTrial::IsUniformRowHeightEnabled();
-    suggestion_view_->description()->SetTextWithStyling(
-        match_.description, match_.description_class, deemphasize);
-  }
   button_row_->UpdateFromModel();
+
+  if (match_.type == AutocompleteMatchType::Type::HISTORY_EMBEDDINGS_ANSWER) {
+    if (!local_answer_header_) {
+      local_answer_header_ =
+          local_answer_header_and_suggestion_and_buttons_->AddChildViewAt(
+              std::make_unique<OmniboxLocalAnswerHeaderView>(), 0);
+    }
+    local_answer_header_->SetText(match.history_embeddings_answer_header_text);
+    local_answer_header_->SetVisible(true);
+    local_answer_header_->SetThrobberVisibility(
+        match.history_embeddings_answer_header_loading);
+  } else if (local_answer_header_) {
+    local_answer_header_->SetVisible(false);
+  }
 
   ApplyThemeAndRefreshIcons();
   InvalidateLayout();
+  UpdateAccessibleName();
 }
 
 void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
@@ -474,18 +500,18 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
                                      popup_view_->GetSelection().state ==
                                          OmniboxPopupSelection::NORMAL);
   }
+
+  if (suggestion_view_->iph_link_view()->GetVisible()) {
+    views::FocusRing::Get(suggestion_view_->iph_link_view())->SchedulePaint();
+  }
 }
 
 void OmniboxResultView::OnSelectionStateChanged() {
   UpdateFeedbackButtonsVisibility();
   UpdateRemoveSuggestionVisibility();
+  UpdateAccessibleName();
   UpdateAccessibilitySelectedState();
   if (GetMatchSelected()) {
-    // Immediately before notifying screen readers that the selected item has
-    // changed, we want to update the name of the newly-selected item so that
-    // any cached values get updated prior to the selection change.
-    EmitTextChangedAccessiblityEvent();
-
     auto selection_state = popup_view_->GetSelection().state;
 
     // The text is also accessible via text/value change events in the omnibox
@@ -631,66 +657,9 @@ void OmniboxResultView::OnMouseExited(const ui::MouseEvent& event) {
   UpdateHoverState();
 }
 
-void OmniboxResultView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // Get the label without the ", n of m" positional text appended.
-  // The positional info is provided via
-  // ax::mojom::IntAttribute::kPosInSet/SET_SIZE and providing it via text as
-  // well would result in duplicate announcements.
-
-  const auto* autocomplete_controller =
-      popup_view_->controller()->autocomplete_controller();
-
-  // TODO(tommycli): We re-fetch the original match from the popup model,
-  // because |match_| already has its contents and description swapped by this
-  // class, and we don't want that for the bubble. We should improve this.
-  bool is_selected = GetMatchSelected();
-  if (model_index_ < autocomplete_controller->result().size()) {
-    AutocompleteMatch raw_match =
-        autocomplete_controller->result().match_at(model_index_);
-    // The selected match can have a special name, e.g. when is one or more
-    // buttons that can be tabbed to.
-    std::u16string label;
-    if (is_selected) {
-      // The selected match can have a special name, e.g. when is one or more
-      // buttons that can be tabbed to.
-      label =
-          popup_view_->model()->GetPopupAccessibilityLabelForCurrentSelection(
-              raw_match.contents, false);
-
-      // If the line immediately after the current selection is the
-      // informational IPH row, append its accessibility label at the end of
-      // this selection's accessibility label.
-      label += popup_view_->model()
-                   ->MaybeGetPopupAccessibilityLabelForIPHSuggestion();
-    } else {
-      label = AutocompleteMatchType::ToAccessibilityLabel(raw_match,
-                                                          raw_match.contents);
-    }
-    node_data->SetName(label);
-  }
-}
-
 void OmniboxResultView::OnThemeChanged() {
   views::View::OnThemeChanged();
   ApplyThemeAndRefreshIcons(/*force_reapply_styles=*/true);
-}
-
-void OmniboxResultView::EmitTextChangedAccessiblityEvent() {
-  if (!popup_view_->IsOpen()) {
-    return;
-  }
-
-  // The omnibox results list reuses the same items, but the text displayed for
-  // these items is updated as the value of omnibox changes. The displayed text
-  // for a given item is exposed to screen readers as the item's name/label.
-  ui::AXNodeData node_data;
-  GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  std::u16string current_name =
-      node_data.GetString16Attribute(ax::mojom::StringAttribute::kName);
-  if (accessible_name_ != current_name) {
-    NotifyAccessibilityEvent(ax::mojom::Event::kTextChanged, true);
-    accessible_name_ = current_name;
-  }
 }
 
 void OmniboxResultView::UpdateAccessibilityProperties() {
@@ -767,6 +736,45 @@ void OmniboxResultView::UpdateRemoveSuggestionVisibility() {
 
 void OmniboxResultView::UpdateAccessibilitySelectedState() {
   GetViewAccessibility().SetIsSelected(GetMatchSelected());
+}
+
+void OmniboxResultView::UpdateAccessibleName() {
+  // Get the label without the ", n of m" positional text appended.
+  // The positional info is provided via
+  // ax::mojom::IntAttribute::kPosInSet/SET_SIZE and providing it via text as
+  // well would result in duplicate announcements.
+
+  const auto* autocomplete_controller =
+      popup_view_->controller()->autocomplete_controller();
+
+  // TODO(tommycli): We re-fetch the original match from the popup model,
+  // because |match_| already has its contents and description swapped by this
+  // class, and we don't want that for the bubble. We should improve this.
+  bool is_selected = GetMatchSelected();
+  if (model_index_ < autocomplete_controller->result().size()) {
+    AutocompleteMatch raw_match =
+        autocomplete_controller->result().match_at(model_index_);
+    // The selected match can have a special name, e.g. when is one or more
+    // buttons that can be tabbed to.
+    std::u16string label;
+    if (is_selected) {
+      // The selected match can have a special name, e.g. when is one or more
+      // buttons that can be tabbed to.
+      label =
+          popup_view_->model()->GetPopupAccessibilityLabelForCurrentSelection(
+              raw_match.contents, false);
+
+      // If the line immediately after the current selection is the
+      // informational IPH row, append its accessibility label at the end of
+      // this selection's accessibility label.
+      label += popup_view_->model()
+                   ->MaybeGetPopupAccessibilityLabelForIPHSuggestion();
+    } else {
+      label = AutocompleteMatchType::ToAccessibilityLabel(raw_match,
+                                                          raw_match.contents);
+    }
+    GetViewAccessibility().SetName(label);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

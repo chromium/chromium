@@ -4,9 +4,9 @@
 
 import 'chrome://shopping-insights-side-panel.top-chrome/app.js';
 
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {BookmarkProductInfo, PageRemote, PriceInsightsInfo, ProductInfo} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {PageCallbackRouter, PriceInsightsInfo_PriceBucket} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
 import type {PriceTrackingSection} from 'chrome://shopping-insights-side-panel.top-chrome/price_tracking_section.js';
@@ -20,7 +20,8 @@ suite('PriceTrackingSectionTest', () => {
   let priceTrackingSection: PriceTrackingSection;
   let callbackRouter: PageCallbackRouter;
   let callbackRouterRemote: PageRemote;
-  const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
+  const shoppingServiceApi =
+      TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
   let metrics: MetricsTracker;
 
   const productInfo: ProductInfo = {
@@ -33,6 +34,7 @@ suite('PriceTrackingSectionTest', () => {
     previousPrice: '$34',
     clusterId: BigInt(12345),
     categoryLabels: [],
+    priceSummary: '',
   };
 
   const priceInsights: PriceInsightsInfo = {
@@ -102,7 +104,7 @@ suite('PriceTrackingSectionTest', () => {
 
     callbackRouterRemote = callbackRouter.$.bindNewPipeAndPassRemote();
 
-    BrowserProxyImpl.setInstance(shoppingServiceApi);
+    ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
 
     priceTrackingSection = document.createElement('price-tracking-section');
     priceTrackingSection.productInfo = productInfo;
@@ -166,6 +168,7 @@ suite('PriceTrackingSectionTest', () => {
         previousPrice: '$34',
         clusterId: BigInt(54321),
         categoryLabels: [],
+        priceSummary: '',
       };
 
       const otherBookmarkProductInfo: BookmarkProductInfo = {

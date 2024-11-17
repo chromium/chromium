@@ -34,11 +34,9 @@
 <translation id="405782047075994056">Ikonen vänsterpil, kan betyda tillbaka</translation>
 <translation id="4302299849305494927">Högtalarikon, kan betyda volym</translation>
 <translation id="4363712632243441817">Cast-ikon, kan betyda att casta en video till en extern skärm</translation>
-<translation id="4384249794467006333">Den här bilden har ingen etikett. Öppna menyn Fler alternativ uppe till höger för att se bildbeskrivningar.</translation>
 <translation id="4436211924730548766">Ikon med vänster v-form</translation>
 <translation id="4444765639179266822">Säger troligen: <ph name="OCR_TEXT" /></translation>
 <translation id="4540719609030900356">Ikon med pappersflygplan, kan betyda skicka</translation>
-<translation id="4576178047100686001">Den här bilden har ingen etikett. Öppna menyn Fler inställningar uppe till vänster för att se bildbeskrivningar.</translation>
 <translation id="4577968231433672268">Plusikon, kan betyda lägg till</translation>
 <translation id="4611825382945206498">Klocka med cirkulär pil, kan betyda historik</translation>
 <translation id="4679853894970977730">Kameraikon, kan betyda ta foto</translation>
@@ -46,6 +44,7 @@
 <translation id="4908855810237020461">Klockikon, kan betyda tid</translation>
 <translation id="5121688653159243920">Ikon med punktlista</translation>
 <translation id="5214400792580101697">Stoppikon</translation>
+<translation id="5316551112821993767">Den här bilden har ingen etikett. Tryck snabbt två gånger på knappen Fler alternativ högst upp i webbläsaren för att få bildbeskrivningar.</translation>
 <translation id="5586467629893654334">Ikon med måne, kan betyda natt eller viloläge</translation>
 <translation id="5599474660109692598">Ikon med pratbubbla, kan betyda chatt</translation>
 <translation id="5617165654945759937">Pennikon, kan betyda redigera</translation>

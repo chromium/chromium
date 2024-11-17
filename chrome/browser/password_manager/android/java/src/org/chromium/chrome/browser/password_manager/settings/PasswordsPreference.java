@@ -12,7 +12,7 @@ import android.widget.TextView;
 import androidx.preference.PreferenceViewHolder;
 
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
-import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
+import org.chromium.chrome.browser.password_manager.PasswordAccessLossDialogHelper;
 import org.chromium.chrome.browser.password_manager.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -68,14 +68,52 @@ public class PasswordsPreference extends ChromeBasePreference implements Profile
     public void setUpPasswordAccessLossWarning(PreferenceViewHolder holder) {
         assert mProfile != null : "Profile is not set!";
         PrefService prefService = UserPrefs.get(mProfile);
-        if (PasswordManagerHelper.getAccessLossWarningType(prefService)
-                == PasswordAccessLossWarningType.NONE) return;
+        @PasswordAccessLossWarningType
+        int warningType = PasswordAccessLossDialogHelper.getAccessLossWarningType(prefService);
 
+        // If the device doesn't support Google Play Services and the user exports the local
+        // passwords from Chrome, there is no need to show the warning anymore (warning type is
+        // NONE), but there is a dialog that will show when the user tries to open the password
+        // manager item in settings and the summary that shows up for the passwords preference.
+        // If there is no need to show any warning or summary, this method can early return.
+        if (warningType == PasswordAccessLossWarningType.NONE) {
+            return;
+        }
+
+        boolean shouldShowNoticeDialogWithoutPwds =
+                (warningType == PasswordAccessLossWarningType.NO_GMS_CORE
+                        && prefService.getBoolean(Pref.EMPTY_PROFILE_STORE_LOGIN_DATABASE));
         TextView summaryView = (TextView) holder.findViewById(android.R.id.summary);
-        summaryView.setText(R.string.access_loss_pref_desc);
+        summaryView.setText(getSummaryViewString(shouldShowNoticeDialogWithoutPwds, warningType));
         // ChromeBasePreference sets summary text view to be not visible by default if it's empty.
         // So explicitly setting it to visible here.
         summaryView.setVisibility(View.VISIBLE);
+        // TODO: crbug.com/372868129 - Make the icon reliably show up, it's flaky at the moment.
+        if (shouldShowNoticeDialogWithoutPwds) {
+            setWidgetLayoutResource(R.layout.passwords_preference_info_widget);
+            return;
+        }
         setWidgetLayoutResource(R.layout.passwords_preference_error_widget);
+    }
+
+    private int getSummaryViewString(
+            boolean shouldShowNoticeDialogWithoutPwds,
+            @PasswordAccessLossWarningType int warningType) {
+        if (shouldShowNoticeDialogWithoutPwds) {
+            return R.string.access_loss_pref_desc_no_pwds;
+        }
+
+        switch (warningType) {
+            case PasswordAccessLossWarningType.NO_GMS_CORE:
+                return R.string.access_loss_pref_desc_no_gms_core;
+            case PasswordAccessLossWarningType.NO_UPM:
+                return R.string.access_loss_pref_desc_no_upm;
+            case PasswordAccessLossWarningType.ONLY_ACCOUNT_UPM:
+                return R.string.access_loss_pref_desc_only_account_upm;
+            case PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED:
+                return R.string.access_loss_pref_desc_migration_failed;
+        }
+        assert false : "Unhandled warning type: " + warningType;
+        return 0;
     }
 }

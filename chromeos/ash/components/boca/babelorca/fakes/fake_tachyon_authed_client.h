@@ -9,12 +9,12 @@
 #include <string>
 
 #include "base/run_loop.h"
-#include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_authed_client.h"
-#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
 
 namespace ash::babelorca {
+
+class TachyonResponse;
 
 class FakeTachyonAuthedClient : public TachyonAuthedClient {
  public:
@@ -33,8 +33,7 @@ class FakeTachyonAuthedClient : public TachyonAuthedClient {
       std::unique_ptr<RequestDataWrapper> request_data,
       std::string request_string) override;
 
-  void ExecuteResponseCallback(
-      base::expected<std::string, TachyonRequestError> response);
+  void ExecuteResponseCallback(TachyonResponse response);
 
   RequestDataWrapper::ResponseCallback TakeResponseCallback();
 

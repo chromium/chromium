@@ -43,6 +43,7 @@ import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.AwSupervisedUserUrlClassifierDelegate;
 import org.chromium.android_webview.common.BackgroundThreadExecutor;
 import org.chromium.android_webview.common.PlatformServiceBridge;
+import org.chromium.android_webview.supervised_user.AwSupervisedUserSafeModeAction;
 import org.chromium.android_webview.supervised_user.AwSupervisedUserUrlClassifier;
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -113,7 +114,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
             new TestAwSupervisedUserUrlClassifierDelegate();
     private AwContents mAwContents;
     private TestWebServer mWebServer;
-    private IFrameLoadedListener mIFrameLoadedListener = new IFrameLoadedListener();
+    private IframeLoadedListener mIframeLoadedListener = new IframeLoadedListener();
 
     public AwSupervisedUserTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
@@ -135,7 +136,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mAwContents.addWebMessageListener(
-                            "myObject", new String[] {"*"}, mIFrameLoadedListener);
+                            "myObject", new String[] {"*"}, mIframeLoadedListener);
                 });
         resetNeedsRestriction(true);
     }
@@ -144,6 +145,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     public void tearDown() throws Exception {
         mActivityTestRule.destroyAwContentsOnMainSync(mAwContents);
         mWebServer.shutdown();
+        AwSupervisedUserSafeModeAction.resetForTesting();
     }
 
     @Test
@@ -289,6 +291,21 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         }
     }
 
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @CommandLineFlags.Add("enable-features=" + AwFeatures.WEBVIEW_SUPERVISED_USER_SITE_BLOCK)
+    public void testSafeMode() throws Throwable {
+        String embeddedUrl = setUpWebPage(MATURE_SITE_IFRAME_PATH, MATURE_SITE_IFRAME_TITLE, null);
+        String requestUrl = setUpWebPage(MATURE_SITE_PATH, MATURE_SITE_TITLE, embeddedUrl);
+
+        new AwSupervisedUserSafeModeAction().execute();
+        loadUrl(requestUrl);
+
+        assertPageTitle(MATURE_SITE_TITLE);
+        assertIframeTitle(MATURE_SITE_IFRAME_TITLE);
+    }
+
     private String setUpWebPage(String path, String title, @Nullable String iFrameUrl) {
         return mWebServer.setResponse(path, makeTestPage(title, iFrameUrl), null);
     }
@@ -305,7 +322,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
     }
 
     private void assertIframeTitle(String expectedTitle) throws Exception {
-        String iFrameTitle = mIFrameLoadedListener.waitForResult();
+        String iFrameTitle = mIframeLoadedListener.waitForResult();
         Assert.assertEquals(expectedTitle, iFrameTitle);
     }
 
@@ -325,7 +342,7 @@ public class AwSupervisedUserTest extends AwParameterizedTest {
         }
     }
 
-    private static class IFrameLoadedListener implements WebMessageListener {
+    private static class IframeLoadedListener implements WebMessageListener {
         private final CallbackHelper mCallbackHelper = new CallbackHelper();
         private volatile String mResult;
 

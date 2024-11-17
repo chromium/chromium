@@ -24,7 +24,7 @@ static const int kDelayUntilReadyToShowResultMs = 1000;
 BrowsingDataCounter::BrowsingDataCounter()
     : initialized_(false), use_delay_(true), state_(State::IDLE) {}
 
-BrowsingDataCounter::~BrowsingDataCounter() {}
+BrowsingDataCounter::~BrowsingDataCounter() = default;
 
 void BrowsingDataCounter::Init(PrefService* pref_service,
                                ClearBrowsingDataTab clear_browsing_data_tab,
@@ -139,8 +139,7 @@ void BrowsingDataCounter::ReportResult(std::unique_ptr<Result> result) {
       DUMP_WILL_BE_NOTREACHED() << "State::IDLE";
       return;
     case State::REPORT_STAGED_RESULT:
-      NOTREACHED_IN_MIGRATION() << "State::REPORT_STAGED_RESULT";
-      return;
+      NOTREACHED() << "State::REPORT_STAGED_RESULT";
   }
 }
 
@@ -198,7 +197,7 @@ BrowsingDataCounter::Result::Result(const BrowsingDataCounter* source)
   DCHECK(source);
 }
 
-BrowsingDataCounter::Result::~Result() {}
+BrowsingDataCounter::Result::~Result() = default;
 
 bool BrowsingDataCounter::Result::Finished() const {
   return false;
@@ -211,7 +210,7 @@ BrowsingDataCounter::FinishedResult::FinishedResult(
     ResultInt value)
     : Result(source), value_(value) {}
 
-BrowsingDataCounter::FinishedResult::~FinishedResult() {}
+BrowsingDataCounter::FinishedResult::~FinishedResult() = default;
 
 bool BrowsingDataCounter::FinishedResult::Finished() const {
   return true;
@@ -229,6 +228,6 @@ BrowsingDataCounter::SyncResult::SyncResult(const BrowsingDataCounter* source,
                                             bool sync_enabled)
     : FinishedResult(source, value), sync_enabled_(sync_enabled) {}
 
-BrowsingDataCounter::SyncResult::~SyncResult() {}
+BrowsingDataCounter::SyncResult::~SyncResult() = default;
 
 }  // namespace browsing_data

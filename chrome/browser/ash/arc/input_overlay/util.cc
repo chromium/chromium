@@ -76,7 +76,7 @@ InputElement* GetInputBindingByBindingOption(Action* action,
       input_binding = action->pending_input();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return input_binding;
 }
@@ -128,11 +128,6 @@ void UpdateFlagAndProperty(aura::Window* window,
     window->SetProperty(ash::kArcGameControlsFlagsKey,
                         UpdateFlag(flags, flag, turn_on));
   }
-}
-
-bool IsBeta() {
-  return ash::features::IsGameDashboardEnabled() &&
-         arc::GetArcAndroidSdkVersionAsInt() > arc::kArcVersionP;
 }
 
 }  // namespace arc::input_overlay

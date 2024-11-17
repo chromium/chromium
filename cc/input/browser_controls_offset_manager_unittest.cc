@@ -38,8 +38,9 @@ class MockBrowserControlsOffsetManagerClient
         browser_controls_show_threshold_(browser_controls_show_threshold),
         browser_controls_hide_threshold_(browser_controls_hide_threshold) {
     active_tree_ = std::make_unique<LayerTreeImpl>(
-        host_impl_, new SyncedScale, new SyncedBrowserControls,
-        new SyncedBrowserControls, new SyncedElasticOverscroll);
+        host_impl_, viz::BeginFrameArgs(), new SyncedScale,
+        new SyncedBrowserControls, new SyncedBrowserControls,
+        new SyncedElasticOverscroll);
     root_scroll_layer_ = LayerImpl::Create(active_tree_.get(), 1);
   }
 

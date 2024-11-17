@@ -10,12 +10,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-PriceInsightsModel* PriceInsightsModelFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 PriceInsightsModel* PriceInsightsModelFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<PriceInsightsModel*>(

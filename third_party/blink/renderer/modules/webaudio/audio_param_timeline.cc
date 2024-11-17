@@ -152,8 +152,7 @@ String AudioParamTimeline::EventToString(const ParamEvent& event) const {
     // Fall through; we should never have to print out the internal
     // `kCancelValues` or `kSetValueCurveEnd` event.
     case ParamEvent::kLastType:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   };
 
   return s + "(" + args + ")";
@@ -769,8 +768,7 @@ bool AudioParamTimeline::HasValues(size_t current_frame,
                (current_time < curve_end_time);
       }
       case ParamEvent::kLastType:
-        NOTREACHED_IN_MIGRATION();
-        return true;
+        NOTREACHED();
     }
   }
 
@@ -933,8 +931,7 @@ void AudioParamTimeline::CancelAndHoldAtTime(double cancel_time,
       // Nothing needs to be done for a SetValue or CancelValues event.
       break;
     case ParamEvent::kLastType:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Now remove all the following events from the timeline.
@@ -1192,8 +1189,7 @@ float AudioParamTimeline::ValuesForFrameRangeImpl(
           break;
         }
         case ParamEvent::kLastType:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
   }
@@ -1483,12 +1479,10 @@ AudioParamTimeline::HandleCancelValues(const ParamEvent* current_event,
               // createCancelValuesEvent doesn't allow them (SetValue,
               // SetTarget, CancelValues) or cancelScheduledValues()
               // doesn't create such an event (SetValueCurve).
-              NOTREACHED_IN_MIGRATION();
-              break;
+              NOTREACHED();
             case ParamEvent::kLastType:
               // Illegal event type.
-              NOTREACHED_IN_MIGRATION();
-              break;
+              NOTREACHED();
           }
 
           // Cache the new value so we don't keep computing it over and over.
@@ -1504,8 +1498,7 @@ AudioParamTimeline::HandleCancelValues(const ParamEvent* current_event,
         // followed by CancelValues.
         break;
       case ParamEvent::kLastType:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

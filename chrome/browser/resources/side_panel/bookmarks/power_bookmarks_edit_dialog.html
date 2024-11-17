@@ -17,6 +17,7 @@
   }
 
   .folder-row {
+    box-sizing: border-box;
     align-items: center;
     display: flex;
     gap: 8px;
@@ -48,6 +49,10 @@
   .folder-row[selected] > .subpage-arrow {
     --cr-icon-button-fill-color: var(
         --color-side-panel-bookmarks-selected-folder-icon);
+  }
+
+  .folder-row:has(.new-folder-input) {
+    margin-block-start: 8px;
   }
 
   .folder-selector {
@@ -91,6 +96,11 @@
     --cr-icon-color: var(--cr-secondary-text-color);
     --cr-input-error-display: none;
   }
+
+  .new-folder-input {
+    --cr-input-error-display: none;
+    width: 100%;
+  }
 </style>
 
 <cr-dialog id="dialog">
@@ -118,6 +128,18 @@
       <h2 slot="heading">[[getActiveFolderTitle_(activeFolderPath_.*)]]</h2>
     </sp-heading>
     <div id="folder-selector" class="folder-selector">
+      <template is="dom-if" if="[[showNewFolderInput_]]"
+          on-dom-change="onNewFolderInputDomChange_">
+        <div class="folder-row">
+          <div class="cr-icon icon-folder-open"></div>
+          <cr-input class="stroked new-folder-input" id="newFolderInput"
+              value="[[newFolderName_]]"
+              on-value-changed="onInput_"
+              on-blur="onBlur_"
+              on-keydown="onKeyDown_"
+              required></cr-input>
+        </div>
+      </template>
       <iron-list scroll-target="folder-selector"
           items="[[getShownFolders_(activeFolderPath_.*, topLevelBookmarks_,
                    newFolders_.*)]]">
@@ -145,12 +167,13 @@
     </div>
   </div>
   <div class="button-row" slot="button-container">
-    <cr-button id="newFolderButton" on-click="onNewFolder_">
+    <cr-button id="newFolderButton" on-click="onNewFolderClick_">
       $i18n{editNewFolder}
     </cr-button>
     <div>
       <cr-button on-click="onCancel_">$i18n{editCancel}</cr-button>
-      <cr-button class="action-button cr-button-gap" on-click="onSave_">
+      <cr-button id="saveFolderButton" class="action-button cr-button-gap"
+          on-click="onSave_">
         $i18n{editSave}
       </cr-button>
     </div>

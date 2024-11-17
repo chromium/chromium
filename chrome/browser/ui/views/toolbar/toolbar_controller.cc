@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_controller.h"
 
 #include <optional>
+#include <ranges>
 #include <string_view>
+#include <vector>
 
 #include "base/functional/overloaded.h"
 #include "base/metrics/user_metrics.h"
@@ -25,7 +27,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -530,6 +533,69 @@ bool ToolbarController::IsOverflowed(
       element.overflow_id);
 }
 
+// This function returns responsive_elements_ but with some portions reordered.
+// It rearranges any consecutive sequence of elements that have overflow_id
+// of type ActionId.
+// Elements with overflow_id of type ElementIdInfo are left in their original
+// position. pinned_actions_delegate_->PinnedActionIds() determines the new
+// order for the ActionId elements. ActionId elements that aren't in
+// PinnedActionIds() are sorted to the front (i.e. placed closer to index 0).
+std::vector<ToolbarController::ResponsiveElementInfo>
+ToolbarController::GetResponsiveElementsWithOrderedActions() const {
+  std::vector<ResponsiveElementInfo> ordered_responsive_elements(
+      responsive_elements_);
+  const std::vector<actions::ActionId>& ordered_pinned_action_ids =
+      pinned_actions_delegate_->PinnedActionIds();
+
+  auto actions_sorting_function =
+      [&ordered_pinned_action_ids](
+          const ToolbarController::ResponsiveElementInfo& a,
+          const ToolbarController::ResponsiveElementInfo& b) -> bool {
+    CHECK(absl::holds_alternative<actions::ActionId>(a.overflow_id));
+    CHECK(absl::holds_alternative<actions::ActionId>(b.overflow_id));
+    actions::ActionId a_action_id = absl::get<actions::ActionId>(a.overflow_id);
+    actions::ActionId b_action_id = absl::get<actions::ActionId>(b.overflow_id);
+
+    for (int ordered_pinned_action_id : ordered_pinned_action_ids) {
+      if (a_action_id == ordered_pinned_action_id) {
+        return true;
+      }
+      if (b_action_id == ordered_pinned_action_id) {
+        return false;
+      }
+    }
+    return false;
+  };
+
+  size_t element_index = 0;
+  while (element_index < ordered_responsive_elements.size()) {
+    // If the element is not an Action, continue
+    if (!absl::holds_alternative<actions::ActionId>(
+            ordered_responsive_elements[element_index].overflow_id)) {
+      element_index++;
+      continue;
+    }
+    // If the current element is an Action, look at the next elements to find
+    // what's the next one that is not an Action.
+    // The elements in the [element_index, next_non_action_element_index) range
+    // will all be Actions and need to be sorted.
+    size_t next_non_action_element_index = element_index + 1;
+    while (next_non_action_element_index < ordered_responsive_elements.size() &&
+           absl::holds_alternative<actions::ActionId>(
+               ordered_responsive_elements[next_non_action_element_index]
+                   .overflow_id)) {
+      next_non_action_element_index++;
+    }
+    std::sort(
+        ordered_responsive_elements.begin() + element_index,
+        ordered_responsive_elements.begin() + next_non_action_element_index,
+        actions_sorting_function);
+
+    element_index = next_non_action_element_index;
+  }
+  return ordered_responsive_elements;
+}
+
 std::unique_ptr<ui::SimpleMenuModel>
 ToolbarController::CreateOverflowMenuModel() {
   CHECK(overflow_button_->GetVisible());
@@ -764,7 +830,7 @@ void ToolbarController::ShowMenu() {
   menu_runner_->RunMenuAt(
       button_controller->button()->GetWidget(), button_controller,
       button_controller->button()->GetAnchorBoundsInScreen(),
-      views::MenuAnchorPosition::kTopRight, ui::MENU_SOURCE_NONE);
+      views::MenuAnchorPosition::kTopRight, ui::mojom::MenuSourceType::kNone);
   ShowStatusIndicator();
 }
 

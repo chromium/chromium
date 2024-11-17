@@ -61,7 +61,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/android/scoped_java_ref.h"
+#include "third_party/jni_zero/jni_zero.h"
 #endif
 
 namespace base {
@@ -88,8 +88,9 @@ class WakeLockContext;
 }  // namespace device
 
 namespace net {
+class HttpNoVarySearchData;
 struct LoadStateWithParam;
-}
+}  // namespace net
 
 namespace service_manager {
 class InterfaceProvider;
@@ -108,6 +109,7 @@ namespace content {
 class BackForwardTransitionAnimationManager;
 class BrowserContext;
 class BrowserPluginGuestDelegate;
+class GuestPageHolder;
 class RenderFrameHost;
 class RenderViewHost;
 class RenderWidgetHostView;
@@ -149,6 +151,21 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   ADVANCED_MEMORY_SAFETY_CHECKS();
 
  public:
+  // Device activity types that can be used by a WebContents.
+  enum class CapabilityType {
+    // WebUSB
+    kUSB,
+    // Web Bluetooth
+    kBluetoothConnected,
+    kBluetoothScanning,
+    // WebHID
+    kHID,
+    // Web Serial
+    kSerial,
+    // Geolocation
+    kGeolocation
+  };
+
   struct CONTENT_EXPORT CreateParams {
     explicit CreateParams(
         BrowserContext* context,
@@ -812,25 +829,9 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // Returns true if the audio is currently audible.
   virtual bool IsCurrentlyAudible() = 0;
 
-  // Indicates whether any frame in the WebContents is connected to a Bluetooth
-  // Device.
-  virtual bool IsConnectedToBluetoothDevice() = 0;
-
-  // Indicates whether any frame in the WebContents is scanning for Bluetooth
-  // devices.
-  virtual bool IsScanningForBluetoothDevices() = 0;
-
-  // Indicates whether any frame in the WebContents is connected to a serial
-  // port.
-  virtual bool IsConnectedToSerialPort() = 0;
-
-  // Indicates whether any frame in the WebContents is connected to a HID
-  // device.
-  virtual bool IsConnectedToHidDevice() = 0;
-
-  // Indicates whether any frame in the WebContents is connected to a USB
-  // device.
-  virtual bool IsConnectedToUsbDevice() = 0;
+  // Indicates whether any frame in the WebContents is connected to anything in
+  // the WebContents::CapabilityType enum.
+  virtual bool IsCapabilityActive(CapabilityType capability_type) = 0;
 
   // Indicates whether any frame in the WebContents has File System Access
   // handles.
@@ -925,6 +926,19 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       std::unique_ptr<WebContents> inner_web_contents,
       RenderFrameHost* render_frame_host,
       bool is_full_page) = 0;
+
+  // Attaches `guest_page` to the container frame `outer_render_frame_host`,
+  // which must be in a FrameTree for this WebContents. Note:
+  // `outer_render_frame_host` will be swapped out and destroyed during the
+  // process. Generally a frame same-process with its parent is the right choice
+  // but ideally it should be "about:blank" to avoid problems with beforeunload.
+  // To ensure sane usage of this API users first should call the async API
+  // RenderFrameHost::PrepareForInnerWebContentsAttach first.
+  // TODO(crbug.com/40202416): This method is the MPArch equivalent of
+  // `AttachInnerWebContents`. Once `features::kGuestViewMPArch` ships,
+  // `AttachInnerWebContents` will be removable.
+  virtual void AttachGuestPage(std::unique_ptr<GuestPageHolder> guest_page,
+                               RenderFrameHost* outer_render_frame_host) = 0;
 
   // Returns whether this WebContents is an inner WebContents for a guest.
   // Important: please avoid using this in new callsites, and use
@@ -1445,6 +1459,7 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       base::RepeatingCallback<bool(const blink::WebInputEvent&)>;
   [[nodiscard]] virtual ScopedIgnoreInputEvents IgnoreInputEvents(
       std::optional<WebInputEventAuditCallback> audit_callback) = 0;
+  virtual bool ShouldIgnoreInputEventsForTesting() = 0;
 
   // Returns the group id for all audio streams that correspond to a single
   // WebContents. This can be used to determine if a AudioOutputStream was
@@ -1536,11 +1551,15 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   //   be embedded into it here.
   // - `attempt` is used to record some metrics associated with this prefetch
   //   request.
-  virtual void StartPrefetch(const GURL& prefetch_url,
-                             bool use_prefetch_proxy,
-                             const blink::mojom::Referrer& referrer,
-                             const std::optional<url::Origin>& referring_origin,
-                             base::WeakPtr<PreloadingAttempt> attempt) = 0;
+  // - `holdback_status_override` is used to override holdback status, if
+  //   specified.
+  virtual void StartPrefetch(
+      const GURL& prefetch_url,
+      bool use_prefetch_proxy,
+      const blink::mojom::Referrer& referrer,
+      const std::optional<url::Origin>& referring_origin,
+      base::WeakPtr<PreloadingAttempt> attempt,
+      std::optional<PreloadingHoldbackStatus> holdback_status_override) = 0;
 
   // Starts an embedder triggered (browser-initiated) prerendering page and
   // returns the unique_ptr<PrerenderHandle>, which cancels prerendering on its
@@ -1561,8 +1580,10 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
       const GURL& prerendering_url,
       PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
+      std::optional<net::HttpNoVarySearchData> no_vary_search_expected,
       ui::PageTransition page_transition,
       bool should_warm_up_compositor,
+      bool should_prepare_paint_tree,
       PreloadingHoldbackStatus holdback_status_override,
       PreloadingAttempt* preloading_attempt,
       base::RepeatingCallback<bool(const GURL&,
@@ -1625,5 +1646,24 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
 };
 
 }  // namespace content
+
+#if BUILDFLAG(IS_ANDROID)
+namespace jni_zero {
+
+// @JniType conversion function.
+template <>
+inline content::WebContents* FromJniType<content::WebContents*>(
+    JNIEnv* env,
+    const JavaRef<jobject>& j_obj) {
+  return content::WebContents::FromJavaWebContents(j_obj);
+}
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType(JNIEnv* env,
+                                             content::WebContents* obj) {
+  return obj->GetJavaWebContents();
+}
+
+}  // namespace jni_zero
+#endif
 
 #endif  // CONTENT_PUBLIC_BROWSER_WEB_CONTENTS_H_

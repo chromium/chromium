@@ -122,7 +122,7 @@ export async function fileDisplayOneDrivePlaceholder() {
 
   // Disable local storage.
   await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
-  directoryTree.waitForItemLostByLabel('/My files');
+  await directoryTree.waitForItemLostByLabel('/My files');
 
   // Check that the placeholder is added.
   await directoryTree.waitForItemByLabel(oneDriveLabel);
@@ -163,6 +163,28 @@ export async function fileDisplayFileSystemDisabled() {
 
   // Check: the empty folder should hide.
   await remoteCall.waitForElement(appId, '#empty-folder[hidden]');
+}
+
+/**
+ * Tests that MyFiles volume is removed after the migration.
+ */
+export async function fileDisplaySkyVaultMigrationRemovesMyFiles() {
+  await remoteCall.setLocalFilesMigrationDestination('google_drive');
+  // Disable local storage.
+  await sendTestMessage({name: 'setLocalFilesEnabled', enabled: false});
+
+  // Open Files app without specifying the initial directory/root.
+  const appId = await remoteCall.openNewWindow(null, null);
+  chrome.test.assertTrue(!!appId, 'failed to open new window');
+
+  // Confirm that MyFiles is visible.
+  const directoryTree = await DirectoryTreePageObject.create(appId);
+  await directoryTree.waitForItemByLabel('My files');
+
+  // Skip SkyVault migration to immediately remove My Files.
+  await sendTestMessage({name: 'skipSkyVaultMigration'});
+
+  await directoryTree.waitForItemLostByLabel('My files');
 }
 
 /**

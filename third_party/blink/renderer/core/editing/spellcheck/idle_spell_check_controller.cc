@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/spellcheck/idle_spell_check_controller.h"
+
+#include <array>
 
 #include "base/check_deref.h"
 #include "base/debug/crash_logging.h"
@@ -333,7 +330,7 @@ void IdleSpellCheckController::ForceInvocationForTesting() {
     case State::kInactive:
     case State::kInHotModeInvocation:
     case State::kInColdModeInvocation:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -353,11 +350,11 @@ void IdleSpellCheckController::SetSpellCheckingDisabled(
 }
 
 const char* IdleSpellCheckController::GetStateAsString() const {
-  static const char* const kTexts[] = {
+  static const auto kTexts = std::to_array<const char*>({
 #define V(state) #state,
       FOR_EACH_IDLE_SPELL_CHECK_CONTROLLER_STATE(V)
 #undef V
-  };
+  });
 
   unsigned index = static_cast<unsigned>(state_);
   if (index < std::size(kTexts)) {

@@ -102,9 +102,6 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
 
   virtual scoped_refptr<PatcherFactory> GetPatcherFactory() = 0;
 
-  // True means that this client can handle delta updates.
-  virtual bool EnabledDeltas() const = 0;
-
   // True means that the background downloader can be used for downloading
   // non on-demand components.
   virtual bool EnabledBackgroundDownloader() const = 0;

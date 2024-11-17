@@ -9,47 +9,19 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/profiler/call_stack_profile_params.h"
-#include "base/profiler/process_type.h"
+#include "base/profiler/periodic_sampling_scheduler.h"
 #include "base/profiler/stack_sampling_profiler.h"
 #include "base/profiler/unwinder.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "components/sampling_profiler/call_stack_profile_params.h"
+#include "components/sampling_profiler/process_type.h"
 
 namespace sampling_profiler {
 
 class ThreadProfilerClient;
-
-// PeriodicSamplingScheduler repeatedly schedules periodic sampling of the
-// thread through calls to GetTimeToNextCollection(). This class is exposed
-// to allow testing.
-class PeriodicSamplingScheduler {
- public:
-  PeriodicSamplingScheduler(base::TimeDelta sampling_duration,
-                            double fraction_of_execution_time_to_sample,
-                            base::TimeTicks start_time);
-
-  PeriodicSamplingScheduler(const PeriodicSamplingScheduler&) = delete;
-  PeriodicSamplingScheduler& operator=(const PeriodicSamplingScheduler&) =
-      delete;
-
-  virtual ~PeriodicSamplingScheduler();
-
-  // Returns the amount of time between now and the next collection.
-  base::TimeDelta GetTimeToNextCollection();
-
- protected:
-  // Virtual to provide seams for test use.
-  virtual double RandDouble() const;
-  virtual base::TimeTicks Now() const;
-
- private:
-  const base::TimeDelta period_duration_;
-  const base::TimeDelta sampling_duration_;
-  base::TimeTicks period_start_time_;
-};
 
 // ThreadProfiler performs startup and periodic profiling of Chrome
 // threads.
@@ -91,7 +63,7 @@ class ThreadProfiler {
   // Creates a profiler for a child thread and immediately starts it. This
   // should be called from a task posted on the child thread immediately after
   // thread start. The thread will be profiled until exit.
-  static void StartOnChildThread(base::ProfilerThreadType thread);
+  static void StartOnChildThread(ProfilerThreadType thread);
 
   // Sets the instance of ThreadProfilerClient to provide embedder-specific
   // implementation logic. This instance must be set early, before any of the
@@ -107,14 +79,14 @@ class ThreadProfiler {
   // Creates the profiler. The task runner will be supplied for child threads
   // but not for main threads.
   explicit ThreadProfiler(
-      base::ProfilerThreadType thread,
+      ProfilerThreadType thread,
       scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner =
           scoped_refptr<base::SingleThreadTaskRunner>());
 
   // Creates a sampling profiler, for either the startup or periodic profiling.
   std::unique_ptr<base::StackSamplingProfiler> CreateSamplingProfiler(
       base::StackSamplingProfiler::SamplingParams sampling_params,
-      base::CallStackProfileParams::Trigger trigger,
+      CallStackProfileParams::Trigger trigger,
       base::OnceClosure builder_completed_callback);
 
   // Posts a task on |owning_thread_task_runner| to start the next periodic
@@ -135,8 +107,8 @@ class ThreadProfiler {
   // Creates a new periodic profiler and initiates a collection with it.
   void StartPeriodicSamplingCollection();
 
-  const base::ProfilerProcessType process_;
-  const base::ProfilerThreadType thread_;
+  const ProfilerProcessType process_;
+  const ProfilerThreadType thread_;
 
   scoped_refptr<base::SingleThreadTaskRunner> owning_thread_task_runner_;
 
@@ -148,7 +120,7 @@ class ThreadProfiler {
   std::unique_ptr<base::StackSamplingProfiler> startup_profiler_;
 
   std::unique_ptr<base::StackSamplingProfiler> periodic_profiler_;
-  std::unique_ptr<PeriodicSamplingScheduler> periodic_sampling_scheduler_;
+  std::unique_ptr<base::PeriodicSamplingScheduler> periodic_sampling_scheduler_;
 
   THREAD_CHECKER(thread_checker_);
   base::WeakPtrFactory<ThreadProfiler> weak_factory_{this};

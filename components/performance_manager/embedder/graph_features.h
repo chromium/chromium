@@ -7,6 +7,9 @@
 
 #include <cstdint>
 
+#include "base/feature_list.h"
+#include "components/performance_manager/public/features.h"
+
 namespace performance_manager {
 
 class Graph;
@@ -41,13 +44,15 @@ class GraphFeatures {
       // (2) Add the feature to EnableDefault() if necessary.
       // (3) Add the feature to the implementation of ConfigureGraph().
       bool frame_visibility_decorator : 1;
+      bool frozen_frame_aggregator : 1;
+      bool important_frame_decorator : 1;
       bool metrics_collector : 1;
       bool node_impl_describers : 1;
+      bool page_aggregator : 1;
       bool page_load_tracker_decorator : 1;
+      bool performance_scenarios : 1;
       bool priority_tracking : 1;
       bool process_hosted_content_types_aggregator : 1;
-      bool page_aggregator : 1;
-      bool frozen_frame_aggregator : 1;
       bool resource_attribution_scheduler : 1;
       bool site_data_recorder : 1;
       bool tab_page_decorator : 1;
@@ -64,6 +69,21 @@ class GraphFeatures {
     return *this;
   }
 
+  constexpr GraphFeatures& EnableFrozenFrameAggregator() {
+    flags_.frozen_frame_aggregator = true;
+    return *this;
+  }
+
+  constexpr GraphFeatures& EnableImportantFrameDecorator() {
+    flags_.important_frame_decorator = true;
+    return *this;
+  }
+
+  constexpr GraphFeatures& EnablePerformanceScenarios() {
+    flags_.performance_scenarios = true;
+    return *this;
+  }
+
   constexpr GraphFeatures& EnableMetricsCollector() {
     flags_.metrics_collector = true;
     return *this;
@@ -74,6 +94,11 @@ class GraphFeatures {
     return *this;
   }
 
+  constexpr GraphFeatures& EnablePageAggregator() {
+    flags_.page_aggregator = true;
+    return *this;
+  }
+
   constexpr GraphFeatures& EnablePageLoadTrackerDecorator() {
     flags_.page_load_tracker_decorator = true;
     return *this;
@@ -81,22 +106,13 @@ class GraphFeatures {
 
   constexpr GraphFeatures& EnablePriorityTracking() {
     EnableFrameVisibilityDecorator();
+    EnableImportantFrameDecorator();
     flags_.priority_tracking = true;
     return *this;
   }
 
   constexpr GraphFeatures& EnableProcessHostedContentTypesAggregator() {
     flags_.process_hosted_content_types_aggregator = true;
-    return *this;
-  }
-
-  constexpr GraphFeatures& EnablePageAggregator() {
-    flags_.page_aggregator = true;
-    return *this;
-  }
-
-  constexpr GraphFeatures& EnableFrozenFrameAggregator() {
-    flags_.frozen_frame_aggregator = true;
     return *this;
   }
 
@@ -133,13 +149,15 @@ class GraphFeatures {
   // from production code.
   constexpr GraphFeatures& EnableDefault() {
     EnableFrameVisibilityDecorator();
+    EnableFrozenFrameAggregator();
+    EnableImportantFrameDecorator();
     EnableMetricsCollector();
     EnableNodeImplDescribers();
+    EnablePageAggregator();
     EnablePageLoadTrackerDecorator();
+    EnablePerformanceScenarios();
     EnablePriorityTracking();
     EnableProcessHostedContentTypesAggregator();
-    EnablePageAggregator();
-    EnableFrozenFrameAggregator();
     EnableResourceAttributionScheduler();
     EnableSiteDataRecorder();
     EnableTabPageDecorator();

@@ -113,7 +113,8 @@ TestViewTransitionContentLayerImpl::TestViewTransitionContentLayerImpl(
     : ViewTransitionContentLayerImpl(tree_impl,
                                      id,
                                      resource_id,
-                                     is_live_content_layer) {}
+                                     is_live_content_layer,
+                                     gfx::RectF()) {}
 
 void TestViewTransitionContentLayerImpl::AddDamageRect(
     const gfx::Rect& damage_rect) {

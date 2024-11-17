@@ -108,7 +108,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
   ASSERT_TRUE(child_widget);
 
   // App is not installed.
-  ASSERT_FALSE(provider().registrar_unsafe().IsInstalled(app_id));
+  ASSERT_FALSE(provider().registrar_unsafe().IsInstallState(
+      app_id, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 
   AcceptDialogAndAwaitDestruction(child_widget);
 
@@ -118,7 +119,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppInstallerBrowserTest,
       IsolatedWebAppInstallerModel::Step::kInstallSuccess);
 
   // App is installed.
-  ASSERT_TRUE(provider().registrar_unsafe().IsInstalled(app_id));
+  ASSERT_TRUE(provider().registrar_unsafe().IsInstallState(
+      app_id, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 
   AcceptDialogAndContinue(main_widget);
 

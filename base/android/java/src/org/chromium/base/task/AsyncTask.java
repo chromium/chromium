@@ -5,6 +5,7 @@
 package org.chromium.base.task;
 
 import android.os.Binder;
+import android.os.Process;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
@@ -69,7 +70,18 @@ public abstract class AsyncTask<Result> {
     private static class StealRunnableHandler implements RejectedExecutionHandler {
         @Override
         public void rejectedExecution(Runnable r, ThreadPoolExecutor executor) {
-            THREAD_POOL_EXECUTOR.execute(r);
+            THREAD_POOL_EXECUTOR.execute(
+                    () -> {
+                        // The Runnable may (and sometimes does) change the thread priority. Make
+                        // sure that it doesn't persist beyond it. See crbug.com/374157901 for
+                        // details.
+                        int priority = Process.getThreadPriority(Process.myTid());
+                        try {
+                            r.run();
+                        } finally {
+                            Process.setThreadPriority(Process.myTid(), priority);
+                        }
+                    });
         }
     }
 
@@ -98,6 +110,10 @@ public abstract class AsyncTask<Result> {
     @SuppressWarnings("NoAndroidAsyncTaskCheck")
     public static void takeOverAndroidThreadPool() {
         ThreadPoolExecutor exec = (ThreadPoolExecutor) android.os.AsyncTask.THREAD_POOL_EXECUTOR;
+        if (exec.isShutdown()) {
+            assert exec.getRejectedExecutionHandler() == STEAL_RUNNABLE_HANDLER;
+            return;
+        }
         exec.setRejectedExecutionHandler(STEAL_RUNNABLE_HANDLER);
         exec.shutdown();
     }

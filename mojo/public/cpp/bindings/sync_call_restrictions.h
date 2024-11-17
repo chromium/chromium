@@ -48,6 +48,12 @@ class HostFrameSinkManager;
 class HostGpuMemoryBufferManager;
 }  // namespace viz
 
+#if BUILDFLAG(IS_MAC)
+namespace web_app {
+class WebAppShortcutCopierSyncCallHelper;
+}  // namespace web_app
+#endif
+
 namespace mojo {
 class ScopedAllowSyncCallForTesting;
 
@@ -134,6 +140,9 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) SyncCallRestrictions {
   friend class content::StreamTextureFactory;
 #if BUILDFLAG(IS_WIN)
   friend class content::DCOMPTextureFactory;
+#endif
+#if BUILDFLAG(IS_MAC)
+  friend class web_app::WebAppShortcutCopierSyncCallHelper;
 #endif
   // END ALLOWED USAGE.
 

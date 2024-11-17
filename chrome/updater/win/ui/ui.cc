@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "chrome/updater/updater_scope.h"
@@ -30,30 +29,29 @@ const OmahaWnd::ControlAttributes OmahaWnd::kDisabledNonButtonAttributes = {
     false, false, false, false, false};
 
 void EnableFlatButtons(HWND hwnd_parent) {
-  struct Local {
-    static BOOL CALLBACK EnumProc(HWND hwnd, LPARAM) {
-      CHECK(hwnd);
-      CWindow wnd(hwnd);
-      const DWORD style = wnd.GetStyle();
-      if (style & BS_FLAT) {
-        ::SetWindowTheme(wnd, _T(""), _T(""));
-      }
-      return true;
-    }
-  };
-
-  ::EnumChildWindows(hwnd_parent, &Local::EnumProc, 0);
+  ::EnumChildWindows(
+      hwnd_parent,
+      [](HWND hwnd, LPARAM) {
+        CHECK(hwnd);
+        CWindow wnd(hwnd);
+        const DWORD style = wnd.GetStyle();
+        if (style & BS_FLAT) {
+          ::SetWindowTheme(wnd, _T(""), _T(""));
+        }
+        return TRUE;
+      },
+      0);
 }
 
 void HideWindowChildren(HWND hwnd_parent) {
-  struct Local {
-    static BOOL CALLBACK EnumProc(HWND hwnd, LPARAM) {
-      CHECK(hwnd);
-      ShowWindow(hwnd, SW_HIDE);
-      return true;
-    }
-  };
-  ::EnumChildWindows(hwnd_parent, &Local::EnumProc, 0);
+  ::EnumChildWindows(
+      hwnd_parent,
+      [](HWND hwnd, LPARAM) {
+        CHECK(hwnd);
+        ShowWindow(hwnd, SW_HIDE);
+        return TRUE;
+      },
+      0);
 }
 
 OmahaWnd::OmahaWnd(int dialog_id, WTL::CMessageLoop* message_loop, HWND parent)
@@ -89,16 +87,18 @@ BOOL OmahaWnd::PreTranslateMessage(MSG* msg) {
 }
 
 void OmahaWnd::InitializeDialog() {
-  SetWindowText(GetInstallerDisplayName(bundle_name_).c_str());
+  SetWindowText(GetInstallerDisplayName(bundle_name()).c_str());
 
   CenterWindow(nullptr);
   ui::SetWindowIcon(m_hWnd, IDI_APP,
                     base::win::ScopedGDIObject<HICON>::Receiver(hicon_).get());
 
-  // Disable the Maximize System Menu item.
+  // Disable the maximize system menu item.
   HMENU menu = ::GetSystemMenu(*this, false);
-  CHECK(menu);
-  ::EnableMenuItem(menu, SC_MAXIMIZE, MF_BYCOMMAND | MF_GRAYED);
+  VLOG_IF(2, !menu) << "Failed to find system menu";
+  if (menu) {
+    ::EnableMenuItem(menu, SC_MAXIMIZE, MF_BYCOMMAND | MF_GRAYED);
+  }
 
   progress_bar_.SubclassWindow(GetDlgItem(IDC_PROGRESS));
 
@@ -225,10 +225,12 @@ HRESULT OmahaWnd::EnableClose(bool enable) {
 
 HRESULT OmahaWnd::EnableSystemCloseButton(bool enable) {
   HMENU menu = ::GetSystemMenu(*this, false);
-  CHECK(menu);
-  uint32_t flags = MF_BYCOMMAND;
-  flags |= enable ? MF_ENABLED : MF_GRAYED;
-  ::EnableMenuItem(menu, SC_CLOSE, flags);
+  VLOG_IF(2, !menu) << "Failed to find system menu";
+  if (!menu) {
+    return E_FAIL;
+  }
+  ::EnableMenuItem(menu, SC_CLOSE,
+                   MF_BYCOMMAND | (enable ? MF_ENABLED : MF_GRAYED));
   RecalcLayout();
   return S_OK;
 }
@@ -243,7 +245,6 @@ HRESULT InitializeCommonControls(DWORD control_classes) {
       return HRESULT_FROM_WIN32(error);
     }
   }
-
   return S_OK;
 }
 

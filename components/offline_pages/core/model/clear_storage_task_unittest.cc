@@ -116,7 +116,7 @@ ClearStorageTaskTest::ClearStorageTaskTest()
       total_cleared_times_(0),
       last_clear_storage_result_(ClearStorageResult::SUCCESS) {}
 
-ClearStorageTaskTest::~ClearStorageTaskTest() {}
+ClearStorageTaskTest::~ClearStorageTaskTest() = default;
 
 void ClearStorageTaskTest::SetUp() {
   ModelTaskTestBase::SetUp();

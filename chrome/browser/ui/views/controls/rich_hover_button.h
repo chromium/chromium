@@ -63,7 +63,9 @@ class RichHoverButton : public HoverButton {
 
   void SetSubtitleMultiline(bool is_multiline);
 
+  views::Label* title() { return title_; }
   views::Label* secondary_label() { return secondary_label_; }
+  views::Label* subtitle() { return subtitle_; }
 
   const views::Label* GetTitleViewForTesting() const;
   const views::Label* GetSubTitleViewForTesting() const;

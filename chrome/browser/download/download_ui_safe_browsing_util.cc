@@ -81,17 +81,33 @@ void SendSafeBrowsingDownloadReport(
     ClientSafeBrowsingReportRequest::ReportType report_type,
     bool did_proceed,
     download::DownloadItem* item) {
-  ClientDownloadResponse::Verdict download_verdict =
-      safe_browsing::DownloadProtectionService::GetDownloadProtectionVerdict(
-          item);
-  if (download_verdict == ClientDownloadResponse::SAFE) {
-    return;
-  }
-  safe_browsing::SafeBrowsingService* sb_service =
-      g_browser_process->safe_browsing_service();
-  if (sb_service) {
+  if (safe_browsing::SafeBrowsingService* sb_service =
+          g_browser_process->safe_browsing_service()) {
     sb_service->SendDownloadReport(item, report_type, did_proceed,
                                    /*show_download_in_folder=*/std::nullopt);
   }
 }
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)
+
+bool ShouldShowDeepScanPromptNotice(Profile* profile,
+                                    download::DownloadDangerType danger_type) {
+  if (danger_type != download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+    return false;
+  }
+
+  if (!safe_browsing::IsEnhancedProtectionEnabled(*profile->GetPrefs())) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(
+          safe_browsing::kDeepScanningPromptRemoval)) {
+    return false;
+  }
+
+  if (profile->GetPrefs()->GetBoolean(
+          prefs::kSafeBrowsingAutomaticDeepScanPerformed)) {
+    return false;
+  }
+
+  return true;
+}

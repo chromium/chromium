@@ -220,7 +220,8 @@ export class SearchboxElement extends SearchboxElementBase {
 
       /**
        * Index of the currently selected match, if any.
-       * Do not modify this. Use <cr-searchbox-dropdown> API to change selection.
+       * Do not modify this. Use <cr-searchbox-dropdown> API to change
+       * selection.
        */
       selectedMatchIndex_: {
         type: Number,
@@ -236,6 +237,11 @@ export class SearchboxElement extends SearchboxElementBase {
       thumbnailUrl_: {
         type: String,
         value: '',
+      },
+
+      queryAutocompleteOnEmptyInput_: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('queryAutocompleteOnEmptyInput'),
       },
 
       /** The value of the input element's 'aria-live' attribute. */
@@ -258,6 +264,7 @@ export class SearchboxElement extends SearchboxElementBase {
   showThumbnail: boolean;
   private inputAriaLive_: string;
   private isDeletingInput_: boolean;
+  private queryAutocompleteOnEmptyInput_: boolean;
   private lastIgnoredEnterEvent_: KeyboardEvent|null;
   private lastInput_: Input;
   private lastQueriedInput_: string|null;
@@ -317,6 +324,10 @@ export class SearchboxElement extends SearchboxElementBase {
     performance.measure('realbox-creation', 'realbox-creation-start');
   }
 
+  getSuggestionsElement(): HTMLElement {
+    return this.$.matches;
+  }
+
   //============================================================================
   // Callbacks
   //============================================================================
@@ -355,9 +366,12 @@ export class SearchboxElement extends SearchboxElementBase {
         this.lastIgnoredEnterEvent_ = null;
       }
     } else if (
-        hasMatches && this.selectedMatchIndex_ !== -1 &&
+        this.$.input.value.trim() && hasMatches &&
+        this.selectedMatchIndex_ >= 0 &&
         this.selectedMatchIndex_ < this.result_.matches.length) {
-      // Restore the selection and update the input.
+      // Restore the selection and update the input. Don't restore when the
+      // user deletes all their input and autocomplete is queried or else the
+      // empty input will change to the value of the first result.
       this.$.matches.selectIndex(this.selectedMatchIndex_);
       this.updateInput_({
         text: decodeString16(this.selectedMatch_!.fillIntoEdit),
@@ -439,8 +453,9 @@ export class SearchboxElement extends SearchboxElementBase {
         metricsReporter.clearMark('CharTyped');
       }
     }
-
-    if (inputValue.trim()) {
+    // For lens searchboxes, requery autcomplete for all updates to the input
+    // (even if the input is empty).
+    if (inputValue.trim() || this.queryAutocompleteOnEmptyInput_) {
       // TODO(crbug.com/40732045): Rather than disabling inline autocompletion
       // when the input event is fired within a composition session, change the
       // mechanism via which inline autocompletion is shown in the searchbox.
@@ -493,20 +508,14 @@ export class SearchboxElement extends SearchboxElementBase {
   }
 
   private onInputKeyup_(e: KeyboardEvent) {
-    if (e.key !== 'Tab') {
+    if (e.key !== 'Tab' || this.dropdownIsVisible) {
       return;
     }
 
-    if (!this.dropdownIsVisible) {
-      // Query for zero-prefix matches if user is tabbing into an empty input
-      // and matches are not visible.
-      if (!this.$.input.value) {
-        this.queryAutocomplete_('');
-      } else if (this.showThumbnail) {
-        // Query current input if tabbing into input while thumbnail is showing
-        // and matches are not visible.
-        this.queryAutocomplete_(this.$.input.value);
-      }
+    // Query autocomplete if user is tabbing into an empty input or a non-empty
+    // input if thumbnail is showing.
+    if (!this.$.input.value || this.showThumbnail) {
+      this.queryAutocomplete_(this.$.input.value);
     }
   }
 

@@ -86,22 +86,21 @@ struct GeoHint {
   bool operator==(const GeoHint& geo_hint) const = default;
 };
 
-// GeoId is a string representation of a ip_protection::GeoHint. A GeoId is
-// constructed by concatenating values of the ip_protection::GeoHint in order of
+// GeoId is a string representation of a GeoHint. A GeoId is
+// constructed by concatenating values of the GeoHint in order of
 // increasing granularity. If a finer granularity is missing, a trailing commas
 // is not appended.
 // Ex. GeoHint{"US", "US-CA", "MOUNTAIN VIEW"} => "US,US-CA,MOUNTAIN VIEW"
 // Ex. GeoHint{"US"} => "US"
 //
-// Returns a formatted version of the ip_protection::GeoHint. In the case
+// Returns a formatted version of the GeoHint. In the case
 // of a nullptr or empty `GeoHintPtr`, an empty string will be returned.
-std::string GetGeoIdFromGeoHint(std::optional<ip_protection::GeoHint> geo_hint);
+std::string GetGeoIdFromGeoHint(std::optional<GeoHint> geo_hint);
 
-// Constructs a ip_protection::GeoHint from a GeoId string. The function
+// Constructs a GeoHint from a GeoId string. The function
 // requires a correctly formatted GeoId string. It DOES NOT handle invalid
 // formats.
-std::optional<ip_protection::GeoHint> GetGeoHintFromGeoIdForTesting(
-    const std::string& geo_id);
+std::optional<GeoHint> GetGeoHintFromGeoIdForTesting(const std::string& geo_id);
 
 // A blind-signed auth token, suitable for use with IP protection proxies.
 struct BlindSignedAuthToken {

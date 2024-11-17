@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/navigation_entry_restore_context.h"
 #include "url/gurl.h"
@@ -76,7 +77,8 @@ class CONTENT_EXPORT NavigationEntryRestoreContextImpl
     std::string unique_name_;
     GURL url_;
   };
-  std::map<Key, FrameNavigationEntry*, Key::Compare> entries_;
+  std::map<Key, raw_ptr<FrameNavigationEntry, CtnExperimental>, Key::Compare>
+      entries_;
 };
 
 }  // namespace content

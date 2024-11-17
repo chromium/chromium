@@ -179,6 +179,10 @@ class NetworkScreen : public BaseScreen,
   // before proceeding to the next screen.
   bool waiting_for_quickstart_stabilization_period_ = false;
 
+  // Whether the QuickStart entry point visibility has already been determined.
+  // This flag prevents duplicate histogram entries.
+  bool has_emitted_quick_start_visible = false;
+
   // Default period to wait when going through QuickStart. Overridden in tests.
   base::TimeDelta quickstart_stabilization_period_ = base::Seconds(2);
 

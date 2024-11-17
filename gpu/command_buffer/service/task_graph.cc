@@ -144,7 +144,7 @@ TaskGraph::Sequence::Sequence(
       sequence_id_(order_data_->sequence_id()),
       front_task_unblocked_callback_(std::move(front_task_unblocked_callback)),
       release_delegate_(task_graph->sync_point_manager()) {
-  if (task_graph_->graph_validation_enabled()) {
+  if (task_graph_->graph_validation_enabled() && validation_runner) {
     validation_timer_ = base::MakeRefCounted<RetainingOneShotTimerHolder>(
         kMaxValidationDelay, kMinValidationDelay, std::move(validation_runner),
         base::BindRepeating(&TaskGraph::ValidateSequenceTaskFenceDeps,
@@ -350,11 +350,7 @@ TaskGraph::Sequence::TakeSyncPointClientState(
 }
 
 void TaskGraph::Sequence::UpdateValidationTimer() {
-  if (!task_graph_->graph_validation_enabled()) {
-    return;
-  }
-
-  if (!HasTasks()) {
+  if (!validation_timer_ || !HasTasks()) {
     return;
   }
 
@@ -568,9 +564,16 @@ void TaskGraph::ValidateTaskFenceDeps(
     const SyncPointClientId client_id = fence.sync_token.GetClientId();
 
     Sequence* release_sequence = GetSequence(fence.release_sequence_id);
+    ValidateState* release_validate_state = nullptr;
 
-    auto& release_validate_state = GetSequenceValidateState(
-        validate_states, pending_releases, release_sequence);
+    // `release_sequence` is nullptr if the release sequence has been destroyed
+    // and the corresponding wait fences hasn't been removed from other
+    // sequences. The task graph lock is unlocked between the two operations, so
+    // it is possible that validation happens right in the middle.
+    if (release_sequence) {
+      release_validate_state = &GetSequenceValidateState(
+          validate_states, pending_releases, release_sequence);
+    }
 
     // This should happen after the GetSequenceValidateState() call above, which
     // ensures that `pending_releases` has been updated for `release_sequence`.
@@ -597,10 +600,13 @@ void TaskGraph::ValidateTaskFenceDeps(
 
       LOG(ERROR) << "Validation: wait-without-release detected. Forcefully "
                     "release fence: Release sequence "
-                 << release_sequence->sequence_id() << "; sync token "
+                 << fence.release_sequence_id << "; sync token "
                  << fence.sync_token.ToDebugString();
     } else {
-      if (release_validate_state.validating) {
+      DCHECK(release_sequence);
+      DCHECK(release_validate_state);
+
+      if (release_validate_state->validating) {
         // Circular dependency detected.
         // Forcefully release the fence to break the cycle.
         UpdateReleaseCount(pending_releases, client_id,
@@ -615,7 +621,7 @@ void TaskGraph::ValidateTaskFenceDeps(
       } else {
         // In order for `release_task` to get a chance to run, all prior tasks
         // in the same sequence must be able to run, so validate them all.
-        for (auto dep_task_iter = release_validate_state.next_to_validate;
+        for (auto dep_task_iter = release_validate_state->next_to_validate;
              dep_task_iter != release_sequence->tasks_.end(); ++dep_task_iter) {
           if (dep_task_iter->order_num > release_task->order_num) {
             break;

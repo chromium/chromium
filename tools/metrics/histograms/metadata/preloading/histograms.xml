@@ -36,11 +36,18 @@ chromium-metrics-reviews@google.com.
   <variant name="Positive" summary=""/>
 </variants>
 
+<variants name="PrefetchDataPipeTeeStateLoadingOrSizeExceeded">
+  <variant name="Loading" summary=""/>
+  <variant name="SizeExceeded" summary=""/>
+</variants>
+
 <variants name="PreloadingPredictor">
   <variant name="BackButtonHover"
       summary="When the user hovers their mouse over the back button."/>
   <variant name="BackGestureNavigation"
       summary="When overscroll that could trigger a back navigation starts."/>
+  <variant name="ChromeCustomTabs"
+      summary="When preloading is triggered by CCT prefetch API."/>
   <variant name="DefaultSearchEngine"
       summary="When preloading is triggered from the default search engine
                suggest service."/>
@@ -79,6 +86,9 @@ chromium-metrics-reviews@google.com.
       summary="When preloading is triggered by OnPointerDown."/>
   <variant name="UrlPointerHoverOnAnchor"
       summary="When preloading is triggered by OnPointerHover."/>
+  <variant name="ViewportHeuristic"
+      summary="When preloading is triggered by a deterministic viewport-based
+               heuristic."/>
 </variants>
 
 <variants name="PreloadingType">
@@ -88,21 +98,6 @@ chromium-metrics-reviews@google.com.
   <variant name="Prerender" summary=""/>
   <variant name="Unspecified" summary=""/>
 </variants>
-
-<histogram name="Preloading.AnchorElementPreloader.PreloadingTriggered"
-    enum="AnchorElementPreloaderType" expires_after="2024-09-15">
-  <owner>spelchat@chromium.org</owner>
-  <owner>curranmax@chromium.org</owner>
-  <owner>chrome-brapp-loading@google.com</owner>
-  <summary>
-    Logged once for each preconnection request sent by renderer to the browser
-    when intercepting pointerdown events. Note that the browser may ignore some
-    of those requests (like duplicate requests or requests made by users that
-    disabled preloading via the UI) and will not always forward the preconnect
-    request to the network service. Associated with the Source ID of the page
-    triggering the preconnection.
-  </summary>
-</histogram>
 
 <histogram name="Preloading.Experimental.UpdateSpeculationCandidatesReason"
     enum="PreloadingUpdateSpeculationCandidatesReason"
@@ -120,7 +115,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.Experimental.{ExperimentalPreloadingPrediction}.{GroundTruth}"
-    units="param" expires_after="2025-02-10">
+    units="param" expires_after="2025-04-13">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>
@@ -143,7 +138,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Preloading.Predictor.{PreloadingPredictor}.Precision"
-    enum="PredictorConfusionMatrix" expires_after="2025-02-10">
+    enum="PredictorConfusionMatrix" expires_after="2025-04-13">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -160,7 +155,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Preloading.Predictor.{PreloadingPredictor}.Recall"
-    enum="PredictorConfusionMatrix" expires_after="2025-02-10">
+    enum="PredictorConfusionMatrix" expires_after="2025-04-13">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -174,6 +169,60 @@ chromium-metrics-reviews@google.com.
     cases are not required to compute the recall and are not recorded here.
   </summary>
   <token key="PreloadingPredictor" variants="PreloadingPredictor"/>
+</histogram>
+
+<histogram
+    name="Preloading.Prefetch.PrefetchDataPipeTeeCloneFailed.{PrefetchDataPipeTeeStateLoadingOrSizeExceeded}"
+    units="count" expires_after="2025-04-17">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records how many times `PrefetchDataPipeTee::Clone()` is called when the
+    method failed.
+
+    {PrefetchDataPipeTeeStateLoadingOrSizeExceeded} indicates
+    `PrefetchDataPipeTee::State` at the failure.
+
+    It is used for investigation crbug.com/374039756.
+  </summary>
+  <token key="PrefetchDataPipeTeeStateLoadingOrSizeExceeded"
+      variants="PrefetchDataPipeTeeStateLoadingOrSizeExceeded"/>
+</histogram>
+
+<histogram name="Preloading.Prefetch.PrefetchDataPipeTeeDtorState"
+    enum="PrefetchDataPipeTeeState" expires_after="2025-04-17">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records the `PrefetchDataPipeTee::State` at `PrefetchDataPipeTee`'s
+    destructor.
+
+    It is used for investigation crbug.com/374039756.
+  </summary>
+</histogram>
+
+<histogram
+    name="Preloading.Prefetch.PrefetchResponseReaderCreateRequestHandlerInvalidBody"
+    units="bool" expires_after="2025-04-17">
+  <owner>kenoss@chromium.org</owner>
+  <owner>chrome-prerendering@google.com</owner>
+  <summary>
+    Records `true` when `PrefetchResponseReader::CreateRequestHandler` couldn't
+    get valid `body`. `false` is never recorded.
+
+    It is used for investigation crbug.com/374039756.
+  </summary>
+</histogram>
+
+<histogram name="Preloading.Prefetch.PrefetchStatus"
+    enum="PrefetchProxyPrefetchStatus" expires_after="2025-10-08">
+  <owner>adithyas@chromium.org</owner>
+  <owner>portals-team@google.com</owner>
+  <summary>
+    Records the final PrefetchStatus value for a PrefetchContainer. The value is
+    recorded when a prefetch fails (in the failure case), or when the
+    PrefetchContainer is destroyed (in all other cases).
+  </summary>
 </histogram>
 
 <histogram name="Preloading.PrefetchBCGSwap.RelatedActiveContents"
@@ -203,7 +252,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.Precision"
-    enum="PredictorConfusionMatrix" expires_after="2025-02-10">
+    enum="PredictorConfusionMatrix" expires_after="2025-04-13">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -223,7 +272,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.Recall"
-    enum="PredictorConfusionMatrix" expires_after="2025-02-10">
+    enum="PredictorConfusionMatrix" expires_after="2025-04-13">
   <owner>isaboori@google.com</owner>
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
@@ -244,7 +293,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Preloading.{PreloadingType}.Attempt.{PreloadingPredictor}.TriggeringOutcome"
-    enum="PreloadingTriggeringOutcome" expires_after="2025-02-09">
+    enum="PreloadingTriggeringOutcome" expires_after="2025-04-13">
   <owner>spelchat@chromium.org</owner>
   <owner>sreejakshetty@chromium.org</owner>
   <owner>jbroman@chromium.org</owner>

@@ -131,6 +131,9 @@ public class AutofillOptionsCoordinator {
                         ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                         getString(R.string.autofill_options_confirm_restart))
                 .with(
+                        ModalDialogProperties.BUTTON_STYLES,
+                        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE)
+                .with(
                         ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
                         getString(R.string.autofill_options_undo_toggle_change))
                 .with(ModalDialogProperties.CANCEL_ON_TOUCH_OUTSIDE, true)

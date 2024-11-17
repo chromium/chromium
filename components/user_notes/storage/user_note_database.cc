@@ -82,7 +82,7 @@ UserNoteMetadataSnapshot UserNoteDatabase::GetNoteMetadataForUrls(
     return UserNoteMetadataSnapshot();
 
   UserNoteMetadataSnapshot metadata_snapshot;
-  for (GURL url : urls) {
+  for (const GURL& url : urls) {
     sql::Statement statement(
         db_.GetCachedStatement(SQL_FROM_HERE,
                                "SELECT id, creation_date, modification_date "

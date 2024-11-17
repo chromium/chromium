@@ -10,7 +10,7 @@ export async function importElements(): Promise<void> {
   const startTime = Date.now();
   try {
     await scriptLoader.load();
-    console.log('Elements imported.');
+    console.info('Elements imported.');
     chrome.metricsPrivate.recordTime(
         'FileBrowser.Load.ImportElements', Date.now() - startTime);
   } catch (error) {

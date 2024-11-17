@@ -125,6 +125,7 @@ public class BottomControlsCoordinator implements BackPressHandler {
                         fullscreenManager,
                         tabObscuringHandler,
                         bottomControlsHeightRes,
+                        root.getTopShadowHeight(),
                         overlayPanelVisibilitySupplier,
                         edgeToEdgeControllerSupplier,
                         readAloudRestoringSupplier);

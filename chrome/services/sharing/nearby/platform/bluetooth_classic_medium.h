@@ -17,8 +17,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "third_party/nearby/src/internal/platform/implementation/bluetooth_classic.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 // Concrete BluetoothClassicMedium implementation.
 // api::BluetoothClassicMedium is a synchronous interface, so this
@@ -85,7 +84,6 @@ class BluetoothClassicMedium : public api::BluetoothClassicMedium,
   base::RepeatingTimer stale_bluetooth_device_timer_;
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLUETOOTH_CLASSIC_MEDIUM_H_

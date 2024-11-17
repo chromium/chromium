@@ -39,6 +39,11 @@ class FileSystemAccessLocalPathWatcher : public FileSystemAccessChangeSource {
   void OnFilePathChanged(const FilePathWatcher::ChangeInfo& change_info,
                          const base::FilePath& changed_path,
                          bool error);
+  void OnUsageChange(size_t old_usage, size_t new_usage);
+
+  // For directory watches this is `scope().root_url().path()`. However, for
+  // file watches, this is the parent directory's path.
+  base::FilePath watch_path_;
 
   base::SequenceBound<FilePathWatcher> watcher_
       GUARDED_BY_CONTEXT(sequence_checker_);

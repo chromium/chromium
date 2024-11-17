@@ -282,7 +282,7 @@ class LargeMessageCardView extends FrameLayout {
     private void setBackground(boolean isIncognito) {
         ColorStateList backgroundTint =
                 ColorStateList.valueOf(
-                        (isIncognito)
+                        isIncognito
                                 ? mContext.getColor(R.color.incognito_card_bg_color)
                                 : ChromeColors.getSurfaceColor(
                                         mContext, R.dimen.default_elevation_2));

@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 
@@ -68,7 +69,8 @@ class BASE_EXPORT dict_iterator {
   // storage is updated to not require a proxy iterator, the implementation can
   // be folded into //base/values.h and a standard friend declaration can be
   // used instead.
-  const DictStorage::iterator& GetUnderlyingIteratorDoNotUse() {
+  const DictStorage::iterator& GetUnderlyingIteratorDoNotUse() const
+      LIFETIME_BOUND {
     return dict_iter_;
   }
 

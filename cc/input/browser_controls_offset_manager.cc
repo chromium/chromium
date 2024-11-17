@@ -83,6 +83,22 @@ float BrowserControlsOffsetManager::TopControlsMinHeight() const {
   return client_->TopControlsMinHeight();
 }
 
+int BrowserControlsOffsetManager::TopControlsHairlineHeight() const {
+  return top_controls_hairline_height_;
+}
+
+int BrowserControlsOffsetManager::BottomControlsAdditionalHeight() const {
+  return bottom_controls_additional_height_;
+}
+
+viz::OffsetTag BrowserControlsOffsetManager::BottomControlsOffsetTag() const {
+  return bottom_controls_offset_tag_;
+}
+
+viz::OffsetTag BrowserControlsOffsetManager::ContentOffsetTag() const {
+  return content_offset_tag_;
+}
+
 viz::OffsetTag BrowserControlsOffsetManager::TopControlsOffsetTag() const {
   return top_controls_offset_tag_;
 }
@@ -165,7 +181,14 @@ void BrowserControlsOffsetManager::UpdateBrowserControlsState(
   permitted_state_ = constraints;
 
   if (offset_tags_info.has_value()) {
+    bottom_controls_offset_tag_ =
+        offset_tags_info.value().bottom_controls_offset_tag;
+    bottom_controls_additional_height_ =
+        offset_tags_info.value().bottom_controls_additional_height;
+    content_offset_tag_ = offset_tags_info.value().content_offset_tag;
     top_controls_offset_tag_ = offset_tags_info.value().top_controls_offset_tag;
+    top_controls_hairline_height_ =
+        offset_tags_info.value().top_controls_hairline_height;
   }
 
   // Don't do anything if it doesn't matter which state the controls are in.

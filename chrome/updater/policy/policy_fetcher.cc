@@ -21,11 +21,13 @@
 #include "base/time/default_clock.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/enterprise_companion_client.h"
+#include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/device_management/dm_client.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/util/util.h"
@@ -226,8 +228,9 @@ InProcessPolicyFetcher::OnFetchPolicyRequestComplete(
 // delegates the policy fetch tasks to it through Mojom.
 class OutOfProcessPolicyFetcher : public PolicyFetcher {
  public:
-  OutOfProcessPolicyFetcher(bool usage_stats_enabled,
-                            std::optional<bool> override_is_managed_device);
+  OutOfProcessPolicyFetcher(scoped_refptr<PersistedData> persisted_data,
+                            std::optional<bool> override_is_managed_device,
+                            base::TimeDelta connection_timeout);
 
   // Overrides for `PolicyFetcher`.
   void FetchPolicies(PolicyFetchCompleteCallback callback) override;
@@ -245,15 +248,18 @@ class OutOfProcessPolicyFetcher : public PolicyFetcher {
   mojo::Remote<enterprise_companion::mojom::EnterpriseCompanion> remote_;
   std::unique_ptr<mojo::IsolatedConnection> connection_;
   PolicyFetchCompleteCallback fetch_complete_callback_;
-  const bool usage_stats_enabled_;
+  scoped_refptr<PersistedData> persisted_data_;
   const std::optional<bool> override_is_managed_device_;
+  const base::TimeDelta connection_timeout_;
 };
 
 OutOfProcessPolicyFetcher::OutOfProcessPolicyFetcher(
-    bool usage_stats_enabled,
-    std::optional<bool> override_is_managed_device)
-    : usage_stats_enabled_(usage_stats_enabled),
-      override_is_managed_device_(override_is_managed_device) {}
+    scoped_refptr<PersistedData> persisted_data,
+    std::optional<bool> override_is_managed_device,
+    base::TimeDelta connection_timeout)
+    : persisted_data_(persisted_data),
+      override_is_managed_device_(override_is_managed_device),
+      connection_timeout_(connection_timeout) {}
 
 OutOfProcessPolicyFetcher::~OutOfProcessPolicyFetcher() = default;
 
@@ -263,12 +269,18 @@ void OutOfProcessPolicyFetcher::FetchPolicies(
   VLOG(1) << __func__;
   CHECK(!fetch_complete_callback_);
   fetch_complete_callback_ = std::move(callback);
+
+  const std::string& cohort_id =
+      persisted_data_->GetCohort(enterprise_companion::kCompanionAppId);
+
   enterprise_companion::ConnectAndLaunchServer(
-      base::DefaultClock::GetInstance(), base::Seconds(60),
-      usage_stats_enabled_,
+      base::DefaultClock::GetInstance(), connection_timeout_,
+      persisted_data_->GetUsageStatsEnabled(),
+      cohort_id.empty() ? std::nullopt : std::make_optional(cohort_id),
       base::BindOnce(&OutOfProcessPolicyFetcher::OnConnected,
-                     base::Unretained(this)));
+                     base::WrapRefCounted(this)));
 }
+
 void OutOfProcessPolicyFetcher::OnConnected(
     std::unique_ptr<mojo::IsolatedConnection> connection,
     mojo::Remote<enterprise_companion::mojom::EnterpriseCompanion> remote) {
@@ -286,9 +298,9 @@ void OutOfProcessPolicyFetcher::OnConnected(
   remote_ = std::move(remote);
   remote_->FetchPolicies(mojo::WrapCallbackWithDropHandler(
       base::BindOnce(&OutOfProcessPolicyFetcher::OnPoliciesFetched,
-                     base::Unretained(this)),
+                     base::WrapRefCounted(this)),
       base::BindOnce(&OutOfProcessPolicyFetcher::OnRPCDropped,
-                     base::Unretained(this))));
+                     base::WrapRefCounted(this))));
 }
 
 void OutOfProcessPolicyFetcher::OnPoliciesFetched(
@@ -332,10 +344,12 @@ scoped_refptr<PolicyFetcher> CreateInProcessPolicyFetcher(
 }
 
 scoped_refptr<PolicyFetcher> CreateOutOfProcessPolicyFetcher(
-    bool usage_stats_enabled,
-    std::optional<bool> override_is_managed_device) {
+    scoped_refptr<PersistedData> persisted_data,
+    std::optional<bool> override_is_managed_device,
+    base::TimeDelta override_ceca_connection_timeout) {
   return base::MakeRefCounted<OutOfProcessPolicyFetcher>(
-      usage_stats_enabled, std::move(override_is_managed_device));
+      persisted_data, std::move(override_is_managed_device),
+      override_ceca_connection_timeout);
 }
 
 }  // namespace updater

@@ -10,10 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 
-namespace ui {
-class PresentationTimeRecorder;
-}  // namespace ui
-
 namespace ash {
 
 class OverviewController;
@@ -48,12 +44,8 @@ class OverviewSessionMetricsRecorder : public OverviewObserver {
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
   bool IsDeskBarOpen() const;
-  bool IsRenderingDeskBarWithMiniViews() const;
 
   const OverviewStartAction start_action_;
-
-  std::unique_ptr<ui::PresentationTimeRecorder>
-      enter_presentation_time_recorder_;
 
   raw_ptr<OverviewSession> session_ = nullptr;
 

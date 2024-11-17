@@ -12,8 +12,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/chrome_activity_item_thumbnail_generator.h"
@@ -66,14 +64,11 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
        !helper->IsFindUIActive());
   NSString* tab_title = tab_util::GetTabTitle(web_state);
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
-  ChromeAccountManagerService* account_manager_service =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_service =
-      SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state);
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile);
   BOOL can_send_tab_to_self =
-      account_manager_service &&
       send_tab_to_self_service &&
       send_tab_to_self_service->GetEntryPointDisplayReason(final_url_to_share);
 

@@ -174,10 +174,9 @@ bool IsAddingUsernameToExistingMatch(
     return false;
   }
 
-  // TODO(b/331409076): investigate if affiliated and grouped matches should be
+  // TODO: crbug.com/331409076 - Investigate if affiliated matches should be
   // skipped as well.
-  if (password_manager_util::GetMatchType(*match) ==
-      password_manager_util::GetLoginMatchType::kPSL) {
+  if (password_manager_util::IsCredentialWeakMatch(*match)) {
     return false;
   }
 
@@ -334,7 +333,7 @@ void EncodePasswordAttributesMetadata(
       }
       break;
     case PasswordAttribute::kPasswordAttributesCount:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   upload.set_password_length(password_attributes.password_length_vote);
 }

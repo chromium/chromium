@@ -77,7 +77,8 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
 
   // Returns whether |api_origin| on |top_frame_origin| can perform
   // |operation| within the interest group API.
-  bool IsInterestGroupAPIAllowed(content::RenderFrameHost* render_frame_host,
+  bool IsInterestGroupAPIAllowed(content::BrowserContext* browser_context,
+                                 content::RenderFrameHost* render_frame_host,
                                  content::InterestGroupApiOperation operation,
                                  const url::Origin& top_frame_origin,
                                  const url::Origin& api_origin) override;
@@ -85,8 +86,7 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
       const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api,
-      bool post_impression_reporting) override;
+      content::PrivacySandboxInvokingAPI invoking_api) override;
 
   bool IsSharedStorageAllowed(
       content::BrowserContext* browser_context,
@@ -101,7 +101,16 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin& accessing_origin,
       std::string* out_debug_message,
       bool* out_block_is_site_setting_specific) override;
-
+  bool IsFencedStorageReadAllowed(content::BrowserContext* browser_context,
+                                  content::RenderFrameHost* rfh,
+                                  const url::Origin& top_frame_origin,
+                                  const url::Origin& accessing_origin) override;
+  bool IsCookieDeprecationLabelAllowed(
+      content::BrowserContext* browser_context) override;
+  bool IsCookieDeprecationLabelAllowedForContext(
+      content::BrowserContext* browser_context,
+      const url::Origin& top_frame_origin,
+      const url::Origin& context_origin) override;
   void ConfigureNetworkContextParams(
       content::BrowserContext* context,
       bool in_memory,

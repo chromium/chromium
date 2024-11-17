@@ -281,9 +281,9 @@ false-negatives).
 Your README.chromium should also specify whether your third party dependency
 will be shipped as part of a final binary. The "Shipped" field replaces the now
 deprecated special value of "NOT_SHIPPED" which was previously allowed in the
-"License File" field. This use is no longer supported and if your third party
-dependency includes a license you should also use the "Licence File" field to
-reference it, regardless of whether it is shipped or not.
+"License File" field. This use is no longer supported and all third party
+dependencies must include a valid license regardless of whether it is shipped
+or not.
 
 
 **Multiple packages**
@@ -298,7 +298,12 @@ README.chromium, use the below line to separate the data for each package:
 ### Add a LICENSE file and run related checks
 
 You need a LICENSE file. Example:
-[//third_party/libjpeg/LICENSE](../third_party/libjpeg/LICENSE).
+[//third_party/libjpeg/LICENSE](../third_party/libjpeg/LICENSE). Dependencies
+should not be added without a license file and license type, even if they are
+not shipped in a final product. Existing dependencies without a license file or
+license type are currently being cleaned up as part of the metadata uplift
+effort. If you are an OWNER of a dependency missing license fields, there will
+soon be a bug filed to fix it.
 
 Run `//tools/licenses/licenses.py scan`; this will complain about incomplete or missing
 data for third_party checkins. We use `licenses.py credits` to generate the

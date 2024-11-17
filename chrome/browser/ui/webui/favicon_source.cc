@@ -79,8 +79,7 @@ std::string FaviconSource::GetSource() {
     case chrome::FaviconUrlFormat::kFavicon2:
       return chrome::kChromeUIFavicon2Host;
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 void FaviconSource::StartDataRequest(
@@ -247,10 +246,11 @@ void FaviconSource::SendDefaultResponse(
   int icon_size = std::ceil(parsed.size_in_dip * parsed.device_scale_factor);
   SkBitmap bitmap = favicon::GenerateMonogramFavicon(GURL(parsed.page_url),
                                                      icon_size, icon_size);
-  std::vector<unsigned char> bitmap_data;
-  bool result = gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &bitmap_data);
-  DCHECK(result);
-  std::move(callback).Run(base::RefCountedBytes::TakeVector(&bitmap_data));
+  std::optional<std::vector<uint8_t>> bitmap_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  DCHECK(bitmap_data);
+  std::move(callback).Run(base::MakeRefCounted<base::RefCountedBytes>(
+      std::move(bitmap_data).value()));
 }
 
 void FaviconSource::SendDefaultResponse(

@@ -37,6 +37,7 @@ public class SiteSettingsUtil {
         ContentSettingsType.MIDI_SYSEX,
         ContentSettingsType.CLIPBOARD_READ_WRITE,
         ContentSettingsType.NFC,
+        ContentSettingsType.FILE_SYSTEM_WRITE_GUARD,
         ContentSettingsType.BLUETOOTH_SCANNING,
         ContentSettingsType.VR,
         ContentSettingsType.AR,
@@ -46,6 +47,7 @@ public class SiteSettingsUtil {
         ContentSettingsType.SENSORS,
         ContentSettingsType.AUTO_DARK_WEB_CONTENT,
         ContentSettingsType.REQUEST_DESKTOP_SITE,
+        ContentSettingsType.JAVASCRIPT_OPTIMIZER,
     };
 
     static final int[] CHOOSER_PERMISSIONS = {

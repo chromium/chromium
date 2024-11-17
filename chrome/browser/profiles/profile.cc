@@ -4,6 +4,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 
+#include <sstream>
 #include <string>
 
 #include "base/check_deref.h"
@@ -31,8 +32,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
-#include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
-#include "components/search_engines/search_engines_pref_names.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_ids_provider.h"
@@ -46,29 +45,23 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/pref_names.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "chromeos/constants/pref_names.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/profiles/android/jni_headers/OTRProfileID_jni.h"
+#include "chrome/browser/profiles/android/jni_headers/OtrProfileId_jni.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/browser/extension_pref_store.h"              // nogncheck
 #include "extensions/browser/extension_pref_value_map_factory.h"  // nogncheck
 #include "extensions/browser/pref_names.h"                        // nogncheck
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/common/chrome_constants.h"
-#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 #if DCHECK_IS_ON()
@@ -136,7 +129,7 @@ bool Profile::OTRProfileID::IsCaptivePortal() const {
 // static
 const Profile::OTRProfileID Profile::OTRProfileID::PrimaryID() {
   // OTRProfileID value should be same as
-  // |OTRProfileID.java#sPrimaryOTRProfileID| variable.
+  // |OtrProfileId.java#sPrimaryOtrProfileId| variable.
   return OTRProfileID("profile::primary_otr");
 }
 
@@ -183,7 +176,7 @@ std::ostream& operator<<(std::ostream& out,
 #if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 Profile::OTRProfileID::ConvertToJavaOTRProfileID(JNIEnv* env) const {
-  return Java_OTRProfileID_Constructor(
+  return Java_OtrProfileId_Constructor(
       env, base::android::ConvertUTF8ToJavaString(env, profile_id_));
 }
 
@@ -192,12 +185,12 @@ Profile::OTRProfileID Profile::OTRProfileID::ConvertFromJavaOTRProfileID(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& j_otr_profile_id) {
   return OTRProfileID(base::android::ConvertJavaStringToUTF8(
-      env, Java_OTRProfileID_getProfileID(env, j_otr_profile_id)));
+      env, Java_OtrProfileId_getProfileId(env, j_otr_profile_id)));
 }
 
 // static
 base::android::ScopedJavaLocalRef<jobject>
-JNI_OTRProfileID_CreateUniqueOTRProfileID(
+JNI_OtrProfileId_CreateUniqueOtrProfileId(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& j_profile_id_prefix) {
   Profile::OTRProfileID profile_id = Profile::OTRProfileID::CreateUnique(
@@ -206,7 +199,7 @@ JNI_OTRProfileID_CreateUniqueOTRProfileID(
 }
 
 // static
-base::android::ScopedJavaLocalRef<jobject> JNI_OTRProfileID_GetPrimaryID(
+base::android::ScopedJavaLocalRef<jobject> JNI_OtrProfileId_GetPrimaryId(
     JNIEnv* env) {
   return Profile::OTRProfileID::PrimaryID().ConvertToJavaOTRProfileID(env);
 }
@@ -218,20 +211,25 @@ Profile::OTRProfileID Profile::OTRProfileID::Deserialize(
   base::android::ScopedJavaLocalRef<jstring> j_value =
       base::android::ConvertUTF8ToJavaString(env, value);
   base::android::ScopedJavaLocalRef<jobject> j_otr_profile_id =
-      Java_OTRProfileID_deserializeWithoutVerify(env, j_value);
+      Java_OtrProfileId_deserializeWithoutVerify(env, j_value);
   return ConvertFromJavaOTRProfileID(env, j_otr_profile_id);
 }
 
 std::string Profile::OTRProfileID::Serialize() const {
   JNIEnv* env = base::android::AttachCurrentThread();
   return base::android::ConvertJavaStringToUTF8(
-      env, Java_OTRProfileID_serialize(env, ConvertToJavaOTRProfileID(env)));
+      env, Java_OtrProfileId_serialize(env, ConvertToJavaOTRProfileID(env)));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 Profile::Profile(const OTRProfileID* otr_profile_id)
     : otr_profile_id_(otr_profile_id ? std::make_optional(*otr_profile_id)
                                      : std::nullopt) {
+#if BUILDFLAG(IS_CHROMEOS)
+  new_guest_profile_impl_ =
+      base::FeatureList::IsEnabled(chromeos::features::kNewGuestProfile);
+#endif
+
 #if DCHECK_IS_ON()
   base::AutoLock lock(g_profile_instances_lock.Get());
   g_profile_instances.Get().insert(this);
@@ -360,8 +358,6 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(prefs::kAllowDinosaurEasterEgg, true);
 #if BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(chromeos::prefs::kCaptivePortalSignin, false);
-#endif
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(dilmah): For OS_CHROMEOS we maintain kApplicationLocale in both
   // local state and user's profile.  For other platforms we maintain
   // kApplicationLocale only in local state.
@@ -378,9 +374,6 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterStringPref(prefs::kLatestVersionWhenClickedUpdateMenuItem,
                                std::string());
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
   registry->RegisterStringPref(prefs::kCommerceMerchantViewerMessagesShownTime,
                                std::string());
 #endif
@@ -407,21 +400,14 @@ bool Profile::IsIncognitoProfile() const {
 }
 
 bool Profile::IsGuestSession() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  static bool is_guest_session =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kGuestSession);
-  return is_guest_session;
-#else
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (chromeos::BrowserParamsProxy::Get()->SessionType() ==
-      crosapi::mojom::SessionType::kGuestSession) {
-    return true;
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!new_guest_profile_impl_) {
+    return base::CommandLine::ForCurrentProcess()->HasSwitch(
+        ash::switches::kGuestSession);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   return profile_metrics::GetBrowserProfileType(this) ==
          profile_metrics::BrowserProfileType::kGuest;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 PrefService* Profile::GetReadOnlyOffTheRecordPrefs() {
@@ -429,23 +415,15 @@ PrefService* Profile::GetReadOnlyOffTheRecordPrefs() {
 }
 
 bool Profile::IsSystemProfile() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   DCHECK_NE(profile_metrics::GetBrowserProfileType(this),
             profile_metrics::BrowserProfileType::kSystem);
   return false;
-#else  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#else  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   return profile_metrics::GetBrowserProfileType(this) ==
          profile_metrics::BrowserProfileType::kSystem;
 #endif
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// static
-bool Profile::IsMainProfilePath(base::FilePath profile_path) {
-  // The main profile is the one with the "Default" path.
-  return profile_path.BaseName().value() == chrome::kInitialProfile;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 bool Profile::IsPrimaryOTRProfile() const {
   return otr_profile_id_.has_value() &&
@@ -453,7 +431,7 @@ bool Profile::IsPrimaryOTRProfile() const {
 }
 
 bool Profile::CanUseDiskWhenOffTheRecord() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Guest mode on ChromeOS uses an in-memory file system to store the profile
   // in, so despite this being an off the record profile, it is still okay to
   // store data on disk.
@@ -514,19 +492,6 @@ double Profile::GetDefaultZoomLevelForProfile() {
 }
 
 void Profile::Wipe() {
-  // Clear the search engine choice prefs.
-  // TODO(b/312180262): Consider clearing other preferences as well.
-  search_engines::WipeSearchEngineChoicePrefs(
-      // For Guest profiles, the OTR is the one that gets wiped, but the choice
-      // prefs get set on the parent profile.
-      // For other OTR profiles, we don't want to automatically forward to the
-      // original profile, the choice made is still relevant there.
-      // This method is also called for regular profiles, when they are
-      // deleted. We don't really care about resetting the pref in that case,
-      // because the full directory will be deleted anyway.
-      CHECK_DEREF((IsGuestSession() ? GetOriginalProfile() : this)->GetPrefs()),
-      search_engines::WipeSearchEngineChoiceReason::kProfileWipe);
-
   GetBrowsingDataRemover()->Remove(
       base::Time(), base::Time::Max(),
       chrome_browsing_data_remover::WIPE_PROFILE,
@@ -594,4 +559,28 @@ base::WeakPtr<const Profile> Profile::GetWeakPtr() const {
 
 base::WeakPtr<Profile> Profile::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+std::string Profile::ToDebugString() {
+  std::ostringstream out;
+  out << "(" << this << "):" << (IsRegularProfile() ? " regular" : "")
+      << (IsIncognitoProfile() ? " incognito" : "")
+      << (IsGuestSession() ? " guest" : "")
+      << (IsSystemProfile() ? " system" : "");
+  if (IsOffTheRecord()) {
+    out << ", otr";
+  }
+#if BUILDFLAG(IS_CHROMEOS)
+  if (ash::IsSigninBrowserContext(this)) {
+    out << ", signin";
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
+  if (GetOriginalProfile() == this) {
+    out << ", is-original";
+  } else {
+    out << ", original=[" << GetOriginalProfile()->ToDebugString() << "]";
+  }
+
+  return out.str();
 }

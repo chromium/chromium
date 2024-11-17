@@ -17,6 +17,14 @@
 
 namespace media {
 
+// A container for information about effects that might be applied to a frame.
+struct EffectInfo {
+  bool enabled;
+  bool operator==(const EffectInfo& other) const {
+    return enabled == other.enabled;
+  }
+};
+
 // NOTE: When adding new VideoFrameMetadata fields, please ensure you update the
 // MergeMetadataFrom() method.
 struct MEDIA_EXPORT VideoFrameMetadata {
@@ -166,9 +174,11 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   std::optional<unsigned int> hw_va_protected_session_id;
 #endif
 
-  // An UnguessableToken that identifies VideoOverlayFactory that created
-  // this VideoFrame. It's used by Cast to help with video hole punch.
-  std::optional<base::UnguessableToken> overlay_plane_id;
+  // An UnguessableToken that can track a frame's underlying platform specific
+  // resources or identify its source. For "hole" VideoFrame's, it is used to
+  // identifies VideoOverlayFactory that created the frame. If this is set, it
+  // should not be modified.
+  std::optional<base::UnguessableToken> tracking_token;
 
   // Whether this frame was decoded in a power efficient way.
   bool power_efficient = false;
@@ -227,6 +237,9 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   //
   // Only set for video frames produced by the frame sink video capturer.
   std::optional<uint64_t> frame_sequence;
+
+  // Information about any background blur effect applied to the frame.
+  std::optional<EffectInfo> background_blur;
 };
 
 }  // namespace media

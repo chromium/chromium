@@ -37,7 +37,6 @@ import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.content.browser.AppWebMessagePort;
 import org.chromium.content.browser.GestureListenerManagerImpl;
-import org.chromium.content.browser.MediaSessionImpl;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content.browser.RenderWidgetHostViewImpl;
 import org.chromium.content.browser.ViewEventSinkImpl;
@@ -167,10 +166,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
 
     // Lazily created proxy observer for handling all Java-based WebContentsObservers.
     private WebContentsObserverProxy mObserverProxy;
-
-    // The media session for this WebContents. It is constructed by the native MediaSession and has
-    // the same life time as native MediaSession.
-    private MediaSessionImpl mMediaSession;
 
     class SmartClipCallback {
         public SmartClipCallback(final Handler smartClipHandler) {
@@ -499,6 +494,14 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     @Override
     public void updateWebContentsVisibility(@Visibility int visibility) {
         checkNotDestroyed();
+        if (visibility == Visibility.VISIBLE) {
+            SelectionPopupControllerImpl controller = getSelectionPopupController();
+            if (controller != null) controller.restoreSelectionPopupsIfNecessary();
+        }
+        if (visibility == Visibility.HIDDEN) {
+            SelectionPopupControllerImpl controller = getSelectionPopupController();
+            if (controller != null) controller.hidePopupsAndPreserveSelection();
+        }
         WebContentsImplJni.get().updateWebContentsVisibility(mNativeWebContentsAndroid, visibility);
     }
 
@@ -601,22 +604,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         // safely guard against this case.
         if (isDestroyed()) return;
         WebContentsImplJni.get().collapseSelection(mNativeWebContentsAndroid);
-    }
-
-    @Override
-    public void onHide() {
-        checkNotDestroyed();
-        SelectionPopupControllerImpl controller = getSelectionPopupController();
-        if (controller != null) controller.hidePopupsAndPreserveSelection();
-        WebContentsImplJni.get().onHide(mNativeWebContentsAndroid);
-    }
-
-    @Override
-    public void onShow() {
-        checkNotDestroyed();
-        SelectionPopupControllerImpl controller = getSelectionPopupController();
-        if (controller != null) controller.restoreSelectionPopupsIfNecessary();
-        WebContentsImplJni.get().onShow(mNativeWebContentsAndroid);
     }
 
     private SelectionPopupControllerImpl getSelectionPopupController() {
@@ -1014,11 +1001,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @CalledByNative
-    private final void setMediaSession(MediaSessionImpl mediaSession) {
-        mMediaSession = mediaSession;
-    }
-
-    @CalledByNative
     private static List<Bitmap> createBitmapList() {
         return new ArrayList<Bitmap>();
     }
@@ -1328,10 +1310,6 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         void selectAll(long nativeWebContentsAndroid);
 
         void collapseSelection(long nativeWebContentsAndroid);
-
-        void onHide(long nativeWebContentsAndroid);
-
-        void onShow(long nativeWebContentsAndroid);
 
         void setImportance(long nativeWebContentsAndroid, int importance);
 

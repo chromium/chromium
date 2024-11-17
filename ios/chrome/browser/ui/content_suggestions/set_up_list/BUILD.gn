@@ -50,7 +50,7 @@ source_set("set_up_list") {
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
-    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/sync/model",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
@@ -84,6 +84,8 @@ source_set("default_browser_promo") {
     "//components/segmentation_platform/public",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/default_promo/ui_bundled:coordinator",
+    "//ios/chrome/browser/default_promo/ui_bundled/generic",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/ui_bundled/default_browser:default_browser_mediator",
     "//ios/chrome/browser/first_run/ui_bundled/default_browser:default_browser_ui",
@@ -97,8 +99,10 @@ source_set("default_browser_promo") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/promo_style",
   ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("content_notification_promo") {
@@ -121,7 +125,8 @@ source_set("content_notification_promo") {
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/ui/push_notification:opt_in_alert_coordinator",
     "//ios/chrome/browser/ui/settings/notifications:notifications_ui",
     "//ios/chrome/common/ui/promo_style",
@@ -179,10 +184,16 @@ source_set("unit_tests") {
     ":set_up_list",
     "//base",
     "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
     "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/public",
     "//components/segmentation_platform/public:test_support",
+    "//components/segmentation_platform/public:test_support",
+    "//components/sync_device_info:test_support",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/ui_bundled/default_browser:default_browser_mediator",
     "//ios/chrome/browser/ntp/model:set_up_list",
     "//ios/chrome/browser/ntp/model:set_up_list_item_type",
@@ -193,6 +204,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
+    "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base:test_support",
   ]

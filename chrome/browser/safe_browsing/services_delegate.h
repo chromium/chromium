@@ -34,15 +34,15 @@ namespace safe_browsing {
 class DownloadProtectionService;
 #endif
 class IncidentReportingService;
-class SafeBrowsingService;
+class SafeBrowsingServiceImpl;
 class SafeBrowsingDatabaseManager;
 struct V4ProtocolConfig;
 
 // Abstraction to help organize code for mobile vs full safe browsing modes.
-// This helper class should be owned by a SafeBrowsingService, and it handles
-// responsibilities for safe browsing service classes that may or may not exist
-// for a given build config. e.g. No DownloadProtectionService on mobile.
-// ServicesDelegate lives on the UI thread.
+// This helper class should be owned by a SafeBrowsingServiceImpl, and it
+// handles responsibilities for safe browsing service classes that may or may
+// not exist for a given build config. e.g. No DownloadProtectionService on
+// mobile. ServicesDelegate lives on the UI thread.
 class ServicesDelegate {
  public:
   // Used for tests to override service creation. If CanCreateFooService()
@@ -69,14 +69,14 @@ class ServicesDelegate {
   // Creates the ServicesDelegate using its's default ServicesCreator.
   // |safe_browsing_service| is the delegate's owner.
   static std::unique_ptr<ServicesDelegate> Create(
-      SafeBrowsingService* safe_browsing_service);
+      SafeBrowsingServiceImpl* safe_browsing_service);
 
   // Creates the ServicesDelegate using a custom ServicesCreator, for testing.
   static std::unique_ptr<ServicesDelegate> CreateForTest(
-      SafeBrowsingService* safe_browsing_service,
+      SafeBrowsingServiceImpl* safe_browsing_service,
       ServicesDelegate::ServicesCreator* services_creator);
 
-  ServicesDelegate(SafeBrowsingService* safe_browsing_service,
+  ServicesDelegate(SafeBrowsingServiceImpl* safe_browsing_service,
                    ServicesCreator* services_creator);
   virtual ~ServicesDelegate();
 
@@ -92,10 +92,10 @@ class ServicesDelegate {
   // Shuts down the download service.
   virtual void ShutdownServices();
 
-  // Handles SafeBrowsingService::RefreshState() for the provided services.
+  // Handles SafeBrowsingServiceImpl::RefreshState() for the provided services.
   virtual void RefreshState(bool enable) = 0;
 
-  // See the SafeBrowsingService methods of the same name.
+  // See the SafeBrowsingServiceImpl methods of the same name.
   virtual std::unique_ptr<prefs::mojom::TrackedPreferenceValidationDelegate>
   CreatePreferenceValidationDelegate(Profile* profile) = 0;
   virtual void RegisterDelayedAnalysisCallback(
@@ -122,7 +122,7 @@ class ServicesDelegate {
 
  protected:
   // Unowned pointer
-  const raw_ptr<SafeBrowsingService> safe_browsing_service_;
+  const raw_ptr<SafeBrowsingServiceImpl> safe_browsing_service_;
 
   // Unowned pointer
   const raw_ptr<ServicesCreator> services_creator_;

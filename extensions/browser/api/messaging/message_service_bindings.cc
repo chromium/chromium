@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/types/optional_util.h"
@@ -52,6 +53,16 @@ bool IsPortContextSandboxed(RenderProcessHost& process,
     // ExtensionFrameHost::OpenChannelToExtension()). Ensure there are no
     // unexpected reports of this and then remove the early return here and also
     // in IsValidSourceUrl().
+    DUMP_WILL_BE_NOTREACHED();
+    return false;
+  }
+
+  if (!frame->HasPolicyContainerHost()) {
+    // If the WebContents has not fully initialized the RenderFrameHost yet.
+    // TODO(crbug.com/346386726): Remove the HasPolicyContainerHost() call once
+    // RenderFrameHost initialization order is fixed.
+    SCOPED_CRASH_KEY_NUMBER("EMF_INVALID_RFH", "lifecycle_state",
+                            static_cast<size_t>(frame->GetLifecycleState()));
     DUMP_WILL_BE_NOTREACHED();
     return false;
   }

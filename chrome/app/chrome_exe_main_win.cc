@@ -106,10 +106,11 @@ bool AttemptFastNotify(const base::CommandLine& command_line) {
     return false;
   policy::path_parser::CheckUserDataDirPolicy(&user_data_dir);
 
-  HWND chrome = chrome::FindRunningChromeWindow(user_data_dir);
+  HWND chrome = FindRunningChromeWindow(user_data_dir);
   if (!chrome)
     return false;
-  return chrome::AttemptToNotifyRunningChrome(chrome) == chrome::NOTIFY_SUCCESS;
+  return AttemptToNotifyRunningChrome(chrome) ==
+         NotifyChromeResult::NOTIFY_SUCCESS;
 }
 
 // Returns true if the child process |command_line| contains a /prefetch:#

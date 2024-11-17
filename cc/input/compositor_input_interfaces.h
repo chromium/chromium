@@ -74,7 +74,7 @@ class InputDelegateForCompositor {
 
   // Called to let the input handler know that a scroll offset animation has
   // completed.
-  virtual void ScrollOffsetAnimationFinished() = 0;
+  virtual void ScrollOffsetAnimationFinished(ElementId element_id) = 0;
 
   // Called to inform the input handler when prefers-reduced-motion changes.
   virtual void SetPrefersReducedMotion(bool prefers_reduced_motion) = 0;

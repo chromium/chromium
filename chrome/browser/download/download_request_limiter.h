@@ -327,7 +327,9 @@ class DownloadRequestLimiter
   // if the state is other than ALLOW_ONE_DOWNLOAD. Similarly once the state
   // transitions from anything but ALLOW_ONE_DOWNLOAD back to ALLOW_ONE_DOWNLOAD
   // the TabDownloadState is removed and deleted (by way of Remove).
-  typedef std::map<content::WebContents*, TabDownloadState*> StateMap;
+  typedef std::map<content::WebContents*,
+                   raw_ptr<TabDownloadState, CtnExperimental>>
+      StateMap;
   StateMap state_map_;
 
   CanDownloadDecidedCallback on_can_download_decided_callback_;

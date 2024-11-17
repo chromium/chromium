@@ -9,6 +9,7 @@
 #include "ash/wm/desks/desk_bar_view_base.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace ash {
 
@@ -23,7 +24,8 @@ class ASH_EXPORT OverviewDeskBarView : public DeskBarViewBase {
  public:
   OverviewDeskBarView(
       base::WeakPtr<OverviewGrid> overview_grid,
-      base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator);
+      base::WeakPtr<WindowOcclusionCalculator> window_occlusion_calculator,
+      const gfx::Rect& initial_widget_bounds);
 
   OverviewDeskBarView(const OverviewDeskBarView&) = delete;
   OverviewDeskBarView& operator=(const OverviewDeskBarView&) = delete;
@@ -34,6 +36,9 @@ class ASH_EXPORT OverviewDeskBarView : public DeskBarViewBase {
 
   // DeskBarViewBase:
   gfx::Rect GetAvailableBounds() const override;
+
+ private:
+  const gfx::Rect initial_widget_bounds_;
 };
 
 }  // namespace ash

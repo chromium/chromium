@@ -147,10 +147,7 @@ public class ChromeImageViewPreference extends Preference {
                 listener);
     }
 
-    /**
-     * Sets the Color resource ID which will be used to set the color of the image.
-     * @param colorRes
-     */
+    /** Sets the Color resource ID which will be used to set the color of the image. */
     public void setImageColor(@ColorRes int colorRes) {
         if (mColorRes == colorRes) return;
 
@@ -167,10 +164,7 @@ public class ChromeImageViewPreference extends Preference {
         mImageViewCustomPadding = true;
     }
 
-    /**
-     * Sets the Color resource ID which will be used to set the color of the view.
-     * @param colorRes
-     */
+    /** Sets the Color resource ID which will be used to set the color of the view. */
     public void setBackgroundColor(@ColorRes int colorRes) {
         if (mBackgroundColorRes != null && mBackgroundColorRes == colorRes) return;
         mBackgroundColorRes = colorRes;

@@ -1,0 +1,16 @@
+<!--
+@BLINK-ALLOW:actions*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <div role="textbox" id="my-textbox" aria-actions="edit">
+    your-file-name.pdf
+    <x-div id="edit">
+      <template shadowrootmode="open" shadowrootreferencetarget="target">
+        <button id="target">Edit</button>
+      </template>
+    </x-div>
+  </div>
+</body>
+</html>

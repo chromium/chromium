@@ -29,11 +29,23 @@ export class HealthdInternalsFanCardElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.$.infoCard.appendCardRow('FANS SPEED');
+    this.$.infoCard.appendCardRow('SPEED (RPM)');
+    this.$.infoCard.updateDisplayedInfo(0, 'Fans not found.');
   }
 
   updateTelemetryData(data: HealthdApiTelemetryResult) {
-    this.$.infoCard.updateDisplayedInfo(0, data.fans);
+    if (data.fans.length === 0) {
+      return;
+    }
+    const speedInfo = data.fans.reduce((acc, fan, index) => {
+      acc[`Fan #${index}`] = parseInt(fan.speedRpm);
+      return acc;
+    }, {} as Record<string, number>);
+    this.$.infoCard.updateDisplayedInfo(0, speedInfo);
+  }
+
+  updateExpanded(isExpanded: boolean) {
+    this.$.infoCard.updateExpanded(isExpanded);
   }
 }
 

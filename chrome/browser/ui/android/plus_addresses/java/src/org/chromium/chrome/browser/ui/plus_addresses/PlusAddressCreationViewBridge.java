@@ -11,6 +11,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.chrome.browser.layouts.LayoutManagerProvider;
@@ -102,7 +103,7 @@ public class PlusAddressCreationViewBridge {
     }
 
     @CalledByNative
-    void updateProposedPlusAddress(String plusAddress) {
+    void updateProposedPlusAddress(@JniType("std::string") String plusAddress) {
         if (mNativePlusAddressCreationPromptAndroid != 0 && mCoordinator != null) {
             mCoordinator.updateProposedPlusAddress(plusAddress);
         }
@@ -116,13 +117,13 @@ public class PlusAddressCreationViewBridge {
     }
 
     /**
-     * TODO: crbug.com/354881207 - Remove `@Nullable` when enhanced error handling is launched.
+     * Shows the error screen specified by {@code errorStateInfo}.
      *
      * @param errorStateInfo necassary UI information to show a meaningful error message to the
      *     user.
      */
     @CalledByNative
-    void showError(@Nullable PlusAddressCreationErrorStateInfo errorStateInfo) {
+    void showError(PlusAddressCreationErrorStateInfo errorStateInfo) {
         if (mNativePlusAddressCreationPromptAndroid != 0 && mCoordinator != null) {
             mCoordinator.showError(errorStateInfo);
         }

@@ -46,7 +46,8 @@
           "builder": "ToTAndroid64",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTAndroid64/targets"
     }
   },
   "$build/reclient": {

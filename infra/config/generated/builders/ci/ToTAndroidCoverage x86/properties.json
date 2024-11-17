@@ -46,7 +46,8 @@
           "builder": "ToTAndroidCoverage x86",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTAndroidCoverage x86/targets"
     }
   },
   "$build/reclient": {

@@ -90,8 +90,6 @@ void LowUsageHelpController::MaybeShowPromo() {
     return;
   }
 
-  const bool result = browser->window()->MaybeShowStartupFeaturePromo(
+  browser->window()->MaybeShowStartupFeaturePromo(
       feature_engagement::kIPHDesktopReEngagementFeature);
-
-  (void)result;
 }

@@ -34,13 +34,14 @@ SecurityInterstitialControllerClient::SecurityInterstitialControllerClient(
       default_safe_page_(default_safe_page),
       settings_page_helper_(std::move(settings_page_helper)) {}
 
-SecurityInterstitialControllerClient::~SecurityInterstitialControllerClient() {}
+SecurityInterstitialControllerClient::~SecurityInterstitialControllerClient() =
+    default;
 
 void SecurityInterstitialControllerClient::GoBack() {
   // TODO(crbug.com/40688528): This method is left so class can be non abstract
   // since it is still instantiated in tests. This can be cleaned up by having
   // tests use a subclass.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool SecurityInterstitialControllerClient::CanGoBack() {
@@ -71,7 +72,7 @@ void SecurityInterstitialControllerClient::Proceed() {
   // TODO(crbug.com/40688528): This method is left so class can be non abstract
   // since it is still instantiated in tests. This can be cleaned up by having
   // tests use a subclass.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SecurityInterstitialControllerClient::Reload() {
@@ -120,12 +121,11 @@ SecurityInterstitialControllerClient::GetExtendedReportingPrefName() const {
 }
 
 bool SecurityInterstitialControllerClient::CanLaunchDateAndTimeSettings() {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void SecurityInterstitialControllerClient::LaunchDateAndTimeSettings() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool SecurityInterstitialControllerClient::CanGoBackBeforeNavigation() {

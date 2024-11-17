@@ -395,7 +395,7 @@ void AudioDeviceMetricsHandler::
 }
 
 void AudioDeviceMetricsHandler::RecordUserOverrideMetricsHelper(
-    const std::string_view histogram_name,
+    std::string_view histogram_name,
     AudioSelectionEvents audio_selection_event,
     int time_delta_since_system_decision) const {
   base::UmaHistogramCustomCounts(

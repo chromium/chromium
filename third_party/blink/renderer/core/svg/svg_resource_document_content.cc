@@ -138,9 +138,7 @@ SVGResourceDocumentContent::UpdateDocument(scoped_refptr<SharedBuffer> data,
   CHECK(!document_host_);
   auto* chrome_client = MakeGarbageCollected<ChromeClient>(this);
   document_host_ = MakeGarbageCollected<IsolatedSVGDocumentHost>(
-      *chrome_client, *agent_group_scheduler_);
-  document_host_->InstallDocument(
-      std::move(data),
+      *chrome_client, *agent_group_scheduler_, std::move(data),
       WTF::BindOnce(&SVGResourceDocumentContent::AsyncLoadingFinished,
                     WrapWeakPersistent(this)),
       nullptr, IsolatedSVGDocumentHost::ProcessingMode::kStatic);

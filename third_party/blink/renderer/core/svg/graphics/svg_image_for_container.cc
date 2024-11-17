@@ -40,7 +40,7 @@ const SVGImageViewInfo* SVGImageForContainer::CreateViewInfo(SVGImage& image,
   if (!url.HasFragmentIdentifier()) {
     return nullptr;
   }
-  return CreateViewInfo(image, url.FragmentIdentifier());
+  return CreateViewInfo(image, url.FragmentIdentifier().ToString());
 }
 
 const SVGImageViewInfo* SVGImageForContainer::CreateViewInfo(

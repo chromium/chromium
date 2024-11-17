@@ -20,6 +20,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
+#include "chrome/browser/ui/views/autofill/popup/autofill_prediction_improvements/prediction_improvements_icon_image_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
@@ -114,11 +115,13 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     // Other networks.
     case Suggestion::Icon::kCardGeneric:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GENERIC);
-    case Suggestion::Icon::kNoIcon:
+
+    case Suggestion::Icon::kAutofillPredictionImprovements:
+
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kClear:
-    case Suggestion::Icon::kCreate:
     case Suggestion::Icon::kCode:
+    case Suggestion::Icon::kCreate:
     case Suggestion::Icon::kDelete:
     case Suggestion::Icon::kDevice:
     case Suggestion::Icon::kEdit:
@@ -131,12 +134,13 @@ std::u16string GetIconAccessibleName(Suggestion::Icon icon) {
     case Suggestion::Icon::kGooglePasswordManager:
     case Suggestion::Icon::kGooglePay:
     case Suggestion::Icon::kGooglePayDark:
-    case Suggestion::Icon::kHttpWarning:
     case Suggestion::Icon::kHttpsInvalid:
+    case Suggestion::Icon::kHttpWarning:
     case Suggestion::Icon::kIban:
     case Suggestion::Icon::kKey:
     case Suggestion::Icon::kLocation:
     case Suggestion::Icon::kMagic:
+    case Suggestion::Icon::kNoIcon:
     case Suggestion::Icon::kOfferTag:
     case Suggestion::Icon::kPenSpark:
     case Suggestion::Icon::kPlusAddress:
@@ -346,12 +350,16 @@ std::optional<ui::ImageModel> GetIconImageModelFromIcon(Suggestion::Icon icon) {
     case Suggestion::Icon::kCardTroy:
     case Suggestion::Icon::kCardUnionPay:
     case Suggestion::Icon::kCardVerve:
-    case Suggestion::Icon::kCardVisa:
+    case Suggestion::Icon::kCardVisa: {
       // For other suggestion entries, get the icon from PNG files.
       int icon_id = GetIconResourceID(icon);
       DCHECK_NE(icon_id, 0);
       return ImageModelFromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(icon_id));
+    }
+    // A special case handled in `GetIconImageView()`.
+    case Suggestion::Icon::kAutofillPredictionImprovements:
+      NOTREACHED();
   }
   NOTREACHED();
 }
@@ -394,11 +402,14 @@ std::unique_ptr<views::ImageView> GetIconImageView(
     std::optional<ui::ImageModel> image_model =
         ImageModelFromImageSkia(icon->AsImageSkia());
     return ConvertModelToImageView(image_model,
-                                   suggestion.apply_deactivated_style);
+                                   suggestion.HasDeactivatedStyle());
   }
   std::unique_ptr<views::ImageView> icon_image_view =
-      ConvertModelToImageView(GetIconImageModelFromIcon(suggestion.icon),
-                              suggestion.apply_deactivated_style);
+      (suggestion.icon == Suggestion::Icon::kAutofillPredictionImprovements)
+          ? autofill_prediction_improvements::
+                CreateSmallPredictionImprovementsIconImageView()
+          : ConvertModelToImageView(GetIconImageModelFromIcon(suggestion.icon),
+                                    suggestion.HasDeactivatedStyle());
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
 
@@ -423,7 +434,7 @@ std::unique_ptr<views::ImageView> GetTrailingIconImageView(
   std::optional<ui::ImageModel> image_model =
       GetIconImageModelFromIcon(suggestion.trailing_icon);
   std::unique_ptr<views::ImageView> icon_image_view =
-      ConvertModelToImageView(image_model, suggestion.apply_deactivated_style);
+      ConvertModelToImageView(image_model, suggestion.HasDeactivatedStyle());
   base::UmaHistogramTimes(kHistogramGetImageViewByName,
                           base::TimeTicks::Now() - start_time);
 

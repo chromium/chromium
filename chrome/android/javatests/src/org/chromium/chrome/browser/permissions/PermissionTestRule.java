@@ -102,7 +102,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
          *
          * @param numUpdates The number that should be after the prefix for the wait to be over. `0`
          *     to only wait for the prefix.
-         * @throws Exception
          */
         public void waitForNumUpdates(int numUpdates) throws Exception {
             int callbackCountBefore = mCallbackHelper.getCallCount();
@@ -187,7 +186,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * @param nUpdates How many updates of the page title to wait for.
      * @param withGesture True if we require a user gesture to trigger the prompt.
      * @param isDialog True if we are expecting a permission dialog, false for an infobar.
-     * @throws Exception
      */
     public void runAllowTest(
             PermissionUpdateWaiter updateWaiter,
@@ -217,7 +215,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * @param nUpdates How many updates of the page title to wait for.
      * @param withGesture True if we require a user gesture to trigger the prompt.
      * @param isDialog True if we are expecting a permission dialog, false for an infobar.
-     * @throws Exception
      */
     public void runDenyTest(
             PermissionUpdateWaiter updateWaiter,
@@ -247,7 +244,6 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
      * @param nUpdates How many updates of the page title to wait for.
      * @param withGesture True if we require a user gesture.
      * @param isDialog True if we are testing a permission dialog, false for an infobar.
-     * @throws Exception
      */
     public void runNoPromptTest(
             PermissionUpdateWaiter updateWaiter,

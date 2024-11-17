@@ -8,7 +8,6 @@
     "enable_base_tracing": false,
     "enable_reporting": true,
     "enable_resource_allowlist_generation": false,
-    "enable_rust": false,
     "enable_websockets": false,
     "include_transport_security_state_preload_list": false,
     "is_component_build": false,

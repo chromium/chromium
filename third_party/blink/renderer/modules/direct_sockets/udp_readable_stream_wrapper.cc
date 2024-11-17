@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/direct_sockets/udp_readable_stream_wrapper.h"
 
 #include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
@@ -97,6 +98,10 @@ void UDPReadableStreamWrapper::ErrorStream(int32_t error_code) {
   if (GetState() != State::kOpen) {
     return;
   }
+
+  // Error codes are negative.
+  base::UmaHistogramSparse("DirectSockets.UDPReadableStreamError", -error_code);
+
   SetState(State::kAborted);
 
   socket_listener_.reset();

@@ -43,8 +43,7 @@ const char* GetAddressPromptDecisionMetricsSuffix(
     case AutofillClient::AddressPromptUserDecision::kAutoDeclined:
       return ".AutoDeclined";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace

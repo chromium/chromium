@@ -24,7 +24,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
-#include "base/types/optional_ref.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/bidding_and_auction_serializer.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
@@ -60,6 +59,7 @@ namespace content {
 
 class AdAuctionPageData;
 class InterestGroupStorage;
+class TrustedSignalsCacheImpl;
 struct DebugReportLockoutAndCooldowns;
 
 // InterestGroupManager is a per-StoragePartition class that owns shared
@@ -214,12 +214,13 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       std::set<std::string> interest_groups_to_keep,
       url::Origin main_frame_origin);
   // Loads all interest groups owned by `owner`, then updates their
-  // definitions by fetching their `dailyUpdateUrl`. Interest group updates
+  // definitions by fetching their `updateURL`. Interest group updates
   // that fail to load or validate are skipped, but other updates will
   // proceed.
   void UpdateInterestGroupsOfOwner(
       const url::Origin& owner,
       network::mojom::ClientSecurityStatePtr client_security_state,
+      std::optional<std::string> user_agent_override,
       AreReportingOriginsAttestedCallback callback);
   // Like UpdateInterestGroupsOfOwner(), but handles multiple interest group
   // owners.
@@ -228,17 +229,19 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void UpdateInterestGroupsOfOwners(
       std::vector<url::Origin> owners,
       network::mojom::ClientSecurityStatePtr client_security_state,
+      std::optional<std::string> user_agent_override,
       AreReportingOriginsAttestedCallback callback);
 
   void UpdateInterestGroupsOfOwnersWithDelay(
       std::vector<url::Origin> owners,
       network::mojom::ClientSecurityStatePtr client_security_state,
+      std::optional<std::string> user_agent_override,
       AreReportingOriginsAttestedCallback callback,
       const base::TimeDelta& delay);
 
   // Allows the interest group specified by `group_key` to be updated if it was
   // last updated before `update_if_older_than`.
-  void AllowUpdateIfOlderThan(const blink::InterestGroupKey& group_key,
+  void AllowUpdateIfOlderThan(blink::InterestGroupKey group_key,
                               base::TimeDelta update_if_older_than);
 
   // For testing *only*; changes the maximum amount of time that the update
@@ -332,6 +335,11 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   void GetLastMaintenanceTimeForTesting(
       base::RepeatingCallback<void(base::Time)> callback) const;
 
+  // Returns a user agent override string for the given frame tree node,
+  // if one is available and the feature is enabled.
+  std::optional<std::string> MaybeGetUserAgentOverride(
+      const FrameTreeNodeId& frame_tree_node_id);
+
   // Enqueues reports for the specified URLs. Virtual for testing.
   virtual void EnqueueReports(
       ReportType report_type,
@@ -403,6 +411,14 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       std::unique_ptr<AuctionProcessManager> auction_process_manager) {
     auction_process_manager_ = std::move(auction_process_manager);
   }
+
+  // Allows the AuctionProcessManager to be overridden in unit tests, to mock
+  // out its behavior. Note that the automatically created built-in
+  // AuctionProcessManager may have raw pointers to the old cache,
+  // set_auction_process_manager_for_testing() should typically be called before
+  // this method.
+  void set_trusted_signals_cache_for_testing(
+      std::unique_ptr<TrustedSignalsCacheImpl> trusted_signals_cache);
 
   // For testing *only*; changes the maximum number of active report requests
   // at a time.
@@ -487,7 +503,7 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // called synchronously if the key is already available or the coordinator is
   // not recognized.
   void GetBiddingAndAuctionServerKey(
-      std::optional<url::Origin> coordinator,
+      const std::optional<url::Origin>& coordinator,
       base::OnceCallback<void(
           base::expected<BiddingAndAuctionServerKey, std::string>)> callback);
 
@@ -517,6 +533,12 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
       std::optional<double> bid,
       base::optional_ref<const std::string> bid_currency);
 
+  // Cache for trusted browser signals version 2. Returns nullptr if relevant
+  // features have not been enabled.
+  TrustedSignalsCacheImpl* trusted_signals_cache() {
+    return trusted_signals_cache_.get();
+  }
+
  private:
   // InterestGroupUpdateManager calls private members to write updates to the
   // database.
@@ -535,6 +557,11 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
     network::mojom::ClientSecurityState client_security_state;
 
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
+
+    // This optional string holds a user agent value that can override the
+    // default one for reporting requests. If no override is needed, it remains
+    // std::nullopt.
+    std::optional<std::string> user_agent_override;
 
     // Used for Uma histograms. These are build-time constants contained within
     // the binary, so no need for anything to own them.
@@ -684,6 +711,13 @@ class CONTENT_EXPORT InterestGroupManagerImpl : public InterestGroupManager {
   // InterestGroupStorage. Returns cached values for GetInterestGroupsForOwner
   // when available.
   InterestGroupCachingStorage caching_storage_;
+
+  // Cache for trusted browser signals version 2. Only populated if
+  // kFledgeTrustedSignalsKVv2Support and kFledgeUseKvv2SignalsCache features
+  // are enabled. Rather than check for those features, consumers should check
+  // if this has been populated. Must be declared before
+  // `auction_process_manager_`, which depends on this.
+  std::unique_ptr<TrustedSignalsCacheImpl> trusted_signals_cache_;
 
   // Stored as pointer so that tests can override it.
   std::unique_ptr<AuctionProcessManager> auction_process_manager_;

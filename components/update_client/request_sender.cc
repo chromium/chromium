@@ -93,15 +93,16 @@ void RequestSender::SendInternal() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   GURL url(*cur_url_);
+  VLOG(2) << "url: " << url.spec();
 
   if (use_signing_) {
     CHECK(!public_key_.empty());
     signer_ = client_update_protocol::Ecdsa::Create(kKeyVersion, public_key_);
     std::string request_query_string;
     signer_->SignRequest(request_body_, &request_query_string);
-
     url = BuildUpdateUrl(url, request_query_string);
   }
+  VLOG_IF(2, !url.is_valid()) << "url is not valid.";
 
   VLOG(2) << "Sending Omaha request: " << request_body_;
 

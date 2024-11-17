@@ -72,7 +72,7 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
                 };
     }
 
-    private class BackgroundThread extends Thread {
+    private static class BackgroundThread extends Thread {
         private Looper mLooper;
 
         BackgroundThread(String name) {
@@ -126,7 +126,7 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
     @Before
     public void setUp() throws Exception {
         disableLifecycleThreadAssertion();
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         mDefaultUncaughtExceptionHandler = Thread.getDefaultUncaughtExceptionHandler();
         mBackgroundThread = new BackgroundThread("background");
         mBackgroundThread.start();
@@ -317,4 +317,3 @@ public class AwUncaughtExceptionTest extends AwParameterizedTest {
                 latch.await(SCALED_WAIT_TIMEOUT_MS, java.util.concurrent.TimeUnit.MILLISECONDS));
     }
 }
-;

@@ -590,9 +590,7 @@ void PeerConnectionDependencyFactory::CreatePeerConnectionFactory() {
   // BoringSSL no longer requires this after
   // https://bugs.chromium.org/p/boringssl/issues/detail?id=35
   if (!rtc::InitializeSSL()) {
-    LOG(ERROR) << "Failed on InitializeSSL.";
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED() << "Failed on InitializeSSL.";
   }
 
   base::WaitableEvent create_network_manager_event(
@@ -755,7 +753,7 @@ void PeerConnectionDependencyFactory::InitializeSignalingThread(
 
   // Audio Processing Module (APM) instances are owned and handled by the Blink
   // media stream module.
-  DCHECK_EQ(pcf_deps.audio_processing.get(), nullptr);
+  DCHECK_EQ(pcf_deps.audio_processing_builder, nullptr);
   webrtc::EnableMedia(pcf_deps);
   pc_factory_ = webrtc::CreateModularPeerConnectionFactory(std::move(pcf_deps));
   CHECK(pc_factory_.get());

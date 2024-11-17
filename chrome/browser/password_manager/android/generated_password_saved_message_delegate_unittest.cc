@@ -51,7 +51,7 @@ class MockJniDelegate : public AddUsernameDialogBridge::JniDelegate {
 
   MOCK_METHOD((void),
               Create,
-              (const gfx::NativeWindow, AddUsernameDialogBridge*),
+              (ui::WindowAndroid&, AddUsernameDialogBridge*),
               (override));
   MOCK_METHOD((void),
               ShowAddUsernameDialog,
@@ -91,6 +91,7 @@ class GeneratedPasswordSavedMessageDelegateTest
  private:
   password_manager::PasswordForm form_;
   GURL password_form_url_;
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window_;
 };
 
 GeneratedPasswordSavedMessageDelegateTest::
@@ -105,6 +106,11 @@ void GeneratedPasswordSavedMessageDelegateTest::SetUp() {
   NavigateAndCommit(GURL(kDefaultUrl));
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
+
+  // Create a scoped window so that
+  // WebContents::GetNativeView()->GetWindowAndroid() does not return null.
+  window_ = ui::WindowAndroid::CreateForTesting();
+  window_.get()->get()->AddChild(web_contents()->GetNativeView());
 }
 
 void GeneratedPasswordSavedMessageDelegateTest::TearDown() {

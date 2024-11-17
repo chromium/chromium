@@ -76,10 +76,6 @@ class COMPOSITOR_EXPORT PresentationTimeRecorder {
   // false if the previous frame has not been committed yet.
   bool RequestNext();
 
-  // Returns the average latency of all recordings thus far. Returns `nullopt`
-  // if no recordings have been made.
-  std::optional<base::TimeDelta> GetAverageLatency() const;
-
   // Enable this to report the presentation time immediately with
   // fake value when RequestNext is called.
   static void SetReportPresentationTimeImmediatelyForTest(bool enable);

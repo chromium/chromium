@@ -92,10 +92,6 @@ class QuicConnectionMigrationTest : public ContentBrowserTest {
     command_line->AppendSwitchASCII(switches::kOriginToForceQuicOn, "*");
     command_line->AppendSwitchASCII(switches::kForceFieldTrials,
                                     "QUIC/Enabled");
-    command_line->AppendSwitchASCII(
-        switches::kForceFieldTrialParams,
-        "QUIC.Enabled:migrate_sessions_on_network_change_v2/true/"
-        "retry_without_alt_svc_on_quic_errors/false");
     mock_cert_verifier_.SetUpCommandLine(command_line);
 
     ASSERT_TRUE(net::QuicSimpleTestServer::Start());

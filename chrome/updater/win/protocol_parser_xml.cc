@@ -13,7 +13,6 @@
 #include <cstdint>
 #include <string>
 
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string_number_conversions_win.h"

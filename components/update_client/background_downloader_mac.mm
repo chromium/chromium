@@ -306,7 +306,10 @@ class BackgroundDownloaderSharedSessionImpl {
       callback.Run(result.is_handled, result.result, result.download_metrics);
     } else {
       int64_t download_size = -1;
-      if (!base::GetFileSize(cached_path, &download_size)) {
+      std::optional<int64_t> file_size_opt = base::GetFileSize(cached_path);
+      if (file_size_opt.has_value()) {
+        download_size = file_size_opt.value();
+      } else {
         LOG(ERROR) << "Failed determine file size for " << cached_path;
       }
       CrxDownloader::DownloadMetrics metrics = GetDefaultMetrics(url);
@@ -483,7 +486,7 @@ class BackgroundDownloaderSharedSessionImpl {
         // the task can be cleaned even if it fails to send a progress update.
         filtered_progresses.emplace(url, now);
       } else {
-        const base::Time& last_progress_time = last_progress_times_.at(url);
+        base::Time last_progress_time = last_progress_times_.at(url);
         if (now - last_progress_time > kNoProgressTimeout) {
           [task cancel];
         } else {

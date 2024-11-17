@@ -78,7 +78,7 @@ constexpr char kCLDModelVersion[] = "CLD3";
 // in the renderer.
 translate::LanguageDetectionModel& GetLanguageDetectionModel() {
   static base::NoDestructor<translate::LanguageDetectionModel> instance(
-      &language_detection::GetLanguageDetectionModel());
+      language_detection::GetLanguageDetectionModel());
   return *instance;
 }
 
@@ -109,7 +109,7 @@ TranslateAgent::TranslateAgent(content::RenderFrame* render_frame, int world_id)
       blink::TaskType::kInternalTranslation);
 }
 
-TranslateAgent::~TranslateAgent() {}
+TranslateAgent::~TranslateAgent() = default;
 
 void TranslateAgent::SeedLanguageDetectionModelForTesting(
     base::File model_file) {
@@ -500,8 +500,7 @@ void TranslateAgent::CheckTranslateStatus() {
     }
 
     if (!translate_callback_pending_) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
 
     // Check JavaScript performance counters for UMA reports.

@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">ປົກ​ກະ​ຕິ</translation>
 <translation id="1591562245178063882">ເດືອນ​ນີ້</translation>
 <translation id="1637811476055996098">ເລືອກ​ໄຟລ​໌</translation>
-<translation id="1680090928918677457">ໃຊ້ກ້ອງຖ່າຍຮູບ</translation>
 <translation id="1729654308190250600">ກະ​ລຸ​ນາ​ໃສ່​ທີ່​ຢູ່​ອີ​ເມວທີ່​ບໍ່​ວ່າງ​ເປົ່າ​.</translation>
 <translation id="1758486001363313524">ອື່ນ...</translation>
 <translation id="1921819250265091946">ວວ</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">ກະລຸນາຫຍໍ້ຂໍ້ຄວາມນີ້ລົງໃຫ້ເຫຼືອ <ph name="MAX_CHARACTERS" /> ຕົວອັກສອນ ຫຼືໜ້ອຍກ່ວາ (ປະຈຸບັນທ່ານກໍາລັງໃຊ້ <ph name="CURRENT_LENGTH" /> ຕົວອັກສອນ).</translation>
 <translation id="2247351761944213033">ອາ​ທິດ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ແທຣັກ <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">ອະນຸຍາດກ້ອງຖ່າຍຮູບ ແລະ ໄມໂຄຣໂຟນ</translation>
 <translation id="2507943997699731163">ກະລຸນາຕື່ມຂໍ້ມູນໃສ່ປ່ອງນີ້.</translation>
 <translation id="2613802280814924224">ກະ​ລຸ​ນາ​ປ້ອນຄ່າທີ່ໃຊ້ໄດ້ເຂົ້າໄປ​. ຄ່າໃຊ້ໄດ້ໃກ້ທີ່ສຸດແມ່ນ <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">ສົ່ງ</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">ກະລຸນາຂະຫຍາຍຂໍ້ຄວາມນີ້ໃຫ້ຍາວເປັນ <ph name="MIN_CHARACTERS" /> ອັກຂະລະຂຶ້ນໄປ (ປະຈຸບັນ ທ່ານກຳລັງໃຊ້ <ph name="CURRENT_LENGTH" /> ອັກຂະລະ).</translation>
 <translation id="383465348367842624">ສ່ວນ​ຫນຶ່ງ​ຕິດຕາມດ້ວຍ  '<ph name="ATSIGN" />' ບໍ່​ຄວນ​ໃຫ້​ມີ​ສັນ​ຍາ​ລັກ '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">ອອກຈາກເຕັມໜ້າຈໍ</translation>
-<translation id="4031179711345676612">ອະນຸຍາດໄມໂຄຣໂຟນແລ້ວ</translation>
 <translation id="4360991593054037559">ກະ​ລຸ​ນາ​ປ້ອນຄ່າທີ່ໃຊ້ໄດ້ເຂົ້າໄປ​. ຄ່າທີ່ໃຊ້ໄດ້ຢູ່ໃກ້ທີ່ສຸດທັງສອງ​ແມ່ນ <ph name="VALID_VALUE_LOW" /> ແລະ <ph name="VALID_VALUE_HIGHER" /> .</translation>
 <translation id="4522570452068850558">ລາຍ​ລະ​ອຽດ</translation>
-<translation id="4663373278480897665">ອະນຸຍາດກ້ອງຖ່າຍຮູບແລ້ວ</translation>
 <translation id="4664250907885839816">ສ່ວນ​ຫນຶ່ງ​ຕໍ່​ໄປ​ນີ້  '<ph name="ATSIGN" />' ບໍ່​ຄວນ​ໃຫ້​ມີ​ສັນ​ຍາ​ລັກ '<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">ກຳລັງຫຼິ້ນໃນໂໝດສະແດງຜົນຊ້ອນກັນ</translation>
-<translation id="4792862212177489858">ແບ່ງປັນສະຖານທີ່</translation>
 <translation id="4812940957355064477">ກະ​ລຸ​ນາ​ປ້ອນຕົວເລກ​.</translation>
-<translation id="49269513399674318">ໃຊ້ໄມໂຄຣໂຟນ</translation>
 <translation id="4975562563186953947">ເລືອກ <ph name="SELECTED_COUNT" /> ແລ້ວ</translation>
 <translation id="4992066212339426712">ເປີດສຽງ</translation>
 <translation id="49969490063480558">ກະ​ລຸ​ນາ​ໃສ່​ພາກ​ສ່ວນໜຶ່ງ​ຫຼັງຈາກ '<ph name="ATSIGN" />'. '<ph name="INVALIDADDRESS" />' ບໍ່ສໍາເລັດ.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">ບໍ່ສາມາດໂຫຼດປລັກອິນໄດ້.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">ກະລຸນາຂະຫຍາຍຄວາມຍາວຂອງຂໍ້ຄວາມນີ້ເປັນ <ph name="MIN_CHARACTERS" /> ຕົວອັກສອນຂຶ້ນໄປ (ໃນປັດຈຸບັນທ່ານກຳລັງໃຊ້ 1 ຕົວອັກສອນ).</translation>
-<translation id="7080893216867146095">ອະນຸຍາດໃຫ້ແບ່ງປັນສະຖານທີ່</translation>
 <translation id="709897737746224366">ກະລຸນາຈັບຄູ່ຮູບແບບທີ່ໄດ້ສະເໜີ.</translation>
-<translation id="7134810312945846184">ໃຊ້ໄມໂຄຣໂຟນ ແລະ ກ້ອງຖ່າຍຮູບ</translation>
 <translation id="7263440858009898357">ກະລຸນາເລືອກລາຍການຢູ່ໃນລາຍຊື່.</translation>
 <translation id="7364796246159120393">ເລືອກ​ໄຟລ​໌</translation>
 <translation id="739024184232394898">ອື່ນ...</translation>

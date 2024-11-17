@@ -29,6 +29,7 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/connection_holder.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "base/check.h"
 #include "base/command_line.h"
@@ -47,12 +48,10 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/ash/lock_screen_apps/lock_screen_apps.h"
 #include "chrome/browser/ash/note_taking/note_taking_controller_client.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/prefs/pref_service.h"
@@ -88,7 +87,7 @@ NoteTakingHelper* g_helper = nullptr;
 // regardless of the app metadata, and will be shown in this order at the top of
 // the list of note-taking apps.
 const char* const kDefaultAllowedAppIds[] = {
-    web_app::kCursiveAppId,
+    ash::kCursiveAppId,
     NoteTakingHelper::kDevKeepExtensionId,
     NoteTakingHelper::kProdKeepExtensionId,
     NoteTakingHelper::kNoteTakingWebAppIdTest,
@@ -301,11 +300,8 @@ std::vector<NoteTakingAppInfo> NoteTakingHelper::GetAvailableApps(
 
   std::vector<std::string> app_ids = GetNoteTakingAppIds(profile);
   for (const auto& app_id : app_ids) {
-    LockScreenAppSupport lock_screen_support =
-        LockScreenApps::GetSupport(profile, app_id);
     infos.push_back(NoteTakingAppInfo{GetAppName(profile, app_id), app_id,
-                                      /*preferred=*/false,
-                                      lock_screen_support});
+                                      /*preferred=*/false});
   }
 
   if (arc::IsArcAllowedForProfile(profile))
@@ -343,30 +339,6 @@ void NoteTakingHelper::SetPreferredApp(Profile* profile,
 
   for (Observer& observer : observers_)
     observer.OnPreferredNoteTakingAppUpdated(profile);
-}
-
-bool NoteTakingHelper::SetPreferredAppEnabledOnLockScreen(Profile* profile,
-                                                          bool enabled) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(profile);
-
-  std::string app_id = profile->GetPrefs()->GetString(prefs::kNoteTakingAppId);
-  if (app_id.empty())
-    return false;
-
-  LockScreenApps* lock_screen_apps =
-      LockScreenAppsFactory::GetInstance()->Get(profile);
-  if (!lock_screen_apps)
-    return false;
-
-  bool changed = lock_screen_apps->SetAppEnabledOnLockScreen(app_id, enabled);
-  if (!changed)
-    return false;
-
-  for (Observer& observer : observers_)
-    observer.OnPreferredNoteTakingAppUpdated(profile);
-
-  return true;
 }
 
 bool NoteTakingHelper::IsAppAvailable(Profile* profile) {
@@ -599,8 +571,7 @@ void NoteTakingHelper::OnGotAndroidApps(
   android_apps_.reserve(handlers.size());
   for (const auto& it : handlers) {
     android_apps_.emplace_back(
-        NoteTakingAppInfo{it->name, it->package_name, false,
-                          LockScreenAppSupport::kNotSupported});
+        NoteTakingAppInfo{it->name, it->package_name, false});
   }
   android_apps_received_ = true;
 

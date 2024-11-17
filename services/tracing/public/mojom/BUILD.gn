@@ -10,10 +10,6 @@ mojom_component("mojom") {
   macro_prefix = "TRACING_MOJOM"
   enabled_features = []
 
-  if (is_linux || is_chromeos) {
-    enabled_features += [ "is_linux_or_chromeos" ]
-  }
-
   sources = [
     "background_tracing_agent.mojom",
     "system_tracing_service.mojom",

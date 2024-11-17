@@ -154,6 +154,41 @@ PaymentHandlerWebFlowViewController::~PaymentHandlerWebFlowViewController() {
   state()->OnPaymentAppWindowClosed();
 }
 
+// Ensures that the views::WebView created by this class has its corners
+// properly rounded. This class is a ViewsObserver that waits until the view
+// attaches to the widget, then manually sets its corner radii to match those of
+// the dialog.
+//
+// TODO(crbug.com/344626785): Remove once WebViews obey parent clips.
+class PaymentHandlerWebFlowViewController::RoundedCornerViewClipper
+    : public views::ViewObserver {
+ public:
+  RoundedCornerViewClipper(views::WebView* web_view,
+                           base::WeakPtr<PaymentRequestDialogView> dialog)
+      : web_view_(web_view), dialog_(dialog) {
+    view_observation_.Observe(web_view);
+  }
+
+  void OnViewAddedToWidget(views::View* observed_view) override {
+    CHECK_EQ(web_view_, observed_view);
+    // The PaymentHandler dialog has a header above the WebView, so only the
+    // bottom corners should be clipped to be rounded.
+    web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(
+        0.f, 0.f, dialog_->GetCornerRadius(), dialog_->GetCornerRadius()));
+  }
+
+  void OnViewIsDeleting(views::View* observed_view) override {
+    CHECK_EQ(web_view_, observed_view);
+    view_observation_.Reset();
+    web_view_ = nullptr;
+  }
+
+ private:
+  base::ScopedObservation<views::View, ViewObserver> view_observation_{this};
+  raw_ptr<views::WebView> web_view_;
+  base::WeakPtr<PaymentRequestDialogView> dialog_;
+};
+
 std::u16string PaymentHandlerWebFlowViewController::GetSheetTitle() {
   return GetPaymentHandlerDialogTitle(web_contents());
 }
@@ -174,8 +209,14 @@ void PaymentHandlerWebFlowViewController::FillContentView(
   }
 
   content_view->SetLayoutManager(std::make_unique<views::FillLayout>());
+
   auto* web_view =
       content_view->AddChildView(std::make_unique<views::WebView>(profile_));
+  rounded_corner_clipper_ =
+      std::make_unique<RoundedCornerViewClipper>(web_view, dialog());
+
+  // Set up the WebContents that is inside the views::WebView, which hosts the
+  // payment app.
   Observe(web_view->GetWebContents());
   PaymentHandlerNavigationThrottle::MarkPaymentHandlerWebContents(
       web_contents());
@@ -185,13 +226,11 @@ void PaymentHandlerWebFlowViewController::FillContentView(
       /*payment_request_web_contents=*/log_.web_contents())
       ->SetOpenedWindow(
           /*payment_handler_web_contents=*/web_contents());
+
   web_view->LoadInitialURL(target_);
 
-  if (base::FeatureList::IsEnabled(
-          features::kPaymentHandlerWindowInTaskManager)) {
-    // Make the web view show up in the task manager.
-    task_manager::WebContentsTags::CreateForTabContents(web_contents());
-  }
+  // Make the web view show up in the task manager.
+  task_manager::WebContentsTags::CreateForTabContents(web_contents());
 
   // Enable modal dialogs for web-based payment handlers.
   dialog_manager_delegate_.SetWebContents(web_contents());

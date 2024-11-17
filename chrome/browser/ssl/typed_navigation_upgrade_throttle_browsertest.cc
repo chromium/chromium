@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
+
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -12,10 +14,12 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
+#include "chrome/browser/ssl/https_upgrades_interceptor.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_tab_helper.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -28,6 +32,7 @@
 #include "components/security_interstitials/core/omnibox_https_upgrade_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -37,7 +42,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "typed_navigation_upgrade_throttle.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 
@@ -169,6 +173,7 @@ class TypedNavigationUpgradeThrottleBrowserTest
     } else {
       disabled_features.push_back(omnibox::kDefaultTypedNavigationsToHttps);
     }
+    disabled_features.push_back(features::kHttpsFirstBalancedModeAutoEnable);
     feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                 disabled_features);
   }
@@ -352,17 +357,13 @@ class TypedNavigationUpgradeThrottleBrowserTest
   // is true, simulates pressing CTRL+Enter instead.
   void PressEnterAndWaitForNavigations(size_t num_expected_navigations,
                                        bool ctrl_key = false) {
+    content::WaitForLoadStop(
+        browser()->tab_strip_model()->GetActiveWebContents());
     content::TestNavigationObserver navigation_observer(
         browser()->tab_strip_model()->GetActiveWebContents(),
         num_expected_navigations);
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](const Browser* browser, bool ctrl_key) {
-              EXPECT_TRUE(ui_test_utils::SendKeyPressSync(
-                  browser, ui::VKEY_RETURN, ctrl_key, false, false, false));
-            },
-            browser(), ctrl_key));
+    ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
+                                                ctrl_key, false, false, false));
     navigation_observer.Wait();
   }
 
@@ -533,8 +534,11 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
 // If the feature is disabled, typing a URL in the omnibox without a scheme
 // should load the HTTP version.
-IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
-                       UrlTypedWithoutScheme_FeatureDisabled_ShouldNotUpgrade) {
+// TODO(crbug.com/375004882): Disabled as the test no longer works correctly
+// under HFM Balanced Mode and typed nav upgrades is being removed.
+IN_PROC_BROWSER_TEST_P(
+    TypedNavigationUpgradeThrottleBrowserTest,
+    DISABLED_UrlTypedWithoutScheme_FeatureDisabled_ShouldNotUpgrade) {
   if (IsFeatureEnabled()) {
     return;
   }
@@ -713,9 +717,12 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 // Regression test for crbug.com/1202967: Paste a hostname in the omnibox and
 // press enter. This should hit a bad HTTPS URL and fallback to HTTP, never
 // showing an interstitial.
+// TODO(crbug.com/375004882): Disabled as the test no longer works correctly
+// under HTTPS-Upgrades only. Will be removed as part of removing the typed nav
+// upgrades feature.
 IN_PROC_BROWSER_TEST_P(
     TypedNavigationUpgradeThrottleBrowserTest,
-    PasteUrlWithoutASchemeAndHitEnter_BadHttps_ShouldFallback) {
+    DISABLED_PasteUrlWithoutASchemeAndHitEnter_BadHttps_ShouldFallback) {
   if (!IsFeatureEnabled()) {
     return;
   }
@@ -792,10 +799,12 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
   histograms.ExpectBucketCount(kEventHistogram, Event::kHttpsLoadSucceeded, 1);
 }
 
-// If the upgraded HTTPS URL is not available because of an SSL error), we
+// If the upgraded HTTPS URL is not available (because of an SSL error), we
 // should load the HTTP URL.
+// TODO(crbug.com/375004882): Disabled as the test no longer works correctly
+// under HFM Balanced Mode and typed nav upgrades is being removed.
 IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
-                       UrlTypedWithoutScheme_BadHttps_ShouldFallback) {
+                       DISABLED_UrlTypedWithoutScheme_BadHttps_ShouldFallback) {
   if (!IsFeatureEnabled()) {
     return;
   }
@@ -826,9 +835,11 @@ IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
 
 // Similar to UrlTypedWithoutScheme_BadHttps_ShouldFallback, except this time
 // user presses CTRL+Enter to navigate.
+// TODO(crbug.com/375004882): Disabled as the test no longer works correctly
+// under HFM Balanced Mode and typed nav upgrades is being removed.
 IN_PROC_BROWSER_TEST_P(
     TypedNavigationUpgradeThrottleBrowserTest,
-    UrlTypedWithoutScheme_CtrlEnter_BadHttps_ShouldFallback) {
+    DISABLED_UrlTypedWithoutScheme_CtrlEnter_BadHttps_ShouldFallback) {
   if (!IsFeatureEnabled()) {
     return;
   }
@@ -860,8 +871,10 @@ IN_PROC_BROWSER_TEST_P(
 
 // If the upgraded HTTPS URL is not available because of a net error, we should
 // load the HTTP URL.
+// TODO(crbug.com/375004882): Disabled as the test no longer works correctly
+// under HFM Balanced Mode and typed nav upgrades is being removed.
 IN_PROC_BROWSER_TEST_P(TypedNavigationUpgradeThrottleBrowserTest,
-                       UrlTypedWithoutScheme_NetError_ShouldFallback) {
+                       DISABLED_UrlTypedWithoutScheme_NetError_ShouldFallback) {
   if (!IsFeatureEnabled()) {
     return;
   }
@@ -956,6 +969,9 @@ class TypedNavigationUpgradeThrottleRedirectBrowserTest
     TypedNavigationUpgradeThrottle::SetHttpsPortForTesting(
         https_server_.port());
     TypedNavigationUpgradeThrottle::SetHttpPortForTesting(
+        embedded_test_server()->port());
+    HttpsUpgradesInterceptor::SetHttpsPortForTesting(https_server_.port());
+    HttpsUpgradesInterceptor::SetHttpPortForTesting(
         embedded_test_server()->port());
   }
 
@@ -1055,13 +1071,24 @@ INSTANTIATE_TEST_SUITE_P(All,
                          TypedNavigationUpgradeThrottleRedirectBrowserTest,
                          testing::Bool() /* IsFeatureEnabled */);
 
+// This test is broken on Mac and Windows bots, but the typed navigations
+// feature is now disabled (see crbug.com/375004882) so just skip running this
+// test on those platforms.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#define MAYBE_UrlTypedWithoutScheme_GoodHttps_Redirected_ShouldUpgrade \
+  DISABLED_UrlTypedWithoutScheme_GoodHttps_Redirected_ShouldUpgrade
+#else
+#define MAYBE_UrlTypedWithoutScheme_GoodHttps_Redirected_ShouldUpgrade \
+  UrlTypedWithoutScheme_GoodHttps_Redirected_ShouldUpgrade
+#endif
+
 // If the feature is enabled, typing a URL in the omnibox without a scheme
 // should load the HTTPS version. In this test, the HTTPS site redirects to
 // a working HTTPS site and a working HTTP site. Both of these cases should
 // count as successful upgrades and histogram entries should be recorded.
 IN_PROC_BROWSER_TEST_P(
     TypedNavigationUpgradeThrottleRedirectBrowserTest,
-    UrlTypedWithoutScheme_GoodHttps_Redirected_ShouldUpgrade) {
+    MAYBE_UrlTypedWithoutScheme_GoodHttps_Redirected_ShouldUpgrade) {
   if (!IsFeatureEnabled()) {
     return;
   }

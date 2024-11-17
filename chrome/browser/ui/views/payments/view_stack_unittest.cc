@@ -32,9 +32,7 @@ class TestStackView : public views::View {
   TestStackView& operator=(const TestStackView&) = delete;
 
   ~TestStackView() override {
-    for (auto& observer: observers_) {
-      observer.OnViewBeingDeleted();
-    }
+    observers_.Notify(&Observer::OnViewBeingDeleted);
   }
 
   void AddObserver(Observer* observer) {

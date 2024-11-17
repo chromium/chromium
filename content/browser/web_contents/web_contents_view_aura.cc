@@ -1085,6 +1085,8 @@ WebContentsViewAura::GetBackForwardTransitionAnimationManager() {
   return nullptr;
 }
 
+void WebContentsViewAura::DestroyBackForwardTransitionAnimationManager() {}
+
 ////////////////////////////////////////////////////////////////////////////////
 // WebContentsViewAura, RenderViewHostDelegateView implementation:
 

@@ -56,12 +56,13 @@
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/fake_network_url_loader_factory.h"
 #include "device/fido/fake_fido_discovery.h"
-#include "device/fido/features.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_test_data.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
+#include "device/fido/large_blob.h"
 #include "device/fido/public_key_credential_params.h"
+#include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/virtual_fido_device.h"
 #include "device/fido/virtual_fido_device_factory.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -169,6 +170,10 @@ constexpr char kRpIdNoEntryMessage[] =
     ".well-known/webauthn resource of the claimed RP ID was "
     "successful, but no listed origin matched the caller.";
 
+constexpr char kMaxLargeBlobMessage[] =
+    "NotSupportedError: The 'largeBlob' extension's 'write' parameter exceeds "
+    "the maximum allowed size (2kb)";
+
 // Templates to be used with base::ReplaceStringPlaceholders. Can be
 // modified to include up to 9 replacements. The default values for
 // any additional replacements added should also be added to the
@@ -190,7 +195,7 @@ constexpr char kCreatePublicKeyTemplate[] =
     "     authenticatorAttachment: '$5',"
     "  },"
     "  attestation: '$6',"
-    "  extensions: {payment: {isPayment: $8}},"
+    "  extensions: {payment: {isPayment: $8}, $9},"
     "}}).then(c => 'OK',"
     "         e => e.toString())";
 
@@ -211,7 +216,7 @@ constexpr char kCreatePublicKeyWithAbortSignalTemplate[] =
     "     authenticatorAttachment: '$5',"
     "  },"
     "  attestation: '$6',"
-    "  extensions: {payment: {isPayment: $8}},"
+    "  extensions: {payment: {isPayment: $8}, $9},"
     "}, signal: _signal_}"
     ").then(c => 'OK',"
     "       e => e.toString())";
@@ -230,6 +235,7 @@ struct CreateParameters {
   std::string signal = "";
   std::string timeout = "10000";
   bool is_payment = false;
+  std::string extra_extension;
 };
 
 std::string BuildCreateCallWithParameters(const CreateParameters& parameters) {
@@ -242,6 +248,7 @@ std::string BuildCreateCallWithParameters(const CreateParameters& parameters) {
   substitutions.push_back(parameters.attestation);
   substitutions.push_back(parameters.exclude_credentials);
   substitutions.push_back(parameters.is_payment ? "true" : "false");
+  substitutions.push_back(parameters.extra_extension);
 
   std::string result;
   if (parameters.signal.empty()) {
@@ -265,7 +272,8 @@ constexpr char kGetPublicKeyTemplate[] =
     "  userVerification: '$1',"
     "  allowCredentials: $2,"
     "  timeout: $3,"
-    "  rpId: '$4'}"
+    "  rpId: '$4',"
+    "  extensions: {$5}}"
     "}).then(c => 'OK',"
     "        e => e.toString())";
 
@@ -276,7 +284,8 @@ constexpr char kGetPublicKeyWithAbortSignalTemplate[] =
     "  allowCredentials: $2,"
     "  timeout: $3,"
     "  rpId: '$4',"
-    "}, signal: $5}"
+    "  extensions: {$5}"
+    "}, signal: $6}"
     ").catch(c => c.toString())";
 
 // Default values for kGetPublicKeyTemplate.
@@ -289,6 +298,7 @@ struct GetParameters {
   std::string signal = "";
   std::string timeout = "10000";
   std::string rp_id = "acme.com";
+  std::string extra_extension;
 };
 
 std::string BuildGetCallWithParameters(const GetParameters& parameters) {
@@ -297,6 +307,7 @@ std::string BuildGetCallWithParameters(const GetParameters& parameters) {
   substitutions.push_back(parameters.allow_credentials);
   substitutions.push_back(parameters.timeout);
   substitutions.push_back(parameters.rp_id);
+  substitutions.push_back(parameters.extra_extension);
   if (parameters.signal.empty()) {
     return base::ReplaceStringPlaceholders(kGetPublicKeyTemplate, substitutions,
                                            nullptr);
@@ -1718,6 +1729,52 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
                    BuildCreateCallWithParameters(parameters)));
 }
 
+// Tests storing a large blob exceeding 2kb through WebAuthn.
+IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, LargeBlobMaxSize) {
+  // This call is necessary for WebAuthenticationDelegate::SupportsResidentKeys
+  // to return true.
+  content::AuthenticatorEnvironment::GetInstance()
+      ->EnableVirtualAuthenticatorFor(
+          static_cast<content::RenderFrameHostImpl*>(
+              shell()->web_contents()->GetPrimaryMainFrame())
+              ->frame_tree_node(),
+          /*enable_ui=*/false);
+  auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
+  device::VirtualCtap2Device::Config config;
+  config.resident_key_support = true;
+  config.internal_uv_support = true;
+  config.large_blob_support = true;
+  config.pin_uv_auth_token_support = true;
+  config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
+  virtual_device_factory->SetSupportedProtocol(device::ProtocolVersion::kCtap2);
+  virtual_device_factory->SetCtap2Config(config);
+  virtual_device_factory->mutable_state()->fingerprints_enrolled = true;
+  const std::vector<uint8_t> kCredentialId = {1};
+  virtual_device_factory->mutable_state()->InjectResidentKey(
+      kCredentialId, device::PublicKeyCredentialRpEntity("acme.com"),
+      device::PublicKeyCredentialUserEntity({2}));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title1.html")));
+  {
+    // Attempt writing a large blob at exactly the max size. This should be
+    // allowed.
+    GetParameters get;
+    get.allow_credentials = "[{type: 'public-key', id: new Uint8Array([1])}]";
+    get.extra_extension = "largeBlob: { write: new Uint8Array(2048) }";
+    EXPECT_EQ(kOkMessage,
+              EvalJs(shell()->web_contents(), BuildGetCallWithParameters(get)));
+  }
+  {
+    // Attempt writing a large blob that exceeds the max size. This should not
+    // be allowed.
+    GetParameters get;
+    get.allow_credentials = "[{type: 'public-key', id: new Uint8Array([1])}]";
+    get.extra_extension = "largeBlob: { write: new Uint8Array(2049) }";
+    EXPECT_EQ(kMaxLargeBlobMessage,
+              EvalJs(shell()->web_contents(), BuildGetCallWithParameters(get)));
+  }
+}
+
 class WebAuthCrossDomainTest : public WebAuthBrowserTestBase {
  public:
   void SetUpOnMainThread() override {
@@ -1732,8 +1789,6 @@ class WebAuthCrossDomainTest : public WebAuthBrowserTestBase {
 
  protected:
   raw_ptr<device::test::VirtualFidoDeviceFactory> virtual_device_factory_;
-  const base::test::ScopedFeatureList scoped_feature_list{
-      device::kWebAuthnRelatedOrigin};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAuthCrossDomainTest, Create) {

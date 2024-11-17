@@ -88,8 +88,7 @@ Outcome FailureTypeToOutcome(SmsFetchFailureType failure_type) {
     case SmsFetchFailureType::kCrossDeviceFailure:
       return Outcome::kCrossDeviceFailure;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return Outcome::kTimeout;
+      NOTREACHED();
   }
 }
 
@@ -296,7 +295,7 @@ void WebOTPService::OnFailure(FailureType failure_type) {
       CompleteRequest(SmsStatus::kBackendNotAvailable);
       return;
     case FailureType::kNoFailure:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // Records Sms parsing failures.

@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -52,7 +51,6 @@ namespace {
 constexpr int kGooglePayLogoWidth = 40;
 #endif
 constexpr int kIconHeight = 16;
-constexpr int kSeparatorHeight = 12;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // kGooglePayLogoIcon is square overall, despite the drawn portion being a
@@ -68,20 +66,20 @@ gfx::ImageSkia CreateTiledIcon(const ui::ColorProvider* provider) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 std::unique_ptr<views::ImageView> CreateIconView(
-    TitleWithIconAndSeparatorView::Icon icon_to_show) {
+    TitleWithIconAfterLabelView::Icon icon_to_show) {
   ui::ImageModel model;
   switch (icon_to_show) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    case TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY:
+    case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY:
       model = ui::ImageModel::FromImageGenerator(
           base::BindRepeating(&CreateTiledIcon),
           gfx::Size(kGooglePayLogoWidth, kIconHeight));
       break;
-    case TitleWithIconAndSeparatorView::Icon::GOOGLE_G: {
+    case TitleWithIconAfterLabelView::Icon::GOOGLE_G: {
       const gfx::VectorIcon& icon = vector_icons::kGoogleGLogoIcon;
 #else
-    case TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY:
-    case TitleWithIconAndSeparatorView::Icon::GOOGLE_G: {
+    case TitleWithIconAfterLabelView::Icon::GOOGLE_PAY:
+    case TitleWithIconAfterLabelView::Icon::GOOGLE_G: {
       const gfx::VectorIcon& icon = kCreditCardIcon;
 #endif
       model = ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kIconHeight);
@@ -110,71 +108,9 @@ ui::ImageModel GetProfileAvatar(const AccountInfo& account_info) {
       account_avatar, avatar_size, avatar_size, profiles::SHAPE_CIRCLE));
 }
 
-// TODO(crbug.com/40914008): Replace TableLayout with BoxLayout or FlexLayout,
-// since this view is not tabular data.
-TitleWithIconAndSeparatorView::TitleWithIconAndSeparatorView(
-    const std::u16string& window_title,
-    Icon icon_to_show) {
-  AddColumn(views::LayoutAlignment::kStart, views::LayoutAlignment::kStart,
-            views::TableLayout::kFixedSize,
-            views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-      .AddColumn(views::LayoutAlignment::kStart, views::LayoutAlignment::kStart,
-                 views::TableLayout::kFixedSize,
-                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-      .AddColumn(views::LayoutAlignment::kStretch,
-                 views::LayoutAlignment::kStart, 1.0f,
-                 views::TableLayout::ColumnSize::kUsePreferred, 0, 0)
-      .AddRows(1, views::TableLayout::kFixedSize);
-
-  auto* icon_view_ptr = AddChildView(CreateIconView(icon_to_show));
-
-  auto separator = std::make_unique<views::Separator>();
-  separator->SetPreferredLength(kSeparatorHeight);
-  auto* separator_ptr = AddChildView(std::move(separator));
-
-  auto* title_label = AddChildView(std::make_unique<views::Label>(
-      window_title, views::style::CONTEXT_DIALOG_TITLE));
-  title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  title_label->SetMultiLine(true);
-
-  // Add vertical padding to the icon and the separator so they are aligned with
-  // the first line of title label. This needs to be done after we create the
-  // title label, so that we can use its preferred size.
-  const int title_label_height =
-      title_label->GetPreferredSize(views::SizeBounds(title_label->width(), {}))
-          .height();
-  icon_view_ptr->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::TLBR((title_label_height - kIconHeight) / 2, 0, 0, 0)));
-  // TODO(crbug.com/41407386): DISTANCE_RELATED_BUTTON_HORIZONTAL isn't the
-  // right
-  //                         choice here, but INSETS_DIALOG_TITLE gives too much
-  //                         padding. Create a new Harmony DistanceMetric?
-  const int separator_horizontal_padding =
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
-  separator_ptr->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
-      (title_label_height - kSeparatorHeight) / 2, separator_horizontal_padding,
-      0, separator_horizontal_padding)));
-}
-
-TitleWithIconAndSeparatorView::~TitleWithIconAndSeparatorView() = default;
-
-gfx::Size TitleWithIconAndSeparatorView::GetMinimumSize() const {
-  // Default View::GetMinimumSize() will make dialogs wider than it should.
-  // To avoid that, just return 0x0.
-  //
-  // TODO(crbug.com/40914021): Replace GetMinimumSize() may generate views
-  // narrower than expected. The ideal solution should be limit the width of
-  // multi-line text views.
-  return gfx::Size(0, 0);
-}
-
-BEGIN_METADATA(TitleWithIconAndSeparatorView)
-END_METADATA
-
 TitleWithIconAfterLabelView::TitleWithIconAfterLabelView(
     const std::u16string& window_title,
-    TitleWithIconAndSeparatorView::Icon icon_to_show) {
+    TitleWithIconAfterLabelView::Icon icon_to_show) {
   SetBetweenChildSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL));
   // Align to the top instead of center in vertical direction so that we
@@ -214,118 +150,93 @@ gfx::Size TitleWithIconAfterLabelView::GetMinimumSize() const {
 BEGIN_METADATA(TitleWithIconAfterLabelView)
 END_METADATA
 
-std::unique_ptr<views::View> CreateTitleView(
-    const std::u16string& window_title,
-    TitleWithIconAndSeparatorView::Icon icon_to_show) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableMovingGPayLogoToTheRightOnDesktop)) {
-    return std::make_unique<TitleWithIconAfterLabelView>(window_title,
-                                                         icon_to_show);
+PaymentsUiClosedReason GetPaymentsUiClosedReasonFromWidget(
+    const views::Widget* widget) {
+  DCHECK(widget);
+  if (!widget->IsClosed()) {
+    return PaymentsUiClosedReason::kUnknown;
   }
-  return std::make_unique<TitleWithIconAndSeparatorView>(window_title,
-                                                         icon_to_show);
+
+  switch (widget->closed_reason()) {
+    case views::Widget::ClosedReason::kUnspecified:
+      return PaymentsUiClosedReason::kNotInteracted;
+    case views::Widget::ClosedReason::kEscKeyPressed:
+    case views::Widget::ClosedReason::kCloseButtonClicked:
+      return PaymentsUiClosedReason::kClosed;
+    case views::Widget::ClosedReason::kLostFocus:
+      return PaymentsUiClosedReason::kLostFocus;
+    case views::Widget::ClosedReason::kAcceptButtonClicked:
+      return PaymentsUiClosedReason::kAccepted;
+    case views::Widget::ClosedReason::kCancelButtonClicked:
+      return PaymentsUiClosedReason::kCancelled;
+  }
 }
 
-LegalMessageView::LegalMessageView(const LegalMessageLines& legal_message_lines,
-                                   const std::u16string& user_email,
-                                   const ui::ImageModel& user_avatar,
-                                   LinkClickedCallback callback) {
-  SetOrientation(views::BoxLayout::Orientation::kVertical);
-  SetBetweenChildSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_RELATED_CONTROL_VERTICAL_SMALL));
+std::unique_ptr<views::View> CreateLegalMessageView(
+    const LegalMessageLines& legal_message_lines,
+    const std::u16string& user_email,
+    const ui::ImageModel& user_avatar,
+    base::RepeatingCallback<void(const GURL&)> callback) {
+  auto result = views::Builder<views::BoxLayoutView>()
+                    .SetOrientation(views::BoxLayout::Orientation::kVertical)
+                    .SetBetweenChildSpacing(
+                        ChromeLayoutProvider::Get()->GetDistanceMetric(
+                            DISTANCE_RELATED_CONTROL_VERTICAL_SMALL))
+                    .Build();
   for (const LegalMessageLine& line : legal_message_lines) {
-    views::StyledLabel* label =
-        AddChildView(std::make_unique<views::StyledLabel>());
-    label->SetText(line.text());
-    label->SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL);
-    label->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
+    auto label = views::Builder<views::StyledLabel>()
+                     .SetText(line.text())
+                     .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                     .SetDefaultTextStyle(views::style::STYLE_SECONDARY)
+                     .Build();
     for (const LegalMessageLine::Link& link : line.links()) {
       label->AddStyleRange(link.range,
                            views::StyledLabel::RangeStyleInfo::CreateForLink(
                                base::BindRepeating(callback, link.url)));
     }
+    result->AddChildView(std::move(label));
   }
 
   if (user_email.empty() || user_avatar.IsEmpty()) {
-    return;
+    return result;
   }
 
   // Extra child view for user identity information including the avatar and
   // the email.
-  views::View* user_info_view = AddChildView(std::make_unique<views::View>());
-
-  auto* const user_label_layout =
-      user_info_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal));
-  user_label_layout->set_between_child_spacing(
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL));
-
-  user_info_view->AddChildView(std::make_unique<views::ImageView>(user_avatar));
-
-  views::Label* email_label =
-      user_info_view->AddChildView(std::make_unique<views::Label>());
-  email_label->SetText(user_email);
-  email_label->SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL);
-  email_label->SetTextStyle(views::style::STYLE_SECONDARY);
-
-  user_info_view->SetID(DialogViewId::USER_INFORMATION_VIEW);
+  result->AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+          .SetBetweenChildSpacing(
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL))
+          .SetID(DialogViewId::USER_INFORMATION_VIEW)
+          .AddChildren(views::Builder<views::ImageView>().SetImage(user_avatar),
+                       views::Builder<views::Label>()
+                           .SetText(user_email)
+                           .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
+                           .SetTextStyle(views::style::STYLE_SECONDARY))
+          .Build());
+  return result;
 }
 
-LegalMessageView::~LegalMessageView() = default;
-
-BEGIN_METADATA(LegalMessageView)
-END_METADATA
-
-PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidget(
-    const views::Widget* widget) {
-  DCHECK(widget);
-  if (!widget->IsClosed()) {
-    return PaymentsBubbleClosedReason::kUnknown;
-  }
-
-  switch (widget->closed_reason()) {
-    case views::Widget::ClosedReason::kUnspecified:
-      return PaymentsBubbleClosedReason::kNotInteracted;
-    case views::Widget::ClosedReason::kEscKeyPressed:
-    case views::Widget::ClosedReason::kCloseButtonClicked:
-      return PaymentsBubbleClosedReason::kClosed;
-    case views::Widget::ClosedReason::kLostFocus:
-      return PaymentsBubbleClosedReason::kLostFocus;
-    case views::Widget::ClosedReason::kAcceptButtonClicked:
-      return PaymentsBubbleClosedReason::kAccepted;
-    case views::Widget::ClosedReason::kCancelButtonClicked:
-      return PaymentsBubbleClosedReason::kCancelled;
-  }
-}
-
-ProgressBarWithTextView::ProgressBarWithTextView(
+std::unique_ptr<views::View> CreateProgressBarWithTextView(
     const std::u16string& progress_bar_text) {
-  SetOrientation(views::BoxLayout::Orientation::kVertical);
-  SetBetweenChildSpacing(ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_CONTROL_VERTICAL));
-  SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
-  progress_throbber_ = AddChildView(std::make_unique<views::Throbber>());
-  progress_label_ =
-      AddChildView(std::make_unique<views::Label>(progress_bar_text));
+  views::Throbber* throbber = nullptr;
+  auto result =
+      views::Builder<views::BoxLayoutView>()
+          .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetBetweenChildSpacing(
+              ChromeLayoutProvider::Get()->GetDistanceMetric(
+                  views::DISTANCE_RELATED_CONTROL_VERTICAL))
+          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter)
+          .AddChildren(
+              views::Builder<views::Throbber>().CopyAddressTo(&throbber),
+              views::Builder<views::Label>()
+                  .SetText(progress_bar_text)
+                  .SetEnabledColorId(ui::kColorThrobber))
+          .Build();
+  throbber->Start();
+  return result;
 }
-
-ProgressBarWithTextView::~ProgressBarWithTextView() = default;
-
-void ProgressBarWithTextView::OnThemeChanged() {
-  views::View::OnThemeChanged();
-
-  // We need to ensure |progress_label_|'s color matches the color of the
-  // throbber above it.
-  progress_label_->SetEnabledColor(
-      GetColorProvider()->GetColor(ui::kColorThrobber));
-}
-
-void ProgressBarWithTextView::AddedToWidget() {
-  progress_throbber_->Start();
-}
-
-BEGIN_METADATA(ProgressBarWithTextView)
-END_METADATA
 
 }  // namespace autofill

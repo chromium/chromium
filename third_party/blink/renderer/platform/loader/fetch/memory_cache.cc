@@ -334,24 +334,6 @@ void MemoryCache::EvictResources() {
   ClearStrongReferences();
 }
 
-void MemoryCache::PruneAll() {
-  base::AutoReset<bool> reentrancy_protector(&in_prune_resources_, true);
-
-  // Release the strong referenced cached objects
-  // TODO(crbug.com/1409349): Filter page loading metrics when prune happens.
-  ClearStrongReferences();
-
-  for (const auto& resource_map_iter : resource_maps_) {
-    for (const auto& resource_iter : *resource_map_iter.value) {
-      Resource* resource = resource_iter.value->GetResource();
-      DCHECK(resource);
-      if (resource->IsLoaded() && resource->DecodedSize()) {
-        resource->Prune();
-      }
-    }
-  }
-}
-
 bool MemoryCache::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
                                WebProcessMemoryDump* memory_dump) {
   if (level_of_detail == WebMemoryDumpLevelOfDetail::kBackground) {
@@ -404,10 +386,9 @@ bool MemoryCache::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
 
 void MemoryCache::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {
-  ClearStrongReferences();
-  if (MemoryPressureListenerRegistry::
-          IsLowEndDeviceOrPartialLowEndModeEnabled()) {
-    PruneAll();
+  if (base::FeatureList::IsEnabled(
+          features::kReleaseResourceStrongReferencesOnMemoryPressure)) {
+    ClearStrongReferences();
   }
 }
 

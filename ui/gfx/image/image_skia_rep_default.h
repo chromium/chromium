@@ -5,12 +5,12 @@
 #ifndef UI_GFX_IMAGE_IMAGE_SKIA_REP_DEFAULT_H_
 #define UI_GFX_IMAGE_IMAGE_SKIA_REP_DEFAULT_H_
 
+#include "base/component_export.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
@@ -19,7 +19,7 @@ namespace gfx {
 // (ImageSkia does not automatically scale the image).
 // TODO(malaykeshav): Support transport of PaintRecord across mojo. This would
 // require adding inline serialization support for PaintRecords.
-class GFX_EXPORT ImageSkiaRep {
+class COMPONENT_EXPORT(GFX) ImageSkiaRep {
  public:
   // Create null bitmap.
   ImageSkiaRep();

@@ -30,7 +30,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
  public:
   ManagedPreferencePolicyManager(
       CRUUpdatePolicyDictionary* policy,
-      const std::optional<bool>& override_is_managed_device);
+      std::optional<bool> override_is_managed_device);
   ManagedPreferencePolicyManager(const ManagedPreferencePolicyManager&) =
       delete;
   ManagedPreferencePolicyManager& operator=(
@@ -73,7 +73,7 @@ class ManagedPreferencePolicyManager : public PolicyManagerInterface {
 
 ManagedPreferencePolicyManager::ManagedPreferencePolicyManager(
     CRUUpdatePolicyDictionary* policyDict,
-    const std::optional<bool>& override_is_managed_device)
+    std::optional<bool> override_is_managed_device)
     : impl_([[CRUManagedPreferencePolicyManager alloc]
           initWithDictionary:policyDict]),
       is_managed_device_(override_is_managed_device.value_or(
@@ -237,7 +237,7 @@ NSDictionary* ReadManagedPreferencePolicyDictionary() {
 }
 
 scoped_refptr<PolicyManagerInterface> CreateManagedPreferencePolicyManager(
-    const std::optional<bool>& override_is_managed_device) {
+    std::optional<bool> override_is_managed_device) {
   NSDictionary* policyDict = ReadManagedPreferencePolicyDictionary();
   return base::MakeRefCounted<ManagedPreferencePolicyManager>(
       policyDict, override_is_managed_device);

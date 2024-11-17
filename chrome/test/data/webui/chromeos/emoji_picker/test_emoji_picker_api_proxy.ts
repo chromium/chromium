@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {EmojiPickerApiProxy, GifSubcategoryData, TenorGifResponse, VisualContent} from 'chrome://emoji-picker/emoji_picker.js';
+import {EmojiPickerApiProxy, GifSubcategoryData, PaginatedGifResponses, VisualContent} from 'chrome://emoji-picker/emoji_picker.js';
 
 export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
   // This variable is used to mock the status return value in the actual api
@@ -18,7 +18,7 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAACCAQAAAAziH6sAAAADklEQVR42mNk+M/I8B8ABQoCAV5AcKEAAAAASUVORK5CYII=';
 
 
-  readonly initialSet: TenorGifResponse = {
+  readonly initialSet: PaginatedGifResponses = {
     next: '1',
     results:
         [
@@ -163,7 +163,7 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
         ],
   };
 
-  readonly followingSet: TenorGifResponse = {
+  readonly followingSet: PaginatedGifResponses = {
     next: '2',
     results:
         [
@@ -308,17 +308,17 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
         ],
   };
 
-  readonly gifs: {[query: string]: TenorGifResponse} = {
+  readonly gifs: {[query: string]: PaginatedGifResponses} = {
     trending: this.formatTenorGifResults(this.initialSet, 'Trending'),
     trending1: this.formatTenorGifResults(this.followingSet, 'Trending'),
   };
 
-  readonly searchResults: {[query: string]: TenorGifResponse} = {
+  readonly searchResults: {[query: string]: PaginatedGifResponses} = {
     'face': this.initialSet,
     'face1': this.followingSet,
   };
 
-  formatTenorGifResults(gifResults: TenorGifResponse, query: string) {
+  formatTenorGifResults(gifResults: PaginatedGifResponses, query: string) {
     return {
       next: gifResults.next,
       results: gifResults.results.map(
@@ -349,7 +349,7 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
   }
 
   override getFeaturedGifs(pos?: string):
-      Promise<{status: number, featuredGifs: TenorGifResponse}> {
+      Promise<{status: number, featuredGifs: PaginatedGifResponses}> {
     const query = pos ? 'trending' + pos : 'trending';
     return new Promise((resolve) => {
       resolve({
@@ -360,7 +360,7 @@ export class TestEmojiPickerApiProxy extends EmojiPickerApiProxy {
   }
 
   override searchGifs(query: string, pos?: string):
-      Promise<{status: number, searchGifs: TenorGifResponse}> {
+      Promise<{status: number, searchGifs: PaginatedGifResponses}> {
     query = (pos ? query + pos : query).replace('#', '');
     return Promise.resolve({
       status: this.httpOk,

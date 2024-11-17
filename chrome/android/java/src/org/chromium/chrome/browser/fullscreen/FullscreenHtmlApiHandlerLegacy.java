@@ -70,22 +70,22 @@ public class FullscreenHtmlApiHandlerLegacy extends FullscreenHtmlApiHandlerBase
     void hideSystemBars(View contentView, FullscreenOptions fullscreenOptions) {
         setSystemUiVisibility(
                 contentView,
-                applyEnterFullscreenUIFlags(
+                applyEnterFullscreenUiFlags(
                         contentView.getSystemUiVisibility(), fullscreenOptions));
     }
 
     @Override
     void showSystemBars(View contentView) {
         setSystemUiVisibility(
-                contentView, applyExitFullscreenUIFlags(contentView.getSystemUiVisibility()));
+                contentView, applyExitFullscreenUiFlags(contentView.getSystemUiVisibility()));
     }
 
     @Override
     void adjustSystemBarsInFullscreenMode(View contentView, FullscreenOptions fullscreenOptions) {
         setSystemUiVisibility(
                 contentView,
-                applyEnterFullscreenUIFlags(
-                        applyExitFullscreenUIFlags(contentView.getSystemUiVisibility()),
+                applyEnterFullscreenUiFlags(
+                        applyExitFullscreenUiFlags(contentView.getSystemUiVisibility()),
                         fullscreenOptions));
     }
 
@@ -181,11 +181,12 @@ public class FullscreenHtmlApiHandlerLegacy extends FullscreenHtmlApiHandlerBase
         }
     }
 
-    /*
+    /**
      * Returns system ui flags to enable fullscreen mode based on the current options.
+     *
      * @return fullscreen flags to be applied to system UI visibility.
      */
-    private int applyEnterFullscreenUIFlags(
+    private int applyEnterFullscreenUiFlags(
             int systemUiVisibility, FullscreenOptions fullscreenOptions) {
         boolean showNavigationBar =
                 fullscreenOptions != null && fullscreenOptions.showNavigationBar;
@@ -209,12 +210,13 @@ public class FullscreenHtmlApiHandlerLegacy extends FullscreenHtmlApiHandlerBase
         return flags | systemUiVisibility;
     }
 
-    /*
+    /**
      * Returns system ui flags with any flags that might have been set during
-     * applyEnterFullscreenUIFlags masked off.
+     * applyEnterFullscreenUiFlags masked off.
+     *
      * @return fullscreen flags to be applied to system UI visibility.
      */
-    private static int applyExitFullscreenUIFlags(int systemUiVisibility) {
+    private static int applyExitFullscreenUiFlags(int systemUiVisibility) {
         int maskOffFlags =
                 SYSTEM_UI_FLAG_LOW_PROFILE
                         | SYSTEM_UI_FLAG_FULLSCREEN

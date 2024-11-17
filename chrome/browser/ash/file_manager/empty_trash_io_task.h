@@ -38,7 +38,6 @@ class EmptyTrashIOTask : public IOTask {
       blink::StorageKey storage_key,
       Profile* profile,
       scoped_refptr<storage::FileSystemContext> file_system_context,
-      base::FilePath base_path,
       bool show_notification = true);
 
   ~EmptyTrashIOTask() override;
@@ -66,9 +65,6 @@ class EmptyTrashIOTask : public IOTask {
   const blink::StorageKey storage_key_;
 
   const raw_ptr<Profile> profile_;
-
-  // Parent path that all the source URLs descend from.
-  const base::FilePath base_path_;
 
   // Completion callback.
   CompleteCallback complete_callback_;

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
+#include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -16,6 +17,7 @@
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_manager.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 #include "components/autofill/core/browser/ui/payments/virtual_card_enroll_bubble_controller.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/grit/components_scaled_resources.h"
@@ -65,7 +67,7 @@ void VirtualCardEnrollBubbleViews::Hide() {
   CloseBubble();
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        GetPaymentsUiClosedReasonFromWidget(GetWidget()));
   }
   controller_ = nullptr;
 }
@@ -73,11 +75,8 @@ void VirtualCardEnrollBubbleViews::Hide() {
 bool VirtualCardEnrollBubbleViews::OnDialogAccepted() {
   bool did_switch_to_loading_state = false;
   if (controller_) {
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-      SwitchToLoadingState();
-      did_switch_to_loading_state = true;
-    }
+    SwitchToLoadingState();
+    did_switch_to_loading_state = true;
     controller_->OnAcceptButton(did_switch_to_loading_state);
   }
   return !did_switch_to_loading_state;
@@ -105,8 +104,9 @@ void VirtualCardEnrollBubbleViews::AddedToWidget() {
   header_view->AddChildView(std::move(image_view));
 
   GetBubbleFrameView()->SetHeaderView(std::move(header_view));
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
 std::u16string VirtualCardEnrollBubbleViews::GetWindowTitle() const {
@@ -117,7 +117,7 @@ std::u16string VirtualCardEnrollBubbleViews::GetWindowTitle() const {
 void VirtualCardEnrollBubbleViews::WindowClosing() {
   if (controller_) {
     controller_->OnBubbleClosed(
-        GetPaymentsBubbleClosedReasonFromWidget(GetWidget()));
+        GetPaymentsUiClosedReasonFromWidget(GetWidget()));
     controller_ = nullptr;
   }
 }
@@ -210,10 +210,7 @@ void VirtualCardEnrollBubbleViews::Init() {
   AddChildView(CreateLegalMessageView())
       ->SetID(DialogViewId::LEGAL_MESSAGE_VIEW);
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableVcnEnrollLoadingAndConfirmation)) {
-    loading_progress_row_ = AddChildView(CreateLoadingProgressRow());
-  }
+  loading_progress_row_ = AddChildView(CreateLoadingProgressRow());
 }
 
 std::unique_ptr<views::View>
@@ -226,20 +223,20 @@ VirtualCardEnrollBubbleViews::CreateLegalMessageView() {
 
   const LegalMessageLines google_legal_message =
       controller_->GetUiModel().enrollment_fields().google_legal_message;
-  const LegalMessageLines issuser_legal_message =
+  const LegalMessageLines issuer_legal_message =
       controller_->GetUiModel().enrollment_fields().issuer_legal_message;
 
   DCHECK(!google_legal_message.empty());
-  legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
+  legal_message_view->AddChildView(::autofill::CreateLegalMessageView(
       google_legal_message, /*user_email=*/std::u16string(),
       /*user_avatar=*/ui::ImageModel(),
       base::BindRepeating(
           &VirtualCardEnrollBubbleViews::GoogleLegalMessageClicked,
           base::Unretained(this))));
 
-  if (!issuser_legal_message.empty()) {
-    legal_message_view->AddChildView(std::make_unique<LegalMessageView>(
-        issuser_legal_message, /*user_email=*/std::u16string(),
+  if (!issuer_legal_message.empty()) {
+    legal_message_view->AddChildView(::autofill::CreateLegalMessageView(
+        issuer_legal_message, /*user_email=*/std::u16string(),
         /*user_avatar=*/ui::ImageModel(),
         base::BindRepeating(
             &VirtualCardEnrollBubbleViews::IssuerLegalMessageClicked,

@@ -90,10 +90,7 @@ public class MemoryPressureMonitorTest {
         mMonitor.setCurrentPressureSupplierForTesting(null);
     }
 
-    /**
-     * Runs all UiThread tasks posted |delayMs| in the future.
-     * @param delayMs
-     */
+    /** Runs all UiThread tasks posted |delayMs| in the future. */
     private void runUiThreadFor(long delayMs) {
         ShadowLooper.idleMainLooper(delayMs, TimeUnit.MILLISECONDS);
     }

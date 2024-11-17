@@ -45,17 +45,20 @@ source_set("exclusive_access") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/blocked_content",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",
     "//components/content_settings/core/browser",
     "//components/history/core/browser",
     "//components/input",
+    "//components/permissions:permissions_common",
     "//components/prefs",
+    "//components/safe_browsing/content/browser:safe_browsing_service",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/strings:components_strings",
     "//components/strings:components_strings_grit",
@@ -113,8 +116,10 @@ if (!is_android) {
 
     deps = [
       ":test_support",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/ui:ui_features",
       "//components/content_settings/core/browser",
+      "//ui/base:ozone_buildflags",
     ]
   }
 
@@ -129,6 +134,7 @@ if (!is_android) {
       ]
       deps = [
         ":test_support",
+        "//chrome/browser/content_settings:content_settings_factory",
         "//chrome/browser/ui:test_support",
         "//chrome/browser/web_applications:web_applications_test_support",
         "//components/blocked_content",

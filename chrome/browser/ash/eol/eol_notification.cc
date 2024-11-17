@@ -49,7 +49,6 @@ using ::l10n_util::GetStringUTF16;
 
 const char kEolNotificationId[] = "chrome://product_eol";
 
-constexpr int kFirstWarningDaysInAdvance = 180;
 constexpr int kSecondWarningDaysInAdvance = 90;
 
 // The first and second incentive notification button indices.
@@ -59,10 +58,6 @@ constexpr int kButtonAboutUpdates = 1;
 // The number of days past the EOL within which the last incentive notification
 // is shown.
 constexpr int kLastIncentiveEndDaysPastEol = -5;
-
-base::Time FirstWarningDate(base::Time eol_date) {
-  return eol_date - base::Days(kFirstWarningDaysInAdvance);
-}
 
 base::Time SecondWarningDate(const base::Time& eol_date) {
   return eol_date - base::Days(kSecondWarningDaysInAdvance);
@@ -145,14 +140,7 @@ void EolNotification::MaybeShowEolNotification(base::Time eol_date) {
     dismiss_pref_ = prefs::kEolNotificationDismissed;
   } else if (SecondWarningDate(eol_date) <= now) {
     dismiss_pref_ = prefs::kSecondEolWarningDismissed;
-  } else if (FirstWarningDate(eol_date) <= now) {
-    if (base::FeatureList::IsEnabled(features::kSuppressFirstEolWarning)) {
-      dismiss_pref_ = std::nullopt;
-      return;
-    }
-    dismiss_pref_ = prefs::kFirstEolWarningDismissed;
   } else {
-    // |now| < FirstWarningDate() so don't show anything.
     dismiss_pref_ = std::nullopt;
     return;
   }

@@ -106,8 +106,6 @@ using mojom::blink::FormControlType;
 
 namespace {
 
-const unsigned kMaxEmailFieldLength = 254;
-
 static bool is_default_font_prewarmed_ = false;
 
 }  // namespace
@@ -364,8 +362,6 @@ void HTMLInputElement::EndEditing() {
   LocalFrame* frame = GetDocument().GetFrame();
   frame->GetSpellChecker().DidEndEditingOnTextField(this);
   frame->GetPage()->GetChromeClient().DidEndEditingOnTextField(*this);
-
-  MaybeReportPiiMetrics();
 }
 
 void HTMLInputElement::DispatchFocusInEvent(
@@ -844,7 +840,7 @@ void HTMLInputElement::ParseAttribute(
     AddToRadioButtonGroup();
     TextControlElement::ParseAttribute(params);
   } else if (name == html_names::kAutocompleteAttr) {
-    if (EqualIgnoringASCIICase(value, "off")) {
+    if (EqualIgnoringASCIICase(value, keywords::kOff)) {
       autocomplete_ = kOff;
     } else {
       if (value.empty())
@@ -1202,8 +1198,7 @@ String HTMLInputElement::Value() const {
     case ValueMode::kValue:
       return non_attribute_value_;
   }
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_string;
+  NOTREACHED();
 }
 
 String HTMLInputElement::ValueOrDefaultLabel() const {
@@ -2340,38 +2335,6 @@ bool HTMLInputElement::IsDraggedSlider() const {
   return input_type_view_->IsDraggedSlider();
 }
 
-void HTMLInputElement::MaybeReportPiiMetrics() {
-  // Don't report metrics if the field is empty.
-  if (Value().empty())
-    return;
-
-  // Report the PII types derived from autofill field semantic type prediction.
-  if (GetFormElementPiiType() != FormElementPiiType::kUnknown) {
-    UseCounter::Count(GetDocument(),
-                      WebFeature::kUserDataFieldFilled_PredictedTypeMatch);
-
-    if (GetFormElementPiiType() == FormElementPiiType::kEmail) {
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kEmailFieldFilled_PredictedTypeMatch);
-    } else if (GetFormElementPiiType() == FormElementPiiType::kPhone) {
-      UseCounter::Count(GetDocument(),
-                        WebFeature::kPhoneFieldFilled_PredictedTypeMatch);
-    }
-  }
-
-  // Report the PII types derived by matching the field value with patterns.
-
-  // For Email, we add a length limitation (based on
-  // https://www.rfc-editor.org/errata_search.php?rfc=3696) in addition to
-  // matching with the pattern given by the HTML standard.
-  if (Value().length() <= kMaxEmailFieldLength &&
-      EmailInputType::IsValidEmailAddress(GetDocument().EnsureEmailRegexp(),
-                                          Value())) {
-    UseCounter::Count(GetDocument(),
-                      WebFeature::kEmailFieldFilled_PatternMatch);
-  }
-}
-
 // https://html.spec.whatwg.org/multipage/form-control-infrastructure.html#concept-fe-mutable
 bool HTMLInputElement::isMutable() {
   return !IsDisabledFormControl() &&
@@ -2412,9 +2375,9 @@ void HTMLInputElement::showPicker(ExceptionState& exception_state) {
   input_type_view_->OpenPopupView();
 }
 
-bool HTMLInputElement::IsValidCommand(HTMLElement& invoker,
-                                      CommandEventType command) {
-  bool parent_is_valid = HTMLElement::IsValidCommand(invoker, command);
+bool HTMLInputElement::IsValidBuiltinCommand(HTMLElement& invoker,
+                                             CommandEventType command) {
+  bool parent_is_valid = HTMLElement::IsValidBuiltinCommand(invoker, command);
   if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled() ||
       parent_is_valid) {
     return parent_is_valid;
@@ -2432,7 +2395,7 @@ bool HTMLInputElement::IsValidCommand(HTMLElement& invoker,
 
 bool HTMLInputElement::HandleCommandInternal(HTMLElement& invoker,
                                              CommandEventType command) {
-  CHECK(IsValidCommand(invoker, command));
+  CHECK(IsValidBuiltinCommand(invoker, command));
 
   if (HTMLElement::HandleCommandInternal(invoker, command)) {
     return true;

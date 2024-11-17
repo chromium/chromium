@@ -47,6 +47,13 @@ bool IsFingerprintingProtectionEnabledForIncognitoState(bool is_incognito) {
          IsFingerprintingProtectionEnabledInNonIncognito(is_incognito);
 }
 
+bool IsFingerprintingProtectionConsoleLoggingEnabled() {
+  // We don't care which feature flag the param is enabled on - if the
+  // param is set to true with either feature flag, we should log when blocking.
+  return kEnableConsoleLoggingIncognito.Get() ||
+         kEnableConsoleLoggingNonIncognito.Get();
+}
+
 constexpr base::FeatureParam<subresource_filter::mojom::ActivationLevel>::Option
     kActivationLevelOptions[] = {
         {subresource_filter::mojom::ActivationLevel::kDisabled, "disabled"},
@@ -58,8 +65,24 @@ const base::FeatureParam<subresource_filter::mojom::ActivationLevel>
                      subresource_filter::mojom::ActivationLevel::kEnabled,
                      &kActivationLevelOptions};
 
-const base::FeatureParam<bool> kEnableOn3pcBlocked{
-    &kEnableFingerprintingProtectionFilter, "enable_on_3pc_blocked", false};
+const base::FeatureParam<bool> kEnableOnlyIf3pcBlocked{
+    &kEnableFingerprintingProtectionFilter, "enable_only_if_3pc_blocked",
+    false};
+
+const base::FeatureParam<bool> kEnableConsoleLoggingNonIncognito{
+    &kEnableFingerprintingProtectionFilter, kEnableConsoleLoggingParam, false};
+
+const base::FeatureParam<bool> kEnableConsoleLoggingIncognito{
+    &kEnableFingerprintingProtectionFilterInIncognito,
+    kEnableConsoleLoggingParam, false};
+
+const base::FeatureParam<double> kPerformanceMeasurementRateNonIncognito{
+    &kEnableFingerprintingProtectionFilter, kPerformanceMeasurementRateParam,
+    0.0};
+
+const base::FeatureParam<double> kPerformanceMeasurementRateIncognito{
+    &kEnableFingerprintingProtectionFilterInIncognito,
+    kPerformanceMeasurementRateParam, 0.0};
 
 BASE_FEATURE(kUseCnameAliasesForFingerprintingProtectionFilter,
              "UseCnameAliasesForFingerprintingProtectionFilter",

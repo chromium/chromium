@@ -62,7 +62,7 @@ class CAPTURE_EXPORT VideoCaptureGpuChannelHost final
   // It will return nullptr when
   // `VideoCaptureServiceImpl::VizGpuContextProvider::StartContextProviderIfNeeded()`
   // failed.
-  gpu::SharedImageInterface* SharedImageInterface();
+  scoped_refptr<gpu::SharedImageInterface> GetSharedImageInterface();
 
   // VideoCaptureGpuContextLostObserver implementation.
   void OnContextLost() override;

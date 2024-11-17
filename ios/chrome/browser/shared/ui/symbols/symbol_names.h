@@ -257,8 +257,16 @@ extern NSString* const kPencilSymbol;
 extern NSString* const kMagicStackSymbol;
 extern NSString* const kDiscoverFeedSymbol;
 extern NSString* const kFilterSymbol;
+extern NSString* const kSelectedFilterSymbol;
 extern NSString* const kPersonTwoSymbol;
 extern NSString* const kSquareFilledOnSquareSymbol;
+extern NSString* const kPauseButton;
+extern NSString* const kPlayButton;
+extern NSString* const kFolderSymbol;
+extern NSString* const kCartSymbol;
+extern NSString* const kArrowUTurnForwardSymbol;
+extern NSString* const kIPhoneAndArrowForwardSymbol;
+extern NSString* const kPersonPlusSymbol;
 
 // Names of the default symbol being non-monochrome by default. When using them,
 // you probably want to set their color to monochrome.

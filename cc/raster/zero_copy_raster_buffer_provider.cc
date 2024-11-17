@@ -139,9 +139,9 @@ class ZeroCopyRasterBufferImpl : public RasterBuffer {
 
     // TODO(danakj): Implement partial raster with raster_dirty_rect.
     RasterBufferProvider::PlaybackToMemory(
-        mapping->Memory(0), format_, resource_size_, mapping->Stride(0),
-        raster_source, raster_full_rect, raster_full_rect, transform,
-        resource_color_space_,
+        mapping->GetMemoryForPlane(0).data(), format_, resource_size_,
+        mapping->Stride(0), raster_source, raster_full_rect, raster_full_rect,
+        transform, resource_color_space_,
         /*gpu_compositing=*/true, playback_settings);
   }
 

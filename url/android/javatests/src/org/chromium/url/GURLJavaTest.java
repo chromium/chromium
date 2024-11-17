@@ -101,7 +101,7 @@ public class GURLJavaTest {
     @SmallTest
     @Test
     public void testEmpty() {
-        GURLJni.TEST_HOOKS.setInstanceForTesting(mGURLMocks);
+        GURLJni.setInstanceForTesting(mGURLMocks);
         doThrow(new RuntimeException("Should not need to parse empty URL"))
                 .when(mGURLMocks)
                 .init(any(), any());
@@ -117,7 +117,7 @@ public class GURLJavaTest {
         Assert.assertEquals("", url.getPath());
         Assert.assertEquals("", url.getQuery());
         Assert.assertEquals("", url.getRef());
-        GURLJni.TEST_HOOKS.setInstanceForTesting(null);
+        GURLJni.setInstanceForTesting(null);
     }
 
     // Test that GURL and URI return the correct Origin.
@@ -195,7 +195,7 @@ public class GURLJavaTest {
             new GURL("https://www.foo" + GURL.SERIALIZER_DELIMITER + "bar.com"),
         };
 
-        GURLJni.TEST_HOOKS.setInstanceForTesting(mGURLMocks);
+        GURLJni.setInstanceForTesting(mGURLMocks);
         doThrow(
                         new RuntimeException(
                                 "Should not re-initialize for deserialization when the "
@@ -206,7 +206,7 @@ public class GURLJavaTest {
             GURL out = GURL.deserialize(url.serialize());
             deepAssertEquals(url, out);
         }
-        GURLJni.TEST_HOOKS.setInstanceForTesting(null);
+        GURLJni.setInstanceForTesting(null);
     }
 
     /**

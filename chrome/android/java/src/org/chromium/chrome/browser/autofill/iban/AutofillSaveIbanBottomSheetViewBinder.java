@@ -37,8 +37,8 @@ import org.chromium.ui.modelutil.PropertyModel;
             setMaybeEmptyText(
                     view.mDescription,
                     model.get(AutofillSaveIbanBottomSheetProperties.DESCRIPTION));
-        } else if (AutofillSaveIbanBottomSheetProperties.IBAN_LABEL == propertyKey) {
-            view.mIbanLabel.setText(model.get(AutofillSaveIbanBottomSheetProperties.IBAN_LABEL));
+        } else if (AutofillSaveIbanBottomSheetProperties.IBAN_VALUE == propertyKey) {
+            view.mIbanValue.setText(model.get(AutofillSaveIbanBottomSheetProperties.IBAN_VALUE));
         } else if (AutofillSaveIbanBottomSheetProperties.ACCEPT_BUTTON_LABEL == propertyKey) {
             view.mAcceptButton.setText(
                     model.get(AutofillSaveIbanBottomSheetProperties.ACCEPT_BUTTON_LABEL));

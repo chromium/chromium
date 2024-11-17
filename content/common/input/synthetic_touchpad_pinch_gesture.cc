@@ -131,11 +131,9 @@ void SyntheticTouchpadPinchGesture::ForwardGestureEvents(
       break;
     }
     case SETUP:
-      NOTREACHED_IN_MIGRATION() << "State SETUP invalid for synthetic pinch.";
-      break;
+      NOTREACHED() << "State SETUP invalid for synthetic pinch.";
     case DONE:
-      NOTREACHED_IN_MIGRATION() << "State DONE invalid for synthetic pinch.";
-      break;
+      NOTREACHED() << "State DONE invalid for synthetic pinch.";
   }
 }
 

@@ -24,7 +24,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
@@ -55,7 +54,6 @@ import org.chromium.url.GURL;
         shadows = {ShadowAppCompatResources.class})
 public class BookmarkSaveFlowMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private BookmarkSaveFlowMediator mMediator;
     private PropertyModel mPropertyModel =
@@ -80,7 +78,7 @@ public class BookmarkSaveFlowMediatorUnitTest {
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
 
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(PriceTrackingUtilsJni.TEST_HOOKS, mMockPriceTrackingUtilsJni);
+        PriceTrackingUtilsJni.setInstanceForTesting(mMockPriceTrackingUtilsJni);
         PriceDropNotificationManagerFactory.setInstanceForTesting(mMockNotificationManager);
         mMediator =
                 new BookmarkSaveFlowMediator(

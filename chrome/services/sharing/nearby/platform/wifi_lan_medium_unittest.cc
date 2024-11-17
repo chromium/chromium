@@ -46,8 +46,7 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "third_party/nearby/src/internal/platform/nsd_service_info.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -887,5 +886,4 @@ TEST_F(WifiLanMediumTest, GetDynamicPortRange) {
   EXPECT_EQ(ash::nearby::TcpServerSocketPort::kMax, port_range->second);
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

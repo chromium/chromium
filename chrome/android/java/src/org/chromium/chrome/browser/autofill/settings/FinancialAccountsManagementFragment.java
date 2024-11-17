@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.PersonalDataManagerObserver;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.payments.AccountType;
@@ -56,6 +57,8 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     private PersonalDataManager mPersonalDataManager;
     private BankAccount[] mBankAccounts;
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
+    private Callback<String> mFinancialAccountManageLinkOpenerCallback =
+            url -> CustomTabActivity.showInfoPage(getActivity(), url);
 
     // ChromeBaseSettingsFramgent override.
     @Override
@@ -181,6 +184,13 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
                                 R.drawable.ic_account_balance,
                                 getStyledContext().getTheme());
         bankAccountPref.setIcon(displayIconBitmapDrawable);
+        bankAccountPref.setOnPreferenceClickListener(
+                preference -> {
+                    mFinancialAccountManageLinkOpenerCallback.onResult(
+                            AutofillUiUtils.getManagePaymentMethodUrlForInstrumentId(
+                                    bankAccount.getInstrumentId()));
+                    return true;
+                });
 
         return bankAccountPref;
     }
@@ -229,6 +239,10 @@ public class FinancialAccountsManagementFragment extends ChromeBaseSettingsFragm
     @Override
     public void onPersonalDataChanged() {
         rebuildPage();
+    }
+
+    public void setFinancialAccountManageLinkOpenerCallbackForTesting(Callback<String> callback) {
+        mFinancialAccountManageLinkOpenerCallback = callback;
     }
 
     @VisibleForTesting

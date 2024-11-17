@@ -71,12 +71,7 @@ class WindowRestoreControllerTest : public AshTestBase,
     app_restore::WindowInfo info;
   };
 
-  WindowRestoreControllerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding},
-        /*disabled_features=*/{});
-  }
+  WindowRestoreControllerTest() = default;
   WindowRestoreControllerTest(const WindowRestoreControllerTest&) = delete;
   WindowRestoreControllerTest& operator=(const WindowRestoreControllerTest&) =
       delete;
@@ -311,8 +306,6 @@ class WindowRestoreControllerTest : public AshTestBase,
 
     fake_window_restore_file_[restore_window_id].info = window_info;
   }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   // A map which is a fake representation of the window restore file.
   base::flat_map<int32_t, WindowInfo> fake_window_restore_file_;
@@ -1272,12 +1265,14 @@ TEST_F(WindowRestoreControllerTest, TopmostWindowIsActivatable) {
 
   // Create a Window Restore'd Chrome app.
   AddEntryToFakeFile(
-      /*restore_id=*/2, gfx::Rect(200, 200), chromeos::WindowStateType::kNormal,
+      /*restore_window_id=*/2, gfx::Rect(200, 200),
+      chromeos::WindowStateType::kNormal,
       /*activation_index=*/1, WindowTreeHostManager::GetPrimaryDisplayId());
-  auto* restored_window1 = CreateTestWindowRestoredWidgetFromRestoreId(
-                               /*restore_id=*/2, chromeos::AppType::CHROME_APP,
-                               /*is_taskless_arc_app=*/false)
-                               ->GetNativeWindow();
+  auto* restored_window1 =
+      CreateTestWindowRestoredWidgetFromRestoreId(
+          /*restore_window_id=*/2, chromeos::AppType::CHROME_APP,
+          /*is_taskless_arc_app=*/false)
+          ->GetNativeWindow();
   EXPECT_THAT(desk_container->children(),
               ElementsAre(restored_window1, window.get()));
 
@@ -1314,13 +1309,14 @@ TEST_F(WindowRestoreControllerTest, NextTopmostWindowIsActivatable) {
 
   // Create a minimized Window Restore'd browser. It should not be activatable.
   AddEntryToFakeFile(
-      /*restore_id=*/2, gfx::Rect(200, 200),
+      /*restore_window_id=*/2, gfx::Rect(200, 200),
       chromeos::WindowStateType::kMinimized,
       /*activation_index=*/2, WindowTreeHostManager::GetPrimaryDisplayId());
-  auto* restored_window2 = CreateTestWindowRestoredWidgetFromRestoreId(
-                               /*restore_id=*/2, chromeos::AppType::BROWSER,
-                               /*is_taskless_arc_app=*/false)
-                               ->GetNativeWindow();
+  auto* restored_window2 =
+      CreateTestWindowRestoredWidgetFromRestoreId(
+          /*restore_window_id=*/2, chromeos::AppType::BROWSER,
+          /*is_taskless_arc_app=*/false)
+          ->GetNativeWindow();
   EXPECT_THAT(desk_container->children(), ElementsAre(restored_window2));
   EXPECT_FALSE(wm::CanActivateWindow(restored_window2));
 
@@ -1328,13 +1324,14 @@ TEST_F(WindowRestoreControllerTest, NextTopmostWindowIsActivatable) {
   // `restored_window2` in the stacking order. Both restored windows should not
   // be activatable because they're minimized.
   AddEntryToFakeFile(
-      /*restore_id=*/3, gfx::Rect(200, 200),
+      /*restore_window_id=*/3, gfx::Rect(200, 200),
       chromeos::WindowStateType::kMinimized,
       /*activation_index=*/3, WindowTreeHostManager::GetPrimaryDisplayId());
-  auto* restored_window3 = CreateTestWindowRestoredWidgetFromRestoreId(
-                               /*restore_id=*/3, chromeos::AppType::BROWSER,
-                               /*is_taskless_arc_app=*/false)
-                               ->GetNativeWindow();
+  auto* restored_window3 =
+      CreateTestWindowRestoredWidgetFromRestoreId(
+          /*restore_window_id=*/3, chromeos::AppType::BROWSER,
+          /*is_taskless_arc_app=*/false)
+          ->GetNativeWindow();
   EXPECT_THAT(desk_container->children(),
               ElementsAre(restored_window3, restored_window2));
   EXPECT_FALSE(wm::CanActivateWindow(restored_window3));
@@ -1345,12 +1342,14 @@ TEST_F(WindowRestoreControllerTest, NextTopmostWindowIsActivatable) {
   // activatable and will be activated so it will be added to the top of the
   // stacking order.
   AddEntryToFakeFile(
-      /*restore_id=*/4, gfx::Rect(200, 200), chromeos::WindowStateType::kNormal,
+      /*restore_window_id=*/4, gfx::Rect(200, 200),
+      chromeos::WindowStateType::kNormal,
       /*activation_index=*/4, WindowTreeHostManager::GetPrimaryDisplayId());
-  auto* restored_window4 = CreateTestWindowRestoredWidgetFromRestoreId(
-                               /*restore_id=*/4, chromeos::AppType::BROWSER,
-                               /*is_taskless_arc_app=*/false)
-                               ->GetNativeWindow();
+  auto* restored_window4 =
+      CreateTestWindowRestoredWidgetFromRestoreId(
+          /*restore_window_id=*/4, chromeos::AppType::BROWSER,
+          /*is_taskless_arc_app=*/false)
+          ->GetNativeWindow();
   EXPECT_THAT(
       desk_container->children(),
       ElementsAre(restored_window3, restored_window2, restored_window4));
@@ -1376,14 +1375,15 @@ TEST_F(WindowRestoreControllerTest, WindowsOnInactiveDeskAreNotActivatable) {
   // Create a Window Restore'd browser in the third desk. It should not be
   // activatable.
   AddEntryToFakeFile(
-      /*restore_id=*/2, gfx::Rect(200, 200),
+      /*restore_window_id=*/2, gfx::Rect(200, 200),
       chromeos::WindowStateType::kMinimized,
       /*activation_index=*/2, WindowTreeHostManager::GetPrimaryDisplayId(),
       /*desk_id=*/2);
-  auto* restored_window2 = CreateTestWindowRestoredWidgetFromRestoreId(
-                               /*restore_id=*/2, chromeos::AppType::BROWSER,
-                               /*is_taskless_arc_app=*/false)
-                               ->GetNativeWindow();
+  auto* restored_window2 =
+      CreateTestWindowRestoredWidgetFromRestoreId(
+          /*restore_window_id=*/2, chromeos::AppType::BROWSER,
+          /*is_taskless_arc_app=*/false)
+          ->GetNativeWindow();
   EXPECT_FALSE(wm::CanActivateWindow(restored_window2));
 }
 
@@ -1414,7 +1414,7 @@ TEST_F(WindowRestoreControllerTest, WindowsSavedInOverview) {
 // restore, we exit overview.
 TEST_F(WindowRestoreControllerTest, WindowsRestoredWhileInOverview) {
   AddEntryToFakeFile(
-      /*restore_id=*/1, gfx::Rect(900, 700, 300, 300),
+      /*restore_window_id=*/1, gfx::Rect(900, 700, 300, 300),
       chromeos::WindowStateType::kNormal);
 
   ToggleOverview();
@@ -1422,7 +1422,7 @@ TEST_F(WindowRestoreControllerTest, WindowsRestoredWhileInOverview) {
 
   // Create a restored window. Test that we have exited overview.
   CreateTestWindowRestoredWidgetFromRestoreId(
-      /*restore_id=*/1, chromeos::AppType::BROWSER,
+      /*restore_window_id=*/1, chromeos::AppType::BROWSER,
       /*is_taskless_arc_app=*/false)
       ->GetNativeWindow();
   EXPECT_FALSE(OverviewController::Get()->InOverviewSession());
@@ -1437,12 +1437,14 @@ TEST_F(WindowRestoreControllerTest, WindowsMinimumVisibleArea) {
   // the bottom right of the current display.
   const int window_length = 200;
   AddEntryToFakeFile(
-      /*restore_id=*/1, gfx::Rect(900, 700, window_length, window_length),
+      /*restore_window_id=*/1,
+      gfx::Rect(900, 700, window_length, window_length),
       chromeos::WindowStateType::kNormal);
-  auto* restored_window = CreateTestWindowRestoredWidgetFromRestoreId(
-                              /*restore_id=*/1, chromeos::AppType::BROWSER,
-                              /*is_taskless_arc_app=*/false)
-                              ->GetNativeWindow();
+  auto* restored_window =
+      CreateTestWindowRestoredWidgetFromRestoreId(
+          /*restore_window_id=*/1, chromeos::AppType::BROWSER,
+          /*is_taskless_arc_app=*/false)
+          ->GetNativeWindow();
   const gfx::Rect& bounds_in_screen = restored_window->GetBoundsInScreen();
 
   // Check the intersection of the display bounds and the window bounds in

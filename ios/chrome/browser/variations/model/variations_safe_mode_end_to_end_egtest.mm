@@ -116,9 +116,9 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
   self.continueAfterFailure = YES;
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [self resetAppState:[self appConfigurationForCleanRestart]];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests

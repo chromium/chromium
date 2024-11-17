@@ -509,7 +509,7 @@ void DoTestFillAugmentedPhoneCountryCodeField(
       features::kAutofillEnableFillingPhoneCountryCodesByAddressCountryCodes,
       enable_filling_phone_country_codes_by_address_country_codes);
 
-  AutofillField field(test::CreateTestSelectOrSelectListField(
+  AutofillField field(test::CreateTestSelectField(
       /*label=*/"", /*name=*/"", /*value=*/"", /*autocomplete=*/"",
       /*values=*/{}, /*contents=*/{}, field_type));
   field.set_options(test_case.phone_country_code_selection_options);
@@ -534,13 +534,6 @@ TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
   DoTestFillAugmentedPhoneCountryCodeField(std::get<0>(GetParam()),
                                            std::get<1>(GetParam()),
                                            FormControlType::kSelectOne);
-}
-
-TEST_P(AutofillFillAugmentedPhoneCountryCodeTest,
-       FillAugmentedPhoneCountryCodeSelectListField) {
-  DoTestFillAugmentedPhoneCountryCodeField(std::get<0>(GetParam()),
-                                           std::get<1>(GetParam()),
-                                           FormControlType::kSelectList);
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -60,6 +60,9 @@ mojom("test_interfaces") {
   testonly = true
   generate_java = true
   generate_rust = true
+  webui_module_path = "/"
+  generate_legacy_js_bindings = true
+
   sources = [
     "math_calculator.mojom",
     "no_module.mojom",
@@ -283,6 +286,8 @@ mojom("test_mojom_import") {
   testonly = true
   generate_java = true
   generate_rust = true
+  webui_module_path = "/"
+  generate_legacy_js_bindings = true
   sources = [ "sample_import.mojom" ]
 }
 
@@ -304,6 +309,8 @@ mojom("test_mojom_import2") {
   testonly = true
   generate_java = true
   generate_rust = true
+  webui_module_path = "/"
+  generate_legacy_js_bindings = true
   sources = [ "sample_import2.mojom" ]
   public_deps = [
     ":test_mojom_import",

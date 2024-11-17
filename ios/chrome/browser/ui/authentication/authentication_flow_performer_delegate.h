@@ -15,7 +15,7 @@
 // Handles completion of AuthenticationFlowPerformer steps.
 @protocol AuthenticationFlowPerformerDelegate<NSObject>
 
-// Indicates that a browser state was signed out.
+// Indicates that a profile was signed out.
 - (void)didSignOut;
 
 // Indicates that browsing data finished clearing.

@@ -311,7 +311,7 @@ class RedactionToolTest : public testing::Test {
 
   template <typename T>
   void ExpectBucketCount(
-      const std::string_view histogram_name,
+      std::string_view histogram_name,
       const T enum_value,
       const size_t expected_count,
       const base::Location location = base::Location::Current()) {
@@ -581,18 +581,6 @@ TEST_F(RedactionToolTest, RedactCustomPatterns) {
   EXPECT_EQ("[(IPv6: 4)]", RedactCustomPatterns("[aa::bb]"));
   EXPECT_EQ("State::Abort", RedactCustomPatterns("State::Abort"));
 
-  // Real IPv4 address
-  EXPECT_EQ("(IPv4: 1)", RedactCustomPatterns("192.160.0.1"));
-
-  // Non-PII IPv4 address (see MaybeScrubIPAddress)
-  EXPECT_EQ("255.255.255.255", RedactCustomPatterns("255.255.255.255"));
-
-  // Not an actual IPv4 address
-  EXPECT_EQ("75.748.86.91", RedactCustomPatterns("75.748.86.91"));
-
-  // USB Path - not an actual IPv4 Address
-  EXPECT_EQ("4-3.3.3.3", RedactCustomPatterns("4-3.3.3.3"));
-
   // ModemManager modem firmware revisions - not actual IPv4 Addresses
   EXPECT_EQ("Revision: 81600.0000.00.29.19.16_DO",
             RedactCustomPatterns("Revision: 81600.0000.00.29.19.16_DO"));
@@ -689,6 +677,30 @@ TEST_F(RedactionToolTest, RedactCustomPatternWithContext) {
             RedactCustomPatternWithContext("idg='1234'", kPattern3));
   EXPECT_EQ("x(FOO: 1)z",
             RedactCustomPatternWithContext("xyz", {"FOO", "()(y+)()"}));
+
+  // Real IPv4 address
+  EXPECT_EQ("(IPv4: 1)", RedactCustomPatterns("192.160.0.1"));
+  EXPECT_EQ("[(IPv4: 1)]", RedactCustomPatterns("[192.160.0.1]"));
+  EXPECT_EQ("aaaa(IPv4: 2)aaa", RedactCustomPatterns("aaaa123.123.45.4aaa"));
+  EXPECT_EQ("IP: (IPv4: 3)", RedactCustomPatterns("IP: 111.222.3.4"));
+  EXPECT_EQ("(email: 1) (IPv4: 3)",
+            RedactCustomPatterns("test@email.com 111.222.3.4"));
+  EXPECT_EQ(
+      "(URL: 1) (email: 1) (IPv4: 3)",
+      RedactCustomPatterns("http://www.google.com test@email.com 111.222.3.4"));
+  EXPECT_EQ("addresses=(IPv4: 4)/30,x",
+            RedactCustomPatterns("addresses=100.100.1.10/30,x"));
+
+  // Non-PII IPv4 address (see MaybeScrubIPAddress)
+  EXPECT_EQ("255.255.255.255", RedactCustomPatterns("255.255.255.255"));
+
+  // Not an actual IPv4 address
+  EXPECT_EQ("75.748.86.91", RedactCustomPatterns("75.748.86.91"));
+  EXPECT_EQ("1.2.3.4.5", RedactCustomPatterns("1.2.3.4.5"));
+  EXPECT_EQ("1.2.3.4.5.6.7.8", RedactCustomPatterns("1.2.3.4.5.6.7.8"));
+
+  // USB Path - not an actual IPv4 Address
+  EXPECT_EQ("4-3.3.3.3", RedactCustomPatterns("4-3.3.3.3"));
 }
 
 TEST_F(RedactionToolTest, RedactCustomPatternWithoutContext) {

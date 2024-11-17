@@ -21,6 +21,7 @@
 #include "net/filter/source_stream.h"
 #include "net/http/http_request_headers.h"
 #include "net/log/net_log_source.h"
+#include "net/socket/socket_tag.h"
 #include "net/storage_access_api/status.h"
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/optional_trust_token_params.h"
@@ -30,6 +31,7 @@
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cors.mojom-shared.h"
+#include "services/network/public/mojom/device_bound_sessions.mojom-forward.h"
 #include "services/network/public/mojom/devtools_observer.mojom-forward.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom-shared.h"
@@ -49,6 +51,8 @@ namespace network {
 //
 // Note: Please revise EqualsForTesting accordingly on any updates to this
 // struct.
+//
+// LINT.IfChange(ResourceRequest)
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   // Typemapped to network.mojom.TrustedUrlRequestParams, see comments there
   // for details of each field.
@@ -76,6 +80,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
     mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
         url_loader_network_observer;
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer;
+    mojo::PendingRemote<mojom::DeviceBoundSessionAccessObserver>
+        device_bound_session_observer;
     mojom::ClientSecurityStatePtr client_security_state;
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer;
     mojo::PendingRemote<mojom::SharedDictionaryAccessObserver>
@@ -223,7 +229,9 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
   std::optional<base::UnguessableToken> attribution_reporting_src_token;
   bool is_ad_tagged = false;
   std::optional<base::UnguessableToken> prefetch_token;
+  net::SocketTag socket_tag;
 };
+// LINT.ThenChange(//services/network/prefetch_matches.cc)
 
 // This does not accept |kDefault| referrer policy.
 COMPONENT_EXPORT(NETWORK_CPP_BASE)

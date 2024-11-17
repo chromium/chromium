@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/audio_encoder.h"
+#include "media/base/decoder_buffer.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -59,7 +60,7 @@ class MODULES_EXPORT AudioTrackRecorder
     // Called to indicate there is encoded audio data available.
     virtual void OnEncodedAudio(
         const media::AudioParameters& params,
-        std::string encoded_data,
+        scoped_refptr<media::DecoderBuffer> encoded_data,
         std::optional<media::AudioEncoder::CodecDescription> codec_description,
         base::TimeTicks capture_time) = 0;
 
@@ -73,7 +74,7 @@ class MODULES_EXPORT AudioTrackRecorder
 
   using OnEncodedAudioCB = base::RepeatingCallback<void(
       const media::AudioParameters& params,
-      std::string encoded_data,
+      scoped_refptr<media::DecoderBuffer> encoded_data,
       std::optional<media::AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks capture_time)>;
 

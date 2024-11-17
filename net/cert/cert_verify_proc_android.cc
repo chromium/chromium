@@ -91,8 +91,7 @@ std::shared_ptr<const bssl::ParsedCertificate> FindLastCertWithUnknownIssuer(
     // Continue the search for |last_issuer|'s issuer.
     last = last_issuer;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // Uses |fetcher| to fetch issuers from |uri|. If the fetch succeeds, the
@@ -238,8 +237,7 @@ android::CertVerifyStatusAndroid TryVerifyWithAIAFetching(
     last_cert_with_unknown_issuer = new_last_cert_with_unknown_issuer;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return android::CERT_VERIFY_STATUS_ANDROID_NO_TRUSTED_ROOT;
+  NOTREACHED();
 }
 
 // Returns true if the certificate verification call was successful (regardless
@@ -285,9 +283,7 @@ bool VerifyFromAndroidTrustManager(
       verify_result->cert_status |= CERT_STATUS_INVALID;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      verify_result->cert_status |= CERT_STATUS_INVALID;
-      break;
+      NOTREACHED();
   }
 
   // Save the verified chain.

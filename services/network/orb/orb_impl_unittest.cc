@@ -1711,11 +1711,11 @@ class ResponseAnalyzerTest : public testing::Test,
         url::Origin::Create(GURL(scenario.initiator_origin)));
 
     // Check if this is a CORS request.
-    std::string cors_header_value;
-    response.headers->GetNormalizedHeader("access-control-allow-origin",
-                                          &cors_header_value);
-    auto request_mode = cors_header_value == "" ? mojom::RequestMode::kNoCors
-                                                : mojom::RequestMode::kCors;
+    auto request_mode =
+        response.headers->GetNormalizedHeader("access-control-allow-origin")
+                    .value_or(std::string()) == ""
+            ? mojom::RequestMode::kNoCors
+            : mojom::RequestMode::kCors;
 
     // Initialize the `analyzer`.
     //

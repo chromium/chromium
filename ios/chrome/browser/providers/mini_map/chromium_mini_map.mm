@@ -11,7 +11,8 @@ namespace provider {
 
 id<MiniMapController> CreateMiniMapController(
     NSString* address,
-    MiniMapControllerCompletion completion) {
+    MiniMapControllerCompletionWithURL completion,
+    MiniMapControllerCompletionWithString completionWithQuery) {
   // Mini map is not supported in Chromium.
   return nil;
 }

@@ -98,7 +98,7 @@ class TestSchemaValidatingPolicyHandler : public SchemaValidatingPolicyHandler {
   TestSchemaValidatingPolicyHandler(const Schema& schema,
                                     SchemaOnErrorStrategy strategy)
       : SchemaValidatingPolicyHandler(kPolicyName, schema, strategy) {}
-  ~TestSchemaValidatingPolicyHandler() override {}
+  ~TestSchemaValidatingPolicyHandler() override = default;
 
   void ApplyPolicySettings(const policy::PolicyMap&, PrefValueMap*) override {}
 

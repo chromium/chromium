@@ -35,6 +35,17 @@ public class InputHintChecker {
         }
     }
 
+    /**
+     * Called when {@link org.chromium.chrome.browser.compositor.CompositorViewHolder} attempts to
+     * dispatch a touch event.
+     *
+     * <p>Records metrics about the relation between the provided input hints and the resulting
+     * dispatch of input events.
+     */
+    public static void onCompositorViewHolderTouchEvent() {
+        InputHintCheckerJni.get().onCompositorViewHolderTouchEvent();
+    }
+
     public static void setAllowSetViewForTesting(boolean allow) {
         sAllowSetViewForTesting = allow;
     }
@@ -80,9 +91,15 @@ public class InputHintChecker {
         InputHintCheckerJni.get().setView(new Object());
     }
 
+    public static void setIsAfterInputYieldForTesting(boolean after) {
+        InputHintCheckerJni.get().setIsAfterInputYieldForTesting(after); // IN-TEST
+    }
+
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void setView(Object view);
+
+        void onCompositorViewHolderTouchEvent();
 
         boolean isInitializedForTesting(); // IN-TEST
 
@@ -91,5 +108,7 @@ public class InputHintChecker {
         boolean hasInputForTesting(); // IN-TEST
 
         boolean hasInputWithThrottlingForTesting(); // IN-TEST
+
+        void setIsAfterInputYieldForTesting(boolean after); // IN-TEST
     }
 }

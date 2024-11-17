@@ -6,11 +6,14 @@
 
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_api.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/geo/alternative_state_name_map_test_utils.h"
+#include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/form_data_test_api.h"
@@ -20,11 +23,26 @@
 namespace autofill {
 namespace {
 
-using test::CreateTestFormField;
-using test::CreateTestSelectOrSelectListField;
+using ::autofill::test::CreateTestFormField;
+using ::autofill::test::CreateTestSelectField;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Not;
+
+// Fakes that a `form` has been seen (without its field value) and parsed and
+// then values have been entered. Returns the resulting FormStructure.
+std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
+    const FormData& form) {
+  auto cached_form_structure =
+      std::make_unique<FormStructure>(test::WithoutValues(form));
+  cached_form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
+
+  auto form_structure = std::make_unique<FormStructure>(form);
+  form_structure->RetrieveFromCache(
+      *cached_form_structure,
+      FormStructure::RetrieveFromCacheReason::kFormImport);
+  return form_structure;
+}
 
 void CheckThatOnlyFieldByIndexHasThisPossibleType(
     const FormStructure& form_structure,
@@ -128,7 +146,9 @@ class ProfileMatchingTypesTest
   ProfileMatchingTypesTest() {
     features_.InitWithFeatures({features::kAutofillUseCAAddressModel,
                                 features::kAutofillUseFRAddressModel,
-                                features::kAutofillUseITAddressModel},
+                                features::kAutofillUseITAddressModel,
+                                features::kAutofillUseNLAddressModel
+                               },
                                {});
   }
 
@@ -298,14 +318,15 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   test_api(form).Append(CreateTestFormField("", "1", test_case.input_value,
                                             FormControlType::kInputText));
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
+                                       "en-us", &*form_structure);
 
-  ASSERT_EQ(1U, form_structure.field_count());
+  ASSERT_EQ(1U, form_structure->field_count());
 
-  FieldTypeSet possible_types = form_structure.field(0)->possible_types();
+  FieldTypeSet possible_types = form_structure->field(0)->possible_types();
   EXPECT_EQ(possible_types, expected_possible_types);
 }
 
@@ -343,14 +364,15 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest, CrowdsourceCVCFieldByValue) {
        CreateTestFormField("c_v_c", "c_v_c", kCvc,
                            FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
-  form_structure.field(0)->set_possible_types({CREDIT_CARD_NUMBER});
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, kCvc16, "en-us",
-                                       &form_structure);
+                                       &*form_structure);
 
   CheckThatOnlyFieldByIndexHasThisPossibleType(
-      form_structure, 2, CREDIT_CARD_VERIFICATION_CODE,
+      *form_structure, 2, CREDIT_CARD_VERIFICATION_CODE,
       FieldPropertiesFlags::kKnownValue);
 }
 
@@ -375,12 +397,13 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
                    CreateTestFormField("cvc_number", "cvc_number", cvc,
                                        FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   // Set the field types.
-  form_structure.field(0)->set_possible_types({CREDIT_CARD_NUMBER});
-  form_structure.field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure.field(2)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
+  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
+  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -394,9 +417,9 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
+                                       "en-us", &*form_structure);
 
-  CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 2,
+  CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
                                                FieldPropertiesFlags::kNoFlags);
 }
@@ -422,12 +445,13 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
        CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc,
                            FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   // Set the field types.
-  form_structure.field(0)->set_possible_types({CREDIT_CARD_NUMBER});
-  form_structure.field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure.field(2)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
+  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
+  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -441,9 +465,9 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
+                                       "en-us", &*form_structure);
 
-  CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 2,
+  CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 2,
                                                CREDIT_CARD_VERIFICATION_CODE,
                                                FieldPropertiesFlags::kNoFlags);
 }
@@ -468,12 +492,13 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
                                        user_entered_credit_card_exp_year,
                                        FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   // Set the field types.
-  form_structure.field(0)->set_possible_types({CREDIT_CARD_NUMBER});
-  form_structure.field(1)->set_possible_types({UNKNOWN_TYPE});
-  form_structure.field(2)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(0)->set_possible_types({CREDIT_CARD_NUMBER});
+  form_structure->field(1)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -487,9 +512,9 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
+                                       "en-us", &*form_structure);
 
-  CheckThatOnlyFieldByIndexHasThisPossibleType(form_structure, 1,
+  CheckThatOnlyFieldByIndexHasThisPossibleType(*form_structure, 1,
                                                CREDIT_CARD_VERIFICATION_CODE,
                                                FieldPropertiesFlags::kNoFlags);
 }
@@ -514,12 +539,13 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
                    CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc,
                                        FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   // Set the field types.
-  form_structure.field(0)->set_possible_types({UNKNOWN_TYPE});
-  form_structure.field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure.field(2)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(0)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
+  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -533,8 +559,8 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
-  CheckThatNoFieldHasThisPossibleType(form_structure,
+                                       "en-us", &*form_structure);
+  CheckThatNoFieldHasThisPossibleType(*form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
 }
 
@@ -556,13 +582,14 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
        CreateTestFormField("date_or_cvc2", "date_or_cvc2", cvc,
                            FormControlType::kInputText)});
 
-  FormStructure form_structure(form);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
 
   // Set the field types.
-  form_structure.field(0)->set_possible_types(
+  form_structure->field(0)->set_possible_types(
       {CREDIT_CARD_NUMBER, UNKNOWN_TYPE});
-  form_structure.field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
-  form_structure.field(2)->set_possible_types({UNKNOWN_TYPE});
+  form_structure->field(1)->set_possible_types({CREDIT_CARD_EXP_4_DIGIT_YEAR});
+  form_structure->field(2)->set_possible_types({UNKNOWN_TYPE});
 
   // Set up the test credit cards.
   std::vector<CreditCard> credit_cards;
@@ -576,10 +603,110 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   std::vector<AutofillProfile> profiles;
 
   DeterminePossibleFieldTypesForUpload(profiles, credit_cards, std::u16string(),
-                                       "en-us", &form_structure);
+                                       "en-us", &*form_structure);
 
-  CheckThatNoFieldHasThisPossibleType(form_structure,
+  CheckThatNoFieldHasThisPossibleType(*form_structure,
                                       CREDIT_CARD_VERIFICATION_CODE);
+}
+
+// Test fixture for PreProcessStateMatchingTypes().
+class PreProcessStateMatchingTypesTest : public testing::Test {
+ public:
+  void SetUp() override {
+    testing::Test::SetUp();
+    test::ClearAlternativeStateNameMapForTesting();
+    test::PopulateAlternativeStateNameMapForTesting();
+    test::SetProfileInfo(&profile_, "", "", "", "", "", "", "", "", "Bavaria",
+                         "", "DE", "");
+  }
+
+  void TearDown() override { testing::Test::TearDown(); }
+
+  TestAutofillClient& client() { return client_; }
+  AutofillProfile& profile() { return profile_; }
+
+ private:
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  test::AutofillUnitTestEnvironment autofill_test_environment_;
+  TestAutofillClient client_;
+  AutofillProfile profile_{i18n_model_definition::kLegacyHierarchyCountryCode};
+};
+
+// Tests that we properly match typed values to stored state data.
+TEST_F(PreProcessStateMatchingTypesTest, PreProcessStateMatchingTypes) {
+  const char* const kValidMatches[] = {"by", "Bavaria", "Bayern",
+                                       "BY", "B.Y",     "B-Y"};
+  for (const char* valid_match : kValidMatches) {
+    SCOPED_TRACE(valid_match);
+    FormData form;
+    form.set_fields({CreateTestFormField("Name", "Name", /*value=*/"",
+                                         FormControlType::kInputText),
+                     CreateTestFormField("State", "state", /*value=*/"",
+                                         FormControlType::kInputText)});
+
+    FormStructure form_structure(form);
+    ASSERT_EQ(form_structure.field_count(), 2U);
+    form_structure.fields()[0]->set_value(u"Test");
+    form_structure.fields()[1]->set_value(base::UTF8ToUTF16(valid_match));
+    if (base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
+      // If kAutofillFixValueSemantics is disabled, there's no distinction
+      // between the current and initial value.
+      ASSERT_EQ(form_structure.fields()[0]->value(ValueSemantics::kInitial),
+                u"");
+      ASSERT_EQ(form_structure.fields()[1]->value(ValueSemantics::kInitial),
+                u"");
+    }
+
+    PreProcessStateMatchingTypes(client(), {profile()}, form_structure);
+    EXPECT_TRUE(form_structure.field(1)->state_is_a_matching_type());
+  }
+
+  const char* const kInvalidMatches[] = {"Garbage", "BYA",   "BYA is a state",
+                                         "Bava",    "Empty", ""};
+  for (const char* invalid_match : kInvalidMatches) {
+    SCOPED_TRACE(invalid_match);
+    FormData form;
+    form.set_fields({CreateTestFormField("Name", "Name", "Test",
+                                         FormControlType::kInputText),
+                     CreateTestFormField("State", "state", invalid_match,
+                                         FormControlType::kInputText)});
+
+    FormStructure form_structure(form);
+    EXPECT_EQ(form_structure.field_count(), 2U);
+
+    PreProcessStateMatchingTypes(client(), {profile()}, form_structure);
+    EXPECT_FALSE(form_structure.field(1)->state_is_a_matching_type());
+  }
+
+  test::PopulateAlternativeStateNameMapForTesting(
+      "US", "California",
+      {{.canonical_name = "California",
+        .abbreviations = {"CA"},
+        .alternative_names = {}}});
+
+  test::SetProfileInfo(&profile(), "", "", "", "", "", "", "", "", "California",
+                       "", "US", "");
+
+  FormData form;
+  form.set_fields({CreateTestFormField("Name", "Name", /*value=*/"",
+                                       FormControlType::kInputText),
+                   CreateTestFormField("State", "state", /*value=*/"",
+                                       FormControlType::kInputText)});
+
+  FormStructure form_structure(form);
+  ASSERT_EQ(form_structure.field_count(), 2U);
+  form_structure.fields()[0]->set_value(u"Test");
+  form_structure.fields()[1]->set_value(u"CA");
+  if (base::FeatureList::IsEnabled(features::kAutofillFixValueSemantics)) {
+    // If kAutofillFixValueSemantics is disabled, there's no distinction between
+    // the current and initial value.
+    ASSERT_EQ(form_structure.fields()[0]->value(ValueSemantics::kInitial), u"");
+    ASSERT_EQ(form_structure.fields()[1]->value(ValueSemantics::kInitial), u"");
+  }
+
+  PreProcessStateMatchingTypes(client(), {profile()}, form_structure);
+  EXPECT_TRUE(form_structure.field(1)->state_is_a_matching_type());
 }
 
 }  // namespace

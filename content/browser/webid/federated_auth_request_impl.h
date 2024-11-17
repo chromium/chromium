@@ -142,7 +142,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
     blink::mojom::IdentityProviderRequestOptionsPtr provider;
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
-    blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kWidget};
+    blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kPassive};
   };
 
   struct IdentityProviderInfo {
@@ -159,7 +159,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
     IdentityProviderMetadata metadata;
     bool has_failing_idp_signin_status{false};
     blink::mojom::RpContext rp_context{blink::mojom::RpContext::kSignIn};
-    blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kWidget};
+    blink::mojom::RpMode rp_mode{blink::mojom::RpMode::kPassive};
     IdentityProviderDataPtr data;
   };
 
@@ -199,7 +199,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   };
   DialogType GetDialogType() const { return dialog_type_; }
 
-  enum IdentitySelectionType { kExplicit, kAutoWidget, kAutoButton };
+  enum IdentitySelectionType { kExplicit, kAutoPassive, kAutoActive };
 
   bool ShouldNotifyDevtoolsForDialogType(DialogType type);
 
@@ -223,6 +223,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // etc.)
   bool CanShowContinueOnPopup() const;
 
+  bool HasUserTriedToSignInToIdp(const GURL& idp_config_url) {
+    return idps_user_tried_to_signin_to_.contains(idp_config_url);
+  }
+
  private:
   friend class FederatedAuthRequestImplTest;
 
@@ -235,9 +239,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
     // Whether accounts endpoint fetch succeeded for at least one IdP.
     bool did_succeed_for_at_least_one_idp{false};
-
-    // Whether the fetch was triggered by an IdP sign-in status update.
-    bool for_idp_signin{false};
   };
 
   FederatedAuthRequestImpl(
@@ -252,10 +253,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Fetch well-known, config, accounts and client metadata endpoints for
   // passed-in IdPs. Uses parameters from `token_request_get_infos_`.
-  // `for_idp_signin` indicates whether the fetch is as a result of an IdP
-  // sign-in status update.
-  void FetchEndpointsForIdps(const std::set<GURL>& idp_config_urls,
-                             bool for_idp_signin);
+  void FetchEndpointsForIdps(const std::set<GURL>& idp_config_urls);
 
   void OnAllConfigAndWellKnownFetched(
       std::vector<FederatedProviderFetcher::FetchResult> fetch_results);
@@ -335,7 +333,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void OnDismissErrorDialog(
       const GURL& idp_config_url,
       IdpNetworkRequestManager::FetchStatus status,
-      std::optional<TokenError> token_error,
       IdentityRequestDialogController::DismissReason dismiss_reason);
   void OnDialogDismissed(
       IdentityRequestDialogController::DismissReason dismiss_reason);
@@ -361,7 +358,6 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void CompleteRequestWithError(
       blink::mojom::FederatedAuthRequestResult result,
       std::optional<content::FedCmRequestIdTokenStatus> token_status,
-      std::optional<TokenError> token_error,
       bool should_delay_callback);
 
   // Completes request. Displays a dialog if there is an error and the error is
@@ -434,7 +430,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                   const GURL& idp_config_url,
                   GURL login_url);
 
-  void MaybeShowButtonModeModalDialog(const GURL& idp_config_url,
+  void MaybeShowActiveModeModalDialog(const GURL& idp_config_url,
                                       const GURL& idp_login_url);
 
   void CompleteDisconnectRequest(DisconnectCallback callback,
@@ -455,18 +451,18 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   bool IsNewlyLoggedIn(const IdentityRequestAccount& account);
 
-  // Returns whether there are accounts remaining after applying the account
+  // Returns whether the algorithm should terminate after applying the account
   // label filter.
   bool FilterAccountsWithLabel(
       const std::string& label,
       std::vector<IdentityRequestAccountPtr>& accounts);
-  // Returns whether there are accounts remaining after applying the login hint
-  // filter.
+  // Returns whether the algorithm should terminate after applying the login
+  // hint filter.
   bool FilterAccountsWithLoginHint(
       const std::string& login_hint,
       std::vector<IdentityRequestAccountPtr>& accounts);
-  // Returns whether there are accounts remaining after applying the domain hint
-  // filter.
+  // Returns whether the algorithm should terminate after applying the domain
+  // hint filter.
   bool FilterAccountsWithDomainHint(
       const std::string& domain_hint,
       std::vector<IdentityRequestAccountPtr>& accounts);
@@ -570,12 +566,17 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Data related to in-progress FetchEndpointsForIdps() fetch.
   FetchData fetch_data_;
 
+  // The set of IDPs that the user has tried to sign in to since the start of
+  // the current request.
+  base::flat_set<GURL> idps_user_tried_to_signin_to_;
+
   // List of config URLs of IDPs in the same order as the providers specified in
   // the navigator.credentials.get call.
   std::vector<GURL> idp_order_;
 
   // If dialog_type_ is kConfirmIdpLogin, this is the login URL for the IDP. If
-  // LoginToIdp() is called, this is the login URL for the IDP.
+  // LoginToIdp() is called, this is the login URL for the IDP. Does not include
+  // the filters as query parameters, if any.
   GURL login_url_;
 
   // If dialog_type_ is kError or a popup is open, this is the config URL for
@@ -591,7 +592,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   DialogType dialog_type_ = kNone;
   MediationRequirement mediation_requirement_;
   IdentitySelectionType identity_selection_type_ = kExplicit;
-  RpMode rp_mode_{RpMode::kWidget};
+  RpMode rp_mode_{RpMode::kPassive};
 
   // Time when the accounts dialog is last shown for metrics purposes.
   std::optional<base::TimeTicks> accounts_dialog_shown_time_;
@@ -609,12 +610,12 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   // Wallets or multi-IDP are not counted.
   int num_requests_{0};
 
-  // The button flow requires user activation to be kicked off. We'd also need
+  // The active flow requires user activation to be kicked off. We'd also need
   // this information along the way. e.g. showing pop-up window when accounts
   // fetch is failed. However, the function `HasTransientUserActivation` may
   // return false at that time because the network requests may be very slow
   // such that the previous user gesture is expired. Therefore we store the
-  // information to use it during the entire the button flow.
+  // information to use it during the entire the active flow.
   bool had_transient_user_activation_{false};
 
   base::WeakPtrFactory<FederatedAuthRequestImpl> weak_ptr_factory_{this};

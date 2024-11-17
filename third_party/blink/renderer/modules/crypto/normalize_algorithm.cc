@@ -145,8 +145,7 @@ bool VerifyAlgorithmNameMappings(const AlgorithmNameMapping* begin,
   for (const AlgorithmNameMapping* it = begin; it != end; ++it) {
     if (it->algorithm_name_length != strlen(it->algorithm_name))
       return false;
-    String str(it->algorithm_name,
-               static_cast<unsigned>(it->algorithm_name_length));
+    String str(base::span(it->algorithm_name, it->algorithm_name_length));
     if (!str.ContainsOnlyASCIIOrEmpty())
       return false;
     if (str.UpperASCII() != str)
@@ -245,20 +244,18 @@ class ErrorContext {
       return String();
 
     StringBuilder result;
-    constexpr const char* const separator = ": ";
-    constexpr wtf_size_t separator_length =
-        std::char_traits<char>::length(separator);
+    const base::span<const LChar> separator =
+        base::byte_span_from_cstring(": ");
 
-    wtf_size_t length = (messages_.size() - 1) * separator_length;
+    wtf_size_t length = (messages_.size() - 1) * separator.size();
     for (wtf_size_t i = 0; i < messages_.size(); ++i)
       length += strlen(messages_[i]);
     result.ReserveCapacity(length);
 
     for (wtf_size_t i = 0; i < messages_.size(); ++i) {
       if (i)
-        result.Append(separator, separator_length);
-      result.Append(messages_[i],
-                    static_cast<wtf_size_t>(strlen(messages_[i])));
+        result.Append(separator);
+      result.Append(StringView(messages_[i]));
     }
 
     return result.ToString();
@@ -1073,8 +1070,7 @@ bool ParseAlgorithmParams(v8::Isolate* isolate,
       context.Add("Pbkdf2Params");
       return ParsePbkdf2Params(isolate, raw, params, context, exception_state);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 const char* OperationToString(WebCryptoOperation op) {

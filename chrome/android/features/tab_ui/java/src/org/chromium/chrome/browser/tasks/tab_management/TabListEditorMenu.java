@@ -60,10 +60,8 @@ public class TabListEditorMenu
     /**
      * @param context to use for accessing resources.
      * @param actionViewLayout the actionViewLayout to use.
-     * @param anchorView the {@link View} to anchor on.
      */
-    public TabListEditorMenu(
-            Context context, TabListEditorActionViewLayout actionViewLayout) {
+    public TabListEditorMenu(Context context, TabListEditorActionViewLayout actionViewLayout) {
         mContext = context;
         mActionViewLayout = actionViewLayout;
 

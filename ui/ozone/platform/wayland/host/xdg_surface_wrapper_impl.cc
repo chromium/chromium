@@ -23,8 +23,7 @@ XDGSurfaceWrapperImpl::~XDGSurfaceWrapperImpl() {
 
 bool XDGSurfaceWrapperImpl::Initialize() {
   if (!connection_->shell()) {
-    NOTREACHED_IN_MIGRATION() << "Wrong shell protocol";
-    return false;
+    NOTREACHED() << "Wrong shell protocol";
   }
 
   xdg_surface_.reset(xdg_wm_base_get_xdg_surface(

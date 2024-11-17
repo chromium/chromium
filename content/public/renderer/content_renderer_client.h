@@ -309,11 +309,14 @@ class CONTENT_EXPORT ContentRendererClient {
   GetSupportedKeySystems(RenderFrame* render_frame,
                          media::GetSupportedKeySystemsCB cb);
 
-  // Allows embedder to describe customized audio capabilities.
-  virtual bool IsSupportedAudioType(const media::AudioType& type);
+  // Allows embedder to describe customized audio decoder capabilities.
+  virtual bool IsDecoderSupportedAudioType(const media::AudioType& type);
 
-  // Allows embedder to describe customized video capabilities.
-  virtual bool IsSupportedVideoType(const media::VideoType& type);
+  // Allows embedder to describe customized video decoder capabilities.
+  virtual bool IsDecoderSupportedVideoType(const media::VideoType& type);
+
+  // Allows embedder to describe customized video encoder capabilities.
+  virtual bool IsEncoderSupportedVideoType(const media::VideoType& type);
 
   // Return true if the bitstream format |codec| is supported by the audio sink.
   virtual bool IsSupportedBitstreamAudioCodec(media::AudioCodec codec);

@@ -17,15 +17,15 @@
 class TabUtilsTest : public PlatformTest {
  public:
   TabUtilsTest() {
-    TestChromeBrowserState::Builder browser_state_builder;
-    browser_state_ = std::move(browser_state_builder).Build();
+    TestProfileIOS::Builder profile_builder;
+    profile_ = std::move(profile_builder).Build();
     browser_ = std::make_unique<TestBrowser>(
-        browser_state_.get(), std::make_unique<FakeWebStateListDelegate>());
+        profile_.get(), std::make_unique<FakeWebStateListDelegate>());
     web_state_list_ = browser_->GetWebStateList();
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   raw_ptr<WebStateList> web_state_list_;
 };

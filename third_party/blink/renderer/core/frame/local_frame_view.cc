@@ -297,7 +297,6 @@ LocalFrameView::LocalFrameView(LocalFrame& frame, gfx::Rect frame_rect)
       intersection_observation_state_(kNotNeeded),
       main_thread_scrolling_reasons_(0),
       forced_layout_stack_depth_(0),
-      forced_layout_start_time_(base::TimeTicks()),
       paint_frame_count_(0),
       unique_id_(NewUniqueObjectId()),
       layout_shift_tracker_(MakeGarbageCollected<LayoutShiftTracker>(this)),
@@ -330,7 +329,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(fragment_anchor_);
   visitor->Trace(scroll_anchoring_scrollable_areas_);
   visitor->Trace(animating_scrollable_areas_);
-  visitor->Trace(user_scrollable_areas_);
+  visitor->Trace(scrollable_areas_);
   visitor->Trace(background_attachment_fixed_objects_);
   visitor->Trace(auto_size_info_);
   visitor->Trace(pagination_state_);
@@ -531,9 +530,7 @@ void LocalFrameView::InvalidateAllCustomScrollbarsOnActiveChanged() {
 }
 
 void LocalFrameView::UsesOverlayScrollbarsChanged() {
-  if (!user_scrollable_areas_)
-    return;
-  for (const auto& scrollable_area : user_scrollable_areas_->Values()) {
+  for (const auto& scrollable_area : scrollable_areas_.Values()) {
     if (scrollable_area->ScrollsOverflow() || scrollable_area->HasScrollbar()) {
       scrollable_area->RemoveScrollbarsForReconstruction();
       if (auto* layout_box = scrollable_area->GetLayoutBox()) {
@@ -784,8 +781,6 @@ void LocalFrameView::PerformLayout() {
     }
   }
 
-  document->Fetcher()->UpdateAllImageResourcePriorities();
-
   Lifecycle().AdvanceTo(DocumentLifecycle::kAfterPerformLayout);
 
   TRACE_EVENT_END0(PERFORM_LAYOUT_TRACE_CATEGORIES,
@@ -852,25 +847,32 @@ void LocalFrameView::UpdateLayout() {
   probe::DidChangeViewport(frame_.Get());
 }
 
-void LocalFrameView::WillStartForcedLayout() {
+void LocalFrameView::WillStartForcedLayout(DocumentUpdateReason reason) {
+  if (!base::TimeTicks::IsHighResolution()) {
+    return;
+  }
+
   // UpdateLayout is re-entrant for auto-sizing and plugins. So keep
   // track of stack depth to include all the time in the top-level call.
   forced_layout_stack_depth_++;
   if (forced_layout_stack_depth_ > 1)
     return;
-  forced_layout_start_time_ = base::TimeTicks::Now();
-  if (auto* metrics_aggregator = GetUkmAggregator())
-    metrics_aggregator->BeginForcedLayout();
+  if (auto* metrics_aggregator = GetUkmAggregator()) {
+    DCHECK(!forced_layout_timer_.has_value());
+    forced_layout_timer_ =
+        metrics_aggregator->GetScopedForcedLayoutTimer(reason);
+  }
 }
 
-void LocalFrameView::DidFinishForcedLayout(DocumentUpdateReason reason) {
+void LocalFrameView::DidFinishForcedLayout() {
+  if (!base::TimeTicks::IsHighResolution()) {
+    return;
+  }
+
   CHECK_GT(forced_layout_stack_depth_, (unsigned)0);
   forced_layout_stack_depth_--;
-  if (!forced_layout_stack_depth_ && base::TimeTicks::IsHighResolution()) {
-    if (auto* metrics_aggregator = GetUkmAggregator()) {
-      metrics_aggregator->RecordForcedLayoutSample(
-          reason, forced_layout_start_time_, base::TimeTicks::Now());
-    }
+  if (!forced_layout_stack_depth_) {
+    forced_layout_timer_.reset();
   }
 }
 
@@ -1030,7 +1032,7 @@ void LocalFrameView::ForceUpdateViewportIntersections() {
   // update; but we can't wait for a lifecycle update to run them, because a
   // hidden frame won't run lifecycle updates. Force layout and run them now.
   DisallowThrottlingScope disallow_throttling(*this);
-  UpdateLifecycleToPrePaintClean(
+  UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kIntersectionObservation);
   ComputeIntersectionsContext context;
   UpdateViewportIntersectionsForSubtree(
@@ -1682,6 +1684,7 @@ void LocalFrameView::PerformPostLayoutTasks(bool visual_viewport_size_changed) {
   Document* document = GetFrame().GetDocument();
   DCHECK(document);
 
+  document->Fetcher()->UpdateAllImageResourcePriorities();
   UpdateDocumentDraggableRegions();
   ExecutePendingStickyUpdates();
 
@@ -1716,10 +1719,7 @@ void LocalFrameView::NotifyPageThatContentAreaWillPaint() const {
   if (!page)
     return;
 
-  if (!user_scrollable_areas_)
-    return;
-
-  for (const auto& scrollable_area : user_scrollable_areas_->Values()) {
+  for (const auto& scrollable_area : scrollable_areas_.Values()) {
     if (!scrollable_area->ScrollbarsCanBeActive())
       continue;
 
@@ -1931,12 +1931,6 @@ bool LocalFrameView::UpdateAllLifecyclePhasesForTest() {
   return result;
 }
 
-bool LocalFrameView::UpdateLifecycleToPrePaintClean(
-    DocumentUpdateReason reason) {
-  return GetFrame().LocalFrameRoot().View()->UpdateLifecyclePhases(
-      DocumentLifecycle::kPrePaintClean, reason);
-}
-
 bool LocalFrameView::UpdateLifecycleToCompositingInputsClean(
     DocumentUpdateReason reason) {
   return GetFrame().LocalFrameRoot().View()->UpdateLifecyclePhases(
@@ -1947,6 +1941,28 @@ bool LocalFrameView::UpdateAllLifecyclePhasesExceptPaint(
     DocumentUpdateReason reason) {
   return GetFrame().LocalFrameRoot().View()->UpdateLifecyclePhases(
       DocumentLifecycle::kPrePaintClean, reason);
+}
+
+void LocalFrameView::DryRunPaintingForPrerender() {
+  TRACE_EVENT("blink", "DryRunPaintingForPrerender");
+  CHECK(GetFrame().GetDocument()->IsPrerendering());
+  bool update_result =
+      GetFrame().LocalFrameRoot().View()->UpdateLifecyclePhases(
+          DocumentLifecycle::kPrePaintClean, DocumentUpdateReason::kPrerender);
+  if (!update_result) {
+    return;
+  }
+  if (paint_artifact_compositor_) {
+    // If `paint_artifact_compositor_` has been created, PaintArtifact might be
+    // referred in its `pending_layers`, and since creating the paint tree again
+    // may discard the old PaintArtifact, which breaks the reference
+    // relationship down, we should not build the tree again. It is very
+    // unlikely to reach here, just to avoid race conditions.
+    return;
+  }
+  std::optional<PaintController> paint_controller;
+  PaintTree(PaintBenchmarkMode::kNormal, paint_controller);
+  return;
 }
 
 void LocalFrameView::UpdateLifecyclePhasesForPrinting() {
@@ -2029,14 +2045,24 @@ bool LocalFrameView::NotifyResizeObservers() {
     if (resize_controller->SkippedObservations() &&
         !resize_controller->IsLoopLimitErrorDispatched()) {
       resize_controller->ClearObservations();
-      ErrorEvent* error = ErrorEvent::Create(
-          "ResizeObserver loop completed with undelivered notifications.",
-          CaptureSourceLocation(frame_->DomWindow()), nullptr);
-      // We're using |SanitizeScriptErrors::kDoNotSanitize| as the error is made
-      // by blink itself.
-      // TODO(yhirano): Reconsider this.
-      frame_->DomWindow()->DispatchErrorEvent(
-          error, SanitizeScriptErrors::kDoNotSanitize);
+
+      if (auto* script_state = ToScriptStateForMainWorld(frame_->DomWindow())) {
+        ScriptState::Scope scope(script_state);
+        const String message =
+            "ResizeObserver loop completed with undelivered notifications.";
+        ScriptValue value(script_state->GetIsolate(),
+                          V8String(script_state->GetIsolate(), message));
+        // TODO(pdr): We could report the source location of one of the
+        // observers which had skipped observations.
+        ErrorEvent* error = ErrorEvent::Create(message, CaptureSourceLocation(),
+                                               value, &script_state->World());
+        // We're using |SanitizeScriptErrors::kDoNotSanitize| as the error is
+        // made by blink itself.
+        // TODO(yhirano): Reconsider this.
+        frame_->DomWindow()->DispatchErrorEvent(
+            error, SanitizeScriptErrors::kDoNotSanitize);
+      }
+
       // Ensure notifications will get delivered in next cycle.
       ScheduleAnimation();
       resize_controller->SetLoopLimitErrorDispatched(true);
@@ -2459,12 +2485,10 @@ bool LocalFrameView::ShouldDeferLayoutSnap() const {
 
 void LocalFrameView::EnqueueScrollSnapChangingFromImplIfNecessary() {
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-    const auto* scrollable_areas = frame_view.UserScrollableAreas();
-    if (!scrollable_areas) {
-      return;
-    }
-    for (const auto& area : scrollable_areas->Values()) {
-      area->EnqueueScrollSnapChangingEventFromImplIfNeeded();
+    for (const auto& area : frame_view.scrollable_areas_.Values()) {
+      if (area->ScrollsOverflow()) {
+        area->EnqueueScrollSnapChangingEventFromImplIfNeeded();
+      }
     }
   });
 }
@@ -2984,14 +3008,12 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
       scroll_translation_nodes;
   ForAllNonThrottledLocalFrameViews(
       [&scroll_translation_nodes](LocalFrameView& frame_view) {
-        if (const auto* scrollable_areas = frame_view.UserScrollableAreas()) {
-          for (const auto& area : scrollable_areas->Values()) {
-            const auto* paint_properties =
-                area->GetLayoutBox()->FirstFragment().PaintProperties();
-            if (paint_properties && paint_properties->Scroll()) {
-              scroll_translation_nodes.push_back(
-                  paint_properties->ScrollTranslation());
-            }
+        for (const auto& area : frame_view.ScrollableAreas().Values()) {
+          const auto* paint_properties =
+              area->GetLayoutBox()->FirstFragment().PaintProperties();
+          if (paint_properties && paint_properties->Scroll()) {
+            scroll_translation_nodes.push_back(
+                paint_properties->ScrollTranslation());
           }
         }
       });
@@ -3117,6 +3139,10 @@ void LocalFrameView::UpdateStyleAndLayout() {
     ScriptForbiddenScope::AllowUserAgentScript allow_script;
     did_layout = UpdateStyleAndLayoutInternal();
   }
+
+  // Update counters after layout since counters may be added during layout for
+  // generated ::scroll-markers.
+  frame_->GetDocument()->GetStyleEngine().UpdateCounters();
 
   // Second pass: run autosize until it stabilizes
   if (auto_size_info_) {
@@ -3581,20 +3607,32 @@ void LocalFrameView::RemoveAnimatingScrollableArea(
   animating_scrollable_areas_->erase(scrollable_area);
 }
 
+void LocalFrameView::AddScrollableArea(
+    PaintLayerScrollableArea& scrollable_area) {
+  CHECK(RuntimeEnabledFeatures::UnifiedScrollableAreasEnabled());
+  scrollable_areas_.insert(scrollable_area.GetScrollElementId(),
+                           scrollable_area);
+}
+
+void LocalFrameView::RemoveScrollableArea(
+    PaintLayerScrollableArea& scrollable_area) {
+  scrollable_areas_.erase(scrollable_area.GetScrollElementId());
+  RemoveScrollAnchoringScrollableArea(&scrollable_area);
+  RemoveAnimatingScrollableArea(&scrollable_area);
+  RemovePendingSnapUpdate(&scrollable_area);
+}
+
 void LocalFrameView::AddUserScrollableArea(
-    PaintLayerScrollableArea* scrollable_area) {
-  DCHECK(scrollable_area);
-  if (!user_scrollable_areas_)
-    user_scrollable_areas_ = MakeGarbageCollected<ScrollableAreaMap>();
-  user_scrollable_areas_->insert(scrollable_area->GetScrollElementId(),
-                                 scrollable_area);
+    PaintLayerScrollableArea& scrollable_area) {
+  CHECK(!RuntimeEnabledFeatures::UnifiedScrollableAreasEnabled());
+  scrollable_areas_.insert(scrollable_area.GetScrollElementId(),
+                           &scrollable_area);
 }
 
 void LocalFrameView::RemoveUserScrollableArea(
-    PaintLayerScrollableArea* scrollable_area) {
-  if (user_scrollable_areas_) {
-    user_scrollable_areas_->erase(scrollable_area->GetScrollElementId());
-  }
+    PaintLayerScrollableArea& scrollable_area) {
+  CHECK(!RuntimeEnabledFeatures::UnifiedScrollableAreasEnabled());
+  scrollable_areas_.erase(scrollable_area.GetScrollElementId());
 }
 
 void LocalFrameView::AttachToLayout() {
@@ -3738,19 +3776,20 @@ void LocalFrameView::DidChangeScrollOffset() {
 
 ScrollableArea* LocalFrameView::ScrollableAreaWithElementId(
     const CompositorElementId& id) {
-  // Check for the layout viewport, which may not be in user_scrollable_areas_
-  // if it is styled overflow: hidden.  (Other overflow: hidden elements won't
-  // have composited scrolling layers per crbug.com/784053, so we don't have to
-  // worry about them.)
-  ScrollableArea* viewport = LayoutViewport();
-  if (id == viewport->GetScrollElementId())
-    return viewport;
-
-  if (user_scrollable_areas_) {
-    auto it = user_scrollable_areas_->find(id);
-    if (it != user_scrollable_areas_->end()) {
-      return it->value;
+  if (!RuntimeEnabledFeatures::UnifiedScrollableAreasEnabled()) {
+    // Check for the layout viewport, which may not be in scrollable_areas_
+    // if it is styled overflow: hidden.  (Other overflow: hidden elements won't
+    // have composited scrolling layers per crbug.com/784053, so we don't have
+    // to worry about them.)
+    ScrollableArea* viewport = LayoutViewport();
+    if (id == viewport->GetScrollElementId()) {
+      return viewport;
     }
+  }
+
+  auto it = scrollable_areas_.find(id);
+  if (it != scrollable_areas_.end()) {
+    return it->value;
   }
   return nullptr;
 }
@@ -4597,7 +4636,7 @@ String LocalFrameView::MainThreadScrollingReasonsAsText() {
     const auto* compositor =
         GetFrame().LocalFrameRoot().View()->paint_artifact_compositor_.Get();
     CHECK(compositor);
-    reasons = compositor->GetMainThreadScrollingReasons(*properties->Scroll());
+    reasons = compositor->GetMainThreadRepaintReasons(*properties->Scroll());
   }
   return String(cc::MainThreadScrollingReason::AsText(reasons).c_str());
 }
@@ -4838,8 +4877,8 @@ void LocalFrameView::SetCullRectNeedsUpdateForFrames(bool disable_expansion) {
         // invalidate cull rects for user scrollable areas. This may not
         // invalidate all cull rects affected by disable_expansion but it
         // doesn't affect correctness.
-        if (disable_expansion && frame_view.UserScrollableAreas()) {
-          for (const auto& area : frame_view.UserScrollableAreas()->Values()) {
+        if (disable_expansion) {
+          for (const auto& area : frame_view.ScrollableAreas().Values()) {
             area->Layer()->SetNeedsCullRectUpdate();
           }
         }

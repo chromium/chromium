@@ -16,17 +16,6 @@
 namespace ash {
 namespace {
 
-const char kCellularPolicyPattern[] =
-    R"({
-      "GUID": "%s",
-      "Type": "Cellular",
-      "Name": "cellular_policy",
-      "Cellular": {
-        "SMDPAddress": "LPA:1$SMDP.GSMA.COM$123",
-        "ICCID": "%s"
-      }
-    })";
-
 class EsimPolicyInteractiveUiTest : public EsimInteractiveUiTestBase {
  public:
   std::optional<bool> NetworkIsConnected(const std::string& service_path) {
@@ -57,15 +46,10 @@ class EsimPolicyInteractiveUiTest : public EsimInteractiveUiTestBase {
       global_config.Set(
           ::onc::global_network_config::kAllowOnlyPolicyCellularNetworks,
           allow_only_managed_cellular);
-      std::optional<base::Value::Dict> cellular_config =
-          chromeos::onc::ReadDictionaryFromJson(base::StringPrintf(
-              kCellularPolicyPattern, esim_info_->guid().c_str(),
-              esim_info_->iccid().c_str()));
-      ASSERT_TRUE(cellular_config.has_value());
 
       auto onc_configs = base::Value::List();
       if (set_existing_esim_as_managed) {
-        onc_configs.Append(cellular_config->Clone());
+        onc_configs.Append(GenerateCellularPolicy(*esim_info_));
       }
 
       NetworkHandler::Get()->managed_network_configuration_handler()->SetPolicy(

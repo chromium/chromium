@@ -43,15 +43,6 @@ class ActionHandlersManifestTest : public ManifestTest {
         extension->GetManifestData(manifest_keys::kActionHandlers));
     return info ? info->action_handlers : std::set<app_runtime::ActionType>();
   }
-
-  // Returns all action handlers associated with |extension|.
-  std::set<app_runtime::ActionType> GetLockScreenActionHandlers(
-      const Extension* extension) {
-    ActionHandlersInfo* info = static_cast<ActionHandlersInfo*>(
-        extension->GetManifestData(manifest_keys::kActionHandlers));
-    return info ? info->lock_screen_action_handlers
-                : std::set<app_runtime::ActionType>();
-  }
 };
 
 }  // namespace
@@ -67,8 +58,6 @@ TEST_F(ActionHandlersManifestTest, InvalidType) {
                      manifest_errors::kInvalidActionHandlersActionType);
   LoadAndExpectError(CreateManifest("[{}]"),
                      manifest_errors::kInvalidActionHandlerDictionary);
-  LoadAndExpectError(CreateManifest(R"([{"enabled_on_lock_screen": false}])"),
-                     manifest_errors::kInvalidActionHandlerDictionary);
   LoadAndExpectError(CreateManifest(R"([{"action": "invalid_handler"}])"),
                      manifest_errors::kInvalidActionHandlersActionType);
 }
@@ -79,60 +68,27 @@ TEST_F(ActionHandlersManifestTest, VerifyParse) {
 
   EXPECT_FALSE(ActionHandlersInfo::HasActionHandler(
       none.get(), app_runtime::ActionType::kNewNote));
-  EXPECT_FALSE(ActionHandlersInfo::HasLockScreenActionHandler(
-      none.get(), app_runtime::ActionType::kNewNote));
 
   scoped_refptr<Extension> new_note =
       LoadAndExpectSuccess(CreateManifest("[\"new_note\"]"));
   EXPECT_EQ(
       std::set<app_runtime::ActionType>{app_runtime::ActionType::kNewNote},
       GetActionHandlers(new_note.get()));
-  EXPECT_TRUE(GetLockScreenActionHandlers(new_note.get()).empty());
   EXPECT_TRUE(ActionHandlersInfo::HasActionHandler(
-      new_note.get(), app_runtime::ActionType::kNewNote));
-  EXPECT_FALSE(ActionHandlersInfo::HasLockScreenActionHandler(
       new_note.get(), app_runtime::ActionType::kNewNote));
 }
 
 TEST_F(ActionHandlersManifestTest, ParseDictionaryActionValues) {
-  scoped_refptr<Extension> no_enabled_on_lock_screen_key =
+  scoped_refptr<Extension> new_note_key =
       LoadAndExpectSuccess(CreateManifest(R"([{"action": "new_note"}])"));
   EXPECT_EQ(
       std::set<app_runtime::ActionType>{app_runtime::ActionType::kNewNote},
-      GetActionHandlers(no_enabled_on_lock_screen_key.get()));
-  EXPECT_TRUE(
-      GetLockScreenActionHandlers(no_enabled_on_lock_screen_key.get()).empty());
+      GetActionHandlers(new_note_key.get()));
   EXPECT_TRUE(ActionHandlersInfo::HasActionHandler(
-      no_enabled_on_lock_screen_key.get(), app_runtime::ActionType::kNewNote));
-  EXPECT_FALSE(ActionHandlersInfo::HasLockScreenActionHandler(
-      no_enabled_on_lock_screen_key.get(), app_runtime::ActionType::kNewNote));
-
-  scoped_refptr<Extension> enabled_on_lock_screen_false =
-      LoadAndExpectSuccess(CreateManifest(
-          R"([{"action": "new_note", "enabled_on_lock_screen": false}])"));
-  EXPECT_EQ(
-      std::set<app_runtime::ActionType>{app_runtime::ActionType::kNewNote},
-      GetActionHandlers(enabled_on_lock_screen_false.get()));
-  EXPECT_TRUE(
-      GetLockScreenActionHandlers(enabled_on_lock_screen_false.get()).empty());
-  EXPECT_TRUE(ActionHandlersInfo::HasActionHandler(
-      enabled_on_lock_screen_false.get(), app_runtime::ActionType::kNewNote));
-  EXPECT_FALSE(ActionHandlersInfo::HasLockScreenActionHandler(
-      enabled_on_lock_screen_false.get(), app_runtime::ActionType::kNewNote));
-
-  scoped_refptr<Extension> enabled_on_lock_screen_true =
-      LoadAndExpectSuccess(CreateManifest(
-          R"([{"action": "new_note", "enabled_on_lock_screen": true}])"));
-  EXPECT_EQ(
-      std::set<app_runtime::ActionType>{app_runtime::ActionType::kNewNote},
-      GetActionHandlers(enabled_on_lock_screen_true.get()));
-  EXPECT_EQ(
-      std::set<app_runtime::ActionType>{app_runtime::ActionType::kNewNote},
-      GetLockScreenActionHandlers(enabled_on_lock_screen_true.get()));
-  EXPECT_TRUE(ActionHandlersInfo::HasActionHandler(
-      enabled_on_lock_screen_true.get(), app_runtime::ActionType::kNewNote));
-  EXPECT_TRUE(ActionHandlersInfo::HasLockScreenActionHandler(
-      enabled_on_lock_screen_true.get(), app_runtime::ActionType::kNewNote));
+      new_note_key.get(), app_runtime::ActionType::kNewNote));
+  scoped_refptr<Extension> no_new_note_key =
+      LoadAndExpectSuccess(CreateManifest(R"([])"));
+  EXPECT_TRUE(GetActionHandlers(no_new_note_key.get()).empty());
 }
 
 TEST_F(ActionHandlersManifestTest, DuplicateHandlers) {
@@ -141,13 +97,6 @@ TEST_F(ActionHandlersManifestTest, DuplicateHandlers) {
   LoadAndExpectError(CreateManifest(
                          R"(["new_note", {
                               "action": "new_note",
-                              "enabled_on_lock_screen": true
-                            }])"),
-                     manifest_errors::kDuplicateActionHandlerFound);
-  LoadAndExpectError(CreateManifest(
-                         R"(["new_note", {
-                              "action": "new_note",
-                              "enabled_on_lock_screen": false
                             }])"),
                      manifest_errors::kDuplicateActionHandlerFound);
   LoadAndExpectError(CreateManifest(
@@ -155,16 +104,6 @@ TEST_F(ActionHandlersManifestTest, DuplicateHandlers) {
                               "action": "new_note"
                             }, {
                               "action": "new_note",
-                              "enabled_on_lock_screen": false
-                            }])"),
-                     manifest_errors::kDuplicateActionHandlerFound);
-  LoadAndExpectError(CreateManifest(
-                         R"([{
-                              "action": "new_note",
-                              "enabled_on_lock_screen": true
-                            }, {
-                              "action": "new_note",
-                              "enabled_on_lock_screen": false
                             }])"),
                      manifest_errors::kDuplicateActionHandlerFound);
 }

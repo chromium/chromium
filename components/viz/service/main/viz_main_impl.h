@@ -92,13 +92,21 @@ class VizMainImpl : public mojom::VizMain {
     // We use a |PowerMonitorSource| here instead of a boolean flag so that
     // tests can use mocks and fakes for testing.
     mutable std::unique_ptr<base::PowerMonitorSource> power_monitor_source;
+#if BUILDFLAG(IS_ANDROID)
+    // GpuServiceImpl normally creates the below objects internally. However,
+    // on Android WebView they are created by the embedder.
     raw_ptr<gpu::SyncPointManager> sync_point_manager = nullptr;
     raw_ptr<gpu::SharedImageManager> shared_image_manager = nullptr;
     raw_ptr<gpu::Scheduler> scheduler = nullptr;
+#endif
     raw_ptr<base::WaitableEvent> shutdown_event = nullptr;
     scoped_refptr<base::SingleThreadTaskRunner> io_thread_task_runner;
     std::unique_ptr<ukm::MojoUkmRecorder> ukm_recorder;
+#if BUILDFLAG(IS_ANDROID)
+    // GpuServiceImpl normally creates the below object internally. However,
+    // on Android WebView it is created by the embedder.
     raw_ptr<VizCompositorThreadRunner> viz_compositor_thread_runner = nullptr;
+#endif
   };
 
   VizMainImpl(Delegate* delegate,
@@ -120,7 +128,8 @@ class VizMainImpl : public mojom::VizMain {
       mojo::PendingRemote<
           discardable_memory::mojom::DiscardableSharedMemoryManager>
           discardable_memory_manager,
-      base::UnsafeSharedMemoryRegion use_shader_cache_shm_region) override;
+      base::UnsafeSharedMemoryRegion use_shader_cache_shm_region,
+      mojom::GpuServiceCreationParamsPtr params) override;
   void SetRenderParams(
       gfx::FontRenderParams::SubpixelRendering subpixel_rendering,
       float text_contrast,

@@ -118,4 +118,8 @@ void AnimatedPaintWorkletTracker::ClearUnusedInputProperties() {
     entry.second.animation_value.reset();
 }
 
+bool AnimatedPaintWorkletTracker::HasInputPropertiesAnimatedOnImpl() const {
+  return !input_properties_animated_on_impl_.empty();
+}
+
 }  // namespace cc

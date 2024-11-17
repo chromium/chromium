@@ -83,9 +83,9 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   [self signIn];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [self reset];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -93,7 +93,6 @@ id<GREYMatcher> DefaultPromoSubtitle() {
   // Enable Segmented Default Browser promos and iPad tailored Default Browser
   // promo strings.
   config.features_enabled.push_back(kSegmentedDefaultBrowserPromo);
-  config.features_enabled.push_back(kDefaultBrowserPromoIPadExperimentalString);
   // Show the First Run UI at startup.
   config.additional_args.push_back("-FirstRunForceEnabled");
   config.additional_args.push_back("true");

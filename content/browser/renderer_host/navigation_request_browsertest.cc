@@ -1155,6 +1155,54 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleCancelFailure) {
   }
 }
 
+// Ensure that a NavigationThrottle can cancel a redirected navigation that is
+// blocked by CSP.
+IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
+                       ThrottleCancelFailureRedirectBlockedByCSP) {
+  // Navigate to a URL with an iframe that will be later redirected to a
+  // URL blocked by CSP.
+  GURL main_url(
+      embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), main_url));
+
+  // Add frame-src CSP via a new <meta> element.
+  EXPECT_TRUE(
+      ExecJs(shell(),
+             "var meta = document.createElement('meta');"
+             "meta.httpEquiv = 'Content-Security-Policy';"
+             "meta.content = 'frame-src http://a.com:*';"
+             "document.getElementsByTagName('head')[0].appendChild(meta);"));
+
+  // Create a cross-origin redirect URL that doesn't honour above specified CSP.
+  GURL subframe_url(embedded_test_server()->GetURL("b.com", "/title2.html"));
+  GURL redirecting_subframe_url(embedded_test_server()->GetURL(
+      "a.com", "/server-redirect?" + subframe_url.spec()));
+
+  NavigationHandleObserver subframe_observer(shell()->web_contents(),
+                                             redirecting_subframe_url);
+  TestNavigationThrottleInstaller installer(
+      shell()->web_contents(), NavigationThrottle::PROCEED,
+      NavigationThrottle::PROCEED, NavigationThrottle::CANCEL_AND_IGNORE,
+      NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
+
+  FrameTreeNode* child = static_cast<WebContentsImpl*>(shell()->web_contents())
+                             ->GetPrimaryFrameTree()
+                             .root()
+                             ->child_at(0);
+
+  // Navigate the subframe to a location that is not allowed by CSP.
+  EXPECT_FALSE(NavigateToURLFromRenderer(child, redirecting_subframe_url));
+
+  // Wait for WillFailRequest.
+  installer.WaitForThrottleWillFail();
+  // Make sure that throttle WillFailRequest() was called.
+  EXPECT_TRUE(installer.will_fail_called());
+  EXPECT_TRUE(subframe_observer.is_error());
+  // The redirected navigation is cancelled and the old net error code
+  // `net::BLOCKED_BY_CSP` is replaced with `net::ERR_ABORTED`.
+  EXPECT_EQ(net::ERR_ABORTED, subframe_observer.net_error_code());
+}
+
 // Ensure that a NavigationThrottle can cancel the navigation when the response
 // is received.
 IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest, ThrottleCancelResponse) {
@@ -2106,7 +2154,8 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
     EXPECT_TRUE(observer.is_same_document());
   }
 
-  // 4) Redo the last navigation, but this time it should trigger a reload.
+  // 4) Redo the last navigation, and it should be treated as fragment
+  //    navigation.
   {
     TestNavigationThrottleInstaller installer(
         shell()->web_contents(), NavigationThrottle::PROCEED,
@@ -2114,10 +2163,10 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBrowserTest,
         NavigationThrottle::PROCEED, NavigationThrottle::PROCEED);
     NavigationHandleObserver observer(shell()->web_contents(), url_fragment_2);
     EXPECT_TRUE(NavigateToURL(shell(), url_fragment_2));
-    EXPECT_EQ(1, installer.will_start_called());
-    EXPECT_EQ(1, installer.will_process_called());
-    EXPECT_EQ(0, installer.will_commit_without_url_loader_called());
-    EXPECT_FALSE(observer.is_same_document());
+    EXPECT_EQ(0, installer.will_start_called());
+    EXPECT_EQ(0, installer.will_process_called());
+    EXPECT_EQ(1, installer.will_commit_without_url_loader_called());
+    EXPECT_TRUE(observer.is_same_document());
   }
 
   // 5) Perform a new-document navigation by removing the fragment.
@@ -3557,6 +3606,25 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBackForwardBrowserTest,
 
   // Expect that the offsets are still 1 even when we hit the entry count limit.
   EXPECT_THAT(offsets_, testing::ElementsAre(1, 1, 1, 1, 1));
+}
+
+IN_PROC_BROWSER_TEST_F(NavigationRequestBackForwardBrowserTest,
+                       SameUrlNavigationFromAddressBar) {
+  const GURL url1(embedded_test_server()->GetURL("/title1.html"));
+
+  // NavigateToURL is treated like an address bar navigation because it uses
+  // NavigateToURLBlockUntilNavigationsComplete, which sets that transition
+  // type.
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+
+  // The second navigation has an offset of 1 because the estimated
+  // offset is calculated at the time when the navigation request is created and
+  // it is created as a regular navigation without should_replace_current_entry
+  // set. The estimated offset is not updated when should_replace_current_entry
+  // is updated to true later on in NavigationRequest::StartNavigation.
+  // We should consider fixing this to report an offset of 0 instead.
+  EXPECT_THAT(offsets_, testing::ElementsAre(1, 1));
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationRequestBackForwardBrowserTest,

@@ -30,7 +30,6 @@ import org.chromium.chrome.browser.readaloud.player.Colors;
 import org.chromium.chrome.browser.readaloud.player.InteractionHandler;
 import org.chromium.chrome.browser.readaloud.player.R;
 import org.chromium.chrome.browser.readaloud.player.TouchDelegateUtil;
-import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.interpolators.Interpolators;
@@ -55,9 +54,7 @@ public class MiniPlayerLayout extends LinearLayout {
 
     private @PlaybackListener.State int mLastPlaybackState;
     private boolean mEnableAnimations;
-    private InteractionHandler mInteractionHandler;
     private ObjectAnimator mAnimator;
-    private @VisibilityState int mFinalVisibility;
     private MiniPlayerMediator mMediator;
     private float mFinalOpacity;
     private @ColorInt int mBackgroundColorArgb;
@@ -66,7 +63,6 @@ public class MiniPlayerLayout extends LinearLayout {
     /** Constructor for inflating from XML. */
     public MiniPlayerLayout(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mFinalVisibility = VisibilityState.GONE;
     }
 
     void destroy() {
@@ -140,7 +136,7 @@ public class MiniPlayerLayout extends LinearLayout {
         View nonErrorLayoutContainer = mErrorLayout.getVisibility() == View.GONE ? mContents : null;
         Runnable onFinished =
                 endValue == 1f
-                        ? (() -> mMediator.onFullOpacityReached(nonErrorLayoutContainer))
+                        ? () -> mMediator.onFullOpacityReached(nonErrorLayoutContainer)
                         : mMediator::onZeroOpacityReached;
 
         if (mEnableAnimations) {
@@ -200,7 +196,6 @@ public class MiniPlayerLayout extends LinearLayout {
     }
 
     void setInteractionHandler(InteractionHandler handler) {
-        mInteractionHandler = handler;
         setOnClickListener(R.id.close_button, handler::onCloseClick);
         setOnClickListener(R.id.mini_player_container, handler::onMiniPlayerExpandClick);
         setOnClickListener(R.id.play_button, handler::onPlayPauseClick);

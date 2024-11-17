@@ -21,10 +21,6 @@ extern const BASE_EXPORT base::FeatureParam<int> kThreadPoolCapRestrictedCount;
 // running USER_VISIBLE tasks.
 BASE_EXPORT BASE_DECLARE_FEATURE(kUseUtilityThreadGroup);
 
-// Under this feature, worker threads are not reclaimed after a timeout. Rather,
-// only excess workers are cleaned up immediately after finishing a task.
-BASE_EXPORT BASE_DECLARE_FEATURE(kNoWorkerThreadReclaim);
-
 // This feature controls whether ThreadPool WorkerThreads should hold off waking
 // up to purge PartitionAlloc within the first minute of their lifetime. See
 // base::internal::GetSleepDurationBeforePurge.
@@ -69,10 +65,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kPumpFastToSleepAndroid);
 
 // Feature to run tasks by batches before pumping out messages.
 BASE_EXPORT BASE_DECLARE_FEATURE(kRunTasksByBatches);
-
-// Feature to use ThreadGroupSemaphore instead of ThreadGroupImpl.
-BASE_EXPORT BASE_DECLARE_FEATURE(kThreadGroupSemaphore);
-extern const BASE_EXPORT base::FeatureParam<int> kMaxNumWorkersCreated;
 
 }  // namespace base
 

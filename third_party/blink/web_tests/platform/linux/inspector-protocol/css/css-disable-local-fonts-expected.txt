@@ -6,5 +6,5 @@ Actual p font: "DejaVu Sans local"
 
 Running test: testElementFontsWithLocalFontsDisabled
 Expected p font: "Ahem network"
-Actual p font: "Ahem network"
+Actual p font: "Ahem (Fontations) network"
 

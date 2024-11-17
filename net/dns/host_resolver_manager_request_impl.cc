@@ -263,8 +263,7 @@ int HostResolverManager::RequestImpl::DoLoop(int rv) {
         rv = DoFinishRequest(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "next_state_: " << next_state_;
-        break;
+        NOTREACHED() << "next_state_: " << next_state_;
     }
   } while (next_state_ != STATE_NONE && rv != ERR_IO_PENDING);
 
@@ -420,9 +419,11 @@ void HostResolverManager::RequestImpl::LogFinishRequest(int net_error,
     DCHECK(!request_time_.is_null());
     base::TimeDelta duration = tick_clock_->NowTicks() - request_time_;
 
-    UMA_HISTOGRAM_MEDIUM_TIMES("Net.DNS.Request.TotalTime", duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Net.DNS.Request.TotalTime",
+                                          duration);
     if (async_completion) {
-      UMA_HISTOGRAM_MEDIUM_TIMES("Net.DNS.Request.TotalTimeAsync", duration);
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Net.DNS.Request.TotalTimeAsync",
+                                            duration);
     }
   }
 }

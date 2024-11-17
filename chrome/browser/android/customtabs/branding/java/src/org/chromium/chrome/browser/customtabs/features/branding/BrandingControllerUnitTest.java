@@ -5,10 +5,16 @@
 package org.chromium.chrome.browser.customtabs.features.branding;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.customtabs.features.branding.BrandingController.BRANDING_CADENCE_MS;
 import static org.chromium.chrome.browser.customtabs.features.branding.BrandingController.MAX_BLANK_TOOLBAR_TIMEOUT_MS;
@@ -26,6 +32,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -37,6 +45,7 @@ import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
 import org.robolectric.shadows.ShadowToast;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
@@ -44,6 +53,7 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.base.task.test.ShadowPostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.customtabs.features.branding.proto.AccountMismatchData.CloseType;
 import org.chromium.ui.widget.Toast;
 import org.chromium.ui.widget.ToastManager;
 
@@ -61,7 +71,8 @@ public class BrandingControllerUnitTest {
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
     @Mock ToolbarBrandingDelegate mToolbarBrandingDelegate;
-
+    @Mock MismatchNotificationChecker mMismatchNotificationChecker;
+    @Captor ArgumentCaptor<Callback<MismatchNotificationData>> mCloseCallbackCaptor;
     private BrandingController mBrandingController;
     private ShadowPostTask.TestImpl mShadowPostTaskImpl;
 
@@ -85,7 +96,7 @@ public class BrandingControllerUnitTest {
     @After
     public void tearDown() {
         mFakeTimeTestRule.resetTimes();
-        SharedPreferencesBrandingTimeStorage.getInstance().resetSharedPref();
+        SharedPreferencesBrandingTimeStorage.getInstance().resetSharedPrefForTesting();
         ShadowSystemClock.reset();
         ShadowToast.reset();
         ToastManager.resetForTesting();
@@ -126,6 +137,30 @@ public class BrandingControllerUnitTest {
                 .assertShownEmptyLocationBar(true)
                 .assertShownBrandingLocationBar(false)
                 .assertShownRegularLocationBar(true);
+    }
+
+    @Test
+    public void testBrandingWorkflow_MismatchPrecedenceOverBranding() {
+        new BrandingCheckTester()
+                .newBrandingController()
+                .setMaybeShowMismatchNotification(true)
+                .idleMainLooper()
+                .onToolbarInitialized()
+                // Mismatch notification overwrites the decision and gets shown instead.
+                .assertBrandingDecisionMade(BrandingDecision.MIM)
+                .invokeMimCloseCallback()
+                .idleMainLooper()
+                .assertLastShowTimeGlobalUpdated()
+                .assertMimDataUpdated()
+                .assertShownToastBranding(false)
+                .advanceMills(BRANDING_CADENCE_MS + 1)
+                .newBrandingController()
+                .setMaybeShowMismatchNotification(false)
+                .idleMainLooper()
+                .onToolbarInitialized()
+                // The branding decision is respected if mismatch notification doesn't show.
+                .assertBrandingDecisionMade(BrandingDecision.TOOLBAR)
+                .assertShownBrandingLocationBar(true);
     }
 
     @Test
@@ -271,6 +306,7 @@ public class BrandingControllerUnitTest {
                             "appName",
                             context.getPackageName(),
                             R.string.twa_running_in_chrome_template,
+                            () -> mMismatchNotificationChecker,
                             null);
 
             // Always initialize a new mock, as some tests were testing multiple branding runs.
@@ -287,6 +323,7 @@ public class BrandingControllerUnitTest {
                             /* appId= */ null,
                             context.getPackageName(),
                             R.string.auth_tab_secured_by_chrome_template,
+                            () -> null,
                             null);
 
             // Always initialize a new mock, as some tests were testing multiple branding runs.
@@ -314,7 +351,7 @@ public class BrandingControllerUnitTest {
             assertEquals(
                     "BrandingDecision is different.",
                     decision,
-                    mBrandingController.getBrandingDecisionForTest());
+                    mBrandingController.getBrandingDecision());
             return this;
         }
 
@@ -324,6 +361,12 @@ public class BrandingControllerUnitTest {
                     shown ? 1 : 0,
                     ShadowToast.shownToastCount());
             ToastManager.resetForTesting();
+            return this;
+        }
+
+        public BrandingCheckTester assertLastShowTimeGlobalUpdated() {
+            long ts = SharedPreferencesBrandingTimeStorage.getInstance().getLastShowTimeGlobal();
+            assertTrue("Global last-show-time was not updated", ts >= 0);
             return this;
         }
 
@@ -340,6 +383,32 @@ public class BrandingControllerUnitTest {
         public BrandingCheckTester advanceMills(long duration) {
             ShadowSystemClock.advanceBy(duration, TimeUnit.MILLISECONDS);
             mFakeTimeTestRule.advanceMillis(duration);
+            return this;
+        }
+
+        public BrandingCheckTester setMaybeShowMismatchNotification(boolean show) {
+            when(mMismatchNotificationChecker.maybeShow(
+                            anyString(), anyLong(), any(), mCloseCallbackCaptor.capture()))
+                    .thenReturn(show);
+            return this;
+        }
+
+        public BrandingCheckTester invokeMimCloseCallback() {
+            final String appId = "org.cities.gotham";
+            final String accountId = "batman@gmail.com";
+            var mimData = new MismatchNotificationData();
+            var appData = new MismatchNotificationData.AppUiData();
+            appData.showCount = 32;
+            appData.closeType = CloseType.ACCEPTED.getNumber();
+            mimData.setAppData(accountId, appId, appData);
+            mCloseCallbackCaptor.getValue().onResult(mimData);
+            return this;
+        }
+
+        public BrandingCheckTester assertMimDataUpdated() {
+            assertNotNull(
+                    "MimData should be updated",
+                    SharedPreferencesBrandingTimeStorage.getInstance().getMimData());
             return this;
         }
 

@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar_handler.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_handler.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/wallpaper_search/wallpaper_search_string_map.h"
+#include "chrome/browser/ui/webui/theme_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -72,7 +73,8 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeChromeUI,
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(CustomizeChromeUI, kChromeThemeElementId);
 
 CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
-    : TopChromeWebUIController(web_ui),
+    // Enable chrome.send to notify `ThemeHandler` to observe theme changes.
+    : TopChromeWebUIController(web_ui, true),
       image_decoder_(std::make_unique<ImageDecoderImpl>()),
       profile_(Profile::FromWebUI(web_ui)),
       web_contents_(web_ui->GetWebContents()),
@@ -90,6 +92,10 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
   }
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile_, chrome::kChromeUICustomizeChromeSidePanelHost);
+
+  if (!profile_->IsGuestSession()) {
+    web_ui->AddMessageHandler(std::make_unique<ThemeHandler>());
+  }
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       // Side panel strings.
@@ -275,6 +281,9 @@ CustomizeChromeUI::CustomizeChromeUI(content::WebUI* web_ui)
               ntp_features::kCustomizeChromeWallpaperSearchButton));
   source->AddBoolean("toolbarCustomizationEnabled",
                      base::FeatureList::IsEnabled(features::kToolbarPinning));
+  source->AddBoolean("imageErrorDetectionEnabled",
+                     base::FeatureList::IsEnabled(
+                         ntp_features::kNtpBackgroundImageErrorDetection));
 
   webui::SetupWebUIDataSource(
       source,

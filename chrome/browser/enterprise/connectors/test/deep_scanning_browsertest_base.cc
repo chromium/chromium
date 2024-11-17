@@ -9,6 +9,7 @@
 
 #include "chrome/browser/enterprise/connectors/test/deep_scanning_browsertest_base.h"
 
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -182,7 +183,7 @@ void DeepScanningBrowserTestBase::CreateFilesForTest(
     base::FilePath path = parent_path.AppendASCII(paths[i]);
     created_file_paths_.emplace_back(path);
     base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    file.WriteAtCurrentPos(contents[i].data(), contents[i].size());
+    file.WriteAtCurrentPos(base::as_byte_span(contents[i]));
     if (parent.empty()) {
       data->paths.emplace_back(path);
     }

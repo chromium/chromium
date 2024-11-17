@@ -9,6 +9,7 @@ load("//lib/builders.star", "os", "siso")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/html.star", "linkify_builder")
+load("//lib/targets.star", "targets")
 load("//lib/try.star", "try_")
 load("//project.star", "settings")
 
@@ -25,11 +26,51 @@ try_.defaults.set(
     service_account = try_.DEFAULT_SERVICE_ACCOUNT,
     siso_enabled = True,
     siso_project = siso.project.DEFAULT_UNTRUSTED,
+    siso_remote_linking = True,
+)
+
+targets.builder_defaults.set(
+    mixins = [
+        "chromium-tester-service-account",
+    ],
 )
 
 consoles.list_view(
     name = "tryserver.chromium.linux",
     branch_selector = branches.selector.LINUX_BRANCHES,
+)
+
+try_.builder(
+    name = "compile-size",
+    branch_selector = branches.selector.MAIN,
+    # TODO: crbug.com/370594503 - Add documents for compile-size.
+    description_html = "Measures and prevents unexpected compile input size " +
+                       "growth. See docs for details.",
+    executable = "recipe:build_size_trybot",
+    gn_args = gn_args.config(
+        configs = [
+            "release_try_builder",
+            "remoteexec",
+            "system_headers_in_deps",
+            "dcheck_off",
+            "linux",
+            "x64",
+        ],
+    ),
+    # TODO: crbug.com/40190002 - Make builderful before productionizing.
+    builderless = True,
+    cores = 8,
+    contact_team_email = "build@chromium.org",
+    properties = {
+        "$build/binary_size": {
+            "analyze_targets": [
+                "chrome",
+            ],
+            "compile_targets": [
+                "chrome",
+            ],
+        },
+    },
 )
 
 try_.builder(
@@ -94,18 +135,45 @@ try_.builder(
 )
 
 try_.builder(
+    name = "linux-cast-arm-rel",
+    branch_selector = branches.selector.LINUX_BRANCHES,
+    mirrors = [
+        "ci/linux-cast-arm-rel",
+    ],
+    gn_args = "ci/linux-cast-arm-rel",
+    contact_team_email = "cast-eng@google.com",
+    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+    tryjob = try_.job(
+        location_filters = [
+            "chromecast/.+",
+            "components/cast/.+",
+            "components/cast_receiver/.+",
+            "components/cast_streaming/.+",
+            "third_party/cast_core/.+",
+            "third_party/openscreen/.+",
+        ],
+    ),
+)
+
+try_.builder(
     name = "linux-cast-arm64-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
     mirrors = [
         "ci/linux-cast-arm64-rel",
     ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/linux-cast-arm64-rel",
-        ],
-    ),
+    gn_args = "ci/linux-cast-arm64-rel",
     contact_team_email = "cast-eng@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+    tryjob = try_.job(
+        location_filters = [
+            "chromecast/.+",
+            "components/cast/.+",
+            "components/cast_receiver/.+",
+            "components/cast_streaming/.+",
+            "third_party/cast_core/.+",
+            "third_party/openscreen/.+",
+        ],
+    ),
 )
 
 try_.builder(
@@ -262,6 +330,29 @@ try_.builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "chromium_webkit_isolated_scripts",
+        ],
+        additional_compile_targets = [
+            "blink_tests",
+        ],
+        mixins = [
+            "linux-xenial",
+        ],
+        per_test_modifications = {
+            "blink_web_tests": targets.mixin(
+                args = [
+                    "--flag-specific=enable-editing-ng",
+                ],
+            ),
+            "blink_wpt_tests": targets.mixin(
+                args = [
+                    "--flag-specific=enable-editing-ng",
+                ],
+            ),
+        },
+    ),
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -356,25 +447,14 @@ try_.orchestrator_builder(
     name = "linux-full-remote-rel",
     description_html = "Experimental " + linkify_builder("try", "linux-rel", "chromium") + " builder with more kinds of remote actions. e.g. remote linking",
     mirrors = builder_config.copy_from("linux-rel"),
-    # TODO: crbug.com/364131303 - Enabling testing until Sep 2nd JST to
-    # experiment remote linking + test isolate without bytes.
-    # Comment out builder_config_settings to disable testing and increase
-    # experiment_percentage to 10%.
-    #  builder_config_settings = builder_config.try_settings(
-    #     is_compile_only = True,
-    # ),
-    gn_args = gn_args.config(
-        configs = [
-            "try/linux-rel",
-            "no_reclient",
-        ],
+    builder_config_settings = builder_config.try_settings(
+        is_compile_only = True,
     ),
+    gn_args = "try/linux-rel",
     compilator = "linux-full-remote-rel-compilator",
     contact_team_email = "chrome-build-team@google.com",
-    siso_configs = ["builder", "remote-library-link", "remote-exec-link"],
-    siso_output_local_strategy = "minimum",
     tryjob = try_.job(
-        experiment_percentage = 1,
+        experiment_percentage = 10,
     ),
     use_clang_coverage = True,
 )
@@ -382,17 +462,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "linux-full-remote-rel-compilator",
     contact_team_email = "chrome-build-team@google.com",
-)
-
-# TODO(crbug.com/40248746): Remove this builder after burning down failures
-# and measuring performance to see if we can roll UBSan into ASan.
-try_.builder(
-    name = "linux-ubsan-fyi-rel",
-    mirrors = [
-        "ci/linux-ubsan-fyi-rel",
-    ],
-    gn_args = "ci/linux-ubsan-fyi-rel",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
 try_.builder(
@@ -465,13 +534,19 @@ try_.builder(
     mirrors = [
         "ci/linux-cast-x64-dbg",
     ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/linux-cast-x64-dbg",
-        ],
-    ),
+    gn_args = "ci/linux-cast-x64-dbg",
     contact_team_email = "cast-eng@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+    tryjob = try_.job(
+        location_filters = [
+            "chromecast/.+",
+            "components/cast/.+",
+            "components/cast_receiver/.+",
+            "components/cast_streaming/.+",
+            "third_party/cast_core/.+",
+            "third_party/openscreen/.+",
+        ],
+    ),
 )
 
 try_.builder(
@@ -480,13 +555,19 @@ try_.builder(
     mirrors = [
         "ci/linux-cast-x64-rel",
     ],
-    gn_args = gn_args.config(
-        configs = [
-            "ci/linux-cast-x64-rel",
-        ],
-    ),
+    gn_args = "ci/linux-cast-x64-rel",
     contact_team_email = "cast-eng@google.com",
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+    tryjob = try_.job(
+        location_filters = [
+            "chromecast/.+",
+            "components/cast/.+",
+            "components/cast_receiver/.+",
+            "components/cast_streaming/.+",
+            "third_party/cast_core/.+",
+            "third_party/openscreen/.+",
+        ],
+    ),
 )
 
 try_.builder(
@@ -524,6 +605,7 @@ try_.orchestrator_builder(
         "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
+    siso_remote_linking = True,
     # TODO (crbug.com/1372179): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
@@ -617,6 +699,10 @@ try_.builder(
     ),
     execution_timeout = 6 * time.hour,
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
+    # Do not use remote linking becaues it doesn't download
+    # the remote artifacts by default. But, the deterministic recipe
+    # requires them for determinism check.
+    siso_remote_linking = False,
 )
 
 try_.builder(
@@ -757,14 +843,14 @@ try_.compilator_builder(
 )
 
 try_.builder(
-    name = "linux-ubsan-vptr",
+    name = "linux_chromium_ubsan_rel_ng",
     mirrors = [
-        "ci/linux-ubsan-vptr",
+        "ci/Linux UBSan Builder",
+        "ci/Linux UBSan Tests",
     ],
-    # This is intentionally a release_bot and not a release_trybot to match
-    # the CI configuration, where no debug builder exists.
-    gn_args = "ci/linux-ubsan-vptr",
-    siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
+    gn_args = "ci/Linux UBSan Builder",
+    contact_team_email = "chrome-sanitizer-builder-owners@google.com",
+    main_list_view = "try",
 )
 
 try_.builder(
@@ -872,6 +958,15 @@ try_.gpu.optional_tests_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "linux_optional_gpu_tests_rel_gpu_telemetry_tests",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.LINUX,
+    ),
     main_list_view = "try",
     tryjob = try_.job(
         location_filters = [
@@ -897,7 +992,6 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webgpu/.+"),
             cq.location_filter(path_regexp = "third_party/blink/renderer/platform/graphics/gpu/.+"),
             cq.location_filter(path_regexp = "tools/clang/scripts/update.py"),
-            cq.location_filter(path_regexp = "tools/mb/mb_config_expectations/tryserver.chromium.linux.json"),
             cq.location_filter(path_regexp = "ui/gl/.+"),
 
             # Exclusion filters.

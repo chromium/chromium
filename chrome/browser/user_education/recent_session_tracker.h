@@ -11,16 +11,16 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
-#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
-#include "components/user_education/common/feature_promo_session_manager.h"
-#include "components/user_education/common/feature_promo_storage_service.h"
+#include "chrome/browser/user_education/browser_user_education_storage_service.h"
+#include "components/user_education/common/session/user_education_session_manager.h"
+#include "components/user_education/common/user_education_storage_service.h"
 
 // Tracks recent sessions by the current user on this device.
 // Used to help understand usage across populations and to provide additional
 // input for user education experience triggers.
 //
 // Data is stored in `RecentSessionDataStorageService`, which is typically part
-// of `BrowserFeaturePromoStorageService`.
+// of `BrowserUserEducationStorageService`.
 class RecentSessionTracker {
  public:
   static constexpr int kMaxRecentSessionRecords = 30;
@@ -31,8 +31,8 @@ class RecentSessionTracker {
       base::RepeatingCallback<void(const RecentSessionData&)>;
 
   RecentSessionTracker(
-      user_education::FeaturePromoSessionManager& session_manager,
-      user_education::FeaturePromoStorageService& feature_promo_storage,
+      user_education::UserEducationSessionProvider& session_provider,
+      user_education::UserEducationStorageService& feature_promo_storage,
       RecentSessionDataStorageService& recent_session_storage);
   RecentSessionTracker(const RecentSessionTracker&) = delete;
   void operator=(const RecentSessionTracker&) = delete;
@@ -54,7 +54,7 @@ class RecentSessionTracker {
   void OnSessionStart();
 
   const base::CallbackListSubscription subscription_;
-  const raw_ref<user_education::FeaturePromoStorageService>
+  const raw_ref<user_education::UserEducationStorageService>
       feature_promo_storage_;
   const raw_ref<RecentSessionDataStorageService> recent_session_storage_;
   base::RepeatingCallbackList<RecentSessionsUpdatedCallback::RunType>

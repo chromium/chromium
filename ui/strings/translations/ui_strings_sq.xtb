@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">Ngarkimi i faqes dështoi sepse moduli i ndërfaqes së përdoruesit të zhvilluesit (dev_ui) nuk është instaluar</translation>
 <translation id="5574202486608032840">Sistemi <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Hapësirë prapa</translation>
+<translation id="5606865426897221650">Skeda</translation>
 <translation id="5613020302032141669">Shigjeta majtas</translation>
 <translation id="5633029987065897167">Bosh</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 min.}other{# min.}}</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Faqe poshtë</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Skeda</translation>
 <translation id="8259556432390118667">Vlera heks e ngjyrës</translation>
 <translation id="8328145009876646418">Cepi i majtë</translation>
 <translation id="8331626408530291785">Lëviz lart</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 sek.}other{# sek.}}</translation>
 <translation id="9059834730836941392">Palos njoftimin</translation>
 <translation id="9170848237812810038">&amp;Zhbëj</translation>
+<translation id="9195990613383871904">Nesër</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">Faqja kryesore</translation>
 <translation id="944069440740578670">Njoftime të palexuara</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 sekondë më parë}other{# sekonda më parë}}</translation>

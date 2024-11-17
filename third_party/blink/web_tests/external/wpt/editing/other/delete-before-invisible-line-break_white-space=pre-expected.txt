@@ -1,0 +1,67 @@
+This is a testharness.js-based test.
+[FAIL] document.execCommand("delete") when <p>a []<br></p>
+  assert_equals: expected "<p>a</p>" but got "<p>a<br></p>"
+[FAIL] Backspace when <p>a []<br></p>
+  assert_equals: expected "<p>a</p>" but got "<p>a<br></p>"
+[FAIL] document.execCommand("delete") when <p>a[ ]<br></p>
+  assert_equals: expected "<p>a</p>" but got "<p>a<br></p>"
+[FAIL] Backspace when <p>a[ ]<br></p>
+  assert_equals: expected "<p>a</p>" but got "<p>a<br></p>"
+[FAIL] document.execCommand("delete") when <p>a b[]<br></p>
+  assert_equals: expected "<p>a </p>" but got "<p>a <br></p>"
+[FAIL] Backspace when <p>a b[]<br></p>
+  assert_equals: expected "<p>a </p>" but got "<p>a <br></p>"
+[FAIL] document.execCommand("delete") when <p>a [b]<br></p>
+  assert_equals: expected "<p>a </p>" but got "<p>a <br></p>"
+[FAIL] Backspace when <p>a [b]<br></p>
+  assert_equals: expected "<p>a </p>" but got "<p>a <br></p>"
+[FAIL] document.execCommand("delete") when <p>a []\\n</p>
+  assert_equals: expected "<p>a</p>" but got "<p>a\\n</p>"
+[FAIL] Backspace when <p>a []\\n</p>
+  assert_equals: expected "<p>a</p>" but got "<p>a\\n</p>"
+[FAIL] document.execCommand("delete") when <p>a[ ]\\n</p>
+  assert_equals: expected "<p>a</p>" but got "<p>a\\n</p>"
+[FAIL] Backspace when <p>a[ ]\\n</p>
+  assert_equals: expected "<p>a</p>" but got "<p>a\\n</p>"
+[FAIL] document.execCommand("delete") when <p>a b[]\\n</p>
+  assert_equals: expected "<p>a </p>" but got "<p>a \\n</p>"
+[FAIL] Backspace when <p>a b[]\\n</p>
+  assert_equals: expected "<p>a </p>" but got "<p>a \\n</p>"
+[FAIL] document.execCommand("delete") when <p>a [b]\\n</p>
+  assert_equals: expected "<p>a </p>" but got "<p>a \\n</p>"
+[FAIL] Backspace when <p>a [b]\\n</p>
+  assert_equals: expected "<p>a </p>" but got "<p>a \\n</p>"
+[FAIL] document.execCommand("delete") when <div>a []<br><div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "<div>a<br><div>b</div></div>"
+[FAIL] Backspace when <div>a []<br><div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "<div>a<br><div>b</div></div>"
+[FAIL] document.execCommand("delete") when <div>a[ ]<br><div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "<div>a<br><div>b</div></div>"
+[FAIL] Backspace when <div>a[ ]<br><div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "<div>a<br><div>b</div></div>"
+[FAIL] document.execCommand("delete") when <div>a b[]<br><div>b</div></div>
+  assert_equals: expected "<div>a <div>b</div></div>" but got "<div>a <br><div>b</div></div>"
+[FAIL] Backspace when <div>a b[]<br><div>b</div></div>
+  assert_equals: expected "<div>a <div>b</div></div>" but got "<div>a <br><div>b</div></div>"
+[FAIL] document.execCommand("delete") when <div>a [b]<br><div>b</div></div>
+  assert_equals: expected "<div>a <div>b</div></div>" but got "<div>a <br><div>b</div></div>"
+[FAIL] Backspace when <div>a [b]<br><div>b</div></div>
+  assert_equals: expected "<div>a <div>b</div></div>" but got "<div>a <br><div>b</div></div>"
+[FAIL] document.execCommand("delete") when <div>a []\\n<div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "<div>a\\n<div>b</div></div>"
+[FAIL] Backspace when <div>a []\\n<div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "<div>a\\n<div>b</div></div>"
+[FAIL] document.execCommand("delete") when <div>a[ ]\\n<div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "<div>a\\n<div>b</div></div>"
+[FAIL] Backspace when <div>a[ ]\\n<div>b</div></div>
+  assert_equals: expected "<div>a<div>b</div></div>" but got "<div>a\\n<div>b</div></div>"
+[FAIL] document.execCommand("delete") when <div>a b[]\\n<div>b</div></div>
+  assert_equals: expected "<div>a <div>b</div></div>" but got "<div>a \\n<div>b</div></div>"
+[FAIL] Backspace when <div>a b[]\\n<div>b</div></div>
+  assert_equals: expected "<div>a <div>b</div></div>" but got "<div>a \\n<div>b</div></div>"
+[FAIL] document.execCommand("delete") when <div>a [b]\\n<div>b</div></div>
+  assert_equals: expected "<div>a <div>b</div></div>" but got "<div>a \\n<div>b</div></div>"
+[FAIL] Backspace when <div>a [b]\\n<div>b</div></div>
+  assert_equals: expected "<div>a <div>b</div></div>" but got "<div>a \\n<div>b</div></div>"
+Harness: the test ran to completion.
+

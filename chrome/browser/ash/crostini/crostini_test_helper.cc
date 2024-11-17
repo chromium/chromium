@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -29,8 +28,7 @@ namespace crostini {
 
 constexpr SkColor kTestContainerBadgeColor = SK_ColorBLUE;
 
-CrostiniTestHelper::CrostiniTestHelper(TestingProfile* profile,
-                                       bool enable_crostini)
+CrostiniTestHelper::CrostiniTestHelper(Profile* profile, bool enable_crostini)
     : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
       profile_(profile) {
   scoped_feature_list_.InitAndEnableFeature(features::kCrostini);
@@ -130,11 +128,11 @@ void CrostiniTestHelper::UpdateAppKeywords(
 }
 
 // static
-void CrostiniTestHelper::EnableCrostini(TestingProfile* profile) {
+void CrostiniTestHelper::EnableCrostini(Profile* profile) {
   profile->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled, true);
 }
 // static
-void CrostiniTestHelper::DisableCrostini(TestingProfile* profile) {
+void CrostiniTestHelper::DisableCrostini(Profile* profile) {
   profile->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled, false);
 }
 

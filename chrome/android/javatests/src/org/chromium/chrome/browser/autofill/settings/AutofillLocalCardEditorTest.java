@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.autofill.settings;
 
 import static com.google.common.truth.Truth.assertThat;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -29,7 +31,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -40,6 +43,8 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
+import org.chromium.chrome.browser.autofill.CreditCardScanner;
+import org.chromium.chrome.browser.autofill.CreditCardScanner.Delegate;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
@@ -55,6 +60,7 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 /** Instrumentation tests for AutofillLocalCardEditor. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillLocalCardEditorTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public final AutofillTestRule rule = new AutofillTestRule();
 
     @Rule
@@ -99,7 +105,9 @@ public class AutofillLocalCardEditorTest {
                     /* productDescription= */ "",
                     /* cardNameForAutofillDisplay= */ "",
                     /* obfuscatedLastFourDigits= */ "",
-                    /* cvc= */ "123");
+                    /* cvc= */ "123",
+                    /* issuerId= */ "",
+                    /* productTermsUrl= */ null);
     private static final CreditCard SAMPLE_AMEX_CARD_WITH_CVC =
             new CreditCard(
                     /* guid= */ "",
@@ -124,7 +132,9 @@ public class AutofillLocalCardEditorTest {
                     /* productDescription= */ "",
                     /* cardNameForAutofillDisplay= */ "",
                     /* obfuscatedLastFourDigits= */ "",
-                    /* cvc= */ "1234");
+                    /* cvc= */ "1234",
+                    /* issuerId= */ "",
+                    /* productTermsUrl= */ null);
 
     private static final CreditCard SAMPLE_MASKED_SERVER_CARD =
             new CreditCard(
@@ -149,7 +159,9 @@ public class AutofillLocalCardEditorTest {
                     /* productDescription= */ "",
                     /* cardNameForAutofillDisplay= */ "",
                     /* obfuscatedLastFourDigits= */ "• • • • 1111",
-                    /* cvc= */ "");
+                    /* cvc= */ "",
+                    /* issuerId= */ "",
+                    /* productTermsUrl= */ null);
 
     private static final String AMEX_CARD_NUMBER = "378282246310005";
     private static final String AMEX_CARD_NUMBER_PREFIX = "37";
@@ -160,10 +172,10 @@ public class AutofillLocalCardEditorTest {
     @Mock private PersonalDataManager mPersonalDataManagerMock;
     private AutofillTestHelper mAutofillTestHelper;
     private UserActionTester mActionTester;
+    @Mock private CreditCardScanner mScanner;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mAutofillTestHelper = new AutofillTestHelper();
         mActionTester = new UserActionTester();
     }
@@ -233,7 +245,7 @@ public class AutofillLocalCardEditorTest {
                     try {
                         autofillLocalCardEditorFragment.mNicknameText.setText("Nickname 123");
                     } catch (Exception e) {
-                        Assert.fail("Failed to set the nickname");
+                        throw new AssertionError("Failed to set the nickname", e);
                     }
                 });
 
@@ -258,7 +270,7 @@ public class AutofillLocalCardEditorTest {
                     try {
                         autofillLocalCardEditorFragment.mNicknameText.setText("Nickname 123");
                     } catch (Exception e) {
-                        Assert.fail("Failed to set the nickname");
+                        throw new AssertionError("Failed to set the nickname", e);
                     }
                 });
         assertThat(autofillLocalCardEditorFragment.mNicknameLabel.getError())
@@ -272,7 +284,7 @@ public class AutofillLocalCardEditorTest {
                     try {
                         autofillLocalCardEditorFragment.mNicknameText.setText("Valid Nickname");
                     } catch (Exception e) {
-                        Assert.fail("Failed to set the nickname");
+                        throw new AssertionError("Failed to set the nickname", e);
                     }
                 });
 
@@ -293,7 +305,7 @@ public class AutofillLocalCardEditorTest {
                     try {
                         autofillLocalCardEditorFragment.mNicknameText.setText("Nickname 123");
                     } catch (Exception e) {
-                        Assert.fail("Failed to set the nickname");
+                        throw new AssertionError("Failed to set the nickname", e);
                     }
                 });
         assertThat(autofillLocalCardEditorFragment.mNicknameLabel.getError())
@@ -307,7 +319,7 @@ public class AutofillLocalCardEditorTest {
                     try {
                         autofillLocalCardEditorFragment.mNicknameText.setText(null);
                     } catch (Exception e) {
-                        Assert.fail("Failed to set the nickname");
+                        throw new AssertionError("Failed to set the nickname", e);
                     }
                 });
 
@@ -331,7 +343,7 @@ public class AutofillLocalCardEditorTest {
                     try {
                         autofillLocalCardEditorFragment.mNicknameText.setText(veryLongNickname);
                     } catch (Exception e) {
-                        Assert.fail("Failed to set the nickname");
+                        throw new AssertionError("Failed to set the nickname", e);
                     }
                 });
 
@@ -819,7 +831,7 @@ public class AutofillLocalCardEditorTest {
         setSecurityCodeOnEditor(autofillLocalCardEditorFragment, /* code= */ "321");
         performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
 
-        Assert.assertTrue(
+        assertTrue(
                 "User action should be logged.",
                 mActionTester.getActions().contains("AutofillCreditCardsAddedWithCvc"));
     }
@@ -842,7 +854,7 @@ public class AutofillLocalCardEditorTest {
                 String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
         performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
 
-        Assert.assertTrue(
+        assertTrue(
                 "User action should be logged.",
                 mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasLeftBlank"));
     }
@@ -861,7 +873,7 @@ public class AutofillLocalCardEditorTest {
         setSecurityCodeOnEditor(autofillLocalCardEditorFragment, /* code= */ "321");
         performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
 
-        Assert.assertTrue(
+        assertTrue(
                 "User action should be logged.",
                 mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasAdded"));
     }
@@ -881,7 +893,7 @@ public class AutofillLocalCardEditorTest {
         setSecurityCodeOnEditor(autofillLocalCardEditorFragment, /* code= */ "");
         performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
 
-        Assert.assertTrue(
+        assertTrue(
                 "User action should be logged.",
                 mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasRemoved"));
     }
@@ -901,7 +913,7 @@ public class AutofillLocalCardEditorTest {
         setSecurityCodeOnEditor(autofillLocalCardEditorFragment, /* code= */ "321");
         performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
 
-        Assert.assertTrue(
+        assertTrue(
                 "User action should be logged.",
                 mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasUpdated"));
     }
@@ -925,9 +937,23 @@ public class AutofillLocalCardEditorTest {
                 String.format("%s/%s", validExpirationMonth, validExpirationYear.substring(2)));
         performButtonClickOnEditor(autofillLocalCardEditorFragment.mDoneButton);
 
-        Assert.assertTrue(
+        assertTrue(
                 "User action should be logged.",
                 mActionTester.getActions().contains("AutofillCreditCardsEditedAndCvcWasUnchanged"));
+    }
+
+    @Test
+    @MediumTest
+    public void testRecordHistogram_whenAddCardFlowStarted() throws Exception {
+        // Expect histogram to record add card flow.
+        HistogramWatcher addCardFlowHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectBooleanRecord(AutofillLocalCardEditor.ADD_CARD_FLOW_HISTOGRAM, true)
+                        .build();
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        addCardFlowHistogram.assertExpected();
     }
 
     private void openDeletePaymentMethodConfirmationDialog(
@@ -953,7 +979,7 @@ public class AutofillLocalCardEditorTest {
                         autofillLocalCardEditorFragment.mExpirationMonth.setSelection(
                                 monthSelection);
                     } catch (Exception e) {
-                        Assert.fail("Failed to set the Expiration Month");
+                        throw new AssertionError("Failed to set the Expiration Month", e);
                     }
                 });
     }
@@ -965,7 +991,7 @@ public class AutofillLocalCardEditorTest {
                     try {
                         autofillLocalCardEditorFragment.mExpirationYear.setSelection(yearSelection);
                     } catch (Exception e) {
-                        Assert.fail("Failed to set the Expiration Year");
+                        throw new AssertionError("Failed to set the Expiration Year", e);
                     }
                 });
     }
@@ -977,7 +1003,7 @@ public class AutofillLocalCardEditorTest {
                     try {
                         autofillLocalCardEditorFragment.mExpirationDate.setText(date);
                     } catch (Exception e) {
-                        Assert.fail("Failed to set the Expiration Date");
+                        throw new AssertionError("Failed to set the Expiration Date", e);
                     }
                 });
     }
@@ -989,7 +1015,7 @@ public class AutofillLocalCardEditorTest {
                     try {
                         autofillLocalCardEditorFragment.mNicknameText.setText(nickname);
                     } catch (Exception e) {
-                        Assert.fail("Failed to set the nickname");
+                        throw new AssertionError("Failed to set the nickname", e);
                     }
                 });
     }
@@ -1022,7 +1048,7 @@ public class AutofillLocalCardEditorTest {
                         assertThat(AutofillLocalCardEditor.isAmExCard(AMEX_CARD_NUMBER_PREFIX))
                                 .isTrue();
                     } catch (Exception e) {
-                        Assert.fail("Failed to verify AmEx card.");
+                        throw new AssertionError("Failed to verify AmEx card.", e);
                     }
                 });
     }
@@ -1036,7 +1062,7 @@ public class AutofillLocalCardEditorTest {
                         assertThat(AutofillLocalCardEditor.isAmExCard(NON_AMEX_CARD_NUMBER_PREFIX))
                                 .isFalse();
                     } catch (Exception e) {
-                        Assert.fail("Failed to verify AmEx card.");
+                        throw new AssertionError("Failed to verify AmEx card.", e);
                     }
                 });
     }
@@ -1048,7 +1074,7 @@ public class AutofillLocalCardEditorTest {
                     try {
                         autofillLocalCardEditorFragment.mNumberText.setText(cardNumber);
                     } catch (Exception e) {
-                        Assert.fail("Failed to set the card number");
+                        throw new AssertionError("Failed to set the card number", e);
                     }
                 });
     }
@@ -1060,7 +1086,7 @@ public class AutofillLocalCardEditorTest {
                     try {
                         autofillLocalCardEditorFragment.mCvc.setText(code);
                     } catch (Exception e) {
-                        Assert.fail("Failed to set the security code");
+                        throw new AssertionError("Failed to set the security code", e);
                     }
                 });
     }
@@ -1071,7 +1097,7 @@ public class AutofillLocalCardEditorTest {
                     try {
                         button.performClick();
                     } catch (Exception e) {
-                        Assert.fail("Failed to click the button");
+                        throw new AssertionError("Failed to click the button", e);
                     }
                 });
     }
@@ -1085,5 +1111,112 @@ public class AutofillLocalCardEditorTest {
         BitmapDrawable actualDrawable =
                 (BitmapDrawable) autofillLocalCardEditorFragment.mCvcHintImage.getDrawable();
         assertThat(expectedDrawable.getBitmap().sameAs(actualDrawable.getBitmap())).isTrue();
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
+    public void paymentSettingsCardScannerFeatureDisabled_scanButtonIsHidden() {
+        setUpCreditCardScanner();
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+
+        assertEquals(autofillLocalCardEditorFragment.mScanButton.getVisibility(), View.GONE);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
+    public void paymentSettingsCardScannerFeatureEnabled_scanButtonIsVisible() {
+        setUpCreditCardScanner();
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+
+        assertEquals(autofillLocalCardEditorFragment.mScanButton.getVisibility(), View.VISIBLE);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
+    public void paymentSettingsCardScannerCannotScan_scanButtonIsHidden() {
+        CreditCardScanner.setFactory(
+                new CreditCardScanner.Factory() {
+                    @Override
+                    public CreditCardScanner create(Delegate delegate) {
+                        return mScanner;
+                    }
+                });
+        when(mScanner.canScan()).thenReturn(false);
+
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+
+        assertEquals(autofillLocalCardEditorFragment.mScanButton.getVisibility(), View.GONE);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENT_SETTINGS_CARD_PROMO_AND_SCAN_CARD})
+    public void paymentSettingsCardScannerButtonClicked_scanIsCalled() {
+        setUpCreditCardScanner();
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+
+        performButtonClickOnEditor(autofillLocalCardEditorFragment.mScanButton);
+        verify(mScanner).scan(activity.getIntentRequestTracker());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    public void paymentSettingsOnScanCompleted_cardDataIsAdded() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+        AutofillLocalCardEditor autofillLocalCardEditorFragment =
+                (AutofillLocalCardEditor) activity.getMainFragment();
+        CreditCard card = SAMPLE_LOCAL_CARD;
+
+        assertTrue(autofillLocalCardEditorFragment.mNameText.getText().toString().isEmpty());
+        assertTrue(autofillLocalCardEditorFragment.mNumberText.getText().toString().isEmpty());
+        assertTrue(autofillLocalCardEditorFragment.mExpirationDate.getText().toString().isEmpty());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    try {
+                        autofillLocalCardEditorFragment.onScanCompleted(
+                                card.getName(),
+                                card.getNumber(),
+                                Integer.parseInt(card.getMonth()),
+                                Integer.parseInt(card.getYear()));
+                    } catch (Exception e) {
+                        throw new AssertionError("Failed to run on scan completed", e);
+                    }
+                });
+
+        assertThat(autofillLocalCardEditorFragment.mNameText.getText().toString())
+                .isEqualTo(card.getName());
+        assertThat(
+                        autofillLocalCardEditorFragment
+                                .mNumberText
+                                .getText()
+                                .toString()
+                                .replaceAll(" ", ""))
+                .isEqualTo(card.getNumber());
+        assertThat(autofillLocalCardEditorFragment.mExpirationDate.getText().toString())
+                .isEqualTo(String.format("%s/%s", card.getMonth(), card.getYear().substring(2)));
+    }
+
+    private void setUpCreditCardScanner() {
+        CreditCardScanner.setFactory(
+                new CreditCardScanner.Factory() {
+                    @Override
+                    public CreditCardScanner create(Delegate delegate) {
+                        return mScanner;
+                    }
+                });
+        when(mScanner.canScan()).thenReturn(true);
     }
 }

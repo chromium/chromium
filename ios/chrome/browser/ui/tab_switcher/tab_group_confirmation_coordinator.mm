@@ -150,14 +150,14 @@
 
 // Returns a string used in the action sheet as a message.
 - (NSString*)sheetMessage {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
 
   // Show a user's email in the message if it's not incognito and a user is
   // signed in.
   NSString* userEmail = nil;
-  if (!browserState->IsOffTheRecord()) {
+  if (!profile->IsOffTheRecord()) {
     AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForBrowserState(browserState);
+        AuthenticationServiceFactory::GetForProfile(profile);
     id<SystemIdentity> identity = authenticationService->GetPrimaryIdentity(
         signin::ConsentLevel::kSignin);
     userEmail = identity.userEmail;

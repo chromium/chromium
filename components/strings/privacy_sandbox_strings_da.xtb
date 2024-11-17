@@ -3,18 +3,25 @@
 <translationbundle lang="da">
 <translation id="1444443021901415601">Chrome registrerer emner, du kan være interesseret i, baseret på din seneste browserhistorik</translation>
 <translation id="2252052615723281030">Denne indstilling hjælper med at beskytte din IP-adresse, når du er logget ind i Chrome. Hvis Chrome har mistanke om, at et website muligvis sporer dig, kan noget af din trafik sendes via privatlivsbeskyttende servere.</translation>
+<translation id="235789365079050412">Googles privatlivspolitik</translation>
 <translation id="2793385791865768072">Chromium registrerer emner, du kan være interesseret i, baseret på din seneste browserhistorik</translation>
+<translation id="2979365474350987274">Tredjepartscookies er begrænsede</translation>
 <translation id="33479675708419823">Denne indstilling hjælper med at beskytte din IP-adresse, når du er logget ind i Chrome. Hvis Chrome har mistanke om, at et website muligvis sporer dig, kan noget af din trafik sendes via privatlivsbeskyttende servere. Få flere oplysninger om, <ph name="LINK_BEGIN" />hvordan IP-beskyttelse fungerer<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Få flere oplysninger om, hvordan du skjuler din IP-adresse</translation>
+<translation id="385051799172605136">Tilbage</translation>
 <translation id="4041687306270459969">Annonceemner, der er mere end 4 uger gamle, slettes automatisk. Emner kan f.eks. være Sport eller Beklædning</translation>
 <translation id="4177501066905053472">Annonceemner</translation>
 <translation id="4301151630239508244">Annonceemner er blot én af mange muligheder, som et website kan benytte til at foretage personlig tilpasning af annoncer. Selv uden annonceemner kan websites stadig vise dig annoncer, men de er muligvis mindre personligt tilpassede. Se, hvordan du <ph name="BEGIN_LINK_1" />administrerer privatliv vedrørende annoncering<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Få flere oplysninger om, hvordan Google beskytter dine data, i vores <ph name="BEGIN_LINK" />privatlivspolitik<ph name="END_LINK" />.</translation>
 <translation id="453692855554576066">Du kan se dine annonceemner i Chromium-indstillingerne og blokere dem, der ikke skal deles med websites</translation>
 <translation id="4598427486995631491">Skjul din IP-adresse</translation>
 <translation id="4692439979815346597">Du kan se dine annonceemner i Chrome-indstillingerne og blokere dem, der ikke skal deles med websites</translation>
 <translation id="5413586988657235240">Websites, du besøger, kan anmode Chromium om emner for at vise dig relevante annoncer, samtidig med at din browserhistorik og identitet beskyttes</translation>
+<translation id="6053735090575989697">Få flere oplysninger om, hvordan Google beskytter dine data, i vores privatlivspolitik.</translation>
 <translation id="6186536480878693792">Websites, du besøger, kan anmode Chrome om emner for at vise dig relevante annoncer, samtidig med at din browserhistorik og identitet beskyttes</translation>
+<translation id="6195163219142236913">Tredjepartscookies er begrænset</translation>
 <translation id="6371812158043974664">Denne indstilling hjælper med at beskytte din IP-adresse, når du er logget ind i Chromium. Hvis Chromium har mistanke om, at et website muligvis sporer dig, kan noget af din trafik sendes via privatlivsbeskyttende servere. Få flere oplysninger om, <ph name="LINK_BEGIN" />hvordan IP-beskyttelse fungerer<ph name="LINK_END" /></translation>
+<translation id="6398358690696005758">Få flere oplysninger om, hvordan Google beskytter dine data, i vores <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="LINK_END1" />.</translation>
 <translation id="7040031291654706261">Få flere oplysninger om, <ph name="BEGIN_LINK" />hvordan IP-beskyttelse fungerer<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Gennemgå din indstilling for annonceemner</translation>
 </translationbundle>

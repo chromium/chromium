@@ -29,18 +29,10 @@ BASE_DECLARE_FEATURE(kAutoApproveSharedPasswordUpdatesFromSameSender);
 // goal is to have a go to place to understand how users are perceiving autofill
 // across quarters.
 BASE_DECLARE_FEATURE(kAutofillPasswordUserPerceptionSurvey);
+// Moves the "Use a passkey / Use a different passkey" to the context menu from
+// the autofill dropdown.
+BASE_DECLARE_FEATURE(kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu);
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-
-#if BUILDFLAG(IS_WIN)
-// OS authentication will use IUserConsentVerifierInterop api to trigger Windows
-// Hello authentication. This api allows us to specify explicitly to which
-// window, the OS prompt should attach.
-BASE_DECLARE_FEATURE(kAuthenticateUsingUserConsentVerifierInteropApi);
-
-// OS authentication will use UserConsentVerifier api to trigger Windows Hello
-// authentication.
-BASE_DECLARE_FEATURE(kAuthenticateUsingUserConsentVerifierApi);
-#endif  // BUILDFLAG(IS_WIN)
 
 // Enables Biometrics for the Touch To Fill feature. This only effects Android.
 BASE_DECLARE_FEATURE(kBiometricTouchToFill);
@@ -62,8 +54,23 @@ BASE_DECLARE_FEATURE(kFillOnAccountSelect);
 
 #if BUILDFLAG(IS_IOS)
 
+// Enables the clean up of hanging form extraction requests made by the
+// password suggestion helper. This is to fix the cases where the suggestions
+// pipeline is broken because the pipeline is waiting for password suggestions
+// that are never provided.
+BASE_DECLARE_FEATURE(kIosCleanupHangingPasswordFormExtractionRequests);
+
+// The feature parameter that determines the minimal period of time in
+// milliseconds before the form extraction request times out.
+extern const base::FeatureParam<int>
+    kIosPasswordFormExtractionRequestsTimeoutMs;
+
 // Enable saving username in UFF on iOS.
 BASE_DECLARE_FEATURE(kIosDetectUsernameInUff);
+
+// Enables the second version of the bottom sheet to fix a few bugs that we've
+// seen in production since the launch of the V1 of the feature.
+BASE_DECLARE_FEATURE(kIOSPasswordBottomSheetV2);
 
 // Enables password generation bottom sheet to be displayed (on iOS) when a user
 // is signed-in and taps on a new password field.
@@ -73,6 +80,12 @@ BASE_DECLARE_FEATURE(kIOSProactivePasswordGenerationBottomSheet);
 
 // Enables saving enterprise password hashes to a local state preference.
 BASE_DECLARE_FEATURE(kLocalStateEnterprisePasswordHashes);
+
+// Enables running the clientside form classifier to parse password forms.
+BASE_DECLARE_FEATURE(kPasswordFormClientsideClassifier);
+
+// Enables offering credentials for filling across grouped domains.
+BASE_DECLARE_FEATURE(kPasswordFormGroupedAffiliations);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 
@@ -93,16 +106,13 @@ BASE_DECLARE_FEATURE(kPasswordManagerLogToTerminal);
 // Enables triggering password suggestions through the context menu.
 BASE_DECLARE_FEATURE(kPasswordManualFallbackAvailable);
 
+// Detects password reuse based on hashed password values.
+BASE_DECLARE_FEATURE(kReuseDetectionBasedOnPasswordHashes);
+
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Enables "Needs access to keychain, restart chrome" bubble and banner.
 BASE_DECLARE_FEATURE(kRestartToGainAccessToKeychain);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-// Enables promo card in settings encouraging users to enable screenlock reauth
-// before filling passwords.
-BASE_DECLARE_FEATURE(kScreenlockReauthPromoCard);
-#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables biometric authentication on for Password Autofill on ChromeOS.
@@ -118,7 +128,6 @@ BASE_DECLARE_FEATURE(kSkipUndecryptablePasswords);
 BASE_DECLARE_FEATURE(kTriggerPasswordResyncAfterDeletingUndecryptablePasswords);
 
 #if BUILDFLAG(IS_ANDROID)
-
 // Enables showing various warnings for password manager users not yet enrolled
 // into the new experience of storing passwords in GMSCore.
 BASE_DECLARE_FEATURE(
@@ -144,6 +153,16 @@ BASE_DECLARE_FEATURE(kBiometricAuthIdentityCheck);
 // Enables clearing the login database for the users who already migrated their
 // credentials to GMS Core.
 BASE_DECLARE_FEATURE(kClearLoginDatabaseForAllMigratedUPMUsers);
+
+// If enabled, the profile login db will no longer be renamed to account
+// login db upon UPM with split stores activation. The db is cleared on
+// the following run anyway.
+BASE_DECLARE_FEATURE(kDropLoginDbRenameForUpmSyncingUsers);
+
+// If enabled, the password store no longer uses the Login DB as a backend.
+// Instead, it either uses the Android-specific storage or an empty backend
+// if the client isn't eligible for the former.
+BASE_DECLARE_FEATURE(kLoginDbDeprecationAndroid);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // Improves PSL matching capabilities by utilizing PSL-extension list from
@@ -157,14 +176,6 @@ BASE_DECLARE_FEATURE(kUseExtensionListForPSLMatching);
 // TODO(crbug.com/40626063): Clean up if the main crowdsourcing is good enough
 // and we don't need additional signals.
 BASE_DECLARE_FEATURE(kUsernameFirstFlowFallbackCrowdsourcing);
-
-// Enables storing more possible username values in the LRU cache. Part of the
-// `kUsernameFirstFlowWithIntermediateValues` feature.
-BASE_DECLARE_FEATURE(kUsernameFirstFlowStoreSeveralValues);
-
-// Enables tolerating intermediate fields like OTP or CAPTCHA
-// between username and password fields in Username First Flow.
-BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValues);
 
 // Enables new prediction that is based on votes from Username First Flow with
 // Intermediate Values.
@@ -183,16 +194,14 @@ BASE_DECLARE_FEATURE(kUseNewEncryptionMethod);
 // Enables re-encryption of all passwords. Done separately for each store.
 BASE_DECLARE_FEATURE(kEncryptAllPasswordsWithOSCryptAsync);
 
+// Marks all submitted credentials as leaked, useful for testing of a password
+// leak dialog.
+BASE_DECLARE_FEATURE(kMarkAllCredentialsAsLeaked);
+
+// Enables improvements to password change functionality.
+BASE_DECLARE_FEATURE(kImprovedPasswordChangeService);
+
 // All features parameters in alphabetical order.
-
-// If `kUsernameFirstFlowStoreSeveralValues` is enabled, the size of LRU
-// cache that stores all username candidates outside the form.
-extern const base::FeatureParam<int> kMaxSingleUsernameFieldsToStore;
-
-// If `kUsernameFirstFlowWithIntermediateValues` is enabled, after this amount
-// of minutes single username will not be used in the save prompt.
-extern const base::FeatureParam<int> kSingleUsernameTimeToLive;
-
 }  // namespace password_manager::features
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FEATURES_PASSWORD_FEATURES_H_

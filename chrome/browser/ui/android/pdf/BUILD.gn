@@ -33,6 +33,7 @@ android_library("java") {
     ":pdf_provider_java",
     "//base:base_java",
     "//base:content_uri_utils_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/native_page:java",
     "//chrome/browser/util:java",

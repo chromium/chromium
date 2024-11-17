@@ -17,8 +17,6 @@ namespace autofill {
 AutofillDataModel::AutofillDataModel(size_t usage_history_size)
     : usage_history_size_(usage_history_size), use_dates_(usage_history_size_) {
   CHECK_NE(usage_history_size_, 0u);
-  CHECK(usage_history_size_ == 1 ||
-        base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates));
   set_use_date(AutofillClock::Now());
   set_modification_date(AutofillClock::Now());
 }
@@ -42,10 +40,7 @@ void AutofillDataModel::set_use_date(std::optional<base::Time> time, size_t i) {
 }
 
 void AutofillDataModel::RecordUseDate(base::Time time) {
-  if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
-    std::rotate(use_dates_.rbegin(), use_dates_.rbegin() + 1,
-                use_dates_.rend());
-  }
+  std::rotate(use_dates_.rbegin(), use_dates_.rbegin() + 1, use_dates_.rend());
   set_use_date(time, 1);
 }
 
@@ -55,10 +50,6 @@ double AutofillDataModel::GetRankingScore(base::Time current_time) const {
 }
 
 void AutofillDataModel::MergeUseDates(const AutofillDataModel& other) {
-  if (!base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
-    set_use_date(std::max(use_date(), other.use_date()));
-    return;
-  }
   // Take the `usage_history_size()` latest use dates (nullopts go last).
   use_dates_.insert(use_dates_.end(), other.use_dates_.begin(),
                     other.use_dates_.end());

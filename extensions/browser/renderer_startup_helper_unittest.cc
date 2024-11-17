@@ -6,7 +6,6 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -30,11 +29,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace extensions {
 
@@ -122,8 +116,7 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
   void SetDeveloperMode(bool current_developer_mode) override {}
 
   void SetSessionInfo(version_info::Channel channel,
-                      mojom::FeatureSessionType session,
-                      bool is_lock_screen_context) override {}
+                      mojom::FeatureSessionType session) override {}
   void SetSystemFont(const std::string& font_family,
                      const std::string& font_size) override {}
 
@@ -545,24 +538,11 @@ class RendererStartupHelperTestCaptivePortalPopupWindow
   RendererStartupHelperTestCaptivePortalPopupWindow() = default;
   ~RendererStartupHelperTestCaptivePortalPopupWindow() override = default;
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kCaptivePortalPopupWindow);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    crosapi::mojom::BrowserInitParamsPtr init_params =
-        chromeos::BrowserInitParams::GetForTests()->Clone();
-    init_params->is_captive_portal_popup_window_enabled = true;
-    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     RendererStartupHelperTest::SetUp();
     static_cast<TestingPrefServiceSimple*>(pref_service())
         ->registry()
         ->RegisterBooleanPref(chromeos::prefs::kCaptivePortalSignin, false);
   }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that only incognito-enabled extensions are loaded in an incognito

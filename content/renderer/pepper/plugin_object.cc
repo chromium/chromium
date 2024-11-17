@@ -270,7 +270,7 @@ void PluginObject::Call(const std::string& identifier,
   for (uint32_t i = 0; i < argument_vars.size(); ++i) {
     v8::Local<v8::Value> arg;
     if (!args->GetNext(&arg)) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     argument_vars.Set(i, try_catch.FromV8(arg));

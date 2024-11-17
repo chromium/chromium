@@ -18,7 +18,6 @@
 #include "ash/components/arc/crash_collector/arc_crash_collector_bridge.h"
 #include "ash/components/arc/disk_space/arc_disk_space_bridge.h"
 #include "ash/components/arc/ime/arc_ime_service.h"
-#include "ash/components/arc/keyboard_shortcut/arc_keyboard_shortcut_bridge.h"
 #include "ash/components/arc/media_session/arc_media_session_bridge.h"
 #include "ash/components/arc/memory/arc_memory_bridge.h"
 #include "ash/components/arc/metrics/arc_metrics_service.h"
@@ -48,6 +47,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager.h"
 #include "chrome/browser/ash/app_list/arc/arc_usb_host_permission_manager_factory.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/apps/apk_web_app_service.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
 #include "chrome/browser/ash/arc/adbd/arc_adbd_monitor_bridge.h"
@@ -56,7 +56,7 @@
 #include "chrome/browser/ash/arc/bluetooth/arc_bluetooth_bridge.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
 #include "chrome/browser/ash/arc/enterprise/arc_enterprise_reporting_service.h"
-#include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
+#include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service_factory.h"
 #include "chrome/browser/ash/arc/error_notification/arc_error_notification_bridge.h"
 #include "chrome/browser/ash/arc/file_system_watcher/arc_file_system_watcher_service.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_root_map_factory.h"
@@ -86,7 +86,7 @@
 #include "chrome/browser/ash/arc/process/arc_process_service.h"
 #include "chrome/browser/ash/arc/screen_capture/arc_screen_capture_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_disk_space_monitor.h"
-#include "chrome/browser/ash/arc/session/arc_initial_optin_metrics_recorder.h"
+#include "chrome/browser/ash/arc/session/arc_initial_optin_metrics_recorder_factory.h"
 #include "chrome/browser/ash/arc/session/arc_play_store_enabled_preference_handler.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/sharesheet/arc_sharesheet_bridge.h"
@@ -270,7 +270,6 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
     arc_icon_cache_delegate_provider_ =
         std::make_unique<ArcIconCacheDelegateProvider>(intent_helper);
   }
-  ArcKeyboardShortcutBridge::GetForBrowserContext(profile);
   if (ShouldUseArcKeyMint()) {
     ArcKeyMintBridge::GetForBrowserContext(profile);
   } else {
@@ -320,11 +319,11 @@ void ArcServiceLauncher::OnPrimaryUserProfilePrepared(Profile* profile) {
   ArcWallpaperService::GetForBrowserContext(profile);
   ArcWifiHostImpl::GetForBrowserContext(profile);
   GpuArcVideoKeyedService::GetForBrowserContext(profile);
-  CertStoreService::GetForBrowserContext(profile);
+  CertStoreServiceFactory::GetForBrowserContext(profile);
   apps::ArcAppsFactory::GetForProfile(profile);
   ash::ApkWebAppService::Get(profile);
-  ash::app_restore::AppRestoreArcTaskHandler::GetForProfile(profile);
-  ArcInitialOptInMetricsRecorder::GetForProfile(profile);
+  ash::app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(profile);
+  ArcInitialOptInMetricsRecorderFactory::GetForBrowserContext(profile);
   ArcChromeFeatureFlagsBridge::GetForBrowserContext(profile);
 
   if (arc::IsArcVmEnabled()) {
@@ -454,9 +453,8 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcIdleManager::EnsureFactoryBuilt();
   ArcIioSensorBridge::EnsureFactoryBuilt();
   ArcImeService::EnsureFactoryBuilt();
-  ArcInitialOptInMetricsRecorder::EnsureFactoryBuilt();
+  ArcInitialOptInMetricsRecorderFactory::GetInstance();
   ArcInstanceThrottle::EnsureFactoryBuilt();
-  ArcKeyboardShortcutBridge::EnsureFactoryBuilt();
   if (ShouldUseArcKeyMint()) {
     ArcKeyMintBridge::EnsureFactoryBuilt();
   } else {
@@ -498,7 +496,7 @@ void ArcServiceLauncher::EnsureFactoriesBuilt() {
   ArcWakeLockBridge::EnsureFactoryBuilt();
   ArcWallpaperService::EnsureFactoryBuilt();
   ArcWifiHostImpl::EnsureFactoryBuilt();
-  CertStoreService::EnsureFactoryBuilt();
+  CertStoreServiceFactory::GetInstance();
   GpuArcVideoKeyedService::EnsureFactoryBuilt();
   input_overlay::ArcInputOverlayManager::EnsureFactoryBuilt();
   ArcChromeFeatureFlagsBridge::EnsureFactoryBuilt();

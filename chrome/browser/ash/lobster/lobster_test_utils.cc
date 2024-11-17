@@ -8,6 +8,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/no_destructor.h"
 #include "components/manta/proto/manta.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -24,20 +25,19 @@ constexpr int kFakeBaseGenerationSeed = 10;
 
 const std::string_view GetTestJpgBytes(const SkBitmap& bitmap) {
   static const base::NoDestructor<std::string> jpg_bytes([&] {
-    std::vector<unsigned char> data;
-    gfx::JPEGCodec::Encode(bitmap, /*quality=*/50, &data);
-    return std::string(data.begin(), data.end());
+    std::optional<std::vector<uint8_t>> data =
+        gfx::JPEGCodec::Encode(bitmap, /*quality=*/50);
+    return std::string(base::as_string_view(data.value()));
   }());
   return *jpg_bytes;
 }
 
 MATCHER_P(AreJpgBytesClose, expected_bitmap, "") {
-  std::unique_ptr<SkBitmap> actual_bitmap = gfx::JPEGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(arg.data()), arg.size());
+  SkBitmap actual_bitmap = gfx::JPEGCodec::Decode(base::as_byte_span(arg));
   // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
   // slightly.
-  return actual_bitmap != nullptr &&
-         gfx::test::AreBitmapsClose(expected_bitmap, *actual_bitmap,
+  return !actual_bitmap.isNull() &&
+         gfx::test::AreBitmapsClose(expected_bitmap, actual_bitmap,
                                     /*max_deviation=*/1);
 }
 

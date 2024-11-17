@@ -216,10 +216,6 @@ std::string ConstructArcAppShortcutUrl(const std::string& app_id,
   return "appshortcutsearch://" + app_id + "/" + shortcut_id;
 }
 
-bool IsInstantResponseOpenEnabled() {
-  return base::FeatureList::IsEnabled(arc::kInstantResponseWindowOpen);
-}
-
 bool IsArcVmAndSwappedOut(content::BrowserContext* context) {
   return IsArcVmEnabled() &&
          base::FeatureList::IsEnabled(arc::kVmmSwapoutGhostWindow) &&
@@ -428,17 +424,6 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     launch_intent_to_send->extras[kRequestStartTimeParamKey] =
         base::NumberToString(
             (base::TimeTicks::Now() - base::TimeTicks()).InMilliseconds());
-  } else if (IsInstantResponseOpenEnabled() &&
-             !WindowPredictor::GetInstance()->IsAppPendingLaunch(profile,
-                                                                 app_id)) {
-    // For some devices, launch ghost window and app at the same time.
-    if (WindowPredictor::GetInstance()->LaunchArcAppWithGhostWindow(
-            profile, app_id, *app_info, launch_intent_to_send, event_flags,
-            GhostWindowType::kAppLaunch,
-            WindowPredictorUseCase::kInstanceResponse, window_info)) {
-      return true;
-    }
-    VLOG(2) << "Failed to launch ghost window, fallback to launch directly.";
   }
 
   arc::ArcBootPhaseMonitorBridge::RecordFirstAppLaunchDelayUMA(context);

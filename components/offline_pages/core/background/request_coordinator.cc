@@ -176,7 +176,7 @@ RequestCoordinator::RequestCoordinator(
   queue_->CleanupRequestQueue();
 }
 
-RequestCoordinator::~RequestCoordinator() {}
+RequestCoordinator::~RequestCoordinator() = default;
 
 int64_t RequestCoordinator::SavePageLater(
     const SavePageLaterParams& save_page_later_params,
@@ -882,8 +882,7 @@ bool RequestCoordinator::ShouldTryNextRequest(
       // Should not be possible to receive these values.
       // Make explicit choice about new status codes that actually reach here.
       // Their default is no further processing in this service window.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

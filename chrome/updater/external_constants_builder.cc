@@ -155,7 +155,7 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearGroupPolicies() {
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetOverinstallTimeout(
-    const base::TimeDelta& overinstall_timeout) {
+    base::TimeDelta overinstall_timeout) {
   overrides_.Set(kDevOverrideKeyOverinstallTimeout,
                  static_cast<int>(overinstall_timeout.InSeconds()));
   return *this;
@@ -167,7 +167,7 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearOverinstallTimeout() {
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetIdleCheckPeriod(
-    const base::TimeDelta& idle_check_period) {
+    base::TimeDelta idle_check_period) {
   overrides_.Set(kDevOverrideKeyIdleCheckPeriodSeconds,
                  static_cast<int>(idle_check_period.InSeconds()));
   return *this;
@@ -179,7 +179,7 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::ClearIdleCheckPeriod() {
 }
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::SetMachineManaged(
-    const std::optional<bool>& is_managed_device) {
+    std::optional<bool> is_managed_device) {
   if (is_managed_device.has_value()) {
     overrides_.Set(kDevOverrideKeyManagedDevice, is_managed_device.value());
   }
@@ -200,6 +200,19 @@ ExternalConstantsBuilder& ExternalConstantsBuilder::SetEnableDiffUpdates(
 
 ExternalConstantsBuilder& ExternalConstantsBuilder::ClearEnableDiffUpdates() {
   overrides_.Remove(kDevOverrideKeyEnableDiffUpdates);
+  return *this;
+}
+
+ExternalConstantsBuilder& ExternalConstantsBuilder::SetCecaConnectionTimeout(
+    base::TimeDelta ceca_connection_timeout) {
+  overrides_.Set(kDevOverrideKeyCecaConnectionTimeout,
+                 static_cast<int>(ceca_connection_timeout.InSeconds()));
+  return *this;
+}
+
+ExternalConstantsBuilder&
+ExternalConstantsBuilder::ClearCecaConnectionTimeout() {
+  overrides_.Remove(kDevOverrideKeyCecaConnectionTimeout);
   return *this;
 }
 
@@ -267,6 +280,9 @@ bool ExternalConstantsBuilder::Modify() {
   }
   if (!overrides_.contains(kDevOverrideKeyEnableDiffUpdates)) {
     SetEnableDiffUpdates(verifier->EnableDiffUpdates());
+  }
+  if (!overrides_.contains(kDevOverrideKeyCecaConnectionTimeout)) {
+    SetCecaConnectionTimeout(verifier->CecaConnectionTimeout());
   }
 
   return Overwrite();

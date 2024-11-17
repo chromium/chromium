@@ -294,8 +294,7 @@ SpeechRecognizerImpl::~SpeechRecognizerImpl() {
 void SpeechRecognizerImpl::Capture(const AudioBus* data,
                                    base::TimeTicks audio_capture_time,
                                    const AudioGlitchInfo& glitch_info,
-                                   double volume,
-                                   bool key_pressed) {
+                                   double volume) {
   // Convert audio from native format to fixed format used by WebSpeech.
   FSMEventArgs event_args(EVENT_AUDIO_DATA);
   event_args.audio_chunk = audio_converter_->Convert(data);
@@ -746,9 +745,8 @@ SpeechRecognizerImpl::DoNothing(const FSMEventArgs&) const {
 
 SpeechRecognizerImpl::FSMState
 SpeechRecognizerImpl::NotFeasible(const FSMEventArgs& event_args) {
-  NOTREACHED_IN_MIGRATION()
-      << "Unfeasible event " << event_args.event << " in state " << state_;
-  return state_;
+  NOTREACHED() << "Unfeasible event " << event_args.event << " in state "
+               << state_;
 }
 
 void SpeechRecognizerImpl::CloseAudioCapturerSource() {

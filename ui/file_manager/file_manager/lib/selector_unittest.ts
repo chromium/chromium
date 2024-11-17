@@ -139,7 +139,7 @@ export async function testSelectorController(done: () => void) {
   }
 
   // Silence unused var TS error.
-  console.log(!!XfTest);
+  console.info(!!XfTest);
 
   // Create test element and add it to the DOM, then wait for it to be ready on
   // the next event loop cycle.
@@ -147,7 +147,7 @@ export async function testSelectorController(done: () => void) {
   document.body.appendChild(testEl);
   await waitForElementUpdate(testEl);
 
-  const testDiv = testEl.shadowRoot!.querySelector('#test') as HTMLDivElement;
+  const testDiv = testEl.shadowRoot!.querySelector<HTMLDivElement>('#test')!;
   assertEquals(testDiv.textContent, '0');
 
   // Update the store and verify that the component automatically re-renders.

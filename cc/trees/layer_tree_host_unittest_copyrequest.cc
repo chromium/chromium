@@ -825,8 +825,7 @@ class LayerTreeHostTestAsyncTwoReadbacksWithoutDraw
         EndTest();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     ++callback_count_;
@@ -1392,7 +1391,7 @@ class LayerTreeHostCopyRequestTestMultipleDrawsHiddenCopyRequest
         else if (it.current_layer() == child)
           saw_child = true;
         else
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
 

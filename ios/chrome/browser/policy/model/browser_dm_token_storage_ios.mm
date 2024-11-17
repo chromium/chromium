@@ -52,8 +52,7 @@ bool StoreDMTokenInDirAppDataDir(const std::string& token,
                                  const std::string& client_id) {
   base::FilePath token_file_path;
   if (!GetDmTokenFilePath(&token_file_path, client_id, /*create_dir=*/true)) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   if (!base::ImportantFileWriter::WriteFileAtomically(token_file_path, token)) {
@@ -68,8 +67,7 @@ bool StoreDMTokenInDirAppDataDir(const std::string& token,
 bool DeleteDMTokenFromAppDataDir(const std::string& client_id) {
   base::FilePath token_file_path;
   if (!GetDmTokenFilePath(&token_file_path, client_id, /*create_dir=*/false)) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   return base::DeleteFile(token_file_path);

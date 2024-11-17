@@ -47,9 +47,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_CRYPTOHOME) AuthFactorInput {
   };
 
   struct SmartCard {
-    SmartCard(const std::vector<ChallengeResponseKey::SignatureAlgorithm>
+    SmartCard(std::vector<ChallengeResponseKey::SignatureAlgorithm>
                   signature_algorithms,
-              const std::string key_delegate_dbus_service_name);
+              std::string key_delegate_dbus_service_name);
     SmartCard(const SmartCard& other);
     SmartCard& operator=(const SmartCard&);
     ~SmartCard();

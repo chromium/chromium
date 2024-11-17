@@ -5,7 +5,7 @@
 import 'chrome://compare/new_column_selector.js';
 
 import type {NewColumnSelectorElement} from 'chrome://compare/new_column_selector.js';
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {stringToMojoUrl} from 'chrome://resources/js/mojo_type_util.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -13,7 +13,8 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 suite('NewColumnSelectorTest', () => {
-  const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
+  const shoppingServiceApi =
+      TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
 
   async function createSelector(): Promise<NewColumnSelectorElement> {
     const selector = document.createElement('new-column-selector');
@@ -41,7 +42,7 @@ suite('NewColumnSelectorTest', () => {
   setup(async () => {
     shoppingServiceApi.reset();
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    BrowserProxyImpl.setInstance(shoppingServiceApi);
+    ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
   });
 
   test('menu shown on enter', async () => {

@@ -22,6 +22,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/components/arc/mojom/app.mojom.h"
@@ -30,7 +31,7 @@
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/display/display_configuration_controller.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
@@ -64,7 +65,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/values.h"
@@ -98,7 +98,6 @@
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/eche_app/app_id.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/apps/camera_app/camera_system_web_app_info.h"
@@ -130,7 +129,6 @@
 #include "chrome/browser/ui/ash/shelf/shelf_controller_helper.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_controller.h"
 #include "chrome/browser/ui/ash/shelf/shelf_spinner_item_controller.h"
-#include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_shelf_item_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -145,7 +143,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_switches.h"
@@ -158,7 +155,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/account_id/account_id.h"
 #include "components/app_constants/constants.h"
 #include "components/exo/shell_surface_util.h"
@@ -670,8 +667,8 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     EXPECT_EQ("Chrome", GetPinnedAppStatus());
 
     // Assume all applications have been added already.
-    AddWebApp(web_app::kGoogleDocsAppId);
-    AddWebApp(web_app::kGmailAppId);
+    AddWebApp(ash::kGoogleDocsAppId);
+    AddWebApp(ash::kGmailAppId);
     extension_service_->AddExtension(extension1_.get());
     extension_service_->AddExtension(extension2_.get());
     extension_service_->AddExtension(extension5_.get());
@@ -685,9 +682,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     // Set user a preferences.
     InsertAddPinChange(user_a, 0, extension1_->id());
     InsertAddPinChange(user_a, 1, extension2_->id());
-    InsertAddPinChange(user_a, 2, web_app::kGmailAppId);
+    InsertAddPinChange(user_a, 2, ash::kGmailAppId);
     InsertAddPinChange(user_a, 3, extension_platform_app_->id());
-    InsertAddPinChange(user_a, 4, web_app::kGoogleDocsAppId);
+    InsertAddPinChange(user_a, 4, ash::kGoogleDocsAppId);
     InsertAddPinChange(user_a, 5, extension5_->id());
     InsertAddPinChange(user_a, 6, app_constants::kChromeAppId);
 
@@ -996,13 +993,13 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
             result += "app7";
           } else if (app == extension8_->id()) {
             result += "app8";
-          } else if (app == web_app::kGmailAppId) {
+          } else if (app == ash::kGmailAppId) {
             result += "gmail";
           } else if (app == extension_platform_app_->id()) {
             result += "platform_app";
-          } else if (app == web_app::kGoogleDocsAppId) {
+          } else if (app == ash::kGoogleDocsAppId) {
             result += "doc";
-          } else if (app == web_app::kYoutubeAppId) {
+          } else if (app == ash::kYoutubeAppId) {
             result += "youtube";
           } else {
             result += app_service_test_.GetAppName(app);
@@ -1027,15 +1024,15 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
             result += "App7";
           } else if (app == extension8_->id()) {
             result += "App8";
-          } else if (app == web_app::kGmailAppId) {
+          } else if (app == ash::kGmailAppId) {
             result += "Gmail";
-          } else if (app == web_app::kGoogleCalendarAppId) {
+          } else if (app == ash::kGoogleCalendarAppId) {
             result += "Calendar";
-          } else if (app == web_app::kGoogleDocsAppId) {
+          } else if (app == ash::kGoogleDocsAppId) {
             result += "Doc";
-          } else if (app == web_app::kMessagesAppId) {
+          } else if (app == ash::kMessagesAppId) {
             result += "Messages";
-          } else if (app == web_app::kYoutubeAppId) {
+          } else if (app == ash::kYoutubeAppId) {
             result += "Youtube";
           } else if (app == extension_platform_app_->id()) {
             result += "Platform_App";
@@ -1231,15 +1228,14 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
 
   const GURL& GetWebAppUrl(const std::string& web_app_id) const {
     static const base::flat_map<std::string, GURL> web_app_id_to_start_url{
-        {web_app::kGmailAppId,
+        {ash::kGmailAppId,
          GURL("https://mail.google.com/mail/?usp=installed_webapp")},
-        {web_app::kGoogleCalendarAppId,
+        {ash::kGoogleCalendarAppId,
          GURL("https://calendar.google.com/calendar/r")},
-        {web_app::kGoogleDocsAppId,
+        {ash::kGoogleDocsAppId,
          GURL("https://docs.google.com/document/?usp=installed_webapp")},
-        {web_app::kMessagesAppId, GURL("https://messages.google.com/web/")},
-        {web_app::kYoutubeAppId,
-         GURL("https://www.youtube.com/?feature=ytca")}};
+        {ash::kMessagesAppId, GURL("https://messages.google.com/web/")},
+        {ash::kYoutubeAppId, GURL("https://www.youtube.com/?feature=ytca")}};
 
     DCHECK(base::Contains(web_app_id_to_start_url, web_app_id));
     return web_app_id_to_start_url.at(web_app_id);
@@ -1260,8 +1256,9 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   web_app::IsolatedWebAppUrlInfo AddIsolatedWebApp(const GURL& url) {
     web_app::AddDummyIsolatedAppToRegistry(
         profile(), url, "IWA",
-        web_app::WebApp::IsolationData(
-            web_app::IwaStorageOwnedBundle{"", false}, base::Version("1.0.0")),
+        web_app::IsolationData::Builder(
+            web_app::IwaStorageOwnedBundle{"", false}, base::Version("1.0.0"))
+            .Build(),
         webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
     base::expected<web_app::IsolatedWebAppUrlInfo, std::string> url_info =
         web_app::IsolatedWebAppUrlInfo::Create(url);
@@ -1469,78 +1466,6 @@ class ChromeShelfControllerTest : public ChromeShelfControllerTestBase {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Tests for Lacros integration. Exists as a separate class because the feature
-// must be initialized before ChromeShelfControllerTestBase::SetUp().
-class ChromeShelfControllerLacrosTest : public ChromeShelfControllerTestBase {
- public:
-  ChromeShelfControllerLacrosTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
-        /*disabled_features=*/{});
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-  }
-  ChromeShelfControllerLacrosTest(const ChromeShelfControllerLacrosTest&) =
-      delete;
-  ChromeShelfControllerLacrosTest& operator=(
-      const ChromeShelfControllerLacrosTest&) = delete;
-  ~ChromeShelfControllerLacrosTest() override = default;
-
-  // testing::Test:
-  void SetUp() override {
-    // Creates profile().
-    ChromeShelfControllerTestBase::SetUp();
-
-    ASSERT_TRUE(ash::ProfileHelper::Get()->IsPrimaryProfile(profile()));
-    proxy_ = apps::AppServiceProxyFactory::GetForProfile(profile());
-    ASSERT_TRUE(proxy_);
-  }
-
-  void TearDown() override {
-    proxy_ = nullptr;
-    chrome_app_shelf_item_ = nullptr;
-    ChromeShelfControllerTestBase::TearDown();
-  }
-
-  void AddChromeAppItem(const std::string& app_id, aura::Window* window) {
-    ash::ShelfItem item;
-    item.id = ash::ShelfID(app_id);
-    item.type = ash::TYPE_APP;
-    auto delegate =
-        std::make_unique<StandaloneBrowserExtensionAppShelfItemController>(
-            ash::ShelfID(kDummyAppId), window);
-    chrome_app_shelf_item_ = delegate.get();
-    ash::ShelfModel::Get()->Add(item, std::move(delegate));
-  }
-
-  // Verify instance for `window`. If `state` is not destroyed, verify `app_id`
-  // and `state`. Otherwise, verify there is no instance for `app_id` and
-  // `window`.
-  void VerifyInstance(const std::string& app_id,
-                      aura::Window* window,
-                      apps::InstanceState state) {
-    if (state != apps::InstanceState::kDestroyed) {
-      EXPECT_EQ(app_id, proxy_->InstanceRegistry().GetShelfId(window).app_id);
-      EXPECT_EQ(state, proxy_->InstanceRegistry().GetState(window));
-    } else {
-      EXPECT_FALSE(proxy_->InstanceRegistry().Exists(window));
-    }
-  }
-
-  StandaloneBrowserExtensionAppShelfItemController* chrome_app_shelf_item() {
-    return chrome_app_shelf_item_;
-  }
-
-  apps::AppServiceProxy* proxy() { return proxy_; }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
-  raw_ptr<apps::AppServiceProxy> proxy_ = nullptr;
-  raw_ptr<StandaloneBrowserExtensionAppShelfItemController, DanglingUntriaged>
-      chrome_app_shelf_item_ = nullptr;
-};
-
 // A V1 windowed application.
 class V1App : public TestBrowserWindow {
  public:
@@ -1614,13 +1539,9 @@ class MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest
     : public ChromeShelfControllerTestBase {
  protected:
   MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest() {
-    // Lacros (standalone browser) is disabled since Lacros does not support the
-    // ChromeOS Legacy multi profile feature. `kMediaRouter` is disabled because
-    // it has unmet dependencies and is unrelated to this unit test.
-    auto disabled_features = ash::standalone_browser::GetFeatureRefs();
-    disabled_features.push_back(media_router::kMediaRouter);
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{}, disabled_features);
+    // `kMediaRouter` is disabled because it has unmet dependencies and is
+    // unrelated to this unit test.
+    scoped_feature_list_.InitAndDisableFeature(media_router::kMediaRouter);
   }
   MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest(
       const MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest&) =
@@ -1902,161 +1823,21 @@ TEST_F(ChromeShelfControllerTest, PreinstalledApps) {
   // preinstalled apps appear on shelf between manually pinned App1.
 
   // Prefs are not yet synced. No default pin appears.
-  AddWebApp(web_app::kYoutubeAppId);
+  AddWebApp(ash::kYoutubeAppId);
   EXPECT_EQ("Chrome, App1", GetPinnedAppStatus());
 
   StartPrefSyncService(syncer::SyncDataList());
   EXPECT_EQ("Chrome, Youtube, App1", GetPinnedAppStatus());
 
-  AddWebApp(web_app::kMessagesAppId);
+  AddWebApp(ash::kMessagesAppId);
   EXPECT_EQ("Chrome, Messages, Youtube, App1", GetPinnedAppStatus());
 
-  AddWebApp(web_app::kGoogleCalendarAppId);
+  AddWebApp(ash::kGoogleCalendarAppId);
   EXPECT_EQ("Chrome, Calendar, Messages, Youtube, App1", GetPinnedAppStatus());
 
-  AddWebApp(web_app::kGmailAppId);
+  AddWebApp(ash::kGmailAppId);
   EXPECT_EQ("Chrome, Gmail, Calendar, Messages, Youtube, App1",
             GetPinnedAppStatus());
-}
-
-TEST_F(ChromeShelfControllerLacrosTest, LacrosPinnedByDefault) {
-  InitShelfController();
-  std::string lacros_app_name = l10n_util::GetStringUTF8(IDS_PRODUCT_NAME);
-  EXPECT_EQ(lacros_app_name, GetPinnedAppStatus());
-}
-
-// Checks that AppService instance is updated appropriately for one Chrome app
-// window.
-TEST_F(ChromeShelfControllerLacrosTest, ChromeAppWindow) {
-  InitShelfController();
-
-  auto window = std::make_unique<aura::Window>(nullptr);
-  window->Init(ui::LAYER_NOT_DRAWN);
-  AddChromeAppItem(kDummyAppId, window.get());
-  VerifyInstance(
-      kDummyAppId, window.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning));
-
-  // Set window visibility as true.
-  window->Show();
-  VerifyInstance(
-      kDummyAppId, window.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning |
-                                       apps::InstanceState::kVisible));
-
-  // Set window as activated.
-  chrome_app_shelf_item()->OnWindowActivated(
-      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
-      window.get(), nullptr);
-  VerifyInstance(
-      kDummyAppId, window.get(),
-      static_cast<apps::InstanceState>(
-          apps::InstanceState::kStarted | apps::InstanceState::kRunning |
-          apps::InstanceState::kVisible | apps::InstanceState::kActive));
-
-  // Set window as inactivated.
-  chrome_app_shelf_item()->OnWindowActivated(
-      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
-      nullptr, window.get());
-  VerifyInstance(
-      kDummyAppId, window.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning |
-                                       apps::InstanceState::kVisible));
-
-  // Set window visibility as false.
-  window->Hide();
-  VerifyInstance(
-      kDummyAppId, window.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning));
-
-  // Remove window.
-  window.reset();
-  VerifyInstance(kDummyAppId, window.get(), apps::InstanceState::kDestroyed);
-}
-
-// Checks that AppService instance is updated appropriately for multiple Chrome
-// app windows.
-TEST_F(ChromeShelfControllerLacrosTest, ChromeAppWindows) {
-  InitShelfController();
-
-  auto window1 = std::make_unique<aura::Window>(nullptr);
-  window1->Init(ui::LAYER_NOT_DRAWN);
-  auto window2 = std::make_unique<aura::Window>(nullptr);
-  window2->Init(ui::LAYER_NOT_DRAWN);
-  AddChromeAppItem(kDummyAppId, window1.get());
-  VerifyInstance(
-      kDummyAppId, window1.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning));
-
-  // Add `window2`.
-  window2->Show();
-  chrome_app_shelf_item()->StartTrackingInstance(window2.get());
-  VerifyInstance(
-      kDummyAppId, window2.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning |
-                                       apps::InstanceState::kVisible));
-
-  // Set `window2` as activated.
-  chrome_app_shelf_item()->OnWindowActivated(
-      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
-      window2.get(), window1.get());
-  VerifyInstance(
-      kDummyAppId, window2.get(),
-      static_cast<apps::InstanceState>(
-          apps::InstanceState::kStarted | apps::InstanceState::kRunning |
-          apps::InstanceState::kVisible | apps::InstanceState::kActive));
-  VerifyInstance(
-      kDummyAppId, window1.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning));
-
-  // Set `window1` as visible and activated.
-  window2->Hide();
-  window1->Show();
-  chrome_app_shelf_item()->OnWindowActivated(
-      wm::ActivationChangeObserver::ActivationReason::ACTIVATION_CLIENT,
-      window1.get(), window2.get());
-  VerifyInstance(
-      kDummyAppId, window1.get(),
-      static_cast<apps::InstanceState>(
-          apps::InstanceState::kStarted | apps::InstanceState::kRunning |
-          apps::InstanceState::kVisible | apps::InstanceState::kActive));
-  VerifyInstance(
-      kDummyAppId, window2.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning));
-
-  // Remove `window1`.
-  window1.reset();
-  VerifyInstance(kDummyAppId, window1.get(), apps::InstanceState::kDestroyed);
-  VerifyInstance(
-      kDummyAppId, window2.get(),
-      static_cast<apps::InstanceState>(apps::InstanceState::kStarted |
-                                       apps::InstanceState::kRunning));
-  EXPECT_TRUE(proxy()->InstanceRegistry().ContainsAppId(kDummyAppId));
-
-  // Remove `window2`.
-  window2.reset();
-  VerifyInstance(kDummyAppId, window2.get(), apps::InstanceState::kDestroyed);
-  EXPECT_FALSE(proxy()->InstanceRegistry().ContainsAppId(kDummyAppId));
-}
-
-// Regression test for crash. crbug.com/1296949
-TEST_F(ChromeShelfControllerLacrosTest, WithoutAppService) {
-  Profile* const controller_profile = profile()->GetOffTheRecordProfile(
-      Profile::OTRProfileID::CreateUniqueForTesting(),
-      /*create_if_needed=*/true);
-  EXPECT_FALSE(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-      controller_profile));
-
-  ash::ShelfModel model;
-  ChromeShelfController(controller_profile, &model).Init();
 }
 
 TEST_F(ChromeShelfControllerWithArcTest, ArcAppsHiddenFromLaunchCanBePinned) {
@@ -2088,7 +1869,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
 
   extension_service_->AddExtension(extension1_.get());
   extension_service_->AddExtension(extension2_.get());
-  AddWebApp(web_app::kGmailAppId);
+  AddWebApp(ash::kGmailAppId);
 
   // extension 1, 3 are pinned by user
   syncer::SyncChangeList sync_list;
@@ -2096,7 +1877,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
   InsertAddPinChange(&sync_list, 1, arc_app_id1);
   InsertAddPinChange(&sync_list, 2, extension2_->id());
   InsertAddPinChange(&sync_list, 3, arc_app_id2);
-  InsertAddPinChange(&sync_list, 4, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list, 4, ash::kGmailAppId);
   SendPinChanges(sync_list, true);
   SetShelfChromeIconIndex(1);
 
@@ -2104,7 +1885,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
   EXPECT_FALSE(shelf_controller_->IsAppPinned(arc_app_id1));
   EXPECT_TRUE(shelf_controller_->IsAppPinned(extension2_->id()));
   EXPECT_FALSE(shelf_controller_->IsAppPinned(arc_app_id2));
-  EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
   EXPECT_FALSE(shelf_controller_->IsAppPinned(arc_app_id3));
   EXPECT_EQ("App1, Chrome, App2, Gmail", GetPinnedAppStatus());
 
@@ -2136,7 +1917,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
   EXPECT_TRUE(shelf_controller_->IsAppPinned(arc_app_id1));
   EXPECT_TRUE(shelf_controller_->IsAppPinned(extension2_->id()));
   EXPECT_TRUE(shelf_controller_->IsAppPinned(arc_app_id2));
-  EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
   EXPECT_FALSE(shelf_controller_->IsAppPinned(arc_app_id3));
 
   EXPECT_EQ("App1, Chrome, Fake App 1, App2, Fake App 2, Gmail",
@@ -2172,7 +1953,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
   EXPECT_FALSE(shelf_controller_->IsAppPinned(arc_app_id1));
   EXPECT_TRUE(shelf_controller_->IsAppPinned(extension2_->id()));
   EXPECT_FALSE(shelf_controller_->IsAppPinned(arc_app_id2));
-  EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
   EXPECT_FALSE(shelf_controller_->IsAppPinned(arc_app_id3));
   EXPECT_EQ("App2, Chrome, App1, Gmail", GetPinnedAppStatus());
 
@@ -2188,7 +1969,7 @@ TEST_F(ChromeShelfControllerWithArcTest, ArcAppPinCrossPlatformWorkflow) {
   EXPECT_TRUE(shelf_controller_->IsAppPinned(arc_app_id1));
   EXPECT_FALSE(shelf_controller_->IsAppPinned(extension2_->id()));
   EXPECT_TRUE(shelf_controller_->IsAppPinned(arc_app_id2));
-  EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
   EXPECT_FALSE(shelf_controller_->IsAppPinned(arc_app_id3));
   EXPECT_EQ("Gmail, Fake App 2, Chrome, App1, Fake App 1",
             GetPinnedAppStatus());
@@ -2199,7 +1980,7 @@ TEST_F(ChromeShelfControllerTest, MergePolicyAndUserPrefPinnedApps) {
   InitShelfController();
 
   // Install two versions of google docs with different install_urls.
-  const GURL& google_docs_start_url = GetWebAppUrl(web_app::kGoogleDocsAppId);
+  const GURL& google_docs_start_url = GetWebAppUrl(ash::kGoogleDocsAppId);
 
   const GURL google_docs_install_url_v1{
       base::StrCat({google_docs_start_url.spec(), "&v=1"})};
@@ -2218,20 +1999,20 @@ TEST_F(ChromeShelfControllerTest, MergePolicyAndUserPrefPinnedApps) {
   };
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->AppRegistryCache()
-      .ForOneApp(web_app::kGoogleDocsAppId, [&google_docs_install_urls](
-                                                const auto& update) {
+      .ForOneApp(ash::kGoogleDocsAppId, [&google_docs_install_urls](
+                                            const auto& update) {
         ASSERT_THAT(update.PolicyIds(), testing::UnorderedElementsAreArray(
                                             google_docs_install_urls));
       });
 
-  InstallExternalWebApp(GetWebAppUrl(web_app::kGmailAppId));
+  InstallExternalWebApp(GetWebAppUrl(ash::kGmailAppId));
   extension_service_->AddExtension(extension1_.get());
   extension_service_->AddExtension(extension5_.get());
   // extension 1, 3 are pinned by user
   syncer::SyncChangeList sync_list;
   InsertAddPinChange(&sync_list, 0, extension1_->id());
   InsertAddPinChange(&sync_list, 1, app_constants::kChromeAppId);
-  InsertAddPinChange(&sync_list, 2, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list, 2, ash::kGmailAppId);
   SendPinChanges(sync_list, /*reset_pin_model=*/true);
 
   base::Value::List policy_value;
@@ -2244,8 +2025,8 @@ TEST_F(ChromeShelfControllerTest, MergePolicyAndUserPrefPinnedApps) {
   EXPECT_TRUE(shelf_controller_->IsAppPinned(extension1_->id()));
   // 2 is not pinned as it's not installed
   EXPECT_FALSE(shelf_controller_->IsAppPinned(extension2_->id()));
-  EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
-  EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kGoogleDocsAppId));
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(ash::kGoogleDocsAppId));
   // install extension 2 and check
   AddExtension(extension2_.get());
   EXPECT_TRUE(shelf_controller_->IsAppPinned(extension2_->id()));
@@ -2256,9 +2037,9 @@ TEST_F(ChromeShelfControllerTest, MergePolicyAndUserPrefPinnedApps) {
   EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
             GetPinnableForAppID(extension2_->id(), profile()));
   EXPECT_EQ(AppListControllerDelegate::PIN_EDITABLE,
-            GetPinnableForAppID(web_app::kGmailAppId, profile()));
+            GetPinnableForAppID(ash::kGmailAppId, profile()));
   EXPECT_EQ(AppListControllerDelegate::PIN_FIXED,
-            GetPinnableForAppID(web_app::kGoogleDocsAppId, profile()));
+            GetPinnableForAppID(ash::kGoogleDocsAppId, profile()));
 
   // Check the order of shelf pinned apps
   EXPECT_EQ("App2, Doc, App1, Chrome, Gmail", GetPinnedAppStatus());
@@ -2273,19 +2054,19 @@ TEST_F(ChromeShelfControllerTest, RestorePreinstalledAppsReverseOrder) {
   syncer::SyncChangeList sync_list;
   InsertAddPinChange(&sync_list, 0, extension1_->id());
   InsertAddPinChange(&sync_list, 1, extension2_->id());
-  InsertAddPinChange(&sync_list, 2, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list, 2, ash::kGmailAppId);
   SendPinChanges(sync_list, true);
 
   // The model should only contain the browser shortcut and app list items.
   EXPECT_FALSE(shelf_controller_->IsAppPinned(extension1_->id()));
   EXPECT_FALSE(shelf_controller_->IsAppPinned(extension2_->id()));
-  EXPECT_FALSE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
+  EXPECT_FALSE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
   EXPECT_EQ("Chrome", GetPinnedAppStatus());
 
   // Installing Gmail should add it to the shelf - behind the
   // chrome icon.
   ash::ShelfItem item;
-  AddWebApp(web_app::kGmailAppId);
+  AddWebApp(ash::kGmailAppId);
   EXPECT_FALSE(shelf_controller_->IsAppPinned(extension1_->id()));
   EXPECT_FALSE(shelf_controller_->IsAppPinned(extension2_->id()));
   EXPECT_EQ("Chrome, Gmail", GetPinnedAppStatus());
@@ -2311,31 +2092,31 @@ TEST_F(ChromeShelfControllerTest, RestorePreinstalledAppsRandomOrder) {
   syncer::SyncChangeList sync_list;
   InsertAddPinChange(&sync_list, 0, extension1_->id());
   InsertAddPinChange(&sync_list, 1, extension2_->id());
-  InsertAddPinChange(&sync_list, 2, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list, 2, ash::kGmailAppId);
   SendPinChanges(sync_list, true);
 
   // The model should only contain the browser shortcut and app list items.
   EXPECT_FALSE(shelf_controller_->IsAppPinned(extension1_->id()));
   EXPECT_FALSE(shelf_controller_->IsAppPinned(extension2_->id()));
-  EXPECT_FALSE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
+  EXPECT_FALSE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
   EXPECT_EQ("Chrome", GetPinnedAppStatus());
 
   // Installing |extension2_| should add it to the shelf - behind the
   // chrome icon.
   AddExtension(extension2_.get());
   EXPECT_FALSE(shelf_controller_->IsAppPinned(extension1_->id()));
-  EXPECT_FALSE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
+  EXPECT_FALSE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
   EXPECT_EQ("Chrome, App2", GetPinnedAppStatus());
 
   // Installing |extension1_| should add it to the shelf - behind the
   // chrome icon, but in first location.
   AddExtension(extension1_.get());
-  EXPECT_FALSE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
+  EXPECT_FALSE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
   EXPECT_EQ("Chrome, App1, App2", GetPinnedAppStatus());
 
   // Installing Gmail should add it to the shelf - behind the chrome icon,
   // but in first location.
-  AddWebApp(web_app::kGmailAppId);
+  AddWebApp(ash::kGmailAppId);
   EXPECT_EQ("Chrome, App1, App2, Gmail", GetPinnedAppStatus());
 }
 
@@ -2350,13 +2131,13 @@ TEST_F(ChromeShelfControllerTest,
   InsertAddPinChange(&sync_list, 0, extension1_->id());
   InsertAddPinChange(&sync_list, 1, app_constants::kChromeAppId);
   InsertAddPinChange(&sync_list, 2, extension2_->id());
-  InsertAddPinChange(&sync_list, 3, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list, 3, ash::kGmailAppId);
   SendPinChanges(sync_list, true);
 
   // The model should only contain the browser shortcut and app list items.
   EXPECT_FALSE(shelf_controller_->IsAppPinned(extension1_->id()));
   EXPECT_FALSE(shelf_controller_->IsAppPinned(extension2_->id()));
-  EXPECT_FALSE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
+  EXPECT_FALSE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
   EXPECT_EQ("Chrome", GetPinnedAppStatus());
 
   // Installing |extension2_| should add it to the shelf - behind the
@@ -2364,18 +2145,18 @@ TEST_F(ChromeShelfControllerTest,
   ash::ShelfItem item;
   AddExtension(extension2_.get());
   EXPECT_FALSE(shelf_controller_->IsAppPinned(extension1_->id()));
-  EXPECT_FALSE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
+  EXPECT_FALSE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
   EXPECT_EQ("Chrome, App2", GetPinnedAppStatus());
 
   // Installing |extension1_| should add it to the shelf - behind the
   // chrome icon, but in first location.
   AddExtension(extension1_.get());
-  EXPECT_FALSE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
+  EXPECT_FALSE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
   EXPECT_EQ("App1, Chrome, App2", GetPinnedAppStatus());
 
   // Installing Gmail should add it to the shelf - behind the chrome icon,
   // but in first location.
-  AddWebApp(web_app::kGmailAppId);
+  AddWebApp(ash::kGmailAppId);
   EXPECT_EQ("App1, Chrome, App2, Gmail", GetPinnedAppStatus());
 }
 
@@ -2386,7 +2167,7 @@ TEST_F(ChromeShelfControllerTest, RestorePreinstalledAppsResyncOrder) {
   syncer::SyncChangeList sync_list0;
   InsertAddPinChange(&sync_list0, 0, extension1_->id());
   InsertAddPinChange(&sync_list0, 1, extension2_->id());
-  InsertAddPinChange(&sync_list0, 2, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list0, 2, ash::kGmailAppId);
   SendPinChanges(sync_list0, true);
 
   // The shelf layout has always one static item at the beginning (App List).
@@ -2394,12 +2175,12 @@ TEST_F(ChromeShelfControllerTest, RestorePreinstalledAppsResyncOrder) {
   EXPECT_EQ("Chrome, App2", GetPinnedAppStatus());
   AddExtension(extension1_.get());
   EXPECT_EQ("Chrome, App1, App2", GetPinnedAppStatus());
-  AddWebApp(web_app::kGmailAppId);
+  AddWebApp(ash::kGmailAppId);
   EXPECT_EQ("Chrome, App1, App2, Gmail", GetPinnedAppStatus());
 
   // Change the order with increasing chrome position and decreasing position.
   syncer::SyncChangeList sync_list1;
-  InsertAddPinChange(&sync_list1, 0, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list1, 0, ash::kGmailAppId);
   InsertAddPinChange(&sync_list1, 1, extension1_->id());
   InsertAddPinChange(&sync_list1, 2, extension2_->id());
   InsertAddPinChange(&sync_list1, 3, app_constants::kChromeAppId);
@@ -2408,7 +2189,7 @@ TEST_F(ChromeShelfControllerTest, RestorePreinstalledAppsResyncOrder) {
 
   syncer::SyncChangeList sync_list2;
   InsertAddPinChange(&sync_list2, 0, extension2_->id());
-  InsertAddPinChange(&sync_list2, 1, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list2, 1, ash::kGmailAppId);
   InsertAddPinChange(&sync_list2, 2, app_constants::kChromeAppId);
   InsertAddPinChange(&sync_list2, 3, extension1_->id());
   SendPinChanges(sync_list2, true);
@@ -2416,7 +2197,7 @@ TEST_F(ChromeShelfControllerTest, RestorePreinstalledAppsResyncOrder) {
 
   // Check that the chrome icon can also be at the first possible location.
   syncer::SyncChangeList sync_list3;
-  InsertAddPinChange(&sync_list3, 0, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list3, 0, ash::kGmailAppId);
   InsertAddPinChange(&sync_list3, 1, extension2_->id());
   InsertAddPinChange(&sync_list3, 2, extension1_->id());
   SendPinChanges(sync_list3, true);
@@ -2621,7 +2402,7 @@ TEST_F(ChromeShelfControllerTest, CheckRunningV1AppOrder) {
   // Add a few running applications.
   shelf_controller_->SetAppStatus(extension1_->id(), ash::STATUS_RUNNING);
   shelf_controller_->SetAppStatus(extension2_->id(), ash::STATUS_RUNNING);
-  shelf_controller_->SetAppStatus(web_app::kGmailAppId, ash::STATUS_RUNNING);
+  shelf_controller_->SetAppStatus(ash::kGmailAppId, ash::STATUS_RUNNING);
   EXPECT_EQ(4, model_->item_count());
   // Note that this not only checks the order of applications but also the
   // running type.
@@ -2657,7 +2438,7 @@ TEST_F(ChromeShelfControllerTest, CheckRunningV1AppOrder) {
   shelf_controller_->SetAppStatus(extension2_->id(), ash::STATUS_CLOSED);
   RestoreUnpinnedRunningApplicationOrder(current_account_id);
   EXPECT_EQ("Chrome, gmail", GetPinnedAppStatus());
-  shelf_controller_->SetAppStatus(web_app::kGmailAppId, ash::STATUS_CLOSED);
+  shelf_controller_->SetAppStatus(ash::kGmailAppId, ash::STATUS_CLOSED);
   RestoreUnpinnedRunningApplicationOrder(current_account_id);
   EXPECT_EQ("Chrome", GetPinnedAppStatus());
 }
@@ -3556,7 +3337,7 @@ TEST_F(ChromeShelfControllerTest, RestoreDefaultAndRunningV1AppsResyncOrder) {
 
   syncer::SyncChangeList sync_list;
   InsertAddPinChange(&sync_list, 0, extension1_->id());
-  InsertAddPinChange(&sync_list, 1, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list, 1, ash::kGmailAppId);
   SendPinChanges(sync_list, true);
 
   // The shelf layout has always one static item at the beginning (App List).
@@ -3569,12 +3350,12 @@ TEST_F(ChromeShelfControllerTest, RestoreDefaultAndRunningV1AppsResyncOrder) {
   // Set the app status as running, which will add an unpinned item.
   shelf_controller_->SetAppStatus(extension2_->id(), ash::STATUS_RUNNING);
   EXPECT_EQ("Chrome, App1, app2", GetPinnedAppStatus());
-  AddWebApp(web_app::kGmailAppId);
+  AddWebApp(ash::kGmailAppId);
   EXPECT_EQ("Chrome, App1, Gmail, app2", GetPinnedAppStatus());
 
   // Now request to pin all items, which will pin the running unpinned items.
   syncer::SyncChangeList sync_list1;
-  InsertAddPinChange(&sync_list1, 0, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list1, 0, ash::kGmailAppId);
   InsertAddPinChange(&sync_list1, 1, extension2_->id());
   InsertAddPinChange(&sync_list1, 2, extension1_->id());
   SendPinChanges(sync_list1, true);
@@ -3584,7 +3365,7 @@ TEST_F(ChromeShelfControllerTest, RestoreDefaultAndRunningV1AppsResyncOrder) {
   // running but not pinned. It should move towards the end of the shelf, after
   // the pinned items, as determined by the |ShelfModel|'s weight system.
   syncer::SyncChangeList sync_list2;
-  InsertAddPinChange(&sync_list2, 0, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list2, 0, ash::kGmailAppId);
   InsertAddPinChange(&sync_list2, 1, extension1_->id());
   SendPinChanges(sync_list2, true);
   EXPECT_EQ("Chrome, Gmail, App1, app2", GetPinnedAppStatus());
@@ -3602,7 +3383,7 @@ TEST_F(ChromeShelfControllerTest, RestoreDefaultAndRunningV2AppsResyncOrder) {
   InitShelfController();
   syncer::SyncChangeList sync_list0;
   InsertAddPinChange(&sync_list0, 0, extension1_->id());
-  InsertAddPinChange(&sync_list0, 1, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list0, 1, ash::kGmailAppId);
   SendPinChanges(sync_list0, true);
   // The shelf layout has always one static item at the beginning (app List).
   AddExtension(extension1_.get());
@@ -3613,12 +3394,12 @@ TEST_F(ChromeShelfControllerTest, RestoreDefaultAndRunningV2AppsResyncOrder) {
   // Add an unpinned but running V2 app.
   CreateRunningV2App(extension_platform_app_->id());
   EXPECT_EQ("Chrome, App1, *platform_app", GetPinnedAppStatus());
-  AddWebApp(web_app::kGmailAppId);
+  AddWebApp(ash::kGmailAppId);
   EXPECT_EQ("Chrome, App1, Gmail, *platform_app", GetPinnedAppStatus());
 
   // Now request to pin all items, which should pin the running unpinned item.
   syncer::SyncChangeList sync_list1;
-  InsertAddPinChange(&sync_list1, 0, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list1, 0, ash::kGmailAppId);
   InsertAddPinChange(&sync_list1, 1, extension_platform_app_->id());
   InsertAddPinChange(&sync_list1, 2, extension1_->id());
   SendPinChanges(sync_list1, true);
@@ -3628,14 +3409,14 @@ TEST_F(ChromeShelfControllerTest, RestoreDefaultAndRunningV2AppsResyncOrder) {
   // running but not pinned. It should move towards the end of the shelf, after
   // the pinned items, as determined by the |ShelfModel|'s weight system.
   syncer::SyncChangeList sync_list2;
-  InsertAddPinChange(&sync_list2, 0, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list2, 0, ash::kGmailAppId);
   InsertAddPinChange(&sync_list2, 1, extension1_->id());
   SendPinChanges(sync_list2, true);
   EXPECT_EQ("Chrome, Gmail, App1, *platform_app", GetPinnedAppStatus());
 
   // Removing an item should simply close it and everything should shift.
   syncer::SyncChangeList sync_list3;
-  InsertAddPinChange(&sync_list3, 0, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list3, 0, ash::kGmailAppId);
   SendPinChanges(sync_list3, true);
   EXPECT_EQ("Chrome, Gmail, *platform_app", GetPinnedAppStatus());
 }
@@ -3735,23 +3516,23 @@ TEST_F(ChromeShelfControllerTest, Policy) {
 
   extension_service_->AddExtension(extension2_.get());
 
-  AddWebApp(web_app::kYoutubeAppId);
+  AddWebApp(ash::kYoutubeAppId);
 
   // Here and below we pretend that Gmail is both a preinstalled and a
   // force-installed app and instruct that "gmail" policy_id has to be treated
   // accordingly. This means that both "gmail" and
   // "https://mail.google.com/mail/?usp=installed_webapp" are valid policy_ids
-  // for web_app::kGmailAppId.
+  // for ash::kGmailAppId.
   constexpr std::string_view kGmailPolicyId = "gmail";
 
   base::flat_map<std::string_view, std::string_view>
       preinstalled_web_apps_mapping;
-  preinstalled_web_apps_mapping.emplace(kGmailPolicyId, web_app::kGmailAppId);
+  preinstalled_web_apps_mapping.emplace(kGmailPolicyId, ash::kGmailAppId);
   apps_util::SetPreinstalledWebAppsMappingForTesting(
       preinstalled_web_apps_mapping);
 
   // Force-install Gmail.
-  auto gmail_start_url = GetWebAppUrl(web_app::kGmailAppId);
+  auto gmail_start_url = GetWebAppUrl(ash::kGmailAppId);
   auto gmail_install_url = gmail_start_url;
   InstallExternalWebApp(gmail_start_url, gmail_install_url);
 
@@ -3760,13 +3541,13 @@ TEST_F(ChromeShelfControllerTest, Policy) {
 
   // Pin Camera and Gmail to shelf; they should be synced with `is_user_pinned =
   // true`.
-  PinAppWithIDToShelf(web_app::kCameraAppId);
-  PinAppWithIDToShelf(web_app::kGmailAppId);
+  PinAppWithIDToShelf(ash::kCameraAppId);
+  PinAppWithIDToShelf(ash::kGmailAppId);
 
   // `extension2_` is not pinned yet.
   UpdateSyncPinAssertion(extension2_->id(), PinAssertion::kNotPinned);
-  UpdateSyncPinAssertion(web_app::kCameraAppId, PinAssertion::kUserPinned);
-  UpdateSyncPinAssertion(web_app::kGmailAppId, PinAssertion::kUserPinned);
+  UpdateSyncPinAssertion(ash::kCameraAppId, PinAssertion::kUserPinned);
+  UpdateSyncPinAssertion(ash::kGmailAppId, PinAssertion::kUserPinned);
   ValidateSyncPinAssertions();
 
   // Construct a pinning policy.
@@ -3785,8 +3566,8 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   // that shouldn't take effect when the policy override is in place.
   EXPECT_EQ("Chrome, App2, Camera, Gmail", GetPinnedAppStatus());
   EXPECT_TRUE(IsAppPolicyPinned(extension2_->id()));
-  EXPECT_TRUE(IsAppPolicyPinned(web_app::kCameraAppId));
-  EXPECT_TRUE(IsAppPolicyPinned(web_app::kGmailAppId));
+  EXPECT_TRUE(IsAppPolicyPinned(ash::kCameraAppId));
+  EXPECT_TRUE(IsAppPolicyPinned(ash::kGmailAppId));
 
   // `extension2_` is only pinned by the policy, whereas the other two apps have
   // also been previously pinned by us directly.
@@ -3822,11 +3603,11 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
   EXPECT_EQ("Chrome, App2, Camera, Gmail", GetPinnedAppStatus());
-  EXPECT_FALSE(IsAppPolicyPinned(web_app::kGmailAppId));
+  EXPECT_FALSE(IsAppPolicyPinned(ash::kGmailAppId));
 
   // Gmail was backed by both the policy and the user, but now that it's removed
   // from the policy, only the user pin should persist.
-  UpdateSyncPinAssertion(web_app::kGmailAppId, PinAssertion::kUserPinned);
+  UpdateSyncPinAssertion(ash::kGmailAppId, PinAssertion::kUserPinned);
   ValidateSyncPinAssertions();
 
   // Check that Gmail can also be pinned by direct mapping.
@@ -3834,7 +3615,7 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   profile()->GetTestingPrefService()->SetManagedPref(
       prefs::kPolicyPinnedLauncherApps, base::Value(policy_value.Clone()));
   EXPECT_EQ("Chrome, App2, Camera, Gmail", GetPinnedAppStatus());
-  EXPECT_TRUE(IsAppPolicyPinned(web_app::kGmailAppId));
+  EXPECT_TRUE(IsAppPolicyPinned(ash::kGmailAppId));
 
   ValidateSyncPinAssertions();
 
@@ -3909,7 +3690,7 @@ TEST_F(ChromeShelfControllerTest, InitialMergeAndUpdateForPolicyPinnedApps) {
   InstallSystemWebApp(std::make_unique<CameraSystemAppDelegate>(profile()));
 
   EXPECT_EQ(app_list_syncable_service_->sync_items().size(), 2U);
-  auto camera_item = GetAppListSpecificsFor(web_app::kCameraAppId);
+  auto camera_item = GetAppListSpecificsFor(ash::kCameraAppId);
 
   StopAppSyncService();
 
@@ -3928,7 +3709,7 @@ TEST_F(ChromeShelfControllerTest, InitialMergeAndUpdateForPolicyPinnedApps) {
   EXPECT_EQ(sync_processor->changes().size(), 1U);
   const auto& camera_change =
       sync_processor->changes()[0].sync_data().GetSpecifics().app_list();
-  EXPECT_EQ(camera_change.item_id(), web_app::kCameraAppId);
+  EXPECT_EQ(camera_change.item_id(), ash::kCameraAppId);
   EXPECT_TRUE(
       syncer::StringOrdinal(camera_change.item_pin_ordinal()).IsValid());
   EXPECT_TRUE(camera_change.has_is_user_pinned());
@@ -3946,7 +3727,7 @@ TEST_F(ChromeShelfControllerTest, PostFactumPolicyUnpin) {
   sync_changes.pop_back();
 
   const auto& camera_sync_specs = camera_sync.GetSpecifics().app_list();
-  ASSERT_EQ(camera_sync_specs.item_id(), web_app::kCameraAppId);
+  ASSERT_EQ(camera_sync_specs.item_id(), ash::kCameraAppId);
 
   StopAppSyncService();
 
@@ -3963,8 +3744,7 @@ TEST_F(ChromeShelfControllerTest, PostFactumPolicyUnpin) {
 
   // App should be pinned, but the exact pin source is unclear.
   EXPECT_EQ("Chrome, Camera", GetPinnedAppStatus());
-  UpdateSyncPinAssertion(web_app::kCameraAppId,
-                         PinAssertion::kUnknownPinSource);
+  UpdateSyncPinAssertion(ash::kCameraAppId, PinAssertion::kUnknownPinSource);
   ValidateSyncPinAssertions();
 
   // Pin camera by policy.
@@ -3972,8 +3752,7 @@ TEST_F(ChromeShelfControllerTest, PostFactumPolicyUnpin) {
 
   // App should be pinned with source = policy.
   EXPECT_EQ("Chrome, Camera", GetPinnedAppStatus());
-  UpdateSyncPinAssertion(web_app::kCameraAppId,
-                         PinAssertion::kOnlyPolicyPinned);
+  UpdateSyncPinAssertion(ash::kCameraAppId, PinAssertion::kOnlyPolicyPinned);
   ValidateSyncPinAssertions();
 
   // Reset policy value.
@@ -3981,30 +3760,30 @@ TEST_F(ChromeShelfControllerTest, PostFactumPolicyUnpin) {
 
   // App should no longer be pinned.
   EXPECT_EQ("Chrome", GetPinnedAppStatus());
-  UpdateSyncPinAssertion(web_app::kCameraAppId, PinAssertion::kNotPinned);
+  UpdateSyncPinAssertion(ash::kCameraAppId, PinAssertion::kNotPinned);
   ValidateSyncPinAssertions();
 }
 
 TEST_F(ChromeShelfControllerTest, UnpinWithUninstall) {
-  AddWebApp(web_app::kGmailAppId);
-  AddWebApp(web_app::kYoutubeAppId);
+  AddWebApp(ash::kGmailAppId);
+  AddWebApp(ash::kYoutubeAppId);
 
   InitShelfController();
   StartPrefSyncService(syncer::SyncDataList());
 
-  EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
-  EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kYoutubeAppId));
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(ash::kYoutubeAppId));
 
-  RemoveWebApp(web_app::kGmailAppId);
+  RemoveWebApp(ash::kGmailAppId);
 
-  EXPECT_FALSE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
-  EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kYoutubeAppId));
+  EXPECT_FALSE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(ash::kYoutubeAppId));
 }
 
 TEST_F(ChromeShelfControllerTest, SyncUpdates) {
   extension_service_->AddExtension(extension2_.get());
-  AddWebApp(web_app::kGmailAppId);
-  AddWebApp(web_app::kGoogleDocsAppId);
+  AddWebApp(ash::kGmailAppId);
+  AddWebApp(ash::kGoogleDocsAppId);
 
   InitShelfController();
 
@@ -4021,25 +3800,25 @@ TEST_F(ChromeShelfControllerTest, SyncUpdates) {
   sync_list.clear();
   InsertAddPinChange(&sync_list, 0, extension1_->id());
   InsertAddPinChange(&sync_list, 1, extension2_->id());
-  InsertAddPinChange(&sync_list, 3, web_app::kGoogleDocsAppId);
+  InsertAddPinChange(&sync_list, 3, ash::kGoogleDocsAppId);
   SendPinChanges(sync_list, false);
 
   expected_pinned_apps.push_back(extension2_->id());
-  expected_pinned_apps.push_back(web_app::kGoogleDocsAppId);
+  expected_pinned_apps.push_back(ash::kGoogleDocsAppId);
   GetPinnedAppIds(shelf_controller_.get(), &actual_pinned_apps);
   EXPECT_EQ(expected_pinned_apps, actual_pinned_apps);
 
   sync_list.clear();
-  InsertAddPinChange(&sync_list, 2, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list, 2, ash::kGmailAppId);
   SendPinChanges(sync_list, false);
   expected_pinned_apps.insert(expected_pinned_apps.begin() + 1,
-                              web_app::kGmailAppId);
+                              ash::kGmailAppId);
   GetPinnedAppIds(shelf_controller_.get(), &actual_pinned_apps);
   EXPECT_EQ(expected_pinned_apps, actual_pinned_apps);
 
   sync_list.clear();
-  InsertUpdatePinChange(&sync_list, 0, web_app::kGoogleDocsAppId);
-  InsertUpdatePinChange(&sync_list, 1, web_app::kGmailAppId);
+  InsertUpdatePinChange(&sync_list, 0, ash::kGoogleDocsAppId);
+  InsertUpdatePinChange(&sync_list, 1, ash::kGmailAppId);
   InsertUpdatePinChange(&sync_list, 2, extension2_->id());
   SendPinChanges(sync_list, false);
   std::reverse(expected_pinned_apps.begin(), expected_pinned_apps.end());
@@ -4048,20 +3827,20 @@ TEST_F(ChromeShelfControllerTest, SyncUpdates) {
 
   // Sending legacy sync change without pin info should not affect pin model.
   sync_list.clear();
-  InsertLegacyPinChange(&sync_list, web_app::kGoogleDocsAppId);
+  InsertLegacyPinChange(&sync_list, ash::kGoogleDocsAppId);
   SendPinChanges(sync_list, false);
   GetPinnedAppIds(shelf_controller_.get(), &actual_pinned_apps);
   EXPECT_EQ(expected_pinned_apps, actual_pinned_apps);
 
   sync_list.clear();
-  InsertRemovePinChange(&sync_list, web_app::kGoogleDocsAppId);
+  InsertRemovePinChange(&sync_list, ash::kGoogleDocsAppId);
   SendPinChanges(sync_list, false);
   expected_pinned_apps.erase(expected_pinned_apps.begin());
   GetPinnedAppIds(shelf_controller_.get(), &actual_pinned_apps);
   EXPECT_EQ(expected_pinned_apps, actual_pinned_apps);
 
   sync_list.clear();
-  InsertRemovePinChange(&sync_list, web_app::kGmailAppId);
+  InsertRemovePinChange(&sync_list, ash::kGmailAppId);
   InsertRemovePinChange(&sync_list, extension2_->id());
   SendPinChanges(sync_list, false);
   expected_pinned_apps.clear();
@@ -4071,19 +3850,19 @@ TEST_F(ChromeShelfControllerTest, SyncUpdates) {
 
 TEST_F(ChromeShelfControllerTest, PendingInsertionOrder) {
   extension_service_->AddExtension(extension1_.get());
-  AddWebApp(web_app::kGmailAppId);
+  AddWebApp(ash::kGmailAppId);
 
   InitShelfController();
 
   syncer::SyncChangeList sync_list;
   InsertAddPinChange(&sync_list, 0, extension1_->id());
   InsertAddPinChange(&sync_list, 1, extension2_->id());
-  InsertAddPinChange(&sync_list, 2, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list, 2, ash::kGmailAppId);
   SendPinChanges(sync_list, true);
 
   std::vector<std::string> expected_pinned_apps;
   expected_pinned_apps.push_back(extension1_->id());
-  expected_pinned_apps.push_back(web_app::kGmailAppId);
+  expected_pinned_apps.push_back(ash::kGmailAppId);
   std::vector<std::string> actual_pinned_apps;
 
   GetPinnedAppIds(shelf_controller_.get(), &actual_pinned_apps);
@@ -4205,12 +3984,12 @@ TEST_F(ChromeShelfControllerTest, V1AppMenuGeneration) {
 
   // The model should only contain the browser shortcut item.
   EXPECT_EQ(1, model_->item_count());
-  EXPECT_FALSE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
+  EXPECT_FALSE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
 
   // Installing Gmail pins it to the shelf.
-  const ash::ShelfID gmail_id(web_app::kGmailAppId);
-  AddWebApp(web_app::kGmailAppId);
-  EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
+  const ash::ShelfID gmail_id(ash::kGmailAppId);
+  AddWebApp(ash::kGmailAppId);
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
   SetRefocusURL(gmail_id, GURL(kGmailUrl));
 
   // Check the menu content.
@@ -4265,9 +4044,9 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   chrome::NewTab(browser());
 
   // Installing Gmail pins it to the shelf.
-  const ash::ShelfID gmail_id(web_app::kGmailAppId);
-  AddWebApp(web_app::kGmailAppId);
-  EXPECT_TRUE(shelf_controller_->IsAppPinned(web_app::kGmailAppId));
+  const ash::ShelfID gmail_id(ash::kGmailAppId);
+  AddWebApp(ash::kGmailAppId);
+  EXPECT_TRUE(shelf_controller_->IsAppPinned(ash::kGmailAppId));
   SetRefocusURL(gmail_id, GURL(kGmailUrl));
 
   // Check the menu content.
@@ -4693,8 +4472,8 @@ TEST_F(ChromeShelfControllerTest, V1AppMenuExecution) {
 
   // Add Gmail to the shelf and add two items.
   GURL gmail = GURL("https://mail.google.com/mail/u");
-  const ash::ShelfID gmail_id(web_app::kGmailAppId);
-  AddWebApp(web_app::kGmailAppId);
+  const ash::ShelfID gmail_id(ash::kGmailAppId);
+  AddWebApp(ash::kGmailAppId);
   SetRefocusURL(gmail_id, GURL(kGmailUrl));
   std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
@@ -4741,8 +4520,8 @@ TEST_F(ChromeShelfControllerTest, V1AppMenuDeletionExecution) {
   StartPrefSyncService(syncer::SyncDataList());
 
   // Add Gmail to the shelf and add two items.
-  const ash::ShelfID gmail_id(web_app::kGmailAppId);
-  AddWebApp(web_app::kGmailAppId);
+  const ash::ShelfID gmail_id(ash::kGmailAppId);
+  AddWebApp(ash::kGmailAppId);
   SetRefocusURL(gmail_id, GURL(kGmailUrl));
   std::u16string title1 = u"Test1";
   NavigateAndCommitActiveTabWithTitle(browser(), GURL(kGmailUrl), title1);
@@ -4904,7 +4683,7 @@ TEST_F(ChromeShelfControllerTest, MultipleAppIconLoaders) {
 
   const ash::ShelfID shelf_id1(extension1_->id());
   const ash::ShelfID shelf_id2(extension2_->id());
-  const ash::ShelfID shelf_id3(web_app::kGmailAppId);
+  const ash::ShelfID shelf_id3(ash::kGmailAppId);
   // app_icon_loader1 and app_icon_loader2 are owned by
   // ChromeShelfController.
   TestAppIconLoaderImpl* app_icon_loader1 = new TestAppIconLoaderImpl();
@@ -5394,13 +5173,13 @@ TEST_F(ChromeShelfControllerTest, CheckPositionConflict) {
 
   extension_service_->AddExtension(extension1_.get());
   extension_service_->AddExtension(extension2_.get());
-  AddWebApp(web_app::kGmailAppId);
+  AddWebApp(ash::kGmailAppId);
 
   syncer::SyncChangeList sync_list;
   InsertAddPinChange(&sync_list, 0, app_constants::kChromeAppId);
   InsertAddPinChange(&sync_list, 1, extension1_->id());
   InsertAddPinChange(&sync_list, 1, extension2_->id());
-  InsertAddPinChange(&sync_list, 1, web_app::kGmailAppId);
+  InsertAddPinChange(&sync_list, 1, ash::kGmailAppId);
   SendPinChanges(sync_list, true);
 
   EXPECT_EQ("Chrome, App1, App2, Gmail", GetPinnedAppStatus());
@@ -5412,7 +5191,7 @@ TEST_F(ChromeShelfControllerTest, CheckPositionConflict) {
   const syncer::StringOrdinal position_2 =
       app_list_syncable_service_->GetPinPosition(extension2_->id());
   const syncer::StringOrdinal position_3 =
-      app_list_syncable_service_->GetPinPosition(web_app::kGmailAppId);
+      app_list_syncable_service_->GetPinPosition(ash::kGmailAppId);
   EXPECT_TRUE(position_chrome.LessThan(position_1));
   EXPECT_TRUE(position_1.Equals(position_2));
   EXPECT_TRUE(position_2.Equals(position_3));
@@ -5434,7 +5213,7 @@ TEST_F(ChromeShelfControllerTest, CheckPositionConflict) {
   EXPECT_TRUE(position_2.Equals(
       app_list_syncable_service_->GetPinPosition(extension2_->id())));
   EXPECT_TRUE(position_3.Equals(
-      app_list_syncable_service_->GetPinPosition(web_app::kGmailAppId)));
+      app_list_syncable_service_->GetPinPosition(ash::kGmailAppId)));
 }
 
 // Test the case when sync app is turned off and we need to use local copy to

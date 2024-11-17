@@ -9,6 +9,7 @@ include_rules = [
   "+components/messages/android",
   "+components/pref_registry",
   "+components/guest_view/browser",
+  "+components/guest_view/buildflags",
   "+components/prefs",
   "+components/privacy_sandbox",
   "+components/resources/android",

@@ -109,36 +109,33 @@ std::string GetComponentIDByInputMethodID(const std::string& input_method_id) {
 }
 
 std::string GetInputMethodIDByEngineID(const std::string& engine_id) {
-  if (base::StartsWith(engine_id, kComponentExtensionIMEPrefix,
-                       base::CompareCase::SENSITIVE) ||
-      base::StartsWith(engine_id, kExtensionIMEPrefix,
-                       base::CompareCase::SENSITIVE) ||
-      base::StartsWith(engine_id, kArcIMEPrefix,
-                       base::CompareCase::SENSITIVE)) {
+  if (engine_id.starts_with(kComponentExtensionIMEPrefix) ||
+      engine_id.starts_with(kExtensionIMEPrefix) ||
+      engine_id.starts_with(kArcIMEPrefix)) {
     return engine_id;
   }
-  if (base::StartsWith(engine_id, "xkb:", base::CompareCase::SENSITIVE)) {
+  if (engine_id.starts_with("xkb:")) {
     return GetComponentInputMethodID(kXkbExtensionId, engine_id);
   }
-  if (base::StartsWith(engine_id, "vkd_", base::CompareCase::SENSITIVE)) {
+  if (engine_id.starts_with("vkd_")) {
     return GetComponentInputMethodID(kM17nExtensionId, engine_id);
   }
-  if (base::StartsWith(engine_id, "nacl_mozc_", base::CompareCase::SENSITIVE)) {
+  if (engine_id.starts_with("nacl_mozc_")) {
     return GetComponentInputMethodID(kMozcExtensionId, engine_id);
   }
-  if (base::StartsWith(engine_id, "hangul_", base::CompareCase::SENSITIVE)) {
+  if (engine_id.starts_with("hangul_")) {
     return GetComponentInputMethodID(kHangulExtensionId, engine_id);
   }
 
-  if (base::StartsWith(engine_id, "zh-", base::CompareCase::SENSITIVE) &&
+  if (engine_id.starts_with("zh-") &&
       engine_id.find("pinyin") != std::string::npos) {
     return GetComponentInputMethodID(kChinesePinyinExtensionId, engine_id);
   }
-  if (base::StartsWith(engine_id, "zh-", base::CompareCase::SENSITIVE) &&
+  if (engine_id.starts_with("zh-") &&
       engine_id.find("zhuyin") != std::string::npos) {
     return GetComponentInputMethodID(kChineseZhuyinExtensionId, engine_id);
   }
-  if (base::StartsWith(engine_id, "zh-", base::CompareCase::SENSITIVE) &&
+  if (engine_id.starts_with("zh-") &&
       engine_id.find("cangjie") != std::string::npos) {
     return GetComponentInputMethodID(kChineseCangjieExtensionId, engine_id);
   }
@@ -150,29 +147,25 @@ std::string GetInputMethodIDByEngineID(const std::string& engine_id) {
 }
 
 bool IsExtensionIME(const std::string& input_method_id) {
-  return base::StartsWith(input_method_id, kExtensionIMEPrefix,
-                          base::CompareCase::SENSITIVE) &&
+  return input_method_id.starts_with(kExtensionIMEPrefix) &&
          input_method_id.size() >
              kExtensionIMEPrefixLength + kExtensionIdLength;
 }
 
 bool IsComponentExtensionIME(const std::string& input_method_id) {
-  return base::StartsWith(input_method_id, kComponentExtensionIMEPrefix,
-                          base::CompareCase::SENSITIVE) &&
+  return input_method_id.starts_with(kComponentExtensionIMEPrefix) &&
          input_method_id.size() >
              kComponentExtensionIMEPrefixLength + kExtensionIdLength;
 }
 
 bool IsArcIME(const std::string& input_method_id) {
-  return base::StartsWith(input_method_id, kArcIMEPrefix,
-                          base::CompareCase::SENSITIVE) &&
+  return input_method_id.starts_with(kArcIMEPrefix) &&
          input_method_id.size() > kArcIMEPrefixLength + kExtensionIdLength;
 }
 
 bool IsKeyboardLayoutExtension(const std::string& input_method_id) {
   if (IsComponentExtensionIME(input_method_id)) {
-    return base::StartsWith(GetComponentIDByInputMethodID(input_method_id),
-                            "xkb:", base::CompareCase::SENSITIVE);
+    return GetComponentIDByInputMethodID(input_method_id).starts_with("xkb:");
   }
   return false;
 }

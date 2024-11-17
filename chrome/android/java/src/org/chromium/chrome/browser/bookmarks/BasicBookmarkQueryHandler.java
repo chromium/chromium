@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -49,7 +47,7 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
                         : mBookmarkModel.getChildIds(parentId);
 
         final List<BookmarkListEntry> bookmarkListEntries =
-                bookmarkIdListToBookmarkListEntryList(childIdList, parentId);
+                bookmarkIdListToBookmarkListEntryList(childIdList);
         if (parentId.getType() == BookmarkType.READING_LIST) {
             ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(bookmarkListEntries);
         }
@@ -63,7 +61,7 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
         final List<BookmarkId> searchIdList =
                 mBookmarkModel.searchBookmarks(query, MAXIMUM_NUMBER_OF_SEARCH_RESULTS);
         final boolean isFilterEmpty = powerFilter == null || powerFilter.isEmpty();
-        return bookmarkIdListToBookmarkListEntryList(searchIdList, null).stream()
+        return bookmarkIdListToBookmarkListEntryList(searchIdList).stream()
                 .filter(
                         entry -> {
                             return isFilterEmpty
@@ -80,7 +78,7 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
                         ? mBookmarkModel.getTopLevelFolderIds(/* ignoreVisibility= */ true)
                         : mBookmarkModel.getChildIds(parentId);
         List<BookmarkListEntry> bookmarkListEntries =
-                bookmarkIdListToBookmarkListEntryList(childIdList, parentId);
+                bookmarkIdListToBookmarkListEntryList(childIdList);
         bookmarkListEntries =
                 bookmarkListEntries.stream()
                         .filter(this::isFolderEntry)
@@ -106,7 +104,7 @@ public class BasicBookmarkQueryHandler implements BookmarkQueryHandler {
     }
 
     private List<BookmarkListEntry> bookmarkIdListToBookmarkListEntryList(
-            List<BookmarkId> bookmarkIds, @Nullable BookmarkId parentId) {
+            List<BookmarkId> bookmarkIds) {
         final List<BookmarkListEntry> bookmarkListEntries = new ArrayList<>();
         for (BookmarkId bookmarkId : bookmarkIds) {
             PowerBookmarkMeta powerBookmarkMeta = mBookmarkModel.getPowerBookmarkMeta(bookmarkId);

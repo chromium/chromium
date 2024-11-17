@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/quick_delete_browsing_data_coordinator.h"
 
+#import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/browsing_data/model/browsing_data_remover_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -28,9 +30,21 @@
   UINavigationController* _navigationController;
   QuickDeleteMediator* _mediator;
   SignoutActionSheetCoordinator* _signoutCoordinator;
+  browsing_data::TimePeriod _initialTimeRange;
 }
 
 #pragma mark - ChromeCoordinator
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                                 timeRange:
+                                     (browsing_data::TimePeriod)timeRange {
+  if ((self = [super initWithBaseViewController:viewController
+                                        browser:browser])) {
+    _initialTimeRange = timeRange;
+  }
+  return self;
+}
 
 - (void)start {
   ProfileIOS* profile = self.browser->GetProfile();
@@ -38,20 +52,22 @@
   CHECK(!profile->IsOffTheRecord());
 
   BrowsingDataCounterWrapperProducer* producer =
-      [[BrowsingDataCounterWrapperProducer alloc] initWithBrowserState:profile];
+      [[BrowsingDataCounterWrapperProducer alloc] initWithProfile:profile];
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForProfile(profile);
   BrowsingDataRemover* browsingDataRemover =
-      BrowsingDataRemoverFactory::GetForBrowserState(profile);
+      BrowsingDataRemoverFactory::GetForProfile(profile);
   DiscoverFeedService* discoverFeedService =
       DiscoverFeedServiceFactory::GetForProfile(profile);
 
-  _mediator = [[QuickDeleteMediator alloc] initWithPrefs:profile->GetPrefs()
-                      browsingDataCounterWrapperProducer:producer
-                                         identityManager:identityManager
-                                     browsingDataRemover:browsingDataRemover
-                                     discoverFeedService:discoverFeedService
-                          canPerformTabsClosureAnimation:NO];
+  _mediator =
+      [[QuickDeleteMediator alloc] initWithPrefs:profile->GetPrefs()
+              browsingDataCounterWrapperProducer:producer
+                                 identityManager:identityManager
+                             browsingDataRemover:browsingDataRemover
+                             discoverFeedService:discoverFeedService
+                                       timeRange:_initialTimeRange
+                                 uiBlockerTarget:self.browser->GetSceneState()];
 
   _viewController = [[QuickDeleteBrowsingDataViewController alloc] init];
   _viewController.delegate = self;
@@ -107,10 +123,11 @@
                          browser:browser
                             rect:_viewController.view.frame
                             view:_viewController.view
+        forceSnackbarOverToolbar:NO
                       withSource:signout_source_metric];
   _signoutCoordinator.showUnavailableFeatureDialogHeader = YES;
   __weak __typeof(self) weakSelf = self;
-  _signoutCoordinator.completion = ^(BOOL success) {
+  _signoutCoordinator.signoutCompletion = ^(BOOL success) {
     [weakSelf handleAuthenticationOperationDidFinish];
   };
   _signoutCoordinator.delegate = self;

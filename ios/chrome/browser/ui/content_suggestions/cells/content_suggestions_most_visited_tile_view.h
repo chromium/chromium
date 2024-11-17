@@ -15,9 +15,11 @@
 @interface ContentSuggestionsMostVisitedTileView
     : ContentSuggestionsTileView <UIContextMenuInteractionDelegate>
 
-// Initializes and configures the view with `config`.
-- (instancetype)initWithConfiguration:
-    (ContentSuggestionsMostVisitedItem*)config;
+// Initializes and configures the view with `config`. If `inMagicStack`, the
+// view will be inside the magic stack, otherwise it will be in content
+// suggestions view.
+- (instancetype)initInMagicStack:(BOOL)inMagicStack
+               withConfiguration:(ContentSuggestionsMostVisitedItem*)config;
 
 // FaviconView displaying the favicon.
 @property(nonatomic, strong, readonly) FaviconView* faviconView;

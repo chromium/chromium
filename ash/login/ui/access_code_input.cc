@@ -195,7 +195,12 @@ BEGIN_METADATA(FlexCodeInput)
 END_METADATA
 
 AccessibleInputField::AccessibleInputField()
-    : SystemTextfield(SystemTextfield::Type::kMedium) {}
+    : SystemTextfield(SystemTextfield::Type::kMedium) {
+  // We want the PIN input field, an empty input field, to retain
+  // NameFrom::kAttributeExplicitlyEmpty.
+  GetViewAccessibility().SetName(
+      std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+}
 
 bool AccessibleInputField::IsGroupFocusTraversable() const {
   return false;
@@ -212,18 +217,6 @@ void AccessibleInputField::OnGestureEvent(ui::GestureEvent* event) {
   }
 
   views::Textfield::OnGestureEvent(event);
-}
-
-void AccessibleInputField::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // Focusable nodes generally must have a name, but the focus of an accessible
-  // input field is propagated to its ancestor.
-  views::Textfield::GetAccessibleNodeData(node_data);
-
-  // We want the PIN input field, an empty input field, to retain
-  // NameFrom::kAttributeExplicitlyEmpty. However
-  // Textfield::GetAccessibleNodeData() sets NameFrom to NameFrom::kContent.
-  // We override NameFrom after this call.
-  node_data->SetNameFrom(ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
 }
 
 BEGIN_METADATA(AccessibleInputField)
@@ -286,8 +279,12 @@ FixedLengthCodeInput::FixedLengthCodeInput(int length,
   text_value_for_a11y_ = std::u16string(length, ' ');
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTextField);
+  GetViewAccessibility().SetName(l10n_util::GetStringUTF8(
+      IDS_ASH_LOGIN_PARENT_ACCESS_GENERIC_DESCRIPTION));
   GetViewAccessibility().SetIsProtected(is_obscure_pin_);
   GetViewAccessibility().SetValue(text_value_for_a11y_);
+  GetViewAccessibility().SetIsEditable(true);
+  GetViewAccessibility().AddHTMLAttributes(std::make_pair("type", "tel"));
   OnTextSelectionChanged();
 }
 
@@ -399,16 +396,6 @@ void FixedLengthCodeInput::OnTextSelectionChanged() {
   const gfx::Range& range = GetSelectedRangeOfTextValueForA11y();
   GetViewAccessibility().SetTextSelStart(range.start());
   GetViewAccessibility().SetTextSelEnd(range.end());
-}
-
-void FixedLengthCodeInput::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->AddState(ax::mojom::State::kEditable);
-
-  node_data->html_attributes.push_back(std::make_pair("type", "tel"));
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kName,
-      l10n_util::GetStringUTF8(
-          IDS_ASH_LOGIN_PARENT_ACCESS_GENERIC_DESCRIPTION));
 }
 
 bool FixedLengthCodeInput::HandleKeyEvent(views::Textfield* sender,

@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">Учитавање странице није успело јер програмеров модул корисничког интерфејса (dev_ui) није инсталиран</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> систем</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">Картица</translation>
 <translation id="5613020302032141669">Стрелица налево</translation>
 <translation id="5633029987065897167">Празно</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин}one{# мин}few{# мин}other{# мин}}</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Страница надоле</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Табулатор</translation>
 <translation id="8259556432390118667">Хексадецимална вредност боје</translation>
 <translation id="8328145009876646418">Лева ивица</translation>
 <translation id="8331626408530291785">Помери нагоре</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 сек}one{# сек}few{# сек}other{# сек}}</translation>
 <translation id="9059834730836941392">Скупи обавештење</translation>
 <translation id="9170848237812810038">&amp;Опозови</translation>
+<translation id="9195990613383871904">Сутра</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">Почетна</translation>
 <translation id="944069440740578670">Непрочитана обавештења</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{Пре 1 секунде}one{Пре # секунде}few{Пре # секунде}other{Пре # секунди}}</translation>

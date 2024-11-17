@@ -23,6 +23,7 @@ class TestDocumentLoader : public DocumentLoader {
   // `pdf_name` is the base name for a PDF file.
   TestDocumentLoader(Client* client,
                      const base::FilePath::StringType& pdf_name);
+  TestDocumentLoader(Client* client, std::vector<uint8_t> pdf_data);
   ~TestDocumentLoader() override;
 
   // Simulates loading up to `max_bytes` more data, returning `true` if there is

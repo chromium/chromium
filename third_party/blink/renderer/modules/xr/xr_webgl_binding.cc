@@ -60,6 +60,13 @@ XRWebGLBinding* XRWebGLBinding::Create(XRSession* session,
     return nullptr;
   }
 
+  if (session->GraphicsApi() != XRGraphicsBinding::Api::kWebGL) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot create an XRWebGLBinding with a WebGPU-based XRSession.");
+    return nullptr;
+  }
+
   return MakeGarbageCollected<XRWebGLBinding>(
       session, webgl_context, context->IsWebGL2RenderingContext());
 }

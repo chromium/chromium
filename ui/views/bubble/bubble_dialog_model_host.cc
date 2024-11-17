@@ -15,11 +15,13 @@
 #include "ui/base/models/combobox_model.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_field.h"
+#include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/strings/grit/ui_strings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
@@ -28,6 +30,7 @@
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/combobox/combobox.h"
+#include "ui/views/controls/editable_combobox/editable_password_combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
@@ -56,6 +59,8 @@ BubbleDialogModelHost::FieldType GetFieldTypeForField(
     case ui::DialogModelField::kCheckbox:
       return BubbleDialogModelHost::FieldType::kControl;
     case ui::DialogModelField::kTextfield:
+      return BubbleDialogModelHost::FieldType::kControl;
+    case ui::DialogModelField::kPasswordField:
       return BubbleDialogModelHost::FieldType::kControl;
     case ui::DialogModelField::kCombobox:
       return BubbleDialogModelHost::FieldType::kControl;
@@ -360,6 +365,9 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
       case ui::DialogModelField::kTextfield:
         AddOrUpdateTextfield(field->AsTextfield());
         break;
+      case ui::DialogModelField::kPasswordField:
+        AddOrUpdatePasswordField(field->AsPasswordField());
+        break;
       case ui::DialogModelField::kCustom:
         AddOrUpdateCustomField(field->AsCustomField());
         break;
@@ -450,9 +458,8 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
                   pass_key, combobox->GetSelectedIndex().value());
             },
             model_field, GetPassKey(), combobox.get())));
-    const gfx::FontList& font_list = combobox->GetFontList();
     AddViewForLabelAndField(model_field, model_field->label(),
-                            std::move(combobox), font_list);
+                            std::move(combobox));
   }
 
   void AddOrUpdateMenuItem(ui::DialogModelMenuItem* model_field) {
@@ -485,6 +492,72 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
     AddDialogModelHostField(std::move(item), info);
   }
 
+  void AddOrUpdatePasswordField(ui::DialogModelPasswordField* model_field) {
+    // TODO(pbos): Support updates to the existing model.
+
+    auto view = std::make_unique<BoxLayoutView>();
+    view->SetOrientation(BoxLayout::Orientation::kVertical);
+
+    std::unique_ptr<Label> error_label;
+    if (!model_field->incorrect_password_text().empty()) {
+      // TODO(droger): Implement the supporting text directly in Textfield.
+      error_label = std::make_unique<Label>(
+          model_field->incorrect_password_text(),
+          style::CONTEXT_TEXTFIELD_SUPPORTING_TEXT, style::STYLE_INVALID);
+      error_label->SetMultiLine(true);
+      error_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      error_label->SetVisible(false);
+    }
+
+    // Use a combobox with empty model, rather than a Textfield, so that it
+    // supports the "reveal" functionality (eye icon).
+    // TODO(droger): add better support for passwords in the regular Textfield.
+    auto password_combobox = std::make_unique<views::EditablePasswordCombobox>(
+        std::make_unique<ui::SimpleComboboxModel>(
+            std::vector<ui::SimpleComboboxModel::Item>()),
+        views::style::CONTEXT_TEXTFIELD, style::STYLE_PRIMARY_MONOSPACED,
+        false);
+    password_combobox->SetPasswordIconTooltips(
+        l10n_util::GetStringUTF16(IDS_SETTINGS_PASSWORD_SHOW),
+        l10n_util::GetStringUTF16(IDS_SETTINGS_PASSWORD_HIDE));
+    password_combobox->GetViewAccessibility().SetName(
+        model_field->accessible_name().empty()
+            ? model_field->label()
+            : model_field->accessible_name());
+
+    password_combobox->SetCallback(base::BindRepeating(
+        [](ui::DialogModelPasswordField* model_field,
+           base::PassKey<DialogModelFieldHost> pass_key,
+           EditablePasswordCombobox* combobox, Label* error_label) {
+          model_field->OnTextChanged(pass_key, combobox->GetText());
+          combobox->SetInvalid(false);
+          if (error_label) {
+            error_label->SetVisible(false);
+          }
+        },
+        model_field, GetPassKey(), password_combobox.get(), error_label.get()));
+
+    property_changed_subscriptions_.push_back(
+        model_field->AddOnInvalidateCallback(
+            GetPassKey(),
+            base::BindRepeating(
+                [](EditablePasswordCombobox* combobox, Label* error_label) {
+                  combobox->SetText(std::u16string());
+                  combobox->SetInvalid(true);
+                  if (error_label) {
+                    error_label->SetVisible(true);
+                  }
+                },
+                password_combobox.get(), error_label.get())));
+
+    view->AddChildView(std::move(password_combobox));
+    if (error_label) {
+      view->AddChildView(std::move(error_label));
+    }
+
+    AddViewForLabelAndField(model_field, model_field->label(), std::move(view));
+  }
+
   void AddOrUpdateTextfield(ui::DialogModelTextfield* model_field) {
     // TODO(pbos): Support updates to the existing model.
 
@@ -513,9 +586,8 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
             },
             model_field, GetPassKey(), textfield.get())));
 
-    const gfx::FontList& font_list = textfield->GetFontList();
     AddViewForLabelAndField(model_field, model_field->label(),
-                            std::move(textfield), font_list);
+                            std::move(textfield));
   }
 
   void AddOrUpdateCustomField(ui::DialogModelCustomField* model_field) {
@@ -540,8 +612,7 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
 
   void AddViewForLabelAndField(ui::DialogModelField* model_field,
                                const std::u16string& label_text,
-                               std::unique_ptr<View> field,
-                               const gfx::FontList& field_font) {
+                               std::unique_ptr<View> field) {
     auto box_layout = std::make_unique<BoxLayoutView>();
 
     box_layout->SetBetweenChildSpacing(LayoutProvider::Get()->GetDistanceMetric(
@@ -563,12 +634,12 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
     AddDialogModelHostField(std::move(box_layout), info);
   }
 
-  bool DialogModelLabelRequiresStyledLabel(
+  static bool DialogModelLabelRequiresStyledLabel(
       const ui::DialogModelLabel& dialog_label) {
     return !dialog_label.replacements().empty();
   }
 
-  std::unique_ptr<View> CreateViewForLabel(
+  static std::unique_ptr<View> CreateViewForLabel(
       const ui::DialogModelLabel& dialog_label) {
     if (DialogModelLabelRequiresStyledLabel(dialog_label)) {
       return CreateStyledLabelForDialogModelLabel(dialog_label);
@@ -576,7 +647,7 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
     return CreateLabelForDialogModelLabel(dialog_label);
   }
 
-  std::unique_ptr<StyledLabel> CreateStyledLabelForDialogModelLabel(
+  static std::unique_ptr<StyledLabel> CreateStyledLabelForDialogModelLabel(
       const ui::DialogModelLabel& dialog_label) {
     DCHECK(DialogModelLabelRequiresStyledLabel(dialog_label));
     const std::vector<ui::DialogModelLabel::TextReplacement>& replacements =
@@ -623,7 +694,7 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
     return styled_label;
   }
 
-  std::unique_ptr<Label> CreateLabelForDialogModelLabel(
+  static std::unique_ptr<Label> CreateLabelForDialogModelLabel(
       const ui::DialogModelLabel& dialog_label) {
     DCHECK(!DialogModelLabelRequiresStyledLabel(dialog_label));
 
@@ -638,7 +709,7 @@ class BubbleDialogModelHostContentsView final : public DialogModelSectionHost {
 
   std::unique_ptr<View> CreateViewForParagraphWithHeader(
       const ui::DialogModelLabel& dialog_label,
-      const std::u16string header) {
+      const std::u16string& header) {
     auto view = std::make_unique<BoxLayoutView>();
     view->SetOrientation(BoxLayout::Orientation::kVertical);
 
@@ -903,6 +974,11 @@ BubbleDialogModelHost::BubbleDialogModelHost(
   set_fixed_width(LayoutProvider::Get()->GetDistanceMetric(
       anchor_view ? DISTANCE_BUBBLE_PREFERRED_WIDTH
                   : DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
+
+  if (model_->footnote_label()) {
+    SetFootnoteView(BubbleDialogModelHostContentsView::CreateViewForLabel(
+        *model_->footnote_label()));
+  }
 
   // Make sure we're up to date with initial contents state.
   UpdateSpacingAndMargins();

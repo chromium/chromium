@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/form_events/form_events.h"
+#include "components/autofill/core/browser/metrics/form_interactions_ukm_logger.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/form_interactions_flow.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -33,8 +34,7 @@ class FormEventLoggerBase {
  public:
   FormEventLoggerBase(
       const std::string& form_type_name,
-      bool is_in_any_main_frame,
-      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+      autofill_metrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       AutofillClient* client);
 
   void OnDidInteractWithAutofillableForm(const FormStructure& form);
@@ -42,9 +42,6 @@ class FormEventLoggerBase {
   void OnDidPollSuggestions(const FormFieldData& field);
 
   void OnDidParseForm(const FormStructure& form);
-
-  void OnUserHideSuggestions(const FormStructure& form,
-                             const AutofillField& field);
 
   virtual void OnDidShowSuggestions(const FormStructure& form,
                                     const AutofillField& field,
@@ -94,7 +91,8 @@ class FormEventLoggerBase {
 
   void SetFastCheckoutRunId(int64_t run_id) { fast_checkout_run_id_ = run_id; }
 
-  AutofillMetrics::FormEventSet GetFormEvents(FormGlobalId form_global_id);
+  FormInteractionsUkmLogger::FormEventSet GetFormEvents(
+      FormGlobalId form_global_id);
 
   const FormInteractionsFlowId& form_interactions_flow_id_for_test() const {
     return flow_id_;
@@ -198,7 +196,6 @@ class FormEventLoggerBase {
 
   // Constructor parameters.
   std::string form_type_name_;
-  bool is_in_any_main_frame_;
 
   // State variables.
   bool has_parsed_form_ = false;
@@ -251,10 +248,11 @@ class FormEventLoggerBase {
   DenseSet<FormTypeNameForLogging> field_by_field_filled_form_types_;
 
   // A map of the form's global id and its form events.
-  std::map<FormGlobalId, AutofillMetrics::FormEventSet> form_events_set_;
+  std::map<FormGlobalId, FormInteractionsUkmLogger::FormEventSet>
+      form_events_set_;
 
   // Weak reference.
-  raw_ptr<AutofillMetrics::FormInteractionsUkmLogger>
+  raw_ptr<autofill_metrics::FormInteractionsUkmLogger>
       form_interactions_ukm_logger_;
 
   // Weak reference.

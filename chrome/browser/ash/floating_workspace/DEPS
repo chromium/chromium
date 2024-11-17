@@ -15,6 +15,7 @@ include_rules = [
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/app/vector_icons",
+  "+chrome/browser/ash/floating_sso",
   "+chrome/browser/ash/login/session",
   "+chrome/browser/ash/profiles",
   "+chrome/browser/lifetime",
@@ -27,6 +28,7 @@ include_rules = [
   "+chrome/browser/ui/ash/multi_user",
   "+chrome/browser/ui/ash/session",
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  "+chrome/common/pref_names.h",
   "+chrome/grit",
   "+chrome/test/base",
 ]

@@ -37,6 +37,7 @@ static_library("browser") {
     "credential_manager_pending_request_task.h",
     "credential_manager_utils.cc",
     "credential_manager_utils.h",
+    "credential_type_flags.h",
     "credentials_cleaner.cc",
     "credentials_cleaner.h",
     "credentials_cleaner_runner.cc",
@@ -78,6 +79,7 @@ static_library("browser") {
     "password_autofill_manager.h",
     "password_bubble_experiment.cc",
     "password_bubble_experiment.h",
+    "password_change_service_interface.h",
     "password_check_referrer_android.h",
     "password_counter.cc",
     "password_counter.h",
@@ -126,6 +128,7 @@ static_library("browser") {
     "password_manual_fallback_metrics_recorder.h",
     "password_requirements_service.cc",
     "password_requirements_service.h",
+    "password_reuse_detector.cc",
     "password_reuse_detector.h",
     "password_reuse_detector_consumer.cc",
     "password_reuse_detector_consumer.h",
@@ -294,6 +297,7 @@ source_set("passkey_credential") {
     "//components/strings:components_strings",
     "//components/sync/protocol",
     "//components/webauthn/core/browser:passkey_model",
+    "//device/fido:fido",
     "//ui/base",
   ]
   if (is_android) {

@@ -57,6 +57,7 @@
 //third_party/jdk
 //third_party/jni_zero
 //third_party/kotlin_stdlib
+//third_party/llvm-libc
 //third_party/metrics_proto
 //third_party/modp_b64
 //third_party/protobuf

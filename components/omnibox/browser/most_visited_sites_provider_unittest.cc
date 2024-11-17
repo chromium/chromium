@@ -358,7 +358,7 @@ TEST_F(MostVisitedSitesProviderTest, AllowMostVisitedSitesSuggestions) {
   // Offer MV sites when the User is visiting a website and deletes text.
   EXPECT_TRUE(
       provider_->AllowMostVisitedSitesSuggestions(BuildAutocompleteInput(
-          WEB_URL, WEB_URL, OEP::OTHER, OFT::INTERACTION_CLOBBER)));
+          WEB_URL, WEB_URL, OEP::OTHER, OFT::INTERACTION_FOCUS)));
 }
 
 TEST_F(MostVisitedSitesProviderTest, NoSRPCoverage) {

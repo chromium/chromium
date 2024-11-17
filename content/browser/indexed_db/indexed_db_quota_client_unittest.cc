@@ -83,7 +83,6 @@ class IndexedDBQuotaClientTest : public testing::Test,
         temp_dir_.GetPath(), quota_manager_->proxy(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(),
-        base::SequencedTaskRunner::GetCurrentDefault(),
         base::SequencedTaskRunner::GetCurrentDefault());
     base::RunLoop().RunUntilIdle();
     SetupTempDir();
@@ -463,7 +462,6 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaFirstParty) {
       base::FilePath(), quota_manager->proxy(),
       /*blob_storage_context=*/mojo::NullRemote(),
       /*file_system_access_context=*/mojo::NullRemote(),
-      base::SequencedTaskRunner::GetCurrentDefault(),
       base::SequencedTaskRunner::GetCurrentDefault());
   base::RunLoop().RunUntilIdle();
 
@@ -490,7 +488,6 @@ TEST_P(IndexedDBQuotaClientTest, IncognitoQuotaThirdParty) {
       base::FilePath(), quota_manager->proxy(),
       /*blob_storage_context=*/mojo::NullRemote(),
       /*file_system_access_context=*/mojo::NullRemote(),
-      base::SequencedTaskRunner::GetCurrentDefault(),
       base::SequencedTaskRunner::GetCurrentDefault());
   base::RunLoop().RunUntilIdle();
 

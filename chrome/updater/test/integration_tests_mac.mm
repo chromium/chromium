@@ -7,6 +7,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "base/apple/foundation_util.h"
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/file_version_info.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -27,6 +29,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
@@ -87,23 +90,8 @@ base::FilePath GetSetupExecutablePath() {
   return GetExecutablePath();
 }
 
-void EnterTestMode(const GURL& update_url,
-                   const GURL& crash_upload_url,
-                   const GURL& device_management_url,
-                   const GURL& app_logo_url,
-                   const base::TimeDelta& idle_timeout) {
-  ASSERT_TRUE(ExternalConstantsBuilder()
-                  .SetUpdateURL(std::vector<std::string>{update_url.spec()})
-                  .SetCrashUploadURL(crash_upload_url.spec())
-                  .SetDeviceManagementURL(device_management_url.spec())
-                  .SetAppLogoURL(app_logo_url.spec())
-                  .SetUseCUP(false)
-                  .SetInitialDelay(base::Milliseconds(100))
-                  .SetServerKeepAliveTime(base::Seconds(2))
-                  .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
-                  .SetOverinstallTimeout(base::Seconds(5))
-                  .SetIdleCheckPeriod(idle_timeout)
-                  .Modify());
+base::TimeDelta GetOverinstallTimeoutForEnterTestMode() {
+  return base::Seconds(5);
 }
 
 void Clean(UpdaterScope scope) {
@@ -150,6 +138,10 @@ void Clean(UpdaterScope scope) {
       launchctl_rm.AppendArg(token);
       ASSERT_TRUE(base::GetAppOutput(launchctl_rm, &out_rm));
     }
+  }
+
+  if (IsSystemInstall(scope)) {
+    ASSERT_NO_FATAL_FAILURE(UninstallEnterpriseCompanionApp());
   }
 }
 
@@ -202,6 +194,7 @@ void ExpectClean(UpdaterScope scope) {
     EXPECT_FALSE(
         base::PathExists(keystone_path->AppendASCII(KEYSTONE_NAME ".bundle")));
   }
+  ASSERT_NO_FATAL_FAILURE(ExpectEnterpriseCompanionAppNotInstalled());
 }
 
 void ExpectInstalled(UpdaterScope scope) {
@@ -264,21 +257,31 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
 }
 
 bool WaitForUpdaterExit() {
+  std::string last_found;
   return WaitFor(
-      [] {
+      [&] {
         std::string ps_stdout;
         EXPECT_TRUE(
             base::GetAppOutput({"ps", "ax", "-o", "command"}, &ps_stdout));
-        if (ps_stdout.find(GetExecutablePath().BaseName().AsUTF8Unsafe()) ==
-            std::string::npos) {
-          return true;
+        std::vector<std::string_view> commands = base::SplitStringPiece(
+            ps_stdout, "\n", base::WhitespaceHandling::TRIM_WHITESPACE,
+            base::SplitResult::SPLIT_WANT_NONEMPTY);
+        for (const auto& command : commands) {
+          // Skip command lines referencing the symbol files, other processes
+          // can safely have those open (and often do on ASAN bots).
+          if (command.find(GetExecutablePath().BaseName().AsUTF8Unsafe()) !=
+                  std::string::npos &&
+              command.find(".dSYM") == std::string::npos) {
+            last_found = command;
+            return false;
+          }
         }
-        return false;
+        return true;
       },
-      [] { VLOG(0) << "Still waiting for updater to exit..."; });
+      [&] { VLOG(0) << "Still waiting for updater to exit: " << last_found; });
 }
 
-base::FilePath GetRealUpdaterLowerVersionPath() {
+std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions() {
   base::FilePath exe_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_EXE, &exe_path));
   base::FilePath old_updater_path =
@@ -296,10 +299,16 @@ base::FilePath GetRealUpdaterLowerVersionPath() {
 #if BUILDFLAG(CHROMIUM_BRANDING) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   old_updater_path = old_updater_path.Append("cipd");
 #endif
-  return old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app")
-      .Append("Contents")
-      .Append("MacOS")
-      .Append(PRODUCT_FULLNAME_STRING "_test");
+
+  const base::FilePath updater_setup_path =
+      old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app")
+          .Append("Contents")
+          .Append("MacOS")
+          .Append(PRODUCT_FULLNAME_STRING "_test");
+  return {{updater_setup_path,
+           base::Version(base::UTF16ToUTF8(
+               FileVersionInfo::CreateFileVersionInfo(updater_setup_path)
+                   ->file_version()))}};
 }
 
 void SetupFakeLegacyUpdater(UpdaterScope scope) {

@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/sql_utils.h"
 
+#include <stddef.h>
 #include <stdint.h>
 
 #include <iterator>
@@ -21,7 +22,9 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/attribution_scopes_data.h"
@@ -34,6 +37,7 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom.h"
+#include "content/browser/attribution_reporting/aggregatable_named_budget_pair.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_reporting.pb.h"
 #include "content/browser/attribution_reporting/stored_source.h"
@@ -47,6 +51,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::AggregatableNamedBudgetDefs;
 using ::attribution_reporting::AggregatableTriggerConfig;
 using ::attribution_reporting::EventReportWindows;
 using ::attribution_reporting::SuitableOrigin;
@@ -88,19 +93,18 @@ void SerializeCommonAggregatableData(
       trigger_config.aggregatable_filtering_id_max_bytes().value());
 }
 
-std::optional<AttributionReport::CommonAggregatableData>
-DeserializeCommonAggregatableData(
-    const proto::AttributionCommonAggregatableMetadata& msg) {
+std::optional<AttributionReport::AggregatableData> DeserializeAggregatableData(
+    const proto::AttributionCommonAggregatableMetadata& msg,
+    base::Time source_time,
+    base::optional_ref<const SuitableOrigin> source_origin) {
   if (!msg.has_source_registration_time_config()) {
     return std::nullopt;
   }
 
-  std::optional<attribution_reporting::SuitableOrigin>
-      aggregation_coordinator_origin;
+  std::optional<SuitableOrigin> aggregation_coordinator_origin;
   if (msg.has_coordinator_origin()) {
     aggregation_coordinator_origin =
-        attribution_reporting::SuitableOrigin::Deserialize(
-            msg.coordinator_origin());
+        SuitableOrigin::Deserialize(msg.coordinator_origin());
     if (!aggregation_coordinator_origin.has_value()) {
       return std::nullopt;
     }
@@ -141,9 +145,10 @@ DeserializeCommonAggregatableData(
     return std::nullopt;
   }
 
-  return AttributionReport::CommonAggregatableData(
+  return AttributionReport::AggregatableData(
       std::move(aggregation_coordinator_origin),
-      *std::move(aggregatable_trigger_config));
+      *std::move(aggregatable_trigger_config), source_time,
+      /*contributions=*/{}, source_origin.CopyAsOptional());
 }
 
 }  // namespace
@@ -180,10 +185,10 @@ void SetReadOnlySourceData(
 }
 
 std::string SerializeReadOnlySourceData(
-    const attribution_reporting::TriggerSpecs& trigger_specs,
+    const TriggerSpecs& trigger_specs,
     double randomized_response_rate,
     TriggerDataMatching trigger_data_matching,
-    bool debug_cookie_set,
+    bool cookie_based_debug_allowed,
     absl::uint128 aggregatable_debug_key_piece) {
   DCHECK_GE(randomized_response_rate, 0);
   DCHECK_LE(randomized_response_rate, 1);
@@ -225,7 +230,7 @@ std::string SerializeReadOnlySourceData(
       break;
   }
 
-  msg.set_debug_cookie_set(debug_cookie_set);
+  msg.set_cookie_based_debug_allowed(cookie_based_debug_allowed);
 
   proto::AttributionAggregationKey* key_msg =
       msg.mutable_aggregatable_debug_key_piece();
@@ -393,7 +398,7 @@ std::string SerializeAggregatableReportMetadata(
   return msg.SerializeAsString();
 }
 
-std::optional<AttributionReport::AggregatableAttributionData>
+std::optional<AttributionReport::AggregatableData>
 DeserializeAggregatableReportMetadata(base::span<const uint8_t> blob,
                                       const StoredSource& source) {
   proto::AttributionAggregatableMetadata msg;
@@ -402,9 +407,10 @@ DeserializeAggregatableReportMetadata(base::span<const uint8_t> blob,
     return std::nullopt;
   }
 
-  std::optional<AttributionReport::CommonAggregatableData> common_data =
-      DeserializeCommonAggregatableData(msg.common_data());
-  if (!common_data.has_value()) {
+  std::optional<AttributionReport::AggregatableData> data =
+      DeserializeAggregatableData(msg.common_data(), source.source_time(),
+                                  source.common_info().source_origin());
+  if (!data.has_value()) {
     return std::nullopt;
   }
 
@@ -421,7 +427,7 @@ DeserializeAggregatableReportMetadata(base::span<const uint8_t> blob,
     }
     std::optional<uint64_t> filtering_id;
     if (contribution_msg.has_filtering_id()) {
-      if (!common_data->aggregatable_trigger_config
+      if (!data->aggregatable_trigger_config()
                .aggregatable_filtering_id_max_bytes()
                .CanEncompass(contribution_msg.filtering_id())) {
         return std::nullopt;
@@ -434,8 +440,8 @@ DeserializeAggregatableReportMetadata(base::span<const uint8_t> blob,
         base::checked_cast<int32_t>(contribution_msg.value()), filtering_id);
   }
 
-  return AttributionReport::AggregatableAttributionData(
-      *std::move(common_data), std::move(contributions), source);
+  data->SetContributions(std::move(contributions));
+  return data;
 }
 
 std::string SerializeNullAggregatableReportMetadata(
@@ -454,7 +460,7 @@ std::string SerializeNullAggregatableReportMetadata(
   return msg.SerializeAsString();
 }
 
-std::optional<AttributionReport::NullAggregatableData>
+std::optional<AttributionReport::AggregatableData>
 DeserializeNullAggregatableReportMetadata(base::span<const uint8_t> blob) {
   proto::AttributionNullAggregatableMetadata msg;
   if (!msg.ParseFromArray(blob.data(), blob.size()) ||
@@ -462,17 +468,11 @@ DeserializeNullAggregatableReportMetadata(base::span<const uint8_t> blob) {
     return std::nullopt;
   }
 
-  std::optional<AttributionReport::CommonAggregatableData> common_data =
-      DeserializeCommonAggregatableData(msg.common_data());
-  if (!common_data.has_value()) {
-    return std::nullopt;
-  }
+  base::Time fake_source_time = base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(msg.fake_source_time()));
 
-  return AttributionReport::NullAggregatableData(
-      *std::move(common_data),
-      /*fake_source_time=*/
-      base::Time::FromDeltaSinceWindowsEpoch(
-          base::Microseconds(msg.fake_source_time())));
+  return DeserializeAggregatableData(msg.common_data(), fake_source_time,
+                                     /*source_origin=*/std::nullopt);
 }
 
 std::optional<TriggerSpecs> DeserializeTriggerSpecs(
@@ -555,6 +555,54 @@ DeserializeAttributionScopesData(sql::Statement& stmt, int col) {
 
 void DeduplicateSourceIds(std::vector<StoredSource::Id>& ids) {
   ids = base::flat_set<StoredSource::Id>(std::move(ids)).extract();
+}
+
+std::string SerializeAggregatableNamedBudgets(
+    const StoredSource::AggregatableNamedBudgets& budgets) {
+  proto::AggregatableNamedBudgets msg;
+
+  for (const auto& [name, budget] : budgets) {
+    proto::AggregatableNamedBudgetPair budget_pair;
+    budget_pair.set_original_budget(budget.original_budget());
+    budget_pair.set_remaining_budget(budget.remaining_budget());
+    (*msg.mutable_budgets())[name] = std::move(budget_pair);
+  }
+  return msg.SerializeAsString();
+}
+
+std::optional<StoredSource::AggregatableNamedBudgets>
+DeserializeAggregatableNamedBudgets(sql::Statement& stmt, int col) {
+  if (stmt.GetColumnType(col) == sql::ColumnType::kNull) {
+    return StoredSource::AggregatableNamedBudgets();
+  }
+
+  proto::AggregatableNamedBudgets msg;
+  if (base::span<const uint8_t> blob = stmt.ColumnBlob(col);
+      !msg.ParseFromArray(blob.data(), blob.size()) ||
+      static_cast<size_t>(msg.budgets_size()) >
+          attribution_reporting::kMaxAggregatableNamedBudgetsPerSource) {
+    return std::nullopt;
+  }
+
+  StoredSource::AggregatableNamedBudgets::container_type budgets;
+  budgets.reserve(msg.budgets_size());
+
+  for (const auto& [name, budget] : msg.budgets()) {
+    if (name.length() >
+        attribution_reporting::kMaxLengthPerAggregatableNamedBudgetName) {
+      return std::nullopt;
+    }
+
+    auto budget_pair = AggregatableNamedBudgetPair::Create(
+        budget.original_budget(), budget.remaining_budget());
+    if (!budget_pair.has_value()) {
+      return std::nullopt;
+    }
+
+    budgets.emplace_back(name, *budget_pair);
+  }
+
+  return budgets;
 }
 
 }  // namespace content

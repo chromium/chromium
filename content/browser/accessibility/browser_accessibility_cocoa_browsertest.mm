@@ -25,6 +25,7 @@
 #include "ui/accessibility/platform/browser_accessibility_mac.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_mac.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils_mac.h"
 #include "ui/accessibility/platform/test_ax_node_id_delegate.h"
 #include "url/gurl.h"
 
@@ -107,40 +108,6 @@ NSString* GetAXUIElementStringValue(AXUIElementRef element) {
   return stringValue;
 }
 
-// Returns a table element within the descendants of `element`.
-AXUIElementRef FindTable(AXUIElementRef element) {
-  AXUIElementRef table = NULL;
-  CFArrayRef children = NULL;
-  CFStringRef role = NULL;
-
-  AXUIElementCopyAttributeValue(element, kAXRoleAttribute, (CFTypeRef*)&role);
-  if (role) {
-    if (CFStringCompare(role, CFSTR("AXTable"), 0) == kCFCompareEqualTo) {
-      table = element;
-      CFRetain(table);
-    }
-    CFRelease(role);
-  }
-
-  if (table) {
-    return table;
-  }
-
-  AXUIElementCopyAttributeValue(element, kAXChildrenAttribute,
-                                (CFTypeRef*)&children);
-  if (children) {
-    CFIndex count = CFArrayGetCount(children);
-    for (CFIndex i = 0; i < count && !table; i++) {
-      AXUIElementRef child =
-          (AXUIElementRef)CFArrayGetValueAtIndex(children, i);
-
-      table = FindTable(child);
-    }
-    CFRelease(children);
-  }
-
-  return table;
-}
 }  // namespace
 
 // A table cell as seen by an assitive technology when navigating a web page.
@@ -293,8 +260,7 @@ class BrowserAccessibilityCocoaBrowserTest : public ContentBrowserTest {
       NSAccessibilityElement* element) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    [element accessibilitySetValue:@(1)
-                      forAttribute:NSAccessibilityFocusedAttribute];
+    [element setAccessibilityFocused:YES];
 #pragma clang diagnostic pop
     WaitForAccessibilityFocusChange();
   }
@@ -344,12 +310,14 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
   ASSERT_TRUE(waiter.WaitForNotification());
 
   pid_t pid = getpid();
-  AXUIElementRef axApplication = AXUIElementCreateApplication(pid);
-  AXUIElementRef table = FindTable(axApplication);
+  base::apple::ScopedCFTypeRef<AXUIElementRef> axApplication(
+      AXUIElementCreateApplication(pid));
+  base::apple::ScopedCFTypeRef<AXUIElementRef> table =
+      ui::FindAXUIElement(axApplication.get(), "AXTable");
 
   ASSERT_TRUE(table);
 
-  AXTestTable* axTable = [[AXTestTable alloc] initWithAXUIElement:table];
+  AXTestTable* axTable = [[AXTestTable alloc] initWithAXUIElement:table.get()];
   NSArray* rows = [axTable rows];
 
   EXPECT_TRUE(rows.count == 60);
@@ -368,9 +336,6 @@ IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,
 
     rowNumber++;
   }
-
-  CFRelease(table);
-  CFRelease(axApplication);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAccessibilityCocoaBrowserTest,

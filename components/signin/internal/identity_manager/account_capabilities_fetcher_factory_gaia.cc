@@ -43,5 +43,6 @@ void AccountCapabilitiesFetcherFactoryGaia::
       /*num_streams=*/1, GaiaUrls::GetInstance()->account_capabilities_url(),
       google_apis::GetOmitCredentialsModeForGaiaRequests(),
       net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(
-          GaiaUrls::GetInstance()->account_capabilities_url())));
+          GaiaUrls::GetInstance()->account_capabilities_url())),
+      net::MutableNetworkTrafficAnnotationTag());
 }

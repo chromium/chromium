@@ -10,8 +10,6 @@ static_library("omnibox") {
   sources = [
     "omnibox_answer_result.cc",
     "omnibox_answer_result.h",
-    "omnibox_lacros_provider.cc",
-    "omnibox_lacros_provider.h",
     "omnibox_provider.cc",
     "omnibox_provider.h",
     "omnibox_result.cc",
@@ -36,13 +34,13 @@ static_library("omnibox") {
     "//chrome/browser/ash/app_list/search/common",
     "//chrome/browser/ash/app_list/search/ranking",
     "//chrome/browser/bitmap_fetcher",
-    "//chrome/browser/chromeos/launcher_search:search_util",
     "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
     "//chromeos/ash/components/string_matching",
     "//chromeos/crosapi/cpp",
     "//chromeos/crosapi/mojom",
+    "//components/bookmarks/browser",
     "//components/favicon/core",
     "//components/omnibox/browser",
     "//components/omnibox/browser:location_bar",
@@ -73,9 +71,9 @@ source_set("unit_tests") {
 
   sources = [
     "omnibox_answer_result_unittest.cc",
-    "omnibox_lacros_provider_unittest.cc",
     "omnibox_provider_unittest.cc",
     "omnibox_result_unittest.cc",
+    "omnibox_util_unittest.cc",
     "open_tab_result_unittest.cc",
   ]
 
@@ -92,7 +90,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list/search/test:test_support",
     "//chrome/browser/ash/app_list/test:test_support",
     "//chrome/browser/ash/crosapi",
-    "//chrome/browser/chromeos/launcher_search:search_util",
     "//chrome/browser/search_engines",
     "//chrome/browser/ui",
     "//chrome/common:non_code_constants",

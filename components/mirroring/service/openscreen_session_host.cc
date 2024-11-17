@@ -119,7 +119,7 @@ media::mojom::RemotingSinkMetadata ToRemotingSinkMetadata(
             RemotingSinkAudioCapability::CODEC_OPUS);
         continue;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   for (const openscreen::cast::VideoCapability capability :
@@ -154,7 +154,7 @@ media::mojom::RemotingSinkMetadata ToRemotingSinkMetadata(
       case openscreen::cast::VideoCapability::kAv1:
         continue;
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   return sink_metadata;
@@ -275,8 +275,7 @@ class OpenscreenSessionHost::AudioCapturingCallback final
   void Capture(const media::AudioBus* audio_bus,
                base::TimeTicks audio_capture_time,
                const media::AudioGlitchInfo& glitch_info,
-               double volume,
-               bool key_pressed) override {
+               double volume) override {
     if (!has_captured_) {
       logger_.LogInfo(
           base::StringPrintf("first Capture(): volume = %f", volume));
@@ -1053,7 +1052,7 @@ void OpenscreenSessionHost::Negotiate() {
     case State::kInitializing:
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void OpenscreenSessionHost::NegotiateMirroring() {

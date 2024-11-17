@@ -79,7 +79,8 @@
           "builder": "gpu-fyi-try-win10-nvidia-dx12vk-dbg-64",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Win x64 DX12 Vulkan Builder (dbg)/targets"
     }
   },
   "$build/reclient": {

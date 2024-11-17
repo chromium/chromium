@@ -1027,37 +1027,122 @@ TEST_F(ComposeEnablingTest, ProactiveNudgeDisabledSitesPreferenceTest) {
                 kProactiveNudgeDisabledForSiteByUserPreference);
 }
 
-TEST_F(ComposeEnablingTest, ClientCountryNotInFinchCountryList) {
+TEST_F(ComposeEnablingTest, ClientCountryNotInFinchCountryListForCompose) {
   // Sets a country list via Finch that does not include "us".
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       compose::features::kEnableCompose, {{"enabled_countries", "a, b, c"}});
   compose::ResetConfigForTesting();
-
   EXPECT_THAT(compose_enabling_->IsEnabled(),
               ErrorIs(compose::ComposeShowStatus::kComposeNotEnabledInCountry));
 }
 
-TEST_F(ComposeEnablingTest, ClientCountryUndefined) {
+TEST_F(ComposeEnablingTest, ClientCountryUndefinedForCompose) {
   // Replace the client country override with an undefined country.
   scoped_country_override_.reset();
   scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("");
-
   EXPECT_THAT(compose_enabling_->IsEnabled(),
               ErrorIs(compose::ComposeShowStatus::kUndefinedCountry));
 }
 
-TEST_F(ComposeEnablingTest, AnyAndAllCountriesAllowed) {
-  // Replace the client country override with an undefined country.
+TEST_F(ComposeEnablingTest, AnyAndAllCountriesAllowedForCompose) {
+  // Set the country list to the wildcard element.
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       compose::features::kEnableCompose, {{"enabled_countries", "*"}});
+  compose::ResetConfigForTesting();
 
-  EXPECT_NE(compose_enabling_->IsEnabled(), base::ok());
+  // If the country check passes the signed out check will fail next.
+  EXPECT_THAT(compose_enabling_->IsEnabled(),
+              ErrorIs(compose::ComposeShowStatus::kSignedOut));
+
+  // Check that country other than "us" is also accepted.
+  scoped_country_override_.reset();
+  scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("aa");
+  EXPECT_THAT(compose_enabling_->IsEnabled(),
+              ErrorIs(compose::ComposeShowStatus::kSignedOut));
 
   scoped_country_override_.reset();
-  EXPECT_NE(compose_enabling_->IsEnabled(), base::ok());
-
   scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("");
-  EXPECT_NE(compose_enabling_->IsEnabled(), base::ok());
+  EXPECT_THAT(compose_enabling_->IsEnabled(),
+              ErrorIs(compose::ComposeShowStatus::kSignedOut));
+}
+
+TEST_F(ComposeEnablingTest,
+       ClientCountryNotInFinchCountryListForProactiveNudge) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{compose::features::kEnableComposeProactiveNudge,
+        // Sets a country list for the proactive nudge that does not include
+        // "us".
+        {{"proactive_nudge_countries", "a, b, c"}}},
+       {compose::features::kEnableCompose, {{"enabled_countries", "*"}}}},
+      {});
+  compose::ResetConfigForTesting();
+
+  std::string autocomplete_attribute;
+  auto no_state_status = compose_enabling_->ShouldTriggerNoStatePopup(
+      autocomplete_attribute, /*allows_writing_suggestions=*/true, GetProfile(),
+      GetProfile()->GetPrefs(), translate_manager_.get(), GetOrigin(),
+      GetOrigin(), GURL(kExampleURL), /*is_msbb_enabled*/ true);
+  EXPECT_THAT(no_state_status,
+              ErrorIs(compose::ComposeShowStatus::kComposeNotEnabledInCountry));
+}
+
+TEST_F(ComposeEnablingTest, ClientCountryUndefinedForProactiveNudge) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      compose::features::kEnableCompose, {{"enabled_countries", "*"}});
+  compose::ResetConfigForTesting();
+
+  // Replace the client country override with an undefined country.
+  scoped_country_override_.reset();
+  scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("");
+
+  std::string autocomplete_attribute;
+  auto no_state_status = compose_enabling_->ShouldTriggerNoStatePopup(
+      autocomplete_attribute, /*allows_writing_suggestions=*/true, GetProfile(),
+      GetProfile()->GetPrefs(), translate_manager_.get(), GetOrigin(),
+      GetOrigin(), GURL(kExampleURL), /*is_msbb_enabled*/ true);
+  EXPECT_THAT(no_state_status,
+              ErrorIs(compose::ComposeShowStatus::kUndefinedCountry));
+}
+
+TEST_F(ComposeEnablingTest, AnyAndAllCountriesAllowedForProactiveNudge) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{compose::features::kEnableComposeProactiveNudge,
+        // Set both client country lists to the wildcard element.
+        {{"proactive_nudge_countries", "*"}}},
+       {compose::features::kEnableCompose, {{"enabled_countries", "*"}}}},
+      {});
+  compose::ResetConfigForTesting();
+
+  std::string autocomplete_attribute;
+  auto no_state_status = compose_enabling_->ShouldTriggerNoStatePopup(
+      autocomplete_attribute, /*allows_writing_suggestions=*/true, GetProfile(),
+      GetProfile()->GetPrefs(), translate_manager_.get(), GetOrigin(),
+      GetOrigin(), GURL(kExampleURL), /*is_msbb_enabled*/ true);
+  // If the country check passes the signed out check will fail next.
+  EXPECT_THAT(no_state_status, ErrorIs(compose::ComposeShowStatus::kSignedOut));
+
+  // Check that country other than "us" is also accepted.
+  scoped_country_override_.reset();
+  scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("aa");
+
+  no_state_status = compose_enabling_->ShouldTriggerNoStatePopup(
+      autocomplete_attribute, /*allows_writing_suggestions=*/true, GetProfile(),
+      GetProfile()->GetPrefs(), translate_manager_.get(), GetOrigin(),
+      GetOrigin(), GURL(kExampleURL), /*is_msbb_enabled*/ true);
+  EXPECT_THAT(no_state_status, ErrorIs(compose::ComposeShowStatus::kSignedOut));
+
+  // Replace the client country override with an undefined country.
+  scoped_country_override_.reset();
+  scoped_country_override_ = ComposeEnabling::OverrideCountryForTesting("");
+
+  no_state_status = compose_enabling_->ShouldTriggerNoStatePopup(
+      autocomplete_attribute, /*allows_writing_suggestions=*/true, GetProfile(),
+      GetProfile()->GetPrefs(), translate_manager_.get(), GetOrigin(),
+      GetOrigin(), GURL(kExampleURL), /*is_msbb_enabled*/ true);
+  EXPECT_THAT(no_state_status, ErrorIs(compose::ComposeShowStatus::kSignedOut));
 }

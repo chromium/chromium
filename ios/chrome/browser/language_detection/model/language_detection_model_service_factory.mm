@@ -29,8 +29,7 @@ LanguageDetectionModelServiceFactory::GetInstance() {
 
 // static
 language_detection::LanguageDetectionModelService*
-LanguageDetectionModelServiceFactory::GetForBrowserState(
-    ChromeBrowserState* state) {
+LanguageDetectionModelServiceFactory::GetForProfile(ProfileIOS* state) {
   return static_cast<language_detection::LanguageDetectionModelService*>(
       GetInstance()->GetServiceForBrowserState(state, true));
 }
@@ -51,12 +50,10 @@ LanguageDetectionModelServiceFactory::BuildServiceInstanceFor(
       !optimization_guide::features::IsOptimizationTargetPredictionEnabled()) {
     return nullptr;
   }
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   // The optimization guide service must be available for the translate model
   // service to be created.
-  auto* opt_guide =
-      OptimizationGuideServiceFactory::GetForProfile(browser_state);
+  auto* opt_guide = OptimizationGuideServiceFactory::GetForProfile(profile);
   if (opt_guide) {
     scoped_refptr<base::SequencedTaskRunner> background_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(

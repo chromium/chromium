@@ -33,7 +33,7 @@ class MockTapSuppressionController : public TapSuppressionController {
   MockTapSuppressionController& operator=(const MockTapSuppressionController&) =
       delete;
 
-  ~MockTapSuppressionController() override {}
+  ~MockTapSuppressionController() override = default;
 
   void NotifyGestureFlingCancelStoppedFling() {
     last_actions_ = NONE;
@@ -83,8 +83,8 @@ class MockTapSuppressionController : public TapSuppressionController {
 
 class TapSuppressionControllerTest : public testing::Test {
  public:
-  TapSuppressionControllerTest() {}
-  ~TapSuppressionControllerTest() override {}
+  TapSuppressionControllerTest() = default;
+  ~TapSuppressionControllerTest() override = default;
 
  protected:
   // testing::Test

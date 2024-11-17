@@ -51,7 +51,7 @@ class SingleTypeMockServer {
 
   // Generates a SyncEntity representing a server-delivered update.
   //
-  // The |version_offset| parameter allows the caller to simulate reflected
+  // The `version_offset` parameter allows the caller to simulate reflected
   // updates, redeliveries, and genuine updates.
   sync_pb::SyncEntity UpdateFromServer(
       int64_t version_offset,

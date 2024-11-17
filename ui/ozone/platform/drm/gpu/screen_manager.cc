@@ -101,8 +101,7 @@ CrtcController* GetCrtcController(HardwareDisplayController* controller,
       return crtc_controller.get();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void ParamsToTracedValue(

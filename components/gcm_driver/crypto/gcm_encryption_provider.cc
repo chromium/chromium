@@ -46,7 +46,7 @@ IncomingMessage CreateMessageWithId(const std::string& message_id) {
 
 }  // namespace
 
-GCMEncryptionProvider::GCMEncryptionProvider() {}
+GCMEncryptionProvider::GCMEncryptionProvider() = default;
 
 GCMEncryptionProvider::~GCMEncryptionProvider() = default;
 

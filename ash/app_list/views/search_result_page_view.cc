@@ -18,8 +18,10 @@
 #include "ash/style/system_shadow.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/animation/animation_builder.h"
@@ -84,7 +86,6 @@ END_METADATA
 
 SearchResultPageView::SearchResultPageView() {
   SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
   SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR(kActiveSearchBoxHeight, 0, 0, 0)));
   shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
@@ -94,9 +95,18 @@ SearchResultPageView::SearchResultPageView() {
   // Hides this view behind the search box by using the same color and
   // background border corner radius. All child views' background should be
   // set transparent so that the rounded corner is not overwritten.
-  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+  SetBackground(views::CreateThemedSolidBackground(background_color_id));
+
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
+
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kExpandedSearchBoxCornerRadius));
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -109,8 +119,8 @@ void SearchResultPageView::InitializeContainers(
     SearchBoxView* search_box_view) {
   DCHECK(view_delegate);
 
-  // For productivity launcher, the dialog will be anchored to the search box
-  // to keep the position of dialogs consistent.
+  // The dialog will be anchored to the search box to keep the position of
+  // dialogs consistent.
   dialog_controller_ =
       std::make_unique<SearchResultPageDialogController>(search_box_view);
   std::unique_ptr<AppListSearchView> search_view_ptr =

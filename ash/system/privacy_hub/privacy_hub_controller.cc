@@ -5,6 +5,7 @@
 #include "ash/system/privacy_hub/privacy_hub_controller.h"
 
 #include <cstddef>
+#include <optional>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -146,11 +147,10 @@ bool PrivacyHubController::CheckCameraLEDFallbackDirectly() {
     // and forward compatibility when the fallback is eventually dropped.
     return false;
   }
-  int64_t file_size{};
-  const bool file_size_read_success = base::GetFileSize(kPath, &file_size);
-  CHECK(file_size_read_success);
+  std::optional<int64_t> file_size = base::GetFileSize(kPath);
+  CHECK(file_size.has_value());
 
-  return (file_size != 0ll);
+  return (file_size.value() != 0ll);
 }
 
 // static

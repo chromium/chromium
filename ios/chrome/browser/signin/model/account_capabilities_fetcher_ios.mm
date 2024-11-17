@@ -58,7 +58,8 @@ AccountCapabilitiesFetcherIOS::AccountCapabilitiesFetcherIOS(
 
 void AccountCapabilitiesFetcherIOS::StartImpl() {
   id<SystemIdentity> identity =
-      account_manager_service_->GetIdentityWithGaiaID(account_info().gaia);
+      account_manager_service_->GetIdentityOnDeviceWithGaiaID(
+          account_info().gaia);
 
   // If the `account_manager_service_` and system identity manager are out of
   // sync the `identity` may not have been written yet to the latter. In this

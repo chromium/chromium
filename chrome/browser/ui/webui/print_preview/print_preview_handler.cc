@@ -93,10 +93,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
-#include "chrome/browser/ui/webui/print_preview/extension_printer_handler_adapter_ash.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/common/chrome_paths_lacros.h"
-#include "chromeos/lacros/lacros_service.h"
 #endif
 
 #if DCHECK_IS_ON()
@@ -414,15 +410,6 @@ PrintPreviewHandler::PrintPreviewHandler() {
   DCHECK(crosapi::CrosapiManager::IsInitialized());
   local_printer_ =
       crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  if (service->IsAvailable<crosapi::mojom::LocalPrinter>()) {
-    local_printer_ = service->GetRemote<crosapi::mojom::LocalPrinter>().get();
-    local_printer_version_ =
-        service->GetInterfaceVersion<crosapi::mojom::LocalPrinter>();
-  } else {
-    LOG(ERROR) << "Local printer not available";
-  }
 #endif
   ReportUserActionHistogram(UserActionBuckets::kPreviewStarted);
 }
@@ -506,13 +493,6 @@ void PrintPreviewHandler::ReadPrinterTypeDenyListFromPrefs() {
   if (!local_printer_)
     return;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (local_printer_version_ <
-      int{crosapi::mojom::LocalPrinter::MethodMinVersions::
-              kGetPrinterTypeDenyListMinVersion}) {
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   local_printer_->GetPrinterTypeDenyList(
       base::BindOnce(&PrintPreviewHandler::OnPrinterTypeDenyListReady,
                      weak_factory_.GetWeakPtr()));
@@ -1001,15 +981,6 @@ void PrintPreviewHandler::SendInitialSettings(
           Profile::FromWebUI(web_ui()));
   initial_settings.Set(kIsDriveMounted,
                        drive_service && drive_service->IsMounted());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The "Save to Google Drive" option is only allowed for the primary profile
-  // in the Lacros browser.
-  if (Profile::FromWebUI(web_ui())->IsMainProfile()) {
-    base::FilePath drive_path;
-    initial_settings.Set(
-        kIsDriveMounted,
-        chrome::GetDriveFsMountPointPath(&drive_path) && !drive_path.empty());
-  }
 #endif
 
   ResolveJavascriptCallback(base::Value(callback_id), initial_settings);
@@ -1166,18 +1137,6 @@ void PrintPreviewHandler::ClearInitiatorDetails() {
 PrinterHandler* PrintPreviewHandler::GetPrinterHandler(
     mojom::PrinterType printer_type) {
   if (printer_type == mojom::PrinterType::kExtension) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // When Lacros is enabled, uses the ExtensionPrinterHandlerAdapterAsh to
-    // talk to Lacros's extension printers.
-    if (ash::features::IsLacrosExtensionPrintingEnabled() &&
-        crosapi::browser_util::IsLacrosEnabled()) {
-      if (!extension_printer_handler_adapter_) {
-        extension_printer_handler_adapter_ =
-            std::make_unique<ExtensionPrinterHandlerAdapterAsh>();
-      }
-      return extension_printer_handler_adapter_.get();
-    }
-#endif
     if (!extension_printer_handler_) {
       extension_printer_handler_ = PrinterHandler::CreateForExtensionPrinters(
           Profile::FromWebUI(web_ui()));

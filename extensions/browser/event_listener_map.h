@@ -260,7 +260,8 @@ class EventListenerMap {
   std::set<std::string> filtered_events_;
   ListenerMap listeners_;
 
-  std::map<EventFilter::MatcherID, EventListener*> listeners_by_matcher_id_;
+  std::map<EventFilter::MatcherID, raw_ptr<EventListener, CtnExperimental>>
+      listeners_by_matcher_id_;
 
   EventFilter event_filter_;
 };

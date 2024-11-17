@@ -37,7 +37,7 @@ class HistoryDatabase;
 // Encapsulates visit expiration criteria and type of visits to expire.
 class ExpiringVisitsReader {
  public:
-  virtual ~ExpiringVisitsReader() {}
+  virtual ~ExpiringVisitsReader() = default;
   // Populates `visits` from `db`, using provided `end_time` and `max_visits`
   // cap.
   virtual bool Read(base::Time end_time, HistoryDatabase* db,

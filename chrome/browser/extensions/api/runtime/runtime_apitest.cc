@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest, GetPlatformInfo) {
 
 namespace {
 
-const char kUninstallUrl[] = "http://www.google.com/";
+const char kUninstallUrl[] = "https://www.google.com/";
 
 std::string GetActiveUrl(Browser* browser) {
   return browser->tab_strip_model()

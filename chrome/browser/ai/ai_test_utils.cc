@@ -7,6 +7,7 @@
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
 #include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 
 AITestUtils::MockModelStreamingResponder::MockModelStreamingResponder() =
     default;
@@ -15,6 +16,26 @@ AITestUtils::MockModelStreamingResponder::~MockModelStreamingResponder() =
 
 mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
 AITestUtils::MockModelStreamingResponder::BindNewPipeAndPassRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
+}
+
+AITestUtils::MockModelDownloadProgressMonitor::
+    MockModelDownloadProgressMonitor() = default;
+AITestUtils::MockModelDownloadProgressMonitor::
+    ~MockModelDownloadProgressMonitor() = default;
+
+mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+AITestUtils::MockModelDownloadProgressMonitor::BindNewPipeAndPassRemote() {
+  return receiver_.BindNewPipeAndPassRemote();
+}
+
+AITestUtils::MockCreateLanguageModelClient::MockCreateLanguageModelClient() =
+    default;
+AITestUtils::MockCreateLanguageModelClient::~MockCreateLanguageModelClient() =
+    default;
+
+mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+AITestUtils::MockCreateLanguageModelClient::BindNewPipeAndPassRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
@@ -54,22 +75,34 @@ void AITestUtils::AITestBase::SetupNullOptimizationGuideKeyedService() {
 
 mojo::Remote<blink::mojom::AIManager>
 AITestUtils::AITestBase::GetAIManagerRemote() {
-  AIManagerKeyedService* ai_manager_keyed_service =
-      AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
-          main_rfh()->GetBrowserContext());
   mojo::Remote<blink::mojom::AIManager> ai_manager;
-  ai_manager_keyed_service->AddReceiver(ai_manager.BindNewPipeAndPassReceiver(),
-                                        mock_host_.get());
+  GetAIManager()->AddReceiver(ai_manager.BindNewPipeAndPassReceiver(),
+                              mock_host());
   return ai_manager;
+}
+
+size_t AITestUtils::AITestBase::GetAIManagerReceiversSize() {
+  return GetAIManager()->GetReceiversSizeForTesting();
+}
+
+size_t AITestUtils::AITestBase::GetAIManagerDownloadProgressObserversSize() {
+  return GetAIManager()->GetDownloadProgressObserversSizeForTesting();
+}
+
+void AITestUtils::AITestBase::MockDownloadProgressUpdate(
+    uint64_t downloaded_bytes,
+    uint64_t total_bytes) {
+  GetAIManager()->SendDownloadProgressUpdateForTesting(downloaded_bytes,
+                                                       total_bytes);
 }
 
 void AITestUtils::AITestBase::ResetMockHost() {
   mock_host_.reset();
 }
 
-// static
-std::string AITestUtils::GetTypeURLForProto(std::string type_name) {
-  return "type.googleapis.com/" + type_name;
+AIManagerKeyedService* AITestUtils::AITestBase::GetAIManager() {
+  return AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
+      main_rfh()->GetBrowserContext());
 }
 
 // static

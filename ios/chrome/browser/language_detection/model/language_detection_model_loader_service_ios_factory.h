@@ -9,7 +9,8 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace language_detection {
 class LanguageDetectionModelLoaderServiceIOS;
@@ -22,10 +23,6 @@ class LanguageDetectionModelLoaderServiceIOS;
 class LanguageDetectionModelLoaderServiceIOSFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static language_detection::LanguageDetectionModelLoaderServiceIOS*
-  GetForBrowserState(ProfileIOS* profile);
-
   static language_detection::LanguageDetectionModelLoaderServiceIOS*
   GetForProfile(ProfileIOS* profile);
 

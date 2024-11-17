@@ -289,10 +289,8 @@ bool ProgramInfoManager::Program::GetProgramiv(
       *params = static_cast<GLint>(transform_feedback_buffer_mode_);
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return false;
 }
 
 GLuint ProgramInfoManager::Program::GetUniformBlockIndex(
@@ -392,10 +390,8 @@ bool ProgramInfoManager::Program::GetUniformsiv(
       }
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return false;
 }
 
 void ProgramInfoManager::Program::UpdateES2(base::span<const int8_t> result) {
@@ -602,8 +598,7 @@ bool ProgramInfoManager::Program::IsCached(ProgramInfoType type) const {
     case kNone:
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
   }
 }
 
@@ -662,8 +657,7 @@ ProgramInfoManager::Program* ProgramInfoManager::GetProgramInfo(
       info->UpdateES3Uniformsiv(result);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
   return info;
 }
@@ -951,7 +945,7 @@ bool ProgramInfoManager::GetActiveUniformBlockiv(
                 uniform_block->referenced_by_fragment_shader);
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
         }
         return true;
       }
@@ -1088,7 +1082,7 @@ void ProgramInfoManager::UpdateProgramInfo(GLuint program,
       info->UpdateES3Uniformsiv(data);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -58,8 +58,7 @@ void UnexportableKeyLoader::InvokeCallbackAfterKeyLoaded(
   on_load_callbacks_.push_back(std::move(callback));
 }
 
-ServiceErrorOr<UnexportableKeyId>
-UnexportableKeyLoader::GetKeyIdOrErrorForTesting() {
+ServiceErrorOr<UnexportableKeyId> UnexportableKeyLoader::GetKeyIdOrError() {
   return key_id_or_error_;
 }
 
@@ -102,8 +101,9 @@ void UnexportableKeyLoader::OnKeyLoaded(
   std::vector<base::OnceCallback<void(ServiceErrorOr<UnexportableKeyId>)>>
       callbacks;
   callbacks.swap(on_load_callbacks_);
+  // `this` may be destroyed after invoking a callback.
   for (auto& callback : callbacks) {
-    std::move(callback).Run(key_id_or_error_);
+    std::move(callback).Run(key_id_or_error);
   }
 }
 

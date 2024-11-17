@@ -40,6 +40,8 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
@@ -955,16 +957,16 @@ void ExtensionsToolbarContainer::UpdateContainerVisibilityAfterAnimation() {
 }
 
 void ExtensionsToolbarContainer::OnMenuOpening() {
-  // Close Extensions menu IPH if it is open.
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHExtensionsMenuFeature);
-
   // Record IPH usage, which should only be shown when any extension has access.
   if (GetExtensionsButton()->state() ==
       ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
-    browser_->window()->NotifyFeatureEngagementEvent(
-        feature_engagement::events::
-            kExtensionsMenuOpenedWhileExtensionHasAccess);
+    browser_->window()->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHExtensionsMenuFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  } else {
+    // Otherwise, just close the IPH if it's present.
+    browser_->window()->AbortFeaturePromo(
+        feature_engagement::kIPHExtensionsMenuFeature);
   }
 
   UpdateContainerVisibility();

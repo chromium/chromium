@@ -19,6 +19,8 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
+#include "base/containers/checked_iterators.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -64,8 +66,8 @@ class BASE_EXPORT PickleIterator {
   // until the message data is mutated). Do not keep the pointer around!
   [[nodiscard]] bool ReadData(const char** data, size_t* length);
 
-  // Similar, but using base::span for convenience.
-  [[nodiscard]] std::optional<base::span<const uint8_t>> ReadData();
+  // Similar, but using span for convenience.
+  [[nodiscard]] std::optional<span<const uint8_t>> ReadData();
 
   // A pointer to the data will be placed in |*data|. The caller specifies the
   // number of bytes to read, and ReadBytes will validate this length. The
@@ -155,6 +157,8 @@ class BASE_EXPORT Pickle {
     virtual ~Attachment();
   };
 
+  using iterator = CheckedContiguousIterator<const uint8_t>;
+
   // Initialize a Pickle object using the default header size.
   Pickle();
 
@@ -196,6 +200,8 @@ class BASE_EXPORT Pickle {
     return header_ ? header_size_ + header_->payload_size : 0;
   }
 
+  bool empty() const { return !size(); }
+
   // Returns the data for this Pickle.
   const uint8_t* data() const {
     return reinterpret_cast<const uint8_t*>(header_);
@@ -204,6 +210,18 @@ class BASE_EXPORT Pickle {
   // Handy method to simplify calling data() with a reinterpret_cast.
   const char* data_as_char() const {
     return reinterpret_cast<const char*>(data());
+  }
+
+  // Iteration. These allow `Pickle` to satisfy `std::ranges::contiguous_range`,
+  // which in turn allow it to be implicitly converted to a `span`.
+  iterator begin() const {
+    // SAFETY: `data()` always points to at least `size()` valid bytes, so this
+    // pointer is no further than just-past-the-end of the allocation.
+    return UNSAFE_BUFFERS(iterator(data(), data() + size()));
+  }
+  iterator end() const {
+    // SAFETY: As in `begin()` above.
+    return UNSAFE_BUFFERS(iterator(data(), data() + size(), data() + size()));
   }
 
   // Returns the effective memory capacity of this Pickle, that is, the total
@@ -252,7 +270,7 @@ class BASE_EXPORT Pickle {
 
   // ReadAttachment parses an attachment given the parsing state |iter| and
   // writes it to |*attachment|. It returns true on success.
-  virtual bool ReadAttachment(base::PickleIterator* iter,
+  virtual bool ReadAttachment(PickleIterator* iter,
                               scoped_refptr<Attachment>* attachment) const;
 
   // Indicates whether the pickle has any attachments.
@@ -287,8 +305,8 @@ class BASE_EXPORT Pickle {
     return header_ ? header_->payload_size : 0;
   }
 
-  base::span<const uint8_t> payload_bytes() const {
-    return base::as_bytes(base::make_span(payload(), payload_size()));
+  span<const uint8_t> payload_bytes() const {
+    return as_bytes(make_span(payload(), payload_size()));
   }
 
  protected:

@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/file_system_access/file_system_access_ui_helpers.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/vector_icons/vector_icons.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -48,7 +49,8 @@ std::unique_ptr<views::ScrollView> FileSystemAccessScrollPanel::Create(
     icon->SetVerticalAlignment(views::ImageView::Alignment::kCenter);
 
     auto* label = line_container->AddChildView(std::make_unique<views::Label>(
-        file_system_access_ui_helper::GetPathForDisplayAsParagraph(file_path)));
+        file_system_access_ui_helper::GetPathForDisplayAsParagraph(
+            content::PathInfo(file_path))));
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   }
   // TODO(crbug.com/40101962): Determine if/how file names should be focused for

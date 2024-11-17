@@ -24,7 +24,7 @@ export class XfDlpRestrictionDetailsDialog extends HTMLElement {
     const fragment = template.content.cloneNode(true);
     this.attachShadow({mode: 'open'}).appendChild(fragment);
 
-    this.dialog = this.shadowRoot!.querySelector('#dialog')! as CrDialogElement;
+    this.dialog = this.shadowRoot!.querySelector<CrDialogElement>('#dialog')!;
   }
 
   /**

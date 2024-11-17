@@ -18,11 +18,10 @@ class ChromeAccountManagerServiceObserverBridgeTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
     ChromeAccountManagerService* account_manager_service =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
 
     test_observer_ =
         OCMStrictProtocolMock(@protocol(ChromeAccountManagerServiceObserver));
@@ -39,7 +38,7 @@ class ChromeAccountManagerServiceObserverBridgeTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<ChromeAccountManagerService::Observer> observer_bridge_;
   id<ChromeAccountManagerServiceObserver> test_observer_ = nil;
 };

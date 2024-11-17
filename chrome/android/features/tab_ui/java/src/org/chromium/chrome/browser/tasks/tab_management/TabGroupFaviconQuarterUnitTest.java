@@ -57,7 +57,7 @@ public class TabGroupFaviconQuarterUnitTest {
 
     @Before
     public void setUp() {
-        mActivityScenarioRule.getScenario().onActivity((activity -> mActivity = activity));
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         ConstraintLayout parent = new ConstraintLayout(mActivity, null);
         LayoutInflater inflater = LayoutInflater.from(mActivity);
         inflater.inflate(R.layout.tab_group_favicon_quarter, parent, true);

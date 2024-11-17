@@ -84,10 +84,6 @@ MicIndicator::~MicIndicator() {
 void MicIndicator::UpdateProgress() {
   step_ = (step_ + 1) % kMaxStep;
   if (step_ == 0) {
-    bool sidetone_enabled =
-        VideoConferenceTrayController::Get()->GetSidetoneEnabled();
-    color_ = sidetone_enabled ? cros_tokens::kCrosSysSystemOnPrimaryContainer
-                              : cros_tokens::kCrosSysOnSurface;
     power_ = VideoConferenceTrayController::Get()->GetEwmaPower();
   }
   SchedulePaint();
@@ -123,6 +119,15 @@ void MicIndicator::OnPaint(gfx::Canvas* canvas) {
 
     x += kIndicatorSpace + static_cast<int>(flags.getStrokeWidth());
   }
+}
+
+void MicIndicator::OnThemeChanged() {
+  views::View::OnThemeChanged();
+
+  bool sidetone_enabled =
+      VideoConferenceTrayController::Get()->GetSidetoneEnabled();
+  color_ = sidetone_enabled ? cros_tokens::kCrosSysSystemOnPrimaryContainer
+                            : cros_tokens::kCrosSysOnSurface;
 }
 
 BEGIN_METADATA(MicIndicator)

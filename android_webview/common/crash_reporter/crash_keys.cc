@@ -198,6 +198,17 @@ const char* const kWebViewCrashKeyAllowList[] = {
     "NoTrackedNav-is_history",
     "NoTrackedNav-is_restore",
 
+    // crbug.com/370872370
+    "OriginCalc-debug_info",
+    "OriginCalc-url_stripped",
+    "OriginCalc-same_ptr",
+    "OriginCalc-origin",
+    "OriginCalc-origin_to_commit",
+    "OriginCalc-origin_local",
+    "OriginCalc-origin_to_commit_local",
+    "OriginCalc-origin_blcok",
+    "OriginCalc-origin_to_commit_block",
+
     nullptr};
 // clang-format on
 

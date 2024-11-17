@@ -147,6 +147,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/trace_event/named_trigger.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/clean_exit_beacon.h"
@@ -590,6 +591,8 @@ void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
   // Schedule a write, which happens on a different thread.
   local_state_->CommitPendingWrite();
 
+  base::trace_event::EmitNamedTrigger("app-enter-background");
+
   // Give providers a chance to persist histograms as part of being
   // backgrounded.
   delegating_provider_.OnAppEnterBackground();
@@ -623,6 +626,8 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
   reporting_service_.SetIsInForegound(true);
   state_manager_->LogHasSessionShutdownCleanly(false);
   StartSchedulerIfNecessary();
+
+  base::trace_event::EmitNamedTrigger("app-enter-foreground");
 
   if (force_open_new_log && recording_active() && !IsTooEarlyToCloseLog()) {
     base::UmaHistogramBoolean(
@@ -832,10 +837,8 @@ void MetricsService::InitializeMetricsState() {
       // they do, it may not be possible to know at this point whether a session
       // is a background session.
       //
-      // TODO(crbug.com/40788576): On WebLayer, it is not possible to know
+      // TODO(crbug.com/40196247): On WebView, it is not possible to know
       // whether it's a background session at this point.
-      //
-      // TODO(crbug.com/40196247): Ditto for WebView.
       state_manager_->clean_exit_beacon()->WriteBeaconValue(true);
     }
 #endif  // BUILDFLAG(IS_ANDROID)

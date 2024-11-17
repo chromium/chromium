@@ -22,6 +22,7 @@
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/plus_addresses/features.h"
@@ -198,10 +199,6 @@ const GURL& AllPasswordsBottomSheetController::GetFrameUrl() {
 
 bool AllPasswordsBottomSheetController::IsPlusAddress(
     const std::string& potential_plus_address) const {
-  if (!base::FeatureList::IsEnabled(
-          plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled)) {
-    return false;
-  }
   return plus_address_service_ &&
          plus_address_service_->IsPlusAddress(potential_plus_address);
 }
@@ -256,6 +253,8 @@ void AllPasswordsBottomSheetController::TryToShowAccessLossWarningSheet() {
                      profile->GetPrefs(), /*called_at_startup=*/false)) {
     access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
         profile->GetPrefs(), web_contents_->GetTopLevelNativeWindow(), profile,
-        /*called_at_startup=*/false);
+        /*called_at_startup=*/false,
+        password_manager_android_util::PasswordAccessLossWarningTriggers::
+            kAllPasswords);
   }
 }

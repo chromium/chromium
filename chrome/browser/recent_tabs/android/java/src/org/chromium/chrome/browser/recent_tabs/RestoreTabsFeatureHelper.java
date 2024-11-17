@@ -61,7 +61,7 @@ public class RestoreTabsFeatureHelper {
 
         Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
 
-        if (!tracker.wouldTriggerHelpUI(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE)) {
+        if (!tracker.wouldTriggerHelpUi(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE)) {
             RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
                     RestoreTabsOnFREPromoShowResult.NOT_ELIGIBLE);
             return;
@@ -84,26 +84,26 @@ public class RestoreTabsFeatureHelper {
 
         // Determines whether the promo is to be shown for the first or second time.
         // To determine if it is the first time that the promo is being triggered, the logic checks
-        // if the promo has ever triggered. Since wouldTriggerHelpUI indicates that the promo
-        // will be shown if the shouldTriggerHelpUI is called, it is assumed that it will show,
+        // if the promo has ever triggered. Since wouldTriggerHelpUi indicates that the promo
+        // will be shown if the shouldTriggerHelpUi is called, it is assumed that it will show,
         // hence setting the showCount to 1. If it has already triggered and the same criteria is
         // fulfilled, it can be assumed this will be the second time the promo shows. Note that this
         // logic only works for the 2 count max for promo showing. The hasEverTriggered call must be
-        // before the shouldTriggerHelpUI call, otherwise it will always return true.
+        // before the shouldTriggerHelpUi call, otherwise it will always return true.
         int showCount =
                 tracker.hasEverTriggered(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE, false)
                         ? 2
                         : 1;
         RestoreTabsMetricsHelper.setPromoShownCount(showCount);
 
-        // The difference between wouldTriggerHelpUI and shouldTriggerHelpUI is that the latter
+        // The difference between wouldTriggerHelpUi and shouldTriggerHelpUi is that the latter
         // increments an internal trigger count if it returns true, which means that if it is called
         // successfully, IPH must show. Alternatively, the former lets the logic know if the promo
         // is expected to show, which can help determine if it is being shown for the first or
         // second time.
         List<ForeignSession> sessions = mForeignSessionHelper.getMobileAndTabletForeignSessions();
         if (hasValidSyncedDevices(sessions)
-                && tracker.shouldTriggerHelpUI(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE)) {
+                && tracker.shouldTriggerHelpUi(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE)) {
             createDelegate(
                     activity,
                     profile,

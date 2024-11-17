@@ -1,26 +1,307 @@
 ../resources/webkit02.dat:
+3
 12
-13
+16
+17
+18
+19
+28
+29
+30
+33
+34
+35
 
-Test 12 of 16 in ../resources/webkit02.dat failed. Input:
-<isindex action="x">
+Test 3 of 35 in ../resources/webkit02.dat failed. Input:
+<p id="status"><noscript><strong>A</strong></noscript><span>B</span></p>
 Got:
-| <isindex>
-|   action="x"
+| <html>
+|   <head>
+|   <body>
+|     <p>
+|       id="status"
+|       <noscript>
+|         "<strong>A</strong>"
+|       <span>
+|         "B"
 Expected:
-| <form>
-|   action="x"
-| <hr>
-| <label>
-|   "This is a searchable index. Enter search keywords: "
-|   <input>
-|     name="isindex"
-| <hr>
+| <html>
+|   <head>
+|   <body>
+|     <p>
+|       id="status"
+|       <noscript>
+|         <strong>
+|           "A"
+|       <span>
+|         "B"
 
-Test 13 of 16 in ../resources/webkit02.dat failed. Input:
+Test 12 of 35 in ../resources/webkit02.dat failed. Input:
+<b><em><dcell><postfield><postfield><postfield><postfield><missing_glyph><missing_glyph><missing_glyph><missing_glyph><hkern><aside></b></em>
+Got:
+| <b>
+|   <em>
+|     <dcell>
+|       <postfield>
+|         <postfield>
+|           <postfield>
+|             <postfield>
+|               <missing_glyph>
+|                 <missing_glyph>
+|                   <missing_glyph>
+|                     <missing_glyph>
+|                       <hkern>
+| <aside>
+|   <em>
+|     <b>
+Expected:
+| <b>
+|   <em>
+|     <dcell>
+|       <postfield>
+|         <postfield>
+|           <postfield>
+|             <postfield>
+|               <missing_glyph>
+|                 <missing_glyph>
+|                   <missing_glyph>
+|                     <missing_glyph>
+|                       <hkern>
+| <aside>
+|   <b>
+
+Test 16 of 35 in ../resources/webkit02.dat failed. Input:
+<b><em><foo><foo><foo><aside></b></em>
+Got:
+| <html>
+|   <head>
+|   <body>
+|     <b>
+|       <em>
+|         <foo>
+|           <foo>
+|             <foo>
+|     <aside>
+|       <em>
+|         <b>
+Expected:
+| <html>
+|   <head>
+|   <body>
+|     <b>
+|       <em>
+|         <foo>
+|           <foo>
+|             <foo>
+|     <aside>
+|       <b>
+
+Test 17 of 35 in ../resources/webkit02.dat failed. Input:
+<b><em><foo><foo><foo><foo><foo><foo><foo><foo><foo><foo><aside></b></em>
+Got:
+| <b>
+|   <em>
+|     <foo>
+|       <foo>
+|         <foo>
+|           <foo>
+|             <foo>
+|               <foo>
+|                 <foo>
+|                   <foo>
+|                     <foo>
+|                       <foo>
+| <aside>
+|   <em>
+|     <b>
+Expected:
+| <b>
+|   <em>
+|     <foo>
+|       <foo>
+|         <foo>
+|           <foo>
+|             <foo>
+|               <foo>
+|                 <foo>
+|                   <foo>
+|                     <foo>
+|                       <foo>
+| <aside>
+|   <b>
+
+Test 18 of 35 in ../resources/webkit02.dat failed. Input:
+<b><em><foo><foob><foob><foob><foob><fooc><fooc><fooc><fooc><food><aside></b></em>
+Got:
+| <b>
+|   <em>
+|     <foo>
+|       <foob>
+|         <foob>
+|           <foob>
+|             <foob>
+|               <fooc>
+|                 <fooc>
+|                   <fooc>
+|                     <fooc>
+|                       <food>
+| <aside>
+|   <em>
+|     <b>
+Expected:
+| <b>
+|   <em>
+|     <foo>
+|       <foob>
+|         <foob>
+|           <foob>
+|             <foob>
+|               <fooc>
+|                 <fooc>
+|                   <fooc>
+|                     <fooc>
+|                       <food>
+| <aside>
+|   <b>
+
+Test 19 of 35 in ../resources/webkit02.dat failed. Input:
 <option><XH<optgroup></optgroup>
 Got:
 | <option>
 |   <xh<optgroup>
 Expected:
 | <option>
+
+Test 28 of 35 in ../resources/webkit02.dat failed. Input:
+<select><optgroup><option><hr>
+Got:
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <optgroup>
+|         <option>
+|         <hr>
+Expected:
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <optgroup>
+|         <option>
+|       <hr>
+
+Test 29 of 35 in ../resources/webkit02.dat failed. Input:
+<select><optgroup><hr>
+Got:
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <optgroup>
+|         <hr>
+Expected:
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <optgroup>
+|       <hr>
+
+Test 30 of 35 in ../resources/webkit02.dat failed. Input:
+<select><option><optgroup><hr>
+Got:
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <option>
+|       <optgroup>
+|         <hr>
+Expected:
+| <html>
+|   <head>
+|   <body>
+|     <select>
+|       <option>
+|       <optgroup>
+|       <hr>
+
+Test 33 of 35 in ../resources/webkit02.dat failed. Input:
+<table><tr><td><select><optgroup><option><hr>
+Got:
+| <html>
+|   <head>
+|   <body>
+|     <table>
+|       <tbody>
+|         <tr>
+|           <td>
+|             <select>
+|               <optgroup>
+|                 <option>
+|                 <hr>
+Expected:
+| <html>
+|   <head>
+|   <body>
+|     <table>
+|       <tbody>
+|         <tr>
+|           <td>
+|             <select>
+|               <optgroup>
+|                 <option>
+|               <hr>
+
+Test 34 of 35 in ../resources/webkit02.dat failed. Input:
+<table><tr><td><select><optgroup><hr>
+Got:
+| <html>
+|   <head>
+|   <body>
+|     <table>
+|       <tbody>
+|         <tr>
+|           <td>
+|             <select>
+|               <optgroup>
+|                 <hr>
+Expected:
+| <html>
+|   <head>
+|   <body>
+|     <table>
+|       <tbody>
+|         <tr>
+|           <td>
+|             <select>
+|               <optgroup>
+|               <hr>
+
+Test 35 of 35 in ../resources/webkit02.dat failed. Input:
+<table><tr><td><select><option><optgroup><hr>
+Got:
+| <html>
+|   <head>
+|   <body>
+|     <table>
+|       <tbody>
+|         <tr>
+|           <td>
+|             <select>
+|               <option>
+|               <optgroup>
+|                 <hr>
+Expected:
+| <html>
+|   <head>
+|   <body>
+|     <table>
+|       <tbody>
+|         <tr>
+|           <td>
+|             <select>
+|               <option>
+|               <optgroup>
+|               <hr>

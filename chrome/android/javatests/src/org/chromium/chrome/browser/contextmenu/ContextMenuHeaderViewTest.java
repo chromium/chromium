@@ -9,6 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.text.TextUtils;
@@ -18,23 +19,34 @@ import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /** Tests for ContextMenuHeader view and {@link ContextMenuHeaderViewBinder} */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
-public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
+public class ContextMenuHeaderViewTest {
     private static final String TITLE_STRING = "Some Very Cool Title";
     private static final String URL_STRING = "www.website.com";
+
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     private View mHeaderView;
     private TextView mTitle;
@@ -46,14 +58,17 @@ public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
+    @Before
+    public void setUp() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    getActivity().setContentView(R.layout.context_menu_header);
-                    mHeaderView = getActivity().findViewById(android.R.id.content);
+                    sActivity.setContentView(R.layout.context_menu_header);
+                    mHeaderView = sActivity.findViewById(android.R.id.content);
                     mTitle = mHeaderView.findViewById(R.id.menu_header_title);
                     mUrl = mHeaderView.findViewById(R.id.menu_header_url);
                     mTitleAndUrl = mHeaderView.findViewById(R.id.title_and_url);
@@ -78,10 +93,9 @@ public class ContextMenuHeaderViewTest extends BlankUiTestActivityTestCase {
                 });
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
-        super.tearDownTest();
     }
 
     @Test

@@ -303,8 +303,7 @@ void IOSChromePaymentsAutofillClient::OnUnmaskVerificationResult(
       // Do nothing
       break;
     case PaymentsRpcResult::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 

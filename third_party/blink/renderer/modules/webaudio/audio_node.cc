@@ -29,6 +29,8 @@
 
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_node_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_channel_count_mode.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_channel_interpretation.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_handler.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
@@ -75,7 +77,7 @@ void AudioNode::Dispose() {
   // the handler still needs to be added in case the context is resumed.
   DCHECK(context());
   if (context()->IsPullingAudioGraph() ||
-      context()->ContextState() == BaseAudioContext::kSuspended) {
+      context()->ContextState() == V8AudioContextState::Enum::kSuspended) {
     context()->GetDeferredTaskHandler().AddRenderingOrphanHandler(
         std::move(handler_));
   }
@@ -571,22 +573,23 @@ void AudioNode::setChannelCount(unsigned count,
   Handler().SetChannelCount(count, exception_state);
 }
 
-String AudioNode::channelCountMode() const {
-  return Handler().GetChannelCountMode();
+V8ChannelCountMode AudioNode::channelCountMode() const {
+  return V8ChannelCountMode(Handler().GetChannelCountMode());
 }
 
-void AudioNode::setChannelCountMode(const String& mode,
+void AudioNode::setChannelCountMode(const V8ChannelCountMode& mode,
                                     ExceptionState& exception_state) {
-  Handler().SetChannelCountMode(mode, exception_state);
+  Handler().SetChannelCountMode(mode.AsEnum(), exception_state);
 }
 
-String AudioNode::channelInterpretation() const {
-  return Handler().ChannelInterpretation();
+V8ChannelInterpretation AudioNode::channelInterpretation() const {
+  return V8ChannelInterpretation(Handler().ChannelInterpretation());
 }
 
-void AudioNode::setChannelInterpretation(const String& interpretation,
-                                         ExceptionState& exception_state) {
-  Handler().SetChannelInterpretation(interpretation, exception_state);
+void AudioNode::setChannelInterpretation(
+    const V8ChannelInterpretation& interpretation,
+    ExceptionState& exception_state) {
+  Handler().SetChannelInterpretation(interpretation.AsEnum(), exception_state);
 }
 
 const AtomicString& AudioNode::InterfaceName() const {

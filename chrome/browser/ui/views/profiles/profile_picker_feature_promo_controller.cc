@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_view.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
+#include "chrome/browser/ui/views/user_education/browser_help_bubble.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "components/feature_engagement/public/event_constants.h"
@@ -16,11 +16,11 @@ ProfilePickerFeaturePromoController::ProfilePickerFeaturePromoController(
     feature_engagement::Tracker* tracker_service,
     UserEducationService* user_education_service,
     ProfilePickerView* profile_picker_view)
-    : user_education::FeaturePromoControllerCommon(
+    : user_education::FeaturePromoController20(
           tracker_service,
           &user_education_service->feature_promo_registry(),
           &user_education_service->help_bubble_factory_registry(),
-          &user_education_service->feature_promo_storage_service(),
+          &user_education_service->user_education_storage_service(),
           &user_education_service->feature_promo_session_policy(),
           &user_education_service->tutorial_service(),
           &user_education_service->product_messaging_controller()),
@@ -69,8 +69,7 @@ ProfilePickerFeaturePromoController::GetTutorialScreenReaderHint() const {
 std::u16string
 ProfilePickerFeaturePromoController::GetFocusHelpBubbleScreenReaderHint(
     user_education::FeaturePromoSpecification::PromoType promo_type,
-    ui::TrackedElement* anchor_element,
-    bool is_critical_promo) const {
-  return GetFocusHelpBubbleScreenReaderHintCommon(
-      promo_type, profile_picker_view_, anchor_element, is_critical_promo);
+    ui::TrackedElement* anchor_element) const {
+  return BrowserHelpBubble::GetFocusHelpBubbleScreenReaderHint(
+      promo_type, profile_picker_view_, anchor_element);
 }

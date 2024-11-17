@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/containers/contains.h"
@@ -19,9 +20,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_list/extension_app_utils.h"
 #include "chrome/browser/ash/eche_app/app_id.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
@@ -33,10 +32,10 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/webapps/common/web_app_id.h"
 #include "extensions/browser/extension_registry.h"
@@ -58,9 +57,6 @@ AppListControllerDelegate::Pinnable GetPinnableForAppID(
   // item that does nothing.
   const char* kNoPinAppIds[] = {
       ash::eche_app::kEcheAppId,
-      // The Mall web app is force pinned to the shelf and cannot be removed.
-      // This app is only installed as part of a Finch experiment.
-      web_app::kMallAppId,
   };
   if (base::Contains(kNoPinAppIds, app_id))
     return AppListControllerDelegate::NO_PIN;
@@ -185,9 +181,8 @@ bool IsAppPinEditable(apps::AppType app_type,
     case apps::AppType::kRemote:
     case apps::AppType::kExtension:
     case apps::AppType::kStandaloneBrowserExtension:
-      NOTREACHED_IN_MIGRATION()
-          << "Type " << (int)app_type << " should not appear in shelf.";
-      return false;
+      NOTREACHED() << "Type " << (int)app_type
+                   << " should not appear in shelf.";
     case apps::AppType::kBruschetta:
       return true;
   }

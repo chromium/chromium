@@ -1163,14 +1163,6 @@ void aom_sad_skip_16x32x4d_c(const uint8_t *src_ptr, int src_stride, const uint8
 void aom_sad_skip_16x32x4d_neon(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
 RTCD_EXTERN void (*aom_sad_skip_16x32x4d)(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
 
-unsigned int aom_sad_skip_16x8_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
-unsigned int aom_sad_skip_16x8_neon(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
-RTCD_EXTERN unsigned int (*aom_sad_skip_16x8)(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
-
-void aom_sad_skip_16x8x4d_c(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
-void aom_sad_skip_16x8x4d_neon(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
-RTCD_EXTERN void (*aom_sad_skip_16x8x4d)(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
-
 unsigned int aom_sad_skip_32x16_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
 unsigned int aom_sad_skip_32x16_neon(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
 RTCD_EXTERN unsigned int (*aom_sad_skip_32x16)(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
@@ -1194,22 +1186,6 @@ RTCD_EXTERN unsigned int (*aom_sad_skip_32x64)(const uint8_t *src_ptr, int src_s
 void aom_sad_skip_32x64x4d_c(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
 void aom_sad_skip_32x64x4d_neon(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
 RTCD_EXTERN void (*aom_sad_skip_32x64x4d)(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
-
-unsigned int aom_sad_skip_4x4_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
-unsigned int aom_sad_skip_4x4_neon(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
-RTCD_EXTERN unsigned int (*aom_sad_skip_4x4)(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
-
-void aom_sad_skip_4x4x4d_c(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
-void aom_sad_skip_4x4x4d_neon(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
-RTCD_EXTERN void (*aom_sad_skip_4x4x4d)(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
-
-unsigned int aom_sad_skip_4x8_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
-unsigned int aom_sad_skip_4x8_neon(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
-RTCD_EXTERN unsigned int (*aom_sad_skip_4x8)(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
-
-void aom_sad_skip_4x8x4d_c(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
-void aom_sad_skip_4x8x4d_neon(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
-RTCD_EXTERN void (*aom_sad_skip_4x8x4d)(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
 
 unsigned int aom_sad_skip_64x128_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
 unsigned int aom_sad_skip_64x128_neon(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
@@ -1242,22 +1218,6 @@ RTCD_EXTERN unsigned int (*aom_sad_skip_8x16)(const uint8_t *src_ptr, int src_st
 void aom_sad_skip_8x16x4d_c(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
 void aom_sad_skip_8x16x4d_neon(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
 RTCD_EXTERN void (*aom_sad_skip_8x16x4d)(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
-
-unsigned int aom_sad_skip_8x4_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
-unsigned int aom_sad_skip_8x4_neon(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
-RTCD_EXTERN unsigned int (*aom_sad_skip_8x4)(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
-
-void aom_sad_skip_8x4x4d_c(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
-void aom_sad_skip_8x4x4d_neon(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
-RTCD_EXTERN void (*aom_sad_skip_8x4x4d)(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
-
-unsigned int aom_sad_skip_8x8_c(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
-unsigned int aom_sad_skip_8x8_neon(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
-RTCD_EXTERN unsigned int (*aom_sad_skip_8x8)(const uint8_t *src_ptr, int src_stride, const uint8_t *ref_ptr, int ref_stride);
-
-void aom_sad_skip_8x8x4d_c(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
-void aom_sad_skip_8x8x4d_neon(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
-RTCD_EXTERN void (*aom_sad_skip_8x8x4d)(const uint8_t *src_ptr, int src_stride, const uint8_t * const ref_ptr[4], int ref_stride, uint32_t sad_array[4]);
 
 int aom_satd_c(const tran_low_t *coeff, int length);
 int aom_satd_neon(const tran_low_t *coeff, int length);
@@ -2264,10 +2224,6 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON) aom_sad_skip_16x32 = aom_sad_skip_16x32_neon;
     aom_sad_skip_16x32x4d = aom_sad_skip_16x32x4d_c;
     if (flags & HAS_NEON) aom_sad_skip_16x32x4d = aom_sad_skip_16x32x4d_neon;
-    aom_sad_skip_16x8 = aom_sad_skip_16x8_c;
-    if (flags & HAS_NEON) aom_sad_skip_16x8 = aom_sad_skip_16x8_neon;
-    aom_sad_skip_16x8x4d = aom_sad_skip_16x8x4d_c;
-    if (flags & HAS_NEON) aom_sad_skip_16x8x4d = aom_sad_skip_16x8x4d_neon;
     aom_sad_skip_32x16 = aom_sad_skip_32x16_c;
     if (flags & HAS_NEON) aom_sad_skip_32x16 = aom_sad_skip_32x16_neon;
     aom_sad_skip_32x16x4d = aom_sad_skip_32x16x4d_c;
@@ -2280,14 +2236,6 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON) aom_sad_skip_32x64 = aom_sad_skip_32x64_neon;
     aom_sad_skip_32x64x4d = aom_sad_skip_32x64x4d_c;
     if (flags & HAS_NEON) aom_sad_skip_32x64x4d = aom_sad_skip_32x64x4d_neon;
-    aom_sad_skip_4x4 = aom_sad_skip_4x4_c;
-    if (flags & HAS_NEON) aom_sad_skip_4x4 = aom_sad_skip_4x4_neon;
-    aom_sad_skip_4x4x4d = aom_sad_skip_4x4x4d_c;
-    if (flags & HAS_NEON) aom_sad_skip_4x4x4d = aom_sad_skip_4x4x4d_neon;
-    aom_sad_skip_4x8 = aom_sad_skip_4x8_c;
-    if (flags & HAS_NEON) aom_sad_skip_4x8 = aom_sad_skip_4x8_neon;
-    aom_sad_skip_4x8x4d = aom_sad_skip_4x8x4d_c;
-    if (flags & HAS_NEON) aom_sad_skip_4x8x4d = aom_sad_skip_4x8x4d_neon;
     aom_sad_skip_64x128 = aom_sad_skip_64x128_c;
     if (flags & HAS_NEON) aom_sad_skip_64x128 = aom_sad_skip_64x128_neon;
     aom_sad_skip_64x128x4d = aom_sad_skip_64x128x4d_c;
@@ -2304,14 +2252,6 @@ static void setup_rtcd_internal(void)
     if (flags & HAS_NEON) aom_sad_skip_8x16 = aom_sad_skip_8x16_neon;
     aom_sad_skip_8x16x4d = aom_sad_skip_8x16x4d_c;
     if (flags & HAS_NEON) aom_sad_skip_8x16x4d = aom_sad_skip_8x16x4d_neon;
-    aom_sad_skip_8x4 = aom_sad_skip_8x4_c;
-    if (flags & HAS_NEON) aom_sad_skip_8x4 = aom_sad_skip_8x4_neon;
-    aom_sad_skip_8x4x4d = aom_sad_skip_8x4x4d_c;
-    if (flags & HAS_NEON) aom_sad_skip_8x4x4d = aom_sad_skip_8x4x4d_neon;
-    aom_sad_skip_8x8 = aom_sad_skip_8x8_c;
-    if (flags & HAS_NEON) aom_sad_skip_8x8 = aom_sad_skip_8x8_neon;
-    aom_sad_skip_8x8x4d = aom_sad_skip_8x8x4d_c;
-    if (flags & HAS_NEON) aom_sad_skip_8x8x4d = aom_sad_skip_8x8x4d_neon;
     aom_satd = aom_satd_c;
     if (flags & HAS_NEON) aom_satd = aom_satd_neon;
     aom_satd_lp = aom_satd_lp_c;

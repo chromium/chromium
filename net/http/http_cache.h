@@ -516,7 +516,8 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   // set it is in on destruction.
   using ActiveEntriesMap =
       std::unordered_map<std::string, base::raw_ref<ActiveEntry>>;
-  using PendingOpsMap = std::unordered_map<std::string, PendingOp*>;
+  using PendingOpsMap =
+      std::unordered_map<std::string, raw_ptr<PendingOp, CtnExperimental>>;
   using ActiveEntriesSet = std::set<base::raw_ref<ActiveEntry>>;
 
   // Methods ------------------------------------------------------------------

@@ -100,7 +100,7 @@ void LogCrossUserSharingDecryptionResult(
 // commit queue injected on construction.
 class CommitQueueProxy : public CommitQueue {
  public:
-  // Must be called from the sequence where |commit_queue| lives.
+  // Must be called from the sequence where `commit_queue` lives.
   explicit CommitQueueProxy(const base::WeakPtr<CommitQueue>& commit_queue)
       : commit_queue_(commit_queue) {}
   ~CommitQueueProxy() override = default;
@@ -139,7 +139,7 @@ void AdaptClientTagForFullUpdateData(DataType data_type,
         AUTOFILL_WALLET_OFFER, GetUnhashedClientTagFromAutofillOfferSpecifics(
                                    data->specifics.autofill_offer()));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -163,7 +163,7 @@ void AdaptWebAuthnClientTagHash(syncer::EntityData* data) {
   }
 }
 
-// Returns empty string if |entity| is not encrypted.
+// Returns empty string if `entity` is not encrypted.
 // TODO(crbug.com/40141634): Consider moving this to a util file and converting
 // UpdateResponseData::encryption_key_name into a method that calls it. Consider
 // returning a struct containing also the encrypted blob, which would make the
@@ -182,12 +182,12 @@ std::string GetEncryptionKeyName(const sync_pb::SyncEntity& entity) {
   return std::string();
 }
 
-// Attempts to decrypt the given specifics and return them in the |out|
+// Attempts to decrypt the given specifics and return them in the `out`
 // parameter. The cryptographer must know the decryption key, i.e.
 // cryptographer.CanDecrypt(specifics.encrypted()) must return true.
 //
 // Returns false if the decryption failed. There are no guarantees about the
-// contents of |out| when that happens.
+// contents of `out` when that happens.
 //
 // In theory, this should never fail. Only corrupt or invalid entries could
 // cause this to fail, and no clients are known to create such entries. The
@@ -211,11 +211,11 @@ bool DecryptSpecifics(const Cryptographer& cryptographer,
 }
 
 // Attempts to decrypt the given password specifics and return them in the
-// |out| parameter. The cryptographer must know the decryption key, i.e.
+// `out` parameter. The cryptographer must know the decryption key, i.e.
 // cryptographer.CanDecrypt(in.encrypted()) must return true.
 //
 // Returns false if the decryption failed. There are no guarantees about the
-// contents of |out| when that happens.
+// contents of `out` when that happens.
 //
 // In theory, this should never fail. Only corrupt or invalid entries could
 // cause this to fail, and no clients are known to create such entries. The
@@ -324,7 +324,7 @@ DataTypeWorker::DataTypeWorker(DataType type,
   if (!data_type_state_.invalidations().empty()) {
     if (static_cast<size_t>(data_type_state_.invalidations_size()) >
         kMaxPendingInvalidations) {
-      DVLOG(1) << "Cleaning invalidations in |data_type_state_| due to "
+      DVLOG(1) << "Cleaning invalidations in `data_type_state_` due to "
                   "invalidations overflow.";
       data_type_state_.clear_invalidations();
     }
@@ -350,7 +350,7 @@ DataTypeWorker::DataTypeWorker(DataType type,
           *pending_invalidations_[i].pending_invalidation));
     }
     if (!is_version_order_correct) {
-      DVLOG(1) << "Cleaning invalidations in |data_type_state| due to "
+      DVLOG(1) << "Cleaning invalidations in `data_type_state` due to "
                   "incorrect version order.";
       pending_invalidations_.clear();
       data_type_state_.clear_invalidations();
@@ -407,8 +407,8 @@ void DataTypeWorker::ConnectSync(
     nudge_handler_->NudgeForInitialDownload(type_);
   }
 
-  // |data_type_state_| might have an outdated encryption key name, e.g.
-  // because |cryptographer_| was updated before this worker was constructed.
+  // `data_type_state_` might have an outdated encryption key name, e.g.
+  // because `cryptographer_` was updated before this worker was constructed.
   // OnCryptographerChange() might never be called, so update the key manually
   // here and push it to the processor. SendPendingUpdatesToProcessorIfReady()
   // takes care to only send updated if initial sync is (at least partially)
@@ -444,8 +444,8 @@ void DataTypeWorker::EnableEncryption() {
 
 void DataTypeWorker::OnCryptographerChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Always try to decrypt, regardless of |encryption_enabled_|. This might
-  // add some elements to |pending_updates_|.
+  // Always try to decrypt, regardless of `encryption_enabled_`. This might
+  // add some elements to `pending_updates_`.
   DecryptStoredEntities();
   bool had_oudated_key_name = UpdateTypeEncryptionKeyName();
   if (had_oudated_key_name || !pending_updates_.empty()) {
@@ -559,8 +559,8 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
         const std::string& server_id = update_entity->id_string();
         if (ShouldIgnoreUpdatesEncryptedWith(key_name)) {
           // Don't queue the incoming update. If there's a queued entry for
-          // |server_id|, don't clear it: outdated data is better than nothing.
-          // Such entry should be encrypted with another key, since |key_name|'s
+          // `server_id`, don't clear it: outdated data is better than nothing.
+          // Such entry should be encrypted with another key, since `key_name`'s
           // queued updates would've have been dropped by now.
           DCHECK(!entries_pending_decryption_.contains(server_id) ||
                  GetEncryptionKeyName(entries_pending_decryption_[server_id]) !=
@@ -570,10 +570,10 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
           break;
         }
         // Copy the sync entity for later decryption.
-        // TODO(crbug.com/40805099): Any write to |entries_pending_decryption_|
+        // TODO(crbug.com/40805099): Any write to `entries_pending_decryption_`
         // should do like DeduplicatePendingUpdatesBasedOnServerId() and honor
         // entity version. Additionally, it should look up the same server id
-        // in |pending_updates_| and compare versions. In fact, the 2 containers
+        // in `pending_updates_` and compare versions. In fact, the 2 containers
         // should probably be moved to a separate class with unit tests.
         entries_pending_decryption_[server_id] = *update_entity;
         break;
@@ -608,7 +608,7 @@ void DataTypeWorker::ProcessGetUpdatesResponse(
 }
 
 // static
-// |response_data| must be not null.
+// `response_data` must be not null.
 DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
     const Cryptographer& cryptographer,
     DataType data_type,
@@ -687,7 +687,7 @@ DataTypeWorker::DecryptionStatus DataTypeWorker::PopulateUpdateResponseData(
     data.collaboration_id = update_entity.collaboration().collaboration_id();
   }
 
-  // Populate |originator_cache_guid| and |originator_client_item_id|. This is
+  // Populate `originator_cache_guid` and `originator_client_item_id`. This is
   // currently relevant only for bookmarks.
   data.originator_cache_guid = update_entity.originator_cache_guid();
   data.originator_client_item_id = update_entity.originator_client_item_id();
@@ -825,7 +825,7 @@ void DataTypeWorker::NudgeForCommit() {
 }
 
 void DataTypeWorker::NudgeIfReadyToCommit() {
-  // TODO(crbug.com/40173160): |kNoNudgedLocalChanges| is used to keep the
+  // TODO(crbug.com/40173160): `kNoNudgedLocalChanges` is used to keep the
   // existing behaviour. But perhaps there is no need to nudge for commit if all
   // known changes are already in flight.
   if (has_local_changes_state_ != kNoNudgedLocalChanges && CanCommitItems()) {
@@ -852,7 +852,7 @@ std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
 
   // Pull local changes from the processor (in the model thread/sequence). Note
   // that this takes place independently of nudges (i.e.
-  // |has_local_changes_state_|), in case the processor decided a local change
+  // `has_local_changes_state_`), in case the processor decided a local change
   // was not worth a nudge.
   scoped_refptr<GetLocalChangesRequest> request =
       base::MakeRefCounted<GetLocalChangesRequest>();
@@ -871,13 +871,13 @@ std::unique_ptr<CommitContribution> DataTypeWorker::GetContribution(
 
   DCHECK(response.size() <= max_entries);
   if (response.size() < max_entries) {
-    // In case when response.size() equals to |max_entries|, there will be
+    // In case when response.size() equals to `max_entries`, there will be
     // another commit request (see CommitProcessor::GatherCommitContributions).
-    // Hence, in general it should be normal if |has_local_changes_state_| is
-    // |kNewlyNudgedLocalChanges| (even if there are no more items in the
-    // processor). In other words, |kAllNudgedLocalChangesInFlight| means that
+    // Hence, in general it should be normal if `has_local_changes_state_` is
+    // `kNewlyNudgedLocalChanges` (even if there are no more items in the
+    // processor). In other words, `kAllNudgedLocalChangesInFlight` means that
     // there might not be another commit request in the current sync cycle (but
-    // still possible if some other data type contributes |max_entities|).
+    // still possible if some other data type contributes `max_entities`).
     has_local_changes_state_ = kAllNudgedLocalChangesInFlight;
   }
 
@@ -1033,12 +1033,12 @@ void DataTypeWorker::DeduplicatePendingUpdatesBasedOnServerId() {
         id_to_index.emplace(candidate.entity.id, pending_updates_.size());
     if (success) {
       // New server id, append at the end. Note that we already inserted
-      // the correct index (|pending_updates_.size()|) above.
+      // the correct index (`pending_updates_.size()`) above.
       pending_updates_.push_back(std::move(candidate));
       continue;
     }
 
-    // Duplicate! Overwrite the existing update if |candidate| has a more recent
+    // Duplicate! Overwrite the existing update if `candidate` has a more recent
     // version.
     const size_t existing_index = it->second;
     UpdateResponseData& existing_update = pending_updates_[existing_index];
@@ -1066,12 +1066,12 @@ void DataTypeWorker::DeduplicatePendingUpdatesBasedOnClientTagHash() {
                                               pending_updates_.size());
     if (success) {
       // New client tag hash, append at the end. Note that we already inserted
-      // the correct index (|pending_updates_.size()|) above.
+      // the correct index (`pending_updates_.size()`) above.
       pending_updates_.push_back(std::move(candidate));
       continue;
     }
 
-    // Duplicate! Overwrite the existing update if |candidate| has a more recent
+    // Duplicate! Overwrite the existing update if `candidate` has a more recent
     // version.
     const size_t existing_index = it->second;
     UpdateResponseData& existing_update = pending_updates_[existing_index];
@@ -1105,12 +1105,12 @@ void DataTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
         pending_updates_.size());
     if (success) {
       // New item ID, append at the end. Note that we already inserted the
-      // correct index (|pending_updates_.size()|) above.
+      // correct index (`pending_updates_.size()`) above.
       pending_updates_.push_back(std::move(candidate));
       continue;
     }
 
-    // Duplicate! Overwrite the existing update if |candidate| has a more recent
+    // Duplicate! Overwrite the existing update if `candidate` has a more recent
     // version.
     const size_t existing_index = it->second;
     UpdateResponseData& existing_update = pending_updates_[existing_index];
@@ -1213,7 +1213,7 @@ void DataTypeWorker::ExtractGcDirective() {
   }
 
   // Note that normally if the server returns non-empty updates for a
-  // download-only data type, it returns a non-empty |gc_directive| as well.
+  // download-only data type, it returns a non-empty `gc_directive` as well.
   // However, it's safer to keep the GC directive until it's applied even if the
   // server returns non-empty updates without GC directive within the same sync
   // cycle.

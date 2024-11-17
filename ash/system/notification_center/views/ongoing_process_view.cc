@@ -33,10 +33,12 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 namespace ash {
@@ -44,12 +46,11 @@ namespace ash {
 namespace {
 
 constexpr gfx::Insets kInteriorMargin = gfx::Insets::TLBR(12, 18, 12, 16);
-constexpr gfx::Insets kIconAndLabelContainerDefaultMargins =
-    gfx::Insets::VH(0, 16);
 constexpr gfx::Insets kButtonsContainerDefaultMargins = gfx::Insets::VH(0, 6);
 constexpr gfx::Insets kButtonsContainerInteriorMargin =
     gfx::Insets::TLBR(0, 12, 0, 0);
 
+constexpr int kIconAndLabelContainerBetweenSpacing = 16;
 constexpr int kIconSize = 20;
 constexpr int kTitleMaxLines = 2;
 constexpr int kSubtitleMaxLines = 2;
@@ -87,78 +88,57 @@ OngoingProcessView::OngoingProcessView(
   focus_ring->SetColorId(ui::kColorAshFocusRing);
   focus_ring->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
-  auto* icon_and_label_container =
-      AddChildView(views::Builder<views::FlexLayoutView>()
-                       .SetIgnoreDefaultMainAxisMargins(true)
-                       .SetCollapseMargins(true)
-                       .Build());
-  icon_and_label_container->SetDefault(views::kMarginsKey,
-                                       kIconAndLabelContainerDefaultMargins);
-  // Set `MaximumFlexSizeRule` to `kUnbounded` so the container expands and the
-  // `buttons_container` is always on the trailing side of the notification.
-  icon_and_label_container->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(
-          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                   views::MaximumFlexSizeRule::kUnbounded,
-                                   /*adjust_height_for_width=*/true)));
-
-  icon_and_label_container->AddChildView(
-      views::Builder<views::ImageView>()
-          .SetID(VIEW_ID_ONGOING_PROCESS_ICON)
-          .SetImage(ui::ImageModel::FromVectorIcon(
-              notification.vector_small_image().is_empty()
-                  ? message_center::kProductIcon
-                  : notification.vector_small_image(),
-              cros_tokens::kCrosSysOnSurface, kIconSize))
-          .Build());
-
-  auto* label_container = icon_and_label_container->AddChildView(
-      views::Builder<views::FlexLayoutView>()
-          .SetOrientation(views::LayoutOrientation::kVertical)
-          .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
-          .Build());
-  // Set `MinimumFlexSizeRule` to `kScaleToZero` so labels can shrink and elide,
-  // or wrap when multi-line text is enabled.
-  label_container->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(
-          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                                   views::MaximumFlexSizeRule::kUnbounded,
-                                   /*adjust_height_for_width=*/true)));
-
-  label_container->AddChildView(
-      views::Builder<views::Label>()
-          .CopyAddressTo(&title_label_)
-          .SetID(VIEW_ID_ONGOING_PROCESS_TITLE_LABEL)
-          .SetMultiLine(notification.message().empty())
-          .SetMaxLines(kTitleMaxLines)
-          .SetText(notification.title())
-          .SetTooltipText(notification.title())
-          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
-          .SetAutoColorReadabilityEnabled(false)
-          .SetSubpixelRenderingEnabled(false)
-          .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-              TypographyToken::kCrosBody2))
-          .Build());
-
-  label_container->AddChildView(
-      views::Builder<views::Label>()
-          .CopyAddressTo(&subtitle_label_)
-          .SetID(VIEW_ID_ONGOING_PROCESS_SUBTITLE_LABEL)
-          .SetVisible(!notification.message().empty())
-          .SetMultiLine(true)
-          .SetMaxLines(kSubtitleMaxLines)
-          .SetText(notification.message())
-          .SetTooltipText(notification.message())
-          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetEnabledColorId(cros_tokens::kCrosSysOnSurfaceVariant)
-          .SetAutoColorReadabilityEnabled(false)
-          .SetSubpixelRenderingEnabled(false)
-          .SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-              TypographyToken::kCrosAnnotation1))
-          .SetLineHeight(kSubtitleLineHeight)
+  AddChildView(
+      views::Builder<views::BoxLayoutView>()
+          .SetBetweenChildSpacing(kIconAndLabelContainerBetweenSpacing)
+          .AddChildren(
+              views::Builder<views::ImageView>()
+                  .SetID(VIEW_ID_ONGOING_PROCESS_ICON)
+                  .SetImage(ui::ImageModel::FromVectorIcon(
+                      notification.vector_small_image().is_empty()
+                          ? message_center::kProductIcon
+                          : notification.vector_small_image(),
+                      cros_tokens::kCrosSysOnSurface, kIconSize)),
+              views::Builder<views::BoxLayoutView>()
+                  .SetOrientation(views::LayoutOrientation::kVertical)
+                  .SetMainAxisAlignment(views::LayoutAlignment::kCenter)
+                  .SetProperty(
+                      views::kBoxLayoutFlexKey,
+                      views::BoxLayoutFlexSpecification().WithWeight(1))
+                  .AddChildren(
+                      views::Builder<views::Label>()
+                          .CopyAddressTo(&title_label_)
+                          .SetID(VIEW_ID_ONGOING_PROCESS_TITLE_LABEL)
+                          .SetMultiLine(notification.message().empty())
+                          .SetMaxLines(kTitleMaxLines)
+                          .SetAllowCharacterBreak(true)
+                          .SetText(notification.title())
+                          .SetTooltipText(notification.title())
+                          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                          .SetEnabledColorId(cros_tokens::kCrosSysOnSurface)
+                          .SetAutoColorReadabilityEnabled(false)
+                          .SetSubpixelRenderingEnabled(false)
+                          .SetFontList(
+                              TypographyProvider::Get()->ResolveTypographyToken(
+                                  TypographyToken::kCrosBody2)),
+                      views::Builder<views::Label>()
+                          .CopyAddressTo(&subtitle_label_)
+                          .SetID(VIEW_ID_ONGOING_PROCESS_SUBTITLE_LABEL)
+                          .SetVisible(!notification.message().empty())
+                          .SetMultiLine(true)
+                          .SetMaxLines(kSubtitleMaxLines)
+                          .SetAllowCharacterBreak(true)
+                          .SetText(notification.message())
+                          .SetTooltipText(notification.message())
+                          .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                          .SetEnabledColorId(
+                              cros_tokens::kCrosSysOnSurfaceVariant)
+                          .SetAutoColorReadabilityEnabled(false)
+                          .SetSubpixelRenderingEnabled(false)
+                          .SetFontList(
+                              TypographyProvider::Get()->ResolveTypographyToken(
+                                  TypographyToken::kCrosAnnotation1))
+                          .SetLineHeight(kSubtitleLineHeight)))
           .Build());
 
   auto* buttons_container =

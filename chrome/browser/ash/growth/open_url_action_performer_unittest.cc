@@ -43,13 +43,7 @@ class TestNewWindowDelegateImpl : public ash::TestNewWindowDelegate {
 
 class OpenUrlActionPerformerTest : public testing::Test {
  public:
-  OpenUrlActionPerformerTest() {
-    auto new_window_delegate = std::make_unique<TestNewWindowDelegateImpl>();
-    new_window_delegate_ = new_window_delegate.get();
-    new_window_delegate_provider_ =
-        std::make_unique<ash::TestNewWindowDelegateProvider>(
-            std::move(new_window_delegate));
-  }
+  OpenUrlActionPerformerTest() = default;
   OpenUrlActionPerformerTest(const OpenUrlActionPerformerTest&) = delete;
   OpenUrlActionPerformerTest& operator=(const OpenUrlActionPerformerTest&) =
       delete;
@@ -80,12 +74,13 @@ class OpenUrlActionPerformerTest : public testing::Test {
     return true;
   }
 
- protected:
-  std::unique_ptr<ash::TestNewWindowDelegateProvider>
-      new_window_delegate_provider_;
-  raw_ptr<TestNewWindowDelegateImpl> new_window_delegate_ = nullptr;
+  TestNewWindowDelegateImpl& new_window_delegate() {
+    return new_window_delegate_;
+  }
 
  private:
+  TestNewWindowDelegateImpl new_window_delegate_;
+
   content::BrowserTaskEnvironment task_environment_;
 
   base::RunLoop action_success_run_loop_;
@@ -112,7 +107,7 @@ TEST_F(OpenUrlActionPerformerTest, TestValidOpenUrlParams) {
           base::Unretained(this)));
 
   EXPECT_TRUE(VerifyActionResult(/*success=*/true));
-  EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL(kValidUrl));
+  EXPECT_EQ(new_window_delegate().last_opened_url_, GURL(kValidUrl));
 }
 
 TEST_F(OpenUrlActionPerformerTest, TestInvalidOpenUrlParams) {

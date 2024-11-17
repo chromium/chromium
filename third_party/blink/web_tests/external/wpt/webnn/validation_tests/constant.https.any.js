@@ -11,13 +11,6 @@ const tests = [
   // Tests for constant(descriptor, bufferView)
   {
     name:
-        '[constant] Test building a 0-D scalar constant without presenting dimensions',
-    descriptor: {dataType: 'float32'},
-    bufferView: {type: Float32Array, byteLength: 1 * 4},
-    output: {dataType: 'float32', shape: []}
-  },
-  {
-    name:
         '[constant] Test building a 0-D scalar constant with empty dimensions',
     descriptor: {dataType: 'float32', shape: []},
     bufferView: {type: Float32Array, byteLength: 1 * 4},
@@ -136,8 +129,8 @@ tests.forEach(
       const bufferView = new test.bufferView.type(buffer);
       if (test.output) {
         const constantOperand = builder.constant(test.descriptor, bufferView);
-        assert_equals(constantOperand.dataType(), test.output.dataType);
-        assert_array_equals(constantOperand.shape(), test.output.shape);
+        assert_equals(constantOperand.dataType, test.output.dataType);
+        assert_array_equals(constantOperand.shape, test.output.shape);
       } else {
         assert_throws_js(
             TypeError, () => builder.constant(test.descriptor, bufferView));

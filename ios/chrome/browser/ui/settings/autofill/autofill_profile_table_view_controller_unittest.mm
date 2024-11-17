@@ -7,6 +7,7 @@
 #import "base/apple/foundation_util.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/uuid.h"
 #import "components/autofill/core/browser/address_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_profile.h"
@@ -14,14 +15,21 @@
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #import "components/autofill/core/common/autofill_features.h"
+#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller_test.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
+#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/fake_authentication_service_delegate.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/ui/settings/settings_root_table_view_controller.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -36,26 +44,21 @@ class AutofillProfileTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  protected:
   AutofillProfileTableViewControllerTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
+    TestProfileIOS::Builder builder;
     // Profile import requires a PersonalDataManager which itself needs the
-    // WebDataService; this is not initialized on a TestChromeBrowserState by
+    // WebDataService; this is not initialized on a TestProfileIOS by
     // default.
-    test_cbs_builder.AddTestingFactory(
-        ios::WebDataServiceFactory::GetInstance(),
-        ios::WebDataServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
+                              ios::WebDataServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
-
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     // Set circular SyncService dependency to null.
-    autofill::PersonalDataManagerFactory::GetForBrowserState(
-        chrome_browser_state_.get())
+    autofill::PersonalDataManagerFactory::GetForProfile(profile_.get())
         ->SetSyncServiceForTest(nullptr);
   }
 
@@ -70,10 +73,24 @@ class AutofillProfileTableViewControllerTest
     LegacyChromeTableViewControllerTest::TearDown();
   }
 
+  void SignIn() {
+    FakeSystemIdentityManager* fake_system_identity_manager =
+        FakeSystemIdentityManager::FromSystemIdentityManager(
+            GetApplicationContext()->GetSystemIdentityManager());
+    FakeSystemIdentity* fake_identity = [FakeSystemIdentity fakeIdentity1];
+    fake_system_identity_manager->AddIdentity(fake_identity);
+
+    ChromeAccountManagerService* account_manager_service =
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
+    AuthenticationService* auth_service =
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
+    auth_service->SignIn(account_manager_service->GetDefaultIdentity(),
+                         signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  }
+
   void AddProfile(const std::string& name, const std::string& address) {
     autofill::PersonalDataManager* personal_data_manager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        autofill::PersonalDataManagerFactory::GetForProfile(profile_.get());
     personal_data_manager->address_data_manager()
         .get_alternative_state_name_map_updater_for_testing()
         ->set_local_state_for_testing(local_state());
@@ -95,7 +112,7 @@ class AutofillProfileTableViewControllerTest
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
 };
 
@@ -127,6 +144,32 @@ TEST_F(AutofillProfileTableViewControllerTest, TestOneProfile) {
   EXPECT_EQ(2, NumberOfSections());
   // Expect address section to contain one row (the address itself).
   EXPECT_EQ(1, NumberOfItemsInSection(1));
+}
+
+// Checks if there is a plus address section when
+// `plus_addresses::features::kPlusAddressIOSErrorAndLoadingStatesEnabled` is
+// enabled.
+TEST_F(AutofillProfileTableViewControllerTest, TestPlusAddressSection) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      plus_addresses::features::kPlusAddressesEnabled);
+
+  SignIn();
+
+  LegacyChromeTableViewController* controller =
+      LegacyChromeTableViewControllerTest::controller();
+  CheckController();
+
+  // Expect only the header section.
+  EXPECT_EQ(2, NumberOfSections());
+  // Expect header section to contain one row.
+  EXPECT_EQ(1, NumberOfItemsInSection(1));
+  // Expect subtitle section to contain one row.
+  EXPECT_NE(nil, [controller.tableViewModel footerForSectionIndex:1]);
+
+  // Check the footer of the sections.
+  CheckSectionFooterWithId(IDS_AUTOFILL_ENABLE_PROFILES_TOGGLE_SUBLABEL, 0);
+  CheckSectionFooterWithId(IDS_PLUS_ADDRESS_SETTINGS_SUBLABEL, 1);
 }
 
 }  // namespace

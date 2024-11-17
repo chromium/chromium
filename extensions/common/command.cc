@@ -6,8 +6,6 @@
 
 #include <stddef.h>
 
-#include <string_view>
-
 #include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -42,7 +40,7 @@ static const int kMaxTokenSize = 4;
 static const int kMaxTokenSize = 3;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-bool DoesRequireModifier(const std::string& accelerator) {
+bool DoesRequireModifier(std::string_view accelerator) {
   return accelerator != values::kKeyMediaNextTrack &&
          accelerator != values::kKeyMediaPlayPause &&
          accelerator != values::kKeyMediaPrevTrack &&
@@ -57,8 +55,8 @@ bool DoesRequireModifier(const std::string& accelerator) {
 // Note: If the parsing rules here are changed, make sure to update the
 // corresponding extension_command_list.js validation, which validates the user
 // input for chrome://extensions/configureCommands.
-ui::Accelerator ParseImpl(const std::string& accelerator,
-                          const std::string& platform_key,
+ui::Accelerator ParseImpl(std::string_view accelerator,
+                          std::string_view platform_key,
                           int index,
                           bool should_parse_media_keys,
                           std::u16string* error) {
@@ -231,8 +229,8 @@ ui::Accelerator ParseImpl(const std::string& accelerator,
 
 // For Mac, we convert "Ctrl" to "Command" and "MacCtrl" to "Ctrl". Other
 // platforms leave the shortcut untouched.
-std::string NormalizeShortcutSuggestion(const std::string& suggestion,
-                                        const std::string& platform) {
+std::string NormalizeShortcutSuggestion(std::string_view suggestion,
+                                        std::string_view platform) {
   bool normalize = false;
   if (platform == values::kKeybindingPlatformMac) {
     normalize = true;
@@ -243,7 +241,7 @@ std::string NormalizeShortcutSuggestion(const std::string& suggestion,
   }
 
   if (!normalize) {
-    return suggestion;
+    return std::string{suggestion};
   }
 
   std::vector<std::string_view> tokens = base::SplitStringPiece(
@@ -262,9 +260,9 @@ std::string NormalizeShortcutSuggestion(const std::string& suggestion,
 
 Command::Command() : global_(false) {}
 
-Command::Command(const std::string& command_name,
-                 const std::u16string& description,
-                 const std::string& accelerator,
+Command::Command(std::string_view command_name,
+                 std::u16string_view description,
+                 std::string_view accelerator,
                  bool global)
     : command_name_(command_name), description_(description), global_(global) {
   if (!accelerator.empty()) {
@@ -302,8 +300,8 @@ std::string Command::CommandPlatform() {
 }
 
 // static
-ui::Accelerator Command::StringToAccelerator(const std::string& accelerator,
-                                             const std::string& command_name) {
+ui::Accelerator Command::StringToAccelerator(std::string_view accelerator,
+                                             std::string_view command_name) {
   std::u16string error;
   ui::Accelerator parsed =
       ParseImpl(accelerator, Command::CommandPlatform(), 0,
@@ -419,14 +417,14 @@ bool Command::IsMediaKey(const ui::Accelerator& accelerator) {
 }
 
 // static
-bool Command::IsActionRelatedCommand(const std::string& command_name) {
+bool Command::IsActionRelatedCommand(std::string_view command_name) {
   return command_name == values::kActionCommandEvent ||
          command_name == values::kBrowserActionCommandEvent ||
          command_name == values::kPageActionCommandEvent;
 }
 
 bool Command::Parse(const base::Value::Dict& command,
-                    const std::string& command_name,
+                    std::string_view command_name,
                     int index,
                     std::u16string* error) {
   DCHECK(!command_name.empty());

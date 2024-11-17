@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/extension.h"
 
@@ -47,7 +48,8 @@ struct DNRManifestData : Extension::ManifestData {
     bool enabled = false;
   };
 
-  using ManifestIDToRulesetMap = std::map<std::string, const RulesetInfo*>;
+  using ManifestIDToRulesetMap =
+      std::map<std::string, raw_ptr<const RulesetInfo, CtnExperimental>>;
 
   explicit DNRManifestData(std::vector<RulesetInfo> ruleset);
 

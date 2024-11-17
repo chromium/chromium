@@ -6,6 +6,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/public/browser/storage_partition.h"
+#include "extensions/browser/api/socket/write_quota_checker.h"
 #include "extensions/browser/api/sockets_udp/sockets_udp_api.h"
 #include "extensions/browser/api/sockets_udp/test_udp_echo_server.h"
 #include "extensions/browser/api_test_utils.h"
@@ -58,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(SocketsUdpApiTest, SocketsUdpExtension) {
       &host_port_pair));
 
   int port = host_port_pair.port();
-  ASSERT_TRUE(port > 0);
+  ASSERT_GT(port, 0);
 
   // Test that sendTo() is properly resolving hostnames.
   host_port_pair.set_host(kHostname);
@@ -86,6 +87,36 @@ IN_PROC_BROWSER_TEST_F(SocketsUdpApiTest, DISABLED_SocketsUdpMulticast) {
   ASSERT_TRUE(LoadApp("sockets_udp/api"));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
   listener.Reply(base::StringPrintf("multicast:%s:%d", kHostname, kPort));
+
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(SocketsUdpApiTest, SocketsUdpSendWriteQuota) {
+  WriteQuotaChecker* write_quota_checker =
+      WriteQuotaChecker::Get(browser_context());
+  constexpr size_t kBytesLimit = 1;
+  WriteQuotaChecker::ScopedBytesLimitForTest scoped_quota(write_quota_checker,
+                                                          kBytesLimit);
+
+  TestUdpEchoServer udp_echo_server;
+  net::HostPortPair host_port_pair;
+  ASSERT_TRUE(udp_echo_server.Start(
+      browser_context()->GetDefaultStoragePartition()->GetNetworkContext(),
+      &host_port_pair));
+
+  int port = host_port_pair.port();
+  ASSERT_GT(port, 0);
+
+  ResultCatcher catcher;
+  catcher.RestrictToBrowserContext(browser_context());
+
+  ExtensionTestMessageListener listener("info_please",
+                                        ReplyBehavior::kWillReply);
+
+  ASSERT_TRUE(LoadApp("sockets_udp/api"));
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+  listener.Reply(base::StringPrintf("udp_send_write_quota:%s:%d",
+                                    host_port_pair.host().c_str(), port));
 
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }

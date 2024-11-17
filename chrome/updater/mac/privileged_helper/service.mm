@@ -255,7 +255,7 @@ bool VerifyUpdaterSignature(const base::FilePath& updater_app_bundle) {
                 " or identifier \"" LEGACY_GOOGLE_UPDATE_APPID "\""
                 " or identifier \"" LEGACY_GOOGLE_UPDATE_APPID ".Agent\""
                 ") and certificate leaf[subject.OU] "
-                "= " MAC_TEAM_IDENTIFIER_STRING),
+                "= \"" MAC_TEAM_IDENTIFIER_STRING "\""),
           kSecCSDefaultFlags, requirement.InitializeInto()) != errSecSuccess) {
     return false;
   }

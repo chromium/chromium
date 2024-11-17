@@ -40,11 +40,11 @@ class AX_EXPORT TestSingleAXTreeManager : public AXTreeManager {
   TestSingleAXTreeManager(TestSingleAXTreeManager&& manager);
   TestSingleAXTreeManager& operator=(TestSingleAXTreeManager&& manager);
 
-  void DestroyTree();
+  virtual void DestroyTree();
   AXTree* GetTree() const;
 
   // Takes ownership of |tree|.
-  void SetTree(std::unique_ptr<AXTree> tree);
+  virtual void SetTree(std::unique_ptr<AXTree> tree);
 
   // Creates and set the tree by a given AXTreeUpdate instance.
   AXTree* Init(AXTreeUpdate tree_update);

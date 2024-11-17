@@ -42,7 +42,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -58,7 +58,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.net.test.EmbeddedTestServerRule;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.ViewUtils;
 
 /** Integration tests for showing IPH bubbles for read later. */
@@ -71,7 +71,6 @@ public class ReadLaterContextMenuTest {
 
     @Rule public EmbeddedTestServerRule mTestServer = new EmbeddedTestServerRule();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mocker = new JniMocker();
     @Mock private Tracker mTracker;
     @Mock RequestCoordinatorBridge.Natives mRequestCoordinatorBridgeJniMock;
 
@@ -84,7 +83,7 @@ public class ReadLaterContextMenuTest {
     @Before
     public void setUp() {
         // Pretend the feature engagement feature is already initialized. Otherwise
-        // UserEducationHelper#requestShowIPH() calls get dropped during test.
+        // UserEducationHelper#requestShowIph() calls get dropped during test.
         doAnswer(
                         invocation -> {
                             invocation.<Callback<Boolean>>getArgument(0).onResult(true);
@@ -93,20 +92,21 @@ public class ReadLaterContextMenuTest {
                 .when(mTracker)
                 .addOnInitializedCallback(any());
         TrackerFactory.setTrackerForTests(mTracker);
-        when(mTracker.shouldTriggerHelpUIWithSnooze(any()))
+        when(mTracker.shouldTriggerHelpUiWithSnooze(any()))
                 .thenReturn(new TriggerDetails(false, false));
         mActivityTestRule.startMainActivityOnBlankPage();
-        mocker.mock(RequestCoordinatorBridgeJni.TEST_HOOKS, mRequestCoordinatorBridgeJniMock);
+        RequestCoordinatorBridgeJni.setInstanceForTesting(mRequestCoordinatorBridgeJniMock);
     }
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
-    public void testShowIPHOnContextMenuLinkCopied() throws Throwable {
-        when(mTracker.shouldTriggerHelpUI(
+    @Restriction({DeviceFormFactor.PHONE})
+    @DisabledTest(message = "https://crbug.com/358177365")
+    public void testShowIphOnContextMenuLinkCopied() throws Throwable {
+        when(mTracker.shouldTriggerHelpUi(
                         FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE))
                 .thenReturn(true);
-        when(mTracker.shouldTriggerHelpUIWithSnooze(
+        when(mTracker.shouldTriggerHelpUiWithSnooze(
                         FeatureConstants.READ_LATER_APP_MENU_BOOKMARK_THIS_PAGE_FEATURE))
                 .thenReturn(new TriggerDetails(true, false));
 
@@ -127,7 +127,7 @@ public class ReadLaterContextMenuTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testContextMenuAddToOfflinePage() throws Throwable {
         String url = mTestServer.getServer().getURL(CONTEXT_MENU_TEST_URL);
         mActivityTestRule.loadUrlInNewTab(url);

@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] execCommand("insertParagraph") when <p>[]AB</p>
+  assert_equals: expected "<p>\\n</p><p>AB</p>" but got "<p><br></p><p>AB</p>"
+[FAIL] execCommand("insertParagraph") when <p>AB[]</p>
+  assert_equals: expected "<p>AB</p><p>\\n</p>" but got "<p>AB</p><p><br></p>"
+[FAIL] execCommand("insertParagraph") when <p style="white-space:pre">[]AB</p>
+  assert_equals: expected "<p style=\\"white-space:pre\\">\\n</p><p style=\\"white-space:pre\\">AB</p>" but got "<p style=\\"white-space:pre\\"><br></p><p style=\\"white-space:pre\\">AB</p>"
+[FAIL] execCommand("insertParagraph") when <p style="white-space:pre-line">[]AB</p>
+  assert_equals: expected "<p style=\\"white-space:pre-line\\">\\n</p><p style=\\"white-space:pre-line\\">AB</p>" but got "<p style=\\"white-space:pre-line\\"><br></p><p style=\\"white-space:pre-line\\">AB</p>"
+[FAIL] execCommand("insertParagraph") when <p style="white-space:pre-wrap">[]AB</p>
+  assert_equals: expected "<p style=\\"white-space:pre-wrap\\">\\n</p><p style=\\"white-space:pre-wrap\\">AB</p>" but got "<p style=\\"white-space:pre-wrap\\"><br></p><p style=\\"white-space:pre-wrap\\">AB</p>"
+[FAIL] execCommand("insertParagraph") when <ul><li>[]AB</li></ul>
+  assert_equals: expected "<ul><li>\\n</li><li>AB</li></ul>" but got "<ul><li><br></li><li>AB</li></ul>"
+[FAIL] execCommand("insertParagraph") when <ul><li>AB[]</li></ul>
+  assert_equals: expected "<ul><li>AB</li><li>\\n</li></ul>" but got "<ul><li>AB</li><li><br></li></ul>"
+Harness: the test ran to completion.
+

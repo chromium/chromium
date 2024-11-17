@@ -316,7 +316,7 @@ public final class BaseSuggestionViewBinder<T extends View>
      *
      * @param model A property model to look up relevant properties.
      * @param ctx Context used to retrieve appropriate color value.
-     * @return @ColorInt value representing the color to be applied.
+     * @return The @ColorInt value representing the color to be applied.
      */
     public static @ColorInt int getSuggestionBackgroundColor(PropertyModel model, Context ctx) {
         return isIncognito(model)

@@ -9,13 +9,12 @@
 
 #import "base/memory/raw_ptr.h"
 #import "base/sequence_checker.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
 @protocol CRWWebViewScrollViewProxyObserver;
-
+class ProfileIOS;
 
 namespace web {
 class WebState;
@@ -63,7 +62,7 @@ class WebSessionStateTabHelper
   void CreateScrollingObserver();
   void OnScrollEvent();
 
-  ChromeBrowserState* GetBrowserState();
+  ProfileIOS* GetProfile();
 
   // Mark the tab helper as stale.  Future calls to SaveSessionStateIfStale()
   // will result in calls to SaveSessionState().

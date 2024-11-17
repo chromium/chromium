@@ -79,7 +79,7 @@ class CONTENT_EXPORT WebContentsDevToolsAgentHost
 
   // DevToolsAgentHostImpl overrides.
   DevToolsSession::Mode GetSessionMode() override;
-  bool AttachSession(DevToolsSession* session, bool acquire_wake_lock) override;
+  bool AttachSession(DevToolsSession* session) override;
 
   // WebContentsObserver overrides.
   void WebContentsDestroyed() override;

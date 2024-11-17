@@ -1,5 +1,0 @@
-# ignore characters in words (for Arabic Harakat or Hebrew niqqud)
-IGNORE aeiou
-
-PFX A Y 1
-PFX A 0 re .

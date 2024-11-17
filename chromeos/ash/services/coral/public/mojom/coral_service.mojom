@@ -10,26 +10,27 @@
 module coral.mojom;
 
 import "url/mojom/url.mojom";
+import "mojo/public/mojom/base/token.mojom";
 
 // Represents metadata of a Chrome tab entity.
 [Stable]
 struct Tab {
   // This is the exact title string of a tab shown on UI.
-  string title;
+  string title@0;
   // This will be purely viewed as a string for the Coral service. It will not
   // be parsed as a URL structure or used for navigation.
-  url.mojom.Url url;
+  url.mojom.Url url@1;
 };
 
 // Represents metadata of an ARC app entity.
 [Stable]
 struct App {
   // This is the exact title string of an ARC app shown on UI.
-  string title;
+  string title@0;
   // App id, like Chrome extension ids, are just a sequence of random
   // characters that uniquely identifies the app/Chrome extension. The client
   // uses this id to refer to the actual app.
-  string id;
+  string id@1;
 };
 
 // Entity types that the coral service supports. For each of the entity type
@@ -48,25 +49,6 @@ union Entity {
   App app;
 };
 
-// Identifier that uniquely identifies an entity of each type. In CoralResponse,
-// to return the groupings we don't need to include all original metadata, but
-// just this identifier, to the client.
-[Stable, Extensible]
-union EntityKey {
-  // For backward compatibility. In mojom, when deserializing variants of an
-  // extensible union that are introduced in newer versions than the version
-  // remote is on, they'll be mapped to the variant marked [Default] with
-  // nullified value. In service-side logic, we'd like to treat those variants
-  // as unknown and unsupported instead of being disguised as a valid entity
-  // type (like Tab). So we introduce this default unknown variant.
-  [Default]
-  bool unknown;
-  // URL field of Tab struct.
-  url.mojom.Url tab_url;
-  // Id field of App struct.
-  string app_id;
-};
-
 // Configurable options of the embedding engine.
 [Stable]
 struct EmbeddingOptions {};
@@ -78,13 +60,13 @@ struct EmbeddingOptions {};
 struct ClusteringOptions {
   // 0 means min items in cluster is 0, which effectively means there is no
   // limit.
-  uint32 min_items_in_cluster;
+  uint32 min_items_in_cluster@0;
   // 0 is a special value meaning there is no limitation of max items in a
   // cluster.
-  uint32 max_items_in_cluster;
+  uint32 max_items_in_cluster@1;
   // Max number of clusters to return from the clustering engine. 0 is a
   // special value meaning there is no limitation of max number of clusters.
-  uint32 max_clusters;
+  uint32 max_clusters@2;
 };
 
 // Configurable options of the title generation engine.
@@ -92,41 +74,55 @@ struct ClusteringOptions {
 struct TitleGenerationOptions {
   // Max characters allowed in the generated title. 0 is a special value
   // meaning there is no limitation of maximum number of characters.
-  uint32 max_characters;
+  uint32 max_characters@0;
   // Target language of the generated title using ISO 639-2 language code
   // definition. If not set, EN is assumed.
-  string? language_code;
+  string? language_code@1;
 };
 
 [Stable, Extensible]
 enum CoralError {
-  // TODO(b/358531135): Add more error types and avoid using kUnknownError.
-  [Default] kUnknownError,
-  [MinVersion=1] kLoadModelFailed,
-  [MinVersion=2] kInvalidArgs,
-  [MinVersion=2] kModelExecutionFailed,
-  [MinVersion=3] kClusteringError,
+  // Error enums that are introduced in a newer version will be mapped to this.
+  // Other than that, implementations should choose a value below or add a new
+  // one to use, instead of using kUnknownError.
+  [Default] kUnknownError = 0,
+  // Loading models necessary for coral service to operate failed.
+  kLoadModelFailed = 1,
+  // The client passed argument values or combinations that aren't supported.
+  kInvalidArgs = 2,
+  // Execution of model inferences failed.
+  kModelExecutionFailed = 3,
+  // Execution of the cluster algorithm failed.
+  kClusteringError = 4,
 };
 
 [Stable]
 struct Group {
-  string title;
+  // A random id that uniquely identifies the group.
+  mojo_base.mojom.Token id@0;
+  // There are 3 possibilities of the title field:
+  // - If it's null, it means that the title hasn't been generated yet,
+  // and the actual title will be updated to the title observer with
+  // corresponding group ID when the generation is done.
+  // - If it's empty string, it means that title generation has failed.
+  // - Otherwise, it contains the valid title of the generated group.
+  string? title@1;
   // This is sorted by descending rank of importance.
-  array<EntityKey> entities;
+  array<Entity> entities@2;
 };
 
 [Stable]
 struct GroupRequest {
-  array<Entity> entities;
-  EmbeddingOptions embedding_options;
-  ClusteringOptions clustering_options;
-  TitleGenerationOptions title_generation_options;
+  array<Entity> entities@0;
+  EmbeddingOptions embedding_options@1;
+  ClusteringOptions clustering_options@2;
+  TitleGenerationOptions title_generation_options@3;
 };
 
 [Stable]
 struct GroupResponse {
   // This is sorted by descending rank of importance.
-  array<Group> groups;
+  array<Group> groups@0;
 };
 
 [Stable]
@@ -139,8 +135,8 @@ union GroupResult {
 
 [Stable]
 struct CacheEmbeddingsRequest {
-  array<Entity> entities;
-  EmbeddingOptions embedding_options;
+  array<Entity> entities@0;
+  EmbeddingOptions embedding_options@1;
 };
 
 // Does not yet contain any fields.
@@ -155,15 +151,44 @@ union CacheEmbeddingsResult {
   CacheEmbeddingsResponse response;
 };
 
+// This interface is used to provide updates of the `Group.title` field inside
+// the `GroupResponse`. Title generation may take significantly high amount of
+// time compared to the grouping process, so this observer is used such that
+// `CoralService::Group` can return the groupings without titles first, then
+// update the title through this observer when they are ready.
+[Stable]
+interface TitleObserver {
+  // Updates the title of the group with id `group_id` to `title`.
+  // Currently this should be called exactly once for each group with null
+  // title.
+  // If `title` is empty, that means some error is encountered and can't be
+  // generated.
+  TitleUpdated@0(mojo_base.mojom.Token group_id, string title);
+};
+
 // The ChromeOS odml daemon implements this service interface, utilizing the on
 // device models for backend logic. Ash Chrome is the client, implementing
 // UI features using this coral service.
 [Stable]
 interface CoralService {
-  // Group the request entities into suitable groups with titles.
-  Group@0(GroupRequest request) => (GroupResult result);
+  // Group the request entities into suitable groups with titles. When the
+  // observer is passed, the service could return groups with null title
+  // before the title is generated, then trigger title updates on the observer
+  // afterwards.
+  Group@0(GroupRequest request, pending_remote<TitleObserver>? observer)
+      => (GroupResult result);
 
   // Generate and cache the embeddings for the request entities.
   CacheEmbeddings@1(CacheEmbeddingsRequest request)
       => (CacheEmbeddingsResult result);
+
+  // Claim necessary resources (dlc download / model loading) for processing
+  // `Group` and `CacheEmbeddings` requests. It is not necessary to call
+  // `PrepareResource` before calling other methods, but in that case the first
+  // method request might take longer to run. Note that some resources might
+  // be released after the service is idle for a while, so if the caller
+  // expects that `Group` could be called soon after, the caller can call this
+  // method again. This method should have little/no overhead when all
+  // resources are already claimed.
+  PrepareResource@2();
 };

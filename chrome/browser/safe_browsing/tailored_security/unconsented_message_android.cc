@@ -9,7 +9,7 @@
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/android/safe_browsing_settings_launcher_android.h"
+#include "chrome/browser/safe_browsing/android/safe_browsing_settings_navigation_android.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"

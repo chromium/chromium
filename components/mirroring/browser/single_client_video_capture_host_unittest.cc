@@ -34,12 +34,12 @@ constexpr bool kNotPremapped = false;
 class MockVideoCaptureDevice final
     : public content::LaunchedVideoCaptureDevice {
  public:
-  MockVideoCaptureDevice() {}
+  MockVideoCaptureDevice() = default;
 
   MockVideoCaptureDevice(const MockVideoCaptureDevice&) = delete;
   MockVideoCaptureDevice& operator=(const MockVideoCaptureDevice&) = delete;
 
-  ~MockVideoCaptureDevice() override {}
+  ~MockVideoCaptureDevice() override = default;
   void GetPhotoState(
       VideoCaptureDevice::GetPhotoStateCallback callback) override {}
   void SetPhotoOptions(
@@ -118,12 +118,12 @@ class FakeDeviceLauncher final : public content::VideoCaptureDeviceLauncher {
 class StubReadWritePermission final
     : public VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
  public:
-  StubReadWritePermission() {}
+  StubReadWritePermission() = default;
 
   StubReadWritePermission(const StubReadWritePermission&) = delete;
   StubReadWritePermission& operator=(const StubReadWritePermission&) = delete;
 
-  ~StubReadWritePermission() override {}
+  ~StubReadWritePermission() override = default;
 };
 
 class MockVideoCaptureObserver final

@@ -257,7 +257,7 @@ class ArcInputMethodManagerServiceTest : public testing::Test {
   void ToggleTabletMode(bool enabled) {
     auto state = enabled ? display::TabletState::kInTabletMode
                          : display::TabletState::kInClamshellMode;
-    display::Screen::GetScreen()->OverrideTabletStateForTesting(state);
+    test_screen_.OverrideTabletStateForTesting(state);
   }
 
   void NotifyNewBounds(const gfx::Rect& bounds) {

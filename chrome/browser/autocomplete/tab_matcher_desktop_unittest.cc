@@ -69,7 +69,8 @@ TEST_F(TabMatcherDesktopTest, GetOpenTabsOnlyWithinProfile) {
       kServiceInitializers);
   TabMatcherDesktop matcher(&service, profile());
 
-  const auto tabs = matcher.GetOpenTabs();
+  AutocompleteInput input;
+  const auto tabs = matcher.GetOpenTabs(&input);
   ASSERT_EQ(tabs.size(), 2U);
   EXPECT_EQ(tabs[0].url, GURL("http://bar.chromium.org"));
   EXPECT_EQ(tabs[1].url, GURL("http://foo.chromium.org"));

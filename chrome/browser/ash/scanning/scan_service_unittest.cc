@@ -14,6 +14,7 @@
 #include "ash/webui/scanning/mojom/scanning.mojom.h"
 #include "ash/webui/scanning/scanning_uma.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -161,9 +162,10 @@ std::string CreateJpeg(const int alpha = 255) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(100, 100);
   bitmap.eraseARGB(alpha, 0, 0, 255);
-  std::vector<unsigned char> bytes;
-  CHECK(gfx::JPEGCodec::Encode(bitmap, 90, &bytes));
-  return std::string(bytes.begin(), bytes.end());
+  std::optional<std::vector<uint8_t>> bytes =
+      gfx::JPEGCodec::Encode(bitmap, 90);
+  CHECK(bytes);
+  return std::string(base::as_string_view(bytes.value()));
 }
 
 // Returns scan settings with the given path and file type.

@@ -260,7 +260,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       RemoteCharacteristicReadValueCallback callback) override;
   void RemoteCharacteristicWriteValue(
       const std::string& characteristic_instance_id,
-      const std::vector<uint8_t>& value,
+      base::span<const uint8_t> value,
       blink::mojom::WebBluetoothWriteType write_type,
       RemoteCharacteristicWriteValueCallback callback) override;
   void RemoteCharacteristicStartNotifications(
@@ -286,7 +286,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
       RemoteDescriptorReadValueCallback callback) override;
   void RemoteDescriptorWriteValue(
       const std::string& descriptor_instance_id,
-      const std::vector<uint8_t>& value,
+      base::span<const uint8_t> value,
       RemoteDescriptorWriteValueCallback callback) override;
   void RequestScanningStart(
       mojo::PendingAssociatedRemote<

@@ -86,8 +86,7 @@ class SVGStringListBase : public SVGPropertyBase {
   static AnimatedPropertyType ClassType() { return kAnimatedStringList; }
 
   SVGPropertyBase* CloneForAnimation(const String& value) const override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   AnimatedPropertyType GetType() const override { return ClassType(); }

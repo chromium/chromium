@@ -20,6 +20,7 @@
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
@@ -154,8 +155,7 @@ class InstallAppLocallyCommandTest : public WebAppTest {
     EXPECT_TRUE(icon_color.has_value());
     return icon_color.value();
 #else
-    NOTREACHED_IN_MIGRATION() << "Shortcuts not supported for other OS";
-    return SK_ColorTRANSPARENT;
+    NOTREACHED() << "Shortcuts not supported for other OS";
 #endif
   }
 
@@ -197,6 +197,13 @@ TEST_F(InstallAppLocallyCommandTest, BasicBehavior) {
   const proto::WebAppOsIntegrationState& updated_os_states =
       updated_state.value();
   ASSERT_TRUE(updated_os_states.has_shortcut());
+
+  if (base::FeatureList::IsEnabled(
+          features::kWebAppDontAddExistingAppsToSync)) {
+    EXPECT_TRUE(
+        provider().registrar_unsafe().GetAppById(app_id)->GetSources().Has(
+            WebAppManagement::kUserInstalled));
+  }
 
   // OS integration should be triggered now.
   if (HasShortcutsOsIntegration()) {

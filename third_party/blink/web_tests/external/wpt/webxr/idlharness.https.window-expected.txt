@@ -1,7 +1,11 @@
 This is a testharness.js-based test.
-Found 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 14 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] WebGLRenderingContext includes WebGLRenderingContextOverloads: member names are unique
   assert_true: member bufferData is unique expected true got false
+[FAIL] XRSession interface: attribute trackedSources
+  assert_true: The prototype object must have a property "trackedSources" expected true got false
+[FAIL] XRSession interface: xrSession must inherit property "trackedSources" with the proper type
+  assert_inherits: property "trackedSources" not found in prototype chain
 [FAIL] XRFrame interface: attribute predictedDisplayTime
   assert_true: The prototype object must have a property "predictedDisplayTime" expected true got false
 [FAIL] XRInputSource interface: attribute skipRendering

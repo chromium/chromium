@@ -5,5 +5,7 @@ include_rules = [
   "+components/url_matcher",
   "+crypto",
   "+net",
+  "+services/network/public/mojom/ct_log_info.mojom.h",
   "+third_party/boringssl/src/pki",
+  "+third_party/boringssl/src/include/openssl",
 ]

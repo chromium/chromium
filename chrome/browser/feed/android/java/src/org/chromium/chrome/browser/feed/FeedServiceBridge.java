@@ -24,13 +24,6 @@ import java.util.Locale;
 /** Bridge for FeedService-related calls. */
 @JNINamespace("feed")
 public final class FeedServiceBridge {
-    // Access to JNI test hooks for other libraries. This can go away once more Feed code is
-    // migrated to chrome/browser/feed.
-    public static org.jni_zero.JniStaticTestMocker<FeedServiceBridge.Natives>
-            getTestHooksForTesting() {
-        return FeedServiceBridgeJni.TEST_HOOKS;
-    }
-
     public static ProcessScope xSurfaceProcessScope() {
         return XSurfaceProcessScopeProvider.getProcessScope();
     }

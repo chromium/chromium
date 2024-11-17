@@ -54,7 +54,9 @@ class SamplingHeapProfilerTest : public ::testing::Test {
   }
 
   static int GetRunningSessionsCount() {
-    return SamplingHeapProfiler::Get()->running_sessions_;
+    SamplingHeapProfiler* p = SamplingHeapProfiler::Get();
+    AutoLock lock(p->start_stop_mutex_);
+    return p->running_sessions_;
   }
 
   static void RunStartStopLoop(SamplingHeapProfiler* profiler) {
@@ -221,7 +223,7 @@ void CheckAllocationPattern(void (*allocate_callback)()) {
 // Yes, they do leak lots of memory.
 
 TEST_F(SamplingHeapProfilerTest, DISABLED_ParallelLargeSmallStats) {
-  CheckAllocationPattern([]() {
+  CheckAllocationPattern([] {
     MyThread1 t1;
     MyThread1 t2;
     t1.Start();
@@ -234,7 +236,7 @@ TEST_F(SamplingHeapProfilerTest, DISABLED_ParallelLargeSmallStats) {
 }
 
 TEST_F(SamplingHeapProfilerTest, DISABLED_SequentialLargeSmallStats) {
-  CheckAllocationPattern([]() {
+  CheckAllocationPattern([] {
     for (int i = 0; i < kNumberOfAllocations; ++i) {
       Allocate1();
       Allocate2();

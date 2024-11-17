@@ -134,8 +134,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForPsmAutoEnrollment::HandleRequest(
         "PSM RLWE oprf_request, or query_request fields must be filled");
   }
 
-  return CreateHttpResponse(net::HTTP_OK,
-                            device_management_response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, device_management_response);
 }
 
 }  // namespace policy

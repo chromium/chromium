@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/extension_app_utils.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
@@ -59,8 +60,7 @@ apps::WindowMode ConvertUseLaunchTypeCommandToWindowMode(int command_id) {
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
       [[fallthrough]];
     default:
-      NOTREACHED_IN_MIGRATION();
-      return apps::WindowMode::kUnknown;
+      NOTREACHED();
   }
 }
 
@@ -105,6 +105,14 @@ void ExecuteLaunchCommand(app_list::AppContextMenuDelegate* delegate,
   }
 
   delegate->ExecuteLaunchCommand(event_flags);
+}
+
+void MaybeCloseFullRestoreServiceNotification(Profile* profile) {
+  if (auto* full_restore_service =
+          ash::full_restore::FullRestoreServiceFactory::GetForProfile(
+              profile)) {
+    full_restore_service->MaybeCloseNotification();
+  }
 }
 
 }  // namespace
@@ -188,17 +196,17 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
     case ash::LAUNCH_NEW:
       ExecuteLaunchCommand(delegate(), event_flags, /*post_task=*/true);
-      ash::full_restore::FullRestoreService::MaybeCloseNotification(profile());
+      MaybeCloseFullRestoreServiceNotification(profile());
       break;
 
     case ash::SHOW_APP_INFO:
       ShowAppInfo();
-      ash::full_restore::FullRestoreService::MaybeCloseNotification(profile());
+      MaybeCloseFullRestoreServiceNotification(profile());
       break;
 
     case ash::OPTIONS:
       ShowOptionsPage(controller(), profile(), app_id(), /*post_task=*/true);
-      ash::full_restore::FullRestoreService::MaybeCloseNotification(profile());
+      MaybeCloseFullRestoreServiceNotification(profile());
       break;
 
     case ash::UNINSTALL:
@@ -209,8 +217,7 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
       if (app_id() == guest_os::kTerminalSystemAppId) {
         guest_os::LaunchTerminalSettings(profile(),
                                          controller()->GetAppListDisplayId());
-        ash::full_restore::FullRestoreService::MaybeCloseNotification(
-            profile());
+        MaybeCloseFullRestoreServiceNotification(profile());
       }
       break;
 
@@ -226,7 +233,7 @@ void AppServiceContextMenu::ExecuteCommand(int command_id, int event_flags) {
         // object to be deleted when the browser window is shown.
         CreateNewWindow(is_incognito, /*post_task=*/true);
       }
-      ash::full_restore::FullRestoreService::MaybeCloseNotification(profile());
+      MaybeCloseFullRestoreServiceNotification(profile());
       break;
     }
     case ash::SHUTDOWN_GUEST_OS:

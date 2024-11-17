@@ -217,6 +217,14 @@ enum class PolicyDeviceIdValidity {
   kMaxValue = kInvalid,  // Must be the last.
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PolicyPromotionBannerAction {
+  kBannerDismissed = 0,
+  kBannerRedirected = 1,
+  kMaxValue = kBannerRedirected,  // Must be the last.
+};
+
 // Names for the UMA counters. They are shared from here since the events
 // from the same enum above can be triggered in different files, and must use
 // the same UMA histogram name.
@@ -416,10 +424,6 @@ inline constexpr char kUMAStateDeterminationDeviceIdentifierStatus[] =
     "Enterprise.StateDetermination.DeviceIdentifierStatus";
 inline constexpr char kUMAStateDeterminationEnabled[] =
     "Enterprise.StateDetermination.Enabled";
-inline constexpr char kUMAStateDeterminationKillSwitchFetchNetworkErrorCode[] =
-    "Enterprise.StateDetermination.KillSwitchFetch.NetworkErrorCode";
-inline constexpr char kUMAStateDeterminationKillSwitchFetchNumTries[] =
-    "Enterprise.StateDetermination.KillSwitchFetch.NumTries";
 inline constexpr char kUMAStateDeterminationOnFlex[] =
     "Enterprise.StateDetermination.OnFlex";
 inline constexpr char kUMAStateDeterminationOwnershipStatus[] =
@@ -474,6 +478,11 @@ inline constexpr char kUMASuffixQueryRequest[] = ".QueryRequest";
 inline constexpr char kUMASuffixStateKeysRetrieval[] = ".StateKeysRetrieval";
 inline constexpr char kUMASuffixStateRequest[] = ".StateRequest";
 
+// Histograms for the promotion banner on chrome://policy
+inline constexpr char kUMAPolicyBannerDisplayed[] =
+    "Enterprise.PolicyPromotionBannerDisplayed";
+inline constexpr char kUMAPolicyBannerAction[] =
+    "Enterprise.PolicyPromotionBannerAction";
 }  // namespace policy
 
 #endif  // COMPONENTS_POLICY_CORE_COMMON_CLOUD_ENTERPRISE_METRICS_H_

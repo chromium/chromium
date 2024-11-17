@@ -56,7 +56,6 @@ window.customElements.define('svg-wrapper', SvgWrapper);
 
 declare global {
   interface HTMLElementTagNameMap {
-    /* eslint-disable-next-line @typescript-eslint/naming-convention */
     'svg-wrapper': SvgWrapper;
   }
 }

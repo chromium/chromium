@@ -231,7 +231,7 @@ public class IncognitoNotificationServiceTest {
     @Test
     @MediumTest
     @Feature("Incognito")
-    public void testCloseAllIncognitoNotificationForIncognitoCCT_DoesNotCloseCCT()
+    public void testCloseAllIncognitoNotificationForIncognitoCct_DoesNotCloseCct()
             throws PendingIntent.CanceledException {
         launchIncognitoTabAndEnsureNotificationDisplayed();
 

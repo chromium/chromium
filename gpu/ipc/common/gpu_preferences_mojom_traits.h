@@ -36,8 +36,7 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::GrContextType, gpu::GrContextType> {
       case gpu::GrContextType::kGraphiteMetal:
         return gpu::mojom::GrContextType::kGraphiteMetal;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gpu::mojom::GrContextType::kGL;
+    NOTREACHED();
   }
   static bool FromMojom(gpu::mojom::GrContextType input,
                         gpu::GrContextType* out) {
@@ -77,8 +76,7 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::VulkanImplementationName,
       case gpu::VulkanImplementationName::kSwiftshader:
         return gpu::mojom::VulkanImplementationName::kSwiftshader;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gpu::mojom::VulkanImplementationName::kNone;
+    NOTREACHED();
   }
   static bool FromMojom(gpu::mojom::VulkanImplementationName input,
                         gpu::VulkanImplementationName* out) {
@@ -114,8 +112,7 @@ struct GPU_EXPORT
       case gpu::WebGPUAdapterName::kSwiftShader:
         return gpu::mojom::WebGPUAdapterName::kSwiftShader;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gpu::mojom::WebGPUAdapterName::kDefault;
+    NOTREACHED();
   }
   static bool FromMojom(gpu::mojom::WebGPUAdapterName input,
                         gpu::WebGPUAdapterName* out) {
@@ -154,8 +151,7 @@ struct GPU_EXPORT
       case gpu::WebGPUPowerPreference::kForceHighPerformance:
         return gpu::mojom::WebGPUPowerPreference::kForceHighPerformance;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gpu::mojom::WebGPUPowerPreference::kNone;
+    NOTREACHED();
   }
 
   static bool FromMojom(gpu::mojom::WebGPUPowerPreference input,
@@ -194,8 +190,7 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::DawnBackendValidationLevel,
       case gpu::DawnBackendValidationLevel::kFull:
         return gpu::mojom::DawnBackendValidationLevel::kFull;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gpu::mojom::DawnBackendValidationLevel::kDisabled;
+    NOTREACHED();
   }
   static bool FromMojom(gpu::mojom::DawnBackendValidationLevel input,
                         gpu::DawnBackendValidationLevel* out) {

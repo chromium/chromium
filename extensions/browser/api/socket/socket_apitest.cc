@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/api/socket/socket_api.h"
+#include "extensions/browser/api/socket/write_quota_checker.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -12,7 +13,7 @@ using extensions::api_test_utils::RunFunctionAndReturnSingleResult;
 
 namespace extensions {
 
-class SocketApiTest : public AppShellTest {};
+using SocketApiTest = AppShellTest;
 
 IN_PROC_BROWSER_TEST_F(SocketApiTest, SocketUDPCreateGood) {
   scoped_refptr<extensions::SocketCreateFunction> socket_create_function(
@@ -64,6 +65,32 @@ IN_PROC_BROWSER_TEST_F(SocketApiTest, GetNetworkList) {
   // least one address, but not what it is.
   ASSERT_TRUE(result->is_list());
   ASSERT_FALSE(result->GetList().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(SocketApiTest, WriteQuotaChecker) {
+  WriteQuotaChecker* checker = WriteQuotaChecker::Get(browser_context());
+
+  constexpr size_t kBytesLimit = 100;
+  WriteQuotaChecker::ScopedBytesLimitForTest scoped_limit(checker, kBytesLimit);
+
+  const ExtensionId extension_id = "test_extension_id";
+  const ExtensionId another_extension_id = "another_test_extension_id";
+
+  // Fails if a single request is too large.
+  EXPECT_FALSE(checker->TakeBytes(extension_id, kBytesLimit + 1));
+
+  // Fails if combined multiple requests are larger than limit.
+  EXPECT_TRUE(checker->TakeBytes(extension_id, kBytesLimit));
+  EXPECT_FALSE(checker->TakeBytes(extension_id, 1));
+
+  // Different extension is not affected.
+  EXPECT_TRUE(checker->TakeBytes(another_extension_id, kBytesLimit));
+
+  // Simulate a request is done and return bytes to the pool.
+  checker->ReturnBytes(extension_id, kBytesLimit);
+
+  // Writes are allowed again.
+  EXPECT_TRUE(checker->TakeBytes(extension_id, 1));
 }
 
 }  //  namespace extensions

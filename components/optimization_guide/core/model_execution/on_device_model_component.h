@@ -64,7 +64,8 @@ class OnDeviceModelComponentStateManager
     // `OnDeviceModelComponentStateManager::SetReady` when the component is
     // ready to use.
     virtual void RegisterInstaller(
-        scoped_refptr<OnDeviceModelComponentStateManager> state_manager) = 0;
+        scoped_refptr<OnDeviceModelComponentStateManager> state_manager,
+        bool is_already_installing) = 0;
 
     // Uninstall the component. Calls
     // `OnDeviceModelComponentStateManager::UninstallComplete()` when uninstall
@@ -78,6 +79,12 @@ class OnDeviceModelComponentStateManager
     // Called whenever the on-device component state changes. `state` is null if
     // the component is not available.
     virtual void StateChanged(const OnDeviceModelComponentState* state) = 0;
+
+    // Called when on-device eligible `feature` was used for the first time.
+    // This is called when at startup the feature was not used, and then gets
+    // used for the first time.
+    virtual void OnDeviceEligibleFeatureFirstUsed(
+        ModelBasedCapabilityKey feature) {}
   };
 
   // Creates the instance if one does not already exist. Returns an existing
@@ -101,6 +108,9 @@ class OnDeviceModelComponentStateManager
   void DevicePerformanceClassChanged(
       OnDeviceModelPerformanceClass performance_class);
 
+  // Whether the performance class needs to be fetched.
+  bool NeedsPerformanceClassUpdate();
+
   // Returns the current state. Null if the component is not available.
   const OnDeviceModelComponentState* GetState();
 
@@ -120,6 +130,9 @@ class OnDeviceModelComponentStateManager
 
   // Called after the installer is successfully registered.
   void InstallerRegistered();
+
+  // Returns true if the installer is registered.
+  bool IsInstallerRegistered();
 
   // Returns the current OnDeviceModelStatus.
   OnDeviceModelStatus GetOnDeviceModelStatus();
@@ -157,6 +170,9 @@ class OnDeviceModelComponentStateManager
   void CompleteUpdateRegistration(int64_t disk_space_free_bytes);
 
   void NotifyStateChanged();
+
+  // Notifies the observers of the `feature` used for the first time.
+  void NotifyOnDeviceEligibleFeatureFirstUsed(ModelBasedCapabilityKey feature);
 
   raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<Delegate> delegate_ GUARDED_BY_CONTEXT(sequence_checker_);

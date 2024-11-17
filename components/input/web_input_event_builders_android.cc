@@ -17,6 +17,7 @@
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_code_conversion_android.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/types/scroll_types.h"
 
 using blink::WebInputEvent;
 using blink::WebKeyboardEvent;
@@ -159,11 +160,15 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
   result.SetPositionInWidget(motion_event.GetX(0), motion_event.GetY(0));
   result.SetPositionInScreen(motion_event.GetRawX(0), motion_event.GetRawY(0));
   result.button = WebMouseEvent::Button::kNoButton;
-  result.delta_units = ui::ScrollGranularity::kScrollByPrecisePixel;
+  result.delta_units = motion_event.GetSource() == AINPUT_SOURCE_TOUCHPAD
+                           ? ui::ScrollGranularity::kScrollByPrecisePixel
+                           : ui::ScrollGranularity::kScrollByPixel;
   result.delta_x = motion_event.ticks_x() * motion_event.GetTickMultiplier();
   result.delta_y = motion_event.ticks_y() * motion_event.GetTickMultiplier();
   result.wheel_ticks_x = motion_event.ticks_x();
   result.wheel_ticks_y = motion_event.ticks_y();
+  result.SetModifiers(
+      ui::EventFlagsToWebEventModifiers(motion_event.GetFlags()));
 
   return result;
 }

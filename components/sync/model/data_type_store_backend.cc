@@ -38,12 +38,7 @@ void LogDbStatusByCallingSiteIfNeeded(const std::string& calling_site,
   }
   const std::string histogram_name =
       "Sync.DataTypeStoreBackendError." + calling_site;
-  const std::string legacy_histogram_name =
-      "Sync.ModelTypeStoreBackendError." + calling_site;
   base::UmaHistogramEnumeration(histogram_name,
-                                leveldb_env::GetLevelDBStatusUMAValue(status),
-                                leveldb_env::LEVELDB_STATUS_MAX);
-  base::UmaHistogramEnumeration(legacy_histogram_name,
                                 leveldb_env::GetLevelDBStatusUMAValue(status),
                                 leveldb_env::LEVELDB_STATUS_MAX);
 }
@@ -92,7 +87,7 @@ DataTypeStoreBackend::CreateUninitialized() {
 // This is a refcounted class and the destructor is safe on any sequence and
 // hence DCHECK_CALLED_ON_VALID_SEQUENCE is omitted. Note that blocking
 // operations in leveldb's DBImpl::~DBImpl are posted to the backend sequence
-// due to the custom deleter used for |db_|.
+// due to the custom deleter used for `db_`.
 DataTypeStoreBackend::~DataTypeStoreBackend() = default;
 
 std::optional<ModelError> DataTypeStoreBackend::Init(

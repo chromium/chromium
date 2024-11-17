@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.hub.Pane;
 import org.chromium.chrome.browser.hub.PaneHubController;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.ResourceButtonData;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
 
 import java.util.function.DoubleConsumer;
@@ -38,6 +39,7 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
     private final Context mContext;
     private final DoubleConsumer mOnToolbarAlphaChange;
     private final FrameLayout mRootView;
+    private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeController;
     private final ObservableSupplierImpl<DisplayButtonData> mReferenceButtonSupplier =
             new ObservableSupplierImpl<>();
     private final ObservableSupplier<FullButtonData> mEmptyActionButtonSupplier =
@@ -50,10 +52,15 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
     /**
      * @param context Used to inflate UI.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      */
-    CrossDevicePaneImpl(@NonNull Context context, @NonNull DoubleConsumer onToolbarAlphaChange) {
+    CrossDevicePaneImpl(
+            @NonNull Context context,
+            @NonNull DoubleConsumer onToolbarAlphaChange,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mContext = context;
         mOnToolbarAlphaChange = onToolbarAlphaChange;
+        mEdgeToEdgeController = edgeToEdgeSupplier;
         mReferenceButtonSupplier.set(
                 new ResourceButtonData(
                         R.string.accessibility_cross_device_tabs,
@@ -106,7 +113,8 @@ public class CrossDevicePaneImpl implements CrossDevicePane {
     public void notifyLoadHint(@LoadHint int loadHint) {
         if (loadHint == LoadHint.HOT) {
             if (mCrossDeviceListCoordinator == null) {
-                mCrossDeviceListCoordinator = new CrossDeviceListCoordinator(mContext);
+                mCrossDeviceListCoordinator =
+                        new CrossDeviceListCoordinator(mContext, mEdgeToEdgeController);
                 mRootView.addView(mCrossDeviceListCoordinator.getView());
             } else {
                 mCrossDeviceListCoordinator.buildCrossDeviceData();

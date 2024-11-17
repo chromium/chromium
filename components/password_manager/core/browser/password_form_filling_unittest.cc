@@ -894,4 +894,19 @@ TEST(PasswordFormFillDataTest, TestCrossOriginIframe) {
   EXPECT_EQ(result.additional_logins[0].realm, additional_match.signon_realm);
 }
 
+// Tests that  constructing a `PasswordFormFillData` sets
+// `is_grouped_affiliation` correctly.
+TEST(PasswordFormFillDataTest, TestGroupedAffiliation) {
+  // Create a match that was matched using grouped matching.
+  PasswordForm grouped_match;
+  grouped_match.match_type = PasswordForm::MatchType::kGrouped;
+
+  PasswordFormFillData result = CreatePasswordFormFillData(
+      PasswordForm(), /*best_matches=*/{grouped_match},
+      /*preferred_match=*/grouped_match,
+      /*main_frame_origin=*/Origin::Create(GURL()),
+      /*wait_for_username=*/false, /*suggestion_banned_fields=*/{});
+  EXPECT_TRUE(result.preferred_login.is_grouped_affiliation);
+}
+
 }  // namespace password_manager

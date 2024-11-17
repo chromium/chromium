@@ -26,25 +26,6 @@ BUILDLOG_NAME = f'rust-buildlog-{PACKAGE_VERSION}.txt'
 RUST_TOOLCHAIN_PACKAGE_NAME = f'rust-toolchain-{PACKAGE_VERSION}.tar.xz'
 
 
-# TODO(crbug.com/40226863): Use this function (after integrating Crubit
-# into Chromium; this work is on hold right now - see also
-# https://crbug.com/1510943#c2).
-def BuildCrubit():
-    with open(os.path.join(THIRD_PARTY_DIR, BUILDLOG_NAME),
-              'w',
-              encoding='utf-8') as log:
-        build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_crubit.py')]
-        # TODO(crbug.com/40226863): Default to `fail_hard` once we
-        # actually depend on the build step (i.e. once we start packaging
-        # Crubit).
-        TeeCmd(build_cmd, log, fail_hard=False)
-
-    # TODO(crbug.com/40226863): Rename this function to
-    # BuildAndInstallCrubit and actually install Crubit binaries into
-    # RUST_TOOLCHAIN_OUT_DIR/bin (once we gain confidence that Crubit continues
-    # to build uneventfully on the bots).
-
-
 def main():
     parser = argparse.ArgumentParser(description='build and package Rust')
     parser.add_argument('--upload',
@@ -89,6 +70,12 @@ def main():
         # Build cargo-vet.
         build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_vet.py')]
         TeeCmd(build_cmd, log)
+
+        # Build Crubit.
+        build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_crubit.py')]
+        # TODO: crbug.com/40226863 - Remove `fail_hard=False` once we can depend
+        # on the OSS Crubit build staying green with latest Rust and Clang.
+        TeeCmd(build_cmd, log, fail_hard=False)
 
     # Strip everything in bin/ to reduce the package size.
     bin_dir_path = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin')

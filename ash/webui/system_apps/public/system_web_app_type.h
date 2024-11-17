@@ -55,7 +55,7 @@ enum class SystemWebAppType {
   // You can find information about this SWA at: http://go/shimless-ux.
   //
   // Source: //ash/webui/shimless_rma/
-  // Contact: cros-peripherals@google.com
+  // Contact: cros-device-enablement@google.com
   SHIMLESS_RMA = 17,
 
   // A System Web App that launches on Demo Mode startup, to display animated
@@ -72,7 +72,7 @@ enum class SystemWebAppType {
   // feedback report on Chrome OS.
   //
   // Source: //ash/webui/os_feedback_ui
-  // contact: cros-feedback-app@google.com
+  // contact: cros-device-enablement@google.com
   OS_FEEDBACK = 19,
 
   // Projector aka Screencast (go/projector-player-dd) aims to make it simple
@@ -88,17 +88,14 @@ enum class SystemWebAppType {
   // will have a mock page.
   PROJECTOR = 20,
 
-  // OsUrlHandler is called by Lacros to show Ash internal chrome:// pages as
-  // applications to the user. Note that these pages are accessible to the user
-  // as os://<page> through search.
-  // contact: skuhne@google.com
-  OS_URL_HANDLER = 21,
+  // OsUrlHandler was removed.
+  // OS_URL_HANDLER = 21,
 
   // FIRMWARE UPDATE App is SWA that lets users update all their peripheral
   // firmwares in one place.
   // You can find information about this SWA at: http://go/fwupd-app.
   // Source: //ash/webui/firmware_update/
-  // Contact: cros-peripherals@google.com
+  // Contact: cros-device-enablement@google.com
   FIRMWARE_UPDATE = 22,
 
   // OsFlags is called by Lacros to show the chrome://flags page as
@@ -118,7 +115,7 @@ enum class SystemWebAppType {
 
   // CrOS implementation of the print preview surface.
   // Source: //ash/webui/print_preview_cros/
-  // Contact: cros-peripherals@google.com
+  // Contact: cros-device-enablement@google.com
   PRINT_PREVIEW_CROS = 26,
 
   // Boca implementation.

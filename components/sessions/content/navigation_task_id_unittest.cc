@@ -12,12 +12,12 @@ namespace sessions {
 
 class NavigationTaskIDTest : public testing::Test {
  public:
-  NavigationTaskIDTest() {}
+  NavigationTaskIDTest() = default;
 
   NavigationTaskIDTest(const NavigationTaskIDTest&) = delete;
   NavigationTaskIDTest& operator=(const NavigationTaskIDTest&) = delete;
 
-  ~NavigationTaskIDTest() override {}
+  ~NavigationTaskIDTest() override = default;
 
   void SetUp() override {
     navigation_entry_ = content::NavigationEntry::Create();

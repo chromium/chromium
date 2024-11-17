@@ -51,6 +51,8 @@ class BrowserGpuVideoAcceleratorFactories
   void NotifyEncoderSupportKnown(base::OnceClosure) override;
   std::unique_ptr<media::VideoEncodeAccelerator> CreateVideoEncodeAccelerator()
       override;
+  std::optional<media::SupportedVideoDecoderConfigs>
+  GetSupportedVideoDecoderConfigs() override;
   std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
       const gfx::Size& size,
       gfx::BufferFormat format,

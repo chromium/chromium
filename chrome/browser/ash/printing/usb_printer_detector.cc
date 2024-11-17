@@ -16,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/printing/ppd_provider_factory.h"
 #include "chrome/browser/ash/printing/printer_configurer.h"
@@ -152,7 +153,11 @@ class UsbPrinterDetectorImpl : public UsbPrinterDetector,
     DetectedPrinter entry;
     if (!UsbDeviceToPrinter(device_info, &entry)) {
       // An error will already have been logged if we failed to convert.
-      PRINTER_LOG(EVENT) << "USB printer was detected but not recognized";
+      PRINTER_LOG(EVENT) << "USB printer "
+                         << base::StringPrintf("%04x:%04x",
+                                               device_info.vendor_id,
+                                               device_info.product_id)
+                         << " was detected but not recognized";
       return;
     }
     std::string make_and_model = GuessEffectiveMakeAndModel(device_info);

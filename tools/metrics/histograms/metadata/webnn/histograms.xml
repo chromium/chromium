@@ -24,26 +24,26 @@ chromium-metrics-reviews@google.com.
 
 <variants name="WebNNCoreMLActions">
   <variant name="CompiledModelLoad"
-      summary="Time to load the compiled .mlmodelc file."/>
+      summary="time to load the compiled .mlmodelc file."/>
   <variant name="MLModelCompile"
-      summary="Time to compile the generated .mlmodel file."/>
+      summary="time to compile the generated .mlmodel file."/>
   <variant name="MLModelTranslate"
-      summary="Time to translate from webnn graph to CoreML representation
+      summary="time to translate from webnn graph to CoreML representation
                and serializes to disk."/>
   <variant name="MLModelWrite"
-      summary="Time to write the temporary .mlmodel file."/>
+      summary="time to write the temporary .mlmodel file."/>
   <variant name="MLWeightsWrite"
-      summary="Time to write the temporary weights.bin file."/>
-  <variant name="ModelOutputRead"
-      summary="Time it took to read back the inference results."/>
-  <variant name="ModelPredict"
-      summary="Time predictionFromFeatures took when calling compute()."/>
+      summary="time to write the temporary weights.bin file."/>
   <variant name="ModelPredictWithDispatch"
-      summary="Time predictionFromFeatures took when calling dispatch()."/>
+      summary="time predictionFromFeatures took when calling dispatch()."/>
 </variants>
 
 <variants name="WebNNDMLActions">
-  <variant name="Compilation" summary="Time to compile the DirectML graph."/>
+  <variant name="Compilation" summary="time to compile the DirectML graph."/>
+  <variant name="RecordGraphExecutionOnBackgroundThread"
+      summary="time to record graph execution on background thread."/>
+  <variant name="RecordGraphExecutionOnMainThread"
+      summary="time to record graph execution on the main thread."/>
 </variants>
 
 <histogram name="WebNN.CoreML.TimingMs.{WebNNCoreMLActions}" units="ms"
@@ -51,9 +51,17 @@ chromium-metrics-reviews@google.com.
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>
-    The time taken to perform a WebNN CoreML action. This includes model
-    creation, model compilation, and model inference.
+    The time taken to perform a WebNN CoreML action. This includes
+    {WebNNCoreMLActions}
   </summary>
+  <token key="WebNNCoreMLActions" variants="WebNNCoreMLActions"/>
+</histogram>
+
+<histogram name="WebNN.DeviceType" enum="DeviceTypeUma"
+    expires_after="2025-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>Records what device type WebNN is running on.</summary>
 </histogram>
 
 <histogram name="WebNN.DML.TimingMs.{WebNNDMLActions}" units="ms"
@@ -61,8 +69,37 @@ chromium-metrics-reviews@google.com.
   <owner>reillyg@chromium.org</owner>
   <owner>src/services/webnn/OWNERS</owner>
   <summary>
-    The time taken to perform a WebNN DML action. This includes model
-    compilation.
+    The time taken to perform a WebNN DML action. This includes
+    {WebNNDMLActions}
+  </summary>
+  <token key="WebNNDMLActions" variants="WebNNDMLActions"/>
+</histogram>
+
+<histogram name="WebNN.DMLCreateDevice.Error" enum="Hresult"
+    expires_after="2025-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    The HRESULT returned when an attempt to create a dml device fails.
+  </summary>
+</histogram>
+
+<histogram name="WebNN.MLTensor.TimingMs.Read" units="ms"
+    expires_after="2025-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>The time taken to read the ml tensor.</summary>
+</histogram>
+
+<histogram name="WebNN.Operator" enum="MLGraphOperatorUma"
+    expires_after="2025-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    When an MLGraph is built using WebNN, this histogram records whether a given
+    operator has been used. The enum value GraphBuilt is always logged once per
+    MLGraph, so to see the prevalence of a given operator, you need to divide
+    its count by GraphBuilt count.
   </summary>
 </histogram>
 

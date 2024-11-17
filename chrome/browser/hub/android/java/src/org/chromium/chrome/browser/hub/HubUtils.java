@@ -1,0 +1,27 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+package org.chromium.chrome.browser.hub;
+
+import androidx.annotation.IdRes;
+
+/** Feature related utilities for Hub. */
+public class HubUtils {
+    /**
+     * Returns the height of the hub search box's calculated container.
+     *
+     * @param containerView The {@link HubContainerView} that hosts the search box.
+     * @param hubToolbar The resource id for the hub toolbar.
+     * @param toolbarActionContainer The resource id for the toolbar action container.
+     */
+    public static int getSearchBoxHeight(
+            HubContainerView containerView,
+            @IdRes int hubToolbar,
+            @IdRes int toolbarActionContainer) {
+        int hubToolbarBottom = containerView.findViewById(hubToolbar).getBottom();
+        int searchBoxContainerBottom =
+                containerView.findViewById(toolbarActionContainer).getBottom();
+        return hubToolbarBottom - searchBoxContainerBottom;
+    }
+}

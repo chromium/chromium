@@ -32,7 +32,6 @@
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
 
@@ -86,27 +85,6 @@ DataOffer::AsyncSendDataCallback AsyncEncodeAsRefCountedString(
         std::move(callback).Run(EncodeAsRefCountedString(text, charset));
       },
       text, charset);
-}
-
-void ReadDataTransferEndpointFromClipboard(
-    const std::string& charset,
-    const ui::DataTransferEndpoint data_dst,
-    DataOffer::SendDataCallback callback) {
-  std::optional<ui::DataTransferEndpoint> data_src =
-      ui::Clipboard::GetForCurrentThread()->GetSource(
-          ui::ClipboardBuffer::kCopyPaste);
-
-  std::u16string encoded_endpoint;
-  if (data_src) {
-    encoded_endpoint =
-        base::UTF8ToUTF16(ui::ConvertDataTransferEndpointToJson(*data_src));
-  } else {
-    DCHECK(data_src) << "Clipboard source DataTransferEndpoint has changed "
-                        "after initial MIME advertising. If you see this "
-                        "please file a bug and contact the chromeos-dlp team.";
-  }
-
-  std::move(callback).Run(EncodeAsRefCountedString(encoded_endpoint, charset));
 }
 
 void ReadTextFromClipboard(const std::string& charset,
@@ -237,17 +215,6 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
   ui::EndpointType endpoint_type =
       data_exchange_delegate->GetDataTransferEndpointType(target);
 
-  // Drag & Drop source metadata (if any) is synced between Ash and Lacros by
-  // encoding the metadata into a custom MIME type.
-  if (endpoint_type == ui::EndpointType::kLacros && data.GetSource()) {
-    std::u16string encoded_endpoint = base::UTF8ToUTF16(
-        ui::ConvertDataTransferEndpointToJson(*data.GetSource()));
-    data_callbacks_.emplace(
-        ui::kMimeTypeDataTransferEndpoint,
-        AsyncEncodeAsRefCountedString(encoded_endpoint, kUTF8));
-    delegate_->OnOffer(ui::kMimeTypeDataTransferEndpoint);
-  }
-
   const std::string uri_list_mime_type =
       data_exchange_delegate->GetMimeTypeForUriList(endpoint_type);
   // We accept the filenames pickle from FilesApp, or
@@ -353,17 +320,6 @@ void DataOffer::SetClipboardData(DataExchangeDelegate* data_exchange_delegate,
                                  ui::EndpointType endpoint_type) {
   DCHECK_EQ(0u, data_callbacks_.size());
   const ui::DataTransferEndpoint data_dst(endpoint_type);
-
-  // Clipboard source metadata (if any) is synced between Ash and Lacros by
-  // encoding the metadata into a custom MIME type.
-  if (endpoint_type == ui::EndpointType::kLacros &&
-      data.GetSource(ui::ClipboardBuffer::kCopyPaste)) {
-    delegate_->OnOffer(std::string(ui::kMimeTypeDataTransferEndpoint));
-    data_callbacks_.emplace(
-        std::string(ui::kMimeTypeDataTransferEndpoint),
-        base::BindOnce(&ReadDataTransferEndpointFromClipboard,
-                       std::string(kUTF8), data_dst));
-  }
 
   if (data.IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
                              ui::ClipboardBuffer::kCopyPaste, &data_dst)) {

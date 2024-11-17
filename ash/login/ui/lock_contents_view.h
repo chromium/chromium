@@ -20,6 +20,7 @@
 #include "ash/login/ui/login_display_style.h"
 #include "ash/login/ui/login_error_bubble.h"
 #include "ash/login/ui/management_bubble.h"
+#include "ash/login/ui/management_disclosure_dialog.h"
 #include "ash/login/ui/non_accessible_view.h"
 #include "ash/login/ui/user_state.h"
 #include "ash/public/cpp/keyboard/keyboard_controller_observer.h"
@@ -65,12 +66,7 @@ class LoginCameraTimeoutView;
 class LoginDetachableBaseModel;
 class LoginExpandedPublicAccountView;
 class LoginUserView;
-class NoteActionLaunchButton;
 class ScrollableUsersListView;
-
-namespace mojom {
-enum class TrayActionState;
-}
 
 enum class BottomIndicatorState {
   kNone,
@@ -111,7 +107,6 @@ class ASH_EXPORT LockContentsView
   static const int kLoginAttemptsBeforeGaiaDialog;
 
   LockContentsView(
-      mojom::TrayActionState initial_note_action_state,
       LockScreen::ScreenType screen_type,
       LoginDataDispatcher* data_dispatcher,
       std::unique_ptr<LoginDetachableBaseModel> detachable_base_model);
@@ -128,16 +123,16 @@ class ASH_EXPORT LockContentsView
   void ShowAdbEnabled();
   void ToggleSystemInfo();
   void ShowParentAccessDialog();
+  // Shows the current device privacy disclosures.
+  void ShowManagementDisclosureDialog();
   void SetHasKioskApp(bool has_kiosk_apps);
 
   // views::View:
-  void Layout(PassKey) override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void OnFocus() override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
   // LoginDataDispatcher::Observer:
@@ -172,7 +167,6 @@ class ASH_EXPORT LockContentsView
   void OnSetTpmLockedState(const AccountId& user,
                            bool is_locked,
                            base::TimeDelta time_left) override;
-  void OnLockScreenNoteStateChanged(mojom::TrayActionState state) override;
   void OnForceOnlineSignInForUser(const AccountId& user) override;
   void OnWarningMessageUpdated(const std::u16string& message) override;
   void OnSystemInfoChanged(bool show,
@@ -196,7 +190,6 @@ class ASH_EXPORT LockContentsView
       bool show_full_management_disclosure) override;
   void OnDetachableBasePairingStatusChanged(
       DetachableBasePairingStatus pairing_status) override;
-  void OnFocusLeavingLockScreenApps(bool reverse) override;
   void OnOobeDialogStateChanged(OobeDialogState state) override;
 
   void MaybeUpdateExpandedView(const AccountId& account_id,
@@ -227,10 +220,9 @@ class ASH_EXPORT LockContentsView
   void OnWillChangeFocus(View* focused_before, View* focused_now) override;
   void OnDidChangeFocus(View* focused_before, View* focused_now) override;
 
-  // Called by LockScreen.
-  void SetManagementDisclosureClient(ManagementDisclosureClient* client);
-
  private:
+  class LockContentsViewLayout;
+
   using DisplayLayoutAction = base::RepeatingCallback<void(bool landscape)>;
 
   // Focus the next/previous widget.
@@ -261,29 +253,11 @@ class ASH_EXPORT LockContentsView
       views::BoxLayout* main_layout,
       std::unique_ptr<LoginBigUserView> primary_big_view);
 
-  // Lay out the entire view. This is called when the view is attached to a
-  // widget and when the screen is rotated.
-  void DoLayout();
-
-  // Lay out the top header. This is called when the children of the top header
-  // change contents or visibility.
-  void LayoutTopHeader();
-
-  // Lay out the bottom status indicator. This is called when system information
-  // is shown if ADB is enabled and at the initialization of lock screen if the
-  // device is enrolled.
-  void LayoutBottomStatusIndicator();
-
-  // Lay out the user adding screen indicator. This is called when a secondary
-  // user is being added.
-  void LayoutUserAddingScreenIndicator();
-
-  // Lay out the expanded public session view.
-  void LayoutPublicSessionView();
-
   // Adds |layout_action| to |layout_actions_| and immediately executes it with
   // the current rotation.
   void AddDisplayLayoutAction(const DisplayLayoutAction& layout_action);
+
+  void RunDisplayLayoutActions();
 
   // Change the active |auth_user_|. If |is_primary| is true, the active auth
   // switches to |opt_secondary_big_view_|. If |is_primary| is false, the active
@@ -326,7 +300,7 @@ class ASH_EXPORT LockContentsView
   LoginBigUserView* CurrentBigUserView();
 
   // Opens an error bubble to indicate authentication failure.
-  void ShowAuthErrorMessage();
+  void ShowAuthErrorMessage(bool authenticated_by_pin);
 
   // Hides the error bubble indicating authentication failure if open.
   void HideAuthErrorMessage();
@@ -413,7 +387,15 @@ class ASH_EXPORT LockContentsView
 
   // Shows the pin auth and hides the pin delay message on the user pod when pin
   // becomes available after being soft-locked.
-  void OnPinUnlock(bool is_primary);
+  void OnPinUnlock(const AccountId& account_id);
+
+  // Checks whether `pin_available_at` is past and pin needs to be enabled
+  // again.
+  void CheckIfPinEnabled(const AccountId& account_id);
+
+  void ForceSyncLayoutOfAllViews();
+
+  void UpdateAccessiblePreviousAndNextFocus();
 
   const LockScreen::ScreenType screen_type_;
 
@@ -435,9 +417,6 @@ class ASH_EXPORT LockContentsView
   // placed on the top right corner of the screen without affecting layout of
   // other views.
   raw_ptr<views::View> top_header_ = nullptr;
-
-  // View for launching a note taking action handler from the lock screen.
-  raw_ptr<NoteActionLaunchButton> note_action_ = nullptr;
 
   // View for showing the version, enterprise and bluetooth info.
   raw_ptr<views::View> system_info_ = nullptr;
@@ -474,6 +453,10 @@ class ASH_EXPORT LockContentsView
   // Bubble for displaying warning banner message.
   raw_ptr<LoginErrorBubble> warning_banner_bubble_;
 
+  // The current ManagementDisclosureDialog, if one exists.
+  // Shows the list of device privacy disclosures.
+  base::WeakPtr<ManagementDisclosureDialog> management_disclosure_dialog_;
+
   // View that is shown on login timeout with camera usage.
   raw_ptr<LoginCameraTimeoutView, AcrossTasksDanglingUntriaged>
       login_camera_timeout_view_ = nullptr;
@@ -488,16 +471,8 @@ class ASH_EXPORT LockContentsView
   base::flat_map<AccountId, int> unlock_attempt_by_user_;
   base::flat_map<AccountId, int> pin_unlock_attempt_by_user_;
 
-  // Whether a lock screen app is currently active (i.e. lock screen note action
-  // state is reported as kActive by the data dispatcher).
-  bool lock_screen_apps_active_ = false;
-
   // Tracks the visibility of the OOBE dialog.
   bool oobe_dialog_visible_ = false;
-
-  // Whether the lock screen note is disabled. Used to override the actual lock
-  // screen note state.
-  bool disable_lock_screen_note_ = false;
 
   // Whether the device is enrolled with Kiosk SKU.
   bool kiosk_license_mode_ = false;

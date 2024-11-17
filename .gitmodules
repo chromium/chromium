@@ -18,6 +18,9 @@
 [submodule "third_party/libunwind/src"]
 	path = third_party/libunwind/src
 	url = https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libunwind
+[submodule "third_party/llvm-libc/src"]
+	path = third_party/llvm-libc/src
+	url = https://chromium.googlesource.com/external/github.com/llvm/llvm-project/libc
 [submodule "chrome/test/data/autofill/captured_sites/artifacts"]
 	path = chrome/test/data/autofill/captured_sites/artifacts
 	url = https://chrome-internal.googlesource.com/chrome/test/captured_sites/autofill
@@ -199,10 +202,6 @@
 [submodule "third_party/crossbench"]
 	path = third_party/crossbench
 	url = https://chromium.googlesource.com/crossbench
-[submodule "third_party/crubit/src"]
-	path = third_party/crubit/src
-	url = https://chromium.googlesource.com/external/github.com/google/crubit
-	gclient-condition = checkout_crubit
 [submodule "third_party/depot_tools"]
 	path = third_party/depot_tools
 	url = https://chromium.googlesource.com/chromium/tools/depot_tools
@@ -350,9 +349,6 @@
 [submodule "third_party/crabbyavif/src"]
 	path = third_party/crabbyavif/src
 	url = https://chromium.googlesource.com/external/github.com/webmproject/CrabbyAvif
-[submodule "third_party/libavifinfo/src"]
-	path = third_party/libavifinfo/src
-	url = https://aomedia.googlesource.com/libavifinfo
 [submodule "third_party/nearby/src"]
 	path = third_party/nearby/src
 	url = https://chromium.googlesource.com/external/github.com/google/nearby-connections
@@ -401,7 +397,7 @@
 [submodule "third_party/libsync/src"]
 	path = third_party/libsync/src
 	url = https://chromium.googlesource.com/aosp/platform/system/core/libsync
-	gclient-condition = checkout_linux
+	gclient-condition = checkout_linux or checkout_android
 [submodule "third_party/libunwindstack"]
 	path = third_party/libunwindstack
 	url = https://chromium.googlesource.com/chromium/src/third_party/libunwindstack
@@ -777,6 +773,10 @@
 [submodule "components/test/data/autofill/heuristics-json/internal"]
 	path = components/test/data/autofill/heuristics-json/internal
 	url = https://chrome-internal.googlesource.com/chrome/test/autofill/structured_forms
+	gclient-condition = checkout_chromium_autofill_test_dependencies
+[submodule "components/test/data/autofill/label-doms/internal"]
+	path = components/test/data/autofill/label-doms/internal
+	url = https://chrome-internal.googlesource.com/chrome/test/autofill/field_labels
 	gclient-condition = checkout_chromium_autofill_test_dependencies
 [submodule "components/vector_icons/google_chrome"]
 	path = components/vector_icons/google_chrome

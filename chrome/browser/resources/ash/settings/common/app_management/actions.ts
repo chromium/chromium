@@ -7,8 +7,8 @@
  * listed in one place to document available actions and their parameters.
  */
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {Action} from 'chrome://resources/js/store.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {Action} from 'chrome://resources/js/store.js';
 
 export interface AddAppAction extends Action {
   name: 'add-app';

@@ -221,8 +221,7 @@ extensions::api::downloads::DangerType ConvertDangerType(
     case download::DOWNLOAD_DANGER_TYPE_BLOCKED_SCAN_FAILED:
       return extensions::api::downloads::DangerType::kBlockedScanFailed;
     case download::DOWNLOAD_DANGER_TYPE_MAX:
-      NOTREACHED_IN_MIGRATION();
-      return extensions::api::downloads::DangerType::kMaxValue;
+      NOTREACHED();
   }
 }
 
@@ -450,8 +449,7 @@ IconLoader::IconSize IconLoaderSizeFromPixelSize(int pixel_size) {
     case 32:
       return IconLoader::NORMAL;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return IconLoader::NORMAL;
+      NOTREACHED();
   }
 }
 
@@ -737,8 +735,7 @@ ConvertConflictAction(downloads::FilenameConflictAction action) {
     case downloads::FilenameConflictAction::kPrompt:
       return DownloadPathReservationTracker::PROMPT;
   }
-  NOTREACHED_IN_MIGRATION();
-  return download::DownloadPathReservationTracker::UNIQUIFY;
+  NOTREACHED();
 }
 
 class ExtensionDownloadsEventRouterData : public base::SupportsUserData::Data {

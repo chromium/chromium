@@ -101,8 +101,7 @@ media::EncryptionScheme ConvertEncryptionScheme(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return media::EncryptionScheme::kUnencrypted;
+  NOTREACHED();
 }
 
 WebString MakeCodecs(const std::string& a, const std::string& b) {
@@ -242,8 +241,7 @@ class FakeKeySystems : public media::KeySystems {
       case EmeInitDataType::KEYIDS:
         return init_data_type_keyids_supported_;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   EmeConfig::Rule GetEncryptionSchemeConfigRule(
@@ -348,8 +346,7 @@ class FakeKeySystems : public media::KeySystems {
       return EmeConfig::UnsupportedRule();
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return EmeConfig::UnsupportedRule();
+    NOTREACHED();
   }
 
   EmeConfig::Rule GetPersistentLicenseSessionSupport(

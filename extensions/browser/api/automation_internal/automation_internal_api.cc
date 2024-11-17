@@ -43,6 +43,7 @@
 #include "ui/accessibility/ax_action_handler_base.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
 #include "ui/accessibility/ax_enum_util.h"
+#include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_updates_and_events.h"
 
 #if defined(USE_AURA)
@@ -353,10 +354,15 @@ class AutomationWebContentsObserver
   }
 
   void AccessibilityLocationChangesReceived(
-      const std::vector<ui::AXLocationChanges>& details) override {
+      const ui::AXTreeID& tree_id,
+      ui::AXLocationAndScrollUpdates& details) override {
     AutomationEventRouter* router = AutomationEventRouter::GetInstance();
-    for (const auto& src : details) {
-      router->DispatchAccessibilityLocationChange(src);
+    for (const auto& src : details.location_changes) {
+      router->DispatchAccessibilityLocationChange(tree_id, src);
+    }
+
+    for (const auto& change : details.scroll_changes) {
+      router->DispatchAccessibilityScrollChange(tree_id, change);
     }
   }
 
@@ -404,7 +410,7 @@ class AutomationWebContentsObserver
       // On ChromeOS Ash, the automation api is the native accessibility api.
       // For the purposes of tracking web contents accessibility like other
       // desktop platforms, record the same UMA metric as those platforms.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       UMA_HISTOGRAM_ENUMERATION(
           "Accessibility.ModeFlag",
           ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_WEB_CONTENTS,
@@ -433,7 +439,7 @@ class AutomationWebContentsObserver
           "Accessibility.ModeFlag",
           ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_PDF,
           ui::AXMode::ModeFlagHistogramValue::UMA_AX_MODE_MAX);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     }
   }
 

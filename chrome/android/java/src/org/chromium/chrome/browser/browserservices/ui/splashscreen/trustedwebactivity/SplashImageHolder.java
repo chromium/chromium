@@ -13,27 +13,29 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 /**
- * Stores the splash images received from TWA clients between the call to
- * {@link androidx.browser.customtabs.CustomTabsService#receiveFile} and a Trusted Web Activity
- * claiming the image.
+ * Stores the splash images received from TWA clients between the call to {@link
+ * androidx.browser.customtabs.CustomTabsService#receiveFile} and a Trusted Web Activity claiming
+ * the image.
  *
- * This class is thread-safe.
+ * <p>This class is thread-safe.
  */
-@Singleton
 public class SplashImageHolder {
     private final Map<CustomTabsSessionToken, Bitmap> mBitmaps =
             Collections.synchronizedMap(new ArrayMap<>());
 
-    @Inject
-    public SplashImageHolder() {}
+    private static SplashImageHolder sInstance;
+
+    public static SplashImageHolder getInstance() {
+        if (sInstance == null) sInstance = new SplashImageHolder();
+        return sInstance;
+    }
+
+    private SplashImageHolder() {}
 
     /**
-     * Puts the bitmap into cache. It is expected to be retrieved shortly thereafter using
-     * {@link #takeImage}.
+     * Puts the bitmap into cache. It is expected to be retrieved shortly thereafter using {@link
+     * #takeImage}.
      */
     public void putImage(CustomTabsSessionToken token, Bitmap bitmap) {
         mBitmaps.put(token, bitmap);

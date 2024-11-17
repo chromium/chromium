@@ -125,8 +125,7 @@ constexpr const char* ToCString(RadioAccessStatus access_status) {
       return "RadioAccessStatus::DeniedBySystem";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 template <typename VectorView, typename T>

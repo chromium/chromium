@@ -32,7 +32,7 @@ public class ArchivePersistedTabData extends PersistedTabData {
      *
      * @param tab The {@link Tab} to get/create the tab data for.
      * @param callback The {@link Callback} to be invoked when the {@link ArchivePersistedTabData}
-     *     is ready.
+     *     is ready. The returned value can be null.
      */
     public static void from(Tab tab, Callback<ArchivePersistedTabData> callback) {
         PersistedTabData.from(tab, () -> new ArchivePersistedTabData(tab), USER_DATA_KEY, callback);
@@ -78,7 +78,7 @@ public class ArchivePersistedTabData extends PersistedTabData {
 
     @Override
     boolean deserialize(@Nullable ByteBuffer bytes) {
-        if (bytes == null || bytes.limit() == 0) return false;
+        if (bytes == null || !bytes.hasRemaining()) return false;
 
         try {
             mArchivedTimeMs = ArchivePersistedTabDataProto.parseFrom(bytes).getArchivedTimeMs();

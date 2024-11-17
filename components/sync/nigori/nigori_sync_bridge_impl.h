@@ -94,21 +94,21 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
       const sync_pb::NigoriSpecifics& specifics);
 
   // Builds NigoriKeyBag, which contains keys acceptable for decryption of
-  // |encryption_keybag| from remote NigoriSpecifics. Its content depends on
+  // `encryption_keybag` from remote NigoriSpecifics. Its content depends on
   // current passphrase type and available keys: it contains current default
   // encryption key, for KEYSTORE_PASSPHRASE it additionally contains key
-  // obtained from |keystore_decryptor_token| and all keystore keys.
+  // obtained from `keystore_decryptor_token` and all keystore keys.
   NigoriKeyBag BuildDecryptionKeyBagForRemoteKeybag() const;
 
-  // Uses |key_bag| to try to decrypt pending keys as represented in
-  // |state_.pending_keys| (which must be set).
+  // Uses `key_bag` to try to decrypt pending keys as represented in
+  // `state_.pending_keys` (which must be set).
   //
   // If decryption is possible, the newly decrypted keys are put in the
-  // |state_.cryptographer|'s keybag and the default key is updated. In that
+  // `state_.cryptographer`'s keybag and the default key is updated. In that
   // case pending keys are cleared.
   //
-  // If |key_bag| is not capable of decrypting pending keys,
-  // |state_.pending_keys| stays set. Such outcome is not itself considered
+  // If `key_bag` is not capable of decrypting pending keys,
+  // `state_.pending_keys` stays set. Such outcome is not itself considered
   // and error and returns std::nullopt.
   //
   // Errors may be returned, in rare cases, for fatal protocol violations.
@@ -117,9 +117,9 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
 
   base::Time GetExplicitPassphraseTime() const;
 
-  // Returns key derivation params based on |passphrase_type_| and
-  // |custom_passphrase_key_derivation_params_|. Should be called only if
-  // |passphrase_type_| is an explicit passphrase.
+  // Returns key derivation params based on `passphrase_type_` and
+  // `custom_passphrase_key_derivation_params_`. Should be called only if
+  // `passphrase_type_` is an explicit passphrase.
   KeyDerivationParams GetKeyDerivationParamsForPendingKeys() const;
 
   // If there are pending keys and depending on the passphrase type, it invokes
@@ -133,19 +133,19 @@ class NigoriSyncBridgeImpl : public KeystoreKeysHandler,
   // Serializes state of the bridge and sync metadata into the proto.
   sync_pb::NigoriLocalData SerializeAsNigoriLocalData() const;
 
-  // Appends |local_commit| to |pending_local_commit_queue_| and if appropriate
+  // Appends `local_commit` to `pending_local_commit_queue_` and if appropriate
   // calls Put() to trigger the commit.
   void QueuePendingLocalCommit(
       std::unique_ptr<PendingLocalNigoriCommit> local_commit);
 
-  // Processes |pending_local_commit_queue_| FIFO such that all non-applicable
+  // Processes `pending_local_commit_queue_` FIFO such that all non-applicable
   // pending commits issue a failure, until the first one that is applicable is
   // found (if any). If such applicable commit is found, the corresponding Put()
   // call is issued.
   void PutNextApplicablePendingLocalCommit();
 
-  // Populates keystore keys into |cryptographer| in case it doesn't contain
-  // them already and |passphrase_type| isn't KEYSTORE_PASSPHRASE. This
+  // Populates keystore keys into `cryptographer` in case it doesn't contain
+  // them already and `passphrase_type` isn't KEYSTORE_PASSPHRASE. This
   // function only updates local state and doesn't trigger a commit.
   void MaybePopulateKeystoreKeysIntoCryptographer();
 

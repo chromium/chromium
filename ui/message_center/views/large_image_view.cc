@@ -10,9 +10,9 @@
 #include "ui/message_center/views/notification_view_base.h"
 #include "ui/message_center/views/notification_view_util.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "ui/views/background.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace message_center {
 
@@ -20,10 +20,10 @@ LargeImageView::LargeImageView(const gfx::Size& max_size)
     : max_size_(max_size), min_size_(max_size_.width(), /*height=*/0) {
   SetID(NotificationViewBase::kLargeImageView);
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   SetBackground(views::CreateThemedSolidBackground(
       ui::kColorNotificationImageBackground));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 LargeImageView::~LargeImageView() = default;

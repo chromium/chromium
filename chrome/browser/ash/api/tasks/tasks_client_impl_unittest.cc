@@ -12,6 +12,7 @@
 
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -244,7 +244,7 @@ TEST_F(TasksClientImplIsDisabledByAdminTest, DisabledCalendarApp) {
 
   std::vector<apps::AppPtr> app_deltas;
   app_deltas.push_back(apps::AppPublisher::MakeApp(
-      apps::AppType::kWeb, web_app::kGoogleCalendarAppId,
+      apps::AppType::kWeb, ash::kGoogleCalendarAppId,
       apps::Readiness::kDisabledByPolicy, "Calendar",
       apps::InstallReason::kUser, apps::InstallSource::kBrowser));
 

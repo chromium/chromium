@@ -4,8 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/ble_peripheral.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 BlePeripheral::BlePeripheral(
     bluetooth::mojom::DeviceInfoPtr device_info,
@@ -54,5 +53,4 @@ void BlePeripheral::UpdateIdToUuidMap(
       service_id_to_fast_advertisement_service_uuid_map;
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

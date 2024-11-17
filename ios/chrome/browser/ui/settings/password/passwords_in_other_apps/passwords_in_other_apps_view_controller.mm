@@ -6,7 +6,6 @@
 
 #import "base/ios/ios_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_in_other_apps/constants.h"
@@ -16,6 +15,7 @@
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
+#import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -617,16 +617,10 @@ CGFloat const kContentOptimalWidth = 327;
 }
 
 - (NSArray<NSString*>*)steps {
-  BOOL isIOS16AndAbove = NO;
-  if (@available(iOS 16, *)) {
-    isIOS16AndAbove = YES;
-  }
   if (self.useShortInstruction) {
     return @[
       l10n_util::GetNSString(
-          isIOS16AndAbove
-              ? IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16
-              : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1),
+          IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16),
       l10n_util::GetNSString(
           IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_2)
     ];
@@ -639,8 +633,7 @@ CGFloat const kContentOptimalWidth = 327;
               IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_1_IPHONE),
     l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_2),
     l10n_util::GetNSString(
-        isIOS16AndAbove ? IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3_IOS16
-                        : IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3),
+        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3_IOS16),
     l10n_util::GetNSString(IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_4)
   ];
 }
@@ -667,13 +660,8 @@ CGFloat const kContentOptimalWidth = 327;
 // Returns caption text that shows below the subtitle in turnOffInstructions.
 - (UITextView*)drawCaptionTextView {
   NSString* text;
-  if (@available(iOS 16, *)) {
-    text = l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS16);
-  } else {
-    text = l10n_util::GetNSString(
-        IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION);
-  }
+  text = l10n_util::GetNSString(
+      IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS16);
   NSDictionary* textAttributes = @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kGrey600Color],
     NSFontAttributeName :

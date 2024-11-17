@@ -6,7 +6,10 @@ import("//build/config/android/rules.gni")
 import("//third_party/jni_zero/jni_zero.gni")
 
 generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyBridge.java",
+  ]
 }
 
 android_library("java") {
@@ -31,13 +34,13 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsBaseFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSnackbarController.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSurveyBridge.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/Topic.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicPreference.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicSwitchPreference.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsBlockedFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsHeaderPreference.java",
-    "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsLearnMoreFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsManageFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicsUtils.java",
   ]
@@ -205,9 +208,8 @@ android_resources("java_resources") {
     "java/res/xml/fledge_preference.xml",
     "java/res/xml/privacy_sandbox_preferences.xml",
     "java/res/xml/privacy_sandbox_preferences_restricted.xml",
-    "java/res/xml/topics_learn_more_preference.xml",
     "java/res/xml/topics_manage_preference.xml",
-    "java/res/xml/topics_preference_v2.xml",
+    "java/res/xml/topics_preference.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
@@ -223,5 +225,8 @@ android_resources("java_resources") {
 }
 
 java_cpp_enum("privacy_sandbox_enums") {
-  sources = [ "//chrome/browser/privacy_sandbox/privacy_sandbox_service.h" ]
+  sources = [
+    "//chrome/browser/privacy_sandbox/privacy_sandbox_activity_types_service.h",
+    "//chrome/browser/privacy_sandbox/privacy_sandbox_service.h",
+  ]
 }

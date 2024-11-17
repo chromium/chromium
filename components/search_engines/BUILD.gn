@@ -18,12 +18,14 @@ static_library("search_engines") {
     "eea_countries_ids.h",
     "enterprise/default_search_policy_handler.cc",
     "enterprise/default_search_policy_handler.h",
-    "enterprise/enterprise_site_search_manager.cc",
-    "enterprise/enterprise_site_search_manager.h",
+    "enterprise/enterprise_search_manager.cc",
+    "enterprise/enterprise_search_manager.h",
     "keyword_table.cc",
     "keyword_table.h",
     "keyword_web_data_service.cc",
     "keyword_web_data_service.h",
+    "reconciling_template_url_data_holder.cc",
+    "reconciling_template_url_data_holder.h",
     "search_engine_choice/search_engine_choice_metrics_service_accessor.h",
     "search_engine_choice/search_engine_choice_service.cc",
     "search_engine_choice/search_engine_choice_service.h",
@@ -134,6 +136,10 @@ static_library("search_engines") {
 
   if (is_linux || is_win || is_mac || is_chromeos) {
     sources += [
+      "enterprise/search_aggregator_policy_handler.cc",
+      "enterprise/search_aggregator_policy_handler.h",
+      "enterprise/search_engine_fields_validators.cc",
+      "enterprise/search_engine_fields_validators.h",
       "enterprise/site_search_policy_handler.cc",
       "enterprise/site_search_policy_handler.h",
     ]
@@ -196,8 +202,9 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "default_search_manager_unittest.cc",
-    "enterprise/enterprise_site_search_manager_unittest.cc",
+    "enterprise/enterprise_search_manager_unittest.cc",
     "keyword_table_unittest.cc",
+    "reconciling_template_url_data_holder_unittest.cc",
     "search_engine_choice/search_engine_choice_service_unittest.cc",
     "search_engine_choice/search_engine_choice_utils_unittest.cc",
     "search_host_to_urls_map_unittest.cc",
@@ -237,7 +244,12 @@ source_set("unit_tests") {
   ]
 
   if (is_linux || is_win || is_mac || is_chromeos) {
-    sources += [ "enterprise/site_search_policy_handler_unittest.cc" ]
+    sources += [
+      "enterprise/field_validation_test_utils.cc",
+      "enterprise/field_validation_test_utils.h",
+      "enterprise/search_aggregator_policy_handler_unittest.cc",
+      "enterprise/site_search_policy_handler_unittest.cc",
+    ]
   }
 
   if (!is_ios) {
@@ -264,7 +276,10 @@ json_to_struct("prepopulated_engines") {
   source = "prepopulated_engines.json"
   schema_file = "prepopulated_engines_schema.json"
   namespace = "TemplateURLPrepopulateData"
-  deps = [ ":search_engine_type" ]
+  deps = [
+    ":search_engine_type",
+    "//base",
+  ]
 }
 
 if (is_android) {

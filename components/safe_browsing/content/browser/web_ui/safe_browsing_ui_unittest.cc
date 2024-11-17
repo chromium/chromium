@@ -14,7 +14,7 @@ namespace safe_browsing {
 
 class SafeBrowsingUITest : public testing::Test {
  public:
-  SafeBrowsingUITest() {}
+  SafeBrowsingUITest() = default;
 
   void SetUp() override {}
 

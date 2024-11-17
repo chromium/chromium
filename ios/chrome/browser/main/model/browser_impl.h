@@ -12,19 +12,19 @@
 #import "base/observer_list.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
+class ProfileIOS;
 @class SceneState;
 
 // BrowserImpl is the concrete implementation of the Browser interface.
 class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
  public:
-  // Constructs an instance attached to `browser_state`, `scene_state`. If
+  // Constructs an instance attached to `profile`, `scene_state`. If
   // `active_browser` is not null, then the Browser is an inactive Browser
   // and is considered to be attached to it. The `insertion_policy` and
   // `activation_policy` are passed to BrowserWebStateListDelegate constructor.
-  BrowserImpl(ChromeBrowserState* browser_state,
+  BrowserImpl(ProfileIOS* profile,
               SceneState* scene_state,
               CommandDispatcher* command_dispatcher,
               BrowserImpl* active_browser,
@@ -39,10 +39,7 @@ class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
 
   // Browser.
   Type type() const override;
-  // TODO(crbug.com/358301380): After all usage has changed to GetProfile(),
-  // remove this method.
-  ChromeBrowserState* GetBrowserState() final;
-  ChromeBrowserState* GetProfile() final;
+  ProfileIOS* GetProfile() final;
   WebStateList* GetWebStateList() final;
   CommandDispatcher* GetCommandDispatcher() final;
   SceneState* GetSceneState() final;
@@ -59,8 +56,8 @@ class BrowserImpl final : public Browser, public BrowserWebStateListDelegate {
   // The type of this browser.
   const Type type_;
 
-  // The ChromeBrowserState this Browser is attached to. Must not be null.
-  raw_ptr<ChromeBrowserState> const browser_state_;
+  // The ProfileIOS this Browser is attached to. Must not be null.
+  raw_ptr<ProfileIOS> const profile_;
 
   // The owned WebStateList.
   WebStateList web_state_list_;

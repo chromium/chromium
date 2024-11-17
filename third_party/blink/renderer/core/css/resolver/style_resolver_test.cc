@@ -857,6 +857,9 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
       #marker ::marker {
         color: blue;
       }
+      #before-marker ::before::marker {
+        color: blue;
+      }
     </style>
     <ul>
       <li style="list-style: decimal outside"><b></b></li>
@@ -886,6 +889,9 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
     const ComputedStyle* li_style = li->GetComputedStyle();
     EXPECT_FALSE(li_style->HasPseudoElementStyle(kPseudoIdMarker));
     EXPECT_FALSE(li_style->HasAnyPseudoElementStyles());
+    // Check that UA's ::before::marker rule doesn't set HasPseudoElementStyle.
+    // For performance reason we do not SetHasPseudoElementStyle() for ::marker
+    // pseudo element selectors from UA stylesheets for now.
     const ComputedStyle* before_style = before->GetComputedStyle();
     EXPECT_FALSE(before_style->HasPseudoElementStyle(kPseudoIdMarker));
     EXPECT_FALSE(before_style->HasAnyPseudoElementStyles());
@@ -917,11 +923,21 @@ TEST_F(StyleResolverTest, CSSMarkerPseudoElement) {
     EXPECT_TRUE(li_style->HasPseudoElementStyle(kPseudoIdMarker));
     EXPECT_TRUE(li_style->HasAnyPseudoElementStyles());
 
-    // But ::marker styles don't match a ::before::marker
+    // But #marker ::marker styles don't match a ::before::marker
     const ComputedStyle* before_style = before->GetComputedStyle();
     EXPECT_FALSE(before_style->HasPseudoElementStyle(kPseudoIdMarker));
     EXPECT_FALSE(before_style->HasAnyPseudoElementStyles());
   }
+
+  GetDocument().body()->SetIdAttribute(AtomicString("before-marker"));
+  UpdateAllLifecyclePhasesForTest();
+  Element* li = lis->item(0);
+  PseudoElement* before =
+      li->QuerySelector(AtomicString("b"))->GetPseudoElement(kPseudoIdBefore);
+  // And #before-marker ::before::marker styles match a ::before::marker
+  const ComputedStyle* before_style = before->GetComputedStyle();
+  EXPECT_TRUE(before_style->HasPseudoElementStyle(kPseudoIdMarker));
+  EXPECT_TRUE(before_style->HasAnyPseudoElementStyles());
 }
 
 TEST_F(StyleResolverTest, ApplyInheritedOnlyCustomPropertyChange) {
@@ -3742,7 +3758,7 @@ TEST_F(StyleResolverTestCQ, CanAffectAnimationsMPC) {
   EXPECT_FALSE(c->ComputedStyleRef().CanAffectAnimations());
 }
 
-TEST_F(StyleResolverTest, CssRulesForElementExcludeStartingStyle) {
+TEST_F(StyleResolverTest, CssRulesForElementIncludeStartingStyle) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @starting-style {
@@ -3758,18 +3774,18 @@ TEST_F(StyleResolverTest, CssRulesForElementExcludeStartingStyle) {
 
   Element* target = GetDocument().getElementById(AtomicString("target"));
   EXPECT_EQ(target->GetComputedStyle(), nullptr);
-  EXPECT_EQ(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
+  EXPECT_NE(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
             nullptr);
 
   GetElementById("wrapper")->removeAttribute(html_names::kHiddenAttr);
   UpdateAllLifecyclePhasesForTest();
 
   EXPECT_NE(target->GetComputedStyle(), nullptr);
-  EXPECT_EQ(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
+  EXPECT_NE(GetStyleEngine().GetStyleResolver().CssRulesForElement(target),
             nullptr);
 }
 
-TEST_F(StyleResolverTest, PseudoCSSRulesForElementExcludeStartingStyle) {
+TEST_F(StyleResolverTest, PseudoCSSRulesForElementIncludeStartingStyle) {
   SetBodyInnerHTML(R"HTML(
     <style>
       @starting-style {
@@ -3795,7 +3811,7 @@ TEST_F(StyleResolverTest, PseudoCSSRulesForElementExcludeStartingStyle) {
       GetStyleEngine().GetStyleResolver().PseudoCSSRulesForElement(
           target, kPseudoIdBefore, g_null_atom);
   ASSERT_NE(pseudo_rules, nullptr);
-  EXPECT_EQ(pseudo_rules->size(), 1u);
+  EXPECT_EQ(pseudo_rules->size(), 2u);
 
   GetElementById("wrapper")->removeAttribute(html_names::kHiddenAttr);
   UpdateAllLifecyclePhasesForTest();
@@ -3806,8 +3822,10 @@ TEST_F(StyleResolverTest, PseudoCSSRulesForElementExcludeStartingStyle) {
   pseudo_rules = GetStyleEngine().GetStyleResolver().PseudoCSSRulesForElement(
       target, kPseudoIdBefore, g_null_atom);
   ASSERT_NE(pseudo_rules, nullptr);
-  EXPECT_EQ(pseudo_rules->size(), 1u);
+  EXPECT_EQ(pseudo_rules->size(), 2u);
   EXPECT_EQ(pseudo_rules->at(0).first->cssText(),
+            "#target::before { color: red; }");
+  EXPECT_EQ(pseudo_rules->at(1).first->cssText(),
             "#target::before { content: \"X\"; color: green; }");
 }
 

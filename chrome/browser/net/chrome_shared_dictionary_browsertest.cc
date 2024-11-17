@@ -36,6 +36,7 @@
 #include "net/shared_dictionary/shared_dictionary_constants.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_access_observer.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -748,6 +749,12 @@ class SharedDictionaryDevToolsBrowserTest
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
     embedded_https_test_server().ServeFilesFromSourceDirectory(
         "content/test/data");
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(
+        network::switches::kDisableSharedDictionaryStorageCleanupForTesting);
   }
   void TearDownOnMainThread() override {
     DetachProtocolClient();

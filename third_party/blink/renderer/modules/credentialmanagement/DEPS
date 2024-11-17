@@ -8,3 +8,9 @@ include_rules = [
   "+third_party/blink/renderer/modules/credentialmanagement",
   "+third_party/blink/renderer/modules/modules_export.h",
 ]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+components/ukm/test_ukm_recorder.h",
+  ],
+}

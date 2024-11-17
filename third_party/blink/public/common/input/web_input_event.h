@@ -334,8 +334,7 @@ class BLINK_COMMON_EXPORT WebInputEvent {
       CASE_TYPE(PointerCausedUaAction);
     }
 #undef CASE_TYPE
-    NOTREACHED_IN_MIGRATION();
-    return "";
+    NOTREACHED();
   }
 
   float FrameScale() const { return frame_scale_; }

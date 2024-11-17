@@ -4,6 +4,7 @@
 
 module viz.mojom;
 
+import "services/viz/public/mojom/compositing/animation.mojom";
 import "services/viz/public/mojom/compositing/begin_frame_args.mojom";
 import "services/viz/public/mojom/compositing/layer.mojom";
 import "services/viz/public/mojom/compositing/local_surface_id.mojom";
@@ -35,8 +36,11 @@ struct LayerTreeUpdate {
   uint64 trace_id;
 
   // The device viewport and scale factor set by the tree's client.
+  // The final scale factor is the product of device_scale_factor and
+  // painted_device_scale_factor. Both must be positive, non-zero.
   gfx.mojom.Rect device_viewport;
   float device_scale_factor;
+  float painted_device_scale_factor;
 
   // If a new LocalSurfaceId is assigned by the parent, it's included here.
   LocalSurfaceId? local_surface_id_from_parent;
@@ -83,6 +87,13 @@ struct LayerTreeUpdate {
 
   // Tiling updates for any PictureLayers in the tree.
   array<Tiling> tilings;
+
+  // New or updated animation timelines.
+  array<AnimationTimeline>? animation_timelines;
+
+  // Animation timelines removed since last update. These IDs correspond to the
+  // IDs given in each AnimationTimeline when added or updated above.
+  array<int32>? removed_animation_timelines;
 };
 
 // Drives updates to a GPU-side LayerTreeHostImpl from its corresponding

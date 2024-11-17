@@ -1321,10 +1321,20 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
 
   // Iterators and reverse iterators. They are invalidated on a reallocation.
   //
-  // If you get a compiler warning about code adding or subtracting values
-  // from the iterators returned by these functions, you can either use the
-  // standard library or base::span::subspan to avoid the addition or
-  // subtraction, or use CheckedBegin() and CheckedEnd().
+  // When working with a subrange of a Vector, use base::span to represent
+  // the range instead of a pair of iterators.
+  //
+  // If iterators are required for an api, prefer CheckedBegin() and
+  // CheckedEnd() as they include bounds checks when the compiler can not
+  // verify the code won't have a security bug with adversarial states
+  // otherwise.
+  //
+  // These functions were primarily left unchecked for backward compat with
+  // std sort algorithms. Use of the iterators that involves manually adjusting
+  // their positions would require UNSAFE_BUFFERS and the code should satisfy
+  // the requirements of UNSAFE_BUFFERS. See the macro definition in
+  // https://source.chromium.org/chromium/chromium/src/+/main:base/compiler_specific.h
+  // for more.
   iterator begin() { return iterator(data()); }
   iterator end() { return iterator(DataEnd()); }
   const_iterator begin() const { return const_iterator(data()); }
@@ -1460,8 +1470,8 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   void AppendVector(const Vector<U, otherCapacity, V>&);
   template <typename Iterator>
   void AppendRange(Iterator begin, Iterator end);
-  template <typename U, size_t N>
-  void AppendSpan(base::span<U, N>);
+  template <typename U, size_t N, typename Ptr>
+  void AppendSpan(base::span<U, N, Ptr>);
   template <typename U>
   void UncheckedAppend(U&&);
 
@@ -2220,8 +2230,9 @@ void Vector<T, InlineCapacity, Allocator>::AppendRange(Iterator begin,
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
-template <typename U, size_t N>
-void Vector<T, InlineCapacity, Allocator>::AppendSpan(base::span<U, N> data) {
+template <typename U, size_t N, typename Ptr>
+void Vector<T, InlineCapacity, Allocator>::AppendSpan(
+    base::span<U, N, Ptr> data) {
   Append(data.data(), base::checked_cast<wtf_size_t>(data.size()));
 }
 

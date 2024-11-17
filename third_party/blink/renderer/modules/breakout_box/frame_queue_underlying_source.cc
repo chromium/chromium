@@ -44,8 +44,7 @@ media::VideoFrame::ID GetFrameId(
 }
 
 media::VideoFrame::ID GetFrameId(const scoped_refptr<media::AudioBuffer>&) {
-  NOTREACHED_IN_MIGRATION();
-  return media::VideoFrame::ID();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -89,7 +88,7 @@ FrameQueueUnderlyingSource<NativeFrameType>::FrameQueueUnderlyingSource(
 }
 
 template <typename NativeFrameType>
-ScriptPromiseUntyped FrameQueueUnderlyingSource<NativeFrameType>::Pull(
+ScriptPromise<IDLUndefined> FrameQueueUnderlyingSource<NativeFrameType>::Pull(
     ScriptState* script_state,
     ExceptionState&) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
@@ -116,9 +115,8 @@ ScriptPromiseUntyped FrameQueueUnderlyingSource<NativeFrameType>::Pull(
 }
 
 template <typename NativeFrameType>
-ScriptPromiseUntyped FrameQueueUnderlyingSource<NativeFrameType>::Start(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
+ScriptPromise<IDLUndefined> FrameQueueUnderlyingSource<NativeFrameType>::Start(
+    ScriptState* script_state) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   if (is_closed_) {
     // This was intended to be closed before Start() was called.
@@ -127,9 +125,10 @@ ScriptPromiseUntyped FrameQueueUnderlyingSource<NativeFrameType>::Start(
     if (!StartFrameDelivery()) {
       // There is only one way in which this can fail for now. Perhaps
       // implementations should return their own failure messages.
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Invalid track");
-      return ScriptPromiseUntyped();
+      V8ThrowDOMException::Throw(script_state->GetIsolate(),
+                                 DOMExceptionCode::kInvalidStateError,
+                                 "Invalid track");
+      return EmptyPromise();
     }
   }
 
@@ -137,7 +136,7 @@ ScriptPromiseUntyped FrameQueueUnderlyingSource<NativeFrameType>::Start(
 }
 
 template <typename NativeFrameType>
-ScriptPromiseUntyped FrameQueueUnderlyingSource<NativeFrameType>::Cancel(
+ScriptPromise<IDLUndefined> FrameQueueUnderlyingSource<NativeFrameType>::Cancel(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState&) {

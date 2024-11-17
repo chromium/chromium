@@ -62,6 +62,20 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   void SetIsSharedDictionaryReadAllowedCallback(
       base::RepeatingCallback<bool()> callback) override;
 
+  // An enumeration of the results of a request with respect to IP Protection.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class IpProtectionJobResult {
+    // Request was not IP Protected.
+    kProtectionNotAttempted = 0,
+    // Request was IP Protected and carried via IP Protection proxies or, if
+    // the direct-only parameter is true, made directly.
+    kProtectionSuccess = 1,
+    // Request was IP Protected, but fell back to direct.
+    kDirectFallback = 2,
+    kMaxValue = kDirectFallback,
+  };
+
  protected:
   URLRequestHttpJob(URLRequest* request,
                     const HttpUserAgentSettings* http_user_agent_settings);
@@ -75,7 +89,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   ConnectionAttempts GetConnectionAttempts() const override;
   void CloseConnectionOnDestruction() override;
   std::unique_ptr<SourceStream> SetUpSourceStream() override;
-  cookie_util::StorageAccessStatus StorageAccessStatus() const override;
 
   RequestPriority priority() const {
     return priority_;
@@ -148,6 +161,8 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   int NotifyConnectedCallback(const TransportInfo& info,
                               CompletionOnceCallback callback);
 
+  void RestartTransaction();
+  void RestartTransactionForRefresh();
   void RestartTransactionWithAuth(const AuthCredentials& credentials);
 
   // Overridden from URLRequestJob:
@@ -238,9 +253,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // in a request.
   bool ShouldRecordPartitionedCookieUsage() const;
 
-  // Applies the relevant Sec-Fetch-Storage-Access header if needed.
-  void MaybeSetSecFetchStorageAccessHeader();
-
   RequestPriority priority_ = DEFAULT_PRIORITY;
 
   HttpRequestInfo request_info_;
@@ -316,13 +328,6 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // The First-Party Set metadata associated with this job. Set when the job is
   // started.
   FirstPartySetMetadata first_party_set_metadata_;
-
-  // The level of storage access available to this request. Note that this
-  // member is not set during construction; it is only set on request legs that
-  // include the Sec-Fetch-Storage-Access request header. (In particular, this
-  // excludes same-site requests and requests that cannot include cookies.)
-  cookie_util::StorageAccessStatus storage_access_status_ =
-      cookie_util::StorageAccessStatus::kNone;
 
   base::WeakPtrFactory<URLRequestHttpJob> weak_factory_{this};
 };

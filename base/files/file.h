@@ -291,10 +291,8 @@ class BASE_EXPORT File {
   // Updates the file times.
   bool SetTimes(Time last_access_time, Time last_modified_time);
 
-  // Returns some basic information for the given file. Code that needs to
-  // support android Content-URIs should use base::GetFileInfo(FilePath)
-  // which is able to use the path (URI) to populate Info via Java APIs.
-  bool GetInfo(Info* info);
+  // Returns some basic information for the given file.
+  bool GetInfo(Info* info) const;
 
 #if !BUILDFLAG( \
     IS_FUCHSIA)  // Fuchsia's POSIX API does not support file locking.
@@ -432,9 +430,10 @@ class BASE_EXPORT File {
 
   ScopedPlatformFile file_;
 
-  // A path to use for tracing purposes. Set if file tracing is enabled during
-  // |Initialize()|.
-  FilePath tracing_path_;
+  // Platform path to `file_`. Set if `this` wraps a file from an Android
+  // content provider (i.e. a content URI) or if tracing is enabled in
+  // `Initialize()`.
+  FilePath path_;
 
   // Object tied to the lifetime of |this| that enables/disables tracing.
   FileTracing::ScopedEnabler trace_enabler_;

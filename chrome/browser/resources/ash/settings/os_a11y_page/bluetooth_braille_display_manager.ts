@@ -8,7 +8,8 @@
  * component to interact with a bluetooth braille display.
  */
 
-import {ChromeVoxSubpageBrowserProxy, ChromeVoxSubpageBrowserProxyImpl, DeviceEventListener, PairingEventListener} from './chromevox_subpage_browser_proxy.js';
+import type {ChromeVoxSubpageBrowserProxy, DeviceEventListener, PairingEventListener} from './chromevox_subpage_browser_proxy.js';
+import {ChromeVoxSubpageBrowserProxyImpl} from './chromevox_subpage_browser_proxy.js';
 
 export interface BluetoothBrailleDisplayListener {
   onDisplayListChanged(displays: chrome.bluetooth.Device[]): void;

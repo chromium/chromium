@@ -13,6 +13,8 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
+
 class ApplicationControllerImpl final
     : public fidl::Server<chromium_cast::ApplicationController> {
  public:
@@ -45,7 +47,7 @@ class ApplicationControllerImpl final
  private:
   std::optional<fidl::ServerBinding<chromium_cast::ApplicationController>>
       binding_;
-  fuchsia::web::Frame* const frame_;
+  const raw_ptr<fuchsia::web::Frame> frame_;
   const uint64_t trace_flow_id_;
 };
 

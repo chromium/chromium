@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Invoerwaarde voor persoonlijke sleutel moet een geldig pad zijn.</translation>
 <translation id="388442998277590542">Kan optiepagina '<ph name="OPTIONS_PAGE" />' niet laden.</translation>
 <translation id="3984413272403535372">Fout bij ondertekenen van extensie.</translation>
-<translation id="4115165561519362854">De beheerder van dit apparaat vereist dat minimaal versie <ph name="EXTENSION_VERSION" /> van <ph name="EXTENSION_NAME" /> moet zijn geïnstalleerd. De extensie kan pas worden aangezet nadat deze is geüpdatet naar die versie (of hoger).</translation>
 <translation id="4233778200880751280">De informatiepagina '<ph name="ABOUT_PAGE" />' kan niet worden geladen.</translation>
 <translation id="471800408830181311">Uitvoer van persoonlijke sleutel is mislukt.</translation>
 <translation id="4811956658694082538">Kan pakket niet installeren, omdat het proces van een hulpprogramma is gecrasht. Start Chrome opnieuw en probeer het nogmaals.</translation>

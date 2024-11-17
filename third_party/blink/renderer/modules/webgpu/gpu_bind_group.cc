@@ -61,13 +61,12 @@ wgpu::BindGroupEntry AsDawnType(
   return dawn_binding;
 }
 
-std::unique_ptr<wgpu::BindGroupEntry[]> AsDawnType(
+base::HeapArray<wgpu::BindGroupEntry> AsDawnType(
     const HeapVector<Member<GPUBindGroupEntry>>& webgpu_objects,
     Vector<std::unique_ptr<wgpu::ExternalTextureBindingEntry>>*
         externalTextureBindingEntries) {
-  wtf_size_t count = webgpu_objects.size();
-  std::unique_ptr<wgpu::BindGroupEntry[]> dawn_objects(
-      new wgpu::BindGroupEntry[count]);
+  const wtf_size_t count = webgpu_objects.size();
+  auto dawn_objects = base::HeapArray<wgpu::BindGroupEntry>::WithSize(count);
   for (wtf_size_t i = 0; i < count; ++i) {
     dawn_objects[i] =
         AsDawnType(webgpu_objects[i].Get(), externalTextureBindingEntries);
@@ -83,7 +82,7 @@ GPUBindGroup* GPUBindGroup::Create(GPUDevice* device,
   DCHECK(webgpu_desc);
 
   uint32_t entry_count = 0;
-  std::unique_ptr<wgpu::BindGroupEntry[]> entries;
+  base::HeapArray<wgpu::BindGroupEntry> entries;
   Vector<std::unique_ptr<wgpu::ExternalTextureBindingEntry>>
       externalTextureBindingEntries;
   entry_count = static_cast<uint32_t>(webgpu_desc->entries().size());
@@ -95,7 +94,7 @@ GPUBindGroup* GPUBindGroup::Create(GPUDevice* device,
   wgpu::BindGroupDescriptor dawn_desc = {
       .layout = AsDawnType(webgpu_desc->layout()),
       .entryCount = entry_count,
-      .entries = entries.get(),
+      .entries = entries.data(),
   };
   std::string label = webgpu_desc->label().Utf8();
   if (!label.empty()) {

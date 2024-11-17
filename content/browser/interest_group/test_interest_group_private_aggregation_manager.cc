@@ -72,7 +72,7 @@ void TestInterestGroupPrivateAggregationManager::ClearBudgetData(
     base::Time delete_end,
     StoragePartition::StorageKeyMatcherFunction filter,
     base::OnceClosure done) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool TestInterestGroupPrivateAggregationManager::IsDebugModeAllowed(

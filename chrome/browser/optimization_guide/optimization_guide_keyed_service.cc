@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -49,6 +50,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_manager.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
 #include "components/optimization_guide/core/model_quality/model_quality_util.h"
@@ -89,6 +91,7 @@ namespace {
 using ::optimization_guide::ModelExecutionFeaturesController;
 using ::optimization_guide::OnDeviceModelComponentStateManager;
 using ::optimization_guide::OnDeviceModelPerformanceClass;
+using ::optimization_guide::OnDeviceModelServiceController;
 
 // Deletes old store paths that were written in incorrect locations.
 void DeleteOldStorePaths(const base::FilePath& profile_path) {
@@ -122,58 +125,6 @@ Profile* GetProfileForOTROptimizationGuide(Profile* profile) {
     }
   }
   return profile->GetOriginalProfile();
-}
-
-OnDeviceModelPerformanceClass ConvertToOnDeviceModelPerformanceClass(
-    std::optional<on_device_model::mojom::PerformanceClass> performance_class) {
-  if (!performance_class) {
-    return OnDeviceModelPerformanceClass::kServiceCrash;
-  }
-
-  switch (*performance_class) {
-    case on_device_model::mojom::PerformanceClass::kError:
-      return OnDeviceModelPerformanceClass::kError;
-    case on_device_model::mojom::PerformanceClass::kVeryLow:
-      return OnDeviceModelPerformanceClass::kVeryLow;
-    case on_device_model::mojom::PerformanceClass::kLow:
-      return OnDeviceModelPerformanceClass::kLow;
-    case on_device_model::mojom::PerformanceClass::kMedium:
-      return OnDeviceModelPerformanceClass::kMedium;
-    case on_device_model::mojom::PerformanceClass::kHigh:
-      return OnDeviceModelPerformanceClass::kHigh;
-    case on_device_model::mojom::PerformanceClass::kVeryHigh:
-      return OnDeviceModelPerformanceClass::kVeryHigh;
-    case on_device_model::mojom::PerformanceClass::kGpuBlocked:
-      return OnDeviceModelPerformanceClass::kGpuBlocked;
-    case on_device_model::mojom::PerformanceClass::kFailedToLoadLibrary:
-      return OnDeviceModelPerformanceClass::kFailedToLoadLibrary;
-  }
-}
-
-std::string OnDeviceModelPerformanceClassToString(
-    OnDeviceModelPerformanceClass performance_class) {
-  switch (performance_class) {
-    case OnDeviceModelPerformanceClass::kUnknown:
-      return "Unknown";
-    case OnDeviceModelPerformanceClass::kError:
-      return "Error";
-    case OnDeviceModelPerformanceClass::kVeryLow:
-      return "VeryLow";
-    case OnDeviceModelPerformanceClass::kLow:
-      return "Low";
-    case OnDeviceModelPerformanceClass::kMedium:
-      return "Medium";
-    case OnDeviceModelPerformanceClass::kHigh:
-      return "High";
-    case OnDeviceModelPerformanceClass::kVeryHigh:
-      return "VeryHigh";
-    case OnDeviceModelPerformanceClass::kGpuBlocked:
-      return "GpuBlocked";
-    case OnDeviceModelPerformanceClass::kFailedToLoadLibrary:
-      return "FailedToLoadLibrary";
-    case OnDeviceModelPerformanceClass::kServiceCrash:
-      return "ServiceCrash";
-  }
 }
 
 scoped_refptr<optimization_guide::OnDeviceModelServiceController>
@@ -219,13 +170,15 @@ class OnDeviceModelComponentStateManagerDelegate
         std::move(callback));
   }
 
-  void RegisterInstaller(scoped_refptr<OnDeviceModelComponentStateManager>
-                             state_manager) override {
+  void RegisterInstaller(
+      scoped_refptr<OnDeviceModelComponentStateManager> state_manager,
+      bool is_already_installing) override {
     if (!g_browser_process) {
       return;
     }
     component_updater::RegisterOptimizationGuideOnDeviceModelComponent(
-        g_browser_process->component_updater(), state_manager);
+        g_browser_process->component_updater(), state_manager,
+        is_already_installing);
   }
 
   void Uninstall(scoped_refptr<OnDeviceModelComponentStateManager>
@@ -254,38 +207,24 @@ OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
 }
 
 // static
-// We're using a weakptr here for testing purposes. We need to allow
-// OnDeviceModelComponentStateManager to be destroyed along with a test harness.
 void OptimizationGuideKeyedService::DeterminePerformanceClass(
-    base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+    base::WeakPtr<OnDeviceModelComponentStateManager>
         on_device_component_state_manager) {
-  auto controller =
-      GetOnDeviceModelServiceController(on_device_component_state_manager);
-  controller->GetEstimatedPerformanceClass(base::BindOnce(
-      [](base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
-             on_device_component_state_manager,
-         // Keep a reference to the controller to avoid it being deleted and
-         // killing the service.
-         scoped_refptr<optimization_guide::OnDeviceModelServiceController>
-             controller,
-         std::optional<on_device_model::mojom::PerformanceClass>
-             performance_class) {
-        auto optimization_guide_performance_class =
-            ConvertToOnDeviceModelPerformanceClass(performance_class);
+  OnDeviceModelServiceController::GetEstimatedPerformanceClass(
+      GetOnDeviceModelServiceController(on_device_component_state_manager),
+      base::BindOnce([](OnDeviceModelPerformanceClass perf_class) {
         base::UmaHistogramEnumeration(
             "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
-            optimization_guide_performance_class);
-        if (on_device_component_state_manager) {
-          on_device_component_state_manager->DevicePerformanceClassChanged(
-              optimization_guide_performance_class);
-        }
+            perf_class);
         ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
             "SyntheticOnDeviceModelPerformanceClass",
-            OnDeviceModelPerformanceClassToString(
-                optimization_guide_performance_class),
+            SyntheticTrialGroupForPerformanceClass(perf_class),
             variations::SyntheticTrialAnnotationMode::kCurrentLog);
-      },
-      on_device_component_state_manager, controller));
+        return perf_class;
+      })
+          .Then(base::BindOnce(&OnDeviceModelComponentStateManager::
+                                   DevicePerformanceClassChanged,
+                               on_device_component_state_manager)));
 }
 
 OptimizationGuideKeyedService::OptimizationGuideKeyedService(
@@ -424,7 +363,8 @@ void OptimizationGuideKeyedService::Initialize() {
     if (!performance_class_fetched &&
         (base::FeatureList::IsEnabled(
              optimization_guide::features::kLogOnDeviceMetricsOnStartup) ||
-         optimization_guide::features::IsOnDeviceExecutionEnabled())) {
+         optimization_guide::features::IsOnDeviceExecutionEnabled()) &&
+        on_device_component_manager_->NeedsPerformanceClassUpdate()) {
       performance_class_fetched = true;
       base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
           FROM_HERE,
@@ -479,6 +419,10 @@ void OptimizationGuideKeyedService::Initialize() {
               model_quality_logs_uploader_service_
                   ? model_quality_logs_uploader_service_->GetWeakPtr()
                   : nullptr);
+      if (on_device_component_manager_) {
+        on_device_component_manager_->AddObserver(
+            model_execution_manager_.get());
+      }
 
       RecordModelExecutionFeatureSyntheticFieldTrial(
           optimization_guide::UserVisibleFeatureKey::kHistorySearch,
@@ -637,22 +581,24 @@ OptimizationGuideKeyedService::StartSession(
 void OptimizationGuideKeyedService::ExecuteModel(
     optimization_guide::ModelBasedCapabilityKey feature,
     const google::protobuf::MessageLite& request_metadata,
+    const std::optional<base::TimeDelta>& execution_timeout,
     optimization_guide::OptimizationGuideModelExecutionResultCallback
         callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!model_execution_manager_) {
     std::move(callback).Run(
+        optimization_guide::OptimizationGuideModelExecutionResult(
         base::unexpected(
             optimization_guide::OptimizationGuideModelExecutionError::
                 FromModelExecutionError(
                     optimization_guide::OptimizationGuideModelExecutionError::
-                        ModelExecutionError::kGenericFailure)),
+                        ModelExecutionError::kGenericFailure)), nullptr),
         nullptr);
     return;
   }
-  model_execution_manager_->ExecuteModel(feature, request_metadata,
-                                         /*log_ai_data_request=*/nullptr,
-                                         std::move(callback));
+  model_execution_manager_->ExecuteModel(
+      feature, request_metadata, execution_timeout,
+      /*log_ai_data_request=*/nullptr, std::move(callback));
 }
 
 void OptimizationGuideKeyedService::AddOnDeviceModelAvailabilityChangeObserver(
@@ -729,6 +675,11 @@ void OptimizationGuideKeyedService::
   model_quality_logs_uploader_service_ = std::move(uploader);
 }
 
+void OptimizationGuideKeyedService::AllowUnsignedUserForTesting(
+    optimization_guide::UserVisibleFeatureKey feature) {
+  model_execution_features_controller_->AllowUnsignedUserForTesting(feature);  // IN-TEST
+}
+
 bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(
     optimization_guide::UserVisibleFeatureKey feature) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -737,6 +688,13 @@ bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyEnabledForUser(
   }
   return model_execution_features_controller_
       ->ShouldFeatureBeCurrentlyEnabledForUser(feature);
+}
+
+bool OptimizationGuideKeyedService::
+    ShouldFeatureAllowModelExecutionForSignedInUser(
+        optimization_guide::UserVisibleFeatureKey feature) const {
+  return model_execution_features_controller_
+      ->ShouldFeatureAllowModelExecutionForSignedInUser(feature);
 }
 
 bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyAllowedForFeedback(
@@ -757,16 +715,14 @@ bool OptimizationGuideKeyedService::ShouldFeatureBeCurrentlyAllowedForFeedback(
   // Otherwise, feedback is disabled, with one exception: On dogfood clients,
   // feedback is always enabled (as long as the feature is enabled).
   auto* variations_service = g_browser_process->variations_service();
-  bool is_dogfood_client =
-      !!variations_service && variations_service->IsLikelyDogfoodClient();
-  std::optional<optimization_guide::UserVisibleFeatureKey> feature_key =
-      metadata->user_visible_feature_key();
-  if (!feature_key) {
-    // This isn't a user-visible feature, so we shouldn't show the feedback UI.
-    return false;
-  }
-  return is_dogfood_client &&
-         ShouldFeatureBeCurrentlyEnabledForUser(*feature_key);
+  return !!variations_service && variations_service->IsLikelyDogfoodClient();
+}
+
+bool OptimizationGuideKeyedService::ShouldModelExecutionBeAllowedForUser()
+    const {
+  return model_execution_features_controller_ &&
+         model_execution_features_controller_
+             ->ShouldModelExecutionBeAllowedForUser();
 }
 
 bool OptimizationGuideKeyedService::IsSettingVisible(
@@ -775,6 +731,13 @@ bool OptimizationGuideKeyedService::IsSettingVisible(
   if (!model_execution_features_controller_) {
     return false;
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (optimization_guide::features::kShowAiSettingsForTesting.Get()) {
+    return true;
+  }
+#endif
+
   return model_execution_features_controller_->IsSettingVisible(feature);
 }
 
@@ -827,7 +790,7 @@ void OptimizationGuideKeyedService::RemoveModelExecutionSettingsEnabledObserver(
 void OptimizationGuideKeyedService::
     RecordModelExecutionFeatureSyntheticFieldTrial(
         optimization_guide::UserVisibleFeatureKey feature,
-        const std::string_view feature_name) {
+        std::string_view feature_name) {
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       base::StrCat({"SyntheticModelExecutionFeature", feature_name}),
       ShouldFeatureBeCurrentlyEnabledForUser(feature) ? "Enabled" : "Disabled",

@@ -15,11 +15,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/commerce/commerce_page_action_controller.h"
 #include "chrome/browser/ui/commerce/discounts_page_action_controller.h"
 #include "chrome/browser/ui/commerce/price_tracking_page_action_controller.h"
+#include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/commerce/product_specifications_page_action_controller.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
@@ -203,6 +205,17 @@ void CommerceUiTabHelper::DidFinishNavigation(
         base::BindOnce(&CommerceUiTabHelper::HandleProductInfoResponse,
                        weak_ptr_factory_.GetWeakPtr()));
   }
+
+  auto* browser = chrome::FindBrowserWithTab(web_contents());
+  if (browser) {
+    auto* product_specifications_entry_point_controller =
+        browser->browser_window_features()
+            ->product_specifications_entry_point_controller();
+    if (product_specifications_entry_point_controller) {
+      product_specifications_entry_point_controller->DidFinishNavigation(
+          web_contents());
+    }
+  }
 }
 
 bool CommerceUiTabHelper::ShouldIgnoreSameUrlNavigation() {
@@ -351,7 +364,8 @@ void CommerceUiTabHelper::MaybeComputePageActionToExpand() {
   if (ShouldShowDiscountsIconView()) {
     commerce::metrics::DiscountsMetricCollector::
         RecordDiscountsPageActionIconExpandState(
-            IsPageActionIconExpanded(PageActionIconType::kDiscounts));
+            IsPageActionIconExpanded(PageActionIconType::kDiscounts),
+            GetDiscounts());
   }
 }
 
@@ -438,6 +452,38 @@ bool CommerceUiTabHelper::IsInRecommendedSet() {
   return product_specifications_controller_->IsInRecommendedSet();
 }
 
+GURL CommerceUiTabHelper::GetComparisonTableURL() {
+  return product_specifications_controller_->GetComparisonTableURL();
+}
+
+void CommerceUiTabHelper::OnOpenComparePageClicked() {
+  auto* tab_strip_model = tabs::TabInterface::GetFromContents(web_contents())
+                              ->GetBrowserWindowInterface()
+                              ->GetTabStripModel();
+  GURL comparison_table_url = GetComparisonTableURL();
+
+  for (int index = 0; index < tab_strip_model->count(); index++) {
+    auto* tab_web_contents = tab_strip_model->GetWebContentsAt(index);
+    if (tab_web_contents->GetLastCommittedURL() == comparison_table_url) {
+      tab_strip_model->ActivateTabAt(index);
+      return;
+    }
+  }
+
+  auto* browser = chrome::FindBrowserWithTab(web_contents());
+  if (!browser) {
+    return;
+  }
+
+  int active_index = tab_strip_model->active_index();
+  chrome::AddTabAt(browser, comparison_table_url, active_index + 1, true,
+                   tab_strip_model->GetTabGroupForTab(active_index));
+}
+
+std::u16string CommerceUiTabHelper::GetComparisonSetName() {
+  return product_specifications_controller_->GetComparisonSetName();
+}
+
 std::u16string CommerceUiTabHelper::GetProductSpecificationsLabel(
     bool is_added) {
   return product_specifications_controller_->GetProductSpecificationsLabel(
@@ -480,11 +526,11 @@ void CommerceUiTabHelper::MakeShoppingInsightsSidePanelUnavailable() {
       SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights));
 }
 
-std::unique_ptr<views::View>
-CommerceUiTabHelper::CreateShoppingInsightsWebView() {
+std::unique_ptr<views::View> CommerceUiTabHelper::CreateShoppingInsightsWebView(
+    SidePanelEntryScope& scope) {
   auto shopping_insights_web_view =
       std::make_unique<SidePanelWebUIViewT<ShoppingInsightsSidePanelUI>>(
-          base::RepeatingClosure(), base::RepeatingClosure(),
+          scope, base::RepeatingClosure(), base::RepeatingClosure(),
           std::make_unique<WebUIContentsWrapperT<ShoppingInsightsSidePanelUI>>(
               GURL(kChromeUIShoppingInsightsSidePanelUrl),
               Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
@@ -729,7 +775,7 @@ void CommerceUiTabHelper::MaybeRecordShoppingInformationUKM(
       promoted_feature =
           static_cast<int64_t>(ShoppingContextualFeature::kPriceTracking);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     ukm_builder.SetPromotedFeature(promoted_feature);
   }

@@ -86,9 +86,9 @@ class EventSource::EventRewriterContinuationImpl
   base::WeakPtrFactory<EventRewriterContinuationImpl> weak_ptr_factory_{this};
 };
 
-EventSource::EventSource() {}
+EventSource::EventSource() = default;
 
-EventSource::~EventSource() {}
+EventSource::~EventSource() = default;
 
 void EventSource::AddEventRewriter(EventRewriter* rewriter) {
   EventRewriterContinuationImpl::Create(this, rewriter);

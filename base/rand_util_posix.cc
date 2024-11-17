@@ -120,34 +120,9 @@ bool GetRandomSyscall(void* output, size_t output_length) {
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)) && !BUILDFLAG(IS_NACL)
 
-#if BUILDFLAG(IS_ANDROID)
-std::atomic<bool> g_use_getrandom;
-
-// Note: the BoringSSL feature takes precedence over the getrandom() trial if
-// both are enabled.
-BASE_FEATURE(kUseGetrandomForRandBytes,
-             "UseGetrandomForRandBytes",
-             FEATURE_ENABLED_BY_DEFAULT);
-
-bool UseGetrandom() {
-  return g_use_getrandom.load(std::memory_order_relaxed);
-}
-#elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !BUILDFLAG(IS_NACL)
-bool UseGetrandom() {
-  return true;
-}
-#endif
-
 }  // namespace
 
 namespace internal {
-
-#if BUILDFLAG(IS_ANDROID)
-void ConfigureRandBytesFieldTrial() {
-  g_use_getrandom.store(FeatureList::IsEnabled(kUseGetrandomForRandBytes),
-                        std::memory_order_relaxed);
-}
-#endif
 
 namespace {
 
@@ -188,14 +163,12 @@ void RandBytesInternal(span<uint8_t> output, bool avoid_allocation) {
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
      BUILDFLAG(IS_ANDROID)) &&                        \
     !BUILDFLAG(IS_NACL)
-  if (avoid_allocation || UseGetrandom()) {
-    // On Android it is mandatory to check that the kernel _version_ has the
-    // support for a syscall before calling. The same check is made on Linux and
-    // ChromeOS to avoid making a syscall that predictably returns ENOSYS.
-    static const bool kernel_has_support = KernelSupportsGetRandom();
-    if (kernel_has_support && GetRandomSyscall(output.data(), output.size())) {
-      return;
-    }
+  // On Android it is mandatory to check that the kernel _version_ has the
+  // support for a syscall before calling. The same check is made on Linux and
+  // ChromeOS to avoid making a syscall that predictably returns ENOSYS.
+  static const bool kernel_has_support = KernelSupportsGetRandom();
+  if (kernel_has_support && GetRandomSyscall(output.data(), output.size())) {
+    return;
   }
 #elif BUILDFLAG(IS_MAC)
   // TODO(crbug.com/40641285): Enable this on iOS too, when sys/random.h arrives

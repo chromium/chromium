@@ -1,5 +1,8 @@
 specific_include_rules = {
+  "serialized_script_value_fuzzer.cc": [
+    "+base/test",
+  ],
   "v8_script_value_serializer_test.cc": [
-    "+gin/wrappable.h"
-  ]
+    "+gin/wrappable.h",
+  ],
 }

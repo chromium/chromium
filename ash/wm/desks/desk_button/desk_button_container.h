@@ -105,6 +105,9 @@ class ASH_EXPORT DeskButtonContainer : public DeskProfilesDelegate::Observer,
   // controller so that they show the same menu items.
   void MaybeShowContextMenu(views::View* source, ui::LocatedEvent* event);
 
+  // Sets previous focus and next focus of desk button.
+  void InitializeAccessibleProperties();
+
  private:
   bool zero_state_ = false;
   raw_ptr<Shelf> shelf_ = nullptr;

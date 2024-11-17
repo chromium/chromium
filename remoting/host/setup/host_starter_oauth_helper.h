@@ -50,7 +50,7 @@ class HostStarterOAuthHelper : public gaia::GaiaOAuthClient::Delegate {
   void OnGetTokensResponse(const std::string& refresh_token,
                            const std::string& access_token,
                            int expires_in_seconds) override;
-  void OnGetTokenInfoResponse(const base::Value::Dict& token_info) override;
+  void OnGetUserEmailResponse(const std::string& user_email) override;
   void OnOAuthError() override;
   void OnNetworkError(int response_code) override;
 

@@ -75,8 +75,13 @@ public final class InputHintCheckerTest {
                         InputHintChecker.hasInputWithThrottlingForTesting();
                     } else {
                         InputHintChecker.hasInputForTesting();
+                        // Only assert on |mCallCount| in non-throttled case. Oftentimes
+                        // the hasInputWithThrottlingForTesting() call above is preceded by another
+                        // input hint poll from MessagePumpAndroid. This would prevent incrementing
+                        // the poll count for a few milliseconds.
+                        // See https://crbug.com/372637659#comment5.
+                        Assert.assertEquals(1, view.mCallCount);
                     }
-                    Assert.assertEquals(1, view.mCallCount);
                 });
     }
 
@@ -94,6 +99,47 @@ public final class InputHintCheckerTest {
         CriteriaHelper.pollUiThread(InputHintChecker::isInitializedForTesting);
 
         checkHasInputOnUi(view, /* withThrottling= */ false);
+    }
+
+    @Test
+    @MediumTest
+    public void testInputHintResultHistogram() {
+        // Start InputHintChecker asynchronous initialization by calling setView().
+        TestTextView view =
+                new TestTextView(InstrumentationRegistry.getInstrumentation().getTargetContext());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InputHintChecker.setAllowSetViewForTesting(true);
+                    InputHintChecker.setView(view);
+                });
+        CriteriaHelper.pollUiThread(InputHintChecker::isInitializedForTesting);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Simulate input event pending.
+                    view.mReturnValue = true;
+                    InputHintChecker.setView(view);
+                    Assert.assertTrue(InputHintChecker.hasInputForTesting());
+                    InputHintChecker.setIsAfterInputYieldForTesting(true);
+
+                    // Check that the histogram is recorded as a result of handling of the input
+                    // event in web contents.
+                    int compositorViewTouchEventResult = 0; // from input_hint_checker.h
+                    try (HistogramWatcher ignored =
+                            HistogramWatcher.newSingleRecordWatcher(
+                                    "Android.InputHintChecker.InputHintResult",
+                                    compositorViewTouchEventResult)) {
+                        InputHintChecker.onCompositorViewHolderTouchEvent();
+                    }
+
+                    // Check that no histogram is recorded after the yield state is reset.
+                    try (var ignored =
+                            HistogramWatcher.newBuilder()
+                                    .expectNoRecords("Android.InputHintChecker.InputHintResult")
+                                    .build()) {
+                        InputHintChecker.onCompositorViewHolderTouchEvent();
+                    }
+                });
     }
 
     @Test

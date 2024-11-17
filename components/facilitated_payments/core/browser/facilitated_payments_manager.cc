@@ -17,6 +17,7 @@
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 
 namespace payments::facilitated {
 
@@ -34,23 +35,21 @@ FacilitatedPaymentsManager::FacilitatedPaymentsManager(
               FacilitatedPaymentsInitiatePaymentRequestDetails>()) {
   DCHECK(optimization_guide_decider_);
   RegisterPixAllowlist();
+  client_->SetUiEventListener(base::BindRepeating(
+      &FacilitatedPaymentsManager::OnUiEvent, weak_ptr_factory_.GetWeakPtr()));
 }
 
 FacilitatedPaymentsManager::~FacilitatedPaymentsManager() {
-  client_->DismissPrompt();
+  DismissPrompt();
 }
 
 void FacilitatedPaymentsManager::Reset() {
-  // In tests, when the payment flow is abandoned, do not reset so the final
-  // states can be verified.
-  if (is_test_) {
-    return;
-  }
   has_payflow_started_ = false;
   ukm_source_id_ = 0;
   trigger_source_ = TriggerSource::kUnknown;
   initiate_payment_request_details_ =
       std::make_unique<FacilitatedPaymentsInitiatePaymentRequestDetails>();
+  ui_state_ = UiState::kHidden;
   weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
@@ -65,14 +64,11 @@ void FacilitatedPaymentsManager::OnPixCodeCopiedToClipboard(
   ukm_source_id_ = ukm_source_id;
   trigger_source_ = TriggerSource::kCopyEvent;
   // Check whether the domain for the render_frame_host_url is allowlisted.
-  auto decision = optimization_guide_decider_->CanApplyOptimization(
-      render_frame_host_url,
-      optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST,
-      /*optimization_metadata=*/nullptr);
-  if (decision != optimization_guide::OptimizationGuideDecision::kTrue) {
+  if (!IsMerchantAllowlisted(render_frame_host_url)) {
     // The merchant is not part of the allowlist, ignore the copy event.
     return;
   }
+  LogPixCodeCopied();
   initiate_payment_request_details_->merchant_payment_page_hostname_ =
       render_frame_host_url.host();
   // Trigger Pix code validation.
@@ -84,21 +80,20 @@ void FacilitatedPaymentsManager::OnPixCodeCopiedToClipboard(
 
 void FacilitatedPaymentsManager::RegisterPixAllowlist() const {
   optimization_guide_decider_->RegisterOptimizationTypes(
-      {optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST,
-       optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST});
+      {optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST});
 }
 
-optimization_guide::OptimizationGuideDecision
-FacilitatedPaymentsManager::GetAllowlistCheckResult(const GURL& url) const {
+bool FacilitatedPaymentsManager::IsMerchantAllowlisted(const GURL& url) const {
   // Since the optimization guide decider integration corresponding to PIX
   // merchant lists are allowlists for the question "Can this site be
   // optimized?", a match on the allowlist answers the question with "yes".
-  // Therefore, `kTrue` indicates that `url` is allowed for running PIX code
-  // detection. If the optimization type was not registered in time when we
+  // Therefore, `kTrue` indicates that `url` is allowed for detecting PIX code
+  // on copy events. If the optimization type was not registered in time when we
   // queried it, it will be `kUnknown`.
   return optimization_guide_decider_->CanApplyOptimization(
-      url, optimization_guide::proto::PIX_PAYMENT_MERCHANT_ALLOWLIST,
-      /*optimization_metadata=*/nullptr);
+             url, optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST,
+             /*optimization_metadata=*/nullptr) ==
+         optimization_guide::OptimizationGuideDecision::kTrue;
 }
 
 void FacilitatedPaymentsManager::OnPixCodeValidated(
@@ -109,25 +104,33 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
       is_pix_code_valid, (base::TimeTicks::Now() - start_time));
   if (!is_pix_code_valid.has_value()) {
     // Pix code validator encountered an error.
-    LogPaymentNotOfferedReason(PaymentNotOfferedReason::kCodeValidatorFailed);
-    Reset();
+    LogPayflowExitedReason(PayflowExitedReason::kCodeValidatorFailed);
     return;
   }
 
   if (!is_pix_code_valid.value()) {
     // Pix code is not valid.
-    LogPaymentNotOfferedReason(PaymentNotOfferedReason::kInvalidCode);
-    Reset();
+    LogPayflowExitedReason(PayflowExitedReason::kInvalidCode);
     return;
   }
   // If a valid PIX code is found, and the user has Google wallet linked PIX
   // accounts, verify that the payments API is available, and then show the PIX
   // payment prompt.
   auto* payments_data_manager = client_->GetPaymentsDataManager();
-  if (!payments_data_manager ||
-      !payments_data_manager->IsFacilitatedPaymentsPixUserPrefEnabled() ||
-      !payments_data_manager->HasMaskedBankAccounts()) {
-    Reset();
+  if (!payments_data_manager) {
+    // `payments_data_manager` (owned by a PersonalDataManager) does not exist
+    // in a system profile but Pix should not be triggered there. Keep this
+    // check for safety but no logging should be required.
+    return;
+  }
+
+  if (!payments_data_manager->IsFacilitatedPaymentsPixUserPrefEnabled()) {
+    LogPayflowExitedReason(PayflowExitedReason::kUserOptedOut);
+    return;
+  }
+
+  if (!payments_data_manager->HasMaskedBankAccounts()) {
+    LogPayflowExitedReason(PayflowExitedReason::kNoLinkedAccount);
     return;
   }
 
@@ -135,14 +138,11 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
   // doesn't support it yet.
   if (client_->IsInLandscapeMode() &&
       !base::FeatureList::IsEnabled(kEnablePixPaymentsInLandscapeMode)) {
-    LogPaymentNotOfferedReason(
-        PaymentNotOfferedReason::kLandscapeScreenOrientation);
-    Reset();
+    LogPayflowExitedReason(PayflowExitedReason::kLandscapeScreenOrientation);
     return;
   }
 
   if (!GetApiClient()) {
-    Reset();
     return;
   }
 
@@ -165,12 +165,11 @@ FacilitatedPaymentsApiClient* FacilitatedPaymentsManager::GetApiClient() {
 
 void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
     bool is_api_available) {
-  LogIsApiAvailableResult(
+  LogApiAvailabilityCheckResultAndLatency(
       is_api_available,
       (base::TimeTicks::Now() - api_availability_check_start_time_));
   if (!is_api_available) {
-    LogPaymentNotOfferedReason(PaymentNotOfferedReason::kApiNotAvailable);
-    Reset();
+    LogPayflowExitedReason(PayflowExitedReason::kApiClientNotAvailable);
     return;
   }
 
@@ -179,14 +178,11 @@ void FacilitatedPaymentsManager::OnApiAvailabilityReceived(
       autofill::payments::GetBillingCustomerId(
           client_->GetPaymentsDataManager());
 
-  bool promptShown = client_->ShowPixPaymentPrompt(
+  ShowPixPaymentPrompt(
       client_->GetPaymentsDataManager()->GetMaskedBankAccounts(),
       base::BindOnce(&FacilitatedPaymentsManager::OnPixPaymentPromptResult,
                      weak_ptr_factory_.GetWeakPtr()));
-  LogFopSelectorShown(promptShown);
-  if (promptShown) {
-    fop_selector_shown_time_ = base::TimeTicks::Now();
-  }
+  fop_selector_shown_time_ = base::TimeTicks::Now();
 }
 
 void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
@@ -196,11 +192,10 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
     LogTransactionResult(TransactionResult::kAbandoned, trigger_source_,
                          base::TimeTicks::Now() - fop_selector_shown_time_,
                          ukm_source_id_);
-    Reset();
     return;
   }
-
-  client_->ShowProgressScreen();
+  LogFopSelected();
+  ShowProgressScreen();
 
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
 
@@ -215,9 +210,8 @@ void FacilitatedPaymentsManager::OnRiskDataLoaded(
   LogLoadRiskDataResultAndLatency(/*was_successful=*/!risk_data.empty(),
                                   base::TimeTicks::Now() - start_time);
   if (risk_data.empty()) {
-    client_->ShowErrorScreen();
-    LogPaymentNotOfferedReason(PaymentNotOfferedReason::kRiskDataEmpty);
-    Reset();
+    ShowErrorScreen();
+    LogPayflowExitedReason(PayflowExitedReason::kRiskDataNotAvailable);
     return;
   }
   initiate_payment_request_details_->risk_data_ = risk_data;
@@ -230,15 +224,12 @@ void FacilitatedPaymentsManager::OnRiskDataLoaded(
 
 void FacilitatedPaymentsManager::OnGetClientToken(
     std::vector<uint8_t> client_token) {
-  LogGetClientTokenResult(
+  LogGetClientTokenResultAndLatency(
       !client_token.empty(),
       (base::TimeTicks::Now() - get_client_token_loading_start_time_));
   if (client_token.empty()) {
-    client_->ShowErrorScreen();
-    LogTransactionResult(TransactionResult::kFailed, trigger_source_,
-                         base::TimeTicks::Now() - fop_selector_shown_time_,
-                         ukm_source_id_);
-    Reset();
+    ShowErrorScreen();
+    LogPayflowExitedReason(PayflowExitedReason::kClientTokenNotAvailable);
     return;
   }
   initiate_payment_request_details_->client_token_ = client_token;
@@ -252,6 +243,7 @@ void FacilitatedPaymentsManager::SendInitiatePaymentRequest() {
   initiate_payment_network_start_time_ = base::TimeTicks::Now();
   if (FacilitatedPaymentsNetworkInterface* payments_network_interface =
           client_->GetFacilitatedPaymentsNetworkInterface()) {
+    LogInitiatePaymentAttempt();
     payments_network_interface->InitiatePayment(
         std::move(initiate_payment_request_details_),
         base::BindOnce(
@@ -269,22 +261,17 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
       base::TimeTicks::Now() - initiate_payment_network_start_time_;
   if (result !=
       autofill::payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
-    LogInitiatePaymentResult(/*result=*/false, latency);
-    client_->ShowErrorScreen();
-    LogTransactionResult(TransactionResult::kFailed, trigger_source_,
-                         base::TimeTicks::Now() - fop_selector_shown_time_,
-                         ukm_source_id_);
-    Reset();
+    LogInitiatePaymentResultAndLatency(/*result=*/false, latency);
+    LogPayflowExitedReason(PayflowExitedReason::kInitiatePaymentFailed);
+    ShowErrorScreen();
     return;
   }
-  LogInitiatePaymentResult(/*result=*/true, latency);
+  LogInitiatePaymentResultAndLatency(/*result=*/true, latency);
+
   DCHECK(response_details);
   if (response_details->action_token_.empty()) {
-    client_->ShowErrorScreen();
-    LogTransactionResult(TransactionResult::kFailed, trigger_source_,
-                         base::TimeTicks::Now() - fop_selector_shown_time_,
-                         ukm_source_id_);
-    Reset();
+    LogPayflowExitedReason(PayflowExitedReason::kActionTokenNotAvailable);
+    ShowErrorScreen();
     return;
   }
   std::optional<CoreAccountInfo> account_info = client_->GetCoreAccountInfo();
@@ -292,11 +279,8 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
   // `account_info` would be empty, and the `FacilitatedPaymentsManager` should
   // abandon the payment flow.
   if (!account_info.has_value() || account_info.value().IsEmpty()) {
-    client_->ShowErrorScreen();
-    LogTransactionResult(TransactionResult::kFailed, trigger_source_,
-                         base::TimeTicks::Now() - fop_selector_shown_time_,
-                         ukm_source_id_);
-    Reset();
+    LogPayflowExitedReason(PayflowExitedReason::kUserLoggedOut);
+    ShowErrorScreen();
     return;
   }
   purchase_action_start_time_ = base::TimeTicks::Now();
@@ -311,8 +295,7 @@ void FacilitatedPaymentsManager::OnPurchaseActionResult(
   // When server responds to the purchase action, Google Play Services takes
   // over, and the progress screen gets dismissed. Calling `DismissPrompt`
   // clears the associated Java objects.
-  client_->DismissPrompt();
-  Reset();
+  DismissPrompt();
   LogInitiatePurchaseActionResult(
       /*result=*/result ==
           FacilitatedPaymentsApiClient::PurchaseActionResult::kResultOk,
@@ -336,10 +319,48 @@ void FacilitatedPaymentsManager::OnPurchaseActionResult(
                        ukm_source_id_);
 }
 
-void FacilitatedPaymentsManager::ResetForTesting() {
-  is_test_ = false;
-  Reset();
-  is_test_ = true;
+void FacilitatedPaymentsManager::OnUiEvent(UiEvent ui_event_type) {
+  switch (ui_event_type) {
+    case UiEvent::kNewScreenShown: {
+      CHECK_NE(ui_state_, UiState::kHidden);
+      LogUiScreenShown(ui_state_);
+      // TODO: crbug.com/375089558 - Log latency metrics.
+      break;
+    }
+    case UiEvent::kScreenClosedNotByUser: {
+      // TODO(crbug.com/375089558): Based on the `ui_state_`, log metrics.
+      ui_state_ = UiState::kHidden;
+      break;
+    }
+    case UiEvent::kScreenClosedByUser: {
+      // TODO(crbug.com/375089558): Based on the `ui_state_`, log metrics.
+      ui_state_ = UiState::kHidden;
+      break;
+    }
+  }
+}
+
+void FacilitatedPaymentsManager::DismissPrompt() {
+  ui_state_ = UiState::kHidden;
+  client_->DismissPrompt();
+}
+
+void FacilitatedPaymentsManager::ShowPixPaymentPrompt(
+    base::span<const autofill::BankAccount> bank_account_suggestions,
+    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
+  ui_state_ = UiState::kFopSelector;
+  client_->ShowPixPaymentPrompt(std::move(bank_account_suggestions),
+                                std::move(on_user_decision_callback));
+}
+
+void FacilitatedPaymentsManager::ShowProgressScreen() {
+  ui_state_ = UiState::kProgressScreen;
+  client_->ShowProgressScreen();
+}
+
+void FacilitatedPaymentsManager::ShowErrorScreen() {
+  ui_state_ = UiState::kErrorScreen;
+  client_->ShowErrorScreen();
 }
 
 }  // namespace payments::facilitated

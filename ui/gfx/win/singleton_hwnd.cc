@@ -31,8 +31,8 @@ BOOL SingletonHwnd::ProcessWindowMessage(HWND window,
     return false;
   }
 
-  for (SingletonHwndObserver& observer : observer_list_)
-    observer.OnWndProc(window, message, wparam, lparam);
+  observer_list_.Notify(&SingletonHwndObserver::OnWndProc, window, message,
+                        wparam, lparam);
   return false;
 }
 
@@ -51,8 +51,7 @@ SingletonHwnd::~SingletonHwnd() {
     DestroyWindow(hwnd());
 
   // Tell all of our current observers to clean themselves up.
-  for (SingletonHwndObserver& observer : observer_list_)
-    observer.ClearWndProc();
+  observer_list_.Notify(&SingletonHwndObserver::ClearWndProc);
 }
 
 void SingletonHwnd::AddObserver(SingletonHwndObserver* observer) {

@@ -11,6 +11,7 @@
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_align_setting.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_create_html_callback.h"
@@ -18,7 +19,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_file_formdata_usvstring.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/core/testing/garbage_collected_script_wrappable.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/dictionary_base.h"
@@ -283,7 +283,8 @@ TEST(ToV8TraitsTest, Promise) {
   test::TaskEnvironment task_environment;
   const V8TestingScope scope;
   auto promise = ToResolvedUndefinedPromise(scope.GetScriptState());
-  TEST_TOV8_TRAITS(scope, IDLPromise, "[object Promise]", promise);
+  TEST_TOV8_TRAITS(scope, IDLPromise<IDLUndefined>, "[object Promise]",
+                   promise);
 }
 
 TEST(ToV8TraitsTest, NotShared) {

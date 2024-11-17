@@ -1355,7 +1355,7 @@ CookieMonster::FindPartitionedCookiesForRegistryControlledHost(
 }
 
 void CookieMonster::FilterCookiesWithOptions(
-    const GURL url,
+    const GURL& url,
     const CookieOptions options,
     std::vector<CanonicalCookie*>* cookie_ptrs,
     CookieAccessResultList* included_cookies,
@@ -1799,25 +1799,6 @@ void CookieMonster::SetCanonicalCookie(
     if (!already_expired) {
       HistogramExpirationDuration(*cc, creation_date);
 
-      // Histogram the type of scheme used on URLs that set cookies. This
-      // intentionally includes cookies that are set or overwritten by
-      // http:// URLs, but not cookies that are cleared by http:// URLs, to
-      // understand if the former behavior can be deprecated for Secure
-      // cookies.
-      // TODO(crbug.com/40640080): Consider removing this histogram. The
-      // decision it was added to evaluate has been implemented and
-      // standardized.
-      CookieSource cookie_source_sample =
-          (source_url.SchemeIsCryptographic()
-               ? (cc->SecureAttribute()
-                      ? CookieSource::kSecureCookieCryptographicScheme
-                      : CookieSource::kNonsecureCookieCryptographicScheme)
-               : (cc->SecureAttribute()
-                      ? CookieSource::kSecureCookieNoncryptographicScheme
-                      : CookieSource::kNonsecureCookieNoncryptographicScheme));
-      UMA_HISTOGRAM_ENUMERATION("Cookie.CookieSourceScheme",
-                                cookie_source_sample);
-
       UMA_HISTOGRAM_BOOLEAN("Cookie.DomainSet", cc->IsDomainCookie());
 
       if (!creation_date_to_inherit.is_null()) {
@@ -2185,8 +2166,8 @@ size_t CookieMonster::GarbageCollect(const Time& current,
 
       base::Time earliest_non_secure_access_time;
       size_t just_deleted = GarbageCollectLeastRecentlyAccessed(
-          current, safe_date, non_secure_purge_goal, non_secure_cookie_its,
-          &earliest_non_secure_access_time);
+          current, safe_date, non_secure_purge_goal,
+          std::move(non_secure_cookie_its), &earliest_non_secure_access_time);
       num_deleted += just_deleted;
 
       if (secure_cookie_its.size() == 0) {
@@ -2200,7 +2181,7 @@ size_t CookieMonster::GarbageCollect(const Time& current,
                                                     secure_cookie_its.size());
         base::Time earliest_secure_access_time;
         num_deleted += GarbageCollectLeastRecentlyAccessed(
-            current, safe_date, secure_purge_goal, secure_cookie_its,
+            current, safe_date, secure_purge_goal, std::move(secure_cookie_its),
             &earliest_secure_access_time);
 
         if (!earliest_non_secure_access_time.is_null() &&

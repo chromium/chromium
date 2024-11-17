@@ -302,6 +302,18 @@ NetworkSandboxState IsNetworkSandboxEnabledInternal() {
              : NetworkSandboxState::kDisabledByPlatform;
 }
 
+network::mojom::CTLogInfo::LogType GetCTLogType(
+    certificate_transparency::LogType log_type) {
+  switch (log_type) {
+    case certificate_transparency::LogType::kUnspecified:
+      return network::mojom::CTLogInfo::LogType::kUnspecified;
+    case certificate_transparency::LogType::kRFC6962:
+      return network::mojom::CTLogInfo::LogType::kRFC6962;
+    case certificate_transparency::LogType::kStaticCTAPI:
+      return network::mojom::CTLogInfo::LogType::kStaticCTAPI;
+  }
+}
+
 std::vector<network::mojom::CTLogInfoPtr> GetStaticCtLogListMojo() {
   std::vector<std::pair<std::string, base::Time>> disqualified_logs =
       certificate_transparency::GetDisqualifiedLogs();
@@ -311,6 +323,7 @@ std::vector<network::mojom::CTLogInfoPtr> GetStaticCtLogListMojo() {
     log_info->public_key = std::string(ct_log.log_key, ct_log.log_key_length);
     log_info->id = crypto::SHA256HashString(log_info->public_key);
     log_info->name = ct_log.log_name;
+    log_info->log_type = GetCTLogType(ct_log.log_type);
     log_info->current_operator = ct_log.current_operator;
 
     auto it = std::lower_bound(
@@ -356,6 +369,7 @@ class SystemNetworkContextManager::NetworkProcessLaunchWatcher
   void BrowserChildProcessLaunchFailed(
       const content::ChildProcessData& data,
       const content::ChildProcessTerminationInfo& info) override {
+    CHECK(data.sandbox_type.has_value());
     if (data.sandbox_type == sandbox::mojom::Sandbox::kNetwork) {
       // This histogram duplicates data recorded in
       // ChildProcess.LaunchFailed.UtilityProcessErrorCode but is specific to
@@ -781,17 +795,12 @@ void SystemNetworkContextManager::OnNetworkServiceCreated(
   // The OSCrypt keys are process bound, so if network service is out of
   // process, send it the required key.
   if (content::IsOutOfProcessNetworkService()) {
-#if BUILDFLAG(IS_WIN)
-    // On Windows, if OSCrypt Async is enabled then OSCrypt manages the
-    // encryption key via the DPAPI key provider, and there is no need to send
-    // the key separately to OSCrypt sync.
-    if (!base::FeatureList::IsEnabled(
-            features::kUseOsCryptAsyncForCookieEncryption)) {
-      network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
-    }
-#else
+    // On Windows, OSCrypt Async manages the encryption key via the DPAPI key
+    // provider, and there is no need to send the key separately to OSCrypt
+    // sync.
+#if !BUILDFLAG(IS_WIN)
     network_service->SetEncryptionKey(OSCrypt::GetRawEncryptionKey());
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
   }
 
   // Configure SCT Auditing in the NetworkService.

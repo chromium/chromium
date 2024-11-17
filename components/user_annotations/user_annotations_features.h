@@ -13,25 +13,16 @@
 
 namespace user_annotations {
 
-BASE_DECLARE_FEATURE(kUserAnnotations);
-
-BASE_DECLARE_FEATURE(kUserAnnotationsObserveFormSubmissions);
-
 // Whether the user annotations feature is enabled.
 bool IsUserAnnotationsEnabled();
-
-// Whether the user annotations web contents observer should observe form
-// submissions.
-bool IsUserAnnotationsObserveFormSubmissionsEnabled();
 
 // Returns the set of hosts that are allowed for forms annotations.
 std::vector<std::string> GetAllowedHostsForFormsAnnotations();
 
-// Whether the user annotations should be replaced after each form submission.
-bool ShouldReplaceAnnotationsAfterEachSubmission();
+bool ShouldExtractAXTreeForFormsAnnotations();
 
-// Whether the user annotations should be persisted in database.
-bool ShouldPersistUserAnnotations();
+// Returns the completion timeout for the entirety of forms submission stages.
+base::TimeDelta GetFormSubmissionCompletionTimeout();
 
 }  // namespace user_annotations
 

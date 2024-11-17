@@ -8,6 +8,7 @@
 #include <concepts>
 #include <functional>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <tuple>
@@ -19,6 +20,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/gtest_prod_util.h"
 #include "base/logging.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -34,6 +36,7 @@
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_test_util.h"
 #include "ui/base/interaction/state_observer.h"
+#include "ui/gfx/geometry/rect.h"
 
 class ChromeOSTestLauncherDelegate;
 class InteractiveUITestSuite;
@@ -104,6 +107,8 @@ class InteractiveTestPrivate {
 
   bool sequence_skipped() const { return sequence_skipped_; }
 
+  base::WeakPtr<InteractiveTestPrivate> GetAsWeakPtr();
+
   // Possibly fails or skips a sequence based on the result of an action
   // simulation.
   void HandleActionResult(InteractionSequence* seq,
@@ -158,6 +163,43 @@ class InteractiveTestPrivate {
     allow_interactive_test_verbs_ = true;
   }
 
+  // Represents a node in a debug tree of UI elements that can be pretty-
+  // printed.
+  struct DebugTreeNode {
+    DebugTreeNode();
+    explicit DebugTreeNode(std::string initial_text);
+    DebugTreeNode(DebugTreeNode&& other) noexcept;
+    DebugTreeNode& operator=(DebugTreeNode&& other) noexcept;
+    ~DebugTreeNode();
+
+    std::string text;
+    std::vector<DebugTreeNode> children;
+
+    void PrintTo(std::ostream& stream) const;
+  };
+
+ protected:
+  // Dumps the entire tree of named elements. Default implementation organizes
+  // all elements by context. This is the entry point when printing test failure
+  // information. The `current_context` is the current context in the test, if
+  // known.
+  virtual DebugTreeNode DebugDumpElements(
+      ui::ElementContext current_context) const;
+
+  // Dumps the contents of a particular context.
+  virtual DebugTreeNode DebugDumpContext(
+      const ui::ElementContext context) const;
+
+  // Dumps the context of a particular element.
+  virtual DebugTreeNode DebugDumpElement(const ui::TrackedElement* el) const;
+
+  // Provides the top-level description for a context.
+  virtual std::string DebugDescribeContext(ui::ElementContext context) const;
+
+  // Gets a verbose string representation of a set of `bounds` for debug
+  // purposes.
+  virtual std::string DebugDumpBounds(const gfx::Rect& bounds) const;
+
  private:
   friend class ui::test::InteractiveTestTest;
   friend class ui::test::InteractiveTestApi;
@@ -200,6 +242,8 @@ class InteractiveTestPrivate {
 
   // Overrides the default test failure behavior to test the API itself.
   InteractionSequence::AbortedCallback aborted_callback_for_testing_;
+
+  base::WeakPtrFactory<InteractiveTestPrivate> weak_ptr_factory_{this};
 
   // Whether interactive test verbs are allowed. See
   // `InteractiveTestApi::RequireInteractiveTest()` for more info.

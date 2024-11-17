@@ -164,7 +164,7 @@ bool ShouldForceOldAPIUse() {
   // This is fixed in macOS 15.
   //
   // https://crbug.com/333443445, FB13717818
-  if (base::mac::MacOSVersion() > 15'00'00) {
+  if (base::mac::MacOSVersion() >= 15'00'00) {
     return false;
   }
 

@@ -310,8 +310,7 @@ struct TraceTrait<std::pair<T, U>> {
     // The following code should never be reached as tracing through std::pair
     // should always happen eagerly by directly invoking `Trace()` below. This
     // happens e.g. when being used in HeapVector<std::pair<...>>.
-    NOTREACHED_IN_MIGRATION();
-    return {nullptr, Trace};
+    NOTREACHED();
   }
 
   static void Trace(Visitor* visitor, const std::pair<T, U>* pair) {

@@ -39,22 +39,18 @@
     padding: 0px 12px;
   }
 
+  iron-icon[icon^='personalization-shared:refresh'] {
+    transform: rotateY(180deg);
+  }
+
   #underline {
     background-image:
         linear-gradient(to right, transparent 65%, var(--cros-sys-app_base_shaded) 35%),
-        linear-gradient(to right, #D7E6FF, #C7E4FF, #DCE2FF, #ECDCFB);
+        linear-gradient(to right, #217BFE, #078EFB, #AC87EB, #EE4D5D);
     background-size: 12px 3px, 100% 3px;
     border: none;
     height: 3px;
     width: 100%;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    #underline {
-      background-image:
-        linear-gradient(to right, transparent 65%, var(--cros-sys-app_base_shaded) 35%),
-        linear-gradient(to right, #217BFE, #078EFB, #AC87EB, #EE4D5D);
-    }
   }
 </style>
 <div id="container">

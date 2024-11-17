@@ -7,13 +7,13 @@
 #include <optional>
 
 #include "ash/ash_element_identifiers.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/user_education/user_education_types.h"
 #include "ash/user_education/user_education_util.h"
 #include "base/check.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ash/app_list/app_list_syncable_service_factory.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -21,15 +21,15 @@
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
-#include "components/user_education/common/help_bubble.h"
-#include "components/user_education/common/help_bubble_factory_registry.h"
-#include "components/user_education/common/help_bubble_params.h"
-#include "components/user_education/common/tutorial_registry.h"
-#include "components/user_education/common/tutorial_service.h"
+#include "components/user_education/common/help_bubble/help_bubble.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/tutorial/tutorial_registry.h"
+#include "components/user_education/common/tutorial/tutorial_service.h"
 #include "components/user_manager/user_manager.h"
 #include "ui/base/interaction/element_tracker.h"
 
@@ -79,10 +79,10 @@ ChromeUserEducationDelegate::GetElementIdentifierForAppId(
   if (!strcmp(file_manager::kFileManagerSwaAppId, app_id.c_str())) {
     return ash::kFilesAppElementId;
   }
-  if (!strcmp(web_app::kHelpAppId, app_id.c_str())) {
+  if (!strcmp(ash::kHelpAppId, app_id.c_str())) {
     return ash::kExploreAppElementId;
   }
-  if (!strcmp(web_app::kOsSettingsAppId, app_id.c_str())) {
+  if (!strcmp(ash::kOsSettingsAppId, app_id.c_str())) {
     return ash::kSettingsAppElementId;
   }
   return std::nullopt;

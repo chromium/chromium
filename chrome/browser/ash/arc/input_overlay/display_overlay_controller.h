@@ -35,14 +35,8 @@ class ActionEditMenu;
 class ActionViewListItem;
 class ButtonOptionsMenu;
 class DeleteEditShortcut;
-class EditFinishView;
 class EditingList;
-class EducationalView;
 class InputMappingView;
-class InputMenuView;
-class MenuEntryView;
-class MessageView;
-class NudgeView;
 class RichNudge;
 class TargetView;
 class TouchInjector;
@@ -55,19 +49,15 @@ class DisplayOverlayController : public ui::EventHandler,
                                  public aura::WindowObserver,
                                  public views::WidgetObserver {
  public:
-  DisplayOverlayController(TouchInjector* touch_injector, bool first_launch);
+  explicit DisplayOverlayController(TouchInjector* touch_injector);
   DisplayOverlayController(const DisplayOverlayController&) = delete;
   DisplayOverlayController& operator=(const DisplayOverlayController&) = delete;
   ~DisplayOverlayController() override;
 
-  void SetDisplayModeAlpha(DisplayMode mode);
   void SetDisplayMode(DisplayMode mode);
 
   // Get the bounds of `menu_entry_` in screen coordinates.
   std::optional<gfx::Rect> GetOverlayMenuEntryBounds();
-
-  void AddEditMessage(std::string_view message, MessageType message_type);
-  void RemoveEditMessage();
 
   void OnInputBindingChange(Action* action,
                             std::unique_ptr<InputElement> input_element);
@@ -76,11 +66,6 @@ class DisplayOverlayController : public ui::EventHandler,
   void SaveToProtoFile();
   // Save the changes when users press the save button after editing.
   void OnCustomizeSave();
-  // Don't save any changes when users press the cancel button after editing.
-  void OnCustomizeCancel();
-  // Restore back to original default binding when users press the restore
-  // button after editing.
-  void OnCustomizeRestore();
   const std::string& GetPackageName() const;
   // Once the menu state is loaded from protobuf data, it should be applied on
   // the view. For example, `InputMappingView` may not be visible if it is
@@ -106,9 +91,6 @@ class DisplayOverlayController : public ui::EventHandler,
   bool IsActiveAction(Action* action) const;
 
   MappingSource GetMappingSource() const;
-
-  // For menu entry hover state:
-  void SetMenuEntryHoverState(bool curr_hover_state);
 
   // Add UIs to observer touch injector change.
   void AddTouchInjectorObserver(TouchInjectorObserver* observer);
@@ -167,24 +149,17 @@ class DisplayOverlayController : public ui::EventHandler,
   friend class ArcInputOverlayManagerTest;
   friend class ButtonOptionsMenu;
   friend class DisplayOverlayControllerTest;
-  friend class DisplayOverlayControllerAlphaTest;
   friend class EditingList;
   friend class EditingListTest;
   friend class EditLabelTest;
   friend class EducationalView;
   friend class GameControlsTestBase;
   friend class InputMappingView;
-  friend class InputMenuView;
-  friend class MenuEntryView;
-  friend class MenuEntryViewTest;
   friend class OverlayViewTestBase;
   friend class RichNudgeTest;
 
   class FocusCycler;
 
-  // Display overlay is added for starting `display_mode`.
-  void AddOverlay(DisplayMode display_mode);
-  void RemoveOverlayIfAny();
   // If `on_overlay` is true, set event target on overlay layer. Otherwise, set
   // event target on the layer underneath the overlay layer.
   void SetEventTarget(views::Widget* overlay_widget, bool on_overlay);
@@ -192,35 +167,6 @@ class DisplayOverlayController : public ui::EventHandler,
   // Update display mode when initializing DisplayOverlayController or the
   // window property is changed on `ash::kArcGameControlsFlagsKey`.
   void UpdateDisplayMode();
-
-  // On charge of Add/Remove nudge view.
-  void AddNudgeView(views::Widget* overlay_widget);
-  void RemoveNudgeView();
-  void OnNudgeDismissed();
-  gfx::Point CalculateNudgePosition(int nudge_width);
-
-  bool IsNudgeEmpty();
-
-  void AddMenuEntryView(views::Widget* overlay_widget);
-  void RemoveMenuEntryView();
-  void OnMenuEntryPressed();
-  void OnMenuEntryPositionChanged(bool leave_focus,
-                                  std::optional<gfx::Point> location);
-  void FocusOnMenuEntry();
-  void ClearFocus();
-  void RemoveInputMenuView();
-
-  void AddInputMappingView(views::Widget* overlay_widget);
-  void RemoveInputMappingView();
-
-  void AddEditFinishView(views::Widget* overlay_widget);
-  void RemoveEditFinishView();
-
-  // Add `EducationalView`.
-  void AddEducationalView();
-  // Remove `EducationalView` and its references.
-  void RemoveEducationalView();
-  void OnEducationalViewDismissed();
 
   views::Widget* GetOverlayWidget();
   views::View* GetOverlayWidgetContentsView();
@@ -289,25 +235,10 @@ class DisplayOverlayController : public ui::EventHandler,
   // events.
   void UpdateEventRewriteCapability();
 
-  // For test:
-  gfx::Rect GetInputMappingViewBoundsForTesting();
-  void DismissEducationalViewForTesting();
-  InputMenuView* GetInputMenuView() { return input_menu_view_; }
-  MenuEntryView* GetMenuEntryView() { return menu_entry_; }
-
   const raw_ptr<TouchInjector> touch_injector_;
 
   base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
       widget_observations_{this};
-
-  // References to UI elements owned by the overlay widget.
-  raw_ptr<InputMappingView, DanglingUntriaged> input_mapping_view_ = nullptr;
-  raw_ptr<InputMenuView, DanglingUntriaged> input_menu_view_ = nullptr;
-  raw_ptr<MenuEntryView, DanglingUntriaged> menu_entry_ = nullptr;
-  raw_ptr<EditFinishView, DanglingUntriaged> edit_finish_view_ = nullptr;
-  raw_ptr<MessageView, DanglingUntriaged> message_ = nullptr;
-  raw_ptr<EducationalView, DanglingUntriaged> educational_view_ = nullptr;
-  raw_ptr<NudgeView, DanglingUntriaged> nudge_view_ = nullptr;
 
   DisplayMode display_mode_ = DisplayMode::kNone;
 

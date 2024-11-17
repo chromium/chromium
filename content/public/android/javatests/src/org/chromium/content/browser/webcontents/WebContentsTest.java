@@ -27,6 +27,7 @@ import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.ChildProcessLauncherHelperImpl;
 import org.chromium.content_public.browser.ChildProcessImportance;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.content_shell.Shell;
@@ -418,7 +419,8 @@ public class WebContentsTest {
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         final WebContents webContents = activity.getActiveWebContents();
         // Make sure visibility do not affect bindings.
-        ThreadUtils.runOnUiThreadBlocking(() -> webContents.onHide());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> webContents.updateWebContentsVisibility(Visibility.HIDDEN));
 
         final ChildProcessConnection connection = getSandboxedChildProcessConnection();
         // Need to poll here because there is an intentional delay for removing binding.
@@ -454,14 +456,16 @@ public class WebContentsTest {
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
                 () -> Assert.assertTrue(connection.isStrongBindingBound()));
 
-        ThreadUtils.runOnUiThreadBlocking(() -> webContents.onHide());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> webContents.updateWebContentsVisibility(Visibility.HIDDEN));
         CriteriaHelper.pollInstrumentationThread(
                 () ->
                         ChildProcessLauncherTestUtils.runOnLauncherAndGetResult(
                                 () -> !connection.isStrongBindingBound()),
                 "Failed to remove strong binding");
 
-        ThreadUtils.runOnUiThreadBlocking(() -> webContents.onShow());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> webContents.updateWebContentsVisibility(Visibility.VISIBLE));
         ChildProcessLauncherTestUtils.runOnLauncherThreadBlocking(
                 () -> Assert.assertTrue(connection.isStrongBindingBound()));
     }

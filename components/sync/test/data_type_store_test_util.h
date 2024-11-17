@@ -30,7 +30,7 @@ class DataTypeStoreTestUtil {
       std::unique_ptr<DataTypeStore> store);
 
   // Returns a callback that constructs a store that forwards all calls to
-  // |target|. |*target| must outlive the returned factory as well any store
+  // `target`. `*target` must outlive the returned factory as well any store
   // created by the factory.
   static RepeatingDataTypeStoreFactory FactoryForForwardingStore(
       DataTypeStore* target);

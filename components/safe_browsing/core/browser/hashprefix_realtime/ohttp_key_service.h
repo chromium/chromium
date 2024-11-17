@@ -66,7 +66,8 @@ class OhttpKeyService : public KeyedService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service,
       PrefService* local_state,
-      base::RepeatingCallback<std::optional<std::string>()> country_getter);
+      base::RepeatingCallback<std::optional<std::string>()> country_getter,
+      bool are_background_lookups_allowed);
 
   OhttpKeyService(const OhttpKeyService&) = delete;
   OhttpKeyService& operator=(const OhttpKeyService&) = delete;
@@ -189,6 +190,9 @@ class OhttpKeyService : public KeyedService {
   // when the first response is received using this key. Used for logging
   // metrics.
   bool has_received_lookup_response_from_current_key_ = true;
+
+  // Determines whether a background HPRT lookup can be sent.
+  bool are_background_lookups_allowed_;
 
   base::WeakPtrFactory<OhttpKeyService> weak_factory_{this};
 };

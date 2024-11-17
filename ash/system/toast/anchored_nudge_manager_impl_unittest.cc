@@ -12,7 +12,6 @@
 #include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
-#include "ash/style/system_toast_style.h"
 #include "ash/system/toast/anchored_nudge.h"
 #include "ash/system/toast/nudge_constants.h"
 #include "ash/system/unified/unified_system_tray.h"

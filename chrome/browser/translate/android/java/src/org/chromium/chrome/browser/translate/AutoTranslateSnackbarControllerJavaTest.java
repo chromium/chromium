@@ -22,7 +22,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -39,8 +38,6 @@ import java.util.concurrent.ExecutionException;
 public final class AutoTranslateSnackbarControllerJavaTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private static final long NATIVE_SNACKBAR_VIEW = 1001L;
 
@@ -62,7 +59,7 @@ public final class AutoTranslateSnackbarControllerJavaTest {
                 new AutoTranslateSnackbarController(
                         weakReference, mSnackbarManager, NATIVE_SNACKBAR_VIEW);
 
-        mJniMocker.mock(AutoTranslateSnackbarControllerJni.TEST_HOOKS, mMockJni);
+        AutoTranslateSnackbarControllerJni.setInstanceForTesting(mMockJni);
     }
 
     @Test
@@ -87,14 +84,14 @@ public final class AutoTranslateSnackbarControllerJavaTest {
         Assert.assertEquals("en", data.getTargetLanguage());
     }
 
-    @Test
-    @SmallTest
     /**
      * The target language is stored in Translate format, which uses the old deprecated Java codes
      * for several languages (Hebrew, Indonesian), and uses "tl" while Chromium uses "fil" for
      * Tagalog/Filipino. This tests that when using Translate format codes the Chrome version is
      * displayed in the Snackbar.
      */
+    @Test
+    @SmallTest
     public void testShowSnackbarChromeLanguage() throws Exception {
         // Use the Translate tag tl which Chrome should display as "Filipino"
         showSnackbar("tl");

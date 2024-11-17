@@ -26,7 +26,7 @@ std::string ReadString(const base::ScopedFD& sock);
 void ReadBuffer(const base::ScopedFD& sock, void* buf, int byte_size);
 
 // Sends a string with a null terminator appended to the given socket.
-void SendString(const base::ScopedFD& sock, const std::string_view str);
+void SendString(const base::ScopedFD& sock, std::string_view str);
 
 }  // namespace crosier
 

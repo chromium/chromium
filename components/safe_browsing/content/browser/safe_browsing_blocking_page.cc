@@ -94,7 +94,9 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
     UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.ThreatType",
                               unsafe_resources[0].threat_type);
   }
-  LogSafeBrowsingInterstitialShownUKM(web_contents);
+  if (unsafe_resources[0].navigation_id.has_value()) {
+    LogSafeBrowsingInterstitialShownUKM();
+  }
 
   if (metrics_collector_) {
     metrics_collector_->AddSafeBrowsingEventToPref(
@@ -130,7 +132,7 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
   }
 }
 
-SafeBrowsingBlockingPage::~SafeBrowsingBlockingPage() {}
+SafeBrowsingBlockingPage::~SafeBrowsingBlockingPage() = default;
 
 security_interstitials::SecurityInterstitialPage::TypeID
 SafeBrowsingBlockingPage::GetTypeForTesting() {
@@ -158,8 +160,8 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
   }
 
   // Log UKM if the user bypassed the interstitial.
-  if (proceeded()) {
-    LogSafeBrowsingInterstitialBypassedUKM(web_contents());
+  if (proceeded() && unsafe_resources()[0].navigation_id.has_value()) {
+    LogSafeBrowsingInterstitialBypassedUKM();
   }
 
   // If the user proceeded past a social engineering threat interstitial,
@@ -276,18 +278,20 @@ void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
   }
 }
 
-void SafeBrowsingBlockingPage::LogSafeBrowsingInterstitialBypassedUKM(
-    content::WebContents* web_contents) {
+void SafeBrowsingBlockingPage::LogSafeBrowsingInterstitialBypassedUKM() {
+  CHECK(unsafe_resources()[0].navigation_id.has_value());
   ukm::SourceId source_id =
-      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+      ukm::ConvertToSourceId(unsafe_resources()[0].navigation_id.value(),
+                             ukm::SourceIdType::NAVIGATION_ID);
   ukm::builders::SafeBrowsingInterstitial(source_id).SetBypassed(true).Record(
       ukm::UkmRecorder::Get());
 }
 
-void SafeBrowsingBlockingPage::LogSafeBrowsingInterstitialShownUKM(
-    content::WebContents* web_contents) {
+void SafeBrowsingBlockingPage::LogSafeBrowsingInterstitialShownUKM() {
+  CHECK(unsafe_resources()[0].navigation_id.has_value());
   ukm::SourceId source_id =
-      web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId();
+      ukm::ConvertToSourceId(unsafe_resources()[0].navigation_id.value(),
+                             ukm::SourceIdType::NAVIGATION_ID);
   ukm::builders::SafeBrowsingInterstitial(source_id).SetShown(true).Record(
       ukm::UkmRecorder::Get());
 }

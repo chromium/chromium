@@ -30,7 +30,6 @@
 
 #include <algorithm>
 
-#include "base/debug/dump_without_crashing.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -89,8 +88,7 @@ DocumentMarker::MarkerTypeIndex MarkerTypeToMarkerIndex(
       return DocumentMarker::kCustomHighlightMarkerIndex;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return DocumentMarker::kSpellingMarkerIndex;
+  NOTREACHED();
 }
 
 DocumentMarkerList* CreateListForType(DocumentMarker::MarkerType type) {
@@ -113,19 +111,20 @@ DocumentMarkerList* CreateListForType(DocumentMarker::MarkerType type) {
       return MakeGarbageCollected<CustomHighlightMarkerListImpl>();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void InvalidateVisualOverflowForNode(const Node& node,
                                      DocumentMarker::MarkerType type) {
-  if (!node.GetLayoutObject() ||
+  LayoutObject* layout_object = node.GetLayoutObject();
+  if (!layout_object ||
       !DocumentMarker::MarkerTypes::HighlightPseudos().Intersects(
           DocumentMarker::MarkerTypes(type))) {
     return;
   }
-  if (HighlightStyleUtils::ShouldInvalidateVisualOverflow(node, type)) {
-    node.GetLayoutObject()->InvalidateVisualOverflow();
+  if (HighlightStyleUtils::ShouldInvalidateVisualOverflow(*layout_object,
+                                                          type)) {
+    layout_object->InvalidateVisualOverflow();
   }
 }
 
@@ -694,8 +693,8 @@ DocumentMarkerController::MarkersAroundPosition(
   const PositionInFlatTree& end = SearchAroundPositionEnd(position);
 
   if (start > end) {
-    // TODO(crbug/1114021): Investigate why this might happen.
-    base::debug::DumpWithoutCrashing();
+    // TODO(crbug.com/1114021, crbug.com/40892570): This is unexpected, happens
+    // frequently, but no good idea how to diagnose it.
     return node_marker_pairs;
   }
 
@@ -1235,24 +1234,6 @@ void DocumentMarkerController::RemoveMarkersFromList(
   MarkerMap* marker_map = markers_[MarkerTypeToMarkerIndex(marker_type)];
   marker_map->erase(iterator);
   DidRemoveNodeFromMap(marker_type);
-}
-
-void DocumentMarkerController::RepaintMarkers(
-    DocumentMarker::MarkerTypes marker_types) {
-  if (!PossiblyHasMarkers(marker_types)) {
-    return;
-  }
-  DCHECK(!markers_.empty());
-
-  for (auto type : marker_types) {
-    const MarkerMap* marker_map = markers_[MarkerTypeToMarkerIndex(type)];
-    if (!marker_map) {
-      continue;
-    }
-    for (auto& iterator : *marker_map) {
-      InvalidatePaintForNode(*iterator.key);
-    }
-  }
 }
 
 bool DocumentMarkerController::SetTextMatchMarkersActive(

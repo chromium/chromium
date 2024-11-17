@@ -130,7 +130,7 @@ std::string_view ReportingDestinationAsString(
     case blink::FencedFrame::ReportingDestination::kDirectSeller:
       return "DirectSeller";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string_view InvokingAPIAsString(
@@ -141,7 +141,7 @@ std::string_view InvokingAPIAsString(
     case PrivacySandboxInvokingAPI::kSharedStorage:
       return "Shared Storage";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string AutomaticBeaconTypeAsString(
@@ -215,10 +215,12 @@ void RecordBeaconReportingResultHistogram(
 FencedFrameReporter::PendingEvent::PendingEvent(
     const DestinationVariant& event,
     const url::Origin& request_initiator,
+    const net::ReferrerPolicy request_referrer_policy,
     std::optional<AttributionReportingData> attribution_reporting_data,
     FrameTreeNodeId initiator_frame_tree_node_id)
     : event(event),
       request_initiator(request_initiator),
+      request_referrer_policy(request_referrer_policy),
       attribution_reporting_data(std::move(attribution_reporting_data)),
       initiator_frame_tree_node_id(initiator_frame_tree_node_id) {}
 
@@ -366,12 +368,12 @@ void FencedFrameReporter::OnUrlMappingReady(
         blink::mojom::ConsoleMessageLevel::kError;
     const std::string devtools_request_id =
         base::UnguessableToken::Create().ToString();
-    SendReportInternal(it->second, pending_event.event, reporting_destination,
-                       pending_event.request_initiator,
-                       pending_event.attribution_reporting_data,
-                       pending_event.initiator_frame_tree_node_id,
-                       ignored_error_message, ignored_console_message_level,
-                       devtools_request_id);
+    SendReportInternal(
+        it->second, pending_event.event, reporting_destination,
+        pending_event.request_initiator, pending_event.request_referrer_policy,
+        pending_event.attribution_reporting_data,
+        pending_event.initiator_frame_tree_node_id, ignored_error_message,
+        ignored_console_message_level, devtools_request_id);
   }
 }
 
@@ -382,8 +384,7 @@ bool FencedFrameReporter::SendReport(
     std::string& error_message,
     blink::mojom::ConsoleMessageLevel& console_message_level,
     FrameTreeNodeId initiator_frame_tree_node_id,
-    std::optional<int64_t> navigation_id,
-    std::optional<url::Origin> ad_root_origin) {
+    std::optional<int64_t> navigation_id) {
   DCHECK(request_initiator_frame);
 
   if (reporting_destination ==
@@ -442,16 +443,35 @@ bool FencedFrameReporter::SendReport(
 
   url::Origin request_initiator =
       request_initiator_frame->GetLastCommittedOrigin();
+  net::ReferrerPolicy request_referrer_policy = net::ReferrerPolicy::ORIGIN;
 
-  // |ad_root_origin| is only set for ad components. Automatic beacons sent from
-  // ad components should not have the ad component's origin present in the
-  // beacon, as that is additional information that should not be made available
-  // to the reporting server. Set it to the root ad frame's origin instead.
+  if (request_initiator_frame->policy_container_host()) {
+    request_referrer_policy = Referrer::ReferrerPolicyForUrlRequest(
+        request_initiator_frame->policy_container_host()->referrer_policy());
+  }
+
+  // Automatic beacons that originate from component ads shouldn't expose the ad
+  // component's origin in the referrer for the beacon or the frame's referrer
+  // policy. Instead, use the origin and referrer policy of the ad frame root.
   if (base::FeatureList::IsEnabled(
           blink::features::kFencedFramesReportEventHeaderChanges) &&
-      ad_root_origin.has_value()) {
+      request_initiator_frame->frame_tree_node()->GetFencedFrameProperties() &&
+      request_initiator_frame->frame_tree_node()
+          ->GetFencedFrameProperties()
+          ->is_ad_component()) {
+    FrameTreeNode* ad_component_root =
+        request_initiator_frame->frame_tree_node()
+            ->GetClosestAncestorWithFencedFrameProperties();
+    FrameTreeNode* ad_root =
+        ad_component_root->GetParentOrOuterDocument()
+            ->frame_tree_node()
+            ->GetClosestAncestorWithFencedFrameProperties();
     CHECK(absl::holds_alternative<AutomaticBeaconEvent>(event_variant));
-    request_initiator = ad_root_origin.value();
+    request_initiator = ad_root->current_frame_host()->GetLastCommittedOrigin();
+    request_referrer_policy =
+        Referrer::ReferrerPolicyForUrlRequest(ad_root->current_frame_host()
+                                                  ->policy_container_host()
+                                                  ->referrer_policy());
   }
 
   // If the reporting URL map is pending, queue the event.
@@ -461,13 +481,14 @@ bool FencedFrameReporter::SendReport(
 
   if (it->second.reporting_url_map == std::nullopt) {
     it->second.pending_events.emplace_back(
-        event_variant, request_initiator, std::move(attribution_reporting_data),
-        initiator_frame_tree_node_id);
+        event_variant, request_initiator, request_referrer_policy,
+        std::move(attribution_reporting_data), initiator_frame_tree_node_id);
     return true;
   }
 
   return SendReportInternal(it->second, event_variant, reporting_destination,
-                            request_initiator, attribution_reporting_data,
+                            request_initiator, request_referrer_policy,
+                            attribution_reporting_data,
                             initiator_frame_tree_node_id, error_message,
                             console_message_level, devtools_request_id);
 }
@@ -477,6 +498,7 @@ bool FencedFrameReporter::SendReportInternal(
     const DestinationVariant& event_variant,
     blink::FencedFrame::ReportingDestination reporting_destination,
     const url::Origin& request_initiator,
+    const net::ReferrerPolicy request_referrer_policy,
     const std::optional<AttributionReportingData>& attribution_reporting_data,
     FrameTreeNodeId initiator_frame_tree_node_id,
     std::string& error_message,
@@ -640,19 +662,11 @@ bool FencedFrameReporter::SendReportInternal(
            ->browser()
            ->IsPrivacySandboxReportingDestinationAttested(
                browser_context_, url::Origin::Create(destination_url),
-               invoking_api_, /*post_impression_reporting=*/true)) {
-    error_message = base::StrCat({
-        "The reporting destination '",
-        ReportingDestinationAsString(reporting_destination),
-        "' is not attested for '",
-        InvokingAPIAsString(invoking_api_),
-        "'",
-        (base::FeatureList::IsEnabled(
-             blink::features::kFencedFramesReportingAttestationsChanges) &&
-         invoking_api_ == PrivacySandboxInvokingAPI::kProtectedAudience)
-            ? " or 'Attribution Reporting'."
-            : ".",
-    });
+               invoking_api_)) {
+    error_message = base::StrCat(
+        {"The reporting destination '",
+         ReportingDestinationAsString(reporting_destination),
+         "' is not attested for '", InvokingAPIAsString(invoking_api_), "'"});
     console_message_level = blink::mojom::ConsoleMessageLevel::kError;
     NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
     return false;
@@ -689,8 +703,9 @@ bool FencedFrameReporter::SendReportInternal(
           blink::features::kFencedFramesReportEventHeaderChanges)) {
     // For automatic beacons initiating from component ad frames, the
     // request_initiator will have already been set to the root ad frame's
-    // origin by this point.
-    request->referrer_policy = net::ReferrerPolicy::ORIGIN;
+    // origin by this point. For all cases, the request initiator will always be
+    // sanitized to just its origin.
+    request->referrer_policy = request_referrer_policy;
     request->referrer = request_initiator.GetURL();
   }
   request->trusted_params = network::ResourceRequest::TrustedParams();

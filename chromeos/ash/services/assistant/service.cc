@@ -322,7 +322,7 @@ void Service::SuspendDone(base::TimeDelta sleep_duration) {
   // |token_refresh_timer_| may become stale during sleeping, so we immediately
   // request a new token to make sure it is fresh.
   if (token_refresh_timer_->IsRunning()) {
-    token_refresh_timer_->AbandonAndStop();
+    token_refresh_timer_->Stop();
     RequestAccessToken();
   }
 }

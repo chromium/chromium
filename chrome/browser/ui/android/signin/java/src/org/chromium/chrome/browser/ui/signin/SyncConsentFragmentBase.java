@@ -27,7 +27,6 @@ import androidx.lifecycle.Lifecycle;
 
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.consent_auditor.ConsentAuditorFeature;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -579,12 +578,7 @@ public abstract class SyncConsentFragmentBase extends Fragment
         mConsentTextTracker.setText(mSigninView.getTitleView(), R.string.signin_title);
 
         mConsentTextTracker.setText(
-                mSigninView.getSyncTitleView(),
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)
-                        ? R.string.signin_sync_title_without_passwords
-                        : R.string.signin_sync_title);
+                mSigninView.getSyncTitleView(), R.string.signin_sync_title_without_passwords);
         mConsentTextTracker.setText(
                 mSigninView.getSyncDescriptionView(), R.string.signin_sync_description);
 

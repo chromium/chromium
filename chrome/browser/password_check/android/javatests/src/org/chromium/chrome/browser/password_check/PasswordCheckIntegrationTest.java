@@ -22,7 +22,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -39,14 +38,12 @@ public class PasswordCheckIntegrationTest {
     public final SettingsActivityTestRule<PasswordCheckFragmentView> mTestRule =
             new SettingsActivityTestRule<>(PasswordCheckFragmentView.class);
 
-    @Rule public final JniMocker mJniMocker = new JniMocker();
-
     @Mock private PasswordCheckBridge.Natives mPasswordCheckBridge;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(PasswordCheckBridgeJni.TEST_HOOKS, mPasswordCheckBridge);
+        PasswordCheckBridgeJni.setInstanceForTesting(mPasswordCheckBridge);
     }
 
     @Test

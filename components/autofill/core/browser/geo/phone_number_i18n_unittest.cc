@@ -379,8 +379,7 @@ INSTANTIATE_TEST_SUITE_P(
         // A US phone with the country code is correctly formatted as an US
         // number.
         PhoneNumberFormatCase(u"+1 415-555-5555", u"MX", u"+1 415-555-5555"),
-        // "+52 415 555 5555" is a valid number for Mexico,
-        PhoneNumberFormatCase(u"1 415-555-5555", u"MX", u"+52 415 555 5555"),
+        PhoneNumberFormatCase(u"1 415-555-5555", u"MX", u"+1 415-555-5555"),
         // Without a country code, the phone is formatted for the profile's
         // country.
         PhoneNumberFormatCase(u"415-555-5555", u"MX", u"+52 415 555 5555"),

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback_list.h"
 #include "base/files/file_path.h"
@@ -18,6 +19,7 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/policy/skyvault/signin_notification_helper.h"
@@ -29,6 +31,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_context.h"
+#include "net/base/filename_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
@@ -57,16 +60,35 @@ std::unique_ptr<message_center::Notification> CreateNotificationPtr(
 
 // Closes the notification with `kSkyVaultMigrationNotificationId`.
 void CloseNotification(Profile* profile) {
-  NotificationDisplayService::GetForProfile(profile)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Close(
       NotificationHandler::Type::TRANSIENT, kSkyVaultMigrationNotificationId);
 }
 
-// Closes the notification and, if the button is clicked, opens `path`.
-void HandleNotificationClick(Profile* profile,
-                             const base::FilePath& path,
-                             std::optional<int> button) {
+// Closes the notification and, if the button is clicked, opens `path` in the
+// Files App.
+void HandleCompletedNotificationClick(Profile* profile,
+                                      const base::FilePath& path,
+                                      std::optional<int> button) {
   if (button.has_value() && button == 0) {
     file_manager::util::ShowItemInFolder(profile, path, base::DoNothing());
+    ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+        net::FilePathToFileURL(path),
+        ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+        ash::NewWindowDelegate::Disposition::kNewForegroundTab);
+  }
+  CloseNotification(profile);
+}
+
+// Closes the notification and, if the button is clicked, opens `path` in the
+// browser.
+void HandleErrorNotificationClick(Profile* profile,
+                                  const base::FilePath& path,
+                                  std::optional<int> button) {
+  if (button.has_value() && button == 0) {
+    ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+        net::FilePathToFileURL(path),
+        ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,
+        ash::NewWindowDelegate::Disposition::kNewForegroundTab);
   }
   CloseNotification(profile);
 }
@@ -119,7 +141,7 @@ void MigrationNotificationManager::ShowMigrationProgressNotification(
   auto notification = CreateNotificationPtr(title, message,
                                             /*callback=*/base::DoNothing());
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
 }
@@ -144,44 +166,43 @@ void MigrationNotificationManager::ShowMigrationCompletedNotification(
       provider_str,
       /*offset=*/nullptr);
 
-  auto notification =
-      CreateNotificationPtr(title, message,
-                            base::BindRepeating(&HandleNotificationClick,
-                                                profile(), destination_path));
+  auto notification = CreateNotificationPtr(
+      title, message,
+      base::BindRepeating(&HandleCompletedNotificationClick, profile(),
+                          destination_path));
   notification->set_buttons({message_center::ButtonInfo(button)});
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
 }
 
 void MigrationNotificationManager::ShowMigrationErrorNotification(
     CloudProvider provider,
-    const base::FilePath& destination_path,
-    std::map<base::FilePath, MigrationUploadError> errors) {
-  // TODO(aidazolic): Pass error log path.
-  const base::FilePath error_log_path = base::FilePath();
+    const std::string& folder_name,
+    const base::FilePath& error_log_path) {
+  DCHECK(!error_log_path.empty());
 
   std::u16string provider_str = CloudProviderToString(provider);
 
-  std::u16string folder_name = destination_path.BaseName().AsUTF16Unsafe();
   std::u16string title = base::ReplaceStringPlaceholders(
       l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_ERROR_TITLE),
       provider_str,
       /*offset=*/nullptr);
   std::u16string message = base::ReplaceStringPlaceholders(
       l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_ERROR_MESSAGE),
-      {folder_name, provider_str},
+      {base::UTF8ToUTF16(folder_name), provider_str},
       /*offsets=*/nullptr);
   std::u16string button =
       l10n_util::GetStringUTF16(IDS_POLICY_SKYVAULT_MIGRATION_ERROR_BUTTON);
 
-  auto notification = CreateNotificationPtr(
-      title, message,
-      base::BindRepeating(&HandleNotificationClick, profile(), error_log_path));
+  auto notification =
+      CreateNotificationPtr(title, message,
+                            base::BindRepeating(&HandleErrorNotificationClick,
+                                                profile(), error_log_path));
   notification->set_buttons({message_center::ButtonInfo(button)});
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
 }
@@ -204,7 +225,7 @@ void MigrationNotificationManager::ShowConfigurationErrorNotification(
   auto notification = CreateNotificationPtr(title, message,
                                             /*callback=*/base::DoNothing());
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, *notification,
       /*metadata=*/nullptr);
 }
@@ -217,7 +238,7 @@ MigrationNotificationManager::ShowOneDriveSignInNotification(
   if (sign_in_callbacks_.empty()) {
     policy::skyvault_ui_utils::ShowSignInNotification(
         Profile::FromBrowserContext(context_), /*id=*/0,
-        ash::cloud_upload::OdfsSkyvaultUploader::FileType::kMigration,
+        UploadTrigger::kMigration,
         /*file_path=*/base::FilePath(),
         base::BindOnce(&MigrationNotificationManager::OnSignInResponse,
                        weak_factory_.GetWeakPtr()));
@@ -227,14 +248,13 @@ MigrationNotificationManager::ShowOneDriveSignInNotification(
   return sign_in_callbacks_.Add(std::move(callback));
 }
 
-void MigrationNotificationManager::CloseAll() {
+void MigrationNotificationManager::CloseNotifications() {
   // TODO(b/349097807): Potential race condition. When migration stopping is
   // fully implemented, make sure this runs after uploads were already stopped
   // (otherwise upload might fail before it's cancelled) and/or post this to
   // same sequence & fail new requests that come in (if closing exactly when an
   // upload job was getting paused for sign in).
   CloseNotification(profile());
-  CloseDialog();
 }
 
 void MigrationNotificationManager::CloseDialog() {

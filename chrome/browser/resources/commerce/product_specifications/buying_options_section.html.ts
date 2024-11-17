@@ -8,7 +8,8 @@ import type {BuyingOptionsSectionElement} from './buying_options_section.js';
 
 export function getHtml(this: BuyingOptionsSectionElement) {
   return html`<!--_html_template_start_-->
-  <div id="link" @click="${this.openJackpotUrl_}">
+  <div id="price">${this.price}</div>
+  <div id="link" @click="${this.openJackpotUrl_}" ?hidden="${!this.jackpotUrl}">
     <span class="link-text">$i18n{buyingOptions}</span>
     <cr-icon icon="cr:open-in-new"></cr-icon>
   </div>

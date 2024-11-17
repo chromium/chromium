@@ -166,13 +166,30 @@ namespace traffic_counters {
 // static
 void TrafficCountersHandler::Initialize() {
   CHECK(!g_traffic_counters_handler);
+  CHECK(ash::NetworkHandler::IsInitialized());
   g_traffic_counters_handler = new TrafficCountersHandler();
-  g_traffic_counters_handler->StartAutoReset();
+  ash::NetworkStateHandler::NetworkStateList active_networks;
+  ash::NetworkHandler::Get()
+      ->network_state_handler()
+      ->GetActiveNetworkListByType(ash::NetworkTypePattern::Default(),
+                                   &active_networks);
+  if (!active_networks.empty()) {
+    g_traffic_counters_handler->StartAutoReset();
+    return;
+  }
+  ash::NetworkHandler::Get()->network_state_handler()->AddObserver(
+      g_traffic_counters_handler, FROM_HERE);
 }
 
 // static
 void TrafficCountersHandler::Shutdown() {
   CHECK(g_traffic_counters_handler);
+  if (ash::NetworkHandler::IsInitialized() &&
+      ash::NetworkHandler::Get()->network_state_handler()->HasObserver(
+          g_traffic_counters_handler)) {
+    ash::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
+        g_traffic_counters_handler, FROM_HERE);
+  }
   delete g_traffic_counters_handler;
   g_traffic_counters_handler = nullptr;
 }
@@ -214,6 +231,16 @@ TrafficCountersHandler::TrafficCountersHandler()
 }
 
 TrafficCountersHandler::~TrafficCountersHandler() = default;
+
+void TrafficCountersHandler::ActiveNetworksChanged(
+    const std::vector<const NetworkState*>& active_networks) {
+  if (active_networks.empty()) {
+    return;
+  }
+  ash::NetworkHandler::Get()->network_state_handler()->RemoveObserver(
+      this, FROM_HERE);
+  StartAutoReset();
+}
 
 void TrafficCountersHandler::StartAutoReset() {
   RunAutoResetTrafficCountersForActiveNetworks();

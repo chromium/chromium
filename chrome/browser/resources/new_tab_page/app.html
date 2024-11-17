@@ -51,15 +51,7 @@
       </ntp-middle-slot-promo>
     ` : ''}
     ${this.modulesEnabled_ ? html`
-      ${!this.modulesRedesignedEnabled_ ? html`
-        <ntp-modules id="modules"
-            ?modules-shown-to-user="${this.modulesShownToUser}"
-            @modules-shown-to-user-changed="${this.onModulesShownToUserChanged_}"
-            @customize-module="${this.onCustomizeModule_}"
-            @modules-loaded="${this.onModulesLoaded_}"
-            ?hidden="${!this.promoAndModulesLoaded_}">
-        </ntp-modules>
-      ` : html`
+      ${html`
         <ntp-modules-v2 id="modules"
             ?modules-shown-to-user="${this.modulesShownToUser}"
             @modules-shown-to-user-changed="${this.onModulesShownToUserChanged_}"
@@ -84,7 +76,7 @@
       </div>
     </a>
     <div id="customizeButtons">
-      ${this.wallpaperSearchButtonEnabled_ ? html`
+      ${this.showWallpaperSearchButton_ ? html`
         <cr-button id="wallpaperSearchButton"
             class="customize-button" @click="${this.onWallpaperSearchClick_}"
             title="$i18n{customizeThisPageWallpaperSearch}"

@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {i18n} from '../i18n.js';
 import {assertExists} from '../utils/assert.js';
 import {Infer, z} from '../utils/schema.js';
-import {lazyInit, sliceWhen} from '../utils/utils.js';
+import {getWordCount, lazyInit, sliceWhen} from '../utils/utils.js';
 
+import {LanguageCode} from './language_info.js';
 import {
   FinalResult,
   PartialResult,
@@ -128,27 +130,37 @@ export class SodaEventTransformer {
   // The last tokens from the PartialResult in SodaEvent with partial result.
   private partialResultTokens: TextToken[]|null = null;
 
-  constructor(private readonly speakerLabelEnabled: boolean) {}
+  // Speaker label will be dynamically toggled and impact on the final result.
+  // If speaker label is turned on/off in the middle of the sentence, the whole
+  // sentence will include/drop the speaker label.
+  constructor(public speakerLabelEnabled: boolean) {}
 
-  getTranscription(): Transcription {
+  getTranscription(language: LanguageCode, shouldFinalizeTranscription = false):
+    Transcription {
     const tokens = [...this.tokens];
     if (this.partialResultTokens !== null) {
       if (tokens.length > 0) {
         tokens.push(textSeparator);
       }
-      tokens.push(...this.partialResultTokens);
+      if (shouldFinalizeTranscription) {
+        const partialResultTokens = structuredClone(this.partialResultTokens);
+        for (const token of partialResultTokens) {
+          if (token.kind === 'textPart') {
+            delete token.partial;
+          }
+        }
+        tokens.push(...partialResultTokens);
+      } else {
+        tokens.push(...this.partialResultTokens);
+      }
     }
-    return new Transcription(tokens);
+    return new Transcription(tokens, language);
   }
 
   private handleSpeakerLabelCorrectionEvent(
     ev: SpeakerLabelCorrectionEvent,
     offsetMs: number,
   ) {
-    if (!this.speakerLabelEnabled) {
-      // Don't handle speaker label correction event when it's not enabled.
-      return;
-    }
     const {hypothesisParts} = ev;
     for (const correctionPart of hypothesisParts) {
       const speakerLabel = correctionPart.speakerLabel ?? null;
@@ -174,7 +186,11 @@ export class SodaEventTransformer {
           // immutable update, or signal/proxy with nested change detection, or
           // have a clearer boundary on which values (especially object/array)
           // should be immutably updated for lit change detection.
-          token.speakerLabel = speakerLabel;
+          // Correct speaker label only if speaker label is enabled on the
+          // original transcription.
+          if (token.speakerLabel !== null) {
+            token.speakerLabel = speakerLabel;
+          }
           found = true;
           break;
         }
@@ -241,22 +257,23 @@ export const transcriptionSchema = z.transform(
     // If the transcription is never enabled while recording, `textTokens` will
     // be null (to show a different state in playback view).
     textTokens: z.nullable(z.array(textTokenSchema)),
+    language: z.withDefault(z.nativeEnum(LanguageCode), LanguageCode.EN_US),
   }),
   {
     test(input) {
       return input instanceof Transcription;
     },
-    decode({textTokens}) {
+    decode({textTokens, language}) {
       if (textTokens === null) {
         return null;
       }
-      return new Transcription(textTokens);
+      return new Transcription(textTokens, language);
     },
     encode(val) {
       if (val === null) {
-        return {textTokens: null};
+        return {textTokens: null, language: LanguageCode.EN_US};
       }
-      return {textTokens: val.textTokens};
+      return {textTokens: val.textTokens, language: val.language};
     },
   },
 );
@@ -264,27 +281,24 @@ export const transcriptionSchema = z.transform(
 const MAX_DESCRIPTION_LENGTH = 512;
 
 export class Transcription {
-  constructor(readonly textTokens: TextToken[]) {}
+  constructor(
+    readonly textTokens: TextToken[],
+    readonly language: LanguageCode,
+  ) {}
 
   isEmpty(): boolean {
     return this.textTokens.length === 0;
   }
 
-  get wordCount(): number {
-    // TODO(kamchonlathorn): The definition of "word count" can be ambiguous and
-    // the word count for non-English languages can be different.
-    return this.textTokens.filter((token) => token.kind === 'textPart').length;
-  }
+  getWordCount = lazyInit((): number => {
+    return getWordCount(this.toPlainText(), this.language);
+  });
 
   /**
    * Concatenates textTokens into the string representation of the
    * transcription.
    *
-   * This is also used to export the transcription into a txt file.
-   *
-   * TODO(pihsun): Have a different function for exporting to text format and
-   * when exporting representation used for summary input.
-   * TODO(pihsun): Include speaker label in the output.
+   * This is used for title generation and summary input.
    */
   toPlainText = lazyInit((): string => {
     const ret: string[] = [];
@@ -297,6 +311,47 @@ export class Transcription {
         ret.push('\n');
         startOfParagraph = true;
         continue;
+      }
+      if (!startOfParagraph && (token.leadingSpace ?? true)) {
+        ret.push(' ');
+      }
+      ret.push(token.text);
+      startOfParagraph = false;
+    }
+    return ret.join('');
+  });
+
+  /**
+   * Concatenates textTokens into the string representation of the
+   * transcription. For continuous paragraphs with the same speaker label, adds
+   * the speaker label at the first paragraph.
+   *
+   * This is used to export the transcription into a txt file.
+   */
+  toExportText = lazyInit((): string => {
+    const ret: string[] = [];
+    let startOfParagraph = true;
+    let currentSpeaker: string|null = null;
+    for (const token of this.textTokens) {
+      if (token.kind === 'textSeparator') {
+        ret.push('\n');
+        startOfParagraph = true;
+        continue;
+      }
+      if (token.speakerLabel !== currentSpeaker) {
+        if (!startOfParagraph) {
+          ret.push('\n');
+          startOfParagraph = true;
+        }
+        if (ret.length !== 0) {
+          // Add a new line between two speakers.
+          ret.push('\n');
+        }
+        if (token.speakerLabel !== null) {
+          ret.push(i18n.transcriptionSpeakerLabelLabel(token.speakerLabel));
+          ret.push('\n');
+        }
+        currentSpeaker = token.speakerLabel;
       }
       if (!startOfParagraph && (token.leadingSpace ?? true)) {
         ret.push(' ');

@@ -10,7 +10,9 @@
 
 #include "base/command_line.h"
 #include "build/ios_buildflags.h"
+#include "components/input/events_helper.h"
 #include "components/input/render_widget_host_input_event_router.h"
+#include "components/input/switches.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/frame_sink_id_allocator.h"
 #include "content/browser/renderer_host/browser_compositor_ios.h"
@@ -21,7 +23,6 @@
 #include "content/browser/renderer_host/render_widget_host_view_ios_uiview.h"
 #include "content/browser/renderer_host/text_input_manager.h"
 #include "content/common/content_switches_internal.h"
-#include "content/common/input/events_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/common/content_switches.h"
 #include "ui/accelerated_widget_mac/display_ca_layer_tree.h"
@@ -411,11 +412,8 @@ void RenderWidgetHostViewIOS::UpdateCALayerTree(
 }
 
 void RenderWidgetHostViewIOS::OnOldViewDidNavigatePreCommit() {
-  if (base::FeatureList::IsEnabled(
-          features::kInvalidateLocalSurfaceIdPreCommit)) {
-    CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
-    browser_compositor_->DidNavigateMainFramePreCommit();
-  }
+  CHECK(browser_compositor_) << "Shouldn't be called during destruction!";
+  browser_compositor_->DidNavigateMainFramePreCommit();
 }
 
 void RenderWidgetHostViewIOS::OnNewViewDidNavigatePostCommit() {
@@ -563,7 +561,7 @@ void RenderWidgetHostViewIOS::ProcessAckedTouchEvent(
       ack_result == blink::mojom::InputEventResultState::kConsumed;
   gesture_provider_.OnTouchEventAck(
       touch.event.unique_touch_event_id, event_consumed,
-      InputEventResultStateIsSetBlocking(ack_result));
+      input::InputEventResultStateIsSetBlocking(ack_result));
   if (touch.event.touch_start_or_first_touch_move && event_consumed &&
       ShouldRouteEvents()) {
     host()
@@ -579,7 +577,7 @@ void RenderWidgetHostViewIOS::OnGestureEvent(
   if ((gesture.type() == ui::EventType::kGesturePinchBegin ||
        gesture.type() == ui::EventType::kGesturePinchUpdate ||
        gesture.type() == ui::EventType::kGesturePinchEnd) &&
-      !IsPinchToZoomEnabled()) {
+      !input::switches::IsPinchToZoomEnabled()) {
     return;
   }
 

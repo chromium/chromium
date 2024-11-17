@@ -5,7 +5,7 @@
 module media.mojom;
 
 import "gpu/ipc/common/exported_shared_image.mojom";
-import "gpu/ipc/common/mailbox_holder.mojom";
+import "gpu/ipc/common/mailbox.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
 import "media/mojo/mojom/audio_data.mojom";
@@ -250,14 +250,6 @@ enum CdmSessionClosedReason {
   kResourceEvicted,
 };
 
-// This defines a mojo transport format for media::SharedImageFormatType.
-// See media/base/video_frame.h for descriptions.
-enum SharedImageFormatType {
-  kLegacy,
-  kSharedImageFormat,
-  kSharedImageFormatExternalSampler,
-};
-
 // This defines a mojo transport format for media::DecryptConfig.
 // See media/base/decrypt_config.h for descriptions.
 struct DecryptConfig {
@@ -290,20 +282,12 @@ struct DecoderBufferSideData {
   // These fields indicate the amount of data to discard after decoding.
   mojo_base.mojom.TimeDelta front_discard;
   mojo_base.mojom.TimeDelta back_discard;
-
-  // If the buffer is an end of stream buffer, presence of `next_config`
-  // indicates that the EOS is for a config change. Decoders may make more
-  // optimal flushing decisions using this information.
-  DecoderBufferSideDataNextConfig? next_config;
 };
 
-// This defines a mojo transport format for media::DecoderBuffer.
-struct DecoderBuffer {
+// This defines a mojo transport format for media::DecoderBuffer w/ data.
+struct DataDecoderBuffer {
   mojo_base.mojom.TimeDelta timestamp;
   mojo_base.mojom.TimeDelta duration;
-
-  // Whether the buffer is an end-of-stream (EOS) buffer.
-  bool is_end_of_stream;
 
   // The number of bytes present in this buffer. The data is not serialized
   // along with this structure and must be read from a separate DataPipe.
@@ -318,6 +302,19 @@ struct DecoderBuffer {
   DecryptConfig? decrypt_config;
 
   DecoderBufferSideData? side_data;
+};
+
+// This defines a mojo transport format for an EOS media::DecoderBuffer.
+struct EosDecoderBuffer {
+  // Indicates that the EOS is for a config change. Decoders may make more
+  // optimal flushing decisions using this information.
+  DecoderBufferSideDataNextConfig? next_config;
+};
+
+// Possible choices for DecoderBuffer types.
+union DecoderBuffer {
+  EosDecoderBuffer eos;
+  DataDecoderBuffer data;
 };
 
 // This defines a mojo transport format for media::AudioBuffer.
@@ -345,6 +342,13 @@ struct AudioBuffer {
 
   // Channel data. Will be empty for EOS buffers.
   array<uint8> data;
+};
+
+// See media/base/video_frame_metadata.h for a description of fields.
+enum EffectState {
+  kUnknown = 0,
+  kDisabled = 1,
+  kEnabled = 2
 };
 
 // See media/base/video_frame_metadata.h for a description of fields.
@@ -394,7 +398,7 @@ struct VideoFrameMetadata {
 
   bool is_webgpu_compatible;
 
-  mojo_base.mojom.UnguessableToken? overlay_plane_id;
+  mojo_base.mojom.UnguessableToken? tracking_token;
 
   bool power_efficient;
 
@@ -428,6 +432,8 @@ struct VideoFrameMetadata {
   mojo_base.mojom.TimeDelta? wallclock_frame_duration;
 
   uint64? frame_sequence;
+
+  EffectState background_blur;
 };
 
 // This defines a mojo transport format for media::VideoFrame.
@@ -455,8 +461,6 @@ struct VideoFrame {
 
   gfx.mojom.ColorSpace color_space;
   gfx.mojom.HDRMetadata? hdr_metadata;
-
-  media.mojom.SharedImageFormatType shared_image_format_type;
 };
 
 // Possible choices for storing VideoFrame data.
@@ -464,8 +468,8 @@ union VideoFrameData {
   EosVideoFrameData eos_data;
   SharedMemoryVideoFrameData shared_memory_data;
   GpuMemoryBufferSharedImageVideoFrameData gpu_memory_buffer_shared_image_data;
-  MailboxVideoFrameData mailbox_data;
   SharedImageVideoFrameData shared_image_data;
+  OpaqueVideoFrameData opaque_data;
 };
 
 // A marker for EOS frames.
@@ -487,23 +491,19 @@ struct GpuMemoryBufferSharedImageVideoFrameData {
   gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;
   gpu.mojom.ExportedSharedImage? shared_image;
   gpu.mojom.SyncToken sync_token;
-  uint32 texture_target;
-};
-
-// This defines video frame data stored in texture mailbox.
-struct MailboxVideoFrameData {
-  gpu.mojom.MailboxHolder mailbox_holder;
-  gpu.mojom.VulkanYCbCrInfo? ycbcr_data;
 };
 
 // This defines video frame data stored in texture shared images.
 struct SharedImageVideoFrameData {
   gpu.mojom.ExportedSharedImage shared_image;
   gpu.mojom.SyncToken sync_token;
-  uint32 texture_target;
   // |ycbcr_data| is present on Android (and sometimes Fuchsia) when the
   // video is hardware decoded and the display compositor uses Vulkan.
   gpu.mojom.VulkanYCbCrInfo? ycbcr_data;
+};
+
+// An empty structure used for STORAGE_OPAQUE VideoFrame.
+struct OpaqueVideoFrameData {
 };
 
 struct PipelineStatistics {
@@ -616,25 +616,34 @@ enum RendererType {
 
 // See media::CreateCdmStatus
 enum CreateCdmStatus {
-  kSuccess,
-  kUnknownError,
-  kCdmCreationAborted,
-  kLoadCdmFailed,
-  kCreateCdmFuncNotAvailable,
-  kCdmHelperCreationFailed,
-  kGetCdmPrefDataFailed,
-  kGetCdmOriginIdFailed,
-  kInitCdmFailed,
-  kCdmFactoryCreationFailed,
-  kCdmNotSupported,
-  kInvalidCdmConfig,
-  kUnsupportedKeySystem,
-  kDisconnectionError,
-  kNotAllowedOnUniqueOrigin,
-  kMediaDrmBridgeCreationFailed,
-  kMediaCryptoNotAvailable,
-  kNoMoreInstances,
-  kInsufficientGpuResources,
-  kCrOsVerifiedAccessDisabled,
-  kCrOsRemoteFactoryCreationFailed,
+  kSuccess = 0,
+  kUnknownError = 1,
+  kCdmCreationAborted = 2,
+  //kLoadCdmFailed = 3,     // Deprecated
+  kCreateCdmFuncNotAvailable = 4,
+  kCdmHelperCreationFailed = 5,
+  kGetCdmPrefDataFailed = 6,
+  kGetCdmOriginIdFailed = 7,
+  kInitCdmFailed = 8,
+  kCdmFactoryCreationFailed = 9,
+  kCdmNotSupported = 10,
+  kInvalidCdmConfig = 11,
+  kUnsupportedKeySystem = 12,
+  kDisconnectionError = 13,
+  kNotAllowedOnUniqueOrigin = 14,
+  kMediaDrmBridgeCreationFailed = 15,
+  kMediaCryptoNotAvailable = 16,
+  kNoMoreInstances = 17,
+  kInsufficientGpuResources = 18,
+  kCrOsVerifiedAccessDisabled = 19,
+  kCrOsRemoteFactoryCreationFailed = 20,
+  kAndroidMediaDrmIllegalArgument = 21,
+  kAndroidMediaDrmIllegalState = 22,
+  kAndroidFailedL1SecurityLevel = 23,
+  kAndroidFailedL3SecurityLevel = 24,
+  kAndroidFailedSecurityOrigin = 25,
+  kAndroidFailedMediaCryptoSession = 26,
+  kAndroidFailedToStartProvisioning = 27,
+  kAndroidFailedMediaCryptoCreate = 28,
+  kAndroidUnsupportedMediaCryptoScheme = 29,
 };

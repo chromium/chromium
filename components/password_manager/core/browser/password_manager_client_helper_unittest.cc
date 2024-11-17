@@ -133,9 +133,6 @@ TEST_F(PasswordManagerClientHelperTest,
 }
 
 TEST_F(PasswordManagerClientHelperTest, PromptMoveForMovableFormInAccountMode) {
-  ON_CALL(*client()->GetPasswordFeatureManager(),
-          ShouldShowAccountStorageBubbleUi)
-      .WillByDefault(Return(true));
   ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
   ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
@@ -158,9 +155,6 @@ TEST_F(PasswordManagerClientHelperTest, PromptMoveForMovableFormInAccountMode) {
 
 TEST_F(PasswordManagerClientHelperTest,
        NoPromptToMoveForMovableFormInProfileMode) {
-  ON_CALL(*client()->GetPasswordFeatureManager(),
-          ShouldShowAccountStorageBubbleUi)
-      .WillByDefault(Return(true));
   ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
   ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
@@ -176,9 +170,6 @@ TEST_F(PasswordManagerClientHelperTest,
 }
 
 TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForUnmovableForm) {
-  ON_CALL(*client()->GetPasswordFeatureManager(),
-          ShouldShowAccountStorageBubbleUi)
-      .WillByDefault(Return(true));
   ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
   ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
@@ -194,9 +185,6 @@ TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForUnmovableForm) {
 }
 
 TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForGaiaAccountForm) {
-  ON_CALL(*client()->GetPasswordFeatureManager(),
-          ShouldShowAccountStorageBubbleUi)
-      .WillByDefault(Return(true));
   ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage)
       .WillByDefault(Return(true));
   ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)
@@ -211,9 +199,6 @@ TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForGaiaAccountForm) {
 }
 
 TEST_F(PasswordManagerClientHelperTest, NoPromptToMoveForNonOptedInUser) {
-  ON_CALL(*client()->GetPasswordFeatureManager(),
-          ShouldShowAccountStorageBubbleUi)
-      .WillByDefault(Return(true));
   ON_CALL(*client()->GetPasswordFeatureManager(), IsOptedInForAccountStorage)
       .WillByDefault(Return(false));
   ON_CALL(*client()->GetPasswordFeatureManager(), GetDefaultPasswordStore)

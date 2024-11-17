@@ -21,6 +21,7 @@
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
 #include "components/attribution_reporting/aggregatable_dedup_key.h"
 #include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
+#include "components/attribution_reporting/aggregatable_named_budget_candidate.h"
 #include "components/attribution_reporting/aggregatable_trigger_config.h"
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
@@ -60,9 +61,6 @@ TriggerRegistration TriggerRegistrationWith(
 }
 
 TEST(TriggerRegistrationTest, Parse) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAttributionReportingAggregatableFilteringIds);
   const struct {
     const char* description;
     const char* json;
@@ -318,7 +316,8 @@ TEST(TriggerRegistrationTest, Parse) {
           R"json({"aggregatable_filtering_id_max_bytes": null})json",
           ErrorIs(TriggerRegistrationError::
                       kAggregatableFilteringIdMaxBytesInvalidValue),
-      }};
+      },
+  };
 
   static constexpr char kTriggerRegistrationErrorMetric[] =
       "Conversions.TriggerRegistrationError11";
@@ -340,9 +339,6 @@ TEST(TriggerRegistrationTest, Parse) {
 }
 
 TEST(TriggerRegistrationTest, ToJson) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kAttributionReportingAggregatableFilteringIds);
   const struct {
     TriggerRegistration input;
     const char* expected_json;
@@ -477,9 +473,6 @@ TEST(TriggerRegistrationTest, ParseAggregationCoordinator) {
 }
 
 TEST(TriggerRegistrationTest, SerializeAggregationCoordinator) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kAttributionReportingAggregatableFilteringIds);
   const struct {
     TriggerRegistration input;
     const char* expected_json;
@@ -487,6 +480,7 @@ TEST(TriggerRegistrationTest, SerializeAggregationCoordinator) {
       {
           TriggerRegistration(),
           R"json({
+            "aggregatable_filtering_id_max_bytes": 1,
             "aggregatable_source_registration_time": "exclude",
             "debug_reporting": false,
             "aggregatable_debug_reporting": {
@@ -500,6 +494,7 @@ TEST(TriggerRegistrationTest, SerializeAggregationCoordinator) {
                 SuitableOrigin::Create(GURL("https://a.test"));
           }),
           R"json({
+            "aggregatable_filtering_id_max_bytes": 1,
             "aggregatable_source_registration_time": "exclude",
             "aggregation_coordinator_origin": "https://a.test",
             "debug_reporting": false,
@@ -602,6 +597,115 @@ TEST(TriggerRegistrationTest, ParseAttributionScopesConfig) {
                                     trigger->attribution_scopes.scopes().size(),
                                     1);
     }
+  }
+}
+
+TEST(TriggerRegistrationTest, ParseAggregatableNamedBudgetCandidate) {
+  const struct {
+    const char* desc;
+    const char* json;
+    ::testing::Matcher<
+        base::expected<TriggerRegistration, TriggerRegistrationError>>
+        matches;
+  } kTestCases[] = {
+      {
+          "aggregatable_named_budgets_valid",
+          R"json({"named_budgets":[
+            {
+              "name":"a"
+            },
+            {
+              "name":"b",
+              "not_filters":{"a":["b"]}
+            }
+          ]})json",
+          ValueIs(Field(
+              &TriggerRegistration::aggregatable_named_budget_candidates,
+              ElementsAre(
+                  AggregatableNamedBudgetCandidate(/*name=*/"a", FilterPair()),
+                  AggregatableNamedBudgetCandidate(
+                      /*name=*/"b", FilterPair(
+                                        /*positive=*/FiltersDisjunction(),
+                                        /*negative=*/{*FilterConfig::Create(
+                                            {{{"a", {"b"}}}})}))))),
+      },
+      {
+          "empty",
+          R"json({})json",
+          ValueIs(
+              Field(&TriggerRegistration::aggregatable_named_budget_candidates,
+                    IsEmpty())),
+      },
+      {
+          "aggregatable_named_budgets_invalid",
+          R"json({"named_budgets":[
+            {
+              "name":1
+            }
+          ]})json",
+          ErrorIs(
+              TriggerRegistrationError::kAggregatableNamedBudgetNameInvalid),
+      },
+  };
+
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAttributionAggregatableNamedBudgets);
+
+  for (const auto& test_case : kTestCases) {
+    base::HistogramTester histograms;
+    SCOPED_TRACE(test_case.desc);
+
+    auto trigger = TriggerRegistration::Parse(test_case.json);
+    EXPECT_THAT(trigger, test_case.matches);
+    if (trigger.has_value()) {
+      histograms.ExpectUniqueSample(
+          "Conversions.NamedBudgetsPerTriggerRegistration",
+          trigger->aggregatable_named_budget_candidates.size(), 1);
+    }
+  }
+}
+
+TEST(TriggerRegistrationTest, SerializeAggregatableNamedBudgetCandidate) {
+  const struct {
+    TriggerRegistration input;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          TriggerRegistration(),
+          R"json({
+            "aggregatable_source_registration_time": "exclude",
+            "aggregatable_filtering_id_max_bytes": 1,
+            "debug_reporting": false,
+            "aggregatable_debug_reporting": {
+              "key_piece": "0x0"
+            }
+          })json",
+      },
+      {
+          TriggerRegistrationWith([](TriggerRegistration& r) {
+            r.aggregatable_named_budget_candidates = {
+                AggregatableNamedBudgetCandidate(
+                    /*name=*/"a", FilterPair(
+                                      /*positive=*/FiltersDisjunction(),
+                                      /*negative=*/{*FilterConfig::Create(
+                                          {{{"a", {"b"}}}})}))};
+          }),
+          R"json({
+            "aggregatable_source_registration_time": "exclude",
+            "aggregatable_filtering_id_max_bytes": 1,
+            "named_budgets": [
+              {"name":"a", "not_filters":[{"a":["b"]}]}],
+            "debug_reporting": false,
+            "aggregatable_debug_reporting": {
+              "key_piece": "0x0"
+            }
+          })json",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_THAT(test_case.input.ToJson(),
+                base::test::IsJson(test_case.expected_json));
   }
 }
 

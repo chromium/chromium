@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/adapters.h"
+#include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -136,6 +138,34 @@ TEST(ExtendTest, ExtendWithSpan) {
   Extend(dst, kRawArray);
   EXPECT_THAT(dst,
               ElementsAre(3, 4, 5, 6, 7, 8, 9, 10, 11, 9, 10, 11, 3, 4, 5));
+}
+
+TEST(ExtendTest, ExtendWithRanges) {
+  std::set<int> set = {1, 2, 3};
+  circular_deque<int> deque = {4, 5, 6};
+  {
+    std::vector<int> dst;
+    Extend(dst, Reversed(set));
+    EXPECT_THAT(dst, ElementsAre(3, 2, 1));
+    Extend(dst, Reversed(deque));
+    EXPECT_THAT(dst, ElementsAre(3, 2, 1, 6, 5, 4));
+  }
+
+  {
+    std::vector<int> dst;
+    Extend(dst, set, [](int val) { return -val; });
+    EXPECT_THAT(dst, ElementsAre(-1, -2, -3));
+    Extend(dst, deque, [](int val) { return val + 1; });
+    EXPECT_THAT(dst, ElementsAre(-1, -2, -3, 5, 6, 7));
+  }
+
+  {
+    std::vector<int> dst;
+    Extend(dst, Reversed(set), [](int val) { return val * val; });
+    EXPECT_THAT(dst, ElementsAre(9, 4, 1));
+    Extend(dst, Reversed(deque), [](int val) { return val - 1; });
+    EXPECT_THAT(dst, ElementsAre(9, 4, 1, 5, 4, 3));
+  }
 }
 
 }  // namespace base

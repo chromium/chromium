@@ -36,7 +36,7 @@ const char kFakeFileMimeType[] = "text/plain";
 
 constexpr base::FilePath::CharType kBadFakeEntryPath1[] =
     FILE_PATH_LITERAL("/bad1");
-constexpr char kBadFakeEntryName1[] = "/bad1";
+constexpr char kBadFakeEntryName1[] = "";
 constexpr base::FilePath::CharType kBadFakeEntryPath2[] =
     FILE_PATH_LITERAL("/bad2");
 constexpr char kBadFakeEntryName2[] = "bad2";
@@ -243,8 +243,9 @@ AbortCallback FakeProvidedFileSystem::ReadDirectory(
       if (*metadata->name == kBadFakeEntryName2) {
         entry_type = static_cast<filesystem::mojom::FsFileType>(7);
       }
-      entry_list.emplace_back(base::FilePath(*metadata->name), base::FilePath(),
-                              entry_type);
+      auto name = base::SafeBaseName::Create(*metadata->name);
+      CHECK(name) << *metadata->name;
+      entry_list.emplace_back(*name, std::string(), entry_type);
     }
   }
 
@@ -606,8 +607,7 @@ const ProvidedFileSystemInfo& FakeProvidedFileSystem::GetFileSystemInfo()
 }
 
 OperationRequestManager* FakeProvidedFileSystem::GetRequestManager() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 Watchers* FakeProvidedFileSystem::GetWatchers() {
@@ -666,8 +666,7 @@ void FakeProvidedFileSystem::Notify(
 
 void FakeProvidedFileSystem::Configure(
     storage::AsyncFileUtil::StatusCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  std::move(callback).Run(base::File::FILE_ERROR_SECURITY);
+  NOTREACHED();
 }
 
 base::WeakPtr<ProvidedFileSystemInterface>

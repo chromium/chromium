@@ -45,7 +45,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "media/base/android/media_jni_headers/MediaDrmBridge_jni.h"
 
-using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::JavaByteArrayToByteVector;
@@ -55,6 +54,7 @@ using base::android::JavaParamRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaByteArray;
+using jni_zero::AttachCurrentThread;
 
 namespace media {
 
@@ -324,6 +324,37 @@ int GetFirstApiLevel() {
   return first_api_level;
 }
 
+CreateCdmTypedStatus ConvertMediaDrmCreateError(
+    MediaDrmBridge::MediaDrmCreateError error,
+    MediaDrmBridge::SecurityLevel security_level) {
+  switch (error) {
+    case MediaDrmBridge::MediaDrmCreateError::SUCCESS:
+      return CreateCdmTypedStatus::Codes::kSuccess;
+    case MediaDrmBridge::MediaDrmCreateError::UNSUPPORTED_DRM_SCHEME:
+      return CreateCdmTypedStatus::Codes::kUnsupportedKeySystem;
+    case MediaDrmBridge::MediaDrmCreateError::MEDIADRM_ILLEGAL_ARGUMENT:
+      return CreateCdmTypedStatus::Codes::kAndroidMediaDrmIllegalArgument;
+    case MediaDrmBridge::MediaDrmCreateError::MEDIADRM_ILLEGAL_STATE:
+      return CreateCdmTypedStatus::Codes::kAndroidMediaDrmIllegalState;
+    case MediaDrmBridge::MediaDrmCreateError::FAILED_SECURITY_LEVEL:
+      return (security_level == MediaDrmBridge::SECURITY_LEVEL_1)
+                 ? CreateCdmTypedStatus::Codes::kAndroidFailedL1SecurityLevel
+                 : CreateCdmTypedStatus::Codes::kAndroidFailedL3SecurityLevel;
+    case MediaDrmBridge::MediaDrmCreateError::FAILED_SECURITY_ORIGIN:
+      return CreateCdmTypedStatus::Codes::kAndroidFailedSecurityOrigin;
+    case MediaDrmBridge::MediaDrmCreateError::FAILED_MEDIA_CRYPTO_SESSION:
+      return CreateCdmTypedStatus::Codes::kAndroidFailedMediaCryptoSession;
+    case MediaDrmBridge::MediaDrmCreateError::FAILED_TO_START_PROVISIONING:
+      return CreateCdmTypedStatus::Codes::kAndroidFailedToStartProvisioning;
+    case MediaDrmBridge::MediaDrmCreateError::FAILED_MEDIA_CRYPTO_CREATE:
+      return CreateCdmTypedStatus::Codes::kAndroidFailedMediaCryptoCreate;
+    case MediaDrmBridge::MediaDrmCreateError::UNSUPPORTED_MEDIACRYPTO_SCHEME:
+      return CreateCdmTypedStatus::Codes::kAndroidUnsupportedMediaCryptoScheme;
+  }
+
+  return CreateCdmTypedStatus::Codes::kUnknownError;
+}
+
 }  // namespace
 
 // static
@@ -378,13 +409,13 @@ std::vector<uint8_t> MediaDrmBridge::GetUUID(const std::string& key_system) {
 
 // static
 base::Version MediaDrmBridge::GetVersion(const std::string& key_system) {
-  scoped_refptr<MediaDrmBridge> media_drm_bridge =
-      MediaDrmBridge::CreateWithoutSessionSupport(
-          key_system, /* origin_id= */ "",
-          MediaDrmBridge::SECURITY_LEVEL_DEFAULT, "GetVersion",
-          base::NullCallback());
-  if (!media_drm_bridge) {
-    DVLOG(1) << "Unable to create MediaDrmBridge for " << key_system;
+  auto media_drm_bridge = MediaDrmBridge::CreateWithoutSessionSupport(
+      key_system, /* origin_id= */ "", MediaDrmBridge::SECURITY_LEVEL_DEFAULT,
+      "GetVersion", base::NullCallback());
+  if (!media_drm_bridge.has_value()) {
+    DVLOG(1) << "Unable to create MediaDrmBridge for " << key_system
+             << ", CreateCdmStatus: "
+             << (media::StatusCodeType)media_drm_bridge.code();
     return base::Version();
   }
 
@@ -400,7 +431,7 @@ base::Version MediaDrmBridge::GetVersion(const std::string& key_system) {
 }
 
 // static
-scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateInternal(
+MediaDrmBridge::CdmCreationResult MediaDrmBridge::CreateInternal(
     const std::vector<uint8_t>& scheme_uuid,
     const std::string& origin_id,
     SecurityLevel security_level,
@@ -423,14 +454,18 @@ scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateInternal(
       std::move(storage), std::move(create_fetcher_cb), session_message_cb,
       session_closed_cb, session_keys_change_cb, session_expiration_update_cb));
 
-  if (!media_drm_bridge->j_media_drm_)
-    return nullptr;
+  if (!media_drm_bridge->j_media_drm_) {
+    DCHECK_NE(media_drm_bridge->last_create_error_,
+              MediaDrmCreateError::SUCCESS);
+    return ConvertMediaDrmCreateError(media_drm_bridge->last_create_error_,
+                                      security_level);
+  }
 
   return media_drm_bridge;
 }
 
 // static
-scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateWithoutSessionSupport(
+MediaDrmBridge::CdmCreationResult MediaDrmBridge::CreateWithoutSessionSupport(
     const std::string& key_system,
     const std::string& origin_id,
     SecurityLevel security_level,
@@ -440,7 +475,7 @@ scoped_refptr<MediaDrmBridge> MediaDrmBridge::CreateWithoutSessionSupport(
 
   UUID scheme_uuid = GetKeySystemManager()->GetUUID(key_system);
   if (scheme_uuid.empty())
-    return nullptr;
+    return CreateCdmTypedStatus::Codes::kUnsupportedKeySystem;
 
   // When created without session support, MediaCrypto is not needed.
   const bool requires_media_crypto = false;
@@ -945,6 +980,13 @@ void MediaDrmBridge::OnSessionExpirationUpdate(
       base::BindOnce(
           session_expiration_update_cb_, std::move(session_id),
           base::Time::FromMillisecondsSinceUnixEpoch(expiry_time_ms)));
+}
+
+void MediaDrmBridge::OnCreateError(JNIEnv* env, jint j_error_code) {
+  CHECK(j_error_code >= static_cast<jint>(MediaDrmCreateError::MIN_VALUE) &&
+        j_error_code <= static_cast<jint>(MediaDrmCreateError::MAX_VALUE));
+
+  last_create_error_ = static_cast<MediaDrmCreateError>(j_error_code);
 }
 
 //------------------------------------------------------------------------------

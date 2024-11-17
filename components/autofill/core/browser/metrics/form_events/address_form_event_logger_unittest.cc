@@ -63,7 +63,8 @@ class CategoryResolvedKeyMetricsTest
     autofill_manager().OnAskForValuesToFillTest(
         form, form.fields().front().global_id());
     autofill_manager().FillOrPreviewProfileForm(
-        mojom::ActionPersistence::kFill, form, form.fields().front(), profile,
+        mojom::ActionPersistence::kFill, form,
+        form.fields().front().global_id(), profile,
         {.trigger_source = AutofillTriggerSource::kPopup});
   }
 

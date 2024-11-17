@@ -63,6 +63,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   UITapGestureRecognizer* _tapGestureRecognizer;
   /// Whether the pasteboard currently has strings.
   BOOL _pasteboardHasStrings;
+  BOOL _isLensOverlay;
 }
 
 @dynamic delegate;
@@ -70,18 +71,23 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 #pragma mark - Public methods
 
 // Overload to allow for code-based initialization.
-- (instancetype)initWithFrame:(CGRect)frame {
-  return [self initWithFrame:frame textColor:TextColor() tintColor:nil];
+- (instancetype)initWithFrame:(CGRect)frame isLensOverlay:(BOOL)isLensOverlay {
+  return [self initWithFrame:frame
+                   textColor:TextColor()
+                   tintColor:nil
+               isLensOverlay:isLensOverlay];
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor
-                    tintColor:(UIColor*)tintColor {
+                    tintColor:(UIColor*)tintColor
+                isLensOverlay:(BOOL)isLensOverlay {
   self = [super initWithFrame:frame];
   if (self) {
     if (tintColor) {
       [self setTintColor:tintColor];
     }
+    _isLensOverlay = isLensOverlay;
     self.textColor = textColor;
     self.autocorrectionType = UITextAutocorrectionTypeNo;
     self.autocapitalizationType = UITextAutocapitalizationTypeNone;
@@ -119,13 +125,20 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
              object:nil];
 
     [self pasteboardDidChange:nil];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.class ]);
+      [self
+          registerForTraitChanges:(traits)
+                       withAction:@selector(updateTextProperitesOnTraitChange)];
+    }
   }
   return self;
 }
 
 - (instancetype)initWithCoder:(nonnull NSCoder*)aDecoder {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (void)setText:(NSAttributedString*)text
@@ -247,7 +260,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
   // point, the baseWritingDirectionForPosition doesn't yet return the correct
   // direction if the text field is empty. Instead, treat this as a special case
   // and calculate the direction from the keyboard locale if there is no text.
-  if (self.text.length == 0) {
+  if (self.text.length == 0 || _isLensOverlay) {
     NSLocaleLanguageDirection direction = [NSLocale
         characterDirectionForLanguage:self.textInputMode.primaryLanguage];
     return direction == NSLocaleLanguageDirectionRightToLeft
@@ -285,7 +298,7 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 - (void)updateTextDirection {
   // If the keyboard language direction does not match the device
   // language direction, the alignment of the placeholder text will be off.
-  if (self.text.length == 0) {
+  if (self.text.length == 0 || _isLensOverlay) {
     NSLocaleLanguageDirection direction = [NSLocale
         characterDirectionForLanguage:self.textInputMode.primaryLanguage];
     if (direction == NSLocaleLanguageDirectionRightToLeft) {
@@ -479,14 +492,16 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 #pragma mark - UITraitCollection
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
 
-  // Reset the fonts to the appropriate ones in this size class.
-  [self setFont:self.currentFont];
-  // Reset the attributed text to apply the new font.
-  [self setAttributedText:self.attributedText];
+  [self updateTextProperitesOnTraitChange];
 }
+#endif
 
 #pragma mark - UIGestureRecognizerDelegate
 
@@ -1049,6 +1064,14 @@ NSString* const kOmniboxFadeAnimationKey = @"OmniboxFadeAnimation";
 
 - (void)pasteboardDidChangeCallback:(UIPasteboard*)pasteboard {
   _pasteboardHasStrings = pasteboard.hasStrings;
+}
+
+// Resets Omnibox's the font and attributed text when a UITrait is modified.
+- (void)updateTextProperitesOnTraitChange {
+  // Reset the fonts to the appropriate ones in this size class.
+  [self setFont:self.currentFont];
+  // Reset the attributed text to apply the new font.
+  [self setAttributedText:self.attributedText];
 }
 
 @end

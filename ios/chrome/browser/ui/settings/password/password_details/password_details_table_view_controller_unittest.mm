@@ -14,6 +14,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
+#import "base/test/task_environment.h"
 #import "components/password_manager/core/browser/password_form.h"
 #import "components/password_manager/core/browser/password_manager_metrics_util.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
@@ -216,7 +217,6 @@ class PasswordDetailsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  protected:
   PasswordDetailsTableViewControllerTest() {
-    feature_list_.InitAndEnableFeature(syncer::kSyncWebauthnCredentials);
     handler_ = [[FakePasswordDetailsHandler alloc] init];
     delegate_ = [[FakePasswordDetailsDelegate alloc] init];
     reauthentication_module_ = [[MockReauthenticationModule alloc] init];
@@ -404,6 +404,9 @@ class PasswordDetailsTableViewControllerTest
     base::HistogramTester histogram_tester;
     SetPassword(websites);
 
+    base::RunLoop run_loop;
+    base::RunLoop* run_loop_ptr = &run_loop;
+
     PasswordDetailsTableViewController* password_details =
         base::apple::ObjCCastStrict<PasswordDetailsTableViewController>(
             controller());
@@ -411,7 +414,12 @@ class PasswordDetailsTableViewControllerTest
     [password_details tableView:password_details.tableView
         didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:0 inSection:0]];
 
-    [password_details copyPasswordDetailsHelper:PasswordDetailsItemTypeWebsite];
+    [password_details copyPasswordDetailsHelper:PasswordDetailsItemTypeWebsite
+                                     completion:^{
+                                       run_loop_ptr->Quit();
+                                     }];
+
+    run_loop.Run();
 
     UIPasteboard* general_pasteboard = [UIPasteboard generalPasteboard];
     EXPECT_NSEQ(expected_pasteboard, general_pasteboard.string);
@@ -429,6 +437,7 @@ class PasswordDetailsTableViewControllerTest
   FakePasswordDetailsDelegate* delegate_ = nil;
   MockReauthenticationModule* reauthentication_module_ = nil;
   CredentialType credential_type_ = CredentialTypeRegularPassword;
+  base::test::TaskEnvironment task_environment_;
 };
 
 // Tests that password is displayed properly.
@@ -444,6 +453,10 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestPassword) {
 
 // Tests that passkey is displayed properly.
 TEST_F(PasswordDetailsTableViewControllerTest, TestPasskey) {
+  if (!syncer::IsWebauthnCredentialSyncEnabled()) {
+    GTEST_SKIP() << "This build configuration does not support passkeys.";
+  }
+
   base::Time creation_time = SetPasskey();
   EXPECT_EQ(1, NumberOfSections());
   EXPECT_EQ(4, NumberOfItemsInSection(0));
@@ -452,7 +465,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestPasskey) {
   CheckEditCellText(Username(), 0, 2);
   CheckEditCellText(
       l10n_util::GetNSStringF(IDS_IOS_PASSKEY_CREATION_DATE,
-                              base::TimeFormatShortDateNumeric(creation_time)),
+                              base::TimeFormatShortDate(creation_time)),
       0, 3);
 }
 
@@ -601,11 +614,12 @@ TEST_F(PasswordDetailsTableViewControllerTest, TestChangePasswordOnWebsite) {
       [model indexPathForItemType:PasswordDetailsItemTypeChangePasswordButton];
 
   OCMExpect([applicationCommandsMock
-      closeSettingsUIAndOpenURL:[OCMArg checkWithBlock:^BOOL(id value) {
-        // This block verifies that the closeSettingsUIAndOpenURL function is
-        // called with a URL argument which matches the initial URL passed to
-        // the password form above. Information may have been appended to the
-        // URL argument, so we only make sure it includes the initial URL.
+      closePresentedViewsAndOpenURL:[OCMArg checkWithBlock:^BOOL(id value) {
+        // This block verifies that the closePresentedViewsAndOpenURL
+        // function is called with a URL argument which matches the initial URL
+        // passed to the password form above. Information may have been appended
+        // to the URL argument, so we only make sure it includes the initial
+        // URL.
         return base::Contains(((OpenNewTabCommand*)value).URL.spec(),
                               kExampleCom);
       }]]);
@@ -853,9 +867,17 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyUsername) {
       base::apple::ObjCCastStrict<PasswordDetailsTableViewController>(
           controller());
 
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+
   [password_details tableView:password_details.tableView
       didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:1 inSection:0]];
-  [password_details copyPasswordDetailsHelper:PasswordDetailsItemTypeUsername];
+  [password_details copyPasswordDetailsHelper:PasswordDetailsItemTypeUsername
+                                   completion:^{
+                                     run_loop_ptr->Quit();
+                                   }];
+
+  run_loop.Run();
 
   UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
   EXPECT_NSEQ(Username(), generalPasteboard.string);
@@ -875,9 +897,17 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyPasswordSuccess) {
       base::apple::ObjCCastStrict<PasswordDetailsTableViewController>(
           controller());
 
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+
   [password_details tableView:password_details.tableView
       didSelectRowAtIndexPath:[NSIndexPath indexPathForRow:2 inSection:0]];
-  [password_details copyPasswordDetailsHelper:PasswordDetailsItemTypePassword];
+  [password_details copyPasswordDetailsHelper:PasswordDetailsItemTypePassword
+                                   completion:^{
+                                     run_loop_ptr->Quit();
+                                   }];
+
+  run_loop.Run();
 
   UIPasteboard* generalPasteboard = [UIPasteboard generalPasteboard];
   EXPECT_NSEQ(@"test", generalPasteboard.string);
@@ -893,7 +923,7 @@ TEST_F(PasswordDetailsTableViewControllerTest, CopyDetailsFailedEmitted) {
   PasswordDetailsTableViewController* password_details =
       base::apple::ObjCCastStrict<PasswordDetailsTableViewController>(
           controller());
-  [password_details copyPasswordDetailsHelper:NSIntegerMax];
+  [password_details copyPasswordDetailsHelper:NSIntegerMax completion:nil];
 
   EXPECT_FALSE(handler().passwordCopiedByUserCalled);
 }

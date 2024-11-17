@@ -22,6 +22,7 @@
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/media_player_watch_time.h"
 #include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/select_audio_output_request.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/javascript_dialog_type.h"
@@ -100,7 +101,7 @@ class SharedDictionaryAccessDetails;
 namespace ui {
 class ClipboardFormatType;
 struct AXUpdatesAndEvents;
-struct AXLocationChanges;
+struct AXLocationAndScrollUpdates;
 }  // namespace ui
 
 namespace content {
@@ -117,6 +118,19 @@ struct TrustTokenAccessDetails;
 namespace mojom {
 class CreateNewWindowParams;
 }
+
+// When calculating storage access for a partitioned popin the
+// `top_frame_origin` and `ancestor_chain_bit` are needed to calculate the
+// storage key and the `site_for_cookies` is needed to properly filter cookie
+// access.
+// https://explainers-by-googlers.github.io/partitioned-popins/
+struct PartitionedPopinOpenerProperties {
+  url::Origin top_frame_origin;
+  net::SiteForCookies site_for_cookies;
+  blink::mojom::AncestorChainBit ancestor_chain_bit;
+
+  blink::mojom::PartitionedPopinParamsPtr AsMojom() const;
+};
 
 // An interface implemented by an object interested in knowing about the state
 // of the RenderFrameHost.
@@ -188,7 +202,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // A context menu should be shown, to be built using the context information
   // provided in the supplied params.
   virtual void ShowContextMenu(
-      RenderFrameHost& render_frame_host,
+      RenderFrameHostImpl& render_frame_host,
       mojo::PendingAssociatedRemote<blink::mojom::ContextMenuClient>
           context_menu_client,
       const ContextMenuParams& params) {}
@@ -277,6 +291,13 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void RequestMediaAccessPermission(const MediaStreamRequest& request,
                                             MediaResponseCallback callback);
 
+  // Called when a renderer requests to select an audio output device.
+  // |request| contains parameters for audio output device selection.
+  // |callback| is called with the unique ID of the selected device, or
+  // std::nullopt if selection fails.
+  virtual void ProcessSelectAudioOutput(const SelectAudioOutputRequest& request,
+                                        SelectAudioOutputCallback callback);
+
   // Checks if we have permission to access the microphone or camera. Note that
   // this does not query the user. |type| must be MEDIA_DEVICE_AUDIO_CAPTURE
   // or MEDIA_DEVICE_VIDEO_CAPTURE.
@@ -302,7 +323,8 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual void ProcessAccessibilityUpdatesAndEvents(
       ui::AXUpdatesAndEvents& details) {}
   virtual void AccessibilityLocationChangesReceived(
-      const std::vector<ui::AXLocationChanges>& details) {}
+      const ui::AXTreeID& tree_id,
+      ui::AXLocationAndScrollUpdates& details) {}
 
   // Indicates an unrecoverable error in accessibility. Gracefully turns off
   // accessibility in all frames.
@@ -339,7 +361,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
       blink::mojom::FullscreenOptionsPtr options);
 
   // Returns whether the RFH can use Additional Windowing Controls (AWC) APIs.
-  // https://github.com/ivansandrk/additional-windowing-controls/blob/main/awc-explainer.md
+  // https://github.com/explainers-by-googlers/additional-windowing-controls/blob/main/README.md
   virtual bool CanUseWindowingControls(RenderFrameHostImpl* requesting_frame);
 
   // Request to maximize window.
@@ -358,24 +380,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // were initiated by a gesture too, otherwise the navigation may be blocked.
   virtual void UpdateUserGestureCarryoverInfo() {}
 #endif
-
-  // Let the delegate decide whether postMessage should be delivered to
-  // |target_rfh| from a source frame in the given SiteInstance.  This defaults
-  // to false and overrides the RenderFrameHost's decision if true.
-  virtual bool ShouldRouteMessageEvent(RenderFrameHostImpl* target_rfh) const;
-
-  // Ensure that |source_rfh| has swapped-out RenderViews and
-  // RenderFrameProxies for itself and for all frames on its opener chain in
-  // the current frame's SiteInstance.
-  //
-  // TODO(alexmos): This method currently supports cross-process postMessage,
-  // where we may need to create any missing proxies for the message's source
-  // frame and its opener chain. It currently exists in WebContents due to a
-  // special case for <webview> guests, but this logic should eventually be
-  // moved down into RenderFrameProxyHost::RouteMessageEvent when <webview>
-  // refactoring for --site-per-process mode is further along.  See
-  // https://crbug.com/330264.
-  virtual void EnsureOpenerProxiesExist(RenderFrameHostImpl* source_rfh) {}
 
   // The frame called |window.focus()|.
   virtual void DidCallFocus() {}
@@ -737,20 +741,26 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // Whether the containing window was initially opened as a new popup.
   virtual bool IsPopup() const;
 
-  // If the containing window was opened as a new partitioned popin.
+  // Returns true if `this` is a partitioned popin. If you are calling this to
+  // check if a `RenderFrameHost` should be partitioned due to being in a popin,
+  // check `ShouldPartitionAsPopin` on that host instead.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
   virtual bool IsPartitionedPopin() const;
 
-  // If this window was opened as a new partitioned popin this will be the
-  // frame of the opener. This will only have a value if `is_popup_` is true.
+  // If this window is a partitioned popin then this returns the properties
+  // struct, otherwise this function CHECKs.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
-  virtual RenderFrameHostImpl* PartitionedPopinOpener() const;
+  virtual const PartitionedPopinOpenerProperties&
+  GetPartitionedPopinOpenerProperties() const;
 
   // Each window can have at most one open partitioned popin, and this will be a
-  // pointer to it. If this is set `PartitionedPopinOpener` must return null as
+  // pointer to it. If this is set `IsPartitionedPopin` must return false as
   // no popin can open a popin.
   // See https://explainers-by-googlers.github.io/partitioned-popins/
-  virtual WebContents* OpenedPartitionedPopin() const;
+  virtual WebContents* GetOpenedPartitionedPopin() const;
+
+  // Called when a first contentful paint happened in the primary main frame.
+  virtual void OnFirstContentfulPaintInPrimaryMainFrame() {}
 
  protected:
   virtual ~RenderFrameHostDelegate() = default;

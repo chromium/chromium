@@ -16,9 +16,12 @@ AppLockDescription::AppLockDescription(base::flat_set<webapps::AppId> app_ids)
 AppLockDescription::AppLockDescription(AppLockDescription&&) = default;
 AppLockDescription::~AppLockDescription() = default;
 
-AppLock::AppLock(base::WeakPtr<WebAppLockManager> lock_manager,
-                 std::unique_ptr<PartitionedLockHolder> holder)
-    : Lock(std::move(holder), lock_manager), WithAppResources(lock_manager) {}
+AppLock::AppLock() = default;
 AppLock::~AppLock() = default;
+
+void AppLock::GrantLock(WebAppLockManager& lock_manager) {
+  GrantLockResources(lock_manager);
+  GrantWithAppResources(lock_manager);
+}
 
 }  // namespace web_app

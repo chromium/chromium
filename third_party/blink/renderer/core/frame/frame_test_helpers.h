@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/display/screen_info.h"
 
 namespace base {
 class TickClock;
@@ -250,6 +251,8 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
   cc::FakeLayerTreeFrameSink* LastCreatedFrameSink();
 
   virtual display::ScreenInfo GetInitialScreenInfo();
+  void SetInitialScreenInfo(const display::ScreenInfo&);
+
   virtual std::unique_ptr<TestWebFrameWidgetHost> CreateWidgetHost();
 
   void BindWidgetChannels(
@@ -298,6 +301,7 @@ class TestWebFrameWidget : public WebFrameWidgetImpl {
   viz::FrameSinkId frame_sink_id_;
   std::unique_ptr<TestWebFrameWidgetHost> widget_host_;
   mojom::blink::DidOverscrollParamsPtr last_overscroll_;
+  display::ScreenInfo initial_screen_info_;
 };
 
 using CreateTestWebFrameWidgetCallback =
@@ -517,7 +521,7 @@ class TestWebFrameClient : public WebLocalFrameClient {
             std::unique_ptr<TestWebFrameClient> self_owned = nullptr);
 
   // WebLocalFrameClient:
-  void FrameDetached() override;
+  void FrameDetached(DetachReason detach_reason) override;
   WebLocalFrame* CreateChildFrame(
       blink::mojom::blink::TreeScopeType,
       const WebString& name,

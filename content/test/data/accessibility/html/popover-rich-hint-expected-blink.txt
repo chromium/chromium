@@ -1,0 +1,12 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++group ispopup=hint
+++++++++staticText name='Test rich hint ' nameFrom=contents
+++++++++++inlineTextBox name='Test rich hint ' nameFrom=contents
+++++++++link name='popover' nameFrom=contents
+++++++++++staticText name='popover' nameFrom=contents
+++++++++++++inlineTextBox name='popover' nameFrom=contents
+++++++button expanded name='hover me' nameFrom=contents detailsFrom=popoverTarget detailsIds=group
+++++++++staticText name='hover me' nameFrom=contents
+++++++++++inlineTextBox name='hover me' nameFrom=contents

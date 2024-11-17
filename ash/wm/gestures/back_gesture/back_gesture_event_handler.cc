@@ -20,10 +20,12 @@
 #include "ash/wm/gestures/back_gesture/back_gesture_affordance.h"
 #include "ash/wm/gestures/back_gesture/back_gesture_contextual_nudge_controller_impl.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/screen_pinning_controller.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_pin_util.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -33,6 +35,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/types/cxx23_to_underlying.h"
 #include "chromeos/ui/base/app_types.h"
+#include "chromeos/ui/base/window_pin_type.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
@@ -470,6 +473,16 @@ bool BackGestureEventHandler::CanStartGoingBack(
   // screen, lock screen.
   if (shell->session_controller()->GetSessionState() !=
       session_manager::SessionState::ACTIVE) {
+    return false;
+  }
+
+  // Do not enable back gesture in locked fullscreen to prevent users from
+  // exiting this mode.
+  const ScreenPinningController* const screen_pinning_controller =
+      shell->screen_pinning_controller();
+  if (screen_pinning_controller->IsPinned() &&
+      GetWindowPinType(screen_pinning_controller->pinned_window()) ==
+          chromeos::WindowPinType::kTrustedPinned) {
     return false;
   }
 

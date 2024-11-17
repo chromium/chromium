@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
 
+enum class IncognitoLockState;
 @class IncognitoReauthSceneAgent;
 class PrefRegistrySimple;
 class PrefService;
@@ -19,8 +20,13 @@ class PrefService;
 @optional
 // Called when the authentication requirement in a given scene might have
 // changed.
+// TODO(crbug.com/374073829): Remove after launching Soft Lock.
 - (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
     didUpdateAuthenticationRequirement:(BOOL)isRequired;
+
+// Called when the incognito lock state in a given scene might have changed.
+- (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
+    didUpdateIncognitoLockState:(IncognitoLockState)incogitoLockState;
 
 @end
 
@@ -50,6 +56,10 @@ class PrefService;
 // Returns YES when the authentication is currently required.
 @property(nonatomic, assign, readonly, getter=isAuthenticationRequired)
     BOOL authenticationRequired;
+
+// Returns whether incognito tabs are hidden behind a reauthentication screen,
+// soft lock screen or are not hidden at all.
+@property(nonatomic, assign, readonly) IncognitoLockState incognitoLockState;
 
 // Authentication module used when the user toggles the biometric auth on.
 @property(nonatomic, strong, readonly) id<ReauthenticationProtocol>

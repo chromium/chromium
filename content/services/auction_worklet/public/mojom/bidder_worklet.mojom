@@ -7,6 +7,7 @@ module auction_worklet.mojom;
 import "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom";
 import "content/services/auction_worklet/public/mojom/real_time_reporting.mojom";
 import "content/services/auction_worklet/public/mojom/reject_reason.mojom";
+import "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "third_party/blink/public/mojom/devtools/devtools_agent.mojom";
@@ -374,6 +375,15 @@ interface BidderWorklet {
   //  InterestGroup definitions of the InterestGroups that can share this
   //  BidderWorklet.
   //
+  // `key_value_signals_cache_key`: When using version two of the trusted
+  //  signals key value protocol, this contains information needed to retrieve
+  //  the fetched signals for the call from the browser process through the
+  //  TrustedSignalsCache API. When the browser-side cache is disabled and
+  //  fetching is done by the worklet service directly, this should be null.
+  //  SetTrustedSignalsCache() must have already been called on the parent
+  //  AuctionWorkletService before creating the BidderWorklet in order to
+  //  pass in a non-null value.
+  //
   // `kanon_mode` determines whether to use k-anonymity to potentially re-run
   //  the bidding function with only ads that are k-anonymous and produce an
   //  alternative bid. See GenerateBidClient.OnGenerateBidComplete for more
@@ -440,6 +450,7 @@ interface BidderWorklet {
   //  that may be delivered later (via JS promises).
   BeginGenerateBid(
       BidderWorkletNonSharedParams bidder_worklet_non_shared_params,
+      TrustedSignalsCacheKey? key_value_signals_cache_key,
       KAnonymityBidMode kanon_mode,
       url.mojom.Origin interest_group_join_origin,
       url.mojom.Url? direct_from_seller_per_buyer_signals,

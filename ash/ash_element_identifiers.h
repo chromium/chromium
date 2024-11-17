@@ -64,6 +64,10 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kEnterpriseManagedView);
 // associated element.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kExploreAppElementId);
 
+// Identifies the FaceGaze bubble UI that is pinned to the top of the screen
+// when the feature is running.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kFaceGazeBubbleElementId);
+
 // Uniquely identifies an element corresponding to the Files app.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kFilesAppElementId);
 
@@ -87,6 +91,11 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kLoginUserViewElementId);
 
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kNetworkAddEsimElementId);
+
+// Uniquely identifies the configure network button element.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kNetworkDetailedViewConfigureNetworkButtonElementId);
 
 // Uniquely identifies the Mobile data toggle element.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
@@ -132,48 +141,51 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
 
 // Identifies the overall Picker window UI.
 // See go/palette-next for more information about Picker.
-DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kPickerElementId);
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kQuickInsertElementId);
 
 // Identifies the emoji bar of Picker.
-DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kPickerEmojiBarElementId);
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
+                                          kQuickInsertEmojiBarElementId);
 
 // Identifies an emoji result in the emoji bar of Picker.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
-                                          kPickerEmojiItemElementId);
+                                          kQuickInsertEmojiItemElementId);
 
 // Identifies the 'GIF' button in the emoji bar of Picker.
-DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kPickerGifElementId);
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kQuickInsertGifElementId);
 
 // Identifies the 'more emojis' button in the emoji bar of Picker.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
-                                          kPickerMoreEmojisElementId);
+                                          kQuickInsertMoreEmojisElementId);
 
 // Identifies the preview bubble of Picker.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
-                                          kPickerPreviewBubbleElementId);
+                                          kQuickInsertPreviewBubbleElementId);
 
 // Identifies the textfield that implements the Picker search field.
-DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
-                                          kPickerSearchFieldTextfieldElementId);
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kQuickInsertSearchFieldTextfieldElementId);
 
 // Identifies the search results page of Picker.
-DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,
-                                          kPickerSearchResultsPageElementId);
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kQuickInsertSearchResultsPageElementId);
 
 // Identifies a list result in the search results page of Picker.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
-    kPickerSearchResultsListItemElementId);
+    kQuickInsertSearchResultsListItemElementId);
 
 // Identifies an image result in the search results page of Picker.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
-    kPickerSearchResultsImageItemElementId);
+    kQuickInsertSearchResultsImageItemElementId);
 
 // Identifies a row of image results in Picker.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
-    kPickerSearchResultsImageRowElementId);
+    kQuickInsertSearchResultsImageRowElementId);
 
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
     ASH_EXPORT,
@@ -198,6 +210,11 @@ DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kSettingsAppElementId);
 
 // Uniquely identifies the `ShelfView`.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT, kShelfViewElementId);
+
+// Uniquely identifies the progress bar shown for the `TrayDetailedView`.
+DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(
+    ASH_EXPORT,
+    kTrayDetailedViewProgressBarElementId);
 
 // Uniquely identifies the `UnifiedSystemTray`.
 DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ASH_EXPORT,

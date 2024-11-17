@@ -12,8 +12,7 @@
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "third_party/nearby/src/internal/platform/implementation/bluetooth_classic.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 // Concrete BluetoothDevice implementation.
 class BluetoothDevice : public api::BluetoothDevice {
@@ -45,7 +44,6 @@ class BluetoothDevice : public api::BluetoothDevice {
   std::optional<base::TimeTicks> last_discovered_time_ = std::nullopt;
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_BLUETOOTH_DEVICE_H_

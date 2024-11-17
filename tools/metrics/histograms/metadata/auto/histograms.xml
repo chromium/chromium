@@ -151,7 +151,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="AutoScreenBrightness.BrightnessMonitorStatus"
     enum="AutoScreenBrightnessBrightnessMonitorStatus"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>

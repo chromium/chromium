@@ -213,8 +213,6 @@ class ReadWriteWaiter {
 
 class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
  public:
-  ~DirectSocketsTcpBrowserTest() override = default;
-
   GURL GetTestOpenPageURL() {
     return embedded_test_server()->GetURL("/direct_sockets/open.html");
   }
@@ -292,7 +290,6 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
   }
 
  private:
-  base::test::ScopedFeatureList feature_list_{blink::features::kDirectSockets};
   mojo::Remote<network::mojom::TCPServerSocket> tcp_server_socket_;
 
   std::unique_ptr<ContentBrowserClient> client_;

@@ -47,7 +47,7 @@ class MachineLevelUserCloudPolicyStoreTest : public ::testing::Test {
   MachineLevelUserCloudPolicyStoreTest& operator=(
       const MachineLevelUserCloudPolicyStoreTest&) = delete;
 
-  ~MachineLevelUserCloudPolicyStoreTest() override {}
+  ~MachineLevelUserCloudPolicyStoreTest() override = default;
 
   void SetUp() override {
     ASSERT_TRUE(tmp_policy_dir_.CreateUniqueTempDir());

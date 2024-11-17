@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Jwayelekile</translation>
 <translation id="1591562245178063882">Le nyanga</translation>
 <translation id="1637811476055996098">Khetha amafayela</translation>
-<translation id="1680090928918677457">Sebenzisa ikhamera</translation>
 <translation id="1729654308190250600">Sicela ufake ikheli le imeyili elinokuthile.</translation>
 <translation id="1758486001363313524">Okunye...</translation>
 <translation id="1921819250265091946">i-dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Sicela unciphisele lo mbhalo kuzinhlamvu ezingu-<ph name="MAX_CHARACTERS" /> noma ngaphansi (okwamanje usebenzisa izinhlamvu ezingu-<ph name="CURRENT_LENGTH" />).</translation>
 <translation id="2247351761944213033">Iviki elingu-<ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Ithrekhi engu-<ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Ikhamera nemakrofoni ivunyelwe</translation>
 <translation id="2507943997699731163">Sicela ugcwalise le nkambu.</translation>
 <translation id="2613802280814924224">Sicela ufake inani elivumelekile. Inani elivumelekile eliseduze ngu-<ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Hambisa</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Sicela welule lo mbhalo kuya kuzinhlamvu ezingu-<ph name="MIN_CHARACTERS" /> noma ngaphezulu (okwamanje usebenzisa izinhlamvu ezingu-<ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">Ingxenye elandelwa yi-'<ph name="ATSIGN" />' akumele iqukathe isimbuli engu-'<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="3846214748874656680">Phuma kusikrini esigcwele</translation>
-<translation id="4031179711345676612">Imakrofoni ivunyelwe</translation>
 <translation id="4360991593054037559">Sicela ufake inani elivumelekile. Amanani amabili avumelekile asondele kakhulu ngu-<ph name="VALID_VALUE_LOW" /> no-<ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Imininingwane</translation>
-<translation id="4663373278480897665">Ikhamera ivunyelwe</translation>
 <translation id="4664250907885839816">Ingxenye elandelai-'<ph name="ATSIGN" />' akumele iqukathe isimbuli engu-'<ph name="INVALIDCHARACTER" />'.</translation>
 <translation id="4718048029184481307">Idlala kusithombe esiphakathi kwesithombe</translation>
-<translation id="4792862212177489858">Yabelana ngendawo</translation>
 <translation id="4812940957355064477">Sicela ufake inombolo.</translation>
-<translation id="49269513399674318">Sebenzisa imakrofoni</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> okukhethiwe</translation>
 <translation id="4992066212339426712">Susa ukuthula</translation>
 <translation id="49969490063480558">Sicela ufake ingxenye elandela i-'<ph name="ATSIGN" />'. I-'<ph name="INVALIDADDRESS" />' ayiphelele.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">ayikwazanga ukulayisha i-plug-in.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">Sicela welule lo mbhalo kuya kuzinhlamvu ezingu-<ph name="MIN_CHARACTERS" /> noma ngaphezulu (okwamanje usebenzisa uhlamvu olungu1.</translation>
-<translation id="7080893216867146095">Ukwabelana ngendawo kuvunyelwe</translation>
 <translation id="709897737746224366">Sicela ufanise ifomethi eceliwe.</translation>
-<translation id="7134810312945846184">Sebenzisa imakrofoni nekhamera</translation>
 <translation id="7263440858009898357">Sicela ukhethe into kuhlu.</translation>
 <translation id="7364796246159120393">Khetha ifayela</translation>
 <translation id="739024184232394898">Okunye...</translation>

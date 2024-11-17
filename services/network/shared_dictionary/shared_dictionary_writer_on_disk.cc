@@ -59,8 +59,7 @@ void SharedDictionaryWriterOnDisk::Append(const char* buf, int num_bytes) {
   secure_hash_->Update(buf, num_bytes);
   switch (state_) {
     case State::kBeforeInitialize:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case State::kInitializing:
       pending_write_buffers_.push_back(
           base::MakeRefCounted<net::StringIOBuffer>(
@@ -72,8 +71,7 @@ void SharedDictionaryWriterOnDisk::Append(const char* buf, int num_bytes) {
           std::string(buf, num_bytes)));
     } break;
     case State::kFailed:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

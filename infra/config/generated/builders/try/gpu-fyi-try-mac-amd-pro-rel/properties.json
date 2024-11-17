@@ -73,7 +73,8 @@
           "builder": "Mac Pro FYI Release (AMD)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-mac-amd-pro-rel/targets"
     }
   },
   "$build/reclient": {

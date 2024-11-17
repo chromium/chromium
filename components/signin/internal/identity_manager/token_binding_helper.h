@@ -92,6 +92,13 @@ class TokenBindingHelper {
   std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const;
 
+  // Returns the number of bound tokens.
+  size_t GetBoundTokenCount() const;
+
+  // Returns whether all accounts reuse the same binding key.
+  // Returns `true` if empty.
+  bool AreAllBindingKeysSame() const;
+
  private:
   struct BindingKeyData {
     explicit BindingKeyData(std::vector<uint8_t> wrapped_key);

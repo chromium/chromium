@@ -9,30 +9,39 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.UnifiedConsentServiceBridge;
 import org.chromium.components.browser_ui.widget.MaterialSwitchWithText;
 
-/** Controls the behaviour of the MSBB privacy guide page. */
+/** Controls the behavior of the MSBB privacy guide page. */
 public class MSBBFragment extends PrivacyGuideBasePage {
+    private MaterialSwitchWithText mMSBBSwitch;
+
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled()
-                ? inflater.inflate(R.layout.privacy_guide_msbb_v3_step, container, false)
-                : inflater.inflate(R.layout.privacy_guide_msbb_step, container, false);
+        return inflater.inflate(R.layout.privacy_guide_msbb_step, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        MaterialSwitchWithText msbbSwitch = view.findViewById(R.id.msbb_switch);
-        msbbSwitch.setChecked(PrivacyGuideUtils.isMsbbEnabled(getProfile()));
+        mMSBBSwitch = view.findViewById(R.id.msbb_switch);
+        setMSBBSwitchState();
 
-        msbbSwitch.setOnCheckedChangeListener(
+        mMSBBSwitch.setOnCheckedChangeListener(
                 (button, isChecked) -> {
                     PrivacyGuideMetricsDelegate.recordMetricsOnMSBBChange(isChecked);
                     UnifiedConsentServiceBridge.setUrlKeyedAnonymizedDataCollectionEnabled(
                             getProfile(), isChecked);
                 });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        setMSBBSwitchState();
+    }
+
+    private void setMSBBSwitchState() {
+        mMSBBSwitch.setChecked(PrivacyGuideUtils.isMsbbEnabled(getProfile()));
     }
 }

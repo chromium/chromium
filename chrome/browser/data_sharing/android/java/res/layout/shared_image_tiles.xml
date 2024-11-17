@@ -19,21 +19,19 @@ found in the LICENSE file.
     <LinearLayout
         android:id="@+id/last_tile_container"
         android:layout_width="wrap_content"
-        android:layout_height="@dimen/shared_image_tiles_icon_height"
+        android:layout_height="@dimen/shared_image_tiles_icon_total_height"
         android:layout_marginEnd="@dimen/shared_image_tiles_overlap_margin_negative"
-        android:minWidth="@dimen/shared_image_tiles_icon_height"
-        android:orientation="vertical"
+        android:minWidth="@dimen/shared_image_tiles_icon_total_height"
         android:background="@drawable/round_image_filled"
-        android:focusable="false"
         android:visibility="gone" >
 
         <TextView
             android:id="@+id/tiles_count"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:paddingStart="@dimen/shared_image_tiles_overlap_margin"
             android:paddingEnd="@dimen/shared_image_tiles_overlap_margin"
-            android:layout_gravity="center"
             android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Primary"
             android:gravity="center"
             android:visibility="gone"/>

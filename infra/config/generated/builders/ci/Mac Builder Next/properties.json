@@ -48,7 +48,8 @@
           "builder": "mac-builder-next",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Mac Builder Next/targets"
     }
   },
   "$build/reclient": {

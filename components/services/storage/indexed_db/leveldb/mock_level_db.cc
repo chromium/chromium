@@ -6,12 +6,12 @@
 
 namespace leveldb {
 
-MockIterator::MockIterator() {}
+MockIterator::MockIterator() = default;
 
-MockIterator::~MockIterator() {}
+MockIterator::~MockIterator() = default;
 
-MockLevelDB::MockLevelDB() {}
+MockLevelDB::MockLevelDB() = default;
 
-MockLevelDB::~MockLevelDB() {}
+MockLevelDB::~MockLevelDB() = default;
 
 }  // namespace leveldb

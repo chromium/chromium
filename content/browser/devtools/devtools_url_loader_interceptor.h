@@ -10,6 +10,7 @@
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/network.h"
@@ -252,7 +253,7 @@ class DevToolsURLLoaderInterceptor {
 
   std::vector<Pattern> patterns_;
   bool handle_auth_ = false;
-  std::map<std::string, InterceptionJob*> jobs_;
+  std::map<std::string, raw_ptr<InterceptionJob, CtnExperimental>> jobs_;
 
   base::WeakPtrFactory<DevToolsURLLoaderInterceptor> weak_factory_;
 };

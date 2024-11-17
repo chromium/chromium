@@ -13,7 +13,7 @@
 set -e  # makes the script quit on any command failure
 set -u  # unset variables are quit-worthy errors
 
-PLATFORMS="${1:-linux,fuchsia,android,chromeos-ash,chromeos-lacros,win,mac}"
+PLATFORMS="${1:-linux,fuchsia,android,chromeos,win,mac}"
 
 COMPILE_DIRS=.
 EDIT_DIRS=.
@@ -87,6 +87,7 @@ EOF
     fuchsia)
         cat <<EOF
 target_os = "fuchsia"
+enable_cast_receiver=true
 clang_use_chrome_plugins = false
 dcheck_always_on = true
 is_chrome_branded = true
@@ -98,22 +99,7 @@ force_enable_raw_ptr_exclusion = true
 EOF
         ;;
 
-    chromeos-lacros)
-        cat <<EOF
-target_os = "chromeos"
-clang_use_chrome_plugins = false
-chromeos_is_browser_only = true
-dcheck_always_on = true
-is_chrome_branded = true
-is_debug = false
-is_official_build = true
-use_remoteexec = false
-chrome_pgo_phase = 0
-force_enable_raw_ptr_exclusion = true
-EOF
-        ;;
-
-    chromeos-ash)
+    chromeos)
         cat <<EOF
 target_os = "chromeos"
 clang_use_chrome_plugins = false

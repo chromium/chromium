@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_observer_chromeos_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -42,7 +43,7 @@ void TtsHandler::HandleGetTtsExtensions(const base::Value::List& args) {
       extensions::ExtensionRegistry::Get(profile);
 
   const std::set<std::string> extensions =
-      TtsEngineExtensionObserverChromeOS::GetInstance(profile)
+      TtsEngineExtensionObserverChromeOSFactory::GetForProfile(profile)
           ->engine_extension_ids();
   std::set<std::string>::const_iterator iter;
   for (iter = extensions.begin(); iter != extensions.end(); ++iter) {

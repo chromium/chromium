@@ -153,9 +153,8 @@ class SSLPlatformKeySecKey : public ThreadedSSLPrivateKey::Delegate {
       return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
     }
 
-    signature->assign(CFDataGetBytePtr(signature_ref.get()),
-                      CFDataGetBytePtr(signature_ref.get()) +
-                          CFDataGetLength(signature_ref.get()));
+    auto signature_span = base::apple::CFDataToSpan(signature_ref.get());
+    signature->assign(signature_span.begin(), signature_span.end());
     return OK;
   }
 

@@ -35,9 +35,7 @@ int SampleFormatToBytesPerChannel(SampleFormat sample_format) {
       return 4;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid sample format provided: " << sample_format;
-  return 0;
+  NOTREACHED() << "Invalid sample format provided: " << sample_format;
 }
 
 int SampleFormatToBitsPerChannel(SampleFormat sample_format) {
@@ -81,9 +79,7 @@ const char* SampleFormatToString(SampleFormat sample_format) {
     case kSampleFormatDtse:
       return "Compressed DTS Express bitstream";
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid sample format provided: " << sample_format;
-  return "";
+  NOTREACHED() << "Invalid sample format provided: " << sample_format;
 }
 
 bool IsPlanar(SampleFormat sample_format) {
@@ -109,9 +105,7 @@ bool IsPlanar(SampleFormat sample_format) {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid sample format provided: " << sample_format;
-  return false;
+  NOTREACHED() << "Invalid sample format provided: " << sample_format;
 }
 
 bool IsInterleaved(SampleFormat sample_format) {
@@ -137,9 +131,7 @@ bool IsInterleaved(SampleFormat sample_format) {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid sample format provided: " << sample_format;
-  return false;
+  NOTREACHED() << "Invalid sample format provided: " << sample_format;
 }
 
 bool IsBitstream(SampleFormat sample_format) {
@@ -169,9 +161,7 @@ bool IsBitstream(SampleFormat sample_format) {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid sample format provided: " << sample_format;
-  return false;
+  NOTREACHED() << "Invalid sample format provided: " << sample_format;
 }
 
 }  // namespace media

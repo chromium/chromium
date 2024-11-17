@@ -13,7 +13,7 @@ source_set("api") {
   deps = [ "//third_party/dawn/src/dawn/native:headers" ]
 }
 
-if (use_blink) {
+if (use_blink || (is_ios && build_with_internal_optimization_guide)) {
   component("ml_no_internal") {
     public = [
       "chrome_ml.h",

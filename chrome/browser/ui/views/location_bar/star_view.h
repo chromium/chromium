@@ -8,7 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/prefs/pref_member.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 class Browser;
@@ -34,15 +34,12 @@ class StarView : public PageActionIconView {
   // PageActionIconView:
   void UpdateImpl() override;
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
-  void ExecuteCommand(ExecuteSource source) override;
   views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
   void EditBookmarksPrefUpdated();
-
-  const raw_ptr<Browser> browser_;
 
   BooleanPrefMember edit_bookmarks_enabled_;
 };

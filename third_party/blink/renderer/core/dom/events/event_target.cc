@@ -558,8 +558,7 @@ bool EventTarget::addEventListener(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool EventTarget::addEventListener(const AtomicString& event_type,
@@ -639,8 +638,7 @@ bool EventTarget::AddEventListenerInternal(
     Vector<String> argv;
     argv.push_back(ToNode() ? ToNode()->nodeName() : InterfaceName());
     argv.push_back(event_type);
-    activity_logger->LogEvent(execution_context, "blinkAddEventListener",
-                              argv.size(), argv.data());
+    activity_logger->LogEvent(execution_context, "blinkAddEventListener", argv);
   }
 
   RegisteredEventListener* registered_listener = nullptr;
@@ -797,8 +795,7 @@ bool EventTarget::removeEventListener(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool EventTarget::removeEventListener(const AtomicString& event_type,

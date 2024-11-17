@@ -83,7 +83,7 @@ void GetStorageStatsImpl(const base::FilePath& temporary_archives_dir,
 }  // namespace
 
 // protected and used for testing.
-ArchiveManager::ArchiveManager() {}
+ArchiveManager::ArchiveManager() = default;
 
 ArchiveManager::ArchiveManager(
     const base::FilePath& temporary_archives_dir,
@@ -95,7 +95,7 @@ ArchiveManager::ArchiveManager(
       public_archives_dir_(public_archives_dir),
       task_runner_(task_runner) {}
 
-ArchiveManager::~ArchiveManager() {}
+ArchiveManager::~ArchiveManager() = default;
 
 void ArchiveManager::EnsureArchivesDirCreated(
     base::OnceCallback<void()> callback) {

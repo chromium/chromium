@@ -19,9 +19,6 @@ class NonAccessibleImageView : public views::ImageView {
   NonAccessibleImageView& operator=(const NonAccessibleImageView&) = delete;
   ~NonAccessibleImageView() override;
 
- private:
-  // Overridden from views::ImageView.
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_NON_ACCESSIBLE_IMAGE_VIEW_H_

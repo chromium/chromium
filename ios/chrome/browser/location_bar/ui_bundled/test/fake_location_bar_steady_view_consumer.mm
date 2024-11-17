@@ -24,4 +24,10 @@
 - (void)updateAfterNavigatingToNTP {
 }
 
+- (void)attemptShowingLensOverlayIPH {
+}
+
+- (void)recordLensOverlayAvailability {
+}
+
 @end

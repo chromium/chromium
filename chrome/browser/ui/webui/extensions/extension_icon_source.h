@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSION_ICON_SOURCE_H_
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "base/memory/raw_ptr.h"
@@ -72,7 +73,7 @@ class ExtensionIconSource : public content::URLDataSource {
 
   // A public utility function for accessing the bitmap of the image specified
   // by |resource_id|.
-  static SkBitmap* LoadImageByResourceId(int resource_id);
+  static std::unique_ptr<SkBitmap> LoadImageByResourceId(int resource_id);
 
   // content::URLDataSource implementation.
   std::string GetSource() override;

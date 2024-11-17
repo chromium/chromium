@@ -7,6 +7,8 @@
 
 #include "ash/public/cpp/coral_delegate.h"
 
+class DesksTemplatesAppLaunchHandler;
+
 class CoralDelegateImpl : public ash::CoralDelegate {
  public:
   CoralDelegateImpl();
@@ -14,10 +16,19 @@ class CoralDelegateImpl : public ash::CoralDelegate {
   CoralDelegateImpl& operator=(const CoralDelegateImpl&) = delete;
   ~CoralDelegateImpl() override;
 
-  // ash::CoralDelegateImpl:
+  void OnPostLoginLaunchComplete();
+
+  // ash::CoralDelegate:
   void LaunchPostLoginGroup(coral::mojom::GroupPtr group) override;
-  void OpenNewDeskWithGroup(coral::mojom::GroupPtr group) override;
-  void CreateSavedDeskFromGroup(coral::mojom::GroupPtr group) override;
+  void MoveTabsInGroupToNewDesk(const std::vector<coral::mojom::Tab>& tabs,
+                                size_t src_desk_index) override;
+  int GetChromeDefaultRestoreId() override;
+
+ private:
+  // Handles launching apps and creating browsers for post login groups.
+  std::unique_ptr<DesksTemplatesAppLaunchHandler> app_launch_handler_;
+
+  base::WeakPtrFactory<CoralDelegateImpl> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_WM_CORAL_DELEGATE_IMPL_H_

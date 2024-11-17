@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_TEST_UTIL_H_
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSIONS_MENU_TEST_UTIL_H_
 
-#include <memory>
-#include <string>
-
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -24,7 +21,7 @@ class ExtensionsToolbarContainer;
 class ExtensionsMenuTestUtil : public ExtensionActionTestHelper,
                                views::ViewObserver {
  public:
-  ExtensionsMenuTestUtil(Browser* browser, bool is_real_window);
+  explicit ExtensionsMenuTestUtil(Browser* browser);
   ExtensionsMenuTestUtil(const ExtensionsMenuTestUtil&) = delete;
   ExtensionsMenuTestUtil& operator=(const ExtensionsMenuTestUtil&) = delete;
   ~ExtensionsMenuTestUtil() override;
@@ -33,25 +30,20 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper,
   int NumberOfBrowserActions() override;
   bool HasAction(const extensions::ExtensionId& id) override;
   void InspectPopup(const extensions::ExtensionId& id) override;
-  void TriggerPopupForAPI(const extensions::ExtensionId& id) override;
   gfx::Image GetIcon(const extensions::ExtensionId& id) override;
   void Press(const extensions::ExtensionId& id) override;
   gfx::NativeView GetPopupNativeView() override;
   bool HasPopup() override;
   bool HidePopup() override;
-  ExtensionsContainer* GetExtensionsContainer() override;
   void WaitForExtensionsContainerLayout() override;
   gfx::Size GetMinPopupSize() override;
   gfx::Size GetMaxPopupSize() override;
-  gfx::Size GetToolbarActionSize() override;
   gfx::Size GetMaxAvailableSizeToFitBubbleOnScreen(
       const extensions::ExtensionId& id) override;
 
   void OnViewIsDeleting(views::View* observed_view) override;
 
  private:
-  class Wrapper;
-
   // Returns the ExtensionMenuItemView for the given `id` from the
   // `menu_view`.
   ExtensionMenuItemView* GetMenuItemViewForId(
@@ -60,8 +52,6 @@ class ExtensionsMenuTestUtil : public ExtensionActionTestHelper,
   // An override to allow test instances of the ExtensionsMenuView.
   // This has to be defined before |menu_view_| below.
   base::AutoReset<bool> scoped_allow_extensions_menu_instances_;
-
-  std::unique_ptr<Wrapper> wrapper_;
 
   const raw_ptr<Browser, DanglingUntriaged> browser_;
   raw_ptr<ExtensionsToolbarContainer, DanglingUntriaged> extensions_container_ =

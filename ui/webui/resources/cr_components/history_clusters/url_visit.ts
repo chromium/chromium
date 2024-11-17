@@ -232,7 +232,7 @@ export class UrlVisitElement extends ClusterMenuElementBase {
 
   private openUrl_(event: MouseEvent|KeyboardEvent) {
     assert(this.visit);
-    BrowserProxyImpl.getInstance().handler.openHistoryCluster(
+    BrowserProxyImpl.getInstance().handler.openHistoryUrl(
         this.visit.normalizedUrl, {
           middleButton: (event as MouseEvent).button === 1,
           altKey: event.altKey,

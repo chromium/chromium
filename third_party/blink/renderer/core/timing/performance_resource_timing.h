@@ -48,6 +48,8 @@
 
 namespace blink {
 
+class V8RenderBlockingStatusType;
+
 class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
   friend class PerformanceResourceTimingTest;
@@ -69,7 +71,7 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   AtomicString initiatorType() const { return initiator_type_; }
   virtual AtomicString deliveryType() const;
   AtomicString nextHopProtocol() const;
-  virtual AtomicString renderBlockingStatus() const;
+  virtual V8RenderBlockingStatusType renderBlockingStatus() const;
   virtual AtomicString contentType() const;
   DOMHighResTimeStamp workerStart() const;
   DOMHighResTimeStamp workerRouterEvaluationStart() const;
@@ -85,14 +87,15 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
   DOMHighResTimeStamp requestStart() const;
   DOMHighResTimeStamp responseStart() const;
   DOMHighResTimeStamp firstInterimResponseStart() const;
+  DOMHighResTimeStamp finalResponseHeadersStart() const;
   virtual DOMHighResTimeStamp responseEnd() const;
   uint64_t transferSize() const;
   virtual uint64_t encodedBodySize() const;
   virtual uint64_t decodedBodySize() const;
   uint16_t responseStatus() const;
   const HeapVector<Member<PerformanceServerTiming>>& serverTiming() const;
-  AtomicString matchedSourceType() const;
-  AtomicString finalSourceType() const;
+  AtomicString workerMatchedSourceType() const;
+  AtomicString workerFinalSourceType() const;
 
   void Trace(Visitor*) const override;
 
@@ -122,6 +125,12 @@ class CORE_EXPORT PerformanceResourceTiming : public PerformanceEntry {
 
   AtomicString GetNextHopProtocol(const AtomicString& alpn_negotiated_protocol,
                                   const AtomicString& connection_info) const;
+
+  // Returns true if the response comes from the CacheStorage. This is
+  // regardless of where the response came from whether it is from the `cache`
+  // rule of ServiceWorker static routing API, or the fetch handler's
+  // respondWith().
+  bool IsResponseFromCacheStorage() const;
 
   DOMHighResTimeStamp GetAnyFirstResponseStart() const;
   double WorkerReady() const;

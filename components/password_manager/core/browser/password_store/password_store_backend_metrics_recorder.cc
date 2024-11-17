@@ -28,8 +28,7 @@ bool HasRunToCompletion(
         kCancelledPwdSyncStateChanged:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -229,8 +228,7 @@ std::string PasswordStoreBackendMetricsRecorder::GetStoreInfix() const {
         kLocal:
       return base::JoinString({*backend_infix_, "Local"}, ".");
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 

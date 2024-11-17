@@ -85,9 +85,8 @@ void MediaAccessPermissionRequest::NotifyRequestResult(bool allowed) {
         audio_devices, request_.requested_audio_device_ids);
     if (device)
       devices.audio_device = *device;
-    if (base::FeatureList::IsEnabled(features::kWebViewEnumerateDevicesCache) &&
-        (request_.url_origin.scheme() != url::kFileScheme ||
-         can_cache_file_url_permissions_)) {
+    if (request_.url_origin.scheme() != url::kFileScheme ||
+        can_cache_file_url_permissions_) {
       permission_manager_->SetOriginCanReadEnumerateDevicesAudioLabels(
           request_.url_origin, true);
     }
@@ -103,9 +102,8 @@ void MediaAccessPermissionRequest::NotifyRequestResult(bool allowed) {
         video_devices, request_.requested_video_device_ids);
     if (device)
       devices.video_device = *device;
-    if (base::FeatureList::IsEnabled(features::kWebViewEnumerateDevicesCache) &&
-        (request_.url_origin.scheme() != url::kFileScheme ||
-         can_cache_file_url_permissions_)) {
+    if (request_.url_origin.scheme() != url::kFileScheme ||
+        can_cache_file_url_permissions_) {
       permission_manager_->SetOriginCanReadEnumerateDevicesVideoLabels(
           request_.url_origin, true);
     }

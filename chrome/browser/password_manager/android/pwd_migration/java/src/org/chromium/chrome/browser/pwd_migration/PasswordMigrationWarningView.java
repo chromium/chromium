@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.appcompat.app.AppCompatActivity;
@@ -262,8 +263,8 @@ public class PasswordMigrationWarningView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.password_migration_warning_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.password_migration_warning_content_description);
     }
 
     @Override

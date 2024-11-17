@@ -154,7 +154,7 @@ public class MerchantTrustMessageViewTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testRenderMessage_Alternative1() throws IOException {
-        setMessageUIParams("true", "false", "1", "1");
+        setMessageUiParams("true", "false", "1", "1");
 
         createModelAndSetView(mMerchantInfo);
         mRenderTestRule.render(mMessageBannerView, "merchant_trust_message_alternative1");
@@ -164,7 +164,7 @@ public class MerchantTrustMessageViewTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testRenderMessage_Alternative2() throws IOException {
-        setMessageUIParams("true", "true", "0", "0");
+        setMessageUiParams("true", "true", "0", "0");
 
         createModelAndSetView(mMerchantInfo);
         mRenderTestRule.render(mMessageBannerView, "merchant_trust_message_alternative2");
@@ -174,18 +174,18 @@ public class MerchantTrustMessageViewTest extends BlankUiTestActivityTestCase {
     @MediumTest
     @Feature({"RenderTest"})
     public void testRenderMessage_Alternative3() throws IOException {
-        setMessageUIParams("true", "false", "1", "2");
+        setMessageUiParams("true", "false", "1", "2");
 
         createModelAndSetView(mMerchantInfo);
         mRenderTestRule.render(mMessageBannerView, "merchant_trust_message_alternative3");
     }
 
     private void setUseRatingBarParam(String useRatingBar) {
-        setMessageUIParams(useRatingBar, "false", "0", "1");
+        setMessageUiParams(useRatingBar, "false", "0", "1");
     }
 
-    private void setMessageUIParams(
-            String useRatingBar, String useGoogleIcon, String titleUI, String descriptionUI) {
+    private void setMessageUiParams(
+            String useRatingBar, String useGoogleIcon, String titleUi, String descriptionUi) {
         // TODO: Remove use of setDisableNativeForTesting(), probably needed due to isInitialized()
         // in MerchantViewerConfig.
         FeatureList.setDisableNativeForTesting(true);
@@ -201,11 +201,11 @@ public class MerchantTrustMessageViewTest extends BlankUiTestActivityTestCase {
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
                 MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_TITLE_UI_PARAM,
-                titleUI);
+                titleUi);
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
                 MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_DESCRIPTION_UI_PARAM,
-                descriptionUI);
+                descriptionUi);
         FeatureList.setTestValues(testValues);
     }
 }

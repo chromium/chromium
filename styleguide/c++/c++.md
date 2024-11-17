@@ -299,6 +299,13 @@ STL containers. However, if it would otherwise make sense to use a type as a
 member by-value, don't convert it to a pointer just to be able to
 forward-declare the type.
 
+Headers that contain only forward declarations, such as
+[`callback_forward.h`](../../base/functional/callback_forward.h), satisfy the
+spirit of this rule. Note that the [Mojo bindings
+generator](../../mojo/public/cpp/bindings/README.md#Getting-Started)
+creates a `.mojom-forward.h` file along with every generated `.mojom.h` file
+that can be included for forward declarations of Mojo types.
+
 ## File headers
 
 All files in Chromium start with a common license header. That header should

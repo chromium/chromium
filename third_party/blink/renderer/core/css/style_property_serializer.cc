@@ -21,11 +21,6 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/style_property_serializer.h"
 
 #include <bitset>
@@ -90,6 +85,11 @@ bool IsZeroPercent(const CSSValue* value) {
   }
 
   return false;
+}
+
+template <typename T>
+StringView PlatformEnumToCSSValueString(T e) {
+  return GetCSSValueNameAs<StringView>(PlatformEnumToCSSValueID(e));
 }
 
 }  // namespace
@@ -444,11 +444,10 @@ String StylePropertySerializer::CommonShorthandChecks(
     const StylePropertyShorthand& shorthand) const {
   unsigned longhand_count = shorthand.length();
   if (!longhand_count || longhand_count > kMaxShorthandExpansion) {
-    NOTREACHED_IN_MIGRATION();
-    return g_empty_string;
+    NOTREACHED();
   }
 
-  const CSSValue* longhands[kMaxShorthandExpansion] = {};
+  std::array<const CSSValue*, kMaxShorthandExpansion> longhands;
 
   bool has_important = false;
   bool has_non_important = false;
@@ -713,18 +712,13 @@ String StylePropertySerializer::SerializeShorthand(
       return String();
     case CSSPropertyID::kScrollStart:
       return ScrollStartValue();
-    case CSSPropertyID::kScrollStartTarget:
-      return ScrollStartTargetValue();
     case CSSPropertyID::kPositionTry:
       return PositionTryValue(positionTryShorthand());
-    case CSSPropertyID::kAlternativePositionTry:
-      return PositionTryValue(alternativePositionTryShorthand());
     default:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "Shorthand property "
           << CSSPropertyName(property_id).ToAtomicString()
           << " must be handled in StylePropertySerializer::SerializeShorthand.";
-      return String();
   }
 }
 
@@ -827,7 +821,7 @@ bool StylePropertySerializer::AppendFontLonghandValueIfNotNormal(
         result.Append(" / ");
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   result.Append(value);
@@ -1204,7 +1198,7 @@ String StylePropertySerializer::FontValue() const {
         return g_empty_string;
       }
     }
-    return getValueName(system_font->SystemFontId());
+    return GetCSSValueNameAs<String>(system_font->SystemFontId());
   } else {
     for (const CSSProperty* const longhand : longhands.subspan(1)) {
       const CSSValue* value = property_set_.GetPropertyCSSValue(*longhand);
@@ -1557,16 +1551,16 @@ void SerializeMaskOriginAndClip(StringBuilder& result,
     // If the values are the same, only emit one value. Note that mask-origin
     // does not support no-clip, so there is no need to consider no-clip
     // special cases.
-    result.Append(getValueName(origin_id));
+    result.Append(GetCSSValueNameAs<StringView>(origin_id));
   } else if (origin_id == CSSValueID::kBorderBox &&
              clip_id == CSSValueID::kNoClip) {
     // Mask-origin does not support no-clip, so mask-origin can be omitted if it
     // is the default.
-    result.Append(getValueName(clip_id));
+    result.Append(GetCSSValueNameAs<StringView>(clip_id));
   } else {
-    result.Append(getValueName(origin_id));
+    result.Append(GetCSSValueNameAs<StringView>(origin_id));
     result.Append(' ');
-    result.Append(getValueName(clip_id));
+    result.Append(GetCSSValueNameAs<StringView>(clip_id));
   }
 }
 
@@ -1801,7 +1795,7 @@ String StylePropertySerializer::GetLayeredShorthandValue(
       }
     }
     if (shorthand.id() == CSSPropertyID::kMask && layer_result.empty()) {
-      layer_result.Append(getValueName(CSSValueID::kNone));
+      layer_result.Append(GetCSSValueNameAs<StringView>(CSSValueID::kNone));
     }
     if (shorthand.id() == CSSPropertyID::kTransition && layer_result.empty()) {
       // When serializing the transition shorthand, we omit all values which are
@@ -2094,7 +2088,7 @@ String StylePropertySerializer::GetShorthandValueForGridArea(
       property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
 
   // `grid-row-end` depends on `grid-row-start`, and `grid-column-end` depends
-  // on on `grid-column-start`, but what's not consistent is that
+  // on `grid-column-start`, but what's not consistent is that
   // `grid-column-start` has a dependency on `grid-row-start`. For more details,
   // see https://www.w3.org/TR/css-grid-2/#placement-shorthands
   const bool include_column_start =
@@ -2253,16 +2247,17 @@ String StylePropertySerializer::BorderImagePropertyValue() const {
       &GetCSSPropertyBorderImageSource(), &GetCSSPropertyBorderImageSlice(),
       &GetCSSPropertyBorderImageWidth(), &GetCSSPropertyBorderImageOutset(),
       &GetCSSPropertyBorderImageRepeat()};
-  size_t length = std::size(properties);
-  for (size_t i = 0; i < length; ++i) {
-    const CSSValue& value = *property_set_.GetPropertyCSSValue(*properties[i]);
+  size_t index = 0;
+  for (const CSSProperty* property : properties) {
+    const CSSValue& value = *property_set_.GetPropertyCSSValue(*property);
     if (!result.empty()) {
       result.Append(" ");
     }
-    if (i == 2 || i == 3) {
+    if (index == 2 || index == 3) {
       result.Append("/ ");
     }
     result.Append(value.CssText());
+    index++;
   }
   return result.ReleaseString();
 }
@@ -2359,7 +2354,7 @@ String StylePropertySerializer::TextBoxValue() const {
     const CSSValueID edge_id = edge_identifier->GetValueID();
     if (edge_id == CSSValueID::kAuto) {
       if (trim_id == CSSValueID::kNone) {
-        return getValueName(CSSValueID::kNormal);
+        return GetCSSValueNameAs<String>(CSSValueID::kNormal);
       }
       return trim_value->CssText();
     }
@@ -2391,23 +2386,23 @@ String StylePropertySerializer::TextSpacingValue() const {
   const CSSValueID spacing_trim_id = spacing_trim_value->GetValueID();
   if (autospace_id == CSSValueID::kNormal &&
       spacing_trim_id == CSSValueID::kNormal) {
-    return getValueName(CSSValueID::kNormal);
+    return GetCSSValueNameAs<String>(CSSValueID::kNormal);
   }
   if (autospace_id == CSSValueID::kNoAutospace &&
       spacing_trim_id == CSSValueID::kSpaceAll) {
-    return getValueName(CSSValueID::kNone);
+    return GetCSSValueNameAs<String>(CSSValueID::kNone);
   }
 
   // Otherwise build a multi-value list.
   StringBuilder result;
   if (spacing_trim_id != CSSValueID::kNormal) {
-    result.Append(getValueName(spacing_trim_id));
+    result.Append(GetCSSValueNameAs<StringView>(spacing_trim_id));
   }
   if (autospace_id != CSSValueID::kNormal) {
     if (!result.empty()) {
       result.Append(kSpaceCharacter);
     }
-    result.Append(getValueName(autospace_id));
+    result.Append(GetCSSValueNameAs<StringView>(autospace_id));
   }
   // When all longhands are initial values, it should be `normal`.
   DCHECK(!result.empty());
@@ -2428,19 +2423,19 @@ String StylePropertySerializer::TextWrapValue() const {
   const TextWrapMode mode = ToTextWrapMode(mode_value);
   const TextWrapStyle style = ToTextWrapStyle(style_value);
   if (style == ComputedStyleInitialValues::InitialTextWrapStyle()) {
-    return getValueName(PlatformEnumToCSSValueID(mode));
+    return PlatformEnumToCSSValueString(mode).ToString();
   }
 
   // Otherwise, if `text-wrap-mode` is initial, return `text-wrap-style`.
   if (mode == ComputedStyleInitialValues::InitialTextWrapMode()) {
-    return getValueName(PlatformEnumToCSSValueID(style));
+    return PlatformEnumToCSSValueString(style).ToString();
   }
 
   // If neither is initial, return a list.
   StringBuilder result;
-  result.Append(getValueName(PlatformEnumToCSSValueID(mode)));
+  result.Append(PlatformEnumToCSSValueString(mode));
   result.Append(kSpaceCharacter);
-  result.Append(getValueName(PlatformEnumToCSSValueID(style)));
+  result.Append(PlatformEnumToCSSValueString(style));
   return result.ToString();
 }
 
@@ -2459,19 +2454,19 @@ String StylePropertySerializer::WhiteSpaceValue() const {
   const TextWrapMode wrap = ToTextWrapMode(wrap_value);
   const EWhiteSpace whitespace = ToWhiteSpace(collapse, wrap);
   if (IsValidWhiteSpace(whitespace)) {
-    return getValueName(PlatformEnumToCSSValueID(whitespace));
+    return PlatformEnumToCSSValueString(whitespace).ToString();
   }
 
   // Otherwise build a multi-value list.
   StringBuilder result;
   if (collapse != ComputedStyleInitialValues::InitialWhiteSpaceCollapse()) {
-    result.Append(getValueName(PlatformEnumToCSSValueID(collapse)));
+    result.Append(PlatformEnumToCSSValueString(collapse));
   }
   if (wrap != ComputedStyleInitialValues::InitialTextWrapMode()) {
     if (!result.empty()) {
       result.Append(kSpaceCharacter);
     }
-    result.Append(getValueName(PlatformEnumToCSSValueID(wrap)));
+    result.Append(PlatformEnumToCSSValueString(wrap));
   }
   // When all longhands are initial values, it should be `normal`, covered by
   // `IsValidWhiteSpace()` above.
@@ -2499,31 +2494,6 @@ String StylePropertySerializer::ScrollStartValue() const {
 
   if (const auto* ident_value = DynamicTo<CSSIdentifierValue>(inline_value);
       !ident_value || ident_value->GetValueID() != CSSValueID::kStart) {
-    list->Append(*inline_value);
-  }
-
-  return list->CssText();
-}
-
-String StylePropertySerializer::ScrollStartTargetValue() const {
-  CHECK_EQ(scrollStartTargetShorthand().length(), 2u);
-  CHECK_EQ(scrollStartTargetShorthand().properties()[0],
-           &GetCSSPropertyScrollStartTargetBlock());
-  CHECK_EQ(scrollStartTargetShorthand().properties()[1],
-           &GetCSSPropertyScrollStartTargetInline());
-
-  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  const CSSValue* block_value =
-      property_set_.GetPropertyCSSValue(GetCSSPropertyScrollStartTargetBlock());
-  const CSSValue* inline_value = property_set_.GetPropertyCSSValue(
-      GetCSSPropertyScrollStartTargetInline());
-
-  DCHECK(block_value);
-  DCHECK(inline_value);
-
-  list->Append(*block_value);
-
-  if (To<CSSIdentifierValue>(*inline_value).GetValueID() != CSSValueID::kNone) {
     list->Append(*inline_value);
   }
 

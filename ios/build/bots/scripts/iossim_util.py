@@ -452,9 +452,9 @@ def override_default_iphonesim_runtime(runtime_id, ios_version):
 
 
 def add_simulator_runtime(runtime_dmg_path):
-  cmd = ['xcrun', 'simctl', 'runtime', 'add', runtime_dmg_path]
+  cmd = ['xcrun', 'simctl', 'runtime', 'add', runtime_dmg_path, '--verbose']
   LOGGER.debug('Adding runtime with command %s' % cmd)
-  return subprocess.check_output(cmd).decode('utf-8')
+  return subprocess.check_output(cmd, stderr=subprocess.STDOUT).decode('utf-8')
 
 
 def delete_simulator_runtime(runtime_id, should_wait=False):

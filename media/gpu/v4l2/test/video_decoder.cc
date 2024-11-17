@@ -296,14 +296,12 @@ std::vector<uint8_t> VideoDecoder::ConvertYUVToPNG(uint8_t* y_plane,
     LOG(FATAL) << bit_depth << " is not a valid number of bits / pixel";
   }
 
-  std::vector<uint8_t> image_buffer;
-  const bool encode_to_png_result = gfx::PNGCodec::Encode(
+  std::optional<std::vector<uint8_t>> image_buffer = gfx::PNGCodec::Encode(
       argb_data.get(), gfx::PNGCodec::FORMAT_BGRA, size, argb_stride,
-      true /*discard_transparency*/, std::vector<gfx::PNGCodec::Comment>(),
-      &image_buffer);
-  LOG_ASSERT(encode_to_png_result) << "Failed to encode to PNG";
+      /*discard_transparency=*/true, std::vector<gfx::PNGCodec::Comment>());
+  LOG_ASSERT(image_buffer) << "Failed to encode to PNG";
 
-  return image_buffer;
+  return image_buffer.value();
 }
 }  // namespace v4l2_test
 }  // namespace media

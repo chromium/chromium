@@ -224,7 +224,7 @@ TEST_F(CompoundImageBackingTest, References) {
     std::optional<gl::DCLayerOverlayImage> overlay_image =
         access->GetDCLayerOverlayImage();
     ASSERT_TRUE(overlay_image);
-    EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kNV12Pixmap);
+    EXPECT_EQ(overlay_image->type(), gl::DCLayerOverlayType::kShMemPixmap);
   }
 #endif
 

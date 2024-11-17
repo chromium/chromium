@@ -4,8 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/atomic_boolean.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 AtomicBoolean::AtomicBoolean(bool initial_value) : value_(initial_value) {}
 
@@ -19,5 +18,4 @@ bool AtomicBoolean::Set(bool value) {
   return value_.exchange(value);
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

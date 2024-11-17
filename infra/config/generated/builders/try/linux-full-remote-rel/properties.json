@@ -155,7 +155,9 @@
           "builder": "Linux Tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "is_compile_only": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-full-remote-rel/targets"
     }
   },
   "$build/code_coverage": {
@@ -173,12 +175,13 @@
   "$build/siso": {
     "configs": [
       "builder",
-      "remote-library-link",
-      "remote-exec-link"
+      "remote-link"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
     "output_local_strategy": "minimum",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": -1

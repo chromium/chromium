@@ -6,6 +6,7 @@
 
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/performance_controls/battery_saver_bubble_view.h"
@@ -66,7 +67,7 @@ void BatterySaverButton::Show() {
 }
 
 void BatterySaverButton::Hide() {
-  CloseFeaturePromo(user_education::EndFeaturePromoReason::kAbortPromo);
+  CloseFeaturePromo(/*engaged=*/false);
 
   if (IsBubbleShowing()) {
     // The bubble is closed sync and will be cleared in OnBubbleHidden
@@ -100,11 +101,7 @@ void BatterySaverButton::OnClicked() {
     // The bubble is closed sync and will be cleared in OnBubbleHidden
     BatterySaverBubbleView::CloseBubble(bubble_);
   } else {
-    CloseFeaturePromo(user_education::EndFeaturePromoReason::kFeatureEngaged);
-
-    browser_view_->NotifyFeatureEngagementEvent(
-        feature_engagement::events::kBatterySaverDialogShown);
-
+    CloseFeaturePromo(/*engaged=*/true);
     bubble_ = BatterySaverBubbleView::CreateBubble(
         browser_view_->browser(), this, views::BubbleBorder::TOP_RIGHT, this);
   }
@@ -116,13 +113,18 @@ void BatterySaverButton::MaybeShowFeaturePromo() {
       feature_engagement::kIPHBatterySaverModeFeature);
 }
 
-void BatterySaverButton::CloseFeaturePromo(
-    user_education::EndFeaturePromoReason close_reason) {
+void BatterySaverButton::CloseFeaturePromo(bool engaged) {
   // CloseFeaturePromo checks if the promo is active for the feature before
   // attempting to close the promo bubble
   pending_promo_ = false;
-  browser_view_->CloseFeaturePromo(
-      feature_engagement::kIPHBatterySaverModeFeature, close_reason);
+  if (engaged) {
+    browser_view_->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHBatterySaverModeFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  } else {
+    browser_view_->AbortFeaturePromo(
+        feature_engagement::kIPHBatterySaverModeFeature);
+  }
 }
 
 BEGIN_METADATA(BatterySaverButton)

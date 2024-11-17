@@ -95,9 +95,9 @@ const PolicyToPreferenceMapEntry kDefaultSearchPolicyDataMap[] = {
 
 // DefaultSearchPolicyHandler implementation -----------------------------------
 
-DefaultSearchPolicyHandler::DefaultSearchPolicyHandler() {}
+DefaultSearchPolicyHandler::DefaultSearchPolicyHandler() = default;
 
-DefaultSearchPolicyHandler::~DefaultSearchPolicyHandler() {}
+DefaultSearchPolicyHandler::~DefaultSearchPolicyHandler() = default;
 
 bool DefaultSearchPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
                                                      PolicyErrorMap* errors) {

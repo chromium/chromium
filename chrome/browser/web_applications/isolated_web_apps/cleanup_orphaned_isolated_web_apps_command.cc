@@ -38,7 +38,7 @@ std::set<base::FilePath> RetrieveAllInstalledIsolatedWebAppsPaths(
     if (const auto& isolation_data = app.isolation_data()) {
       const auto* owned_bundle =
           absl::get_if<IsolatedWebAppStorageLocation::OwnedBundle>(
-              &isolation_data->location.variant());
+              &isolation_data->location().variant());
       if (!owned_bundle) {
         continue;
       }

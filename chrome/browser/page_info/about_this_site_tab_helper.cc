@@ -74,20 +74,6 @@ void AboutThisSiteTabHelper::OnOptimizationGuideDecision(
     return;
   }
   about_this_site_metadata_ = metadata.ParsedMetadata<AboutThisSiteMetadata>();
-
-#if defined(TOOLKIT_VIEWS)
-  if (page_info::IsPersistentSidePanelEntryFeatureEnabled()) {
-    auto status = ValidateMetadata(about_this_site_metadata_);
-
-    if (status != AboutThisSiteStatus::kValid) {
-      return;
-    }
-
-    RegisterAboutThisSiteSidePanel(
-        web_contents(),
-        GURL(about_this_site_metadata_->site_info().more_about().url()));
-  }
-#endif
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(AboutThisSiteTabHelper);

@@ -16,12 +16,14 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
+#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/model/sync/utils/account_error_ui_info.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/settings/model/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -53,9 +55,9 @@
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet/signout_action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_model_identity_data_source.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_accounts/identity_view_item.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_model_identity_data_source.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_root_view_controlling.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -127,9 +129,9 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   // ApplicationCommands handler.
   id<ApplicationCommands> _applicationHandler;
 
-  // If YES, AccountsTableViewController should not dismiss itself only for a
-  // sign-out reason. The parent coordinator is responsible to dismiss this
-  // coordinator when a sign-out happens.
+  // If YES, ManageAccountsTableViewController should not dismiss itself only
+  // for a sign-out reason. The parent coordinator is responsible to dismiss
+  // this coordinator when a sign-out happens.
   BOOL _signoutDismissalByParentCoordinator;
 }
 
@@ -162,7 +164,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     signoutDismissalByParentCoordinator:
         (BOOL)signoutDismissalByParentCoordinator {
   DCHECK(browser);
-  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
+  DCHECK(!browser->GetProfile()->IsOffTheRecord());
 
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
@@ -501,8 +503,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
     case ItemTypeSignInHeader:
     case ItemTypeSignOutSyncingFooter:
     case ItemTypeRestrictedAccountsFooter:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -523,21 +524,21 @@ constexpr CGFloat kErrorSymbolSize = 22.;
                identity:nil
             accessPoint:AccessPoint::ACCESS_POINT_SETTINGS
             promoAction:PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:^(SigninCoordinatorResult result,
+             completion:^(SigninCoordinatorResult result,
                           SigninCompletionInfo* completionInfo) {
-                 BOOL success = result == SigninCoordinatorResultSuccess;
-                 [weakSelf handleDidAddAccount:success];
-               }];
+               [weakSelf handleDidAddAccount:result];
+             }];
   [_applicationHandler showSignin:command baseViewController:self];
 }
 
-- (void)handleDidAddAccount:(BOOL)success {
+- (void)handleDidAddAccount:(SigninCoordinatorResult)result {
   // TODO(crbug.com/40229802): Remove the following line when todo bug will be
   // fixed.
   [self allowUserInteraction];
   [self handleAuthenticationOperationDidFinish];
-  if (success && _closeSettingsOnAddAccount) {
-    [_applicationHandler closeSettingsUI];
+  if (result == SigninCoordinatorResult::SigninCoordinatorResultSuccess &&
+      _closeSettingsOnAddAccount) {
+    [_applicationHandler closePresentedViews];
   }
 }
 
@@ -679,10 +680,11 @@ constexpr CGFloat kErrorSymbolSize = 22.;
                          browser:_browser
                             rect:itemView.frame
                             view:itemView
+        forceSnackbarOverToolbar:NO
                       withSource:signin_metrics::ProfileSignout::
                                      kUserClickedSignoutSettings];
   __weak LegacyAccountsTableViewController* weakSelf = self;
-  self.signoutCoordinator.completion = ^(BOOL success) {
+  self.signoutCoordinator.signoutCompletion = ^(BOOL success) {
     [weakSelf.signoutCoordinator stop];
     weakSelf.signoutCoordinator = nil;
     if (success) {
@@ -775,8 +777,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
 - (AuthenticationService*)authService {
   DCHECK(_browser) << "-authService called after -settingsWillBeDismissed";
-  return AuthenticationServiceFactory::GetForBrowserState(
-      _browser->GetBrowserState());
+  return AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
@@ -805,7 +806,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 - (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)URL {
   OpenNewTabCommand* command =
       [OpenNewTabCommand commandWithURLFromChrome:URL.gurl];
-  [_applicationHandler closeSettingsUIAndOpenURL:command];
+  [_applicationHandler closePresentedViewsAndOpenURL:command];
 }
 
 #pragma mark - Internal
@@ -863,6 +864,12 @@ constexpr CGFloat kErrorSymbolSize = 22.;
 
 // Opens the passphrase dialog.
 - (void)openPassphraseDialog {
+  SceneState* sceneState = _browser->GetSceneState();
+  if (sceneState.isUIBlocked) {
+    // This could occur due to race condition with multiple windows and
+    // simultaneous taps. See crbug.com/368310663.
+    return;
+  }
   UIViewController<SettingsRootViewControlling>* controllerToPush =
       [[SyncEncryptionPassphraseTableViewController alloc]
           initWithBrowser:_browser];
@@ -891,7 +898,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
   _accountDetailsControllerDismissCallback.Reset();
 }
 
-#pragma mark - AccountsConsumer
+#pragma mark - ManageAccountsConsumer
 
 - (void)reloadAllItems {
   if (!self.tableViewModel) {

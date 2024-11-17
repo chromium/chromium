@@ -21,21 +21,17 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountRenameChecker;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.test.util.TestAccounts;
 
 /**
  * This class tests the sign-in checks done at Chrome start-up or when accounts change on device.
@@ -63,95 +59,15 @@ public class SigninCheckerTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1205346")
-    public void signinWhenPrimaryAccountIsRenamedToAKnownAccount() {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mSigninTestRule.addAccount("the.second.account@gmail.com");
-        final CoreAccountInfo oldAccount = mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-        final String newAccountEmail = "test.new.account@gmail.com";
-        when(mAccountRenameCheckerDelegateMock.getNewNameOfRenamedAccount(oldAccount.getEmail()))
-                .thenReturn(newAccountEmail);
-        final CoreAccountInfo expectedPrimaryAccount = mSigninTestRule.addAccount(newAccountEmail);
-
-        mSigninTestRule.removeAccount(oldAccount.getId());
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return expectedPrimaryAccount.equals(
-                            mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
-                });
-    }
-
-    @Test
-    @MediumTest
-    @DisabledTest(message = "https://crbug.com/1205346")
-    public void signoutWhenPrimaryAccountIsRenamedToAnUnknownAccount() {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mSigninTestRule.addAccount("the.second.account@gmail.com");
-        final CoreAccountInfo oldAccount = mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-        final String newAccountEmail = "test.new.account@gmail.com";
-        when(mAccountRenameCheckerDelegateMock.getNewNameOfRenamedAccount(oldAccount.getEmail()))
-                .thenReturn(newAccountEmail);
-
-        mSigninTestRule.removeAccount(oldAccount.getId());
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return !IdentityServicesProvider.get()
-                            .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
-                            .hasPrimaryAccount(ConsentLevel.SYNC);
-                });
-        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
-    }
-
-    @Test
-    @MediumTest
-    @DisabledTest(message = "https://crbug.com/1205346")
-    public void signoutWhenPrimaryAccountIsRemoved() {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mSigninTestRule.addAccount("the.second.account@gmail.com");
-        final CoreAccountInfo oldAccount = mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-
-        mSigninTestRule.removeAccount(oldAccount.getId());
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return !IdentityServicesProvider.get()
-                            .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
-                            .hasPrimaryAccount(ConsentLevel.SYNC);
-                });
-        Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
-    }
-
-    @Test
-    @MediumTest
-    @DisabledTest(message = "https://crbug.com/1205346")
-    public void signoutWhenPrimaryAccountWithoutSyncConsentIsRemoved() {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mSigninTestRule.addAccount("the.second.account@gmail.com");
-        final CoreAccountInfo oldAccount = mSigninTestRule.addTestAccountThenSignin();
-
-        mSigninTestRule.removeAccount(oldAccount.getId());
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return !IdentityServicesProvider.get()
-                            .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
-                            .hasPrimaryAccount(ConsentLevel.SIGNIN);
-                });
-    }
-
-    @Test
-    @MediumTest
     public void signinWhenChildAccountIsTheOnlyAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
 
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
+        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return AccountManagerTestRule.TEST_CHILD_ACCOUNT.equals(
+                    return TestAccounts.CHILD_ACCOUNT.equals(
                             mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
                 });
         Assert.assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SYNC));
@@ -179,7 +95,7 @@ public class SigninCheckerTest {
         when(mExternalAuthUtilsMock.isGooglePlayServicesMissing(any())).thenReturn(true);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtilsMock);
 
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
+        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         Assert.assertEquals(
                 1,
@@ -198,7 +114,7 @@ public class SigninCheckerTest {
         // test case therefore is not currently hittable on a real device; however it is included
         // here for completeness.
         mSigninTestRule.addAccount("the.default.account@gmail.com");
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
+        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
 
         mActivityTestRule.startMainActivityOnBlankPage();
         UserActionTester actionTester = new UserActionTester();
@@ -216,14 +132,14 @@ public class SigninCheckerTest {
     @MediumTest
     public void signinWhenChildAccountIsFirstAccount() {
         mActivityTestRule.startMainActivityOnBlankPage();
-        mSigninTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
+        mSigninTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         mSigninTestRule.addAccount("the.second.account@gmail.com");
 
         UserActionTester actionTester = new UserActionTester();
 
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return AccountManagerTestRule.TEST_CHILD_ACCOUNT.equals(
+                    return TestAccounts.CHILD_ACCOUNT.equals(
                             mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
                 });
 

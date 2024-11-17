@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 
-BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state,
+BrowserImpl::BrowserImpl(ProfileIOS* profile,
                          SceneState* scene_state,
                          CommandDispatcher* command_dispatcher,
                          BrowserImpl* active_browser,
@@ -23,12 +23,12 @@ BrowserImpl::BrowserImpl(ChromeBrowserState* browser_state,
                          Type type)
     : BrowserWebStateListDelegate(insertion_policy, activation_policy),
       type_(type),
-      browser_state_(browser_state),
+      profile_(profile),
       web_state_list_(this),
       scene_state_(scene_state),
       command_dispatcher_(command_dispatcher),
       active_browser_(active_browser ?: this) {
-  DCHECK(browser_state_);
+  DCHECK(profile_);
   DCHECK(active_browser_);
 
   CHECK((type == Type::kInactive) == (active_browser != nullptr));
@@ -46,14 +46,8 @@ Browser::Type BrowserImpl::type() const {
   return type_;
 }
 
-// TODO(crbug.com/358301380): After all usage has changed to GetProfile(),
-// remove this method.
-ChromeBrowserState* BrowserImpl::GetBrowserState() {
-  return GetProfile();
-}
-
-ChromeBrowserState* BrowserImpl::GetProfile() {
-  return browser_state_;
+ProfileIOS* BrowserImpl::GetProfile() {
+  return profile_;
 }
 
 WebStateList* BrowserImpl::GetWebStateList() {
@@ -97,7 +91,7 @@ Browser* BrowserImpl::CreateInactiveBrowser() {
   CHECK(!inactive_browser_.get())
       << "This browser already links to its inactive counterpart.";
   inactive_browser_ = std::make_unique<BrowserImpl>(
-      browser_state_, scene_state_, [[CommandDispatcher alloc] init],
+      profile_, scene_state_, [[CommandDispatcher alloc] init],
       /*active_browser=*/this, BrowserImpl::InsertionPolicy::kAttachTabHelpers,
       BrowserImpl::ActivationPolicy::kDoNothing, Type::kInactive);
   return inactive_browser_.get();
@@ -110,22 +104,21 @@ void BrowserImpl::DestroyInactiveBrowser() {
 }
 
 // static
-std::unique_ptr<Browser> Browser::Create(ChromeBrowserState* browser_state,
+std::unique_ptr<Browser> Browser::Create(ProfileIOS* profile,
                                          SceneState* scene_state) {
   const Type type =
-      browser_state->IsOffTheRecord() ? Type::kIncognito : Type::kRegular;
+      profile->IsOffTheRecord() ? Type::kIncognito : Type::kRegular;
   return std::make_unique<BrowserImpl>(
-      browser_state, scene_state, [[CommandDispatcher alloc] init],
+      profile, scene_state, [[CommandDispatcher alloc] init],
       /*active_browser=*/nullptr,
       BrowserImpl::InsertionPolicy::kAttachTabHelpers,
       BrowserImpl::ActivationPolicy::kForceRealization, type);
 }
 
 // static
-std::unique_ptr<Browser> Browser::CreateTemporary(
-    ChromeBrowserState* browser_state) {
+std::unique_ptr<Browser> Browser::CreateTemporary(ProfileIOS* profile) {
   return std::make_unique<BrowserImpl>(
-      browser_state, /*scene_state=*/nil, /*command_dispatcher=*/nil,
+      profile, /*scene_state=*/nil, /*command_dispatcher=*/nil,
       /*active_browser=*/nullptr, BrowserImpl::InsertionPolicy::kDoNothing,
       BrowserImpl::ActivationPolicy::kDoNothing, Type::kTemporary);
 }

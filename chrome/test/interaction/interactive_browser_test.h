@@ -358,6 +358,21 @@ class InteractiveBrowserTestApi : public views::test::InteractiveViewsTestApi {
   [[nodiscard]] StepBuilder ScrollIntoView(ui::ElementIdentifier web_contents,
                                            const DeepQuery& where);
 
+  // Simulates clicking on an HTML element by injecting the click event directly
+  // into the DOM. You can specify the mouse button and additional modifier
+  // keys (default is left-click, no modifiers).
+  //
+  // Normally, clicking with buttons other than the left mouse button generates
+  // an auxclick event rather than a click event. However, injecting auxclick
+  // does not e.g. trigger navigation when clicking a link, so in all these
+  // cases, vanilla click events are sent, which should be handled normally for
+  // backwards-compatibility reasons.
+  [[nodiscard]] StepBuilder ClickElement(
+      ui::ElementIdentifier web_contents,
+      const DeepQuery& where,
+      ui_controls::MouseButton button = ui_controls::LEFT,
+      ui_controls::AcceleratorState modifiers = ui_controls::kNoAccelerator);
+
  protected:
   explicit InteractiveBrowserTestApi(
       std::unique_ptr<internal::InteractiveBrowserTestPrivate>

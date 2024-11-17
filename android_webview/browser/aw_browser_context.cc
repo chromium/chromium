@@ -4,10 +4,14 @@
 
 #include "android_webview/browser/aw_browser_context.h"
 
+#include <jni.h>
+
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
+#include <vector>
 
 #include "android_webview/browser/aw_browser_context_store.h"
 #include "android_webview/browser/aw_browser_process.h"
@@ -23,6 +27,7 @@
 #include "android_webview/browser/ip_protection/aw_ip_protection_core_host.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/network_service/net_helpers.h"
+#include "android_webview/browser/prefetch/aw_preloading_utils.h"
 #include "android_webview/browser/safe_browsing/aw_safe_browsing_allowlist_manager.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_switches.h"
@@ -31,6 +36,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/base_paths_posix.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -68,12 +74,15 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_request_utils.h"
+#include "content/public/browser/prefetch_request_status_listener.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/zoom_level_delegate.h"
 #include "media/mojo/buildflags.h"
 #include "net/base/features.h"
+#include "net/http/http_no_vary_search_data.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #include "net/proxy_resolution/proxy_resolution_service.h"
@@ -84,11 +93,59 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwBrowserContext_jni.h"
+#include "url/gurl.h"
 
 using base::FilePath;
 using content::BrowserThread;
 
 namespace android_webview {
+
+class AwPrefetchRequestStatusListener
+    : public content::PrefetchRequestStatusListener {
+ public:
+  AwPrefetchRequestStatusListener(
+      const base::android::ScopedJavaGlobalRef<jobject>
+          browser_context_java_object,
+      const base::android::JavaRef<jobject>& callback,
+      const base::android::JavaRef<jobject>& callback_executor)
+      : browser_context_java_object_(browser_context_java_object),
+        prefetch_java_callback_(callback),
+        prefetch_java_callback_executor_(callback_executor) {}
+  ~AwPrefetchRequestStatusListener() override = default;
+
+  void OnPrefetchStartFailed() override {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_AwBrowserContext_onPrefetchStartFailed(
+        env, browser_context_java_object_, prefetch_java_callback_,
+        prefetch_java_callback_executor_);
+  }
+
+  void OnPrefetchResponseCompleted() override {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_AwBrowserContext_onPrefetchResponseCompleted(
+        env, browser_context_java_object_, prefetch_java_callback_,
+        prefetch_java_callback_executor_);
+  }
+
+  void OnPrefetchResponseError() override {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_AwBrowserContext_onPrefetchResponseError(
+        env, browser_context_java_object_, prefetch_java_callback_,
+        prefetch_java_callback_executor_);
+  }
+
+  void OnPrefetchResponseServerError(int response_code) override {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    Java_AwBrowserContext_onPrefetchResponseServerError(
+        env, browser_context_java_object_, prefetch_java_callback_,
+        prefetch_java_callback_executor_, response_code);
+  }
+
+ private:
+  base::android::ScopedJavaGlobalRef<jobject> browser_context_java_object_;
+  base::android::ScopedJavaGlobalRef<jobject> prefetch_java_callback_;
+  base::android::ScopedJavaGlobalRef<jobject> prefetch_java_callback_executor_;
+};
 
 namespace {
 
@@ -464,6 +521,11 @@ AwBrowserContext::GetBrowsingDataRemoverDelegate() {
   return nullptr;
 }
 
+content::FileSystemAccessPermissionContext*
+AwBrowserContext::GetFileSystemAccessPermissionContext() {
+  return &fsa_permission_context_;
+}
+
 content::ReduceAcceptLanguageControllerDelegate*
 AwBrowserContext::GetReduceAcceptLanguageControllerDelegate() {
   return nullptr;
@@ -584,10 +646,9 @@ void AwBrowserContext::ConfigureNetworkContextParams(
   AwIpProtectionCoreHost* aw_ipp_core_host = AwIpProtectionCoreHost::Get(this);
   if (aw_ipp_core_host) {
     aw_ipp_core_host->AddNetworkService(
-        context_params->ip_protection_config_getter
+        context_params->ip_protection_core_host
             .InitWithNewPipeAndPassReceiver(),
-        context_params->ip_protection_proxy_delegate
-            .InitWithNewPipeAndPassRemote());
+        context_params->ip_protection_control.InitWithNewPipeAndPassRemote());
     context_params->enable_ip_protection =
         aw_ipp_core_host->IsIpProtectionEnabled();
   }
@@ -682,6 +743,30 @@ void AwBrowserContext::SetServiceWorkerIoThreadClient(
     const base::android::JavaParamRef<jobject>& io_thread_client) {
   sw_io_thread_client_ =
       base::android::ScopedJavaGlobalRef<jobject>(io_thread_client);
+}
+
+void AwBrowserContext::StartPrefetchRequest(
+    JNIEnv* env,
+    const std::string& url,
+    const base::android::JavaParamRef<jobject>& prefetch_params,
+    const base::android::JavaParamRef<jobject>& callback,
+    const base::android::JavaParamRef<jobject>& callback_executor) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  GURL pf_url = GURL(url);
+  net::HttpRequestHeaders additional_headers =
+      GetAdditionalHeadersFromPrefetchParameters(env, prefetch_params);
+  std::optional<net::HttpNoVarySearchData> expected_no_vary_search =
+      GetExpectedNoVarySearchFromPrefetchParameters(env, prefetch_params);
+  std::unique_ptr<content::PrefetchRequestStatusListener>
+      request_status_listener =
+          std::make_unique<AwPrefetchRequestStatusListener>(obj_, callback,
+                                                            callback_executor);
+  StartBrowserPrefetchRequest(
+      pf_url,
+      GetIsJavaScriptEnabledFromPrefetchParameters(env, prefetch_params),
+      expected_no_vary_search, additional_headers,
+      std::move(request_status_listener));
 }
 
 std::unique_ptr<AwContentsIoThreadClient>

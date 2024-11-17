@@ -97,6 +97,7 @@ class MetaBuildWrapper:
     self.isolate_exe = 'isolate.exe' if self.platform.startswith(
         'win') else 'isolate'
     self.use_luci_auth = False
+    self.rts_out_dir = self.PathJoin('gen', 'rts')
 
   def PostArgsInit(self):
     self.use_luci_auth = getattr(self.args, 'luci_auth', False)
@@ -167,7 +168,9 @@ class MetaBuildWrapper:
                         help='Sets GN arg android_default_version_code')
       subp.add_argument('--android-version-name',
                         help='Sets GN arg android_default_version_name')
-
+      subp.add_argument('--rts-model',
+                        default=None,
+                        help='which regression test selection model to use')
       # TODO(crbug.com/40122201): Remove this once swarming task templates
       # support command prefixes.
       luci_auth_group = subp.add_mutually_exclusive_group()
@@ -483,7 +486,23 @@ class MetaBuildWrapper:
       self.WriteFile(expectation_file, json_s)
     return 0
 
+  def RtsSelect(self):
+    # TODO(crbug.com/374962112): Support 'filegraph-selection'.
+    filter_data = None
+
+    # TODO(crbug.com/360878342): Get Filter files and store on isolate.
+    # TODO(crbug.com/375209059): Add Doc Link for STS
+    if self.args.rts_model == 'smart-test-selection':
+      filter_data = ""  # Android API: GetTasksToSkip(self.args.target)
+
+    filter_file_path = self.PathJoin(self.ToAbsPath(self.args.path),
+                                     self.rts_out_dir,
+                                     self.args.target + '.filter')
+    self.WriteFile(filter_file_path, filter_data, force_verbose=True)
+
   def CmdGen(self):
+    if self.args.rts_model:
+      self.RtsSelect()
     vals = self.Lookup()
     return self.RunGNGen(vals)
 
@@ -1285,6 +1304,21 @@ class MetaBuildWrapper:
         return ret
     return 0
 
+  def AddFilterFileArg(self, target, build_dir, command):
+    filter_file = target + '.filter'
+    filter_file_path = self.PathJoin(self.rts_out_dir, filter_file)
+    abs_filter_file_path = self.ToAbsPath(build_dir, filter_file_path)
+
+    filter_exists = self.Exists(abs_filter_file_path)
+    if filter_exists:
+      filtered_command = command.copy()
+      filtered_command.append('--test-launcher-filter-file=%s' %
+                              filter_file_path)
+      self.Print('added test selection filter file to command: %s' %
+                 filter_file)
+      return filtered_command
+    return None
+
   def PossibleRuntimeDepsPaths(self, vals, ninja_targets, isolate_map):
     """Returns a map of targets to possible .runtime_deps paths.
 
@@ -1447,10 +1481,13 @@ class MetaBuildWrapper:
               'test_data/chrome/browser/resources/chromeos/accessibility/'
               'select_to_speak/',
           )) or (is_mac and f in (  # https://crbug.com/1000667
+              'ChromeEnterpriseCompanion.app/',
+              'ChromeEnterpriseCompanion_test.app/',
               'Chromium Framework.framework/',
               'Chromium Helper.app/',
               'Chromium.app/',
               'ChromiumEnterpriseCompanion.app/',
+              'ChromiumEnterpriseCompanion_test.app/',
               'ChromiumUpdater.app/',
               'ChromiumUpdater_test.app/',
               'Content Shell.app/',
@@ -1496,6 +1533,11 @@ class MetaBuildWrapper:
             'files': files,
         }
     }
+
+    if self.args.rts_model:
+      rts_command = self.AddFilterFileArg(target, build_dir, command)
+      if rts_command:
+        isolate['variables']['rts_command'] = rts_command
 
     self.WriteFile(isolate_path, json.dumps(isolate, sort_keys=True) + '\n')
 
@@ -1565,6 +1607,9 @@ class MetaBuildWrapper:
     android_version_name = self.args.android_version_name
     if android_version_name:
       gn_args += ' android_default_version_name="%s"' % android_version_name
+
+    if self.args.rts_model:
+      gn_args += ' use_rts=true'
 
     args_gn_lines = []
     parsed_gn_args = {}

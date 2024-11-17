@@ -220,10 +220,8 @@ TEST_P(DataURLTest, BuildResponseSimple) {
   EXPECT_EQ(1, version.major_value());
   EXPECT_EQ(1, version.minor_value());
   EXPECT_EQ("OK", headers->GetStatusText());
-  std::string value;
-  EXPECT_TRUE(headers->GetNormalizedHeader("Content-Type", &value));
-  EXPECT_EQ(value, "text/plain;charset=US-ASCII");
-  value.clear();
+  EXPECT_EQ(headers->GetNormalizedHeader("Content-Type"),
+            "text/plain;charset=US-ASCII");
 }
 
 TEST_P(DataURLTest, BuildResponseHead) {
@@ -247,9 +245,8 @@ TEST_P(DataURLTest, BuildResponseHead) {
     EXPECT_EQ(1, version.major_value());
     EXPECT_EQ(1, version.minor_value());
     EXPECT_EQ("OK", headers->GetStatusText());
-    std::string content_type;
-    EXPECT_TRUE(headers->GetNormalizedHeader("Content-Type", &content_type));
-    EXPECT_EQ(content_type, "text/plain;charset=US-ASCII");
+    EXPECT_EQ(headers->GetNormalizedHeader("Content-Type"),
+              "text/plain;charset=US-ASCII");
   }
 }
 
@@ -280,9 +277,8 @@ TEST_P(DataURLTest, BuildResponseInvalidMimeType) {
                                        &mime_type, &charset, &data, &headers));
 
   ASSERT_TRUE(headers);
-  std::string value;
-  EXPECT_TRUE(headers->GetNormalizedHeader("Content-Type", &value));
-  EXPECT_EQ(value, "text/plain;charset=US-ASCII");
+  EXPECT_EQ(headers->GetNormalizedHeader("Content-Type"),
+            "text/plain;charset=US-ASCII");
 }
 
 TEST_P(DataURLTest, InvalidCharset) {
@@ -341,8 +337,7 @@ TEST_P(DataURLTest, Image) {
   ASSERT_TRUE(headers);
   std::string value;
   EXPECT_EQ(headers->GetStatusLine(), "HTTP/1.1 200 OK");
-  EXPECT_TRUE(headers->GetNormalizedHeader("Content-Type", &value));
-  EXPECT_EQ(value, "image/png");
+  EXPECT_EQ(headers->GetNormalizedHeader("Content-Type"), "image/png");
 }
 
 // Tests the application of the kRemoveWhitespaceForDataURLs command line

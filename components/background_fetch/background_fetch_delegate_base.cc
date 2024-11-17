@@ -203,7 +203,7 @@ JobDetails* BackgroundFetchDelegateBase::GetJobDetails(
   auto job_details_iter = job_details_map_.find(job_id);
   if (job_details_iter == job_details_map_.end()) {
     if (!allow_null) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     return nullptr;
@@ -403,24 +403,20 @@ void BackgroundFetchDelegateBase::OnDownloadReceived(
       break;
     case StartResult::BACKOFF:
       // TODO(delphick): try again later?
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case StartResult::UNEXPECTED_CLIENT:
       // This really should never happen since we're supplying the
       // DownloadClient.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case StartResult::CLIENT_CANCELLED:
       // TODO(delphick): do we need to do anything here, since we will have
       // cancelled it?
       break;
     case StartResult::INTERNAL_ERROR:
       // TODO(delphick): We need to handle this gracefully.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case StartResult::COUNT:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

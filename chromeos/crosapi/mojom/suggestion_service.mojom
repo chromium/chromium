@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 
 // Enum representing the device form factor from which the suggestion item
 // originates.
-[Stable, Extensible]
+[Extensible]
 enum SuggestionDeviceFormFactor {
   [Default] kDesktop,
   kPhone,
@@ -17,7 +17,6 @@ enum SuggestionDeviceFormFactor {
 };
 
 // Structure representing a suggestion tab item.
-[Stable]
 struct TabSuggestionItem {
   // The title of the tab item.
   string title@0;
@@ -40,7 +39,6 @@ struct TabSuggestionItem {
 
 // Provides suggestions data to consumers.
 // Implemented by lacros-chrome.
-[Stable]
 interface SuggestionServiceProvider {
   // Gets a list of suggestion tab items from the lacros browser. Returns an
   // empty list of tab items if no data is available.
@@ -49,7 +47,7 @@ interface SuggestionServiceProvider {
 
 // This interface lets ash query lacros for suggestion items.
 // Implemented by ash-chrome.
-[Stable, Uuid="85f05a2b-f9bb-48af-8cf2-624379d237d1"]
+[Uuid="85f05a2b-f9bb-48af-8cf2-624379d237d1"]
 interface SuggestionService {
   // Registers the provider that live in lacros-chrome.
   AddSuggestionServiceProvider@0(

@@ -4,10 +4,17 @@
 
 package org.chromium.chrome.browser.model_execution;
 
+import org.chromium.base.ServiceLoaderUtil;
+
 /** Class in charge of creating and maintaining model execution sessions for multiple features. */
 public class ModelExecutionManager {
 
     public ModelExecutionSession createSession(@ModelExecutionFeature int feature) {
-        return new ModelExecutionSessionImpl(feature);
+        ModelExecutionSessionFactory factory =
+                ServiceLoaderUtil.maybeCreate(ModelExecutionSessionFactory.class);
+        if (factory == null) {
+            return new ModelExecutionSessionUpstreamImpl(feature);
+        }
+        return factory.forFeature(feature);
     }
 }

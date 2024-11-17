@@ -269,7 +269,8 @@
           "builder": "gpu-fyi-try-linux-nvidia-rel",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Linux Builder/targets"
     }
   },
   "$build/reclient": {

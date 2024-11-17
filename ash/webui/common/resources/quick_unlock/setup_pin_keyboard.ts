@@ -131,6 +131,13 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
         value: false,
       },
 
+      // Whether the PIN keyboard is being used during ChromeOS recovery. In
+      // that case, a different API should be used.
+      useRecoveryModeApi: {
+        type: Boolean,
+        value: false,
+      },
+
       /**
        * Interface for chrome.quickUnlockPrivate calls.
        */
@@ -148,6 +155,14 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
        * Enables pin placeholder.
        */
       enablePlaceholder: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Enables the visibility icon for showing/hiding the PIN
+       */
+      enableVisibilityIcon: {
         type: Boolean,
         value: false,
       },
@@ -171,8 +186,10 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
   enableSubmit: boolean;
   writeUma: (progress: LockScreenProgress) => void;
   isConfirmStep: boolean;
+  useRecoveryModeApi: boolean;
   quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
   enablePlaceholder: boolean;
+  enableVisibilityIcon: boolean;
 
   override focus(): void {
     this.$.pinKeyboard.focusInput();
@@ -197,6 +214,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
     this.enableSubmit = false;
     this.isConfirmStep = false;
     this.pinHasPassedMinimumLength_ = false;
+    this.useRecoveryModeApi = false;
     this.hideProblem_();
     this.onPinChange_(
         new CustomEvent('pin-change', {detail: {pin: this.pinKeyboardValue_}}));
@@ -344,6 +362,7 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
       this.initialPin_ = this.pinKeyboardValue_;
       this.pinKeyboardValue_ = '';
       this.isConfirmStep = true;
+      this.$.pinKeyboard.resetPinVisibility();
       this.onPinChange_(new CustomEvent(
           'pin-change', {detail: {pin: this.pinKeyboardValue_}}));
       this.$.pinKeyboard.focusInput();
@@ -367,8 +386,14 @@ export class SetupPinKeyboardElement extends SetupPinKeyboardElementBase {
 
     this.isSetPinCallPending_ = true;
     this.enableSubmit = false;
-    const {result} = await PinFactorEditor.getRemote().setPin(
-        this.authToken, this.pinKeyboardValue_);
+    let result: any;
+    if (this.useRecoveryModeApi) {
+      ({result} = await PinFactorEditor.getRemote().updatePin(
+           this.authToken, this.pinKeyboardValue_));
+    } else {
+      ({result} = await PinFactorEditor.getRemote().setPin(
+           this.authToken, this.pinKeyboardValue_));
+    }
     this.isSetPinCallPending_ = false;
 
     switch (result) {

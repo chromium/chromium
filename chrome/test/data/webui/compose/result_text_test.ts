@@ -79,7 +79,7 @@ suite('ResultText', () => {
         'Hi Mom, Happy Birthday!', resultText.$.partialResultText.innerText);
   });
 
-  test('StreamingParitalText', async () => {
+  test('StreamingPartialText', async () => {
     resultText.textInput = {
       text: 'Hi Mom, Happy Birthday!',
       isPartial: true,
@@ -96,7 +96,7 @@ suite('ResultText', () => {
     assertFalse(resultText.isOutputComplete);
   });
 
-  test('StreamingParitalThenCompleteText', async () => {
+  test('StreamingPartialThenCompleteText', async () => {
     resultText.textInput = {
       text: 'Hi Mom, Happy Birthday!',
       isPartial: true,
@@ -119,7 +119,7 @@ suite('ResultText', () => {
     assertTrue(resultText.isOutputComplete);
   });
 
-  test('StreamingParitalThenCompleteWithError', async () => {
+  test('StreamingPartialThenCompleteWithError', async () => {
     resultText.textInput = {
       text: 'Hi Mom, Happy Birthday!',
       isPartial: true,

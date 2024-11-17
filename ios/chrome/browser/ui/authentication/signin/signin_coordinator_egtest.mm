@@ -130,15 +130,17 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [super setUp];
   // Remove closed tab history to make sure the sign-in promo is always visible
   // in recent tabs.
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
   [BookmarkEarlGrey waitForBookmarkModelLoaded];
   [BookmarkEarlGrey clearBookmarks];
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Failed to set up histogram tester.");
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   [BookmarkEarlGrey clearBookmarksPositionCache];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
@@ -147,13 +149,6 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
-  if ([self isRunningTest:@selector
-            (testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled)]) {
-    config.features_disabled.push_back(
-        kClearDeviceDataOnSignOutForManagedUsers);
-  } else {
-    config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
-  }
   if ([self isRunningTest:@selector(testOpenManageSyncSettingsFromNTP)] ||
       [self isRunningTest:@selector
             (FLAKY_testAccessiblityStringForSignedInUserWithoutName)]) {
@@ -259,7 +254,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 }
 
 // Tests that signing out a supervised user account clears the account data.
-- (void)testSignOutForSupervisedUserClearAccountData {
+// TODO(crbug.com/378058907): Re-enable this test.
+- (void)DISABLED_testSignOutForSupervisedUserClearAccountData {
   // Sign in with a fake supervised identity.
   FakeSystemIdentity* fakeSupervisedIdentity =
       [FakeSystemIdentity fakeIdentity1];
@@ -293,7 +289,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
 
 // Tests that signing out of a managed account from the Settings works
 // correctly.
-- (void)testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled {
+// TODO(crbug.com/369617405): Disabled due to flakiness.
+- (void)DISABLED_testSignInDisconnectFromChromeManaged_ClearDataFeatureDisabled {
   // Sign-in with a managed account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
@@ -305,7 +302,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGreyUI signOut];
 }
 
-- (void)testSignInDisconnectFromChromeManaged_ClearDataFeatureEnabled {
+// TODO(crbug.com/368595150): Disabled due to flakiness.
+- (void)DISABLED_testSignInDisconnectFromChromeManaged_ClearDataFeatureEnabled {
   // Sign-in with a managed account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];

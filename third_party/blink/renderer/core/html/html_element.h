@@ -44,7 +44,6 @@ class ElementInternals;
 class ExceptionState;
 class FormAssociated;
 class HTMLFormElement;
-class HTMLSelectListElement;
 class KeyboardEvent;
 class TextControlElement;
 class V8UnionStringLegacyNullToEmptyStringOrTrustedScript;
@@ -301,8 +300,8 @@ class CORE_EXPORT HTMLElement : public Element {
   void MaybeQueuePopoverHideEvent();
   static void HoveredElementChanged(Element* old_element, Element* new_element);
 
-  void SetInternalImplicitAnchor(HTMLElement* element);
-  HTMLElement* internalImplicitAnchor() const;
+  void SetImplicitAnchor(Element* element);
+  Element* implicitAnchor() const;
 
   bool DispatchFocusEvent(
       Element* old_focused_element,
@@ -320,7 +319,8 @@ class CORE_EXPORT HTMLElement : public Element {
   // for example a `<dialog popover>` should run `popover` invocation steps
   // before `<dialog>` invocation steps.
   // See: crbug.com/1490919, https://open-ui.org/components/invokers.explainer/
-  bool IsValidCommand(HTMLElement& invoker, CommandEventType command) override;
+  bool IsValidBuiltinCommand(HTMLElement& invoker,
+                             CommandEventType command) override;
   bool HandleCommandInternal(HTMLElement& invoker,
                              CommandEventType command) override;
 

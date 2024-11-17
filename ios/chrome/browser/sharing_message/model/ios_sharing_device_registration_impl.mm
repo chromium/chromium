@@ -249,7 +249,7 @@ void IOSSharingDeviceRegistrationImpl::OnFCMTokenDeleted(
       return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::optional<std::string>

@@ -529,7 +529,7 @@ void QuotaManagerProxy::GetUsageAndQuota(
   quota_manager_impl_->GetUsageAndQuota(storage_key, type, std::move(respond));
 }
 
-void QuotaManagerProxy::GetBucketUsageAndQuota(
+void QuotaManagerProxy::GetBucketUsageAndReportedQuota(
     BucketId bucket,
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     UsageAndQuotaCallback callback) {
@@ -539,8 +539,9 @@ void QuotaManagerProxy::GetBucketUsageAndQuota(
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&QuotaManagerProxy::GetBucketUsageAndQuota, this, bucket,
-                       std::move(callback_task_runner), std::move(callback)));
+        base::BindOnce(&QuotaManagerProxy::GetBucketUsageAndReportedQuota, this,
+                       bucket, std::move(callback_task_runner),
+                       std::move(callback)));
     return;
   }
 
@@ -553,7 +554,8 @@ void QuotaManagerProxy::GetBucketUsageAndQuota(
     return;
   }
 
-  quota_manager_impl_->GetBucketUsageAndQuota(bucket, std::move(respond));
+  quota_manager_impl_->GetBucketUsageAndReportedQuota(bucket,
+                                                      std::move(respond));
 }
 
 void QuotaManagerProxy::GetBucketSpaceRemaining(

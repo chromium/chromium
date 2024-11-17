@@ -7,6 +7,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/weak_ptr.h"
+
+namespace web {
+class WebFrame;
+}
+
 // Commands related to suggesting strong passwords.
 @protocol PasswordSuggestionCommands
 
@@ -15,6 +21,7 @@
 - (void)showPasswordSuggestion:(NSString*)passwordSuggestion
                      proactive:(BOOL)proactive
                       webState:(web::WebState*)webState
+                         frame:(base::WeakPtr<web::WebFrame>)frame
                decisionHandler:(void (^)(BOOL accept))decisionHandler;
 
 @end

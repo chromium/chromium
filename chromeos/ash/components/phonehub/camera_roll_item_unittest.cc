@@ -11,8 +11,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -76,5 +75,4 @@ TEST_F(CameraRollItemTest, ItemsDoNotMatch) {
   EXPECT_TRUE(item_1 != item_2);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

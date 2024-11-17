@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.preferences.PrefChangeRegistrar;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.translate.TranslateBridge;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -70,9 +70,9 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
 
         // Create the correct version of language settings.
         if (shouldShowDetailedPreferences()) {
-            createDetailedPreferences(savedInstanceState, rootKey);
+            createDetailedPreferences();
         } else {
-            createBasicPreferences(savedInstanceState, rootKey);
+            createBasicPreferences();
         }
 
         LanguagesManager.recordImpression(LanguagesManager.LanguageSettingsPageType.PAGE_MAIN);
@@ -96,7 +96,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     }
 
     /** Create the old language and translate settings page. Delete once no longer used. */
-    private void createBasicPreferences(Bundle savedInstanceState, String rootKey) {
+    private void createBasicPreferences() {
         SettingsUtils.addPreferencesFromResource(this, R.xml.languages_preferences);
 
         ContentLanguagesPreference mLanguageListPref =
@@ -137,7 +137,7 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
      * Create the new language and translate settings page. With options to change the app language,
      * translate target language, and detailed translate preferences.
      */
-    private void createDetailedPreferences(Bundle savedInstanceState, String rootKey) {
+    private void createDetailedPreferences() {
         // Log currently installed language splits.
         String installedLanguages =
                 TextUtils.join(",", LanguageSplitInstaller.getInstance().getInstalledLanguages());
@@ -364,8 +364,8 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
     private void launchSelectLanguage(
             @LanguagesManager.LanguageListType int languageListType, int requestCode) {
         Intent intent =
-                SettingsLauncherFactory.createSettingsLauncher()
-                        .createSettingsActivityIntent(getActivity(), SelectLanguageFragment.class);
+                SettingsNavigationFactory.createSettingsNavigation()
+                        .createSettingsIntent(getActivity(), SelectLanguageFragment.class);
         intent.putExtra(SelectLanguageFragment.INTENT_POTENTIAL_LANGUAGES, languageListType);
         startActivityForResult(intent, requestCode);
     }
@@ -379,8 +379,8 @@ public class LanguageSettings extends ChromeBaseSettingsFragment
         listPreference.setOnPreferenceClickListener(
                 preference -> {
                     Intent intent =
-                            SettingsLauncherFactory.createSettingsLauncher()
-                                    .createSettingsActivityIntent(
+                            SettingsNavigationFactory.createSettingsNavigation()
+                                    .createSettingsIntent(
                                             getActivity(), listPreference.getFragmentClass());
                     startActivity(intent);
                     return true;

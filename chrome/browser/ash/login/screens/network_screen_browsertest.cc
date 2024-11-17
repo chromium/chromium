@@ -42,6 +42,9 @@ constexpr char kCancelButton[] = "cancelButton";
 constexpr char kLoadingDialog[] = "loadingDialog";
 constexpr char kConnectingDialog[] = "connectingDialog";
 constexpr char kNextButton[] = "nextButton";
+constexpr char kQuickStartEntryPointVisibleHistogram[] =
+    "QuickStart.EntryPointVisible";
+
 constexpr test::UIPath kCancelButtonLoadingDialog = {
     QuickStartView::kScreenId.name, kLoadingDialog, kCancelButton};
 constexpr test::UIPath kNextNetworkButtonPath = {
@@ -247,11 +250,17 @@ IN_PROC_BROWSER_TEST_F(NetworkScreenQuickStartEnabled,
       IDS_LOGIN_QUICK_START_SETUP_NETWORK_SCREEN_ENTRY_POINT);
   test::OobeJS().ExpectTrue(NetworkElementSelector(kQuickStartEntryPointName) +
                             " == null");
+  histogram_tester_.ExpectBucketCount(
+      kQuickStartEntryPointVisibleHistogram,
+      quick_start::QuickStartMetrics::EntryPoint::NETWORK_SCREEN, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkScreenQuickStartEnabled,
                        QuickStartButtonFunctionalWhenFeatureEnabled) {
   EnterQuickStartFlowFromNetworkScreen();
+  histogram_tester_.ExpectBucketCount(
+      kQuickStartEntryPointVisibleHistogram,
+      quick_start::QuickStartMetrics::EntryPoint::NETWORK_SCREEN, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(NetworkScreenQuickStartEnabled,

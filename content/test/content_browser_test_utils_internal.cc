@@ -576,7 +576,8 @@ void FileChooserDelegate::RunFileChooser(
   std::vector<blink::mojom::FileChooserFileInfoPtr> files;
   for (const auto& file : files_) {
     auto file_info = blink::mojom::FileChooserFileInfo::NewNativeFile(
-        blink::mojom::NativeFileInfo::New(file, std::u16string()));
+        blink::mojom::NativeFileInfo::New(file, std::u16string(),
+                                          std::vector<std::u16string>()));
     files.push_back(std::move(file_info));
   }
   listener->FileSelected(std::move(files), base_dir_, params.mode);
@@ -850,7 +851,7 @@ void BeforeUnloadBlockingDelegate::RunJavaScriptDialog(
     const std::u16string& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BeforeUnloadBlockingDelegate::RunBeforeUnloadDialog(
@@ -866,8 +867,7 @@ bool BeforeUnloadBlockingDelegate::HandleJavaScriptDialog(
     WebContents* web_contents,
     bool accept,
     const std::u16string* prompt_override) {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 FrameNavigateParamsCapturer::FrameNavigateParamsCapturer(WebContents* contents)
@@ -1171,6 +1171,10 @@ void WaitForCopyableViewInFrame(RenderFrameHost* render_frame_host) {
 }
 
 void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_IOS) && \
+    !defined(USE_AURA)
+  NOTREACHED();
+#else
   base::RunLoop run_loop;
   auto callback = base::BindOnce(
       [](base::RepeatingClosure cb,
@@ -1199,10 +1203,9 @@ void WaitForBrowserCompositorFramePresented(WebContents* web_contents) {
                          ->GetCompositor();
   compositor->RequestSuccessfulPresentationTimeForNextFrame(
       std::move(callback));
-#else
-  NOTREACHED_IN_MIGRATION();
 #endif
   run_loop.Run();
+#endif
 }
 
 void ForceNewCompositorFrameFromBrowser(WebContents* web_contents) {

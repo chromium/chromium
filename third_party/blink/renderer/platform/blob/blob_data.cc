@@ -33,6 +33,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -280,11 +281,9 @@ scoped_refptr<BlobDataHandle> BlobDataHandle::Create(
     const String& type,
     uint64_t size,
     mojo::PendingRemote<mojom::blink::Blob> blob_remote) {
-  if (blob_remote.is_valid()) {
-    return base::AdoptRef(
-        new BlobDataHandle(uuid, type, size, std::move(blob_remote)));
-  }
-  return base::AdoptRef(new BlobDataHandle(uuid, type, size));
+  CHECK(blob_remote.is_valid());
+  return base::AdoptRef(
+      new BlobDataHandle(uuid, type, size, std::move(blob_remote)));
 }
 
 BlobDataHandle::BlobDataHandle()
@@ -348,8 +347,8 @@ BlobDataHandle::BlobDataHandle(const String& uuid,
       type_(IsValidBlobType(type) ? type : ""),
       size_(size),
       is_single_unknown_size_file_(false) {
-  GetThreadSpecificRegistry()->GetBlobFromUUID(
-      blob_remote_.InitWithNewPipeAndPassReceiver(), uuid_);
+  // This is only used by unit tests that won't access `blob_remote_`.
+  CHECK_IS_TEST();
 }
 
 BlobDataHandle::BlobDataHandle(
@@ -406,17 +405,6 @@ void BlobDataHandle::ReadAll(
   base::AutoLock locker(blob_remote_lock_);
   mojo::Remote<mojom::blink::Blob> blob(std::move(blob_remote_));
   blob->ReadAll(std::move(pipe), std::move(client));
-  blob_remote_ = blob.Unbind();
-}
-
-void BlobDataHandle::ReadRange(
-    uint64_t offset,
-    uint64_t length,
-    mojo::ScopedDataPipeProducerHandle pipe,
-    mojo::PendingRemote<mojom::blink::BlobReaderClient> client) {
-  base::AutoLock locker(blob_remote_lock_);
-  mojo::Remote<mojom::blink::Blob> blob(std::move(blob_remote_));
-  blob->ReadRange(offset, length, std::move(pipe), std::move(client));
   blob_remote_ = blob.Unbind();
 }
 

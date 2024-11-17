@@ -31,11 +31,13 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/download/download_crx_util.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
 #include "chrome/browser/extensions/extension_install_prompt_show_params.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/fake_safe_browsing_database_manager.h"
@@ -47,6 +49,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/grit/generated_resources.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/browser/browser_thread.h"
@@ -80,7 +83,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/extensions/extension_assets_manager_chromeos.h"
@@ -193,8 +196,9 @@ class ManagementPolicyMock : public ManagementPolicy::Provider {
 
   bool UserMayLoad(const Extension* extension,
                    std::u16string* error) const override {
-    if (error)
+    if (error) {
       *error = u"Dummy error message";
+    }
     return false;
   }
 };
@@ -214,8 +218,9 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
     std::string error;
     std::optional<base::Value::Dict> parsed_manifest(
         file_util::LoadManifest(ext_path, &error));
-    if (!parsed_manifest || !error.empty())
+    if (!parsed_manifest || !error.empty()) {
       return result;
+    }
 
     return WebstoreInstaller::Approval::CreateWithNoInstallPrompt(
         browser()->profile(), id, std::move(*parsed_manifest),
@@ -246,8 +251,9 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
                           const base::FilePath& relative_path,
                           const std::string& content) const {
     const base::FilePath full_path = directory.Append(relative_path);
-    if (!CreateDirectory(full_path.DirName()))
+    if (!CreateDirectory(full_path.DirName())) {
       return false;
+    }
     return base::WriteFile(full_path, content);
   }
 
@@ -281,8 +287,9 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
   static void InstallerCallback(base::OnceClosure quit_closure,
                                 CrxInstaller::InstallerResultCallback callback,
                                 const std::optional<CrxInstallError>& error) {
-    if (!callback.is_null())
+    if (!callback.is_null()) {
       std::move(callback).Run(error);
+    }
     std::move(quit_closure).Run();
   }
 
@@ -353,8 +360,9 @@ class ExtensionCrxInstallerTest : public ExtensionBrowserTest {
     base::FilePath ext_path = test_data_dir_.AppendASCII(ext_relpath);
 
     std::unique_ptr<WebstoreInstaller::Approval> approval;
-    if (!id.empty())
+    if (!id.empty()) {
       approval = GetApproval(ext_relpath, id, true);
+    }
 
     base::FilePath crx_path = PackExtension(ext_path);
     EXPECT_FALSE(crx_path.empty());
@@ -986,21 +994,28 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest,
             *installation_failure.install_error_detail);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, KioskOnlyTest) {
   base::ScopedAllowBlockingForTesting allow_io;
-  // kiosk_only is allowlisted from non-chromeos.
+  // Expect kiosk_only extensions are not allowed outside kiosk.
   base::FilePath crx_path = test_data_dir_.AppendASCII("kiosk/kiosk_only.crx");
   EXPECT_FALSE(InstallExtension(crx_path, 0));
-  // Simulate ChromeOS kiosk mode. |scoped_user_manager| will take over
+  LOG(INFO) << "Extension didn't install in non-kiosk mode.";
+
+  // Simulate a ChromeOS kiosk user. |scoped_user_manager| will take over
   // lifetime of |user_manager|.
-  auto* fake_user_manager = new ash::FakeChromeUserManager();
+  auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
   const AccountId account_id(AccountId::FromUserEmail("example@example.com"));
-  fake_user_manager->AddKioskAppUser(account_id);
+  auto* kiosk_user = fake_user_manager->AddKioskAppUser(account_id);
   fake_user_manager->LoginUser(account_id);
+  TestingProfile kiosk_profile;
+  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(kiosk_user,
+                                                               &kiosk_profile);
+
   user_manager::ScopedUserManager scoped_user_manager(
-      base::WrapUnique(fake_user_manager));
+      std::move(fake_user_manager));
   EXPECT_TRUE(InstallExtension(crx_path, 1));
+  LOG(INFO) << "Extension installed in simulated kiosk mode.";
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, InstallToSharedLocation) {
@@ -1047,7 +1062,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, DoNotSync) {
       ExtensionPrefs::Get(browser()->profile());
   EXPECT_TRUE(extension_prefs->DoNotSync(crx_installer->extension()->id()));
   EXPECT_FALSE(
-      util::ShouldSync(crx_installer->extension(), browser()->profile()));
+      sync_util::ShouldSync(browser()->profile(), crx_installer->extension()));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionCrxInstallerTest, ManagementPolicy) {

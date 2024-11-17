@@ -12,8 +12,10 @@
 <translation id="1260702988262336471">Apri il menu Chromium</translation>
 <translation id="12739128458173458">Per inviare questa scheda a un altro dispositivo, accedi a Chromium su entrambi i dispositivi.</translation>
 <translation id="1361748954329991663">Chromium non è aggiornato. Se non sono disponibili aggiornamenti nell'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, è possibile che il dispositivo non supporti più le nuove versioni di Chromium.</translation>
+<translation id="1383876407941801731">Cerca</translation>
 <translation id="1423007117030725713">Avvia una ricerca in una nuova scheda di Chromium.</translation>
 <translation id="1431818719585918472">Consenti a Chromium di bloccare le schede di navigazione in incognito.</translation>
+<translation id="1451665391191990528">Nascondi le schede di navigazione in incognito aperte quando esci da Chromium</translation>
 <translation id="146407871188825689">Usa Chromium sull'iPad per impostazione predefinita</translation>
 <translation id="1471084500615228555">Elimina dati di navigazione in Chromium</translation>
 <translation id="1472013873724362412">Il tuo account non funziona su Chromium. Contatta l'amministratore di dominio o utilizza un normale Account Google per accedere.</translation>
@@ -49,6 +51,7 @@
 <translation id="2195025571279539885">Vuoi che Chromium ti proponga di tradurre le pagine di questo sito in <ph name="LANGUAGE_NAME" /> al prossimo accesso?</translation>
 <translation id="22313767259766852">Al momento questo indirizzo è salvato su Chromium. Per usarlo su tutti i prodotti Google, salvalo nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Ciò significa che Chromium richiederà ogni volta il sito desktop.</translation>
+<translation id="2270466829363945454">Acquista</translation>
 <translation id="2313870531055795960">Controlla gli URL confrontandoli con un elenco di siti non sicuri memorizzato in Chromium. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chromium potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura.</translation>
 <translation id="231828342043114302">Accedi a Chromium per ricevere contenuti personalizzati in base ai tuoi interessi.</translation>
 <translation id="2326738825692478496">Alcuni dati di Chromium non sono ancora stati salvati nel tuo Account Google.
@@ -107,6 +110,7 @@ Prova ad attendere qualche minuto prima di cambiare account. Se cambi account or
 <translation id="377649297473651452">Visualizzazione espansa della compilazione automatica di Chromium</translation>
 <translation id="3780779443901618967">Ricevi un avviso in caso di siti pericolosi, inclusi quelli di cui Google non era a conoscenza, analizzando più dati provenienti dai siti rispetto al livello Protezione standard. Puoi scegliere di ignorare gli avvisi di Chromium.</translation>
 <translation id="3805899903892079518">Chromium non ha accesso alle tue foto o ai tuoi video. Attiva l'accesso in Impostazioni iOS &gt; Privacy &gt; Foto.</translation>
+<translation id="3816686541346279443">Chromium ti proporrà di salvare la password.</translation>
 <translation id="3827545470516145620">Otterrai la protezione di sicurezza standard su questo dispositivo</translation>
 <translation id="3833326979834193417">Chromium esegue automaticamente il controllo di sicurezza ogni giorno per proteggerti da violazioni dei dati, siti web non sicuri e altro ancora. Puoi trovare ulteriori informazioni sul controllo di sicurezza nelle Impostazioni.</translation>
 <translation id="3855938650519180865">Novità di Chromium</translation>
@@ -129,6 +133,7 @@ I dati sono criptati con la tua passphrase. Inseriscila per utilizzare e salvare
 <translation id="4432744876818348753">Accedi per usare al meglio Chromium.</translation>
 <translation id="4445228361214254027">La tua organizzazione ha disattivato la possibilità di usare e salvare i dati di Chromium nel tuo Account Google. I nuovi preferiti, le nuove password e altri dati verranno salvati solo su questo dispositivo.</translation>
 <translation id="4498832288620833153">Aggiunge gli URL inseriti al tuo elenco di lettura in Chromium.</translation>
+<translation id="4508268628669724828">Torna qui per altri suggerimenti utili per usare al meglio Chromium.</translation>
 <translation id="452436063477828504">Assicurati di poter usare sempre i dati di Chromium nel tuo Account Google</translation>
 <translation id="4527452566931097835">Impostare Chromium come browser predefinito?</translation>
 <translation id="4555020257205549924">Quando questa funzione è attiva, Chromium si offre di tradurre le pagine scritte in altre lingue utilizzando Google Traduttore. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
@@ -177,6 +182,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="5571094606370987472">Apre le schede recenti di Chromium.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Apri La mia scheda più recente in Chromium</translation>
+<translation id="5671188105328420281">Suggerimenti per Chromium</translation>
 <translation id="5688047395118852662">In questa scheda vengono mostrati suggerimenti su come utilizzare al meglio Chromium.</translation>
 <translation id="5700709190537129682">Chromium non può controllare le tue password</translation>
 <translation id="584550191241316896">Accesso a Chromium eseguito</translation>
@@ -218,6 +224,7 @@ Aspetti da considerare:
 <translation id="6752854822223394465">La tua organizzazione sta configurando Chromium…</translation>
 <translation id="6794054469102824109">Apre il gioco Dino di Chromium.</translation>
 <translation id="6820823224820483452">Chromium non ha potuto controllare tutte le password. Riprova domani.</translation>
+<translation id="6831043979455480757">Traduci</translation>
 <translation id="6852419005633611413">Accedi più velocemente a Chromium dal dock della schermata Home</translation>
 <translation id="6852799557929001644">Accedi alle tue password di Chromium e ad altri dati in altre app su questo dispositivo.</translation>
 <translation id="6887138405044152640">Per inviare questa scheda a un altro dispositivo, accedi a Chromium su quel dispositivo.</translation>

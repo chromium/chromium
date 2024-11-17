@@ -13,6 +13,7 @@
 #include <memory>
 #include <string_view>
 
+#include "base/containers/heap_array.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
 #include "base/strings/escape.h"
@@ -226,7 +227,7 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
   // Initial buffer allocated on stack.
   char initial_buf[INITIAL_BUFFER_SIZE];
   // Dynamic buffer in case initial buffer isn't large enough.
-  std::unique_ptr<char[]> buf;
+  base::HeapArray<char> buf;
 
   IP_ADAPTER_ADDRESSES* adapters = nullptr;
   {
@@ -244,8 +245,8 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
     for (int tries = 1; result == ERROR_BUFFER_OVERFLOW &&
                         tries < MAX_GETADAPTERSADDRESSES_TRIES;
          ++tries) {
-      buf = std::make_unique<char[]>(len);
-      adapters = reinterpret_cast<IP_ADAPTER_ADDRESSES*>(buf.get());
+      buf = base::HeapArray<char>::Uninit(len);
+      adapters = reinterpret_cast<IP_ADAPTER_ADDRESSES*>(buf.data());
       result = GetAdaptersAddresses(AF_UNSPEC, flags, nullptr, adapters, &len);
     }
 

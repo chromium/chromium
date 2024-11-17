@@ -69,8 +69,7 @@ FieldType TypeForField(AddressField address_field) {
     case ::i18n::addressinput::RECIPIENT:
       return NAME_FULL;
   }
-  NOTREACHED_IN_MIGRATION();
-  return UNKNOWN_TYPE;
+  NOTREACHED();
 }
 
 bool FieldForType(FieldType server_type, AddressField* field) {

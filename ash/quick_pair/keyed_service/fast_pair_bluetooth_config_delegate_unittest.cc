@@ -37,8 +37,8 @@ class FastPairBluetoothConfigDelegateTest : public testing::Test {
     fake_fast_pair_repository_ = std::make_unique<FakeFastPairRepository>();
   }
 
-  scoped_refptr<Device> CreateDevice(const std::string model_id,
-                                     const std::string device_address,
+  scoped_refptr<Device> CreateDevice(const std::string& model_id,
+                                     const std::string& device_address,
                                      std::string display_name) {
     scoped_refptr<Device> device = base::MakeRefCounted<Device>(
         model_id, device_address, Protocol::kFastPairSubsequent);

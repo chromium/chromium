@@ -52,7 +52,8 @@ CalculationExpressionSizingKeywordNode::CalculationExpressionSizingKeywordNode(
   if (keyword != Keyword::kSize && keyword != Keyword::kAny) {
     if (keyword == Keyword::kAuto) {
       has_auto_ = true;
-    } else if (keyword == Keyword::kWebkitFillAvailable) {
+    } else if (keyword == Keyword::kWebkitFillAvailable ||
+               keyword == Keyword::kStretch) {
       has_stretch_ = true;
     } else {
       has_content_or_intrinsic_ = true;
@@ -101,11 +102,12 @@ float CalculationExpressionSizingKeywordNode::Evaluate(
               ? Length::Type::kAuto
               : Length::Type::kFitContent;
       break;
+    case Keyword::kStretch:
     case Keyword::kWebkitFillAvailable:
       intrinsic_type =
           input.calc_size_keyword_behavior == CalcSizeKeywordBehavior::kAsAuto
               ? Length::Type::kAuto
-              : Length::Type::kFillAvailable;
+              : Length::Type::kStretch;
       break;
   }
 
@@ -230,6 +232,16 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
       pixels_and_percent *= number.Value();
       return base::MakeRefCounted<CalculationExpressionPixelsAndPercentNode>(
           pixels_and_percent);
+    }
+    case CalculationOperator::kInvert: {
+      DCHECK_EQ(children.size(), 1u);
+      auto* number = DynamicTo<CalculationExpressionNumberNode>(*children[0]);
+      if (number) {
+        return base::MakeRefCounted<CalculationExpressionNumberNode>(
+            1.0 / number->Value());
+      }
+      return base::MakeRefCounted<CalculationExpressionOperationNode>(
+          Children({std::move(children[0])}), op);
     }
     case CalculationOperator::kMin:
     case CalculationOperator::kMax: {
@@ -396,8 +408,7 @@ CalculationExpressionOperationNode::CreateSimplified(Children&& children,
           std::move(children), op);
     }
     case CalculationOperator::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -460,6 +471,11 @@ float CalculationExpressionOperationNode::Evaluate(
       float left = children_[0]->Evaluate(max_value, input);
       float right = children_[1]->Evaluate(max_value, input);
       return left * right;
+    }
+    case CalculationOperator::kInvert: {
+      DCHECK_EQ(children_.size(), 1u);
+      float denominator = children_[0]->Evaluate(max_value, input);
+      return 1.0 / denominator;
     }
     case CalculationOperator::kMin: {
       DCHECK(!children_.empty());
@@ -545,8 +561,7 @@ float CalculationExpressionOperationNode::Evaluate(
       break;
       // TODO(crbug.com/1284199): Support other math functions.
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::numeric_limits<float>::quiet_NaN();
+  NOTREACHED();
 }
 
 bool CalculationExpressionOperationNode::Equals(
@@ -581,6 +596,11 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
       return CreateSimplified(
           Children({pixels_and_percent->Zoom(factor), number}), operator_);
     }
+    case CalculationOperator::kInvert: {
+      DCHECK_EQ(children_.size(), 1u);
+      return CreateSimplified(Children({children_[0]->Zoom(factor)}),
+                              operator_);
+    }
     case CalculationOperator::kCalcSize: {
       DCHECK_EQ(children_.size(), 2u);
       return CreateSimplified(
@@ -609,8 +629,7 @@ CalculationExpressionOperationNode::Zoom(double factor) const {
       return CreateSimplified(std::move(cloned_operands), operator_);
     }
     case CalculationOperator::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -674,6 +693,14 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
 
       return ResultType::kNumber;
     }
+    case CalculationOperator::kInvert: {
+      DCHECK_EQ(children_.size(), 1u);
+      auto denominator_type = children_[0]->ResolvedResultType();
+      if (denominator_type == ResultType::kNumber) {
+        return ResultType::kNumber;
+      }
+      return ResultType::kInvalid;
+    }
     case CalculationOperator::kCalcSize: {
       DCHECK_EQ(children_.size(), 2u);
       auto basis_type = children_[0]->ResolvedResultType();
@@ -710,8 +737,7 @@ CalculationExpressionOperationNode::ResolvedResultType() const {
     case CalculationOperator::kMediaProgress:
       return ResultType::kNumber;
     case CalculationOperator::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      return result_type_;
+      NOTREACHED();
   }
 }
 #endif

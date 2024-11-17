@@ -5,6 +5,7 @@
 #include "components/component_updater/installer_policies/tpcd_metadata_component_installer_policy.h"
 
 #include <optional>
+#include <string>
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -98,7 +99,7 @@ void TpcdMetadataComponentInstallerPolicy::ComponentReady(
         base::BindOnce(&ReadComponentFromDisk, GetComponentPath(install_dir)),
         base::BindOnce(
             [](OnTpcdMetadataComponentReadyCallback on_component_ready_callback,
-               const std::optional<std::string>& maybe_contents) {
+               std::optional<std::string> maybe_contents) {
               if (maybe_contents.has_value()) {
                 on_component_ready_callback.Run(maybe_contents.value());
               }

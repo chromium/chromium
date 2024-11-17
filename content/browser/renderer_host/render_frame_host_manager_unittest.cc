@@ -265,9 +265,7 @@ void DidNavigateFrame(RenderFrameHostManager* rfh_manager,
                                 false /* is_same_document_navigation */,
                                 false /* clear_proxies_on_commit */,
                                 blink::FramePolicy(),
-                                false
-                                /* allow_subframe_paint_holding */,
-                                /*is_initiated_by_animated_transition=*/false);
+                                true /* allow_paint_holding */);
 }
 
 class TestDevToolsClientHost : public DevToolsAgentHostClient {
@@ -2345,7 +2343,7 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
 // there is no FallbackSurface for the RenderWidgetHostView to display during
 // the navigation. (https://crbug.com/1258363)
 TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
-       TwoTabsOneNavigatesAndCrashesThenNavigatesBack) {
+       DISABLED_TwoTabsOneNavigatesAndCrashesThenNavigatesBack) {
   const GURL kUrl1("http://www.google.com/");
   const GURL kUrl2("http://webkit.org/");
 
@@ -2377,8 +2375,10 @@ TEST_P(RenderFrameHostManagerTestWithSiteIsolation,
   EXPECT_NE(initial_view, post_nav_view);
   EXPECT_FALSE(
       post_nav_view->clear_fallback_surface_for_commit_pending_called());
-  EXPECT_TRUE(post_nav_view->take_fallback_content_from_called());
-  post_nav_view->ClearFallbackSurfaceCalled();
+  // Since this is a cross-origin navigation, paint holding would not be
+  // enabled without user activation.
+  EXPECT_FALSE(post_nav_view->take_fallback_content_from_called());
+
   EXPECT_TRUE(contents1->GetPrimaryMainFrame()->IsRenderFrameLive());
   EXPECT_TRUE(contents2->GetPrimaryMainFrame()->IsRenderFrameLive());
   EXPECT_NE(contents1->GetSiteInstance(), contents2->GetSiteInstance());

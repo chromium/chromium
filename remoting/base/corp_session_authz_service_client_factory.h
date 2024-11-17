@@ -10,6 +10,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "remoting/base/authentication_method.h"
 #include "remoting/base/session_authz_service_client_factory.h"
 
 namespace network {
@@ -37,6 +38,7 @@ class CorpSessionAuthzServiceClientFactory
       const CorpSessionAuthzServiceClientFactory&) = delete;
 
   std::unique_ptr<SessionAuthzServiceClient> Create() override;
+  AuthenticationMethod method() override;
 
  private:
   ~CorpSessionAuthzServiceClientFactory() override;

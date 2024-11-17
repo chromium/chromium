@@ -212,7 +212,7 @@ class MockFrameSinkManager : public FrameSinkVideoCapturerManager {
 
 class MockConsumer : public mojom::FrameSinkVideoConsumer {
  public:
-  MockConsumer() {}
+  MockConsumer() = default;
 
   MOCK_METHOD0(OnFrameCapturedMock, void());
   MOCK_METHOD1(OnNewSubCaptureTargetVersion, void(uint32_t));
@@ -763,13 +763,6 @@ class TestGmbVideoFramePoolContext
       : context_provider_(TestContextProvider::Create()) {}
   ~TestGmbVideoFramePoolContext() override = default;
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage) override {
-    return std::make_unique<media::FakeGpuMemoryBuffer>(size, format);
-  }
-
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       const SharedImageFormat& si_format,
@@ -801,16 +794,11 @@ class TestGmbVideoFramePoolContext
         gpu::kNullSurfaceHandle, buffer_usage);
   }
 
-  void DestroySharedImage(const gpu::SyncToken& sync_token,
-                          scoped_refptr<gpu::ClientSharedImage> shared_image,
-                          const bool is_mappable_si_enabled) override {
+  void DestroySharedImage(
+      const gpu::SyncToken& sync_token,
+      scoped_refptr<gpu::ClientSharedImage> shared_image) override {
     CHECK(shared_image);
-    if (is_mappable_si_enabled) {
-      shared_image->UpdateDestructionSyncToken(sync_token);
-    } else {
-      context_provider_->SharedImageInterface()->DestroySharedImage(
-          sync_token, std::move(shared_image));
-    }
+    shared_image->UpdateDestructionSyncToken(sync_token);
   }
 
  private:

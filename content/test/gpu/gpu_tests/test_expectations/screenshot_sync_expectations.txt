@@ -112,14 +112,6 @@ crbug.com/330130724 [ fuchsia fuchsia-board-qemu-x64 ] ScreenshotSync_SWRasterWi
 
 # Gardener 2024-04-30 - timeouts
 crbug.com/324934210 [ mac angle-metal intel-0x3e9b passthrough asan ] ScreenshotSync_SWRasterWithCanvas [ Failure ]
-crbug.com/324934210 [ mac angle-metal apple-angle-metal-renderer:-apple-m1 passthrough ] ScreenshotSync_GPURasterWithCanvas [ RetryOnFailure ]
-crbug.com/324934210 [ mac angle-metal apple-angle-metal-renderer:-apple-m1 passthrough ] ScreenshotSync_GPURasterWithDivs [ RetryOnFailure ]
-crbug.com/324934210 [ mac angle-metal apple-angle-metal-renderer:-apple-m1 passthrough ] ScreenshotSync_SWRasterWithCanvas [ RetryOnFailure ]
-crbug.com/324934210 [ mac angle-metal apple-angle-metal-renderer:-apple-m1 passthrough ] ScreenshotSync_SWRasterWithDivs [ RetryOnFailure ]
-crbug.com/324934210 [ mac angle-opengl apple-apple-m1 graphite-disabled passthrough ] ScreenshotSync_GPURasterWithCanvas [ RetryOnFailure ]
-crbug.com/324934210 [ mac angle-opengl apple-apple-m1 graphite-disabled passthrough ] ScreenshotSync_GPURasterWithDivs [ RetryOnFailure ]
-crbug.com/324934210 [ mac angle-opengl apple-apple-m1 graphite-disabled passthrough ] ScreenshotSync_SWRasterWithCanvas [ RetryOnFailure ]
-crbug.com/324934210 [ mac angle-opengl apple-apple-m1 graphite-disabled passthrough ] ScreenshotSync_SWRasterWithDivs [ RetryOnFailure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

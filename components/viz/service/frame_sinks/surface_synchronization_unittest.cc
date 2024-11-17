@@ -52,14 +52,15 @@ CompositorFrame MakeCompositorFrame(
     std::vector<SurfaceId> activation_dependencies,
     std::vector<SurfaceRange> referenced_surfaces,
     std::vector<TransferableResource> resource_list,
-    const FrameDeadline& deadline = FrameDeadline()) {
+    const FrameDeadline& deadline = FrameDeadline(),
+    bool is_handling_interaction = true) {
   return CompositorFrameBuilder()
       .AddDefaultRenderPass()
       .SetActivationDependencies(std::move(activation_dependencies))
       .SetBeginFrameSourceId(kBeginFrameSourceId)
       .SetReferencedSurfaces(std::move(referenced_surfaces))
       .SetTransferableResources(std::move(resource_list))
-      .SetIsHandlingInteraction(true)
+      .SetIsHandlingInteraction(is_handling_interaction)
       .SetDeadline(deadline)
       .Build();
 }
@@ -73,7 +74,7 @@ class SurfaceSynchronizationTest : public testing::Test {
   SurfaceSynchronizationTest& operator=(const SurfaceSynchronizationTest&) =
       delete;
 
-  ~SurfaceSynchronizationTest() override {}
+  ~SurfaceSynchronizationTest() override = default;
 
   CompositorFrameSinkSupport& display_support() {
     return *supports_[kDisplayFrameSink];
@@ -3472,11 +3473,7 @@ TEST_P(SurfaceSynchronizationTestMayAlwaysAckOnActivation,
   // We start tracking that surfaces will damage the display. This will lead to
   // frames not being immediately ACKed.
   surface_observer().set_damage_display(true);
-  if (ShouldAckOnSurfaceActivationWhenInteractive()) {
-    EXPECT_CALL(support_client_, DidReceiveCompositorFrameAck(_)).Times(1);
-  } else {
-    EXPECT_CALL(support_client_, DidReceiveCompositorFrameAck(_)).Times(0);
-  }
+  EXPECT_CALL(support_client_, DidReceiveCompositorFrameAck(_)).Times(0);
   // Submit second frame at the same LocalSurfaceId.
   child_support1().SubmitCompositorFrame(
       child_id.local_surface_id(),
@@ -3489,11 +3486,7 @@ TEST_P(SurfaceSynchronizationTestMayAlwaysAckOnActivation,
   EXPECT_FALSE(child_surface1()->HasPendingFrame());
   EXPECT_THAT(child_surface1()->activation_dependencies(), IsEmpty());
   // There should also be an un-acked frame, which was just submitted.
-  if (ShouldAckOnSurfaceActivationWhenInteractive()) {
-    EXPECT_FALSE(child_surface1()->HasUnackedActiveFrame());
-  } else {
-    EXPECT_TRUE(child_surface1()->HasUnackedActiveFrame());
-  }
+  EXPECT_TRUE(child_surface1()->HasUnackedActiveFrame());
 
   // Submit new |parent_surface|, with ActivationDependencies that are newer
   // than the currently unACKed |child_surface|.
@@ -3524,6 +3517,40 @@ TEST_P(SurfaceSynchronizationTestMayAlwaysAckOnActivation,
   EXPECT_THAT(child_surface1()->activation_dependencies(), IsEmpty());
   EXPECT_TRUE(parent_surface()->HasActiveFrame());
   EXPECT_FALSE(parent_surface()->HasPendingFrame());
+}
+
+// Tests that when we are handling interactions, that we only activate the
+// non-interactive clients.
+TEST_P(SurfaceSynchronizationTestMayAlwaysAckOnActivation,
+       OnlyEarlyAckNonInteractiveSurface) {
+  TestSurfaceIdAllocator parent_id(kParentFrameSink);
+  TestSurfaceIdAllocator child_id(kChildFrameSink1);
+
+  // We start tracking that surfaces will damage the display. This will lead to
+  // frames not being immediately ACKed.
+  surface_observer().set_damage_display(true);
+
+  // The interactive Surface should never have immediate Ack
+  EXPECT_CALL(support_client_, DidReceiveCompositorFrameAck(_)).Times(0);
+  parent_support().SubmitCompositorFrame(
+      parent_id.local_surface_id(),
+      MakeCompositorFrame({child_id}, {SurfaceRange(std::nullopt, child_id)},
+                          std::vector<TransferableResource>(), FrameDeadline(),
+                          /*is_handling_interaction=*/true));
+  testing::Mock::VerifyAndClearExpectations(&support_client_);
+
+  // The non-interactive Surface can be immediately Acked
+  if (ShouldAckOnSurfaceActivationWhenInteractive()) {
+    EXPECT_CALL(support_client_, DidReceiveCompositorFrameAck(_)).Times(1);
+  } else {
+    EXPECT_CALL(support_client_, DidReceiveCompositorFrameAck(_)).Times(0);
+  }
+  child_support1().SubmitCompositorFrame(
+      child_id.local_surface_id(),
+      MakeCompositorFrame(empty_surface_ids(), empty_surface_ranges(),
+                          std::vector<TransferableResource>(), FrameDeadline(),
+                          /*is_handling_interaction=*/false));
+  testing::Mock::VerifyAndClearExpectations(&support_client_);
 }
 
 INSTANTIATE_TEST_SUITE_P(

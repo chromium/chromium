@@ -1,0 +1,55 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/collaboration/internal/messaging/empty_messaging_backend_service.h"
+
+#include <optional>
+#include <vector>
+
+#include "components/collaboration/public/messaging/message.h"
+#include "components/saved_tab_groups/public/types.h"
+
+namespace collaboration::messaging {
+
+EmptyMessagingBackendService::EmptyMessagingBackendService() = default;
+
+EmptyMessagingBackendService::~EmptyMessagingBackendService() = default;
+
+void EmptyMessagingBackendService::SetInstantMessageDelegate(
+    InstantMessageDelegate* instant_message_delegate) {}
+
+void EmptyMessagingBackendService::AddPersistentMessageObserver(
+    PersistentMessageObserver* observer) {}
+
+void EmptyMessagingBackendService::RemovePersistentMessageObserver(
+    PersistentMessageObserver* observer) {}
+
+bool EmptyMessagingBackendService::IsInitialized() {
+  return false;
+}
+
+std::vector<PersistentMessage> EmptyMessagingBackendService::GetMessagesForTab(
+    tab_groups::EitherTabID tab_id,
+    std::optional<PersistentNotificationType> type) {
+  return std::vector<PersistentMessage>();
+}
+
+std::vector<PersistentMessage>
+EmptyMessagingBackendService::GetMessagesForGroup(
+    tab_groups::EitherGroupID group_id,
+    std::optional<PersistentNotificationType> type) {
+  return std::vector<PersistentMessage>();
+}
+
+std::vector<PersistentMessage> EmptyMessagingBackendService::GetMessages(
+    std::optional<PersistentNotificationType> type) {
+  return std::vector<PersistentMessage>();
+}
+
+std::vector<ActivityLogItem> EmptyMessagingBackendService::GetActivityLog(
+    const ActivityLogQueryParams& params) {
+  return std::vector<ActivityLogItem>();
+}
+
+}  // namespace collaboration::messaging

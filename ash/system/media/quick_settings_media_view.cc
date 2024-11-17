@@ -224,6 +224,10 @@ int QuickSettingsMediaView::GetMediaViewHeight() const {
              : global_media_controls::kCrOSMediaItemUpdatedUISize.height();
 }
 
+base::WeakPtr<QuickSettingsMediaView> QuickSettingsMediaView::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 BEGIN_METADATA(QuickSettingsMediaView)
 END_METADATA
 

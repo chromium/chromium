@@ -1023,8 +1023,7 @@ void ShellSurfaceBase::RebindRootSurface(Surface* root_surface,
   if (window) {
     // Int properties.
     for (auto* const key :
-         {aura::client::kSkipImeProcessing, chromeos::kFrameRestoreLookKey,
-          ash::kFrameRateThrottleKey}) {
+         {aura::client::kSkipImeProcessing, chromeos::kFrameRestoreLookKey}) {
       if (base::Contains(window->GetAllPropertyKeys(), key)) {
         OnWindowPropertyChanged(window, key,
                                 /*old_value(unused)=*/0);
@@ -1608,9 +1607,6 @@ void ShellSurfaceBase::OnWindowPropertyChanged(aura::Window* window,
         window->GetProperty(chromeos::kFrameRestoreLookKey));
   } else if (key == aura::client::kWindowWorkspaceKey) {
     root_surface()->OnDeskChanged(GetWindowDeskStateChanged(window));
-  } else if (key == ash::kFrameRateThrottleKey) {
-    root_surface()->ThrottleFrameRate(
-        window->GetProperty(ash::kFrameRateThrottleKey));
   }
 }
 

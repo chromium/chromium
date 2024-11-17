@@ -5,6 +5,7 @@
 #include "ash/metrics/post_login_metrics_recorder.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/metrics/deferred_metrics_reporter.h"
@@ -16,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/scoped_observation.h"
+#include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/metrics/login_event_recorder.h"
@@ -51,6 +53,8 @@ constexpr char kAshLoginSessionRestoreShelfLoginAnimationEnd[] =
 constexpr char kUmaMetricsPrefixAutoRestore[] = "Ash.LoginPerf.AutoRestore.";
 constexpr char kUmaMetricsPrefixManualRestore[] =
     "Ash.LoginPerf.ManualRestore.";
+
+constexpr char kLoginPerfHistogramNameSuffix[] = ".TotalDuration";
 
 std::string GetDeviceModeSuffix() {
   return display::Screen::GetScreen()->InTabletMode() ? "TabletMode"
@@ -196,6 +200,7 @@ void PostLoginMetricsRecorder::OnSessionRestoreDataLoaded(
   if (restore_automatically) {
     uma_login_perf_.SetPrefix(kUmaMetricsPrefixAutoRestore);
   } else {
+    post_login_ui_status_ = PostLoginUIStatus::kNotShown;
     uma_login_perf_.SetPrefix(kUmaMetricsPrefixManualRestore);
   }
   uma_login_perf_.MarkReadyToReport();
@@ -324,6 +329,12 @@ void PostLoginMetricsRecorder::OnArcUiReady(base::TimeTicks ts) {
 
 void PostLoginMetricsRecorder::OnShelfIconsLoadedAndSessionRestoreDone(
     base::TimeTicks ts) {
+  if (!timestamp_origin_.has_value()) {
+    // Tests could get here when they don't simulate login.
+    CHECK_IS_TEST();
+    return;
+  }
+
   // TODO(b/328339021, b/323098858): This is the mitigation against a bug that
   // animation observation has race condition. Can be in a part of better
   // architecture.
@@ -353,6 +364,25 @@ void PostLoginMetricsRecorder::OnShelfAnimationAndCompositorAnimationDone(
   base::UmaHistogramCustomTimes(
       "BootTime.Login3", ts - timestamp_origin_.value(),
       base::Milliseconds(100), base::Seconds(100), 100);
+
+  if (post_login_ui_status_ && total_duration) {
+    std::string_view ui_flow_str;
+    switch (*post_login_ui_status_) {
+      case PostLoginUIStatus::kNotShown:
+        ui_flow_str = "NoLoginUI";
+        break;
+      case PostLoginUIStatus::kShownWithBirchBar:
+        ui_flow_str = "GlanceablesShown";
+        break;
+      case PostLoginUIStatus::kShownWithoutBirchBar:
+        ui_flow_str = "GlanceablesHidden";
+        break;
+    }
+
+    uma_login_perf_.ReportOrSchedule(std::make_unique<MetricTime>(
+        base::StrCat({ui_flow_str, kLoginPerfHistogramNameSuffix}),
+        *total_duration));
+  }
 
   LoginEventRecorder::Get()->RunScheduledWriteLoginTimes();
 }

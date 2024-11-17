@@ -1,0 +1,101 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+assert(is_android)
+
+source_set("fast_checkout") {
+  sources = [
+    "fast_checkout_accessibility_service.h",
+    "fast_checkout_accessibility_service_impl.h",
+    "fast_checkout_capabilities_fetcher.h",
+    "fast_checkout_capabilities_fetcher_factory.h",
+    "fast_checkout_capabilities_fetcher_impl.h",
+    "fast_checkout_client_impl.h",
+    "fast_checkout_delegate_impl.h",
+    "fast_checkout_personal_data_helper.h",
+    "fast_checkout_personal_data_helper_impl.h",
+    "fast_checkout_tab_helper.h",
+    "fast_checkout_trigger_validator.h",
+    "fast_checkout_trigger_validator_impl.h",
+  ]
+
+  public_deps = [
+    ":fast_checkout_funnels_proto",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/fast_checkout",
+    "//components/autofill/android:keyboard_suppressor",
+    "//components/autofill/content/browser",
+    "//content/public/browser",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "fast_checkout_accessibility_service_impl.cc",
+    "fast_checkout_capabilities_fetcher_factory.cc",
+    "fast_checkout_capabilities_fetcher_impl.cc",
+    "fast_checkout_client_impl.cc",
+    "fast_checkout_delegate_impl.cc",
+    "fast_checkout_personal_data_helper_impl.cc",
+    "fast_checkout_tab_helper.cc",
+    "fast_checkout_trigger_validator_impl.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":fast_checkout",
+    "//chrome/browser/autofill",
+    "//chrome/browser/ui",
+    "//components/commerce/core:heuristics_provider",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+}
+
+proto_library("fast_checkout_funnels_proto") {
+  sources = [ "fast_checkout_funnels.proto" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "mock_fast_checkout_capabilities_fetcher.cc",
+    "mock_fast_checkout_capabilities_fetcher.h",
+  ]
+  public_deps = [
+    ":fast_checkout",
+    "//components/autofill/core/common",
+    "//testing/gmock",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "fast_checkout_capabilities_fetcher_impl_unittest.cc",
+    "fast_checkout_client_impl_unittest.cc",
+    "fast_checkout_delegate_impl_unittest.cc",
+    "fast_checkout_personal_data_helper_impl_unittest.cc",
+    "fast_checkout_trigger_validator_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":fast_checkout",
+    ":test_support",
+    "//base/test:test_support",
+    "//chrome/browser/autofill",
+    "//chrome/browser/ui/autofill",
+    "//chrome/test:test_support",
+    "//components/autofill/content/browser:test_support",
+    "//components/autofill/core/browser:test_support",
+    "//components/unified_consent:unified_consent",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}

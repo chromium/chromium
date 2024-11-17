@@ -78,7 +78,7 @@ void MediaRouterCastUiForTest::StopCasting(const std::string& sink_name) {
     ClickOnButton(sink_view->stop_button_for_test());
     return;
   }
-  NOTREACHED_IN_MIGRATION() << "No stop button found for sink " << sink_name;
+  NOTREACHED() << "No stop button found for sink " << sink_name;
 }
 
 MediaRoute::Id MediaRouterCastUiForTest::GetRouteIdForSink(
@@ -101,8 +101,7 @@ std::string MediaRouterCastUiForTest::GetIssueTextForSink(
   CastDialogSinkButton* sink_button =
       static_cast<CastDialogSinkButton*>(GetSinkButton(sink_name));
   if (!sink_button->sink().issue) {
-    NOTREACHED_IN_MIGRATION() << "Issue not found for sink " << sink_name;
-    return "";
+    NOTREACHED() << "Issue not found for sink " << sink_name;
   }
   return sink_button->sink().issue->info().title;
 }
@@ -172,8 +171,7 @@ void MediaRouterCastUiForTest::OnDialogModelUpdated(
               case WatchType::kNone:
               case WatchType::kDialogShown:
               case WatchType::kDialogHidden:
-                NOTREACHED_IN_MIGRATION() << "Invalid WatchType";
-                return false;
+                NOTREACHED() << "Invalid WatchType";
             }
           })) {
     std::move(*watch_callback_).Run();
@@ -242,8 +240,7 @@ CastDialogSinkView* MediaRouterCastUiForTest::GetSinkView(
                                  return sink_view->sink().friendly_name;
                                });
   if (it == sink_views.end()) {
-    NOTREACHED_IN_MIGRATION() << "Sink view not found for sink: " << sink_name;
-    return nullptr;
+    NOTREACHED() << "Sink view not found for sink: " << sink_name;
   } else {
     return it->get();
   }

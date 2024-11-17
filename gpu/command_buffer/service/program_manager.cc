@@ -50,8 +50,7 @@ int ShaderTypeToIndex(GLenum shader_type) {
     case GL_FRAGMENT_SHADER:
       return 1;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -151,8 +150,7 @@ ShaderVariableBaseType InputOutputTypeToBaseType(bool is_input, GLenum type) {
       DCHECK(is_input);
       return SHADER_VARIABLE_FLOAT;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return SHADER_VARIABLE_UNDEFINED_TYPE;
+      NOTREACHED();
   }
 }
 
@@ -201,8 +199,7 @@ GLsizeiptr VertexShaderOutputBaseTypeToSize(GLenum type) {
     case GL_FLOAT_MAT4x3:
       return 48;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -378,8 +375,7 @@ Program::UniformInfo::UniformInfo(const std::string& client_name,
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Unhandled UniformInfo type " << type;
-      break;
+      NOTREACHED() << "Unhandled UniformInfo type " << type;
   }
   DCHECK_LT(0, size);
   DCHECK(is_array || size == 1);
@@ -2367,7 +2363,7 @@ void ProgramManager::RemoveProgramInfoIfUnused(
         return;
       }
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

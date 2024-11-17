@@ -214,6 +214,15 @@ const TestParam kTestParams[] = {
         .intercepted_account_management_state =
             ManagedAccountState::kSupervisedAccount,
     },
+    // Profile switch for supervised user with explicit browser signin.
+    {
+        .test_suffix = "SupervisedUserProfileSwitchExplicitBrowserSignin",
+        .interception_type =
+            WebSigninInterceptor::SigninInterceptionType::kProfileSwitch,
+        .intercepted_account_management_state =
+            ManagedAccountState::kSupervisedAccount,
+        .with_explicit_browser_signin_design = true,
+    },
 
     // Chrome Signin bubble: no accounts in chrome, and signing triggers this
     // intercept bubble.
@@ -256,7 +265,7 @@ class DiceWebSigninInterceptionBubblePixelTest
       enabled_features.push_back(switches::kExplicitBrowserSigninUIOnDesktop);
     }
     enabled_features.push_back(
-        supervised_user::kCustomWebSignInInterceptForSupervisedUsersUi);
+        supervised_user::kCustomProfileStringsForSupervisedUsers);
     enabled_features.push_back(supervised_user::kShowKiteForSupervisedUsers);
     scoped_feature_list_.InitWithFeatures(enabled_features,
                                           /*disabled_features=*/{});

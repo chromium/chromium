@@ -167,8 +167,7 @@ PromiseAppPtr AppPublisher::MakePromiseApp(const PackageId& package_id) {
 
 void AppPublisher::PublishPromiseApp(PromiseAppPtr delta) {
   if (!proxy_) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   proxy_->OnPromiseApp(std::move(delta));
 }
@@ -177,8 +176,7 @@ void AppPublisher::PublishPromiseApp(PromiseAppPtr delta) {
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
 void AppPublisher::Publish(AppPtr app) {
   if (!proxy_) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   std::vector<AppPtr> apps;
@@ -191,8 +189,7 @@ void AppPublisher::Publish(std::vector<AppPtr> apps,
                            AppType app_type,
                            bool should_notify_initialized) {
   if (!proxy_) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   proxy_->OnApps(std::move(apps), app_type, should_notify_initialized);
 }

@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_wayland_server.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -326,7 +327,7 @@ void AwaitBorealisStartup::RunInternal(BorealisContext* context) {
   // It is safe to BindOnce() the context* since it is guaranteed to be alive
   // until this task calls Complete().
   subscription_ =
-      guest_os::GuestOsSessionTracker::GetForProfile(context->profile())
+      guest_os::GuestOsSessionTrackerFactory::GetForProfile(context->profile())
           ->RunOnceContainerStarted(
               id, base::BindOnce(&AwaitBorealisStartup::OnContainerStarted,
                                  weak_factory_.GetWeakPtr(), context));

@@ -73,7 +73,6 @@ public class ImprovedBookmarkRowProperties {
     // Not if the row is currently selected, but whether another row in the same list is selected.
     public static final WritableBooleanPropertyKey SELECTION_ACTIVE =
             new WritableBooleanPropertyKey();
-    public static final WritableBooleanPropertyKey DRAG_ENABLED = new WritableBooleanPropertyKey();
     public static final WritableBooleanPropertyKey EDITABLE = new WritableBooleanPropertyKey();
 
     public static final WritableObjectPropertyKey<Runnable> ROW_CLICK_LISTENER =
@@ -122,7 +121,6 @@ public class ImprovedBookmarkRowProperties {
         POPUP_LISTENER,
         SELECTED,
         SELECTION_ACTIVE,
-        DRAG_ENABLED,
         EDITABLE,
         ROW_CLICK_LISTENER,
         ROW_LONG_CLICK_LISTENER,

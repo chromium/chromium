@@ -25,6 +25,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/view.h"
 
 namespace ash {
 
@@ -166,7 +167,7 @@ const CloseButton* GetCloseDeskButtonForMiniView(
   // visible, so we need to use the `close_all_button`
   const DeskActionView* desk_action_view = mini_view->desk_action_view();
   auto* combine_desks_button = desk_action_view->combine_desks_button();
-  return (combine_desks_button && combine_desks_button->GetVisible())
+  return IsLazyInitViewVisible(combine_desks_button)
              ? combine_desks_button
              : desk_action_view->close_all_button();
 }
@@ -214,6 +215,10 @@ void SimulateWaitForCloseAll() {
   DesksController::Get()->MaybeCommitPendingDeskRemoval();
   WaitForMilliseconds(
       DesksTestApi::GetCloseAllWindowCloseTimeout().InMilliseconds());
+}
+
+bool IsLazyInitViewVisible(const views::View* view) {
+  return view && view->GetVisible();
 }
 
 }  // namespace ash

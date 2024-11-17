@@ -11,6 +11,7 @@
 #include "ash/public/cpp/in_session_auth_dialog_controller.h"
 #include "ash/shell.h"
 #include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/user_auth_config.h"
@@ -24,7 +25,8 @@
 namespace ash::settings {
 
 OSSettingsLockScreenBrowserTestBase::OSSettingsLockScreenBrowserTestBase(
-    ash::AshAuthFactor password_type) {
+    ash::AshAuthFactor auth_factor_type)
+    : auth_factor_type_(auth_factor_type) {
   // We configure FakeUserDataAuthClient (via `cryptohome_`) here and not
   // later because the global PinBackend object reads whether or not
   // cryptohome PINs are supported on startup. If we set up
@@ -32,11 +34,16 @@ OSSettingsLockScreenBrowserTestBase::OSSettingsLockScreenBrowserTestBase(
   // determine whether PINs are supported before we have configured
   // FakeUserDataAuthClient.
   test::UserAuthConfig config;
-  if (password_type == ash::AshAuthFactor::kGaiaPassword) {
+  if (auth_factor_type_ == ash::AshAuthFactor::kGaiaPassword) {
     config.WithOnlinePassword(kPassword);
-  } else {
-    CHECK_EQ(password_type, ash::AshAuthFactor::kLocalPassword);
+  } else if (auth_factor_type_ == ash::AshAuthFactor::kLocalPassword) {
+    CHECK_EQ(auth_factor_type_, ash::AshAuthFactor::kLocalPassword);
     config.WithLocalPassword(kPassword);
+  } else if (auth_factor_type_ == ash::AshAuthFactor::kCryptohomePin) {
+    CHECK_EQ(auth_factor_type_, ash::AshAuthFactor::kCryptohomePin);
+    config.WithCryptohomePin(kPin, kPinStubSalt);
+  } else {
+    NOTREACHED();
   }
 
   logged_in_user_mixin_ = std::make_unique<LoggedInUserMixin>(
@@ -85,6 +92,20 @@ OSSettingsLockScreenBrowserTestBase::OpenLockScreenSettings() {
       lock_screen_settings_remote_.get());
 }
 
+void OSSettingsLockScreenBrowserTestBase::Authenticate() {
+  switch (auth_factor_type_) {
+    case ash::AshAuthFactor::kCryptohomePin:
+      AuthenticateUsingPin();
+      break;
+    case ash::AshAuthFactor::kGaiaPassword:
+    case ash::AshAuthFactor::kLocalPassword:
+      AuthenticateUsingPassword();
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
 void OSSettingsLockScreenBrowserTestBase::AuthenticateUsingPassword() {
   auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
       Shell::Get()->active_session_auth_controller());
@@ -95,11 +116,20 @@ void OSSettingsLockScreenBrowserTestBase::AuthenticateUsingPassword() {
   base::RunLoop().RunUntilIdle();
 }
 
+void OSSettingsLockScreenBrowserTestBase::AuthenticateUsingPin() {
+  auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
+      Shell::Get()->active_session_auth_controller());
+
+  ActiveSessionAuthControllerImpl::TestApi(controller).SubmitPin(kPin);
+
+  base::RunLoop().RunUntilIdle();
+}
+
 mojom::LockScreenSettingsAsyncWaiter
 OSSettingsLockScreenBrowserTestBase::OpenLockScreenSettingsAndAuthenticate() {
   if (ash::features::IsUseAuthPanelInSessionEnabled()) {
     OpenLockScreenSettings();
-    AuthenticateUsingPassword();
+    Authenticate();
   } else {
     OpenLockScreenSettings().Authenticate(kPassword);
   }
@@ -131,7 +161,7 @@ mojom::LockScreenSettingsAsyncWaiter OSSettingsLockScreenBrowserTestBase::
 
     base::RunLoop().RunUntilIdle();
 
-    AuthenticateUsingPassword();
+    Authenticate();
 
     lock_screen_settings_remote_ =
         mojo::Remote(os_settings_driver.AssertOnLockScreenSettings());

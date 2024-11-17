@@ -92,6 +92,7 @@
         <message key="name.invalidPattern" value="Method names should start with a lower case letter (e.g. getWidth())"/>
     </module>
     <module name="ParameterName">
+      <property name="format" value="^(unused_)?[a-z][a-zA-Z0-9]*$"/>
       <property name="severity" value="error"/>
     </module>
     <module name="LocalFinalVariableName">
@@ -108,7 +109,12 @@
       <!-- https://source.android.com/docs/setup/contribute/code-style#treat-acronyms-as-words -->
       <property name="severity" value="warning"/>
       <property name="allowedAbbreviationLength" value="0"/>
-      <property name="allowedAbbreviations" value="GURL"/>
+      <!-- Fixing/changing GURL is not happening. X/Y/Z variable names
+      implicitly have meaning without any trailing lower case letters, and often
+      must be in the middle of an associated method name, especially when the
+      name needs ForTesting suffix. J allows JUnit which we want to exactly
+      match and is defined externally. -->
+      <property name="allowedAbbreviations" value="GURL,X,Y,Z,J"/>
     </module>
     <module name="FallThrough">
       <property name="severity" value="error"/>
@@ -242,8 +248,8 @@
     <module name="RegexpSinglelineJava">
       <property name="id" value="RemoveObserverMethodReference"/>
       <property name="severity" value="warning"/>
-      <property name="format" value="removeObserver\([a-zA-Z]+::"/>
-      <property name="message"  value="Each method reference creates a new instance. The instance given to addObserver needs to be remembered and supplied to removeObserver."/>
+      <property name="format" value="remove[A-Z][a-zA-Z]*\([a-zA-Z]+::"/>
+      <property name="message"  value="Each method reference creates a new instance. The specific object given to the addObserver-like-method needs to be remembered and given to the removeObserver-like-method."/>
     </module>
     <module name="RegexpSinglelineJava">
       <property name="id" value="MockitoInitMocks"/>
@@ -251,11 +257,24 @@
       <property name="format" value="MockitoAnnotations.initMocks"/>
       <property name="message" value="Prefer to use MockitoJUnit.Rule for consistency unless timing of when exactly mocks are initialized is required."/>
     </module>
+    <module name="RegexpSinglelineJava">
+      <property name="id" value="SetDecorFitsSystemWindowsCheck"/>
+      <property name="severity" value="warning"/>
+      <property name="format" value="[Ww]indow(Compat)?.setDecorFitsSystemWindows"/>
+      <property name="ignoreComments" value="true"/>
+      <property name="message" value="setDecorFitsSystemWindows will change the window flag at activity level, and requires coordination. Use org.chromium.browser_ui.edge_to_edge.EdgeToEdgeStateProvider if possible. (crbug.com/41492646)"/>
+    </module>
   </module>
   <module name="RegexpMultiline">
     <property name="id" value="VisibleForTestingForTesting"/>
     <property name="severity" value="warning"/>
     <property name="format" value="@VisibleForTesting.*\n.*ForTests?(ing)\("/>
     <property name="message" value="There is no need to add @VisibleForTesting to test-only methods (those with &quot;ForTesting&quot; suffix)."/>
+  </module>
+  <module name="RegexpMultiline">
+    <property name="id" value="ContextGetString"/>
+    <property name="severity" value="warning"/>
+    <property name="format" value="ontext\(?\)?\s*\.getResources\(\)\s*\.getString\("/>
+    <property name="message" value="Use Context.getString() rather than Context.getResources().getString()."/>
   </module>
 </module>

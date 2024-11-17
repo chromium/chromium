@@ -43,6 +43,9 @@ import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /** Collection of utility methods that operates on Tab. */
 public class TabUtils {
@@ -340,7 +343,7 @@ public class TabUtils {
                         (float) newHeight / drawable.getIntrinsicHeight());
         m.setScale(scale, scale);
 
-        /**
+        /*
          * Bitmap is top-left aligned by default. We want to translate the image to be horizontally
          * center-aligned. |destination width - scaled width| is the width that is out of view
          * bounds. We need to translate the drawable (to left) by half of this distance.
@@ -367,5 +370,14 @@ public class TabUtils {
         final int thumbnailMargin =
                 (int) context.getResources().getDimension(R.dimen.tab_grid_card_thumbnail_margin);
         return 2 * (tabGridCardMargin + thumbnailMargin);
+    }
+
+    /** Returns the list of Tab IDs for the given Tabs. */
+    public static List<Integer> getTabIds(Collection<Tab> tabs) {
+        List<Integer> ret = new ArrayList<>(tabs.size());
+        for (Tab tab : tabs) {
+            ret.add(tab.getId());
+        }
+        return ret;
     }
 }

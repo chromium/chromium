@@ -79,7 +79,7 @@ DemographicMetricsProvider::DemographicMetricsProvider(
   DCHECK(profile_client_);
 }
 
-DemographicMetricsProvider::~DemographicMetricsProvider() {}
+DemographicMetricsProvider::~DemographicMetricsProvider() = default;
 
 std::optional<UserDemographics>
 DemographicMetricsProvider::ProvideSyncedUserNoisedBirthYearAndGender() {
@@ -158,8 +158,11 @@ void DemographicMetricsProvider::LogUserDemographicsStatusInHistogram(
     case MetricsLogUploader::MetricServiceType::STRUCTURED_METRICS:
       // Structured Metrics doesn't have demographic metrics.
       return;
+    case MetricsLogUploader::MetricServiceType::DWA:
+      // DWA doesn't have demographic metrics.
+      return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace metrics

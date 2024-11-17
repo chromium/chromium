@@ -4,11 +4,7 @@
 
 #include "sandbox/policy/fuchsia/sandbox_policy_fuchsia.h"
 
-#include <lib/fdio/spawn.h>
-#include <stdio.h>
-#include <zircon/processargs.h>
-#include <zircon/syscalls/policy.h>
-
+#include <fidl/fuchsia.scheduler/cpp/fidl.h>
 #include <fuchsia/buildinfo/cpp/fidl.h>
 #include <fuchsia/camera3/cpp/fidl.h>
 #include <fuchsia/fonts/cpp/fidl.h>
@@ -24,8 +20,12 @@
 #include <fuchsia/tracing/perfetto/cpp/fidl.h>
 #include <fuchsia/tracing/provider/cpp/fidl.h>
 #include <fuchsia/ui/composition/cpp/fidl.h>
+#include <lib/fdio/spawn.h>
 #include <lib/sys/cpp/component_context.h>
 #include <lib/sys/cpp/service_directory.h>
+#include <stdio.h>
+#include <zircon/processargs.h>
+#include <zircon/syscalls/policy.h>
 
 #include <memory>
 #include <utility>
@@ -101,6 +101,7 @@ constexpr SandboxConfig kGpuConfig = {
         // TODO(crbug.com/42050308): Use the fuchsia.scheduler API instead.
         fuchsia::media::ProfileProvider::Name_,
         fuchsia::mediacodec::CodecFactory::Name_,
+        fidl::DiscoverableProtocolName<fuchsia_scheduler::RoleManager>,
         fuchsia::sysmem::Allocator::Name_,
         fuchsia::sysmem2::Allocator::Name_,
         "fuchsia.vulkan.loader.Loader",
@@ -128,6 +129,7 @@ constexpr SandboxConfig kRendererConfig = {
         // TODO(crbug.com/42050308): Use the fuchsia.scheduler API instead.
         fuchsia::media::ProfileProvider::Name_,
         fuchsia::memorypressure::Provider::Name_,
+        fidl::DiscoverableProtocolName<fuchsia_scheduler::RoleManager>,
         fuchsia::sysmem::Allocator::Name_,
         fuchsia::sysmem2::Allocator::Name_,
         fuchsia::ui::composition::Allocator::Name_,

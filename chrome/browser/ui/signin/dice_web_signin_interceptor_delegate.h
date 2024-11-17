@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_DELEGATE_H_
 #define CHROME_BROWSER_UI_SIGNIN_DICE_WEB_SIGNIN_INTERCEPTOR_DELEGATE_H_
 
-#include "chrome/browser/signin/web_signin_interceptor.h"
-
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
+#include "chrome/browser/signin/web_signin_interceptor.h"
 
 namespace content {
 class WebContents;
@@ -34,8 +34,9 @@ class DiceWebSigninInterceptorDelegate : public WebSigninInterceptor::Delegate {
   ShowOidcInterceptionDialog(
       content::WebContents* web_contents,
       const BubbleParameters& bubble_parameters,
-      signin::SigninChoiceWithConfirmationCallback callback,
-      base::OnceClosure dialog_closed_closure) override;
+      signin::SigninChoiceWithConfirmAndRetryCallback callback,
+      base::OnceClosure dialog_closed_closure,
+      base::RepeatingClosure retry_callback = base::DoNothing()) override;
   void ShowFirstRunExperienceInNewProfile(
       Browser* browser,
       const CoreAccountId& account_id,

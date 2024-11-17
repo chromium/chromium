@@ -74,17 +74,6 @@ bool ElementIntersectionObserverData::NeedsOcclusionTracking() const {
   return false;
 }
 
-void ElementIntersectionObserverData::InvalidateCachedRects() {
-  if (!RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-    for (auto& observer : observers_) {
-      observer->InvalidateCachedRects();
-    }
-  }
-  for (auto& entry : observations_) {
-    entry.value->InvalidateCachedRects();
-  }
-}
-
 void ElementIntersectionObserverData::Trace(Visitor* visitor) const {
   visitor->Trace(observations_);
   visitor->Trace(observers_);

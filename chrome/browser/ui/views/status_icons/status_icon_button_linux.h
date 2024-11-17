@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/linux/status_icon_linux.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
@@ -35,9 +36,10 @@ class StatusIconButtonLinux : public ui::StatusIconLinux,
   void OnSetDelegate() override;
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;

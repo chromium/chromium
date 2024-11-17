@@ -10,6 +10,8 @@ static_library("contact_center_insights") {
   sources = [
     "contact_center_insights_extension_manager.cc",
     "contact_center_insights_extension_manager.h",
+    "contact_center_insights_extension_manager_factory.cc",
+    "contact_center_insights_extension_manager_factory.h",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -62,32 +64,6 @@ if (is_chromeos_ash) {
       "//chrome/browser/profiles:profile",
       "//chrome/common",
       "//chrome/common:constants",
-      "//content/test:test_support",
-      "//extensions/browser",
-      "//testing/gtest",
-    ]
-  }
-}
-
-if (is_chromeos_lacros) {
-  source_set("lacros_chrome_browsertests") {
-    testonly = true
-
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-    sources =
-        [ "contact_center_insights_extension_manager_lacros_browsertest.cc" ]
-
-    deps = [
-      "//chrome/browser:browser_process",
-      "//chrome/browser/profiles:profile",
-      "//chrome/common",
-      "//chrome/common:constants",
-      "//chrome/test:test_support",
-      "//chromeos/startup",
-      "//components/policy/core/common",
-      "//components/prefs",
-      "//content/public/browser",
       "//content/test:test_support",
       "//extensions/browser",
       "//testing/gtest",

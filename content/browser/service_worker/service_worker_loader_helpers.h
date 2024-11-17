@@ -6,7 +6,9 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_LOADER_HELPERS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/common/content_export.h"
@@ -77,7 +79,7 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
 CONTENT_EXPORT bool IsPathRestrictionSatisfied(
     const GURL& scope,
     const GURL& script_url,
-    const std::string* service_worker_allowed_header_value,
+    const std::optional<std::string_view>& service_worker_allowed_header_value,
     std::string* error_message);
 
 // Same as above IsPathRestrictionSatisfied, but without considering

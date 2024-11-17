@@ -23,8 +23,7 @@ DriverEntry::State ToDriverEntryState(InMemoryDownload::State state) {
     case InMemoryDownload::State::COMPLETE:
       return DriverEntry::State::COMPLETE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return DriverEntry::State::UNKNOWN;
+  NOTREACHED();
 }
 
 // Helper function to create download driver entry based on in memory download.
@@ -186,8 +185,7 @@ void InMemoryDownloadDriver::OnDownloadComplete(InMemoryDownload* download) {
     case InMemoryDownload::State::INITIAL:
     case InMemoryDownload::State::RETRIEVE_BLOB_CONTEXT:
     case InMemoryDownload::State::IN_PROGRESS:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 }
 

@@ -109,14 +109,6 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
     return;
   }
 
-  if (app_restore::IsLacrosWindow(window)) {
-    observed_windows_.AddObservation(window);
-
-    if (lacros_save_handler_)
-      lacros_save_handler_->OnWindowInitialized(window);
-    return;
-  }
-
   const int32_t window_id = window->GetProperty(app_restore::kWindowIdKey);
   if (!SessionID::IsValidValue(window_id)) {
     return;
@@ -193,12 +185,6 @@ void FullRestoreSaveHandler::OnWindowDestroyed(aura::Window* window) {
   if (app_restore::IsArcWindow(window)) {
     if (arc_save_handler_)
       arc_save_handler_->OnWindowDestroyed(window);
-    return;
-  }
-
-  if (app_restore::IsLacrosWindow(window)) {
-    if (lacros_save_handler_)
-      lacros_save_handler_->OnWindowDestroyed(window);
     return;
   }
 
@@ -330,12 +316,6 @@ void FullRestoreSaveHandler::SaveWindowInfo(
   if (app_restore::IsArcWindow(window_info.window)) {
     if (arc_save_handler_)
       arc_save_handler_->ModifyWindowInfo(window_info);
-    return;
-  }
-
-  if (app_restore::IsLacrosWindow(window_info.window)) {
-    if (lacros_save_handler_)
-      lacros_save_handler_->ModifyWindowInfo(window_info);
     return;
   }
 
@@ -544,9 +524,6 @@ std::string FullRestoreSaveHandler::GetAppId(aura::Window* window) {
   if (app_restore::IsArcWindow(window)) {
     return arc_save_handler_ ? arc_save_handler_->GetAppId(window)
                              : std::string();
-  } else if (app_restore::IsLacrosWindow(window)) {
-    return lacros_save_handler_ ? lacros_save_handler_->GetAppId(window)
-                                : std::string();
   } else {
     // For other window types (browser, PWAs, SWAs, Chrome apps), get its
     // corresponding app id from |window_id_to_app_restore_info_|.

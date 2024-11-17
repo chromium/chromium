@@ -16,50 +16,45 @@ import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactiv
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TrustedWebActivityDisclosureController;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TrustedWebActivityOpenTimeRecorder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.components.embedder_support.util.Origin;
 
 import javax.inject.Inject;
 
 /**
- * Coordinator for the Trusted Web Activity component.
- * Add methods here if other components need to communicate with Trusted Web Activity component.
+ * Coordinator for the Trusted Web Activity component. Add methods here if other components need to
+ * communicate with Trusted Web Activity component.
  */
 @ActivityScope
 public class TrustedWebActivityCoordinator {
     private final SharedActivityCoordinator mSharedActivityCoordinator;
     private final CurrentPageVerifier mCurrentPageVerifier;
-    private final InstalledWebappRegistrar mInstalledWebappRegistrar;
     private final ClientPackageNameProvider mClientPackageNameProvider;
 
     @Inject
     public TrustedWebActivityCoordinator(
             SharedActivityCoordinator sharedActivityCoordinator,
-            TrustedWebActivityDisclosureController disclosureController,
-            DisclosureUiPicker disclosureUiPicker,
-            TrustedWebActivityOpenTimeRecorder openTimeRecorder,
+            TrustedWebActivityDisclosureController unused_disclosureController,
+            DisclosureUiPicker unused_disclosureUiPicker,
+            TrustedWebActivityOpenTimeRecorder unused_openTimeRecorder,
             CurrentPageVerifier currentPageVerifier,
             Lazy<TwaSplashController> splashController,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            TrustedWebActivityUmaRecorder umaRecorder,
-            InstalledWebappRegistrar installedWebappRegistrar,
-            ClientPackageNameProvider clientPackageNameProvider) {
-        // We don't need to do anything with most of the classes above, we just need to resolve them
+            BaseCustomTabActivity activity) {
+        // We don't need to do anything with the unused_ classes above, we just need to resolve them
         // so they start working.
         mSharedActivityCoordinator = sharedActivityCoordinator;
         mCurrentPageVerifier = currentPageVerifier;
-        mInstalledWebappRegistrar = installedWebappRegistrar;
-        mClientPackageNameProvider = clientPackageNameProvider;
+        mClientPackageNameProvider = activity.getClientPackageNameProvider();
 
-        initSplashScreen(splashController, intentDataProvider, umaRecorder);
+        initSplashScreen(splashController, activity.getIntentDataProvider());
 
         currentPageVerifier.addVerificationObserver(this::onVerificationUpdate);
     }
 
     private void initSplashScreen(
             Lazy<TwaSplashController> splashController,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            TrustedWebActivityUmaRecorder umaRecorder) {
+            BrowserServicesIntentDataProvider intentDataProvider) {
         boolean showSplashScreen =
                 TwaSplashController.intentIsForTwaWithSplashScreen(intentDataProvider.getIntent());
 
@@ -67,7 +62,7 @@ public class TrustedWebActivityCoordinator {
             splashController.get();
         }
 
-        umaRecorder.recordSplashScreenUsage(showSplashScreen);
+        TrustedWebActivityUmaRecorder.recordSplashScreenUsage(showSplashScreen);
     }
 
     private void onVerificationUpdate() {
@@ -76,8 +71,11 @@ public class TrustedWebActivityCoordinator {
         // The state will start off as null and progress to PENDING then SUCCESS/FAILURE. We only
         // want to register the clients once the state reaches SUCCESS.
         if (state != null && state.status == VerificationStatus.SUCCESS) {
-            mInstalledWebappRegistrar.registerClient(
-                    mClientPackageNameProvider.get(), Origin.create(state.scope), state.url);
+            InstalledWebappRegistrar.getInstance()
+                    .registerClient(
+                            mClientPackageNameProvider.get(),
+                            Origin.create(state.scope),
+                            state.url);
         }
     }
 

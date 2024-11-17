@@ -171,6 +171,18 @@ class ClientSideDetectionHost
                            VibrationApiTriggersPreclassificationCheck);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostVibrateTest,
                            VibrationApiClassificationTriggersCSPPPing);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostTest,
+      TestPreClassificationCheckMatchHighConfidenceAllowlist);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostTest,
+      TestPreClassificationCheckDoesNotMatchHighConfidenceAllowlist);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionHostTest,
+      TestPreClassificationCheckDoesNotMatchHighConfidenceAllowlistDueToDisabledFeature);
+  FRIEND_TEST_ALL_PREFIXES(
+      ClientSideDetectionRTLookupResponseForceRequestTest,
+      AsyncCheckTrackerTriggersClassificationRequestOnAllowlistMatch);
 
   // Helper function to create preclassification check once requirements are
   // met.
@@ -255,6 +267,9 @@ class ClientSideDetectionHost
     account_signed_in_callback_ = account_signed_in_callback;
   }
 
+  void set_high_confidence_allowlist_acceptance_rate_for_testing(
+      float acceptance_rate);
+
   // Check if CSD can get an access Token. Should be enabled only for ESB
   // users, who are signed in and not in incognito mode.
   bool CanGetAccessToken();
@@ -322,6 +337,10 @@ class ClientSideDetectionHost
   // A boolean indicates whether TRIGGER_MODELS request is skipped. This is
   // used to decide whether async check is allowed to trigger FORCE_REQUEST.
   bool trigger_models_request_skipped_ = false;
+
+  // Modified through tests only. Initial value is set to the const
+  // kProbabilityForAcceptingHCAllowlistTrigger.
+  float probability_for_accepting_hc_allowlist_trigger_;
 
   base::ScopedObservation<AsyncCheckTracker, AsyncCheckTracker::Observer>
       async_check_observation_{this};

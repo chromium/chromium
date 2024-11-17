@@ -22,6 +22,7 @@
 #include "chromeos/ash/components/osauth/impl/auth_surface_registry.h"
 #include "chromeos/ash/components/osauth/public/auth_engine_api.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -69,7 +70,9 @@ enum class PinType {
 class OSSettingsPinSetupTest : public OSSettingsLockScreenBrowserTestBase,
                                public testing::WithParamInterface<PinType> {
  public:
-  OSSettingsPinSetupTest() : pin_type_(GetParam()) {
+  OSSettingsPinSetupTest()
+      : OSSettingsLockScreenBrowserTestBase(ash::AshAuthFactor::kGaiaPassword),
+        pin_type_(GetParam()) {
     switch (pin_type_) {
       case PinType::kPrefs:
         cryptohome_->set_supports_low_entropy_credentials(false);
@@ -507,7 +510,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AutosubmitWithLockedPin) {
   auto go_to_lock_screen_settings_and_authenticate = [&]() {
     if (ash::features::IsUseAuthPanelInSessionEnabled()) {
       OpenLockScreenSettings();
-      AuthenticateUsingPassword();
+      Authenticate();
       return mojom::LockScreenSettingsAsyncWaiter{
           lock_screen_settings_remote_.get()};
     } else {
@@ -536,7 +539,7 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AutosubmitWithLockedPin) {
 
     base::RunLoop().RunUntilIdle();
 
-    AuthenticateUsingPassword();
+    Authenticate();
 
     base::RunLoop().RunUntilIdle();
 
@@ -550,6 +553,34 @@ IN_PROC_BROWSER_TEST_P(OSSettingsPinSetupTest, AutosubmitWithLockedPin) {
     EXPECT_EQ(false, GetPinAutoSubmitState());
     pin_settings.AssertPinAutosubmitEnabled(false);
   }
+}
+
+// Tests PIN-only related settings in the ChromeOS settings page.
+class OSSettingsPinOnlySetupTest : public OSSettingsLockScreenBrowserTestBase {
+ public:
+  OSSettingsPinOnlySetupTest()
+      : OSSettingsLockScreenBrowserTestBase(
+            ash::AshAuthFactor::kCryptohomePin) {
+    cryptohome_->set_supports_low_entropy_credentials(true);
+  }
+
+  mojom::PinSettingsApiAsyncWaiter GoToPinSettings(
+      mojom::LockScreenSettingsAsyncWaiter& lock_screen_settings) {
+    pin_settings_remote_ = mojo::Remote(lock_screen_settings.GoToPinSettings());
+    return mojom::PinSettingsApiAsyncWaiter(pin_settings_remote_.get());
+  }
+
+ private:
+  mojo::Remote<mojom::PinSettingsApi> pin_settings_remote_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+};
+
+// Tests that the PIN control is disabled when PIN is the only factor.
+IN_PROC_BROWSER_TEST_F(OSSettingsPinOnlySetupTest, PinOnlyRemobalDisabled) {
+  auto lock_screen_settings = OpenLockScreenSettingsAndAuthenticate();
+  auto pin_settings = GoToPinSettings(lock_screen_settings);
+
+  pin_settings.AssertMoreButtonDisabled(true);
 }
 
 }  // namespace ash::settings

@@ -48,7 +48,7 @@ class VisitDatabaseTest : public PlatformTest,
                           public VisitDatabase,
                           public VisitedLinkDatabase {
  public:
-  VisitDatabaseTest() {}
+  VisitDatabaseTest() = default;
 
  private:
   // Test setup.

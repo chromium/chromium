@@ -68,7 +68,6 @@
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/platform_window/platform_window.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #include "url/gurl.h"
 
 namespace {
@@ -646,8 +645,7 @@ void BrowserServiceLacros::NewWindowWithProfile(
       incognito = true;
       break;
     case policy::IncognitoModeAvailability::kNumTypes:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   display::ScopedDisplayForNewWindows scoped(target_display_id);
@@ -742,13 +740,6 @@ void BrowserServiceLacros::NewWindowForDetachingTabWithProfile(
   }
 
   new_browser->window()->Show();
-
-  auto* native_window = new_browser->window()->GetNativeWindow();
-  auto* dwth_platform =
-      views::DesktopWindowTreeHostLacros::From(native_window->GetHost());
-  auto* platform_window = dwth_platform->platform_window();
-  std::move(callback).Run(crosapi::mojom::CreationResult::kSuccess,
-                          platform_window->GetWindowUniqueId());
 }
 
 void BrowserServiceLacros::LaunchOrNewTabWithProfile(

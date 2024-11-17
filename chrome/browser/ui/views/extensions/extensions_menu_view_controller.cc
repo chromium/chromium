@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_menu_item_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_main_page_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_site_permissions_page_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/permissions_manager.h"
@@ -40,6 +41,41 @@ namespace {
 
 using PermissionsManager = extensions::PermissionsManager;
 using SitePermissionsHelper = extensions::SitePermissionsHelper;
+
+// Returns the state for the main page in the menu.
+enum class MainPageState {
+  // Site is restricted to all extensions.
+  kRestrictedSite,
+  // Site is restricted all non-enterprise extensions by policy.
+  kPolicyBlockedSite,
+  // User blocked all extensions access to the site.
+  kUserBlockedSite,
+  // User can customize each extension's access to the site.
+  kUserCustomizedSite,
+};
+
+MainPageState GetMainPageState(Profile& profile,
+                               const ToolbarActionsModel& toolbar_model,
+                               content::WebContents& web_contents) {
+  const GURL& url = web_contents.GetLastCommittedURL();
+  if (toolbar_model.IsRestrictedUrl(url)) {
+    return MainPageState::kRestrictedSite;
+  }
+
+  if (toolbar_model.IsPolicyBlockedHost(url)) {
+    return MainPageState::kPolicyBlockedSite;
+  }
+
+  PermissionsManager::UserSiteSetting site_setting =
+      PermissionsManager::Get(&profile)->GetUserSiteSetting(
+          web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin());
+  if (site_setting ==
+      PermissionsManager::UserSiteSetting::kBlockAllExtensions) {
+    return MainPageState::kUserBlockedSite;
+  }
+
+  return MainPageState::kUserCustomizedSite;
+}
 
 // Returns the extension for `extension_id`.
 const extensions::Extension* GetExtension(
@@ -99,23 +135,6 @@ bool HasEnterpriseForcedAccess(const extensions::Extension& extension,
       extensions::ExtensionSystem::Get(&profile)->management_policy();
   return !policy->UserMayModifySettings(&extension, nullptr) ||
          policy->MustRemainInstalled(&extension, nullptr);
-}
-
-// Returns whether the site setting toggle for `web_contents` should be visible.
-bool IsSiteSettingsToggleVisible(const ToolbarActionsModel& toolbar_model,
-                                 content::WebContents* web_contents) {
-  const GURL& url = web_contents->GetLastCommittedURL();
-  return !toolbar_model.IsRestrictedUrl(url) &&
-         !toolbar_model.IsPolicyBlockedHost(url);
-}
-
-// Returns whether the site settings toggle for `web_contents` should be on.
-bool IsSiteSettingsToggleOn(Browser* browser,
-                            content::WebContents* web_contents) {
-  auto origin = web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
-  return PermissionsManager::Get(browser->profile())
-             ->GetUserSiteSetting(origin) ==
-         PermissionsManager::UserSiteSetting::kCustomizeByExtension;
 }
 
 // Returns whether the site permissions button should be visible.
@@ -258,41 +277,6 @@ ExtensionMenuItemView::SiteAccessToggleState GetSiteAccessToggleState(
              : ExtensionMenuItemView::SiteAccessToggleState::kOff;
 }
 
-// Returns the state for the message section in the menu.
-ExtensionsMenuMainPageView::MessageSectionState GetMessageSectionState(
-    Profile& profile,
-    const ToolbarActionsModel& toolbar_model,
-    content::WebContents& web_contents) {
-  const GURL& url = web_contents.GetLastCommittedURL();
-  if (toolbar_model.IsRestrictedUrl(url)) {
-    return ExtensionsMenuMainPageView::MessageSectionState::kRestrictedAccess;
-  }
-
-  if (toolbar_model.IsPolicyBlockedHost(url)) {
-    return ExtensionsMenuMainPageView::MessageSectionState::
-        kPolicyBlockedAccess;
-  }
-
-  PermissionsManager::UserSiteSetting site_setting =
-      PermissionsManager::Get(&profile)->GetUserSiteSetting(
-          web_contents.GetPrimaryMainFrame()->GetLastCommittedOrigin());
-  bool reload_required =
-      extensions::TabHelper::FromWebContents(&web_contents)->IsReloadRequired();
-
-  if (site_setting ==
-      PermissionsManager::UserSiteSetting::kBlockAllExtensions) {
-    return reload_required ? ExtensionsMenuMainPageView::MessageSectionState::
-                                 kUserBlockedAccessReload
-                           : ExtensionsMenuMainPageView::MessageSectionState::
-                                 kUserBlockedAccess;
-  }
-
-  return reload_required ? ExtensionsMenuMainPageView::MessageSectionState::
-                               kUserCustomizedAccessReload
-                         : ExtensionsMenuMainPageView::MessageSectionState::
-                               kUserCustomizedAccess;
-}
-
 void LogSiteAccessUpdate(PermissionsManager::UserSiteAccess site_access) {
   switch (site_access) {
     case PermissionsManager::UserSiteAccess::kOnClick:
@@ -308,8 +292,7 @@ void LogSiteAccessUpdate(PermissionsManager::UserSiteAccess site_access) {
           base::UserMetricsAction("Extensions.Menu.OnAllSitesSelected"));
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown site access";
-      break;
+      NOTREACHED() << "Unknown site access";
   }
 }
 
@@ -487,14 +470,14 @@ void ExtensionsMenuViewController::OnAllowExtensionClicked(
     return;
   }
 
+  // Accepting a site access request grants always access to the site.
+  extensions::SitePermissionsHelper(browser_->profile())
+      .UpdateSiteAccess(
+          *GetExtension(browser_, extension_id), web_contents,
+          extensions::PermissionsManager::UserSiteAccess::kOnSite);
+
   base::RecordAction(base::UserMetricsAction(
       "Extensions.Toolbar.ExtensionActivatedFromAllowingRequestAccessInMenu"));
-  action_runner->GrantTabPermissions({GetExtension(browser_, extension_id)});
-  // TODO(crbug.com/40912394): Granting tab permission but not accepting the
-  // reload page means we grant tab permissions but the action is not executed.
-  // This causes a mismatch between the request access button in the toolbar,
-  // and the request access section in the menu when the extension is granted
-  // tab permission by one item but the action is not run.
 }
 
 void ExtensionsMenuViewController::OnDismissExtensionClicked(
@@ -591,40 +574,67 @@ void ExtensionsMenuViewController::UpdateMainPage(
     ExtensionsMenuMainPageView* main_page,
     content::WebContents* web_contents) {
   CHECK(web_contents);
-
-  // Update site settings.
-  std::u16string current_site = GetCurrentHost(web_contents);
-  bool is_site_settings_toggle_visible =
-      IsSiteSettingsToggleVisible(*toolbar_model_, web_contents);
-  bool is_site_settings_toggle_on =
-      IsSiteSettingsToggleOn(browser_, web_contents);
-  main_page->UpdateSiteSettings(current_site, is_site_settings_toggle_visible,
-                                is_site_settings_toggle_on);
-
-  // Update message section.
-  ExtensionsMenuMainPageView::MessageSectionState message_section_state =
-      GetMessageSectionState(*browser_->profile(), *toolbar_model_,
-                             *web_contents);
-  bool has_enterprise_extensions = false;
-  // Only kUserBlockedAccess or kPolicyBlockedAccess states care whether there
-  // are any extensions installed by enterprise.
-  if (message_section_state ==
-          ExtensionsMenuMainPageView::MessageSectionState::kUserBlockedAccess ||
-      message_section_state == ExtensionsMenuMainPageView::MessageSectionState::
-                                   kPolicyBlockedAccess) {
-    has_enterprise_extensions = std::any_of(
+  auto has_enterprise_extensions = [&]() {
+    return std::any_of(
         toolbar_model_->action_ids().begin(),
         toolbar_model_->action_ids().end(),
         [this](const ToolbarActionsModel::ActionId extension_id) {
           auto* extension = GetExtension(browser_, extension_id);
           return HasEnterpriseForcedAccess(*extension, *browser_->profile());
         });
-  }
-  main_page->UpdateMessageSection(message_section_state,
-                                  has_enterprise_extensions);
+  };
+  auto reload_required = [web_contents]() {
+    return extensions::TabHelper::FromWebContents(web_contents)
+        ->IsReloadRequired();
+  };
 
-  if (message_section_state ==
-      ExtensionsMenuMainPageView::MessageSectionState::kUserCustomizedAccess) {
+  std::u16string current_site = GetCurrentHost(web_contents);
+  int site_settings_label_id;
+  bool is_site_settings_toggle_visible = false;
+  bool is_site_settings_toggle_on = false;
+  bool is_site_settings_tooltip_visible = false;
+  bool is_reload_required = false;
+  bool can_have_requests = false;
+
+  MainPageState state =
+      GetMainPageState(*browser_->profile(), *toolbar_model_, *web_contents);
+  switch (state) {
+    case MainPageState::kRestrictedSite:
+      site_settings_label_id =
+          IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL;
+      is_site_settings_toggle_visible = false;
+      is_site_settings_toggle_on = false;
+      break;
+    case MainPageState::kPolicyBlockedSite:
+      site_settings_label_id =
+          IDS_EXTENSIONS_MENU_SITE_SETTINGS_NOT_ALLOWED_LABEL;
+      is_site_settings_toggle_visible = false;
+      is_site_settings_toggle_on = false;
+      is_site_settings_tooltip_visible = has_enterprise_extensions();
+      break;
+    case MainPageState::kUserBlockedSite:
+      site_settings_label_id = IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL;
+      is_site_settings_toggle_visible = true;
+      is_site_settings_toggle_on = false;
+      is_site_settings_tooltip_visible = has_enterprise_extensions();
+      is_reload_required = reload_required();
+      break;
+    case MainPageState::kUserCustomizedSite:
+      site_settings_label_id = IDS_EXTENSIONS_MENU_SITE_SETTINGS_LABEL;
+      is_site_settings_toggle_visible = true;
+      is_site_settings_toggle_on = true;
+      is_reload_required = reload_required();
+      can_have_requests = true;
+      break;
+  }
+
+  main_page->UpdateSiteSettings(
+      current_site, site_settings_label_id, is_site_settings_tooltip_visible,
+      is_site_settings_toggle_visible, is_site_settings_toggle_on);
+
+  if (is_reload_required) {
+    main_page->ShowReloadSection();
+  } else if (can_have_requests) {
     int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
     auto* permissions_manager = PermissionsManager::Get(browser_->profile());
     int index = 0;
@@ -642,6 +652,7 @@ void ExtensionsMenuViewController::UpdateMainPage(
         main_page->RemoveExtensionRequestingAccess(extension_id);
       }
     }
+    main_page->MaybeShowRequestsSection();
   }
 
   // Update menu items.
@@ -836,6 +847,7 @@ void ExtensionsMenuViewController::OnSiteAccessRequestDismissedByUser(
   }
 
   main_page->RemoveExtensionRequestingAccess(extension_id);
+  main_page->MaybeShowRequestsSection();
 }
 
 void ExtensionsMenuViewController::OnSiteAccessRequestAdded(
@@ -850,12 +862,9 @@ void ExtensionsMenuViewController::OnSiteAccessRequestAdded(
     return;
   }
 
-  // Site access requests only affect the 'user customized access' section in
-  // the main page.
+  // Site access requests only affect the main page.
   ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
-  if (!main_page || main_page->GetMessageSectionState() !=
-                        ExtensionsMenuMainPageView::MessageSectionState::
-                            kUserCustomizedAccess) {
+  if (!main_page) {
     return;
   }
 
@@ -868,6 +877,7 @@ void ExtensionsMenuViewController::OnSiteAccessRequestAdded(
     int index = 0;
     AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
                                          GetActiveWebContents());
+    main_page->MaybeShowRequestsSection();
   }
 }
 
@@ -883,12 +893,9 @@ void ExtensionsMenuViewController::OnSiteAccessRequestUpdated(
     return;
   }
 
-  // Site access requests only affect the 'user customized access' section in
-  // the main page.
+  // Site access requests only affect the main page.
   ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
-  if (!main_page || main_page->GetMessageSectionState() !=
-                        ExtensionsMenuMainPageView::MessageSectionState::
-                            kUserCustomizedAccess) {
+  if (!main_page) {
     return;
   }
 
@@ -901,11 +908,13 @@ void ExtensionsMenuViewController::OnSiteAccessRequestUpdated(
     int index = 0;
     AddOrUpdateExtensionRequestingAccess(main_page, extension_id, index,
                                          GetActiveWebContents());
+    main_page->MaybeShowRequestsSection();
     return;
   }
 
   // Otherwise, remove the request if existent.
   main_page->RemoveExtensionRequestingAccess(extension_id);
+  main_page->MaybeShowRequestsSection();
 }
 
 void ExtensionsMenuViewController::OnSiteAccessRequestRemoved(
@@ -920,16 +929,14 @@ void ExtensionsMenuViewController::OnSiteAccessRequestRemoved(
     return;
   }
 
-  // Site access requests only affect the 'user customized access' section in
-  // the main page.
+  // Site access requests only affect the main page.
   ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
-  if (!main_page || main_page->GetMessageSectionState() !=
-                        ExtensionsMenuMainPageView::MessageSectionState::
-                            kUserCustomizedAccess) {
+  if (!main_page) {
     return;
   }
 
   main_page->RemoveExtensionRequestingAccess(extension_id);
+  main_page->MaybeShowRequestsSection();
 }
 
 void ExtensionsMenuViewController::OnSiteAccessRequestsCleared(int tab_id) {
@@ -945,13 +952,12 @@ void ExtensionsMenuViewController::OnSiteAccessRequestsCleared(int tab_id) {
   // Site access requests only affect the 'user customized access' section in
   // the main page.
   ExtensionsMenuMainPageView* main_page = GetMainPage(current_page_.view());
-  if (!main_page || main_page->GetMessageSectionState() !=
-                        ExtensionsMenuMainPageView::MessageSectionState::
-                            kUserCustomizedAccess) {
+  if (!main_page) {
     return;
   }
 
   main_page->ClearExtensionsRequestingAccess();
+  main_page->MaybeShowRequestsSection();
 }
 
 ExtensionsMenuMainPageView*

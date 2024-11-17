@@ -1,11 +1,40 @@
 {
-  "short_name": "Google Password Manager",
-  "name": "Google Password Manager",
+  "short_name": "$i18n{passwordManagerTitle}",
+  "name": "$i18n{passwordManagerTitle}",
   "icons": [
     {
       "src": "chrome://password-manager/images/password_manager_pwa_icon.svg",
       "type": "image/svg+xml",
       "sizes": "any"
+    }
+  ],
+  "description": "$i18n{passwordManagerDescription}",
+  "lang": "$i18n{language}",
+  "categories": ["utilities"],
+  "screenshots": [
+    {
+      "src": "chrome://password-manager/images/password_manager_screenshot_passwords_1x.png",
+      "type": "image/png",
+      "sizes": "1018x573",
+      "form_factor": "wide"
+    },
+    {
+      "src": "chrome://password-manager/images/password_manager_screenshot_passwords_2x.png",
+      "type": "image/png",
+      "sizes": "2036x1145",
+      "form_factor": "wide"
+    },
+    {
+      "src": "chrome://password-manager/images/password_manager_screenshot_checkup_1x.png",
+      "type": "image/png",
+      "sizes": "1018x573",
+      "form_factor": "wide"
+    },
+    {
+      "src": "chrome://password-manager/images/password_manager_screenshot_checkup_2x.png",
+      "type": "image/png",
+      "sizes": "2036x1145",
+      "form_factor": "wide"
     }
   ],
   "start_url": "/?source=pwa",

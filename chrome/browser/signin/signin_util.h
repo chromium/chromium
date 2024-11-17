@@ -166,7 +166,7 @@ PrimaryAccountError SetPrimaryAccountWithInvalidToken(
 bool IsSigninPending(signin::IdentityManager* identity_manager);
 
 // Returns the current state of the primary account that is used in Chrome.
-SignedInState GetSignedInState(signin::IdentityManager* identity_manager);
+SignedInState GetSignedInState(const signin::IdentityManager* identity_manager);
 
 }  // namespace signin_util
 

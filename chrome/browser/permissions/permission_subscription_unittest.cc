@@ -80,7 +80,7 @@ class PermissionSubscriptionTest : public ChromeRenderViewHostTestHarness {
                      PermissionStatus status) {
     GetHostContentSettingsMap()->SetContentSettingDefaultScope(
         requesting_origin, embedding_origin,
-        permissions::PermissionUtil::PermissionTypeToContentSettingType(
+        permissions::PermissionUtil::PermissionTypeToContentSettingsType(
             permission),
         permissions::PermissionUtil::PermissionStatusToContentSetting(status));
   }

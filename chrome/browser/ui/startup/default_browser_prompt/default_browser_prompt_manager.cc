@@ -25,6 +25,7 @@
 #include "content/public/browser/web_contents.h"
 
 namespace {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 bool ShouldShowPrompts() {
   PrefService *local_state = g_browser_process->local_state();
 
@@ -53,6 +54,7 @@ bool ShouldShowPrompts() {
       std::pow(features::kRepromptDurationMultiplier.Get(), declined_count - 1);
   return (base::Time::Now() - last_declined_time) > reprompt_duration;
 }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 } // namespace
 
 // static
@@ -70,10 +72,8 @@ void DefaultBrowserPromptManager::RemoveObserver(Observer *observer) {
 void DefaultBrowserPromptManager::MaybeShowPrompt() {
   CHECK(base::FeatureList::IsEnabled(features::kDefaultBrowserPromptRefresh));
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED_IN_MIGRATION()
-      << "Unsupported platforms for showing default browser prompts.";
-#endif
-
+  NOTREACHED() << "Unsupported platforms for showing default browser prompts.";
+#else
   if (features::kShowDefaultBrowserAppMenuItem.Get()) {
     SetAppMenuItemVisibility(true);
   }
@@ -91,14 +91,13 @@ void DefaultBrowserPromptManager::MaybeShowPrompt() {
         std::make_unique<BrowserTabStripTracker>(this, this);
     browser_tab_strip_tracker_->Init();
   }
+#endif
 }
 
 void DefaultBrowserPromptManager::CloseAllPrompts(CloseReason close_reason) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED_IN_MIGRATION()
-      << "Unsupported platforms for showing default browser prompts.";
-#endif
-
+  NOTREACHED() << "Unsupported platforms for showing default browser prompts.";
+#else
   CloseAllInfoBars();
 
   SetShowAppMenuPromptVisibility(false);
@@ -106,6 +105,7 @@ void DefaultBrowserPromptManager::CloseAllPrompts(CloseReason close_reason) {
   if (close_reason == CloseReason::kAccept) {
     SetAppMenuItemVisibility(false);
   }
+#endif
 }
 
 DefaultBrowserPromptManager::DefaultBrowserPromptManager() = default;
@@ -117,7 +117,7 @@ void DefaultBrowserPromptManager::CreateInfoBarForWebContents(
   // Ensure that an infobar hasn't already been created.
   CHECK(!infobars_.contains(web_contents));
 
-  infobars::InfoBar *infobar = chrome::DefaultBrowserInfoBarDelegate::Create(
+  infobars::InfoBar* infobar = DefaultBrowserInfoBarDelegate::Create(
       infobars::ContentInfoBarManager::FromWebContents(web_contents), profile);
 
   if (infobar == nullptr) {

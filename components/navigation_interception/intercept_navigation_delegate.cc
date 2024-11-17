@@ -113,7 +113,7 @@ class RedirectURLLoader : public network::mojom::URLLoader {
       const net::HttpRequestHeaders& modified_headers,
       const net::HttpRequestHeaders& modified_cors_exempt_headers,
       const std::optional<GURL>& new_url) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void SetPriority(net::RequestPriority priority,
                    int intra_priority_value) override {}
@@ -251,7 +251,7 @@ void InterceptNavigationDelegate::HandleSubframeExternalProtocol(
       Java_InterceptNavigationDelegate_handleSubframeExternalProtocol(
           env, jdelegate, url::GURLAndroid::FromNativeGURL(env, escaped_url),
           page_transition, has_user_gesture,
-          initiating_origin ? initiating_origin->ToJavaObject() : nullptr);
+          initiating_origin ? initiating_origin->ToJavaObject(env) : nullptr);
   if (j_gurl.is_null())
     return;
   subframe_redirect_url_ =

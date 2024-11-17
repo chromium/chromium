@@ -288,7 +288,7 @@ UIStackView* CarouselStackView() {
   } else if (keyboardAction == previousTileAction) {
     nextHighlightedIndex = MAX(prevHighlightedIndex - 1, 0);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   allTiles[prevHighlightedIndex].selected = NO;
   allTiles[nextHighlightedIndex].selected = YES;

@@ -211,12 +211,10 @@ class LockDebugView::DebugDataDispatcherTransformer
     : public LoginDataDispatcher::Observer {
  public:
   DebugDataDispatcherTransformer(
-      mojom::TrayActionState initial_lock_screen_note_state,
       LoginDataDispatcher* dispatcher,
       const base::RepeatingClosure& on_users_received,
       LockDebugView* lock_debug_view)
       : root_dispatcher_(dispatcher),
-        lock_screen_note_state_(initial_lock_screen_note_state),
         on_users_received_(on_users_received),
         lock_debug_view_(lock_debug_view) {
     root_dispatcher_->AddObserver(this);
@@ -581,16 +579,6 @@ class LockDebugView::DebugDataDispatcherTransformer
     NotifyUsers(std::move(users));
   }
 
-  void ToggleLockScreenNoteButton() {
-    if (lock_screen_note_state_ == mojom::TrayActionState::kAvailable) {
-      lock_screen_note_state_ = mojom::TrayActionState::kNotAvailable;
-    } else {
-      lock_screen_note_state_ = mojom::TrayActionState::kAvailable;
-    }
-
-    debug_dispatcher_.SetLockScreenNoteState(lock_screen_note_state_);
-  }
-
   void AddKioskApp(ShelfWidget* shelf_widget) {
     kiosk_apps_.emplace_back(KioskAppMenuEntry::AppType::kChromeApp,
                              kDebugKioskAppAccountId, kDebugKioskAppId,
@@ -675,10 +663,6 @@ class LockDebugView::DebugDataDispatcherTransformer
       }
     }
   }
-  void OnLockScreenNoteStateChanged(mojom::TrayActionState state) override {
-    lock_screen_note_state_ = state;
-    debug_dispatcher_.SetLockScreenNoteState(state);
-  }
   void OnDetachableBasePairingStatusChanged(
       DetachableBasePairingStatus pairing_status) override {
     debug_dispatcher_.SetDetachableBasePairingStatus(pairing_status);
@@ -712,9 +696,6 @@ class LockDebugView::DebugDataDispatcherTransformer
 
   // Metadata for users that the UI is displaying.
   std::vector<UserMetadata> debug_users_;
-
-  // The current lock screen note action state.
-  mojom::TrayActionState lock_screen_note_state_;
 
   // List of kiosk apps loaded.
   std::vector<KioskAppMenuEntry> kiosk_apps_;
@@ -867,10 +848,8 @@ class LockDebugView::DebugLoginDetachableBaseModel
   std::map<AccountId, int> last_used_bases_;
 };
 
-LockDebugView::LockDebugView(mojom::TrayActionState initial_note_action_state,
-                             LockScreen::ScreenType screen_type)
+LockDebugView::LockDebugView(LockScreen::ScreenType screen_type)
     : debug_data_dispatcher_(std::make_unique<DebugDataDispatcherTransformer>(
-          initial_note_action_state,
           Shell::Get()->login_screen_controller()->data_dispatcher(),
           base::BindRepeating(
               &LockDebugView::UpdatePerUserActionContainerAndLayout,
@@ -884,7 +863,7 @@ LockDebugView::LockDebugView(mojom::TrayActionState initial_note_action_state,
       std::make_unique<DebugLoginDetachableBaseModel>();
   debug_detachable_base_model_ = debug_detachable_base_model.get();
 
-  lock_ = new LockContentsView(initial_note_action_state, screen_type,
+  lock_ = new LockContentsView(screen_type,
                                debug_data_dispatcher_->debug_dispatcher(),
                                std::move(debug_detachable_base_model));
   AddChildView(lock_.get());
@@ -938,11 +917,6 @@ LockDebugView::LockDebugView(mojom::TrayActionState initial_note_action_state,
               wallpaper_controller->UpdateWallpaperBlurForLockState(
                   !wallpaper_controller->IsWallpaperBlurredForLockState());
             }),
-            toggle_container);
-  AddButton("Toggle note action",
-            base::BindRepeating(
-                &DebugDataDispatcherTransformer::ToggleLockScreenNoteButton,
-                base::Unretained(debug_data_dispatcher_.get())),
             toggle_container);
   AddButton("Toggle caps lock", base::BindRepeating([]() {
               ImeControllerImpl* ime_controller =

@@ -28,4 +28,7 @@ int LensTranslateToggleMode();
 // Whether to enable the Lens web page load optimization.
 BASE_DECLARE_FEATURE(kLensWebPageLoadOptimizationEnabled);
 
+// Whether to use unary APIs with HTTP transport.
+BASE_DECLARE_FEATURE(kLensUnaryApisWithHttpTransportEnabled);
+
 #endif  // IOS_CHROME_BROWSER_UI_LENS_FEATURES_H_

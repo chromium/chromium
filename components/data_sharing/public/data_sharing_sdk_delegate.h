@@ -59,6 +59,10 @@ class DataSharingSDKDelegate {
       const data_sharing_pb::RemoveMemberParams& params,
       base::OnceCallback<void(const absl::Status&)> callback) = 0;
 
+  virtual void LeaveGroup(
+      const data_sharing_pb::LeaveGroupParams& params,
+      base::OnceCallback<void(const absl::Status&)> callback) = 0;
+
   virtual void DeleteGroup(
       const data_sharing_pb::DeleteGroupParams& params,
       base::OnceCallback<void(const absl::Status&)> callback) = 0;

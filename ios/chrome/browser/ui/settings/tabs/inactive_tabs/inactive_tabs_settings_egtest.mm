@@ -22,16 +22,7 @@
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.additional_args.push_back(
-      "--enable-features=" + std::string(kTabInactivityThreshold.name) + "<" +
-      std::string(kTabInactivityThreshold.name));
-  config.additional_args.push_back(
-      "--force-fieldtrials=" + std::string(kTabInactivityThreshold.name) +
-      "/Test");
-  config.additional_args.push_back(
-      "--force-fieldtrial-params=" + std::string(kTabInactivityThreshold.name) +
-      ".Test:" + std::string(kTabInactivityThresholdParameterName) + "/" +
-      kTabInactivityThresholdTwoWeeksParam);
+  config.features_enabled.push_back(kInactiveTabsIPadFeature);
   return config;
 }
 
@@ -46,20 +37,15 @@
       @"Inactive tabs preference is not set to default value.");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Reset preferences back to default values.
   [ChromeEarlGrey setIntegerValue:0
                 forLocalStatePref:prefs::kInactiveTabsTimeThreshold];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Ensures that the inactive tabs settings open.
 - (void)testOpenInactiveTabsSettings {
-  // This test is not relevant on iPads because there is no inactive tabs in
-  // iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
-  }
   [self openInactiveTabsSettings];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::
@@ -68,11 +54,6 @@
 }
 
 - (void)testInactiveTabsPreferenceChange {
-  // This test is not relevant on iPads because there is no inactive tabs in
-  // iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad.");
-  }
   [self openInactiveTabsSettings];
 
   NSArray<NSString*>* inactiveTabsThresholdOptions = @[

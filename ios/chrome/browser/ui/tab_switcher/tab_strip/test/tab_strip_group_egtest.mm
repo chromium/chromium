@@ -800,6 +800,13 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
+  // TODO(crbug.com/374897082): Flaky on iOS 17 simulators.
+#if TARGET_OS_SIMULATOR
+  if (@available(iOS 18, *)) {
+  } else {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 17 simulators.");
+  }
+#endif
 
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:GURL("chrome://version")];
@@ -834,6 +841,13 @@ void DragDropTabStripTabCellInTabStripView(NSString* src_cell_identifier,
   if ([ChromeEarlGrey isCompactWidth]) {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
+  // TODO(crbug.com/374897082): Flaky on iOS 17 simulators.
+#if TARGET_OS_SIMULATOR
+  if (@available(iOS 18, *)) {
+  } else {
+    EARL_GREY_TEST_DISABLED(@"Flaky on iOS 17 simulators.");
+  }
+#endif
 
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:GURL("chrome://version")];

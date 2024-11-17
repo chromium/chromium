@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normaal</translation>
 <translation id="1591562245178063882">Vandeesmaand</translation>
 <translation id="1637811476055996098">Kies lêers</translation>
-<translation id="1680090928918677457">Gebruik kamera</translation>
 <translation id="1729654308190250600">Voer 'n nie-leë e-posadres in.</translation>
 <translation id="1758486001363313524">Ander …</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Verkort hierdie teks na <ph name="MAX_CHARACTERS" /> karakters of minder (jy gebruik tans <ph name="CURRENT_LENGTH" /> karakters).</translation>
 <translation id="2247351761944213033">Week <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Snit <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Kamera en mikrofoon word toegelaat</translation>
 <translation id="2507943997699731163">Vul asseblief hierdie veld in.</translation>
 <translation id="2613802280814924224">Voer asseblief 'n geldige waarde in. Die naaste geldige waarde is <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Dien in</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Verleng asseblief hierdie teks na <ph name="MIN_CHARACTERS" /> karakters of meer (jy gebruik tans <ph name="CURRENT_LENGTH" /> karakters).</translation>
 <translation id="383465348367842624">'n Deel gevolg deur "<ph name="ATSIGN" />" moenie die simbool "<ph name="INVALIDCHARACTER" />" bevat nie.</translation>
 <translation id="3846214748874656680">Verlaat volskerm</translation>
-<translation id="4031179711345676612">Mikrofoon word toegelaat</translation>
 <translation id="4360991593054037559">Voer asseblief 'n geldige waarde in. Die twee naaste geldige waardes is <ph name="VALID_VALUE_LOW" /> en <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Besonderhede</translation>
-<translation id="4663373278480897665">Kamera word toegelaat</translation>
 <translation id="4664250907885839816">'n Deel wat '<ph name="ATSIGN" />' volg, behoort nie die simbool '<ph name="INVALIDCHARACTER" />' te bevat nie.</translation>
 <translation id="4718048029184481307">Speel tans prent-in-prent</translation>
-<translation id="4792862212177489858">Deel ligging</translation>
 <translation id="4812940957355064477">Voer asseblief 'n nommer in.</translation>
-<translation id="49269513399674318">Gebruik mikrofoon</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> gekies</translation>
 <translation id="4992066212339426712">Ontdemp</translation>
 <translation id="49969490063480558">Voer asseblief 'n deel in wat volg op "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" is onvolledig.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Kon nie inprop laai nie.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Verleng asseblief hierdie teks na <ph name="MIN_CHARACTERS" /> karakters of meer (jy gebruik tans 1 karakter).</translation>
-<translation id="7080893216867146095">Deel van ligging word toegelaat</translation>
 <translation id="709897737746224366">Kry passing vir versoekte formaat.</translation>
-<translation id="7134810312945846184">Gebruik mikrofoon en kamera</translation>
 <translation id="7263440858009898357">Kies asseblief 'n item uit die lys.</translation>
 <translation id="7364796246159120393">Kies lêer</translation>
 <translation id="739024184232394898">Ander …</translation>

@@ -115,9 +115,8 @@ constexpr kSpecificsFieldNumberToDataTypeMap specifics_field_number2data_type =
 void AddDefaultFieldValue(DataType type, sync_pb::EntitySpecifics* specifics) {
   switch (type) {
     case UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION()
-          << "No default field value for " << DataTypeToDebugString(type);
-      break;
+      NOTREACHED() << "No default field value for "
+                   << DataTypeToDebugString(type);
     case BOOKMARKS:
       specifics->mutable_bookmark();
       break;
@@ -572,7 +571,7 @@ DataType GetDataTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
     return PLUS_ADDRESS_SETTING;
   }
 
-  // This client version doesn't understand |specifics|.
+  // This client version doesn't understand `specifics`.
   DVLOG(1) << "Unknown datatype in sync proto.";
   return UNSPECIFIED;
 }

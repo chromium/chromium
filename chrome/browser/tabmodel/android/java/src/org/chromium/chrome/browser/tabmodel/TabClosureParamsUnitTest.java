@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.when;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 
@@ -25,11 +27,16 @@ import java.util.List;
 /** Unit tests for {@link TabClosureParams}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TabClosureParamsUnitTest {
+    private static final int ROOT_ID = 1589;
+    private static final Token TAB_GROUP_ID = new Token(4378L, 73489L);
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock Tab mTab1;
-    @Mock Tab mTab2;
-    @Mock Tab mTab3;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
+    @Mock private Tab mTab1;
+    @Mock private Tab mTab2;
+    @Mock private Tab mTab3;
+    @Mock private Runnable mUndoRunnable;
 
     @Test
     public void testCloseTabParams_Defaults() {
@@ -43,6 +50,8 @@ public class TabClosureParamsUnitTest {
         assertFalse("Should not hide tab groups", params.hideTabGroups);
         assertTrue("Should save to tab restore service", params.saveToTabRestoreService);
         assertEquals("Should be TabCloseType.SINGLE", TabCloseType.SINGLE, params.tabCloseType);
+        assertNull("Undo runnable should be null", params.undoRunnable);
+        assertFalse("Should not be a tab group", params.isTabGroup);
     }
 
     @Test
@@ -52,6 +61,7 @@ public class TabClosureParamsUnitTest {
                         .recommendedNextTab(mTab2)
                         .uponExit(true)
                         .allowUndo(false)
+                        .withUndoRunnable(mUndoRunnable)
                         .build();
 
         assertEquals("Tabs should be mTab1", List.of(mTab1), params.tabs);
@@ -62,6 +72,8 @@ public class TabClosureParamsUnitTest {
         assertFalse("Should not hide tab groups", params.hideTabGroups);
         assertTrue("Should save to tab restore service", params.saveToTabRestoreService);
         assertEquals("Should be TabCloseType.SINGLE", TabCloseType.SINGLE, params.tabCloseType);
+        assertEquals("Undo runnable should be set", mUndoRunnable, params.undoRunnable);
+        assertFalse("Should not be a tab group", params.isTabGroup);
     }
 
     @Test
@@ -77,6 +89,8 @@ public class TabClosureParamsUnitTest {
         assertFalse("Should not hide tab groups", params.hideTabGroups);
         assertTrue("Should save to tab restore service", params.saveToTabRestoreService);
         assertEquals("Should be TabCloseType.MULTIPLE", TabCloseType.MULTIPLE, params.tabCloseType);
+        assertNull("Undo runnable should be null", params.undoRunnable);
+        assertFalse("Should not be a tab group", params.isTabGroup);
     }
 
     @Test
@@ -87,6 +101,7 @@ public class TabClosureParamsUnitTest {
                         .allowUndo(false)
                         .hideTabGroups(true)
                         .saveToTabRestoreService(false)
+                        .withUndoRunnable(mUndoRunnable)
                         .build();
 
         assertEquals("Tabs should be mTab1, mTab2", tabs, params.tabs);
@@ -97,6 +112,28 @@ public class TabClosureParamsUnitTest {
         assertTrue("Should hide tab groups", params.hideTabGroups);
         assertFalse("Should not save to tab restore service", params.saveToTabRestoreService);
         assertEquals("Should be TabCloseType.MULTIPLE", TabCloseType.MULTIPLE, params.tabCloseType);
+        assertEquals("Undo runnable should be set", mUndoRunnable, params.undoRunnable);
+        assertFalse("Should not be a tab group", params.isTabGroup);
+    }
+
+    @Test
+    public void testCloseTabsParams_TabGroup() {
+        List<Tab> tabs = List.of(mTab1, mTab2);
+        when(mTabGroupModelFilter.getRootIdFromStableId(TAB_GROUP_ID)).thenReturn(ROOT_ID);
+        when(mTabGroupModelFilter.getRelatedTabListForRootId(ROOT_ID)).thenReturn(tabs);
+        TabClosureParams params =
+                TabClosureParams.forCloseTabGroup(mTabGroupModelFilter, TAB_GROUP_ID).build();
+
+        assertEquals("Tabs should be mTab1, mTab2", tabs, params.tabs);
+        assertFalse("Should not be all tabs", params.isAllTabs);
+        assertNull("Recommended next tab should be null", params.recommendedNextTab);
+        assertFalse("Should not be upon exit", params.uponExit);
+        assertTrue("Should allow undo", params.allowUndo);
+        assertFalse("Should not hide tab groups", params.hideTabGroups);
+        assertTrue("Should save to tab restore service", params.saveToTabRestoreService);
+        assertEquals("Should be TabCloseType.MULTIPLE", TabCloseType.MULTIPLE, params.tabCloseType);
+        assertNull("Undo runnable should be null", params.undoRunnable);
+        assertTrue("Should be a tab group", params.isTabGroup);
     }
 
     @Test
@@ -111,12 +148,18 @@ public class TabClosureParamsUnitTest {
         assertFalse("Should not hide tab groups", params.hideTabGroups);
         assertTrue("Should save to tab restore service", params.saveToTabRestoreService);
         assertEquals("Should be TabCloseType.ALL", TabCloseType.ALL, params.tabCloseType);
+        assertNull("Undo runnable should be null", params.undoRunnable);
+        assertFalse("Should not be a tab group", params.isTabGroup);
     }
 
     @Test
     public void testCloseAllTabsParams_NonDefaults() {
         TabClosureParams params =
-                TabClosureParams.closeAllTabs().uponExit(true).hideTabGroups(true).build();
+                TabClosureParams.closeAllTabs()
+                        .uponExit(true)
+                        .hideTabGroups(true)
+                        .withUndoRunnable(mUndoRunnable)
+                        .build();
 
         assertNull("Tabs should be null", params.tabs);
         assertTrue("Should be all tabs", params.isAllTabs);
@@ -126,6 +169,8 @@ public class TabClosureParamsUnitTest {
         assertTrue("Should hide tab groups", params.hideTabGroups);
         assertTrue("Should save to tab restore service", params.saveToTabRestoreService);
         assertEquals("Should be TabCloseType.ALL", TabCloseType.ALL, params.tabCloseType);
+        assertEquals("Undo runnable should be set", mUndoRunnable, params.undoRunnable);
+        assertFalse("Should not be a tab group", params.isTabGroup);
     }
 
     @Test

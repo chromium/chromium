@@ -200,14 +200,12 @@ ProposedLayout BoxLayout::CalculateProposedLayout(
 
   InitializeChildData(data);
 
-  // TODO(crbug.com/40232718): In a vertical layout, if the width is not
-  // specified, we need to first calculate the maximum width of the view, which
-  // makes it convenient for us to call GetHeightForWidth later. If all views
-  // are modified to GetPreferredSize(const SizeBounds&), we might consider
-  // removing this part.
+  // If the layout is stretched, and no constraints are specified, we need to
+  // calculate the maximum width of the child elements.
   SizeBounds new_bounds(size_bounds);
-  if (!new_bounds.width().is_bounded() &&
-      orientation_ == Orientation::kVertical) {
+  if (orientation_ == Orientation::kVertical &&
+      cross_axis_alignment_ == CrossAxisAlignment::kStretch &&
+      !size_bounds.width().is_bounded()) {
     new_bounds.set_width(CalculateMaxChildWidth(data));
   }
 
@@ -276,22 +274,7 @@ int BoxLayout::GetMinimumSizeForView(const View* view) const {
 gfx::Size BoxLayout::GetPreferredSizeForView(
     const View* view,
     const NormalizedSizeBounds& size_bounds) const {
-  // TODO(crbug.com/40232718): If all views are migrated to
-  // GetPreferredSize(const SizeBounds&), simplify the processing here.
-  if (orientation_ == Orientation::kVertical &&
-      cross_axis_alignment_ == CrossAxisAlignment::kStretch) {
-    int width = size_bounds.cross().value();
-    return gfx::Size(width, view->GetHeightForWidth(width));
-  } else {
-    gfx::Size bounded_preferred_size =
-        view->GetPreferredSize(Denormalize(orientation_, size_bounds));
-    if (orientation_ == Orientation::kHorizontal) {
-      return bounded_preferred_size;
-    } else {
-      int width = size_bounds.cross().min_of(bounded_preferred_size.width());
-      return gfx::Size(width, view->GetHeightForWidth(width));
-    }
-  }
+  return view->GetPreferredSize(Denormalize(orientation_, size_bounds));
 }
 
 void BoxLayout::EnsureCrossSize(BoxLayoutData& data) const {
@@ -398,24 +381,9 @@ void BoxLayout::CalculatePreferredSize(const SizeBounds& bounds,
       SizeBound available_width = std::max<SizeBound>(
           0, bounds.width() - box_child.margins.cross_size());
 
-      // Use the child area width for getting the height if the child is
-      // supposed to stretch. Use its preferred size otherwise.
-      int actual_width =
-          cross_axis_alignment_ == CrossAxisAlignment::kStretch
-              ? available_width.value()
-              : std::min(
-                    available_width.value(),
-                    child_layout.child_view->GetPreferredSize({/* Unbounded */})
-                        .width());
-
-      if (collapse_margins_spacing_) {
-        int height = child_layout.child_view->GetHeightForWidth(actual_width);
-        box_child.preferred_size = NormalizedSize(height, actual_width);
-      } else {
-        actual_width = std::max(0, actual_width);
-        int height = child_layout.child_view->GetHeightForWidth(actual_width);
-        box_child.preferred_size = NormalizedSize(height, actual_width);
-      }
+      box_child.preferred_size = Normalize(
+          orientation_, child_layout.child_view->GetPreferredSize(
+                            SizeBounds(available_width, bounds.height())));
     }
   } else {
     for (size_t i = 0; i < data.num_children(); ++i) {

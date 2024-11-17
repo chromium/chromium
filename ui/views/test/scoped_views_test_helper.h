@@ -36,12 +36,12 @@ class ScopedViewsTestHelper {
   gfx::NativeWindow GetContext();
 
   // Simulate an OS-level destruction of the native window held by non-desktop
-  // |widget|.
+  // `widget`.
   void SimulateNativeDestroy(Widget* widget);
 
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
   // Simulate an OS-level destruction of the native window held by desktop
-  // |widget|.
+  // `widget`.
   void SimulateDesktopNativeDestroy(Widget* widget);
 #endif
 
@@ -50,8 +50,12 @@ class ScopedViewsTestHelper {
   }
 
  private:
-  std::unique_ptr<ViewsTestHelper> test_helper_ = ViewsTestHelper::Create();
+  // The delegate must outlive the helper. The helper owns objects like
+  // `gpu::RasterInProcessContext` that will spin the run loop on destruction,
+  // and the delegate owns objects like the layout provider that may be accessed
+  // when the run loop spins.
   std::unique_ptr<TestViewsDelegate> test_views_delegate_;
+  std::unique_ptr<ViewsTestHelper> test_helper_ = ViewsTestHelper::Create();
 };
 
 }  // namespace views

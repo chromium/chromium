@@ -91,7 +91,8 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   virtual void OnQuery(const FormData& form,
                        const FormFieldData& field,
                        const gfx::Rect& caret_bounds,
-                       AutofillSuggestionTriggerSource trigger_source);
+                       AutofillSuggestionTriggerSource trigger_source,
+                       bool update_datalist);
 
   // Records query results and correctly formats them before sending them off
   // to be displayed. Called when an Autofill query result is available.
@@ -121,9 +122,6 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // readers.
   virtual void OnAutofillAvailabilityEvent(
       mojom::AutofillSuggestionAvailability suggestion_availability);
-
-  // Sets the data list value associated with the current field.
-  void SetCurrentDataListValues(std::vector<SelectOption> datalist);
 
   // Informs the delegate that the text field editing has ended. This is
   // used to help record the metrics of when a new popup is shown.
@@ -228,12 +226,12 @@ class AutofillExternalDelegate : public AutofillSuggestionDelegate,
   // `OnQuery()` or if the `form` becomes outdated, see crbug.com/1117028.
   const AutofillField* GetQueriedAutofillField() const;
 
-  // Fills the form with the Autofill data corresponding to `backend_id`.
+  // Fills the form with the Autofill data corresponding to `guid`.
   // If `is_preview` is true then this is just a preview to show the user what
   // would be selected and if `is_preview` is false then the user has selected
   // this data.
   void FillAutofillFormData(SuggestionType type,
-                            Suggestion::BackendId backend_id,
+                            const Suggestion::Payload& payload,
                             std::optional<SuggestionMetadata> metadata,
                             bool is_preview,
                             const AutofillTriggerDetails& trigger_details);

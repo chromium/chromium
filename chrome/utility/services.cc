@@ -15,9 +15,7 @@
 #include "components/password_manager/services/csv_password/csv_password_parser_impl.h"
 #include "components/password_manager/services/csv_password/public/mojom/csv_password_parser.mojom.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/services/language_detection/language_detection_service_impl.h"
-#include "components/services/language_detection/public/mojom/language_detection.mojom.h"
-#include "components/services/on_device_translation/on_device_translation_service.h"
+#include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "components/services/patch/file_patcher_impl.h"
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
@@ -119,6 +117,8 @@ static_assert(BUILDFLAG(ENABLE_PRINTING), "ChromeOS Ash must enable Printing");
 #include "chromeos/ash/components/local_search_service/public/mojom/local_search_service.mojom.h"
 #include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom.h"
 #include "chromeos/ash/components/trash_service/trash_service_impl.h"
+#include "chromeos/ash/services/boca/babelorca/cpp/tachyon_parsing_service.h"
+#include "chromeos/ash/services/boca/babelorca/mojom/tachyon_parsing_service.mojom.h"
 #include "chromeos/ash/services/ime/ime_service.h"
 #include "chromeos/ash/services/ime/public/mojom/input_engine.mojom.h"
 #include "chromeos/ash/services/nearby/public/mojom/sharing.mojom.h"  // nogncheck
@@ -142,6 +142,10 @@ static_assert(BUILDFLAG(ENABLE_PRINTING), "ChromeOS Ash must enable Printing");
 #include "chromeos/components/quick_answers/public/mojom/spell_check.mojom.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+#include "components/services/on_device_translation/on_device_translation_service.h"
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+
 namespace {
 
 auto RunFilePatcher(mojo::PendingReceiver<patch::mojom::FilePatcher> receiver) {
@@ -150,13 +154,6 @@ auto RunFilePatcher(mojo::PendingReceiver<patch::mojom::FilePatcher> receiver) {
 
 auto RunUnzipper(mojo::PendingReceiver<unzip::mojom::Unzipper> receiver) {
   return std::make_unique<unzip::UnzipperImpl>(std::move(receiver));
-}
-
-auto RunLanguageDetectionService(
-    mojo::PendingReceiver<language_detection::mojom::LanguageDetectionService>
-        receiver) {
-  return std::make_unique<language_detection::LanguageDetectionServiceImpl>(
-      std::move(receiver));
 }
 
 auto RunWebAppOriginAssociationParser(
@@ -431,12 +428,23 @@ auto RunMahiContentExtractionServiceFactory(
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 auto RunOnDeviceTranslationService(
     mojo::PendingReceiver<
         on_device_translation::mojom::OnDeviceTranslationService> receiver) {
   return std::make_unique<on_device_translation::OnDeviceTranslationService>(
       std::move(receiver));
 }
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+auto RunBabelOrcaTachyonParsingService(
+    mojo::PendingReceiver<ash::babelorca::mojom::TachyonParsingService>
+        receiver) {
+  return std::make_unique<ash::babelorca::TachyonParsingService>(
+      std::move(receiver));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -452,7 +460,6 @@ void RegisterElevatedMainThreadServices(mojo::ServiceFactory& services) {
 void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunFilePatcher);
   services.Add(RunUnzipper);
-  services.Add(RunLanguageDetectionService);
   services.Add(RunWebAppOriginAssociationParser);
   services.Add(RunCSVPasswordParser);
 
@@ -532,6 +539,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunTtsService);
   services.Add(RunLocalSearchService);
   services.Add(RunQuickPairService);
+  services.Add(RunBabelOrcaTachyonParsingService);
 #if BUILDFLAG(ENABLE_CROS_LIBASSISTANT)
   services.Add(RunAssistantAudioDecoder);
   services.Add(RunLibassistantService);
@@ -543,7 +551,9 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunMahiContentExtractionServiceFactory);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
   services.Add(RunOnDeviceTranslationService);
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 }
 
 void RegisterIOThreadServices(mojo::ServiceFactory& services) {

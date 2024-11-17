@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"

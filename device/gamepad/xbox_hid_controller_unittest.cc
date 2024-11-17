@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -77,9 +78,8 @@ class FakeHidWriter : public HidWriter {
 class XboxHidControllerTest : public testing::Test {
  public:
   XboxHidControllerTest()
-      : start_vibration_report_(kStartVibration,
-                                kStartVibration + kReportLength),
-        stop_vibration_report_(kStopVibration, kStopVibration + kReportLength),
+      : start_vibration_report_(base::ToVector(kStartVibration)),
+        stop_vibration_report_(base::ToVector(kStopVibration)),
         callback_count_(0),
         callback_result_(
             mojom::GamepadHapticsResult::GamepadHapticsResultError) {

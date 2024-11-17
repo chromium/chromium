@@ -54,7 +54,8 @@ void SupervisedUserMetricsServiceFactory::RegisterProfilePrefs(
   supervised_user::SupervisedUserMetricsService::RegisterProfilePrefs(registry);
 }
 
-KeyedService* SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SupervisedUserMetricsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -68,7 +69,7 @@ KeyedService* SupervisedUserMetricsServiceFactory::BuildServiceInstanceFor(
   CHECK(extensions_metrics_delegate);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
-  return new supervised_user::SupervisedUserMetricsService(
+  return std::make_unique<supervised_user::SupervisedUserMetricsService>(
       profile->GetPrefs(),
       SupervisedUserServiceFactory::GetForProfile(profile)->GetURLFilter(),
       std::move(extensions_metrics_delegate));

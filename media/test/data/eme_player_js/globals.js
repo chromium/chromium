@@ -76,6 +76,10 @@ var MEDIA_TYPES = {
   'MP4 - Video Only': 'video/mp4; codecs="avc1.4D000C"',
   'MP4 - Audio Only': 'audio/mp4; codecs="mp4a.40.2"',
   'MP4 - Video Only': 'video/mp4; codecs="avc1.64001E"',
+  // DolbyVision Profile 5
+  'MP4 - Video Only': 'video/mp4; codecs="dvh1.05.06"',
+  // DolbyVision Profile 8.1 and 8.4
+  'MP4 - Video Only': 'video/mp4; codecs="dvhe.08.07"',
   'MP4 - Audio Video': 'video/mp4; codecs="mp4a.40.2, avc1.64001E"'
 };
 

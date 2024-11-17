@@ -28,9 +28,6 @@ constexpr int32_t kParentToHiddenContainer = -1;
 // Returns true if `window` is an ARC window. Otherwise, returns false.
 bool IsArcWindow(aura::Window* window);
 
-// Returns true if `window` is a Lacros window. Otherwise, returns false.
-bool IsLacrosWindow(aura::Window* window);
-
 // Returns true if there is a window info for `restore_window_id` from desk
 // templates or full restore, depending on which one is thought to be launching
 // apps currently. Otherwise, returns false. This interface can't be used for

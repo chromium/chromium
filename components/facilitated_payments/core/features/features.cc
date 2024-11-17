@@ -11,12 +11,6 @@ BASE_FEATURE(kEnablePixDetection,
              "EnablePixDetection",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Chrome will detect PIX codes when user copies a PIX code to the
-// clipboard.
-BASE_FEATURE(kEnablePixDetectionOnCopyEvent,
-             "EnablePixDetectionOnCopyEvent",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Chrome will use `WebContentsObserver::DOMContentLoaded` event
 // as the trigger for PIX code detection instead of
 // `WebContentsObserver::DidDinishLoad`.
@@ -42,5 +36,10 @@ BASE_FEATURE(kEwalletPayments,
              "EwalletPayments",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
+
+// When enabled, Pix will be able to send multiple server request at a time.
+BASE_FEATURE(kSupportMultipleServerRequestsForPixPayments,
+             "SupportMultipleServerRequestsForPixPayments",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace payments::facilitated

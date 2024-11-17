@@ -61,6 +61,11 @@ public class DisplayCutoutTabHelper implements UserData {
 
                     mCutoutController.onActivityAttachmentChanged(window);
                 }
+
+                @Override
+                public void onContentChanged(Tab tab) {
+                    mCutoutController.onContentChanged();
+                }
             };
 
     public static DisplayCutoutTabHelper from(Tab tab) {
@@ -90,7 +95,7 @@ public class DisplayCutoutTabHelper implements UserData {
         }
 
         @Override
-        public InsetObserver getInsetObserver() {
+        public @Nullable InsetObserver getInsetObserver() {
             return mTab.getWindowAndroid().getInsetObserver();
         }
 

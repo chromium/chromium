@@ -1,0 +1,8 @@
+specific_include_rules = {
+  "sandbox_hook\.cc": [
+    "+sandbox/linux/syscall_broker/broker_command.h",
+  ],
+  "sandbox_hook\.h": [
+    "+sandbox/policy/linux/sandbox_linux.h",
+  ],
+}

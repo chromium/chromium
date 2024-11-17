@@ -8,21 +8,23 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
+#import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #import "components/prefs/pref_change_registrar.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/tribool.h"
-#import "components/supervised_user/core/browser/supervised_user_capabilities.h"
+#import "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/supervised_user/core/common/pref_names.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
-#import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities_observer_bridge.h"
+#import "ios/chrome/browser/supervised_user/model/family_link_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_toolbars_mutator.h"
@@ -40,7 +42,7 @@
 
 @interface IncognitoGridMediator () <IncognitoReauthObserver,
                                      PrefObserverDelegate,
-                                     SupervisedUserCapabilitiesObserving>
+                                     FamilyLinkUserCapabilitiesObserving>
 @end
 
 @implementation IncognitoGridMediator {
@@ -54,11 +56,11 @@
   BOOL _selected;
   // Identity manager providing AccountInfo capabilities to determine
   // supervision status. This identity manager is not available for
-  // the incognito browser state and need to be passed in.
+  // the incognito profile and need to be passed in.
   raw_ptr<signin::IdentityManager> _identityManager;
-  // Observer to track changes to supervision-related capabilities.
-  std::unique_ptr<supervised_user::SupervisedUserCapabilitiesObserverBridge>
-      _supervisedUserCapabilitiesObserver;
+  // Observer to track changes to Family Link user state.
+  std::unique_ptr<supervised_user::FamilyLinkUserCapabilitiesObserverBridge>
+      _familyLinkUserCapabilitiesObserver;
 }
 
 // TODO(crbug.com/40273478): Refactor the grid commands to have the same
@@ -105,6 +107,7 @@
         base::UserMetricsAction("MobileTabGridSelectIncognitoPanel"));
 
     [self configureToolbarsButtons];
+    [self recordIncognitoGridStatusOnSelection];
   }
 }
 
@@ -148,7 +151,7 @@
 - (void)disconnect {
   _prefChangeRegistrar.reset();
   _prefObserverBridge.reset();
-  _supervisedUserCapabilitiesObserver.reset();
+  _familyLinkUserCapabilitiesObserver.reset();
   _identityManager = nil;
   [_reauthSceneAgent removeObserver:self];
   [super disconnect];
@@ -220,7 +223,7 @@
   [super setBrowser:browser];
 
   if (browser) {
-    PrefService* prefService = browser->GetBrowserState()->GetPrefs();
+    PrefService* prefService = browser->GetProfile()->GetPrefs();
     DCHECK(prefService);
 
     if (!base::FeatureList::IsEnabled(
@@ -242,8 +245,7 @@
 - (PrefService*)prefService {
   Browser* browser = self.browser;
   DCHECK(browser);
-
-  return browser->GetBrowserState()->GetPrefs();
+  return browser->GetProfile()->GetPrefs();
 }
 
 - (void)setReauthSceneAgent:(IncognitoReauthSceneAgent*)reauthSceneAgent {
@@ -270,7 +272,14 @@
   }
 }
 
-#pragma mark - SupervisedUserCapabilitiesObserving
+- (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
+    didUpdateIncognitoLockState:(IncognitoLockState)incogitoLockState {
+  [self reauthAgent:agent
+      didUpdateAuthenticationRequirement:incogitoLockState !=
+                                         IncognitoLockState::kNone];
+}
+
+#pragma mark - FamilyLinkUserCapabilitiesObserving
 
 - (void)onIsSubjectToParentalControlsCapabilityChanged:
     (supervised_user::CapabilityUpdateState)capabilityUpdateState {
@@ -289,15 +298,15 @@
 
 #pragma mark - Public
 
-- (void)initializeSupervisedUserCapabilitiesObserver:
+- (void)initializeFamilyLinkUserCapabilitiesObserver:
     (signin::IdentityManager*)identityManager {
   if (base::FeatureList::IsEnabled(
           supervised_user::
               kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS)) {
     DCHECK(identityManager);
     _identityManager = identityManager;
-    _supervisedUserCapabilitiesObserver = std::make_unique<
-        supervised_user::SupervisedUserCapabilitiesObserverBridge>(
+    _familyLinkUserCapabilitiesObserver = std::make_unique<
+        supervised_user::FamilyLinkUserCapabilitiesObserverBridge>(
         _identityManager, self);
     _incognitoDisabled = [self isIncognitoModeDisabled];
   }
@@ -308,20 +317,55 @@
 // Returns YES if incognito is disabled.
 - (BOOL)isIncognitoModeDisabled {
   DCHECK(self.browser);
-  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
-  if (IsIncognitoModeDisabled(prefService)) {
+  // Incognito mode can be disabled by enterprise policies.
+  if (IsIncognitoModeDisabled([self prefService])) {
     return YES;
   }
 
   // Incognito mode is disabled for supervised users.
+  return [self isSupervisedUser];
+}
+
+// Returns YES if the primary account is supervised.
+- (BOOL)isSupervisedUser {
   if (base::FeatureList::IsEnabled(
           supervised_user::
               kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS)) {
     return _identityManager &&
            supervised_user::IsPrimaryAccountSubjectToParentalControls(
                _identityManager) == signin::Tribool::kTrue;
-  } else {
-    return supervised_user::IsSubjectToParentalControls(*prefService);
+  }
+
+  return supervised_user::IsSubjectToParentalControls(*[self prefService]);
+}
+
+// Returns YES if incognito mode is managed by enterprise policies.
+- (BOOL)areEnterprisePoliciesApplied {
+  return [self prefService]->IsManagedPreference(
+      policy::policy_prefs::kIncognitoModeAvailability);
+}
+
+- (void)recordIncognitoGridStatusOnSelection {
+  // Record grid status for supervised users.
+  if ([self isSupervisedUser]) {
+    RecordIncognitoGridStatus(
+        _incognitoDisabled ? IncognitoGridStatus::kDisabledForSupervisedUser
+                           : IncognitoGridStatus::kEnabledForSupervisedUser);
+  }
+
+  // Record grid status for enterprise users.
+  if ([self areEnterprisePoliciesApplied]) {
+    RecordIncognitoGridStatus(
+        _incognitoDisabled ? IncognitoGridStatus::kDisabledByEnterprisePolicies
+                           : IncognitoGridStatus::kEnabledByEnterprisePolicies);
+  }
+
+  // Record grid status for users who do not have management applied,
+  // or for signed-out users.
+  if (![self isSupervisedUser] && ![self areEnterprisePoliciesApplied]) {
+    RecordIncognitoGridStatus(
+        _incognitoDisabled ? IncognitoGridStatus::kDisabledForUnmanagedUser
+                           : IncognitoGridStatus::kEnabledForUnmanagedUser);
   }
 }
 

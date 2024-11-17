@@ -69,10 +69,9 @@ scoped_refptr<media::DecoderBuffer> ConvertProtoToDecoderBuffer(
   }
 
   if (buffer_message.has_side_data()) {
-    const uint8_t* side_ptr =
-        reinterpret_cast<const uint8_t*>(buffer_message.side_data().data());
-    buffer->WritableSideData().alpha_data.assign(
-        side_ptr, side_ptr + buffer_message.side_data().size());
+    buffer->WritableSideData().alpha_data =
+        base::HeapArray<uint8_t>::CopiedFrom(
+            base::as_byte_span(buffer_message.side_data()));
   }
 
   return buffer;
@@ -135,25 +134,25 @@ scoped_refptr<media::DecoderBuffer> ByteArrayToDecoderBuffer(
   return nullptr;
 }
 
-std::vector<uint8_t> DecoderBufferToByteArray(
+base::HeapArray<uint8_t> DecoderBufferToByteArray(
     const media::DecoderBuffer& decoder_buffer) {
   openscreen::cast::DecoderBuffer decoder_buffer_message;
   ConvertDecoderBufferToProto(decoder_buffer, &decoder_buffer_message);
 
-  size_t decoder_buffer_size =
+  const size_t decoder_buffer_size =
       decoder_buffer.end_of_stream() ? 0 : decoder_buffer.size();
-  size_t size = kPayloadVersionFieldSize + kProtoBufferHeaderSize +
-                decoder_buffer_message.ByteSize() + kDataBufferHeaderSize +
-                decoder_buffer_size;
-  auto message_cached_size =
+  const size_t size = kPayloadVersionFieldSize + kProtoBufferHeaderSize +
+                      decoder_buffer_message.ByteSize() +
+                      kDataBufferHeaderSize + decoder_buffer_size;
+  const auto message_cached_size =
       // GetCachedSize() is only valid after ByteSize() is called above.
       base::checked_cast<uint16_t>(decoder_buffer_message.GetCachedSize());
-  std::vector<uint8_t> buffer(size);
-  auto writer = base::SpanWriter(base::span(buffer));
+  auto buffer = base::HeapArray<uint8_t>::WithSize(size);
+  auto writer = base::SpanWriter(buffer.as_span());
   if (writer.WriteU8BigEndian(0) &&
       writer.WriteU16BigEndian(message_cached_size) &&
       [&] {
-        std::optional<base::span<uint8_t>> span =
+        const std::optional<base::span<uint8_t>> span =
             writer.Skip(message_cached_size);
         return span.has_value() && decoder_buffer_message.SerializeToArray(
                                        span->data(), span->size());
@@ -166,9 +165,7 @@ std::vector<uint8_t> DecoderBufferToByteArray(
     return buffer;
   }
 
-  // Reset buffer since serialization of the data failed.
-  buffer.clear();
-  return buffer;
+  return {};
 }
 
 void ConvertAudioDecoderConfigToProto(

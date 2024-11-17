@@ -36,6 +36,7 @@
 #include "chrome/browser/download/download_request_limiter.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/permission_bubble_media_access_handler.h"
+#include "chrome/browser/permissions/permission_actions_history_factory.h"
 #include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
@@ -570,14 +571,15 @@ void ContentSettingRPHBubbleModel::ClearOrSetPreviousHandler() {
 }
 
 void ContentSettingRPHBubbleModel::PerformActionForSelectedItem() {
-  if (selected_item() == RPH_ALLOW)
+  if (selected_item() == RPH_ALLOW) {
     RegisterProtocolHandler();
-  else if (selected_item() == RPH_BLOCK)
+  } else if (selected_item() == RPH_BLOCK) {
     UnregisterProtocolHandler();
-  else if (selected_item() == RPH_IGNORE)
+  } else if (selected_item() == RPH_IGNORE) {
     IgnoreProtocolHandler();
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 }
 
 // ContentSettingSingleRadioGroup ----------------------------------------------
@@ -1653,7 +1655,7 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
       bubble_title_string_id = IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_TITLE;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   set_title(l10n_util::GetStringUTF16(bubble_title_string_id));
   switch (*quiet_ui_reason) {
@@ -1727,7 +1729,7 @@ ContentSettingQuietRequestBubbleModel::ContentSettingQuietRequestBubbleModel(
               IDS_GEOLOCATION_QUIET_PERMISSION_BUBBLE_ALLOW_BUTTON;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
       set_message(l10n_util::GetStringUTF16(bubble_message_string_id));
       set_done_button_text(
@@ -1773,7 +1775,7 @@ void ContentSettingQuietRequestBubbleModel::OnManageButtonClicked() {
             "Permissions.Prompt.QuietBubble.Geolocation.ManageClicked"));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }
@@ -1906,10 +1908,9 @@ ContentSettingBubbleModel::CreateContentSettingBubbleModel(
       return std::make_unique<ContentSettingStorageAccessBubbleModel>(
           delegate, web_contents);
     default:
-      NOTREACHED_IN_MIGRATION() << "No bubble for the content type "
-                                << static_cast<int32_t>(content_type) << ".";
+      NOTREACHED() << "No bubble for the content type "
+                   << static_cast<int32_t>(content_type) << ".";
   }
-  return nullptr;
 }
 
 ContentSettingBubbleModel::ContentSettingBubbleModel(Delegate* delegate,

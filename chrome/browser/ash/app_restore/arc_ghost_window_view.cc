@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/app_restore/arc_ghost_window_view.h"
 
-#include "ash/components/arc/arc_features.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "base/metrics/histogram_functions.h"
@@ -69,10 +68,6 @@ enum class GhostWindowType {
   kIconSpinningWithFixupText = 1,
   kMaxValue = kIconSpinningWithFixupText,
 };
-
-bool IsGhostWindowNewStyleEnabled() {
-  return base::FeatureList::IsEnabled(arc::kGhostWindowNewStyle);
-}
 
 std::u16string GetGhostWindowAppLaunchString(const std::string& app_name) {
   return l10n_util::GetStringFUTF16(IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_MESSAGE,
@@ -148,7 +143,7 @@ void ArcGhostWindowView::SetGhostWindowViewType(arc::GhostWindowType type) {
 
   // DarkLightModeController maybe null in test env.
   if (type != arc::GhostWindowType::kFullRestore &&
-      IsGhostWindowNewStyleEnabled() && DarkLightModeController::Get()) {
+      DarkLightModeController::Get()) {
     // New style use ChromeOS system provided background color.
     auto color = cros_styles::ResolveColor(
         cros_styles::ColorName::kBgColor,
@@ -161,8 +156,7 @@ void ArcGhostWindowView::SetGhostWindowViewType(arc::GhostWindowType type) {
     SetBackground(views::CreateSolidBackground(theme_color_));
   }
 
-  if (type == arc::GhostWindowType::kFullRestore ||
-      !IsGhostWindowNewStyleEnabled()) {
+  if (type == arc::GhostWindowType::kFullRestore) {
     // If not enabled new style flag, all types will use original UI.
     AddChildView(views::Builder<views::ImageView>()
                      .SetImage(icon_raw_data_)
@@ -186,7 +180,7 @@ void ArcGhostWindowView::SetGhostWindowViewType(arc::GhostWindowType type) {
       AddCommonChildrenViews();
       AddChildrenViewsForAppLaunchType();
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -196,8 +190,7 @@ void ArcGhostWindowView::SetGhostWindowViewType(arc::GhostWindowType type) {
 void ArcGhostWindowView::OnThemeChanged() {
   views::View::OnThemeChanged();
   // DarkLightModeController maybe null in test env.
-  if (!IsGhostWindowNewStyleEnabled() ||
-      ghost_window_type_ == arc::GhostWindowType::kFullRestore ||
+  if (ghost_window_type_ == arc::GhostWindowType::kFullRestore ||
       !DarkLightModeController::Get()) {
     return;
   }

@@ -153,8 +153,20 @@ TEST_P(ExclusiveAccessBubbleViewsTest, UpdateViewContent) {
 
 TEST_P(ExclusiveAccessBubbleViewsTest,
        SubtleNotificationViewAccessibleProperties) {
+  ui::AXNodeData data;
+  GetSubtleNotificationView()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.role, ax::mojom::Role::kAlert);
   EXPECT_EQ(GetSubtleNotificationView()->GetViewAccessibility().GetCachedRole(),
             ax::mojom::Role::kAlert);
+
+  GetSubtleNotificationView()->UpdateContent(u"Sample |Accessible| Text");
+
+  data = ui::AXNodeData();
+  GetSubtleNotificationView()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Sample Accessible Text");
 }
 
 INSTANTIATE_TEST_SUITE_P(

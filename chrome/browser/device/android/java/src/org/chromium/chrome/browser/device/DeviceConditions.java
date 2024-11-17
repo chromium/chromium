@@ -80,8 +80,8 @@ public class DeviceConditions {
         }
 
         return new DeviceConditions(
-                isCurrentlyPowerConnected(context, batteryStatus),
-                getCurrentBatteryPercentage(context, batteryStatus),
+                isCurrentlyPowerConnected(batteryStatus),
+                getCurrentBatteryPercentage(batteryStatus),
                 getCurrentNetConnectionType(context),
                 isCurrentlyInPowerSaveMode(context),
                 isCurrentActiveNetworkMetered(context),
@@ -93,10 +93,10 @@ public class DeviceConditions {
         Intent batteryStatus = getBatteryStatus(context);
         if (batteryStatus == null) return false;
 
-        return isCurrentlyPowerConnected(context, batteryStatus);
+        return isCurrentlyPowerConnected(batteryStatus);
     }
 
-    private static boolean isCurrentlyPowerConnected(Context context, Intent batteryStatus) {
+    private static boolean isCurrentlyPowerConnected(Intent batteryStatus) {
         int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
         boolean isConnected =
                 (status == BatteryManager.BATTERY_STATUS_CHARGING
@@ -109,10 +109,10 @@ public class DeviceConditions {
         Intent batteryStatus = getBatteryStatus(context);
         if (batteryStatus == null) return 0;
 
-        return getCurrentBatteryPercentage(context, batteryStatus);
+        return getCurrentBatteryPercentage(batteryStatus);
     }
 
-    private static int getCurrentBatteryPercentage(Context context, Intent batteryStatus) {
+    private static int getCurrentBatteryPercentage(Intent batteryStatus) {
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
         if (scale == 0) return 0;
 

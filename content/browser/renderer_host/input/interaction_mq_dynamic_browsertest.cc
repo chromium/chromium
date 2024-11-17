@@ -4,7 +4,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/web_contents/slow_web_preference_cache.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -31,12 +31,9 @@ class InteractionMediaQueriesDynamicTest : public ContentBrowserTest {
     (BUILDFLAG(IS_ANDROID) && !defined(ADDRESS_SANITIZER))
 IN_PROC_BROWSER_TEST_F(InteractionMediaQueriesDynamicTest,
                        PointerMediaQueriesDynamic) {
-  RenderViewHostImpl* rvhi = static_cast<RenderViewHostImpl*>(
-      shell()->web_contents()->GetPrimaryMainFrame()->GetRenderViewHost());
-
   ui::SetAvailablePointerAndHoverTypesForTesting(ui::POINTER_TYPE_NONE,
                                                  ui::HOVER_TYPE_NONE);
-  rvhi->OnHardwareConfigurationChanged();
+  SlowWebPreferenceCache::GetInstance()->OnInputDeviceConfigurationChanged(0);
 
   GURL test_url = GetTestUrl("", "interaction-mq-dynamic.html");
   const std::u16string kSuccessTitle(u"SUCCESS");
@@ -45,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(InteractionMediaQueriesDynamicTest,
 
   ui::SetAvailablePointerAndHoverTypesForTesting(ui::POINTER_TYPE_COARSE,
                                                  ui::HOVER_TYPE_HOVER);
-  rvhi->OnHardwareConfigurationChanged();
+  SlowWebPreferenceCache::GetInstance()->OnInputDeviceConfigurationChanged(0);
   EXPECT_EQ(kSuccessTitle, title_watcher.WaitAndGetTitle());
 }
 #endif

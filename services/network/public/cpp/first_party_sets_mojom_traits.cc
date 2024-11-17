@@ -4,9 +4,10 @@
 
 #include "services/network/public/cpp/first_party_sets_mojom_traits.h"
 
+#include <utility>
+
 #include "base/containers/flat_map.h"
 #include "base/ranges/algorithm.h"
-#include "base/types/optional_util.h"
 #include "base/version.h"
 #include "mojo/public/cpp/base/version_mojom_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
@@ -59,8 +60,7 @@ EnumTraits<network::mojom::SiteType, net::SiteType>::ToMojom(
     case net::SiteType::kService:
       return network::mojom::SiteType::kService;
   }
-  NOTREACHED_IN_MIGRATION();
-  return network::mojom::SiteType::kPrimary;
+  NOTREACHED();
 }
 
 bool StructTraits<network::mojom::FirstPartySetEntryDataView,
@@ -95,8 +95,8 @@ bool StructTraits<network::mojom::FirstPartySetMetadataDataView,
   if (!metadata.ReadTopFrameEntry(&top_frame_entry))
     return false;
 
-  *out_metadata = net::FirstPartySetMetadata(
-      base::OptionalToPtr(frame_entry), base::OptionalToPtr(top_frame_entry));
+  *out_metadata = net::FirstPartySetMetadata(std::move(frame_entry),
+                                             std::move(top_frame_entry));
 
   return true;
 }

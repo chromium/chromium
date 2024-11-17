@@ -202,8 +202,7 @@ bool SupervisedUserExtensionsManager::UserMayLoad(
 
 bool SupervisedUserExtensionsManager::MustRemainDisabled(
     const extensions::Extension* extension,
-    extensions::disable_reason::DisableReason* reason,
-    std::u16string* error) const {
+    extensions::disable_reason::DisableReason* reason) const {
   ExtensionState state = GetExtensionState(*extension);
   // Only extensions that require approval should be disabled.
   // Blocked extensions should be not loaded at all, and are taken care of
@@ -215,9 +214,6 @@ bool SupervisedUserExtensionsManager::MustRemainDisabled(
   }
   if (reason) {
     *reason = extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED;
-  }
-  if (error) {
-    *error = GetExtensionsLockedMessage();
   }
   return true;
 }
@@ -277,8 +273,6 @@ SupervisedUserExtensionsManager::GetExtensionState(
     const extensions::Extension& extension) const {
   bool was_installed_by_default = extension.was_installed_by_default();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/40771733): Check if this is needed for extensions in
-  // LaCrOS.
   // On Chrome OS all external sources are controlled by us so it means that
   // they are "default". Method was_installed_by_default returns false because
   // extensions creation flags are ignored in case of default extensions with
@@ -550,12 +544,12 @@ bool SupervisedUserExtensionsManager::IsLocallyParentApprovedExtension(
 }
 
 void SupervisedUserExtensionsManager::RemoveLocalParentalApproval(
-    const std::set<std::string> extension_ids) {
+    const std::set<std::string>& extension_ids) {
   base::Value::Dict locally_approved_extensions_dict =
       user_prefs_
           ->GetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions)
           .Clone();
-  for (auto& extension_id : extension_ids) {
+  for (const auto& extension_id : extension_ids) {
     locally_approved_extensions_dict.Remove(extension_id);
   }
   user_prefs_->SetDict(prefs::kSupervisedUserLocallyParentApprovedExtensions,

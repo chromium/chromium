@@ -4,11 +4,14 @@
 
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_coordinator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_action_handler.h"
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_interstitial_view_controller.h"
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator.h"
 #import "ios/chrome/browser/mini_map/ui_bundled/mini_map_mediator_delegate.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -79,7 +82,7 @@
 - (void)start {
   [super start];
 
-  PrefService* prefService = self.browser->GetBrowserState()->GetPrefs();
+  PrefService* prefService = self.browser->GetProfile()->GetPrefs();
   self.mediator = [[MiniMapMediator alloc] initWithPrefs:prefService
                                                 webState:self.webState.get()];
   self.mediator.delegate = self;
@@ -159,10 +162,18 @@
 
 - (void)doShowMapWithIPH:(BOOL)showIPH {
   __weak __typeof(self) weakSelf = self;
-  self.miniMapController =
-      ios::provider::CreateMiniMapController(self.text, ^(NSURL* url) {
-        [weakSelf mapDismissedRequestingURL:url];
-      });
+
+  MiniMapControllerCompletionWithURL completion = ^(NSURL* url) {
+    [weakSelf mapDismissedRequestingURL:url];
+  };
+
+  MiniMapControllerCompletionWithString completionWithQuery =
+      ^(NSString* query) {
+        [weakSelf mapDismissedRequestingQuery:query];
+      };
+  self.miniMapController = ios::provider::CreateMiniMapController(
+      self.text, completion, completionWithQuery);
+
   [self.miniMapController
       configureFooterWithTitle:l10n_util::GetNSString(
                                    IDS_IOS_MINI_MAP_FOOTER_STRING)
@@ -243,8 +254,29 @@
     [self.mediator userOpenedURLFromMiniMap];
     OpenNewTabCommand* command = [OpenNewTabCommand
         commandWithURLFromChrome:net::GURLWithNSURL(url)
-                     inIncognito:self.browser->GetBrowserState()
-                                     ->IsOffTheRecord()];
+                     inIncognito:self.browser->GetProfile()->IsOffTheRecord()];
+    id<ApplicationCommands> applicationHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ApplicationCommands);
+    [applicationHandler openURLInNewTab:command];
+  } else {
+    [self.mediator userClosedMiniMap];
+  }
+  [self workflowEnded];
+}
+
+- (void)mapDismissedRequestingQuery:(NSString*)query {
+  _showingMap = NO;
+  if (query) {
+    [self.mediator userOpenedQueryFromMiniMap];
+    TemplateURLService* templateURLService =
+        ios::TemplateURLServiceFactory::GetForProfile(
+            self.browser->GetProfile());
+    GURL url = templateURLService->GenerateSearchURLForDefaultSearchProvider(
+        base::SysNSStringToUTF16(query));
+
+    OpenNewTabCommand* command = [OpenNewTabCommand
+        commandWithURLFromChrome:url
+                     inIncognito:self.browser->GetProfile()->IsOffTheRecord()];
     id<ApplicationCommands> applicationHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ApplicationCommands);
     [applicationHandler openURLInNewTab:command];

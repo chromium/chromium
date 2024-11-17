@@ -19,7 +19,7 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.metrics.UserAction;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 
 /** Fragment containing Safe Browsing settings. */
@@ -94,13 +94,11 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     public void onSafeBrowsingModeDetailsRequested(@SafeBrowsingState int safeBrowsingState) {
         recordUserActionHistogramForStateDetailsClicked(safeBrowsingState);
         if (safeBrowsingState == SafeBrowsingState.ENHANCED_PROTECTION) {
-            SettingsLauncherFactory.createSettingsLauncher()
-                    .launchSettingsActivity(
-                            getActivity(), EnhancedProtectionSettingsFragment.class);
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .startSettings(getActivity(), EnhancedProtectionSettingsFragment.class);
         } else if (safeBrowsingState == SafeBrowsingState.STANDARD_PROTECTION) {
-            SettingsLauncherFactory.createSettingsLauncher()
-                    .launchSettingsActivity(
-                            getActivity(), StandardProtectionSettingsFragment.class);
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .startSettings(getActivity(), StandardProtectionSettingsFragment.class);
         } else {
             assert false : "Should not be reached";
         }
@@ -163,13 +161,13 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     private void recordUserActionHistogramForNewStateClicked(
             @SafeBrowsingState int safeBrowsingState) {
         switch (safeBrowsingState) {
-            case (SafeBrowsingState.ENHANCED_PROTECTION):
+            case SafeBrowsingState.ENHANCED_PROTECTION:
                 recordUserActionHistogram(UserAction.ENHANCED_PROTECTION_CLICKED);
                 break;
-            case (SafeBrowsingState.STANDARD_PROTECTION):
+            case SafeBrowsingState.STANDARD_PROTECTION:
                 recordUserActionHistogram(UserAction.STANDARD_PROTECTION_CLICKED);
                 break;
-            case (SafeBrowsingState.NO_SAFE_BROWSING):
+            case SafeBrowsingState.NO_SAFE_BROWSING:
                 recordUserActionHistogram(UserAction.DISABLE_SAFE_BROWSING_CLICKED);
                 break;
             default:
@@ -180,10 +178,10 @@ public class SafeBrowsingSettingsFragment extends SafeBrowsingSettingsFragmentBa
     private void recordUserActionHistogramForStateDetailsClicked(
             @SafeBrowsingState int safeBrowsingState) {
         switch (safeBrowsingState) {
-            case (SafeBrowsingState.ENHANCED_PROTECTION):
+            case SafeBrowsingState.ENHANCED_PROTECTION:
                 recordUserActionHistogram(UserAction.ENHANCED_PROTECTION_EXPAND_ARROW_CLICKED);
                 break;
-            case (SafeBrowsingState.STANDARD_PROTECTION):
+            case SafeBrowsingState.STANDARD_PROTECTION:
                 recordUserActionHistogram(UserAction.STANDARD_PROTECTION_EXPAND_ARROW_CLICKED);
                 break;
             default:

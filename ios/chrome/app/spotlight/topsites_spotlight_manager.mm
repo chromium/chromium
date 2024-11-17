@@ -112,14 +112,13 @@ class SpotlightTopSitesBridge : public history::TopSitesObserver {
 @implementation TopSitesSpotlightManager
 @synthesize topSites = _topSites;
 
-+ (TopSitesSpotlightManager*)topSitesSpotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState {
++ (TopSitesSpotlightManager*)topSitesSpotlightManagerWithProfile:
+    (ProfileIOS*)profile {
   favicon::LargeIconService* largeIconService =
-      IOSChromeLargeIconServiceFactory::GetForBrowserState(browserState);
+      IOSChromeLargeIconServiceFactory::GetForProfile(profile);
   return [[TopSitesSpotlightManager alloc]
       initWithLargeIconService:largeIconService
-                      topSites:ios::TopSitesFactory::GetForBrowserState(
-                                   browserState)
+                      topSites:ios::TopSitesFactory::GetForProfile(profile)
             spotlightInterface:[SpotlightInterface defaultInterface]
          searchableItemFactory:
              [[SearchableItemFactory alloc]

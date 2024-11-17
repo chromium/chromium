@@ -6,7 +6,6 @@ ci/Android arm64 Builder All Targets (dbg)
 ci/Android x64 Builder (dbg)
 ci/Android x64 Builder All Targets (dbg)
 ci/Android x86 Builder (dbg)
-ci/Cast Android (dbg)
 ci/Deterministic Android
 ci/Deterministic Android (dbg)
 ci/android-10-arm64-rel
@@ -20,6 +19,11 @@ ci/android-15-x64-rel
 ci/android-androidx-packager
 ci/android-bfcache-rel
 ci/android-binary-size-generator
+ci/android-cast-arm-dbg
+ci/android-cast-arm-rel
+ci/android-cast-arm64-dbg
+ci/android-cast-arm64-rel
+ci/android-desktop-x64-compile-rel
 ci/android-oreo-x86-rel
 ci/android-pie-arm64-dbg
 ci/android-pie-arm64-rel

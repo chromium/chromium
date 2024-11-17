@@ -79,7 +79,7 @@ PassthroughTouchEventQueue::PassthroughTouchEventQueue(
   }
 }
 
-PassthroughTouchEventQueue::~PassthroughTouchEventQueue() {}
+PassthroughTouchEventQueue::~PassthroughTouchEventQueue() = default;
 
 void PassthroughTouchEventQueue::SendTouchCancelEventForTouchEvent(
     const TouchEventWithLatencyInfo& event_to_cancel) {

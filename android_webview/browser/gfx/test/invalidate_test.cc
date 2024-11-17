@@ -390,7 +390,7 @@ class InvalidateTest
     auto child_frame = std::make_unique<ChildFrame>(
         future, kRootClientSinkId, kFrameSize, gfx::Transform(), false, 1.0f,
         CopyOutputRequestQueue(), /*did_invalidate=*/invalidated, args,
-        /*renderer_thread_ids=*/base::flat_set<base::PlatformThreadId>(),
+        /*renderer_thread_ids=*/std::vector<viz::Thread>(),
         /*browser_io_thread_id=*/base::kInvalidThreadId);
     return child_frame;
   }

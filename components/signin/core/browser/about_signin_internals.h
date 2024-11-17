@@ -26,7 +26,7 @@
 #include "components/signin/public/identity_manager/scope_set.h"
 
 namespace signin {
-struct AccountsInCookieJarInfo;
+class AccountsInCookieJarInfo;
 }
 
 class PrefRegistrySimple;

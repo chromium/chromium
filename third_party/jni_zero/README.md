@@ -283,21 +283,15 @@ than just `T` if `T` is not a nullable type.
 
 ### Testing Mockable Natives
 
-1. Add the `JniMocker` rule to your test.
-2. Call `JniMocker#mock` in a `setUp()` method for each interface you want to
-   stub out.
-
-`JniMocker` will reset the stubs during `tearDown()`.
-
 ```java
 /**
  * Tests for {@link AnimationFrameTimeHistogram}
  */
-@RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@RunWith(RobolectricTestRunner.class)
 public class AnimationFrameTimeHistogramTest {
-    @Rule
-    public JniMocker mocker = new JniMocker();
+    // Optional: Resets test overrides during tearDown().
+    // Not needed when using Chrome's test runners.
+    @Rule public JniResetterRule jniResetterRule = new JniResetterRule();
 
     @Mock
     AnimationFrameTimeHistogram.Natives mNativeMock;
@@ -305,7 +299,7 @@ public class AnimationFrameTimeHistogramTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(AnimationFrameTimeHistogramJni.TEST_HOOKS, mNativeMock);
+        AnimationFrameTimeHistogramJni.setInstanceForTesting(mNativeMock);
     }
 
     @Test
@@ -321,9 +315,9 @@ public class AnimationFrameTimeHistogramTest {
 If a native method is called without setting a mock in a unit test, an
 `UnsupportedOperationException` will be thrown.
 
-### Special case: DFMs
-DFMs have their own generated `GEN_JNI`s, which are `<module_name>_GEN_JNI`. In
-order to get your DFM's JNI to use the `<module_name>` prefix, you must add your
+### Special case: APK Splits
+Each APK split has their own generated `GEN_JNI`s, which are `<module_name>_GEN_JNI`. In
+order to get your split's JNI to use the `<module_name>` prefix, you must add your
 module name into the argument of the `@NativeMethods` annotation.
 
 So, for example, say your module was named `test_module`. You would annotate

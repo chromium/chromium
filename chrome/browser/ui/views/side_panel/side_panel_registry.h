@@ -8,23 +8,28 @@
 #include <memory>
 #include <vector>
 
-#include "base/observer_list.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_observer.h"
+#include "chrome/browser/ui/views/side_panel/side_panel_entry_scope.h"
+
+class SidePanelCoordinator;
 
 namespace content {
 class WebContents;
 }  // namespace content
 
-class SidePanelRegistryObserver;
-
 // This class is used for storing SidePanelEntries specific to a context. This
 // context can be one per tab or one per window. See also SidePanelCoordinator.
-class SidePanelRegistry final : public SidePanelEntryObserver {
+class SidePanelRegistry final : public SidePanelEntryObserver,
+                                public SidePanelEntryScope {
  public:
-  SidePanelRegistry();
+  using SidePanelEntryScope::GetBrowserWindowInterface;
+  using SidePanelEntryScope::GetTabInterface;
+
+  explicit SidePanelRegistry(tabs::TabInterface* tab_interface);
+  explicit SidePanelRegistry(BrowserWindowInterface* browser_window_interface);
   SidePanelRegistry(const SidePanelRegistry&) = delete;
   SidePanelRegistry& operator=(const SidePanelRegistry&) = delete;
   ~SidePanelRegistry() override;
@@ -44,9 +49,6 @@ class SidePanelRegistry final : public SidePanelEntryObserver {
   // Clear cached view for all owned entries.
   void ClearCachedEntryViews();
 
-  void AddObserver(SidePanelRegistryObserver* observer);
-  void RemoveObserver(SidePanelRegistryObserver* observer);
-
   // Registers a SidePanelEntry. Returns true if the entry is successfully
   // registered and false if a SidePanelEntry already exists in the registry for
   // the provided SidePanelEntry::Id.
@@ -55,11 +57,6 @@ class SidePanelRegistry final : public SidePanelEntryObserver {
   // Deregisters the entry for the given SidePanelEntry::Key. Returns true if
   // successful and false if there is no entry registered for the `key`.
   bool Deregister(const SidePanelEntry::Key& key);
-
-  // Deregisters the entry for the given SidePanelEntry::Key and returns the
-  // entry or nullptr if one does not exist.
-  std::unique_ptr<SidePanelEntry> DeregisterAndReturnEntry(
-      const SidePanelEntry::Key& key);
 
   // Set the active entry in the side panel to be |entry|.
   void SetActiveEntry(SidePanelEntry* entry);
@@ -73,8 +70,12 @@ class SidePanelRegistry final : public SidePanelEntryObserver {
   // SidePanelEntryObserver:
   void OnEntryShown(SidePanelEntry* id) override;
 
+  // SidePanelEntryScope:
+  const tabs::TabInterface& GetTabInterface() const override;
+  const BrowserWindowInterface& GetBrowserWindowInterface() const override;
+
  private:
-  std::unique_ptr<SidePanelEntry> RemoveEntry(SidePanelEntry* entry);
+  SidePanelCoordinator* GetCoordinator();
 
   // The active entry hosted in the side panel used to determine what entry
   // should be visible. This is reset by the coordinator when the panel is
@@ -88,9 +89,9 @@ class SidePanelRegistry final : public SidePanelEntryObserver {
 
   std::vector<std::unique_ptr<SidePanelEntry>> entries_;
 
-  std::optional<SidePanelEntryKey> deregistering_entry_key_ = std::nullopt;
+  const std::variant<tabs::TabInterface*, BrowserWindowInterface*> owner_;
 
-  base::ObserverList<SidePanelRegistryObserver> observers_;
+  std::optional<SidePanelEntryKey> deregistering_entry_key_ = std::nullopt;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_REGISTRY_H_

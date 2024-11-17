@@ -27,14 +27,22 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_DIALOG_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/events/toggle_event.h"
 #include "third_party/blink/renderer/core/html/closewatcher/close_watcher.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 
 namespace blink {
 
 class Document;
 class ExceptionState;
+
+enum class ClosedByState {
+  kAny,
+  kCloseRequest,
+  kNone,
+};
 
 class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
@@ -46,16 +54,25 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
 
   void close(const String& return_value = String(),
              bool ignore_open_attribute = false);
+  void requestClose(const String& return_value = String());
   void show(ExceptionState&);
   void showModal(ExceptionState&);
   void RemovedFrom(ContainerNode&) override;
 
   bool IsModal() const { return is_modal_; }
+  bool IsOpen() const { return FastHasAttribute(html_names::kOpenAttr); }
 
   String returnValue() const { return return_value_; }
   void setReturnValue(const String& return_value) {
     return_value_ = return_value;
   }
+
+  ClosedByState ClosedBy() const;
+  String closedBy() const;
+  void setClosedBy(const String& return_value);
+
+  static void HandleDialogLightDismiss(const Event& event,
+                                       const Node& target_node);
 
   void CloseWatcherFiredCancel(Event*);
   void CloseWatcherFiredClose();
@@ -80,15 +97,23 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   // to stable with no issues.
   static void SetFocusForDialogLegacy(HTMLDialogElement* dialog);
 
-  bool IsValidCommand(HTMLElement& invoker, CommandEventType command) override;
+  bool IsValidBuiltinCommand(HTMLElement& invoker,
+                             CommandEventType command) override;
   bool HandleCommandInternal(HTMLElement& invoker,
                              CommandEventType command) override;
 
- private:
+  void AttributeChanged(const AttributeModificationParams&) override;
   void ParseAttribute(const AttributeModificationParams&) override;
+
+ private:
+  void SetCloseWatcherEnabledState();
+  void CreateCloseWatcher();
 
   void SetIsModal(bool is_modal);
   void ScheduleCloseEvent();
+
+  bool DispatchToggleEvents(bool opening, bool asModal = false);
+  void DispatchPendingToggleEvent();
 
   bool is_modal_;
   // is_closing_ is set to true at the beginning of close() and is reset to
@@ -98,6 +123,9 @@ class CORE_EXPORT HTMLDialogElement final : public HTMLElement {
   WeakMember<Element> previously_focused_element_;
 
   Member<CloseWatcher> close_watcher_;
+
+  TaskHandle pending_toggle_event_task_;
+  Member<ToggleEvent> pending_toggle_event_;
 };
 
 }  // namespace blink

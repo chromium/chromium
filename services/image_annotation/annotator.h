@@ -14,6 +14,7 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -279,7 +280,9 @@ class Annotator : public mojom::Annotator {
   // Note that separate local processing will be scheduled for two requests that
   // share a source ID but differ in language. This is suboptimal; in future we
   // could share local processing among all relevant requests.
-  std::map<RequestKey, mojo::Remote<mojom::ImageProcessor>*> local_processors_;
+  std::map<RequestKey,
+           raw_ptr<mojo::Remote<mojom::ImageProcessor>, CtnExperimental>>
+      local_processors_;
 
   // A list of currently-ongoing HTTP requests to the image annotation server.
   UrlLoaderList ongoing_server_requests_;

@@ -180,13 +180,11 @@ bool WebRemoteFrameImpl::IsWebLocalFrame() const {
 }
 
 WebLocalFrame* WebRemoteFrameImpl::ToWebLocalFrame() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 const WebLocalFrame* WebRemoteFrameImpl::ToWebLocalFrame() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool WebRemoteFrameImpl::IsWebRemoteFrame() const {
@@ -201,8 +199,8 @@ const WebRemoteFrame* WebRemoteFrameImpl::ToWebRemoteFrame() const {
   return this;
 }
 
-void WebRemoteFrameImpl::Close() {
-  WebRemoteFrame::Close();
+void WebRemoteFrameImpl::Close(DetachReason detach_reason) {
+  WebRemoteFrame::Close(detach_reason);
 
   self_keep_alive_.Clear();
 }

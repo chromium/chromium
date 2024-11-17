@@ -600,7 +600,7 @@ pointer to a DFM-created object or factory (implemented by the feature), and
 call its virtual methods.
 
 Ideally, the interface to the feature will avoid feature-specific types. If a
-feature defines complex data types, and uses them in its own interface, then its
+feature defines complex data types, and uses them in its own interface, then it's
 likely the main library will utilize the code backing these types. That code,
 and anything it references, will in turn be pulled back into the main library,
 negating the intent to house code in the DFM.

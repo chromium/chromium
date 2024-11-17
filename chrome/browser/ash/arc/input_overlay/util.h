@@ -71,9 +71,6 @@ void UpdateFlagAndProperty(aura::Window* window,
                            ash::ArcGameControlsFlag flag,
                            bool turn_on);
 
-// TODO(b/253646354): This will be removed when removing the flag.
-bool IsBeta();
-
 }  // namespace arc::input_overlay
 
 #endif  // CHROME_BROWSER_ASH_ARC_INPUT_OVERLAY_UTIL_H_

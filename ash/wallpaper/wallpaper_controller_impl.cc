@@ -285,14 +285,15 @@ scoped_refptr<base::RefCountedMemory> EncodeAndResizeImage(
     gfx::ImageSkia image) {
   auto resized = WallpaperResizer::GetResizedImage(image,
                                                    /*max_size_in_dips=*/1024);
-  scoped_refptr<base::RefCountedMemory> jpg_bytes = new base::RefCountedBytes();
-  std::vector<uint8_t> jpg_buffer;
   // Conversion quality between 0 - 100. Manually tested to use 90 for good
   // performance with reasonable quality.
-  gfx::JPEG1xEncodedDataFromImage(gfx::Image(resized), /*quality=*/90,
-                                  &jpg_buffer);
-  jpg_bytes = base::RefCountedBytes::TakeVector(&jpg_buffer);
-  return jpg_bytes;
+  std::optional<std::vector<uint8_t>> jpg_buffer =
+      gfx::JPEG1xEncodedDataFromImage(gfx::Image(resized), /*quality=*/90);
+  if (jpg_buffer) {
+    return base::MakeRefCounted<base::RefCountedBytes>(
+        std::move(jpg_buffer).value());
+  }
+  return base::MakeRefCounted<base::RefCountedBytes>(0);
 }
 
 // Selects the online wallpaper variant to show and specifies it in the
@@ -1038,10 +1039,10 @@ void WallpaperControllerImpl::OnPolicyWallpaperDecoded(
   }
   wallpaper_metrics_manager_->LogWallpaperResult(WallpaperType::kPolicy,
                                                  SetWallpaperResult::kSuccess);
-  SaveAndSetWallpaper(
-      account_id, user_type == user_manager::UserType::kPublicAccount,
-      kPolicyWallpaperFile, /*file_path=*/"", WallpaperType::kPolicy,
-      WALLPAPER_LAYOUT_CENTER_CROPPED, show_wallpaper, image);
+  SaveAndSetWallpaper(account_id, IsEphemeralUser(account_id),
+                      kPolicyWallpaperFile, /*file_path=*/"",
+                      WallpaperType::kPolicy, WALLPAPER_LAYOUT_CENTER_CROPPED,
+                      show_wallpaper, image);
 }
 
 void WallpaperControllerImpl::SetDevicePolicyWallpaperPath(
@@ -1179,7 +1180,8 @@ void WallpaperControllerImpl::ShowUserWallpaper(
     const user_manager::UserType user_type) {
   current_account_id_ = account_id;
   if (user_type == user_manager::UserType::kKioskApp ||
-      user_type == user_manager::UserType::kWebKioskApp) {
+      user_type == user_manager::UserType::kWebKioskApp ||
+      user_type == user_manager::UserType::kKioskIWA) {
     return;
   }
 
@@ -1788,15 +1790,6 @@ void WallpaperControllerImpl::CompositorLockTimedOut() {
 void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   AccountId account_id = GetActiveAccountId();
-
-  // Tests may not initialize global wallpaper dirs before logging in a user.
-  if (sea_pen_wallpaper_manager_.ShouldMigrate(account_id) &&
-      !GlobalChromeOSSeaPenWallpaperDir().empty()) {
-    sea_pen_wallpaper_manager_.Migrate(
-        account_id, GetUserSeaPenWallpaperDir(account_id),
-        base::BindOnce(&WallpaperControllerImpl::OnSeaPenFilesMigrated,
-                       weak_factory_.GetWeakPtr(), account_id));
-  }
 
   WallpaperInfo local_info;
   if (pref_manager_->GetLocalWallpaperInfo(account_id, &local_info) &&

@@ -176,7 +176,11 @@ impl SharedBuffer {
                 info.inner_mut_ptr(),
             )
         });
-        if r != MojoResult::Okay { Err(r) } else { Ok(info.size) }
+        if r != MojoResult::Okay {
+            Err(r)
+        } else {
+            Ok(info.size)
+        }
     }
 }
 

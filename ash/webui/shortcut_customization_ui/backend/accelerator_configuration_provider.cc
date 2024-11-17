@@ -16,7 +16,6 @@
 #include "ash/accelerators/ash_accelerator_configuration.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/picker/picker_controller.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerators_util.h"
 #include "ash/public/mojom/accelerator_configuration.mojom-shared.h"
@@ -24,6 +23,7 @@
 #include "ash/public/mojom/accelerator_info.mojom-forward.h"
 #include "ash/public/mojom/accelerator_info.mojom-shared.h"
 #include "ash/public/mojom/accelerator_keys.mojom.h"
+#include "ash/quick_insert/quick_insert_controller.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_controller_impl.h"
 #include "ash/webui/shortcut_customization_ui/backend/accelerator_layout_table.h"
@@ -36,9 +36,6 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
-#include "build/branding_buildflags.h"
-#include "build/build_config.h"
-#include "build/buildflag.h"
 #include "components/prefs/pref_member.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -57,10 +54,6 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/types/event_type.h"
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash {
 
@@ -451,8 +444,6 @@ std::string GetUuid(mojom::AcceleratorSource source,
 // or specific device property.
 bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
   switch (details.action_id) {
-    case kCreateSnapGroup:
-      return !features::IsSnapGroupEnabled();
     // Hide user switching shortcuts for lacros builds.
     case kSwitchToNextUser:
     case kSwitchToPreviousUser:
@@ -468,9 +459,6 @@ bool ShouldExcludeItem(const AcceleratorLayoutDetails& details) {
       return !::features::IsAccessibilityMouseKeysEnabled();
     case kToggleSnapGroupWindowsMinimizeAndRestore:
       return true;
-    case kTogglePicker:
-      return !(ash::features::IsPickerUpdateEnabled() &&
-               Shell::Get()->picker_controller());
   }
 
   return false;
@@ -604,7 +592,7 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
   // data that provides additional details for the app for styling.
   // Also create a cached shortcut description lookup.
   for (const auto& layout_id : kAcceleratorLayouts) {
-    std::optional<AcceleratorLayoutDetails> layout =
+    const std::optional<AcceleratorLayoutDetails> layout =
         GetAcceleratorLayout(layout_id);
     if (!layout) {
       LOG(ERROR) << "Unexpectedly could not find layout for id: " << layout_id;
@@ -614,12 +602,6 @@ AcceleratorConfigurationProvider::AcceleratorConfigurationProvider(
       continue;
     }
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    if (layout_id == AcceleratorAction::kTogglePicker &&
-        Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()) {
-      layout->description_string_id = IDS_ASH_ACCELERATOR_DESCRIPTION_RIGHT_ALT;
-    }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     layout_infos_.push_back(LayoutInfoToMojom(*layout));
     accelerator_layout_lookup_[GetUuid(layout->source, layout->action_id)] =
         *layout;

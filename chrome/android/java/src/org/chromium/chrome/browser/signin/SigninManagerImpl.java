@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -566,9 +565,7 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         // Check the management domain before nativeSignOut() potentially clears it.
         boolean shouldWipeBecauseOfAccountManagement =
                 getManagementDomain() != null
-                        && (!ChromeFeatureList.isEnabled(
-                                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                                || mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC));
+                        && mIdentityManager.hasPrimaryAccount(ConsentLevel.SYNC);
         @SignOutState.DataWipeAction
         int dataWipeAction =
                 (forceWipeUserData || shouldWipeBecauseOfAccountManagement)
@@ -624,16 +621,13 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         // Should be set at start of sign-out flow.
         assert mSignOutState != null;
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)) {
-            // After sign-out, reset the Sync promo show count, so the user will see Sync promos
-            // again.
-            ChromeSharedPreferences.getInstance()
-                    .writeInt(
-                            ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                                    SigninPreferencesManager.SyncPromoAccessPointId.NTP),
-                            0);
-        }
+        // After sign-out, reset the Sync promo show count, so the user will see Sync promos
+        // again.
+        ChromeSharedPreferences.getInstance()
+                .writeInt(
+                        ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
+                                SigninPreferencesManager.SyncPromoAccessPointId.NTP),
+                        0);
         SignOutCallback signOutCallback = mSignOutState.mSignOutCallback;
         if (mAccountManagerFacade.getCoreAccountInfos().isFulfilled()) {
             // We don't reload the accounts if they are not yet available.
@@ -906,8 +900,8 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
 
         /**
          * @param signOutCallback Hooks to call before/after data wiping phase of sign-out.
-         * @param shouldWipeUserData Flag to wipe user data as requested by the user and enforced
-         *         for managed users.
+         * @param dataWipeAction Flag to wipe user data as requested by the user and enforced for
+         *     managed users.
          */
         SignOutState(
                 @Nullable SignOutCallback signOutCallback, @DataWipeAction int dataWipeAction) {

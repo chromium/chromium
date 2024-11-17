@@ -110,10 +110,8 @@ constexpr std::string_view kManifestPath =
 constexpr std::string_view kIconPath = "/icon.png";
 
 IsolatedWebAppUrlInfo CreateRandomIsolatedWebAppUrlInfo() {
-  web_package::SignedWebBundleId signed_web_bundle_id =
-      web_package::SignedWebBundleId::CreateRandomForProxyMode();
   return IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
-      signed_web_bundle_id);
+      web_package::SignedWebBundleId::CreateRandomForProxyMode());
 }
 
 IsolatedWebAppUrlInfo CreateEd25519IsolatedWebAppUrlInfo() {
@@ -221,6 +219,7 @@ class InstallIsolatedWebAppCommandTest : public WebAppTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 };
 
 TEST_F(InstallIsolatedWebAppCommandTest, PropagateErrorWhenURLLoaderFails) {
@@ -355,11 +354,11 @@ TEST_F(InstallIsolatedWebAppCommandTest, PendingUpdateInfoIsEmpty) {
   SetUpPageAndIconStates(url_info);
 
   EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info}), HasValue());
-  EXPECT_THAT(web_app_registrar().GetAppById(url_info.app_id()),
-              Pointee(Property(
-                  &WebApp::isolation_data,
-                  Optional(Property(&WebApp::IsolationData::pending_update_info,
-                                    Eq(std::nullopt))))));
+  EXPECT_THAT(
+      web_app_registrar().GetAppById(url_info.app_id()),
+      Pointee(Property(&WebApp::isolation_data,
+                       Optional(Property(&IsolationData::pending_update_info,
+                                         Eq(std::nullopt))))));
 }
 
 TEST_F(InstallIsolatedWebAppCommandTest,
@@ -425,8 +424,8 @@ TEST_F(InstallIsolatedWebAppCommandTest, LocationSentToFinalizer) {
       web_app_registrar().GetAppById(url_info.app_id()),
       Pointee(AllOf(Property(
           "isolation_data", &WebApp::isolation_data,
-          Optional(Field(
-              "location", &WebApp::IsolationData::location,
+          Optional(Property(
+              "location", &IsolationData::location,
               Property("variant", &IsolatedWebAppStorageLocation::variant,
                        VariantWith<IwaStorageProxy>(Property(
                            "proxy_url", &IwaStorageProxy::proxy_url,
@@ -725,6 +724,26 @@ TEST_F(InstallIsolatedWebAppCommandTest,
                   /*IWAInstallError::kCantValidateManifest*/ 5, 1)));
 }
 
+TEST_F(InstallIsolatedWebAppCommandTest, FailsWhenAppInstalledAlready) {
+  auto app = IsolatedWebAppBuilder(ManifestBuilder())
+                 .BuildBundle(test::GetDefaultEd25519KeyPair());
+  auto install_source = IsolatedWebAppInstallSource::FromDevUi(
+      IwaSourceBundleDevModeWithFileOp(app->path(), kDefaultBundleDevFileOp));
+  app->FakeInstallPageState(profile());
+  app->TrustSigningKey();
+  IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
+
+  // Installation 1
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info,
+                                        .install_source = install_source}),
+              HasValue());
+  // Installation 2
+  EXPECT_THAT(ExecuteCommand(Parameters{.url_info = url_info,
+                                        .install_source = install_source}),
+              ErrorIs(Field(&InstallIsolatedWebAppCommandError::message,
+                            HasSubstr("already installed"))));
+}
+
 struct BundleTestInfo {
   bool has_error;
   bool not_trusted;
@@ -841,9 +860,6 @@ TEST_P(InstallIsolatedWebAppCommandBundleTest, InstallsWhenThereIsNoError) {
                   EXPECT_TRUE(DirectoryExists(iwa_root_dir));
                   EXPECT_TRUE(base::IsDirectoryEmpty(iwa_root_dir));
                   break;
-                case IwaSourceBundleModeAndFileOp::kDevModeReference:
-                  EXPECT_FALSE(DirectoryExists(iwa_root_dir));
-                  break;
               }
             },
             [](const IwaSourceProxy&) { FAIL(); }},
@@ -890,8 +906,8 @@ class InstallIsolatedWebAppCommandBundleInstallSourceTest
 
 TEST_P(InstallIsolatedWebAppCommandBundleInstallSourceTest,
        InstallationFinalizedWithCorrectInstallSurface) {
-  IsolatedWebAppBuilder builder{ManifestBuilder()};
-  auto app = builder.BuildBundle(test::GetDefaultEd25519KeyPair());
+  auto app = IsolatedWebAppBuilder(ManifestBuilder())
+                 .BuildBundle(test::GetDefaultEd25519KeyPair());
   app->FakeInstallPageState(profile());
   app->TrustSigningKey();
   IsolatedWebAppUrlInfo url_info = CreateEd25519IsolatedWebAppUrlInfo();
@@ -944,16 +960,16 @@ INSTANTIATE_TEST_SUITE_P(
         BundleInstallSourceParam{
             .install_source =
                 [](const base::FilePath& path) {
-                  return IsolatedWebAppInstallSource::FromDevUi(
+                  return IsolatedWebAppInstallSource::FromDevCommandLine(
                       IwaSourceBundleDevModeWithFileOp(
-                          path, IwaSourceBundleDevFileOp::kReference));
+                          path, IwaSourceBundleDevFileOp::kCopy));
                 },
             .expected_management_type =
                 WebAppManagement::Type::kIwaUserInstalled},
         BundleInstallSourceParam{
             .install_source =
                 [](const base::FilePath& path) {
-                  return IsolatedWebAppInstallSource::FromDevCommandLine(
+                  return IsolatedWebAppInstallSource::FromDevUi(
                       IwaSourceBundleDevModeWithFileOp(
                           path, IwaSourceBundleDevFileOp::kCopy));
                 },

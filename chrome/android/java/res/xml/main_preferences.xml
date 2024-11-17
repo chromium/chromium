@@ -12,10 +12,8 @@ for the previous order (main_preferences_legacy). -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orderingFromXml="false">
-
-    <org.chromium.chrome.browser.sync.settings.SyncPromoPreference
-        android:key="sync_promo"
-        android:order="0"/>
+<!-- `order=0` is reserved and it will be added in code.  -->
+<!-- TODO(crbug.com/364906215): Move SettingsPromoCardPreference here once SyncPromoPreference is removed -->
     <PreferenceCategory
         android:key="account_and_google_services_section"
         android:order="1"

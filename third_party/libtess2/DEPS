@@ -1,0 +1,5 @@
+include_rules = [
+  # Allow this third party code to use relative includes from its Source
+  # directory.
+  '+../Include/tesselator.h',
+]

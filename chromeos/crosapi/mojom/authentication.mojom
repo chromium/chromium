@@ -7,7 +7,7 @@ module crosapi.mojom;
 import "mojo/public/mojom/base/time.mojom";
 
 // Deprecated.
-[Stable, RenamedFrom="crosapi.mojom.QuickUnlockPrivateTokenInfo"]
+[RenamedFrom="crosapi.mojom.QuickUnlockPrivateTokenInfo"]
 struct QuickUnlockPrivateTokenInfoDeprecated {
   // The authentication token that can be passed to quickUnlockPrivate::SetModes
   // calls.
@@ -19,7 +19,7 @@ struct QuickUnlockPrivateTokenInfoDeprecated {
 };
 
 // Deprecated.
-[Stable, RenamedFrom="crosapi.mojom.CreateQuickUnlockPrivateTokenInfoResult"]
+[RenamedFrom="crosapi.mojom.CreateQuickUnlockPrivateTokenInfoResult"]
 union CreateQuickUnlockPrivateTokenInfoResultDeprecated {
   // Implies failure.
   string REMOVED_0@0;
@@ -29,7 +29,7 @@ union CreateQuickUnlockPrivateTokenInfoResultDeprecated {
 };
 
 // Deprecated.
-[Stable, Uuid="7548cbb8-944f-4db0-8f5d-a37512733c78",
+[Uuid="7548cbb8-944f-4db0-8f5d-a37512733c78",
   RenamedFrom="crosapi.mojom.Authentication"]
 interface AuthenticationDeprecated {
   // Deprecated.

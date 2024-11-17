@@ -14,25 +14,28 @@ found in the LICENSE file.
     android:layout_marginBottom="@dimen/facilitated_payments_header_bottom_margin"
     android:orientation="vertical">
 
-  <ImageView
-      android:id="@+id/branding_icon"
-      android:layout_width="wrap_content"
-      android:layout_height="@dimen/facilitated_payments_product_icon_height"
-      android:layout_marginVertical="@dimen/facilitated_payments_product_icon_margin_vertical"
-      android:importantForAccessibility="no"
-      android:layout_gravity="center_horizontal"/>
+    <ImageView
+        android:id="@+id/branding_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/facilitated_payments_product_icon_height"
+        android:layout_marginVertical="@dimen/facilitated_payments_product_icon_margin_vertical"
+        android:importantForAccessibility="no"
+        android:layout_gravity="center_horizontal" />
 
     <androidx.appcompat.widget.DialogTitle
         android:id="@+id/sheet_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/facilitated_payments_fop_selector_title_margin_top"
         android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle"/>
+        android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
+
     <TextView
-          android:id="@+id/description_text"
-          android:layout_height="wrap_content"
-          android:layout_width="match_parent"
-          android:textAlignment="center"
-          android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+        android:id="@+id/description_text"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginTop="@dimen/facilitated_payments_fop_selector_description_text_margin_top"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 </LinearLayout>

@@ -10,8 +10,8 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupColorUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -114,6 +114,8 @@ public class RemoteTabGroupMutationHelper {
         LogUtils.log(TAG, "updateTabIdMappingsOnStartup, localGroupId = " + localGroupId);
         // Update tab ID mapping for tabs in the group.
         SavedTabGroup group = mTabGroupSyncService.getGroup(localGroupId);
+        if (group == null) return;
+
         int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, localGroupId);
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
         // We just reconciled local state with sync. The tabs should match.
@@ -138,9 +140,7 @@ public class RemoteTabGroupMutationHelper {
     public void handleCommittedTabGroupClosure(LocalTabGroupId groupId, boolean wasHiding) {
         int closingSource =
                 wasHiding ? ClosingSource.CLOSED_BY_USER : ClosingSource.DELETED_BY_USER;
-        TabGroupSyncUtils.recordTabGroupOpenCloseMetrics(
-                mTabGroupSyncService, /* open= */ false, closingSource, groupId);
-        mTabGroupSyncService.removeLocalTabGroupMapping(groupId);
+        mTabGroupSyncService.removeLocalTabGroupMapping(groupId, closingSource);
         if (!wasHiding) {
             // When deleting drop the group from sync entirely.
             removeGroup(groupId);

@@ -40,7 +40,6 @@
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
-#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -204,15 +203,14 @@ std::unique_ptr<ClientMetadata> ConnectorsService::GetBasicClientMetadata(
   return metadata;
 }
 
-std::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
-    ReportingConnector connector) {
+std::optional<ReportingSettings> ConnectorsService::GetReportingSettings() {
 #if BUILDFLAG(IS_CHROMEOS)
   if (!ConnectorsEnabled()) {
     return std::nullopt;
   }
 
   std::optional<ReportingSettings> settings =
-      connectors_manager_->GetReportingSettings(connector);
+      connectors_manager_->GetReportingSettings();
   if (!settings.has_value())
     return std::nullopt;
 
@@ -230,7 +228,7 @@ std::optional<ReportingSettings> ConnectorsService::GetReportingSettings(
   }
 #endif
 
-  return ConnectorsServiceBase::GetReportingSettings(connector);
+  return ConnectorsServiceBase::GetReportingSettings();
 }
 
 std::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
@@ -492,23 +490,6 @@ std::optional<std::string> ConnectorsService::GetBrowserDmToken() const {
   return dm_token.value();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-std::optional<std::string> ConnectorsService::GetProfileDmToken() const {
-  Profile* profile = Profile::FromBrowserContext(context_);
-
-  policy::CloudPolicyManager* policy_manager = profile->GetCloudPolicyManager();
-  if (policy_manager && policy_manager->core() &&
-      policy_manager->core()->store() &&
-      policy_manager->core()->store()->has_policy() &&
-      policy_manager->core()->store()->policy()->has_request_token()) {
-    return policy_manager->core()->store()->policy()->request_token();
-  }
-
-  return std::nullopt;
-}
-
-#endif  // !BUILDFLAG(IS_CHROMEOS)
-
 policy::PolicyScope ConnectorsService::GetPolicyScope(
     const char* scope_pref) const {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -563,10 +544,14 @@ const ConnectorsManagerBase* ConnectorsService::GetConnectorsManagerBase()
   return connectors_manager_.get();
 }
 
+policy::CloudPolicyManager*
+ConnectorsService::GetManagedUserCloudPolicyManager() const {
+  return Profile::FromBrowserContext(context_)->GetCloudPolicyManager();
+}
+
 std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata(
     bool is_cloud) {
-  auto reporting_settings =
-      GetReportingSettings(ReportingConnector::SECURITY_EVENT);
+  auto reporting_settings = GetReportingSettings();
 
   Profile* profile = Profile::FromBrowserContext(context_);
   if (is_cloud && !reporting_settings.has_value()) {
@@ -628,14 +613,15 @@ ConnectorsServiceFactory::ConnectorsServiceFactory()
 
 ConnectorsServiceFactory::~ConnectorsServiceFactory() = default;
 
-KeyedService* ConnectorsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ConnectorsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   bool observe_prefs =
       IsManagedGuestSession()
           ? base::FeatureList::IsEnabled(kEnterpriseConnectorsEnabledOnMGS)
           : true;
 
-  return new ConnectorsService(
+  return std::make_unique<ConnectorsService>(
       context, std::make_unique<ConnectorsManager>(
                    user_prefs::UserPrefs::Get(context),
                    GetServiceProviderConfig(), observe_prefs));

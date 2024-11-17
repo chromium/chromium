@@ -232,7 +232,7 @@ struct VertexOut {
   wgpu::FutureWaitInfo wait_info{readback_buffer.MapAsync(
       wgpu::MapMode::Read, 0, wgpu::kWholeMapSize,
       wgpu::CallbackMode::WaitAnyOnly,
-      [](wgpu::MapAsyncStatus status, const char*) {
+      [](wgpu::MapAsyncStatus status, wgpu::StringView) {
         ASSERT_EQ(status, wgpu::MapAsyncStatus::Success);
       })};
 

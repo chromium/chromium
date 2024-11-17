@@ -9,9 +9,20 @@
 #include "components/autofill/core/common/autofill_regexes.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 
 namespace password_manager::util {
+
+namespace {
+
+// Returns true if the field attributes indicate a password field.
+bool IsLikelyPasswordField(std::u16string_view name, std::u16string_view id) {
+  return autofill::MatchesRegex<constants::kPasswordRe>(name) ||
+         autofill::MatchesRegex<constants::kPasswordRe>(id);
+}
+
+}  // namespace
 
 // The minimum length of the input name that allows considering it as potential
 // single username field.
@@ -28,13 +39,17 @@ bool IsRendererRecognizedCredentialForm(const autofill::FormData& form) {
                    std::string::npos ||
                field.autocomplete_attribute().find(
                    password_manager::constants::kAutocompleteWebAuthn) !=
-                   std::string::npos;
+                   std::string::npos ||
+               IsLikelyPasswordField(field.name_attribute(),
+                                     field.id_attribute());
       });
 }
 
-bool CanFieldBeConsideredAsSingleUsername(const std::u16string& name,
-                                          const std::u16string& id,
-                                          const std::u16string& label) {
+bool CanFieldBeConsideredAsSingleUsername(
+    const std::u16string& name,
+    const std::u16string& id,
+    const std::u16string& label,
+    autofill::mojom::FormControlType type) {
   // Do not consider fields with very short names/ids to avoid aggregating
   // multiple unrelated fields on the server. (crbug.com/1209143)
   if (name.length() < kMinInputNameLengthForSingleUsername &&
@@ -43,12 +58,13 @@ bool CanFieldBeConsideredAsSingleUsername(const std::u16string& name,
   }
   // Do not consider fields if their HTML attributes indicate they
   // are search fields.
-  return (name.find(password_manager::constants::kSearch) ==
+  return (base::ToLowerASCII(name).find(password_manager::constants::kSearch) ==
           std::u16string::npos) &&
-         (id.find(password_manager::constants::kSearch) ==
+         (base::ToLowerASCII(id).find(password_manager::constants::kSearch) ==
           std::u16string::npos) &&
-         (label.find(password_manager::constants::kSearch) ==
-          std::u16string::npos);
+         (base::ToLowerASCII(label).find(
+              password_manager::constants::kSearch) == std::u16string::npos) &&
+         (type != autofill::mojom::FormControlType::kInputSearch);
 }
 
 bool CanValueBeConsideredAsSingleUsername(const std::u16string& value) {

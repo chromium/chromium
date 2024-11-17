@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -46,10 +45,6 @@ class DeskApiExtensionManager : public KeyedService {
         ::extensions::ComponentLoader* component_loader) const;
   };
 
-  // Retrieves the `DeskApiExtensionManager` for the given
-  // profile.
-  static DeskApiExtensionManager* GetForProfile(Profile* profile);
-
   DeskApiExtensionManager(::extensions::ComponentLoader* component_loader,
                           Profile* profile,
                           std::unique_ptr<Delegate> delegate);
@@ -68,13 +63,7 @@ class DeskApiExtensionManager : public KeyedService {
   // https://developer.chrome.com/docs/extensions/mv3/intro/
   std::string GetManifest() const;
 
-  static void EnsureFactoryBuilt();
-
  private:
-  // Retrieves the factory instance for the
-  // `DeskApiExtensionManager`.
-  static BrowserContextKeyedServiceFactory* GetFactory();
-
   // Initializes the extension manager and sets up appropriate observers for
   // the relevant pref.
   void Init();

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html class=reftest-wait>
-<meta name=fuzzy content="maxDifference=0-16;totalPixels=0-6">
+<meta name=fuzzy content="maxDifference=0-41;totalPixels=0-6">
 <link rel=author href="mailto:jarhar@chromium.org">
 <link rel=help href="https://github.com/whatwg/html/issues/9799">
 <link rel=match href="select-appearance-picker-select-border-ref.html">
@@ -22,7 +22,8 @@ select::picker(select) {
 
 <script>
 (async () => {
-  await test_driver.click(document.querySelector('select'));
+  await test_driver.bless();
+  document.querySelector('select').showPicker();
   document.documentElement.classList.remove('reftest-wait');
 })();
 </script>

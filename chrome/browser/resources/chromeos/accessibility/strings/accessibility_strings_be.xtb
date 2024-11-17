@@ -1,6 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
+<translation id="100421257800558142">Націснуць клавішу са стрэлкай управа</translation>
 <translation id="100506692671054486">няма папярэдняй каманды</translation>
 <translation id="1009046985747440431">Для навігацыі па меню карыстайцеся Стрэлкай уверх і Стрэлкай уніз. Для актывацыі каманды націсніце Enter</translation>
 <translation id="1011903154582639569">Знайдзіце клавішу, а затым адніміце палец, каб увесці значэнне</translation>
@@ -21,12 +22,14 @@
 <translation id="1120743664840974483">{"а": "ала", "б": "барыс", "в": "вітаўт", "г": "ганна", "д": "давыд", "е": "ева", "ё": "ёлка", "ж": "жана", "з": "зося", "і": "ігар", "й": "йемен", "к": "кандрат", "л": "ларыса", "м": "марыя", "н": "надзея", "о": "осіп", "п": "павел", "р": "раіса", "с": "соня", "т": "тарас", "у": "уладзімір", "ў": "у нескладовае", "ф": "франак", "х": "харытон", "ц": "цаля", "ч": "чалавек", "ш": "шаг", "ы": "літара ы", "ь": "мяккі знак", "э": "эдуард", "ю": "юрый", "я": "якаў"}</translation>
 <translation id="1120938014254001895">Правядзіце двума пальцамі ўверх</translation>
 <translation id="1126928665165112660">Не курсівам</translation>
+<translation id="1133751489735776037">Тройчы націснуць на левую кнопку мышы</translation>
 <translation id="113582498867142724">Калекцыя змесціва тыпу "<ph name="TAG" />" (элементаў: <ph name="NUM" />)</translation>
 <translation id="1146441463334103638">Уключыць або выключыць экран</translation>
 <translation id="1156488781945104845">Бягучы час</translation>
 <translation id="1161762950103988776">Перайсці</translation>
 <translation id="1164857107703583584">Каманды хуткага пераходу спрашчаюць навігацыю па вэб-старонках.</translation>
 <translation id="1175914831232945926">Лічбы</translation>
+<translation id="1186712907912748007">Выконваецца перацягванне. <ph name="GESTURE" />, каб завяршыць. Іншыя жэсты часова недаступныя.</translation>
 <translation id="1188858454923323853">дадатковае</translation>
 <translation id="1189258430971676908">Вобласць практыкаванняў: выпадныя спісы</translation>
 <translation id="1195238899008218998">Пасляслоўе</translation>
@@ -52,16 +55,19 @@
 <translation id="1243477406442346359">Васільковы</translation>
 <translation id="1246424317317450637">Паўтлусты</translation>
 <translation id="1251750620252348585">Наступны загаловак узроўню 6</translation>
+<translation id="1264956950255940376">Скасіце левае вока</translation>
 <translation id="1268366246392928616">Няма папярэдняга матэматычнага выразу</translation>
 <translation id="1275718070701477396">Выбрана</translation>
 <translation id="1284576163386164372">Дапаможнікі заўсёды можна праглядзець, адкрыўшы меню дотыкам чатырма пальцамі і актываваўшы дапаможнік у раздзеле "ChromeVox".</translation>
 <translation id="1291286136605998134">Кнопка пераключэння</translation>
 <translation id="1299774449519412690">Светлы нябесна-блакітны</translation>
 <translation id="1303806948938513162">Каб увайсці ў меню ChromeVox, дакраніцеся чатырма пальцамі</translation>
+<translation id="1304162325618937178">Націснуць клавішу прабелу</translation>
 <translation id="1313373992684326101">Перайсці да папярэдняга раздзела. Напрыклад, да панэлі стану або панэлі запуску.</translation>
 <translation id="1315077335264761176">Арыентацыя з дапамогай сэнсарнага кіравання</translation>
 <translation id="1325363694295259631"><ph name="NAME" />, кнопка-пераключальнік у пункце меню не выбрана</translation>
 <translation id="1325946044405407859">Рудавата-карычневы</translation>
+<translation id="1328928545650070438">Апусціце бровы</translation>
 <translation id="1331702245475014624"><ph name="INDEX" /> з <ph name="TOTAL" /></translation>
 <translation id="1334095593597963605">рэха сімвалаў і слоў</translation>
 <translation id="1334570596456017464">Падрадковы тэкст</translation>
@@ -70,6 +76,7 @@
 <translation id="1346059596910821859">Парада</translation>
 <translation id="1354356357730355833">скапіраваць</translation>
 <translation id="1360699455582016846">Націснуць на элемент пад ключом маршрутызацыі <ph name="ROUTING_KEY_NUMBER" /></translation>
+<translation id="1365650529628379165">Уздыміце бровы</translation>
 <translation id="1376703628032300005">перайсці да наступнага сімвала</translation>
 <translation id="1377925789329510816">Гэта апошні загаловак. Націсніце "Пошук"+H, каб прагартаць да першага загалоўка, або "Пошук"+Shift+H, каб перайсці да другога загалоўка на гэтай старонцы.</translation>
 <translation id="138218114945450791">Светла-сіні</translation>
@@ -131,6 +138,7 @@
 <translation id="1771761307086386028">Прагартаць управа</translation>
 <translation id="1781173782405573156">Клавіша пераходу</translation>
 <translation id="1787176709638001873">Рэдагаванне пароля</translation>
+<translation id="1795438342141780114">Памясціць курсор у цэнтр</translation>
 <translation id="180203835522132923">Пошук + O, затым W</translation>
 <translation id="1810107444790159527">Поле спіса</translation>
 <translation id="1812527064848182527">альбомная</translation>
@@ -148,6 +156,7 @@
 <translation id="1914424852593176649">Памер <ph name="FONT_SIZE" /></translation>
 <translation id="1914635379910604678">камбінацыя <ph name="DOT" /></translation>
 <translation id="1923956950274750765">Умераны архідэйны</translation>
+<translation id="1926147969119007125">Прыпыніць кіраванне тварам</translation>
 <translation id="1928932365747995741">Няма папярэдняга тэкставага поля, якое можна рэдагаваць</translation>
 <translation id="1964135212174907577">Наступны аб’ект</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
@@ -169,6 +178,7 @@
 <translation id="2121067395472282800">клавіша доступу:<ph name="KEY" /></translation>
 <translation id="2126597928985245619">Няма тэксту для гэтага элемента</translation>
 <translation id="2127747486437921899">Курсіў</translation>
+<translation id="2148212683005708350"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="KEY" /></translation>
 <translation id="2152179395627233441">Закрыць вобласць практыкаванняў</translation>
 <translation id="2163782704988363449">Памылкі</translation>
 <translation id="2169714232367507776">Націснуць на бягучы элемент</translation>
@@ -178,9 +188,11 @@
 <translation id="2197863150503783129">Скураны карычневы</translation>
 <translation id="2199994615414171367">Папярэдняе матэматычнае дзеянне</translation>
 <translation id="2203046366315513658">Паменшыць значэнне</translation>
+<translation id="2206580811360135054">Паказаць ці схаваць агляд вокнаў</translation>
 <translation id="2216790501338699346">URL-адрас спасылкі: <ph name="LINK_URL" /></translation>
 <translation id="2220205454259065436">Перамясціць на адзін сімвал назад</translation>
 <translation id="2220529011494928058">Паведаміць аб праблеме</translation>
+<translation id="2239819015858077439">Націснуць клавішу са стрэлкай уніз</translation>
 <translation id="2243633977138166243">Для навігацыі па меню карыстайцеся стрэлкай улева і стрэлкай управа; для актывацыі каманды націсніце Enter</translation>
 <translation id="224426591676115802">Няма даступных галасоў для мовы "<ph name="LANGUAGE" />"</translation>
 <translation id="2247700577781885251">Ажыццяўляецца выхад з рэжыму навучання</translation>
@@ -188,6 +200,7 @@
 <translation id="2267538686624070261">Пакіданне няправільна напісанага слова</translation>
 <translation id="2267945578749931355">Наступны сімвал</translation>
 <translation id="2278490101488436824">Правядзіце трыма пальцамі ўлева</translation>
+<translation id="228059581448666199">Націснуць на левую кнопку мышы</translation>
 <translation id="2303873575703885770">Актывацыя элемента</translation>
 <translation id="2305942658236913680">Наступнага загалоўка няма</translation>
 <translation id="2311237334957139798">Перайсці да папярэдняга элемента ў дэталізацыі</translation>
@@ -197,6 +210,7 @@
 <translation id="2347456970887948350">Спасылка</translation>
 <translation id="2363753371702255035">маркер</translation>
 <translation id="2365384324219615024">Для актывацыі аб’ектаў можна выкарыстоўваць клавішу Enter. Напрыклад, націскаючы Enter, вы можаце ўводзіць тэкст у формы. Націсніце Enter, каб працягнуць.</translation>
+<translation id="2371402123699727805">Галасавы ўвод актыўны. <ph name="GESTURE" />, каб спыніць. Іншыя жэсты часова недаступныя.</translation>
 <translation id="2381733276052567791">Уключыць або выключыць маўленне</translation>
 <translation id="2390264819538553347">Націсніце клавішу Enter, каб перайсці на наступную старонку, або Backspace, каб вярнуцца на папярэднюю.</translation>
 <translation id="2398579267367951220">Увядзіце тэкст, які трэба знайсці на старонцы. Enter – перайсці да выніку, стрэлкі ўверх або ўніз – пераключыцца паміж вынікамі. Каб змяніць пошукавы запыт, увядзіце патрэбны тэкст. Esc – скасаваць пошук.</translation>
@@ -259,9 +273,11 @@
 <translation id="2723001399770238859">аўдыя</translation>
 <translation id="2737898226590637227">Няма наступнага арыенціра ARIA</translation>
 <translation id="2749275490991666823">Выбраны</translation>
+<translation id="2751454300227269244">Ссуньце рот управа</translation>
 <translation id="27527859628328957">Перамясціць фокус на наступны даступны элемент</translation>
 <translation id="2756452585631602151">Увядзіце карыстальніцкую метку</translation>
 <translation id="2766299274563946262">Ячэйкі злева няма</translation>
+<translation id="2770947749427257887">Увайсці ў рэжым гартання</translation>
 <translation id="2783001728278437613">{COUNT,plural, =1{+#}one{+#}few{+#}many{+#}other{+#}}</translation>
 <translation id="2792200646155001340">Для пераходу да папярэдняга элемента можна таксама правесці адным пальцам справа налева. Паспрабуйце.</translation>
 <translation id="280499067616661124">ChromeVox знайсці на старонцы</translation>
@@ -272,6 +288,8 @@
 <translation id="2843432675592278677">Няма папярэдняга арыенціра ARIA</translation>
 <translation id="2843814945404750166">Цёмны аліўкава-зялёны</translation>
 <translation id="2843837985843789981">Папярэдняя група</translation>
+<translation id="2849035674501872372">Знайсці</translation>
+<translation id="2860710618359053450">Змясціце сківіцу ўправа</translation>
 <translation id="2864481629947106776">Папярэдняя спасылка</translation>
 <translation id="2867808975387772810">Бібліяграфія</translation>
 <translation id="2873259058405069099">Перайсці ў пачатак табліцы</translation>
@@ -308,6 +326,7 @@
 <translation id="3060880924447482063">Для перамяшчэння паміж элементамі правядзіце пальцам улева або ўправа</translation>
 <translation id="3070245424257836917">Правядзіце трыма пальцамі ўверх</translation>
 <translation id="307516670110542567">Кароткі курс</translation>
+<translation id="3077734595579995578">shift</translation>
 <translation id="3078345202707391975">Наступны загаловак узроўню 2</translation>
 <translation id="3078740164268491126">табліца</translation>
 <translation id="3082249673510793544">Прагартаць назад</translation>
@@ -335,8 +354,10 @@
 <translation id="3153928844647607688">Табліца "<ph name="TABLENAME" />", <ph name="TABLEROWS" /> на <ph name="TABLECOLS" /></translation>
 <translation id="3159493096109238499">Бэжавы</translation>
 <translation id="316542773973815724">Навігацыя</translation>
+<translation id="3167446923957429259">Ссуньце рот улева</translation>
 <translation id="3172700825913348768">{COUNT,plural, =1{прабел}one{# прабел}few{# прабелы}many{# прабелаў}other{# прабелу}}</translation>
 <translation id="3179119189286472195">Не звязаны</translation>
+<translation id="3180990259147710757">Змясціце сківіцу ўлева</translation>
 <translation id="320041337977930740">Змяніць стыль паказу на стыль з чаргаваннем</translation>
 <translation id="3206698050650195442">Выйсці з дапаможніка</translation>
 <translation id="3208346789712025453">Няма наступнага элемента кіравання</translation>
@@ -364,6 +385,7 @@
 <translation id="3322936298410871309">Папярэдні загаловак узроўню 1</translation>
 <translation id="3323447499041942178">Тэкставае поле</translation>
 <translation id="3324983252691184275">Цёмна-чырвоны</translation>
+<translation id="334252345105450327">Зрабіць здымак экрана</translation>
 <translation id="335581015389089642">Маўленне</translation>
 <translation id="3356951775008366684">Агучыць фанетычнае вымаўленне слова</translation>
 <translation id="3359142382821736686">раздзяляльнік</translation>
@@ -372,6 +394,7 @@
 <translation id="3374537878095184207">{COUNT,plural, =1{плюс}one{# знак плюса}few{# знакі плюса}many{# знакаў плюса}other{# знака плюса}}</translation>
 <translation id="338583716107319301">Раздзяляльнік</translation>
 <translation id="3389259863310851658">Папярэдняе поле формы</translation>
+<translation id="3390740059150071453">Паглядзіце ўлева</translation>
 <translation id="3393605254399152980">Правядзіце адным пальцам, каб пачуць, да чаго вы дакрануліся</translation>
 <translation id="3406283310380167331">Паказаць спіс форм</translation>
 <translation id="3407726812456125464">Праслухаць вылучаны тэкст</translation>
@@ -385,6 +408,7 @@
 <translation id="3466530247399808663">Націснута няправільная клавіша</translation>
 <translation id="3468959318854349468">Без назвы</translation>
 <translation id="3469413619751135069">Бледна-зялёны</translation>
+<translation id="3473744269398144689">Пачаць галасавы ўвод</translation>
 <translation id="3490765818161916458">Сетка спісаў</translation>
 <translation id="3492609944033322585">{COUNT,plural, =1{правая квадратная дужка}one{# правая квадратная дужка}few{# правыя квадратныя дужкі}many{# правых квадратных дужак}other{# правай квадратнай дужкі}}</translation>
 <translation id="3494946239022273294">пктменю</translation>
@@ -426,6 +450,7 @@
 <translation id="3777255250339039212">заг1</translation>
 <translation id="3777742246909257041">Снег</translation>
 <translation id="3781428340399460090">Ярка-ружовы</translation>
+<translation id="3783640748446814672">alt</translation>
 <translation id="3783725005098956899">Паказаць журнал</translation>
 <translation id="3801735343383419236">Спіс аўтазапаўнення</translation>
 <translation id="3806327402890551732">Пераход да наступнага або папярэдняга элемента</translation>
@@ -440,6 +465,7 @@
 <translation id="3870295413168340326">Няма папярэдняга загалоўка ўзроўню 3</translation>
 <translation id="3887399638190992181">Асноўныя клавішы</translation>
 <translation id="3887576927692165210">рэд</translation>
+<translation id="3896762831164962772">Функцыя кіравання тварам прыпынена. <ph name="GESTURE" />, каб узнавіць. Іншыя жэсты часова недаступныя.</translation>
 <translation id="3897092660631435901">Меню</translation>
 <translation id="3907138069015388678">сткспс</translation>
 <translation id="3909320334364316587">Папярэдні загаловак узроўню 6</translation>
@@ -471,6 +497,7 @@
 <translation id="409334809956508737">Папярэдні аб’ект</translation>
 <translation id="4099274309791143834">з падменю</translation>
 <translation id="4101527861445851766">Пазначанае поле для птушкі</translation>
+<translation id="410225014223200513">Акругліце вусны</translation>
 <translation id="4115378294792113321">Пурпурны</translation>
 <translation id="4116415223832267137">Абвестка</translation>
 <translation id="4148180433151187540">{COUNT,plural, =1{правая фігурная дужка}one{# правая фігурная дужка}few{# правыя фігурныя дужкі}many{# правых фігурных дужак}other{# правай фігурнай дужкі}}</translation>
@@ -498,6 +525,7 @@
 <translation id="4246217262268234757">Сталёва-сіні</translation>
 <translation id="4253168017788158739">Нататка</translation>
 <translation id="4254798249533888099">Дрэва</translation>
+<translation id="4255016471934258618">Шырока адкрыйце рот</translation>
 <translation id="4259220820964911921">Уключыць кіраванне з дапамогай мімікі?</translation>
 <translation id="4271220233568730077">Наступны матэматычны сімвал</translation>
 <translation id="4275397969489577657">Уключыць вядзенне журнала плыні падзей</translation>
@@ -506,9 +534,11 @@
 <translation id="4289540628985791613">Агляд</translation>
 <translation id="4294967782363273192">Адсартавана па ўзрастанні</translation>
 <translation id="4300318234632215983">Паказваць URL-адрас спасылак</translation>
+<translation id="4321179778687042513">ctrl</translation>
 <translation id="4322625298640984693">Вохравы</translation>
 <translation id="4342180618051828363">{COUNT,plural, =1{кропка}=3{шматкроп’е}one{# кропка}few{# кропкі}many{# кропак}other{# кропкі}}</translation>
 <translation id="4352022650330571548">увесці слова "<ph name="PHRASE" />"</translation>
+<translation id="4360738659108163902">Націснуць на правую кнопку мышы</translation>
 <translation id="4372435075475052704">мін:<ph name="X" /></translation>
 <translation id="4372705107434148843">Спыніць агучванне</translation>
 <translation id="4376316291247992553">Паказаць графічны аб’ект як набор кропак на дысплэі Брайля</translation>
@@ -518,9 +548,12 @@
 <translation id="4391478986194775161">звесткзмесц</translation>
 <translation id="4402014469255336455">Нябесна-сіні</translation>
 <translation id="4406249099130339147">Рэха пунктуацыі:</translation>
+<translation id="441418754432585599"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="KEY" /></translation>
+<translation id="4423525817792153232">Пакажыце ўсе зубы</translation>
 <translation id="4432457053224379116">Індыйскі чырвоны</translation>
 <translation id="4432896207833262240">Пазначанае змесціва</translation>
 <translation id="4437615272777527928">Пачніце ўводзіць тэкст, які трэба знайсці ў меню. Для прагляду вынікаў выкарыстоўвайце клавішы са стрэлкамі ўверх і ўніз. Каб змяняць становішча курсора рэдагавання тэксту і перамяшчацца паміж меню, выкарыстоўвайце клавішы са стрэлкамі ўлева і ўправа.</translation>
+<translation id="4441677939526091190">Націснуць клавішу са стрэлкай уверх</translation>
 <translation id="4453530046591759283">Для пераходу на іншыя часткі экрана, напрыклад на панэль інструментаў або панэль заданняў, націсніце клавішы Ctrl + F1. F1 – гэта першая клавіша справа ад Esc.</translation>
 <translation id="4457472090507035117">Выбар бягучага голасу:</translation>
 <translation id="4476183483923481720">новы радок</translation>
@@ -538,6 +571,7 @@
 <translation id="4562381607973973258">Загаловак</translation>
 <translation id="4597532268155981612">форма</translation>
 <translation id="4601367666219428522">тбл <ph name="TABLENAME" /> <ph name="TABLEROWS" />x<ph name="TABLECOLS" /></translation>
+<translation id="4606933160360542263">Уласная камбінацыя клавіш: <ph name="KEY_COMBINATION" /></translation>
 <translation id="4615592953348396470">Наступная націснутая клавіша будзе праігнаравана</translation>
 <translation id="4617384941327705512">Разумны рэжым заліпання клавіш выключаны</translation>
 <translation id="4623097797855662355">Калафон</translation>
@@ -566,6 +600,7 @@
 <translation id="4815668758102003883">Бледна-бірузовы</translation>
 <translation id="4826415162591436065">Перайсці наперад</translation>
 <translation id="4827410568042294688">вылучэнне скасавана</translation>
+<translation id="4835598628985424375">Складзіце вусны трубачкай</translation>
 <translation id="4838490795649708173">Дакраніцеся чатырма пальцамі</translation>
 <translation id="4839925464551908214">Перайсці да папярэдняга радка</translation>
 <translation id="4841614409681890122">Насычаны ружовы</translation>
@@ -574,6 +609,7 @@
 <translation id="4848993367330139335">тмр</translation>
 <translation id="4854380505292502090">Няма папярэдняга мультымедыйнага віджэта</translation>
 <translation id="4855927945655956315">Асноўныя клавішы: Ctrl</translation>
+<translation id="485806788160414322">Прайграць або прыпыніць медыязмесціва</translation>
 <translation id="4862744964787595316">Не паўтлустым шрыфтам</translation>
 <translation id="4865995900839719272">перайсці на папярэдні радок</translation>
 <translation id="4866956062845190338">пункт меню з кнопкай-пераключальнікам</translation>
@@ -620,6 +656,7 @@
 <translation id="5138912041966667164">Умераны шыферна-блакітны</translation>
 <translation id="5140016802771803559">Ліловы Рэбэкі Меер</translation>
 <translation id="5142101052131610456">Усе ўрокі</translation>
+<translation id="514387318601895731">Паглядзіце ўніз</translation>
 <translation id="5158275234811857234">Вокладка</translation>
 <translation id="516076699907426116">Каб працягнуць, выкарыстайце жэст дотыку, каб знайсці кнопку "Наступны ўрок", і двойчы націсніце на яе.</translation>
 <translation id="5170206230005240598">Подпісы шрыфтам Брайля ўключаны</translation>
@@ -629,6 +666,7 @@
 <translation id="5263344797180442561">з2</translation>
 <translation id="528468243742722775">Канец</translation>
 <translation id="5290220123487191192">Давайце пачнём з тых жэстаў, якія вам трэба будзе выкарыстоўваць пастаянна. Перайшоўшы да элемента, які трэба актываваць, двойчы націсніце на экран адным пальцам. Каб зараз працягнуць, націсніце двойчы.</translation>
+<translation id="5291860916305032607">Узнавіць кіраванне тварам</translation>
 <translation id="5302089807023311274">Спасылка на бібліяграфію</translation>
 <translation id="530391007967514163">Патрэніруйцеся пераходзіць па загалоўках у тэксце ніжэй.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, укладка</translation>
@@ -654,6 +692,7 @@
 <translation id="5400836586163650660">Шэры</translation>
 <translation id="5402367795255837559">Шрыфт Брайля</translation>
 <translation id="5402791055281059602">Мадальная абвестка</translation>
+<translation id="5406272775687194041">Пачаць перацягванне</translation>
 <translation id="5407530583102765689">{COUNT,plural, =1{кропка з коскай}one{# кропка з коскай}few{# кропкі з коскай}many{# кропак з коскай}other{# кропкі з коскай}}</translation>
 <translation id="5420259671171615858">Пошук па меню</translation>
 <translation id="5435274640623994081">Уключыць вядзенне журнала гукавых сігналаў</translation>
@@ -663,6 +702,7 @@
 <translation id="5452267669091857717">Няма наступнага загалоўка ўзроўню 1</translation>
 <translation id="5455441614648621694">Дадатковае</translation>
 <translation id="5462510922370980473">Спіс старонак</translation>
+<translation id="5489460663499094917">Рэжым гартання актыўны. <ph name="GESTURE" />, каб выйсці. Іншыя жэсты часова недаступныя.</translation>
 <translation id="5495517933067991341">Асноўныя клавішы: Shift</translation>
 <translation id="549602578321198708">Слова</translation>
 <translation id="5513242761114685513">Кантэкстнае меню</translation>
@@ -695,6 +735,7 @@
 <translation id="5653397561111110475">Выкарыстанне спецыяльных магчымасцей сэнсарнага экрана Chromebook</translation>
 <translation id="5655682562155942719">Каманды пераходу</translation>
 <translation id="56637627897541303">Тэкставая вобласць</translation>
+<translation id="5666746275818170484">Націснуць клавішу са стрэлкай улева</translation>
 <translation id="5669637233317991674">Каб перамяшчацца па гэтым уроку, націскайце клавішы Пошук + Стрэлка ўправа або Пошук + Стрэлка ўлева</translation>
 <translation id="5677240841070992068">Бягучае месцазнаходжанне</translation>
 <translation id="5678161956734658133">шматрадк.рэд</translation>
@@ -714,11 +755,13 @@
 <translation id="5776001898637896684">Пашырэнне для сінтэзу маўлення Google Enhanced Network</translation>
 <translation id="5783252477644995371">Кіраванне з дапамогай мімікі дазваляе перамяшчаць курсор і выконваць такія дзеянні, як націск на левую кнопку мышы мімічнымі жэстамі, напрыклад усмешкай</translation>
 <translation id="5805940204952508776">Дакраніцеся двума пальцамі</translation>
+<translation id="5807774529265708172">Паказаць ці схаваць экранную клавіятуру</translation>
 <translation id="5819072574982403430">Элемент дрэва</translation>
 <translation id="5822819874379903994">Цёмна-бірузовы</translation>
 <translation id="5824976764713185207">Аўтаматычна чытаць старонку пасля яе загрузкі</translation>
 <translation id="5826479389509458994">радок <ph name="ROW" /> слупок <ph name="COL" /></translation>
 <translation id="5833044594931167190">Няма арыенціраў ARIA</translation>
+<translation id="584044465500042213">Выйсці з рэжыму гартання</translation>
 <translation id="5842625257683688671">Няма наступнага графічнага аб’екта</translation>
 <translation id="5847883414085148048">Прысвячэнне</translation>
 <translation id="5850707923114094062">Зрушыць назад</translation>
@@ -739,6 +782,7 @@
 <translation id="5923780477617566089">Бягучая дата</translation>
 <translation id="5926889058434275234">Каб праглядзець увесь спіс жэстаў, наведайце даведачны цэнтр.</translation>
 <translation id="5937336320314038555">{COUNT,plural, =1{знак роўнасці}one{# знак роўнасці}few{# знакі роўнасці}many{# знакаў роўнасці}other{# знака роўнасці}}</translation>
+<translation id="5947651424015173580">Двойчы націснуць на кнопку мышы</translation>
 <translation id="5948123859135882163">Пераключэнне паміж структурнай і семантычнай інтэрпрэтацыяй матэматычных выразаў</translation>
 <translation id="5955304353782037793">праграма</translation>
 <translation id="5956928062748260866">Дыялогавае акно</translation>
@@ -747,6 +791,7 @@
 <translation id="597121107011153418">{COUNT,plural, =1{з # элементам}one{з # элементам}few{з # элементамі}many{з # элементамі}other{з # элемента}}</translation>
 <translation id="5981446804259161541">Светла-блакітны</translation>
 <translation id="5983179082906765664">Павялічыць дэталізацыю навігацыі</translation>
+<translation id="5988563937187882754">Паглядзіце ўправа</translation>
 <translation id="5992285135956208197">Графічны дакумент</translation>
 <translation id="5999630716831179808">Галасы</translation>
 <translation id="6006050241733874051">Форма</translation>
@@ -821,6 +866,7 @@
 <translation id="6584162722998608255">Цяпер вы навучыцеся, як перамяшчацца па экране. Каб перамясціцца да наступнага элемента, можна правесці адным пальцам злева направа. Паспрабуйце зрабіць гэта, каб перайсці да наступнага кроку.</translation>
 <translation id="6609828810966525877">Даведайцеся пра іншыя жэсты ў рэжыме навучання і ў Даведачным цэнтры Chromebook</translation>
 <translation id="6628427060004938651">Частка</translation>
+<translation id="6629951648264770593"><ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="6637586476836377253">журнал</translation>
 <translation id="6657128831881431364">Індыкатар стану</translation>
 <translation id="667999046851023355">Дакумент</translation>
@@ -885,6 +931,7 @@
 <translation id="7096001299300236431">Папярэдні файл мультымедыя</translation>
 <translation id="7096668131290451939">Каб выйсці з рэжыму навучання, націсніце Esc яшчэ раз</translation>
 <translation id="7116595520562830928">шматрадк</translation>
+<translation id="7125177678433853645"><ph name="MODIFIER_ONE" /> + <ph name="MODIFIER_TWO" /> + <ph name="MODIFIER_THREE" /> + <ph name="MODIFIER_FOUR" /> + <ph name="KEY" /></translation>
 <translation id="712735679809149106">агучванне слоў</translation>
 <translation id="7137397390322864165">Ласасёвы</translation>
 <translation id="7140168702531682811">Надрадковы тэкст</translation>
@@ -895,6 +942,7 @@
 <translation id="7161771961008409533">Усплывальная кнопка</translation>
 <translation id="7167657087543110">агучванне сімвалаў</translation>
 <translation id="7173102181852295013">Цёмна-сіні</translation>
+<translation id="7194194198490288773"><ph name="ACTION" /> (<ph name="GESTURE" />)</translation>
 <translation id="7203150201908454328">Разгорнута</translation>
 <translation id="7209751026933045237">Наступнага паўзунка няма</translation>
 <translation id="7218782500591078391">Сумнікавы</translation>
@@ -915,6 +963,7 @@
 <translation id="7285387653379749618">Табліцы</translation>
 <translation id="7289186959554153431">Загаловак 3</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
+<translation id="7297440685387139507">Скончыць перацягванне</translation>
 <translation id="7308519659008003150">Няма папярэдняга поля формы</translation>
 <translation id="731121099745151312">элдрва</translation>
 <translation id="7313717760367325059">паказаць даведку</translation>
@@ -973,6 +1022,7 @@
 <translation id="7701040980221191251">Няма</translation>
 <translation id="7701196182766842984">аўтаспіс</translation>
 <translation id="7714340021005120797">Няма наступнага камбінаванага спіса</translation>
+<translation id="7715455358521357192">Скасіце правае вока</translation>
 <translation id="7724603315864178912">Выразаць</translation>
 <translation id="7731785449856576010">Няма наступнага мультымедыйнага віджэта</translation>
 <translation id="7735498529470878067">Азнаямленне дотыкам можа дапамагчы вам хутка атрымаць уяўленне пра тое, што паказваецца на экране.</translation>
@@ -1027,6 +1077,7 @@
 <translation id="8098587210054821856">Шыферна-шэры</translation>
 <translation id="8121539003537428024">Уключыць усе фільтры падзей</translation>
 <translation id="8123975449645947908">Прагартаць назад</translation>
+<translation id="8126355825906412872">Усміхніцеся</translation>
 <translation id="8126386426083591964">Няма папярэдняга загалоўка ўзроўню 5</translation>
 <translation id="812886159861361726">Спынена спампоўванне файла "<ph name="FILE_NAME" />"</translation>
 <translation id="8129445297241948503">Ячэйкі зверху няма</translation>
@@ -1117,6 +1168,7 @@
 <translation id="8775203254697638994">У некаторых выпадках вам трэба будзе выбраць пункт з выпаднога спіса. Для гэтага спярша адкрыйце спіс, націснуўшы Пошук + Прабел. Потым выкарыстайце стрэлкі ўверх і ўніз, каб выбраць пункт. Затым згарніце спіс, націснуўшы Пошук + Прабел.</translation>
 <translation id="8779057862865475116">Няма папярэдняй спасылкі</translation>
 <translation id="8796411681063377102">Наступны загаловак узроўню 3</translation>
+<translation id="8821891849214789910">Спыніць галасавы ўвод</translation>
 <translation id="8823311177246872527">Старонка <ph name="CURRENTPAGE" /> з <ph name="TOTALPAGES" /></translation>
 <translation id="8825828890761629845">банер</translation>
 <translation id="8851136666856101339">галоўны</translation>

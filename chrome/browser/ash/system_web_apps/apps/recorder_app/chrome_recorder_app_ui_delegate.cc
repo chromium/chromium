@@ -17,8 +17,10 @@
 #include "components/feedback/feedback_constants.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_util.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 ChromeRecorderAppUIDelegate::ChromeRecorderAppUIDelegate(content::WebUI* web_ui)
@@ -31,13 +33,23 @@ void ChromeRecorderAppUIDelegate::InstallSoda(
   raw_ptr<PrefService> global_prefs = g_browser_process->local_state();
 
   auto* soda_installer = speech::SodaInstaller::GetInstance();
-  soda_installer->Init(profile_prefs, global_prefs);
-
-  if (soda_installer->IsSodaDownloading(language_code)) {
-    return;
-  }
+  // InstallSoda and InstallLanguage calls DLC download, which will ignore
+  // duplicate request, so this is safe without checking if an ongoing install
+  // is in progress.
+  // TODO: b/369730074 - Ideally we should also remember whether user enabled
+  // transcription in a user pref, and ask SODA to preload on ash launch (in
+  // `IsAnyFeatureUsingSodaEnabled`) if it's enabled so the app can get
+  // transcription faster.
+  soda_installer->InstallSoda(global_prefs);
   soda_installer->InstallLanguage(speech::GetLanguageName(language_code),
                                   g_browser_process->local_state());
+}
+
+std::u16string ChromeRecorderAppUIDelegate::GetLanguageDisplayName(
+    speech::LanguageCode language_code) {
+  return l10n_util::GetDisplayNameForLocale(
+      speech::GetLanguageName(language_code),
+      g_browser_process->GetApplicationLocale(), /*is_for_ui=*/true);
 }
 
 void ChromeRecorderAppUIDelegate::OpenAiFeedbackDialog(
@@ -63,12 +75,42 @@ ChromeRecorderAppUIDelegate::GetMediaDeviceSaltService(
       context);
 }
 
+bool ChromeRecorderAppUIDelegate::CanUseGenerativeAiForCurrentProfile() {
+  Profile* profile = Profile::FromWebUI(web_ui_);
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  if (identity_manager == nullptr) {
+    return false;
+  }
+
+  const auto account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (account_id.empty()) {
+    return false;
+  }
+
+  const AccountInfo extended_account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+  return extended_account_info.capabilities
+             .can_use_generative_ai_in_recorder_app() == signin::Tribool::kTrue;
+}
+
 bool ChromeRecorderAppUIDelegate::CanUseSpeakerLabelForCurrentProfile() {
   Profile* profile = Profile::FromWebUI(web_ui_);
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  // TODO: b/341806818 - Integrate with capabilities.
-  return identity_manager != nullptr &&
-         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  if (identity_manager == nullptr) {
+    return false;
+  }
+
+  const auto account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (account_id.empty()) {
+    return false;
+  }
+
+  const AccountInfo extended_account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+  return extended_account_info.capabilities
+             .can_use_speaker_label_in_recorder_app() == signin::Tribool::kTrue;
 }
 
 void ChromeRecorderAppUIDelegate::RecordSpeakerLabelConsent(

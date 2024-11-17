@@ -4,19 +4,15 @@
 
 .customizable-select-button, .customizable-select-popover {
   box-sizing: border-box;
-  /* TODO(crbug.com/1511354): Make the UA stylesheet use something standardized
-   * instead of -webkit-small-control. */
-  font: -webkit-small-control;
 }
 
 .customizable-select-popover {
-  box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
   overflow: auto;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 0.25em;
+  border: solid;
   padding-block: 0.25em;
   padding-inline: 0;
-  background-color: Field;
+  color: CanvasText;
+  background-color: Canvas;
   margin: 0;
   inset: auto;
   min-inline-size: anchor-size(self-inline);
@@ -38,6 +34,10 @@
   align-content: center;
 }
 
+.customizable-select-option.disabled {
+  color: color-mix(in lab, currentColor 50%, transparent);
+}
+
 .customizable-select-option::before {
   content: '\2713' / '';
 }
@@ -46,11 +46,11 @@
 }
 
 .customizable-select-button {
-  color: FieldText;
-  background-color: Field;
+  color: inherit;
+  background-color: color-mix(in lab, currentColor 10%, transparent);
   appearance: none;
   padding: 0.25em;
-  border: 1px solid ButtonBorder;
+  border: 1px solid currentColor;
   cursor: default;
   text-align: inherit;
   /* TODO(crbug.com/1511354): Make display match the UA stylesheet. */
@@ -69,9 +69,5 @@
 
 .customizable-select-button::after {
   padding-inline-start: 0.5em;
-  content: counter(fake-counter-name, disclosure-closed);
-}
-
-.customizable-select-button.open::after {
   content: counter(fake-counter-name, disclosure-open);
 }

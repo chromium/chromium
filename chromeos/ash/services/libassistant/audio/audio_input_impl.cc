@@ -133,10 +133,7 @@ class AudioInputBufferImpl : public assistant_client::AudioBuffer {
     return g_current_format;
   }
   const void* GetData() const override { return data_.data(); }
-  void* GetWritableData() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  void* GetWritableData() override { NOTREACHED(); }
   int GetFrameCount() const override { return frame_count_; }
 
  private:
@@ -198,8 +195,7 @@ class AudioCapturer : public media::AudioCapturerSource::CaptureCallback {
   void Capture(const media::AudioBus* audio_source,
                base::TimeTicks audio_capture_time,
                const media::AudioGlitchInfo& glitch_info,
-               double volume,
-               bool key_pressed) override {
+               double volume) override {
     DCHECK_EQ(g_current_format.num_channels, audio_source->channels());
 
     callback_task_runner_->PostTask(FROM_HERE, on_capture_callback_);

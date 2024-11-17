@@ -44,7 +44,8 @@
           "builder": "win-fieldtrial-rel",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/win-fieldtrial-rel/targets"
     }
   },
   "$build/reclient": {

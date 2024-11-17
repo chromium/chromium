@@ -23,7 +23,7 @@ class MappedFontFile : public base::RefCountedThreadSafe<MappedFontFile> {
  public:
   class Observer {
    public:
-    ~Observer() {}
+    ~Observer() = default;
 
     // Called when a MappedFontFile is destroyed.
     virtual void OnMappedFontFileDestroyed(MappedFontFile* f) = 0;

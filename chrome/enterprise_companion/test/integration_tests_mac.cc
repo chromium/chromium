@@ -82,7 +82,7 @@ TEST_F(InstallerPkgTest, FirstInstallFailsIfKSAdminMissing) {
 
   RunInstaller(/*expect_success=*/false);
 
-  EXPECT_FALSE(base::PathExists(install_dir_.AppendASCII(kExecutableName)));
+  EXPECT_FALSE(FindExistingInstall());
 }
 
 TEST_F(InstallerPkgTest, FirstInstallFailsIfKSAdminFails) {
@@ -90,7 +90,7 @@ TEST_F(InstallerPkgTest, FirstInstallFailsIfKSAdminFails) {
 
   RunInstaller(/*expect_success=*/false);
 
-  EXPECT_FALSE(base::PathExists(install_dir_.AppendASCII(kExecutableName)));
+  EXPECT_FALSE(FindExistingInstall());
 }
 
 }  // namespace enterprise_companion

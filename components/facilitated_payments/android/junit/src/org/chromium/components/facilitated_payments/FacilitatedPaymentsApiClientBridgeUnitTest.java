@@ -16,13 +16,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 
 /** Tests for the native bridge of the facilitated payment API client. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -34,12 +32,10 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
     @Mock private FacilitatedPaymentsApiClientBridge.Natives mBridgeNatives;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(FacilitatedPaymentsApiClientBridgeJni.TEST_HOOKS, mBridgeNatives);
+        FacilitatedPaymentsApiClientBridgeJni.setInstanceForTesting(mBridgeNatives);
     }
 
     @After

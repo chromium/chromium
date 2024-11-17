@@ -30,6 +30,7 @@ source_set("impl") {
     "//chrome/android:chrome_jni_headers",
     "//chrome/browser/commerce",
     "//chrome/browser/profiles:profiles",
+    "//chrome/browser/reading_list",
     "//components/query_parser",
     "//components/undo",
   ]

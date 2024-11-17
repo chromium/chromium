@@ -13,7 +13,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -253,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
 }
 
 // TODO(crbug.com/41474891): Setup test profiles properly for CrOS.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ExtensionsToolbarContainerForGuest \
   DISABLED_ExtensionsToolbarContainerForGuest
 #else

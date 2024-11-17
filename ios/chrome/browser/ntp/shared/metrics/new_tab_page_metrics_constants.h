@@ -29,6 +29,7 @@ extern const char kMagicStackSetUpListEnabledHistogram[];
 extern const char kMagicStackSafetyCheckEnabledHistogram[];
 extern const char kMagicStackTabResumptionEnabledHistogram[];
 extern const char kMagicStackParcelTrackingEnabledHistogram[];
+extern const char kMagicStackTipsEnabledHistogram[];
 extern const char kHomeCustomizationOpenedHistogram[];
 
 #endif  // IOS_CHROME_BROWSER_NTP_SHARED_METRICS_NEW_TAB_PAGE_METRICS_CONSTANTS_H_

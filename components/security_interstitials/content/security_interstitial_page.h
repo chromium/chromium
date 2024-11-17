@@ -21,14 +21,15 @@ class WebContents;
 namespace security_interstitials {
 class SecurityInterstitialControllerClient;
 
+// Represents a single interstitial, which is associated to either a subframe or
+// main frame.
+// TODO(crbug.com/369755672): Rename to SecurityInterstitialDocument.
 class SecurityInterstitialPage {
  public:
   // An identifier used to identify a SecurityInterstitialPage.
   typedef const void* TypeID;
 
-  // |request_url| is the URL which triggered the interstitial page. For
-  // SafeBrowsing interstitials, it can be a main frame or a subresource URL.
-  // For SSL interstitials, it's always the main frame URL.
+  // |request_url| is the URL which triggered the interstitial document.
   SecurityInterstitialPage(
       content::WebContents* web_contents,
       const GURL& request_url,

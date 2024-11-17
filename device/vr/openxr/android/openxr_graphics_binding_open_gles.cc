@@ -239,6 +239,13 @@ void OpenXrGraphicsBindingOpenGLES::ResizeSharedBuffer(
       gpu::SHARED_IMAGE_USAGE_SCANOUT | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_GLES2_WRITE;
 
+  // If the XRSession is producing frames with WebGPU then the appropriate usage
+  // also needs to be added.
+  if (IsWebGPUSession()) {
+    shared_image_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ |
+                          gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  }
+
   swap_chain_info.scoped_ahb_handle =
       gpu::CreateScopedHardwareBufferHandle(transfer_size, format, usage);
   swap_chain_info.shared_buffer_size = transfer_size;
@@ -367,6 +374,14 @@ bool OpenXrGraphicsBindingOpenGLES::Render(
       glGenTextures(1, &overlay_texture_.id);
     }
 
+    // If the image is going to be flipped during compositing then the overlay
+    // needs to be rendered flipped as well.
+    if (ShouldFlipSubmittedImage()) {
+      transform.Translate(0, 1);
+      transform.Scale(1, -1);
+      transform.GetColMajorF(transform_floats);
+    }
+
     glBindTexture(overlay_texture_.target, overlay_texture_.id);
     glEGLImageTargetTexture2DOES(overlay_texture_.target, egl_image.get());
     renderer_->Draw(overlay_texture_, transform_floats);
@@ -389,7 +404,9 @@ bool OpenXrGraphicsBindingOpenGLES::WaitOnFence(gfx::GpuFence& gpu_fence) {
 }
 
 bool OpenXrGraphicsBindingOpenGLES::ShouldFlipSubmittedImage() {
-  return false;
+  // WebGPU produces textures that are y-flipped relative to WebGL, which needs
+  // to be accounted for during frame submission.
+  return IsWebGPUSession();
 }
 
 void OpenXrGraphicsBindingOpenGLES::OnSwapchainImageActivated(

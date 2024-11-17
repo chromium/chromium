@@ -28,6 +28,7 @@ import androidx.recyclerview.widget.RecyclerView.AdapterDataObserver;
 import androidx.recyclerview.widget.RecyclerView.ItemAnimator;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.widget.FadingShadow;
@@ -90,7 +91,7 @@ public class SelectableListLayout<E> extends FrameLayout
                     // At inflation, the RecyclerView is set to gone, and the loading view is
                     // visible. As long as the adapter data changes, we show the recycler view,
                     // and hide loading view.
-                    mLoadingView.hideLoadingUI();
+                    mLoadingView.hideLoadingUi();
                 }
 
                 @Override
@@ -100,7 +101,7 @@ public class SelectableListLayout<E> extends FrameLayout
                     // At inflation, the RecyclerView is set to gone, and the loading view is
                     // visible. As long as the adapter data changes, we show the recycler view,
                     // and hide loading view.
-                    mLoadingView.hideLoadingUI();
+                    mLoadingView.hideLoadingUi();
                 }
 
                 @Override
@@ -124,7 +125,7 @@ public class SelectableListLayout<E> extends FrameLayout
         mEmptyView = findViewById(R.id.empty_view);
         mEmptyViewWrapper = findViewById(R.id.empty_view_wrapper);
         mLoadingView = findViewById(R.id.loading_view);
-        mLoadingView.showLoadingUI();
+        mLoadingView.showLoadingUi();
 
         mToolbarStub = findViewById(R.id.action_bar_stub);
 
@@ -416,7 +417,7 @@ public class SelectableListLayout<E> extends FrameLayout
 
     @Override
     public void onDisplayStyleChanged(DisplayStyle newDisplayStyle) {
-        int padding = getPaddingForDisplayStyle(newDisplayStyle, getResources());
+        int padding = getPaddingForDisplayStyle(newDisplayStyle, mRecyclerView, getResources());
         mRecyclerView.setPaddingRelative(
                 padding, mRecyclerView.getPaddingTop(), padding, mRecyclerView.getPaddingBottom());
     }
@@ -459,11 +460,18 @@ public class SelectableListLayout<E> extends FrameLayout
      * @param resources The {@link Resources} used to retrieve configuration and display metrics.
      * @return The lateral padding to use for the current display style.
      */
-    public static int getPaddingForDisplayStyle(DisplayStyle displayStyle, Resources resources) {
+    public static int getPaddingForDisplayStyle(
+            DisplayStyle displayStyle, View view, Resources resources) {
         int padding = 0;
         if (displayStyle.horizontal == HorizontalDisplayStyle.WIDE) {
-            int screenWidthDp = resources.getConfiguration().screenWidthDp;
             float dpToPx = resources.getDisplayMetrics().density;
+            int screenWidthDp = 0;
+            if (BuildInfo.getInstance().isAutomotive && view != null) {
+                screenWidthDp = (int) (view.getMeasuredWidth() / dpToPx);
+            } else {
+                screenWidthDp = resources.getConfiguration().screenWidthDp;
+            }
+
             padding =
                     (int)
                             (((screenWidthDp - UiConfig.WIDE_DISPLAY_STYLE_MIN_WIDTH_DP) / 2.f)

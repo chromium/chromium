@@ -5,7 +5,6 @@
 module patch.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 // Interface to the out-of-process file patcher. The file patcher runs
@@ -16,8 +15,7 @@ interface FilePatcher {
   // Patch |input_file_path| with |patch_file_path| using the Puffin PuffPatch
   // algorithm and place the output in |output_file_path|.
   // Returns |result| puffin::Status::P_OK on success.
-  PatchFilePuffPatch(
-      mojo_base.mojom.ReadOnlyFile input_file,
-      mojo_base.mojom.ReadOnlyFile patch_file,
-      mojo_base.mojom.File output_file) => (int32 result);
+  PatchFilePuffPatch(mojo_base.mojom.ReadOnlyFile input_file,
+                     mojo_base.mojom.ReadOnlyFile patch_file,
+                     mojo_base.mojom.File output_file) => (int32 result);
 };

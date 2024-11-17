@@ -152,8 +152,7 @@ wl_output_transform ToWaylandTransform(gfx::OverlayTransform transform) {
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return WL_OUTPUT_TRANSFORM_NORMAL;
+  NOTREACHED();
 }
 
 gfx::RectF ApplyWaylandTransform(const gfx::RectF& rect,
@@ -198,8 +197,7 @@ gfx::RectF ApplyWaylandTransform(const gfx::RectF& rect,
       result.set_height(rect.width());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return result;
 }
@@ -246,8 +244,7 @@ gfx::Rect ApplyWaylandTransform(const gfx::Rect& rect,
       result.set_height(rect.width());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return result;
 }
@@ -269,8 +266,7 @@ gfx::SizeF ApplyWaylandTransform(const gfx::SizeF& size,
       result.set_height(size.width());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return result;
 }

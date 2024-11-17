@@ -92,7 +92,6 @@ constexpr char kErrorOnlyKioskModeAllowed[] =
     "API available only for ChromeOS kiosk mode.";
 constexpr char kErrorOnlyFirstExtensionAllowed[] =
     "Not the first extension to call this API.";
-constexpr char kErrorInvalidStatus[] = "Invalid restart request status.";
 constexpr char kErrorRequestedTooSoon[] =
     "Restart was requested too soon. It was throttled instead.";
 
@@ -768,8 +767,7 @@ ExtensionFunction::ResponseAction RuntimeRestartAfterDelayFunction::Run() {
       return RespondNow(NoArguments());
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return RespondNow(Error(kErrorInvalidStatus));
+  NOTREACHED();
 }
 
 ExtensionFunction::ResponseAction RuntimeGetPlatformInfoFunction::Run() {

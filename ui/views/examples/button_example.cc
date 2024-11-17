@@ -23,6 +23,7 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/button/md_text_button_with_down_arrow.h"
 #include "ui/views/examples/examples_color_id.h"
 #include "ui/views/examples/examples_window.h"
 #include "ui/views/examples/grit/views_examples_resources.h"
@@ -238,6 +239,10 @@ void ButtonExample::CreateExampleView(View* container) {
       base::BindRepeating(&ButtonExample::ImageButtonPressed,
                           base::Unretained(this)),
       views::kLaunchIcon, u"Icon button"));
+  view->AddChildView(std::make_unique<views::MdTextButtonWithDownArrow>(
+      base::BindRepeating(&ButtonExample::ImageButtonPressed,
+                          base::Unretained(this)),
+      u"TextButton with down arrow"));
 
   image_button_->SetImageModel(ImageButton::STATE_NORMAL,
                                ui::ImageModel::FromResourceId(IDR_CLOSE));

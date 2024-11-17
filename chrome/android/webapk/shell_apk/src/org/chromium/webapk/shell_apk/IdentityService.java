@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.os.IBinder;
 
 import org.chromium.webapk.lib.common.identity_service.IIdentityService;
+import org.chromium.webapk.shell_apk.HostBrowserUtils.PackageNameAndComponentName;
 
 /** IdentityService allows browsers to query information about the WebAPK. */
 public class IdentityService extends Service {
@@ -16,7 +17,12 @@ public class IdentityService extends Service {
             new IIdentityService.Stub() {
                 @Override
                 public String getRuntimeHostBrowserPackageName() {
-                    return HostBrowserUtils.computeHostBrowserPackageName(getApplicationContext());
+                    PackageNameAndComponentName hostBrowserPackageAndComponent =
+                            HostBrowserUtils.computeHostBrowserPackageNameAndComponentName(
+                                    getApplicationContext());
+                    return hostBrowserPackageAndComponent != null
+                            ? hostBrowserPackageAndComponent.getPackageName()
+                            : null;
                 }
             };
 

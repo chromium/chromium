@@ -8,6 +8,10 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
+#import <optional>
+
+#import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+
 @class UIApplication;
 @class UNNotificationCategory;
 @class UNNotificationSettings;
@@ -22,7 +26,8 @@ enum class SettingsAuthorizationStatus {
   AUTHORIZED,
   PROVISIONAL,
   EPHEMERAL,
-  kMaxValue = EPHEMERAL
+  INVALID,
+  kMaxValue = INVALID
 };
 }  // namespace push_notification
 
@@ -84,6 +89,9 @@ enum class SettingsAuthorizationStatus {
 // status changes on notification permissions.
 + (UNAuthorizationStatus)getSavedPermissionSettings;
 
+// Gets the authorization status from iOS and updates prefs if needed.
++ (void)updateAuthorizationStatusPref;
+
 // This function updates the value stored in the prefService that represents the
 // user's iOS settings permission status for push notifications. If there is a
 // difference between the prefService's previous value and the new value, the
@@ -94,6 +102,13 @@ enum class SettingsAuthorizationStatus {
 // `status`.
 + (push_notification::SettingsAuthorizationStatus)
     getNotificationSettingsStatusFrom:(UNAuthorizationStatus)status;
+
+// This function maps a chime client id from a payload (`userInfo`) to a single
+// PushNotificationClient.
++ (std::optional<PushNotificationClientId>)
+    mapToPushNotificationClientIdFromUserInfo:
+        (NSDictionary<NSString*, id>*)userInfo;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_UTIL_H_

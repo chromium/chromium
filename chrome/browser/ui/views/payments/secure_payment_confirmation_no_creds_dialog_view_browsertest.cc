@@ -4,8 +4,13 @@
 
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_no_creds_dialog_view.h"
 
+#include <utility>
+
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "components/payments/content/secure_payment_confirmation_no_creds_model.h"
@@ -76,7 +81,14 @@ class SecurePaymentConfirmationNoCredsDialogViewTest
   }
 
   // SecurePaymentConfirmationNoCredsDialogView::ObserverForTest
-  void OnDialogClosed() override { dialog_closed_ = true; }
+  void OnDialogClosed() override {
+    dialog_closed_ = true;
+    if (dialog_closed_callback_) {
+      std::move(dialog_closed_callback_).Run();
+    }
+  }
+
+  // SecurePaymentConfirmationNoCredsDialogView::ObserverForTest
   void OnOptOutClicked() override { opt_out_clicked_ = true; }
 
  protected:
@@ -86,6 +98,8 @@ class SecurePaymentConfirmationNoCredsDialogViewTest
 
   bool dialog_closed_ = false;
   bool opt_out_clicked_ = false;
+
+  base::OnceClosure dialog_closed_callback_;
 };
 
 IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest,
@@ -157,6 +171,21 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest, OptOut) {
   // Now click the Opt Out link and make sure that the expected events occur.
   opt_out_label->ClickFirstLinkForTesting();
   EXPECT_TRUE(opt_out_clicked_);
+}
+
+// Occlusion by picture-in-picture video should dismiss the SPC no-credentials
+// dialog.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationNoCredsDialogViewTest,
+                       PictureInPictureOcclusionClosesTheDialog) {
+  CreateAndShowDialog(u"merchant.example", /*show_opt_out=*/true);
+  base::RunLoop run_loop;
+  dialog_closed_callback_ = run_loop.QuitClosure();
+
+  static_cast<PictureInPictureOcclusionObserver*>(dialog_view_.get())
+      ->OnOcclusionStateChanged(/*occluded=*/true);
+
+  run_loop.Run();
+  EXPECT_TRUE(dialog_closed_);
 }
 
 class SecurePaymentConfirmationNoCredsDialogViewWithInlineNetworkAndIssuerTest

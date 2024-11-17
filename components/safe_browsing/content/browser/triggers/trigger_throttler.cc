@@ -64,7 +64,7 @@ TriggerThrottler::TriggerThrottler(PrefService* local_state_prefs)
   LoadTriggerEventsFromPref();
 }
 
-TriggerThrottler::~TriggerThrottler() {}
+TriggerThrottler::~TriggerThrottler() = default;
 
 void TriggerThrottler::SetClockForTesting(base::Clock* test_clock) {
   clock_ = test_clock;

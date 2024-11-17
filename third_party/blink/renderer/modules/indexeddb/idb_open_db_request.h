@@ -87,6 +87,7 @@ class MODULES_EXPORT IDBOpenDBRequest final : public IDBRequest {
 
   void set_connection_priority(int priority) {
     connection_priority_ = priority;
+    metrics_.set_is_fg_client(priority == 0);
   }
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(blocked, kBlocked)

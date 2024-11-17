@@ -30,7 +30,7 @@ class ChromeSigninClientFactory : public ProfileKeyedServiceFactory {
   ~ChromeSigninClientFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 

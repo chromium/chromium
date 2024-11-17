@@ -13,7 +13,7 @@ module crosapi.mojom;
 // Telemetry management interface exposed to Lacros.
 //
 // NextMinVersion: 3, NextIndex: 2
-[Stable, Uuid="562b12e3-8773-4085-9480-450e088ac252"]
+[Uuid="562b12e3-8773-4085-9480-450e088ac252"]
 interface TelemetryManagementService {
   // Sets the specified input audio device |node_id| gain to value |gain|.
   //

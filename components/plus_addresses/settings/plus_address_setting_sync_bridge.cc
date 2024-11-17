@@ -231,9 +231,8 @@ void PlusAddressSettingSyncBridge::StartSyncingWithDataAndMetadata(
     }
     processed_entries.emplace_back(record.id, std::move(specifics));
   }
-  settings_ =
-      base::MakeFlatMap<std::string, sync_pb::PlusAddressSettingSpecifics>(
-          std::move(processed_entries));
+  settings_ = base::flat_map<std::string, sync_pb::PlusAddressSettingSpecifics>(
+      std::move(processed_entries));
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
 }
 

@@ -1624,7 +1624,7 @@ class BackupRefPtrTest : public testing::Test {
   }
 
   partition_alloc::PartitionAllocator allocator_ =
-      partition_alloc::PartitionAllocator([]() {
+      partition_alloc::PartitionAllocator([] {
         partition_alloc::PartitionOptions opts;
         opts.backup_ref_ptr = partition_alloc::PartitionOptions::kEnabled;
         opts.memory_tagging = {
@@ -2128,9 +2128,10 @@ TEST_F(BackupRefPtrTest, RawPtrNotDangling) {
         allocator_.root()->Free(ptr);  // Dangling raw_ptr detected.
         dangling_ptr = nullptr;        // Dangling raw_ptr released.
       },
-      AllOf(HasSubstr("Detected dangling raw_ptr"),
-            HasSubstr("The memory was freed at:"),
-            HasSubstr("The dangling raw_ptr was released at:")));
+      AllOf(HasSubstr("[DanglingPtr](1/3) A raw_ptr/raw_ref is dangling."),
+            HasSubstr("[DanglingPtr](2/3) First, the memory was freed at:"),
+            HasSubstr("[DanglingPtr](3/3) Later, the dangling raw_ptr was "
+                      "released at:")));
 #else
   allocator_.root()->Free(ptr);
   dangling_ptr = nullptr;
@@ -2226,9 +2227,10 @@ TEST_F(BackupRefPtrTest, RawPtrDeleteWithoutExtractAsDangling) {
         allocator_.root()->Free(ptr.get());  // Dangling raw_ptr detected.
         ptr = nullptr;                       // Dangling raw_ptr released.
       },
-      AllOf(HasSubstr("Detected dangling raw_ptr"),
-            HasSubstr("The memory was freed at:"),
-            HasSubstr("The dangling raw_ptr was released at:")));
+      AllOf(HasSubstr("[DanglingPtr](1/3) A raw_ptr/raw_ref is dangling."),
+            HasSubstr("[DanglingPtr](2/3) First, the memory was freed at:"),
+            HasSubstr("[DanglingPtr](3/3) Later, the dangling raw_ptr was "
+                      "released at:")));
 #else
   allocator_.root()->Free(ptr.get());
   ptr = nullptr;
@@ -2249,7 +2251,7 @@ TEST_F(BackupRefPtrTest, SpatialAlgoCompat) {
   RawPtrCountingImpl::ClearCounters();
 
   uint32_t gen_val = 1;
-  std::generate(counting_ptr, counting_ptr_end, [&gen_val]() {
+  std::generate(counting_ptr, counting_ptr_end, [&gen_val] {
     gen_val ^= gen_val + 1;
     return gen_val;
   });

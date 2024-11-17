@@ -55,12 +55,8 @@ class MockRemoteFileSyncService : public RemoteFileSyncService {
   MOCK_METHOD0(GetLocalChangeProcessor, LocalChangeProcessor*());
   MOCK_CONST_METHOD0(GetCurrentState,
                      RemoteServiceState());
-  MOCK_METHOD1(GetOriginStatusMap, void(StatusMapCallback callback));
   MOCK_METHOD1(SetSyncEnabled, void(bool enabled));
   MOCK_METHOD1(PromoteDemotedChanges, void(base::OnceClosure callback));
-
-  void DumpFiles(const GURL& origin, ListCallback callback) override;
-  void DumpDatabase(ListCallback callback) override;
 
   void SetServiceState(RemoteServiceState state);
 

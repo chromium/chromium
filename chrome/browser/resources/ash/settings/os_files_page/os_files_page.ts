@@ -14,7 +14,7 @@ import './files_settings_card.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsState} from '../common/types.js';
+import type {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 
 import {getTemplate} from './os_files_page.html.js';

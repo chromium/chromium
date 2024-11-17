@@ -165,6 +165,9 @@ class NET_EXPORT HttpResponseInfo {
   // this is the last time the cache entry was validated.
   base::Time response_time;
 
+  // Like response_time, but ignoring revalidations.
+  base::Time original_response_time;
+
   // Host resolution error info.
   ResolveErrorInfo resolve_error_info;
 

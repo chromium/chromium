@@ -142,6 +142,11 @@ class MediaEngagementScoreDetailsProviderImpl
 
 }  // namespace
 
+bool MediaEngagementUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return MediaEngagementService::IsEnabled();
+}
+
 MediaEngagementUI::MediaEngagementUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   // Setup the data source behind chrome://media-engagement.

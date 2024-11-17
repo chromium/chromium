@@ -28,7 +28,6 @@
 
 #include <algorithm>
 
-#include "base/memory/raw_ptr.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_get_root_node_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_node_string_trustedscript.h"
@@ -37,7 +36,6 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
-#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -121,7 +119,6 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_shift_tracker.h"
@@ -148,7 +145,6 @@
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
@@ -393,10 +389,10 @@ Node* Node::PseudoAwarePreviousSibling() const {
 
   // Note the [[fallthrough]] attributes, the order of the cases matters and
   // corresponds to the ordering of pseudo elements in a traversal:
-  // ::scroll-marker-group(before), ::marker, ::scroll-marker, ::before,
-  // non-pseudo Elements,
-  // ::after, ::scroll-marker-group(after), ::view-transition. The fallthroughs
-  // ensure this ordering by checking for each kind of node in-turn.
+  // ::scroll-marker-group(before), ::marker, ::scroll-marker, ::check,
+  // ::before, non-pseudo Elements, ::after, ::select-arrow,
+  // ::scroll-marker-group(after), ::view-transition. The fallthroughs ensure
+  // this ordering by checking for each kind of node in-turn.
   switch (GetPseudoId()) {
     case kPseudoIdViewTransition:
       if (Node* previous =
@@ -411,6 +407,11 @@ Node* Node::PseudoAwarePreviousSibling() const {
       }
       [[fallthrough]];
     case kPseudoIdScrollMarkerGroupAfter:
+      if (Node* next = parent->GetPseudoElement(kPseudoIdSelectArrow)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdSelectArrow:
       if (Node* next = parent->GetPseudoElement(kPseudoIdAfter)) {
         return next;
       }
@@ -424,6 +425,11 @@ Node* Node::PseudoAwarePreviousSibling() const {
         return previous;
       [[fallthrough]];
     case kPseudoIdBefore:
+      if (Node* previous = parent->GetPseudoElement(kPseudoIdCheck)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdCheck:
       if (Node* previous = parent->GetPseudoElement(kPseudoIdScrollMarker)) {
         return previous;
       }
@@ -473,8 +479,7 @@ Node* Node::PseudoAwarePreviousSibling() const {
     case kPseudoIdViewTransitionOld:
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -503,6 +508,11 @@ Node* Node::PseudoAwareNextSibling() const {
       }
       [[fallthrough]];
     case kPseudoIdScrollMarker:
+      if (Node* next = parent->GetPseudoElement(kPseudoIdCheck)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdCheck:
       if (Node* next = parent->GetPseudoElement(kPseudoIdBefore))
         return next;
       [[fallthrough]];
@@ -515,6 +525,11 @@ Node* Node::PseudoAwareNextSibling() const {
         return next;
       [[fallthrough]];
     case kPseudoIdAfter:
+      if (Node* next = parent->GetPseudoElement(kPseudoIdSelectArrow)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdSelectArrow:
       if (Node* next =
               parent->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
         return next;
@@ -555,8 +570,7 @@ Node* Node::PseudoAwareNextSibling() const {
     case kPseudoIdViewTransitionNew:
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -603,11 +617,17 @@ Node* Node::PseudoAwareFirstChild() const {
             current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
       return first;
     }
+    if (Node* first = current_element->GetPseudoElement(kPseudoIdCheck)) {
+      return first;
+    }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdBefore))
       return first;
     if (Node* first = current_element->firstChild())
       return first;
     if (Node* first = current_element->GetPseudoElement(kPseudoIdAfter)) {
+      return first;
+    }
+    if (Node* first = current_element->GetPseudoElement(kPseudoIdSelectArrow)) {
       return first;
     }
     if (Node* first = current_element->GetPseudoElement(
@@ -665,12 +685,18 @@ Node* Node::PseudoAwareLastChild() const {
             kPseudoIdScrollMarkerGroupAfter)) {
       return last;
     }
+    if (Node* last = current_element->GetPseudoElement(kPseudoIdSelectArrow)) {
+      return last;
+    }
     if (Node* last = current_element->GetPseudoElement(kPseudoIdAfter))
       return last;
     if (Node* last = current_element->lastChild())
       return last;
     if (Node* last = current_element->GetPseudoElement(kPseudoIdBefore))
       return last;
+    if (Node* last = current_element->GetPseudoElement(kPseudoIdCheck)) {
+      return last;
+    }
     if (Node* last = current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
       return last;
     }
@@ -725,40 +751,52 @@ Node* Node::moveBefore(Node* new_child,
                        ExceptionState& exception_state) {
   DCHECK(new_child);
 
-  // Only perform a state-preserving atomic move if the child is ALREADY
-  // connected to this document, and doesn't cross shadow boundaries.
-  // If the child is NOT connected to this document, then script can run during
-  // the node's initial post-insertion steps (i.e.,
+  // Only perform a state-preserving atomic move if the new parent and the child
+  // are ALREADY connected, and its document is the same as `this`'s. If the
+  // child is NOT connected to this document, then script could run during the
+  // node's initial post-insertion steps (i.e.,
   // `Node::DidNotifySubtreeInsertionsToDocument()`), and no script is permitted
   // to run during atomic moves.
   const bool perform_state_preserving_atomic_move =
-      isConnected() && new_child->isConnected() && GetDocument().IsActive() &&
-      (GetTreeScope() == new_child->GetTreeScope()) &&
-      new_child->IsElementNode();
+      // "If either parent or node are not connected, then..."
+      isConnected() && new_child->isConnected() &&
+      // "If parent’s shadow-including root is not the same as node’s
+      // shadow-including root, then..."
+      GetDocument() == new_child->GetDocument() &&
+      // "If node is not an Element or a CharacterData node, then ..."
+      (new_child->IsElementNode() || new_child->IsCharacterDataNode()) &&
+      // "If parent is not an Element or DocumentFragment node, then throw a
+      // "HierarchyRequestError" DOMException."
+      (IsElementNode() || IsDocumentFragment());
+  // These two conditions below are caught by `EnsurePreInsertionValidity()`
+  // that gets invoked in `insertBefore()`:
+  //
+  // "If node is a host-including inclusive ancestor of parent, then...
+  // "If child is non-null and its parent is not parent, then..."
 
-  if (perform_state_preserving_atomic_move) {
-    // When `moveBefore()` is called, AND we're actually performing a
-    // state-preserving atomic move, no script can run synchronously during the
-    // move. That means it is impossible for nested `moveBefore()` calls to
-    // occur. Assert that no atomic move is already in progress.
-    DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
-    GetDocument().SetStatePreservingAtomicMoveInProgress(true);
-  } else if (GetTreeScope() != new_child->GetTreeScope() &&
-             GetDocument() == new_child->GetDocument()) {
-    // Currently we disable atomic move for same-document cross-shadow use
-    // cases, but this UseCounter can help use discern if this is an interesting
-    // use case in the future.
-    UseCounter::Count(&GetDocument(), WebFeature::kCrossShadowAtomicMove);
+  // ...throw a "HierarchyRequestError" DOMException."
+  if (!perform_state_preserving_atomic_move) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kHierarchyRequestError,
+        "State-preserving atomic move cannot be performed on nodes "
+        "participating in an invalid hierarchy.");
+    return nullptr;
   }
+
+  // No script can run synchronously during the move. That means it is
+  // impossible for nested `moveBefore()` calls to occur. Assert that no atomic
+  // move is already in progress.
+  DCHECK(!GetDocument().StatePreservingAtomicMoveInProgress());
+  GetDocument().SetStatePreservingAtomicMoveInProgress(true);
 
   // Mutation events are disabled during the `moveBefore()` API.
   MutationEventSuppressionScope scope(GetDocument());
 
-  Node* return_node = insertBefore(new_child, ref_child, exception_state);
+  ContainerNode* old_parent = new_child->parentNode();
 
-  // Regardless of whether we were *actually* performing a state-preserving
-  // atomic move, we can safely, unconditionally reset the document's boolean.
+  Node* return_node = insertBefore(new_child, ref_child, exception_state);
   GetDocument().SetStatePreservingAtomicMoveInProgress(false);
+  new_child->MovedFrom(*old_parent);
 
   // We don't need to conditionally return `nullptr` if `exception_state` had an
   // exception. `insertBefore()` already handles this for us, so we can just
@@ -863,8 +901,7 @@ static Node* NodeOrStringToNode(
         return Text::Create(document,
                             node_or_string->GetAsTrustedScript()->toString());
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   // With trusted type checks, we can process trusted script or non-text nodes
@@ -889,14 +926,35 @@ static Node* NodeOrStringToNode(
   return Text::Create(document, string_value);
 }
 
-// static
+// Converts |node_unions| from bindings into actual Nodes by converting strings
+// and script into text nodes via NodeOrStringToNode.
 // Returns nullptr if an exception was thrown.
-Node* Node::ConvertNodesIntoNode(const Node* parent,
-                                 const VectorOf<Node>& nodes,
-                                 Document& document,
-                                 ExceptionState& exception_state) {
-  if (nodes.size() == 1) {
-    return nodes[0].Get();
+// static
+Node* Node::ConvertNodeUnionsIntoNode(
+    const ContainerNode* parent,
+    const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
+    Document& document,
+    const char* property_name,
+    ExceptionState& exception_state) {
+  DCHECK(!RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled());
+
+  bool needs_check = IsA<HTMLScriptElement>(parent) &&
+                     document.GetExecutionContext() &&
+                     document.GetExecutionContext()->RequireTrustedTypes();
+  VectorOf<Node> nodes;
+  for (const auto& node_union : node_unions) {
+    Node* node = NodeOrStringToNode(node_union, document, needs_check,
+                                    property_name, exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+    if (node) {
+      nodes.push_back(node);
+    }
+  }
+
+  if (nodes.size() == 1u) {
+    return nodes[0];
   }
 
   Node* fragment = DocumentFragment::Create(document);
@@ -909,17 +967,18 @@ Node* Node::ConvertNodesIntoNode(const Node* parent,
   return fragment;
 }
 
-namespace {
-
 // Converts |node_unions| from bindings into actual Nodes by converting strings
 // and script into text nodes via NodeOrStringToNode.
 // Returns nullptr if an exception was thrown.
-VectorOf<Node> ConvertNodeUnionsIntoNodes(
-    const Node* parent,
+// static
+VectorOf<Node> Node::ConvertNodeUnionsIntoNodes(
+    const ContainerNode* parent,
     const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
     Document& document,
     const char* property_name,
     ExceptionState& exception_state) {
+  DCHECK(RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled());
+
   bool needs_check = IsA<HTMLScriptElement>(parent) &&
                      document.GetExecutionContext() &&
                      document.GetExecutionContext()->RequireTrustedTypes();
@@ -932,70 +991,69 @@ VectorOf<Node> ConvertNodeUnionsIntoNodes(
       return nodes;
     }
     if (node) {
-      nodes.push_back(node);
-    }
-  }
-  return nodes;
-}
-
-// When instantiating an AutoAtomicMoveScope (and the AtomicMoveAutoEnabled flag
-// is on), the node insertion operations that occur in the scope act like a
-// "state preserving atomic move". This means that some of the usual effects of
-// removal+insertion, such as iframe reloading and losing focus, are skipped.
-// See https://github.com/whatwg/dom/issues/1255
-struct AutoAtomicMoveScope {
-  bool CheckNode(const Node* node, const TreeScope* tree_scope) {
-    return node->isConnected() && node->GetDocument().IsActive() &&
-           (!tree_scope || node->GetTreeScope() == *tree_scope);
-  }
-  AutoAtomicMoveScope(
-      Node* base_node,
-      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>&
-          node_unions) {
-    if (!RuntimeEnabledFeatures::AtomicMoveAutoEnabled()) {
-      return;
-    }
-
-    CHECK(base_node);
-    if (!CheckNode(base_node, /*tree_scope=*/nullptr)) {
-      return;
-    }
-    for (const auto& node_or_string : node_unions) {
-      if (node_or_string->IsNode() &&
-          !CheckNode(node_or_string->GetAsNode(), &base_node->GetTreeScope())) {
-        return;
+      if (auto* fragment = DynamicTo<DocumentFragment>(node)) {
+        NodeVector fragment_nodes;
+        GetChildNodes(*fragment, fragment_nodes);
+        fragment->RemoveChildren();
+        nodes.AppendVector(fragment_nodes);
+      } else {
+        nodes.push_back(node);
       }
     }
-    document = base_node->ownerDocument();
-    CHECK(!document->StatePreservingAtomicMoveInProgress());
-    document->SetStatePreservingAtomicMoveInProgress(true);
   }
 
-  ~AutoAtomicMoveScope() {
-    if (document) {
-      document->SetStatePreservingAtomicMoveInProgress(false);
+  // When there's more than one node, we need to pretend that we're inserting
+  // the nodes into a document fragment (which we later insert into the
+  // intended parent, which transfers them from the document fragment), but we
+  // don't actually do that because of the costs of inserting and later
+  // removing (which require walking the entire tree).  Not actually inserting
+  // into a DocumentFragment is web observable in some edge cases, and
+  // https://github.com/whatwg/dom/issues/1313 proposes to specify this new
+  // (faster) behavior instead.
+  //
+  // TODO(https://github.com/whatwg/dom/issues/1313): We should consider not
+  // having different behavior depending on how many nodes are here, which
+  // makes it a strange API.
+  //
+  // The only pre-insertion check that could fail when inserting into a
+  // DocumentFragment is the ChildTypeAllowed check.  This will be checked
+  // again later when we insert the nodes into their intended parent.
+  // However, this does mean we differ from the spec in two ways:
+  // * we allow the use of DocumentType nodes (when their eventual parent is a
+  //   Document) in these methods where the spec would disallow them.
+  // * we perform some of the checks at different times, which means that when
+  //   an exception is thrown it could be a different exception from the one
+  //   the spec calls for, and we could leave the tree in a different state
+  //   than exactly following the spec would lead to.
+
+  if (nodes.size() > 1u) {
+    // Remove each node from its parent, and if a node occurs multiple
+    // times in the list, remove all except the *last* occurrence.
+    HeapHashSet<Member<Node>> nodes_seen;
+    HeapVector<Member<Node>> nodes_to_remove;
+    for (Node* node : nodes) {
+      auto add_result = nodes_seen.insert(node);
+      if (add_result.is_new_entry) {
+        node->remove(exception_state);
+        if (exception_state.HadException()) {
+          nodes.clear();
+          return nodes;
+        }
+      } else {
+        nodes_to_remove.push_back(node);
+      }
+    }
+    // The same node might be in nodes_to_remove more than once; for
+    // each occurrence we will remove one occurrence.  This is slow, but
+    // it's handling what is essentially an error case.
+    for (Node* node : nodes_to_remove) {
+      wtf_size_t index = nodes.Find(node);
+      CHECK_NE(index, kNotFound);
+      nodes.EraseAt(index);
     }
   }
 
-  Persistent<Document> document;
-};
-
-}  // namespace
-
-// static
-// Returns nullptr if an exception was thrown.
-Node* Node::ConvertNodeUnionsIntoNode(
-    const Node* parent,
-    const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
-    Document& document,
-    const char* property_name,
-    ExceptionState& exception_state) {
-  VectorOf<Node> nodes = ConvertNodeUnionsIntoNodes(
-      parent, node_unions, document, property_name, exception_state);
-  if (exception_state.HadException()) {
-    return nullptr;
-  }
-  return Node::ConvertNodesIntoNode(parent, nodes, document, exception_state);
+  return nodes;
 }
 
 void Node::prepend(
@@ -1009,10 +1067,19 @@ void Node::prepend(
     return;
   }
 
-  AutoAtomicMoveScope atomic_move_auto_scope(this, nodes);
-  if (Node* node = ConvertNodeUnionsIntoNode(this, nodes, GetDocument(),
-                                             "prepend", exception_state)) {
-    this_node->InsertBefore(node, this_node->firstChild(), exception_state);
+  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
+    VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
+        this_node, nodes, GetDocument(), "prepend", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    this_node->InsertBefore(node_vector, this_node->firstChild(),
+                            exception_state);
+  } else {
+    if (Node* node = ConvertNodeUnionsIntoNode(this_node, nodes, GetDocument(),
+                                               "prepend", exception_state)) {
+      this_node->InsertBefore(node, this_node->firstChild(), exception_state);
+    }
   }
 }
 
@@ -1027,10 +1094,18 @@ void Node::append(
     return;
   }
 
-  AutoAtomicMoveScope atomic_move_auto_scope(this, nodes);
-  if (Node* node = ConvertNodeUnionsIntoNode(this, nodes, GetDocument(),
-                                             "append", exception_state)) {
-    this_node->AppendChild(node, exception_state);
+  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
+    VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
+        this_node, nodes, GetDocument(), "append", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    this_node->AppendChildren(node_vector, exception_state);
+  } else {
+    if (Node* node = ConvertNodeUnionsIntoNode(this_node, nodes, GetDocument(),
+                                               "append", exception_state)) {
+      this_node->AppendChild(node, exception_state);
+    }
   }
 }
 
@@ -1040,16 +1115,27 @@ void Node::before(
   ContainerNode* parent = parentNode();
   if (!parent)
     return;
-
-  AutoAtomicMoveScope atomic_move_auto_scope(parent, nodes);
   Node* viable_previous_sibling = FindViablePreviousSibling(*this, nodes);
-  if (Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
-                                             "before", exception_state)) {
-    parent->InsertBefore(node,
+  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
+    VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
+        parent, nodes, GetDocument(), "before", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    parent->InsertBefore(node_vector,
                          viable_previous_sibling
                              ? viable_previous_sibling->nextSibling()
                              : parent->firstChild(),
                          exception_state);
+  } else {
+    if (Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
+                                               "before", exception_state)) {
+      parent->InsertBefore(node,
+                           viable_previous_sibling
+                               ? viable_previous_sibling->nextSibling()
+                               : parent->firstChild(),
+                           exception_state);
+    }
   }
 }
 
@@ -1059,11 +1145,19 @@ void Node::after(
   ContainerNode* parent = parentNode();
   if (!parent)
     return;
-  AutoAtomicMoveScope atomic_move_auto_scope(parent, nodes);
   Node* viable_next_sibling = FindViableNextSibling(*this, nodes);
-  if (Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
-                                             "after", exception_state)) {
-    parent->InsertBefore(node, viable_next_sibling, exception_state);
+  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
+    VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
+        parent, nodes, GetDocument(), "after", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    parent->InsertBefore(node_vector, viable_next_sibling, exception_state);
+  } else {
+    if (Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
+                                               "after", exception_state)) {
+      parent->InsertBefore(node, viable_next_sibling, exception_state);
+    }
   }
 }
 
@@ -1074,14 +1168,29 @@ void Node::replaceWith(
   if (!parent)
     return;
   Node* viable_next_sibling = FindViableNextSibling(*this, nodes);
-  Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
-                                         "replaceWith", exception_state);
-  if (exception_state.HadException())
-    return;
-  if (parent == parentNode())
-    parent->ReplaceChild(node, this, exception_state);
-  else
-    parent->InsertBefore(node, viable_next_sibling, exception_state);
+  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
+    VectorOf<Node> node_vector = ConvertNodeUnionsIntoNodes(
+        parent, nodes, GetDocument(), "replaceWith", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    if (parent == parentNode()) {
+      parent->ReplaceChild(node_vector, this, exception_state);
+    } else {
+      parent->InsertBefore(node_vector, viable_next_sibling, exception_state);
+    }
+  } else {
+    Node* node = ConvertNodeUnionsIntoNode(parent, nodes, GetDocument(),
+                                           "replaceWith", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    if (parent == parentNode()) {
+      parent->ReplaceChild(node, this, exception_state);
+    } else {
+      parent->InsertBefore(node, viable_next_sibling, exception_state);
+    }
+  }
 }
 
 // https://dom.spec.whatwg.org/#dom-parentnode-replacechildren
@@ -1096,10 +1205,19 @@ void Node::replaceChildren(
     return;
   }
 
-  VectorOf<Node> nodes = ConvertNodeUnionsIntoNodes(
-      this, node_unions, GetDocument(), "replace", exception_state);
-  if (!exception_state.HadException()) {
+  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
+    VectorOf<Node> nodes = ConvertNodeUnionsIntoNodes(
+        this_node, node_unions, GetDocument(), "replace", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
     this_node->ReplaceChildren(nodes, exception_state);
+  } else {
+    Node* node = ConvertNodeUnionsIntoNode(
+        this_node, node_unions, GetDocument(), "replace", exception_state);
+    if (!exception_state.HadException()) {
+      this_node->ReplaceChildren(node, exception_state);
+    }
   }
 }
 
@@ -2172,7 +2290,7 @@ void Node::setTextContentForBinding(const V8UnionStringOrTrustedScript* value,
       return setTextContent(value->GetAsTrustedScript()->toString());
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void Node::setTextContent(const String& text) {
@@ -2213,7 +2331,7 @@ void Node::setTextContent(const String& text) {
       // Do nothing.
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 uint16_t Node::compareDocumentPosition(const Node* other_node,
@@ -2265,8 +2383,7 @@ uint16_t Node::compareDocumentPosition(const Node* other_node,
                kDocumentPositionPreceding;
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return kDocumentPositionDisconnected;
+    NOTREACHED();
   }
 
   // If one node is in the document and the other is not, we must be
@@ -2384,6 +2501,8 @@ Node::InsertionNotificationRequest Node::InsertedInto(
 
   return kInsertionDone;
 }
+
+void Node::MovedFrom(ContainerNode& old_parent) {}
 
 void Node::RemovedFrom(ContainerNode& insertion_point) {
   DCHECK(IsContainerNode() || IsInTreeScope() || GetDOMParts());
@@ -2595,7 +2714,18 @@ static void AppendMarkedTree(const String& base_indent,
         AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
                          marked_node2, marked_label2, builder);
       }
+      if (const ColumnPseudoElementsVector* column_pseudo_elements =
+              element->GetColumnPseudoElements()) {
+        for (const ColumnPseudoElement* pseudo : *column_pseudo_elements) {
+          AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
+                           marked_node2, marked_label2, builder);
+        }
+      }
       if (Element* pseudo = element->GetPseudoElement(kPseudoIdScrollMarker)) {
+        AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
+                         marked_node2, marked_label2, builder);
+      }
+      if (Element* pseudo = element->GetPseudoElement(kPseudoIdCheck)) {
         AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
                          marked_node2, marked_label2, builder);
       }
@@ -2605,6 +2735,10 @@ static void AppendMarkedTree(const String& base_indent,
       if (Element* pseudo = element->GetPseudoElement(kPseudoIdAfter))
         AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
                          marked_node2, marked_label2, builder);
+      if (Element* pseudo = element->GetPseudoElement(kPseudoIdSelectArrow)) {
+        AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
+                         marked_node2, marked_label2, builder);
+      }
       if (Element* pseudo =
               element->GetPseudoElement(kPseudoIdScrollMarkerGroupAfter)) {
         AppendMarkedTree(indent_string, pseudo, marked_node1, marked_label1,
@@ -3326,8 +3460,7 @@ void Node::SetCustomElementState(CustomElementState new_state) {
 
   switch (new_state) {
     case CustomElementState::kUncustomized:
-      NOTREACHED_IN_MIGRATION();  // Everything starts in this state
-      return;
+      NOTREACHED();  // Everything starts in this state
 
     case CustomElementState::kUndefined:
       DCHECK_EQ(CustomElementState::kUncustomized, old_state);

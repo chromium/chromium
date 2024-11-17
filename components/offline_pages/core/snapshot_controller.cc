@@ -43,7 +43,7 @@ SnapshotController::SnapshotController(
   }
 }
 
-SnapshotController::~SnapshotController() {}
+SnapshotController::~SnapshotController() = default;
 
 void SnapshotController::Reset() {
   // Cancel potentially delayed tasks that relate to the previous 'session'.

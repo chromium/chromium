@@ -71,7 +71,7 @@ class UsbMidiDeviceFactoryAndroid {
                     public void onReceive(Context context, Intent intent) {
                         if (!IntentUtils.isTrustedIntentFromSelf(intent)) return;
                         assert ACTION_USB_PERMISSION.equals(intent.getAction());
-                        onUsbDevicePermissionRequestDone(context, intent);
+                        onUsbDevicePermissionRequestDone(intent);
                     }
                 };
         mDeviceChangeReceiver =
@@ -207,13 +207,9 @@ class UsbMidiDeviceFactoryAndroid {
     }
 
     /**
-     * Called when the user accepts or rejects the permission request requested by
-     * EnumerateDevices.
-     *
-     * @param context
-     * @param intent
+     * Called when the user accepts or rejects the permission request requested by EnumerateDevices.
      */
-    private void onUsbDevicePermissionRequestDone(Context context, Intent intent) {
+    private void onUsbDevicePermissionRequestDone(Intent intent) {
         UsbDevice device = (UsbDevice) intent.getParcelableExtra(UsbManager.EXTRA_DEVICE);
         UsbMidiDeviceAndroid midiDevice = null;
         if (mRequestedDevices.contains(device)) {

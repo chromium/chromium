@@ -887,8 +887,7 @@ void SQLTransactionBackend::RequestTransitToState(
 // in the state dispatch table. They are unimplemented because they should
 // never be reached in the course of correct execution.
 SQLTransactionState SQLTransactionBackend::UnreachableState() {
-  NOTREACHED_IN_MIGRATION();
-  return SQLTransactionState::kEnd;
+  NOTREACHED();
 }
 
 SQLTransactionState SQLTransactionBackend::SendToFrontendState() {

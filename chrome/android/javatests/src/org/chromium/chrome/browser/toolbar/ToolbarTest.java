@@ -64,7 +64,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.KeyboardUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests for toolbar manager behavior. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -174,7 +174,7 @@ public class ToolbarTest {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"Omnibox"})
     public void testFindInPageDismissedOnOmniboxFocus() {
         findInPageFromMenu();
@@ -185,7 +185,7 @@ public class ToolbarTest {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     public void testNtpOmniboxFocusAndUnfocusWithHardwareKeyboardConnected() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         // Simulate availability of a hardware keyboard.
@@ -225,7 +225,7 @@ public class ToolbarTest {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     public void testMaybeShowUrlBarFocusIfHardwareKeyboardAvailable_newTabFromTabSwitcher() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         // Simulate availability of a hardware keyboard.
@@ -258,7 +258,7 @@ public class ToolbarTest {
     @Test
     @MediumTest
     @DisableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     public void testToggleTabStripVisibility() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
         int tabStripHeightResource =

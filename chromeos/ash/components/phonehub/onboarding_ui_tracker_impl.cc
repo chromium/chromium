@@ -11,8 +11,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 void OnboardingUiTrackerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kHideOnboardingUi, false);
@@ -115,5 +114,4 @@ void OnboardingUiTrackerImpl::UpdateShouldShowOnboardingUi() {
   NotifyShouldShowOnboardingUiChanged();
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

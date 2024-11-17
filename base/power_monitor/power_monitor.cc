@@ -170,6 +170,13 @@ void PowerMonitor::NotifyPowerStateChange(
                      ? "On"
                      : "Off")
              << " battery";
+    TRACE_EVENT_INSTANT(
+        "power",
+        battery_power_status ==
+                PowerStateObserver::BatteryPowerStatus::kBatteryPower
+            ? perfetto::StaticString("PowerMonitor::BatteryPower")
+            : perfetto::StaticString("PowerMonitor::ExternalPower"),
+        process_track_);
   }
 
   AutoLock auto_lock(battery_power_status_lock_);
@@ -183,8 +190,7 @@ void PowerMonitor::NotifyPowerStateChange(
 
 void PowerMonitor::NotifySuspend() {
   DCHECK(IsInitialized());
-  TRACE_EVENT_INSTANT0("base", "PowerMonitor::NotifySuspend",
-                       TRACE_EVENT_SCOPE_PROCESS);
+  TRACE_EVENT_INSTANT("power", "PowerMonitor::NotifySuspend", process_track_);
   DVLOG(1) << "Power Suspending";
 
   AutoLock auto_lock(is_system_suspended_lock_);
@@ -198,8 +204,7 @@ void PowerMonitor::NotifySuspend() {
 
 void PowerMonitor::NotifyResume() {
   DCHECK(IsInitialized());
-  TRACE_EVENT_INSTANT0("base", "PowerMonitor::NotifyResume",
-                       TRACE_EVENT_SCOPE_PROCESS);
+  TRACE_EVENT_INSTANT("power", "PowerMonitor::NotifyResume", process_track_);
   DVLOG(1) << "Power Resuming";
 
   TimeTicks resume_time = TimeTicks::Now();
@@ -245,7 +250,8 @@ PowerMonitor* PowerMonitor::GetInstance() {
 }
 
 PowerMonitor::PowerMonitor()
-    : power_state_observers_(
+    : process_track_("PowerMonitor"),
+      power_state_observers_(
           base::MakeRefCounted<ObserverListThreadSafe<PowerStateObserver>>()),
       power_suspend_observers_(
           base::MakeRefCounted<ObserverListThreadSafe<PowerSuspendObserver>>()),

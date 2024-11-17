@@ -159,7 +159,8 @@ bool PageAllocator::DiscardSystemPages(void* address, size_t size) {
 bool PageAllocator::DecommitPages(void* address, size_t size) {
   // V8 expects the pages to be inaccessible and zero-initialized upon next
   // access.
-  return partition_alloc::DecommitAndZeroSystemPages(address, size);
+  return partition_alloc::DecommitAndZeroSystemPages(
+      address, size, partition_alloc::PageTag::kV8);
 }
 
 bool PageAllocator::SealPages(void* address, size_t size) {

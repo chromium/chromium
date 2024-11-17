@@ -7,17 +7,22 @@
 #include <optional>
 
 #include "base/containers/contains.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/process/process.h"
 #include "base/task/task_traits.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
+#include "base/test/task_environment.h"
 #include "base/trace_event/named_trigger.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/public/render_process_host_id.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
+#include "components/performance_manager/public/scenarios/performance_scenarios.h"
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "components/performance_manager/test_support/mock_graphs.h"
-#include "content/public/browser/background_tracing_config.h"
+#include "content/public/common/content_switches.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -99,8 +104,8 @@ namespace {
 
 class LenientMockObserver : public ProcessNodeImpl::Observer {
  public:
-  LenientMockObserver() {}
-  ~LenientMockObserver() override {}
+  LenientMockObserver() = default;
+  ~LenientMockObserver() override = default;
 
   MOCK_METHOD(void, OnProcessNodeAdded, (const ProcessNode*), (override));
   MOCK_METHOD(void, OnProcessLifetimeChange, (const ProcessNode*), (override));
@@ -272,37 +277,47 @@ TEST_F(ProcessNodeImplTest, PublicInterface) {
   }
 }
 
-namespace {
+TEST_F(ProcessNodeImplTest, InitializeChildProcessCoordination) {
+  auto process_node = CreateNode<ProcessNodeImpl>();
 
-class LenientFakeNamedTriggerManager
-    : public base::trace_event::NamedTriggerManager {
- public:
-  LenientFakeNamedTriggerManager() { NamedTriggerManager::SetInstance(this); }
-  ~LenientFakeNamedTriggerManager() {
-    NamedTriggerManager::SetInstance(nullptr);
-  }
+  // No global memory mapped. ProcessNodeImpl automatically creates a process
+  // memory region on request.
+  process_node->InitializeChildProcessCoordination(
+      0u, base::BindLambdaForTesting(
+              [&](base::ReadOnlySharedMemoryRegion global_region,
+                  base::ReadOnlySharedMemoryRegion process_region) {
+                EXPECT_FALSE(global_region.IsValid());
+                EXPECT_TRUE(process_region.IsValid());
+              })
+              .Then(task_env().QuitClosure()));
+  task_env().RunUntilQuit();
 
-  // Functions we want to intercept.
-  MOCK_METHOD(bool,
-              DoEmitNamedTrigger,
-              (const std::string& trigger_name, std::optional<int32_t> value),
-              (override));
-};
+  // Map global memory.
+  ScopedGlobalScenarioMemory global_shared_memory;
+  process_node->InitializeChildProcessCoordination(
+      0u, base::BindLambdaForTesting(
+              [&](base::ReadOnlySharedMemoryRegion global_region,
+                  base::ReadOnlySharedMemoryRegion process_region) {
+                EXPECT_TRUE(global_region.IsValid());
+                EXPECT_TRUE(process_region.IsValid());
+              })
+              .Then(task_env().QuitClosure()));
+  task_env().RunUntilQuit();
 
-using FakeBackgroundTracingManager =
-    ::testing::StrictMock<LenientFakeNamedTriggerManager>;
-
-}  // namespace
-
-TEST_F(ProcessNodeImplTest, FireBackgroundTracingTriggerOnUI) {
-  const std::string kTrigger1("trigger1");
-
-  LenientFakeNamedTriggerManager manager;
-
-  // Expect a new trigger to be registered and triggered.
-  EXPECT_CALL(manager, DoEmitNamedTrigger(_, _));
-  ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(kTrigger1);
-  testing::Mock::VerifyAndClear(&manager);
+  // In single process mode, memory shouldn't be shared even if it's mapped,
+  // because the request isn't actually sent from a different process.
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitch(
+      switches::kSingleProcess);
+  process_node->InitializeChildProcessCoordination(
+      0u, base::BindLambdaForTesting(
+              [&](base::ReadOnlySharedMemoryRegion global_region,
+                  base::ReadOnlySharedMemoryRegion process_region) {
+                EXPECT_FALSE(global_region.IsValid());
+                EXPECT_FALSE(process_region.IsValid());
+              })
+              .Then(task_env().QuitClosure()));
+  task_env().RunUntilQuit();
 }
 
 }  // namespace performance_manager

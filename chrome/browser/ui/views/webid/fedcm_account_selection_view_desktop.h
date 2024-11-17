@@ -6,7 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBID_FEDCM_ACCOUNT_SELECTION_VIEW_DESKTOP_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/ui/lens/lens_overlay_controller.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
+#include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/webid/account_selection_bubble_view.h"
 #include "chrome/browser/ui/views/webid/fedcm_modal_dialog_view.h"
@@ -24,15 +25,29 @@ using TokenError = content::IdentityCredentialTokenError;
 
 class AccountSelectionViewBase;
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 // Provides an implementation of the AccountSelectionView interface on desktop,
 // which creates the AccountSelectionBubbleView dialog to display the FedCM
 // account chooser to the user.
+// The lifetime of this class is conceptually scoped to the intersection of:
+//  * IdentityDialogController, which represents the request from blink.
+//  * tabs::TabInterface, which represents the tab in which the UI is shown.
+// If either goes away, then this class should be destroyed. This class is owned
+// as a unique_ptr by IdentityDialogController which ensures that the lifetime
+// is scoped to that of FederatedAuthRequestImpl. However, the lifetime must be
+// manually scoped to the tabs::TabInterface. This is done by:
+//  * Registering callbacks on tabs::TabInterface for relevant changes.
+//  * If the tab goes away, Close() is called. However destruction may be
+//  asynchronous.
+//  * All methods to show UI early exit if the tab no longer exists.
 class FedCmAccountSelectionView : public AccountSelectionView,
-                                  public AccountSelectionViewBase::Observer,
                                   public FedCmModalDialogView::Observer,
                                   content::WebContentsObserver,
-                                  views::WidgetObserver,
-                                  public LensOverlayController::Observer {
+                                  public PictureInPictureOcclusionObserver,
+                                  views::WidgetObserver {
  public:
   // safe_zone_diameter/icon_size as defined in
   // https://www.w3.org/TR/appmanifest/#icon-masks
@@ -50,7 +65,8 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     MODAL
   };
 
-  explicit FedCmAccountSelectionView(AccountSelectionView::Delegate* delegate);
+  FedCmAccountSelectionView(AccountSelectionView::Delegate* delegate,
+                            tabs::TabInterface* tab);
   ~FedCmAccountSelectionView() override;
 
   // AccountSelectionView:
@@ -77,7 +93,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                          const std::string& idp_etld_plus_one,
                          blink::mojom::RpContext rp_context,
                          blink::mojom::RpMode rp_mode) override;
-  void OnAccountsDisplayed() override;
 
   void ShowUrl(LinkType link_type, const GURL& url) override;
   std::string GetTitle() const override;
@@ -87,8 +102,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // FedCmModalDialogView::Observer
   void OnPopupWindowDestroyed() override;
 
-  void OnTabForegrounded();
-  void OnTabBackgrounded();
   // Closes the widget and notifies the delegate.
   void Close();
 
@@ -105,15 +118,58 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   void CloseModalDialog() override;
   void PrimaryMainFrameWasResized(bool width_changed) override;
 
-  // LensOverlayController::Observer:
-  void OnLensOverlayDidShow() override;
-  void OnLensOverlayDidClose() override;
-  void OnLensOverlayControllerDestroyed() override;
-
-  // Setter method for testing only.
-  void SetIsLensOverlayShowingForTesting(bool value);
-
   base::WeakPtr<FedCmAccountSelectionView> GetWeakPtr();
+
+  // Called when the associated tab enters the foreground.
+  // Public for testing.
+  void TabForegrounded(tabs::TabInterface* tab);
+
+  // Called when the associated tab will enter the background.
+  // Public for testing.
+  void TabWillEnterBackground(tabs::TabInterface* tab);
+
+  // Called when the accounts UI is displayed.
+  void OnAccountsDisplayed();
+
+  // Called when a user either selects the account from the multi-account
+  // chooser or clicks the "continue" button.
+  // Takes `account` as well as `idp_data` since passing `account_id`
+  // is insufficient in the multiple IDP case.
+  void OnAccountSelected(const content::IdentityRequestAccount& account,
+                         const content::IdentityProviderData& idp_data,
+                         const ui::Event& event);
+
+  // Called when the user clicks "privacy policy" or "terms of service" link.
+  void OnLinkClicked(
+      content::IdentityRequestDialogController::LinkType link_type,
+      const GURL& url,
+      const ui::Event& event);
+
+  // Called when the user clicks "back" button.
+  void OnBackButtonClicked();
+
+  // Called when the user clicks "close" button.
+  void OnCloseButtonClicked(const ui::Event& event);
+
+  // Called when the user clicks the "continue" button on the sign-in
+  // failure dialog or wants to sign in to another account.
+  void OnLoginToIdP(const GURL& idp_config_url,
+                    const GURL& idp_login_url,
+                    const ui::Event& event);
+
+  // Called when the user clicks "got it" button.
+  void OnGotIt(const ui::Event& event);
+
+  // Called when the user clicks the "more details" button on the error
+  // dialog.
+  void OnMoreDetails(const ui::Event& event);
+
+  // Called when the user clicks on the 'Choose an account' button
+  void OnChooseAnAccountClicked();
+
+  // TODO(https://crbug.com/377803489): Get rid of this and move all of
+  // InitDialogWidget() into this class.
+  void PostWidgetCreate(views::Widget* widget);
 
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;
@@ -258,21 +314,14 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // views::WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override;
 
-  // AccountSelectionBubbleView::Observer:
-  void OnAccountSelected(const Account& account,
-                         const content::IdentityProviderData& idp_data,
-                         const ui::Event& event) override;
-  void OnLinkClicked(LinkType link_type,
-                     const GURL& url,
-                     const ui::Event& event) override;
-  void OnBackButtonClicked() override;
-  void OnCloseButtonClicked(const ui::Event& event) override;
-  void OnLoginToIdP(const GURL& idp_config_url,
-                    const GURL& idp_login_url,
-                    const ui::Event& event) override;
-  void OnGotIt(const ui::Event& event) override;
-  void OnMoreDetails(const ui::Event& event) override;
-  void OnChooseAnAccountClicked() override;
+  // Called when the tab's WebContents is discarded.
+  void WillDiscardContents(tabs::TabInterface* tab,
+                           content::WebContents* old_contents,
+                           content::WebContents* new_contents);
+
+  // Called when the tab will be removed from the window.
+  void WillDetach(tabs::TabInterface* tab,
+                  tabs::TabInterface::DetachReason reason);
 
   // Returns false if `this` got deleted. In that case, the caller should not
   // access any further member variables.
@@ -320,6 +369,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       bool show_back_button,
       bool is_choose_an_account);
 
+  // PictureInPictureOcclusionObserver:
+  void OnOcclusionStateChanged(bool occluded) override;
+
   std::vector<IdentityProviderDataPtr> idp_list_;
 
   std::vector<IdentityRequestAccountPtr> accounts_;
@@ -364,9 +416,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // pop-up window has already been closed.
   bool is_modal_closed_but_accounts_fetch_pending_{false};
 
-  // Whether the associated WebContents is visible or not.
-  bool is_web_contents_visible_;
-
   // Whether the "Continue" button on the mismatch dialog is clicked. Once the
   // "Continue" button is clicked, a pop-up window is shown for the user to sign
   // in to an IDP. The mismatch dialog is hidden until it has been updated into
@@ -380,10 +429,6 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Used to determine whether the multi IDP picker needs to show a back button
   // or not.
   bool started_as_single_returning_account_{false};
-
-  // Whether the Lens overlay is showing. Updated by LensOverlayController and
-  // observer events.
-  bool is_lens_overlay_showing_{false};
 
   // Whether the last ShowMultiAccountPicker() is from a "Choose an account"
   // button. This is used to determine whether to show this title when coming
@@ -406,10 +451,21 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // for button flows.
   raw_ptr<AccountSelectionViewBase> account_selection_view_;
 
-  // Observation for Lens overlay controller.
-  base::ScopedObservation<LensOverlayController,
-                          LensOverlayController::Observer>
-      lens_overlay_controller_observation_{this};
+  // Whether the widget is occluded by PIP (and therefore we should ignore
+  // inputs).
+  bool is_occluded_by_pip_{false};
+
+  // Observer for widget occlusion.
+  std::unique_ptr<ScopedPictureInPictureOcclusionObservation>
+      pip_occlusion_observation_;
+
+  // The tab hosting the associated UI.
+  // This class is owned by IdentityDialogController and thus can outlive the
+  // associated UI. Any uses of tab_ must be preceded by a nullptr check.
+  raw_ptr<tabs::TabInterface> tab_;
+
+  // Holds subscriptions for TabInterface callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };

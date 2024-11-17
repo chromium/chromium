@@ -219,6 +219,10 @@ SnapGroup* SnapGroupController::AddSnapGroup(
 
 bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group,
                                           SnapGroupExitPoint exit_point) {
+  if (snap_group->is_shutting_down_) {
+    return false;
+  }
+
   CHECK(snap_group);
 
   const bool snap_to_replace = exit_point == SnapGroupExitPoint::kSnapToReplace;

@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/variations/client_filterable_state.h"
+#include "components/variations/entropy_provider.h"
 #include "components/variations/service/limited_entropy_synthetic_trial.h"
 #include "components/variations/service/safe_seed_manager.h"
 #include "components/variations/service/ui_string_overrider.h"
@@ -82,7 +83,7 @@ class VariationsService
     virtual void OnExperimentChangesDetected(Severity severity) = 0;
 
    protected:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
   };
 
   VariationsService(const VariationsService&) = delete;
@@ -182,9 +183,21 @@ class VariationsService
   // Register Variations related prefs in the Profile prefs.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Factory method for creating a VariationsService. Does not take ownership of
-  // |state_manager|. Caller should ensure that |state_manager| is valid for the
-  // lifetime of this class.
+  // Creates a VariationsService instance. Does not take ownership of
+  // |state_manager|, so callers should ensure that |state_manager| is valid for
+  // the lifetime of this class.
+  //
+  // |client| provides some platform-specific operations for variations. Must
+  // not be null.
+  // |local_state| provides access to Local State prefs. Must not be null.
+  // |state_manager| provides access to metrics state info. Must not be null.
+  // |disable_network_switch| is a command-line switch that can be used to
+  // disable network communication.
+  // |ui_string_overrider| provides overrides for UI strings.
+  // |network_connection_tracker_getter| allows the VariationsService to
+  // observe network state changes.
+  // |synthetic_trial_registry| provides an interface to register synthetic
+  // trials. Must not be null.
   static std::unique_ptr<VariationsService> Create(
       std::unique_ptr<VariationsServiceClient> client,
       PrefService* local_state,
@@ -277,10 +290,8 @@ class VariationsService
                          bool store_success,
                          VariationsSeed seed);
 
-  // Creates the VariationsService with the given |local_state| prefs service
-  // and |state_manager|. Does not take ownership of |state_manager|. Caller
-  // should ensure that |state_manager| is valid for the lifetime of this class.
-  // Use the |Create| factory method to create a VariationsService.
+  // Use the |Create| factory method to create a VariationsService. See |Create|
+  // for more details.
   VariationsService(
       std::unique_ptr<VariationsServiceClient> client,
       std::unique_ptr<web_resource::ResourceRequestAllowedNotifier> notifier,
@@ -453,6 +464,9 @@ class VariationsService
 
   // The main entry point for managing safe mode state.
   SafeSeedManager safe_seed_manager_;
+
+  // Used to provide entropy to field trials.
+  std::unique_ptr<const EntropyProviders> entropy_providers_;
 
   // Member responsible for creating trials from a variations seed.
   VariationsFieldTrialCreator field_trial_creator_;

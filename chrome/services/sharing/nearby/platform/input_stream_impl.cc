@@ -9,8 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/c/system/data_pipe.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -34,6 +33,7 @@ void LogReadResult(connections::mojom::Medium medium, bool success) {
     case connections::mojom::Medium::kWebRtc:
     case connections::mojom::Medium::kBleL2Cap:
     case connections::mojom::Medium::kUsb:
+    case connections::mojom::Medium::kWebRtcNonCellular:
       break;
   }
 }
@@ -188,5 +188,4 @@ void InputStreamImpl::DoClose(base::WaitableEvent* task_run_waitable_event) {
     task_run_waitable_event->Signal();
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

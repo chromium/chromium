@@ -79,6 +79,7 @@ struct BatterySaverModeState {
 };
 
 // Next method ID: 9
+[Uuid="df491e4a-b035-4930-8351-6db499ef9247"]
 interface PowerHost {
   // Acquire and release wake locks on the host side.
   OnAcquireDisplayWakeLock@0(DisplayWakeLockType type);

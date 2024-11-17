@@ -4,6 +4,7 @@
 
 #include "chrome/browser/media/router/providers/dial/dial_activity_manager.h"
 
+#include <optional>
 #include <string_view>
 
 #include "base/containers/contains.h"
@@ -42,13 +43,13 @@ GURL GetApplicationInstanceURL(
   // the Application Instance URL. The host portion of the URL SHALL either
   // resolve to an IPv4 address or be an IPv4 address. No response body shall
   // be returned.
-  std::string location_header;
-  if (!response_info.headers->EnumerateHeader(nullptr, "LOCATION",
-                                              &location_header)) {
+  std::optional<std::string_view> location_header =
+      response_info.headers->EnumerateHeader(/*iter=*/nullptr, "LOCATION");
+  if (!location_header) {
     return GURL();
   }
 
-  GURL app_instance_url(location_header);
+  GURL app_instance_url(*location_header);
   if (!app_instance_url.is_valid() || !app_instance_url.SchemeIs("http"))
     return GURL();
 

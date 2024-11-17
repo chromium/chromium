@@ -211,6 +211,8 @@ class CodecProfileLevelList {
                         return 51;
                     case CodecProfileLevel.AVCLevel52:
                         return 52;
+                    case CodecProfileLevel.AVCLevel6:
+                        return 60;
                     case CodecProfileLevel.AVCLevel61:
                         return 61;
                     case CodecProfileLevel.AVCLevel62:

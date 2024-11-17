@@ -2,19 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/cast/encoding/vpx_quantizer_parser.h"
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 
-namespace media {
-namespace cast {
-
+namespace media::cast {
 namespace {
 // VpxBitReader is a re-implementation of a subset of the VP8 entropy decoder.
 // It is used to decompress the VP8 bitstream for the purposes of quickly
@@ -26,8 +20,7 @@ namespace {
 // necessary parts being exported.
 class VpxBitReader {
  public:
-  VpxBitReader(const uint8_t* data, size_t size)
-      : encoded_data_(data), encoded_data_end_(data + size) {
+  explicit VpxBitReader(base::span<const uint8_t> data) : data_(data) {
     VpxDecoderReadBytes();
   }
   ~VpxBitReader() = default;
@@ -46,10 +39,9 @@ class VpxBitReader {
   // Read new bytes from the encoded data buffer until |bit_count_| > 0.
   void VpxDecoderReadBytes();
 
-  raw_ptr<const uint8_t, AllowPtrArithmetic>
-      encoded_data_;  // Current byte to decode.
-  const raw_ptr<const uint8_t>
-      encoded_data_end_;  // The end of the byte to decode.
+  // The current byte to decode.
+  base::raw_span<const uint8_t> data_;
+
   // The following two variables are maintained by the decoder.
   // General decoding rule:
   // If |value_| is in the range of 0 to half of |range_|, output 0.
@@ -65,7 +57,7 @@ class VpxBitReader {
 };
 
 // The number of bits to be left-shifted to make the variable range_ over 128.
-const uint8_t vpx_shift[128] = {
+constexpr const std::array<uint8_t, 128> kVpxShift = {
     0, 7, 6, 6, 5, 5, 5, 5, 4, 4, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 3,
     3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
     2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 1,
@@ -74,7 +66,7 @@ const uint8_t vpx_shift[128] = {
     1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 // Mapping from the q_index(0-127) to the quantizer value(0-63).
-const uint8_t vpx_quantizer_lookup[128] = {
+constexpr const std::array<uint8_t, 128> kVpxQuantizerLookup = {
     0,  1,  2,  3,  4,  5,  6,  6,  7,  8,  9,  10, 10, 11, 12, 12, 13, 13, 14,
     15, 16, 17, 18, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 27, 28, 28, 29, 29,
     30, 30, 31, 31, 32, 32, 33, 33, 34, 34, 35, 35, 36, 36, 37, 37, 38, 38, 39,
@@ -85,10 +77,10 @@ const uint8_t vpx_quantizer_lookup[128] = {
 
 void VpxBitReader::VpxDecoderReadBytes() {
   int shift = -bit_count_;
-  while ((shift >= 0) && (encoded_data_ < encoded_data_end_)) {
+  while ((shift >= 0) && (!data_.empty())) {
     bit_count_ += 8;
-    value_ |= static_cast<unsigned int>(*encoded_data_) << shift;
-    ++encoded_data_;
+    value_ |= static_cast<unsigned int>(*data_.data()) << shift;
+    data_ = data_.subspan(1);
     shift -= 8;
   }
 }
@@ -109,7 +101,7 @@ unsigned int VpxBitReader::DecodeBit() {
     range_ = split;
   }
   if (range_ < 128) {
-    int shift = vpx_shift[range_];
+    int shift = kVpxShift[range_];
     range_ <<= shift;
     value_ <<= shift;
     bit_count_ -= shift;
@@ -179,43 +171,44 @@ void ParseFilterHeader(VpxBitReader* bit_reader) {
 }
 }  // unnamed namespace
 
-int ParseVpxHeaderQuantizer(const uint8_t* encoded_data, size_t size) {
-  DCHECK(encoded_data);
-  if (size <= 3) {
+int ParseVpxHeaderQuantizer(base::span<const uint8_t> data) {
+  if (data.size() <= 3) {
     return -1;
   }
-  const bool is_key = !(encoded_data[0] & 1);
-  const unsigned int header_3bytes =
-      encoded_data[0] | (encoded_data[1] << 8) | (encoded_data[2] << 16);
+  const bool is_key = !(data[0] & 1);
+  const unsigned int header_3bytes = data[0] | (data[1] << 8) | (data[2] << 16);
+
   // Parse the size of the first partition.
-  unsigned int partition_size = (header_3bytes >> 5);
-  encoded_data += 3;  // Skip 3 bytes.
-  size -= 3;
+  const unsigned int partition_size = (header_3bytes >> 5);
+  data = data.subspan(3);
+
   if (is_key) {
-    if (size <= 7) {
+    if (data.size() <= 7) {
       return -1;
     }
-    encoded_data += 7;  // Skip 7 bytes.
-    size -= 7;
+    data = data.subspan(7);
   }
-  if (size < partition_size) {
+  if (data.size() < partition_size) {
     return -1;
   }
-  VpxBitReader bit_reader(encoded_data, partition_size);
+
+  VpxBitReader bit_reader(data.first(partition_size));
   if (is_key) {
     bit_reader.DecodeValue(1 + 1);  // Parse two bits: color_space + clamp_type.
   }
+
   ParseSegmentHeader(&bit_reader);
   ParseFilterHeader(&bit_reader);
+
   // Parse the number of coefficient data partitions.
   bit_reader.DecodeValue(2);
+
   // Parse the base q_index.
-  uint8_t q_index = static_cast<uint8_t>(bit_reader.DecodeValue(7));
+  const auto q_index = static_cast<uint8_t>(bit_reader.DecodeValue(7));
   if (q_index > 127) {
     return 63;
   }
-  return vpx_quantizer_lookup[q_index];
+  return kVpxQuantizerLookup[q_index];
 }
 
-}  //  namespace cast
-}  //  namespace media
+}  //  namespace media::cast

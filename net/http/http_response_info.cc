@@ -144,6 +144,9 @@ enum {
 
   // This bit is set if the response has valid `proxy_chain`.
   RESPONSE_EXTRA_INFO_HAS_PROXY_CHAIN = 1 << 1,
+
+  // This bit is set if the response has original_response_time.
+  RESPONSE_EXTRA_INFO_HAS_ORIGINAL_RESPONSE_TIME = 1 << 2
 };
 
 HttpResponseInfo::HttpResponseInfo() = default;
@@ -187,6 +190,14 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
   if (!iter.ReadInt64(&time_val))
     return false;
   response_time = Time::FromInternalValue(time_val);
+
+  // Read original-response-time
+  if ((extra_flags & RESPONSE_EXTRA_INFO_HAS_ORIGINAL_RESPONSE_TIME) != 0) {
+    if (!iter.ReadInt64(&time_val)) {
+      return false;
+    }
+    original_response_time = Time::FromInternalValue(time_val);
+  }
 
   // Read response-headers
   headers = base::MakeRefCounted<HttpResponseHeaders>(&iter);
@@ -420,16 +431,14 @@ void HttpResponseInfo::Persist(base::Pickle* pickle,
     extra_flags |= RESPONSE_EXTRA_INFO_HAS_PROXY_CHAIN;
   }
 
-  if (extra_flags) {
-    flags |= RESPONSE_INFO_HAS_EXTRA_FLAGS;
-  }
+  extra_flags |= RESPONSE_EXTRA_INFO_HAS_ORIGINAL_RESPONSE_TIME;
+  flags |= RESPONSE_INFO_HAS_EXTRA_FLAGS;
 
   pickle->WriteInt(flags);
-  if (extra_flags) {
-    pickle->WriteInt(extra_flags);
-  }
+  pickle->WriteInt(extra_flags);
   pickle->WriteInt64(request_time.ToInternalValue());
   pickle->WriteInt64(response_time.ToInternalValue());
+  pickle->WriteInt64(original_response_time.ToInternalValue());
 
   HttpResponseHeaders::PersistOptions persist_options =
       HttpResponseHeaders::PERSIST_RAW;

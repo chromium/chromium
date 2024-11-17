@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.app.creator;
 
 import android.app.Activity;
+import android.content.Intent;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
@@ -24,8 +27,9 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabCreationParams;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.ui.signin.SigninAndHistorySyncCoordinator;
+import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -121,16 +125,23 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
                 new AccountPickerBottomSheetStrings.Builder(
                                 R.string.signin_account_picker_bottom_sheet_title)
                         .build();
-        SigninAndHistorySyncActivityLauncherImpl.get()
-                .launchActivityIfAllowed(
-                        mActivity,
-                        mProfile,
-                        strings,
-                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
-                        signinAccessPoint);
+        @Nullable
+        Intent intent =
+                SigninAndHistorySyncActivityLauncherImpl.get()
+                        .createBottomSheetSigninIntentOrShowError(
+                                mActivity,
+                                mProfile,
+                                strings,
+                                BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                        .BOTTOM_SHEET,
+                                BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                        .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                HistorySyncConfig.OptInMode.NONE,
+                                signinAccessPoint,
+                                /* selectedCoreAccountId= */ null);
+        if (intent != null) {
+            mActivity.startActivity(intent);
+        }
     }
 
     @Override
@@ -149,16 +160,23 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
                                             .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin)
                             .setDismissButtonStringId(R.string.cancel)
                             .build();
-            SigninAndHistorySyncActivityLauncherImpl.get()
-                    .launchActivityIfAllowed(
-                            mActivity,
-                            mProfile,
-                            strings,
-                            SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                            SigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                            SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE,
-                            signinAccessPoint);
+            @Nullable
+            Intent intent =
+                    SigninAndHistorySyncActivityLauncherImpl.get()
+                            .createBottomSheetSigninIntentOrShowError(
+                                    mActivity,
+                                    mProfile,
+                                    strings,
+                                    BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                            .BOTTOM_SHEET,
+                                    BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                            .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                                    HistorySyncConfig.OptInMode.NONE,
+                                    signinAccessPoint,
+                                    /* selectedCoreAccountId= */ null);
+            if (intent != null) {
+                mActivity.startActivity(intent);
+            }
             return;
         }
         AccountPickerBottomSheetStrings strings =

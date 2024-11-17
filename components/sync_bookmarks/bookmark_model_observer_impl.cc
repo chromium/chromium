@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/no_destructor.h"
 #include "components/bookmarks/browser/bookmark_node.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
@@ -103,8 +102,7 @@ BookmarkModelObserverImpl::BookmarkModelObserverImpl(
 
 BookmarkModelObserverImpl::~BookmarkModelObserverImpl() = default;
 
-void BookmarkModelObserverImpl::BookmarkModelLoaded(
-    bool ids_reassigned) {
+void BookmarkModelObserverImpl::BookmarkModelLoaded(bool ids_reassigned) {
   // This class isn't responsible for any loading-related logic.
 }
 
@@ -464,8 +462,9 @@ syncer::UniquePosition BookmarkModelObserverImpl::ComputePosition(
   CHECK_LT(index, parent.children().size());
 
   const bookmarks::BookmarkNode* node = parent.children()[index].get();
-  const std::string suffix = syncer::GenerateUniquePositionSuffix(
-      SyncedBookmarkTracker::GetClientTagHashFromUuid(node->uuid()));
+  const syncer::UniquePosition::Suffix suffix =
+      syncer::UniquePosition::GenerateSuffix(
+          SyncedBookmarkTracker::GetClientTagHashFromUuid(node->uuid()));
 
   const SyncedBookmarkTrackerEntity* predecessor_entity = nullptr;
   const SyncedBookmarkTrackerEntity* successor_entity = nullptr;
@@ -597,8 +596,8 @@ syncer::UniquePosition BookmarkModelObserverImpl::UpdateUniquePositionForNode(
   const SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker_->GetEntityForBookmarkNode(node);
   CHECK(entity);
-  const std::string suffix =
-      syncer::GenerateUniquePositionSuffix(entity->GetClientTagHash());
+  const syncer::UniquePosition::Suffix suffix =
+      syncer::UniquePosition::GenerateSuffix(entity->GetClientTagHash());
   const base::Time modification_time = base::Time::Now();
 
   syncer::UniquePosition new_unique_position;

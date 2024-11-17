@@ -16,12 +16,11 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "base/uuid.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_drag_context.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_session.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -228,9 +227,19 @@ class TabDragController : public views::WidgetObserver,
   void EndDrag(EndDragReason reason);
 
   // Set a callback to be called when the nested drag loop / system DnD session
-  // finishes. Note that the latter only ends when the mouse is released, i.e.
-  // the callback won't be invoked when attaching to another browser if the tab
-  // dragging session continues running.
+  // finishes.
+  //
+  // The details of when this callback is called are as follows:
+  // - If using a nested drag loop, it is called when dragging tabs into a
+  //   browser; or when dropping a window.
+  // - If using system DnD, it is called when releasing the mouse after having
+  //   dragged out of the window at any point in time during the drag session;
+  //   or when dragging tabs into a browser, if all tabs from the source
+  //   browser were part of the drag and therefore the source browser is closed.
+  //   Also, the callback must be set before the system DnD session starts.
+  //   As that session keeps running until the end of the tab dragging session,
+  //   this means that this method has no effect after entering the
+  //   kDraggingUsingSystemDragAndDrop state for the first time.
   void SetDragLoopDoneCallbackForTesting(base::OnceClosure callback);
 
   TabStripScrollSession* GetTabStripScrollSessionForTesting() {
@@ -655,8 +664,10 @@ class TabDragController : public views::WidgetObserver,
   // as a result of a drag finishing.
   void NotifyEventIfTabAddedToGroup();
 
+  // Similar implementations present in
+  // chrome/browser/ui/webui/tab_strip/tab_strip_page_handler.cc. If logic  is
+  // updated in one, the other should also be updated.
   void MaybePauseTrackingSavedTabGroup();
-
   void MaybeResumeTrackingSavedTabGroup();
 
 #if defined(USE_AURA)

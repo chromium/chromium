@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -23,27 +24,37 @@ import android.widget.FrameLayout;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.test.filters.SmallTest;
 
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Integration tests for MessageCardProvider component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class MessageCardProviderTest extends BlankUiTestActivityTestCase {
-    private static final int SUGGESTED_TAB_COUNT = 2;
+@Batch(Batch.PER_CLASS)
+public class MessageCardProviderTest {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     private TabListRecyclerView mRecyclerView;
 
@@ -60,23 +71,27 @@ public class MessageCardProviderTest extends BlankUiTestActivityTestCase {
 
     @Mock private Profile mProfile;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
+    @Before
+    public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         // TODO(meiliang): Replace with TabSwitcher instead when ready to integrate with
         // TabSwitcher.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModelList = new TabListModel();
-                    ViewGroup view = new FrameLayout(getActivity());
+                    ViewGroup view = new FrameLayout(sActivity);
                     mAdapter = new SimpleRecyclerViewAdapter(mModelList);
 
-                    getActivity().setContentView(view);
+                    sActivity.setContentView(view);
 
                     mRecyclerView =
                             (TabListRecyclerView)
-                                    getActivity()
+                                    sActivity
                                             .getLayoutInflater()
                                             .inflate(
                                                     R.layout.tab_list_recycler_view_layout,
@@ -119,7 +134,7 @@ public class MessageCardProviderTest extends BlankUiTestActivityTestCase {
 
                     mCoordinator =
                             new MessageCardProviderCoordinator(
-                                    getActivity(), () -> mProfile, mUiDismissActionProvider);
+                                    sActivity, () -> mProfile, mUiDismissActionProvider);
                     mCoordinator.subscribeMessageService(mTestingService);
                     mCoordinator.subscribeMessageService(mPriceService);
                 });

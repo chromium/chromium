@@ -22,15 +22,27 @@ using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuPrivacyButton;
 using web::test::HttpServer;
 
+namespace {
+
+// Matcher for a tile containing `text`.
+id<GREYMatcher> TileWithText(NSString* text) {
+  return grey_allOf(chrome_test_util::StaticTextWithAccessibilityLabel(text),
+                    grey_ancestor(grey_kindOfClassName(
+                        @"ContentSuggestionsMostVisitedTileView")),
+                    nil);
+}
+
+}  // namespace
+
 // Test case for NTP tiles.
 @interface NTPTilesTest : WebHttpServerChromeTestCase
 @end
 
 @implementation NTPTilesTest
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey clearBrowsingHistory];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -50,12 +62,14 @@ using web::test::HttpServer;
   web::test::SetUpSimpleHttpServer(responses);
 
   // Clear history and verify that the tile does not exist.
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
+
   [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey openNewTab];
 
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabel(@"title1")]
+  [[EarlGrey selectElementWithMatcher:TileWithText(@"title1")]
       assertWithMatcher:grey_nil()];
 
   [ChromeEarlGrey loadURL:URL];
@@ -63,14 +77,12 @@ using web::test::HttpServer;
   [ChromeEarlGrey goBack];
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabel(@"title1")]
+  [[EarlGrey selectElementWithMatcher:TileWithText(@"title1")]
       assertWithMatcher:grey_notNil()];
 
   [[AppLaunchManager sharedManager]
       ensureAppLaunchedWithConfiguration:self.appConfigurationForTestCase];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabel(@"title1")]
+  [[EarlGrey selectElementWithMatcher:TileWithText(@"title1")]
       assertWithMatcher:grey_notNil()];
 }
 
@@ -101,8 +113,7 @@ using web::test::HttpServer;
   [ChromeEarlGrey clearBrowsingHistory];
   [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey openNewTab];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabel(@"title2")]
+  [[EarlGrey selectElementWithMatcher:TileWithText(@"title2")]
       assertWithMatcher:grey_nil()];
 
   // Load first URL and expect redirect to destination URL.
@@ -115,11 +126,9 @@ using web::test::HttpServer;
   // Which of the two tiles that is displayed is an implementation detail, and
   // this test helps document it. The purpose of the test is to verify that only
   // one tile is displayed.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabel(@"title2")]
+  [[EarlGrey selectElementWithMatcher:TileWithText(@"title2")]
       assertWithMatcher:grey_notNil()];
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::StaticTextWithAccessibilityLabel(@"title1")]
+  [[EarlGrey selectElementWithMatcher:TileWithText(@"title1")]
       assertWithMatcher:grey_nil()];
 
   // Clear history and verify that the tile does not exist.
@@ -128,8 +137,7 @@ using web::test::HttpServer;
   // Wait for clear browsing data to completed before checking for title2 to
   // disappear.
   [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:
-          chrome_test_util::StaticTextWithAccessibilityLabel(@"title2")
+      waitForUIElementToDisappearWithMatcher:TileWithText(@"title2")
                                      timeout:
                                          base::test::ios::
                                              kWaitForClearBrowsingDataTimeout];

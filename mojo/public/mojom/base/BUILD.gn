@@ -30,7 +30,6 @@ mojom_component("base") {
     "process_id.mojom",
     "process_priority.mojom",
     "read_only_buffer.mojom",
-    "read_only_file.mojom",
     "ref_counted_memory.mojom",
     "safe_base_name.mojom",
     "shared_memory.mojom",

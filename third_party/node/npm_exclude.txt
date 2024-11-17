@@ -46,3 +46,6 @@ lit-html/*
 
 # Exlude unnecessary files fom @rollup/wasm-node.
 @rollup/wasm-node/dist/es/*
+
+# Exclude unnecessary files from @typescript-eslint.
+@typescript-eslint/eslint-plugin/docs/*

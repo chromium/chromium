@@ -91,10 +91,10 @@ constexpr CGFloat kAppIconPointSize = 80;
       static_cast<id<BrowserCoordinatorCommands, FindInPageCommands>>(
           self.browser->GetCommandDispatcher());
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  self.incognito = browserState->IsOffTheRecord();
+  ProfileIOS* profile = self.browser->GetProfile();
+  self.incognito = profile->IsOffTheRecord();
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(browserState);
+      ios::BookmarkModelFactory::GetForProfile(profile);
   id<BookmarksCommands> bookmarksHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), BookmarksCommands);
   id<HelpCommands> helpHandler =
@@ -108,7 +108,7 @@ constexpr CGFloat kAppIconPointSize = 80;
                                       bookmarksHandler:bookmarksHandler
                                            helpHandler:helpHandler
                                    qrGenerationHandler:self.scopedHandler
-                                           prefService:browserState->GetPrefs()
+                                           prefService:profile->GetPrefs()
                                          bookmarkModel:bookmarkModel
                                     baseViewController:self.baseViewController
                                        navigationAgent:agent

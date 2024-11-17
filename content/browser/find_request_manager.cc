@@ -19,6 +19,7 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 
 namespace content {
 
@@ -169,12 +170,18 @@ bool IsFindInPageDisabled(RenderFrameHost* rfh) {
 }
 
 bool IsUnattachedGuestView(RenderFrameHost* rfh) {
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(rfh));
-  if (!web_contents->IsGuest())
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    NOTIMPLEMENTED();
     return false;
+  } else {
+    WebContentsImpl* web_contents =
+        static_cast<WebContentsImpl*>(WebContents::FromRenderFrameHost(rfh));
+    if (!web_contents->IsGuest()) {
+      return false;
+    }
 
-  return !web_contents->GetOuterWebContents();
+    return !web_contents->GetOuterWebContents();
+  }
 }
 
 // kMinKeystrokesWithoutDelay should be high enough that script in the page
@@ -734,8 +741,7 @@ void FindRequestManager::SendFindRequest(const FindRequest& request,
 
 void FindRequestManager::NotifyFindReply(int request_id, bool final_update) {
   if (request_id == kInvalidId) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // Ensure that replies are not reported with IDs lower than the ID of the

@@ -139,10 +139,9 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   void OnGestureEvent(ui::GestureEvent* event) override;
 
   // Initialize and create mini_views for any pre-existing desks, before the
-  // bar was created. This should only be called after this view has been added
-  // to a widget, as it needs to call `GetWidget()` when it's performing a
-  // layout.
-  void Init();
+  // bar was created. `desk_bar_widget_window` is desk bar `Widget`'s
+  // corresponding "native window".
+  void Init(aura::Window* desk_bar_widget_window);
 
   // Return true if it is currently in zero state.
   bool IsZeroState() const;
@@ -176,13 +175,19 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // the active desk's mini view`.
   void UpdateButtonsForSavedDeskGrid();
 
-  // Update the visibility of the `default_desk_button_` on the desk bar's
-  // state.
+  // Updates the visibility of all buttons in the desk bar and schedules a
+  // layout of the desk bar if any button's visibility changes.
   void UpdateDeskButtonsVisibility();
 
   // Update the visibility of the saved desk library button based on whether
   // the saved desk feature is enabled and the user has any saved desks.
   void UpdateLibraryButtonVisibility();
+
+  // Updates visibility of the label under the new desk button to
+  // `new_visibility`. If `layout_if_changed` is true and the label's visibility
+  // changes, the desk bar get asynchronously laid out after this call.
+  void UpdateNewDeskButtonLabelVisibility(bool new_visibility,
+                                          bool layout_if_changed);
 
   // Called to update state of `button` and apply the scale animation to the
   // button. For the new desk button, this is called when the make the new desk
@@ -283,10 +288,11 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // done with its animation or when `desk_activation_timer_` fires.
   void OnUiUpdateDone();
 
-  // The `library_button_` and its label get lazily constructed for performance
-  // reasons. Creates the button if it doesn't exist. Only use if the button
-  // should be visible.
+  // Accessors for UI elements that are lazily constructed for performance
+  // reasons. Creates them if they don't exist. Only use if they should be
+  // visible.
   DeskIconButton& GetOrCreateLibraryButton();
+  views::Label& GetOrCreateNewDeskButtonLabel();
 
   // Gets full available bounds for the desk bar widget.
   virtual gfx::Rect GetAvailableBounds() const = 0;
@@ -388,9 +394,6 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // Maybe refreshes `overview_grid_` bounds on desk bar `state_` changed.
   void MaybeRefreshOverviewGridBounds();
 
-  // Records UMA histograms on desk profile adoption.
-  void RecordDeskProfileAdoption();
-
   const Type type_ = Type::kOverview;
 
   State state_ = State::kZero;
@@ -468,7 +471,7 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // A timer to wait on desk activation before desk bar animation is finished.
   base::OneShotTimer desk_activation_timer_;
 
-  raw_ptr<aura::Window> root_;
+  const raw_ptr<aura::Window> root_;
 
   std::unique_ptr<views::AnimationAbortHandle> animation_abort_handle_;
 

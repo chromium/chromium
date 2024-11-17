@@ -9,6 +9,9 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingChecker.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingController.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingDecision.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingInfo.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/MismatchNotificationChecker.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/MismatchNotificationData.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/SharedPreferencesBrandingTimeStorage.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/ToolbarBrandingDelegate.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/ToolbarBrandingOverlayCoordinator.java",
@@ -20,18 +23,28 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//build/android:build_java",
+    "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/browser/util:java",
     "//components/browser_ui/widget/android:java",
     "//components/crash/android:java",
+    "//components/feature_engagement/public:public_java",
+    "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//components/user_prefs/android:java",
     "//content/public/android:content_main_dex_java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_animation_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 
+  public_deps = [ ":proto_java" ]
   resources_package = "org.chromium.chrome"
 }
 
@@ -46,11 +59,19 @@ android_resources("java_resources") {
   deps = [ "//chrome/browser/ui/android/strings:ui_strings_grd" ]
 }
 
+proto_java_library("proto_java") {
+  proto_path =
+      "java/src/org/chromium/chrome/browser/customtabs/features/branding/proto"
+  sources = [ "$proto_path/account_mismatch_data.proto" ]
+}
+
 robolectric_library("junit") {
   resources_package = "org.chromium.chrome.browser.customtabs.features.branding"
   sources = [
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingCheckerUnitTest.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/BrandingControllerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/MismatchNotificationCheckerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/customtabs/features/branding/MismatchNotificationDataUnitTest.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/SharedPreferencesBrandingTimeStorageUnitTest.java",
     "java/src/org/chromium/chrome/browser/customtabs/features/branding/ToolbarBrandingOverlayCoordinatorUnitTest.java",
   ]
@@ -62,10 +83,20 @@ robolectric_library("junit") {
     "//base:base_java_test_support_uncommon",
     "//base:base_junit_test_support",
     "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
     "//chrome/browser/ui/android/theme:java",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/crash/android:java",
+    "//components/feature_engagement/public:public_java",
+    "//components/prefs/android:java",
+    "//components/signin/public/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_core_core_animation_testing_java",
     "//third_party/androidx:androidx_test_core_java",

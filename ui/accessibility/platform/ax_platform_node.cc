@@ -33,13 +33,13 @@ AXPlatformNode* AXPlatformNode::FromNativeWindow(
   return nullptr;
 }
 
-#if !BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
+#if !BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
 // static
 AXPlatformNode* AXPlatformNode::FromNativeViewAccessible(
     gfx::NativeViewAccessible accessible) {
   return nullptr;
 }
-#endif  // !BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
+#endif  // !BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
 
 // static
 void AXPlatformNode::RegisterNativeWindowHandler(

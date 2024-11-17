@@ -45,7 +45,7 @@ class ProfileListDesktopBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<AvatarMenu> avatar_menu_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // This test doesn't make sense for Chrome OS since it has a different
 // multi-profiles menu in the system tray instead.
 #define MAYBE_SwitchToProfile DISABLED_SwitchToProfile

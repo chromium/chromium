@@ -49,7 +49,7 @@ public class RadioButtonWithEditTextTest {
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    private class TestListener implements RadioButtonWithEditText.OnTextChangeListener {
+    private static class TestListener implements RadioButtonWithEditText.OnTextChangeListener {
         private CharSequence mCurrentText;
         private int mNumberOfTimesTextChanged;
 

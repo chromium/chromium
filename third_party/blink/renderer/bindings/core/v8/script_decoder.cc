@@ -41,6 +41,30 @@ struct CrossThreadCopier<mojo::ScopedDataPipeConsumerHandle> {
 
 namespace blink {
 
+namespace {
+void AppendDataImpl(Digestor* digestor,
+                    StringBuilder* builder,
+                    const String& data) {
+  bool was_8bit = builder->Is8Bit();
+  unsigned starting_length = builder->length();
+  builder->Append(data);
+  if (was_8bit == builder->Is8Bit()) {
+    // Update the hash using the data from the builder, not the input string,
+    // because the input string could be 8-bit when the builder is 16-bit.
+    digestor->Update(builder
+                         ->SubstringView(starting_length,
+                                         builder->length() - starting_length)
+                         .RawByteSpan());
+  } else {
+    // The hash data computed so far is invalid and must be recomputed. This can
+    // only happen once per builder when it changes from 8-bit to 16-bit mode.
+    DCHECK(!builder->Is8Bit());
+    *digestor = Digestor(kHashAlgorithmSha256);
+    digestor->Update(StringView(*builder).RawByteSpan());
+  }
+}
+}  // namespace
+
 ScriptDecoder::Result::Result(
     SegmentedBuffer raw_data,
     String decoded_data,
@@ -92,6 +116,7 @@ void ScriptDecoder::FinishDecode(
   CHECK(!client_task_runner_->RunsTasksInCurrentSequence());
 
   AppendData(decoder_->Flush());
+  ParkableStringImpl::UpdateDigestWithEncoding(&digestor_, builder_.Is8Bit());
 
   DigestValue digest_value;
   digestor_.Finish(digest_value);
@@ -110,8 +135,7 @@ void ScriptDecoder::Delete() const {
 }
 
 void ScriptDecoder::AppendData(const String& data) {
-  digestor_.Update(data.RawByteSpan());
-  builder_.Append(data);
+  AppendDataImpl(&digestor_, &builder_, data);
 }
 
 void ScriptDecoderDeleter::operator()(const ScriptDecoder* ptr) {
@@ -161,6 +185,7 @@ void DataPipeScriptDecoder::OnDataAvailable(base::span<const uint8_t> data) {
 
 void DataPipeScriptDecoder::OnDataComplete() {
   AppendData(decoder_->Flush());
+  ParkableStringImpl::UpdateDigestWithEncoding(&digestor_, builder_.Is8Bit());
   digestor_.Finish(digest_value_);
   PostCrossThreadTask(
       *client_task_runner_, FROM_HERE,
@@ -173,8 +198,7 @@ void DataPipeScriptDecoder::OnDataComplete() {
 }
 
 void DataPipeScriptDecoder::AppendData(const String& data) {
-  digestor_.Update(data.RawByteSpan());
-  builder_.Append(data);
+  AppendDataImpl(&digestor_, &builder_, data);
 }
 
 void DataPipeScriptDecoder::Delete() const {
@@ -254,6 +278,7 @@ void ScriptDecoderWithClient::FinishDecode(
   CHECK(!client_task_runner_->RunsTasksInCurrentSequence());
 
   AppendData(decoder_->Flush());
+  ParkableStringImpl::UpdateDigestWithEncoding(&digestor_, builder_.Is8Bit());
 
   DigestValue digest_value;
   digestor_.Finish(digest_value);
@@ -282,8 +307,7 @@ void ScriptDecoderWithClient::Delete() const {
 }
 
 void ScriptDecoderWithClient::AppendData(const String& data) {
-  digestor_.Update(data.RawByteSpan());
-  builder_.Append(data);
+  AppendDataImpl(&digestor_, &builder_, data);
 }
 
 void ScriptDecoderWithClientDeleter::operator()(

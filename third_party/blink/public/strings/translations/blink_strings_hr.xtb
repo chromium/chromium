@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Uobičajeno</translation>
 <translation id="1591562245178063882">Ovaj mjesec</translation>
 <translation id="1637811476055996098">Odabir datoteka</translation>
-<translation id="1680090928918677457">Upotrijebi kameru</translation>
 <translation id="1729654308190250600">Unesite e-adresu koja nije prazna vrijednost.</translation>
 <translation id="1758486001363313524">Drugo...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Skratite taj tekst na <ph name="MAX_CHARACTERS" /> znakova ili manje (trenutačno upotrebljavate <ph name="CURRENT_LENGTH" /> znakova).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. tjedan, <ph name="YEAR" />. godina</translation>
 <translation id="2277199496770840904">Zapis <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Dopušteni su kamera i mikrofon</translation>
 <translation id="2507943997699731163">Ispunite ovo polje.</translation>
 <translation id="2613802280814924224">Unesite važeću vrijednost. Najbliža je važeća vrijednost <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Pošalji</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Produljite broj znakova u tekstu na minimalno <ph name="MIN_CHARACTERS" />. Trenutačno imate premalo znakova (<ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">Dio adrese ispred znaka "<ph name="ATSIGN" />" ne smije sadržavati simbol "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Izlaz iz punog zaslona</translation>
-<translation id="4031179711345676612">Mikrofon je dopušten</translation>
 <translation id="4360991593054037559">Unesite važeću vrijednost. Dvije su najbliže važeće vrijednosti <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Pojedinosti</translation>
-<translation id="4663373278480897665">Kamera je dopuštena</translation>
 <translation id="4664250907885839816">Dio adrese iza znaka "<ph name="ATSIGN" />" ne smije sadržavati simbol "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Reproducira se u načinu slika u slici</translation>
-<translation id="4792862212177489858">Dijeli lokaciju</translation>
 <translation id="4812940957355064477">Unesite broj.</translation>
-<translation id="49269513399674318">Upotrijebi mikrofon</translation>
 <translation id="4975562563186953947">Odabrano: <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Uključi zvuk</translation>
 <translation id="49969490063480558">Unesite dio adrese iza znaka "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" nije potpuna e-adresa.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Nije bilo moguće učitati dodatak.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Produljite broj znakova u tekstu na minimalno <ph name="MIN_CHARACTERS" /> (trenutačno imate 1 znak).</translation>
-<translation id="7080893216867146095">Dopušteno je dijeljenje lokacije</translation>
 <translation id="709897737746224366">Udovoljite zadanom formatu.</translation>
-<translation id="7134810312945846184">Upotrijebi mikrofon i kameru</translation>
 <translation id="7263440858009898357">Odaberite stavku s popisa.</translation>
 <translation id="7364796246159120393">Odaberi datoteku</translation>
 <translation id="739024184232394898">Drugo...</translation>

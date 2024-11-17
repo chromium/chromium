@@ -4,14 +4,18 @@
 
 #include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/risk_util.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 
@@ -78,12 +82,18 @@ bool ChromeFacilitatedPaymentsClient::IsInLandscapeMode() {
   return facilitated_payments_controller_->IsInLandscapeMode();
 }
 
-bool ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
+void ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
     base::span<const autofill::BankAccount> bank_account_suggestions,
     base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
-  return facilitated_payments_controller_->Show(
-      std::move(bank_account_suggestions),
-      std::move(on_user_decision_callback));
+  facilitated_payments_controller_->Show(std::move(bank_account_suggestions),
+                                         std::move(on_user_decision_callback));
+}
+
+void ChromeFacilitatedPaymentsClient::ShowEwalletPaymentPrompt(
+    base::span<const autofill::Ewallet> ewallet_suggestions,
+    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
+  facilitated_payments_controller_->ShowForEwallet(
+      ewallet_suggestions, std::move(on_user_decision_callback));
 }
 
 void ChromeFacilitatedPaymentsClient::ShowProgressScreen() {
@@ -96,6 +106,13 @@ void ChromeFacilitatedPaymentsClient::ShowErrorScreen() {
 
 void ChromeFacilitatedPaymentsClient::DismissPrompt() {
   facilitated_payments_controller_->Dismiss();
+}
+
+void ChromeFacilitatedPaymentsClient::SetUiEventListener(
+    base::RepeatingCallback<void(payments::facilitated::UiEvent)>
+        ui_event_listener) {
+  facilitated_payments_controller_->SetUiEventListener(
+      std::move(ui_event_listener));
 }
 
 payments::facilitated::ContentFacilitatedPaymentsDriver*

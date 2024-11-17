@@ -20,8 +20,7 @@ const char* SyncActionToString(SyncAction action) {
       return "Deleted";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown SyncAction";
+  NOTREACHED();
 }
 
 }  // namespace sync_file_system

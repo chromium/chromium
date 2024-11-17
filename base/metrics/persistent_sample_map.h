@@ -98,7 +98,9 @@ class BASE_EXPORT PersistentSampleMap : public HistogramSamples {
   // All created/loaded sample values and their associated counts. The storage
   // for the actual Count numbers is owned by the |records_| object and its
   // underlying allocator.
-  std::map<HistogramBase::Sample, HistogramBase::Count*> sample_counts_;
+  std::map<HistogramBase::Sample,
+           raw_ptr<HistogramBase::Count, CtnExperimental>>
+      sample_counts_;
 
   // The allocator that manages histograms inside persistent memory. This is
   // owned externally and is expected to live beyond the life of this object.

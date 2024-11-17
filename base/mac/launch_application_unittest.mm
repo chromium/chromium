@@ -255,7 +255,7 @@ class LaunchApplicationTest : public testing::Test {
       return;
     }
     base::RunLoop loop;
-    launch_event_callback_ = BindLambdaForTesting([&]() {
+    launch_event_callback_ = BindLambdaForTesting([&] {
       if (LaunchEventCount() >= expected_count) {
         launch_event_callback_ = NullCallback();
         loop.Quit();

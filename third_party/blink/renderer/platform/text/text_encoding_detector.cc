@@ -47,8 +47,7 @@
 
 namespace blink {
 
-bool DetectTextEncoding(const char* data,
-                        uint32_t length,
+bool DetectTextEncoding(base::span<const uint8_t> bytes,
                         const char* hint_encoding_name,
                         const KURL& hint_url,
                         const char* hint_user_language,
@@ -62,9 +61,10 @@ bool DetectTextEncoding(const char* data,
     LanguageFromCode(hint_user_language, &language);
   int consumed_bytes;
   bool is_reliable;
+  auto chars = base::as_chars(bytes);
   Encoding encoding = CompactEncDet::DetectEncoding(
-      data, length, hint_url.GetString().Ascii().c_str(), nullptr, nullptr,
-      EncodingNameAliasToEncoding(hint_encoding_name), language,
+      chars.data(), chars.size(), hint_url.GetString().Ascii().c_str(), nullptr,
+      nullptr, EncodingNameAliasToEncoding(hint_encoding_name), language,
       CompactEncDet::WEB_CORPUS,
       false,  // Include 7-bit encodings to detect ISO-2022-JP
       &consumed_bytes, &is_reliable);

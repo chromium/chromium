@@ -18,6 +18,8 @@ component("crypto") {
   sources = [
     "aead.cc",
     "aead.h",
+    "aes_cbc.cc",
+    "aes_cbc.h",
     "crypto_export.h",
     "ec_private_key.cc",
     "ec_private_key.h",
@@ -29,12 +31,18 @@ component("crypto") {
     "encryptor.h",
     "features.cc",
     "features.h",
+    "hash.cc",
+    "hash.h",
     "hkdf.cc",
     "hkdf.h",
     "hmac.cc",
     "hmac.h",
+    "kdf.cc",
+    "kdf.h",
     "openssl_util.cc",
     "openssl_util.h",
+    "process_bound_string.cc",
+    "process_bound_string.h",
     "random.cc",
     "random.h",
     "rsa_private_key.cc",
@@ -50,6 +58,8 @@ component("crypto") {
     "signature_creator.h",
     "signature_verifier.cc",
     "signature_verifier.h",
+    "subtle_passkey.cc",
+    "subtle_passkey.h",
     "symmetric_key.cc",
     "symmetric_key.h",
     "unexportable_key.cc",
@@ -110,7 +120,10 @@ component("crypto") {
       "unexportable_key_win.h",
       "user_verifying_key_win.cc",
     ]
-    libs = [ "ncrypt.lib" ]
+    libs = [
+      "crypt32.lib",
+      "ncrypt.lib",
+    ]
   }
 
   # Some files are built when NSS is used for the platform certificate library.
@@ -167,10 +180,14 @@ if (is_apple) {
 test("crypto_unittests") {
   sources = [
     "aead_unittest.cc",
+    "aes_cbc_unittest.cc",
     "ec_private_key_unittest.cc",
     "ec_signature_creator_unittest.cc",
     "encryptor_unittest.cc",
+    "hash_unittest.cc",
     "hmac_unittest.cc",
+    "kdf_unittest.cc",
+    "process_bound_string_unittest.cc",
     "random_unittest.cc",
     "rsa_private_key_unittest.cc",
     "secure_hash_unittest.cc",

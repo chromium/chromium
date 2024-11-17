@@ -121,6 +121,41 @@ bool GenerateCodecDescription(AudioCodec codec,
   return true;
 }
 
+std::optional<int> FindNearestSupportedBitrate(AudioConverterRef encoder,
+                                               UInt32 requested_bitrate) {
+  UInt32 size;
+  auto status = AudioConverterGetPropertyInfo(
+      encoder, kAudioConverterApplicableEncodeBitRates, &size, nullptr);
+  if (status != noErr || !size) {
+    return std::nullopt;
+  }
+
+  auto list_storage =
+      base::HeapArray<AudioValueRange>::Uninit(size / sizeof(AudioValueRange));
+  status = AudioConverterGetProperty(encoder,
+                                     kAudioConverterApplicableEncodeBitRates,
+                                     &size, list_storage.data());
+  if (status != noErr) {
+    return std::nullopt;
+  }
+
+  std::optional<int> closest_match;
+  for (const auto& rate : list_storage) {
+    // If we have an exact match, return it now; this way we only have to care
+    // about range maximums below.
+    if (rate.mMinimum <= requested_bitrate &&
+        rate.mMaximum >= requested_bitrate) {
+      return requested_bitrate;
+    }
+    if (rate.mMaximum <= requested_bitrate &&
+        rate.mMaximum > closest_match.value_or(0)) {
+      closest_match = rate.mMaximum;
+    }
+  }
+
+  return closest_match;
+}
+
 }  // namespace
 
 AudioToolboxAudioEncoder::AudioToolboxAudioEncoder() = default;
@@ -154,7 +189,7 @@ void AudioToolboxAudioEncoder::Initialize(const Options& options,
   options_ = options;
   GenerateOutputFormat(options, output_format);
 
-  if (!CreateEncoder(options, output_format)) {
+  if (!CreateEncoder(output_format)) {
     std::move(done_cb).Run(EncoderStatus::Codes::kEncoderInitializationError);
     return;
   }
@@ -247,7 +282,6 @@ void AudioToolboxAudioEncoder::Flush(EncoderStatusCB flush_cb) {
 }
 
 bool AudioToolboxAudioEncoder::CreateEncoder(
-    const Options& options,
     const AudioStreamBasicDescription& output_format) {
   // Input is always float planar.
   AudioStreamBasicDescription input_format = {};
@@ -256,8 +290,8 @@ bool AudioToolboxAudioEncoder::CreateEncoder(
       kLinearPCMFormatFlagIsFloat | kLinearPCMFormatFlagIsNonInterleaved;
   input_format.mFramesPerPacket = 1;
   input_format.mBitsPerChannel = 32;
-  input_format.mSampleRate = options.sample_rate;
-  input_format.mChannelsPerFrame = options.channels;
+  input_format.mSampleRate = options_.sample_rate;
+  input_format.mChannelsPerFrame = options_.channels;
 
   // Note: This is important to get right or AudioConverterNew will balk. For
   // interleaved data, this value should be multiplied by the channel count.
@@ -274,8 +308,21 @@ bool AudioToolboxAudioEncoder::CreateEncoder(
   // NOTE: We don't setup the AudioConverter channel layout here, though we may
   // need to in the future to support obscure multichannel layouts.
 
-  if (options.bitrate && options.bitrate > 0) {
-    UInt32 rate = options.bitrate.value();
+  if (options_.bitrate && options_.bitrate > 0) {
+    // Depending on the output channel count and sample rate, the maximum
+    // supported bitrate may be lower than requested. As such find a supported
+    // bitrate less than or equal to the requested one.
+    UInt32 rate = options_.bitrate.value();
+    options_.bitrate = FindNearestSupportedBitrate(encoder_, rate);
+    if (options_.bitrate && options_.bitrate != rate) {
+      DVLOG(1) << "Reducing bitrate from " << rate
+               << " to nearest supported by the encoder " << *options_.bitrate;
+      rate = *options_.bitrate;
+    } else {
+      // Try configuring with the requested rate and see if we fail.
+      options_.bitrate = rate;
+    }
+
     result = AudioConverterSetProperty(encoder_, kAudioConverterEncodeBitRate,
                                        sizeof(rate), &rate);
     if (result != noErr) {
@@ -284,9 +331,9 @@ bool AudioToolboxAudioEncoder::CreateEncoder(
     }
   }
 
-  if (options.bitrate_mode) {
+  if (options_.bitrate_mode) {
     const bool use_vbr =
-        *options.bitrate_mode == AudioEncoder::BitrateMode::kVariable;
+        options_.bitrate_mode == AudioEncoder::BitrateMode::kVariable;
 
     UInt32 bitrate_mode = use_vbr ? kAudioCodecBitRateControlMode_Variable
                                   : kAudioCodecBitRateControlMode_Constant;

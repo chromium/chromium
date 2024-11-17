@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_method_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_shipping_type.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -34,6 +35,7 @@ class ExceptionState;
 class ExecutionContext;
 class PaymentAddress;
 class PaymentDetailsInit;
+class PaymentDetailsUpdate;
 class PaymentRequestUpdateEvent;
 class PaymentResponse;
 class ScriptState;
@@ -75,14 +77,16 @@ class MODULES_EXPORT PaymentRequest final
 
   ScriptPromise<PaymentResponse> show(ScriptState*, ExceptionState&);
   ScriptPromise<PaymentResponse> show(ScriptState*,
-                                      ScriptPromiseUntyped details_promise,
+                                      ScriptPromise<PaymentDetailsUpdate>,
                                       ExceptionState&);
   ScriptPromise<IDLUndefined> abort(ScriptState*, ExceptionState&);
 
   const String& id() const { return id_; }
   PaymentAddress* getShippingAddress() const { return shipping_address_.Get(); }
   const String& shippingOption() const { return shipping_option_; }
-  const String& shippingType() const { return shipping_type_; }
+  std::optional<V8PaymentShippingType> shippingType() const {
+    return shipping_type_;
+  }
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(shippingaddresschange, kShippingaddresschange)
   DEFINE_ATTRIBUTE_EVENT_LISTENER(shippingoptionchange, kShippingoptionchange)
@@ -108,7 +112,7 @@ class MODULES_EXPORT PaymentRequest final
                                     ExceptionState&) override;
 
   // PaymentRequestDelegate:
-  void OnUpdatePaymentDetails(const ScriptValue& details_script_value) override;
+  void OnUpdatePaymentDetails(PaymentDetailsUpdate*) override;
   void OnUpdatePaymentDetailsFailure(const String& error) override;
   bool IsInteractive() const override;
 
@@ -176,7 +180,7 @@ class MODULES_EXPORT PaymentRequest final
   Member<PaymentResponse> payment_response_;
   String id_;
   String shipping_option_;
-  String shipping_type_;
+  std::optional<V8PaymentShippingType> shipping_type_;
   HashSet<String> method_names_;
   Member<ScriptPromiseResolver<PaymentResponse>>
       accept_resolver_;  // the resolver for the show() promise.

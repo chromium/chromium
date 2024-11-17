@@ -487,6 +487,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="320"
       label="PSI_ADD_PAGE_EMBEDDED_PERMISSION_OBSERVER_WITHOUT_FEATURE"/>
   <int value="321" label="RFH_INITIATOR_BASE_URL_IS_EMPTY"/>
+  <int value="322" label="MDDH_SELECT_AUDIO_OUTPUT_WITHOUT_FEATURE"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
@@ -529,6 +530,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="31" label="EFH_NO_BACKGROUND_HOST_FOR_FRAME"/>
   <int value="32" label="LEGACY_IPC_MISMATCH"/>
   <int value="33" label="ER_SW_INVALID_LAZY_BACKGROUND_PARAM"/>
+  <int value="34" label="SWH_BAD_WORKER_THREAD_ID"/>
 </enum>
 
 <enum name="BadMessageReasonGuestView">
@@ -1027,6 +1029,7 @@ Called by update_debug_scenarios.py.-->
   <int value="1766" label="RPC_S_INTERNAL_ERROR"/>
   <int value="1783" label="RPC_X_BAD_STUB_DATA"/>
   <int value="1818" label="RPC_S_CALL_CANCELLED"/>
+  <int value="7014" label="SBOX_FATAL_BROKER_SHUTDOWN_HUNG"/>
   <int value="85436397" label="0x517a7ed - Crashpad simulated exception"/>
   <int value="1073807364" label="0x40010004 - DBG_TERMINATE_PROCESS"/>
 </enum>

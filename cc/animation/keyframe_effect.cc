@@ -83,6 +83,10 @@ void KeyframeEffect::SetNeedsPushProperties() {
   animation_->SetNeedsPushProperties();
 }
 
+void KeyframeEffect::ResetNeedsPushProperties() {
+  needs_push_properties_ = false;
+}
+
 void KeyframeEffect::BindElementAnimations(
     ElementAnimations* element_animations) {
   DCHECK(element_animations);
@@ -188,20 +192,18 @@ void KeyframeEffect::UpdateTickingState() {
   }
   if (was_ticking && !is_ticking_) {
     awaiting_deletion_ = false;
-    if (base::FeatureList::IsEnabled(features::kNoPreserveLastMutation)) {
-      for (const auto& keyframe_model : keyframe_models()) {
-        // deleted impl side keyframe models keep ticking until the commit
-        // removes them.
-        KeyframeModel* cc_keyframe_model =
-            KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
-        if (keyframe_model->run_state() ==
-                gfx::KeyframeModel::WAITING_FOR_DELETION &&
-            cc_keyframe_model->is_controlling_instance() &&
-            !cc_keyframe_model->is_impl_only()) {
-          awaiting_deletion_ = true;
-          is_ticking_ = true;
-          break;
-        }
+    for (const auto& keyframe_model : keyframe_models()) {
+      // deleted impl side keyframe models keep ticking until the commit
+      // removes them.
+      KeyframeModel* cc_keyframe_model =
+          KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
+      if (keyframe_model->run_state() ==
+              gfx::KeyframeModel::WAITING_FOR_DELETION &&
+          cc_keyframe_model->is_controlling_instance() &&
+          !cc_keyframe_model->is_impl_only()) {
+        awaiting_deletion_ = true;
+        is_ticking_ = true;
+        break;
       }
     }
   }
@@ -458,8 +460,7 @@ bool KeyframeEffect::DispatchAnimationEventToKeyframeModel(
       // TIME_UPDATED events are used to synchronize effect time between cc and
       // main thread worklet animations. Keyframe models are not involved in
       // this process.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return dispatched;
 }
@@ -732,6 +733,8 @@ void KeyframeEffect::PushPropertiesTo(
   if (!needs_push_properties_)
     return;
   needs_push_properties_ = false;
+
+  keyframe_effect_impl->SetNeedsPushProperties();
 
   // Synchronize the keyframe_model target between main and impl side.
   if (element_id_ != keyframe_effect_impl->element_id_) {

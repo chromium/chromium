@@ -76,7 +76,7 @@ typedef (Blob or BufferSource or FormData or URLSearchParams or USVString) XMLHt
     ByteString getAllResponseHeaders();
     [RaisesException] void overrideMimeType(DOMString mime);
     [RaisesException=Setter] attribute XMLHttpRequestResponseType responseType;
-    [CallWith=ScriptState, RaisesException=Getter] readonly attribute any response;
+    [CallWith=ScriptState] readonly attribute any response;
     [RaisesException=Getter] readonly attribute USVString responseText;
     [Exposed=Window, MeasureAs=XMLHttpRequestResponseXML, RaisesException=Getter] readonly attribute Document? responseXML;
 };

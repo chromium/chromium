@@ -73,8 +73,7 @@ inline int WebRtcSevToChromeSev(LoggingSeverity sev) {
     case LS_SENSITIVE:
       return ::logging::LOGGING_VERBOSE;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ::logging::LOGGING_FATAL;
+      NOTREACHED();
   }
 }
 
@@ -90,8 +89,7 @@ inline int WebRtcVerbosityLevel(LoggingSeverity sev) {
     case LS_SENSITIVE:
       return 2;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

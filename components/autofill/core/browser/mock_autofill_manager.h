@@ -38,7 +38,7 @@ class MockAutofillManager : public AutofillManager {
   MOCK_METHOD(void, OnDidEndTextFieldEditingImpl, (), (override));
   MOCK_METHOD(void, OnHidePopupImpl, (), (override));
   MOCK_METHOD(void,
-              OnSelectOrSelectListFieldOptionsDidChangeImpl,
+              OnSelectFieldOptionsDidChangeImpl,
               (const FormData& form),
               (override));
   MOCK_METHOD(void,
@@ -51,7 +51,6 @@ class MockAutofillManager : public AutofillManager {
   MOCK_METHOD(void,
               OnFormSubmittedImpl,
               (const FormData& form,
-               bool known_success,
                mojom::SubmissionSource source),
               (override));
   MOCK_METHOD(void,

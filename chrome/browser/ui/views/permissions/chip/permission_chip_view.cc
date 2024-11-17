@@ -57,9 +57,7 @@ PermissionChipView::~PermissionChipView() = default;
 
 void PermissionChipView::VisibilityChanged(views::View* starting_from,
                                            bool is_visible) {
-  for (Observer& observer : observers_) {
-    observer.OnChipVisibilityChanged(is_visible);
-  }
+  observers_.Notify(&Observer::OnChipVisibilityChanged, is_visible);
 }
 
 void PermissionChipView::AnimateCollapse(base::TimeDelta duration) {
@@ -125,9 +123,7 @@ gfx::Size PermissionChipView::CalculatePreferredSize(
 }
 
 bool PermissionChipView::OnMousePressed(const ui::MouseEvent& event) {
-  for (Observer& observer : observers_) {
-    observer.OnMousePressed();
-  }
+  observers_.Notify(&Observer::OnMousePressed);
   return MdTextButton::OnMousePressed(event);
 }
 
@@ -151,13 +147,9 @@ void PermissionChipView::AnimationEnded(const gfx::Animation* animation) {
 
   const double value = animation_->GetCurrentValue();
   if (value == 1.0) {
-    for (Observer& observer : observers_) {
-      observer.OnExpandAnimationEnded();
-    }
+    observers_.Notify(&Observer::OnExpandAnimationEnded);
   } else if (value == 0.0) {
-    for (Observer& observer : observers_) {
-      observer.OnCollapseAnimationEnded();
-    }
+    observers_.Notify(&Observer::OnCollapseAnimationEnded);
   }
 }
 

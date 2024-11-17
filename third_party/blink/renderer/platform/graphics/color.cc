@@ -23,15 +23,11 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/color.h"
 
 #include <math.h>
 
+#include <array>
 #include <optional>
 #include <tuple>
 
@@ -42,6 +38,7 @@
 #include "third_party/blink/renderer/platform/geometry/blend.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -79,32 +76,34 @@ int BlendComponent(int c, int a) {
 
 // originally moved here from the CSS parser
 template <typename CharacterType>
-inline bool ParseHexColorInternal(const CharacterType* name,
-                                  unsigned length,
+inline bool ParseHexColorInternal(base::span<const CharacterType> name,
                                   Color& color) {
-  if (length != 3 && length != 4 && length != 6 && length != 8)
+  if (name.size() != 3 && name.size() != 4 && name.size() != 6 &&
+      name.size() != 8) {
     return false;
-  if ((length == 8 || length == 4) &&
-      !RuntimeEnabledFeatures::CSSHexAlphaColorEnabled())
+  }
+  if ((name.size() == 8 || name.size() == 4) &&
+      !RuntimeEnabledFeatures::CSSHexAlphaColorEnabled()) {
     return false;
-  unsigned value = 0;
-  for (unsigned i = 0; i < length; ++i) {
+  }
+  uint32_t value = 0;
+  for (unsigned i = 0; i < name.size(); ++i) {
     if (!IsASCIIHexDigit(name[i]))
       return false;
     value <<= 4;
     value |= ToASCIIHexValue(name[i]);
   }
-  if (length == 6) {
+  if (name.size() == 6) {
     color = Color::FromRGBA32(0xFF000000 | value);
     return true;
   }
-  if (length == 8) {
+  if (name.size() == 8) {
     // We parsed the values into RGBA order, but the RGBA32 type
     // expects them to be in ARGB order, so we right rotate eight bits.
     color = Color::FromRGBA32(value << 24 | value >> 8);
     return true;
   }
-  if (length == 4) {
+  if (name.size() == 4) {
     // #abcd converts to ddaabbcc in RGBA32.
     color = Color::FromRGBA32((value & 0xF) << 28 | (value & 0xF) << 24 |
                               (value & 0xF000) << 8 | (value & 0xF000) << 4 |
@@ -121,18 +120,18 @@ inline bool ParseHexColorInternal(const CharacterType* name,
 }
 
 inline const NamedColor* FindNamedColor(const String& name) {
-  char buffer[64];  // easily big enough for the longest color name
-  unsigned length = name.length();
-  if (length > sizeof(buffer) - 1)
+  std::array<char, 64> buffer;  // easily big enough for the longest color name
+  wtf_size_t length = name.length();
+  if (length > buffer.size() - 1) {
     return nullptr;
-  for (unsigned i = 0; i < length; ++i) {
-    UChar c = name[i];
+  }
+  for (wtf_size_t i = 0; i < length; ++i) {
+    const UChar c = name[i];
     if (!c || c > 0x7F)
       return nullptr;
     buffer[i] = ToASCIILower(static_cast<char>(c));
   }
-  buffer[length] = '\0';
-  return FindColor(buffer, length);
+  return FindColor(base::as_string_view(base::span(buffer).first(length)));
 }
 
 constexpr int RedChannel(RGBA32 color) {
@@ -418,8 +417,7 @@ Color Color::InterpolateColors(Color::ColorSpace interpolation_space,
   CarryForwardAnalogousMissingComponents(color2, color2_prev_color_space);
 
   if (!SubstituteMissingParameters(color1, color2)) {
-    NOTREACHED_IN_MIGRATION();
-    return Color();
+    NOTREACHED();
   }
 
   float alpha1 = color1.PremultiplyColor();
@@ -512,8 +510,7 @@ std::tuple<float, float, float> Color::ExportAsXYZD50Floats() const {
       return gfx::SRGBToXYZD50(r, g, b);
     }
     case ColorSpace::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return std::tuple<float, float, float>();
+      NOTREACHED();
   }
 }
 
@@ -910,20 +907,20 @@ RGBA32 Color::Rgb() const {
   return toSkColor4f().toSkColor();
 }
 
-bool Color::ParseHexColor(const LChar* name, unsigned length, Color& color) {
-  return ParseHexColorInternal(name, length, color);
+bool Color::ParseHexColor(base::span<const LChar> name, Color& color) {
+  return ParseHexColorInternal(name, color);
 }
 
-bool Color::ParseHexColor(const UChar* name, unsigned length, Color& color) {
-  return ParseHexColorInternal(name, length, color);
+bool Color::ParseHexColor(base::span<const UChar> name, Color& color) {
+  return ParseHexColorInternal(name, color);
 }
 
 bool Color::ParseHexColor(const StringView& name, Color& color) {
   if (name.empty())
     return false;
-  if (name.Is8Bit())
-    return ParseHexColor(name.Characters8(), name.length(), color);
-  return ParseHexColor(name.Characters16(), name.length(), color);
+  return VisitCharacters(name, [&color](auto chars) {
+    return ParseHexColorInternal(chars, color);
+  });
 }
 
 int DifferenceSquared(const Color& c1, const Color& c2) {
@@ -937,9 +934,9 @@ bool Color::SetFromString(const String& name) {
   // TODO(https://crbug.com/1434423): Implement CSS Color level 4 parsing.
   if (name[0] != '#')
     return SetNamedColor(name);
-  if (name.Is8Bit())
-    return ParseHexColor(name.Characters8() + 1, name.length() - 1, *this);
-  return ParseHexColor(name.Characters16() + 1, name.length() - 1, *this);
+  return VisitCharacters(name, [this](auto chars) {
+    return ParseHexColorInternal(chars.subspan(1), *this);
+  });
 }
 
 // static
@@ -976,8 +973,7 @@ String Color::ColorSpaceToString(Color::ColorSpace color_space) {
     case Color::ColorSpace::kHWB:
       return "hwb";
     case ColorSpace::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return "None";
+      NOTREACHED();
   }
 }
 

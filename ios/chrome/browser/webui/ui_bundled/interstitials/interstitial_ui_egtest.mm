@@ -33,9 +33,9 @@
   url::AddStandardScheme(kChromeUIScheme, url::SCHEME_WITH_HOST);
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   _schemeRegistry = nullptr;
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that chrome://interstitials loads correctly.
@@ -127,6 +127,26 @@
 
   [ChromeEarlGrey waitForWebStateContainingText:
                       "The page ahead may try to charge you money"];
+}
+
+// Tests that chrome://interstitials/enterprise-warn loads correctly.
+- (void)testEnterpriseWarnInterstitialUI {
+  GURL enterpriseWarnURL =
+      GURL(kChromeUIIntersitialsURL).Resolve(kChromeInterstitialEnterpriseWarn);
+  [ChromeEarlGrey loadURL:enterpriseWarnURL];
+
+  [ChromeEarlGrey waitForWebStateContainingText:
+                      "The site ahead is flagged by your organization"];
+}
+
+// Tests that chrome://interstitials/enterprise-block loads correctly.
+- (void)testEnterpriseBlockInterstitialUI {
+  GURL enterpriseBlockURL = GURL(kChromeUIIntersitialsURL)
+                                .Resolve(kChromeInterstitialEnterpriseBlock);
+  [ChromeEarlGrey loadURL:enterpriseBlockURL];
+
+  [ChromeEarlGrey waitForWebStateContainingText:
+                      "The site ahead is blocked by your organization"];
 }
 
 @end

@@ -11,7 +11,6 @@
 
 #include "base/component_export.h"
 #include "base/pickle.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/gfx/geometry/vector2d.h"

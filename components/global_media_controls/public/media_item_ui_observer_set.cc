@@ -56,7 +56,7 @@ void MediaItemUIObserverSet::OnMediaItemUIDismissed(const std::string& id) {
 
 void MediaItemUIObserverSet::OnMediaItemUIDestroyed(const std::string& id) {
   owner_->OnMediaItemUIDestroyed(id);
-  StopObserving(id);
+  observed_item_uis_.erase(id);
 }
 
 void MediaItemUIObserverSet::OnMediaItemUIShowDevices(const std::string& id) {

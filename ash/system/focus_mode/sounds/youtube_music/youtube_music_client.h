@@ -11,7 +11,6 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
-#include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/youtube_music/youtube_music_api_request_types.h"
 #include "google_apis/youtube_music/youtube_music_api_response_types.h"
@@ -66,20 +65,20 @@ class ASH_EXPORT YouTubeMusicClient {
       base::expected<
           std::unique_ptr<
               google_apis::youtube_music::TopLevelMusicRecommendations>,
-          google_apis::ApiErrorCode> result);
+          google_apis::youtube_music::ApiError> result);
 
   // Triggered when playlist with name `playlist_id` is fetched.
   void OnGetPlaylistRequestDone(
       const std::string& playlist_id,
       const base::Time& request_start_time,
       base::expected<std::unique_ptr<google_apis::youtube_music::Playlist>,
-                     google_apis::ApiErrorCode> result);
+                     google_apis::youtube_music::ApiError> result);
 
   // Triggered when play context is fetched by preparing the playback queue.
   void OnPlaybackQueuePrepareRequestDone(
       const base::Time& request_start_time,
       base::expected<std::unique_ptr<google_apis::youtube_music::Queue>,
-                     google_apis::ApiErrorCode> result);
+                     google_apis::youtube_music::ApiError> result);
 
   // Triggered when play context is fetched by requesting next in the playback
   // queue.
@@ -87,14 +86,14 @@ class ASH_EXPORT YouTubeMusicClient {
       const base::Time& request_start_time,
       base::expected<
           std::unique_ptr<google_apis::youtube_music::QueueContainer>,
-          google_apis::ApiErrorCode> result);
+          google_apis::youtube_music::ApiError> result);
 
   // Triggered when report playback request is done.
   void OnReportPlaybackRequestDone(
       const base::Time& request_start_time,
       base::expected<
           std::unique_ptr<google_apis::youtube_music::ReportPlaybackResult>,
-          google_apis::ApiErrorCode> result);
+          google_apis::youtube_music::ApiError> result);
 
   void OnRequestSigned(
       google_apis::RequestSender* request_sender,

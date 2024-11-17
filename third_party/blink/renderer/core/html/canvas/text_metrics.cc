@@ -6,17 +6,26 @@
 
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_baselines.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_text_cluster_options.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
+#include "third_party/blink/renderer/core/html/canvas/text_cluster.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/fonts/character_range.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
+#include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_metrics.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
+#include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
+#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/bidi_paragraph.h"
+#include "third_party/blink/renderer/platform/text/text_direction.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -102,8 +111,8 @@ void TextMetrics::Update(const Font& font,
   if (!font_data)
     return;
 
+  text_ = text;
   font_ = font;
-  text_length_ = text.length();
   direction_ = direction;
   runs_with_offset_.clear();
   if (!RuntimeEnabledFeatures::Canvas2dTextMetricsShapingEnabled()) {
@@ -164,11 +173,16 @@ void TextMetrics::Update(const Font& font,
   text_align_dx_ = 0.0f;
   if (align == kCenterTextAlign) {
     text_align_dx_ = real_width / 2.0f;
+    ctx_text_align_ = kCenterTextAlign;
   } else if (align == kRightTextAlign ||
              (align == kStartTextAlign && direction == TextDirection::kRtl) ||
              (align == kEndTextAlign && direction != TextDirection::kRtl)) {
     text_align_dx_ = real_width;
+    ctx_text_align_ = kRightTextAlign;
+  } else {
+    ctx_text_align_ = kLeftTextAlign;
   }
+  ctx_text_baseline_ = baseline;
   actual_bounding_box_left_ = -glyph_bounds.x() + text_align_dx_;
   actual_bounding_box_right_ = glyph_bounds.right() - text_align_dx_;
 
@@ -232,11 +246,11 @@ const HeapVector<Member<DOMRectReadOnly>> TextMetrics::getSelectionRects(
 
   // Checks indexes that go over the maximum for the text. For indexes less than
   // 0, an exception is thrown by [EnforceRange] in the idl binding.
-  if (start > text_length_ || end > text_length_) {
+  if (start > text_.length() || end > text_.length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
         String::Format("The %s index is out of bounds.",
-                       start > text_length_ ? "start" : "end"));
+                       start > text_.length() ? "start" : "end"));
     return selection_rects;
   }
 
@@ -317,11 +331,11 @@ const DOMRectReadOnly* TextMetrics::getActualBoundingBox(
 
   // Checks indexes that go over the maximum for the text. For indexes less than
   // 0, an exception is thrown by [EnforceRange] in the idl binding.
-  if (start >= text_length_ || end > text_length_) {
+  if (start >= text_.length() || end > text_.length()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kIndexSizeError,
         String::Format("The %s index is out of bounds.",
-                       start >= text_length_ ? "start" : "end"));
+                       start >= text_.length() ? "start" : "end"));
     return DOMRectReadOnly::FromRectF(bounding_box);
   }
 
@@ -366,6 +380,145 @@ const DOMRectReadOnly* TextMetrics::getActualBoundingBox(
   return DOMRectReadOnly::FromRectF(bounding_box);
 }
 
+namespace {
+float getTextAlignDelta(float width,
+                        const TextAlign& text_align,
+                        const TextDirection& direction) {
+  switch (text_align) {
+    case kRightTextAlign:
+      return width;
+    case kCenterTextAlign:
+      return width / 2.0f;
+    case kLeftTextAlign:
+      return 0;
+    case kStartTextAlign:
+      if (IsLtr(direction)) {
+        return 0;
+      }
+      return width;
+    case kEndTextAlign:
+      if (IsLtr(direction)) {
+        return width;
+      }
+      return 0;
+  }
+}
+
+float getTextBaselineDelta(float baseline,
+                           const TextBaseline& text_baseline,
+                           const SimpleFontData& font_data) {
+  float new_baseline = TextMetrics::GetFontBaseline(text_baseline, font_data);
+  return baseline - new_baseline;
+}
+
+struct TextClusterCallbackContext {
+  unsigned start_index_;
+  float x_position_;
+  float width_;
+
+  void Trace(Visitor* visitor) const {}
+};
+}  // namespace
+
+HeapVector<Member<TextCluster>> TextMetrics::getTextClusters(
+    const TextClusterOptions* options) {
+  return getTextClustersImpl(0, text_.length(), options,
+                             /*exception_state=*/nullptr);
+}
+
+HeapVector<Member<TextCluster>> TextMetrics::getTextClusters(
+    uint32_t start,
+    uint32_t end,
+    const TextClusterOptions* options,
+    ExceptionState& exception_state) {
+  return getTextClustersImpl(start, end, options, &exception_state);
+}
+
+HeapVector<Member<TextCluster>> TextMetrics::getTextClustersImpl(
+    uint32_t start,
+    uint32_t end,
+    const TextClusterOptions* options,
+    ExceptionState* exception_state) {
+  HeapVector<Member<TextCluster>> minimal_clusters, clusters_for_range;
+  // Checks indexes that go over the maximum for the text. For indexes less than
+  // 0, an exception is thrown by [EnforceRange] in the idl binding.
+  if (start >= text_.length() || end > text_.length()) {
+    CHECK(exception_state != nullptr);
+    exception_state->ThrowDOMException(
+        DOMExceptionCode::kIndexSizeError,
+        String::Format("The %s index is out of bounds.",
+                       start >= text_.length() ? "start" : "end"));
+    return clusters_for_range;
+  }
+
+  TextAlign cluster_text_align;
+  TextBaseline cluster_text_baseline;
+  if (options == nullptr || !options->hasAlign() ||
+      !ParseTextAlign(options->align(), cluster_text_align)) {
+    cluster_text_align = ctx_text_align_;
+  }
+  if (options == nullptr || !options->hasBaseline() ||
+      !ParseTextBaseline(options->baseline(), cluster_text_baseline)) {
+    cluster_text_baseline = ctx_text_baseline_;
+  }
+
+  for (const auto& run_with_offset : runs_with_offset_) {
+    HeapVector<TextClusterCallbackContext> clusters_for_run;
+
+    run_with_offset.shape_result_->ForEachGraphemeClusters(
+        StringView(run_with_offset.text_), run_with_offset.x_position_, 0,
+        run_with_offset.num_characters_, 0,
+        [](void* context, unsigned character_index, float total_advance,
+           unsigned graphemes_in_cluster, float cluster_advance,
+           CanvasRotationInVertical rotation) {
+          auto* clusters =
+              static_cast<HeapVector<TextClusterCallbackContext>*>(context);
+          TextClusterCallbackContext cluster = {.start_index_ = character_index,
+                                                .x_position_ = total_advance,
+                                                .width_ = cluster_advance};
+          clusters->push_back(cluster);
+        },
+        &clusters_for_run);
+
+    std::sort(clusters_for_run.begin(), clusters_for_run.end(),
+              [](TextClusterCallbackContext a, TextClusterCallbackContext b) {
+                return a.start_index_ < b.start_index_;
+              });
+
+    for (wtf_size_t i = 0; i < clusters_for_run.size(); i++) {
+      TextCluster* text_cluster;
+      if (i + 1 < clusters_for_run.size()) {
+        text_cluster = TextCluster::Create(
+            text_, clusters_for_run[i].x_position_, 0,
+            clusters_for_run[i].start_index_,
+            clusters_for_run[i + 1].start_index_, cluster_text_align,
+            cluster_text_baseline, *this);
+      } else {
+        text_cluster = TextCluster::Create(
+            text_, clusters_for_run[i].x_position_, 0,
+            clusters_for_run[i].start_index_, run_with_offset.num_characters_,
+            cluster_text_align, cluster_text_baseline, *this);
+      }
+      text_cluster->OffsetCharacters(run_with_offset.character_offset_);
+      text_cluster->OffsetPosition(
+          getTextAlignDelta(clusters_for_run[i].width_, cluster_text_align,
+                            direction_),
+          getTextBaselineDelta(baseline_y, cluster_text_baseline,
+                               *font_.PrimaryFont()));
+      text_cluster->OffsetPosition(-text_align_dx_, 0);
+      minimal_clusters.push_back(text_cluster);
+    }
+  }
+
+  for (const auto& cluster : minimal_clusters) {
+    if (cluster->end() <= start or end <= cluster->begin()) {
+      continue;
+    }
+    clusters_for_range.push_back(cluster);
+  }
+  return clusters_for_range;
+}
+
 unsigned TextMetrics::caretPositionFromPoint(double x) {
   if (runs_with_offset_.empty()) {
     return 0;
@@ -376,28 +529,12 @@ unsigned TextMetrics::caretPositionFromPoint(double x) {
   // alignment point.
   float target_x = text_align_dx_ + x;
 
-  // If to the left (or right), return the leftmost (or rightmost) index
+  // If to the left (or right), clamp to the left (or right) point
   if (target_x <= 0) {
-    const auto& run_with_offset = runs_with_offset_.front();
-    if (IsLtr(run_with_offset.direction_)) {
-      // The 0 offset within the run is leftmost
-      return run_with_offset.character_offset_;
-    } else {
-      // The highest offset is leftmost.
-      return run_with_offset.num_characters_ +
-             run_with_offset.character_offset_;
-    }
+    target_x = 0;
   }
   if (target_x >= width_) {
-    const auto& run_with_offset = runs_with_offset_.back();
-    if (IsLtr(run_with_offset.direction_)) {
-      // The max offset within the run is rightmost
-      return run_with_offset.num_characters_ +
-             run_with_offset.character_offset_;
-    } else {
-      // The 0 offset is rightmost.
-      return run_with_offset.character_offset_;
-    }
+    target_x = width_;
   }
 
   ShapeTextIfNeeded();
@@ -409,10 +546,57 @@ unsigned TextMetrics::caretPositionFromPoint(double x) {
       float run_x = target_x - riter->x_position_;
       unsigned run_offset = riter->shape_result_->CaretOffsetForHitTest(
           run_x, StringView(riter->text_), BreakGlyphsOption(true));
+      if (direction_ != riter->direction_) {
+        return CorrectForMixedBidi(riter, run_offset);
+      }
       return run_offset + riter->character_offset_;
     }
   }
   return 0;
+}
+
+unsigned TextMetrics::CorrectForMixedBidi(
+    HeapVector<RunWithOffset>::reverse_iterator& riter,
+    unsigned run_offset) {
+  DCHECK(direction_ != riter->direction_);
+  // Do our best to handle mixed direction strings. The decisions to adjust
+  // are based on trying to get reasonable selection behavior when there
+  // are LTR runs embedded in an RTL string or vice versa.
+  if (IsRtl(direction_)) {
+    if (run_offset == 0) {
+      // Position is at the left edge of a LTR run within an RTL string.
+      // Move it to the start of the next RTL run on its left.
+      auto next_run = riter + 1;
+      if (next_run != runs_with_offset_.rend()) {
+        return next_run->character_offset_;
+      }
+    } else if (run_offset == riter->num_characters_) {
+      // Position is at the right end of an LTR run embedded in RTL. Move
+      // it to the last position of the RTL run to the right, which is the first
+      // position of the LTR run, unless there is no run to the right.
+      if (riter != runs_with_offset_.rbegin()) {
+        return riter->character_offset_;
+      }
+    }
+  } else {
+    if (run_offset == 0) {
+      // Position is at the right edge of a RTL run within an LTR string.
+      // Move it to the start of the next LTR run on its right.
+      if (riter != runs_with_offset_.rbegin()) {
+        riter--;
+        return riter->character_offset_;
+      }
+    } else if (run_offset == riter->num_characters_) {
+      // Position is at the left end of an RTL run embedded in LTR. Move
+      // it to the last position of the left side LTR run, unless there is
+      // no run to the left.
+      auto next_run = riter + 1;
+      if (next_run != runs_with_offset_.rend()) {
+        return next_run->character_offset_ + next_run->num_characters_;
+      }
+    }
+  }
+  return run_offset + riter->character_offset_;
 }
 
 }  // namespace blink

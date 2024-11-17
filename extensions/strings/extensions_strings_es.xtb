@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">El valor de entrada de la clave privada debe ser una ruta válida.</translation>
 <translation id="388442998277590542">No se ha podido cargar la página de opciones "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">Se ha producido un error al firmar la extensión.</translation>
-<translation id="4115165561519362854">El administrador de este equipo requiere que <ph name="EXTENSION_NAME" /> tenga como mínimo la versión <ph name="EXTENSION_VERSION" />. No se puede habilitar hasta que se haya actualizado a esa versión (o superior).</translation>
 <translation id="4233778200880751280">No se ha podido cargar la página de información (<ph name="ABOUT_PAGE" />).</translation>
 <translation id="471800408830181311">Se ha producido un error al generar la clave privada.</translation>
 <translation id="4811956658694082538">No se ha podido instalar el paquete porque se ha producido un fallo en el proceso de ejecución de una utilidad. Reinicia Chrome y vuelve a intentarlo.</translation>

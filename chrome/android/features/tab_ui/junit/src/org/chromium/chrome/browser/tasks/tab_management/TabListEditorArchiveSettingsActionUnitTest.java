@@ -8,8 +8,6 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.app.Activity;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -18,12 +16,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -33,7 +30,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabListEditorArchiveSettingsActionUnitTest {
-    @Mock private TabGroupModelFilter mTabModelFilter;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private SelectionDelegate<Integer> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
     @Mock private Profile mProfile;
@@ -42,19 +39,16 @@ public class TabListEditorArchiveSettingsActionUnitTest {
 
     private MockTabModel mTabModel;
     private TabListEditorArchiveSettingsAction mAction;
-    private Activity mActivity;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mActivity = Robolectric.buildActivity(Activity.class).get();
         mAction =
                 (TabListEditorArchiveSettingsAction)
-                        TabListEditorArchiveSettingsAction.createAction(
-                                mActivity, mArchiveDelegate);
+                        TabListEditorArchiveSettingsAction.createAction(mArchiveDelegate);
         mTabModel = spy(new MockTabModel(mProfile, null));
-        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
-        mAction.configure(() -> mTabModelFilter, mSelectionDelegate, mDelegate, false);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        mAction.configure(() -> mTabGroupModelFilter, mSelectionDelegate, mDelegate, false);
     }
 
     @Test

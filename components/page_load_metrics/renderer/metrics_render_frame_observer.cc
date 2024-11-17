@@ -698,6 +698,10 @@ MetricsRenderFrameObserver::Timing MetricsRenderFrameObserver::GetTiming()
     timing->connect_start =
         CreateTimeDeltaFromTimestampsInSeconds(perf.ConnectStart(), start);
   }
+  if (perf.ConnectEnd() > 0.0) {
+    timing->connect_end =
+        CreateTimeDeltaFromTimestampsInSeconds(perf.ConnectEnd(), start);
+  }
   if (perf.ResponseStart() > 0.0) {
     timing->response_start =
         CreateTimeDeltaFromTimestampsInSeconds(perf.ResponseStart(), start);

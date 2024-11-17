@@ -6,6 +6,7 @@
 
 #import <memory>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
@@ -42,7 +43,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
     builder_ =
         std::make_unique<WebStateListBuilderFromDescription>(web_state_list);
     ASSERT_TRUE(builder_->BuildWebStateListFromDescription(
-        "| f [ 1 a* b c ] d e ", browser_->GetBrowserState()));
+        "| f [ 1 a* b c ] d e ", browser_->GetProfile()));
 
     mode_holder_ = [[TabGridModeHolder alloc] init];
 
@@ -77,7 +78,7 @@ class TabGroupMediatorTest : public GridMediatorTestClass {
  protected:
   TabGroupMediator* mediator_;
   id<TabGroupConsumer> tab_group_consumer_;
-  const TabGroup* tab_group_;
+  raw_ptr<const TabGroup> tab_group_;
   std::unique_ptr<WebStateListBuilderFromDescription> builder_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
@@ -92,7 +93,7 @@ TEST_F(TabGroupMediatorTest, DropLocalTab) {
       web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
 
   id local_object = [[TabInfo alloc] initWithTabID:web_state_id
-                                      browserState:browser_->GetBrowserState()];
+                                           profile:browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -113,7 +114,7 @@ TEST_F(TabGroupMediatorTest, DropFromTabGrid) {
   web::WebStateID web_state_id =
       web_state_list->GetWebStateAt(0)->GetUniqueIdentifier();
   id local_object = [[TabInfo alloc] initWithTabID:web_state_id
-                                      browserState:browser_->GetBrowserState()];
+                                           profile:browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -125,7 +126,7 @@ TEST_F(TabGroupMediatorTest, DropFromTabGrid) {
   // Drop "D" before "B".
   web_state_id = web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
   local_object = [[TabInfo alloc] initWithTabID:web_state_id
-                                   browserState:browser_->GetBrowserState()];
+                                        profile:browser_->GetProfile()];
   item_provider = [[NSItemProvider alloc] init];
   drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
   drag_item.localObject = local_object;
@@ -138,7 +139,7 @@ TEST_F(TabGroupMediatorTest, DropFromTabGrid) {
 // the grid.
 TEST_F(TabGroupMediatorTest, DropCrossWindowTab) {
   auto other_browser = std::make_unique<TestBrowser>(
-      browser_state_.get(), scene_state_,
+      profile_.get(), scene_state_,
       std::make_unique<BrowserWebStateListDelegate>());
   SnapshotBrowserAgent::CreateForBrowser(other_browser.get());
 
@@ -154,7 +155,7 @@ TEST_F(TabGroupMediatorTest, DropCrossWindowTab) {
   ASSERT_EQ(6, web_state_list->count());
 
   id local_object = [[TabInfo alloc] initWithTabID:other_id
-                                      browserState:browser_->GetBrowserState()];
+                                           profile:browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -237,4 +238,23 @@ TEST_F(TabGroupMediatorTest, Ungroup) {
   [mediator_ ungroup];
   ASSERT_EQ(6, web_state_list->count());
   EXPECT_EQ(0u, web_state_list->GetGroups().size());
+}
+
+// Tests that closing tabs in a group that is not captured by the current
+// mediator removes the group.
+TEST_F(TabGroupMediatorTest, CreateAnotherGroupAndCloseTabs) {
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  ASSERT_EQ(6, web_state_list->count());
+  EXPECT_EQ(1u, web_state_list->GetGroups().size());
+
+  tab_groups::TabGroupVisualData visual_data = tab_groups::TabGroupVisualData(
+      u"group 2", tab_groups::TabGroupColorId::kRed);
+  web_state_list->CreateGroup({4, 5}, visual_data,
+                              tab_groups::TabGroupId::GenerateNew());
+  EXPECT_EQ("| f [ 1 a* b c ] [ _ d e ]",
+            builder_->GetWebStateListDescription());
+
+  web_state_list->CloseWebStateAt(4, WebStateList::CLOSE_USER_ACTION);
+  web_state_list->CloseWebStateAt(4, WebStateList::CLOSE_USER_ACTION);
+  EXPECT_EQ("| f [ 1 a* b c ]", builder_->GetWebStateListDescription());
 }

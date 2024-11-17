@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_MODEL_SEARCH_ENGINE_CHOICE_UTIL_H_
 #define IOS_CHROME_BROWSER_SEARCH_ENGINE_CHOICE_MODEL_SEARCH_ENGINE_CHOICE_UTIL_H_
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+class ProfileIOS;
 
 // Utilities for the search engine choice screen.
 

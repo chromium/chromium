@@ -101,13 +101,13 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
 // |restrict_to_accounts_eligible_for_sync| is true, removes the account that
 // are not suitable for sync promos.
 std::vector<AccountInfo> GetOrderedAccountsForDisplay(
-    signin::IdentityManager* identity_manager,
+    const signin::IdentityManager* identity_manager,
     bool restrict_to_accounts_eligible_for_sync);
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns single account to use in promos.
 AccountInfo GetSingleAccountForPromos(
-    signin::IdentityManager* identity_manager);
+    const signin::IdentityManager* identity_manager);
 
 #endif
 
@@ -154,17 +154,6 @@ void RecordProfileMenuViewShown(Profile* profile);
 
 // Called when a button/link in the profile menu was clicked.
 void RecordProfileMenuClick(Profile* profile);
-
-// Records the result of a re-auth challenge to finish a transaction (like
-// unlocking the account store for passwords).
-void RecordTransactionalReauthResult(
-    signin_metrics::ReauthAccessPoint access_point,
-    signin::ReauthResult result);
-
-// Records user action performed in a transactional reauth dialog/tab.
-void RecordTransactionalReauthUserAction(
-    signin_metrics::ReauthAccessPoint access_point,
-    SigninReauthViewController::UserAction user_action);
 
 }  // namespace signin_ui_util
 

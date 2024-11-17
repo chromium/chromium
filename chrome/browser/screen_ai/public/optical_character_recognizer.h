@@ -30,7 +30,8 @@ class OpticalCharacterRecognizer
  public:
   // Creates OCR using ScreenAI service instance for `profile`. If needed,
   // triggers download and initialization of the component. Calls
-  // `status_callback` when service initialization status is known.
+  // `status_callback` asynchronously after the OCR has been created and the
+  // service initialization status is known.
   static scoped_refptr<screen_ai::OpticalCharacterRecognizer>
   CreateWithStatusCallback(Profile* profile,
                            mojom::OcrClientType client_type,

@@ -20,6 +20,7 @@ static_library("exo") {
     "//ash/components/arc",
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/file_manager",

@@ -9,6 +9,10 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 // Logs metrics for user sign-in operations.
 @interface UserSigninLogger : NSObject
 
@@ -16,6 +20,7 @@
 // The designated initializer.
 - (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
                         promoAction:(signin_metrics::PromoAction)promoAction
+                    identityManager:(signin::IdentityManager*)identityManager
               accountManagerService:
                   (ChromeAccountManagerService*)accountManagerService
     NS_DESIGNATED_INITIALIZER;
@@ -25,6 +30,9 @@
 
 // Promo button used to trigger the sign-in.
 @property(nonatomic, assign, readonly) signin_metrics::PromoAction promoAction;
+
+// Identity manager to retrieve Chrome identities.
+@property(nonatomic, assign) signin::IdentityManager* identityManager;
 
 // Account manager service to retrieve Chrome identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;

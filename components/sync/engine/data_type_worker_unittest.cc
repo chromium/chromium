@@ -277,7 +277,7 @@ class DataTypeWorkerTest : public ::testing::Test {
         PassphraseType::kImplicitPassphrase, &mock_nudge_handler_,
         &cancelation_signal_);
 
-    // We don't get to own this object. The |worker_| keeps a unique_ptr to it.
+    // We don't get to own this object. The `worker_` keeps a unique_ptr to it.
     auto processor = std::make_unique<MockDataTypeProcessor>();
     mock_type_processor_ = processor.get();
     processor->SetDisconnectCallback(base::BindOnce(
@@ -326,7 +326,7 @@ class DataTypeWorkerTest : public ::testing::Test {
     }
   }
 
-  // Modifies the input/output parameter |specifics| by encrypting it with
+  // Modifies the input/output parameter `specifics` by encrypting it with
   // the n-th encryption key.
   void EncryptUpdateWithNthKey(int n, EntitySpecifics* specifics) {
     EntitySpecifics original_specifics = *specifics;
@@ -477,7 +477,7 @@ class DataTypeWorkerTest : public ::testing::Test {
   }
   void PumpModelThread() { processor()->RunQueuedTasks(); }
 
-  // Returns true if the |worker_| is ready to commit something.
+  // Returns true if the `worker_` is ready to commit something.
   bool WillCommit() { return worker()->GetContribution(INT_MAX) != nullptr; }
 
   // Pretend to successfully commit all outstanding unsynced items.
@@ -550,11 +550,11 @@ class DataTypeWorkerTest : public ::testing::Test {
 
   FakeCryptographer cryptographer_;
 
-  // Determines whether |worker_| has access to the cryptographer or not.
+  // Determines whether `worker_` has access to the cryptographer or not.
   bool is_encrypted_type_ = false;
 
   // The number of encryption keys known to the cryptographer. Keys are
-  // identified by an index from 1 to |encryption_keys_count_| and the last one
+  // identified by an index from 1 to `encryption_keys_count_` and the last one
   // might not have been decrypted yet.
   int encryption_keys_count_ = 0;
 
@@ -574,7 +574,7 @@ class DataTypeWorkerTest : public ::testing::Test {
 
   // A mock that emulates enough of the sync server that it can be used
   // a single UpdateHandler and CommitContributor pair. In this test
-  // harness, the |worker_| is both of them.
+  // harness, the `worker_` is both of them.
   std::unique_ptr<SingleTypeMockServer> mock_server_;
 
   // A mock to track the number of times the CommitQueue requests to
@@ -591,7 +591,7 @@ class DataTypeWorkerTest : public ::testing::Test {
 //
 // This test performs sanity checks on most of the fields in these messages.
 // For the most part this is checking that the test code behaves as expected
-// and the |worker_| doesn't mess up its simple task of moving around these
+// and the `worker_` doesn't mess up its simple task of moving around these
 // values. It makes sense to have one or two tests that are this thorough, but
 // we shouldn't be this verbose in all tests.
 TEST_F(DataTypeWorkerTest, SimpleCommit) {
@@ -768,7 +768,7 @@ TEST_F(DataTypeWorkerTest, TwoNewItemsCommittedSeparately) {
 
   EXPECT_FALSE(WillCommit());
 
-  // The IDs assigned by the |worker_| should be unique.
+  // The IDs assigned by the `worker_` should be unique.
   EXPECT_NE(tag1_entity.id_string(), tag2_entity.id_string());
 
   // Check that the committed specifics values are sane.
@@ -977,7 +977,7 @@ TEST_F(DataTypeWorkerTest,
   second_newest_entity.set_client_tag_hash(oldest_entity.client_tag_hash());
   newest_entity.set_client_tag_hash(oldest_entity.client_tag_hash());
 
-  // Send |newest_entity| in the middle position, to rule out the worker is
+  // Send `newest_entity` in the middle position, to rule out the worker is
   // keeping the first or last received update.
   worker()->ProcessGetUpdatesResponse(
       server()->GetProgress(), server()->GetContext(),
@@ -1030,7 +1030,7 @@ TEST_F(DataTypeWorkerTest,
   second_newest_entity.set_originator_client_item_id(kOriginatorClientItemId);
   newest_entity.set_originator_client_item_id(kOriginatorClientItemId);
 
-  // Send |newest_entity| in the middle position, to rule out the worker is
+  // Send `newest_entity` in the middle position, to rule out the worker is
   // keeping the first or last received update.
   worker()->ProcessGetUpdatesResponse(
       server()->GetProgress(), server()->GetContext(),
@@ -2110,7 +2110,7 @@ TEST_F(DataTypeWorkerPasswordsTest, PasswordCommit) {
 }
 
 // Same as above but uses custom passphrase. In this case, field
-// |unencrypted_metadata| should be cleared.
+// `unencrypted_metadata` should be cleared.
 TEST_F(DataTypeWorkerPasswordsTest, PasswordCommitWithCustomPassphrase) {
   NormalInitializeWithCustomPassphrase();
 
@@ -2605,7 +2605,7 @@ TEST_F(DataTypeWorkerTest, ShouldHaveLocalChangesWhenContributedMaxEntities) {
 
   // The worker is still not aware if there are more changes available. It is
   // supposed that GetContribution() will be called until it returns less than
-  // |max_entities| items. This is not the intended behaviour, but this is how
+  // `max_entities` items. This is not the intended behaviour, but this is how
   // things currently work.
   EXPECT_TRUE(worker()->HasLocalChanges());
   contribution = worker()->GetContribution(kMaxEntities);

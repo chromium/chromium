@@ -150,8 +150,7 @@ const char* TypeToStringValue(MediaGalleryPrefInfo::Type type) {
       result = kMediaGalleriesTypeRemovedScanValue;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return result;
 }
@@ -195,8 +194,7 @@ const char* DefaultGalleryTypeToStringValue(
       result = kMediaGalleriesDefaultGalleryTypeVideosDefaultValue;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return result;
 }
@@ -344,8 +342,7 @@ bool GetMediaGalleryPermissionFromDictionary(
     out_permission->has_permission = *has_permission;
     return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // For a device with |device_name| and a relative path |sub_folder|, construct
@@ -1021,8 +1018,7 @@ bool MediaGalleriesPreferences::NonAutoGalleryHasPermission(
 
   for (const auto iter : extensions) {
     if (!crx_file::id_util::IdIsValid(iter.first)) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     std::vector<MediaGalleryPermission> permissions =
         GetGalleryPermissionsFromPrefs(iter.first);
@@ -1071,7 +1067,7 @@ MediaGalleryPrefIdSet MediaGalleriesPreferences::GalleriesForExtension(
       if (!gallery->second.IsBlockListedType()) {
         result.insert(it->pref_id);
       } else {
-        NOTREACHED_IN_MIGRATION() << gallery->second.device_id;
+        NOTREACHED() << gallery->second.device_id;
       }
     }
   }
@@ -1229,8 +1225,7 @@ void MediaGalleriesPreferences::RemoveGalleryPermissionsFromPrefs(
 
   for (const auto iter : extensions) {
     if (!crx_file::id_util::IdIsValid(iter.first)) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     UnsetGalleryPermissionInPrefs(iter.first, gallery_id);
   }

@@ -245,10 +245,9 @@ void Spake2Authenticator::ProcessMessageInternal(
   }
 
   if (verification_hash_present) {
-    if (verification_hash.size() != expected_verification_hash_.size() ||
-        !crypto::SecureMemEqual(verification_hash.data(),
-                                expected_verification_hash_.data(),
-                                verification_hash.size())) {
+    if (!crypto::SecureMemEqual(
+            base::as_byte_span(verification_hash),
+            base::as_byte_span(expected_verification_hash_))) {
       state_ = REJECTED;
       rejection_reason_ = RejectionReason::INVALID_CREDENTIALS;
       return;

@@ -205,8 +205,7 @@ PersistedWindowShowState ShowStateToPersistedShowState(
     case ui::mojom::WindowShowState::kEnd:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PERSISTED_SHOW_STATE_NORMAL;
+  NOTREACHED();
 }
 
 // Lints show state values when read back from persited disk.

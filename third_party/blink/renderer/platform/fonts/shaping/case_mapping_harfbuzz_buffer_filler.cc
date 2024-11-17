@@ -50,8 +50,8 @@ CaseMappingHarfBuzzBufferFiller::CaseMappingHarfBuzzBufferFiller(
     if (case_mapped_text.length() != text.length()) {
       String original_text = text;
       original_text.Ensure16Bit();
-      FillSlowCase(case_map_intend, locale, original_text.Characters16(),
-                   original_text.length(), start_index, num_characters);
+      FillSlowCase(case_map_intend, locale, original_text.Span16(), start_index,
+                   num_characters);
       return;
     }
 
@@ -68,20 +68,20 @@ CaseMappingHarfBuzzBufferFiller::CaseMappingHarfBuzzBufferFiller(
 void CaseMappingHarfBuzzBufferFiller::FillSlowCase(
     CaseMapIntend case_map_intend,
     const AtomicString& locale,
-    const UChar* buffer,
-    unsigned buffer_length,
+    base::span<const UChar> buffer,
     unsigned start_index,
     unsigned num_characters) {
   // Record pre-context.
-  hb_buffer_add_utf16(harfbuzz_buffer_, ToUint16(buffer), buffer_length,
+  hb_buffer_add_utf16(harfbuzz_buffer_, ToUint16(buffer.data()), buffer.size(),
                       start_index, 0);
 
   CaseMap case_map(locale);
   for (unsigned char_index = start_index;
        char_index < start_index + num_characters;) {
     unsigned new_char_index = char_index;
-    U16_FWD_1(buffer, new_char_index, num_characters);
-    String char_by_char(&buffer[char_index], new_char_index - char_index);
+    U16_FWD_1(buffer.data(), new_char_index, num_characters);
+    String char_by_char(
+        buffer.subspan(char_index, new_char_index - char_index));
     String case_mapped_char;
     if (case_map_intend == CaseMapIntend::kUpperCase)
       case_mapped_char = case_map.ToUpper(char_by_char);
@@ -100,7 +100,7 @@ void CaseMappingHarfBuzzBufferFiller::FillSlowCase(
   }
 
   // Record post-context
-  hb_buffer_add_utf16(harfbuzz_buffer_, ToUint16(buffer), buffer_length,
+  hb_buffer_add_utf16(harfbuzz_buffer_, ToUint16(buffer.data()), buffer.size(),
                       start_index + num_characters, 0);
 }
 

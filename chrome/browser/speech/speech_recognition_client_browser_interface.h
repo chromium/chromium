@@ -56,6 +56,13 @@ class SpeechRecognitionClientBrowserInterface
       mojo::PendingRemote<media::mojom::SpeechRecognitionSurface> origin_remote,
       media::mojom::SpeechRecognitionSurfaceMetadataPtr metadata) override;
 
+  // BabelOrca feature methods are ash only.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void BindBabelOrcaSpeechRecognitionBrowserObserver(
+      mojo::PendingRemote<media::mojom::SpeechRecognitionBrowserObserver>
+          pending_remote) override;
+  void ChangeBabelOrcaSpeechRecognitionAvailability(bool enabled);
+#endif
   // SodaInstaller::Observer:
   void OnSodaInstalled(speech::LanguageCode language_code) override;
   void OnSodaProgress(speech::LanguageCode language_code,
@@ -65,13 +72,27 @@ class SpeechRecognitionClientBrowserInterface
       speech::SodaInstaller::ErrorCode error_code) override {}
 
  private:
-  void OnSpeechRecognitionAvailabilityChanged();
-  void OnSpeechRecognitionLanguageChanged();
   void OnSpeechRecognitionMaskOffensiveWordsChanged();
-  void NotifyObservers(bool enabled);
+
+  // Live Caption Event handling
+  void OnLiveCaptionAvailabilityChanged();
+  void OnLiveCaptionLanguageChanged();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void OnBabelOrcaLanguageChanged();
+  void OnBabelOrcaAvailabilityChanged(bool enabled);
+  void NotifyBabelOrcaCaptionObservers(bool enabled);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  void NotifyLiveCaptionObservers(bool enabled);
+
+  bool waiting_on_live_caption_ = false;
+  bool waiting_on_babel_orca_ = false;
+  bool babel_orca_enabled_ = false;
 
   mojo::RemoteSet<media::mojom::SpeechRecognitionBrowserObserver>
-      speech_recognition_availibility_observers_;
+      live_caption_availibility_observers_;
+
+  mojo::RemoteSet<media::mojom::SpeechRecognitionBrowserObserver>
+      babel_orca_availability_observers_;
 
   mojo::ReceiverSet<media::mojom::SpeechRecognitionClientBrowserInterface>
       speech_recognition_client_browser_interface_;

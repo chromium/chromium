@@ -8,6 +8,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/prefs/pref_service.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
@@ -15,6 +16,7 @@
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -23,32 +25,43 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/ui/push_notification/metrics.h"
+#import "ios/chrome/browser/ui/push_notification/prominence_notification_setting_alert_coordinator.h"
+#import "ios/chrome/browser/ui/push_notification/prominence_notification_setting_alert_coordinator_delegate.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
 
-// Returns the gaia id used for `browser_state`.
-NSString* GetGaiaIdForBrowserState(ChromeBrowserState* browser_state) {
+// Impression limit for the ProminenceNotificationSettingAlert.
+const int kProminenceAlertImpressionLimit = 2;
+
+// Returns the gaia id used for `profile`.
+NSString* GetGaiaIdForProfile(ProfileIOS* profile) {
   const ProfileAttributesIOS attributes =
       GetApplicationContext()
           ->GetProfileManager()
           ->GetProfileAttributesStorage()
-          ->GetAttributesForProfileWithName(browser_state->GetProfileName());
+          ->GetAttributesForProfileWithName(profile->GetProfileName());
 
   return base::SysUTF8ToNSString(attributes.GetGaiaId());
 }
 
 }  // namespace
 
+@interface NotificationsOptInAlertCoordinator () <
+    ProminenceNotificationSettingAlertCoordinatorDelegate>
+@end
+
 @implementation NotificationsOptInAlertCoordinator {
   SEQUENCE_CHECKER(sequence_checker_);
   // The coordinator used to present the alert used when permission has
   // previously been denied.
   AlertCoordinator* _alertCoordinator;
+  ProminenceNotificationSettingAlertCoordinator* _prominenceAlertCoordinator;
 }
 
 - (void)start {
@@ -60,6 +73,19 @@ NSString* GetGaiaIdForBrowserState(ChromeBrowserState* browser_state) {
 - (void)stop {
   [_alertCoordinator stop];
   _alertCoordinator = nil;
+  [_prominenceAlertCoordinator stop];
+  _prominenceAlertCoordinator = nil;
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+#pragma mark - ProminenceNotificationSettingAlertCoordinatorDelegate
+
+- (void)prominenceNotificationSettingAlertCoordinatorIsDone:
+    (ProminenceNotificationSettingAlertCoordinator*)coordinator {
+  DCHECK(coordinator == _prominenceAlertCoordinator);
+  [_prominenceAlertCoordinator stop];
+  _prominenceAlertCoordinator = nil;
+  [self setResult:NotificationsOptInAlertResult::kPermissionGranted];
 }
 
 #pragma mark - Private methods
@@ -101,6 +127,35 @@ NSString* GetGaiaIdForBrowserState(ChromeBrowserState* browser_state) {
     if (self.confirmationMessage) {
       [self showConfirmationSnackbar];
     }
+    PrefService* localState = GetApplicationContext()->GetLocalState();
+    const int impressionCount = localState->GetInteger(
+        prefs::kProminenceNotificationAlertImpressionCount);
+    // Check notification permission settings in case user doesn't have lock
+    // screen or alert notifications enabled to show an alert. The alert has an
+    // impression limit so don't try if the limit has already been met.
+    if (IsProvisionalNotificationAlertEnabled() &&
+        impressionCount < kProminenceAlertImpressionLimit) {
+      __weak __typeof(self) weakSelf = self;
+      [PushNotificationUtil
+          getPermissionSettings:^(UNNotificationSettings* settings) {
+            [weakSelf onPermissionSettingResult:settings];
+          }];
+    } else {
+      [self setResult:NotificationsOptInAlertResult::kPermissionGranted];
+    }
+  }
+}
+
+- (void)onPermissionSettingResult:(UNNotificationSettings*)settings {
+  if (settings.lockScreenSetting == UNNotificationSettingDisabled ||
+      settings.alertSetting == UNNotificationSettingDisabled) {
+    _prominenceAlertCoordinator =
+        [[ProminenceNotificationSettingAlertCoordinator alloc]
+            initWithBaseViewController:self.baseViewController
+                               browser:self.browser];
+    _prominenceAlertCoordinator.delegate = self;
+    [_prominenceAlertCoordinator start];
+  } else {
     [self setResult:NotificationsOptInAlertResult::kPermissionGranted];
   }
 }
@@ -141,15 +196,14 @@ NSString* GetGaiaIdForBrowserState(ChromeBrowserState* browser_state) {
 
 // Enables notifications in prefs for the client with `clientID`.
 - (void)enableNotifications {
-  NSString* gaiaID = GetGaiaIdForBrowserState(self.browser->GetBrowserState());
+  NSString* gaiaID = GetGaiaIdForProfile(self.browser->GetProfile());
   std::vector<PushNotificationClientId> clientIDs = self.clientIds.value();
   for (PushNotificationClientId clientID : clientIDs) {
     GetApplicationContext()->GetPushNotificationService()->SetPreference(
         gaiaID, clientID, true);
     if (clientID == PushNotificationClientId::kSendTab) {
       // Refresh enabled status in DeviceInfo.
-      DeviceInfoSyncServiceFactory::GetForBrowserState(
-          self.browser->GetProfile())
+      DeviceInfoSyncServiceFactory::GetForProfile(self.browser->GetProfile())
           ->RefreshLocalDeviceInfo();
     }
   }
@@ -181,14 +235,23 @@ NSString* GetGaiaIdForBrowserState(ChromeBrowserState* browser_state) {
 
 // Opens the iOS settings app to the app's Notification permissions.
 - (void)openSettings {
+  __weak __typeof(self) weakSelf = self;
+
   NSURL* url = [NSURL URLWithString:UIApplicationOpenSettingsURLString];
   if (@available(iOS 15.4, *)) {
     url = [NSURL URLWithString:UIApplicationOpenNotificationSettingsURLString];
   }
 
-  [[UIApplication sharedApplication] openURL:url
-                                     options:@{}
-                           completionHandler:nil];
+  [[UIApplication sharedApplication]
+                openURL:url
+                options:@{}
+      completionHandler:^(BOOL result) {
+        [[NSNotificationCenter defaultCenter]
+            addObserver:weakSelf
+               selector:@selector(onReturnFromSettings:)
+                   name:UIApplicationWillEnterForegroundNotification
+                 object:nil];
+      }];
   [self setResult:NotificationsOptInAlertResult::kOpenedSettings];
 }
 
@@ -222,6 +285,17 @@ NSString* GetGaiaIdForBrowserState(ChromeBrowserState* browser_state) {
           base::UserMetricsAction(kNotificationsOptInAlertError));
       break;
   }
+}
+
+// Called when the user returns to Chrome from the settings page after opening
+// the settings page through the alert.
+- (void)onReturnFromSettings:(NSNotification*)notification {
+  if ([self.delegate
+          respondsToSelector:@selector
+          (notificationsOptInAlertCoordinatorReturnedFromSettings:)]) {
+    [self.delegate notificationsOptInAlertCoordinatorReturnedFromSettings:self];
+  }
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 @end

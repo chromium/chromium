@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_functions_internal_overloads.h"
 #include "base/strings/strcat.h"
 
 using base::StrCat;
@@ -199,6 +200,15 @@ void RecordOriginTrialAllowed(UiLocation location, bool allowed) {
   base::UmaHistogramBoolean(
       StrCat({kUiPrefix, GetUiLocationString(location), ".OriginTrialAllowed"}),
       allowed);
+}
+
+void RecordVideoCaptureError(const Context& context,
+                             media::VideoCaptureError received_error) {
+  CHECK_EQ(context.preview_type, PreviewType::kCamera);
+  std::string metric_name =
+      StrCat({kUiPrefix, kPreview, GetUiLocationString(context.ui_location),
+              ".VideoCaptureError"});
+  base::UmaHistogramEnumeration(metric_name, received_error);
 }
 
 }  // namespace media_preview_metrics

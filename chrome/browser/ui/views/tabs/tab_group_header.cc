@@ -30,8 +30,9 @@
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/saved_tab_groups/features.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/data_sharing/public/features.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -41,6 +42,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -48,6 +50,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -106,8 +109,20 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
           title_chip_->AddChildView(std::make_unique<views::ImageView>())),
       group_style_(style),
       tab_style_(TabStyle::Get()),
-      editor_bubble_tracker_(tab_slot_controller) {
-  set_group(group);
+      group_title_(u""),
+      color_(tab_slot_controller_->GetPaintedGroupColor(
+          tab_slot_controller_->GetGroupColorId(group))),
+      editor_bubble_tracker_(tab_slot_controller) {}
+
+TabGroupHeader::~TabGroupHeader() = default;
+
+void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
+  SetGroup(group);
+  auto* tab_group = tab_slot_controller_->GetTabGroup(group);
+  if (tab_group) {
+    tab_group->SetTabGroupVisualsChangedCallback(base::BindRepeating(
+        &TabGroupHeader::UpdateAccessibleName, weak_ptr_factory_.GetWeakPtr()));
+  }
   set_context_menu_controller(this);
 
   // Disable events processing (like tooltip handling)
@@ -138,9 +153,9 @@ TabGroupHeader::TabGroupHeader(TabSlotController& tab_slot_controller,
   UpdateIsCollapsed();
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
+  GetViewAccessibility().SetIsEditable(true);
+  UpdateAccessibleName();
 }
-
-TabGroupHeader::~TabGroupHeader() = default;
 
 bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
   if ((event.key_code() == ui::VKEY_SPACE ||
@@ -261,35 +276,6 @@ void TabGroupHeader::OnFocus() {
       nullptr, TabSlotController::HoverCardUpdateType::kFocus);
 }
 
-void TabGroupHeader::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->AddState(ax::mojom::State::kEditable);
-
-  std::u16string title = tab_slot_controller_->GetGroupTitle(group().value());
-  std::u16string contents =
-      tab_slot_controller_->GetGroupContentString(group().value());
-  std::u16string collapsed_state = std::u16string();
-
-// Windows screen reader properly announces the state set above in |node_data|
-// and will read out the state change when the header's collapsed state is
-// toggled. The state is added into the title for other platforms and the title
-// will be reread with the updated state when the header's collapsed state is
-// toggled.
-#if !BUILDFLAG(IS_WIN)
-  bool is_collapsed = tab_slot_controller_->IsGroupCollapsed(group().value());
-  collapsed_state =
-      is_collapsed ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
-                   : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
-#endif
-  if (title.empty()) {
-    node_data->SetNameChecked(l10n_util::GetStringFUTF16(
-        IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT, contents, collapsed_state));
-  } else {
-    node_data->SetNameChecked(
-        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT, title,
-                                   contents, collapsed_state));
-  }
-}
-
 std::u16string TabGroupHeader::GetTooltipText(const gfx::Point& p) const {
   if (!title_->GetText().empty()) {
     return l10n_util::GetStringFUTF16(
@@ -331,7 +317,7 @@ TabSizeInfo TabGroupHeader::GetTabSizeInfo() const {
 void TabGroupHeader::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   if (editor_bubble_tracker_.is_open()) {
     return;
   }
@@ -390,112 +376,20 @@ int TabGroupHeader::GetDesiredWidth() const {
 }
 
 void TabGroupHeader::VisualsChanged() {
+  // TODO(crbug.com/372296676): Make TabGroupHeader observe the group for
+  // changes to cut down on the number of times we recalculate the view.
   const tab_groups::TabGroupId tab_group_id = group().value();
-  const std::u16string title =
-      tab_slot_controller_->GetGroupTitle(tab_group_id);
-  const tab_groups::TabGroupColorId color_id =
-      tab_slot_controller_->GetGroupColorId(tab_group_id);
-  const SkColor color = tab_slot_controller_->GetPaintedGroupColor(color_id);
+  group_title_ = tab_slot_controller_->GetGroupTitle(tab_group_id);
+  color_ = tab_slot_controller_->GetPaintedGroupColor(
+      tab_slot_controller_->GetGroupColorId(tab_group_id));
+  should_show_header_icon_ = ShouldShowHeaderIcon();
 
-  title_->SetText(title);
-
-  if (ShouldShowSyncIcon()) {
-    sync_icon_->SetImage(ui::ImageModel::FromVectorIcon(
-        kTabGroupsSyncIcon, color_utils::GetColorWithMaxContrast(color),
-        group_style_->GetSyncIconWidth()));
-  }
-
-  sync_icon_->SetVisible(ShouldShowSyncIcon());
-
-  if (title.empty()) {
-    title_chip_->SetBoundsRect(group_style_->GetEmptyTitleChipBounds(this));
-    title_chip_->SetBackground(
-        group_style_->GetEmptyTitleChipBackground(color));
-
-    if (ShouldShowSyncIcon()) {
-      // The `sync_icon` should be centered in the title chip.
-      gfx::Rect sync_icon_bounds = title_chip_->GetLocalBounds();
-      sync_icon_bounds.ClampToCenteredSize(gfx::Size(
-          group_style_->GetSyncIconWidth(), group_style_->GetSyncIconWidth()));
-      sync_icon_->SetBoundsRect(sync_icon_bounds);
-    } else {
-      sync_icon_->SetBounds(0, 0, 0, 0);
-    }
+  UpdateTitleView();
+  UpdateSyncIconView();
+  if (group_title_.empty()) {
+    CreateHeaderWithoutTitle();
   } else {
-    // If the title is set, the chip is a rounded rect that matches the active
-    // tab shape, particularly the tab's corner radius.
-    title_->SetEnabledColor(color_utils::GetColorWithMaxContrast(color));
-
-    // Set the radius such that the chip nestles snugly against the tab corner
-    // radius, taking into account the group underline stroke.
-    const int corner_radius = group_style_->GetChipCornerRadius();
-
-    // TODO(crbug.com/40893761): The math of the layout in this function is done
-    // arithmetically and can be hard to understand. This should instead be done
-    // by a layout manager.
-    const int text_height =
-        title_->GetPreferredSize(views::SizeBounds(title_->width(), {}))
-            .height();
-
-    const gfx::Size sync_icon_size =
-        ShouldShowSyncIcon()
-            ? gfx::Size(group_style_->GetSyncIconWidth(), text_height)
-            : gfx::Size();
-
-    const int padding_between_label_sync_icon =
-        ShouldShowSyncIcon() ? kSyncIconPaddingFromLabel : 0;
-
-    // The max width of the content should be half the standard tab width (not
-    // counting overlap).
-    const int text_max_width =
-        (tab_style_->GetStandardWidth() - tab_style_->GetTabOverlap()) / 2 -
-        sync_icon_size.width() - padding_between_label_sync_icon;
-
-    const int text_width = std::min(
-        title_->GetPreferredSize(views::SizeBounds(title_->width(), {}))
-            .width(),
-        text_max_width);
-
-    // width of the content including the text label, sync icon and the padding
-    // between them
-    const int content_width =
-        text_width + sync_icon_size.width() + padding_between_label_sync_icon;
-
-    // horizontal and vertical insets of the title chip.
-    const gfx::Insets title_chip_insets =
-        group_style_->GetInsetsForHeaderChip(ShouldShowSyncIcon());
-    const int title_chip_vertical_inset = 0;
-    const int title_chip_horizontal_inset_left = title_chip_insets.left();
-    const int title_chip_horizontal_inset_right = title_chip_insets.right();
-
-    // Width of title chip should atleast be the width of an empty title chip.
-    const int title_chip_width =
-        std::max(group_style_->GetEmptyTitleChipBounds(this).width(),
-                 content_width + title_chip_horizontal_inset_left +
-                     title_chip_horizontal_inset_right);
-
-    // The bounds and background for the `title_chip_` is set here.
-    const gfx::Point title_chip_origin =
-        group_style_->GetTitleChipOffset(text_height);
-    title_chip_->SetBounds(title_chip_origin.x(), title_chip_origin.y(),
-                           title_chip_width,
-                           text_height + 2 * title_chip_vertical_inset);
-    title_chip_->SetBackground(
-        views::CreateRoundedRectBackground(color, corner_radius));
-
-    // Bounds and background of the `title_` and the `sync_icon` are set here.
-    const int start_of_sync_icon = title_chip_horizontal_inset_left;
-    if (!ShouldShowSyncIcon()) {
-      sync_icon_->SetBounds(0, 0, 0, 0);
-      title_->SetBounds(title_chip_horizontal_inset_left,
-                        title_chip_vertical_inset, text_width, text_height);
-    } else {
-      sync_icon_->SetBounds(start_of_sync_icon, title_chip_vertical_inset,
-                            sync_icon_size.width(), text_height);
-      title_->SetBounds(start_of_sync_icon + sync_icon_size.width() +
-                            padding_between_label_sync_icon,
-                        title_chip_vertical_inset, text_width, text_height);
-    }
+    CreateHeaderWithTitle();
   }
 
   if (views::FocusRing::Get(this)) {
@@ -513,14 +407,49 @@ void TabGroupHeader::VisualsChanged() {
       UpdateIsCollapsed();
     }
   }
+  UpdateAccessibleName();
+}
+
+void TabGroupHeader::UpdateAccessibleName() {
+  std::u16string title = tab_slot_controller_->GetGroupTitle(group().value());
+  std::u16string contents =
+      tab_slot_controller_->GetGroupContentString(group().value());
+  std::u16string collapsed_state = std::u16string();
+
+// Windows screen reader properly announces the state set above in |node_data|
+// and will read out the state change when the header's collapsed state is
+// toggled. The state is added into the title for other platforms and the title
+// will be reread with the updated state when the header's collapsed state is
+// toggled.
+#if !BUILDFLAG(IS_WIN)
+  bool is_collapsed = tab_slot_controller_->IsGroupCollapsed(group().value());
+  collapsed_state =
+      is_collapsed ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
+                   : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
+#endif
+  if (title.empty()) {
+    GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+        IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT, contents, collapsed_state));
+  } else {
+    GetViewAccessibility().SetName(
+        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT, title,
+                                   contents, collapsed_state));
+  }
 }
 
 int TabGroupHeader::GetCollapsedHeaderWidth() const {
   return GetTabSizeInfo().standard_width;
 }
 
-bool TabGroupHeader::ShouldShowSyncIcon() const {
-  if (tab_groups::IsTabGroupsSaveV2Enabled()) {
+bool SupportsDataSharing() {
+  return base::FeatureList::IsEnabled(
+      data_sharing::features::kDataSharingFeature);
+}
+
+bool TabGroupHeader::ShouldShowHeaderIcon() const {
+  const bool supports_shared_groups = SupportsDataSharing();
+  if (tab_groups::IsTabGroupsSaveV2Enabled() && !supports_shared_groups) {
+    // In V2, the sync icon was removed.
     return false;
   }
 
@@ -529,8 +458,23 @@ bool TabGroupHeader::ShouldShowSyncIcon() const {
           ? tab_groups::SavedTabGroupUtils::GetServiceForProfile(
                 tab_slot_controller_->GetBrowser()->profile())
           : nullptr;
+  if (!tab_group_service) {
+    return false;
+  }
 
-  return tab_group_service && tab_group_service->GetGroup(group().value());
+  std::optional<tab_groups::SavedTabGroup> saved_group =
+      tab_group_service->GetGroup(group().value());
+  if (!saved_group) {
+    return false;
+  }
+
+  if (tab_groups::IsTabGroupsSaveV2Enabled() && supports_shared_groups) {
+    // V2 + DataSharing shows a share icon if the group is shared.
+    return saved_group->is_shared_tab_group();
+  }
+
+  // Show the V1 sync icon.
+  return true;
 }
 
 void TabGroupHeader::UpdateIsCollapsed() {
@@ -540,6 +484,100 @@ void TabGroupHeader::UpdateIsCollapsed() {
     GetViewAccessibility().SetIsCollapsed();
   } else {
     GetViewAccessibility().SetIsExpanded();
+  }
+}
+
+void TabGroupHeader::UpdateTitleView() {
+  title_->SetText(group_title_);
+
+  if (!group_title_.empty()) {
+    title_->SetEnabledColor(color_utils::GetColorWithMaxContrast(color_));
+  }
+}
+
+void TabGroupHeader::UpdateSyncIconView() {
+  sync_icon_->SetVisible(should_show_header_icon_);
+  if (should_show_header_icon_) {
+    bool use_share_icon =
+        tab_groups::IsTabGroupsSaveV2Enabled() && SupportsDataSharing();
+    sync_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        use_share_icon ? kPeopleGroupIcon : kTabGroupsSyncIcon,
+        color_utils::GetColorWithMaxContrast(color_),
+        group_style_->GetSyncIconWidth()));
+  }
+}
+
+void TabGroupHeader::CreateHeaderWithoutTitle() {
+  title_chip_->SetBoundsRect(group_style_->GetEmptyTitleChipBounds(this));
+  title_chip_->SetBackground(group_style_->GetEmptyTitleChipBackground(color_));
+
+  if (should_show_header_icon_) {
+    // The `sync_icon` should be centered in the title chip.
+    gfx::Rect sync_icon_bounds = title_chip_->GetLocalBounds();
+    sync_icon_bounds.ClampToCenteredSize(gfx::Size(
+        group_style_->GetSyncIconWidth(), group_style_->GetSyncIconWidth()));
+    sync_icon_->SetBoundsRect(sync_icon_bounds);
+  } else {
+    sync_icon_->SetBounds(0, 0, 0, 0);
+  }
+}
+
+void TabGroupHeader::CreateHeaderWithTitle() {
+  // TODO(crbug.com/40893761): The math of the layout in this function is done
+  // arithmetically and can be hard to understand. This should instead be done
+  // by a layout manager.
+  // Visual representation of tab group header:
+  //               [         Total Content Width         ]
+  // [ Left Inset ][ Sync Icon ][ Padding ][ Group Title ][ Right Inset ]
+  const int sync_icon_width =
+      should_show_header_icon_ ? group_style_->GetSyncIconWidth() : 0;
+  const int padding_between_label_sync_icon =
+      should_show_header_icon_ ? kSyncIconPaddingFromLabel : 0;
+
+  // The max width of the content should be half the standard tab width (not
+  // counting overlap).
+  const int text_max_width =
+      (tab_style_->GetStandardWidth() - tab_style_->GetTabOverlap()) / 2 -
+      sync_icon_width - padding_between_label_sync_icon;
+  const int text_width = std::min(
+      title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).width(),
+      text_max_width);
+
+  // Width of title chip should at least be the width of an empty title chip.
+  const int total_content_width =
+      text_width + sync_icon_width + padding_between_label_sync_icon;
+  const gfx::Insets title_chip_insets =
+      group_style_->GetInsetsForHeaderChip(should_show_header_icon_);
+  const int title_chip_width =
+      std::max(group_style_->GetEmptyTitleChipBounds(this).width(),
+               total_content_width + title_chip_insets.width());
+
+  const int text_height =
+      title_->GetPreferredSize(views::SizeBounds(title_->width(), {})).height();
+
+  // The title chip's radius should nestle snuggly against the tab corner
+  // radius, taking into account the group underline stroke.
+  const gfx::Point title_chip_origin =
+      group_style_->GetTitleChipOffset(text_height);
+  const int corner_radius = group_style_->GetChipCornerRadius();
+  title_chip_->SetBounds(title_chip_origin.x(), title_chip_origin.y(),
+                         title_chip_width, text_height);
+  title_chip_->SetBackground(
+      views::CreateRoundedRectBackground(color_, corner_radius));
+
+  // Set the bounds of the sync icon first, followed by the title.
+  const int start_of_sync_icon = title_chip_insets.left();
+  const int title_chip_vertical_inset = 0;
+  if (!should_show_header_icon_) {
+    sync_icon_->SetBounds(0, 0, 0, 0);
+    title_->SetBounds(title_chip_insets.left(), title_chip_vertical_inset,
+                      text_width, text_height);
+  } else {
+    sync_icon_->SetBounds(start_of_sync_icon, title_chip_vertical_inset,
+                          sync_icon_width, text_height);
+    title_->SetBounds(
+        sync_icon_->bounds().right() + padding_between_label_sync_icon,
+        title_chip_vertical_inset, text_width, text_height);
   }
 }
 

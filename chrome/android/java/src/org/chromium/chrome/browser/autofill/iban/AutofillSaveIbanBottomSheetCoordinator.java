@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.autofill.payments.AutofillSaveIbanUiInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -74,8 +75,8 @@ public class AutofillSaveIbanBottomSheetCoordinator {
                                 AutofillSaveIbanBottomSheetProperties.DESCRIPTION,
                                 uiInfo.getDescriptionText())
                         .with(
-                                AutofillSaveIbanBottomSheetProperties.IBAN_LABEL,
-                                uiInfo.getIbanLabel())
+                                AutofillSaveIbanBottomSheetProperties.IBAN_VALUE,
+                                uiInfo.getIbanValue())
                         .with(
                                 AutofillSaveIbanBottomSheetProperties.ACCEPT_BUTTON_LABEL,
                                 uiInfo.getAcceptText())
@@ -105,7 +106,8 @@ public class AutofillSaveIbanBottomSheetCoordinator {
                                 mView.mContentView, mView.mScrollView),
                         bottomSheetController,
                         layoutStateProvider,
-                        tabModel);
+                        tabModel,
+                        uiInfo.isServerSave());
     }
 
     void onAcceptButtonClick(String userProvidedNickname) {
@@ -122,8 +124,8 @@ public class AutofillSaveIbanBottomSheetCoordinator {
     }
 
     /** Destroys this component, hiding the bottom sheet if needed. */
-    public void destroy() {
-        mMediator.hide(BottomSheetController.StateChangeReason.NONE);
+    public void destroy(@StateChangeReason int hideReason) {
+        mMediator.hide(hideReason);
     }
 
     void openLegalMessageLink(String url) {

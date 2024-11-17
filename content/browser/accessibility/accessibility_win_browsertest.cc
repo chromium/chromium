@@ -39,6 +39,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/accessibility_notification_waiter.h"
@@ -88,6 +89,9 @@ class AccessibilityWinBrowserTest : public AccessibilityBrowserTest {
     AccessibilityBrowserTest::SetUpCommandLine(command_line);
     // Some of these tests assume a device scale factor of 1.0.
     command_line->AppendSwitchASCII(switches::kForceDeviceScaleFactor, "1");
+    // Enable aria-actions.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "AriaActions");
   }
 
  protected:
@@ -487,8 +491,9 @@ ui::BrowserAccessibility* AccessibilityWinBrowserTest::FindNodeInSubtree(
   for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
     ui::BrowserAccessibility* result =
         FindNodeInSubtree(*node.PlatformGetChild(i), role, name_or_value);
-    if (result)
+    if (result) {
       return result;
+    }
   }
   return nullptr;
 }
@@ -501,8 +506,9 @@ AccessibilityWinBrowserTest::GetAccessibleFromVariant(IAccessible* parent,
   switch (V_VT(var)) {
     case VT_DISPATCH: {
       IDispatch* dispatch = V_DISPATCH(var);
-      if (dispatch)
+      if (dispatch) {
         dispatch->QueryInterface(IID_PPV_ARGS(&ptr));
+      }
       break;
     }
 
@@ -510,8 +516,9 @@ AccessibilityWinBrowserTest::GetAccessibleFromVariant(IAccessible* parent,
       Microsoft::WRL::ComPtr<IDispatch> dispatch;
       HRESULT hr = parent->get_accChild(*var, &dispatch);
       EXPECT_TRUE(SUCCEEDED(hr));
-      if (dispatch.Get())
+      if (dispatch.Get()) {
         dispatch.As(&ptr);
+      }
       break;
     }
   }
@@ -549,8 +556,9 @@ void AccessibilityWinBrowserTest::FindNodeInAccessibilityTree(
 
   // Print the accessibility tree as we go, because if this test fails
   // on the bots, this is really helpful in figuring out why.
-  for (int i = 0; i < depth; i++)
+  for (int i = 0; i < depth; i++) {
     printf("  ");
+  }
   printf("role=%s name=%s\n",
          base::WideToUTF8(IAccessibleRoleToString(V_I4(role.ptr()))).c_str(),
          base::WideToUTF8(name).c_str());
@@ -568,8 +576,9 @@ void AccessibilityWinBrowserTest::FindNodeInAccessibilityTree(
     if (child_accessible) {
       FindNodeInAccessibilityTree(child_accessible.Get(), expected_role,
                                   expected_name, depth + 1, found);
-      if (*found)
+      if (*found) {
         return;
+      }
     }
   }
 }
@@ -604,8 +613,9 @@ AccessibilityWinBrowserTest::GetAllAccessibleChildren(IAccessible* element) {
   LONG child_count = 0;
   HRESULT hr = element->get_accChildCount(&child_count);
   EXPECT_EQ(S_OK, hr);
-  if (child_count <= 0)
+  if (child_count <= 0) {
     return std::vector<base::win::ScopedVariant>();
+  }
 
   auto children_array = base::HeapArray<VARIANT>::WithSize(child_count);
   LONG obtained_count = 0;
@@ -616,8 +626,9 @@ AccessibilityWinBrowserTest::GetAllAccessibleChildren(IAccessible* element) {
 
   std::vector<base::win::ScopedVariant> children(
       static_cast<size_t>(child_count));
-  for (size_t i = 0; i < children.size(); i++)
+  for (size_t i = 0; i < children.size(); i++) {
     children[i].Reset(children_array[i]);
+  }
 
   return children;
 }
@@ -703,7 +714,6 @@ AccessibilityWinBrowserTest::AccessibleChecker::AccessibleChecker(
       value_(expected_value),
       state_(-1) {}
 
-
 void AccessibilityWinBrowserTest::AccessibleChecker::AppendExpectedChild(
     AccessibleChecker* expected_child) {
   children_.push_back(expected_child);
@@ -782,8 +792,9 @@ void AccessibilityWinBrowserTest::AccessibleChecker::CheckAccessibleValue(
   base::win::ScopedVariant childid_self(CHILDID_SELF);
   HRESULT hr = accessible->get_accRole(childid_self, role.Receive());
   ASSERT_EQ(S_OK, hr);
-  if (role.type() == VT_I4 && V_I4(role.ptr()) == ROLE_SYSTEM_DOCUMENT)
+  if (role.type() == VT_I4 && V_I4(role.ptr()) == ROLE_SYSTEM_DOCUMENT) {
     return;
+  }
 
   // Get the value.
   base::win::ScopedBstr value;
@@ -796,8 +807,9 @@ void AccessibilityWinBrowserTest::AccessibleChecker::CheckAccessibleValue(
 
 void AccessibilityWinBrowserTest::AccessibleChecker::CheckAccessibleState(
     IAccessible* accessible) {
-  if (state_ < 0)
+  if (state_ < 0) {
     return;
+  }
 
   base::win::ScopedVariant state;
   base::win::ScopedVariant childid_self(CHILDID_SELF);
@@ -855,8 +867,9 @@ class NativeWinEventWaiter {
 
   void OnEvent(const std::string& event_str) {
     DLOG(INFO) << "Got event " + event_str;
-    if (base::MatchPattern(event_str, match_pattern_))
+    if (base::MatchPattern(event_str, match_pattern_)) {
       run_loop_.Quit();
+    }
   }
 
   void Wait() { run_loop_.Run(); }
@@ -4047,8 +4060,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
     // should be one past the embedded object character. To get to the start of
     // the next word, we have to skip the space between the embedded object
     // character and the next word.
-    if (word == embedded_character)
+    if (word == embedded_character) {
       ++word_start_offset;
+    }
   }
 }
 
@@ -4096,8 +4110,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
   for (LONG offset = 0; offset < contents_string_length &&
                         sentence_index < sentence_starts.size();
        ++offset) {
-    if (offset == sentence_starts[sentence_index + 1])
+    if (offset == sentence_starts[sentence_index + 1]) {
       ++sentence_index;
+    }
     LONG expected_start_offset = sentence_starts[sentence_index];
     LONG expected_end_offset = sentence_ends[sentence_index];
     const std::wstring expected_text =
@@ -4435,6 +4450,179 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestIAccessibleAction) {
   EXPECT_HRESULT_FAILED(image_action->doAction(2));
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
+                       TestAriaActionIAccessibleAction) {
+  LoadInitialAccessibilityTreeFromHtml(
+      R"HTML(<!DOCTYPE html>
+      <html>
+      <body>
+      <div role="textbox" id="my-textbox" aria-actions="edit open">
+        your-file-name.pdf
+        <button id="edit"
+          onclick="document.getElementById('edit').innerText = 'edit clicked';">
+          Edit
+        </button>
+        <button id="open"
+          onclick="document.getElementById('open').innerText = 'open clicked';">
+          Open
+        </button>
+      </div>
+      </body>
+      </html>)HTML");
+
+  // Retrieve the IAccessible interface for the web page.
+  Microsoft::WRL::ComPtr<IAccessible> document(GetRendererAccessible());
+  std::vector<base::win::ScopedVariant> document_children =
+      GetAllAccessibleChildren(document.Get());
+  ASSERT_EQ(1u, document_children.size());
+
+  Microsoft::WRL::ComPtr<IAccessible2> div;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(document.Get(), document_children[0].AsInput())
+          .Get(),
+      &div));
+  LONG div_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(div->role(&div_role));
+  ASSERT_EQ(ROLE_SYSTEM_TEXT, div_role);
+
+  // Verify the 3 children of the div.
+  std::vector<base::win::ScopedVariant> div_children =
+      GetAllAccessibleChildren(div.Get());
+  ASSERT_EQ(3u, div_children.size());
+
+  Microsoft::WRL::ComPtr<IAccessible2> static_text;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(div.Get(), div_children[0].AsInput()).Get(),
+      &static_text));
+  LONG static_text_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(static_text->role(&static_text_role));
+  ASSERT_EQ(ROLE_SYSTEM_STATICTEXT, static_text_role);
+
+  Microsoft::WRL::ComPtr<IAccessible2> edit_button;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(div.Get(), div_children[1].AsInput()).Get(),
+      &edit_button));
+  LONG edit_button_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(edit_button->role(&edit_button_role));
+  ASSERT_EQ(ROLE_SYSTEM_PUSHBUTTON, edit_button_role);
+
+  Microsoft::WRL::ComPtr<IAccessible2> open_button;
+  ASSERT_HRESULT_SUCCEEDED(QueryIAccessible2(
+      GetAccessibleFromVariant(div.Get(), div_children[2].AsInput()).Get(),
+      &open_button));
+  LONG open_button_role = 0;
+  ASSERT_HRESULT_SUCCEEDED(open_button->role(&open_button_role));
+  ASSERT_EQ(ROLE_SYSTEM_PUSHBUTTON, open_button_role);
+
+  // Check the number of actions.
+  Microsoft::WRL::ComPtr<IAccessibleAction> div_action;
+  ASSERT_HRESULT_SUCCEEDED(div.As(&div_action));
+  LONG n_actions = 0;
+  EXPECT_HRESULT_SUCCEEDED(div_action->nActions(&n_actions));
+  EXPECT_EQ(4, n_actions);
+
+  // Check action names.
+  base::win::ScopedBstr action_name;
+  EXPECT_HRESULT_SUCCEEDED(div_action->get_name(0, action_name.Receive()));
+  EXPECT_EQ(L"doDefault",
+            std::wstring(action_name.Get(), action_name.Length()));
+  action_name.Release();
+  EXPECT_HRESULT_SUCCEEDED(div_action->get_name(1, action_name.Receive()));
+  EXPECT_EQ(L"showContextMenu",
+            std::wstring(action_name.Get(), action_name.Length()));
+  action_name.Release();
+  EXPECT_HRESULT_SUCCEEDED(div_action->get_name(2, action_name.Receive()));
+  EXPECT_EQ(L"custom#edit",
+            std::wstring(action_name.Get(), action_name.Length()));
+  action_name.Release();
+  EXPECT_HRESULT_SUCCEEDED(div_action->get_name(3, action_name.Receive()));
+  EXPECT_EQ(L"custom#open",
+            std::wstring(action_name.Get(), action_name.Length()));
+  action_name.Release();
+  EXPECT_HRESULT_FAILED(div_action->get_name(4, action_name.Receive()));
+  EXPECT_EQ(nullptr, action_name.Get());
+
+  base::win::ScopedBstr localized_name;
+  EXPECT_HRESULT_SUCCEEDED(
+      div_action->get_localizedName(0, localized_name.Receive()));
+  EXPECT_EQ(L"doDefault",
+            std::wstring(localized_name.Get(), localized_name.Length()));
+  localized_name.Release();
+  EXPECT_HRESULT_SUCCEEDED(
+      div_action->get_localizedName(1, localized_name.Receive()));
+  EXPECT_EQ(L"showContextMenu",
+            std::wstring(localized_name.Get(), localized_name.Length()));
+  localized_name.Release();
+  EXPECT_HRESULT_SUCCEEDED(
+      div_action->get_localizedName(2, localized_name.Receive()));
+  EXPECT_EQ(L"Edit",
+            std::wstring(localized_name.Get(), localized_name.Length()));
+  localized_name.Release();
+  EXPECT_HRESULT_SUCCEEDED(
+      div_action->get_localizedName(3, localized_name.Receive()));
+  EXPECT_EQ(L"Open",
+            std::wstring(localized_name.Get(), localized_name.Length()));
+  localized_name.Release();
+  EXPECT_HRESULT_FAILED(
+      div_action->get_localizedName(4, localized_name.Receive()));
+  EXPECT_EQ(nullptr, localized_name.Get());
+
+  LONG n_key_bindings = 0;
+  BSTR* key_bindings = nullptr;
+  EXPECT_HRESULT_SUCCEEDED(
+      div_action->get_keyBinding(0, 100, &key_bindings, &n_key_bindings));
+  EXPECT_EQ(0, n_key_bindings);
+  EXPECT_EQ(nullptr, key_bindings);
+
+  base::win::ScopedVariant childid_self(CHILDID_SELF);
+
+  // Verify name of the edit button before doAction is called.
+  base::win::ScopedBstr edit_button_name;
+  EXPECT_HRESULT_SUCCEEDED(
+      edit_button->get_accName(childid_self, edit_button_name.Receive()));
+  EXPECT_EQ(L"Edit",
+            std::wstring(edit_button_name.Get(), edit_button_name.Length()));
+  edit_button_name.Release();
+
+  // Test first aria-action (since its the third action, call doAction(2)).
+  // Clicking the button should change its name.
+  AccessibilityNotificationWaiter waiter(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::NAME_CHANGED);
+  EXPECT_HRESULT_SUCCEEDED(div_action->doAction(2));
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  // Verify the name of the edit button is changed.
+  EXPECT_HRESULT_SUCCEEDED(
+      edit_button->get_accName(childid_self, edit_button_name.Receive()));
+  EXPECT_EQ(L"edit clicked",
+            std::wstring(edit_button_name.Get(), edit_button_name.Length()));
+  edit_button_name.Release();
+
+  // Verify the name of the open button before doAction is called.
+  base::win::ScopedBstr open_button_name;
+  EXPECT_HRESULT_SUCCEEDED(
+      open_button->get_accName(childid_self, open_button_name.Receive()));
+  EXPECT_EQ(L"Open",
+            std::wstring(open_button_name.Get(), open_button_name.Length()));
+  open_button_name.Release();
+
+  // Test second aria-action (since its the fourth action, call doAction(3)).
+  // Clicking the button should change its name.
+  EXPECT_HRESULT_SUCCEEDED(div_action->doAction(3));
+  ASSERT_TRUE(waiter.WaitForNotification());
+
+  // Verify the name of the open button is changed.
+  EXPECT_HRESULT_SUCCEEDED(
+      open_button->get_accName(childid_self, open_button_name.Receive()));
+  EXPECT_EQ(L"open clicked",
+            std::wstring(open_button_name.Get(), open_button_name.Length()));
+  open_button_name.Release();
+
+  // There are no more actions, calls for indexes >=4 will fail.
+  EXPECT_HRESULT_FAILED(div_action->doAction(4));
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, HasHWNDAfterNavigation) {
   // This test simulates a scenario where RenderWidgetHostViewAura::SetSize
   // is not called again after its window is added to the root window.
@@ -4696,26 +4884,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestScrollTo) {
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest,
                        TestPageIsAccessibleAfterCancellingReload) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kBeforeunloadEventCancelByPreventDefault)) {
-    LoadInitialAccessibilityTreeFromHtml(
-        "data:text/html,"
-        "<script>"
-        "window.onbeforeunload = function (e) {"
-        "  e.preventDefault()"
-        "};"
-        "</script>"
-        "<input value='Test'>");
-  } else {
-    LoadInitialAccessibilityTreeFromHtml(
-        "data:text/html,"
-        "<script>"
-        "window.onbeforeunload = function () {"
-        "  return 'Not empty string';"
-        "};"
-        "</script>"
-        "<input value='Test'>");
-  }
+  LoadInitialAccessibilityTreeFromHtml(
+      "data:text/html,"
+      "<script>"
+      "window.onbeforeunload = function (e) {"
+      "  e.preventDefault()"
+      "};"
+      "</script>"
+      "<input value='Test'>");
 
   // When the before unload dialog shows, simulate the user clicking
   // cancel on that dialog.
@@ -4986,8 +5162,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
   EXPECT_EQ(VT_EMPTY, result.type());
 }
 
-IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
-                       OnscreenNodeClickable) {
+IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest, OnscreenNodeClickable) {
   LoadInitialAccessibilityTreeFromHtml(
       R"HTML(<!DOCTYPE html>
       <html>
@@ -5509,7 +5684,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIASelectivelyEnabledBrowserTest,
 
   // Web content accessibility support should now be enabled.
   expected_mode |= ui::AXMode::kNativeAPIs | ui::AXMode::kWebContents |
-                   ui::AXMode::kScreenReader | ui::AXMode::kHTML;
+                   ui::AXMode::kScreenReader;
   EXPECT_EQ(expected_mode, content::BrowserAccessibilityStateImpl::GetInstance()
                                ->GetAccessibilityMode());
   ASSERT_TRUE(waiter.WaitForNotification());
@@ -5544,11 +5719,6 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIASelectivelyEnabledBrowserTest,
     ASSERT_HRESULT_SUCCEEDED(text_element->GetCurrentPropertyValue(
         UIA_AutomationIdPropertyId, variant.Receive()));
   }
-  // TODO(janewman) UIA_AutomationIdPropertyId currently requires the author
-  // supplied ID property, this requires HTML mode enabled to be available,
-  // crbug 703277 is tracking separating this out so that kHTML can be removed
-  // altogether.
-  expected_mode |= ui::AXMode::kHTML;
   EXPECT_EQ(expected_mode, content::BrowserAccessibilityStateImpl::GetInstance()
                                ->GetAccessibilityMode());
 }

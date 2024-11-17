@@ -36,10 +36,10 @@
 #include "components/strings/grit/components_strings.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace {
 

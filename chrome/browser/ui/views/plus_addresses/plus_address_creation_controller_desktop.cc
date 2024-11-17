@@ -10,17 +10,28 @@
 #include <string>
 #include <utility>
 
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/plus_addresses/plus_address_setting_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/plus_addresses/plus_address_creation_dialog_delegate.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
+#include "components/plus_addresses/plus_address_prefs.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/settings/plus_address_setting_service.h"
 
 namespace plus_addresses {
+
+using metrics::PlusAddressModalCompletionStatus;
+
 // static
 PlusAddressCreationController* PlusAddressCreationController::GetOrCreate(
     content::WebContents* web_contents) {
@@ -49,6 +60,7 @@ void PlusAddressCreationControllerDesktop::OnRefreshClicked() {
   if (!plus_address_service) {
     return;
   }
+  base::RecordAction(base::UserMetricsAction("PlusAddresses.Refreshed"));
   plus_address_service->RefreshPlusAddress(
       relevant_origin_,
       base::BindOnce(
@@ -70,6 +82,7 @@ PlusAddressCreationControllerDesktop::GetPlusAddressSettingService() {
 
 void PlusAddressCreationControllerDesktop::OfferCreation(
     const url::Origin& main_frame_origin,
+    bool is_manual_fallback,
     PlusAddressCallback callback) {
   if (dialog_delegate_) {
     return;
@@ -85,6 +98,7 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
   }
 
   relevant_origin_ = main_frame_origin;
+  is_manual_fallback_ = is_manual_fallback;
   callback_ = std::move(callback);
 
   const bool should_show_notice = ShouldShowNotice();
@@ -109,6 +123,18 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
 void PlusAddressCreationControllerDesktop::OnConfirmed() {
   // The UI prevents any attempt to Confirm if Reserve() had failed.
   CHECK(plus_profile_.has_value());
+  if (modal_error_status_ ==
+      PlusAddressModalCompletionStatus::kConfirmPlusAddressError) {
+    base::RecordAction(
+        base::UserMetricsAction("PlusAddresses.CreateErrorTryAgainClicked"));
+  } else {
+    // The only value that `modal_error_status_` can currently take are
+    // `kConfirmPlusAddressError` (handled above), `kReservePlusAddressError`
+    // (prevents confirming the dialog), and `std::nullopt`.
+    CHECK(!modal_error_status_.has_value());
+    base::RecordAction(
+        base::UserMetricsAction("PlusAddresses.OfferedPlusAddressAccepted"));
+  }
   metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalConfirmed,
                             ShouldShowNotice());
 
@@ -121,26 +147,40 @@ void PlusAddressCreationControllerDesktop::OnConfirmed() {
     // Note: this call may fail if this modal is confirmed on the same
     // `relevant_origin_` from another device.
     plus_address_service->ConfirmPlusAddress(
-        relevant_origin_, plus_profile_->plus_address,
+        relevant_origin_, plus_profile_->plus_address, is_manual_fallback_,
         base::BindOnce(
             &PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed,
             GetWeakPtr()));
   }
 }
+
 void PlusAddressCreationControllerDesktop::OnCanceled() {
   // TODO(b/320541525) ModalEvent is in sync with actual user action. May
   // re-evaluate the use of this metric when modal becomes more complex.
   const bool was_notice_shown = ShouldShowNotice();
   metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalCanceled,
                             was_notice_shown);
-  if (modal_error_status_.has_value()) {
-    RecordModalShownOutcome(modal_error_status_.value(), was_notice_shown);
-    modal_error_status_.reset();
-  } else {
-    RecordModalShownOutcome(
-        metrics::PlusAddressModalCompletionStatus::kModalCanceled,
-        was_notice_shown);
+  if (!modal_error_status_) {
+    RecordModalShownOutcome(PlusAddressModalCompletionStatus::kModalCanceled,
+                            was_notice_shown);
+    if (was_notice_shown) {
+      TriggerUserPerceptionSurvey(hats::SurveyType::kDeclinedFirstTimeCreate);
+    }
+    return;
   }
+
+  RecordModalShownOutcome(modal_error_status_.value(), was_notice_shown);
+  if (modal_error_status_ ==
+      PlusAddressModalCompletionStatus::kReservePlusAddressError) {
+    base::RecordAction(
+        base::UserMetricsAction("PlusAddresses.ReserveErrorCanceled"));
+  } else {
+    CHECK_EQ(*modal_error_status_,
+             PlusAddressModalCompletionStatus::kConfirmPlusAddressError);
+    base::RecordAction(
+        base::UserMetricsAction("PlusAddresses.CreateErrorCanceled"));
+  }
+  modal_error_status_.reset();
 }
 void PlusAddressCreationControllerDesktop::OnDialogDestroyed() {
   dialog_delegate_.reset();
@@ -153,7 +193,7 @@ PlusAddressCreationControllerDesktop::get_view_for_testing() {
 }
 
 void PlusAddressCreationControllerDesktop::RecordModalShownOutcome(
-    metrics::PlusAddressModalCompletionStatus status,
+    PlusAddressModalCompletionStatus status,
     bool was_notice_shown) {
   if (modal_shown_time_.has_value()) {
     // The number of refreshes is equal to the number of `reserve` responses
@@ -184,11 +224,12 @@ PlusAddressCreationControllerDesktop::GetWeakPtr() {
 void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
     const PlusProfileOrError& maybe_plus_profile) {
   if (maybe_plus_profile.has_value()) {
+    modal_error_status_.reset();
     plus_profile_ = maybe_plus_profile.value();
     ++reserve_response_count_;
   } else {
     modal_error_status_ =
-        metrics::PlusAddressModalCompletionStatus::kReservePlusAddressError;
+        PlusAddressModalCompletionStatus::kReservePlusAddressError;
   }
   // Display result on UI only after setting `plus_profile_` to prevent
   // premature confirm without `plus_profile_` value.
@@ -202,23 +243,32 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressReserved(
 
 void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
     const PlusProfileOrError& maybe_plus_profile) {
+  const bool was_notice_shown = ShouldShowNotice();
   if (maybe_plus_profile.has_value()) {
+    modal_error_status_.reset();
+
     // Autofill the plus address.
     std::move(callback_).Run(*maybe_plus_profile->plus_address);
 
     // If this was a first run dialog, record that the user has accepted the
     // notice.
-    const bool was_notice_shown = ShouldShowNotice();
     if (was_notice_shown) {
       GetPlusAddressSettingService()->SetHasAcceptedNotice();
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext())
+          ->GetPrefs()
+          ->SetTime(prefs::kFirstPlusAddressCreationTime, base::Time::Now());
+      if (Browser* browser = chrome::FindBrowserWithTab(&GetWebContents())) {
+        browser->window()->MaybeShowFeaturePromo(
+            feature_engagement::kIPHPlusAddressFirstSaveFeature);
+      }
+      TriggerUserPerceptionSurvey(hats::SurveyType::kAcceptedFirstTimeCreate);
     }
 
-    RecordModalShownOutcome(
-        metrics::PlusAddressModalCompletionStatus::kModalConfirmed,
-        was_notice_shown);
+    RecordModalShownOutcome(PlusAddressModalCompletionStatus::kModalConfirmed,
+                            was_notice_shown);
   } else {
     modal_error_status_ =
-        metrics::PlusAddressModalCompletionStatus::kConfirmPlusAddressError;
+        PlusAddressModalCompletionStatus::kConfirmPlusAddressError;
   }
 
   // Display result on UI after setting `modal_error_status_` to ensure correct
@@ -226,6 +276,15 @@ void PlusAddressCreationControllerDesktop::OnPlusAddressConfirmed(
   if (dialog_delegate_) {
     dialog_delegate_->ShowConfirmResult(maybe_plus_profile);
   }
+}
+
+void PlusAddressCreationControllerDesktop::TriggerUserPerceptionSurvey(
+    hats::SurveyType survey_type) {
+  PlusAddressService* plus_address_service = GetPlusAddressService();
+  if (!plus_address_service) {
+    return;
+  }
+  plus_address_service->TriggerUserPerceptionSurvey(survey_type);
 }
 
 bool PlusAddressCreationControllerDesktop::ShouldShowNotice() const {

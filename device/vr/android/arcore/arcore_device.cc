@@ -21,6 +21,7 @@
 #include "device/vr/android/compositor_delegate_provider.h"
 #include "device/vr/android/mailbox_to_surface_bridge.h"
 #include "device/vr/android/xr_java_coordinator.h"
+#include "device/vr/public/cpp/features.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "ui/android/window_android.h"
 #include "ui/display/display.h"
@@ -83,6 +84,13 @@ ArCoreDevice::ArCoreDevice(
   // Only support camera access if the device supports shared buffers.
   if (base::AndroidHardwareBufferCompat::IsSupportAvailable())
     device_features.emplace_back(mojom::XRSessionFeature::CAMERA_ACCESS);
+
+  // Only support WebGPU sessions if the appropriate feature flag is enabled
+  // and shared buffers will be used.
+  if (base::FeatureList::IsEnabled(features::kWebXrWebGpuBinding) &&
+      ArImageTransport::UseSharedBuffer()) {
+    device_features.emplace_back(mojom::XRSessionFeature::WEBGPU);
+  }
 
   SetSupportedFeatures(device_features);
 }
@@ -427,10 +435,10 @@ void ArCoreDevice::RequestArCoreGlInitialization(
     PostTaskToGlThread(base::BindOnce(
         &ArCoreGl::Initialize,
         session_state_->arcore_gl_thread_->GetArCoreGl()->GetWeakPtr(),
-        xr_java_coordinator_.get(), arcore_factory_.get(),
-        frame_sink_client_.get(), drawing_widget, surface_handle, root_window,
-        frame_size, rotation, session_state_->required_features_,
-        session_state_->optional_features_,
+        main_thread_task_runner_, xr_java_coordinator_.get(),
+        arcore_factory_.get(), frame_sink_client_.get(), drawing_widget,
+        surface_handle, root_window, frame_size, rotation,
+        session_state_->required_features_, session_state_->optional_features_,
         std::move(session_state_->tracked_images_),
         std::move(session_state_->depth_options_),
         base::BindPostTask(

@@ -53,7 +53,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @interface BlockPopupsTableViewController () <
     BooleanObserver,
     PopoverLabelViewControllerDelegate> {
-  raw_ptr<ChromeBrowserState> _browserState;  // weak
+  raw_ptr<ProfileIOS> _profile;  // weak
 
   // List of url patterns that are allowed to display popups.
   base::Value::List _exceptions;
@@ -75,14 +75,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 @implementation BlockPopupsTableViewController
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
-  DCHECK(browserState);
+- (instancetype)initWithProfile:(ProfileIOS*)profile {
+  DCHECK(profile);
 
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    _browserState = browserState;
+    _profile = profile;
     HostContentSettingsMap* settingsMap =
-        ios::HostContentSettingsMapFactory::GetForBrowserState(_browserState);
+        ios::HostContentSettingsMapFactory::GetForProfile(_profile);
     _disablePopupsSetting = [[ContentSettingBackedBoolean alloc]
         initWithHostContentSettingsMap:settingsMap
                              settingID:ContentSettingsType::POPUPS
@@ -115,7 +115,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Block popups switch.
   [model addSectionWithIdentifier:SectionIdentifierMainSwitch];
 
-  if (_browserState->GetPrefs()->IsManagedPreference(
+  if (_profile->GetPrefs()->IsManagedPreference(
           prefs::kManagedDefaultPopupsSetting)) {
     _blockPopupsManagedItem = [self blockPopupsManagedItem];
     [model addItem:_blockPopupsManagedItem
@@ -299,7 +299,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
     // Remove the exception for the site by resetting its popup setting to the
     // default.
-    ios::HostContentSettingsMapFactory::GetForBrowserState(_browserState)
+    ios::HostContentSettingsMapFactory::GetForProfile(_profile)
         ->SetContentSettingCustomScope(
             ContentSettingsPattern::FromString(urlToRemove),
             ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,
@@ -343,7 +343,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // chrome/browser/ui/webui/options/content_settings_handler.cc and simplified
   // to only deal with urls/patterns that allow popups.
   ContentSettingsForOneType entries =
-      ios::HostContentSettingsMapFactory::GetForBrowserState(_browserState)
+      ios::HostContentSettingsMapFactory::GetForProfile(_profile)
           ->GetSettingsForOneType(ContentSettingsType::POPUPS);
   for (size_t i = 0; i < entries.size(); ++i) {
     // Skip default settings from extensions and policy, and the default content

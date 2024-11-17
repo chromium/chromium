@@ -18,7 +18,6 @@ import android.os.Build.VERSION_CODES;
 import android.view.WindowInsets;
 import android.view.WindowMetrics;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -102,7 +101,7 @@ public class DimensionCompatUnitTest {
             dimensionCompat.updatePosition();
             helper.waitForCallback(0);
         } catch (TimeoutException e) {
-            Assert.fail("Position updater was not invoked.");
+            throw new AssertionError("Position updater was not invoked.", e);
         }
     }
 

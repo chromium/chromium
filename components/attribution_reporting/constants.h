@@ -47,6 +47,9 @@ inline constexpr uint32_t kDefaultMaxEventStates = 3;
 inline constexpr size_t kMaxScopesPerSource = 20;
 inline constexpr size_t kMaxLengthPerAttributionScope = 50;
 
+inline constexpr size_t kMaxAggregatableNamedBudgetsPerSource = 25;
+inline constexpr size_t kMaxLengthPerAggregatableNamedBudgetName = 25;
+
 inline constexpr char kTriggerDataMatchingExact[] = "exact";
 inline constexpr char kTriggerDataMatchingModulus[] = "modulus";
 
@@ -55,6 +58,7 @@ inline constexpr char kSummaryOperatorValueSum[] = "value_sum";
 
 inline constexpr char kAggregatableFilteringIdsMaxBytes[] =
     "aggregatable_filtering_id_max_bytes";
+inline constexpr char kAggregatableNamedBudgets[] = "named_budgets";
 inline constexpr char kAggregatableReportWindow[] =
     "aggregatable_report_window";
 inline constexpr char kAggregationKeys[] = "aggregation_keys";
@@ -93,6 +97,7 @@ inline constexpr char kEventTriggerData[] = "event_trigger_data";
 inline constexpr char kFilteringId[] = "filtering_id";
 inline constexpr char kFilters[] = "filters";
 inline constexpr char kKeyPiece[] = "key_piece";
+inline constexpr char kName[] = "name";
 inline constexpr char kSourceKeys[] = "source_keys";
 inline constexpr char kTriggerContextId[] = "trigger_context_id";
 inline constexpr char kValue[] = "value";

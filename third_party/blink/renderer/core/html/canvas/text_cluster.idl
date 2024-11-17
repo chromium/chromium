@@ -1,0 +1,12 @@
+[
+    RuntimeEnabled=ExtendedTextMetrics,
+    Exposed=(Window,Worker)
+]
+interface TextCluster {
+    attribute double x;
+    attribute double y;
+    readonly attribute unsigned long begin;
+    readonly attribute unsigned long end;
+    readonly attribute DOMString align;
+    readonly attribute DOMString baseline;
+};

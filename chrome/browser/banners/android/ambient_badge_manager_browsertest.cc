@@ -222,15 +222,18 @@ class AmbientBadgeManagerBrowserTest : public AndroidBrowserTest {
       mock_segmentation_service_;
 };
 
-IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerBrowserTest, ShowAmbientBadge) {
+// TODO(crbug.com/369913977): Flaky
+IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerBrowserTest,
+                       DISABLED_ShowAmbientBadge) {
   SetSegmentationResult(MLInstallabilityPromoter::kShowInstallPromptLabel);
 
   RunTest(embedded_test_server()->GetURL("/banners/manifest_test_page.html"),
           AmbientBadgeManager::State::kShowing);
 }
 
+// TODO(crbug.com/376278389): Flaky
 IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerBrowserTest,
-                       BlockedBySegmentationResult) {
+                       DISABLED_BlockedBySegmentationResult) {
   SetSegmentationResult(MLInstallabilityPromoter::kDontShowLabel);
 
   RunTest(embedded_test_server()->GetURL("/banners/manifest_test_page.html"),

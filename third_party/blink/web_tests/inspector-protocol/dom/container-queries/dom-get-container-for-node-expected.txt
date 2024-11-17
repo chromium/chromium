@@ -43,7 +43,16 @@ true
     sessionId : <string>
 }
 Is the returned container the expected style container?
-false
+true
+{
+    id : <number>
+    result : {
+        nodeId : <number>
+    }
+    sessionId : <string>
+}
+Is the returned container the expected scroll-state container?
+true
 {
     id : <number>
     result : {

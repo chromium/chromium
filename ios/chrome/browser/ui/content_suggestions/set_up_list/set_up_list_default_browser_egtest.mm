@@ -34,7 +34,9 @@ id<GREYMatcher> DefaultItemTitle() {
 // title.
 id<GREYMatcher> DefaultItemSeeMoreTitle() {
   return grey_allOf(
-      grey_text(GetNSString(IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE)),
+      grey_text(GetNSString([ChromeEarlGrey isIPadIdiom]
+                                ? IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE_IPAD
+                                : IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE)),
       grey_accessibilityID(set_up_list::kAccessibilityID), nil);
 }
 
@@ -161,10 +163,8 @@ id<GREYMatcher> DefaultPromoSubtitle() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // Enable Segmented Default Browser promos and iPad tailored Default Browser
-  // promo strings.
+  // Enable Segmented Default Browser promo strings.
   config.features_enabled.push_back(kSegmentedDefaultBrowserPromo);
-  config.features_enabled.push_back(kDefaultBrowserPromoIPadExperimentalString);
   // Set first run details to show Set Up List.
   config.additional_args.push_back("-FirstRunRecency");
   config.additional_args.push_back("1");

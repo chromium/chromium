@@ -59,13 +59,14 @@ public class WebViewUiTestRule extends BaseActivityTestRule<WebViewUiTestActivit
     }
 
     @Override
-    public void launchActivity(Intent i) {
+    public WebViewUiTestActivity launchActivity(Intent i) {
         if (mLayout != null && !mLayout.isEmpty()) {
             if (i == null) i = getActivityIntent();
             i.putExtra(WebViewUiTestActivity.EXTRA_TEST_LAYOUT_FILE, mLayout);
         }
-        super.launchActivity(i);
-        mSyncWrapper = new WebViewSyncWrapper((WebView) getActivity().findViewById(R.id.webview));
+        WebViewUiTestActivity activity = super.launchActivity(i);
+        mSyncWrapper = new WebViewSyncWrapper((WebView) activity.findViewById(R.id.webview));
+        return activity;
     }
 
     public void launchActivity() {

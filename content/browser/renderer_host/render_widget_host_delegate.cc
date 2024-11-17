@@ -61,6 +61,10 @@ RenderWidgetHostDelegate::GetOrCreateRootBrowserAccessibilityManager() {
   return nullptr;
 }
 
+uint32_t RenderWidgetHostDelegate::GetCompositorFrameSinkGroupingId() const {
+  NOTREACHED();  // Not implemented.
+}
+
 // If a delegate does not override this, the RenderWidgetHostView will
 // assume it is the sole platform event consumer.
 input::RenderWidgetHostInputEventRouter*
@@ -92,7 +96,7 @@ blink::mojom::DisplayMode RenderWidgetHostDelegate::GetDisplayMode() const {
   return blink::mojom::DisplayMode::kBrowser;
 }
 
-ui::WindowShowState RenderWidgetHostDelegate::GetWindowShowState() {
+ui::mojom::WindowShowState RenderWidgetHostDelegate::GetWindowShowState() {
   return ui::mojom::WindowShowState::kDefault;
 }
 
@@ -120,6 +124,11 @@ bool RenderWidgetHostDelegate::HasPointerLock(
 
 RenderWidgetHostImpl* RenderWidgetHostDelegate::GetPointerLockWidget() {
   return nullptr;
+}
+
+bool RenderWidgetHostDelegate::IsWaitingForPointerLockPrompt(
+    RenderWidgetHostImpl* render_widget_host) {
+  return false;
 }
 
 bool RenderWidgetHostDelegate::RequestKeyboardLock(RenderWidgetHostImpl* host,

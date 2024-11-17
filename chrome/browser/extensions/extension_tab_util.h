@@ -48,6 +48,36 @@ class WindowController;
 // Provides various utility functions that help manipulate tabs.
 class ExtensionTabUtil {
  public:
+  static constexpr char kNoCrashBrowserError[] =
+      "I'm sorry. I'm afraid I can't do that.";
+  static constexpr char kCanOnlyMoveTabsWithinNormalWindowsError[] =
+      "Tabs can only be moved to and from normal windows.";
+  static constexpr char kCanOnlyMoveTabsWithinSameProfileError[] =
+      "Tabs can only be moved between windows in the same profile.";
+  static constexpr char kNoCurrentWindowError[] = "No current window";
+  static constexpr char kWindowNotFoundError[] = "No window with id: *.";
+  static constexpr char kTabNotFoundError[] = "No tab with id: *.";
+  static constexpr char kTabStripNotEditableError[] =
+      "Tabs cannot be edited right now (user may be dragging a tab).";
+  static constexpr char kTabStripDoesNotSupportTabGroupsError[] =
+      "Grouping is not supported by tabs in this window.";
+  static constexpr char kJavaScriptUrlsNotAllowedInExtensionNavigations[] =
+      "JavaScript URLs are not allowed in API based extension navigations. Use "
+      "chrome.scripting.executeScript instead.";
+  static constexpr char kBrowserWindowNotAllowed[] =
+      "Browser windows not allowed.";
+  static constexpr char kCannotNavigateToDevtools[] =
+      "Cannot navigate to a devtools:// page without either the devtools or "
+      "debugger permission.";
+  static constexpr char kLockedFullscreenModeNewTabError[] =
+      "You cannot create new tabs while in locked fullscreen mode.";
+  static constexpr char kCannotNavigateToChromeUntrusted[] =
+      "Cannot navigate to a chrome-untrusted:// page.";
+  static constexpr char kFileUrlsNotAllowedInExtensionNavigations[] =
+      "Cannot navigate to a file URL without local file access.";
+
+  static constexpr char kTabsKey[] = "tabs";
+
   enum ScrubTabBehaviorType {
     kScrubTabFully,
     kScrubTabUrlToOrigin,
@@ -172,16 +202,14 @@ class ExtensionTabUtil {
   // null if there is no active tab.
   static content::WebContents* GetActiveTab(Browser* browser);
 
-  // Any out parameter (|browser|, |tab_strip|, |contents|, & |tab_index|) may
-  // be NULL and will not be set within the function.
+  // Any out parameter (`window`, `contents`, & `tab_index`) may be null.
   //
-  // The output `*browser` value may be null if the tab is a prerender tab that
+  // The output `*window` value may be null if the tab is a prerender tab that
   // has no corresponding browser window.
   static bool GetTabById(int tab_id,
                          content::BrowserContext* browser_context,
                          bool include_incognito,
-                         Browser** browser,
-                         TabStripModel** tab_strip,
+                         WindowController** window,
                          content::WebContents** contents,
                          int* tab_index);
   static bool GetTabById(int tab_id,
@@ -196,12 +224,12 @@ class ExtensionTabUtil {
   static int GetWindowIdOfGroup(const tab_groups::TabGroupId& id);
 
   // Gets the metadata for the group with ID `group_id`. Sets the `error` if not
-  // found. `browser`, `id`, or `visual_data` may be nullptr and will not be set
+  // found. `window`, `id`, or `visual_data` may be nullptr and will not be set
   // within the function if so.
   static bool GetGroupById(int group_id,
                            content::BrowserContext* browser_context,
                            bool include_incognito,
-                           Browser** browser,
+                           WindowController** window,
                            tab_groups::TabGroupId* id,
                            const tab_groups::TabGroupVisualData** visual_data,
                            std::string* error);

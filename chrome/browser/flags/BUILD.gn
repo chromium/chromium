@@ -11,7 +11,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureMap.java",
     "android/java/src/org/chromium/chrome/browser/flags/ChromeSessionState.java",
   ]
-  public_deps = [ "//base:base_cached_flags_java" ]
+  public_deps = [ "//components/cached_flags:java" ]
   deps = [
     "//base:base_java",
     "//base/version_info/android:version_constants_java",

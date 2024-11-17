@@ -97,6 +97,22 @@ TEST_F(BookmarkLocalDataBatchUploaderTest,
   EXPECT_THAT(description.Get().domains, IsEmpty());
 }
 
+TEST_F(BookmarkLocalDataBatchUploaderTest,
+       LocalDescriptionEmptyIfNoAccountFolders) {
+  bookmark_model()->LoadEmptyForTest();
+  ASSERT_FALSE(bookmark_model()->account_bookmark_bar_node());
+  bookmark_model()->AddURL(bookmark_model()->bookmark_bar_node(), /*index=*/0,
+                           u"Local", GURL("http://local.com/"));
+  BookmarkLocalDataBatchUploader uploader(bookmark_model());
+  base::test::TestFuture<syncer::LocalDataDescription> description;
+
+  uploader.GetLocalDataDescription(description.GetCallback());
+
+  EXPECT_EQ(description.Get().item_count, 0u);
+  EXPECT_EQ(description.Get().domain_count, 0u);
+  EXPECT_THAT(description.Get().domains, IsEmpty());
+}
+
 TEST_F(BookmarkLocalDataBatchUploaderTest, LocalDescriptionOnlyHasLocalData) {
   bookmark_model()->LoadEmptyForTest();
   bookmark_model()->CreateAccountPermanentFolders();

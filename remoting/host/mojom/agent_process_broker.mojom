@@ -1,0 +1,52 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module remoting.mojom;
+
+// Interface for the agent process broker to control the agent process. See
+// documentation on AgentProcessBroker below for more details.
+[EnableIf=is_mac]
+interface AgentProcess {
+  // Resumes the agent process. After calling this, the agent will be allowed to
+  // send heartbeats and connect to signaling.
+  ResumeProcess();
+
+  // Suspends the agent process. After calling this, the agent will stop sending
+  // heartbeats and disconnect from signaling.
+  SuspendProcess();
+};
+
+// Interface for brokering the agent processes. CRD hosts are run as Mac launch
+// agents, meaning they will be launched whenever a new user session (or the
+// login screen) has started. This will cause problems since the CRD
+// architecture does not support multiple hosts heartbeating and signaling with
+// the same directory registration. The agent process broker is used to ensure
+// there will be at most one host running at a time. The agent process broker is
+// run as a Mac launch daemon, meaning there will only be one process running as
+// root.
+//
+// See Apple's documentation about launch daemons and agents:
+// https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/CreatingLaunchdJobs.html
+[EnableIf=is_mac]
+interface AgentProcessBroker {
+  // Called by an agent process right after it is launched. There will be three
+  // possible outcomes:
+  //
+  // 1. Broker closes the remote: agent should terminate immediately.
+  // 2. ResumeProcess() is called: agent is allowed to send heartbeats and
+  //    connect to signaling.
+  // 3. SuspendProcess() is called: agent should stop sending heartbeats and
+  //    disconnect from signaling, wait for ResumeProcess() to be called or
+  //    the remote to be closed.
+  //
+  // Right after the agent process is launched, it should not send heartbeats or
+  // connect to signaling until ResumeProcess() is called.
+  //
+  // Note: The broker does not wait for the exit/suspension of the agent
+  // process, so said process might heartbeat after the new agent process is
+  // resumed. This is not a problem with the current signaling implementation
+  // since all agent processes share the same signaling credential/registration.
+  // This could become problematic if the signaling mechanism is changed.
+  OnAgentProcessLaunched(pending_remote<AgentProcess> agent_process);
+};

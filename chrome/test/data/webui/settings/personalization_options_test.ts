@@ -10,7 +10,7 @@ import type {SettingsPersonalizationOptionsElement} from 'chrome://settings/lazy
 import type {CrLinkRowElement, PrivacyPageVisibility, SettingsPrefsElement} from 'chrome://settings/settings.js';
 import {CrSettingsPrefs, loadTimeData, PrivacyPageBrowserProxyImpl, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 // <if expr="not is_chromeos">
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 import {ChromeSigninUserChoice} from 'chrome://settings/settings.js';
@@ -32,11 +32,6 @@ suite('AllBuilds', function() {
 
   suiteSetup(function() {
     loadTimeData.overrideValues({
-      // TODO(crbug.com/40274151): Remove the tests for "driveSuggest" when
-      // the setting is completely removed.
-      driveSuggestAvailable: true,
-      driveSuggestNoSetting: false,
-      driveSuggestNoSyncRequirement: false,
       signinAvailable: true,
       changePriceEmailNotificationsEnabled: true,
     });
@@ -64,57 +59,6 @@ suite('AllBuilds', function() {
 
   teardown(function() {
     testElement.remove();
-  });
-
-  test('DriveSearchSuggestControl', function() {
-    assertFalse(isChildVisible(testElement, '#driveSuggestControl'));
-
-    testElement.syncStatus = {
-      signedInState: SignedInState.SYNCING,
-      statusAction: StatusAction.NO_ACTION,
-    };
-    flush();
-    assertTrue(isChildVisible(testElement, '#driveSuggestControl'));
-
-    testElement.syncStatus = {
-      signedInState: SignedInState.SYNCING,
-      statusAction: StatusAction.REAUTHENTICATE,
-    };
-    flush();
-    assertFalse(isChildVisible(testElement, '#driveSuggestControl'));
-  });
-
-  test('DriveSearchSuggestControlDeprecated', function() {
-    testElement.syncStatus = {
-      signedInState: SignedInState.SYNCING,
-      statusAction: StatusAction.NO_ACTION,
-    };
-    flush();
-    assertTrue(isChildVisible(testElement, '#driveSuggestControl'));
-
-    loadTimeData.overrideValues({'driveSuggestNoSetting': false});
-    buildTestElement();
-
-    assertFalse(isChildVisible(testElement, '#driveSuggestControl'));
-  });
-
-  test('DriveSearchSuggestControlNoSyncRequirement', function() {
-    testElement.syncStatus = {
-      signedInState: SignedInState.SYNCING,
-      statusAction: StatusAction.REAUTHENTICATE,
-    };
-    flush();
-    assertFalse(isChildVisible(testElement, '#driveSuggestControl'));
-
-    loadTimeData.overrideValues({'driveSuggestNoSyncRequirement': true});
-    buildTestElement();
-    testElement.syncStatus = {
-      signedInState: SignedInState.SYNCING,
-      statusAction: StatusAction.REAUTHENTICATE,
-    };
-    flush();
-
-    assertTrue(isChildVisible(testElement, '#driveSuggestControl'));
   });
 
   // <if expr="not is_chromeos">
@@ -375,7 +319,10 @@ suite('AllBuilds', function() {
   });
 
   test('historySearchRow', () => {
-    loadTimeData.overrideValues({showHistorySearchControl: true});
+    loadTimeData.overrideValues({
+      showHistorySearchControl: true,
+      enableAiSettingsPageRefresh: false,
+    });
     resetRouterForTesting();
     buildTestElement();
 
@@ -384,7 +331,9 @@ suite('AllBuilds', function() {
     assertTrue(!!historySearchRow);
     assertTrue(isVisible(historySearchRow));
     historySearchRow.click();
-    assertEquals(routes.HISTORY_SEARCH, Router.getInstance().getCurrentRoute());
+    const currentRoute = Router.getInstance().getCurrentRoute();
+    assertEquals(routes.HISTORY_SEARCH, currentRoute);
+    assertEquals(routes.SYNC, currentRoute.parent);
 
     loadTimeData.overrideValues({showHistorySearchControl: false});
     buildTestElement();

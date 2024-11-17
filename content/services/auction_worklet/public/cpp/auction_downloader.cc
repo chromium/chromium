@@ -12,6 +12,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
@@ -116,16 +117,17 @@ bool MimeTypeIsConsistent(
       // ResponseInfo's `mime_type` is always lowercase.
       return blink::IsJSONMimeType(response_info.mime_type);
     case AuctionDownloader::MimeType::kWebAssembly: {
-      std::string raw_content_type;
       // Here we use the headers directly, not the parsed mimetype, since we
       // much check there are no parameters whatsoever. Ref.
       // https://webassembly.github.io/spec/web-api/#streaming-modules
-      if (!response_info.headers->GetNormalizedHeader(
-              net::HttpRequestHeaders::kContentType, &raw_content_type)) {
+      std::optional<std::string> raw_content_type =
+          response_info.headers->GetNormalizedHeader(
+              net::HttpRequestHeaders::kContentType);
+      if (!raw_content_type) {
         return false;
       }
 
-      return base::ToLowerASCII(raw_content_type) == kWebAssemblyMime;
+      return base::ToLowerASCII(*raw_content_type) == kWebAssemblyMime;
     }
   }
 }
@@ -427,15 +429,17 @@ void AuctionDownloader::OnResponseStarted(
     return;
   }
 
-  std::string allow_fledge;
-  std::string auction_allowed;
-  if (!response_head.headers ||
-      ((!response_head.headers->GetNormalizedHeader("X-Allow-FLEDGE",
-                                                    &allow_fledge) ||
-        !base::EqualsCaseInsensitiveASCII(allow_fledge, "true")) &&
-       (!response_head.headers->GetNormalizedHeader("Ad-Auction-Allowed",
-                                                    &auction_allowed) ||
-        !base::EqualsCaseInsensitiveASCII(auction_allowed, "true")))) {
+  std::optional<std::string> allow_fledge;
+  std::optional<std::string> auction_allowed;
+  if (response_head.headers) {
+    allow_fledge = response_head.headers->GetNormalizedHeader("X-Allow-FLEDGE");
+    auction_allowed =
+        response_head.headers->GetNormalizedHeader("Ad-Auction-Allowed");
+  }
+  if ((!allow_fledge ||
+       !base::EqualsCaseInsensitiveASCII(*allow_fledge, "true")) &&
+      (!auction_allowed ||
+       !base::EqualsCaseInsensitiveASCII(*auction_allowed, "true"))) {
     FailRequest(
         network::URLLoaderCompletionStatus(net::ERR_ABORTED),
         base::StringPrintf(
@@ -467,6 +471,10 @@ void AuctionDownloader::TraceResult(bool failure,
                                     base::TimeTicks completion_time,
                                     int64_t encoded_data_length,
                                     int64_t decoded_body_length) {
+  if (!completion_time.is_null()) {
+    base::UmaHistogramTimes("Ads.InterestGroup.Auction.DownloadThreadDelay",
+                            base::TimeTicks::Now() - completion_time);
+  }
   TRACE_EVENT_INSTANT1(
       "devtools.timeline", "ResourceFinish", TRACE_EVENT_SCOPE_THREAD, "data",
       [&](perfetto::TracedValue dest) {

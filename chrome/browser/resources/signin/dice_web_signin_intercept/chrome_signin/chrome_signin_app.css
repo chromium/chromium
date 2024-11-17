@@ -51,7 +51,7 @@
 #contents-container {
   margin-top: 16px;
   padding: 20px;
-  border-radius: 16px;
+  border-radius: 10px;
   background-color: var(--color-chrome-signin-bubble-info-background);
 }
 

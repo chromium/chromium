@@ -89,12 +89,8 @@ class ProfileMetrics {
     // Delete profile internally when Chrome signout is prohibited and the
     // username is no longer allowed.
     DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED = 6,
-    // Delete profile internally when a profile cannot exist without a primary
-    // account and this account gets removed.
-    DELETE_PROFILE_PRIMARY_ACCOUNT_REMOVED_LACROS = 7,
-    // Delete profile internally at startup, if a Lacros profile using Mirror is
-    // not signed in (as it is not supported yet).
-    DELETE_PROFILE_SIGNIN_REQUIRED_MIRROR_LACROS = 8,
+    // DELETE_PROFILE_PRIMARY_ACCOUNT_REMOVED_LACROS = 7,  // No longer used.
+    // DELETE_PROFILE_SIGNIN_REQUIRED_MIRROR_LACROS = 8,   // No longer used.
     NUM_DELETE_PROFILE_METRICS
   };
 
@@ -106,6 +102,23 @@ class ProfileMetrics {
     AUTH_FAILED_OFFLINE,  // Profile failed authentication and was offline
     NUM_PROFILE_AUTH_METRICS
   };
+
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  // LINT.IfChange(GaiaNameShareStatus)
+  enum class GaiaNameShareStatus {
+    // The Gaia name is unique among profiles.
+    kNotShared,
+    // Two non-managed profiles or more share this name.
+    kSharedNonManaged,
+    // The Gaia name is unique among non-managed profiles, but may be shared by
+    // multiple managed profiles, or by one managed profile and a non-managed
+    // profile.
+    kSharedManaged,
+
+    kMaxValue = kSharedManaged,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/profile/enums.xml:ProfileGaiaNameShareStatus)
 
   // Returns whether profile |entry| is considered active for metrics.
   static bool IsProfileActive(const ProfileAttributesEntry* entry);

@@ -1,0 +1,14 @@
+{
+  "linux-upload-perfetto": {
+    "additional_compile_targets": [
+      "trace_processor_shell"
+    ],
+    "isolated_scripts": [
+      {
+        "name": "upload_trace_processor",
+        "test": "upload_trace_processor",
+        "test_id_prefix": "ninja://tools/perf/core/perfetto_binary_roller:upload_trace_processor/"
+      }
+    ]
+  }
+}

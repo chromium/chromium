@@ -14,7 +14,6 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/accessibility/ax_action_data.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/default_style.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -36,6 +35,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/layout_manager.h"
+#include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 
@@ -43,8 +43,9 @@ namespace views {
 
 TabbedPaneTab::TabbedPaneTab(TabbedPane* tabbed_pane,
                              const std::u16string& title,
-                             View* contents)
-    : tabbed_pane_(tabbed_pane), contents_(contents) {
+                             View* contents,
+                             const gfx::VectorIcon* tab_icon)
+    : icon_for_tab_(tab_icon), tabbed_pane_(tabbed_pane), contents_(contents) {
   // Calculate the size while the font list is bold.
   auto title_label = std::make_unique<Label>(title, style::CONTEXT_LABEL,
                                              style::STYLE_TAB_ACTIVE);
@@ -66,8 +67,33 @@ TabbedPaneTab::TabbedPaneTab(TabbedPane* tabbed_pane,
   }
 
   SetState(State::kInactive);
+
+  // Create an icon for the kCompactWithIcon style
+  if (tabbed_pane_->GetStyle() == TabbedPane::TabStripStyle::kCompactWithIcon) {
+    auto icon = std::make_unique<views::ImageView>(
+        GetImageModelForTab(GetIconTitleColor()));
+    icon->SetProperty(views::kMarginsKey,
+                      gfx::Insets::TLBR(0, 0, 0, kIconRightMargin));
+    icon_view_ = icon.get();
+    AddChildView(std::move(icon));
+  }
+
   AddChildView(std::move(title_label));
-  SetLayoutManager(std::make_unique<FillLayout>());
+
+  // A child with FillLayout determines it's own size as the parents bounds.
+  // Therefore, for a single child, FillLayout is okay. However when multiple
+  // elements are present (e.g. icon + text), we need to use a BoxLayout to
+  // arrange them correctly.
+  if (tabbed_pane_->GetStyle() == TabbedPane::TabStripStyle::kCompactWithIcon) {
+    auto box_layout = std::make_unique<BoxLayout>();
+    box_layout->set_main_axis_alignment(
+        views::BoxLayout::MainAxisAlignment::kCenter);
+    box_layout->set_cross_axis_alignment(
+        views::BoxLayout::CrossAxisAlignment::kCenter);
+    SetLayoutManager(std::move(box_layout));
+  } else {
+    SetLayoutManager(std::make_unique<FillLayout>());
+  }
 
   // Use leaf so that name is spoken by screen reader without exposing the
   // children.
@@ -139,10 +165,18 @@ void TabbedPaneTab::OnGestureEvent(ui::GestureEvent* event) {
 gfx::Size TabbedPaneTab::CalculatePreferredSize(
     const SizeBounds& available_size) const {
   int width = preferred_title_width_ + GetInsets().width();
+
+  // There is no icon if the component is not kCompactWithIcon.
+  if (tabbed_pane_->GetStyle() == TabbedPane::TabStripStyle::kCompactWithIcon &&
+      tabbed_pane_->GetOrientation() == TabbedPane::Orientation::kHorizontal) {
+    width += icon_view_->GetPreferredSize({}).width() + kIconRightMargin;
+  }
+
   if (tabbed_pane_->GetStyle() == TabbedPane::TabStripStyle::kHighlight &&
       tabbed_pane_->GetOrientation() == TabbedPane::Orientation::kVertical) {
     width = std::max(width, 192);
   }
+
   return gfx::Size(width, 32);
 }
 
@@ -212,6 +246,7 @@ void TabbedPaneTab::OnStateChanged() {
   if (GetWidget()) {
     UpdateTitleColor();
   }
+  UpdateIconColor();
 
   // TabbedPaneTab design spec dictates special handling of font weight for
   // the windows platform when dealing with border style tabs.
@@ -284,10 +319,15 @@ void TabbedPaneTab::UpdatePreferredTitleWidth() {
 
 void TabbedPaneTab::UpdateTitleColor() {
   DCHECK(GetWidget());
-  const SkColor font_color = GetColorProvider()->GetColor(
-      state_ == State::kActive ? ui::kColorTabForegroundSelected
-                               : ui::kColorTabForeground);
-  title_->SetEnabledColor(font_color);
+  title_->SetEnabledColorId(std::make_optional(GetIconTitleColor()));
+}
+
+void TabbedPaneTab::UpdateIconColor() {
+  // icon_view_ is not guaranteed to be defined based on the caller's selected
+  // TabStripStyle.
+  if (icon_view_) {
+    icon_view_->SetImage(GetImageModelForTab(GetIconTitleColor()));
+  }
 }
 
 void TabbedPaneTab::UpdateAccessibleName() {
@@ -298,10 +338,21 @@ void TabbedPaneTab::UpdateAccessibleName() {
     GetViewAccessibility().SetName(title_->GetText(),
                                    ax::mojom::NameFrom::kContents);
   }
+  tabbed_pane_->UpdateAccessibleName();
 }
 
 void TabbedPaneTab::UpdateAccessibleSelection() {
   GetViewAccessibility().SetIsSelected(selected());
+}
+
+ui::ImageModel TabbedPaneTab::GetImageModelForTab(ui::ColorId color_id) const {
+  DCHECK(icon_for_tab_);
+  return ui::ImageModel::FromVectorIcon(*icon_for_tab_, color_id, kIconSize);
+}
+
+ui::ColorId TabbedPaneTab::GetIconTitleColor() const {
+  return state_ == State::kActive ? ui::kColorTabForegroundSelected
+                                  : ui::kColorTabForeground;
 }
 
 BEGIN_METADATA(TabbedPaneTab)
@@ -513,6 +564,9 @@ TabbedPane::TabbedPane(TabbedPane::Orientation orientation,
                        bool scrollable) {
   DCHECK(orientation != TabbedPane::Orientation::kHorizontal ||
          style != TabbedPane::TabStripStyle::kHighlight);
+  DCHECK(orientation != TabbedPane::Orientation::kVertical ||
+         style != TabbedPane::TabStripStyle::kCompactWithIcon);
+
   if (orientation == TabbedPane::Orientation::kHorizontal)
     SetOrientation(views::LayoutOrientation::kVertical);
 
@@ -538,6 +592,7 @@ TabbedPane::TabbedPane(TabbedPane::Orientation orientation,
       ui::Accelerator(ui::VKEY_TAB, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN));
   AddAccelerator(ui::Accelerator(ui::VKEY_TAB, ui::EF_CONTROL_DOWN));
   GetViewAccessibility().SetRole(ax::mojom::Role::kTabList);
+  UpdateAccessibleName();
 }
 
 TabbedPane::~TabbedPane() = default;
@@ -553,7 +608,8 @@ size_t TabbedPane::GetTabCount() const {
 
 void TabbedPane::AddTabInternal(size_t index,
                                 const std::u16string& title,
-                                std::unique_ptr<View> contents) {
+                                std::unique_ptr<View> contents,
+                                const gfx::VectorIcon* tab_icon) {
   DCHECK_LE(index, GetTabCount());
   contents->SetVisible(false);
   contents->GetViewAccessibility().SetRole(ax::mojom::Role::kTabPanel);
@@ -563,7 +619,8 @@ void TabbedPane::AddTabInternal(size_t index,
   }
 
   tab_strip_->AddChildViewAt(
-      std::make_unique<TabbedPaneTab>(this, title, contents.get()), index);
+      std::make_unique<TabbedPaneTab>(this, title, contents.get(), tab_icon),
+      index);
   contents_->AddChildViewAt(std::move(contents), index);
   if (!GetSelectedTab()) {
     SelectTabAt(index);
@@ -589,6 +646,8 @@ void TabbedPane::SelectTab(TabbedPaneTab* new_selected_tab, bool animate) {
 
     NotifyAccessibilityEvent(ax::mojom::Event::kSelectedChildrenChanged, true);
   }
+
+  UpdateAccessibleName();
   tab_strip_->SchedulePaint();
 
   FocusManager* focus_manager = new_selected_tab->contents()->GetFocusManager();
@@ -666,10 +725,13 @@ bool TabbedPane::AcceleratorPressed(const ui::Accelerator& accelerator) {
   return MoveSelectionBy(accelerator.IsShiftDown() ? -1 : 1);
 }
 
-void TabbedPane::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+void TabbedPane::UpdateAccessibleName() {
   const TabbedPaneTab* const selected_tab = GetSelectedTab();
+
   if (selected_tab) {
-    node_data->SetName(selected_tab->GetTitleText());
+    GetViewAccessibility().SetName(selected_tab->GetTitleText());
+  } else {
+    GetViewAccessibility().RemoveName();
   }
 }
 

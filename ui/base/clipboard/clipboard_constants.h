@@ -39,13 +39,6 @@ extern const char kMimeTypeOctetStream[];
 COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
 extern const char kMimeTypeWindowDrag[];
 
-// ----- CHROMEOS MIME TYPES -----
-
-#if BUILDFLAG(IS_CHROMEOS)
-COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES)
-extern const char kMimeTypeDataTransferEndpoint[];
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 // ----- LINUX & CHROMEOS & FUCHSIA MIME TYPES -----
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)

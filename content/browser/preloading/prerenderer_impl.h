@@ -50,6 +50,8 @@ class CONTENT_EXPORT PrerendererImpl : public Prerenderer,
                 const PrerenderCancellationReason& reason) override;
   void OnRegistryDestroyed() override;
 
+  void CancelStartedPrerendersForTesting();
+
  private:
   struct PrerenderInfo;
 

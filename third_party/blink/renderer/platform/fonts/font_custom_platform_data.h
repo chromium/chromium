@@ -96,8 +96,6 @@ class PLATFORM_EXPORT FontCustomPlatformData
 
   size_t DataSize() const { return data_size_; }
 
-  bool MayBeIconFont() const;
-
  private:
   sk_sp<SkTypeface> base_typeface_;
   size_t data_size_;

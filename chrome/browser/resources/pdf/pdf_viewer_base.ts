@@ -166,6 +166,7 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
         this.browserApi!.getDefaultZoom() :
         1.0;
 
+    assert(!this.viewport_);
     this.viewport_ = new Viewport(
         scroller, sizer, content, getScrollbarWidth(), defaultZoom);
     this.viewport_!.setViewportChangedCallback(() => this.viewportChanged_());
@@ -177,9 +178,6 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
     });
     this.viewport_!.setUserInitiatedCallback(
         userInitiated => this.setUserInitiated_(userInitiated));
-    window.addEventListener('beforeunload', (event: BeforeUnloadEvent) =>
-        this.onBeforeUnload(event),
-    );
 
     // Handle scripting messages from outside the extension that wish to
     // interact with it. We also send a message indicating that extension has
@@ -420,6 +418,10 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
     }
   }
 
+  getLoadSucceededForTesting(): boolean {
+    return this.loadState_ === LoadState.SUCCESS;
+  }
+
   /**
    * Load a dictionary of translated strings into the UI. Used as a callback for
    * chrome.resourcesPrivate.
@@ -560,20 +562,5 @@ export abstract class PdfViewerBaseElement extends CrLitElement {
   protected rotateCounterclockwise() {
     record(UserAction.ROTATE);
     this.currentController!.rotateCounterclockwise();
-  }
-
-  /**
-   * Handles the `BeforeUnloadEvent` event.
-   * @param event The `BeforeUnloadEvent` object representing the event.
-   */
-  protected onBeforeUnload(_: BeforeUnloadEvent) {
-    this.resetTrackers_();
-  }
-
-  private resetTrackers_() {
-    this.viewport_!.resetTracker();
-    if (this.tracker) {
-      this.tracker.removeAll();
-    }
   }
 }

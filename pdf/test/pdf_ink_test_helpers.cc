@@ -7,9 +7,24 @@
 #include <string>
 #include <utility>
 
+#include "base/notreached.h"
 #include "base/values.h"
+#include "pdf/pdf_ink_conversions.h"
 
 namespace chrome_pdf {
+
+std::optional<ink::StrokeInputBatch> CreateInkInputBatch(
+    base::span<const PdfInkInputData> inputs) {
+  ink::StrokeInputBatch input_batch;
+  for (const auto& input : inputs) {
+    auto result = input_batch.Append(CreateInkStrokeInput(
+        ink::StrokeInput::ToolType::kMouse, input.position, input.time));
+    if (!result.ok()) {
+      return std::nullopt;
+    }
+  }
+  return input_batch;
+}
 
 base::Value::Dict CreateSetAnnotationBrushMessageForTesting(
     const std::string& type,
@@ -37,6 +52,24 @@ base::Value::Dict CreateSetAnnotationModeMessageForTesting(bool enable) {
   message.Set("type", "setAnnotationMode");
   message.Set("enable", enable);
   return message;
+}
+
+base::Value::Dict CreateSetAnnotationUndoRedoMessageForTesting(
+    TestAnnotationUndoRedoMessageType type) {
+  base::Value::Dict message;
+  switch (type) {
+    case TestAnnotationUndoRedoMessageType::kUndo:
+      message.Set("type", "annotationUndo");
+      return message;
+    case TestAnnotationUndoRedoMessageType::kRedo:
+      message.Set("type", "annotationRedo");
+      return message;
+  }
+  NOTREACHED();
+}
+
+base::FilePath GetInkTestDataFilePath(std::string_view filename) {
+  return base::FilePath(FILE_PATH_LITERAL("ink")).AppendASCII(filename);
 }
 
 }  // namespace chrome_pdf

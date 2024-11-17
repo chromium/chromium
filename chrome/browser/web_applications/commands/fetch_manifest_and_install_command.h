@@ -90,7 +90,7 @@ class FetchManifestAndInstallCommand
   // should be stopped and an intent to the Play Store should be made, or
   // synchronously calls OnDidCheckForIntentToPlayStore() implicitly failing the
   // check if it cannot be made.
-  void CheckForPlayStoreIntentOrGetIcons(std::unique_ptr<AppLock> app_lock);
+  void CheckForPlayStoreIntentOrGetIcons();
 
   // Called when the asynchronous check for whether an intent to the Play Store
   // should be made returns.

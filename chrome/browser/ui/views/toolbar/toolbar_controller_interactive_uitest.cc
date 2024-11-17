@@ -33,7 +33,7 @@
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/test/scoped_iph_feature_list.h"
-#include "components/user_education/common/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -525,11 +525,9 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest, ActivateActionElementFromMenu) {
                 "ResponsiveToolbar.OverflowMenuItemActivated.ForwardButton"));
 }
 
-// TODO(crbug.com/360465388): Lacros failures are because resize doesn't
-// actually stick.
 // TODO(crbug/361296257): ActionItemsOverflowAndReappear is flaky on
 // linux64-rel-ready.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_ActionItemsOverflowAndReappear \
   DISABLED_ActionItemsOverflowAndReappear
 #else
@@ -552,17 +550,8 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                       ChromeActionIds::kActionSidePanelShowBookmarks, false));
 }
 
-// TODO(crbug.com/360465388): Lacros failures are because resize doesn't
-// actually stick.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ActionItemsShowInMenuAndActivateFromMenu \
-  DISABLED_ActionItemsShowInMenuAndActivateFromMenu
-#else
-#define MAYBE_ActionItemsShowInMenuAndActivateFromMenu \
-  ActionItemsShowInMenuAndActivateFromMenu
-#endif
 IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
-                       MAYBE_ActionItemsShowInMenuAndActivateFromMenu) {
+                       ActionItemsShowInMenuAndActivateFromMenu) {
   RunTestSequence(
       PinBookmarkToToolbar(),
       AddDummyButtonsToToolbarTillElementOverflows(
@@ -679,10 +668,8 @@ IN_PROC_BROWSER_TEST_F(ToolbarControllerUiTest,
                    ->is_animating());
 }
 
-// TODO(crbug.com/41495158): Flaky on Windows and fails on Lacros.
-// TODO(crbug.com/360465388): Lacros failures are because resize doesn't
-// actually stick.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/41495158): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_DoNotShowIphWhenOverflowed DISABLED_DoNotShowIphWhenOverflowed
 #else
 #define MAYBE_DoNotShowIphWhenOverflowed DoNotShowIphWhenOverflowed

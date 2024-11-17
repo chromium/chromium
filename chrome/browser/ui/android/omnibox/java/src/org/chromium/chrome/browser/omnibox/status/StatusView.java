@@ -378,9 +378,7 @@ public class StatusView extends LinearLayout {
                         if (mAccessibilityToast == 0) return false;
                         Context context = getContext();
                         return Toast.showAnchoredToast(
-                                context,
-                                view,
-                                context.getResources().getString(mAccessibilityToast));
+                                context, view, context.getString(mAccessibilityToast));
                     }
                 };
         setOnLongClickListener(listener);
@@ -395,9 +393,7 @@ public class StatusView extends LinearLayout {
                         if (mAccessibilityDoubleTapDescription == 0) return;
 
                         String onTapDescription =
-                                getContext()
-                                        .getResources()
-                                        .getString(mAccessibilityDoubleTapDescription);
+                                getContext().getString(mAccessibilityDoubleTapDescription);
                         info.addAction(
                                 new AccessibilityAction(
                                         AccessibilityNodeInfo.ACTION_CLICK, onTapDescription));

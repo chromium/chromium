@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './print_preview_vars.css.js';
-import '../strings.m.js';
+import '/strings.m.js';
 import '../data/document_info.js';
 import './sidebar.js';
 

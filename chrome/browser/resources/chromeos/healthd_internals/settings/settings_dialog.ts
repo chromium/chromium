@@ -60,12 +60,12 @@ export class HealthdInternalsSettingsDialogElement extends PolymerElement {
         'Data retention duration for line charts (hour)');
   }
 
-  // UI update interval. Default: 3 seconds.
-  private uiUpdateInterval: number = 3;
-  // Healthd data polling cycle. Default: 1000 milliseconds.
-  private dataPollingCycle: number = 1000;
-  // Data retention duration for line charts. Default: 6 hours.
-  private dataRetentionDuration: number = 6;
+  // UI update interval in seconds.
+  private uiUpdateInterval: number = 2;
+  // Healthd data polling cycle in milliseconds.
+  private dataPollingCycle: number = 500;
+  // Data retention duration for line charts in hours.
+  private dataRetentionDuration: number = 3;
 
   openSettingsDialog() {
     this.$.uiUpdateIntervalSlider.setTickValue(this.uiUpdateInterval);

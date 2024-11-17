@@ -9,8 +9,9 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
-#include "base/check.h"
+#include "base/barrier_callback.h"
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -21,6 +22,8 @@
 #include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/uuid.h"
+#include "base/values.h"
+#include "base/version.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/component.h"
 #include "components/update_client/configurator.h"
@@ -35,14 +38,35 @@
 
 namespace update_client {
 
+namespace {
+
+base::Value::Dict MakeEvent(UpdateClient::PingParams ping_params,
+                            const base::Version& previous_version) {
+  base::Value::Dict event;
+  event.Set("eventtype", ping_params.event_type);
+  event.Set("eventresult", ping_params.result);
+  if (ping_params.error_code) {
+    event.Set("errorcode", ping_params.error_code);
+  }
+  if (ping_params.extra_code1) {
+    event.Set("extracode1", ping_params.extra_code1);
+  }
+  if (!ping_params.app_command_id.empty()) {
+    event.Set("appcommandid", ping_params.app_command_id);
+  }
+  event.Set("previousversion", previous_version.GetString());
+  return event;
+}
+
+}  // namespace
+
 UpdateContext::UpdateContext(
     scoped_refptr<Configurator> config,
-    std::optional<scoped_refptr<CrxCache>> crx_cache,
+    scoped_refptr<CrxCache> crx_cache,
     bool is_foreground,
     bool is_install,
     const std::vector<std::string>& ids,
     UpdateClient::CrxStateChangeCallback crx_state_change_callback,
-    const UpdateEngine::NotifyObserversCallback& notify_observers_callback,
     UpdateEngine::Callback callback,
     PersistedData* persisted_data,
     bool is_update_check_only,
@@ -53,7 +77,6 @@ UpdateContext::UpdateContext(
       is_install(is_install),
       ids(ids),
       crx_state_change_callback(crx_state_change_callback),
-      notify_observers_callback(notify_observers_callback),
       callback(std::move(callback)),
       session_id(base::StrCat(
           {"{", base::Uuid::GenerateRandomV4().AsLowercaseString(), "}"})),
@@ -72,20 +95,12 @@ UpdateEngine::UpdateEngine(
     scoped_refptr<Configurator> config,
     UpdateChecker::Factory update_checker_factory,
     scoped_refptr<PingManager> ping_manager,
-    const NotifyObserversCallback& notify_observers_callback)
+    const UpdateClient::CrxStateChangeCallback& notify_observers_callback)
     : config_(config),
       update_checker_factory_(update_checker_factory),
       ping_manager_(ping_manager),
-      notify_observers_callback_(notify_observers_callback) {
-  std::optional<base::FilePath> crx_cache_path = config->GetCrxCachePath();
-  if (crx_cache_path.has_value()) {
-    CrxCache::Options options(crx_cache_path.value());
-    crx_cache_ = std::optional<scoped_refptr<CrxCache>>(
-        base::MakeRefCounted<CrxCache>(options));
-  } else {
-    crx_cache_ = std::nullopt;
-  }
-}
+      notify_observers_callback_(notify_observers_callback),
+      crx_cache_(base::MakeRefCounted<CrxCache>(config->GetCrxCachePath())) {}
 
 UpdateEngine::~UpdateEngine() = default;
 
@@ -140,7 +155,16 @@ base::RepeatingClosure UpdateEngine::InvokeOperation(
   scoped_refptr<UpdateContext> update_context =
       base::MakeRefCounted<UpdateContext>(
           config_, crx_cache_, is_foreground, is_install, ids,
-          crx_state_change_callback, notify_observers_callback_,
+          crx_state_change_callback
+              ? base::BindRepeating(
+                    [](UpdateClient::CrxStateChangeCallback a,
+                       UpdateClient::CrxStateChangeCallback b,
+                       const CrxUpdateItem& item) {
+                      a.Run(item);
+                      b.Run(item);
+                    },
+                    crx_state_change_callback, notify_observers_callback_)
+              : notify_observers_callback_,
           std::move(callback), config_->GetPersistedData(),
           is_update_check_only);
   CHECK(!update_context->session_id.empty());
@@ -224,7 +248,7 @@ void UpdateEngine::DoUpdateCheck(scoped_refptr<UpdateContext> update_context) {
 
 void UpdateEngine::UpdateCheckResultsAvailable(
     scoped_refptr<UpdateContext> update_context,
-    const std::optional<ProtocolParser::Results>& results,
+    std::optional<ProtocolParser::Results> results,
     ErrorCategory error_category,
     int error,
     int retry_after_sec) {
@@ -247,17 +271,19 @@ void UpdateEngine::UpdateCheckResultsAvailable(
 
   update_context->update_check_error = error;
 
+  auto complete = base::BarrierCallback<bool>(
+      update_context->components_to_check_for_updates.size(),
+      base::BindOnce([](const std::vector<bool>&) {})
+          .Then(base::BindOnce(&UpdateEngine::UpdateCheckComplete, this,
+                               update_context)));
   if (error) {
     CHECK(!results);
     for (const auto& id : update_context->components_to_check_for_updates) {
       CHECK_EQ(1u, update_context->components.count(id));
       auto& component = update_context->components.at(id);
       component->SetUpdateCheckResult(std::nullopt, ErrorCategory::kUpdateCheck,
-                                      error);
+                                      error, complete);
     }
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&UpdateEngine::UpdateCheckComplete, this,
-                                  update_context));
     return;
   }
 
@@ -314,18 +340,14 @@ void UpdateEngine::UpdateCheckResultsAvailable(
         // the literals above, then this must be a success an not a parse error.
         return std::make_pair(ErrorCategory::kNone, ProtocolError::NONE);
       }(result.status);
-      component->SetUpdateCheckResult(result, category,
-                                      static_cast<int>(protocol_error));
+      component->SetUpdateCheckResult(
+          result, category, static_cast<int>(protocol_error), complete);
     } else {
       component->SetUpdateCheckResult(
           std::nullopt, ErrorCategory::kUpdateCheck,
-          static_cast<int>(ProtocolError::UPDATE_RESPONSE_NOT_FOUND));
+          static_cast<int>(ProtocolError::UPDATE_RESPONSE_NOT_FOUND), complete);
     }
   }
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UpdateEngine::UpdateCheckComplete, this, update_context));
 }
 
 void UpdateEngine::UpdateCheckComplete(
@@ -379,7 +401,6 @@ void UpdateEngine::HandleComponent(
         base::BindOnce(&UpdateEngine::HandleComponent, this, update_context),
         next_update_delay);
     next_update_delay = base::TimeDelta();
-    component->NotifyWait();
     return;
   }
 
@@ -466,32 +487,13 @@ void UpdateEngine::SendPing(const CrxComponent& crx_component,
                             UpdateClient::PingParams ping_params,
                             Callback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  const std::string& id = crx_component.app_id;
-
-  const auto update_context = base::MakeRefCounted<UpdateContext>(
-      config_, crx_cache_, false, false, std::vector<std::string>{id},
-      UpdateClient::CrxStateChangeCallback(),
-      UpdateEngine::NotifyObserversCallback(), std::move(callback),
-      config_->GetPersistedData(), /*is_update_check_only=*/false);
-  CHECK(!update_context->session_id.empty());
-
-  const auto [unused, inserted] = update_contexts_.insert(
-      std::make_pair(update_context->session_id, update_context));
-  CHECK(inserted);
-
-  CHECK(update_context);
-  CHECK_EQ(1u, update_context->ids.size());
-  CHECK_EQ(1u, update_context->components.count(id));
-  const auto& component = update_context->components.at(id);
-
-  component->PingOnly(crx_component, ping_params);
-
-  update_context->component_queue.push(id);
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&UpdateEngine::HandleComponent, this, update_context));
+  std::vector<base::Value::Dict> events;
+  events.push_back(MakeEvent(ping_params, crx_component.version));
+  ping_manager_->SendPing(
+      base::StrCat(
+          {"{", base::Uuid::GenerateRandomV4().AsLowercaseString(), "}"}),
+      crx_component, std::move(events),
+      base::BindOnce(std::move(callback), Error::NONE));
 }
 
 }  // namespace update_client

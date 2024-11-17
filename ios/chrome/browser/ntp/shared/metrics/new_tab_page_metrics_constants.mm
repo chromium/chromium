@@ -37,4 +37,6 @@ const char kMagicStackTabResumptionEnabledHistogram[] =
     "IOS.HomeCustomization.MagicStack.TabResumption.Enabled";
 const char kMagicStackParcelTrackingEnabledHistogram[] =
     "IOS.HomeCustomization.MagicStack.ParcelTracking.Enabled";
+const char kMagicStackTipsEnabledHistogram[] =
+    "IOS.HomeCustomization.MagicStack.Tips.Enabled";
 const char kHomeCustomizationOpenedHistogram[] = "IOS.HomeCustomization.Opened";

@@ -8,6 +8,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -47,6 +48,7 @@
 #include "components/enterprise/connectors/core/connectors_prefs.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -241,7 +243,7 @@ class DeepScanningRequestTest : public testing::Test {
           temp_dir_.GetPath().AppendASCII(base::StrCat({file_name, ".tmp"}));
       base::File file(current_path,
                       base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-      UNSAFE_TODO(file.WriteAtCurrentPos(file_name, 7));
+      file.WriteAtCurrentPos(base::as_byte_span(std::string_view(file_name)));
       secondary_files_.push_back(current_path);
       secondary_files_targets_.push_back(final_path);
     }
@@ -254,8 +256,7 @@ class DeepScanningRequestTest : public testing::Test {
 
     base::File download(download_path_,
                         base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    UNSAFE_TODO(download.WriteAtCurrentPos(download_contents.c_str(),
-                                           download_contents.size()));
+    download.WriteAtCurrentPos(base::as_byte_span(download_contents));
     download.Close();
 
     EXPECT_CALL(item_, GetFullPath()).WillRepeatedly(ReturnRef(download_path_));
@@ -1744,38 +1745,39 @@ TEST_P(DeepScanningDownloadFailClosedTest, HandlesDefaultActionCorrectly) {
 
 class DeepScanningDownloadRestrictionsTest
     : public DeepScanningReportingTest,
-      public testing::WithParamInterface<DownloadPrefs::DownloadRestriction> {
+      public testing::WithParamInterface<policy::DownloadRestriction> {
  public:
   void SetUp() override {
     DeepScanningReportingTest::SetUp();
-    profile_->GetPrefs()->SetInteger(prefs::kDownloadRestrictions,
-                                     static_cast<int>(download_restriction()));
+    profile_->GetPrefs()->SetInteger(
+        policy::policy_prefs::kDownloadRestrictions,
+        static_cast<int>(download_restriction()));
   }
 
-  DownloadPrefs::DownloadRestriction download_restriction() const {
+  policy::DownloadRestriction download_restriction() const {
     return GetParam();
   }
 
   EventResult expected_event_result_for_malware() const {
     switch (download_restriction()) {
-      case DownloadPrefs::DownloadRestriction::NONE:
+      case policy::DownloadRestriction::NONE:
         return EventResult::WARNED;
-      case DownloadPrefs::DownloadRestriction::DANGEROUS_FILES:
-      case DownloadPrefs::DownloadRestriction::MALICIOUS_FILES:
-      case DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
-      case DownloadPrefs::DownloadRestriction::ALL_FILES:
+      case policy::DownloadRestriction::DANGEROUS_FILES:
+      case policy::DownloadRestriction::MALICIOUS_FILES:
+      case policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
+      case policy::DownloadRestriction::ALL_FILES:
         return EventResult::BLOCKED;
     }
   }
 
   EventResult expected_event_result_for_safe_large_file() const {
     switch (download_restriction()) {
-      case DownloadPrefs::DownloadRestriction::NONE:
-      case DownloadPrefs::DownloadRestriction::DANGEROUS_FILES:
-      case DownloadPrefs::DownloadRestriction::MALICIOUS_FILES:
-      case DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
+      case policy::DownloadRestriction::NONE:
+      case policy::DownloadRestriction::DANGEROUS_FILES:
+      case policy::DownloadRestriction::MALICIOUS_FILES:
+      case policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
         return EventResult::ALLOWED;
-      case DownloadPrefs::DownloadRestriction::ALL_FILES:
+      case policy::DownloadRestriction::ALL_FILES:
         return EventResult::BLOCKED;
     }
   }
@@ -1783,12 +1785,12 @@ class DeepScanningDownloadRestrictionsTest
   enterprise_connectors::ContentAnalysisAcknowledgement::FinalAction
   expected_final_action() const {
     switch (download_restriction()) {
-      case DownloadPrefs::DownloadRestriction::NONE:
+      case policy::DownloadRestriction::NONE:
         return enterprise_connectors::ContentAnalysisAcknowledgement::WARN;
-      case DownloadPrefs::DownloadRestriction::DANGEROUS_FILES:
-      case DownloadPrefs::DownloadRestriction::MALICIOUS_FILES:
-      case DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
-      case DownloadPrefs::DownloadRestriction::ALL_FILES:
+      case policy::DownloadRestriction::DANGEROUS_FILES:
+      case policy::DownloadRestriction::MALICIOUS_FILES:
+      case policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES:
+      case policy::DownloadRestriction::ALL_FILES:
         return enterprise_connectors::ContentAnalysisAcknowledgement::BLOCK;
     }
   }
@@ -1797,12 +1799,11 @@ class DeepScanningDownloadRestrictionsTest
 INSTANTIATE_TEST_SUITE_P(
     ,
     DeepScanningDownloadRestrictionsTest,
-    testing::Values(
-        DownloadPrefs::DownloadRestriction::NONE,
-        DownloadPrefs::DownloadRestriction::DANGEROUS_FILES,
-        DownloadPrefs::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES,
-        DownloadPrefs::DownloadRestriction::ALL_FILES,
-        DownloadPrefs::DownloadRestriction::MALICIOUS_FILES));
+    testing::Values(policy::DownloadRestriction::NONE,
+                    policy::DownloadRestriction::DANGEROUS_FILES,
+                    policy::DownloadRestriction::POTENTIALLY_DANGEROUS_FILES,
+                    policy::DownloadRestriction::ALL_FILES,
+                    policy::DownloadRestriction::MALICIOUS_FILES));
 
 TEST_P(DeepScanningDownloadRestrictionsTest, GeneratesCorrectReport) {
   enterprise_connectors::test::SetAnalysisConnector(

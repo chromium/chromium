@@ -25,3 +25,4 @@ include_rules = [
   "+mojo/core/embedder",
   "+services/cert_verifier",
 ]
+new_usages_require_review = True

@@ -23,10 +23,10 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.ui.test.util.MockitoHelper;
 
 /** Unit tests for {@link TabGroupUsageTracker}. */
@@ -38,18 +38,21 @@ public class TabGroupUsageTrackerUnitTest {
 
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabModelFilterProvider mTabModelFilterProvider;
-    @Mock private TabGroupModelFilter mRegularTabModelFilter;
-    @Mock private TabGroupModelFilter mIncognitoTabModelFilter;
+    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
+    @Mock private TabGroupModelFilter mRegularTabGroupModelFilter;
+    @Mock private TabGroupModelFilter mIncognitoTabGroupModelFilter;
 
     private TabGroupUsageTracker mUsageTracker;
     private boolean mIsWarmOnResume;
 
     @Before
     public void setUp() {
-        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
-        when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mRegularTabModelFilter);
-        when(mTabModelFilterProvider.getTabModelFilter(true)).thenReturn(mIncognitoTabModelFilter);
+        when(mTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mTabGroupModelFilterProvider);
+        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
+                .thenReturn(mRegularTabGroupModelFilter);
+        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(true))
+                .thenReturn(mIncognitoTabGroupModelFilter);
     }
 
     @After
@@ -68,8 +71,8 @@ public class TabGroupUsageTrackerUnitTest {
                         })
                 .when(mActivityLifecycleDispatcher)
                 .register(any());
-        when(mRegularTabModelFilter.getTabGroupCount()).thenReturn(regularGroups);
-        when(mIncognitoTabModelFilter.getTabGroupCount()).thenReturn(incognitoGroups);
+        when(mRegularTabGroupModelFilter.getTabGroupCount()).thenReturn(regularGroups);
+        when(mIncognitoTabGroupModelFilter.getTabGroupCount()).thenReturn(incognitoGroups);
         TabGroupUsageTracker.initialize(
                 mActivityLifecycleDispatcher, mTabModelSelector, () -> mIsWarmOnResume);
     }

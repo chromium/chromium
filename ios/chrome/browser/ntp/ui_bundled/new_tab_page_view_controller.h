@@ -43,7 +43,9 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 // Delegate for actions relating to the NTP content.
 @property(nonatomic, weak) id<NewTabPageContentDelegate> NTPContentDelegate;
 
-// The view controller representing the content suggestions.
+// The view controller representing the content suggestions. Will NOT be set if
+// 1) content suggestions would not be shown, or 2) would be a part of the magic
+// stack.
 @property(nonatomic, strong)
     ContentSuggestionsViewController* contentSuggestionsViewController;
 

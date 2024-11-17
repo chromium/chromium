@@ -2025,15 +2025,6 @@ class UnitTest(TestCase):
         'Attempted to generate a script test on tester.*'):
       fbb.check_output_file_consistency(verbose=True)
 
-  def test_junit_tests(self):
-    fbb = FakeBBGen(self.args,
-                    FOO_JUNIT_WATERFALL,
-                    GOOD_COMPOSITION_TEST_SUITES,
-                    LUCI_MILO_CFG,
-                    exceptions=NO_BAR_TEST_EXCEPTIONS)
-    fbb.check_output_file_consistency(verbose=True)
-    self.assertFalse(fbb.printed_lines)
-
   def test_gpu_telemetry_test_with_invalid_name(self):
     fbb = FakeBBGen(self.args,
                     FOO_GPU_TELEMETRY_TEST_WATERFALL,
@@ -2604,6 +2595,23 @@ FOO_TEST_SUITE_WITH_MIXIN = """\
 }
 """
 
+FOO_TEST_SUITE_WITH_TEST_COMMON = """\
+{
+  'basic_suites': {
+    'foo_tests': {
+      'foo_test': {
+        'test_common': {
+          'args': ['test-common-arg'],
+          'mixins': ['test-common-mixin'],
+        },
+        'args': ['test-arg'],
+        'mixins': ['test-mixin'],
+      },
+    },
+  },
+}
+"""
+
 MIXIN_ARGS = """\
 {
   'builder_mixin': {
@@ -2635,6 +2643,21 @@ MIXIN_APPEND = """\
     '$mixin_append': {
       'args': [ '--mixin-argument' ],
     },
+  },
+}
+"""
+
+MIXINS_FAIL_IF_UNUSED_FALSE = """\
+{
+  'test_mixin': {
+    'fail_if_unused': False,
+    'swarming': {
+      'value': 'test',
+    },
+  },
+  'unused_mixin': {
+    'fail_if_unused': False,
+    'args': ['--unused'],
   },
 }
 """
@@ -2721,6 +2744,17 @@ SWARMING_MIXINS_SORTED = """\
   },
   'c_mixin': {
     'c': 'c',
+  },
+}
+"""
+
+TEST_COMMON_MIXINS = """\
+{
+  'test-common-mixin': {
+    'args': ['test-common-mixin-arg'],
+  },
+  'test-mixin': {
+    'args': ['test-mixin-arg'],
   },
 }
 """
@@ -2857,6 +2891,15 @@ class MixinTests(TestCase):
       fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
 
+  def test_fail_if_unused_false(self):
+    fbb = FakeBBGen(self.args,
+                    FOO_GTESTS_WATERFALL,
+                    FOO_TEST_SUITE_WITH_MIXIN,
+                    LUCI_MILO_CFG,
+                    mixins=MIXINS_FAIL_IF_UNUSED_FALSE)
+    fbb.check_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
   def test_list(self):
     fbb = FakeBBGen(self.args,
                     FOO_GTESTS_INVALID_LIST_MIXIN_WATERFALL,
@@ -2866,7 +2909,6 @@ class MixinTests(TestCase):
     with self.assertRaises(generate_buildbot_json.BBGenErr):
       fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
-
 
   def test_no_duplicate_keys(self):
     fbb = FakeBBGen(self.args,
@@ -2990,6 +3032,16 @@ class MixinTests(TestCase):
                     mixins=SWARMING_MIXINS)
     fbb.check_output_file_consistency(verbose=True)
     self.assertFalse(fbb.printed_lines)
+
+  def test_test_common(self):
+    fbb = FakeBBGen(self.args,
+                    FOO_GTESTS_WATERFALL,
+                    FOO_TEST_SUITE_WITH_TEST_COMMON,
+                    LUCI_MILO_CFG,
+                    mixins=TEST_COMMON_MIXINS)
+    fbb.check_consistency(verbose=True)
+    self.assertFalse(fbb.printed_lines)
+
 
 TEST_SUITE_WITH_PARAMS = """\
 {
@@ -4315,7 +4367,6 @@ MATRIX_SKYLAB_WATERFALL = """\
         },
         'cros_board': 'octopus',
         'cros_dut_pool': 'chromium',
-        'run_cft': True,
       },
     },
   },
@@ -4336,7 +4387,6 @@ MATRIX_SKYLAB_WATERFALL_WITH_BUILD_TARGET_VARIANT = """\
         'cros_board': 'octopus',
         'cros_build_target': 'octopus-arc-t',
         'cros_dut_pool': 'chromium',
-        'run_cft': True,
       },
     },
   },

@@ -200,8 +200,7 @@ class CORE_EXPORT LocalFrameClientImpl final : public LocalFrameClient {
       HTMLMediaElement&,
       const WebMediaPlayerSource&,
       WebMediaPlayerClient*) override;
-  WebRemotePlaybackClient* CreateWebRemotePlaybackClient(
-      HTMLMediaElement&) override;
+  RemotePlaybackClient* CreateRemotePlaybackClient(HTMLMediaElement&) override;
   void DidChangeScrollOffset() override;
   void NotifyCurrentHistoryItemChanged() override;
   void DidUpdateCurrentHistoryItem() override;

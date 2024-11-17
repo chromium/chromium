@@ -165,10 +165,11 @@ void CastMediaRouteProvider::Init(
   receiver_.Bind(std::move(receiver));
   media_router_.Bind(std::move(media_router));
   media_router_->GetLogger(logger_.BindNewPipeAndPassReceiver());
+  media_router_->GetDebugger(debugger_.BindNewPipeAndPassReceiver());
 
   activity_manager_ = std::make_unique<CastActivityManager>(
       media_sink_service_, session_tracker, message_handler_,
-      media_router_.get(), logger_.get(), hash_token);
+      media_router_.get(), logger_, debugger_, hash_token);
 }
 
 CastMediaRouteProvider::~CastMediaRouteProvider() {
@@ -238,17 +239,7 @@ void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
   if (!activity_manager_) {
     // This should never happen, but it looks like maybe it does.  See
     // crbug.com/1114067.
-    NOTREACHED_IN_MIGRATION();
-    // This message will probably go unnoticed, but it's here to give some
-    // indication of what went wrong, since NOTREACHED() is compiled out of
-    // release builds.  It would be nice if we could log a message to |logger_|,
-    // but it's initialized in the same place as |activity_manager_|, so it's
-    // almost certainly not available here.
-    LOG(ERROR) << "missing activity manager";
-    std::move(callback).Run(std::nullopt, nullptr,
-                            "Internal error: missing activity manager",
-                            mojom::RouteRequestResultCode::UNKNOWN_ERROR);
-    return;
+    NOTREACHED();
   }
   activity_manager_->JoinSession(*cast_source, presentation_id, origin,
                                  content::FrameTreeNodeId(frame_tree_node_id),
@@ -269,8 +260,7 @@ void CastMediaRouteProvider::SendRouteMessage(const std::string& media_route_id,
 void CastMediaRouteProvider::SendRouteBinaryMessage(
     const std::string& media_route_id,
     const std::vector<uint8_t>& data) {
-  NOTREACHED_IN_MIGRATION()
-      << "Binary messages are not supported for Cast routes.";
+  NOTREACHED() << "Binary messages are not supported for Cast routes.";
 }
 
 void CastMediaRouteProvider::StartObservingMediaSinks(

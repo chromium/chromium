@@ -69,12 +69,9 @@
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_test_helper.h"
 #include "chrome/browser/ash/app_restore/app_restore_test_util.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/ash/system_web_apps/apps/os_url_handler_system_web_app_info.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -96,7 +93,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
-#include "chrome/test/base/chromeos/ash_browser_test_starter.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -307,12 +303,6 @@ webapps::AppId CreateHelpSystemWebApp(Profile* profile) {
                                        kHelpWindowId);
 }
 
-webapps::AppId CreateOsUrlHandlerSystemWebApp(Profile* profile,
-                                              const GURL& override_url) {
-  return ash::test::CreateOsUrlHandlerSystemWebApp(profile, kTestWindowId,
-                                                   override_url);
-}
-
 void SendKey(ui::KeyboardCode key_code) {
   ui::test::EventGenerator generator(ash::Shell::GetPrimaryRootWindow());
   ash::SendKey(key_code, &generator);
@@ -411,7 +401,9 @@ class MockDesksTemplatesAppLaunchHandler
     : public DesksTemplatesAppLaunchHandler {
  public:
   explicit MockDesksTemplatesAppLaunchHandler(Profile* profile)
-      : DesksTemplatesAppLaunchHandler(profile) {}
+      : DesksTemplatesAppLaunchHandler(
+            profile,
+            DesksTemplatesAppLaunchHandler::Type::kTemplate) {}
   MockDesksTemplatesAppLaunchHandler(
       const MockDesksTemplatesAppLaunchHandler&) = delete;
   MockDesksTemplatesAppLaunchHandler& operator=(
@@ -531,14 +523,10 @@ class DesksClientTest : public extensions::PlatformAppBrowserTest {
     // Suppress the multitask menu nudge as we'll be checking the stacking order
     // and the count of the active desk children.
     chromeos::MultitaskMenuNudgeController::SetSuppressNudgeForTesting(true);
-
-    OsUrlHandlerSystemWebAppDelegate::EnableDelegateForTesting(true);
   }
   DesksClientTest(const DesksClientTest&) = delete;
   DesksClientTest& operator=(const DesksClientTest&) = delete;
-  ~DesksClientTest() override {
-    OsUrlHandlerSystemWebAppDelegate::EnableDelegateForTesting(false);
-  }
+  ~DesksClientTest() override = default;
 
   // TODO(crbug.com/1286515): These functions will be removed with the
   // extension. Avoid further uses of this method and create or launch templates
@@ -1945,71 +1933,6 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUILaunchTemplateWithSWAExisting) {
   EXPECT_EQ(gfx::Rect(), help_window->layer()->clip_rect());
 }
 
-// Tests that when restoring the OsUrlHandler SWA, the override URL is restored
-// as expected. Regression test for crbug.com/1466634.
-IN_PROC_BROWSER_TEST_F(DesksClientTest, OsUrlHandlerSWARestoreTest) {
-  // Do not exit from test or delete the Profile* when last browser is closed.
-  ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
-                             KeepAliveRestartOption::DISABLED);
-  Profile* profile = browser()->profile();
-  ScopedProfileKeepAlive profile_keep_alive(
-      profile, ProfileKeepAliveOrigin::kBrowserWindow);
-
-  // Create the OsUrlHandler SWA.
-  constexpr char kOverrideUrl[] = "chrome://version";
-  CreateOsUrlHandlerSystemWebApp(browser()->profile(), GURL(kOverrideUrl));
-
-  aura::Window* url_handler_window = FindBrowserWindow(kTestWindowId);
-  ASSERT_TRUE(url_handler_window);
-  const std::u16string url_handler_title = url_handler_window->GetTitle();
-
-  // Enter overview and save the current desk as a template.
-  ash::ToggleOverview();
-  ash::WaitForOverviewEnterAnimation();
-
-  ClickSaveDeskAsTemplateButton();
-
-  // Exit overview and close the settings window. We'll need to verify if it
-  // reopens later.
-  ash::ToggleOverview();
-  ash::WaitForOverviewExitAnimation();
-
-  // Close both apps.
-  views::Widget::GetWidgetForNativeWindow(url_handler_window)->CloseNow();
-  ASSERT_FALSE(FindBrowserWindow(kTestWindowId));
-
-  // Enter overview, head over to the desks templates grid and launch the
-  // template.
-  ash::ToggleOverview();
-  ash::WaitForOverviewEnterAnimation();
-
-  ClickLibraryButton();
-
-  BrowsersAddedObserver browsers_added(/*num_browser_expected=*/2);
-  ClickFirstTemplateItem();
-  browsers_added.Wait();
-
-  url_handler_window = nullptr;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    aura::Window* window = browser->window()->GetNativeWindow();
-    const std::u16string title = window->GetTitle();
-    if (title == url_handler_title) {
-      url_handler_window = window;
-
-      // Ensure the kOverrideUrl is honored by the SWA after it is restored.
-      content::WebContents* active_contents =
-          browser->tab_strip_model()->GetActiveWebContents();
-      content::TestNavigationObserver navigation_observer(active_contents);
-      navigation_observer.Wait();
-      EXPECT_EQ(GURL(kOverrideUrl), active_contents->GetLastCommittedURL());
-    }
-  }
-  ASSERT_TRUE(url_handler_window);
-  EXPECT_EQ(ash::Shell::GetContainer(url_handler_window->GetRootWindow(),
-                                     ash::kShellWindowId_DeskContainerB),
-            url_handler_window->parent());
-}
-
 // Tests that browser windows created from a template have the correct bounds
 // and window state.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, SystemUIBrowserWindowRestorationTest) {
@@ -3063,194 +2986,6 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest,
           chrome_desks_util::kAppNotAvailableTemplateToastName));
 }
 
-class DesksTemplatesClientLacrosTest : public InProcessBrowserTest {
- public:
-  DesksTemplatesClientLacrosTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kDesksTemplates},
-        /*disabled_features=*/{ash::features::kDeskTemplateSync});
-  }
-  DesksTemplatesClientLacrosTest(const DesksTemplatesClientLacrosTest&) =
-      delete;
-  DesksTemplatesClientLacrosTest& operator=(
-      const DesksTemplatesClientLacrosTest&) = delete;
-  ~DesksTemplatesClientLacrosTest() override = default;
-
-  // InProcessBrowserTest:
-  void SetUpInProcessBrowserTestFixture() override {
-    if (!ash_starter_.HasLacrosArgument()) {
-      return;
-    }
-
-    ASSERT_TRUE(ash_starter_.PrepareEnvironmentForLacros());
-  }
-
-  void SetUpOnMainThread() override {
-    if (!ash_starter_.HasLacrosArgument()) {
-      return;
-    }
-
-    // `StartLacros()` will bring up one lacros browser. There will also be one
-    // classic browser from `InProcessBrowserTest` that can be accessed with
-    // `browser()`.
-    LacrosWindowWaiter waiter;
-    ash_starter_.StartLacros(this);
-    std::ignore = waiter.Wait(/*expected_count=*/1u);
-  }
-
- protected:
-  // Helper class which waits for lacros windows to become visible.
-  class LacrosWindowWaiter : public aura::WindowObserver {
-   public:
-    LacrosWindowWaiter() {
-      window_observation_.Observe(ash::Shell::GetPrimaryRootWindow());
-    }
-    LacrosWindowWaiter(const LacrosWindowWaiter&) = delete;
-    LacrosWindowWaiter& operator=(const LacrosWindowWaiter&) = delete;
-    ~LacrosWindowWaiter() override = default;
-
-    // Spins the loop and waits for `expected_count` number of lacros windows to
-    // become visible.
-    aura::Window::Windows Wait(size_t expected_count) {
-      DCHECK(windows_.empty());
-      DCHECK_GT(expected_count, 0u);
-
-      expected_count_ = expected_count;
-      run_loop_.Run();
-      return windows_;
-    }
-
-    // aura::WindowObserver::
-    void OnWindowVisibilityChanged(aura::Window* window,
-                                   bool visible) override {
-      if (!visible || !crosapi::browser_util::IsLacrosWindow(window)) {
-        return;
-      }
-
-      windows_.push_back(window);
-      if (windows_.size() < expected_count_) {
-        return;
-      }
-
-      run_loop_.Quit();
-    }
-
-   private:
-    size_t expected_count_ = 0u;
-
-    // The vector of lacros windows that where shown while waiting.
-    aura::Window::Windows windows_;
-
-    base::RunLoop run_loop_;
-
-    base::ScopedObservation<aura::Window, aura::WindowObserver>
-        window_observation_{this};
-  };
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-  test::AshBrowserTestStarter ash_starter_;
-};
-
-// Tests launching a template with a browser window.
-IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest, SystemUILaunchBrowser) {
-  if (!ash_starter_.HasLacrosArgument()) {
-    return;
-  }
-
-  ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
-
-  // Enter overview and save the current desk as a template. The current desk
-  // has one lacros browser.
-  ash::ToggleOverview();
-  ash::WaitForOverviewEnterAnimation();
-  ClickSaveDeskAsTemplateButton();
-
-  // Launch the saved desk template. We expect one launched lacros windows.
-  // Check the launched windows will have data in `app_restore::kWindowInfoKey`,
-  // otherwise ash does not know that they are launched from desk templates. See
-  // https://crbug.com/1333965 for more details.
-  LacrosWindowWaiter waiter;
-  ClickFirstTemplateItem();
-  aura::Window::Windows launched_windows = waiter.Wait(/*expected_count=*/1u);
-  ASSERT_EQ(1u, launched_windows.size());
-  for (aura::Window* window : launched_windows) {
-    EXPECT_TRUE(window->GetProperty(app_restore::kWindowInfoKey));
-  }
-
-  ash::ToggleOverview();
-  ash::WaitForOverviewExitAnimation();
-}
-
-// Tests that app browsers are captured correctly, coverage for launching
-// lacros browsers can be found in
-// c/b/lacros/desk_template_client_browsertest.cc This simply confirms that the
-// chrome desk client handles apps correctly when converting the returned mojom
-// from crosapi to app_launch_info.
-IN_PROC_BROWSER_TEST_F(DesksTemplatesClientLacrosTest,
-                       DISABLED_CapturesLacrosAppCorrectly) {
-  // Prevents test from running when running in a build without lacros.
-  if (!ash_starter_.HasLacrosArgument()) {
-    return;
-  }
-
-  ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
-
-  // Add our browser under test, this is the only way to launch an app
-  // via the BrowserManager.
-  crosapi::BrowserManager::Get()->CreateBrowserWithRestoredData(
-      {GURL(kExampleUrl1)}, {0, 0, 256, 256}, {},
-      ui::mojom::WindowShowState::kDefault,
-      /*active_tab_index=*/0, /*first_non_pinned_tab_index=*/0, kTestAppName,
-      kTestWindowId, /*lacros_profile_id=*/0);
-  LacrosWindowWaiter waiter;
-  aura::Window::Windows launched_windows = waiter.Wait(/*expected_count=*/1u);
-  ASSERT_EQ(1u, launched_windows.size());
-
-  // Enter overview and save the current desk as a template. The current desk
-  // has one lacros app and the default browser.
-  ash::ToggleOverview();
-  ash::WaitForOverviewEnterAnimation();
-  ClickSaveDeskAsTemplateButton();
-
-  // Grab all entries to assert.
-  const std::vector<raw_ptr<const ash::DeskTemplate, VectorExperimental>>
-      all_entries = GetAllEntries();
-  ASSERT_EQ(all_entries.size(), 1u);
-
-  // Since we only have one template grab the first one.
-  const app_restore::RestoreData* desk_restore_data =
-      all_entries[0]->desk_restore_data();
-  ASSERT_NE(desk_restore_data, nullptr);
-
-  // Through an exhaustive process of trial and error we cannot retrieve our
-  // desired window through any other means than running a search for the app
-  // name in the mapping of window ID's to app launch info.  There isn't a way,
-  // currently at least, within this test class or through the crosapi
-  // to close the default browser.  We can't use the test's class' close browser
-  // method either as both have been tried and failed to successfully close the
-  // window.  Furthermore obscuring the window from the capture logic doesn't
-  // seem to work in the testing logic either.  Simply using the window ID the
-  // browser was launched with doesn't work either because the window ID is
-  // changed on capture.
-  const auto& app_id_to_launch_list =
-      desk_restore_data->app_id_to_launch_list();
-  const auto& launch_list =
-      app_id_to_launch_list.at(app_constants::kLacrosAppId);
-  const app_restore::AppRestoreData* actual_app_data = nullptr;
-
-  for (const auto& it : launch_list) {
-    if (it.second->browser_extra_info.app_name.value_or("") == kTestAppName) {
-      actual_app_data = it.second.get();
-      break;
-    }
-  }
-  ASSERT_TRUE(actual_app_data);
-
-  // Finally assert we set the relevant fields properly.
-  EXPECT_THAT(actual_app_data->browser_extra_info.app_type_browser,
-              testing::Optional((true)));
-}
-
 using SaveAndRecallBrowserTest = DesksClientTest;
 
 IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
@@ -3324,20 +3059,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
 }
 // TODO(crbug.com/40228006): Add some tests to launch LaCros browser.
 
-class SnapGroupDesksClientTest : public DesksClientTest {
- public:
-  SnapGroupDesksClientTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kSnapGroup},
-        /*disabled_features=*/{});
-  }
-  SnapGroupDesksClientTest(const SnapGroupDesksClientTest&) = delete;
-  SnapGroupDesksClientTest& operator=(const SnapGroupDesksClientTest&) = delete;
-  ~SnapGroupDesksClientTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using SnapGroupDesksClientTest = DesksClientTest;
 
 IN_PROC_BROWSER_TEST_F(SnapGroupDesksClientTest, DesksTemplates) {
   // Create 1 other window to create a snap group.
@@ -3769,7 +3491,6 @@ class AdminTemplateTest : public extensions::PlatformAppBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(b/273803538): Add tests for lacros.
 IN_PROC_BROWSER_TEST_F(AdminTemplateTest, LaunchAdminTemplate) {
   // Launch an admin template with two browsers. Verifies that the browsers were
   // actually launched.  One browser will have an activation index, but it

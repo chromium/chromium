@@ -15,9 +15,9 @@ using content::BrowserThread;
 
 namespace prerender {
 
-NoStatePrefetchHandle::Observer::Observer() {}
+NoStatePrefetchHandle::Observer::Observer() = default;
 
-NoStatePrefetchHandle::Observer::~Observer() {}
+NoStatePrefetchHandle::Observer::~Observer() = default;
 
 NoStatePrefetchHandle::~NoStatePrefetchHandle() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

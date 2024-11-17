@@ -60,7 +60,7 @@ TEST(DigitallySignedTraitsTest, OutOfBoundsEnumsRejected) {
   original.signature_data.assign(32, '\x01');
 
   net::ct::DigitallySigned copied;
-  EXPECT_DCHECK_DEATH(
+  EXPECT_NOTREACHED_DEATH(
       mojo::test::SerializeAndDeserialize<mojom::DigitallySigned>(original,
                                                                   copied));
 }

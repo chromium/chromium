@@ -7,14 +7,20 @@
 #include <cstddef>
 #include <functional>
 #include <map>
+#include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/base64url.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
+#include "base/strings/stringprintf.h"
+#include "base/types/expected.h"
+#include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -28,6 +34,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
+#include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/origin.h"
 
@@ -40,6 +47,21 @@ const char kAdAuctionAdditionalBidResponseHeaderKey[] =
     "Ad-Auction-Additional-Bid";
 
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AdditionalBidHeaderType)
+enum class AdditionalBidHeaderType {
+  kAuctionNonce = 0,
+  kAuctionNonceAndSellerNonce = 1,
+  kMalformedHeaderWrongNumberOfColons = 2,
+  kMalformedHeaderWrongAuctionNonceSize = 3,
+  kMalformedHeaderWrongSellerNonceSize = 4,
+
+  kMaxValue = kMalformedHeaderWrongSellerNonceSize,
+};
+// LINT.ThenChange(//tools/metrics/histograms/enums.xml:AdditionalBidHeaderType)
 
 // Common conditions checked for eligibility in both
 //`IsAdAuctionHeadersEligible` and `IsAdAuctionHeadersEligibleForNavigation`.
@@ -70,7 +92,7 @@ bool IsAdAuctionHeadersEligibleInternal(Page& page,
   }
 
   if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
-          render_frame_host,
+          render_frame_host->GetBrowserContext(), render_frame_host,
           ContentBrowserClient::InterestGroupApiOperation::kSell,
           top_frame_origin, request_origin)) {
     base::UmaHistogramEnumeration(
@@ -185,25 +207,93 @@ std::vector<std::string> ParseAdAuctionResultResponseHeader(
 // this function simple and avoid adding custom logic.
 //
 // Fuzzer: ad_auction_headers_util_fuzzer
-void ParseAdAuctionAdditionalBidResponseHeader(
+base::expected<void, std::string> ParseAdAuctionAdditionalBidResponseHeader(
     const std::string& header_line,
-    std::map<std::string, std::vector<std::string>>&
+    std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>&
         nonce_additional_bids_map) {
-  // Skip if `header_line` doesn't match the format
+  // Skip if `header_line` doesn't match either the usual format:
+  //
+  // <36 characters auction nonce>:<36 characters seller nonce>:<base64-encoded
+  // signed additional bid>
+  //
+  // OR the legacy format:
+  //
   // <36 characters auction nonce>:<base64-encoded signed additional bid>
-  std::vector<std::string> nonce_and_additional_bid = base::SplitString(
+  std::vector<std::string> nonces_and_additional_bid = base::SplitString(
       header_line, ":", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  if (nonce_and_additional_bid.size() != 2) {
-    return;
-  }
+  constexpr size_t kNonceSize = 36u;
 
-  const std::string& nonce = nonce_and_additional_bid[0];
-  if (nonce.size() != 36) {
-    return;
-  }
-  const std::string& additional_bid = nonce_and_additional_bid[1];
+  if (base::FeatureList::IsEnabled(blink::features::kFledgeSellerNonce) &&
+      nonces_and_additional_bid.size() == 3u) {
+    std::string auction_nonce = std::move(nonces_and_additional_bid[0]);
+    if (auction_nonce.size() != kNonceSize) {
+      base::UmaHistogramEnumeration(
+          "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
+          AdditionalBidHeaderType::kMalformedHeaderWrongAuctionNonceSize);
+      return base::unexpected(base::StringPrintf(
+          "Malformed %s: The first colon-delimited part (the auction nonce) is "
+          "expected to be %zu characters in size (representing the canonical "
+          "representation of a UUIDv4), but was instead %zu characters. "
+          "Header received: %s",
+          kAdAuctionAdditionalBidResponseHeaderKey, kNonceSize,
+          auction_nonce.size(), header_line));
+    }
+    std::string seller_nonce = std::move(nonces_and_additional_bid[1]);
+    if (seller_nonce.size() != kNonceSize) {
+      base::UmaHistogramEnumeration(
+          "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
+          AdditionalBidHeaderType::kMalformedHeaderWrongSellerNonceSize);
+      return base::unexpected(base::StringPrintf(
+          "Malformed %s: The second colon-delimited part (the seller nonce) is "
+          "expected to be %zu characters in size (representing the canonical "
+          "representation of a UUIDv4), but was instead %zu characters. "
+          "Header received: %s",
+          kAdAuctionAdditionalBidResponseHeaderKey, kNonceSize,
+          seller_nonce.size(), header_line));
+    }
+    std::string additional_bid = std::move(nonces_and_additional_bid[2]);
 
-  nonce_additional_bids_map[nonce].push_back(additional_bid);
+    nonce_additional_bids_map[std::move(auction_nonce)].emplace_back(
+        /*signed_additional_bid=*/std::move(additional_bid),
+        /*seller_nonce=*/std::move(seller_nonce));
+
+    UMA_HISTOGRAM_ENUMERATION(
+        "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
+        AdditionalBidHeaderType::kAuctionNonceAndSellerNonce);
+  } else if (nonces_and_additional_bid.size() == 2u) {
+    std::string auction_nonce = std::move(nonces_and_additional_bid[0]);
+    if (auction_nonce.size() != kNonceSize) {
+      base::UmaHistogramEnumeration(
+          "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
+          AdditionalBidHeaderType::kMalformedHeaderWrongAuctionNonceSize);
+      return base::unexpected(base::StringPrintf(
+          "Malformed %s: The first colon-delimited part (the auction nonce) is "
+          "expected to be %zu characters in size (representing the canonical "
+          "representation of a UUIDv4), but was instead %zu characters. "
+          "Header received: %s",
+          kAdAuctionAdditionalBidResponseHeaderKey, kNonceSize,
+          auction_nonce.size(), header_line));
+    }
+    std::string additional_bid = std::move(nonces_and_additional_bid[1]);
+
+    nonce_additional_bids_map[std::move(auction_nonce)].emplace_back(
+        /*signed_additional_bid=*/std::move(additional_bid),
+        /*seller_nonce=*/std::nullopt);
+
+    UMA_HISTOGRAM_ENUMERATION(
+        "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
+        AdditionalBidHeaderType::kAuctionNonce);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Ads.InterestGroup.Auction.AdditionalBids.HeaderReceived",
+        AdditionalBidHeaderType::kMalformedHeaderWrongNumberOfColons);
+    return base::unexpected(base::StringPrintf(
+        "Malformed %s: Expected two or three colon-delimited parts, but "
+        "instead received %zu. Header received: %s",
+        kAdAuctionAdditionalBidResponseHeaderKey,
+        nonces_and_additional_bid.size(), header_line));
+  }
+  return base::ok();
 }
 
 // NOTE: This function processes untrusted content, in an unsafe language, from
@@ -212,21 +302,20 @@ void ParseAdAuctionAdditionalBidResponseHeader(
 // by fuzz tests.
 void ProcessAdAuctionResponseHeaders(
     const url::Origin& request_origin,
-    Page& page,
+    RenderFrameHostImpl& rfh,
     scoped_refptr<net::HttpResponseHeaders> headers) {
   if (!headers) {
     return;
   }
   AdAuctionPageData* ad_auction_page_data =
-      PageUserData<AdAuctionPageData>::GetOrCreateForPage(page);
+      PageUserData<AdAuctionPageData>::GetOrCreateForPage(rfh.GetPage());
 
   if (base::FeatureList::IsEnabled(
           blink::features::kFledgeBiddingAndAuctionServer)) {
-    std::string ad_auction_results;
-    if (headers->GetNormalizedHeader(kAdAuctionResultResponseHeaderKey,
-                                     &ad_auction_results)) {
+    if (std::optional<std::string> ad_auction_results =
+            headers->GetNormalizedHeader(kAdAuctionResultResponseHeaderKey)) {
       for (const std::string& parsed_result :
-           ParseAdAuctionResultResponseHeader(ad_auction_results)) {
+           ParseAdAuctionResultResponseHeader(*ad_auction_results)) {
         ad_auction_page_data->AddAuctionResultWitnessForOrigin(request_origin,
                                                                parsed_result);
       }
@@ -235,30 +324,36 @@ void ProcessAdAuctionResponseHeaders(
   // We intentionally leave the `Ad-Auction-Result` response header in place.
 
   if (base::FeatureList::IsEnabled(blink::features::kAdAuctionSignals)) {
-    std::string ad_auction_signals;
-    if (headers->GetNormalizedHeader(kAdAuctionSignalsResponseHeaderKey,
-                                     &ad_auction_signals)) {
-      if (ad_auction_signals.size() <=
+    if (std::optional<std::string> ad_auction_signals =
+            headers->GetNormalizedHeader(kAdAuctionSignalsResponseHeaderKey)) {
+      if (ad_auction_signals->size() <=
           static_cast<size_t>(
               blink::features::kAdAuctionSignalsMaxSizeBytes.Get())) {
         ad_auction_page_data->AddAuctionSignalsWitnessForOrigin(
-            request_origin, ad_auction_signals);
+            request_origin, *ad_auction_signals);
       }
     }
   }
   headers->RemoveHeader(kAdAuctionSignalsResponseHeaderKey);
 
-  std::map<std::string, std::vector<std::string>> nonce_additional_bids_map;
+  std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>
+      nonce_additional_bids_map;
   size_t iter = 0;
   std::string header_line;
   while (headers->EnumerateHeader(
       &iter, kAdAuctionAdditionalBidResponseHeaderKey, &header_line)) {
-    ParseAdAuctionAdditionalBidResponseHeader(header_line,
-                                              nonce_additional_bids_map);
+    base::expected<void, std::string> result =
+        ParseAdAuctionAdditionalBidResponseHeader(header_line,
+                                                  nonce_additional_bids_map);
+    if (!result.has_value()) {
+      devtools_instrumentation::LogWorkletMessage(
+          rfh, blink::mojom::ConsoleMessageLevel::kError,
+          std::move(result).error());
+    }
   }
   if (!nonce_additional_bids_map.empty()) {
     ad_auction_page_data->AddAuctionAdditionalBidsWitnessForOrigin(
-        request_origin, nonce_additional_bids_map);
+        request_origin, std::move(nonce_additional_bids_map));
   }
   headers->RemoveHeader(kAdAuctionAdditionalBidResponseHeaderKey);
 }

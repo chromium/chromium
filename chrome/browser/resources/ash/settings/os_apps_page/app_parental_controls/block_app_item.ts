@@ -6,7 +6,7 @@ import '../../settings_shared.css.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {App, AppParentalControlsHandlerInterface} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
+import type {App, AppParentalControlsHandlerInterface} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
 
 import {getTemplate} from './block_app_item.html.js';
 import {getAppParentalControlsProvider} from './mojo_interface_provider.js';

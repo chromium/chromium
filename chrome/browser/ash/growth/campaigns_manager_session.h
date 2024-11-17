@@ -7,9 +7,12 @@
 
 #include <string_view>
 
+#include "ash/shell.h"
+#include "ash/shell_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -26,6 +29,8 @@ class Profile;
 // observe related components changes to conditionally trigger proactive growth
 // slots.
 class CampaignsManagerSession : public session_manager::SessionManagerObserver,
+                                public ash::ShellObserver,
+                                public chromeos::PowerManagerClient::Observer,
                                 public apps::InstanceRegistry::Observer {
  public:
   CampaignsManagerSession();
@@ -42,6 +47,12 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
   void OnInstanceUpdate(const apps::InstanceUpdate& update) override;
   void OnInstanceRegistryWillBeDestroyed(
       apps::InstanceRegistry* cache) override;
+
+  // ShellObserver:
+  void OnShellDestroying() override;
+
+  // chromeos::PowerManagerClient::Observer:
+  void SuspendDone(base::TimeDelta sleep_duration) override;
 
   void PrimaryPageChanged(const content::WebContents* web_contents);
 
@@ -79,9 +90,17 @@ class CampaignsManagerSession : public session_manager::SessionManagerObserver,
 
   void MaybeTriggerCampaignsWhenAppOpened();
 
+  void RecordSessionUnlockEvent();
+
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_manager_observation_{this};
+
+  base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observer_{this};
+
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_client_observer_{this};
 
   base::ScopedObservation<apps::InstanceRegistry,
                           apps::InstanceRegistry::Observer>

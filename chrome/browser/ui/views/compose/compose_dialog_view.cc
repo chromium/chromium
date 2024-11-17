@@ -5,14 +5,15 @@
 #include "chrome/browser/ui/views/compose/compose_dialog_view.h"
 
 #include <vector>
+
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "components/compose/core/browser/config.h"
 #include "components/renderer_context_menu/context_menu_delegate.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view_class_properties.h"

@@ -11,6 +11,7 @@ html {
   --iron-icon-width: 20px;
   --viewer-border-color: rgb(94, 94, 94);
 <if expr="enable_pdf_ink2">
+  --viewer-icon-ink-background-color: rgb(143, 143, 143);
   --viewer-icon-ink-fill-color: rgb(199, 199, 199);
   --viewer-icon-ink-selected-fill-color: rgb(168, 199, 250);
   --viewer-icon-ink-selected-background-color: rgba(76, 141, 246, 0.32);

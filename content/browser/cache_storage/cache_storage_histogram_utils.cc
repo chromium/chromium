@@ -77,8 +77,7 @@ std::string_view OpToName(CacheStorageSchedulerOp op_type) {
     case CacheStorageSchedulerOp::kSizeThenClose:
       RETURN_LITERAL_STRING_PIECE("SizeThenClose");
     case CacheStorageSchedulerOp::kTest:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
     case CacheStorageSchedulerOp::kWriteIndex:
       RETURN_LITERAL_STRING_PIECE("WriteIndex");
     case CacheStorageSchedulerOp::kWriteSideData:

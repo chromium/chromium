@@ -147,8 +147,7 @@ class ImageTransferCacheEntryTest
                       CreateSolidPlane(gr_context(), 32, 32, GL_RG8_EXT,
                                        SkColors::kWhite, &release_flags[1])};
     } else {
-      NOTREACHED_IN_MIGRATION();
-      return {};
+      NOTREACHED();
     }
     if (!base::Contains(plane_images, nullptr)) {
       return plane_images;
@@ -248,8 +247,7 @@ TEST_P(ImageTransferCacheEntryTest, MAYBE_Deserialize) {
   ASSERT_TRUE(yuva_pixmaps.plane(0).erase(SkColors::kBlack, &top_color_rect));
 
   auto client_entry(std::make_unique<ClientImageTransferCacheEntry>(
-      ClientImageTransferCacheEntry::Image(yuva_pixmaps.planes().data(),
-                                           yuva_info,
+      ClientImageTransferCacheEntry::Image(yuva_pixmaps.planes(), yuva_info,
                                            nullptr /* decoded color space*/),
       true /* needs_mips */, std::nullopt));
   uint32_t size = client_entry->SerializedSize();
@@ -381,8 +379,7 @@ std::string TestParamToString(
     case SkYUVAInfo::PlaneConfig::kY_UV:
       return "Y_UV";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 

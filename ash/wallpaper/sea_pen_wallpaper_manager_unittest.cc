@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <utility>
 #include <vector>
 
 #include "ash/constants/ash_pref_names.h"
@@ -16,6 +17,7 @@
 #include "ash/wallpaper/wallpaper_utils/sea_pen_metadata_utils.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_file_utils.h"
 #include "ash/webui/common/mojom/sea_pen.mojom.h"
+#include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -52,9 +54,12 @@ SkBitmap CreateBitmap(SkColor color = kDefaultImageColor) {
 
 std::string CreateJpgBytes(SkColor color = kDefaultImageColor) {
   SkBitmap bitmap = CreateBitmap(color);
-  std::vector<unsigned char> data;
-  gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &data);
-  return std::string(data.begin(), data.end());
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(bitmap, /*quality=*/100);
+  if (!data) {
+    return std::string();
+  }
+  return std::string(base::as_string_view(data.value()));
 }
 
 base::subtle::ScopedTimeClockOverrides CreateScopedTimeNowOverride() {
@@ -629,72 +634,6 @@ TEST_F(SeaPenWallpaperManagerTest, DeleteImageForOtherUserFails) {
   // Image still exists for other account id.
   ASSERT_TRUE(
       base::PathExists(GetFilePathForImageId(other_account_id, image_id)));
-}
-
-TEST_F(SeaPenWallpaperManagerTest, MigrateMovesFiles) {
-  SetUpMigrationSourceDir(kAccountId1);
-  ASSERT_TRUE(base::PathExists(GetMigrationSourceDir(kAccountId1)));
-
-  base::test::TestFuture<bool> migrate_sea_pen_files_if_necessary_future;
-  sea_pen_wallpaper_manager()->Migrate(
-      kAccountId1, GetMigrationSourceDir(kAccountId1),
-      migrate_sea_pen_files_if_necessary_future.GetCallback());
-  EXPECT_TRUE(migrate_sea_pen_files_if_necessary_future.Get());
-
-  std::string migrated_file_contents;
-  EXPECT_TRUE(
-      base::ReadFileToString(sea_pen_wallpaper_manager_session_delegate()
-                                 ->GetStorageDirectory(kAccountId1)
-                                 .Append("12345.jpg"),
-                             &migrated_file_contents));
-  EXPECT_EQ(kExpectedMigrationFileContents, migrated_file_contents);
-
-  EXPECT_FALSE(base::PathExists(GetMigrationSourceDir(kAccountId1)));
-
-  base::test::TestFuture<const std::vector<uint32_t>&> get_image_ids_future;
-  sea_pen_wallpaper_manager()->GetImageIds(kAccountId1,
-                                           get_image_ids_future.GetCallback());
-
-  EXPECT_EQ(std::vector<uint32_t>{12345}, get_image_ids_future.Get());
-}
-
-TEST_F(SeaPenWallpaperManagerTest, MigrateWritesPrefs) {
-  EXPECT_EQ(
-      SeaPenWallpaperManager::MigrationStatus::kNotStarted,
-      static_cast<SeaPenWallpaperManager::MigrationStatus>(
-          sea_pen_wallpaper_manager_session_delegate()
-              ->GetPrefService(kAccountId1)
-              ->GetInteger(::ash::prefs::kWallpaperSeaPenMigrationStatus)));
-
-  base::ScopedTempDir source_dir;
-  ASSERT_TRUE(source_dir.CreateUniqueTempDir());
-
-  const base::FilePath source_subdir =
-      source_dir.GetPath().Append(kAccountId1.GetAccountIdKey());
-  ASSERT_TRUE(base::CreateDirectory(source_subdir));
-
-  base::test::TestFuture<bool> migrate_sea_pen_files_if_necessary_future;
-
-  sea_pen_wallpaper_manager()->Migrate(
-      kAccountId1, source_subdir,
-      migrate_sea_pen_files_if_necessary_future.GetCallback());
-
-  EXPECT_EQ(
-      SeaPenWallpaperManager::MigrationStatus::kCrashed,
-      static_cast<SeaPenWallpaperManager::MigrationStatus>(
-          sea_pen_wallpaper_manager_session_delegate()
-              ->GetPrefService(kAccountId1)
-              ->GetInteger(::ash::prefs::kWallpaperSeaPenMigrationStatus)))
-      << "kCrashed should have been written as migration started";
-
-  EXPECT_TRUE(migrate_sea_pen_files_if_necessary_future.Get());
-
-  EXPECT_EQ(
-      SeaPenWallpaperManager::MigrationStatus::kSuccess,
-      static_cast<SeaPenWallpaperManager::MigrationStatus>(
-          sea_pen_wallpaper_manager_session_delegate()
-              ->GetPrefService(kAccountId1)
-              ->GetInteger(::ash::prefs::kWallpaperSeaPenMigrationStatus)));
 }
 
 }  // namespace

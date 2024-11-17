@@ -252,6 +252,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/policy/core:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/login",
     "//chrome/browser/ui/webui/ash/os_feedback_dialog",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
     "//chrome/common:constants",

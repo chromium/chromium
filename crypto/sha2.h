@@ -19,6 +19,9 @@ namespace crypto {
 // These functions perform SHA-256 operations.
 //
 // Functions for SHA-384 and SHA-512 can be added when the need arises.
+//
+// Deprecated: use the interface in crypto/hash.h instead.
+// TODO(https://issues.chromium.org/issues/374310081): Delete these.
 
 static const size_t kSHA256Length = 32;  // Length in bytes of a SHA-256 hash.
 

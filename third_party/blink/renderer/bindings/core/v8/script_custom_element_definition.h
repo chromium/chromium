@@ -43,6 +43,7 @@ class CORE_EXPORT ScriptCustomElementDefinition final
 
   bool HasConnectedCallback() const override;
   bool HasDisconnectedCallback() const override;
+  bool HasConnectedMoveCallback() const override;
   bool HasAdoptedCallback() const override;
   bool HasFormAssociatedCallback() const override;
   bool HasFormResetCallback() const override;
@@ -51,6 +52,7 @@ class CORE_EXPORT ScriptCustomElementDefinition final
 
   void RunConnectedCallback(Element&) override;
   void RunDisconnectedCallback(Element&) override;
+  void RunConnectedMoveCallback(Element&) override;
   void RunAdoptedCallback(Element&,
                           Document& old_owner,
                           Document& new_owner) override;
@@ -81,6 +83,7 @@ class CORE_EXPORT ScriptCustomElementDefinition final
   Member<V8CustomElementConstructor> constructor_;
   Member<V8VoidFunction> connected_callback_;
   Member<V8VoidFunction> disconnected_callback_;
+  Member<V8VoidFunction> connected_move_callback_;
   Member<V8CustomElementAdoptedCallback> adopted_callback_;
   Member<V8CustomElementAttributeChangedCallback> attribute_changed_callback_;
   Member<V8CustomElementFormAssociatedCallback> form_associated_callback_;

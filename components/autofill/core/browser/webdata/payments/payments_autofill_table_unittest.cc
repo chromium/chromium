@@ -705,8 +705,10 @@ TEST_F(PaymentsAutofillTableTest, UpdateCreditCardOriginOnly) {
 TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
   for (bool is_cvc_storage_flag_enabled : {true, false}) {
     base::test::ScopedFeatureList feature;
-    feature.InitWithFeatureState(features::kAutofillEnableCvcStorageAndFilling,
-                                 is_cvc_storage_flag_enabled);
+    feature.InitWithFeatureStates(
+        {{features::kAutofillEnableCvcStorageAndFilling,
+          is_cvc_storage_flag_enabled},
+         {features::kAutofillEnableCardInfoRuntimeRetrieval, true}});
 
     std::vector<CreditCard> inputs;
     inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
@@ -723,6 +725,9 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
         CreditCard::VirtualCardEnrollmentType::kIssuer);
     inputs[0].set_product_description(u"Fake description");
     inputs[0].set_cvc(u"000");
+    inputs[0].set_card_info_retrieval_enrollment_state(
+        CreditCard::CardInfoRetrievalEnrollmentState::
+            kRetrievalUnenrolledAndNotEligible);
 
     inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b456");
     inputs[1].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Rick Roman");
@@ -742,6 +747,8 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
     inputs[1].set_card_art_url(GURL("https://www.example.com"));
     inputs[1].set_product_terms_url(GURL("https://www.example_term.com"));
     inputs[1].set_cvc(u"111");
+    inputs[1].set_card_info_retrieval_enrollment_state(
+        CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
 
     // The CVC modification dates are set to `now` during insertion.
     const time_t now = base::Time::Now().ToTimeT();
@@ -816,6 +823,63 @@ TEST_F(PaymentsAutofillTableTest, SetGetServerCards) {
       EXPECT_EQ(now, outputs[1]->cvc_modification_date().ToTimeT());
     }
   }
+}
+
+TEST_F(PaymentsAutofillTableTest, SetGetCardInfoEnrollmentState) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(
+      features::kAutofillEnableCardInfoRuntimeRetrieval);
+  std::vector<CreditCard> inputs;
+  inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
+  inputs[0].set_instrument_id(321);
+  inputs[0].set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndNotEligible);
+
+  inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b456");
+  inputs[1].set_instrument_id(123);
+  inputs[1].set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+
+  test::SetServerCreditCards(table_.get(), inputs);
+
+  std::vector<std::unique_ptr<CreditCard>> outputs;
+  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
+  ASSERT_EQ(inputs.size(), outputs.size());
+
+  EXPECT_EQ(CreditCard::CardInfoRetrievalEnrollmentState::
+                kRetrievalUnenrolledAndNotEligible,
+            outputs[0]->card_info_retrieval_enrollment_state());
+  EXPECT_EQ(CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled,
+            outputs[1]->card_info_retrieval_enrollment_state());
+}
+
+TEST_F(PaymentsAutofillTableTest, SetGetCardInfoEnrollmentStateWithFlagOff) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndDisableFeature(
+      features::kAutofillEnableCardInfoRuntimeRetrieval);
+  std::vector<CreditCard> inputs;
+  inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
+  inputs[0].set_instrument_id(321);
+  inputs[0].set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndNotEligible);
+
+  inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "b456");
+  inputs[1].set_instrument_id(123);
+  inputs[1].set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+
+  test::SetServerCreditCards(table_.get(), inputs);
+
+  std::vector<std::unique_ptr<CreditCard>> outputs;
+  ASSERT_TRUE(table_->GetServerCreditCards(outputs));
+  ASSERT_EQ(inputs.size(), outputs.size());
+
+  EXPECT_EQ(CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified,
+            outputs[0]->card_info_retrieval_enrollment_state());
+  EXPECT_EQ(CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified,
+            outputs[1]->card_info_retrieval_enrollment_state());
 }
 
 TEST_F(PaymentsAutofillTableTest, SetGetRemoveServerCardMetadata) {
@@ -983,6 +1047,9 @@ TEST_F(PaymentsAutofillTableTest, RemoveWrongServerCardMetadata) {
 
 TEST_F(PaymentsAutofillTableTest, SetServerCardsData) {
   // Set a card data.
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(
+      features::kAutofillEnableCardInfoRuntimeRetrieval);
   std::vector<CreditCard> inputs;
   inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "card1");
   inputs[0].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Rick Roman");
@@ -1001,6 +1068,8 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardsData) {
   inputs[0].set_card_art_url(GURL("https://www.example.com"));
   inputs[0].set_product_terms_url(GURL("https://www.example_term.com"));
   inputs[0].set_product_description(u"Fake description");
+  inputs[0].set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
 
   table_->SetServerCardsData(inputs);
 
@@ -1030,6 +1099,8 @@ TEST_F(PaymentsAutofillTableTest, SetServerCardsData) {
   EXPECT_EQ(GURL("https://www.example_term.com"),
             outputs[0]->product_terms_url());
   EXPECT_EQ(u"Fake description", outputs[0]->product_description());
+  EXPECT_EQ(CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled,
+            outputs[0]->card_info_retrieval_enrollment_state());
 
   // Make sure no metadata was added.
   std::vector<PaymentsMetadata> metadata;
@@ -1719,6 +1790,45 @@ TEST_F(PaymentsAutofillTableTest,
   EXPECT_EQ(payment_instrument.iban().suffix(), table_iban.suffix());
   EXPECT_EQ(payment_instrument.iban().length(), table_iban.length());
   EXPECT_EQ(payment_instrument.iban().nickname(), table_iban.nickname());
+}
+
+TEST_F(PaymentsAutofillTableTest,
+       PaymentInstrument_StoresPaymentInstrumentWithEwalletAccount) {
+  // Add an eWallet payment instrument to the table.
+  sync_pb::PaymentInstrument payment_instrument =
+      test::CreatePaymentInstrumentWithEwalletAccount(1234);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments{
+      payment_instrument};
+  table_->SetPaymentInstruments(payment_instruments);
+
+  // Retrieve the payment instruments.
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_from_table;
+  table_->GetPaymentInstruments(payment_instruments_from_table);
+
+  // Check that the payment instruments are equal.
+  ASSERT_EQ(payment_instruments_from_table.size(), 1u);
+  EXPECT_EQ(payment_instrument.instrument_id(),
+            payment_instruments_from_table[0].instrument_id());
+  EXPECT_EQ(
+      payment_instrument.device_details().is_fido_enrolled(),
+      payment_instruments_from_table[0].device_details().is_fido_enrolled());
+  const sync_pb::EwalletDetails& table_ewallet =
+      payment_instruments_from_table[0].ewallet_details();
+  EXPECT_EQ(payment_instrument.ewallet_details().ewallet_name(),
+            table_ewallet.ewallet_name());
+  EXPECT_EQ(payment_instrument.ewallet_details().account_display_name(),
+            table_ewallet.account_display_name());
+  EXPECT_EQ(
+      payment_instrument.ewallet_details().supported_payment_link_uris().size(),
+      table_ewallet.supported_payment_link_uris().size());
+  for (int i = 0; i < payment_instrument.ewallet_details()
+                          .supported_payment_link_uris()
+                          .size();
+       ++i) {
+    EXPECT_EQ(
+        payment_instrument.ewallet_details().supported_payment_link_uris()[i],
+        table_ewallet.supported_payment_link_uris()[i]);
+  }
 }
 
 TEST_F(PaymentsAutofillTableTest,

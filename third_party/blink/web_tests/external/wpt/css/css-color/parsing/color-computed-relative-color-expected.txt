@@ -1,11 +1,5 @@
 This is a testharness.js-based test.
-Found 18 FAIL, 0 TIMEOUT, 0 NOTRUN.
-[FAIL] Property color value 'color-mix(in srgb, rgb(from rebeccapurple none g b), rebeccapurple)'
-  Colors do not match.\nActual:   color(srgb 0.2 0.2 0.6)\nExpected: color(srgb 0.4 0.2 0.6).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.4 +/- 0.01, expected 0.4 but got 0.2
-[FAIL] Property color value 'color-mix(in hsl, hsl(from rebeccapurple none s l), rebeccapurple)'
-  Colors do not match.\nActual:   color(srgb 0.6 0.2 0.5)\nExpected: color(srgb 0.4 0.2 0.6).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.4 +/- 0.01, expected 0.4 but got 0.6
-[FAIL] Property color value 'color-mix(in hwb, hwb(from rebeccapurple none w b), rebeccapurple)'
-  Colors do not match.\nActual:   color(srgb 0.6 0.2 0.5)\nExpected: color(srgb 0.4 0.2 0.6).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.4 +/- 0.01, expected 0.4 but got 0.6
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Property color value 'lch(from color(srgb 0.25 0.5 0.75) l c h)'
   Colors do not match.\nActual:   lch(51.4265 40.4863 262.601)\nExpected: lch(51.4321 40.4828 262.58).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 2, expected 262.58 +/- 0.02, expected 262.58 but got 262.601
 [FAIL] Property color value 'color(from rgb(from color(xyz-d50 0.99 0.88 0.77) r g b) xyz-d50 x y z)'

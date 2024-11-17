@@ -12,7 +12,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
-import org.chromium.build.BuildConfig;
 import org.chromium.ui.base.ResourceBundle;
 
 /**
@@ -41,8 +40,6 @@ public class CastApplication extends Application {
     }
 
     private static boolean isBrowserProcess() {
-        return BuildConfig.IS_BUNDLE
-                ? ContextUtils.getProcessName().contains("cast_browser_process")
-                : !ContextUtils.getProcessName().contains(":");
+        return ContextUtils.getProcessName().contains("cast_browser_process");
     }
 }

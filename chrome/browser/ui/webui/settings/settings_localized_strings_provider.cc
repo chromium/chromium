@@ -24,6 +24,8 @@
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/obsolete_system/obsolete_system.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/performance_manager/public/user_tuning/battery_saver_mode_manager.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
@@ -35,10 +37,8 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/managed_ui.h"
-#include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -69,25 +69,27 @@
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
-#include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
+#include "components/autofill_ai/core/browser/autofill_ai_features.h"
+#include "components/commerce/core/commerce_constants.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/google/core/common/google_util.h"
 #include "components/history/core/common/pref_names.h"
-#include "components/omnibox/common/omnibox_features.h"
+#include "components/history_embeddings/history_embeddings_features.h"
 #include "components/password_manager/core/browser/leak_detection_dialog_utils.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/performance_manager/public/features.h"
 #include "components/permissions/features.h"
 #include "components/plus_addresses/features.h"
+#include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/hashprefix_realtime/hash_realtime_utils.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
-#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -95,6 +97,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_service_utils.h"
@@ -119,10 +122,6 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/strings/grit/ui_strings.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
@@ -144,7 +143,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #endif
 
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #include "ui/display/screen.h"
 #endif
 
@@ -213,6 +212,7 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
       {"sendFeedbackButton", IDS_SETTINGS_SEND_FEEDBACK_ROLE_DESCRIPTION},
       {"columnHeadingWhenOn", IDS_SETTINGS_COLUMN_HEADING_WHEN_ON},
       {"columnHeadingConsider", IDS_SETTINGS_COLUMN_HEADING_CONSIDER},
+      {"columnHeadingWhenUsed", IDS_SETTINGS_COLUMN_HEADING_WHEN_USED},
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
       {"relaunchConfirmationDialogTitle",
        IDS_RELAUNCH_CONFIRMATION_DIALOG_TITLE},
@@ -254,10 +254,6 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
           user_manager::UserManager::Get()->IsLoggedInAsManagedGuestSession());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-      chromeos::BrowserParamsProxy::Get()->SessionType() ==
-              crosapi::mojom::SessionType::kPublicSession ||
-          profile->IsGuestSession());
 #else
                           profile->IsGuestSession());
 #endif
@@ -368,6 +364,147 @@ void AddAboutStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #endif
 }
 
+void AddAiStrings(content::WebUIDataSource* html_source) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"aiPageTitle", IDS_SETTINGS_AI_PAGE_TITLE},
+      {"aiInnovationsPageTitle", IDS_SETTINGS_AI_INNOVATIONS_PAGE_TITLE},
+      {"aiPageMainTitle", IDS_SETTINGS_AI_PAGE_MAIN_TITLE},
+      {"aiPageMainSublabel1", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL_1},
+      {"aiPageMainSublabel2", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL_2},
+      {"aiPageMainSublabel3", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL_3},
+      {"aiSubpageSublabelAi", IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_AI},
+      {"aiSubpageSublabelReviewers",
+       IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_REVIEWERS},
+      {"aiSubpageSublabelLoggingManagedDisabled",
+       IDS_SETTINGS_AI_SUBPAGE_SUBLABEL_LOGGING_MANAGED_DISABLED},
+
+      // History search strings.
+      {"historySearchSettingLabel", IDS_SETTINGS_HISTORY_SEARCH_SETTING_LABEL},
+      {"historySearchSettingSublabel",
+       IDS_SETTINGS_HISTORY_SEARCH_SETTING_SUBLABEL},
+      {"historySearchSettingSublabelV2",
+       IDS_SETTINGS_HISTORY_SEARCH_SETTING_SUBLABEL_V2},
+      {"historySearchWhenOnBulletOne",
+       IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_BULLET_ONE},
+      {"historySearchConsiderBulletOne",
+       IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_ONE},
+      {"historySearchConsiderBulletTwo",
+       IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_TWO},
+      {"historySearchAnswersSettingSublabel",
+       IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_SETTING_SUBLABEL},
+      {"historySearchAnswersWhenOnBulletOne",
+       IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_WHEN_ON_BULLET_ONE},
+      {"historySearchAnswersWhenOnBulletTwo",
+       IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_WHEN_ON_BULLET_TWO},
+      {"historySearchAnswersConsiderBulletOne",
+       IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_CONSIDER_BULLET_ONE},
+      {"historySearchAnswersConsiderBulletTwo",
+       IDS_SETTINGS_HISTORY_SEARCH_ANSWERS_CONSIDER_BULLET_TWO},
+      {"historySearchWhenOnPageContent",
+       IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_PAGE_CONTENT},
+      {"historySearchWhenOnSearchFrom",
+       IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_SEARCH_FROM},
+      {"historySearchConsiderData", IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_DATA},
+      {"historySearchConsiderDataEncrypted",
+       IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_DATA_ENCRYPTED},
+      {"historySearchLearnMoreA11yLabel",
+       IDS_SETTINGS_HISTORY_SEARCH_LEARN_MORE_A11Y_LABEL},
+      {"historySearchSublabelOn", IDS_SETTINGS_HISTORY_SEARCH_SUBLABEL_ON},
+      {"historySearchSublabelOff", IDS_SETTINGS_HISTORY_SEARCH_SUBLABEL_OFF},
+      {"historySearchWithAnswersSettingSublabelV2",
+       IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SETTING_SUBLABEL_V2},
+      {"historySearchWithAnswersWhenOnPageContent",
+       IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_WHEN_ON_PAGE_CONTENT},
+      {"historySearchWithAnswersWhenOnLogStart",
+       IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_WHEN_ON_LOG_START},
+      {"historySearchWithAnswersConsiderDataEncrypted",
+       IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_CONSIDER_DATA_ENCRYPTED},
+      {"historySearchWithAnswersConsiderOutdated",
+       IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_CONSIDER_OUTDATED},
+      {"historySearchWithAnswersSublabelOn",
+       IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SUBLABEL_ON},
+      {"historySearchWithAnswersSublabelOff",
+       IDS_SETTINGS_HISTORY_SEARCH_WITH_ANSWERS_SUBLABEL_OFF},
+
+      // Compare strings.
+      {"aiCompareLabel", IDS_COMPARE_EMPTY_STATE_TITLE},
+      {"aiCompareSublabel", IDS_SETTINGS_COMPARE_SETTING_SUBLABEL},
+      {"aiCompareLearnMoreA11yLabel", IDS_SETTINGS_COMPARE_SETTING_LINK_A11Y},
+      {"aiCompareWhenOnProductDetails",
+       IDS_SETTINGS_COMPARE_WHEN_ON_PRODUCT_DETAILS},
+      {"aiCompareConsiderData", IDS_SETTINGS_COMPARE_CONSIDER_DATA},
+      {"aiCompareConsiderTablesInAccount",
+       IDS_SETTINGS_COMPARE_CONSIDER_TABLES_IN_ACCOUNT},
+
+      // Compose strings.
+      {"aiComposeLabel", IDS_COMPOSE_SUGGESTION_MAIN_TEXT},
+      {"aiComposeSublabelV2", IDS_SETTINGS_AI_COMPOSE_SUBLABEL_V2},
+      {"offerWritingHelpToggleLabel",
+       IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_LABEL},
+      {"offerWritingHelpToggleSublabel",
+       IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_SUB_LABEL},
+      {"offerWritingHelpDisabledSitesLabel",
+       IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SITES_LABEL},
+      {"offerWritingHelpDisabledSitesLabelV2",
+       IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SITES_LABEL_V2},
+      {"offerWritingHelpNoDisabledSites",
+       IDS_SETTINGS_OFFER_WRITING_HELP_NO_DISABLED_SITES},
+      {"offerWritingHelpRemoveDisabledSiteAriaLabel",
+       IDS_SETTINGS_OFFER_WRITING_HELP_REMOVE_SITE_ARIA_LABEL},
+      {"aiComposeSettingLearnMoreA11y", IDS_SETTINGS_COMPOSE_SETTING_LINK_A11Y},
+      {"aiComposeWhenOnWritingHelp", IDS_SETTINGS_COMPOSE_WHEN_ON_WRITING_HELP},
+      {"aiComposeComposeConsiderData", IDS_SETTINGS_COMPOSE_CONSIDER_DATA},
+
+      // Tab Organization strings.
+      {"tabOrganizationSettingLabel",
+       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL},
+      {"tabOrganizationSettingSublabelV2",
+       IDS_SETTINGS_TAB_ORGANIZER_SUB_LABEL},
+      {"tabOrganizationSettingLearnMoreA11y",
+       IDS_SETTINGS_AUTOTABS_SETTING_LINK_A11Y},
+      {"tabOrganizationSettingWhenOnAutoGroups",
+       IDS_SETTINGS_TAB_ORGANIZER_WHEN_ON_AUTO_GROUPS},
+      {"tabOrganizationSettingConsiderData",
+       IDS_SETTINGS_TAB_ORGANIZER_CONSIDER_DATA},
+
+      // Themes strings.
+      {"wallpaperSearchSettingLabel",
+       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL},
+      {"wallpaperSearchSettingSublabelV2", IDS_SETTINGS_AI_THEMES_SUB_LABEL},
+  };
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  std::string managed_sublabel_3 =
+      l10n_util::GetStringFUTF8(IDS_SETTINGS_AI_PAGE_MAIN_MANAGED_SUBLABEL_3,
+                                {chrome::kAiSettingsLearnMorePageManagedUrl});
+  html_source->AddString("aiPageMainManagedSublabel3", managed_sublabel_3);
+
+  html_source->AddString("historySearchLearnMoreUrl",
+                         chrome::kHistorySearchLearnMorePageURL);
+  html_source->AddString("historySearchLearnMoreManagedUrl",
+                         chrome::kHistorySearchLearnMorePageManagedURL);
+  html_source->AddString("historySearchDataHomeUrl",
+                         chrome::kChromeUIHistoryURL);
+  html_source->AddString("compareLearnMoreUrl",
+                         commerce::kChromeUICompareLearnMoreUrl);
+  html_source->AddString("compareLearnMoreManagedUrl",
+                         commerce::kChromeUICompareLearnMoreManagedUrl);
+  html_source->AddString("compareDataHomeUrl",
+                         commerce::kChromeUICompareListsUrl);
+  html_source->AddString("composeLearnMorePageURL",
+                         chrome::kComposeLearnMorePageURL);
+  html_source->AddString("composeLearnMorePageManagedURL",
+                         chrome::kComposeLearnMorePageManagedURL);
+  html_source->AddString("tabOrganizationLearnMoreUrl",
+                         chrome::kTabOrganizationLearnMorePageURL);
+  html_source->AddString("tabOrganizationLearnMoreManagedUrl",
+                         chrome::kTabOrganizationLearnMorePageManagedURL);
+  html_source->AddString("wallpaperSearchLearnMoreUrl",
+                         chrome::kWallpaperSearchLearnMorePageURL);
+  html_source->AddString("wallpaperSearchLearnMoreManagedUrl",
+                         chrome::kWallpaperSearchLearnMorePageManagedURL);
+}
+
 void AddAppearanceStrings(content::WebUIDataSource* html_source,
                           Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -420,7 +557,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
       {"classicTheme", IDS_SETTINGS_CLASSIC_THEME},
       {"useClassicTheme", IDS_SETTINGS_USE_CLASSIC_THEME},
 #endif
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
       {"showWindowDecorations", IDS_SHOW_WINDOW_DECORATIONS},
 #endif
 #if BUILDFLAG(IS_MAC)
@@ -446,9 +583,7 @@ void AddAppearanceStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean("toolbarPinningEnabled",
                           features::IsToolbarPinningEnabled());
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   bool show_custom_chrome_frame = ui::OzonePlatform::GetInstance()
                                       ->GetPlatformRuntimeProperties()
                                       .supports_server_side_window_decorations;
@@ -482,10 +617,6 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_SIGNED_IN_PROFILE},
       {"clearCookiesSummarySyncing",
        IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_WITH_EXCEPTION},
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      {"clearCookiesSummarySignedInMainProfile",
-       IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_MAIN_PROFILE},
-#endif
       {"clearCookiesSummarySignedInSupervisedProfile",
        IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_SUPERVISED_PROFILE},
       {"clearCookiesCounter", IDS_DEL_COOKIES_COUNTER},
@@ -1142,33 +1273,25 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
        IDS_AUTOFILL_SETTINGS_PAGE_CVC_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
       {"benefitsTermsTagForCreditCardListEntry",
        IDS_AUTOFILL_SETTINGS_PAGE_BENEFITS_TERMS_TAG_FOR_CREDIT_CARD_LIST_ENTRY},
-      {"cardBenefitsToggleLabel",
-       IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_TOGGLE_LABEL},
-      {"aiPageTitle", IDS_SETTINGS_AI_PAGE_TITLE},
-      {"aiPageMainLabel", IDS_SETTINGS_AI_PAGE_MAIN_LABEL},
-      {"aiPageMainSublabel", IDS_SETTINGS_AI_PAGE_MAIN_SUBLABEL},
-      {"aiComposeLabel", IDS_SETTINGS_AI_COMPOSE_LABEL},
-      {"aiComposeSublabel", IDS_SETTINGS_AI_COMPOSE_SUBLABEL},
-      {"experimentalAdvancedFeature2Label",
-       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_LABEL},
-      {"experimentalAdvancedFeature2Sublabel",
-       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE2_SUBLABEL},
-      {"experimentalAdvancedFeature3Label",
-       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_LABEL},
-      {"experimentalAdvancedFeature3Sublabel",
-       IDS_SETTINGS_EXPERIMENTAL_ADVANCED_FEATURE3_SUBLABEL},
+      {"cardBenefitsLabel", IDS_AUTOFILL_SETTINGS_PAGE_CARD_BENEFITS_LABEL},
       {"autofillPredictionImprovementsPageTitle",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_PAGE_TITLE},
       {"autofillPredictionImprovementsWhenOnSavedInfo",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_SAVED_INFO},
-      {"autofillPredictionImprovementsWhenOnAdapts",
-       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_ADAPTS},
-      {"autofillPredictionImprovementsToConsiderInfoLocal",
-       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_INFO_LOCAL},
+      {"autofillPredictionImprovementsUseToFill",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_WHEN_ON_USE_TO_FILL},
+      {"autofillPredictionImprovementsNewFeature",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_NEW_FEATURE},
       {"autofillPredictionImprovementsToConsiderDataUsage",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_DATA_USAGE},
+      {"autofillPredictionImprovementsToConsiderDataStorage",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_STORAGE},
+      {"autofillPredictionImprovementsToConsiderDataImprovement",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TO_CONSIDER_IMPROVEMENT},
       {"autofillPredictionImprovementsUserAnnotationsHeader",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_HEADER},
+      {"autofillPredictionImprovementsUserAnnotationsNone",
+       IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_USER_ANNOTATIONS_NONE},
       {"autofillPredictionImprovementsDeleteEntryDialogTitle",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ENTRY_DIALOG_TITLE},
       {"autofillPredictionImprovementsDeleteEntryDialogText",
@@ -1180,9 +1303,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       {"autofillPredictionImprovementsDeleteAllEntriesDialogText",
        IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_DELETE_ALL_ENTRIES_DIALOG_TEXT},
   };
-
-  GURL google_password_manager_url = GetGooglePasswordManagerURL(
-      password_manager::ManagePasswordsReferrer::kChromeSettings);
 
   html_source->AddString("manageAddressesUrl",
                          autofill::payments::GetManageAddressesUrl().spec());
@@ -1196,6 +1316,8 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
                          autofill::payments::GetManageInstrumentsUrl().spec());
   html_source->AddString("addressesAndPaymentMethodsLearnMoreURL",
                          chrome::kAddressesAndPaymentMethodsLearnMoreURL);
+  html_source->AddString("autofillPredictionImprovementsLearnMoreURL",
+                         chrome::kAutofillPredictionImprovementsLearnMoreURL);
   html_source->AddString(
       "signedOutUserLabel",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_SIGNED_OUT_USER_LABEL,
@@ -1220,6 +1342,7 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       !is_guest_mode &&
           autofill::IsCreditCardMigrationEnabled(
               personal_data, SyncServiceFactory::GetForProfile(profile),
+              *profile->GetPrefs(),
               /*is_test_mode=*/false,
               /*log_manager=*/nullptr));
 
@@ -1277,34 +1400,29 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       plus_addresses::features::kPlusAddressManagementUrl.Get());
 
   html_source->AddBoolean(
-      "requireValidLocalCards",
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillRequireValidLocalCardsInSettings));
+      "autofillPredictionImprovementsEnabled",
+      autofill_ai::IsAutofillAiSupported(profile->GetPrefs()));
 
   html_source->AddBoolean(
-      "autofillPredictionImprovementsEnabled",
-      base::FeatureList::IsEnabled(
-          autofill_prediction_improvements::kAutofillPredictionImprovements));
+      "autofillPredictionBootstrappingEnabled",
+      base::FeatureList::IsEnabled(autofill_ai::kAutofillAiBootstrapping));
+
   html_source->AddString(
       "autofillPredictionImprovementsToggleSubLabel",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_AUTOFILL_PREDICTION_IMPROVEMENTS_TOGGLE_SUB_LABEL,
-          base::ASCIIToUTF16(
-              std::string(chrome::kAddressesAndPaymentMethodsLearnMoreURL))));
+          chrome::kAutofillPredictionImprovementsLearnMoreURL));
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
                              Profile* profile) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  bool is_main_profile = profile->IsMainProfile();
-#else
-  bool is_main_profile = false;
-#endif
-
-  if (is_main_profile) {
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kCustomProfileStringsForSupervisedUsers) &&
+      profile->IsChild()) {
     static constexpr webui::LocalizedString kTurnOffStrings[] = {
         {"syncDisconnect", IDS_SETTINGS_PEOPLE_SYNC_TURN_OFF},
-        {"syncDisconnectTitle", IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_TITLE},
+        {"syncDisconnectTitle",
+         IDS_SETTINGS_TURN_OFF_SYNC_AND_SIGN_OUT_DIALOG_TITLE_SUPERVISED_PROFILE},
     };
     html_source->AddLocalizedStrings(kTurnOffStrings);
   } else {
@@ -1322,14 +1440,16 @@ void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
           g_browser_process->GetApplicationLocale())
           .spec();
 
-  if (is_main_profile) {
+  if (base::FeatureList::IsEnabled(
+          supervised_user::kCustomProfileStringsForSupervisedUsers) &&
+      profile->IsChild()) {
     static constexpr webui::LocalizedString kSyncDisconnectStrings[] = {
         {"syncDisconnectDeleteProfile",
          IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_CHECKBOX},
         {"syncDisconnectConfirm",
          IDS_SETTINGS_TURN_OFF_SYNC_DIALOG_MANAGED_CONFIRM},
         {"syncDisconnectExplanation",
-         IDS_SETTINGS_SYNC_DISCONNECT_MAIN_PROFILE_EXPLANATION},
+         IDS_SETTINGS_SYNC_DISCONNECT_AND_SIGN_OUT_EXPLANATION_SUPERVISED_PROFILE},
     };
     html_source->AddLocalizedStrings(kSyncDisconnectStrings);
   } else {
@@ -1369,22 +1489,11 @@ void AddSyncAccountControlStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PEOPLE_SYNC_PASSWORDS_NOT_WORKING},
       {"peopleSignOut", IDS_SETTINGS_PEOPLE_SIGN_OUT},
       {"useAnotherAccount", IDS_SETTINGS_PEOPLE_SYNC_ANOTHER_ACCOUNT},
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
       {"syncAdvancedPageTitle", IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE},
-#endif
       {"verifyAccount", IDS_SETTINGS_PEOPLE_VERIFY_ACCOUNT_BUTTON},
   };
 
   html_source->AddLocalizedStrings(kLocalizedStrings);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  html_source->AddLocalizedString(
-      "syncAdvancedPageTitle",
-      base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)
-          ? IDS_SETTINGS_NEW_SYNC_ADVANCED_BROWSER_PAGE_TITLE
-          : IDS_SETTINGS_NEW_SYNC_ADVANCED_PAGE_TITLE);
-#endif
 }
 
 void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
@@ -1406,8 +1515,6 @@ void AddPersonalizationOptionsStrings(content::WebUIDataSource* html_source) {
       {"linkDoctorPref", IDS_SETTINGS_LINKDOCTOR_PREF},
       {"linkDoctorPrefDesc", IDS_SETTINGS_LINKDOCTOR_PREF_DESC},
       {"searchSuggestPref", IDS_SETTINGS_SUGGEST_PREF},
-      {"driveSuggestPref", IDS_SETTINGS_DRIVE_SUGGEST_PREF},
-      {"driveSuggestPrefDesc", IDS_SETTINGS_DRIVE_SUGGEST_PREF_DESC},
       {"priceEmailNotificationsPref", IDS_PRICE_TRACKING_SETTINGS_TITLE},
       {"priceEmailNotificationsPrefDesc",
        IDS_PRICE_TRACKING_SETTINGS_EMAIL_DESCRIPTION},
@@ -1489,9 +1596,7 @@ void AddBrowserSyncPageStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddLocalizedString(
       "passwordsCheckboxLabel",
-      base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
-          ? IDS_SETTINGS_PASSWORDS_AND_PASSKEYS_CHECKBOX_LABEL
-          : IDS_SETTINGS_PASSWORDS_CHECKBOX_LABEL);
+      IDS_SETTINGS_PASSWORDS_AND_PASSKEYS_CHECKBOX_LABEL);
 
 #if BUILDFLAG(IS_CHROMEOS)
   html_source->AddString(
@@ -1530,9 +1635,6 @@ void AddSyncControlsStrings(content::WebUIDataSource* html_source) {
       {"syncEverythingCheckboxLabel",
        IDS_SETTINGS_SYNC_EVERYTHING_CHECKBOX_LABEL},
       {"appCheckboxLabel", IDS_SETTINGS_APPS_CHECKBOX_LABEL},
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      {"appCheckboxSublabel", IDS_SETTINGS_APPS_CHECKBOX_SUBLABEL},
-#endif
       {"paymentsCheckboxLabel", IDS_SYNC_DATATYPE_PAYMENTS},
       {"nonPersonalizedServicesSectionLabel",
        IDS_SETTINGS_NON_PERSONALIZED_SERVICES_SECTION_LABEL},
@@ -1595,21 +1697,17 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
        IDS_SETTINGS_SYNC_DISCONNECT_DELETE_PROFILE_WARNING_WITH_COUNTS_PLURAL},
       {"deleteProfileWarningWithoutCounts",
        IDS_SETTINGS_SYNC_DISCONNECT_DELETE_PROFILE_WARNING_WITHOUT_COUNTS},
-
-      // History search strings:
-      {"historySearchSettingLabel", IDS_SETTINGS_HISTORY_SEARCH_SETTING_LABEL},
-      {"historySearchSettingSublabel",
-       IDS_SETTINGS_HISTORY_SEARCH_SETTING_SUBLABEL},
-      {"historySearchWhenOnBulletOne",
-       IDS_SETTINGS_HISTORY_SEARCH_WHEN_ON_BULLET_ONE},
-      {"historySearchConsiderBulletOne",
-       IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_ONE},
-      {"historySearchConsiderBulletTwo",
-       IDS_SETTINGS_HISTORY_SEARCH_CONSIDER_BULLET_TWO},
-      {"historySearchLearnMoreA11yLabel",
-       IDS_SETTINGS_HISTORY_SEARCH_LEARN_MORE_A11Y_LABEL},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  OptimizationGuideKeyedService* optimization_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+  html_source->AddBoolean(
+      "historyEmbeddingsAnswersFeatureEnabled",
+      history_embeddings::IsHistoryEmbeddingsAnswersEnabled() &&
+          optimization_guide_keyed_service &&
+          optimization_guide_keyed_service
+              ->ShouldModelExecutionBeAllowedForUser());
 
   // Add Google Account URL and include UTM parameter to signal the source of
   // the navigation.
@@ -1620,8 +1718,6 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
           .spec());
   html_source->AddBoolean("profileShortcutsEnabled",
                           ProfileShortcutManager::IsFeatureEnabled());
-  html_source->AddString("historySearchLearnMoreUrl",
-                         chrome::kHistorySearchLearnMorePageURL);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   auto* profile_entry =
@@ -1646,10 +1742,6 @@ void AddPeopleStrings(content::WebUIDataSource* html_source, Profile* profile) {
               ? chromeos::settings::mojom::kPeopleSectionPath
               : chromeos::settings::mojom::kMyAccountsSubpagePath)
           .spec());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  html_source->AddBoolean(
-      "isAccountManagerEnabled",
-      AccountConsistencyModeManager::IsMirrorEnabledForProfile(profile));
 #endif
 
   AddSignOutDialogStrings(html_source, profile);
@@ -1740,6 +1832,8 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_SAFEBROWSING_ENABLE_REPORTING_DESC},
       {"safeBrowsingEnhanced", IDS_SETTINGS_SAFEBROWSING_ENHANCED},
       {"safeBrowsingEnhancedDesc", IDS_SETTINGS_SAFEBROWSING_ENHANCED_DESC},
+      {"safeBrowsingEnhancedDescUpdated",
+       IDS_SETTINGS_SAFEBROWSING_ENHANCED_DESC_UPDATED},
       {"safeBrowsingEnhancedExpandA11yLabel",
        IDS_SETTINGS_SAFEBROWSING_ENHANCED_EXPAND_ACCESSIBILITY_LABEL},
       {"safeBrowsingEnhancedBulOne",
@@ -1883,21 +1977,10 @@ void AddPrivacyStrings(content::WebUIDataSource* html_source,
 
   html_source->AddString("syncAndGoogleServicesLearnMoreURL",
                          chrome::kSyncAndGoogleServicesLearnMoreURL);
-  html_source->AddString("composeLearnMorePageURL",
-                         chrome::kComposeLearnMorePageURL);
   html_source->AddString("doNotTrackLearnMoreURL",
                          chrome::kDoNotTrackLearnMoreURL);
   html_source->AddString("exceptionsLearnMoreURL",
                          chrome::kContentSettingsExceptionsLearnMoreURL);
-  html_source->AddBoolean(
-      "driveSuggestAvailable",
-      base::FeatureList::IsEnabled(omnibox::kDocumentProvider));
-  html_source->AddBoolean(
-      "driveSuggestNoSetting",
-      base::FeatureList::IsEnabled(omnibox::kDocumentProviderNoSetting));
-  html_source->AddBoolean("driveSuggestNoSyncRequirement",
-                          base::FeatureList::IsEnabled(
-                              omnibox::kDocumentProviderNoSyncRequirement));
   html_source->AddString("enhancedProtectionHelpCenterURL",
                          chrome::kSafeBrowsingInChromeHelpCenterURL);
 
@@ -2001,10 +2084,6 @@ void AddPrivacyGuideStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_PRIVACY_SANDBOX_SUB_LABEL},
       {"privacyGuideCompletionCardPrivacySandboxSubLabelAdTopics",
        IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_PRIVACY_SANDBOX_SUB_LABEL_AD_TOPICS},
-      {"privacyGuideCompletionCardTrackingProtectionLabel",
-       IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_TRACKING_PROTECTION_LABEL},
-      {"privacyGuideCompletionCardTrackingProtectionSubLabel",
-       IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_TRACKING_PROTECTION_SUB_LABEL},
       {"privacyGuideCompletionCardWaaLabel",
        IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_WAA_LABEL},
       {"privacyGuideCompletionCardWaaSubLabel",
@@ -2288,6 +2367,9 @@ void AddSearchStrings(content::WebUIDataSource* html_source, Profile* profile) {
       search_engines::IsEeaChoiceCountry(country_id)
           ? IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE
           : IDS_SEARCH_ENGINE_CHOICE_SETTINGS_SUBTITLE_NON_EEA);
+
+  html_source->AddLocalizedString(
+      "saveGuestChoiceText", IDS_SEARCH_ENGINE_CHOICE_GUEST_SESSION_CHECKBOX);
 }
 
 void AddSearchEnginesStrings(content::WebUIDataSource* html_source) {
@@ -2417,7 +2499,8 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_LABEL},
       {"trackingProtectionLinkRowSubLabel",
        IDS_SETTINGS_TRACKING_PROTECTION_LINK_ROW_SUB_LABEL},
-
+      {"thirdPartyCookiesLinkRowSublabelLimited",
+       IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_LIMITED},
       {"thirdPartyCookiesAlignedPageDescription",
        IDS_SETTINGS_THIRD_PARTY_COOKIES_ALIGNED_PAGE_DESCRIPTION},
       {"thirdPartyCookiesPageDescription",
@@ -2536,7 +2619,7 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       {"siteSettingsCameraMidSentence",
        IDS_SITE_SETTINGS_TYPE_CAMERA_MID_SENTENCE},
       {"siteSettingsCapturedSurfaceControl",
-       IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL},
+       IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_SHARED_TABS},
       {"siteSettingsCapturedSurfaceControlMidSentence",
        IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_MID_SENTENCE},
       {"siteSettingsClipboard", IDS_SITE_SETTINGS_TYPE_CLIPBOARD},
@@ -3269,20 +3352,10 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        IDS_SITE_SETTINGS_TYPE_PERFORMANCE_SUBLABEL},
       {"siteSettingsOfferWritingHelp",
        IDS_SITE_SETTINGS_TYPE_OFFER_WRITING_HELP},
-      {"offerWritingHelpToggleLabel",
-       IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_LABEL},
-      {"offerWritingHelpToggleSublabel",
-       IDS_SETTINGS_OFFER_WRITING_HELP_TOGGLE_SUB_LABEL},
       {"siteSettingsOfferWritingHelpEnabledSublabel",
        IDS_SETTINGS_OFFER_WRITING_HELP_ENABLED_SUB_LABEL},
       {"siteSettingsOfferWritingHelpDisabledSublabel",
        IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SUB_LABEL},
-      {"offerWritingHelpDisabledSitesLabel",
-       IDS_SETTINGS_OFFER_WRITING_HELP_DISABLED_SITES_LABEL},
-      {"offerWritingHelpNoDisabledSites",
-       IDS_SETTINGS_OFFER_WRITING_HELP_NO_DISABLED_SITES},
-      {"offerWritingHelpRemoveDisabledSiteAriaLabel",
-       IDS_SETTINGS_OFFER_WRITING_HELP_REMOVE_SITE_ARIA_LABEL},
       {"siteSettingsSmartCardReaders", IDS_SITE_SETTINGS_SMART_CARD_READERS},
       {"siteSettingsSmartCardReadersDescription",
        IDS_SITE_SETTINGS_SMART_CARD_READERS_DESCRIPTION},
@@ -3291,7 +3364,11 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       {"siteSettingsSmartCardReadersAllowed",
        IDS_SITE_SETTINGS_SMART_CARDS_ALLOWED},
       {"siteSettingsSmartCardReadersBlocked",
-       IDS_SITE_SETTINGS_SMART_CARDS_BLOCKED}};
+       IDS_SITE_SETTINGS_SMART_CARDS_BLOCKED},
+      {"siteSettingsNoSmartCardReadersFound",
+       IDS_SITE_SETTINGS_NO_SMART_CARD_READERS_FOUND},
+      {"siteSettingsResetSmartCardConfirmation",
+       IDS_SITE_SETTINGS_RESET_SMART_CARD_CONFIRMATION}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   // Tracking protection learn more links.
@@ -3368,11 +3445,6 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
       "showPersistentPermissions",
       base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissions));
-
-  html_source->AddBoolean(
-      "permissionDedicatedCpssSettings",
-      base::FeatureList::IsEnabled(
-          permissions::features::kPermissionDedicatedCpssSetting));
 
   // The exception placeholder should not be translated. See
   // crbug.com/1095878.
@@ -3455,18 +3527,12 @@ void AddSiteDataPageStrings(content::WebUIDataSource* html_source,
 void AddSystemStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"systemPageTitle", IDS_SETTINGS_SYSTEM},
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_MAC)
       {"backgroundAppsLabel", IDS_SETTINGS_SYSTEM_BACKGROUND_APPS_LABEL},
 #endif
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
       {"hardwareAccelerationLabel",
        IDS_SETTINGS_SYSTEM_HARDWARE_ACCELERATION_LABEL},
       {"proxySettingsLabel", IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_LABEL},
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      {"useAshProxyLabel", IDS_SETTINGS_SYSTEM_USE_ASH_PROXY_LABEL},
-      {"usesAshProxyLabel", IDS_SETTINGS_SYSTEM_USES_ASH_PROXY_LABEL},
-#endif
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
       {"featureNotificationsLabel",
        IDS_SETTINGS_SYSTEM_FEATURE_NOTIFICATIONS_LABEL},
@@ -3474,7 +3540,6 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   html_source->AddString(
       "proxySettingsExtensionLabel",
       l10n_util::GetStringFUTF16(
@@ -3485,7 +3550,6 @@ void AddSystemStrings(content::WebUIDataSource* html_source) {
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_SYSTEM_PROXY_SETTINGS_POLICY_LABEL,
           l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME)));
-#endif
 
   // TODO(dbeam): we should probably rename anything involving "localized
   // strings" to "load time data" as all primitive types are used now.
@@ -3627,6 +3691,9 @@ void AddSecurityKeysStrings(content::WebUIDataSource* html_source) {
                           !win_native_api_available);
   html_source->AddBoolean("enableSecurityKeysBioEnrollment",
                           !win_native_api_available);
+  html_source->AddBoolean(
+      "enableSecurityKeysManagePhones",
+      base::FeatureList::IsEnabled(device::kWebAuthnHybridLinking));
 }
 
 }  // namespace
@@ -3639,6 +3706,7 @@ void AddLocalizedStrings(content::WebUIDataSource* html_source,
                          content::WebContents* web_contents) {
   AddA11yStrings(html_source);
   AddAboutStrings(html_source, profile);
+  AddAiStrings(html_source);
   AddAutofillStrings(html_source, profile, web_contents);
   AddAppearanceStrings(html_source, profile);
 

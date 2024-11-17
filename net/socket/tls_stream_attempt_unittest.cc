@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/bind.h"
+#include "base/types/expected.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_endpoint.h"
@@ -25,8 +26,10 @@
 #include "net/socket/tcp_stream_attempt.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_config.h"
+#include "net/ssl/ssl_config_service.h"
 #include "net/ssl/test_ssl_config_service.h"
 #include "net/test/gtest_util.h"
+#include "net/test/ssl_test_util.h"
 #include "net/test/test_with_task_environment.h"
 
 namespace net {
@@ -87,6 +90,15 @@ class TlsStreamAttemptHelper : public TlsStreamAttempt::SSLConfigProvider {
     }
   }
 
+  void SetGetSSLConfigError(TlsStreamAttempt::GetSSLConfigError error) {
+    CHECK(!get_ssl_config_error_.has_value());
+    get_ssl_config_error_ = error;
+
+    if (request_ssl_config_callback_) {
+      std::move(request_ssl_config_callback_).Run(OK);
+    }
+  }
+
   TlsStreamAttempt* attempt() { return attempt_.get(); }
 
   std::optional<int> result() const { return result_; }
@@ -102,7 +114,14 @@ class TlsStreamAttemptHelper : public TlsStreamAttempt::SSLConfigProvider {
     return ERR_IO_PENDING;
   }
 
-  SSLConfig GetSSLConfig() override { return *ssl_config_; }
+  base::expected<SSLConfig, TlsStreamAttempt::GetSSLConfigError> GetSSLConfig()
+      override {
+    if (get_ssl_config_error_.has_value()) {
+      return base::unexpected(*get_ssl_config_error_);
+    }
+
+    return *ssl_config_;
+  }
 
  private:
   void OnComplete(int rv) {
@@ -116,6 +135,7 @@ class TlsStreamAttemptHelper : public TlsStreamAttempt::SSLConfigProvider {
 
   CompletionOnceCallback request_ssl_config_callback_;
   std::optional<SSLConfig> ssl_config_;
+  std::optional<TlsStreamAttempt::GetSSLConfigError> get_ssl_config_error_;
 
   base::OnceClosure completion_closure_;
   std::optional<int> result_;
@@ -138,6 +158,12 @@ class TlsStreamAttemptTest : public TestWithTaskEnvironment {
 
  protected:
   MockClientSocketFactory& socket_factory() { return socket_factory_; }
+
+  void SetEchEnabled(bool ech_enabled) {
+    SSLContextConfig config = ssl_config_service_->GetSSLContextConfig();
+    config.ech_enabled = ech_enabled;
+    ssl_config_service_->UpdateSSLConfigAndNotify(config);
+  }
 
   const StreamAttemptParams* params() const { return &params_; }
 
@@ -249,6 +275,23 @@ TEST_F(TlsStreamAttemptTest, SSLConfigDelayed) {
   rv = helper.WaitForCompletion();
   EXPECT_THAT(rv, IsOk());
   ValidateConnectTiming(helper.attempt()->connect_timing());
+}
+
+TEST_F(TlsStreamAttemptTest, GetSSLConfigAborted) {
+  StaticSocketDataProvider data;
+  data.set_connect_data(MockConnect(SYNCHRONOUS, OK));
+  socket_factory().AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(SYNCHRONOUS, OK);
+  socket_factory().AddSSLSocketDataProvider(&ssl);
+
+  TlsStreamAttemptHelper helper(params(), /*ssl_config=*/std::nullopt);
+  int rv = helper.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+  ASSERT_EQ(helper.attempt()->GetLoadState(), LOAD_STATE_SSL_HANDSHAKE);
+
+  helper.SetGetSSLConfigError(TlsStreamAttempt::GetSSLConfigError::kAbort);
+  rv = helper.WaitForCompletion();
+  EXPECT_THAT(rv, IsError(ERR_ABORTED));
 }
 
 TEST_F(TlsStreamAttemptTest, TcpFail) {
@@ -414,6 +457,100 @@ TEST_F(TlsStreamAttemptTest, ClientAuthCertNeeded) {
       helper.attempt()->GetCertRequestInfo();
   ASSERT_TRUE(cert_request_info);
   EXPECT_EQ(cert_request_info->host_and_port, kHostPortPair);
+}
+
+TEST_F(TlsStreamAttemptTest, EchOk) {
+  SetEchEnabled(true);
+
+  std::vector<uint8_t> ech_config_list;
+  ASSERT_TRUE(MakeTestEchKeys("public.example", /*max_name_len=*/128,
+                              &ech_config_list));
+
+  StaticSocketDataProvider data;
+  socket_factory().AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, OK);
+  ssl.expected_ech_config_list = ech_config_list;
+  socket_factory().AddSSLSocketDataProvider(&ssl);
+
+  SSLConfig ssl_config;
+  ssl_config.ech_config_list = ech_config_list;
+
+  TlsStreamAttemptHelper helper(params(), std::move(ssl_config));
+  int rv = helper.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = helper.WaitForCompletion();
+  EXPECT_THAT(rv, IsOk());
+}
+
+TEST_F(TlsStreamAttemptTest, EchRetryOk) {
+  SetEchEnabled(true);
+
+  std::vector<uint8_t> ech_config_list;
+  ASSERT_TRUE(MakeTestEchKeys("public1.example", /*max_name_len=*/128,
+                              &ech_config_list));
+
+  std::vector<uint8_t> ech_retry_config_list;
+  ASSERT_TRUE(MakeTestEchKeys("public2.example", /*max_name_len=*/128,
+                              &ech_config_list));
+
+  StaticSocketDataProvider data;
+  socket_factory().AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, ERR_ECH_NOT_NEGOTIATED);
+  ssl.expected_ech_config_list = ech_config_list;
+  ssl.ech_retry_configs = ech_retry_config_list;
+  socket_factory().AddSSLSocketDataProvider(&ssl);
+
+  StaticSocketDataProvider retry_data;
+  socket_factory().AddSocketDataProvider(&retry_data);
+  SSLSocketDataProvider retry_ssl(ASYNC, OK);
+  retry_ssl.expected_ech_config_list = ech_retry_config_list;
+  socket_factory().AddSSLSocketDataProvider(&retry_ssl);
+
+  SSLConfig ssl_config;
+  ssl_config.ech_config_list = ech_config_list;
+
+  TlsStreamAttemptHelper helper(params(), std::move(ssl_config));
+  int rv = helper.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = helper.WaitForCompletion();
+  EXPECT_THAT(rv, IsOk());
+}
+
+TEST_F(TlsStreamAttemptTest, EchRetryFail) {
+  SetEchEnabled(true);
+
+  std::vector<uint8_t> ech_config_list;
+  ASSERT_TRUE(MakeTestEchKeys("public1.example", /*max_name_len=*/128,
+                              &ech_config_list));
+
+  std::vector<uint8_t> ech_retry_config_list;
+  ASSERT_TRUE(MakeTestEchKeys("public2.example", /*max_name_len=*/128,
+                              &ech_config_list));
+
+  StaticSocketDataProvider data;
+  socket_factory().AddSocketDataProvider(&data);
+  SSLSocketDataProvider ssl(ASYNC, ERR_ECH_NOT_NEGOTIATED);
+  ssl.expected_ech_config_list = ech_config_list;
+  ssl.ech_retry_configs = ech_retry_config_list;
+  socket_factory().AddSSLSocketDataProvider(&ssl);
+
+  StaticSocketDataProvider retry_data;
+  socket_factory().AddSocketDataProvider(&retry_data);
+  SSLSocketDataProvider retry_ssl(ASYNC, ERR_ECH_NOT_NEGOTIATED);
+  retry_ssl.expected_ech_config_list = ech_retry_config_list;
+  socket_factory().AddSSLSocketDataProvider(&retry_ssl);
+
+  SSLConfig ssl_config;
+  ssl_config.ech_config_list = ech_config_list;
+
+  TlsStreamAttemptHelper helper(params(), std::move(ssl_config));
+  int rv = helper.Start();
+  EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
+
+  rv = helper.WaitForCompletion();
+  EXPECT_THAT(rv, IsError(ERR_ECH_NOT_NEGOTIATED));
 }
 
 }  // namespace net

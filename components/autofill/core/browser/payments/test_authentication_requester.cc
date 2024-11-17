@@ -82,8 +82,7 @@ void TestAuthenticationRequester::OnRiskBasedAuthenticationResponseReceived(
 void TestAuthenticationRequester::
     OnVirtualCardRiskBasedAuthenticationResponseReceived(
         payments::PaymentsAutofillClient::PaymentsRpcResult result,
-        const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
-            response_details) {
+        const payments::UnmaskResponseDetails& response_details) {
   did_succeed_ =
       (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess);
   if (*did_succeed_) {

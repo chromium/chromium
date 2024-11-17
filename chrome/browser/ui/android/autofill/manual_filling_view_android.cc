@@ -54,6 +54,9 @@ namespace {
 AccessorySheetField ConvertJavaUserInfoField(
     JNIEnv* env,
     const JavaRef<jobject>& j_field_to_convert) {
+  autofill::AccessorySuggestionType suggestion_type =
+      static_cast<autofill::AccessorySuggestionType>(
+          Java_UserInfoField_getSuggestionType(env, j_field_to_convert));
   std::u16string display_text = ConvertJavaStringToUTF16(
       env, Java_UserInfoField_getDisplayText(env, j_field_to_convert));
   std::u16string text_to_fill = ConvertJavaStringToUTF16(
@@ -65,6 +68,7 @@ AccessorySheetField ConvertJavaUserInfoField(
   bool is_obfuscated = Java_UserInfoField_isObfuscated(env, j_field_to_convert);
   bool selectable = Java_UserInfoField_isSelectable(env, j_field_to_convert);
   return AccessorySheetField::Builder()
+      .SetSuggestionType(suggestion_type)
       .SetDisplayText(std::move(display_text))
       .SetTextToFill(std::move(text_to_fill))
       .SetA11yDescription(std::move(a11y_description))
@@ -105,7 +109,9 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
        tab_data.plus_address_info_list()) {
     Java_ManualFillingComponentBridge_addPlusAddressInfoToAccessorySheetData(
         env, java_object, j_tab_data,
-        static_cast<int>(tab_data.get_sheet_type()), plus_address_info.origin(),
+        static_cast<int>(tab_data.get_sheet_type()),
+        static_cast<int>(plus_address_info.plus_address().suggestion_type()),
+        plus_address_info.origin(),
         plus_address_info.plus_address().display_text());
   }
 
@@ -126,7 +132,8 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
     for (const AccessorySheetField& field : user_info.fields()) {
       Java_ManualFillingComponentBridge_addFieldToUserInfo(
           env, java_object, j_user_info,
-          static_cast<int>(tab_data.get_sheet_type()), field.display_text(),
+          static_cast<int>(tab_data.get_sheet_type()),
+          static_cast<int>(field.suggestion_type()), field.display_text(),
           field.text_to_fill(), field.a11y_description(), field.id(),
           field.icon_id(), field.is_obfuscated(), field.selectable());
     }
@@ -138,16 +145,19 @@ ScopedJavaGlobalRef<jobject> ConvertAccessorySheetDataToJavaObject(
     const std::u16string& detailsText = promo_code_info.details_text();
     Java_ManualFillingComponentBridge_addPromoCodeInfoToAccessorySheetData(
         env, java_object, j_tab_data,
-        static_cast<int>(tab_data.get_sheet_type()), promo_code.display_text(),
-        promo_code.text_to_fill(), promo_code.a11y_description(),
-        promo_code.id(), promo_code.is_obfuscated(), detailsText);
+        static_cast<int>(tab_data.get_sheet_type()),
+        static_cast<int>(promo_code.suggestion_type()),
+        promo_code.display_text(), promo_code.text_to_fill(),
+        promo_code.a11y_description(), promo_code.id(),
+        promo_code.is_obfuscated(), detailsText);
   }
 
   for (const autofill::IbanInfo& iban_info : tab_data.iban_info_list()) {
     const AccessorySheetField& value = iban_info.value();
     Java_ManualFillingComponentBridge_addIbanInfoToAccessorySheetData(
         env, java_object, j_tab_data,
-        static_cast<int>(tab_data.get_sheet_type()), value.id(),
+        static_cast<int>(tab_data.get_sheet_type()),
+        static_cast<int>(value.suggestion_type()), value.id(),
         value.display_text(), value.text_to_fill());
   }
 

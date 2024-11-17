@@ -258,8 +258,7 @@ DownloadItemWarningData::ConstructCsbrrDownloadWarningAction(
                             OPEN_LEARN_MORE_LINK);
       break;
     case DownloadItemWarningData::WarningAction::SHOWN:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case DownloadItemWarningData::WarningAction::ACCEPT_DEEP_SCAN:
       action.set_action(ClientSafeBrowsingReportRequest::DownloadWarningAction::
                             ACCEPT_DEEP_SCAN);

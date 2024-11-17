@@ -265,8 +265,7 @@ const char* RRectFTypeToString(gfx::RRectF::Type type) {
     MAP_RRECTF_TYPE_TO_STRING(kOval)
     MAP_RRECTF_TYPE_TO_STRING(kComplex)
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 #undef MAP_RRECTF_TYPE_TO_STRING
@@ -1216,8 +1215,7 @@ const char* ProtectedVideoTypeToString(gfx::ProtectedVideoType type) {
     MAP_VIDEO_TYPE_TO_STRING(kSoftwareProtected)
     MAP_VIDEO_TYPE_TO_STRING(kHardwareProtected)
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 #undef MAP_VIDEO_TYPE_TO_STRING
@@ -1296,10 +1294,10 @@ void VideoHoleDrawQuadToDict(const VideoHoleDrawQuad* draw_quad,
   }
 }
 
-#define UNEXPECTED_DRAW_QUAD_TYPE(NAME)                  \
-  case DrawQuad::Material::NAME:                         \
-    NOTREACHED_IN_MIGRATION() << "Unexpected " << #NAME; \
-    break;
+#define UNEXPECTED_DRAW_QUAD_TYPE(NAME) \
+  case DrawQuad::Material::NAME:        \
+    NOTREACHED() << "Unexpected " << #NAME;
+
 #define WRITE_DRAW_QUAD_TYPE_FIELDS(NAME, TYPE)                    \
   case DrawQuad::Material::NAME:                                   \
     TYPE##ToDict(reinterpret_cast<const TYPE*>(draw_quad), &dict); \
@@ -1556,10 +1554,9 @@ bool VideoHoleDrawQuadFromDict(const base::Value::Dict& dict,
   return true;
 }
 
-#define UNEXPECTED_DRAW_QUAD_TYPE(NAME)                  \
-  case DrawQuad::Material::NAME:                         \
-    NOTREACHED_IN_MIGRATION() << "Unexpected " << #NAME; \
-    break;
+#define UNEXPECTED_DRAW_QUAD_TYPE(NAME) \
+  case DrawQuad::Material::NAME:        \
+    NOTREACHED() << "Unexpected " << #NAME;
 #define GET_QUAD_FROM_DICT(NAME, TYPE)                             \
   case DrawQuad::Material::NAME: {                                 \
     TYPE* quad = quads.AllocateAndConstruct<TYPE>();               \
@@ -1805,8 +1802,7 @@ const char* BlendModeToString(SkBlendMode blend_mode) {
     MAP_BLEND_MODE_TO_STRING(kColor)
     MAP_BLEND_MODE_TO_STRING(kLuminosity)
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 #undef MAP_BLEND_MODE_TO_STRING
@@ -1827,8 +1823,7 @@ const char* DrawQuadMaterialToString(DrawQuad::Material material) {
     MAP_MATERIAL_TO_STRING(kTiledContent)
     MAP_MATERIAL_TO_STRING(kVideoHole)
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 #undef MAP_MATERIAL_TO_STRING

@@ -13,6 +13,7 @@
 #include "net/http/http_util.h"
 
 #include <algorithm>
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -80,9 +81,9 @@ class AcceptLanguageBuilder {
 // Extract the base language code from a language code.
 // If there is no '-' in the code, the original code is returned.
 std::string GetBaseLanguageCode(const std::string& language_code) {
-  const std::vector<std::string> tokens = base::SplitString(
+  std::vector<std::string> tokens = base::SplitString(
       language_code, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  return tokens.empty() ? "" : tokens[0];
+  return tokens.empty() ? "" : std::move(tokens[0]);
 }
 
 }  // namespace
@@ -90,7 +91,7 @@ std::string GetBaseLanguageCode(const std::string& language_code) {
 // HttpUtil -------------------------------------------------------------------
 
 std::string HttpUtil::GenerateRequestLine(std::string_view method,
-                                          GURL url,
+                                          const GURL& url,
                                           bool is_for_get_to_http_proxy) {
   static constexpr char kSuffix[] = " HTTP/1.1\r\n";
   const std::string path = is_for_get_to_http_proxy
@@ -107,7 +108,7 @@ std::string HttpUtil::SpecForRequest(const GURL& url) {
 }
 
 // static
-void HttpUtil::ParseContentType(const std::string& content_type_str,
+void HttpUtil::ParseContentType(std::string_view content_type_str,
                                 std::string* mime_type,
                                 std::string* charset,
                                 bool* had_charset,
@@ -177,10 +178,11 @@ bool HttpUtil::ParseRangeHeader(const std::string& ranges_specifier,
       ranges_specifier.begin() + equal_char_offset + 1;
   std::string::const_iterator byte_range_set_end = ranges_specifier.end();
 
-  ValuesIterator byte_range_set_iterator(byte_range_set_begin,
-                                         byte_range_set_end, ',');
+  ValuesIterator byte_range_set_iterator(
+      std::string_view(byte_range_set_begin, byte_range_set_end),
+      /*delimiter=*/',');
   while (byte_range_set_iterator.GetNext()) {
-    std::string_view value = byte_range_set_iterator.value_piece();
+    std::string_view value = byte_range_set_iterator.value();
     size_t minus_char_offset = value.find('-');
     // If '-' character is not found, reports failure.
     if (minus_char_offset == std::string::npos)
@@ -396,11 +398,9 @@ bool HttpUtil::IsSafeHeader(std::string_view name, std::string_view value) {
     }
   }
   if (is_forbidden_header_fields_with_forbidden_method) {
-    std::string value_string(value);
-    ValuesIterator method_iterator(value_string.begin(), value_string.end(),
-                                   ',');
+    ValuesIterator method_iterator(value, ',');
     while (method_iterator.GetNext()) {
-      std::string_view method = method_iterator.value_piece();
+      std::string_view method = method_iterator.value();
       for (const char* forbidden_method : kForbiddenMethods) {
         if (base::EqualsCaseInsensitiveASCII(method, forbidden_method))
           return false;
@@ -575,15 +575,15 @@ std::string HttpUtil::Quote(std::string_view str) {
 // some slop at the start. If the "http" string could not be found
 // then returns std::string::npos.
 // static
-size_t HttpUtil::LocateStartOfStatusLine(const char* buf, size_t buf_len) {
+size_t HttpUtil::LocateStartOfStatusLine(base::span<const uint8_t> buf) {
   const size_t slop = 4;
   const size_t http_len = 4;
 
-  if (buf_len >= http_len) {
-    size_t i_max = std::min(buf_len - http_len, slop);
+  if (buf.size() >= http_len) {
+    size_t i_max = std::min(buf.size() - http_len, slop);
     for (size_t i = 0; i <= i_max; ++i) {
-      if (base::EqualsCaseInsensitiveASCII(std::string_view(buf + i, http_len),
-                                           "http")) {
+      if (base::EqualsCaseInsensitiveASCII(
+              base::as_string_view(buf.subspan(i, http_len)), "http")) {
         return i;
       }
     }
@@ -591,8 +591,7 @@ size_t HttpUtil::LocateStartOfStatusLine(const char* buf, size_t buf_len) {
   return std::string::npos;  // Not found
 }
 
-static size_t LocateEndOfHeadersHelper(const char* buf,
-                                       size_t buf_len,
+static size_t LocateEndOfHeadersHelper(base::span<const uint8_t> buf,
                                        size_t i,
                                        bool accept_empty_header_list) {
   char last_c = '\0';
@@ -604,7 +603,7 @@ static size_t LocateEndOfHeadersHelper(const char* buf,
     was_lf = true;
   }
 
-  for (; i < buf_len; ++i) {
+  for (; i < buf.size(); ++i) {
     char c = buf[i];
     if (c == '\n') {
       if (was_lf)
@@ -618,14 +617,13 @@ static size_t LocateEndOfHeadersHelper(const char* buf,
   return std::string::npos;
 }
 
-size_t HttpUtil::LocateEndOfAdditionalHeaders(const char* buf,
-                                              size_t buf_len,
+size_t HttpUtil::LocateEndOfAdditionalHeaders(base::span<const uint8_t> buf,
                                               size_t i) {
-  return LocateEndOfHeadersHelper(buf, buf_len, i, true);
+  return LocateEndOfHeadersHelper(buf, i, true);
 }
 
-size_t HttpUtil::LocateEndOfHeaders(const char* buf, size_t buf_len, size_t i) {
-  return LocateEndOfHeadersHelper(buf, buf_len, i, false);
+size_t HttpUtil::LocateEndOfHeaders(base::span<const uint8_t> buf, size_t i) {
+  return LocateEndOfHeadersHelper(buf, i, false);
 }
 
 // In order for a line to be continuable, it must specify a
@@ -678,7 +676,7 @@ std::string HttpUtil::AssembleRawHeaders(std::string_view input) {
   // Skip any leading slop, since the consumers of this output
   // (HttpResponseHeaders) don't deal with it.
   size_t status_begin_offset =
-      LocateStartOfStatusLine(input.data(), input.size());
+      LocateStartOfStatusLine(base::as_byte_span(input));
   if (status_begin_offset != std::string::npos)
     input.remove_prefix(status_begin_offset);
 
@@ -800,55 +798,64 @@ std::string HttpUtil::GenerateAcceptLanguageHeader(
   return lang_list_with_q;
 }
 
-bool HttpUtil::HasStrongValidators(HttpVersion version,
-                                   const std::string& etag_header,
-                                   const std::string& last_modified_header,
-                                   const std::string& date_header) {
-  if (!HasValidators(version, etag_header, last_modified_header))
-    return false;
-
+bool HttpUtil::HasStrongValidators(
+    HttpVersion version,
+    std::optional<std::string_view> etag_header,
+    std::optional<std::string_view> last_modified_header,
+    std::optional<std::string_view> date_header) {
   if (version < HttpVersion(1, 1))
     return false;
 
-  if (!etag_header.empty()) {
-    size_t slash = etag_header.find('/');
-    if (slash == std::string::npos || slash == 0)
+  if (etag_header && !etag_header->empty()) {
+    size_t slash = etag_header->find('/');
+    if (slash == std::string_view::npos || slash == 0) {
       return true;
+    }
 
-    std::string::const_iterator i = etag_header.begin();
-    std::string::const_iterator j = etag_header.begin() + slash;
-    TrimLWS(&i, &j);
-    if (!base::EqualsCaseInsensitiveASCII(base::MakeStringPiece(i, j), "w"))
+    std::string_view trimmed_etag = TrimLWS(etag_header->substr(0, slash));
+    if (!base::EqualsCaseInsensitiveASCII(trimmed_etag, "w")) {
       return true;
+    }
   }
 
   base::Time last_modified;
-  if (!base::Time::FromString(last_modified_header.c_str(), &last_modified))
+  if (!last_modified_header ||
+      !base::Time::FromString(std::string(*last_modified_header).c_str(),
+                              &last_modified)) {
     return false;
+  }
 
   base::Time date;
-  if (!base::Time::FromString(date_header.c_str(), &date))
+  if (!date_header ||
+      !base::Time::FromString(std::string(*date_header).c_str(), &date)) {
     return false;
+  }
 
   // Last-Modified is implicitly weak unless it is at least 60 seconds before
   // the Date value.
   return ((date - last_modified).InSeconds() >= 60);
 }
 
-bool HttpUtil::HasValidators(HttpVersion version,
-                             const std::string& etag_header,
-                             const std::string& last_modified_header) {
+bool HttpUtil::HasValidators(
+    HttpVersion version,
+    std::optional<std::string_view> etag_header,
+    std::optional<std::string_view> last_modified_header) {
   if (version < HttpVersion(1, 0))
     return false;
 
   base::Time last_modified;
-  if (base::Time::FromString(last_modified_header.c_str(), &last_modified))
+  // Have to construct a C-style string here, since that's what
+  // base::Time::FromString requires.
+  if (last_modified_header &&
+      base::Time::FromString(std::string(*last_modified_header).c_str(),
+                             &last_modified)) {
     return true;
+  }
 
   // It is OK to consider an empty string in etag_header to be a missing header
   // since valid ETags are always quoted-strings (see RFC 2616 3.11) and thus
   // empty ETags aren't empty strings (i.e., an empty ETag might be "\"\"").
-  return version >= HttpVersion(1, 1) && !etag_header.empty();
+  return version >= HttpVersion(1, 1) && etag_header && !etag_header->empty();
 }
 
 // Functions for histogram initialization.  The code 0 is put in the map to
@@ -946,12 +953,10 @@ bool HttpUtil::HeadersIterator::AdvanceTo(const char* name) {
   return false;
 }
 
-HttpUtil::ValuesIterator::ValuesIterator(
-    std::string::const_iterator values_begin,
-    std::string::const_iterator values_end,
-    char delimiter,
-    bool ignore_empty_values)
-    : values_(values_begin, values_end, std::string(1, delimiter)),
+HttpUtil::ValuesIterator::ValuesIterator(std::string_view values,
+                                         char delimiter,
+                                         bool ignore_empty_values)
+    : values_(values, std::string(1, delimiter)),
       ignore_empty_values_(ignore_empty_values) {
   values_.set_quote_chars("\"");
   // Could set this unconditionally, since code below has to check for empty
@@ -967,39 +972,22 @@ HttpUtil::ValuesIterator::~ValuesIterator() = default;
 
 bool HttpUtil::ValuesIterator::GetNext() {
   while (values_.GetNext()) {
-    value_begin_ = values_.token_begin();
-    value_end_ = values_.token_end();
-    TrimLWS(&value_begin_, &value_end_);
+    value_ = TrimLWS(values_.token());
 
-    if (!ignore_empty_values_ || value_begin_ != value_end_)
+    if (!ignore_empty_values_ || !value_.empty()) {
       return true;
+    }
   }
   return false;
 }
 
-HttpUtil::NameValuePairsIterator::NameValuePairsIterator(
-    std::string::const_iterator begin,
-    std::string::const_iterator end,
-    char delimiter,
-    Values optional_values,
-    Quotes strict_quotes)
-    : props_(begin, end, delimiter),
-      name_begin_(end),
-      name_end_(end),
-      value_begin_(end),
-      value_end_(end),
+HttpUtil::NameValuePairsIterator::NameValuePairsIterator(std::string_view value,
+                                                         char delimiter,
+                                                         Values optional_values,
+                                                         Quotes strict_quotes)
+    : props_(value, delimiter),
       values_optional_(optional_values == Values::NOT_REQUIRED),
       strict_quotes_(strict_quotes == Quotes::STRICT_QUOTES) {}
-
-HttpUtil::NameValuePairsIterator::NameValuePairsIterator(
-    std::string::const_iterator begin,
-    std::string::const_iterator end,
-    char delimiter)
-    : NameValuePairsIterator(begin,
-                             end,
-                             delimiter,
-                             Values::REQUIRED,
-                             Quotes::NOT_STRICT) {}
 
 HttpUtil::NameValuePairsIterator::NameValuePairsIterator(
     const NameValuePairsIterator& other) = default;
@@ -1017,67 +1005,80 @@ HttpUtil::NameValuePairsIterator::~NameValuePairsIterator() = default;
 // accept values with missing close quotemark (http://crbug.com/39836):
 //   name="value
 bool HttpUtil::NameValuePairsIterator::GetNext() {
-  if (!props_.GetNext())
-    return false;
-
-  // Set the value as everything. Next we will split out the name.
-  value_begin_ = props_.value_begin();
-  value_end_ = props_.value_end();
-  name_begin_ = name_end_ = value_end_;
-
-  // Scan for the equals sign.
-  std::string::const_iterator equals = std::find(value_begin_, value_end_, '=');
-  if (equals == value_begin_)
-    return valid_ = false;  // Malformed, no name
-  if (equals == value_end_ && !values_optional_)
-    return valid_ = false;  // Malformed, no equals sign and values are required
-
-  // If an equals sign was found, verify that it wasn't inside of quote marks.
-  if (equals != value_end_) {
-    for (std::string::const_iterator it = value_begin_; it != equals; ++it) {
-      if (IsQuote(*it))
-        return valid_ = false;  // Malformed, quote appears before equals sign
+  CHECK(valid_);
+  // Not an error, but nothing left to do.
+  if (props_.GetNext()) {
+    // State only becomes invalid if there's another element, but parsing it
+    // fails.
+    valid_ = ParseNameValuePair(props_.value());
+    if (valid_) {
+      return true;
     }
   }
 
-  name_begin_ = value_begin_;
-  name_end_ = equals;
-  value_begin_ = (equals == value_end_) ? value_end_ : equals + 1;
+  // Clear all fields when returning false, regardless of whether `valid` is
+  // true or not, since any populated data is no longer valid.
+  name_ = std::string_view();
+  value_ = std::string_view();
+  unquoted_value_.clear();
+  value_is_quoted_ = false;
+  return false;
+}
 
-  TrimLWS(&name_begin_, &name_end_);
-  TrimLWS(&value_begin_, &value_end_);
+bool HttpUtil::NameValuePairsIterator::ParseNameValuePair(
+    std::string_view name_value_pair) {
+  // Scan for the equals sign.
+  const size_t equals = name_value_pair.find('=');
+  if (equals == 0) {
+    return false;  // Malformed, no name
+  }
+  const bool has_value = (equals != std::string_view::npos);
+  if (!has_value && !values_optional_) {
+    return false;  // Malformed, no equals sign and values are required
+  }
+
+  // Make `name_` everything up until the equals sign.
+  name_ = TrimLWS(name_value_pair.substr(0, equals));
+  // Clear rest of state.
+  value_ = std::string_view();
   value_is_quoted_ = false;
   unquoted_value_.clear();
 
-  if (equals != value_end_ && value_begin_ == value_end_) {
-    // Malformed; value is empty
-    return valid_ = false;
+  // If there is a value, do additional checking and calculate the value.
+  if (has_value) {
+    // Check that no quote appears before the equals sign.
+    if (base::ranges::any_of(name_, IsQuote)) {
+      return false;
+    }
+
+    // Value consists of everything after the equals sign, with whitespace
+    // trimmed.
+    value_ = TrimLWS(name_value_pair.substr(equals + 1));
+    if (value_.empty()) {
+      // Malformed; value is empty
+      return false;
+    }
   }
 
-  if (value_begin_ != value_end_ && IsQuote(*value_begin_)) {
+  if (has_value && IsQuote(value_.front())) {
     value_is_quoted_ = true;
 
     if (strict_quotes_) {
-      if (!HttpUtil::StrictUnquote(
-              base::MakeStringPiece(value_begin_, value_end_),
-              &unquoted_value_))
-        return valid_ = false;
-      return true;
+      return HttpUtil::StrictUnquote(value_, &unquoted_value_);
     }
 
     // Trim surrounding quotemarks off the value
-    if (*value_begin_ != *(value_end_ - 1) || value_begin_ + 1 == value_end_) {
+    if (value_.front() != value_.back() || value_.size() == 1) {
       // NOTE: This is not as graceful as it sounds:
       // * quoted-pairs will no longer be unquoted
       //   (["\"hello] should give ["hello]).
       // * Does not detect when the final quote is escaped
       //   (["value\"] should give [value"])
       value_is_quoted_ = false;
-      ++value_begin_;  // Gracefully recover from mismatching quotes.
+      value_ = value_.substr(1);  // Gracefully recover from mismatching quotes.
     } else {
-      // Do not store iterators into this. See declaration of unquoted_value_.
-      unquoted_value_ =
-          HttpUtil::Unquote(base::MakeStringPiece(value_begin_, value_end_));
+      // Do not store iterators into this. See declaration of `unquoted_value_`.
+      unquoted_value_ = HttpUtil::Unquote(value_);
     }
   }
 
@@ -1196,13 +1197,15 @@ bool HttpUtil::HeadersContainMultipleCopiesOfField(
     const HttpResponseHeaders& headers,
     const std::string& field_name) {
   size_t it = 0;
-  std::string field_value;
-  if (!headers.EnumerateHeader(&it, field_name, &field_value))
+  std::optional<std::string_view> field_value =
+      headers.EnumerateHeader(&it, field_name);
+  if (!field_value) {
     return false;
+  }
   // There's at least one `field_name` header.  Check if there are any more
   // such headers, and if so, return true if they have different values.
-  std::string field_value2;
-  while (headers.EnumerateHeader(&it, field_name, &field_value2)) {
+  std::optional<std::string_view> field_value2;
+  while ((field_value2 = headers.EnumerateHeader(&it, field_name))) {
     if (field_value != field_value2)
       return true;
   }

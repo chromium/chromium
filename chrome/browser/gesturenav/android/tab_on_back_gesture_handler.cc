@@ -4,8 +4,12 @@
 
 #include "chrome/browser/gesturenav/android/tab_on_back_gesture_handler.h"
 
+#include <iomanip>
+
 #include "content/public/browser/back_forward_transition_animation_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -16,6 +20,10 @@
 namespace gesturenav {
 
 namespace {
+
+const base::FeatureParam<bool> kDumpWithoutCrashTabOnBackGestureHandler{
+    &blink::features::kBackForwardTransitions,
+    "dump-without-crash-tab-on-back-gesture-handler", false};
 
 using NavDirection =
     content::BackForwardTransitionAnimationManager::NavigationDirection;
@@ -35,13 +43,18 @@ TabOnBackGestureHandler::TabOnBackGestureHandler(TabAndroid* tab_android)
 void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
                                             float progress,
                                             int edge,
-                                            bool forward) {
+                                            bool forward,
+                                            bool is_gesture_mode) {
+  is_gesture_mode_ = is_gesture_mode;
+  SCOPED_CRASH_KEY_BOOL("OnBackStarted", "gesture mode", is_gesture_mode);
   // Ideally the OS shouldn't start a new gesture without finishing the previous
   // gesture but we see this pattern on multiple devices.
   // See crbug.com/41484247.
   if (is_in_progress_) {
-    base::debug::DumpWithoutCrashing();
-    OnBackCancelled(env);
+    if (kDumpWithoutCrashTabOnBackGestureHandler.Get()) {
+      base::debug::DumpWithoutCrashing();
+    }
+    OnBackCancelled(env, is_gesture_mode);
     CHECK(!is_in_progress_);
   }
 
@@ -60,27 +73,67 @@ void TabOnBackGestureHandler::OnBackStarted(JNIEnv* env,
 
 void TabOnBackGestureHandler::OnBackProgressed(JNIEnv* env,
                                                float progress,
-                                               int edge) {
-  CHECK(is_in_progress_);
+                                               int edge,
+                                               bool forward,
+                                               bool is_gesture_mode) {
+  SCOPED_CRASH_KEY_BOOL("OnBackProgressed", "gesture mode", is_gesture_mode);
+  if (
+      // http://crbug.com/373617224. Gracefully handle this case until the
+      // upstream is fixed.
+      !is_in_progress_ ||
+      // Ideally the edge value should not be changed during a navigation
+      // however, we see multiple instances with different edge values from
+      // start to progress. See crbug.com/370105609.
+      started_edge_ != static_cast<ui::BackGestureEventSwipeEdge>(edge)) {
+    if (kDumpWithoutCrashTabOnBackGestureHandler.Get()) {
+      std::ostringstream strs;
+      strs << std::fixed << std::setprecision(6) << progress;
+      SCOPED_CRASH_KEY_STRING64("OnBackProgressed", "progress", strs.str());
+      SCOPED_CRASH_KEY_STRING32(
+          "OnBackProgressed", "started edge",
+          started_edge_ == ui::BackGestureEventSwipeEdge::LEFT ? "left"
+                                                               : "right");
+      SCOPED_CRASH_KEY_STRING32("OnBackProgressed", "edge",
+                                edge == 0 ? "left" : "right");
+      SCOPED_CRASH_KEY_BOOL("OnBackProgressed", "forward", forward);
+      SCOPED_CRASH_KEY_BOOL("OnBackProgressed", "is in progress",
+                            is_in_progress_);
+      base::debug::DumpWithoutCrashing();
+    }
+    if (is_in_progress_) {
+      OnBackCancelled(env, is_gesture_mode);
+    }
+
+    CHECK(!is_in_progress_);
+    OnBackStarted(env, progress, edge, forward, is_gesture_mode);
+    return;
+  }
 
   content::WebContents* web_contents = tab_android_->web_contents();
   AssertHasWindowAndCompositor(web_contents);
 
-  CHECK_EQ(started_edge_, static_cast<ui::BackGestureEventSwipeEdge>(edge));
+  // The OS can give us incorrect progress values.
+  progress = std::clamp(progress, 0.f, 1.f);
 
-  if (progress > 1.f) {
-    // TODO(crbug.com/41483519): Happens in fling. Should figure out why
-    // before launch. Cap the progress at 1.f for now.
-    LOG(ERROR) << "TabOnBackGestureHandler::OnBackProgressed " << progress;
-    progress = 1.f;
-  }
   ui::BackGestureEvent back_gesture(progress);
   web_contents->GetBackForwardTransitionAnimationManager()->OnGestureProgressed(
       back_gesture);
 }
 
-void TabOnBackGestureHandler::OnBackCancelled(JNIEnv* env) {
-  CHECK(is_in_progress_);
+void TabOnBackGestureHandler::OnBackCancelled(JNIEnv* env,
+                                              bool is_gesture_mode) {
+  SCOPED_CRASH_KEY_BOOL("OnBackCancelled", "gesture mode", is_gesture_mode);
+  if (!is_in_progress_) {
+    if (kDumpWithoutCrashTabOnBackGestureHandler.Get()) {
+      SCOPED_CRASH_KEY_STRING32(
+          "OnBackCancelled", "started edge",
+          started_edge_ == ui::BackGestureEventSwipeEdge::LEFT ? "left"
+                                                               : "right");
+      base::debug::DumpWithoutCrashing();
+    }
+    return;
+  }
+
   is_in_progress_ = false;
 
   content::WebContents* web_contents = tab_android_->web_contents();
@@ -90,8 +143,19 @@ void TabOnBackGestureHandler::OnBackCancelled(JNIEnv* env) {
       ->OnGestureCancelled();
 }
 
-void TabOnBackGestureHandler::OnBackInvoked(JNIEnv* env) {
-  CHECK(is_in_progress_);
+void TabOnBackGestureHandler::OnBackInvoked(JNIEnv* env, bool is_gesture_mode) {
+  SCOPED_CRASH_KEY_BOOL("OnBackInvoked", "gesture mode", is_gesture_mode);
+  if (!is_in_progress_) {
+    if (kDumpWithoutCrashTabOnBackGestureHandler.Get()) {
+      SCOPED_CRASH_KEY_STRING32(
+          "OnBackInvoked", "started edge",
+          started_edge_ == ui::BackGestureEventSwipeEdge::LEFT ? "left"
+                                                               : "right");
+      base::debug::DumpWithoutCrashing();
+    }
+    return;
+  }
+
   is_in_progress_ = false;
 
   content::WebContents* web_contents = tab_android_->web_contents();
@@ -110,7 +174,7 @@ void TabOnBackGestureHandler::Destroy(JNIEnv* env) {
     // When the Java's Tab is destroyed, the compositor might already be
     // detached from the Window. No need to call `OnBackCancelled()` because the
     // animation is already aborted (thus `AnimationStage::kNone`).
-    OnBackCancelled(env);
+    OnBackCancelled(env, is_gesture_mode_);
   }
   delete this;
 }

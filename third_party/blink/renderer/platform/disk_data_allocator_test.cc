@@ -40,8 +40,8 @@ class DiskDataAllocatorTest : public ::testing::Test {
     std::vector<std::unique_ptr<DiskDataMetadata>> all_metadata;
     for (size_t i = 0; i < count; i++) {
       auto reserved_chunk = allocator->TryReserveChunk(random_data.size());
-      auto metadata =
-          allocator->Write(std::move(reserved_chunk), random_data.c_str());
+      auto metadata = allocator->Write(std::move(reserved_chunk),
+                                       base::as_byte_span(random_data));
       EXPECT_TRUE(metadata);
       EXPECT_EQ(metadata->start_offset(), static_cast<int64_t>(i * size));
       all_metadata.push_back(std::move(metadata));
@@ -95,13 +95,13 @@ TEST_F(DiskDataAllocatorTest, ReadWrite) {
   std::string random_data = base::RandBytesAsString(kSize);
   auto reserved_chunk = allocator.TryReserveChunk(kSize);
   ASSERT_TRUE(reserved_chunk);
-  auto metadata =
-      allocator.Write(std::move(reserved_chunk), random_data.c_str());
+  auto metadata = allocator.Write(std::move(reserved_chunk),
+                                  base::as_byte_span(random_data));
   EXPECT_TRUE(metadata);
   EXPECT_EQ(kSize, metadata->size());
 
   auto read_data = std::vector<char>(kSize);
-  allocator.Read(*metadata, &read_data[0]);
+  allocator.Read(*metadata, base::as_writable_bytes(base::span(read_data)));
 
   EXPECT_EQ(0, memcmp(&read_data[0], random_data.c_str(), kSize));
 }
@@ -117,7 +117,8 @@ TEST_F(DiskDataAllocatorTest, ReadWriteDiscardMultiple) {
     auto data = base::RandBytesAsString(size);
     auto reserved_chunk = allocator.TryReserveChunk(size);
     ASSERT_TRUE(reserved_chunk);
-    auto metadata = allocator.Write(std::move(reserved_chunk), &data[0]);
+    auto metadata =
+        allocator.Write(std::move(reserved_chunk), base::as_byte_span(data));
     EXPECT_TRUE(metadata);
     data_written.emplace_back(std::move(metadata), data);
   }
@@ -127,7 +128,7 @@ TEST_F(DiskDataAllocatorTest, ReadWriteDiscardMultiple) {
   for (const auto& p : data_written) {
     size_t size = p.first->size();
     auto read_data = std::vector<char>(size);
-    allocator.Read(*p.first, &read_data[0]);
+    allocator.Read(*p.first, base::as_writable_bytes(base::span(read_data)));
 
     EXPECT_EQ(0, memcmp(&read_data[0], &p.second[0], size));
   }
@@ -150,14 +151,14 @@ TEST_F(DiskDataAllocatorTest, WriteEventuallyFail) {
   for (int i = 0; i < 4; i++) {
     auto reserved_chunk = allocator.TryReserveChunk(random_data.size());
     ASSERT_TRUE(reserved_chunk);
-    auto metadata =
-        allocator.Write(std::move(reserved_chunk), random_data.c_str());
+    auto metadata = allocator.Write(std::move(reserved_chunk),
+                                    base::as_byte_span(random_data));
     EXPECT_TRUE(metadata);
   }
   auto reserved_chunk = allocator.TryReserveChunk(random_data.size());
   ASSERT_TRUE(reserved_chunk);
-  auto metadata =
-      allocator.Write(std::move(reserved_chunk), random_data.c_str());
+  auto metadata = allocator.Write(std::move(reserved_chunk),
+                                  base::as_byte_span(random_data));
   EXPECT_FALSE(metadata);
   EXPECT_FALSE(allocator.may_write());
 }
@@ -172,8 +173,8 @@ TEST_F(DiskDataAllocatorTest, CanReuseFreedChunk) {
     std::string random_data = base::RandBytesAsString(kSize);
     auto reserved_chunk = allocator.TryReserveChunk(random_data.size());
     ASSERT_TRUE(reserved_chunk);
-    auto metadata =
-        allocator.Write(std::move(reserved_chunk), random_data.c_str());
+    auto metadata = allocator.Write(std::move(reserved_chunk),
+                                    base::as_byte_span(random_data));
     EXPECT_TRUE(metadata);
     all_metadata.push_back(std::move(metadata));
   }
@@ -186,8 +187,8 @@ TEST_F(DiskDataAllocatorTest, CanReuseFreedChunk) {
   std::string random_data = base::RandBytesAsString(kSize);
   auto reserved_chunk = allocator.TryReserveChunk(random_data.size());
   ASSERT_TRUE(reserved_chunk);
-  auto new_metadata =
-      allocator.Write(std::move(reserved_chunk), random_data.c_str());
+  auto new_metadata = allocator.Write(std::move(reserved_chunk),
+                                      base::as_byte_span(random_data));
   EXPECT_TRUE(new_metadata);
   EXPECT_EQ(new_metadata->start_offset(), start_offset);
 }
@@ -205,8 +206,8 @@ TEST_F(DiskDataAllocatorTest, ExactThenWorstFit) {
     std::string random_data = base::RandBytesAsString(size);
     auto reserved_chunk = allocator.TryReserveChunk(random_data.size());
     ASSERT_TRUE(reserved_chunk);
-    auto metadata =
-        allocator.Write(std::move(reserved_chunk), random_data.c_str());
+    auto metadata = allocator.Write(std::move(reserved_chunk),
+                                    base::as_byte_span(random_data));
     EXPECT_TRUE(metadata);
     all_metadata.push_back(std::move(metadata));
     size += size_increment;
@@ -224,8 +225,8 @@ TEST_F(DiskDataAllocatorTest, ExactThenWorstFit) {
   std::string random_data = base::RandBytesAsString(hole_size);
   auto reserved_chunk = allocator.TryReserveChunk(random_data.size());
   ASSERT_TRUE(reserved_chunk);
-  auto metadata =
-      allocator.Write(std::move(reserved_chunk), random_data.c_str());
+  auto metadata = allocator.Write(std::move(reserved_chunk),
+                                  base::as_byte_span(random_data));
   EXPECT_TRUE(metadata);
   // Exact fit.
   EXPECT_EQ(metadata->start_offset(), hole_offset);
@@ -235,7 +236,8 @@ TEST_F(DiskDataAllocatorTest, ExactThenWorstFit) {
   random_data = base::RandBytesAsString(hole_size - 1);
   reserved_chunk = allocator.TryReserveChunk(random_data.size());
   ASSERT_TRUE(reserved_chunk);
-  metadata = allocator.Write(std::move(reserved_chunk), random_data.c_str());
+  metadata = allocator.Write(std::move(reserved_chunk),
+                             base::as_byte_span(random_data));
   EXPECT_TRUE(metadata);
   EXPECT_EQ(metadata->start_offset(), larger_hole_offset);
 }
@@ -322,8 +324,8 @@ TEST_F(DiskDataAllocatorTest, ProvideValidFile) {
   std::string random_data = base::RandBytesAsString(kSize);
   auto reserved_chunk = allocator.TryReserveChunk(random_data.size());
   ASSERT_TRUE(reserved_chunk);
-  auto metadata =
-      allocator.Write(std::move(reserved_chunk), random_data.c_str());
+  auto metadata = allocator.Write(std::move(reserved_chunk),
+                                  base::as_byte_span(random_data));
   if (!metadata) {
     GTEST_SKIP() << "Disk full?";
   }
@@ -331,7 +333,7 @@ TEST_F(DiskDataAllocatorTest, ProvideValidFile) {
   EXPECT_EQ(kSize, metadata->size());
 
   auto read_data = std::vector<char>(kSize);
-  allocator.Read(*metadata, &read_data[0]);
+  allocator.Read(*metadata, base::as_writable_bytes(base::span(read_data)));
 
   EXPECT_EQ(0, memcmp(&read_data[0], random_data.c_str(), kSize));
 }
@@ -360,22 +362,22 @@ TEST_F(DiskDataAllocatorTest, WriteWithLimitedCapacity) {
   std::string random_data_1 = base::RandBytesAsString(kMB - 1000);
   auto reserved_chunk = allocator.TryReserveChunk(random_data_1.size());
   ASSERT_TRUE(reserved_chunk);
-  auto metadata_1 =
-      allocator.Write(std::move(reserved_chunk), random_data_1.c_str());
+  auto metadata_1 = allocator.Write(std::move(reserved_chunk),
+                                    base::as_byte_span(random_data_1));
   EXPECT_TRUE(metadata_1);
 
   std::string random_data_2 = base::RandBytesAsString(500);
   reserved_chunk = allocator.TryReserveChunk(random_data_2.size());
   ASSERT_TRUE(reserved_chunk);
-  auto metadata_2 =
-      allocator.Write(std::move(reserved_chunk), random_data_2.c_str());
+  auto metadata_2 = allocator.Write(std::move(reserved_chunk),
+                                    base::as_byte_span(random_data_2));
   EXPECT_TRUE(metadata_2);
 
   std::string random_data_3 = base::RandBytesAsString(100);
   reserved_chunk = allocator.TryReserveChunk(random_data_3.size());
   ASSERT_TRUE(reserved_chunk);
-  auto metadata_3 =
-      allocator.Write(std::move(reserved_chunk), random_data_3.c_str());
+  auto metadata_3 = allocator.Write(std::move(reserved_chunk),
+                                    base::as_byte_span(random_data_3));
   EXPECT_TRUE(metadata_3);
 
   allocator.Discard(std::move(metadata_2));

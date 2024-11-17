@@ -10,8 +10,8 @@ import android.view.ViewGroup.MarginLayoutParams;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -76,20 +76,20 @@ public class LogoUtils {
         return resources.getDimensionPixelSize(R.dimen.logo_margin_top_logo_polish);
     }
 
-    @VisibleForTesting
     /** Returns the height of the LogoView if Logo Polish is enabled with large height. */
+    @VisibleForTesting
     public static int getLogoHeightForLogoPolishWithLargeSize(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_large);
     }
 
-    @VisibleForTesting
     /** Returns the height of the LogoView if Logo Polish is enabled with medium height. */
+    @VisibleForTesting
     public static int getLogoHeightForLogoPolishWithMediumSize(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_medium);
     }
 
-    @VisibleForTesting
     /** Returns the height of the LogoView if Logo Polish is enabled. */
+    @VisibleForTesting
     public static int getLogoHeightForLogoPolishWithSmallSize(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_small);
     }

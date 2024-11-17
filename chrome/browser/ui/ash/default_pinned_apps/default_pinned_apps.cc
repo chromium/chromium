@@ -4,15 +4,13 @@
 
 #include "chrome/browser/ui/ash/default_pinned_apps/default_pinned_apps.h"
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_switches.h"
-#include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
-#include "chrome/common/extensions/extension_constants.h"
+#include "ash/constants/web_app_id_constants.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "content/public/browser/browser_context.h"
-#include "extensions/common/constants.h"
 
 namespace {
 
@@ -25,35 +23,35 @@ bool ShouldAddHelpApp(content::BrowserContext* browser_context) {
 std::vector<StaticAppId> GetDefaultPinnedApps(
     content::BrowserContext* browser_context) {
   std::vector<StaticAppId> app_ids{
-      web_app::kGmailAppId,
+      ash::kGmailAppId,
 
-      web_app::kGoogleCalendarAppId,
+      ash::kGoogleCalendarAppId,
 
       file_manager::kFileManagerSwaAppId,
 
-      web_app::kMessagesAppId,
+      ash::kMessagesAppId,
 
-      web_app::kGoogleMeetAppId,
+      ash::kGoogleMeetAppId,
 
       arc::kPlayStoreAppId,
 
-      web_app::kYoutubeAppId,
+      ash::kYoutubeAppId,
 
       arc::kGooglePhotosAppId,
   };
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (chromeos::features::IsContainerAppPreinstallEnabled()) {
-    app_ids.insert(app_ids.begin(), web_app::kContainerAppId);
+  if (chromeos::features::IsGeminiAppPreinstallEnabled()) {
+    app_ids.insert(app_ids.begin(), ash::kGeminiAppId);
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   if (chromeos::features::IsCloudGamingDeviceEnabled()) {
-    app_ids.push_back(web_app::kNvidiaGeForceNowAppId);
+    app_ids.push_back(ash::kNvidiaGeForceNowAppId);
   }
 
   if (ShouldAddHelpApp(browser_context)) {
-    app_ids.push_back(web_app::kHelpAppId);
+    app_ids.push_back(ash::kHelpAppId);
   }
 
   return app_ids;
@@ -74,7 +72,7 @@ std::vector<StaticAppId> GetTabletFormFactorDefaultPinnedApps(
   };
 
   if (ShouldAddHelpApp(browser_context)) {
-    app_ids.push_back(web_app::kHelpAppId);
+    app_ids.push_back(ash::kHelpAppId);
   }
 
   return app_ids;

@@ -34,33 +34,43 @@ const tests = [
   },
   {
     name:
-        '[quantizeLinear] Throw if the shape of scale is not broadcastable to the shape of input.',
-    input: {dataType: 'float32', shape: [3, 2, 5]},
-    scale: {dataType: 'float32', shape: [2]},
-    zeroPoint: {dataType: 'int8', shape: [5]},
+        '[quantizeLinear] Test block-wise quantization with block_size = [3, 2, 5].',
+    input: {dataType: 'float32', shape: [6, 4, 5]},
+    scale: {dataType: 'float32', shape: [2, 2, 1]},
+    zeroPoint: {dataType: 'int8', shape: [2, 2, 1]},
+    output: {dataType: 'int8', shape: [6, 4, 5]},
   },
   {
     name:
-        '[quantizeLinear] Throw if the shape of zero_point is not broadcastable to the shape of input.',
+        '[quantizeLinear] Throw if the scale size is not a factor of input size.',
+    input: {dataType: 'float32', shape: [3, 2, 5]},
+    scale: {dataType: 'float32', shape: [2, 1, 5]},
+    zeroPoint: {dataType: 'int8', shape: [2, 1, 5]},
+  },
+  {
+    name:
+        '[quantizeLinear] Throw if the shape of zero_point is not the same as the shape of input.',
     input: {dataType: 'float32', shape: [3, 2, 5]},
     scale: {dataType: 'float32', shape: [5]},
-    zeroPoint: {dataType: 'int8', shape: [2]},
+    zeroPoint: {dataType: 'int8', shape: [2, 5]},
   },
   {
     name:
         '[quantizeLinear] Throw if the data type of input is not the same as scale.',
     input: {dataType: 'float32', shape: [3, 2, 5]},
-    scale: {dataType: 'float16', shape: [5]},
-    zeroPoint: {dataType: 'int8', shape: [5]},
+    scale: {dataType: 'float16', shape: [3, 1, 5]},
+    zeroPoint: {dataType: 'int8', shape: [3, 1, 5]},
   },
   {
-    name: '[quantizeLinear] Throw if the data type of input is not float32.',
+    name:
+        '[quantizeLinear] Throw if the data type of input is not float32 or float16.',
     input: {dataType: 'int32', shape: [3, 2, 5]},
     scale: {dataType: 'float32', shape: [5]},
     zeroPoint: {dataType: 'int8', shape: [5]},
   },
   {
-    name: '[quantizeLinear] Throw if the data type of scale is not float32.',
+    name:
+        '[quantizeLinear] Throw if the data type of scale is not float32 or float16.',
     input: {dataType: 'float32', shape: [3, 2, 5]},
     scale: {dataType: 'int32', shape: [5]},
     zeroPoint: {dataType: 'uint8', shape: [5]},
@@ -82,8 +92,8 @@ tests.forEach(
       const zeroPoint = builder.input('zeroPoint', test.zeroPoint);
       if (test.output) {
         const output = builder.quantizeLinear(input, scale, zeroPoint);
-        assert_equals(output.dataType(), test.output.dataType);
-        assert_array_equals(output.shape(), test.output.shape);
+        assert_equals(output.dataType, test.output.dataType);
+        assert_array_equals(output.shape, test.output.shape);
       } else {
         const label = 'quantize_linear_123';
         const options = {label};

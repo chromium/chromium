@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 
-import {convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, getFilteredVoiceList, mojoVoicePackStatusToVoicePackStatusEnum, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
+import {convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, getFilteredVoiceList, getNotification, mojoVoicePackStatusToVoicePackStatusEnum, NotificationType, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertDeepEquals, assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {createSpeechSynthesisVoice} from './common.js';
@@ -331,4 +331,78 @@ suite('voice and language utils', () => {
               [voice1, voice2, voice4], getFilteredVoiceList(possibleVoices));
         }
       });
+
+  test('getNotification', () => {
+    const availableVoices: SpeechSynthesisVoice[] = [];
+    // Unsupported language.
+    assertEquals(
+        NotificationType.NONE,
+        getNotification(
+            'unsupported lang', VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
+            availableVoices, true));
+
+    // Downloading notifications.
+    const voicePackLang = 'cs-cz';
+    assertEquals(
+        NotificationType.DOWNLOADING,
+        getNotification(
+            voicePackLang, VoiceClientSideStatusCode.SENT_INSTALL_REQUEST,
+            availableVoices, true));
+    assertEquals(
+        NotificationType.DOWNLOADING,
+        getNotification(
+            voicePackLang,
+            VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY,
+            availableVoices, true));
+    assertEquals(
+        NotificationType.DOWNLOADING,
+        getNotification(
+            voicePackLang, VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE,
+            availableVoices, true));
+
+    // Offline.
+    assertEquals(
+        NotificationType.NO_INTERNET,
+        getNotification(
+            voicePackLang, VoiceClientSideStatusCode.ERROR_INSTALLING,
+            availableVoices, false));
+    availableVoices.push(createSpeechSynthesisVoice({
+      name: 'Ed',
+      lang: voicePackLang,
+    }));
+    assertEquals(
+        NotificationType.NONE,
+        getNotification(
+            voicePackLang, VoiceClientSideStatusCode.ERROR_INSTALLING,
+            availableVoices, false));
+
+    // Generic error.
+    assertEquals(
+        NotificationType.NONE,
+        getNotification(
+            voicePackLang, VoiceClientSideStatusCode.ERROR_INSTALLING,
+            availableVoices, true));
+    availableVoices.pop();
+    assertEquals(
+        NotificationType.GENERIC_ERROR,
+        getNotification(
+            voicePackLang, VoiceClientSideStatusCode.ERROR_INSTALLING,
+            availableVoices, true));
+
+    // Allocation error.
+    assertEquals(
+        NotificationType.NO_SPACE,
+        getNotification(
+            voicePackLang, VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION,
+            availableVoices, true));
+    availableVoices.push(createSpeechSynthesisVoice({
+      name: 'Taylor',
+      lang: voicePackLang,
+    }));
+    assertEquals(
+        NotificationType.NO_SPACE_HQ,
+        getNotification(
+            voicePackLang, VoiceClientSideStatusCode.INSTALL_ERROR_ALLOCATION,
+            availableVoices, true));
+  });
 });

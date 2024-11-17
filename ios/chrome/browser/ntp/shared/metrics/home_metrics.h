@@ -21,9 +21,11 @@ enum class IOSHomeActionType {
   kSafetyCheck = 7,
   kParcelTracking = 8,
   kOpenDistantTabResumption = 9,
-  kMaxValue = kOpenDistantTabResumption,
+  kPriceTrackingPromo = 10,
+  kTips = 11,
+  kMaxValue = kTips,
 };
-// LINT.ThenChange(/tools/metrics/histograms/ios/enums.xml)
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml)
 
 extern const char kMagicStackTopModuleImpressionHistogram[];
 

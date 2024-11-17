@@ -25,6 +25,7 @@
 #include "components/cbor/writer.h"
 #include "content/browser/interest_group/interest_group_auction.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/storage_interest_group.h"
 #include "content/public/common/content_switches.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
@@ -99,6 +100,18 @@ struct SerializedBiddersMap {
   base::flat_map<blink::InterestGroupKey, url::Origin> group_pagg_coordinators;
 };
 
+bool KAnonIsEnabled() {
+  // K-anonymity enforcement is always disabled for the testing population.
+  if (base::FeatureList::IsEnabled(
+          features::kCookieDeprecationFacilitatedTesting)) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(
+             blink::features::kFledgeConsiderKAnonymity) &&
+         base::FeatureList::IsEnabled(
+             blink::features::kFledgeEnforceKAnonymity);
+}
+
 constexpr std::size_t constexpr_strlen(const char* s) {
   return std::char_traits<char>::length(s);
 }
@@ -134,7 +147,7 @@ size_t MaxLengthOfTaggedData(uint64_t length) {
   } else if (length <= 0xFFFF + 1 + 2) {
     // 1 byte tag, 2 bytes length.
     lol_x = 2;
-  } else if (length <= 0xFFFFFFFF + 1 + 4) {
+  } else if (length <= static_cast<uint64_t>(0xFFFFFFFF) + 1 + 4) {
     // 1 byte tag, 4 bytes length.
     lol_x = 4;
   } else {
@@ -287,15 +300,15 @@ ValueAndSize SerializeInterestGroup(base::Time start_time,
   browser_signals_elements_size +=
       TaggedStringLength(constexpr_strlen("joinCount")) +
       TaggedSIntLength(group->bidding_browser_signals->join_count);
-  int32_t recency = (start_time - group->join_time).InSeconds();
+  int64_t recency = (start_time - group->join_time).InMilliseconds();
   if (recency < 0) {
     // It doesn't make sense to say that the browser joined the interest group
     // in the future, so just truncate to the present.
     recency = 0;
   }
-  browser_signals[cbor::Value("recency")] = cbor::Value(recency);
+  browser_signals[cbor::Value("recencyMs")] = cbor::Value(recency);
   browser_signals_elements_size +=
-      TaggedStringLength(constexpr_strlen("recency")) +
+      TaggedStringLength(constexpr_strlen("recencyMs")) +
       TaggedSIntLength(recency);
 
   cbor::Value::ArrayValue prev_wins;
@@ -943,6 +956,13 @@ BiddingAndAuctionData BiddingAndAuctionSerializer::Build() {
   message_elements_size +=
       TaggedStringLength(constexpr_strlen("requestTimestampMs")) +
       TaggedSIntLength(timestamp);
+
+  if (base::FeatureList::IsEnabled(features::kEnableBandAKAnonEnforcement) &&
+      KAnonIsEnabled()) {
+    message_obj[cbor::Value("enforceKAnon")] = cbor::Value(true);
+    message_elements_size +=
+        TaggedStringLength(constexpr_strlen("enforceKAnon")) + 1;
+  }
 
   // Add a dummy element that we will overwrite later to help us estimate the
   // size of the message.

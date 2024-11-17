@@ -87,9 +87,7 @@ export function getHtml(this: ViewerPropertiesDialogElement) {
       <tr>
         <td class="name">$i18n{propertiesFastWebView}</td>
         <td class="value" id="fast-web-view">
-          ${this.getFastWebViewValue_('$i18nPolymer{propertiesFastWebViewYes}',
-              '$i18nPolymer{propertiesFastWebViewNo}',
-              this.documentMetadata.linearized)}
+          ${this.getFastWebViewValue_()}
         </td>
       </tr>
     </table>

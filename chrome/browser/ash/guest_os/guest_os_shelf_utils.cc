@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
@@ -153,7 +154,7 @@ std::string GetGuestTokenForWindowId(const std::string* window_app_id) {
   return token;
 }
 
-std::string GetUnregisteredAppIdPrefix(const std::optional<std::string> token) {
+std::string GetUnregisteredAppIdPrefix(const std::string& token) {
   if (token == kBorealisToken) {
     return borealis::kBorealisAnonymousPrefix;
   }
@@ -201,7 +202,8 @@ std::string GetGuestOsShelfAppId(Profile* profile,
 
   std::string token = GetGuestTokenForWindowId(window_app_id);
   std::optional<GuestId> guest_id =
-      GuestOsSessionTracker::GetForProfile(profile)->GetGuestIdForToken(token);
+      GuestOsSessionTrackerFactory::GetForProfile(profile)->GetGuestIdForToken(
+          token);
 
   if (window_startup_id) {
     if (FindAppId(apps, guest_os::prefs::kAppDesktopFileIdKey,
@@ -318,7 +320,8 @@ apps::AppType GetAppType(Profile* profile, std::string_view shelf_app_id) {
   const std::string id(shelf_app_id);
   const std::string token = GetGuestTokenForWindowId(&id);
   std::optional<GuestId> guest_id =
-      GuestOsSessionTracker::GetForProfile(profile)->GetGuestIdForToken(token);
+      GuestOsSessionTrackerFactory::GetForProfile(profile)->GetGuestIdForToken(
+          token);
   if (guest_id.has_value()) {
     return ToAppType(guest_id->vm_type);
   }

@@ -290,8 +290,7 @@ bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
   } else if (strcmp(os, "openbsd") == 0) {
     info->os = extensions::api::runtime::PlatformOs::kOpenbsd;
   } else {
-    NOTREACHED_IN_MIGRATION() << "Platform not supported: " << os;
-    return false;
+    NOTREACHED() << "Platform not supported: " << os;
   }
 
   const char* arch = update_client::UpdateQueryParams::GetArch();
@@ -308,8 +307,7 @@ bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
   } else if (strcmp(arch, "mips64el") == 0) {
     info->arch = extensions::api::runtime::PlatformArch::kMips64;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   const char* nacl_arch = update_client::UpdateQueryParams::GetNaclArch();
@@ -324,8 +322,7 @@ bool ChromeRuntimeAPIDelegate::GetPlatformInfo(PlatformInfo* info) {
   } else if (strcmp(nacl_arch, "mips64") == 0) {
     info->nacl_arch = extensions::api::runtime::PlatformNaclArch::kMips64;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   return true;

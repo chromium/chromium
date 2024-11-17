@@ -9,19 +9,20 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace page_content_annotations {
 class PageContentAnnotationsService;
 }  // namespace page_content_annotations
 
 // Singleton that owns all PageContentAnnotationsService(s) and associates them
-// with ChromeBrowserState. No service is created for incognito profile.
+// with ProfileIOS. No service is created for incognito profile.
 class PageContentAnnotationsServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  static page_content_annotations::PageContentAnnotationsService*
-  GetForBrowserState(ChromeBrowserState* context);
+  static page_content_annotations::PageContentAnnotationsService* GetForProfile(
+      ProfileIOS* profile);
   static PageContentAnnotationsServiceFactory* GetInstance();
 
   // Returns the default factory used to build PageContentAnnotationsService.

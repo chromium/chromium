@@ -1,5 +1,5 @@
 AXWebArea AXRoleDescription='HTML content'
-++AXTextField AXRoleDescription='text field' accessibilityCustomContent=[{label: 'description', value: 'Your username should be your email id'}]
+++AXTextField AXCustomContent=[{label: 'description', value: 'Your username should be your email id'}] AXRoleDescription='text field'
 ++AXGroup AXSubrole=AXUserInterfaceTooltip AXRoleDescription='tooltip' AXTitle='Your username should be your email id'
 ++++AXStaticText AXRoleDescription='text' AXValue='Your username should be your email id'
-++AXTextField AXRoleDescription='text field' accessibilityCustomContent=[{label: 'description', value: 'mmddyy'}]
+++AXTextField AXCustomContent=[{label: 'description', value: 'mmddyy'}] AXRoleDescription='text field'

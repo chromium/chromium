@@ -8,6 +8,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
@@ -40,7 +42,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
-
 
 namespace policy {
 
@@ -166,10 +167,13 @@ class PromotionalTabsEnabledPolicyWhatsNewTest
   virtual int WhatsNewVersionForPref() { return CHROME_VERSION_MAJOR - 1; }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     command_line->RemoveSwitch(switches::kForceFirstRun);
     command_line->AppendSwitch(switches::kForceWhatsNew);
-    command_line->AppendSwitchPath(switches::kUserDataDir, temp_dir_.GetPath());
+  }
+
+  bool SetUpUserDataDirectory() override {
+    base::FilePath user_data_dir;
+    base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
 
     // Suppress the welcome page by setting the pref indicating that it has
     // already been seen. This is necessary because welcome/onboarding takes
@@ -186,13 +190,18 @@ class PromotionalTabsEnabledPolicyWhatsNewTest
     base::JSONWriter::Write(prefs, &json);
 
     base::FilePath default_dir =
-        temp_dir_.GetPath().AppendASCII(chrome::kInitialProfile);
-    ASSERT_TRUE(base::CreateDirectory(default_dir));
+        user_data_dir.AppendASCII(chrome::kInitialProfile);
+    if (!base::CreateDirectory(default_dir)) {
+      ADD_FAILURE() << "base::CreateDirectory() failed, " << default_dir;
+      return false;
+    }
+
     base::FilePath preferences_path =
         default_dir.Append(chrome::kPreferencesFilename);
-
-    ASSERT_TRUE(base::WriteFile(
-        default_dir.Append(chrome::kPreferencesFilename), json));
+    if (!base::WriteFile(preferences_path, json)) {
+      ADD_FAILURE() << "base::WriteFile() failed, " << preferences_path;
+      return false;
+    }
 
     // Also set the version for What's New in the local state.
     base::Value::Dict local_state;
@@ -200,13 +209,15 @@ class PromotionalTabsEnabledPolicyWhatsNewTest
                                 WhatsNewVersionForPref());
     std::string local_state_string;
     base::JSONWriter::Write(local_state, &local_state_string);
-    ASSERT_TRUE(
-        base::WriteFile(temp_dir_.GetPath().Append(chrome::kLocalStateFilename),
-                        local_state_string));
-  }
+    base::FilePath local_state_path =
+        user_data_dir.Append(chrome::kLocalStateFilename);
+    if (!base::WriteFile(local_state_path, local_state_string)) {
+      ADD_FAILURE() << "base::WriteFile() failed, " << local_state_path;
+      return false;
+    }
 
- private:
-  base::ScopedTempDir temp_dir_;
+    return true;
+  }
 };
 
 // This is disabled due to flakiness: https://crbug.com/1362518

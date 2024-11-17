@@ -42,7 +42,8 @@
           "builder": "ToTChromeOS",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTChromeOS/targets"
     }
   },
   "$build/reclient": {

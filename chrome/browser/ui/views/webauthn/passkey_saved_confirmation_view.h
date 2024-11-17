@@ -7,12 +7,16 @@
 
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/webauthn/passkey_saved_confirmation_controller.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 // A view informing the user that their passkey was saved.
 class PasskeySavedConfirmationView : public PasswordBubbleViewBase {
+  METADATA_HEADER(PasskeySavedConfirmationView, PasswordBubbleViewBase)
+
  public:
   PasskeySavedConfirmationView(content::WebContents* web_contents,
-                               views::View* anchor_view);
+                               views::View* anchor_view,
+                               std::string passkey_rp_id);
   ~PasskeySavedConfirmationView() override;
 
  private:

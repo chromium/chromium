@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_
 #define CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_
 
+#include <vector>
+
 #include "base/callback_list.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/browser/page_navigator.h"
@@ -17,10 +19,6 @@
 // your feature needs. This comment will be deleted after there are 10+ features
 // in BrowserWindowFeatures.
 
-namespace user_education {
-class FeaturePromoController;
-}  // namespace user_education
-
 namespace tabs {
 class TabInterface;
 }  // namespace tabs
@@ -30,11 +28,17 @@ class WebView;
 class View;
 }  // namespace views
 
+namespace web_app {
+class AppBrowserController;
+}  // namespace web_app
+
 namespace web_modal {
 class WebContentsModalDialogHost;
 }  // namespace web_modal
 
+class Browser;
 class BrowserActions;
+class BrowserUserEducationInterface;
 class BrowserWindowFeatures;
 class ExclusiveAccessManager;
 class GURL;
@@ -73,8 +77,23 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Returns true if the browser controls are hidden due to being in fullscreen.
   virtual bool ShouldHideUIForFullscreen() const = 0;
 
+  // See Browser::IsAttemptingToCloseBrowser() for more details.
+  virtual bool IsAttemptingToCloseBrowser() const = 0;
+
+  // Register callbacks invoked when browser has successfully processed its
+  // close request and has been scheduled for deletion.
+  using BrowserDidCloseCallback =
+      base::RepeatingCallback<void(BrowserWindowInterface*)>;
+  virtual base::CallbackListSubscription RegisterBrowserDidClose(
+      BrowserDidCloseCallback callback) = 0;
+
   // Returns the top container view.
   virtual views::View* TopContainer() = 0;
+
+  using ActiveTabChangeCallback =
+      base::RepeatingCallback<void(BrowserWindowInterface*)>;
+  virtual base::CallbackListSubscription RegisterActiveTabDidChange(
+      ActiveTabChangeCallback callback) = 0;
 
   // Returns the foreground tab. This can be nullptr very early during
   // BrowserWindow initialization, and very late during BrowserWindow teardown.
@@ -102,6 +121,8 @@ class BrowserWindowInterface : public content::PageNavigator {
   // Whether the window is active.
   // This definition needs to be more precise, as "active" has different
   // semantics and nuance on each platform.
+  // Note that this does not work correctly for mac PWA windows, as those are
+  // hosted in a separate application with a stub in the browser process.
   virtual bool IsActive() = 0;
 
   // Register for these two callbacks to detect changes to IsActive().
@@ -163,10 +184,27 @@ class BrowserWindowInterface : public content::PageNavigator {
   };
   virtual Type GetType() const = 0;
 
-  // Gets the windows's FeaturePromoController which manages display of
-  // in-product help. Will return null in incognito and guest profiles.
-  virtual user_education::FeaturePromoController*
-  GetFeaturePromoController() = 0;
+  // Gets an object that provides common per-browser-window functionality for
+  // user education. The remainder of functionality is provided directly by the
+  // UserEducationService, which can be retrieved directly from the profile.
+  virtual BrowserUserEducationInterface* GetUserEducationInterface() = 0;
+
+  virtual web_app::AppBrowserController* GetAppBrowserController() = 0;
+
+  // This is used by features that need to operate on most or all tabs in the
+  // browser window. Do not use this method to find a specific tab.
+  virtual std::vector<tabs::TabInterface*> GetAllTabInterfaces() = 0;
+
+  // Downcasts to a Browser*. The only valid use for this method is when
+  // migrating a large chunk of code to BrowserWindowInterface, to allow
+  // incremental migration.
+  virtual Browser* GetBrowserForMigrationOnly() = 0;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Ensure there is an active tab, or fail.
+  // TODO(crbug.com/378020140): Remove this once the root cause is identified.
+  virtual void EnsureActiveTab() {}
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_WINDOW_PUBLIC_BROWSER_WINDOW_INTERFACE_H_

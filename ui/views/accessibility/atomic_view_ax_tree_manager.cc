@@ -54,13 +54,7 @@ bool AtomicViewAXTreeManager::IsView() const {
   return true;
 }
 
-ui::AXNode* AtomicViewAXTreeManager::GetNodeFromTree(
-    const ui::AXTreeID& tree_id,
-    const ui::AXNodeID node_id) const {
-  return GetNode(node_id);
-}
-
-ui::AXNode* AtomicViewAXTreeManager::GetNode(const ui::AXNodeID node_id) const {
+ui::AXNode* AtomicViewAXTreeManager::GetNode(ui::AXNodeID node_id) const {
   // This here is the key to the whole thing. The AtomicViewAXTreeManager is
   // fetching and updating the AXNodeData from the View itself whenever this
   // function gets called.
@@ -69,20 +63,6 @@ ui::AXNode* AtomicViewAXTreeManager::GetNode(const ui::AXNodeID node_id) const {
       << "The AtomicViewAXTreeManager should only allow callers to get the "
          "root node as it is the only managed node.";
   return ax_tree_->root();
-}
-
-ui::AXPlatformNode* AtomicViewAXTreeManager::GetPlatformNodeFromTree(
-    const ui::AXNodeID node_id) const {
-  return delegate_->GetFromNodeID(node_id);
-}
-
-ui::AXPlatformNode* AtomicViewAXTreeManager::GetPlatformNodeFromTree(
-    const ui::AXNode& node) const {
-  return GetPlatformNodeFromTree(node.id());
-}
-
-ui::AXPlatformNodeDelegate* AtomicViewAXTreeManager::RootDelegate() const {
-  return delegate_;
 }
 
 ui::AXTreeID AtomicViewAXTreeManager::GetParentTreeID() const {
@@ -100,6 +80,20 @@ ui::AXNode* AtomicViewAXTreeManager::GetRoot() const {
 
 ui::AXNode* AtomicViewAXTreeManager::GetParentNodeFromParentTree() const {
   return nullptr;
+}
+
+ui::AXPlatformNode* AtomicViewAXTreeManager::GetPlatformNodeFromTree(
+    ui::AXNodeID node_id) const {
+  return delegate_->GetFromNodeID(node_id);
+}
+
+ui::AXPlatformNode* AtomicViewAXTreeManager::GetPlatformNodeFromTree(
+    const ui::AXNode& node) const {
+  return GetPlatformNodeFromTree(node.id());
+}
+
+ui::AXPlatformNodeDelegate* AtomicViewAXTreeManager::RootDelegate() const {
+  return delegate_;
 }
 
 void AtomicViewAXTreeManager::ClearComputedRootData() {

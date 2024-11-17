@@ -5,6 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_FLATLAND_FLATLAND_SURFACE_CANVAS_H_
 #define UI_OZONE_PLATFORM_FLATLAND_FLATLAND_SURFACE_CANVAS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -85,8 +86,8 @@ class FlatlandSurfaceCanvas : public SurfaceOzoneCanvas {
 
   void OnFlatlandError(fuchsia::ui::composition::FlatlandError error);
 
-  fuchsia::sysmem2::Allocator_Sync* const sysmem_allocator_;
-  fuchsia::ui::composition::Allocator* const flatland_allocator_;
+  const raw_ptr<fuchsia::sysmem2::Allocator_Sync> sysmem_allocator_;
+  const raw_ptr<fuchsia::ui::composition::Allocator> flatland_allocator_;
 
   FlatlandConnection flatland_;
 

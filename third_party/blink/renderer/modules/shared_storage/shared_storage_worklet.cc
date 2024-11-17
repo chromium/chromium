@@ -12,7 +12,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
@@ -93,12 +93,6 @@ ScriptPromise<IDLUndefined> SharedStorageWorklet::addModule(
     const String& module_url,
     const WorkletOptions* options,
     ExceptionState& exception_state) {
-  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
-    LogSharedStorageWorkletError(
-        SharedStorageWorkletErrorType::kAddModuleWebVisible);
-    return EmptyPromise();
-  }
-
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
@@ -116,6 +110,12 @@ void SharedStorageWorklet::AddModuleHelper(
     ExceptionState& exception_state,
     bool resolve_to_worklet,
     SharedStorageDataOrigin data_origin_type) {
+  if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kAddModuleWebVisible);
+    return;
+  }
+
   base::TimeTicks start_time = base::TimeTicks::Now();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   CHECK(execution_context->IsWindow());
@@ -232,10 +232,9 @@ void SharedStorageWorklet::AddModuleHelper(
 
   shared_storage_origin_ = std::move(shared_storage_origin);
 
-  const String& credentials = options->credentials();
-  std::optional<network::mojom::CredentialsMode> credentials_mode =
-      Request::ParseCredentialsMode(credentials);
-  CHECK(credentials_mode);
+  network::mojom::CredentialsMode credentials_mode =
+      Request::V8RequestCredentialsToCredentialsMode(
+          options->credentials().AsEnum());
 
   std::unique_ptr<Vector<mojom::blink::OriginTrialFeature>>
       origin_trial_features =
@@ -244,7 +243,7 @@ void SharedStorageWorklet::AddModuleHelper(
   SharedStorageWindowSupplement::From(To<LocalDOMWindow>(*execution_context))
       ->GetSharedStorageDocumentService()
       ->CreateWorklet(
-          script_source_url, shared_storage_security_origin, *credentials_mode,
+          script_source_url, shared_storage_security_origin, credentials_mode,
           origin_trial_features ? *origin_trial_features
                                 : Vector<mojom::blink::OriginTrialFeature>(),
           worklet_host_.BindNewEndpointAndPassReceiver(
@@ -489,12 +488,24 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
     index++;
   }
 
+  base::ElapsedTimer serialization_timer;
+
   std::optional<BlinkCloneableMessage> serialized_data =
       Serialize(options, *execution_context, exception_state);
   if (!serialized_data) {
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kSelectURLWebVisible);
     return promise;
+  }
+
+  base::UmaHistogramTimes(
+      "Storage.SharedStorage.SelectURL.DataSerialization.Time",
+      serialization_timer.Elapsed());
+
+  if (serialized_data->message) {
+    base::UmaHistogramMemoryKB(
+        "Storage.SharedStorage.SelectURL.DataSerialization.SizeKB",
+        serialized_data->message->DataLengthInBytes() / 1024);
   }
 
   bool resolve_to_config = options->resolveToConfig();
@@ -530,7 +541,7 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
 
   worklet_host_->SelectURL(
       name, std::move(converted_urls), std::move(*serialized_data), keep_alive,
-      std::move(private_aggregation_config),
+      std::move(private_aggregation_config), options->savedQuery(),
       WTF::BindOnce(
           [](ScriptPromiseResolver<V8SharedStorageResponse>* resolver,
              SharedStorageWorklet* shared_storage_worklet,
@@ -598,11 +609,22 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
     return EmptyPromise();
   }
 
+  base::ElapsedTimer serialization_timer;
+
   std::optional<BlinkCloneableMessage> serialized_data =
       Serialize(options, *execution_context, exception_state);
   if (!serialized_data) {
     LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
     return EmptyPromise();
+  }
+
+  base::UmaHistogramTimes("Storage.SharedStorage.Run.DataSerialization.Time",
+                          serialization_timer.Elapsed());
+
+  if (serialized_data->message) {
+    base::UmaHistogramMemoryKB(
+        "Storage.SharedStorage.Run.DataSerialization.SizeKB",
+        serialized_data->message->DataLengthInBytes() / 1024);
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<IDLAny>>(

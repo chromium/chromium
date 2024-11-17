@@ -86,7 +86,6 @@ def CheckNoDisallowedJS(input_api, output_api):
   # Also exempt any externs or eslint files, which must be in JS.
   EXCLUDE_PATH_SUFFIXES = [
     '_externs.js',
-    '.eslintrc.js',
   ]
 
   def allow_js(f):

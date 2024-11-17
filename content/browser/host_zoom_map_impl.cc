@@ -519,6 +519,13 @@ void HostZoomMapImpl::SetSystemFontScaleForTesting(float scale) {
   Java_HostZoomMapImpl_setSystemFontScaleForTesting(env, scale);  // IN-TEST
 }
 
+void HostZoomMapImpl::SetShouldAdjustForOSLevelForTesting(
+    bool shouldAdjustForOSLevel) {
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  Java_HostZoomMapImpl_setShouldAdjustForOSLevelForTesting(
+      env, shouldAdjustForOSLevel);  // IN-TEST
+}
+
 void HostZoomMapImpl::SetDefaultZoomLevelPrefCallback(
     HostZoomMap::DefaultZoomChangedCallback callback) {
   default_zoom_level_pref_callback_ = std::move(callback);
@@ -647,10 +654,9 @@ JNI_HostZoomMapImpl_GetAllHostZoomLevels(
         break;
       }
       case HostZoomMap::ZOOM_CHANGED_FOR_SCHEME_AND_HOST:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case HostZoomMap::ZOOM_CHANGED_TEMPORARY_ZOOM:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

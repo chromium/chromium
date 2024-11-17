@@ -9,9 +9,10 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/memory/scoped_refptr.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/credential_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
+
+class ProfileIOS;
 
 namespace password_manager {
 struct CredentialUIEntry;
@@ -39,7 +40,7 @@ class SavedPasswordsPresenter;
                     (const std::vector<password_manager::CredentialUIEntry>&)
                         credentials
                       displayName:(NSString*)displayName
-                     browserState:(ChromeBrowserState*)browserState
+                          profile:(ProfileIOS*)profile
                           context:(DetailsContext)context
                          delegate:(id<PasswordDetailsMediatorDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;

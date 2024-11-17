@@ -277,8 +277,7 @@ bool URLDatabase::CommitTemporaryURLTable() {
     return false;
   }
   if (!GetDB().Execute("ALTER TABLE temp_urls RENAME TO urls")) {
-    NOTREACHED_IN_MIGRATION() << GetDB().GetErrorMessage();
-    return false;
+    NOTREACHED() << GetDB().GetErrorMessage();
   }
 
   // Re-create the index over the now permanent URLs table -- this was not there
@@ -716,8 +715,7 @@ bool URLDatabase::CreateURLTable(bool is_temporary) {
       return true;
     }
     if (!GetDB().Execute("DROP TABLE temp_urls")) {
-      NOTREACHED_IN_MIGRATION() << GetDB().GetErrorMessage();
-      return false;
+      NOTREACHED() << GetDB().GetErrorMessage();
     }
   }
 
@@ -752,8 +750,7 @@ bool URLDatabase::CreateMainURLIndex() {
 bool URLDatabase::RecreateURLTableWithAllContents() {
   // Create a temporary table to contain the new URLs table.
   if (!CreateTemporaryURLTable()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   // Copy the contents.

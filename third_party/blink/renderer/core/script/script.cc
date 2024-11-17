@@ -13,13 +13,15 @@
 
 namespace blink {
 
-std::optional<mojom::blink::ScriptType> Script::ParseScriptType(
-    const String& script_type) {
-  if (script_type == script_type_names::kClassic)
-    return mojom::blink::ScriptType::kClassic;
-  if (script_type == script_type_names::kModule)
-    return mojom::blink::ScriptType::kModule;
-  return std::nullopt;
+mojom::blink::ScriptType Script::V8WorkerTypeToScriptType(
+    V8WorkerType::Enum worker_script_type) {
+  switch (worker_script_type) {
+    case V8WorkerType::Enum::kClassic:
+      return mojom::blink::ScriptType::kClassic;
+    case V8WorkerType::Enum::kModule:
+      return mojom::blink::ScriptType::kModule;
+  }
+  NOTREACHED();
 }
 
 void Script::RunScriptOnScriptState(

@@ -45,7 +45,7 @@ void CoalescedTasks::RunScheduledTasks(
     base::AutoLock auto_lock(lock_);
     // `scheduled_time` is no longer scheduled.
     auto scheduled_ticks_it = scheduled_ticks_.find(scheduled_time);
-    DCHECK(scheduled_ticks_it != scheduled_ticks_.end());
+    CHECK(scheduled_ticks_it != scheduled_ticks_.end());
     scheduled_ticks_.erase(scheduled_ticks_it);
     // Obtain ready tasks so that we can run them whilst not holding the lock.
     while (!delayed_tasks_.empty()) {

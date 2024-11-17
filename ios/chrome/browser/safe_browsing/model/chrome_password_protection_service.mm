@@ -28,6 +28,7 @@
 #import "components/safe_browsing/core/common/safebrowsing_constants.h"
 #import "components/safe_browsing/core/common/utils.h"
 #import "components/safe_browsing/ios/browser/password_protection/password_protection_request_ios.h"
+#import "components/signin/public/identity_manager/account_managed_status_finder.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/data_type.h"
@@ -487,10 +488,16 @@ bool ChromePasswordProtectionService::IsPrimaryAccountSignedIn() const {
          !GetAccountInfo().hosted_domain.empty();
 }
 
-bool ChromePasswordProtectionService::IsAccountGmail(
+bool ChromePasswordProtectionService::IsAccountConsumer(
     const std::string& username) const {
-  return GetAccountInfoForUsername(username).hosted_domain ==
-         kNoHostedDomainFound;
+  // Check that `username` is likely an email address because if `username` has
+  // no email domain MayBeEnterpriseUserBasedOnEmail will assume it is a
+  // consumer account.
+  return (username.find("@") != std::string::npos &&
+          !signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
+              username)) ||
+         GetAccountInfoForUsername(username).hosted_domain ==
+             kNoHostedDomainFound;
 }
 
 bool ChromePasswordProtectionService::IsInExcludedCountry() {
@@ -657,8 +664,7 @@ void ChromePasswordProtectionService::OnUserAction(
           UserMetricsAction("PasswordProtection.ModalWarning.CloseWarning"));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   RemoveWarningRequestsByWebState(web_state);
 }

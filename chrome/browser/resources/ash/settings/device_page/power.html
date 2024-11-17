@@ -90,14 +90,6 @@
 </template>
 
 <template is="dom-if" if="[[batteryStatus_.present]]" restamp>
-  <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">
-    <div class$="[[getClassForRow_(batteryStatus_.present, 'idle')]]">
-      <div id="powerIdleLabel" class="flex" aria-label="true">
-        $i18n{powerIdleLabel}
-      </div>
-    </div>
-  </template>
-
   <div id="acIdleSettingBox"
       class$="[[getClassForRow_(batteryStatus_.present, 'acIdle')]]">
     <div class="flex" aria-hidden="true">

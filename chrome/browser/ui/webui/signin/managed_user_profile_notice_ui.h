@@ -14,13 +14,30 @@
 #include "content/public/browser/web_ui_controller.h"
 #include "third_party/skia/include/core/SkColor.h"
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
+#endif  //  !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+
 class Browser;
 class ManagedUserProfileNoticeHandler;
-struct AccountInfo;
 
 namespace content {
 class WebUI;
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+class ManagedUserProfileNoticeUI;
+
+class ManagedUserProfileNoticeUIConfig
+    : public content::DefaultWebUIConfig<ManagedUserProfileNoticeUI> {
+ public:
+  ManagedUserProfileNoticeUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIManagedUserProfileNoticeHost) {}
+};
+#endif  //  !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 class ManagedUserProfileNoticeUI : public content::WebUIController {
  public:
@@ -51,14 +68,10 @@ class ManagedUserProfileNoticeUI : public content::WebUIController {
   // selected, will indicate that the user wants the current profile to be used
   // as dedicated profile for the new account, linking the current data with
   // synced data from the new account.
-  void Initialize(
-      Browser* browser,
-      ScreenType type,
-      const AccountInfo& account_info,
-      bool profile_creation_required_by_policy,
-      bool show_link_data_option,
-      signin::SigninChoiceCallbackVariant process_user_choice_callback,
-      base::OnceClosure done_callback);
+  void Initialize(Browser* browser,
+                  ScreenType type,
+                  std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+                      create_param);
 
   // Allows tests to trigger page events.
   ManagedUserProfileNoticeHandler* GetHandlerForTesting();

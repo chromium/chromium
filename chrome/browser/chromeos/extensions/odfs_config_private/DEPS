@@ -14,8 +14,26 @@ include_rules = [
   "+chrome/browser/chromeos/enterprise/cloud_storage",
   "+chrome/browser/extensions/extension_apitest.h",
   "+chrome/browser/extensions/extension_api_unittest.h",
+  "+chrome/browser/extensions/chrome_extension_function_details.h",
+  "+chrome/browser/extensions/extension_tab_util.h",
   "+chrome/browser/notifications",
   "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/sessions/session_tab_helper_factory.h",
+  "+chrome/browser/web_applications/web_app_provider.h",
+  "+chrome/browser/web_applications/web_app_ui_manager.h",
   "+chrome/browser/ui/webui/ash/cloud_upload",
   "+chrome/common",
+  "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  "odfs_config_private_api_browsertest\.cc": [
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_commands.h",
+    "+chrome/browser/ui/browser_list.h",
+    "+chrome/browser/ui/web_applications/app_browser_controller.h",
+    "+chrome/browser/ui/web_applications/test/web_app_browsertest_util.h",
+    "+chrome/browser/web_applications/test/web_app_install_test_utils.h",
+    "+chrome/browser/web_applications/web_app_install_info.h",
+  ],
+}

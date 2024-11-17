@@ -29,8 +29,6 @@ class RenderFrameHostImpl;
 // If for some reason the history navigation couldn't be animated, this class
 // won't create an `animator_`, and will start the history navigation via the
 // `NavigationController`.
-// TODO(crbug.com/40260440): We should always animate a gesture history
-// navigation.
 class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
     : public BackForwardTransitionAnimationManager,
       public ui::ViewAndroidObserver,
@@ -87,6 +85,8 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
+  void PrimaryMainFrameRenderProcessGone(
+      base::TerminationStatus status) override;
 
   // This is called before the `old_host` is swapped out and before the
   // `new_host` is swapped in.
@@ -99,14 +99,6 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // 2. `old_host` might be the same as `new_host`. This can only happen for
   //    navigating away from a crashed frame (early-swap), or for same-RFH
   //    navigations.
-  //
-  // TODO(crbug.com/41487964): This also won't work for the initial
-  // navigation away from "about:blank". We might be able to treat this
-  // navigation as a same-doc one.
-  //
-  // TODO(crbug.com/40615943): Check the status of RD when it is close to
-  // launch. Without RD we need to make sure no frames from the old document is
-  // associated with the updated LocalSurfaceId (https://crbug.com/1445976).
   void OnDidNavigatePrimaryMainFramePreCommit(
       NavigationRequest* navigation_request,
       RenderFrameHostImpl* old_host,
@@ -122,10 +114,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // Called upon ignoring an input event.
   void MaybeRecordIgnoredInput(const blink::WebInputEvent& event);
 
-  // Called from the animator when a stable screenshot is not dismissed. This
-  // can happen to a very busy renderer when it couldn't submit a new frame
-  // after the navigation.
-  void OnPostNavigationFirstFrameTimeout();
+  void OnPhysicalBackingSizeChanged();
+
+  void OnBeforeUnloadDialogShown(int64_t navigation_id);
 
   WebContentsViewAndroid* web_contents_view_android() const {
     return web_contents_view_android_;
@@ -162,15 +153,12 @@ class CONTENT_EXPORT BackForwardTransitionAnimationManagerAndroid
   // this manager.
   const raw_ptr<NavigationControllerImpl> navigation_controller_;
 
-  // The index of the destination entry in the history list. Set when the
+  // The ID of the destination entry in the history list. Set when the
   // embedder notifies the animation manager upon a gesture's start. This is
   // used to ensure the navigation is initiated at gesture end, even if the
   // animation had to be terminated sooner.
-  //
-  // Use an index instead of an offset, in case during the animated transition
-  // the session history is updated (e.g., history.pushState()) and we don't
-  // want to lead the user to the wrong entry.
-  int destination_entry_index_ = -1;
+  NavigationTransitionData::UniqueId destination_entry_id_ =
+      NavigationTransitionData::kInvalidId;
 
   // The actual implementation of the animation manager that manages the history
   // navigation animation. One instance per gesture.

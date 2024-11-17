@@ -7,11 +7,11 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_node.h"
-#include "third_party/blink/renderer/core/layout/grid/grid_item.h"
 #include "third_party/blink/renderer/core/layout/grid/layout_grid.h"
 
 namespace blink {
 
+class GridItems;
 class GridSizingSubtree;
 
 // Grid specific extensions to `BlockNode`.

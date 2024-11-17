@@ -284,7 +284,6 @@ def _skylab(
         public_builder = None,
         public_builder_bucket = None,
         shards = None,
-        run_cft = False,
         args = []):
     """Define a Skylab test target.
 
@@ -313,7 +312,6 @@ def _skylab(
         public_builder_bucket: Optional luci bucket. See public_builder
             above.
         shards: The number of shards used to run the test.
-        run_cft: Whether enabled CFT mode for chromium tests on Skylab.
         args: The list of test arguments to be added to test CLI.
     """
     return struct(
@@ -329,7 +327,6 @@ def _skylab(
         public_builder = public_builder,
         public_builder_bucket = public_builder_bucket,
         shards = shards,
-        run_cft = run_cft,
         args = args,
     )
 
@@ -479,7 +476,9 @@ def _mixin_values(
     )
     return {k: v for k, v in mixin_values.items() if v != None}
 
-def _mixin(*, name = None, generate_pyl_entry = True, **kwargs):
+_IGNORE_UNUSED = "ignore_unused"
+
+def _mixin(*, name = None, generate_pyl_entry = None, **kwargs):
     """Define a mixin used for defining tests.
 
     //infra/config/generated/testing/mixins.pyl will be generated from
@@ -488,14 +487,28 @@ def _mixin(*, name = None, generate_pyl_entry = True, **kwargs):
 
     Args:
         name: The name of the mixin.
-        generate_pyl_entry: If true and name is provided, then the
-            generated mixin.pyl file will contain an entry allowing this
-            mixin to be used by generate_buildbot_json.py.
+        generate_pyl_entry: If true, the generated mixin.pyl will
+            contain an entry allowing the mixin to be used by
+            generate_buildbot_json.py. If set to targets.IGNORE_UNUSED,
+            then an entry will be generated that
+            generate_buildbot_json.py which won't cause an error if it
+            isn't used. This enables mixins to be generated to the pyl
+            file that are only used by the angle repo, which reuses the
+            generated mixins.pyl. By default, this will be True if name
+            is provided.
         **kwargs: The mixin values, see _mixin_values for allowed
             keywords and their meanings.
     """
+    if generate_pyl_entry not in (None, False, True, _IGNORE_UNUSED):
+        fail("unexpected value for generate_pyl_entry: {}".format(generate_pyl_entry))
+    if generate_pyl_entry == None:
+        generate_pyl_entry = name != None
+    elif generate_pyl_entry:
+        if name == None:
+            fail("pyl entries can't be generated for anonymous mixins")
     key = _targets_nodes.MIXIN.add(name, props = dict(
         mixin_values = _mixin_values(**kwargs),
+        pyl_fail_if_unused = generate_pyl_entry == True,
     ))
     if generate_pyl_entry and name != None:
         graph.add_edge(keys.project(), key)
@@ -505,6 +518,7 @@ def _variant(
         *,
         name,
         identifier,
+        generate_pyl_entry = True,
         enabled = None,
         mixins = None,
         **kwargs):
@@ -520,6 +534,9 @@ def _variant(
             identifies the variant of the test being run. When tests are
             expanded with the variant, this will be appended to the test
             name.
+        generate_pyl_entry: If true, the generated variants.pyl will
+            contain an entry allowing the mixin to be used by
+            generate_buildbot_json.py.
         enabled: Whether or not the variant is enabled. By default, a
             variant is enabled. If a variant is not enabled, then it
             will be ignored when expanding a test suite with variants.
@@ -530,14 +547,20 @@ def _variant(
     """
     if enabled == None:
         enabled = True
-    key = _targets_nodes.VARIANT.add(name, props = dict(
+    variant_key = _targets_nodes.VARIANT.add(name, props = dict(
         identifier = identifier,
         enabled = enabled,
-        mixins = mixins,
         mixin_values = _mixin_values(**kwargs),
     ))
 
-    graph.add_edge(keys.project(), key)
+    for m in mixins or []:
+        if generate_pyl_entry and type(m) != type(""):
+            fail("variants used by //testing/buildbot cannot use anonymous mixins", trace = stacktrace(skip = 2))
+        mixin_key = _targets_nodes.MIXIN.key(m)
+        graph.add_edge(variant_key, mixin_key)
+
+    if generate_pyl_entry:
+        graph.add_edge(keys.project(), variant_key)
 
 def _bundle(*, name = None, additional_compile_targets = None, targets = None, mixins = None, variants = None, per_test_modifications = None):
     """Define a targets bundle.
@@ -710,15 +733,16 @@ def _legacy_matrix_compound_suite(*, name, basic_suites):
         matrix_config_key = _targets_nodes.LEGACY_MATRIX_CONFIG.add(name, basic_suite_name)
         graph.add_edge(key, matrix_config_key)
         config = config or _legacy_matrix_config()
+        for v in config.variants:
+            graph.add_edge(matrix_config_key, _targets_nodes.VARIANT.key(v))
         for m in config.mixins:
             graph.add_edge(matrix_config_key, _targets_nodes.MIXIN.key(m))
-        if config.variants:
+        if config.variants or config.mixins:
             dep_targets.append(_bundle(
                 targets = basic_suite_name,
                 variants = config.variants,
+                mixins = config.mixins,
             ))
-            for v in config.variants:
-                graph.add_edge(matrix_config_key, _targets_nodes.VARIANT.key(v))
         else:
             dep_targets.append(basic_suite_name)
 
@@ -771,6 +795,7 @@ targets = struct(
     # Functions for declaring bundles
     bundle = _bundle,
     per_test_modification = _targets_common.per_test_modification,
+    replacements = _targets_common.replacements,
     builder_defaults = _targets_common.builder_defaults,
     settings = _targets_common.settings,
     settings_defaults = _targets_common.settings_defaults,
@@ -782,6 +807,7 @@ targets = struct(
     legacy_matrix_compound_suite = _legacy_matrix_compound_suite,
     legacy_matrix_config = _legacy_matrix_config,
     mixin = _mixin,
+    IGNORE_UNUSED = _IGNORE_UNUSED,
     variant = _variant,
     cipd_package = _cipd_package,
     merge = _targets_common.merge,

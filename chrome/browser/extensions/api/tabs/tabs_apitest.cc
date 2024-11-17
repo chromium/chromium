@@ -183,12 +183,10 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, Query) {
 }
 
 // TODO(crbug.com/40254426): Move to tabs_interactive_test.cc
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(crbug.com/40890826): Re-enable once flakiness is fixed.
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, DISABLED_Highlight) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/highlight")) << message_;
 }
-#endif
 
 IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, LastAccessed) {
   ASSERT_TRUE(RunExtensionTest("tabs/basics/last_accessed")) << message_;
@@ -292,8 +290,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiCaptureTest, MAYBE_CaptureVisibleFile) {
       << message_;
 }
 
-// TODO(crbug.com/40803947): Fix flakiness on Linux and Lacros then reenable.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/40803947): Fix flakiness on Linux then reenable.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_CaptureVisibleDisabled DISABLED_CaptureVisibleDisabled
 #else
 #define MAYBE_CaptureVisibleDisabled CaptureVisibleDisabled
@@ -323,7 +321,13 @@ IN_PROC_BROWSER_TEST_P(ExtensionApiTabTestWithContextType, OnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/on_updated")) << message_;
 }
 
-IN_PROC_BROWSER_TEST_P(ExtensionApiTabBackForwardCacheTest, OnUpdated) {
+// TODO(crbug.com/378027647) Failing on ChromeOS and Linux
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_OnUpdated DISABLED_OnUpdated
+#else
+#define MAYBE_OnUpdated OnUpdated
+#endif
+IN_PROC_BROWSER_TEST_P(ExtensionApiTabBackForwardCacheTest, MAYBE_OnUpdated) {
   ASSERT_TRUE(RunExtensionTest("tabs/backForwardCache/on_updated")) << message_;
 }
 

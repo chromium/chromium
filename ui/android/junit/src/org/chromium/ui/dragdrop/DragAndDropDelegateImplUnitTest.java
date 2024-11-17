@@ -44,6 +44,7 @@ import org.robolectric.shadows.ShadowContentResolver;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.base.UiAndroidFeatureList;
@@ -52,6 +53,7 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link DragAndDropDelegateImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({UiAndroidFeatureList.DRAG_DROP_EMPTY})
 public class DragAndDropDelegateImplUnitTest {
     /** Using a window size of 1000*600 for the ease of dp / pixel calculation. */
     private static final int WINDOW_WIDTH = 1000;
@@ -91,8 +93,7 @@ public class DragAndDropDelegateImplUnitTest {
                             return true;
                         })
                 .when(mContainerView)
-                .startDragAndDrop(
-                        any(ClipData.class), any(DragShadowBuilder.class), any(), anyInt());
+                .startDragAndDrop(any(), any(DragShadowBuilder.class), any(), anyInt());
         View rootView = mContainerView.getRootView();
         rootView.measure(
                 MeasureSpec.makeMeasureSpec(WINDOW_WIDTH, MeasureSpec.EXACTLY),
@@ -103,7 +104,8 @@ public class DragAndDropDelegateImplUnitTest {
     @After
     public void tearDown() {
         mDropDataProviderImpl.onDragEnd(false);
-        AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(false);
+        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
+        AccessibilityState.setIsPerformGesturesEnabledForTesting(false);
     }
 
     @Test
@@ -292,9 +294,23 @@ public class DragAndDropDelegateImplUnitTest {
                         /* dragObjRectWidth= */ 100,
                         /* dragObjRectHeight= */ 200));
 
-        AccessibilityState.setIsAnyAccessibilityServiceEnabledForTesting(true);
+        AccessibilityState.setIsTouchExplorationEnabledForTesting(true);
         Assert.assertFalse(
-                "Drag and drop should not start when isAnyAccessibilityServiceEnabled=true.",
+                "Drag and drop should not start when isTouchExplorationEnabled=true.",
+                mDragAndDropDelegateImpl.startDragAndDrop(
+                        mContainerView,
+                        shadowImage,
+                        dropData,
+                        mContainerView.getContext(),
+                        /* cursorOffsetX= */ 0,
+                        /* cursorOffsetY= */ 0,
+                        /* dragObjRectWidth= */ 100,
+                        /* dragObjRectHeight= */ 200));
+
+        AccessibilityState.setIsTouchExplorationEnabledForTesting(false);
+        AccessibilityState.setIsPerformGesturesEnabledForTesting(true);
+        Assert.assertFalse(
+                "Drag and drop should not start when isPerformGesturesEnabled=true.",
                 mDragAndDropDelegateImpl.startDragAndDrop(
                         mContainerView,
                         shadowImage,
@@ -307,6 +323,7 @@ public class DragAndDropDelegateImplUnitTest {
     }
 
     @Test
+    @DisableFeatures({UiAndroidFeatureList.DRAG_DROP_EMPTY})
     public void testStartDragAndDrop_InvalidDropData() {
         final DropDataAndroid dropData = DropDataAndroid.create(null, null, null, null, null);
 
@@ -321,6 +338,24 @@ public class DragAndDropDelegateImplUnitTest {
                         /* cursorOffsetY= */ 0,
                         /* dragObjRectWidth= */ 100,
                         /* dragObjRectHeight= */ 200));
+    }
+
+    @Test
+    public void testStartDragAndDrop_EmptyDropData() {
+        final DropDataAndroid dropData = DropDataAndroid.create(null, null, null, null, null);
+
+        Assert.assertTrue(
+                "Drag and drop should start.",
+                mDragAndDropDelegateImpl.startDragAndDrop(
+                        mContainerView,
+                        Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888),
+                        dropData,
+                        mContainerView.getContext(),
+                        /* cursorOffsetX= */ 0,
+                        /* cursorOffsetY= */ 0,
+                        /* dragObjRectWidth= */ 100,
+                        /* dragObjRectHeight= */ 200));
+        Assert.assertTrue("Drag should be started.", mDragAndDropDelegateImpl.isDragStarted());
     }
 
     @Test

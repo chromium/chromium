@@ -169,8 +169,7 @@ TEST_F(PictureInPictureWindowManagerTest, DontShowAutoPipSettingUiWithoutPip) {
       PictureInPictureWindowManager::GetInstance();
   // There's no pip open, so expect no setting UI.
   EXPECT_FALSE(picture_in_picture_window_manager->GetOverlayView(
-      gfx::Rect(), /* anchor_view = */ nullptr,
-      views::BubbleBorder::TOP_CENTER));
+      /* anchor_view = */ nullptr, views::BubbleBorder::TOP_CENTER));
 }
 
 TEST_F(PictureInPictureWindowManagerTest,
@@ -181,8 +180,7 @@ TEST_F(PictureInPictureWindowManagerTest,
       web_contents(), child_web_contents());
   // This isn't auto-pip, so expect no overlay view.
   EXPECT_FALSE(picture_in_picture_window_manager->GetOverlayView(
-      gfx::Rect(), /* anchor_view = */ nullptr,
-      views::BubbleBorder::TOP_CENTER));
+      /* anchor_view = */ nullptr, views::BubbleBorder::TOP_CENTER));
 }
 
 TEST_F(PictureInPictureWindowManagerTest, CorrectTypesAreSupported) {

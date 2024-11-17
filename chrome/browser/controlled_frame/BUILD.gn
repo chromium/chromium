@@ -14,12 +14,15 @@ source_set("controlled_frame") {
     "controlled_frame_extensions_browser_api_provider.h",
     "controlled_frame_menu_icon_loader.cc",
     "controlled_frame_menu_icon_loader.h",
+    "controlled_frame_user_agent_util.cc",
+    "controlled_frame_user_agent_util.h",
   ]
 
   deps = [
     "//base",
     "//chrome/browser/extensions",
     "//chrome/browser/web_applications",
+    "//components/embedder_support:browser_util",
     "//content/public/common",
     "//extensions/browser",
     "//extensions/common",
@@ -51,6 +54,7 @@ source_set("test_support") {
     "//base",
     "//base/version_info",
     "//chrome/browser",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications:web_applications_test_support",

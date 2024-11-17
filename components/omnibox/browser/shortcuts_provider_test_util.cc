@@ -50,7 +50,7 @@ TestShortcutData::TestShortcutData(
   this->number_of_hits = number_of_hits;
 }
 
-TestShortcutData::~TestShortcutData() {}
+TestShortcutData::~TestShortcutData() = default;
 
 void PopulateShortcutsBackendWithTestData(
     scoped_refptr<ShortcutsBackend> backend,

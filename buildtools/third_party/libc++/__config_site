@@ -63,6 +63,9 @@
 // does not match ours.  Only has an effect on Windows.
 #define _LIBCPP_NO_AUTO_LINK
 
+// See https://libcxx.llvm.org/DesignDocs/HeaderRemovalPolicy.html
+#define _LIBCPP_REMOVE_TRANSITIVE_INCLUDES
+
 // Don't add ABI tags to libc++ symbols. ABI tags increase mangled name sizes.
 // This only exists to allow multiple // libc++ versions to be linked into a
 // binary, which Chrome doesn't do.
@@ -72,5 +75,8 @@
 // function because by default, this macro will does not call the verbose
 // termination function on Apple platforms.
 #define _LIBCPP_VERBOSE_ABORT(...) ::std::__libcpp_verbose_abort(__VA_ARGS__)
+
+// Disable header include for parallel algorithms.
+#define _LIBCPP_HAS_NO_INCOMPLETE_PSTL
 
 #endif // _LIBCPP_CONFIG_SITE

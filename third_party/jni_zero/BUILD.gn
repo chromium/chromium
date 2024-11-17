@@ -94,10 +94,12 @@ if (enable_java_templates && is_android) {
       "java/src/org/jni_zero/CalledByNativeUnchecked.java",
       "java/src/org/jni_zero/JNINamespace.java",
       "java/src/org/jni_zero/JniInit.java",
+      "java/src/org/jni_zero/JniTestOverrides.java",
       "java/src/org/jni_zero/JniType.java",
       "java/src/org/jni_zero/JniUtil.java",
       "java/src/org/jni_zero/NativeClassQualifiedName.java",
       "java/src/org/jni_zero/NativeMethods.java",
+      "java/src/org/jni_zero/UsedReflectively.java",
     ]
     proguard_configs = [ "proguard.flags" ]
   }
@@ -108,6 +110,7 @@ if (enable_java_templates && is_android) {
       "java/src/org/jni_zero/CheckDiscard.java",
       "java/src/org/jni_zero/JniStaticTestMocker.java",
       "java/src/org/jni_zero/NativeLibraryLoadedStatus.java",
+      "java/src/org/jni_zero/internal/JniOverrideHolder.java",
     ]
   }
 

@@ -17,6 +17,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -26,7 +27,6 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
-#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -118,13 +118,10 @@ void KSAgentApp::ChooseServiceForApp(
          base::OnceCallback<void(UpdaterScope)> callback,
          const std::vector<updater::UpdateService::AppState>& states) {
         std::move(callback).Run(
-            base::ranges::find_if(
-                states,
-                [&app_id](const updater::UpdateService::AppState& state) {
-                  return base::EqualsCaseInsensitiveASCII(state.app_id, app_id);
-                }) == std::end(states)
-                ? UpdaterScope::kUser
-                : UpdaterScope::kSystem);
+            base::Contains(states, base::ToLowerASCII(app_id),
+                           &updater::UpdateService::AppState::app_id)
+                ? UpdaterScope::kSystem
+                : UpdaterScope::kUser);
       },
       app_id, std::move(callback)));
 }

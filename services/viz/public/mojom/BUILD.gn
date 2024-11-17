@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   generate_java = true
   sources = [
+    "compositing/animation.mojom",
     "compositing/begin_frame_args.mojom",
     "compositing/bitmap_in_shared_memory.mojom",
     "compositing/compositing_mode_watcher.mojom",
@@ -43,6 +44,7 @@ mojom("mojom") {
     "compositing/surface_info.mojom",
     "compositing/surface_range.mojom",
     "compositing/texture_releaser.mojom",
+    "compositing/thread.mojom",
     "compositing/tiling.mojom",
     "compositing/transferable_resource.mojom",
     "compositing/vertical_scroll_direction.mojom",
@@ -549,6 +551,19 @@ mojom("mojom") {
         "//ui/gfx/geometry/mojom",
       ]
     },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.Thread"
+          cpp = "::viz::Thread"
+        },
+      ]
+      traits_headers =
+          [ "//services/viz/public/cpp/compositing/thread_mojom_traits.h" ]
+      traits_sources =
+          [ "//services/viz/public/cpp/compositing/thread_mojom_traits.cc" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
   ]
   blink_cpp_typemaps = shared_cpp_typemaps
   blink_cpp_typemaps += [
@@ -608,6 +623,17 @@ mojom("mojom") {
         },
       ]
       traits_headers = [ "//services/viz/public/cpp/compositing/frame_timing_details_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
+    },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.Thread"
+          cpp = "::viz::Thread"
+        },
+      ]
+      traits_headers =
+          [ "//services/viz/public/cpp/compositing/thread_mojom_traits.h" ]
       traits_public_deps = [ "//components/viz/common" ]
     },
     {

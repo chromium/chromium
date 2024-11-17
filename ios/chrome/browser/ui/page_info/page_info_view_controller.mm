@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/page_info/page_info_about_this_site_info.h"
 #import "ios/chrome/browser/ui/page_info/page_info_constants.h"
+#import "ios/chrome/browser/ui/page_info/page_info_history_mutator.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -101,14 +102,9 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
   [super viewDidLoad];
 
   self.title = l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SITE_INFORMATION);
-  if (IsRevampPageInfoIosEnabled()) {
-    self.navigationItem.largeTitleDisplayMode =
-        UINavigationItemLargeTitleDisplayModeNever;
-    self.navigationItem.prompt = self.pageInfoSecurityDescription.siteURL;
-  } else {
-    self.navigationItem.titleView =
-        [self titleViewLabelForURL:self.pageInfoSecurityDescription.siteURL];
-  }
+  self.navigationItem.largeTitleDisplayMode =
+      UINavigationItemLargeTitleDisplayModeNever;
+  self.navigationItem.prompt = self.pageInfoSecurityDescription.siteURL;
 
   self.tableView.accessibilityIdentifier = kPageInfoViewAccessibilityIdentifier;
   self.navigationController.navigationBar.accessibilityIdentifier =
@@ -119,14 +115,8 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
                            target:self.pageInfoCommandsHandler
                            action:@selector(hidePageInfo)];
   self.navigationItem.rightBarButtonItem = dismissButton;
-  self.tableView.separatorInset = UIEdgeInsetsMake(
-      0,
-      IsRevampPageInfoIosEnabled() ? kPageInfoTableViewSeparatorInsetWithIcon
-                                   : kPageInfoTableViewSeparatorInset,
-      0, 0);
-  if (!IsRevampPageInfoIosEnabled()) {
-    self.tableView.allowsSelection = NO;
-  }
+  self.tableView.separatorInset =
+      UIEdgeInsetsMake(0, kPageInfoTableViewSeparatorInsetWithIcon, 0, 0);
 
   if (self.pageInfoSecurityDescription.isEmpty) {
     [self addEmptyTableViewWithMessage:self.pageInfoSecurityDescription.message
@@ -147,6 +137,17 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
   }
 
   [self loadModel];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+
+  if (IsPageInfoLastVisitedIOSEnabled()) {
+    // The Last Visited timestamp needs to be updated when the view is first
+    // loaded and subsequencenly since there could have been deletions performed
+    // on the Last Visited or History UI.
+    [self.pageInfoHistoryMutator lastVisitedTimestampNeedsUpdate];
+  }
 }
 
 #pragma mark - LegacyChromeTableViewController
@@ -176,7 +177,8 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot
       appendSectionsWithIdentifiers:@[ @(SectionIdentifierSecurityContent) ]];
-  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierSecurity) ]];
+  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierSecurity) ]
+             intoSectionWithIdentifier:@(SectionIdentifierSecurityContent)];
 
   // Permissions section.
   for (NSNumber* permission in self.permissionsInfo.allKeys) {
@@ -192,7 +194,8 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
   if (IsPageInfoLastVisitedIOSEnabled() && _lastVisitedTimestamp) {
     [snapshot
         appendSectionsWithIdentifiers:@[ @(SectionIdentifierLastVisited) ]];
-    [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierLastVisited) ]];
+    [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierLastVisited) ]
+               intoSectionWithIdentifier:@(SectionIdentifierLastVisited)];
   }
 
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
@@ -207,18 +210,15 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       [_dataSource itemIdentifierForIndexPath:indexPath].integerValue);
   switch (itemType) {
     case ItemIdentifierSecurity:
-      if (IsRevampPageInfoIosEnabled()) {
         [self.pageInfoPresentationHandler showSecurityPage];
-      }
       break;
     case ItemIdentifierAboutThisSite:
-      if (IsRevampPageInfoIosEnabled()) {
         [self.pageInfoPresentationHandler
             showAboutThisSitePage:_aboutThisSiteInfo.moreAboutURL];
-      }
       break;
     case ItemIdentifierLastVisited:
-      // TODO(crbug.com/358341532): Handle the tap on the Last Visited row.
+      CHECK(IsPageInfoLastVisitedIOSEnabled());
+      [self.pageInfoPresentationHandler showLastVisitedPage];
       break;
     case ItemIdentifierPermissionsCamera:
     case ItemIdentifierPermissionsMicrophone:
@@ -236,17 +236,11 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
   SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
       [_dataSource sectionIdentifierForIndex:section].integerValue);
 
-  if (IsRevampPageInfoIosEnabled()) {
     return ChromeTableViewHeightForHeaderInSection(sectionIdentifier);
-  }
-
-  return sectionIdentifier == SectionIdentifierSecurityContent
-             ? kPageInfoPaddingFirstSectionHeader
-             : UITableViewAutomaticDimension;
 }
 
 - (UIView*)tableView:(UITableView*)tableView
-    viewForHeaderInSection:(NSInteger)section {
+    viewForFooterInSection:(NSInteger)section {
   SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
       [_dataSource sectionIdentifierForIndex:section].integerValue);
   switch (sectionIdentifier) {
@@ -255,54 +249,15 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
     case SectionIdentifierLastVisited:
       return nil;
     case SectionIdentifierPermissions: {
-      if (IsRevampPageInfoIosEnabled()) {
-        return nil;
-      }
-
-      TableViewTextHeaderFooterView* header =
-          DequeueTableViewHeaderFooter<TableViewTextHeaderFooterView>(
-              self.tableView);
-      header.textLabel.text =
-          l10n_util::GetNSString(IDS_IOS_PAGE_INFO_PERMISSIONS_HEADER);
-      [header setSubtitle:nil];
-      return header;
-    }
-  }
-}
-
-- (UIView*)tableView:(UITableView*)tableView
-    viewForFooterInSection:(NSInteger)section {
-  SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
-      [_dataSource sectionIdentifierForIndex:section].integerValue);
-  switch (sectionIdentifier) {
-    case SectionIdentifierSecurityContent: {
-      if (IsRevampPageInfoIosEnabled()) {
-        // Don't show the security footer in the revamp UI.
-        return nil;
-      }
-
-      TableViewLinkHeaderFooterView* footer =
-          DequeueTableViewHeaderFooter<TableViewLinkHeaderFooterView>(
-              self.tableView);
-      footer.urls =
-          @[ [[CrURL alloc] initWithGURL:GURL(kPageInfoHelpCenterURL)] ];
-      [footer setText:self.pageInfoSecurityDescription.message
-            withColor:[UIColor colorNamed:kTextSecondaryColor]];
-      footer.delegate = self;
-      footer.accessibilityIdentifier =
-          kPageInfoSecurityFooterAccessibilityIdentifier;
-      return footer;
-    }
-    case SectionIdentifierPermissions: {
       TableViewAttributedStringHeaderFooterView* footer =
           DequeueTableViewHeaderFooter<
               TableViewAttributedStringHeaderFooterView>(self.tableView);
       footer.attributedString = [self permissionFooterAttributedString];
       return footer;
     }
-    default:
-      return nil;
   }
+
+  NOTREACHED();
 }
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
@@ -346,18 +301,14 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
     case ItemIdentifierSecurity: {
       TableViewDetailIconCell* cell =
           DequeueTableViewCell<TableViewDetailIconCell>(tableView);
-      cell.textLabel.text = l10n_util::GetNSString(
-          IsRevampPageInfoIosEnabled() ? IDS_IOS_PAGE_INFO_CONNECTION
-                                       : IDS_IOS_PAGE_INFO_SITE_SECURITY);
+      cell.textLabel.text =
+          l10n_util::GetNSString(IDS_IOS_PAGE_INFO_CONNECTION);
       cell.detailText = self.pageInfoSecurityDescription.status;
       [cell setIconImage:self.pageInfoSecurityDescription.iconImage
                 tintColor:UIColor.whiteColor
           backgroundColor:self.pageInfoSecurityDescription.iconBackgroundColor
              cornerRadius:kColorfulBackgroundSymbolCornerRadius];
-
-      if (IsRevampPageInfoIosEnabled()) {
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-      }
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
 
       return cell;
     }
@@ -378,15 +329,12 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       [cell.switchView addTarget:self
                           action:@selector(permissionSwitchToggled:)
                 forControlEvents:UIControlEventValueChanged];
-
-      if (IsRevampPageInfoIosEnabled()) {
         [cell setIconImage:CustomSymbolWithPointSize(kCameraSymbol,
                                                      kPageInfoSymbolPointSize)
                   tintColor:UIColor.whiteColor
             backgroundColor:[UIColor colorNamed:kOrange500Color]
                cornerRadius:kColorfulBackgroundSymbolCornerRadius
                 borderWidth:0];
-      }
 
       return cell;
     }
@@ -407,15 +355,12 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       [cell.switchView addTarget:self
                           action:@selector(permissionSwitchToggled:)
                 forControlEvents:UIControlEventValueChanged];
-
-      if (IsRevampPageInfoIosEnabled()) {
         [cell setIconImage:DefaultSymbolWithPointSize(kMicrophoneSymbol,
                                                       kPageInfoSymbolPointSize)
                   tintColor:UIColor.whiteColor
             backgroundColor:[UIColor colorNamed:kOrange500Color]
                cornerRadius:kColorfulBackgroundSymbolCornerRadius
                 borderWidth:0];
-      }
 
       return cell;
     }
@@ -460,10 +405,7 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
                 tintColor:UIColor.whiteColor
           backgroundColor:[UIColor colorNamed:kBlue500Color]
              cornerRadius:kColorfulBackgroundSymbolCornerRadius];
-
-      if (IsRevampPageInfoIosEnabled()) {
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-      }
 
       return cell;
     }
@@ -620,27 +562,44 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
 
 #pragma mark - PageInfoHistoryConsumer
 
-- (void)setLastVisitedTimestamp:(base::Time)lastVisited {
+- (void)setLastVisitedTimestamp:(std::optional<base::Time>)lastVisited {
   CHECK(IsPageInfoLastVisitedIOSEnabled());
-  std::string timestamp = base::UTF16ToUTF8(
-      page_info::PageInfoHistoryDataSource::FormatLastVisitedTimestamp(
-          lastVisited));
-  _lastVisitedTimestamp = [NSString stringWithUTF8String:timestamp.c_str()];
+
+  if (lastVisited.has_value()) {
+    _lastVisitedTimestamp = base::SysUTF16ToNSString(
+        page_info::PageInfoHistoryDataSource::FormatLastVisitedTimestamp(
+            lastVisited.value()));
+  } else {
+    _lastVisitedTimestamp = nil;
+  }
 
   NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
       [_dataSource snapshot];
 
-  // It was observed that the Last Visited timestamp is usually available before
-  // the view is displayed. If that is the case, then we can just store the
-  // value of the timestamp and rely on `loadModel` to display the Last Visited
-  // row.
+  // The Last Visited timestamp can be available before the view is loaded. If
+  // that occurs, just store the value of the timestamp and rely on `loadModel`
+  // to add the Last Visited section and row to the snapshot.
   if (!_dataSource || !snapshot) {
     return;
   }
 
-  // Append cell for the Last Visited row.
-  [snapshot appendSectionsWithIdentifiers:@[ @(SectionIdentifierLastVisited) ]];
-  [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierLastVisited) ]];
+  // Update or remove the Last Visited section based on the timestamp.
+  if (_lastVisitedTimestamp) {
+    if ([snapshot indexOfSectionIdentifier:@(SectionIdentifierLastVisited)] ==
+        NSNotFound) {
+      // Add the Last Visited section.
+      [snapshot
+          appendSectionsWithIdentifiers:@[ @(SectionIdentifierLastVisited) ]];
+      [snapshot appendItemsWithIdentifiers:@[ @(ItemIdentifierLastVisited) ]
+                 intoSectionWithIdentifier:@(SectionIdentifierLastVisited)];
+    }
+    // If the section already exists, no need to update the snapshot.
+    // The timestamp change will be handled when the cell is configured.
+  } else {
+    // Remove the Last Visited section.
+    [snapshot
+        deleteSectionsWithIdentifiers:@[ @(SectionIdentifierLastVisited) ]];
+  }
 
   // Update the UI.
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];

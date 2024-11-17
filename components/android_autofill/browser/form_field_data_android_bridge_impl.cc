@@ -23,12 +23,12 @@ namespace autofill {
 
 namespace {
 
-using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF16;
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
+using jni_zero::AttachCurrentThread;
 
 // Converts the `AutofillType`s to strings and returns a Java array of strings.
 // Returns `nullptr` instead if `server_predictions` is empty.

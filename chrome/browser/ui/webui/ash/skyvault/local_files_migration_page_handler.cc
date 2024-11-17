@@ -23,7 +23,7 @@ namespace {
 mojom::CloudProvider ConvertCloudProviderToMojo(CloudProvider cloud_provider) {
   switch (cloud_provider) {
     case CloudProvider::kNotSpecified:
-      NOTREACHED_NORETURN()
+      NOTREACHED()
           << "Case should not be reached, cloud provider must be specified.";
     case CloudProvider::kGoogleDrive:
       return mojom::CloudProvider::kGoogleDrive;
@@ -87,7 +87,7 @@ LocalFilesMigrationPageHandler::LocalFilesMigrationPageHandler(
     Profile* profile,
     CloudProvider cloud_provider,
     base::Time migration_start_time,
-    UserActionCallback callback,
+    DialogActionCallback callback,
     mojo::PendingRemote<mojom::Page> page,
     mojo::PendingReceiver<mojom::PageHandler> receiver)
     : profile_(profile),
@@ -128,13 +128,13 @@ void LocalFilesMigrationPageHandler::GetInitialDialogInfo(
 
 void LocalFilesMigrationPageHandler::UploadNow() {
   if (callback_) {
-    std::move(callback_).Run(UserAction::kUploadNow);
+    std::move(callback_).Run(DialogAction::kUploadNow);
   }
 }
 
 void LocalFilesMigrationPageHandler::Close() {
   if (callback_) {
-    std::move(callback_).Run(UserAction::kDismiss);
+    std::move(callback_).Run(DialogAction::kUploadLater);
   }
 }
 

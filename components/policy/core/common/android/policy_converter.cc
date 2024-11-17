@@ -181,8 +181,7 @@ std::optional<base::Value> PolicyConverter::ConvertValueToSchema(
 
     // Binary is not a valid schema type.
     case base::Value::Type::BINARY: {
-      NOTREACHED_IN_MIGRATION();
-      return base::Value();
+      NOTREACHED();
     }
 
     // Complex types have to be deserialized from JSON.
@@ -220,8 +219,7 @@ std::optional<base::Value> PolicyConverter::ConvertValueToSchema(
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 void PolicyConverter::SetPolicyValueForTesting(const std::string& key,

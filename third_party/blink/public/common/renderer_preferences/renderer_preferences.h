@@ -58,6 +58,9 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   bool allow_cross_origin_auth_prompt{false};
   bool enable_do_not_track{false};
   bool enable_encrypted_media{true};
+#if BUILDFLAG(IS_CHROMEOS)
+  bool use_overlay_scrollbar{false};
+#endif
   std::string webrtc_ip_handling_policy;
   uint16_t webrtc_udp_min_port{0};
   uint16_t webrtc_udp_max_port{0};
@@ -90,7 +93,6 @@ struct BLINK_COMMON_EXPORT RendererPreferences {
   bool plugin_fullscreen_allowed{true};
   bool caret_browsing_enabled{false};
   std::vector<uint16_t> explicitly_allowed_network_ports;
-  std::optional<bool> prefixed_fullscreen_video_api_availability;
 
   RendererPreferences();
   RendererPreferences(const RendererPreferences& other);

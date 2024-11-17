@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">デベロッパー UI モジュール（dev_ui）がインストールされていないため、ページを読み込めませんでした</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> システム</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">タブ</translation>
 <translation id="5613020302032141669">左矢印キー</translation>
 <translation id="5633029987065897167">何もありません</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 分}other{# 分}}</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">次のページへ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />、<ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">タブ</translation>
 <translation id="8259556432390118667">16 進数色コード</translation>
 <translation id="8328145009876646418">左端</translation>
 <translation id="8331626408530291785">上にスクロール</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 秒}other{# 秒}}</translation>
 <translation id="9059834730836941392">通知を折りたたむ</translation>
 <translation id="9170848237812810038">取消(&amp;U)</translation>
+<translation id="9195990613383871904">明日</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">ホーム</translation>
 <translation id="944069440740578670">未読のお知らせ</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 秒前}other{# 秒前}}</translation>

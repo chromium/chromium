@@ -169,7 +169,7 @@ void ProducerClient::NewDataSourceAdded(
 
 bool ProducerClient::IsTracingActive() {
   base::AutoLock lock(lock_);
-  return data_sources_tracing_ > 0 || IsStartupTracingActive();
+  return data_sources_tracing_ > 0;
 }
 
 void ProducerClient::OnTracingStart() {
@@ -205,9 +205,6 @@ void ProducerClient::StartDataSource(
         base::AutoLock lock(lock_);
         ++data_sources_tracing_;
       }
-      // Now that a data source is active, mark the startup tracing session as
-      // taken over by the service.
-      OnStartupTracingComplete();
       // ProducerClient should never be denied permission to start, but it will
       // only start tracing once the callback passed below is called.
       bool result = PerfettoTracedProcess::Get()->CanStartTracing(
@@ -336,52 +333,49 @@ void ProducerClient::UnregisterTraceWriter(uint32_t writer_id) {
 }
 
 perfetto::SharedMemory* ProducerClient::shared_memory() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void ProducerClient::NotifyFlushComplete(perfetto::FlushRequestID id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ProducerClient::RegisterDataSource(const perfetto::DataSourceDescriptor&) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ProducerClient::UpdateDataSource(const perfetto::DataSourceDescriptor&) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ProducerClient::UnregisterDataSource(const std::string& name) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ProducerClient::NotifyDataSourceStopped(
     perfetto::DataSourceInstanceID id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ProducerClient::NotifyDataSourceStarted(
     perfetto::DataSourceInstanceID id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ProducerClient::ActivateTriggers(const std::vector<std::string>&) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 size_t ProducerClient::shared_buffer_page_size_kb() const {
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 bool ProducerClient::IsShmemProvidedByProducer() const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void ProducerClient::Sync(std::function<void()>) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ProducerClient::BindClientAndHostPipesForTesting(

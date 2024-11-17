@@ -869,6 +869,8 @@ component("platform") {
     "graphics/canvas_2d_layer_bridge.h",
     "graphics/canvas_color_params.cc",
     "graphics/canvas_color_params.h",
+    "graphics/canvas_deferred_paint_record.cc",
+    "graphics/canvas_deferred_paint_record.h",
     "graphics/canvas_hibernation_handler.cc",
     "graphics/canvas_hibernation_handler.h",
     "graphics/canvas_resource.cc",
@@ -1201,6 +1203,8 @@ component("platform") {
     "graphics/static_bitmap_image.h",
     "graphics/static_bitmap_image_to_video_frame_copier.cc",
     "graphics/static_bitmap_image_to_video_frame_copier.h",
+    "graphics/static_bitmap_image_transform.cc",
+    "graphics/static_bitmap_image_transform.h",
     "graphics/stroke_data.cc",
     "graphics/stroke_data.h",
     "graphics/styled_stroke_data.cc",
@@ -1247,6 +1251,10 @@ component("platform") {
     "language_detection/detect.h",
     "link_hash.cc",
     "link_hash.h",
+    "media/media_player_client.h",
+    "media/media_player_util.cc",
+    "media/media_player_util.h",
+    "media/remote_playback_client.h",
     "media/web_audio_source_provider_client.h",
     "media/web_audio_source_provider_impl.cc",
     "media_capabilities/web_audio_configuration.h",
@@ -1257,8 +1265,6 @@ component("platform") {
     "mediastream/aec_dump_agent_impl.h",
     "mediastream/audio_service_audio_processor_proxy.cc",
     "mediastream/audio_service_audio_processor_proxy.h",
-    "mediastream/media_constraints_consts.cc",
-    "mediastream/media_constraints_consts.h",
     "mediastream/media_stream_audio_deliverer.h",
     "mediastream/media_stream_audio_level_calculator.cc",
     "mediastream/media_stream_audio_level_calculator.h",
@@ -1739,6 +1745,8 @@ component("platform") {
     "//third_party/dawn/include/dawn:cpp_headers",
     "//third_party/fdlibm",
     "//third_party/pffft:pffft",
+    "//ui/base:base",
+    "//ui/base:ui_data_pack",
     "//ui/base/cursor",
     "//ui/base/mojom:ui_base_types_blink",
     "//ui/gfx",
@@ -1862,6 +1870,11 @@ component("platform") {
       "/wd4334",  # Result of 32-bit shift implicitly converted to 64 bits.
       "/wd4724",  # Modulo by 0.
     ]
+
+    # TODO(crbug.com/40915226): Remove the need to ignore this warning.
+    if (is_component_build) {
+      ldflags = [ "/IGNORE:4217" ]
+    }
   }
 
   if (is_android) {
@@ -2055,7 +2068,7 @@ static_library("test_support") {
     "//services/service_manager/public/cpp",
     "//skia",
     "//skia:skcms",
-    "//testing/libfuzzer:renderer_fuzzing",
+    "//testing/libfuzzer/renderer_fuzzing",
     "//third_party/blink/public/common:common",
     "//third_party/blink/renderer/modules:modules",
     "//third_party/blink/renderer/platform/network:test_support",
@@ -2140,6 +2153,7 @@ source_set("blink_platform_unittests_sources") {
     "exported/web_icon_sizes_parser_test.cc",
     "exported/web_screen_info_test.cc",
     "exported/web_string_test.cc",
+    "exported/web_thread_safe_data_test.cc",
     "exported/web_vector_test.cc",
     "fonts/bitmap_glyphs_block_list_test.cc",
     "fonts/cursor_position_test.cc",
@@ -2643,6 +2657,7 @@ fuzzer_test("math_transform_fuzzer") {
   ]
   libfuzzer_options = [ "max_len=10" ]
   dict = "//testing/libfuzzer/fuzzers/dicts/math_transform.dict"
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("layout_locale_fuzzer") {
@@ -2651,6 +2666,7 @@ fuzzer_test("layout_locale_fuzzer") {
     ":blink_fuzzer_test_support",
     ":platform",
   ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("segmented_string_fuzzer") {
@@ -2659,6 +2675,7 @@ fuzzer_test("segmented_string_fuzzer") {
     ":blink_fuzzer_test_support",
     ":platform",
   ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::FindCategory.
@@ -2670,6 +2687,7 @@ fuzzer_test("mathml_operator_dictionary_fuzzer") {
   ]
   libfuzzer_options = [ "max_len=10" ]
   dict = "//testing/libfuzzer/fuzzers/dicts/mathml_operator_dictionary.dict"
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 if (rtc_use_h265) {
@@ -2681,6 +2699,7 @@ if (rtc_use_h265) {
       ":platform",
     ]
     libfuzzer_options = [ "rss_limit_mb=8192" ]
+    additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
   }
 }
 
@@ -2695,6 +2714,7 @@ fuzzer_test("open_type_math_support_fuzzer") {
     "//third_party/blink/web_tests/external/wpt/fonts/math",
     "//testing/libfuzzer/fuzzers/woff2_corpus",
   ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::StretchyOperatorShaper
@@ -2708,6 +2728,7 @@ fuzzer_test("stretchy_operator_shaper_fuzzer") {
     "//third_party/blink/web_tests/external/wpt/fonts/math",
     "//testing/libfuzzer/fuzzers/woff2_corpus",
   ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::MHTMLParser.
@@ -2722,6 +2743,7 @@ fuzzer_test("mhtml_parser_fuzzer") {
   additional_configs = [
     "//third_party/blink/renderer/platform/wtf:wtf_config",
     "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
   ]
 }
 
@@ -2733,6 +2755,7 @@ fuzzer_test("web_icon_sizes_fuzzer") {
     ":platform",
   ]
   dict = "//testing/libfuzzer/fuzzers/dicts/web_icon_sizes.dict"
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::AVIFImageDecoder
@@ -2744,6 +2767,7 @@ fuzzer_test("blink_avif_decoder_fuzzer") {
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/avif" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::CrabbyAVIFImageDecoder
@@ -2755,6 +2779,7 @@ fuzzer_test("blink_crabbyavif_decoder_fuzzer") {
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/avif" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::ICOImageDecoder.
@@ -2766,6 +2791,7 @@ fuzzer_test("blink_ico_decoder_fuzzer") {
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/icofuzz" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::GIFImageDecoder
@@ -2777,6 +2803,7 @@ fuzzer_test("blink_gif_decoder_fuzzer") {
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/giffuzz" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("blink_png_decoder_fuzzer") {
@@ -2794,6 +2821,7 @@ fuzzer_test("blink_png_decoder_fuzzer") {
     "//third_party/blink/web_tests/images/resources/pngfuzz",
   ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("blink_jpeg_decoder_fuzzer") {
@@ -2805,6 +2833,7 @@ fuzzer_test("blink_jpeg_decoder_fuzzer") {
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/jpegfuzz" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("blink_bmp_decoder_fuzzer") {
@@ -2819,6 +2848,7 @@ fuzzer_test("blink_bmp_decoder_fuzzer") {
   # TODO: crbug.com/324586211 - raise the memory limit to avoid OOMs in the
   # fuzzer harness. This can be removed once the global memory limit is raised.
   libfuzzer_options = [ "rss_limit_mb=4096" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::WEBPImageDecoder.
@@ -2830,6 +2860,7 @@ fuzzer_test("blink_webp_decoder_fuzzer") {
   ]
   seed_corpuses = [ "//third_party/blink/web_tests/images/resources/webpfuzz" ]
   libfuzzer_options = [ "rss_limit_mb=8192" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::DateTimeFormat.
@@ -2841,6 +2872,7 @@ fuzzer_test("blink_date_time_format_fuzzer") {
   ]
   dict = "//testing/libfuzzer/fuzzers/dicts/date.dict"
   seed_corpus = "text/date_time_format_fuzzer_seed_corpus"
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::JSONParser.
@@ -2851,6 +2883,7 @@ fuzzer_test("blink_json_parser_fuzzer") {
     ":platform",
   ]
   dict = "//testing/libfuzzer/fuzzers/dicts/json.dict"
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer for blink::SecurityOrigin.
@@ -2861,7 +2894,7 @@ fuzzer_test("blink_security_origin_fuzzer") {
     ":platform",
   ]
   dict = "//url/gurl_fuzzer.dict"
-  defines = [ "INSIDE_BLINK" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("blink_harfbuzz_shaper_fuzzer") {
@@ -2872,6 +2905,7 @@ fuzzer_test("blink_harfbuzz_shaper_fuzzer") {
     "//third_party/icu",
   ]
   libfuzzer_options = [ "max_len=256" ]
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("blink_http_parsers_fuzzer") {
@@ -2881,6 +2915,7 @@ fuzzer_test("blink_http_parsers_fuzzer") {
     ":platform",
   ]
   dict = "network/HTTPParsersFuzzer.dict"
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 fuzzer_test("blink_storage_key_fuzzer") {
@@ -2890,6 +2925,7 @@ fuzzer_test("blink_storage_key_fuzzer") {
     "//third_party/blink/public/common",
   ]
   seed_corpus = "//third_party/blink/common/storage_key/storage_key_corpus"
+  additional_configs = [ "//third_party/blink/renderer:inside_blink" ]
 }
 
 # Fuzzer template for WTF::TextCodec.
@@ -2905,7 +2941,10 @@ template("blink_text_codec_fuzzer") {
       ":blink_fuzzer_test_support",
       ":platform",
     ]
-    additional_configs = [ ":" + name + "_config" ]
+    additional_configs = [
+      ":" + name + "_config",
+      "//third_party/blink/renderer:inside_blink",
+    ]
     seed_corpus = "text_codec_fuzzer_seed_corpus"
   }
 }
@@ -2925,7 +2964,6 @@ source_set("unit_tests") {
   visibility = [ "//third_party/blink/renderer/*" ]
   sources = [
     "graphics/animation_worklet_mutator_dispatcher_impl_test.cc",
-    "graphics/canvas_2d_layer_bridge_test.cc",
     "graphics/canvas_color_params_test.cc",
     "graphics/canvas_hibernation_handler_test.cc",
     "graphics/canvas_resource_dispatcher_test.cc",

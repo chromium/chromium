@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSugg
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -81,6 +82,7 @@ public final class MostVisitedTilesProcessorUnitTest {
     private @Mock Bitmap mFaviconBitmap;
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock OmniboxImageSupplier mImageSupplier;
+    private @Mock AutocompleteInput mInput;
 
     static class TileData {
         public final String title;
@@ -139,7 +141,7 @@ public final class MostVisitedTilesProcessorUnitTest {
                             .setDisplayText(tile.title)
                             .setUrl(tile.url)
                             .build();
-            mProcessor.populateModel(match, mPropertyModel, placement);
+            mProcessor.populateModel(mInput, match, mPropertyModel, placement);
             mMatches.add(match);
         }
 
@@ -545,7 +547,7 @@ public final class MostVisitedTilesProcessorUnitTest {
         populateMatchesForHorizontalRenderGroup(0, new TileData("", SEARCH_URL, true));
 
         assertEquals(
-                mContext.getResources().getString(R.string.accessibility_omnibox_most_visited_list),
+                mContext.getString(R.string.accessibility_omnibox_most_visited_list),
                 mPropertyModel.get(BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION));
     }
 }

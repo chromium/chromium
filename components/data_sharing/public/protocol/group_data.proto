@@ -24,6 +24,7 @@ message GroupMember {
   optional string email = 3;
   optional MemberRole role = 4;
   optional string avatar_url = 5;
+  optional string given_name = 6;
 };
 
 message GroupData {

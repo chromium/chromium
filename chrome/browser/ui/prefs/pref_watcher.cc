@@ -56,7 +56,7 @@ const char* const kWebPrefsToObserve[] = {
 #if BUILDFLAG(IS_ANDROID)
     browser_ui::prefs::kWebKitFontScaleFactor,
     prefs::kAccessibilityTextSizeContrastFactor,
-    browser_ui::prefs::kWebKitForceEnableZoom,
+    prefs::kAccessibilityForceEnableZoom,
     prefs::kAccessibilityFontWeightAdjustment,
     prefs::kWebKitPasswordEchoEnabled,
 #endif
@@ -103,8 +103,6 @@ PrefWatcher::PrefWatcher(Profile* profile)
                                      renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kEnableEncryptedMedia,
                                      renderer_callback);
-  profile_pref_change_registrar_.Add(
-      prefs::kPrefixedVideoFullscreenApiAvailability, renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kWebRTCIPHandlingPolicy,
                                      renderer_callback);
   profile_pref_change_registrar_.Add(prefs::kWebRTCUDPPortRange,

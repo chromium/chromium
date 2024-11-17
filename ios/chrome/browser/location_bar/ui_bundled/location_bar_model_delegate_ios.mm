@@ -28,8 +28,8 @@
 
 LocationBarModelDelegateIOS::LocationBarModelDelegateIOS(
     WebStateList* web_state_list,
-    ChromeBrowserState* browser_state)
-    : web_state_list_(web_state_list), browser_state_(browser_state) {}
+    ProfileIOS* profile)
+    : web_state_list_(web_state_list), profile_(profile) {}
 
 LocationBarModelDelegateIOS::~LocationBarModelDelegateIOS() {}
 
@@ -149,5 +149,5 @@ bool LocationBarModelDelegateIOS::IsHomePage(const GURL& url) const {
 TemplateURLService* LocationBarModelDelegateIOS::GetTemplateURLService()
 
 {
-  return ios::TemplateURLServiceFactory::GetForBrowserState(browser_state_);
+  return ios::TemplateURLServiceFactory::GetForProfile(profile_);
 }

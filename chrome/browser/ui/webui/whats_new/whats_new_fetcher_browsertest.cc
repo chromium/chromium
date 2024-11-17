@@ -27,6 +27,10 @@ BASE_FEATURE(kTestModuleEnabled,
 BASE_FEATURE(kTestModule2Enabled,
              "TestModule2Enabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
+// Enabled through feature list.
+BASE_FEATURE(kTestEditionEnabled,
+             "TestEditionEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Disabled through feature list.
 BASE_FEATURE(kTestModuleDisabled,
              "TestModuleDisabled",
@@ -64,6 +68,12 @@ class WhatsNewFetcherBrowserTest : public InteractiveBrowserTest {
   WhatsNewFetcherBrowserTest() {
     GlobalFeatures::ReplaceGlobalFeaturesForTesting(
         base::BindRepeating(&CreateGlobalFeatures));
+  }
+  void SetUp() override {
+    InitFeatures();
+    InteractiveBrowserTest::SetUp();
+  }
+  virtual void InitFeatures() {
     feature_list_.InitWithFeatures({user_education::features::kWhatsNewVersion2,
                                     kTestModuleEnabled, kTestModule2Enabled},
                                    {kTestModuleDisabled});
@@ -76,7 +86,7 @@ class WhatsNewFetcherBrowserTest : public InteractiveBrowserTest {
     return g_browser_process->GetFeatures()->whats_new_registry();
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -94,8 +104,8 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
       "https://www.google.com/chrome/v2/whats-new/?version=%d&internal=true",
       CHROME_VERSION_MAJOR);
 
-  EXPECT_EQ(expected,
-            whats_new::GetV2ServerURLForRender().possibly_invalid_spec());
+  EXPECT_EQ(expected, whats_new::GetV2ServerURLForRender(*GetRegistry())
+                          .possibly_invalid_spec());
 }
 
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
@@ -105,8 +115,8 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
       "?version=%d&internal=true",
       CHROME_VERSION_MAJOR);
 
-  EXPECT_EQ(expected,
-            whats_new::GetV2ServerURLForRender(true).possibly_invalid_spec());
+  EXPECT_EQ(expected, whats_new::GetV2ServerURLForRender(*GetRegistry(), true)
+                          .possibly_invalid_spec());
 }
 
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
@@ -125,8 +135,8 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
 
   expected.append("&internal=true");
 
-  EXPECT_EQ(expected,
-            whats_new::GetV2ServerURLForRender().possibly_invalid_spec());
+  EXPECT_EQ(expected, whats_new::GetV2ServerURLForRender(*GetRegistry())
+                          .possibly_invalid_spec());
 }
 
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
@@ -147,8 +157,8 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
 
   expected.append("&internal=true");
 
-  EXPECT_EQ(expected,
-            whats_new::GetV2ServerURLForRender().possibly_invalid_spec());
+  EXPECT_EQ(expected, whats_new::GetV2ServerURLForRender(*GetRegistry())
+                          .possibly_invalid_spec());
 }
 
 IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
@@ -179,6 +189,97 @@ IN_PROC_BROWSER_TEST_F(WhatsNewFetcherBrowserTest,
 
   expected.append("&internal=true");
 
-  EXPECT_EQ(expected,
-            whats_new::GetV2ServerURLForRender().possibly_invalid_spec());
+  EXPECT_EQ(expected, whats_new::GetV2ServerURLForRender(*GetRegistry())
+                          .possibly_invalid_spec());
+}
+
+class WhatsNewFetcherOneCustomizationBrowserTest
+    : public WhatsNewFetcherBrowserTest {
+ public:
+  void InitFeatures() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kTestModuleEnabled, {{whats_new::kCustomizationParam, "abc"}}},
+         {kTestModule2Enabled, {{}}}},
+        {kTestModuleDisabled});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WhatsNewFetcherOneCustomizationBrowserTest,
+                       GetV2ServerURLForRender) {
+  whats_new::WhatsNewRegistry* registry = GetRegistry();
+  registry->RegisterModule(whats_new::WhatsNewModule(kTestModuleEnabled, ""));
+  // Will be ignored - disabled by experiment
+  registry->RegisterModule(whats_new::WhatsNewModule(kTestModuleDisabled, ""));
+  registry->RegisterModule(
+      whats_new::WhatsNewModule(kTestModuleEnabledByDefault, ""));
+  // Will be ignored - disabled by default
+  registry->RegisterModule(
+      whats_new::WhatsNewModule(kTestModuleDisabledByDefault, ""));
+  // Will be ignored - no feature.
+  registry->RegisterModule(
+      whats_new::WhatsNewModule("", "", BrowserCommand::kNoOpCommand));
+
+  std::string expected = base::StringPrintf(
+      "https://www.google.com/chrome/v2/whats-new/?version=%d",
+      CHROME_VERSION_MAJOR);
+
+  // Enabled modules will be sent with `enabled` parameter.
+  expected.append(base::StringPrintf("&enabled=%s", kTestModuleEnabled.name));
+
+  // Enabled by default modules will be sent with `rolled` parameter.
+  expected.append(
+      base::StringPrintf("&rolled=%s", kTestModuleEnabledByDefault.name));
+
+  // Customization
+  expected.append("&customization=abc");
+
+  expected.append("&internal=true");
+
+  EXPECT_EQ(expected, whats_new::GetV2ServerURLForRender(*GetRegistry())
+                          .possibly_invalid_spec());
+}
+
+class WhatsNewFetcherMultipleCustomizationsBrowserTest
+    : public WhatsNewFetcherBrowserTest {
+ public:
+  void InitFeatures() override {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kTestModuleEnabled, {{whats_new::kCustomizationParam, "abc"}}},
+         {kTestModule2Enabled, {{whats_new::kCustomizationParam, "def"}}},
+         {kTestEditionEnabled, {{whats_new::kCustomizationParam, "hij"}}}},
+        {});
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WhatsNewFetcherMultipleCustomizationsBrowserTest,
+                       GetV2ServerURLForRender) {
+  whats_new::WhatsNewRegistry* registry = GetRegistry();
+  registry->RegisterModule(whats_new::WhatsNewModule(kTestModuleEnabled, ""));
+  registry->RegisterModule(whats_new::WhatsNewModule(kTestModule2Enabled, ""));
+  registry->RegisterEdition(
+      whats_new::WhatsNewEdition(kTestEditionEnabled, ""));
+  // Will be ignored - no feature.
+  registry->RegisterModule(
+      whats_new::WhatsNewModule("", "", BrowserCommand::kNoOpCommand));
+
+  std::string expected = base::StringPrintf(
+      "https://www.google.com/chrome/v2/whats-new/?version=%d",
+      CHROME_VERSION_MAJOR);
+
+  // Enabled modules will be sent with `enabled` parameter.
+  auto enabled =
+      base::JoinString({kTestEditionEnabled.name, kTestModuleEnabled.name,
+                        kTestModule2Enabled.name},
+                       std::string("%2C"));
+  expected.append(base::StringPrintf("&enabled=%s", enabled));
+
+  // Customizations
+  auto customizations =
+      base::JoinString({"abc", "def", "hij"}, std::string("%2C"));
+  expected.append(base::StringPrintf("&customization=%s", customizations));
+
+  expected.append("&internal=true");
+
+  EXPECT_EQ(expected, whats_new::GetV2ServerURLForRender(*GetRegistry())
+                          .possibly_invalid_spec());
 }

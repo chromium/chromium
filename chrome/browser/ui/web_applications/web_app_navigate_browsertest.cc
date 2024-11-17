@@ -71,6 +71,7 @@ IN_PROC_BROWSER_TEST_F(WebAppNavigateBrowserTest,
   NavigateParams params(MakeNavigateParams());
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.open_pwa_window_if_possible = false;
+  params.pwa_navigation_capturing_force_off = true;
   Navigate(&params);
 
   EXPECT_EQ(browser(), params.browser);

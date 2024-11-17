@@ -41,7 +41,7 @@ class CONTENT_EXPORT AttributionDebugReport {
 
   static std::optional<AttributionDebugReport> Create(
       base::FunctionRef<bool()> is_operation_allowed,
-      bool is_debug_cookie_set,
+      bool cookie_based_debug_allowed,
       const CreateReportResult& result);
 
   static std::optional<AttributionDebugReport> Create(
@@ -52,7 +52,7 @@ class CONTENT_EXPORT AttributionDebugReport {
 
   static std::optional<AttributionDebugReport> Create(
       attribution_reporting::SuitableOrigin reporting_origin,
-      const attribution_reporting::RegistrationHeaderError&,
+      attribution_reporting::RegistrationHeaderError,
       const attribution_reporting::SuitableOrigin& context_origin,
       bool is_within_fenced_frame,
       base::FunctionRef<bool(const url::Origin& reporting_origin)>

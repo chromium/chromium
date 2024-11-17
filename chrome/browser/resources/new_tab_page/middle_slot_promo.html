@@ -10,6 +10,12 @@
     </cr-icon-button>
   ` : ''}
 </div>
+${this.mobilePromoEnabled_ ? html`
+  <!-- Visibility is toggled in TS -->
+  <ntp-mobile-promo id="mobilePromo"
+      @qr-code-changed="${this.onMobilePromoQrCodeChanged_}" hidden>
+  </ntp-mobile-promo>
+` : ''}
 <cr-toast id="dismissPromoButtonToast" duration="10000">
   <div id="dismissPromoButtonToastMessage">
     $i18n{undoDismissPromoButtonToast}

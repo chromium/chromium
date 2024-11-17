@@ -29,6 +29,10 @@ class RasterInterface;
 }  // namespace raster
 }  // namespace gpu
 
+namespace libyuv {
+struct YuvConstants;
+}
+
 namespace media {
 
 class VideoFramePool;
@@ -148,6 +152,19 @@ MEDIA_EXPORT gfx::Size PadToMatchAspectRatio(const gfx::Size& size,
 MEDIA_EXPORT scoped_refptr<VideoFrame> ConvertToMemoryMappedFrame(
     scoped_refptr<VideoFrame> frame);
 
+// A helper function to map GpuMemoryBuffer-based VideoFrame. This function
+// maps the given GpuMemoryBuffer of |frame| as-is without converting pixel
+// format, unless the video frame is backed by DXGI GMB.
+// The returned VideoFrame owns the |frame|.
+// If the underlying buffer is DXGI, then it will be copied to shared memory
+// in GPU process.
+// If the GPU process is involved, the callback will be called in the
+// GpuMemoryThread. Otherwise it will be involved immediately in the current
+// sequence.
+MEDIA_EXPORT void ConvertToMemoryMappedFrameAsync(
+    scoped_refptr<VideoFrame> frame,
+    base::OnceCallback<void(scoped_refptr<VideoFrame>)> result_cb);
+
 // This function synchronously reads pixel data from textures associated with
 // |txt_frame| and creates a new CPU memory backed frame. It's needed because
 // existing video encoders can't handle texture backed frames.
@@ -217,6 +234,16 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> CreateFromSkImage(
 // Utility to convert a media pixel format to SkYUVAInfo.
 MEDIA_EXPORT std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>
 VideoPixelFormatToSkiaValues(VideoPixelFormat video_format);
+
+// Returns the libyuv RGB conversion matrix for a given skia YUV color space.
+// If `output_argb_matrix` is true a ARGB matrix will be provided, if false a
+// ABGR matrix will be provided.
+//
+// NOTE: When using the ABGR matrix, you must also swap the V,U parameters to
+// whichever libyuv function you're using.
+MEDIA_EXPORT const libyuv::YuvConstants* GetYuvContantsForColorSpace(
+    SkYUVColorSpace cs,
+    bool output_argb_matrix);
 
 }  // namespace media
 

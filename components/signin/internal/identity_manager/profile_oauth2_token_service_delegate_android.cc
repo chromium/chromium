@@ -89,7 +89,7 @@ AndroidAccessTokenFetcher::AndroidAccessTokenFetcher(
       request_was_cancelled_(false),
       weak_factory_(this) {}
 
-AndroidAccessTokenFetcher::~AndroidAccessTokenFetcher() {}
+AndroidAccessTokenFetcher::~AndroidAccessTokenFetcher() = default;
 
 void AndroidAccessTokenFetcher::Start(const std::string& client_id,
                                       const std::string& client_secret,
@@ -166,7 +166,7 @@ ProfileOAuth2TokenServiceDelegateAndroid::
 }
 
 ProfileOAuth2TokenServiceDelegateAndroid::
-    ~ProfileOAuth2TokenServiceDelegateAndroid() {}
+    ~ProfileOAuth2TokenServiceDelegateAndroid() = default;
 
 ScopedJavaLocalRef<jobject>
 ProfileOAuth2TokenServiceDelegateAndroid::GetJavaObject() {

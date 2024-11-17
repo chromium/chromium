@@ -13,8 +13,8 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertGT, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
-import {FakeHidPreservingBluetoothStateController} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_hid_preserving_bluetooth_state_controller.js';
+import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://webui-test/chromeos/bluetooth/fake_bluetooth_config.js';
+import {FakeHidPreservingBluetoothStateController} from 'chrome://webui-test/chromeos/bluetooth/fake_hid_preserving_bluetooth_state_controller.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -533,25 +533,25 @@ suite('<os-settings-bluetooth-devices-subpage>', () => {
     assertFalse(enableBluetoothToggle.checked);
 
     const enableBluetooth = async () => {
-      assertTrue(
-          bluetoothDevicesSubpage.systemProperties.systemState ===
-          BluetoothSystemState.kDisabled);
+      assertEquals(
+          BluetoothSystemState.kDisabled,
+          bluetoothDevicesSubpage.systemProperties.systemState);
 
       // Simulate clicking toggle.
       enableBluetoothToggle.click();
       await flushTasks();
 
       // Toggle should be on since systemState is enabling.
-      assertTrue(
-          bluetoothDevicesSubpage.systemProperties.systemState ===
-          BluetoothSystemState.kEnabling);
+      assertEquals(
+          BluetoothSystemState.kEnabling,
+          bluetoothDevicesSubpage.systemProperties.systemState);
 
       // Mock operation success.
       bluetoothConfig.completeSetBluetoothEnabledState(/*success=*/ true);
       await flushTasks();
-      assertTrue(
-          bluetoothDevicesSubpage.systemProperties.systemState ===
-          BluetoothSystemState.kEnabled);
+      assertEquals(
+          BluetoothSystemState.kEnabled,
+          bluetoothDevicesSubpage.systemProperties.systemState);
     };
 
     await enableBluetooth();
@@ -565,16 +565,16 @@ suite('<os-settings-bluetooth-devices-subpage>', () => {
 
     assertTrue(enableBluetoothToggle.checked);
     assertEquals(hidPreservingController.getDialogShownCount(), 1);
-    assertTrue(
-        bluetoothDevicesSubpage.systemProperties.systemState ===
-        BluetoothSystemState.kEnabled);
+    assertEquals(
+        BluetoothSystemState.kEnabled,
+        bluetoothDevicesSubpage.systemProperties.systemState);
     hidPreservingController.completeShowDialog(true);
     await flushTasks();
 
     assertFalse(enableBluetoothToggle.checked);
-    assertTrue(
-        bluetoothDevicesSubpage.systemProperties.systemState ===
-        BluetoothSystemState.kDisabling);
+    assertEquals(
+        BluetoothSystemState.kDisabling,
+        bluetoothDevicesSubpage.systemProperties.systemState);
     bluetoothConfig.completeSetBluetoothEnabledState(/*success=*/ true);
     await flushTasks();
     await enableBluetooth();
@@ -588,9 +588,9 @@ suite('<os-settings-bluetooth-devices-subpage>', () => {
 
     assertTrue(enableBluetoothToggle.checked);
     assertEquals(hidPreservingController.getDialogShownCount(), 2);
-    assertTrue(
-        bluetoothDevicesSubpage.systemProperties.systemState ===
-        BluetoothSystemState.kEnabled);
+    assertEquals(
+        BluetoothSystemState.kEnabled,
+        bluetoothDevicesSubpage.systemProperties.systemState);
     hidPreservingController.completeShowDialog(false);
 
     await flushTasks();
@@ -599,78 +599,4 @@ suite('<os-settings-bluetooth-devices-subpage>', () => {
         bluetoothDevicesSubpage.systemProperties.systemState ===
         BluetoothSystemState.kEnabled);
   });
-
-  test(
-      'Software Scanning dropdown visible on Software Scanning Support flag enabled, Battery Saver inactive, Hardware Offloading unsupported',
-      async () => {
-        loadTimeData.overrideValues(
-            {'isFastPairSoftwareScanningSupportEnabled': true});
-        browserProxy.setBatterySaverStatus(false);
-        browserProxy.setHardwareOffloadingSupportStatus(false);
-        await init();
-        assertTrue(isVisible(bluetoothDevicesSubpage.shadowRoot!.querySelector(
-            'settings-dropdown-menu')));
-        assertFalse(bluetoothDevicesSubpage.shadowRoot!
-            .querySelector('settings-dropdown-menu')!.disabled);
-        assertFalse(isVisible(bluetoothDevicesSubpage.shadowRoot!.querySelector(
-            '#enableFastPairToggle')));
-      });
-
-  test(
-      'Software Scanning dropdown invisible on Software Scanning Support flag disabled, Battery Saver inactive, Hardware Offloading unsupported',
-      async () => {
-        loadTimeData.overrideValues(
-            {'isFastPairSoftwareScanningSupportEnabled': false});
-        browserProxy.setBatterySaverStatus(false);
-        browserProxy.setHardwareOffloadingSupportStatus(false);
-        await init();
-        assertFalse(isVisible(bluetoothDevicesSubpage.shadowRoot!.querySelector(
-            'settings-dropdown-menu')));
-        assertTrue(isVisible(bluetoothDevicesSubpage.shadowRoot!.querySelector(
-            '#enableFastPairToggle')));
-      });
-
-  test(
-      'Software Scanning dropdown disabled on Software Scanning Support flag enabled, Battery Saver active, Hardware Offloading unsupported',
-      async () => {
-        loadTimeData.overrideValues(
-            {'isFastPairSoftwareScanningSupportEnabled': true});
-        browserProxy.setBatterySaverStatus(true);
-        browserProxy.setHardwareOffloadingSupportStatus(false);
-        await init();
-        assertTrue(isVisible(bluetoothDevicesSubpage.shadowRoot!.querySelector(
-            'settings-dropdown-menu')));
-        assertFalse(isVisible(bluetoothDevicesSubpage.shadowRoot!.querySelector(
-            '#enableFastPairToggle')));
-        assertTrue(bluetoothDevicesSubpage.shadowRoot!
-                       .querySelector('settings-dropdown-menu')!.disabled);
-      });
-
-  test(
-      'Software Scanning dropdown invisible on Software Scanning Support flag enabled, Battery Saver inactive, Hardware Offloading supported',
-      async () => {
-        loadTimeData.overrideValues(
-            {'isFastPairSoftwareScanningSupportEnabled': true});
-        browserProxy.setBatterySaverStatus(false);
-        browserProxy.setHardwareOffloadingSupportStatus(true);
-        await init();
-        assertFalse(isVisible(bluetoothDevicesSubpage.shadowRoot!.querySelector(
-            'settings-dropdown-menu')));
-        assertTrue(isVisible(bluetoothDevicesSubpage.shadowRoot!.querySelector(
-            '#enableFastPairToggle')));
-      });
-
-  test(
-      'Software Scanning dropdown invisible on Software Scanning Support flag enabled, Battery Saver active, Hardware Offloading supported',
-      async () => {
-        loadTimeData.overrideValues(
-            {'isFastPairSoftwareScanningSupportEnabled': true});
-        browserProxy.setBatterySaverStatus(true);
-        browserProxy.setHardwareOffloadingSupportStatus(true);
-        await init();
-        assertFalse(isVisible(bluetoothDevicesSubpage.shadowRoot!.querySelector(
-            'settings-dropdown-menu')));
-        assertTrue(isVisible(bluetoothDevicesSubpage.shadowRoot!.querySelector(
-            '#enableFastPairToggle')));
-      });
 });

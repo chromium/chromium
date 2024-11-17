@@ -75,7 +75,7 @@ void PasswordGenerationControllerImpl::OnAutomaticGenerationAvailable(
   // FocusedInputChanged by now, because there is a race condition. The roots
   // of the OnAutomaticGenerationAvailable and FocusedInputChanged calls are
   // the same in the renderer. So we need to set it here too.
-  FocusedInputChanged(autofill::mojom::FocusedFieldType::kFillablePasswordField,
+  FocusedInputChanged(/*is_field_eligible_for_generation=*/true,
                       std::move(target_frame_driver));
 
   active_frame_driver_->GetPasswordManager()
@@ -117,17 +117,16 @@ void PasswordGenerationControllerImpl::ShowManualGenerationDialog(
 }
 
 void PasswordGenerationControllerImpl::FocusedInputChanged(
-    autofill::mojom::FocusedFieldType focused_field_type,
+    bool is_field_eligible_for_generation,
     base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver) {
   TRACE_EVENT0("passwords",
                "PasswordGenerationControllerImpl::FocusedInputChanged");
   // It's probably a duplicate notification.
-  if (IsActiveFrameDriver(driver.get()) &&
-      focused_field_type == FocusedFieldType::kFillablePasswordField) {
+  if (IsActiveFrameDriver(driver.get()) && is_field_eligible_for_generation) {
     return;
   }
   ResetFocusState();
-  if (focused_field_type == FocusedFieldType::kFillablePasswordField) {
+  if (is_field_eligible_for_generation) {
     active_frame_driver_ = std::move(driver);
   }
 }
@@ -249,6 +248,11 @@ PasswordGenerationControllerImpl::
                          OnTouchToFillForGenerationDismissed,
                      base::Unretained(this)),
       manual_filling_controller);
+}
+
+TouchToFillPasswordGenerationController* PasswordGenerationControllerImpl::
+    GetTouchToFillGenerationControllerForTesting() {
+  return touch_to_fill_generation_controller_.get();
 }
 
 bool PasswordGenerationControllerImpl::TryToShowGenerationTouchToFill(

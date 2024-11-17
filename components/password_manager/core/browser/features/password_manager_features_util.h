@@ -21,23 +21,23 @@ namespace password_manager::features_util {
 // histogram_suffixes in histograms.xml!
 enum class PasswordAccountStorageUserState {
   // Signed-out user (and no account storage opt-in exists).
-  kSignedOutUser = 0,
+  kSignedOutUser,
   // Signed-out user, but an account storage opt-in exists.
-  kSignedOutAccountStoreUser = 1,
+  kSignedOutAccountStoreUser,
   // Signed-in non-syncing user, not opted in to the account storage (but may
   // save passwords to the account storage by default).
-  kSignedInUser = 2,
+  kSignedInUser,
   // Signed-in non-syncing user, not opted in to the account storage, and has
   // explicitly chosen to save passwords only on the device.
-  kSignedInUserSavingLocally = 3,
+  kSignedInUserSavingLocally,
   // Signed-in non-syncing user, opted in to the account storage, and saving
   // passwords to the account storage.
-  kSignedInAccountStoreUser = 4,
+  kSignedInAccountStoreUser,
   // Signed-in non-syncing user and opted in to the account storage, but has
   // chosen to save passwords only on the device.
-  kSignedInAccountStoreUserSavingLocally = 5,
+  kSignedInAccountStoreUserSavingLocally,
   // Syncing user.
-  kSyncUser = 6,
+  kSyncUser,
 };
 
 // The usage level of the account-scoped password storage. This is essentially
@@ -116,19 +116,6 @@ bool ShouldShowAccountStorageReSignin(const PrefService* pref_service,
                                       const syncer::SyncService* sync_service,
                                       const GURL& current_page_url);
 
-// Whether it makes sense to ask the user to move a password to their account or
-// in which store to save a password (i.e. profile or account store). This
-// is true if the user has opted in already, or hasn't opted in but all other
-// requirements are met (i.e. there is a signed-in user, Sync-the-feature is not
-// enabled, etc). |pref_service| must not be null. |sync_service| may be null
-// (commonly the case in incognito mode), in which case this will simply return
-// false. See PasswordFeatureManager::ShouldShowPasswordStorePicker.
-// TODO(crbug.com/40261471): This predicate is kinda confusing, especially on
-// mobile. Consider splitting it in two, "should offer move" and "should offer
-// store choice".
-bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
-                                      const syncer::SyncService* sync_service);
-
 // Returns the default storage location for signed-in but non-syncing users
 // (i.e. will new passwords be saved to locally or to the account by default).
 // Always returns an actual value, never kNotSet.
@@ -203,11 +190,6 @@ void SetDefaultPasswordStore(PrefService* pref_service,
 void KeepAccountStorageSettingsOnlyForUsers(
     PrefService* pref_service,
     const std::vector<std::string>& gaia_ids);
-
-// Migrates the old password_manager account storage opt-in pref to
-// SyncUserSettings::GetSelectedTypes(), see crbug.com/1484531.
-// TODO(crbug.com/40943534): Delete the migration when appropriate, see bug.
-void MigrateOptInPrefToSyncSelectedTypes(PrefService* pref_service);
 
 // When the user declines the opt-in offer during saving, the default
 // store pref is set to kProfileStore, to signal the opt-in shouldn't be

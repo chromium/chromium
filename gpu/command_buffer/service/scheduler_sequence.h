@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/sequence_id.h"
 #include "gpu/command_buffer/service/single_task_sequence.h"
 #include "gpu/gpu_gles2_export.h"
@@ -27,7 +28,6 @@ class OverlayProcessorAndroid;
 }  // namespace viz
 
 namespace gpu {
-class Scheduler;
 
 // Selectively allow ScheduleTask if DefaultDisallowScheduleTaskOnCurrentThread
 // is used for a thread.
@@ -92,16 +92,29 @@ class GPU_GLES2_EXPORT SchedulerSequence : public SingleTaskSequence {
   SequenceId GetSequenceId() override;
   bool ShouldYield() override;
   void ScheduleTask(
+      gpu::TaskCallback task,
+      std::vector<SyncToken> sync_token_fences,
+      const SyncToken& release,
+      ReportingCallback report_callback = ReportingCallback()) override;
+  void ScheduleTask(
       base::OnceClosure task,
       std::vector<SyncToken> sync_token_fences,
+      const SyncToken& release,
       ReportingCallback report_callback = ReportingCallback()) override;
   void ScheduleOrRetainTask(
       base::OnceClosure task,
       std::vector<SyncToken> sync_token_fences,
+      const SyncToken& release,
       ReportingCallback report_callback = ReportingCallback()) override;
+  void ContinueTask(gpu::TaskCallback task) override;
   void ContinueTask(base::OnceClosure task) override;
+  [[nodiscard]] ScopedSyncPointClientState CreateSyncPointClientState(
+      CommandBufferNamespace namespace_id,
+      CommandBufferId command_buffer_id) override;
 
  private:
+  void ScheduleTaskImpl(Scheduler::Task task);
+
   const raw_ptr<Scheduler> scheduler_;
   const SequenceId sequence_id_;
   const bool target_thread_is_always_available_;

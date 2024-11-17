@@ -19,6 +19,22 @@ namespace base::android {
 
 BASE_DECLARE_FEATURE(kYieldWithInputHint);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Distinguishes outcomes of returning |true| from HasInput() below.
+enum class InputHintResult {
+  // The yield went through the Looper and dispatched input in
+  // CompositorViewHolder. This path probably reduces touch latency in the
+  // web contents area.
+  kCompositorViewTouchEvent = 0,
+  // The yield returned back from the Looper to continue with native tasks. It
+  // can happen because the Looper did not prioritize input handling or
+  // because the input events were hitting the parts of the UI outside of the
+  // renderer compositor view.
+  kBackToNative = 1,
+  kMaxValue = kBackToNative,
+};
+
 // A class to track a single global root View object and ask it for presence of
 // new unhandled input events.
 //
@@ -62,6 +78,14 @@ class BASE_EXPORT InputHintChecker {
     ~ScopedOverrideInstance();
   };
 
+  // Used for UMA metrics to remember that the input hint was used to yield
+  // recently.
+  void set_is_after_input_yield(bool after) { is_after_input_yield_ = after; }
+  bool is_after_input_yield() { return is_after_input_yield_; }
+
+  // Records the UMA metric based on the InputHintResult.
+  static void RecordInputHintResult(InputHintResult result);
+
   bool IsInitializedForTesting();
   bool FailedToInitializeForTesting();
   bool HasInputImplNoThrottlingForTesting(_JNIEnv* env);
@@ -80,6 +104,9 @@ class BASE_EXPORT InputHintChecker {
   void InitGlobalRefsAndMethodIds(JNIEnv* env);
   bool HasInputImpl(JNIEnv* env, jobject o);
 
+  bool is_after_input_yield_ = false;
+
+  // Last time the input hint was requested. Used for throttling.
   base::TimeTicks last_checked_;
 
   // Initialization state. It is made atomic because part of the initialization

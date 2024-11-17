@@ -20,6 +20,10 @@ namespace screen_ai {
 class ScreenAIServiceRouter;
 }  // namespace screen_ai
 
+namespace on_device_translation {
+class OnDeviceTranslationServiceController;
+}  // namespace on_device_translation
+
 namespace content {
 class VideoCaptureServiceLauncher;
 
@@ -35,6 +39,7 @@ class ServiceProcessHostPreloadLibraries {
   friend class screen_ai::ScreenAIServiceRouter;
   friend video_effects::mojom::VideoEffectsService*
   video_effects::GetVideoEffectsService();
+  friend class on_device_translation::OnDeviceTranslationServiceController;
 
   // Tests.
   FRIEND_TEST_ALL_PREFIXES(ServiceProcessHostBrowserTest,

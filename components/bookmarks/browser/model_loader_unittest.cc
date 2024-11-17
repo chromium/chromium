@@ -19,10 +19,14 @@
 namespace bookmarks {
 namespace {
 
-const char kLocalOrSyncableIdsReassignedMetricName[] =
+constexpr char kLocalOrSyncableIdsReassignedMetricName[] =
     "Bookmarks.IdsReassigned.OnProfileLoad.LocalOrSyncable";
-const char kAccountIdsReassignedMetricName[] =
+constexpr char kAccountIdsReassignedMetricName[] =
     "Bookmarks.IdsReassigned.OnProfileLoad.Account";
+constexpr char kUserFolderCountMetricName[] =
+    "Bookmarks.UserFolder.OnProfileLoad.Count";
+constexpr char kUserFolderTopLevelCountMetricName[] =
+    "Bookmarks.UserFolder.OnProfileLoad.TopLevelCount";
 
 const base::FilePath& GetTestDataDir() {
   static base::NoDestructor<base::FilePath> dir([]() {
@@ -84,6 +88,16 @@ TEST(ModelLoaderTest, LoadEmptyModelFromInexistentFile) {
                                     /*expected_count=*/0);
   histogram_tester.ExpectTotalCount(kAccountIdsReassignedMetricName,
                                     /*expected_count=*/0);
+
+  histogram_tester.ExpectTotalCount(kUserFolderCountMetricName,
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kUserFolderCountMetricName,
+                                     /*sample=*/0, /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(kUserFolderTopLevelCountMetricName,
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kUserFolderTopLevelCountMetricName,
+                                     /*sample=*/0, /*expected_count=*/1);
 }
 
 TEST(ModelLoaderTest, LoadNonEmptyModel) {
@@ -132,6 +146,16 @@ TEST(ModelLoaderTest, LoadNonEmptyModel) {
                                       /*expected_bucket_count=*/1);
   histogram_tester.ExpectTotalCount(kAccountIdsReassignedMetricName,
                                     /*expected_count=*/0);
+
+  histogram_tester.ExpectTotalCount(kUserFolderCountMetricName,
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kUserFolderCountMetricName,
+                                     /*sample=*/3, /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(kUserFolderTopLevelCountMetricName,
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kUserFolderTopLevelCountMetricName,
+                                     /*sample=*/3, /*expected_count=*/1);
 }
 
 TEST(ModelLoaderTest, LoadNonEmptyModelFromOneFileWithInternalIdCollisions) {
@@ -255,6 +279,16 @@ TEST(ModelLoaderTest, LoadTwoFilesWithNonCollidingIds) {
   histogram_tester.ExpectUniqueSample(kAccountIdsReassignedMetricName,
                                       /*sample=*/false,
                                       /*expected_bucket_count=*/1);
+
+  histogram_tester.ExpectTotalCount(kUserFolderCountMetricName,
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kUserFolderCountMetricName,
+                                     /*sample=*/6, /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(kUserFolderTopLevelCountMetricName,
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kUserFolderTopLevelCountMetricName,
+                                     /*sample=*/6, /*expected_count=*/1);
 }
 
 TEST(ModelLoaderTest, LoadTwoFilesWithCollidingIdsAcross) {
@@ -608,6 +642,34 @@ TEST(ModelLoaderTest, LoadTwoFilesWhereTheLocalOrSyncableFileDoesNotExist) {
   histogram_tester.ExpectUniqueSample(kAccountIdsReassignedMetricName,
                                       /*sample=*/false,
                                       /*expected_bucket_count=*/1);
+}
+
+TEST(ModelLoaderTest, LoadModelWithNestedUserFolders) {
+  base::HistogramTester histogram_tester;
+  base::test::TaskEnvironment task_environment;
+  const base::FilePath test_file =
+      GetTestDataDir().AppendASCII("bookmarks/model_nested_user_folders.json");
+  ASSERT_TRUE(base::PathExists(test_file));
+
+  base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
+  scoped_refptr<ModelLoader> loader = ModelLoader::Create(
+      /*local_or_syncable_file_path=*/test_file,
+      /*account_file_path=*/base::FilePath(),
+      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      details_future.GetCallback());
+
+  const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
+  ASSERT_NE(nullptr, details);
+
+  histogram_tester.ExpectTotalCount(kUserFolderCountMetricName,
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kUserFolderCountMetricName,
+                                     /*sample=*/7, /*expected_count=*/1);
+
+  histogram_tester.ExpectTotalCount(kUserFolderTopLevelCountMetricName,
+                                    /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(kUserFolderTopLevelCountMetricName,
+                                     /*sample=*/3, /*expected_count=*/1);
 }
 
 }  // namespace

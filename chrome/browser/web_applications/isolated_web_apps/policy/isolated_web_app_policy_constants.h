@@ -10,6 +10,8 @@ namespace web_app {
 // Keys for the IsolatedWebAppInstallForceList preference.
 extern const char kPolicyUpdateManifestUrlKey[];
 extern const char kPolicyWebBundleIdKey[];
+extern const char kPolicyUpdateChannelKey[];
+extern const char kPolicyPinnedVersionKey[];
 
 }  // namespace web_app
 

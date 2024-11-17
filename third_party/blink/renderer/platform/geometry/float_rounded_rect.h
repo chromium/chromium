@@ -27,14 +27,10 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_ROUNDED_RECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_FLOAT_ROUNDED_RECT_H_
 
+#include <array>
 #include <iosfwd>
 #include <optional>
 
@@ -232,7 +228,7 @@ inline FloatRoundedRect::operator SkRRect() const {
   SkRRect rrect;
 
   if (IsRounded()) {
-    SkVector radii[4];
+    std::array<SkVector, 4> radii;
     radii[SkRRect::kUpperLeft_Corner].set(TopLeftCorner().width(),
                                           TopLeftCorner().height());
     radii[SkRRect::kUpperRight_Corner].set(TopRightCorner().width(),
@@ -242,7 +238,7 @@ inline FloatRoundedRect::operator SkRRect() const {
     radii[SkRRect::kLowerLeft_Corner].set(BottomLeftCorner().width(),
                                           BottomLeftCorner().height());
 
-    rrect.setRectRadii(gfx::RectFToSkRect(Rect()), radii);
+    rrect.setRectRadii(gfx::RectFToSkRect(Rect()), radii.data());
   } else {
     rrect.setRect(gfx::RectFToSkRect(Rect()));
   }

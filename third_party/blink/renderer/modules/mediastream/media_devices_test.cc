@@ -28,11 +28,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_output_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_capture_handle_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crop_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_long_range.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_device_info.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_device_kind.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_restriction_target.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_user_media_stream_constraints.h"
@@ -196,24 +198,40 @@ class MockMediaDevicesDispatcherHost final
                             std::move(audio_input_capabilities));
   }
 
+  void SelectAudioOutput(
+      const String& device_id,
+      SelectAudioOutputCallback select_audio_output_callback) override {
+    mojom::blink::SelectAudioOutputResultPtr result =
+        mojom::blink::SelectAudioOutputResult::New();
+    if (device_id == "test_device_id") {
+      result->status = blink::mojom::AudioOutputStatus::kSuccess;
+      result->device_info.device_id = "test_device_id";
+      result->device_info.label = "Test Speaker";
+      result->device_info.group_id = "test_group_id";
+    } else {
+      result->status = blink::mojom::AudioOutputStatus::kNoPermission;
+    }
+    std::move(select_audio_output_callback).Run(std::move(result));
+  }
+
   void GetVideoInputCapabilities(GetVideoInputCapabilitiesCallback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void GetAllVideoInputDeviceFormats(
       const String&,
       GetAllVideoInputDeviceFormatsCallback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void GetAvailableVideoInputDeviceFormats(
       const String&,
       GetAvailableVideoInputDeviceFormatsCallback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void GetAudioInputCapabilities(GetAudioInputCapabilitiesCallback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void AddMediaDevicesListener(
@@ -349,17 +367,18 @@ class MockDeviceChangeEventListener : public NativeEventListener {
   MOCK_METHOD(void, Invoke, (ExecutionContext*, Event*));
 };
 
-String ToString(MediaDeviceType type) {
+V8MediaDeviceKind::Enum ToEnum(MediaDeviceType type) {
   switch (type) {
     case MediaDeviceType::kMediaAudioInput:
-      return "audioinput";
+      return V8MediaDeviceKind::Enum::kAudioinput;
     case blink::MediaDeviceType::kMediaVideoInput:
-      return "videoinput";
+      return V8MediaDeviceKind::Enum::kVideoinput;
     case blink::MediaDeviceType::kMediaAudioOutput:
-      return "audiooutput";
-    default:
-      return String();
+      return V8MediaDeviceKind::Enum::kAudiooutput;
+    case blink::MediaDeviceType::kNumMediaDeviceTypes:
+      break;
   }
+  NOTREACHED();
 }
 
 void VerifyFacingMode(const Vector<String>& js_facing_mode,
@@ -389,7 +408,7 @@ void VerifyDeviceInfo(const MediaDeviceInfo* device,
   EXPECT_EQ(device->deviceId(), String(expected.device_id));
   EXPECT_EQ(device->groupId(), String(expected.group_id));
   EXPECT_EQ(device->label(), String(expected.label));
-  EXPECT_EQ(device->kind(), ToString(type));
+  EXPECT_EQ(device->kind(), ToEnum(type));
 }
 
 void VerifyVideoInputCapabilities(
@@ -397,7 +416,7 @@ void VerifyVideoInputCapabilities(
     const WebMediaDeviceInfo& expected_device_info,
     const mojom::blink::VideoInputDeviceCapabilitiesPtr&
         expected_capabilities) {
-  CHECK_EQ(device->kind(), "videoinput");
+  CHECK_EQ(device->kind(), V8MediaDeviceKind::Enum::kVideoinput);
   const InputDeviceInfo* info = static_cast<const InputDeviceInfo*>(device);
   MediaTrackCapabilities* capabilities = info->getCapabilities();
   EXPECT_EQ(capabilities->hasFacingMode(), expected_device_info.IsAvailable());
@@ -452,22 +471,23 @@ SubCaptureTarget* ToSubCaptureTarget(const blink::ScriptValue& value) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-ScriptPromiseUntyped ProduceSubCaptureTargetAndGetPromise(
-    V8TestingScope& scope,
-    SubCaptureTarget::Type type,
-    MediaDevices* media_devices,
-    Element* element) {
+bool ProduceSubCaptureTargetAndGetPromise(V8TestingScope& scope,
+                                          SubCaptureTarget::Type type,
+                                          MediaDevices* media_devices,
+                                          Element* element) {
   switch (type) {
     case SubCaptureTarget::Type::kCropTarget:
-      return media_devices->ProduceCropTarget(scope.GetScriptState(), element,
-                                              scope.GetExceptionState());
+      return !media_devices
+                  ->ProduceCropTarget(scope.GetScriptState(), element,
+                                      scope.GetExceptionState())
+                  .IsEmpty();
 
     case SubCaptureTarget::Type::kRestrictionTarget:
-      return media_devices->ProduceRestrictionTarget(
-          scope.GetScriptState(), element, scope.GetExceptionState());
+      return !media_devices
+                  ->ProduceRestrictionTarget(scope.GetScriptState(), element,
+                                             scope.GetExceptionState())
+                  .IsEmpty();
   }
-
-  NOTREACHED();
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
@@ -477,9 +497,20 @@ void ProduceSubCaptureTargetAndGetTester(
     MediaDevices* media_devices,
     Element* element,
     std::optional<ScriptPromiseTester>& tester) {
-  const ScriptPromiseUntyped promise =
-      ProduceSubCaptureTargetAndGetPromise(scope, type, media_devices, element);
-  tester.emplace(scope.GetScriptState(), promise);
+  switch (type) {
+    case SubCaptureTarget::Type::kCropTarget:
+      tester.emplace(
+          scope.GetScriptState(),
+          media_devices->ProduceCropTarget(scope.GetScriptState(), element,
+                                           scope.GetExceptionState()));
+      return;
+    case SubCaptureTarget::Type::kRestrictionTarget:
+      tester.emplace(
+          scope.GetScriptState(),
+          media_devices->ProduceRestrictionTarget(
+              scope.GetScriptState(), element, scope.GetExceptionState()));
+      return;
+  }
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -557,10 +588,9 @@ TEST_F(MediaDevicesTest, GetUserMediaCanBeCalled) {
   V8TestingScope scope;
   UserMediaStreamConstraints* constraints =
       UserMediaStreamConstraints::Create();
-  ScriptPromiseUntyped promise =
-      GetMediaDevices(scope.GetWindow())
-          ->getUserMedia(scope.GetScriptState(), constraints,
-                         scope.GetExceptionState());
+  auto promise = GetMediaDevices(scope.GetWindow())
+                     ->getUserMedia(scope.GetScriptState(), constraints,
+                                    scope.GetExceptionState());
   // We return the created promise before it was resolved/rejected.
   ASSERT_FALSE(promise.IsEmpty());
   // We expect a type error because the given constraints are empty.
@@ -977,7 +1007,7 @@ TEST_F(MediaDevicesTest, DistinctIdsForDistinctTypes) {
 
   Document& document = GetDocument();
   Element* const div = document.getElementById(AtomicString("test-div"));
-  const ScriptPromiseUntyped first_promise = media_devices->ProduceCropTarget(
+  const auto first_promise = media_devices->ProduceCropTarget(
       scope.GetScriptState(), div, scope.GetExceptionState());
   ScriptPromiseTester first_tester(scope.GetScriptState(), first_promise);
   first_tester.WaitUntilSettled();
@@ -986,9 +1016,8 @@ TEST_F(MediaDevicesTest, DistinctIdsForDistinctTypes) {
 
   // The second call to |produceSubCaptureTargetId|, given the different type,
   // should return a different ID.
-  const ScriptPromiseUntyped second_promise =
-      media_devices->ProduceRestrictionTarget(scope.GetScriptState(), div,
-                                              scope.GetExceptionState());
+  const auto second_promise = media_devices->ProduceRestrictionTarget(
+      scope.GetScriptState(), div, scope.GetExceptionState());
   ScriptPromiseTester second_tester(scope.GetScriptState(), second_promise);
   second_tester.WaitUntilSettled();
   EXPECT_TRUE(second_tester.IsFulfilled());
@@ -1052,13 +1081,14 @@ TEST_P(ProduceSubCaptureTargetTest, IdUnsupportedOnAndroid) {
 
   Document& document = GetDocument();
   Element* const div = document.getElementById(AtomicString("test-div"));
-  const ScriptPromiseUntyped div_promise =
+  bool got_promise =
       ProduceSubCaptureTargetAndGetPromise(scope, type_, media_devices, div);
   platform()->RunUntilIdle();
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  EXPECT_FALSE(got_promise);
   EXPECT_TRUE(scope.GetExceptionState().HadException());
 #else  // Non-Android shown to work, proving the test is sane.
-  EXPECT_FALSE(div_promise.IsEmpty());
+  EXPECT_TRUE(got_promise);
   EXPECT_FALSE(scope.GetExceptionState().HadException());
 #endif
 }
@@ -1121,10 +1151,10 @@ TEST_P(ProduceSubCaptureTargetTest, IdRejectedIfDifferentWindow) {
 
   Document& document = GetDocument();
   Element* const div = document.getElementById(AtomicString("test-div"));
-  const ScriptPromiseUntyped element_promise =
+  bool got_promise =
       ProduceSubCaptureTargetAndGetPromise(scope, type_, media_devices, div);
   platform()->RunUntilIdle();
-  EXPECT_TRUE(element_promise.IsEmpty());
+  EXPECT_FALSE(got_promise);
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
             DOMExceptionCode::kNotSupportedError);

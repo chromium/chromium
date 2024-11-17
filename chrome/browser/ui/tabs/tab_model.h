@@ -19,6 +19,11 @@
 
 class TabStripModel;
 
+namespace views {
+class WidgetDelegate;
+class Widget;
+}  // namespace views
+
 namespace tabs {
 
 class TabCollection;
@@ -45,13 +50,11 @@ class TabModel final : public SupportsHandles<TabModel>,
   void OnAddedToModel(TabStripModel* owning_model);
   void OnRemovedFromModel();
 
-  content::WebContents* contents() const { return contents_.get(); }
-  TabStripModel* owning_model() const { return owning_model_.get(); }
+  TabStripModel* owning_model() const { return owning_model_; }
   tabs::TabModel* opener() const { return opener_; }
   bool reset_opener_on_active_tab_change() const {
     return reset_opener_on_active_tab_change_;
   }
-  bool pinned() const { return pinned_; }
   bool blocked() const { return blocked_; }
   std::optional<tab_groups::TabGroupId> group() const { return group_; }
 
@@ -60,11 +63,11 @@ class TabModel final : public SupportsHandles<TabModel>,
       bool reset_opener_on_active_tab_change) {
     reset_opener_on_active_tab_change_ = reset_opener_on_active_tab_change;
   }
-  void set_pinned(bool pinned) { pinned_ = pinned; }
+
+  void SetPinned(bool pinned);
+  void SetGroup(std::optional<tab_groups::TabGroupId> group);
+
   void set_blocked(bool blocked) { blocked_ = blocked; }
-  void set_group(std::optional<tab_groups::TabGroupId> group) {
-    group_ = group;
-  }
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
@@ -112,6 +115,9 @@ class TabModel final : public SupportsHandles<TabModel>,
   void WillDetach(base::PassKey<TabStripModel>,
                   tabs::TabInterface::DetachReason reason);
 
+  // Called by TabStripModel when a tab has been inserted into a tab strip.
+  void DidInsert(base::PassKey<TabStripModel>);
+
   // TabInterface overrides:
   content::WebContents* GetContents() const override;
   base::CallbackListSubscription RegisterWillDiscardContents(
@@ -123,12 +129,24 @@ class TabModel final : public SupportsHandles<TabModel>,
       TabInterface::WillEnterBackgroundCallback callback) override;
   base::CallbackListSubscription RegisterWillDetach(
       TabInterface::WillDetach callback) override;
+  base::CallbackListSubscription RegisterDidInsert(
+      TabInterface::DidInsertCallback callback) override;
+  base::CallbackListSubscription RegisterPinnedStateChanged(
+      TabInterface::PinnedStateChangedCallback callback) override;
+  base::CallbackListSubscription RegisterGroupChanged(
+      TabInterface::GroupChangedCallback callback) override;
+
   bool CanShowModalUI() const override;
   std::unique_ptr<ScopedTabModalUI> ShowModalUI() override;
   bool IsInNormalWindow() const override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   tabs::TabFeatures* GetTabFeatures() override;
-  uint32_t GetTabHandle() override;
+  std::unique_ptr<views::Widget> CreateAndShowTabScopedWidget(
+      views::WidgetDelegate* delegate) override;
+  bool IsPinned() const override;
+  std::optional<tab_groups::TabGroupId> GetGroup() const override;
+  uint32_t GetTabHandle() const override;
+  void Close() override;
 
  private:
   // Overridden from TabStripModelObserver:
@@ -189,6 +207,18 @@ class TabModel final : public SupportsHandles<TabModel>,
       base::RepeatingCallbackList<void(TabInterface*,
                                        tabs::TabInterface::DetachReason)>;
   WillDetachCallbackList will_detach_callback_list_;
+
+  using DidInsertCallbackList =
+      base::RepeatingCallbackList<void(TabInterface*)>;
+  DidInsertCallbackList did_insert_callback_list_;
+
+  using PinnedStateChangedCallbackList =
+      base::RepeatingCallbackList<void(TabInterface*, bool new_pinned_state)>;
+  PinnedStateChangedCallbackList pinned_state_changed_callback_list_;
+
+  using GroupChangedCallbackList = base::RepeatingCallbackList<
+      void(TabInterface*, std::optional<tab_groups::TabGroupId> new_group)>;
+  GroupChangedCallbackList group_changed_callback_list_;
 
   // Tracks whether a modal UI is showing.
   bool showing_modal_ui_ = false;

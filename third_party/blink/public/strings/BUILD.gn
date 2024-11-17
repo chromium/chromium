@@ -11,3 +11,46 @@ grit("strings") {
             process_file_template(all_chrome_locales,
                                   [ "blink_strings_{{source_name_part}}.pak" ])
 }
+
+# The base strings for the permission element.
+grit("permission_element_strings") {
+  source = "permission_element_strings.grd"
+  outputs = [ "grit/permission_element_strings.h" ]
+  foreach(locale, all_chrome_locales) {
+    outputs += [ "permission_element_strings_$locale.pak" ]
+  }
+}
+
+action("generate_permission_element_strings_mono_grd") {
+  script = "//third_party/blink/renderer/build/scripts/generate_permission_element_grd.py"
+
+  outfile_grd = "$root_gen_dir/third_party/blink/public/strings/permission_element_generated_strings.grd"
+  outfile_map = "$root_gen_dir/third_party/blink/renderer/core/html/html_permission_element_strings_map.h"
+  outputs = [
+    outfile_grd,
+    outfile_map,
+  ]
+
+  args = [
+    "--output_grd",
+    rebase_path(outfile_grd, root_build_dir),
+    "--output_map",
+    rebase_path(outfile_map, root_build_dir),
+    "--input_base_dir",
+    rebase_path("//third_party/blink/public/strings/", root_build_dir),
+  ]
+  deps = [ ":permission_element_strings" ]
+}
+
+# The aggregated strings from all locales for the permission element.
+grit("permission_element_generated_strings") {
+  source = "$root_gen_dir/third_party/blink/public/strings/permission_element_generated_strings.grd"
+
+  # Required because the .grd is generated
+  enable_input_discovery_for_gn_analyze = false
+  outputs = [
+    "grit/permission_element_generated_strings.h",
+    "permission_element_generated_strings.pak",
+  ]
+  deps = [ ":generate_permission_element_strings_mono_grd" ]
+}

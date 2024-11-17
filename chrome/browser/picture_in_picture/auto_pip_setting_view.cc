@@ -58,7 +58,6 @@ AutoPipSettingView::AutoPipSettingView(
     ResultCb result_cb,
     HideViewCb hide_view_cb,
     const GURL& origin,
-    const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow)
     : views::BubbleDialogDelegate(anchor_view, arrow),

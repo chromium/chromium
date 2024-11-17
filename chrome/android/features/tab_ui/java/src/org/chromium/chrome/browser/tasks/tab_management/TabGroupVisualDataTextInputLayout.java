@@ -30,7 +30,7 @@ public class TabGroupVisualDataTextInputLayout extends TextInputLayout {
         final int emptyErrorMessageId =
                 a.getResourceId(R.styleable.TabGroupVisualDataTextInputLayout_emptyErrorMessage, 0);
         if (emptyErrorMessageId != 0) {
-            mEmptyErrorMessage = context.getResources().getString(emptyErrorMessageId);
+            mEmptyErrorMessage = context.getString(emptyErrorMessageId);
         }
 
         a.recycle();

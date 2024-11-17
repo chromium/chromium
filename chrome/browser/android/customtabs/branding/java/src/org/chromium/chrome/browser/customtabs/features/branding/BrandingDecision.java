@@ -15,12 +15,14 @@ import java.lang.annotation.RetentionPolicy;
     BrandingDecision.NONE,
     BrandingDecision.TOOLBAR,
     BrandingDecision.TOAST,
+    BrandingDecision.MIM,
     BrandingDecision.NUM_ENTRIES
 })
 @interface BrandingDecision {
     int NONE = 0;
     int TOOLBAR = 1;
     int TOAST = 2;
+    int MIM = 3;
 
-    int NUM_ENTRIES = 3;
+    int NUM_ENTRIES = 4;
 }

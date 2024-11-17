@@ -14,6 +14,7 @@
 #include "base/token.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
+#include "media/base/video_frame_metadata.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 
 namespace media {
@@ -90,10 +91,11 @@ void VideoCaptureDevice::Client::OnIncomingCapturedData(
     bool flip_y,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
-    std::optional<base::TimeTicks> capture_begin_timestamp) {
+    std::optional<base::TimeTicks> capture_begin_timestamp,
+    const std::optional<VideoFrameMetadata>& metadata) {
   OnIncomingCapturedData(data, length, frame_format, color_space,
                          clockwise_rotation, flip_y, reference_time, timestamp,
-                         capture_begin_timestamp,
+                         capture_begin_timestamp, metadata,
                          /*frame_feedback_id=*/0);
 }
 
@@ -103,10 +105,11 @@ void VideoCaptureDevice::Client::OnIncomingCapturedGfxBuffer(
     int clockwise_rotation,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
-    std::optional<base::TimeTicks> capture_begin_timestamp) {
+    std::optional<base::TimeTicks> capture_begin_timestamp,
+    const std::optional<VideoFrameMetadata>& metadata) {
   OnIncomingCapturedGfxBuffer(buffer, frame_format, clockwise_rotation,
                               reference_time, timestamp,
-                              capture_begin_timestamp,
+                              capture_begin_timestamp, metadata,
                               /*frame_feedback_id=*/0);
 }
 

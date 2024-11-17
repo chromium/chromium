@@ -113,8 +113,7 @@ scoped_refptr<TextureOwner> TextureOwner::Create(
                                        std::move(context_state));
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 GLuint TextureOwner::GetTextureId() const {

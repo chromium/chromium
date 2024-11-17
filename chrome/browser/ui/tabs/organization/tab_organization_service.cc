@@ -25,7 +25,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/system/sys_info.h"
-#include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/settings/about_flags.h"
@@ -83,13 +82,13 @@ TabOrganizationSession* TabOrganizationService::GetSessionForBrowser(
 TabOrganizationSession* TabOrganizationService::CreateSessionForBrowser(
     const Browser* browser,
     const TabOrganizationEntryPoint entrypoint,
-    const content::WebContents* base_session_webcontents) {
+    const tabs::TabInterface* base_session_tab) {
   CHECK(!base::Contains(browser_session_map_, browser));
   CHECK(browser->tab_strip_model()->SupportsTabGroups());
   std::pair<BrowserSessionMap::iterator, bool> pair =
       browser_session_map_.emplace(
           browser, TabOrganizationSession::CreateSessionForBrowser(
-                       browser, entrypoint, base_session_webcontents));
+                       browser, entrypoint, base_session_tab));
   browser->tab_strip_model()->AddObserver(this);
 
   for (TabOrganizationObserver& observer : observers_) {
@@ -102,20 +101,20 @@ TabOrganizationSession* TabOrganizationService::CreateSessionForBrowser(
 TabOrganizationSession* TabOrganizationService::ResetSessionForBrowser(
     const Browser* browser,
     const TabOrganizationEntryPoint entrypoint,
-    const content::WebContents* base_session_webcontents) {
+    const tabs::TabInterface* base_session_tab) {
   browser->tab_strip_model()->RemoveObserver(this);
   if (base::Contains(browser_session_map_, browser)) {
     RemoveBrowserFromSessionMap(browser);
   }
 
-  return CreateSessionForBrowser(browser, entrypoint, base_session_webcontents);
+  return CreateSessionForBrowser(browser, entrypoint, base_session_tab);
 }
 
 void TabOrganizationService::RestartSessionAndShowUI(
     const Browser* browser,
     const TabOrganizationEntryPoint entrypoint,
-    const content::WebContents* base_session_webcontents) {
-  ResetSessionForBrowser(browser, entrypoint, base_session_webcontents);
+    const tabs::TabInterface* base_session_tab) {
+  ResetSessionForBrowser(browser, entrypoint, base_session_tab);
   StartRequestIfNotFRE(browser, entrypoint);
   OnUserInvokedFeature(browser);
 }

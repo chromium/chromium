@@ -345,13 +345,14 @@ void WorkletLoader::OnResponseStarted(
     const network::mojom::URLResponseHead& head) {
   DCHECK(allow_trusted_scoring_signals_callback_);
   std::vector<url::Origin> allow_trusted_scoring_signals_from;
-  std::string allow_trusted_scoring_signals_from_header;
-  if (head.headers && head.headers->GetNormalizedHeader(
-                          kAllowTrustedScoringSignalsHeader,
-                          &allow_trusted_scoring_signals_from_header)) {
-    allow_trusted_scoring_signals_from =
-        WorkletLoader::ParseAllowTrustedScoringSignalsFromHeader(
-            allow_trusted_scoring_signals_from_header);
+  if (head.headers) {
+    if (std::optional<std::string> allow_trusted_scoring_signals_from_header =
+            head.headers->GetNormalizedHeader(
+                kAllowTrustedScoringSignalsHeader)) {
+      allow_trusted_scoring_signals_from =
+          WorkletLoader::ParseAllowTrustedScoringSignalsFromHeader(
+              *allow_trusted_scoring_signals_from_header);
+    }
   }
   std::move(allow_trusted_scoring_signals_callback_)
       .Run(allow_trusted_scoring_signals_from);

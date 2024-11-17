@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
-import static org.chromium.chrome.browser.autofill.AutofillUiUtils.getCardIcon;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,14 +18,14 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.base.CommandLine;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
@@ -42,10 +40,6 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Server credit card settings. */
 public class AutofillServerCardEditor extends AutofillCreditCardEditor {
-    private static final String AUTOFILL_MANAGE_PAYMENTS_CARDS_URL =
-            "https://pay.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods";
-    private static final String AUTOFILL_MANAGE_PAYMENTS_CARDS_SANDBOX_URL =
-            "https://pay.sandbox.google.com/pay?p=paymentmethods&utm_source=chrome&utm_medium=settings&utm_campaign=payment_methods";
     private static final String SETTINGS_PAGE_ENROLLMENT_HISTOGRAM_TEXT =
             "Autofill.VirtualCard.SettingsPageEnrollment";
 
@@ -151,14 +145,14 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View v = super.onCreateView(inflater, container, savedInstanceState);
         if (mCard == null) {
-            getActivity().finish();
+            SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
             return v;
         }
 
         // Set card icon. It can be either a custom card art or the network icon.
         ImageView cardIconContainer = v.findViewById(R.id.settings_page_card_icon);
         cardIconContainer.setImageDrawable(
-                getCardIcon(
+                AutofillUiUtils.getCardIcon(
                         getContext(),
                         PersonalDataManagerFactory.getForProfile(getProfile()),
                         mCard.getCardArtUrl(),
@@ -181,7 +175,9 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                                             ? CardType.VIRTUAL_CARD
                                             : CardType.SERVER_CARD,
                                     ButtonType.EDIT_CARD);
-                            mServerCardEditLinkOpenerCallback.onResult(getEditCardLink());
+                            mServerCardEditLinkOpenerCallback.onResult(
+                                    AutofillUiUtils.getManagePaymentMethodUrlForInstrumentId(
+                                            mCard.getInstrumentId()));
                         });
 
         final LinearLayout virtualCardContainerLayout = v.findViewById(R.id.virtual_card_ui);
@@ -316,21 +312,6 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                 mVirtualCardEnrollmentButtonShowsUnenroll
                         ? R.string.autofill_card_editor_virtual_card_turn_off_button_label
                         : R.string.autofill_card_editor_virtual_card_turn_on_button_label);
-    }
-
-    // Returns the URL for managing the card in GPay Web.
-    private String getEditCardLink() {
-        // Check if sandbox is enabled.
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.USE_SANDBOX_WALLET_ENVIRONMENT)) {
-            return new StringBuilder(AUTOFILL_MANAGE_PAYMENTS_CARDS_SANDBOX_URL)
-                    .append("&id=")
-                    .append(mCard.getInstrumentId())
-                    .toString();
-        }
-        return new StringBuilder(AUTOFILL_MANAGE_PAYMENTS_CARDS_URL)
-                .append("&id=")
-                .append(mCard.getInstrumentId())
-                .toString();
     }
 
     @Override

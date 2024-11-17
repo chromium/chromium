@@ -22,13 +22,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
+#include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
-#include "chrome/common/accessibility/read_anything.mojom-forward.h"
-#include "chrome/common/accessibility/read_anything.mojom.h"
+#include "chrome/common/read_anything/read_anything.mojom-forward.h"
+#include "chrome/common/read_anything/read_anything.mojom.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
@@ -73,6 +74,7 @@ using ash::language_packs::LanguagePackManager;
 using ash::language_packs::PackResult;
 #endif
 
+using content::TtsController;
 using read_anything::mojom::ErrorCode;
 using read_anything::mojom::InstallationState;
 using read_anything::mojom::UntrustedPage;
@@ -81,12 +83,16 @@ using read_anything::mojom::VoicePackInstallationState;
 
 namespace {
 
-// All components of kAXModeWebContentsOnly are needed. |ui::AXMode::kHTML| is
-// needed for URL information. |ui::AXMode::kScreenReader| is needed for heading
-// level information. |ui::AXMode::kInlineTextBoxes| is needed for complete
-// Screen2x output -- if excluded, some nodes from the tree will not be
-// identified as content nodes.
-constexpr ui::AXMode kReadAnythingAXMode = ui::kAXModeWebContentsOnly;
+// All AXMode flags of kAXModeWebContentsOnly are needed. |ui::AXMode::kHTML| is
+// needed for retrieveing the `aria-expanded` attribute.
+// |ui::AXMode::kScreenReader| is needed for HTML tag, and heading level
+// information. |ui::AXMode::kInlineTextBoxes| is needed for complete screen2x
+// output -- if excluded, some nodes from the tree will not be identified as
+// content nodes.
+// TODO(crbug.com/366000250): kHTML is a heavy-handed approach as it copies all
+// HTML attributes into the accessibility tree. It should be removed ASAP.
+constexpr ui::AXMode kReadAnythingAXMode =
+    ui::kAXModeWebContentsOnly | ui::AXMode::kHTML;
 
 int GetNormalizedFontScale(double font_scale) {
   DCHECK(font_scale >= kReadAnythingMinimumFontScale &&
@@ -126,10 +132,9 @@ ErrorCode GetMojoErrorFromPackError(const PackResult::ErrorCode pack_error) {
   }
 }
 
-// Called when LanguagePackManager::GetPackState or ::InstallPack is complete.
-void OnLanguagePackManagerResponse(
-    read_anything::mojom::UntrustedPageHandler::GetVoicePackInfoCallback
-        mojo_remote_callback,
+// Called when LanguagePackManager::GetPackState is complete.
+void OnGetPackStateResponse(
+    base::OnceCallback<void(read_anything::mojom::VoicePackInfoPtr)> callback,
     const PackResult& pack_result) {
   // Convert the LanguagePackManager's response object into a mojo object
   read_anything::mojom::VoicePackInfoPtr voicePackInfo =
@@ -145,10 +150,49 @@ void OnLanguagePackManagerResponse(
   }
   voicePackInfo->language = pack_result.language_code;
 
-  // Call the callback sent from the mojo remote
-  std::move(mojo_remote_callback).Run(std::move(voicePackInfo));
+  std::move(callback).Run(std::move(voicePackInfo));
 }
 
+// Called when LanguagePackManager::InstallPack is complete.
+void OnInstallPackResponse(
+    base::OnceCallback<void(read_anything::mojom::VoicePackInfoPtr)> callback,
+    const PackResult& pack_result) {
+  // Convert the LanguagePackManager's response object into a mojo object
+  read_anything::mojom::VoicePackInfoPtr voicePackInfo =
+      read_anything::mojom::VoicePackInfo::New();
+
+  // TODO(crbug.com/40927698): Investigate the fact that VoicePackManager
+  // doesn't return the expected pack_state. Even when a voice is unavailable
+  // and not installed, it responds "INSTALLED" in the InstallVoicePackCallback.
+  // So we probably need to rely on GetVoicePackInfo for the pack_state.
+  if (pack_result.operation_error == PackResult::ErrorCode::kNone) {
+    LanguagePackManager::GetPackState(
+        ash::language_packs::kTtsFeatureId, pack_result.language_code,
+        base::BindOnce(&OnGetPackStateResponse, std::move(callback)));
+    return;
+  }
+
+  voicePackInfo->pack_state = VoicePackInstallationState::NewErrorCode(
+      GetMojoErrorFromPackError(pack_result.operation_error));
+  voicePackInfo->language = pack_result.language_code;
+  std::move(callback).Run(std::move(voicePackInfo));
+}
+
+#else
+InstallationState GetInstallationStateFromStatusCode(
+    const content::LanguageInstallStatus status_code) {
+  switch (status_code) {
+    case content::LanguageInstallStatus::NOT_INSTALLED:
+      return InstallationState::kNotInstalled;
+    case content::LanguageInstallStatus::INSTALLING:
+      return InstallationState::kInstalling;
+    case content::LanguageInstallStatus::INSTALLED:
+      return InstallationState::kInstalled;
+    case content::LanguageInstallStatus::FAILED:
+    case content::LanguageInstallStatus::UNKNOWN:
+      return InstallationState::kUnknown;
+  }
+}
 #endif
 
 class PersistentAccessibilityHelper
@@ -241,8 +285,9 @@ void ReadAnythingWebContentsObserver::AccessibilityEventReceived(
 }
 
 void ReadAnythingWebContentsObserver::AccessibilityLocationChangesReceived(
-    const std::vector<ui::AXLocationChanges>& details) {
-  page_handler_->AccessibilityLocationChangesReceived(details);
+    const ui::AXTreeID& tree_id,
+    ui::AXLocationAndScrollUpdates& details) {
+  page_handler_->AccessibilityLocationChangesReceived(tree_id, details);
 }
 
 void ReadAnythingWebContentsObserver::PrimaryPageChanged(content::Page& page) {
@@ -256,14 +301,19 @@ void ReadAnythingWebContentsObserver::WebContentsDestroyed() {
 ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
     mojo::PendingRemote<UntrustedPage> page,
     mojo::PendingReceiver<UntrustedPageHandler> receiver,
-    content::WebUI* web_ui)
+    content::WebUI* web_ui,
+    bool use_screen_ai_service)
     : profile_(Profile::FromWebUI(web_ui)),
       web_ui_(web_ui),
       receiver_(this, std::move(receiver)),
-      page_(std::move(page)) {
+      page_(std::move(page)),
+      use_screen_ai_service_(use_screen_ai_service) {
   ax_action_handler_observer_.Observe(
       ui::AXActionHandlerRegistry::GetInstance());
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  content::TtsController::GetInstance()->AddUpdateLanguageStatusDelegate(this);
+#endif
   side_panel_controller_ = ReadAnythingSidePanelControllerGlue::FromWebContents(
                                web_ui_->GetWebContents())
                                ->controller();
@@ -320,18 +370,25 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
   prefs_lang = language::ExtractBaseLanguage(prefs_lang);
   SetDefaultLanguageCode(prefs_lang);
 
-  if (features::IsReadAnythingWithScreen2xEnabled()) {
-    screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
-        ->GetServiceStateAsync(
-            screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
-            base::BindOnce(
-                &ReadAnythingUntrustedPageHandler::OnScreenAIServiceInitialized,
-                weak_factory_.GetWeakPtr()));
-  }
-  if (features::IsPdfOcrEnabled()) {
-    screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
-        ->GetServiceStateAsync(screen_ai::ScreenAIServiceRouter::Service::kOCR,
-                               base::DoNothing());
+  if (use_screen_ai_service_) {
+    if (features::IsReadAnythingWithScreen2xEnabled()) {
+      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
+          ->GetServiceStateAsync(
+              screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
+              base::BindOnce(&ReadAnythingUntrustedPageHandler::
+                                 OnScreenAIServiceInitialized,
+                             weak_factory_.GetWeakPtr()));
+    }
+#if BUILDFLAG(ENABLE_PDF)
+    // PDF searchify feature adds OCR text to images while loading the PDF, so
+    // warming up the OCR service is not needed.
+    if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
+      screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(profile_)
+          ->GetServiceStateAsync(
+              screen_ai::ScreenAIServiceRouter::Service::kOCR,
+              base::DoNothing());
+    }
+#endif  // BUILDFLAG(ENABLE_PDF)
   }
 
   // Enable accessibility for the top level render frame and all descendants.
@@ -352,6 +409,10 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
 }
 
 ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  content::TtsController::GetInstance()->RemoveUpdateLanguageStatusDelegate(
+      this);
+#endif
   translate_observation_.Reset();
   web_screenshotter_.reset();
   main_observer_.reset();
@@ -390,9 +451,10 @@ void ReadAnythingUntrustedPageHandler::AccessibilityEventReceived(
 }
 
 void ReadAnythingUntrustedPageHandler::AccessibilityLocationChangesReceived(
-    const std::vector<ui::AXLocationChanges>& details) {
+    const ui::AXTreeID& tree_id,
+    ui::AXLocationAndScrollUpdates& details) {
   if (features::IsReadAnythingDocsIntegrationEnabled()) {
-    page_->AccessibilityLocationChangesReceived(details);
+    page_->AccessibilityLocationChangesReceived(tree_id, details);
   }
 }
 
@@ -435,45 +497,63 @@ void ReadAnythingUntrustedPageHandler::GetDependencyParserModel(
   OnDependencyParserModelFileAvailabilityChanged(std::move(callback), true);
 }
 
-void ReadAnythingUntrustedPageHandler::GetVoicePackInfo(
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+void ReadAnythingUntrustedPageHandler::OnUpdateLanguageStatus(
     const std::string& language,
-    read_anything::mojom::UntrustedPageHandler::GetVoicePackInfoCallback
-        mojo_remote_callback) {
+    content::LanguageInstallStatus install_status,
+    const std::string& error) {
+  auto voicePackInfo = read_anything::mojom::VoicePackInfo::New();
+  voicePackInfo->language = language;
+  voicePackInfo->pack_state = VoicePackInstallationState::NewInstallationState(
+      GetInstallationStateFromStatusCode(install_status));
+  OnGetVoicePackInfo(std::move(voicePackInfo));
+}
+#endif
+
+void ReadAnythingUntrustedPageHandler::OnGetVoicePackInfo(
+    read_anything::mojom::VoicePackInfoPtr info) {
+  page_->OnGetVoicePackInfo(std::move(info));
+}
+
+void ReadAnythingUntrustedPageHandler::GetVoicePackInfo(
+    const std::string& language) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   LanguagePackManager::GetPackState(
       ash::language_packs::kTtsFeatureId, language,
-      base::BindOnce(&OnLanguagePackManagerResponse,
-                     std::move(mojo_remote_callback)));
+      base::BindOnce(
+          &OnGetPackStateResponse,
+          base::BindOnce(&ReadAnythingUntrustedPageHandler::OnGetVoicePackInfo,
+                         weak_factory_.GetWeakPtr())));
 #else
-  //  TODO (b/40927698) Implement high quality voice support for non ChromeOS
-  //  platforms. For now, just return that all high quality voices are
-  //  unavailable.
-  auto voicePackInfo = read_anything::mojom::VoicePackInfo::New();
-  voicePackInfo->language = language;
-  voicePackInfo->pack_state =
-      VoicePackInstallationState::NewErrorCode(ErrorCode::kUnsupportedPlatform);
-  std::move(mojo_remote_callback).Run(std::move(voicePackInfo));
+  TtsController::GetInstance()->LanguageStatusRequest(
+      profile_, language, string_constants::kReadingModeName,
+      static_cast<int>(tts_engine_events::TtsClientSource::CHROMEFEATURE));
 #endif
 }
 
 void ReadAnythingUntrustedPageHandler::InstallVoicePack(
-    const std::string& language,
-    read_anything::mojom::UntrustedPageHandler::InstallVoicePackCallback
-        mojo_remote_callback) {
+    const std::string& language) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   LanguagePackManager::InstallPack(
       ash::language_packs::kTtsFeatureId, language,
-      base::BindOnce(&OnLanguagePackManagerResponse,
-                     std::move(mojo_remote_callback)));
+      base::BindOnce(
+          &OnInstallPackResponse,
+          base::BindOnce(&ReadAnythingUntrustedPageHandler::OnGetVoicePackInfo,
+                         weak_factory_.GetWeakPtr())));
 #else
-  //  TODO (b/40927698) Implement high quality voice support for non ChromeOS
-  //  platforms. For now, just return that all high quality voices are
-  //  unavailable.
-  auto voicePackInfo = read_anything::mojom::VoicePackInfo::New();
-  voicePackInfo->language = language;
-  voicePackInfo->pack_state =
-      VoicePackInstallationState::NewErrorCode(ErrorCode::kUnsupportedPlatform);
-  std::move(mojo_remote_callback).Run(std::move(voicePackInfo));
+  TtsController::GetInstance()->InstallLanguageRequest(
+      profile_, language, string_constants::kReadingModeName,
+      static_cast<int>(tts_engine_events::TtsClientSource::CHROMEFEATURE));
+#endif
+}
+
+void ReadAnythingUntrustedPageHandler::UninstallVoice(
+    const std::string& language) {
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  TtsController::GetInstance()->UninstallLanguageRequest(
+      profile_, language, string_constants::kReadingModeName,
+      static_cast<int>(tts_engine_events::TtsClientSource::CHROMEFEATURE),
+      /*uninstall_immediately=*/false);
 #endif
 }
 
@@ -589,17 +669,20 @@ void ReadAnythingUntrustedPageHandler::OnImageDataDownloaded(
     const GURL& image_url,
     const std::vector<SkBitmap>& bitmaps,
     const std::vector<gfx::Size>& sizes) {
-
   bool download_was_successful =
       network::IsSuccessfulStatus(http_status_code) || http_status_code == 0;
 
-  // There should be at least one image.
-  if (download_was_successful && !bitmaps.empty()) {
-    const auto& bitmap = bitmaps[0];
-    page_->OnImageDataDownloaded(target_tree_id, node_id, bitmap);
-  } else {
-    page_->OnImageDataDownloaded(target_tree_id, node_id, SkBitmap());
+  if (!download_was_successful || bitmaps.empty()) {
+    // If there was a failure, leave the canvas empty.
+    return;
   }
+  // There should be at least one image.
+  const auto& bitmap = bitmaps[0];
+  if (bitmap.isNull()) {
+    // If there was a failure, leave the canvas empty.
+    return;
+  }
+  page_->OnImageDataDownloaded(target_tree_id, node_id, bitmap);
 }
 
 void ReadAnythingUntrustedPageHandler::ScrollToTargetNode(
@@ -722,7 +805,10 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
           weak_factory_.GetSafeRef(), inner_contents[0], kReadAnythingAXMode);
     }
   }
-  if (features::IsPdfOcrEnabled()) {
+  // PDF searchify feature adds OCR text to images while loading the PDF, so
+  // activating PDF OCR is not needed.
+  if (use_screen_ai_service_ &&
+      !base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
     screen_ai::PdfOcrControllerFactory::GetForProfile(profile_)->Activate();
   }
 #endif  // BUILDFLAG(ENABLE_PDF)

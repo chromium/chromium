@@ -1215,13 +1215,13 @@ void PaintArtifactCompositor::DropCompositorScrollDeltaNextCommit(
       *root_layer_->layer_tree_host(), element_id);
 }
 
-uint32_t PaintArtifactCompositor::GetMainThreadScrollingReasons(
+uint32_t PaintArtifactCompositor::GetMainThreadRepaintReasons(
     const ScrollPaintPropertyNode& scroll) const {
   CHECK(root_layer_);
   if (!root_layer_->layer_tree_host()) {
     return 0;
   }
-  return PropertyTreeManager::GetMainThreadScrollingReasons(
+  return PropertyTreeManager::GetMainThreadRepaintReasons(
       *root_layer_->layer_tree_host(), scroll);
 }
 
@@ -1481,6 +1481,15 @@ void PaintArtifactCompositor::ShowDebugData() {
                    .Utf8();
 }
 #endif
+
+void PaintArtifactCompositor::ForAllContentLayersForTesting(
+    base::FunctionRef<void(ContentLayerClientImpl*)> func) const {
+  for (auto& pending_layer : pending_layers_) {
+    if (auto* client = pending_layer.GetContentLayerClient()) {
+      func(client);
+    }
+  }
+}
 
 ContentLayerClientImpl* PaintArtifactCompositor::ContentLayerClientForTesting(
     wtf_size_t i) const {

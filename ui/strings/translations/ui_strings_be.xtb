@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">Не ўдалося загрузіць старонку: модуль карыстальніцкага інтэрфейсу для распрацоўшчыкаў (dev_ui) не ўсталяваны</translation>
 <translation id="5574202486608032840">Сістэма <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">Стрэлка ўлева</translation>
 <translation id="5633029987065897167">Змесціва няма</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 хв}one{# хв}few{# хв}many{# хв}other{# хв}}</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Page Down</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Tab</translation>
 <translation id="8259556432390118667">Шаснаццатковае значэнне колеру</translation>
 <translation id="8328145009876646418">Левы край</translation>
 <translation id="8331626408530291785">Прагартаць уверх</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 с}one{# с}few{# с}many{# с}other{# с}}</translation>
 <translation id="9059834730836941392">Згарнуць апавяшчэнне</translation>
 <translation id="9170848237812810038">&amp;Адрабіць</translation>
+<translation id="9195990613383871904">Заўтра</translation>
+<translation id="928628199082367701">Супер</translation>
 <translation id="932327136139879170">Галоўная старонка</translation>
 <translation id="944069440740578670">Непрачытаныя апавяшчэнні</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 секунду таму}one{# секунду таму}few{# секунды таму}many{# секунд таму}other{# секунды таму}}</translation>

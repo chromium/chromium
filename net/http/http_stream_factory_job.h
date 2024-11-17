@@ -359,6 +359,8 @@ class HttpStreamFactory::Job
 
   bool disable_cert_verification_network_fetches() const;
 
+  void RecordPreconnectHistograms(int result);
+
   const StreamRequestInfo request_info_;
   RequestPriority priority_;
   const ProxyInfo proxy_info_;
@@ -499,9 +501,8 @@ class HttpStreamFactory::JobFactory {
       bool is_websocket,
       bool enable_ip_based_pooling,
       NetLog* net_log,
-      NextProto alternative_protocol = kProtoUnknown,
-      quic::ParsedQuicVersion quic_version =
-          quic::ParsedQuicVersion::Unsupported());
+      NextProto alternative_protocol,
+      quic::ParsedQuicVersion quic_version);
 };
 
 }  // namespace net

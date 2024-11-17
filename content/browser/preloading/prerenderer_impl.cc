@@ -219,6 +219,11 @@ bool PrerendererImpl::MaybePrerender(
     return false;
   }
 
+  WebContents* web_contents =
+      WebContents::FromRenderFrameHost(&render_frame_host_.get());
+  static_cast<PreloadingDataImpl*>(
+      PreloadingData::GetOrCreateForWebContents(web_contents))
+      ->SetHasSpeculationRulesPrerender();
   if (blocked_) {
     blocked_candidates_.emplace_back(candidate->Clone(), enacting_predictor,
                                      confidence);
@@ -233,8 +238,6 @@ bool PrerendererImpl::MaybePrerender(
     return false;
 
   auto& rfhi = static_cast<RenderFrameHostImpl&>(render_frame_host_.get());
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(&render_frame_host_.get());
 
   auto [begin, end] = base::ranges::equal_range(
       started_prerenders_.begin(), started_prerenders_.end(), candidate->url,
@@ -246,9 +249,6 @@ bool PrerendererImpl::MaybePrerender(
 
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       &rfhi, blink::mojom::WebFeature::kSpeculationRulesPrerender);
-  auto* preloading_data = static_cast<PreloadingDataImpl*>(
-      PreloadingData::GetOrCreateForWebContents(web_contents));
-  preloading_data->SetHasSpeculationRulesPrerender();
 
   IncrementReceivedPrerendersCountForMetrics(
       PreloadingTriggerTypeFromSpeculationInjectionType(
@@ -284,14 +284,13 @@ bool PrerendererImpl::MaybePrerender(
       /*embedder_histogram_suffix=*/"",
       candidate->target_browsing_context_name_hint,
       Referrer{*candidate->referrer}, candidate->eagerness,
-      no_vary_search_expected, rfhi.GetLastCommittedOrigin(),
-      rfhi.GetProcess()->GetID(), web_contents->GetWeakPtr(),
-      rfhi.GetFrameToken(), rfhi.GetFrameTreeNodeId(),
-      rfhi.GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
+      no_vary_search_expected, &rfhi, web_contents->GetWeakPtr(),
+      ui::PAGE_TRANSITION_LINK,
       /*should_warm_up_compositor=*/false,
+      /*should_prepare_paint_tree=*/false,
       /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{},
-      rfhi.GetDevToolsNavigationToken());
+      base::MakeRefCounted<PreloadPipelineInfo>());
 
   PreloadingTriggerType trigger_type =
       PreloadingTriggerTypeFromSpeculationInjectionType(
@@ -324,7 +323,8 @@ bool PrerendererImpl::MaybePrerender(
               content::PrefetchDocumentManager::GetOrCreateForCurrentDocument(
                   web_contents->GetPrimaryMainFrame());
           prefetch_document_manager->PrefetchAheadOfPrerender(
-              candidate.Clone(), enacting_predictor);
+              attributes.preload_pipeline_info, candidate.Clone(),
+              enacting_predictor);
         }
 
         // Create new PreloadingAttempt and pass all the values corresponding to
@@ -422,6 +422,10 @@ void PrerendererImpl::CancelStartedPrerenders() {
   }
 
   started_prerenders_.clear();
+}
+
+void PrerendererImpl::CancelStartedPrerendersForTesting() {
+  CancelStartedPrerenders();
 }
 
 void PrerendererImpl::ResetReceivedPrerendersCountForMetrics() {

@@ -53,6 +53,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "content/browser/renderer_host/virtual_keyboard_controller_win.h"
+#include "ui/events/win/stylus_handwriting_properties_win.h"
 #endif
 
 namespace aura_extra {
@@ -208,12 +209,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   viz::SurfaceId GetCurrentSurfaceId() const override;
   void FocusedNodeChanged(bool is_editable_node,
                           const gfx::Rect& node_bounds_in_screen) override;
+#if BUILDFLAG(IS_WIN)
   bool ShouldInitiateStylusWriting() override;
   void OnStartStylusWriting() override;
   void OnEditElementFocusedForStylusWriting(
-      const gfx::Rect& focused_edit_bounds,
-      const gfx::Rect& caret_bounds) override;
-  void OnEditElementFocusClearedForStylusWriting() override;
+      blink::mojom::StylusWritingFocusResultPtr focus_result) override;
+#endif  // BUILDFLAG(IS_WIN)
   void OnSynchronizedDisplayPropertiesChanged(bool rotation = false) override;
   viz::ScopedSurfaceIdAllocator DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
@@ -242,6 +243,13 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   bool CanComposeInline() const override;
   gfx::Rect GetCaretBounds() const override;
   gfx::Rect GetSelectionBoundingBox() const override;
+#if BUILDFLAG(IS_WIN)
+  std::optional<gfx::Rect> GetProximateCharacterBounds(
+      const gfx::Range& range) const override;
+  std::optional<size_t> GetProximateCharacterIndexFromPoint(
+      const gfx::Point& point,
+      ui::IndexFromPointFlags flags) const override;
+#endif  // BUILDFLAG(IS_WIN)
   bool GetCompositionCharacterBounds(size_t index,
                                      gfx::Rect* rect) const override;
   bool HasCompositionText() const override;
@@ -432,6 +440,13 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   DelegatedFrameHost* GetDelegatedFrameHostForTesting() const {
     return delegated_frame_host_.get();
   }
+
+#if BUILDFLAG(IS_WIN)
+  const std::optional<ui::StylusHandwritingPropertiesWin>&
+  last_stylus_handwriting_properties() const {
+    return last_stylus_handwriting_properties_;
+  }
+#endif  // BUILDFLAG(IS_WIN)
 
  protected:
   ~RenderWidgetHostViewAura() override;
@@ -696,6 +711,17 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // DisplayFeature.
   void ComputeDisplayFeature();
 
+#if BUILDFLAG(IS_WIN)
+  // Forwards `proximate_bounds` to the TextInputManager for caching.
+  void UpdateProximateCharacterBounds(
+      blink::mojom::ProximateCharacterRangeBoundsPtr proximate_bounds);
+
+  // Invoked on Shell Handwriting API request to update the element's focus
+  // based on the provided rect and the distance tolerance.
+  void OnFocusHandwritingTarget(const gfx::Rect& rect_in_screen,
+                                const gfx::Size& distance_tolerance);
+#endif  // BUILDFLAG(IS_WIN)
+
   raw_ptr<aura::Window> window_;
 
   std::unique_ptr<DelegatedFrameHostClient> delegated_frame_host_client_;
@@ -830,7 +856,12 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   base::ScopedObservation<DevicePosturePlatformProvider,
                           DevicePosturePlatformProvider::Observer>
       device_posture_observation_{this};
-#endif
+
+  // Stores last stylus handwriting specific details including a handwriting
+  // pointer id and a handwriting stroke id.
+  std::optional<ui::StylusHandwritingPropertiesWin>
+      last_stylus_handwriting_properties_;
+#endif  // BUILDFLAG(IS_WIN)
 
   std::optional<display::ScopedDisplayObserver> display_observer_;
 

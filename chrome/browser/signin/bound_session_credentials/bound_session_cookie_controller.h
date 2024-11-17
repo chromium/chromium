@@ -12,6 +12,8 @@
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_key.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_params.pb.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
+#include "chrome/browser/signin/bound_session_credentials/rotation_debug_info.pb.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "url/gurl.h"
 
@@ -38,8 +40,11 @@ class BoundSessionCookieController {
     // can't be fixed by retrying. `BoundSessionCookieController` is expected to
     // be deleted after this call.
     // `controller` points at the caller object.
+    // `BoundSessionRefreshCookieFetcher::IsPersistentError(refresh_error)` is
+    // guaranteed to be true.
     virtual void OnPersistentErrorEncountered(
-        BoundSessionCookieController* controller) = 0;
+        BoundSessionCookieController* controller,
+        BoundSessionRefreshCookieFetcher::Result refresh_error) = 0;
 
     // Called when the bound session parameters change, for example the minimum
     // cookie expiration date changes. Cookie deletion is considered as a change
@@ -83,6 +88,9 @@ class BoundSessionCookieController {
 
   // Key that uniquely identifies the session across all sites.
   BoundSessionKey GetBoundSessionKey() const;
+
+  // Extracts debug info information from the controller.
+  virtual bound_session_credentials::RotationDebugInfo TakeDebugInfo() = 0;
 
   // Returns true in case of successive 5xx responses on the cookie rotation
   // endpoint which indicates the server might be experiencing an outage.

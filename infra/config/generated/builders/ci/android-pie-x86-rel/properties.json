@@ -30,7 +30,9 @@
               },
               "legacy_gclient_config": {
                 "apply_configs": [
-                  "android"
+                  "android",
+                  "chromium_with_telemetry_dependencies",
+                  "enable_wpr_tests"
                 ],
                 "config": "chromium"
               }
@@ -50,7 +52,8 @@
           "builder": "android-pie-x86-rel",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-pie-x86-rel/targets"
     }
   },
   "$build/reclient": {

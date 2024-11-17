@@ -10,3 +10,7 @@ per-file BUILD.gn=file://ui/android/java/res/LAYOUT_OWNERS
 # for display/window/view_android
 boliu@chromium.org
 jinsukkim@chromium.org
+
+# for window / keyboard insets
+wenyufu@chromium.org
+pnoland@chromium.org

@@ -1,4 +1,6 @@
 include_rules = [
+  "+components/lens",
+  "+components/ukm",
   "+ios/chrome/browser/autocomplete/model",
   "+ios/chrome/browser/bookmarks/model",
   "+ios/chrome/browser/default_browser/model",
@@ -9,10 +11,10 @@ include_rules = [
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/sessions/model",
   "+ios/chrome/browser/tabs/model/tab_helper_util.h",
-  "+ios/chrome/browser/web/model/web_state_delegate_browser_agent.h",
   "+ios/chrome/browser/ui/lens/lens_entrypoint.h",
   "+ios/chrome/browser/signin/model/authentication_service.h",
   "+ios/chrome/browser/signin/model/authentication_service_factory.h",
   "+ios/chrome/browser/context_menu/ui_bundled",
-  "+components/lens",
+  "+ios/chrome/browser/web/model",
+  "+ios/chrome/browser/ui/device_orientation/scoped_force_portrait_orientation.h",
 ]

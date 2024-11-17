@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_COOKIE_CONTROLS_ICON_VIEW_H_
 
 #include <memory>
+
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_coordinator.h"
@@ -13,6 +14,7 @@
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 // View for the cookie control icon in the Omnibox.  This is the new version of
@@ -65,17 +67,22 @@ class CookieControlsIconView : public PageActionIconView,
   void OnIPHClosed();
 
   // Attempts to show IPH for the cookie controls icon.
-  // Returns whether IPH was successfully shown.
-  bool MaybeShowIPH();
+  void MaybeShowIPH();
+  // Callback for when we try to show the IPH.
+  void OnShowPromoResult(user_education::FeaturePromoResult result);
 
-  bool MaybeAnimateIcon();
+  void MaybeAnimateIcon();
   void UpdateIcon();
 
   int GetLabelForStatus() const;
-  void SetLabelAndTooltip();
+  void SetLabelForStatus();
+
+  // Whether to use "Tracking Protection" for label and tooltip.
+  bool ShouldShowTrackingProtectionText();
 
   bool icon_visible_ = false;
   bool protections_on_ = false;
+  bool protections_changed_ = true;
   bool did_animate_ = false;
   // Whether we should have a visual indicator highlighting the icon.
   bool should_highlight_ = false;

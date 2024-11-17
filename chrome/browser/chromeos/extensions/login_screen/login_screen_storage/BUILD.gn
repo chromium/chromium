@@ -24,76 +24,43 @@ static_library("login_screen_storage") {
     "//build:chromeos_buildflags",
     "//chrome/common/extensions/api",
   ]
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
-if (is_chromeos_ash) {
-  source_set("browser_tests") {
-    testonly = true
+source_set("browser_tests") {
+  testonly = true
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [ "login_screen_storage_apitest.cc" ]
+  sources = [ "login_screen_storage_apitest.cc" ]
 
-    deps = [
-      "//base",
-      "//build:chromeos_buildflags",
-      "//chrome/common:constants",
-      "//chrome/test:test_support",
-      "//chromeos/crosapi/mojom",
-      "//components/policy/core/browser",
-      "//components/policy/core/common:test_support",
-      "//content/test:test_support",
-      "//extensions:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-  }
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//chromeos/crosapi/mojom",
+    "//components/policy/core/browser",
+    "//components/policy/core/common:test_support",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }
 
-if (is_chromeos_lacros) {
-  source_set("lacros_chrome_browsertests") {
-    testonly = true
+source_set("unit_tests") {
+  testonly = true
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "login_screen_storage_api_ash_unittest.cc" ]
 
-    sources = [ "login_screen_storage_apitest.cc" ]
-
-    deps = [
-      "//base",
-      "//build:chromeos_buildflags",
-      "//chrome/common:constants",
-      "//chrome/test:test_support",
-      "//chromeos/crosapi/mojom",
-      "//chromeos/lacros",
-      "//components/policy/core/browser",
-      "//components/policy/core/common:test_support",
-      "//content/test:test_support",
-      "//extensions:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-  }
-}
-
-if (is_chromeos_ash) {
-  source_set("unit_tests") {
-    testonly = true
-
-    sources = [ "login_screen_storage_api_ash_unittest.cc" ]
-
-    deps = [
-      ":login_screen_storage",
-      "//base",
-      "//chrome/test:test_support",
-      "//chromeos/ash/components/dbus/session_manager",
-      "//extensions:test_support",
-      "//extensions/common",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-  }
+  deps = [
+    ":login_screen_storage",
+    "//base",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//extensions:test_support",
+    "//extensions/common",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

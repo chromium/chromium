@@ -6,6 +6,16 @@ import("//build/buildflag_header.gni")
 import("//components/plus_addresses/buildflags.gni")
 import("//third_party/protobuf/proto_library.gni")
 
+component("features") {
+  output_name = "plus_addresses_features"
+  defines = [ "IS_PLUS_ADDRESSES_FEATURES_IMPL" ]
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  public_deps = [ "//base" ]
+}
+
 source_set("types") {
   sources = [
     "plus_address_types.cc",
@@ -25,9 +35,7 @@ source_set("parsing") {
     "plus_address_parsing_utils.h",
   ]
 
-  # TODO(b/322147254): The webdata dependency only exists to check if sync
-  # support is enabled. Remove when fully launched.
-  deps = [ "//components/plus_addresses/webdata" ]
+  deps = [ ":features" ]
   public_deps = [
     ":types",
     "//base",
@@ -42,6 +50,20 @@ source_set("prefs") {
   ]
   deps = [
     "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+  ]
+}
+
+source_set("hats_utils") {
+  sources = [
+    "plus_address_hats_utils.cc",
+    "plus_address_hats_utils.h",
+  ]
+  deps = [
+    ":prefs",
+    "//base",
+    "//components/pref_registry",
     "//components/prefs",
   ]
 }
@@ -71,6 +93,7 @@ source_set("plus_addresses") {
     "plus_address_allocator.h",
     "plus_address_cache.cc",
     "plus_address_cache.h",
+    "plus_address_hats_utils.h",
     "plus_address_http_client.h",
     "plus_address_http_client_impl.cc",
     "plus_address_http_client_impl.h",
@@ -78,8 +101,9 @@ source_set("plus_addresses") {
     "plus_address_jit_allocator.h",
     "plus_address_preallocator.cc",
     "plus_address_preallocator.h",
-    "plus_address_service.cc",
     "plus_address_service.h",
+    "plus_address_service_impl.cc",
+    "plus_address_service_impl.h",
     "plus_address_suggestion_generator.cc",
     "plus_address_suggestion_generator.h",
     "plus_address_ui_utils.cc",
@@ -93,6 +117,7 @@ source_set("plus_addresses") {
     "//components/feature_engagement/public",
     "//components/plus_addresses/metrics",
     "//components/plus_addresses/metrics:submission_logger",
+    "//components/plus_addresses/resources/strings",
     "//components/plus_addresses/settings",
     "//components/plus_addresses/webdata",
     "//components/signin/public/identity_manager",
@@ -117,16 +142,6 @@ source_set("plus_addresses") {
   ]
 }
 
-component("features") {
-  output_name = "plus_addresses_features"
-  defines = [ "IS_PLUS_ADDRESSES_FEATURES_IMPL" ]
-  sources = [
-    "features.cc",
-    "features.h",
-  ]
-  public_deps = [ "//base" ]
-}
-
 buildflag_header("plus_addresses_buildflags") {
   header = "plus_addresses_buildflags.h"
   flags = [ "PLUS_ADDRESSES_USE_INTERNAL_ANDROID_RESOURCES=$plus_addresses_use_internal_android_resources" ]
@@ -138,17 +153,19 @@ source_set("unit_tests") {
     "affiliations/plus_address_affiliation_match_helper_unittest.cc",
     "affiliations/plus_address_affiliation_source_adapter_unittest.cc",
     "plus_address_blocklist_data_unittest.cc",
+    "plus_address_hats_utils_unittest.cc",
     "plus_address_http_client_impl_unittest.cc",
     "plus_address_jit_allocator_unittest.cc",
     "plus_address_parsing_utils_unittest.cc",
     "plus_address_preallocator_unittest.cc",
-    "plus_address_service_unittest.cc",
+    "plus_address_service_impl_unittest.cc",
     "plus_address_suggestion_generator_unittest.cc",
   ]
 
   deps = [
     ":blocklist_data",
     ":features",
+    ":hats_utils",
     ":parsing",
     ":plus_addresses",
     ":prefs",
@@ -160,11 +177,12 @@ source_set("unit_tests") {
     "//components/feature_engagement/public",
     "//components/os_crypt/async/browser:test_support",
     "//components/plus_addresses/metrics",
+    "//components/plus_addresses/resources/strings",
     "//components/plus_addresses/settings:test_support",
     "//components/plus_addresses/webdata",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:test_support",
-    "//components/strings:components_strings_grit",
+    "//components/sync_preferences:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//services/network:test_support",
   ]
@@ -173,6 +191,8 @@ source_set("unit_tests") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "fake_plus_address_allocator.cc",
+    "fake_plus_address_allocator.h",
     "fake_plus_address_service.cc",
     "fake_plus_address_service.h",
     "mock_plus_address_http_client.cc",
@@ -189,6 +209,9 @@ static_library("test_support") {
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
     "//components/autofill/core/browser",
+    "//components/feature_engagement/public",
+    "//components/plus_addresses/resources/strings",
+    "//components/strings:components_strings_grit",
     "//net:test_support",
     "//testing/gmock",
   ]

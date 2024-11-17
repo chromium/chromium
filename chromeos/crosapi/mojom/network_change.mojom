@@ -5,7 +5,7 @@
 module crosapi.mojom;
 
 // This needs to match the definition of net::ConnectionType.
-[Stable, Extensible]
+[Extensible]
 enum ConnectionType {
   [Default] CONNECTION_UNKNOWN = 0,  // A connection exists, but its type is
                                      // unknown. Also used as a default value.
@@ -21,7 +21,7 @@ enum ConnectionType {
 };
 
 // This needs to match the definition of net::ConnectionSubtype.
-[Stable, Extensible]
+[Extensible]
 enum ConnectionSubtype {
   [Default] SUBTYPE_UNKNOWN = 0,
   SUBTYPE_NONE,
@@ -62,7 +62,7 @@ enum ConnectionSubtype {
 // Implemented in Ash-chrome.
 // Next version: 2
 // Next method id: 2
-[Stable, Uuid="f1762d7c-f5cf-4580-8fad-e181dab68e4e"]
+[Uuid="f1762d7c-f5cf-4580-8fad-e181dab68e4e"]
 interface  NetworkChange {
     // Adds NetworkChangeObserver to NetworkChangeManagerClient in Ash.
     AddObserver@0(pending_remote<NetworkChangeObserver> observer);
@@ -80,7 +80,7 @@ interface  NetworkChange {
 // Implemented in Lacros-chrome.
 // Next version: 1
 // Next method id: 1
-[Stable, Uuid="f95d3481-103e-4507-8e83-9bb6b7515c07"]
+[Uuid="f95d3481-103e-4507-8e83-9bb6b7515c07"]
 interface NetworkChangeObserver {
     // Notifies observer of network change.
     OnNetworkChanged@0(

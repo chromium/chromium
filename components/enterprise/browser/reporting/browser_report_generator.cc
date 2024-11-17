@@ -73,8 +73,7 @@ void BrowserReportGenerator::GenerateBasicInfo(em::BrowserReport* report,
           ObfuscateFilePath(delegate_->GetExecutablePath()));
       break;
     case ReportType::kBrowserVersion:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

@@ -129,6 +129,7 @@ android_library("content_main_dex_java") {
     "java/src/org/chromium/content/browser/ServicificationStartupUma.java",
     "java/src/org/chromium/content/browser/TracingControllerAndroidImpl.java",
     "java/src/org/chromium/content/common/ContentSwitchUtils.java",
+    "java/src/org/chromium/content/common/InputTransferTokenWrapper.java",
     "java/src/org/chromium/content/common/SurfaceWrapper.java",
     "java/src/org/chromium/content_public/app/ChildProcessServiceFactory.java",
     "java/src/org/chromium/content_public/app/ZygotePreload.java",
@@ -160,6 +161,7 @@ android_library("content_full_java") {
     "$google_play_services_package:google_play_services_auth_api_phone_java",
     "$google_play_services_package:google_play_services_base_java",
     "$google_play_services_package:google_play_services_basement_java",
+    "$google_play_services_package:google_play_services_identity_credentials_java",
     "$google_play_services_package:google_play_services_tasks_java",
     "//base:base_java",
     "//base:process_launcher_java",
@@ -355,6 +357,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content/browser/webcontents/EmptyInternalAccessDelegate.java",
     "java/src/org/chromium/content/browser/webcontents/WebContentsImpl.java",
     "java/src/org/chromium/content/browser/webcontents/WebContentsObserverProxy.java",
+    "java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegate.java",
     "java/src/org/chromium/content_public/browser/ActionModeCallback.java",
     "java/src/org/chromium/content_public/browser/ActionModeCallbackHelper.java",
     "java/src/org/chromium/content_public/browser/AdditionalNavigationParams.java",
@@ -376,6 +379,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/ImeAdapter.java",
     "java/src/org/chromium/content_public/browser/ImeEventObserver.java",
     "java/src/org/chromium/content_public/browser/InputMethodManagerWrapper.java",
+    "java/src/org/chromium/content_public/browser/InputTransferHandler.java",
     "java/src/org/chromium/content_public/browser/InterfaceRegistrar.java",
     "java/src/org/chromium/content_public/browser/JavaScriptCallback.java",
     "java/src/org/chromium/content_public/browser/JavascriptInjector.java",
@@ -409,6 +413,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/SpeechRecognition.java",
     "java/src/org/chromium/content_public/browser/StylusWritingHandler.java",
     "java/src/org/chromium/content_public/browser/StylusWritingImeCallback.java",
+    "java/src/org/chromium/content_public/browser/SurfaceInputTransferHandlerMap.java",
     "java/src/org/chromium/content_public/browser/ViewEventSink.java",
     "java/src/org/chromium/content_public/browser/WebContents.java",
     "java/src/org/chromium/content_public/browser/WebContentsAccessibility.java",
@@ -417,19 +422,10 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/WebContentsStatics.java",
     "java/src/org/chromium/content_public/browser/selection/SelectionActionMenuDelegate.java",
     "java/src/org/chromium/content_public/browser/selection/SelectionDropdownMenuDelegate.java",
+    "java/src/org/chromium/content_public/common/InputUtils.java",
   ]
 
-  public_deps = [ ":identity_credentials_public_impl_java" ]
-}
-
-android_library("identity_credentials_public_impl_java") {
-  sources = [ "java/src/org/chromium/content/browser/webid/IdentityCredentialsDelegate.java" ]
-  deps = [
-    "$google_play_services_package:google_play_services_identity_credentials_java",
-    "$google_play_services_package:google_play_services_tasks_java",
-    "//base:base_java",
-    "//third_party/androidx:androidx_core_core_java",
-  ]
+  public_deps = [ "//ui/base/mojom:ui_base_types_java" ]
 }
 
 android_library("content_util_java") {
@@ -458,7 +454,6 @@ java_cpp_enum("content_public_android_java_enums_srcjar") {
     "//content/public/browser/android/motion_event_action.h",
     "//content/public/browser/back_forward_transition_animation_manager.h",
     "//content/public/browser/bluetooth_scanning_prompt.h",
-    "//content/public/browser/browsing_data_remover.h",
     "//content/public/browser/invalidate_type.h",
     "//content/public/browser/navigation_controller.h",
     "//content/public/browser/overlay_window.h",
@@ -724,7 +719,6 @@ robolectric_binary("content_junit_tests") {
 
   deps = [
     ":content_java",
-    ":identity_credentials_public_impl_java",
     "//base:base_java",
     "//base:base_java_process_launcher_test_support",
     "//base:base_java_test_support",
@@ -746,6 +740,7 @@ robolectric_binary("content_junit_tests") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java",
+    "//ui/base/mojom:ui_base_types_java",
     "//ui/gfx/geometry/mojom:mojom_java",
   ]
   data_deps = [ "//testing/buildbot/filters:content_junit_tests_filters" ]

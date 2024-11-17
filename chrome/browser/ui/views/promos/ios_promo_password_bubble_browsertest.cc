@@ -37,7 +37,8 @@ class IOSPromoPasswordBubbleTest : public DialogBrowserTest {
     // Set a dummy value of 1 in promo impressions otherwise a
     // NOTREACHED() is hit.
     PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
-    prefs->SetInteger(promos_prefs::kiOSPasswordPromoImpressionsCounter, 1);
+    prefs->SetInteger(
+        promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter, 1);
 
     ToolbarButtonProvider* button_provider =
         BrowserView::GetBrowserViewForBrowser(browser())

@@ -51,7 +51,7 @@ public class ActivityTabWebContentsDelegateAndroidUnitTest {
 
         @Implementation
         public static boolean isEnabledForUrl(BrowserContextHandle browserContextHandle, GURL url) {
-            return sGlobalSettingsEnabled && (!url.equals(sBlockedUrl));
+            return sGlobalSettingsEnabled && !url.equals(sBlockedUrl);
         }
     }
 

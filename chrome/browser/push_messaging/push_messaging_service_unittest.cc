@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "content/public/browser/push_messaging_service.h"
+
 #include <stdint.h>
 
 #include <optional>
@@ -42,7 +44,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/test_history_database.h"
 #include "components/permissions/permission_manager.h"
-#include "content/public/browser/push_messaging_service.h"
+#include "content/public/browser/permission_result.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -498,11 +500,11 @@ class ExtensionsPushMessagingServiceTest
   }
 };
 
-// Tests that extensions with various workers can request userVisible as true
-// or false when subscribing to push notifications. Only worker based extensions
-// are allowed to request userVisible as false.
-TEST_P(ExtensionsPushMessagingServiceTest,
-       GetPermissionStatus_ExtensionNonServiceWorker_UserVisible) {
+// Tests that extension origins with various background contexts have permission
+// to the Push API. It tests that they can request userVisible:true when
+// subscribing to push notifications. Only worker based extensions are allowed
+// to set userVisible:false though.
+TEST_P(ExtensionsPushMessagingServiceTest, PushMessagingAPIPermission) {
   static constexpr char kManifestPersistentBackgroundScript[] =
       R"({"scripts": ["background.js"], "persistent": true})";
   static constexpr char kManifestEventPageBackgroundScript[] =
@@ -543,21 +545,28 @@ TEST_P(ExtensionsPushMessagingServiceTest,
       loader.LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
 
-  // Ensure that permissions are always granted by default when we are not
-  // applying the exception for worker-based extensions.
+  // Assume (with mocking) that notifications permission is granted for
+  // extensions per the manifest (for workers and non-workers).
   auto mock_permission_controller =
       std::make_unique<content::MockPermissionController>();
-  auto permission_mock_return =
+  auto permission_status_mock_return = content::PermissionStatus::GRANTED;
+  EXPECT_CALL(*mock_permission_controller,
+              GetPermissionStatusForWorker(testing::_, testing::_, testing::_))
+      .WillRepeatedly(testing::Return(permission_status_mock_return));
+  EXPECT_CALL(*mock_permission_controller,
+              GetPermissionStatusForWorker(testing::_, testing::_, testing::_))
+      .WillRepeatedly(testing::Return(permission_status_mock_return));
+  auto permission_result_mock_return =
       content::PermissionResult(content::PermissionStatus::GRANTED,
                                 content::PermissionStatusSource::UNSPECIFIED);
   EXPECT_CALL(*mock_permission_controller,
               GetPermissionResultForOriginWithoutContext(testing::_, testing::_,
                                                          testing::_))
-      .WillRepeatedly(testing::Return(permission_mock_return));
+      .WillRepeatedly(testing::Return(permission_result_mock_return));
   EXPECT_CALL(
       *mock_permission_controller,
       GetPermissionResultForOriginWithoutContext(testing::_, testing::_))
-      .WillRepeatedly(testing::Return(permission_mock_return));
+      .WillRepeatedly(testing::Return(permission_result_mock_return));
   browser_context()->SetPermissionControllerForTesting(
       std::move(mock_permission_controller));
 
@@ -567,19 +576,24 @@ TEST_P(ExtensionsPushMessagingServiceTest,
   const GURL extension_origin =
       Extension::GetBaseURLFromExtensionId(extension->id());
 
-  // All workers can always set userVisible to true when subscribing.
+  // All extension origins (worker or non-worker) can always use the Push API if
+  // they set userVisibleOnly:true on push subscription.
   EXPECT_EQ(
       blink::mojom::PermissionStatus::GRANTED,
       push_service->GetPermissionStatus(extension_origin, /*user_visible=*/
                                         true));
 
-  // Only worker based extensions can set userVisible to false when subscribing.
+  // Extension origins with workers can set userVisible:false when subscribing
+  // and still use the Push API if they don't intend to show notifications
+  // (if they try to show notifications then the permission is still enforced).
   if (worker_extension) {
     EXPECT_EQ(
         blink::mojom::PermissionStatus::GRANTED,
         push_service->GetPermissionStatus(extension_origin, /*user_visible=*/
                                           false));
   } else {
+    // Extension origins that are not worker based are not allowed to use the
+    // Push API if they set userVisibleOnly:false on subscription.
     EXPECT_EQ(
         blink::mojom::PermissionStatus::DENIED,
         push_service->GetPermissionStatus(extension_origin, /*user_visible=*/
@@ -604,8 +618,6 @@ INSTANTIATE_TEST_SUITE_P(WorkerBasedExtension,
 class FCMRevocationTest : public PushMessagingServiceTest {
  public:
   FCMRevocationTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kRevokeNotificationsPermissionIfDisabledOnAppLevel);
     PushMessagingServiceImpl::RegisterPrefs(prefs_.registry());
   }
 
@@ -627,7 +639,6 @@ class FCMRevocationTest : public PushMessagingServiceTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
   GURL origin_ = GURL("https://example.com");
   TestingPrefServiceSimple prefs_;
 };

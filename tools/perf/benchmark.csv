@@ -4,13 +4,13 @@ Googlers can view additional information about internal perf infrastructure at,h
 Benchmark name,Individual owners,Component,Documentation,Tags
 UNSCHEDULED_ad_frames.iframe,lbrady@google.com,Blink>FencedFrames,https://tinyurl.com/fenced-frame-benchmark,
 UNSCHEDULED_blink_perf.base64,csharrison@chromium.org,Blink>Internals>WTF,https://bit.ly/blink-perf-benchmarks,all
+UNSCHEDULED_blink_perf.loading,"pmeenan@chromium.org, kouhei@chromium.org",Blink>Loader,https://bit.ly/blink-perf-benchmarks,all
 UNSCHEDULED_blink_perf.performance_apis,sullivan@chromium.org,Blink>PerformanceAPIs,https://bit.ly/blink-perf-benchmarks,all
 UNSCHEDULED_blink_perf.service_worker,"yyanagisawa@chromium.org, chrome-worker@google.com",Blink>ServiceWorker,https://bit.ly/blink-perf-benchmarks,
 UNSCHEDULED_blink_perf.view_transitions,"bokan@chromium.org, khushalsagar@chromium.org, vmpstr@chromium.org",Blink>ViewTransitions,https://bit.ly/blink-perf-benchmarks,all
 UNSCHEDULED_dummy_wpr_benchmark.loading_using_wpr,maxqli@google.com,Test>Telemetry,,
 UNSCHEDULED_jetstream20,"vahl@chromium.org, cbruni@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.0/in-depth.html,all
 UNSCHEDULED_jetstream21,"vahl@chromium.org, cbruni@chromium.org",Blink>JavaScript,https://browserbench.org/JetStream2.1/in-depth.html,all
-UNSCHEDULED_loading.mbi,"blink-isolation-dev@chromium.org, kouhei@chromium.org",Blink>Internals>Modularization,https://bit.ly/loading-benchmarks,many_agents
 UNSCHEDULED_speedometer1.0,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer,all
 UNSCHEDULED_speedometer2.0,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.0,all
 UNSCHEDULED_speedometer2.1,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.1,all
@@ -56,7 +56,7 @@ power.desktop,brucedawson@chromium.org,,https://bit.ly/power-benchmarks,
 rasterize_and_record_micro.top_25,"pdr@chromium.org, wangxianzhu@chromium.org",Internals>Compositing>Rasterization,https://bit.ly/rasterize-and-record-benchmark,
 rendering.desktop,"jonross@chromium.org, chrome-gpu-metrics@google.com",Internals>GPU>Metrics,https://bit.ly/rendering-benchmarks,"backdrop_filter,gpu_rasterization,image_decoding,key_desktop_move,maps,motionmark,motionmark_fixed_2_seconds,motionmark_ramp,repaint_desktop,representative_mac_desktop,representative_mobile,representative_win_desktop,required_webgl,simple_canvas,throughput_test,top_real_world_desktop,tough_animation,tough_canvas,tough_compositor,tough_filters,tough_path_rendering,tough_pinch_zoom,tough_scheduling,tough_scrollbar_scrolling,tough_scrolling,tough_texture_upload,tough_webgl,use_fake_camera_device"
 rendering.desktop.notracing,"jonross@chromium.org, chrome-gpu-metrics@google.com",Internals>GPU>Metrics,https://bit.ly/rendering-benchmarks,"motionmark,motionmark_ramp"
-rendering.mobile,"jonross@chromium.org, chrome-gpu-metrics@google.com",Internals>GPU>Metrics,https://bit.ly/rendering-benchmarks,"backdrop_filter,fastpath,gpu_rasterization,image_decoding,key_idle_power,key_noop,key_silk,maps,motionmark,motionmark_fixed_2_seconds,motionmark_ramp,pathological_mobile_sites,representative_mac_desktop,representative_mobile,representative_win_desktop,required_webgl,simple_canvas,simple_mobile_sites,throughput_test,top_real_world_desktop,top_real_world_mobile,tough_animation,tough_canvas,tough_compositor,tough_filters,tough_path_rendering,tough_pinch_zoom_mobile,tough_scheduling,tough_scrollbar_scrolling,tough_scrolling,tough_texture_upload,tough_webgl,use_fake_camera_device"
+rendering.mobile,"jonross@chromium.org, chrome-gpu-metrics@google.com",Internals>GPU>Metrics,https://bit.ly/rendering-benchmarks,"backdrop_filter,fastpath,gpu_rasterization,image_decoding,key_idle_power,key_noop,key_silk,maps,motionmark,motionmark_fixed_2_seconds,motionmark_ramp,pathological_mobile_sites,representative_mac_desktop,representative_mobile,representative_win_desktop,required_webgl,simple_canvas,simple_mobile_sites,throughput_test,top_real_world_mobile,tough_animation,tough_canvas,tough_compositor,tough_filters,tough_path_rendering,tough_pinch_zoom_mobile,tough_scheduling,tough_scrollbar_scrolling,tough_scrolling,tough_texture_upload,tough_webgl,use_fake_camera_device"
 rendering.mobile.notracing,"jonross@chromium.org, chrome-gpu-metrics@google.com",Internals>GPU>Metrics,https://bit.ly/rendering-benchmarks,"motionmark,motionmark_ramp"
 resource_sizes_monochrome_minimal_apks,agrieve@chromium.org,Build>Android,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
 resource_sizes_system_webview_google_bundle,agrieve@chromium.org,Build>Android,https://chromium.googlesource.com/chromium/src/+/HEAD/tools/binary_size/README.md#resource_sizes_py,
@@ -66,11 +66,11 @@ speedometer-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,htt
 speedometer2,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.1,all
 speedometer2-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://browserbench.org/Speedometer2.1,all
 speedometer2-minorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://browserbench.org/Speedometer2.1,all
-speedometer2-predictable,"agarwaltushar@google.com, wnwen@google.com",Blink>JavaScript,https://browserbench.org/Speedometer2.1,all
+speedometer2-predictable,"rasikan@google.com, wnwen@google.com",Blink>JavaScript,https://browserbench.org/Speedometer2.1,all
 speedometer3,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://github.com/WebKit/Speedometer,all
 speedometer3-future,"cbruni@chromium.org, vahl@chromium.org",Blink>JavaScript,https://github.com/WebKit/Speedometer,all
 speedometer3-minorms,omerkatz@chromium.org,Blink>JavaScript>GarbageCollection,https://github.com/WebKit/Speedometer,all
-speedometer3-predictable,"agarwaltushar@google.com, wnwen@google.com",Blink>JavaScript,https://browserbench.org/Speedometer3.0,all
+speedometer3-predictable,"rasikan@google.com, wnwen@google.com",Blink>JavaScript,https://browserbench.org/Speedometer3.0,all
 startup.mobile,"pasko@chromium.org, lizeb@chromium.org",Speed>Metrics>SystemHealthRegressions,,
 system_health.common_desktop,kouhei@chromium.org,Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,wasm,webgl"
 system_health.common_mobile,kouhei@chromium.org,Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,2023,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"

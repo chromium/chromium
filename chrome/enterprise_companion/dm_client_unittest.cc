@@ -23,6 +23,7 @@
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/event_logger.h"
+#include "chrome/enterprise_companion/proto/enterprise_companion_event.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
@@ -30,6 +31,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/mock_device_management_service.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "net/http/http_status_code.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -188,8 +190,10 @@ class TestTokenService
   std::string dm_token_;
 };
 
-class TestEventLogger : public EventLogger {
+class TestEventLogger : public EnterpriseCompanionEventLogger {
  public:
+  TestEventLogger() = default;
+
   const std::vector<EnterpriseCompanionStatus>& registration_events() {
     return registration_events_;
   }
@@ -197,26 +201,22 @@ class TestEventLogger : public EventLogger {
     return policy_fetch_events_;
   }
 
-  // Overrides for EventLogger.
-  void Flush() override {}
-
-  OnEnrollmentFinishCallback OnEnrollmentStart() override {
-    return base::BindOnce(
-        [](scoped_refptr<TestEventLogger> logger,
-           const EnterpriseCompanionStatus& status) {
-          logger->registration_events_.push_back(status);
-        },
-        base::WrapRefCounted(this));
+  void LogRegisterPolicyAgentEvent(
+      base::Time start_time,
+      StatusCallback callback,
+      const EnterpriseCompanionStatus& status) override {
+    registration_events_.push_back(status);
+    std::move(callback).Run(status);
   }
 
-  OnPolicyFetchFinishCallback OnPolicyFetchStart() override {
-    return base::BindOnce(
-        [](scoped_refptr<TestEventLogger> logger,
-           const EnterpriseCompanionStatus& status) {
-          logger->policy_fetch_events_.push_back(status);
-        },
-        base::WrapRefCounted(this));
+  void LogPolicyFetchEvent(base::Time start_time,
+                           StatusCallback callback,
+                           const EnterpriseCompanionStatus& status) override {
+    policy_fetch_events_.push_back(status);
+    std::move(callback).Run(status);
   }
+
+  void Flush(base::OnceClosure callback) override { std::move(callback).Run(); }
 
  private:
   std::vector<EnterpriseCompanionStatus> registration_events_;
@@ -299,9 +299,10 @@ TEST_F(DMClientTest, RegisterDeviceSuccess) {
   base::RunLoop run_loop;
   dm_client_->RegisterPolicyAgent(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
-      }).Then(run_loop.QuitClosure()));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
   mock_cloud_policy_client_->SetDMToken(kFakeDMToken);
   mock_cloud_policy_client_->NotifyRegistrationStateChanged();
   run_loop.Run();
@@ -322,10 +323,11 @@ TEST_F(DMClientTest, RegisterDeviceFailure) {
   base::RunLoop run_loop;
   dm_client_->RegisterPolicyAgent(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsDeviceManagementStatus(
             policy::DM_STATUS_SERVICE_INVALID_SERIAL_NUMBER));
-      }).Then(run_loop.QuitClosure()));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
   mock_cloud_policy_client_->SetStatus(
       policy::DM_STATUS_SERVICE_INVALID_SERIAL_NUMBER);
   mock_cloud_policy_client_->NotifyClientError();
@@ -362,9 +364,10 @@ TEST_F(DMClientTest, RegistrationRemovesPolicies) {
   base::RunLoop run_loop;
   dm_client_->RegisterPolicyAgent(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
-      }).Then(run_loop.QuitClosure()));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
   mock_cloud_policy_client_->SetDMToken(kFakeDMToken);
   mock_cloud_policy_client_->NotifyRegistrationStateChanged();
   run_loop.Run();
@@ -383,9 +386,10 @@ TEST_F(DMClientTest, RegistrationSkippedNoEnrollmentToken) {
   base::RunLoop run_loop;
   dm_client_->RegisterPolicyAgent(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
-      }).Then(run_loop.QuitClosure()));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
   run_loop.Run();
 
   EXPECT_TRUE(test_token_service_->GetDmToken().empty());
@@ -400,9 +404,10 @@ TEST_F(DMClientTest, RegistrationSkippedAlreadyManaged) {
   base::RunLoop run_loop;
   dm_client_->RegisterPolicyAgent(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
-      }).Then(run_loop.QuitClosure()));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
   run_loop.Run();
 
   EXPECT_EQ(test_token_service_->GetDmToken(), kFakeDMToken);
@@ -432,9 +437,10 @@ TEST_F(DMClientTest, PoliciesPersistedThroughSkippedRegistration) {
   base::RunLoop run_loop;
   dm_client_->RegisterPolicyAgent(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
-      }).Then(run_loop.QuitClosure()));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
   run_loop.Run();
 
   EXPECT_EQ(test_token_service_->GetDmToken(), kFakeDMToken);
@@ -448,10 +454,11 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfNotRegistered) {
   base::RunLoop run_loop;
   dm_client_->FetchPolicies(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsApplicationError(
             ApplicationError::kRegistrationPreconditionFailed));
-      }).Then(run_loop.QuitClosure()));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
   run_loop.Run();
 
   std::unique_ptr<device_management_storage::CachedPolicyInfo>
@@ -472,10 +479,11 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfDMStorageCannotPersist) {
   base::RunLoop run_loop;
   dm_client_->FetchPolicies(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsApplicationError(
             ApplicationError::kPolicyPersistenceImpossible));
-      }).Then(run_loop.QuitClosure()));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
   run_loop.Run();
 
   std::unique_ptr<device_management_storage::CachedPolicyInfo>
@@ -497,10 +505,11 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfCloudPolicyClientFails) {
   base::RunLoop run_loop;
   dm_client_->FetchPolicies(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsDeviceManagementStatus(
             policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID));
-      }).Then(run_loop.QuitClosure()));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
   mock_cloud_policy_client_->SetStatus(
       policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID);
   mock_cloud_policy_client_->NotifyPolicyFetched();
@@ -527,10 +536,11 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfFetchResultInvalid) {
   base::RunLoop run_loop;
   dm_client_->FetchPolicies(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsCloudPolicyValidationResult(
             policy::CloudPolicyValidatorBase::VALIDATION_POLICY_PARSE_ERROR));
-      }).Then(run_loop.QuitClosure()));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
   mock_cloud_policy_client_->SetPolicy(
       kPolicyType1, /*settings_entity_id=*/"",
       enterprise_management::PolicyFetchResponse());
@@ -560,10 +570,11 @@ TEST_F(DMClientTest, FetchPoliciesFailsIfResultCannotBePersisted) {
   base::RunLoop run_loop;
   dm_client_->FetchPolicies(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsApplicationError(
             ApplicationError::kPolicyPersistenceFailed));
-      }).Then(run_loop.QuitClosure()));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
   mock_cloud_policy_client_->SetPolicy(
       kPolicyType1, /*settings_entity_id=*/"",
       enterprise_management::PolicyFetchResponse());
@@ -610,9 +621,10 @@ TEST_F(DMClientTest, FetchPoliciesSuccess) {
   base::RunLoop run_loop;
   dm_client_->FetchPolicies(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
-      }).Then(run_loop.QuitClosure()));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
   mock_cloud_policy_client_->SetPolicy(kPolicyType1, "", response1);
   mock_cloud_policy_client_->SetPolicy(kPolicyType2, "", response2);
   mock_cloud_policy_client_->NotifyPolicyFetched();
@@ -669,9 +681,10 @@ TEST_F(DMClientTest, FetchPoliciesOverwrite) {
   base::RunLoop first_fetch_loop;
   dm_client_->FetchPolicies(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
-      }).Then(first_fetch_loop.QuitClosure()));
+        test_event_logger_->Flush(first_fetch_loop.QuitClosure());
+      }));
   mock_cloud_policy_client_->SetPolicy(kPolicyType1, "", response1);
   mock_cloud_policy_client_->SetPolicy(kPolicyType2, "", response2);
   mock_cloud_policy_client_->NotifyPolicyFetched();
@@ -695,9 +708,10 @@ TEST_F(DMClientTest, FetchPoliciesOverwrite) {
   base::RunLoop second_fetch_loop;
   dm_client_->FetchPolicies(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.ok());
-      }).Then(second_fetch_loop.QuitClosure()));
+        test_event_logger_->Flush(second_fetch_loop.QuitClosure());
+      }));
   mock_cloud_policy_client_->SetPolicy(kPolicyType1, "", response3);
   mock_cloud_policy_client_->NotifyPolicyFetched();
   second_fetch_loop.Run();
@@ -730,20 +744,21 @@ TEST_F(DMClientTest, FetchPoliciesReset) {
 
   EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).Times(1);
 
-  base::RunLoop first_fetch_loop;
+  base::RunLoop run_loop;
   dm_client_->FetchPolicies(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsDeviceManagementStatus(
             policy::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET));
-      }).Then(first_fetch_loop.QuitClosure()));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
 
   mock_cloud_policy_client_->SetStatus(
       policy::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET);
   mock_cloud_policy_client_->dm_token_.clear();
   mock_cloud_policy_client_->NotifyClientError();
   mock_cloud_policy_client_->NotifyRegistrationStateChanged();
-  first_fetch_loop.Run();
+  run_loop.Run();
 
   EXPECT_TRUE(test_token_service_->GetDmToken().empty());
   EXPECT_TRUE(test_event_logger_->registration_events().empty());
@@ -759,20 +774,21 @@ TEST_F(DMClientTest, FetchPoliciesInvalidation) {
 
   EXPECT_CALL(*mock_cloud_policy_client_, FetchPolicy).Times(1);
 
-  base::RunLoop first_fetch_loop;
+  base::RunLoop run_loop;
   dm_client_->FetchPolicies(
       test_event_logger_,
-      base::BindOnce([](const EnterpriseCompanionStatus& status) {
+      base::BindLambdaForTesting([&](const EnterpriseCompanionStatus& status) {
         EXPECT_TRUE(status.EqualsDeviceManagementStatus(
             policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND));
-      }).Then(first_fetch_loop.QuitClosure()));
+        test_event_logger_->Flush(run_loop.QuitClosure());
+      }));
 
   mock_cloud_policy_client_->SetStatus(
       policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND);
   mock_cloud_policy_client_->dm_token_.clear();
   mock_cloud_policy_client_->NotifyClientError();
   mock_cloud_policy_client_->NotifyRegistrationStateChanged();
-  first_fetch_loop.Run();
+  run_loop.Run();
 
   EXPECT_TRUE(dm_storage_->IsDeviceDeregistered());
   EXPECT_TRUE(test_event_logger_->registration_events().empty());

@@ -1,9 +1,0 @@
-# Digits in words, handled by COMPOUNDRULE.
-# 1-jährig, 2-jährig, 100-jährig etc.
-SET UTF-8
-COMPOUNDMIN 1
-# recognize ab, aab, aaab etc. compounds (a=digits, b=-jährig, see dic file)
-COMPOUNDRULE 1
-COMPOUNDRULE a*b
-ONLYINCOMPOUND c
-WORDCHARS 0123456789-

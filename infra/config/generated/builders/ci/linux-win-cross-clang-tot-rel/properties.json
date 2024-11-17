@@ -42,7 +42,8 @@
           "builder": "linux-win-cross-clang-tot-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-win-cross-clang-tot-rel/targets"
     }
   },
   "$build/reclient": {

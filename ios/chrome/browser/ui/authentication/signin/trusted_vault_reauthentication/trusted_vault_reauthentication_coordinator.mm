@@ -45,7 +45,7 @@ using l10n_util::GetNSStringF;
                        trigger:
                            (syncer::TrustedVaultUserActionTriggerForUMA)trigger
                    accessPoint:(signin_metrics::AccessPoint)accessPoint {
-  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
+  DCHECK(!browser->GetProfile()->IsOffTheRecord());
   self = [super initWithBaseViewController:viewController
                                    browser:browser
                                accessPoint:accessPoint];
@@ -75,9 +75,8 @@ using l10n_util::GetNSStringF;
     // The completion block has to be called explicitly.
     SigninCompletionInfo* completionInfo =
         [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
-    [weakSelf
-        runCompletionCallbackWithSigninResult:SigninCoordinatorResultInterrupted
-                               completionInfo:completionInfo];
+    [weakSelf runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
+                             completionInfo:completionInfo];
     if (completion) {
       completion();
     }
@@ -117,8 +116,7 @@ using l10n_util::GetNSStringF;
 - (void)start {
   [super start];
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
   DCHECK(
       authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
   // TODO(crbug.com/40105436): Should test if reauth is still needed. If still
@@ -126,9 +124,9 @@ using l10n_util::GetNSStringF;
   // If not, the coordinator can be closed successfuly, by calling
   // -[TrustedVaultReauthenticationCoordinator
   // reauthentificationCompletedWithSuccess:]
-  self.identity = AuthenticationServiceFactory::GetForBrowserState(
-                      self.browser->GetBrowserState())
-                      ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  self.identity =
+      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile())
+          ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   __weak __typeof(self) weakSelf = self;
   void (^callback)(BOOL success, NSError* error) =
       ^(BOOL success, NSError* error) {
@@ -137,15 +135,15 @@ using l10n_util::GetNSStringF;
   switch (self.intent) {
     case SigninTrustedVaultDialogIntentFetchKeys:
       _dialogCancelCallback =
-          TrustedVaultClientBackendFactory::GetForBrowserState(
-              self.browser->GetBrowserState())
+          TrustedVaultClientBackendFactory::GetForProfile(
+              self.browser->GetProfile())
               ->Reauthentication(self.identity, _securityDomainID,
                                  self.baseViewController, callback);
       break;
     case SigninTrustedVaultDialogIntentDegradedRecoverability:
       _dialogCancelCallback =
-          TrustedVaultClientBackendFactory::GetForBrowserState(
-              self.browser->GetBrowserState())
+          TrustedVaultClientBackendFactory::GetForProfile(
+              self.browser->GetProfile())
               ->FixDegradedRecoverability(self.identity, _securityDomainID,
                                           self.baseViewController, callback);
       break;
@@ -192,8 +190,7 @@ using l10n_util::GetNSStringF;
                                        : SigninCoordinatorResultCanceledByUser;
   SigninCompletionInfo* completionInfo = [SigninCompletionInfo
       signinCompletionInfoWithIdentity:success ? self.identity : nil];
-  [self runCompletionCallbackWithSigninResult:result
-                               completionInfo:completionInfo];
+  [self runCompletionWithSigninResult:result completionInfo:completionInfo];
 }
 
 #pragma mark - NSObject

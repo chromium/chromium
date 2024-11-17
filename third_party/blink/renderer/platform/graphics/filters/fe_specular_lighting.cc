@@ -23,9 +23,10 @@
 #include "third_party/blink/renderer/platform/graphics/filters/fe_specular_lighting.h"
 
 #include <algorithm>
+
 #include "third_party/blink/renderer/platform/graphics/filters/light_source.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -70,8 +71,9 @@ bool FESpecularLighting::SetSpecularExponent(float specular_exponent) {
   return true;
 }
 
-WTF::TextStream& FESpecularLighting::ExternalRepresentation(WTF::TextStream& ts,
-                                                            int indent) const {
+StringBuilder& FESpecularLighting::ExternalRepresentation(
+    StringBuilder& ts,
+    wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feSpecularLighting";
   FilterEffect::ExternalRepresentation(ts);

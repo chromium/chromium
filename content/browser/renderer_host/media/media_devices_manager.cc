@@ -56,6 +56,19 @@
 
 namespace content {
 
+// Release video source provider in VideoCaptureDevicesChangedObserver
+// if it is not used.
+// Do not enable by default until https://crbug.com/377749384 is fixed.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+BASE_FEATURE(kReleaseVideoSourceProviderIfNotInUse,
+             "ReleaseVideoSourceProviderIfNotInUse",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kReleaseVideoSourceProviderTimeout{
+    &kReleaseVideoSourceProviderIfNotInUse,
+    "release_video_source_provider_timeout", base::Seconds(60)};
+#endif
+
 namespace {
 using media::mojom::DeviceEnumerationResult;
 
@@ -81,9 +94,8 @@ const char* DeviceTypeToString(MediaDeviceType device_type) {
     case MediaDeviceType::kMediaAudioOutput:
       return "AUDIO_OUTPUT";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "UNKNOWN";
 }
 
 std::string GetDevicesEnumeratedLogString(
@@ -474,6 +486,11 @@ MediaDevicesManager::MediaDevicesManager(
 
 MediaDevicesManager::~MediaDevicesManager() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(kReleaseVideoSourceProviderIfNotInUse)) {
+    disconnect_video_source_provider_timer_.Stop();
+  }
+#endif
 }
 
 void MediaDevicesManager::EnumerateDevices(
@@ -543,6 +560,36 @@ void MediaDevicesManager::EnumerateAndRankDevices(
               request_audio_input_capabilities, std::move(callback)))));
 }
 
+void MediaDevicesManager::AddAudioDeviceToOriginMap(
+    GlobalRenderFrameHostId render_frame_host_id,
+    const blink::WebMediaDeviceInfo& device_info) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  audio_device_origin_map_[render_frame_host_id].insert(device_info);
+}
+
+bool MediaDevicesManager::IsAudioOutputDeviceExplicitlyAuthorized(
+    GlobalRenderFrameHostId render_frame_host_id,
+    const std::string& raw_device_id) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  auto authorized_devices = audio_device_origin_map_.find(render_frame_host_id);
+  if (authorized_devices == audio_device_origin_map_.end()) {
+    return false;
+  }
+  blink::WebMediaDeviceInfo device_info;
+  device_info.device_id = raw_device_id;
+  return base::Contains(authorized_devices->second, device_info);
+}
+
+void MediaDevicesManager::GetSpeakerSelectionAndMicrophonePermissionState(
+    GlobalRenderFrameHostId render_frame_host_id,
+    base::OnceCallback<void(PermissionDeniedState, bool)> callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  permission_checker_->GetSpeakerSelectionAndMicrophonePermissionState(
+      render_frame_host_id.child_id, render_frame_host_id.frame_routing_id,
+      std::move(callback));
+}
+
 uint32_t MediaDevicesManager::SubscribeDeviceChangeNotifications(
     GlobalRenderFrameHostId render_frame_host_id,
     const BoolDeviceTypes& subscribe_types,
@@ -559,6 +606,11 @@ uint32_t MediaDevicesManager::SubscribeDeviceChangeNotifications(
       subscription_id,
       SubscriptionRequest(render_frame_host_id, subscribe_types,
                           std::move(media_devices_listener)));
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(kReleaseVideoSourceProviderIfNotInUse)) {
+    MaybeScheduleDisconectVideoSourceProviderTimer();
+  }
+#endif
 
   // Fetch the first device_id_salt for this subscriber's frame, to be able to
   // later detect changes.
@@ -589,6 +641,11 @@ void MediaDevicesManager::UnsubscribeDeviceChangeNotifications(
     uint32_t subscription_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   subscriptions_.erase(subscription_id);
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(kReleaseVideoSourceProviderIfNotInUse)) {
+    MaybeScheduleDisconectVideoSourceProviderTimer();
+  }
+#endif
 }
 
 void MediaDevicesManager::SetCachePolicy(MediaDeviceType type,
@@ -609,8 +666,16 @@ void MediaDevicesManager::SetCachePolicy(MediaDeviceType type,
 
 void MediaDevicesManager::StartMonitoring() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (monitoring_started_)
+  if (monitoring_started_) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    if (base::FeatureList::IsEnabled(kReleaseVideoSourceProviderIfNotInUse)) {
+      if (video_capture_service_device_changed_observer_) {
+        video_capture_service_device_changed_observer_->EnsureConnectedToService();
+      }
+    }
+#endif
     return;
+  }
 
   if (!base::SystemMonitor::Get())
     return;
@@ -798,13 +863,14 @@ void MediaDevicesManager::OnPermissionsCheckDone(
   EnumerateAndRankDevices(
       render_frame_host_id, internal_requested_types,
       base::BindOnce(&MediaDevicesManager::OnDevicesEnumerated,
-                     weak_factory_.GetWeakPtr(), requested_types,
-                     request_video_input_capabilities,
+                     weak_factory_.GetWeakPtr(), render_frame_host_id,
+                     requested_types, request_video_input_capabilities,
                      request_audio_input_capabilities, std::move(callback),
                      std::move(salt_and_origin), has_permissions));
 }
 
 void MediaDevicesManager::OnDevicesEnumerated(
+    GlobalRenderFrameHostId render_frame_host_id,
     const MediaDevicesManager::BoolDeviceTypes& requested_types,
     bool request_video_input_capabilities,
     bool request_audio_input_capabilities,
@@ -835,6 +901,30 @@ void MediaDevicesManager::OnDevicesEnumerated(
 
       translation[i].push_back(TranslateMediaDeviceInfo(
           has_permissions[i], salt_and_origin, device_info));
+    }
+  }
+
+  // Expose devices authorized by selectAudioOutput.
+  if (!audio_device_origin_map_.empty() &&
+      !has_permissions[static_cast<size_t>(
+          MediaDeviceType::kMediaAudioInput)] &&
+      translation[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
+              .size() == 1 &&
+      translation[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)][0]
+          .device_id.empty()) {
+    translation[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
+        .clear();
+    auto authorized_devices =
+        audio_device_origin_map_.find(render_frame_host_id);
+    if (authorized_devices != audio_device_origin_map_.end()) {
+      for (const auto& enum_device : enumeration[static_cast<size_t>(
+               MediaDeviceType::kMediaAudioOutput)]) {
+        if (base::Contains(authorized_devices->second, enum_device)) {
+          translation[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]
+              .push_back(TranslateMediaDeviceInfo(
+                  /*has_permission=*/true, salt_and_origin, enum_device));
+        }
+      }
     }
   }
 
@@ -1008,7 +1098,7 @@ void MediaDevicesManager::DoEnumerateDevices(MediaDeviceType type) {
       EnumerateAudioDevices(false /* is_input */);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -1202,7 +1292,7 @@ bool MediaDevicesManager::IsEnumerationRequestReady(
         }
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   return true;
@@ -1378,7 +1468,47 @@ void MediaDevicesManager::RegisterVideoCaptureDevicesChangedObserver() {
                   base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
             }
           }));
-  video_capture_service_device_changed_observer_->ConnectToService();
+  video_capture_service_device_changed_observer_->EnsureConnectedToService();
+}
+
+void MediaDevicesManager::OnDisconectVideoSourceProviderTimer() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  CHECK(video_capture_service_device_changed_observer_);
+  if (is_video_capture_hosts_set_empty_ && subscriptions_.empty()) {
+    SendLogMessage("It is time to disconnect video source provider interface.");
+    video_capture_service_device_changed_observer_
+        ->DisconnectVideoSourceProvider();
+  }
+}
+
+void MediaDevicesManager::MaybeScheduleDisconectVideoSourceProviderTimer() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (!video_capture_service_device_changed_observer_) {
+    return;
+  }
+
+  if (is_video_capture_hosts_set_empty_ && subscriptions_.empty()) {
+    if (!disconnect_video_source_provider_timer_.IsRunning()) {
+      SendLogMessage("Start disconnect video source provider timer.");
+      disconnect_video_source_provider_timer_.Start(
+          FROM_HERE, kReleaseVideoSourceProviderTimeout.Get(),
+          base::BindOnce(
+              &MediaDevicesManager::OnDisconectVideoSourceProviderTimer,
+              base::Unretained(this)));
+    }
+  } else {
+    if (disconnect_video_source_provider_timer_.IsRunning()) {
+      SendLogMessage(
+          "Disconnect video source provider timer is running, stop it.");
+      disconnect_video_source_provider_timer_.Stop();
+    }
+  }
+}
+
+void MediaDevicesManager::UpdateVideoCaptureHostsEmptyState(bool empty) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  is_video_capture_hosts_set_empty_ = empty;
+  MaybeScheduleDisconectVideoSourceProviderTimer();
 }
 #endif
 

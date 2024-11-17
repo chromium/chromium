@@ -97,12 +97,6 @@ suite('Main', function() {
     assertFalse(!!row, 'Chrome Root Store Help Center link unexpectedly found');
   });
 
-  // <if expr="not chromeos_lacros">
-  // TODO(crbug.com/40156980): This class directly calls
-  // `CreateNSSCertDatabaseGetterForIOThread()` that causes crash at the
-  // moment and is never called from Lacros-Chrome. This should be revisited
-  // when there is a solution for the client certificates settings page on
-  // Lacros-Chrome.
   test('ManageCertificatesClick', async function() {
     page.shadowRoot!.querySelector<HTMLElement>(
                         '#manageCertificatesLinkRow')!.click();
@@ -113,7 +107,6 @@ suite('Main', function() {
     const url = await openWindowProxy.whenCalled('openUrl');
     assertEquals(url, loadTimeData.getString('certManagementV2URL'));
   });
-  // </if>
 
   test('ManageSecurityKeysSubpageVisible', function() {
     assertTrue(isChildVisible(page, '#security-keys-subpage-trigger'));
@@ -345,29 +338,33 @@ suite('FlagsDisabled', function() {
       enableHashPrefixRealTimeLookups: false,
       enableHttpsFirstModeNewSettings: false,
       enableCertManagementUIV2: false,
+      enableEsbAiStringUpdate: false,
+      enablePasswordLeakToggleMove: false,
       extendedReportingRemovePrefDependency: false,
       hashPrefixRealTimeLookupsSamplePing: false,
     });
     resetRouterForTesting();
   });
 
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-
-    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
-    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
-    testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
-    PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
-    openWindowProxy = new TestOpenWindowProxy();
-    OpenWindowProxyImpl.setInstance(openWindowProxy);
-
+  function createPage() {
     page = document.createElement('settings-security-page');
     page.prefs = pagePrefs();
     document.body.appendChild(page);
 
     page.$.safeBrowsingEnhanced.updateCollapsed();
     page.$.safeBrowsingStandard.updateCollapsed();
-    flush();
+    return flushTasks();
+  }
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
+    testPrivacyBrowserProxy = new TestPrivacyPageBrowserProxy();
+    PrivacyPageBrowserProxyImpl.setInstance(testPrivacyBrowserProxy);
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+    return createPage();
   });
 
   teardown(function() {
@@ -391,12 +388,6 @@ suite('FlagsDisabled', function() {
     assertEquals(url, loadTimeData.getString('chromeRootStoreHelpCenterURL'));
   });
 
-  // <if expr="not chromeos_lacros">
-  // TODO(crbug.com/40156980): This class directly calls
-  // `CreateNSSCertDatabaseGetterForIOThread()` that causes crash at the
-  // moment and is never called from Lacros-Chrome. This should be revisited
-  // when there is a solution for the client certificates settings page on
-  // Lacros-Chrome.
   test('LogManageCertificatesClick', async function() {
     page.shadowRoot!.querySelector<HTMLElement>(
                         '#manageCertificatesLinkRow')!.click();
@@ -404,25 +395,43 @@ suite('FlagsDisabled', function() {
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.MANAGE_CERTIFICATES, result);
   });
-  // </if>
 
   test('ManageSecurityKeysSubpageHidden', function() {
     assertFalse(isChildVisible(page, '#security-keys-subpage-trigger'));
   });
 
-  // The element only exists on Windows.
+  // On modern versions of Windows the security keys subpage will be disabled
+  // because Windows manages that itself, but a link to the subpage for
+  // managing phones as security keys will be included when hybrid linking is
+  // enabled.
+  // TODO(crbug.com/372493822): remove these tests when hybrid linking flag is
+  // removed.
   // <if expr="is_win">
-  test('ManageSecurityKeysPhonesSubpageVisibleAndNavigates', function() {
-    // On modern versions of Windows the security keys subpage will be disabled
-    // because Windows manages that itself, but a link to the subpage for
-    // managing phones as security keys will be included.
-    const triggerId = '#security-keys-phones-subpage-trigger';
-    assertTrue(isChildVisible(page, triggerId));
-    page.shadowRoot!.querySelector<HTMLElement>(triggerId)!.click();
-    flush();
-    assertEquals(
-        routes.SECURITY_KEYS_PHONES, Router.getInstance().getCurrentRoute());
-  });
+  test(
+      'ManageSecurityKeysPhonesSubpage_HybridLinkingEnabled', async function() {
+        loadTimeData.overrideValues({enableSecurityKeysManagePhones: true});
+        await createPage();
+        resetRouterForTesting();
+
+        const triggerId = '#security-keys-phones-subpage-trigger';
+        assertTrue(isChildVisible(page, triggerId));
+        page.shadowRoot!.querySelector<HTMLElement>(triggerId)!.click();
+        flush();
+        assertEquals(
+            routes.SECURITY_KEYS_PHONES,
+            Router.getInstance().getCurrentRoute());
+      });
+
+  test(
+      'ManageSecurityKeysPhonesSubpage_HybridLinkingDisabled',
+      async function() {
+        loadTimeData.overrideValues({enableSecurityKeysManagePhones: false});
+        await createPage();
+        resetRouterForTesting();
+
+        const triggerId = '#security-keys-phones-subpage-trigger';
+        assertFalse(isChildVisible(page, triggerId));
+      });
   // </if>
 
   // Tests the old HTTPS-Only Mode toggle UI.
@@ -594,6 +603,32 @@ suite('FlagsDisabled', function() {
         assertTrue(page.$.safeBrowsingStandard.expanded);
         assertTrue(isChildVisible(page, '#safeBrowsingReportingToggle'));
       });
+
+  // TODO(crbug.com/372743989): Remove the test once the EsbAiStringUpdate is
+  // fully launched. This tests the old string before the AI addition to the
+  // description.
+  test('EnhancedProtectionTextIsRendered', async () => {
+    const enhancedProtection = page.$.safeBrowsingEnhanced;
+    const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
+    assertEquals(epSubLabel, enhancedProtection.subLabel);
+
+    page.$.safeBrowsingEnhanced.click();
+    await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
+    // Learn more label should be visible.
+    assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
+  });
+
+  // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove is
+  // launched.
+  test('PasswordLeakToggleNotMoved', function() {
+    assertFalse(loadTimeData.getBoolean('enablePasswordLeakToggleMove'));
+    // Check that the password leak toggle is still under the safe browsing
+    // radio group.
+    assertTrue(isChildVisible(page, '#passwordsLeakToggleOld'));
+    // Check that the password leak toggle is not visible in the new section.
+    assertFalse(isChildVisible(page, '#passwordsLeakToggle'));
+  });
+
 });
 
 // Separate test suite for tests specifically related to Safe Browsing controls.
@@ -641,8 +676,27 @@ suite('SafeBrowsing', function() {
     assertTrue(page.$.safeBrowsingStandard.expanded);
   });
 
-  test('PasswordsLeakDetectionSubLabel', function() {
-    const toggle = page.$.passwordsLeakToggle;
+  // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove is
+  // launched.
+  test('PasswordLeakToggleMoved', function() {
+    assertTrue(loadTimeData.getBoolean('enablePasswordLeakToggleMove'));
+    // Check that the password leak toggle is no longer under the safebrowsing
+    // radio group.
+    assertFalse(isChildVisible(page, '#passwordsLeakToggleOld'));
+    // Check that the password leak toggle is still visible on the page but now
+    // in the new section.
+    assertTrue(isChildVisible(page, '#passwordsLeakToggle'));
+  });
+
+  test('PasswordsLeakDetectionText', function() {
+    const toggle = page.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        '#passwordsLeakToggle');
+    assertTrue(!!toggle);
+
+    const passwordLeakLabel =
+        loadTimeData.getString('passwordsLeakDetectionLabel');
+    assertEquals(passwordLeakLabel, toggle.label);
+
     const defaultSubLabel =
         loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
     const activeWhenSignedInSubLabel =
@@ -1001,7 +1055,7 @@ suite('SafeBrowsing', function() {
     assertFalse(page.$.safeBrowsingStandard.expanded);
   });
 
-  test('StandardProtectionDropdown', async () => {
+  test('StandardProtectionText', async () => {
     loadTimeData.overrideValues({enableHashPrefixRealTimeLookups: false});
     resetRouterForTesting();
 
@@ -1009,30 +1063,26 @@ suite('SafeBrowsing', function() {
     const standardProtection = page.$.safeBrowsingStandard;
     const spSubLabel = loadTimeData.getString('safeBrowsingStandardDesc');
     assertEquals(spSubLabel, standardProtection.subLabel);
-
-    const passwordsLeakToggle = page.$.passwordsLeakToggle;
-    const passwordLeakLabel =
-        loadTimeData.getString('passwordsLeakDetectionLabel');
-    assertEquals(passwordLeakLabel, passwordsLeakToggle.label);
-
-    const passwordLeakSubLabel =
-        loadTimeData.getString('passwordsLeakDetectionGeneralDescription');
-    assertEquals(passwordLeakSubLabel, passwordsLeakToggle.subLabel);
   });
 
-  test('EnhancedProtectionText', async () => {
+  // TODO(crbug.com/372743989): Update test when EsbAiStringUpdate is fully
+  // launched.
+  test('EnhancedProtectionTextWithAI', async () => {
     const enhancedProtection = page.$.safeBrowsingEnhanced;
-    const epSubLabel = loadTimeData.getString('safeBrowsingEnhancedDesc');
+    const epSubLabel =
+        loadTimeData.getString('safeBrowsingEnhancedDescUpdated');
     assertEquals(epSubLabel, enhancedProtection.subLabel);
-
-    const noProtection = page.$.safeBrowsingDisabled;
-    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDesc');
-    assertEquals(npSubLabel, noProtection.subLabel);
 
     page.$.safeBrowsingEnhanced.click();
     await eventToPromise('selected-changed', page.$.safeBrowsingRadioGroup);
     // Learn more label should be visible.
     assertTrue(isChildVisible(page, '#learnMoreLabelContainer'));
+  });
+
+  test('NoProtectionText', async () => {
+    const noProtection = page.$.safeBrowsingDisabled;
+    const npSubLabel = loadTimeData.getString('safeBrowsingNoneDesc');
+    assertEquals(npSubLabel, noProtection.subLabel);
   });
 
   test('LearnMoreLinkClickableWhenControlledByPolicy', async () => {
@@ -1150,6 +1200,68 @@ suite('SafeBrowsing', function() {
 
         assertTrue(isChildVisible(page, '#safeBrowsingReportingToggle'));
       });
+
+  // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove
+  // and SBER deprecation is launched.
+  test('StandardProtectionNoCollapse', async function() {
+    // The Standard Protection radio button should not have a dropdown when
+    // these two flags are BOTH enabled and when the PasswordLeakToggleMove
+    // feature is enabled.
+    loadTimeData.overrideValues({
+      extendedReportingRemovePrefDependency: true,
+      hashPrefixRealTimeLookupsSamplePing: true,
+    });
+    resetRouterForTesting();
+
+    await resetPage();
+    assertTrue(page.$.safeBrowsingStandard.noCollapse);
+  });
+
+  // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove
+  // and SBER deprecation is launched.
+  test('StandardProtectionCollapseVisibleCase1', async function() {
+    // The Standard Protection radio button should have a dropdown if any
+    // one of these flags are disabled.
+    loadTimeData.overrideValues({
+      extendedReportingRemovePrefDependency: false,
+      hashPrefixRealTimeLookupsSamplePing: true,
+    });
+    resetRouterForTesting();
+
+    await resetPage();
+    assertFalse(page.$.safeBrowsingStandard.noCollapse);
+  });
+
+  // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove
+  // and SBER deprecation is launched.
+  test('StandardProtectionCollapseVisibleCase2', async function() {
+    // The Standard Protection radio button should have a dropdown if any
+    // one of these flags are disabled.
+    loadTimeData.overrideValues({
+      extendedReportingRemovePrefDependency: true,
+      hashPrefixRealTimeLookupsSamplePing: false,
+    });
+    resetRouterForTesting();
+
+    await resetPage();
+    assertFalse(page.$.safeBrowsingStandard.noCollapse);
+  });
+
+  // TODO(crbug.com/372671916): Remove test once the passwordLeakToggleMove
+  // and SBER deprecation is launched.
+  test('StandardProtectionCollapseVisibleCase3', async function() {
+    // The Standard Protection radio button should have a dropdown if the
+    // PasswordLeakToggleMove is disabled.
+    loadTimeData.overrideValues({
+      extendedReportingRemovePrefDependency: true,
+      hashPrefixRealTimeLookupsSamplePing: true,
+      enablePasswordLeakToggleMove: false,
+    });
+    resetRouterForTesting();
+
+    await resetPage();
+    assertFalse(page.$.safeBrowsingStandard.noCollapse);
+  });
 });
 
 async function clickCancelOnDisableSafebrowsingDialog(

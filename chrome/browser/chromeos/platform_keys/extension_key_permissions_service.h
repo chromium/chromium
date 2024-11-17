@@ -36,6 +36,9 @@ namespace chromeos::platform_keys {
 
 // PlatformKeys is a field stored in each extension's state store. It saves
 // signing permissions of keys in the context of a (Profile, Extension) pair.
+// Those permissions are only relevant for asymmetric keys used for signing
+// requests (i.e. RSASSA-PKCS1-V1_5 and ECDSA). For that reason, keys with other
+// algorithms (e.g. RSA-OAEP) will have no entry in the extension state storage.
 // The current format of data that is written to the PlatformKeys field is a
 // list of serialized KeyEntry objects:
 //   { 'SPKI': string,
@@ -46,48 +49,44 @@ namespace chromeos::platform_keys {
 // Do not change this constant as clients will lose their existing state.
 const char kStateStorePlatformKeys[] = "PlatformKeys";
 
-using CanUseKeyForSigningCallback = base::OnceCallback<void(bool allowed)>;
+using ExtensionKeyPermissionQueryCallback =
+    base::OnceCallback<void(bool allowed)>;
 
-using RegisterKeyForCorporateUsageCallback =
-    base::OnceCallback<void(bool is_error,
-                            crosapi::mojom::KeystoreError error)>;
-
-using SetUserGrantedPermissionCallback =
-    base::OnceCallback<void(bool is_error,
-                            crosapi::mojom::KeystoreError error)>;
-
-using SetKeyUsedForSigningCallback =
+using ExtensionKeyPermissionOperationCallback =
     base::OnceCallback<void(bool is_error,
                             crosapi::mojom::KeystoreError error)>;
 
 // ** ExtensionKeyPermissionsService Responsibility **
-// - Managing signing permissions for a (Profile, Extension) pair.
-// - Answering signing permissions queries for a (Profile, Extension) pair.
+// - Managing usage permissions for a (Profile, Extension) pair.
+// - Answering usage permissions queries for a (Profile, Extension) pair.
+// - Account for the special permissions of signing with asymmetric keys.
 //
 // The permission model depends on whether the user account is managed or not.
 //
 // ** If the user account is not managed **
 // The user is under full control of the keys that are generated or imported
 // while the device is not managed. For that, a user can grant a specific
-// extension the permission to sign arbitrary data with a specific key for an
-// unlimited number of times.
+// extension the permission to sign arbitrary data (e.g. a certificate requests)
+// with a specific asymmetric key for an unlimited number of times. Use cases
+// other than signing arbitrary data using asymmetric keys are currently not
+// supported for unmanaged users. Therefore, the permission will default to
+// `false` in those cases.
 //
 // ** If the user account is managed **
 // The administrator is in charge of granting access to keys that are meant for
-// corporate usage.
-// The KeyPermissions policy allows the administrator to list exactly the
-// extensions that are allowed to use corporate keys. Non-corporate keys are not
-// affected.
+// corporate usage. The KeyPermissions policy allows the administrator to list
+// exactly the extensions that are allowed to use corporate keys. Non-corporate
+// keys are not affected.
 //
 // ** One-off Permission for the Certification Requests **
-// Independent of the above, the extension that generates a key using the
-// chrome.enterprise.platformKeys API is allowed to sign arbitrary data with the
-// private key for a single time in order to create a certification request.
-// The assumption is that certification requests usually require a signature of
-// data including the public key. So the one-off permission implies that once a
-// certificate authority creates the certificate of the generated key, the
-// generating extension isn't able to use the key anymore except if explicitly
-// permitted by the administrator.
+// Independent of the above, the extension that generates an asymmetric key with
+// type RSASSA-PKCS1-V1_5 or ECDSA using the chrome.enterprise.platformKeys API
+// is allowed to sign arbitrary data with the private key for a single time in
+// order to create a certification request. The assumption is that certification
+// requests usually require a signature of data including the public key. So,
+// the one-off permission implies that, once a certificate authority creates the
+// certificate of the generated key, the generating extension isn't able to use
+// the key anymore, except if explicitly permitted by the administrator.
 //
 // ** IMPORTANT: Synchronization / Possible Race Conditions **
 // This class reads from the extensions::StateStore only once on creation and
@@ -116,36 +115,36 @@ class ExtensionKeyPermissionsService {
       const ExtensionKeyPermissionsService&) = delete;
   ~ExtensionKeyPermissionsService();
 
-  // Returns true if the private key matching |public_key_spki_der| can be
-  // used for signing by the extension with id |extension_id_|.
-  // |key_locations| must describe locations available to the user the private
-  // key is stored on.
-  void CanUseKeyForSigning(const std::vector<uint8_t>& public_key_spki_der,
-                           CanUseKeyForSigningCallback callback);
+  // Returns true if the private key matching `public_key_spki_der` can be used
+  // by the extension with id `extension_id_`. This method also takes into
+  // account the particular case of signing with an asymmetric key, by checking
+  // the extension's state store entry (if present).
+  void CanUseKey(const std::vector<uint8_t>& public_key_spki_der,
+                 ExtensionKeyPermissionQueryCallback callback);
 
   // Must be called when the extension with id |extension_id| used the private
-  // key matching |public_key_spki_der| for signing. |key_locations| must
-  // describe locations available to the user the private key is stored on.
-  // Updates the permissions accordingly.  E.g. if this extension generated
-  // the key and no other permission was granted then the permission to sign
-  // with this key is removed.
+  // key matching |public_key_spki_der| for signing. Updates the permissions
+  // accordingly. E.g. if this extension generated the key and no other
+  // permission was granted then the permission to sign with this key is
+  // removed.
   void SetKeyUsedForSigning(const std::vector<uint8_t>& public_key_spki_der,
-                            SetKeyUsedForSigningCallback callback);
+                            ExtensionKeyPermissionOperationCallback callback);
 
-  // Registers the private key matching |public_key_spki_der| as being generated
-  // by the extension with id |extension_id| and marks it for corporate usage.
-  // |key_locations| must describe locations available to the user the private
-  // key is stored on.
+  // Marks the private key matching |public_key_spki_der| as corporate.
   void RegisterKeyForCorporateUsage(
       const std::vector<uint8_t>& public_key_spki_der,
-      RegisterKeyForCorporateUsageCallback callback);
+      ExtensionKeyPermissionOperationCallback callback);
 
-  // Sets the user granted permission that the extension with id
-  // |extension_id| can use the private key matching |public_key_spki_der| for
-  // signing. |key_locations| must describe locations available to the user
-  // the private key is stored on.
-  void SetUserGrantedPermission(const std::vector<uint8_t>& public_key_spki_der,
-                                SetUserGrantedPermissionCallback callback);
+  // Registers that the private key matching |public_key_spki_der| is permitted
+  // to sign arbitrary content once by the extension with id |extension_id|.
+  void RegisterOneTimeSigningPermissionForKey(
+      const std::vector<uint8_t>& public_key_spki_der);
+
+  // Sets the user granted permission that the extension with id |extension_id|
+  // can use the private key matching |public_key_spki_der| for signing.
+  void SetUserGrantedPermission(
+      const std::vector<uint8_t>& public_key_spki_der,
+      ExtensionKeyPermissionOperationCallback callback);
 
   // Returns the list of apps and extensions ids allowed to use corporate usage
   // keys by policy in |profile_policies|.
@@ -168,9 +167,10 @@ class ExtensionKeyPermissionsService {
     bool sign_once = false;
 
     // True if the key can be used for signing an unlimited number of times.
-    // This permission is granted by the user to allow the extension to use the
-    // key for signing through the enterprise.platformKeys or platformKeys API.
-    // This permission is granted until revoked by the user or the policy.
+    // This permission is granted by the user or by admin policy to allow the
+    // extension to use the key for signing through the enterprise.platformKeys
+    // or platformKeys API. This permission is granted until revoked by the user
+    // or the policy.
     bool sign_unlimited = false;
   };
 
@@ -200,14 +200,13 @@ class ExtensionKeyPermissionsService {
 
   bool PolicyAllowsCorporateKeyUsage() const;
 
-  void CanUseKeyForSigningWithFlags(
-      CanUseKeyForSigningCallback callback,
-      bool sign_unlimited_allowed,
-      crosapi::mojom::GetKeyTagsResultPtr key_tags);
+  void CanUseKeyWithFlags(ExtensionKeyPermissionQueryCallback callback,
+                          bool sign_unlimited_allowed,
+                          crosapi::mojom::GetKeyTagsResultPtr key_tags);
 
   void SetUserGrantedPermissionWithFlag(
       const std::vector<uint8_t>& public_key_spki_der,
-      SetUserGrantedPermissionCallback callback,
+      ExtensionKeyPermissionOperationCallback callback,
       bool can_user_grant_permission);
 
   const extensions::ExtensionId extension_id_;

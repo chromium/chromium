@@ -52,7 +52,10 @@ static_library("handlers") {
     "tpm_auto_update_mode_policy_handler.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/upgrade_detector:build_state_observer",
+  ]
 
   deps = [
     "//ash",
@@ -188,6 +191,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/ash/tpm",
     "//chrome/browser/extensions",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/shelf",
     "//chrome/common:chrome_features",

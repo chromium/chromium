@@ -10,6 +10,7 @@
 #include "base/containers/queue.h"
 #include "base/containers/small_map.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -176,7 +177,9 @@ class MEDIA_GPU_EXPORT MailboxVideoFrameConverter final
   // the unwrapped FrameResources so that they can be used even after
   // MailboxVideoFrameConverter dies (e.g., there may still be compositing
   // commands that need the shared images).
-  base::small_map<std::map<UniqueID, ScopedSharedImage*>> shared_images_;
+  base::small_map<
+      std::map<UniqueID, raw_ptr<ScopedSharedImage, CtnExperimental>>>
+      shared_images_;
 
   // The queue of input frames and the unique_id of their origin frame.
   // Accessed only on |parent_task_runner_|.

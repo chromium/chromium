@@ -8,12 +8,24 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_geometry.proto";
+import "lens_overlay_interaction_request_metadata.proto";
 import "lens_overlay_visual_search_interaction_log_data.proto";
 
 // Metadata associated with a Lens Visual Search request.
 message LensOverlayVisualSearchInteractionData {
+  // The type of interaction.
+  LensOverlayInteractionRequestMetadata.Type interaction_type = 1;
+
+  // The selected region for this interaction, instead of the object id.
+  ZoomedCrop zoomed_crop = 7;
+
+  // The selected object id for this interaction, instead of the zoomed crop.
+  // Currently unsupported and should not be populated.
+  string object_id = 3;
+
   // Logging-specific data.
   LensOverlayVisualSearchInteractionLogData log_data = 5;
 
-  reserved 1, 2, 3, 4, 6;
+  reserved 2, 4, 6;
 }

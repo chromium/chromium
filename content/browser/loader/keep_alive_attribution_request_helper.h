@@ -18,6 +18,10 @@
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "url/gurl.h"
 
+namespace attribution_reporting {
+enum class AttributionSrcRequestStatus;
+}  // namespace attribution_reporting
+
 namespace net {
 class HttpResponseHeaders;
 }  // namespace net
@@ -56,13 +60,20 @@ class CONTENT_EXPORT KeepAliveAttributionRequestHelper {
   void OnReceiveRedirect(const net::HttpResponseHeaders* headers,
                          const GURL& redirect_url);
   void OnReceiveResponse(const net::HttpResponseHeaders* headers);
+  void OnError();
 
  private:
   friend class KeepAliveAttributionRequestHelperTestPeer;
 
   KeepAliveAttributionRequestHelper(BackgroundRegistrationsId,
                                     AttributionDataHostManager*,
-                                    const GURL& reporting_url);
+                                    const GURL& reporting_url,
+                                    bool is_navigation_tied);
+
+  void RecordAttributionSrcRequestStatus(
+      attribution_reporting::AttributionSrcRequestStatus);
+
+  void OnComplete();
 
   BackgroundRegistrationsId id_;
 
@@ -72,6 +83,13 @@ class CONTENT_EXPORT KeepAliveAttributionRequestHelper {
   // might be suitable or not, if it is not, when receiving a response, it will
   // be ignored.
   GURL reporting_url_;
+
+  // Whether the keep alive request is tied with a navigation.
+  bool is_navigation_tied_ = false;
+
+  // Whether the keep alive request has been ever redirected, updated at the
+  // first redirect if there's a chain of multiple redirects.
+  bool redirected_ = false;
 };
 
 }  // namespace content

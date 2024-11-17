@@ -92,6 +92,9 @@ if (is_android) {
     } else {
       android_static_analysis = "on"
     }
+
+    # Enables teamfooding of new experimental build_server changes.
+    experimental_build_server = false
   }
 
   # Our build system no longer supports legacy multidex.
@@ -135,10 +138,10 @@ if (is_android) {
   public_android_sdk_root = "//third_party/android_sdk/public"
   public_android_sdk_build_tools =
       "${public_android_sdk_root}/build-tools/35.0.0"
-  public_android_sdk_version = "35"
+  public_android_sdk_platform_version = "35"
   if (android_sdk_release == "v") {
     default_android_sdk_root = public_android_sdk_root
-    default_android_sdk_version = public_android_sdk_version
+    default_android_sdk_platform_version = public_android_sdk_platform_version
     default_android_sdk_build_tools_version = "35.0.0"
     public_android_sdk = true
   }
@@ -152,7 +155,7 @@ if (is_android) {
     # Purposefully repeated so that downstream can change
     # default_android_sdk_root without changing lint version.
     default_lint_android_sdk_root = public_android_sdk_root
-    default_lint_android_sdk_version = 35
+    default_lint_android_sdk_version = public_android_sdk_platform_version
   }
 
   if (!defined(default_extras_android_sdk_root)) {
@@ -207,8 +210,8 @@ if (is_android) {
     }
 
     android_sdk_root = default_android_sdk_root
-    android_sdk_version = default_android_sdk_version
     android_sdk_build_tools_version = default_android_sdk_build_tools_version
+    android_sdk_platform_version = default_android_sdk_platform_version
 
     lint_android_sdk_root = default_lint_android_sdk_root
     lint_android_sdk_version = default_lint_android_sdk_version
@@ -308,11 +311,8 @@ if (is_android) {
   # We need a second declare_args block to make sure we are using the overridden
   # value of the arguments set above.
   declare_args() {
-    if (defined(default_android_sdk_platform_version)) {
-      android_sdk_platform_version = default_android_sdk_platform_version
-    } else {
-      android_sdk_platform_version = android_sdk_version
-    }
+    # Default value for targetSdkVersion for APK and bundle targets.
+    default_target_sdk_version = "34"
 
     # Whether java assertions and Preconditions checks are enabled.
     enable_java_asserts = dcheck_always_on || !is_official_build
@@ -342,7 +342,9 @@ if (is_android) {
 
   # Defines the name the Android build gives to the current host CPU
   # architecture, which is different than the names GN uses.
-  if (host_cpu == "x64") {
+  if (host_cpu == "x64" || host_cpu == "arm64") {
+    # Android toolchain on Mac supports both ARM64 and x64 architectures
+    # despite the x86_64 tag in the Darwin name.
     android_host_arch = "x86_64"
   } else if (host_cpu == "x86") {
     android_host_arch = "x86"
@@ -440,6 +442,24 @@ if (is_android) {
 
   javac_paths_for_inputs =
       [ "//third_party/jdk/current/bin/javac" ] + _common_inputs_for_jre_jdk
+
+  kotlinc_paths_for_inputs = [
+    "//third_party/kotlinc",
+    "//third_party/kotlinc/current/bin/kotlinc",
+    "//third_party/kotlinc/current/lib/jvm-abi-gen.jar",
+    "//third_party/kotlinc/current/lib/annotations-13.0.jar",
+    "//third_party/kotlinc/current/lib/kotlin-compiler.jar",
+    "//third_party/kotlinc/current/lib/kotlin-preloader.jar",
+    "//third_party/kotlinc/current/lib/kotlin-reflect.jar",
+    "//third_party/kotlinc/current/lib/kotlin-script-runtime.jar",
+    "//third_party/kotlinc/current/lib/kotlin-scripting-common.jar",
+    "//third_party/kotlinc/current/lib/kotlin-scripting-compiler-impl.jar",
+    "//third_party/kotlinc/current/lib/kotlin-scripting-compiler.jar",
+    "//third_party/kotlinc/current/lib/kotlin-scripting-jvm.jar",
+    "//third_party/kotlinc/current/lib/kotlin-stdlib.jar",
+    "//third_party/kotlinc/current/lib/kotlinx-coroutines-core-jvm.jar",
+    "//third_party/kotlinc/current/lib/trove4j.jar",
+  ]
 
   # TODO(crbug.com/40261378): Remove.
   use_upstream_errorprone_annotations_threadsafe = true

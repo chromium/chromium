@@ -45,16 +45,12 @@
 #include "chromeos/ash/components/login/auth/public/recovery_types.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_type.h"
 
 namespace ash {
 
 namespace {
-
-bool IsKioskUserType(user_manager::UserType type) {
-  return type == user_manager::UserType::kKioskApp ||
-         type == user_manager::UserType::kWebKioskApp;
-}
 
 user_data_auth::AuthIntent SerializeIntent(AuthSessionIntent intent) {
   switch (intent) {
@@ -202,7 +198,7 @@ void AuthPerformer::AuthenticateUsingKnowledgeKey(
     AuthOperationCallback callback) {
   DCHECK(context->GetChallengeResponseKeys().empty());
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
 
   if (context->GetKey()->GetKeyType() == Key::KEY_TYPE_PASSWORD_PLAIN) {
@@ -290,7 +286,7 @@ void AuthPerformer::AuthenticateUsingChallengeResponseKey(
     AuthOperationCallback callback) {
   DCHECK(!context->GetChallengeResponseKeys().empty());
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
   LOGIN_LOG(EVENT) << "Authenticating using challenge-response";
 
@@ -323,7 +319,7 @@ void AuthPerformer::AuthenticateWithPassword(
   DCHECK(!password.empty()) << "Caller should check for empty password";
   DCHECK(!key_label.empty()) << "Caller should provide correct label";
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
 
   const SessionAuthFactors& auth_factors = context->GetAuthFactorsData();
@@ -364,7 +360,7 @@ void AuthPerformer::AuthenticateWithPin(const std::string& pin,
   DCHECK(!pin.empty()) << "Caller should check for empty PIN";
   DCHECK(!pin_salt.empty()) << "Client code should provide correct salt";
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
 
   // Use Key until proper migration to AuthFactors API.
@@ -448,7 +444,7 @@ void AuthPerformer::AuthenticateWithLegacyFingerprint(
 void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
                                         AuthOperationCallback callback) {
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
 
   LOGIN_LOG(EVENT) << "Authenticating as Kiosk";
@@ -479,7 +475,7 @@ void AuthPerformer::AuthenticateAsKiosk(std::unique_ptr<UserContext> context,
 void AuthPerformer::GetAuthSessionStatus(std::unique_ptr<UserContext> context,
                                          AuthSessionStatusCallback callback) {
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
 
   LOGIN_LOG(EVENT) << "Requesting authsession status";
@@ -497,8 +493,7 @@ void AuthPerformer::ExtendAuthSessionLifetime(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
-    return;
+    NOTREACHED() << "Auth session should exist";
   }
   LOGIN_LOG(EVENT) << "Requesting authsession lifetime extension";
   user_data_auth::ExtendAuthSessionRequest request;
@@ -519,7 +514,7 @@ void AuthPerformer::GetRecoveryRequest(
     std::unique_ptr<UserContext> context,
     RecoveryRequestCallback callback) {
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
 
   LOGIN_LOG(EVENT) << "Obtaining RecoveryRequest";
@@ -563,7 +558,7 @@ void AuthPerformer::AuthenticateWithRecovery(
     std::unique_ptr<UserContext> context,
     AuthOperationCallback callback) {
   if (context->GetAuthSessionId().empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
 
   LOGIN_LOG(EVENT) << "Authenticating via Recovery";
@@ -612,7 +607,7 @@ void AuthPerformer::OnStartAuthSession(
   std::vector<cryptohome::AuthFactor> next_factors;
   cryptohome::AuthFactorType fallback_type =
       cryptohome::AuthFactorType::kPassword;
-  if (IsKioskUserType(context->GetUserType())) {
+  if (user_manager::User::TypeIsKiosk(context->GetUserType())) {
     fallback_type = cryptohome::AuthFactorType::kKiosk;
   }
 

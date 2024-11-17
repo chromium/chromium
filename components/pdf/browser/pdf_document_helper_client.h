@@ -35,6 +35,9 @@ class PDFDocumentHelperClient {
   // Lets the client observe scroll events. Only used for testing.
   virtual void OnDidScroll(const gfx::SelectionBound& start,
                            const gfx::SelectionBound& end) {}
+
+  // Notifies that PDF searchifier started processing pages.
+  virtual void OnSearchifyStarted(content::WebContents* contents) = 0;
 };
 
 }  // namespace pdf

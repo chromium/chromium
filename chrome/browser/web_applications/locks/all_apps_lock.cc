@@ -15,9 +15,12 @@ AllAppsLockDescription::AllAppsLockDescription(AllAppsLockDescription&&) =
     default;
 AllAppsLockDescription::~AllAppsLockDescription() = default;
 
-AllAppsLock::AllAppsLock(base::WeakPtr<WebAppLockManager> lock_manager,
-                         std::unique_ptr<PartitionedLockHolder> holder)
-    : Lock(std::move(holder), lock_manager), WithAppResources(lock_manager) {}
+AllAppsLock::AllAppsLock() = default;
 AllAppsLock::~AllAppsLock() = default;
+
+void AllAppsLock::GrantLock(WebAppLockManager& lock_manager) {
+  GrantLockResources(lock_manager);
+  GrantWithAppResources(lock_manager);
+}
 
 }  // namespace web_app

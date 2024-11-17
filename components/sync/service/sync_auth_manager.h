@@ -41,7 +41,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
  public:
   // Called when the existence of an authenticated account changes. It's
   // guaranteed that this is only called for going from "no account" to "have
-  // account" or vice versa, or if the existing account's |is_primary| bit
+  // account" or vice versa, or if the existing account's `is_primary` bit
   // changed. I.e. SyncAuthManager will never directly switch from one account
   // to a different one. Call GetActiveAccountInfo to get the new state.
   using AccountStateChangedCallback = base::RepeatingClosure;
@@ -49,7 +49,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   // added/changed/removed. Call GetCredentials to get the new state.
   using CredentialsChangedCallback = base::RepeatingClosure;
 
-  // |identity_manager| may be null (this is the case if local Sync is enabled),
+  // `identity_manager` may be null (this is the case if local Sync is enabled),
   // but if non-null, must outlive this object.
   SyncAuthManager(signin::IdentityManager* identity_manager,
                   const AccountStateChangedCallback& account_state_changed,
@@ -130,7 +130,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
  private:
   SyncAccountInfo DetermineAccountToUse() const;
 
-  // Updates |sync_account_| to the appropriate account (i.e.
+  // Updates `sync_account_` to the appropriate account (i.e.
   // DetermineAccountToUse) if necessary, and notifies observers of any changes
   // (sign-in/sign-out/"primary" bit change). Note that changing from one
   // account to another is exposed to observers as a sign-out + sign-in.
@@ -148,7 +148,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   void ClearAccessTokenAndRequest();
 
   // Schedules a request for an access token according to the current
-  // |request_access_token_backoff_|. Usually called after some transient error.
+  // `request_access_token_backoff_`. Usually called after some transient error.
   void ScheduleAccessTokenRequest();
 
   // Immediately starts an access token request, unless one is already ongoing.
@@ -156,7 +156,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   // we currently have is invalidated.
   void RequestAccessToken();
 
-  // Callback for |ongoing_access_token_fetch_|.
+  // Callback for `ongoing_access_token_fetch_`.
   void AccessTokenFetched(GoogleServiceAuthError error,
                           signin::AccessTokenInfo access_token_info);
 
@@ -187,7 +187,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
   bool connection_open_ = false;
 
   // The current access token. This is mutually exclusive with
-  // |ongoing_access_token_fetch_| and |request_access_token_retry_timer_|:
+  // `ongoing_access_token_fetch_` and `request_access_token_retry_timer_`:
   // We have at most one of a) an access token OR b) a pending request OR c) a
   // pending retry i.e. a scheduled request.
   std::string access_token_;
@@ -203,7 +203,7 @@ class SyncAuthManager : public signin::IdentityManager::Observer {
 
   // Info about the state of our access token, for display in the internals UI.
   // "Partial" because this instance is not fully populated - in particular,
-  // |has_token| and |next_token_request_time| get computed on demand.
+  // `has_token` and `next_token_request_time` get computed on demand.
   SyncTokenStatus partial_token_status_;
 
   // Whether there was a retry done to fetch the access token when the request

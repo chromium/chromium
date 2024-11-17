@@ -3,7 +3,7 @@
   "importMapBaseURL": "https://base.example/",
   "tests": {
     "should throw for top-level non-objects": {
-      "expectedParsedImportMap": null,
+      "expectedParsedImportMap": { "imports":{}, "scopes":{}, "integrity": {} },
       "tests": {
         "null": {
           "importMap": null
@@ -23,7 +23,7 @@
       }
     },
     "should throw if imports is a non-object": {
-      "expectedParsedImportMap": null,
+      "expectedParsedImportMap": { "imports":{}, "scopes":{}, "integrity": {} },
       "tests": {
         "null": {
           "importMap": {
@@ -53,7 +53,7 @@
       }
     },
     "should throw if scopes is a non-object": {
-      "expectedParsedImportMap": null,
+      "expectedParsedImportMap": { "imports":{}, "scopes":{}, "integrity": {} },
       "tests": {
         "null": {
           "importMap": {

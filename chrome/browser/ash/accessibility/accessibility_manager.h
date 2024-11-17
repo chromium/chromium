@@ -183,6 +183,9 @@ class AccessibilityManager
   // Returns true if the Sticky Keys is enabled, or false if not.
   bool IsStickyKeysEnabled() const;
 
+  // Returns true if the built-in touchpad is disabled, or false if not.
+  bool IsTouchpadDisabled() const;
+
   // Enables or disables spoken feedback. Enabling spoken feedback installs the
   // ChromeVox component extension.
   void EnableSpokenFeedback(bool enabled);
@@ -211,6 +214,12 @@ class AccessibilityManager
 
   // Returns true if ReducedAnimations is enabled.
   bool IsReducedAnimationsEnabled() const;
+
+  // Enables or disables overlay scrollbar.
+  void EnableOverlayScrollbar(bool enabled);
+
+  // Returns true if overlay scrollbar is enabled.
+  bool IsOverlayScrollbarEnabled() const;
 
   // Enables or disables FaceGaze.
   void EnableFaceGaze(bool enabled);
@@ -458,7 +467,8 @@ class AccessibilityManager
   void SendSyntheticMouseEvent(ui::EventType type,
                                int flags,
                                int changed_button_flags,
-                               gfx::Point location_in_screen);
+                               gfx::Point location_in_screen,
+                               bool use_rewriters);
 
   // Looks up the action key that translates to F7 for caret browsing dialog.
   std::optional<ui::KeyboardCode> GetCaretBrowsingActionKey();
@@ -563,6 +573,7 @@ class AccessibilityManager
   void OnSelectToSpeakChanged();
   void OnAccessibilityCommonChanged(const std::string& pref_name);
   void OnSwitchAccessChanged();
+  void OnReducedAnimationsChanged() const;
   void OnFocusChangedInPage(const content::FocusedNodeDetails& details);
   // |triggered_by_user| is false when Dictation pref is changed at startup,
   // and true if Dictation enabled changed because the user changed their

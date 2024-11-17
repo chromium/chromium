@@ -13,33 +13,31 @@ namespace ui_devtools {
 RootElement::RootElement(UIElementDelegate* ui_element_delegate)
     : UIElement(UIElementType::ROOT, ui_element_delegate, nullptr) {}
 
-RootElement::~RootElement() {}
+RootElement::~RootElement() = default;
 
 void RootElement::GetBounds(gfx::Rect* bounds) const {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RootElement::SetBounds(const gfx::Rect& bounds) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RootElement::GetVisible(bool* visible) const {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RootElement::SetVisible(bool visible) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::vector<std::string> RootElement::GetAttributes() const {
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 std::pair<gfx::NativeWindow, gfx::Rect>
 RootElement::GetNodeWindowAndScreenBounds() const {
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 }  // namespace ui_devtools

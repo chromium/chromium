@@ -43,13 +43,16 @@ if (!is_android && !is_ios) {
       public_deps = [ "//ui/base/mojom:ui_base_types" ]
 
       deps += [
+        "//components/language/core/common",
         "//components/strings",
+        "//components/translate/core/browser",
         "//components/vector_icons",
         "//third_party/re2",
         "//ui/accessibility",
         "//ui/base",
         "//ui/compositor",
         "//ui/gfx",
+        "//ui/menus",
         "//ui/strings:ui_strings_grit",
         "//ui/views",
       ]
@@ -76,6 +79,8 @@ if (!is_android && !is_ios) {
       "greedy_text_stabilizer.h",
       "live_translate_controller.cc",
       "live_translate_controller.h",
+      "translation_dispatcher.cc",
+      "translation_dispatcher.h",
     ]
 
     deps = [
@@ -105,10 +110,6 @@ if (!is_android && !is_ios) {
 
     sources = [ "greedy_text_stabilizer_unittest.cc" ]
 
-    if (is_chromeos_ash) {
-      sources += [ "caption_bubble_context_remote_unittest.cc" ]
-    }
-
     deps = [
       ":live_caption",
       ":live_translate",
@@ -120,6 +121,27 @@ if (!is_android && !is_ios) {
       "//testing/gtest",
       "//ui/gfx/geometry:geometry",
     ]
+
+    if (is_chromeos_ash) {
+      sources += [
+        "caption_bubble_context_remote_unittest.cc",
+
+        # This test verifies behavior of the controller
+        # in an ash environment and requires ash dependencies.
+        "live_caption_controller_unittest.cc",
+      ]
+
+      deps += [
+        ":constants",
+        "//ash/constants",
+        "//components/pref_registry",
+        "//components/prefs",
+        "//components/prefs:test_support",
+        "//components/soda",
+        "//components/soda:constants",
+        "//ui/views",
+      ]
+    }
   }
 }  # !is_android
 

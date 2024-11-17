@@ -60,8 +60,7 @@ viz::SharedImageFormat DXGIFormatToMultiPlanarSharedImageFormat(
     case DXGI_FORMAT_R16G16B16A16_FLOAT:
       return viz::SinglePlaneFormat::kRGBA_F16;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return viz::SinglePlaneFormat::kBGRA_8888;
+      NOTREACHED();
   }
 }
 
@@ -201,13 +200,14 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
       gpu::SHARED_IMAGE_USAGE_GLES2_READ | gpu::SHARED_IMAGE_USAGE_RASTER_READ |
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
+  HRESULT hr = S_OK;
   scoped_refptr<gpu::DXGISharedHandleState> dxgi_shared_handle_state;
   D3D11_TEXTURE2D_DESC desc = {};
   texture->GetDesc(&desc);
   // Create shared handle for shareable output texture.
   if (desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE) {
     ComDXGIResource1 dxgi_resource;
-    HRESULT hr = texture.As(&dxgi_resource);
+    hr = texture.As(&dxgi_resource);
     if (FAILED(hr)) {
       DLOG(ERROR) << "QueryInterface for IDXGIResource failed with error "
                   << std::hex << hr;
@@ -235,7 +235,16 @@ DefaultTexture2DWrapper::GpuResources::GpuResources(
             ->CreateAnonymousSharedHandleState(
                 base::win::ScopedHandle(shared_handle), texture);
   }
+
+  Microsoft::WRL::ComPtr<ID3D11Multithread> multi_threaded;
+  hr = video_device.As(&multi_threaded);
+  CHECK_EQ(hr, S_OK);
+
+  // When |video_device| has multi-thread protection turned on, SkiaGraphite
+  // is ensured to be enabled. However we don't need to enable locking on the
+  // shared image if media service runs on main thread.
   const bool is_thread_safe =
+      multi_threaded->GetMultithreadProtected() &&
       IsDedicatedMediaServiceThreadEnabled(gl::ANGLEImplementation::kD3D11);
 
   gpu::SharedImageInfo si_info{

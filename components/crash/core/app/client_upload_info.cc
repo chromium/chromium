@@ -17,7 +17,11 @@ bool GetClientCollectStatsConsent() {
 void GetClientProductNameAndVersion(std::string* product,
                                     std::string* version,
                                     std::string* channel) {
-  GetCrashReporterClient()->GetProductNameAndVersion(product, version, channel);
+  CrashReporterClient::ProductInfo product_info;
+  GetCrashReporterClient()->GetProductInfo(&product_info);
+  *product = product_info.product_name;
+  *version = product_info.version;
+  *channel = product_info.channel;
 }
 #endif
 

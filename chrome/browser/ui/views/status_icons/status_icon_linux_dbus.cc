@@ -35,12 +35,13 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/menu_separator_types.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/linux/status_icon_linux.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace {
 
@@ -123,7 +124,8 @@ auto MakeDbusImage(const gfx::ImageSkia& image) {
   }
   return MakeDbusArray(MakeDbusStruct(
       DbusInt32(width), DbusInt32(height),
-      DbusByteArray(base::RefCountedBytes::TakeVector(&color_data))));
+      DbusByteArray(
+          base::MakeRefCounted<base::RefCountedBytes>(std::move(color_data)))));
 }
 
 auto MakeDbusToolTip(const std::string& text) {
@@ -420,7 +422,7 @@ void StatusIconLinuxDbus::OnContextMenu(
   }
   menu_runner_->RunMenuAt(
       nullptr, nullptr, gfx::Rect(gfx::Point(x, y), gfx::Size()),
-      views::MenuAnchorPosition::kTopRight, ui::MENU_SOURCE_MOUSE);
+      views::MenuAnchorPosition::kTopRight, ui::mojom::MenuSourceType::kMouse);
   std::move(sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 

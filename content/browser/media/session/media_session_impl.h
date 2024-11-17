@@ -52,6 +52,7 @@ class MediaSessionImplVisibilityBrowserTest;
 class MediaSessionPlayerObserver;
 class MediaSessionServiceImpl;
 class MediaSessionServiceImplBrowserTest;
+class VideoPictureInPictureWindowControllerImpl;
 
 #if BUILDFLAG(IS_ANDROID)
 class MediaSessionAndroid;
@@ -350,6 +351,10 @@ class MediaSessionImpl : public MediaSession,
   // Returns the Audio Focus request ID associated with this media session.
   const base::UnguessableToken& GetRequestId() const;
 
+  // Flushes the VideoPictureInPictureWindowControllerImpl with the latest data.
+  void UpdateVideoPictureInPictureWindowController(
+      VideoPictureInPictureWindowControllerImpl* pip_controller) const;
+
   // Returns a WeakPtr to `this`.
   base::WeakPtr<MediaSessionImpl> GetWeakPtr();
 
@@ -622,7 +627,8 @@ class MediaSessionImpl : public MediaSession,
 
   // MediaSessionService-related fields
   using ServicesMap =
-      std::map<GlobalRenderFrameHostId, MediaSessionServiceImpl*>;
+      std::map<GlobalRenderFrameHostId,
+               raw_ptr<MediaSessionServiceImpl, CtnExperimental>>;
 
   // The current metadata and images associated with the current media session.
   media_session::MediaMetadata metadata_;

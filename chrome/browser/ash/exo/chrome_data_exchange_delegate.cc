@@ -79,9 +79,6 @@ ui::EndpointType ChromeDataExchangeDelegate::GetDataTransferEndpointType(
     return ui::EndpointType::kBorealis;
   }
 
-  if (crosapi::browser_util::IsLacrosWindow(top_level_window))
-    return ui::EndpointType::kLacros;
-
   if (crostini::IsCrostiniWindow(top_level_window))
     return ui::EndpointType::kCrostini;
 

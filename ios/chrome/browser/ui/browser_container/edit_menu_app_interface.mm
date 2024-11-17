@@ -26,19 +26,8 @@ NSDictionary* ExtractMenuElements(UIView* view,
                                   CGFloat menu_width) {
   // The type of the edit menu cell depends on the OS version.
   bool is_edit_menu_cell = false;
-  if (@available(iOS 16, *)) {
-    is_edit_menu_cell =
-        [view isKindOfClass:NSClassFromString(@"_UIEditMenuListViewCell")];
-  } else {
-    // Back and forward buttons have the same type as the actions, so exclude
-    // them using the accessibility labels.
-    is_edit_menu_cell =
-        [view isKindOfClass:NSClassFromString(@"UICalloutBarButton")] &&
-        ![view.accessibilityIdentifier
-            isEqualToString:@"show.previous.items.menu.button"] &&
-        ![view.accessibilityIdentifier
-            isEqualToString:@"show.next.items.menu.button"];
-  }
+  is_edit_menu_cell =
+      [view isKindOfClass:NSClassFromString(@"_UIEditMenuListViewCell")];
 
   if (is_edit_menu_cell) {
     // Exclude views that are hidden or outside of the scrollview visible part.
@@ -72,49 +61,27 @@ NSDictionary* ExtractMenuElements(UIView* view,
 @implementation EditMenuAppInterface
 
 + (id<GREYMatcher>)editMenuMatcher {
-  if (@available(iOS 16, *)) {
-    return grey_kindOfClassName(@"_UIEditMenuListView");
-  } else {
-    return grey_kindOfClassName(@"UICalloutBar");
-  }
+  return grey_kindOfClassName(@"_UIEditMenuListView");
 }
 
 + (id<GREYMatcher>)editMenuButtonMatcher {
-  if (@available(iOS 16.0, *)) {
-    return grey_kindOfClass(NSClassFromString(@"_UIEditMenuListViewCell"));
-  } else {
-    return grey_kindOfClass(NSClassFromString(@"UICalloutBarButton"));
-  }
+  return grey_kindOfClass(NSClassFromString(@"_UIEditMenuListViewCell"));
 }
 
 + (id<GREYMatcher>)editMenuNextButtonMatcher {
   id<GREYMatcher> editMenu = [EditMenuAppInterface editMenuMatcher];
-  if (@available(iOS 16, *)) {
-    id<GREYMatcher> nextButton = grey_allOf(
-        grey_ancestor(editMenu), grey_kindOfClassName(@"_UIEditMenuPageButton"),
-        grey_accessibilityLabel(@"Forward"), nil);
-    return nextButton;
-  } else {
-    id<GREYMatcher> nextButton = grey_allOf(
-        grey_ancestor(editMenu), grey_kindOfClassName(@"UICalloutBarButton"),
-        grey_accessibilityID(@"show.next.items.menu.button"), nil);
-    return nextButton;
-  }
+  id<GREYMatcher> nextButton = grey_allOf(
+      grey_ancestor(editMenu), grey_kindOfClassName(@"_UIEditMenuPageButton"),
+      grey_accessibilityLabel(@"Forward"), nil);
+  return nextButton;
 }
 
 + (id<GREYMatcher>)editMenuPreviousButtonMatcher {
   id<GREYMatcher> editMenu = [EditMenuAppInterface editMenuMatcher];
-  if (@available(iOS 16, *)) {
-    id<GREYMatcher> previousButton = grey_allOf(
-        grey_ancestor(editMenu), grey_kindOfClassName(@"_UIEditMenuPageButton"),
-        grey_accessibilityLabel(@"Previous"), nil);
-    return previousButton;
-  } else {
-    id<GREYMatcher> previousButton = grey_allOf(
-        grey_ancestor(editMenu), grey_kindOfClassName(@"UICalloutBarButton"),
-        grey_accessibilityID(@"show.previous.items.menu.button"), nil);
-    return previousButton;
-  }
+  id<GREYMatcher> previousButton = grey_allOf(
+      grey_ancestor(editMenu), grey_kindOfClassName(@"_UIEditMenuPageButton"),
+      grey_accessibilityLabel(@"Previous"), nil);
+  return previousButton;
 }
 
 + (id<GREYMatcher>)editMenuActionWithAccessibilityLabel:

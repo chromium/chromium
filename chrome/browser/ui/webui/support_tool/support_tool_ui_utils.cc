@@ -72,10 +72,6 @@ std::string GetDataCollectorName(
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_INTEL_WIFI_DEBUG_DUMP);
     case support_tool::CHROMEOS_TOUCH_EVENTS:
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_TOUCH_EVENTS);
-    case support_tool::CHROMEOS_CROS_API:
-      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_LACROS_SYSTEM_INFO);
-    case support_tool::CHROMEOS_LACROS:
-      return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_LACROS);
     case support_tool::CHROMEOS_REVEN:
       return l10n_util::GetStringUTF8(IDS_SUPPORT_TOOL_CHROMEOS_FLEX_LOGS);
     case support_tool::CHROMEOS_DBUS:

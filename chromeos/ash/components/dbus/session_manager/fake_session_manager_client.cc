@@ -150,8 +150,7 @@ std::string GetStubPolicyFilenamePostfix(
       return kStubSigninExtensionPolicyFileNameFragment +
              descriptor.component_id();
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Returns the last part of the stub policy file path consisting of the filename
@@ -179,8 +178,7 @@ base::FilePath GetStubRelativePolicyPath(
           .AppendASCII(kStubPerAccountPolicyFileNamePrefix + postfix);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return base::FilePath();
+      NOTREACHED();
   }
 }
 
@@ -216,8 +214,7 @@ base::FilePath GetStubPolicyFilePath(
       return base_path.Append(relative_policy_path);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return base::FilePath();
+      NOTREACHED();
   }
 }
 

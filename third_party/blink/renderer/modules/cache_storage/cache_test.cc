@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_response.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_response_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_request_usvstring.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_response_undefined.h"
 #include "third_party/blink/renderer/core/dom/abort_controller.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -164,7 +165,7 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
                             mojom::blink::CacheQueryOptionsPtr query_options,
                             int64_t trace_id,
                             GetAllMatchedEntriesCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void Keys(mojom::blink::FetchAPIRequestPtr fetch_api_request,
             mojom::blink::CacheQueryOptionsPtr query_options,
@@ -191,7 +192,7 @@ class ErrorCacheForTests : public mojom::blink::CacheStorageCache {
                      mojo_base::BigBuffer data,
                      int64_t trace_id,
                      WriteSideDataCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  protected:
@@ -335,14 +336,16 @@ class CacheStorageTest : public PageTestBase {
   }
 
   // Convenience methods for testing the returned promises.
-  ScriptValue GetRejectValue(ScriptPromiseUntyped& promise) {
+  template <typename IDLType>
+  ScriptValue GetRejectValue(ScriptPromise<IDLType>& promise) {
     ScriptPromiseTester tester(GetScriptState(), promise);
     tester.WaitUntilSettled();
     EXPECT_TRUE(tester.IsRejected());
     return tester.Value();
   }
 
-  std::string GetRejectString(ScriptPromiseUntyped& promise) {
+  template <typename IDLType>
+  std::string GetRejectString(ScriptPromise<IDLType>& promise) {
     ScriptValue on_reject = GetRejectValue(promise);
     return ToCoreString(
                GetIsolate(),
@@ -351,14 +354,16 @@ class CacheStorageTest : public PageTestBase {
         .data();
   }
 
-  ScriptValue GetResolveValue(ScriptPromiseUntyped& promise) {
+  template <typename IDLType>
+  ScriptValue GetResolveValue(ScriptPromise<IDLType>& promise) {
     ScriptPromiseTester tester(GetScriptState(), promise);
     tester.WaitUntilSettled();
     EXPECT_TRUE(tester.IsFulfilled());
     return tester.Value();
   }
 
-  std::string GetResolveString(ScriptPromiseUntyped& promise) {
+  template <typename IDLType>
+  std::string GetResolveString(ScriptPromise<IDLType>& promise) {
     ScriptValue on_resolve = GetResolveValue(promise);
     return ToCoreString(
                GetIsolate(),
@@ -392,8 +397,8 @@ TEST_F(CacheStorageTest, Basics) {
   const String url = "http://www.cachetest.org/";
 
   CacheQueryOptions* options = CacheQueryOptions::Create();
-  ScriptPromiseUntyped match_promise = cache->match(
-      GetScriptState(), StringToRequestInfo(url), options, exception_state);
+  auto match_promise = cache->match(GetScriptState(), StringToRequestInfo(url),
+                                    options, exception_state);
   EXPECT_EQ(kNotImplementedString, GetRejectString(match_promise));
 
   cache = CreateCache(fetcher, std::make_unique<ErrorCacheForTests>(
@@ -421,7 +426,7 @@ TEST_F(CacheStorageTest, BasicArguments) {
       CreateCache(fetcher, std::make_unique<NotImplementedErrorCache>());
   DCHECK(cache);
 
-  ScriptPromiseUntyped match_all_result_no_arguments =
+  auto match_all_result_no_arguments =
       cache->matchAll(GetScriptState(), exception_state);
   EXPECT_EQ("dispatchMatchAll",
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
@@ -441,14 +446,14 @@ TEST_F(CacheStorageTest, BasicArguments) {
 
   Request* request = NewRequestFromUrl(url);
   DCHECK(request);
-  ScriptPromiseUntyped match_result =
+  auto match_result =
       cache->match(GetScriptState(), RequestToRequestInfo(request), options,
                    exception_state);
   EXPECT_EQ("dispatchMatch",
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
   EXPECT_EQ(kNotImplementedString, GetRejectString(match_result));
 
-  ScriptPromiseUntyped string_match_result = cache->match(
+  auto string_match_result = cache->match(
       GetScriptState(), StringToRequestInfo(url), options, exception_state);
   EXPECT_EQ("dispatchMatch",
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
@@ -456,35 +461,34 @@ TEST_F(CacheStorageTest, BasicArguments) {
 
   request = NewRequestFromUrl(url);
   DCHECK(request);
-  ScriptPromiseUntyped match_all_result =
+  auto match_all_result =
       cache->matchAll(GetScriptState(), RequestToRequestInfo(request), options,
                       exception_state);
   EXPECT_EQ("dispatchMatchAll",
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
   EXPECT_EQ(kNotImplementedString, GetRejectString(match_all_result));
 
-  ScriptPromiseUntyped string_match_all_result = cache->matchAll(
+  auto string_match_all_result = cache->matchAll(
       GetScriptState(), StringToRequestInfo(url), options, exception_state);
   EXPECT_EQ("dispatchMatchAll",
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
   EXPECT_EQ(kNotImplementedString, GetRejectString(string_match_all_result));
 
-  ScriptPromiseUntyped keys_result1 =
-      cache->keys(GetScriptState(), exception_state);
+  auto keys_result1 = cache->keys(GetScriptState(), exception_state);
   EXPECT_EQ("dispatchKeys",
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
   EXPECT_EQ(kNotImplementedString, GetRejectString(keys_result1));
 
   request = NewRequestFromUrl(url);
   DCHECK(request);
-  ScriptPromiseUntyped keys_result2 =
+  auto keys_result2 =
       cache->keys(GetScriptState(), RequestToRequestInfo(request), options,
                   exception_state);
   EXPECT_EQ("dispatchKeys",
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
   EXPECT_EQ(kNotImplementedString, GetRejectString(keys_result2));
 
-  ScriptPromiseUntyped string_keys_result2 = cache->keys(
+  auto string_keys_result2 = cache->keys(
       GetScriptState(), StringToRequestInfo(url), options, exception_state);
   EXPECT_EQ("dispatchKeys",
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
@@ -527,14 +531,14 @@ TEST_F(CacheStorageTest, BatchOperationArguments) {
   }
   test_cache()->SetExpectedBatchOperations(&expected_delete_operations);
 
-  ScriptPromiseUntyped delete_result =
+  auto delete_result =
       cache->Delete(GetScriptState(), RequestToRequestInfo(request), options,
                     exception_state);
   EXPECT_EQ("dispatchBatch",
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
   EXPECT_EQ(kNotImplementedString, GetRejectString(delete_result));
 
-  ScriptPromiseUntyped string_delete_result = cache->Delete(
+  auto string_delete_result = cache->Delete(
       GetScriptState(), StringToRequestInfo(url), options, exception_state);
   EXPECT_EQ("dispatchBatch",
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
@@ -553,14 +557,14 @@ TEST_F(CacheStorageTest, BatchOperationArguments) {
 
   request = NewRequestFromUrl(url);
   DCHECK(request);
-  ScriptPromiseUntyped put_result = cache->put(
+  auto put_result = cache->put(
       GetScriptState(), RequestToRequestInfo(request),
       response->clone(GetScriptState(), exception_state), exception_state);
   EXPECT_EQ("dispatchBatch",
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
   EXPECT_EQ(kNotImplementedString, GetRejectString(put_result));
 
-  ScriptPromiseUntyped string_put_result = cache->put(
+  auto string_put_result = cache->put(
       GetScriptState(), StringToRequestInfo(url), response, exception_state);
   EXPECT_EQ("dispatchBatch",
             test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
@@ -608,9 +612,8 @@ TEST_F(CacheStorageTest, MatchResponseTest) {
       fetcher, std::make_unique<MatchTestCache>(std::move(fetch_api_response)));
   CacheQueryOptions* options = CacheQueryOptions::Create();
 
-  ScriptPromiseUntyped result =
-      cache->match(GetScriptState(), StringToRequestInfo(request_url), options,
-                   exception_state);
+  auto result = cache->match(GetScriptState(), StringToRequestInfo(request_url),
+                             options, exception_state);
   ScriptValue script_value = GetResolveValue(result);
   Response* response =
       V8Response::ToWrappable(GetIsolate(), script_value.V8Value());
@@ -658,7 +661,7 @@ TEST_F(CacheStorageTest, KeysResponseTest) {
   Cache* cache = CreateCache(
       fetcher, std::make_unique<KeysTestCache>(std::move(fetch_api_requests)));
 
-  ScriptPromiseUntyped result = cache->keys(GetScriptState(), exception_state);
+  auto result = cache->keys(GetScriptState(), exception_state);
   ScriptValue script_value = GetResolveValue(result);
 
   HeapVector<Member<Request>> requests =
@@ -726,10 +729,10 @@ TEST_F(CacheStorageTest, MatchAllAndBatchResponseTest) {
                                std::move(fetch_api_responses)));
 
   CacheQueryOptions* options = CacheQueryOptions::Create();
-  ScriptPromiseUntyped result =
+  auto match_all_result =
       cache->matchAll(GetScriptState(), StringToRequestInfo("http://some.url/"),
                       options, exception_state);
-  ScriptValue script_value = GetResolveValue(result);
+  ScriptValue script_value = GetResolveValue(match_all_result);
 
   HeapVector<Member<Response>> responses =
       NativeValueTraits<IDLSequence<Response>>::NativeValue(
@@ -743,10 +746,10 @@ TEST_F(CacheStorageTest, MatchAllAndBatchResponseTest) {
       EXPECT_EQ(expected_urls[i], response->url());
   }
 
-  result =
+  auto delete_result =
       cache->Delete(GetScriptState(), StringToRequestInfo("http://some.url/"),
                     options, exception_state);
-  script_value = GetResolveValue(result);
+  script_value = GetResolveValue(delete_result);
   EXPECT_TRUE(script_value.V8Value()->IsBoolean());
   EXPECT_EQ(true, script_value.V8Value().As<v8::Boolean>()->Value());
 }
@@ -787,8 +790,8 @@ TEST_F(CacheStorageTest, Add) {
   }
   test_cache()->SetExpectedBatchOperations(&expected_put_operations);
 
-  ScriptPromiseUntyped add_result = cache->add(
-      GetScriptState(), RequestToRequestInfo(request), exception_state);
+  auto add_result = cache->add(GetScriptState(), RequestToRequestInfo(request),
+                               exception_state);
 
   EXPECT_EQ(kNotImplementedString, GetRejectString(add_result));
   EXPECT_EQ(1u, fetcher->FetchCount());
@@ -818,8 +821,7 @@ TEST_F(CacheStorageTest, AddAllAbortOne) {
   HeapVector<Member<V8RequestInfo>> info_list;
   info_list.push_back(RequestToRequestInfo(request));
 
-  ScriptPromiseUntyped promise =
-      cache->addAll(GetScriptState(), info_list, exception_state);
+  auto promise = cache->addAll(GetScriptState(), info_list, exception_state);
 
   EXPECT_EQ("TypeError: Request failed", GetRejectString(promise));
   EXPECT_FALSE(cache->IsAborted());
@@ -848,8 +850,7 @@ TEST_F(CacheStorageTest, AddAllAbortMany) {
   info_list.push_back(RequestToRequestInfo(request));
   info_list.push_back(RequestToRequestInfo(request));
 
-  ScriptPromiseUntyped promise =
-      cache->addAll(GetScriptState(), info_list, exception_state);
+  auto promise = cache->addAll(GetScriptState(), info_list, exception_state);
 
   EXPECT_EQ("TypeError: Request failed", GetRejectString(promise));
   EXPECT_TRUE(cache->IsAborted());

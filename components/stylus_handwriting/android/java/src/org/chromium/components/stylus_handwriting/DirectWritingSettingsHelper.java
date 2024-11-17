@@ -29,39 +29,56 @@ public class DirectWritingSettingsHelper {
     }
 
     /**
-     * Direct writing feature main switch
-     * 0 : disable, 1 : enable
+     * Direct writing feature main switch 0 : disable, 1 : enable
      *
      * @param context the current {@link Context}
      */
     private static boolean isFeatureEnabled(Context context) {
-        if (context != null) {
-            try {
-                return Settings.System.getInt(
-                                context.getContentResolver(),
-                                URI_DIRECT_WRITING,
-                                /* default= */ DIRECT_WRITING_DISABLED)
-                        == DIRECT_WRITING_ENABLED;
-            } catch (SecurityException e) {
-                // On some devices, URI_DIRECT_WRITING is not readable and trying to do so will
-                // throw a security exception. https://crbug.com/1356155.
+        if (context == null) {
+            return false;
+        }
+
+        if (StylusHandwritingFeatureMap.isEnabledOrDefault(
+                StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {
+            Integer value = StylusWritingSettingsState.getInstance().getDirectWritingSetting();
+            if (value == null) {
                 return false;
             }
+            return value == DIRECT_WRITING_ENABLED;
         }
-        return false;
+
+        try {
+            return Settings.System.getInt(
+                            context.getContentResolver(),
+                            URI_DIRECT_WRITING,
+                            /* default= */ DIRECT_WRITING_DISABLED)
+                    == DIRECT_WRITING_ENABLED;
+        } catch (SecurityException e) {
+            // On some devices, URI_DIRECT_WRITING is not readable and trying to do so will
+            // throw a security exception. https://crbug.com/1356155.
+            return false;
+        }
     }
 
     private static boolean isHoneyboardDefault(Context context) {
-        if (context != null) {
-            try {
-                String defaultIme =
-                        Settings.Secure.getString(
-                                context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
-                return HONEYBOARD_SERVICE_PKG_NAME.equals(defaultIme);
-            } catch (SecurityException e) {
-                return false;
-            }
+        if (context == null) {
+            return false;
         }
-        return false;
+
+        try {
+            String defaultIme = getDefaultInputMethod(context);
+            return HONEYBOARD_SERVICE_PKG_NAME.equals(defaultIme);
+        } catch (SecurityException e) {
+            return false;
+        }
+    }
+
+    private static String getDefaultInputMethod(Context context) {
+        if (StylusHandwritingFeatureMap.isEnabledOrDefault(
+                StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {
+            return StylusWritingSettingsState.getInstance().getDefaultInputMethod();
+        }
+        return Settings.Secure.getString(
+                context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
     }
 }

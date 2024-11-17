@@ -14,7 +14,6 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -28,7 +27,6 @@ import org.robolectric.shadows.ShadowLooper;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
@@ -45,7 +43,7 @@ import java.util.concurrent.TimeUnit;
 @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_ANDROID_TRIGGER_FOR_PRERENDER2)
 public class TileInteractionDelegateTest {
 
-    private class TileGroupForTest extends TileGroup {
+    private static class TileGroupForTest extends TileGroup {
         private Tile mTile;
 
         public TileGroupForTest(
@@ -89,8 +87,6 @@ public class TileInteractionDelegateTest {
     @Mock private AndroidPrerenderManager mAndroidPrerenderManager;
     @Mock private AndroidPrerenderManager.Natives mNativeMock;
 
-    @Rule public JniMocker jniMocker = new JniMocker();
-
     @Captor
     ArgumentCaptor<View.OnTouchListener> mOnTouchListenerCaptor =
             ArgumentCaptor.forClass(View.OnTouchListener.class);
@@ -102,7 +98,7 @@ public class TileInteractionDelegateTest {
         when(mSearchTile.getUrl()).thenReturn(new GURL("https://www.google.com/search?q=123"));
         when(mTile.getData()).thenReturn(mData);
         when(mAndroidPrerenderManager.startPrerendering(any())).thenReturn(true);
-        jniMocker.mock(AndroidPrerenderManagerJni.TEST_HOOKS, mNativeMock);
+        AndroidPrerenderManagerJni.setInstanceForTesting(mNativeMock);
     }
 
     @Test

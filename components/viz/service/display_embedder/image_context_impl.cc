@@ -28,6 +28,46 @@
 
 namespace {
 
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(SKIA_USE_DAWN)
+bool DawnYCbCrVkDescriptorsAreEqual(wgpu::YCbCrVkDescriptor left,
+                                    wgpu::YCbCrVkDescriptor right) {
+  // NOTE: We deliberately do not compare the swizzle components as those
+  // components are not plumbed through the Chrome-level information and thus
+  // could cause spurious equality failures. By the Vulkan spec, those
+  // components should not be set for external formats, but some drivers do not
+  // adhere to the spec here.
+  // TODO(crbug.com/346282342): Plumb that information through the Chrome level
+  // and do equality checks for the swizzle componetns. Once that is complete,
+  // add an equality operator to this struct in Dawn and remove this method
+  // entirely.
+  if (left.vkFormat != right.vkFormat) {
+    return false;
+  }
+  if (left.vkYCbCrModel != right.vkYCbCrModel) {
+    return false;
+  }
+  if (left.vkYCbCrRange != right.vkYCbCrRange) {
+    return false;
+  }
+  if (left.vkXChromaOffset != right.vkXChromaOffset) {
+    return false;
+  }
+  if (left.vkYChromaOffset != right.vkYChromaOffset) {
+    return false;
+  }
+  if (left.vkChromaFilter != right.vkChromaFilter) {
+    return false;
+  }
+  if (left.forceExplicitReconstruction != right.forceExplicitReconstruction) {
+    return false;
+  }
+  if (left.externalFormat != right.externalFormat) {
+    return false;
+  }
+  return true;
+}
+#endif
+
 SkColor4f GetFallbackColorForPlane(viz::SharedImageFormat format,
                                    int plane_index) {
   DCHECK(format.IsValidPlaneIndex(plane_index));
@@ -134,6 +174,13 @@ void ImageContextImpl::CreateFallbackImage(
   if (format().PrefersExternalSampler()) {
     // Skia can't allocate a fallback texture since the original texture was
     // externally allocated.
+    return;
+  }
+
+  if (graphite_ycbcr_info_mismatch_) {
+    // It is not possible to allocate a fallback texture if the failure was due
+    // to a mismatch in YCBCr info between the promise image and the
+    // fulfillment texture.
     return;
   }
 
@@ -326,6 +373,34 @@ bool ImageContextImpl::BeginAccessIfNecessaryInternal(
   int num_planes =
       format().PrefersExternalSampler() ? 1 : format().NumberOfPlanes();
   if (context_state->graphite_context()) {
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(SKIA_USE_DAWN)
+    // In the case of video decoding, it is possible for there to be a mismatch
+    // between the YCbCr info passed to Viz at the time of creating the promise
+    // texture and that computed at the time of fulfilling the promise texture.
+    // Detect such mismatches and error out, as Skia/Dawn will raise errors.
+    graphite_ycbcr_info_mismatch_ = false;
+
+    skgpu::graphite::DawnTextureInfo fulfillment_texture_info;
+    CHECK(skgpu::graphite::TextureInfos::GetDawnTextureInfo(
+        representation_scoped_read_access_->graphite_texture(0).info(),
+        &fulfillment_texture_info));
+
+    wgpu::YCbCrVkDescriptor promise_texture_ycbcr_desc = {};
+    if (ycbcr_info()) {
+      promise_texture_ycbcr_desc =
+          gpu::ToDawnYCbCrVkDescriptor(ycbcr_info().value());
+    }
+    wgpu::YCbCrVkDescriptor fulfillment_texture_ycbcr_desc =
+        fulfillment_texture_info.fYcbcrVkDescriptor;
+
+    if (!DawnYCbCrVkDescriptorsAreEqual(promise_texture_ycbcr_desc,
+                                        fulfillment_texture_ycbcr_desc)) {
+      graphite_ycbcr_info_mismatch_ = true;
+      representation_scoped_read_access_.reset();
+      return false;
+    }
+#endif
+
     for (int plane_index = 0; plane_index < num_planes; plane_index++) {
       graphite_textures_.push_back(
           representation_scoped_read_access_->graphite_texture(plane_index));

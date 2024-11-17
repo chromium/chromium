@@ -20,7 +20,7 @@ const char kMimeTypeHTMLUtf8[] = "text/html;charset=utf-8";
 const char kMimeTypeSvg[] = "image/svg+xml";
 const char kMimeTypeRTF[] = "text/rtf";
 const char kMimeTypePNG[] = "image/png";
-// Used for image drag & drop from LaCrOS.
+// Used for image drag & drop on X11 and Wayland.
 const char kMimeTypeOctetStream[] = "application/octet-stream";
 // Used for window dragging on some platforms.
 const char kMimeTypeWindowDrag[] = "chromium/x-window-drag";
@@ -32,12 +32,6 @@ const char kMimeTypeLinuxText[] = "TEXT";
 const char kMimeTypeLinuxSourceUrl[] = "chromium/x-source-url";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_FUCHSIA)
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Used to sync clipboard source metadata between Ash and LaCrOS.
-const char kMimeTypeDataTransferEndpoint[] =
-    "chromium/x-data-transfer-endpoint";
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_APPLE)
 const char kMimeTypeDataTransferCustomData[] = "chromium/x-web-custom-data";

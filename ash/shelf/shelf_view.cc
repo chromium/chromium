@@ -65,14 +65,14 @@
 #include "components/account_id/account_id.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_types.h"
-#include "components/user_education/common/events.h"
+#include "components/user_education/common/user_education_events.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/menu_source_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -89,6 +89,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/animation/ink_drop.h"
@@ -659,7 +660,7 @@ void ShelfView::OnMouseEvent(ui::MouseEvent* event) {
       if (!event->IsOnlyLeftMouseButton()) {
         if (event->IsOnlyRightMouseButton()) {
           ShowContextMenuForViewImpl(this, location_in_screen,
-                                     ui::MENU_SOURCE_MOUSE);
+                                     ui::mojom::MenuSourceType::kMouse);
           event->SetHandled();
         }
         return;
@@ -827,9 +828,10 @@ views::View* ShelfView::GetDefaultFocusableChild() {
                                        : FindFirstFocusableChild();
 }
 
-void ShelfView::ShowContextMenuForViewImpl(views::View* source,
-                                           const gfx::Point& point,
-                                           ui::MenuSourceType source_type) {
+void ShelfView::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
   // Prevent concurrent requests that may show application or context menus.
   const ShelfItem* item = ShelfItemForView(source);
   if (!item_awaiting_response_.IsNull()) {
@@ -1045,6 +1047,10 @@ void ShelfView::UpdateButton(ShelfAppButton* button, const ShelfItem& item) {
                                         item.badge_image);
   button->SetNotificationBadgeColor(item.notification_badge_color);
   button->GetViewAccessibility().SetName(item.accessible_name);
+  // If an empty accessible name of the item is provided, in such a case we want
+  // the cache to have the name corresponding to the implementation in
+  // `UpdateAccessibleName`
+  button->UpdateAccessibleName();
   button->SchedulePaint();
 }
 
@@ -1200,8 +1206,7 @@ bool ShelfView::Drag(const gfx::Point& location_in_screen,
   return true;
 }
 
-void ShelfView::EndDrag(bool cancel,
-                        std::unique_ptr<AppDragIconProxy> icon_proxy) {
+void ShelfView::EndDrag(bool cancel) {
   drag_scroll_dir_ = 0;
   scrolling_timer_.Stop();
   speed_up_drag_scrolling_.Stop();
@@ -1210,8 +1215,6 @@ void ShelfView::EndDrag(bool cancel,
     is_active_drag_and_drop_host_ = false;
     return;
   }
-
-  drag_icon_proxy_ = std::move(icon_proxy);
 
   views::View* drag_and_drop_view =
       view_model_->view_at(model_->ItemIndexByID(drag_and_drop_shelf_id_));
@@ -2280,7 +2283,7 @@ void ShelfView::ShelfItemAdded(int model_index) {
   AnimateToIdealBounds();
 
   // Attempt to animate the transition from a promise app into an actual app
-  const std::string package_id = item.package_id;
+  std::string package_id = item.package_id;
   auto found = pending_promise_apps_removals_.find(package_id);
 
   if (item.app_status == AppStatus::kReady &&
@@ -2289,16 +2292,16 @@ void ShelfView::ShelfItemAdded(int model_index) {
     static_cast<ShelfAppButton*>(view)->AnimateInFromPromiseApp(
         found->second,
         base::BindRepeating(&ShelfView::FinishAnimationForPromiseApps,
-                            weak_factory_.GetWeakPtr(), package_id));
-  } else {
-    DCHECK_LE(static_cast<size_t>(model_index), visible_views_indices_.back());
-    // TODO(crbug.com/40266934): Remove the check below once the bounds animator
-    // works better with zero animation duration.
-    if (!bounds_animator_->GetAnimationDuration().is_zero()) {
-      bounds_animator_->SetAnimationDelegate(
-          view, std::unique_ptr<gfx::AnimationDelegate>(
-                    new StartFadeAnimationDelegate(this, view)));
-    }
+                            weak_factory_.GetWeakPtr(), std::move(package_id)));
+    return;
+  }
+  DCHECK_LE(static_cast<size_t>(model_index), visible_views_indices_.back());
+  // TODO(crbug.com/40266934): Remove the check below once the bounds animator
+  // works better with zero animation duration.
+  if (!bounds_animator_->GetAnimationDuration().is_zero()) {
+    bounds_animator_->SetAnimationDelegate(
+        view, std::unique_ptr<gfx::AnimationDelegate>(
+                  new StartFadeAnimationDelegate(this, view)));
   }
 }
 
@@ -2598,7 +2601,7 @@ void ShelfView::ShowShelfContextMenu(
     const ShelfID& shelf_id,
     const gfx::Point& point,
     views::View* source,
-    ui::MenuSourceType source_type,
+    ui::mojom::MenuSourceType source_type,
     std::unique_ptr<ui::SimpleMenuModel> model) {
   if (!model) {
     const int64_t display_id = GetDisplayIdForView(this);
@@ -2614,7 +2617,7 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
                          const ShelfID& shelf_id,
                          const gfx::Point& click_point,
                          bool context_menu,
-                         ui::MenuSourceType source_type) {
+                         ui::mojom::MenuSourceType source_type) {
   // Delayed callbacks to show context and application menus may conflict; hide
   // the old menu before showing a new menu in that case.
   if (IsShowingMenu())
@@ -2637,8 +2640,8 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
 
   const ShelfItem* item = ShelfItemForView(source);
 
-  if ((source_type == ui::MenuSourceType::MENU_SOURCE_MOUSE ||
-       source_type == ui::MenuSourceType::MENU_SOURCE_KEYBOARD) &&
+  if ((source_type == ui::mojom::MenuSourceType::kMouse ||
+       source_type == ui::mojom::MenuSourceType::kKeyboard) &&
       item) {
     views::InkDrop::Get(source)->GetInkDrop()->AnimateToState(
         views::InkDropState::ACTIVATED);
@@ -2646,7 +2649,7 @@ void ShelfView::ShowMenu(std::unique_ptr<ui::SimpleMenuModel> menu_model,
 
   // Only selected shelf items with context menu opened can be dragged.
   if (context_menu && item && ShelfButtonIsInDrag(item->type, source) &&
-      source_type == ui::MenuSourceType::MENU_SOURCE_TOUCH) {
+      source_type == ui::mojom::MenuSourceType::kTouch) {
     run_types |= views::MenuRunner::SEND_GESTURE_EVENTS_TO_OWNER;
   }
 
@@ -2851,7 +2854,7 @@ void ShelfView::EndDragCallback(
   // TODO(b/271601288): Hook up drop animation with the drag image icon.
   output_drag_op = ui::mojom::DragOperation::kMove;
   drag_image_layer_ = std::move(drag_image_layer_owner);
-  EndDrag(false, /*icon_proxy = */ nullptr);
+  EndDrag(false);
 }
 
 bool ShelfView::GetDropFormats(
@@ -2874,7 +2877,7 @@ bool ShelfView::CanDrop(const OSExchangeData& data) {
 }
 
 void ShelfView::OnDragExited() {
-  EndDrag(/*cancel=*/true, nullptr);
+  EndDrag(/*cancel=*/true);
 }
 
 void ShelfView::OnDragEntered(const ui::DropTargetEvent& event) {

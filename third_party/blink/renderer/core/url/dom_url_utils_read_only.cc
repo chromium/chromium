@@ -46,10 +46,10 @@ String DOMURLUtilsReadOnly::origin(const KURL& kurl) {
 
 String DOMURLUtilsReadOnly::host(const KURL& kurl) {
   if (kurl.HostEnd() == kurl.PathStart())
-    return kurl.Host();
+    return kurl.Host().ToString();
   if (IsDefaultPortForProtocol(kurl.Port(), kurl.Protocol()))
-    return kurl.Host();
-  return kurl.Host() + ":" + String::Number(kurl.Port());
+    return kurl.Host().ToString();
+  return String(kurl.Host() + ":" + String::Number(kurl.Port()));
 }
 
 String DOMURLUtilsReadOnly::port(const KURL& kurl) {
@@ -60,15 +60,11 @@ String DOMURLUtilsReadOnly::port(const KURL& kurl) {
 }
 
 String DOMURLUtilsReadOnly::search(const KURL& kurl) {
-  String query = kurl.Query();
-  return query.empty() ? g_empty_string : "?" + query;
+  return kurl.QueryWithLeadingQuestionMark().ToString();
 }
 
 String DOMURLUtilsReadOnly::hash(const KURL& kurl) {
-  String fragment_identifier = kurl.FragmentIdentifier();
-  if (fragment_identifier.empty())
-    return g_empty_string;
-  return AtomicString(String("#" + fragment_identifier));
+  return kurl.FragmentIdentifierWithLeadingNumberSign().ToAtomicString();
 }
 
 }  // namespace blink

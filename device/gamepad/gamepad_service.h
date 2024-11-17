@@ -126,7 +126,6 @@ class DEVICE_GAMEPAD_EXPORT GamepadService : public GamepadChangeClient {
   void OnUserGesture();
 
   // GamepadChangeClient implementation.
-  void OnGamepadChange(mojom::GamepadChangesPtr change) override;
   void OnGamepadConnectionChange(bool connected,
                                  uint32_t index,
                                  const Gamepad& pad) override;

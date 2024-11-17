@@ -188,13 +188,15 @@ If modifying InterestGroup fields, make sure to also modify:
 * test_interest_group_builder[.h/.cc]
 * interest_group_mojom_traits[.h/.cc/.test]
 * bidder_worklet.cc (to pass the InterestGroup to generateBid())
+* shared_storage_worklet_global_scope.cc (interestGroups())
+* shared_storage_worklet_unittest.cc (SharedStorageWorkletTest.InterestGroups)
 
 In interest_group_storage.cc, add the new field and any respective indices, add
 a new database version and migration. Run InterestGroupStorageTest and follow
 the test failure message instructions to update the
 InterestGroupStorageTest.MultiVersionUpgradeTest database upgrade test.
 
-If the new field is to be updatable via dailyUpdateUrl, also update *all* of
+If the new field is to be updatable via updateURL, also update *all* of
 these:
 
 * Add field to content::InterestGroupUpdate

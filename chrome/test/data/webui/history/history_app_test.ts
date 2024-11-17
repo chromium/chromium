@@ -443,4 +443,20 @@ suite('HistoryAppTest', function() {
         new MouseEvent('auxclick'));
     assertTrue(historyEmbeddingsElement.forceSuppressLogging);
   });
+
+  test('SetsDateTimeFormatForEmbeddings', async () => {
+    await forceHistoryEmbeddingsElement();
+    const historyEmbeddingsElement =
+        element.shadowRoot!.querySelector('cr-history-embeddings');
+    assertTrue(!!historyEmbeddingsElement);
+    assertFalse(historyEmbeddingsElement.showRelativeTimes);
+
+    element.$.router.selectedPage = 'grouped';
+    await flushTasks();
+    assertTrue(historyEmbeddingsElement.showRelativeTimes);
+
+    element.$.router.selectedPage = 'history';
+    await flushTasks();
+    assertFalse(historyEmbeddingsElement.showRelativeTimes);
+  });
 });

@@ -59,7 +59,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_pressure_level_proto.h"
 #include "base/trace_event/trace_event.h"
-#include "base/trace_event/typed_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -348,6 +347,30 @@ bool IsBackgrounded(std::optional<base::Process::Priority> process_priority) {
   }
 }
 
+perfetto::StaticString ProcessPriorityToString(
+    base::Process::Priority priority) {
+  switch (priority) {
+    case base::Process::Priority::kBestEffort:
+      return "Best effort";
+    case base::Process::Priority::kUserVisible:
+      return "User visible";
+    case base::Process::Priority::kUserBlocking:
+      return "User blocking";
+  }
+  NOTREACHED();
+}
+
+perfetto::StaticString ProcessVisibilityToString(
+    mojom::RenderProcessVisibleState visible_state) {
+  switch (visible_state) {
+    case mojom::RenderProcessVisibleState::kVisible:
+      return "Visible";
+    case mojom::RenderProcessVisibleState::kHidden:
+      return "Hidden";
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 RenderThreadImpl::HistogramCustomizer::HistogramCustomizer() {
@@ -479,6 +502,8 @@ RenderThreadImpl::RenderThreadImpl(
       main_thread_scheduler_(std::move(scheduler)),
       client_id_(client_id) {
   TRACE_EVENT0("startup", "RenderThreadImpl::Create");
+  TRACE_EVENT_BEGIN("renderer", "Unknown", process_priority_track_);
+  TRACE_EVENT_BEGIN("renderer", "Unknown", process_visibility_track_);
   Init();
 }
 
@@ -509,6 +534,8 @@ RenderThreadImpl::RenderThreadImpl(
       main_thread_scheduler_(std::move(scheduler)),
       client_id_(GetClientIdFromCommandLine()) {
   TRACE_EVENT0("startup", "RenderThreadImpl::Create");
+  TRACE_EVENT_BEGIN("renderer", "Unknown", process_priority_track_);
+  TRACE_EVENT_BEGIN("renderer", "Unknown", process_visibility_track_);
   Init();
 }
 
@@ -592,7 +619,7 @@ void RenderThreadImpl::Init() {
   cc::SetClientNameForMetrics("Renderer");
 
   is_threaded_animation_enabled_ =
-      !command_line.HasSwitch(cc::switches::kDisableThreadedAnimation);
+      !command_line.HasSwitch(switches::kDisableThreadedAnimation);
 
   is_elastic_overscroll_enabled_ = switches::IsElasticOverscrollEnabled();
 
@@ -664,6 +691,9 @@ void RenderThreadImpl::Init() {
 }
 
 RenderThreadImpl::~RenderThreadImpl() {
+  TRACE_EVENT_END("renderer", process_priority_track_);
+  TRACE_EVENT_END("renderer", process_visibility_track_);
+
   // The destructor should not run in multi-process mode because Shutdown()
   // terminates the process. The destructor only needs to clean up for tests.
   CHECK(IsSingleProcess());
@@ -1017,7 +1047,7 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
 
   const bool enable_video_decode_accelerator =
 #if BUILDFLAG(IS_LINUX)
-      base::FeatureList::IsEnabled(media::kVaapiVideoDecodeLinux) &&
+      base::FeatureList::IsEnabled(media::kAcceleratedVideoDecodeLinux) &&
 #endif  // BUILDFLAG(IS_LINUX)
       !cmd_line->HasSwitch(switches::kDisableAcceleratedVideoDecode) &&
       (gpu_channel_host->gpu_feature_info()
@@ -1026,7 +1056,7 @@ media::GpuVideoAcceleratorFactories* RenderThreadImpl::GetGpuFactories() {
 
   const bool enable_video_encode_accelerator =
 #if BUILDFLAG(IS_LINUX)
-      base::FeatureList::IsEnabled(media::kVaapiVideoEncodeLinux) &&
+      base::FeatureList::IsEnabled(media::kAcceleratedVideoEncodeLinux) &&
 #else
       !cmd_line->HasSwitch(switches::kDisableAcceleratedVideoEncode) &&
 #endif  // BUILDFLAG(IS_LINUX)
@@ -1212,7 +1242,7 @@ scoped_refptr<DCOMPTextureFactory> RenderThreadImpl::GetDCOMPTextureFactory() {
   return dcomp_texture_factory_;
 }
 
-OverlayStateServiceProvider*
+scoped_refptr<OverlayStateServiceProvider>
 RenderThreadImpl::GetOverlayStateServiceProvider() {
   DCHECK(IsMainThread());
   // Only set 'overlay_state_service_provider_' if Media Foundation for clear
@@ -1226,11 +1256,12 @@ RenderThreadImpl::GetOverlayStateServiceProvider() {
         return nullptr;
       }
       overlay_state_service_provider_ =
-          std::make_unique<OverlayStateServiceProviderImpl>(std::move(channel));
+          base::MakeRefCounted<OverlayStateServiceProviderImpl>(
+              std::move(channel));
     }
   }
 
-  return overlay_state_service_provider_.get();
+  return overlay_state_service_provider_;
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -1322,7 +1353,7 @@ void RenderThreadImpl::OnProcessFinalRelease() {
   // caused race conditions, where the browser process was reusing renderer
   // processes that were shutting down.
   // See https://crbug.com/535246 or https://crbug.com/873541/#c8.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 #if BUILDFLAG(CONTENT_ENABLE_LEGACY_IPC)
@@ -1379,6 +1410,17 @@ void RenderThreadImpl::SetProcessState(
       OnRendererHidden();
   }
 
+  if (process_priority_ != process_priority) {
+    TRACE_EVENT_END("renderer", process_priority_track_);
+    TRACE_EVENT_BEGIN("renderer", ProcessPriorityToString(process_priority),
+                      process_priority_track_);
+  }
+
+  if (visible_state_ != visible_state) {
+    TRACE_EVENT_END("renderer", process_visibility_track_);
+    TRACE_EVENT_BEGIN("renderer", ProcessVisibilityToString(visible_state),
+                      process_visibility_track_);
+  }
   process_priority_ = process_priority;
   visible_state_ = visible_state;
 }
@@ -1483,10 +1525,11 @@ void RenderThreadImpl::CreateAssociatedAgentSchedulingGroup(
 
 void RenderThreadImpl::TransferSharedLastForegroundTime(
     base::ReadOnlySharedMemoryRegion last_foreground_time_region) {
-  last_foreground_time_mapping_ =
-      base::AtomicSharedMemory<base::TimeTicks>::MapReadOnlyRegion(
-          std::move(last_foreground_time_region));
-  CHECK(last_foreground_time_mapping_.has_value());
+  if (!last_foreground_time_mapping_.has_value()) {
+    last_foreground_time_mapping_ =
+        base::AtomicSharedMemory<base::TimeTicks>::MapReadOnlyRegion(
+            std::move(last_foreground_time_region));
+  }
 
   if (!IsSingleProcess()) {
     // The pointer will only be valid until `last_foreground_time_mapping_` is
@@ -1533,7 +1576,7 @@ void RenderThreadImpl::SetWebKitSharedTimersSuspended(bool suspend) {
     main_thread_scheduler_->ResumeTimersForAndroidWebView();
   }
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 
@@ -1553,7 +1596,7 @@ void RenderThreadImpl::UpdateScrollbarTheme(
 #if BUILDFLAG(IS_APPLE)
   is_elastic_overscroll_enabled_ = params->scroll_view_rubber_banding;
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif  // BUILDFLAG(IS_APPLE)
 }
 
@@ -1563,7 +1606,7 @@ void RenderThreadImpl::OnSystemColorsChanged(int32_t aqua_color_variant) {
   // that rely on system colors, such as the accent and highlight colors.
   blink::SystemColorsChanged();
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 
@@ -1590,7 +1633,7 @@ void RenderThreadImpl::PurgePluginListCache(bool reload_pages) {
   for (auto& observer : observers_)
     observer.PluginListChanged();
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 
@@ -1613,7 +1656,14 @@ void RenderThreadImpl::OnMemoryPressure(
     blink::WebMemoryPressureListener::OnMemoryPressure(memory_pressure_level);
   if (memory_pressure_level ==
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_CRITICAL) {
-    ReleaseFreeMemory();
+    discardable_memory_allocator_->ReleaseFreeMemory();
+
+    // Do not call into blink if it is not initialized.
+    if (blink_platform_impl_) {
+      // Purge Skia font cache, resource cache, and image filter.
+      SkGraphics::PurgeAllCaches();
+      blink::WebMemoryPressureListener::OnPurgeMemory();
+    }
   }
 }
 
@@ -1751,18 +1801,6 @@ void RenderThreadImpl::OnRendererForegrounded() {
   process_foregrounded_count_++;
 }
 
-void RenderThreadImpl::ReleaseFreeMemory() {
-  TRACE_EVENT0("blink", "RenderThreadImpl::ReleaseFreeMemory()");
-  discardable_memory_allocator_->ReleaseFreeMemory();
-
-  // Do not call into blink if it is not initialized.
-  if (blink_platform_impl_) {
-    // Purge Skia font cache, resource cache, and image filter.
-    SkGraphics::PurgeAllCaches();
-    blink::WebMemoryPressureListener::OnPurgeMemory();
-  }
-}
-
 void RenderThreadImpl::OnSyncMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level) {
   v8::MemoryPressureLevel v8_memory_pressure_level =
@@ -1776,7 +1814,10 @@ void RenderThreadImpl::OnSyncMemoryPressure(
     v8_memory_pressure_level = v8::MemoryPressureLevel::kModerate;
 #endif  // !BUILDFLAG(ALLOW_CRITICAL_MEMORY_PRESSURE_HANDLING_IN_FOREGROUND)
 
-  blink::MemoryPressureNotificationToAllIsolates(v8_memory_pressure_level);
+  if (base::FeatureList::IsEnabled(
+          features::kForwardMemoryPressureToBlinkIsolates)) {
+    blink::MemoryPressureNotificationToAllIsolates(v8_memory_pressure_level);
+  }
 }
 
 void RenderThreadImpl::OnRendererInterfaceReceiver(

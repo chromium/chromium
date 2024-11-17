@@ -9,8 +9,10 @@
 #include <utility>
 
 #include "base/functional/callback.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/strings/grit/components_strings.h"
+#include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -21,6 +23,13 @@ namespace plus_addresses {
 
 namespace {
 
+// Helper function to create a `OnceClosure` that records `action`.
+base::OnceClosure CreateUserActionClosure(
+    const base::UserMetricsAction& action) {
+  return base::BindOnce(
+      [](const base::UserMetricsAction& a) { base::RecordAction(a); }, action);
+}
+
 std::unique_ptr<ui::DialogModel> CreateErrorDialogWithWithCancelAndAccept(
     std::u16string description,
     base::OnceClosure on_accepted) {
@@ -28,10 +37,14 @@ std::unique_ptr<ui::DialogModel> CreateErrorDialogWithWithCancelAndAccept(
       .SetTitle(
           l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_TITLE))
       .AddParagraph(ui::DialogModelLabel(std::move(description)))
-      .AddCancelButton(base::DoNothing(),
+      .AddCancelButton(CreateUserActionClosure(base::UserMetricsAction(
+                           "PlusAddresses.CreateErrorCanceled")),
                        ui::DialogModel::Button::Params().SetId(
                            kPlusAddressErrorDialogCancelButton))
-      .AddOkButton(std::move(on_accepted),
+      .AddOkButton(CreateUserActionClosure(
+                       base::UserMetricsAction(
+                           "PlusAddresses.CreateErrorTryAgainClicked"))
+                       .Then(std::move(on_accepted)),
                    ui::DialogModel::Button::Params()
                        .SetId(kPlusAddressErrorDialogAcceptButton)
                        .SetLabel(l10n_util::GetStringUTF16(
@@ -58,13 +71,16 @@ std::unique_ptr<ui::DialogModel> CreateTimeoutErrorDialog(
 std::unique_ptr<ui::DialogModel> CreateQuotaErrorDialog(
     base::OnceClosure on_accepted) {
   return ui::DialogModel::Builder()
-      .SetTitle(
-          l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_TITLE))
+      .SetTitle(l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_CREATE_INLINE_QUOTA_ERROR_TITLE))
       .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
-          IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_DESCRIPTION)))
-      .AddOkButton(std::move(on_accepted),
-                   ui::DialogModel::Button::Params().SetId(
-                       kPlusAddressErrorDialogAcceptButton))
+          IDS_PLUS_ADDRESS_CREATE_INLINE_QUOTA_ERROR_DESCRIPTION)))
+      .AddOkButton(
+          CreateUserActionClosure(
+              base::UserMetricsAction("PlusAddresses.QuotaErrorAccepted"))
+              .Then(std::move(on_accepted)),
+          ui::DialogModel::Button::Params().SetId(
+              kPlusAddressErrorDialogAcceptButton))
       .Build();
 }
 
@@ -88,11 +104,15 @@ void ShowInlineCreationAffiliationErrorDialog(
                    std::move(affiliated_domain)),
                ui::DialogModelLabel::CreateEmphasizedText(
                    std::move(affiliated_plus_address))}))
-          .AddCancelButton(base::DoNothing(),
+          .AddCancelButton(CreateUserActionClosure(base::UserMetricsAction(
+                               "PlusAddresses.AffiliationErrorCanceled")),
                            ui::DialogModel::Button::Params().SetId(
                                kPlusAddressErrorDialogCancelButton))
           .AddOkButton(
-              std::move(on_accepted),
+              CreateUserActionClosure(
+                  base::UserMetricsAction(
+                      "PlusAddresses.AffiliationErrorFilledExisting"))
+                  .Then(std::move(on_accepted)),
               ui::DialogModel::Button::Params()
                   .SetId(kPlusAddressErrorDialogAcceptButton)
                   .SetLabel(l10n_util::GetStringUTF16(

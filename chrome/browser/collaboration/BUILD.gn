@@ -1,0 +1,101 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
+if (is_android) {
+  android_library("factory_java") {
+    srcjar_deps = [ ":jni_headers" ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/CollaborationServiceFactory.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//chrome/browser/profiles/android:java",
+      "//components/collaboration/public:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  generate_jni("jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/CollaborationServiceFactory.java" ]
+  }
+
+  android_library("javatests") {
+    testonly = true
+
+    sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/CollaborationServiceFactoryTest.java" ]
+    deps = [
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//chrome/browser/collaboration:factory_java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/test/android:chrome_java_integration_test_support",
+      "//components/collaboration/public:java",
+      "//components/data_sharing/public:public_java",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/hamcrest:hamcrest_core_java",
+      "//third_party/hamcrest:hamcrest_library_java",
+      "//third_party/junit:junit",
+    ]
+  }
+
+  generate_jni("messaging_jni_headers") {
+    sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/messaging/MessagingBackendServiceFactory.java" ]
+  }
+
+  android_library("messaging_factory_java") {
+    srcjar_deps = [ ":messaging_jni_headers" ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/messaging/MessagingBackendServiceFactory.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//build/android:build_java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//components/collaboration/public:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:url_java",
+    ]
+  }
+
+  android_library("messaging_test_support_java") {
+    testonly = true
+
+    deps = [
+      "//base:base_java",
+      "//components/collaboration/public:java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//url:url_java",
+    ]
+    sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/messaging/TestMessagingBackendService.java" ]
+  }
+
+  android_library("messaging_javatests") {
+    testonly = true
+
+    sources = [ "android/java/src/org/chromium/chrome/browser/collaboration/messaging/MessagingBackendServiceFactoryTest.java" ]
+    deps = [
+      ":messaging_factory_java",
+      ":messaging_test_support_java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/profiles/android:java",
+      "//chrome/test/android:chrome_java_integration_test_support",
+      "//components/collaboration/public:java",
+      "//third_party/androidx:androidx_test_runner_java",
+      "//third_party/hamcrest:hamcrest_core_java",
+      "//third_party/hamcrest:hamcrest_library_java",
+      "//third_party/junit:junit",
+    ]
+  }
+}

@@ -184,12 +184,18 @@ void WaylandEventSource::FrameData::DumpState(std::ostream& out) const {
 // WaylandEventSource implementation
 
 // static
-void WaylandEventSource::ConvertEventToTarget(const EventTarget* new_target,
+void WaylandEventSource::ConvertEventToTarget(EventTarget* new_target,
                                               LocatedEvent* event) {
   auto* current_target = static_cast<WaylandWindow*>(event->target());
-  gfx::Vector2d diff = GetOriginInScreen(current_target) -
-                       GetOriginInScreen(static_cast<WaylandWindow*>(
-                           const_cast<EventTarget*>(new_target)));
+  auto* new_target_window = static_cast<WaylandWindow*>(new_target);
+  DCHECK(current_target);
+  DCHECK(new_target_window);
+  // GetOriginInScreen returns a location in UI coordinates space, ie:
+  // ui_scale'd. OTOH `event` location is assumed to be in Wayland
+  // coordinates, thus `diff` must be converted before used below.
+  auto diff = gfx::ScaleVector2d(
+      GetOriginInScreen(current_target) - GetOriginInScreen(new_target_window),
+      new_target_window->applied_state().ui_scale);
   event->set_location_f(event->location_f() + diff);
 }
 
@@ -853,8 +859,6 @@ void WaylandEventSource::SetRelativePointerMotionEnabled(bool enabled) {
 void WaylandEventSource::OnRelativePointerMotion(const gfx::Vector2dF& delta,
                                                  base::TimeTicks timestamp) {
   DCHECK(relative_pointer_location_.has_value());
-  // TODO(oshima): Investigate if we need to scale the delta
-  // when surface_submission_in_pixel_coordinates is on.
   relative_pointer_location_ = *relative_pointer_location_ + delta;
   OnPointerMotionEvent(*relative_pointer_location_, timestamp,
                        wl::EventDispatchPolicy::kImmediate,
@@ -932,10 +936,6 @@ void WaylandEventSource::OnPointerStylusTiltChanged(
   }
 
   last_pointer_stylus_data_->tilt = tilt;
-}
-
-const WaylandWindow* WaylandEventSource::GetPointerTarget() const {
-  return window_manager_->GetCurrentPointerFocusedWindow();
 }
 
 void WaylandEventSource::OnDispatcherListChanged() {

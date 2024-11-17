@@ -10,7 +10,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/readaloud/BoyerMoore.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudController.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudControllerSupplier.java",
-    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudIPHController.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudIphController.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayer.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefs.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonController.java",
@@ -23,12 +23,14 @@ android_library("java") {
     ":hooks_java",
     ":metrics_java",
     "//base:base_java",
+    "//base:service_loader_java",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android/modules/readaloud/public:java",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/device:java",
     "//chrome/browser/feature_engagement:java",
+    "//chrome/browser/fullscreen/android:java",
     "//chrome/browser/language/android:base_module_java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/profiles/android:java",
@@ -160,7 +162,8 @@ android_resources("java_resources") {
 android_library("hooks_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudReadabilityHooks.java",
-    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudReadabilityHooksImpl.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudReadabilityHooksFactory.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudReadabilityHooksUpstreamImpl.java",
   ]
   deps = [
     "//base:base_java",
@@ -169,18 +172,6 @@ android_library("hooks_java") {
     "//third_party/android_deps:guava_android_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//url:gurl_java",
-  ]
-  jar_excluded_patterns = [ "*/ReadAloudReadabilityHooksImpl*.class" ]
-}
-
-android_library("hooks_public_impl_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/readaloud/ReadAloudReadabilityHooksImpl.java" ]
-
-  deps = [
-    ":hooks_java",
-    "//chrome/browser/profiles/android:java",
-    "//chrome/browser/tab:java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
 
@@ -198,7 +189,7 @@ robolectric_library("junit") {
   testonly = true
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudControllerUnitTest.java",
-    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudIPHControllerUnitTest.java",
+    "java/src/org/chromium/chrome/browser/readaloud/ReadAloudIphControllerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayerUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefsUnitTest.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudToolbarButtonControllerUnitTest.java",
@@ -225,6 +216,7 @@ robolectric_library("junit") {
     "//chrome/browser/device:java",
     "//chrome/browser/device:junit",
     "//chrome/browser/flags:java",
+    "//chrome/browser/fullscreen/android:java",
     "//chrome/browser/language/android:base_module_java",
     "//chrome/browser/language/android:java",
     "//chrome/browser/language/android:junit",
@@ -362,6 +354,7 @@ robolectric_library("player_junit_java") {
     "//components/browser_ui/styles/android:java",
     "//components/prefs/android:java",
     "//net/android:net_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",
     "//third_party/androidx:androidx_test_core_java",

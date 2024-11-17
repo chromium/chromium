@@ -27,8 +27,12 @@ ts_library("build_ts") {
     "//chrome/browser/resources/app_home:build_ts",
     "//chrome/browser/resources/app_settings:build_ts",
     "//chrome/browser/resources/browser_switch:build_ts",
+    "//chrome/browser/resources/certificate_viewer:build_ts",
     "//chrome/browser/resources/commerce/product_specifications:build_ts",
+    "//chrome/browser/resources/components:build_ts",
     "//chrome/browser/resources/downloads:build_ts",
+    "//chrome/browser/resources/extensions:build_ts",
+    "//chrome/browser/resources/family_link_user_internals:build_ts",
     "//chrome/browser/resources/feedback:build_ts",
     "//chrome/browser/resources/internals/user_education:build_ts",
     "//chrome/browser/resources/intro:build_ts",
@@ -37,7 +41,9 @@ ts_library("build_ts") {
     "//chrome/browser/resources/media_router/cast_feedback:build_ts",
     "//chrome/browser/resources/new_tab_page:build_ts",
     "//chrome/browser/resources/on_device_internals:build_ts",
+    "//chrome/browser/resources/on_device_translation_internals:build_ts",
     "//chrome/browser/resources/pdf:build_ts",
+    "//chrome/browser/resources/privacy_sandbox:build_ts",
     "//chrome/browser/resources/privacy_sandbox/internals/private_state_tokens:build_ts",
     "//chrome/browser/resources/privacy_sandbox/internals/related_website_sets:build_ts",
     "//chrome/browser/resources/profile_internals:build_ts",
@@ -68,11 +74,16 @@ ts_library("build_ts") {
     "//chrome/test/data/webui/signin:build_ts",
     "//chrome/test/data/webui/tab_search:build_ts",
     "//chrome/test/data/webui/welcome:build_ts",
+    "//components/commerce/core/internals/resources:build_ts",
+    "//components/download/resources/download_internals:build_ts",
+    "//components/flags_ui/resources:build_ts",
+    "//content/browser/resources/indexed_db:build_ts",
     "//content/browser/resources/traces_internals:build_ts",
     "//ui/webui/resources/cr_components/certificate_manager:build_ts",
     "//ui/webui/resources/cr_components/customize_color_scheme_mode:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/history_clusters:build_ts",
+    "//ui/webui/resources/cr_components/history_embeddings:build_ts",
     "//ui/webui/resources/cr_components/localized_link:build_ts",
     "//ui/webui/resources/cr_components/managed_dialog:build_ts",
     "//ui/webui/resources/cr_components/managed_footnote:build_ts",
@@ -151,6 +162,11 @@ ts_library("build_ts") {
   path_mappings = [
     "lit/index.js|" +
         rebase_path("${node_modules}/lit/index.d.ts", target_gen_dir),
+    "lit-html/async-directive.js|" +
+        rebase_path("${node_modules}/lit-html/async-directive.d.ts",
+                    target_gen_dir),
+    "lit-html/directive.js|" +
+        rebase_path("${node_modules}/lit-html/directive.d.ts", target_gen_dir),
     "lit-html|" +
         rebase_path("${node_modules}/lit-html/lit-html.d.ts", target_gen_dir),
     "@lit/reactive-element|" + rebase_path(

@@ -75,19 +75,21 @@ enum class TestType {
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey clearBrowsingHistory];
-  [HttpsUpgradeAppInterface clearAllowlist];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+    [HttpsUpgradeAppInterface clearAllowlist];
+  }
 
   if ([self testType] == TestType::kHttpsOnlyMode) {
     [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kHttpsOnlyModeEnabled];
   }
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kHttpsOnlyModeEnabled];
   [HttpsUpgradeAppInterface clearAllowlist];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Returns true if the HTTPS-Only Mode interstitial is enabled.

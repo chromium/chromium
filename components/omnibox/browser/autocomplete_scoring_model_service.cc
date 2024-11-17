@@ -96,7 +96,7 @@ AutocompleteScoringModelService::BatchScoreAutocompleteUrlMatchesSync(
 
     // Source ML scores from the in-memory cache when possible.
     for (size_t i = 0; i < batch_model_input->size(); ++i) {
-      const auto model_input = batch_model_input->at(i);
+      const auto& model_input = batch_model_input->at(i);
       const auto it = score_cache_.Get(model_input);
 
       const bool cache_hit = it != score_cache_.end();

@@ -618,8 +618,7 @@ void TablePainter::PaintCollapsedBorders(const PaintInfo& paint_info,
         // NOTE: This crash has been observed, but we aren't able to find a
         // reproducible testcase. See: crbug.com/1179369.
         if (table_column + 1 >= collapsed_borders_geometry->columns.size()) {
-          NOTREACHED_IN_MIGRATION();
-          continue;
+          NOTREACHED();
         }
 
         // Check if we have painted this inline border in a previous section.
@@ -882,7 +881,7 @@ void TableCellPainter::PaintBackgroundForTablePart(
     const LayoutBox& table_part,
     const PhysicalRect& table_part_paint_rect,
     const PhysicalOffset& table_cell_paint_offset) {
-  if (fragment_.Style().UsedVisibility() != EVisibility::kVisible) {
+  if (fragment_.Style().Visibility() != EVisibility::kVisible) {
     return;
   }
   const auto& layout_table_cell =

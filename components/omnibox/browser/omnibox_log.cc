@@ -51,4 +51,4 @@ OmniboxLog::OmniboxLog(
          "OmniboxLog::selection.";
 }
 
-OmniboxLog::~OmniboxLog() {}
+OmniboxLog::~OmniboxLog() = default;

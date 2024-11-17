@@ -90,8 +90,8 @@ def main(args):
   options = browser_options.BrowserFinderOptions()
   parser = options.CreateParser(
       usage='Create a snapshot of the page, suitable for the style perftest')
-  parser.add_option('--url', help='URL of the web page to record')
-  parser.add_option('--snapshot-path', help='Where to save the snapshot',
+  parser.add_argument('--url', help='URL of the web page to record')
+  parser.add_argument('--snapshot-path', help='Where to save the snapshot',
       default='snapshot.json')
   parser.parse_args(args)
 

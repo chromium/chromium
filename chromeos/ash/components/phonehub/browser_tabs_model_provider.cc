@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/browser_tabs_model_provider.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 BrowserTabsModelProvider::BrowserTabsModelProvider() = default;
 
@@ -28,5 +27,4 @@ void BrowserTabsModelProvider::NotifyBrowserTabsUpdated(
   }
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

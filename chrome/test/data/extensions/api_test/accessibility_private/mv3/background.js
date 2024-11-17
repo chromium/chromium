@@ -319,6 +319,16 @@ var availableTests = [
     }
 
     chrome.test.succeed();
+  },
+
+  async function testUpdateFaceGazeBubble() {
+    const update = chrome.accessibilityPrivate.updateFaceGazeBubble;
+    chrome.test.notifyPass();
+    update('Hello world');
+    await chrome.test.sendMessage('Confirm hello world');
+    update('');
+    await chrome.test.sendMessage('Confirm empty text');
+    chrome.test.succeed();
   }
 ];
 

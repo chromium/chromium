@@ -111,8 +111,7 @@ enum class ProfileKeepAliveOrigin {
   // An extension .crx is being installed.
   kCrxInstaller = 24,
 
-  // The ProfilePickerView dialog is visible. This normally refers to the System
-  // Profile, but may be a different one in Lacros.
+  // The ProfilePickerView dialog is visible. This refers to the System Profile.
   kProfilePickerView = 25,
 
   // DEPRECATED
@@ -125,18 +124,15 @@ enum class ProfileKeepAliveOrigin {
   // something to show after the profile is destroyed. macOS-specific.
   kHistoryMenuBridge = 28,
 
-  // Protect Lacros Main Profile from being destroyed. Value expected to be set
-  // for main profile and never removed. Lacros main profile shouldn't be
-  // destroyed.
-  kLacrosMainProfile = 29,
+  // DEPRECATED
+  // kLacrosMainProfile = 29,
 
   // This profile is being created, and the SAML flow needs to be completed to
   // finish signin in the user's account.
   kProfileCreationSamlFlow = 30,
 
-  // Used when DriveFS on ChromeOS wants to connect to an extension in Lacros.
-  // This keeps the profile alive while the connection is active.
-  kDriveFsNativeMessageHostLacros = 31,
+  // DEPRECATED
+  // kDriveFsNativeMessageHostLacros = 31,
 
   // Used during the deletion process for the respective profile. Avoids the
   // profile from being randomly unloaded. Useful to keep an ephemeral profile

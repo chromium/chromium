@@ -1,0 +1,6 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.view.View role_description='disclosure triangle' clickable collapsed focusable heading name='details tag'
+++android.view.View
+++++android.view.View role_description='disclosure triangle' clickable expanded focusable heading name='details tag open' item_index=1 row_index=1
+++++android.widget.TextView name='The details tag with open specifies that the details should be visible (open) to the user.'

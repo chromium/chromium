@@ -391,7 +391,6 @@ class TestReportingService : public ReportingService {
 
  private:
   std::vector<Report> reports_;
-  ReportingPolicy dummy_policy_;
 };
 
 }  // namespace net

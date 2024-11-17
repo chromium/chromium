@@ -105,7 +105,7 @@ id<GREYMatcher> BottomToolbar() {
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface clearMockReauthenticationModule];
 
@@ -113,7 +113,7 @@ id<GREYMatcher> BottomToolbar() {
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Returns the label for `creditCard` in the settings page for Autofill credit
@@ -304,7 +304,8 @@ id<GREYMatcher> BottomToolbar() {
 }
 
 // Test that the page for viewing Autofill credit card details is accessible.
-- (void)testAccessibilityOnCreditCardViewPage {
+// TODO(crbug.com/366085550): Re-enable the test.
+- (void)DISABLED_testAccessibilityOnCreditCardViewPage {
   NSString* lastDigits = [AutofillAppInterface saveLocalCreditCard];
   [AutofillAppInterface mockReauthenticationModuleExpectedResult:
                             ReauthenticationResult::kSuccess];

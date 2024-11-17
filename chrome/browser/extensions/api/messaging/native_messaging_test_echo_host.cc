@@ -8,6 +8,7 @@
 
 #include <string.h>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 
 int main(int argc, char* argv[]) {
@@ -38,8 +39,7 @@ int main(int argc, char* argv[]) {
     }
 
     // Reply by echoing the message length and body.
-    write_stream.WriteAtCurrentPos(reinterpret_cast<char*>(&message_len),
-                                   sizeof(message_len));
-    write_stream.WriteAtCurrentPos(message_body.data(), message_len);
+    write_stream.WriteAtCurrentPos(base::byte_span_from_ref(message_len));
+    write_stream.WriteAtCurrentPos(base::as_byte_span(message_body));
   }
 }

@@ -33,8 +33,7 @@ SignalCollectionError PermissionToError(const UserPermission permission) {
     case UserPermission::kMissingUser:
       return SignalCollectionError::kInvalidUser;
     case UserPermission::kGranted:
-      NOTREACHED_IN_MIGRATION();
-      ABSL_FALLTHROUGH_INTENDED;
+      NOTREACHED();
     case UserPermission::kUnsupported:
       return SignalCollectionError::kUnsupported;
   }

@@ -15,7 +15,8 @@ namespace enterprise_obfuscation {
 
 // User data to persist download file obfuscation data for the deobfuscation
 // process.
-struct DownloadObfuscationData : public base::SupportsUserData::Data {
+struct COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION) DownloadObfuscationData
+    : public base::SupportsUserData::Data {
   explicit DownloadObfuscationData(bool is_obfuscated);
   ~DownloadObfuscationData() override;
   static const char kUserDataKey[];
@@ -27,7 +28,7 @@ struct DownloadObfuscationData : public base::SupportsUserData::Data {
 // It is designed to allow using separate instances for obfuscation and
 // deobfuscation of the same file. For deobfuscation with the same instance,
 // reset chunk_counter_ to 0 before starting.
-class DownloadObfuscator {
+class COMPONENT_EXPORT(ENTERPRISE_OBFUSCATION) DownloadObfuscator {
  public:
   DownloadObfuscator();
   ~DownloadObfuscator();

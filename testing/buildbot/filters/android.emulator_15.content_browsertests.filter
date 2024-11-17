@@ -8,6 +8,9 @@
 
 # crbug.com/343335591
 -FormControlsBrowserTest.Button
+-FormControlsBrowserTest.Checkbox
+-FormControlsBrowserTest.MultiSelect
+-FormControlsBrowserTest.Select
 
 # crbug.com/365150687
 -IndexedDBBrowserTest.BlobsCountAgainstQuota

@@ -16,12 +16,6 @@
 
 namespace password_manager {
 
-// The maximum time between the user typed in a text field and subsequent
-// submission of the password form, such that the typed value is considered to
-// be a possible username.
-// Used unless `kUsernameFirstFlowWithIntermediateValues` feature is turned on.
-constexpr auto kPossibleUsernameExpirationTimeout = base::Minutes(1);
-
 // Contains information to uniquely identify the field that is considered to be
 // username in Username First Flow.
 struct PossibleUsernameFieldIdentifier {

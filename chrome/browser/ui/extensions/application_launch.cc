@@ -282,7 +282,7 @@ WebContents* OpenApplicationTab(Profile* profile,
   // this case?
   if (launch_type == extensions::LAUNCH_TYPE_FULLSCREEN &&
       !browser->window()->IsFullscreen()) {
-    chrome::ToggleFullscreenMode(browser);
+    chrome::ToggleFullscreenMode(browser, /*user_initiated=*/false);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   return contents;
@@ -342,8 +342,7 @@ WebContents* OpenEnabledApplicationHelper(Profile* profile,
 
   switch (params.container) {
     case apps::LaunchContainer::kLaunchContainerNone: {
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
     // Panels are deprecated. Launch a normal window instead.
     case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
@@ -355,8 +354,7 @@ WebContents* OpenEnabledApplicationHelper(Profile* profile,
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (supports_web_file_handlers) {
@@ -489,6 +487,7 @@ WebContents* NavigateApplicationWindow(Browser* browser,
 
   NavigateParams nav_params(browser, url, transition);
   nav_params.disposition = disposition;
+  nav_params.pwa_navigation_capturing_force_off = true;
   Navigate(&nav_params);
 
   WebContents* const web_contents = nav_params.navigated_or_inserted_contents;

@@ -5,6 +5,7 @@
 module webapps.mojom;
 
 import "sandbox/policy/mojom/sandbox.mojom";
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 // The WebAppOriginAssociation structure is an internal representation of the
@@ -17,8 +18,13 @@ struct WebAppOriginAssociation {
 
 // |web_app_identity| is the app's manifest id.
 // https://www.w3.org/TR/appmanifest/#dfn-id
+// |scope| is the extended scope the associated site is allowing. It works
+// similar to an app manifest's |scope| in the way that matching is performed,
+// and in the way that relative scopes are resolved relative to the associate's
+// origin. Works with absolute and relative scopes.
 struct AssociatedWebApp {
   url.mojom.Url web_app_identity;
+  url.mojom.Url scope;
 };
 
 struct WebAppOriginAssociationError {
@@ -31,10 +37,12 @@ struct WebAppOriginAssociationError {
 // process, and used as part of the "PWAs as URL Handlers" feature.
 [ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface WebAppOriginAssociationParser {
-  // Parses the |raw_json| into a WebAppOriginAssociation object, along
-  // with any errors. If parsing failed, |association| will be null. If no
-  // errors are found, |errors| will be empty.
-  ParseWebAppOriginAssociation(string raw_json)
+  // Parses the |raw_json| web-app-origin-association file and validates the
+  // |associate_origin| URL + extended "scope" field. Returns a
+  // WebAppOriginAssociation object, along with any errors. If parsing failed,
+  // |association| will be null. If no errors are found, |errors| will be empty.
+  ParseWebAppOriginAssociation(string raw_json,
+                               url.mojom.Origin associate_origin)
     => (WebAppOriginAssociation? association,
         array<WebAppOriginAssociationError> errors);
 };

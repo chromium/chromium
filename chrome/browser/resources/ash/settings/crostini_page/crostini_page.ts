@@ -24,7 +24,7 @@ import './crostini_settings_card.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {PrefsState} from '../common/types.js';
+import type {PrefsState} from '../common/types.js';
 import {Section} from '../mojom-webui/routes.mojom-webui.js';
 
 import {getTemplate} from './crostini_page.html.js';

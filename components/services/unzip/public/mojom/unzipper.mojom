@@ -5,8 +5,8 @@
 module unzip.mojom;
 
 import "components/services/storage/public/mojom/filesystem/directory.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
 struct UnzipOptions {
@@ -53,12 +53,11 @@ interface Unzipper {
   // one IPC for each entry) and only the entries for which it returns true are
   // extracted.
   // If provided, |listener| is called repeatedly with the bytes extracted.
-  Unzip(
-      mojo_base.mojom.ReadOnlyFile zip_file,
-      pending_remote<storage.mojom.Directory> output_dir,
-      UnzipOptions options,
-      pending_remote<UnzipFilter>? filter,
-      pending_remote<UnzipListener>? listener) => (bool result);
+  Unzip(mojo_base.mojom.ReadOnlyFile zip_file,
+        pending_remote<storage.mojom.Directory> output_dir,
+        UnzipOptions options,
+        pending_remote<UnzipFilter>? filter,
+        pending_remote<UnzipListener>? listener) => (bool result);
 
   // Detects the encoding of filenames stored in the ZIP archive.
   // Returns an Encoding as defined in

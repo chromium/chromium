@@ -99,6 +99,7 @@ void HotspotNotifier::OnHotspotTurnedOff(DisableReason disable_reason) {
     case DisableReason::kDownstreamNetworkDisconnect:
     case DisableReason::kStartTimeout:
     case DisableReason::kUpstreamNotAvailable:
+    case DisableReason::kResourceBusy:
     case DisableReason::kUnknownError:
       title_id = IDS_ASH_HOTSPOT_OFF_TITLE;
       message_id = IDS_ASH_HOTSPOT_INTERNAL_ERROR_MESSAGE;

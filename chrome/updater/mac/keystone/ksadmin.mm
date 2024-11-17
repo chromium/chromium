@@ -20,7 +20,6 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/at_exit.h"
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_map.h"
@@ -487,7 +486,11 @@ void KSAdminApp::PrintUsage(const std::string& error_message) {
       "  --version,-v VERS   Set the version. Use with -P.\n"
       "  --version-key,-e    Set the version path key. Use with -P and -a.\n"
       "  --version-path,-a   Set the version path. Use with -P and -e.\n"
-      "  --xcpath,-x PATH    Set a path to use as an existence checker.\n";
+      "  --xcpath,-x PATH    Set a path to use as an existence checker.\n"
+      "\n"
+      "If neither -S nor -U are provided, ksadmin will try to deduce the\n"
+      "correct store, but may return a ticket with a mismatching xcpath if\n"
+      "tickets are present in both stores.\n";
   printf("%s\n", usage_message.c_str());
   Shutdown(error_message.empty() ? 0 : 1);
 }

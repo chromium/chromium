@@ -331,7 +331,7 @@ void TestLibraryUnload(bool wait_until_unloaded, ModuleCache* module_cache) {
 
   UnwindScenario::SampleEvents events;
   TargetThread target_thread(
-      BindLambdaForTesting([&]() { scenario.Execute(&events); }));
+      BindLambdaForTesting([&] { scenario.Execute(&events); }));
   target_thread.Start();
   events.ready_for_sample.Wait();
 
@@ -1182,14 +1182,14 @@ PROFILER_TEST_F(StackSamplingProfilerTest, MultipleSampledThreads) {
   UnwindScenario scenario1(BindRepeating(&CallWithPlainFunction));
   UnwindScenario::SampleEvents events1;
   TargetThread target_thread1(
-      BindLambdaForTesting([&]() { scenario1.Execute(&events1); }));
+      BindLambdaForTesting([&] { scenario1.Execute(&events1); }));
   target_thread1.Start();
   events1.ready_for_sample.Wait();
 
   UnwindScenario scenario2(BindRepeating(&CallWithPlainFunction));
   UnwindScenario::SampleEvents events2;
   TargetThread target_thread2(
-      BindLambdaForTesting([&]() { scenario2.Execute(&events2); }));
+      BindLambdaForTesting([&] { scenario2.Execute(&events2); }));
   target_thread2.Start();
   events2.ready_for_sample.Wait();
 
@@ -1341,7 +1341,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_BeforeStart) {
 
   int add_initial_modules_invocation_count = 0;
   const auto add_initial_modules_callback =
-      [&add_initial_modules_invocation_count]() {
+      [&add_initial_modules_invocation_count] {
         ++add_initial_modules_invocation_count;
       };
 
@@ -1372,7 +1372,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_BeforeStart) {
 
   ASSERT_EQ(1, add_initial_modules_invocation_count);
 
-  // The sample should have one frame from the context values and one from the
+  // The sample should have one frame from the context values aFFnd one from the
   // TestAuxUnwinder.
   ASSERT_EQ(1u, profile.samples.size());
   const std::vector<Frame>& frames = profile.samples[0];
@@ -1391,7 +1391,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest, AddAuxUnwinder_AfterStart) {
 
   int add_initial_modules_invocation_count = 0;
   const auto add_initial_modules_callback =
-      [&add_initial_modules_invocation_count]() {
+      [&add_initial_modules_invocation_count] {
         ++add_initial_modules_invocation_count;
       };
 
@@ -1520,7 +1520,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest,
           [&](SamplingProfilerThreadToken target_thread_token) {
             SynchronizedSampleTimes synchronized_sample_times;
             WaitableEvent sample_seen(WaitableEvent::ResetPolicy::AUTOMATIC);
-            PostSampleInvoker post_sample_invoker(BindLambdaForTesting([&]() {
+            PostSampleInvoker post_sample_invoker(BindLambdaForTesting([&] {
               synchronized_sample_times.AddNow();
               sample_seen.Signal();
             }));
@@ -1587,7 +1587,7 @@ PROFILER_TEST_F(
 
   Profile profile1;
   WaitableEvent sampling_completed1;
-  TargetThread target_thread1(BindLambdaForTesting([&]() {
+  TargetThread target_thread1(BindLambdaForTesting([&] {
     StackSamplingProfiler profiler1(
         target_thread1.thread_token(), params,
         std::make_unique<TestProfileBuilder>(
@@ -1615,7 +1615,7 @@ PROFILER_TEST_F(
 
   Profile profile2;
   WaitableEvent sampling_completed2;
-  TargetThread target_thread2(BindLambdaForTesting([&]() {
+  TargetThread target_thread2(BindLambdaForTesting([&] {
     StackSamplingProfiler profiler2(
         target_thread2.thread_token(), params,
         std::make_unique<TestProfileBuilder>(
@@ -1696,7 +1696,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest,
           [&](SamplingProfilerThreadToken target_thread_token) {
             WaitableEvent sample_seen(WaitableEvent::ResetPolicy::AUTOMATIC);
             PostSampleInvoker post_sample_invoker(
-                BindLambdaForTesting([&]() { sample_seen.Signal(); }));
+                BindLambdaForTesting([&] { sample_seen.Signal(); }));
 
             StackSamplingProfiler profiler(
                 target_thread_token, params,
@@ -1737,7 +1737,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest,
 
   Profile profile1;
   WaitableEvent sampling_completed1;
-  TargetThread target_thread1(BindLambdaForTesting([&]() {
+  TargetThread target_thread1(BindLambdaForTesting([&] {
     StackSamplingProfiler profiler1(
         target_thread1.thread_token(), params,
         std::make_unique<TestProfileBuilder>(
@@ -1761,7 +1761,7 @@ PROFILER_TEST_F(StackSamplingProfilerTest,
 
   Profile profile2;
   WaitableEvent sampling_completed2;
-  TargetThread target_thread2(BindLambdaForTesting([&]() {
+  TargetThread target_thread2(BindLambdaForTesting([&] {
     StackSamplingProfiler profiler2(
         target_thread2.thread_token(), params,
         std::make_unique<TestProfileBuilder>(

@@ -5,7 +5,7 @@
 import './edu_coexistence_template.js';
 import './edu_coexistence_button.js';
 import './common.css.js';
-import '../supervision/supervised_user_error.js';
+import '/supervision/supervised_user_error.js';
 
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 

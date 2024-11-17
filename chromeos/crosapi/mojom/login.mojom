@@ -6,7 +6,6 @@ module crosapi.mojom;
 
 // A container for the SAML properties that are used to launch a SAML user
 // session.
-[Stable]
 struct SamlUserSessionProperties {
   // User's email address.
   string email@0;
@@ -20,14 +19,14 @@ struct SamlUserSessionProperties {
 
 // Interface for the cleanup triggered observer. The cleanup is signaled to
 // Lacros from ash-chrome as part of the |endSharedSession()| API call.
-[Stable, Uuid="883697b4-1fe3-4144-95ae-84afbea67e5c"]
+[Uuid="883697b4-1fe3-4144-95ae-84afbea67e5c"]
 interface LacrosCleanupTriggeredObserver {
   // Triggers a session cleanup for the Lacros browser.
   OnLacrosCleanupTriggered@0() => (string? error);
 };
 
 // Interface for observers of external logout request events.
-[Stable, Uuid="4aee372e-a1f0-482c-bb21-922eac8ba7cc"]
+[Uuid="4aee372e-a1f0-482c-bb21-922eac8ba7cc"]
 interface ExternalLogoutRequestObserver {
   // Called when an external logout is requested.
   OnRequestExternalLogout@0();
@@ -36,7 +35,7 @@ interface ExternalLogoutRequestObserver {
 // This API allows Lacros to call the chrome.login extension API.
 //
 // Next MinVersion: 5
-[Stable, Uuid="639e9f04-981f-46d1-91da-583c2958265b"]
+[Uuid="639e9f04-981f-46d1-91da-583c2958265b"]
 interface Login {
   // Exits the current session. If |data_for_next_login_attempt| is provided,
   // stores data which can be read by |FetchDataForNextLoginAttempt()|.

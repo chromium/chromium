@@ -76,7 +76,8 @@
           "builder": "android-webview-10-x86-rel-tests",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-webview-10-x86-rel-tests/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

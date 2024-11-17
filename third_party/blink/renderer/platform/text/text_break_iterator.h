@@ -73,8 +73,8 @@ AcquireLineBreakIterator(StringView, const AtomicString& locale);
 PLATFORM_EXPORT TextBreakIterator* CursorMovementIterator(
     base::span<const UChar>);
 PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(const String&,
-                                                     int start,
-                                                     int length);
+                                                     wtf_size_t start,
+                                                     wtf_size_t length);
 PLATFORM_EXPORT TextBreakIterator* WordBreakIterator(base::span<const UChar>);
 PLATFORM_EXPORT TextBreakIterator* SentenceBreakIterator(
     base::span<const UChar>);
@@ -221,7 +221,7 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
  private:
   FRIEND_TEST_ALL_PREFIXES(TextBreakIteratorTest, Strictness);
 
-  template <typename CharacterType, bool use_fast_table>
+  template <typename CharacterType>
   struct Context;
 
   const AtomicString& LocaleWithKeyword() const;
@@ -252,13 +252,6 @@ class PLATFORM_EXPORT LazyLineBreakIterator final {
     return iterator_.get();
   }
 
-  template <typename CharacterType,
-            LineBreakType,
-            BreakSpaceType,
-            bool use_fast_table>
-  unsigned NextBreakablePosition(unsigned pos,
-                                 const CharacterType* str,
-                                 unsigned len) const;
   template <typename CharacterType, LineBreakType, BreakSpaceType>
   unsigned NextBreakablePosition(unsigned pos,
                                  const CharacterType* str,
@@ -334,7 +327,7 @@ class PLATFORM_EXPORT NonSharedCharacterBreakIterator final {
 
  public:
   explicit NonSharedCharacterBreakIterator(const StringView&);
-  NonSharedCharacterBreakIterator(const UChar*, unsigned length);
+  explicit NonSharedCharacterBreakIterator(base::span<const UChar>);
   NonSharedCharacterBreakIterator(const NonSharedCharacterBreakIterator&) =
       delete;
   NonSharedCharacterBreakIterator& operator=(
@@ -351,7 +344,7 @@ class PLATFORM_EXPORT NonSharedCharacterBreakIterator final {
   bool operator!() const { return !is_8bit_ && !iterator_; }
 
  private:
-  void CreateIteratorForBuffer(const UChar*, unsigned length);
+  void CreateIteratorForBuffer(base::span<const UChar>);
 
   unsigned ClusterLengthStartingAt(unsigned offset) const {
     DCHECK(is_8bit_);

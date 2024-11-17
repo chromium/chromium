@@ -11,7 +11,6 @@
 #import "base/time/time.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
-#import "components/variations/service/variations_field_trial_creator.h"
 #import "components/variations/service/variations_service_utils.h"
 #import "components/variations/variations_seed_store.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -29,14 +28,11 @@ const char kIOSChromeVariationsTrialName[] = "kIOSChromeVariationsTrial";
 const char kIOSChromeVariationsTrialDefaultGroup[] = "Default";
 const char kIOSChromeVariationsTrialControlGroup[] = "Control-v1";
 const char kIOSChromeVariationsTrialEnabledGroup[] = "Enabled-v1";
-// Histogram name for seed expiry.
-const char kIOSSeedExpiryHistogram[] = "IOS.Variations.CreateTrials.SeedExpiry";
 
 namespace {
 
 using ::variations::HasSeedExpiredSinceTime;
 using ::variations::SeedApplicationStage;
-using ::variations::VariationsSeedExpiry;
 using ::variations::VariationsSeedStore;
 
 // The NSUserDefault key to store the time the last seed is fetched.
@@ -64,21 +60,6 @@ base::Time GetLastVariationsSeedFetchTime() {
   double timestamp = [[NSUserDefaults standardUserDefaults]
       doubleForKey:kLastVariationsSeedFetchTimeKey];
   return base::Time::FromSecondsSinceUnixEpoch(timestamp);
-}
-
-// Records metric for `kIOSSeedExpiryHistogram` according whether there is a
-// seed in the variations seed store fetched by a previous run, and if there is,
-// whether it is expired.
-void RecordSeedExpiry(base::Time time) {
-  VariationsSeedExpiry expiry;
-  if (time.is_null()) {
-    expiry = VariationsSeedExpiry::kFetchTimeMissing;
-  } else if (HasSeedExpiredSinceTime(time)) {
-    expiry = VariationsSeedExpiry::kExpired;
-  } else {
-    expiry = VariationsSeedExpiry::kNotExpired;
-  }
-  base::UmaHistogramEnumeration(kIOSSeedExpiryHistogram, expiry);
 }
 
 // Creates and returns a one-time randomized trial group assignment with regards
@@ -115,8 +96,7 @@ void ActivateFieldTrialForGroup(IOSChromeVariationsGroup group) {
   std::string group_name;
   switch (group) {
     case IOSChromeVariationsGroup::kNotAssigned:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case IOSChromeVariationsGroup::kNotFirstRun:
       // First run completed before the experiment is setup. Use group
       // name from previous launches if exists, or leave empty if not.
@@ -211,7 +191,6 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
     _group = firstRun ? CreateOneTimeExperimentGroupAssignment(
                             enabledGroupWeight, controlGroupWeight)
                       : IOSChromeVariationsGroup::kNotFirstRun;
-    RecordSeedExpiry(lastSeedFetchTime);
     if (_group == IOSChromeVariationsGroup::kEnabled) {
       _fetcher = fetcher;
       _fetcher.delegate = self;
@@ -229,8 +208,9 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 #pragma mark - AppAgentObserver
 
 - (void)appState:(AppState*)appState
-    willTransitionToInitStage:(InitStage)nextInitStage {
-  if (self.appState.initStage == InitStageBrowserObjectsForBackgroundHandlers) {
+    willTransitionToInitStage:(AppInitStage)nextInitStage {
+  if (self.appState.initStage ==
+      AppInitStage::kBrowserObjectsForBackgroundHandlers) {
     // Records whether the fetched seed for first run has been applied, and if
     // not, which stage has the seed application process reached.
     //
@@ -249,8 +229,8 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 #pragma mark - ObservingAppAgent
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (self.appState.initStage == InitStageVariationsSeed) {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  if (self.appState.initStage == AppInitStage::kVariationsSeed) {
     // Keep waiting for the seed if the app should have variations seed fetched
     // but hasn't.
     if (_group != IOSChromeVariationsGroup::kEnabled || _seedFetchCompleted) {
@@ -264,7 +244,7 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
     transitionedToActivationLevel:(SceneActivationLevel)level {
   // If the app would be showing UI before Chrome UI is ready, extend the launch
   // screen.
-  if (self.appState.initStage == InitStageVariationsSeed &&
+  if (self.appState.initStage == AppInitStage::kVariationsSeed &&
       _group == IOSChromeVariationsGroup::kEnabled &&
       level > SceneActivationLevelBackground && !_extendedLaunchScreenShown) {
     [self showExtendedLaunchScreen:sceneState];
@@ -274,7 +254,8 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
   // to background.
   if (_previousActivationLevel > SceneActivationLevelBackground &&
       level == SceneActivationLevelBackground &&
-      self.appState.initStage > InitStageBrowserObjectsForBackgroundHandlers) {
+      self.appState.initStage >
+          AppInitStage::kBrowserObjectsForBackgroundHandlers) {
     SaveFetchTimeOfLatestSeedInLocalState();
   }
   _previousActivationLevel = level;
@@ -285,10 +266,10 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 
 - (void)variationsSeedFetcherDidCompleteFetchWithSuccess:(BOOL)success {
   DCHECK_EQ(_group, IOSChromeVariationsGroup::kEnabled);
-  DCHECK_LE(self.appState.initStage, InitStageVariationsSeed);
+  DCHECK_LE(self.appState.initStage, AppInitStage::kVariationsSeed);
   _seedFetchCompleted = YES;
   _fetcher.delegate = nil;
-  if (self.appState.initStage == InitStageVariationsSeed) {
+  if (self.appState.initStage == AppInitStage::kVariationsSeed) {
     [self.appState queueTransitionToNextInitStage];
   }
 }
@@ -299,11 +280,8 @@ void SaveFetchTimeOfLatestSeedInLocalState() {
 // scene will be active on the foreground but the seed has not been fetched to
 // initialize Chrome.
 - (void)showExtendedLaunchScreen:(SceneState*)sceneState {
-  DCHECK(sceneState.window);
-  // Set up view controller.
-  UIViewController* controller = [[LaunchScreenViewController alloc] init];
-  [sceneState.window setRootViewController:controller];
-  [sceneState.window makeKeyAndVisible];
+  [sceneState setRootViewController:[[LaunchScreenViewController alloc] init]
+                  makeKeyAndVisible:YES];
 }
 
 @end

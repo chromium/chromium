@@ -133,7 +133,7 @@ class WaylandTestBase {
   std::unique_ptr<WaylandWindow> window_;
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
   std::vector<base::test::FeatureRef> enabled_features_{
-      features::kLacrosColorManagement, ui::kWaylandOverlayDelegation};
+      ui::kWaylandOverlayDelegation};
   std::vector<base::test::FeatureRef> disabled_features_;
 
  private:
@@ -153,8 +153,6 @@ class WaylandTest : public WaylandTestBase,
 
   void SetUp() override;
   void TearDown() override;
-
-  bool IsAuraShellEnabled();
 };
 
 // Version of WaylandTest that uses simple test fixtures (TEST_F).
@@ -165,20 +163,6 @@ class WaylandTestSimple : public WaylandTestBase, public ::testing::Test {
   WaylandTestSimple(const WaylandTestSimple&) = delete;
   WaylandTestSimple& operator=(const WaylandTestSimple&) = delete;
   ~WaylandTestSimple() override;
-
-  void SetUp() override;
-  void TearDown() override;
-};
-
-// Version of WaylandTest that uses simple test fixtures (TEST_F) and
-// aura_shell enabled.
-class WaylandTestSimpleWithAuraShell : public WaylandTestBase,
-                                       public ::testing::Test {
- public:
-  WaylandTestSimpleWithAuraShell();
-  WaylandTestSimpleWithAuraShell(const WaylandTestSimple&) = delete;
-  WaylandTestSimpleWithAuraShell& operator=(const WaylandTestSimple&) = delete;
-  ~WaylandTestSimpleWithAuraShell() override;
 
   void SetUp() override;
   void TearDown() override;

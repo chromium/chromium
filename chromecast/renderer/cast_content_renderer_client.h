@@ -59,8 +59,8 @@ class CastContentRendererClient
   std::unique_ptr<::media::KeySystemSupportRegistration> GetSupportedKeySystems(
       content::RenderFrame* render_frame,
       ::media::GetSupportedKeySystemsCB cb) override;
-  bool IsSupportedAudioType(const ::media::AudioType& type) override;
-  bool IsSupportedVideoType(const ::media::VideoType& type) override;
+  bool IsDecoderSupportedAudioType(const ::media::AudioType& type) override;
+  bool IsDecoderSupportedVideoType(const ::media::VideoType& type) override;
   bool IsSupportedBitstreamAudioCodec(::media::AudioCodec codec) override;
   std::unique_ptr<blink::WebPrescientNetworking> CreatePrescientNetworking(
       content::RenderFrame* render_frame) override;

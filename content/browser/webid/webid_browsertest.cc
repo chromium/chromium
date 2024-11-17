@@ -211,7 +211,7 @@ class IdpTestServer {
 
   std::string ConvertToJsonDictionary(
       const std::map<std::string, std::string>& data,
-      const std::vector<std::string> types) {
+      const std::vector<std::string>& types) {
     std::string out = "{";
     for (auto it : data) {
       out += "\"" + it.first + "\":\"" + it.second + "\",";
@@ -1421,16 +1421,13 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
             content += "account_id=not_real_account&";
             content += "disclosure_text_shown=false&";
             content += "is_auto_selected=false&";
+            content += "mode=passive&";
             // Asserts that the fields and params parameters
             // were passed correctly to the id assertion endpoint.
             content += "fields=name,email,picture&";
-            content += "param_%3F+gets+://=%26+escaped+!&";
-            content += "param_foo=bar&";
-            content += "param_hello=world&";
             content +=
-                "params=%7B%22%3F+gets+://"
-                "%22:%22%26+escaped+!%22,%22foo%22:%22bar%22,%22hello%22:%"
-                "22world%22%7D";
+                "params=%7B%22foo%22:%22bar%22,%22hello%22"
+                ":%22world%22,%22%3F+gets+://%22:%22%26+escaped+!%22%7D";
 
             EXPECT_EQ(request.content, content);
 
@@ -1481,12 +1478,8 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
   EXPECT_EQ(std::string("[request lgtm!]"), EvalJs(shell(), script));
 }
 
-// Verify that the Authz parameters are passed to the id assertion endpoint.
+// Verify that subsets of the default fields work.
 IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_invalidFields) {
-  WebContentsConsoleObserver console_observer(shell()->web_contents());
-  console_observer.SetPattern(
-      "Invalid 'fields' were specified in the FedCM call.");
-
   IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
 
   // Points the id assertion endpoint to a servlet.
@@ -1512,9 +1505,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_invalidFields) {
       }) ()
     )";
 
-  std::string expected_error = "NetworkError: Error retrieving a token.";
-  EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), script)));
-  ASSERT_TRUE(console_observer.Wait());
+  EXPECT_EQ(std::string("[not a real token]"), EvalJs(shell(), script));
 }
 
 // Verify that the id assertion endpoint can request a pop-up window.
@@ -1538,6 +1529,7 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
             content += "account_id=not_real_account&";
             content += "disclosure_text_shown=false&";
             content += "is_auto_selected=false&";
+            content += "mode=passive&";
             content += "fields=locale";
 
             EXPECT_EQ(request.content, content);
@@ -1759,6 +1751,45 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest,
   WebContentsConsoleObserver console_observer(shell()->web_contents());
   EXPECT_EQ(std::string(kToken), EvalJs(shell(), script));
   EXPECT_TRUE(console_observer.messages().empty());
+}
+
+class WebIdModeBrowserTest : public WebIdBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_feature_list_.InitAndEnableFeature(features::kFedCmButtonMode);
+    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
+  }
+};
+
+// Verify that using mode: button in the API call logs to console.
+IN_PROC_BROWSER_TEST_F(WebIdModeBrowserTest, UseModeButtonInsteadOfActive) {
+  idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
+
+  std::string script = R"(
+        (async () => {
+          var x = (await navigator.credentials.get({
+            identity: {
+              providers: [{
+                configURL: ')" +
+                       BaseIdpUrl() + R"(',
+                clientId: 'client_id_1',
+                nonce: '12345',
+              }],
+              mode: 'button'
+            },
+          }));
+          return x.token;
+        }) ()
+    )";
+
+  WebContentsConsoleObserver console_observer(shell()->web_contents());
+  console_observer.SetPattern(
+      "The mode button/widget are renamed to active/passive respectively and "
+      "will be deprecated soon.");
+  EXPECT_EQ(std::string(kToken), EvalJs(shell(), script));
+  EXPECT_TRUE(base::MatchPattern(console_observer.GetMessageAt(0u),
+                                 "*The mode button*"));
+  ASSERT_TRUE(console_observer.Wait());
 }
 
 }  // namespace content

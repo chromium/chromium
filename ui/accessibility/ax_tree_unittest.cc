@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_tree.h"
 
 #include "base/containers/contains.h"
+#include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -98,10 +99,10 @@ void AssertReverseRelationFor(ax::mojom::IntListAttribute relation) {
 class TestAXTreeObserver final : public AXTreeObserver {
  public:
   explicit TestAXTreeObserver(AXTree* tree)
-      : tree_(tree), tree_data_changed_(false), root_changed_(false) {
-    tree_->AddObserver(this);
+      : tree_data_changed_(false), root_changed_(false) {
+    observation_.Observe(tree);
   }
-  ~TestAXTreeObserver() override { tree_->RemoveObserver(this); }
+  ~TestAXTreeObserver() override = default;
 
   void OnNodeDataWillChange(AXTree* tree,
                             const AXNodeData& old_node_data,
@@ -300,7 +301,6 @@ class TestAXTreeObserver final : public AXTreeObserver {
   }
 
  private:
-  raw_ptr<AXTree> tree_;
   bool tree_data_changed_;
   bool root_changed_;
   std::vector<int32_t> deleted_ids_;
@@ -317,6 +317,7 @@ class TestAXTreeObserver final : public AXTreeObserver {
   std::vector<int32_t> subtree_reparented_finished_ids_;
   std::vector<int32_t> change_finished_ids_;
   std::vector<std::string> attribute_change_log_;
+  base::ScopedObservation<AXTree, AXTreeObserver> observation_{this};
 };
 
 // UTF encodings that are tested by the `AXTreeTestWithMultipleUTFEncodings`

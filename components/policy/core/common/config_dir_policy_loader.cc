@@ -51,7 +51,7 @@ ConfigDirPolicyLoader::ConfigDirPolicyLoader(
       config_dir_(config_dir),
       scope_(scope) {}
 
-ConfigDirPolicyLoader::~ConfigDirPolicyLoader() {}
+ConfigDirPolicyLoader::~ConfigDirPolicyLoader() = default;
 
 void ConfigDirPolicyLoader::InitOnBackgroundThread() {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());

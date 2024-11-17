@@ -100,10 +100,13 @@ public class PiiElider {
     private static final String[] SYSTEM_NAMESPACE =
             new String[] {
                 "android.",
+                "c2.", // MediaCodec names.
                 "com.android.",
                 "dalvik.",
                 "java.",
                 "javax.",
+                "omx.", // MediaCodec names.
+                "OMX.",
                 "org.apache.",
                 "org.json.",
                 "org.w3c.dom.",

@@ -341,8 +341,7 @@ std::vector<MediaEngagementScore> MediaEngagementService::GetAllStoredScores()
     url::Origin origin =
         url::Origin::Create(GURL(site.primary_pattern.ToString()));
     if (origin.opaque()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     if (base::FeatureList::IsEnabled(media::kMediaEngagementHTTPSOnly) &&

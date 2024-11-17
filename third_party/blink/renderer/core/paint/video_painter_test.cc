@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/media/media_player_client.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -65,7 +66,8 @@ size_t CountImagesOfType(const PaintRecord& record, cc::ImageType image_type) {
 
 class StubWebMediaPlayer : public EmptyWebMediaPlayer {
  public:
-  StubWebMediaPlayer(WebMediaPlayerClient* client) : client_(client) {}
+  explicit StubWebMediaPlayer(WebMediaPlayerClient* client)
+      : client_(static_cast<MediaPlayerClient*>(client)) {}
 
   const cc::Layer* GetCcLayer() { return layer_.get(); }
 
@@ -88,7 +90,7 @@ class StubWebMediaPlayer : public EmptyWebMediaPlayer {
   ReadyState GetReadyState() const override { return ready_state_; }
 
  private:
-  WebMediaPlayerClient* client_;
+  MediaPlayerClient* client_;
   scoped_refptr<cc::Layer> layer_;
   NetworkState network_state_ = kNetworkStateEmpty;
   ReadyState ready_state_ = kReadyStateHaveNothing;

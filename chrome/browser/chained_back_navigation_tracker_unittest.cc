@@ -11,8 +11,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_simulator.h"
 
-namespace chrome {
-
 class ChainedBackNavigationTrackerTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -176,5 +174,3 @@ TEST_F(ChainedBackNavigationTrackerTest,
     }
   }
 }
-
-}  // namespace chrome

@@ -232,7 +232,7 @@ bool ShouldHandleElement(
 
 }  // namespace
 
-TagAndAttributesItem::TagAndAttributesItem() {}
+TagAndAttributesItem::TagAndAttributesItem() = default;
 
 TagAndAttributesItem::TagAndAttributesItem(
     const std::string& tag_name_param,
@@ -242,7 +242,7 @@ TagAndAttributesItem::TagAndAttributesItem(
 TagAndAttributesItem::TagAndAttributesItem(const TagAndAttributesItem& item)
     : tag_name(item.tag_name), attributes(item.attributes) {}
 
-TagAndAttributesItem::~TagAndAttributesItem() {}
+TagAndAttributesItem::~TagAndAttributesItem() = default;
 
 uint32_t ThreatDOMDetails::kMaxNodes = 500;
 uint32_t ThreatDOMDetails::kMaxAttributes = 100;
@@ -272,7 +272,7 @@ ThreatDOMDetails::ThreatDOMDetails(content::RenderFrame* render_frame,
       &ThreatDOMDetails::OnThreatReporterReceiver, base::Unretained(this)));
 }
 
-ThreatDOMDetails::~ThreatDOMDetails() {}
+ThreatDOMDetails::~ThreatDOMDetails() = default;
 
 void ThreatDOMDetails::GetThreatDOMDetails(
     GetThreatDOMDetailsCallback callback) {

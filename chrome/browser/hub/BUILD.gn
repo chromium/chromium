@@ -27,6 +27,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/HubLayoutScrimController.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubManager.java",
     "android/java/src/org/chromium/chrome/browser/hub/HubShowPaneHelper.java",
+    "android/java/src/org/chromium/chrome/browser/hub/HubUtils.java",
     "android/java/src/org/chromium/chrome/browser/hub/LoadHint.java",
     "android/java/src/org/chromium/chrome/browser/hub/Pane.java",
     "android/java/src/org/chromium/chrome/browser/hub/PaneHubController.java",
@@ -43,6 +44,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimationData.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandAnimator.java",
     "android/java/src/org/chromium/chrome/browser/hub/ShrinkExpandImageView.java",
+    "android/java/src/org/chromium/chrome/browser/hub/TabSwitcherDrawableButtonData.java",
   ]
 
   deps = [
@@ -51,7 +53,9 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/appmenu:java",
+    "//chrome/browser/ui/android/edge_to_edge:java",
     "//chrome/browser/ui/android/layouts:java",
+    "//components/browser_ui/edge_to_edge/android:java",
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//third_party/android_deps:guava_android_java",
@@ -68,6 +72,8 @@ android_library_factory("factory_java") {
     "//chrome/browser/back_press/android:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/edge_to_edge:java",
+    "//chrome/browser/ui/android/searchactivityutils:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/browser/ui/messages/android:java",
     "//components/browser_ui/widget/android:java",

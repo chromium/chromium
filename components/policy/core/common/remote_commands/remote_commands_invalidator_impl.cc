@@ -11,6 +11,7 @@
 #include "components/invalidation/public/invalidation.h"
 #include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/core/common/cloud/policy_invalidation_util.h"
+#include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
 #include "components/policy/core/common/remote_commands/remote_commands_service.h"
 
 namespace policy {
@@ -26,10 +27,8 @@ const char* GetInvalidationMetricName(PolicyInvalidationScope scope) {
     case PolicyInvalidationScope::kCBCM:
       return kMetricCBCMRemoteCommandInvalidations;
     case PolicyInvalidationScope::kDeviceLocalAccount:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected instance of remote commands invalidator with "
-             "device local account scope.";
-      return "";
+      NOTREACHED() << "Unexpected instance of remote commands invalidator with "
+                      "device local account scope.";
   }
 }
 
@@ -42,10 +41,8 @@ std::string ComposeOwnerName(PolicyInvalidationScope scope) {
     case PolicyInvalidationScope::kCBCM:
       return "RemoteCommands.CBCM";
     case PolicyInvalidationScope::kDeviceLocalAccount:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected instance of remote commands invalidator with "
-             "device local account scope.";
-      return "";
+      NOTREACHED() << "Unexpected instance of remote commands invalidator with "
+                      "device local account scope.";
   }
 }
 
@@ -88,13 +85,15 @@ void RemoteCommandsInvalidatorImpl::DoRemoteCommandsFetch(
 
   RecordInvalidationMetric(invalidation);
 
-  core_->remote_commands_service()->FetchRemoteCommands();
+  core_->remote_commands_service()->FetchRemoteCommands(
+      RemoteCommandsFetchReason::kInvalidation);
 }
 
 void RemoteCommandsInvalidatorImpl::DoInitialRemoteCommandsFetch() {
   CHECK(core_->remote_commands_service());
 
-  core_->remote_commands_service()->FetchRemoteCommands();
+  core_->remote_commands_service()->FetchRemoteCommands(
+      RemoteCommandsFetchReason::kStartup);
 }
 
 void RemoteCommandsInvalidatorImpl::OnCoreConnected(CloudPolicyCore* core) {}

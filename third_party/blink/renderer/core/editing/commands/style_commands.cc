@@ -97,8 +97,7 @@ bool StyleCommands::ApplyCommandToFrame(LocalFrame& frame,
       ApplyStyle(frame, style, input_type);
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool StyleCommands::ExecuteApplyStyle(LocalFrame& frame,

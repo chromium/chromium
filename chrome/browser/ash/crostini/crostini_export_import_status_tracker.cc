@@ -18,7 +18,8 @@ CrostiniExportImportStatusTracker::CrostiniExportImportStatusTracker(
     base::FilePath path)
     : type_(type), path_(path) {
   DCHECK(type == ExportImportType::EXPORT || type == ExportImportType::IMPORT ||
-         type == ExportImportType::EXPORT_DISK_IMAGE);
+         type == ExportImportType::EXPORT_DISK_IMAGE ||
+         type == ExportImportType::IMPORT_DISK_IMAGE);
 }
 
 CrostiniExportImportStatusTracker::~CrostiniExportImportStatusTracker() =

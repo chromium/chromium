@@ -235,6 +235,12 @@ void LoginProfilePolicyProvider::UpdateFromDevicePolicy() {
   PolicyBundle bundle;
   PolicyMap& user_policy_map = bundle.Get(chrome_namespaces);
 
+  // We generally do not want the dino game being played on the login screen,
+  // see crbug.com/375062959.
+  user_policy_map.Set(key::kAllowDinosaurEasterEgg,
+                      PolicyLevel::POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                      POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
+
   // The device policies which includes the policy options
   // |kDevicePoliciesWithPolicyOptionsMap| should be applied after
   // |kRecommendedDevicePoliciesMap|, because its overrides some deprecated ones

@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_gatt_manager_client.h"
 
@@ -15,8 +16,9 @@ namespace bluez {
 FakeBluetoothGattApplicationServiceProvider::
     FakeBluetoothGattApplicationServiceProvider(
         const dbus::ObjectPath& object_path,
-        const std::map<dbus::ObjectPath, BluetoothLocalGattServiceBlueZ*>&
-            services)
+        const std::map<
+            dbus::ObjectPath,
+            raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>& services)
     : object_path_(object_path) {
   DVLOG(1) << "Creating Bluetooth GATT application: " << object_path_.value();
 

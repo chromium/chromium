@@ -207,7 +207,7 @@ int SerializeWindowShowState(ui::mojom::WindowShowState show_state) {
       return kSerializedShowStateFullscreen;
     case ui::mojom::WindowShowState::kEnd:
       // This should never happen.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return kSerializedShowStateInvalid;
 }
@@ -377,7 +377,7 @@ std::unique_ptr<sessions::tab_restore::Window> CreateWindowEntryFromCommand(
   } else {
     // This should never be called with anything other than a known window
     // command ID.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // Create the Window entry.
@@ -1184,8 +1184,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
           DCHECK_EQ(current_group.has_value(), false);
           if (!current_window->first) {
             // We should have created a window already.
-            NOTREACHED_IN_MIGRATION();
-            return;
+            NOTREACHED();
           }
           current_window->first->tabs.push_back(
               std::make_unique<tab_restore::Tab>());
@@ -1196,8 +1195,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
         } else if (current_group.has_value()) {
           if (!current_group->first) {
             // We should have created a group already.
-            NOTREACHED_IN_MIGRATION();
-            return;
+            NOTREACHED();
           }
           current_group->first->tabs.push_back(
               std::make_unique<tab_restore::Tab>());
@@ -1284,8 +1282,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
       case kCommandSetWindowAppName: {
         if (!current_window->first) {
           // We should have created a window already.
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
         }
 
         SessionID window_id = SessionID::InvalidValue();
@@ -1353,8 +1350,7 @@ void TabRestoreServiceImpl::PersistenceDelegate::CreateEntriesFromCommands(
       case kCommandSetWindowUserTitle: {
         if (!current_window->first) {
           // We should have created a window already.
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
         }
 
         SessionID window_id = SessionID::InvalidValue();

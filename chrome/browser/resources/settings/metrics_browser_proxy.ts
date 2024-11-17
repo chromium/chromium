@@ -11,28 +11,29 @@
  * numeric values should never be reused.
  *
  * Must be kept in sync with the SettingsPrivacyElementInteractions enum in
- * histograms/enums.xml
+ * histograms/metadata/settings/enums.xml
  */
+// LINT.IfChange(PrivacyElementInteractions)
 export enum PrivacyElementInteractions {
-  SYNC_AND_GOOGLE_SERVICES = 0,
-  CHROME_SIGN_IN = 1,
+  // SYNC_AND_GOOGLE_SERVICES = 0,
+  // CHROME_SIGN_IN = 1,
   DO_NOT_TRACK = 2,
   PAYMENT_METHOD = 3,
-  NETWORK_PREDICTION = 4,
+  // NETWORK_PREDICTION = 4,
   MANAGE_CERTIFICATES = 5,
-  SAFE_BROWSING = 6,
-  PASSWORD_CHECK = 7,
+  // SAFE_BROWSING = 6,
+  // PASSWORD_CHECK = 7,
   IMPROVE_SECURITY = 8,
-  COOKIES_ALL = 9,
-  COOKIES_INCOGNITO = 10,
-  COOKIES_THIRD = 11,
-  COOKIES_BLOCK = 12,
-  COOKIES_SESSION = 13,
-  SITE_DATA_REMOVE_ALL = 14,
-  SITE_DATA_REMOVE_FILTERED = 15,
-  SITE_DATA_REMOVE_SITE = 16,
-  COOKIE_DETAILS_REMOVE_ALL = 17,
-  COOKIE_DETAILS_REMOVE_ITEM = 18,
+  // COOKIES_ALL = 9,
+  // COOKIES_INCOGNITO = 10,
+  // COOKIES_THIRD = 11,
+  // COOKIES_BLOCK = 12,
+  // COOKIES_SESSION = 13,
+  // SITE_DATA_REMOVE_ALL = 14,
+  // SITE_DATA_REMOVE_FILTERED = 15,
+  // SITE_DATA_REMOVE_SITE = 16,
+  // COOKIE_DETAILS_REMOVE_ALL = 17,
+  // COOKIE_DETAILS_REMOVE_ITEM = 18,
   SITE_DETAILS_CLEAR_DATA = 19,
   THIRD_PARTY_COOKIES_ALLOW = 20,
   THIRD_PARTY_COOKIES_BLOCK_IN_INCOGNITO = 21,
@@ -43,6 +44,7 @@ export enum PrivacyElementInteractions {
   // Max value should be updated whenever new entries are added.
   MAX_VALUE = 26,
 }
+// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsPrivacyElementInteractions)
 
 /**
  * Contains all Safety Hub card states.
@@ -346,12 +348,107 @@ export enum CardBenefitsUserAction {
   CARD_BENEFITS_TERMS_LINK_CLICKED = 'CardBenefits_TermsLinkClicked',
 }
 
+/**
+ * Contains all recorded interactions across AI settings page.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the SettingsAiPageInteractions enum in
+ * histograms/metadata/settings/enums.xml
+ */
+// LINT.IfChange(AiPageInteractions)
+export enum AiPageInteractions {
+  HISTORY_SEARCH_CLICK = 0,
+  COMPARE_CLICK = 1,
+  COMPOSE_CLICK = 2,
+  TAB_ORGANIZATION_CLICK = 3,
+  WALLPAPER_SEARCH_CLICK = 4,
+  MAX_VALUE = 5,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageInteractions)
+
+/**
+ * Contains all recorded interactions in the AI History Search settings page.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the SettingsAiPageHistorySearchInteractions enum in
+ * histograms/metadata/settings/enums.xml
+ */
+// LINT.IfChange(AiPageHistorySearchInteractions)
+export enum AiPageHistorySearchInteractions {
+  HISTORY_SEARCH_ENABLED = 0,
+  HISTORY_SEARCH_DISABLED = 1,
+  FEATURE_LINK_CLICKED = 2,
+  LEARN_MORE_LINK_CLICKED = 3,
+  MAX_VALUE = 4,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageHistorySearchInteractions)
+
+/**
+ * Contains all recorded interactions in the AI Compare settings page.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the SettingsAiPageCompareInteractions enum in
+ * histograms/metadata/settings/enums.xml
+ */
+// LINT.IfChange(AiPageCompareInteractions)
+export enum AiPageCompareInteractions {
+  FEATURE_LINK_CLICKED = 0,
+  LEARN_MORE_LINK_CLICKED = 1,
+  MAX_VALUE = 2,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageCompareInteractions)
+
+/**
+ * Contains all recorded interactions in the AI Compose settings page.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the SettingsAiPageComposeInteractions enum in
+ * histograms/metadata/settings/enums.xml
+ */
+// LINT.IfChange(AiPageComposeInteractions)
+export enum AiPageComposeInteractions {
+  LEARN_MORE_LINK_CLICKED = 0,
+  COMPOSE_PROACTIVE_NUDGE_ENABLED = 1,
+  COMPOSE_PROACTIVE_NUDGE_DISABLED = 2,
+  MAX_VALUE = 3,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageComposeInteractions)
+
+/**
+ * Contains all recorded interactions in the AI Tab Organization settings page.
+ *
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ *
+ * Must be kept in sync with the SettingsAiPageTabOrganizationInteractions enum
+ * in histograms/metadata/settings/enums.xml
+ */
+// LINT.IfChange(AiPageTabOrganizationInteractions)
+export enum AiPageTabOrganizationInteractions {
+  LEARN_MORE_LINK_CLICKED = 0,
+  MAX_VALUE = 1,
+}
+// LINT.ThenChange(/tools/metrics/histograms/metadata/settings/enums.xml:SettingsAiPageTabOrganizationInteractions)
+
 export interface MetricsBrowserProxy {
   /**
    * Helper function that calls recordAction with one action from
    * tools/metrics/actions/actions.xml.
    */
   recordAction(action: string): void;
+
+  /**
+   * Helper function that calls recordBooleanHistogram with the histogramName.
+   */
+  recordBooleanHistogram(histogramName: string, visible: boolean): void;
 
   /**
    * Helper function that calls recordHistogram for the
@@ -542,11 +639,50 @@ export interface MetricsBrowserProxy {
    */
   recordFeatureNotificationsChange(enabled: boolean): void;
   // </if>
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.AiPage.Interactions histogram
+   */
+  recordAiPageInteractions(interaction: AiPageInteractions): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.AiPage.HistorySearch.Interactions histogram
+   */
+  recordAiPageHistorySearchInteractions(
+      interaction: AiPageHistorySearchInteractions): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.AiPage.Compare.Interactions histogram
+   */
+  recordAiPageCompareInteractions(interaction: AiPageCompareInteractions): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.AiPage.Compose.Interactions histogram
+   */
+  recordAiPageComposeInteractions(interaction: AiPageComposeInteractions): void;
+
+  /**
+   * Helper function that calls recordHistogram for the
+   * Settings.AiPage.TabOrganization.Interactions histogram
+   */
+  recordAiPageTabOrganizationInteractions(
+      interaction: AiPageTabOrganizationInteractions): void;
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
   recordAction(action: string) {
     chrome.send('metricsHandler:recordAction', [action]);
+  }
+
+  recordBooleanHistogram(histogramName: string, visible: boolean): void {
+    chrome.send('metricsHandler:recordBooleanHistogram', [
+      histogramName,
+      visible,
+    ]);
   }
 
   recordSafetyCheckInteractionHistogram(interaction: SafetyCheckInteractions) {
@@ -780,6 +916,50 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
         'Windows.FeatureNotificationsSettingChange', enabled);
   }
   // </if>
+
+  recordAiPageInteractions(interaction: AiPageInteractions): void {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.AiPage.Interactions',
+      interaction,
+      AiPageInteractions.MAX_VALUE,
+    ]);
+  }
+
+  recordAiPageHistorySearchInteractions(
+      interaction: AiPageHistorySearchInteractions): void {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.AiPage.HistorySearch.Interactions',
+      interaction,
+      AiPageHistorySearchInteractions.MAX_VALUE,
+    ]);
+  }
+
+  recordAiPageCompareInteractions(interaction: AiPageCompareInteractions):
+      void {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.AiPage.Compare.Interactions',
+      interaction,
+      AiPageCompareInteractions.MAX_VALUE,
+    ]);
+  }
+
+  recordAiPageComposeInteractions(interaction: AiPageComposeInteractions):
+      void {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.AiPage.Compose.Interactions',
+      interaction,
+      AiPageComposeInteractions.MAX_VALUE,
+    ]);
+  }
+
+  recordAiPageTabOrganizationInteractions(
+      interaction: AiPageTabOrganizationInteractions): void {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Settings.AiPage.TabOrganization.Interactions',
+      interaction,
+      AiPageTabOrganizationInteractions.MAX_VALUE,
+    ]);
+  }
 
   static getInstance(): MetricsBrowserProxy {
     return instance || (instance = new MetricsBrowserProxyImpl());

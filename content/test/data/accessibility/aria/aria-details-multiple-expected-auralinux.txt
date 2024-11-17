@@ -1,6 +1,6 @@
 [document web]
 ++[static] name='Some '
-++[static] details=[description value,footnote,section]
+++[static] details=[description value,footnote,section] details-from:aria-details
 ++++[static] name='highlighted text'
 ++[static] name=' example.'
 ++[section] details-for=[static]

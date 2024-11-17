@@ -35,8 +35,7 @@ struct EnumTraits<network::mojom::HashAlgorithm,
       case net::ct::DigitallySigned::HASH_ALGO_SHA512:
         return network::mojom::HashAlgorithm::HASH_ALGO_SHA512;
     }
-    NOTREACHED_IN_MIGRATION();
-    return network::mojom::HashAlgorithm::HASH_ALGO_NONE;
+    NOTREACHED();
   }
 
   static bool FromMojom(network::mojom::HashAlgorithm input,
@@ -64,8 +63,7 @@ struct EnumTraits<network::mojom::HashAlgorithm,
         *output = net::ct::DigitallySigned::HASH_ALGO_SHA512;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -84,8 +82,7 @@ struct EnumTraits<network::mojom::SignatureAlgorithm,
       case net::ct::DigitallySigned::SIG_ALGO_ECDSA:
         return network::mojom::SignatureAlgorithm::SIG_ALGO_ECDSA;
     }
-    NOTREACHED_IN_MIGRATION();
-    return network::mojom::SignatureAlgorithm::SIG_ALGO_ANONYMOUS;
+    NOTREACHED();
   }
 
   static bool FromMojom(network::mojom::SignatureAlgorithm input,
@@ -104,8 +101,7 @@ struct EnumTraits<network::mojom::SignatureAlgorithm,
         *output = net::ct::DigitallySigned::SIG_ALGO_ECDSA;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

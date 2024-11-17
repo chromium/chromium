@@ -15,8 +15,8 @@ import 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.
 import '../settings_shared.css.js';
 
 import {getNearbyShareSettings} from '/shared/nearby_share_settings.js';
-import {NearbySettings} from '/shared/nearby_share_settings_mixin.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {NearbySettings} from '/shared/nearby_share_settings_mixin.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {DataUsage} from 'chrome://resources/mojo/chromeos/ash/services/nearby/public/mojom/nearby_share_settings.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

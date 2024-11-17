@@ -138,8 +138,7 @@ std::string GetClockString() {
       return "WIN_ROLLOVER_PROTECTED_TIME_GET_TIME";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_ANDROID)

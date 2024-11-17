@@ -831,6 +831,7 @@ public class BottomBarConfigCreatorTest {
                 CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.keySet(), supportedGoogleBottomBarButtons);
     }
 
+    @Test
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             getSupportedCustomButtonParamIds_variantLayoutsEnabled_singleDecker_returnsEmptySet() {
@@ -846,6 +847,7 @@ public class BottomBarConfigCreatorTest {
         assertEquals(Set.of(), supportedGoogleBottomBarButtons);
     }
 
+    @Test
     @EnableFeatures(ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR_VARIANT_LAYOUTS)
     public void
             getSupportedCustomButtonParamIds_variantLayoutsEnabledButNotSupported_singleDecker_returnsSetWithAllSupportedCustomParams() {

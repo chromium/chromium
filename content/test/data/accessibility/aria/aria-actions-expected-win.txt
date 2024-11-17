@@ -1,0 +1,15 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++ROLE_SYSTEM_TEXT value='your-file-name.pdf EditOpenClose' has-actions:true
+++++ROLE_SYSTEM_STATICTEXT name='your-file-name.pdf '
+++++ROLE_SYSTEM_PUSHBUTTON name='Edit' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='Open' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='Close' FOCUSABLE
+++ROLE_SYSTEM_PUSHBUTTON name='Delete' FOCUSABLE
+=== Start Continuation ===
+ROLE_SYSTEM_DOCUMENT name='change-aria-action-id' READONLY FOCUSABLE
+++ROLE_SYSTEM_TEXT value='your-file-name.pdf EditOpenClose' has-actions:true
+++++ROLE_SYSTEM_STATICTEXT name='your-file-name.pdf '
+++++ROLE_SYSTEM_PUSHBUTTON name='Edit' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='Open' FOCUSABLE
+++++ROLE_SYSTEM_PUSHBUTTON name='Close' FOCUSABLE
+++ROLE_SYSTEM_PUSHBUTTON name='Delete' FOCUSABLE

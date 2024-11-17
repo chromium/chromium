@@ -11,6 +11,7 @@
 #include "base/test/bind.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -123,6 +124,23 @@ PrerenderHost* GetPrerenderHostByUrl(WebContents* web_contents,
                                      const GURL& url) {
   auto& registry = GetPrerenderHostRegistry(web_contents);
   return registry.FindHostByUrlForTesting(url);
+}
+
+PrerenderHost::LoadingOutcome WaitForPrerenderLoadingOutcome(
+    WebContents& web_contents,
+    const GURL& url) {
+  TRACE_EVENT("test", "PrerenderTestHelper::WaitForPrerenderLoadingOutcome",
+              "web_contents", web_contents, "url", url);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry(&web_contents);
+  PrerenderHost* host = registry.FindHostByUrlForTesting(url);
+  // Wait for the host to be created if it hasn't yet.
+  if (!host) {
+    PrerenderHostRegistryObserver observer(web_contents);
+    observer.WaitForTrigger(url);
+    host = registry.FindHostByUrlForTesting(url);
+    CHECK_NE(host, nullptr);
+  }
+  return host->WaitForLoadStopForTesting();
 }
 
 }  // namespace
@@ -245,17 +263,17 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
     StartObserving(*host);
   }
 
-  PrerenderHostObserverImpl(WebContents& web_contents, const GURL& gurl) {
+  PrerenderHostObserverImpl(WebContents& web_contents, const GURL& url) {
     registry_observer_ =
         std::make_unique<PrerenderHostRegistryObserver>(web_contents);
     if (PrerenderHost* host = GetPrerenderHostRegistry(&web_contents)
-                                  .FindHostByUrlForTesting(gurl)) {
+                                  .FindHostByUrlForTesting(url)) {
       StartObserving(*host);
     } else {
       registry_observer_->NotifyOnTrigger(
-          gurl,
+          url,
           base::BindOnce(&PrerenderHostObserverImpl::OnTrigger,
-                         base::Unretained(this), std::ref(web_contents), gurl));
+                         base::Unretained(this), std::ref(web_contents), url));
     }
   }
 
@@ -333,10 +351,10 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
   bool was_activated() const { return was_activated_; }
 
  private:
-  void OnTrigger(WebContents& web_contents, const GURL& gurl) {
+  void OnTrigger(WebContents& web_contents, const GURL& url) {
     PrerenderHost* host =
-        GetPrerenderHostRegistry(&web_contents).FindHostByUrlForTesting(gurl);
-    DCHECK(host) << "Attempted to trigger a prerender for [" << gurl << "] "
+        GetPrerenderHostRegistry(&web_contents).FindHostByUrlForTesting(url);
+    DCHECK(host) << "Attempted to trigger a prerender for [" << url << "] "
                  << "but canceled before a PrerenderHost was created.";
     StartObserving(*host);
   }
@@ -367,8 +385,8 @@ PrerenderHostObserver::PrerenderHostObserver(WebContents& web_contents,
                                                         prerender_host)) {}
 
 PrerenderHostObserver::PrerenderHostObserver(WebContents& web_contents,
-                                             const GURL& gurl)
-    : impl_(std::make_unique<PrerenderHostObserverImpl>(web_contents, gurl)) {}
+                                             const GURL& url)
+    : impl_(std::make_unique<PrerenderHostObserverImpl>(web_contents, url)) {}
 
 PrerenderHostObserver::~PrerenderHostObserver() = default;
 
@@ -406,15 +424,39 @@ FrameTreeNodeId PrerenderHostCreationWaiter::Wait() {
   return created_host_id_;
 }
 
-ScopedPrerenderFeatureList::ScopedPrerenderFeatureList() {
+ScopedPrerenderFeatureList::ScopedPrerenderFeatureList()
+    : ScopedPrerenderFeatureList(/*force_disable_prerender2fallback=*/true) {}
+
+ScopedPrerenderFeatureList::ScopedPrerenderFeatureList(
+    bool force_disable_prerender2fallback) {
   // Disable the memory requirement of Prerender2
   // so the test can run on any bot.
-  feature_list_.InitWithFeatures({blink::features::kPrerender2InNewTab},
-                                 {blink::features::kPrerender2MemoryControls});
+  if (force_disable_prerender2fallback) {
+    // In addition, disable `kPrerender2FallbackPrefetchSpecRules` if the user
+    // of `PrerenderTestHelper` is not ready for it as it changes
+    // `PrerenderFinalStatus` to `PrerenderFailedDuringPrefetch`, so that we
+    // enable it in fieldtrial testing config and then fix them one by one.
+    feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2InNewTab},
+        {blink::features::kPrerender2MemoryControls,
+         features::kPrerender2FallbackPrefetchSpecRules});
+  } else {
+    feature_list_.InitWithFeatures(
+        {blink::features::kPrerender2InNewTab},
+        {blink::features::kPrerender2MemoryControls});
+  }
 }
 
 PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn)
-    : get_web_contents_fn_(fn) {}
+    : feature_list_(ScopedPrerenderFeatureList(
+          /*force_disable_prerender2fallback=*/true)),
+      get_web_contents_fn_(fn) {}
+
+PrerenderTestHelper::PrerenderTestHelper(const WebContents::Getter& fn,
+                                         bool force_disable_prerender2fallback)
+    : feature_list_(
+          ScopedPrerenderFeatureList(force_disable_prerender2fallback)),
+      get_web_contents_fn_(fn) {}
 
 PrerenderTestHelper::~PrerenderTestHelper() = default;
 
@@ -433,14 +475,14 @@ void PrerenderTestHelper::RegisterServerRequestMonitor(
 
 // static
 FrameTreeNodeId PrerenderTestHelper::GetHostForUrl(WebContents& web_contents,
-                                                   const GURL& gurl) {
+                                                   const GURL& url) {
   auto* host =
-      GetPrerenderHostRegistry(&web_contents).FindHostByUrlForTesting(gurl);
+      GetPrerenderHostRegistry(&web_contents).FindHostByUrlForTesting(url);
   return host ? host->frame_tree_node_id() : FrameTreeNodeId();
 }
 
-FrameTreeNodeId PrerenderTestHelper::GetHostForUrl(const GURL& gurl) {
-  return GetHostForUrl(*GetWebContents(), gurl);
+FrameTreeNodeId PrerenderTestHelper::GetHostForUrl(const GURL& url) {
+  return GetHostForUrl(*GetWebContents(), url);
 }
 
 bool PrerenderTestHelper::HasNewTabHandle(FrameTreeNodeId host_id) {
@@ -461,26 +503,25 @@ void PrerenderTestHelper::WaitForPrerenderLoadCompletion(
 // static
 void PrerenderTestHelper::WaitForPrerenderLoadCompletion(
     WebContents& web_contents,
-    const GURL& gurl) {
-  TRACE_EVENT("test", "PrerenderTestHelper::WaitForPrerenderLoadCompletion",
-              "web_contents", web_contents, "url", gurl);
-  PrerenderHostRegistry& registry = GetPrerenderHostRegistry(&web_contents);
-  PrerenderHost* host = registry.FindHostByUrlForTesting(gurl);
-  // Wait for the host to be created if it hasn't yet.
-  if (!host) {
-    PrerenderHostRegistryObserver observer(web_contents);
-    observer.WaitForTrigger(gurl);
-    host = registry.FindHostByUrlForTesting(gurl);
-    ASSERT_NE(host, nullptr);
-  }
-  auto status = host->WaitForLoadStopForTesting();
+    const GURL& url) {
+  auto status = WaitForPrerenderLoadingOutcome(web_contents, url);
   EXPECT_EQ(status, PrerenderHost::LoadingOutcome::kLoadingCompleted);
 }
 
-void PrerenderTestHelper::WaitForPrerenderLoadCompletion(const GURL& gurl) {
-  TRACE_EVENT("test", "PrerenderTestHelper::WaitForPrerenderLoadCompletion",
-              "url", gurl);
-  WaitForPrerenderLoadCompletion(*GetWebContents(), gurl);
+void PrerenderTestHelper::WaitForPrerenderLoadCompletion(const GURL& url) {
+  WaitForPrerenderLoadCompletion(*GetWebContents(), url);
+}
+
+// static
+void PrerenderTestHelper::WaitForPrerenderLoadCancellation(
+    WebContents& web_contents,
+    const GURL& url) {
+  auto status = WaitForPrerenderLoadingOutcome(web_contents, url);
+  EXPECT_EQ(status, PrerenderHost::LoadingOutcome::kPrerenderingCancelled);
+}
+
+void PrerenderTestHelper::WaitForPrerenderLoadCancellation(const GURL& url) {
+  WaitForPrerenderLoadCancellation(*GetWebContents(), url);
 }
 
 FrameTreeNodeId PrerenderTestHelper::AddPrerender(const GURL& prerendering_url,
@@ -611,16 +652,18 @@ PrerenderTestHelper::AddEmbedderTriggeredPrerenderAsync(
   WebContents* web_contents = GetWebContents();
   return web_contents->StartPrerendering(
       prerendering_url, trigger_type, embedder_histogram_suffix,
-      page_transition, /*should_warm_up_compositor=*/false,
+      /*no_vary_search_expected=*/std::nullopt, page_transition,
+      /*should_warm_up_compositor=*/false,
+      /*should_prepare_paint_tree=*/false,
       PreloadingHoldbackStatus::kUnspecified,
       /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{});
 }
 
 void PrerenderTestHelper::NavigatePrerenderedPage(FrameTreeNodeId host_id,
-                                                  const GURL& gurl) {
+                                                  const GURL& url) {
   TRACE_EVENT("test", "PrerenderTestHelper::NavigatePrerenderedPage", "host_id",
-              host_id, "url", gurl);
+              host_id, "url", url);
 
   // Take RenderFrameHost corresponding to the main frame of the prerendered
   // page.
@@ -638,7 +681,7 @@ void PrerenderTestHelper::NavigatePrerenderedPage(FrameTreeNodeId host_id,
   // in execution failure even when the execution succeeded.
   // See https://crbug.com/1186584 for details.
   std::ignore =
-      ExecJs(prerender_render_frame_host, JsReplace("location = $1", gurl));
+      ExecJs(prerender_render_frame_host, JsReplace("location = $1", url));
 }
 
 void PrerenderTestHelper::CancelPrerenderedPage(FrameTreeNodeId host_id) {
@@ -649,9 +692,9 @@ void PrerenderTestHelper::CancelPrerenderedPage(FrameTreeNodeId host_id) {
 // static
 std::unique_ptr<content::TestNavigationObserver>
 PrerenderTestHelper::NavigatePrimaryPageAsync(WebContents& web_contents,
-                                              const GURL& gurl) {
+                                              const GURL& url) {
   TRACE_EVENT("test", "PrerenderTestHelper::NavigatePrimaryPage",
-              "web_contents", web_contents, "url", gurl);
+              "web_contents", web_contents, "url", url);
   if (web_contents.IsLoading()) {
     // Ensure that any ongoing navigation is complete prior to the construction
     // of |observer| below (this navigation may complete while executing ExecJs
@@ -673,23 +716,23 @@ PrerenderTestHelper::NavigatePrimaryPageAsync(WebContents& web_contents,
   // ExecJs() gets a result from the frame. This results in execution failure
   // even when the navigation succeeded.
   std::ignore = ExecJs(web_contents.GetPrimaryMainFrame(),
-                       JsReplace("location = $1", gurl));
+                       JsReplace("location = $1", url));
   return observer;
 }
 
 std::unique_ptr<content::TestNavigationObserver>
-PrerenderTestHelper::NavigatePrimaryPageAsync(const GURL& gurl) {
-  return NavigatePrimaryPageAsync(*GetWebContents(), gurl);
+PrerenderTestHelper::NavigatePrimaryPageAsync(const GURL& url) {
+  return NavigatePrimaryPageAsync(*GetWebContents(), url);
 }
 
 // static
 void PrerenderTestHelper::NavigatePrimaryPage(WebContents& web_contents,
-                                              const GURL& gurl) {
-  NavigatePrimaryPageAsync(web_contents, gurl)->Wait();
+                                              const GURL& url) {
+  NavigatePrimaryPageAsync(web_contents, url)->Wait();
 }
 
-void PrerenderTestHelper::NavigatePrimaryPage(const GURL& gurl) {
-  NavigatePrimaryPage(*GetWebContents(), gurl);
+void PrerenderTestHelper::NavigatePrimaryPage(const GURL& url) {
+  NavigatePrimaryPage(*GetWebContents(), url);
 }
 
 void PrerenderTestHelper::OpenNewWindowWithoutOpener(WebContents& web_contents,
@@ -711,9 +754,9 @@ void PrerenderTestHelper::SetHoldback(std::string_view preloading_type,
 }
 
 ::testing::AssertionResult PrerenderTestHelper::VerifyPrerenderingState(
-    const GURL& gurl) {
+    const GURL& url) {
   PrerenderHostRegistry& registry = GetPrerenderHostRegistry(GetWebContents());
-  PrerenderHost* prerender_host = registry.FindHostByUrlForTesting(gurl);
+  PrerenderHost* prerender_host = registry.FindHostByUrlForTesting(url);
   RenderFrameHostImpl* prerendered_render_frame_host =
       prerender_host->GetPrerenderedMainFrameHost();
   std::vector<RenderFrameHost*> frames =
@@ -834,7 +877,7 @@ std::string PrerenderTestHelper::GenerateHistogramName(
       DCHECK(!embedder_suffix.empty());
       return std::string(histogram_base_name) + ".Embedder_" + embedder_suffix;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 ScopedPrerenderWebContentsDelegate::ScopedPrerenderWebContentsDelegate(

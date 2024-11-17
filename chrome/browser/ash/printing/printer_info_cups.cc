@@ -67,7 +67,9 @@ QueryResult QueryPrinterImpl(const std::string& host,
       ::printing::GetPrinterInfo(host, port, path, encrypted,
                                  &result.printer_info, &result.printer_status);
   if (result.result != ::printing::PrinterQueryResult::kSuccess) {
-    LOG(ERROR) << "Could not retrieve printer info";
+    LOG(ERROR) << "Could not retrieve printer info from "
+               << (encrypted ? "ipps://" : "ipp://") << host << ":" << port
+               << path << ": " << static_cast<int>(result.result);
   }
 
   return result;

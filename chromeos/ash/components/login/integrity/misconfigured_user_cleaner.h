@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(ASH_LOGIN_INTEGRITY) MisconfiguredUserCleaner {
   // Must be called on the UI thread. Schedules misconfigured user cleanup if
   // any did not successfully go through the user creation process during the
   // previous boot. Misconfigured users will not be shown in the login UI, as we
-  // filter them as part of `UserManagerBase::EnsureUsersLoaded`.
+  // filter them as part of `UserManagerImpl::EnsureUsersLoaded`.
   void ScheduleCleanup();
 
  private:

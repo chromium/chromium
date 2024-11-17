@@ -496,8 +496,7 @@ const ShapeResultView* ShapingLineBreaker::ShapeLine(
         break;
       if (last_safe > break_opportunity.offset) [[unlikely]] {
         // TODO(crbug.com/1787026): This should not happen, but we see crashes.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       }
 
       // Moved the opportunity back enough to require reshaping the whole line.

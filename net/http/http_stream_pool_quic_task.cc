@@ -11,6 +11,8 @@
 #include "base/time/time.h"
 #include "net/base/connection_endpoint_metadata.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/net_error_details.h"
+#include "net/base/net_errors.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/host_resolver_results.h"
 #include "net/http/http_network_session.h"
@@ -29,8 +31,6 @@ namespace net {
 HttpStreamPool::QuicTask::QuicTask(AttemptManager* manager,
                                    quic::ParsedQuicVersion quic_version)
     : manager_(manager),
-      quic_session_alias_key_(manager_->group()->stream_key().destination(),
-                              quic_session_key()),
       quic_version_(quic_version),
       net_log_(NetLogWithSource::Make(
           manager->net_log().net_log(),
@@ -55,8 +55,8 @@ HttpStreamPool::QuicTask::~QuicTask() {
 }
 
 void HttpStreamPool::QuicTask::MaybeAttempt() {
-  CHECK(!quic_session_pool()->CanUseExistingSession(
-      quic_session_key(), stream_key().destination()));
+  CHECK(!quic_session_pool()->CanUseExistingSession(GetKey().session_key(),
+                                                    GetKey().destination()));
 
   if (session_attempt_) {
     // TODO(crbug.com/346835898): Support multiple attempts.
@@ -66,6 +66,9 @@ void HttpStreamPool::QuicTask::MaybeAttempt() {
   std::optional<QuicEndpoint> quic_endpoint = GetQuicEndpointToAttempt();
   if (!quic_endpoint.has_value()) {
     if (manager_->is_service_endpoint_request_finished()) {
+      if (!start_result_.has_value()) {
+        start_result_ = ERR_DNS_NO_MATCHING_SUPPORTED_ALPN;
+      }
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE, base::BindOnce(&QuicTask::OnSessionAttemptComplete,
                                     weak_ptr_factory_.GetWeakPtr(),
@@ -96,16 +99,15 @@ void HttpStreamPool::QuicTask::MaybeAttempt() {
                     [&] { return quic_endpoint->ToValue(); });
 
   session_attempt_ = quic_session_pool()->CreateSessionAttempt(
-      this, quic_session_key(), std::move(*quic_endpoint), cert_verify_flags,
-      dns_resolution_start_time, dns_resolution_end_time,
-      /*use_dns_aliases=*/true, std::move(dns_aliases));
+      this, GetKey().session_key(), std::move(*quic_endpoint),
+      cert_verify_flags, dns_resolution_start_time, dns_resolution_end_time,
+      /*use_dns_aliases=*/true, std::move(dns_aliases),
+      manager_->CalculateMultiplexedSessionCreationInitiator());
 
   int rv = session_attempt_->Start(base::BindOnce(
       &QuicTask::OnSessionAttemptComplete, weak_ptr_factory_.GetWeakPtr()));
   if (rv != ERR_IO_PENDING) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&QuicTask::OnSessionAttemptComplete,
-                                  weak_ptr_factory_.GetWeakPtr(), rv));
+    OnSessionAttemptComplete(rv);
   }
 }
 
@@ -114,7 +116,7 @@ QuicSessionPool* HttpStreamPool::QuicTask::GetQuicSessionPool() {
 }
 
 const QuicSessionAliasKey& HttpStreamPool::QuicTask::GetKey() {
-  return quic_session_alias_key_;
+  return manager_->group()->quic_session_alias_key();
 }
 
 const NetLogWithSource& HttpStreamPool::QuicTask::GetNetLog() {
@@ -123,10 +125,6 @@ const NetLogWithSource& HttpStreamPool::QuicTask::GetNetLog() {
 
 const HttpStreamKey& HttpStreamPool::QuicTask::stream_key() const {
   return manager_->group()->stream_key();
-}
-
-const QuicSessionKey& HttpStreamPool::QuicTask::quic_session_key() const {
-  return manager_->group()->quic_session_key();
 }
 
 QuicSessionPool* HttpStreamPool::QuicTask::quic_session_pool() {
@@ -140,9 +138,10 @@ HttpStreamPool::QuicTask::service_endpoint_request() {
 
 std::optional<QuicEndpoint>
 HttpStreamPool::QuicTask::GetQuicEndpointToAttempt() {
+  const bool svcb_optional = manager_->IsSvcbOptional();
   for (auto& endpoint : service_endpoint_request()->GetEndpointResults()) {
     std::optional<QuicEndpoint> quic_endpoint =
-        GetQuicEndpointFromServiceEndpoint(endpoint);
+        GetQuicEndpointFromServiceEndpoint(endpoint, svcb_optional);
     if (quic_endpoint.has_value()) {
       return quic_endpoint;
     }
@@ -153,11 +152,11 @@ HttpStreamPool::QuicTask::GetQuicEndpointToAttempt() {
 
 std::optional<QuicEndpoint>
 HttpStreamPool::QuicTask::GetQuicEndpointFromServiceEndpoint(
-    const ServiceEndpoint& service_endpoint) {
-  // TODO(crbug.com/346835898): Support ECH.
+    const ServiceEndpoint& service_endpoint,
+    bool svcb_optional) {
   quic::ParsedQuicVersion endpoint_quic_version =
       quic_session_pool()->SelectQuicVersion(
-          quic_version_, service_endpoint.metadata, /*svcb_optional=*/true);
+          quic_version_, service_endpoint.metadata, svcb_optional);
   if (!endpoint_quic_version.IsKnown()) {
     return std::nullopt;
   }
@@ -184,20 +183,32 @@ std::optional<IPEndPoint> HttpStreamPool::QuicTask::GetPreferredIPEndPoint(
 }
 
 void HttpStreamPool::QuicTask::OnSessionAttemptComplete(int rv) {
+  if (rv == OK) {
+    QuicChromiumClientSession* session =
+        quic_session_pool()->FindExistingSession(GetKey().session_key(),
+                                                 GetKey().destination());
+    if (!session) {
+      // QUIC session is closed before stream can be created.
+      rv = ERR_CONNECTION_CLOSED;
+    }
+  }
+
   net_log_.AddEventWithNetErrorCode(
       NetLogEventType::HTTP_STREAM_POOL_QUIC_ATTEMPT_END, rv);
 
   // TODO(crbug.com/346835898): Attempt other endpoints when failed.
 
-  // The destination is not considered broken or working if we didn't attempt
-  // QUIC due to no matching ALPN.
-  if (rv == OK) {
-    quic_session_pool()->set_is_quic_known_to_work_on_current_network(true);
-  } else if (rv != ERR_DNS_NO_MATCHING_SUPPORTED_ALPN) {
-    quic_session_pool()->set_is_quic_known_to_work_on_current_network(false);
+  if (rv == OK &&
+      !quic_session_pool()->has_quic_ever_worked_on_current_network()) {
+    quic_session_pool()->set_has_quic_ever_worked_on_current_network(true);
+  }
+
+  NetErrorDetails details;
+  if (session_attempt_) {
+    session_attempt_->PopulateNetErrorDetails(&details);
   }
   session_attempt_.reset();
-  manager_->OnQuicTaskComplete(rv);
+  manager_->OnQuicTaskComplete(rv, std::move(details));
   // `this` is deleted.
 }
 

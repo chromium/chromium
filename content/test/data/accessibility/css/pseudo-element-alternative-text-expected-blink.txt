@@ -9,4 +9,3 @@ rootWebArea
 ++++++++++inlineTextBox name='DOM text'
 ++++++++staticText name=' '
 ++++++++++inlineTextBox name=' '
-++++++++image

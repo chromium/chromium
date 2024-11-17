@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -20,6 +20,14 @@ export class ManagedUserProfileNoticeValuePropElement extends CrLitElement {
     return getCss();
   }
 
+  get titleElement(): HTMLElement|undefined {
+    return this.shadowRoot?.querySelector('.title') || undefined;
+  }
+
+  override firstUpdated() {
+    this.titleElement?.focus();
+  }
+
   override render() {
     return getHtml.bind(this)();
   }
@@ -31,14 +39,16 @@ export class ManagedUserProfileNoticeValuePropElement extends CrLitElement {
       subtitle: {type: String},
       email: {type: String},
       accountName: {type: String},
+      showEnterpriseBadge: {type: Boolean},
     };
   }
 
-  pictureUrl: string;
-  override title: string;
-  subtitle: string;
-  email: string;
-  accountName: string;
+  pictureUrl: string = '';
+  override title: string = '';
+  subtitle: string = '';
+  email: string = '';
+  accountName: string = '';
+  showEnterpriseBadge: boolean = false;
 }
 
 declare global {

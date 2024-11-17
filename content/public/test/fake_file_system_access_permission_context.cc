@@ -19,27 +19,26 @@ FakeFileSystemAccessPermissionContext::
 scoped_refptr<FileSystemAccessPermissionGrant>
 FakeFileSystemAccessPermissionContext::GetReadPermissionGrant(
     const url::Origin& origin,
-    const base::FilePath& path,
+    const PathInfo& path_info,
     HandleType handle_type,
     UserAction user_action) {
   return base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
-      FileSystemAccessPermissionGrant::PermissionStatus::GRANTED, path);
+      FileSystemAccessPermissionGrant::PermissionStatus::GRANTED, path_info);
 }
 
 scoped_refptr<FileSystemAccessPermissionGrant>
 FakeFileSystemAccessPermissionContext::GetWritePermissionGrant(
     const url::Origin& origin,
-    const base::FilePath& path,
+    const PathInfo& path_info,
     HandleType handle_type,
     UserAction user_action) {
   return base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
-      FileSystemAccessPermissionGrant::PermissionStatus::GRANTED, path);
+      FileSystemAccessPermissionGrant::PermissionStatus::GRANTED, path_info);
 }
 
 void FakeFileSystemAccessPermissionContext::ConfirmSensitiveEntryAccess(
     const url::Origin& origin,
-    PathType path_type,
-    const base::FilePath& path,
+    const PathInfo& path_info,
     HandleType handle_type,
     UserAction user_action,
     GlobalRenderFrameHostId frame_id,
@@ -54,6 +53,17 @@ void FakeFileSystemAccessPermissionContext::PerformAfterWriteChecks(
   std::move(callback).Run(AfterWriteCheckResult::kAllow);
 }
 
+bool FakeFileSystemAccessPermissionContext::IsFileTypeDangerous(
+    const base::FilePath& path,
+    const url::Origin& origin) {
+  return false;
+}
+
+base::expected<void, std::string>
+FakeFileSystemAccessPermissionContext::CanShowFilePicker(RenderFrameHost* rfh) {
+  return base::ok();
+}
+
 bool FakeFileSystemAccessPermissionContext::CanObtainReadPermission(
     const url::Origin& origin) {
   return true;
@@ -66,16 +76,11 @@ bool FakeFileSystemAccessPermissionContext::CanObtainWritePermission(
 void FakeFileSystemAccessPermissionContext::SetLastPickedDirectory(
     const url::Origin& origin,
     const std::string& id,
-    const base::FilePath& path,
-    const PathType type) {
-  PathInfo info;
-  info.path = path;
-  info.type = type;
-  id_pathinfo_map_.insert({id, info});
+    const PathInfo& path_info) {
+  id_pathinfo_map_.insert({id, path_info});
 }
 
-FakeFileSystemAccessPermissionContext::PathInfo
-FakeFileSystemAccessPermissionContext::GetLastPickedDirectory(
+PathInfo FakeFileSystemAccessPermissionContext::GetLastPickedDirectory(
     const url::Origin& origin,
     const std::string& id) {
   return base::Contains(id_pathinfo_map_, id) ? id_pathinfo_map_[id]
@@ -103,8 +108,8 @@ std::u16string FakeFileSystemAccessPermissionContext::GetPickerTitle(
 
 void FakeFileSystemAccessPermissionContext::NotifyEntryMoved(
     const url::Origin& origin,
-    const base::FilePath& old_path,
-    const base::FilePath& new_path) {}
+    const PathInfo& old_path,
+    const PathInfo& new_path) {}
 
 void FakeFileSystemAccessPermissionContext::OnFileCreatedFromShowSaveFilePicker(
     const GURL& file_picker_binding_context,

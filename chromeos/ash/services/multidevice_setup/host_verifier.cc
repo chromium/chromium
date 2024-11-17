@@ -17,10 +17,9 @@ HostVerifier::~HostVerifier() = default;
 
 void HostVerifier::AttemptVerificationNow() {
   if (IsHostVerified()) {
-    PA_LOG(ERROR) << "HostVerifier::AttemptVerificationNow(): Attempted to "
-                  << "start verification, but the current host has already "
-                  << "been verified.";
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "HostVerifier::AttemptVerificationNow(): Attempted to "
+                 << "start verification, but the current host has already "
+                 << "been verified.";
   }
 
   PerformAttemptVerificationNow();

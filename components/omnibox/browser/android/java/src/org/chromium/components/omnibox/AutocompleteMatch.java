@@ -72,14 +72,12 @@ public class AutocompleteMatch {
     private final List<MatchClassification> mDisplayTextClassifications;
     private String mDescription;
     private List<MatchClassification> mDescriptionClassifications;
-    private SuggestionAnswer mAnswer;
     private @Nullable RichAnswerTemplate mAnswerTemplate;
     private AnswerType mAnswerType;
     private final String mFillIntoEdit;
     private GURL mUrl;
     private final GURL mImageUrl;
     private final String mImageDominantColor;
-    private final int mRelevance;
     private final int mTransition;
     private final boolean mIsDeletable;
     private String mPostContentType;
@@ -97,13 +95,11 @@ public class AutocompleteMatch {
             int nativeType,
             Set<Integer> subtypes,
             boolean isSearchType,
-            int relevance,
             int transition,
             String displayText,
             List<MatchClassification> displayTextClassifications,
             String description,
             List<MatchClassification> descriptionClassifications,
-            SuggestionAnswer answer,
             byte[] serializedAnswerTemplate,
             int answerType,
             String fillIntoEdit,
@@ -126,13 +122,11 @@ public class AutocompleteMatch {
         mType = nativeType;
         mSubtypes = subtypes;
         mIsSearchType = isSearchType;
-        mRelevance = relevance;
         mTransition = transition;
         mDisplayText = displayText;
         mDisplayTextClassifications = displayTextClassifications;
         mDescription = description;
         mDescriptionClassifications = descriptionClassifications;
-        mAnswer = answer;
         if (serializedAnswerTemplate != null) {
             try {
                 mAnswerTemplate = RichAnswerTemplate.parseFrom(serializedAnswerTemplate);
@@ -165,7 +159,6 @@ public class AutocompleteMatch {
             int nativeType,
             int[] nativeSubtypes,
             boolean isSearchType,
-            int relevance,
             int transition,
             String contents,
             int[] contentClassificationOffsets,
@@ -173,7 +166,6 @@ public class AutocompleteMatch {
             String description,
             int[] descriptionClassificationOffsets,
             int[] descriptionClassificationStyles,
-            SuggestionAnswer answer,
             byte[] serializedAnswerTemplate,
             int answerType,
             String fillIntoEdit,
@@ -208,13 +200,11 @@ public class AutocompleteMatch {
                         nativeType,
                         subtypes,
                         isSearchType,
-                        relevance,
                         transition,
                         contents,
                         contentClassifications,
                         description,
                         new ArrayList<>(),
-                        answer,
                         serializedAnswerTemplate,
                         answerType,
                         fillIntoEdit,
@@ -283,11 +273,6 @@ public class AutocompleteMatch {
     }
 
     @CalledByNative
-    private void setAnswer(SuggestionAnswer answer) {
-        mAnswer = answer;
-    }
-
-    @CalledByNative
     private void setAnswerTemplate(byte[] serializedAnswerTemplate) {
         if (serializedAnswerTemplate != null) {
             try {
@@ -346,14 +331,6 @@ public class AutocompleteMatch {
 
     public List<MatchClassification> getDescriptionClassifications() {
         return mDescriptionClassifications;
-    }
-
-    public SuggestionAnswer getAnswer() {
-        return mAnswer;
-    }
-
-    public boolean hasAnswer() {
-        return mAnswer != null;
     }
 
     public @Nullable RichAnswerTemplate getAnswerTemplate() {
@@ -429,12 +406,9 @@ public class AutocompleteMatch {
         return mClipboardImageData;
     }
 
-    /** @return The relevance score of this suggestion. */
-    public int getRelevance() {
-        return mRelevance;
-    }
-
-    /** @return Set of suggestion subtypes. */
+    /**
+     * @return Set of suggestion subtypes.
+     */
     public @NonNull Set<Integer> getSubtypes() {
         return mSubtypes;
     }
@@ -448,7 +422,6 @@ public class AutocompleteMatch {
                         + 2017 * displayTextHash
                         + 1901 * fillIntoEditHash
                         + (mIsDeletable ? 1 : 0);
-        if (mAnswer != null) hash = hash + mAnswer.hashCode();
         return hash;
     }
 
@@ -460,7 +433,7 @@ public class AutocompleteMatch {
 
         AutocompleteMatch suggestion = (AutocompleteMatch) obj;
         boolean answer_template_is_equal =
-                mAnswerTemplate != null && suggestion.mAnswerTemplate != null
+                (mAnswerTemplate != null && suggestion.mAnswerTemplate != null)
                         ? mAnswerTemplate.equals(suggestion.mAnswerTemplate)
                         : mAnswerTemplate == null && suggestion.mAnswerTemplate == null;
         return mType == suggestion.mType
@@ -474,8 +447,6 @@ public class AutocompleteMatch {
                 && ObjectsCompat.equals(
                         mDescriptionClassifications, suggestion.mDescriptionClassifications)
                 && mIsDeletable == suggestion.mIsDeletable
-                && mRelevance == suggestion.mRelevance
-                && ObjectsCompat.equals(mAnswer, suggestion.mAnswer)
                 && TextUtils.equals(mPostContentType, suggestion.mPostContentType)
                 && Arrays.equals(mPostData, suggestion.mPostData)
                 && mGroupId == suggestion.mGroupId
@@ -508,7 +479,100 @@ public class AutocompleteMatch {
         AutocompleteMatchJni.get().updateWithClipboardContent(mNativeMatch, callback);
     }
 
+    /** Serialize suggestion to a protocol buffer message. */
+    public @Nullable AutocompleteProto.AutocompleteMatchProto serialize() {
+        var builder = AutocompleteProto.AutocompleteMatchProto.newBuilder();
+        builder.setType(mType)
+                .setDisplayText(mDisplayText)
+                .setFillIntoEdit(mFillIntoEdit)
+                .setUrl(mUrl.getSpec())
+                .setTransition(mTransition)
+                .setGroupId(mGroupId)
+                .setIsSearchType(mIsSearchType)
+                .setAllowedToBeDefaultMatch(mAllowedToBeDefaultMatch);
+
+        if (!TextUtils.isEmpty(mFillIntoEdit)) {
+            builder.setFillIntoEdit(mFillIntoEdit);
+        }
+        if (!TextUtils.isEmpty(mDescription)) {
+            builder.setDescription(mDescription);
+        }
+        if (!TextUtils.isEmpty(mInlineAutocompletion)) {
+            builder.setInlineAutocompletion(mInlineAutocompletion);
+        }
+        if (!TextUtils.isEmpty(mAdditionalText)) {
+            builder.setAdditionalText(mAdditionalText);
+        }
+        if (mImageUrl.isValid()) {
+            builder.setImageUrl(mImageUrl.getSpec());
+        }
+
+        for (int subtype : mSubtypes) {
+            builder.addSubtype(subtype);
+        }
+        for (var displayTextClassification : mDisplayTextClassifications) {
+            builder.addDisplayTextClassification(
+                    AutocompleteProto.MatchClassificationProto.newBuilder()
+                            .setOffset(displayTextClassification.offset)
+                            .setStyle(displayTextClassification.style));
+        }
+        for (var descriptionClassification : mDescriptionClassifications) {
+            builder.addDescriptionClassification(
+                    AutocompleteProto.MatchClassificationProto.newBuilder()
+                            .setOffset(descriptionClassification.offset)
+                            .setStyle(descriptionClassification.style));
+        }
+        return builder.build();
+    }
+
+    /** Deserialize suggestion from a protocol buffer message. */
+    public static AutocompleteMatch deserialize(AutocompleteProto.AutocompleteMatchProto input) {
+        List<MatchClassification> displayTextClassifications = new ArrayList<>();
+        List<MatchClassification> descriptionClassifications = new ArrayList<>();
+
+        for (var displayTextClassification : input.getDisplayTextClassificationList()) {
+            displayTextClassifications.add(
+                    new MatchClassification(
+                            displayTextClassification.getOffset(),
+                            displayTextClassification.getStyle()));
+        }
+
+        for (var descriptionClassification : input.getDescriptionClassificationList()) {
+            descriptionClassifications.add(
+                    new MatchClassification(
+                            descriptionClassification.getOffset(),
+                            descriptionClassification.getStyle()));
+        }
+
+        return new AutocompleteMatch(
+                input.getType(),
+                new ArraySet(input.getSubtypeList()),
+                input.getIsSearchType(),
+                input.getTransition(),
+                input.getDisplayText(),
+                displayTextClassifications,
+                input.getDescription(),
+                descriptionClassifications,
+                /* serializedAnswerTemplate= */ null,
+                /* answerType= */ 0,
+                input.getFillIntoEdit(),
+                new GURL(input.getUrl()),
+                new GURL(input.getImageUrl()),
+                /* imageDominantColor= */ null,
+                /* isDeletable= */ false,
+                /* postContentType= */ null,
+                /* postData= */ null,
+                input.getGroupId(),
+                /* clipboardImageData= */ null,
+                /* hasTabMatch= */ false,
+                /* actions= */ null,
+                input.getAllowedToBeDefaultMatch(),
+                input.getInlineAutocompletion(),
+                input.getAdditionalText());
+    }
+
     @Override
+    @SuppressWarnings("LiteProtoToString")
     public String toString() {
         List<String> pieces =
                 Arrays.asList(
@@ -521,7 +585,6 @@ public class AutocompleteMatch {
                         "mUrl=" + mUrl,
                         "mImageUrl=" + mImageUrl,
                         "mImageDominatColor=" + mImageDominantColor,
-                        "mRelevance=" + mRelevance,
                         "mTransition=" + mTransition,
                         "mIsDeletable=" + mIsDeletable,
                         "mPostContentType=" + mPostContentType,
@@ -529,7 +592,6 @@ public class AutocompleteMatch {
                         "mGroupId=" + mGroupId,
                         "mDisplayTextClassifications=" + mDisplayTextClassifications,
                         "mDescriptionClassifications=" + mDescriptionClassifications,
-                        "mAnswer=" + mAnswer,
                         "mAnswerTemplate=" + mAnswerTemplate);
         return pieces.toString();
     }

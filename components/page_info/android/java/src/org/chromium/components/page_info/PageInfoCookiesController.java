@@ -38,11 +38,10 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
     private boolean mCookieControlsVisible;
     private boolean mThirdPartyCookiesBlocked;
     private int mEnforcement;
-    private boolean mIsEnforced;
     private long mExpiration;
     private boolean mShouldDisplaySiteBreakageString;
     private Website mWebsite;
-    private boolean mBlockAll3PC;
+    private boolean mBlockAll3pc;
     private boolean mIsIncognito;
 
     public PageInfoCookiesController(
@@ -51,13 +50,13 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
             PageInfoControllerDelegate delegate) {
         super(delegate);
 
-        mBlockAll3PC = delegate.allThirdPartyCookiesBlockedTrackingProtection();
+        mBlockAll3pc = delegate.allThirdPartyCookiesBlockedTrackingProtection();
         mIsIncognito = delegate.isIncognito();
 
         mMainController = mainController;
         mRowView = rowView;
         mFullUrl = mainController.getURL().getSpec();
-        mTitle = mRowView.getContext().getResources().getString(R.string.page_info_cookies_title);
+        mTitle = mRowView.getContext().getString(R.string.page_info_cookies_title);
         mBridge = delegate.createCookieControlsBridge(this);
 
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
@@ -102,7 +101,7 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         params.onFeedbackLinkClicked = getDelegate()::showCookieFeedback;
         params.disableCookieDeletion = isDeletionDisabled();
         params.hostName = mMainController.getURL().getHost();
-        params.blockAll3PC = mBlockAll3PC;
+        params.blockAll3pc = mBlockAll3pc;
         params.isIncognito = mIsIncognito;
         mSubPage.setParams(params);
         mSubPage.setCookieStatus(
@@ -129,11 +128,11 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         if (mSubPage != null) {
             mSubPage.setStorageUsage(mWebsite.getTotalUsage());
 
-            boolean isRWSInfoShown =
-                    mSubPage.maybeShowRWSInfo(
-                            mWebsite.getRWSCookieInfo(), mWebsite.getAddress().getOrigin());
+            boolean isRwsInfoShown =
+                    mSubPage.maybeShowRwsInfo(
+                            mWebsite.getRwsCookieInfo(), mWebsite.getAddress().getOrigin());
             RecordHistogram.recordBooleanHistogram(
-                    "Security.PageInfo.Cookies.HasFPSInfo", isRWSInfoShown);
+                    "Security.PageInfo.Cookies.HasFPSInfo", isRwsInfoShown);
         }
     }
 

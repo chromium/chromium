@@ -8,12 +8,12 @@
 #include <utility>
 
 #include "base/check_is_test.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/types/expected_macros.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/buildflags.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/context_properties.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
@@ -49,6 +49,33 @@ WebNNContextProviderImpl::BackendForTesting* g_backend_for_testing = nullptr;
 
 using webnn::mojom::CreateContextOptionsPtr;
 using webnn::mojom::WebNNContextProvider;
+
+// These values are persisted to logs. Entries should not be renumbered or
+// removed and numeric values should never be reused.
+// Please keep in sync with DeviceTypeUma in
+// //tools/metrics/histograms/metadata/webnn/enums.xml.
+enum class DeviceTypeUma {
+  kCpu = 0,
+  kGpu = 1,
+  kNpu = 2,
+  kMaxValue = kNpu,
+};
+
+void RecordDeviceType(const mojom::CreateContextOptions::Device device) {
+  DeviceTypeUma uma_value;
+  switch (device) {
+    case mojom::CreateContextOptions::Device::kCpu:
+      uma_value = DeviceTypeUma::kCpu;
+      break;
+    case mojom::CreateContextOptions::Device::kGpu:
+      uma_value = DeviceTypeUma::kGpu;
+      break;
+    case mojom::CreateContextOptions::Device::kNpu:
+      uma_value = DeviceTypeUma::kNpu;
+      break;
+  }
+  base::UmaHistogramEnumeration("WebNN.DeviceType", uma_value);
+}
 
 #if BUILDFLAG(IS_WIN)
 base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
@@ -88,9 +115,7 @@ base::expected<scoped_refptr<dml::Adapter>, mojom::ErrorPtr> GetDmlGpuAdapter(
   CHECK_EQ(dxgi_device->GetAdapter(&dxgi_adapter), S_OK);
   return dml::Adapter::GetGpuInstance(std::move(dxgi_adapter));
 }
-#endif
 
-#if BUILDFLAG(IS_WIN)
 bool ShouldCreateDmlContext(const mojom::CreateContextOptions& options) {
   switch (options.device) {
     case mojom::CreateContextOptions::Device::kCpu:
@@ -107,21 +132,24 @@ bool ShouldCreateDmlContext(const mojom::CreateContextOptions& options) {
 WebNNContextProviderImpl::WebNNContextProviderImpl(
     scoped_refptr<gpu::SharedContextState> shared_context_state,
     gpu::GpuFeatureInfo gpu_feature_info,
-    gpu::GPUInfo gpu_info)
+    gpu::GPUInfo gpu_info,
+    LoseAllContextsCallback lose_all_contexts_callback)
     : shared_context_state_(std::move(shared_context_state)),
       gpu_feature_info_(std::move(gpu_feature_info)),
-      gpu_info_(std::move(gpu_info)) {}
+      gpu_info_(std::move(gpu_info)),
+      lose_all_contexts_callback_(std::move(lose_all_contexts_callback)) {}
 
 WebNNContextProviderImpl::~WebNNContextProviderImpl() = default;
 
 std::unique_ptr<WebNNContextProviderImpl> WebNNContextProviderImpl::Create(
     scoped_refptr<gpu::SharedContextState> shared_context_state,
     gpu::GpuFeatureInfo gpu_feature_info,
-    gpu::GPUInfo gpu_info) {
+    gpu::GPUInfo gpu_info,
+    LoseAllContextsCallback lose_all_contexts_callback) {
   CHECK_NE(shared_context_state, nullptr);
   return base::WrapUnique(new WebNNContextProviderImpl(
       std::move(shared_context_state), std::move(gpu_feature_info),
-      std::move(gpu_info)));
+      std::move(gpu_info), std::move(lose_all_contexts_callback)));
 }
 
 void WebNNContextProviderImpl::BindWebNNContextProvider(
@@ -154,10 +182,11 @@ void WebNNContextProviderImpl::CreateForTesting(
         DISABLE_WEBNN_FOR_NPU);
   }
 
+  LoseAllContextsCallback lose_all_contexts_callback = base::BindOnce([]() {});
   mojo::MakeSelfOwnedReceiver<WebNNContextProvider>(
       base::WrapUnique(new WebNNContextProviderImpl(
           /*shared_context_state=*/nullptr, std::move(gpu_feature_info),
-          std::move(gpu_info))),
+          std::move(gpu_info), std::move(lose_all_contexts_callback))),
       std::move(receiver));
 }
 
@@ -166,6 +195,18 @@ void WebNNContextProviderImpl::OnConnectionError(WebNNContextImpl* impl) {
   CHECK(it != impls_.end());
   impls_.erase(it);
 }
+
+#if BUILDFLAG(IS_WIN)
+void WebNNContextProviderImpl::DestroyContextsAndKillGpuProcess(
+    std::string_view reason) {
+  // Send the contexts lost reason to the renderer process.
+  for (const auto& impl : impls_) {
+    impl->ResetReceiverWithReason(reason);
+  }
+
+  std::move(lose_all_contexts_callback_).Run();
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // static
 void WebNNContextProviderImpl::SetBackendForTesting(
@@ -185,6 +226,8 @@ void WebNNContextProviderImpl::CreateWebNNContext(
   WebNNContextImpl* context_impl = nullptr;
   mojo::PendingRemote<mojom::WebNNContext> remote;
   auto receiver = remote.InitWithNewPipeAndPassReceiver();
+
+  RecordDeviceType(options->device);
 
 #if BUILDFLAG(IS_WIN)
   if (ShouldCreateDmlContext(*options)) {

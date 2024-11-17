@@ -181,7 +181,8 @@ TEST_F(CredManControllerTest, Fill) {
                                 /*is_webauthn_form=*/true));
 
   ON_CALL(last_filler(), ShouldTriggerSubmission()).WillByDefault(Return(true));
-  EXPECT_CALL(last_filler(), FillUsernameAndPassword(kUsername, kPassword));
+  EXPECT_CALL(last_filler(), FillUsernameAndPassword(kUsername, kPassword, _))
+      .WillOnce(base::test::RunOnceCallback<2>(/*triggered_submission=*/true));
   web_authn_cred_man_delegate()->FillUsernameAndPassword(kUsername, kPassword);
   uma_recorder.ExpectBucketCount(
       "PasswordManager.CredMan.PasswordFormSubmissionTriggered", /*true*/ 1, 1);
@@ -207,7 +208,7 @@ TEST_F(CredManControllerTest, FillsPasswordIfReauthSuccessfull) {
       .WillByDefault(Return(true));
   EXPECT_CALL(*device_authenticator(), AuthenticateWithMessage)
       .WillOnce(base::test::RunOnceCallback<1>(/*auth_succeeded=*/true));
-  EXPECT_CALL(last_filler(), FillUsernameAndPassword(kUsername, kPassword));
+  EXPECT_CALL(last_filler(), FillUsernameAndPassword(kUsername, kPassword, _));
 
   web_authn_cred_man_delegate()->FillUsernameAndPassword(kUsername, kPassword);
 }

@@ -1,0 +1,22 @@
+[
+    RuntimeEnabled=LanguageDetectionAPI,
+    Exposed=(Window,Worker),
+    SecureContext
+]
+interface AILanguageDetector {
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<sequence<LanguageDetectionResult>> detect(DOMString input,
+    optional AILanguageDetectorDetectOptions options = {});
+
+[
+  CallWith=ScriptState
+]
+  undefined destroy();
+};
+
+dictionary AILanguageDetectorDetectOptions {
+  AbortSignal signal;
+};

@@ -4,6 +4,8 @@
 
 #include "cc/test/test_tile_task_runner.h"
 
+#include <utility>
+
 #include "base/check.h"
 
 namespace cc {
@@ -36,6 +38,9 @@ void TestTileTaskRunner::CompleteTask(TileTask* task) {
   DCHECK(task->state().IsFinished() || task->state().IsCanceled());
   task->OnTaskCompleted();
   task->DidComplete();
+  if (auto& dependent = task->external_dependent()) {
+    std::move(dependent)->ExternalDependencyCompleted();
+  }
 }
 
 }  // namespace cc

@@ -15,9 +15,6 @@ constexpr int kMaximumVibrationPatternLength = 99;
 // Maximum duration of each vibration in a pattern.
 constexpr int kMaximumVibrationDurationMs = 10000;  // 10 seconds.
 
-// Maximum number of developer-provided actions on a notification.
-constexpr size_t kMaximumActions = 2;
-
 bool ValidateVibrationPattern(const std::vector<int>& vibration_pattern) {
   if (vibration_pattern.size() > kMaximumVibrationPatternLength)
     return false;
@@ -30,7 +27,7 @@ bool ValidateVibrationPattern(const std::vector<int>& vibration_pattern) {
 
 bool ValidateActions(
     const std::vector<blink::mojom::NotificationActionPtr>& actions) {
-  return actions.size() <= kMaximumActions;
+  return actions.size() <= blink::mojom::NotificationData::kMaximumActions;
 }
 
 bool ValidateData(const std::vector<char>& data) {

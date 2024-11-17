@@ -26,6 +26,7 @@ struct NetworkTrafficAnnotationTag;
 
 namespace remoting {
 
+class OAuthTokenGetter;
 class ProtobufHttpStatus;
 
 // A helper class that communicates with backend services using the Corp API.
@@ -37,8 +38,20 @@ class CorpServiceClient {
   using ReportProvisioningErrorCallback =
       base::OnceCallback<void(const ProtobufHttpStatus&,
                               std::unique_ptr<Empty>)>;
+  using SendHeartbeatCallback =
+      base::OnceCallback<void(const ProtobufHttpStatus&,
+                              std::unique_ptr<Empty>)>;
+  using UpdateRemoteAccessHostCallback = base::OnceCallback<void(
+      const ProtobufHttpStatus&,
+      std::unique_ptr<internal::RemoteAccessHostV1Proto>)>;
 
+  // C'tor to use for unauthenticated service requests.
   explicit CorpServiceClient(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+  // C'tor to use for authenticated requests using the device robot account.
+  CorpServiceClient(
+      const std::string& refresh_token,
+      const std::string& service_account_email,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   ~CorpServiceClient();
 
@@ -55,6 +68,17 @@ class CorpServiceClient {
                                const std::string& error_message,
                                ReportProvisioningErrorCallback callback);
 
+  void SendHeartbeat(const std::string& directory_id,
+                     SendHeartbeatCallback callback);
+
+  void UpdateRemoteAccessHost(const std::string& directory_id,
+                              std::optional<std::string> host_version,
+                              std::optional<std::string> signaling_id,
+                              std::optional<std::string> offline_reason,
+                              std::optional<std::string> os_name,
+                              std::optional<std::string> os_version,
+                              UpdateRemoteAccessHostCallback callback);
+
   void CancelPendingRequests();
 
  private:
@@ -62,9 +86,12 @@ class CorpServiceClient {
   void ExecuteRequest(
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       const std::string& path,
+      const std::string& method,
+      bool unauthenticated,
       std::unique_ptr<google::protobuf::MessageLite> request_message,
       CallbackType callback);
 
+  std::unique_ptr<OAuthTokenGetter> oauth_token_getter_;
   ProtobufHttpClient http_client_;
 };
 

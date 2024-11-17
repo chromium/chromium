@@ -33,7 +33,6 @@ class MODULES_EXPORT NavigatorWebInstall final
   static ScriptPromise<WebInstallResult> install(
       ScriptState* script_state,
       Navigator& navigator,
-      const String& manifest_id,
       ExceptionState& exception_state);
 
   static ScriptPromise<WebInstallResult> install(
@@ -49,7 +48,6 @@ class MODULES_EXPORT NavigatorWebInstall final
   static NavigatorWebInstall& From(Navigator&);
 
   ScriptPromise<WebInstallResult> InstallImpl(ScriptState* script_state,
-                                              const String& manifest_id,
                                               ExceptionState& exception_state);
   ScriptPromise<WebInstallResult> InstallImpl(ScriptState* script_state,
                                               const String& manifest_id,

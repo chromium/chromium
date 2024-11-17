@@ -8,8 +8,12 @@ build_webui_tests("build") {
   files = [
     "about_page_test.ts",
     "advanced_page_test.ts",
+    "ai_compare_subpage_test.ts",
+    "ai_history_search_subpage_test.ts",
+    "ai_info_card_test.ts",
+    "ai_logging_info_bullet_test.ts",
     "ai_page_test.ts",
-    "ai_subpage_test.ts",
+    "ai_tab_organization_subpage_test.ts",
     "all_sites_test.ts",
     "anti_abuse_page_test.ts",
     "appearance_fonts_page_test.ts",
@@ -47,6 +51,7 @@ build_webui_tests("build") {
     "offer_writing_help_page_test.ts",
     "on_startup_page_test.ts",
     "autofill_fake_data.ts",
+    "autofill_section_focus_test.ts",
     "payments_section_card_rows_test.ts",
     "payments_section_card_dialogs_test.ts",
     "payments_section_focus_test.ts",
@@ -92,6 +97,7 @@ build_webui_tests("build") {
     "search_settings_test.ts",
     "secure_dns_interactive_test.ts",
     "secure_dns_test.ts",
+    "security_keys_subpage_test.ts",
     "security_keys_bio_enrollment_test.ts",
     "security_keys_credential_management_test.ts",
     "security_keys_reset_dialog_test.ts",
@@ -132,6 +138,7 @@ build_webui_tests("build") {
     "sync_test_util.ts",
     "tab_discard_exception_dialog_test.ts",
     "test_about_page_browser_proxy.ts",
+    "test_user_annotations_manager_proxy.ts",
     "test_clear_browsing_data_browser_proxy.ts",
     "test_extension_control_browser_proxy.ts",
     "test_hats_browser_proxy.ts",
@@ -155,6 +162,8 @@ build_webui_tests("build") {
     "unused_site_permissions_test.ts",
     "unused_site_permissions_interactive_ui_test.ts",
     "zoom_levels_test.ts",
+    "smart_card_readers_page_test.ts",
+    "smart_card_reader_origin_entry_test.ts",
   ]
 
   if (is_chromeos_ash) {

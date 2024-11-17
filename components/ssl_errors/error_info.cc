@@ -194,12 +194,12 @@ ErrorInfo ErrorInfo::CreateError(ErrorType error_type,
           l10n_util::GetStringUTF16(IDS_CERT_ERROR_UNKNOWN_ERROR_DESCRIPTION);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return ErrorInfo(details, short_description);
 }
 
-ErrorInfo::~ErrorInfo() {}
+ErrorInfo::~ErrorInfo() = default;
 
 // static
 ErrorInfo::ErrorType ErrorInfo::NetErrorToErrorType(int net_error) {
@@ -239,8 +239,7 @@ ErrorInfo::ErrorType ErrorInfo::NetErrorToErrorType(int net_error) {
     case net::ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
       return CERT_KNOWN_INTERCEPTION_BLOCKED;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return UNKNOWN;
+      NOTREACHED();
   }
 }
 

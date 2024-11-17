@@ -33,6 +33,7 @@ void PressureClientImpl::Reset() {
 
   client_receiver_.reset();
   client_remote_.reset();
+  pressure_source_type_ = PressureSourceType::kUnknown;
 }
 
 mojo::PendingReceiver<device::mojom::PressureClient>
@@ -49,8 +50,15 @@ PressureClientImpl::BindNewPipeAndPassReceiver() {
 }
 
 void PressureClientImpl::BindReceiver(
-    mojo::PendingReceiver<device::mojom::PressureClient> pending_receiver) {
+    mojo::PendingReceiver<device::mojom::PressureClient> pending_receiver,
+    bool is_virtual_source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (is_virtual_source) {
+    pressure_source_type_ = PressureSourceType::kVirtual;
+  } else {
+    pressure_source_type_ = PressureSourceType::kNonVirtual;
+  }
 
   client_receiver_.Bind(std::move(pending_receiver));
   client_receiver_.set_disconnect_handler(

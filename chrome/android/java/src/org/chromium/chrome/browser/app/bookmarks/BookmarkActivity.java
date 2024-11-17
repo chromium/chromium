@@ -20,7 +20,10 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
 /**
  * The activity that displays the bookmark UI on the phone. It keeps a {@link
@@ -75,6 +78,11 @@ public class BookmarkActivity extends SnackbarActivity {
                             data.getStringExtra(INTENT_VISIT_BOOKMARK_ID));
             mBookmarkManagerCoordinator.openBookmark(bookmarkId);
         }
+    }
+
+    @Override
+    protected ModalDialogManager createModalDialogManager() {
+        return new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP);
     }
 
     /**

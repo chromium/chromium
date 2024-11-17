@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/country_code_picker_commands.h"
+#import "ios/chrome/browser/shared/public/commands/drive_file_picker_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/main/bvc_container_view_controller.h"
@@ -92,17 +93,9 @@ SceneController* GetForegroundActiveSceneController() {
 
 NSUInteger RegularBrowserCount() {
   return static_cast<NSUInteger>(
-      BrowserListFactory::GetForBrowserState(GetOriginalProfile())
+      BrowserListFactory::GetForProfile(GetOriginalProfile())
           ->BrowsersOfType(BrowserList::BrowserType::kRegularAndInactive)
           .size());
-}
-
-ChromeBrowserState* GetOriginalBrowserState() {
-  return GetOriginalProfile();
-}
-
-ChromeBrowserState* GetCurrentIncognitoBrowserState() {
-  return GetCurrentIncognitoProfile();
 }
 
 ProfileIOS* GetOriginalProfile() {
@@ -149,11 +142,12 @@ id<ApplicationCommands,
    BrowserCommands,
    BrowserCoordinatorCommands,
    CountryCodePickerCommands,
-   UnitConversionCommands>
+   UnitConversionCommands,
+   DriveFilePickerCommands>
 HandlerForActiveBrowser() {
-  return static_cast<
-      id<ApplicationCommands, BrowserCommands, BrowserCoordinatorCommands,
-         UnitConversionCommands, CountryCodePickerCommands>>(
+  return static_cast<id<ApplicationCommands, BrowserCommands,
+                        BrowserCoordinatorCommands, UnitConversionCommands,
+                        CountryCodePickerCommands, DriveFilePickerCommands>>(
       GetMainBrowser()->GetCommandDispatcher());
 }
 

@@ -19,6 +19,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "cc/base/region.h"
 #include "cc/paint/paint_flags.h"
@@ -1292,6 +1293,51 @@ TEST_F(DiscardableImageMapTest,
     // height, the image should not get stretched.
     EXPECT_THAT(image_out.scale.height(), FloatNear(2.f, kScaleTolerance));
   }
+}
+
+TEST_F(DiscardableImageMapTest, PreserveImageQuality) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPreserveDiscardableImageMapQuality);
+
+  scoped_refptr<DisplayItemList> display_list = new DisplayItemList;
+  PaintFlags paint;
+  gfx::Rect visible_rect(200, 200);
+  display_list->StartPaint();
+
+  PaintImage low_quality_image = CreateDiscardablePaintImage(gfx::Size(25, 25));
+  SkSamplingOptions low_quality_sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(
+          PaintFlags::FilterQuality::kLow));
+  display_list->push<DrawImageOp>(low_quality_image, 0.f, 0.f,
+                                  low_quality_sampling, nullptr);
+
+  PaintImage medium_quality_image =
+      CreateDiscardablePaintImage(gfx::Size(25, 25));
+  SkSamplingOptions medium_quality_sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(
+          PaintFlags::FilterQuality::kMedium));
+  display_list->push<DrawImageOp>(medium_quality_image, 0.f, 0.f,
+                                  medium_quality_sampling, nullptr);
+
+  PaintImage high_quality_image =
+      CreateDiscardablePaintImage(gfx::Size(25, 25));
+  SkSamplingOptions high_quality_sampling(
+      PaintFlags::FilterQualityToSkSamplingOptions(
+          PaintFlags::FilterQuality::kHigh));
+  display_list->push<DrawImageOp>(high_quality_image, 0.f, 0.f,
+                                  high_quality_sampling, nullptr);
+  display_list->EndPaintOfUnpaired(visible_rect);
+  display_list->Finalize();
+
+  scoped_refptr<DiscardableImageMap> image_map =
+      display_list->GenerateDiscardableImageMap(ScrollOffsetMap());
+  std::vector<const DrawImage*> images =
+      image_map->GetDiscardableImagesInRect(gfx::Rect(0, 0, 200, 200));
+  EXPECT_EQ(3u, images.size());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow, images[0]->filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kMedium, images[1]->filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kHigh, images[2]->filter_quality());
 }
 
 #endif  // BUILDFLAG(SKIA_SUPPORT_SKOTTIE)

@@ -161,9 +161,6 @@ crbug.com/1327754 [ mac amd debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 # Vulkan enabled on linux, the crash fallback logic is different.
 crbug.com/1334650 [ linux ] GpuCrash_InfoForHardwareGpu [ Skip ]
 
-# Windows debug causes render process hangs due to slow gpu process restart.
-crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Failure ]
-
 ###############################
 # Temporary Skip Expectations #
 ###############################
@@ -192,24 +189,25 @@ crbug.com/329145823 [ win release qualcomm ] GpuCrash_InfoForHardwareGpu [ Failu
 crbug.com/329145823 [ mac release ] GpuCrash_InfoForHardwareGpu [ Failure ]
 crbug.com/329145823 [ angle-metal graphite-enabled intel-gen-9 mac no-asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
-# Flaky driver failure to create device
-crbug.com/329145623 [ linux angle-vulkan graphite-disabled nvidia-0x2184 passthrough release ] ContextLost_WebGPUStressRequestDeviceAndRemoveLoop [ Failure ]
 
-# Flaky failure to restore context
-crbug.com/338071088 [ amd-0x67ef angle-opengl graphite-disabled no-asan passthrough release sonoma ] ContextLost_WebGL2UnpackImageHeight [ Failure ]
 
-# Flaky timeout on Android
-crbug.com/353650054 [ android ] ContextLost_WorkerWebGLRAFAfterGPUCrash [ Failure ]
 
 # Flaky failure on Mac AMD ASAN - 3 GPU process crashes instead of 4
-crbug.com/354748640 [ mac amd asan release ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
+crbug.com/354748640 [ mac amd asan release ] GpuCrash_InfoForDualHardwareGpus [ Failure ]
 
 # Flaky failure on Mac release NVIDIA - 3 GPU process crashes instead of 4
 crbug.com/355923591 [ mac release nvidia ] GpuCrash_InfoForDualHardwareGpus [ RetryOnFailure ]
 
 # Flaky failure on Mac Intel ASAN - DevTools Serialization Crash
-crbug.com/338574390 [ mac intel asan ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
-crbug.com/338574390 [ mac intel asan ] ContextLost_WebGPUBlockedAfterJSNavigation [ Failure ]
+crbug.com/338574390 [ amd-0x7340 angle-opengl asan graphite-disabled mac ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
+crbug.com/338574390 [ angle-metal asan intel mac ] ContextLost_WebGLContextRestoredInHiddenTab [ Failure ]
+crbug.com/338574390 [ angle-metal asan intel mac ] ContextLost_WebGPUBlockedAfterJSNavigation [ Failure ]
+
+# Windows debug causes render process hangs due to slow gpu process restart.
+crbug.com/1416920 [ win debug ] GpuCrash_InfoForHardwareGpu [ Failure ]
+
+# Flaky crash affects this test in particular for some reason
+crbug.com/365565140 [ win qualcomm ] ContextLost_WebGPUUnblockedAfterUserInitiatedReload [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

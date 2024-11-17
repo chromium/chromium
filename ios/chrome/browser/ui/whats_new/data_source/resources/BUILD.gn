@@ -27,6 +27,29 @@ bundle_data("whats_new_entries_plist") {
   outputs = [ "{{bundle_resources_dir}}/whats_new_entries.plist" ]
 }
 
+substitute_strings_identifier("convert_whats_new_price_insights_items") {
+  source = "whats_new_price_insights_entries.plist"
+  output = "$target_gen_dir/whats_new_price_insights_items.plist"
+  headers = [
+    "$root_gen_dir/ios/chrome/grit/ios_branded_strings.h",
+    "$root_gen_dir/ios/chrome/grit/ios_strings.h",
+    "$root_gen_dir/ios/chrome/grit/ios_whats_new_strings.h",
+  ]
+
+  deps = [
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/whats_new/strings",
+  ]
+}
+
+bundle_data("whats_new_price_insights_entries_plist") {
+  public_deps = [ ":convert_whats_new_price_insights_items" ]
+  sources = get_target_outputs(":convert_whats_new_price_insights_items")
+
+  outputs =
+      [ "{{bundle_resources_dir}}/whats_new_price_insights_entries.plist" ]
+}
+
 substitute_strings_identifier("convert_unit_tests_resources") {
   source = "test/data/whats_new_test.plist"
   output = "$target_gen_dir/whats_new/test/data/whats_new_test.plist"
@@ -54,6 +77,8 @@ bundle_data("unit_tests_resources") {
 # Please do not modify this list. The content is updated by script.
 # For more info, please see `tools/whats_new`.
 screenshots_lists = [
+  "tips/DockingBling.json",
+  "tips/DockingBling_darkmode.json",
   "m125/PWMWidget.json",
   "m125/PWMWidget_darkmode.json",
   "m125/PinnedTabs.json",
@@ -66,6 +91,12 @@ screenshots_lists = [
   "m128/PasswordSharing_darkmode.json",
   "m128/CustomizableOverflowMenu.json",
   "m128/CustomizableOverflowMenu_darkmode.json",
+  "m132/PriceTracking.json",
+  "m132/PriceTracking_darkmode.json",
+  "m132/PriceHistory.json",
+  "m132/PriceHistory_darkmode.json",
+  "m132/OtherBuyingOptions.json",
+  "m132/OtherBuyingOptions_darkmode.json",
 ]
 
 bundle_data("screenshots_files") {

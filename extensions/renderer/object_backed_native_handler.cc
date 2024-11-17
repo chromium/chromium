@@ -127,10 +127,9 @@ void ObjectBackedNativeHandler::Router(
   v8::ReturnValue<v8::Value> ret = args.GetReturnValue();
   v8::Local<v8::Value> ret_value = ret.Get();
   if (ret_value->IsObject() && !ret_value->IsNull() &&
-      !ContextCanAccessObject(context, v8::Local<v8::Object>::Cast(ret_value),
-                              true)) {
-    NOTREACHED_IN_MIGRATION() << "Insecure return value";
-    ret.SetUndefined();
+      !ContextCanAccessObject(isolate, context,
+                              v8::Local<v8::Object>::Cast(ret_value), true)) {
+    NOTREACHED() << "Insecure return value";
   }
 }
 
@@ -201,6 +200,7 @@ void ObjectBackedNativeHandler::Invalidate() {
 
 // static
 bool ObjectBackedNativeHandler::ContextCanAccessObject(
+    v8::Isolate* isolate,
     const v8::Local<v8::Context>& context,
     const v8::Local<v8::Object>& object,
     bool allow_null_context) {

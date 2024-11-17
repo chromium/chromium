@@ -34,6 +34,8 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/browser_features.h"
@@ -45,6 +47,7 @@
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
+#include "chrome/browser/ui/bookmarks/bookmark_ui_operations_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils_desktop.h"
 #include "chrome/browser/ui/browser.h"
@@ -88,7 +91,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
-#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/url_formatter/url_formatter.h"
 #include "extensions/browser/extension_registry.h"
@@ -104,6 +107,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model_utils.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -157,6 +161,7 @@ namespace {
 
 using ::bookmarks::BookmarkModel;
 using ::bookmarks::BookmarkNode;
+using chrome::GetBookmarkDropOperation;
 using ::ui::mojom::DragOperation;
 using ::views::Background;
 using ::views::Border;
@@ -1121,9 +1126,7 @@ void BookmarkBarView::VisibilityChanged(View* starting_from, bool is_visible) {
   AccessiblePaneView::VisibilityChanged(starting_from, is_visible);
 
   if (starting_from == this) {
-    for (BookmarkBarViewObserver& observer : observers_) {
-      observer.OnBookmarkBarVisibilityChanged();
-    }
+    observers_.Notify(&BookmarkBarViewObserver::OnBookmarkBarVisibilityChanged);
   }
 }
 
@@ -1404,7 +1407,7 @@ void BookmarkBarView::OnMenuButtonPressed(const bookmarks::BookmarkNode* node,
 void BookmarkBarView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   if (!bookmark_model_->loaded()) {
     // Don't do anything if the model isn't loaded.
     return;
@@ -1490,7 +1493,8 @@ void BookmarkBarView::Init() {
   // Also re-enabled when the model is loaded.
   managed_bookmarks_button_->SetEnabled(false);
 
-  if (chrome::IsSavedTabGroupsEnabled(browser_->profile())) {
+  if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
+          browser_->profile())) {
     saved_tab_group_bar_ =
         AddChildView(std::make_unique<tab_groups::SavedTabGroupBar>(
             browser_, animations_enabled));
@@ -1820,9 +1824,7 @@ void BookmarkBarView::ShowDropFolderForNode(const BookmarkNode* node) {
   bookmark_drop_menu_->set_observer(this);
   bookmark_drop_menu_->RunMenuAt(this);
 
-  for (BookmarkBarViewObserver& observer : observers_) {
-    observer.OnDropMenuShown();
-  }
+  observers_.Notify(&BookmarkBarViewObserver::OnDropMenuShown);
 }
 
 void BookmarkBarView::StopShowFolderDropMenuTimer() {
@@ -1873,7 +1875,7 @@ void BookmarkBarView::CalculateDropLocation(
   } else if (bookmark_buttons_.empty()) {
     // No bookmarks, accept the drop.
     location->index = 0;
-    const BookmarkNode* node =
+    const BookmarkNode* const node =
         data.GetFirstNode(bookmark_model_, profile->GetPath());
     int ops = node && !managed_->IsNodeManaged(node)
                   ? ui::DragDropTypes::DRAG_MOVE
@@ -1938,22 +1940,24 @@ void BookmarkBarView::CalculateDropLocation(
   }
 
   if (location->on) {
-    const BookmarkNode* parent =
-        (location->button_type == DROP_ALL_BOOKMARKS_FOLDER)
-            ? bookmark_model_->other_node()
-            : bookmark_model_->bookmark_bar_node()
-                  ->children()[location->index.value()]
-                  .get();
-    location->operation = chrome::GetBookmarkDropOperation(
-        profile, event, data, parent, parent->children().size());
-    if (location->operation != DragOperation::kNone && !data.has_single_url() &&
-        data.GetFirstNode(bookmark_model_, profile->GetPath()) == parent) {
-      // Don't open a menu if the node being dragged is the menu to open.
-      location->on = false;
-    }
+    const BookmarkMergedSurfaceService* const bookmark_merged_service =
+        BookmarkMergedSurfaceServiceFactory::GetForProfile(profile);
+
+    const BookmarkParentFolder parent_folder = [&]() -> BookmarkParentFolder {
+      if (location->button_type == DROP_ALL_BOOKMARKS_FOLDER) {
+        return BookmarkParentFolder::OtherFolder();
+      }
+      const BookmarkNode* const node = bookmark_merged_service->GetNodeAtIndex(
+          BookmarkParentFolder::BookmarkBarFolder(), location->index.value());
+      return BookmarkParentFolder::FromNonPermanentNode(node);
+    }();
+
+    location->operation = GetBookmarkDropOperation(
+        profile, event, data, parent_folder,
+        bookmark_merged_service->GetChildrenCount(parent_folder));
   } else {
-    location->operation = chrome::GetBookmarkDropOperation(
-        profile, event, data, bookmark_model_->bookmark_bar_node(),
+    location->operation = GetBookmarkDropOperation(
+        profile, event, data, BookmarkParentFolder::BookmarkBarFolder(),
         location->index.value());
   }
 }
@@ -2084,7 +2088,8 @@ void BookmarkBarView::OnTabGroupsVisibilityPrefChanged() {
   // Incognito browsers also get triggered if the associated regular profile
   // browser is triggered. Early return because incognito has no
   // `saved_tab_group_bar_`.
-  if (!chrome::IsSavedTabGroupsEnabled(browser_->profile())) {
+  if (!tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
+          browser_->profile())) {
     return;
   }
 
@@ -2189,9 +2194,13 @@ void BookmarkBarView::PerformDrop(
   DCHECK_NE(index, static_cast<size_t>(-1));
 
   base::RecordAction(base::UserMetricsAction("BookmarkBar_DragEnd"));
-  output_drag_op = chrome::DropBookmarks(
-      browser_->profile(), data, parent_node, index, copy,
-      chrome::BookmarkReorderDropTarget::kBookmarkBarView);
+  // TODO(crbug.com/369304373): Update to use
+  // `BookmarkUIOperationsHelperMergedSurfaces` once this class is migrated to
+  // use `BookmarkMergedSurfaceService`.
+  output_drag_op =
+      BookmarkUIOperationsHelperNonMergedSurfaces(bookmark_model_, parent_node)
+          .DropBookmarks(browser_->profile(), data, index, copy,
+                         chrome::BookmarkReorderDropTarget::kBookmarkBarView);
 }
 
 int BookmarkBarView::GetDropLocationModelIndexForTesting() const {
@@ -2208,14 +2217,6 @@ const views::View* BookmarkBarView::GetSavedTabGroupsSeparatorViewForTesting()
 void BookmarkBarView::MaybeShowSavedTabGroupsIntroPromo() const {
   // Only show this promo with the V2 enabled flag.
   if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
-    return;
-  }
-
-  // Attempting to queue up an IPH that should show at startup, this requires
-  // the BrowserFeaturePromoController.
-  BrowserFeaturePromoController* const promo_controller =
-      BrowserFeaturePromoController::GetForView(saved_tab_group_bar_);
-  if (!promo_controller) {
     return;
   }
 
@@ -2266,7 +2267,7 @@ void BookmarkBarView::MaybeShowSavedTabGroupsIntroPromo() const {
     }
   }
 
-  promo_controller->MaybeShowStartupPromo(std::move(params));
+  browser_view_->MaybeShowStartupFeaturePromo(std::move(params));
 }
 
 BEGIN_METADATA(BookmarkBarView)

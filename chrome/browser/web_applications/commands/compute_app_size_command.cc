@@ -10,11 +10,15 @@
 #include "base/barrier_callback.h"
 #include "base/debug/crash_logging.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/get_isolated_web_app_browsing_data_command.h"
+#include "chrome/browser/web_applications/isolated_web_apps/jobs/get_isolated_web_app_size_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -53,11 +57,22 @@ ComputeAppSizeCommand::~ComputeAppSizeCommand() = default;
 void ComputeAppSizeCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
   lock_ = std::move(lock);
 
-  if (!lock_->registrar().IsInstalled(app_id_)) {
+  const WebAppRegistrar& registrar = lock_->registrar();
+  if (!registrar.IsInstalled(app_id_)) {
     ReportResultAndDestroy(CommandResult::kFailure);
     return;
   }
 
+  if (registrar.IsIsolated(app_id_)) {
+    get_isolated_web_app_size_job_ = std::make_unique<GetIsolatedWebAppSizeJob>(
+        profile_.get(), app_id_, GetMutableDebugValue(),
+        base::BindOnce(&ComputeAppSizeCommand::OnIsolatedAppSizeComputed,
+                       weak_factory_.GetWeakPtr()));
+    get_isolated_web_app_size_job_->Start(lock_.get());
+    return;
+  }
+
+  // TODO(crbug.com/378625836): Extract PWA path to a separate job.
   lock_->icon_manager().GetIconsSizeForApp(
       app_id_, base::BindOnce(&ComputeAppSizeCommand::OnGetIconSize,
                               weak_factory_.GetWeakPtr()));
@@ -88,9 +103,7 @@ void ComputeAppSizeCommand::OnQuotaModelInfoLoaded(
     // validity when the command is evoked in StartWithLock. We are also still
     // holding the lock so a change to the status of the app throughout is not
     // expected.
-    NOTREACHED_IN_MIGRATION();
-    ReportResultAndDestroy(CommandResult::kFailure);
-    return;
+    NOTREACHED();
   }
 
   GURL gurl = lock_->registrar().GetAppById(app_id_)->start_url();
@@ -99,9 +112,7 @@ void ComputeAppSizeCommand::OnQuotaModelInfoLoaded(
     // validity when the command is evoked in StartWithLock. We are also still
     // holding the lock so a change to the status of the app throughout is not
     // expected.
-    NOTREACHED_IN_MIGRATION();
-    ReportResultAndDestroy(CommandResult::kFailure);
-    return;
+    NOTREACHED();
   }
   origin_ = url::Origin::Create(gurl);
 
@@ -133,6 +144,15 @@ void ComputeAppSizeCommand::OnLocalStorageModelInfoLoaded(
   }
 
   ReportResultAndDestroy(CommandResult::kSuccess);
+}
+
+void ComputeAppSizeCommand::OnIsolatedAppSizeComputed(
+    std::optional<GetIsolatedWebAppSizeJobResult> result) {
+  if (result) {
+    size_ = std::move(result->size);
+  }
+  ReportResultAndDestroy(result ? CommandResult::kSuccess
+                                : CommandResult::kFailure);
 }
 
 void ComputeAppSizeCommand::ReportResultAndDestroy(CommandResult result) {

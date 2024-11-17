@@ -9,12 +9,14 @@
 #include <string>
 #include <vector>
 
+#import "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/strike_databases/strike_database.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
@@ -54,16 +56,20 @@ class WebViewAutofillClientIOS : public AutofillClient {
   ~WebViewAutofillClientIOS() override;
 
   // AutofillClient:
+  base::WeakPtr<AutofillClient> GetWeakPtr() override;
+  const std::string& GetAppLocale() const override;
   bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   AutofillDriverFactory& GetAutofillDriverFactory() override;
   AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   PersonalDataManager* GetPersonalDataManager() override;
+  SingleFieldFillRouter& GetSingleFieldFillRouter() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
+  const signin::IdentityManager* GetIdentityManager() const override;
   FormDataImporter* GetFormDataImporter() override;
   payments::PaymentsAutofillClient* GetPaymentsAutofillClient() override;
   StrikeDatabase* GetStrikeDatabase() override;
@@ -94,8 +100,11 @@ class WebViewAutofillClientIOS : public AutofillClient {
       base::span<const autofill::SelectOption> datalist) override;
   void PinAutofillSuggestions() override;
   void HideAutofillSuggestions(SuggestionHidingReason reason) override;
+  bool IsAutofillEnabled() const override;
+  bool IsAutofillProfileEnabled() const override;
+  bool IsAutofillPaymentMethodsEnabled() const override;
   bool IsAutocompleteEnabled() const override;
-  bool IsPasswordManagerEnabled() override;
+  bool IsPasswordManagerEnabled() const override;
   void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
                             AutofillTriggerSource trigger_source,
                             bool is_refill) override;
@@ -108,13 +117,13 @@ class WebViewAutofillClientIOS : public AutofillClient {
   void set_bridge(id<CWVAutofillClientIOSBridge> bridge);
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   std::unique_ptr<AutofillCrowdsourcingManager> crowdsourcing_manager_;
   PersonalDataManager* personal_data_manager_;
   AutocompleteHistoryManager* autocomplete_history_manager_;
   web::WebState* web_state_;
   __weak id<CWVAutofillClientIOSBridge> bridge_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
   StrikeDatabase* strike_database_;
   syncer::SyncService* sync_service_ = nullptr;
@@ -125,6 +134,11 @@ class WebViewAutofillClientIOS : public AutofillClient {
   // `payments_autofill_client_` are initialized, other than `this`.
   payments::IOSWebViewPaymentsAutofillClient payments_autofill_client_{
       this, bridge_, web_state_};
+  SingleFieldFillRouter single_field_fill_router_{
+      autocomplete_history_manager_, payments_autofill_client_.GetIbanManager(),
+      payments_autofill_client_.GetMerchantPromoCodeManager()};
+
+  base::WeakPtrFactory<WebViewAutofillClientIOS> weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

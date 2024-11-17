@@ -6,6 +6,7 @@ import './info_card.js';
 
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {CpuUsage} from '../cpu_usage_helper.js';
 import {HealthdApiPhysicalCpuResult, HealthdApiTelemetryResult} from '../externs.js';
 
 import {getTemplate} from './cpu_card.html.js';
@@ -29,7 +30,15 @@ export class HealthdInternalsCpuCardElement extends PolymerElement {
   override connectedCallback() {
     super.connectedCallback();
 
-    this.$.infoCard.appendCardRow('INFO');
+    this.$.infoCard.appendCardRow('INFO', true);
+    this.$.infoCard.appendCardRow('USAGE', true);
+
+    this.$.infoCard.updateDisplayedInfo(1, {
+      'Overall': '0.00%',
+      'System': '0.00%',
+      'User': '0.00%',
+      'Idle': '0.00%'
+    });
   }
 
   // Whether the rows of physical CPUs are initialized.
@@ -37,8 +46,8 @@ export class HealthdInternalsCpuCardElement extends PolymerElement {
 
   updateTelemetryData(data: HealthdApiTelemetryResult) {
     this.$.infoCard.updateDisplayedInfo(0, {
-      'architecture': data.cpu.architecture,
-      'numTotalThreads': data.cpu.numTotalThreads,
+      'Number of Cores': parseInt(data.cpu.numTotalThreads),
+      'Architecture': data.cpu.architecture,
     });
 
     const physicalCpus: HealthdApiPhysicalCpuResult[] = data.cpu.physicalCpus;
@@ -50,19 +59,54 @@ export class HealthdInternalsCpuCardElement extends PolymerElement {
       this.isInitialized = true;
     }
 
-    const nextIdx: number = 1;
+    const nextIdx: number = 2;
     for (let i: number = 0; i < physicalCpus.length; ++i) {
       this.$.infoCard.updateDisplayedInfo(nextIdx + i, {
-        'modelName': physicalCpus[i].modelName,
-        'logicalCpus': physicalCpus[i].logicalCpus.map((logicalCpu) => {
+        'Model': physicalCpus[i].modelName,
+        'Logical CPUs': physicalCpus[i].logicalCpus.map((logicalCpu) => {
+          const curFreqKhz = parseInt(logicalCpu.frequency.current);
+          const maxFreqKhz = parseInt(logicalCpu.frequency.max);
+          const freqPercentage = (maxFreqKhz === 0) ?
+              'N/A' :
+              (curFreqKhz / maxFreqKhz * 100).toFixed(2);
           return {
-            'coreId': logicalCpu.coreId,
-            'currentFrequency': logicalCpu.frequency.current,
-            'maxFrequency': logicalCpu.frequency.max,
+            'Core ID': logicalCpu.coreId,
+            'Current / Max Frequency': `${curFreqKhz / 1e6}GHz / ${
+                maxFreqKhz / 1e6}GHz (${freqPercentage}%)`,
           };
         }),
       });
     }
+  }
+
+  updateCpuUsageData(physcialCpuUsage: (CpuUsage|null)[][]) {
+    let systemPercentage = 0;
+    let userPercentage = 0;
+    let idlePercentage = 0;
+
+    const flattenCpuUsage: (CpuUsage)[] =
+        physcialCpuUsage.flat().filter(usage => usage !== null);
+    const count = flattenCpuUsage.length
+    if (count === 0) {
+      return;
+    }
+    for (const usage of flattenCpuUsage) {
+      const totalTime = usage.systemTime + usage.userTime + usage.idleTime;
+      systemPercentage += usage.systemTime / totalTime * 100;
+      userPercentage += usage.userTime / totalTime * 100;
+      idlePercentage += usage.idleTime / totalTime * 100;
+    }
+
+    this.$.infoCard.updateDisplayedInfo(1, {
+      'Overall': `${((systemPercentage + userPercentage) / count).toFixed(2)}%`,
+      'System': `${(systemPercentage / count).toFixed(2)}%`,
+      'User': `${(userPercentage / count).toFixed(2)}%`,
+      'Idle': `${(idlePercentage / count).toFixed(2)}%`,
+    });
+  }
+
+  updateExpanded(isExpanded: boolean) {
+    this.$.infoCard.updateExpanded(isExpanded);
   }
 }
 

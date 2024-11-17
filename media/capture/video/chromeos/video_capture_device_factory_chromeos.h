@@ -48,7 +48,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceFactoryChromeOS final
       scoped_refptr<gpu::GpuChannelHost> gpu_channel_host);
   static scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost();
 
-  static gpu::SharedImageInterface* GetSharedImageInterface();
+  static scoped_refptr<gpu::SharedImageInterface> GetSharedImageInterface();
   static void SetSharedImageInterface(
       scoped_refptr<gpu::SharedImageInterface> shared_image_interface);
 

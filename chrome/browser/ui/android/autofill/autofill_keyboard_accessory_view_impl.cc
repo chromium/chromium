@@ -118,12 +118,14 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
             env, label, sublabel, android_icon_id,
             base::to_underlying(suggestion.type),
             controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
-            suggestion.feature_for_iph ? suggestion.feature_for_iph->name : "",
+            suggestion.iph_metadata.feature
+                ? suggestion.iph_metadata.feature->name
+                : "",
             suggestion.iph_description_text,
             custom_icon_url
                 ? url::GURLAndroid::FromNativeGURL(env, **custom_icon_url)
                 : url::GURLAndroid::EmptyGURL(env),
-            suggestion.apply_deactivated_style));
+            suggestion.HasDeactivatedStyle()));
   }
   Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_,
                                                 std::move(java_suggestions));

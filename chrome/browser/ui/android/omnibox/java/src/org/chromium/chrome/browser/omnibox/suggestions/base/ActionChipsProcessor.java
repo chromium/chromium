@@ -27,7 +27,6 @@ public class ActionChipsProcessor {
     private @Nullable OmniboxAction mExecutedAction;
 
     /**
-     * @param context An Android context.
      * @param suggestionHost Component receiving suggestion events.
      */
     public ActionChipsProcessor(@NonNull SuggestionHost suggestionHost) {

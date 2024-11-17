@@ -14,7 +14,7 @@ import "mojo/public/mojom/base/file_path.mojom";
 // Used by EffectsConfig to indicate which effect the g3 shared library
 // should be applying. Needs to be kept in sync with g3 version found in
 // chromeos/ml/effects_pipeline/effects_config.h
-[Extensible]
+[Extensible, Stable]
 enum CameraEffect {
   [Default] kNone = 0,
   kBackgroundBlur = 1,
@@ -23,21 +23,21 @@ enum CameraEffect {
 };
 
 // Set of GPU APIs available.
-[Extensible]
+[Extensible, Stable]
 enum GpuApi {
   kOpenCL = 0,
   [Default] kOpenGL = 1,
 };
 
 // Indicates the state of setting an effect.
-[Extensible]
+[Extensible, Stable]
 enum SetEffectResult {
   [Default] kOk = 0,
   kError = 1,
 };
 
 // Defines which level of blur to apply with the background blur effect.
-[Extensible]
+[Extensible, Stable]
 enum BlurLevel {
   kLowest,
   kLight,
@@ -48,7 +48,7 @@ enum BlurLevel {
 
 // Defines the types of segmentation models that the video effects can use.
 // Lower resolution models will reduce the workload on the GPU.
-[Extensible]
+[Extensible, Stable]
 enum SegmentationModel {
   kAuto = 0,
   [Default] kHighResolution = 1,
@@ -56,7 +56,7 @@ enum SegmentationModel {
 };
 
 // Defines the backends to run the ML model inference.
-[Extensible]
+[Extensible, Stable]
 enum InferenceBackend {
   kGpu = 0,
   kNpu = 1,
@@ -66,51 +66,55 @@ enum InferenceBackend {
 // Structure used for configuring and enabling video conferencing effects.
 // This should be kept in sync with the google3 version found in:
 // chromeos/ml/effects_pipeline/public/effects_pipeline_types.h
+[Stable]
 struct EffectsConfig {
   // Name of the effect to enable.
-  CameraEffect effect = kNone;
+  CameraEffect effect@0 = kNone;
 
   // How much blur to apply for the background blur effect.
-  BlurLevel blur_level = kMedium;
+  BlurLevel blur_level@1 = kMedium;
 
   // Select which GPU API to use to perform the segmentation inference.
-  GpuApi segmentation_gpu_api = kOpenGL;
+  GpuApi segmentation_gpu_api@2 = kOpenGL;
 
   // Maximum number of frames allowed in flight.
-  uint16 graph_max_frames_in_flight = 2;
+  uint16 graph_max_frames_in_flight@3 = 2;
 
   // Whether background background blur should be enabled.
-  [MinVersion=1] bool blur_enabled;
+  [MinVersion=1] bool blur_enabled@4;
 
   // Whether background replacement should be enabled.
-  [MinVersion=1] bool replace_enabled;
+  [MinVersion=1] bool replace_enabled@5;
 
   // Whether portrait relighting should be enabled.
-  [MinVersion=1] bool relight_enabled;
+  [MinVersion=1] bool relight_enabled@6;
 
   // The type of segmentation model to use. Lower resolution models will reduce
   // the workload on the GPU.
-  [MinVersion=2] SegmentationModel segmentation_model;
+  [MinVersion=2] SegmentationModel segmentation_model@7;
 
   // The file path to use for the background image.
   // Must be readable from within camera stack.
-  [MinVersion=3] mojo_base.mojom.RelativeFilePath? background_filepath;
+  [MinVersion=3] mojo_base.mojom.RelativeFilePath? background_filepath@8;
 
   // Light intensity for relighting.
-  [MinVersion=4] float? light_intensity;
+  [MinVersion=4] float? light_intensity@9;
 
   // The inference backend to run segmentation model.
-  [MinVersion=5] InferenceBackend segmentation_inference_backend;
+  [MinVersion=5] InferenceBackend segmentation_inference_backend@10;
 
   // The inference backend to run portrait relighing model.
-  [MinVersion=5] InferenceBackend relighting_inference_backend;
+  [MinVersion=5] InferenceBackend relighting_inference_backend@11;
 
   // Whether face retouch should be enabled.
-  [MinVersion=6] bool retouch_enabled;
+  [MinVersion=6] bool retouch_enabled@12;
 
   // Whether Studio Look should be enabled. If the Studio Look feature is not
   // available, set it to always true. Otherwise, it can be set to false by UI,
   // which will override |retouch_enabled| and |relight_enabled| and disable
   // both effects.
-  [MinVersion=6] bool studio_look_enabled = true;
+  [MinVersion=6] bool studio_look_enabled@13 = true;
+
+  // The inference backend to run face retouch model.
+  [MinVersion=7] InferenceBackend retouch_inference_backend@14;
 };

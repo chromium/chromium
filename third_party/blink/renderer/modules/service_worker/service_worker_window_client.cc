@@ -8,6 +8,7 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/callback_promise_adapter.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_visibility_state.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
@@ -85,8 +86,12 @@ ServiceWorkerWindowClient::ServiceWorkerWindowClient(
 
 ServiceWorkerWindowClient::~ServiceWorkerWindowClient() = default;
 
-String ServiceWorkerWindowClient::visibilityState() const {
-  return PageHiddenStateString(page_hidden_);
+V8VisibilityState ServiceWorkerWindowClient::visibilityState() const {
+  if (page_hidden_) {
+    return V8VisibilityState(V8VisibilityState::Enum::kHidden);
+  } else {
+    return V8VisibilityState(V8VisibilityState::Enum::kVisible);
+  }
 }
 
 ScriptPromise<ServiceWorkerWindowClient> ServiceWorkerWindowClient::focus(

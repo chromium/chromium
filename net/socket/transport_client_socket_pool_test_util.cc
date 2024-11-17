@@ -50,10 +50,7 @@ class MockConnectClientSocket : public TransportClientSocket {
   MockConnectClientSocket& operator=(const MockConnectClientSocket&) = delete;
 
   // TransportClientSocket implementation.
-  int Bind(const net::IPEndPoint& local_addr) override {
-    NOTREACHED_IN_MIGRATION();
-    return ERR_FAILED;
-  }
+  int Bind(const net::IPEndPoint& local_addr) override { NOTREACHED(); }
   // StreamSocket implementation.
   int Connect(CompletionOnceCallback callback) override {
     connected_ = true;
@@ -121,10 +118,7 @@ class MockFailingClientSocket : public TransportClientSocket {
   MockFailingClientSocket& operator=(const MockFailingClientSocket&) = delete;
 
   // TransportClientSocket implementation.
-  int Bind(const net::IPEndPoint& local_addr) override {
-    NOTREACHED_IN_MIGRATION();
-    return ERR_FAILED;
-  }
+  int Bind(const net::IPEndPoint& local_addr) override { NOTREACHED(); }
 
   // StreamSocket implementation.
   int Connect(CompletionOnceCallback callback) override {
@@ -230,10 +224,7 @@ class MockTriggerableClientSocket : public TransportClientSocket {
   }
 
   // TransportClientSocket implementation.
-  int Bind(const net::IPEndPoint& local_addr) override {
-    NOTREACHED_IN_MIGRATION();
-    return ERR_FAILED;
-  }
+  int Bind(const net::IPEndPoint& local_addr) override { NOTREACHED(); }
 
   // StreamSocket implementation.
   int Connect(CompletionOnceCallback callback) override {
@@ -368,8 +359,7 @@ MockTransportClientSocketFactory::CreateDatagramClientSocket(
     DatagramSocket::BindType bind_type,
     NetLog* net_log,
     const NetLogSource& source) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 std::unique_ptr<TransportClientSocket>
@@ -429,8 +419,7 @@ MockTransportClientSocketFactory::CreateTransportClientSocket(
       return std::move(rv);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::make_unique<MockConnectClientSocket>(addresses, net_log_);
+      NOTREACHED();
   }
 }
 

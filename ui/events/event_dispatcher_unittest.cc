@@ -93,7 +93,7 @@ class TestEventHandler : public EventHandler {
       EXPECT_TRUE(expect_pre_target_);
       received_pre_target_ = true;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 

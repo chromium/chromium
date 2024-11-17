@@ -102,8 +102,7 @@ enum class NavigationRequestSecurityLevel {
   // due to HSTS.
   kHstsUpgraded = 3,
 
-  // Request was for localhost, and thus no network
-  // due to HSTS.
+  // Request was for localhost, and thus nothing is exposed to the network.
   kLocalhost = 4,
 
   // Request was for an insecure (HTTP) resource, but was internally redirected
@@ -118,7 +117,7 @@ enum class NavigationRequestSecurityLevel {
   kAllowlisted = 7,
 
   // Request was insecure (HTTP), but was to a hostname that isn't globally
-  // unique (e.g. a bare RFC1918 IP address, single-label or .local hostname).
+  // unique (e.g. a bare RFC1918 IP address, or .test or .local hostname).
   // This bucket is recorded IN ADDITION to kInsecure/kAllowlisted.
   kNonUniqueHostname = 8,
 
@@ -129,7 +128,13 @@ enum class NavigationRequestSecurityLevel {
   // Request was for a captive portal login page.
   kCaptivePortalLogin = 10,
 
-  kMaxValue = kCaptivePortalLogin,
+  // Request was for a single-label hostname.
+  kSingleLabelHostname = 11,
+
+  // Request was for a URL with non-default ports.
+  kNonDefaultPorts = 12,
+
+  kMaxValue = kNonDefaultPorts,
 };
 
 // Recorded by the Site Engagement Heuristic logic, recording whether HFM should

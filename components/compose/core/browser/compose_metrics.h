@@ -39,6 +39,7 @@ extern const char kComposeMSBBSessionDialogShownCount[];
 extern const char kInnerTextNodeOffsetFound[];
 extern const char kComposeContextMenuCtr[];
 extern const char kComposeProactiveNudgeCtr[];
+extern const char kComposeSelectionNudgeCtr[];
 extern const char kComposeProactiveNudgeShowStatus[];
 extern const char kOpenComposeDialogResult[];
 extern const char kComposeStartSessionEntryPoint[];
@@ -58,6 +59,10 @@ enum class ComposeContextMenuCtrEvent {
 // Keep in sync with ComposeRequestReason in
 // src/tools/metrics/histograms/metadata/compose/enums.xml.
 enum class ComposeRequestReason {
+  // When the ComposeUpfrontInputModes featuer is enabled, the "first request"
+  // is split between one of three input modes.
+  // TODO(b/371054228): Deprecate the kFirstRequest bucket when upfront inputs
+  // launches.
   kFirstRequest = 0,
   kRetryRequest = 1,
   kUpdateRequest = 2,
@@ -65,7 +70,10 @@ enum class ComposeRequestReason {
   kLengthElaborateRequest = 4,
   kToneCasualRequest = 5,
   kToneFormalRequest = 6,
-  kMaxValue = kToneFormalRequest,
+  kFirstRequestPolishMode = 7,
+  kFirstRequestElaborateMode = 8,
+  kFirstRequestFormalizeMode = 9,
+  kMaxValue = kFirstRequestFormalizeMode,
 };
 
 // Close reasons for sessions that start with FRE or MSBB dialogs.
@@ -169,9 +177,9 @@ enum class ComposeShowStatus {
 };
 
 // Enum for calculating the CTR of the Compose proactive nudge.
-// Keep in sync with ComposeProactiveNudgeCtrEvent in
+// Keep in sync with ComposeNudgeCtrEvent in
 // src/tools/metrics/histograms/metadata/compose/enums.xml.
-enum class ComposeProactiveNudgeCtrEvent {
+enum class ComposeNudgeCtrEvent {
   kNudgeDisplayed = 0,
   kDialogOpened = 1,
   kUserDisabledProactiveNudge = 2,
@@ -425,7 +433,9 @@ void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event);
 
 void LogComposeContextMenuShowStatus(ComposeShowStatus status);
 
-void LogComposeProactiveNudgeCtr(ComposeProactiveNudgeCtrEvent event);
+void LogComposeProactiveNudgeCtr(ComposeNudgeCtrEvent event);
+
+void LogComposeSelectionNudgeCtr(ComposeNudgeCtrEvent event);
 
 void LogComposeProactiveNudgeShowStatus(ComposeShowStatus status);
 

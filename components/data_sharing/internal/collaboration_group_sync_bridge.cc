@@ -214,7 +214,7 @@ void CollaborationGroupSyncBridge::OnReadAllData(
 
   is_data_loaded_ = true;
   for (auto& observer : observers_) {
-    observer.OnDataLoaded();
+    observer.OnCollaborationGroupSyncDataLoaded();
   }
 
   data_type_store_->ReadAllMetadata(

@@ -404,10 +404,7 @@ void BrowserAccessibilityStateImplAndroid::OnAnimatorDurationScaleChanged() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   gfx::Animation::UpdatePrefersReducedMotion();
-  for (content::WebContentsImpl* wc :
-       content::WebContentsImpl::GetAllWebContents()) {
-    wc->OnWebPreferencesChanged();
-  }
+  NotifyWebContentsPreferencesChanged();
 }
 
 void BrowserAccessibilityStateImplAndroid::OnDisplayInversionEnabledChanged(

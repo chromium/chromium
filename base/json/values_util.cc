@@ -82,7 +82,7 @@ std::optional<Time> ValueToTime(const Value& value) {
   return Time::FromDeltaSinceWindowsEpoch(*time_delta);
 }
 
-Value FilePathToValue(FilePath file_path) {
+Value FilePathToValue(const FilePath& file_path) {
   return Value(file_path.AsUTF8Unsafe());
 }
 

@@ -557,6 +557,18 @@ LayoutUnit TableLayoutAlgorithm::ComputeCaptionBlockSize() {
   return captions_block_size;
 }
 
+void TableLayoutAlgorithm::SetupRelayoutData(
+    const TableLayoutAlgorithm& previous,
+    RelayoutType relayout_type) {
+  LayoutAlgorithm::SetupRelayoutData(previous, relayout_type);
+
+  if (relayout_type == kRelayoutAsLastTableBox) {
+    is_known_to_be_last_table_box_ = true;
+  } else {
+    is_known_to_be_last_table_box_ = previous.is_known_to_be_last_table_box_;
+  }
+}
+
 const LayoutResult* TableLayoutAlgorithm::Layout() {
   if (is_known_to_be_last_table_box_) {
     // This is the last table box fragment. Shouldn't reserve space for cloned
@@ -678,7 +690,8 @@ const LayoutResult* TableLayoutAlgorithm::Layout() {
       is_grid_empty ? LogicalSize() : border_spacing);
 
   if (result->Status() == LayoutResult::kNeedsRelayoutAsLastTableBox) {
-    return RelayoutAsLastTableBox();
+    DCHECK(!is_known_to_be_last_table_box_);
+    return Relayout<TableLayoutAlgorithm>(kRelayoutAsLastTableBox);
   }
   if (result->Status() == LayoutResult::kNeedsEarlierBreak) {
     // We shouldn't insert early-breaks when we're relaying out as the last
@@ -727,23 +740,6 @@ MinMaxSizesResult TableLayoutAlgorithm::ComputeMinMaxSizes(
   DCHECK_LE(min_max.min_size, min_max.max_size);
   return MinMaxSizesResult{min_max,
                            /* depends_on_block_constraints */ false};
-}
-
-const LayoutResult* TableLayoutAlgorithm::RelayoutAsLastTableBox() {
-  DCHECK(!is_known_to_be_last_table_box_);
-  LayoutAlgorithmParams params(
-      Node(), container_builder_.InitialFragmentGeometry(),
-      GetConstraintSpace(), GetBreakToken(), /* early_break */ nullptr);
-  TableLayoutAlgorithm algorithm(params);
-  algorithm.is_known_to_be_last_table_box_ = true;
-
-  // In case we were already re-laying out with a known early-break, we need to
-  // re-propagate that piece of information as well, so that we don't end up
-  // getting stuck in an infinite recursion with the early-break and
-  // known-to-be-last-table-box mechanisms invoking each other.
-  algorithm.early_break_ = early_break_;
-
-  return algorithm.Layout();
 }
 
 void TableLayoutAlgorithm::ComputeRows(

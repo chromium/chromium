@@ -12,8 +12,12 @@
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_panel_view.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
+#include "ash/system/mahi/mahi_widget_delegate.h"
 #include "ash/system/mahi/refresh_banner_view.h"
+#include "ash/wm/window_properties.h"
 #include "ash/wm/work_area_insets.h"
+#include "base/feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_type.h"
@@ -23,6 +27,7 @@
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -90,29 +95,24 @@ gfx::Rect CalculateInitialWidgetBounds(const gfx::Rect& mahi_menu_bounds) {
       mahi_constants::kPanelDefaultWidth, mahi_constants::kPanelDefaultHeight);
 }
 
+std::unique_ptr<views::BoxLayoutView> CreateMahiPanelContentsView() {
+  return views::Builder<views::BoxLayoutView>()
+      // We need to set a negative value for between child spacing here
+      // because we need the `RefreshBannerView` to overlap with the
+      // `MahiPanelView`.
+      .SetBetweenChildSpacing(-mahi_constants::kRefreshBannerStackDepth)
+      .SetOrientation(views::BoxLayout::Orientation::kVertical)
+      .Build();
+}
+
 }  // namespace
 
 MahiPanelWidget::MahiPanelWidget(InitParams params,
+                                 RefreshBannerView* refresh_view,
                                  MahiUiController* ui_controller)
-    : views::Widget(std::move(params)) {
-  auto* contents_view = SetContentsView(
-      views::Builder<views::BoxLayoutView>()
-          // We need to set a negative value for between child spacing here
-          // because we need the `RefreshBannerView` to overlap with the
-          // `MahiPanelView`.
-          .SetBetweenChildSpacing(-mahi_constants::kRefreshBannerStackDepth)
-          .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .Build());
-
-  refresh_view_ = contents_view->AddChildView(
-      std::make_unique<RefreshBannerView>(ui_controller));
+    : views::Widget(std::move(params)), refresh_view_(refresh_view) {
+  CHECK(refresh_view_);
   refresh_view_observation_.Observe(refresh_view_);
-
-  auto* panel_view = contents_view->AddChildView(
-      std::make_unique<MahiPanelView>(ui_controller));
-
-  // Make sure the `MahiPanelView` is sized to fill up the available space.
-  contents_view->SetFlexForView(panel_view, 1.0);
   shelf_observation_.Observe(Shelf::ForWindow(Shell::GetPrimaryRootWindow()));
 }
 
@@ -127,8 +127,37 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
 
   views::Widget::InitParams params(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
-      views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+      base::FeatureList::IsEnabled(chromeos::features::kMahiPanelResizable)
+          ? views::Widget::InitParams::TYPE_WINDOW
+          : views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = GetName();
+
+  std::unique_ptr<views::BoxLayoutView> contents_view =
+      CreateMahiPanelContentsView();
+
+  auto* refresh_view = contents_view->AddChildView(
+      std::make_unique<RefreshBannerView>(ui_controller));
+
+  auto* panel_view = contents_view->AddChildView(
+      std::make_unique<MahiPanelView>(ui_controller));
+  // Make sure the `MahiPanelView` is sized to fill up the available space.
+  contents_view->SetFlexForView(panel_view, 1.0);
+
+  // If resizing is enabled, create a custom delegate and set the contents view
+  // so that it can be set on the client view. Else the contents view will be
+  // set on the widget directly as there will be no client view.
+  if (base::FeatureList::IsEnabled(chromeos::features::kMahiPanelResizable)) {
+    auto delegate = std::make_unique<MahiWidgetDelegate>();
+    // Set to true so that the delegate deletes itself.
+    delegate->SetOwnedByWidget(true);
+    delegate->SetCanResize(true);
+    delegate->SetContentsView(std::move(contents_view));
+    params.delegate = delegate.release();
+
+    // If resizable, disable the resize shadow on the window border.
+    params.init_properties_container.SetProperty(kDisableResizeShadow, true);
+  }
+
   // `SystemModalContainer` can travel across displays, is not automatically
   // resizable on limited screen size and stays on top on full-screen.
   params.parent =
@@ -138,8 +167,13 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
   params.layer_type = ui::LAYER_NOT_DRAWN;
 
-  views::UniqueWidgetPtr widget =
-      std::make_unique<MahiPanelWidget>(std::move(params), ui_controller);
+  views::UniqueWidgetPtr widget = std::make_unique<MahiPanelWidget>(
+      std::move(params), refresh_view, ui_controller);
+
+  // Set the contents view of the widget directly if non-resizable.
+  if (!base::FeatureList::IsEnabled(chromeos::features::kMahiPanelResizable)) {
+    widget->SetContentsView(std::move(contents_view));
+  }
   widget->SetBounds(CalculateInitialWidgetBounds(mahi_menu_bounds));
 
   widget->Show();

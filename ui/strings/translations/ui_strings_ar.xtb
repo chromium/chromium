@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">‏تعذّر تحميل الصفحة بسبب عدم تثبيت وحدة واجهة المستخدِم الخاصة بمطوّر البرامج (dev_ui).</translation>
 <translation id="5574202486608032840">نظام <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">‏مفتاح Tab</translation>
 <translation id="5613020302032141669">مفتاح سهم إلى اليسار</translation>
 <translation id="5633029987065897167">فارغة</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{دقيقة واحدة}zero{# من الدقائق}two{دقيقتان (#)}few{# دقائق}many{# دقيقة}other{# من الدقائق}}</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">صفحة  إلى أسفل</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />، <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">علامة تبويب</translation>
 <translation id="8259556432390118667">القيمة السداسية للّون</translation>
 <translation id="8328145009876646418">الحافة اليمنى</translation>
 <translation id="8331626408530291785">التمرير إلى أعلى</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{ثانية واحدة}zero{# ثانية}two{ثانيتان (#)}few{# ثوانٍ}many{# ثانية}other{# من الثواني}}</translation>
 <translation id="9059834730836941392">تصغير الإشعار</translation>
 <translation id="9170848237812810038">&amp;إلغاء</translation>
+<translation id="9195990613383871904">غدًا</translation>
+<translation id="928628199082367701">‏مفتاح Super</translation>
 <translation id="932327136139879170">الصفحة الرئيسية</translation>
 <translation id="944069440740578670">إشعارات غير مقروءة</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{قبل ثانية واحدة}zero{قبل # ثانية}two{قبل ثانيتَين}few{قبل # ثوانٍ}many{قبل # ثانية}other{قبل # ثانية}}</translation>

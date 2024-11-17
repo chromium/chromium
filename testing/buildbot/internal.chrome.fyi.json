@@ -90,11 +90,6 @@
       "chromiumos_preflight"
     ]
   },
-  "lacros-arm-generic-chrome-fyi-reclient": {
-    "additional_compile_targets": [
-      "chrome"
-    ]
-  },
   "linux-chrome-reclient": {
     "additional_compile_targets": [
       "base_unittests",

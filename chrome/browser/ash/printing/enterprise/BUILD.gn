@@ -19,6 +19,8 @@ static_library("enterprise") {
     "enterprise_printers_provider.h",
     "managed_printer_translator.cc",
     "managed_printer_translator.h",
+    "print_job_options_translator.cc",
+    "print_job_options_translator.h",
     "print_servers_policy_provider.cc",
     "print_servers_policy_provider.h",
     "print_servers_provider.cc",
@@ -31,6 +33,7 @@ static_library("enterprise") {
 
   deps = [
     ":managed_printer_proto",
+    ":print_job_options_proto",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles",
@@ -56,6 +59,7 @@ source_set("unit_tests") {
     "calculators_policies_binder_unittest.cc",
     "enterprise_printers_provider_unittest.cc",
     "managed_printer_translator_unittest.cc",
+    "print_job_options_translator_unittest.cc",
     "print_servers_policy_provider_unittest.cc",
     "print_servers_provider_unittest.cc",
   ]
@@ -63,6 +67,7 @@ source_set("unit_tests") {
   deps = [
     ":enterprise",
     ":managed_printer_proto",
+    ":print_job_options_proto",
     "//base/test:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/printing",
@@ -83,6 +88,14 @@ source_set("unit_tests") {
 
 proto_library("managed_printer_proto") {
   sources = [ "managed_printer_configuration.proto" ]
+
+  proto_deps = [ ":print_job_options_proto" ]
+
+  proto_out_dir = "chrome/browser/ash/printing/enterprise"
+}
+
+proto_library("print_job_options_proto") {
+  sources = [ "print_job_options.proto" ]
 
   proto_out_dir = "chrome/browser/ash/printing/enterprise"
 }

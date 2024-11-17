@@ -16,9 +16,9 @@ import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
 import {getTemplate} from './add_input_methods_dialog.html.js';
-import {Item} from './add_items_dialog.js';
+import type {Item} from './add_items_dialog.js';
 import {ACCESSIBILITY_COMMON_IME_ID} from './languages.js';
-import {LanguageHelper, LanguagesModel} from './languages_types.js';
+import type {LanguageHelper, LanguagesModel} from './languages_types.js';
 
 class OsSettingsAddInputMethodsDialogElement extends PolymerElement {
   static get is() {

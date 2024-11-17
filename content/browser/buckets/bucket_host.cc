@@ -107,7 +107,7 @@ void BucketHost::Estimate(EstimateCallback callback) {
     return;
   }
 
-  GetQuotaManagerProxy()->GetBucketUsageAndQuota(
+  GetQuotaManagerProxy()->GetBucketUsageAndReportedQuota(
       bucket_id_, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&BucketHost::DidGetUsageAndQuota,
                      weak_factory_.GetWeakPtr(), std::move(callback)));

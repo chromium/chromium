@@ -46,9 +46,9 @@ constexpr char kEnrollmentToken[] = "enrollment_token";
   [self clearPolicies];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [self clearPolicies];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Helpers

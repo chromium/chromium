@@ -242,9 +242,11 @@ void ManagePasswordsState::OnKeychainError() {
   SetState(password_manager::ui::KEYCHAIN_ERROR_STATE);
 }
 
-void ManagePasswordsState::OnPasskeySaved(bool gpm_pin_created) {
+void ManagePasswordsState::OnPasskeySaved(bool gpm_pin_created,
+                                          std::string passkey_rp_id) {
   ClearData();
   gpm_pin_created_during_recent_passkey_creation_ = gpm_pin_created;
+  passkey_rp_id_ = std::move(passkey_rp_id);
   SetState(password_manager::ui::PASSKEY_SAVED_CONFIRMATION_STATE);
 }
 
@@ -253,13 +255,15 @@ void ManagePasswordsState::OnPasskeyDeleted() {
   SetState(password_manager::ui::PASSKEY_DELETED_CONFIRMATION_STATE);
 }
 
-void ManagePasswordsState::OnPasskeyUpdated() {
+void ManagePasswordsState::OnPasskeyUpdated(std::string passkey_rp_id) {
   ClearData();
+  passkey_rp_id_ = std::move(passkey_rp_id);
   SetState(password_manager::ui::PASSKEY_UPDATED_CONFIRMATION_STATE);
 }
 
-void ManagePasswordsState::OnPasskeyNotAccepted() {
+void ManagePasswordsState::OnPasskeyNotAccepted(std::string passkey_rp_id) {
   ClearData();
+  passkey_rp_id_ = std::move(passkey_rp_id);
   SetState(password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE);
 }
 
@@ -350,6 +354,8 @@ void ManagePasswordsState::ClearData() {
   credentials_callback_.Reset();
   unsynced_credentials_.clear();
   single_credential_mode_credential_.reset();
+  gpm_pin_created_during_recent_passkey_creation_ = false;
+  passkey_rp_id_.clear();
 }
 
 bool ManagePasswordsState::AddForm(const PasswordForm& form) {

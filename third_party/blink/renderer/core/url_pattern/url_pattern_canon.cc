@@ -135,7 +135,7 @@ String CanonicalizeHostname(const String& input,
   }
 
   bool success = false;
-  String result = SecurityOrigin::CanonicalizeHost(input, &success);
+  String result = SecurityOrigin::CanonicalizeSpecialHost(input, &success);
   if (!success) {
     exception_state.ThrowTypeError("Invalid hostname '" + input + "'.");
     return String();

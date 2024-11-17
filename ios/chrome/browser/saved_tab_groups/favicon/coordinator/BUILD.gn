@@ -1,0 +1,22 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "tab_group_favicons_grid_configurator.h",
+    "tab_group_favicons_grid_configurator.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/saved_tab_groups/public",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/saved_tab_groups/favicon/ui",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/favicon",
+    "//ui/gfx",
+  ]
+}

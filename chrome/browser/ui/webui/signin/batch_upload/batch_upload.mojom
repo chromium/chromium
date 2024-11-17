@@ -14,6 +14,36 @@ interface PageHandlerFactory {
                            pending_receiver<PageHandler> handler);
 };
 
+// Structure that contains generic data info to be displayed in the Batch Upload
+// dialog as part of a section/container.
+struct DataItem {
+  int32 id;
+  string icon_url;
+  string title;
+  string subtitle;
+};
+
+// Container that has a list of `DataItem` and a section title. This is used to
+// display a section in the Batch Upload dialog. There should be one container
+// per data type displayed in the dialog.
+struct DataContainer {
+  string section_title;
+  array<DataItem> data_items;
+};
+
+// Information related to the signed in account to be displayed in the web view.
+struct BatchUploadAccountInfo {
+  string email;
+  string data_picture_url;
+};
+
+// A structure containing all the data needed by the web view to be displayed.
+struct BatchUploadData {
+  BatchUploadAccountInfo account_info;
+  string dialog_subtitle;
+  array<DataContainer> data_containers;
+};
+
 // Called from TS side of chrome://batch-upload (Renderer -> Browser)
 interface PageHandler {
   // Updates the native view of the dialog based on the current `height` of the
@@ -21,12 +51,23 @@ interface PageHandler {
   // decrease with user actions on the web view.
   UpdateViewHeight(uint32 height);
 
-  // Reaction to clicking on the `Close` button on the web content view.
+  // Reaction to clicking on the 'Save to account' button on the web content
+  // view. Proceeds with moving all selected items to the account storage, and
+  // closes the ui.
+  SaveToAccount(array<array<int32>> idsToMove);
+
+  // Reaction to clicking on the `Close` button on the web content view. No data
+  // (even if selected) is moved to the account storage. Closes the ui.
   Close();
 };
 
 // Called from C++ side of chrome://batch-upload. (Browser -> Renderer)
 interface Page {
-  // Sending `data` to be displayed in the web content view.
-  SendData(string data);
+  // Sending the Batch Upload data to be displayed in the web content view;
+  // - Account Information
+  // - The dialog subtitle
+  // - A list of `DataContainer` that each have a list of `DataItem` which the
+  // user can select/unselect to proceed with moving the individual items to the
+  // account storage, through the `PageHandler::SaveToAccount()` method.
+  SendBatchUploadData(BatchUploadData data);
 };

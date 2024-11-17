@@ -23,6 +23,7 @@
 enum class PriceInsightsIconLabelType;
 
 class GURL;
+class SidePanelEntryScope;
 class SidePanelRegistry;
 class SidePanelUI;
 namespace bookmarks {
@@ -90,6 +91,15 @@ class CommerceUiTabHelper : public content::WebContentsObserver {
   // product specifications set.
   virtual bool IsInRecommendedSet();
 
+  // A notification that the open button in the added to compare set toast is
+  // clicked. This method will open the compare page in a new tab if the compare
+  // page is not already open in the current window, otherwise it will switch to
+  // that compare page tab.
+  virtual void OnOpenComparePageClicked();
+
+  // Returns the name of the comparison set.
+  virtual std::u16string GetComparisonSetName();
+
   // Returns the label to show on the product specifications icon.
   virtual std::u16string GetProductSpecificationsLabel(bool is_added);
 
@@ -149,7 +159,10 @@ class CommerceUiTabHelper : public content::WebContentsObserver {
  protected:
   const std::optional<bool>& GetPendingTrackingStateForTesting();
 
-  virtual std::unique_ptr<views::View> CreateShoppingInsightsWebView();
+  virtual std::unique_ptr<views::View> CreateShoppingInsightsWebView(
+      SidePanelEntryScope& scope);
+
+  virtual GURL GetComparisonTableURL();
 
  private:
   friend class CommerceUiTabHelperTest;

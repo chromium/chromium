@@ -9,6 +9,7 @@
 #include <tuple>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -150,8 +151,8 @@ void WebAppCommandManager::Shutdown() {
 
   std::vector<base::OnceClosure> callbacks;
   for (const auto& [id, command] : commands_) {
-    base::OnceClosure callback = command->TakeCallbackWithShutdownArgs(
-        base::PassKey<WebAppCommandManager>());
+    base::OnceClosure callback =
+        command->TakeCallbackWithShutdownArgs(PassKey());
     CHECK(!callback.is_null());
     // Add the log value taking the callback because that will log the callback
     // args.
@@ -247,6 +248,17 @@ void WebAppCommandManager::AwaitAllCommandsCompleteForTesting() {
   run_loop_for_testing_.reset();
 }
 
+void WebAppCommandManager::SetOnWebContentsCreatedCallbackForTesting(
+    base::OnceClosure on_web_contents_created) {
+  CHECK_IS_TEST();
+  if (shared_web_contents_) {
+    std::move(on_web_contents_created).Run();
+    return;
+  }
+  CHECK(!on_web_contents_created_for_testing_);
+  on_web_contents_created_for_testing_ = std::move(on_web_contents_created);
+}
+
 void WebAppCommandManager::OnCommandComplete(
     base::PassKey<internal::CommandBase>,
     internal::CommandBase* command,
@@ -334,6 +346,9 @@ content::WebContents* WebAppCommandManager::EnsureWebContentsCreated() {
     shared_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(profile_));
     web_app::CreateWebAppInstallTabHelpers(shared_web_contents_.get());
+    if (on_web_contents_created_for_testing_) {
+      std::move(on_web_contents_created_for_testing_).Run();
+    }
   }
 
   return shared_web_contents_.get();

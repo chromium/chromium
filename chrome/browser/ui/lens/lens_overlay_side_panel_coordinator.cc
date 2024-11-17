@@ -8,8 +8,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_dismissal_source.h"
-#include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_web_view.h"
 #include "chrome/browser/ui/lens/lens_overlay_url_builder.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -24,8 +22,9 @@
 #include "chrome/grit/branded_strings.h"
 #include "components/google/core/common/google_util.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_dismissal_source.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/vector_icons/vector_icons.h"
-#include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/referrer.h"
@@ -34,8 +33,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/page_transition_types.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view_class_properties.h"
 
@@ -133,7 +132,6 @@ void LensOverlaySidePanelCoordinator::WebViewClosing() {
   // state associated with the WebView.
   if (side_panel_web_view_) {
     lens_overlay_controller_->ResetSidePanelSearchboxHandler();
-    lens_overlay_controller_->RemoveGlueForWebView(side_panel_web_view_);
     side_panel_web_view_ = nullptr;
   }
 }
@@ -295,32 +293,20 @@ void LensOverlaySidePanelCoordinator::RegisterEntry() {
 }
 
 std::unique_ptr<views::View>
-LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView() {
+LensOverlaySidePanelCoordinator::CreateLensOverlayResultsView(
+    SidePanelEntryScope& scope) {
   // TODO(b/328295358): Change task manager string ID in view creation when
   // available.
   auto view = std::make_unique<LensOverlaySidePanelWebView>(
       lens_overlay_controller_->GetTabInterface()
           ->GetContents()
           ->GetBrowserContext(),
-      this);
+      this, scope);
   view->SetProperty(views::kElementIdentifierKey,
                     LensOverlayController::kOverlaySidePanelWebViewId);
   side_panel_web_view_ = view.get();
   Observe(GetSidePanelWebContents());
 
-  // Register the modal dialog manager for this side panel web contents so
-  // browser dialogs can open when requested by the side panel WebUI.
-  web_modal::WebContentsModalDialogManager::CreateForWebContents(
-      GetSidePanelWebContents());
-  web_modal::WebContentsModalDialogManager::FromWebContents(
-      GetSidePanelWebContents())
-      ->SetDelegate(this);
-
-  // Important safety note: creating the SidePanelWebUIViewT can result in
-  // synchronous construction of the WebUIController. Until
-  // "CreateGlueForWebView" is called below, the WebUIController will not be
-  // able to access to LensOverlayController.
-  lens_overlay_controller_->CreateGlueForWebView(view.get());
   view->SetVisible(true);
   SidePanelUtil::GetSidePanelContentProxy(view.get())->SetAvailable(true);
   return view;
@@ -332,11 +318,6 @@ GURL LensOverlaySidePanelCoordinator::GetOpenInNewTabUrl() {
 
 base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>
 LensOverlaySidePanelCoordinator::GetMoreInfoCallback() {
-  if (lens::features::IsLensOverlaySearchBubbleEnabled()) {
-    return base::BindRepeating(
-        &LensOverlaySidePanelCoordinator::GetMoreInfoMenuModel,
-        base::Unretained(this));
-  }
   return base::NullCallbackAs<std::unique_ptr<ui::MenuModel>()>();
 }
 

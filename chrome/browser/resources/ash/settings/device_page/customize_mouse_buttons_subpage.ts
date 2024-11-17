@@ -14,16 +14,18 @@ import '../controls/settings_toggle_button.js';
 
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/ash/common/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './customize_mouse_buttons_subpage.html.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {ActionChoice, InputDeviceSettingsProviderInterface, MetaKey, Mouse, MouseButtonConfig, MousePolicies} from './input_device_settings_types.js';
+import type {ActionChoice, InputDeviceSettingsProviderInterface, Mouse, MousePolicies} from './input_device_settings_types.js';
+import {MetaKey, MouseButtonConfig} from './input_device_settings_types.js';
 import {getPrefPolicyFields} from './input_device_settings_utils.js';
 
 const SettingsCustomizeMouseButtonsSubpageElementBase =

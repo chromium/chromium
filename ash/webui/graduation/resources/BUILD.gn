@@ -14,16 +14,28 @@ build_webui("build") {
     "graduation_app_icon_128.png",
     "graduation_app_icon_256.png",
     "index.html",
+    "images/welcome.svg",
   ]
 
-  web_component_files = [ "js/graduation_ui.ts" ]
+  web_component_files = [
+    "js/graduation_app.ts",
+    "js/graduation_error.ts",
+    "js/graduation_offline.ts",
+    "js/graduation_takeout_ui.ts",
+    "js/graduation_welcome.ts",
+  ]
+
+  non_web_component_files = [ "js/graduation_ui_handler.ts" ]
 
   ts_composite = true
 
   ts_deps = [
+    "//ash/webui/common/resources:build_ts",
     "//ash/webui/common/resources/cr_elements:build_ts",
     "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
 
   ts_definitions = [
@@ -33,6 +45,14 @@ build_webui("build") {
     "//tools/typescript/definitions/tabs.d.ts",
     "//tools/typescript/definitions/web_request.d.ts",
     "//tools/typescript/definitions/webview_tag.d.ts",
+  ]
+
+  mojo_files_deps = [ "//ash/webui/graduation/mojom:mojom_ts__generator" ]
+
+  mojo_base_path = "mojom"
+
+  mojo_files = [
+    "$root_gen_dir/ash/webui/graduation/mojom/graduation_ui.mojom-webui.ts",
   ]
 
   webui_context_type = "trusted"

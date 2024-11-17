@@ -5,13 +5,24 @@
 #include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/range.h"
+#include "third_party/blink/renderer/core/editing/dom_selection.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/selection_controller.h"
+#include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
+#include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
+#include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 
 namespace blink {
 
@@ -278,6 +289,146 @@ TEST_F(AutoscrollControllerTest, AutoscrollIsPropagatedInYDirection) {
   EXPECT_TRUE(controller.IsAutoscrolling());
   EXPECT_TRUE(controller.vertical_autoscroll_layout_box_);
   EXPECT_TRUE(controller.horizontal_autoscroll_layout_box_);
+}
+
+TEST_F(AutoscrollControllerTest, TextSelectionAutoScroll) {
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+
+  GetDocument().GetSettings()->SetScriptEnabled(true);
+  Element* script = GetDocument().CreateRawElement(html_names::kScriptTag);
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <style>
+      #targetDiv {
+          width: 200px;
+          height: 200px;
+          overflow: scroll;
+      }
+
+      #innerDiv {
+          width: 4000px;
+          height: 4000px;
+      }
+    </style>
+    <body style='margin:0'>
+      <div id='targetDiv'>
+      <div id='innerDiv'>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+        <p>Test test test test test test...</p>
+      </div>
+      </div>
+      <p id='log'></p>
+  </body>
+  )HTML");
+
+  script->setInnerHTML(R"HTML(
+    let eventCounts = {pointerdown: 0, scroll: 0};
+    let target = document.getElementById('targetDiv');
+    for (let evt in eventCounts) {
+      target.addEventListener(evt, function(e) {
+        eventCounts[e.type]++;
+        let log = document.getElementById('log');
+        log.innerText += " " + e.type;
+       });
+    }
+  )HTML");
+  GetDocument().body()->AppendChild(script);
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
+
+  Compositor().BeginFrame();
+
+  AutoscrollController& controller = GetAutoscrollController();
+  Document& document = GetDocument();
+
+  Element* scrollable = document.getElementById(AtomicString("targetDiv"));
+  DCHECK(scrollable);
+  DCHECK(scrollable->GetLayoutObject());
+
+  WebMouseEvent event(WebInputEvent::Type::kMouseDown, gfx::PointF(10, 10),
+                      gfx::PointF(10, 10), WebPointerProperties::Button::kLeft,
+                      1, WebInputEvent::Modifiers::kLeftButtonDown,
+                      base::TimeTicks::Now());
+  event.SetFrameScale(1);
+  GetDocument().GetFrame()->GetEventHandler().HandleMousePressEvent(event);
+
+  controller.StartAutoscrollForSelection(scrollable->GetLayoutObject());
+
+  DCHECK(controller.IsAutoscrolling());
+
+  WebMouseEvent mouse_event(
+      WebInputEvent::Type::kMouseMove, gfx::PointF(50, 150),
+      gfx::PointF(50, 150), WebPointerProperties::Button::kLeft, 1,
+      WebInputEvent::Modifiers::kLeftButtonDown, base::TimeTicks::Now());
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+      mouse_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  ScrollableArea* scrollable_area =
+      scrollable->GetLayoutBox()->GetScrollableArea();
+
+  controller.Animate();
+  EXPECT_TRUE(controller.AutoscrollInProgress());
+
+  Compositor().BeginFrame();
+
+  mouse_event.SetPositionInWidget(100, 200);
+  mouse_event.SetPositionInScreen(100, 200);
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseMoveEvent(
+      mouse_event, Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+
+  controller.Animate();
+  LocalDOMWindow* current_window = GetDocument().GetFrame()->DomWindow();
+  DCHECK(current_window);
+  WindowPerformance* window_performance =
+      DOMWindowPerformance::performance(*current_window);
+  EXPECT_TRUE(controller.AutoscrollInProgress());
+  EXPECT_GT(scrollable_area->GetScrollOffset().y(), 0);
+  EXPECT_TRUE(window_performance->IsAutoscrollActive());
+
+  Compositor().BeginFrame();
+  EXPECT_GT(scrollable_area->GetScrollOffset().y(), 0);
+  EXPECT_TRUE(window_performance->IsAutoscrollActive());
+
+  mouse_event.SetType(blink::WebInputEvent::Type::kMouseUp);
+  GetDocument().GetFrame()->GetEventHandler().HandleMouseReleaseEvent(
+      mouse_event);
+
+  Compositor().BeginFrame();
+  EXPECT_FALSE(controller.AutoscrollInProgress());
+  EXPECT_FALSE(window_performance->IsAutoscrollActive());
+
+  WebElement element = GetDocument().getElementById(AtomicString("log"));
+  EXPECT_EQ("pointerdown scroll", element.InnerHTML().Utf8());
+
+  ASSERT_TRUE(
+      GetDocument().GetFrame()->Selection().GetSelectionInDOMTree().IsRange());
+  Range* range = CreateRange(EphemeralRange(
+      GetDocument().GetFrame()->Selection().GetSelectionInDOMTree().Anchor(),
+      GetDocument().GetFrame()->Selection().GetSelectionInDOMTree().Focus()));
+  ASSERT_TRUE(range);
+  EXPECT_GT(range->GetText().length(), 0u);
 }
 
 }  // namespace blink

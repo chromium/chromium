@@ -44,6 +44,7 @@ class DMServerJobConfiguration;
 class RegistrationJobConfiguration;
 class SigningService;
 struct DMServerJobResult;
+enum class RemoteCommandsFetchReason;
 
 inline constexpr char kPolicyFetchingTimeHistogramName[] =
     "Enterprise.CloudManagement.PolicyFetchingTime";
@@ -121,6 +122,7 @@ class POLICY_EXPORT CloudPolicyClient {
   class POLICY_EXPORT Result {
    public:
     explicit Result(DeviceManagementStatus);
+    explicit Result(DeviceManagementStatus, int);
     explicit Result(NotRegistered);
 
     bool IsSuccess() const;
@@ -128,13 +130,15 @@ class POLICY_EXPORT CloudPolicyClient {
     bool IsDMServerError() const;
 
     DeviceManagementStatus GetDMServerError() const;
+    int GetNetError() const;
 
     bool operator==(const Result& other) const {
-      return this->result_ == other.result_;
+      return this->result_ == other.result_ && net_error_ == other.net_error_;
     }
 
    private:
     absl::variant<NotRegistered, DeviceManagementStatus> result_;
+    int net_error_ = 0;
   };
 
   // A callback which receives the operations result.
@@ -304,7 +308,8 @@ class POLICY_EXPORT CloudPolicyClient {
       const std::string& oauth_token,
       const std::string& oidc_id_token,
       const std::string& client_id,
-      const base::TimeDelta& timeout_duration);
+      const base::TimeDelta& timeout_duration,
+      ResultCallback callback);
 
   // Sets information about a policy invalidation. Subsequent fetch operations
   // will use the given info, and callers can use fetched_invalidation_version
@@ -447,6 +452,7 @@ class POLICY_EXPORT CloudPolicyClient {
           command_results,
       enterprise_management::PolicyFetchRequest::SignatureType signature_type,
       const std::string& request_type,
+      RemoteCommandsFetchReason reason,
       RemoteCommandCallback callback);
 
   // Sends a device attribute update permission request to the server, uses

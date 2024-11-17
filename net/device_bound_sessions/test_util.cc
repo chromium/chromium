@@ -8,6 +8,8 @@
 
 namespace net::device_bound_sessions {
 
+SessionStoreMock::SessionStoreMock() = default;
+SessionStoreMock::~SessionStoreMock() = default;
 SessionServiceMock::SessionServiceMock() = default;
 SessionServiceMock::~SessionServiceMock() = default;
 

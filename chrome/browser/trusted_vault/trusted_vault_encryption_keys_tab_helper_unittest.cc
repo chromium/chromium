@@ -112,9 +112,8 @@ TEST_F(TrustedVaultEncryptionKeysTabHelperTest,
   EXPECT_FALSE(HasEncryptionKeysApiInMainFrame());
 }
 
-// TODO(crbug.com/40881433): flaky on android bots.
 TEST_F(TrustedVaultEncryptionKeysTabHelperTest,
-       DISABLED_ShouldNotExposeMojoApiIfNavigatedAway) {
+       ShouldNotExposeMojoApiIfNavigatedAway) {
   web_contents_tester()->NavigateAndCommit(GaiaUrls::GetInstance()->gaia_url());
   ASSERT_TRUE(HasEncryptionKeysApiInMainFrame());
   web_contents_tester()->NavigateAndCommit(GURL("http://page.com"));

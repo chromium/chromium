@@ -174,7 +174,7 @@ std::optional<RequestAction> ExtensionUrlPatternIndexMatcher::GetActionHelper(
     case flat::ActionType_allow_all_requests:
     case flat::ActionType_modify_headers:
     case flat::ActionType_count:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return std::nullopt;
@@ -230,8 +230,7 @@ ExtensionUrlPatternIndexMatcher::GetMatchersForStage(
       return headers_received_matchers_;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return before_request_matchers_;
+  NOTREACHED();
 }
 
 void ExtensionUrlPatternIndexMatcher::SetDisabledRuleIds(

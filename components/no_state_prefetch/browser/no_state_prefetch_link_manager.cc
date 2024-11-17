@@ -314,7 +314,7 @@ void NoStatePrefetchLinkManager::RemoveLinkTrigger(LinkTrigger* trigger) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NoStatePrefetchLinkManager::CancelLinkTrigger(LinkTrigger* trigger) {
@@ -329,7 +329,7 @@ void NoStatePrefetchLinkManager::CancelLinkTrigger(LinkTrigger* trigger) {
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NoStatePrefetchLinkManager::Shutdown() {

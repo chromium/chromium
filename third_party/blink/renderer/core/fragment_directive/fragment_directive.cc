@@ -31,7 +31,7 @@ FragmentDirective::~FragmentDirective() = default;
 KURL FragmentDirective::ConsumeFragmentDirective(const KURL& url) {
   // Strip the fragment directive from the URL fragment. E.g. "#id:~:text=a"
   // --> "#id". See https://github.com/WICG/scroll-to-text-fragment.
-  String fragment = url.FragmentIdentifier();
+  String fragment = url.FragmentIdentifier().ToString();
   wtf_size_t start_pos =
       fragment.Find(shared_highlighting::kFragmentsUrlDelimiter);
 

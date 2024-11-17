@@ -41,7 +41,7 @@ namespace base {
 // `observer.h`:
 //   class Observer {
 //    public:
-//     virtual ~Observer() {}
+//     virtual ~Observer() = default;
 //
 //     virtual void OnEvent() {}
 //   };

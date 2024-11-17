@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
-import './strings.m.js';
+import '/strings.m.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 

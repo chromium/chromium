@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -133,19 +132,6 @@ class TestClipboard : public Clipboard {
     std::vector<ui::FileInfo> filenames;
     std::optional<DataTransferEndpoint> data_src;
   };
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Used for syncing clipboard sources between Lacros and Ash in ChromeOS.
-  void AddClipboardSourceToDataOffer(const ClipboardBuffer buffer);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  // In Lacros, retrieves and parses the clipboard source DataTransferEndpoint
-  // from the DTE MIME type if no source is provided. In all cases,
-  // IsReadAllowed() is called and returned.
-  bool MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(
-      ClipboardBuffer buffer,
-      base::optional_ref<const DataTransferEndpoint> data_src,
-      const DataTransferEndpoint* data_dst) const;
 
   // The non-const versions update the sequence number as a side effect.
   const DataStore& GetStore(ClipboardBuffer buffer) const;

@@ -43,7 +43,7 @@
 
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
+        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.class ]);
     [self registerForTraitChanges:traits
                        withAction:@selector
                        (hideFormInputAccessoryViewOnTraitChange)];
@@ -144,8 +144,7 @@
 
 - (void)fromInputAccessoryViewDidTapOmniboxTypingShield:
     (FormInputAccessoryView*)sender {
-  NOTREACHED_IN_MIGRATION()
-      << "The typing shield should only be present on web";
+  NOTREACHED() << "The typing shield should only be present on web";
 }
 
 #pragma mark - Helper methods
@@ -206,8 +205,7 @@
 }
 
 - (BOOL)isItemAtIndexPathTextEditCell:(NSIndexPath*)cellPath {
-  NOTREACHED_IN_MIGRATION();
-  return YES;
+  NOTREACHED();
 }
 
 - (void)moveToAnotherTextFieldWithOffset:(NSInteger)offset {

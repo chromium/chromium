@@ -12,6 +12,10 @@
 #include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_params.h"
 #include "content/browser/preloading/prefetch/prefetch_service.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 
 namespace content {
@@ -191,6 +195,7 @@ std::optional<base::TimeDelta> PrefetchMatchResolver2::GetBlockedDuration()
 // static
 void PrefetchMatchResolver2::FindPrefetch(
     PrefetchContainer::Key navigated_key,
+    bool is_nav_prerender,
     PrefetchService& prefetch_service,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container,
@@ -202,38 +207,21 @@ void PrefetchMatchResolver2::FindPrefetch(
   PrefetchMatchResolver2& ref = *prefetch_match_resolver.get();
   ref.self_ = std::move(prefetch_match_resolver);
 
-  ref.FindPrefetchInternal(prefetch_service,
+  ref.FindPrefetchInternal(is_nav_prerender, prefetch_service,
                            std::move(serving_page_metrics_container));
 }
 
 void PrefetchMatchResolver2::FindPrefetchInternal(
+    bool is_nav_prerender,
     PrefetchService& prefetch_service,
     base::WeakPtr<PrefetchServingPageMetricsContainer>
         serving_page_metrics_container) {
-  for (auto& prefetch_container :
-       prefetch_service.CollectPotentiallyMatchingPrefetchContainers(
-           navigated_key_, std::move(serving_page_metrics_container))) {
-    PrefetchContainer::ServableState servable_state =
-        prefetch_container->GetServableState(PrefetchCacheableDuration());
-
-    // Filter out `kNotServable` ones.
-    //
-    // Note that
-    // `PrefetchService::CollectPotentiallyMatchingPrefetchContainers()` above
-    // checks `ServableState`, but the return value of
-    // `PrefetchContainer::GetServableState()` depends on
-    // `base::TimeTicks::now()` and can expires (can become `kServable` to
-    // `kNotServable`) in the minute between two calls. So, we rely on
-    // `cached_servable_state` during this method.
-    switch (servable_state) {
-      case PrefetchContainer::ServableState::kNotServable:
-        continue;
-      case PrefetchContainer::ServableState::kServable:
-      case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
-        break;
-    }
-
-    RegisterCandidate(*prefetch_container, servable_state);
+  auto [candidates, servable_states] = prefetch_service.CollectMatchCandidates(
+      navigated_key_, is_nav_prerender,
+      std::move(serving_page_metrics_container));
+  // Consume `candidates`.
+  for (auto& prefetch_container : candidates) {
+    RegisterCandidate(*prefetch_container);
   }
 
   // Backward compatibility to the behavior of `PrefetchMatchResolver`: If it
@@ -246,7 +234,7 @@ void PrefetchMatchResolver2::FindPrefetchInternal(
   // (without `PrefetchMatchResoler`/`PrefetchMatchResoler2`) and marking them
   // `kNotServable`.
   for (auto& candidate : candidates_) {
-    switch (candidate.second->cached_servable_state) {
+    switch (servable_states.at(candidate.first)) {
       case PrefetchContainer::ServableState::kServable:
         if (candidate.second->prefetch_container->CreateReader()
                 .HaveDefaultContextCookiesChanged()) {
@@ -255,22 +243,24 @@ void PrefetchMatchResolver2::FindPrefetchInternal(
         }
         break;
       case PrefetchContainer::ServableState::kNotServable:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
         // nop
         break;
     }
   }
 
   for (auto& candidate : candidates_) {
-    switch (candidate.second->cached_servable_state) {
+    switch (servable_states.at(candidate.first)) {
       case PrefetchContainer::ServableState::kServable:
         // Got matching and servable.
         UnblockForMatch(candidate.first);
         return;
       case PrefetchContainer::ServableState::kNotServable:
-        NOTREACHED_NORETURN();
+        NOTREACHED();
       case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+      case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
         // nop
         break;
     }
@@ -283,7 +273,7 @@ void PrefetchMatchResolver2::FindPrefetchInternal(
   wait_started_at_ = base::TimeTicks::Now();
 
   for (auto& candidate : candidates_) {
-    StartWaitFor(candidate.first);
+    StartWaitFor(candidate.first, servable_states.at(candidate.first));
   }
 
   if (candidates_.size() == 0) {
@@ -292,8 +282,7 @@ void PrefetchMatchResolver2::FindPrefetchInternal(
 }
 
 void PrefetchMatchResolver2::RegisterCandidate(
-    PrefetchContainer& prefetch_container,
-    PrefetchContainer::ServableState servable_state) {
+    PrefetchContainer& prefetch_container) {
   auto candidate_data = std::make_unique<CandidateData>();
   // #prefetch-key-availability
   //
@@ -301,27 +290,33 @@ void PrefetchMatchResolver2::RegisterCandidate(
   // `CHECK(candidate_data->prefetch_container)` below always hold because
   // `PrefetchMatchResolver2` observes lifecycle events of `PrefetchContainer`.
   candidate_data->prefetch_container = prefetch_container.GetWeakPtr();
-  candidate_data->cached_servable_state = servable_state;
   candidate_data->timeout_timer = nullptr;
 
   candidates_[prefetch_container.key()] = std::move(candidate_data);
 }
 
 void PrefetchMatchResolver2::StartWaitFor(
-    const PrefetchContainer::Key& prefetch_key) {
+    const PrefetchContainer::Key& prefetch_key,
+    PrefetchContainer::ServableState servable_state) {
   // By #prefetch-key-availability
   CHECK(candidates_.contains(prefetch_key));
   auto& candidate_data = candidates_[prefetch_key];
   CHECK(candidate_data->prefetch_container);
   PrefetchContainer& prefetch_container = *candidate_data->prefetch_container;
 
-  CHECK_EQ(candidate_data->cached_servable_state,
-           PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived);
   // `kServable` -> `kNotServable` is the only possible change during
-  // `FindPrefetchInternal()` call. If `cached_servable_state` is
-  // `kShouldBlockUntilHeadReceived`, `GetServableState()` is the same.
+  // `FindPrefetchInternal()` call.
   CHECK_EQ(prefetch_container.GetServableState(PrefetchCacheableDuration()),
-           PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived);
+           servable_state);
+  switch (servable_state) {
+    case PrefetchContainer::ServableState::kServable:
+    case PrefetchContainer::ServableState::kNotServable:
+      NOTREACHED();
+    case PrefetchContainer::ServableState::kShouldBlockUntilHeadReceived:
+    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
+      // nop
+      break;
+  }
   CHECK(!candidate_data->timeout_timer);
 
   // TODO(crbug.com/356552413): Merge
@@ -361,6 +356,17 @@ void PrefetchMatchResolver2::OnWillBeDestroyed(
   MaybeUnblockForUnmatch(prefetch_container.key());
 }
 
+void PrefetchMatchResolver2::OnGotInitialEligibility(
+    PrefetchContainer& prefetch_container,
+    PreloadingEligibility eligibility) {
+  CHECK(base::FeatureList::IsEnabled(
+      features::kPrerender2FallbackPrefetchSpecRules));
+
+  if (eligibility != PreloadingEligibility::kEligible) {
+    MaybeUnblockForUnmatch(prefetch_container.key());
+  }
+}
+
 void PrefetchMatchResolver2::OnDeterminedHead(
     PrefetchContainer& prefetch_container) {
   CHECK(candidates_.contains(prefetch_container.key()));
@@ -372,6 +378,11 @@ void PrefetchMatchResolver2::OnDeterminedHead(
   }
 
   switch (prefetch_container.GetServableState(PrefetchCacheableDuration())) {
+    case PrefetchContainer::ServableState::kShouldBlockUntilEligibilityGot:
+      // All callsites of `PrefetchContainer::OnDeterminedHead2()` are
+      // `PrefetchStreamingURLLoader`, which implies the prefetch passed
+      // eligibility check.
+      NOTREACHED();
     // `kShouldBlockUntilHeadReceived` case occurs if a prefetch is redirected
     // and the redirect is not eligible.
     //

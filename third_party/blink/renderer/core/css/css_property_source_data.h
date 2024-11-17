@@ -43,12 +43,16 @@ class SourceRange {
   DISALLOW_NEW();
 
  public:
-  SourceRange();
-  SourceRange(unsigned start, unsigned end);
-  unsigned length() const;
+  SourceRange() = default;
+  SourceRange(unsigned start, unsigned end) : start(start), end(end) {}
+  unsigned length() const { return end - start; }
+  bool operator==(const SourceRange& o) const {
+    return start == o.start && end == o.end;
+  }
+  bool operator!=(const SourceRange& o) const { return !operator==(o); }
 
-  unsigned start;
-  unsigned end;
+  unsigned start = 0;
+  unsigned end = 0;
 };
 
 }  // namespace blink
@@ -111,9 +115,23 @@ class CSSRuleSourceData final : public GarbageCollected<CSSRuleSourceData> {
   // Range of the selector list in the enclosing source.
   SourceRange rule_header_range;
 
-  // Range of the rule body (e.g. style text for style rules) in the enclosing
-  // source.
+  // Range of the rule body, i.e. the range between {}.
   SourceRange rule_body_range;
+
+  // The range for the leading declarations. This may be different from
+  // `rule_body_range` for nested style rules, e.g.:
+  //
+  //   .a {
+  //     color: green; /* leading */
+  //     left: 10px;   /* leading */
+  //     & { }
+  //     opacity: 2px; /* not leading */
+  //   }
+  //
+  // Non-leading declarations are wrapped in child rules of type
+  // CSSNestedDeclarations, and therefore not considered part of the
+  // declarations for *this* rule.
+  SourceRange rule_declarations_range;
 
   // Only for CSSStyleRules.
   Vector<SourceRange> selector_ranges;

@@ -29,11 +29,6 @@ CredentialsCleanerRunnerFactory::GetForProfile(ProfileIOS* profile) {
       GetInstance()->GetServiceForBrowserState(profile, true));
 }
 
-password_manager::CredentialsCleanerRunner*
-CredentialsCleanerRunnerFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
 std::unique_ptr<KeyedService>
 CredentialsCleanerRunnerFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {

@@ -182,6 +182,10 @@ const prefs::TrackedPreferenceMetadata kTrackedPrefs[] = {
     {34, enterprise_signin::prefs::kPolicyRecoveryToken,
      EnforcementLevel::ENFORCE_ON_LOAD, PrefTrackingStrategy::ATOMIC,
      ValueType::IMPERSONAL},
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    {35, prefs::kExtensionsUIDeveloperMode, EnforcementLevel::ENFORCE_ON_LOAD,
+     PrefTrackingStrategy::ATOMIC, ValueType::IMPERSONAL},
+#endif
 
     // See note at top, new items added here also need to be added to
     // histograms.xml's TrackedPreference enum.

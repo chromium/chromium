@@ -129,9 +129,7 @@ const CommitRequestData* MockDataTypeWorker::GetLatestPendingCommitForHash(
       }
     }
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Could not find commit for tag hash " << tag_hash << ".";
-  return nullptr;
+  NOTREACHED() << "Could not find commit for tag hash " << tag_hash << ".";
 }
 
 void MockDataTypeWorker::VerifyNthPendingCommit(
@@ -393,7 +391,7 @@ FailedCommitResponseData MockDataTypeWorker::FailedCommitResponse(
   const EntityData& entity = *request_data.entity;
 
   FailedCommitResponseData response_data;
-  // We reuse the |client_tag_hash| from the request.
+  // We reuse the `client_tag_hash` from the request.
   response_data.client_tag_hash = entity.client_tag_hash;
 
   response_data.response_type = sync_pb::CommitResponse::TRANSIENT_ERROR;

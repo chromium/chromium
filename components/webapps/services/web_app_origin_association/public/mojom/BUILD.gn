@@ -10,5 +10,6 @@ mojom("mojom") {
   public_deps = [
     "//sandbox/policy/mojom",
     "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
   ]
 }

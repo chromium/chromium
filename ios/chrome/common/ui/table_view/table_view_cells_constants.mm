@@ -20,6 +20,7 @@ const CGFloat kTableViewAccessoryWidth = 40;
 const CGFloat kTableViewIconImageSize = 30;
 const CGFloat kTableViewImagePadding = 14;
 const CGFloat kTableViewTrailingContentPadding = 6;
+const CGFloat kTopLargePadding = 60.;
 
 NSString* const kMaskedPassword = @"••••••••";
 NSString* const kTableViewCellInfoButtonViewId =

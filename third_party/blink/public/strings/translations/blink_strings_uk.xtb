@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Звичайний</translation>
 <translation id="1591562245178063882">Цей місяць</translation>
 <translation id="1637811476055996098">Вибрати файли</translation>
-<translation id="1680090928918677457">Використовувати камеру</translation>
 <translation id="1729654308190250600">Введіть електронну адресу.</translation>
 <translation id="1758486001363313524">Інші...</translation>
 <translation id="1921819250265091946">дд</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Скоротіть текст до такої кількості символів або менше: <ph name="MAX_CHARACTERS" /> (наразі використано символів: <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="2247351761944213033">Тиждень <ph name="WEEKNUMBER" />, <ph name="YEAR" /> р.</translation>
 <translation id="2277199496770840904">Композиція <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Дозволено використовувати камеру та мікрофон</translation>
 <translation id="2507943997699731163">Заповніть це поле.</translation>
 <translation id="2613802280814924224">Введіть дійсне значення. Найближче дійсне значення: <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Надіслати</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">У тексті має бути на менше <ph name="MIN_CHARACTERS" /> символів (ви ввели <ph name="CURRENT_LENGTH" /> символів).</translation>
 <translation id="383465348367842624">Частина перед знаком "<ph name="ATSIGN" />" не може містити символ "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Вийти з повноекранного режиму</translation>
-<translation id="4031179711345676612">Дозволено використовувати мікрофон</translation>
 <translation id="4360991593054037559">Введіть дійсне значення. Два найближчі дійсні значення: <ph name="VALID_VALUE_LOW" /> і <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Деталі</translation>
-<translation id="4663373278480897665">Дозволено використовувати камеру</translation>
 <translation id="4664250907885839816">Частина після знака "<ph name="ATSIGN" />" не може містити символ "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Відтворюється в режимі "Картинка в картинці"</translation>
-<translation id="4792862212177489858">Поділитися геоданими</translation>
 <translation id="4812940957355064477">Введіть число.</translation>
-<translation id="49269513399674318">Використовувати мікрофон</translation>
 <translation id="4975562563186953947">Вибрано <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Увімкнути звук</translation>
 <translation id="49969490063480558">Введіть частину електронної адреси після знака "<ph name="ATSIGN" />". Електронна адреса "<ph name="INVALIDADDRESS" />" неповна.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Не вдалося завантажити плагін.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">У тексті має бути не менше стількох символів: <ph name="MIN_CHARACTERS" />. Наразі ви ввели 1 символ.</translation>
-<translation id="7080893216867146095">Дозволено ділитися місцезнаходженням</translation>
 <translation id="709897737746224366">Виберіть потрібний формат.</translation>
-<translation id="7134810312945846184">Використовувати мікрофон і камеру</translation>
 <translation id="7263440858009898357">Виберіть елемент зі списку.</translation>
 <translation id="7364796246159120393">Вибрати файл</translation>
 <translation id="739024184232394898">Інші...</translation>

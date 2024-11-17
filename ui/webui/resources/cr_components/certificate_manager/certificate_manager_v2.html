@@ -45,7 +45,8 @@
 
   #adminCertsSection,
   #platformCertsSection,
-  #platformClientCertsSection {
+  #platformClientCertsSection,
+  #userCertsSection {
     box-shadow: var(--cr-card-shadow);
     /* Do not shorten '0px' below to '0' as the calc function requires
      * units. */
@@ -171,6 +172,17 @@
         on-delete-result="onDeleteResult_"
         subpage-title="[[i18n('certificateManagerV2ClientCertsFromPlatform')]]"
         subpage-cert-lists="[[clientPlatformSubpageLists_]]">
+    </certificate-subpage-v2>
+
+    <certificate-subpage-v2 id="userCertsSection"
+        path$="[[pageEnum_.USER_CERTS]]"
+        class="cr-centered-card-container"
+        on-hash-copied="onHashCopied_"
+        on-import-result="onImportResult_"
+        on-delete-result="onDeleteResult_"
+        navigate-back-target="[[pageEnum_.LOCAL_CERTS]]"
+        subpage-title="[[i18n('certificateManagerV2UserCertsTitle')]]"
+        subpage-cert-lists="[[userSubpageLists_]]">
     </certificate-subpage-v2>
   </cr-page-selector>
 </div>

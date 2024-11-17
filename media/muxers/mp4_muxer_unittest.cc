@@ -18,6 +18,7 @@
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/decoder_buffer.h"
 #include "media/base/media_tracks.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/stream_parser.h"
@@ -43,7 +44,6 @@ using ::testing::Mock;
 using ::testing::Optional;
 using ::testing::Property;
 using ::testing::Return;
-using ::testing::StrEq;
 
 constexpr uint32_t kAudioSampleRate = 44100u;
 
@@ -52,15 +52,14 @@ class MockDelegate : public Mp4MuxerDelegateInterface {
   MOCK_METHOD(void,
               AddVideoFrame,
               (const Muxer::VideoParameters& params,
-               std::string encoded_data,
+               scoped_refptr<DecoderBuffer> encoded_data,
                std::optional<VideoEncoder::CodecDescription> codec_description,
-               base::TimeTicks timestamp,
-               bool is_key_frame),
+               base::TimeTicks timestamp),
               (override));
   MOCK_METHOD(void,
               AddAudioFrame,
               (const AudioParameters& params,
-               std::string encoded_data,
+               scoped_refptr<DecoderBuffer> encoded_data,
                std::optional<AudioEncoder::CodecDescription> codec_description,
                base::TimeTicks timestamp),
               (override));
@@ -102,6 +101,10 @@ class Mp4MuxerTest : public ::testing::TestWithParam<TestParam> {
   std::unique_ptr<Mp4Muxer> muxer_;
 };
 
+MATCHER_P(MatchBufferData, data, "decoderbuffer data matcher") {
+  return arg->AsSpan() == base::as_byte_span(data);
+}
+
 TEST_P(Mp4MuxerTest, ForwardsFlush) {
   CreateMuxer();
   InSequence s;
@@ -118,45 +121,52 @@ TEST_P(Mp4MuxerTest, ForwardsFrames) {
     AudioParameters audio_params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                  ChannelLayoutConfig::Stereo(),
                                  kAudioSampleRate, 1000);
+    std::string str1 = "a1";
+    std::string str2 = "a2";
     EXPECT_CALL(
         *delegate_ptr_,
         AddAudioFrame(
             AllOf(Property(&AudioParameters::format,
                            AudioParameters::AUDIO_PCM_LOW_LATENCY),
                   Property(&AudioParameters::sample_rate, kAudioSampleRate)),
-            StrEq("a1"), Optional(GetAudioCodecDescription(99)),
+            MatchBufferData(str1), Optional(GetAudioCodecDescription(99)),
             base::TimeTicks() + base::Milliseconds(10)));
     EXPECT_CALL(*delegate_ptr_,
-                AddAudioFrame(_, StrEq("a2"), Eq(std::nullopt),
+                AddAudioFrame(_, MatchBufferData(str2), Eq(std::nullopt),
                               base::TimeTicks() + base::Milliseconds(20)));
+    auto buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span(str1));
+    buffer->set_is_key_frame(true);
     muxer_->PutFrame(
-        Muxer::EncodedFrame{audio_params, GetAudioCodecDescription(99), "a1",
-                            std::string(), true},
+        Muxer::EncodedFrame{audio_params, GetAudioCodecDescription(99), buffer},
         base::Milliseconds(10));
-    muxer_->PutFrame(Muxer::EncodedFrame{audio_params, std::nullopt, "a2",
-                                         std::string(), true},
+    buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span(str2));
+    buffer->set_is_key_frame(true);
+    muxer_->PutFrame(Muxer::EncodedFrame{audio_params, std::nullopt, buffer},
                      base::Milliseconds(20));
   }
   if (GetParam().has_video) {
     Muxer::VideoParameters video_params(gfx::Size(40, 30), 30,
                                         VideoCodec::kH264, gfx::ColorSpace());
+    std::string str1 = "v1";
+    std::string str2 = "v2";
     EXPECT_CALL(
         *delegate_ptr_,
         AddVideoFrame(
             AllOf(Field(&Muxer::VideoParameters::frame_rate, 30),
                   Field(&Muxer::VideoParameters::codec, VideoCodec::kH264)),
-            StrEq("v1"), Optional(GetVideoCodecDescription(66)),
-            base::TimeTicks() + base::Milliseconds(30), true));
-    EXPECT_CALL(
-        *delegate_ptr_,
-        AddVideoFrame(_, StrEq("v2"), Eq(std::nullopt),
-                      base::TimeTicks() + base::Milliseconds(40), false));
+            MatchBufferData(str1), Optional(GetVideoCodecDescription(66)),
+            base::TimeTicks() + base::Milliseconds(30)));
+    EXPECT_CALL(*delegate_ptr_,
+                AddVideoFrame(_, MatchBufferData(str2), Eq(std::nullopt),
+                              base::TimeTicks() + base::Milliseconds(40)));
+    auto buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span(str1));
+    buffer->set_is_key_frame(true);
     muxer_->PutFrame(
-        Muxer::EncodedFrame{video_params, GetVideoCodecDescription(66), "v1",
-                            std::string(), true},
+        Muxer::EncodedFrame{video_params, GetVideoCodecDescription(66), buffer},
         base::Milliseconds(30));
-    muxer_->PutFrame(Muxer::EncodedFrame{video_params, std::nullopt, "v2",
-                                         std::string(), false},
+    buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span(str2));
+    buffer->set_is_key_frame(false);
+    muxer_->PutFrame(Muxer::EncodedFrame{video_params, std::nullopt, buffer},
                      base::Milliseconds(40));
   }
 }
@@ -169,21 +179,24 @@ TEST_P(Mp4MuxerTest, DoesntFlushOnInsufficientlySpacedFrames) {
   CreateMuxer(base::Seconds(2));
   Muxer::VideoParameters video_params(gfx::Size(40, 30), 30, VideoCodec::kH264,
                                       gfx::ColorSpace());
+  auto buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("v1"));
+  buffer->set_is_key_frame(true);
   muxer_->PutFrame(
-      Muxer::EncodedFrame{video_params, GetVideoCodecDescription(1), "v1",
-                          std::string(), true},
+      Muxer::EncodedFrame{video_params, GetVideoCodecDescription(1), buffer},
       base::Milliseconds(0));
   task_environment_.AdvanceClock(base::Seconds(1));
-  muxer_->PutFrame(Muxer::EncodedFrame{video_params, std::nullopt, "v2",
-                                       std::string(), false},
+  buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("v2"));
+  buffer->set_is_key_frame(false);
+  muxer_->PutFrame(Muxer::EncodedFrame{video_params, std::nullopt, buffer},
                    base::Milliseconds(0));
   // Insert a frame just before the duration limit set initially in the test.
   // Expect that Flush isn't invoked.
   task_environment_.AdvanceClock(base::Seconds(1) - base::Milliseconds(1));
   EXPECT_CALL(*delegate_ptr_, Flush).Times(0);
+  buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("v2"));
+  buffer->set_is_key_frame(true);
   muxer_->PutFrame(
-      Muxer::EncodedFrame{video_params, GetVideoCodecDescription(1), "v2",
-                          std::string(), true},
+      Muxer::EncodedFrame{video_params, GetVideoCodecDescription(1), buffer},
       base::Milliseconds(0));
   Mock::VerifyAndClearExpectations(delegate_ptr_);
 }
@@ -196,21 +209,24 @@ TEST_P(Mp4MuxerTest, FlushesOnSufficientlySpacedFramesForVideo) {
   CreateMuxer(base::Seconds(2));
   Muxer::VideoParameters video_params(gfx::Size(40, 30), 30, VideoCodec::kH264,
                                       gfx::ColorSpace());
+  auto buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("v1"));
+  buffer->set_is_key_frame(true);
   muxer_->PutFrame(
-      Muxer::EncodedFrame{video_params, GetVideoCodecDescription(1), "v1",
-                          std::string(), true},
+      Muxer::EncodedFrame{video_params, GetVideoCodecDescription(1), buffer},
       base::Milliseconds(0));
   task_environment_.AdvanceClock(base::Seconds(1));
-  muxer_->PutFrame(Muxer::EncodedFrame{video_params, std::nullopt, "v2",
-                                       std::string(), false},
+  buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("v2"));
+  buffer->set_is_key_frame(false);
+  muxer_->PutFrame(Muxer::EncodedFrame{video_params, std::nullopt, buffer},
                    base::Milliseconds(0));
   // Time will advance to the time for the next flush, so expect Flush called
   // on the next keyframe.
   task_environment_.AdvanceClock(base::Seconds(1));
   EXPECT_CALL(*delegate_ptr_, FlushFragment);
+  buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("v2"));
+  buffer->set_is_key_frame(true);
   muxer_->PutFrame(
-      Muxer::EncodedFrame{video_params, GetVideoCodecDescription(1), "v2",
-                          std::string(), true},
+      Muxer::EncodedFrame{video_params, GetVideoCodecDescription(1), buffer},
       base::Milliseconds(0));
   Mock::VerifyAndClearExpectations(delegate_ptr_);
 }
@@ -223,21 +239,24 @@ TEST_P(Mp4MuxerTest, FlushesOnSufficientlySpacedFramesForAudioOnly) {
   AudioParameters audio_params(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                                ChannelLayoutConfig::Stereo(), kAudioSampleRate,
                                1000);
+  auto buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("a1"));
+  buffer->set_is_key_frame(true);
   muxer_->PutFrame(
-      Muxer::EncodedFrame{audio_params, GetVideoCodecDescription(1), "a1",
-                          std::string(), true},
+      Muxer::EncodedFrame{audio_params, GetVideoCodecDescription(1), buffer},
       base::Milliseconds(0));
   task_environment_.AdvanceClock(base::Seconds(1));
-  muxer_->PutFrame(Muxer::EncodedFrame{audio_params, std::nullopt, "a2",
-                                       std::string(), false},
+  buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("a2"));
+  buffer->set_is_key_frame(false);
+  muxer_->PutFrame(Muxer::EncodedFrame{audio_params, std::nullopt, buffer},
                    base::Milliseconds(0));
   // Time will advance to the time for the next flush, so expect Flush called
   // on the next keyframe.
   task_environment_.AdvanceClock(base::Seconds(1));
   EXPECT_CALL(*delegate_ptr_, FlushFragment);
+  buffer = media::DecoderBuffer::CopyFrom(base::as_byte_span("a2"));
+  buffer->set_is_key_frame(true);
   muxer_->PutFrame(
-      Muxer::EncodedFrame{audio_params, GetAudioCodecDescription(1), "a2",
-                          std::string(), true},
+      Muxer::EncodedFrame{audio_params, GetAudioCodecDescription(1), buffer},
       base::Milliseconds(0));
   Mock::VerifyAndClearExpectations(delegate_ptr_);
 }

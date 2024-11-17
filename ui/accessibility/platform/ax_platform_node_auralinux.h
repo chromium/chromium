@@ -268,6 +268,8 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeAuraLinux
   // nullopt.
   std::optional<std::pair<int, int>> GetEmbeddedObjectIndices();
 
+  AXPlatformNodeAuraLinux* GetFromNodeID(int32_t node_id);
+
   std::string accessible_name_;
 
  protected:

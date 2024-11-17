@@ -18,7 +18,7 @@ namespace browsing_data {
 MockCookieHelper::MockCookieHelper(content::StoragePartition* storage_partition)
     : CookieHelper(storage_partition, base::NullCallback()) {}
 
-MockCookieHelper::~MockCookieHelper() {}
+MockCookieHelper::~MockCookieHelper() = default;
 
 void MockCookieHelper::StartFetching(FetchCallback callback) {
   ASSERT_FALSE(callback.is_null());

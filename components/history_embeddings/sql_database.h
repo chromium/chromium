@@ -58,6 +58,13 @@ class SqlDatabase : public VectorDatabase {
   // Gets passages and embeddings for given `url_id` if data is found.
   std::optional<UrlPassagesEmbeddings> GetUrlData(history::URLID url_id);
 
+  // Gets passages and embeddings with visit times within specified range,
+  // using `limit` and `offset` to control data range returned.
+  std::vector<UrlPassagesEmbeddings> GetUrlDataInTimeRange(base::Time from_time,
+                                                           base::Time to_time,
+                                                           size_t limit,
+                                                           size_t offset);
+
   // Gets all rows from passages where a corresponding row in embeddings
   // does not exist, keyed on url_id.
   std::vector<UrlPassages> GetUrlPassagesWithoutEmbeddings();
@@ -97,6 +104,9 @@ class SqlDatabase : public VectorDatabase {
 
   // Callback for database errors.
   void DatabaseErrorCallback(int extended_error, sql::Statement* statement);
+
+  // Deletes passages and embeddings for visits before `expiration_time`.
+  void DeleteExpiredData(base::Time expiration_time);
 
   // The directory storing the database.
   const base::FilePath storage_dir_;

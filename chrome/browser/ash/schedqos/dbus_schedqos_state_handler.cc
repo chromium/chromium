@@ -15,6 +15,7 @@
 #include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/system/procfs_util.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
@@ -24,6 +25,8 @@
 namespace ash {
 
 namespace {
+
+constexpr base::TimeDelta kRetryServiceMonitorInterval = base::Seconds(10);
 
 DBusSchedQOSStateHandler::PidReuseResult GetPidReuseResult(bool is_pid_reused,
                                                            bool success) {
@@ -108,8 +111,7 @@ void DBusSchedQOSStateHandler::InitializeProcessPriority(
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&DBusSchedQOSStateHandler::SetProcessPriorityOnThread,
-                     weak_ptr_factory_.GetWeakPtr(), process_id,
-                     default_priority));
+                     weak_ptr_factory_.GetWeakPtr(), process_id));
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&DBusSchedQOSStateHandler::SetThreadTypeOnThread,
@@ -149,7 +151,7 @@ bool DBusSchedQOSStateHandler::SetProcessPriority(
   return main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&DBusSchedQOSStateHandler::SetProcessPriorityOnThread,
-                     weak_ptr_factory_.GetWeakPtr(), process_id, priority));
+                     weak_ptr_factory_.GetWeakPtr(), process_id));
 }
 
 base::Process::Priority DBusSchedQOSStateHandler::GetProcessPriority(
@@ -197,23 +199,37 @@ bool DBusSchedQOSStateHandler::HandleThreadTypeChange(
   return HandleThreadTypeChange(getpid(), thread_id, thread_type);
 }
 
+void DBusSchedQOSStateHandler::WaitForResourcedAvailable() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ash::ResourcedClient::Get()->WaitForServiceToBeAvailable(
+      base::BindOnce(&DBusSchedQOSStateHandler::OnServiceConnected,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
 void DBusSchedQOSStateHandler::CheckResourcedDisconnected(
     dbus::DBusResult result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (is_connected_ && result == dbus::DBusResult::kErrorServiceUnknown) {
     is_connected_ = false;
-    ash::ResourcedClient::Get()->WaitForServiceToBeAvailable(
-        base::BindOnce(&DBusSchedQOSStateHandler::OnServiceConnected,
-                       weak_ptr_factory_.GetWeakPtr()));
+    WaitForResourcedAvailable();
   }
 }
 
 void DBusSchedQOSStateHandler::OnServiceConnected(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramBoolean("Scheduling.DBusSchedQoS.ServiceConnectionSuccess",
+                            success);
   if (!success) {
-    LOG(ERROR) << "resourced service is not available";
+    LOG_IF(ERROR, !is_dbus_down_) << "resourced service is not available";
+    is_dbus_down_ = true;
+    main_task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&DBusSchedQOSStateHandler::WaitForResourcedAvailable,
+                       weak_ptr_factory_.GetWeakPtr()),
+        kRetryServiceMonitorInterval);
     return;
   }
+  is_dbus_down_ = false;
 
   DCHECK(!is_connected_);
   if (is_connected_) {
@@ -245,7 +261,7 @@ void DBusSchedQOSStateHandler::OnServiceConnected(bool success) {
   for (const auto& request : preconnect_requests) {
     base::ProcessId process_id = request.first;
     if (request.second.need_retry) {
-      SetProcessPriorityOnThread(process_id, request.second.priority);
+      SetProcessPriorityOnThread(process_id);
     }
     for (const auto& thread_entry : request.second.preconnected_thread_types) {
       SetThreadTypeOnThread(process_id, thread_entry.first,
@@ -255,14 +271,15 @@ void DBusSchedQOSStateHandler::OnServiceConnected(bool success) {
 }
 
 void DBusSchedQOSStateHandler::SetProcessPriorityOnThread(
-    base::ProcessId process_id,
-    base::Process::Priority priority) {
+    base::ProcessId process_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!is_connected_) {
     MarkProcessToRetry(process_id);
     return;
   }
+
+  base::Process::Priority priority = GetProcessPriority(process_id);
 
   resource_manager::ProcessState state =
       resource_manager::ProcessState::kNormal;

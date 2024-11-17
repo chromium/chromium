@@ -9,7 +9,6 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/ash/crosapi/test_crosapi_environment.h"
 #include "chrome/browser/extensions/api/enterprise_kiosk_input/enterprise_kiosk_input_api.h"
 #include "components/crx_file/id_util.h"

@@ -95,7 +95,7 @@ CacheEntry ZeroSuggestCacheService::ReadZeroSuggestResponse(
 void ZeroSuggestCacheService::StoreZeroSuggestResponse(
     const std::string& page_url,
     const std::string& response_json) {
-  auto entry = CacheEntry(response_json);
+  auto entry = CacheEntry(std::string(response_json));
   if (base::FeatureList::IsEnabled(omnibox::kZeroSuggestInMemoryCaching)) {
     if (page_url.empty()) {
       // Write ZPS response for NTP to cache.

@@ -598,7 +598,7 @@ void BrowserRootView::NavigateToDroppedUrls(
     params.window_action = NavigateParams::SHOW_WINDOW;
     Navigate(&params);
 
-    urls = urls.subspan(1);
+    urls = urls.subspan<1>();
     ++insertion_index;  // Additional URLs inserted to the right.
   }
 

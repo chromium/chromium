@@ -44,7 +44,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.PackageManagerWrapper;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -80,8 +79,6 @@ public final class TabbedActivityLaunchCauseMetricsTest {
 
     @ClassRule
     public static final ChromeBrowserTestRule sBrowserTestRule = new ChromeBrowserTestRule();
-
-    @Rule public final JniMocker mJniMocker = new JniMocker();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -279,7 +276,7 @@ public final class TabbedActivityLaunchCauseMetricsTest {
     @MediumTest
     public void testServiceWorkerTabLaunch() throws Throwable {
         final int count = 1 + histogramCountForValue(LaunchCauseMetrics.LaunchCause.NOTIFICATION);
-        mJniMocker.mock(ServiceTabLauncherJni.TEST_HOOKS, mServiceTabLauncherJni);
+        ServiceTabLauncherJni.setInstanceForTesting(mServiceTabLauncherJni);
         mActivityTestRule.setActivity(
                 ApplicationTestUtils.waitForActivityWithClass(
                         ChromeTabbedActivity.class,

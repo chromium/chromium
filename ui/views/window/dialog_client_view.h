@@ -13,6 +13,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/layout/delegating_layout_manager.h"
@@ -71,10 +72,10 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
   gfx::Size GetMaximumSize() const override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ClientView implementation:
   void UpdateWindowRoundedCorners(int corner_radius) override;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Input protection is triggered upon prompt creation and updated on
   // visibility changes. Other situations such as top window changes in certain
@@ -116,6 +117,8 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
   // LayoutDelegate:
   ProposedLayout CalculateProposedLayout(
       const SizeBounds& size_bounds) const override;
+
+  void SetBackgroundColor(ui::ColorId background_color_id);
 
  private:
   enum {
@@ -197,6 +200,7 @@ class VIEWS_EXPORT DialogClientView : public ClientView,
 
   std::unique_ptr<InputEventActivationProtector> input_protector_;
 
+  ui::ColorId background_color_id_ = ui::kColorDialogBackground;
   gfx::RoundedCornersF background_radii_;
 };
 

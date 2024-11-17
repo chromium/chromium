@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include "build/build_config.h"
@@ -44,14 +39,14 @@ class GpuControlListEntryTest : public testing::Test {
   }
 
   const Entry& GetEntry(size_t index) {
-    EXPECT_LT(index, kGpuControlListTestingEntries.size());
-    EXPECT_EQ(index + 1, kGpuControlListTestingEntries[index].id);
-    return kGpuControlListTestingEntries[index];
+    EXPECT_LT(index, GetGpuControlListTestingEntries().size());
+    EXPECT_EQ(index + 1, GetGpuControlListTestingEntries()[index].id);
+    return GetGpuControlListTestingEntries()[index];
   }
 
   size_t CountFeature(const Entry& entry, int feature) {
     size_t count = 0;
-    for (size_t ii = 0; ii < entry.feature_size; ++ii) {
+    for (size_t ii = 0; ii < entry.features.size(); ++ii) {
       if (entry.features[ii] == feature) {
         ++count;
       }
@@ -78,14 +73,14 @@ TEST_F(GpuControlListEntryTest, DetailedEntry) {
   const Entry& entry = GetEntry(kGpuControlListEntryTest_DetailedEntry);
   EXPECT_EQ(kOsMacosx, entry.conditions.os_type);
   EXPECT_STREQ("GpuControlListEntryTest.DetailedEntry", entry.description);
-  EXPECT_EQ(2u, entry.cr_bug_size);
+  EXPECT_EQ(2u, entry.cr_bugs.size());
   EXPECT_EQ(1024u, entry.cr_bugs[0]);
   EXPECT_EQ(678u, entry.cr_bugs[1]);
-  EXPECT_EQ(1u, entry.feature_size);
+  EXPECT_EQ(1u, entry.features.size());
   EXPECT_EQ(1u, CountFeature(entry, TEST_FEATURE_0));
   EXPECT_FALSE(entry.NeedsMoreInfo(gpu_info(), true));
   EXPECT_TRUE(entry.Contains(kOsMacosx, "10.6.4", gpu_info()));
-  EXPECT_EQ(2u, entry.disabled_extension_size);
+  EXPECT_EQ(2u, entry.disabled_extensions.size());
   EXPECT_STREQ("test_extension1", entry.disabled_extensions[0]);
   EXPECT_STREQ("test_extension2", entry.disabled_extensions[1]);
 }
@@ -111,10 +106,11 @@ TEST_F(GpuControlListEntryTest, AllExceptNVidiaOnLinuxEntry) {
   const Entry& entry =
       GetEntry(kGpuControlListEntryTest_AllExceptNVidiaOnLinuxEntry);
   EXPECT_EQ(kOsLinux, entry.conditions.os_type);
-  const GpuControlList::OsType os_type[] = {kOsMacosx, kOsWin, kOsLinux,
-                                            kOsChromeOS, kOsAndroid};
-  for (size_t i = 0; i < std::size(os_type); ++i)
-    EXPECT_FALSE(entry.Contains(os_type[i], "10.6", gpu_info()));
+  const GpuControlList::OsType os_types[] = {kOsMacosx, kOsWin, kOsLinux,
+                                             kOsChromeOS, kOsAndroid};
+  for (auto os_type : os_types) {
+    EXPECT_FALSE(entry.Contains(os_type, "10.6", gpu_info()));
+  }
 }
 
 TEST_F(GpuControlListEntryTest, AllExceptIntelOnLinuxEntry) {
@@ -143,6 +139,15 @@ TEST_F(GpuControlListEntryTest, ChromeOSEntry) {
   for (auto os_type : os_types)
     EXPECT_FALSE(entry.Contains(os_type, "10.6", gpu_info()));
   EXPECT_TRUE(entry.Contains(kOsChromeOS, "10.6", gpu_info()));
+}
+
+TEST_F(GpuControlListEntryTest, GlTypeEntry) {
+  const Entry& entry = GetEntry(kGpuControlListEntryTest_GlTypeEntry);
+  GPUInfo gpu_info;
+  gpu_info.gl_version = "OpenGL ES 3.0 V@66.0 AU@ (CL@)";
+  EXPECT_FALSE(entry.Contains(kOsAndroid, "4.4.2", gpu_info));
+  gpu_info.gl_version = "3.0 NVIDIA-8.24.11 310.90.9b01";
+  EXPECT_TRUE(entry.Contains(kOsMacosx, "10.9", gpu_info));
 }
 
 TEST_F(GpuControlListEntryTest, GlVersionGLESEntry) {
@@ -333,7 +338,7 @@ TEST_F(GpuControlListEntryTest, NeedsMoreInfoForGlVersionEntry) {
 TEST_F(GpuControlListEntryTest, FeatureTypeAllEntry) {
   const Entry& entry = GetEntry(kGpuControlListEntryTest_FeatureTypeAllEntry);
 
-  EXPECT_EQ(3u, entry.feature_size);
+  EXPECT_EQ(3u, entry.features.size());
   EXPECT_EQ(1u, CountFeature(entry, TEST_FEATURE_0));
   EXPECT_EQ(1u, CountFeature(entry, TEST_FEATURE_1));
   EXPECT_EQ(1u, CountFeature(entry, TEST_FEATURE_2));
@@ -342,7 +347,7 @@ TEST_F(GpuControlListEntryTest, FeatureTypeAllEntry) {
 TEST_F(GpuControlListEntryTest, FeatureTypeAllEntryWithExceptions) {
   const Entry& entry =
       GetEntry(kGpuControlListEntryTest_FeatureTypeAllEntryWithExceptions);
-  EXPECT_EQ(2u, entry.feature_size);
+  EXPECT_EQ(2u, entry.features.size());
   EXPECT_EQ(1u, CountFeature(entry, TEST_FEATURE_1));
   EXPECT_EQ(1u, CountFeature(entry, TEST_FEATURE_2));
 }

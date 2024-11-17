@@ -6,14 +6,11 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_MOCK_ISOLATED_WEB_APP_INSTALL_COMMAND_WRAPPER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_MOCK_ISOLATED_WEB_APP_INSTALL_COMMAND_WRAPPER_H_
 
-#include <memory>
 #include <optional>
 
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_policy_manager.h"
+#include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_installer.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 
 class Profile;
@@ -33,7 +30,7 @@ class WebAppProvider;
 // simulate a failure) and the schedule (schedule command immediately; use the
 // `ScheduleCommand` function to explicitly trigger scheduling of the command).
 class MockIsolatedWebAppInstallCommandWrapper
-    : public internal::IwaInstaller::IwaInstallCommandWrapper {
+    : public IwaInstaller::IwaInstallCommandWrapper {
  public:
   enum class ExecutionMode { kRunCommand, kSimulateSuccess, kSimulateFailure };
 
@@ -41,6 +38,10 @@ class MockIsolatedWebAppInstallCommandWrapper
                                           WebAppProvider* provider,
                                           ExecutionMode execution_mode,
                                           bool schedule_command_immediately);
+  MockIsolatedWebAppInstallCommandWrapper(
+      const MockIsolatedWebAppInstallCommandWrapper&) = delete;
+  MockIsolatedWebAppInstallCommandWrapper& operator=(
+      const MockIsolatedWebAppInstallCommandWrapper&) = delete;
   ~MockIsolatedWebAppInstallCommandWrapper() override;
 
   void Install(

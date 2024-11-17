@@ -62,7 +62,7 @@ void DnsConfigService::WatchConfig(const CallbackType& callback) {
 
 void DnsConfigService::RefreshConfig() {
   // Overridden on supported platforms.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 DnsConfigService::Watcher::Watcher(DnsConfigService& service)
@@ -229,7 +229,7 @@ void DnsConfigService::OnTimeout() {
 }
 
 void DnsConfigService::OnCompleteConfig() {
-  timer_.AbandonAndStop();
+  timer_.Stop();
   if (!need_update_)
     return;
   need_update_ = false;

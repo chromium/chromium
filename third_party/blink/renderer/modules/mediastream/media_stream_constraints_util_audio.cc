@@ -17,7 +17,6 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "media/audio/audio_features.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
@@ -70,18 +69,6 @@ int32_t GetSampleSize() {
   return media::SampleFormatToBitsPerChannel(media::kSampleFormatS16);
 }
 
-bool IsProcessingAllowedForSampleRatesNotDivisibleBy100(
-    mojom::blink::MediaStreamType stream_type) {
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (media::IsChromeWideEchoCancellationEnabled() &&
-      stream_type == mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE) {
-    // When audio processing is performed in the audio process, an experiment
-    // parameter determines which sample rates are supported.
-    return media::kChromeWideEchoCancellationAllowAllSampleRates.Get();
-  }
-#endif
-  return true;
-}
 // This class encapsulates two values that together build up the score of each
 // processed candidate.
 // - Fitness, similarly defined by the W3C specification
@@ -404,7 +391,7 @@ using IntegerDiscreteContainer =
     NumericDiscreteSetContainer<int, blink::LongConstraint>;
 
 // Container to manage the properties related to echo cancellation:
-// echoCancellation, googEchoCancellation and echoCancellationType.
+// echoCancellation and echoCancellationType.
 class EchoCancellationContainer {
  public:
   // Default constructor intended to temporarily create an empty object.
@@ -419,7 +406,8 @@ class EchoCancellationContainer {
                             media::AudioParameters device_parameters,
                             AudioProcessingProperties properties,
                             bool is_reconfiguration_allowed)
-      : ec_mode_allowed_values_(EchoCancellationTypeSet({allowed_values})),
+      : ec_mode_allowed_values_(
+            EchoCancellationTypeSet(std::move(allowed_values))),
         device_parameters_(device_parameters),
         is_device_capture_(is_device_capture) {
     if (!has_active_source)
@@ -437,8 +425,11 @@ class EchoCancellationContainer {
         // same device.
         true;
 #else
+        // Allowing it when the system echo cancellation is enforced via flag,
+        // for evaluation purposes.
+        media::IsSystemEchoCancellationEnforced() ||
         properties.echo_cancellation_type !=
-        EchoCancellationType::kEchoCancellationSystem;
+            EchoCancellationType::kEchoCancellationSystem;
 #endif
     if (is_reconfiguration_allowed && is_aec_reconfiguration_supported) {
       return;
@@ -455,21 +446,14 @@ class EchoCancellationContainer {
     // Convert the constraints into discrete sets.
     BoolSet ec_set = blink::media_constraints::BoolSetFromConstraint(
         constraint_set.echo_cancellation);
-    BoolSet goog_ec_set = blink::media_constraints::BoolSetFromConstraint(
-        constraint_set.goog_echo_cancellation);
 
     // Apply echoCancellation constraint.
     ec_allowed_values_ = ec_allowed_values_.Intersection(ec_set);
     if (ec_allowed_values_.IsEmpty())
       return constraint_set.echo_cancellation.GetName();
-    // Intersect echoCancellation with googEchoCancellation and determine if
-    // there is a contradiction.
-    auto ec_intersection = ec_allowed_values_.Intersection(goog_ec_set);
-    if (ec_intersection.IsEmpty())
-      return constraint_set.echo_cancellation.GetName();
     // Translate the boolean values into EC modes.
     ec_mode_allowed_values_ = ec_mode_allowed_values_.Intersection(
-        ToEchoCancellationTypes(ec_intersection));
+        ToEchoCancellationTypes(ec_allowed_values_));
 
     // Finally, if this container is empty, fail due to contradiction of the
     // resulting allowed values for goog_ec, ec, and/or ec_type.
@@ -496,14 +480,10 @@ class EchoCancellationContainer {
     bool default_audio_processing_value =
         GetDefaultValueForAudioProperties(echo_cancellation_constraint);
 
-    properties->goog_auto_gain_control &= default_audio_processing_value;
+    properties->auto_gain_control &= default_audio_processing_value;
 
-    properties->goog_experimental_echo_cancellation &=
-        default_audio_processing_value;
-    properties->goog_noise_suppression &= default_audio_processing_value;
+    properties->noise_suppression &= default_audio_processing_value;
     properties->voice_isolation = VoiceIsolationType::kVoiceIsolationDefault;
-    properties->goog_experimental_noise_suppression &=
-        default_audio_processing_value;
     properties->goog_highpass_filter &= default_audio_processing_value;
   }
 
@@ -544,12 +524,7 @@ class EchoCancellationContainer {
       types.push_back(EchoCancellationType::kEchoCancellationSystem);
     }
 
-    return EchoCancellationTypeSet(types);
-  }
-
-  static bool ShouldUseExperimentalSystemEchoCanceller(
-      const media::AudioParameters& parameters) {
-    return false;
+    return EchoCancellationTypeSet(std::move(types));
   }
 
   EchoCancellationType SelectBestEcMode(
@@ -559,8 +534,7 @@ class EchoCancellationContainer {
 
     // Try to use an ideal candidate, if supplied.
     bool is_ec_preferred =
-        ShouldUseEchoCancellation(constraint_set.echo_cancellation,
-                                  constraint_set.goog_echo_cancellation);
+        ShouldUseEchoCancellation(constraint_set.echo_cancellation);
 
     if (!is_ec_preferred &&
         ec_mode_allowed_values_.Contains(
@@ -580,8 +554,7 @@ class EchoCancellationContainer {
         ec_mode_allowed_values_.Contains(
             EchoCancellationType::kEchoCancellationSystem) &&
         (device_parameters_.effects() &
-             media::AudioParameters::ECHO_CANCELLER ||
-         ShouldUseExperimentalSystemEchoCanceller(device_parameters_))) {
+         media::AudioParameters::ECHO_CANCELLER)) {
       return EchoCancellationType::kEchoCancellationSystem;
     }
 
@@ -627,18 +600,12 @@ class EchoCancellationContainer {
         EchoCancellationType::kEchoCancellationDisabled);
   }
 
-  bool ShouldUseEchoCancellation(
-      const BooleanConstraint& ec_constraint,
-      const BooleanConstraint& goog_ec_constraint) const {
+  bool ShouldUseEchoCancellation(const BooleanConstraint& ec_constraint) const {
     DCHECK(!ec_mode_allowed_values_.is_universal());
 
     if (ec_constraint.HasIdeal() &&
         EchoCancellationModeContains(ec_constraint.Ideal()))
       return ec_constraint.Ideal();
-
-    if (goog_ec_constraint.HasIdeal() &&
-        EchoCancellationModeContains(goog_ec_constraint.Ideal()))
-      return goog_ec_constraint.Ideal();
 
     // Echo cancellation is enabled by default for device capture and disabled
     // by default for content capture.
@@ -662,17 +629,16 @@ class AutoGainControlContainer {
 
   const char* ApplyConstraintSet(const ConstraintSet& constraint_set) {
     BoolSet agc_set = blink::media_constraints::BoolSetFromConstraint(
-        constraint_set.goog_auto_gain_control);
+        constraint_set.auto_gain_control);
     // Apply autoGainControl/googAutoGainControl constraint.
     allowed_values_ = allowed_values_.Intersection(agc_set);
-    return IsEmpty() ? constraint_set.goog_auto_gain_control.GetName()
-                     : nullptr;
+    return IsEmpty() ? constraint_set.auto_gain_control.GetName() : nullptr;
   }
 
   std::tuple<double, bool> SelectSettingsAndScore(
       const ConstraintSet& constraint_set,
       bool default_setting) const {
-    BooleanConstraint agc_constraint = constraint_set.goog_auto_gain_control;
+    BooleanConstraint agc_constraint = constraint_set.auto_gain_control;
 
     if (agc_constraint.HasIdeal()) {
       bool agc_ideal = agc_constraint.Ideal();
@@ -770,29 +736,19 @@ class ProcessingBasedContainer {
       bool is_device_capture,
       const media::AudioParameters& device_parameters,
       bool is_reconfiguration_allowed) {
-    int sample_rate_hz = media::WebRtcAudioProcessingSampleRateHz();
-    if (stream_type == mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
-        !ProcessedLocalAudioSource::OutputAudioAtProcessingSampleRate()) {
-      // If audio processing runs in the audio service without any mitigations
-      // for unnecessary resmapling, ProcessedLocalAudioSource will output audio
-      // at the device sample rate.
-      // This is only enabled for mic input sources: https://crbug.com/1328012
-      sample_rate_hz = device_parameters.sample_rate();
-    }
     return ProcessingBasedContainer(
         ProcessingType::kApmProcessed,
         {EchoCancellationType::kEchoCancellationAec3,
          EchoCancellationType::kEchoCancellationDisabled},
-        BoolSet(), /* auto_gain_control_set */
-        BoolSet(), /* goog_audio_mirroring_set */
-        BoolSet(), /* goog_experimental_echo_cancellation_set */
-        BoolSet(), /* goog_noise_suppression_set */
-        BoolSet(), /* goog_experimental_noise_suppression_set */
-        BoolSet(), /* goog_highpass_filter_set */
-        BoolSet(), /* voice_isolation_set */
-        IntRangeSet::FromValue(GetSampleSize()),    /* sample_size_range */
+        BoolSet(),                               /* auto_gain_control_set */
+        BoolSet(),                               /* goog_audio_mirroring_set */
+        BoolSet(),                               /* noise_suppression_set */
+        BoolSet(),                               /* goog_highpass_filter_set */
+        BoolSet(),                               /* voice_isolation_set */
+        IntRangeSet::FromValue(GetSampleSize()), /* sample_size_range */
         GetApmSupportedChannels(device_parameters), /* channels_set */
-        IntRangeSet::FromValue(sample_rate_hz),     /* sample_rate_range */
+        IntRangeSet::FromValue(
+            media::WebRtcAudioProcessingSampleRateHz()), /* sample_rate_range */
         source_info, is_device_capture, device_parameters,
         is_reconfiguration_allowed);
   }
@@ -810,13 +766,11 @@ class ProcessingBasedContainer {
     return ProcessingBasedContainer(
         ProcessingType::kNoApmProcessed,
         {EchoCancellationType::kEchoCancellationDisabled},
-        BoolSet({false}), /* auto_gain_control_set */
-        BoolSet(),        /* goog_audio_mirroring_set */
-        BoolSet({false}), /* goog_experimental_echo_cancellation_set */
-        BoolSet({false}), /* goog_noise_suppression_set */
-        BoolSet({false}), /* goog_experimental_noise_suppression_set */
-        BoolSet({false}), /* goog_highpass_filter_set */
-        BoolSet(),        /* voice_isolation_set */
+        BoolSet({false}),                        /* auto_gain_control_set */
+        BoolSet(),                               /* goog_audio_mirroring_set */
+        BoolSet({false}),                        /* noise_suppression_set */
+        BoolSet({false}),                        /* goog_highpass_filter_set */
+        BoolSet(),                               /* voice_isolation_set */
         IntRangeSet::FromValue(GetSampleSize()), /* sample_size_range */
         {device_parameters.channels()},          /* channels_set */
         IntRangeSet::FromValue(
@@ -837,13 +791,11 @@ class ProcessingBasedContainer {
     return ProcessingBasedContainer(
         ProcessingType::kUnprocessed,
         {EchoCancellationType::kEchoCancellationDisabled},
-        BoolSet({false}), /* auto_gain_control_set */
-        BoolSet({false}), /* goog_audio_mirroring_set */
-        BoolSet({false}), /* goog_experimental_echo_cancellation_set */
-        BoolSet({false}), /* goog_noise_suppression_set */
-        BoolSet({false}), /* goog_experimental_noise_suppression_set */
-        BoolSet({false}), /* goog_highpass_filter_set */
-        BoolSet({false}), /* voice_isolation_set */
+        BoolSet({false}),                        /* auto_gain_control_set */
+        BoolSet({false}),                        /* goog_audio_mirroring_set */
+        BoolSet({false}),                        /* noise_suppression_set */
+        BoolSet({false}),                        /* goog_highpass_filter_set */
+        BoolSet({false}),                        /* voice_isolation_set */
         IntRangeSet::FromValue(GetSampleSize()), /* sample_size_range */
         {device_parameters.channels()},          /* channels_set */
         IntRangeSet::FromValue(
@@ -962,9 +914,9 @@ class ProcessingBasedContainer {
     echo_cancellation_container_.UpdateDefaultValues(
         constraint_set.echo_cancellation, &properties);
 
-    std::tie(sub_score, properties.goog_auto_gain_control) =
+    std::tie(sub_score, properties.auto_gain_control) =
         auto_gain_control_container_.SelectSettingsAndScore(
-            constraint_set, properties.goog_auto_gain_control);
+            constraint_set, properties.auto_gain_control);
     score += sub_score;
 
     std::tie(sub_score, properties.voice_isolation) =
@@ -1007,9 +959,7 @@ class ProcessingBasedContainer {
  private:
   enum BooleanContainerId {
     kGoogAudioMirroring,
-    kGoogExperimentalEchoCancellation,
     kGoogNoiseSuppression,
-    kGoogExperimentalNoiseSuppression,
     kGoogHighpassFilter,
     kNumBooleanContainerIds
   };
@@ -1028,14 +978,8 @@ class ProcessingBasedContainer {
       kBooleanPropertyContainerInfoMap[] = {
           {kGoogAudioMirroring, &ConstraintSet::goog_audio_mirroring,
            &AudioProcessingProperties::goog_audio_mirroring},
-          {kGoogExperimentalEchoCancellation,
-           &ConstraintSet::goog_experimental_echo_cancellation,
-           &AudioProcessingProperties::goog_experimental_echo_cancellation},
-          {kGoogNoiseSuppression, &ConstraintSet::goog_noise_suppression,
-           &AudioProcessingProperties::goog_noise_suppression},
-          {kGoogExperimentalNoiseSuppression,
-           &ConstraintSet::goog_experimental_noise_suppression,
-           &AudioProcessingProperties::goog_experimental_noise_suppression},
+          {kGoogNoiseSuppression, &ConstraintSet::noise_suppression,
+           &AudioProcessingProperties::noise_suppression},
           {kGoogHighpassFilter, &ConstraintSet::goog_highpass_filter,
            &AudioProcessingProperties::goog_highpass_filter}};
 
@@ -1049,9 +993,7 @@ class ProcessingBasedContainer {
                            Vector<EchoCancellationType> echo_cancellation_types,
                            BoolSet auto_gain_control_set,
                            BoolSet goog_audio_mirroring_set,
-                           BoolSet goog_experimental_echo_cancellation_set,
-                           BoolSet goog_noise_suppression_set,
-                           BoolSet goog_experimental_noise_suppression_set,
+                           BoolSet noise_suppression_set,
                            BoolSet goog_highpass_filter_set,
                            BoolSet voice_isolation_set,
                            IntRangeSet sample_size_range,
@@ -1063,20 +1005,18 @@ class ProcessingBasedContainer {
                            bool is_reconfiguration_allowed)
       : processing_type_(processing_type),
         sample_size_container_(sample_size_range),
-        channels_container_(channels_set),
+        channels_container_(std::move(channels_set)),
         sample_rate_container_(sample_rate_range),
         latency_container_(
             GetAllowedLatency(processing_type, device_parameters)) {
     // If the parameters indicate that system echo cancellation is available, we
     // add such value in the allowed values for the EC type.
-    if (device_parameters.effects() & media::AudioParameters::ECHO_CANCELLER ||
-        device_parameters.effects() &
-            media::AudioParameters::EXPERIMENTAL_ECHO_CANCELLER) {
+    if (device_parameters.effects() & media::AudioParameters::ECHO_CANCELLER) {
       echo_cancellation_types.push_back(
           EchoCancellationType::kEchoCancellationSystem);
     }
     echo_cancellation_container_ = EchoCancellationContainer(
-        echo_cancellation_types, source_info.HasActiveSource(),
+        std::move(echo_cancellation_types), source_info.HasActiveSource(),
         is_device_capture, device_parameters, source_info.properties(),
         is_reconfiguration_allowed);
 
@@ -1087,12 +1027,8 @@ class ProcessingBasedContainer {
 
     boolean_containers_[kGoogAudioMirroring] =
         BooleanContainer(goog_audio_mirroring_set);
-    boolean_containers_[kGoogExperimentalEchoCancellation] =
-        BooleanContainer(goog_experimental_echo_cancellation_set);
     boolean_containers_[kGoogNoiseSuppression] =
-        BooleanContainer(goog_noise_suppression_set);
-    boolean_containers_[kGoogExperimentalNoiseSuppression] =
-        BooleanContainer(goog_experimental_noise_suppression_set);
+        BooleanContainer(noise_suppression_set);
     boolean_containers_[kGoogHighpassFilter] =
         BooleanContainer(goog_highpass_filter_set);
 
@@ -1110,7 +1046,7 @@ class ProcessingBasedContainer {
     // for this is that opening multiple instances of the APM is costly.
     // TODO(crbug.com/1147928): Consider removing this restriction.
     auto_gain_control_container_ = AutoGainControlContainer(
-        BoolSet({source_info.properties().goog_auto_gain_control}));
+        BoolSet({source_info.properties().auto_gain_control}));
 
     for (size_t i = 0; i < kNumBooleanContainerIds; ++i) {
       auto& info = kBooleanPropertyContainerInfoMap[i];
@@ -1220,21 +1156,11 @@ class DeviceContainer {
         ProcessingBasedContainer::CreateNoApmProcessedContainer(
             source_info, is_device_capture, device_parameters_,
             is_reconfiguration_allowed));
-    // TODO(https://crbug.com/1332484): Sample rates not divisible by 100 are
-    // not reliably supported due to the common assumption that sample_rate/100
-    // corresponds to 10 ms of audio. When that is addressed, this
-    // ApmProcessedContainer can be added to |processing_based_containers_|
-    // unconditionally.
-    if ((device_parameters_.sample_rate() % 100 == 0) ||
-        IsProcessingAllowedForSampleRatesNotDivisibleBy100(stream_type)) {
       processing_based_containers_.push_back(
           ProcessingBasedContainer::CreateApmProcessedContainer(
               source_info, stream_type, is_device_capture, device_parameters_,
               is_reconfiguration_allowed));
       DCHECK_EQ(processing_based_containers_.size(), 3u);
-    } else {
-      DCHECK_EQ(processing_based_containers_.size(), 2u);
-    }
 
     if (source_info.type() == SourceType::kNone)
       return;

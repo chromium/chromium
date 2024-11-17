@@ -59,6 +59,7 @@
 
 namespace blink {
 
+class CanvasHibernationHandler;
 class Canvas2DLayerBridge;
 class CanvasContextCreationAttributesCore;
 class CanvasDrawListener;
@@ -161,6 +162,9 @@ class CORE_EXPORT HTMLCanvasElement final
   Canvas2DLayerBridge* GetCanvas2DLayerBridge() {
     return canvas2d_bridge_.get();
   }
+
+  CanvasHibernationHandler* GetHibernationHandler() const;
+
   Canvas2DLayerBridge* GetOrCreateCanvas2DLayerBridge();
 
   void DiscardResourceProvider() override;
@@ -210,7 +214,7 @@ class CORE_EXPORT HTMLCanvasElement final
   void UnregisterContentsLayer(cc::Layer*) override;
 
   // CanvasResourceHost implementation
-  bool IsPageVisible() override;
+  bool IsPageVisible() const override;
   void NotifyGpuContextLost() override;
   void SetNeedsCompositingUpdate() override;
   void UpdateMemoryUsage() override;
@@ -222,6 +226,8 @@ class CORE_EXPORT HTMLCanvasElement final
   bool IsPrinting() const override;
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality) override;
   bool IsHibernating() const override;
+  void SetTransferToGPUTextureWasInvoked() override;
+  bool TransferToGPUTextureWasInvoked() override;
 
   // CanvasRenderingContextHost implementation.
   UkmParameters GetUkmParameters() override;
@@ -245,7 +251,6 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void SetResourceProviderForTesting(
       std::unique_ptr<CanvasResourceProvider> provider,
-      std::unique_ptr<Canvas2DLayerBridge> bridge,
       const gfx::Size& size);
 
   static void RegisterRenderingContextFactory(
@@ -329,6 +334,11 @@ class CORE_EXPORT HTMLCanvasElement final
  private:
   void Dispose();
 
+  // TODO(crbug.com/40280152): Remove parameter once the hibernation handler is
+  // an instance variable of this class.
+  CanvasResourceProvider* GetOrCreateCanvasResourceProviderFor2DContext(
+      CanvasHibernationHandler& hibernation_handler);
+
   void ColorSchemeMayHaveChanged();
 
   void RecordIdentifiabilityMetric(IdentifiableSurface surface,
@@ -354,9 +364,6 @@ class CORE_EXPORT HTMLCanvasElement final
   bool AreAuthorShadowsAllowed() const override { return false; }
 
   void Reset();
-
-  std::unique_ptr<Canvas2DLayerBridge> Create2DLayerBridge();
-  void SetCanvas2DLayerBridgeInternal(std::unique_ptr<Canvas2DLayerBridge>);
 
   void SetSurfaceSize(gfx::Size);
 
@@ -406,7 +413,6 @@ class CORE_EXPORT HTMLCanvasElement final
   // Canvas2DLayerBridge is used when canvas has 2d rendering context
   std::unique_ptr<Canvas2DLayerBridge> canvas2d_bridge_;
   void ReplaceExisting2dLayerBridge(
-      std::unique_ptr<Canvas2DLayerBridge> new_layer_bridge,
       std::unique_ptr<CanvasResourceProvider> new_provider_for_testing =
           nullptr);
 

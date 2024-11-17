@@ -1230,12 +1230,19 @@ TEST_F(FilePathTest, CompareIgnoreCase) {
 }
 
 TEST_F(FilePathTest, ReferencesParent) {
+  // clang-format off
   const struct UnaryBooleanTestData cases[] = {
     { FPL("."),        false },
     { FPL(".."),       true },
+#if BUILDFLAG(IS_WIN)
     { FPL(".. "),      true },
     { FPL(" .."),      true },
     { FPL("..."),      true },
+#else
+    { FPL(".. "),      false },
+    { FPL(" .."),      false },
+    { FPL("..."),      false },
+#endif
     { FPL("a.."),      false },
     { FPL("..a"),      false },
     { FPL("../"),      true },
@@ -1254,6 +1261,7 @@ TEST_F(FilePathTest, ReferencesParent) {
     { FPL("a/../c"),   true },
     { FPL("a/b/c"),    false },
   };
+  // clang-format on
 
   for (size_t i = 0; i < std::size(cases); ++i) {
     FilePath input(cases[i].input);

@@ -11,13 +11,14 @@
 //  account.
 @interface IdentitySnackbarMessage : MDCSnackbarMessage
 
-// The avatar to display in the snackbar.
+// The avatar to display in the snackbar. Must not be nil.
 @property(nonatomic, readonly) UIImage* avatar;
 
-// The name to display in the snackbar.
+// The name to display in the snackbar. May be nil, in which case the snackbar
+// will not display a name.
 @property(nonatomic, readonly) NSString* name;
 
-// The email to display in the snackbar.
+// The email to display in the snackbar. Must not be nil.
 @property(nonatomic, readonly) NSString* email;
 
 // True if the profile is managed by an enterprise admin.

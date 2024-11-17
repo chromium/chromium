@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Katalanca</translation>
 <translation id="1168100932582989117">Google ad sunucuları</translation>
+<translation id="1170788066030116158">Çekilme tarihi</translation>
 <translation id="1172970565351728681">Yaklaşık <ph name="REMAINING_TIME" /> kaldı</translation>
 <translation id="1173894706177603556">Yeniden adlandır</translation>
 <translation id="1173916544412572294">Ağ <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, %<ph name="SIGNAL_STRENGTH" /> Sinyal Gücü, %<ph name="BATTERY_STATUS" /> Telefon Pili, Ayrıntılar</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Kimlik doğrulama sertifikası uzaktan reddedildi</translation>
 <translation id="4394214039309501350">Harici bağlantı</translation>
 <translation id="4394980935660306080">Bu haftanın başlarında</translation>
+<translation id="4397435965699247285">OneDrive, çevrimdışıyken kullanılamaz</translation>
 <translation id="4398096759193130964">Öğeleri geri yükleyin veya çöp kutusu dışındaki yeni bir klasöre sürükleyin</translation>
 <translation id="4401287888955153199">Tümünü çıkar</translation>
 <translation id="4410695710508688828">Çıkarma işlemi gerçekleştirilemedi. <ph name="ERROR_MESSAGE" /></translation>

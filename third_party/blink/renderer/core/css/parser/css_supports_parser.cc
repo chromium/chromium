@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_supports_parser.h"
 
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
+#include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_impl.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
@@ -99,7 +100,11 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsInParens(
 
 // https://drafts.csswg.org/css-conditional-4/#at-supports-ext
 // <supports-feature> = <supports-selector-fn> | <supports-font-tech-fn>
-//                    | <supports-font-format-fn> | <supports-decl>
+//                    | <supports-font-format-fn> | <supports-at-rule-fn>
+//                    | <supports-decl>
+//
+// <supports-at-rule-fn> is currently only documented here:
+// https://github.com/w3c/csswg-drafts/issues/2463#issuecomment-1016720310
 bool CSSSupportsParser::ConsumeSupportsFeature(CSSParserTokenStream& stream) {
   // <supports-selector-fn>
   if (ConsumeSupportsSelectorFn(stream)) {
@@ -111,6 +116,10 @@ bool CSSSupportsParser::ConsumeSupportsFeature(CSSParserTokenStream& stream) {
   }
   // <supports-font-format-fn>
   if (ConsumeFontFormatFn(stream)) {
+    return true;
+  }
+  // <supports-at-rule-fn>
+  if (ConsumeAtRuleFn(stream)) {
     return true;
   }
   if (parser_.GetMode() == CSSParserMode::kUASheetMode) {
@@ -179,6 +188,159 @@ bool CSSSupportsParser::ConsumeFontTechFn(CSSParserTokenStream& stream) {
   }
 
   return false;
+}
+
+// <supports-at-rule-fn> = at-rule( <at-rule> [ ; <descriptor> : <value> ]? )
+bool CSSSupportsParser::ConsumeAtRuleFn(CSSParserTokenStream& stream) {
+  if (!RuntimeEnabledFeatures::CSSSupportsAtRuleFunctionEnabled()) {
+    return false;
+  }
+
+  if (stream.Peek().FunctionId() != CSSValueID::kAtRule) {
+    return false;
+  }
+  CSSParserTokenStream::RestoringBlockGuard guard(stream);
+  stream.ConsumeWhitespace();
+
+  if (stream.Peek().GetType() != kAtKeywordToken) {
+    return false;
+  }
+  CSSParserToken name_token = stream.ConsumeIncludingWhitespace();
+  const StringView name = name_token.Value();
+  const CSSAtRuleID at_rule_id = CssAtRuleID(name);
+  if (at_rule_id == CSSAtRuleID::kCSSAtRuleInvalid) {
+    return false;
+  }
+
+  if (stream.AtEnd()) {
+    return guard.Release();
+  }
+
+  StyleRule::RuleType rule_type;
+  switch (at_rule_id) {
+    case CSSAtRuleID::kCSSAtRuleInvalid:
+      NOTREACHED();
+    case CSSAtRuleID::kCSSAtRuleViewTransition:
+      rule_type = StyleRule::kViewTransition;
+      break;
+    case CSSAtRuleID::kCSSAtRuleContainer:
+      rule_type = StyleRule::kContainer;
+      break;
+    case CSSAtRuleID::kCSSAtRuleMedia:
+      rule_type = StyleRule::kMedia;
+      break;
+    case CSSAtRuleID::kCSSAtRuleSupports:
+      rule_type = StyleRule::kSupports;
+      break;
+    case CSSAtRuleID::kCSSAtRuleStartingStyle:
+      rule_type = StyleRule::kStartingStyle;
+      break;
+    case CSSAtRuleID::kCSSAtRuleFontFace:
+      rule_type = StyleRule::kFontFace;
+      break;
+    case CSSAtRuleID::kCSSAtRuleFontPaletteValues:
+      rule_type = StyleRule::kFontPaletteValues;
+      break;
+    case CSSAtRuleID::kCSSAtRuleFontFeatureValues:
+      rule_type = StyleRule::kFontFeatureValues;
+      break;
+    case CSSAtRuleID::kCSSAtRuleWebkitKeyframes:
+    case CSSAtRuleID::kCSSAtRuleKeyframes:
+      rule_type = StyleRule::kKeyframes;
+      break;
+    case CSSAtRuleID::kCSSAtRuleLayer:
+      rule_type = StyleRule::kLayerBlock;
+      break;
+    case CSSAtRuleID::kCSSAtRulePage:
+      rule_type = StyleRule::kPage;
+      break;
+    case CSSAtRuleID::kCSSAtRuleProperty:
+      rule_type = StyleRule::kProperty;
+      break;
+    case CSSAtRuleID::kCSSAtRuleScope:
+      rule_type = StyleRule::kScope;
+      break;
+    case CSSAtRuleID::kCSSAtRuleCounterStyle:
+      rule_type = StyleRule::kCounterStyle;
+      break;
+    case CSSAtRuleID::kCSSAtRuleFunction:
+      rule_type = StyleRule::kFunction;
+      break;
+    case CSSAtRuleID::kCSSAtRuleMixin:
+      rule_type = StyleRule::kMixin;
+      break;
+    case CSSAtRuleID::kCSSAtRuleApplyMixin:
+      rule_type = StyleRule::kApplyMixin;
+      break;
+    case CSSAtRuleID::kCSSAtRulePositionTry:
+      rule_type = StyleRule::kPositionTry;
+      break;
+    case CSSAtRuleID::kCSSAtRuleCharset:
+      rule_type = StyleRule::kCharset;
+      break;
+    case CSSAtRuleID::kCSSAtRuleImport:
+      rule_type = StyleRule::kImport;
+      break;
+    case CSSAtRuleID::kCSSAtRuleNamespace:
+      rule_type = StyleRule::kNamespace;
+      break;
+    case CSSAtRuleID::kCSSAtRuleStylistic:
+    case CSSAtRuleID::kCSSAtRuleStyleset:
+    case CSSAtRuleID::kCSSAtRuleCharacterVariant:
+    case CSSAtRuleID::kCSSAtRuleSwash:
+    case CSSAtRuleID::kCSSAtRuleOrnaments:
+    case CSSAtRuleID::kCSSAtRuleAnnotation:
+      rule_type = StyleRule::kFontFeature;
+      break;
+    case CSSAtRuleID::kCSSAtRuleTopLeftCorner:
+    case CSSAtRuleID::kCSSAtRuleTopLeft:
+    case CSSAtRuleID::kCSSAtRuleTopCenter:
+    case CSSAtRuleID::kCSSAtRuleTopRight:
+    case CSSAtRuleID::kCSSAtRuleTopRightCorner:
+    case CSSAtRuleID::kCSSAtRuleBottomLeftCorner:
+    case CSSAtRuleID::kCSSAtRuleBottomLeft:
+    case CSSAtRuleID::kCSSAtRuleBottomCenter:
+    case CSSAtRuleID::kCSSAtRuleBottomRight:
+    case CSSAtRuleID::kCSSAtRuleBottomRightCorner:
+    case CSSAtRuleID::kCSSAtRuleLeftTop:
+    case CSSAtRuleID::kCSSAtRuleLeftMiddle:
+    case CSSAtRuleID::kCSSAtRuleLeftBottom:
+    case CSSAtRuleID::kCSSAtRuleRightTop:
+    case CSSAtRuleID::kCSSAtRuleRightMiddle:
+    case CSSAtRuleID::kCSSAtRuleRightBottom:
+      rule_type = StyleRule::kPageMargin;
+      break;
+  };
+
+  // Parse an optional descriptor.
+  if (stream.Peek().GetType() != kSemicolonToken) {
+    return false;
+  }
+  stream.ConsumeIncludingWhitespace();
+
+  // The descriptor ID.
+  if (stream.Peek().GetType() != kIdentToken) {
+    return false;
+  }
+  AtRuleDescriptorID descriptor_id = stream.Peek().ParseAsAtRuleDescriptorID();
+  if (descriptor_id == AtRuleDescriptorID::Invalid) {
+    return false;
+  }
+  stream.ConsumeIncludingWhitespace();
+
+  // Colon.
+  if (stream.Peek().GetType() != kColonToken) {
+    return false;
+  }
+  stream.ConsumeIncludingWhitespace();
+
+  // The descriptor value.
+  HeapVector<CSSPropertyValue, 64> parsed_descriptors;
+  bool ok = AtRuleDescriptorParser::ParseDescriptorValue(
+      rule_type, descriptor_id, stream, *parser_.GetContext(),
+      parsed_descriptors);
+
+  return ok && guard.Release();
 }
 
 // <supports-decl> = ( <declaration> )

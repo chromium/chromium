@@ -44,6 +44,8 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.OfflineMeasurements.IsRoaming",
                 "Chrome.OfflineMeasurements.TimeBetweenChecksMillisList",
                 "Chrome.OfflineMeasurements.UserStateList",
+                "Chrome.PriceTracking.PriceAlerts",
+                "Chrome.PriceTracking.PriceAlertsShowCount",
                 "Chrome.PriceTracking.PriceDropAlerts",
                 "Chrome.Querytiles.RecentMvClicks",
                 "Chrome.Querytiles.RecentQueryTileClicks",
@@ -172,6 +174,8 @@ public class DeprecatedChromePreferenceKeys {
                 "swap_pixel_format_to_fix_convert_from_translucent",
                 "tab_group_android_enabled",
                 "tab_persistent_store_task_runner_enabled",
+                "user_font_scale_factor",
+                "user_set_force_enable_zoom",
                 "webapk_number_of_uninstalls",
                 "website_settings_filter");
     }

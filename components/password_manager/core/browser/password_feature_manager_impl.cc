@@ -80,11 +80,6 @@ bool PasswordFeatureManagerImpl::ShouldShowAccountStorageReSignin(
       pref_service_, sync_service_, current_page_url);
 }
 
-bool PasswordFeatureManagerImpl::ShouldShowAccountStorageBubbleUi() const {
-  return features_util::ShouldShowAccountStorageBubbleUi(pref_service_,
-                                                         sync_service_);
-}
-
 PasswordForm::Store PasswordFeatureManagerImpl::GetDefaultPasswordStore()
     const {
   DCHECK(pref_service_);

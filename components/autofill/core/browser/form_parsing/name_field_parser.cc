@@ -31,7 +31,7 @@ class FullNameField : public NameFieldParser {
  public:
   static std::unique_ptr<FullNameField> Parse(ParsingContext& context,
                                               AutofillScanner* scanner);
-  explicit FullNameField(AutofillField* field);
+  explicit FullNameField(FieldAndMatchInfo match);
 
   FullNameField(const FullNameField&) = delete;
   FullNameField& operator=(const FullNameField&) = delete;
@@ -40,7 +40,7 @@ class FullNameField : public NameFieldParser {
   void AddClassifications(FieldCandidatesMap& field_candidates) const override;
 
  private:
-  raw_ptr<AutofillField> field_;
+  FieldAndMatchInfo match_;
 };
 
 // A form field that parses a first name field and two last name fields as they
@@ -63,11 +63,12 @@ class FirstTwoLastNamesField : public NameFieldParser {
  private:
   FirstTwoLastNamesField();
 
-  raw_ptr<AutofillField> honorific_prefix_{nullptr};  // Optional.
-  raw_ptr<AutofillField> first_name_{nullptr};
-  raw_ptr<AutofillField> middle_name_{nullptr};  // Optional.
-  raw_ptr<AutofillField> first_last_name_{nullptr};
-  raw_ptr<AutofillField> second_last_name_{nullptr};
+  // `honorific_prefix_` and `middle_name` are not required for a match.
+  std::optional<FieldAndMatchInfo> honorific_prefix_;
+  std::optional<FieldAndMatchInfo> first_name_;
+  std::optional<FieldAndMatchInfo> middle_name_;
+  std::optional<FieldAndMatchInfo> first_last_name_;
+  std::optional<FieldAndMatchInfo> second_last_name_;
   bool middle_initial_{false};  // True if middle_name_ is a middle initial.
 };
 
@@ -108,10 +109,11 @@ class FirstLastNameField : public NameFieldParser {
  private:
   FirstLastNameField();
 
-  raw_ptr<AutofillField> honorific_prefix_{nullptr};  // Optional
-  raw_ptr<AutofillField> first_name_{nullptr};
-  raw_ptr<AutofillField> middle_name_{nullptr};  // Optional.
-  raw_ptr<AutofillField> last_name_{nullptr};
+  // `honorific_prefix_` and `middle_name` are not required for a match.
+  std::optional<FieldAndMatchInfo> honorific_prefix_;
+  std::optional<FieldAndMatchInfo> first_name_;
+  std::optional<FieldAndMatchInfo> middle_name_;
+  std::optional<FieldAndMatchInfo> last_name_;
   bool middle_initial_{false};  // True if middle_name_ is a middle initial.
 };
 
@@ -166,12 +168,12 @@ std::unique_ptr<FullNameField> FullNameField::Parse(ParsingContext& context,
   // Searching for any label containing the word "name" is too general;
   // for example, Travelocity_Edit travel profile.html contains a field
   // "Travel Profile Name".
-  raw_ptr<AutofillField> field = nullptr;
+  std::optional<FieldAndMatchInfo> match;
 
   base::span<const MatchPatternRef> name_patterns =
       GetMatchPatterns("FULL_NAME", context);
-  if (ParseField(context, scanner, name_patterns, &field, "FULL_NAME")) {
-    return std::make_unique<FullNameField>(field);
+  if (ParseField(context, scanner, name_patterns, &match, "FULL_NAME")) {
+    return std::make_unique<FullNameField>(std::move(*match));
   }
 
   return nullptr;
@@ -179,10 +181,11 @@ std::unique_ptr<FullNameField> FullNameField::Parse(ParsingContext& context,
 
 void FullNameField::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
-  AddClassification(field_, NAME_FULL, kBaseNameParserScore, field_candidates);
+  AddClassification(match_, NAME_FULL, kBaseNameParserScore, field_candidates);
 }
 
-FullNameField::FullNameField(AutofillField* field) : field_(field) {}
+FullNameField::FullNameField(FieldAndMatchInfo match)
+    : match_(std::move(match)) {}
 
 FirstTwoLastNamesField::FirstTwoLastNamesField() = default;
 
@@ -346,7 +349,7 @@ FirstLastNameField::ParseSharedNameLabelSequence(ParsingContext& context,
   auto v = base::WrapUnique(new FirstLastNameField());
   scanner->SaveCursor();
 
-  raw_ptr<AutofillField> next = nullptr;
+  std::optional<FieldAndMatchInfo> next;
   base::span<const MatchPatternRef> name_specific_patterns =
       GetMatchPatterns("NAME_GENERIC", context);
   if (ParseField(context, scanner, name_specific_patterns, &v->first_name_,
@@ -355,10 +358,10 @@ FirstLastNameField::ParseSharedNameLabelSequence(ParsingContext& context,
     if (ParseEmptyLabel(context, scanner, &v->last_name_)) {
       // There are three name fields; assume that the middle one is a
       // middle initial (it is, at least, on SmithsonianCheckout.html).
-      v->middle_name_ = next;
+      v->middle_name_ = std::move(next);
       v->middle_initial_ = true;
     } else {  // only two name fields
-      v->last_name_ = next;
+      v->last_name_ = std::move(next);
     }
 
     return v;

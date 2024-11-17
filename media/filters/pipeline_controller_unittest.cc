@@ -144,8 +144,8 @@ class PipelineControllerTest : public ::testing::Test, public Pipeline::Client {
   void OnResumed() { was_resumed_ = true; }
 
   // Pipeline::Client overrides
-  void OnError(PipelineStatus status) override { NOTREACHED_IN_MIGRATION(); }
-  void OnFallback(PipelineStatus status) override { NOTREACHED_IN_MIGRATION(); }
+  void OnError(PipelineStatus status) override { NOTREACHED(); }
+  void OnFallback(PipelineStatus status) override { NOTREACHED(); }
   void OnEnded() override {}
   void OnMetadata(const PipelineMetadata& metadata) override {}
   void OnBufferingStateChange(BufferingState state,
@@ -161,10 +161,17 @@ class PipelineControllerTest : public ::testing::Test, public Pipeline::Client {
   void OnAudioPipelineInfoChange(const AudioPipelineInfo& info) override {}
   void OnVideoPipelineInfoChange(const VideoPipelineInfo& info) override {}
 
+  // testing::Test overrides
+  void TearDown() override {
+    pipeline_ = nullptr;
+    testing::Test::TearDown();
+  }
+
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   NiceMock<MockDemuxer> demuxer_;
-  raw_ptr<StrictMock<MockPipeline>, DanglingUntriaged> pipeline_;
+  // Owned by PipelineController.
+  raw_ptr<StrictMock<MockPipeline>> pipeline_;
   PipelineController pipeline_controller_;
 
   bool was_started_ = false;

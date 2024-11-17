@@ -332,14 +332,14 @@ TestTurnSyncOnHelperDelegate::~TestTurnSyncOnHelperDelegate() {
 }
 
 void TestTurnSyncOnHelperDelegate::ShowLoginError(const SigninUIError& error) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestTurnSyncOnHelperDelegate::ShowMergeSyncDataConfirmation(
     const std::string& previous_email,
     const std::string& new_email,
     signin::SigninChoiceCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestTurnSyncOnHelperDelegate::ShowEnterpriseAccountConfirmation(
@@ -363,11 +363,11 @@ void TestTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
 }
 
 void TestTurnSyncOnHelperDelegate::ShowSyncSettings() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestTurnSyncOnHelperDelegate::SwitchToProfile(Profile* new_profile) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Disabled for Win11 arm64 flakes: https://crbug.com/340623286

@@ -71,6 +71,7 @@ static_library("config") {
     "//chrome/browser/ui/webui/ash/audio",
     "//chrome/browser/ui/webui/ash/bluetooth",
     "//chrome/browser/ui/webui/ash/borealis_installer",
+    "//chrome/browser/ui/webui/ash/cellular_setup",
     "//chrome/browser/ui/webui/ash/cloud_upload",
     "//chrome/browser/ui/webui/ash/crostini_installer",
     "//chrome/browser/ui/webui/ash/crostini_upgrader",

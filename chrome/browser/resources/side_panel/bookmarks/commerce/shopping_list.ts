@@ -9,9 +9,9 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import './icons.html.js';
 
-import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
-import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
 import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {ShoppingServiceBrowserProxy} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from '//resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -70,7 +70,8 @@ export class ShoppingListElement extends PolymerElement {
   private open_: boolean;
   private bookmarksApi_: BookmarksApiProxy =
       BookmarksApiProxyImpl.getInstance();
-  private shoppingServiceApi_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private shoppingServiceApi_: ShoppingServiceBrowserProxy =
+      ShoppingServiceBrowserProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private retryOperationCallback_: () => void;
 

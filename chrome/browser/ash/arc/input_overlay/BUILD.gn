@@ -40,6 +40,7 @@ static_library("input_overlay") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser/ash/app_list/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/input_overlay/actions",
     "//chrome/browser/ash/arc/input_overlay/db",
     "//chrome/browser/ash/arc/input_overlay/db/proto",
@@ -69,7 +70,6 @@ source_set("unit_tests") {
 
   sources = [
     "arc_input_overlay_manager_unittest.cc",
-    "display_overlay_controller_alpha_unittest.cc",
     "display_overlay_controller_unittest.cc",
     "touch_id_manager_unittest.cc",
     "touch_injector_unittest.cc",

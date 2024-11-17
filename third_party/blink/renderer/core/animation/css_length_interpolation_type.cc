@@ -133,21 +133,76 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertUnderlyingValue(
   return result;
 }
 
+namespace {
+class AlwaysInvalidateChecker
+    : public CSSInterpolationType::CSSConversionChecker {
+ public:
+  bool IsValid(const StyleResolverState& state,
+               const InterpolationValue& underlying) const final {
+    return false;
+  }
+};
+}  // namespace
+
+InterpolationValue
+CSSLengthInterpolationType::PreInterpolationCompositeIfNeeded(
+    InterpolationValue value,
+    const InterpolationValue& underlying,
+    EffectModel::CompositeOperation composite,
+    ConversionCheckers& conversion_checkers) const {
+  // For lengths we need to use pre-interpolation composite because the result
+  // of compositing a neutral value endpoint on top of the underlying value
+  // can affect whether the endpoints can interpolate with each other, since
+  // the underlying value may be a length or may be a keyword (particularly
+  // auto).
+
+  // Due to the post-interpolation composite optimization, the interpolation
+  // stack aggressively caches interpolated values. When we are doing
+  // pre-interpolation compositing, this can cause us to bake-in the
+  // composited result even when the underlying value is changing. This
+  // checker is a hack to disable that caching in this case.
+  // TODO(crbug.com/1009230): Remove this once our interpolation code isn't
+  // caching composited values.
+  conversion_checkers.push_back(
+      MakeGarbageCollected<AlwaysInvalidateChecker>());
+
+  InterpolableLength& length =
+      To<InterpolableLength>(*value.interpolable_value);
+  const InterpolableLength* underlying_length =
+      DynamicTo<InterpolableLength>(underlying.interpolable_value.Get());
+
+  if (!underlying_length) {
+    // REVIEW: The underlying interpolable_value might have been null, or it
+    // might have been an InterpolableList created in
+    // CSSDefaultInterpolationType::MaybeConvertSingle via the
+    // ConvertSingleKeyframe call that
+    // InvalidatableInterpolation::EnsureValidConversion uses to create a
+    // FlipPrimitiveInterpolation.
+    return value;
+  }
+
+  if (length.IsNeutralValue()) {
+    length = *underlying_length;
+    return value;
+  }
+
+  if (!InterpolableLength::CanMergeValues(underlying_length, &length)) {
+    return value;
+  }
+
+  length.Add(*underlying_length);
+
+  return value;
+}
+
 void CSSLengthInterpolationType::Composite(
     UnderlyingValueOwner& underlying_value_owner,
     double underlying_fraction,
     const InterpolationValue& value,
     double interpolation_fraction) const {
-  if (!InterpolableLength::CanMergeValues(
-          underlying_value_owner.Value().interpolable_value,
-          value.interpolable_value)) {
-    underlying_value_owner.Set(*this, value);
-    return;
-  }
-
-  return CSSInterpolationType::Composite(underlying_value_owner,
-                                         underlying_fraction, value,
-                                         interpolation_fraction);
+  // We do our compositing behavior in |PreInterpolationCompositeIfNeeded|; see
+  // the documentation on that method.
+  underlying_value_owner.Set(*this, value);
 }
 
 PairwiseInterpolationValue CSSLengthInterpolationType::MaybeMergeSingles(

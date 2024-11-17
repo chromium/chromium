@@ -37,6 +37,7 @@
 #import "ios/chrome/common/credential_provider/archivable_credential+passkey.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/credential_provider/credential_store.h"
+#import "ios/components/credential_provider_extension/password_util.h"
 
 namespace {
 
@@ -252,8 +253,7 @@ void CredentialProviderService::OnLoginsChanged(
         forms_to_remove.push_back(change.form());
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -313,6 +313,14 @@ void CredentialProviderService::SyncAllCredentials(
   SyncStore();
 }
 
+bool CredentialProviderService::SaveAccountInfo() {
+  CoreAccountInfo account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  return credential_provider_extension::StoreAccountInfoInKeychain(
+      base::SysUTF8ToNSString(account.gaia),
+      base::SysUTF8ToNSString(account.email));
+}
+
 void CredentialProviderService::SyncStore() {
   base::UmaHistogramBoolean(kSyncStoreHistogramName, true);
 
@@ -327,6 +335,9 @@ void CredentialProviderService::SyncStore() {
   __weak id<CredentialStore> weak_credential_store = dual_credential_store_;
   [dual_credential_store_ saveDataWithCompletion:^(NSError* error) {
     if (error) {
+      return;
+    }
+    if (!SaveAccountInfo()) {
       return;
     }
     if (weak_credential_store) {
@@ -444,24 +455,29 @@ void CredentialProviderService::AddCredentials(
   NSString* gaia = base::SysUTF8ToNSString(account.gaia);
 
   for (const auto& passkey : passkeys) {
-    // Only fetch favicon for valid URL.
+    if (passkey.hidden()) {
+      continue;
+    }
+
     GURL url(base::StrCat(
         {url::kHttpsScheme, url::kStandardSchemeSeparator, passkey.rp_id()}));
+    // Only fetch favicon for valid URL.
+    NSString* favicon_key;
     if (url.is_valid()) {
-      NSString* favicon_key = GetFaviconFileKey(url);
+      favicon_key = GetFaviconFileKey(url);
 
       // Fetch the favicon and save it to the storage.
       FetchFaviconForURLToPath(favicon_loader_, url, favicon_key,
                                should_skip_max_verification,
                                fallback_to_google_server);
-
-      ArchivableCredential* credential =
-          [[ArchivableCredential alloc] initWithFavicon:favicon_key
-                                                   gaia:gaia
-                                                passkey:passkey];
-      DCHECK(credential);
-      [store addCredential:credential];
     }
+
+    ArchivableCredential* credential =
+        [[ArchivableCredential alloc] initWithFavicon:favicon_key
+                                                 gaia:gaia
+                                              passkey:passkey];
+    DCHECK(credential);
+    [store addCredential:credential];
   }
 }
 
@@ -601,6 +617,8 @@ void CredentialProviderService::OnPasskeyModelShuttingDown() {
   }
   passkey_model_ = nullptr;
 }
+
+void CredentialProviderService::OnPasskeyModelIsReady(bool is_ready) {}
 
 void CredentialProviderService::OnSavingPasswordsEnabledChanged() {
   [app_group::GetGroupUserDefaults()

@@ -90,6 +90,13 @@ enum ErrorCode {
   // and the client.
   NO_COMMON_AUTH_METHOD = 62;
 
+  // The connection was rejected because the curtain mode policy is set, which
+  // does not support the login screen on some platforms.
+  LOGIN_SCREEN_NOT_SUPPORTED = 63;
+
+  // The connection was disconnected because the session policies have changed.
+  SESSION_POLICIES_CHANGED = 64;
+
   reserved 2, 11, 12, 15, 17, 41;
   reserved 5 to 7, 19 to 25, 28 to 39, 51 to 61;
 

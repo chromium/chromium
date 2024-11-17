@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/web_app_id_constants.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -11,7 +12,6 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
@@ -76,29 +76,29 @@ IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
   size_t expected_browser_count = chrome::GetBrowserCount(profile());
 
   const GURL url(kCalculatorAppUrl);
-  ApplyPolicySettings(web_app::kCalculatorAppId, url, /*prevent_close=*/true);
+  ApplyPolicySettings(ash::kCalculatorAppId, url, /*prevent_close=*/true);
 
-  Browser* browser = LaunchWebAppBrowser(web_app::kCalculatorAppId);
+  Browser* browser = LaunchWebAppBrowser(ash::kCalculatorAppId);
   ++expected_browser_count;
 
   ASSERT_TRUE(browser);
   EXPECT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
 
   // Act by launching PWA a second time
-  Browser* second_browser = LaunchWebAppBrowser(web_app::kCalculatorAppId);
+  Browser* second_browser = LaunchWebAppBrowser(ash::kCalculatorAppId);
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Assert that the PWA only has one existing window
   EXPECT_TRUE(WebAppProvider::GetForTest(profile())
                   ->registrar_unsafe()
-                  .IsPreventCloseEnabled(web_app::kCalculatorAppId));
+                  .IsPreventCloseEnabled(ash::kCalculatorAppId));
   EXPECT_EQ(browser, second_browser);
   EXPECT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
 #else
   // On other platforms, the prevent close should not be enabled.
   EXPECT_FALSE(WebAppProvider::GetForTest(profile())
                    ->registrar_unsafe()
-                   .IsPreventCloseEnabled(web_app::kCalculatorAppId));
+                   .IsPreventCloseEnabled(ash::kCalculatorAppId));
   EXPECT_NE(browser, second_browser);
   EXPECT_EQ(expected_browser_count + 1, chrome::GetBrowserCount(profile()));
 #endif
@@ -111,16 +111,16 @@ IN_PROC_BROWSER_TEST_F(PreventCloseControllerBrowserTest,
   size_t expected_browser_count = chrome::GetBrowserCount(profile());
 
   const GURL url(kCalculatorAppUrl);
-  ApplyPolicySettings(web_app::kCalculatorAppId, url, /*prevent_close=*/false);
+  ApplyPolicySettings(ash::kCalculatorAppId, url, /*prevent_close=*/false);
 
-  Browser* browser = LaunchWebAppBrowser(web_app::kCalculatorAppId);
+  Browser* browser = LaunchWebAppBrowser(ash::kCalculatorAppId);
   ++expected_browser_count;
 
   ASSERT_TRUE(browser);
   EXPECT_EQ(expected_browser_count, chrome::GetBrowserCount(profile()));
 
   // Act by launching PWA a second time
-  Browser* second_browser = LaunchWebAppBrowser(web_app::kCalculatorAppId);
+  Browser* second_browser = LaunchWebAppBrowser(ash::kCalculatorAppId);
   expected_browser_count++;
 
   // Assert that the PWA only has one existing window

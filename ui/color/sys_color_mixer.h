@@ -5,6 +5,7 @@
 #ifndef UI_COLOR_SYS_COLOR_MIXER_H_
 #define UI_COLOR_SYS_COLOR_MIXER_H_
 
+#include "base/component_export.h"
 #include "ui/color/color_provider_key.h"
 
 namespace ui {

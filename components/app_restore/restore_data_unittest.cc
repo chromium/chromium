@@ -745,30 +745,6 @@ TEST_F(RestoreDataTest, HasBrowser) {
   EXPECT_TRUE(restore_data().HasBrowser());
 }
 
-TEST_F(RestoreDataTest, UpdateAppIdToLacros) {
-  auto app_launch_info1 =
-      std::make_unique<AppLaunchInfo>(app_constants::kChromeAppId, kWindowId1);
-
-  restore_data().AddAppLaunchInfo(std::move(app_launch_info1));
-  // Verify that ash chrome is added.
-  const auto ash_chrome_it =
-      restore_data().app_id_to_launch_list().find(app_constants::kChromeAppId);
-  EXPECT_TRUE(ash_chrome_it != restore_data().app_id_to_launch_list().end());
-  EXPECT_FALSE(ash_chrome_it->second.empty());
-
-  restore_data().UpdateBrowserAppIdToLacros();
-  // Verify that ash chrome app id is modified to lacros version.
-  const auto lacros_chrome_it =
-      restore_data().app_id_to_launch_list().find(app_constants::kLacrosAppId);
-  const auto ash_chrome_after_update_it =
-      restore_data().app_id_to_launch_list().find(app_constants::kChromeAppId);
-  EXPECT_TRUE(lacros_chrome_it != restore_data().app_id_to_launch_list().end());
-  EXPECT_FALSE(lacros_chrome_it->second.empty());
-  EXPECT_TRUE(ash_chrome_after_update_it ==
-              restore_data().app_id_to_launch_list().end());
-  EXPECT_EQ(1u, restore_data().app_id_to_launch_list().size());
-}
-
 TEST_F(RestoreDataTest, CompareAppRestoreData) {
   auto app_launch_info_1 = std::make_unique<AppLaunchInfo>(
       kAppId1, kWindowId1, apps::LaunchContainer::kLaunchContainerWindow,

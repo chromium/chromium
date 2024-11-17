@@ -7,7 +7,7 @@ import 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_list.js';
 import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bookmarks_api_proxy.js';
 import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_service.js';
-import {BrowserProxyImpl as ShoppingServiceApiProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -36,6 +36,7 @@ class ServiceTestPowerBookmarksDelegate extends TestPowerBookmarksDelegate {
       price: '29.99',
       rating: '4.5',
       description: 'This is a sample product description.',
+      priceSummary: '',
     };
 
     const bookmarkProductInfo: BookmarkProductInfo = {
@@ -197,7 +198,7 @@ suite('SidePanelPowerBookmarksServiceTest', () => {
     BookmarksApiProxyImpl.setInstance(bookmarksApi);
 
     shoppingServiceApi = new TestShoppingServiceApiProxy();
-    ShoppingServiceApiProxyImpl.setInstance(shoppingServiceApi);
+    ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
 
     const pluralString = new TestPluralStringProxy();
     PluralStringProxyImpl.setInstance(pluralString);

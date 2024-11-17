@@ -25,7 +25,6 @@ MediaCodecLoop::InputData::InputData() {}
 
 MediaCodecLoop::InputData::InputData(const InputData& other)
     : memory(other.memory),
-      length(other.length),
       key_id(other.key_id),
       iv(other.iv),
       subsamples(other.subsamples),
@@ -160,7 +159,7 @@ MediaCodecLoop::InputBuffer MediaCodecLoop::DequeueInputBuffer() {
       break;
 
     case MediaCodecResult::Codes::kError:
-      DLOG(ERROR) << __func__ << ": " << MediaSerialize(result);
+      DLOG(ERROR) << __func__ << ": " << result.message();
       SetState(STATE_ERROR);
       break;
 
@@ -168,10 +167,8 @@ MediaCodecLoop::InputBuffer MediaCodecLoop::DequeueInputBuffer() {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected DequeueInputBuffer result: " << MediaSerialize(result);
-      SetState(STATE_ERROR);
-      break;
+      NOTREACHED() << "Unexpected DequeueInputBuffer result: "
+                   << result.message();
   }
 
   return InputBuffer(input_buf_index, false);
@@ -202,15 +199,13 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
     // re-send of a buffer that was sent before decryption keys arrived.
 
     result = media_codec_->QueueSecureInputBuffer(
-        input_buffer.index, input_data.memory, input_data.length,
-        input_data.key_id, input_data.iv, input_data.subsamples,
-        input_data.encryption_scheme, input_data.encryption_pattern,
-        input_data.presentation_time);
+        input_buffer.index, input_data.memory, input_data.key_id, input_data.iv,
+        input_data.subsamples, input_data.encryption_scheme,
+        input_data.encryption_pattern, input_data.presentation_time);
 
   } else {
     result = media_codec_->QueueInputBuffer(
-        input_buffer.index, input_data.memory, input_data.length,
-        input_data.presentation_time);
+        input_buffer.index, input_data.memory, input_data.presentation_time);
   }
 
   switch (result.code()) {
@@ -218,7 +213,7 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
       DLOG(ERROR)
           << __func__
           << ": MediaCodecResult::Codes::kError from QueueInputBuffer : "
-          << MediaSerialize(result);
+          << result.message();
       client_->OnInputDataQueued(false);
       // Transition to the error state after running the completion cb, to keep
       // it in order if the client chooses to flush its queue.
@@ -233,7 +228,7 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
       // MediaCodec has a copy of the data already.  When we call again, be sure
       // to send in nullptr for the source.  Note that the client doesn't
       // guarantee that the pointer will remain valid after we return anyway.
-      pending_input_buf_data_.memory = nullptr;
+      pending_input_buf_data_.memory = {};
       client_->OnWaiting(WaitingReason::kNoDecryptionKey);
       SetState(STATE_WAITING_FOR_KEY);
       // Do not call OnInputDataQueued yet.
@@ -244,11 +239,8 @@ void MediaCodecLoop::EnqueueInputBuffer(const InputBuffer& input_buffer) {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown Queue(Secure)InputBuffer status "
-                                << MediaSerialize(result);
-      client_->OnInputDataQueued(false);
-      SetState(STATE_ERROR);
-      break;
+      NOTREACHED() << "Unknown Queue(Secure)InputBuffer status "
+                   << result.message();
   }
 }
 
@@ -309,15 +301,13 @@ bool MediaCodecLoop::ProcessOneOutputBuffer() {
       DLOG(ERROR) << __func__
                   << ": MediaCodecResult::Codes::kError from "
                      "DequeueOutputBuffer, result: "
-                  << MediaSerialize(result);
+                  << result.message();
       SetState(STATE_ERROR);
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Unexpected DequeueOutputBuffer result: "
-                                << MediaSerialize(result);
-      SetState(STATE_ERROR);
-      break;
+      NOTREACHED() << "Unexpected DequeueOutputBuffer result: "
+                   << result.message();
   }
 
   return did_work;
@@ -374,8 +364,7 @@ const char* MediaCodecLoop::AsString(State state) {
   }
 #undef RETURN_STRING
 
-  NOTREACHED_IN_MIGRATION() << "Unknown state " << state;
-  return nullptr;
+  NOTREACHED() << "Unknown state " << state;
 }
 
 }  // namespace media

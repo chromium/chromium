@@ -63,7 +63,7 @@ void IOSTranslateDriver::Initialize(
   DCHECK(translate_manager);
   DCHECK(web_state_);
   translate_manager_ = translate_manager->GetWeakPtr();
-  web_state_->AddObserver(this);
+  web_state_observation_.Observe(web_state_);
 
   LanguageDetectionModel* language_detection_model = nullptr;
   if (language_detection_model_service_ && IsTFLiteLanguageDetectionEnabled()) {
@@ -74,18 +74,14 @@ void IOSTranslateDriver::Initialize(
   language::IOSLanguageDetectionTabHelper::CreateForWebState(
       web_state_, url_language_histogram, language_detection_model,
       translate_manager_->translate_client()->GetPrefs());
-  language::IOSLanguageDetectionTabHelper::FromWebState(web_state_)
-      ->AddObserver(this);
+  language_detection_observation_.Observe(
+      language::IOSLanguageDetectionTabHelper::FromWebState(web_state_));
 
   TranslateController::CreateForWebState(web_state_);
   TranslateController::FromWebState(web_state_)->set_observer(this);
 }
 
 IOSTranslateDriver::~IOSTranslateDriver() {
-  if (web_state_) {
-    StopObservingIOSLanguageDetectionTabHelper();
-    StopObservingWebState();
-  }
 }
 
 void IOSTranslateDriver::OnLanguageDetermined(
@@ -105,8 +101,7 @@ void IOSTranslateDriver::OnLanguageDetermined(
 
 void IOSTranslateDriver::IOSLanguageDetectionTabHelperWasDestroyed(
     language::IOSLanguageDetectionTabHelper* tab_helper) {
-  // No-op. We stop observing the IOSLanguageDetectionTabHelper in
-  // IOSTranslateDriver::WebStateDestroyed.
+  StopAllObservations();
 }
 
 // web::WebStateObserver methods
@@ -142,10 +137,7 @@ void IOSTranslateDriver::DidFinishNavigation(
 }
 
 void IOSTranslateDriver::WebStateDestroyed(web::WebState* web_state) {
-  DCHECK_EQ(web_state_, web_state);
-  timeout_timer_.Stop();
-  StopObservingIOSLanguageDetectionTabHelper();
-  StopObservingWebState();
+  StopAllObservations();
 }
 
 // TranslateDriver methods
@@ -315,17 +307,11 @@ void IOSTranslateDriver::OnTranslateComplete(TranslateErrors error_type,
   timeout_timer_.Stop();
 }
 
-void IOSTranslateDriver::StopObservingWebState() {
-  web_state_->RemoveObserver(this);
-  web_state_ = nullptr;
+void IOSTranslateDriver::StopAllObservations() {
   timeout_timer_.Stop();
-}
-
-void IOSTranslateDriver::StopObservingIOSLanguageDetectionTabHelper() {
-  DCHECK(web_state_);
-  language::IOSLanguageDetectionTabHelper* language_detection_tab_helper =
-      language::IOSLanguageDetectionTabHelper::FromWebState(web_state_);
-  language_detection_tab_helper->RemoveObserver(this);
+  language_detection_observation_.Reset();
+  web_state_observation_.Reset();
+  web_state_ = nullptr;
 }
 
 }  // namespace translate

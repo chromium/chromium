@@ -168,10 +168,6 @@ SVGLayoutResult LayoutSVGForeignObject::UpdateSVGLayout(
     result.bounds_changed = true;
   }
 
-  if (result.bounds_changed) {
-    DeprecatedInvalidateIntersectionObserverCachedRects();
-  }
-
   DCHECK(!needs_transform_update_);
   return result;
 }

@@ -98,6 +98,11 @@ PasswordReuseManager* StubPasswordManagerClient::GetPasswordReuseManager()
   return nullptr;
 }
 
+PasswordChangeServiceInterface*
+StubPasswordManagerClient::GetPasswordChangeService() const {
+  return nullptr;
+}
+
 const PasswordManagerInterface* StubPasswordManagerClient::GetPasswordManager()
     const {
   return nullptr;
@@ -158,6 +163,9 @@ FirstCctPageLoadPasswordsUkmRecorder*
 StubPasswordManagerClient::GetFirstCctPageLoadUkmRecorder() {
   return nullptr;
 }
+
+void StubPasswordManagerClient::PotentialSaveFormSubmitted() {}
+
 #endif
 
 signin::IdentityManager* StubPasswordManagerClient::GetIdentityManager() {

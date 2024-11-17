@@ -12,6 +12,7 @@
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/accessibility/ax_tree.h"
 
 using blink::WebAXObject;
 using blink::WebDocument;
@@ -35,7 +36,6 @@ class MockMainNodeAnnotationService
   }
 
   void ExtractMainContent(const ::ui::AXTreeUpdate& snapshot,
-                          int64_t ukm_source_id,
                           ExtractMainContentCallback callback) override {}
 
   void ExtractMainNode(const ui::AXTreeUpdate& snapshot,

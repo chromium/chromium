@@ -15,7 +15,7 @@ EMAIL_ADDRESS | tbxEmail | Email |  | accountType_1
 UNKNOWN_TYPE | tbxPassword | Password |  | accountType_1
 UNKNOWN_TYPE | tbxPassword1 | Confirm Password |  | accountType_1
 UNKNOWN_TYPE | ddlMonth | Birthday |  | accountType_1
-UNKNOWN_TYPE | ddlDay |  |  | accountType_1
-UNKNOWN_TYPE | ddlYear |  |  | accountType_1
+UNKNOWN_TYPE | ddlDay | Day |  | accountType_1
+UNKNOWN_TYPE | ddlYear | Year |  | accountType_1
 UNKNOWN_TYPE | rblGender | Male | M | accountType_1
 UNKNOWN_TYPE | rblGender | Female | F | accountType_1

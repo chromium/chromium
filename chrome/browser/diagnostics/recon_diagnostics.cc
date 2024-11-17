@@ -140,14 +140,14 @@ class JSONTest : public DiagnosticsTest {
       }
       return true;
     }
-    int64_t file_size;
-    if (!base::GetFileSize(path_, &file_size)) {
+    std::optional<int64_t> file_size = base::GetFileSize(path_);
+    if (!file_size.has_value()) {
       RecordFailure(DIAG_RECON_CANNOT_OBTAIN_FILE_SIZE,
                     "Cannot obtain file size");
       return true;
     }
 
-    if (file_size > max_file_size_) {
+    if (file_size.value() > max_file_size_) {
       RecordFailure(DIAG_RECON_FILE_TOO_BIG, "File too big");
       return true;
     }
@@ -248,11 +248,11 @@ class PathTest : public DiagnosticsTest {
       return true;
     }
 
-    int64_t dir_or_file_size = 0;
+    int64_t dir_or_file_size;
     if (path_info_.is_directory) {
       dir_or_file_size = base::ComputeDirectorySize(dir_or_file);
     } else {
-      base::GetFileSize(dir_or_file, &dir_or_file_size);
+      dir_or_file_size = base::GetFileSize(dir_or_file).value_or(0);
     }
     if (!dir_or_file_size && !path_info_.is_optional) {
       RecordFailure(DIAG_RECON_CANNOT_OBTAIN_SIZE,

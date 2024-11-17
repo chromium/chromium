@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -87,19 +88,29 @@ class PasswordManagerDriver {
   virtual void FocusNextFieldAfterPasswords() {}
 
   // Tells the renderer to fill the given `value` into the triggering field.
-  virtual void FillField(const std::u16string& value) {}
+  // Also includes the `suggestion_source`, used to update the
+  // `FieldPropertiesMask` of the filled field.
+  virtual void FillField(
+      const std::u16string& value,
+      autofill::AutofillSuggestionTriggerSource suggestion_source) {}
 
   // Tells the driver to fill the currently focused form with the `username` and
   // `password`.
-  virtual void FillSuggestion(const std::u16string& username,
-                              const std::u16string& password) = 0;
+  virtual void FillSuggestion(
+      const std::u16string& username,
+      const std::u16string& password,
+      base::OnceCallback<void(bool)> success_callback) = 0;
 
   // Similar to `FillSuggestion` but also passes the FieldRendererIds of the
   // elements to be filled.
-  virtual void FillSuggestionById(autofill::FieldRendererId username_element_id,
-                                  autofill::FieldRendererId password_element_id,
-                                  const std::u16string& username,
-                                  const std::u16string& password) = 0;
+  // Also includes the `suggestion_source`, used to update the
+  // `FieldPropertiesMask` of the filled field.
+  virtual void FillSuggestionById(
+      autofill::FieldRendererId username_element_id,
+      autofill::FieldRendererId password_element_id,
+      const std::u16string& username,
+      const std::u16string& password,
+      autofill::AutofillSuggestionTriggerSource suggestion_source) = 0;
 
   // Tells the renderer to fill the given credential into the focused element.
   // Always calls `completed_callback` with a status indicating success/error.

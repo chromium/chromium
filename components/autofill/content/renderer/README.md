@@ -38,9 +38,11 @@ element inside its DOM. Examples include
 
 - `<form id=f><input id=t></form>`
 - `<form id=f></form><input id=t form=f>`
+- `<div><form id=f></div><input id=t>`
 
-In both examples, the form control element `t` is associated with the form
-element `f`.
+In all examples, the form control element `t` is associated with the form
+element `f`. The third example is invalid HTML but [explicitly supported by
+the HTML spec](form-element-pointer).
 
 Form association is an HTML concept independent of Autofill. We refer to
 the spec section about form-[associated] elements for more detail.
@@ -116,3 +118,4 @@ to these functions.
 [editable]: https://w3c.github.io/editing/docs/execCommand/#editable
 [shadow DOM]: https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_shadow_DOM
 [form-associated custom elements]: https://web.dev/articles/more-capable-form-controls
+[form-element-pointer]: https://html.spec.whatwg.org/multipage/parsing.html#form-element-pointer

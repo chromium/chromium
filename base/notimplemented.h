@@ -17,7 +17,7 @@
 
 // The lambda returns false the first time it is run, and true every other time.
 #define NOTIMPLEMENTED_LOG_ONCE()                                \
-  LOGGING_CHECK_FUNCTION_IMPL(NOTIMPLEMENTED(), []() {           \
+  LOGGING_CHECK_FUNCTION_IMPL(NOTIMPLEMENTED(), [] {             \
     bool old_value = true;                                       \
     [[maybe_unused]] static const bool call_once = [](bool* b) { \
       *b = false;                                                \

@@ -57,7 +57,7 @@ std::optional<double> FindSizeForContainerAxis(
   const TreeScope* tree_scope = nullptr;
   if (container_name) {
     selector = ContainerSelector(container_name->GetName(), requested_axis,
-                                 kLogicalAxesNone);
+                                 kLogicalAxesNone, /* scroll_state */ false);
     tree_scope = container_name->GetTreeScope();
   } else {
     selector = ContainerSelector(requested_axis);
@@ -343,12 +343,14 @@ float CSSToLengthConversionData::RexFontSize(float zoom) const {
   // element does not necessarily cause a style difference for the root element,
   // hence will not cause an invalidation of root font relative dependent
   // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
+  SetFlag(Flag::kRexRelative);
   SetFlag(Flag::kGlyphRelative);
   SetFlag(Flag::kRootFontRelative);
   return font_sizes_.Rex(zoom);
 }
 
 float CSSToLengthConversionData::ChFontSize(float zoom) const {
+  SetFlag(Flag::kChRelative);
   SetFlag(Flag::kGlyphRelative);
   return font_sizes_.Ch(zoom);
 }
@@ -360,12 +362,14 @@ float CSSToLengthConversionData::RchFontSize(float zoom) const {
   // element does not necessarily cause a style difference for the root element,
   // hence will not cause an invalidation of root font relative dependent
   // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
+  SetFlag(Flag::kRchRelative);
   SetFlag(Flag::kGlyphRelative);
   SetFlag(Flag::kRootFontRelative);
   return font_sizes_.Rch(zoom);
 }
 
 float CSSToLengthConversionData::IcFontSize(float zoom) const {
+  SetFlag(Flag::kIcRelative);
   SetFlag(Flag::kGlyphRelative);
   return font_sizes_.Ic(zoom);
 }
@@ -377,6 +381,7 @@ float CSSToLengthConversionData::RicFontSize(float zoom) const {
   // element does not necessarily cause a style difference for the root element,
   // hence will not cause an invalidation of root font relative dependent
   // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
+  SetFlag(Flag::kRicRelative);
   SetFlag(Flag::kGlyphRelative);
   SetFlag(Flag::kRootFontRelative);
   return font_sizes_.Ric(zoom);
@@ -384,7 +389,7 @@ float CSSToLengthConversionData::RicFontSize(float zoom) const {
 
 float CSSToLengthConversionData::LineHeight(float zoom) const {
   SetFlag(Flag::kGlyphRelative);
-  SetFlag(Flag::kLineHeightRelative);
+  SetFlag(Flag::kLhRelative);
   return line_height_size_.Lh(zoom);
 }
 
@@ -397,7 +402,7 @@ float CSSToLengthConversionData::RootLineHeight(float zoom) const {
   // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
   SetFlag(Flag::kGlyphRelative);
   SetFlag(Flag::kRootFontRelative);
-  SetFlag(Flag::kLineHeightRelative);
+  SetFlag(Flag::kRlhRelative);
   return line_height_size_.Rlh(zoom);
 }
 
@@ -409,6 +414,7 @@ float CSSToLengthConversionData::CapFontSize(float zoom) const {
   // hence will not cause an invalidation of root font relative dependent
   // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
   SetFlag(Flag::kGlyphRelative);
+  SetFlag(Flag::kCapRelative);
   return font_sizes_.Cap(zoom);
 }
 
@@ -420,6 +426,7 @@ float CSSToLengthConversionData::RcapFontSize(float zoom) const {
   // hence will not cause an invalidation of root font relative dependent
   // styles. See also Node::MarkSubtreeNeedsStyleRecalcForFontUpdates().
   SetFlag(Flag::kGlyphRelative);
+  SetFlag(Flag::kRcapRelative);
   SetFlag(Flag::kRootFontRelative);
   return font_sizes_.Rcap(zoom);
 }

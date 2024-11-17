@@ -283,10 +283,10 @@ class CORE_EXPORT MediaQueryExp {
 
  public:
   // Returns an invalid MediaQueryExp if the arguments are invalid.
-  static MediaQueryExp Create(const String& media_feature,
+  static MediaQueryExp Create(const AtomicString& media_feature,
                               CSSParserTokenStream&,
                               const CSSParserContext&);
-  static MediaQueryExp Create(const String& media_feature,
+  static MediaQueryExp Create(const AtomicString& media_feature,
                               const MediaQueryExpBounds&);
   static MediaQueryExp Invalid() {
     return MediaQueryExp(String(), MediaQueryExpValue());
@@ -296,7 +296,7 @@ class CORE_EXPORT MediaQueryExp {
   ~MediaQueryExp();
   void Trace(Visitor*) const;
 
-  const String& MediaFeature() const { return media_feature_; }
+  const AtomicString& MediaFeature() const { return media_feature_; }
 
   const MediaQueryExpBounds& Bounds() const { return bounds_; }
 
@@ -325,7 +325,7 @@ class CORE_EXPORT MediaQueryExp {
   MediaQueryExp(const String&, const MediaQueryExpValue&);
   MediaQueryExp(const String&, const MediaQueryExpBounds&);
 
-  String media_feature_;
+  AtomicString media_feature_;
   MediaQueryExpBounds bounds_;
 };
 
@@ -348,6 +348,7 @@ class CORE_EXPORT MediaQueryExpNode
     kFeatureStyle = 1 << 6,
     kFeatureSticky = 1 << 7,
     kFeatureSnap = 1 << 8,
+    kFeatureOverflow = 1 << 9,
   };
 
   using FeatureFlags = unsigned;

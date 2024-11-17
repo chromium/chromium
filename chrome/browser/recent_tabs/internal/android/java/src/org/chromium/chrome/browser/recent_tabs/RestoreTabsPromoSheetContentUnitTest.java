@@ -12,10 +12,12 @@ import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.Scre
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.ScreenType.REVIEW_TABS_SCREEN;
 import static org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.VISIBLE;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.ScrollView;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -171,10 +173,11 @@ public class RestoreTabsPromoSheetContentUnitTest {
     }
 
     @Test
-    public void testSheetContent_getSheetContentDescriptionStringId() {
+    public void testSheetContent_getSheetContentDescription() {
+        Context context = ApplicationProvider.getApplicationContext();
         Assert.assertEquals(
-                R.string.restore_tabs_content_description,
-                mSheetContent.getSheetContentDescriptionStringId());
+                context.getString(R.string.restore_tabs_content_description),
+                mSheetContent.getSheetContentDescription(context));
     }
 
     @Test

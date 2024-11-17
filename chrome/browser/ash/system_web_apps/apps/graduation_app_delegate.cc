@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/edusumer/graduation_utils.h"
+#include "ash/public/cpp/graduation/graduation_manager.h"
 #include "ash/webui/graduation/url_constants.h"
 #include "ash/webui/grit/ash_graduation_resources.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
@@ -19,11 +20,17 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
 namespace ash::graduation {
+
+namespace {
+constexpr int kGraduationMinWindowWidth = 800;
+constexpr int kGraduationMinWindowHeight = 480;
+}  // namespace
 
 GraduationAppDelegate::GraduationAppDelegate(Profile* profile)
     : SystemWebAppDelegate(SystemWebAppType::GRADUATION,
@@ -60,18 +67,25 @@ GraduationAppDelegate::GetWebAppInfo() const {
   return info;
 }
 
+gfx::Size GraduationAppDelegate::GetMinimumWindowSize() const {
+  return {kGraduationMinWindowWidth, kGraduationMinWindowHeight};
+}
+
 bool GraduationAppDelegate::ShouldShowInLauncher() const {
   return features::IsGraduationEnabled() &&
          IsEligibleForGraduation(profile()->GetPrefs());
 }
 
 bool GraduationAppDelegate::IsAppEnabled() const {
-  // The Graduation app is by default installed, but hidden on every managed
-  // user's device. When the user session starts, the app is made visible and
-  // pinned for the user if the policy allows access to the app. If access is
-  // disabled, the app is unpinned and hidden again.
+  // The Graduation app is by default installed, but hidden for every
+  // non-consumer managed user. When the user session starts, the app is made
+  // visible and pinned for the user if the policy allows access to the app. If
+  // access is disabled, the app is unpinned and hidden again.
+  PrefService* pref_service = profile_->GetPrefs();
+  CHECK(pref_service);
   return features::IsGraduationEnabled() &&
-         profile()->GetProfilePolicyConnector()->IsManaged();
+         profile()->GetProfilePolicyConnector()->IsManaged() &&
+         !supervised_user::IsSubjectToParentalControls(*pref_service);
 }
 
 bool GraduationAppDelegate::ShouldCaptureNavigations() const {

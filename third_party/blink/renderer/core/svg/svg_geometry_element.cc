@@ -66,7 +66,6 @@ void SVGGeometryElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kPathLengthAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     if (LayoutObject* layout_object = GetLayoutObject())
       MarkForLayoutAndParentResourceInvalidation(*layout_object);
     return;
@@ -231,13 +230,12 @@ float SVGGeometryElement::PathLengthScaleFactor(float computed_path_length,
 }
 
 void SVGGeometryElement::GeometryPresentationAttributeChanged(
-    const QualifiedName& attr_name) {
-  UpdatePresentationAttributeStyle(attr_name);
+    const SVGAnimatedPropertyBase& property) {
+  UpdatePresentationAttributeStyle(property);
   GeometryAttributeChanged();
 }
 
 void SVGGeometryElement::GeometryAttributeChanged() {
-  SVGElement::InvalidationGuard invalidation_guard(this);
   if (auto* layout_object = To<LayoutSVGShape>(GetLayoutObject())) {
     layout_object->SetNeedsShapeUpdate();
     MarkForLayoutAndParentResourceInvalidation(*layout_object);

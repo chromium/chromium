@@ -176,37 +176,18 @@ void ClientGpuMemoryBufferManager::CopyGpuMemoryBufferAsync(
     return;
   }
 
-  if (gpu_direct_) {
-    gpu_direct_->CopyGpuMemoryBuffer(std::move(buffer_handle),
-                                     std::move(memory_region),
-                                     std::move(callback));
+  if (!gpu_direct_) {
+    std::move(callback).Run(false);
+    return;
   }
+  gpu_direct_->CopyGpuMemoryBuffer(
+      std::move(buffer_handle), std::move(memory_region),
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback),
+                                                  /*result=*/false));
 }
 
-bool ClientGpuMemoryBufferManager::CopyGpuMemoryBufferSync(
-    gfx::GpuMemoryBufferHandle buffer_handle,
-    base::UnsafeSharedMemoryRegion memory_region) {
-  base::WaitableEvent event;
-  bool mapping_result = false;
-  // Note: this can be called from multiple threads at the same time. Some of
-  // those threads may not have a TaskRunner set.
-  // One of such threads is a WebRTC encoder thread.
-  // That thread is not owned by chromium and therefore doesn't have any
-  // blocking scope machinery. But the workload there is supposed to happen
-  // synchronously, because this is how the WebRTC architecture is designed.
-  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow;
-  CopyGpuMemoryBufferAsync(
-      std::move(buffer_handle), std::move(memory_region),
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          base::BindOnce(
-              [](base::WaitableEvent* event, bool* result_ptr, bool result) {
-                *result_ptr = result;
-                event->Signal();
-              },
-              &event, &mapping_result),
-          /*result=*/false));
-  event.Wait();
-  return mapping_result;
+bool ClientGpuMemoryBufferManager::IsConnected() {
+  return static_cast<bool>(gpu_direct_);
 }
 
 }  // namespace viz

@@ -94,6 +94,7 @@ class BLINK_EXPORT WebPerformanceMetricsForReporting {
   double DomainLookupStart() const;
   double DomainLookupEnd() const;
   double ConnectStart() const;
+  double ConnectEnd() const;
   double ResponseStart() const;
   double DomContentLoadedEventStart() const;
   double DomContentLoadedEventEnd() const;

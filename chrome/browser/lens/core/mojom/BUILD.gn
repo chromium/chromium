@@ -10,8 +10,8 @@ mojom("mojo_bindings") {
     "lens.mojom",
     "overlay_object.mojom",
     "polygon.mojom",
-    "search_bubble.mojom",
     "text.mojom",
+    "translate.mojom",
   ]
   webui_module_path = "/"
   public_deps = [

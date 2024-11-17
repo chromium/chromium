@@ -20,11 +20,11 @@ class AtRuleDescriptorParser {
   STATIC_ONLY(AtRuleDescriptorParser);
 
  public:
-  static bool ParseAtRule(StyleRule::RuleType,
-                          AtRuleDescriptorID,
-                          CSSParserTokenStream&,
-                          const CSSParserContext&,
-                          HeapVector<CSSPropertyValue, 64>&);
+  static bool ParseDescriptorValue(StyleRule::RuleType,
+                                   AtRuleDescriptorID,
+                                   CSSParserTokenStream&,
+                                   const CSSParserContext&,
+                                   HeapVector<CSSPropertyValue, 64>&);
   static CSSValue* ParseFontFaceDescriptor(AtRuleDescriptorID,
                                            CSSParserTokenStream&,
                                            const CSSParserContext&);

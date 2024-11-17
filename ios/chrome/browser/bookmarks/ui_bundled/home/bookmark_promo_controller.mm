@@ -80,11 +80,6 @@
   _identityManagerObserverBridge.reset();
 }
 
-- (void)hidePromoCell {
-  DCHECK(_browser);
-  self.shouldShowSigninPromo = NO;
-}
-
 - (void)setShouldShowSigninPromo:(BOOL)shouldShowSigninPromo {
   if (_shouldShowSigninPromo != shouldShowSigninPromo) {
     _shouldShowSigninPromo = shouldShowSigninPromo;

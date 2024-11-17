@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -37,7 +38,6 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -212,8 +212,7 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
     case DownloadCommands::BYPASS_DEEP_SCANNING_AND_OPEN:
     case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::RETRY:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -337,8 +336,7 @@ void DownloadItemNotification::Click(
     if (*button_index < 0 ||
         static_cast<size_t>(*button_index) >= button_actions_->size()) {
       // Out of boundary.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
 
     DownloadCommands::Command command = button_actions_->at(*button_index);
@@ -433,7 +431,7 @@ void DownloadItemNotification::Click(
       CloseNotification();
       break;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -514,8 +512,7 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
       case download::DownloadItem::InsecureDownloadStatus::SAFE:
       case download::DownloadItem::InsecureDownloadStatus::VALIDATED:
       case download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   } else {
     switch (item_->GetState()) {
@@ -540,8 +537,7 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
         break;
       case download::DownloadItem::CANCELLED:
         // Handled above.
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case download::DownloadItem::INTERRUPTED:
         // Shows a notifiation as progress type once so the visible content will
         // be updated. (same as the case of type = COMPLETE)
@@ -550,7 +546,7 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
         notification_->set_priority(message_center::DEFAULT_PRIORITY);
         break;
       case download::DownloadItem::MAX_DOWNLOAD_STATE:  // sentinel
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   SkColor notification_color = GetNotificationIconColor();
@@ -629,8 +625,7 @@ SkColor DownloadItemNotification::GetNotificationIconColor() {
       case download::DownloadItem::InsecureDownloadStatus::SAFE:
       case download::DownloadItem::InsecureDownloadStatus::VALIDATED:
       case download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -646,8 +641,7 @@ SkColor DownloadItemNotification::GetNotificationIconColor() {
       break;
 
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return gfx::kPlaceholderColor;
@@ -751,8 +745,7 @@ DownloadItemNotification::GetExtraActions() const {
       case download::DownloadItem::InsecureDownloadStatus::SAFE:
       case download::DownloadItem::InsecureDownloadStatus::VALIDATED:
       case download::DownloadItem::InsecureDownloadStatus::SILENT_BLOCK:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     actions->push_back(DownloadCommands::LEARN_MORE_INSECURE_DOWNLOAD);
     return actions;
@@ -797,7 +790,7 @@ DownloadItemNotification::GetExtraActions() const {
       break;
     }
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return actions;
 }
@@ -858,7 +851,7 @@ std::u16string DownloadItemNotification::GetTitle() const {
           IDS_DOWNLOAD_STATUS_DOWNLOAD_FAILED_TITLE, file_name);
       break;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return title_text;
 }
@@ -919,8 +912,7 @@ std::u16string DownloadItemNotification::GetCommandLabel(
 #else
     case DownloadCommands::OPEN_WITH_MEDIA_APP:
     case DownloadCommands::EDIT_WITH_MEDIA_APP:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
 #endif
     case DownloadCommands::ALWAYS_OPEN_TYPE:
     case DownloadCommands::PLATFORM_OPEN:
@@ -932,8 +924,7 @@ std::u16string DownloadItemNotification::GetCommandLabel(
     case DownloadCommands::CANCEL_DEEP_SCAN:
     case DownloadCommands::RETRY:
       // Only for menu.
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
   CHECK_NE(id, -1);
   return l10n_util::GetStringUTF16(id);
@@ -1024,8 +1015,7 @@ std::u16string DownloadItemNotification::GetWarningStatusString() const {
       break;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 std::u16string DownloadItemNotification::GetInProgressSubStatusString() const {
@@ -1115,10 +1105,8 @@ std::u16string DownloadItemNotification::GetSubStatusString() const {
       return l10n_util::GetStringUTF16(IDS_DOWNLOAD_STATUS_CANCELLED);
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return std::u16string();
 }
 
 std::u16string DownloadItemNotification::GetStatusString() const {

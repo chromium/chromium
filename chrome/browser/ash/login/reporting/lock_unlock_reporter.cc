@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/reporting/lock_unlock_reporter.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/logging.h"
@@ -91,11 +92,12 @@ void LockUnlockReporter::MaybeReportEvent(LockUnlockRecord record) {
       user_manager::UserManager::Get()->GetPrimaryUser()->GetDisplayEmail();
   if (helper_->ShouldReportUser(user_email)) {
     record.mutable_affiliated_user()->set_user_email(user_email);
-  } else {
+  } else if (const auto user_id =
+                 helper_->GetUniqueUserIdForThisDevice(user_email);
+             user_id.has_value()) {
     // This is an unaffiliated user. We can't report any personal information
     // about them, so we report a device-unique user id instead.
-    record.mutable_unaffiliated_user()->set_user_id(
-        helper_->GetUniqueUserIdForThisDevice(user_email));
+    record.mutable_unaffiliated_user()->set_user_id_num(user_id.value());
   }
   record.set_event_timestamp_sec(clock_->Now().ToTimeT());
 

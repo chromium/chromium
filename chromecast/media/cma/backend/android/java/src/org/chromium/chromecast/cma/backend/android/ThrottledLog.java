@@ -38,7 +38,7 @@ class ThrottledLog {
         long now = System.nanoTime();
         long timeSinceLastLogNsec = now - mLastTimeLoggedNsec;
 
-        if ((timeSinceLastLogNsec) > mResetTimeNsec) {
+        if (timeSinceLastLogNsec > mResetTimeNsec) {
             reset(now);
         }
 

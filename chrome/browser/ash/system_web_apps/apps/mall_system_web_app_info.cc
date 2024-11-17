@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/system_web_apps/apps/mall_system_web_app_info.h"
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/grit/ash_mall_cros_app_resources.h"
 #include "ash/webui/mall/url_constants.h"
 #include "ash/webui/system_apps/public/system_web_app_type.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ash/system_web_apps/apps/system_web_app_install_utils.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -67,7 +67,8 @@ std::vector<std::string> MallSystemAppDelegate::GetAppIdsToUninstallAndReplace()
   // does not occur, shelf and launcher will reset to default positions for the
   // Mall app. Fixing this requires teaching ExternallyManagedAppManager how
   // to ignore apps, the buggy behaviour is considered an acceptable tradeoff.
-  return {web_app::kMallAppId};
+  constexpr char kMallWebAppId[] = "hmiijpebigdebehjghkpkediohageppo";
+  return {kMallWebAppId};
 }
 
 bool MallSystemAppDelegate::ShouldCaptureNavigations() const {

@@ -47,6 +47,9 @@
 using namespace std;
 #endif
 
+#define UTF8_APOS "\xe2\x80\x99"
+#define APOSTROPHE "'"
+
 static struct {
   const char* pat[2];
   int arg;
@@ -203,7 +206,20 @@ bool LaTeXParser::next_token(std::string& t) {
         break;
       case 1:  // wordchar
         apostrophe = 0;
-        if (!is_wordchar(line[actual].c_str() + head) ||
+        if ((is_wordchar((char*)APOSTROPHE) ||
+             (is_utf8() && is_wordchar((char*)UTF8_APOS))) &&
+            !line[actual].empty() && line[actual][head] == '\'' &&
+            is_wordchar(line[actual].c_str() + head + 1)) {
+          head++;
+        } else if (is_utf8() &&
+                   is_wordchar((char*)APOSTROPHE) &&  // add Unicode apostrophe
+                                                      // to the WORDCHARS, if
+                                                      // needed
+                   strncmp(line[actual].c_str() + head, UTF8_APOS, strlen(UTF8_APOS)) ==
+                   0 &&
+                   is_wordchar(line[actual].c_str() + head + strlen(UTF8_APOS))) {
+          head += strlen(UTF8_APOS) - 1;
+        } else if (!is_wordchar(line[actual].c_str() + head) ||
             (line[actual][head] == '\'' && line[actual][head + 1] == '\'' &&
              ++apostrophe)) {
           state = 0;

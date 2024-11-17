@@ -122,8 +122,6 @@ void SVGPatternElement::SvgAttributeChanged(
       attr_name == svg_names::kPatternTransformAttr ||
       SVGFitToViewBox::IsKnownAttribute(attr_name) ||
       SVGTests::IsKnownAttribute(attr_name)) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
-
     if (is_length_attr)
       UpdateRelativeLengthsInformation();
 
@@ -132,7 +130,6 @@ void SVGPatternElement::SvgAttributeChanged(
   }
 
   if (SVGURIReference::IsKnownAttribute(attr_name)) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     BuildPendingResource();
     return;
   }

@@ -47,6 +47,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
+#include "chrome/browser/web_applications/sampling_metrics_provider.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 #include "components/metrics/android_metrics_helper.h"
@@ -88,8 +89,10 @@
 
 // TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(__GLIBC__) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if defined(__GLIBC__)
 #include <gnu/libc-version.h>
+#endif  // defined(__GLIBC__)
 
 #include "base/linux_util.h"
 #include "base/strings/string_split.h"
@@ -127,6 +130,7 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "base/mac/process_requirement.h"
 #include "chrome/common/chrome_version.h"
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -879,6 +883,10 @@ void RecordStartupMetrics() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   RecordChromeOSChannel();
 #endif
+
+#if BUILDFLAG(IS_MAC)
+  base::mac::ProcessRequirement::MaybeGatherMetrics();
+#endif
 }
 
 }  // namespace
@@ -1175,6 +1183,9 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
         std::make_unique<PerformanceInterventionMetricsReporter>(
             g_browser_process->local_state());
   }
+
+  web_app_metrics_provider_ =
+      std::make_unique<web_app::SamplingMetricsProvider>();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_LINUX)

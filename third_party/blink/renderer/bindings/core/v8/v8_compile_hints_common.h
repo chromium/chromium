@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_COMPILE_HINTS_COMMON_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_COMPILE_HINTS_COMMON_H_
 
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -12,6 +14,25 @@ namespace blink {
 class KURL;
 
 namespace v8_compile_hints {
+
+enum class MagicCommentMode {
+  kNever = 0,
+  kWhenProducingCodeCache = 1,
+  kAlways = 2
+};
+
+inline MagicCommentMode GetMagicCommentMode(
+    ExecutionContext* execution_context) {
+  if (RuntimeEnabledFeatures::JavaScriptCompileHintsMagicAlwaysRuntimeEnabled(
+          execution_context)) {
+    return MagicCommentMode::kAlways;
+  }
+  if (RuntimeEnabledFeatures::JavaScriptCompileHintsMagicRuntimeEnabled(
+          execution_context)) {
+    return MagicCommentMode::kWhenProducingCodeCache;
+  }
+  return MagicCommentMode::kNever;
+}
 
 static constexpr int kBloomFilterKeySize = 16;
 static constexpr int kBloomFilterInt32Count = 2048;

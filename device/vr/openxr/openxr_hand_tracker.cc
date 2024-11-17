@@ -12,128 +12,51 @@
 #include <optional>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
+#include "device/vr/openxr/openxr_hand_utils.h"
 #include "device/vr/openxr/openxr_interaction_profiles.h"
 #include "device/vr/openxr/openxr_util.h"
+#include "device/vr/public/cpp/switches.h"
 #include "device/vr/public/mojom/xr_hand_tracking_data.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom-shared.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {
 
-namespace {
-static constexpr mojom::XRHandJoint OpenXRHandJointToMojomJoint(
-    XrHandJointEXT openxr_joint) {
-  CHECK_NE(openxr_joint, XR_HAND_JOINT_PALM_EXT);
-  // The OpenXR joints have palm at 0, but from that point are the same as the
-  // mojom joints. Hence they are offset by 1.
-  return static_cast<mojom::XRHandJoint>(openxr_joint - 1);
+OpenXrHandTracker::AnonymizationStrategy
+OpenXrHandTracker::GetAnonymizationStrategy() {
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kWebXrHandAnonymizationStrategy)) {
+    return OpenXrHandTracker::AnonymizationStrategy::kDefault;
+  }
+
+  const auto& strategy_str = command_line->GetSwitchValueASCII(
+      switches::kWebXrHandAnonymizationStrategy);
+
+  if (base::CompareCaseInsensitiveASCII(
+          strategy_str, switches::kWebXrHandAnonymizationStrategyRuntime) ==
+      0) {
+    return OpenXrHandTracker::AnonymizationStrategy::kRuntime;
+  }
+
+  if (base::CompareCaseInsensitiveASCII(
+          strategy_str, switches::kWebXrHandAnonymizationStrategyFallback) ==
+      0) {
+    return OpenXrHandTracker::AnonymizationStrategy::kFallback;
+  }
+
+  if (base::CompareCaseInsensitiveASCII(
+          strategy_str, switches::kWebXrHandAnonymizationStrategyNone) == 0) {
+    return OpenXrHandTracker::AnonymizationStrategy::kNone;
+  }
+
+  // Use the default strategy for unknown values.
+  return OpenXrHandTracker::AnonymizationStrategy::kDefault;
 }
-
-constexpr unsigned kNumWebXRJoints =
-    static_cast<unsigned>(mojom::XRHandJoint::kMaxValue) + 1u;
-
-// WebXR doesn't expose the palm joint, so there's not a corresponding mojom
-// value to check, but validate which index we're skipping for it.
-static_assert(XR_HAND_JOINT_PALM_EXT == 0u,
-              "OpenXR palm joint expected to be the 0th joint");
-
-// Because we do not expose the PALM joint (which is the first joint in OpenXR),
-// we have one less joint than OpenXR.
-static_assert(kNumWebXRJoints == XR_HAND_JOINT_COUNT_EXT - 1u);
-
-// Enforce that the conversion is correct at compilation time.
-// The mojom hand joints must match the WebXR spec. If these are ever out of
-// sync, this mapping will need to be updated.
-static_assert(mojom::XRHandJoint::kWrist ==
-                  OpenXRHandJointToMojomJoint(XR_HAND_JOINT_WRIST_EXT),
-              "WebXR - OpenXR joint enum value mismatch");
-static_assert(
-    mojom::XRHandJoint::kThumbMetacarpal ==
-        OpenXRHandJointToMojomJoint(XR_HAND_JOINT_THUMB_METACARPAL_EXT),
-    "WebXR - OpenXR joint enum value mismatch");
-static_assert(mojom::XRHandJoint::kThumbPhalanxProximal ==
-                  OpenXRHandJointToMojomJoint(XR_HAND_JOINT_THUMB_PROXIMAL_EXT),
-              "WebXR - OpenXR joint enum value mismatch");
-static_assert(mojom::XRHandJoint::kThumbPhalanxDistal ==
-                  OpenXRHandJointToMojomJoint(XR_HAND_JOINT_THUMB_DISTAL_EXT),
-              "WebXR - OpenXR joint enum value mismatch");
-static_assert(mojom::XRHandJoint::kThumbTip ==
-                  OpenXRHandJointToMojomJoint(XR_HAND_JOINT_THUMB_TIP_EXT),
-              "WebXR - OpenXR joint enum value mismatch");
-static_assert(
-    mojom::XRHandJoint::kIndexFingerMetacarpal ==
-        OpenXRHandJointToMojomJoint(XR_HAND_JOINT_INDEX_METACARPAL_EXT),
-    "WebXR - OpenXR joint enum value mismatch");
-static_assert(mojom::XRHandJoint::kIndexFingerPhalanxProximal ==
-                  OpenXRHandJointToMojomJoint(XR_HAND_JOINT_INDEX_PROXIMAL_EXT),
-              "WebXR - OpenXR joint enum value mismatch");
-static_assert(
-    mojom::XRHandJoint::kIndexFingerPhalanxIntermediate ==
-        OpenXRHandJointToMojomJoint(XR_HAND_JOINT_INDEX_INTERMEDIATE_EXT),
-    "WebXR - OpenXR joint enum value mismatch");
-static_assert(mojom::XRHandJoint::kIndexFingerPhalanxDistal ==
-                  OpenXRHandJointToMojomJoint(XR_HAND_JOINT_INDEX_DISTAL_EXT),
-              "WebXR - OpenXR joint enum value mismatch");
-static_assert(mojom::XRHandJoint::kIndexFingerTip ==
-                  OpenXRHandJointToMojomJoint(XR_HAND_JOINT_INDEX_TIP_EXT),
-              "WebXR - OpenXR joint enum value mismatch");
-static_assert(
-    mojom::XRHandJoint::kMiddleFingerMetacarpal ==
-        OpenXRHandJointToMojomJoint(XR_HAND_JOINT_MIDDLE_METACARPAL_EXT),
-    "WebXR - OpenXR joint enum value mismatch");
-static_assert(
-    mojom::XRHandJoint::kMiddleFingerPhalanxProximal ==
-        OpenXRHandJointToMojomJoint(XR_HAND_JOINT_MIDDLE_PROXIMAL_EXT),
-    "WebXR - OpenXR joint enum value mismatch");
-static_assert(
-    mojom::XRHandJoint::kMiddleFingerPhalanxIntermediate ==
-        OpenXRHandJointToMojomJoint(XR_HAND_JOINT_MIDDLE_INTERMEDIATE_EXT),
-    "WebXR - OpenXR joint enum value mismatch");
-static_assert(mojom::XRHandJoint::kMiddleFingerPhalanxDistal ==
-                  OpenXRHandJointToMojomJoint(XR_HAND_JOINT_MIDDLE_DISTAL_EXT),
-              "WebXR - OpenXR joint enum value mismatch");
-static_assert(mojom::XRHandJoint::kMiddleFingerTip ==
-                  OpenXRHandJointToMojomJoint(XR_HAND_JOINT_MIDDLE_TIP_EXT),
-              "WebXR - OpenXR joint enum value mismatch");
-static_assert(
-    mojom::XRHandJoint::kRingFingerMetacarpal ==
-        OpenXRHandJointToMojomJoint(XR_HAND_JOINT_RING_METACARPAL_EXT),
-    "WebXR - OpenXR joint enum value mismatch");
-static_assert(mojom::XRHandJoint::kRingFingerPhalanxProximal ==
-                  OpenXRHandJointToMojomJoint(XR_HAND_JOINT_RING_PROXIMAL_EXT),
-              "WebXR - OpenXR joint enum value mismatch");
-static_assert(
-    mojom::XRHandJoint::kRingFingerPhalanxIntermediate ==
-        OpenXRHandJointToMojomJoint(XR_HAND_JOINT_RING_INTERMEDIATE_EXT),
-    "WebXR - OpenXR joint enum value mismatch");
-static_assert(mojom::XRHandJoint::kRingFingerPhalanxDistal ==
-                  OpenXRHandJointToMojomJoint(XR_HAND_JOINT_RING_DISTAL_EXT),
-              "WebXR - OpenXR joint enum value mismatch");
-static_assert(mojom::XRHandJoint::kRingFingerTip ==
-                  OpenXRHandJointToMojomJoint(XR_HAND_JOINT_RING_TIP_EXT),
-              "WebXR - OpenXR joint enum value mismatch");
-static_assert(
-    mojom::XRHandJoint::kPinkyFingerMetacarpal ==
-        OpenXRHandJointToMojomJoint(XR_HAND_JOINT_LITTLE_METACARPAL_EXT),
-    "WebXR - OpenXR joint enum value mismatch");
-static_assert(
-    mojom::XRHandJoint::kPinkyFingerPhalanxProximal ==
-        OpenXRHandJointToMojomJoint(XR_HAND_JOINT_LITTLE_PROXIMAL_EXT),
-    "WebXR - OpenXR joint enum value mismatch");
-static_assert(
-    mojom::XRHandJoint::kPinkyFingerPhalanxIntermediate ==
-        OpenXRHandJointToMojomJoint(XR_HAND_JOINT_LITTLE_INTERMEDIATE_EXT),
-    "WebXR - OpenXR joint enum value mismatch");
-static_assert(mojom::XRHandJoint::kPinkyFingerPhalanxDistal ==
-                  OpenXRHandJointToMojomJoint(XR_HAND_JOINT_LITTLE_DISTAL_EXT),
-              "WebXR - OpenXR joint enum value mismatch");
-static_assert(mojom::XRHandJoint::kPinkyFingerTip ==
-                  OpenXRHandJointToMojomJoint(XR_HAND_JOINT_LITTLE_TIP_EXT),
-              "WebXR - OpenXR joint enum value mismatch");
-}  // namespace
 
 OpenXrHandTracker::OpenXrHandTracker(
     const OpenXrExtensionHelper& extension_helper,
@@ -144,7 +67,8 @@ OpenXrHandTracker::OpenXrHandTracker(
       type_(type),
       mesh_scale_enabled_(
           extension_helper_->ExtensionEnumeration()->ExtensionSupported(
-              XR_FB_HAND_TRACKING_MESH_EXTENSION_NAME)) {
+              XR_FB_HAND_TRACKING_MESH_EXTENSION_NAME)),
+      anonymization_strategy_(GetAnonymizationStrategy()) {
   locations_.jointCount = std::extent<decltype(joint_locations_buffer_)>::value;
   locations_.jointLocations = joint_locations_buffer_;
 
@@ -164,6 +88,17 @@ OpenXrHandTracker::~OpenXrHandTracker() {
   }
 }
 
+bool OpenXrHandTracker::UseRuntimeAnonymization() const {
+  return anonymization_strategy_ == AnonymizationStrategy::kDefault ||
+         anonymization_strategy_ == AnonymizationStrategy::kRuntime;
+}
+
+bool OpenXrHandTracker::NeedsFallbackAnonymization() const {
+  return anonymization_strategy_ == AnonymizationStrategy::kFallback ||
+         (anonymization_strategy_ == AnonymizationStrategy::kDefault &&
+          !mesh_scale_enabled_);
+}
+
 XrResult OpenXrHandTracker::Update(XrSpace base_space,
                                    XrTime predicted_display_time) {
   // Lazy init hand tracking as we only need it if the app requests it.
@@ -176,7 +111,7 @@ XrResult OpenXrHandTracker::Update(XrSpace base_space,
   locate_info.time = predicted_display_time;
 
   void** next = &locations_.next;
-  if (mesh_scale_enabled_) {
+  if (mesh_scale_enabled_ && UseRuntimeAnonymization()) {
     *next = &mesh_scale_;
     next = &mesh_scale_.next;
   }
@@ -192,16 +127,16 @@ XrResult OpenXrHandTracker::Update(XrSpace base_space,
   return result;
 }
 
-bool OpenXrHandTracker::CanSupplyHandTrackingData() const {
-  // We enable the OpenXrHandTracker because we may use it to synthesize a
-  // controller, but if we cannot standardize the bone sizes, then we should not
-  // return the hand tracking data. Note that data being potentially invalid is
-  // a temporary state, and as such does not factor into this calculation.
-  return mesh_scale_enabled_;
-}
-
 mojom::XRHandTrackingDataPtr OpenXrHandTracker::GetHandTrackingData() const {
-  if (!CanSupplyHandTrackingData() || !IsDataValid()) {
+  if (!IsDataValid()) {
+    return nullptr;
+  }
+
+  // If the anonymization strategy is required to force runtime anonymization
+  // and mesh scale isn't enabled, then we can't anonymize the data and must
+  // return nullptr.
+  if (anonymization_strategy_ == AnonymizationStrategy::kRuntime &&
+      !mesh_scale_enabled_) {
     return nullptr;
   }
 
@@ -226,6 +161,15 @@ mojom::XRHandTrackingDataPtr OpenXrHandTracker::GetHandTrackingData() const {
         XrPoseToGfxTransform(joint_locations_buffer_[i].pose);
     joint_data->radius = joint_locations_buffer_[i].radius;
     hand_tracking_data->hand_joint_data.push_back(std::move(joint_data));
+  }
+
+  // If we need to perform fallback anonymization and it fails, then return
+  // nullptr. Otherwise, further anonymization is either not needed or
+  // succeeded and we can return the data.
+  if (NeedsFallbackAnonymization() &&
+      !AnonymizeHand({hand_tracking_data->hand_joint_data.data(),
+                      hand_tracking_data->hand_joint_data.size()})) {
+    return nullptr;
   }
 
   return hand_tracking_data;

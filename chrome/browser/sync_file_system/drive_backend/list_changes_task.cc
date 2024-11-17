@@ -66,10 +66,7 @@ void ListChangesTask::DidListChanges(
   }
 
   if (!change_list) {
-    NOTREACHED_IN_MIGRATION();
-    token->RecordLog("Got invalid change list.");
-    SyncTaskManager::NotifyTaskDone(std::move(token), SYNC_STATUS_FAILED);
-    return;
+    NOTREACHED();
   }
 
   auto* mutable_items = change_list->mutable_items();

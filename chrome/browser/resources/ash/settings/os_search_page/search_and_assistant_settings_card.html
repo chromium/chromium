@@ -98,7 +98,34 @@
             learn-more-url="$i18n{helpMeReadWriteLearnMoreUrl}">
         </settings-toggle-button>
       </div>
+<if expr="_google_chrome">
+      <div class="sub-item">
+        <!-- TODO(b:348516125): add the learn more link -->
+        <template is="dom-if" if="[[isLobsterSettingsToggleVisible_]]">
+          <settings-toggle-button id="lobsterToggle"
+              class="hr"
+              icon="[[rowIcons_.lobster]]"
+              pref="{{prefs.settings.lobster_enabled}}"
+              label="$i18n{enableLobster}"
+              sub-label="$i18n{enableLobsterDesc}"
+              deep-link-focus-id$="[[Setting.kLobsterOnOff]]">
+          </settings-toggle-button>
+        </template>
+      </div>
+</if>
     </iron-collapse>
+  </template>
+
+  <template is="dom-if" if="[[isSunfishSettingsToggleVisible_]]">
+    <!-- TODO: b/368184169 - Localise the label and add an icon, sublabel and
+        learn more link. -->
+    <settings-toggle-button
+        id="sunfishToggle"
+        class="hr"
+        pref="{{prefs.ash.capture_mode.sunfish_enabled}}"
+        label="Enable Sunfish"
+        deep-link-focus-id$="[[Setting.kSunfishOnOff]]">
+    </settings-toggle-button>
   </template>
 
 </settings-card>

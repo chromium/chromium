@@ -411,7 +411,8 @@ class FakeFeatureStateManagerFactory : public FeatureStateManagerImpl::Factory {
       HostStatusProvider* host_status_provider,
       device_sync::DeviceSyncClient* device_sync_client,
       AndroidSmsPairingStateTracker* android_sms_pairing_state_tracker,
-      const base::flat_map<mojom::Feature, GlobalStateFeatureManager*>&
+      const base::flat_map<mojom::Feature,
+                           raw_ptr<GlobalStateFeatureManager, CtnExperimental>>&
           global_state_feature_managers,
       bool is_secondary_user) override {
     EXPECT_FALSE(instance_);

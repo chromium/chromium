@@ -7,8 +7,6 @@ import("//build/config/features.gni")
 
 static_library("service") {
   sources = [
-    "account_pref_utils.cc",
-    "account_pref_utils.h",
     "active_devices_provider.h",
     "backend_migrator.cc",
     "backend_migrator.h",
@@ -16,6 +14,7 @@ static_library("service") {
     "data_type_controller.cc",
     "data_type_controller.h",
     "data_type_encryption_handler.h",
+    "data_type_local_data_batch_uploader.cc",
     "data_type_local_data_batch_uploader.h",
     "data_type_manager.cc",
     "data_type_manager.h",
@@ -24,6 +23,8 @@ static_library("service") {
     "data_type_manager_observer.h",
     "data_type_status_table.cc",
     "data_type_status_table.h",
+    "get_all_nodes_request_barrier.cc",
+    "get_all_nodes_request_barrier.h",
     "get_types_with_unsynced_data_request_barrier.cc",
     "get_types_with_unsynced_data_request_barrier.h",
     "glue/sync_engine_backend.cc",
@@ -44,9 +45,10 @@ static_library("service") {
     "passphrase_type_metrics_provider.h",
     "sync_auth_manager.cc",
     "sync_auth_manager.h",
-    "sync_client.cc",
     "sync_client.h",
     "sync_engine_factory.h",
+    "sync_error.cc",
+    "sync_error.h",
     "sync_feature_status_for_migrations_recorder.cc",
     "sync_feature_status_for_migrations_recorder.h",
     "sync_internals_util.cc",
@@ -81,6 +83,7 @@ static_library("service") {
     "trusted_vault_histograms.h",
     "trusted_vault_synthetic_field_trial.cc",
     "trusted_vault_synthetic_field_trial.h",
+    "type_status_map_for_debugging.h",
   ]
 
   public_deps = [
@@ -106,7 +109,7 @@ static_library("service") {
     "//components/policy:generated",
     "//components/policy/core/browser",
     "//components/prefs",
-    "//components/saved_tab_groups:prefs",
+    "//components/saved_tab_groups/public:prefs",
     "//components/signin/public/identity_manager",
     "//components/strings:components_strings_grit",
     "//components/sync/invalidations",

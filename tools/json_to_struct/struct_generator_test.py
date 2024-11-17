@@ -30,11 +30,15 @@ class StructGeneratorTest(unittest.TestCase):
                        'ctype': 'MyEnumType'}))
 
   def testGenerateArrayField(self):
-    self.assertEquals('const int * bar_bar;\n'
-                      '  const size_t bar_bar_size',
-        GenerateField({'type': 'array',
-                       'field': 'bar_bar',
-                       'contents': {'type': 'int'}}))
+    self.assertEquals(
+        'const base::span<const int> bar_bar',
+        GenerateField({
+            'type': 'array',
+            'field': 'bar_bar',
+            'contents': {
+                'type': 'int'
+            }
+        }))
 
   def testGenerateClassField(self):
     self.assertEquals(
@@ -59,11 +63,10 @@ class StructGeneratorTest(unittest.TestCase):
       }
     ]
     struct = ('struct MyTypeName {\n'
-        '  const int foo_bar;\n'
-        '  const char* const bar_foo;\n'
-        '  const MyEnumType * bar_bar;\n'
-        '  const size_t bar_bar_size;\n'
-        '};\n')
+              '  const int foo_bar;\n'
+              '  const char* const bar_foo;\n'
+              '  const base::span<const MyEnumType> bar_bar;\n'
+              '};\n')
     self.assertEquals(struct, GenerateStruct('MyTypeName', schema))
 
   def testGenerateArrayOfStruct(self):
@@ -81,16 +84,14 @@ class StructGeneratorTest(unittest.TestCase):
         }
       }
     ]
-    struct = (
-        'struct InnerTypeName {\n'
-        '  const char* const key;\n'
-        '  const char* const value;\n'
-        '};\n'
-        '\n'
-        'struct MyTypeName {\n'
-        '  const InnerTypeName * bar_bar;\n'
-        '  const size_t bar_bar_size;\n'
-        '};\n')
+    struct = ('struct InnerTypeName {\n'
+              '  const char* const key;\n'
+              '  const char* const value;\n'
+              '};\n'
+              '\n'
+              'struct MyTypeName {\n'
+              '  const base::span<const InnerTypeName> bar_bar;\n'
+              '};\n')
     self.assertEquals(struct, GenerateStruct('MyTypeName', schema))
 
 if __name__ == '__main__':

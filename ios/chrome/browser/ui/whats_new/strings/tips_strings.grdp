@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Tips specific strings -->
+  <message name="IDS_IOS_WHATS_NEW_DOCKINGBLING_TITLE" desc="DockingBling Title displayed in What's New. [iOS only]">
+    Move Chrome to the Dock
+  </message>
+  <message name="IDS_IOS_WHATS_NEW_DOCKINGBLING_SUBTITLE" desc="DockingBling Subtitle displayed in What's New. [iOS only]">
+    Access Chrome faster by moving it to your iPhone’s Home Screen Dock
+  </message>
+  <message name="IDS_IOS_WHATS_NEW_DOCKINGBLING_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of DockingBling in What's New. [iOS only]">
+    Press and hold the Chrome icon and click “Edit Home Screen”
+  </message>
+  <message name="IDS_IOS_WHATS_NEW_DOCKINGBLING_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 3 of DockingBling in What's New. [iOS only]">
+    Drag it to the dock at the bottom of your Home Screen
+  </message>
+  <message name="IDS_IOS_WHATS_NEW_DOCKINGBLING_SCREENSHOT_TEXT_1" desc="Text in image displaying: Edit Home Screen for the feature: DockingBling in What's New. [iOS only]">
+    Edit Home Screen
+  </message>
+</grit-part>

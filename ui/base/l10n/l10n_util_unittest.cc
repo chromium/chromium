@@ -27,7 +27,6 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_path_override.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "third_party/icu/source/common/unicode/locid.h"
@@ -86,7 +85,7 @@ TEST_F(L10nUtilTest, GetString) {
 // On Android, we are disabling this test since GetApplicationLocale() just
 // returns the system's locale, which, similarly, is not easily unit tested.
 
-#if BUILDFLAG(IS_POSIX) && defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_POSIX) && defined(USE_GLIB) && !BUILDFLAG(IS_CHROMEOS)
 const bool kPlatformHasDefaultLocale = true;
 const bool kUseLocaleFromEnvironment = true;
 const bool kSupportsLocalePreference = false;
@@ -710,19 +709,19 @@ TEST_F(L10nUtilTest, IsAcceptLanguageDisplayable) {
 
 TEST_F(L10nUtilTest, KeepAcceptedLanguages) {
   // All valid languages.
-  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({{"en", "es", "fr"}}),
+  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({"en", "es", "fr"}),
             std::vector<std::string>({"en", "es", "fr"}));
   // Some invalid languages.
-  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({{"en", "es", "iw"}}),
+  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({"en", "es", "iw"}),
             std::vector<std::string>({"en", "es"}));
   // All invalid languages.
-  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({{"iw", "ch_ZN"}}),
+  EXPECT_EQ(l10n_util::KeepAcceptedLanguages({"iw", "ch_ZN"}),
             std::vector<std::string>{});
   // Empty input.
   EXPECT_EQ(l10n_util::KeepAcceptedLanguages({}), std::vector<std::string>{});
   // Maintain languages order.
   EXPECT_EQ(
-      l10n_util::KeepAcceptedLanguages({{"en", "aa", "es", "iw", "fr", "xx"}}),
+      l10n_util::KeepAcceptedLanguages({"en", "aa", "es", "iw", "fr", "xx"}),
       std::vector<std::string>({"en", "es", "fr"}));
 }
 

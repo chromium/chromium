@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/persistent_memory_allocator.h"
@@ -264,13 +265,18 @@ class BASE_EXPORT PersistentHistogramAllocator {
   // StatisticsRecorder, updating the "logged" samples within the passed
   // object so that repeated merges are allowed. Don't call this on a "global"
   // allocator because histograms created there will already be in the SR.
-  void MergeHistogramDeltaToStatisticsRecorder(HistogramBase* histogram);
+  // Returns whether the merge was successful; if false, the histogram did not
+  // have the same shape (different types or buckets), or we couldn't get a
+  // target histogram from the statistic recorder.
+  bool MergeHistogramDeltaToStatisticsRecorder(HistogramBase* histogram);
 
   // As above but merge the "final" delta. No update of "logged" samples is
   // done which means it can operate on read-only objects. It's essential,
   // however, not to call this more than once or those final samples will
-  // get recorded again.
-  void MergeHistogramFinalDeltaToStatisticsRecorder(
+  // get recorded again. Returns whether the merge was successful; if false, the
+  // histogram did not have the same shape (different types or buckets), or we
+  // couldn't get a target histogram from the statistic recorder.
+  bool MergeHistogramFinalDeltaToStatisticsRecorder(
       const HistogramBase* histogram);
 
   // Returns an object that manages persistent-sample-map records for a given
@@ -473,7 +479,7 @@ class BASE_EXPORT GlobalHistogramAllocator
 
   // Retrieves a previously set pathname to which the contents of this allocator
   // are to be saved.
-  const FilePath& GetPersistentLocation() const;
+  const FilePath& GetPersistentLocation() const LIFETIME_BOUND;
 
   // Returns whether the contents of this allocator are being saved to a
   // persistent file on disk.

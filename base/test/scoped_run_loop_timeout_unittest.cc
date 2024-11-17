@@ -177,7 +177,7 @@ TEST(ScopedRunLoopTimeoutTest, OverwriteTimeoutCallbackForTesting) {
   ScopedRunLoopTimeout::SetTimeoutCallbackForTesting(
       std::make_unique<ScopedRunLoopTimeout::TimeoutCallback>(
           std::move(cb).Then(BindLambdaForTesting(
-              [&custom_handler_called]() { custom_handler_called = true; }))));
+              [&custom_handler_called] { custom_handler_called = true; }))));
   static constexpr auto kArbitraryTimeout = Milliseconds(1);
   const auto location = FROM_HERE;
   ScopedRunLoopTimeout run_timeout(

@@ -304,6 +304,7 @@ class SimpleURLLoaderImpl : public SimpleURLLoader,
   bool LoadedFromCache() const override;
   int64_t GetContentSize() const override;
   int GetNumRetries() const override;
+  base::WeakPtr<const SimpleURLLoader> GetWeakPtr() const override;
 
   // Called by BodyHandler when the BodyHandler body handler is done. If |error|
   // is not net::OK, some error occurred reading or consuming the body. If it is
@@ -1649,6 +1650,10 @@ int SimpleURLLoaderImpl::GetNumRetries() const {
   return num_retries_;
 }
 
+base::WeakPtr<const SimpleURLLoader> SimpleURLLoaderImpl::GetWeakPtr() const {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 const mojom::URLResponseHead* SimpleURLLoaderImpl::ResponseInfo() const {
   // Should only be called once the request is complete.
   DCHECK(request_state_->finished);
@@ -1727,7 +1732,7 @@ void SimpleURLLoaderImpl::FinishWithResult(int net_error) {
 
   client_receiver_.reset();
   url_loader_.reset();
-  timeout_timer_.AbandonAndStop();
+  timeout_timer_.Stop();
 
   request_state_->finished = true;
   request_state_->net_error = net_error;

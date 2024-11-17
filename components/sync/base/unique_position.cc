@@ -5,26 +5,45 @@
 #include "components/sync/base/unique_position.h"
 
 #include <algorithm>
+#include <array>
 #include <limits>
+#include <string>
 
+#include "base/base64.h"
+#include "base/containers/span.h"
+#include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "third_party/zlib/zlib.h"
 
 namespace syncer {
 
+namespace {
+
+UniquePosition::Suffix StringToSuffix(std::string_view str) {
+  CHECK_EQ(str.length(), UniquePosition::kSuffixLength);
+  UniquePosition::Suffix suffix;
+  base::ranges::copy(str, suffix.begin());
+  return suffix;
+}
+
+std::string SuffixToString(const UniquePosition::Suffix& suffix) {
+  return std::string(suffix.begin(), suffix.end());
+}
+
+}  // namespace
+
 constexpr size_t UniquePosition::kSuffixLength;
 constexpr size_t UniquePosition::kCompressBytesThreshold;
 
 // static.
-bool UniquePosition::IsValidSuffix(const std::string& suffix) {
-  // The suffix must be exactly the specified length, otherwise unique suffixes
-  // are not sufficient to guarantee unique positions (because prefix + suffix
-  // == p + refixsuffix).
-  return suffix.length() == kSuffixLength && suffix[kSuffixLength - 1] != 0;
+bool UniquePosition::IsValidSuffix(const Suffix& suffix) {
+  return suffix.back() != 0;
 }
 
 // static.
@@ -38,10 +57,23 @@ bool UniquePosition::IsValidBytes(const std::string& bytes) {
 }
 
 // static.
-std::string UniquePosition::RandomSuffix() {
-  // Users random data for all but the last byte.  The last byte must not be
-  // zero.  We arbitrarily set it to 0x7f.
-  return base::RandBytesAsString(kSuffixLength - 1) + "\x7f";
+UniquePosition::Suffix UniquePosition::RandomSuffix() {
+  // Users random data for all but the last byte. The last byte must not be
+  // zero. Set it arbitrarily to 0x7f.
+  Suffix suffix;
+  base::RandBytes(base::make_span(suffix));
+  suffix.back() = 0x7f;
+  return suffix;
+}
+
+// static.
+UniquePosition::Suffix UniquePosition::GenerateSuffix(
+    const ClientTagHash& client_tag_hash) {
+  std::string result = base::Base64Encode(
+      base::SHA1Hash(base::as_byte_span(client_tag_hash.value())));
+  UniquePosition::Suffix suffix = StringToSuffix(result);
+  CHECK(IsValidSuffix(suffix));
+  return suffix;
 }
 
 // static.
@@ -76,7 +108,7 @@ UniquePosition UniquePosition::FromProto(const sync_pb::UniquePosition& proto) {
 }
 
 // static.
-UniquePosition UniquePosition::FromInt64(int64_t x, const std::string& suffix) {
+UniquePosition UniquePosition::FromInt64(int64_t x, const Suffix& suffix) {
   uint64_t y = static_cast<uint64_t>(x);
   y ^= 0x8000000000000000ULL;  // Make it non-negative.
   std::string bytes(8, 0);
@@ -84,46 +116,46 @@ UniquePosition UniquePosition::FromInt64(int64_t x, const std::string& suffix) {
     bytes[i] = static_cast<uint8_t>(y);
     y >>= 8;
   }
-  return UniquePosition(bytes + suffix, suffix);
+  return UniquePosition(bytes + SuffixToString(suffix), suffix);
 }
 
 // static.
-UniquePosition UniquePosition::InitialPosition(const std::string& suffix) {
+UniquePosition UniquePosition::InitialPosition(const Suffix& suffix) {
   DCHECK(IsValidSuffix(suffix));
-  return UniquePosition(suffix, suffix);
+  return UniquePosition(SuffixToString(suffix), suffix);
 }
 
 // static.
 UniquePosition UniquePosition::Before(const UniquePosition& x,
-                                      const std::string& suffix) {
+                                      const Suffix& suffix) {
   DCHECK(IsValidSuffix(suffix));
   DCHECK(x.IsValid());
   const std::string& before =
       FindSmallerWithSuffix(Uncompress(x.compressed_), suffix);
-  return UniquePosition(before + suffix, suffix);
+  return UniquePosition(before + SuffixToString(suffix), suffix);
 }
 
 // static.
 UniquePosition UniquePosition::After(const UniquePosition& x,
-                                     const std::string& suffix) {
+                                     const Suffix& suffix) {
   DCHECK(IsValidSuffix(suffix));
   DCHECK(x.IsValid());
   const std::string& after =
       FindGreaterWithSuffix(Uncompress(x.compressed_), suffix);
-  return UniquePosition(after + suffix, suffix);
+  return UniquePosition(after + SuffixToString(suffix), suffix);
 }
 
 // static.
 UniquePosition UniquePosition::Between(const UniquePosition& before,
                                        const UniquePosition& after,
-                                       const std::string& suffix) {
+                                       const Suffix& suffix) {
   DCHECK(before.IsValid());
   DCHECK(after.IsValid());
   DCHECK(before.LessThan(after));
   DCHECK(IsValidSuffix(suffix));
   const std::string& mid = FindBetweenWithSuffix(
       Uncompress(before.compressed_), Uncompress(after.compressed_), suffix);
-  return UniquePosition(mid + suffix, suffix);
+  return UniquePosition(mid + SuffixToString(suffix), suffix);
 }
 
 UniquePosition::UniquePosition() = default;
@@ -181,16 +213,17 @@ std::string UniquePosition::ToDebugString() const {
   return debug_string;
 }
 
-std::string UniquePosition::GetSuffixForTest() const {
+UniquePosition::Suffix UniquePosition::GetSuffixForTest() const {
   const std::string bytes = Uncompress(compressed_);
   const size_t prefix_len = bytes.length() - kSuffixLength;
-  return bytes.substr(prefix_len, std::string::npos);
+  return StringToSuffix(bytes.substr(prefix_len));
 }
 
 std::string UniquePosition::FindSmallerWithSuffix(const std::string& reference,
-                                                  const std::string& suffix) {
+                                                  const Suffix& suffix) {
   size_t ref_zeroes = reference.find_first_not_of('\0');
-  size_t suffix_zeroes = suffix.find_first_not_of('\0');
+  std::string suffix_str = SuffixToString(suffix);
+  size_t suffix_zeroes = suffix_str.find_first_not_of('\0');
 
   // Neither of our inputs are allowed to have trailing zeroes, so the following
   // must be true.
@@ -202,17 +235,17 @@ std::string UniquePosition::FindSmallerWithSuffix(const std::string& reference,
     return std::string();
   }
 
-  if (suffix.substr(suffix_zeroes) < reference.substr(ref_zeroes)) {
-    // Prepend zeroes so the result has as many zero digits as |reference|.
+  if (suffix_str.substr(suffix_zeroes) < reference.substr(ref_zeroes)) {
+    // Prepend zeroes so the result has as many zero digits as `reference`.
     return std::string(ref_zeroes - suffix_zeroes, '\0');
   } else if (suffix_zeroes > 1) {
-    // Prepend zeroes so the result has one more zero digit than |reference|.
+    // Prepend zeroes so the result has one more zero digit than `reference`.
     // We could also take the "else" branch below, but taking this branch will
     // give us a smaller result.
     return std::string(ref_zeroes - suffix_zeroes + 1, '\0');
   } else {
-    // Prepend zeroes to match those in the |reference|, then something smaller
-    // than the first non-zero digit in |reference|.
+    // Prepend zeroes to match those in the `reference`, then something smaller
+    // than the first non-zero digit in `reference`.
     char lt_digit = static_cast<uint8_t>(reference[ref_zeroes]) / 2;
     return std::string(ref_zeroes, '\0') + lt_digit;
   }
@@ -220,17 +253,18 @@ std::string UniquePosition::FindSmallerWithSuffix(const std::string& reference,
 
 // static
 std::string UniquePosition::FindGreaterWithSuffix(const std::string& reference,
-                                                  const std::string& suffix) {
+                                                  const Suffix& suffix) {
   size_t ref_FFs =
       reference.find_first_not_of(std::numeric_limits<uint8_t>::max());
+  std::string suffix_str = SuffixToString(suffix);
   size_t suffix_FFs =
-      suffix.find_first_not_of(std::numeric_limits<uint8_t>::max());
+      suffix_str.find_first_not_of(std::numeric_limits<uint8_t>::max());
 
   if (ref_FFs == std::string::npos) {
     ref_FFs = reference.length();
   }
   if (suffix_FFs == std::string::npos) {
-    suffix_FFs = suffix.length();
+    suffix_FFs = suffix_str.length();
   }
 
   if (suffix_FFs > ref_FFs) {
@@ -238,19 +272,19 @@ std::string UniquePosition::FindGreaterWithSuffix(const std::string& reference,
     return std::string();
   }
 
-  if (suffix.substr(suffix_FFs) > reference.substr(ref_FFs)) {
-    // Prepend FF digits to match those in |reference|.
+  if (suffix_str.substr(suffix_FFs) > reference.substr(ref_FFs)) {
+    // Prepend FF digits to match those in `reference`.
     return std::string(ref_FFs - suffix_FFs,
                        std::numeric_limits<uint8_t>::max());
   } else if (suffix_FFs > 1) {
     // Prepend enough leading FF digits so result has one more of them than
-    // |reference| does.  We could also take the "else" branch below, but this
+    // `reference` does.  We could also take the "else" branch below, but this
     // gives us a smaller result.
     return std::string(ref_FFs - suffix_FFs + 1,
                        std::numeric_limits<uint8_t>::max());
   } else {
-    // Prepend FF digits to match those in |reference|, then something larger
-    // than the first non-FF digit in |reference|.
+    // Prepend FF digits to match those in `reference`, then something larger
+    // than the first non-FF digit in `reference`.
     char gt_digit = static_cast<uint8_t>(reference[ref_FFs]) +
                     (std::numeric_limits<uint8_t>::max() -
                      static_cast<uint8_t>(reference[ref_FFs]) + 1) /
@@ -262,15 +296,16 @@ std::string UniquePosition::FindGreaterWithSuffix(const std::string& reference,
 // static
 std::string UniquePosition::FindBetweenWithSuffix(const std::string& before,
                                                   const std::string& after,
-                                                  const std::string& suffix) {
+                                                  const Suffix& suffix) {
   DCHECK(IsValidSuffix(suffix));
   DCHECK_NE(before, after);
   DCHECK_LT(before, after);
 
+  std::string suffix_str = SuffixToString(suffix);
   std::string mid;
 
   // Sometimes our suffix puts us where we want to be.
-  if (before < suffix && suffix < after) {
+  if (before < suffix_str && suffix_str < after) {
     return std::string();
   }
 
@@ -287,7 +322,8 @@ std::string UniquePosition::FindBetweenWithSuffix(const std::string& before,
 
       // Both strings are equal so far.  Will appending the suffix at this point
       // give us the comparison we're looking for?
-      if (before.substr(i + 1) < suffix && suffix < after.substr(i + 1)) {
+      if (before.substr(i + 1) < suffix_str &&
+          suffix_str < after.substr(i + 1)) {
         return mid;
       }
     } else {
@@ -298,17 +334,17 @@ std::string UniquePosition::FindBetweenWithSuffix(const std::string& before,
       // digits.  Exploring both options is an optimization and is not required
       // for the correctness of this algorithm.
 
-      // Option A: Round down the current digit.  This makes our |mid| <
-      // |after|, no matter what we append afterwards.  We then focus on
-      // appending digits until |mid| > |before|.
+      // Option A: Round down the current digit.  This makes our `mid` <
+      // `after`, no matter what we append afterwards.  We then focus on
+      // appending digits until `mid` > `before`.
       std::string mid_a = mid;
       mid_a.push_back(a_digit);
       mid_a.append(FindGreaterWithSuffix(before.substr(i + 1), suffix));
 
-      // Option B: Round up the current digit.  This makes our |mid| > |before|,
+      // Option B: Round up the current digit.  This makes our `mid` > `before`,
       // no matter what we append afterwards.  We then focus on appending digits
-      // until |mid| < |after|.  Note that this option may not be viable if the
-      // current digit is the last one in |after|, so we skip the option in that
+      // until `mid` < `after`.  Note that this option may not be viable if the
+      // current digit is the last one in `after`, so we skip the option in that
       // case.
       if (after.length() > i + 1) {
         std::string mid_b = mid;
@@ -329,9 +365,9 @@ std::string UniquePosition::FindBetweenWithSuffix(const std::string& before,
   DCHECK_EQ(before, mid);
   DCHECK_LT(before.length(), after.length());
 
-  // We know that we'll need to append at least one more byte to |mid| in the
-  // process of making it < |after|.  Appending any digit, regardless of the
-  // value, will make |before| < |mid|.  Therefore, the following will get us a
+  // We know that we'll need to append at least one more byte to `mid` in the
+  // process of making it < `after`.  Appending any digit, regardless of the
+  // value, will make `before` < `mid`.  Therefore, the following will get us a
   // valid position.
 
   mid.append(FindSmallerWithSuffix(after.substr(i), suffix));
@@ -343,9 +379,10 @@ UniquePosition::UniquePosition(const std::string& compressed)
                                                        : std::string()) {}
 
 UniquePosition::UniquePosition(const std::string& uncompressed,
-                               const std::string& suffix)
+                               const Suffix& suffix)
     : UniquePosition(Compress(uncompressed)) {
-  DCHECK(uncompressed.rfind(suffix) + kSuffixLength == uncompressed.length());
+  DCHECK(uncompressed.rfind(SuffixToString(suffix)) + kSuffixLength ==
+         uncompressed.length());
   DCHECK(IsValidSuffix(suffix));
   DCHECK(IsValid());
 }
@@ -430,7 +467,7 @@ UniquePosition::UniquePosition(const std::string& uncompressed,
 
 namespace {
 
-// Appends an encoded run length to |output_str|.
+// Appends an encoded run length to `output_str`.
 static void WriteEncodedRunLength(uint32_t length,
                                   bool high_encoding,
                                   std::string* output_str) {
@@ -452,7 +489,7 @@ static void WriteEncodedRunLength(uint32_t length,
   output_str->append(1, 0xff & (encoded_length >> 0U));
 }
 
-// Reads an encoded run length for |str| at position |i|.
+// Reads an encoded run length for `str` at position `i`.
 static uint32_t ReadEncodedRunLength(const std::string& str, size_t i) {
   DCHECK_LE(i + 4, str.length());
 
@@ -519,7 +556,7 @@ std::string UniquePosition::CompressImpl(const std::string& str) {
 
       // Handle the 'runs until end' special case specially.
       size_t run_length;
-      bool encode_high;  // True if the next byte is greater than |rep_digit|.
+      bool encode_high;  // True if the next byte is greater than `rep_digit`.
       if (runs_until == std::string::npos) {
         run_length = str.length() - i;
         encode_high = false;

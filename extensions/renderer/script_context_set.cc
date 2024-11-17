@@ -317,10 +317,6 @@ mojom::ContextType ScriptContextSet::ClassifyJavaScriptContext(
       return mojom::ContextType::kPrivilegedWebPage;
     }
 
-    if (is_lock_screen_context_) {
-      return mojom::ContextType::kLockscreenExtension;
-    }
-
     if (is_webview) {
 #if BUILDFLAG(ENABLE_PDF)
       // The PDF Viewer extension in a webview needs to be a privileged

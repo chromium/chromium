@@ -30,6 +30,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -157,16 +158,20 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   // The layer for `this` is responsible for showing background blur and fade
   // and clip animations.
   SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetName("WindowCycleView");
   layer()->SetMasksToBounds(true);
-  if (features::IsBackgroundBlurEnabled()) {
+  if (features::IsBackgroundBlurEnabled() &&
+      chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
 
   SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysScrim2, kBackgroundCornerRadius));
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysScrim2
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque,
+      kBackgroundCornerRadius));
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBackgroundCornerRadius,
       views::HighlightBorder::Type::kHighlightBorderOnShadow));

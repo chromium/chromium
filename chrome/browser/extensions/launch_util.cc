@@ -95,7 +95,7 @@ apps::LaunchContainer GetLaunchContainer(const ExtensionPrefs* prefs,
       // If the pref is set to launch a window (or no pref is set, and
       // window opening is the default), make the container a window.
       result = apps::LaunchContainer::kLaunchContainerWindow;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     } else if (prefs_launch_type == LAUNCH_TYPE_FULLSCREEN) {
       // LAUNCH_TYPE_FULLSCREEN launches in a maximized app window in ash.
       // For desktop chrome AURA on all platforms we should open the
@@ -112,7 +112,7 @@ apps::LaunchContainer GetLaunchContainer(const ExtensionPrefs* prefs,
     // If a new value for app.launch.container is added, logic for it should be
     // added here. apps::LaunchContainer::kLaunchContainerWindow is not
     // present because there is no way to set it in a manifest.
-    NOTREACHED_IN_MIGRATION() << static_cast<int>(manifest_launch_container);
+    NOTREACHED() << static_cast<int>(manifest_launch_container);
   }
 
   // All paths should set |result|.

@@ -12,9 +12,12 @@
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/mojom/webnn_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
+#include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 #include "services/webnn/webnn_graph_builder_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
@@ -127,8 +130,12 @@ void WebNNContextImpl::DisconnectAndDestroyWebNNTensorImpl(
   tensor_impls_.erase(it);
 }
 
-void WebNNContextImpl::OnLost(std::string_view message) {
+void WebNNContextImpl::ResetReceiverWithReason(std::string_view message) {
   receiver_.ResetWithReason(/*custom_reason_code=*/0, message);
+}
+
+void WebNNContextImpl::OnLost(std::string_view message) {
+  ResetReceiverWithReason(message);
   context_provider_->OnConnectionError(this);
 }
 
@@ -162,9 +169,9 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   backend_context_properties.data_type_limits.cumulative_sum_input.RetainAll(
       DataTypeConstraint::kFloat16To32Ints32To64);
   backend_context_properties.data_type_limits.dequantize_linear_input.RetainAll(
-      DataTypeConstraint::kInts8);
+      DataTypeConstraint::kInts4ToInts8);
   backend_context_properties.data_type_limits.dequantize_linear_scale.RetainAll(
-      DataTypeConstraint::kFloat32);
+      DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.erf_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.exp_input.RetainAll(
@@ -226,9 +233,9 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
   backend_context_properties.data_type_limits.prelu_input.RetainAll(
       DataTypeConstraint::kFloat16To32Int8To32);
   backend_context_properties.data_type_limits.quantize_linear_input.RetainAll(
-      DataTypeConstraint::kFloat32);
+      DataTypeConstraint::kFloat16To32);
   backend_context_properties.data_type_limits.quantize_linear_zero_point
-      .RetainAll(DataTypeConstraint::kInts8);
+      .RetainAll(DataTypeConstraint::kInts4ToInts8);
   backend_context_properties.data_type_limits.reduce_l1_input.RetainAll(
       DataTypeConstraint::kFloat16To32Ints32To64);
   backend_context_properties.data_type_limits.reduce_l2_input.RetainAll(
@@ -249,6 +256,8 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       DataTypeConstraint::kFloat16To32Int8To32);
   backend_context_properties.data_type_limits.resample2d_input.RetainAll(
       DataTypeConstraint::kFloat16To32);
+  backend_context_properties.data_type_limits.scatter_elements_indices
+      .RetainAll(DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes);
   backend_context_properties.data_type_limits.scatter_nd_indices.RetainAll(
       DataTypeConstraint::kGatherScatterIndicesSupportedDataTypes);
   backend_context_properties.data_type_limits.sigmoid_input.RetainAll(

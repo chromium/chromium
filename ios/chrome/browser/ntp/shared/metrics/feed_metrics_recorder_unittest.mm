@@ -38,7 +38,7 @@ using feed::FeedEngagementType;
 class FeedMetricsRecorderTest : public PlatformTest {
  public:
   FeedMetricsRecorderTest() {
-    RegisterBrowserStatePrefs(test_pref_service_.registry());
+    RegisterProfilePrefs(test_pref_service_.registry());
     recorder_ =
         [[FeedMetricsRecorder alloc] initWithPrefService:&test_pref_service_];
     histogram_tester_ = std::make_unique<base::HistogramTester>();

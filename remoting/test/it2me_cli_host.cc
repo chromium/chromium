@@ -81,9 +81,6 @@ void It2MeCliHost::Start() {
   ui_task_runner_ = new AutoThreadTaskRunner(
       base::SingleThreadTaskRunner::GetCurrentDefault(), ui_loop.QuitClosure());
 
-  token_getter_->CallWithToken(base::BindOnce(
-      &It2MeCliHost::StartCRDHostAndGetCode, base::Unretained(this)));
-
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier(
       net::NetworkChangeNotifier::CreateIfNeeded());
   ui_loop.Run();

@@ -140,10 +140,7 @@ component("events_base") {
 
   defines = [ "EVENTS_BASE_IMPLEMENTATION" ]
 
-  deps = [
-    ":dom_keycode_converter",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ ":dom_keycode_converter" ]
 
   public_deps = [
     ":event_constants",
@@ -240,6 +237,7 @@ component("events") {
   if (is_win) {
     public += [
       "win/events_win_utils.h",
+      "win/stylus_handwriting_properties_win.h",
       "win/system_event_state_lookup.h",
     ]
 
@@ -248,6 +246,7 @@ component("events") {
       "keycodes/platform_key_map_win.h",
       "win/events_win.cc",
       "win/events_win_utils.cc",
+      "win/stylus_handwriting_properties_win.cc",
       "win/system_event_state_lookup.cc",
     ]
   }
@@ -318,6 +317,12 @@ component("events") {
     sources -= [ "win/events_win.cc" ]
   }
 
+  # Used for the feature flag check. Should be deleted once the feature is
+  # enabled by default.
+  if (is_win) {
+    deps += [ "//components/stylus_handwriting/win:win" ]
+  }
+
   if (use_ozone) {
     public += [ "ozone/events_ozone.h" ]
     sources += [ "ozone/events_ozone.cc" ]
@@ -338,8 +343,6 @@ component("events") {
       "gestures/gesture_recognizer_impl.cc",
       "gestures/motion_event_aura.cc",
     ]
-
-    deps += [ "//build:chromeos_buildflags" ]
   }
 
   if (is_win || is_apple || use_ozone) {
@@ -355,6 +358,8 @@ component("events") {
       "android/key_event_android.h",
       "android/key_event_utils.h",
       "android/motion_event_android.h",
+      "android/motion_event_android_java.h",
+      "android/motion_event_android_native.h",
 
       # TODO(crbug.com/40255699): Move this outside is_android block when
       # consuming cross-platform code which uses it lands.
@@ -367,6 +372,8 @@ component("events") {
       "android/key_event_android.cc",
       "android/key_event_utils.cc",
       "android/motion_event_android.cc",
+      "android/motion_event_android_java.cc",
+      "android/motion_event_android_native.cc",
       "back_gesture_event.cc",
     ]
     deps += [
@@ -482,7 +489,6 @@ component("gesture_detection") {
   deps = [
     ":events_base",
     "//base",
-    "//build:chromeos_buildflags",
     "//ui/base:features",
     "//ui/display",
     "//ui/gfx",
@@ -574,7 +580,6 @@ static_library("test_support") {
   ]
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//skia",
     "//ui/events/platform",
     "//ui/gfx",
@@ -701,7 +706,10 @@ if (use_blink) {
 
     if (is_android) {
       sources += [ "android/motion_event_android_unittest.cc" ]
-      deps += [ "//ui/android:ui_full_java" ]
+      deps += [
+        ":motionevent_jni_headers",
+        "//ui/android:ui_full_java",
+      ]
     } else {
       data_deps = [ "//third_party/angle:includes" ]
     }
@@ -732,6 +740,7 @@ if (use_blink) {
         "win/event_utils_win_unittest.cc",
         "win/media_keyboard_hook_win_unittest.cc",
         "win/modifier_keyboard_hook_win_unittest.cc",
+        "win/stylus_handwriting_properties_win_unittest.cc",
       ]
       deps += [ "//ui/events:keyboard_hook" ]
     }

@@ -91,8 +91,8 @@ bool MediaFoundationVideoProcessorAccelerator::InitializeVideoProcessor(
                            1);
   RETURN_ON_HR_FAILURE(hr, "Couldn't set pixel aspect ratio", false);
   hr = input_media_type_->SetUINT32(
-      MF_MT_VIDEO_PRIMARIES,
-      VideoPrimariesToMFVideoPrimaries(config.input_color_space.primaries));
+      MF_MT_VIDEO_PRIMARIES, VideoPrimariesToMFVideoPrimaries(
+                                 config.input_color_space.GetPrimaryID()));
   RETURN_ON_HR_FAILURE(hr, "Couldn't set video primaries", false);
   if (config.input_format == PIXEL_FORMAT_XRGB ||
       config.input_format == PIXEL_FORMAT_ARGB) {
@@ -135,8 +135,8 @@ bool MediaFoundationVideoProcessorAccelerator::InitializeVideoProcessor(
                            1);
   RETURN_ON_HR_FAILURE(hr, L"Couldn't set pixel aspect ratio", false);
   hr = output_media_type->SetUINT32(
-      MF_MT_VIDEO_PRIMARIES,
-      VideoPrimariesToMFVideoPrimaries(config.output_color_space.primaries));
+      MF_MT_VIDEO_PRIMARIES, VideoPrimariesToMFVideoPrimaries(
+                                 config.output_color_space.GetPrimaryID()));
   RETURN_ON_HR_FAILURE(hr, L"Couldn't set video primaries", false);
   hr = output_media_type->SetUINT32(MF_MT_INTERLACE_MODE,
                                     MFVideoInterlace_Progressive);

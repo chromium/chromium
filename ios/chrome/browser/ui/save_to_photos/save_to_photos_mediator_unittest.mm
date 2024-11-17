@@ -119,13 +119,13 @@ class FakeImageFetchTabHelper : public ImageFetchTabHelper {
 class SaveToPhotosMediatorTest : public PlatformTest {
  protected:
   void SetUp() final {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     web_state_ = std::make_unique<web::FakeWebState>();
     FakeImageFetchTabHelper::CreateForWebState(web_state_.get());
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
@@ -165,13 +165,12 @@ class SaveToPhotosMediatorTest : public PlatformTest {
   // Create a SaveToPhotosMediator with services from the test browser state.
   SaveToPhotosMediator* CreateSaveToPhotosMediator() {
     PhotosService* photos_service =
-        PhotosServiceFactory::GetForBrowserState(browser_state_.get());
-    PrefService* pref_service = browser_state_->GetPrefs();
+        PhotosServiceFactory::GetForProfile(profile_.get());
+    PrefService* pref_service = profile_->GetPrefs();
     ChromeAccountManagerService* account_manager_service =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser_state_.get());
+        IdentityManagerFactory::GetForProfile(profile_.get());
     return [[SaveToPhotosMediator alloc]
             initWithPhotosService:photos_service
                       prefService:pref_service
@@ -184,7 +183,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
   // Sign-in with a fake account.
   void SignIn() {
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser_state_.get()),
+        IdentityManagerFactory::GetForProfile(profile_.get()),
         base::SysNSStringToUTF8(fake_identity_.userEmail),
         signin::ConsentLevel::kSignin);
   }
@@ -192,7 +191,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
   // Returns the TestPhotosService tied to the browser state.
   TestPhotosService* GetTestPhotosService() {
     return static_cast<TestPhotosService*>(
-        PhotosServiceFactory::GetForBrowserState(browser_state_.get()));
+        PhotosServiceFactory::GetForProfile(profile_.get()));
   }
 
   // Returns the FakeImageFetchTabHelper tied to the WebState.
@@ -202,7 +201,7 @@ class SaveToPhotosMediatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<web::FakeWebState> web_state_;
   id mock_application_;
@@ -234,9 +233,8 @@ TEST_F(SaveToPhotosMediatorTest, ShowsAccountPickerIfNoDefaultAccountInPrefs) {
   SignIn();
 
   // This test assumes there is no default account memorized for Save to Photos.
-  browser_state_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
-  browser_state_->GetPrefs()->ClearPref(
-      prefs::kIosSaveToPhotosSkipAccountPicker);
+  profile_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
+  profile_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosSkipAccountPicker);
 
   // Create a mediator and set up with mock delegate.
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
@@ -291,11 +289,11 @@ TEST_F(SaveToPhotosMediatorTest,
 
   // This test assumes there is a default account memorized for Save to Photos
   // and that the user opted-in skipping the account picker.
-  browser_state_->GetPrefs()->SetString(
+  profile_->GetPrefs()->SetString(
       prefs::kIosSaveToPhotosDefaultGaiaId,
       base::SysNSStringToUTF8(fake_identity_.gaiaID).c_str());
-  browser_state_->GetPrefs()->SetBoolean(
-      prefs::kIosSaveToPhotosSkipAccountPicker, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker,
+                                   true);
 
   // Create a mediator and set up with mock delegate.
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
@@ -338,9 +336,8 @@ TEST_F(SaveToPhotosMediatorTest,
   SignIn();
 
   // This test assumes there is no default account memorized for Save to Photos.
-  browser_state_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
-  browser_state_->GetPrefs()->ClearPref(
-      prefs::kIosSaveToPhotosSkipAccountPicker);
+  profile_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
+  profile_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosSkipAccountPicker);
 
   // Create a mediator and set up with mock delegate.
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();
@@ -411,9 +408,8 @@ TEST_F(SaveToPhotosMediatorTest, DidCancelBeforeUploadDismissesAccountPicker) {
   SignIn();
 
   // This test assumes there is no default account memorized for Save to Photos.
-  browser_state_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
-  browser_state_->GetPrefs()->ClearPref(
-      prefs::kIosSaveToPhotosSkipAccountPicker);
+  profile_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosDefaultGaiaId);
+  profile_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosSkipAccountPicker);
 
   // Create a mediator and set up with mock delegate.
   SaveToPhotosMediator* mediator = CreateSaveToPhotosMediator();

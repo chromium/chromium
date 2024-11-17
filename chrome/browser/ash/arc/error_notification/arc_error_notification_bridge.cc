@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/arc/error_notification/arc_error_notification_item.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
@@ -133,7 +134,7 @@ void ArcErrorNotificationBridge::SendErrorDetails(
 
   notification.set_never_timeout(true);
 
-  NotificationDisplayService::GetForProfile(profile_)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, notification,
       nullptr /* metadata */);
 
@@ -143,7 +144,7 @@ void ArcErrorNotificationBridge::SendErrorDetails(
 
 void ArcErrorNotificationBridge::CloseNotification(
     const std::string& notification_id) {
-  NotificationDisplayService::GetForProfile(profile_)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, notification_id);
 }
 

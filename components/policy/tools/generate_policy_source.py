@@ -1353,7 +1353,7 @@ def _WriteChromePolicyAccessSource(policies, f, protobuf_type, chunking):
 class RiskTags(object):
   '''Generates files and strings to translate the parsed risk tags.'''
 
-  # TODO(fhorschig|tnagel): Add, Check & Generate translation descriptions.
+  # TODO(tnagel): Add, Check & Generate translation descriptions.
 
   def __init__(self, template_file_contents):
     self.max_tags = None

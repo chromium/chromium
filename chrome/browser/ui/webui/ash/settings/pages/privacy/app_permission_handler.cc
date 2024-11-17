@@ -4,13 +4,13 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/app_permission_handler.h"
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/eche_app/app_id.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/url_constants.h"
 #include "components/services/app_service/public/cpp/permission.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -48,15 +48,13 @@ app_permission::mojom::AppPtr CreateAppPtr(const apps::AppUpdate& update) {
 
 // Returns true if the system app with ID `app_id` uses camera.
 bool SystemAppUsesCamera(const std::string& app_id) {
-  return app_id == web_app::kCameraAppId ||
-         app_id == web_app::kPersonalizationAppId ||
+  return app_id == ash::kCameraAppId || app_id == ash::kPersonalizationAppId ||
          app_id == ash::kChromeUIUntrustedProjectorSwaAppId;
 }
 
 // Returns true if the system app with ID `app_id` uses microphone.
 bool SystemAppUsesMicrophone(const std::string& app_id) {
-  return app_id == web_app::kCameraAppId ||
-         app_id == ash::eche_app::kEcheAppId ||
+  return app_id == ash::kCameraAppId || app_id == ash::eche_app::kEcheAppId ||
          app_id == ash::kChromeUIUntrustedProjectorSwaAppId;
 }
 

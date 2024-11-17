@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
 
 import type {AuthCompletedCredentials, AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
 import {Authenticator} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import type {PaperSpinnerLiteElement} from 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './inline_login_app.html.js';
@@ -30,7 +29,7 @@ interface WebViewElement extends HTMLElement {
 export interface InlineLoginAppElement {
   $: {
     signinFrame: WebViewElement,
-    spinner: PaperSpinnerLiteElement,
+    spinner: HTMLElement,
   };
 }
 

@@ -12,13 +12,6 @@
 // In the future, this interface may be extended when WebNN is implemented so
 // a dictionary may be insufficient.
 
-typedef record<DOMString, ArrayBufferView> MLNamedArrayBufferViews;
-
-dictionary MLComputeResult {
-  MLNamedArrayBufferViews inputs;
-  MLNamedArrayBufferViews outputs;
-};
-
 dictionary MLContextLostInfo {
   DOMString message;
 };
@@ -192,6 +185,9 @@ dictionary MLOpSupportLimits {
   MLBinarySupportLimits greaterOrEqual;
   MLBinarySupportLimits lesser;
   MLBinarySupportLimits lesserOrEqual;
+  MLBinarySupportLimits logicalAnd;
+  MLBinarySupportLimits logicalOr;
+  MLBinarySupportLimits logicalXor;
   MLLogicalNotSupportLimits logicalNot;
 
   // Element-wise unary ops.
@@ -252,6 +248,7 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits relu;
   MLSingleInputSupportLimits resample2d;
   MLSingleInputSupportLimits reshape;
+  MLScatterSupportLimits scatterElements;
   MLScatterSupportLimits scatterND;
   MLSingleInputSupportLimits sigmoid;
   MLSingleInputSupportLimits slice;
@@ -287,40 +284,20 @@ typedef record<DOMString, MLTensor> MLNamedTensors;
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
-    RaisesException,
-    Measure
-  ] Promise<MLComputeResult> compute(
-      MLGraph graph, MLNamedArrayBufferViews inputs, MLNamedArrayBufferViews outputs);
-
-  [
-    RuntimeEnabled=MachineLearningNeuralNetwork,
-    CallWith=ScriptState,
     RaisesException
   ] Promise<MLTensor> createTensor(MLTensorDescriptor descriptor);
 
-  // TODO(crbug.com/328105506): enable partial MLTensor reads/writes.
-  // TODO(crbug.com/40278771): consider moving arguments into a dictonary 
-  // per W3C recommendations:
-  // https://w3ctag.github.io/design-principles/#prefer-dictionaries
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] void writeTensor(
-        MLTensor dstTensor,
-        [AllowShared] ArrayBufferView srcData,
-        optional MLSize64 srcElementOffset = 0,
-        optional MLSize64 srcElementSize);
+  ] void writeTensor(MLTensor dstTensor, [AllowShared] ArrayBufferView srcData);
 
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,
     RaisesException
-  ] void writeTensor(
-        MLTensor dstTensor,
-        ArrayBuffer srcData,
-        optional MLSize64 srcByteOffset = 0,
-        optional MLSize64 srcByteSize);
+  ] void writeTensor(MLTensor dstTensor, [AllowShared] ArrayBuffer srcData);
 
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
@@ -345,7 +322,6 @@ typedef record<DOMString, MLTensor> MLNamedTensors;
         MLTensor sourceTensor,
         [AllowShared] ArrayBuffer destinationData);
 
-  // TODO(crbug.com/1273291): enable partial buffer dispatches.
   [
     RuntimeEnabled=MachineLearningNeuralNetwork,
     CallWith=ScriptState,

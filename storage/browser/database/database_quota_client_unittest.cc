@@ -159,8 +159,7 @@ class DatabaseQuotaClientTest : public testing::TestWithParam<bool> {
     quota_manager_ = base::MakeRefCounted<QuotaManager>(
         /*is_incognito_=*/false, data_dir_.GetPath(),
         base::SingleThreadTaskRunner::GetCurrentDefault(),
-        /*quota_change_callback=*/base::DoNothing(), special_storage_policy_,
-        GetQuotaSettingsFunc());
+        special_storage_policy_, GetQuotaSettingsFunc());
     mock_tracker_ = base::MakeRefCounted<MockDatabaseTracker>(
         data_dir_.GetPath(), is_incognito(), quota_manager_->proxy());
   }

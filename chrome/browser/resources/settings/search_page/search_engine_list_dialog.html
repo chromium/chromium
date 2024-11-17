@@ -33,6 +33,10 @@
     margin-inline-start: 12px;
   }
 
+  #saveGuestChoiceCheckbox {
+    margin-right: auto;
+  }
+
   cr-dialog {
     --cr-dialog-body-padding-horizontal: 16px;
     --cr-dialog-button-container-padding-horizontal: 24px;
@@ -76,6 +80,11 @@
     </cr-radio-group>
   </div>
   <div slot="button-container">
+    <template is="dom-if" if="[[showSaveGuestChoice_]]" restamp>
+      <cr-checkbox id="saveGuestChoiceCheckbox" checked="{{saveGuestChoice_}}">
+        $i18n{saveGuestChoiceText}
+      </cr-checkbox>
+    </template>
     <cr-button id="cancelButton" on-click="onCancelClick_">
       $i18n{searchEnginesCancelButton}
     </cr-button>

@@ -6,7 +6,7 @@
 #define UI_VIEWS_WIN_HWND_MESSAGE_HANDLER_DELEGATE_H_
 
 #include "base/win/windows_types.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/views_export.h"
 
@@ -155,7 +155,7 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   // Called when the HWND is to be focused for the first time. This is called
   // when the window is shown for the first time. Returns true if the delegate
   // set focus and no default processing should be done by the message handler.
-  virtual bool HandleInitialFocus(ui::WindowShowState show_state) = 0;
+  virtual bool HandleInitialFocus(ui::mojom::WindowShowState show_state) = 0;
 
   // Called when display settings are adjusted on the system.
   virtual void HandleDisplayChange() = 0;

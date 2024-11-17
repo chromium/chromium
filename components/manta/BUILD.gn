@@ -44,6 +44,8 @@ component("manta") {
       "mahi_provider.h",
       "orca_provider.cc",
       "orca_provider.h",
+      "scanner_provider.cc",
+      "scanner_provider.h",
       "snapper_provider.cc",
       "snapper_provider.h",
       "sparky/sparky_context.cc",
@@ -56,6 +58,8 @@ component("manta") {
       "sparky/sparky_util.h",
       "sparky/system_info_delegate.cc",
       "sparky/system_info_delegate.h",
+      "walrus_provider.cc",
+      "walrus_provider.h",
     ]
     deps += [ "//chromeos/constants:constants" ]
   }
@@ -72,9 +76,11 @@ source_set("unit_tests") {
   if (is_chromeos_ash) {
     sources += [
       "orca_provider_unittest.cc",
+      "scanner_provider_unittest.cc",
       "snapper_provider_unittest.cc",
       "sparky/sparky_provider_unittest.cc",
       "sparky/sparky_util_unittest.cc",
+      "walrus_provider_unittest.cc",
     ]
   }
 

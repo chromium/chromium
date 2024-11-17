@@ -54,9 +54,7 @@ enum class RefillTriggerReason {
 // It holds any state that is only relevant for [re]filling.
 class FormFiller {
  public:
-  FormFiller(BrowserAutofillManager& manager,
-             LogManager* log_manager,
-             const std::string& app_locale);
+  FormFiller(BrowserAutofillManager& manager, LogManager* log_manager);
 
   FormFiller(const FormFiller&) = delete;
   FormFiller& operator=(const FormFiller&) = delete;
@@ -64,7 +62,9 @@ class FormFiller {
   virtual ~FormFiller();
 
   // Given a `form_field` and corresponding `autofill_field` to fill and the
-  // `trigger_field` return the skip reasons for that field.
+  // `trigger_field` return the set of all reasons for that field to be skipped
+  // for filling. If the field should not be skipped, an empty set is returned
+  // (and not {FieldFillingSkipReason::kNotSkipped}).
   // `type_count` tracks the number of times a type of field has been filled.
   // `type_group_originally_filled` denotes, in case of a refill, what groups
   // where filled in the initial filling.
@@ -73,12 +73,10 @@ class FormFiller {
   // `field_types_to_fill` and the classified fields for which we have data
   // stored.
   // `filling_product` is the type of filling calling this function.
-  // TODO(crbug.com/40207153): Add the case removed in crrev.com/c/4675831 when
-  // the experiment resumes.
   // TODO(crbug.com/40281552): Make `optional_type_groups_originally_filled`
   // also a FieldTypeSet.
   // TODO(crbug.com/40227496): Keep only one of 'field' and 'autofill_field'.
-  static FieldFillingSkipReason GetFieldFillingSkipReason(
+  static DenseSet<FieldFillingSkipReason> GetFillingSkipReasonsForField(
       const FormFieldData& field,
       const AutofillField& autofill_field,
       const AutofillField& trigger_field,
@@ -103,7 +101,7 @@ class FormFiller {
   // TODO(crbug.com/40227496): Keep only one of 'form' and 'form_structure'.
   // TODO(crbug.com/40281552): Make `optional_type_groups_originally_filled`
   // also a FieldTypeSet.
-  base::flat_map<FieldGlobalId, FieldFillingSkipReason>
+  base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
   GetFieldFillingSkipReasons(
       base::span<const FormFieldData> fields,
       const FormStructure& form_structure,
@@ -127,9 +125,7 @@ class FormFiller {
   // Records filling information if possible and routes back to the renderer.
   void FillOrPreviewField(mojom::ActionPersistence action_persistence,
                           mojom::FieldActionType action_type,
-                          const FormData& form,
                           const FormFieldData& field,
-                          FormStructure* form_structure,
                           AutofillField* autofill_field,
                           const std::u16string& value,
                           FillingProduct filling_product,
@@ -138,13 +134,13 @@ class FormFiller {
   /////////////////
   // DO NOT USE! //
   /////////////////
-  // Fills or previews `values_to_fill` in the `form`.
+  // Fills or previews `values_to_fill` in the `form`. Called only by
+  // `AutofillPredictionImprovementsManager`.
   // Minimal version of `FillOrPreviewForm()` that misses every feature besides
   // filling / preview. E.g. does not handle refill, undo or any metrics.
-  // TODO(crbug.com/40227071): Clean up the API.
-  void FillOrPreviewFormExperimental(
+  // TODO(crbug.com/40227071): Clean up the generic API and remove this.
+  void FillOrPreviewFormWithPredictionImprovements(
       mojom::ActionPersistence action_persistence,
-      FillingProduct filling_product,
       const FieldTypeSet& field_types_to_fill,
       const DenseSet<FieldFillingSkipReason>& ignorable_skip_reasons,
       const FormData& form,
@@ -153,15 +149,13 @@ class FormFiller {
       const AutofillField& autofill_trigger_field,
       const base::flat_map<FieldGlobalId, std::u16string>& values_to_fill);
 
-  // Fills or previews |data_model| in the |form|.
+  // Fills or previews `profile_or_credit_card` in the `form`.
   // TODO(crbug.com/40227071): Clean up the API.
   void FillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
       const FormData& form,
-      const FormFieldData& trigger_field,
       absl::variant<const AutofillProfile*, const CreditCard*>
           profile_or_credit_card,
-      base::optional_ref<const std::u16string> optional_cvc,
       FormStructure* form_structure,
       AutofillField* autofill_field,
       const AutofillTriggerDetails& trigger_details,
@@ -211,17 +205,13 @@ class FormFiller {
     // non-null.
     FillingContext(const AutofillField& field,
                    absl::variant<const AutofillProfile*, const CreditCard*>
-                       profile_or_credit_card,
-                   base::optional_ref<const std::u16string> optional_cvc);
+                       profile_or_credit_card);
     ~FillingContext();
 
     // Whether a refill attempt was made.
     bool attempted_refill = false;
     // The profile or credit card that was used for the initial fill.
-    // The std::string associated with the credit card is the CVC, which may be
-    // empty.
-    absl::variant<std::pair<CreditCard, std::u16string>, AutofillProfile>
-        profile_or_credit_card_with_cvc;
+    absl::variant<CreditCard, AutofillProfile> profile_or_credit_card;
     // Possible identifiers of the field that was focused when the form was
     // initially filled. A refill shall be triggered from the same field.
     const FieldGlobalId filled_field_id;
@@ -267,7 +257,6 @@ class FormFiller {
           profile_or_credit_card,
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
       const FormFieldData& field_data,
-      const std::u16string& cvc,
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
 
@@ -281,13 +270,8 @@ class FormFiller {
           profile_or_credit_card,
       const std::map<FieldGlobalId, std::u16string>& forced_fill_values,
       FormFieldData& field_data,
-      const std::u16string& cvc,
       mojom::ActionPersistence action_persistence,
       std::string* failure_to_fill);
-
-  const std::string& app_locale() const { return app_locale_; }
-
-  std::string app_locale_;
 
   // Container holding the history of Autofill filling operations. Used to undo
   // some of the filling operations.

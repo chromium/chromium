@@ -34,13 +34,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * This class contains the logic for the simple accessory sheets. Changes to its internal
- * {@link PropertyModel} are observed by a {@link PropertyModelChangeProcessor} and affect the
- * accessory sheet tab view.
+ * This class contains the logic for the simple accessory sheets. Changes to its internal {@link
+ * PropertyModel} are observed by a {@link PropertyModelChangeProcessor} and affect the accessory
+ * sheet tab view.
  */
 class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData> {
     private final PropertyModel mModel;
-    private final @AccessoryTabType int mTabType;
     private final @Type int mUserInfoType;
     private final @AccessoryAction int mManageActionToRecord;
     private final ToggleChangeDelegate mToggleChangeDelegate;
@@ -70,12 +69,10 @@ class AccessorySheetTabMediator implements Provider.Observer<AccessorySheetData>
 
     AccessorySheetTabMediator(
             PropertyModel model,
-            @AccessoryTabType int tabType,
             @Type int userInfoType,
             @AccessoryAction int manageActionToRecord,
             @Nullable ToggleChangeDelegate toggleChangeDelegate) {
         mModel = model;
-        mTabType = tabType;
         mUserInfoType = userInfoType;
         mManageActionToRecord = manageActionToRecord;
         mToggleChangeDelegate = toggleChangeDelegate;

@@ -71,12 +71,25 @@ class CONTENT_EXPORT SafeAreaInsetsHostImpl : public SafeAreaInsetsHost {
   void SetViewportFitValue(RenderFrameHost* rfh,
                            blink::mojom::ViewportFit value);
 
+  // Whether or not non-zero insets have been sent to a frame over the course of
+  // this SafeAreaInsetsHost.
+  bool has_sent_non_zero_insets_;
+
  private:
+  static constexpr gfx::Insets kZeroInsets = gfx::Insets();
+
   friend class TestSafeAreaInsetsHostImpl;
 
   // Checks if the active `RenderFrameHost` has changed, and notifies
   // Blink about the current safe area, and WebContents observers if needed.
   void MaybeActiveRenderFrameHostChanged();
+
+  // Clears the insets on the active frame. This should particularly be used
+  // when switching frames during a transition into or out of fullscreen mode.
+  void ClearSafeAreaInsetsForActiveFrame();
+
+  // Send the safe area insets to the current frame if all conditions are met.
+  void MaybeSendSafeAreaToFrame(RenderFrameHost* rfh, gfx::Insets insets);
 
   // Returns the current active `RenderFrameHost`: the current RFH or the
   // fullscreen RFH when in Fullscreen mode. May return `nullptr` during

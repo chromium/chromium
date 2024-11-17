@@ -232,7 +232,8 @@ void VerifyTestInfoBarVisibleForCurrentTab(bool visible, NSString* message) {
 
 // Tests that the Infobar doesn't dismiss the keyboard when it is triggered
 // while the omnibox is focused.
-- (void)testInfobarWithOmniboxFocused {
+// https://crbug.com/369054108: Flaky.
+- (void)DISABLED_testInfobarWithOmniboxFocused {
   // Open a new tab and navigate to the test page.
   const GURL testURL = self.testServer->GetURL("/pony.html");
   [ChromeEarlGrey loadURL:testURL];

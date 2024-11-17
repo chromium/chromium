@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normalny</translation>
 <translation id="1591562245178063882">W tym miesiącu</translation>
 <translation id="1637811476055996098">Wybierz pliki</translation>
-<translation id="1680090928918677457">Używaj kamery</translation>
 <translation id="1729654308190250600">Podaj adres e-mail.</translation>
 <translation id="1758486001363313524">Inny...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Skróć ten tekst do maksymalnie <ph name="MAX_CHARACTERS" /> znaków (w tej chwili korzystasz z <ph name="CURRENT_LENGTH" /> znaków).</translation>
 <translation id="2247351761944213033">Tydzień <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Utwór <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Zezwolono na dostęp do kamery i mikrofonu</translation>
 <translation id="2507943997699731163">Wypełnij to pole.</translation>
 <translation id="2613802280814924224">Podaj prawidłową wartość. Najbliższa prawidłowa wartość to <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Prześlij</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Wydłuż ten tekst przynajmniej do <ph name="MIN_CHARACTERS" /> znaków (teraz używasz <ph name="CURRENT_LENGTH" /> znaków).</translation>
 <translation id="383465348367842624">Część przed znakiem „<ph name="ATSIGN" />” nie może zawierać symbolu „<ph name="INVALIDCHARACTER" />”.</translation>
 <translation id="3846214748874656680">Zamknij pełny ekran</translation>
-<translation id="4031179711345676612">Zezwolono na dostęp do mikrofonu</translation>
 <translation id="4360991593054037559">Podaj prawidłową wartość. Dwie najbliższe prawidłowe wartości to <ph name="VALID_VALUE_LOW" /> i <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Szczegóły</translation>
-<translation id="4663373278480897665">Zezwolono na dostęp do kamery</translation>
 <translation id="4664250907885839816">Część po znaku „<ph name="ATSIGN" />” nie może zawierać symbolu „<ph name="INVALIDCHARACTER" />”.</translation>
 <translation id="4718048029184481307">Odtwarzam w trybie obrazu w obrazie</translation>
-<translation id="4792862212177489858">Udostępnij lokalizację</translation>
 <translation id="4812940957355064477">Wpisz liczbę.</translation>
-<translation id="49269513399674318">Używaj mikrofonu</translation>
 <translation id="4975562563186953947">Wybrano: <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Wyłącz wyciszenie</translation>
 <translation id="49969490063480558">Podaj część po znaku „<ph name="ATSIGN" />”. Adres „<ph name="INVALIDADDRESS" />” jest niepełny.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Nie można załadować wtyczki.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Wydłuż ten tekst co najmniej do <ph name="MIN_CHARACTERS" /> znaków (teraz używasz jednego znaku).</translation>
-<translation id="7080893216867146095">Udostępnianie lokalizacji dozwolone</translation>
 <translation id="709897737746224366">Podaj wartość w wymaganym formacie.</translation>
-<translation id="7134810312945846184">Używaj mikrofonu i kamery</translation>
 <translation id="7263440858009898357">Wybierz element z listy.</translation>
 <translation id="7364796246159120393">Wybierz plik</translation>
 <translation id="739024184232394898">Inny...</translation>

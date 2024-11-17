@@ -17,14 +17,12 @@
 class AISummarizer : public AIContextBoundObject,
                      public blink::mojom::AISummarizer {
  public:
-  AISummarizer(std::unique_ptr<
+  AISummarizer(AIContextBoundObjectSet& context_bound_object_set,
+               std::unique_ptr<
                    optimization_guide::OptimizationGuideModelExecutor::Session>
                    summarize_session,
                blink::mojom::AISummarizerCreateOptionsPtr options,
                mojo::PendingReceiver<blink::mojom::AISummarizer> receiver);
-
-  // `AIUserData` implementation
-  void SetDeletionCallback(base::OnceClosure deletion_callback) override;
 
   // `blink::mojom::AISummarizer` implementation.
   void Summarize(const std::string& input,

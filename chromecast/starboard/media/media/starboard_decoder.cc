@@ -61,7 +61,15 @@ void StarboardDecoder::Initialize(void* sb_player) {
               << (media_type_ == kStarboardMediaTypeAudio ? "audio " : "video ")
               << "buffer";
     const BufferStatus status = std::move(pending_first_push_).Run();
-    DCHECK_EQ(status, BufferStatus::kBufferPending);
+    CHECK_NE(status, BufferStatus::kBufferFailed);
+
+    if (status == BufferStatus::kBufferSuccess) {
+      // We pushed EoS.
+      delegate_->OnPushBufferComplete(BufferStatus::kBufferSuccess);
+    }
+    // For the kBufferPending case, we wait until
+    // StarboardDecoder::OnBufferWritten is called to inform the delegate that
+    // the push is complete.
   }
 }
 
@@ -197,8 +205,30 @@ BufferStatus StarboardDecoder::PushEndOfStream() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(delegate_);
 
-  starboard_->WriteEndOfStream(player_, media_type_);
-  return BufferStatus::kBufferSuccess;
+  if (player_) {
+    starboard_->WriteEndOfStream(player_, media_type_);
+    return BufferStatus::kBufferSuccess;
+  }
+
+  // The decoder is not yet initialized, e.g. because an EoS buffer is the first
+  // push after a seek.
+  if (pending_first_push_) {
+    LOG(WARNING) << "PushBuffer was called multiple times for "
+                 << (media_type_ == kStarboardMediaTypeAudio ? "audio "
+                                                             : "video ")
+                 << "buffers before the decoder was initialized. Dropping "
+                    "the old buffer.";
+  } else {
+    LOG(INFO) << "StarboardDecoder was not initialized before first "
+                 "PushBuffer. Delaying push until initialization.";
+  }
+
+  // Use of base::Unretained is safe here because pending_first_push_ will
+  // only be called by this object (implying that `this` will not have been
+  // destructed).
+  pending_first_push_ = base::BindOnce(&StarboardDecoder::PushEndOfStream,
+                                       base::Unretained(this));
+  return BufferStatus::kBufferPending;
 }
 
 void* StarboardDecoder::GetPlayer() {

@@ -732,7 +732,7 @@ BOOL CALLBACK MatchWindow(HWND hwnd, LPARAM lParam) {
     title.erase(actual_length);
 
   auto* info = reinterpret_cast<HWNDSearchInfo*>(lParam);
-  if (base::EndsWith(title, info->title) &&
+  if (title.ends_with(info->title) &&
       (info->pattern.empty() ||
        base::MatchPattern(base::AsStringPiece16(title),
                           base::AsStringPiece16(info->pattern)))) {

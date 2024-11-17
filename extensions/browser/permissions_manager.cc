@@ -242,7 +242,7 @@ PermissionsManager* PermissionsManagerFactory::GetForBrowserContext(
 content::BrowserContext* PermissionsManagerFactory::GetBrowserContextToUse(
     content::BrowserContext* browser_context) const {
   return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      browser_context, /*force_guest_profile=*/true);
+      browser_context);
 }
 
 KeyedService* PermissionsManagerFactory::BuildServiceInstanceFor(
@@ -431,7 +431,8 @@ PermissionsManager::ExtensionSiteAccess PermissionsManager::GetSiteAccess(
   PermissionsManager::ExtensionSiteAccess extension_access;
 
   // Extension that doesn't request host permission has no access.
-  if (!ExtensionRequestsHostPermissionsOrActiveTab(extension)) {
+  if (!HasRequestedHostPermissions(extension) &&
+      !HasRequestedActiveTab(extension)) {
     return extension_access;
   }
 
@@ -498,26 +499,15 @@ PermissionsManager::ExtensionSiteAccess PermissionsManager::GetSiteAccess(
   return extension_access;
 }
 
-bool PermissionsManager::ExtensionRequestsHostPermissionsOrActiveTab(
-    const Extension& extension) const {
-  auto has_hosts_or_active_tab = [](const PermissionSet& permissions) {
-    return !permissions.effective_hosts().is_empty() ||
-           permissions.HasAPIPermission(mojom::APIPermissionID::kActiveTab);
-  };
-  return has_hosts_or_active_tab(
-             PermissionsParser::GetRequiredPermissions(&extension)) ||
-         has_hosts_or_active_tab(
-             PermissionsParser::GetOptionalPermissions(&extension));
-}
-
 bool PermissionsManager::CanAffectExtension(const Extension& extension) const {
   // Certain extensions are always exempt from having permissions withheld.
   if (!util::CanWithholdPermissionsFromExtension(extension))
     return false;
 
-  // The extension can be affected by runtime host permissions if it requests
-  // host permissions.
-  return ExtensionRequestsHostPermissionsOrActiveTab(extension);
+  // The extension can be affected by runtime host permissions if extension can
+  // have site access to it.
+  return HasRequestedHostPermissions(extension) ||
+         HasRequestedActiveTab(extension);
 }
 
 bool PermissionsManager::CanUserSelectSiteAccess(
@@ -563,6 +553,16 @@ bool PermissionsManager::CanUserSelectSiteAccess(
   }
 }
 
+bool PermissionsManager::HasRequestedHostPermissions(
+    const Extension& extension) const {
+  return !PermissionsParser::GetRequiredPermissions(&extension)
+              .effective_hosts()
+              .is_empty() ||
+         !PermissionsParser::GetOptionalPermissions(&extension)
+              .effective_hosts()
+              .is_empty();
+}
+
 bool PermissionsManager::HasGrantedHostPermission(const Extension& extension,
                                                   const GURL& url) const {
   DCHECK(CanAffectExtension(extension));
@@ -583,6 +583,14 @@ bool PermissionsManager::HasBroadGrantedHostPermissions(
 bool PermissionsManager::HasWithheldHostPermissions(
     const Extension& extension) const {
   return extension_prefs_->GetWithholdingPermissions(extension.id());
+}
+
+bool PermissionsManager::HasRequestedActiveTab(
+    const Extension& extension) const {
+  return PermissionsParser::GetRequiredPermissions(&extension)
+             .HasAPIPermission(mojom::APIPermissionID::kActiveTab) ||
+         PermissionsParser::GetOptionalPermissions(&extension)
+             .HasAPIPermission(mojom::APIPermissionID::kActiveTab);
 }
 
 bool PermissionsManager::HasActiveTabAndCanAccess(const Extension& extension,
@@ -805,10 +813,30 @@ void PermissionsManager::AddSiteAccessRequest(
     int tab_id,
     const Extension& extension,
     const std::optional<URLPattern>& filter) {
+  // Extension must not have granted access to the current site.
+  const GURL& url = web_contents->GetLastCommittedURL();
+  ExtensionSiteAccess site_access = GetSiteAccess(extension, url);
+  CHECK(!site_access.has_site_access);
+
+  // Request will never be active if the extension cannot be granted access to
+  // the current site. This includes sites that are restricted to the extension,
+  // and sites that were never requested by the extension. Thus, we don't need
+  // to add the request.
+  std::string error;
+  if (extension.permissions_data()->IsPolicyBlockedHost(url) ||
+      extension.permissions_data()->IsRestrictedUrl(url, &error)) {
+    return;
+  }
+  if (!site_access.withheld_site_access &&
+      !PermissionsParser::GetOptionalPermissions(&extension)
+           .HasEffectiveAccessToURL(web_contents->GetLastCommittedURL())) {
+    return;
+  }
+
   SiteAccessRequestsHelper* helper =
       GetOrCreateSiteAccessRequestsHelperFor(web_contents, tab_id);
 
-  // Request will never be visible if `filter` doesn't match the current origin,
+  // Request will never be active if `filter` doesn't match the current origin,
   // since requests are cleared on cross-origin navigations. Thus, we don't need
   // to add the request.
   if (filter.has_value() && !filter.value().MatchesSecurityOrigin(

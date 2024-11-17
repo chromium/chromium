@@ -82,9 +82,6 @@ PermissionRequest::GetDialogAnnotatedMessageText(
           embedding_origin, url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
 
   switch (request_type()) {
-    case RequestType::kAccessibilityEvents:
-      message_id = IDS_ACCESSIBILITY_EVENTS_INFOBAR_TEXT;
-      break;
     case RequestType::kArSession:
       message_id = IDS_AR_INFOBAR_TEXT;
       break;
@@ -96,8 +93,9 @@ PermissionRequest::GetDialogAnnotatedMessageText(
       break;
     case RequestType::kDiskQuota:
       // Handled by an override in `QuotaPermissionRequest`.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
+    case RequestType::kFileSystemAccess:
+      NOTREACHED();
     case RequestType::kHandTracking:
       message_id = IDS_HAND_TRACKING_INFOBAR_TEXT;
       break;
@@ -140,8 +138,7 @@ PermissionRequest::GetDialogAnnotatedMessageText(
                   embedding_origin_string_formatted)),
           /*bolded_ranges=*/{});
     case RequestType::kTopLevelStorageAccess:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case RequestType::kVrSession:
       message_id = IDS_VR_INFOBAR_TEXT;
       break;
@@ -308,9 +305,6 @@ std::optional<std::u16string> PermissionRequest::GetRequestChipText(
 std::u16string PermissionRequest::GetMessageTextFragment() const {
   int message_id = 0;
   switch (request_type()) {
-    case RequestType::kAccessibilityEvents:
-      message_id = IDS_ACCESSIBILITY_EVENTS_PERMISSION_FRAGMENT;
-      break;
     case RequestType::kArSession:
       message_id = IDS_AR_PERMISSION_FRAGMENT;
       break;
@@ -369,13 +363,11 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
 #endif
     case RequestType::kRegisterProtocolHandler:
       // Handled by an override in `RegisterProtocolHandlerPermissionRequest`.
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
 #if BUILDFLAG(IS_CHROMEOS)
     case RequestType::kSmartCard:
       // Handled by an override in `SmartCardPermissionRequest`.
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
 #endif
     case RequestType::kStorageAccess:
     case RequestType::kTopLevelStorageAccess:
@@ -469,8 +461,7 @@ std::u16string PermissionRequest::GetPermissionNameTextFragment() const {
       message_id = IDS_MICROPHONE_PERMISSION_NAME_FRAGMENT;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
   DCHECK_NE(0, message_id);
   return l10n_util::GetStringUTF16(message_id);

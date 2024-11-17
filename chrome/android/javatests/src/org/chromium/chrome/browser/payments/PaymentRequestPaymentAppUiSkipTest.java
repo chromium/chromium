@@ -48,7 +48,7 @@ public class PaymentRequestPaymentAppUiSkipTest {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        mPaymentRequestTestRule.triggerUIAndWait(
+        mPaymentRequestTestRule.triggerUiAndWait(
                 "buyFail", mPaymentRequestTestRule.getResultReady());
 
         mPaymentRequestTestRule.expectResultContains(new String[] {"Transaction failed"});
@@ -145,7 +145,7 @@ public class PaymentRequestPaymentAppUiSkipTest {
                 AppPresence.HAVE_APPS,
                 FactorySpeed.FAST_FACTORY,
                 AppSpeed.FAST_APP);
-        mPaymentRequestTestRule.triggerUIAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
+        mPaymentRequestTestRule.triggerUiAndWait("buy", mPaymentRequestTestRule.getReadyToPay());
         mPaymentRequestTestRule.clickAndWait(
                 R.id.button_primary, mPaymentRequestTestRule.getDismissed());
         mPaymentRequestTestRule.expectResultContains(

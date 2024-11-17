@@ -36,8 +36,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
 #endif
 
 namespace printing {
@@ -159,16 +157,6 @@ LocalPrinterHandlerChromeos::Create(
   DCHECK(crosapi::CrosapiManager::IsInitialized());
   handler->local_printer_ =
       crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  if (!service->IsAvailable<crosapi::mojom::LocalPrinter>()) {
-    PRINTER_LOG(ERROR) << "Local printer not available (Create)";
-    return handler;
-  }
-  handler->local_printer_ =
-      service->GetRemote<crosapi::mojom::LocalPrinter>().get();
-  handler->local_printer_version_ =
-      service->GetInterfaceVersion<crosapi::mojom::LocalPrinter>();
 #endif
   return handler;
 }
@@ -178,9 +166,6 @@ LocalPrinterHandlerChromeos::CreateForTesting(
     crosapi::mojom::LocalPrinter* local_printer) {
   auto handler = std::make_unique<LocalPrinterHandlerChromeos>(nullptr);
   handler->local_printer_ = local_printer;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  handler->local_printer_version_ = INT_MAX;
-#endif
   return handler;
 }
 
@@ -339,17 +324,6 @@ void LocalPrinterHandlerChromeos::GetUsernamePerPolicy(
       base::BindOnce(AddProfileUsernameToJobSettings, std::move(settings))
           .Then(std::move(callback));
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (local_printer_version_ <
-      int{crosapi::mojom::LocalPrinter::MethodMinVersions::
-              kGetUsernamePerPolicyMinVersion}) {
-    LOG(WARNING) << "Ash LocalPrinter version " << local_printer_version_
-                 << " does not support GetUsernamePerPolicy().";
-    std::move(add_profile_username_callback).Run(std::nullopt);
-    return;
-  }
-#endif
-
   local_printer_->GetUsernamePerPolicy(
       std::move(add_profile_username_callback));
 }
@@ -361,19 +335,6 @@ void LocalPrinterHandlerChromeos::GetOAuthToken(
   auto add_oauth_token_callback =
       base::BindOnce(AddOAuthTokenToJobSettings, std::move(settings))
           .Then(std::move(callback));
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (local_printer_version_ <
-      int{crosapi::mojom::LocalPrinter::MethodMinVersions::
-              kGetOAuthAccessTokenMinVersion}) {
-    LOG(WARNING) << "Ash LocalPrinter version " << local_printer_version_
-                 << " does not support GetOAuthToken().";
-    std::move(add_oauth_token_callback)
-        .Run(crosapi::mojom::GetOAuthAccessTokenResult::NewNone(
-            crosapi::mojom::OAuthNotNeeded::New()));
-    return;
-  }
-#endif
 
   local_printer_->GetOAuthAccessToken(printer_id,
                                       std::move(add_oauth_token_callback));
@@ -392,17 +353,6 @@ void LocalPrinterHandlerChromeos::GetIppClientInfo(
     std::move(add_ipp_client_info_callback).Run({});
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (local_printer_version_ <
-      int{crosapi::mojom::LocalPrinter::MethodMinVersions::
-              kGetIppClientInfoMinVersion}) {
-    LOG(WARNING) << "Ash LocalPrinter version " << local_printer_version_
-                 << " does not support GetIppClientInfo().";
-    std::move(add_ipp_client_info_callback).Run({});
-    return;
-  }
-#endif
 
   local_printer_->GetIppClientInfo(printer_id,
                                    std::move(add_ipp_client_info_callback));

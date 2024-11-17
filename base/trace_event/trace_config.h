@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "base/trace_event/trace_config_category_filter.h"
@@ -144,9 +145,11 @@ class BASE_EXPORT TraceConfig {
 
     bool IsCategoryGroupEnabled(std::string_view category_group_name) const;
 
-    const std::string& predicate_name() const { return predicate_name_; }
-    const Value::Dict& filter_args() const { return args_; }
-    const TraceConfigCategoryFilter& category_filter() const {
+    const std::string& predicate_name() const LIFETIME_BOUND {
+      return predicate_name_;
+    }
+    const Value::Dict& filter_args() const LIFETIME_BOUND { return args_; }
+    const TraceConfigCategoryFilter& category_filter() const LIFETIME_BOUND {
       return category_filter_;
     }
 
@@ -290,20 +293,22 @@ class BASE_EXPORT TraceConfig {
   // Clears and resets the memory dump config.
   void ResetMemoryDumpConfig(const MemoryDumpConfig& memory_dump_config);
 
-  const TraceConfigCategoryFilter& category_filter() const {
+  const TraceConfigCategoryFilter& category_filter() const LIFETIME_BOUND {
     return category_filter_;
   }
 
-  const MemoryDumpConfig& memory_dump_config() const {
+  const MemoryDumpConfig& memory_dump_config() const LIFETIME_BOUND {
     return memory_dump_config_;
   }
 
-  const ProcessFilterConfig& process_filter_config() const {
+  const ProcessFilterConfig& process_filter_config() const LIFETIME_BOUND {
     return process_filter_config_;
   }
   void SetProcessFilterConfig(const ProcessFilterConfig&);
 
-  const EventFilters& event_filters() const { return event_filters_; }
+  const EventFilters& event_filters() const LIFETIME_BOUND {
+    return event_filters_;
+  }
   void SetEventFilters(const EventFilters& filter_configs) {
     event_filters_ = filter_configs;
   }

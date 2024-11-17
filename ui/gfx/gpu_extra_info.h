@@ -8,15 +8,15 @@
 #include <string>
 #include <vector>
 
+#include "base/component_export.h"
 #include "build/build_config.h"
 #include "ui/base/ozone_buildflags.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/gfx_export.h"
 
 namespace gfx {
 
 // Specification of a feature that can be enabled/disable in ANGLE
-struct GFX_EXPORT ANGLEFeature {
+struct COMPONENT_EXPORT(GFX) ANGLEFeature {
   ANGLEFeature();
   ANGLEFeature(const ANGLEFeature& other);
   ANGLEFeature(ANGLEFeature&& other);
@@ -30,21 +30,12 @@ struct GFX_EXPORT ANGLEFeature {
   // Name of the category that the feature belongs to.
   std::string category;
 
-  // One sentence description of the feature, why it's available.
-  std::string description;
-
-  // Full link to cr/angle bug if applicable.
-  std::string bug;
-
   // Status, can be "enabled" or "disabled".
   std::string status;
-
-  // Condition, contains the condition that set 'status'.
-  std::string condition;
 };
 using ANGLEFeatures = std::vector<ANGLEFeature>;
 
-struct GFX_EXPORT GpuExtraInfo {
+struct COMPONENT_EXPORT(GFX) GpuExtraInfo {
   GpuExtraInfo();
   GpuExtraInfo(const GpuExtraInfo&);
   GpuExtraInfo(GpuExtraInfo&&);

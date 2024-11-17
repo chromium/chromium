@@ -365,7 +365,7 @@ class RasterCommandsCompletedQuery : public QueryManager::Query {
   }
 
   void QueryCounter(base::subtle::Atomic32 submit_count) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void Pause() override { MarkAsPaused(); }
@@ -610,8 +610,7 @@ class RasterDecoderImpl final : public RasterDecoder,
  private:
   gles2::ContextState* state() const {
     if (use_passthrough_) {
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     }
     return shared_context_state_->context_state();
   }
@@ -693,7 +692,6 @@ class RasterDecoderImpl final : public RasterDecoder,
                                  GLint y,
                                  GLsizei width,
                                  GLsizei height,
-                                 GLboolean unpack_flip_y,
                                  const volatile GLbyte* mailboxes);
   void DoWritePixelsINTERNAL(GLint x_offset,
                              GLint y_offset,
@@ -1269,7 +1267,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   }
 #endif  // BUILDFLAG(SKIA_USE_DAWN)
   else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1281,8 +1279,7 @@ GLCapabilities RasterDecoderImpl::GetGLCapabilities() {
 }
 
 const gles2::ContextState* RasterDecoderImpl::GetContextState() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void RasterDecoderImpl::RestoreGlobalState() const {
@@ -1635,8 +1632,7 @@ bool RasterDecoderImpl::ClearLevel(gles2::Texture* texture,
                                    int yoffset,
                                    int width,
                                    int height) {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool RasterDecoderImpl::ClearCompressedTextureLevel(gles2::Texture* texture,
@@ -1645,8 +1641,7 @@ bool RasterDecoderImpl::ClearCompressedTextureLevel(gles2::Texture* texture,
                                                     unsigned format,
                                                     int width,
                                                     int height) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool RasterDecoderImpl::ClearCompressedTextureLevel3D(gles2::Texture* texture,
@@ -1656,8 +1651,7 @@ bool RasterDecoderImpl::ClearCompressedTextureLevel3D(gles2::Texture* texture,
                                                       int width,
                                                       int height,
                                                       int depth) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 int RasterDecoderImpl::GetRasterDecoderId() const {
@@ -1943,12 +1937,11 @@ void RasterDecoderImpl::DoCopySharedImageINTERNAL(
     GLint y,
     GLsizei width,
     GLsizei height,
-    GLboolean unpack_flip_y,
     const volatile GLbyte* mailboxes) {
   CopySharedImageHelper helper(&shared_image_representation_factory_,
                                shared_context_state_.get());
-  auto result = helper.CopySharedImage(xoffset, yoffset, x, y, width, height,
-                                       unpack_flip_y, mailboxes);
+  auto result =
+      helper.CopySharedImage(xoffset, yoffset, x, y, width, height, mailboxes);
   if (!result.has_value()) {
     LOCAL_SET_GL_ERROR(result.error().gl_error,
                        result.error().function_name.c_str(),

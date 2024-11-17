@@ -173,8 +173,8 @@ void AncestorThrottle::ParseXFrameOptionsError(
          disposition == network::mojom::XFrameOptionsValue::kInvalid);
   DCHECK(headers);
 
-  std::string value;
-  headers->GetNormalizedHeader("X-Frame-Options", &value);
+  std::string value =
+      headers->GetNormalizedHeader("X-Frame-Options").value_or(std::string());
 
   std::string message;
   if (disposition == network::mojom::XFrameOptionsValue::kConflict) {

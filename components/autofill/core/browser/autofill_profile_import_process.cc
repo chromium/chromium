@@ -102,12 +102,8 @@ bool ProfileImportProcess::UserAccepted() const {
 void ProfileImportProcess::DetermineProfileImportType() {
   AutofillProfileComparator comparator(app_locale_);
   bool is_mergeable_with_existing_profile = false;
-
-  new_profiles_suppressed_for_domain_ =
-      address_data_manager_->IsNewProfileImportBlockedForDomain(
-          form_source_url_);
-
   int number_of_unchanged_profiles = 0;
+  int number_of_blocked_profile_updates = 0;
   std::optional<AutofillProfile> migration_candidate;
 
   // We don't offer an import if `observed_profile_` is a duplicate of an
@@ -125,7 +121,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
     import_metadata_.did_complement_country = false;
   }
 
-  for (const auto* existing_profile : existing_profiles) {
+  for (const AutofillProfile* existing_profile : existing_profiles) {
     // If the existing profile is not mergeable with the observed profile, the
     // existing profile is not altered by this import.
     if (!comparator.AreMergeable(*existing_profile, observed_profile_)) {
@@ -172,7 +168,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
               features::test::kAutofillDisableProfileUpdates);
 
       if (is_blocked_for_update) {
-        ++number_of_blocked_profile_updates_;
+        ++number_of_blocked_profile_updates;
       }
 
       // If a settings-visible value changed, the existing profile is the merge
@@ -203,21 +199,14 @@ void ProfileImportProcess::DetermineProfileImportType() {
     MaybeSetMigrationCandidate(migration_candidate, merged_profile);
   }
 
-  // If the profile wasn't mergeable with an existing profile, but is a quasi
-  // duplicate of an existing profile, offer updating the quasi duplicate.
-  if (!is_mergeable_with_existing_profile &&
-      IsObservedProfileAutofilledQuasiDuplicate(comparator)) {
-    is_mergeable_with_existing_profile = true;
-    --number_of_unchanged_profiles;
-  }
-
   // If the profile is not mergeable with an existing profile, the import
   // corresponds to a new profile.
   if (!is_mergeable_with_existing_profile) {
     if (!allow_only_silent_updates_) {
       // There should be no import candidate yet.
       DCHECK(!import_candidate_.has_value());
-      if (new_profiles_suppressed_for_domain_) {
+      if (address_data_manager_->IsNewProfileImportBlockedForDomain(
+              form_source_url_)) {
         import_type_ = AutofillProfileImportType::kSuppressedNewProfile;
       } else {
         import_type_ = AutofillProfileImportType::kNewProfile;
@@ -234,7 +223,7 @@ void ProfileImportProcess::DetermineProfileImportType() {
           silent_updates_present
               ? AutofillProfileImportType::kConfirmableMergeAndSilentUpdate
               : AutofillProfileImportType::kConfirmableMerge;
-    } else if (number_of_blocked_profile_updates_ > 0) {
+    } else if (number_of_blocked_profile_updates > 0) {
       import_type_ =
           silent_updates_present
               ? AutofillProfileImportType::
@@ -284,61 +273,6 @@ void ProfileImportProcess::DetermineSourceOfImportCandidate() {
               import_candidate_->GetRawInfo(ADDRESS_HOME_COUNTRY)))) {
     import_candidate_ = import_candidate_->ConvertToAccountProfile();
   }
-}
-
-bool ProfileImportProcess::IsObservedProfileAutofilledQuasiDuplicate(
-    const AutofillProfileComparator& comparator) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillUpdateLowQualityTokenOnImport)) {
-    return false;
-  }
-
-  // `filled_types_to_autofill_guid` is a map from type to optional GUID,
-  // representing the profile that was used to fill the field from which the
-  // value for `type` was derived. It is nullopt if the field wasn't autofilled
-  // with an `AutofillProfile` at submission.
-  // Invert this map.
-  std::map<std::optional<std::string>, FieldTypeSet> guid_to_types;
-  for (const auto& [type, optional_guid] :
-       import_metadata_.filled_types_to_autofill_guid) {
-    guid_to_types[optional_guid].insert(type);
-  }
-
-  // Check that all but exactly one of the values were autofilled.
-  // Due to the data model, changes to the country are not possible either.
-  FieldTypeSet& non_autofilled_types = guid_to_types[std::nullopt];
-  if (non_autofilled_types.size() != 1 ||
-      non_autofilled_types == FieldTypeSet{ADDRESS_HOME_COUNTRY}) {
-    return false;
-  }
-  FieldType non_autofilled_type = *non_autofilled_types.begin();
-
-  // Check that exactly one profile was used to autofill the remaining types.
-  // This is indicated by the presence of exactly one non-std::nullopt entry.
-  if (guid_to_types.size() != 2) {
-    return false;
-  }
-  const AutofillProfile* autofilled_profile =
-      address_data_manager_->GetProfileByGUID(*guid_to_types.rbegin()->first);
-  if (!autofilled_profile) {
-    return false;
-  }
-
-  // Determine if the `non_autofilled_type` qualifies for an update.
-  if (!AddressDataCleaner::IsTokenLowQualityForDeduplicationPurposes(
-          *autofilled_profile, non_autofilled_type)) {
-    return false;
-  }
-  // Create the merge and import candidate from the `autofilled_profile`.
-  merge_candidate_ = *autofilled_profile;
-  import_candidate_ = *autofilled_profile;
-  import_candidate_->SetInfoWithVerificationStatus(
-      non_autofilled_type,
-      observed_profile_.GetInfo(non_autofilled_type, app_locale_), app_locale_,
-      VerificationStatus::kObserved);
-  // Ensure that potential substructure is cleared.
-  import_candidate_->FinalizeAfterImport();
-  return true;
 }
 
 void ProfileImportProcess::MaybeSetMigrationCandidate(
@@ -439,8 +373,7 @@ void ProfileImportProcess::SetUserDecision(
       break;
 
     case UserDecision::kUndefined:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

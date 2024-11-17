@@ -88,8 +88,8 @@ void BackForwardButton::NotifyClick(const ui::Event& event) {
 
   content::WebContents* web_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
-  chrome::ChainedBackNavigationTracker* tracker =
-      chrome::ChainedBackNavigationTracker::FromWebContents(web_contents);
+  ChainedBackNavigationTracker* tracker =
+      ChainedBackNavigationTracker::FromWebContents(web_contents);
   CHECK(tracker);
   tracker->RecordBackButtonClickForChainedBackNavigation();
 

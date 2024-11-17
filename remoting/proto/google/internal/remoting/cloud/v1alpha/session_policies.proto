@@ -1,0 +1,55 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package google.internal.remoting.cloud.v1alpha;
+
+// Policies to be applied to the CRD host and client.
+// Absent values indicate that a sensible default value should be used, which
+// is usually fail-open. For example, `allow_file_transfer` being absent
+// (as opposed to being explicitly set to false) indicates that file transfer
+// is allowed.
+// When session policies are provided, the CRD host and CRD client must ignore
+// the local policy counterparts. This implies that if an empty
+// `SessionPolicies` is returned, then the host and the client should ignore all
+// the local policies and use the default values instead.
+message SessionPolicies {
+  // Describes a range of port numbers.
+  message PortRange {
+    // The first port of the range, inclusive. Must be at least 1.
+    // An absent value is equivalent to 1.
+    optional int32 start = 1;
+
+    // The last port of the range, inclusive. Must be at most 65535.
+    // An absent value is equivalent to 65535.
+    optional int32 end = 2;
+  }
+
+  // Allow transferring files between the host and the client. Defaults to true.
+  optional bool allow_file_transfer = 1;
+
+  // Allow opening a host-side URI on the client browser. Defaults to true.
+  optional bool allow_uri_forwarding = 2;
+
+  // The maximum size, in bytes, that can be transferred between client and host
+  // via clipboard synchronization. Defaults to no restrictions. Setting it 0
+  // disables clipboard sync.
+  optional int32 clipboard_size_bytes = 3;
+
+  // Enable curtaining of remote access hosts. Defaults to false.
+  optional bool curtain_required = 4;
+
+  // Allow connections over STUN. Defaults to true.
+  optional bool allow_stun_connections = 5;
+
+  // Allow connections over a relay server. Defaults to true.
+  optional bool allow_relayed_connections = 6;
+
+  // Restrict the UDP port range used by the remote access host. Defaults to no
+  // restrictions.
+  optional PortRange host_udp_port_range = 7;
+}

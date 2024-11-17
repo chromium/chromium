@@ -28,6 +28,11 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="org.chromium.chrome.browser.customtabs.BlankAuthTabLauncherTestActivity"
+            android:theme="@style/Theme.Chromium.Activity"
+            android:exported="true"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize|uiMode|density"/>
+
         <!-- Used by ContextualSearchManagerTest -->
         <activity android:name="android.app.Activity" android:exported="true" >
             <intent-filter>

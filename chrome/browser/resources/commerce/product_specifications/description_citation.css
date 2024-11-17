@@ -10,6 +10,7 @@
 cr-button {
     --cr-button-background-color: var(--color-product-specifications-citation-background);
     border-radius: 8px;
+    color: var(--cr-secondary-text-color);
     font-size: 11px;
     height: 16px;
     margin-inline-end: 1px;

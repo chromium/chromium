@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_REQUEST_PASSWORD_MANAGER_AUTH_REQUEST_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_REQUEST_PASSWORD_MANAGER_AUTH_REQUEST_H_
 
+#include <string>
+
 #include "chromeos/ash/components/osauth/impl/request/token_based_auth_request.h"
 
 namespace ash {
@@ -15,6 +17,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
     PasswordManagerAuthRequest : public TokenBasedAuthRequest {
  public:
   explicit PasswordManagerAuthRequest(
+      const std::u16string& prompt,
       TokenBasedAuthRequest::AuthCompletionCallback on_auth_complete);
   PasswordManagerAuthRequest(const PasswordManagerAuthRequest&) = delete;
   PasswordManagerAuthRequest& operator=(const PasswordManagerAuthRequest&) =
@@ -25,6 +28,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
   AuthSessionIntent GetAuthSessionIntent() const override;
   AuthRequest::Reason GetAuthReason() const override;
   const std::u16string GetDescription() const override;
+
+ private:
+  const std::u16string prompt_;
 };
 
 }  // namespace ash

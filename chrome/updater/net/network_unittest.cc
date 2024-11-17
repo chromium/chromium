@@ -101,7 +101,7 @@ class UpdaterNetworkTest : public ::testing::Test {
       http_response->set_content("hello");
       http_response->set_content_type("application/octet-stream");
     } else {
-      NOTREACHED_IN_MIGRATION();
+      ADD_FAILURE();
     }
 
     http_response->set_code(net::HTTP_OK);

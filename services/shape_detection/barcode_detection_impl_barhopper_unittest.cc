@@ -62,8 +62,7 @@ class BarcodeDetectionImplBarhopperTest
     return barcode_service;
   }
 
-  std::unique_ptr<SkBitmap> LoadTestImage(
-      base::FilePath::StringPieceType filename) {
+  SkBitmap LoadTestImage(base::FilePath::StringPieceType filename) {
     // Load image data from test directory.
     base::FilePath image_path;
     EXPECT_TRUE(
@@ -73,17 +72,15 @@ class BarcodeDetectionImplBarhopperTest
                      .Append(FILE_PATH_LITERAL("data"))
                      .Append(filename);
     EXPECT_TRUE(base::PathExists(image_path));
-    std::string image_data;
-    EXPECT_TRUE(base::ReadFileToString(image_path, &image_data));
+    std::optional<std::vector<uint8_t>> image_data =
+        base::ReadFileToBytes(image_path);
 
-    std::unique_ptr<SkBitmap> image(new SkBitmap());
-    EXPECT_TRUE(gfx::PNGCodec::Decode(
-        reinterpret_cast<const uint8_t*>(image_data.data()), image_data.size(),
-        image.get()));
+    SkBitmap image = gfx::PNGCodec::Decode(image_data.value());
+    EXPECT_FALSE(image.isNull());
 
-    const gfx::Size size(image->width(), image->height());
+    const gfx::Size size(image.width(), image.height());
     const uint32_t num_bytes = size.GetArea() * 4 /* bytes per pixel */;
-    EXPECT_EQ(num_bytes, image->computeByteSize());
+    EXPECT_EQ(num_bytes, image.computeByteSize());
 
     return image;
   }
@@ -96,17 +93,16 @@ TEST_P(BarcodeDetectionImplBarhopperTest, Scan) {
   mojo::Remote<mojom::BarcodeDetection> barcode_detector =
       ConnectToBarcodeDetector();
 
-  std::unique_ptr<SkBitmap> image = LoadTestImage(GetParam().filename);
-  ASSERT_TRUE(image);
+  SkBitmap image = LoadTestImage(GetParam().filename);
 
   std::vector<mojom::BarcodeDetectionResultPtr> results;
   base::RunLoop run_loop;
   barcode_detector->Detect(
-      *image, base::BindLambdaForTesting(
-                  [&](std::vector<mojom::BarcodeDetectionResultPtr> barcodes) {
-                    results = std::move(barcodes);
-                    run_loop.Quit();
-                  }));
+      image, base::BindLambdaForTesting(
+                 [&](std::vector<mojom::BarcodeDetectionResultPtr> barcodes) {
+                   results = std::move(barcodes);
+                   run_loop.Quit();
+                 }));
   run_loop.Run();
   EXPECT_EQ(1u, results.size());
   EXPECT_EQ(GetParam().expected_value, results.front()->raw_value);

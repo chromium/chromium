@@ -104,14 +104,6 @@ public abstract class ActionModeCallbackHelper {
     public abstract RenderFrameHost getRenderFrameHost();
 
     /**
-     * Called when the processed text is replied from an activity that supports
-     * Intent.ACTION_PROCESS_TEXT.
-     * @param resultCode the code that indicates if the activity successfully processed the text
-     * @param data the reply that contains the processed text.
-     */
-    public abstract void onReceivedProcessTextResult(int resultCode, Intent data);
-
-    /**
      * Set the action mode menu items allowed on the content.
      * @param allowedMenuItems bit field of item-flag mapping.
      */

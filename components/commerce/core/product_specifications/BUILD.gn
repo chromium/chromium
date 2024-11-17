@@ -4,6 +4,8 @@
 
 source_set("product_specifications") {
   sources = [
+    "product_specifications_cache.cc",
+    "product_specifications_cache.h",
     "product_specifications_service.cc",
     "product_specifications_service.h",
     "product_specifications_set.cc",
@@ -25,6 +27,7 @@ source_set("product_specifications") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "product_specifications_cache_unittest.cc",
     "product_specifications_service_unittest.cc",
     "product_specifications_sync_bridge_unittest.cc",
   ]

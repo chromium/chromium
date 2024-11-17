@@ -286,9 +286,7 @@ bool ImageAnimationController::AnimationState::ShouldAnimate(
         return false;
       break;
     case kAnimationNone:
-      NOTREACHED_IN_MIGRATION()
-          << "We shouldn't be tracking kAnimationNone images";
-      break;
+      NOTREACHED() << "We shouldn't be tracking kAnimationNone images";
     case kAnimationLoopInfinite:
       break;
     default:

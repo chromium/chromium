@@ -19,8 +19,6 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/gpu/gpu_data_manager_testing_autogen.h"
-#include "content/browser/gpu/gpu_data_manager_testing_entry_enums_autogen.h"
 #include "content/public/browser/gpu_data_manager_observer.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"

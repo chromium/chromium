@@ -52,8 +52,8 @@ class CronetUploadDataStream : public net::UploadDataStream {
     virtual void OnUploadDataStreamDestroyed() = 0;
 
    protected:
-    Delegate() {}
-    virtual ~Delegate() {}
+    Delegate() = default;
+    virtual ~Delegate() = default;
   };
 
   CronetUploadDataStream(Delegate* delegate, int64_t size);

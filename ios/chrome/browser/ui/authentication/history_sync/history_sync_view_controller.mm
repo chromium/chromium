@@ -4,11 +4,9 @@
 
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_view_controller.h"
 
-#import "base/feature_list.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -45,20 +43,10 @@
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
-  if (base::FeatureList::IsEnabled(
-          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
-    // Hide the buttons, title, and subtitle only if button visibility has not
-    // been updated.
-    if (self.actionButtonsVisibility == ActionButtonsVisibility::kDefault) {
-      self.actionButtonsVisibility = ActionButtonsVisibility::kHidden;
-    }
-  } else if (base::FeatureList::GetInstance() &&
-             base::FeatureList::GetInstance()->IsFeatureOverridden(
-                 switches::kMinorModeRestrictionsForHistorySyncOptIn.name)) {
-    // Record button type metrics when the feature is overriden to be disabled.
-    base::UmaHistogramEnumeration(
-        "Signin.SyncButtons.Shown",
-        signin_metrics::SyncButtonsType::kHistorySyncNotEqualWeighted);
+  // Hide the buttons, title, and subtitle only if button visibility has not
+  // been updated.
+  if (self.actionButtonsVisibility == ActionButtonsVisibility::kDefault) {
+    self.actionButtonsVisibility = ActionButtonsVisibility::kHidden;
   }
 }
 
@@ -79,34 +67,31 @@
 
 - (void)displayButtonsWithRestrictionCapability:
     (signin::Tribool)canShowUnrestrictedViewCapability {
-  if (base::FeatureList::IsEnabled(
-          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
-    // Show action buttons and record button metrics.
-    signin_metrics::SyncButtonsType buttonType;
-    switch (canShowUnrestrictedViewCapability) {
-      case signin::Tribool::kUnknown:
-        self.actionButtonsVisibility =
-            ActionButtonsVisibility::kEquallyWeightedButtonShown;
-        buttonType = signin_metrics::SyncButtonsType::
-            kHistorySyncEqualWeightedFromDeadline;
-        break;
-      case signin::Tribool::kFalse:
-        self.actionButtonsVisibility =
-            ActionButtonsVisibility::kEquallyWeightedButtonShown;
-        buttonType = signin_metrics::SyncButtonsType::
-            kHistorySyncEqualWeightedFromCapability;
-        break;
-      case signin::Tribool::kTrue:
-        self.actionButtonsVisibility =
-            ActionButtonsVisibility::kRegularButtonsShown;
-        buttonType =
-            signin_metrics::SyncButtonsType::kHistorySyncNotEqualWeighted;
-        break;
-      default:
-        NOTREACHED();
-    }
-    base::UmaHistogramEnumeration("Signin.SyncButtons.Shown", buttonType);
+  // Show action buttons and record button metrics.
+  signin_metrics::SyncButtonsType buttonType;
+  switch (canShowUnrestrictedViewCapability) {
+    case signin::Tribool::kUnknown:
+      self.actionButtonsVisibility =
+          ActionButtonsVisibility::kEquallyWeightedButtonShown;
+      buttonType = signin_metrics::SyncButtonsType::
+          kHistorySyncEqualWeightedFromDeadline;
+      break;
+    case signin::Tribool::kFalse:
+      self.actionButtonsVisibility =
+          ActionButtonsVisibility::kEquallyWeightedButtonShown;
+      buttonType = signin_metrics::SyncButtonsType::
+          kHistorySyncEqualWeightedFromCapability;
+      break;
+    case signin::Tribool::kTrue:
+      self.actionButtonsVisibility =
+          ActionButtonsVisibility::kRegularButtonsShown;
+      buttonType =
+          signin_metrics::SyncButtonsType::kHistorySyncNotEqualWeighted;
+      break;
+    default:
+      NOTREACHED();
   }
+  base::UmaHistogramEnumeration("Signin.SyncButtons.Shown", buttonType);
 }
 
 @end

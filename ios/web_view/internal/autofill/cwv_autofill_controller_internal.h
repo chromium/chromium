@@ -55,7 +55,6 @@ class WebState;
         (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
             passwordManagerClient
        passwordController:(SharedPasswordController*)passwordController
-        applicationLocale:(const std::string&)applicationLocale
     NS_DESIGNATED_INITIALIZER;
 
 @end

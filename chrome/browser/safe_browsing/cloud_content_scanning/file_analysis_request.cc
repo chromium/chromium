@@ -117,7 +117,7 @@ GetFileDataBlocking(const base::FilePath& path,
     }
 
     secure_hash->Update(
-        base::as_byte_span(buf).subspan(0, bytes_currently_read.value()));
+        base::as_byte_span(buf).first(bytes_currently_read.value()));
     bytes_read += bytes_currently_read.value();
   }
 
@@ -135,6 +135,7 @@ GetFileDataBlocking(const base::FilePath& path,
     auto overhead = obfuscator.CalculateDeobfuscationOverhead(file);
     if (overhead.has_value()) {
       file_data.size -= overhead.value();
+      file_data.is_obfuscated = true;
     }
   }
 

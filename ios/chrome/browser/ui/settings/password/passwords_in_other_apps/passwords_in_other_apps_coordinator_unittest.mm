@@ -32,10 +32,9 @@ class PasswordsInOtherAppsCoordinatorTest : public PlatformTest {
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
     mock_reauth_module_ = [[MockReauthenticationModule alloc] init];
     // Delay auth result so auth doesn't pass right after starting coordinator.
@@ -74,7 +73,7 @@ class PasswordsInOtherAppsCoordinatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   SceneState* scene_state_;
   UINavigationController* navigation_controller_ = nil;

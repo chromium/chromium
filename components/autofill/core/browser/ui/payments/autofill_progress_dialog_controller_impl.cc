@@ -118,7 +118,7 @@ std::u16string AutofillProgressDialogControllerImpl::GetCancelButtonLabel()
     // IDS_AUTOFILL_CARD_UNMASK_CANCEL_BUTTON_LABEL to
     // IDS_AUTOFILL_PAYMENT_METHOD_UNMASK_CANCEL_BUTTON_LABEL
     case AutofillProgressDialogType::kServerIbanUnmaskProgressDialog:
-    case autofill::AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
+    case AutofillProgressDialogType::k3dsFetchVcnProgressDialog:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_CARD_UNMASK_CANCEL_BUTTON_LABEL);
     case AutofillProgressDialogType::kUnspecified:

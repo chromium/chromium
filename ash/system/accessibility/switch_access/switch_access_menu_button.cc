@@ -85,10 +85,6 @@ SwitchAccessMenuButton::SwitchAccessMenuButton(std::string action_name,
   GetViewAccessibility().SetValue(action_name);
 }
 
-void SwitchAccessMenuButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::Button::GetAccessibleNodeData(node_data);
-}
-
 void SwitchAccessMenuButton::OnButtonPressed() {
   NotifyAccessibilityEvent(ax::mojom::Event::kClicked,
                            /*send_native_event=*/false);

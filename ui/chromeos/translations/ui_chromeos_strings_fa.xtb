@@ -19,6 +19,7 @@
 <translation id="115443833402798225">هانگول آهنماتائه</translation>
 <translation id="1155759005174418845">کاتالان</translation>
 <translation id="1168100932582989117">‏سرورهای نام Google</translation>
+<translation id="1170788066030116158">تاریخ عکس‌برداری</translation>
 <translation id="1172970565351728681">تقریباً <ph name="REMAINING_TIME" /> باقی مانده است</translation>
 <translation id="1173894706177603556">تغییر نام</translation>
 <translation id="1173916544412572294">شبکه <ph name="NETWORK_INDEX" /> از <ph name="NETWORK_COUNT" />، <ph name="PHONE_NAME" />، <ph name="CONNECTION_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />٪، باتری تلفن <ph name="BATTERY_STATUS" />٪، جزئیات</translation>
@@ -565,7 +566,7 @@
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5318819489018851358">‏هم‌رسانی با Linux</translation>
 <translation id="5323213332664049067">آمریکای لاتین</translation>
-<translation id="5330145655348521461">این فایل‌ها در میزکار دیگری باز شده‌اند. به <ph name="USER_NAME" /> ‏(<ph name="MAIL_ADDRESS" />) بروید تا آن را مشاهده کنید.</translation>
+<translation id="5330145655348521461">این فایل‌ها در میز کار دیگری باز شده‌اند. به <ph name="USER_NAME" /> ‏(<ph name="MAIL_ADDRESS" />) بروید تا آن را مشاهده کنید.</translation>
 <translation id="5330512191124428349">دریافت اطلاعات</translation>
 <translation id="535792325654997756">شخصی با گربه</translation>
 <translation id="5358764674931277">نرخ فریم</translation>
@@ -589,7 +590,7 @@
 <translation id="5494920125229734069">انتخاب همه</translation>
 <translation id="5500122897333236901">ایسلندی</translation>
 <translation id="5508696409934741614">نقطه‌ها</translation>
-<translation id="5522908512596376669">نمای فهرست فایل به نمای فهرستی تغییر کرده است.</translation>
+<translation id="5522908512596376669">فهرست فایل به نمای فهرستی تغییر کرده است.</translation>
 <translation id="5524517123096967210">امکان خواندن فایل وجود نداشت.</translation>
 <translation id="5533102081734025921">تصویر <ph name="IMAGE_TYPE" /></translation>
 <translation id="5534520101572674276">محاسبه اندازه</translation>
@@ -701,7 +702,7 @@
 <translation id="636254897931573416">مقدار واردشده برای «مطابقت پسوند دامنه» نامعتبر است</translation>
 <translation id="6364301859968397756">فضای ذخیره‌سازی سازمان پر است</translation>
 <translation id="6367976544441405720">ون</translation>
-<translation id="637062427944097960">این فایل در میزکار دیگری باز شده است. به <ph name="USER_NAME" /> ‏(<ph name="MAIL_ADDRESS" />) بروید تا آن را مشاهده کنید.</translation>
+<translation id="637062427944097960">این فایل در میز کار دیگری باز شده است. به <ph name="USER_NAME" /> ‏(<ph name="MAIL_ADDRESS" />) بروید تا آن را مشاهده کنید.</translation>
 <translation id="6394388407447716302">فقط خواندنی</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> مورد</translation>
 <translation id="6407769893376380348">‏<ph name="FILE_NAME" /> منتقل نشد زیر رمزگذاری شده است.</translation>

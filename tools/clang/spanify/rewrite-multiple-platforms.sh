@@ -100,7 +100,8 @@ if [ $BUILD_CLANG = true ]
 then
   # Save llvm-build as it is about to be overwritten (if it hasn't already been
   # saved).
-  if [ ! -d third_party/llvm-build-upstream/ ]
+  if [ ${INCREMENTAL_CLANG_BUILD} = false ] && \
+    [ ! -d third_party/llvm-build-upstream/ ]
   then
     echo "*** Saving current build ***"
 
@@ -267,7 +268,8 @@ main_rewrite() {
         --tool spanify \
         --generate-compdb \
         -p $OUT_DIR \
-        $COMPILE_DIRS > ~/scratch/rewriter-$PLATFORM.main.out
+        $COMPILE_DIRS > ~/scratch/rewriter-$PLATFORM.main.out \
+        2>~/scratch/rewriter-"${PLATFORM}".main.err
     touch ~/scratch/rewriter.main.out
     cat ~/scratch/rewriter-$PLATFORM.main.out >> ~/scratch/rewriter.main.out
 }

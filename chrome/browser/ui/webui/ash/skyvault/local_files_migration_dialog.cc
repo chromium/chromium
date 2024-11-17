@@ -10,16 +10,21 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_ui.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
 namespace policy::local_user_files {
+
+// Dialog size.
+constexpr gfx::Size kDialogSize{448, 360};
 
 // static
 bool LocalFilesMigrationDialog::Show(CloudProvider cloud_provider,
@@ -28,15 +33,16 @@ bool LocalFilesMigrationDialog::Show(CloudProvider cloud_provider,
   ash::SystemWebDialogDelegate* existing_dialog =
       SystemWebDialogDelegate::FindInstance(
           chrome::kChromeUILocalFilesMigrationURL);
+  // TODO(368242690): Returning bool isn't needed now that we show a new dialog.
   if (existing_dialog) {
-    // TODO(aidazolic): Check params & maybe update title.
-    existing_dialog->StackAtTop();
-    return false;
+    existing_dialog->Close();
   }
   // This pointer is deleted in `SystemWebDialogDelegate::OnDialogClosed`.
   LocalFilesMigrationDialog* dialog = new LocalFilesMigrationDialog(
       cloud_provider, migration_start_time, std::move(migration_callback));
   dialog->ShowSystemDialog();
+  dialog->StackAtTop();
+  SkyVaultMigrationDialogShownHistogram(cloud_provider, true);
   return true;
 }
 
@@ -57,9 +63,7 @@ LocalFilesMigrationDialog::LocalFilesMigrationDialog(
       cloud_provider_(cloud_provider),
       migration_start_time_(std::move(migration_start_time)),
       migration_callback_(std::move(migration_callback)) {
-  // TODO(b/342340599): Set appropriate height when the text is finalized.
-  set_dialog_size(gfx::Size(SystemWebDialogDelegate::kDialogWidth,
-                            SystemWebDialogDelegate::kDialogHeight));
+  set_dialog_size(kDialogSize);
 
   // This callback runs just before destroying this instance.
   RegisterOnDialogClosedCallback(

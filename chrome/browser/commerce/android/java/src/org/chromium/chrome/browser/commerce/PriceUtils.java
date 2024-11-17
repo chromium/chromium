@@ -37,7 +37,7 @@ public class PriceUtils {
                     String.format(
                             Locale.getDefault(),
                             "%.2f",
-                            (100 * priceMicros / MICROS_TO_UNITS) / 100.0);
+                            (100 * priceMicros / ((double) MICROS_TO_UNITS)) / 100.0);
         } else {
             // Round up when greater than 10 units, 0 fractional digits.
             currencyFormatter.setMaximumFractionalDigits(FRACTIONAL_DIGITS_GREATER_THAN_TEN_UNITS);

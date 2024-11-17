@@ -1450,3 +1450,25 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion133ToCurrent) {
     ASSERT_FALSE(s_type_tokens.Step());
   }
 }
+
+// Tests addition of card_info_retrieval_enrollment_state columns in
+// masked_credit_cards table.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion134ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_134.sql")));
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(134, VersionFromConnection(&connection));
+    EXPECT_FALSE(connection.DoesColumnExist(
+        "masked_credit_cards", "card_info_retrieval_enrollment_state"));
+  }
+  DoMigration();
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_TRUE(connection.DoesColumnExist(
+        "masked_credit_cards", "card_info_retrieval_enrollment_state"));
+  }
+}

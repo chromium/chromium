@@ -37,7 +37,9 @@ class IntegrationTestCommands
                              const GURL& crash_upload_url,
                              const GURL& device_management_url,
                              const GURL& app_logo_url,
-                             const base::TimeDelta& idle_timeout) const = 0;
+                             base::TimeDelta idle_timeout,
+                             base::TimeDelta server_keep_alive_time,
+                             base::TimeDelta ceca_connection_timeout) const = 0;
   virtual void ExitTestMode() const = 0;
   virtual void SetGroupPolicies(const base::Value::Dict& values) const = 0;
   virtual void SetPlatformPolicies(const base::Value::Dict& values) const = 0;
@@ -55,7 +57,8 @@ class IntegrationTestCommands
       bool always_launch_cmd,
       bool verify_app_logo_loaded,
       bool expect_success,
-      bool wait_for_the_installer) const = 0;
+      bool wait_for_the_installer,
+      const base::Value::List& additional_switches) const = 0;
   virtual void SetActive(const std::string& app_id) const = 0;
   virtual void ExpectActive(const std::string& app_id) const = 0;
   virtual void ExpectNotActive(const std::string& app_id) const = 0;
@@ -76,14 +79,18 @@ class IntegrationTestCommands
       const std::string& app_id,
       UpdateService::Priority priority,
       const base::Version& from_version,
-      const base::Version& to_version) const = 0;
-  virtual void ExpectUpdateSequence(ScopedServer* test_server,
-                                    const std::string& app_id,
-                                    const std::string& install_data_index,
-                                    UpdateService::Priority priority,
-                                    const base::Version& from_version,
-                                    const base::Version& to_version,
-                                    bool do_fault_injection) const = 0;
+      const base::Version& to_version,
+      const base::Version& updater_version) const = 0;
+  virtual void ExpectUpdateSequence(
+      ScopedServer* test_server,
+      const std::string& app_id,
+      const std::string& install_data_index,
+      UpdateService::Priority priority,
+      const base::Version& from_version,
+      const base::Version& to_version,
+      bool do_fault_injection,
+      bool skip_download,
+      const base::Version& updater_version) const = 0;
   virtual void ExpectUpdateSequenceBadHash(
       ScopedServer* test_server,
       const std::string& app_id,
@@ -91,13 +98,18 @@ class IntegrationTestCommands
       UpdateService::Priority priority,
       const base::Version& from_version,
       const base::Version& to_version) const = 0;
-  virtual void ExpectInstallSequence(ScopedServer* test_server,
-                                     const std::string& app_id,
-                                     const std::string& install_data_index,
-                                     UpdateService::Priority priority,
-                                     const base::Version& from_version,
-                                     const base::Version& to_version,
-                                     bool do_fault_injection) const = 0;
+  virtual void ExpectInstallSequence(
+      ScopedServer* test_server,
+      const std::string& app_id,
+      const std::string& install_data_index,
+      UpdateService::Priority priority,
+      const base::Version& from_version,
+      const base::Version& to_version,
+      bool do_fault_injection,
+      bool skip_download,
+      const base::Version& updater_version) const = 0;
+  virtual void ExpectEnterpriseCompanionAppOTAInstallSequence(
+      ScopedServer* test_server) const = 0;
   virtual void ExpectVersionActive(const std::string& version) const = 0;
   virtual void ExpectVersionNotActive(const std::string& version) const = 0;
   virtual void Uninstall() const = 0;
@@ -107,7 +119,7 @@ class IntegrationTestCommands
   virtual void CopyLog(const std::string& infix) const = 0;
   virtual void SetupFakeUpdaterHigherVersion() const = 0;
   virtual void SetupFakeUpdaterLowerVersion() const = 0;
-  virtual void SetupRealUpdaterLowerVersion() const = 0;
+  virtual void SetupRealUpdater(const base::FilePath& updater_path) const = 0;
   virtual void SetExistenceCheckerPath(const std::string& app_id,
                                        const base::FilePath& path) const = 0;
   virtual void SetServerStarts(int value) const = 0;
@@ -121,7 +133,7 @@ class IntegrationTestCommands
                          const std::string& tag) const = 0;
   virtual void ExpectAppVersion(const std::string& app_id,
                                 const base::Version& version) const = 0;
-  virtual void RunWake(int exit_code) const = 0;
+  virtual void RunWake(int exit_code, const base::Version& version) const = 0;
   virtual void RunWakeAll() const = 0;
   virtual void RunWakeActive(int exit_code) const = 0;
   virtual void RunCrashMe() const = 0;
@@ -186,7 +198,7 @@ class IntegrationTestCommands
   virtual void ExpectLegacyUpdaterMigrated() const = 0;
   virtual void RunRecoveryComponent(const std::string& app_id,
                                     const base::Version& version) const = 0;
-  virtual void SetLastChecked(const base::Time& time) const = 0;
+  virtual void SetLastChecked(base::Time time) const = 0;
   virtual void ExpectLastChecked() const = 0;
   virtual void ExpectLastStarted() const = 0;
   virtual void UninstallApp(const std::string& app_id) const = 0;
@@ -197,8 +209,12 @@ class IntegrationTestCommands
   virtual void DMPushEnrollmentToken(const std::string& enrollment_token) = 0;
   virtual void DMDeregisterDevice() = 0;
   virtual void DMCleanup() = 0;
-  virtual void InstallEnterpriseCompanionApp(
+  virtual void InstallEnterpriseCompanionApp() = 0;
+  virtual void InstallBrokenEnterpriseCompanionApp() = 0;
+  virtual void UninstallBrokenEnterpriseCompanionApp() = 0;
+  virtual void InstallEnterpriseCompanionAppOverrides(
       const base::Value::Dict& external_overrides) = 0;
+  virtual void ExpectEnterpriseCompanionAppNotInstalled() = 0;
   virtual void UninstallEnterpriseCompanionApp() = 0;
 
  protected:

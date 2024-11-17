@@ -45,7 +45,7 @@ StepUIType step_ui_type(AuthenticatorRequestDialogModel::Step step) {
   switch (step) {
     case AuthenticatorRequestDialogModel::Step::kClosed:
     case AuthenticatorRequestDialogModel::Step::kNotStarted:
-    case AuthenticatorRequestDialogModel::Step::kConditionalMediation:
+    case AuthenticatorRequestDialogModel::Step::kPasskeyAutofill:
       return StepUIType::NONE;
 
     case AuthenticatorRequestDialogModel::Step::kRecoverSecurityDomain:
@@ -214,7 +214,7 @@ std::ostream& operator<<(std::ostream& os,
   using Step = AuthenticatorRequestDialogModel::Step;
   constexpr auto kStepNames = base::MakeFixedFlatMap<Step, std::string_view>({
       {Step::kNotStarted, "kNotStarted"},
-      {Step::kConditionalMediation, "kConditionalMediation"},
+      {Step::kPasskeyAutofill, "kPasskeyAutofill"},
       {Step::kMechanismSelection, "kMechanismSelection"},
       {Step::kErrorNoAvailableTransports, "kErrorNoAvailableTransports"},
       {Step::kErrorNoPasskeys, "kErrorNoPasskeys"},
@@ -233,7 +233,6 @@ std::ostream& operator<<(std::ostream& os,
       {Step::kOffTheRecordInterstitial, "kOffTheRecordInterstitial"},
       {Step::kPhoneConfirmationSheet, "kPhoneConfirmationSheet"},
       {Step::kCableActivate, "kCableActivate"},
-      {Step::kAndroidAccessory, "kAndroidAccessory"},
       {Step::kCableV2QRCode, "kCableV2QRCode"},
       {Step::kCableV2Connecting, "kCableV2Connecting"},
       {Step::kCableV2Connected, "kCableV2Connected"},

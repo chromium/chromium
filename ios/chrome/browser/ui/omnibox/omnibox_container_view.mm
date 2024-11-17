@@ -38,7 +38,11 @@ const CGFloat kThumbnailHeight = 40;
 /// Space between the thumbnail image and the omnibox text.
 const CGFloat kThumbnailImageTrailingMargin = 10;
 /// Space between the leading icon and the thumbnail image.
-const CGFloat kThumbnailImageLeadingMargin = 10;
+const CGFloat kThumbnailImageLeadingMargin = 9;
+
+// The leading image margins when presented in the lens overlay.
+const CGFloat kLeadingImageLeadingMarginLensOverlay = 12;
+const CGFloat kLeadingImageTrailingMarginLensOverlay = 9;
 
 /// Space between the clear button and the edge of the omnibox.
 const CGFloat kTextFieldClearButtonTrailingOffset = 4;
@@ -79,6 +83,9 @@ const CGFloat kClearButtonSize = 28.5f;
 
   // The image thumnail button.
   OmniboxThumbnailButton* _thumbnailButton;
+
+  /// Whether the view is presented in the lens overlay.
+  BOOL _isLensOverlay;
 }
 
 #pragma mark - Public
@@ -86,12 +93,15 @@ const CGFloat kClearButtonSize = 28.5f;
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor
                 textFieldTint:(UIColor*)textFieldTint
-                     iconTint:(UIColor*)iconTint {
+                     iconTint:(UIColor*)iconTint
+                isLensOverlay:(BOOL)isLensOverlay {
   self = [super initWithFrame:frame];
   if (self) {
+    _isLensOverlay = isLensOverlay;
     _textField = [[OmniboxTextFieldIOS alloc] initWithFrame:frame
                                                   textColor:textColor
-                                                  tintColor:textFieldTint];
+                                                  tintColor:textFieldTint
+                                              isLensOverlay:isLensOverlay];
     _textField.translatesAutoresizingMaskIntoConstraints = NO;
 
     // Leading image view.
@@ -117,8 +127,11 @@ const CGFloat kClearButtonSize = 28.5f;
     [self addSubview:_stackView];
     AddSameConstraintsWithInsets(
         _stackView, self,
-        NSDirectionalEdgeInsetsMake(0, kOmniboxLeadingImageViewEdgeOffset, 0,
-                                    kTextFieldClearButtonTrailingOffset));
+        NSDirectionalEdgeInsetsMake(0,
+                                    _isLensOverlay
+                                        ? kLeadingImageLeadingMarginLensOverlay
+                                        : kOmniboxLeadingImageViewEdgeOffset,
+                                    0, kTextFieldClearButtonTrailingOffset));
 
     // Thumbnail image view.
     if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
@@ -212,8 +225,10 @@ const CGFloat kClearButtonSize = 28.5f;
     }
 
     // Spacing between image and text field.
-    [_stackView setCustomSpacing:kOmniboxTextFieldLeadingOffsetImage
-                       afterView:_leadingImageView];
+    [_stackView
+        setCustomSpacing:_isLensOverlay ? kLeadingImageTrailingMarginLensOverlay
+                                        : kOmniboxTextFieldLeadingOffsetImage
+               afterView:_leadingImageView];
 
     // Constraints.
     AddSameConstraintsToSides(_textField, _stackView,
@@ -266,8 +281,10 @@ const CGFloat kClearButtonSize = 28.5f;
     [_stackView setCustomSpacing:kThumbnailImageLeadingMargin
                        afterView:_leadingImageView];
   } else {
-    [_stackView setCustomSpacing:kOmniboxTextFieldLeadingOffsetImage
-                       afterView:_leadingImageView];
+    [_stackView
+        setCustomSpacing:_isLensOverlay ? kLeadingImageTrailingMarginLensOverlay
+                                        : kOmniboxTextFieldLeadingOffsetImage
+               afterView:_leadingImageView];
   }
 }
 

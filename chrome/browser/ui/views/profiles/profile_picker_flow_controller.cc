@@ -81,9 +81,6 @@ GURL GetInitialURL(ProfilePicker::EntryPoint entry_point) {
     case ProfilePicker::EntryPoint::kProfileMenuAddNewProfile:
     case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuAddNewProfile:
       return base_url.Resolve("new-profile");
-    case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:
-      return base_url.Resolve("account-selection-lacros");
-    case ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun:
     case ProfilePicker::EntryPoint::kFirstRun:
       // Should not be used for this entry point.
       NOTREACHED();
@@ -120,12 +117,13 @@ void ShowCustomizationBubble(std::optional<SkColor> new_profile_color,
   }
 }
 
-void MaybeShowProfileSwitchIPH(Browser* browser) {
+void MaybeShowProfileIPHs(Browser* browser) {
   DCHECK(browser);
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
   if (!browser_view) {
     return;
   }
+  browser_view->MaybeShowSupervisedUserProfileSignInIPH();
   browser_view->MaybeShowProfileSwitchIPH();
 }
 
@@ -212,13 +210,8 @@ class ProfileCreationSignedInFlowController
     callback =
         callback->is_null()
             ? CreateFreshProfileExperienceCallback()
-            : PostHostClearedCallback(base::BindOnce(
-                  [](PostHostClearedCallback cb1, PostHostClearedCallback cb2,
-                     Browser* browser) {
-                    std::move(*cb1).Run(browser);
-                    std::move(*cb2).Run(browser);
-                  },
-                  std::move(callback), CreateFreshProfileExperienceCallback()));
+            : CombinePostHostClearedCallbacks(
+                  std::move(callback), CreateFreshProfileExperienceCallback());
 
     profile_name_resolver_->RunWithProfileName(base::BindOnce(
         &ProfileCreationSignedInFlowController::FinishFlow,
@@ -232,8 +225,7 @@ class ProfileCreationSignedInFlowController
     // bubble and trigger an IPH, instead.
     if (ThemeServiceFactory::GetForProfile(profile())->UsingPolicyTheme() ||
         !GetProfileColor().has_value()) {
-      return PostHostClearedCallback(
-          base::BindOnce(&MaybeShowProfileSwitchIPH));
+      return PostHostClearedCallback(base::BindOnce(&MaybeShowProfileIPHs));
     } else {
       // If sync cannot start, we apply `GetProfileColor()` right away before
       // opening a browser window to avoid flicker. Otherwise, it's applied
@@ -441,22 +433,6 @@ void ProfilePickerFlowController::OnProfilePickerStepShownReauthError(
 
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void ProfilePickerFlowController::SwitchToPostSignIn(
-    Profile* signed_in_profile,
-    const CoreAccountInfo& account_info,
-    std::optional<SkColor> profile_color,
-    std::unique_ptr<content::WebContents> contents) {
-  DCHECK_EQ(Step::kProfilePicker, current_step());
-  suggested_profile_color_ = profile_color;
-  SwitchToIdentityStepsFromPostSignIn(
-      signed_in_profile, account_info,
-      content::WebContents::Create(
-          content::WebContents::CreateParams(signed_in_profile)),
-      StepSwitchFinishedCallback());
-}
-#endif
-
 base::FilePath ProfilePickerFlowController::GetSwitchProfilePathOrEmpty()
     const {
   if (weak_signed_in_flow_controller_) {
@@ -494,8 +470,6 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
       ExitFlow();
       return;
     }
-    case ProfilePicker::EntryPoint::kLacrosSelectAvailableAccount:
-    case ProfilePicker::EntryPoint::kLacrosPrimaryProfileFirstRun:
     case ProfilePicker::EntryPoint::kFirstRun:
       NOTREACHED()
           << "CancelPostSignInFlow() is not reachable from this entry point";
@@ -504,11 +478,7 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
 
 std::u16string ProfilePickerFlowController::GetFallbackAccessibleWindowTitle()
     const {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return l10n_util::GetStringUTF16(IDS_PROFILE_PICKER_MAIN_VIEW_TITLE_LACROS);
-#else
   return l10n_util::GetStringUTF16(IDS_PROFILE_PICKER_MAIN_VIEW_TITLE);
-#endif
 }
 
 std::unique_ptr<ProfilePickerSignedInFlowController>

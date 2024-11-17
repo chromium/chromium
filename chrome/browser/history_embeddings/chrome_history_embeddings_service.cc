@@ -10,9 +10,12 @@
 #include "chrome/browser/optimization_guide/chrome_model_quality_logs_uploader_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "components/history_embeddings/history_embeddings_features.h"
+#include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
+#include "components/optimization_guide/core/model_execution/model_execution_util.h"
 #include "components/optimization_guide/core/model_quality/feature_type_map.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
-#include "components/optimization_guide/proto/features/history_document.pb.h"
 #include "components/optimization_guide/proto/features/history_query.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
 
@@ -23,17 +26,38 @@ ChromeHistoryEmbeddingsService::ChromeHistoryEmbeddingsService(
     page_content_annotations::PageContentAnnotationsService*
         page_content_annotations_service,
     OptimizationGuideKeyedService* optimization_guide_service,
-    PassageEmbeddingsServiceController* service_controller)
-    : HistoryEmbeddingsService(history_service,
+    std::unique_ptr<Embedder> embedder,
+    std::unique_ptr<Answerer> answerer,
+    std::unique_ptr<IntentClassifier> intent_classifier)
+    : HistoryEmbeddingsService(g_browser_process->os_crypt_async(),
+                               history_service,
                                page_content_annotations_service,
                                optimization_guide_service,
-                               optimization_guide_service,
-                               service_controller,
-                               g_browser_process->os_crypt_async(),
-                               optimization_guide_service),
+                               std::move(embedder),
+                               std::move(answerer),
+                               std::move(intent_classifier)),
       optimization_guide_service_(optimization_guide_service) {}
 
 ChromeHistoryEmbeddingsService::~ChromeHistoryEmbeddingsService() = default;
+
+bool ChromeHistoryEmbeddingsService::IsAnswererUseAllowed() const {
+  if (GetFeatureParameters().force_answerer_use_allowed) {
+    return true;
+  }
+  if (!optimization_guide_service_) {
+    return false;
+  }
+  if (optimization_guide::
+          GetGenAILocalFoundationalModelEnterprisePolicySettings(
+              g_browser_process->local_state()) ==
+      optimization_guide::model_execution::prefs::
+          GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed) {
+    return false;
+  }
+  return optimization_guide_service_
+      ->ShouldFeatureAllowModelExecutionForSignedInUser(
+          optimization_guide::UserVisibleFeatureKey::kHistorySearch);
+}
 
 QualityLogEntry ChromeHistoryEmbeddingsService::PrepareQualityLogEntry() {
   if (!optimization_guide_service_) {
@@ -48,7 +72,6 @@ QualityLogEntry ChromeHistoryEmbeddingsService::PrepareQualityLogEntry() {
 
   QualityLogEntry log_entry =
       std::make_unique<optimization_guide::ModelQualityLogEntry>(
-          std::make_unique<optimization_guide::proto::LogAiDataRequest>(),
           quality_uploader->GetWeakPtr());
 
   optimization_guide::proto::LogAiDataRequest* request =

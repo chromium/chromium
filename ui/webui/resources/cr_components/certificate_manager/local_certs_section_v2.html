@@ -28,7 +28,9 @@
         </div>
         <cr-toggle id="importOsCerts"
             aria-label="Toggle operating system certificate imports"
-            checked="[[importOsCertsEnabled_]]" disabled>
+            checked="[[importOsCertsEnabled_]]"
+            disabled$="[[importOsCertsEnabledManaged_]]"
+            on-change="onOsCertsToggleChanged_"></cr-toggle>
         </cr-toggle>
 
         <cr-icon id="importOsCertsManagedIcon" icon="cr:domain"
@@ -55,13 +57,28 @@
   <template is="dom-if" if="[[showCustomSection_(certManagementMetadata_)]]">
     <div id="customCertsSection">
       <h3 class="section-title">[[i18n("certificateManagerV2CustomCertsTitle")]]</h3>
-      <cr-link-row id="adminCertsInstalledLinkRow"
-          start-icon="cr:domain"
-          class="card"
-          label="[[i18n('certificateManagerV2AdminCertsTitle')]]"
-          sub-label="[[numPolicyCertsString_]]"
-          on-click="onAdminCertsInstalledLinkRowClick_">
-     </cr-link-row>
+      <template is="dom-if" if="[[showPolicySection_(certManagementMetadata_) || showUserSection_(certManagementMetadata_)]]">
+        <div class="card">
+          <template is="dom-if" if="[[showPolicySection_(certManagementMetadata_)]]">
+            <cr-link-row id="adminCertsInstalledLinkRow"
+                start-icon="cr:domain"
+                label="[[i18n('certificateManagerV2AdminCertsTitle')]]"
+                sub-label="[[numPolicyCertsString_]]"
+                on-click="onAdminCertsInstalledLinkRowClick_">
+            </cr-link-row>
+          </template>
+          <template is="dom-if" if="[[showUserSection_(certManagementMetadata_)]]">
+            <div id="userCertsSection">
+              <cr-link-row id="userCertsInstalledLinkRow"
+                    start-icon="cr:person"
+                    label="[[i18n('certificateManagerV2UserCertsTitle')]]"
+                    sub-label="[[numUserCertsString_]]"
+                    on-click="onUserCertsInstalledLinkRowClick_">
+              </cr-link-row>
+            </div>
+          </template>
+        </div>
+      </template>
     </div>
   </template>
 </div>

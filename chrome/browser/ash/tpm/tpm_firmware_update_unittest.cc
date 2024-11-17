@@ -6,12 +6,14 @@
 
 #include <utility>
 
+#include "ash/constants/ash_switches.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
@@ -136,6 +138,9 @@ class TPMFirmwareUpdateModesTest : public TPMFirmwareUpdateTest {
     statistics_provider_.SetVpdStatus(
         system::StatisticsProvider::VpdStatus::kValid);
     cros_settings_test_helper_.InstallAttributes()->set_device_locked(false);
+    // TODO(b/353731379): Remove when removing legacy state determination code.
+    command_line_.GetProcessCommandLine()->AppendSwitchASCII(
+        ash::switches::kEnterpriseEnableUnifiedStateDetermination, "never");
   }
 
   void RecordResponse(const std::set<Mode>& modes) {
@@ -153,6 +158,7 @@ class TPMFirmwareUpdateModesTest : public TPMFirmwareUpdateTest {
   bool callback_received_ = false;
   std::set<Mode> callback_modes_;
   base::OnceCallback<void(const std::set<Mode>&)> callback_;
+  base::test::ScopedCommandLine command_line_;
 };
 
 TEST_F(TPMFirmwareUpdateModesTest, FeatureDisabled) {

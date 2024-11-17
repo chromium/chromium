@@ -46,9 +46,7 @@ PresentationConnectionFromRouteMessage(RouteMessagePtr route_message) {
       return blink::mojom::PresentationConnectionMessage::NewData(
           route_message->data.value());
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unknown RouteMessageType " << route_message->type;
-  return nullptr;
+  NOTREACHED() << "Unknown RouteMessageType " << route_message->type;
 }
 
 }  // namespace message_util

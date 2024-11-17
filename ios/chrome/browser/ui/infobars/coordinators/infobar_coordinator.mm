@@ -80,7 +80,6 @@
   // Cancel any scheduled automatic dismissal block.
   _autoDismissBannerTimer.Stop();
   _animatedFullscreenDisabler = nullptr;
-  _badgeDelegate = nil;
   _infobarDelegate = nil;
 }
 
@@ -152,33 +151,6 @@
     _autoDismissBannerTimer.Start(FROM_HERE, timeDelta, base::BindOnce(^{
                                     [weakSelf dismissInfobarBannerIfReady];
                                   }));
-  }
-}
-
-- (void)presentInfobarModal {
-  DCHECK(self.started);
-  ProceduralBlock modalPresentation = ^{
-    DCHECK(self.infobarBannerState !=
-           InfobarBannerPresentationState::Presented);
-    DCHECK(self.baseViewController);
-    self.modalTransitionDriver = [[InfobarModalTransitionDriver alloc]
-        initWithTransitionMode:InfobarModalTransitionBase];
-    self.modalTransitionDriver.modalPositioner = self;
-    __weak __typeof(self) weakSelf = self;
-    [self presentInfobarModalFrom:self.baseViewController
-                           driver:self.modalTransitionDriver
-                       completion:^{
-                         [weakSelf infobarModalPresentedFromBanner:NO];
-                       }];
-  };
-
-  // Dismiss InfobarBanner first if being presented.
-  if (self.baseViewController.presentedViewController &&
-      self.baseViewController.presentedViewController ==
-          self.bannerViewController) {
-    [self dismissInfobarBannerAnimated:NO completion:modalPresentation];
-  } else {
-    modalPresentation();
   }
 }
 
@@ -285,52 +257,47 @@
 #pragma mark InfobarCoordinatorImplementation
 
 - (BOOL)configureModalViewController {
-  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
-  return NO;
+  NOTREACHED() << "Subclass must implement.";
 }
 
 - (BOOL)isInfobarAccepted {
-  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
-  return NO;
+  NOTREACHED() << "Subclass must implement.";
 }
 
 - (BOOL)infobarBannerActionWillPresentModal {
-  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
-  return NO;
+  NOTREACHED() << "Subclass must implement.";
 }
 
 - (void)infobarBannerWasPresented {
-  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
+  NOTREACHED() << "Subclass must implement.";
 }
 
 - (void)infobarModalPresentedFromBanner:(BOOL)presentedFromBanner {
-  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
+  NOTREACHED() << "Subclass must implement.";
 }
 
 - (void)dismissBannerIfReady {
-  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
+  NOTREACHED() << "Subclass must implement.";
 }
 
 - (BOOL)infobarActionInProgress {
-  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
-  return NO;
+  NOTREACHED() << "Subclass must implement.";
 }
 
 - (void)performInfobarAction {
-  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
+  NOTREACHED() << "Subclass must implement.";
 }
 
 - (void)infobarBannerWillBeDismissed:(BOOL)userInitiated {
-  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
+  NOTREACHED() << "Subclass must implement.";
 }
 
 - (void)infobarWasDismissed {
-  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
+  NOTREACHED() << "Subclass must implement.";
 }
 
 - (CGFloat)infobarModalHeightForWidth:(CGFloat)width {
-  NOTREACHED_IN_MIGRATION() << "Subclass must implement.";
-  return 0;
+  NOTREACHED() << "Subclass must implement.";
 }
 
 #pragma mark - Private

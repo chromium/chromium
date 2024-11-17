@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/search_engines/template_url_prepopulate_data.h"
 
 #include <algorithm>
@@ -302,8 +297,7 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedEngineFromFullList(
   // case of IDs shared across multiple entries, we might be returning the
   // wrong one for the profile country. We can look into better heuristics in
   // future work.
-  for (size_t i = 0; i < kAllEnginesLength; ++i) {
-    const PrepopulatedEngine* engine = kAllEngines[i];
+  for (const PrepopulatedEngine* engine : kAllEngines) {
     if (engine->id == prepopulated_id) {
       return TemplateURLDataFromPrepopulatedEngine(*engine);
     }
@@ -328,9 +322,8 @@ std::unique_ptr<TemplateURLData> GetPrepopulatedFallbackSearch(
                                         /*use_first_as_fallback=*/true);
 }
 
-std::vector<const PrepopulatedEngine*> GetAllPrepopulatedEngines() {
-  return std::vector<const PrepopulatedEngine*>(
-      &kAllEngines[0], &kAllEngines[0] + kAllEnginesLength);
+const base::span<const PrepopulatedEngine* const> GetAllPrepopulatedEngines() {
+  return kAllEngines;
 }
 
 std::vector<std::unique_ptr<TemplateURLData>>

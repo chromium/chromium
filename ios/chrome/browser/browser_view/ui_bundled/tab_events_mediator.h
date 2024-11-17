@@ -8,9 +8,9 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 @class NewTabPageCoordinator;
+class ProfileIOS;
 @protocol SideSwipeToolbarSnapshotProviding;
 @protocol TabConsumer;
 class UrlLoadingNotifierBrowserAgent;

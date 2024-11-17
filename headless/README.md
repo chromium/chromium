@@ -5,123 +5,77 @@ Expected use cases include loading web pages, extracting metadata (e.g., the
 DOM) and generating bitmaps from page contents -- using all the modern web
 platform features provided by Chromium and Blink.
 
-There are two ways to use Headless Chromium:
-
-## Usage via the DevTools remote debugging protocol
-
-1. Start a normal Chrome binary with the `--headless` command line flag:
-
-```sh
-$ chrome --headless --remote-debugging-port=9222 https://chromium.org/
-```
-
-2. Navigate to `http://localhost:9222/` in another browser to open the
-[DevTools](https://developer.chrome.com/devtools) interface or use a tool such
-as [Selenium](http://www.seleniumhq.org/) to drive the headless browser.
-
-## Usage from Node.js
-
-For example, the [chrome-remote-interface](https://github.com/cyrus-and/chrome-remote-interface)
-Node.js package can be used to extract a page's DOM like this:
-
-```js
-const CDP = require('chrome-remote-interface');
-
-CDP((client) => {
-  // Extract used DevTools domains.
-  const {Page, Runtime} = client;
-
-  // Enable events on domains we are interested in.
-  Promise.all([
-    Page.enable()
-  ]).then(() => {
-    return Page.navigate({url: 'https://example.com'});
-  });
-
-  // Evaluate outerHTML after page has loaded.
-  Page.loadEventFired(() => {
-    Runtime.evaluate({expression: 'document.body.outerHTML'}).then((result) => {
-      console.log(result.result.value);
-      client.close();
-    });
-  });
-}).on('error', (err) => {
-  console.error('Cannot connect to browser:', err);
-});
-```
-
-## Usage as a C++ library
-
-Headless Chromium can be built as a library for embedding into a C++
-application. This approach is otherwise similar to controlling the browser over
-a DevTools connection, but it provides more customization points, e.g., for
-networking and [mojo services](https://docs.google.com/document/d/1Fr6_DJH6OK9rG3-ibMvRPTNnHsAXPk0VzxxiuJDSK3M/edit#heading=h.qh0udvlk963d).
-
-[Headless Example](https://cs.chromium.org/chromium/src/headless/app/headless_example.cc)
-is a small sample application which demonstrates the use of the headless C++
-API. It loads a web page and outputs the resulting DOM. To run it, first
-initialize a headless build configuration:
-
-```sh
-$ mkdir -p out/Debug
-$ echo 'import("//build/args/headless.gn")' > out/Debug/args.gn
-$ gn gen out/Debug
-```
-
-Then build the example:
-
-```sh
-$ ninja -C out/Debug headless_example
-```
-
-After the build completes, the example can be run with the following command:
-
-```sh
-$ out/Debug/headless_example https://www.google.com/
-```
-
-[Headless Shell](https://cs.chromium.org/chromium/src/headless/app/headless_shell.cc)
-is a more capable headless application. For instance, it supports remote
-debugging with the [DevTools](https://developer.chrome.com/devtools) protocol.
-To do this, start the application with an argument specifying the debugging
-port:
-
-```sh
-$ ninja -C out/Debug headless_shell
-$ out/Debug/headless_shell --remote-debugging-port=9222 https://youtube.com/
-```
-
-Then navigate to `http://localhost:9222/` with your browser.
-
 As of M118, precompiled `headless_shell` binaries are available for download
 under the name `chrome-headless-shell` via [Chrome for Testing
 infrastructure](https://googlechromelabs.github.io/chrome-for-testing/).
 
-## Embedder API
+There are two ways to use Headless Chromium:
 
-The embedder API allows developers to integrate the headless library into their
-application. The API provides default implementations for low level adaptation
-points such as networking and the run loop.
+## Usage via the DevTools remote debugging protocol
 
-The main embedder API classes are:
+1. Start a normal Chrome binary with the `--headless=old` command line flag:
 
-- `HeadlessBrowser::Options::Builder` - Defines the embedding options, e.g.:
-  - `SetMessagePump` - Replaces the default base message pump. See
-    `base::MessagePump`.
-  - `SetProxyServer` - Configures an HTTP/HTTPS proxy server to be used for
-    accessing the network.
+```sh
+$ chrome --headless=old --remote-debugging-port=9222 https://chromium.org/
+```
 
-## Client/DevTools API
+2. Navigate to `chrome://inspect/` in another instance of Chrome.
 
-The headless client API is used to drive the browser and interact with loaded
-web pages. Its main classes are:
+## Usage from Node.js
 
-- `HeadlessBrowser` - Represents the global headless browser instance.
-- `HeadlessWebContents` - Represents a single "tab" within the browser.
-- `HeadlessDevToolsClient` - Provides a C++ interface for inspecting and
-  controlling a tab. The API functions corresponds to [DevTools commands](https://developer.chrome.com/devtools/docs/debugger-protocol).
-  See the [client API documentation](https://docs.google.com/document/d/1rlqcp8nk-ZQvldNJWdbaMbwfDbJoOXvahPCDoPGOwhQ/edit#)
-  for more information.
+For example, the [chrome-remote-interface](https://github.com/cyrus-and/chrome-remote-interface) Node.js package can be used to
+extract a page's DOM like this:
+
+```js
+const CDP = require('chrome-remote-interface');
+
+(async () => {
+  let client;
+  try {
+    // Connect to browser
+    client = await CDP();
+
+    // Extract used DevTools domains.
+    const {Page, Runtime} = client;
+
+    // Enable events on domains we are interested in.
+    await Page.enable();
+    await Page.navigate({url: 'https://example.com'});
+    await Page.loadEventFired();
+
+    // Evaluate outerHTML after page has loaded.
+    const expression = {expression: 'document.body.outerHTML'};
+    const { result } = await Runtime.evaluate(expression);
+    console.log(result.value);
+
+  } catch (err) {
+    console.error('Cannot connect to browser:', err);
+
+  } finally {
+    if (client) {
+      await client.close();
+    }
+  }
+})();
+```
+
+Alternatvely, the [Puppeteer](https://pptr.dev/guides/what-is-puppeteer) Node.js package can be used to communicate
+with headless, for example:
+```js
+import puppeteer from 'puppeteer';
+
+(async () => {
+  const browser = await puppeteer.launch({headless: 'shell'});
+
+  const page = await browser.newPage();
+  await page.goto('https://example.com');
+
+  const title = await page.evaluate(() => document.title);
+  console.log(title);
+
+  await browser.close();
+})();
+```
 
 ## Resources and Documentation
 
@@ -139,7 +93,6 @@ Bug tracker: [Internals>Headless](https://bugs.chromium.org/p/chromium/issues/li
 * [Virtual Time in
   Blink](https://docs.google.com/document/d/1y9KDT_ZEzT7pBeY6uzVt1dgKlwc1OB_vY4NZO1zBQmo/edit?usp=sharing)
 * [Headless Chrome architecture (Design Doc)](https://docs.google.com/document/d/11zIkKkLBocofGgoTeeyibB2TZ_k7nR78v7kNelCatUE)
-* [Headless Chrome C++ DevTools API](https://docs.google.com/document/d/1rlqcp8nk-ZQvldNJWdbaMbwfDbJoOXvahPCDoPGOwhQ/edit#heading=h.ng2bxb15li9a)
 * [Session isolation in Headless Chrome](https://docs.google.com/document/d/1XAKvrxtSEoe65vNghSWC5S3kJ--z2Zpt2UWW1Fi8GiM/edit)
 * [Headless Chrome mojo service](https://docs.google.com/document/d/1Fr6_DJH6OK9rG3-ibMvRPTNnHsAXPk0VzxxiuJDSK3M/edit#heading=h.qh0udvlk963d)
 * [Controlling BeginFrame through DevTools](https://docs.google.com/document/d/1LVMYDkfjrrX9PNkrD8pJH5-Np_XUTQHIuJ8IEOirQH4/edit?ts=57d96dbd#heading=h.ndv831lc9uf0)

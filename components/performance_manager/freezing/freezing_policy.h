@@ -8,7 +8,9 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
@@ -16,6 +18,7 @@
 #include "components/performance_manager/freezing/cannot_freeze_reason.h"
 #include "components/performance_manager/freezing/freezer.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
+#include "components/performance_manager/public/freezing/freezing.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
@@ -24,6 +27,7 @@
 #include "components/performance_manager/public/resource_attribution/cpu_proportion_tracker.h"
 #include "components/performance_manager/public/resource_attribution/queries.h"
 #include "content/public/browser/browsing_instance_id.h"
+#include "url/origin.h"
 
 namespace performance_manager {
 
@@ -61,7 +65,7 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
                        public GraphOwnedAndRegistered<FreezingPolicy>,
                        public NodeDataDescriberDefaultImpl {
  public:
-  FreezingPolicy();
+  explicit FreezingPolicy(std::unique_ptr<freezing::Discarder> discarder);
   FreezingPolicy(const FreezingPolicy&) = delete;
   FreezingPolicy& operator=(const FreezingPolicy&) = delete;
   ~FreezingPolicy() override;
@@ -79,11 +83,18 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
   void AddFreezeVote(PageNode* page_node);
   void RemoveFreezeVote(PageNode* page_node);
 
+  // Returns a list of human-readable reasons why a page can't be frozen
+  // automatically, or an empty list if it can be frozen automatically.
+  std::set<std::string> GetCannotFreezeReasons(const PageNode* page_node);
+
  private:
   // State of a browsing instance.
   struct BrowsingInstanceState {
     BrowsingInstanceState();
     ~BrowsingInstanceState();
+
+    // Returns true if all pages in this browsing instance are frozen.
+    bool AllPagesFrozen() const;
 
     // Pages that have frames in this browsing instance (typically only 1 page,
     // but may contain an unbounded amount of pages connected via opener
@@ -95,7 +106,16 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
     // Whether a page associated with this browsing instance had a
     // `CannotFreezeReason` at any time since the last CPU measurement.
     bool had_cannot_freeze_reason_since_last_cpu_measurement = false;
+    // First per-origin Private Memory Footprint measurement taken after this
+    // browsing instance became frozen. Empty if not all pages in this browsing
+    // instance are frozen.
+    base::flat_map<url::Origin, uint64_t> per_origin_pmf_after_freezing_kb;
   };
+
+  // Returns pages connected to `page`, including `page` itself. See
+  // meta-comment above this class for a definition of "connected".
+  base::flat_set<raw_ptr<const PageNode>> GetConnectedPages(
+      const PageNode* page);
 
   // Returns browsing instance id(s) for `page`.
   base::flat_set<content::BrowsingInstanceId> GetBrowsingInstances(
@@ -126,6 +146,7 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
   void OnBeforePageNodeRemoved(const PageNode* page_node) override;
   void OnIsVisibleChanged(const PageNode* page_node) override;
   void OnIsAudibleChanged(const PageNode* page_node) override;
+  void OnPageLifecycleStateChanged(const PageNode* page_node) override;
   void OnPageIsHoldingWebLockChanged(const PageNode* page_node) override;
   void OnPageIsHoldingIndexedDBLockChanged(const PageNode* page_node) override;
   void OnPageUsesWebRTCChanged(const PageNode* page_node) override;
@@ -156,8 +177,21 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
   void OnResourceUsageUpdated(
       const resource_attribution::QueryResultMap& results) override;
 
+  // Discards browsing instances for which memory usage has significantly
+  // increased since they were frozen upon receiving a memory measurement.
+  void DiscardFrozenPagesWithGrowingMemoryOnMemoryMeasurement(
+      const resource_attribution::QueryResultMap& results);
+
+  // Updates the frozen state of all browsing instances upon receiving a CPU
+  // measurement.
+  void UpdateFrozenStateOnCPUMeasurement(
+      const resource_attribution::QueryResultMap& results);
+
   // Used to freeze pages.
   std::unique_ptr<Freezer> freezer_;
+
+  // Used to discard pages.
+  std::unique_ptr<freezing::Discarder> discarder_;
 
   // State of each browsing instance.
   std::map<content::BrowsingInstanceId, BrowsingInstanceState>
@@ -170,15 +204,15 @@ class FreezingPolicy : public PageNode::ObserverDefaultImpl,
   // the same [browsing instance, origin]. Engaged when the
   // "CPUMeasurementInFreezingPolicy" feature is enabled.
   std::optional<resource_attribution::ScopedResourceUsageQuery>
-      cpu_usage_query_;
+      resource_usage_query_;
 
-  // Manages observation of `cpu_usage_query_` by `this`.
-  resource_attribution::ScopedQueryObservation cpu_usage_query_observation_{
-      this};
+  // Manages observation of `resource_usage_query_` by `this`.
+  resource_attribution::ScopedQueryObservation
+      resource_usage_query_observation_{this};
 
   // Calculates the proportion of CPU used by a group of frames/workers that
   // belong to the same [browsing instance, origin] over an interval, based on
-  // cumulative measurements from `cpu_usage_query_`.
+  // cumulative measurements from `resource_usage_query_`.
   resource_attribution::CPUProportionTracker cpu_proportion_tracker_;
 };
 

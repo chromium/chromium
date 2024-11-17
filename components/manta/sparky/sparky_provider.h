@@ -100,7 +100,7 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
   void OnScreenshotObtained(
       std::unique_ptr<SparkyContext> sparky_context,
       SparkyShowAnswerCallback done_callback,
-      scoped_refptr<base::RefCountedMemory> jpeg_screenshot);
+      scoped_refptr<base::RefCountedMemory> png_screenshot);
 
   void OnResponseReceived(
       SparkyShowAnswerCallback done_callback,

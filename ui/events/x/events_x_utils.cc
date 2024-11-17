@@ -14,7 +14,6 @@
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
@@ -252,9 +251,8 @@ ui::EventType GetTouchEventType(const x11::Event& x11_event) {
         return ui::EventType::kTouchMoved;
       return ui::EventType::kUnknown;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return ui::EventType::kUnknown;
 }
 
 double GetParamFromXEvent(const x11::Event& xev,
@@ -347,8 +345,7 @@ base::TimeTicks TimeTicksFromXEvent(const x11::Event& xev) {
     }
     return TimeTicksFromXEventTime(device->time);
   }
-  NOTREACHED_IN_MIGRATION();
-  return base::TimeTicks();
+  NOTREACHED();
 }
 
 // This is ported from libxi's FP1616toDBL in XExtInt.c
@@ -469,7 +466,7 @@ EventType EventTypeFromXEvent(const x11::Event& xev) {
 int GetEventFlagsFromXKeyEvent(const x11::KeyEvent& key, bool send_event) {
   const auto state = static_cast<int>(key.state);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const int ime_fabricated_flag = 0;
 #else
   // XIM fabricates key events for the character compositions by XK_Multi_key.
@@ -574,7 +571,7 @@ gfx::Point EventLocationFromXEvent(const x11::Event& xev) {
   if (auto* xievent = xev.As<x11::Input::DeviceEvent>()) {
     float x = Fp1616ToDouble(xievent->event_x);
     float y = Fp1616ToDouble(xievent->event_y);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     switch (xievent->opcode) {
       case x11::Input::DeviceEvent::TouchBegin:
       case x11::Input::DeviceEvent::TouchUpdate:
@@ -585,7 +582,7 @@ gfx::Point EventLocationFromXEvent(const x11::Event& xev) {
       default:
         break;
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     return gfx::Point(static_cast<int>(x), static_cast<int>(y));
   }
   return gfx::Point();

@@ -24,7 +24,7 @@ void TabGroupTabCollection::AddTab(std::unique_ptr<TabModel> tab_model,
   CHECK(tab_model);
 
   TabModel* inserted_tab_model = impl_->AddTab(std::move(tab_model), index);
-  inserted_tab_model->set_group(/*group=*/group_id_);
+  inserted_tab_model->SetGroup(/*group=*/group_id_);
   inserted_tab_model->OnReparented(this, GetPassKey());
 }
 
@@ -48,14 +48,15 @@ tabs::TabModel* TabGroupTabCollection::GetTabAtIndex(size_t index) const {
   return impl_->GetTabAtIndex(index);
 }
 
-bool TabGroupTabCollection::ContainsTab(TabModel* tab_model) const {
-  CHECK(tab_model);
-  return impl_->ContainsTab(tab_model);
+bool TabGroupTabCollection::ContainsTab(const TabInterface* tab) const {
+  CHECK(tab);
+  return impl_->ContainsTab(tab);
 }
 
-bool TabGroupTabCollection::ContainsTabRecursive(TabModel* tab_model) const {
-  CHECK(tab_model);
-  return impl_->ContainsTab(tab_model);
+bool TabGroupTabCollection::ContainsTabRecursive(
+    const TabInterface* tab) const {
+  CHECK(tab);
+  return impl_->ContainsTab(tab);
 }
 
 bool TabGroupTabCollection::ContainsCollection(
@@ -65,9 +66,9 @@ bool TabGroupTabCollection::ContainsCollection(
 }
 
 std::optional<size_t> TabGroupTabCollection::GetIndexOfTabRecursive(
-    const TabModel* tab_model) const {
-  CHECK(tab_model);
-  return impl_->GetIndexOfTab(tab_model);
+    const TabInterface* tab) const {
+  CHECK(tab);
+  return impl_->GetIndexOfTab(tab);
 }
 
 std::optional<size_t> TabGroupTabCollection::GetIndexOfCollection(
@@ -81,18 +82,13 @@ std::unique_ptr<TabModel> TabGroupTabCollection::MaybeRemoveTab(
   CHECK(tab_model);
 
   std::unique_ptr<TabModel> removed_tab_model = impl_->RemoveTab(tab_model);
-  removed_tab_model->set_group(/*group=*/std::nullopt);
+  removed_tab_model->SetGroup(/*group=*/std::nullopt);
   removed_tab_model->OnReparented(nullptr, GetPassKey());
   return removed_tab_model;
 }
 
 size_t TabGroupTabCollection::ChildCount() const {
   return impl_->GetChildrenCount();
-}
-
-size_t TabGroupTabCollection::TabCountRecursive() const {
-  // Same as total number of children since there are no child collections.
-  return ChildCount();
 }
 
 std::unique_ptr<TabCollection> TabGroupTabCollection::MaybeRemoveCollection(

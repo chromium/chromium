@@ -18,6 +18,8 @@
 #include "partition_alloc/buildflags.h"
 
 #if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#include <stdlib.h>
+
 #include <algorithm>
 #include <cstring>
 

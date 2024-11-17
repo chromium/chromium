@@ -6,14 +6,12 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_log.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -39,7 +37,6 @@ namespace policy {
 
 namespace {
 constexpr char kRebootTaskTimeFieldName[] = "reboot_time";
-constexpr base::TimeDelta kExternalRebootDelay = base::Seconds(100);
 constexpr char kESTTimeZoneID[] = "America/New_York";
 constexpr char kTestName[] = "test@test";
 constexpr char kKioskName[] = "test@kiosk-apps.device-local.localhost";
@@ -183,18 +180,6 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
             task_environment_.GetMockClock()->Now());
   }
 
-  void InitWithFeatureFlag(bool enable_force_scheduled_reboots) {
-    if (enable_force_scheduled_reboots) {
-      scoped_feature_list_.InitWithFeatures(
-          /* enabled_features */ {ash::features::kDeviceForceScheduledReboot},
-          /* disabled_features */ {});
-      return;
-    }
-    scoped_feature_list_.InitWithFeatures(
-        /* enabled_features */ {},
-        /* disabled_features */ {ash::features::kDeviceForceScheduledReboot});
-  }
-
   ash::FakeChromeUserManager* GetFakeUserManager() {
     return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
@@ -210,13 +195,11 @@ class DeviceScheduledRebootHandlerTest : public testing::Test {
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   device::TestWakeLockProvider wake_lock_provider_;
   FakeRebootNotificationsScheduler notifications_scheduler_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   const base::Time start_time_;
 };
 
 TEST_F(DeviceScheduledRebootHandlerTest,
        CheckIfDailyRebootIsScheduledForKiosk) {
-  InitWithFeatureFlag(false /* enable_force_scheduled_reboots */);
   auto* user_manager = GetFakeUserManager();
   auto* user =
       user_manager->AddKioskAppUser(AccountId::FromUserEmail(kKioskName));
@@ -257,107 +240,7 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 }
 
 TEST_F(DeviceScheduledRebootHandlerTest,
-       CheckIfDailyRebootIsScheduledForNonKiosk) {
-  InitWithFeatureFlag(false /* enable_force_scheduled_reboots */);
-  auto* user_manager = GetFakeUserManager();
-  auto* user = user_manager->AddUser(AccountId::FromUserEmail(kTestName));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false, /*is_child=*/false);
-
-  // Calculate time from one hour from now and set the reboot policy to
-  // happen daily at that time.
-  base::TimeDelta delay_from_now = base::Hours(1);
-  auto policy_and_next_reboot_time = scheduled_task_test_util::CreatePolicy(
-      scheduled_task_executor_->GetTimeZone(),
-      scheduled_task_executor_->GetCurrentTime(), delay_from_now,
-      ScheduledTaskExecutor::Frequency::kDaily, kRebootTaskTimeFieldName);
-
-  // Set a new scheduled reboot, fast forward to right before the
-  // expected reboot and then check if an reboot is not scheduled.
-  const base::TimeDelta small_delay = base::Milliseconds(1);
-  cros_settings_.device_settings()->Set(
-      ash::kDeviceScheduledReboot,
-      std::move(policy_and_next_reboot_time.first));
-  int expected_scheduled_reboots = 0;
-  int expected_reboot_requests = 0;
-  task_environment_.FastForwardBy(delay_from_now - small_delay);
-  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
-
-  // Fast forward to the expected reboot time and then check if the
-  // reboot is scheduled, but not executed since we are not in the kiosk mode.
-  expected_scheduled_reboots += 1;
-  task_environment_.FastForwardBy(small_delay);
-  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
-
-  // Fast forward to the next day and then check if the reboot is scheduled
-  // again.
-  expected_scheduled_reboots += 1;
-  task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
-
-  // Switch to the kiosk mode, fast forward to the next day and check that the
-  // reboot is scheduled and executed.
-  auto* kiosk_user =
-      user_manager->AddKioskAppUser(AccountId::FromUserEmail(kKioskName));
-  user_manager->UserLoggedIn(kiosk_user->GetAccountId(),
-                             kiosk_user->username_hash(),
-                             /*browser_restart=*/false, /*is_child=*/false);
-  user_manager->SwitchActiveUser(kiosk_user->GetAccountId());
-  expected_scheduled_reboots += 1;
-  expected_reboot_requests += 1;
-  task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
-}
-
-TEST_F(DeviceScheduledRebootHandlerTest,
-       CheckIfWeeklyUpdateCheckIsScheduledForKiosk) {
-  InitWithFeatureFlag(false /* enable_force_scheduled_reboots */);
-  auto* user_manager = GetFakeUserManager();
-  auto* user = user_manager->AddUser(AccountId::FromUserEmail(kTestName));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false, /*is_child=*/false);
-  // Set the first reboot to happen 49 hours from now (i.e. 1 hour from 2
-  // days from now) and then weekly after.
-  base::TimeDelta delay_from_now = base::Hours(49);
-  auto policy_and_next_reboot_time = scheduled_task_test_util::CreatePolicy(
-      scheduled_task_executor_->GetTimeZone(),
-      scheduled_task_executor_->GetCurrentTime(), delay_from_now,
-      ScheduledTaskExecutor::Frequency::kWeekly, kRebootTaskTimeFieldName);
-
-  // Set a new scheduled reboot setting, fast forward to right before the
-  // expected reboot and then check if a reboot is not scheduled.
-  int expected_scheduled_reboots = 0;
-  int expected_reboot_requests = 0;
-  const base::TimeDelta small_delay = base::Milliseconds(1);
-  cros_settings_.device_settings()->Set(
-      ash::kDeviceScheduledReboot,
-      std::move(policy_and_next_reboot_time.first));
-  task_environment_.FastForwardBy(delay_from_now - small_delay);
-  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
-
-  // Fast forward to the expected reboot time and then check if the reboot
-  // is scheduled, but not executed, since we are not in the kiosk mode.
-  expected_scheduled_reboots += 1;
-  task_environment_.FastForwardBy(small_delay);
-  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
-
-  // Switch to the kiosk mode, fast forward to the next week and check that the
-  // reboot is scheduled and executed.
-  auto* kiosk_user =
-      user_manager->AddKioskAppUser(AccountId::FromUserEmail(kKioskName));
-  user_manager->UserLoggedIn(kiosk_user->GetAccountId(),
-                             kiosk_user->username_hash(),
-                             /*browser_restart=*/false, /*is_child=*/false);
-  user_manager->SwitchActiveUser(kiosk_user->GetAccountId());
-  expected_scheduled_reboots += 1;
-  expected_reboot_requests += 1;
-  task_environment_.FastForwardBy(base::Days(7));
-  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
-}
-
-TEST_F(DeviceScheduledRebootHandlerTest,
        CheckIfMonthlyRebootIsScheduledForKiosk) {
-  InitWithFeatureFlag(false /* enable_force_scheduled_reboots */);
   auto* user_manager = GetFakeUserManager();
   auto* user = user_manager->AddUser(AccountId::FromUserEmail(kTestName));
   user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
@@ -415,56 +298,7 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 }
 
 TEST_F(DeviceScheduledRebootHandlerTest,
-       CheckIfDailyRebootIsScheduledWithExternalDelay) {
-  // Login user and disable kDeviceScheduledReboot flag. The reboot should not
-  // occur.
-  InitWithFeatureFlag(false /* enable_force_scheduled_reboots */);
-  auto* user_manager = GetFakeUserManager();
-  auto* user = user_manager->AddUser(AccountId::FromUserEmail(kTestName));
-  user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
-                             /*browser_restart=*/false, /*is_child=*/false);
-  device_scheduled_reboot_handler_->SetRebootDelayForTest(kExternalRebootDelay);
-
-  // Calculate time from one hour from now and set the reboot policy to
-  // happen daily at that time.
-  base::TimeDelta delay_from_now = base::Hours(1);
-  auto policy_and_next_reboot_time = scheduled_task_test_util::CreatePolicy(
-      scheduled_task_executor_->GetTimeZone(),
-      scheduled_task_executor_->GetCurrentTime(), delay_from_now,
-      ScheduledTaskExecutor::Frequency::kDaily, kRebootTaskTimeFieldName);
-
-  // Set a new scheduled reboot, fast forward to right before the
-  // expected reboot and then check if an reboot is not scheduled.
-  const base::TimeDelta small_delay = base::Milliseconds(1);
-  cros_settings_.device_settings()->Set(
-      ash::kDeviceScheduledReboot,
-      std::move(policy_and_next_reboot_time.first));
-  int expected_scheduled_reboots = 0;
-  int expected_reboot_requests = 0;
-
-  // Verify that final delay is equal to delay_from_now + external_delay.
-  base::TimeDelta final_delay = GetRebootDelay();
-  EXPECT_EQ(final_delay, delay_from_now + kExternalRebootDelay);
-  task_environment_.FastForwardBy(final_delay - small_delay);
-  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
-
-  // Fast forward to the expected reboot time and then check if the
-  // reboot is scheduled, but not executed since we are not in the kiosk mode.
-  expected_scheduled_reboots += 1;
-  task_environment_.FastForwardBy(small_delay);
-  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
-
-  // Fast forward to the next day and then check if the reboot is scheduled
-  // again.
-  expected_scheduled_reboots += 1;
-  task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
-}
-
-TEST_F(DeviceScheduledRebootHandlerTest,
        CheckIfDailyRebootIsScheduledForLoginScreen) {
-  InitWithFeatureFlag(true /* enable_force_scheduled_reboots */);
-
   // Set device uptime to 10 minutes and schedule reboot in 30 minutes. Apply
   // grace time - reboot should not occur.
   task_environment_.FastForwardBy(base::Minutes(10));
@@ -508,46 +342,7 @@ TEST_F(DeviceScheduledRebootHandlerTest,
   EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
 }
 
-TEST_F(DeviceScheduledRebootHandlerTest,
-       VerifyLoginScreenRebootIsGuardedByFeatureFlag) {
-  // Disable the feature. Reboot should not occur.
-  InitWithFeatureFlag(false /* enable_force_scheduled_reboots */);
-
-  // Schedule reboot in 30 minutes. Reboot should not occur because the flag is
-  // disabled.
-  base::TimeDelta delay_from_now = base::Minutes(30);
-  auto policy_and_next_reboot_time = scheduled_task_test_util::CreatePolicy(
-      scheduled_task_executor_->GetTimeZone(),
-      scheduled_task_executor_->GetCurrentTime(), delay_from_now,
-      ScheduledTaskExecutor::Frequency::kDaily, kRebootTaskTimeFieldName);
-
-  // Set a new scheduled reboot, fast forward to right before the
-  // expected reboot and then verify reboot timer has not yet expired.
-  const base::TimeDelta small_delay = base::Milliseconds(1);
-  cros_settings_.device_settings()->Set(
-      ash::kDeviceScheduledReboot,
-      std::move(policy_and_next_reboot_time.first));
-  int expected_scheduled_reboots = 0;
-  int expected_reboot_requests = 0;
-  task_environment_.FastForwardBy(delay_from_now - small_delay);
-  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
-
-  // Fast forward to the expected reboot time and then check if the
-  // reboot timer has expired and the reboot is not executed.
-  expected_scheduled_reboots += 1;
-  task_environment_.FastForwardBy(small_delay);
-  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
-
-  // Fast forward to the next day and then check if the reboot is scheduled
-  // again, but not executed.
-  expected_scheduled_reboots += 1;
-  task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_TRUE(CheckStats(expected_scheduled_reboots, expected_reboot_requests));
-}
-
 TEST_F(DeviceScheduledRebootHandlerTest, EnableForceRebootFeatureInKiosk) {
-  InitWithFeatureFlag(true /* enable_force_scheduled_reboots */);
-
   // Set device uptime to 10 minutes and enable kiosk mode. We don't apply grace
   // period to kiosks, so reboot should occur.
   task_environment_.FastForwardBy(base::Minutes(10));
@@ -586,7 +381,6 @@ TEST_F(DeviceScheduledRebootHandlerTest, EnableForceRebootFeatureInKiosk) {
 
 TEST_F(DeviceScheduledRebootHandlerTest,
        EnableForceRebootFeatureNonKioskSession) {
-  InitWithFeatureFlag(true /* enable_force_scheduled_reboots */);
   auto* user_manager = GetFakeUserManager();
   auto* user = user_manager->AddUser(AccountId::FromUserEmail(kTestName));
   user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),
@@ -640,7 +434,6 @@ TEST_F(DeviceScheduledRebootHandlerTest,
 }
 
 TEST_F(DeviceScheduledRebootHandlerTest, SimulateNotificationButtonClick) {
-  InitWithFeatureFlag(true /* enable_force_scheduled_reboots */);
   auto* user_manager = GetFakeUserManager();
   auto* user = user_manager->AddUser(AccountId::FromUserEmail(kTestName));
   user_manager->UserLoggedIn(user->GetAccountId(), user->username_hash(),

@@ -50,20 +50,25 @@ bool operator<(std::u16string_view a, PrefixMatcher b) {
   return a.substr(0, b.prefix.size()) < b.prefix;
 }
 
-// Represents a score for an emoji match.
-struct EmojiScore {
-  // Scores are compared by the language score first (the higher the better).
-  // The relevance score is only used when the language scores are equal.
-  int language_score;
-  double relevance_score;
+// Represents the 'cost' of an emoji match, in the sense of a cost function.
+// The lower the cost, the more relevant the match.
+struct EmojiMatchCost {
+  // Costs are compared by the language cost first (the lower the better).
+  // The relevance cost is only used when the language costs are equal.
+  // The name length (the lower the better) is used when both the language and
+  // relevance scores are equal.
+  int language_cost;
+  // This value should be negative.
+  float relevance_cost;
+  int name_length = 0;
 
-  auto operator<=>(const EmojiScore& other) const = default;
+  auto operator<=>(const EmojiMatchCost& other) const = default;
 };
 
 // Map from keyword -> sum of position weightings
-std::map<std::u16string, double, std::less<>> CombineSearchTerms(
+std::map<std::u16string, float, std::less<>> CombineSearchTerms(
     base::span<const std::string_view> long_search_terms) {
-  std::map<std::u16string, double, std::less<>> ret;
+  std::map<std::u16string, float, std::less<>> ret;
   for (std::string_view long_string : long_search_terms) {
     std::vector<std::string_view> words = base::SplitStringPieceUsingSubstr(
         long_string, " ", base::WhitespaceHandling::TRIM_WHITESPACE,
@@ -114,7 +119,7 @@ void AddDataFromFileToMap(
       for (const auto& search_term : CombineSearchTerms(search_terms)) {
         // Keywords have less weighting (0.25)
         map[search_term.first].push_back(
-            EmojiSearchEntry{.weighting = 0.25 * search_term.second,
+            EmojiSearchEntry{.weighting = 0.25f * search_term.second,
                              .emoji_string = *emoji_string});
       }
       const std::string* name = base->FindString("name");
@@ -122,7 +127,7 @@ void AddDataFromFileToMap(
         for (const auto& search_term : CombineSearchTerms({{*name}})) {
           map[search_term.first].push_back(
               // Name has full weighting (1.0)
-              EmojiSearchEntry{.weighting = 1 * search_term.second,
+              EmojiSearchEntry{.weighting = 1.0f * search_term.second,
                                .emoji_string = *emoji_string});
         }
         names.emplace(*emoji_string, *name);
@@ -131,59 +136,65 @@ void AddDataFromFileToMap(
   }
 }
 
-std::map<std::string_view, EmojiScore> GetResultsFromMap(
+std::map<std::string_view, EmojiMatchCost> GetResultsFromMap(
     const EmojiEntryMap& map,
     base::span<const std::u16string_view> lowercase_words,
-    int language_score) {
-  std::map<std::string_view, EmojiScore> scored_emoji;
+    std::map<std::string, std::string, std::less<>> names,
+    int language_cost) {
+  std::map<std::string_view, EmojiMatchCost> emoji_costs;
   for (const std::u16string_view lowercase_word : lowercase_words) {
-    std::map<std::string_view, EmojiScore> word_scored_emoji;
+    std::map<std::string_view, EmojiMatchCost> emoji_costs_for_word;
     for (auto [matches, end] = map.equal_range(PrefixMatcher{lowercase_word});
          matches != end; ++matches) {
       for (const auto& match : matches->second) {
-        double previous_score;
-        if (scored_emoji.empty()) {
+        float previous_cost;
+        if (emoji_costs.empty()) {
           // First word.
-          previous_score = 1;
-        } else if (const auto& it = scored_emoji.find(match.emoji_string);
-                   it != scored_emoji.end()) {
+          previous_cost = -1;
+        } else if (const auto& it = emoji_costs.find(match.emoji_string);
+                   it != emoji_costs.end()) {
           // Second+ word, and emoji was previously found.
-          previous_score = it->second.relevance_score;
+          previous_cost = it->second.relevance_cost;
         } else {
           // Second+ word, and emoji was not previously found.
           continue;
         }
         // Will zero initialize if entry missing
-        EmojiScore& score = word_scored_emoji[match.emoji_string];
-        score.language_score = language_score;
-        score.relevance_score +=
-            previous_score * match.weighting / matches->first.size();
+        EmojiMatchCost& cost = emoji_costs_for_word[match.emoji_string];
+        cost.language_cost = language_cost;
+        cost.relevance_cost +=
+            previous_cost * match.weighting / matches->first.size();
       }
     }
-    if (word_scored_emoji.empty()) {
+    if (emoji_costs_for_word.empty()) {
       // Early return if there were no matches, as we assume an empty
-      // `scored_emoji` means the first word.
+      // `emoji_costs` means the first word.
       break;
     }
-    scored_emoji = std::move(word_scored_emoji);
+    emoji_costs = std::move(emoji_costs_for_word);
   }
-  return scored_emoji;
+  for (auto& [emoji, cost] : emoji_costs) {
+    if (auto it = names.find(emoji); it != names.end()) {
+      cost.name_length = it->second.length();
+    }
+  }
+  return emoji_costs;
 }
 
-std::vector<EmojiSearchEntry> SortEmojiResultsByScore(
-    std::map<std::string_view, EmojiScore> scored_emoji) {
-  std::vector<std::pair<EmojiScore, std::string_view>> emojis_by_score;
-  emojis_by_score.reserve(scored_emoji.size());
-  base::ranges::transform(scored_emoji, std::back_inserter(emojis_by_score),
+std::vector<EmojiSearchEntry> SortEmojiResultsByCost(
+    std::map<std::string_view, EmojiMatchCost> emoji_costs) {
+  std::vector<std::pair<EmojiMatchCost, std::string_view>> emojis_by_cost;
+  emojis_by_cost.reserve(emoji_costs.size());
+  base::ranges::transform(emoji_costs, std::back_inserter(emojis_by_cost),
                           [](const auto& entry) {
                             return std::make_pair(entry.second, entry.first);
                           });
-  base::ranges::sort(emojis_by_score, std::greater<>());
+  base::ranges::sort(emojis_by_cost);
   std::vector<EmojiSearchEntry> ret;
-  ret.reserve(scored_emoji.size());
-  base::ranges::transform(emojis_by_score, std::back_inserter(ret),
+  ret.reserve(emojis_by_cost.size());
+  base::ranges::transform(emojis_by_cost, std::back_inserter(ret),
                           [](const auto& entry) {
-                            return EmojiSearchEntry{entry.first.relevance_score,
+                            return EmojiSearchEntry{-entry.first.relevance_cost,
                                                     std::string(entry.second)};
                           });
   return ret;
@@ -340,9 +351,9 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
     std::optional<size_t> max_emojis,
     std::optional<size_t> max_symbols,
     std::optional<size_t> max_emoticons) {
-  std::map<std::string_view, EmojiScore> emojis;
-  std::map<std::string_view, EmojiScore> symbols;
-  std::map<std::string_view, EmojiScore> emoticons;
+  std::map<std::string_view, EmojiMatchCost> emojis;
+  std::map<std::string_view, EmojiMatchCost> symbols;
+  std::map<std::string_view, EmojiMatchCost> emoticons;
 
   // Make search case insensitive.
   std::u16string lowercase_query = base::i18n::ToLower(query);
@@ -351,9 +362,9 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
           lowercase_query, u" ", base::WhitespaceHandling::TRIM_WHITESPACE,
           base::SplitResult::SPLIT_WANT_NONEMPTY);
 
-  // `language_codes` are sorted in order of preference, so start with a high
-  // language score then go down.
-  int language_score = 0;
+  // `language_codes` are sorted in order of preference, so start with a low
+  // language cost then go up.
+  int language_cost = 0;
   for (const std::string& code_str : language_codes) {
     std::optional<EmojiLanguageCode> code = GetLanguageCode(code_str);
     if (!code.has_value()) {
@@ -365,22 +376,22 @@ EmojiSearchResult EmojiSearch::SearchEmoji(
       // we can stop adding to the map.
       if (!max_emojis.has_value() || emojis.size() < *max_emojis) {
         emojis.merge(GetResultsFromMap(it->second.emojis, lowercase_words,
-                                       language_score));
+                                       it->second.names, language_cost));
       }
       if (!max_symbols.has_value() || symbols.size() < *max_symbols) {
         symbols.merge(GetResultsFromMap(it->second.symbols, lowercase_words,
-                                        language_score));
+                                        it->second.names, language_cost));
       }
       if (!max_emoticons.has_value() || emoticons.size() < *max_emoticons) {
         emoticons.merge(GetResultsFromMap(it->second.emoticons, lowercase_words,
-                                          language_score));
+                                          it->second.names, language_cost));
       }
-      --language_score;
+      ++language_cost;
     }
   }
-  return EmojiSearchResult(SortEmojiResultsByScore(emojis),
-                           SortEmojiResultsByScore(symbols),
-                           SortEmojiResultsByScore(emoticons));
+  return EmojiSearchResult(SortEmojiResultsByCost(emojis),
+                           SortEmojiResultsByCost(symbols),
+                           SortEmojiResultsByCost(emoticons));
 }
 
 void EmojiSearch::LoadEmojiLanguages(

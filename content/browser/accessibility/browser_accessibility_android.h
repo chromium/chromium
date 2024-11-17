@@ -72,6 +72,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   bool IsSlider() const;
   bool IsTableHeader() const;
   bool IsVisibleToUser() const;
+  bool ShouldUsePaneTitle() const;
 
   // This returns true for all nodes that we should navigate to.
   // Nodes that have a generic role, no accessible name, and aren't
@@ -135,6 +136,8 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   std::u16string GetHint() const;
 
   std::string GetRoleString() const;
+
+  std::u16string GetPaneTitle() const;
 
   std::u16string GetDialogModalMessageText() const;
 
@@ -240,12 +243,12 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   friend class BrowserAccessibility;  // Needs access to our constructor.
 
  private:
-  static size_t CommonPrefixLength(const std::u16string a,
-                                   const std::u16string b);
-  static size_t CommonSuffixLength(const std::u16string a,
-                                   const std::u16string b);
-  static size_t CommonEndLengths(const std::u16string a,
-                                 const std::u16string b);
+  static size_t CommonPrefixLength(const std::u16string& a,
+                                   const std::u16string& b);
+  static size_t CommonSuffixLength(const std::u16string& a,
+                                   const std::u16string& b);
+  static size_t CommonEndLengths(const std::u16string& a,
+                                 const std::u16string& b);
 
   // BrowserAccessibility overrides.
   BrowserAccessibility* PlatformGetLowestPlatformAncestor() const override;
@@ -259,7 +262,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // on a value (e.g. a date time, or combobox), we wish to expose the value
   // that the user has chosen. When the value is exposed as the name, then the
   // accessible name is added to the Android API's "hint" attribute instead.
-  bool ShouldExposeValueAsName() const;
+  bool ShouldExposeValueAsName(const std::u16string& value) const;
 
   int CountChildrenWithRole(ax::mojom::Role role) const;
 

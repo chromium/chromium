@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
@@ -59,9 +60,10 @@ class AttributionRequestHelper {
   explicit AttributionRequestHelper();
 };
 
-// Sets the Attribution Reporting request headers on attribution eligible
+// Computes the Attribution Reporting request headers on attribution eligible
 // requests. See https://github.com/WICG/attribution-reporting-api.
-void SetAttributionReportingHeaders(net::URLRequest&, const ResourceRequest&);
+net::HttpRequestHeaders ComputeAttributionReportingHeaders(
+    const ResourceRequest&);
 
 }  // namespace network
 

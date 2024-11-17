@@ -159,7 +159,7 @@ public class BookmarkOpenerTest {
     @Test
     @MediumTest
     public void testOpenBookmarkInCurrentTab() {
-        GURL url = new GURL(UrlConstants.ABOUT_URL);
+        GURL url = new GURL(UrlConstants.NTP_URL);
         BookmarkId id = addMobileBookmark("test", url);
         openBookmarkManager();
         openMobileBookmarks();
@@ -208,7 +208,7 @@ public class BookmarkOpenerTest {
     @Test
     @MediumTest
     public void testOpenBookmarkInCurrentTab_Incognito() {
-        GURL url = new GURL(UrlConstants.ABOUT_URL);
+        GURL url = new GURL(UrlConstants.NTP_URL);
         BookmarkId id = addMobileBookmark("test", url);
 
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_NON_NATIVE_URL, /* incognito= */ true);

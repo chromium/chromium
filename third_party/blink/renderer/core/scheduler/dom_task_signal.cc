@@ -39,13 +39,13 @@ class RepeatingCallbackAlgorithm final : public DOMTaskSignal::Algorithm {
 // static
 DOMTaskSignal* DOMTaskSignal::CreateFixedPriorityTaskSignal(
     ScriptState* script_state,
-    const AtomicString& priority) {
+    V8TaskPriority::Enum priority) {
   return MakeGarbageCollected<DOMTaskSignal>(script_state, priority, nullptr,
                                              HeapVector<Member<AbortSignal>>());
 }
 
 DOMTaskSignal::DOMTaskSignal(ExecutionContext* context,
-                             const AtomicString& priority,
+                             V8TaskPriority::Enum priority,
                              SignalType signal_type)
     : AbortSignal(context, signal_type), priority_(priority) {
   DCHECK_NE(signal_type, AbortSignal::SignalType::kComposite);
@@ -56,7 +56,7 @@ DOMTaskSignal::DOMTaskSignal(ExecutionContext* context,
 
 DOMTaskSignal::DOMTaskSignal(
     ScriptState* script_state,
-    const AtomicString& priority,
+    V8TaskPriority::Enum priority,
     DOMTaskSignal* priority_source_signal,
     const HeapVector<Member<AbortSignal>>& abort_source_signals)
     : AbortSignal(script_state, abort_source_signals), priority_(priority) {
@@ -77,15 +77,15 @@ DOMTaskSignal* DOMTaskSignal::any(ScriptState* script_state,
   DOMTaskSignal* priority_source = init->priority()->IsTaskSignal()
                                        ? init->priority()->GetAsTaskSignal()
                                        : nullptr;
-  AtomicString priority = priority_source
-                              ? priority_source->priority()
-                              : init->priority()->GetAsTaskPriority();
-  return MakeGarbageCollected<DOMTaskSignal>(script_state, priority,
+  V8TaskPriority priority = priority_source
+                                ? priority_source->priority()
+                                : init->priority()->GetAsTaskPriority();
+  return MakeGarbageCollected<DOMTaskSignal>(script_state, priority.AsEnum(),
                                              priority_source, signals);
 }
 
-AtomicString DOMTaskSignal::priority() {
-  return priority_;
+V8TaskPriority DOMTaskSignal::priority() {
+  return V8TaskPriority(priority_);
 }
 
 DOMTaskSignal::AlgorithmHandle* DOMTaskSignal::AddPriorityChangeAlgorithm(
@@ -102,7 +102,7 @@ DOMTaskSignal::AlgorithmHandle* DOMTaskSignal::AddPriorityChangeAlgorithm(
   return handle;
 }
 
-void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
+void DOMTaskSignal::SignalPriorityChange(V8TaskPriority::Enum priority,
                                          ExceptionState& exception_state) {
   if (is_priority_changing_) {
     exception_state.ThrowDOMException(
@@ -113,7 +113,7 @@ void DOMTaskSignal::SignalPriorityChange(const AtomicString& priority,
   if (priority_ == priority)
     return;
   is_priority_changing_ = true;
-  const AtomicString previous_priority = priority_;
+  const V8TaskPriority::Enum previous_priority = priority_;
   priority_ = priority;
 
   for (AlgorithmHandle* handle : priority_change_algorithms_) {

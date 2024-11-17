@@ -100,7 +100,7 @@
 #include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/shared_storage/shared_storage_header_observer.h"
-#include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
+#include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/browser/ssl/ssl_client_auth_handler.h"
 #include "content/browser/ssl/ssl_error_handler.h"
 #include "content/browser/ssl_private_key_impl.h"
@@ -451,7 +451,8 @@ class LoginHandlerDelegate {
       WebContents* web_contents,
       content::BrowserContext* browser_context,
       const net::AuthChallengeInfo& auth_info,
-      bool is_request_for_primary_main_frame,
+      bool is_request_for_primary_main_frame_navigation,
+      bool is_request_for_navigation,
       base::StrictNumeric<int32_t> process_id,
       base::StrictNumeric<int32_t> request_id,
       const GURL& url,
@@ -460,7 +461,9 @@ class LoginHandlerDelegate {
       : auth_challenge_responder_(std::move(auth_challenge_responder)),
         auth_info_(auth_info),
         request_id_(process_id, request_id),
-        is_request_for_primary_main_frame_(is_request_for_primary_main_frame),
+        is_request_for_primary_main_frame_navigation_(
+            is_request_for_primary_main_frame_navigation),
+        is_request_for_navigation_(is_request_for_navigation),
         creating_login_delegate_(false),
         url_(url),
         response_headers_(std::move(response_headers)),
@@ -508,7 +511,8 @@ class LoginHandlerDelegate {
     creating_login_delegate_ = true;
     login_delegate_ = GetContentClient()->browser()->CreateLoginDelegate(
         auth_info_, web_contents_.get(), browser_context_.get(), request_id_,
-        is_request_for_primary_main_frame_, url_, response_headers_,
+        is_request_for_primary_main_frame_navigation_,
+        is_request_for_navigation_, url_, response_headers_,
         first_auth_attempt_,
         base::BindOnce(&LoginHandlerDelegate::OnAuthCredentials,
                        weak_factory_.GetWeakPtr()));
@@ -533,7 +537,8 @@ class LoginHandlerDelegate {
       auth_challenge_responder_;
   net::AuthChallengeInfo auth_info_;
   const content::GlobalRequestID request_id_;
-  bool is_request_for_primary_main_frame_;
+  bool is_request_for_primary_main_frame_navigation_;
+  bool is_request_for_navigation_;
   bool creating_login_delegate_;
   GURL url_;
   const scoped_refptr<net::HttpResponseHeaders> response_headers_;
@@ -1329,10 +1334,10 @@ void StoragePartitionImpl::Initialize(
   dom_storage_context_ = DOMStorageContextWrapper::Create(
       this, browser_context_->GetSpecialStoragePolicy());
 
-  lock_manager_ = std::make_unique<LockManager>();
+  lock_manager_ = std::make_unique<LockManager<storage::BucketId>>();
 
-  shared_storage_worklet_host_manager_ =
-      std::make_unique<SharedStorageWorkletHostManager>();
+  shared_storage_runtime_manager_ =
+      std::make_unique<SharedStorageRuntimeManager>();
 
   scoped_refptr<ChromeBlobStorageContext> blob_context =
       ChromeBlobStorageContext::GetFor(browser_context_);
@@ -1515,29 +1520,14 @@ void StoragePartitionImpl::Initialize(
   }
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-  if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase)) {
-    if (is_in_memory()) {
-      // Pass an empty path if in_memory so that CdmStorage.db is not stored on
-      // disk.
-      cdm_storage_manager_ =
-          std::make_unique<CdmStorageManager>(base::FilePath());
-    } else {
-      cdm_storage_manager_ = std::make_unique<CdmStorageManager>(
-          partition_path_.Append(kCdmStorageDatabaseFileName));
-    }
-  }
-
-  media_license_manager_ = std::make_unique<MediaLicenseManager>(
-      is_in_memory(), browser_context_->GetSpecialStoragePolicy(),
-      quota_manager_proxy);
-
-  // When 'kCdmStorageDatabaseMigration' is enabled, in the
-  // 'MediaLicenseStorageHost', when operations occur, we make sure to
-  // update and reflect that in the CdmStorageDatabase as well.
-  if (base::FeatureList::IsEnabled(features::kCdmStorageDatabase) &&
-      base::FeatureList::IsEnabled(features::kCdmStorageDatabaseMigration)) {
-    CHECK(cdm_storage_manager_);
-    media_license_manager_->set_cdm_storage_manager(cdm_storage_manager_.get());
+  if (is_in_memory()) {
+    // Pass an empty path if in_memory so that CdmStorage.db is not stored on
+    // disk.
+    cdm_storage_manager_ =
+        std::make_unique<CdmStorageManager>(base::FilePath());
+  } else {
+    cdm_storage_manager_ = std::make_unique<CdmStorageManager>(
+        partition_path_.Append(kCdmStorageDatabaseFileName));
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
@@ -1690,15 +1680,15 @@ StoragePartitionImpl::GetLocalStorageControl() {
   return GetDOMStorageContext()->GetLocalStorageControl();
 }
 
-LockManager* StoragePartitionImpl::GetLockManager() {
+LockManager<storage::BucketId>* StoragePartitionImpl::GetLockManager() {
   DCHECK(initialized_);
   return lock_manager_.get();
 }
 
-SharedStorageWorkletHostManager*
-StoragePartitionImpl::GetSharedStorageWorkletHostManager() {
+SharedStorageRuntimeManager*
+StoragePartitionImpl::GetSharedStorageRuntimeManager() {
   DCHECK(initialized_);
-  return shared_storage_worklet_host_manager_.get();
+  return shared_storage_runtime_manager_.get();
 }
 
 storage::mojom::IndexedDBControl& StoragePartitionImpl::GetIndexedDBControl() {
@@ -1998,7 +1988,8 @@ void StoragePartitionImpl::OnAuthRequired(
         auth_challenge_responder) {
   URLLoaderNetworkContext context =
       url_loader_network_observers_.current_context();
-  std::optional<bool> is_primary_main_frame;
+  std::optional<bool> is_primary_main_frame_navigation;
+  std::optional<bool> is_navigation_request;
 
   if (window_id) {
     // Use `window_id` if it is provided, because this request was sent by a
@@ -2020,15 +2011,10 @@ void StoragePartitionImpl::OnAuthRequired(
           context = URLLoaderNetworkContext::CreateForRenderFrameHost(
               render_frame_host_id);
 
-          // TODO(crbug.com/963748, crbug.com/1251596): `is_primary_main_frame`
-          // should be false because only the request for a sub resource
-          // intercepted by a service worker reaches here.
-          auto* render_frame_host_impl =
-              RenderFrameHostImpl::FromID(render_frame_host_id);
-          if (render_frame_host_impl) {
-            is_primary_main_frame =
-                render_frame_host_impl->IsInPrimaryMainFrame();
-          }
+          // Only the request for a sub resource intercepted by a service worker
+          // reaches here.
+          is_primary_main_frame_navigation = false;
+          is_navigation_request = false;
         } else if (NavigationRequest* ongoing_navigation =
                        container_host->GetOngoingNavigationRequestBeforeCommit(
                            base::PassKey<StoragePartitionImpl>())) {
@@ -2052,8 +2038,11 @@ void StoragePartitionImpl::OnAuthRequired(
     return;
   }
 
-  if (!is_primary_main_frame.has_value()) {
-    is_primary_main_frame = context.IsPrimaryMainFrameRequest();
+  if (!is_primary_main_frame_navigation.has_value()) {
+    is_primary_main_frame_navigation = context.IsPrimaryMainFrameRequest();
+  }
+  if (!is_navigation_request.has_value()) {
+    is_navigation_request = context.IsNavigationRequestContext();
   }
   int process_id = network::mojom::kBrowserProcessId;
   if (context.type() == ContextType::kRenderFrameHostContext) {
@@ -2116,10 +2105,11 @@ void StoragePartitionImpl::OnAuthRequired(
     }
   }
 
-  new LoginHandlerDelegate(std::move(auth_challenge_responder),
-                           current_web_contents, browser_context_, auth_info,
-                           *is_primary_main_frame, process_id, request_id, url,
-                           head_headers, first_auth_attempt);  // deletes self
+  new LoginHandlerDelegate(
+      std::move(auth_challenge_responder), current_web_contents,
+      browser_context_, auth_info, *is_primary_main_frame_navigation,
+      *is_navigation_request, process_id, request_id, url, head_headers,
+      first_auth_attempt);  // deletes self
 }
 
 void StoragePartitionImpl::OnPrivateNetworkAccessPermissionRequired(
@@ -2794,6 +2784,11 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     if (!end.is_null()) {
       cookie_deletion_filter->created_before_time = end;
     }
+    if (!storage_key_origin_empty) {
+      cookie_deletion_filter->cookie_partition_key_collection =
+          net::CookiePartitionKeyCollection::FromOptional(
+              storage_key.ToCookiePartitionKey());
+    }
 
     cookie_manager->DeleteCookies(
         std::move(cookie_deletion_filter),
@@ -3293,12 +3288,11 @@ void StoragePartitionImpl::OverrideSharedWorkerServiceForTesting(
   shared_worker_service_ = std::move(shared_worker_service);
 }
 
-void StoragePartitionImpl::OverrideSharedStorageWorkletHostManagerForTesting(
-    std::unique_ptr<SharedStorageWorkletHostManager>
-        shared_storage_worklet_host_manager) {
+void StoragePartitionImpl::OverrideSharedStorageRuntimeManagerForTesting(
+    std::unique_ptr<SharedStorageRuntimeManager>
+        shared_storage_runtime_manager) {
   DCHECK(initialized_);
-  shared_storage_worklet_host_manager_ =
-      std::move(shared_storage_worklet_host_manager);
+  shared_storage_runtime_manager_ = std::move(shared_storage_runtime_manager);
 }
 
 void StoragePartitionImpl::OverrideSharedStorageHeaderObserverForTesting(

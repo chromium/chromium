@@ -78,12 +78,11 @@
   ToolbarType _steadyStateOmniboxPosition;
   /// Whether the omnibox focusing should happen with animation.
   BOOL _enableAnimationsForOmniboxFocus;
+  //// Indicates whether the focus came from a tap on the NTP's fakebox.
+  BOOL _focusedFromFakebox;
   /// Indicates whether the fakebox was pinned on last signal to focus from
   /// the fakebox.
   BOOL _fakeboxPinned;
-  /// Whether to show the share button IPH next time the location bar gets
-  /// unfocused.
-  BOOL _showShareButtonIPHOnNextLocationBarUnfocus;
   /// Command handler for showing the IPH.
   id<HelpCommands> _helpHandler;
 }
@@ -124,14 +123,14 @@
 
   segmentation_platform::DeviceSwitcherResultDispatcher* deviceSwitcherResult =
       nullptr;
-  if (!browser->GetBrowserState()->IsOffTheRecord()) {
+  if (!browser->GetProfile()->IsOffTheRecord()) {
     deviceSwitcherResult =
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDispatcherForProfile(browser->GetProfile());
   }
   self.toolbarMediator = [[ToolbarMediator alloc]
       initWithWebStateList:browser->GetWebStateList()
-               isIncognito:browser->GetBrowserState()->IsOffTheRecord()];
+               isIncognito:browser->GetProfile()->IsOffTheRecord()];
   self.toolbarMediator.delegate = self;
   self.toolbarMediator.deviceSwitcherResultDispatcher = deviceSwitcherResult;
 
@@ -170,8 +169,8 @@
   }
 
   [self updateToolbarsLayout];
-  _prerenderService = PrerenderServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  _prerenderService =
+      PrerenderServiceFactory::GetForProfile(self.browser->GetProfile());
 
   [super start];
   self.started = YES;
@@ -257,7 +256,7 @@
   // IsActive() value rather than checking -IsVisibleURLNewTabPage.
   NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   BOOL isNTP = NTPHelper && NTPHelper->IsActive();
-  BOOL isOffTheRecord = self.browser->GetBrowserState()->IsOffTheRecord();
+  BOOL isOffTheRecord = self.browser->GetProfile()->IsOffTheRecord();
   BOOL canShowTabStrip = IsRegularXRegularSizeClass(self.traitEnvironment);
 
   // Hide the toolbar when displaying content suggestions without the tab
@@ -383,7 +382,8 @@
   }
 }
 
-- (void)focusOmniboxFromFakeboxPinned:(BOOL)pinned {
+- (void)focusOmniboxFromFakebox:(BOOL)fromFakebox pinned:(BOOL)pinned {
+  _focusedFromFakebox = fromFakebox;
   _fakeboxPinned = pinned;
   [self.locationBarCoordinator focusOmniboxFromFakebox];
 }
@@ -529,22 +529,6 @@
   }
 }
 
-- (void)setTabGridButtonIPHHighlighted:(BOOL)iphHighlighted {
-  for (id<ToolbarCommands> coordinator in self.coordinators) {
-    [coordinator setTabGridButtonIPHHighlighted:iphHighlighted];
-  }
-}
-
-- (void)setNewTabButtonIPHHighlighted:(BOOL)iphHighlighted {
-  for (id<ToolbarCommands> coordinator in self.coordinators) {
-    [coordinator setNewTabButtonIPHHighlighted:iphHighlighted];
-  }
-}
-
-- (void)showShareButtonIPHAfterLocationBarUnfocus {
-  _showShareButtonIPHOnNextLocationBarUnfocus = YES;
-}
-
 #pragma mark - ToolbarMediatorDelegate
 
 - (void)transitionOmniboxToToolbarType:(ToolbarType)toolbarType {
@@ -608,9 +592,10 @@
 /// an incognito browser, the NTP is displayed, and whether the fakebox was
 /// pinned if it was selected.
 - (OmniboxFocusTrigger)omniboxFocusTrigger {
-  if (self.browser->GetBrowserState()->IsOffTheRecord() ||
+  if (self.browser->GetProfile()->IsOffTheRecord() ||
       !IsSplitToolbarMode(self.traitEnvironment)) {
-    return OmniboxFocusTrigger::kOther;
+    return _focusedFromFakebox ? OmniboxFocusTrigger::kUnpinnedFakebox
+                               : OmniboxFocusTrigger::kOther;
   }
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
@@ -631,14 +616,6 @@
 
 - (void)focusTransitionDidComplete:(BOOL)focused
                         completion:(ProceduralBlock)completion {
-  if (!focused && _showShareButtonIPHOnNextLocationBarUnfocus) {
-    // Must call this display method after the animation is done, because the
-    // display depends on the location of the share button to anchor the IPH,
-    // doing it in the middle of the animtion will lead to the anchoring point
-    // being off.
-    [_helpHandler presentInProductHelpWithType:InProductHelpType::kShareButton];
-    _showShareButtonIPHOnNextLocationBarUnfocus = NO;
-  }
   if (completion) {
     completion();
     completion = nil;

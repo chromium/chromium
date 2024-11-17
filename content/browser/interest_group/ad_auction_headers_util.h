@@ -6,8 +6,11 @@
 #define CONTENT_BROWSER_INTEREST_GROUP_AD_AUCTION_HEADERS_UTIL_H_
 
 #include <functional>
+#include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/types/expected.h"
+#include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/weak_document_ptr.h"
@@ -76,9 +79,14 @@ CONTENT_EXPORT std::vector<std::string> ParseAdAuctionResultResponseHeader(
 // and inserts the resulting additional bids into the provided map. This
 // function processes untrusted content, in an unsafe language, from an
 // unsandboxed process, hence the fuzz test coverage.
-CONTENT_EXPORT void ParseAdAuctionAdditionalBidResponseHeader(
+//
+// Upon failure, returns a base::unexpected failure string, otherwise, returns
+// base::ok().
+CONTENT_EXPORT base::expected<void, std::string>
+ParseAdAuctionAdditionalBidResponseHeader(
     const std::string& header_line,
-    std::map<std::string, std::vector<std::string>>& nonce_additional_bids_map);
+    std::map<std::string, std::vector<SignedAdditionalBidWithMetadata>>&
+        nonce_additional_bids_map);
 
 // Parses and sets the values of the `Ad-Auction-Result`, `Ad-Auction-Signals`,
 // and `Ad-Auction-Additional-Bid` headers on the `AdAuctionPageData`
@@ -87,7 +95,7 @@ CONTENT_EXPORT void ParseAdAuctionAdditionalBidResponseHeader(
 // `headers`.
 CONTENT_EXPORT void ProcessAdAuctionResponseHeaders(
     const url::Origin& request_origin,
-    Page& page,
+    RenderFrameHostImpl& rfh,
     scoped_refptr<net::HttpResponseHeaders> headers);
 
 // Removes the `Ad-Auction-Signals` and `Ad-Auction-Additional-Bid` response

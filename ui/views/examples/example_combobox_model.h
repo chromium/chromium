@@ -7,6 +7,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "ui/base/models/combobox_model.h"
 
 namespace views::examples {
@@ -25,7 +26,7 @@ class ExampleComboboxModel : public ui::ComboboxModel {
   std::u16string GetItemAt(size_t index) const override;
 
  private:
-  const base::span<const char* const> items_;
+  const base::raw_span<const char* const> items_;
 };
 
 }  // namespace views::examples

@@ -17,6 +17,8 @@ var WebRequestSchema =
     requireNative('schema_registry').GetSchema('webRequest');
 var WebViewActionRequests =
     require('webViewActionRequests').WebViewActionRequests;
+var WebViewConstants = require('webViewConstants').WebViewConstants;
+var tagLogMessage = require('webViewConstants').tagLogMessage;
 
 var WebRequestMessageEvent = CreateEvent('webViewInternal.onMessage');
 
@@ -261,10 +263,12 @@ WebViewEvents.prototype.handleFullscreenExitEvent = function(event, eventName) {
 
 WebViewEvents.prototype.handleLoadAbortEvent = function(event, eventName) {
   var showWarningMessage = function(code, reason) {
-    var WARNING_MSG_LOAD_ABORTED = '<webview>: ' +
-        'The load has aborted with error %1: %2.';
-    window.console.warn($String.replace(
-        $String.replace(WARNING_MSG_LOAD_ABORTED, '%1', code), '%2', reason));
+    window.console.warn(tagLogMessage(
+        this.view.getLogTag(),
+        $String.replace(
+            $String.replace(
+                WebViewConstants.WARNING_MSG_LOAD_ABORTED, '%1', code),
+            '%2', reason)));
   };
   var webViewEvent = this.makeDomEvent(event, eventName);
   if (this.view.dispatchEvent(webViewEvent)) {

@@ -334,7 +334,7 @@ void MojoRenderer::OnDemuxerStreamConnectionError(
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION() << "Unrecognized demuxer stream=" << stream;
+  NOTREACHED() << "Unrecognized demuxer stream=" << stream;
 }
 
 void MojoRenderer::BindRemoteRendererIfNeeded() {

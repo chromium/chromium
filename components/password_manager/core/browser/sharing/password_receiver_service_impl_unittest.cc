@@ -361,8 +361,6 @@ TEST_P(PasswordReceiverServiceImplTest,
 
   // Set up an account store user (a non-syncing one, but that doesn't really
   // matter).
-  base::test::ScopedFeatureList feature_list(
-      syncer::kEnablePasswordsAccountStorageForNonSyncingUsers);
   sync_service().SetSignedIn(signin::ConsentLevel::kSignin);
 #if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   pref_service().registry()->RegisterDictionaryPref(

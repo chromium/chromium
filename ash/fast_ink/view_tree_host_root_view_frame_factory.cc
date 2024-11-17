@@ -17,7 +17,9 @@
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
@@ -79,7 +81,18 @@ ViewTreeHostRootViewFrameFactory::CreateUiResource(
       resource->context_provider->SharedImageInterface();
 
   gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  if (is_overlay_candidate) {
+
+  bool add_scanout_usage = is_overlay_candidate;
+
+  // Scanout usage should be added only if scanout of SharedImages is supported.
+  // However, historically this was not checked.
+  // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
+  if (base::FeatureList::IsEnabled(
+          features::kViewTreeHostAddScanoutUsageOnlyIfSupportedBySharedImage)) {
+    add_scanout_usage &= sii->GetCapabilities().supports_scanout_shared_images;
+  }
+
+  if (add_scanout_usage) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
@@ -235,10 +248,8 @@ void ViewTreeHostRootViewFrameFactory::Paint(
 
   SkImageInfo info = SkImageInfo::MakeN32Premul(mapping->Size().width(),
                                                 mapping->Size().height());
-  uint8_t* data = static_cast<uint8_t*>(mapping->Memory(0));
-  int stride = mapping->Stride(0);
-
-  auto canvas = SkCanvas::MakeRasterDirect(info, data, stride);
+  std::unique_ptr<SkCanvas> canvas = SkCanvas::MakeRasterDirect(
+      info, mapping->GetMemoryForPlane(0).data(), mapping->Stride(0));
   canvas->setMatrix(gfx::TransformToFlattenedSkMatrix(rotate_transform));
 
   display_item_list->Raster(canvas.get());

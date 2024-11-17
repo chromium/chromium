@@ -56,8 +56,6 @@ class WaylandCursorBufferListener;
 class WaylandEventSource;
 class WaylandOutputManager;
 class WaylandSeat;
-class WaylandZAuraShell;
-class WaylandZAuraOutputManagerV2;
 class WaylandZcrColorManager;
 class WaylandZcrCursorShapes;
 class WaylandZcrTouchpadHaptics;
@@ -84,7 +82,7 @@ class OverlayPrioritizer;
 //
 // See also tools/metrics/histograms/README.md#enum-histograms
 enum class UMALinuxWaylandShell {
-  kZauraShell = 0,
+  // kZauraShell = 0, // Removed.
   kGtkShell1 = 1,
   kOrgKdePlasmaShell = 2,
   kXdgWmBase = 3,
@@ -114,10 +112,6 @@ class WaylandConnection {
   // Sets a callback that that shutdowns the browser in case of unrecoverable
   // error. Called by WaylandEventWatcher.
   void SetShutdownCb(base::OnceCallback<void()> shutdown_cb);
-
-  // Returns the dotted number version of the Wayland server. For Lacros, this
-  // is the Ash Chrome version.
-  base::Version GetServerVersion() const;
 
   wl_compositor* compositor() const { return compositor_.get(); }
   // The server version of the compositor interface (might be higher than the
@@ -153,6 +147,13 @@ class WaylandConnection {
   zwp_linux_explicit_synchronization_v1* linux_explicit_synchronization_v1()
       const {
     return linux_explicit_synchronization_.get();
+  }
+  wp_linux_drm_syncobj_manager_v1* linux_drm_syncobj_manager_v1() const {
+    return linux_drm_syncobj_manager_.get();
+  }
+  bool SupportsExplicitSync() const {
+    return !!linux_explicit_synchronization_v1() ||
+           !!linux_drm_syncobj_manager_v1();
   }
   zxdg_decoration_manager_v1* xdg_decoration_manager_v1() const {
     return xdg_decoration_manager_.get();
@@ -202,12 +203,6 @@ class WaylandConnection {
   WaylandBufferManagerHost* buffer_manager_host() const {
     return buffer_manager_host_.get();
   }
-
-  WaylandZAuraOutputManagerV2* zaura_output_manager_v2() const {
-    return zaura_output_manager_v2_.get();
-  }
-
-  WaylandZAuraShell* zaura_shell() const { return zaura_shell_.get(); }
 
   WaylandZcrColorManager* zcr_color_manager() const {
     return zcr_color_manager_.get();
@@ -313,14 +308,6 @@ class WaylandConnection {
     return available_globals_;
   }
 
-  bool surface_submission_in_pixel_coordinates() const {
-    return surface_submission_in_pixel_coordinates_;
-  }
-
-  void set_surface_submission_in_pixel_coordinates(bool enabled) {
-    surface_submission_in_pixel_coordinates_ = enabled;
-  }
-
   bool supports_viewporter_surface_scaling() const {
     return supports_viewporter_surface_scaling_;
   }
@@ -329,22 +316,17 @@ class WaylandConnection {
     supports_viewporter_surface_scaling_ = enabled;
   }
 
-  bool UseViewporterSurfaceScaling() const {
-    return supports_viewporter_surface_scaling_ &&
-           !surface_submission_in_pixel_coordinates_;
-  }
-
   bool UsePerSurfaceScaling() const {
     return base::FeatureList::IsEnabled(features::kWaylandPerSurfaceScale) &&
-           UseViewporterSurfaceScaling();
+           supports_viewporter_surface_scaling();
+  }
+
+  bool IsUiScaleEnabled() const {
+    return base::FeatureList::IsEnabled(features::kWaylandUiScale) &&
+           UsePerSurfaceScaling();
   }
 
   bool ShouldUseOverlayDelegation() const;
-
-  // True if the client has bound the either aura output manager globals. If
-  // present aura output manager handles the responsibilities of keeping
-  // output metrics up to date and triggering delegate notifications.
-  bool IsUsingZAuraOutputManager() const;
 
   wl::SerialTracker& serial_tracker() { return serial_tracker_; }
 
@@ -357,13 +339,10 @@ class WaylandConnection {
   }
   display::TabletState GetTabletState() { return tablet_layout_state_; }
 
-  const gfx::PointF MaybeConvertLocation(const gfx::PointF& location,
-                                         const WaylandWindow* window) const;
-
   void DumpState(std::ostream& out) const;
 
   bool UseImplicitSyncInterop() const {
-    return !linux_explicit_synchronization_v1() &&
+    return !SupportsExplicitSync() &&
            WaylandBufferManagerHost::SupportsImplicitSyncInterop();
   }
 
@@ -395,8 +374,6 @@ class WaylandConnection {
   friend class WaylandDataDeviceManager;
   friend class WaylandOutput;
   friend class WaylandSeat;
-  friend class WaylandZAuraOutputManagerV2;
-  friend class WaylandZAuraShell;
   friend class WaylandZcrTouchpadHaptics;
   friend class WaylandZwpPointerConstraints;
   friend class WaylandZwpPointerGestures;
@@ -425,10 +402,6 @@ class WaylandConnection {
 
   // Returns true if the required wl_globals are announced by the server.
   bool WlGlobalsReady() const;
-
-  // Based on the bound globals, returns true if required information are
-  // announced by the server. E.g. server version from zaura-shell.
-  bool WlObjectsReady() const;
 
   // Updates InputDevice structures in Chrome. Currently, Wayland doesn't
   // support such, so the devices are derived from the connected interfaces.
@@ -501,6 +474,8 @@ class WaylandConnection {
   wl::Object<zcr_text_input_extension_v1> text_input_extension_v1_;
   wl::Object<zwp_linux_explicit_synchronization_v1>
       linux_explicit_synchronization_;
+  bool enable_linux_drm_syncobj_for_testing_ = false;
+  wl::Object<wp_linux_drm_syncobj_manager_v1> linux_drm_syncobj_manager_;
   wl::Object<zxdg_decoration_manager_v1> xdg_decoration_manager_;
   wl::Object<zcr_extended_drag_v1> extended_drag_v1_;
   wl::Object<::xdg_toplevel_drag_manager_v1> xdg_toplevel_drag_manager_v1_;
@@ -523,8 +498,6 @@ class WaylandConnection {
   std::unique_ptr<WaylandDataDeviceManager> data_device_manager_;
   std::unique_ptr<WaylandOutputManager> output_manager_;
   std::unique_ptr<WaylandCursorPosition> cursor_position_;
-  std::unique_ptr<WaylandZAuraOutputManagerV2> zaura_output_manager_v2_;
-  std::unique_ptr<WaylandZAuraShell> zaura_shell_;
   std::unique_ptr<WaylandZcrColorManager> zcr_color_manager_;
   std::unique_ptr<WaylandCursorShape> cursor_shape_;
   std::unique_ptr<WaylandZcrCursorShapes> zcr_cursor_shapes_;
@@ -572,12 +545,6 @@ class WaylandConnection {
   // The current window table mode layout state.
   display::TabletState tablet_layout_state_ =
       display::TabletState::kInClamshellMode;
-
-  // Surfaces are submitted in pixel coordinates. Their buffer scales are always
-  // advertised to server as 1, and the scale via vp_viewporter won't be
-  // applied. The server will be responsible to scale the buffers to the right
-  // sizes.
-  bool surface_submission_in_pixel_coordinates_ = false;
 
   // This is set if wp_viewporter may be used to instruct the compositor to
   // properly scale fractional scaled surfaces.

@@ -418,14 +418,12 @@ int AXPosition::ChildIndex() const {
 int AXPosition::TextOffset() const {
   if (IsTextPosition())
     return text_offset_or_child_index_;
-  NOTREACHED_IN_MIGRATION() << *this << " should be a text position.";
-  return 0;
+  NOTREACHED() << *this << " should be a text position.";
 }
 
 int AXPosition::MaxTextOffset() const {
   if (!IsTextPosition()) {
-    NOTREACHED_IN_MIGRATION() << *this << " should be a text position.";
-    return 0;
+    NOTREACHED() << *this << " should be a text position.";
   }
 
   // TODO(nektar): Make AXObject::TextLength() public and use throughout this
@@ -480,8 +478,7 @@ int AXPosition::MaxTextOffset() const {
 
 TextAffinity AXPosition::Affinity() const {
   if (!IsTextPosition()) {
-    NOTREACHED_IN_MIGRATION() << *this << " should be a text position.";
-    return TextAffinity::kDownstream;
+    NOTREACHED() << *this << " should be a text position.";
   }
 
   return affinity_;
@@ -778,14 +775,11 @@ const AXPosition AXPosition::AsValidDOMPosition(
   if ((IsTextPosition() &&
        (!container->GetClosestNode() ||
         container->GetClosestNode()->IsMarkerPseudoElement())) ||
-      container->IsVirtualObject() ||
       (!child && last_child &&
        (!last_child->GetClosestNode() ||
-        last_child->GetClosestNode()->IsMarkerPseudoElement() ||
-        last_child->IsVirtualObject())) ||
+        last_child->GetClosestNode()->IsMarkerPseudoElement())) ||
       (child && (!child->GetClosestNode() ||
-                 child->GetClosestNode()->IsMarkerPseudoElement() ||
-                 child->IsVirtualObject()))) {
+                 child->GetClosestNode()->IsMarkerPseudoElement()))) {
     AXPosition result;
     if (adjustment_behavior == AXPositionAdjustmentBehavior::kMoveRight)
       result = CreateNextPosition();
@@ -1109,10 +1103,8 @@ bool operator==(const AXPosition& a, const AXPosition& b) {
     return a.TextOffset() == b.TextOffset() && a.Affinity() == b.Affinity();
   if (!a.IsTextPosition() && !b.IsTextPosition())
     return a.ChildIndex() == b.ChildIndex();
-  NOTREACHED_IN_MIGRATION()
-      << "AXPosition objects having the same container object should "
-         "have the same type.";
-  return false;
+  NOTREACHED() << "AXPosition objects having the same container object should "
+                  "have the same type.";
 }
 
 bool operator!=(const AXPosition& a, const AXPosition& b) {
@@ -1131,10 +1123,9 @@ bool operator<(const AXPosition& a, const AXPosition& b) {
       return a.TextOffset() < b.TextOffset();
     if (!a.IsTextPosition() && !b.IsTextPosition())
       return a.ChildIndex() < b.ChildIndex();
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "AXPosition objects having the same container object should "
            "have the same type.";
-    return false;
   }
 
   int index_in_ancestor1, index_in_ancestor2;
@@ -1172,10 +1163,9 @@ bool operator>(const AXPosition& a, const AXPosition& b) {
       return a.TextOffset() > b.TextOffset();
     if (!a.IsTextPosition() && !b.IsTextPosition())
       return a.ChildIndex() > b.ChildIndex();
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "AXPosition objects having the same container object should "
            "have the same type.";
-    return false;
   }
 
   int index_in_ancestor1, index_in_ancestor2;

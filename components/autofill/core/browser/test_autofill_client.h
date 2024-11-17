@@ -7,6 +7,7 @@
 
 #include <concepts>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/i18n/rtl.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -30,12 +32,13 @@
 #include "components/autofill/core/browser/logging/text_log_receiver.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/mock_autocomplete_history_manager.h"
+#include "components/autofill/core/browser/mock_autofill_ai_delegate.h"
 #include "components/autofill/core/browser/mock_autofill_optimization_guide.h"
-#include "components/autofill/core/browser/mock_autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/test_payments_network_interface.h"
+#include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/strike_databases/payments/test_strike_database.h"
 #include "components/autofill/core/browser/test_address_normalizer.h"
 #include "components/autofill/core/browser/test_form_data_importer.h"
@@ -46,6 +49,7 @@
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/device_reauth/mock_device_authenticator.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/prefs/pref_service.h"
@@ -63,10 +67,8 @@
 #endif
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #endif
-
-using ::autofill::test::AutofillTestingPrefService;
 
 namespace autofill {
 
@@ -98,6 +100,12 @@ class TestAutofillClientTemplate : public T {
     test_ukm_recorder_.UpdateSourceURL(source_id_, form_origin_);
   }
 
+  base::WeakPtr<AutofillClient> GetWeakPtr() override {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  const std::string& GetAppLocale() const override { return app_locale_; }
+
   version_info::Channel GetChannel() const override {
     return channel_for_testing_;
   }
@@ -128,12 +136,21 @@ class TestAutofillClientTemplate : public T {
     mock_autofill_optimization_guide_.reset();
   }
 
-  MockAutofillPredictionImprovementsDelegate*
-  GetAutofillPredictionImprovementsDelegate() override {
-    return mock_autofill_prediction_improvements_delegate_.get();
+  MockAutofillAiDelegate* GetAutofillAiDelegate() override {
+    return mock_autofill_ai_delegate_.get();
   }
 
-  AutocompleteHistoryManager* GetAutocompleteHistoryManager() override {
+  SingleFieldFillRouter& GetSingleFieldFillRouter() override {
+    if (!single_field_fill_router_) {
+      single_field_fill_router_ = std::make_unique<SingleFieldFillRouter>(
+          GetAutocompleteHistoryManager(),
+          GetPaymentsAutofillClient()->GetIbanManager(),
+          GetPaymentsAutofillClient()->GetMerchantPromoCodeManager());
+    }
+    return *single_field_fill_router_;
+  }
+
+  MockAutocompleteHistoryManager* GetAutocompleteHistoryManager() override {
     return &mock_autocomplete_history_manager_;
   }
 
@@ -141,20 +158,25 @@ class TestAutofillClientTemplate : public T {
     return plus_address_delegate_.get();
   }
 
-  AutofillTestingPrefService* GetPrefs() override {
+  test::AutofillTestingPrefService* GetPrefs() override {
     if (!prefs_) {
       prefs_ = autofill::test::PrefServiceForTesting();
     }
     return prefs_.get();
   }
 
-  const AutofillTestingPrefService* GetPrefs() const override {
+  const test::AutofillTestingPrefService* GetPrefs() const override {
     return const_cast<TestAutofillClientTemplate*>(this)->GetPrefs();
   }
 
   syncer::SyncService* GetSyncService() override { return test_sync_service_; }
 
   signin::IdentityManager* GetIdentityManager() override {
+    return const_cast<signin::IdentityManager*>(
+        std::as_const(*this).GetIdentityManager());
+  }
+
+  const signin::IdentityManager* GetIdentityManager() const override {
     return identity_test_env_.identity_manager();
   }
 
@@ -162,8 +184,7 @@ class TestAutofillClientTemplate : public T {
     if (!form_data_importer_) {
       set_test_form_data_importer(std::make_unique<FormDataImporter>(
           /*client=*/this,
-          /*history_service=*/nullptr,
-          /*app_locale=*/"en-US"));
+          /*history_service=*/nullptr));
     }
     return form_data_importer_.get();
   }
@@ -201,14 +222,24 @@ class TestAutofillClientTemplate : public T {
   }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  AutofillMlPredictionModelHandler* GetAutofillMlPredictionModelHandler()
+  FieldClassificationModelHandler* GetAutofillFieldClassificationModelHandler()
       override {
-    return ml_prediction_model_handler_.get();
+    return autofill_ml_prediction_model_handler_.get();
   }
 
-  void set_ml_prediction_model_handler(
-      std::unique_ptr<AutofillMlPredictionModelHandler> handler) {
-    ml_prediction_model_handler_ = std::move(handler);
+  void set_autofill_ml_prediction_model_handler(
+      std::unique_ptr<FieldClassificationModelHandler> handler) {
+    autofill_ml_prediction_model_handler_ = std::move(handler);
+  }
+
+  FieldClassificationModelHandler*
+  GetPasswordManagerFieldClassificationModelHandler() override {
+    return password_ml_prediction_model_handler_.get();
+  }
+
+  void set_password_ml_prediction_model_handler(
+      std::unique_ptr<FieldClassificationModelHandler> handler) {
+    password_ml_prediction_model_handler_ = std::move(handler);
   }
 #endif
 
@@ -290,20 +321,40 @@ class TestAutofillClientTemplate : public T {
 
   SuggestionHidingReason popup_hiding_reason() { return popup_hidden_reason_; }
 
-  void ShowAutofillFieldIphForManualFallbackFeature(
-      const FormFieldData& field) override {
-    is_showing_manual_fallback_iph_ = true;
+  bool ShowAutofillFieldIphForFeature(
+      const FormFieldData& field,
+      AutofillClient::IphFeature feature) override {
+    autofill_iph_showing_ = feature;
+    return true;
   }
 
-  void HideAutofillFieldIphForManualFallbackFeature() override {
-    is_showing_manual_fallback_iph_ = false;
+  void HideAutofillFieldIph() override { autofill_iph_showing_ = std::nullopt; }
+
+  bool IsShowingManualFallbackIph() {
+    return autofill_iph_showing_ == AutofillClient::IphFeature::kManualFallback;
   }
 
-  bool IsShowingManualFallbackIph() { return is_showing_manual_fallback_iph_; }
+  void NotifyIphFeatureUsed(AutofillClient::IphFeature feature) override {
+    if (notify_iph_feature_used_mock_callback_) {
+      notify_iph_feature_used_mock_callback_->Run(feature);
+    }
+  }
+
+  bool IsAutofillEnabled() const override {
+    return IsAutofillProfileEnabled() || IsAutofillPaymentMethodsEnabled();
+  }
+
+  bool IsAutofillProfileEnabled() const override {
+    return autofill_profile_enabled_;
+  }
+
+  bool IsAutofillPaymentMethodsEnabled() const override {
+    return autofill_payment_methods_enabled_;
+  }
 
   bool IsAutocompleteEnabled() const override { return true; }
 
-  bool IsPasswordManagerEnabled() override { return true; }
+  bool IsPasswordManagerEnabled() const override { return true; }
 
   void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
                             AutofillTriggerSource trigger_source,
@@ -368,8 +419,32 @@ class TestAutofillClientTemplate : public T {
     return test_addresses_;
   }
 
-  void SetPrefs(std::unique_ptr<AutofillTestingPrefService> prefs) {
+  void SetPrefs(std::unique_ptr<test::AutofillTestingPrefService> prefs) {
     prefs_ = std::move(prefs);
+  }
+
+  void SetAutofillProfileEnabled(bool autofill_profile_enabled) {
+    autofill_profile_enabled_ = autofill_profile_enabled;
+    if (PrefService* prefs = GetPrefs()) {
+      prefs->SetBoolean(prefs::kAutofillProfileEnabled,
+                        autofill_profile_enabled);
+    }
+    if (!autofill_profile_enabled_) {
+      // Profile data is refreshed when this pref is changed.
+      GetPersonalDataManager()->test_address_data_manager().ClearProfiles();
+    }
+  }
+
+  void SetAutofillPaymentMethodsEnabled(bool autofill_payment_methods_enabled) {
+    autofill_payment_methods_enabled_ = autofill_payment_methods_enabled;
+    if (PrefService* prefs = GetPrefs()) {
+      prefs->SetBoolean(prefs::kAutofillCreditCardEnabled,
+                        autofill_payment_methods_enabled);
+    }
+    if (!autofill_payment_methods_enabled) {
+      // Credit card data is refreshed when this pref is changed.
+      GetPersonalDataManager()->test_payments_data_manager().ClearCreditCards();
+    }
   }
 
   void set_personal_data_manager(std::unique_ptr<TestPersonalDataManager> pdm) {
@@ -382,6 +457,11 @@ class TestAutofillClientTemplate : public T {
   void set_payments_autofill_client(
       std::unique_ptr<payments::TestPaymentsAutofillClient> payments_client) {
     payments_autofill_client_ = std::move(payments_client);
+  }
+
+  void set_single_field_fill_router(
+      std::unique_ptr<SingleFieldFillRouter> router) {
+    single_field_fill_router_ = std::move(router);
   }
 
   void set_test_strike_database(
@@ -430,8 +510,8 @@ class TestAutofillClientTemplate : public T {
     format_for_large_keyboard_accessory_ = format_for_large_keyboard_accessory;
   }
 
-  MockAutocompleteHistoryManager* GetMockAutocompleteHistoryManager() {
-    return &mock_autocomplete_history_manager_;
+  void set_app_locale(std::string app_locale) {
+    app_locale_ = std::move(app_locale);
   }
 
   void set_channel_for_testing(const version_info::Channel channel) {
@@ -462,6 +542,11 @@ class TestAutofillClientTemplate : public T {
     suggestion_ui_session_id_ = session_id;
   }
 
+  void set_notify_iph_feature_used_mock_callback(
+      base::RepeatingCallback<void(AutofillClient::IphFeature)> callback) {
+    notify_iph_feature_used_mock_callback_ = std::move(callback);
+  }
+
   GURL form_origin() { return form_origin_; }
 
   ukm::TestUkmRecorder* GetTestUkmRecorder() { return &test_ukm_recorder_; }
@@ -479,10 +564,9 @@ class TestAutofillClientTemplate : public T {
   std::unique_ptr<::testing::NiceMock<MockAutofillOptimizationGuide>>
       mock_autofill_optimization_guide_ =
           std::make_unique<testing::NiceMock<MockAutofillOptimizationGuide>>();
-  std::unique_ptr<
-      ::testing::NiceMock<MockAutofillPredictionImprovementsDelegate>>
-      mock_autofill_prediction_improvements_delegate_ = std::make_unique<
-          testing::NiceMock<MockAutofillPredictionImprovementsDelegate>>();
+  std::unique_ptr<::testing::NiceMock<MockAutofillAiDelegate>>
+      mock_autofill_ai_delegate_ =
+          std::make_unique<testing::NiceMock<MockAutofillAiDelegate>>();
   ::testing::NiceMock<MockAutocompleteHistoryManager>
       mock_autocomplete_history_manager_;
   ::testing::NiceMock<MockFastCheckoutClient> mock_fast_checkout_client_;
@@ -490,12 +574,17 @@ class TestAutofillClientTemplate : public T {
       device_authenticator_ = nullptr;
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  std::unique_ptr<AutofillMlPredictionModelHandler>
-      ml_prediction_model_handler_;
+  std::unique_ptr<FieldClassificationModelHandler>
+      autofill_ml_prediction_model_handler_;
+  std::unique_ptr<FieldClassificationModelHandler>
+      password_ml_prediction_model_handler_;
 #endif
 
+  bool autofill_profile_enabled_ = true;
+  bool autofill_payment_methods_enabled_ = true;
+
   // NULL by default.
-  std::unique_ptr<AutofillTestingPrefService> prefs_;
+  std::unique_ptr<test::AutofillTestingPrefService> prefs_;
   std::unique_ptr<TestStrikeDatabase> test_strike_database_;
 
   std::unique_ptr<TestPersonalDataManager> test_personal_data_manager_;
@@ -503,6 +592,7 @@ class TestAutofillClientTemplate : public T {
   // because they keep a reference to it.
   std::unique_ptr<payments::TestPaymentsAutofillClient>
       payments_autofill_client_;
+  std::unique_ptr<SingleFieldFillRouter> single_field_fill_router_;
   std::unique_ptr<FormDataImporter> form_data_importer_;
 
   GURL form_origin_{"https://example.test"};
@@ -516,6 +606,8 @@ class TestAutofillClientTemplate : public T {
 
   bool format_for_large_keyboard_accessory_ = false;
 
+  std::string app_locale_ = "en-US";
+
   version_info::Channel channel_for_testing_ = version_info::Channel::UNKNOWN;
 
   bool is_off_the_record_ = false;
@@ -524,7 +616,7 @@ class TestAutofillClientTemplate : public T {
 
   SuggestionHidingReason popup_hidden_reason_;
 
-  bool is_showing_manual_fallback_iph_ = false;
+  std::optional<AutofillClient::IphFeature> autofill_iph_showing_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_ =
@@ -548,6 +640,9 @@ class TestAutofillClientTemplate : public T {
   std::optional<AutofillClient::SuggestionUiSessionId>
       suggestion_ui_session_id_;
 
+  std::optional<base::RepeatingCallback<void(AutofillClient::IphFeature)>>
+      notify_iph_feature_used_mock_callback_;
+
   LogRouter log_router_;
   struct LogToTerminal {
     explicit LogToTerminal(LogRouter& log_router) {
@@ -559,6 +654,8 @@ class TestAutofillClientTemplate : public T {
   } log_to_terminal_{log_router_};
   std::unique_ptr<LogManager> log_manager_ =
       LogManager::Create(&log_router_, base::NullCallback());
+
+  base::WeakPtrFactory<TestAutofillClientTemplate> weak_ptr_factory_{this};
 };
 
 // A simple `AutofillClient` for tests. Consider `TestContentAutofillClient` as

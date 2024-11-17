@@ -15,7 +15,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/test/global_object.h"
 #include "ui/ozone/platform/wayland/test/test_output_metrics.h"
-#include "ui/ozone/platform/wayland/test/test_zaura_output.h"
 #include "ui/ozone/platform/wayland/test/test_zxdg_output.h"
 
 struct wl_client;
@@ -29,18 +28,8 @@ namespace wl {
 // default.
 class TestOutput : public GlobalObject {
  public:
-  class Delegate {
-   public:
-    // Called immediately before Flush() sends metrics events to clients.
-    virtual void OnTestOutputFlush(TestOutput* test_output,
-                                   const TestOutputMetrics& metrics) = 0;
-
-    // Called immediately after the test output's global is destroyed.
-    virtual void OnTestOutputGlobalDestroy(TestOutput* test_output) = 0;
-  };
-
-  explicit TestOutput(Delegate* delegate);
-  TestOutput(Delegate* delegate, TestOutputMetrics metrics);
+  TestOutput();
+  explicit TestOutput(TestOutputMetrics metrics);
   TestOutput(const TestOutput&) = delete;
   TestOutput& operator=(const TestOutput&) = delete;
   ~TestOutput() override;
@@ -49,10 +38,6 @@ class TestOutput : public GlobalObject {
 
   // Gets the name of the associated wl_output global.
   uint64_t GetOutputName(wl_client* client) const;
-
-  // Useful only when zaura_shell is supported.
-  void set_aura_shell_enabled() { aura_shell_enabled_ = true; }
-  bool aura_shell_enabled() { return aura_shell_enabled_; }
 
   //////////////////////////////////////////////////////////////////////////////
   // Output metrics helpers.
@@ -69,9 +54,6 @@ class TestOutput : public GlobalObject {
   void SetLogicalSize(const gfx::Size& xdg_logical_size);
   void SetLogicalOrigin(const gfx::Point& xdg_logical_origin);
   void SetPanelTransform(wl_output_transform wl_panel_transform);
-  void SetLogicalInsets(const gfx::Insets& wl_logical_insets);
-  void SetDeviceScaleFactor(float aura_device_scale_factor);
-  void SetLogicalTransform(wl_output_transform aura_logical_transform);
 
   const gfx::Size& GetPhysicalSize() const;
   const gfx::Point& GetOrigin() const;
@@ -82,10 +64,7 @@ class TestOutput : public GlobalObject {
   // Flushes `metrics_` for this output and all available extensions.
   void Flush();
 
-  void SetAuraOutput(TestZAuraOutput* aura_output);
-  TestZAuraOutput* GetAuraOutput();
-
-  void SetXdgOutput(TestZXdgOutput* aura_output);
+  void SetXdgOutput(TestZXdgOutput* xdg_output);
   TestZXdgOutput* xdg_output() { return xdg_output_; }
 
   void set_suppress_implicit_flush(bool suppress_implicit_flush) {
@@ -93,23 +72,16 @@ class TestOutput : public GlobalObject {
   }
 
   // GlobalObject:
-  void DestroyGlobal() override;
   void OnBind() override;
 
  private:
-  bool aura_shell_enabled_ = false;
-
   // Disable sending metrics to clients implicitly (i.e. when the output is
   // bound or when output extensions are created). If this is set `Flush()` must
   // be explicitly called to propagate pending metrics.
   bool suppress_implicit_flush_ = false;
 
-  // The delegate strictly outlives TestOutput instances.
-  const raw_ptr<Delegate> delegate_;
-
   TestOutputMetrics metrics_;
 
-  raw_ptr<TestZAuraOutput, DanglingUntriaged> aura_output_ = nullptr;
   raw_ptr<TestZXdgOutput, DanglingUntriaged> xdg_output_ = nullptr;
 };
 

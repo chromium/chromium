@@ -14,8 +14,6 @@ static_library("browser_sync") {
     "common_controller_builder.h",
     "signin_confirmation_helper.cc",
     "signin_confirmation_helper.h",
-    "sync_client_utils.cc",
-    "sync_client_utils.h",
     "sync_engine_factory_impl.cc",
     "sync_engine_factory_impl.h",
     "sync_internals_message_handler.cc",
@@ -51,8 +49,7 @@ static_library("browser_sync") {
     "//components/prefs",
     "//components/reading_list/core",
     "//components/reading_list/features:flags",
-    "//components/saved_tab_groups:core",
-    "//components/saved_tab_groups:model",
+    "//components/saved_tab_groups/public",
     "//components/search_engines",
     "//components/send_tab_to_self",
     "//components/sharing_message",
@@ -97,7 +94,6 @@ source_set("unit_tests") {
 
   sources = [
     "active_devices_provider_impl_unittest.cc",
-    "sync_client_utils_unittest.cc",
     "sync_internals_message_handler_unittest.cc",
     "sync_to_signin_migration_unittest.cc",
   ]

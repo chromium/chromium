@@ -56,6 +56,8 @@ class InteractiveBrowserTestPrivate
       ui::TrackedElement* el) const override;
   gfx::NativeWindow GetNativeWindowFromContext(
       ui::ElementContext context) const override;
+  std::string DebugDescribeContext(ui::ElementContext context) const override;
+  DebugTreeNode DebugDumpElement(const ui::TrackedElement* el) const override;
 
  private:
   friend InteractiveBrowserTestApi;

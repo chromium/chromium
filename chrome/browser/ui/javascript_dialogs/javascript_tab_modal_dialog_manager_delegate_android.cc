@@ -60,3 +60,7 @@ bool JavaScriptTabModalDialogManagerDelegateAndroid::IsWebContentsForemost() {
 bool JavaScriptTabModalDialogManagerDelegateAndroid::IsApp() {
   return false;
 }
+
+bool JavaScriptTabModalDialogManagerDelegateAndroid::CanShowModalUI() {
+  return true;
+}

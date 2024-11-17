@@ -12,14 +12,14 @@ code. Some code is used on Android.
 ## Structure, modularity:
 * Features should be modular.
     * For most features, all code should live in some combination of
-      //component/<feature> and //chrome/browser/<feature> (or
-      //chrome/browser/ui/<feature>), and not in //chrome/browser/ui/views.
+      //component/\<feature> and //chrome/browser/\<feature> (or
+      //chrome/browser/ui/\<feature>), and not in //chrome/browser/ui/views.
         * The historical rule restricting access to views in //chrome/browser
           and //chrome/browser/ui has been removed.
         * The historical rule disallowing ui code in //chrome/browser has been
           removed.
     * WebUI resources are the only exception. They will continue to live in
-      //chrome/browser/resources/<feature> alongside standalone BUILD.gn files.
+      //chrome/browser/resources/\<feature> alongside standalone BUILD.gn files.
     * This directory should have a standalone BUILD.gn and OWNERs file.
     * All files in the directory should belong to targets in the BUILD.gn.
         * Do NOT add to `//chrome/browser/BUILD.gn:browser`,

@@ -18,6 +18,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/native_theme/native_theme.h"
@@ -158,7 +159,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
 
   static ButtonState GetButtonStateFrom(ui::NativeTheme::State state);
 
-  void SetTooltipText(const std::u16string& tooltip_text);
+  virtual void SetTooltipText(const std::u16string& tooltip_text);
   const std::u16string& GetTooltipText() const;
 
   // Tag is now a property. These accessors are deprecated. Use GetTag() and
@@ -245,7 +246,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   bool SkipDefaultKeyEventProcessing(const ui::KeyEvent& event) override;
   std::u16string GetTooltipText(const gfx::Point& p) const override;
   void ShowContextMenu(const gfx::Point& p,
-                       ui::MenuSourceType source_type) override;
+                       ui::mojom::MenuSourceType source_type) override;
   void OnDragDone() override;
   // Instead of overriding this, subclasses that want custom painting should use
   // PaintButtonContents.

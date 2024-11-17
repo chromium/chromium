@@ -31,7 +31,6 @@ namespace ash {
 
 class AppListPage;
 class AppListView;
-class ApplicationDragAndDropHost;
 class AppListMainView;
 class AppsContainerView;
 class AssistantPageView;
@@ -89,11 +88,6 @@ class ASH_EXPORT ContentsView : public views::View,
 
   // The app list gets closed and drag and drop operations need to be cancelled.
   void CancelDrag();
-
-  // If |drag_and_drop| is not nullptr it will be called upon drag and drop
-  // operations outside the application list.
-  void SetDragAndDropHostOfCurrentAppList(
-      ApplicationDragAndDropHost* drag_and_drop_host);
 
   // Called when the target state of AppListView changes.
   void OnAppListViewTargetStateChanged(AppListViewState target_state);

@@ -105,7 +105,7 @@ class CORE_EXPORT SelectionModifier {
   VisiblePositionInFlatTree ModifyMovingBackward(TextGranularity);
   PositionInFlatTree NextWordPositionForPlatform(const PositionInFlatTree&);
 
-  void UpdateLifecycleToPrePaintClean();
+  void UpdateAllLifecyclePhasesExceptPaint();
 
   static PositionInFlatTreeWithAffinity PreviousLinePosition(
       const PositionInFlatTreeWithAffinity&,

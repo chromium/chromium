@@ -6,17 +6,19 @@
 
 #import <CoreGraphics/CGDirectDisplay.h>
 
+#include <set>
+
 #include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "ui/display/mac/display_link_mac.h"
 
 namespace ui {
-class CASharedState;
+struct ObjCState;
 
 class CADisplayLinkMac : public DisplayLinkMac {
  public:
   // Create a CADisplayLinkMac for the specified display.
-  static scoped_refptr<CADisplayLinkMac> GetForDisplayOnCurrentThread(
+  static scoped_refptr<DisplayLinkMac> GetForDisplayOnCurrentThread(
       CGDirectDisplayID display_id);
 
   // DisplayLinkMac implementation
@@ -41,7 +43,7 @@ class CADisplayLinkMac : public DisplayLinkMac {
   base::TimeTicks GetCurrentTime() const override;
 
  private:
-  explicit CADisplayLinkMac(CASharedState* share_state);
+  explicit CADisplayLinkMac(CGDirectDisplayID display_id);
   ~CADisplayLinkMac() override;
 
   CADisplayLinkMac(const CADisplayLinkMac&) = delete;
@@ -53,9 +55,30 @@ class CADisplayLinkMac : public DisplayLinkMac {
   // Return a nearest refresh interval that is supported by CADisplaylink.
   base::TimeDelta AdjustedToSupportedInterval(base::TimeDelta interval);
 
-  // A single Wrapper is shared between all CADisplayLinkMac instances that have
-  // same display ID on the same thread. This is manually retained and released.
-  raw_ptr<CASharedState> shared_state_;
+  // CADisplayLink callback from ObjCState.display_link.
+  void Step();
+
+  const CGDirectDisplayID display_id_;
+  std::unique_ptr<ObjCState> objc_state_;
+
+  // The system can change the available range of frame rates because it factors
+  // in system policies and a person’s preferences. For example, Low Power Mode,
+  // critical thermal state, and accessibility settings can affect the system’s
+  // frame rate. The system typically provides a consistent frame rate by
+  // choosing one that’s a factor of the display’s maximum refresh rate.
+
+  // The current frame interval range set in CADisplayLink
+  // preferredFrameRateRange.
+  base::TimeDelta preferred_interval_;
+  base::TimeDelta max_interval_;
+  base::TimeDelta min_interval_;
+
+  base::WeakPtr<VSyncCallbackMac> vsync_callback_;
+
+  // The number of consecutive DisplayLink VSyncs received after zero
+  // |callbacks_|. DisplayLink will be stopped after |kMaxExtraVSyncs| is
+  // reached.
+  int consecutive_vsyncs_with_no_callbacks_ = 0;
 
   base::WeakPtrFactory<CADisplayLinkMac> weak_factory_{this};
 };

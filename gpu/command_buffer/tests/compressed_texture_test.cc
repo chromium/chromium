@@ -50,9 +50,8 @@ static const char* extension(GLenum format) {
     case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:
       return "GL_ANGLE_texture_compression_dxt5";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 // Index that chooses the given colors (color_0 and color_1),
@@ -188,9 +187,8 @@ class CompressedTextureTest : public ::testing::TestWithParam<GLenum> {
       case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT: return LoadTextureDXT3();
       case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT: return LoadTextureDXT5();
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
-    return 0;
   }
 
  private:

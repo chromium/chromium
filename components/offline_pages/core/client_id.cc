@@ -8,7 +8,7 @@
 
 namespace offline_pages {
 
-ClientId::ClientId() {}
+ClientId::ClientId() = default;
 
 ClientId::ClientId(const std::string& name_space, const std::string& id)
     : name_space(name_space), id(id) {}

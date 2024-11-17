@@ -48,7 +48,6 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   jboolean IsSyncFeatureActive(JNIEnv* env);
   jboolean IsSyncDisabledByEnterprisePolicy(JNIEnv* env);
   jboolean IsEngineInitialized(JNIEnv* env);
-  jboolean IsTransportStateActive(JNIEnv* env);
   void SetSetupInProgress(JNIEnv* env, jboolean in_progress);
   jboolean IsInitialSyncFeatureSetupComplete(JNIEnv* env);
   void SetInitialSyncFeatureSetupComplete(JNIEnv* env, jint source);
@@ -79,6 +78,7 @@ class SyncServiceAndroidBridge : public SyncServiceObserver {
   jboolean IsTrustedVaultRecoverabilityDegraded(JNIEnv* env);
   jboolean IsUsingExplicitPassphrase(JNIEnv* env);
   jint GetPassphraseType(JNIEnv* env);
+  jint GetTransportState(JNIEnv* env);
   void SetEncryptionPassphrase(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& passphrase);

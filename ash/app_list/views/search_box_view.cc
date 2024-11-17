@@ -33,6 +33,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/app_list/vector_icons/vector_icons.h"
 #include "ash/public/cpp/app_menu_constants.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
@@ -64,7 +65,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
@@ -77,6 +78,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_host.h"
@@ -301,20 +303,16 @@ class CheckBoxMenuItemView : public views::MenuItemView {
         view_delegate_(view_delegate) {
     // Set the role of the toggleable menu items to checkbox.
     GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItemCheckBox);
+    // The title of the menu is not focusable but included in the position
+    // counting. Explicitly set the hierarchical level of the toggleable menu
+    // items to exclude the title.
+    GetViewAccessibility().SetHierarchicalLevel(1);
   }
 
   CheckBoxMenuItemView(const CheckBoxMenuItemView&) = delete;
   CheckBoxMenuItemView& operator=(const CheckBoxMenuItemView&) = delete;
 
   ~CheckBoxMenuItemView() override = default;
-
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override {
-    views::MenuItemView::GetAccessibleNodeData(node_data);
-    // The title of the menu is not focusable but included in the position
-    // counting. Explicitly set the hierarchical level of the toggleable menu
-    // items to exclude the title.
-    node_data->AddIntAttribute(ax::mojom::IntAttribute::kHierarchicalLevel, 1);
-  }
 
   void UpdateAccessibleCheckedState() override {
     bool category_enabled = view_delegate_->IsCategoryEnabled(
@@ -427,7 +425,7 @@ class FilterMenuAdapter : public views::MenuModelAdapter {
         search_box->GetWidget(), nullptr /*button_controller*/,
         search_box->filter_button()->GetBoundsInScreen(),
         views::MenuAnchorPosition::kBubbleBottomRight,
-        ui::MenuSourceType::MENU_SOURCE_NONE);
+        ui::mojom::MenuSourceType::kNone);
   }
 
   // Returns true if the category filter menu is opened.
@@ -558,7 +556,7 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
 
   CreateEndButtonContainer();
 
-  if (features::IsSunfishFeatureEnabled()) {
+  if (IsSunfishAllowedAndEnabled()) {
     views::ImageButton* sunfish_button =
         CreateSunfishButton(base::BindRepeating(
             &SearchBoxView::SunfishButtonPressed, base::Unretained(this)));
@@ -567,7 +565,7 @@ SearchBoxView::SearchBoxView(SearchBoxViewDelegate* delegate,
     std::u16string sunfish_button_label(u"Select to search");
     sunfish_button->GetViewAccessibility().SetName(sunfish_button_label);
     sunfish_button->SetTooltipText(sunfish_button_label);
-    SetShowSunfishButton(true);
+    SetShowSunfishButton(search_box_model->show_sunfish_button());
   }
 
   views::ImageButton* assistant_button =
@@ -814,11 +812,13 @@ void SearchBoxView::OnThemeChanged() {
       views::ImageButton::STATE_NORMAL,
       ui::ImageModel::FromVectorIcon(views::kIcCloseIcon, button_icon_color,
                                      GetSearchBoxIconSize()));
-  if (features::IsSunfishFeatureEnabled()) {
+  if (IsSunfishAllowedAndEnabled()) {
     sunfish_button()->SetImageModel(
         views::ImageButton::STATE_NORMAL,
-        ui::ImageModel::FromVectorIcon(kSearchIcon, button_icon_color,
-                                       GetSearchBoxIconSize()));
+        ui::ImageModel::FromVectorIcon(
+            IsSunfishFeatureEnabledWithFeatureKey() ? kLensColorIcon
+                                                    : kScannerIcon,
+            button_icon_color, GetSearchBoxIconSize()));
   }
   assistant_button()->SetImageModel(
       views::ImageButton::STATE_NORMAL,
@@ -1249,7 +1249,10 @@ void SearchBoxView::AssistantButtonPressed() {
 }
 
 void SearchBoxView::SunfishButtonPressed() {
-  view_delegate_->DismissAppList();
+  if (is_app_list_bubble_) {
+    // Only hide the launcher bubble in clamshell mode.
+    view_delegate_->DismissAppList();
+  }
   CaptureModeController::Get()->StartSunfishSession();
 }
 
@@ -1704,6 +1707,13 @@ void SearchBoxView::ShowAssistantChanged() {
                              ->search_model()
                              ->search_box()
                              ->show_assistant_button());
+}
+
+void SearchBoxView::ShowSunfishChanged() {
+  SetShowSunfishButton(AppListModelProvider::Get()
+                           ->search_model()
+                           ->search_box()
+                           ->show_sunfish_button());
 }
 
 void SearchBoxView::UpdateIphViewVisibility(bool can_show_iph) {

@@ -16,7 +16,9 @@ namespace views::switches {
 const char kDisableInputEventActivationProtectionForTesting[] =
     "disable-input-event-activation-protection";
 
-// Draws a semitransparent rect to indicate the bounds of each view.
+// Draws a semitransparent red rect to indicate the bounds of each view. Also,
+// draws a blue semitransparent rect when GetContentBounds() differs from
+// GetLocalBounds().
 const char kDrawViewBoundsRects[] = "draw-view-bounds-rects";
 
 // Captures stack traces on View construction to provide better debug info.

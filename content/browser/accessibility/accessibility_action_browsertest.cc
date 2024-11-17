@@ -7,6 +7,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/escape.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,6 +38,7 @@
 #include "ui/accessibility/mojom/ax_tree_data.mojom-shared-internal.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
@@ -69,19 +71,18 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
     return web_contents->GetRootBrowserAccessibilityManager();
   }
 
-  void GetBitmapFromImageDataURL(ui::BrowserAccessibility* target,
-                                 SkBitmap* bitmap) {
+  SkBitmap GetBitmapFromImageDataURL(ui::BrowserAccessibility* target) {
     std::string image_data_url =
         target->GetStringAttribute(ax::mojom::StringAttribute::kImageDataUrl);
     std::string mimetype;
     std::string charset;
     std::string png_data;
-    ASSERT_TRUE(net::DataURL::Parse(GURL(image_data_url), &mimetype, &charset,
-                                    &png_data));
-    ASSERT_EQ("image/png", mimetype);
-    ASSERT_TRUE(gfx::PNGCodec::Decode(
-        reinterpret_cast<const unsigned char*>(png_data.data()),
-        png_data.size(), bitmap));
+    CHECK(net::DataURL::Parse(GURL(image_data_url), &mimetype, &charset,
+                              &png_data));
+    CHECK_EQ("image/png", mimetype);
+    SkBitmap bitmap = gfx::PNGCodec::Decode(base::as_byte_span(png_data));
+    CHECK(!bitmap.isNull());
+    return bitmap;
   }
 
   void LoadInitialAccessibilityTreeFromHtml(const std::string& html) {
@@ -115,8 +116,9 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
     action_data.vertical_scroll_alignment = vertical_alignment;
     node->AccessibilityPerformAction(action_data);
 
-    if (wait_for_event)
+    if (wait_for_event) {
       ASSERT_TRUE(waiter.WaitForNotification());
+    }
   }
 
   void ScrollToTop(bool will_scroll_horizontally = false) {
@@ -158,8 +160,9 @@ class AccessibilityActionBrowserTest : public ContentBrowserTest {
     for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
       ui::BrowserAccessibility* result =
           FindNodeInSubtree(*node.PlatformGetChild(i), role, name_or_value);
-      if (result)
+      if (result) {
         return result;
+      }
     }
     return nullptr;
   }
@@ -510,8 +513,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCanvasActionBrowserTest,
   // causing flakes when doing so.
   std::ignore = waiter2.WaitForNotification();
 
-  SkBitmap bitmap;
-  GetBitmapFromImageDataURL(target, &bitmap);
+  SkBitmap bitmap = GetBitmapFromImageDataURL(target);
   ASSERT_EQ(4, bitmap.width());
   ASSERT_EQ(2, bitmap.height());
   EXPECT_EQ(SK_ColorRED, bitmap.getColor(0, 0));
@@ -558,8 +560,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityCanvasActionBrowserTest,
   // causing flakes when doing so.
   std::ignore = waiter2.WaitForNotification();
 
-  SkBitmap bitmap;
-  GetBitmapFromImageDataURL(target, &bitmap);
+  SkBitmap bitmap = GetBitmapFromImageDataURL(target);
   ASSERT_EQ(4, bitmap.width());
   ASSERT_EQ(2, bitmap.height());
   EXPECT_EQ(SK_ColorGREEN, bitmap.getColor(0, 0));
@@ -597,8 +598,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ImgElementGetImage) {
   GetManager()->GetImageData(*target, gfx::Size());
   ASSERT_TRUE(waiter2.WaitForNotification());
 
-  SkBitmap bitmap;
-  GetBitmapFromImageDataURL(target, &bitmap);
+  SkBitmap bitmap = GetBitmapFromImageDataURL(target);
   ASSERT_EQ(2, bitmap.width());
   ASSERT_EQ(3, bitmap.height());
   EXPECT_EQ(SK_ColorRED, bitmap.getColor(0, 0));
@@ -742,7 +742,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest, ShowContextMenu) {
   blink::UntrustworthyContextMenuParams context_menu_params =
       context_menu_interceptor->get_params();
   EXPECT_EQ(u"2", context_menu_params.link_text);
-  EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard,
             context_menu_params.source_type);
 }
 
@@ -774,7 +774,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   std::string link_text = base::UTF16ToUTF8(context_menu_params.link_text);
   base::ReplaceChars(link_text, "\n", "\\n", &link_text);
   EXPECT_EQ("This is a\\n\\n\\n\\nmultiline link.", link_text);
-  EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard,
             context_menu_params.source_type);
   // Expect the context menu to open on the same line as the first line of link
   // text. Check that the y coordinate of the context menu is near the line
@@ -809,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   blink::UntrustworthyContextMenuParams context_menu_params =
       context_menu_interceptor->get_params();
   EXPECT_EQ(u"Offscreen", context_menu_params.link_text);
-  EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard,
             context_menu_params.source_type);
   // Expect the context menu point to be 0, 0.
   EXPECT_EQ(0, context_menu_params.x);
@@ -843,7 +843,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityActionBrowserTest,
   blink::UntrustworthyContextMenuParams context_menu_params =
       context_menu_interceptor->get_params();
   EXPECT_EQ(u"Obscured", context_menu_params.link_text);
-  EXPECT_EQ(ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
+  EXPECT_EQ(ui::mojom::MenuSourceType::kKeyboard,
             context_menu_params.source_type);
   // Expect the context menu to open on the same line as the link text. Check
   // that the y coordinate of the context menu is near the line height.

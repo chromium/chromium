@@ -34,8 +34,6 @@ source_set("browser") {
   ]
 
   deps = [
-    "//chrome/browser/enterprise/connectors/device_trust:features",
-    "//chrome/browser/enterprise/connectors/device_trust/key_management/common",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core:util",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/core/network",
@@ -86,7 +84,6 @@ source_set("unit_tests") {
     ":browser",
     ":test_support",
     "//base/test:test_support",
-    "//chrome/browser/enterprise/connectors/device_trust:features",
     "//chrome/browser/enterprise/connectors/device_trust/common",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands",
     "//chrome/browser/enterprise/connectors/device_trust/key_management/browser/commands:test_support",

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_TOUCH_TO_FILL_CONTROLLER_AUTOFILL_DELEGATE_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_TOUCH_TO_FILL_CONTROLLER_AUTOFILL_DELEGATE_H_
 
+#include <memory>
+
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -12,6 +14,8 @@
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_bridge.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/device_reauth/device_authenticator.h"
@@ -38,6 +42,16 @@ class Profile;
 
 // Delegate interface for TouchToFillController being used in an autofill
 // context.
+// The order of execution is the following:
+// - `OnShow` is called upon showing the bottom sheet with credentials.
+// - `OnCredentialSelected` is called upon selecting the credential.
+// - `VerifyBeforeFilling` shows the acknowledgement sheet (e. g. credential for
+// filling is weakly related to the current web site), calls authenticantion or
+// filling immediately (if auth beforefilling is off).
+// - `OnVerificationBeforeFillingFinished` is called upon user confirmation for
+// grouped credential or immediately from `VerifyBeforeFilling`.
+// - `OnReauthCompleted` (only of auth before filling of on).
+// - `FillCredential` finally fills the credentials.
 class TouchToFillControllerAutofillDelegate
     : public TouchToFillControllerDelegate {
  public:
@@ -92,8 +106,9 @@ class TouchToFillControllerAutofillDelegate
       autofill::FieldRendererId focused_field_renderer_id,
       ShowHybridOption should_show_hybrid_option,
       ShowPasswordMigrationWarningCallback show_password_migration_warning,
-      std::unique_ptr<PasswordAccessLossWarningBridge>
-          data_loss_warning_bridge);
+      std::unique_ptr<PasswordAccessLossWarningBridge> data_loss_warning_bridge,
+      std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
+          grouped_credential_sheet_controller);
 
   TouchToFillControllerAutofillDelegate(
       ChromePasswordManagerClient* password_client,
@@ -137,7 +152,18 @@ class TouchToFillControllerAutofillDelegate
   void OnReauthCompleted(password_manager::UiCredential credential,
                          bool authSuccessful);
 
-  // Fills the credential into the form.
+  // Depending on the credential match type, there may be additional user
+  // confirmation needed (e. g. for grouped credentials). If verification is
+  // successful, it will trigger `FillCredential`.
+  void VerifyBeforeFilling(const password_manager::UiCredential& credential);
+
+  // Triggered upon user confirmation to fill the credential.
+  void OnVerificationBeforeFillingFinished(
+      const password_manager::UiCredential& credential,
+      bool success);
+
+  // Fills the credential into the form and triggers form submission when
+  // appropriate.
   void FillCredential(const password_manager::UiCredential& credential);
 
   // Called upon completion or dismissal to perform cleanup.
@@ -145,6 +171,9 @@ class TouchToFillControllerAutofillDelegate
                                      bool show_virtual_keyboard);
 
   void ShowPasswordMigrationWarningIfNeeded();
+
+  void OnFillingCredentialComplete(const std::u16string& username,
+                                   bool triggered_submission);
 
   // Callback to the controller to be invoked when a finalizing action has
   // completed. This will result in the destruction of the delegate so
@@ -184,6 +213,11 @@ class TouchToFillControllerAutofillDelegate
   // Bridge used to show the data loss warning (expected to be shown after
   // filling user's credentials).
   std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge_;
+
+  // Used to show the sheet to ask additional user verification before filling
+  // credential with the grouped match type.
+  std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
+      grouped_credential_sheet_controller_;
 
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
 };

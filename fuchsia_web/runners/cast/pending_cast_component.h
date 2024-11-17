@@ -13,6 +13,7 @@
 #include <string_view>
 
 #include "base/fuchsia/fidl_event_handler.h"
+#include "base/memory/raw_ptr.h"
 #include "fuchsia_web/runners/cast/cast_component.h"
 
 namespace base {
@@ -70,7 +71,7 @@ class PendingCastComponent {
   void CancelComponent();
 
   // Reference to the Delegate which manages |this|.
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   // Id of the Cast application that this instance describes.
   const std::string app_id_;

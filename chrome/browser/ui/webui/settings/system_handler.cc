@@ -23,10 +23,8 @@ SystemHandler::~SystemHandler() {}
 
 // static
 void SystemHandler::AddLoadTimeData(content::WebUIDataSource* data_source) {
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   data_source->AddBoolean("hardwareAccelerationEnabledAtStartup",
       g_browser_process->gpu_mode_manager()->initial_gpu_mode_pref());
-#endif
 }
 
 void SystemHandler::RegisterMessages() {

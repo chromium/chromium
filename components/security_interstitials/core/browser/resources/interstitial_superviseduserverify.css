@@ -54,7 +54,7 @@ body.showing-blocked-site-message {
   body.showing-blocked-site-message {
     --callout-bg-color: var(--google-gray-800);
     --callout-text-color: var(--google-gray-200);
-    --header-color: var(#e9eaed);
+    --header-color: #e9eaed;
     --paragraph-color: var(--google-gray-500);
   }
 }

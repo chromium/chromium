@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Хэвийн</translation>
 <translation id="1591562245178063882">Энэ сар</translation>
 <translation id="1637811476055996098">Файлуудыг сонгох</translation>
-<translation id="1680090928918677457">Камер ашиглах</translation>
 <translation id="1729654308190250600">Заавал имэйл хаяг оруулах ёстой.</translation>
 <translation id="1758486001363313524">Бусад ...</translation>
 <translation id="1921819250265091946">өө</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Энэ текстийг <ph name="MAX_CHARACTERS" /> тэмдэгтүүд рүү богиносгох эсвэл  багасгана уу (та одоогоор <ph name="CURRENT_LENGTH" /> тэмдэгтүүдийг ашиглаж байна).</translation>
 <translation id="2247351761944213033">Долоо хоног <ph name="WEEKNUMBER" /> , <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />-р бичлэг</translation>
-<translation id="2353297238722298836">Камер болон микрофоныг зөвшөөрсөн</translation>
 <translation id="2507943997699731163">Энэ талбарыг бөглөнө үү.</translation>
 <translation id="2613802280814924224">Хүчинтэй утга оруулна уу. Хамгийн ойролцоо хүчинтэй утга нь <ph name="VALID_VALUE" /> юм.</translation>
 <translation id="2653659639078652383">Илгээх</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Энэ текстийг <ph name="MIN_CHARACTERS" /> болон үүнээс дээш тэмдэгтээр уртасгана уу (та одоогоор <ph name="CURRENT_LENGTH" /> тэмдэгт ашиглаж байна).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />'-д хамаарах хэсэг нь '<ph name="INVALIDCHARACTER" />' тэмдэгтийг агуулах ёсгүй.</translation>
 <translation id="3846214748874656680">Бүтэн дэлгэцийг хумих</translation>
-<translation id="4031179711345676612">Микрофоныг зөвшөөрсөн</translation>
 <translation id="4360991593054037559">Хүчинтэй утгыг оруулна уу. Хамгийн ойрын хүчинтэй дараах хоёр <ph name="VALID_VALUE_LOW" /> болон <ph name="VALID_VALUE_HIGHER" />  утгууд байна.</translation>
 <translation id="4522570452068850558">дэлгэрэнгүй мэдээлэл</translation>
-<translation id="4663373278480897665">Камерыг зөвшөөрсөн</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />'-ын дараах хэсэгт '<ph name="INVALIDCHARACTER" />' тэмдэг оруулахгүй байх хэрэгтэй.</translation>
 <translation id="4718048029184481307">Дэлгэцэн доторх дэлгэц дээр тоглуулж байна</translation>
-<translation id="4792862212177489858">Байршил хуваалцах</translation>
 <translation id="4812940957355064477">Нэг тоо оруулна уу.</translation>
-<translation id="49269513399674318">Микрофон ашиглах</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> сонгогдсон</translation>
 <translation id="4992066212339426712">Дууг нээх</translation>
 <translation id="49969490063480558"><ph name="ATSIGN" /> -ны дараа байгаа хэсгийг оруулна уу. " <ph name="INVALIDADDRESS" /> " нь бүрэн бус байна.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Нэмэлт өгөгдлийг ачаалж чадсангүй.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">Энэ текстийг <ph name="MIN_CHARACTERS" /> болон түүнээс дээш тэмдэгтээр уртасгана уу (та одоогоор 1 тэмдэгт оруулсан байна).</translation>
-<translation id="7080893216867146095">Байршил хуваалцахыг зөвшөөрсөн</translation>
 <translation id="709897737746224366">Заагдсан форматанд тааруулна уу.</translation>
-<translation id="7134810312945846184">Микрофон, камер ашиглах</translation>
 <translation id="7263440858009898357">Жагсаалтаас нэг зүйлийг сонгоно уу.</translation>
 <translation id="7364796246159120393">Файлаа сонгоно уу</translation>
 <translation id="739024184232394898">Бусад...</translation>

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 
 # This target should be the default place for adding public interface things
@@ -72,7 +73,6 @@ source_set("profile") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/profile_metrics",
-    "//components/search_engines",
     "//components/sync/service",
     "//components/variations",
     "//content/public/browser",
@@ -82,18 +82,10 @@ source_set("profile") {
     deps += [ "//extensions/browser" ]
   }
   if (is_chromeos) {
-    deps += [ "//chromeos/constants" ]
-  }
-  if (is_chromeos_ash) {
     deps += [
       "//ash/constants",
       "//chromeos/ash/components/browser_context_helper",
-    ]
-  }
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/lacros",
-      "//chromeos/startup",
+      "//chromeos/constants",
     ]
   }
   if (is_android) {
@@ -105,14 +97,30 @@ source_set("profile_util") {
   sources = [
     "nuke_profile_directory_utils.h",
     "pref_service_builder_utils.h",
+    "profile_attributes_entry.h",
+    "profile_attributes_init_params.h",
+    "profile_attributes_storage.h",
+    "profile_attributes_storage_observer.h",
     "profile_avatar_icon_util.h",
+    "profile_statistics.h",
+    "profile_statistics_aggregator.h",
+    "profile_statistics_common.h",
+    "profile_statistics_factory.h",
     "reporting_util.h",
   ]
 
   public_deps = [
+    ":profile",
     "//base",
     "//build:chromeos_buildflags",
+    "//components/account_id",
+    "//components/autofill/core/browser",
+    "//components/browsing_data/core",
     "//components/enterprise/common/proto:connectors_proto",
+    "//components/keyed_service/core",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
+    "//components/user_annotations:user_annotations",
+    "//device/fido:fido",
     "//mojo/public/cpp/bindings",
     "//services/preferences/public/mojom",
     "//skia",
@@ -125,7 +133,14 @@ source_set("profile_util_impl") {
   sources = [
     "nuke_profile_directory_utils.cc",
     "pref_service_builder_utils.cc",
+    "profile_attributes_entry.cc",
+    "profile_attributes_init_params.cc",
+    "profile_attributes_storage.cc",
     "profile_avatar_icon_util.cc",
+    "profile_statistics.cc",
+    "profile_statistics_aggregator.cc",
+    "profile_statistics_common.cc",
+    "profile_statistics_factory.cc",
     "reporting_util.cc",
   ]
 
@@ -133,17 +148,22 @@ source_set("profile_util_impl") {
 
   deps = [
     ":profile",
-    ":profile_attributes",
     ":profile_util",
     "//base",
+    "//base:i18n",
     "//build:chromeos_buildflags",
     "//cc/paint",
+    "//chrome/app:generated_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser:browser_process",
+    "//chrome/browser/autofill",
+    "//chrome/browser/prefs",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",
+    "//chrome/common:constants",
     "//components/account_id",
+    "//components/browsing_data/core",
     "//components/embedder_support:browser_util",
     "//components/enterprise/common/proto:connectors_proto",
     "//components/keyed_service/content",
@@ -151,23 +171,34 @@ source_set("profile_util_impl") {
     "//components/policy/core/common",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/profile_metrics",
     "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
     "//components/supervised_user/core/browser",
     "//components/sync_preferences",
     "//components/variations/service",
     "//components/vector_icons",
     "//content/public/browser",
     "//services/preferences/public/mojom",
+    "//third_party/icu:icui18n",
     "//ui/base",
     "//ui/color",
     "//ui/color/dynamic_color",
     "//ui/gfx",
+    "//ui/gfx:color_utils",
     "//ui/gfx/geometry",
     "//ui/native_theme",
     "//url",
   ]
 
-  if (is_chromeos_ash) {
+  if (!is_android) {
+    deps += [
+      "//chrome/browser/ui:browser_list",
+      "//chrome/browser/user_annotations:user_annotations",
+    ]
+  }
+
+  if (is_chromeos) {
     deps += [
       "//chrome/browser/ash/login/users",
       "//chrome/browser/ash/policy/core",
@@ -176,99 +207,179 @@ source_set("profile_util_impl") {
   }
 }
 
-source_set("profile_attributes") {
-  sources = [
-    "profile_attributes_entry.h",
-    "profile_attributes_init_params.h",
-    "profile_attributes_storage.h",
-    "profile_attributes_storage_observer.h",
-  ]
+source_set("profiles_extra_parts") {
+  sources = [ "chrome_browser_main_extra_parts_profiles.h" ]
 
-  public_deps = [
-    ":profile_util",
-    "//base",
-    "//build:chromeos_buildflags",
-    "//components/account_id",
-    "//ui/gfx",
-  ]
+  public_deps = [ "//chrome/browser:main_extra_parts" ]
 }
 
-source_set("profile_attributes_impl") {
-  sources = [
-    "profile_attributes_entry.cc",
-    "profile_attributes_init_params.cc",
-    "profile_attributes_storage.cc",
+source_set("profiles_extra_parts_impl") {
+  sources = [ "chrome_browser_main_extra_parts_profiles.cc" ]
+
+  deps = [
+    ":profile_util",
+    ":profiles_extra_parts",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:font_pref",
+    "//chrome/browser/ai",
+    "//chrome/browser/autofill",
+    "//chrome/browser/bitmap_fetcher",
+    "//chrome/browser/breadcrumbs",
+    "//chrome/browser/commerce",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/favicon",
+    "//chrome/browser/file_system_access",
+    "//chrome/browser/ip_protection",
+    "//chrome/browser/media/router",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/omnibox",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/permissions",
+    "//chrome/browser/persisted_state_db",
+    "//chrome/browser/prefs",
+    "//chrome/browser/reading_list",
+    "//chrome/browser/safe_browsing",
+    "//chrome/browser/safe_browsing:advanced_protection",
+    "//chrome/browser/safe_browsing:metrics_collector",
+    "//chrome/browser/safe_browsing:verdict_cache_manager_factory",
+    "//chrome/browser/search_engine_choice",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/storage_access_api",
+    "//chrome/browser/sync",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/autofill",
+    "//chrome/browser/ui/cookie_controls",
+    "//chrome/browser/ui/find_bar",
+    "//chrome/browser/ui/hats",
+    "//chrome/browser/ui/prefs",
+    "//chrome/browser/ui/safety_hub",
+    "//chrome/browser/updates/announcement_notification",
+    "//chrome/common:chrome_features",
+    "//components/autofill/content/browser",
+    "//components/breadcrumbs/core:status",
+    "//components/captive_portal/core:buildflags",
+    "//components/commerce/core:commerce_subscription_db_content_proto",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:persisted_state_db_content_proto",
+    "//components/enterprise/content",
+    "//components/manta",
+    "//components/omnibox/browser",
+    "//components/optimization_guide/core",
+    "//components/password_manager/content/browser",
+    "//components/payments/content",
+    "//components/permissions:permissions_common",
+    "//components/policy/content",
+    "//components/policy/content:safe_sites_navigation_throttle",
+    "//components/reading_list/features:flags",
+    "//components/safe_browsing/core/common:features",
+    "//components/signin/public/base",
+    "//components/site_engagement/content",
+    "//components/spellcheck:buildflags",
+    "//components/sync/base:features",
+    "//media",
+    "//services/network/public/cpp",
   ]
 
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
-  deps = [
-    ":profile_attributes",
-    ":profile_util",
-    "//base",
-    "//base:i18n",
-    "//build:chromeos_buildflags",
-    "//chrome/app:generated_resources",
-    "//chrome/app/vector_icons",
-    "//chrome/browser:browser_process",
-    "//chrome/common:constants",
-    "//components/account_id",
-    "//components/policy/core/browser:browser",
-    "//components/policy/core/common:common",
-    "//components/prefs",
-    "//components/profile_metrics",
-    "//components/signin/public/base",
-    "//components/signin/public/identity_manager",
-    "//content/public/browser",
-    "//third_party/icu:icui18n",
-    "//ui/base",
-    "//ui/gfx",
-    "//ui/gfx:color_utils",
-    "//ui/native_theme",
-  ]
+  if (is_android) {
+    deps += [
+      "//chrome/browser/commerce/merchant_viewer:merchant_viewer_data_manager",
+      "//chrome/browser/fast_checkout",
+      "//components/commerce/core:merchant_signal_db_proto",
+    ]
+  } else {
+    deps += [
+      "//chrome/browser/apps/app_service",
+      "//chrome/browser/autofill",
+      "//chrome/browser/devtools",
+      "//chrome/browser/feedback",
+      "//chrome/browser/hid",
+      "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+      "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+      "//chrome/browser/search",
+      "//chrome/browser/search/background",
+      "//chrome/browser/search_engine_choice",
+      "//chrome/browser/themes",
+      "//chrome/browser/ui/global_error",
+      "//chrome/browser/ui/global_media_controls",
+      "//chrome/browser/ui/media_router",
+      "//chrome/browser/ui/views/side_panel",
+      "//chrome/browser/ui/webui/signin",
+      "//chrome/browser/ui/webui/signin:login",
+      "//chrome/browser/user_annotations",
+      "//components/commerce/core:cart_db_content_proto",
+    ]
+  }
 
-  if (!is_android) {
-    deps += [ "//chrome/browser/ui:browser_list" ]
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/apps/almanac_api_client",
+      "//chrome/browser/apps/app_preload_service",
+      "//chrome/browser/ash/app_list",
+      "//chrome/browser/ash/crosapi:browser_util",
+      "//chrome/browser/ash/file_manager",
+      "//chrome/browser/ash/floating_sso",
+      "//chrome/browser/ash/input_method",
+      "//chrome/browser/ash/keyed_service",
+      "//chrome/browser/ash/language_packs",
+      "//chrome/browser/ash/lobster",
+      "//chrome/browser/ash/policy/dlp",
+      "//chrome/browser/ash/policy/multi_screen_capture",
+      "//chrome/browser/ash/policy/skyvault",
+      "//chrome/browser/ash/scanner",
+      "//chrome/browser/chromeos/cros_apps",
+      "//chrome/browser/chromeos/enterprise/cloud_storage",
+      "//chrome/browser/chromeos/extensions/telemetry/api:keyed_service_factory",
+      "//chrome/browser/chromeos/policy/dlp",
+      "//chrome/browser/policy:onc",
+      "//chrome/browser/smart_card",
+    ]
+  }
+
+  if (!is_chromeos && !is_android) {
+    deps += [ ":profile_util" ]
+  }
+
+  if (enable_extensions_core) {
+    deps += [
+      "//chrome/browser/extensions/keyed_services:keyed_service_factories",
+      "//extensions/browser",
+    ]
+  }
+
+  if (enable_extensions) {
+    deps += [
+      "//apps",
+      "//chrome/browser/apps/platform_apps",
+      "//chrome/browser/apps/platform_apps/api",
+      "//chrome/browser/extensions",
+      "//chrome/browser/web_applications",
+      "//components/omnibox/browser",
+    ]
+  }
+
+  if (enterprise_data_controls) {
+    deps += [ "//chrome/browser/enterprise/data_controls" ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    deps += [ "//chrome/browser/glic" ]
   }
 }
 
-source_set("profile_statistics") {
-  sources = [
-    "profile_statistics.h",
-    "profile_statistics_aggregator.h",
-    "profile_statistics_common.h",
-    "profile_statistics_factory.h",
-  ]
-
-  public_deps = [
-    ":profile",
-    "//base",
-    "//components/browsing_data/core",
-    "//components/keyed_service/core",
-  ]
-
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "profile_metrics_unittest.cc" ]
   deps = [
-    "//components/autofill/core/browser",
-    "//components/password_manager/core/browser/password_store:password_store_interface",
-    "//device/fido:fido",
-  ]
-}
-
-source_set("profile_statistics_impl") {
-  sources = [
-    "profile_statistics.cc",
-    "profile_statistics_aggregator.cc",
-    "profile_statistics_common.cc",
-    "profile_statistics_factory.cc",
-  ]
-
-  deps = [
-    ":profile",
-    ":profile_statistics",
+    ":profile_util",
     "//base",
-    "//chrome/browser:browser_process",
-    "//chrome/browser/autofill",
-    "//components/browsing_data/core",
-    "//content/public/browser",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//testing/gtest",
   ]
 }

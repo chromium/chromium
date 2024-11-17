@@ -26,7 +26,7 @@ class PrerenderTask : public RendererTask {
   ~PrerenderTask() override;
 
   // task_manager::Task:
-  const Task* GetParentTask() const override;
+  base::WeakPtr<Task> GetParentTask() const override;
   // task_manager::RendererTask:
   void UpdateTitle() override;
   void UpdateFavicon() override {}

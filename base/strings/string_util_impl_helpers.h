@@ -593,20 +593,23 @@ std::optional<std::basic_string<CharT>> DoReplaceStringPlaceholders(
 //   ftp://ftp.openbsd.org/pub/OpenBSD/src/lib/libc/string/{wcs,str}lcpy.c
 
 template <typename CHAR>
-size_t lcpyT(CHAR* dst, const CHAR* src, size_t dst_size) {
-  for (size_t i = 0; i < dst_size; ++i) {
-    if ((dst[i] = src[i]) == 0)  // We hit and copied the terminating NULL.
-      return i;
+size_t lcpyT(span<CHAR> dst, std::basic_string_view<CHAR> src) {
+  size_t i = 0;
+
+  const size_t dst_size = dst.size();
+  for (; i + 1u < dst_size; ++i) {
+    if (i == src.size()) {
+      break;
+    }
+    dst[i] = src[i];
   }
 
-  // We were left off at dst_size.  We over copied 1 byte.  Null terminate.
-  if (dst_size != 0)
-    dst[dst_size - 1] = 0;
+  // Write the terminating NUL.
+  if (!dst.empty()) {
+    dst[i] = 0;
+  }
 
-  // Count the rest of the |src|, and return it's length in characters.
-  while (src[dst_size])
-    ++dst_size;
-  return dst_size;
+  return src.size();
 }
 
 }  // namespace base::internal

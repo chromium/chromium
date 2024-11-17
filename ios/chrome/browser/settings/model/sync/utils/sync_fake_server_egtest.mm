@@ -113,10 +113,10 @@ void ClearRelevantData() {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   ClearRelevantData();
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -132,6 +132,8 @@ void ClearRelevantData() {
       [self isRunningTest:@selector
             (testMigrateSyncToSignin_ReadingListDisabled)] ||
       [self isRunningTest:@selector(testMigrateSyncToSignin_SyncNotActive)] ||
+      [self isRunningTest:@selector
+            (testMigrateSyncToSignin_SyncNotActive_Force)] ||
       [self
           isRunningTest:@selector(testMigrateSyncToSignin_CustomPassphrase)] ||
       [self isRunningTest:@selector
@@ -145,12 +147,10 @@ void ClearRelevantData() {
   }
   if ([self isRunningTest:@selector
             (testManagedAccountClearsDataForSignedInPeriod)]) {
-    config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
     config.features_disabled.push_back(kIdentityDiscAccountMenu);
   }
   if ([self isRunningTest:@selector
             (testManagedAccountClearsDataAndTabsForSignedInPeriod)]) {
-    config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
     config.features_enabled.push_back(kIdentityDiscAccountMenu);
   }
 
@@ -342,10 +342,12 @@ void ClearRelevantData() {
   const GURL whileSyncURL = self.testServer->GetURL("/pony.html");
   const GURL postSyncURL = self.testServer->GetURL("/destination.html");
 
-  [ChromeEarlGrey clearBrowsingHistory];
-  [self setTearDownHandler:^{
+  if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey clearBrowsingHistory];
-  }];
+    [self setTearDownHandler:^{
+      [ChromeEarlGrey clearBrowsingHistory];
+    }];
+  }
 
   // Visit a URL before turning on Sync.
   [ChromeEarlGrey loadURL:preSyncURL];
@@ -379,10 +381,12 @@ void ClearRelevantData() {
 - (void)testSyncHistoryDownload {
   const GURL mockURL("http://not-a-real-site/");
 
-  [ChromeEarlGrey clearBrowsingHistory];
-  [self setTearDownHandler:^{
+  if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey clearBrowsingHistory];
-  }];
+    [self setTearDownHandler:^{
+      [ChromeEarlGrey clearBrowsingHistory];
+    }];
+  }
 
   // Inject a history visit on the server.
   [ChromeEarlGrey addFakeSyncServerHistoryVisit:mockURL];
@@ -729,7 +733,7 @@ void ClearRelevantData() {
   // phase 3 (i.e. the migration) enabled.
   [self relaunchWithIdentity:fakeIdentity
              enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
-            disabledFeatures:{}];
+            disabledFeatures:{switches::kForceMigrateSyncingUserToSignedIn}];
 
   // Because Sync wasn't active at the time of the migration attempt, the
   // migration should NOT have happened, and Sync-the-feature should still be
@@ -745,8 +749,47 @@ void ClearRelevantData() {
   // Relaunch again - this time the migration should trigger.
   [self relaunchWithIdentity:fakeIdentity
              enabledFeatures:{switches::kMigrateSyncingUserToSignedIn}
-            disabledFeatures:{}];
+            disabledFeatures:{switches::kForceMigrateSyncingUserToSignedIn}];
   // ...and Sync-the-feature should NOT be enabled anymore.
+  [ChromeEarlGrey waitForSyncFeatureEnabled:NO
+                                syncTimeout:kSyncOperationTimeout];
+}
+
+- (void)testMigrateSyncToSignin_SyncNotActive_Force {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Sign in and turn on Sync-the-feature.
+  [SigninEarlGrey signinAndEnableLegacySyncFeature:fakeIdentity];
+  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
+                                syncTimeout:kSyncOperationTimeout];
+  [ChromeEarlGrey
+      waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
+
+  // Disable a data type (so that we can later re-enable it to trigger a
+  // reconfiguration).
+  [self disableTypeForSyncTheFeature:kSyncReadingListIdentifier];
+
+  // Disconnect the fake server, simulating a network/connection issue.
+  [ChromeEarlGrey disconnectFakeSyncServerNetwork];
+  [self setTearDownHandler:^{
+    [ChromeEarlGrey connectFakeSyncServerNetwork];
+  }];
+
+  // Re-enable the data type that was previously disabled. This causes a
+  // reconfiguration, which will not complete due to the network issue.
+  [self enableTypeForSyncTheFeature:kSyncReadingListIdentifier];
+
+  // Now, while Sync is not active (it's reconfiguring), restart Chrome with UNO
+  // phase 3 (i.e. the migration) enabled, including force-migration.
+  [self relaunchWithIdentity:fakeIdentity
+             enabledFeatures:{switches::kMigrateSyncingUserToSignedIn,
+                              switches::kForceMigrateSyncingUserToSignedIn}
+            disabledFeatures:{}];
+
+  // Even though Sync wasn't active at the time of the migration attempt, the
+  // migration should have happened, because the force-migration flag is
+  // enabled.
   [ChromeEarlGrey waitForSyncFeatureEnabled:NO
                                 syncTimeout:kSyncOperationTimeout];
 }
@@ -987,10 +1030,12 @@ void ClearRelevantData() {
 
   // Clear browsing history before and after the test to avoid conflicting with
   // other tests.
-  [ChromeEarlGrey clearBrowsingHistory];
-  [self setTearDownHandler:^{
+  if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey clearBrowsingHistory];
-  }];
+    [self setTearDownHandler:^{
+      [ChromeEarlGrey clearBrowsingHistory];
+    }];
+  }
 
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
                   @"History was unexpectedly not empty");
@@ -1080,10 +1125,12 @@ void ClearRelevantData() {
 
   // Clear browsing history before and after the test to avoid conflicting with
   // other tests.
-  [ChromeEarlGrey clearBrowsingHistory];
-  [self setTearDownHandler:^{
+  if (![ChromeTestCase forceRestartAndWipe]) {
     [ChromeEarlGrey clearBrowsingHistory];
-  }];
+    [self setTearDownHandler:^{
+      [ChromeEarlGrey clearBrowsingHistory];
+    }];
+  }
 
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 0,
                   @"History was unexpectedly not empty");
@@ -1116,6 +1163,10 @@ void ClearRelevantData() {
   [ChromeEarlGrey loadURL:thirdSigninURL];
   GREYAssertEqual([ChromeEarlGrey browsingHistoryEntryCount], 4,
                   @"History did not contain the expected entries");
+
+  // Signout doesn't close the current tab. Switch to the first tab, so the
+  // second tab can close.
+  [ChromeEarlGrey selectTabAtIndex:0];
 
   // Open settings and tap "Sign Out".
   [ChromeEarlGreyUI openSettingsMenu];

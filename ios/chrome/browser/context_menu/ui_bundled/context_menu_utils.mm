@@ -35,6 +35,9 @@ TitleAndOrigin GetContextMenuTitleAndOrigin(web::ContextMenuParams params) {
     } else {
       std::u16string URLText = url_formatter::FormatUrl(params.link_url);
       title = base::SysUTF16ToNSString(URLText);
+      // If there is a link URL, the URL *must* be displayed in the title as
+      // this is what the user will potentially open or share.
+      return TitleAndOrigin(title, origin);
     }
   }
 

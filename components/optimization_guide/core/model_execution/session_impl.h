@@ -16,7 +16,7 @@
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
-#include "components/optimization_guide/core/model_execution/safety_config.h"
+#include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/proto/model_quality_metadata.pb.h"
@@ -34,6 +34,7 @@ class OnDeviceModelFeatureAdapter;
 using ExecuteRemoteFn = base::RepeatingCallback<void(
     ModelBasedCapabilityKey feature,
     const google::protobuf::MessageLite&,
+    std::optional<base::TimeDelta> timeout,
     std::unique_ptr<proto::LogAiDataRequest>,
     OptimizationGuideModelExecutionResultCallback)>;
 
@@ -50,9 +51,6 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // Called to retrieve connection the managed model.
     virtual mojo::Remote<on_device_model::mojom::OnDeviceModel>&
     GetModelRemote() = 0;
-    // Called to retrieve connection the managed model.
-    virtual mojo::Remote<on_device_model::mojom::TextSafetyModel>&
-    GetTextSafetyModelRemote() = 0;
     // Called to report a successful execution of the model.
     virtual void OnResponseCompleted() = 0;
     // Called to report a timeout reached while waiting for model response.
@@ -67,7 +65,7 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     std::unique_ptr<OnDeviceModelClient> model_client;
     proto::OnDeviceModelVersions model_versions;
     scoped_refptr<const OnDeviceModelFeatureAdapter> adapter;
-    SafetyConfig safety_cfg;
+    std::unique_ptr<SafetyChecker> safety_checker;
     TokenLimits token_limits;
 
     // Returns true if the on-device model may be used.
@@ -158,6 +156,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   void GetSizeInTokens(
       const std::string& text,
       OptimizationGuideModelSizeInTokenCallback callback) override;
+  void GetExecutionInputSizeInTokens(
+      const google::protobuf::MessageLite& request_metadata,
+      OptimizationGuideModelSizeInTokenCallback callback) override;
   void GetContextSizeInTokens(
       const google::protobuf::MessageLite& request_metadata,
       OptimizationGuideModelSizeInTokenCallback callback) override;
@@ -217,6 +218,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
     // Adds an execution info for the text safety model based on `this`.
     void AddModelExecutionLog(
         const proto::InternalOnDeviceModelExecutionInfo& log);
+    // Adds a collection of model execution logs to the request log.
+    void AddModelExecutionLogs(google::protobuf::RepeatedPtrField<
+                               proto::InternalOnDeviceModelExecutionInfo> logs);
 
     // Resets all state related to a request.
     void ResetRequestState();
@@ -249,8 +253,10 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       ~SafeRawOutput();
       // How much of 'current_response' was checked.
       size_t length = 0;
-      // The execution log for the check (if any).
-      std::optional<proto::InternalOnDeviceModelExecutionInfo> log;
+      // The execution logs for the check (if any).
+      google::protobuf::RepeatedPtrField<
+          proto::InternalOnDeviceModelExecutionInfo>
+          logs;
     };
     // The longest response that has passed the raw output text safety check.
     SafeRawOutput latest_safe_raw_output;
@@ -298,21 +304,9 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   void RunTextSafetyRemoteFallbackAndCompletionCallback(
       proto::Any success_response_metadata);
 
-  // Runs the next request safety check, or begins request execution.
-  void RunNextRequestSafetyCheckOrBeginExecution(
-      on_device_model::mojom::InputOptionsPtr options,
-      int request_check_idx);
-
   // Callback invoked with RequestSafetyCheck result.
   void OnRequestSafetyResult(on_device_model::mojom::InputOptionsPtr options,
-                             int request_check_idx,
-                             std::string check_input_text,
-                             on_device_model::mojom::SafetyInfoPtr safety_info);
-  void OnRequestDetectLanguageResult(
-      on_device_model::mojom::InputOptionsPtr options,
-      int request_check_idx,
-      std::string check_input_text,
-      on_device_model::mojom::LanguageDetectionResultPtr result);
+                             SafetyChecker::Result safety_result);
 
   // Begins request execution (leads to OnResponse/OnComplete).
   void BeginRequestExecution(on_device_model::mojom::InputOptionsPtr options);
@@ -322,10 +316,8 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   void RunRawOutputSafetyCheck();
 
   // Called when output safety check completes.
-  void OnRawOutputSafetyResult(
-      std::string safety_check_text,
-      size_t raw_output_size,
-      on_device_model::mojom::SafetyInfoPtr safety_info);
+  void OnRawOutputSafetyResult(size_t raw_output_size,
+                               SafetyChecker::Result safety_result);
 
   // Callback invoked when the text safety remote fallback response comes back.
   // Will invoke the session's completion callback and destroy state.
@@ -340,6 +332,11 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
       bool is_complete,
       base::expected<proto::Any, ResponseParsingError> output);
 
+  // Called when response safety check completes.
+  void OnResponseSafetyResult(bool is_complete,
+                              proto::Any output,
+                              SafetyChecker::Result safety_result);
+
   // Returns a new message created by merging `request` into `context_`. This
   // is a bit tricky since we don't know the type of MessageLite.
   std::unique_ptr<google::protobuf::MessageLite> MergeContext(
@@ -352,11 +349,21 @@ class SessionImpl : public OptimizationGuideModelExecutor::Session,
   void SendSuccessCompletionCallback(
       const proto::Any& success_response_metadata);
 
+  // Helper function to get the size of request in tokens with boolean flag to
+  // control if we are extracting the context or the execution text.
+  void GetSizeInTokensInternal(
+      const google::protobuf::MessageLite& request,
+      OptimizationGuideModelSizeInTokenCallback callback,
+      bool want_input_context);
+
   const ModelBasedCapabilityKey feature_;
   ExecuteRemoteFn execute_remote_fn_;
 
   std::unique_ptr<google::protobuf::MessageLite> context_;
   base::TimeTicks context_start_time_;
+
+  // The timeout value for on device model execution.
+  base::TimeDelta on_device_execution_timeout_;
 
   // Last message executed.
   std::unique_ptr<google::protobuf::MessageLite> last_message_;

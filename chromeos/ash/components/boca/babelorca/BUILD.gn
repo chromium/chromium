@@ -9,8 +9,22 @@ assert(is_chromeos_ash,
 
 static_library("babelorca") {
   sources = [
+    "babel_orca_caption_translator.cc",
+    "babel_orca_caption_translator.h",
+    "babel_orca_consumer.cc",
+    "babel_orca_consumer.h",
+    "babel_orca_controller.h",
     "babel_orca_manager.cc",
     "babel_orca_manager.h",
+    "babel_orca_producer.cc",
+    "babel_orca_producer.h",
+    "babel_orca_speech_recognizer.h",
+    "babel_orca_translation_dispatcher.h",
+    "caption_controller.cc",
+    "caption_controller.h",
+    "live_caption_controller_wrapper.h",
+    "live_caption_controller_wrapper_impl.cc",
+    "live_caption_controller_wrapper_impl.h",
     "oauth_token_fetcher.cc",
     "oauth_token_fetcher.h",
     "request_data_wrapper.cc",
@@ -18,6 +32,7 @@ static_library("babelorca") {
     "tachyon_authed_client.h",
     "tachyon_authed_client_impl.cc",
     "tachyon_authed_client_impl.h",
+    "tachyon_client.cc",
     "tachyon_client.h",
     "tachyon_client_impl.cc",
     "tachyon_client_impl.h",
@@ -25,7 +40,10 @@ static_library("babelorca") {
     "tachyon_registrar.cc",
     "tachyon_registrar.h",
     "tachyon_request_data_provider.h",
-    "tachyon_request_error.h",
+    "tachyon_response.cc",
+    "tachyon_response.h",
+    "tachyon_streaming_client.cc",
+    "tachyon_streaming_client.h",
     "tachyon_utils.cc",
     "tachyon_utils.h",
     "token_data_wrapper.h",
@@ -33,8 +51,15 @@ static_library("babelorca") {
     "token_manager.h",
     "token_manager_impl.cc",
     "token_manager_impl.h",
-    "transcript_sender.cc",
+    "transcript_builder.cc",
+    "transcript_builder.h",
+    "transcript_receiver.cc",
+    "transcript_receiver.h",
     "transcript_sender.h",
+    "transcript_sender_impl.cc",
+    "transcript_sender_impl.h",
+    "transcript_sender_rate_limiter.cc",
+    "transcript_sender_rate_limiter.h",
   ]
 
   deps = [
@@ -42,12 +67,22 @@ static_library("babelorca") {
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/babelorca/proto",
     "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
+    "//chromeos/ash/services/boca/babelorca/mojom",
+    "//components/live_caption",
+    "//components/live_caption:constants",
+    "//components/live_caption:live_translate",
+    "//components/live_caption:utils",
+    "//components/prefs",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
+    "//content/public/browser",
     "//google_apis",
     "//media/mojo/mojom:speech_recognition",
+    "//mojo/public/cpp/bindings",
     "//net",
     "//services/network/public/cpp",
+    "//ui/native_theme",
   ]
 }
 
@@ -55,6 +90,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "fakes/fake_caption_controller_delegate.cc",
+    "fakes/fake_caption_controller_delegate.h",
     "fakes/fake_tachyon_authed_client.cc",
     "fakes/fake_tachyon_authed_client.h",
     "fakes/fake_tachyon_client.cc",
@@ -65,13 +102,20 @@ source_set("test_support") {
     "fakes/fake_token_fetcher.h",
     "fakes/fake_token_manager.cc",
     "fakes/fake_token_manager.h",
+    "fakes/fake_translation_dispatcher.cc",
+    "fakes/fake_translation_dispatcher.h",
   ]
 
   deps = [
     ":babelorca",
     "//base",
+    "//components/live_caption",
+    "//components/live_caption:live_translate",
+    "//components/prefs",
+    "//media/mojo/mojom:speech_recognition",
     "//net/traffic_annotation",
     "//third_party/protobuf:protobuf_lite",
+    "//ui/native_theme",
   ]
 }
 
@@ -79,12 +123,22 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "babel_orca_caption_translator_unittest.cc",
+    "babel_orca_consumer_unittest.cc",
+    "babel_orca_manager_unittest.cc",
+    "babel_orca_producer_unittest.cc",
+    "caption_controller_unittest.cc",
     "oauth_token_fetcher_unittest.cc",
     "tachyon_authed_client_impl_unittest.cc",
     "tachyon_client_impl_unittest.cc",
     "tachyon_registrar_unittest.cc",
+    "tachyon_response_unittest.cc",
+    "tachyon_streaming_client_unittest.cc",
     "token_manager_impl_unittest.cc",
-    "transcript_sender_unittest.cc",
+    "transcript_builder_unittest.cc",
+    "transcript_receiver_unittest.cc",
+    "transcript_sender_impl_unittest.cc",
+    "transcript_sender_rate_limiter_unittest.cc",
   ]
 
   deps = [
@@ -92,17 +146,27 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/boca:boca",
     "//chromeos/ash/components/boca/babelorca/proto",
     "//chromeos/ash/components/boca/babelorca/proto:test_support",
+    "//chromeos/ash/components/boca/proto",
+    "//chromeos/ash/components/boca/session_api",
+    "//chromeos/ash/services/boca/babelorca/mojom",
+    "//components/live_caption",
+    "//components/live_caption:constants",
+    "//components/prefs",
+    "//components/prefs:test_support",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager:test_support",
     "//google_apis",
     "//media/mojo/mojom:speech_recognition",
+    "//mojo/public/cpp/bindings",
     "//net",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/native_theme",
   ]
 }

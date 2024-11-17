@@ -487,7 +487,8 @@ def _AnalyzeInternal(apk_path,
       if subpath in z.namelist():
         hindi_apk_info = z.getinfo(subpath)
         total_apk_size += hindi_apk_info.file_size
-      else:
+      elif not is_shared_apk:
+        # In Chrome, splits should always be enabled.
         assert split_name != 'base', 'splits/base-hi.apk should always exist'
 
   total_install_size = total_apk_size

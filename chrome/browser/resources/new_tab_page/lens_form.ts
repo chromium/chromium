@@ -83,7 +83,6 @@ export class LensFormElement extends CrLitElement {
       supportedFileTypes_: {type: String},
       renderingEnvironment_: {type: String},
       chromiumSurface_: {type: String},
-      useDirectUpload_: {type: Boolean},
       uploadFileAction_: {type: String},
       uploadUrlAction_: {type: String},
       uploadUrl_: {type: String},
@@ -105,8 +104,6 @@ export class LensFormElement extends CrLitElement {
   protected startTime_: string|null = null;
   protected clientData_: string =
       loadTimeData.getString('searchboxLensVariations');
-  private useDirectUpload_: boolean =
-      loadTimeData.getBoolean('searchboxLensDirectUpload');
 
   openSystemFilePicker() {
     this.$.fileInput.click();
@@ -144,17 +141,13 @@ export class LensFormElement extends CrLitElement {
       return;
     }
 
-    if (this.useDirectUpload_) {
-      this.uploadFileAction_ = DIRECT_UPLOAD_FILE_ACTION;
-    }
+    this.uploadFileAction_ = DIRECT_UPLOAD_FILE_ACTION;
 
     this.startTime_ = Date.now().toString();
 
     let processedFile: ProcessedFile = {processedFile: file};
 
-    if (this.useDirectUpload_) {
-      processedFile = await processFile(file);
-    }
+    processedFile = await processFile(file);
 
     const dataTransfer = new DataTransfer();
     dataTransfer.items.add(processedFile.processedFile);

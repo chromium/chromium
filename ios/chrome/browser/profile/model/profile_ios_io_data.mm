@@ -78,28 +78,23 @@ void NotifyContextGettersOfShutdownOnIO(
 
 }  // namespace
 
-void ProfileIOSIOData::InitializeOnUIThread(
-    ChromeBrowserState* browser_state) {
+void ProfileIOSIOData::InitializeOnUIThread(ProfileIOS* profile) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
-  PrefService* pref_service = browser_state->GetPrefs();
+  PrefService* pref_service = profile->GetPrefs();
   auto params = std::make_unique<ProfileParams>();
-  params->path = browser_state->GetOriginalChromeBrowserState()->GetStatePath();
+  params->path = profile->GetOriginalProfile()->GetStatePath();
 
   params->io_thread = GetApplicationContext()->GetIOSChromeIOThread();
 
-  params->cookie_settings =
-      ios::CookieSettingsFactory::GetForBrowserState(browser_state);
+  params->cookie_settings = ios::CookieSettingsFactory::GetForProfile(profile);
   params->host_content_settings_map =
-      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state);
+      ios::HostContentSettingsMapFactory::GetForProfile(profile);
 
   params->proxy_config_service = ProxyServiceFactory::CreateProxyConfigService(
-      browser_state->GetProxyConfigTracker());
-  params->system_cookie_store = web::CreateSystemCookieStore(browser_state);
-  params->browser_state = browser_state;
+      profile->GetProxyConfigTracker());
+  params->system_cookie_store = web::CreateSystemCookieStore(profile);
+  params->profile = profile;
   profile_params_ = std::move(params);
-
-  IOSChromeNetworkDelegate::InitializePrefsOnUIThread(&enable_do_not_track_,
-                                                      pref_service);
 
   accept_language_pref_watcher_ =
       std::make_unique<AcceptLanguagePrefWatcher>(pref_service);
@@ -109,13 +104,12 @@ void ProfileIOSIOData::InitializeOnUIThread(
 }
 
 ProfileIOSIOData::ProfileParams::ProfileParams()
-    : io_thread(nullptr), browser_state(nullptr) {}
+    : io_thread(nullptr), profile(nullptr) {}
 
 ProfileIOSIOData::ProfileParams::~ProfileParams() {}
 
-ProfileIOSIOData::ProfileIOSIOData(
-    ChromeBrowserStateType browser_state_type)
-    : initialized_(false), browser_state_type_(browser_state_type) {
+ProfileIOSIOData::ProfileIOSIOData(ProfileIOSType profile_type)
+    : initialized_(false), profile_type_(profile_type) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 }
 
@@ -144,8 +138,7 @@ HostContentSettingsMap* ProfileIOSIOData::GetHostContentSettingsMap()
 }
 
 bool ProfileIOSIOData::IsOffTheRecord() const {
-  return browser_state_type() ==
-         ChromeBrowserStateType::INCOGNITO_BROWSER_STATE;
+  return profile_type() == ProfileIOSType::INCOGNITO_PROFILE;
 }
 
 void ProfileIOSIOData::InitializeMetricsEnabledStateOnUIThread() {
@@ -178,7 +171,6 @@ void ProfileIOSIOData::Init(
   context_builder.set_net_log(io_thread->net_log());
   auto network_delegate = std::make_unique<IOSChromeNetworkDelegate>();
   network_delegate->set_cookie_settings(profile_params_->cookie_settings.get());
-  network_delegate->set_enable_do_not_track(&enable_do_not_track_);
   context_builder.set_network_delegate(std::move(network_delegate));
   auto quic_context = std::make_unique<net::QuicContext>();
   *quic_context->params() = io_thread->quic_params();
@@ -229,7 +221,6 @@ void ProfileIOSIOData::ShutdownOnUIThread(
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   enable_referrers_.Destroy();
-  enable_do_not_track_.Destroy();
   enable_metrics_.Destroy();
   accept_language_pref_watcher_.reset();
 

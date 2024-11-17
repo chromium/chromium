@@ -148,7 +148,6 @@ public final class DefaultBrowserInfo2 {
             boolean isChromeDefault = false;
             boolean isDefaultSystem = false;
             boolean hasDefault = false;
-            int browserCount = 0;
             int systemCount = 0;
 
             // Query the default handler first.
@@ -174,7 +173,7 @@ public final class DefaultBrowserInfo2 {
                 }
             }
 
-            browserCount = uniquePackages.size();
+            int browserCount = uniquePackages.size();
 
             return new DefaultInfo(
                     isChromeSystem,

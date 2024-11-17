@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/flags_ui/feature_entry.h"
 
 #include "base/check_op.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -111,6 +107,7 @@ std::u16string FeatureEntry::DescriptionForOption(int index) const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   );
   DCHECK_LT(index, NumOptions());
+  const auto index_s = base::checked_cast<size_t>(index);
   const char* description = nullptr;
   if (type == FeatureEntry::ENABLE_DISABLE_VALUE ||
       type == FeatureEntry::FEATURE_VALUE
@@ -118,12 +115,10 @@ std::u16string FeatureEntry::DescriptionForOption(int index) const {
       || type == FeatureEntry::PLATFORM_FEATURE_NAME_VALUE
 #endif
   ) {
-    const char* const kEnableDisableDescriptions[] = {
-        kGenericExperimentChoiceDefault,
-        kGenericExperimentChoiceEnabled,
-        kGenericExperimentChoiceDisabled,
-    };
-    description = kEnableDisableDescriptions[index];
+    const auto kEnableDisableDescriptions = std::to_array<const char*>(
+        {kGenericExperimentChoiceDefault, kGenericExperimentChoiceEnabled,
+         kGenericExperimentChoiceDisabled});
+    description = kEnableDisableDescriptions[index_s];
   } else if (type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE
 #if BUILDFLAG(IS_CHROMEOS_ASH)
              || type == FeatureEntry::PLATFORM_FEATURE_NAME_WITH_PARAMS_VALUE
@@ -135,16 +130,15 @@ std::u16string FeatureEntry::DescriptionForOption(int index) const {
       description = kGenericExperimentChoiceEnabled;
     } else if (index < NumOptions() - 1) {
       // First two options do not have variations params.
-      int variation_index = index - 2;
       return base::ASCIIToUTF16(
           base::StrCat({kGenericExperimentChoiceEnabled, " ",
-                        GetVariations()[variation_index].description_text}));
+                        GetVariations()[index_s - 2].description_text}));
     } else {
       DCHECK_EQ(NumOptions() - 1, index);
       description = kGenericExperimentChoiceDisabled;
     }
   } else {
-    description = choices[index].description;
+    description = choices[index_s].description;
   }
   return base::ASCIIToUTF16(description);
 }
@@ -153,7 +147,7 @@ const FeatureEntry::Choice& FeatureEntry::ChoiceForOption(int index) const {
   DCHECK_EQ(FeatureEntry::MULTI_VALUE, type);
   DCHECK_LT(index, NumOptions());
 
-  return choices[index];
+  return choices[base::checked_cast<size_t>(index)];
 }
 
 FeatureEntry::FeatureState FeatureEntry::StateForOption(int index) const {
@@ -166,11 +160,11 @@ FeatureEntry::FeatureState FeatureEntry::StateForOption(int index) const {
   );
   DCHECK_LT(index, NumOptions());
 
-  if (index == 0)
+  if (index == 0) {
     return FeatureEntry::FeatureState::DEFAULT;
-  if (index == NumOptions() - 1)
-    return FeatureEntry::FeatureState::DISABLED;
-  return FeatureEntry::FeatureState::ENABLED;
+  }
+  return (index == NumOptions() - 1) ? FeatureEntry::FeatureState::DISABLED
+                                     : FeatureEntry::FeatureState::ENABLED;
 }
 
 const FeatureEntry::FeatureVariation* FeatureEntry::VariationForOption(
@@ -194,7 +188,7 @@ const FeatureEntry::FeatureVariation* FeatureEntry::VariationForOption(
     // PLATFORM_FEATURE_NAME_VALUE type. Option at |index| corresponds to
     // variation at |index| - 2 as the list starts with "Default" and "Enabled"
     // (with default parameters).
-    return &GetVariations()[index - 2];
+    return &GetVariations()[static_cast<size_t>(index - 2)];
   }
 
   return nullptr;
@@ -298,8 +292,7 @@ bool FeatureEntry::IsValid() const {
       return true;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 const base::span<const FeatureEntry::FeatureVariation>
@@ -312,8 +305,7 @@ FeatureEntry::GetVariations() const {
     return platform_feature_name.feature_variations;
   }
 #endif
-  NOTREACHED_IN_MIGRATION();
-  return base::span<const FeatureEntry::FeatureVariation>();
+  NOTREACHED();
 }
 
 namespace testing {

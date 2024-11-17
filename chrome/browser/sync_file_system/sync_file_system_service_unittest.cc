@@ -152,6 +152,8 @@ class SyncFileSystemServiceTest : public testing::Test {
     EXPECT_CALL(*mock_remote_service(),
                 SetRemoteChangeProcessor(local_service.get())).Times(1);
 
+    EXPECT_CALL(*mock_remote_service(), SetSyncEnabled(false)).Times(1);
+
     sync_service_->Initialize(
         std::move(local_service),
         std::unique_ptr<RemoteFileSyncService>(remote_service_));

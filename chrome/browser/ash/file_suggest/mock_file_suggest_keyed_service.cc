@@ -68,7 +68,11 @@ void MockFileSuggestKeyedService::RunGetSuggestFileDataCallback(
   if (iter != type_suggestion_mappings_.end()) {
     suggestions = iter->second;
   }
-  FilterRemovedSuggestions(std::move(callback), suggestions);
+  GetSuggestFileDataCallback filter_removed_suggestions_callback =
+      base::BindOnce(&MockFileSuggestKeyedService::FilterRemovedSuggestions,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
+  FilterDuplicateSuggestions(std::move(filter_removed_suggestions_callback),
+                             suggestions);
 }
 
 }  // namespace ash

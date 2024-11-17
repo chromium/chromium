@@ -219,9 +219,6 @@ void AwSafeBrowsingAllowlistManager::BuildAllowlist(
   DCHECK(!allowlist->is_terminal);
   DCHECK(!allowlist->match_prefix);
 
-  ui_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(std::move(callback), success));
-
   if (success) {
     // use base::Unretained as AwSafeBrowsingAllowlistManager is a singleton and
     // not cleaned.
@@ -230,6 +227,9 @@ void AwSafeBrowsingAllowlistManager::BuildAllowlist(
         base::BindOnce(&AwSafeBrowsingAllowlistManager::SetAllowlist,
                        base::Unretained(this), std::move(allowlist)));
   }
+
+  ui_task_runner_->PostTask(FROM_HERE,
+                            base::BindOnce(std::move(callback), success));
 }
 
 void AwSafeBrowsingAllowlistManager::SetAllowlistOnUIThread(

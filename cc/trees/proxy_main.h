@@ -74,7 +74,9 @@ class CC_EXPORT ProxyMain : public Proxy {
                                   base::TimeDelta first_scroll_delay,
                                   base::TimeTicks first_scroll_timestamp);
   void NotifyImageDecodeRequestFinished(int request_id, bool decode_succeeded);
-  void NotifyTransitionRequestFinished(uint32_t sequence_id);
+  void NotifyTransitionRequestFinished(
+      uint32_t sequence_id,
+      const viz::ViewTransitionElementResourceRects&);
 
   CommitPipelineStage max_requested_pipeline_stage() const {
     return max_requested_pipeline_stage_;

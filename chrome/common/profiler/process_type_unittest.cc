@@ -5,7 +5,7 @@
 #include "chrome/common/profiler/process_type.h"
 
 #include "base/command_line.h"
-#include "base/profiler/process_type.h"
+#include "components/sampling_profiler/process_type.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -28,14 +28,14 @@ class ThreadProfilerProcessTypeTest : public ::testing::Test {
 
 TEST_F(ThreadProfilerProcessTypeTest, GetProfilerProcessType_Browser) {
   // No process type switch == browser process.
-  EXPECT_EQ(base::ProfilerProcessType::kBrowser,
+  EXPECT_EQ(sampling_profiler::ProfilerProcessType::kBrowser,
             GetProfilerProcessType(command_line()));
 }
 
 TEST_F(ThreadProfilerProcessTypeTest, GetProfilerProcessType_Renderer) {
   command_line().AppendSwitchASCII(switches::kProcessType,
                                    switches::kRendererProcess);
-  EXPECT_EQ(base::ProfilerProcessType::kRenderer,
+  EXPECT_EQ(sampling_profiler::ProfilerProcessType::kRenderer,
             GetProfilerProcessType(command_line()));
 }
 
@@ -46,7 +46,7 @@ TEST_F(ThreadProfilerProcessTypeTest, GetProfilerProcessType_Extension) {
   command_line().AppendSwitch(extensions::switches::kExtensionProcess);
   // Extension renderers are treated separately from non-extension renderers,
   // but don't have a defined enum currently.
-  EXPECT_EQ(base::ProfilerProcessType::kUnknown,
+  EXPECT_EQ(sampling_profiler::ProfilerProcessType::kUnknown,
             GetProfilerProcessType(command_line()));
 }
 #endif
@@ -54,7 +54,7 @@ TEST_F(ThreadProfilerProcessTypeTest, GetProfilerProcessType_Extension) {
 TEST_F(ThreadProfilerProcessTypeTest, GetProfilerProcessType_Gpu) {
   command_line().AppendSwitchASCII(switches::kProcessType,
                                    switches::kGpuProcess);
-  EXPECT_EQ(base::ProfilerProcessType::kGpu,
+  EXPECT_EQ(sampling_profiler::ProfilerProcessType::kGpu,
             GetProfilerProcessType(command_line()));
 }
 
@@ -63,27 +63,27 @@ TEST_F(ThreadProfilerProcessTypeTest, GetProfilerProcessType_NetworkService) {
                                    switches::kUtilityProcess);
   command_line().AppendSwitchASCII(switches::kUtilitySubType,
                                    network::mojom::NetworkService::Name_);
-  EXPECT_EQ(base::ProfilerProcessType::kNetworkService,
+  EXPECT_EQ(sampling_profiler::ProfilerProcessType::kNetworkService,
             GetProfilerProcessType(command_line()));
 }
 
 TEST_F(ThreadProfilerProcessTypeTest, GetProfilerProcessType_Utility) {
   command_line().AppendSwitchASCII(switches::kProcessType,
                                    switches::kUtilityProcess);
-  EXPECT_EQ(base::ProfilerProcessType::kUtility,
+  EXPECT_EQ(sampling_profiler::ProfilerProcessType::kUtility,
             GetProfilerProcessType(command_line()));
 }
 
 TEST_F(ThreadProfilerProcessTypeTest, GetProfilerProcessType_Zygote) {
   command_line().AppendSwitchASCII(switches::kProcessType,
                                    switches::kZygoteProcess);
-  EXPECT_EQ(base::ProfilerProcessType::kZygote,
+  EXPECT_EQ(sampling_profiler::ProfilerProcessType::kZygote,
             GetProfilerProcessType(command_line()));
 }
 
 TEST_F(ThreadProfilerProcessTypeTest, GetProfilerProcessType_PpapiPlugin) {
   command_line().AppendSwitchASCII(switches::kProcessType,
                                    switches::kPpapiPluginProcess);
-  EXPECT_EQ(base::ProfilerProcessType::kPpapiPlugin,
+  EXPECT_EQ(sampling_profiler::ProfilerProcessType::kPpapiPlugin,
             GetProfilerProcessType(command_line()));
 }

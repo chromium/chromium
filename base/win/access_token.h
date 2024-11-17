@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/win/access_control_list.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/sid.h"
@@ -33,7 +34,7 @@ class BASE_EXPORT AccessToken {
   class BASE_EXPORT Group {
    public:
     // Get the group SID.
-    const Sid& GetSid() const { return sid_; }
+    const Sid& GetSid() const LIFETIME_BOUND { return sid_; }
     // Get the group attribute flags.
     DWORD GetAttributes() const { return attributes_; }
     // Returns true if the group is an integrity level.

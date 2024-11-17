@@ -61,7 +61,7 @@ component("features") {
 
 if (is_android) {
   android_library("java") {
-    sources = [ "android/java/src/org/chromium/chrome/browser/sensitive_content/SensitiveContentClient.java" ]
+    sources = [ "android/java/src/org/chromium/components/sensitive_content/SensitiveContentClient.java" ]
     deps = [
       "//base:base_java",
       "//content/public/android:content_full_java",
@@ -74,11 +74,11 @@ if (is_android) {
 
   generate_jni("jni_headers") {
     visibility = [ ":*" ]
-    sources = [ "android/java/src/org/chromium/chrome/browser/sensitive_content/SensitiveContentClient.java" ]
+    sources = [ "android/java/src/org/chromium/components/sensitive_content/SensitiveContentClient.java" ]
   }
 
   robolectric_library("junit") {
-    sources = [ "android/junit/src/org/chromium/chrome/browser/sensitive_content/SensitiveContentClientUnitTest.java" ]
+    sources = [ "android/junit/src/org/chromium/components/sensitive_content/SensitiveContentClientUnitTest.java" ]
     deps = [
       ":java",
       "//base:base_java",
@@ -88,24 +88,6 @@ if (is_android) {
       "//third_party/junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_no_recycler_view_java",
-    ]
-  }
-
-  android_library("javatests") {
-    testonly = true
-    sources = [ "android/javatests/src/org/chromium/chrome/browser/sensitive_content/SensitiveContentTest.java" ]
-    deps = [
-      ":java",
-      ":sensitive_content_features_java",
-      "//base:base_java_test_support",
-      "//chrome/android:chrome_java",
-      "//chrome/browser/flags:java",
-      "//chrome/browser/tab:java",
-      "//chrome/test/android:chrome_java_integration_test_support",
-      "//components/embedder_support/android:content_view_java",
-      "//net/android:net_java_test_support",
-      "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/junit",
     ]
   }
 

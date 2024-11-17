@@ -309,6 +309,14 @@ void HostFrameSinkManager::RequestCopyOfOutput(
                                            capture_exact_surface_id);
 }
 
+void HostFrameSinkManager::SetupRenderInputRouterDelegateConnection(
+    uint32_t grouping_id,
+    mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
+        rir_delegate_client_remote) {
+  frame_sink_manager_->SetupRenderInputRouterDelegateConnection(
+      grouping_id, std::move(rir_delegate_client_remote));
+}
+
 void HostFrameSinkManager::SetOnCopyOutputReadyCallback(
     const blink::SameDocNavigationScreenshotDestinationToken& destination_token,
     ScreenshotDestinationReadyCallback callback) {

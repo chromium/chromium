@@ -106,7 +106,7 @@ bool AppendFileRefToBody(PP_Instance instance,
       platform_path = file_ref_host->GetExternalFilePath();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   std::optional<base::Time> optional_modified_time;
   if (expected_last_modified_time != 0)

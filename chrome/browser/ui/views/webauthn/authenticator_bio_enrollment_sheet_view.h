@@ -8,11 +8,15 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/webauthn/authenticator_request_sheet_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 // Represents a sheet in the Web Authentication request dialog that allows the
 // user to input pin code used to connect to BLE security key.
 class AuthenticatorBioEnrollmentSheetView
     : public AuthenticatorRequestSheetView {
+  METADATA_HEADER(AuthenticatorBioEnrollmentSheetView,
+                  AuthenticatorRequestSheetView)
+
  public:
   explicit AuthenticatorBioEnrollmentSheetView(
       std::unique_ptr<AuthenticatorBioEnrollmentSheetModel> sheet_model);

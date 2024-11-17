@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 
 namespace {
 
@@ -32,9 +33,14 @@ void AutofillTabHelper::SetBaseViewController(
   autofill_client_->SetBaseViewController(base_view_controller);
 }
 
-void AutofillTabHelper::SetCommandsHandler(
-    id<AutofillCommands> commands_handler) {
-  autofill_client_->set_commands_handler(commands_handler);
+void AutofillTabHelper::SetAutofillHandler(
+    id<AutofillCommands> autofill_handler) {
+  autofill_client_->set_commands_handler(autofill_handler);
+}
+
+void AutofillTabHelper::SetSnackbarHandler(
+    id<SnackbarCommands> snackbar_handler) {
+  autofill_agent_.snackbarHandler = snackbar_handler;
 }
 
 id<FormSuggestionProvider> AutofillTabHelper::GetSuggestionProvider() {
@@ -56,8 +62,7 @@ AutofillTabHelper::AutofillTabHelper(web::WebState* web_state)
       profile_, web_state, infobar_manager, autofill_agent_);
 
   autofill::AutofillDriverIOSFactory::CreateForWebState(
-      web_state, autofill_client_.get(), autofill_agent_,
-      GetApplicationContext()->GetApplicationLocale());
+      web_state, autofill_client_.get(), autofill_agent_);
 
   if (IsAutofillAcrossIframesEnabled()) {
     autofill::ChildFrameRegistrar::GetOrCreateForWebState(web_state)

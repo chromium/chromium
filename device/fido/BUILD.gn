@@ -11,6 +11,10 @@ component("fido") {
   # related authentication functions, with a limited amount of dependencies,
   # making it possible to build these on any platform, including iOS.
   sources = [
+    "attestation_object.cc",
+    "attestation_object.h",
+    "attestation_statement.cc",
+    "attestation_statement.h",
     "attested_credential_data.cc",
     "attested_credential_data.h",
     "authenticator_data.cc",
@@ -24,6 +28,8 @@ component("fido") {
     "fido_parsing_utils.cc",
     "fido_parsing_utils.h",
     "fido_types.h",
+    "opaque_attestation_statement.cc",
+    "opaque_attestation_statement.h",
     "p256_public_key.cc",
     "p256_public_key.h",
     "public_key.cc",
@@ -46,10 +52,6 @@ component("fido") {
 
   if (use_blink) {
     sources += [
-      "attestation_object.cc",
-      "attestation_object.h",
-      "attestation_statement.cc",
-      "attestation_statement.h",
       "authenticator_selection_criteria.cc",
       "authenticator_selection_criteria.h",
       "cable/cable_discovery_data.cc",
@@ -70,8 +72,6 @@ component("fido") {
       "json_request.cc",
       "json_request.h",
       "network_context_factory.h",
-      "opaque_attestation_statement.cc",
-      "opaque_attestation_statement.h",
       "prf_input.cc",
       "prf_input.h",
       "public_key_credential_descriptor.cc",
@@ -105,10 +105,6 @@ component("fido") {
     # Android implementation of FIDO is delegated to GMSCore.
     if (!is_android) {
       sources += [
-        "aoa/android_accessory_device.cc",
-        "aoa/android_accessory_device.h",
-        "aoa/android_accessory_discovery.cc",
-        "aoa/android_accessory_discovery.h",
         "appid_exclude_probe_task.cc",
         "appid_exclude_probe_task.h",
         "attestation_statement_formats.cc",

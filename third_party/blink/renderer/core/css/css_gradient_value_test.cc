@@ -30,8 +30,7 @@ const CSSGradientValue* ParseSingleGradient(const char* text) {
     DCHECK_EQ(list->length(), 1u);
     return &To<CSSGradientValue>(list->Item(0));
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool CompareGradients(const char* gradient1, const char* gradient2) {

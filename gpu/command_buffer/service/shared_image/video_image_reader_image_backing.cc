@@ -9,6 +9,7 @@
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
@@ -353,12 +354,12 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
 
   std::vector<skgpu::graphite::BackendTexture> BeginReadAccess() override {
     DCHECK(!scoped_hardware_buffer_);
-    auto* stream_texture_sii = video_backing()->stream_texture_sii_.get();
 
     // Obtain the AHB for the current video frame.
     {
       base::AutoLockMaybe auto_lock(GetDrDcLockPtr());
-      scoped_hardware_buffer_ = stream_texture_sii->GetAHardwareBuffer();
+      scoped_hardware_buffer_ =
+          video_backing()->stream_texture_sii_->GetAHardwareBuffer();
     }
     if (!scoped_hardware_buffer_) {
       LOG(ERROR) << "Failed to get the hardware buffer.";
@@ -411,7 +412,7 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     base::ScopedFD sync_fd = scoped_hardware_buffer_->TakeFence();
 
     if (sync_fd.is_valid()) {
-      wgpu::SharedFenceVkSemaphoreSyncFDDescriptor sync_fd_desc;
+      wgpu::SharedFenceSyncFDDescriptor sync_fd_desc;
       // NOTE: There is no ownership transfer here, as Dawn internally dup()s
       // the passed-in handle.
       sync_fd_desc.handle = sync_fd.get();
@@ -438,6 +439,12 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     if (shared_texture_memory_.BeginAccess(texture_, &begin_access_desc) !=
         wgpu::Status::Success) {
       LOG(ERROR) << "Failed to begin access for texture";
+      // TODO(crbug.com/377489264): Remove after ensuring that all samsung
+      // devices which are failing AHB size vs VkImage size checks have the
+      // check disabled.
+      base::debug::DumpWithoutCrashing();
+      ResetStorage();
+      return {};
     }
 
     // Obtain the YCbCr info from the device.
@@ -445,6 +452,8 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
     if (!device.GetAHardwareBufferProperties(scoped_hardware_buffer_->buffer(),
                                              &ahb_properties)) {
       LOG(ERROR) << "Failed to get the ycbcr info";
+      EndReadAccess();
+      return {};
     }
 
     // Wrap the Dawn texture in a Skia texture, passing the YCbCr info.
@@ -466,15 +475,13 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
 
     if (shared_texture_memory_.EndAccess(texture_, &end_access_desc) !=
         wgpu::Status::Success) {
+      // NOTE: Dawn ensures that `end_access_desc.fenceCount` is set to zero in
+      // the case of an error, so there is no need to early-out here.
       LOG(ERROR) << "Failed to end access for texture";
     }
 
-    if (end_access_desc.initialized) {
-      SetCleared();
-    }
-
     wgpu::SharedFenceExportInfo export_info;
-    wgpu::SharedFenceVkSemaphoreSyncFDExportInfo sync_fd_export_info;
+    wgpu::SharedFenceSyncFDExportInfo sync_fd_export_info;
     export_info.nextInChain = &sync_fd_export_info;
 
     if (end_access_desc.fenceCount) {
@@ -492,6 +499,10 @@ class VideoImageReaderImageBacking::SkiaGraphiteDawnImageRepresentation
       scoped_hardware_buffer_->SetReadFence(std::move(end_access_sync_fd));
     }
 
+    ResetStorage();
+  }
+
+  void ResetStorage() {
     texture_.Destroy();
     texture_ = nullptr;
     shared_texture_memory_ = nullptr;

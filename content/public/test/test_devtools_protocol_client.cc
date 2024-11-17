@@ -182,8 +182,9 @@ void TestDevToolsProtocolClient::DispatchProtocolMessage(
 
 void TestDevToolsProtocolClient::AgentHostClosed(
     DevToolsAgentHost* agent_host) {
-  if (!agent_host_can_close_)
-    NOTREACHED_IN_MIGRATION();
+  if (!agent_host_can_close_) {
+    NOTREACHED();
+  }
 }
 
 bool TestDevToolsProtocolClient::AllowUnsafeOperations() {

@@ -47,7 +47,7 @@ public class MediaNotificationFaviconTest extends MediaNotificationTestBase {
     private MediaNotificationTestTabHolder mTabHolder;
 
     // Mock LargeIconBridge that runs callback using the given favicon.
-    private class TestLargeIconBridge extends LargeIconBridge {
+    private static class TestLargeIconBridge extends LargeIconBridge {
         private LargeIconCallback mCallback;
         private boolean mGetIconCalledAtLeastOnce;
 

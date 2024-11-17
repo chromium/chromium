@@ -33,8 +33,8 @@ class SessionSyncService : public KeyedService {
 
   virtual syncer::GlobalIdMapper* GetGlobalIdMapper() const = 0;
 
-  // Return the active OpenTabsUIDelegate. If open/proxy tabs is not enabled or
-  // not currently syncing, returns nullptr.
+  // Return the active OpenTabsUIDelegate. If UserSelectableType::kTabs is not
+  // enabled or not currently syncing, returns nullptr.
   virtual OpenTabsUIDelegate* GetOpenTabsUIDelegate() = 0;
 
   // Allows client code to be notified when foreign sessions change.

@@ -9,15 +9,20 @@ import android.content.Intent;
 
 import androidx.preference.PreferenceFragmentCompat;
 
+import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
+
 /** Preference fragment for showing the Site Settings UI. */
-public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat {
+public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat
+        implements FragmentSettingsNavigation {
     private SiteSettingsDelegate mSiteSettingsDelegate;
     private CustomTabIntentHelper mCustomTabIntentHelper;
+    private SettingsNavigation mSettingsNavigation;
 
     /**
      * Sets the SiteSettingsDelegate instance this Fragment should use.
      *
-     * This should be called by the embedding Activity.
+     * <p>This should be called by the embedding Activity.
      */
     public void setSiteSettingsDelegate(SiteSettingsDelegate client) {
         assert mSiteSettingsDelegate == null;
@@ -67,5 +72,15 @@ public abstract class BaseSiteSettingsFragment extends PreferenceFragmentCompat 
         if (mSiteSettingsDelegate != null) {
             mSiteSettingsDelegate.onDestroyView();
         }
+    }
+
+    @Override
+    public void setSettingsNavigation(SettingsNavigation settingsNavigation) {
+        mSettingsNavigation = settingsNavigation;
+    }
+
+    /** Returns the associated {@link SettingsNavigation}. */
+    public SettingsNavigation getSettingsNavigation() {
+        return mSettingsNavigation;
     }
 }

@@ -12,10 +12,17 @@
 #import "components/send_tab_to_self/send_tab_to_self_model.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/sync/model/send_tab_to_self_sync_service_factory.h"
 #import "url/gurl.h"
 
@@ -50,13 +57,10 @@ bool SendTabPushNotificationClient::HandleNotificationInteraction(
   // opened.
   std::string guid = base::SysNSStringToUTF8(
       response.notification.request.content.userInfo[kGuidKey]);
-  LoadUrlInNewTab(GURL(url), base::BindOnce(^(Browser* browser) {
-                    send_tab_to_self::SendTabToSelfModel* send_tab_model =
-                        SendTabToSelfSyncServiceFactory::GetForBrowserState(
-                            browser->GetBrowserState())
-                            ->GetSendTabToSelfModel();
-                    send_tab_model->MarkEntryOpened(guid);
-                  }));
+  LoadUrlInNewTab(
+      GURL(url),
+      base::BindOnce(&SendTabPushNotificationClient::OnURLLoadedInNewTab,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(guid)));
 
   base::RecordAction(
       base::UserMetricsAction("IOS.Notifications.SendTab.Interaction"));
@@ -79,4 +83,28 @@ SendTabPushNotificationClient::HandleNotificationReception(
 NSArray<UNNotificationCategory*>*
 SendTabPushNotificationClient::RegisterActionableNotifications() {
   return @[];
+}
+
+void SendTabPushNotificationClient::OnURLLoadedInNewTab(std::string guid,
+                                                        Browser* browser) {
+  send_tab_to_self::SendTabToSelfModel* send_tab_model =
+      SendTabToSelfSyncServiceFactory::GetForProfile(browser->GetProfile())
+          ->GetSendTabToSelfModel();
+  send_tab_model->MarkEntryOpened(guid);
+
+  if (IsProvisionalNotificationAlertEnabled()) {
+    AuthenticationService* authService =
+        AuthenticationServiceFactory::GetForProfile(browser->GetProfile());
+    id<SystemIdentity> identity =
+        authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+    const std::string& gaiaID = base::SysNSStringToUTF8(identity.gaiaID);
+    if (!push_notification_settings::
+            GetMobileNotificationPermissionStatusForClient(
+                PushNotificationClientId::kSendTab, gaiaID)) {
+      PushNotificationService* service =
+          GetApplicationContext()->GetPushNotificationService();
+      service->SetPreference(base::SysUTF8ToNSString(gaiaID),
+                             PushNotificationClientId::kSendTab, true);
+    }
+  }
 }

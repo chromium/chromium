@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -35,6 +36,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -43,6 +45,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_POSIX)
@@ -59,16 +62,6 @@
 #endif
 
 namespace headless {
-
-namespace {
-
-bool DecodePNG(const std::string& png_data, SkBitmap* bitmap) {
-  return gfx::PNGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(png_data.data()), png_data.size(),
-      bitmap);
-}
-
-}  // namespace
 
 class HeadlessCommandBrowserTest : public HeadlessBrowserTest,
                                    public content::WebContentsObserver {
@@ -410,8 +403,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessScreenshotCommandBrowserTest, Screenshot) {
   ASSERT_TRUE(base::ReadFileToString(screenshot_filename_, &png_data))
       << screenshot_filename_;
 
-  SkBitmap bitmap;
-  ASSERT_TRUE(DecodePNG(png_data, &bitmap));
+  SkBitmap bitmap = gfx::PNGCodec::Decode(base::as_byte_span(png_data));
+  ASSERT_FALSE(bitmap.isNull());
 
   ASSERT_EQ(800, bitmap.width());
   ASSERT_EQ(600, bitmap.height());
@@ -448,8 +441,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessScreenshotWithBackgroundCommandBrowserTest,
   ASSERT_TRUE(base::ReadFileToString(screenshot_filename_, &png_data))
       << screenshot_filename_;
 
-  SkBitmap bitmap;
-  ASSERT_TRUE(DecodePNG(png_data, &bitmap));
+  SkBitmap bitmap = gfx::PNGCodec::Decode(base::as_byte_span(png_data));
+  ASSERT_FALSE(bitmap.isNull());
 
   ASSERT_EQ(800, bitmap.width());
   ASSERT_EQ(600, bitmap.height());
@@ -488,8 +481,8 @@ IN_PROC_BROWSER_TEST_F(HeadlessScreenshotCommandBrowserTestWithWindowSize,
   ASSERT_TRUE(base::ReadFileToString(screenshot_filename_, &png_data))
       << screenshot_filename_;
 
-  SkBitmap bitmap;
-  ASSERT_TRUE(DecodePNG(png_data, &bitmap));
+  SkBitmap bitmap = gfx::PNGCodec::Decode(base::as_byte_span(png_data));
+  ASSERT_FALSE(bitmap.isNull());
 
   EXPECT_EQ(bitmap.width(), kWindowSize.width());
   EXPECT_EQ(bitmap.height(), kWindowSize.height());
@@ -502,9 +495,6 @@ IN_PROC_BROWSER_TEST_F(HeadlessScreenshotCommandBrowserTestWithWindowSize,
 class HeadlessPrintToPdfCommandBrowserTest
     : public HeadlessFileCommandBrowserTest {
  public:
-  static constexpr float kPageMarginsInInches =
-      0.393701;  // See Page.PrintToPDF specs.
-
   HeadlessPrintToPdfCommandBrowserTest() = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -520,28 +510,33 @@ class HeadlessPrintToPdfCommandBrowserTest
     return embedded_test_server()->GetURL("/centered_blue_box.html");
   }
 
+  void RenderPageBitmap(int page_index) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    RunTest();
+
+    ASSERT_THAT(result(),
+                testing::Eq(HeadlessCommandHandler::Result::kSuccess));
+
+    ASSERT_TRUE(base::PathExists(print_to_pdf_filename_))
+        << print_to_pdf_filename_;
+
+    std::optional<std::vector<uint8_t>> pdf_data =
+        base::ReadFileToBytes(print_to_pdf_filename_);
+    ASSERT_TRUE(pdf_data.has_value()) << print_to_pdf_filename_;
+
+    ASSERT_TRUE(page_bitmap_.Render(pdf_data.value(), page_index));
+  }
+
   base::FilePath print_to_pdf_filename_;
+  PDFPageBitmap page_bitmap_;
 };
 
 IN_PROC_BROWSER_TEST_F(HeadlessPrintToPdfCommandBrowserTest, PrintToPdf) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  RunTest();
-
-  ASSERT_THAT(result(), testing::Eq(HeadlessCommandHandler::Result::kSuccess));
-
-  ASSERT_TRUE(base::PathExists(print_to_pdf_filename_))
-      << print_to_pdf_filename_;
-
-  std::optional<std::vector<uint8_t>> pdf_data =
-      base::ReadFileToBytes(print_to_pdf_filename_);
-  ASSERT_TRUE(pdf_data.has_value()) << print_to_pdf_filename_;
-
-  PDFPageBitmap page_bitmap;
-  ASSERT_TRUE(page_bitmap.Render(pdf_data.value(), 0));
+  RenderPageBitmap(/*page_index=*/0);
 
   // Expect blue rectangle on white background.
-  EXPECT_TRUE(page_bitmap.CheckColoredRect(0xff0000ff, 0xffffffff));
+  EXPECT_TRUE(page_bitmap_.CheckColoredRect(0xff0000ff, 0xffffffff));
 }
 
 class HeadlessPrintToPdfWithBackgroundCommandBrowserTest
@@ -559,24 +554,67 @@ class HeadlessPrintToPdfWithBackgroundCommandBrowserTest
 
 IN_PROC_BROWSER_TEST_F(HeadlessPrintToPdfWithBackgroundCommandBrowserTest,
                        PrintToPdfBackground) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  RunTest();
-
-  ASSERT_THAT(result(), testing::Eq(HeadlessCommandHandler::Result::kSuccess));
-
-  ASSERT_TRUE(base::PathExists(print_to_pdf_filename_))
-      << print_to_pdf_filename_;
-
-  std::optional<std::vector<uint8_t>> pdf_data =
-      base::ReadFileToBytes(print_to_pdf_filename_);
-  ASSERT_TRUE(pdf_data.has_value()) << print_to_pdf_filename_;
-
-  PDFPageBitmap page_bitmap;
-  ASSERT_TRUE(page_bitmap.Render(pdf_data.value(), 0));
+  RenderPageBitmap(/*page_index=*/0);
 
   // Expect blue rectangle on red background sans margin.
-  EXPECT_TRUE(page_bitmap.CheckColoredRect(0xff0000ff, 0xffff0000, 120));
+  EXPECT_TRUE(page_bitmap_.CheckColoredRect(0xff0000ff, 0xffff0000, 120));
+}
+
+class HeadlessPrintToPdfSvgEllipseCommandBrowserTest
+    : public HeadlessPrintToPdfCommandBrowserTest {
+ public:
+  HeadlessPrintToPdfSvgEllipseCommandBrowserTest() = default;
+
+  GURL GetTargetUrl() override {
+    return embedded_test_server()->GetURL("/ellipse.svg");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessPrintToPdfSvgEllipseCommandBrowserTest,
+                       PrintToPdfSvgEllipse) {
+  RenderPageBitmap(/*page_index=*/0);
+
+  // Default page size, see Page.printToPDF.
+  static constexpr int kPointsPerInch = 72;
+  static constexpr float kPageWidthPoints = 8.5 * kPointsPerInch;
+  static constexpr float kPageHeightPoints = 11 * kPointsPerInch;
+  static constexpr float kMaxAbsError = 0.1;
+
+  // Expect default page size for SVG with no style.
+  EXPECT_THAT(page_bitmap_.page_size_in_points().width(),
+              testing::FloatNear(kPageWidthPoints, kMaxAbsError));
+  EXPECT_THAT(page_bitmap_.page_size_in_points().height(),
+              testing::FloatNear(kPageHeightPoints, kMaxAbsError));
+}
+
+class HeadlessPrintToPdfSvgEllipseWithStyleCommandBrowserTest
+    : public HeadlessPrintToPdfCommandBrowserTest {
+ public:
+  HeadlessPrintToPdfSvgEllipseWithStyleCommandBrowserTest() = default;
+
+  GURL GetTargetUrl() override {
+    return embedded_test_server()->GetURL("/ellipse-with-style.svg");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HeadlessPrintToPdfSvgEllipseWithStyleCommandBrowserTest,
+                       PrintToPdfSvgEllipseWithStyle) {
+  RenderPageBitmap(/*page_index=*/0);
+
+  // Styled SVG size, see //headless/test/data/ellipse-with-style.svg.
+  static constexpr float kPageWidthPoints = 90;
+  static constexpr float kPageHeightPoints = 100;
+  static constexpr float kMaxAbsError = 0.1;
+
+  // Expect styled page size for SVG with style specification.
+  EXPECT_THAT(page_bitmap_.page_size_in_points().width(),
+              testing::FloatNear(kPageWidthPoints, kMaxAbsError));
+  EXPECT_THAT(page_bitmap_.page_size_in_points().height(),
+              testing::FloatNear(kPageHeightPoints, kMaxAbsError));
+
+  // Verify the center pixel on the page to be inside the red ellipse.
+  const gfx::Rect bounds(page_bitmap_.size());
+  EXPECT_EQ(page_bitmap_.GetPixelRGB(bounds.CenterPoint()), 0xff0000u);
 }
 
 #endif  // BUILDFLAG(ENABLE_PRINTING) && BUILDFLAG(ENABLE_PDF)

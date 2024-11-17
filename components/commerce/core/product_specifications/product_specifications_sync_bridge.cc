@@ -71,6 +71,14 @@ std::optional<syncer::ModelError>
 ProductSpecificationsSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
+  if (IsMultiSpecSetsEnabled()) {
+    std::set<std::string> server_uuids;
+    for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
+      server_uuids.emplace(change->storage_key());
+    }
+
+    SendInitialSyncData(server_uuids, metadata_change_list.get());
+  }
   return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                                      std::move(entity_changes));
 }
@@ -212,15 +220,15 @@ bool ProductSpecificationsSyncBridge::IsSyncEnabled() {
 
 void ProductSpecificationsSyncBridge::AddSpecifics(
     const std::vector<sync_pb::ProductComparisonSpecifics> specifics) {
-  // Sync is mandatory for this feature to be usable.
-  CHECK(change_processor()->IsTrackingMetadata());
-
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
 
   for (const auto& specific : specifics) {
-    change_processor()->Put(specific.uuid(), CreateEntityData(specific),
-                            batch->GetMetadataChangeList());
+    // Only sync new data if first download is complete.
+    if (change_processor()->IsTrackingMetadata()) {
+      change_processor()->Put(specific.uuid(), CreateEntityData(specific),
+                              batch->GetMetadataChangeList());
+    }
     batch->WriteData(specific.uuid(), specific.SerializeAsString());
     entries_.emplace(specific.uuid(), specific);
   }
@@ -456,6 +464,19 @@ void ProductSpecificationsSyncBridge::ApplyIncrementalSyncChangesForTesting(
       std::make_unique<syncer::InMemoryMetadataChangeList>();
   ApplyIncrementalSyncChanges(std::move(metadata_change_list),
                               std::move(changes));
+}
+
+void ProductSpecificationsSyncBridge::SendInitialSyncData(
+    const std::set<std::string>& server_uuids,
+    syncer::MetadataChangeList* metadata_change_list) {
+  CHECK(metadata_change_list);
+  CHECK(change_processor()->IsTrackingMetadata());
+  for (const auto& [uuid, specific] : entries_) {
+    if (!server_uuids.contains(uuid)) {
+      change_processor()->Put(specific.uuid(), CreateEntityData(specific),
+                              metadata_change_list);
+    }
+  }
 }
 
 }  // namespace commerce

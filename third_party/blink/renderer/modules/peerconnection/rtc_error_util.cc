@@ -47,7 +47,7 @@ DOMExceptionCode RTCErrorToDOMExceptionCode(const webrtc::RTCError& error) {
       // Needs per-error evaluation or use ThrowExceptionFromRTCError.
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 DOMException* CreateDOMExceptionFromRTCError(const webrtc::RTCError& error) {

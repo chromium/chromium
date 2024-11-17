@@ -97,6 +97,7 @@ export class CrLazyListElement<T = object> extends CrLitElement {
   private numItemsDisplayed_: number = 0;
 
   // Internal state
+  private lastItemsLength_: number = 0;
   private lastRenderedHeight_: number = 0;
   private resizeObserver_: ResizeObserver|null = null;
   private scrollListener_: EventListener = () => this.onScroll_();
@@ -105,9 +106,14 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     super.willUpdate(changedProperties);
 
     if (changedProperties.has('items')) {
+      this.lastItemsLength_ = this.items.length;
       this.numItemsDisplayed_ = this.items.length === 0 ?
           0 :
           Math.min(this.numItemsDisplayed_, this.items.length);
+    } else {
+      assert(
+          this.items.length === this.lastItemsLength_,
+          'Items array changed in place; rendered result may be incorrect.');
     }
 
     if (changedProperties.has('itemSize')) {
@@ -169,12 +175,17 @@ export class CrLazyListElement<T = object> extends CrLitElement {
 
   private addRemoveScrollTargetListeners_(oldTarget: HTMLElement|null) {
     if (oldTarget) {
-      oldTarget.removeEventListener('scroll', this.scrollListener_);
+      const target =
+          oldTarget === document.documentElement ? window : oldTarget;
+      target.removeEventListener('scroll', this.scrollListener_);
       assert(this.resizeObserver_);
       this.resizeObserver_.disconnect();
     }
     if (this.scrollTarget) {
-      this.scrollTarget.addEventListener('scroll', this.scrollListener_);
+      const target = this.scrollTarget === document.documentElement ?
+          window :
+          this.scrollTarget;
+      target.addEventListener('scroll', this.scrollListener_);
       this.resizeObserver_ = new ResizeObserver(() => {
         requestAnimationFrame(() => {
           const newHeight = this.getViewHeight_();
@@ -216,9 +227,18 @@ export class CrLazyListElement<T = object> extends CrLitElement {
     }
   }
 
+  private getScrollTop_(): number {
+    return this.scrollTarget === document.documentElement ?
+        window.pageYOffset :
+        this.scrollTarget.scrollTop;
+  }
+
   private getViewHeight_() {
-    return this.scrollTarget.scrollTop - this.scrollOffset +
-        Math.max(this.minViewportHeight || 0, this.scrollTarget.offsetHeight);
+    const offsetHeight = this.scrollTarget === document.documentElement ?
+        window.innerHeight :
+        this.scrollTarget.offsetHeight;
+    return this.getScrollTop_() - this.scrollOffset +
+        Math.max(this.minViewportHeight || 0, offsetHeight);
   }
 
   private async update_(forceUpdateHeight: boolean): Promise<void> {
@@ -312,7 +332,7 @@ export class CrLazyListElement<T = object> extends CrLitElement {
    * interactions.
    */
   private async onScroll_() {
-    const scrollTop = this.scrollTarget.scrollTop;
+    const scrollTop = this.getScrollTop_();
     if (scrollTop <= 0 || this.numItemsDisplayed_ === this.items.length) {
       return;
     }

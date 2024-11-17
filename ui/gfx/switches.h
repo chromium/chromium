@@ -7,7 +7,6 @@
 
 #include "base/feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/gfx/switches_export.h"
 
 namespace switches {
@@ -31,10 +30,6 @@ namespace features {
 GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kOddHeightMultiPlanarBuffers);
 GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kOddWidthMultiPlanarBuffers);
 GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kUseSmartRefForGPUFenceHandle);
-
-#if BUILDFLAG(IS_CHROMEOS)
-GFX_SWITCHES_EXPORT BASE_DECLARE_FEATURE(kEnableIntelMediaCompression);
-#endif
 
 }  // namespace features
 

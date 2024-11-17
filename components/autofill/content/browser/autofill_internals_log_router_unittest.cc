@@ -12,14 +12,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace autofill {
 namespace {
-
-using autofill::AutofillLogRouterFactory;
-using autofill::LogRouter;
 
 const char kTestText[] = "abcd1234";
 
-class MockLogReceiver : public autofill::LogReceiver {
+class MockLogReceiver : public LogReceiver {
  public:
   MockLogReceiver() = default;
 
@@ -53,8 +51,7 @@ TEST_F(AutofillLogRouterFactoryTest, ServiceActiveNonIncognito) {
   ASSERT_TRUE(log_router);
   log_router->RegisterReceiver(&receiver);
 
-  base::Value::Dict log_entry =
-      autofill::LogRouter::CreateEntryForText(kTestText);
+  base::Value::Dict log_entry = LogRouter::CreateEntryForText(kTestText);
   EXPECT_CALL(receiver, LogEntry(testing::Eq(testing::ByRef(log_entry))))
       .Times(1);
   log_router->ProcessLog(kTestText);
@@ -75,3 +72,4 @@ TEST_F(AutofillLogRouterFactoryTest, ServiceNotActiveIncognito) {
 }
 
 }  // namespace
+}  // namespace autofill

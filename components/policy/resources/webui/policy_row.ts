@@ -4,7 +4,7 @@
 
 import 'chrome://resources/js/action_link.js';
 import './policy_conflict.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {CustomElement} from 'chrome://resources/js/custom_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -130,7 +130,7 @@ export class PolicyRowElement extends CustomElement {
 
       const convertValue = (value: string, format?: boolean) => {
         // Skip 'string' policy to avoid unnecessary conversions.
-        if (typeof value == 'string') {
+        if (typeof value === 'string') {
           return value;
         }
         if (format) {

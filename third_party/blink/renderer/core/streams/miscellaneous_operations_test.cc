@@ -188,11 +188,9 @@ TEST(MiscellaneousOperationsTest, CreateStartAlgorithmNoMethod) {
   auto* algo = CreateStartAlgorithm(scope.GetScriptState(), underlying_object,
                                     "underlyingSink.start", controller);
   ASSERT_TRUE(algo);
-  auto maybe_result = algo->Run(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
-  ASSERT_FALSE(maybe_result.IsEmpty());
-  auto result = maybe_result.ToLocalChecked();
-  ASSERT_EQ(result->State(), v8::Promise::kFulfilled);
-  EXPECT_TRUE(result->Result()->IsUndefined());
+  auto result = algo->Run(scope.GetScriptState());
+  ASSERT_EQ(result.V8Promise()->State(), v8::Promise::kFulfilled);
+  EXPECT_TRUE(result.V8Promise()->Result()->IsUndefined());
 }
 
 TEST(MiscellaneousOperationsTest, CreateStartAlgorithmNullMethod) {
@@ -207,11 +205,10 @@ TEST(MiscellaneousOperationsTest, CreateStartAlgorithmNullMethod) {
   auto* algo = CreateStartAlgorithm(scope.GetScriptState(), underlying_object,
                                     "underlyingSink.start", controller);
   ASSERT_TRUE(algo);
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
-  auto maybe_result = algo->Run(scope.GetScriptState(), exception_state);
-  EXPECT_TRUE(exception_state.HadException());
-  EXPECT_TRUE(maybe_result.IsEmpty());
+  v8::TryCatch try_catch(scope.GetIsolate());
+  auto result = algo->Run(scope.GetScriptState());
+  EXPECT_TRUE(try_catch.HasCaught());
+  EXPECT_TRUE(result.IsEmpty());
 }
 
 TEST(MiscellaneousOperationsTest, CreateStartAlgorithmThrowingMethod) {
@@ -229,11 +226,10 @@ TEST(MiscellaneousOperationsTest, CreateStartAlgorithmThrowingMethod) {
   auto* algo = CreateStartAlgorithm(scope.GetScriptState(), underlying_object,
                                     "underlyingSink.start", controller);
   ASSERT_TRUE(algo);
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
-  auto maybe_result = algo->Run(scope.GetScriptState(), exception_state);
-  EXPECT_TRUE(exception_state.HadException());
-  EXPECT_TRUE(maybe_result.IsEmpty());
+  v8::TryCatch try_catch(scope.GetIsolate());
+  auto result = algo->Run(scope.GetScriptState());
+  EXPECT_TRUE(try_catch.HasCaught());
+  EXPECT_TRUE(result.IsEmpty());
 }
 
 TEST(MiscellaneousOperationsTest, CreateStartAlgorithmReturningController) {
@@ -257,11 +253,9 @@ TEST(MiscellaneousOperationsTest, CreateStartAlgorithmReturningController) {
   auto* algo = CreateStartAlgorithm(scope.GetScriptState(), underlying_object,
                                     "underlyingSink.start", controller);
   ASSERT_TRUE(algo);
-  auto maybe_result = algo->Run(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
-  EXPECT_FALSE(maybe_result.IsEmpty());
-  v8::Local<v8::Value> result = maybe_result.ToLocalChecked();
-  ASSERT_TRUE(result->IsPromise());
-  ASSERT_EQ(result, controller);
+  auto result = algo->Run(scope.GetScriptState());
+  EXPECT_FALSE(result.IsEmpty());
+  ASSERT_EQ(result.V8Promise(), controller);
 }
 
 TEST(MiscellaneousOperationsTest, CallOrNoop1NoMethod) {
@@ -327,14 +321,13 @@ TEST(MiscellaneousOperationsTest, CallOrNoop1ThrowingMethod) {
   ASSERT_TRUE(underlying_value.IsObject());
   auto underlying_object = underlying_value.V8Value().As<v8::Object>();
   v8::Local<v8::Value> arg0 = v8::Number::New(scope.GetIsolate(), 17);
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kUnknown, "", "");
-  auto maybe_result =
-      CallOrNoop1(scope.GetScriptState(), underlying_object, "transform",
-                  "transformer.transform", arg0, exception_state);
-  ASSERT_TRUE(exception_state.HadException());
+  v8::TryCatch try_catch(scope.GetIsolate());
+  auto maybe_result = CallOrNoop1(scope.GetScriptState(), underlying_object,
+                                  "transform", "transformer.transform", arg0,
+                                  PassThroughException(scope.GetIsolate()));
+  ASSERT_TRUE(try_catch.HasCaught());
   EXPECT_TRUE(maybe_result.IsEmpty());
-  EXPECT_TRUE(exception_state.GetException()->IsBoolean());
+  EXPECT_TRUE(try_catch.Exception()->IsBoolean());
 }
 
 v8::Local<v8::Promise> PromiseCallFromText(V8TestingScope* scope,
@@ -421,9 +414,8 @@ TEST(MiscellaneousOperationsTest, UndefinedSizeFunction) {
       scope.GetScriptState(), v8::Undefined(scope.GetIsolate()),
       ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(algo);
-  auto optional =
-      algo->Run(scope.GetScriptState(), v8::Number::New(scope.GetIsolate(), 97),
-                ASSERT_NO_EXCEPTION);
+  auto optional = algo->Run(scope.GetScriptState(),
+                            v8::Number::New(scope.GetIsolate(), 97));
   ASSERT_TRUE(optional.has_value());
   EXPECT_EQ(optional.value(), 1.0);
 }
@@ -453,9 +445,8 @@ TEST(MiscellaneousOperationsTest, SizeAlgorithmWorks) {
   V8TestingScope scope;
   auto* algo = IdentitySizeAlgorithm(&scope);
   ASSERT_TRUE(algo);
-  auto optional =
-      algo->Run(scope.GetScriptState(), v8::Number::New(scope.GetIsolate(), 41),
-                ASSERT_NO_EXCEPTION);
+  auto optional = algo->Run(scope.GetScriptState(),
+                            v8::Number::New(scope.GetIsolate(), 41));
   ASSERT_TRUE(optional.has_value());
   EXPECT_EQ(optional.value(), 41.0);
 }
@@ -466,8 +457,7 @@ TEST(MiscellaneousOperationsTest, SizeAlgorithmConvertsToNumber) {
   auto* algo = IdentitySizeAlgorithm(&scope);
   ASSERT_TRUE(algo);
   auto optional =
-      algo->Run(scope.GetScriptState(), V8String(scope.GetIsolate(), "79"),
-                ASSERT_NO_EXCEPTION);
+      algo->Run(scope.GetScriptState(), V8String(scope.GetIsolate(), "79"));
   ASSERT_TRUE(optional.has_value());
   EXPECT_EQ(optional.value(), 79.0);
 }
@@ -481,14 +471,12 @@ TEST(MiscellaneousOperationsTest, ThrowingSizeAlgorithm) {
   auto* algo = MakeSizeAlgorithmFromSizeFunction(
       scope.GetScriptState(), function_value.V8Value(), ASSERT_NO_EXCEPTION);
   ASSERT_TRUE(algo);
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
+  v8::TryCatch try_catch(scope.GetIsolate());
   auto optional =
-      algo->Run(scope.GetScriptState(), V8String(scope.GetIsolate(), "79"),
-                exception_state);
+      algo->Run(scope.GetScriptState(), V8String(scope.GetIsolate(), "79"));
 
   ASSERT_FALSE(optional.has_value());
-  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_TRUE(try_catch.HasCaught());
 }
 
 TEST(MiscellaneousOperationsTest, UnconvertibleSize) {
@@ -499,13 +487,11 @@ TEST(MiscellaneousOperationsTest, UnconvertibleSize) {
   ScriptValue unconvertible_value =
       EvalWithPrintingError(&scope, "({ toString() { throw new Error(); }})");
   EXPECT_TRUE(unconvertible_value.IsObject());
-  ExceptionState exception_state(scope.GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "", "");
-  auto optional = algo->Run(scope.GetScriptState(),
-                            unconvertible_value.V8Value(), exception_state);
+  v8::TryCatch try_catch(scope.GetIsolate());
+  auto optional =
+      algo->Run(scope.GetScriptState(), unconvertible_value.V8Value());
 
   ASSERT_FALSE(optional.has_value());
-  EXPECT_TRUE(exception_state.HadException());
 }
 
 TEST(MiscellaneousOperationsTest, PromiseResolve) {

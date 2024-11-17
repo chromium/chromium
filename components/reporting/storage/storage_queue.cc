@@ -221,8 +221,8 @@ StorageQueue::~StorageQueue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
 
   // Stop timers.
-  upload_timer_.AbandonAndStop();
-  check_back_timer_.AbandonAndStop();
+  upload_timer_.Stop();
+  check_back_timer_.Stop();
   // Make sure no pending writes is present.
   CHECK(write_contexts_queue_.empty());
 

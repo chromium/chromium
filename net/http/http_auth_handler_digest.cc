@@ -162,12 +162,13 @@ HttpAuth::AuthorizationResult HttpAuthHandlerDigest::HandleAnotherChallengeImpl(
   // for the new challenge.
   std::string original_realm;
   while (parameters.GetNext()) {
-    if (base::EqualsCaseInsensitiveASCII(parameters.name_piece(), "stale")) {
-      if (base::EqualsCaseInsensitiveASCII(parameters.value_piece(), "true")) {
+    if (base::EqualsCaseInsensitiveASCII(parameters.name(), "stale")) {
+      if (base::EqualsCaseInsensitiveASCII(parameters.value(), "true")) {
         return HttpAuth::AUTHORIZATION_RESULT_STALE;
       }
-    } else if (base::EqualsCaseInsensitiveASCII(parameters.name_piece(),
-                                                "realm")) {
+    } else if (base::EqualsCaseInsensitiveASCII(parameters.name(), "realm")) {
+      // This has to be a copy, since value_piece() may point to an internal
+      // buffer of `parameters`.
       original_realm = parameters.value();
     }
   }
@@ -225,8 +226,7 @@ bool HttpAuthHandlerDigest::ParseChallenge(
   // Loop through all the properties.
   while (parameters.GetNext()) {
     // FAIL -- couldn't parse a property.
-    if (!ParseChallengeProperty(parameters.name_piece(),
-                                parameters.value_piece())) {
+    if (!ParseChallengeProperty(parameters.name(), parameters.value())) {
       return false;
     }
   }
@@ -281,15 +281,10 @@ bool HttpAuthHandlerDigest::ParseChallengeProperty(std::string_view name,
   } else if (base::EqualsCaseInsensitiveASCII(name, "qop")) {
     // Parse the comma separated list of qops.
     // auth is the only supported qop, and all other values are ignored.
-    //
-    // TODO(crbug.com/41375521): Remove this copy when
-    // HttpUtil::ValuesIterator can take a std::string_view.
-    std::string value_str(value);
-    HttpUtil::ValuesIterator qop_values(value_str.begin(), value_str.end(),
-                                        ',');
+    HttpUtil::ValuesIterator qop_values(value, /*delimiter=*/',');
     qop_ = QOP_UNSPECIFIED;
     while (qop_values.GetNext()) {
-      if (base::EqualsCaseInsensitiveASCII(qop_values.value_piece(), "auth")) {
+      if (base::EqualsCaseInsensitiveASCII(qop_values.value(), "auth")) {
         qop_ = QOP_AUTH;
         break;
       }
@@ -310,8 +305,7 @@ std::string HttpAuthHandlerDigest::QopToString(QualityOfProtection qop) {
     case QOP_AUTH:
       return "auth";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -329,8 +323,7 @@ std::string HttpAuthHandlerDigest::AlgorithmToString(Algorithm algorithm) {
     case Algorithm::SHA256_SESS:
       return "SHA-256-sess";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 

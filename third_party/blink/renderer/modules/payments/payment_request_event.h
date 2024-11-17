@@ -25,8 +25,9 @@ class AtomicString;
 namespace blink {
 
 class ExceptionState;
+class PaymentHandlerResponse;
 class PaymentRequestDetailsUpdate;
-class RespondWithObserver;
+class PaymentRequestRespondWithObserver;
 class ScriptState;
 class ScriptValue;
 class ServiceWorkerWindowClient;
@@ -40,7 +41,7 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
       const PaymentRequestEventInit*,
       mojo::PendingRemote<payments::mojom::blink::PaymentHandlerHost> host =
           mojo::NullRemote(),
-      RespondWithObserver* respond_with_observer = nullptr,
+      PaymentRequestRespondWithObserver* respond_with_observer = nullptr,
       WaitUntilObserver* wait_until_observer = nullptr,
       ExecutionContext* execution_context = nullptr);
 
@@ -48,7 +49,7 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
       const AtomicString& type,
       const PaymentRequestEventInit*,
       mojo::PendingRemote<payments::mojom::blink::PaymentHandlerHost> host,
-      RespondWithObserver*,
+      PaymentRequestRespondWithObserver*,
       WaitUntilObserver*,
       ExecutionContext* execution_context);
 
@@ -84,7 +85,9 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
       ScriptState*,
       const String& shipping_option_id,
       ExceptionState&);
-  void respondWith(ScriptState*, ScriptPromiseUntyped, ExceptionState&);
+  void respondWith(ScriptState*,
+                   ScriptPromise<PaymentHandlerResponse>,
+                   ExceptionState&);
 
   void Trace(Visitor*) const override;
 
@@ -105,7 +108,7 @@ class MODULES_EXPORT PaymentRequestEvent final : public ExtendableEvent {
 
   Member<ScriptPromiseResolver<IDLNullable<PaymentRequestDetailsUpdate>>>
       change_payment_request_details_resolver_;
-  Member<RespondWithObserver> observer_;
+  Member<PaymentRequestRespondWithObserver> observer_;
   HeapMojoRemote<payments::mojom::blink::PaymentHandlerHost>
       payment_handler_host_;
 };

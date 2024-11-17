@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.browser_controls;
 
+import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerVisibility;
@@ -34,6 +35,16 @@ public interface BottomControlsLayer {
      */
     @LayerVisibility
     int getLayerVisibility();
+
+    /**
+     * Interface method to receive OffsetTag updates.
+     *
+     * @return The additional offset this layer needs after being scrolled offscreen, to hide visual
+     *     effects that extend past the height of the composited view.
+     */
+    default int updateOffsetTag(BrowserControlsOffsetTagsInfo offsetTagsInfo) {
+        return 0;
+    }
 
     /**
      * Interface method to receive browser controls update. The goal is each layer will know exactly

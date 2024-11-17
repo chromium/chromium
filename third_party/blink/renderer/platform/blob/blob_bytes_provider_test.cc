@@ -208,7 +208,7 @@ TEST_P(RequestAsFile, OffsetInEmptyFile) {
 
 TEST_P(RequestAsFile, OffsetInNonEmptyFile) {
   FileTestData test = GetParam();
-  int file_offset = 23;
+  size_t file_offset = 23;
 
   Vector<uint8_t> expected_data(1024, 42);
 

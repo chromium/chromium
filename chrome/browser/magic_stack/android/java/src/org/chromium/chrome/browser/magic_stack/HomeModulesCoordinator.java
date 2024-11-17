@@ -140,7 +140,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                         super.onViewRecycled(holder);
                     }
                 };
-        mModuleRegistry.registerAdapter(mAdapter, this::onViewCreated);
+        mModuleRegistry.registerAdapter(mAdapter, this);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -239,7 +239,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
             long waitForProfileStartTimeMs = SystemClock.elapsedRealtime();
             mOnProfileAvailableObserver =
                     (profile) -> {
-                        onProfileAvailable(profile, callback, waitForProfileStartTimeMs);
+                        onProfileAvailable(callback, waitForProfileStartTimeMs);
                     };
 
             mProfileSupplier.addObserver(mOnProfileAvailableObserver);
@@ -267,9 +267,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     }
 
     private void onProfileAvailable(
-            Profile profile,
-            Runnable onHomeModulesChangedCallback,
-            long waitForProfileStartTimeMs) {
+            Runnable onHomeModulesChangedCallback, long waitForProfileStartTimeMs) {
         long delay = SystemClock.elapsedRealtime() - waitForProfileStartTimeMs;
         mMediator.showModules(onHomeModulesChangedCallback, this, getSegmentationPlatformService());
 
@@ -396,6 +394,7 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
                     mHomeModulesContextMenuManager.createContextMenu(
                             contextMenu, view, moduleProvider);
                 });
+        moduleProvider.onViewCreated();
         int position = mMediator.findModuleIndexInRecyclerView(moduleType, mAdapter.getItemCount());
         HomeModulesMetricsUtils.recordModuleShown(
                 moduleType, position, mModuleDelegateHost.isHomeSurface());

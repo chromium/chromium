@@ -104,6 +104,7 @@ void AddPdfViewerStrings(base::Value::Dict* dict) {
       {"rotationStateLabel90", IDS_PDF_ROTATION_STATE_LABEL_90},
       {"rotationStateLabel180", IDS_PDF_ROTATION_STATE_LABEL_180},
       {"rotationStateLabel270", IDS_PDF_ROTATION_STATE_LABEL_270},
+      {"searchifyInProgress", IDS_PDF_SEARCHIFY_IN_PROGRESS},
       {"thumbnailPageAriaLabel", IDS_PDF_THUMBNAIL_PAGE_ARIA_LABEL},
       {"tooltipAttachments", IDS_PDF_TOOLTIP_ATTACHMENTS},
       {"tooltipDocumentOutline", IDS_PDF_TOOLTIP_DOCUMENT_OUTLINE},
@@ -191,7 +192,7 @@ std::string GetManifest() {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   std::string manifest_contents(
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_PDF_MANIFEST));
   DCHECK(manifest_contents.find(kNameTag) != std::string::npos);
   base::ReplaceFirstSubstringAfterOffset(&manifest_contents, 0, kNameTag,
@@ -233,6 +234,9 @@ void AddAdditionalData(bool enable_printing,
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
   dict->Set("printingEnabled", printing_enabled);
   dict->Set("pdfAnnotationsEnabled", annotations_enabled);
+  dict->Set("pdfUseShowSaveFilePicker",
+            base::FeatureList::IsEnabled(
+                chrome_pdf::features::kPdfUseShowSaveFilePicker));
 }
 
 bool MaybeDispatchSaveEvent(content::RenderFrameHost* embedder_host) {

@@ -16,8 +16,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.text.TextUtils;
 
-import androidx.test.core.app.ApplicationProvider;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,6 +30,7 @@ import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowNotificationManager;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -73,11 +72,8 @@ public class ReengagementNotificationControllerTest {
 
     @Before
     public void setUp() throws Exception {
-        FeatureList.setTestFeatures(
-                Map.of(
-                        ChromeFeatureList.REENGAGEMENT_NOTIFICATION,
-                        true));
-        mContext = ApplicationProvider.getApplicationContext();
+        FeatureList.setTestFeatures(Map.of(ChromeFeatureList.REENGAGEMENT_NOTIFICATION, true));
+        mContext = ContextUtils.getApplicationContext();
         mShadowNotificationManager =
                 Shadows.shadowOf(
                         (NotificationManager)
@@ -91,13 +87,13 @@ public class ReengagementNotificationControllerTest {
                         createDefaultInfo(/* passesPrecondition= */ true));
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
         doReturn(false)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
         doReturn(false)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
         controller.tryToReengageTheUser();
 
         testFeatureShowed(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
@@ -110,13 +106,13 @@ public class ReengagementNotificationControllerTest {
                         createDefaultInfo(/* passesPrecondition= */ true));
         doReturn(false)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
         doReturn(false)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
         controller.tryToReengageTheUser();
 
         testFeatureShowed(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
@@ -129,13 +125,13 @@ public class ReengagementNotificationControllerTest {
                         createDefaultInfo(/* passesPrecondition= */ true));
         doReturn(false)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
         doReturn(false)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
         controller.tryToReengageTheUser();
 
         testFeatureShowed(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
@@ -148,13 +144,13 @@ public class ReengagementNotificationControllerTest {
                         createDefaultInfo(/* passesPrecondition= */ true));
         doReturn(false)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
         controller.tryToReengageTheUser();
 
         testFeatureShowed(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
@@ -167,13 +163,13 @@ public class ReengagementNotificationControllerTest {
                         createDefaultInfo(/* passesPrecondition= */ true));
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
         controller.tryToReengageTheUser();
 
         testFeatureShowed(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
@@ -186,13 +182,13 @@ public class ReengagementNotificationControllerTest {
                         createDefaultInfo(/* passesPrecondition= */ true));
         doReturn(false)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_1_FEATURE);
         doReturn(false)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_2_FEATURE);
         doReturn(false)
                 .when(mTracker)
-                .shouldTriggerHelpUI(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
+                .shouldTriggerHelpUi(FeatureConstants.CHROME_REENGAGEMENT_NOTIFICATION_3_FEATURE);
         controller.tryToReengageTheUser();
         new Handler()
                 .post(
@@ -227,7 +223,7 @@ public class ReengagementNotificationControllerTest {
                 RecordHistogram.getHistogramValueCountForTesting(
                         "Mobile.SystemNotification.Shown", getNotificationType(feature)));
 
-        verify(mTracker, times(1)).shouldTriggerHelpUI(feature);
+        verify(mTracker, times(1)).shouldTriggerHelpUi(feature);
         verify(mTracker, times(1)).dismissed(feature);
         Notification notification = mShadowNotificationManager.getAllNotifications().get(0);
 

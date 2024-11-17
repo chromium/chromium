@@ -28,8 +28,7 @@ inline const char* CommitEarlyOutReasonToString(CommitEarlyOutReason reason) {
     case CommitEarlyOutReason::kFinishedNoUpdates:
       return "CommitEarlyOutReason::kFinishedNoUpdates";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "???";
+  NOTREACHED();
 }
 
 inline bool MainFrameAppliedDeltas(CommitEarlyOutReason reason) {

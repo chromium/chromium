@@ -58,6 +58,45 @@ Browser* GetBrowserWithGroupId(Profile* profile, std::string group_id_string) {
   return nullptr;
 }
 
+void MoveGroupAcrossWindows(Browser* source_browser,
+                            Browser* target_browser,
+                            int to_index,
+                            const tab_groups::TabGroupId& group_id) {
+  TabStripModel* target_tab_strip = target_browser->GetTabStripModel();
+
+  if (!target_tab_strip->SupportsTabGroups()) {
+    return;
+  }
+
+  const TabGroup* group =
+      source_browser->tab_strip_model()->group_model()->GetTabGroup(group_id);
+
+  std::optional<tab_groups::TabGroupId> next_tab_dst_group =
+      target_tab_strip->GetTabGroupForTab(to_index);
+  std::optional<tab_groups::TabGroupId> prev_tab_dst_group =
+      target_tab_strip->GetTabGroupForTab(to_index - 1);
+
+  // Check whether group contiguity will be respected in the `target_browser`
+  // before performing the operation. Noop if the operation will result in a
+  // split tab group.
+  if (next_tab_dst_group.has_value() && prev_tab_dst_group.has_value() &&
+      next_tab_dst_group == prev_tab_dst_group) {
+    return;
+  }
+
+  target_tab_strip->group_model()->AddTabGroup(
+      group_id,
+      std::optional<tab_groups::TabGroupVisualData>{*group->visual_data()});
+
+  const gfx::Range source_tab_indices = group->ListTabs();
+  const int tab_count = source_tab_indices.length();
+  const int from_index = source_tab_indices.start();
+  for (int i = 0; i < tab_count; i++) {
+    MoveTabAcrossWindows(source_browser, from_index, target_browser,
+                         to_index + i, std::make_optional(group_id));
+  }
+}
+
 void MoveTabAcrossWindows(Browser* source_browser,
                           int from_index,
                           Browser* target_browser,
@@ -66,6 +105,24 @@ void MoveTabAcrossWindows(Browser* source_browser,
   bool was_active =
       source_browser->tab_strip_model()->active_index() == from_index;
   bool was_pinned = source_browser->tab_strip_model()->IsTabPinned(from_index);
+
+  TabStripModel* target_tab_strip = target_browser->GetTabStripModel();
+
+  if (target_tab_strip->SupportsTabGroups()) {
+    std::optional<tab_groups::TabGroupId> next_tab_dst_group =
+        target_tab_strip->GetTabGroupForTab(to_index);
+    std::optional<tab_groups::TabGroupId> prev_tab_dst_group =
+        target_tab_strip->GetTabGroupForTab(to_index - 1);
+
+    // Check whether group contiguity will be respected in the `target_browser`
+    // before performing the operation. Noop if the operation will result in a
+    // split tab group.
+    if (next_tab_dst_group.has_value() && prev_tab_dst_group.has_value() &&
+        next_tab_dst_group == prev_tab_dst_group &&
+        to_group_id != prev_tab_dst_group) {
+      return;
+    }
+  }
 
   std::unique_ptr<tabs::TabModel> detached_tab =
       source_browser->tab_strip_model()->DetachTabAtForInsertion(from_index);
@@ -137,11 +194,16 @@ bool DropTabsInNewBrowser(Browser* new_browser,
     if (!base::StringToInt(tab_id_str, &tab_id))
       return false;
 
+    extensions::WindowController* source_window = nullptr;
     int source_index = -1;
     if (!extensions::ExtensionTabUtil::GetTabById(
             tab_id, new_browser->profile(), /* include_incognito = */ false,
-            &source_browser, /* tab_strip = */ nullptr,
-            /* contents = */ nullptr, &source_index)) {
+            &source_window, /* contents = */ nullptr, &source_index) ||
+        !source_window) {
+      return false;
+    }
+    source_browser = source_window->GetBrowser();
+    if (!source_browser) {
       return false;
     }
     tab_indices_to_move = gfx::Range(source_index, source_index + 1);

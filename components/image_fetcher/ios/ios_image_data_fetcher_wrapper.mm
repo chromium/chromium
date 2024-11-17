@@ -21,7 +21,7 @@ IOSImageDataFetcherWrapper::IOSImageDataFetcherWrapper(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : image_data_fetcher_(url_loader_factory) {}
 
-IOSImageDataFetcherWrapper::~IOSImageDataFetcherWrapper() {}
+IOSImageDataFetcherWrapper::~IOSImageDataFetcherWrapper() = default;
 
 void IOSImageDataFetcherWrapper::FetchImageDataWebpDecoded(
     const GURL& image_url,

@@ -177,14 +177,6 @@ RealTimeUrlLookupServiceBase::RealTimeUrlLookupServiceBase(
 RealTimeUrlLookupServiceBase::~RealTimeUrlLookupServiceBase() = default;
 
 // static
-bool RealTimeUrlLookupServiceBase::CanCheckUrl(const GURL& url) {
-  if (VerdictCacheManager::has_artificial_cached_url()) {
-    return true;
-  }
-  return CanGetReputationOfUrl(url);
-}
-
-// static
 SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
     RTLookupResponse::ThreatInfo::ThreatType rt_threat_type,
     RTLookupResponse::ThreatInfo::VerdictType rt_verdict_type) {
@@ -199,8 +191,7 @@ SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
       case RTLookupResponse::ThreatInfo::SAFE:
         return SB_THREAT_TYPE_SAFE;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return SB_THREAT_TYPE_SAFE;
+        NOTREACHED();
     }
   }
 
@@ -219,9 +210,7 @@ SBThreatType RealTimeUrlLookupServiceBase::GetSBThreatTypeForRTThreatType(
       return SB_THREAT_TYPE_BILLING;
     case RTLookupResponse::ThreatInfo::MANAGED_POLICY:
     case RTLookupResponse::ThreatInfo::THREAT_TYPE_UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected RTLookupResponse::ThreatType encountered";
-      return SB_THREAT_TYPE_SAFE;
+      NOTREACHED() << "Unexpected RTLookupResponse::ThreatType encountered";
   }
 }
 
@@ -706,6 +695,8 @@ void RealTimeUrlLookupServiceBase::OnResponseUnauthorized(
     const std::string& invalid_access_token) {}
 
 void RealTimeUrlLookupServiceBase::Shutdown() {
+  shutting_down_ = true;
+
   pending_requests_.clear();
 
   // Clear references to other KeyedServices.

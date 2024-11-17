@@ -69,8 +69,7 @@ DemoService::DemoService(
         std::move(gpu_host_proxy), gpu::GpuProcessShmCount(),
         gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(),
                                            gfx::Size()),
-        /*sync_point_manager=*/nullptr, /*shared_image_manager=*/nullptr,
-        /*scheduler=*/nullptr, /*shutdown_event=*/nullptr);
+        viz::mojom::GpuServiceCreationParams::New());
   }
 
   runner_->CreateFrameSinkManager(std::move(params), gpu_service_.get());

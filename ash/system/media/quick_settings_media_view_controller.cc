@@ -121,7 +121,7 @@ void QuickSettingsMediaViewController::OnMediaItemUIShowDevices(
 
 std::unique_ptr<views::View> QuickSettingsMediaViewController::CreateView() {
   auto media_view = std::make_unique<QuickSettingsMediaView>(this);
-  media_view_ = media_view.get();
+  media_view_ = media_view->AsWeakPtr();
   media_item_manager_->SetDialogDelegate(this);
   return std::move(media_view);
 }
@@ -131,10 +131,12 @@ void QuickSettingsMediaViewController::SetShowMediaView(bool show_media_view) {
 }
 
 void QuickSettingsMediaViewController::UpdateMediaItemOrder() {
+  CHECK(media_view_);
   media_view_->UpdateItemOrder(media_item_manager_->GetActiveItemIds());
 }
 
 int QuickSettingsMediaViewController::GetMediaViewHeight() {
+  CHECK(media_view_);
   return media_view_->GetMediaViewHeight();
 }
 

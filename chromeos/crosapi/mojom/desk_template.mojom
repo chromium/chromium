@@ -11,7 +11,6 @@ import "url/mojom/url.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 
 // Structure representing the state of a tab group in a browser instance.
-[Stable]
 struct TabGroup {
   // The title of the tab group
   string title;
@@ -38,7 +37,6 @@ struct TabGroup {
 
 // Additional state of the browser in the single Lacros window for saving in the
 // desk template.
-[Stable]
 struct DeskTemplateState {
   // URLs in the tab strip.
   array<url.mojom.Url> urls@0;
@@ -65,7 +63,6 @@ struct DeskTemplateState {
 // Interface for desk template clients.  Implemented by lacros-chrome.
 // Next version: 5
 // Next method id: 3
-[Stable]
 interface DeskTemplateClient {
   // Creates a browser from the desk template data.
   [MinVersion=1]
@@ -90,7 +87,7 @@ interface DeskTemplateClient {
 // Interface for desk template. Implemented by ash-chrome.
 // Next version: 1
 // Next method id: 1
-[Stable, Uuid="7566edd4-358d-44b6-b71c-9eb87c632271"]
+[Uuid="7566edd4-358d-44b6-b71c-9eb87c632271"]
 interface DeskTemplate {
   // Registers the client that lives in lacros-chrome.
   AddDeskTemplateClient@0(pending_remote<DeskTemplateClient> client);

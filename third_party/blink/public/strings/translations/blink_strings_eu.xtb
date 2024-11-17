@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Arrunta</translation>
 <translation id="1591562245178063882">Oraingo hilabetea</translation>
 <translation id="1637811476055996098">Aukeratu fitxategiak</translation>
-<translation id="1680090928918677457">Erabili kamera</translation>
 <translation id="1729654308190250600">Idatzi helbide elektronikoa.</translation>
 <translation id="1758486001363313524">Beste batzuk…</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Laburtu testua <ph name="MAX_CHARACTERS" /> karakteretara edo gutxiagora (<ph name="CURRENT_LENGTH" /> erabiltzen ari zara).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. astea, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. pista</translation>
-<translation id="2353297238722298836">Kamera eta mikrofonoa erabil daitezke</translation>
 <translation id="2507943997699731163">Bete eremu hau.</translation>
 <translation id="2613802280814924224">Idatzi balio duen balio bat. Idatzi duzunetik gertuen duzuna <ph name="VALID_VALUE" /> da.</translation>
 <translation id="2653659639078652383">Bidali</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Luzatu testua <ph name="MIN_CHARACTERS" /> karaktere izan ditzan gutxienez (<ph name="CURRENT_LENGTH" /> karaktere erabiltzen ari zara).</translation>
 <translation id="383465348367842624">"<ph name="ATSIGN" />" ikurraren ondoren ezin da "<ph name="INVALIDCHARACTER" />" idatzi.</translation>
 <translation id="3846214748874656680">Irten pantaila osotik</translation>
-<translation id="4031179711345676612">Mikrofonoa erabil daiteke</translation>
 <translation id="4360991593054037559">Idatzi balio egoki bat. <ph name="VALID_VALUE_LOW" /> eta <ph name="VALID_VALUE_HIGHER" /> dira gertuen dauden bi balio egokiak.</translation>
 <translation id="4522570452068850558">Xehetasunak</translation>
-<translation id="4663373278480897665">Kamera erabil daiteke</translation>
 <translation id="4664250907885839816">"<ph name="ATSIGN" />" ikurraren ondoren ezin da "<ph name="INVALIDCHARACTER" />" ikurra ezarri.</translation>
 <translation id="4718048029184481307">Pantaila txiki gainjarrian erreproduzitzen</translation>
-<translation id="4792862212177489858">Partekatu kokapena</translation>
 <translation id="4812940957355064477">Idatzi zenbaki bat.</translation>
-<translation id="49269513399674318">Erabili mikrofonoa</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> hautatuta</translation>
 <translation id="4992066212339426712">Aktibatu audioa</translation>
 <translation id="49969490063480558">Idatzi testua "<ph name="ATSIGN" />" ikurraren ondoren. "<ph name="INVALIDADDRESS" />" ez dago osorik.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Ezin izan da kargatu plugina.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Luzatu testua <ph name="MIN_CHARACTERS" /> karaktere izan ditzan gutxienez (1 karaktere erabiltzen ari zara).</translation>
-<translation id="7080893216867146095">Kokapena partekatzeko baimena eman da</translation>
 <translation id="709897737746224366">Erabili eskatutako formatua.</translation>
-<translation id="7134810312945846184">Erabili mikrofonoa eta kamera</translation>
 <translation id="7263440858009898357">Hautatu zerrendako elementu bat.</translation>
 <translation id="7364796246159120393">Aukeratu fitxategia</translation>
 <translation id="739024184232394898">Beste bat…</translation>

@@ -225,6 +225,70 @@ TEST_F(MagicBoostStateAshTest, UpdateHMRConsentWindowDismissCount) {
   EXPECT_EQ(MagicBoostState::Get()->hmr_consent_window_dismiss_count(), 2);
 }
 
+TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInFunctionCall) {
+  // `ShouldIncludeOrcaInOptIn` should fetch panel context from
+  // `EditorPanelManager` to see if opt-in is needed for Orca.
+  EXPECT_CALL(mock_editor_manager(), GetEditorPanelContext);
+  magic_boost_state()->ShouldIncludeOrcaInOptIn(
+      base::BindOnce([](bool result) {}));
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
+}
+
+TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInBlocked) {
+  ON_CALL(mock_editor_manager(), GetEditorPanelContext)
+      .WillByDefault(
+          [](base::OnceCallback<void(crosapi::mojom::EditorPanelContextPtr)>
+                 callback) {
+            auto context = crosapi::mojom::EditorPanelContext::New();
+            context->editor_panel_mode =
+                crosapi::mojom::EditorPanelMode::kHardBlocked;
+            std::move(callback).Run(std::move(context));
+          });
+
+  magic_boost_state()->ShouldIncludeOrcaInOptIn(base::BindOnce([](bool result) {
+    // If `EditorPanelMode` is `kHardBlocked`, Orca should not be included in
+    // opt-in flow.
+    EXPECT_FALSE(result);
+  }));
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
+}
+
+TEST_F(MagicBoostStateAshTest, ShouldIncludeOrcaInOptInConsentStatusSettled) {
+  ON_CALL(mock_editor_manager(), GetEditorPanelContext)
+      .WillByDefault([](base::OnceCallback<void(
+                            crosapi::mojom::EditorPanelContextPtr)> callback) {
+        auto context = crosapi::mojom::EditorPanelContext::New();
+        context->editor_panel_mode = crosapi::mojom::EditorPanelMode::kWrite;
+        context->consent_status_settled = true;
+        std::move(callback).Run(std::move(context));
+      });
+
+  magic_boost_state()->ShouldIncludeOrcaInOptIn(base::BindOnce([](bool result) {
+    // If `consent_status_settled`, Orca should not be included in opt-in flow.
+    EXPECT_FALSE(result);
+  }));
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
+}
+
+TEST_F(MagicBoostStateAshTest,
+       ShouldIncludeOrcaInOptInConsentStatusNotSettled) {
+  ON_CALL(mock_editor_manager(), GetEditorPanelContext)
+      .WillByDefault([](base::OnceCallback<void(
+                            crosapi::mojom::EditorPanelContextPtr)> callback) {
+        auto context = crosapi::mojom::EditorPanelContext::New();
+        context->editor_panel_mode = crosapi::mojom::EditorPanelMode::kWrite;
+        context->consent_status_settled = false;
+        std::move(callback).Run(std::move(context));
+      });
+
+  magic_boost_state()->ShouldIncludeOrcaInOptIn(base::BindOnce([](bool result) {
+    // If `consent_status_settled` is false, Orca should be included in opt-in
+    // flow.
+    EXPECT_TRUE(result);
+  }));
+  testing::Mock::VerifyAndClearExpectations(&mock_editor_manager());
+}
+
 TEST_F(MagicBoostStateAshTest, DisableOrcaFeature) {
   // `DisableOrcaFeature` should trigger the correct functions from
   // `EditorPanelManager`.

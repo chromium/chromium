@@ -12,8 +12,10 @@
 <translation id="1260702988262336471">የChromium ምናሌውን ይክፈቱ</translation>
 <translation id="12739128458173458">ይህን ትር ወደ ሌላ መሣሪያ ለመላክ፣ በሁለቱም መሣሪያዎች ላይ ወደ Chromium ይግቡ።</translation>
 <translation id="1361748954329991663">Chromium ጊዜው አልፎበታል። በ<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> ውስጥ ምንም ዝማኔ ከሌለ የእርስዎ መሣሪያ አዲስ የChromium ስሪቶችን ከእንግዲህ ላይደግፍ ይችላል።</translation>
+<translation id="1383876407941801731">ፍለጋ </translation>
 <translation id="1423007117030725713">በአዲስ የChromium ትር ውስጥ ፍለጋ ጀምር።</translation>
 <translation id="1431818719585918472">Chromium የእርስዎን ማንነት የማያሳውቁ ትሮች እንዲቆልፍ ይፍቀዱለት።</translation>
+<translation id="1451665391191990528">Chromiumን ለቀው ሲወጡ የተከፈቱ ማንነት የማያሳውቁ ትሮችን ይደብቁ</translation>
 <translation id="146407871188825689">Chromiumን በiPad ላይ በነባሪ ተጠቀም</translation>
 <translation id="1471084500615228555">በChromium ውስጥ የአሰሳ ውሂብን ሰርዝ</translation>
 <translation id="1472013873724362412">የእርስዎ መለያ በChromium ላይ አይሠራም። እባክዎ የእርስዎን የጎራ አስተዳዳሪ ያነጋግሩ ወይም ለመግባት መደበኛ Google መለያ ይጠቀሙ።</translation>
@@ -48,6 +50,7 @@
 <translation id="2195025571279539885">Chromium በሚቀጥለው ጊዜ ከዚህ ጣቢያ የመጡ የ<ph name="LANGUAGE_NAME" /> ገጾችን እንዲተረጎምልዎ ይፈልጋሉ?</translation>
 <translation id="22313767259766852">ይህ አድራሻ በአሁኑ ጊዜ Chromium ላይ ተቀምጧል። በሁሉም የGoogle ምርቶች ላይ እሱን ለመጠቀም በGoogle መለያዎ <ph name="USER_EMAIL" /> ውስጥ ያስቀምጡት።</translation>
 <translation id="2236584955986023187">ይህ ማለት Chromium የዴስክቶፕ ጣቢያውን በእያንዳንዱ ጊዜ ይጠይቃል ማለት ነው።</translation>
+<translation id="2270466829363945454">ይግዙ</translation>
 <translation id="2313870531055795960">በChromium ላይ በተከማቹ ደህንነታቸው ያልተጠበቁ ጣቢያዎች ዝርዝር ጋር ዩአርኤሎችን ይፈትሻል። አንድ ጣቢያ የእርስዎን የይለፍ ቃል ለመስረቅ ከሞከረ ወይም ጎጂ ፋይል ሲያወርዱ Chromium እንዲሁም የገጽ ይዘት ቢትስንም ጨምሮ ዩአርኤሎችን ወደ የጥንቃቄ አሰሳ ሊልክ ይችላል።</translation>
 <translation id="231828342043114302">በፍላጎቶችዎ ላይ የተመሠረተ ግላዊነት የተላበሰ ይዘትን ለመቀበል ወደ Chromium ይግቡ።</translation>
 <translation id="2326738825692478496">አንዳንድ የChromium ውሂብዎ በGoogle መለያዎ ውስጥ ገና አልተቀመጠም።
@@ -106,6 +109,7 @@
 <translation id="377649297473651452">Chromium ራስ-ሙላ የተዘረጋ ዕይታ</translation>
 <translation id="3780779443901618967">ከመደበኛ ጥበቃ በላይ ተጨማሪ ውሂብ ከጣቢያዎች ትንታኔ በመስጠት Google እንኳን በፊት ስላላወቃቸው አደገኛ ጣቢያዎች ያስጠነቅቅዎታል። የChromium ማስጠንቀቂያዎችን ለመዝለል መምረጥ ይችላሉ።</translation>
 <translation id="3805899903892079518">Chromium የእርስዎ ፎቶዎች ወይም ቪዲዮዎች መዳረሻ የለውም። በiOS ቅንብሮች &gt; ግላዊነት &gt; ፎቶዎች ውስጥ መዳረሻን ያንቁ።</translation>
+<translation id="3816686541346279443">Chromium የይለፍ ቃልዎን ለማስቀመጥ ጥያቄ ያቀርባል።</translation>
 <translation id="3827545470516145620">እርስዎ በዚህ መሣሪያ ላይ መደበኛ የደህንነት ጥበቃ እያገኙ ነው</translation>
 <translation id="3833326979834193417">Chromium እርስዎን ከውሂብ ጥሰቶች፣ ደህንነታቸው ካልተጠበቁ ድር ጣቢያዎች እና ሌሎችም ደህንነትዎ እንደተጠበቀ ለማቆየት በየቀኑ የደህንነት ፍተሻን በራስ-ሰር ያሄዳል። ስለ የደህንነት ፍተሻ በቅንብሮች ውስጥ የበለጠ ማግኘት ይችላሉ።</translation>
 <translation id="3855938650519180865">በChromium ውስጥ ምን አዲስ ነገር አለ</translation>
@@ -128,6 +132,7 @@
 <translation id="4432744876818348753">ከChromium የሚችሉትን ሁሉ ለማግኘት በመለያ ይግቡ።</translation>
 <translation id="4445228361214254027">ድርጅትዎ በእርስዎ የGoogle መለያ ውስጥ Chromium ውሂብ የመጠቀም እና የማስቀመጥ አቅምን አጥፍቷል። አዳዲስ ዕልባቶች፣ የይለፍ ቃላት እና ሌሎችም በዚህ መሣሪያ ላይ ብቻ ይቀመጣሉ።</translation>
 <translation id="4498832288620833153">የገባውን ዩአርኤል በ Chromium ውስጥ ባለው የንባብ ዝርዝር ውስጥ ያክላል።</translation>
+<translation id="4508268628669724828">ከChromium ምርጡን ለማግኘት ለተጨማሪ ጠቃሚ ምክሮች ተመልሰው እዚህ ይምጡ።</translation>
 <translation id="452436063477828504">በGoogle መለያዎ ውስጥ በማንኛውም ጊዜ የChromium ውሂብን መጠቀም መቻልዎን ያረጋግጡ</translation>
 <translation id="4527452566931097835">Chromium እንደ ነባሪ ይቀናበር?</translation>
 <translation id="4555020257205549924">ይህ ባህሪ ሲበራ Chromium በሌሎች ቋንቋዎች የተጻፉ ገጾች Google ትርጉምን በመጠቀም እንዲተረጎምልዎ ይጠይቀዎታል። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
@@ -176,6 +181,7 @@
 <translation id="5571094606370987472">የChromium የቅርብ ጊዜ ትሮችን ይከፍታል።</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">በChromium ውስጥ የእኔ የቅርብ ጊዜ ትርን ክፈት</translation>
+<translation id="5671188105328420281">የChromium ጠቃሚ ምክሮች</translation>
 <translation id="5688047395118852662">ይህ ካርድ እንዴት ከChromium ምርጡን ማግኘት እንደሚችሉ ጥቆማዎችን ያሳይዎታል።</translation>
 <translation id="5700709190537129682">Chromium የእርስዎን የይለፍ ቃላት መፈተሽ አይችልም</translation>
 <translation id="584550191241316896">ወደ Chromium ገብተዋል</translation>
@@ -217,6 +223,7 @@
 <translation id="6752854822223394465">የእርስዎ ድርጅት Chromiumን እያዋቀረ ነው...</translation>
 <translation id="6794054469102824109">የChromium Dino ጨዋታውን ይከፍታል።</translation>
 <translation id="6820823224820483452">Chromium ሁሉንም የይለፍ ቃሎች ማረጋገጥ አልቻለም። ነገ እንደገና ይሞክሩ።</translation>
+<translation id="6831043979455480757">መተርጎም</translation>
 <translation id="6852419005633611413">ከመነሻ ማያ ገፅዎ መትከያ Chromium በፍጥነት ይድረሱ</translation>
 <translation id="6852799557929001644">የእርስዎን የChromium የይለፍ ቃላት እና ሌሎችንም በዚህ መሣሪያ ላይ ባሉ ሌሎች መተግበሪያዎች ላይ ይድረሱ።</translation>
 <translation id="6887138405044152640">ይህን ትር ወደ ሌላ መሣሪያ ለመላክ፣ እዚያ ላይ ወደ Chromium ይግቡ።</translation>

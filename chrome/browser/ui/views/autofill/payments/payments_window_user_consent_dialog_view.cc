@@ -18,6 +18,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/fill_layout.h"
@@ -114,8 +115,9 @@ PaymentsWindowUserConsentDialogView::GetWeakPtr() {
 }
 
 void PaymentsWindowUserConsentDialogView::AddedToWidget() {
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
 std::u16string PaymentsWindowUserConsentDialogView::GetWindowTitle() const {
@@ -124,8 +126,16 @@ std::u16string PaymentsWindowUserConsentDialogView::GetWindowTitle() const {
 
 void PaymentsWindowUserConsentDialogView::OnDialogClosing() {
   if (payments_window_user_consent_dialog_controller_) {
+    PaymentsWindowUserConsentDialogResult dialog_result =
+        GetDialogResultForClosedReason(GetWidget()->closed_reason());
+    if (dialog_result ==
+        PaymentsWindowUserConsentDialogResult::kAcceptButtonClicked) {
+      GetViewAccessibility().AnnounceText(
+          payments_window_user_consent_dialog_controller_
+              ->GetAcceptanceAccessibilityAnnouncement());
+    }
     payments_window_user_consent_dialog_controller_->OnDialogClosing(
-        GetDialogResultForClosedReason(GetWidget()->closed_reason()));
+        dialog_result);
   }
 }
 

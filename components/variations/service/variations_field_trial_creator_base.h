@@ -32,7 +32,6 @@
 #include "base/version_info/channel.h"
 #include "build/build_config.h"
 #include "components/variations/client_filterable_state.h"
-#include "components/variations/entropy_provider.h"
 #include "components/variations/metrics.h"
 #include "components/variations/proto/study.pb.h"
 #include "components/variations/seed_response.h"
@@ -50,6 +49,7 @@ class MetricsStateManager;
 namespace variations {
 
 class SyntheticTrialRegistry;
+class EntropyProviders;
 
 // Just maps one set of enum values to another. Nothing to see here.
 Study::Channel ConvertProductChannelToStudyChannel(
@@ -112,14 +112,15 @@ class VariationsServiceClient;
 // Used to set up field trials based on stored variations seed data.
 class VariationsFieldTrialCreatorBase {
  public:
-  // Caller is responsible for ensuring that the VariationsServiceClient passed
-  // to the constructor stays valid for the lifetime of this object.
-  // |locale_cb| computes the locale, given a PrefService for local_state.
+  // Caller is responsible for ensuring that the VariationsServiceClient and
+  // LimitedEntropySyntheticTrial passed to the
+  // constructor stay valid for the lifetime of this object.
   //
-  // The client will be registered to the limited entropy synthetic trial iff
-  // |limited_entropy_synthetic_trial| is not null. Caller is responsible for
-  // ensuring |limited_entropy_synthetic_trial| stays valid for the lifetime of
-  // this object.
+  // |client| provides some platform-specific operations for variations.
+  // |seed_store| manages seed data.
+  // |locale_cb| computes the locale, given a PrefService for local_state.
+  // |limited_entropy_synthetic_trial|, if not null, allows eligible clients to
+  // participate in the synthetic trial.
   VariationsFieldTrialCreatorBase(
       VariationsServiceClient* client,
       std::unique_ptr<VariationsSeedStore> seed_store,
@@ -163,6 +164,7 @@ class VariationsFieldTrialCreatorBase {
   // value is true). Must not be null.
   // |add_entropy_source_to_variations_ids| controls if variations ID for the
   // low entropy source should be added to FIRST_PARTY variation headers.
+  // |entropy_providers| Used to provide entropy to field trials.
   // TODO(b/263797385): eliminate this argument if we can always add the ID.
   //
   // NOTE: The ordering of the FeatureList method calls is such that the
@@ -179,7 +181,8 @@ class VariationsFieldTrialCreatorBase {
       SyntheticTrialRegistry* synthetic_trial_registry,
       PlatformFieldTrials* platform_field_trials,
       SafeSeedManagerBase* safe_seed_manager,
-      bool add_entropy_source_to_variations_ids);
+      bool add_entropy_source_to_variations_ids,
+      const EntropyProviders& entropy_providers);
 
   // Returns all of the client state used for filtering studies.
   // As a side-effect, may update the stored permanent consistency country.

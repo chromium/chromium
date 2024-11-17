@@ -78,7 +78,7 @@
 #include "ui/color/color_provider_source.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/native_theme_utils.h"
 #include "v8/include/v8.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -665,7 +665,7 @@ gfx::Rect RenderViewTest::GetElementBounds(const std::string& element_id) {
 
   v8::Local<v8::Array> array = value.As<v8::Array>();
   v8::Local<v8::Context> v8_context =
-      array->GetCreationContext().ToLocalChecked();
+      array->GetCreationContext(isolate).ToLocalChecked();
   v8::Context::Scope v8_context_scope(v8_context);
   if (array->Length() != 4)
     return gfx::Rect();

@@ -10,6 +10,9 @@
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/vpn_service_ash.h"
 #include "chrome/common/extensions/api/vpn_provider.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/pepper_vpn_provider_resource_host_proxy.h"
@@ -20,16 +23,6 @@
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/vpn_service_ash.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif
 
 namespace chromeos {
 
@@ -338,7 +331,6 @@ void VpnService::OnListenerAdded(const extensions::EventListenerInfo& details) {
 
 // static
 crosapi::mojom::VpnService* VpnService::GetVpnService() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // CrosapiManager may not be initialized.
   // TODO(crbug.com/40225953): Assert it's only happening in tests.
   if (!crosapi::CrosapiManager::IsInitialized()) {
@@ -346,14 +338,6 @@ crosapi::mojom::VpnService* VpnService::GetVpnService() {
     return nullptr;
   }
   return crosapi::CrosapiManager::Get()->crosapi_ash()->vpn_service_ash();
-#else
-  auto* service = chromeos::LacrosService::Get();
-  if (!service->IsAvailable<crosapi::mojom::VpnService>()) {
-    LOG(ERROR) << "chrome.vpnProvider is not available in Lacros";
-    return nullptr;
-  }
-  return service->GetRemote<crosapi::mojom::VpnService>().get();
-#endif
 }
 
 mojo::Remote<crosapi::mojom::VpnServiceForExtension>&

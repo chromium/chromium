@@ -25,6 +25,8 @@ enum class NearbyShareError;
 // ordering of the flow. This enum should be kept in sync with the
 // NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent enum in
 // //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent)
 enum class
     NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent {
       kNotificationShown = 1,
@@ -32,18 +34,22 @@ enum class
       kDismiss = 13,
       kExit = 14,
     };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyShareBackgroundScanningDeviceNearbySharingNotificationFlowEvent)
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused. The numbers here correspond to the
 // ordering of the flow. This enum should be kept in sync with the
 // NearbyShareBackgroundScanningSetupNotificationFlowEvent enum in
 // //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyShareBackgroundScanningSetupNotificationFlowEvent)
 enum class NearbyShareBackgroundScanningSetupNotificationFlowEvent {
   kNotificationShown = 1,
   kSetup = 12,
   kDismiss = 13,
   kExit = 14,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyShareBackgroundScanningSetupNotificationFlowEvent)
 
 enum class PayloadFileOperation {
   kOpen,
@@ -55,6 +61,8 @@ enum class PayloadFileOperation {
 // ordering of the flow. This enum should be kept in sync with the
 // PairedKeyVerificationError enum in
 // //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbySharePairedKeyVerificationError)
 enum class NearbySharePairedKeyVerificationError {
   kFailedToReadEncryptionFrame,
   kFailedToReadResultFrame,
@@ -63,6 +71,7 @@ enum class NearbySharePairedKeyVerificationError {
   kUnableToVerifyOptionalSignature,
   kMaxValue = kUnableToVerifyOptionalSignature,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbySharePairedKeyVerificationError)
 
 std::string GetMediumName(nearby::connections::mojom::Medium medium);
 

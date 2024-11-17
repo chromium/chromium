@@ -80,7 +80,7 @@ bool HandleGetEncryptionKeyResponse(
 // Given a GetUpdates response, iterates over all the returned items and
 // divides them according to their type.  Outputs a map from data types to
 // received SyncEntities.  The output map will have entries (possibly empty)
-// for all types in |requested_types|.
+// for all types in `requested_types`.
 void PartitionUpdatesByType(const sync_pb::GetUpdatesResponse& gu_response,
                             DataTypeSet requested_types,
                             TypeSyncEntityMap* updates_by_type) {
@@ -90,8 +90,7 @@ void PartitionUpdatesByType(const sync_pb::GetUpdatesResponse& gu_response,
   for (const sync_pb::SyncEntity& update : gu_response.entries()) {
     DataType type = GetDataTypeFromSpecifics(update.specifics());
     if (!IsRealDataType(type)) {
-      NOTREACHED_IN_MIGRATION() << "Received update with invalid type.";
-      continue;
+      NOTREACHED() << "Received update with invalid type.";
     }
 
     auto it = updates_by_type->find(type);
@@ -107,7 +106,7 @@ void PartitionUpdatesByType(const sync_pb::GetUpdatesResponse& gu_response,
 }
 
 // Builds a map of DataTypes to indices to progress markers in the given
-// |gu_response| message.  The map is returned in the |index_map| parameter.
+// `gu_response` message.  The map is returned in the `index_map` parameter.
 void PartitionProgressMarkersByType(
     const sync_pb::GetUpdatesResponse& gu_response,
     const DataTypeSet& request_types,
@@ -320,9 +319,7 @@ SyncerError GetUpdatesProcessor::ProcessResponse(
   PartitionProgressMarkersByType(gu_response, gu_types,
                                  &progress_index_by_type);
   if (gu_types.size() != progress_index_by_type.size()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Missing progress markers in GetUpdates response.";
-    return SyncerError::ProtocolViolationError();
+    NOTREACHED() << "Missing progress markers in GetUpdates response.";
   }
 
   TypeToIndexMap context_by_type;

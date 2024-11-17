@@ -1,0 +1,24 @@
+caption: Open links in Chrome browser by default
+desc: |-
+  Setting the policy to False allows Android apps to capture supported links by default.
+  Setting the policy to True make all links open in Chrome browser by default.
+  If the policy is not set, links are opened by default in Android apps for managed users and in the browser for consumers.
+default: false
+example_value: true
+features:
+  dynamic_refresh: false
+  per_profile: true
+items:
+- caption: Open links in Chrome browser by default
+  value: true
+- caption: Open links in Android apps by default
+  value: false
+owners:
+- cros-web-apps-team@google.com
+- ovn@google.com
+schema:
+  type: boolean
+supported_on:
+- chrome_os:132-
+tags: []
+type: main

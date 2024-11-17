@@ -45,6 +45,7 @@ class MockResumableUploadRequest : public ResumableUploadRequest {
                                get_data_result,
                                path,
                                123,
+                               false,
                                TRAFFIC_ANNOTATION_FOR_TESTS,
                                std::move(callback)) {}
 
@@ -147,7 +148,7 @@ TEST_F(ResumableUploadRequestTest,
   network::ResourceRequest resource_request;
   auto connector_request = ResumableUploadRequest::CreateFileRequest(
       nullptr, GURL(), "metadata", BinaryUploadService::Result::SUCCESS,
-      CreateFile("my_file_name.foo", "file_data"), 9,
+      CreateFile("my_file_name.foo", "file_data"), 9, false,
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
   auto* request = static_cast<ResumableUploadRequest*>(connector_request.get());
   request->SetMetadataRequestHeaders(&resource_request);
@@ -160,7 +161,7 @@ TEST_F(ResumableUploadRequestTest,
   network::ResourceRequest resource_request;
   auto connector_request = ResumableUploadRequest::CreateFileRequest(
       nullptr, GURL(), "metadata", BinaryUploadService::Result::FILE_TOO_LARGE,
-      CreateFile("my_file_name.foo", "file_data"), 9,
+      CreateFile("my_file_name.foo", "file_data"), 9, false,
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
   auto* request = static_cast<ResumableUploadRequest*>(connector_request.get());
   request->SetMetadataRequestHeaders(&resource_request);
@@ -173,7 +174,7 @@ TEST_F(ResumableUploadRequestTest,
   network::ResourceRequest resource_request;
   auto connector_request = ResumableUploadRequest::CreateFileRequest(
       nullptr, GURL(), "metadata", BinaryUploadService::Result::FILE_ENCRYPTED,
-      CreateFile("my_file_name.foo", "file_data"), 9,
+      CreateFile("my_file_name.foo", "file_data"), 9, false,
       TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
   auto* request = static_cast<ResumableUploadRequest*>(connector_request.get());
   request->SetMetadataRequestHeaders(&resource_request);
@@ -371,7 +372,7 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesSuccessfulContentScan) {
               GURL(kUploadUrl), std::move(content_response_head),
               "final_response", network::URLLoaderCompletionStatus(net::OK));
         } else {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
       }));
   mock_request->Start();
@@ -413,7 +414,7 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesFileTooLarge) {
               GURL("https://google.com"), std::move(metadata_response_head),
               "metadata_response", network::URLLoaderCompletionStatus(net::OK));
         } else {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
       }));
   mock_request->Start();
@@ -447,7 +448,7 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesEncryptedFile) {
               GURL("https://google.com"), std::move(metadata_response_head),
               "metadata_response", network::URLLoaderCompletionStatus(net::OK));
         } else {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
       }));
   mock_request->Start();
@@ -496,7 +497,7 @@ TEST_P(ResumableUploadSendContentRequestTest, HandlesFailedContentScan) {
               network::CreateURLResponseHead(net::HTTP_UNAUTHORIZED),
               "final_response", network::URLLoaderCompletionStatus(net::OK));
         } else {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
       }));
 

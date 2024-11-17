@@ -6,7 +6,6 @@ module on_device_model.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 
 // Opened file resources needed to define an adaptation.
 [Stable]
@@ -19,7 +18,8 @@ struct AdaptationAssets {
   // GPU backend: weights should be used.
   // TODO(b/313919363): This should also be a ReadOnlyFile.
   mojo_base.mojom.File? weights;
-  [MinVersion=1] mojo_base.mojom.FilePath? weights_path;
+  [MinVersion=1]
+  mojo_base.mojom.FilePath? weights_path;
 };
 
 // Conveys the result of a language detection attempt on output text.
@@ -61,6 +61,14 @@ struct ResponseChunk {
 struct ResponseSummary {
   // Optional safety information computed against the full response.
   SafetyInfo? safety_info;
+
+  // The total number of input tokens from the call to Execute().
+  [MinVersion=1]
+  uint32 input_token_count;
+
+  // The total number of output tokens for this response.
+  [MinVersion=1]
+  uint32 output_token_count;
 };
 
 // Streams a response from a call to execute a model. Close this pipe to cancel
@@ -159,7 +167,8 @@ struct InputOptions {
   float? temperature;
 
   // The input for the model.
-  [MinVersion=1] Input? input;
+  [MinVersion=1]
+  Input? input;
 };
 
 // A session for a model that allows adding context and then executing an input
@@ -179,6 +188,7 @@ interface Session {
   // empty or error occurred.
   [MinVersion=2]
   GetSizeInTokens@5(Input input) => (uint32 size);
+
   GetSizeInTokensDeprecated@2(string text) => (uint32 size);
 
   // Gets the probability score of the first token in `text` on top of the
@@ -216,8 +226,8 @@ interface OnDeviceModel {
   // Loads an adaptation with the specified params. This will always load the
   // adaptation on top of the base model.
   LoadAdaptation@3(
-      LoadAdaptationParams params,
-      pending_receiver<OnDeviceModel> model) => (LoadModelResult result);
+      LoadAdaptationParams params, pending_receiver<OnDeviceModel> model)
+      => (LoadModelResult result);
 };
 
 interface TextSafetyModel {

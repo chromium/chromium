@@ -8,7 +8,12 @@
 #include <string>
 #include <vector>
 
+#if defined(UNIT_TEST)
+#include <ostream>
+#endif
+
 #include "base/files/file_path.h"
+#include "base/types/expected.h"
 #include "content/public/browser/file_system_access_permission_grant.h"
 #include "content/public/browser/file_system_access_write_item.h"
 #include "content/public/browser/global_routing_id.h"
@@ -23,6 +28,74 @@ class FileSystemURL;
 }  // namespace storage
 
 namespace content {
+class RenderFrameHost;
+
+// These values are used in json serialization. Entries should not be
+// renumbered and numeric values should never be reused.
+enum class PathType {
+  // A path on the local file system. Files with these paths can be operated
+  // on by base::File.
+  kLocal = 0,
+
+  // A path on an "external" file system. These paths can only be accessed via
+  // the filesystem abstraction in //storage/browser/file_system, and a
+  // storage::FileSystemURL of type storage::kFileSystemTypeExternal.
+  // This path type should be used for paths retrieved via the `virtual_path`
+  // member of a ui::SelectedFileInfo struct.
+  kExternal = 1
+};
+
+struct PathInfo {
+  PathType type = PathType::kLocal;
+  // Full path of file or directory.
+  base::FilePath path;
+  // Display name of file or directory, must not be empty. This is usually
+  // path.BaseName(), but in some cases such as android content-URIs the path is
+  // unrelated to the display name.
+  std::string display_name;
+
+  PathInfo() = default;
+  explicit PathInfo(base::FilePath path)
+      : path(std::move(path)),
+        display_name(this->path.BaseName().AsUTF8Unsafe()) {
+    CHECK(!this->path.empty(), base::NotFatalUntil::M134);
+    CHECK(!this->display_name.empty(), base::NotFatalUntil::M134);
+  }
+  explicit PathInfo(base::FilePath::StringPieceType path)
+      : PathInfo(base::FilePath(path)) {
+    CHECK(!this->path.empty(), base::NotFatalUntil::M134);
+    CHECK(!this->display_name.empty(), base::NotFatalUntil::M134);
+  }
+  PathInfo(PathType type, base::FilePath path)
+      : type(type),
+        path(std::move(path)),
+        display_name(this->path.BaseName().AsUTF8Unsafe()) {
+    CHECK(!this->path.empty(), base::NotFatalUntil::M134);
+    CHECK(!this->display_name.empty(), base::NotFatalUntil::M134);
+  }
+  PathInfo(base::FilePath path, std::string display_name)
+      : path(std::move(path)), display_name(std::move(display_name)) {
+    CHECK(!this->path.empty(), base::NotFatalUntil::M134);
+    CHECK(!this->display_name.empty(), base::NotFatalUntil::M134);
+  }
+  PathInfo(PathType type, base::FilePath path, std::string display_name)
+      : type(type),
+        path(std::move(path)),
+        display_name(std::move(display_name)) {
+    CHECK(!this->path.empty(), base::NotFatalUntil::M134);
+    CHECK(!this->display_name.empty(), base::NotFatalUntil::M134);
+  }
+
+  bool operator==(const PathInfo& other) const = default;
+};
+
+// For testing only.
+#if defined(UNIT_TEST)
+inline std::ostream& operator<<(std::ostream& os, const PathInfo& path_info) {
+  return os << (int)path_info.type << ':' << path_info.path << ':'
+            << path_info.display_name;
+}
+#endif
 
 // Entry point to an embedder implemented permission context for the File System
 // Access API. Instances of this class can be retrieved via a BrowserContext.
@@ -61,40 +134,13 @@ class FileSystemAccessPermissionContext {
   // handles.
   enum class HandleType { kFile, kDirectory };
 
-  // These values are used in json serialization. Entries should not be
-  // renumbered and numeric values should never be reused.
-  enum class PathType {
-    // A path on the local file system. Files with these paths can be operated
-    // on by base::File.
-    kLocal = 0,
-
-    // A path on an "external" file system. These paths can only be accessed via
-    // the filesystem abstraction in //storage/browser/file_system, and a
-    // storage::FileSystemURL of type storage::kFileSystemTypeExternal.
-    // This path type should be used for paths retrieved via the `virtual_path`
-    // member of a ui::SelectedFileInfo struct.
-    kExternal = 1
-  };
-
-  struct PathInfo {
-    PathType type = PathType::kLocal;
-    // Full path of file or directory.
-    base::FilePath path;
-    // Display name of file or directory. This is usually path.BaseName(), but
-    // in some cases such as android content-URIs the path is unrelated to the
-    // display name. If empty, path.BaseName() should be used for the display.
-    base::FilePath display_name;
-
-    bool operator==(const PathInfo& other) const = default;
-  };
-
   using EntriesAllowedByEnterprisePolicyCallback =
       base::OnceCallback<void(std::vector<PathInfo>)>;
 
   // Returns the read permission grant to use for a particular path.
   virtual scoped_refptr<FileSystemAccessPermissionGrant> GetReadPermissionGrant(
       const url::Origin& origin,
-      const base::FilePath& path,
+      const PathInfo& path_info,
       HandleType handle_type,
       UserAction user_action) = 0;
 
@@ -105,7 +151,7 @@ class FileSystemAccessPermissionContext {
   // that directory.
   virtual scoped_refptr<FileSystemAccessPermissionGrant>
   GetWritePermissionGrant(const url::Origin& origin,
-                          const base::FilePath& path,
+                          const PathInfo& path_info,
                           HandleType handle_type,
                           UserAction user_action) = 0;
 
@@ -125,8 +171,7 @@ class FileSystemAccessPermissionContext {
   // to the user if the path is dangerous or should not be accessed.
   virtual void ConfirmSensitiveEntryAccess(
       const url::Origin& origin,
-      PathType path_type,
-      const base::FilePath& path,
+      const PathInfo& path_info,
       HandleType handle_type,
       UserAction user_action,
       GlobalRenderFrameHostId frame_id,
@@ -139,6 +184,15 @@ class FileSystemAccessPermissionContext {
       std::unique_ptr<FileSystemAccessWriteItem> item,
       GlobalRenderFrameHostId frame_id,
       base::OnceCallback<void(AfterWriteCheckResult)> callback) = 0;
+
+  // Returns whether the file type is considered dangerous. This is used to
+  // block file operations from creating or accessing these file types.
+  virtual bool IsFileTypeDangerous(const base::FilePath& path,
+                                   const url::Origin& origin) = 0;
+
+  // Returns whether the given RFH can use file picker.
+  virtual base::expected<void, std::string> CanShowFilePicker(
+      RenderFrameHost* rfh) = 0;
 
   // Returns whether the give |origin| already allows read permission, or it is
   // possible to request one. This is used to block file dialogs from being
@@ -155,8 +209,7 @@ class FileSystemAccessPermissionContext {
   // |origin| and |id|.
   virtual void SetLastPickedDirectory(const url::Origin& origin,
                                       const std::string& id,
-                                      const base::FilePath& path,
-                                      const PathType type) = 0;
+                                      const content::PathInfo& path_info) = 0;
   // Returns the directory recently chosen by a file picker for a given
   // |origin| and |id|.
   virtual PathInfo GetLastPickedDirectory(const url::Origin& origin,
@@ -178,8 +231,8 @@ class FileSystemAccessPermissionContext {
   // Notifies that the underlying file or directory has been moved and updates
   // permission grants accordingly.
   virtual void NotifyEntryMoved(const url::Origin& origin,
-                                const base::FilePath& old_path,
-                                const base::FilePath& new_path) = 0;
+                                const PathInfo& old_path,
+                                const PathInfo& new_path) = 0;
 
   // Invoked on file creation events originating from
   // `window.showSaveFilePicker()`.

@@ -100,14 +100,13 @@ public class SmsFetcherMessageHandler {
     /**
      * Returns the notification text string.
      *
-     * @param oneTimeCode The one time code from SMS
      * @param topOrigin The top frame origin from the SMS
      * @param embeddedOrigin The embedded frame origin from the SMS. Null if the SMS does not
-     *         contain an iframe origin.
+     *     contain an iframe origin.
      * @param clientName The client name where the remote request comes from
      */
     private static String getNotificationText(
-            String oneTimeCode, String topOrigin, String embeddedOrigin, String clientName) {
+            String topOrigin, String embeddedOrigin, String clientName) {
         Resources resources = ContextUtils.getApplicationContext().getResources();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_OTP_CROSS_DEVICE_SIMPLE_STRING)) {
             if (embeddedOrigin == null) return clientName;
@@ -169,7 +168,7 @@ public class SmsFetcherMessageHandler {
                 confirmIntent,
                 cancelIntent,
                 getNotificationTitle(oneTimeCode, topOrigin, embeddedOrigin, clientName),
-                getNotificationText(oneTimeCode, topOrigin, embeddedOrigin, clientName),
+                getNotificationText(topOrigin, embeddedOrigin, clientName),
                 R.drawable.ic_chrome,
                 /* largeIconId= */ 0,
                 R.color.default_icon_color_accent1_baseline,

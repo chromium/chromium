@@ -126,6 +126,7 @@ int QuicSessionPoolTestBase::RequestBuilder::CallRequest() {
       privacy_mode, priority, socket_tag, network_anonymization_key,
       secure_dns_policy, require_dns_https_alpn, cert_verify_flags, url,
       net_log, &net_error_details,
+      MultiplexedSessionCreationInitiator::kUnknown,
       std::move(failed_on_default_network_callback), std::move(callback));
 }
 QuicSessionPoolTestBase::QuicSessionPoolTestBase(

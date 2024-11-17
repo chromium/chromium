@@ -98,6 +98,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util:terms_util",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/web/model/java_script_console",
     "//ios/chrome/browser/webui/model",
     "//ios/chrome/common",
@@ -115,8 +116,8 @@ source_set("webui_internal") {
     "chrome_web_ui_ios_controller_factory.h",
     "chrome_web_ui_ios_controller_factory.mm",
     "chrome_web_ui_provider.cc",
-    "omaha_ui.cc",
     "omaha_ui.h",
+    "omaha_ui.mm",
     "on_device_llm_internals_ui.h",
     "on_device_llm_internals_ui.mm",
     "signin_internals_ui_ios.cc",
@@ -157,8 +158,9 @@ source_set("webui_internal") {
 
   if (build_with_internal_optimization_guide) {
     deps += [
-      "//components/optimization_guide/internal:optimization_guide_internal+bundle",
-      "//components/optimization_guide/internal:optimization_guide_internal+link",
+      "//components/optimization_guide/core",
+      "//components/optimization_guide/core:features",
+      "//ios/chrome/browser/optimization_guide/model",
       "//ios/chrome/browser/optimization_guide/resources:on_device_llm_bundle_data",
     ]
   }

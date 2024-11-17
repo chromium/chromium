@@ -4,7 +4,7 @@
 
 // Use the <code>chrome.vpnProvider</code> API to implement a VPN
 // client.
-[platforms=("chromeos", "lacros"),
+[platforms=("chromeos"),
  implemented_in="chrome/browser/chromeos/extensions/vpn_provider/vpn_provider_api.h"]
 namespace vpnProvider {
   // A parameters class for the VPN interface.

@@ -10,7 +10,7 @@ MockScreenAvailabilityListener::MockScreenAvailabilityListener(
     const GURL& availability_url)
     : availability_url_(availability_url) {}
 
-MockScreenAvailabilityListener::~MockScreenAvailabilityListener() {}
+MockScreenAvailabilityListener::~MockScreenAvailabilityListener() = default;
 
 GURL MockScreenAvailabilityListener::GetAvailabilityUrl() {
   return availability_url_;

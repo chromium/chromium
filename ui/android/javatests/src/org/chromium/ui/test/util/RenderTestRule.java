@@ -43,13 +43,17 @@ import java.util.concurrent.Callable;
  * A TestRule for creating Render Tests. The comparison is performed using the Skia Gold image
  * diffing service on the host.
  *
- * General usage:
+ * <p>General usage:
  *
  * <pre>
  * {@code
  *
  * @RunWith(BaseJUnit4ClassRunner.class)
- * public class MyTest extends BlankUiTestActivityTestCase {
+ * public class MyTest {
+ *     @ClassRule
+ *     public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+ *             new BaseActivityTestRule<>(BlankUiTestActivity.class);
+ *
  *     @Rule
  *     public RenderTestRule mRenderTestRule = new RenderTestRule.Builder()
  *             // Required. If using ANDROID_RENDER_TESTS_PUBLIC, the Builder can be created with
@@ -147,6 +151,7 @@ public class RenderTestRule extends TestWatcher {
         Component.UI_BROWSER_MOBILE_APP_MENU,
         Component.UI_BROWSER_MOBILE_CONTEXT_MENU,
         Component.UI_BROWSER_MOBILE_CUSTOM_TABS,
+        Component.UI_BROWSER_MOBILE_EDGE_TO_EDGE,
         Component.UI_BROWSER_MOBILE_HUB,
         Component.UI_BROWSER_MOBILE_MESSAGES,
         Component.UI_BROWSER_MOBILE_RECENT_TABS,
@@ -195,6 +200,7 @@ public class RenderTestRule extends TestWatcher {
         String UI_BROWSER_MOBILE_APP_MENU = "UI>Browser>Mobile>AppMenu";
         String UI_BROWSER_MOBILE_CONTEXT_MENU = "UI>Browser>Mobile>ContextMenu";
         String UI_BROWSER_MOBILE_CUSTOM_TABS = "UI>Browser>Mobile>CustomTabs";
+        String UI_BROWSER_MOBILE_EDGE_TO_EDGE = "UI>Browser>Mobile>EdgeToEdge";
         String UI_BROWSER_MOBILE_HUB = "UI>Browser>Mobile>Hub";
         String UI_BROWSER_MOBILE_MESSAGES = "UI>Browser>Mobile>Messages";
         String UI_BROWSER_MOBILE_RECENT_TABS = "UI>Browser>Mobile>RecentTabs";

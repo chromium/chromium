@@ -122,11 +122,11 @@ FidoTunnelDevice::FidoTunnelDevice(
   info.tunnel_server_domain = components.tunnel_server_domain;
 
   info.psk =
-      Derive<EXTENT(info.psk)>(secret, decrypted_eid, DerivedValueType::kPSK);
+      Derive<QRInfo::kPskSize>(secret, decrypted_eid, DerivedValueType::kPSK);
 
   std::array<uint8_t, 16> tunnel_id;
-  tunnel_id = Derive<EXTENT(tunnel_id)>(secret, base::span<uint8_t>(),
-                                        DerivedValueType::kTunnelID);
+  tunnel_id = Derive<tunnel_id.size()>(secret, base::span<uint8_t>(),
+                                       DerivedValueType::kTunnelID);
 
   const GURL url(tunnelserver::GetConnectURL(components.tunnel_server_domain,
                                              components.routing_id, tunnel_id));
@@ -174,8 +174,8 @@ FidoTunnelDevice::FidoTunnelDevice(
   const std::string client_payload_hex = base::HexEncode(*client_payload_bytes);
 
   PairedInfo& info = absl::get<PairedInfo>(info_);
-  info.eid_encryption_key = Derive<EXTENT(info.eid_encryption_key)>(
-      pairing->secret, client_nonce, DerivedValueType::kEIDKey);
+  info.eid_encryption_key = Derive<kEIDKeySize>(pairing->secret, client_nonce,
+                                                DerivedValueType::kEIDKey);
   info.peer_identity = pairing->peer_public_key_x962;
   info.secret = pairing->secret;
   info.pairing_is_invalid = std::move(pairing_is_invalid);
@@ -224,8 +224,8 @@ bool FidoTunnelDevice::MatchAdvert(
     return false;
   }
 
-  info.psk = Derive<EXTENT(*info.psk)>(info.secret, *plaintext,
-                                       DerivedValueType::kPSK);
+  info.psk = Derive<PairedInfo::kPskSize>(info.secret, *plaintext,
+                                          DerivedValueType::kPSK);
 
   if (state_ == State::kWaitingForEID ||
       state_ == State::kWaitingForEIDOrConnectSignal) {
@@ -601,8 +601,7 @@ void FidoTunnelDevice::OnTunnelData(
     case State::kReady: {
       // In |kReady| the connection is handled by |established_connection_| and
       // so this should never happen.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
   }
 }
@@ -724,7 +723,7 @@ void FidoTunnelDevice::EstablishedConnection::Close() {
 
     case State::kLocallyShutdown:
     case State::kClosed:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -869,8 +868,7 @@ void FidoTunnelDevice::EstablishedConnection::OnRemoteClose() {
 
     case State::kRemoteShutdown:
     case State::kClosed:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

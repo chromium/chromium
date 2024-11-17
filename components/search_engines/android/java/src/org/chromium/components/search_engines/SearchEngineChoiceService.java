@@ -12,10 +12,10 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -24,6 +24,8 @@ import org.chromium.components.search_engines.SearchEngineCountryDelegate.Device
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.time.DateTimeException;
+import java.time.Instant;
 
 /**
  * Singleton responsible for communicating with device APIs to expose device-level properties that
@@ -42,10 +44,19 @@ public class SearchEngineChoiceService {
     /**
      * Gets reset to {@code null} after the device country is obtained.
      *
-     * <p>TODO(b/355054098): Rely on disconnections inside the delegate instead of giving it up to
+     * <p>TODO(b:377236248): Rely on disconnections inside the delegate instead of giving it up to
      * garbage collection. This will allow reconnecting if we need the delegate for other purposes.
      */
     private @Nullable SearchEngineCountryDelegate mDelegate;
+
+    /**
+     * Whether the promo offering the user to make Chrome their default browser should be
+     * suppressed. Computed lazily to limit risk of long-running state checks on the critical path.
+     *
+     * <p>TODO(b:377236248): If we can disconnect the delegate instead of setting it to null, we
+     * wouldn't need to cache this value here.
+     */
+    private @Nullable Boolean mIsDefaultBrowserPromoSuppressed;
 
     /**
      * Cached status associated with initiating a device country fetch when the object is
@@ -69,12 +80,16 @@ public class SearchEngineChoiceService {
     public static SearchEngineChoiceService getInstance() {
         ThreadUtils.checkUiThread();
         if (sInstance == null) {
-            var context = ContextUtils.getApplicationContext();
-            var delegate =
-                    SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
-                                    && SearchEnginesFeatureUtils.clayBlockingUseFakeBackend()
-                            ? new FakeSearchEngineCountryDelegate(/* enableLogging= */ true)
-                            : new SearchEngineCountryDelegateImpl(context);
+            SearchEngineCountryDelegate delegate;
+            if (SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)
+                    && SearchEnginesFeatureUtils.clayBlockingUseFakeBackend()) {
+                delegate = new FakeSearchEngineCountryDelegate(/* enableLogging= */ true);
+            } else {
+                delegate = ServiceLoaderUtil.maybeCreate(SearchEngineCountryDelegate.class);
+                if (delegate == null) {
+                    delegate = new NoOpSearchEngineCountryDelegate();
+                }
+            }
             sInstance = new SearchEngineChoiceService(delegate);
         }
         return sInstance;
@@ -123,20 +138,35 @@ public class SearchEngineChoiceService {
         mDelegate = delegate;
 
         mDeviceCountryPromise = mDelegate.getDeviceCountry();
-
-        mDeviceCountryPromise.then(
-                countryCode -> {
-                    assert countryCode != null : "Contract violation, country code should be null";
-                },
-                unusedException -> {});
-
-        if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
-            // We request the country code once per run, so it is safe to free up
-            // the delegate now.
-            mDeviceCountryPromise.andFinally(() -> mDelegate = null);
-        }
+        mDeviceCountryPromise.andFinally(this::maybeDestroyDelegate);
 
         mIsDeviceChoiceRequiredSupplier = createIsDeviceChoiceRequiredSupplier(mDelegate);
+    }
+
+    /**
+     * Determines whether we won't need {@link #mDelegate} for the rest of this Chrome run and frees
+     * it up if that's the case.
+     */
+    @MainThread
+    private void maybeDestroyDelegate() {
+        ThreadUtils.checkUiThread();
+
+        // The delegate is needed to resolve the country promise. We should only attempt destroying
+        // it when the country fetch is done.
+        assert !mDeviceCountryPromise.isPending();
+
+        if (isDeviceChoiceDialogEligible()) {
+            // We still need to use the delegate to power the blocking dialog, so don't free it
+            // up this run.
+            return;
+        }
+
+        // We didn't identify a reason to keep the delegate, so let's free it up. Now is the last
+        // moment to grab what we might need from it later.
+
+        isDefaultBrowserPromoSuppressed(); // Initialize `mIsDefaultBrowserPromoSuppressed`.
+
+        mDelegate = null;
     }
 
     /**
@@ -158,6 +188,20 @@ public class SearchEngineChoiceService {
     }
 
     /**
+     * Returns whether the promo offering the user to make Chrome their default browser should be
+     * suppressed. Works by checking whether a sufficient amount of time has passed since the user
+     * has completed the OS-level default browser choice.
+     */
+    @MainThread
+    public boolean isDefaultBrowserPromoSuppressed() {
+        ThreadUtils.checkUiThread();
+        if (mIsDefaultBrowserPromoSuppressed == null) {
+            mIsDefaultBrowserPromoSuppressed = isDefaultBrowserPromoSuppressedInternal();
+        }
+        return mIsDefaultBrowserPromoSuppressed;
+    }
+
+    /**
      * Returns whether the app should attempt to prompt the user to complete their choices of system
      * default apps.
      *
@@ -169,7 +213,8 @@ public class SearchEngineChoiceService {
     public boolean isDeviceChoiceDialogEligible() {
         ThreadUtils.checkUiThread();
         if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) return false;
-        assert mDelegate != null;
+        // We can free up the delegate only if we already established ineligibility.
+        if (mDelegate == null) return false;
 
         return mDelegate.isDeviceChoiceDialogEligible();
     }
@@ -221,7 +266,10 @@ public class SearchEngineChoiceService {
 
         assert !SearchEnginesFeatureUtils.clayBlockingIsDarkLaunch();
         assert mDelegate != null;
-        Log.i(TAG, "launchChoiceScreens()");
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355186707): Temporary log to be removed after e2e validation.
+            Log.i(TAG, "launchChoiceScreens()");
+        }
         mDelegate.launchDeviceChoiceScreens();
     }
 
@@ -251,7 +299,10 @@ public class SearchEngineChoiceService {
         }
 
         assert mDelegate != null;
-        Log.i(TAG, "notifyDeviceChoiceEvent(%d)", eventType);
+        if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+            // TODO(b/355186707): Temporary log to be removed after e2e validation.
+            Log.i(TAG, "notifyDeviceChoiceEvent(%d)", eventType);
+        }
         mDelegate.notifyDeviceChoiceEvent(eventType);
     }
 
@@ -268,7 +319,19 @@ public class SearchEngineChoiceService {
                 // We want to call into the backend to be able to verify it's working,
                 // but we intercept its returned values to prevent it from affecting the
                 // user experience.
-                ? new TransitiveObservableSupplier<>(supplier, ignored -> alwaysFalseSupplier)
+                ? new TransitiveObservableSupplier<>(
+                        supplier,
+                        isDeviceChoiceRequired -> {
+                            if (SearchEnginesFeatureUtils.clayBlockingEnableVerboseLogging()) {
+                                // TODO(b/355186707): Temp log to be removed after e2e validation.
+                                Log.i(
+                                        TAG,
+                                        "[DarkLaunch] delegate event (isDeviceChoiceRequired=%s)"
+                                                + " suppressed",
+                                        isDeviceChoiceRequired);
+                            }
+                            return alwaysFalseSupplier;
+                        })
                 : supplier;
     }
 
@@ -292,6 +355,25 @@ public class SearchEngineChoiceService {
                         mDeviceCountryPromise.isFulfilled()
                                 ? mDeviceCountryPromise.getResult()
                                 : null);
+    }
+
+    private boolean isDefaultBrowserPromoSuppressedInternal() {
+        if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) return false;
+
+        long suppressionPeriodMillis =
+                SearchEnginesFeatureUtils.clayBlockingDialogDefaultBrowserPromoSuppressedMillis();
+        if (suppressionPeriodMillis <= 0) return false;
+
+        if (mDelegate == null) return false;
+        Instant deviceBrowserSelectedTimestamp = mDelegate.getDeviceBrowserSelectedTimestamp();
+        if (deviceBrowserSelectedTimestamp == null) return false;
+
+        try {
+            return Instant.now()
+                    .isBefore(deviceBrowserSelectedTimestamp.plusMillis(suppressionPeriodMillis));
+        } catch (DateTimeException e) {
+            return false;
+        }
     }
 
     @CalledByNative

@@ -10,15 +10,8 @@
 using TpmIdentifier = metrics::SystemProfileProto_TpmIdentifier;
 
 TEST(TpmIdentifierTest, TpmTest) {
-  // Ensure that full string values are not set.
-  std::optional<TpmIdentifier> identifier =
-      GetTpmIdentifier(/*report_full_names=*/false);
-  EXPECT_TRUE(identifier->tpm_specific_version() == "");
-  EXPECT_TRUE(identifier->manufacturer_version() == "");
-  EXPECT_TRUE(identifier->manufacturer_version_info() == "");
-
   // Ensure that each value has been populated
-  identifier = GetTpmIdentifier(/*report_full_names=*/true);
+  std::optional<TpmIdentifier> identifier = GetTpmIdentifier();
   EXPECT_TRUE(identifier->tpm_specific_version() != "");
   EXPECT_TRUE(identifier->manufacturer_version() != "");
   EXPECT_TRUE(identifier->manufacturer_version_info() != "");

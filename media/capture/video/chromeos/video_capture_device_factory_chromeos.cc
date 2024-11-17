@@ -7,6 +7,8 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
@@ -17,9 +19,72 @@ namespace media {
 
 namespace {
 
-gpu::GpuMemoryBufferManager* g_gpu_buffer_manager = nullptr;
-scoped_refptr<gpu::SharedImageInterface> g_shared_image_interface = nullptr;
-scoped_refptr<gpu::GpuChannelHost> gpu_channel_host_ = nullptr;
+// This class is designed as a singleton because it holds resources that needs
+// to be accessed globally. This ensures consistent state and minimizes memory
+// usage by sharing resources across components.
+class GpuResources : public gpu::GpuMemoryBufferManagerObserver {
+ public:
+  GpuResources() = default;
+
+  void OnGpuMemoryBufferManagerDestroyed() override {
+    base::AutoLock lock(lock_);
+    // Invalidate the pointer to avoid dangling reference.
+    gpu_buffer_manager_ = nullptr;
+  }
+
+  gpu::GpuMemoryBufferManager* GetBufferManager() const {
+    base::AutoLock lock(lock_);
+    return gpu_buffer_manager_;
+  }
+
+  void SetBufferManager(gpu::GpuMemoryBufferManager* buffer_manager) {
+    base::AutoLock lock(lock_);
+    gpu_buffer_manager_ = buffer_manager;
+    if (buffer_manager) {
+      buffer_manager->AddObserver(this);
+    }
+  }
+
+  scoped_refptr<gpu::SharedImageInterface> GetSharedImageInterface() const {
+    base::AutoLock lock(lock_);
+    return shared_image_interface_;
+  }
+
+  void SetSharedImageInterface(
+      scoped_refptr<gpu::SharedImageInterface> interface) {
+    base::AutoLock lock(lock_);
+    //  Ensure only one instance is set
+    if (interface && shared_image_interface_) {
+      CHECK_EQ(interface, shared_image_interface_);
+      return;
+    }
+    shared_image_interface_ = std::move(interface);
+  }
+
+  scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost() const {
+    base::AutoLock lock(lock_);
+    return gpu_channel_host_;
+  }
+
+  void SetGpuChannelHost(scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
+    base::AutoLock lock(lock_);
+    gpu_channel_host_ = std::move(gpu_channel_host);
+  }
+
+ private:
+  mutable base::Lock lock_;
+  raw_ptr<gpu::GpuMemoryBufferManager> gpu_buffer_manager_ GUARDED_BY(lock_) =
+      nullptr;
+  scoped_refptr<gpu::SharedImageInterface> shared_image_interface_
+      GUARDED_BY(lock_);
+  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host_ GUARDED_BY(lock_);
+};
+
+// Singleton accessor for GpuResources.
+static GpuResources& GetGpuResources() {
+  static base::NoDestructor<GpuResources> instance;
+  return *instance;
+}
 
 }  // namespace
 
@@ -76,44 +141,37 @@ void VideoCaptureDeviceFactoryChromeOS::GetDevicesInfo(
 // static
 gpu::GpuMemoryBufferManager*
 VideoCaptureDeviceFactoryChromeOS::GetBufferManager() {
-  return g_gpu_buffer_manager;
+  return GetGpuResources().GetBufferManager();
 }
 
 // static
 void VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
     gpu::GpuMemoryBufferManager* buffer_manager) {
-  g_gpu_buffer_manager = buffer_manager;
+  GetGpuResources().SetBufferManager(buffer_manager);
 }
 
 // static
 void VideoCaptureDeviceFactoryChromeOS::SetGpuChannelHost(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
-  gpu_channel_host_ = std::move(gpu_channel_host);
+  GetGpuResources().SetGpuChannelHost(std::move(gpu_channel_host));
 }
 
 // static
 scoped_refptr<gpu::GpuChannelHost>
 VideoCaptureDeviceFactoryChromeOS::GetGpuChannelHost() {
-  return gpu_channel_host_;
+  return GetGpuResources().GetGpuChannelHost();
 }
 
 // static
-gpu::SharedImageInterface*
+scoped_refptr<gpu::SharedImageInterface>
 VideoCaptureDeviceFactoryChromeOS::GetSharedImageInterface() {
-  return g_shared_image_interface.get();
+  return GetGpuResources().GetSharedImageInterface().get();
 }
 
 // static
 void VideoCaptureDeviceFactoryChromeOS::SetSharedImageInterface(
     scoped_refptr<gpu::SharedImageInterface> shared_image_interface) {
-  // If both SharedImageInterface have a valid pointer, then making sure they
-  // are same in order to catch any issues caused from setting it to different
-  // values multiple times in a given process.
-  if (shared_image_interface && g_shared_image_interface) {
-    CHECK_EQ(shared_image_interface.get(), g_shared_image_interface.get());
-    return;
-  }
-  g_shared_image_interface = std::move(shared_image_interface);
+  GetGpuResources().SetSharedImageInterface(std::move(shared_image_interface));
 }
 
 bool VideoCaptureDeviceFactoryChromeOS::Init() {

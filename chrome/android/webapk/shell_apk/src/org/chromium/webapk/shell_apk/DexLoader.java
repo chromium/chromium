@@ -88,7 +88,6 @@ public class DexLoader {
     /**
      * Extracts an asset from {@link context}'s APK to a file.
      *
-     * @param context
      * @param assetName Name of the asset to extract.
      * @param destFile File to extract the asset to.
      * @return true on success.

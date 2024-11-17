@@ -336,8 +336,8 @@ void DownloadBubbleUIController::ProcessDownloadButtonPress(
       commands.ExecuteCommand(command);
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected button pressed on download bubble: " << command;
+      NOTREACHED() << "Unexpected button pressed on download bubble: "
+                   << command;
   }
 }
 
@@ -436,4 +436,9 @@ void DownloadBubbleUIController::RecordDangerousDownloadShownToUser(
 base::WeakPtr<DownloadBubbleUIController>
 DownloadBubbleUIController::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
+}
+
+void DownloadBubbleUIController::SetDeepScanNoticeSeen() {
+  profile_->GetPrefs()->SetBoolean(
+      prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen, true);
 }

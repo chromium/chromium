@@ -143,9 +143,7 @@ class ShellDevToolsBindings::NetworkResourceLoader
     bindings_->loaders_.erase(bindings_->loaders_.find(this));
   }
 
-  void OnRetry(base::OnceClosure start_retry) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void OnRetry(base::OnceClosure start_retry) override { NOTREACHED(); }
 
   const int stream_id_;
   const int request_id_;
@@ -220,8 +218,7 @@ void ShellDevToolsBindings::AttachInternal() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   const bool create_for_tab = false;
 #else
-  const bool create_for_tab = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kContentShellDevToolsTabTarget);
+  const bool create_for_tab = true;
 #endif
   agent_host_ = create_for_tab
                     ? DevToolsAgentHost::GetOrCreateForTab(inspected_contents_)

@@ -21,7 +21,7 @@ class FakeIpcServer final : public IpcServer {
     base::RepeatingClosure disconnect_handler;
     mojo::ReceiverId current_receiver = 0u;
     mojo::ReceiverId last_closed_receiver = 0u;
-    int32_t current_peer_pid = 0;
+    std::unique_ptr<ConnectionInfo> current_connection_info;
   };
 
   explicit FakeIpcServer(TestState* test_state);
@@ -34,7 +34,7 @@ class FakeIpcServer final : public IpcServer {
   void Close(mojo::ReceiverId id) override;
   void set_disconnect_handler(base::RepeatingClosure handler) override;
   mojo::ReceiverId current_receiver() const override;
-  base::ProcessId current_peer_pid() const override;
+  const ConnectionInfo& current_connection_info() const override;
 
  private:
   raw_ptr<TestState> test_state_;

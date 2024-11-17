@@ -9,7 +9,6 @@ import "mojo/public/mojom/base/byte_string.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/proto_wrapper.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/context.mojom";
@@ -388,7 +387,7 @@ interface NetworkService {
   // from the MDL. Subdomains of entries on this list should be excluded from
   // the MDL as well.
   UpdateMaskedDomainList(mojo_base.mojom.ProtoWrapper masked_domain_list,
-    array<string> exclusion_list);
+                         array<string> exclusion_list);
 
   // Parses response headers and returns a structured version to the caller.
   // This call originates from the browser process. Used for navigations when

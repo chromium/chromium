@@ -29,6 +29,7 @@
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_dns_task.h"
+#include "net/dns/host_resolver_internal_result.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/host_resolver_manager_request_impl.h"
 #include "net/dns/host_resolver_manager_service_endpoint_request_impl.h"
@@ -476,8 +477,7 @@ void HostResolverManager::Job::RunNextTask() {
     case TaskType::HOSTS:
       // These task types should have been handled synchronously in
       // ResolveLocally() prior to Job creation.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -551,7 +551,7 @@ void HostResolverManager::Job::ReduceByOneJobSlot() {
     }
     --num_occupied_job_slots_;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -768,25 +768,30 @@ void HostResolverManager::Job::OnDnsTaskFailure(
   RunNextTask();
 }
 
-void HostResolverManager::Job::OnDnsTaskComplete(base::TimeTicks start_time,
-                                                 bool allow_fallback,
-                                                 HostCache::Entry results,
-                                                 bool secure) {
+void HostResolverManager::Job::OnDnsTaskComplete(
+    base::TimeTicks start_time,
+    bool allow_fallback,
+    HostResolverDnsTask::Results results,
+    bool secure) {
   DCHECK(dns_task_);
+
+  HostCache::Entry legacy_results(results, base::Time::Now(),
+                                  tick_clock_->NowTicks(),
+                                  HostCache::Entry::SOURCE_DNS);
 
   // Tasks containing address queries are only considered successful overall
   // if they find address results. However, DnsTask may claim success if any
   // transaction, e.g. a supplemental HTTPS transaction, finds results.
   DCHECK(!key_.query_types.Has(DnsQueryType::UNSPECIFIED));
-  if (HasAddressType(key_.query_types) && results.error() == OK &&
-      results.ip_endpoints().empty()) {
-    results.set_error(ERR_NAME_NOT_RESOLVED);
+  if (HasAddressType(key_.query_types) && legacy_results.error() == OK &&
+      legacy_results.ip_endpoints().empty()) {
+    legacy_results.set_error(ERR_NAME_NOT_RESOLVED);
   }
 
   base::TimeDelta duration = tick_clock_->NowTicks() - start_time;
-  if (results.error() != OK) {
-    OnDnsTaskFailure(dns_task_->AsWeakPtr(), duration, allow_fallback, results,
-                     secure);
+  if (legacy_results.error() != OK) {
+    OnDnsTaskFailure(dns_task_->AsWeakPtr(), duration, allow_fallback,
+                     legacy_results, secure);
     return;
   }
 
@@ -802,15 +807,15 @@ void HostResolverManager::Job::OnDnsTaskComplete(base::TimeTicks start_time,
   }
 
   base::TimeDelta bounded_ttl =
-      std::max(results.ttl(), base::Seconds(kMinimumTTLSeconds));
+      std::max(legacy_results.ttl(), base::Seconds(kMinimumTTLSeconds));
 
-  if (ContainsIcannNameCollisionIp(results.ip_endpoints())) {
+  if (ContainsIcannNameCollisionIp(legacy_results.ip_endpoints())) {
     CompleteRequestsWithError(ERR_ICANN_NAME_COLLISION,
                               secure ? TaskType::SECURE_DNS : TaskType::DNS);
     return;
   }
 
-  CompleteRequests(results, bounded_ttl, true /* allow_cache */, secure,
+  CompleteRequests(legacy_results, bounded_ttl, true /* allow_cache */, secure,
                    secure ? TaskType::SECURE_DNS : TaskType::DNS);
 }
 
@@ -849,7 +854,7 @@ void HostResolverManager::Job::OnIntermediateTransactionsComplete(
   if (dns_task_results_manager_ && single_transaction_results.has_value()) {
     dns_task_results_manager_->ProcessDnsTransactionResults(
         single_transaction_results->query_type,
-        single_transaction_results->results);
+        std::move(single_transaction_results->results));
     // `this` may be deleted. Do not add code below.
   }
 }

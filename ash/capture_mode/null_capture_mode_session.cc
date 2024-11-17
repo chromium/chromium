@@ -113,13 +113,39 @@ NullCaptureModeSession::GetWindowsToIgnoreFromWidgets() {
   return std::set<aura::Window*>();
 }
 
-void NullCaptureModeSession::ShowSearchResultsPanel(
-    const gfx::ImageSkia& image) {}
+void NullCaptureModeSession::OnPerformCaptureForSearchStarting(
+    PerformCaptureType capture_type) {}
+
+void NullCaptureModeSession::OnPerformCaptureForSearchEnded(
+    PerformCaptureType capture_type) {}
+
+base::WeakPtr<BaseCaptureModeSession>
+NullCaptureModeSession::GetImageSearchToken() {
+  return nullptr;
+}
+
+ActionButtonView* NullCaptureModeSession::AddActionButton(
+    views::Button::PressedCallback callback,
+    std::u16string text,
+    const gfx::VectorIcon* icon,
+    const ActionButtonRank rank,
+    ActionButtonViewID id) {
+  return nullptr;
+}
+
+void NullCaptureModeSession::AddScannerActionButtons(
+    std::vector<ScannerActionViewModel> scanner_actions) {}
+
+void NullCaptureModeSession::OnTextDetected() {}
 
 void NullCaptureModeSession::InitInternal() {
   layer()->SetName("NullCaptureModeSession");
 }
 
 void NullCaptureModeSession::ShutdownInternal() {}
+
+gfx::Rect NullCaptureModeSession::GetFeedbackWidgetScreenBounds() const {
+  return gfx::Rect();
+}
 
 }  // namespace ash

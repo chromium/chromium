@@ -253,7 +253,8 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       const AggregatedRenderPass* pass,
       const RenderPassRequirements& requirements) override;
 
-  void DrawDelegatedInkTrail() override;
+  void DrawDelegatedInkTrail(
+      const gfx::Transform& root_target_to_render_pass_transform);
 
   // Get a color filter that converts from |src| color space to |dst| color
   // space using a shader constructed from gfx::ColorTransform.  The color
@@ -407,10 +408,6 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
   // order.
   std::vector<RenderPassOverlayParams> in_flight_render_pass_overlay_backings_;
   std::vector<RenderPassOverlayParams> available_render_pass_overlay_backings_;
-
-  // A feature flag that allows unchanged render pass draw quad in the overlay
-  // list to skip.
-  const bool can_skip_render_pass_overlay_;
 #endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_WIN)
 
   // Lock set for resources that are used for the current frame. All resources

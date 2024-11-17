@@ -81,6 +81,12 @@ class PLATFORM_EXPORT ServiceWorkerRouterInfo
     router_evaluation_time_ = router_evaluation_time;
   }
 
+  const base::TimeDelta& CacheLookupTime() const { return cache_lookup_time_; }
+
+  void SetCacheLookupTime(const base::TimeDelta& cache_lookup_time) {
+    cache_lookup_time_ = cache_lookup_time;
+  }
+
  private:
   ServiceWorkerRouterInfo();
 
@@ -93,6 +99,7 @@ class PLATFORM_EXPORT ServiceWorkerRouterInfo
   std::optional<network::mojom::ServiceWorkerStatus> evaluation_worker_status_;
 
   base::TimeDelta router_evaluation_time_;
+  base::TimeDelta cache_lookup_time_;
 };
 }  // namespace blink
 

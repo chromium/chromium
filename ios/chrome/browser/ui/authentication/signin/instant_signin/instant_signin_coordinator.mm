@@ -7,13 +7,14 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
-#import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator.h"
@@ -73,12 +74,9 @@
 - (void)start {
   [super start];
   signin_metrics::LogSignInStarted(self.accessPoint);
-  ChromeBrowserState* chromeState = self.browser->GetBrowserState();
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(chromeState);
+  ProfileIOS* profile = self.browser->GetProfile();
   _mediator =
-      [[InstantSigninMediator alloc] initWithSyncService:syncService
-                                             accessPoint:self.accessPoint];
+      [[InstantSigninMediator alloc] initWithAccessPoint:self.accessPoint];
   _mediator.delegate = self;
 
   if (_identity) {
@@ -95,9 +93,17 @@
     return;
   }
 
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(chromeState);
-  if (!accountManagerService->HasIdentities()) {
+  bool hasAccountOnDevice = false;
+  if (AreSeparateProfilesForManagedAccountsEnabled()) {
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForProfile(profile);
+    hasAccountOnDevice = !identityManager->GetAccountsOnDevice().empty();
+  } else {
+    ChromeAccountManagerService* accountManagerService =
+        ChromeAccountManagerServiceFactory::GetForProfile(profile);
+    hasAccountOnDevice = accountManagerService->HasIdentities();
+  }
+  if (!hasAccountOnDevice) {
     signin_metrics::RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
             ADD_ACCOUNT_STARTED_WITH_NO_DEVICE_ACCOUNT,
@@ -145,9 +151,8 @@
     CHECK(!_activityOverlayCoordinator);
     [_identityChooserCoordinator stop];
     _identityChooserCoordinator = nil;
-    [self
-        runCompletionCallbackWithSigninResult:SigninCoordinatorResultInterrupted
-                               completionInfo:nil];
+    [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
+                         completionInfo:nil];
     if (completion) {
       completion();
     }
@@ -161,9 +166,8 @@
     // Drop the activity overlay if it exists.
     [_activityOverlayCoordinator stop];
     _activityOverlayCoordinator = nil;
-    [self
-        runCompletionCallbackWithSigninResult:SigninCoordinatorResultInterrupted
-                               completionInfo:nil];
+    [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
+                         completionInfo:nil];
     if (completion) {
       completion();
     }
@@ -189,7 +193,7 @@
   // `_identityChooserCoordinator.delegate` was set to nil before calling this
   // method since `identityChooserCoordinatorDidTapOnAddAccount:` or
   // `identityChooserCoordinator:didSelectIdentity:` have been called before.
-  NOTREACHED_IN_MIGRATION() << base::SysNSStringToUTF8([self description]);
+  NOTREACHED() << base::SysNSStringToUTF8([self description]);
 }
 
 - (void)identityChooserCoordinatorDidTapOnAddAccount:
@@ -211,9 +215,8 @@
   _identityChooserCoordinator = nil;
   if (!identity) {
     // If no identity was selected, the coordinator can be closed.
-    [self runCompletionCallbackWithSigninResult:
-              SigninCoordinatorResultCanceledByUser
-                                 completionInfo:nil];
+    [self runCompletionWithSigninResult:SigninCoordinatorResultCanceledByUser
+                         completionInfo:nil];
     return;
   }
   _identity = identity;
@@ -234,14 +237,14 @@
                                                        self.accessPoint);
       SigninCompletionInfo* info =
           [SigninCompletionInfo signinCompletionInfoWithIdentity:_identity];
-      [self runCompletionCallbackWithSigninResult:SigninCoordinatorResultSuccess
-                                   completionInfo:info];
+      [self runCompletionWithSigninResult:SigninCoordinatorResultSuccess
+                           completionInfo:info];
       break;
     }
     case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
-      [self runCompletionCallbackWithSigninResult:result completionInfo:nil];
+      [self runCompletionWithSigninResult:result completionInfo:nil];
       break;
   }
 }
@@ -250,6 +253,8 @@
 
 // Starts the sign-in flow.
 - (void)startSignInOnlyFlow {
+  // TODO(crbug.com/375605482): Handle the case where the chosen identity is
+  // assigned to a different profile.
   [self showActivityOverlay];
   signin_metrics::RecordSigninUserActionForAccessPoint(self.accessPoint);
   // If this was triggered by the user tapping the default button in the sign-in
@@ -306,7 +311,7 @@
     case SigninCoordinatorResultDisabled:
     case SigninCoordinatorResultInterrupted:
     case SigninCoordinatorResultCanceledByUser:
-      [self runCompletionCallbackWithSigninResult:result completionInfo:nil];
+      [self runCompletionWithSigninResult:result completionInfo:nil];
       break;
   }
 }

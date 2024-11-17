@@ -25,7 +25,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/display/display.h"
 #include "ui/display/display_layout.h"
 #include "ui/display/display_observer.h"
@@ -369,8 +368,8 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   // mixed mirror mode in the next display configuration. (Use SetMirrorMode()
   // to immediately switch to mixed mirror mode.)
   void set_mixed_mirror_mode_params(
-      const std::optional<MixedMirrorModeParams> mixed_params) {
-    mixed_mirror_mode_params_ = mixed_params;
+      std::optional<MixedMirrorModeParams> mixed_params) {
+    mixed_mirror_mode_params_ = std::move(mixed_params);
   }
 
   void dec_screen_capture_active_counter() {

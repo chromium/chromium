@@ -15,12 +15,15 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
+#include "components/fingerprinting_protection_filter/mojom/fingerprinting_protection_filter.mojom.h"
 #include "components/subresource_filter/content/shared/browser/page_load_statistics.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_handle_user_data.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 
 class GURL;
 
@@ -65,16 +68,27 @@ class FingerprintingProtectionWebContentsHelper;
 // the navigation commits, this class will be transferred to be owned by the\
 // `Page` it is associated with. Otherwise it will be destroyed with the
 // `NavigationHandle`.
-class ThrottleManager : public base::SupportsUserData::Data {
+class ThrottleManager : public base::SupportsUserData::Data,
+                        public mojom::FingerprintingProtectionHost {
  public:
   static const int kUserDataKey = 0;
+
+  // Binds a remote in the given `RenderFrame` to the correct `ThrottleManager`
+  // in the browser. If no manager is found, `pending_receiver` will not be
+  // consumed and the agent's disconnect handler will be called if set.
+  static void BindReceiver(
+      mojo::PendingAssociatedReceiver<mojom::FingerprintingProtectionHost>
+          pending_receiver,
+      content::RenderFrameHost* render_frame_host);
 
   // Creates a ThrottleManager instance from the given parameters.
   // NOTE: Short-circuits out (returns nullptr) if the
   // `kEnableFingerprintingProtectionFilter` feature is not enabled.
   static std::unique_ptr<ThrottleManager> CreateForNewPage(
       subresource_filter::VerifiedRulesetDealer::Handle* dealer_handle,
-      FingerprintingProtectionWebContentsHelper& web_contents_helper);
+      FingerprintingProtectionWebContentsHelper& web_contents_helper,
+      content::NavigationHandle& initiating_navigation_handle,
+      bool is_incognito);
 
   // Since the throttle manager is created for a page-creating navigation, then
   // transferred onto the page once created, it is accessible in both
@@ -101,7 +115,9 @@ class ThrottleManager : public base::SupportsUserData::Data {
 
   ThrottleManager(
       subresource_filter::VerifiedRulesetDealer::Handle* dealer_handle,
-      FingerprintingProtectionWebContentsHelper& web_contents_helper);
+      FingerprintingProtectionWebContentsHelper& web_contents_helper,
+      content::NavigationHandle& initiating_navigation_handle,
+      bool is_incognito);
   ~ThrottleManager() override;
 
   // Disallow copy and assign.
@@ -234,8 +250,8 @@ class ThrottleManager : public base::SupportsUserData::Data {
   const std::optional<subresource_filter::mojom::ActivationState>
   GetFrameActivationState(content::RenderFrameHost* frame_host);
 
-  // Calls NotifyOnBlockedResources() on `web_contents_helper_` at most once per
-  // committed, non-same-page navigation in the main frame. `frame_host`
+  // Calls NotifyOnBlockedSubresource() on `web_contents_helper_` at most once
+  // per committed, non-same-page navigation in the main frame. `frame_host`
   // specifies the frame that blocked the subresource.
   void MaybeNotifyOnBlockedResource(content::RenderFrameHost* frame_host);
 
@@ -243,11 +259,12 @@ class ThrottleManager : public base::SupportsUserData::Data {
   ActivationStateForNextCommittedLoad(
       content::NavigationHandle* navigation_handle);
 
-  // TODO(https://crbug.com/40280666): Call this function from blink.
-  void DidDisallowFirstSubresource();
+  // mojom::FingerprintingProtectionHost:
+  void DidDisallowFirstSubresource() override;
+  void CheckActivation(CheckActivationCallback callback) override;
 
   void SetDocumentLoadStatistics(
-      subresource_filter::mojom::DocumentLoadStatisticsPtr statistics);
+      subresource_filter::mojom::DocumentLoadStatisticsPtr statistics) override;
 
   // Gets a filter for the navigation from `throttle`, creates and returns a new
   // filter, or returns `nullptr`. Also adds `FilterHandle` objects as
@@ -266,6 +283,10 @@ class ThrottleManager : public base::SupportsUserData::Data {
       content::NavigationHandle* navigation_handle,
       const subresource_filter::mojom::ActivationLevel& activation_level,
       bool did_inherit_opener_activation);
+
+  // Receiver set for all RenderFrames in this throttle manager's page.
+  content::RenderFrameHostReceiverSet<mojom::FingerprintingProtectionHost>
+      receivers_;
 
   // Lazily instantiated in EnsureRulesetHandle when the first page level
   // activation is triggered. Will go away when there are no more activated
@@ -288,9 +309,7 @@ class ThrottleManager : public base::SupportsUserData::Data {
   // this class transferred onto it (in
   // FingerprintingProtectionWebContentsHelper) we'll set this member to point
   // to it.
-  //
-  // TODO(https://crbug.com/40280666): Triage dangling pointers.
-  raw_ptr<content::Page, DanglingUntriaged> page_ = nullptr;
+  raw_ptr<content::Page> page_ = nullptr;
 
   // One ThrottleManger per page means one page activation decision per throttle
   // manager.
@@ -301,6 +320,17 @@ class ThrottleManager : public base::SupportsUserData::Data {
   // outlive this class which is owned by either a Page or NavigationHandle in
   // the WebContents.
   const raw_ref<FingerprintingProtectionWebContentsHelper> web_contents_helper_;
+
+  // Whether or not the page-level activation computation is finished. The
+  // activation state won't be returned to the renderer until this is true.
+  bool page_level_activation_computed_ = false;
+
+  // Page-level `ActivationState`, stored to be queried by throttles on the
+  // renderer.
+  subresource_filter::mojom::ActivationState page_activation_state_;
+
+  // Whether the  profile is in Incognito mode.
+  bool is_incognito_;
 
   base::WeakPtrFactory<ThrottleManager> weak_ptr_factory_{this};
 };

@@ -408,9 +408,8 @@ bool CompositorFrameSinkSupport::IsVideoCaptureStarted() {
   return number_clients_capturing_ > 0;
 }
 
-base::flat_set<base::PlatformThreadId>
-CompositorFrameSinkSupport::GetThreadIds() {
-  return thread_ids_;
+std::vector<Thread> CompositorFrameSinkSupport::GetThreads() {
+  return threads_;
 }
 
 void CompositorFrameSinkSupport::OnSurfaceDestroyed(Surface* surface) {
@@ -618,26 +617,34 @@ void CompositorFrameSinkSupport::BindLayerContext(
   layer_context_ = std::make_unique<LayerContextImpl>(this, context);
 }
 
-void CompositorFrameSinkSupport::SetThreadIds(
+void CompositorFrameSinkSupport::SetThreads(
     bool from_untrusted_client,
-    base::flat_set<base::PlatformThreadId> unverified_thread_ids) {
+    std::vector<Thread> unverified_threads) {
   if (!from_untrusted_client) {
-    thread_ids_ = unverified_thread_ids;
+    threads_ = std::move(unverified_threads);
     return;
   }
+  base::flat_set<base::PlatformThreadId> thread_ids;
+  for (const auto& thread : unverified_threads) {
+    thread_ids.insert(thread.id);
+  }
   frame_sink_manager_->VerifySandboxedThreadIds(
-      unverified_thread_ids,
+      thread_ids,
       base::BindOnce(
           &CompositorFrameSinkSupport::UpdateThreadIdsPostVerification,
-          weak_factory_.GetWeakPtr(), unverified_thread_ids));
+          weak_factory_.GetWeakPtr(), unverified_threads));
 }
 
 void CompositorFrameSinkSupport::UpdateThreadIdsPostVerification(
-    base::flat_set<base::PlatformThreadId> thread_ids,
+    std::vector<Thread> threads,
     bool passed_verification) {
   if (passed_verification) {
-    thread_ids_ = std::move(thread_ids);
+    threads_ = std::move(threads);
   } else {
+    std::vector<base::PlatformThreadId> thread_ids;
+    for (const auto& thread : threads) {
+      thread_ids.push_back(thread.id);
+    }
     TRACE_EVENT_INSTANT("viz,android.adpf",
                         "FailedToUpdateThreadIdsPostVerification", "thread_ids",
                         thread_ids);
@@ -659,12 +666,13 @@ void CompositorFrameSinkSupport::DidNotProduceFrame(const BeginFrameAck& ack) {
   TRACE_EVENT(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(ack.trace_id), [&](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_DID_NOT_PRODUCE_FRAME);
         frame_sink_id_.WriteIntoTrace(ctx.Wrap(data->set_frame_sink_id()));
-        data->set_display_trace_id(ack.trace_id);
+        data->set_surface_frame_trace_id(ack.trace_id);
       });
   DCHECK(ack.frame_id.IsSequenceValid());
 
@@ -730,8 +738,8 @@ void CompositorFrameSinkSupport::SubmitCompositorFrameLocally(
   pending_frames_.push_back(FrameData{.local_frame = true});
   Surface* surface = surface_manager_->GetSurfaceForId(surface_id);
 
-  auto frame_rejected_callback = base::ScopedClosureRunner(
-      base::BindOnce([] { NOTREACHED_IN_MIGRATION(); }));
+  auto frame_rejected_callback =
+      base::ScopedClosureRunner(base::BindOnce([] { NOTREACHED(); }));
   auto frame_index = ++last_frame_index_;
   Surface::QueueFrameResult result = surface->QueueFrame(
       std::move(frame), frame_index, std::move(frame_rejected_callback));
@@ -781,12 +789,14 @@ SubmitResult CompositorFrameSinkSupport::MaybeSubmitCompositorFrame(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global((frame.metadata.begin_frame_ack.trace_id)),
       [&](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_RECEIVE_COMPOSITOR_FRAME);
         frame_sink_id_.WriteIntoTrace(ctx.Wrap(data->set_frame_sink_id()));
-        data->set_display_trace_id(frame.metadata.begin_frame_ack.trace_id);
+        data->set_surface_frame_trace_id(
+            frame.metadata.begin_frame_ack.trace_id);
       });
 
   DCHECK(local_surface_id.is_valid());
@@ -1170,11 +1180,12 @@ void CompositorFrameSinkSupport::OnBeginFrame(const BeginFrameArgs& args) {
   TRACE_EVENT(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(trace_id), [trace_id](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
                            StepName::STEP_ISSUE_BEGIN_FRAME);
-        data->set_display_trace_id(trace_id);
+        data->set_surface_frame_trace_id(trace_id);
       });
 
   if (compositor_frame_callback_) {
@@ -1474,8 +1485,7 @@ const char* CompositorFrameSinkSupport::GetSubmitResultAsString(
     case SubmitResult::SURFACE_OWNED_BY_ANOTHER_CLIENT:
       return "Surface belongs to another client";
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 int64_t CompositorFrameSinkSupport::ComputeTraceId() {

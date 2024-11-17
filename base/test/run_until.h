@@ -10,8 +10,11 @@
 namespace base::test {
 
 // Waits until `condition` evaluates to `true`, by evaluating `condition`
-// whenever the current task becomes idle (while allowing the message loop of
-// the calling thread to spin).
+// whenever the current thread becomes idle.
+//
+// Note: "something" (e.g. a task) must wake the current thread once the
+// condition is true. As such testing global conditions which won't wake the
+// current thread is flaky.
 //
 // Returns true if `condition` became true, or false if a timeout happens.
 //
@@ -21,11 +24,13 @@ namespace base::test {
 //
 //   // Waits until the color is red, or aborts the tests otherwise.
 //   ASSERT_TRUE(RunUntil([&](){
-//       return object_under_test.Color() == Color::Red;
-//     })) << "Timeout waiting for the color to turn red";
+//     return object_under_test.Color() == Color::Red;
+//   })) << "Timeout waiting for the color to turn red";
 //
 //   // When we come here `Color()` is guaranteed to be `Color::Red`.
 //
+// TODO (crbug.com/376085325): Implement timeout handling for MOCK_TIME to
+// manage unmet conditions.
 [[nodiscard]] bool RunUntil(base::FunctionRef<bool(void)> condition);
 
 }  // namespace base::test

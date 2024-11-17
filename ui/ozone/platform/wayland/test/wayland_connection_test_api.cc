@@ -33,4 +33,9 @@ void WaylandConnectionTestApi::SyncDisplay() {
   wl_display_flush(impl_->display());
   run_loop.Run();
 }
+
+void WaylandConnectionTestApi::EnableLinuxDrmSyncobj() {
+  impl_->enable_linux_drm_syncobj_for_testing_ = true;
+}
+
 }  // namespace ui

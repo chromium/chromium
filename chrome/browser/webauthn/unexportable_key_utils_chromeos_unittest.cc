@@ -11,6 +11,7 @@
 #include "ash/public/cpp/auth/active_session_auth_controller.h"
 #include "ash/public/cpp/auth/active_session_fingerprint_client.h"
 #include "ash/public/cpp/webauthn_dialog_controller.h"
+#include "base/containers/span.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -140,7 +141,8 @@ TEST_P(UserVerifyingKeyUtilsCrosTest,
                      crypto::UserVerifyingKeyCreationError>>
       future;
   provider->GenerateUserVerifyingSigningKey(
-      {{crypto::SignatureVerifier::ECDSA_SHA256}}, future.GetCallback());
+      base::span_from_ref(crypto::SignatureVerifier::ECDSA_SHA256),
+      future.GetCallback());
   crypto::UserVerifyingSigningKey& signing_key = *future.Get().value();
 
   base::test::TestFuture<
@@ -185,7 +187,8 @@ TEST_P(UserVerifyingKeyUtilsCrosTest,
                      crypto::UserVerifyingKeyCreationError>>
       future;
   provider->GenerateUserVerifyingSigningKey(
-      {{crypto::SignatureVerifier::ECDSA_SHA256}}, future.GetCallback());
+      base::span_from_ref(crypto::SignatureVerifier::ECDSA_SHA256),
+      future.GetCallback());
   crypto::UserVerifyingSigningKey& signing_key = *future.Get().value();
   base::test::TestFuture<base::expected<std::vector<uint8_t>,
                                         crypto::UserVerifyingKeySigningError>>
@@ -226,7 +229,7 @@ TEST_P(UserVerifyingKeyUtilsCrosTest,
                      crypto::UserVerifyingKeyCreationError>>
       signing_key_future;
   provider->GenerateUserVerifyingSigningKey(
-      {{crypto::SignatureVerifier::ECDSA_SHA256}},
+      base::span_from_ref(crypto::SignatureVerifier::ECDSA_SHA256),
       signing_key_future.GetCallback());
   base::test::TestFuture<base::expected<std::vector<uint8_t>,
                                         crypto::UserVerifyingKeySigningError>>

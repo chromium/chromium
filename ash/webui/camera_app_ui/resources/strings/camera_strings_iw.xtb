@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">‏קוד QR</translation>
 <translation id="2244252133441425811">‏הפעלת הכלי לבחירת FPS בסרטונים</translation>
 <translation id="2271433936731426666">הפעלת תמונת מצב לגבי הסרטון בגודל מלא</translation>
-<translation id="2281736597583450397">זום משופר לקבלת פרטים חדים יותר</translation>
 <translation id="2320741269052147773">הזזה שמאלה</translation>
 <translation id="2360840973209616515">אפליקציית המצלמה מנוהלת על ידי האדמין.
         אפשר לפנות לאדמין כדי לקבל פרטים נוספים.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">התרחקות</translation>
 <translation id="5976160379964388480">אחרים</translation>
 <translation id="6073451960410192870">הפסקת צילום הסרטון</translation>
-<translation id="6165508094623778733">למידע נוסף</translation>
 <translation id="6197807149213783179">שמירת מטא-נתונים</translation>
 <translation id="6233780560267770709">3 על 3</translation>
 <translation id="6243827288366940320">יחס הזהב</translation>
@@ -122,7 +120,6 @@
 אם המשוב מתייחס לאיכות התמונה או הסרטון, יש לצרף תמונה או סרטון לדוגמה ולתאר מה השתבש (לדוגמה, התמונה כהה מדי או שנושא התמונה לא בפוקוס).</translation>
 <translation id="6519884562954018934">הצטרפות לרשת <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">שיתוף</translation>
-<translation id="6586509689874700895">קודם לוחצים על <ph name="BUTTON_NAME" /> כדי להגדיל את התצוגה. הפרטים המשופרים יוצגו לאחר צילום התמונה.</translation>
 <translation id="659539649712855529">ההעתקה של <ph name="CONTENT" /> הסתיימה</translation>
 <translation id="6617916774429601017">הצגת כל הרזולוציות</translation>
 <translation id="6631515515009660915">השיקוף כבוי</translation>
@@ -168,7 +165,6 @@
 <translation id="8609951387004618906">פתיחה של <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">החלפת המצב של השתקת המיקרופון. ההשתקה פועלת</translation>
-<translation id="8712637175834984815">הבנתי</translation>
 <translation id="8730621377337864115">בוצע</translation>
 <translation id="8732462232047530626">תצוגה מקדימה של מטא-נתונים</translation>
 <translation id="874854738381978209">‏זוהתה רשת Wi-Fi.</translation>

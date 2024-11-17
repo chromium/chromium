@@ -23,8 +23,10 @@
 #include "chromeos/constants/chromeos_features.h"  // nogncheck
 #include "components/manta/mahi_provider.h"
 #include "components/manta/orca_provider.h"
+#include "components/manta/scanner_provider.h"
 #include "components/manta/snapper_provider.h"
 #include "components/manta/sparky/sparky_provider.h"
+#include "components/manta/walrus_provider.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace manta {
@@ -41,19 +43,6 @@ FeatureSupportStatus ConvertToMantaFeatureSupportStatus(signin::Tribool value) {
       return FeatureSupportStatus::kUnsupported;
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-constexpr auto kAllowedLanguagesForAddingLocaleToRequest =
-    base::MakeFixedFlatSet<std::string_view>({"de", "en", "en-GB", "fr", "ja"});
-
-bool ShouldIncludeLocaleInRequest(std::string_view locale) {
-  return chromeos::features::IsOrcaUseL10nStringsEnabled() ||
-         (chromeos::features::IsOrcaInternationalizeEnabled() &&
-          base::Contains(kAllowedLanguagesForAddingLocaleToRequest, locale));
-}
-
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -121,19 +110,27 @@ std::unique_ptr<OrcaProvider> MantaService::CreateOrcaProvider() {
     return nullptr;
   }
   const ProviderParams provider_params = {
-      /*use_api_key=*/is_demo_mode_, chrome_version_, chrome_channel_,
-      /*locale=*/
-      ShouldIncludeLocaleInRequest(locale_) ? locale_ : std::string()};
+      /*use_api_key=*/is_demo_mode_, chrome_version_, chrome_channel_, locale_};
   return std::make_unique<OrcaProvider>(shared_url_loader_factory_,
                                         identity_manager_, provider_params);
+}
+
+std::unique_ptr<ScannerProvider> MantaService::CreateScannerProvider() {
+  if (!identity_manager_) {
+    return nullptr;
+  }
+  const ProviderParams provider_params = {
+      /*use_api_key=*/is_demo_mode_, chrome_version_, chrome_channel_, locale_};
+  return std::make_unique<ScannerProvider>(shared_url_loader_factory_,
+                                           identity_manager_, provider_params);
 }
 
 std::unique_ptr<SnapperProvider> MantaService::CreateSnapperProvider() {
   if (!identity_manager_) {
     return nullptr;
   }
-  const ProviderParams provider_params = {/*use_api_key=*/is_demo_mode_,
-                                          chrome_version_, chrome_channel_};
+  const ProviderParams provider_params = {
+      /*use_api_key=*/is_demo_mode_, chrome_version_, chrome_channel_, locale_};
   return std::make_unique<SnapperProvider>(shared_url_loader_factory_,
                                            identity_manager_, provider_params);
 }
@@ -142,8 +139,8 @@ std::unique_ptr<MahiProvider> MantaService::CreateMahiProvider() {
   if (!identity_manager_) {
     return nullptr;
   }
-  const ProviderParams provider_params = {/*use_api_key=*/is_demo_mode_,
-                                          chrome_version_, chrome_channel_};
+  const ProviderParams provider_params = {
+      /*use_api_key=*/is_demo_mode_, chrome_version_, chrome_channel_, locale_};
   return std::make_unique<MahiProvider>(shared_url_loader_factory_,
                                         identity_manager_, provider_params);
 }
@@ -154,11 +151,21 @@ std::unique_ptr<SparkyProvider> MantaService::CreateSparkyProvider(
   if (!identity_manager_ || !sparky_delegate || !system_info_delegate) {
     return nullptr;
   }
-  const ProviderParams provider_params = {/*use_api_key=*/is_demo_mode_,
-                                          chrome_version_, chrome_channel_};
+  const ProviderParams provider_params = {
+      /*use_api_key=*/is_demo_mode_, chrome_version_, chrome_channel_, locale_};
   return std::make_unique<SparkyProvider>(
       shared_url_loader_factory_, identity_manager_, provider_params,
       std::move(sparky_delegate), std::move(system_info_delegate));
+}
+
+std::unique_ptr<WalrusProvider> MantaService::CreateWalrusProvider() {
+  if (!identity_manager_) {
+    return nullptr;
+  }
+  const ProviderParams provider_params = {
+      /*use_api_key=*/is_demo_mode_, chrome_version_, chrome_channel_, locale_};
+  return std::make_unique<WalrusProvider>(shared_url_loader_factory_,
+                                          identity_manager_, provider_params);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

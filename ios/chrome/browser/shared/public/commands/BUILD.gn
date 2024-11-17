@@ -86,8 +86,10 @@ source_set("commands") {
   ]
 
   deps = [
+    "//components/lens",
     "//components/tab_groups",
     "//ios/chrome/browser/browsing_data/model:util",
+    "//ios/chrome/browser/lens_overlay/model:entrypoint",
     "//ios/chrome/browser/parcel_tracking:parcel_tracking_step",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/tabs/model",

@@ -148,6 +148,10 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
                : gfx::Rect(-kMenuViewBoundsBuffer, -kMenuViewBoundsBuffer);
   }
 
+  float GetMenuOpacity() {
+    return controller()->bubble_view()->layer()->opacity();
+  }
+
   void Show() { accessibility_controller()->ShowFloatingMenuIfEnabled(); }
 
   void SetUpVisibleMenu() {
@@ -204,6 +208,10 @@ class FloatingAccessibilityControllerTest : public AshTestBase {
 
     SetCurrentAndAvailableImes(ImeEnglishId,
                                /*available_imes=*/{ime_english, ime_pinyin});
+  }
+
+  std::u16string GetAccessibleNameForBubble() {
+    return controller()->GetAccessibleNameForBubble();
   }
 
  protected:
@@ -765,6 +773,20 @@ TEST_F(FloatingAccessibilityControllerTest,
 
   bubble_view_->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kWindow);
+  // FloatingAccessibilityController::Show sets the
+  // FloatingAccessibleBubbleView's CanActivate() to false, so we expect the
+  // accessible name to be empty.
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            std::u16string());
+  EXPECT_EQ(data.GetNameFrom(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+}
+
+TEST_F(FloatingAccessibilityControllerTest, CheckOpacity) {
+  SetUpVisibleMenu();
+  EXPECT_LT(GetMenuOpacity(), 1.0f);
+
+  controller()->FocusOnMenu();
+  EXPECT_EQ(GetMenuOpacity(), 1.0f);
 }
 
 }  // namespace ash

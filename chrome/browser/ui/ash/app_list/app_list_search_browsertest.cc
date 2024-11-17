@@ -8,6 +8,7 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/window_properties.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
@@ -106,7 +106,7 @@ class AppListSearchWithCustomizableShortcutsBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchBuiltInApps) {
-  const std::string app_id = web_app::kOsSettingsAppId;
+  const std::string app_id = ash::kOsSettingsAppId;
   aura::Window* const primary_root_window = Shell::GetPrimaryRootWindow();
 
   SearchForSystemApp(primary_root_window, u"Settings", app_id);
@@ -126,8 +126,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, SearchBuiltInApps) {
 
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, OpenFeedbackApp) {
   aura::Window* const primary_root_window = Shell::GetPrimaryRootWindow();
-  SearchForSystemApp(primary_root_window, u"Feedback",
-                     web_app::kOsFeedbackAppId);
+  SearchForSystemApp(primary_root_window, u"Feedback", ash::kOsFeedbackAppId);
 
   GURL feedback_url = GURL(kChromeUIOSFeedbackUrl);
   content::TestNavigationObserver navigation_observer(feedback_url);
@@ -146,7 +145,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, OpenFeedbackApp) {
 IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, OpenShortcutsApp) {
   aura::Window* const primary_root_window = Shell::GetPrimaryRootWindow();
   SearchForSystemApp(primary_root_window, u"Key Shortcuts",
-                     web_app::kShortcutCustomizationAppId);
+                     ash::kShortcutCustomizationAppId);
 
   GURL shortcut_customization_url = GURL(kChromeUIShortcutCustomizationAppURL);
   content::TestNavigationObserver navigation_observer(
@@ -169,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(AppListSearchWithCustomizableShortcutsBrowserTest,
   // Launch the app from the Launcher via searching for a shortcut
   aura::Window* const primary_root_window = Shell::GetPrimaryRootWindow();
   SearchForSystemApp(primary_root_window, u"Open notifications",
-                     web_app::kShortcutCustomizationAppId);
+                     ash::kShortcutCustomizationAppId);
 
   GURL shortcut_customization_url = GURL(kChromeUIShortcutCustomizationAppURL);
   content::TestNavigationObserver navigation_observer(

@@ -34,7 +34,6 @@
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-forward.h"
-#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-forward.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -713,11 +712,6 @@ class CONTENT_EXPORT FrameTreeNode : public RenderFrameHostOwner {
   void CancelNavigation(NavigationDiscardReason reason) override;
   void ResetNavigationsForDiscard() override;
   bool Credentialless() const override;
-#if !BUILDFLAG(IS_ANDROID)
-  void GetVirtualAuthenticatorManager(
-      mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
-          receiver) override;
-#endif
   FrameType GetCurrentFrameType() const override;
 
   // Restart the navigation restoring the page from the back-forward cache

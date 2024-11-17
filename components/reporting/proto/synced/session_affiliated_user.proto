@@ -10,6 +10,9 @@ option optimize_for = LITE_RUNTIME;
 
 package reporting;
 
+// Used for annotating sensitive fields in google3.
+// ${COPYBARA_DATAPOL_IMPORT}
+
 // Common information about Session Affiliated User accounts.
 message SessionAffiliatedUser {
   // Email address associated with the account.
@@ -17,7 +20,14 @@ message SessionAffiliatedUser {
 }
 
 message SessionUnaffiliatedUser {
+  // String user id is deprecated because it was filled using a cryptographic
+  // hash which generated a non-readable byte string. The ID must be human
+  // readable since it's displayed in a UI.
+  // ${COPYBARA_DATAPOL_ST_NOT_REQUIRED}
+  optional string user_id = 1 [deprecated = true];
+
   // Unique per-device user id. Used to track unaffiliated user activity on a
   // given device without revealing the identity of the user.
-  optional string user_id = 1;
+  // ${COPYBARA_DATAPOL_ST_NOT_REQUIRED}
+  optional uint32 user_id_num = 2;
 }

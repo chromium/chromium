@@ -2,22 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isChromeOS} from 'chrome://resources/js/platform.js';
 import {$, getRequiredElement} from 'chrome://resources/js/util.js';
+import {render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-declare global {
-  class JsEvalContext {
-    constructor(data: any);
-  }
-  function jstProcess(context: JsEvalContext, template: HTMLElement): void;
-
-  const trustedTypes: {emptyHTML: string};
-}
+import {getHtml} from './component.html.js';
 
 interface Component {
   id: string;
@@ -26,7 +20,7 @@ interface Component {
   version: string;
 }
 
-interface ComponentsData {
+export interface ComponentsData {
   components: Component[];
   showOsLink: boolean;
 }
@@ -40,22 +34,13 @@ let currentComponentsData: Component[]|null = null;
 
 /**
  * Takes the |componentsData| input argument which represents data about the
- * currently installed components and populates the html jstemplate with
+ * currently installed components and populates the Lit HTML template with
  * that data. It expects an object structure like the above.
  * @param componentsData Detailed info about installed components.
  *      Same expected format as returnComponentsData().
  */
 function renderTemplate(componentsData: ComponentsData) {
-  // This is the javascript code that processes the template:
-  const input = new JsEvalContext(componentsData);
-  const output =
-      document.body.querySelector<HTMLElement>(
-                       '#component-template')!.cloneNode(true) as HTMLElement;
-  getRequiredElement('component-placeholder').innerHTML =
-      trustedTypes.emptyHTML;
-  getRequiredElement('component-placeholder').appendChild(output);
-  jstProcess(input, output);
-  output.removeAttribute('hidden');
+  render(getHtml(componentsData), getRequiredElement('component-placeholder'));
 
   // <if expr="is_chromeos">
   const crosUrlRedirectButton = $('os-link-href');

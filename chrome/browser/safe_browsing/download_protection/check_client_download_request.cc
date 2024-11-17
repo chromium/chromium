@@ -13,6 +13,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -105,7 +106,21 @@ void MaybeOverrideScanResult(DownloadCheckResultReason reason,
   }
 
   // This function should always run |callback| and return before reaching this.
-  CHECK(false);
+  NOTREACHED();
+}
+
+void LogNoticeSeenMetrics(PrefService* prefs) {
+  bool has_seen =
+      prefs->GetBoolean(prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen);
+  if (prefs->GetBoolean(prefs::kDownloadBubblePartialViewEnabled)) {
+    base::UmaHistogramBoolean(
+        "SBClientDownload.AutomaticDeepScanNoticeSeen2.PartialViewEnabled",
+        has_seen);
+  } else {
+    base::UmaHistogramBoolean(
+        "SBClientDownload.AutomaticDeepScanNoticeSeen2.PartialViewSuppressed",
+        has_seen);
+  }
 }
 
 bool ShouldUploadToDownloadFeedback(DownloadCheckResult result) {
@@ -387,7 +402,8 @@ bool CheckClientDownloadRequest::IsUnderAdvancedProtection(
 }
 
 bool CheckClientDownloadRequest::ShouldImmediatelyDeepScan(
-    bool server_requests_prompt) const {
+    bool server_requests_prompt,
+    bool log_metrics) const {
   if (!ShouldPromptForDeepScanning(server_requests_prompt)) {
     return false;
   }
@@ -402,6 +418,18 @@ bool CheckClientDownloadRequest::ShouldImmediatelyDeepScan(
   }
 
   if (DownloadItemWarningData::IsTopLevelEncryptedArchive(item_)) {
+    return false;
+  }
+
+  if (!base::FeatureList::IsEnabled(kDeepScanningPromptRemoval)) {
+    return false;
+  }
+
+  if (log_metrics) {
+    LogNoticeSeenMetrics(profile->GetPrefs());
+  }
+  if (!profile->GetPrefs()->GetBoolean(
+          prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen)) {
     return false;
   }
 
@@ -443,6 +471,9 @@ bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
 
 bool CheckClientDownloadRequest::ShouldPromptForLocalDecryption(
     bool server_requests_prompt) const {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
   if (!server_requests_prompt) {
     return false;
   }
@@ -476,12 +507,17 @@ bool CheckClientDownloadRequest::ShouldPromptForLocalDecryption(
   }
 
   return true;
+#endif
 }
 
 bool CheckClientDownloadRequest::ShouldPromptForIncorrectPassword() const {
+#if BUILDFLAG(IS_CHROMEOS)
+  return false;
+#else
   return password_.has_value() &&
          DownloadItemWarningData::HasShownLocalDecryptionPrompt(item_) &&
          DownloadItemWarningData::HasIncorrectPassword(item_);
+#endif
 }
 
 bool CheckClientDownloadRequest::ShouldShowScanFailure() const {

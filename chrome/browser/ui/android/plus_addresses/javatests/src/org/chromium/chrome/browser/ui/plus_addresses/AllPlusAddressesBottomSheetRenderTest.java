@@ -16,7 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -51,9 +50,6 @@ import java.util.List;
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class AllPlusAddressesBottomSheetRenderTest {
-    private static final String BOTTOMSHEET_TITLE = "Bottom sheet title";
-    private static final String BOTTOMSHEET_WARNING = "Bottom sheet warning";
-    private static final String BOTTOMSHEET_QUERY_HINT = "Query hint";
     private static final PlusProfile PROFILE_1 =
             new PlusProfile("foo@gmail.com", "google.com", "https://google.com");
     private static final PlusProfile PROFILE_2 =
@@ -78,7 +74,7 @@ public class AllPlusAddressesBottomSheetRenderTest {
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(1)
+                    .setRevision(2)
                     .setBugComponent(Component.UI_BROWSER_AUTOFILL)
                     .build();
 
@@ -94,7 +90,6 @@ public class AllPlusAddressesBottomSheetRenderTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivityTestRule.waitForActivityCompletelyLoaded();
     }
@@ -105,13 +100,6 @@ public class AllPlusAddressesBottomSheetRenderTest {
     public void testShowBottomSheet() throws IOException {
         runOnUiThreadBlocking(
                 () -> {
-                    AllPlusAddressesBottomSheetUIInfo uiInfo =
-                            new AllPlusAddressesBottomSheetUIInfo();
-                    uiInfo.setTitle(BOTTOMSHEET_TITLE);
-                    uiInfo.setWarning(BOTTOMSHEET_WARNING);
-                    uiInfo.setQueryHint(BOTTOMSHEET_QUERY_HINT);
-                    uiInfo.setPlusProfiles(List.of(PROFILE_1, PROFILE_2, PROFILE_3, PROFILE_4));
-
                     ChromeTabbedActivity activity = mActivityTestRule.getActivity();
                     AllPlusAddressesBottomSheetCoordinator coordinator =
                             new AllPlusAddressesBottomSheetCoordinator(
@@ -121,7 +109,8 @@ public class AllPlusAddressesBottomSheetRenderTest {
                                     mDelegate,
                                     FaviconHelper.create(activity, mProfile));
 
-                    coordinator.showPlusProfiles(uiInfo);
+                    coordinator.showPlusProfiles(
+                            List.of(PROFILE_1, PROFILE_2, PROFILE_3, PROFILE_4));
                 });
         BottomSheetTestSupport.waitForOpen(
                 mActivityTestRule

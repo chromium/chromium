@@ -89,10 +89,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/cert/cert_db_initializer_factory.h"
-#endif
-
 using testing::Return;
 using testing::_;
 
@@ -321,15 +317,6 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
 class CertificateProviderApiMockedExtensionTest
     : public CertificateProviderApiTest {
  public:
-  void SetUpInProcessBrowserTestFixture() override {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)  // Needed for ClientCertStoreLacros
-    CertDbInitializerFactory::GetInstance()
-        ->SetCreateWithBrowserContextForTesting(
-            /*should_create=*/true);
-#endif
-    CertificateProviderApiTest::SetUpInProcessBrowserTestFixture();
-  }
-
   void SetUpOnMainThread() override {
     CertificateProviderApiTest::SetUpOnMainThread();
 

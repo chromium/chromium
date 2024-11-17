@@ -6,20 +6,20 @@
 #define IOS_CHROME_TEST_APP_CHROME_TEST_UTIL_H_
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/public/commands/browser_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 
 @protocol ApplicationCommands;
-@protocol CountryCodePickerCommands;
-@protocol UnitConversionCommands;
-
 class Browser;
+@protocol CountryCodePickerCommands;
+@protocol DriveFilePickerCommands;
 @class MainController;
 @class NewTabPageController;
+class ProfileIOS;
 @class SceneController;
 @class SceneState;
 @class UIViewController;
+@protocol UnitConversionCommands;
 
 namespace chrome_test_util {
 
@@ -34,14 +34,6 @@ SceneController* GetForegroundActiveSceneController();
 
 // Returns the number of regular Browsers for the default profile.
 NSUInteger RegularBrowserCount();
-
-// Returns the current, non-incognito ChromeBrowserState.
-// TODO(crbug.com/358299863): Remove when fully migrated.
-ChromeBrowserState* GetOriginalBrowserState();
-
-// Returns the current incognito ChromeBrowserState
-// TODO(crbug.com/358299863): Remove when fully migrated.
-ChromeBrowserState* GetCurrentIncognitoBrowserState();
 
 // Returns the current, non-incognito Profile.
 ProfileIOS* GetOriginalProfile();
@@ -65,7 +57,8 @@ id<ApplicationCommands,
    BrowserCommands,
    BrowserCoordinatorCommands,
    UnitConversionCommands,
-   CountryCodePickerCommands>
+   CountryCodePickerCommands,
+   DriveFilePickerCommands>
 HandlerForActiveBrowser();
 
 // Removes all presented infobars.

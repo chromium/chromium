@@ -20,7 +20,7 @@ FakeBluetoothChooserController::FakeBluetoothChooserController(
                                      u"example.com")),
       devices_(std::move(devices)) {}
 
-FakeBluetoothChooserController::~FakeBluetoothChooserController() {}
+FakeBluetoothChooserController::~FakeBluetoothChooserController() = default;
 
 bool FakeBluetoothChooserController::ShouldShowIconBeforeText() const {
   return true;

@@ -147,7 +147,7 @@ public class OmahaBaseTest {
 
     private static class ClosableThreadAssertsDisabler implements AutoCloseable {
         ClosableThreadAssertsDisabler() {
-            ThreadUtils.setThreadAssertsDisabledForTesting(true);
+            ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
         }
 
         @Override

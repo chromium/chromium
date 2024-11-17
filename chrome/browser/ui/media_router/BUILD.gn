@@ -1,0 +1,130 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("media_router") {
+  sources = [
+    "cast_dialog_controller.h",
+    "cast_dialog_model.h",
+    "cast_modes_with_media_sources.h",
+    "media_cast_mode.h",
+    "media_route_starter.h",
+    "media_router_ui.h",
+    "media_router_ui_helper.h",
+    "media_router_ui_service.h",
+    "media_router_ui_service_factory.h",
+    "media_sink_with_cast_modes.h",
+    "media_sink_with_cast_modes_observer.h",
+    "presentation_receiver_window.h",
+    "presentation_receiver_window_controller.h",
+    "presentation_receiver_window_delegate.h",
+    "presentation_request_source_observer.h",
+    "query_result_manager.h",
+    "ui_media_sink.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/media/router",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/toolbar/cast",
+    "//components/keyed_service/core",
+    "//components/media_router/browser",
+    "//components/media_router/common",
+    "//content/public/browser",
+    "//media",
+    "//media:shared_memory_support",
+    "//url",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "cast_dialog_model.cc",
+    "cast_modes_with_media_sources.cc",
+    "media_route_starter.cc",
+    "media_router_ui.cc",
+    "media_router_ui_helper.cc",
+    "media_router_ui_service.cc",
+    "media_router_ui_service_factory.cc",
+    "media_sink_with_cast_modes.cc",
+    "presentation_receiver_window_controller.cc",
+    "query_result_manager.cc",
+    "ui_media_sink.cc",
+  ]
+
+  deps = [
+    ":media_router",
+    "//build:buildflag_header_h",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/media/webrtc",
+    "//chrome/browser/ui/global_media_controls",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//components/media_message_center",
+    "//components/prefs",
+    "//components/sessions",
+    "//components/sessions:session_id",
+    "//components/url_formatter",
+    "//components/user_prefs",
+    "//extensions/browser",
+    "//extensions/common:common_constants",
+    "//media/remoting:remoting_device_capability",
+    "//net",
+    "//third_party/icu:icui18n",
+    "//ui/base",
+    "//ui/display",
+    "//ui/views",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "presentation_receiver_window_controller_browsertest.cc" ]
+  deps = [
+    ":media_router",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//content/test:test_support",
+    "//extensions/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [
+    "cast_modes_with_media_sources_unittest.cc",
+    "media_route_starter_unittest.cc",
+    "media_router_ui_helper_unittest.cc",
+    "media_router_ui_service_factory_unittest.cc",
+    "media_router_ui_unittest.cc",
+    "query_result_manager_unittest.cc",
+  ]
+
+  deps = [
+    ":media_router",
+    "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/media/router:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/global_media_controls:test_support",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/media_router/browser:test_support",
+    "//components/media_router/common:test_support",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+    "//extensions:test_support",
+    "//url",
+  ]
+}

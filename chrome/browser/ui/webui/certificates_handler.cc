@@ -37,7 +37,7 @@
 #include "chrome/browser/ui/certificate_dialogs.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/crypto_module_password_dialog_nss.h"
-#include "chrome/browser/ui/webui/certificate_viewer_webui.h"
+#include "chrome/browser/ui/webui/certificate_viewer/certificate_viewer_webui.h"
 #include "chrome/common/net/x509_certificate_model_nss.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -359,9 +359,7 @@ void CertificatesHandler::RegisterMessages() {
 }
 
 void CertificatesHandler::CertificatesRefreshed() {
-  if (ShouldDisplayClientCertificates()) {
-    PopulateTree("personalCerts", net::USER_CERT);
-  }
+  PopulateTree("personalCerts", net::USER_CERT);
   PopulateTree("serverCerts", net::SERVER_CERT);
   PopulateTree("caCerts", net::CA_CERT);
   PopulateTree("otherCerts", net::OTHER_CERT);
@@ -393,7 +391,7 @@ void CertificatesHandler::FileSelected(const ui::SelectedFileInfo& file,
                          weak_ptr_factory_.GetWeakPtr(), file.path()));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   select_file_dialog_.reset();
@@ -1217,22 +1215,11 @@ bool CertificatesHandler::IsClientCertificateManagementAllowed(Slot slot) {
   }
 #endif  //  BUILDFLAG(IS_CHROMEOS)
 
-  return ShouldDisplayClientCertificates();
+  return true;
 }
 
 bool CertificatesHandler::IsCACertificateManagementAllowed(
     CertificateSource source) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/194781831): Currently CA certificates are shared between all
-  // profiles for technical reasons. Evaluating the policy independently in each
-  // profile would create a policy escape (e.g. if one of profiles is not
-  // managed). Therefore make the main profile "own" CA certificates and allow
-  // management based on its policy.
-  if (!Profile::FromWebUI(web_ui())->IsMainProfile()) {
-    return false;
-  }
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
   if (!IsCACertificateManagementAllowedPolicy(source)) {
     return false;
@@ -1242,33 +1229,10 @@ bool CertificatesHandler::IsCACertificateManagementAllowed(
   return true;
 }
 
-bool CertificatesHandler::ShouldDisplayClientCertificates() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // TODO(b/194781831): When secondary profiles in Lacros-Chrome support client
-  // certificates, this should be removed and the page should be updated to
-  // support them.
-  if (!Profile::FromWebUI(web_ui())->IsMainProfile()) {
-    return false;
-  }
-#endif  // #if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-  return true;
-}
-
 #if BUILDFLAG(IS_CHROMEOS)
 bool CertificatesHandler::IsClientCertificateManagementAllowedPolicy(
     Slot slot) {
   Profile* profile = Profile::FromWebUI(web_ui());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profile->IsMainProfile()) {
-    // TODO(b/194781831): Currently client certificates are not supported in
-    // secondary profiles on Lacros-Chrome. This "return" disables some buttons
-    // (e.g. Import, Import&Bind) that wouldn't work anyway. This can be changed
-    // when client certificates for secondary profiles are implemented.
-    return false;
-  }
-#endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)
 
   PrefService* prefs = profile->GetPrefs();
   auto policy_value = static_cast<ClientCertificateManagementPermission>(
@@ -1283,16 +1247,6 @@ bool CertificatesHandler::IsClientCertificateManagementAllowedPolicy(
 bool CertificatesHandler::IsCACertificateManagementAllowedPolicy(
     CertificateSource source) {
   Profile* profile = Profile::FromWebUI(web_ui());
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!profile->IsMainProfile()) {
-    // TODO(b/194781831): Currently CA certificates are shared between all
-    // profiles for technical reasons. Therefore only the main profile should
-    // decide if they are allowed to be managed. This can be changed when a
-    // proper separation of CA certificates between profiles is implemented.
-    return false;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   PrefService* prefs = profile->GetPrefs();
   auto policy_value = static_cast<CACertificateManagementPermission>(

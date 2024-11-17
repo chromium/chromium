@@ -1,37 +1,30 @@
 rootWebArea focusable htmlTag='#document'
 ++genericContainer focusable ignored htmlTag='html'
 ++++genericContainer focusable ignored htmlTag='body'
-++++++genericContainer focusable htmlTag='div' name='sit dolor '
+++++++genericContainer focusable htmlTag='div'
 ++++++++genericContainer ignored
-++++++++++genericContainer focusable htmlTag='span' name='sit'
+++++++++++genericContainer focusable htmlTag='span'
 ++++++++++++staticText name='sit'
 ++++++++++++++inlineTextBox name='sit'
 ++++++++genericContainer ignored invisible
 ++++++++++staticText ignored invisible
 ++++++++++genericContainer ignored invisible
-++++++genericContainer focusable htmlTag='div' name=' consectetur adipiscing tempor '
+++++++genericContainer focusable htmlTag='div'
 ++++++++staticText name='<newline>  consectetur<newline>  '
-++++++++genericContainer ignored invisible
-++++++++++staticText ignored invisible
 ++++++++staticText name='<newline>  '
-++++++++genericContainer ignored
-++++++++++staticText name='<newline>    '
-++++++++++genericContainer ignored invisible
-++++++++++++staticText ignored invisible
-++++++++++staticText name='<newline>  '
+++++++++staticText name='<newline>    '
+++++++++staticText name='<newline>  '
 ++++++++staticText name='<newline>'
-++++++canvas focusable htmlTag='canvas' name=' sed do eiusmod tempor '
+++++++canvas focusable htmlTag='canvas'
 ++++++++staticText name='<newline>  sed<newline>  '
-++++++++genericContainer focusable htmlTag='span' name='do'
+++++++++genericContainer focusable htmlTag='span'
 ++++++++++staticText name='do'
 ++++++++staticText name='<newline>  '
-++++++++genericContainer ignored invisible
-++++++++++staticText invisible name='eiusmod'
+++++++++staticText invisible name='eiusmod'
 ++++++++staticText name='<newline>  '
-++++++++genericContainer focusable htmlTag='div' name=' tempor '
+++++++++genericContainer focusable htmlTag='div'
 ++++++++++staticText name='<newline>    '
-++++++++++genericContainer ignored invisible
-++++++++++++staticText invisible name='tempor'
+++++++++++staticText invisible name='tempor'
 ++++++++++staticText name='<newline>  '
 ++++++++staticText name='<newline>  '
 ++++++++staticText name='<newline>'
@@ -39,6 +32,6 @@ rootWebArea focusable htmlTag='#document'
 ++++++++rootWebArea focusable htmlTag='#document'
 ++++++++++genericContainer ignored
 ++++++++++++genericContainer ignored
-++++++++++++++genericContainer focusable htmlTag='div' name='Normal frame'
+++++++++++++++genericContainer focusable htmlTag='div'
 ++++++++++++++++staticText name='Normal frame'
 ++++++++++++++++++inlineTextBox name='Normal frame'

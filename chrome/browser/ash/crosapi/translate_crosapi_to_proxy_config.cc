@@ -133,8 +133,7 @@ ProxyConfigDictionary CrosapiProxyToProxyConfig(
     return ProxyConfigDictionary(TranslateManualProxySettings(
         std::move(crosapi_proxy->proxy_settings->get_manual())));
 
-  NOTREACHED_IN_MIGRATION() << "Invalid crosapi proxy settings";
-  return DirectProxyConfig();
+  NOTREACHED() << "Invalid crosapi proxy settings";
 }
 
 }  // namespace crosapi

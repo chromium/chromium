@@ -227,6 +227,8 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   bool is_continued_without_invalidation_for_uma_ = false;
   // Calculates retry timeout for network related failures.
   net::BackoffEntry request_backoff_;
+  // Calculates retry timeout for fetching the next instruction.
+  net::BackoffEntry fetch_instruction_backoff_;
 
   // Marks where a key pair used by this worker is located.
   KeyLocation key_location_ = KeyLocation::kNone;

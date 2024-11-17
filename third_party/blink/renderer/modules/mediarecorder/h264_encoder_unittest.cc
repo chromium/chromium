@@ -129,14 +129,12 @@ class H264EncoderFixture : public ::testing::Test {
 
     const auto eProfileIdc = params.sSpatialLayers[0].uiProfileIdc;
     if (!kEProfileIdcToProfile.Contains(eProfileIdc)) {
-      NOTREACHED_IN_MIGRATION()
-          << "Failed to convert unknown EProfileIdc: " << eProfileIdc;
+      NOTREACHED() << "Failed to convert unknown EProfileIdc: " << eProfileIdc;
     }
 
     const auto eLevelIdc = params.sSpatialLayers[0].uiLevelIdc;
     if (!kELevelIdcToLevel.Contains(eLevelIdc)) {
-      NOTREACHED_IN_MIGRATION()
-          << "Failed to convert unknown ELevelIdc: " << eLevelIdc;
+      NOTREACHED() << "Failed to convert unknown ELevelIdc: " << eLevelIdc;
     }
     return {kEProfileIdcToProfile.find(eProfileIdc)->value,
             kELevelIdcToLevel.find(eLevelIdc)->value};
@@ -144,11 +142,9 @@ class H264EncoderFixture : public ::testing::Test {
 
   void OnEncodedVideo(
       const media::Muxer::VideoParameters& params,
-      std::string encoded_data,
-      std::string encoded_alpha,
+      scoped_refptr<media::DecoderBuffer> encoded_data,
       std::optional<media::VideoEncoder::CodecDescription> codec_description,
-      base::TimeTicks capture_timestamp,
-      bool is_key_frame) {}
+      base::TimeTicks capture_timestamp) {}
 
   test::TaskEnvironment task_environment_;
   const std::optional<media::VideoCodecProfile> profile_;

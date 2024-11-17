@@ -55,12 +55,6 @@ DomDistillerServiceFactory* DomDistillerServiceFactory::GetInstance() {
 }
 
 // static
-DomDistillerService* DomDistillerServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 DomDistillerService* DomDistillerServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<DomDistillerKeyedService*>(
@@ -91,7 +85,7 @@ DomDistillerServiceFactory::BuildServiceInstanceFor(
           std::move(distiller_url_fetcher_factory), options);
   std::unique_ptr<DistilledPagePrefs> distilled_page_prefs =
       std::make_unique<DistilledPagePrefs>(
-          ChromeBrowserState::FromBrowserState(context)->GetPrefs());
+          ProfileIOS::FromBrowserState(context)->GetPrefs());
 
   return std::make_unique<DomDistillerKeyedService>(
       std::move(distiller_factory), std::move(distiller_page_factory),

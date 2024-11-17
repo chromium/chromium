@@ -69,8 +69,6 @@ source_set("audio") {
     "sync_reader.h",
     "system_info.cc",
     "system_info.h",
-    "user_input_monitor.cc",
-    "user_input_monitor.h",
   ]
 
   deps = [
@@ -187,7 +185,6 @@ source_set("tests") {
     "test/mock_group_member.h",
     "test/mock_log.cc",
     "test/mock_log.h",
-    "user_input_monitor_unittest.cc",
   ]
 
   deps = [

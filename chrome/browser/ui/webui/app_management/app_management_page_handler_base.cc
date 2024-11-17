@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/message_formatter.h"
@@ -58,7 +59,7 @@ namespace {
 const char kFileHandlingLearnMore[] =
     "https://support.google.com/chrome/?p=pwa_default_associations";
 
-bool ShouldHideMoreSettings(const std::string app_id) {
+bool ShouldHideMoreSettings(const std::string& app_id) {
   constexpr auto kAppIdsWithHiddenMoreSettings =
       base::MakeFixedFlatSet<std::string_view>({
           extensions::kWebStoreAppId,
@@ -68,7 +69,7 @@ bool ShouldHideMoreSettings(const std::string app_id) {
   return kAppIdsWithHiddenMoreSettings.contains(app_id);
 }
 
-bool ShouldHidePinToShelf(const std::string app_id) {
+bool ShouldHidePinToShelf(const std::string& app_id) {
   constexpr auto kAppIdsWithHiddenPinToShelf =
       base::MakeFixedFlatSet<std::string_view>({
           app_constants::kChromeAppId,
@@ -78,7 +79,7 @@ bool ShouldHidePinToShelf(const std::string app_id) {
   return kAppIdsWithHiddenPinToShelf.contains(app_id);
 }
 
-bool ShouldHideStoragePermission(const std::string app_id) {
+bool ShouldHideStoragePermission(const std::string& app_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   constexpr auto kAppIdsWithHiddenStoragePermission =
       base::MakeFixedFlatSet<std::string_view>({

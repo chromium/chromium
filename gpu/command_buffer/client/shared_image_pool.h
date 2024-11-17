@@ -11,12 +11,14 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/gpu_export.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace gpu {
@@ -32,30 +34,37 @@ struct GPU_EXPORT ImageInfo {
   gfx::ColorSpace color_space;
   GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
   SkAlphaType alpha_type = kPremul_SkAlphaType;
+  std::optional<gfx::BufferUsage> buffer_usage = std::nullopt;
 
   ImageInfo(gfx::Size size,
             viz::SharedImageFormat format,
-            SharedImageUsageSet usage)
-      : size(size), format(format), usage(usage) {}
+            SharedImageUsageSet usage,
+            std::optional<gfx::BufferUsage> buffer_usage = std::nullopt)
+      : size(size),
+        format(format),
+        usage(usage),
+        buffer_usage(std::move(buffer_usage)) {}
 
   ImageInfo(gfx::Size size,
             viz::SharedImageFormat format,
             SharedImageUsageSet usage,
             gfx::ColorSpace color_space,
             GrSurfaceOrigin surface_origin,
-            SkAlphaType alpha_type)
+            SkAlphaType alpha_type,
+            std::optional<gfx::BufferUsage> buffer_usage = std::nullopt)
       : size(size),
         format(format),
         usage(usage),
         color_space(color_space),
         surface_origin(surface_origin),
-        alpha_type(alpha_type) {}
+        alpha_type(alpha_type),
+        buffer_usage(std::move(buffer_usage)) {}
 
   bool operator==(const ImageInfo& other) const {
     return size == other.size && format == other.format &&
            usage == other.usage && color_space == other.color_space &&
            surface_origin == other.surface_origin &&
-           alpha_type == other.alpha_type;
+           alpha_type == other.alpha_type && buffer_usage == other.buffer_usage;
   }
 };
 
@@ -92,6 +101,11 @@ class GPU_EXPORT ClientImage : public base::RefCounted<ClientImage> {
   // This will be also used internally as a destruction sync token for the
   // shared image.
   SyncToken sync_token_;
+
+  // The time when this image was last used. This can be used to purge the
+  // recycled images in the pool based on the optional expiration time set by
+  // the client.
+  base::TimeTicks last_used_time_ = base::TimeTicks::Now();
 };
 
 // This class is designed to handle bulk of functionality of the image pool.
@@ -105,11 +119,14 @@ class GPU_EXPORT SharedImagePoolBase {
   virtual ~SharedImagePoolBase();
 
   size_t GetPoolSizeForTesting() const;
+  bool IsReclaimTimerRunningForTesting() const;
 
  protected:
-  SharedImagePoolBase(const ImageInfo& image_info,
-                      const scoped_refptr<SharedImageInterface> sii,
-                      std::optional<uint8_t> max_pool_size);
+  SharedImagePoolBase(
+      const ImageInfo& image_info,
+      const scoped_refptr<SharedImageInterface> sii,
+      std::optional<uint8_t> max_pool_size,
+      std::optional<base::TimeDelta> unused_resource_expiration_time);
 
   scoped_refptr<ClientSharedImage> CreateSharedImageInternal();
   scoped_refptr<ClientImage> GetImageFromPoolInternal();
@@ -127,8 +144,16 @@ class GPU_EXPORT SharedImagePoolBase {
   // limit on the size of the pool.
   const std::optional<uint8_t> max_pool_size_;
 
+  const std::optional<base::TimeDelta> unused_resource_expiration_time_;
+
   // Pool of available images.
   std::vector<scoped_refptr<ClientImage>> image_pool_;
+
+ private:
+  void MaybePostUnusedResourcesReclaimTask();
+  void ClearOldUnusedResources();
+
+  base::OneShotTimer unused_resources_reclaim_timer_;
 };
 
 // Templated class for managing a pool of ClientImageType objects which wraps
@@ -143,11 +168,14 @@ class GPU_EXPORT SharedImagePool : public SharedImagePoolBase {
   static std::unique_ptr<SharedImagePool<ClientImageType>> Create(
       const ImageInfo& image_info,
       const scoped_refptr<SharedImageInterface> sii,
-      std::optional<uint8_t> max_pool_size = std::nullopt) {
+      std::optional<uint8_t> max_pool_size = std::nullopt,
+      std::optional<base::TimeDelta> unused_resource_expiration_time =
+          std::nullopt) {
     CHECK(sii);
     return base::WrapUnique<SharedImagePool<ClientImageType>>(
         new SharedImagePool(image_info, std::move(sii),
-                            std::move(max_pool_size)));
+                            std::move(max_pool_size),
+                            std::move(unused_resource_expiration_time)));
   }
 
   // Clears the pool, deleting all contained images.
@@ -200,12 +228,15 @@ class GPU_EXPORT SharedImagePool : public SharedImagePoolBase {
   }
 
  private:
-  SharedImagePool(const ImageInfo& image_info,
-                  scoped_refptr<SharedImageInterface> sii,
-                  std::optional<uint8_t> max_pool_size)
+  SharedImagePool(
+      const ImageInfo& image_info,
+      scoped_refptr<SharedImageInterface> sii,
+      std::optional<uint8_t> max_pool_size,
+      std::optional<base::TimeDelta> unused_resource_expiration_time)
       : SharedImagePoolBase(image_info,
                             std::move(sii),
-                            std::move(max_pool_size)) {}
+                            std::move(max_pool_size),
+                            std::move(unused_resource_expiration_time)) {}
 
   base::WeakPtrFactory<SharedImagePool<ClientImageType>> weak_ptr_factory_{
       this};

@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_THREAD_SAFE_DATA_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_THREAD_SAFE_DATA_H_
 
+#include "base/containers/checked_iterators.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 
@@ -48,6 +49,14 @@ class RawData;
 // object.  It is safe to pass a WebThreadSafeData across threads.
 class BLINK_PLATFORM_EXPORT WebThreadSafeData {
  public:
+  // Ideally, instead of defining this, `begin()`/`end()` below would return
+  // `auto` and just pass through the underlying storage types' iterators, so
+  // that they could decide what to do. However, since those types are defined
+  // outside /public/, that would be a layering violation. So be conservative
+  // and use `CheckedContiguousIterator` directyly, regardless of what the
+  // underlying type does.
+  using iterator = base::CheckedContiguousIterator<const char>;
+
   WebThreadSafeData() = default;
   WebThreadSafeData(const char* data, size_t length);
 
@@ -58,6 +67,10 @@ class BLINK_PLATFORM_EXPORT WebThreadSafeData {
 
   size_t size() const;
   const char* data() const;
+
+  // Iterators, required to satisfy the `std::ranges::contiguous_range` concept.
+  iterator begin() const;
+  iterator end() const;
 
   bool IsEmpty() const { return !size(); }
 

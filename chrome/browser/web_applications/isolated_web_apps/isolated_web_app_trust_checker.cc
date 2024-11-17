@@ -25,7 +25,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_trust_check.h"
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"  // nogncheck
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -62,6 +62,12 @@ IsolatedWebAppTrustChecker::Result IsolatedWebAppTrustChecker::IsTrusted(
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::IsTrustedAsKioskIwa(web_bundle_id)) {
+    return {.status = Result::Status::kTrusted};
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // TODO(b/292227137): Migrate Shimless RMA app to LaCrOS.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::IsShimlessRmaAppBrowserContext(&*profile_) &&
@@ -89,8 +95,7 @@ bool IsolatedWebAppTrustChecker::IsTrustedViaPolicy(
   const PrefService::Preference* pref = profile_->GetPrefs()->FindPreference(
       prefs::kIsolatedWebAppInstallForceList);
   if (!pref) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   return base::ranges::any_of(

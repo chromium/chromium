@@ -28,6 +28,7 @@ include_rules = [
     "+third_party/blink/public/common",
     "+third_party/blink/public/mojom",
     "+ui/base/clipboard/clipboard_sequence_number_token.h",
+    "+ui/base/mojom/menu_source_type.mojom-forward.h",
     "+ui/base/mojom/window_show_state.mojom-forward.h",
     "+ui/base/mojom/window_show_state.mojom-shared.h",
     "+ui/base/pointer/pointer_device.h",

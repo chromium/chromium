@@ -11,6 +11,7 @@
 
 #include <Carbon/Carbon.h>
 #import <Cocoa/Cocoa.h>
+#include <IOKit/hidsystem/IOLLEvent.h>  // for NX_ constants
 #include <stddef.h>
 
 #import <string_view>
@@ -45,20 +46,28 @@ struct KeyMappingEntry {
 
 struct ModifierKey {
   int mac_key_code;
-  int left_or_right_mask;
-  int non_specific_mask;
+  int device_dependent_modifier_flag;
+  int device_independent_modifier_flag;
 };
 
 // Modifier keys, grouped into left/right pairs.
 const ModifierKey kModifierKeys[] = {
-    {56, 1 << 1, NSEventModifierFlagShift},     // Left Shift
-    {60, 1 << 2, NSEventModifierFlagShift},     // Right Shift
-    {55, 1 << 3, NSEventModifierFlagCommand},   // Left Command
-    {54, 1 << 4, NSEventModifierFlagCommand},   // Right Command
-    {58, 1 << 5, NSEventModifierFlagOption},    // Left Alt
-    {61, 1 << 6, NSEventModifierFlagOption},    // Right Alt
-    {59, 1 << 0, NSEventModifierFlagControl},   // Left Control
-    {62, 1 << 13, NSEventModifierFlagControl},  // Right Control
+    // Left Shift
+    {kVK_Shift, NX_DEVICELSHIFTKEYMASK, NSEventModifierFlagShift},
+    // Right Shift
+    {kVK_RightShift, NX_DEVICERSHIFTKEYMASK, NSEventModifierFlagShift},
+    // Left Command
+    {kVK_Command, NX_DEVICELCMDKEYMASK, NSEventModifierFlagCommand},
+    // Right Command
+    {kVK_RightCommand, NX_DEVICERCMDKEYMASK, NSEventModifierFlagCommand},
+    // Left Option
+    {kVK_Option, NX_DEVICELALTKEYMASK, NSEventModifierFlagOption},
+    // Right Option
+    {kVK_RightOption, NX_DEVICERALTKEYMASK, NSEventModifierFlagOption},
+    // Left Control
+    {kVK_Control, NX_DEVICELCTLKEYMASK, NSEventModifierFlagControl},
+    // Right Control
+    {kVK_RightControl, NX_DEVICERCTLKEYMASK, NSEventModifierFlagControl},
 };
 
 NSEvent* BuildFakeKeyEvent(NSUInteger key_code,
@@ -118,7 +127,7 @@ NSEvent* BuildFakeMouseEvent(CGEventType mouse_type,
 TEST(WebInputEventBuilderMacTest, ArrowKeyNumPad) {
   // Left
   NSEvent* mac_event =
-      BuildFakeKeyEvent(0x7B, NSLeftArrowFunctionKey,
+      BuildFakeKeyEvent(kVK_LeftArrow, NSLeftArrowFunctionKey,
                         NSEventModifierFlagNumericPad, NSEventTypeKeyDown);
   WebKeyboardEvent web_event = WebKeyboardEventBuilder::Build(mac_event);
   EXPECT_EQ(0, web_event.GetModifiers());
@@ -128,7 +137,7 @@ TEST(WebInputEventBuilderMacTest, ArrowKeyNumPad) {
 
   // Right
   mac_event =
-      BuildFakeKeyEvent(0x7C, NSRightArrowFunctionKey,
+      BuildFakeKeyEvent(kVK_RightArrow, NSRightArrowFunctionKey,
                         NSEventModifierFlagNumericPad, NSEventTypeKeyDown);
   web_event = WebKeyboardEventBuilder::Build(mac_event);
   EXPECT_EQ(0, web_event.GetModifiers());
@@ -138,7 +147,7 @@ TEST(WebInputEventBuilderMacTest, ArrowKeyNumPad) {
 
   // Down
   mac_event =
-      BuildFakeKeyEvent(0x7D, NSDownArrowFunctionKey,
+      BuildFakeKeyEvent(kVK_DownArrow, NSDownArrowFunctionKey,
                         NSEventModifierFlagNumericPad, NSEventTypeKeyDown);
   web_event = WebKeyboardEventBuilder::Build(mac_event);
   EXPECT_EQ(0, web_event.GetModifiers());
@@ -148,7 +157,7 @@ TEST(WebInputEventBuilderMacTest, ArrowKeyNumPad) {
 
   // Up
   mac_event =
-      BuildFakeKeyEvent(0x7E, NSUpArrowFunctionKey,
+      BuildFakeKeyEvent(kVK_UpArrow, NSUpArrowFunctionKey,
                         NSEventModifierFlagNumericPad, NSEventTypeKeyDown);
   web_event = WebKeyboardEventBuilder::Build(mac_event);
   EXPECT_EQ(0, web_event.GetModifiers());
@@ -160,8 +169,9 @@ TEST(WebInputEventBuilderMacTest, ArrowKeyNumPad) {
 // Test that control sequence generate the correct vkey code.
 TEST(WebInputEventBuilderMacTest, ControlSequence) {
   // Ctrl-[ generates escape.
-  NSEvent* mac_event = BuildFakeKeyEvent(0x21, 0x1b, NSEventModifierFlagControl,
-                                         NSEventTypeKeyDown);
+  NSEvent* mac_event =
+      BuildFakeKeyEvent(kVK_ANSI_LeftBracket, 0x1b, NSEventModifierFlagControl,
+                        NSEventTypeKeyDown);
   WebKeyboardEvent web_event = WebKeyboardEventBuilder::Build(mac_event);
   EXPECT_EQ(ui::VKEY_OEM_4, web_event.windows_key_code);
   EXPECT_EQ(ui::DomCode::BRACKET_LEFT,
@@ -173,40 +183,41 @@ TEST(WebInputEventBuilderMacTest, ControlSequence) {
 // Test that numpad keys get mapped correctly.
 TEST(WebInputEventBuilderMacTest, NumPadMapping) {
   KeyMappingEntry table[] = {
-      {65, '.', ui::VKEY_DECIMAL, ui::DomCode::NUMPAD_DECIMAL,
-       ui::DomKey::FromCharacter('.')},
-      {67, '*', ui::VKEY_MULTIPLY, ui::DomCode::NUMPAD_MULTIPLY,
-       ui::DomKey::FromCharacter('*')},
-      {69, '+', ui::VKEY_ADD, ui::DomCode::NUMPAD_ADD,
+      {kVK_ANSI_KeypadDecimal, '.', ui::VKEY_DECIMAL,
+       ui::DomCode::NUMPAD_DECIMAL, ui::DomKey::FromCharacter('.')},
+      {kVK_ANSI_KeypadMultiply, '*', ui::VKEY_MULTIPLY,
+       ui::DomCode::NUMPAD_MULTIPLY, ui::DomKey::FromCharacter('*')},
+      {kVK_ANSI_KeypadPlus, '+', ui::VKEY_ADD, ui::DomCode::NUMPAD_ADD,
        ui::DomKey::FromCharacter('+')},
-      {71, NSClearLineFunctionKey, ui::VKEY_CLEAR, ui::DomCode::NUM_LOCK,
-       ui::DomKey::CLEAR},
-      {75, '/', ui::VKEY_DIVIDE, ui::DomCode::NUMPAD_DIVIDE,
+      {kVK_ANSI_KeypadClear, NSClearLineFunctionKey, ui::VKEY_CLEAR,
+       ui::DomCode::NUM_LOCK, ui::DomKey::CLEAR},
+      {kVK_ANSI_KeypadDivide, '/', ui::VKEY_DIVIDE, ui::DomCode::NUMPAD_DIVIDE,
        ui::DomKey::FromCharacter('/')},
-      {76, 3, ui::VKEY_RETURN, ui::DomCode::NUMPAD_ENTER, ui::DomKey::ENTER},
-      {78, '-', ui::VKEY_SUBTRACT, ui::DomCode::NUMPAD_SUBTRACT,
-       ui::DomKey::FromCharacter('-')},
-      {81, '=', ui::VKEY_OEM_PLUS, ui::DomCode::NUMPAD_EQUAL,
+      {kVK_ANSI_KeypadEnter, 3, ui::VKEY_RETURN, ui::DomCode::NUMPAD_ENTER,
+       ui::DomKey::ENTER},
+      {kVK_ANSI_KeypadMinus, '-', ui::VKEY_SUBTRACT,
+       ui::DomCode::NUMPAD_SUBTRACT, ui::DomKey::FromCharacter('-')},
+      {kVK_ANSI_KeypadEquals, '=', ui::VKEY_OEM_PLUS, ui::DomCode::NUMPAD_EQUAL,
        ui::DomKey::FromCharacter('=')},
-      {82, '0', ui::VKEY_NUMPAD0, ui::DomCode::NUMPAD0,
+      {kVK_ANSI_Keypad0, '0', ui::VKEY_NUMPAD0, ui::DomCode::NUMPAD0,
        ui::DomKey::FromCharacter('0')},
-      {83, '1', ui::VKEY_NUMPAD1, ui::DomCode::NUMPAD1,
+      {kVK_ANSI_Keypad1, '1', ui::VKEY_NUMPAD1, ui::DomCode::NUMPAD1,
        ui::DomKey::FromCharacter('1')},
-      {84, '2', ui::VKEY_NUMPAD2, ui::DomCode::NUMPAD2,
+      {kVK_ANSI_Keypad2, '2', ui::VKEY_NUMPAD2, ui::DomCode::NUMPAD2,
        ui::DomKey::FromCharacter('2')},
-      {85, '3', ui::VKEY_NUMPAD3, ui::DomCode::NUMPAD3,
+      {kVK_ANSI_Keypad3, '3', ui::VKEY_NUMPAD3, ui::DomCode::NUMPAD3,
        ui::DomKey::FromCharacter('3')},
-      {86, '4', ui::VKEY_NUMPAD4, ui::DomCode::NUMPAD4,
+      {kVK_ANSI_Keypad4, '4', ui::VKEY_NUMPAD4, ui::DomCode::NUMPAD4,
        ui::DomKey::FromCharacter('4')},
-      {87, '5', ui::VKEY_NUMPAD5, ui::DomCode::NUMPAD5,
+      {kVK_ANSI_Keypad5, '5', ui::VKEY_NUMPAD5, ui::DomCode::NUMPAD5,
        ui::DomKey::FromCharacter('5')},
-      {88, '6', ui::VKEY_NUMPAD6, ui::DomCode::NUMPAD6,
+      {kVK_ANSI_Keypad6, '6', ui::VKEY_NUMPAD6, ui::DomCode::NUMPAD6,
        ui::DomKey::FromCharacter('6')},
-      {89, '7', ui::VKEY_NUMPAD7, ui::DomCode::NUMPAD7,
+      {kVK_ANSI_Keypad7, '7', ui::VKEY_NUMPAD7, ui::DomCode::NUMPAD7,
        ui::DomKey::FromCharacter('7')},
-      {91, '8', ui::VKEY_NUMPAD8, ui::DomCode::NUMPAD8,
+      {kVK_ANSI_Keypad8, '8', ui::VKEY_NUMPAD8, ui::DomCode::NUMPAD8,
        ui::DomKey::FromCharacter('8')},
-      {92, '9', ui::VKEY_NUMPAD9, ui::DomCode::NUMPAD9,
+      {kVK_ANSI_Keypad9, '9', ui::VKEY_NUMPAD9, ui::DomCode::NUMPAD9,
        ui::DomKey::FromCharacter('9')},
   };
 
@@ -229,24 +240,27 @@ TEST(WebInputEventFactoryTestMac, SimultaneousModifierKeys) {
     const ModifierKey& left = kModifierKeys[2 * i];
     const ModifierKey& right = kModifierKeys[2 * i + 1];
     // Press the left key.
-    NSEvent* mac_event = BuildFakeKeyEvent(
-        left.mac_key_code, 0, left.left_or_right_mask | left.non_specific_mask,
-        NSEventTypeFlagsChanged);
+    NSEvent* mac_event =
+        BuildFakeKeyEvent(left.mac_key_code, 0,
+                          left.device_dependent_modifier_flag |
+                              left.device_independent_modifier_flag,
+                          NSEventTypeFlagsChanged);
     WebKeyboardEvent web_event = WebKeyboardEventBuilder::Build(mac_event);
     EXPECT_EQ(WebInputEvent::Type::kRawKeyDown, web_event.GetType());
-    // Press the right key
-    mac_event =
-        BuildFakeKeyEvent(right.mac_key_code, 0,
-                          left.left_or_right_mask | right.left_or_right_mask |
-                              left.non_specific_mask,
-                          NSEventTypeFlagsChanged);
+    // Press the right key.
+    mac_event = BuildFakeKeyEvent(right.mac_key_code, 0,
+                                  left.device_dependent_modifier_flag |
+                                      right.device_dependent_modifier_flag |
+                                      left.device_independent_modifier_flag,
+                                  NSEventTypeFlagsChanged);
     web_event = WebKeyboardEventBuilder::Build(mac_event);
     EXPECT_EQ(WebInputEvent::Type::kRawKeyDown, web_event.GetType());
-    // Release the right key
-    mac_event = BuildFakeKeyEvent(
-        right.mac_key_code, 0, left.left_or_right_mask | left.non_specific_mask,
-        NSEventTypeFlagsChanged);
-    // Release the left key
+    // Release the right key.
+    mac_event = BuildFakeKeyEvent(right.mac_key_code, 0,
+                                  left.device_dependent_modifier_flag |
+                                      left.device_independent_modifier_flag,
+                                  NSEventTypeFlagsChanged);
+    // Release the left key.
     mac_event =
         BuildFakeKeyEvent(left.mac_key_code, 0, 0, NSEventTypeFlagsChanged);
     web_event = WebKeyboardEventBuilder::Build(mac_event);
@@ -255,11 +269,12 @@ TEST(WebInputEventFactoryTestMac, SimultaneousModifierKeys) {
 }
 
 // Test that individual modifier keys are still reported correctly, even if the
-// undocumented left- or right-hand flags are not set.
+// device dependent modifier flags are not set.
 TEST(WebInputEventBuilderMacTest, MissingUndocumentedModifierFlags) {
   for (const auto& key : kModifierKeys) {
-    NSEvent* mac_event = BuildFakeKeyEvent(
-        key.mac_key_code, 0, key.non_specific_mask, NSEventTypeFlagsChanged);
+    NSEvent* mac_event = BuildFakeKeyEvent(key.mac_key_code, 0,
+                                           key.device_independent_modifier_flag,
+                                           NSEventTypeFlagsChanged);
     WebKeyboardEvent web_event = WebKeyboardEventBuilder::Build(mac_event);
     EXPECT_EQ(WebInputEvent::Type::kRawKeyDown, web_event.GetType());
     mac_event =
@@ -659,12 +674,9 @@ TEST(WebInputEventBuilderMacTest, DomKeyFlagsChanged) {
 }
 
 TEST(WebInputEventBuilderMacTest, ContextMenuKey) {
-  // Context menu is not defined but shows up as 0x6E.
-  const int kVK_ContextMenu = 0x6E;
-
   const NSEventType kEventTypeToTest[] = {NSEventTypeKeyDown, NSEventTypeKeyUp};
   for (auto type : kEventTypeToTest) {
-    NSEvent* mac_event = BuildFakeKeyEvent(kVK_ContextMenu, 0, 0, type);
+    NSEvent* mac_event = BuildFakeKeyEvent(kVK_ContextualMenu, 0, 0, type);
     WebKeyboardEvent web_event = WebKeyboardEventBuilder::Build(mac_event);
     EXPECT_EQ(ui::DomKey::CONTEXT_MENU, web_event.dom_key);
     EXPECT_EQ(ui::VKEY_APPS, web_event.windows_key_code);

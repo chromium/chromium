@@ -110,6 +110,8 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
   ~ArCoreGl() override;
 
   void Initialize(
+      const scoped_refptr<base::SingleThreadTaskRunner>&
+          main_thread_task_runner,
       XrJavaCoordinator* session_utils,
       ArCoreFactory* arcore_factory,
       XrFrameSinkClient* xr_frame_sink_client,
@@ -216,7 +218,9 @@ class ArCoreGl : public mojom::XRFrameDataProvider,
                     mojom::XRFrameDataProvider::GetFrameDataCallback callback);
 
   bool InitializeGl(gfx::AcceleratedWidget drawing_widget);
-  void InitializeArCompositor(gpu::SurfaceHandle surface_handle,
+  void InitializeArCompositor(const scoped_refptr<base::SingleThreadTaskRunner>&
+                                  main_thread_task_runner,
+                              gpu::SurfaceHandle surface_handle,
                               ui::WindowAndroid* root_window,
                               XrFrameSinkClient* xr_frame_sink_client,
                               device::DomOverlaySetup dom_setup);

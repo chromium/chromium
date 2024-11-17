@@ -174,7 +174,7 @@ class IpProtectionCoreHostTest : public testing::Test {
 
   // Call `TryGetAuthTokens()` and run until it completes.
   void TryGetAuthTokens(int num_tokens,
-                        network::mojom::IpProtectionProxyLayer proxy_layer) {
+                        ip_protection::mojom::ProxyLayer proxy_layer) {
     SetupAccount();
 
     core_host_->TryGetAuthTokens(num_tokens, proxy_layer,
@@ -272,7 +272,7 @@ TEST_F(IpProtectionCoreHostTest, Success) {
                         CreateBlindSignTokenForTesting(
                             "single-use-2", expiration_time_, geo_hint_)});
 
-  TryGetAuthTokens(2, network::mojom::IpProtectionProxyLayer::kProxyB);
+  TryGetAuthTokens(2, ip_protection::mojom::ProxyLayer::kProxyB);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
@@ -299,7 +299,7 @@ TEST_F(IpProtectionCoreHostTest, Success) {
 TEST_F(IpProtectionCoreHostTest, NoTokens) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
 
-  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA);
+  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyA);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->num_tokens(), 1);
@@ -326,7 +326,7 @@ TEST_F(IpProtectionCoreHostTest, MalformedTokens) {
   bsa_->set_tokens(
       {{"invalid-token-proto-data", absl::Now() + absl::Hours(1), geo_hint}});
 
-  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyB);
+  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyB);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->num_tokens(), 1);
@@ -353,7 +353,7 @@ TEST_F(IpProtectionCoreHostTest, TokenGeoHintContainsOnlyCountry) {
            CreateBlindSignTokenForTesting("single-use-2", expiration_time_,
                                           geo_hint_country)});
 
-  TryGetAuthTokens(2, network::mojom::IpProtectionProxyLayer::kProxyB);
+  TryGetAuthTokens(2, ip_protection::mojom::ProxyLayer::kProxyB);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
@@ -383,7 +383,7 @@ TEST_F(IpProtectionCoreHostTest, TokenHasMissingGeoHint) {
                         CreateBlindSignTokenForTesting(
                             "single-use-1", expiration_time_, geo_hint)});
 
-  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA);
+  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyA);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->num_tokens(), 1);
@@ -403,7 +403,7 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenError400) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   bsa_->set_status(absl::InvalidArgumentError("uhoh"));
 
-  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA);
+  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyA);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->num_tokens(), 1);
@@ -427,7 +427,7 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenError401) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   bsa_->set_status(absl::UnauthenticatedError("uhoh"));
 
-  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyB);
+  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyB);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->num_tokens(), 1);
@@ -451,7 +451,7 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenError403) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   bsa_->set_status(absl::PermissionDeniedError("uhoh"));
 
-  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA);
+  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyA);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->num_tokens(), 1);
@@ -476,7 +476,7 @@ TEST_F(IpProtectionCoreHostTest, BlindSignedTokenErrorOther) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
   bsa_->set_status(absl::UnknownError("uhoh"));
 
-  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyB);
+  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyB);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->num_tokens(), 1);
@@ -505,7 +505,7 @@ TEST_F(IpProtectionCoreHostTest, AccountCapabilityUnknown) {
                         CreateBlindSignTokenForTesting(
                             "single-use-2", expiration_time_, geo_hint_)});
 
-  TryGetAuthTokens(2, network::mojom::IpProtectionProxyLayer::kProxyA);
+  TryGetAuthTokens(2, ip_protection::mojom::ProxyLayer::kProxyA);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
@@ -532,7 +532,7 @@ TEST_F(IpProtectionCoreHostTest, AccountCapabilityUnknown) {
 TEST_F(IpProtectionCoreHostTest, AuthTokenTransientError) {
   primary_account_behavior_ = PrimaryAccountBehavior::kTokenFetchTransientError;
 
-  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyB);
+  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyB);
 
   EXPECT_FALSE(bsa_->get_tokens_called());
   ExpectTryGetAuthTokensResultFailed(
@@ -547,7 +547,7 @@ TEST_F(IpProtectionCoreHostTest, AuthTokenPersistentError) {
   primary_account_behavior_ =
       PrimaryAccountBehavior::kTokenFetchPersistentError;
 
-  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA);
+  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyA);
 
   EXPECT_FALSE(bsa_->get_tokens_called());
   ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
@@ -560,7 +560,7 @@ TEST_F(IpProtectionCoreHostTest, AuthTokenPersistentError) {
 TEST_F(IpProtectionCoreHostTest, NoPrimary) {
   primary_account_behavior_ = PrimaryAccountBehavior::kNone;
 
-  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyB);
+  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyB);
 
   EXPECT_FALSE(bsa_->get_tokens_called());
   ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
@@ -580,7 +580,7 @@ TEST_F(IpProtectionCoreHostTest, TryGetAuthTokens_IpProtectionDisabled) {
 
   prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
 
-  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA);
+  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyA);
 
   EXPECT_FALSE(bsa_->get_tokens_called());
   ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
@@ -597,7 +597,7 @@ TEST_F(IpProtectionCoreHostTest, TryGetAuthTokens_IpProtectionDisabled) {
 TEST_F(IpProtectionCoreHostTest, AccountLoginTriggersBackoffReset) {
   primary_account_behavior_ = PrimaryAccountBehavior::kNone;
 
-  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA);
+  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyA);
 
   EXPECT_FALSE(bsa_->get_tokens_called());
   ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
@@ -607,7 +607,7 @@ TEST_F(IpProtectionCoreHostTest, AccountLoginTriggersBackoffReset) {
                         CreateBlindSignTokenForTesting(
                             "single-use-1", expiration_time_, geo_hint_)});
 
-  TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA);
+  TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyA);
 
   EXPECT_TRUE(bsa_->get_tokens_called());
   EXPECT_EQ(bsa_->oauth_token(), "access_token");
@@ -632,8 +632,7 @@ TEST_F(IpProtectionCoreHostTest, SessionRefreshTriggersBackoffReset) {
       const std::optional<std::vector<BlindSignedAuthToken>>&,
       std::optional<base::Time>>
       tokens_future;
-  core_host_->TryGetAuthTokens(1,
-                               network::mojom::IpProtectionProxyLayer::kProxyB,
+  core_host_->TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyB,
                                tokens_future.GetCallback());
   const std::optional<base::Time>& try_again_after =
       tokens_future.Get<std::optional<base::Time>>();
@@ -648,8 +647,7 @@ TEST_F(IpProtectionCoreHostTest, SessionRefreshTriggersBackoffReset) {
                         CreateBlindSignTokenForTesting(
                             "single-use-1", expiration_time_, geo_hint_)});
   tokens_future.Clear();
-  core_host_->TryGetAuthTokens(1,
-                               network::mojom::IpProtectionProxyLayer::kProxyB,
+  core_host_->TryGetAuthTokens(1, ip_protection::mojom::ProxyLayer::kProxyB,
                                tokens_future.GetCallback());
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
       "access_token", base::Time::Now());
@@ -714,7 +712,7 @@ TEST_F(IpProtectionCoreHostTest, CalculateBackoff) {
         true);
 }
 
-TEST_F(IpProtectionCoreHostTest, GetProxyListWithApiKey) {
+TEST_F(IpProtectionCoreHostTest, GetProxyConfigWithApiKey) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       net::features::kEnableIpProtectionProxy,
@@ -748,8 +746,8 @@ TEST_F(IpProtectionCoreHostTest, GetProxyListWithApiKey) {
             network::URLLoaderCompletionStatus(net::OK));
       }));
 
-  core_host_->GetProxyList(proxy_list_future_.GetCallback());
-  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
+  core_host_->GetProxyConfig(proxy_list_future_.GetCallback());
+  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyConfig did not call back";
 
   // Extract tuple elements for individual comparison.
   const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
@@ -762,7 +760,7 @@ TEST_F(IpProtectionCoreHostTest, GetProxyListWithApiKey) {
   EXPECT_TRUE(geo_hint == geo_hint_);
 }
 
-TEST_F(IpProtectionCoreHostTest, GetProxyListWithOAuthToken) {
+TEST_F(IpProtectionCoreHostTest, GetProxyConfigWithOAuthToken) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       net::features::kEnableIpProtectionProxy,
@@ -797,9 +795,9 @@ TEST_F(IpProtectionCoreHostTest, GetProxyListWithOAuthToken) {
       }));
 
   SetupAccount();
-  core_host_->GetProxyList(proxy_list_future_.GetCallback());
+  core_host_->GetProxyConfig(proxy_list_future_.GetCallback());
   RespondToAccessTokenRequest();
-  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
+  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyConfig did not call back";
 
   // Extract tuple elements for individual comparison.
   const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
@@ -846,8 +844,8 @@ TEST_F(IpProtectionCoreHostTest, ProxyOverrideFlagsAll) {
   test_url_loader_factory_.AddResponse(
       token_server_get_proxy_config_url_.spec(), response_str);
 
-  core_host_->GetProxyList(proxy_list_future_.GetCallback());
-  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
+  core_host_->GetProxyConfig(proxy_list_future_.GetCallback());
+  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyConfig did not call back";
 
   // Extract tuple elements for individual comparison.
   const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();
@@ -860,7 +858,7 @@ TEST_F(IpProtectionCoreHostTest, ProxyOverrideFlagsAll) {
   EXPECT_TRUE(geo_hint == geo_hint_);
 }
 
-TEST_F(IpProtectionCoreHostTest, GetProxyListFailure) {
+TEST_F(IpProtectionCoreHostTest, GetProxyConfigFailure) {
   // Count each call to the retriever's GetProxyConfig and return an error.
   int get_proxy_config_calls = 0;
   bool get_proxy_config_fails = true;
@@ -885,7 +883,7 @@ TEST_F(IpProtectionCoreHostTest, GetProxyListFailure) {
     base::test::TestFuture<const std::optional<std::vector<net::ProxyChain>>&,
                            const std::optional<GeoHint>&>
         future;
-    this->core_host_->GetProxyList(future.GetCallback());
+    this->core_host_->GetProxyConfig(future.GetCallback());
     ASSERT_TRUE(future.Wait());
 
     // Extract tuple elements for individual comparison.
@@ -908,7 +906,7 @@ TEST_F(IpProtectionCoreHostTest, GetProxyListFailure) {
   call_get_proxy_list(/*expect_success=*/false);
   EXPECT_EQ(get_proxy_config_calls, 1);
 
-  // An immediate second call to GetProxyList should not call the retriever
+  // An immediate second call to GetProxyConfig should not call the retriever
   // again.
   call_get_proxy_list(/*expect_success=*/false);
   EXPECT_EQ(get_proxy_config_calls, 1);
@@ -934,7 +932,7 @@ TEST_F(IpProtectionCoreHostTest, GetProxyListFailure) {
   call_get_proxy_list(/*expect_success=*/true);
   EXPECT_EQ(get_proxy_config_calls, 3);
 
-  // An immediate second call to GetProxyList is also allowed to proceed.
+  // An immediate second call to GetProxyConfig is also allowed to proceed.
   // Note that the network service also applies a minimum time between calls,
   // so this would not happen in production.
   get_proxy_config_fails = true;
@@ -947,17 +945,24 @@ TEST_F(IpProtectionCoreHostTest, GetProxyListFailure) {
   task_environment_.FastForwardBy(timeout);
   call_get_proxy_list(/*expect_success=*/false);
   EXPECT_EQ(get_proxy_config_calls, 5);
+
+  get_proxy_config_fails = false;
+  // SetupAccount should trigger ClearOAuthTokenProblemBackoff() and reset
+  // fetcher's backoff.
+  SetupAccount();
+  call_get_proxy_list(/*expect_success=*/true);
+  EXPECT_EQ(get_proxy_config_calls, 6);
 }
 
-TEST_F(IpProtectionCoreHostTest, GetProxyList_IpProtectionDisabled) {
+TEST_F(IpProtectionCoreHostTest, GetProxyConfig_IpProtectionDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(privacy_sandbox::kIpProtectionV1);
 
   prefs()->SetBoolean(prefs::kIpProtectionEnabled, false);
 
-  core_host_->GetProxyList(proxy_list_future_.GetCallback());
+  core_host_->GetProxyConfig(proxy_list_future_.GetCallback());
 
-  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
+  ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyConfig did not call back";
 
   // Extract tuple elements for individual comparison.
   const auto& [proxy_list, geo_hint] = proxy_list_future_.Get();

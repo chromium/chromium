@@ -7,17 +7,14 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class DeviceSharingManager;
+class ProfileIOS;
 
 // Keyed service factory for BrowserList.
 // This factory returns the same instance for regular and OTR profiles.
 class DeviceSharingManagerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static DeviceSharingManager* GetForBrowserState(ProfileIOS* profile);
-
   static DeviceSharingManager* GetForProfile(ProfileIOS* profile);
   static DeviceSharingManagerFactory* GetInstance();
 

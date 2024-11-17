@@ -36,8 +36,6 @@ namespace {
 
 constexpr std::string_view kNptIdentifier = "npt:";
 
-}  // namespace
-
 static String CollectDigits(std::string_view input, size_t& position) {
   StringBuilder digits;
 
@@ -64,32 +62,49 @@ static String CollectFraction(std::string_view input, size_t& position) {
   return digits.ToString();
 }
 
+}  // namespace
+
 MediaFragmentURIParser::MediaFragmentURIParser(const KURL& url)
     : url_(url),
-      time_format_(kNone),
       start_time_(std::numeric_limits<double>::quiet_NaN()),
       end_time_(std::numeric_limits<double>::quiet_NaN()) {}
 
 double MediaFragmentURIParser::StartTime() {
-  if (!url_.IsValid())
+  if (!url_.IsValid()) {
     return std::numeric_limits<double>::quiet_NaN();
-  if (time_format_ == kNone)
+  }
+  if (!has_parsed_time_) {
     ParseTimeFragment();
+  }
   return start_time_;
 }
 
 double MediaFragmentURIParser::EndTime() {
-  if (!url_.IsValid())
+  if (!url_.IsValid()) {
     return std::numeric_limits<double>::quiet_NaN();
-  if (time_format_ == kNone)
+  }
+  if (!has_parsed_time_) {
     ParseTimeFragment();
+  }
   return end_time_;
 }
 
+Vector<String> MediaFragmentURIParser::DefaultTracks() {
+  if (!url_.IsValid()) {
+    return {};
+  }
+  if (!has_parsed_track_) {
+    ParseTrackFragment();
+  }
+  return default_tracks_;
+}
+
 void MediaFragmentURIParser::ParseFragments() {
-  if (!url_.HasFragmentIdentifier())
+  has_parsed_fragments_ = true;
+  if (!url_.HasFragmentIdentifier()) {
     return;
-  String fragment_string = url_.FragmentIdentifier();
+  }
+  String fragment_string = url_.FragmentIdentifier().ToString();
   if (fragment_string.empty())
     return;
 
@@ -150,13 +165,32 @@ void MediaFragmentURIParser::ParseFragments() {
   }
 }
 
-void MediaFragmentURIParser::ParseTimeFragment() {
-  DCHECK_EQ(time_format_, kNone);
-
-  if (fragments_.empty())
+void MediaFragmentURIParser::ParseTrackFragment() {
+  has_parsed_track_ = true;
+  if (!has_parsed_fragments_) {
     ParseFragments();
+  }
 
-  time_format_ = kInvalid;
+  for (const auto& fragment : fragments_) {
+    // https://www.w3.org/2008/WebVideo/Fragments/WD-media-fragments-spec/#naming-track
+    // Track selection is denoted by the name 'track'. Allowed track names are
+    // determined by the original source media, this information has to be known
+    // before construction of the media fragment. There is no support for
+    // generic media type names.
+    if (fragment.first != "track") {
+      continue;
+    }
+
+    // The fragment value has already been escaped.
+    default_tracks_.emplace_back(String::FromUTF8(fragment.second));
+  }
+}
+
+void MediaFragmentURIParser::ParseTimeFragment() {
+  has_parsed_time_ = true;
+  if (!has_parsed_fragments_) {
+    ParseFragments();
+  }
 
   for (const auto& fragment : fragments_) {
     // http://www.w3.org/2008/WebVideo/Fragments/WD-media-fragments-spec/#naming-time
@@ -177,7 +211,6 @@ void MediaFragmentURIParser::ParseTimeFragment() {
     if (ParseNPTFragment(fragment.second, start, end)) {
       start_time_ = start;
       end_time_ = end;
-      time_format_ = kNormalPlayTime;
 
       // Although we have a valid fragment, don't return yet because when a
       // fragment dimensions occurs multiple times, only the last occurrence of
@@ -188,7 +221,6 @@ void MediaFragmentURIParser::ParseTimeFragment() {
       // previous occurrences (valid or invalid) SHOULD be ignored by the UA.
     }
   }
-  fragments_.clear();
 }
 
 bool MediaFragmentURIParser::ParseNPTFragment(std::string_view time_string,

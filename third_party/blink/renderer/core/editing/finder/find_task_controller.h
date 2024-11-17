@@ -21,7 +21,6 @@ const int kInvalidFindIdentifier = -1;
 class LocalFrame;
 class Range;
 class TextFinder;
-class WebString;
 class WebLocalFrameImpl;
 
 class CORE_EXPORT FindTaskController final
@@ -32,7 +31,7 @@ class CORE_EXPORT FindTaskController final
   // Starts an effort of finding |search_text| in |owner_frame|,
   // which will be done asynchronously with idle tasks.
   void StartRequest(int identifier,
-                    const WebString& search_text,
+                    const String& search_text,
                     const mojom::blink::FindOptions& options);
 
   // Cancels the current effort, canceling the idle task request
@@ -61,7 +60,7 @@ class CORE_EXPORT FindTaskController final
   // One run of idle task finishes, so we need to update our state and
   // notify |text_finder_| accordingly. Also schedules next task if needed.
   void DidFinishTask(int identifier,
-                     const WebString& search_text,
+                     const String& search_text,
                      const mojom::blink::FindOptions& options,
                      bool finished_whole_request,
                      PositionInFlatTree next_starting_position,
@@ -83,15 +82,11 @@ class CORE_EXPORT FindTaskController final
 
   void ResetLastFindRequestCompletedWithNoMatches();
 
-  void InvokeFind(int identifier,
-                  const WebString& search_text_,
-                  mojom::blink::FindOptionsPtr options_);
-
   int GetMatchYieldCheckInterval() const;
 
  private:
   void RequestFindTask(int identifier,
-                       const WebString& search_text,
+                       const String& search_text,
                        const mojom::blink::FindOptions& options);
 
   enum class RequestEndState {

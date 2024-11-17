@@ -180,14 +180,14 @@ DynamicInterstitialInfo::DynamicInterstitialInfo(
       show_only_for_nonoverridable_errors(show_only_for_nonoverridable_errors) {
 }
 
-DynamicInterstitialInfo::~DynamicInterstitialInfo() {}
+DynamicInterstitialInfo::~DynamicInterstitialInfo() = default;
 
 DynamicInterstitialInfo::DynamicInterstitialInfo(
     const DynamicInterstitialInfo& other) = default;
 
-SSLErrorAssistant::SSLErrorAssistant() {}
+SSLErrorAssistant::SSLErrorAssistant() = default;
 
-SSLErrorAssistant::~SSLErrorAssistant() {}
+SSLErrorAssistant::~SSLErrorAssistant() = default;
 
 bool SSLErrorAssistant::IsKnownCaptivePortalCertificate(
     const net::SSLInfo& ssl_info) {

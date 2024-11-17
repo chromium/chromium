@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.hub;
 
-import android.content.Context;
+import android.app.Activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,7 +21,9 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 
 /**
@@ -40,7 +42,6 @@ public class HubProvider {
     private @Nullable HubTabSwitcherMetricsRecorder mHubTabSwitcherMetricsRecorder;
 
     /**
-     * @param context The Android {@link Context} for the Hub.
      * @param profileProviderSupplier Used to fetch dependencies.
      * @param orderController The {@link PaneOrderController} for the Hub.
      * @param backPressManager The {@link BackPressManager} for the activity.
@@ -50,16 +51,20 @@ public class HubProvider {
      *     activity.
      * @param tabModelSelectorSupplier The supplier of the {@link TabModelSelector}.
      * @param menuButtonCoordinatorSupplier A supplier for the root component for the app menu.
+     * @param edgeToEdgeSupplier A supplier for the {@link EdgeToEdgeController}.
+     * @param searchActivityClient A client for the search activity, used to launch search.
      */
     public HubProvider(
-            @NonNull Context context,
+            @NonNull Activity activity,
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull PaneOrderController orderController,
             @NonNull BackPressManager backPressManager,
             @NonNull MenuOrKeyboardActionController menuOrKeyboardActionController,
             @NonNull Supplier<SnackbarManager> snackbarManagerSupplier,
             @NonNull Supplier<TabModelSelector> tabModelSelectorSupplier,
-            @NonNull Supplier<MenuButtonCoordinator> menuButtonCoordinatorSupplier) {
+            @NonNull Supplier<MenuButtonCoordinator> menuButtonCoordinatorSupplier,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @NonNull SearchActivityClient searchActivityClient) {
         mPaneListBuilder = new PaneListBuilder(orderController);
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mHubShowPaneHelper = new HubShowPaneHelper();
@@ -74,7 +79,7 @@ public class HubProvider {
                             SnackbarManager snackbarManager = snackbarManagerSupplier.get();
                             assert snackbarManager != null;
                             return HubManagerFactory.createHubManager(
-                                    context,
+                                    activity,
                                     profileProviderSupplier,
                                     mPaneListBuilder,
                                     backPressManager,
@@ -82,7 +87,9 @@ public class HubProvider {
                                     snackbarManager,
                                     tabSupplier,
                                     menuButtonCoordinatorSupplier.get(),
-                                    mHubShowPaneHelper);
+                                    mHubShowPaneHelper,
+                                    edgeToEdgeSupplier,
+                                    searchActivityClient);
                         });
 
         mOnPaneFocused =

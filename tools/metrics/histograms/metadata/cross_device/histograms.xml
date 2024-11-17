@@ -724,77 +724,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.NumV1Devices"
-    units="count" expires_after="2025-05-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records the number of devices returned by a v1 DeviceSync. Only recorded
-    when v1 and v2 DeviceSync are running in parallel. Only recorded if a v1 and
-    v2 DeviceSync has ever previously occurred. Emitted when v1 and v2 devices
-    are merged together, which occurs after either a v1 or v2 DeviceSync.
-  </summary>
-</histogram>
-
-<histogram name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.NumV2Devices"
-    units="count" expires_after="2025-05-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records the number of devices returned by a v2 DeviceSync. Only recorded
-    when v1 and v2 DeviceSync are running in parallel. Only recorded if a v1 and
-    v2 DeviceSync has ever previously occurred. Emitted when v1 and v2 devices
-    are merged together, which occurs after either a v1 or v2 DeviceSync.
-  </summary>
-</histogram>
-
-<histogram
-    name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.PercentageOfV1DevicesReplacedByV2Devices"
-    units="%" expires_after="2025-05-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records the percentage of devices returned by a v2 DeviceSync that replace
-    their v1 counterparts. This will only occur if the v2 device has a decrypted
-    public key that matches a v1 device. Only recorded when v1 and v2 DeviceSync
-    are running in parallel. Only recorded if a v1 and v2 DeviceSync has ever
-    previously occurred. Emitted when v1 and v2 devices are merged together,
-    which occurs after either a v1 or v2 DeviceSync.
-  </summary>
-</histogram>
-
-<histogram
-    name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.PercentageOfV2DevicesWithDecryptedPublicKey"
-    units="%" expires_after="2025-05-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records the percentage of devices returned by a v2 DeviceSync that have a
-    decrypted user public key. Only recorded when v1 and v2 DeviceSync are
-    running in parallel. Only recorded if a v1 and v2 DeviceSync has ever
-    previously occurred. Emitted when v1 and v2 devices are merged together,
-    which occurs after either a v1 or v2 DeviceSync.
-  </summary>
-</histogram>
-
-<histogram
-    name="CryptAuth.DeviceSyncV2.RemoteDeviceProvider.RatioOfV2ToV1Devices"
-    units="%" expires_after="2025-05-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Records the ratio of the number of devices returned by a v2 DeviceSync to
-    the number returned by a v1 DeviceSync. Devices returned by a v2 DeviceSync
-    should be a subset of the devices returned by a v1 DeviceSync, barring any
-    race conditions. This ratio should be greater than or equal to
-    PercentageOfV1DevicesReplacedByV2Devices because a v2 device can only
-    replace its v1 counterpart if it has a decrypted public key. Only recorded
-    when v1 and v2 DeviceSync are running in parallel. Only recorded if a v1 and
-    v2 DeviceSync has ever previously occurred. Emitted when v1 and v2 devices
-    are merged together, which occurs after either a v1 or v2 DeviceSync.
-  </summary>
-</histogram>
-
 <histogram name="CryptAuth.DeviceSyncV2.Result.DidDeviceRegistryChange"
     enum="BooleanChanged" expires_after="2025-05-05">
   <owner>hansberry@chromium.org</owner>
@@ -1609,25 +1538,6 @@ chromium-metrics-reviews@google.com.
     metric is emitted to at the creation of the user session (when the user logs
     in) with a 15-second delay to allow for the mojo client to be ready, and
     when any multi-device feature state changes, and every 30 minutes.
-  </summary>
-</histogram>
-
-<histogram name="MultiDevice.DeviceSyncService.FindEligibleDevices.Result"
-    enum="BooleanSuccess" expires_after="2025-05-05">
-  <owner>hansberry@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>Result of trying to find eligible devices.</summary>
-</histogram>
-
-<histogram
-    name="MultiDevice.DeviceSyncService.FindEligibleDevices.Result.FailureReason"
-    enum="MultiDevice_DeviceSyncService_DeviceSyncRequestFailureReason"
-    expires_after="2025-05-05">
-  <owner>hansberry@google.com</owner>
-  <owner>chromeos-cross-device-eng@google.com</owner>
-  <summary>
-    Breaks down the percentages of reasons when failure occurs on
-    FindEligibleDevices.
   </summary>
 </histogram>
 

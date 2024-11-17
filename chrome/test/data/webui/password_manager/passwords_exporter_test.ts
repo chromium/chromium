@@ -9,6 +9,7 @@ import {PasswordManagerImpl} from 'chrome://password-manager/password_manager.js
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 
@@ -17,7 +18,7 @@ const ExportProgressStatus = chrome.passwordsPrivate.ExportProgressStatus;
 // Checks the expected display of elements on PasswordsExporterElement creation.
 function verifyInitialUIState(exporter: PasswordsExporterElement) {
   assertTrue(!!exporter.shadowRoot!.querySelector('#exportPasswordsButton'));
-  assertFalse(!!exporter.shadowRoot!.querySelector('#progressSpinner'));
+  assertFalse(isVisible(exporter.shadowRoot!.querySelector('.spinner')));
   assertFalse(!!exporter.shadowRoot!.querySelector('#dialogError'));
 }
 
@@ -64,7 +65,7 @@ suite('PasswordExporterTest', function() {
         passwordManager, {status: ExportProgressStatus.IN_PROGRESS});
     flush();
     assertTrue(
-        !!passwordsExporter.shadowRoot!.querySelector('#progressSpinner'));
+        isVisible(passwordsExporter.shadowRoot!.querySelector('.spinner')));
 
     const successToast = passwordsExporter.$.exportSuccessToast;
     assertFalse(successToast.open);

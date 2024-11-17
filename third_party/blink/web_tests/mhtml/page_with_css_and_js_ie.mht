@@ -27,8 +27,8 @@ src=3D"http://localhost/resources/remove_image_script.js"></SCRIPT>
 <META name=3DGENERATOR content=3D"MSHTML 9.00.8112.16421"></HEAD>
 <BODY onload=3DonLoad()>This page tests that CSS and JavaScript =
 resources are=20
-retrieved correctly for MHTML files.<BR><BR>There should be only 2 red =
-squares=20
+retrieved correctly for MHTML files.<BR><BR>There should be only 1 red =
+square=20
 below:=20
 <DIV id=3DfirstDiv><IMG=20
 src=3D"http://localhost/resources/red_square.png"><BR><BR></DIV>
@@ -36,7 +36,7 @@ src=3D"http://localhost/resources/red_square.png"><BR><BR></DIV>
 CSS.<BR><IMG=20
 src=3D"http://localhost/resources/red_square.png"><BR><BR></DIV>
 <DIV id=3DthirdDiv>The red square below should be hidden by way of=20
-JavaScript (with JS disabled in MHTML, it still should show).<BR><IMG=20
+JavaScript.<BR><IMG=20
 src=3D"http://localhost/resources/red_square.png"><BR><BR></DIV></BODY><=
 /HTML>
 

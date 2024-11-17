@@ -173,7 +173,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
 
   void DropCompositorScrollDeltaNextCommit(CompositorElementId);
 
-  uint32_t GetMainThreadScrollingReasons(const ScrollPaintPropertyNode&) const;
+  uint32_t GetMainThreadRepaintReasons(const ScrollPaintPropertyNode&) const;
   // Returns true if the scroll node is currently composited in cc.
   // TODO(crbug.com/40517276): Remove this function after launching
   // RasterInducingScroll.
@@ -196,6 +196,8 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   void ShowDebugData();
 #endif
 
+  void ForAllContentLayersForTesting(
+      base::FunctionRef<void(ContentLayerClientImpl*)> func) const;
   // Returns the ith ContentLayerClientImpl for testing.
   ContentLayerClientImpl* ContentLayerClientForTesting(wtf_size_t i) const;
 

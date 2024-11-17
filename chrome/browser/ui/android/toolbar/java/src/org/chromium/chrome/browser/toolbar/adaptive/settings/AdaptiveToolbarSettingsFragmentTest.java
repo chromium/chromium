@@ -23,7 +23,6 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -33,7 +32,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -63,7 +61,6 @@ import java.util.List;
     ChromeFeatureList.READALOUD
 })
 public class AdaptiveToolbarSettingsFragmentTest {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock Profile mProfile;
     @Mock private UserPrefsJni mUserPrefsNatives;
@@ -78,7 +75,7 @@ public class AdaptiveToolbarSettingsFragmentTest {
     public void setUpTest() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         doReturn(mPrefService).when(mUserPrefsNatives).get(any());
 
         ChromeSharedPreferences.getInstance().removeKey(ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED);

@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/process/process_metrics.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
@@ -254,6 +255,22 @@ base::Value::List ConvertThermalValue(const mojom::ThermalInfoPtr& info) {
   return out_thermals;
 }
 
+std::optional<base::Value::Dict> GetZramValue() {
+  base::SwapInfo swap_info;
+  if (!GetSwapInfo(&swap_info)) {
+    LOG(WARNING) << ("Unable to get system zram info.");
+    return std::nullopt;
+  }
+  base::Value::Dict out_zram;
+  out_zram.Set("totalUsedMemory",
+               base::NumberToString(swap_info.mem_used_total));
+  out_zram.Set("originalDataSize",
+               base::NumberToString(swap_info.orig_data_size));
+  out_zram.Set("compressedDataSize",
+               base::NumberToString(swap_info.compr_data_size));
+  return out_zram;
+}
+
 }  // namespace
 
 HealthdInternalsMessageHandler::HealthdInternalsMessageHandler() = default;
@@ -276,6 +293,11 @@ void HealthdInternalsMessageHandler::RegisterMessages() {
       base::BindRepeating(
           &HealthdInternalsMessageHandler::HandleGetHealthdProcessInfo,
           weak_ptr_factory_.GetWeakPtr()));
+  web_ui()->RegisterMessageCallback(
+      "getCrosSystemInfo",
+      base::BindRepeating(
+          &HealthdInternalsMessageHandler::HandleGetCrosSystemInfo,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void HealthdInternalsMessageHandler::HandleGetHealthdInternalsFeatureFlag(
@@ -284,8 +306,7 @@ void HealthdInternalsMessageHandler::HandleGetHealthdInternalsFeatureFlag(
 
   AllowJavascript();
   if (list.size() != 1 || !list[0].is_string()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   base::Value callback_id = list[0].Clone();
   base::Value::Dict result;
@@ -299,8 +320,7 @@ void HealthdInternalsMessageHandler::HandleGetHealthdTelemetryInfo(
 
   AllowJavascript();
   if (list.size() != 1 || !list[0].is_string()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   base::Value callback_id = list[0].Clone();
@@ -358,8 +378,7 @@ void HealthdInternalsMessageHandler::HandleGetHealthdProcessInfo(
 
   AllowJavascript();
   if (list.size() != 1 || !list[0].is_string()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   base::Value callback_id = list[0].Clone();
@@ -394,6 +413,25 @@ void HealthdInternalsMessageHandler::HandleMultipleProcessResult(
   result.Set("processes", std::move(out_processes));
 
   ReplyHealthdInternalInfo(std::move(callback_id), std::move(result));
+}
+
+void HealthdInternalsMessageHandler::HandleGetCrosSystemInfo(
+    const base::Value::List& list) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  AllowJavascript();
+  if (list.size() != 1 || !list[0].is_string()) {
+    NOTREACHED();
+  }
+  base::Value callback_id = list[0].Clone();
+  base::Value::Dict result;
+
+  auto zram = GetZramValue();
+  if (zram.has_value()) {
+    result.Set("zram", std::move(zram.value()));
+  }
+
+  ResolveJavascriptCallback(callback_id, result);
 }
 
 void HealthdInternalsMessageHandler::ReplyHealthdInternalInfo(

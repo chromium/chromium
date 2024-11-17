@@ -146,8 +146,6 @@ class BrowserReportGeneratorTest : public ::testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     profile_manager_.CreateTestingProfile(ash::kSigninBrowserContextBaseName);
-    profile_manager_.CreateTestingProfile(
-        ash::kLockScreenAppBrowserContextBaseName);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 

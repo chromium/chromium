@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/task_manager/providers/child_process_task.h"
+
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/task_manager/providers/child_process_task.h"
 #include "chrome/browser/task_manager/providers/child_process_task_provider.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/grit/generated_resources.h"
@@ -74,7 +76,7 @@ class ChildProcessTaskTest
   }
 
  protected:
-  std::map<base::ProcessHandle, Task*> provided_tasks_;
+  std::map<base::ProcessHandle, raw_ptr<Task, CtnExperimental>> provided_tasks_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;

@@ -25,6 +25,11 @@ if (proprietary_codecs && !is_debug && !is_component_build) {
   # cpu_model.c: init_have_lse_atomics, init_cpu_features
   _chrome_64only_count += 2
 
+  # 64bit only:
+  # Caused by AArch64 SME.
+  # sme-abi-init.c: init_aarch64_has_sme
+  _chrome_64only_count += 1
+
   # iostream.cpp: _GLOBAL__I_000101
   _chrome_common_count += 1
 

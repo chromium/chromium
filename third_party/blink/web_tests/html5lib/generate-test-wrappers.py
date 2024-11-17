@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2013 Google Inc. All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -75,14 +75,14 @@ var test_files = [ '%(test_path)s' ]
             name = self._last_path_component_removing_suffix(path, self.HARNESS_SUFFIX)
             name = self._test_name_from_harness_name(name)
             if name not in test_names:
-                print "Removing %s, %s no longer exists." % (path, self._input_path(name))
+                print("Removing %s, %s no longer exists." % (path, self._input_path(name)))
                 os.remove(path)
 
         for path in self._files_in_directory_with_suffix(self.OUTPUT_DIRECTORY, self.EXPECTAION_SUFFIX):
             name = self._last_path_component_removing_suffix(path, self.EXPECTAION_SUFFIX)
             name = self._test_name_from_harness_name(name)
             if name not in test_names:
-                print "Removing %s, %s no longer exists." % (path, self._input_path(name))
+                print("Removing %s, %s no longer exists." % (path, self._input_path(name)))
                 os.remove(path)
 
     def _input_path(self, test_name):

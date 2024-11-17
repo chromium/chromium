@@ -39,7 +39,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -60,9 +59,9 @@ import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
-import org.chromium.ui.base.MenuSourceType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.mojom.MenuSourceType;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -79,8 +78,6 @@ public class ChromeContextMenuPopulatorTest {
     private static final String IMAGE_SRC_URL = "http://www.blah.com/image.jpg";
     private static final String IMAGE_TITLE_TEXT = "IMAGE!";
     private static final String RETRIEVED_IMAGE_URL = "http://www.blah.com/retrieved_image.jpg";
-
-    @Rule public JniMocker jniMocker = new JniMocker();
 
     @Rule
     public AutomotiveContextWrapperTestRule mAutomotiveRule =
@@ -106,6 +103,7 @@ public class ChromeContextMenuPopulatorTest {
         mAutomotiveRule.setIsAutomotive(false);
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(false);
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
+        ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
 
         GURL pageUrl = new GURL(PAGE_URL);
         when(mItemDelegate.getPageUrl()).thenReturn(pageUrl);
@@ -116,7 +114,7 @@ public class ChromeContextMenuPopulatorTest {
         when(mItemDelegate.supportsAddToContacts()).thenReturn(true);
         when(mItemDelegate.getWebContents()).thenReturn(mWebContents);
 
-        jniMocker.mock(ProfileJni.TEST_HOOKS, mProfileNatives);
+        ProfileJni.setInstanceForTesting(mProfileNatives);
         when(mProfileNatives.fromWebContents(eq(mWebContents))).thenReturn(mProfile);
 
         ThreadUtils.runOnUiThreadBlocking(
@@ -141,7 +139,6 @@ public class ChromeContextMenuPopulatorTest {
                                 mItemDelegate,
                                 () -> mShareDelegate,
                                 mode,
-                                mExternalAuthUtils,
                                 ContextUtils.getApplicationContext(),
                                 params,
                                 mNativeDelegate));
@@ -224,7 +221,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -299,7 +296,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -359,7 +356,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -424,7 +421,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -489,7 +486,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -558,7 +555,7 @@ public class ChromeContextMenuPopulatorTest {
                         true,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -636,7 +633,7 @@ public class ChromeContextMenuPopulatorTest {
                         true,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -707,7 +704,7 @@ public class ChromeContextMenuPopulatorTest {
                         true,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -772,7 +769,7 @@ public class ChromeContextMenuPopulatorTest {
                         true,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -860,7 +857,7 @@ public class ChromeContextMenuPopulatorTest {
                         true,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -915,7 +912,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -973,7 +970,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -1009,7 +1006,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -1047,7 +1044,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -1088,7 +1085,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
 
@@ -1129,7 +1126,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.NORMAL, params);
@@ -1180,7 +1177,7 @@ public class ChromeContextMenuPopulatorTest {
                         /* canSaveMedia= */ false,
                         /* triggeringTouchXDp= */ 0,
                         /* triggeringTouchXDp= */ 0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         /* openedFromHighlight= */ true,
                         /* additionalNavigationParams= */ null);
 
@@ -1222,7 +1219,7 @@ public class ChromeContextMenuPopulatorTest {
                         false,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, linkParams);
@@ -1250,7 +1247,7 @@ public class ChromeContextMenuPopulatorTest {
                         true,
                         0,
                         0,
-                        MenuSourceType.MENU_SOURCE_TOUCH,
+                        MenuSourceType.TOUCH,
                         false,
                         /* additionalNavigationParams= */ null);
         initializePopulator(ChromeContextMenuPopulator.ContextMenuMode.CUSTOM_TAB, imageParams);

@@ -51,9 +51,9 @@ function setupSearchContainer(): void {
       },
     } as unknown as VolumeManager;
     searchContainer = new SearchContainer(
-        volumeManager, document.querySelector('#search-wrapper') as HTMLElement,
-        document.querySelector('#options-container') as HTMLElement,
-        document.querySelector('#path-container') as HTMLElement, a11y);
+        volumeManager, document.querySelector<HTMLElement>('#search-wrapper')!,
+        document.querySelector<HTMLElement>('#options-container')!,
+        document.querySelector<HTMLElement>('#path-container')!, a11y);
   }
 }
 
@@ -97,7 +97,7 @@ export async function testQueryUpdated() {
   searchContainer!.openSearch();
 
   // Test 1: Enter a query.
-  const input = document.querySelector('cr-input') as CrInputElement;
+  const input = document.querySelector<CrInputElement>('cr-input')!;
   input.value = 'hello';
   input.dispatchEvent(new Event('input', {
     bubbles: true,

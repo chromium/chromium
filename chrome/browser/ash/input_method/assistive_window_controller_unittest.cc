@@ -4,12 +4,8 @@
 
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "base/feature_list.h"
-#include "base/test/scoped_command_line.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller_delegate.h"
 #include "chrome/browser/ui/ash/input_method/announcement_view.h"
@@ -17,7 +13,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/components/standalone_browser/feature_refs.h"
 #include "chromeos/ash/services/ime/public/cpp/assistive_suggestions.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -113,22 +108,11 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
     emoji_button_.announce_string = kAnnounceString;
   }
 
-  void EnableLacros() {
-    feature_list_.Reset();
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/ash::standalone_browser::GetFeatureRefs(),
-        /*disabled_features=*/{});
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-  }
-
   void WaitForSuggestionWindowDelay() {
     task_environment()->FastForwardBy(
         base::Milliseconds(kShowSuggestionDelay + 1));
   }
 
-  base::test::ScopedFeatureList feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
   std::unique_ptr<AssistiveWindowController> controller_;
   std::unique_ptr<MockDelegate> delegate_ = std::make_unique<MockDelegate>();
   std::unique_ptr<TestingProfile> profile_;

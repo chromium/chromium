@@ -84,6 +84,8 @@ struct SavedDesks {
   std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> desk_templates;
   // Saved desks created for save & recall.
   std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> save_and_recall;
+  // Saved desks created for coral.
+  std::vector<raw_ptr<const DeskTemplate, VectorExperimental>> coral;
 };
 
 SavedDesks Group(
@@ -98,6 +100,9 @@ SavedDesks Group(
         break;
       case DeskTemplateType::kSaveAndRecall:
         grouped.save_and_recall.push_back(saved_desk);
+        break;
+      case DeskTemplateType::kCoral:
+        grouped.coral.push_back(saved_desk);
         break;
       // Do nothing in the case of a floating workspace type or an unknown type.
       case DeskTemplateType::kFloatingWorkspace:
@@ -299,6 +304,14 @@ SavedDeskLibraryView::SavedDeskLibraryView() {
 
     scroll_contents->AddChildView(std::move(group_contents));
   }
+  if (features::IsCoralSavedDeskFeatureEnabled()) {
+    auto group_contents = GetLabelAndGridGroupContents();
+    coral_grid_view_ =
+        group_contents->AddChildView(std::make_unique<SavedDeskGridView>());
+    grid_views_.push_back(coral_grid_view_.get());
+
+    scroll_contents->AddChildView(std::move(group_contents));
+  }
 
   no_items_label_ =
       scroll_contents->AddChildView(std::make_unique<RoundedLabel>(
@@ -342,17 +355,19 @@ void SavedDeskLibraryView::AddOrUpdateEntries(
     save_and_recall_grid_view_->AddOrUpdateEntries(grouped.save_and_recall,
                                                    order_first_uuid, animate);
   }
+  if (coral_grid_view_ && !grouped.coral.empty()) {
+    coral_grid_view_->AddOrUpdateEntries(grouped.coral, order_first_uuid,
+                                         animate);
+  }
 
   DeprecatedLayoutImmediately();
 }
 
 void SavedDeskLibraryView::DeleteEntries(const std::vector<base::Uuid>& uuids,
                                          bool delete_animation) {
-  if (desk_template_grid_view_)
-    desk_template_grid_view_->DeleteEntries(uuids, delete_animation);
-  if (save_and_recall_grid_view_)
-    save_and_recall_grid_view_->DeleteEntries(uuids, delete_animation);
-
+  for (SavedDeskGridView* grid_view : grid_views_) {
+    grid_view->DeleteEntries(uuids, delete_animation);
+  }
   DeprecatedLayoutImmediately();
 }
 

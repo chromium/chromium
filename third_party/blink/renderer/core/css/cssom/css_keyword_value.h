@@ -23,6 +23,7 @@ class CORE_EXPORT CSSKeywordValue final : public CSSStyleValue {
   static CSSKeywordValue* FromCSSValue(const CSSValue&);
 
   explicit CSSKeywordValue(const String& keyword) : keyword_value_(keyword) {}
+  explicit CSSKeywordValue(CSSValueID keyword_value);
   CSSKeywordValue(const CSSKeywordValue&) = delete;
   CSSKeywordValue& operator=(const CSSKeywordValue&) = delete;
 

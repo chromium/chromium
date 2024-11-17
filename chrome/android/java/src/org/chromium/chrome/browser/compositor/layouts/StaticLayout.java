@@ -224,7 +224,7 @@ public class StaticLayout extends Layout {
                             if (mNeedsOffsetTag) {
                                 mModel.set(
                                         LayoutTab.CONTENT_OFFSET_TAG,
-                                        offsetTagsInfo.getTopControlsOffsetTag());
+                                        offsetTagsInfo.getContentOffsetTag());
                             }
 
                             // With BCIV enabled, scrolling will not update the content offset of
@@ -338,10 +338,8 @@ public class StaticLayout extends Layout {
                     }
 
                     @Override
-                    public void didBackForwardTransitionAnimationChange() {
-                        updateStaticTab(
-                                tabModelSelector.getCurrentTab(),
-                                /* skipUpdateVisibleIds= */ false);
+                    public void didBackForwardTransitionAnimationChange(Tab tab) {
+                        updateStaticTab(tab, /* skipUpdateVisibleIds= */ false);
                     }
                 };
     }

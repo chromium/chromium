@@ -31,6 +31,8 @@ const int64_t kTypicalPriceMicros = 5;
 
 namespace commerce {
 
+class MockAccountChecker;
+
 // A matcher that checks that a
 // std::unique_ptr<std::vector<CommerceSubscription>> contains a subscription
 // ID that matches the provided string.
@@ -98,6 +100,11 @@ DiscountInfo CreateValidDiscountInfo(
     bool is_merchant_wide,
     double expiry_time_sec,
     DiscountClusterType cluster_type = DiscountClusterType::kOfferLevel);
+
+// Set up `account_checker` and `prefs` so that product specification data
+// fetching is enabled.
+void EnableProductSpecificationsDataFetch(MockAccountChecker* account_checker,
+                                          TestingPrefServiceSimple* prefs);
 
 }  // namespace commerce
 

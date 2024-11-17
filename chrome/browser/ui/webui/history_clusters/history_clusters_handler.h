@@ -35,6 +35,10 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace ui {
+class SimpleMenuModel;
+}  // namespace ui
+
 namespace history_clusters {
 
 class QueryClustersState;
@@ -85,13 +89,17 @@ class HistoryClustersHandler : public mojom::PageHandler,
 
   void SetSidePanelUIEmbedder(
       base::WeakPtr<TopChromeWebUIController::Embedder> side_panel_embedder);
+
+  using ContextInterface =
+      absl::variant<BrowserWindowInterface*, tabs::TabInterface*>;
+  void SetContextInterface(ContextInterface interface);
+
   // Used to set the in-page query from the browser.
   void SetQuery(const std::string& query);
 
   // mojom::PageHandler:
-  void OpenHistoryCluster(
-      const GURL& url,
-      ui::mojom::ClickModifiersPtr click_modifiers) override;
+  void OpenHistoryUrl(const GURL& url,
+                      ui::mojom::ClickModifiersPtr click_modifiers) override;
   void SetPage(mojo::PendingRemote<mojom::Page> pending_page) override;
   void ShowSidePanelUI() override;
   void ToggleVisibility(bool visible,
@@ -102,6 +110,10 @@ class HistoryClustersHandler : public mojom::PageHandler,
   void LoadMoreClusters(const std::string& query) override;
   void RemoveVisits(std::vector<mojom::URLVisitPtr> visits,
                     RemoveVisitsCallback callback) override;
+  void RemoveVisitByUrlAndTime(
+      const GURL& url,
+      double timestamp,
+      RemoveVisitByUrlAndTimeCallback callback) override;
   void HideVisits(std::vector<mojom::URLVisitPtr> visits,
                   HideVisitsCallback callback) override;
   void OpenVisitUrlsInTabGroup(
@@ -128,6 +140,11 @@ class HistoryClustersHandler : public mojom::PageHandler,
   void HistoryDeleted() override;
   Profile* GetProfile() override;
 
+  std::unique_ptr<ui::SimpleMenuModel>
+  CreateHistoryClustersSidePanelContextMenuForTesting(
+      ContextInterface interface,
+      GURL url);
+
  private:
   // Common initialization code shared by constructors.
   void CommonInit();
@@ -146,7 +163,7 @@ class HistoryClustersHandler : public mojom::PageHandler,
   raw_ptr<Profile> profile_;
   raw_ptr<content::WebContents> web_contents_;
 
-  absl::variant<BrowserWindowInterface*, tabs::TabInterface*> interface_;
+  ContextInterface interface_;
 
   // Used to observe the service.
   base::ScopedObservation<HistoryClustersService,
@@ -180,6 +197,8 @@ class HistoryClustersHandler : public mojom::PageHandler,
   // `BrowsingHistoryService` can handle only 1 delete request at a time.
   std::vector<mojom::URLVisitPtr> pending_remove_visits_;
   RemoveVisitsCallback pending_remove_visits_callback_;
+  RemoveVisitByUrlAndTimeCallback
+      pending_remove_visits_by_url_and_time_callback_;
 
   // Last query issued by the WebUI. The WebUI always makes a query upon load,
   // so this string is always set. If the WebUI loads without a query in the q=

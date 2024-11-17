@@ -469,7 +469,13 @@ TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetwork) {
   TestSurface surface(stream_.get());
   WaitForIdleTaskQueue();
   ASSERT_TRUE(network_.query_request_sent);
-  EXPECT_EQ(0, network_.GetApiRequestCount<QueryInteractiveFeedDiscoverApi>());
+  if (GetStreamType().IsForYou()) {
+    EXPECT_EQ(1,
+              network_.GetApiRequestCount<QueryInteractiveFeedDiscoverApi>());
+  } else {
+    EXPECT_EQ(1, network_.GetApiRequestCount<ListWebFeedsDiscoverApi>());
+    EXPECT_EQ(1, network_.GetApiRequestCount<WebFeedListContentsDiscoverApi>());
+  }
   EXPECT_EQ(
       "token",
       network_.query_request_sent->feed_request().consistency_token().token());
@@ -1706,6 +1712,10 @@ TEST_F(FeedApiTest, LoadMoreBeforeLoad) {
 }
 
 TEST_F(FeedApiTest, ReadNetworkResponse) {
+  // InjectRealFeedQueryResponse is only supported in old feed query request.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kDiscoFeedEndpoint);
+
   base::HistogramTester histograms;
   network_.InjectRealFeedQueryResponse();
   TestForYouSurface surface(stream_.get());
@@ -1737,6 +1747,10 @@ TEST_F(FeedApiTest, ReadNetworkResponse) {
 }
 
 TEST_F(FeedApiTest, ReadNetworkResponseWithNoContent) {
+  // InjectRealFeedQueryResponse is only supported in old feed query request.
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kDiscoFeedEndpoint);
+
   base::HistogramTester histograms;
   network_.InjectRealFeedQueryResponseWithNoContent();
   TestForYouSurface surface(stream_.get());

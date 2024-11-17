@@ -19,10 +19,12 @@ source_set("form_util") {
     "form_activity_tab_helper.mm",
   ]
   deps = [
+    ":child_frame_registrar",
     ":form_util_feature",
     "//base",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser:util",
+    "//components/autofill/ios/common",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
@@ -36,12 +38,12 @@ source_set("form_util_feature") {
   ]
   deps = [
     ":autofill_form_features",
-    ":cross_content_world_util_feature",
     ":fill_js",
     ":form_js",
     "//base",
     "//components/autofill/ios/common:common",
     "//ios/web/public/js_messaging",
+    "//ios/web/public/js_messaging:content_world_header",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
@@ -52,10 +54,12 @@ source_set("form_handler_feature") {
     "form_handlers_java_script_feature.mm",
   ]
   deps = [
-    ":child_frame_registrar",
+    ":autofill_form_features",
+    ":autofill_renderer_id_feature",
     ":form_handlers_js",
     ":form_util",
     ":form_util_feature",
+    ":frame_registration_feature",
     ":register_remote_frame_token_js",
     "//base",
     "//components/autofill/core/common:features",
@@ -71,8 +75,8 @@ compile_ts("autofill_form_features_ts") {
   deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
-# For bundling with form_util_feature, which enables/disables features
-optimize_js("autofill_form_features") {
+# For bundling with autofill_form_features, which enables/disables features
+optimize_js("autofill_form_features_ts_bundling") {
   deps = [
     ":autofill_form_features_ts",
     "//ios/web/public/js_messaging:gcrweb",
@@ -84,10 +88,28 @@ optimize_js("autofill_form_features") {
   sources = _script
 }
 
-compile_ts("child_frame_registration_ts_lib") {
+source_set("frame_registration_feature") {
+  sources = [
+    "remote_frame_registration_java_script_feature.h",
+    "remote_frame_registration_java_script_feature.mm",
+  ]
+  deps = [
+    ":autofill_form_features",
+    ":child_frame_registrar",
+    ":child_frame_registration_ts",
+    "//base",
+    "//components/autofill/core/common:features",
+    "//components/autofill/ios/common",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
+optimize_ts("child_frame_registration_ts") {
   sources = [ "resources/child_frame_registration_lib.ts" ]
   deps = [
     ":autofill_form_features_ts",
+    ":fill_js_namespace",
     "//ios/web/public/js_messaging:frame_id",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
@@ -96,10 +118,7 @@ compile_ts("child_frame_registration_ts_lib") {
 
 optimize_ts("child_frame_registration_test_ts") {
   sources = [ "resources/child_frame_registration_test.ts" ]
-  deps = [
-    ":child_frame_registration_ts_lib",
-    "//ios/web/public/js_messaging:gcrweb",
-  ]
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
 compile_ts("fill_js_dependencies") {
@@ -130,7 +149,6 @@ optimize_ts("fill_js") {
   sources = [ "resources/fill.ts" ]
 
   deps = [
-    ":child_frame_registration_ts_lib",
     ":fill_js_dependencies",
     ":fill_js_namespace",
     "//ios/web/public/js_messaging:frame_id",
@@ -142,7 +160,8 @@ optimize_ts("form_js") {
   sources = [ "resources/form.ts" ]
 
   deps = [
-    "//components/autofill/ios/form_util:fill_js_namespace",
+    ":fill_js_dependencies",
+    ":fill_js_namespace",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -151,7 +170,6 @@ optimize_ts("form_js") {
 optimize_ts("form_handlers_js") {
   sources = [ "resources/form_handlers.ts" ]
   deps = [
-    ":child_frame_registration_ts_lib",
     "//ios/web/public/js_messaging:gcrweb",
     "//ios/web/public/js_messaging:util_scripts",
   ]
@@ -161,33 +179,60 @@ optimize_ts("register_remote_frame_token_js") {
   sources = [ "resources/register_remote_frame_token.ts" ]
 
   deps = [
-    ":child_frame_registration_ts_lib",
+    ":fill_js_dependencies",
     "//ios/web/public/js_messaging:frame_id",
+    "//ios/web/public/js_messaging:gcrweb",
   ]
 }
 
-source_set("cross_content_world_util_feature") {
+source_set("autofill_renderer_id_feature") {
   sources = [
-    "cross_content_world_util_java_script_feature.h",
-    "cross_content_world_util_java_script_feature.mm",
+    "autofill_renderer_id_java_script_feature.h",
+    "autofill_renderer_id_java_script_feature.mm",
   ]
 
   deps = [
-    ":cross_content_world_js",
+    ":autofill_renderer_id_js",
     "//base",
+    "//components/autofill/ios/common",
     "//ios/web/public/js_messaging",
     "//ios/web/public/js_messaging:content_world_header",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
-optimize_ts("cross_content_world_js") {
-  sources = [ "resources/cross_content_world_fill_util.ts" ]
+optimize_ts("autofill_renderer_id_js") {
+  sources = [ "resources/renderer_id.ts" ]
 
   deps = [
     ":fill_js_namespace",
     "//ios/web/public/js_messaging:gcrweb",
   ]
+}
+
+source_set("programmatic_form_submission_handler_feature") {
+  sources = [
+    "programmatic_form_submission_handler_java_script_feature.h",
+    "programmatic_form_submission_handler_java_script_feature.mm",
+  ]
+
+  deps = [
+    ":autofill_form_features",
+    ":form_util",
+    ":form_util_feature",
+    ":programatic_form_submission_js",
+    "//base",
+    "//components/autofill/ios/common",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/js_messaging:content_world_header",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+optimize_ts("programatic_form_submission_js") {
+  sources = [ "resources/programmatic_form_submission_handler.ts" ]
+
+  deps = [ "//ios/web/public/js_messaging:gcrweb" ]
 }
 
 source_set("test_support") {
@@ -206,6 +251,7 @@ source_set("test_support") {
     ":form_util_feature",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/core/common",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
@@ -229,9 +275,41 @@ source_set("child_frame_registrar") {
   ]
 }
 
+source_set("autofill_form_features") {
+  sources = [
+    "autofill_form_features_java_script_feature.h",
+    "autofill_form_features_java_script_feature.mm",
+  ]
+  deps = [
+    ":autofill_form_features_ts_bundling",
+    "//base",
+    "//ios/web/public/js_messaging",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("autofill_form_features_injector") {
+  sources = [
+    "autofill_form_features_injector.h",
+    "autofill_form_features_injector.mm",
+  ]
+  deps = [
+    ":autofill_form_features",
+    "//base",
+    "//components/autofill/core/common:features",
+    "//components/autofill/ios/common",
+    "//ios/web/public",
+    "//ios/web/public:web_state_observer",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/js_messaging:content_world_header",
+  ]
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "autofill_form_features_injector_unittest.mm",
     "child_frame_registrar_unittest.mm",
     "fill_js_unittest.mm",
     "form_activity_observer_bridge_unittest.mm",
@@ -240,13 +318,16 @@ source_set("unit_tests") {
     "remote_frame_token_registration_unittest.mm",
   ]
   deps = [
+    ":autofill_form_features",
+    ":autofill_form_features_injector",
+    ":autofill_renderer_id_feature",
     ":child_frame_registrar",
-    ":cross_content_world_util_feature",
     ":fill_js",
     ":form_handler_feature",
     ":form_js",
     ":form_util",
     ":form_util_feature",
+    ":programmatic_form_submission_handler_feature",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -256,11 +337,14 @@ source_set("unit_tests") {
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
     "//ios/web/public/js_messaging",
+    "//ios/web/public/js_messaging:content_world_header",
     "//ios/web/public/test:javascript_test",
     "//ios/web/public/test:test_fixture",
     "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",
+    "//testing/gmock",
     "//testing/gtest",
+    "//url",
   ]
 }
 if (is_ios) {

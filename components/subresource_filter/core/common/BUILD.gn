@@ -15,6 +15,8 @@ static_library("common") {
     "common_features.h",
     "constants.cc",
     "constants.h",
+    "copying_file_stream.cc",
+    "copying_file_stream.h",
     "document_subresource_filter.cc",
     "document_subresource_filter.h",
     "first_party_origin.cc",

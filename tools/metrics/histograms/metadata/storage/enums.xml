@@ -26,6 +26,27 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<!-- LINT.IfChange(ActivateStorageAccessLoadOutcome) -->
+
+<enum name="ActivateStorageAccessLoadOutcome">
+  <int value="0" label="Failure: header disabled"/>
+  <int value="1" label="Failure: invalid storage access status"/>
+  <int value="2" label="Success"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cookies/cookie_util.h:ActivateStorageAccessLoadOutcome) -->
+
+<!-- LINT.IfChange(ActivateStorageAccessRetryOutcome) -->
+
+<enum name="ActivateStorageAccessRetryOutcome">
+  <int value="0" label="Failure: header disabled"/>
+  <int value="1"
+      label="Failure: ineffective retry, would not change cookie access"/>
+  <int value="2" label="Success"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cookies/cookie_util.h:ActivateStorageAccessRetryOutcome) -->
+
 <!-- LINT.IfChange(AdProtoDecompressionOutcome) -->
 
 <enum name="AdProtoDecompressionOutcome">
@@ -294,6 +315,14 @@ chromium-metrics-reviews@google.com.
   <int value="14" label="Rejected due to invalid origin"/>
 </enum>
 
+<enum name="SecFetchStorageAccessOutcome">
+  <int value="0" label="Omitted: storage access status missing"/>
+  <int value="1" label="Omitted: request credentials mode is not 'include'"/>
+  <int value="2" label="Value: none"/>
+  <int value="3" label="Value: inactive"/>
+  <int value="4" label="Value: active"/>
+</enum>
+
 <enum name="SharedStorageHeaderObserverPermissionsPolicyDoubleCheckStatus">
   <int value="0" label="SubresourceSourceNoRFH">
     The RenderFrameHost was null, so no double check was run. Any previous
@@ -336,6 +365,13 @@ chromium-metrics-reviews@google.com.
     request's origin. Any operations were allowed to proceed, pending a user
     profile check.
   </int>
+</enum>
+
+<enum name="SharedStorageInterestGroupsResultStatus">
+  <int value="0" label="FailureDuringAddModule"/>
+  <int value="1" label="FailurePermissionsPolicyDenied"/>
+  <int value="2" label="FailureBrowserDenied"/>
+  <int value="3" label="Success"/>
 </enum>
 
 <enum name="SharedStorageSelectUrlBudgetStatus">
@@ -564,6 +600,18 @@ chromium-metrics-reviews@google.com.
   <int value="8" label="Storage access allowed due to CORS opt in"/>
   <int value="9" label="Storage access allowed by top-level 3PCD setting"/>
 </enum>
+
+<!-- LINT.IfChange(StorageAccessStatusOutcome) -->
+
+<enum name="StorageAccessStatusOutcome">
+  <int value="0" label="Omitted: feature disabled"/>
+  <int value="1" label="Omitted: same-site request"/>
+  <int value="2" label="Value: none"/>
+  <int value="3" label="Value: inactive"/>
+  <int value="4" label="Value: active"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/cookies/cookie_util.h:StorageAccessStatusOutcome) -->
 
 <enum name="StorageBucketDurabilityParameter">
   <int value="0" label="Not provided"/>

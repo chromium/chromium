@@ -215,11 +215,11 @@ body {
 .month-popup-button:disabled {
     opacity: 0.7;
     background-color: #FFFFFF;
-    color: rgba(16, 16, 16, 0.3);
+    color: var(--month-popup-button-disabled-color);
 }
 
 .month-popup-button:disabled polygon {
-  fill: rgba(16, 16, 16, 0.3) !important;
+  fill: var(--month-popup-button-disabled-color) !important;
 }
 
 .month-button:hover {

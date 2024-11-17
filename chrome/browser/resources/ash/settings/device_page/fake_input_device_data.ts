@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AcceleratorAction, ActionChoice, ChargeState, CompanionAppState, CustomizableButton, CustomizationRestriction, ExtendedFkeysModifier, GraphicsTablet, GraphicsTabletButtonConfig, Keyboard, MetaKey, ModifierKey, Mouse, MouseButtonConfig, PointingStick, SimulateRightClickModifier, SixPackKeyInfo, SixPackShortcutModifier, StaticShortcutAction, Stylus, TopRowActionKey, Touchpad, Vkey} from './input_device_settings_types.js';
+import type {ActionChoice, GraphicsTablet, Keyboard, Mouse, PointingStick, SixPackKeyInfo, Stylus, Touchpad} from './input_device_settings_types.js';
+import {AcceleratorAction, ChargeState, CompanionAppState, CustomizableButton, CustomizationRestriction, ExtendedFkeysModifier, GraphicsTabletButtonConfig, MetaKey, ModifierKey, MouseButtonConfig, SimulateRightClickModifier, SixPackShortcutModifier, StaticShortcutAction, TopRowActionKey, Vkey} from './input_device_settings_types.js';
 
 const defaultSixPackKeyRemappings: SixPackKeyInfo = {
   pageDown: SixPackShortcutModifier.kSearch,

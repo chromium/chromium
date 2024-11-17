@@ -13,6 +13,7 @@
 #include "base/containers/stack.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -410,7 +411,8 @@ class DriveBackendSyncTest : public testing::Test,
       app_root_by_title[remote_entry->title()] = remote_entry.get();
     }
 
-    for (std::map<std::string, CannedSyncableFileSystem*>::const_iterator itr =
+    for (std::map<std::string, raw_ptr<CannedSyncableFileSystem,
+                                       CtnExperimental>>::const_iterator itr =
              file_systems_.begin();
          itr != file_systems_.end(); ++itr) {
       const std::string& app_id = itr->first;
@@ -599,7 +601,8 @@ class DriveBackendSyncTest : public testing::Test,
   int64_t pending_local_changes_;
 
   std::unique_ptr<FakeDriveServiceHelper> fake_drive_service_helper_;
-  std::map<std::string, CannedSyncableFileSystem*> file_systems_;
+  std::map<std::string, raw_ptr<CannedSyncableFileSystem, CtnExperimental>>
+      file_systems_;
 
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;

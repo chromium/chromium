@@ -32,10 +32,10 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.TestActivity;
 
@@ -49,7 +49,7 @@ public class OmniboxActionDelegateImplUnitTest {
     private @Mock Consumer<String> mMockOpenUrl;
     private @Mock Runnable mMockOpenIncognitoPage;
     private @Mock Runnable mMockOpenPasswordSettings;
-    private @Mock SettingsLauncher mMockSettingsLauncher;
+    private @Mock SettingsNavigation mMockSettingsNavigation;
     private @Mock Tab mTab;
     private @Mock Runnable mMockOpenQuickDeleteDialog;
     private AtomicReference<Tab> mTabReference = new AtomicReference<>();
@@ -68,7 +68,7 @@ public class OmniboxActionDelegateImplUnitTest {
                         mMockOpenIncognitoPage,
                         mMockOpenPasswordSettings,
                         mMockOpenQuickDeleteDialog);
-        SettingsLauncherFactory.setInstanceForTesting(mMockSettingsLauncher);
+        SettingsNavigationFactory.setInstanceForTesting(mMockSettingsNavigation);
     }
 
     @After
@@ -94,8 +94,8 @@ public class OmniboxActionDelegateImplUnitTest {
     @Test
     public void openSettingsPage() {
         mDelegate.openSettingsPage(SettingsFragment.ACCESSIBILITY);
-        verify(mMockSettingsLauncher, times(1))
-                .launchSettingsActivity(mContext, SettingsFragment.ACCESSIBILITY);
+        verify(mMockSettingsNavigation, times(1))
+                .startSettings(mContext, SettingsFragment.ACCESSIBILITY);
     }
 
     @Test
@@ -144,9 +144,8 @@ public class OmniboxActionDelegateImplUnitTest {
     @DisableFeatures(ChromeFeatureList.QUICK_DELETE_FOR_ANDROID)
     public void openClearBrowsingData() {
         mDelegate.handleClearBrowsingData();
-        verify(mMockSettingsLauncher)
-                .launchSettingsActivity(
-                        mContext, SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
+        verify(mMockSettingsNavigation)
+                .startSettings(mContext, SettingsFragment.CLEAR_BROWSING_DATA_ADVANCED_PAGE);
     }
 
     @Test

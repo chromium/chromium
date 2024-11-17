@@ -5,14 +5,33 @@
 #ifndef CHROME_BROWSER_DIPS_DIPS_REDIRECT_INFO_H_
 #define CHROME_BROWSER_DIPS_DIPS_REDIRECT_INFO_H_
 
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
-#include "chrome/browser/dips/dips_utils.h"
+enum class DIPSCookieMode { kBlock3PC, kOffTheRecord_Block3PC };
+
+enum class DIPSRedirectType { kClient, kServer };
+
+// SiteDataAccessType:
+// NOTE: We use this type as a bitfield and log it. Don't
+// change the values or add additional members.
+enum class SiteDataAccessType {
+  kUnknown = -1,
+  kNone = 0,
+  kRead = 1,
+  kWrite = 2,
+  kReadWrite = 3
+};
+
+const char* DIPSCookieModeToString(DIPSCookieMode mode);
+const char* DIPSRedirectTypeToString(DIPSRedirectType type);
+std::string_view SiteDataAccessTypeToString(SiteDataAccessType type);
 
 struct UrlAndSourceId {
   GURL url;
@@ -60,7 +79,10 @@ struct DIPSRedirectInfo {
   DIPSRedirectInfo(const UrlAndSourceId& url,
                    DIPSRedirectType redirect_type,
                    SiteDataAccessType access_type,
-                   base::Time time);
+                   base::Time time,
+                   bool was_response_cached,
+                   int response_code,
+                   base::TimeDelta server_bounce_delay);
   // Constructor for client-side redirects.
   DIPSRedirectInfo(const UrlAndSourceId& url,
                    DIPSRedirectType redirect_type,
@@ -69,6 +91,16 @@ struct DIPSRedirectInfo {
                    base::TimeDelta client_bounce_delay,
                    bool has_sticky_activation,
                    bool web_authn_assertion_request_succeeded);
+  DIPSRedirectInfo(const UrlAndSourceId& url,
+                   DIPSRedirectType redirect_type,
+                   SiteDataAccessType access_type,
+                   base::Time time,
+                   base::TimeDelta client_bounce_delay,
+                   bool has_sticky_activation,
+                   bool web_authn_assertion_request_succeeded,
+                   bool was_response_cached,
+                   int response_code,
+                   base::TimeDelta server_bounce_delay);
   DIPSRedirectInfo(const DIPSRedirectInfo&);
   ~DIPSRedirectInfo();
 
@@ -100,6 +132,11 @@ struct DIPSRedirectInfo {
   // For client redirects, whether the user ever triggered a web authn assertion
   // call.
   const bool web_authn_assertion_request_succeeded;
+
+  // The following properties are only applicable for server-side redirects:
+  const bool was_response_cached;
+  const int response_code;
+  const base::TimeDelta server_bounce_delay;
 };
 
 // a movable DIPSRedirectInfo, essentially

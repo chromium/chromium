@@ -9,7 +9,7 @@
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/android/android_theme_resources.h"
 #include "chrome/browser/android/resource_mapper.h"
-#include "chrome/browser/safe_browsing/android/safe_browsing_settings_launcher_android.h"
+#include "chrome/browser/safe_browsing/android/safe_browsing_settings_navigation_android.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/messages/android/message_dispatcher_bridge.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_outcome.h"

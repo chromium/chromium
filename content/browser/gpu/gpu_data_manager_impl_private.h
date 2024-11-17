@@ -207,6 +207,13 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
           message(_message) { }
   };
 
+  // GPUInfo related data that should stay the same value even after GPUInfo is
+  // updated. After GPU process restart different GPUInfo can be sent back to
+  // the browser so the values here will be used reset the fixed data.
+  struct FixedGpuInfo {
+    std::optional<bool> hardware_supports_vulkan;
+  };
+
   // Decide the order of GPU process states, and go to the first one. This
   // should only be called once, during initialization.
   void InitializeGpuModes();
@@ -241,6 +248,7 @@ class CONTENT_EXPORT GpuDataManagerImplPrivate {
   const raw_ptr<GpuDataManagerImpl> owner_;
 
   gpu::GpuFeatureInfo gpu_feature_info_;
+  FixedGpuInfo fixed_gpu_info_;
   gpu::GPUInfo gpu_info_;
   gl::GpuPreference active_gpu_heuristic_ = gl::GpuPreference::kDefault;
 #if BUILDFLAG(IS_WIN)

@@ -7,8 +7,9 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "gpu/config/gpu_feature_info.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-forward.h"
-#include "services/webnn/public/mojom/webnn_tensor.mojom-forward.h"
+#include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_graph_impl.h"
 #include "third_party/microsoft_dxheaders/include/directml.h"

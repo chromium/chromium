@@ -315,9 +315,7 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
         return result;
 
       case H264Parser::kUnsupportedStream:
-        NOTREACHED_IN_MIGRATION()
-            << "AdvanceToNextNALU() returned kUnsupportedStream!";
-        return result;
+        NOTREACHED() << "AdvanceToNextNALU() returned kUnsupportedStream!";
 
       case H264Parser::kEOStream:
         done = true;

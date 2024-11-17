@@ -549,8 +549,8 @@ CGFloat ConvertVerticalCoordonateWithMainViewReference(UIView* mainView,
 
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-      UITraitPreferredContentSizeCategory.self, UITraitVerticalSizeClass.self,
-      UITraitHorizontalSizeClass.self
+      UITraitPreferredContentSizeCategory.class, UITraitVerticalSizeClass.class,
+      UITraitHorizontalSizeClass.class
     ]);
     [self registerForTraitChanges:traits
                        withAction:@selector(updateUIOnTraitChange)];

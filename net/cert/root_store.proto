@@ -32,6 +32,11 @@ message ConstraintSet {
   // For example, max_version_exclusive="122" will match any M-121 or earlier
   // version, and will not match any M-122 version.
   optional string max_version_exclusive = 4;
+
+  // All DNS names in the leaf certificate subjectAltNames must fall within the
+  // subtrees defined by `permitted_dns_names`. The constraints are interpereted
+  // as described in RFC 5280 section 4.2.1.10.
+  repeated string permitted_dns_names = 5;
 }
 
 message TrustAnchor {

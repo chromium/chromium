@@ -34,6 +34,15 @@ class DriveMetricsProvider : public metrics::MetricsProvider {
   void ProvideSystemProfileMetrics(
       metrics::SystemProfileProto* system_profile_proto) override;
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class OptionalBoolRecord {
+    kUnknown = 0,
+    kFalse = 1,
+    kTrue = 2,
+    kMaxValue = kTrue,
+  };
+
  private:
   FRIEND_TEST_ALL_PREFIXES(DriveMetricsProviderTest, HasSeekPenalty);
 
@@ -41,8 +50,10 @@ class DriveMetricsProvider : public metrics::MetricsProvider {
   // |has_seek_penalty| is set if |success| is true.
   struct SeekPenaltyResponse {
     SeekPenaltyResponse();
-    bool success;
-    bool has_seek_penalty;
+    std::optional<bool> has_seek_penalty;
+    std::optional<bool> has_seek_penalty_base;
+    std::optional<bool> is_removable;
+    std::optional<bool> is_usb;
   };
 
   struct DriveMetrics {

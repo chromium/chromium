@@ -36,8 +36,10 @@
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/mailbox.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/media_switches.h"
 #include "ui/aura/env.h"
@@ -309,7 +311,19 @@ Buffer::Texture::Texture(
   gpu::SharedImageUsageSet usage = gpu::SHARED_IMAGE_USAGE_RASTER_READ |
                                    gpu::SHARED_IMAGE_USAGE_RASTER_WRITE |
                                    gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
-  if (is_overlay_candidate) {
+
+  bool add_scanout_usage = is_overlay_candidate;
+
+  // Scanout usage should be added only if scanout of SharedImages is supported.
+  // However, historically this was not checked.
+  // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
+  if (base::FeatureList::IsEnabled(
+          features::kExoBufferAddScanoutUsageOnlyIfSupportedBySharedImage)) {
+    add_scanout_usage = add_scanout_usage &&
+                        sii->GetCapabilities().supports_scanout_shared_images;
+  }
+
+  if (add_scanout_usage) {
     usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
   }
 
@@ -425,14 +439,9 @@ gpu::SyncToken Buffer::Texture::CopyTexImage(
     DCHECK_NE(query_id_, 0u);
     ri->BeginQueryEXT(query_type_, query_id_);
 
-    // This function is used only to copy a Texture backed by a GMB to a Texture
-    // that is not backed by a GMB and has RGBA_8888 format. The texture target
-    // to use for RGBA_8888 on ChromeOS is always GL_TEXTURE_2D.
     ri->CopySharedImage(shared_image_->mailbox(),
-                        destination->shared_image_->mailbox(), GL_TEXTURE_2D, 0,
-                        0, 0, 0, size_.width(), size_.height(),
-                        /*unpack_flip_y=*/false,
-                        /*unpack_premultiply_alpha=*/false);
+                        destination->shared_image_->mailbox(), 0, 0, 0, 0,
+                        size_.width(), size_.height());
     ri->EndQueryEXT(query_type_);
     // Run callback when query result is available.
     ReleaseWhenQueryResultIsAvailable(std::move(callback));
@@ -569,7 +578,7 @@ Buffer::Buffer(gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
       y_invert_(y_invert),
       wait_for_release_delay_(base::Milliseconds(kWaitForReleaseDelayMs)) {}
 
-Buffer::~Buffer() {}
+Buffer::~Buffer() = default;
 
 // static
 std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
@@ -973,10 +982,8 @@ SkBitmap Buffer::CreateBitmap() {
   SkImageInfo image_info = SkImageInfo::Make(size.width(), size.height(),
                                              color_type, kPremul_SkAlphaType);
 
-  SkPixmap pixmap =
-      SkPixmap(image_info, mapping->Memory(0), mapping->Stride(0));
   bitmap.allocPixels(image_info);
-  bitmap.writePixels(pixmap);
+  bitmap.writePixels(mapping->GetSkPixmapForPlane(0, image_info));
   bitmap.setImmutable();
   mapping.reset();
 

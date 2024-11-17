@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">Cod QR</translation>
 <translation id="2244252133441425811">Galluogi dewisydd FPS fideo</translation>
 <translation id="2271433936731426666">Galluogi ciplun fideo maint llawn</translation>
-<translation id="2281736597583450397">Cael manylion mwy manwl gyda chwyddo gwell</translation>
 <translation id="2320741269052147773">Panio i'r chwith</translation>
 <translation id="2360840973209616515">Rheolir yr ap camera gan eich gweinyddwr.
         Am fanylion, cysylltwch â'r gweinyddwr.</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">Pellhau</translation>
 <translation id="5976160379964388480">Eraill</translation>
 <translation id="6073451960410192870">Stopio recordio</translation>
-<translation id="6165508094623778733">Dysgu rhagor</translation>
 <translation id="6197807149213783179">Cadw metaddata</translation>
 <translation id="6233780560267770709">3 wrth 3</translation>
 <translation id="6243827288366940320">Cymhareb euraidd</translation>
@@ -122,7 +120,6 @@
 Os yw'ch adborth yn ymwneud ag ansawdd lluniau neu fideos, atodwch lun neu fideo enghreifftiol a disgrifiwch beth sy'n bod. (Er enghraifft, mae'r llun yn rhy dywyll neu nid yw'r ffocws ar y goddrych.)</translation>
 <translation id="6519884562954018934">Ymuno <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">Rhannu</translation>
-<translation id="6586509689874700895">Yn gyntaf, pwyswch <ph name="BUTTON_NAME" /> i chwyddo. Yna, ar ôl i chi dynnu llun, byddwch yn gweld manylion gwell.</translation>
 <translation id="659539649712855529">Wedi copïo <ph name="CONTENT" /></translation>
 <translation id="6617916774429601017">Dangos yr holl gydraniadau</translation>
 <translation id="6631515515009660915">Adlewyrchu wedi'i ddiffodd</translation>
@@ -168,7 +165,6 @@ Os yw'ch adborth yn ymwneud ag ansawdd lluniau neu fideos, atodwch lun neu fideo
 <translation id="8609951387004618906">Agor <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">Toglo distewi'r meicroffon. Mae distewi ymlaen</translation>
-<translation id="8712637175834984815">Iawn</translation>
 <translation id="8730621377337864115">Wedi gorffen</translation>
 <translation id="8732462232047530626">Rhagweld metaddata</translation>
 <translation id="874854738381978209">Rhwydwaith Wi-Fi wedi'i ganfod.</translation>

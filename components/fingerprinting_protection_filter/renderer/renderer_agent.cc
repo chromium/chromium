@@ -5,17 +5,23 @@
 #include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/fingerprinting_protection_filter/mojom/fingerprinting_protection_filter.mojom.h"
-#include "components/fingerprinting_protection_filter/renderer/renderer_url_loader_throttle.h"
 #include "components/fingerprinting_protection_filter/renderer/unverified_ruleset_dealer.h"
-#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
-#include "components/subresource_filter/content/shared/renderer/web_document_subresource_filter_impl.h"
+#include "components/subresource_filter/content/shared/common/utils.h"
+#include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/common/memory_mapped_ruleset.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/renderer/render_frame.h"
@@ -48,53 +54,7 @@ bool IsFencedFrameRoot(content::RenderFrame* render_frame) {
 
 }  // namespace
 
-// static
-//
-// If no activation state is found to inherit the returned `ActivationLevel`
-// will be `kDisabled`.
-subresource_filter::mojom::ActivationState
-RendererAgent::GetInheritedActivationState(content::RenderFrame* render_frame) {
-  if (!render_frame) {
-    return subresource_filter::mojom::ActivationState();
-  }
-
-  // A fenced frame is isolated from its outer embedder so we cannot inspect
-  // the parent's activation state. However, that's ok because the embedder
-  // cannot script the fenced frame so we can wait until a navigation to set
-  // activation state.
-  if (IsFencedFrameRoot(render_frame)) {
-    return subresource_filter::mojom::ActivationState();
-  }
-
-  blink::WebFrame* frame_to_inherit_from =
-      render_frame->IsMainFrame() ? render_frame->GetWebFrame()->Opener()
-                                  : render_frame->GetWebFrame()->Parent();
-
-  if (!frame_to_inherit_from || !frame_to_inherit_from->IsWebLocalFrame()) {
-    return subresource_filter::mojom::ActivationState();
-  }
-
-  blink::WebSecurityOrigin render_frame_origin =
-      render_frame->GetWebFrame()->GetSecurityOrigin();
-  blink::WebSecurityOrigin inherited_origin =
-      frame_to_inherit_from->GetSecurityOrigin();
-
-  // Only inherit from same-origin frames.
-  if (render_frame_origin.IsSameOriginWith(inherited_origin)) {
-    auto* agent = RendererAgent::Get(content::RenderFrame::FromWebFrame(
-        frame_to_inherit_from->ToWebLocalFrame()));
-    if (agent && agent->filter_) {
-      return agent->filter_->activation_state();
-    }
-  }
-
-  return subresource_filter::mojom::ActivationState();
-}
-
 GURL RendererAgent::GetMainDocumentUrl() {
-  if (!render_frame()) {
-    return GURL();
-  }
   auto* main_render_frame = render_frame()->IsMainFrame()
                                 ? render_frame()
                                 : render_frame()->GetMainRenderFrame();
@@ -106,11 +66,13 @@ GURL RendererAgent::GetMainDocumentUrl() {
 }
 
 bool RendererAgent::IsTopLevelMainFrame() {
-  if (!render_frame()) {
-    return false;
-  }
   return render_frame()->IsMainFrame() &&
          !render_frame()->IsInFencedFrameTree();
+}
+
+bool RendererAgent::HasValidOpener() {
+  return render_frame()->GetWebFrame()->Opener() &&
+         render_frame()->GetWebFrame()->Opener()->IsWebLocalFrame();
 }
 
 RendererAgent::RendererAgent(content::RenderFrame* render_frame,
@@ -119,15 +81,53 @@ RendererAgent::RendererAgent(content::RenderFrame* render_frame,
       content::RenderFrameObserverTracker<RendererAgent>(render_frame),
       ruleset_dealer_(ruleset_dealer) {}
 
-RendererAgent::~RendererAgent() {
-  DeleteAllThrottles();
+RendererAgent::~RendererAgent() = default;
+
+std::optional<subresource_filter::mojom::ActivationState>
+RendererAgent::GetInheritedActivationState() {
+  // A fenced frame is isolated from its outer embedder so we cannot inspect
+  // the parent's activation state. However, that's ok because the embedder
+  // cannot script the fenced frame so we can wait until a navigation to set
+  // activation state.
+  if (IsFencedFrameRoot(render_frame())) {
+    return std::nullopt;
+  }
+
+  blink::WebFrame* frame_to_inherit_from =
+      render_frame()->IsMainFrame() ? render_frame()->GetWebFrame()->Opener()
+                                    : render_frame()->GetWebFrame()->Parent();
+
+  if (!frame_to_inherit_from || !frame_to_inherit_from->IsWebLocalFrame()) {
+    return std::nullopt;
+  }
+
+  blink::WebSecurityOrigin render_frame_origin =
+      render_frame()->GetWebFrame()->GetSecurityOrigin();
+  blink::WebSecurityOrigin inherited_origin =
+      frame_to_inherit_from->GetSecurityOrigin();
+
+  // Only inherit from same-origin frames, or any origin if the current frame
+  // doesn't have one.
+  if (render_frame_origin.IsNull() ||
+      render_frame_origin.IsSameOriginWith(inherited_origin)) {
+    auto* agent = RendererAgent::Get(content::RenderFrame::FromWebFrame(
+        frame_to_inherit_from->ToWebLocalFrame()));
+    if (agent) {
+      return agent->filter_ ? agent->filter_->activation_state()
+                            : subresource_filter::mojom::ActivationState();
+    }
+  }
+  return std::nullopt;
 }
 
 void RendererAgent::RequestActivationState() {
-  if (render_frame()) {
-    // We will be notified of activation with a callback if there is a valid
-    // `FingerprintingProtectionHost` on the browser.
-    GetFingerprintingProtectionHost()->CheckActivation(base::BindOnce(
+  CHECK(pending_activation_);
+  activation_state_ = subresource_filter::mojom::ActivationState();
+  // We will be notified of activation with a callback if there is a valid
+  // `FingerprintingProtectionHost` on the browser.
+  auto* fp_host = GetFingerprintingProtectionHost();
+  if (fp_host) {
+    fp_host->CheckActivation(base::BindOnce(
         &RendererAgent::OnActivationComputed, base::Unretained(this)));
   }
 }
@@ -135,14 +135,18 @@ void RendererAgent::RequestActivationState() {
 void RendererAgent::Initialize() {
   current_document_url_ = GetMainDocumentUrl();
   pending_activation_ = true;
-
-  if (subresource_filter::ShouldInheritActivation(current_document_url_)) {
-    activation_state_ = GetInheritedActivationState(render_frame());
-    pending_activation_ =
-        (activation_state_.activation_level ==
-         subresource_filter::mojom::ActivationLevel::kDisabled);
-    MaybeCreateNewFilter();
+  if (!IsTopLevelMainFrame() || HasValidOpener()) {
+    // Attempt to inherit activation only for child frames or main frames that
+    // are opened from another page.
+    std::optional<subresource_filter::mojom::ActivationState> inherited_state =
+        GetInheritedActivationState();
+    if (inherited_state.has_value()) {
+      activation_state_ = inherited_state.value();
+      pending_activation_ = false;
+      MaybeCreateNewFilter();
+    }
   }
+
   if (pending_activation_) {
     RequestActivationState();
   }
@@ -156,128 +160,128 @@ void RendererAgent::DidCreateNewDocument() {
   // message.
   if (IsTopLevelMainFrame()) {
     fingerprinting_protection_host_.reset();
+    notified_disallow_ = false;
     auto new_origin = url::Origin::Create(new_document_url);
     auto current_origin = url::Origin::Create(current_document_url_);
     // Could be same origin for refreshes, etc.
     if (!new_origin.IsSameOriginWith(current_origin)) {
       filter_.reset();
+      Initialize();
     }
   }
-
   current_document_url_ = new_document_url;
-  if (current_document_url_ != GURL()) {
-    // The main document for the page has changed - request new activation.
-    RequestActivationState();
-  }
 }
 
 void RendererAgent::DidFailProvisionalLoad() {
   // We know the document will change (or this agent will be deleted) since a
-  // navigation did not commit - set up to request new activation.
+  // navigation did not commit - set up to request new activation in
+  // `DidCreateNewDocument()`.
   activation_state_ = subresource_filter::mojom::ActivationState();
   pending_activation_ = true;
 }
 
-void RendererAgent::WillDetach(blink::DetachReason detach_reason) {
-  DeleteAllThrottles();
+void RendererAgent::DidFinishLoad() {
+  if (!filter_) {
+    return;
+  }
+  const auto& statistics = filter_->statistics();
+  SendDocumentLoadStatistics(statistics);
 }
 
 void RendererAgent::OnDestruct() {
-  DeleteAllThrottles();
+  // Deleting itself here ensures that a `RendererAgent` does not need to
+  // check the validity of `render_frame()` before using it and avoids a memory
+  // leak.
+  delete this;
 }
 
-void RendererAgent::AddThrottle(RendererURLLoaderThrottle* throttle) {
-  // Should only be called by throttles, so the throttle should always be valid.
-  CHECK(throttle);
-  throttles_.insert(throttle);
-  if (!pending_activation_) {
-    // Notify the new throttle if we already know the activation state.
-    throttle->OnActivationComputed(activation_state_);
-  }
-}
+void RendererAgent::OnSubresourceDisallowed(std::string_view subresource_url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!notified_disallow_) {
+    notified_disallow_ = true;
 
-void RendererAgent::DeleteThrottle(RendererURLLoaderThrottle* throttle) {
-  if (!throttle) {
-    return;
-  }
-  throttles_.erase(throttle);
-}
-
-void RendererAgent::DeleteAllThrottles() {
-  for (const raw_ptr<RendererURLLoaderThrottle> throttle : throttles_) {
-    if (throttle) {
-      // Notify throttles of activation so any ongoing loads are not left
-      // deferred.
-      throttle->OnActivationComputed(activation_state_);
+    // Notify the browser that a subresource was disallowed on the renderer
+    // (for metrics or UI logic).
+    auto* fp_host = GetFingerprintingProtectionHost();
+    if (fp_host) {
+      fp_host->DidDisallowFirstSubresource();
     }
-  }
 
-  for (raw_ptr<RendererURLLoaderThrottle>& throttle : throttles_) {
-    DeleteThrottle(throttle);
+#if defined(_DEBUG)
+    if (features::IsFingerprintingProtectionConsoleLoggingEnabled()) {
+      // Log message to console.
+      std::string console_message = base::StringPrintf(
+          kDisallowSubresourceConsoleDebugMessageFormat, subresource_url);
+      render_frame()->AddMessageToConsole(
+          blink::mojom::ConsoleMessageLevel::kError, console_message);
+    }
+#endif
   }
-}
-
-void RendererAgent::OnSubresourceDisallowed() {
-  // Notify the browser that a subresource was disallowed on the renderer
-  // (for metrics or UI logic).
-  GetFingerprintingProtectionHost()->DidDisallowFirstSubresource();
 }
 
 void RendererAgent::OnActivationComputed(
     subresource_filter::mojom::ActivationStatePtr activation_state) {
+  if (!pending_activation_) {
+    return;
+  }
+
   activation_state_ = *activation_state;
   pending_activation_ = false;
 
-  if (activation_state_.activation_level !=
-      subresource_filter::mojom::ActivationLevel::kDisabled) {
-    MaybeCreateNewFilter();
-  }
+  MaybeCreateNewFilter();
 
-  for (const raw_ptr<RendererURLLoaderThrottle> throttle : throttles_) {
-    throttle->OnActivationComputed(*activation_state);
+  for (auto& callback : pending_activation_callbacks_) {
+    std::move(callback).Run(activation_state_);
   }
+  pending_activation_callbacks_.clear();
+}
+
+void RendererAgent::GetActivationState(ActivationCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!pending_activation_) {
+    std::move(callback).Run(activation_state_);
+  } else {
+    pending_activation_callbacks_.emplace_back(std::move(callback));
+  }
+}
+
+void RendererAgent::CheckURL(const GURL& url,
+                             url_pattern_index::proto::ElementType element_type,
+                             FilterCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  subresource_filter::LoadPolicy load_policy =
+      subresource_filter::LoadPolicy::ALLOW;
+  if (filter_) {
+    load_policy = filter_->GetLoadPolicy(url, element_type);
+  }
+  std::move(callback).Run(load_policy);
 }
 
 mojom::FingerprintingProtectionHost*
 RendererAgent::GetFingerprintingProtectionHost() {
-  if (!fingerprinting_protection_host_) {
-    if (render_frame()) {
-      // Attempt a new connection to a host on the browser.
-      render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
-          &fingerprinting_protection_host_);
-    }
+  if (!fingerprinting_protection_host_.is_bound()) {
+    // Attempt a new connection to a host on the browser.
+    render_frame()->GetRemoteAssociatedInterfaces()->GetInterface(
+        &fingerprinting_protection_host_);
+    // Default to disabled activation if there is no response from the browser
+    // before the host disconnects. This handler will not be called if the
+    // host is reset due to a new document being created on the same frame.
+    fingerprinting_protection_host_.set_disconnect_handler(base::BindOnce(
+        &RendererAgent::OnActivationComputed, base::Unretained(this),
+        subresource_filter::mojom::ActivationState::New()));
   }
-  return fingerprinting_protection_host_.get();
+  return fingerprinting_protection_host_.is_bound()
+             ? fingerprinting_protection_host_.get()
+             : nullptr;
 }
 
-void RendererAgent::SetFilterForCurrentDocument(
-    std::unique_ptr<blink::WebDocumentSubresourceFilter> filter) {
-  if (!render_frame()) {
-    return;
-  }
-  CHECK(render_frame()->GetWebFrame());
-  CHECK(render_frame()->GetWebFrame()->GetDocumentLoader());
-
-  blink::WebLocalFrame* web_frame = render_frame()->GetWebFrame();
-  CHECK(web_frame->GetDocumentLoader());
-  // TODO(https://crbug.com/40280666): Set the filter on the `DocumentLoader`
-  // once it is supported.
+void RendererAgent::SetFilter(
+    std::unique_ptr<subresource_filter::DocumentSubresourceFilter> filter) {
+  filter_ = std::move(filter);
 }
 
 void RendererAgent::MaybeCreateNewFilter() {
-  if (pending_activation_ ||
-      activation_state_.activation_level ==
-          subresource_filter::mojom::ActivationLevel::kDisabled) {
-    return;
-  }
-
-  if (!ruleset_dealer_ || !ruleset_dealer_->IsRulesetFileAvailable()) {
-    return;
-  }
-
-  scoped_refptr<const subresource_filter::MemoryMappedRuleset> ruleset =
-      ruleset_dealer_->GetRuleset();
-  if (!ruleset) {
+  if (pending_activation_ || !ruleset_dealer_) {
     return;
   }
 
@@ -286,15 +290,59 @@ void RendererAgent::MaybeCreateNewFilter() {
     return;
   }
 
-  base::OnceClosure first_disallowed_load_callback(base::BindOnce(
-      &RendererAgent::OnSubresourceDisallowed, weak_factory_.GetWeakPtr()));
+  const bool should_record_histograms =
+      !IsTopLevelMainFrame() || current_document_url_.SchemeIsHTTPOrHTTPS() ||
+      current_document_url_.IsAboutBlank() ||
+      current_document_url_.SchemeIsFile();
+  if (should_record_histograms) {
+    RecordHistogramsOnFilterCreation(activation_state_);
+  }
+
+  // Note: Even if there is a memory mapping failure for the ruleset, the
+  // ruleset dealer can still have ruleset file(s) to read from,. Hence, the
+  // relevant histogram(s) are still emitted prior.
+  scoped_refptr<const subresource_filter::MemoryMappedRuleset> ruleset =
+      ruleset_dealer_->GetRuleset();
+  if (!ruleset) {
+    return;
+  }
+
+  if (activation_state_.activation_level ==
+          subresource_filter::mojom::ActivationLevel::kDisabled ||
+      !ruleset_dealer_->IsRulesetFileAvailable()) {
+    return;
+  }
+
   url::Origin origin = url::Origin::Create(current_document_url_);
-  auto new_filter =
-      std::make_unique<subresource_filter::WebDocumentSubresourceFilterImpl>(
-          std::move(origin), activation_state_, std::move(ruleset),
-          std::move(first_disallowed_load_callback));
-  filter_ = new_filter->AsWeakPtr();
-  SetFilterForCurrentDocument(std::move(new_filter));
+  SetFilter(std::make_unique<subresource_filter::DocumentSubresourceFilter>(
+      std::move(origin), activation_state_, std::move(ruleset),
+      kFingerprintingProtectionRulesetConfig.uma_tag));
+}
+
+void RendererAgent::SendDocumentLoadStatistics(
+    const subresource_filter::mojom::DocumentLoadStatistics& statistics) {
+  GetFingerprintingProtectionHost()->SetDocumentLoadStatistics(
+      statistics.Clone());
+}
+
+// Record histograms when a new document is created, in particular when the
+// current document is an interesting root frame document (e.g. a filter child,
+// a file URL, http/https scheme).
+void RendererAgent::RecordHistogramsOnFilterCreation(
+    const subresource_filter::mojom::ActivationState& activation_state) {
+  subresource_filter::mojom::ActivationLevel activation_level =
+      activation_state.activation_level;
+
+  if (IsTopLevelMainFrame()) {
+    UMA_HISTOGRAM_BOOLEAN(
+        MainFrameLoadRulesetIsAvailableAnyActivationLevelHistogramName,
+        ruleset_dealer_->IsRulesetFileAvailable());
+  }
+  if (activation_level !=
+      subresource_filter::mojom::ActivationLevel::kDisabled) {
+    UMA_HISTOGRAM_BOOLEAN(DocumentLoadRulesetIsAvailableHistogramName,
+                          ruleset_dealer_->IsRulesetFileAvailable());
+  }
 }
 
 }  // namespace fingerprinting_protection_filter

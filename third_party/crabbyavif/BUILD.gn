@@ -2,13 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/rust/rust_bindgen.gni")
+import("//build/rust/rust_bindgen_generator.gni")
 import("//build/rust/rust_static_library.gni")
 
-rust_bindgen("crabbyavif_dav1d_bindings") {
+rust_bindgen_generator("crabbyavif_dav1d_bindings") {
   header = "src/sys/dav1d-sys/wrapper.h"
   deps = [ "//third_party/dav1d:dav1d_headers" ]
   configs = [ "//third_party/dav1d:dav1d_config" ]
+  output_name = "dav1d_bindgen"
   bindgen_flags = [
     "no-doc-comments",
     "generate=functions,types,vars,methods,constructors,destructors",
@@ -30,25 +31,19 @@ rust_static_library("crabbyavif_dav1d_sys") {
   # This is a wrapper interface to a C library. So unsafe has to be allowed.
   allow_unsafe = true
   crate_name = "dav1d_sys"
-
   sources = [ "src/sys/dav1d-sys/src/lib.rs" ]
-
-  deps = [ ":crabbyavif_dav1d_bindings" ]
-
-  _bindgen_output = get_target_outputs(":crabbyavif_dav1d_bindings")
-  inputs = _bindgen_output
-  rustenv =
-      [ "CRABBYAVIF_DAV1D_BINDINGS_RS=" +
-        rebase_path(_bindgen_output[0], get_path_info(crate_root, "dir")) ]
+  bindgen_deps = [ ":crabbyavif_dav1d_bindings" ]
 }
 
-rust_bindgen("crabbyavif_libyuv_bindings") {
+rust_bindgen_generator("crabbyavif_libyuv_bindings") {
   header = "src/sys/libyuv-sys/wrapper.h"
   configs = [ "//third_party/libyuv:libyuv_config" ]
+  output_name = "libyuv_bindgen"
   bindgen_flags = [
     "no-doc-comments",
     "generate=functions,types,vars,methods,constructors,destructors",
     "allowlist-item=AR30ToAB30",
+    "allowlist-item=ARGBToABGR",
     "allowlist-item=ARGBAttenuate",
     "allowlist-item=ARGBUnattenuate",
     "allowlist-item=Convert16To8Plane",
@@ -87,7 +82,10 @@ rust_bindgen("crabbyavif_libyuv_bindings") {
     "allowlist-item=I444AlphaToARGBMatrix",
     "allowlist-item=I444ToARGBMatrix",
     "allowlist-item=I444ToRGB24Matrix",
+    "allowlist-item=NV12ToARGBMatrix",
+    "allowlist-item=NV21ToARGBMatrix",
     "allowlist-item=P010ToAR30Matrix",
+    "allowlist-item=P010ToARGBMatrix",
     "allowlist-item=ScalePlane",
     "allowlist-item=ScalePlane_12",
     "allowlist-item=YuvConstants",
@@ -112,16 +110,8 @@ rust_static_library("crabbyavif_libyuv_sys") {
   # This is a wrapper interface to a C++ library. So unsafe has to be allowed.
   allow_unsafe = true
   crate_name = "libyuv_sys"
-
   sources = [ "src/sys/libyuv-sys/src/lib.rs" ]
-
-  deps = [ ":crabbyavif_libyuv_bindings" ]
-
-  _bindgen_output = get_target_outputs(":crabbyavif_libyuv_bindings")
-  inputs = _bindgen_output
-  rustenv =
-      [ "CRABBYAVIF_LIBYUV_BINDINGS_RS=" +
-        rebase_path(_bindgen_output[0], get_path_info(crate_root, "dir")) ]
+  bindgen_deps = [ ":crabbyavif_libyuv_bindings" ]
 }
 
 rust_static_library("crabbyavif") {

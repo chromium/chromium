@@ -15,11 +15,6 @@
 #import "ios/public/provider/chrome/browser/follow/follow_api.h"
 
 // static
-FollowService* FollowServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 FollowService* FollowServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<FollowService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

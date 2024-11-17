@@ -88,6 +88,12 @@ class PLATFORM_EXPORT RawData : public ThreadSafeRefCounted<RawData> {
 
   const char* data() const { return data_.data(); }
   size_t size() const { return data_.size(); }
+
+  // Iterators, so this type meets the requirements of
+  // `std::ranges::contiguous_range`.
+  auto begin() const { return data_.begin(); }
+  auto end() const { return data_.end(); }
+
   Vector<char>* MutableData() { return &data_; }
 
  private:
@@ -189,10 +195,9 @@ class PLATFORM_EXPORT BlobDataHandle
     return base::AdoptRef(new BlobDataHandle(std::move(data), size));
   }
 
-  // For deserialization of script values and ipc messages.
-  static scoped_refptr<BlobDataHandle> Create(const String& uuid,
-                                              const String& type,
-                                              uint64_t size) {
+  static scoped_refptr<BlobDataHandle> CreateForTesting(const String& uuid,
+                                                        const String& type,
+                                                        uint64_t size) {
     return base::AdoptRef(new BlobDataHandle(uuid, type, size));
   }
 
@@ -216,10 +221,6 @@ class PLATFORM_EXPORT BlobDataHandle
 
   void ReadAll(mojo::ScopedDataPipeProducerHandle,
                mojo::PendingRemote<mojom::blink::BlobReaderClient>);
-  void ReadRange(uint64_t offset,
-                 uint64_t length,
-                 mojo::ScopedDataPipeProducerHandle,
-                 mojo::PendingRemote<mojom::blink::BlobReaderClient>);
 
   // This does synchronous IPC, and possibly synchronous file operations. Think
   // twice before calling this function.
@@ -248,6 +249,8 @@ class PLATFORM_EXPORT BlobDataHandle
                  uint64_t size,
                  mojo::PendingRemote<mojom::blink::Blob>);
 
+  // This UUID is deprecated and should not be used to reference the blob in the
+  // backend (BlobRegistry). TODO(crbug.com/40529364): remove.
   const String uuid_;
   const String type_;
   const uint64_t size_;

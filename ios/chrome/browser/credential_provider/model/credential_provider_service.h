@@ -93,6 +93,11 @@ class CredentialProviderService
   // Syncs the credential store to disk.
   void SyncStore();
 
+  // Saves the Gaia and email of the current user to the ios keychain for the
+  // Credential Provider Extension to use when creating new credentials. Returns
+  // whether writing the data to the ios keychain succeeded.
+  bool SaveAccountInfo();
+
   // Add credentials from `forms`. Currently simply calls either the legacy or
   // refactored version of this function.
   void AddCredentials(MemoryCredentialStore* store,
@@ -145,6 +150,7 @@ class CredentialProviderService
   void OnPasskeysChanged(
       const std::vector<webauthn::PasskeyModelChange>& changes) override;
   void OnPasskeyModelShuttingDown() override;
+  void OnPasskeyModelIsReady(bool is_ready) override;
 
   // syncer::SyncServiceObserver:
   void OnStateChanged(syncer::SyncService* sync) override;
@@ -168,7 +174,7 @@ class CredentialProviderService
       account_password_store_;
 
   // Passkey store.
-  webauthn::PasskeyModel* passkey_model_;
+  raw_ptr<webauthn::PasskeyModel> passkey_model_;
 
   // Identity manager to observe.
   const raw_ptr<signin::IdentityManager> identity_manager_;

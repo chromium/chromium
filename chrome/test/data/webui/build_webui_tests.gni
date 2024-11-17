@@ -125,6 +125,9 @@ template("build_webui_tests") {
       }
       extra_deps += [ ":copy_mojo" ]
     }
+    if (defined(invoker.ts_extra_deps)) {
+      extra_deps += invoker.ts_extra_deps
+    }
   }
 
   # This target is public so that it can be depended on by

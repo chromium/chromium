@@ -10,10 +10,15 @@ chromium/try/android-arm-compile-dbg
 chromium/try/android-arm64-all-targets-dbg
 chromium/try/android-arm64-rel
 chromium/try/android-bfcache-rel
+chromium/try/android-cast-arm-dbg
+chromium/try/android-cast-arm-rel
+chromium/try/android-cast-arm64-dbg
+chromium/try/android-cast-arm64-rel
 chromium/try/android-clobber-rel
 chromium/try/android-dawn-arm-rel
 chromium/try/android-dawn-arm64-rel
 chromium/try/android-dawn-arm64-s24-rel
+chromium/try/android-desktop-x64-compile-rel
 chromium/try/android-official
 chromium/try/android-oreo-x86-rel
 chromium/try/android-pie-arm64-dbg
@@ -22,7 +27,6 @@ chromium/try/android-webview-10-x86-rel-tests
 chromium/try/android-webview-13-x64-hostside-rel
 chromium/try/android-webview-oreo-arm64-dbg
 chromium/try/android-webview-pie-arm64-dbg
-chromium/try/android-x64-cast
 chromium/try/android-x64-rel
 chromium/try/android-x86-rel
 chromium/try/android_arm64_dbg_recipe
@@ -32,7 +36,6 @@ chromium/try/android_compile_x86_dbg
 chromium/try/chromeos-amd64-generic-asan-rel
 chromium/try/chromeos-amd64-generic-cfi-thin-lto-rel
 chromium/try/chromeos-amd64-generic-dbg
-chromium/try/chromeos-amd64-generic-lacros-dbg
 chromium/try/chromeos-amd64-generic-rel
 chromium/try/chromeos-amd64-generic-rel-gtest
 chromium/try/chromeos-amd64-generic-rel-gtest-and-tast
@@ -48,7 +51,6 @@ chromium/try/dawn-chromium-presubmit
 chromium/try/dawn-linux-x64-deps-rel
 chromium/try/dawn-mac-arm64-deps-rel
 chromium/try/dawn-mac-x64-deps-rel
-chromium/try/dawn-try-chromeos-volteer-rel
 chromium/try/dawn-try-linux-tsan-rel
 chromium/try/dawn-try-linux-x64-intel-uhd770-rel
 chromium/try/dawn-try-mac-amd-exp
@@ -81,8 +83,6 @@ chromium/try/ios-simulator
 chromium/try/ios-simulator-exp
 chromium/try/ios-simulator-full-configs
 chromium/try/ios-simulator-noncq
-chromium/try/lacros-amd64-generic-rel
-chromium/try/lacros-arm-generic-rel
 chromium/try/layout_test_leak_detection
 chromium/try/linux-asan-dbg
 chromium/try/linux-asan-media-rel
@@ -92,6 +92,10 @@ chromium/try/linux-asan-v8-arm-dbg
 chromium/try/linux-asan-v8-arm-rel
 chromium/try/linux-bfcache-rel
 chromium/try/linux-blink-web-tests-force-accessibility-rel
+chromium/try/linux-cast-arm-rel
+chromium/try/linux-cast-arm64-rel
+chromium/try/linux-cast-x64-dbg
+chromium/try/linux-cast-x64-rel
 chromium/try/linux-centipede-asan-rel
 chromium/try/linux-cfm-rel
 chromium/try/linux-chromeos-asan-rel
@@ -106,8 +110,6 @@ chromium/try/linux-dcheck-off-rel
 chromium/try/linux-extended-tracing-rel
 chromium/try/linux-full-remote-rel
 chromium/try/linux-gcc-rel
-chromium/try/linux-lacros-dbg
-chromium/try/linux-lacros-rel
 chromium/try/linux-libfuzzer-asan-rel
 chromium/try/linux-msan-chained-origins-rel
 chromium/try/linux-msan-no-origins-rel
@@ -115,7 +117,6 @@ chromium/try/linux-rel
 chromium/try/linux-tsan-dbg
 chromium/try/linux-tsan-rel
 chromium/try/linux-ubsan-rel
-chromium/try/linux-ubsan-vptr
 chromium/try/linux-ubsan-vptr-rel
 chromium/try/linux-v4l2-codec-rel
 chromium/try/linux-wayland-rel
@@ -132,6 +133,7 @@ chromium/try/linux_chromium_compile_rel_ng
 chromium/try/linux_chromium_dbg_ng
 chromium/try/linux_chromium_msan_rel_ng
 chromium/try/linux_chromium_tsan_rel_ng
+chromium/try/linux_chromium_ubsan_rel_ng
 chromium/try/mac-arm64-clobber-rel
 chromium/try/mac-arm64-dawn-rel
 chromium/try/mac-arm64-on-arm64-rel

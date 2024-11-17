@@ -156,8 +156,7 @@ Color PluginData::PluginBackgroundColorForMimeType(
     if (info->type_ == mime_type)
       return info->Plugin()->BackgroundColor();
   }
-  NOTREACHED_IN_MIGRATION();
-  return Color();
+  NOTREACHED();
 }
 
 bool PluginData::IsExternalPluginMimeType(const String& mime_type) const {

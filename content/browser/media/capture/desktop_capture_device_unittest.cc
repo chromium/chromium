@@ -288,6 +288,7 @@ class DesktopCaptureDeviceTest : public testing::Test {
                  base::TimeTicks /* reference_time */,
                  base::TimeDelta /* timestamp */,
                  std::optional<base::TimeTicks> /* capture_begin_time */,
+                 const std::optional<media::VideoFrameMetadata>& /* metadata */,
                  int /* frame_feedback_id */) {
     ASSERT_TRUE(output_frame_);
     ASSERT_EQ(output_frame_->stride() * output_frame_->size().height(), size);

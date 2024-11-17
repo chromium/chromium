@@ -76,7 +76,7 @@ found in the LICENSE file.
             android:lineSpacingMultiplier="1.25"
             android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
             android:includeFontPadding="false"
-            tools:text="@string/sync_promo_description_settings"/>
+            tools:text="@string/sync_promo_description_settings_without_passwords"/>
 
         <org.chromium.ui.widget.ButtonCompat
             android:id="@+id/sync_promo_signin_button"

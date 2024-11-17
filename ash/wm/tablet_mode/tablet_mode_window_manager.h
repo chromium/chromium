@@ -120,7 +120,8 @@ class ASH_EXPORT TabletModeWindowManager : public aura::WindowObserver,
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
 
  private:
-  using WindowToState = std::map<aura::Window*, TabletModeWindowState*>;
+  using WindowToState =
+      std::map<aura::Window*, raw_ptr<TabletModeWindowState, CtnExperimental>>;
   using WindowAndStateTypeList =
       std::vector<std::pair<aura::Window*, chromeos::WindowStateType>>;
 

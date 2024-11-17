@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -14,8 +15,21 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image_unittest_util.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/window/dialog_client_view.h"
+
+namespace {
+
+class TestMenuModel : public ui::SimpleMenuModel,
+                      ui::SimpleMenuModel::Delegate {
+ public:
+  TestMenuModel() : ui::SimpleMenuModel(/*delegate=*/this) {}
+
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override {}
+};
 
 class ToastViewTest : public DialogBrowserTest {
  public:
@@ -27,11 +41,22 @@ class ToastViewTest : public DialogBrowserTest {
     const std::u16string& toast_text =
         l10n_util::GetStringUTF16(IDS_LINK_COPIED);
     const gfx::VectorIcon& icon = vector_icons::kLinkIcon;
+    if (name == "Image") {
+      int size = toasts::ToastView::GetIconSize();
+      image_override_ =
+          std::make_unique<ui::ImageModel>(ui::ImageModel::FromImage(
+              gfx::test::CreateImage(size, size, 0xff0000)));
+    }
     std::unique_ptr<toasts::ToastView> toast =
         std::make_unique<toasts::ToastView>(anchor_view, toast_text, icon,
-                                            name == "CloseButton", false);
-    if (name == "ActionButton") {
+                                            image_override_.get(), false,
+                                            base::DoNothing());
+    if (name == "CloseButton") {
+      toast->AddCloseButton(base::DoNothing());
+    } else if (name == "ActionButton") {
       toast->AddActionButton(l10n_util::GetStringUTF16(IDS_APP_OK));
+    } else if (name == "Menu") {
+      toast->AddMenu(std::make_unique<TestMenuModel>());
     }
     toast_ = toast.get();
     widget_ = views::BubbleDialogDelegateView::CreateBubble(std::move(toast));
@@ -58,6 +83,7 @@ class ToastViewTest : public DialogBrowserTest {
   toasts::ToastView* toast() { return toast_; }
 
  private:
+  std::unique_ptr<ui::ImageModel> image_override_;
   raw_ptr<toasts::ToastView> toast_;
   raw_ptr<views::Widget> widget_;
 };
@@ -91,3 +117,13 @@ IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_CloseButton) {
       toast()->GetDialogClientView()->width() - toast()->bounds().right());
   DismissUi();
 }
+
+IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_Image) {
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_F(ToastViewTest, InvokeUi_Menu) {
+  ShowAndVerifyUi();
+}
+
+}  // namespace

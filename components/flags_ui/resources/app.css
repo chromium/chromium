@@ -1,0 +1,385 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #css_wrapper_metadata_end */
+
+:host {
+  color: var(--primary-color);
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8125rem;
+  height: 100%;
+
+  --ease-in-out: cubic-bezier(0.4, 0.0, 0.2, 1);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+
+  --google-blue-300-rgb: 138, 180, 248;
+  --google-blue-300: rgb(var(--google-blue-300-rgb));
+  --google-blue-400: rgb(102, 157, 246);
+  --google-blue-500-rgb: 66, 133, 244;
+  --google-blue-500: rgb(var(--google-blue-500-rgb));
+  --google-blue-600-rgb: 26, 115, 232;
+  --google-blue-600: rgb(var(--google-blue-600-rgb));
+  --google-blue-700: rgb(25, 103, 210);
+  --google-grey-100: rgb(241, 243, 244);
+  --google-grey-200-rgb: 232, 234, 237;
+  --google-grey-200: rgb(var(--google-grey-200-rgb));
+  --google-grey-300: rgb(218, 220, 224);
+  --google-grey-500: rgb(154, 160, 166);
+  --google-grey-700: rgb(95, 99, 104);
+  --google-grey-900-rgb: 32, 33, 36;
+  --google-grey-900: rgb(var(--google-grey-900-rgb));
+  /* --google-grey-900 + 4% white blended together. */
+  --google-grey-900-white-4-percent: #292a2d;
+  --google-red-300: rgb(242, 139, 130);
+  --google-red-700: rgb(197, 34, 31);
+
+  --interactive-color: var(--google-blue-600);
+  --primary-color: var(--google-grey-900);
+  --secondary-color: var(--google-grey-700);
+  --warning-color: var(--google-red-700);
+
+  --focus-shadow-color: rgba(var(--google-blue-600-rgb), 0.4);
+  --input-background: var(--google-grey-100);
+  --link-color: var(--google-blue-700);
+  --separator-color: rgba(0, 0, 0, .06);
+  --toolbar-color: white;
+
+  background: white;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --interactive-color: var(--google-blue-300);
+    --primary-color: var(--google-grey-200);
+    --secondary-color: var(--google-grey-500);
+    --warning-color: var(--google-red-300);
+
+    --focus-shadow-color: rgba(var(--google-blue-300-rgb), 0.4);
+    --input-background: rgba(0, 0, 0, .3);
+    --link-color: var(--google-blue-300);
+    --separator-color: rgba(255, 255, 255, .1);
+    --toolbar-color: var(--google-grey-900-white-4-percent);
+
+    background: var(--google-grey-900);
+  }
+}
+
+a {
+  color: var(--link-color);
+  font-size: .8125rem;
+}
+
+h1 {
+  color: var(--primary-color);
+  font-size: 1.4625rem;
+  font-weight: 400;
+  margin-top: 0;
+  padding: 0;
+}
+
+button {
+  cursor: pointer;
+  font-weight: 500;
+}
+
+#body-container {
+  flex: 1;
+  /* Force the vertical scrollbar to always be displayed, to avoid UI jumps.
+  */
+  overflow-y: scroll;
+}
+
+#flagsTemplate {
+  --side-padding: 20px;
+  box-sizing: border-box;
+  padding: 1rem var(--side-padding) 8px;
+  margin: 0 auto;
+  max-width: calc(700px + 2 * var(--side-padding));
+  width: 100%;
+}
+
+:focus-visible {
+  box-shadow: 0 0 0 2px var(--focus-shadow-color);
+  outline: none;
+}
+
+@media (forced-colors: active) {
+  :focus-visible {
+    /* Outline is needed for Windows HCM. Color of outline does not matter; it
+      * is overridden by the OS. */
+    box-shadow: none;
+    outline: 2px solid transparent;
+  }
+}
+
+#flags-app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+@media (prefers-color-scheme: dark) {
+  #flagsTemplate {
+    background: rgba(255, 255, 255, .04);
+  }
+}
+
+.flex {
+  align-self: center;
+  flex: 1 1 auto;
+}
+
+.flex-container {
+  display: flex;
+  padding: 8px 1em;
+}
+
+#flagsTemplate>.flex-container:first-child {
+  padding: 0;
+}
+
+#header {
+  background: var(--toolbar-color);
+  box-shadow: 0 2px 2px 0 var(--shadow-color);
+  box-sizing: border-box;
+}
+
+@media (prefers-color-scheme: dark) {
+  #header {
+    border-bottom: 1px solid var(--separator-color);
+  }
+}
+
+#header .flex-container {
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 700px;
+}
+
+#header .flex-container .flex:first-child {
+  text-align: left;
+  /* csschecker-disable-line left-right */
+}
+
+#header .flex-container .flex:last-child {
+  text-align: right;
+  /* csschecker-disable-line left-right */
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.search-container {
+  margin-inline-end: 8px;
+  position: relative;
+}
+
+#search {
+  background: var(--input-background)
+      url(chrome://resources/images/icon_search.svg) no-repeat 8px 50%;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  box-sizing: border-box;
+  color: inherit;
+  font-size: .8125rem;
+  padding: 12px 36px;
+  width: 100%;
+}
+
+#search::placeholder {
+  color: rgba(var(--google-grey-900-rgb), .71);
+}
+
+@media (prefers-color-scheme: dark) {
+  #search {
+    background-image: url(chrome://resources/images/dark/icon_search.svg);
+  }
+
+  #search::placeholder {
+    color: rgba(var(--google-grey-200-rgb), .51);
+  }
+}
+
+.clear-search {
+  -webkit-mask-image: url(chrome://resources/images/icon_cancel.svg);
+  -webkit-mask-size: 20px;
+  background: var(--secondary-color);
+  border: 0;
+  display: none;
+  height: 20px;
+  opacity: 0.5;
+  position: absolute;
+  right: 8px;
+  top: calc(50% - 10px);
+  width: 20px;
+}
+
+.clear-search:focus {
+  opacity: 1;
+  outline: 0;
+}
+
+:host([searching]) .clear-search {
+  display: inline-block;
+}
+
+:host([searching]) .blurb-container,
+:host([searching]) #promos {
+  display: none;
+}
+
+.blurb-container {
+  color: var(--primary-color);
+  font-size: .875rem;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+}
+
+.blurb-warning {
+  color: var(--warning-color);
+  text-transform: uppercase;
+}
+
+.screen-reader-only {
+  clip: rect(0, 0, 0, 0);
+  display: inline-block;
+  position: fixed;
+}
+
+#promos {
+  color: var(--secondary-color);
+  font-size: .875rem;
+}
+
+cr-tabs {
+  border-bottom: 1px solid var(--cr-separator-color);
+}
+
+.tab-content {
+  display: none;
+  line-height: 25px;
+  /* Bottom padding should be greater than evaluated height of needs-restart
+  */
+  padding-bottom: 100px;
+  position: relative;
+}
+
+.tab-content[selected] {
+  display: block;
+}
+
+/* Restart tray. */
+#needs-restart {
+  background: var(--toolbar-color);
+  bottom: 0;
+  box-shadow: 0 -2px 2px 0 var(--shadow-color);
+  box-sizing: border-box;
+  left: 0;
+  opacity: 0;
+  padding: 16px;
+  position: fixed;
+  transform: translateY(300px);
+  transition: all 225ms var(--ease-in-out);
+  width: 100%;
+  z-index: 10;
+}
+
+#needs-restart .flex:last-child {
+  text-align: right;
+  /* csschecker-disable-line left-right */
+}
+
+#needs-restart.show {
+  opacity: 1;
+  transform: translate(0);
+}
+
+.no-match {
+  margin-top: 75px;
+}
+
+.restart-notice {
+  font-size: .9375rem;
+  line-height: 1.4;
+}
+
+#version {
+  color: var(--secondary-color);
+  text-align: right;
+  /* csschecker-disable-line left-right */
+}
+
+<if expr="chromeos_ash">
+#os-flags-link-container {
+  background-image: url(chrome://resources/images/os_flags_app_icon.svg);
+}
+</if>
+
+@media (max-width: 360px) {
+  #experiment-reset-all {
+    text-align: center;
+  }
+
+  #flagsTemplate>.flex-container {
+    flex-direction: column;
+  }
+
+  #version {
+    text-align: initial;
+  }
+
+  #search {
+    padding: 8px 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  #flagsTemplate>.flex-container:first-child:not('.version') {
+    flex-direction: column;
+    text-align: left;
+    /* csschecker-disable-line left-right */
+  }
+
+  #flagsTemplate>.flex-container:first-child .flex {
+    width: 100%;
+  }
+
+  #needs-restart {
+    padding: 8px 12px;
+  }
+
+  .restart-notice {
+    font-size: .8125rem;
+    padding: 4px;
+  }
+
+  :host([searching]) flags-experiment::part(body) {
+    overflow: visible;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 732px) {
+  #version,
+  .blurb-warning {
+    display: block;
+    margin-bottom: 1rem;
+  }
+}
+
+@media (max-height: 400px) {
+  #header {
+    position: relative;
+  }
+
+  #flagsTemplate {
+    padding-top: 1.5rem;
+  }
+}

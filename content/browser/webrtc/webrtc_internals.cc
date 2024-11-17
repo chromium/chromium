@@ -285,23 +285,6 @@ void WebRTCInternals::OnAddStandardStats(GlobalRenderFrameHostId frame_id,
   SendUpdate("add-standard-stats", std::move(dict));
 }
 
-void WebRTCInternals::OnAddLegacyStats(GlobalRenderFrameHostId frame_id,
-                                       int lid,
-                                       base::Value::List value) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  if (observers_.empty())
-    return;
-
-  base::Value::Dict dict;
-  dict.Set("rid", frame_id.child_id);
-  dict.Set("lid", lid);
-
-  dict.Set("reports", std::move(value));
-
-  SendUpdate("add-legacy-stats", std::move(dict));
-}
-
 void WebRTCInternals::OnGetMedia(const std::string& request_type,
                                  GlobalRenderFrameHostId frame_id,
                                  base::ProcessId pid,
@@ -683,7 +666,7 @@ void WebRTCInternals::FileSelected(const ui::SelectedFileInfo& file,
       break;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }
@@ -700,7 +683,7 @@ void WebRTCInternals::FileSelectionCanceled() {
                  base::Value());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   select_file_dialog_ = nullptr;
 }

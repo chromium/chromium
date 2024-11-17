@@ -1,8 +1,10 @@
 include_rules = [
   "+ios/chrome/browser/affiliations/model",
+  "+ios/chrome/browser/infobars",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/sync/model",
   "+ios/chrome/browser/favicon/model",
   "+ios/chrome/browser/passwords/model",
   "+ios/chrome/browser/webauthn/model",
+  "+ios/components/credential_provider_extension",
 ]

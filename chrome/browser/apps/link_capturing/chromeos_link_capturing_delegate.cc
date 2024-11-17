@@ -7,6 +7,7 @@
 #include <optional>
 #include <string_view>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/auto_reset.h"
 #include "base/feature_list.h"
@@ -24,7 +25,7 @@
 #include "chrome/browser/apps/link_capturing/link_capturing_tab_data.h"
 #include "chrome/browser/apps/link_capturing/metrics/intent_handling_metrics.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
+#include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -110,8 +111,7 @@ IntentHandlingMetrics::Platform GetMetricsPlatform(AppType app_type) {
     case AppType::kExtension:
     case AppType::kStandaloneBrowserExtension:
     case AppType::kBruschetta:
-      NOTREACHED_IN_MIGRATION();
-      return IntentHandlingMetrics::Platform::ARC;
+      NOTREACHED();
   }
 }
 
@@ -148,18 +148,32 @@ static const base::TickClock*& GetTickClock() {
 // static
 std::optional<std::string> ChromeOsLinkCapturingDelegate::GetLaunchAppId(
     const AppIdsToLaunchForUrl& app_ids_to_launch,
-    bool is_navigation_from_link) {
+    bool is_navigation_from_link,
+    int redirection_chain_size) {
   if (app_ids_to_launch.candidates.empty()) {
     return std::nullopt;
   }
 
-  if (ShouldOnlyCaptureLinks(app_ids_to_launch.candidates) &&
-      !is_navigation_from_link) {
-    return std::nullopt;
-  }
-
   if (app_ids_to_launch.preferred) {
-    return app_ids_to_launch.preferred;
+    if (is_navigation_from_link) {
+      // A link click is always captured.
+      return app_ids_to_launch.preferred;
+    }
+    if (!ShouldOnlyCaptureLinks(app_ids_to_launch.candidates)) {
+      // For specific applications, we want to launch them even when there's no
+      // link click.
+      return app_ids_to_launch.preferred;
+    }
+
+    if (redirection_chain_size > 1 &&
+        web_app::ChromeOsWebAppExperiments::ShouldLaunchForRedirectedNavigation(
+            *app_ids_to_launch.preferred)) {
+      // For specific applications, we want to launch them after a redirect led
+      // to an app-controlled URL. Note: this behavior isn't covered by the web
+      // specs for Navigation Capturing, still it shouldn't be removed without
+      // prior alignment (e.g., the Enterprise Clippy project).
+      return app_ids_to_launch.preferred;
+    }
   }
 
   return std::nullopt;
@@ -188,13 +202,14 @@ ChromeOsLinkCapturingDelegate::CreateLinkCaptureLaunchClosure(
     Profile* profile,
     content::WebContents* web_contents,
     const GURL& url,
-    bool is_navigation_from_link) {
+    bool is_navigation_from_link,
+    int redirection_chain_size) {
   AppServiceProxy* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
 
   AppIdsToLaunchForUrl app_ids_to_launch = FindAppIdsToLaunchForUrl(proxy, url);
 
-  std::optional<std::string> launch_app_id =
-      GetLaunchAppId(app_ids_to_launch, is_navigation_from_link);
+  std::optional<std::string> launch_app_id = GetLaunchAppId(
+      app_ids_to_launch, is_navigation_from_link, redirection_chain_size);
   if (!launch_app_id) {
     return std::nullopt;
   }

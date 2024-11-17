@@ -43,7 +43,7 @@ using testing::Test;
 
 class InputStreamTest : public Test {
  public:
-  InputStreamTest() {}
+  InputStreamTest() = default;
 
  protected:
   void SetUp() override {

@@ -34,10 +34,7 @@ scoped_refptr<ClientSharedImage> SharedImageInterface::CreateSharedImage(
     const SharedImageInfo& si_info,
     gpu::SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage) {
-  NOTREACHED_IN_MIGRATION();
-  return base::MakeRefCounted<ClientSharedImage>(Mailbox(), si_info.meta,
-                                                 GenUnverifiedSyncToken(),
-                                                 holder_, gfx::EMPTY_BUFFER);
+  NOTREACHED();
 }
 
 SharedImageUsageSet SharedImageInterface::UsageForMailbox(
@@ -88,14 +85,31 @@ scoped_refptr<ClientSharedImage> SharedImageInterface::NotifyMailboxAdded(
 
 void SharedImageInterface::CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                                                  const Mailbox& mailbox) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SharedImageInterface::CopyToGpuMemoryBufferAsync(
     const SyncToken& sync_token,
     const Mailbox& mailbox,
     base::OnceCallback<void(bool)> callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
+}
+
+bool SharedImageInterface::CopyNativeGmbToSharedMemorySync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region) {
+  NOTREACHED();
+}
+
+void SharedImageInterface::CopyNativeGmbToSharedMemoryAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    base::OnceCallback<void(bool)> callback) {
+  NOTREACHED();
+}
+
+bool SharedImageInterface::IsConnected() {
+  NOTREACHED();
 }
 
 void SharedImageInterface::Release() const {

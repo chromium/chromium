@@ -14,10 +14,6 @@ import {
 
 import {i18n} from '../core/i18n.js';
 import {
-  MAX_WORD_LENGTH,
-  MIN_WORD_LENGTH,
-} from '../core/on_device_model/ai_feature_constants.js';
-import {
   GenaiResultType,
   ModelResponseError,
 } from '../core/on_device_model/types.js';
@@ -28,12 +24,12 @@ export class GenaiError extends ReactiveLitElement {
   static override styles: CSSResultGroup = css`
     :host {
       align-items: center;
-      text-align: center;
       display: flex;
       flex-flow: column;
       font: var(--cros-button-1-font);
       gap: 16px;
       padding: 32px;
+      text-align: center;
     }
   `;
 
@@ -57,16 +53,50 @@ export class GenaiError extends ReactiveLitElement {
         imageName = 'genai_error_general';
         message = i18n.genAiErrorGeneralLabel;
         break;
-
+      case ModelResponseError.UNSUPPORTED_LANGUAGE: {
+        imageName = 'genai_error_unsafe';
+        const resultType = assertExists(this.resultType);
+        switch (resultType) {
+          case GenaiResultType.SUMMARY:
+            message = i18n.genAiErrorSummaryLanguageUnsupportedLabel;
+            break;
+          case GenaiResultType.TITLE_SUGGESTION:
+            message = i18n.genAiErrorTitleSuggestionLanguageUnsupportedLabel;
+            break;
+          default:
+            assertExhaustive(resultType);
+        }
+        break;
+      }
       case ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_SHORT: {
         imageName = 'genai_error_general';
-        message = i18n.genAiErrorTranscriptionTooShortLabel(MIN_WORD_LENGTH);
+        const resultType = assertExists(this.resultType);
+        switch (resultType) {
+          case GenaiResultType.SUMMARY:
+            message = i18n.genAiErrorSummaryTranscriptTooShortLabel;
+            break;
+          case GenaiResultType.TITLE_SUGGESTION:
+            message = i18n.genAiErrorTitleSuggestionTranscriptTooShortLabel;
+            break;
+          default:
+            assertExhaustive(resultType);
+        }
         break;
       }
 
       case ModelResponseError.UNSUPPORTED_TRANSCRIPTION_IS_TOO_LONG: {
         imageName = 'genai_error_general';
-        message = i18n.genAiErrorTranscriptionTooLongLabel(MAX_WORD_LENGTH);
+        const resultType = assertExists(this.resultType);
+        switch (resultType) {
+          case GenaiResultType.SUMMARY:
+            message = i18n.genAiErrorSummaryTranscriptTooLongLabel;
+            break;
+          case GenaiResultType.TITLE_SUGGESTION:
+            message = i18n.genAiErrorTitleSuggestionTranscriptTooLongLabel;
+            break;
+          default:
+            assertExhaustive(resultType);
+        }
         break;
       }
 

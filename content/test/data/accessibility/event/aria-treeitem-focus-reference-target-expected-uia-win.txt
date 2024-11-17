@@ -1,0 +1,14 @@
+AutomationFocusChanged on role=tree
+=== Start Continuation ===
+AriaProperties changed on role=treeitem, name=Major
+AutomationFocusChanged on role=treeitem, name=Major
+SelectionItemIsSelected changed on role=treeitem, name=Major
+SelectionItem_ElementSelected on role=treeitem, name=Major
+=== Start Continuation ===
+AriaProperties changed on role=treeitem, name=Major
+AriaProperties changed on role=treeitem, name=Minor Ninth
+AutomationFocusChanged on role=treeitem, name=Minor Ninth
+SelectionItemIsSelected changed on role=treeitem, name=Major
+SelectionItemIsSelected changed on role=treeitem, name=Minor Ninth
+SelectionItem_ElementRemovedFromSelection on role=treeitem, name=Major
+SelectionItem_ElementSelected on role=treeitem, name=Minor Ninth

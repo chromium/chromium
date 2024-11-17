@@ -125,6 +125,8 @@ source_set("compress") {
     "src/lib/compress/zstd_ldm_geartab.h",
     "src/lib/compress/zstd_opt.c",
     "src/lib/compress/zstd_opt.h",
+    "src/lib/compress/zstd_preSplit.c",
+    "src/lib/compress/zstd_preSplit.h",
     "src/lib/compress/zstdmt_compress.c",
     "src/lib/compress/zstdmt_compress.h",
   ]

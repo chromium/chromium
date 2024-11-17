@@ -109,10 +109,6 @@ mojom("mojom") {
   }
 
   enabled_features = []
-  if (is_linux || is_chromeos) {
-    enabled_features += [ "is_linux_or_chromeos" ]
-  }
-
   if (allow_oop_video_decoder) {
     enabled_features += [ "allow_oop_video_decoder" ]
   }
@@ -658,6 +654,10 @@ mojom("mojom") {
         {
           mojom = "media.mojom.CdmCapability"
           cpp = "::media::CdmCapability"
+        },
+        {
+          mojom = "media.mojom.CdmCapabilityQueryStatus"
+          cpp = "::media::CdmCapabilityQueryStatus"
         },
       ]
       traits_headers = [ "cdm_capability_mojom_traits.h" ]

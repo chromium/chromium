@@ -33,6 +33,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
     private SafetyCheckMediator mMediator;
     private SyncService mSyncService;
     private PrefService mPrefService;
+    private PasswordStoreBridge mPasswordStoreBridge;
     private PropertyModel mPasswordCheckLocalModel;
     private PropertyModel mPasswordCheckAccountModel;
 
@@ -100,6 +101,7 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
         mUpdatesClient = updatesClient;
         mSyncService = syncService;
         mPrefService = prefService;
+        mPasswordStoreBridge = passwordStoreBridge;
         mSettingsFragment.setComponentDelegate(this);
         // Create the model and the mediator once the view is created.
         // The view's lifecycle is not available at this point, so observe the {@link LiveData} for
@@ -162,6 +164,19 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
                                 mMediator.setInitialState();
                             }
                         });
+        // Clean up any objects we are holding on to when the fragment is destroyed.
+        mSettingsFragment
+                .getLifecycle()
+                .addObserver(
+                        new DefaultLifecycleObserver() {
+                            @Override
+                            public void onDestroy(LifecycleOwner lifecycleOwner) {
+                                mSettingsFragment = null;
+                                mUpdatesClient = null;
+                                mPasswordStoreBridge.destroy();
+                                mPasswordStoreBridge = null;
+                            }
+                        });
     }
 
     @VisibleForTesting
@@ -219,16 +234,19 @@ public class SafetyCheckCoordinator implements DefaultLifecycleObserver, SafetyC
         return passwordSafetyCheckModel;
     }
 
-    /** Gets invoked when the Fragment detaches (the View is destroyed ). */
+    /**
+     * Gets invoked when the Fragment's view is destroyed.
+     *
+     * <p>This method can be called back for several different views as a fragment may create
+     * multiple views (e.g. when the user navigation pushes the fragment into the back stack and
+     * then pops it).
+     */
     @Override
     public void onDestroy(LifecycleOwner owner) {
         // Stop observing the Lifecycle of the View as it is about to be destroyed.
         owner.getLifecycle().removeObserver(this);
         // Cancel any pending tasks.
         mMediator.destroy();
-        // Clean up any objects we are holding on to.
-        mSettingsFragment = null;
-        mUpdatesClient = null;
         mMediator = null;
     }
 

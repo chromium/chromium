@@ -5,8 +5,9 @@
 /* #css_wrapper_metadata_start
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_spinner_style_lit.css.js
  * #scheme=relative
- * #include=cr-icons-lit
+ * #include=cr-icons-lit cr-spinner-style-lit
  * #css_wrapper_metadata_end */
 
 :host {
@@ -39,7 +40,6 @@
 
 @media (prefers-color-scheme: dark) {
   :host {
-    --paper-spinner-color: var(--google-blue-300);
     --upload-dialog-background: var(--google-grey-850);
     --upload-dialog-divider-line-border-top: 1px solid var(--google-grey-800);
     --upload-dialog-drag-drop-background: rgba(var(--google-grey-900-rgb), .68);
@@ -322,8 +322,7 @@
   justify-content: center;
 }
 
-#loadingSpinner {
-  display: block;
+#loadingContainer .spinner {
   margin-bottom: 12px;
 }
 

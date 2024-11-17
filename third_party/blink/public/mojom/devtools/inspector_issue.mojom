@@ -154,6 +154,8 @@ enum CookieExclusionReason {
   kExcludeSameSiteStrict,
   kExcludeDomainNonASCII,
   kExcludeThirdPartyPhaseout,
+  kExcludePortMismatch,
+  kExcludeSchemeMismatch,
 };
 
 // Reasons to warn about a cookie, see net/cookies/cookie_inclusion_status.h
@@ -247,7 +249,7 @@ enum FederatedAuthRequestResult {
   kThirdPartyCookiesBlocked,
   kNotSignedInWithIdp,
   kMissingTransientUserActivation,
-  kReplacedByButtonMode,
+  kReplacedByActiveMode,
   kInvalidFieldsSpecified,
   kRelyingPartyOriginIsOpaque,
   kTypeNotMatching,

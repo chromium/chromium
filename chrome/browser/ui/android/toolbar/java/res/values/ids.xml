@@ -19,8 +19,10 @@ found in the LICENSE file.
     <item type="id" name="leave_group" />
     <item type="id" name="open_new_tab_in_group" />
     <item type="id" name="share_group" />
+    <item type="id" name="close_tab_group" />
+    <item type="id" name="delete_tab_group" />
 
-    <!-- Presentation is the same as delete_tab, but helps handler impl. -->
+    <!-- Presentation is the same as delete_tab_group, but helps handler impl. -->
     <item type="id" name="delete_shared_group" />
 
     <!-- Menu IDs -->

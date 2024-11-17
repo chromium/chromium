@@ -18,6 +18,7 @@
 #include "pdf/buildflags.h"
 #include "pdf/page_orientation.h"
 #include "pdf/ui/thumbnail.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdf_doc.h"
 #include "third_party/pdfium/public/fpdf_formfill.h"
@@ -29,6 +30,10 @@
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
 #include "ui/gfx/geometry/size.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#include "base/containers/span.h"
 #endif
 
 namespace gfx {
@@ -74,6 +79,12 @@ class PDFiumPage {
   // Returns FPDF_TEXTPAGE for the page, loading and parsing it if necessary.
   FPDF_TEXTPAGE GetTextPage();
 
+  // Gets the number of characters in the page.
+  int GetCharCount();
+
+  // Resets loaded text and loads it again.
+  void ReloadTextPage();
+
   // See definition of PDFiumEngine::GetTextRunInfo().
   std::optional<AccessibilityTextRunInfo> GetTextRunInfo(int start_char_index);
 
@@ -106,8 +117,21 @@ class PDFiumPage {
   // `image_data` field.
   std::vector<AccessibilityImageInfo> GetImageInfo(uint32_t text_run_count);
 
+  // Returns the indices of image objects.
+  std::vector<int> GetImageObjectIndices();
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // Returns the image as a 32-bit bitmap format for OCR.
   SkBitmap GetImageForOcr(int page_object_index);
+
+  // Called to inform PDFiumPage that OCR operations performed on this page
+  // added `text_objects` into the page.
+  // May be called several times if the page has more than one image.
+  void OnSearchifyGotOcrResult(base::span<FPDF_PAGEOBJECT> text_objects);
+
+  // Returns if searchify has run on the page.
+  bool IsPageSearchified() const;
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   // For all the highlights on the page, get their underlying text ranges and
   // bounding boxes.
@@ -190,12 +214,6 @@ class PDFiumPage {
 
   // Converts a form type to its corresponding Area.
   static Area FormTypeToArea(int form_type);
-
-  // Gets the character at the given index.
-  char16_t GetCharAtIndex(int index);
-
-  // Gets the number of characters in the page.
-  int GetCharCount();
 
   // Returns true if the given `char_index` lies within the character range
   // of the page.
@@ -439,6 +457,10 @@ class PDFiumPage {
   // using this page's size.
   Thumbnail GetThumbnail(float device_pixel_ratio);
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  bool IsCharacterAddedBySearchify(int char_index);
+#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+
   raw_ptr<PDFiumEngine> engine_;
   ScopedFPDFPage page_;
   ScopedFPDFTextPage text_page_;
@@ -459,7 +481,17 @@ class PDFiumPage {
   // objects.
   std::set<int> page_object_text_run_breaks_;
   base::OnceClosure thumbnail_callback_;
-  bool available_;
+  bool available_ = false;
+
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Indicates whether this page received any Searchify results. Note that it is
+  // possible to receive Searchify results, but the results list is empty.
+  bool got_searchify_results_ = false;
+
+  // The set of text objects added by running Searchify on this page.
+  // Used to help identify if text objects are created by Searchify or not.
+  std::set<FPDF_PAGEOBJECT> searchify_added_text_;
+#endif
 };
 
 // Converts page orientations to the PDFium equivalents, as defined by

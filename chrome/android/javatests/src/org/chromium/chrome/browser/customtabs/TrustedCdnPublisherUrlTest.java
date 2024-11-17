@@ -14,7 +14,9 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
@@ -39,10 +41,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.RuleChain;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.CommandLine;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.PostTask;
@@ -56,13 +58,8 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.ChromeActivity;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
-import org.chromium.chrome.browser.crypto.CipherFactory;
-import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler;
-import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityModule;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
-import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.ClientId;
@@ -73,7 +70,6 @@ import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.test.ScreenShooter;
-import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
@@ -96,25 +92,6 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class TrustedCdnPublisherUrlTest {
-    private final TestRule mModuleOverridesRule =
-            new ModuleOverridesRule()
-                    .setOverride(
-                            BaseCustomTabActivityModule.Factory.class,
-                            (BrowserServicesIntentDataProvider intentDataProvider,
-                                    CustomTabNightModeStateController nightModeController,
-                                    CustomTabIntentHandler.IntentIgnoringCriterion
-                                            intentIgnoringCriterion,
-                                    TopUiThemeColorProvider topUiThemeColorProvider,
-                                    DefaultBrowserProviderImpl customTabDefaultBrowserProvider,
-                                    CipherFactory cipherFactory) ->
-                                    new BaseCustomTabActivityModule(
-                                            intentDataProvider,
-                                            nightModeController,
-                                            intentIgnoringCriterion,
-                                            topUiThemeColorProvider,
-                                            new FakeDefaultBrowserProviderImpl(),
-                                            cipherFactory));
-
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
@@ -123,10 +100,19 @@ public class TrustedCdnPublisherUrlTest {
 
     @Rule
     public RuleChain mRuleChain =
-            RuleChain.emptyRuleChain()
-                    .around(mRenderTestRule)
-                    .around(mCustomTabActivityTestRule)
-                    .around(mModuleOverridesRule);
+            RuleChain.emptyRuleChain().around(mRenderTestRule).around(mCustomTabActivityTestRule);
+
+    private static class TestContext extends ContextWrapper {
+        public TestContext(Context baseContext) {
+            super(baseContext);
+        }
+
+        @Override
+        public PackageManager getPackageManager() {
+            return CustomTabsTestUtils.getDefaultBrowserOverridingPackageManager(
+                    getPackageName(), super.getPackageManager());
+        }
+    }
 
     private static final String PAGE_WITH_TITLE =
             "<!DOCTYPE html><html><head><title>Example title</title></head></html>";
@@ -165,6 +151,8 @@ public class TrustedCdnPublisherUrlTest {
                     .appendSwitchWithValue(
                             "trusted-cdn-base-url-for-tests", mWebServer.getBaseUrl());
         }
+        TestContext testContext = new TestContext(ContextUtils.getApplicationContext());
+        ContextUtils.initApplicationContextForTests(testContext);
     }
 
     @After

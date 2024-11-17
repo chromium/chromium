@@ -9,12 +9,16 @@
 #include <variant>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
+struct AccountInfo;
 class Browser;
 class Profile;
+struct AccountInfo;
 
 namespace content {
 class RenderFrameHost;
@@ -52,12 +56,40 @@ enum SigninChoiceOperationResult {
 // handled.
 using SigninChoiceOperationDoneCallback =
     base::OnceCallback<void(SigninChoiceOperationResult)>;
-using SigninChoiceWithConfirmationCallback =
-    base::OnceCallback<void(SigninChoice, SigninChoiceOperationDoneCallback)>;
+using SigninChoiceOperationRetryCallback =
+    base::RepeatingCallback<void(SigninChoiceOperationResult)>;
+using SigninChoiceWithConfirmAndRetryCallback =
+    base::OnceCallback<void(SigninChoice,
+                            SigninChoiceOperationDoneCallback,
+                            SigninChoiceOperationRetryCallback)>;
 using SigninChoiceCallback = base::OnceCallback<void(SigninChoice)>;
 using SigninChoiceCallbackVariant =
     std::variant<SigninChoiceCallback,
-                 signin::SigninChoiceWithConfirmationCallback>;
+                 signin::SigninChoiceWithConfirmAndRetryCallback>;
+
+struct EnterpriseProfileCreationDialogParams {
+  EnterpriseProfileCreationDialogParams(
+      AccountInfo account_info,
+      bool is_oidc_account,
+      bool profile_creation_required_by_policy,
+      bool show_link_data_option,
+      SigninChoiceCallbackVariant process_user_choice_callback,
+      base::OnceClosure done_callback,
+      base::RepeatingClosure retry_callback = base::DoNothing());
+  ~EnterpriseProfileCreationDialogParams();
+  EnterpriseProfileCreationDialogParams(
+      const EnterpriseProfileCreationDialogParams&) = delete;
+  EnterpriseProfileCreationDialogParams& operator=(
+      const EnterpriseProfileCreationDialogParams&) = delete;
+
+  AccountInfo account_info;
+  bool is_oidc_account;
+  bool profile_creation_required_by_policy;
+  bool show_link_data_option;
+  SigninChoiceCallbackVariant process_user_choice_callback;
+  base::OnceClosure done_callback;
+  base::RepeatingClosure retry_callback;
+};
 
 // Gets a webview within an auth page that has the specified parent frame name
 // (i.e. <webview name="foobar"></webview>).
@@ -93,6 +125,10 @@ void SetInitializedModalHeight(Browser* browser,
 // adapted.
 void ClearProfileWithManagedAccounts(Profile* profile);
 #endif
+
+// Gets the account picture in the `account_info` as a data:// URL or the
+// default placeholder if it doesn't exist.
+std::string GetAccountPictureUrl(const AccountInfo& account_info);
 
 }  // namespace signin
 

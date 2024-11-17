@@ -95,15 +95,17 @@ config("runtime_library") {
 }
 
 config("hide_all_but_jni_onload") {
-  ldflags = [ "-Wl,--version-script=" + rebase_path(
-                  "//build/android/android_only_explicit_jni_exports.lst",
-                  root_build_dir) ]
+  _version_script = "//build/android/android_only_explicit_jni_exports.lst"
+  inputs = [ _version_script ]
+  ldflags =
+      [ "-Wl,--version-script=" + rebase_path(_version_script, root_build_dir) ]
 }
 
 config("hide_all_but_jni") {
-  ldflags = [ "-Wl,--version-script=" +
-              rebase_path("//build/android/android_only_jni_exports.lst",
-                          root_build_dir) ]
+  _version_script = "//build/android/android_only_jni_exports.lst"
+  inputs = [ _version_script ]
+  ldflags =
+      [ "-Wl,--version-script=" + rebase_path(_version_script, root_build_dir) ]
 }
 
 config("lld_pack_relocations") {

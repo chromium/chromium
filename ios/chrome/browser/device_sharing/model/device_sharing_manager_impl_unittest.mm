@@ -28,11 +28,10 @@ class DeviceSharingManagerImplTest : public PlatformTest {
         test_url_2_("http://test_sharing_2.html"),
         test_nsurl_1_(net::NSURLWithGURL(test_url_1_)),
         test_nsurl_2_(net::NSURLWithGURL(test_url_2_)) {
-    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
     sharing_manager_ = static_cast<DeviceSharingManagerImpl*>(
-        DeviceSharingManagerFactory::GetForBrowserState(
-            chrome_browser_state_.get()));
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+        DeviceSharingManagerFactory::GetForProfile(profile_.get()));
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     sharing_manager_->SetActiveBrowser(browser_.get());
   }
 
@@ -45,14 +44,14 @@ class DeviceSharingManagerImplTest : public PlatformTest {
   __strong NSURL* test_nsurl_1_;
   __strong NSURL* test_nsurl_2_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<DeviceSharingManagerImpl> sharing_manager_;
   std::unique_ptr<TestBrowser> browser_;
 };
 
 TEST_F(DeviceSharingManagerImplTest, SameServiceForIncognito) {
-  EXPECT_EQ(DeviceSharingManagerFactory::GetForBrowserState(
-                chrome_browser_state_->GetOffTheRecordChromeBrowserState()),
+  EXPECT_EQ(DeviceSharingManagerFactory::GetForProfile(
+                profile_->GetOffTheRecordProfile()),
             sharing_manager_);
 }
 
@@ -88,7 +87,7 @@ TEST_F(DeviceSharingManagerImplTest, ShareThenClear) {
 TEST_F(DeviceSharingManagerImplTest, SharingWhenDisabled) {
   // Disable sharing. Expect the handoff manager shares nothing.
   sync_preferences::TestingPrefServiceSyncable* prefs =
-      chrome_browser_state_->GetTestingPrefService();
+      profile_->GetTestingPrefService();
   prefs->SetBoolean(prefs::kIosHandoffToOtherDevices, false);
   sharing_manager_->UpdateActiveUrl(browser_.get(), test_url_1_);
   EXPECT_NSEQ(ActiveHandoffUrl(), nil);
@@ -101,7 +100,7 @@ TEST_F(DeviceSharingManagerImplTest, SharingThenDisabled) {
 
   // Disable, expaect URL is no longer shared.
   sync_preferences::TestingPrefServiceSyncable* prefs =
-      chrome_browser_state_->GetTestingPrefService();
+      profile_->GetTestingPrefService();
   prefs->SetBoolean(prefs::kIosHandoffToOtherDevices, false);
   EXPECT_NSEQ(ActiveHandoffUrl(), nil);
 
@@ -113,7 +112,7 @@ TEST_F(DeviceSharingManagerImplTest, SharingThenDisabled) {
 }
 
 TEST_F(DeviceSharingManagerImplTest, SwitchActiveBrowser) {
-  auto browser_2 = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+  auto browser_2 = std::make_unique<TestBrowser>(profile_.get());
   // Share one URL, expect it's shared by the handoff manager.
   sharing_manager_->UpdateActiveUrl(browser_.get(), test_url_1_);
   EXPECT_NSEQ(ActiveHandoffUrl(), test_nsurl_1_);

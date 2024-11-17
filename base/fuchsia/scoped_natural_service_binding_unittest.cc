@@ -97,7 +97,7 @@ TEST_F(ScopedNaturalServiceBindingTest, MultipleLastClientCallback) {
       ComponentContextForProcess()->outgoing().get(), &test_service_);
   int disconnect_count = 0;
   binding.SetOnLastClientCallback(
-      BindLambdaForTesting([&disconnect_count]() { ++disconnect_count; }));
+      BindLambdaForTesting([&disconnect_count] { ++disconnect_count; }));
 
   // Connect a client, verify it is functional.
   {
@@ -131,7 +131,7 @@ TEST_F(ScopedNaturalServiceBindingTest, LastClientCallbackOnlyForLastClient) {
       ComponentContextForProcess()->outgoing().get(), &test_service_);
   int disconnect_count = 0;
   binding.SetOnLastClientCallback(
-      BindLambdaForTesting([&disconnect_count]() { ++disconnect_count; }));
+      BindLambdaForTesting([&disconnect_count] { ++disconnect_count; }));
 
   {
     // Connect a long lived client, verify it is functional.

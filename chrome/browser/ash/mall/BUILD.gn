@@ -16,6 +16,7 @@ static_library("mall") {
 
   deps = [
     "//ash/webui/mall",
+    "//ash/webui/mall:url_constants",
     "//base",
     "//chrome/browser/apps/almanac_api_client",
     "//chrome/browser/apps/almanac_api_client/proto",

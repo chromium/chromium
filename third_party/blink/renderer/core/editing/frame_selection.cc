@@ -540,9 +540,19 @@ bool FrameSelection::SelectionHasFocus() const {
   if (!focused_element || focused_element->IsScrollControlPseudoElement()) {
     return false;
   }
-
-  if (focused_element->IsTextControl())
-    return focused_element->ContainsIncludingHostElements(*current);
+  if (RuntimeEnabledFeatures::SelectionOnShadowDOMWithDelegatesFocusEnabled()) {
+    // If focus is on the delegated target of a shadow host with delegatesFocus,
+    // selection could be on focus even if focused element does not contain
+    // current selection start.
+    if (focused_element->IsTextControl() &&
+        focused_element->ContainsIncludingHostElements(*current)) {
+      return true;
+    }
+  } else {
+    if (focused_element->IsTextControl()) {
+      return focused_element->ContainsIncludingHostElements(*current);
+    }
+  }
 
   // Selection has focus if it contains the focused element.
   const PositionInFlatTree& focused_position =
@@ -561,6 +571,16 @@ bool FrameSelection::SelectionHasFocus() const {
     // Selection has focus if its sub tree has focus.
     if (current == focused_element)
       return true;
+    if (RuntimeEnabledFeatures::
+            SelectionOnShadowDOMWithDelegatesFocusEnabled()) {
+      // If current is a shadow host with delegatesFocus, then it cannot be the
+      // focused element and we should compare with its focusable area instead.
+      if (const Element* el = DynamicTo<Element>(current);
+          el && el->IsShadowHostWithDelegatesFocus() &&
+          el->GetFocusableArea() == focused_element) {
+        return true;
+      }
+    }
     current = current->ParentOrShadowHostNode();
   } while (current);
 
@@ -1077,15 +1097,11 @@ static String ExtractSelectedText(const FrameSelection& selection,
 String FrameSelection::SelectedHTMLForClipboard() const {
   const EphemeralRangeInFlatTree& range =
       ComputeRangeForSerialization(GetSelectionInDOMTree());
-  CreateMarkupOptions::Builder builder;
-  if (RuntimeEnabledFeatures::
-          IgnoresCSSTextTransformsForPlainTextCopyEnabled()) {
-    builder.SetIgnoresCSSTextTransformsForRenderedText(true);
-  }
-
   return CreateMarkup(range.StartPosition(), range.EndPosition(),
-                      builder.SetShouldAnnotateForInterchange(true)
+                      CreateMarkupOptions::Builder()
+                          .SetShouldAnnotateForInterchange(true)
                           .SetShouldResolveURLs(kResolveNonLocalURLs)
+                          .SetIgnoresCSSTextTransformsForRenderedText(true)
                           .Build());
 }
 
@@ -1099,19 +1115,14 @@ String FrameSelection::SelectedText() const {
 }
 
 String FrameSelection::SelectedTextForClipboard() const {
-  TextIteratorBehavior::Builder builder;
-  if (RuntimeEnabledFeatures::
-          IgnoresCSSTextTransformsForPlainTextCopyEnabled()) {
-    builder.SetIgnoresCSSTextTransforms(true);
-  }
-
   return ExtractSelectedText(
-      *this, builder
+      *this, TextIteratorBehavior::Builder()
                  .SetEmitsImageAltText(
                      frame_->GetSettings() &&
                      frame_->GetSettings()->GetSelectionIncludesAltImageText())
                  .SetSkipsUnselectableContent(true)
                  .SetEntersTextControls(true)
+                 .SetIgnoresCSSTextTransforms(true)
                  .Build());
 }
 

@@ -3,7 +3,7 @@ Short Name: markdown
 URL: https://pypi.python.org/pypi/Markdown
 Version: 2.3.1
 CPEPrefix: cpe:/a:cebe:markdown:2.3.1
-Date: March 22, 2013
+Date: 2013-03-22
 Revision: commit 0ea0bac85a749a13381b721cde44214d9193406c
 License: BSD 3-Clause
 License File: LICENSE

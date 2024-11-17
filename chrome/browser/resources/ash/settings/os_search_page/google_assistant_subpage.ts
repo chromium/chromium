@@ -27,9 +27,11 @@ import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
-import {GoogleAssistantBrowserProxy, GoogleAssistantBrowserProxyImpl} from './google_assistant_browser_proxy.js';
+import type {GoogleAssistantBrowserProxy} from './google_assistant_browser_proxy.js';
+import {GoogleAssistantBrowserProxyImpl} from './google_assistant_browser_proxy.js';
 import {getTemplate} from './google_assistant_subpage.html.js';
 
 /**

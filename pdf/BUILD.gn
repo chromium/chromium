@@ -54,7 +54,7 @@ if (enable_pdf) {
       "//ui/gfx/geometry",
     ]
 
-    if (enable_screen_ai_service) {
+    if (is_chromeos && enable_screen_ai_service) {
       public_deps = [ ":pdf_progressive_searchifier" ]
     }
   }
@@ -92,6 +92,8 @@ if (enable_pdf) {
       "draw_utils/shadow.h",
       "input_utils.cc",
       "input_utils.h",
+      "message_util.cc",
+      "message_util.h",
       "metrics_handler.cc",
       "metrics_handler.h",
       "page_orientation.cc",
@@ -112,6 +114,8 @@ if (enable_pdf) {
       "pdf_utils/dates.h",
       "pdfium/pdfium_api_string_buffer_adapter.cc",
       "pdfium/pdfium_api_string_buffer_adapter.h",
+      "pdfium/pdfium_api_wrappers.cc",
+      "pdfium/pdfium_api_wrappers.h",
       "pdfium/pdfium_document.cc",
       "pdfium/pdfium_document.h",
       "pdfium/pdfium_document_metadata.cc",
@@ -139,6 +143,8 @@ if (enable_pdf) {
       "pdfium/pdfium_unsupported_features.h",
       "preview_mode_client.cc",
       "preview_mode_client.h",
+      "text_search.cc",
+      "text_search.h",
       "ui/document_properties.cc",
       "ui/document_properties.h",
       "ui/file_name.cc",
@@ -216,8 +222,12 @@ if (enable_pdf) {
         "draw_utils/page_boundary_intersect.h",
         "pdf_ink_brush.cc",
         "pdf_ink_brush.h",
+        "pdf_ink_constants.h",
+        "pdf_ink_conversions.cc",
+        "pdf_ink_conversions.h",
         "pdf_ink_cursor.cc",
         "pdf_ink_cursor.h",
+        "pdf_ink_ids.h",
         "pdf_ink_module.cc",
         "pdf_ink_module.h",
         "pdf_ink_module_client.h",
@@ -225,6 +235,10 @@ if (enable_pdf) {
         "pdf_ink_transform.h",
         "pdf_ink_undo_redo_model.cc",
         "pdf_ink_undo_redo_model.h",
+        "pdfium/pdfium_ink_reader.cc",
+        "pdfium/pdfium_ink_reader.h",
+        "pdfium/pdfium_ink_writer.cc",
+        "pdfium/pdfium_ink_writer.h",
       ]
 
       public_deps += [ "//third_party/ink" ]
@@ -232,8 +246,8 @@ if (enable_pdf) {
 
     if (enable_screen_ai_service) {
       sources += [
-        "pdfium/pdfium_progressive_searchifier.cc",
-        "pdfium/pdfium_progressive_searchifier.h",
+        "pdfium/pdfium_on_demand_searchifier.cc",
+        "pdfium/pdfium_on_demand_searchifier.h",
         "pdfium/pdfium_searchify.cc",
         "pdfium/pdfium_searchify.h",
         "pdfium/pdfium_searchify_font.cc",
@@ -242,11 +256,18 @@ if (enable_pdf) {
 
       public_deps += [ "//services/screen_ai/public/mojom" ]
 
-      deps += [ ":pdf_progressive_searchifier" ]
+      if (is_chromeos) {
+        sources += [
+          "pdfium/pdfium_progressive_searchifier.cc",
+          "pdfium/pdfium_progressive_searchifier.h",
+        ]
+
+        deps += [ ":pdf_progressive_searchifier" ]
+      }
     }
   }
 
-  if (enable_screen_ai_service) {
+  if (is_chromeos && enable_screen_ai_service) {
     source_set("pdf_progressive_searchifier") {
       public = [ "pdf_progressive_searchifier.h" ]
 
@@ -326,7 +347,10 @@ if (enable_pdf) {
 
     public = [ "pdf_view_web_plugin.h" ]
 
-    public_deps = [ "//pdf/mojom" ]
+    public_deps = [
+      "//pdf/mojom",
+      "//ui/base:base",
+    ]
 
     deps = [
       ":accessibility",
@@ -342,6 +366,7 @@ if (enable_pdf) {
       "//pdf/loader",
       "//printing",
       "//services/network/public/mojom:url_loader_base",
+      "//services/screen_ai/buildflags",
       "//skia",
       "//third_party/blink/public:blink_headers",
       "//third_party/blink/public/common:headers",
@@ -379,6 +404,8 @@ if (enable_pdf) {
       "//base",
       "//cc:test_support",
       "//pdf/loader",
+      "//printing",
+      "//services/screen_ai/buildflags",
       "//testing/gmock",
       "//testing/gtest",
       "//third_party/blink/public:blink",
@@ -394,6 +421,7 @@ if (enable_pdf) {
       "document_layout_unittest.cc",
       "draw_utils/coordinates_unittest.cc",
       "input_utils_unittest.cc",
+      "message_util_unittest.cc",
       "page_orientation_unittest.cc",
       "paint_manager_unittest.cc",
       "parsed_params_unittest.cc",
@@ -411,6 +439,8 @@ if (enable_pdf) {
       "pdfium/pdfium_range_unittest.cc",
       "pdfium/pdfium_test_base.cc",
       "pdfium/pdfium_test_base.h",
+      "pdfium/pdfium_test_helpers.cc",
+      "pdfium/pdfium_test_helpers.h",
       "test/run_all_unittests.cc",
       "ui/document_properties_unittest.cc",
       "ui/file_name_unittest.cc",
@@ -480,15 +510,24 @@ if (enable_pdf) {
         "pdf_ink_module_unittest.cc",
         "pdf_ink_transform_unittest.cc",
         "pdf_ink_undo_redo_model_unittest.cc",
+        "pdfium/pdfium_ink_reader_unittest.cc",
+        "pdfium/pdfium_ink_writer_unittest.cc",
         "test/pdf_ink_test_helpers.cc",
         "test/pdf_ink_test_helpers.h",
       ]
 
-      deps += [ "//third_party/ink" ]
+      deps += [
+        "//third_party/ink",
+        "//third_party/ink:brush_test_support",
+        "//third_party/ink:input_test_support",
+      ]
     }
 
     if (enable_screen_ai_service) {
-      sources += [ "pdfium/pdfium_searchify_unittest.cc" ]
+      sources += [
+        "pdfium/pdfium_on_demand_searchifier_unittest.cc",
+        "pdfium/pdfium_searchify_unittest.cc",
+      ]
     }
 
     if (v8_use_external_startup_data) {
@@ -514,6 +553,18 @@ if (enable_pdf) {
       ":internal",
       "//base",
     ]
+  }
+
+  if (enable_pdf_ink2) {
+    test("pdf_ink_reader_fuzzer") {
+      fuzztests = [ "PdfInkReaderFuzzer.CreateMeshFromPolylineDoesntCrash" ]
+      sources = [ "pdfium/pdfium_ink_reader_fuzzer.cc" ]
+      deps = [
+        ":internal",
+        "//third_party/fuzztest:fuzztest_gtest_main",
+        "//third_party/ink",
+      ]
+    }
   }
 } else {
   # Dummy groups when PDF support is disabled so targets can unconditionally

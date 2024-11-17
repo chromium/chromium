@@ -15,12 +15,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/context_menu_controller.h"
 
 namespace ui {
 class Event;
-enum MenuSourceType;
 }  // namespace ui
 
 namespace views {
@@ -298,9 +298,10 @@ class ASH_EXPORT TrayBackgroundView : public views::Button,
   void UpdateStatusArea(bool should_log_visible_pod_count);
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // views::View:
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;

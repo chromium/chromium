@@ -117,9 +117,8 @@ HeapVector<Member<MediaKeySystemMediaCapability>> ConvertCapabilities(
         capability->setEncryptionScheme("cbcs-1-9");
         break;
       case WebMediaKeySystemMediaCapability::EncryptionScheme::kUnrecognized:
-        NOTREACHED_IN_MIGRATION()
+        NOTREACHED()
             << "Unrecognized encryption scheme should never be returned.";
-        break;
     }
 
     result[i] = capability;
@@ -190,10 +189,10 @@ MediaKeySystemConfiguration* MediaKeySystemAccess::getConfiguration() const {
   // |distinctiveIdentifier|, |persistentState|, and |sessionTypes| are always
   // set by requestMediaKeySystemAccess().
   result->setDistinctiveIdentifier(
-      EncryptedMediaUtils::ConvertMediaKeysRequirementToString(
+      EncryptedMediaUtils::ConvertMediaKeysRequirementToEnum(
           configuration.distinctive_identifier));
   result->setPersistentState(
-      EncryptedMediaUtils::ConvertMediaKeysRequirementToString(
+      EncryptedMediaUtils::ConvertMediaKeysRequirementToEnum(
           configuration.persistent_state));
   result->setSessionTypes(ConvertSessionTypes(configuration.session_types));
 

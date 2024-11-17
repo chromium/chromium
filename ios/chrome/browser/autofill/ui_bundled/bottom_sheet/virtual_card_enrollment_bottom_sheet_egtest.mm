@@ -108,8 +108,6 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableVirtualCards);
   if ([self
           isRunningTest:@selector
           (testVirtualCardEnrollmentShowsLoadingAndConfirmationAfterAcceptPushed
@@ -138,11 +136,11 @@ id<GREYMatcher> VirtualCardEnrollmentSkipButton() {
   GREYAssertTrue(self.testServer->Start(), @"Failed to start test server.");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearAllServerDataForTesting];
   [AutofillAppInterface clearVirtualCardEnrollmentStrikes];
   [AutofillAppInterface tearDownFakeCreditCardServer];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)showVirtualCardEnrollmentBottomSheet {

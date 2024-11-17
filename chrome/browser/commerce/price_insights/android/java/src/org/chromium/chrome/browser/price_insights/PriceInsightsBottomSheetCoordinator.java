@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -60,8 +59,6 @@ public class PriceInsightsBottomSheetCoordinator {
 
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
-    private final PropertyModelChangeProcessor<PropertyModel, ? extends View, PropertyKey>
-            mChangeProcessor;
 
     private PriceInsightsBottomSheetContent mBottomSheetContent;
     private PriceInsightsBottomSheetMediator mBottomSheetMediator;
@@ -86,11 +83,8 @@ public class PriceInsightsBottomSheetCoordinator {
         mPriceInsightsView =
                 LayoutInflater.from(mContext)
                         .inflate(R.layout.price_insights_container, /* root= */ null);
-        mChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        propertyModel,
-                        mPriceInsightsView,
-                        PriceInsightsBottomSheetViewBinder::bind);
+        PropertyModelChangeProcessor.create(
+                propertyModel, mPriceInsightsView, PriceInsightsBottomSheetViewBinder::bind);
         mBottomSheetMediator =
                 new PriceInsightsBottomSheetMediator(
                         mContext,

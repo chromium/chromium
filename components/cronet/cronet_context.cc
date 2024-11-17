@@ -113,7 +113,7 @@ static base::LazyInstance<NetLogWithNetworkChangeEvents>::Leaky g_net_log =
 
 class BasicNetworkDelegate : public net::NetworkDelegateImpl {
  public:
-  BasicNetworkDelegate() {}
+  BasicNetworkDelegate() = default;
 
   BasicNetworkDelegate(const BasicNetworkDelegate&) = delete;
   BasicNetworkDelegate& operator=(const BasicNetworkDelegate&) = delete;

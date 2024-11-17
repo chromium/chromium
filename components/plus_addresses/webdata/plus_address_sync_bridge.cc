@@ -164,8 +164,7 @@ void PlusAddressSyncBridge::ApplyDisableSyncChanges(
 std::unique_ptr<syncer::DataBatch> PlusAddressSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   // PLUS_ADDRESS is read-only, so `GetDataForCommit()` is not needed.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 std::unique_ptr<syncer::DataBatch>

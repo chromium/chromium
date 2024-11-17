@@ -801,9 +801,6 @@ TEST(ServiceWorkerRouterTypeConverterTest,
 // TODO(crbug.com/1490445): Add tests to limit depth of condition nests
 
 TEST(ServiceWorkerRouterTypeConverterTest, NotCondition) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {blink::features::kServiceWorkerStaticRouterNotConditionEnabled}, {});
   test::TaskEnvironment task_environment;
   auto* idl_rule = blink::RouterRule::Create();
   auto* idl_condition = blink::RouterCondition::Create();
@@ -845,9 +842,6 @@ TEST(ServiceWorkerRouterTypeConverterTest, NotCondition) {
 }
 
 TEST(ServiceWorkerRouterTypeConverterTest, NestedNotCondition) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {blink::features::kServiceWorkerStaticRouterNotConditionEnabled}, {});
   test::TaskEnvironment task_environment;
   auto* idl_rule = blink::RouterRule::Create();
   auto* idl_condition = blink::RouterCondition::Create();

@@ -51,7 +51,8 @@
           "builder": "gpu-try-android-m-nexus-5x-64",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Android Release (Nexus 5X)/targets"
     }
   },
   "$build/reclient": {

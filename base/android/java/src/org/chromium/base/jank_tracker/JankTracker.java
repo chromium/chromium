@@ -24,8 +24,8 @@ public interface JankTracker {
      *
      * @param scenario A value constructed from {@link JankScenarioType} along with an id that
      *     specifies a use scenario.
-     * @param endScenarioTime A value that determines the maximum frame metric (based on vsync time)
-     *     that should be included.
+     * @param endScenarioTimeNs A value that determines the maximum frame metric (based on vsync
+     *     time) that should be included.
      */
     void finishTrackingScenario(JankScenario scenario, long endScenarioTimeNs);
 

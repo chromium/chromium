@@ -51,7 +51,7 @@ class SyntheticInputTest : public ContentBrowserTest,
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(cc::switches::kEnableGpuBenchmarking);
+    command_line->AppendSwitch(switches::kEnableGpuBenchmarking);
   }
 
   RenderWidgetHostImpl* GetRenderWidgetHost() const {

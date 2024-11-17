@@ -106,8 +106,10 @@ ExternalProtocolDialog::ExternalProtocolDialog(
       GetMessageTextForOrigin(initiating_origin_)));
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  set_margins(provider->GetDialogInsetsForContentType(
-      views::DialogContentType::kText, views::DialogContentType::kText));
+  gfx::Insets dialog_insets = provider->GetDialogInsetsForContentType(
+      views::DialogContentType::kText, views::DialogContentType::kText);
+  dialog_insets.set_left(0);
+  set_margins(dialog_insets);
 
   SetUseDefaultFillLayout(true);
 

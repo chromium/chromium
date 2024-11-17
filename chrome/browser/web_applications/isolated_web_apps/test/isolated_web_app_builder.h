@@ -154,6 +154,8 @@ class BundledIsolatedWebApp {
   IsolatedWebAppUrlInfo InstallChecked(Profile* profile);
 
   base::expected<IsolatedWebAppUrlInfo, std::string> Install(Profile* profile);
+  base::expected<IsolatedWebAppUrlInfo, std::string> TrustBundleAndInstall(
+      Profile* profile);
 
  private:
   web_package::SignedWebBundleId web_bundle_id_;
@@ -271,6 +273,12 @@ class IsolatedWebAppBuilder {
                                          const base::FilePath& file_path,
                                          const Headers& headers = {});
 
+  // Adds file specified by a path relative to //chrome/test/data to the app.
+  IsolatedWebAppBuilder& AddFileFromDisk(
+      std::string_view resource_path,
+      std::string_view chrome_test_data_relative_path,
+      const Headers& headers = {});
+
   // Recursively adds the contents of the `folder_path` directory on disk to the
   // app, using `resource_path` as the base path within the app.
   //
@@ -283,7 +291,7 @@ class IsolatedWebAppBuilder {
   // //chrome/test/data to the app.
   IsolatedWebAppBuilder& AddFolderFromDisk(
       std::string_view resource_path,
-      const std::string& chrome_test_data_relative_path);
+      std::string_view chrome_test_data_relative_path);
 
   IsolatedWebAppBuilder& RemoveResource(std::string_view resource_path);
 

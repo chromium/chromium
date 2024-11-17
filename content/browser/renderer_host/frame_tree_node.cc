@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 
 #include <math.h>
+
 #include <queue>
 #include <unordered_map>
 #include <utility>
@@ -15,6 +16,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -29,7 +31,6 @@
 #include "content/browser/renderer_host/navigator_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
-#include "content/browser/webauth/authenticator_environment.h"
 #include "content/common/navigation_params_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -180,23 +181,42 @@ FrameTreeNode::FrameTreeNode(
 }
 
 void FrameTreeNode::DestroyInnerFrameTreeIfExists() {
+  if (!current_frame_host() ||
+      !current_frame_host()->inner_tree_main_frame_tree_node_id()) {
+    return;
+  }
+
+  FrameTreeNode* inner_tree_main_frame_tree_node =
+      FrameTreeNode::GloballyFindByID(
+          current_frame_host()->inner_tree_main_frame_tree_node_id());
+  if (!inner_tree_main_frame_tree_node) {
+    return;
+  }
+
   // If `this` is an dummy outer delegate node, then we really are representing
   // an inner FrameTree for one of the following consumers:
   //   - `FencedFrame`
   //   - `GuestView`
-  // If we are representing a `FencedFrame` object, we need to destroy it
-  // alongside ourself. `GuestView` however, *currently* has a more complex
-  // lifetime and is dealt with separately.
-  bool is_outer_dummy_node = false;
-  if (current_frame_host() &&
-      current_frame_host()->inner_tree_main_frame_tree_node_id()) {
-    is_outer_dummy_node = true;
-  }
-
-  if (is_outer_dummy_node) {
-    if (FencedFrame* doomed_fenced_frame = FindFencedFrame(this)) {
-      parent()->DestroyFencedFrame(*doomed_fenced_frame);
-    }
+  switch (inner_tree_main_frame_tree_node->GetFrameType()) {
+    case FrameType::kSubframe:
+    case FrameType::kPrerenderMainFrame:
+      NOTREACHED();
+    case FrameType::kPrimaryMainFrame:
+      // This is possible for inner WebContents based GuestViews. The lifetimes
+      // of inner WebContents are dealt with separately.
+      // TODO(crbug.com/40202416): Once inner WebContents are removed, this can
+      // be NOTREACHED.
+      break;
+    case FrameType::kFencedFrameRoot:
+      // If we are representing a `FencedFrame` object, we need to destroy it
+      // alongside ourself.
+      if (FencedFrame* doomed_fenced_frame = FindFencedFrame(this)) {
+        parent()->DestroyFencedFrame(*doomed_fenced_frame);
+      }
+      break;
+    case FrameType::kGuestMainFrame:
+      parent()->DestroyGuestPage(this);
+      break;
   }
 }
 
@@ -381,6 +401,8 @@ FrameType FrameTreeNode::GetFrameType() const {
       return FrameType::kPrerenderMainFrame;
     case FrameTree::Type::kFencedFrame:
       return FrameType::kFencedFrameRoot;
+    case FrameTree::Type::kGuest:
+      return FrameType::kGuestMainFrame;
   }
 }
 
@@ -1261,18 +1283,6 @@ void FrameTreeNode::ResetNavigationsForDiscard() {
 bool FrameTreeNode::Credentialless() const {
   return attributes_->credentialless;
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-void FrameTreeNode::GetVirtualAuthenticatorManager(
-    mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
-        receiver) {
-  auto* environment_singleton = AuthenticatorEnvironment::GetInstance();
-  environment_singleton->EnableVirtualAuthenticatorFor(this,
-                                                       /*enable_ui=*/false);
-  environment_singleton->AddVirtualAuthenticatorReceiver(this,
-                                                         std::move(receiver));
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 FrameType FrameTreeNode::GetCurrentFrameType() const {
   return GetFrameType();

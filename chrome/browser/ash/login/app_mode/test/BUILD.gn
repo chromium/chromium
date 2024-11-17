@@ -13,12 +13,8 @@ static_library("test_support") {
     "ash_accelerator_helpers.cc",
     "kiosk_apps_mixin.cc",
     "kiosk_apps_mixin.h",
-    "kiosk_ash_browser_test_starter.cc",
-    "kiosk_ash_browser_test_starter.h",
     "kiosk_base_test.cc",
     "kiosk_base_test.h",
-    "kiosk_test_helpers.cc",
-    "kiosk_test_helpers.h",
     "managed_guest_session_test_helpers.cc",
     "managed_guest_session_test_helpers.h",
     "new_aura_window_watcher.cc",
@@ -27,8 +23,6 @@ static_library("test_support") {
     "test_app_data_load_waiter.h",
     "web_kiosk_base_test.cc",
     "web_kiosk_base_test.h",
-    "web_kiosk_lacros_base_test.cc",
-    "web_kiosk_lacros_base_test.h",
   ]
 
   public_deps = [
@@ -59,6 +53,7 @@ static_library("test_support") {
     "//ash/public/cpp",
     "//ash/webui/settings/public/constants:mojom",
     "//chrome/browser",
+    "//chrome/browser/ash/app_mode/test:test_support",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",
@@ -87,9 +82,7 @@ source_set("browser_tests") {
 
   sources = [
     "auto_launched_kiosk_browsertest.cc",
-    "chome_app_kiosk_lacros_browsertest.cc",
     "kiosk_accelerator_browsertest.cc",
-    "kiosk_accelerator_lacros_browsertest.cc",
     "kiosk_block_tablet_mode_browsertest.cc",
     "kiosk_device_owned_browsertest.cc",
     "kiosk_enterprise_browsertest.cc",
@@ -97,11 +90,9 @@ source_set("browser_tests") {
     "kiosk_remote_command_browsertest.cc",
     "kiosk_sku_browsertest.cc",
     "kiosk_update_browsertest.cc",
+    "web_kiosk_browser_permissions_browsertest.cc",
     "web_kiosk_browsertest.cc",
-    "web_kiosk_controlled_frame_browsertest.cc",
     "web_kiosk_device_attributes_browsertest.cc",
-    "web_kiosk_direct_sockets_browsertest.cc",
-    "web_kiosk_lacros_browsertest.cc",
     "web_kiosk_media_ui_browsertest.cc",
   ]
 
@@ -123,6 +114,7 @@ source_set("browser_tests") {
     "//chrome/browser/ash/accessibility:test_support",
     "//chrome/browser/ash/app_mode",
     "//chrome/browser/ash/app_mode:test_support",
+    "//chrome/browser/ash/app_mode/test:test_support",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/crosapi:browser_util",

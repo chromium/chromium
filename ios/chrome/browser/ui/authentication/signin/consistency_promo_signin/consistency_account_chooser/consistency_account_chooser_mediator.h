@@ -21,7 +21,7 @@ class ChromeAccountManagerService;
 @property(nonatomic, strong) id<ConsistencyAccountChooserConsumer> consumer;
 @property(nonatomic, strong) id<SystemIdentity> selectedIdentity;
 
-// See -[SigninPromoViewMediator initWithBrowserState:].
+// See -[SigninPromoViewMediator initWithProfile:].
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithSelectedIdentity:(id<SystemIdentity>)selectedIdentity

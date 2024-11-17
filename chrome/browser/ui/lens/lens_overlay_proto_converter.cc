@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_ref.h"
 #include "chrome/browser/lens/core/mojom/geometry.mojom.h"
@@ -172,16 +173,11 @@ lens::mojom::BackgroundImageDataPtr CreateBackgroundImageDataMojomFromProto(
   image_data->horizontal_padding = background_image_data.horizontal_padding();
 
   // Create vector for `background_image_data`.
-  const std::string& image_bytes = background_image_data.background_image();
-  std::vector<unsigned char> background_pixel_data(image_bytes.begin(),
-                                                   image_bytes.end());
-  image_data->background_image = std::move(background_pixel_data);
+  image_data->background_image =
+      base::as_byte_span(background_image_data.background_image());
 
   // Create vector for `text_mask`.
-  const std::string& text_mask = background_image_data.text_mask();
-  std::vector<unsigned char> mask_pixel_data(text_mask.begin(),
-                                             text_mask.end());
-  image_data->text_mask = std::move(mask_pixel_data);
+  image_data->text_mask = base::as_byte_span(background_image_data.text_mask());
 
   return image_data;
 }
@@ -203,7 +199,6 @@ lens::mojom::TranslatedLinePtr CreateTranslatedLineMojomFromProto(
     const lens::TextLayout_Line& proto_line,
     const lens::TranslationData_Line& translated_line,
     const std::string& line_translation,
-    const gfx::Size& resized_bitmap_size,
     lens::WritingDirection writing_direction) {
   lens::mojom::TranslatedLinePtr line = lens::mojom::TranslatedLine::New();
 
@@ -300,10 +295,11 @@ lens::mojom::TranslatedParagraphPtr CreateTranslatedParagraphMojomFromProto(
     auto translated_line = translation_data.line()[line_index];
     lines.push_back(CreateTranslatedLineMojomFromProto(
         proto_line, translated_line, translation_data.translation(),
-        resized_bitmap_size, translation_data.writing_direction()));
+        translation_data.writing_direction()));
   }
 
   paragraph->lines = std::move(lines);
+  paragraph->resized_bitmap_size = gfx::Size(resized_bitmap_size);
   paragraph->content_language = translation_data.target_language();
   paragraph->alignment = ProtoToMojo(translation_data.alignment());
   paragraph->writing_direction =

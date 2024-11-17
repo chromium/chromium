@@ -37,6 +37,11 @@ class PaymentsWindowUserConsentDialogController {
 
   // Returns the label for the accept button.
   virtual std::u16string GetOkButtonLabel() const = 0;
+
+  // Returns the accessibility text to announce to the user after acceptance of
+  // the payments window pop-up user consent dialog. This is to let the user
+  // know the payment verification website is loading.
+  virtual std::u16string GetAcceptanceAccessibilityAnnouncement() const = 0;
 };
 
 }  // namespace autofill::payments

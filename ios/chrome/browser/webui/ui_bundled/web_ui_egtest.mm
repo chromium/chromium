@@ -20,6 +20,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/components/webui/web_ui_url_constants.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "ios/web/public/test/element_selector.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -217,7 +218,17 @@ using chrome_test_util::ForwardButton;
 
   // Validates that some of the expected text on the page exists.
   [ChromeEarlGrey waitForWebStateContainingText:"Experiments"];
-  [ChromeEarlGrey waitForWebStateContainingText:"Available"];
+  NSString* selector =
+      @"(function() {"
+       "  var app = document.body.querySelector('flags-app');"
+       "  var crTabs = app.shadowRoot.querySelector('cr-tabs');"
+       "  return crTabs.tabNames.includes('Available');"
+       "})()";
+  NSString* description = @"'Available' tab exists.";
+  ElementSelector* tabTextSelector =
+      [ElementSelector selectorWithScript:selector
+                      selectorDescription:description];
+  [ChromeEarlGrey waitForWebStateContainingElement:tabTextSelector];
 
   // Validates that the experimental flags container is visible.
   NSString* flags_page_warning =
@@ -243,7 +254,17 @@ using chrome_test_util::ForwardButton;
 
   // Validates that some of the expected text on the page exists.
   [ChromeEarlGrey waitForWebStateContainingText:"Experiments"];
-  [ChromeEarlGrey waitForWebStateContainingText:"Available"];
+  NSString* selector =
+      @"(function() {"
+       "  var app = document.body.querySelector('flags-app');"
+       "  var crTabs = app.shadowRoot.querySelector('cr-tabs');"
+       "  return crTabs.tabNames.includes('Available');"
+       "})()";
+  NSString* description = @"'Available' tab exists.";
+  ElementSelector* tabTextSelector =
+      [ElementSelector selectorWithScript:selector
+                      selectorDescription:description];
+  [ChromeEarlGrey waitForWebStateContainingElement:tabTextSelector];
 
   NSString* flags_page_warning =
       l10n_util::GetNSString(IDS_FLAGS_UI_PAGE_WARNING);

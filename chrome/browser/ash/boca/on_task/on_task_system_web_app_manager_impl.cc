@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/boca/on_task/on_task_system_web_app_manager_impl.h"
 
 #include "ash/webui/boca_ui/url_constants.h"
+#include "ash/wm/window_pin_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -19,10 +20,10 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
+#include "chromeos/ash/components/boca/on_task/activity/active_tab_tracker.h"
 #include "chromeos/ash/components/boca/on_task/on_task_blocklist.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_handle.h"
 #include "url/gurl.h"
 
 namespace ash::boca {
@@ -66,15 +67,9 @@ void OnTaskSystemWebAppManagerImpl::LaunchSystemWebAppAsync(
              base::WeakPtr<OnTaskSystemWebAppManagerImpl> instance,
              apps::LaunchResult&& launch_result) {
             if (instance) {
-              // Configure the browser window for OnTask. This is required to
-              // ensure downstream components (especially UI controls) are setup
-              // for locked mode transitions.
               const SessionID active_window_id =
                   instance->GetActiveSystemWebAppWindowID();
-              Browser* const browser = GetBrowserWindowWithID(active_window_id);
-              if (browser) {
-                browser->SetLockedForOnTask(true);
-              }
+              instance->PrepareSystemWebAppWindowForOnTask(active_window_id);
             }
             std::move(callback).Run(launch_result.state ==
                                     apps::LaunchResult::State::kSuccess);
@@ -86,8 +81,7 @@ void OnTaskSystemWebAppManagerImpl::CloseSystemWebAppWindow(
     SessionID window_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   Browser* const browser = GetBrowserWindowWithID(window_id);
-  LockedSessionWindowTracker* const window_tracker =
-      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile_);
+  LockedSessionWindowTracker* const window_tracker = GetWindowTracker();
   if (window_tracker) {
     window_tracker->InitializeBrowserInfoForTracking(nullptr);
   }
@@ -126,46 +120,144 @@ void OnTaskSystemWebAppManagerImpl::SetPinStateForSystemWebAppWindow(
   if (pinned) {
     PinWindow(native_window, /*trusted=*/true);
     browser->command_controller()->LockedFullscreenStateChanged();
+    browser->window()->FocusToolbar();
   } else {
     UnpinWindow(native_window);
     browser->command_controller()->LockedFullscreenStateChanged();
   }
 }
 
+// TODO(b/367417612): Add unit test for this function.
 void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForSystemWebAppWindow(
+    SessionID window_id,
+    const std::vector<boca::BocaWindowObserver*> observers) {
+  Browser* const browser = GetBrowserWindowWithID(window_id);
+  if (!browser) {
+    return;
+  }
+  LockedSessionWindowTracker* const window_tracker = GetWindowTracker();
+  if (!window_tracker) {
+    return;
+  }
+  window_tracker->InitializeBrowserInfoForTracking(browser);
+  for (auto* observer : observers) {
+    window_tracker->AddObserver(observer);
+  }
+}
+
+SessionID OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
+    SessionID window_id,
+    GURL url,
+    ::boca::LockedNavigationOptions::NavigationType restriction_level) {
+  Browser* const browser = GetBrowserWindowWithID(window_id);
+  if (!browser) {
+    return SessionID::InvalidValue();
+  }
+  LockedSessionWindowTracker* const window_tracker = GetWindowTracker();
+  if (!window_tracker) {
+    return SessionID::InvalidValue();
+  }
+  // Stop the window tracker while adding tabs before resuming it.
+  window_tracker->set_can_start_navigation_throttle(false);
+  NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_FROM_API);
+  navigate_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+  Navigate(&navigate_params);
+  content::WebContents* const tab =
+      navigate_params.navigated_or_inserted_contents;
+  window_tracker->on_task_blocklist()->SetParentURLRestrictionLevel(
+      tab, url, restriction_level);
+  window_tracker->set_can_start_navigation_throttle(true);
+  return sessions::SessionTabHelper::IdForTab(tab);
+}
+
+void OnTaskSystemWebAppManagerImpl::RemoveTabsWithTabIds(
+    SessionID window_id,
+    const std::set<SessionID>& tab_ids_to_remove) {
+  Browser* const browser = GetBrowserWindowWithID(window_id);
+  if (!browser) {
+    return;
+  }
+  LockedSessionWindowTracker* const window_tracker = GetWindowTracker();
+  if (!window_tracker) {
+    return;
+  }
+  // Stop the window tracker while removing tabs before resuming it.
+  window_tracker->set_can_start_navigation_throttle(false);
+  // TODO (b/358197253): Add logic to prevent force closing tabs that are
+  // actively being used by consumers.
+  for (int idx = browser->tab_strip_model()->count() - 1; idx >= 0; --idx) {
+    content::WebContents* const tab =
+        browser->tab_strip_model()->GetWebContentsAt(idx);
+    const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
+    if (tab_ids_to_remove.contains(tab_id)) {
+      browser->tab_strip_model()->DetachAndDeleteWebContentsAt(idx);
+    }
+  }
+  window_tracker->set_can_start_navigation_throttle(true);
+}
+
+void OnTaskSystemWebAppManagerImpl::PrepareSystemWebAppWindowForOnTask(
     SessionID window_id) {
   Browser* const browser = GetBrowserWindowWithID(window_id);
   if (!browser) {
     return;
   }
-  LockedSessionWindowTracker* const window_tracker =
-      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile_);
-  if (!window_tracker) {
-    return;
+
+  // Configure the browser window for OnTask. This is required to ensure
+  // downstream components (especially UI controls) are setup for locked mode
+  // transitions.
+  browser->SetLockedForOnTask(true);
+
+  // Remove all tabs with pre-existing content. This is to de-dupe content and
+  // ensure that the tabs are set up for locked mode.
+  std::set<SessionID> tab_ids_to_remove;
+  for (int idx = browser->tab_strip_model()->count() - 1; idx > 0; --idx) {
+    content::WebContents* const tab =
+        browser->tab_strip_model()->GetWebContentsAt(idx);
+    const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
+    tab_ids_to_remove.insert(tab_id);
   }
-  window_tracker->InitializeBrowserInfoForTracking(browser);
+  RemoveTabsWithTabIds(window_id, tab_ids_to_remove);
 }
 
-void OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
-    SessionID window_id,
-    GURL url,
-    OnTaskBlocklist::RestrictionLevel restriction_level) {
-  Browser* const browser = GetBrowserWindowWithID(window_id);
+SessionID OnTaskSystemWebAppManagerImpl::GetActiveTabID() {
+  const Browser* const browser =
+      GetBrowserWindowWithID(GetActiveSystemWebAppWindowID());
   if (!browser) {
+    return SessionID::InvalidValue();
+  }
+  const SessionID tab_id = sessions::SessionTabHelper::IdForTab(
+      browser->tab_strip_model()->GetActiveWebContents());
+  return tab_id;
+}
+
+void OnTaskSystemWebAppManagerImpl::SwitchToTab(SessionID tab_id) {
+  Browser* const browser =
+      GetBrowserWindowWithID(GetActiveSystemWebAppWindowID());
+  if (!browser || !tab_id.is_valid()) {
     return;
   }
-  NavigateParams navigate_params(browser, url, ui::PAGE_TRANSITION_FROM_API);
-  navigate_params.disposition = WindowOpenDisposition::NEW_BACKGROUND_TAB;
-  base::WeakPtr<content::NavigationHandle> navigation_handle =
-      Navigate(&navigate_params);
-  content::WebContents* const tab = navigation_handle->GetWebContents();
-  LockedSessionWindowTracker* const window_tracker =
-      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile_);
-  if (!window_tracker) {
-    return;
+  for (int idx = browser->tab_strip_model()->count() - 1; idx >= 0; --idx) {
+    content::WebContents* const tab =
+        browser->tab_strip_model()->GetWebContentsAt(idx);
+    const SessionID id = sessions::SessionTabHelper::IdForTab(tab);
+    if (tab_id == id) {
+      browser->tab_strip_model()->ActivateTabAt(idx);
+      return;
+    }
   }
-  window_tracker->on_task_blocklist()->SetParentURLRestrictionLevel(
-      tab, restriction_level);
+}
+
+void OnTaskSystemWebAppManagerImpl::SetWindowTrackerForTesting(
+    LockedSessionWindowTracker* window_tracker) {
+  window_tracker_for_testing_ = window_tracker;
+}
+
+LockedSessionWindowTracker* OnTaskSystemWebAppManagerImpl::GetWindowTracker() {
+  if (window_tracker_for_testing_) {
+    return window_tracker_for_testing_;
+  }
+  return LockedSessionWindowTrackerFactory::GetForBrowserContext(profile_);
 }
 
 }  // namespace ash::boca

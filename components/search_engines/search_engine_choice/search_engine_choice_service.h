@@ -11,6 +11,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "components/country_codes/country_codes.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
@@ -32,13 +34,20 @@ namespace search_engines {
 // for the country information).
 class SearchEngineChoiceService : public KeyedService {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnSavedGuestSearchChanged() = 0;
+  };
+
   // This constructor should only be used in tests.
   SearchEngineChoiceService(
       PrefService& profile_prefs,
       PrefService* local_state,
+      bool is_profile_eligible_for_dse_guest_propagation,
       int variations_country_id = country_codes::kCountryIDUnknown);
   SearchEngineChoiceService(PrefService& profile_prefs,
                             PrefService* local_state,
+                            bool is_profile_eligible_for_dse_guest_propagation,
                             variations::VariationsService* variations_service);
   ~SearchEngineChoiceService() override;
 
@@ -87,12 +96,37 @@ class SearchEngineChoiceService : public KeyedService {
       const ChoiceScreenDisplayState& display_state,
       bool is_from_cached_state = false);
 
+  // Clear state e.g. when a guest session is closed.
+  void ResetState();
+
   // Clears the country id cache to be able to change countries multiple times
   // in tests.
   void ClearCountryIdCacheForTesting();
 
+  // Returns whether the profile is eligible for the default search engine to be
+  // used across all guest sessions.
+  bool IsProfileEligibleForDseGuestPropagation() const;
+
+  // Returns the previously chosen default search engine configured to be
+  // propagated to new guest sessions. Returns nullopt if the profile is
+  // not eligible for DSE propagation or no DSE choice was previously stored.
+  std::optional<int> GetSavedSearchEngineBetweenGuestSessions() const;
+
+  // Save the `prepopulated_id` of the chosen search engine to be used for all
+  // guest sessions. Pass nullopt to reset the search engine choice.
+  void SetSavedSearchEngineBetweenGuestSessions(
+      std::optional<int> prepopulated_id);
+
+  void AddObserver(Observer* obs) { observers_.AddObserver(obs); }
+
+  void RemoveObserver(Observer* obs) { observers_.RemoveObserver(obs); }
+
   // Register Local state preferences in `registry`.
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+
+  void SetIsProfileEligibleForDseGuestPropagationForTesting(bool eligible) {
+    is_profile_eligible_for_dse_guest_propagation_ = eligible;
+  }
 
  private:
   // Checks if the search engine choice should be prompted again, based on
@@ -100,7 +134,7 @@ class SearchEngineChoiceService : public KeyedService {
   // the choice are cleared, which triggers a reprompt on the next page load.
   void PreprocessPrefsForReprompt();
 
-  void ProcessPendingChoiceScreenDisplayState(PrefService* local_state);
+  void ProcessPendingChoiceScreenDisplayState();
 
   int GetCountryIdInternal();
 
@@ -109,6 +143,9 @@ class SearchEngineChoiceService : public KeyedService {
 #endif
 
   const raw_ref<PrefService> profile_prefs_;
+  const raw_ptr<PrefService> local_state_;
+  bool is_profile_eligible_for_dse_guest_propagation_ = false;
+  base::ObserverList<Observer> observers_;
   const int variations_country_id_;
 
   // Used to ensure that the value returned from `GetCountryId` never changes

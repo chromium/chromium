@@ -24,6 +24,7 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
@@ -54,6 +55,11 @@ constexpr char kHostD[] = "d.test";
 
 constexpr char kRequestOutcomeHistogram[] =
     "API.TopLevelStorageAccess.RequestOutcome";
+
+constexpr char kRequestStorageAccessUkmEntryName[] =
+    "RequestStorageAccessFor.RequestStorageResult";
+
+constexpr char kRequestStorageResultMetricName[] = "RequestStorageResult";
 
 // Path for URL of custom response
 constexpr char kFetchWithCredentialsPath[] = "/respondwithcookies";
@@ -164,6 +170,16 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
         browser(), https_server_.GetURL(host, "/iframe.html")));
   }
 
+  void NavigateToPageWithCredentiallessFrame(std::string_view host) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server_.GetURL(host, "/iframe_credentialless.html")));
+  }
+
+  void NavigateToSandboxedPage(std::string_view host) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), https_server_.GetURL(host, "/csp-sandbox.html")));
+  }
+
   void NavigateToNewTabWithFrame(const std::string& host) {
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), https_server_.GetURL(host, "/iframe.html"),
@@ -238,6 +254,61 @@ class RequestStorageAccessForBaseBrowserTest : public InProcessBrowserTest {
   net::test_server::EmbeddedTestServer https_server_;
   base::test::ScopedFeatureList features_;
 };
+
+class InsecureRequestStorageAccessForBaseBrowserTest
+    : public InProcessBrowserTest {
+ protected:
+  InsecureRequestStorageAccessForBaseBrowserTest()
+      : http_server_(net::EmbeddedTestServer::TYPE_HTTP) {}
+
+  void SetUp() override { InProcessBrowserTest::SetUp(); }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    base::FilePath path;
+    base::PathService::Get(content::DIR_TEST_DATA, &path);
+    http_server_.ServeFilesFromDirectory(path);
+    http_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    http_server_.RegisterRequestHandler(base::BindRepeating(&HandleRequest));
+    ASSERT_TRUE(http_server_.Start());
+  }
+  void SetBlockThirdPartyCookies(bool value) {
+    browser()->profile()->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            value ? content_settings::CookieControlsMode::kBlockThirdParty
+                  : content_settings::CookieControlsMode::kOff));
+  }
+  void NavigateToPageWithFrame(std::string_view host) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), http_server_.GetURL(host, "/iframe.html")));
+  }
+
+  content::WebContents* active_web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  net::test_server::EmbeddedTestServer http_server_;
+};
+
+IN_PROC_BROWSER_TEST_F(InsecureRequestStorageAccessForBaseBrowserTest,
+                       RequestStorageAccessForRequiresSecureContext) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithFrame(kHostA);
+
+  // This call would grant access in a secure context but is rejected because
+  // the context is not secure.
+  EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
+      active_web_contents()->GetPrimaryMainFrame(),
+      http_server_.GetURL(kHostA, "/").spec()));
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* REJECTED_INSECURE_CONTEXT */ 9L));
+}
 
 class RequestStorageAccessForBrowserTest
     : public RequestStorageAccessForBaseBrowserTest {};
@@ -344,6 +415,7 @@ class RequestStorageAccessForEnabledBrowserTest
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
                        SameOriginGrantedByDefault) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
@@ -354,12 +426,73 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
       storage::test::RequestStorageAccessForOrigin(GetFrame(), "mattwashere"));
   EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
       GetPrimaryMainFrame(), GetURL(kHostA).spec()));
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(
+          /* REJECTED_INCORRECT_FRAME */ 8L, /* REJECTED_INCORRECT_FRAME */ 8L,
+          /* APPROVED_EXISTING_ACCESS */ 0L));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest, IframeCheck) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  SetBlockThirdPartyCookies(true);
+  // Calling RequestStorageAccessForOrigin from a nested frame results rejection
+  // even if the origin's are the same.
+  NavigateToPageWithFrame(kHostA);
+
   EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
       GetFrame(), GetURL(kHostA).spec()));
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* REJECTED_INCORRECT_FRAME */ 8L));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
+                       ConfirmRejectedIncorrectFrameTakesPrecedent) {
+  // Calling RequestStorageAccessForOrigin from a nested
+  // frame results in REJECTED_INCORRECT_FRAME which supersedes the result
+  // (REJECTED_CREDENTIALLESS_IFRAME) that would be recorded by
+  // RequestStorageAccess.
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToPageWithCredentiallessFrame(kHostA);
+
+  // Confirm that the frame is credentialless
+  ASSERT_EQ(content::EvalJs(GetFrame(), "window.credentialless"), true);
+
+  EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
+      GetFrame(), GetURL(kHostA).spec()));
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* REJECTED_INCORRECT_FRAME */ 8L));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
+                       SandboxCheck) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  SetBlockThirdPartyCookies(true);
+
+  NavigateToSandboxedPage(kHostA);
+
+  EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostA).spec()));
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* REJECTED_OPAQUE_ORIGIN */ 4L));
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
                        TopLevelUnrelatedOriginRejected) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   NavigateToPageWithFrame(kHostA);
 
   EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
@@ -369,19 +502,48 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
                             "navigator.userActivation.isActive",
                             content::EXECUTE_SCRIPT_NO_USER_GESTURE),
             false);
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* REJECTED_GRANT_DENIED */ 7L));
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
                        TopLevelOpaqueOriginRejected) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
                                            GURL("data:,Hello%2C%20World%21")));
 
   EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
       GetPrimaryMainFrame(), GetURL(kHostA).spec()));
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* REJECTED_OPAQUE_ORIGIN */ 4L));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
+                       TopLevelFileOriginRejected) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("file://test.txt")));
+
+  EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostA).spec()));
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* REJECTED_OPAQUE_ORIGIN */ 4L));
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
                        RequestStorageAccessForEmbeddedOriginScoping) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   SetBlockThirdPartyCookies(true);
 
   // Set cross-site cookies on all hosts.
@@ -403,6 +565,11 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForEnabledBrowserTest,
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostASubdomain,
                                             /*cors_enabled=*/true),
             "");
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* APPROVED_EXISTING_ACCESS */ 0L));
 }
 
 // Tests to validate First-Party Set use with `requestStorageAccessFor`.
@@ -433,6 +600,8 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        PermissionQueryDoesNotShowDenied) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   NavigateToPageWithFrame(kHostA);
 
   // First, get a rejection for `kHostD`, because it is not in the same
@@ -443,10 +612,41 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   // Then, validate that the rejection is not exposed via query, matching the
   // spec.
   EXPECT_EQ(QueryPermission(GetPrimaryMainFrame(), kHostD), "prompt");
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* REJECTED_GRANT_DENIED */ 7L));
+}
+
+IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
+                       LogRepeatDenials) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  NavigateToPageWithFrame(kHostA);
+
+  // First, get a rejection for `kHostD`, because it is not in the same
+  // First-Party Set.
+  EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostD).spec()));
+  // Then make the same request.
+  EXPECT_FALSE(storage::test::RequestStorageAccessForOrigin(
+      GetPrimaryMainFrame(), GetURL(kHostD).spec()));
+
+  // Confirm that the reason for the denial is repeated instead of using
+  // REJECTED_EXISTING_DENIAL
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* REJECTED_GRANT_DENIED */ 7L,
+                           /* REJECTED_GRANT_DENIED */ 7L));
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        PermissionQueryCrossSiteFrame) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   NavigateToPageWithFrame(kHostA);
 
   // First, grant `kHostB` access.
@@ -459,6 +659,11 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   // The cross-site frame on `kHostD` should not be able to get the state of
   // `kHostB` on `kHostA`.
   EXPECT_EQ(QueryPermission(GetFrame(), kHostB), "prompt");
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* APPROVED_NEW_OR_EXISTING_GRANT */ 12L));
 }
 
 // Validate that if a top-level document requests access that cookies become
@@ -469,6 +674,7 @@ IN_PROC_BROWSER_TEST_F(
     Permission_AutograntedWithinFirstPartySet) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Set cross-site cookies on all hosts.
   SetCrossSiteCookieOnHost(kHostA);
@@ -530,10 +736,18 @@ IN_PROC_BROWSER_TEST_F(
                   kRequestOutcomeHistogram,
                   TopLevelStorageAccessRequestOutcome::kGrantedByFirstPartySet),
               Gt(0));
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* APPROVED_NEW_OR_EXISTING_GRANT */ 12L,
+                           /* APPROVED_NEW_OR_EXISTING_GRANT */ 12L));
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        Permission_NoUserGestureAfterPermissionGranted) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
@@ -553,11 +767,18 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   EXPECT_TRUE(storage::test::RequestStorageAccessForOrigin(
       GetPrimaryMainFrame(), GetURL(kHostB).spec(),
       /*omit_user_gesture=*/true));
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* APPROVED_NEW_OR_EXISTING_GRANT */ 12L,
+                           /* APPROVED_NEW_OR_EXISTING_GRANT */ 12L));
 }
 
 // Validate that a user gesture is required.
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        Permission_DeniedWithoutUserGesture) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetBlockThirdPartyCookies(true);
 
   SetCrossSiteCookieOnHost(kHostA);
@@ -583,10 +804,16 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
             "");
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* REJECTED_GRANT_DENIED */ 7L));
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        AccessGranted_DoesNotConsumeUserGesture) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetBlockThirdPartyCookies(true);
 
   NavigateToPageWithFrame(kHostA);
@@ -598,12 +825,18 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                             "navigator.userActivation.isActive",
                             content::EXECUTE_SCRIPT_NO_USER_GESTURE),
             true);
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* APPROVED_NEW_OR_EXISTING_GRANT */ 12L));
 }
 
 // Validate that the permission for rSAFor allows autogranting of rSA, including
 // without a user gesture.
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        Permission_AllowsRequestStorageAccessResolution) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetBlockThirdPartyCookies(true);
 
   SetCrossSiteCookieOnHost(kHostB);
@@ -633,12 +866,18 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   // `requestStorageAccess` without a user gesture should lead to rejection.
   EXPECT_FALSE(content::ExecJs(GetFrame(), kRequestStorageAccess,
                                content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* APPROVED_NEW_OR_EXISTING_GRANT */ 12L));
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        Permission_AutodeniedForServiceDomain) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Set cross-site cookies on all hosts.
   SetCrossSiteCookieOnHost(kHostA);
@@ -669,10 +908,16 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                   kRequestOutcomeHistogram,
                   TopLevelStorageAccessRequestOutcome::kDeniedByPrerequisites),
               Gt(0));
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* REJECTED_GRANT_DENIED */ 7L));
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        Permission_AutodeniedForServiceDomainInIframe) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetBlockThirdPartyCookies(true);
 
   // Set cross-site cookies on all hosts.
@@ -704,12 +949,18 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
             "");
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* REJECTED_INCORRECT_FRAME */ 8L));
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        Permission_AutodeniedOutsideFirstPartySet) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Set cross-site cookies on all hosts.
   SetCrossSiteCookieOnHost(kHostA);
@@ -742,10 +993,16 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                   kRequestOutcomeHistogram,
                   TopLevelStorageAccessRequestOutcome::kDeniedByFirstPartySet),
               Gt(0));
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* REJECTED_GRANT_DENIED */ 7L));
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        RequestStorageAccessForTopLevelScoping) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetBlockThirdPartyCookies(true);
 
   // Set cross-site cookies on all hosts.
@@ -793,11 +1050,17 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
             "");
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* APPROVED_NEW_OR_EXISTING_GRANT */ 12L));
 }
 
 IN_PROC_BROWSER_TEST_F(
     RequestStorageAccessForWithFirstPartySetsBrowserTest,
     RequestStorageAccessForTopLevelScopingWhenRequestedFromSubdomain) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetBlockThirdPartyCookies(true);
 
   // Set cross-site cookies on all hosts.
@@ -846,11 +1109,17 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
             "");
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* APPROVED_NEW_OR_EXISTING_GRANT */ 12L));
 }
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        RequestExplicitlyDeniedResourceInFirstPartySet) {
   SetBlockThirdPartyCookies(true);
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   // Set cross-site cookies on all hosts.
   SetCrossSiteCookieOnHost(kHostA);
@@ -873,6 +1142,11 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                   TopLevelStorageAccessRequestOutcome::kDeniedByCookieSettings),
               Gt(0));
 
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* REJECTED_GRANT_DENIED */ 7));
+
   // Verify that no cookies were sent.
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
@@ -881,11 +1155,17 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
                        PRE_PermissionGrantsResetAfterRestart) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetBlockThirdPartyCookies(true);
   NavigateToPageWithFrame(kHostA);
   ASSERT_TRUE(storage::test::RequestStorageAccessForOrigin(
       GetPrimaryMainFrame(), GetURL(kHostB).spec()));
   ASSERT_EQ("granted", QueryPermission(GetPrimaryMainFrame(), kHostB));
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* APPROVED_NEW_OR_EXISTING_GRANT */ 12L));
 }
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithFirstPartySetsBrowserTest,
@@ -910,6 +1190,7 @@ class RequestStorageAccessForWithCHIPSBrowserTest
 
 IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithCHIPSBrowserTest,
                        RequestStorageAccessFor_CoexistsWithCHIPS) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
   SetBlockThirdPartyCookies(true);
 
   SetCrossSiteCookieOnHost(kHostB);
@@ -944,6 +1225,11 @@ IN_PROC_BROWSER_TEST_F(RequestStorageAccessForWithCHIPSBrowserTest,
   EXPECT_EQ(CookiesFromFetchWithCredentials(GetFrame(), kHostB,
                                             /*cors_enabled=*/true),
             "cross-site=b.test(partitioned)");
+
+  EXPECT_THAT(
+      ukm_recorder.GetMetricsEntryValues(kRequestStorageAccessUkmEntryName,
+                                         kRequestStorageResultMetricName),
+      testing::ElementsAre(/* APPROVED_NEW_OR_EXISTING_GRANT */ 12L));
 }
 
 }  // namespace

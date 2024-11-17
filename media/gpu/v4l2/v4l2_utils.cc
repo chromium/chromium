@@ -570,38 +570,54 @@ struct timeval TimeDeltaToTimeVal(base::TimeDelta time_delta) {
 
 std::optional<SupportedVideoDecoderConfigs> GetSupportedV4L2DecoderConfigs() {
   SupportedVideoDecoderConfigs supported_media_configs;
+  std::vector<std::string> candidate_paths;
 
-  constexpr char kVideoDeviceDriverPath[] = "/dev/video-dec0";
-  base::ScopedFD device_fd(HANDLE_EINTR(
-      open(kVideoDeviceDriverPath, O_RDWR | O_NONBLOCK | O_CLOEXEC)));
-  if (!device_fd.is_valid()) {
-    PLOG(ERROR) << "Could not open " << kVideoDeviceDriverPath;
-    return std::nullopt;
-  }
-
-  std::vector<uint32_t> v4l2_codecs = EnumerateSupportedPixFmts(
-      base::BindRepeating(&HandledIoctl, device_fd.get()),
-      V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
-
-  for (const uint32_t v4l2_codec : v4l2_codecs) {
-    const std::vector<VideoCodecProfile> media_codec_profiles =
-        EnumerateSupportedProfilesForV4L2Codec(
-            base::BindRepeating(&HandledIoctl, device_fd.get()), v4l2_codec);
-
-    gfx::Size min_coded_size;
-    gfx::Size max_coded_size;
-    GetSupportedResolution(base::BindRepeating(&HandledIoctl, device_fd.get()),
-                           v4l2_codec, &min_coded_size, &max_coded_size);
-
-    for (const auto& profile : media_codec_profiles) {
-      supported_media_configs.emplace_back(SupportedVideoDecoderConfig(
-          profile, profile, min_coded_size, max_coded_size,
-#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-          /*allow_encrypted=*/true,
+#if BUILDFLAG(IS_CHROMEOS)
+  constexpr char kVideoDevicePattern[] = "/dev/video-dec0";
+  candidate_paths.push_back(kVideoDevicePattern);
 #else
-          /*allow_encrypted=*/false,
+  constexpr char kVideoDevicePattern[] = "/dev/video";
+  constexpr int kMaxDevices = 256;
+  candidate_paths.reserve(kMaxDevices);
+  for (int i = 0; i < kMaxDevices; ++i) {
+    candidate_paths.push_back(
+        base::StringPrintf("%s%d", kVideoDevicePattern, i));
+  }
 #endif
-          /*require_encrypted=*/false));
+
+  for (const auto& path : candidate_paths) {
+    base::ScopedFD device_fd(
+        HANDLE_EINTR(open(path.c_str(), O_RDWR | O_NONBLOCK | O_CLOEXEC)));
+    if (!device_fd.is_valid()) {
+      PLOG(WARNING) << "Could not open " << path;
+      continue;
+    }
+
+    std::vector<uint32_t> v4l2_codecs = EnumerateSupportedPixFmts(
+        base::BindRepeating(&HandledIoctl, device_fd.get()),
+        V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
+
+    for (const uint32_t v4l2_codec : v4l2_codecs) {
+      const std::vector<VideoCodecProfile> media_codec_profiles =
+          EnumerateSupportedProfilesForV4L2Codec(
+              base::BindRepeating(&HandledIoctl, device_fd.get()), v4l2_codec);
+
+      gfx::Size min_coded_size;
+      gfx::Size max_coded_size;
+      GetSupportedResolution(
+          base::BindRepeating(&HandledIoctl, device_fd.get()), v4l2_codec,
+          &min_coded_size, &max_coded_size);
+
+      for (const auto& profile : media_codec_profiles) {
+        supported_media_configs.emplace_back(SupportedVideoDecoderConfig(
+            profile, profile, min_coded_size, max_coded_size,
+#if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+            /*allow_encrypted=*/true,
+#else
+            /*allow_encrypted=*/false,
+#endif
+            /*require_encrypted=*/false));
+      }
     }
   }
 

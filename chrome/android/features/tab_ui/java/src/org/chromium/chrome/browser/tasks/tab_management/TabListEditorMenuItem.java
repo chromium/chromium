@@ -28,13 +28,11 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import java.util.List;
 
 /**
- * Holds the {@code mActionView} and {@link ListItem} for an item in the {@link
- * TabListEditorMenu}.
+ * Holds the {@code mActionView} and {@link ListItem} for an item in the {@link TabListEditorMenu}.
  */
 public class TabListEditorMenuItem {
     private final Context mContext;
 
-    private int mMenuId;
     private final ListItem mListItem;
     private @Nullable Button mActionView;
     private boolean mShowText;
@@ -96,7 +94,7 @@ public class TabListEditorMenuItem {
                     mContext.getResources()
                             .getQuantityString(titleResourceId, itemCount, itemCount);
         } else {
-            title = mContext.getResources().getString(titleResourceId);
+            title = mContext.getString(titleResourceId);
         }
         mListItem.model.set(TabListEditorActionProperties.TITLE, title);
         if (mActionView != null) {

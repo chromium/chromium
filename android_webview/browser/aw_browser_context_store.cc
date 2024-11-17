@@ -28,6 +28,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "android_webview/browser_jni_headers/AwBrowserContextStore_jni.h"
@@ -43,7 +44,7 @@ bool g_initialized = false;
 
 const base::FeatureParam<bool> kCreateSpareRendererForDefaultIfMultiProfile{
     &features::kCreateSpareRendererOnBrowserContextCreation,
-    "create_spare_renderer_for_default_if_multi_profile", true};
+    "create_spare_renderer_for_default_if_multi_profile", false};
 
 }  // namespace
 
@@ -117,7 +118,7 @@ AwBrowserContext* AwBrowserContextStore::Get(const std::string& name,
         content::BrowserThread::IsThreadInitialized(
             content::BrowserThread::IO) &&
         (!is_default || kCreateSpareRendererForDefaultIfMultiProfile.Get())) {
-      content::RenderProcessHost::WarmupSpareRenderProcessHost(
+      content::SpareRenderProcessHostManager::Get().WarmupSpare(
           entry->instance.get());
     }
   }
@@ -166,7 +167,7 @@ base::FilePath AwBrowserContextStore::GetRelativePathForTesting(
 }
 
 AwBrowserContextStore::Entry* AwBrowserContextStore::CreateNewContext(
-    const std::string_view name) {
+    std::string_view name) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto emplace_result = contexts_.emplace(std::string(name), Entry());
   // Check it was new

@@ -66,10 +66,10 @@ GREYLayoutConstraint* RightConstraintWithOverlap() {
       resetDataForLocalStatePref:prefs::kOverflowMenuDestinationBadgeData];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Close the overflow menu (popup menu).
   [ChromeTestCase removeAnyOpenMenusAndInfoBars];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Helpers

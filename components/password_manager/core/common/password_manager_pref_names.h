@@ -15,7 +15,7 @@ namespace password_manager::prefs {
 // Boolean controlling whether the password manager allows automatic signing in
 // through Credential Management API.
 //
-// IMPORTANT: This pref is neither querried nor updated on Android if the
+// IMPORTANT: This pref is neither queried nor updated on Android if the
 // unified password manager is enabled.
 // Use `password_manager_util::IsAutoSignInEnabled` to check
 // the value of this setting instead.
@@ -26,12 +26,21 @@ inline constexpr char kCredentialsEnableAutosignin[] =
 // credentials. When it is false, it doesn't ask if you want to save passwords
 // but will continue to fill passwords.
 //
-// IMPORTANT: This pref is neither querried nor updated on Android if the
+// IMPORTANT: This pref is neither queried nor updated on Android if the
 // unified password manager is enabled.
 // Use `password_manager_util::IsSavingPasswordsEnabled` to check the value of
 // this setting instead.
 inline constexpr char kCredentialsEnableService[] =
     "credentials_enable_service";
+
+// The value of this preference controls whether the Password Manager will save
+// passkeys. When it is false, GPM is not a candidate for saving passkeys.
+// (Although users could still save into GPM by using a phone after scanning a
+// QR code.) `kCredentialsEnableService` being false implies this too.
+//
+// IMPORTANT: This pref is neither queried nor updated on Android.
+inline constexpr char kCredentialsEnablePasskeys[] =
+    "credentials_enable_passkeys";
 
 #if BUILDFLAG(IS_IOS)
 // The value of this preference determines whether the user had enabled the

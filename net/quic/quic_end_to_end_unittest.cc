@@ -308,14 +308,13 @@ TEST_F(QuicEndToEndTest, UberTest) {
     CheckResponse(*consumer.get(), "HTTP/1.1 200", kResponseBody);
 }
 
-TEST_F(QuicEndToEndTest, EnableKyber) {
-  // Enable Kyber on the client.
+TEST_F(QuicEndToEndTest, EnableMLKEM) {
+  // Enable ML-KEM on the client.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kPostQuantumKyber}, {});
 
-  // Configure the server to only support Kyber.
-  server_->crypto_config()->set_preferred_groups(
-      {SSL_GROUP_X25519_KYBER768_DRAFT00});
+  // Configure the server to only support ML-KEM.
+  server_->crypto_config()->set_preferred_groups({SSL_GROUP_X25519_MLKEM768});
 
   AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
 
@@ -325,17 +324,16 @@ TEST_F(QuicEndToEndTest, EnableKyber) {
 
   CheckResponse(consumer, "HTTP/1.1 200", kResponseBody);
   EXPECT_EQ(consumer.response_info()->ssl_info.key_exchange_group,
-            SSL_GROUP_X25519_KYBER768_DRAFT00);
+            SSL_GROUP_X25519_MLKEM768);
 }
 
-TEST_F(QuicEndToEndTest, KyberDisabled) {
-  // Disable Kyber on the client.
+TEST_F(QuicEndToEndTest, MLKEMDisabled) {
+  // Disable ML-KEM on the client.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({}, {features::kPostQuantumKyber});
 
-  // Configure the server to only support Kyber.
-  server_->crypto_config()->set_preferred_groups(
-      {SSL_GROUP_X25519_KYBER768_DRAFT00});
+  // Configure the server to only support ML-KEM.
+  server_->crypto_config()->set_preferred_groups({SSL_GROUP_X25519_MLKEM768});
 
   AddToCache(request_.url.PathForRequest(), 200, "OK", kResponseBody);
 

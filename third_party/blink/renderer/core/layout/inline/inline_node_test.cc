@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
@@ -504,7 +499,7 @@ TEST_F(InlineNodeTest, SegmentBidiIsolate) {
 
 struct MinMaxData {
   const char* content;
-  int min_max[2];
+  std::array<int, 2> min_max;
   const char* target_style = "";
   const char* style = "";
   const char* lang = nullptr;
@@ -1705,12 +1700,13 @@ TEST_F(InlineNodeTest, FindSvgTextChunksCrash3) {
   auto* tspan = GetElementById("target");
   // A trail surrogate, then a lead surrogate.
   constexpr UChar kText[2] = {0xDE48, 0xD864};
-  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
-  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
-  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
-  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
-  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
-  tspan->appendChild(GetDocument().createTextNode(String(kText, 2u)));
+  const String text{base::span(kText)};
+  tspan->appendChild(GetDocument().createTextNode(text));
+  tspan->appendChild(GetDocument().createTextNode(text));
+  tspan->appendChild(GetDocument().createTextNode(text));
+  tspan->appendChild(GetDocument().createTextNode(text));
+  tspan->appendChild(GetDocument().createTextNode(text));
+  tspan->appendChild(GetDocument().createTextNode(text));
   UpdateAllLifecyclePhasesForTest();
   // Pass if no CHECK() failures in FindSvgTextChunks().
 }

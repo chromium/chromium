@@ -210,15 +210,14 @@ TEST_F(BoxLayoutTest, UseHeightForWidth) {
 
   // Test without horizontal stretching of the views.
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kEnd);
-  EXPECT_EQ(gfx::Size(20, 10).ToString(),
-            layout->GetPreferredSize(host_.get()).ToString());
+  EXPECT_EQ(gfx::Size(20, 10), layout->GetPreferredSize(host_.get()));
 
   host_->SetBounds(0, 0, 20, 30);
   test::RunScheduledLayout(host_.get());
   EXPECT_EQ(gfx::Rect(0, 0, 20, 10), v1->bounds());
-  EXPECT_EQ(gfx::Rect(20, 10, 0, 0), v2->bounds());
+  EXPECT_EQ(gfx::Rect(0, 10, 20, 20), v2->bounds());
 
-  EXPECT_EQ(10, layout->GetPreferredHeightForWidth(host_.get(), 50));
+  EXPECT_EQ(110, layout->GetPreferredHeightForWidth(host_.get(), 50));
 
   v2->SetPreferredWidth(10);
   test::RunScheduledLayout(host_.get());

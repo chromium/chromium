@@ -27,11 +27,6 @@
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/shell.h"
-#include "ui/display/test/display_manager_test_api.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 namespace {
 
 // Tests popups with multi-screen features from the Window Management API.
@@ -44,6 +39,12 @@ namespace {
 #else
 #define MAYBE_PopupMultiScreenTest DISABLED_PopupMultiScreenTest
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/371121282): Re-enable the test.
+// TODO(crbug.com/365126887): Re-enable the test.
+#undef MAYBE_PopupMultiScreenTest
+#define MAYBE_PopupMultiScreenTest DISABLED_PopupMultiScreenTest
+#endif  // BUILDFLAG(IS_WIN)
 class MAYBE_PopupMultiScreenTest : public PopupTestBase,
                                    public ::testing::WithParamInterface<bool> {
  public:
@@ -83,11 +84,6 @@ class MAYBE_PopupMultiScreenTest : public PopupTestBase,
     if (display::Screen::GetScreen()->GetNumDisplays() > 1) {
       return true;
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    display::test::DisplayManagerTestApi(ash::Shell::Get()->display_manager())
-        .UpdateDisplay("100+100-801x802,901+100-802x803");
-    return true;
-#else
     if ((virtual_display_util_ = display::test::VirtualDisplayUtil::TryCreate(
              display::Screen::GetScreen()))) {
       virtual_display_util_->AddDisplay(
@@ -95,7 +91,6 @@ class MAYBE_PopupMultiScreenTest : public PopupTestBase,
       return true;
     }
     return false;
-#endif
   }
 
  private:

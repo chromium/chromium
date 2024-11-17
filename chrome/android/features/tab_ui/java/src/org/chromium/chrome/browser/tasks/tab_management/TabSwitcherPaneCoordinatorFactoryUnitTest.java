@@ -38,6 +38,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
+import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.hub.PaneHubController;
@@ -51,21 +53,26 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabListCoordinator.TabListMode;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.collaboration.CollaborationService;
+import org.chromium.components.collaboration.CollaborationStatus;
+import org.chromium.components.collaboration.ServiceStatus;
+import org.chromium.components.collaboration.SigninStatus;
+import org.chromium.components.collaboration.SyncStatus;
+import org.chromium.components.data_sharing.TestDataSharingService;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -93,8 +100,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
 
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private TabModelFilterProvider mTabModelFilterProvider;
-    @Mock private TabGroupModelFilter mTabModelFilter;
+    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
     @Mock private TabContentManager mTabContentManager;
     @Mock private TabCreatorManager mTabCreatorManager;
@@ -112,6 +119,7 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private BackPressManager mBackpressManager;
+    @Mock private CollaborationService mCollaborationService;
 
     @Captor private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserverCaptor;
     @Captor private ArgumentCaptor<LifecycleObserver> mLifecycleObserverCaptor;
@@ -121,7 +129,9 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
     private Activity mActivity;
     private FrameLayout mParentView;
     private TabSwitcherPaneCoordinatorFactory mFactory;
-    private ObservableSupplierImpl<TabModelFilter> mTabModelFilterSupplier =
+    private ObservableSupplierImpl<TabGroupModelFilter> mTabGroupModelFilterSupplier =
+            new ObservableSupplierImpl<>();
+    private ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
             new ObservableSupplierImpl<>();
 
     @Before
@@ -130,20 +140,30 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
 
         TrackerFactory.setTrackerForTests(mTracker);
+        DataSharingServiceFactory.setForTesting(new TestDataSharingService());
+        CollaborationServiceFactory.setForTesting(mCollaborationService);
+        when(mCollaborationService.getServiceStatus())
+                .thenReturn(
+                        new ServiceStatus(
+                                SigninStatus.NOT_SIGNED_IN,
+                                SyncStatus.NOT_SYNCING,
+                                CollaborationStatus.DISABLED));
         mTab1 = TabUiUnitTestUtils.prepareTab(TAB1_ID, TAB1_TITLE);
         mProfileProviderSupplier.set(mProfileProvider);
         when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mProfileProvider.getOriginalProfile()).thenReturn(mProfile);
 
-        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
+        when(mTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mTabGroupModelFilterProvider);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModelSelector.getModels()).thenReturn(Arrays.asList(mTabModel));
-        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
-        when(mTabModelFilterProvider.getTabModelFilter(false)).thenReturn(mTabModelFilter);
-        mTabModelFilterSupplier.set(mTabModelFilter);
-        when(mTabModelFilterProvider.getCurrentTabModelFilterSupplier())
-                .thenReturn(mTabModelFilterSupplier);
-        when(mTabModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
+        when(mTabGroupModelFilterProvider.getTabGroupModelFilter(false))
+                .thenReturn(mTabGroupModelFilter);
+        mTabGroupModelFilterSupplier.set(mTabGroupModelFilter);
+        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilterSupplier())
+                .thenReturn(mTabGroupModelFilterSupplier);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabModel.getCount()).thenReturn(1);
         when(mTabModel.getTabAt(0)).thenReturn(mTab1);
         when(mTabModel.getTabById(TAB1_ID)).thenReturn(mTab1);
@@ -170,7 +190,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mModalDialogManager,
                         mBottomSheetController,
                         mDataSharingTabManager,
-                        mBackpressManager);
+                        mBackpressManager,
+                        /* desktopWindowStateManager= */ null);
     }
 
     @Test
@@ -186,7 +207,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mOnTabClickedCallback,
                         mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        mEdgeToEdgeSupplier);
         assertNotNull(coordinator);
 
         TabSwitcherMessageManager messageManager = mFactory.getMessageManagerForTesting();
@@ -211,7 +233,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mOnTabClickedCallback,
                         mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        mEdgeToEdgeSupplier);
         assertNotNull(coordinator1);
 
         TabSwitcherMessageManager messageManager = mFactory.getMessageManagerForTesting();
@@ -227,7 +250,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mOnTabClickedCallback,
                         mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        mEdgeToEdgeSupplier);
         assertNotNull(coordinator2);
         assertEquals(messageManager, mFactory.getMessageManagerForTesting());
 
@@ -251,7 +275,8 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
                         mOnTabClickedCallback,
                         mHairlineVisibilityCallback,
                         /* isIncognito= */ false,
-                        /* onTabGroupCreation= */ null);
+                        /* onTabGroupCreation= */ null,
+                        mEdgeToEdgeSupplier);
         assertNotNull(coordinator);
 
         TabSwitcherMessageManager messageManager = mFactory.getMessageManagerForTesting();
@@ -291,20 +316,20 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
 
     @Test
     @SmallTest
-    public void testCreateTabModelFilterSupplier_AlreadyCreated() {
+    public void testCreateTabGroupModelFilterSupplier_AlreadyCreated() {
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
 
-        var supplier = mFactory.createTabModelFilterSupplier(false);
+        var supplier = mFactory.createTabGroupModelFilterSupplier(false);
         verify(mTabModelSelector, never()).addObserver(any());
-        assertEquals(mTabModelFilter, supplier.get());
+        assertEquals(mTabGroupModelFilter, supplier.get());
     }
 
     @Test
     @SmallTest
-    public void testCreateTabModelFilterSupplier_WaitForChange() {
+    public void testCreateTabGroupModelFilterSupplier_WaitForChange() {
         when(mTabModelSelector.getModels()).thenReturn(Collections.emptyList());
 
-        var supplier = mFactory.createTabModelFilterSupplier(false);
+        var supplier = mFactory.createTabGroupModelFilterSupplier(false);
         verify(mTabModelSelector).addObserver(mTabModelSelectorObserverCaptor.capture());
         assertNull(supplier.get());
 
@@ -313,6 +338,6 @@ public class TabSwitcherPaneCoordinatorFactoryUnitTest {
         when(mTabModelSelector.getModels()).thenReturn(List.of(mTabModel));
         observer.onChange();
         verify(mTabModelSelector).removeObserver(observer);
-        assertEquals(mTabModelFilter, supplier.get());
+        assertEquals(mTabGroupModelFilter, supplier.get());
     }
 }

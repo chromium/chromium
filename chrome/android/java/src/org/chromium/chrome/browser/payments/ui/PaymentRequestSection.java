@@ -49,35 +49,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Represents a single section in the {@link PaymentRequestUI} that flips between multiple states.
+ * Represents a single section in the {@link PaymentRequestUi} that flips between multiple states.
  *
- * The row is broken up into three major, vertically-centered sections:
+ * <p>The row is broken up into three major, vertically-centered sections:
+ * ............................................................................................. .
+ * TITLE | | CHEVRON . .................................................................| | or . .
+ * LEFT SUMMARY TEXT | RIGHT SUMMARY TEXT | LOGO | ADD .
+ * .................................................................| | or . . MAIN SECTION CONTENT
+ * | | CHOOSE .
  * .............................................................................................
- * . TITLE                                                          |                | CHEVRON .
- * .................................................................|                |    or   .
- * . LEFT SUMMARY TEXT                        |  RIGHT SUMMARY TEXT |           LOGO |   ADD   .
- * .................................................................|                |    or   .
- * . MAIN SECTION CONTENT                                           |                |  CHOOSE .
- * .............................................................................................
  *
- * 1) MAIN CONTENT
- *    The main content is on the left side of the UI.  This includes the title of the section and
- *    two bits of optional summary text.  Subclasses may extend this class to append more controls
- *    via the {@link #createMainSectionContent} function.
+ * <p>1) MAIN CONTENT The main content is on the left side of the UI. This includes the title of the
+ * section and two bits of optional summary text. Subclasses may extend this class to append more
+ * controls via the {@link #createMainSectionContent} function.
  *
- * 2) LOGO
- *    Displays an optional logo (e.g. a credit card image) that floats to the right of the main
- *    content.
+ * <p>2) LOGO Displays an optional logo (e.g. a credit card image) that floats to the right of the
+ * main content.
  *
- * 3) CHEVRON or ADD or CHOOSE
- *    Drawn to indicate that the current section may be expanded.  Displayed only when the view is
- *    in the {@link #DISPLAY_MODE_EXPANDABLE} state and only if an ADD or CHOOSE button isn't shown.
+ * <p>3) CHEVRON or ADD or CHOOSE Drawn to indicate that the current section may be expanded.
+ * Displayed only when the view is in the {@link #DISPLAY_MODE_EXPANDABLE} state and only if an ADD
+ * or CHOOSE button isn't shown.
  *
- * There are three states that the UI may flip between; see {@link #DISPLAY_MODE_NORMAL},
- * {@link #DISPLAY_MODE_EXPANDABLE}, and {@link #DISPLAY_MODE_FOCUSED} for details.
+ * <p>There are three states that the UI may flip between; see {@link #DISPLAY_MODE_NORMAL}, {@link
+ * #DISPLAY_MODE_EXPANDABLE}, and {@link #DISPLAY_MODE_FOCUSED} for details.
  */
 public abstract class PaymentRequestSection extends LinearLayout implements View.OnClickListener {
-    public static final String TAG = "PaymentRequestUI";
+    public static final String TAG = "PaymentRequestUi";
 
     /** Handles clicks on the widgets and providing data to the PaymentsRequestSection. */
     public interface SectionDelegate extends View.OnClickListener {
@@ -275,7 +272,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
     /**
      * Changes the appearance of the title.
      *
-     * @param resId @see android.widget.TextView#setTextAppearance(int id).
+     * @see android.widget.TextView#setTextAppearance(int id).
      */
     protected void setTitleAppearance(int resId) {
         mTitleView.setTextAppearance(resId);
@@ -284,7 +281,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
     /**
      * Changes the appearance of the summary.
      *
-     * @param resId @see android.widget.TextView#setTextAppearance(int id).
+     * @see android.widget.TextView#setTextAppearance(int id).
      */
     protected void setSummaryAppearance(int leftResId, int rightResId) {
         mSummaryLeftTextView.setTextAppearance(leftResId);
@@ -857,18 +854,17 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
              * @param dataType  The type of the data contained in the section.
              * @param willFocus Whether the section is getting the focus.
              */
-            void onFocusChanged(@PaymentRequestUI.DataType int dataType, boolean willFocus);
+            void onFocusChanged(@PaymentRequestUi.DataType int dataType, boolean willFocus);
         }
 
         /**
          * Displays a row representing either a selectable option or some flavor text.
          *
-         * + The "button" is on the left and shows either an icon or a radio button to represent th
-         *   row type.
-         * + The "label" is text describing the row.
-         * + The "icon" is a logo representing the option, like a credit card.
-         * + The "edit icon" is a pencil icon with a vertical separator to indicate the option is
-         *   editable, clicking on it brings up corresponding editor.
+         * <p>+ The "button" is on the left and shows either an icon or a radio button to represent
+         * th row type. + The "label" is text describing the row. + The "icon" is a logo
+         * representing the option, like a credit card. + The "edit icon" is a pencil icon with a
+         * vertical separator to indicate the option is editable, clicking on it brings up
+         * corresponding editor.
          */
         public class OptionRow {
             private static final int OPTION_ROW_TYPE_OPTION = 0;
@@ -1175,11 +1171,7 @@ public abstract class PaymentRequestSection extends LinearLayout implements View
             setSummaryText(null, null);
         }
 
-        /**
-         * Registers the delegate to be notified when this OptionSection gains or loses focus.
-         *
-         * @param delegate The delegate to notify.
-         */
+        /** Registers the delegate to be notified when this OptionSection gains or loses focus. */
         public void setOptionSectionFocusChangedObserver(FocusChangedObserver observer) {
             mFocusChangedObserver = observer;
         }

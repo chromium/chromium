@@ -6,6 +6,7 @@
 #define COMPONENTS_HISTORY_EMBEDDINGS_VECTOR_DATABASE_H_
 
 #include <optional>
+#include <unordered_set>
 #include <vector>
 
 #include "base/time/time.h"
@@ -57,6 +58,23 @@ struct SearchParams {
   // Divides and caps a word match boost. Finding the word more than this many
   // times won't increase the boost for the word.
   size_t word_match_limit = 5;
+
+  // Used as a term in final score boost divide to normalize for long queries.
+  size_t word_match_smoothing_factor = 1;
+
+  // Maximum number of terms a query may have. When term count exceeds this
+  // limit, no text search for the terms occurs.
+  size_t word_match_max_term_count = 3;
+
+  // Makes the total word match boost zero when the ratio of terms matched to
+  // total query terms is less than this required value. A term is considered
+  // matched if there's at least one instance found in all passages.
+  // Stop words are not considered query terms and are not counted.
+  float word_match_required_term_ratio = 1.0f;
+
+  // If true, any non-ASCII characters in queries or passages will be erased
+  // instead of ignoring such queries or passages entirely.
+  bool erase_non_ascii = false;
 };
 
 struct SearchInfo {
@@ -76,6 +94,9 @@ struct SearchInfo {
   // The number of embeddings scored zero due to having a source passage
   // containing non-ASCII characters.
   size_t skipped_nonascii_passage_count = 0u;
+
+  // The number of source passages modified by erasing non-ASCII characters.
+  size_t modified_nonascii_passage_count = 0u;
 
   // Whether the search completed without interruption. Starting a new search
   // may cause a search to halt, and in that case this member will be false.
@@ -245,6 +266,16 @@ class VectorDatabaseInMemory : public VectorDatabase {
  private:
   std::vector<UrlPassagesEmbeddings> data_;
 };
+
+// Utility method to split a query into separate query terms for search.
+std::vector<std::string> SplitQueryToTerms(
+    const std::unordered_set<uint32_t>& stop_words_hashes,
+    std::string_view raw_query,
+    size_t min_term_length);
+
+// Destructively removes non-ASCII characters from single or many passages.
+void EraseNonAsciiCharacters(std::string& passage);
+void EraseNonAsciiCharacters(std::vector<std::string>& passages);
 
 }  // namespace history_embeddings
 

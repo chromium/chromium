@@ -89,25 +89,25 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     }
 
     @Override
-    public boolean isFirstPartySetsDataAccessEnabled(Profile profile) {
+    public boolean isRelatedWebsiteSetsDataAccessEnabled(Profile profile) {
         return false;
     }
 
     @Override
-    public boolean isFirstPartySetsDataAccessManaged(Profile profile) {
+    public boolean isRelatedWebsiteSetsDataAccessManaged(Profile profile) {
         return false;
     }
 
     @Override
-    public boolean isPartOfManagedFirstPartySet(Profile profile, String origin) {
+    public boolean isPartOfManagedRelatedWebsiteSet(Profile profile, String origin) {
         return false;
     }
 
     @Override
-    public void setFirstPartySetsDataAccessEnabled(Profile profile, boolean enabled) {}
+    public void setRelatedWebsiteSetsDataAccessEnabled(Profile profile, boolean enabled) {}
 
     @Override
-    public String getFirstPartySetOwner(Profile profile, String memberOrigin) {
+    public String getRelatedWebsiteSetOwner(Profile profile, String memberOrigin) {
         return null;
     }
 
@@ -233,7 +233,7 @@ public class FakePrivacySandboxBridge implements PrivacySandboxBridge.Natives {
     public void recordActivityType(Profile profile, int activityType) {}
 
     @Override
-    public boolean isConsentCountry() {
+    public boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard(Profile profile) {
         return false;
     }
 }

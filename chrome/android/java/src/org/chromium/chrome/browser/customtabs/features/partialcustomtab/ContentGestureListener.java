@@ -50,7 +50,6 @@ class ContentGestureListener extends GestureDetector.SimpleOnGestureListener {
     private DragEventCallback mCallback;
     private Supplier<Tab> mTab;
     private BooleanSupplier mIsFullyExpanded;
-    private int mPrevRawY;
 
     /**
      * Constructor.

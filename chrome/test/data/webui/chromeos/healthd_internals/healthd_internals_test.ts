@@ -13,7 +13,7 @@ import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 suite('healthdInternalsTestSuite', function() {
   let healthdInternalsApp: HealthdInternalsAppElement;
   // The expected number of navigation items in the sidebar.
-  const navItemsNumber: number = 7;
+  const navItemsNumber: number = 8;
   // The expected number of card components in the telemetry page.
   const cardsNumberTelemetryPage: number = 5;
 
@@ -54,7 +54,7 @@ suite('healthdInternalsTestSuite', function() {
         '#telemetryPage', healthdInternalsApp.shadowRoot, HTMLElement);
     const cardContainer = strictQuery(
         '.cr-centered-card-container', telemetryPage.shadowRoot, HTMLElement);
-    const cardElements = cardContainer.querySelectorAll('*');
+    const cardElements = cardContainer.querySelectorAll('.telemetry-card');
 
     assertEquals(cardsNumberTelemetryPage, cardElements.length);
     assertEquals('cpuCard', cardElements[0]!.id);

@@ -28,8 +28,10 @@ namespace {
 // Waits until `url` has the expected blocked state.
 void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
   NSString* nsurl = base::SysUTF8ToNSString(url.spec());
+  // TODO(crbug.com/361151875): Fix this long delay and revert this timeout back
+  // to base::test::ios::kWaitForActionTimeout
   GREYAssertTrue(base::test::ios::WaitUntilConditionOrTimeout(
-                     base::test::ios::kWaitForActionTimeout,
+                    base::Seconds(25),
                      ^{
                        return
                            [PolicyAppInterface isURLBlocked:nsurl] == blocked;
@@ -80,9 +82,9 @@ void WaitForURLBlockedStatus(const GURL& url, bool blocked) {
   WaitForURLBlockedStatus(self.testServer->GetURL("/testpage"), false);
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [PolicyAppInterface clearPolicies];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that pages are not blocked when the blocklist exists, but is empty.

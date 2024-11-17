@@ -26,6 +26,8 @@ import logging
 import os
 import subprocess
 import sys
+import threading
+import time
 
 import rpc_client
 import updater_test_service_control
@@ -74,6 +76,21 @@ def ExcludeUpdaterPathsFromWindowsDefender():
     ])
 
 
+def KeepAliveThread():
+    """Function logs periodically to notify parent this process is still alive.
+
+    Swarming test infra monitors test sub-process console activities. If there
+    is no console output for the extended period of time, it infers that the
+    test is not responding and kills the process. Note only STDERR will be
+    actually output to the console with current setup.
+    """
+    for i in range(180):
+        time.sleep(60)
+        logging.error(
+            "%s: still waiting for test sub-process to complete, sleep 60s ...",
+            i)
+
+
 def main():
     flags, remaining_args = ParseCommandLine()
 
@@ -102,6 +119,11 @@ def main():
     logging.error('Full command line: %s', command_line)
 
     ExcludeUpdaterPathsFromWindowsDefender()
+
+    keep_alive_thread = threading.Thread(target=KeepAliveThread)
+    keep_alive_thread.setDaemon(True)  # Do not block process on exit.
+    keep_alive_thread.start()
+
     with updater_test_service_control.OpenService():
         pid, exit_code, stdout, stderr = rpc_client.RunAsStandardUser(
             command_line)

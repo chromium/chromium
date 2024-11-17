@@ -97,7 +97,7 @@ struct Arrow {
   WeakPtr<Target> target;
 };
 struct TargetWithFactory : public Target {
-  TargetWithFactory() {}
+  TargetWithFactory() = default;
   WeakPtrFactory<Target> factory{this};
 };
 

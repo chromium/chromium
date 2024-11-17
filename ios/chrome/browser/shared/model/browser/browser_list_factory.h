@@ -7,17 +7,14 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class BrowserList;
+class ProfileIOS;
 
 // Keyed service factory for BrowserList.
-// This factory returns the same instance for regular and OTR browser states.
+// This factory returns the same instance for regular and OTR profiles.
 class BrowserListFactory final : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static BrowserList* GetForBrowserState(ChromeBrowserState* browser_state);
-
   static BrowserList* GetForProfile(ProfileIOS* profile);
 
   // Getter for singleton instance.

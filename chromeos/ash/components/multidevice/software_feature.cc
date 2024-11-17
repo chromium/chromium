@@ -44,11 +44,10 @@ SoftwareFeature FromCryptAuthFeature(
     case cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_CLIENT:
       return SoftwareFeature::kPhoneHubCameraRollClient;
     case cryptauth::SoftwareFeature::UNKNOWN_FEATURE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SoftwareFeature::kBetterTogetherHost;
+  NOTREACHED();
 }
 
 cryptauth::SoftwareFeature ToCryptAuthFeature(
@@ -89,8 +88,7 @@ cryptauth::SoftwareFeature ToCryptAuthFeature(
       return cryptauth::SoftwareFeature::PHONE_HUB_CAMERA_ROLL_CLIENT;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return cryptauth::SoftwareFeature::BETTER_TOGETHER_HOST;
+  NOTREACHED();
 }
 
 std::ostream& operator<<(std::ostream& stream, const SoftwareFeature& feature) {

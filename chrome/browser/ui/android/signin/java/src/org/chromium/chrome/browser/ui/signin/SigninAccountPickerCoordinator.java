@@ -12,6 +12,7 @@ import android.widget.FrameLayout;
 import androidx.activity.ComponentActivity;
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
@@ -32,6 +33,7 @@ import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -51,6 +53,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
     private final SigninManager mSigninManager;
     private final @SigninAccessPoint int mSigninAccessPoint;
+    private final @Nullable CoreAccountId mSelectedCoreAccountId;
 
     private ScrimCoordinator mScrim;
     private BottomSheetObserver mBottomSheetObserver;
@@ -88,6 +91,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
      * @param bottomSheetStrings The object containing the strings shown by the bottom sheet.
      * @param accountPickerLaunchMode Indicate the first bottom sheet view shown to the user.
      * @param signinAccessPoint The entry point for the sign-in.
+     * @param selectedAccountId the account id to use as default, if present.
      */
     public SigninAccountPickerCoordinator(
             @NonNull WindowAndroid windowAndroid,
@@ -98,7 +102,8 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
             @NonNull SigninManager signinManager,
             @NonNull AccountPickerBottomSheetStrings bottomSheetStrings,
             @AccountPickerLaunchMode int accountPickerLaunchMode,
-            @SigninAccessPoint int signinAccessPoint) {
+            @SigninAccessPoint int signinAccessPoint,
+            @Nullable CoreAccountId selectedAccountId) {
         mWindowAndroid = windowAndroid;
         mActivity = activity;
         mContainerView = containerView;
@@ -106,6 +111,7 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         mSigninManager = signinManager;
         mSigninAccessPoint = signinAccessPoint;
+        mSelectedCoreAccountId = selectedAccountId;
 
         initAndShowBottomSheet(bottomSheetStrings, accountPickerLaunchMode);
     }
@@ -150,7 +156,8 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                         mActivity.getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),
                         () -> sheetContainer,
-                        () -> 0);
+                        () -> 0,
+                        /* desktopWindowStateManager= */ null);
 
         mBottomSheetObserver =
                 new EmptyBottomSheetObserver() {
@@ -179,7 +186,8 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                         mDeviceLockActivityLauncher,
                         accountPickerLaunchMode,
                         mSigninAccessPoint == SigninAccessPoint.WEB_SIGNIN,
-                        mSigninAccessPoint);
+                        mSigninAccessPoint,
+                        mSelectedCoreAccountId);
     }
 
     /** Called when an account is added on the device. */

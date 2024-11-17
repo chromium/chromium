@@ -110,8 +110,7 @@ void SyncProcessRunner::Schedule() {
       return;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  ScheduleInternal(kSyncDelayMaxInMilliseconds);
+  NOTREACHED();
 }
 
 void SyncProcessRunner::ThrottleSync(int64_t base_delay) {

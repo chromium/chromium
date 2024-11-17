@@ -73,7 +73,7 @@ double GenerateNormalizedMurmurHashEntropy(ValueInRange entropy_source,
 // entropy source values internally to produce each output entropy value.
 class TrialEntropyGenerator {
  public:
-  virtual ~TrialEntropyGenerator() {}
+  virtual ~TrialEntropyGenerator() = default;
   virtual double GenerateEntropyValue() const = 0;
 };
 
@@ -89,7 +89,7 @@ class SHA1EntropyGenerator : public TrialEntropyGenerator {
   SHA1EntropyGenerator(const SHA1EntropyGenerator&) = delete;
   SHA1EntropyGenerator& operator=(const SHA1EntropyGenerator&) = delete;
 
-  ~SHA1EntropyGenerator() override {}
+  ~SHA1EntropyGenerator() override = default;
 
   double GenerateEntropyValue() const override {
     // Use a random UUID + 13 additional bits of entropy to match how the
@@ -118,7 +118,7 @@ class NormalizedMurmurHashEntropyGenerator : public TrialEntropyGenerator {
   NormalizedMurmurHashEntropyGenerator& operator=(
       const NormalizedMurmurHashEntropyGenerator&) = delete;
 
-  ~NormalizedMurmurHashEntropyGenerator() override {}
+  ~NormalizedMurmurHashEntropyGenerator() override = default;
 
   double GenerateEntropyValue() const override {
     return GenerateNormalizedMurmurHashEntropy(

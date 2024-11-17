@@ -86,7 +86,8 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
   // printed page. In both cases, the memory handle is assumed to be valid.
   ConnectorDataPipeGetter(const std::string& boundary,
                           const std::string& metadata,
-                          std::unique_ptr<InternalMemoryMappedFile> file);
+                          std::unique_ptr<InternalMemoryMappedFile> file,
+                          bool is_obfuscated);
   ConnectorDataPipeGetter(const std::string& boundary,
                           const std::string& metadata,
                           base::ReadOnlySharedMemoryMapping page);
@@ -106,7 +107,8 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
   static std::unique_ptr<ConnectorDataPipeGetter> CreateMultipartPipeGetter(
       const std::string& boundary,
       const std::string& metadata,
-      base::File file);
+      base::File file,
+      bool is_obfuscated);
 
   // Returns nullptr if `page` is invalid or if a memory region can't be created
   // from it.
@@ -121,7 +123,8 @@ class ConnectorDataPipeGetter : public network::mojom::DataPipeGetter {
   // Returns nullptr if `file` is invalid or if a memory mapped file can't be
   // created from it.
   static std::unique_ptr<ConnectorDataPipeGetter> CreateResumablePipeGetter(
-      base::File file);
+      base::File file,
+      bool is_obfuscated);
 
   // Returns nullptr if `page` is invalid or if a memory region can't be created
   // from it.

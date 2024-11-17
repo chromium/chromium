@@ -42,7 +42,7 @@ TEST_P(LayoutSVGRootTest, VisualRectMappingWithoutViewportClipWithBorder) {
   EXPECT_EQ(PhysicalRect(90, 90, 100, 100), rect);
 
   auto root_visual_rect =
-      static_cast<const LayoutObject&>(root).LocalVisualRect();
+      LocalVisualRect(static_cast<const LayoutObject&>(root));
   // SVG root's local overflow does not include overflow from descendants.
   EXPECT_EQ(PhysicalRect(0, 0, 220, 120), root_visual_rect);
 
@@ -85,7 +85,7 @@ TEST_P(LayoutSVGRootTest, VisualRectMappingWithViewportClipAndBorder) {
   EXPECT_EQ(PhysicalRect(90, 90, 100, 20), rect);
 
   auto root_visual_rect =
-      static_cast<const LayoutObject&>(root).LocalVisualRect();
+      LocalVisualRect(static_cast<const LayoutObject&>(root));
   // SVG root with overflow:hidden doesn't include overflow from children, just
   // border box rect.
   EXPECT_EQ(PhysicalRect(0, 0, 220, 120), root_visual_rect);

@@ -394,6 +394,9 @@ class UserSessionManager
   void StartCrosSession();
   void PrepareProfile(const base::FilePath& profile_path);
 
+  // Check if the ARCVM DLC image was installed on the device.
+  void CheckArcVmDlcImageExist();
+
   // Callback for Profile::CREATE_STATUS_CREATED profile state.
   // Initializes basic preferences for newly created profile. Any other
   // early profile initialization that needs to happen before

@@ -441,11 +441,6 @@ class TestPlatform : public authenticator::Platform {
     memcpy(request.client_data_hash.data(), params->challenge.data(),
            params->challenge.size());
     if (params->extensions) {
-      // The PRF inputs are hashed when they are sent over CTAP. So the
-      // `prf_inputs_hashed` flag should be set iff `prf_inputs` is non-empty.
-      CHECK(params->extensions->prf_inputs.empty() !=
-            params->extensions->prf_inputs_hashed);
-
       for (const auto& prf_input_from_request :
            params->extensions->prf_inputs) {
         PRFInput prf_input_to_authenticator;
@@ -492,7 +487,7 @@ class TestPlatform : public authenticator::Platform {
         FROM_HERE,
         base::BindOnce(
             &TestPlatform::DoSendBLEAdvert, weak_factory_.GetWeakPtr(),
-            device::fido_parsing_utils::Materialize<EXTENT(payload)>(payload)));
+            device::fido_parsing_utils::Materialize<payload.size()>(payload)));
     return std::make_unique<DummyBLEAdvert>();
   }
 
@@ -655,11 +650,11 @@ class LateLinkingDevice : public authenticator::Transaction {
       : ctap_error_(ctap_error),
         platform_(std::move(platform)),
         network_context_factory_(std::move(network_context_factory)),
-        tunnel_id_(device::cablev2::Derive<EXTENT(tunnel_id_)>(
+        tunnel_id_(device::cablev2::Derive<kTunnelIdSize>(
             qr_secret,
             base::span<uint8_t>(),
             DerivedValueType::kTunnelID)),
-        eid_key_(device::cablev2::Derive<EXTENT(eid_key_)>(
+        eid_key_(device::cablev2::Derive<kEIDKeySize>(
             qr_secret,
             base::span<const uint8_t>(),
             device::cablev2::DerivedValueType::kEIDKey)),
@@ -707,7 +702,7 @@ class LateLinkingDevice : public authenticator::Transaction {
 
     ble_advert_ =
         platform_->SendBLEAdvert(eid::Encrypt(plaintext_eid, eid_key_));
-    psk_ = device::cablev2::Derive<EXTENT(psk_)>(
+    psk_ = device::cablev2::Derive<kPSKSize>(
         secret_, plaintext_eid, device::cablev2::DerivedValueType::kPSK);
   }
 
@@ -878,11 +873,11 @@ class HandshakeErrorDevice : public authenticator::Transaction {
                        base::span<const uint8_t> qr_secret)
       : platform_(std::move(platform)),
         network_context_factory_(std::move(network_context_factory)),
-        tunnel_id_(device::cablev2::Derive<EXTENT(tunnel_id_)>(
+        tunnel_id_(device::cablev2::Derive<kTunnelIdSize>(
             qr_secret,
             base::span<uint8_t>(),
             DerivedValueType::kTunnelID)),
-        eid_key_(device::cablev2::Derive<EXTENT(eid_key_)>(
+        eid_key_(device::cablev2::Derive<kEIDKeySize>(
             qr_secret,
             base::span<const uint8_t>(),
             device::cablev2::DerivedValueType::kEIDKey)),
@@ -929,7 +924,7 @@ class HandshakeErrorDevice : public authenticator::Transaction {
 
     ble_advert_ =
         platform_->SendBLEAdvert(eid::Encrypt(plaintext_eid, eid_key_));
-    psk_ = device::cablev2::Derive<EXTENT(psk_)>(
+    psk_ = device::cablev2::Derive<kPSKSize>(
         secret_, plaintext_eid, device::cablev2::DerivedValueType::kPSK);
   }
 

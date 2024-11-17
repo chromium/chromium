@@ -18,7 +18,7 @@
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/strike_databases/payments/local_card_migration_strike_database.h"
 
 namespace autofill {
@@ -88,8 +88,7 @@ class LocalCardMigrationManager {
   };
 
   // `client` must outlive the LocalCardMigrationManager.
-  LocalCardMigrationManager(AutofillClient* client,
-                            const std::string& app_locale);
+  explicit LocalCardMigrationManager(AutofillClient* client);
 
   LocalCardMigrationManager(const LocalCardMigrationManager&) = delete;
   LocalCardMigrationManager& operator=(const LocalCardMigrationManager&) =
@@ -150,11 +149,6 @@ class LocalCardMigrationManager {
   // unsupported cards. If so, the first OnDidGetUploadDetails() will need to
   // store the supported ranges locally.
   void GetMigratableCreditCards();
-
-  // For testing.
-  void SetAppLocaleForTesting(const std::string& app_locale) {
-    app_locale_ = app_locale;
-  }
 
  protected:
   // Callback after successfully getting the legal documents. On success,
@@ -221,8 +215,6 @@ class LocalCardMigrationManager {
 
   const raw_ref<AutofillClient> client_;
 
-  std::string app_locale_;
-
   // The parsed lines from the legal message return from GetUploadDetails.
   LegalMessageLines legal_message_lines_;
 
@@ -233,8 +225,7 @@ class LocalCardMigrationManager {
   int credit_card_import_type_;
 
   // Collected information about a pending migration request.
-  payments::PaymentsNetworkInterface::MigrationRequestDetails
-      migration_request_;
+  payments::MigrationRequestDetails migration_request_;
 
   // The local credit cards to be uploaded. Owned by LocalCardMigrationManager.
   // The order of cards should not be changed.

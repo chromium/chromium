@@ -24,7 +24,7 @@ sandbox::ResultCode StartSandboxedProcess(
     SandboxedProcessLauncherDelegate* delegate,
     const base::CommandLine& target_command_line,
     const base::HandlesToInheritVector& handles_to_inherit,
-    base::Process* process) {
+    sandbox::StartSandboxedProcessCallback result_callback) {
   std::string type_str =
       target_command_line.GetSwitchValueASCII(switches::kProcessType);
   TRACE_EVENT1("startup", "StartProcessWithAccess", "type", type_str);
@@ -45,7 +45,8 @@ sandbox::ResultCode StartSandboxedProcess(
   }
 
   return sandbox::policy::SandboxWin::StartSandboxedProcess(
-      full_command_line, handles_to_inherit, delegate, process);
+      full_command_line, handles_to_inherit, delegate,
+      std::move(result_callback));
 }
 
 }  // namespace content

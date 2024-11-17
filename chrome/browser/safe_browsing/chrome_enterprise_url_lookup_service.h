@@ -67,6 +67,7 @@ class ChromeEnterpriseRealTimeUrlLookupService
       const override;
   std::string GetMetricSuffix() const override;
   void Shutdown() override;
+  bool CanCheckUrl(const GURL& url) override;
 
  private:
   // RealTimeUrlLookupServiceBase:

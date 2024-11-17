@@ -65,7 +65,7 @@ CompileOptions GetCompileOptions(bool first_script_in_scan) {
 
 scoped_refptr<base::SequencedTaskRunner> GetCompileTaskRunner() {
   static const base::FeatureParam<bool> kCompileInParallelParam{
-      &features::kPrecompileInlineScripts, "compile-in-parallel", true};
+      &features::kPrecompileInlineScripts, "compile-in-parallel", false};
   // Returning a null task runner will result in posting to the worker pool for
   // each task.
   if (kCompileInParallelParam.Get()) {
@@ -89,7 +89,7 @@ bool ShouldPrecompileFrame(bool is_main_frame) {
     return false;
 
   static const base::FeatureParam<bool> kPrecompileMainFrameOnlyParam{
-      &features::kPrecompileInlineScripts, "precompile-main-frame-only", false};
+      &features::kPrecompileInlineScripts, "precompile-main-frame-only", true};
   // Cache the value to avoid parsing the param string more than once.
   static const bool kPrecompileMainFrameOnlyValue =
       kPrecompileMainFrameOnlyParam.Get();

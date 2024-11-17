@@ -11,7 +11,7 @@
 import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
-import './strings.m.js';
+import '/strings.m.js';
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -24,12 +24,28 @@ import {$} from 'chrome://resources/js/util.js';
 // </if>
 // clang-format on
 
+
+/**
+ * Truncate string if it's too long to show.
+ * @param str The original string.
+ * @returns If |str| length is less or equal than 60, return |str|.
+ * Otherwise return the truncated |str|, appended with '...' in the end.
+ */
+function truncateString(str: string): string {
+  // 60 is a magic number which show nicely on the page.
+  const maxLength = 60;
+  if (str.length <= maxLength) {
+    return str;
+  }
+  return str.substring(0, maxLength) + '...';
+}
+
 /**
  * Promise resolution handler for variations list and command line equivalent.
  */
 function handleVariationInfo(
     {variationsList, variationsCmd}:
-        {variationsList: string[], variationsCmd?: string}) {
+        {variationsList: string[], variationsCmd: string}) {
   getRequiredElement('variations-section').hidden = !variationsList.length;
   for (const item of variationsList) {
     getRequiredElement('variations-list')
@@ -38,9 +54,18 @@ function handleVariationInfo(
         .appendChild(document.createElement('br'));
   }
 
-  if (variationsCmd) {
-    getRequiredElement('variations-cmd-section').hidden = !variationsCmd;
-    getRequiredElement('variations-cmd').textContent = variationsCmd;
+  const includeVariationsCmd = location.search.includes('show-variations-cmd');
+  if (variationsCmd !== '') {
+    getRequiredElement('variations-cmd-section').hidden = false;
+    getRequiredElement('copy-variations-to-clipboard').hidden =
+        includeVariationsCmd;
+    if (includeVariationsCmd) {
+      getRequiredElement('variations-cmd').textContent = variationsCmd;
+    } else {
+      getRequiredElement('variations-cmd').textContent =
+          truncateString(variationsCmd);
+      getRequiredElement('variations-cmd').dataset['value'] = variationsCmd;
+    }
   }
 }
 
@@ -128,12 +153,24 @@ function crosUrlVersionRedirect() {
 }
 // </if>
 
-function copyToClipboard() {
-  navigator.clipboard.writeText(getRequiredElement('copy-content').innerText)
-      .then(announceCopy);
+async function copyVersionToClipboard() {
+  await navigator.clipboard.writeText(
+      getRequiredElement('copy-content').innerText);
+  announceCopy('copy_notice');
 }
 
-function announceCopy() {
+async function copyVariationsToClipboard() {
+  const cmdLine =
+      getRequiredElement('variations-cmd').dataset['value'] as string;
+  await navigator.clipboard.writeText(cmdLine);
+  announceCopy('copy_variations_notice');
+}
+
+/**
+ * Announce the copy action when screen reader is on.
+ * @param id The id string for the notice.
+ */
+function announceCopy(id: string) {
   const messagesDiv = getRequiredElement('messages');
   messagesDiv.innerHTML = window.trustedTypes!.emptyHTML;
 
@@ -146,7 +183,7 @@ function announceCopy() {
   // </if>
 
   const div = document.createElement('div');
-  div.innerText = loadTimeData.getString('copy_notice');
+  div.innerText = loadTimeData.getString(id);
   messagesDiv.append(div);
 }
 
@@ -197,7 +234,10 @@ function initialize() {
   }
 
   getRequiredElement('copy-to-clipboard')
-      .addEventListener('click', copyToClipboard);
+      .addEventListener('click', copyVersionToClipboard);
+
+  getRequiredElement('copy-variations-to-clipboard')
+      .addEventListener('click', copyVariationsToClipboard);
 
   // <if expr="chromeos_lacros">
   getRequiredElement('copy-os-content-to-clipboard')

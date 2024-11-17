@@ -32,6 +32,7 @@
 #include "chrome/browser/ash/input_method/japanese/japanese_prefs.h"
 #include "chrome/browser/ash/input_method/japanese/japanese_prefs_constants.h"
 #include "chrome/browser/ash/input_method/suggestion_enums.h"
+#include "chrome/browser/ash/lobster/lobster_event_sink.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/input_method/input_method_menu_manager.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
@@ -143,7 +144,7 @@ bool IsPredictiveWritingEnabled(PrefService* pref_service,
           IsUsEnglishEngine(engine_id));
 }
 
-std::string NormalizeRuleBasedEngineId(const std::string engine_id) {
+std::string NormalizeRuleBasedEngineId(const std::string& engine_id) {
   // For legacy reasons, |engine_id| starts with "vkd_" in the input method
   // manifest, but the InputEngineManager expects the prefix "m17n:".
   // TODO(https://crbug.com/1012490): Migrate to m17n prefix and remove this.
@@ -700,6 +701,7 @@ bool CanRouteToNativeMojoEngine(const std::string& engine_id) {
 NativeInputMethodEngineObserver::NativeInputMethodEngineObserver(
     PrefService* prefs,
     EditorEventSink* editor_event_sink,
+    LobsterEventSink* lobster_event_sink,
     std::unique_ptr<InputMethodEngineObserver> ime_base_observer,
     std::unique_ptr<AssistiveSuggester> assistive_suggester,
     std::unique_ptr<AutocorrectManager> autocorrect_manager,
@@ -708,6 +710,7 @@ NativeInputMethodEngineObserver::NativeInputMethodEngineObserver(
     bool use_ime_service)
     : prefs_(prefs),
       editor_event_sink_(editor_event_sink),
+      lobster_event_sink_(lobster_event_sink),
       ime_base_observer_(std::move(ime_base_observer)),
       assistive_suggester_(std::move(assistive_suggester)),
       autocorrect_manager_(std::move(autocorrect_manager)),
@@ -882,6 +885,9 @@ void NativeInputMethodEngineObserver::OnFocus(
       TextClient{.context_id = context_id, .state = TextClientState::kPending};
   if (chromeos::features::IsOrcaEnabled() && editor_event_sink_) {
     editor_event_sink_->OnFocus(context_id);
+  }
+  if (lobster_event_sink_) {
+    lobster_event_sink_->OnFocus(context_id);
   }
   if (assistive_suggester_->IsAssistiveFeatureEnabled()) {
     assistive_suggester_->OnFocus(context_id, context);

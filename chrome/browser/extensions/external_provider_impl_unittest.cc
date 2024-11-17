@@ -42,7 +42,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/customization/customization_document.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -101,7 +101,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   ~ExternalProviderImplTest() override {}
 
   void InitService() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     user_manager::ScopedUserManager scoped_user_manager(
         std::make_unique<ash::FakeChromeUserManager>());
 #endif
@@ -237,7 +237,7 @@ class ExternalProviderImplTest : public ExtensionServiceTestBase {
   std::unique_ptr<base::ScopedPathOverride> external_externsions_overrides_;
   std::unique_ptr<ExtensionCacheFake> test_extension_cache_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // chromeos::ServicesCustomizationExternalLoader is hooked up as an
   // ExternalLoader and depends on a functioning StatisticsProvider.
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;

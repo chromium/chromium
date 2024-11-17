@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 
 namespace base {
+// LINT.IfChange
 
 void UmaHistogramBoolean(std::string_view name, bool sample) {
   HistogramBase* histogram = BooleanHistogram::FactoryGet(
@@ -385,5 +386,5 @@ ScopedUmaHistogramTimer::~ScopedUmaHistogramTimer() {
       break;
   }
 }
-
+// LINT.ThenChange(//base/metrics/histogram_macros.h)
 }  // namespace base

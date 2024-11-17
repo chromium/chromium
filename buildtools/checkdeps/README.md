@@ -53,7 +53,7 @@ applied is arbitrary.
 
 ```
 specific_include_rules = {
-  ".*_(unit|browser|api)test\.cc": [
+  ".*_(unit|browser|api)test\\.cc": [
     "+libraries/testsupport",
   ],
 }
@@ -64,10 +64,10 @@ following regular expressions may be useful:
 
 ```
 specific_include_rules = {
-  '.*UnitTest\.java': [
+  '.*UnitTest\\.java': [
     # Rules for unit tests.
   ],
-  '.*(?<!Unit)Test\.java': [
+  '.*(?<!Unit)Test\\.java': [
     # Rules for instrumentation tests.
   ],
 }

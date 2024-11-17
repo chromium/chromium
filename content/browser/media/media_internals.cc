@@ -508,29 +508,9 @@ void MediaInternals::SendGeneralAudioInformation() {
       GetContentClient()->browser()->ShouldSandboxAudioService());
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   std::string chrome_wide_echo_cancellation_value_string =
-      media::IsChromeWideEchoCancellationEnabled()
-          ? base::StrCat(
-                {"Enabled, minimize_resampling = ",
-                 media::kChromeWideEchoCancellationMinimizeResampling.Get()
-                     ? "true"
-                     : "false",
-                 ", allow_all_sample_rates = ",
-                 media::kChromeWideEchoCancellationAllowAllSampleRates.Get()
-                     ? "true"
-                     : "false"})
-          : "Disabled";
+      media::IsChromeWideEchoCancellationEnabled() ? "Enabled" : "Disabled";
   audio_info_data.Set(media::kChromeWideEchoCancellation.name,
                       base::Value(chrome_wide_echo_cancellation_value_string));
-
-  std::string decrease_processing_audio_fifo_size_value_string =
-      base::FeatureList::IsEnabled(media::kDecreaseProcessingAudioFifoSize)
-          ? base::StrCat(
-                {"Enabled, fifo_size = ",
-                 base::NumberToString(media::GetProcessingAudioFifoSize())})
-          : "Disabled";
-  audio_info_data.Set(
-      media::kDecreaseProcessingAudioFifoSize.name,
-      base::Value(decrease_processing_audio_fifo_size_value_string));
 #endif
   std::u16string audio_info_update =
       SerializeUpdate("media.updateGeneralAudioInformation", audio_info_data);

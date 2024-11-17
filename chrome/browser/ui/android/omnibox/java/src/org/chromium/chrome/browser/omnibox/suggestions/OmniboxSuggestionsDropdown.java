@@ -68,6 +68,8 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
     private float mChildVerticalTranslation;
     private float mChildAlpha = 1.0f;
 
+    private final int mBaseBottomPadding;
+
     /**
      * Interface that will receive notifications when the user is interacting with an item on the
      * Suggestions list.
@@ -247,11 +249,11 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         addOnChildAttachStateChangeListener(mSelectionController);
 
         final Resources resources = context.getResources();
-        int paddingBottom =
+        mBaseBottomPadding =
                 resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_bottom);
         int paddingTop =
                 resources.getDimensionPixelOffset(R.dimen.omnibox_suggestion_list_padding_top);
-        this.setPaddingRelative(0, paddingTop, 0, paddingBottom);
+        this.setPaddingRelative(0, paddingTop, 0, mBaseBottomPadding);
 
         if (OmniboxFeatures.sAsyncViewInflation.isEnabled()) {
             setRecycledViewPool(new PreWarmingRecycledViewPool(mAdapter, context));
@@ -584,6 +586,12 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
                 omniboxAlignment.isOnlyHorizontalDifference(mOmniboxAlignment);
         boolean isWidthDifference = omniboxAlignment.doesWidthDiffer(mOmniboxAlignment);
         mOmniboxAlignment = omniboxAlignment;
+        this.setPaddingRelative(
+                getPaddingStart(),
+                getPaddingTop(),
+                getPaddingEnd(),
+                mBaseBottomPadding + mOmniboxAlignment.paddingBottom);
+
         if (isOnlyHorizontalDifference) {
             adjustHorizontalPosition();
             return;

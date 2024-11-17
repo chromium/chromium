@@ -195,7 +195,8 @@ class TargetHandler : public DevToolsDomainHandler,
   // !auto_attach_related_targets_.empty())
   std::unique_ptr<TargetFilter> auto_attach_target_filter_;
   bool wait_for_debugger_on_start_ = false;
-  std::map<DevToolsAgentHost*, Session*> auto_attached_sessions_;
+  std::map<DevToolsAgentHost*, raw_ptr<Session, CtnExperimental>>
+      auto_attached_sessions_;
   base::flat_map<TargetAutoAttacher*, bool /* wait_for_debugger_on_start */>
       auto_attach_related_targets_;
   bool auto_attach_service_workers_ = true;

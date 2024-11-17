@@ -6,6 +6,7 @@
 
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 
 namespace content {
 
@@ -55,56 +56,42 @@ void AuctionSharedStorageHost::BindNewReceiver(
                                     .worklet_origin = worklet_origin});
 }
 
-void AuctionSharedStorageHost::Set(
-    const std::u16string& key,
-    const std::u16string& value,
-    bool ignore_if_present,
+void AuctionSharedStorageHost::SharedStorageUpdate(
+    network::mojom::SharedStorageModifierMethodPtr method,
     auction_worklet::mojom::AuctionWorkletFunction
         source_auction_worklet_function) {
-  storage::SharedStorageManager::SetBehavior set_behavior =
-      ignore_if_present
-          ? storage::SharedStorageManager::SetBehavior::kIgnoreIfPresent
-          : storage::SharedStorageManager::SetBehavior::kDefault;
+  if (method->is_set_method()) {
+    network::mojom::SharedStorageSetMethodPtr& set_method =
+        method->get_set_method();
 
-  shared_storage_manager_->Set(receiver_set_.current_context().worklet_origin,
-                               key, value, base::DoNothing(), set_behavior);
+    storage::SharedStorageManager::SetBehavior set_behavior =
+        set_method->ignore_if_present
+            ? storage::SharedStorageManager::SetBehavior::kIgnoreIfPresent
+            : storage::SharedStorageManager::SetBehavior::kDefault;
 
-  GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-      receiver_set_.current_context().auction_runner_rfh,
-      ToWebFeature(source_auction_worklet_function));
-}
+    shared_storage_manager_->Set(receiver_set_.current_context().worklet_origin,
+                                 set_method->key, set_method->value,
+                                 base::DoNothing(), set_behavior);
+  } else if (method->is_append_method()) {
+    network::mojom::SharedStorageAppendMethodPtr& append_method =
+        method->get_append_method();
 
-void AuctionSharedStorageHost::Append(
-    const std::u16string& key,
-    const std::u16string& value,
-    auction_worklet::mojom::AuctionWorkletFunction
-        source_auction_worklet_function) {
-  shared_storage_manager_->Append(
-      receiver_set_.current_context().worklet_origin, key, value,
-      base::DoNothing());
+    shared_storage_manager_->Append(
+        receiver_set_.current_context().worklet_origin, append_method->key,
+        append_method->value, base::DoNothing());
+  } else if (method->is_delete_method()) {
+    network::mojom::SharedStorageDeleteMethodPtr& delete_method =
+        method->get_delete_method();
 
-  GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-      receiver_set_.current_context().auction_runner_rfh,
-      ToWebFeature(source_auction_worklet_function));
-}
+    shared_storage_manager_->Delete(
+        receiver_set_.current_context().worklet_origin, delete_method->key,
+        base::DoNothing());
+  } else {
+    CHECK(method->is_clear_method());
 
-void AuctionSharedStorageHost::Delete(
-    const std::u16string& key,
-    auction_worklet::mojom::AuctionWorkletFunction
-        source_auction_worklet_function) {
-  shared_storage_manager_->Delete(
-      receiver_set_.current_context().worklet_origin, key, base::DoNothing());
-
-  GetContentClient()->browser()->LogWebFeatureForCurrentPage(
-      receiver_set_.current_context().auction_runner_rfh,
-      ToWebFeature(source_auction_worklet_function));
-}
-
-void AuctionSharedStorageHost::Clear(
-    auction_worklet::mojom::AuctionWorkletFunction
-        source_auction_worklet_function) {
-  shared_storage_manager_->Clear(receiver_set_.current_context().worklet_origin,
-                                 base::DoNothing());
+    shared_storage_manager_->Clear(
+        receiver_set_.current_context().worklet_origin, base::DoNothing());
+  }
 
   GetContentClient()->browser()->LogWebFeatureForCurrentPage(
       receiver_set_.current_context().auction_runner_rfh,

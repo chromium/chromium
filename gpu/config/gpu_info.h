@@ -493,6 +493,8 @@ struct GPU_EXPORT GPUInfo {
   uint32_t visibility_callback_call_count = 0;
 
 #if BUILDFLAG(ENABLE_VULKAN)
+  bool hardware_supports_vulkan = false;
+
   std::optional<VulkanInfo> vulkan_info;
 #endif
 

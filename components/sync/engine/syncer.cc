@@ -35,8 +35,7 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(
     SyncProtocolErrorType protocol_error) {
   switch (protocol_error) {
     case SYNC_SUCCESS:
-      NOTREACHED_IN_MIGRATION();
-      return SyncerErrorValueForUma::kSyncerOk;
+      NOTREACHED();
     case NOT_MY_BIRTHDAY:
       return SyncerErrorValueForUma::kServerReturnNotMyBirthday;
     case THROTTLED:
@@ -48,8 +47,7 @@ SyncerErrorValueForUma GetSyncerErrorValueForUma(
     case DISABLED_BY_ADMIN:
       return SyncerErrorValueForUma::kServerReturnDisabledByAdmin;
     case PARTIAL_FAILURE:
-      NOTREACHED_IN_MIGRATION();
-      return SyncerErrorValueForUma::kServerReturnUnknownError;
+      NOTREACHED();
     case CLIENT_DATA_OBSOLETE:
       return SyncerErrorValueForUma::kServerReturnClientDataObsolete;
     case ENCRYPTION_OBSOLETE:
@@ -168,7 +166,7 @@ bool Syncer::DownloadAndApplyUpdates(DataTypeSet* request_types,
                                      const GetUpdatesDelegate& delegate) {
   // CommitOnlyTypes() should not be included in the GetUpdates, but should be
   // included in the Commit. We are given a set of types for our SyncShare,
-  // and we must do this filtering. Note that |request_types| is also an out
+  // and we must do this filtering. Note that `request_types` is also an out
   // param, see below where we update it.
   DataTypeSet requested_commit_only_types =
       Intersection(*request_types, CommitOnlyTypes());

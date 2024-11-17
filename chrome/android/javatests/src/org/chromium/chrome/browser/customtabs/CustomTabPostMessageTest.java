@@ -96,7 +96,6 @@ public class CustomTabPostMessageTest {
 
     private String mTestPage;
     private String mTestPage2;
-    private CustomTabsConnection mConnectionToCleanup;
     private TestWebServer mWebServer;
 
     @Before
@@ -109,7 +108,7 @@ public class CustomTabPostMessageTest {
 
     @After
     public void tearDown() {
-        if (mConnectionToCleanup != null) CustomTabsTestUtils.cleanupSessions(mConnectionToCleanup);
+        CustomTabsTestUtils.cleanupSessions();
         if (mWebServer != null) mWebServer.shutdown();
     }
 
@@ -118,27 +117,23 @@ public class CustomTabPostMessageTest {
         ChromeTabUtils.waitForTitle(currentTab, newTitle);
     }
 
-    private void setCanUseHiddenTabForSession(
-            CustomTabsConnection connection, CustomTabsSessionToken token, boolean useHiddenTab) {
-        assert mConnectionToCleanup == null || mConnectionToCleanup == connection;
-        // Save the connection. In case the hidden tab is not consumed by the test, ensure that it
-        // is properly cleaned up after the test.
-        mConnectionToCleanup = connection;
-        connection.setCanUseHiddenTabForSession(token, useHiddenTab);
+    private void setCanUseHiddenTabForSession(CustomTabsSessionToken token, boolean useHiddenTab) {
+        CustomTabsConnection.getInstance().setCanUseHiddenTabForSession(token, useHiddenTab);
     }
 
-    private static void ensureCompletedSpeculationForUrl(
-            final CustomTabsConnection connection, final String url) {
+    private static void ensureCompletedSpeculationForUrl(final String url) {
         CriteriaHelper.pollUiThread(
                 () -> {
                     Criteria.checkThat(
                             "Tab was not created",
-                            connection.getSpeculationParamsForTesting(),
+                            CustomTabsConnection.getInstance().getSpeculationParamsForTesting(),
                             Matchers.notNullValue());
                 },
                 LONG_TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        ChromeTabUtils.waitForTabPageLoaded(connection.getSpeculationParamsForTesting().tab, url);
+        ChromeTabUtils.waitForTabPageLoaded(
+                CustomTabsConnection.getInstance().getSpeculationParamsForTesting().hiddenTab.tab,
+                url);
     }
 
     /**
@@ -443,9 +438,9 @@ public class CustomTabPostMessageTest {
             Assert.assertTrue(channelRequested);
         }
 
-        setCanUseHiddenTabForSession(connection, token, true);
+        setCanUseHiddenTabForSession(token, true);
         session.mayLaunchUrl(Uri.parse(url), null, null);
-        ensureCompletedSpeculationForUrl(connection, url);
+        ensureCompletedSpeculationForUrl(url);
 
         if (requestTime == BEFORE_INTENT) {
             channelRequested =

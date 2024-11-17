@@ -53,6 +53,8 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//components/proxy_config",
     "//components/sync_preferences:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
     "//net:test_support",
     "//testing/gtest",
   ]

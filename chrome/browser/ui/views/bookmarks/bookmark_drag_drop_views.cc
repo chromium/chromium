@@ -14,6 +14,7 @@
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
@@ -25,7 +26,6 @@
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
-#include "components/bookmarks/browser/bookmark_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
@@ -229,8 +229,11 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
     bookmark_drag_data.Write(profile->GetPath(), drag_data_.get());
 
     operation_ = ui::DragDropTypes::DRAG_COPY | ui::DragDropTypes::DRAG_LINK;
-    if (bookmarks::CanAllBeEditedByUser(model_->client(), params.nodes))
+    if (chrome::CanAllBeEditedByUser(
+            ManagedBookmarkServiceFactory::GetForProfile(profile),
+            params.nodes)) {
       operation_ |= ui::DragDropTypes::DRAG_MOVE;
+    }
   }
 
   void Start(const BookmarkNode* drag_node) {

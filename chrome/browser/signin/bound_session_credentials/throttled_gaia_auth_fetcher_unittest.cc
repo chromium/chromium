@@ -187,7 +187,7 @@ TEST_F(ThrottledGaiaAuthFetcherTest, ThrottleMultilogin) {
 
   fetcher()->StartOAuthMultilogin(
       gaia::MultiloginMode::MULTILOGIN_PRESERVE_COOKIE_ACCOUNTS_ORDER,
-      {{"token1", "id1"}, {"token2", "id2"}}, "cc_result");
+      {{"id1", "token1", ""}, {"id2", "token2", ""}}, "cc_result");
   ASSERT_TRUE(unblock_callback);
   std::move(unblock_callback).Run(UnblockAction::kResume, kResumeTrigger);
   EXPECT_CALL(consumer(), OnOAuthMultiloginFinished(_));

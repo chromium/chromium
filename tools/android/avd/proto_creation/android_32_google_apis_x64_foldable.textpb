@@ -7,20 +7,17 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "5biVQLkXXVm61beRTyVfmPBrmjEJFBJTpdzAUcXY378C"  # 34.2.16 (Stable)
-  dest_path: "android_32_google_apis_x64_foldable"
+  version: "XS__KK27esI_4qZkc_Ybb_ooYjPfcIQ7DDOPUZGYW5wC"  # 35.1.21 (Stable)
 }
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-32/google_apis/x86_64"
   version: "KK_VeEUvdJrxL7eEKvVnt_4bjZPRLsGPymVm6Ios5HEC"  # r7, SE1B.220616.007
-  dest_path: "android_32_google_apis_x64_foldable"
 }
 system_image_name: "system-images;android-32;google_apis;x86_64"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-32/google_apis/x86_64"
-  dest_path: "android_32_google_apis_x64_foldable"
 }
 avd_name: "android_32_google_apis_x64_foldable"
 
@@ -87,10 +84,53 @@ avd_settings {
     value: "884"
   }
 }
+avd_variants {
+  key: "swarming"
+  value {
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "4G"
+    }
+  }
+}
+avd_variants {
+  key: "swarming_landscape"
+  value {
+    screen {
+      height: 1768
+      width: 2208
+    }
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "4G"
+    }
+  }
+}
+avd_variants {
+  key: "local"
+  value {
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "12G"
+    }
+  }
+}
+avd_variants {
+  key: "local_landscape"
+  value {
+    screen {
+      height: 1768
+      width: 2208
+    }
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "12G"
+    }
+  }
+}
 
 min_sdk: 32
 additional_apk {
   package_name: "chrome_internal/third_party/google3/apks/gmscore/x86_64"
   version: "5mF806AbGnsm29dfwLgz7FkLBXv2l2POLvQ2nojUlhgC" # 24.26.32
-  dest_path: "android_32_google_apis_x64_foldable/gmscore_apks"
 }

@@ -230,6 +230,12 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_SEGMENTATION_METRICS_CLUSTERING = 50;
   // Target for Summarize API feature config.
   OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_SUMMARIZE = 51;
+  // Target for Password Manager form classification model.
+  OPTIMIZATION_TARGET_PASSWORD_MANAGER_FORM_CLASSIFICATION = 52;
+  // Target for model classifying notification content as suspicious.
+  OPTIMIZATION_TARGET_NOTIFICATION_CONTENT_DETECTION = 53;
+  // Target for History query intent model.
+  OPTIMIZATION_TARGET_MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT = 54;
 }
 
 // The model engine versions that can be used to do model inference.

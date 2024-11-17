@@ -25,8 +25,8 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer_tree_owner.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -114,6 +114,8 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   }
 
  private:
+  friend class HoldingSpaceTestApi;
+
   // TrayBubbleView::Delegate:
   std::u16string GetAccessibleNameForBubble() override;
   bool ShouldEnableExtraKeyboardAccessibility() override;

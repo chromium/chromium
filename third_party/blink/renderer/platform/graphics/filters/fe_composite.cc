@@ -27,7 +27,7 @@
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -164,8 +164,7 @@ SkBlendMode ToBlendMode(CompositeOperationType mode) {
     case FECOMPOSITE_OPERATOR_LIGHTER:
       return SkBlendMode::kPlus;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return SkBlendMode::kSrcOver;
+      NOTREACHED();
   }
 }
 
@@ -200,8 +199,8 @@ sk_sp<PaintFilter> FEComposite::CreateImageFilterInternal(
       base::OptionalToPtr(crop_rect));
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const CompositeOperationType& type) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const CompositeOperationType& type) {
   switch (type) {
     case FECOMPOSITE_OPERATOR_UNKNOWN:
       ts << "UNKNOWN";
@@ -231,8 +230,8 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
   return ts;
 }
 
-WTF::TextStream& FEComposite::ExternalRepresentation(WTF::TextStream& ts,
-                                                     int indent) const {
+StringBuilder& FEComposite::ExternalRepresentation(StringBuilder& ts,
+                                                   wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feComposite";
   FilterEffect::ExternalRepresentation(ts);

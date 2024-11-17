@@ -458,8 +458,7 @@ void CreateOrUpdateDesktopShortcutsAndIconForProfile(
 
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   std::set<base::FilePath> desktop_contents =
@@ -620,8 +619,7 @@ void UnpinAndDeleteDesktopShortcuts(
 
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   const std::wstring command_line =
@@ -656,8 +654,7 @@ bool HasAnyProfileShortcuts(const base::FilePath& profile_path) {
 
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   const std::wstring command_line =
@@ -783,8 +780,7 @@ bool IsChromeShortcutForProfile(const base::FilePath& shortcut,
                                 const base::FilePath& profile_path) {
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   std::wstring cmd_line_string;
@@ -937,8 +933,7 @@ void ProfileShortcutManagerWin::GetShortcutProperties(
     base::FilePath* icon_path) {
   base::FilePath chrome_exe;
   if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   ProfileAttributesStorage& storage =
@@ -1064,8 +1059,7 @@ base::FilePath ProfileShortcutManagerWin::GetOtherProfilePath(
     if (path != profile_path)
       return path;
   }
-  NOTREACHED_IN_MIGRATION();
-  return base::FilePath();
+  NOTREACHED();
 }
 
 void ProfileShortcutManagerWin::CreateOrUpdateShortcutsForProfileAtPath(

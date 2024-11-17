@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "url/gurl.h"
+
 namespace base {
 template <class StructType>
 class JSONValueConverter;
@@ -39,10 +41,10 @@ class Name {
 // https://developers.google.com/classroom/reference/rest/v1/userProfiles
 class UserProfile {
  public:
-  UserProfile() = default;
+  UserProfile();
   UserProfile(const UserProfile&) = delete;
   UserProfile& operator=(const UserProfile&) = delete;
-  ~UserProfile() = default;
+  ~UserProfile();
 
   // Registers the mapping between JSON field names and the members in this
   // class.
@@ -52,6 +54,7 @@ class UserProfile {
   const std::string& id() const { return id_; }
   const Name& name() const { return name_; }
   const std::string& email_address() const { return email_address_; }
+  const GURL& photo_url() const { return photo_url_; }
 
  private:
   // Identifier of the user.
@@ -62,6 +65,9 @@ class UserProfile {
 
   // Email address of the user.
   std::string email_address_;
+
+  // Photo url of the user.
+  GURL photo_url_;
 };
 
 // https://developers.google.com/classroom/reference/rest/v1/courses.students

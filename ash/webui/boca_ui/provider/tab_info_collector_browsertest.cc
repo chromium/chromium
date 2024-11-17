@@ -6,7 +6,10 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
+#include "ash/shell.h"
 #include "ash/webui/boca_ui/mojom/boca.mojom.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
@@ -20,6 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
+#include "ui/views/widget/any_widget_observer.h"
 
 using ::testing::_;
 using ::testing::Mock;
@@ -67,27 +71,48 @@ class TabInfoCollectorTest : public InProcessBrowserTest {
     return browser;
   }
 
-  void SetUp() override {
-    auto mock = std::make_unique<StrictMock<MockImageGenerator>>();
-    image_generator_ = mock.get();
-    tab_info_collector_ = std::make_unique<TabInfoCollector>(std::move(mock));
-    InProcessBrowserTest::SetUp();
-  }
 
   void TearDown() override {
     image_generator_ = nullptr;
     tab_info_collector_.reset();
   }
 
-  TabInfoCollector* tabInfoCollector() { return tab_info_collector_.get(); }
-  MockImageGenerator* imageGenerator() { return image_generator_.get(); }
+  TabInfoCollector* tab_info_collector() { return tab_info_collector_.get(); }
+  MockImageGenerator* image_generator() { return image_generator_.get(); }
 
- private:
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<StrictMock<MockImageGenerator>> image_generator_;
   std::unique_ptr<TabInfoCollector> tab_info_collector_;
 };
 
-IN_PROC_BROWSER_TEST_F(TabInfoCollectorTest, GetTabListForNonEmptyWindow) {
+class TabInfoCollectorConsumerTest : public TabInfoCollectorTest {
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kBoca, ash::features::kBocaConsumer},
+        /*disabled_features=*/{});
+    auto mock = std::make_unique<StrictMock<MockImageGenerator>>();
+    image_generator_ = mock.get();
+    tab_info_collector_ = std::make_unique<TabInfoCollector>(
+        std::move(mock), /*is_producer=*/false);
+    TabInfoCollectorTest::SetUp();
+  }
+};
+
+class TabInfoCollectorProducerTest : public TabInfoCollectorTest {
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures({ash::features::kBoca},
+                                          /*disabled_features=*/{});
+    auto mock = std::make_unique<StrictMock<MockImageGenerator>>();
+    image_generator_ = mock.get();
+    tab_info_collector_ = std::make_unique<TabInfoCollector>(
+        std::move(mock), /*is_producer=*/true);
+    TabInfoCollectorTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(TabInfoCollectorProducerTest,
+                       GetTabListForProducerNonEmptyWindow) {
   ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Create browser 1 and navigate to url1 and then url2
@@ -98,10 +123,10 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorTest, GetTabListForNonEmptyWindow) {
 
   // Create browser 3 and navigate to url4
   CreateBrowser({GURL(kTabUrl4)});
-  EXPECT_CALL(*imageGenerator(), StringifyImage(_))
+  EXPECT_CALL(*image_generator(), StringifyImage(_))
       .WillRepeatedly(Return(kDataUrl));
   base::test::TestFuture<std::vector<mojom::WindowPtr>> future;
-  tabInfoCollector()->GetWindowTabInfo(future.GetCallback());
+  tab_info_collector()->GetWindowTabInfo(future.GetCallback());
   auto window_list = future.Take();
 
   // Start with 1 existing window.
@@ -135,17 +160,48 @@ IN_PROC_BROWSER_TEST_F(TabInfoCollectorTest, GetTabListForNonEmptyWindow) {
   EXPECT_EQ(kDefaultTitle, window_list[1]->tab_list[0]->title);
 }
 
-IN_PROC_BROWSER_TEST_F(TabInfoCollectorTest, GetTabListForEmptyWindow) {
+IN_PROC_BROWSER_TEST_F(TabInfoCollectorProducerTest,
+                       GetTabListForProducerEmptyWindow) {
   // Close the browser and verify that all browser windows are closed.
   CloseBrowserSynchronously(browser());
   ASSERT_EQ(0u, chrome::GetTotalBrowserCount());
 
-  EXPECT_CALL(*imageGenerator(), StringifyImage(_)).Times(0);
+  EXPECT_CALL(*image_generator(), StringifyImage(_)).Times(0);
 
   base::test::TestFuture<std::vector<mojom::WindowPtr>> future;
-  tabInfoCollector()->GetWindowTabInfo(future.GetCallback());
+  tab_info_collector()->GetWindowTabInfo(future.GetCallback());
   auto window_list = future.Take();
 
   EXPECT_EQ(0u, window_list.size());
 }
+
+IN_PROC_BROWSER_TEST_F(TabInfoCollectorConsumerTest,
+                       GetTabListForTargetWindow) {
+  ASSERT_EQ(1u, chrome::GetTotalBrowserCount());
+  views::AnyWidgetObserver observer(views::test::AnyWidgetTestPasskey{});
+  observer.set_shown_callback(
+      base::BindLambdaForTesting([&](views::Widget* widget) {
+        auto* window = widget->GetNativeWindow();
+        base::test::TestFuture<std::vector<mojom::WindowPtr>> future;
+        tab_info_collector()->GetWindowTabInfoForTarget(window,
+                                                        future.GetCallback());
+        auto window_list = future.Take();
+
+        // Only target window should be recorded.
+        ASSERT_EQ(1u, window_list.size());
+
+        ASSERT_EQ(1u, window_list[0]->tab_list.size());
+
+        // Verify tab is listed in non-ascending order inside window based on
+        // last access time.
+        EXPECT_EQ(kTabUrl1, window_list[0]->tab_list[0]->url);
+        // Verify image data url is generated.
+        EXPECT_EQ(kDataUrl, window_list[0]->tab_list[0]->favicon);
+      }));
+  EXPECT_CALL(*image_generator(), StringifyImage(_))
+      .WillRepeatedly(Return(kDataUrl));
+  // Create browser 1 and navigate to url1 and then url2
+  CreateBrowser({GURL(kTabUrl1)});
+}
+
 }  // namespace ash::boca

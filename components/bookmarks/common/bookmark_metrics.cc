@@ -11,12 +11,14 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/strcat.h"
 #include "components/bookmarks/common/url_load_stats.h"
+#include "components/bookmarks/common/user_folder_load_stats.h"
 
 namespace bookmarks::metrics {
 
 namespace {
 
-const int kBytesPerKB = 1024;
+constexpr int kBytesPerKB = 1024;
+constexpr int kUmaUserFolderDepthLimit = 11;
 
 void RecordBookmarkParentFolderType(BookmarkFolderTypeForUMA parent) {
   base::UmaHistogramEnumeration("Bookmarks.ParentFolderType", parent);
@@ -47,11 +49,15 @@ std::string GetStorageFileSuffixForMetrics(StorageFileForUma storage_file) {
 }  // namespace
 
 void RecordUrlBookmarkAdded(BookmarkFolderTypeForUMA parent,
-                            StorageStateForUma storage_state) {
+                            StorageStateForUma storage_state,
+                            int ancestor_user_folder_depth) {
   base::RecordAction(base::UserMetricsAction("Bookmarks.Added"));
   base::RecordComputedAction(base::StrCat(
       {"Bookmarks.Added", GetStorageStateSuffixForMetrics(storage_state)}));
   RecordBookmarkParentFolderType(parent);
+  base::UmaHistogramExactLinear("Bookmarks.UserFolderDepth.UrlAdded",
+                                ancestor_user_folder_depth,
+                                kUmaUserFolderDepthLimit);
 }
 
 void RecordBookmarkFolderAdded(BookmarkFolderTypeForUMA parent,
@@ -70,13 +76,20 @@ void RecordBookmarkRemoved(BookmarkEditSource source) {
 void RecordBookmarkOpened(base::Time now,
                           base::Time date_last_used,
                           base::Time date_added,
-                          StorageStateForUma storage_state) {
+                          StorageStateForUma storage_state,
+                          bool is_url_bookmark,
+                          int ancestor_user_folder_depth) {
   if (date_last_used != base::Time()) {
     base::UmaHistogramCounts10000("Bookmarks.Opened.TimeSinceLastUsed",
                                   (now - date_last_used).InDays());
   }
   base::UmaHistogramCounts10000("Bookmarks.Opened.TimeSinceAdded",
                                 (now - date_added).InDays());
+  if (is_url_bookmark) {
+    base::UmaHistogramExactLinear("Bookmarks.UserFolderDepth.UrlOpened",
+                                  ancestor_user_folder_depth,
+                                  kUmaUserFolderDepthLimit);
+  }
 
   base::RecordAction(base::UserMetricsAction("Bookmarks.Opened"));
   base::RecordComputedAction(base::StrCat(
@@ -161,6 +174,16 @@ void RecordUrlLoadStatsOnProfileLoad(const UrlLoadStats& stats) {
         "Bookmarks.Times.OnProfileLoad.MostRecentlyAddedFolderInDays",
         base::saturated_cast<int>(stats.most_recently_saved_folder_days));
   }
+}
+
+void RecordUserFolderLoadStatsOnProfileLoad(const UserFolderLoadStats& stats) {
+  base::UmaHistogramExactLinear(
+      "Bookmarks.UserFolder.OnProfileLoad.TopLevelCount",
+      stats.total_top_level_folders, /*exclusive_max=*/31);
+
+  base::UmaHistogramCustomCounts("Bookmarks.UserFolder.OnProfileLoad.Count",
+                                 stats.total_folders, /*min=*/1,
+                                 /*exclusive_max=*/300, /*buckets=*/100);
 }
 
 void RecordCloneBookmarkNode(int num_cloned) {

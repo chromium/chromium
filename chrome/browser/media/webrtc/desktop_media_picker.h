@@ -9,8 +9,11 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "build/android_buildflags.h"
+#include "build/buildflag.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -23,6 +26,10 @@ class DesktopMediaList;
 namespace content {
 class WebContents;
 }
+
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+BASE_DECLARE_FEATURE(kAndroidMediaPicker);
+#endif
 
 // Base class for desktop media picker UI. It's used by Desktop Media API, and
 // by ARC to let user choose a desktop media source.

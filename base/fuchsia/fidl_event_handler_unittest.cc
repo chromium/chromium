@@ -149,7 +149,7 @@ TEST(FidlEventHandlerDeathTest,
   fidl::Client client(std::move(*client_end), async_get_default_dispatcher(),
                       &event_handler);
 
-  auto bind_and_close_service = [&]() {
+  auto bind_and_close_service = [&] {
     {
       TestInterfaceNaturalImpl test_service;
       ScopedNaturalServiceBinding<base_testfidl::TestInterface> binding(

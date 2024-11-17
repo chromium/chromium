@@ -342,8 +342,36 @@ bool GetSimilarDomainFromEngagedSites(
   return false;
 }
 
-void RecordEvent(NavigationSuggestionEvent event) {
-  UMA_HISTOGRAM_ENUMERATION(lookalikes::kInterstitialHistogramName, event);
+std::optional<NavigationSuggestionEvent> ToNavigationSuggestionEvent(
+    LookalikeUrlMatchType match_type) {
+  switch (match_type) {
+    case LookalikeUrlMatchType::kSkeletonMatchSiteEngagement:
+      return NavigationSuggestionEvent::kMatchSiteEngagement;
+    case LookalikeUrlMatchType::kEditDistance:
+      return NavigationSuggestionEvent::kMatchEditDistance;
+    case LookalikeUrlMatchType::kEditDistanceSiteEngagement:
+      return NavigationSuggestionEvent::kMatchEditDistanceSiteEngagement;
+    case LookalikeUrlMatchType::kTargetEmbedding:
+      return NavigationSuggestionEvent::kMatchTargetEmbedding;
+    case LookalikeUrlMatchType::kSkeletonMatchTop500:
+      return NavigationSuggestionEvent::kMatchSkeletonTop500;
+    case LookalikeUrlMatchType::kSkeletonMatchTop5k:
+      return NavigationSuggestionEvent::kMatchSkeletonTop5k;
+    case LookalikeUrlMatchType::kTargetEmbeddingForSafetyTips:
+      return NavigationSuggestionEvent::kMatchTargetEmbeddingForSafetyTips;
+    case LookalikeUrlMatchType::kFailedSpoofChecks:
+      return NavigationSuggestionEvent::kFailedSpoofChecks;
+    case LookalikeUrlMatchType::kCharacterSwapSiteEngagement:
+      return NavigationSuggestionEvent::kMatchCharacterSwapSiteEngagement;
+    case LookalikeUrlMatchType::kCharacterSwapTop500:
+      return NavigationSuggestionEvent::kMatchCharacterSwapTop500;
+    case LookalikeUrlMatchType::kComboSquatting:
+      return NavigationSuggestionEvent::kComboSquatting;
+    case LookalikeUrlMatchType::kComboSquattingSiteEngagement:
+      return NavigationSuggestionEvent::kComboSquattingSiteEngagement;
+    case LookalikeUrlMatchType::kNone:
+      return std::nullopt;
+  }
 }
 
 // Returns the parts of the domain that are separated by "." or "-", not
@@ -364,13 +392,13 @@ std::vector<std::string_view> SplitDomainIntoTokens(
 bool ASubdomainIsAllowlisted(
     const base::span<const std::string_view>& domain_labels,
     const LookalikeTargetAllowlistChecker& in_target_allowlist) {
-  DCHECK(domain_labels.size() >= 2);
-  std::string potential_hostname(domain_labels[domain_labels.size() - 1]);
+  CHECK_GT(domain_labels.size(), 1u);
+  std::string potential_hostname(domain_labels.back());
   // Attach each token from the end to the embedded target to check if that
   // subdomain has been allowlisted.
-  for (int i = domain_labels.size() - 2; i >= 0; i--) {
+  for (size_t i = domain_labels.size() - 1; i; --i) {
     potential_hostname =
-        std::string(domain_labels[i]) + "." + potential_hostname;
+        base::StrCat({domain_labels[i - 1], ".", potential_hostname});
     if (in_target_allowlist.Run(potential_hostname)) {
       return true;
     }
@@ -476,13 +504,13 @@ bool UsesCommonWord(const reputation::SafetyTipsConfig* config_proto,
 bool IsEmbeddingItself(const base::span<const std::string_view>& domain_labels,
                        const std::string& embedding_domain) {
   DCHECK(domain_labels.size() >= 2);
-  std::string potential_hostname(domain_labels[domain_labels.size() - 1]);
+  std::string potential_hostname(domain_labels.back());
   // Attach each token from the end to the embedded target to check if that
   // subdomain is the embedding domain. (e.g. using the earlier example, check
   // each ["com", "example.com", "foo.example.com"] against "example.com".
-  for (int i = domain_labels.size() - 2; i >= 0; i--) {
+  for (size_t i = domain_labels.size() - 1; i; --i) {
     potential_hostname =
-        std::string(domain_labels[i]) + "." + potential_hostname;
+        base::StrCat({domain_labels[i - 1], ".", potential_hostname});
     if (embedding_domain == potential_hostname) {
       return true;
     }
@@ -583,8 +611,7 @@ char GetFirstDifferentChar(const std::string& str1, const std::string& str2) {
     i1++;
     i2++;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // Brand names with length of 4 or less should not be checked in domains for
@@ -721,6 +748,8 @@ bool IsComboSquatting(
 namespace lookalikes {
 
 const char kInterstitialHistogramName[] = "NavigationSuggestion.Event2";
+const char kIncognitoInterstitialHistogramName[] =
+    "NavigationSuggestion.Event2.Incognito";
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterListPref(prefs::kLookalikeWarningAllowlistDomains);
@@ -1043,47 +1072,17 @@ bool GetMatchingDomain(
   return false;
 }
 
-void RecordUMAFromMatchType(LookalikeUrlMatchType match_type) {
-  switch (match_type) {
-    case LookalikeUrlMatchType::kSkeletonMatchSiteEngagement:
-      RecordEvent(NavigationSuggestionEvent::kMatchSiteEngagement);
-      break;
-    case LookalikeUrlMatchType::kEditDistance:
-      RecordEvent(NavigationSuggestionEvent::kMatchEditDistance);
-      break;
-    case LookalikeUrlMatchType::kEditDistanceSiteEngagement:
-      RecordEvent(NavigationSuggestionEvent::kMatchEditDistanceSiteEngagement);
-      break;
-    case LookalikeUrlMatchType::kTargetEmbedding:
-      RecordEvent(NavigationSuggestionEvent::kMatchTargetEmbedding);
-      break;
-    case LookalikeUrlMatchType::kSkeletonMatchTop500:
-      RecordEvent(NavigationSuggestionEvent::kMatchSkeletonTop500);
-      break;
-    case LookalikeUrlMatchType::kSkeletonMatchTop5k:
-      RecordEvent(NavigationSuggestionEvent::kMatchSkeletonTop5k);
-      break;
-    case LookalikeUrlMatchType::kTargetEmbeddingForSafetyTips:
-      RecordEvent(
-          NavigationSuggestionEvent::kMatchTargetEmbeddingForSafetyTips);
-      break;
-    case LookalikeUrlMatchType::kFailedSpoofChecks:
-      RecordEvent(NavigationSuggestionEvent::kFailedSpoofChecks);
-      break;
-    case LookalikeUrlMatchType::kCharacterSwapSiteEngagement:
-      RecordEvent(NavigationSuggestionEvent::kMatchCharacterSwapSiteEngagement);
-      break;
-    case LookalikeUrlMatchType::kCharacterSwapTop500:
-      RecordEvent(NavigationSuggestionEvent::kMatchCharacterSwapTop500);
-      break;
-    case LookalikeUrlMatchType::kComboSquatting:
-      RecordEvent(NavigationSuggestionEvent::kComboSquatting);
-      break;
-    case LookalikeUrlMatchType::kComboSquattingSiteEngagement:
-      RecordEvent(NavigationSuggestionEvent::kComboSquattingSiteEngagement);
-      break;
-    case LookalikeUrlMatchType::kNone:
-      break;
+void RecordUMAFromMatchType(LookalikeUrlMatchType match_type,
+                            bool is_incognito) {
+  std::optional<NavigationSuggestionEvent> event =
+      ToNavigationSuggestionEvent(match_type);
+  if (event) {
+    if (is_incognito) {
+      UMA_HISTOGRAM_ENUMERATION(lookalikes::kIncognitoInterstitialHistogramName,
+                                *event);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION(lookalikes::kInterstitialHistogramName, *event);
+    }
   }
 }
 
@@ -1512,11 +1511,10 @@ LookalikeActionType GetActionForMatchType(
                  : LookalikeActionType::kRecordMetrics;
 
     case LookalikeUrlMatchType::kNone:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return LookalikeActionType::kNone;
+  NOTREACHED();
 }
 
 GURL GetSuggestedURL(LookalikeUrlMatchType match_type,

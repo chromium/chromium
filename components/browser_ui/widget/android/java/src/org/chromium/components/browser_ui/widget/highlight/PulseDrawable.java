@@ -396,7 +396,7 @@ public class PulseDrawable extends Drawable implements Animatable {
         // Encode the alpha into the color.
         alpha += alpha >> 7; // make it 0..256
         final int baseAlpha = mState.color >>> 24;
-        final int useAlpha = baseAlpha * alpha >> 8;
+        final int useAlpha = (baseAlpha * alpha) >> 8;
         final int useColor = (mState.color << 8 >>> 8) | (useAlpha << 24);
         if (mState.drawColor != useColor) {
             mState.drawColor = useColor;
@@ -450,7 +450,7 @@ public class PulseDrawable extends Drawable implements Animatable {
         // If we are on a new pulse
         if ((mLastUpdateTime - mState.startTime) / PULSE_DURATION_MS
                 != (curTime - mState.startTime) / PULSE_DURATION_MS) {
-            if (!(mPulseEndAuthority.canPulseAgain())) {
+            if (!mPulseEndAuthority.canPulseAgain()) {
                 stop();
                 return;
             }

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/updater/branding.gni")
 import("//chrome/updater/zip.gni")
 
 # This target builds the updater executable and unittests.
@@ -38,10 +39,12 @@ artifact_zip("updater_zip") {
     "$root_build_dir/updater",
     "$root_build_dir/updater_test",
     "$root_build_dir/qualification_app",
+    "$root_out_dir/LICENSE.${updater_product_full_name_dashed_lowercase}",
   ]
   deps = [
     ":updater",
     ":updater_test",
+    "//chrome/updater:updater_license",
     "//chrome/updater/test/qualification_app",
   ]
 }

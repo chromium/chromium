@@ -28,7 +28,7 @@ template <typename From, typename To>
                                                    const To& min = std::numeric_limits<To>::min(),
                                                    const To& max = std::numeric_limits<To>::max()) {
     To conv = arg;
-    return std::to_string(std::clamp(conv, min, max));
+    return base::NumberToString(std::clamp(conv, min, max));
 }
 
 [[maybe_unused]] std::string handle_float(domatolpm::Context* ctx [[maybe_unused]], const float& arg) {

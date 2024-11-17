@@ -49,6 +49,8 @@
         break;
       case GridItemType::kSuggestedActions:
         NOTREACHED();
+      case GridItemType::kActivitySummary:
+        NOTREACHED();
     }
   }
 }

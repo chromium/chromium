@@ -21,7 +21,7 @@
   server.StartOrDie(base::PathService::CheckedGet(base::DIR_ASSETS));
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   web::test::HttpServer& server = web::test::HttpServer::GetSharedInstance();
   if (!server.IsRunning()) {
     return;
@@ -29,7 +29,7 @@
 
   server.Stop();
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 @end

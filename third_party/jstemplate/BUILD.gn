@@ -2,19 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-
-js_library("util") {
-}
-
-js_library("jsevalcontext") {
-  deps = [ ":util" ]
-}
-
-js_library("jstemplate") {
-  deps = [ ":jsevalcontext" ]
-}
 
 generate_grd("build_grdp") {
   grd_prefix = "jstemplate"
@@ -22,4 +11,17 @@ generate_grd("build_grdp") {
   input_files_base_dir = rebase_path(".", "//")
   input_files = [ "jstemplate_compiled.js" ]
   resource_path_prefix = "js"
+}
+
+ts_library("library") {
+  # Don't add new entries in the list below. jstemplate should be avoided since
+  # it requires unsafe-eval CSP header to work. Use Lit templates instead.
+  # TODO(crbug.com/40433145): Replace remaining usages with alternatives.
+  visibility = [
+    "//components/ntp_tiles/webui/resources:build_ts",
+    "//components/sync/service/resources:build_ts",
+    "//content/browser/resources/service_worker:build_ts",
+  ]
+  composite = true
+  definitions = [ "jstemplate.d.ts" ]
 }

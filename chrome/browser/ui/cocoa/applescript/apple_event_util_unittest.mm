@@ -53,8 +53,7 @@ std::string AEDescToString(const AEDesc* aedesc) {
       FourCharCode code;
       OSErr err = AEGetDescData(aedesc, &code, sizeof(code));
       if (err != noErr) {
-        NOTREACHED_IN_MIGRATION();
-        return std::string();
+        NOTREACHED();
       }
 
       return FourCharToString(code);
@@ -65,15 +64,13 @@ std::string AEDescToString(const AEDesc* aedesc) {
       base::mac::ScopedAEDesc<> wide_desc;
       OSErr err = AECoerceDesc(aedesc, typeSInt64, wide_desc.OutPointer());
       if (err != noErr) {
-        NOTREACHED_IN_MIGRATION();
-        return std::string();
+        NOTREACHED();
       }
 
       int64_t value;
       err = AEGetDescData(wide_desc, &value, sizeof(value));
       if (err != noErr) {
-        NOTREACHED_IN_MIGRATION();
-        return std::string();
+        NOTREACHED();
       }
 
       return base::NumberToString(value);
@@ -84,15 +81,13 @@ std::string AEDescToString(const AEDesc* aedesc) {
       OSErr err = AECoerceDesc(aedesc, typeIEEE64BitFloatingPoint,
                                wide_desc.OutPointer());
       if (err != noErr) {
-        NOTREACHED_IN_MIGRATION();
-        return std::string();
+        NOTREACHED();
       }
 
       double value;
       err = AEGetDescData(wide_desc, &value, sizeof(value));
       if (err != noErr) {
-        NOTREACHED_IN_MIGRATION();
-        return std::string();
+        NOTREACHED();
       }
 
       return base::NumberToString(value);
@@ -104,8 +99,7 @@ std::string AEDescToString(const AEDesc* aedesc) {
       std::vector<char16_t> data_vector(byte_length / sizeof(char16_t));
       OSErr err = AEGetDescData(aedesc, data_vector.data(), byte_length);
       if (err != noErr) {
-        NOTREACHED_IN_MIGRATION();
-        return std::string();
+        NOTREACHED();
       }
       return FourCharToString(typeUnicodeText) + "(\"" +
              base::UTF16ToUTF8(
@@ -124,8 +118,7 @@ std::string AEDescToString(const AEDesc* aedesc) {
       long list_count;
       OSErr err = AECountItems(aedesc, &list_count);
       if (err != noErr) {
-        NOTREACHED_IN_MIGRATION();
-        return std::string();
+        NOTREACHED();
       }
       for (long i = 0; i < list_count; ++i) {
         AEKeyword key;
@@ -133,8 +126,7 @@ std::string AEDescToString(const AEDesc* aedesc) {
         err = AEGetNthDesc(aedesc, i + 1 /* 1-based! */, typeWildCard, &key,
                            value_desc.OutPointer());
         if (err != noErr) {
-          NOTREACHED_IN_MIGRATION();
-          return std::string();
+          NOTREACHED();
         }
 
         if (is_record) {
@@ -152,9 +144,8 @@ std::string AEDescToString(const AEDesc* aedesc) {
       return result;
     }
     default: {
-      NOTREACHED_IN_MIGRATION() << "unexpected descriptor type "
-                                << FourCharToString(aedesc->descriptorType);
-      return std::string();
+      NOTREACHED() << "unexpected descriptor type "
+                   << FourCharToString(aedesc->descriptorType);
     }
   }
 }

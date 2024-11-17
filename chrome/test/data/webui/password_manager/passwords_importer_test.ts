@@ -42,9 +42,9 @@ async function triggerImportHelper(
   flush();
 
   // In progress state after the click.
-  const spinner = importer.shadowRoot!.querySelector('paper-spinner-lite');
+  const spinner = importer.shadowRoot!.querySelector('.spinner');
   assertTrue(!!spinner);
-  assertTrue(spinner.active);
+  assertTrue(isVisible(spinner));
   assertFalse(isVisible(chooseFile));
 
   // Import flow should have been triggered.
@@ -343,9 +343,9 @@ suite('PasswordsImporterTest', function() {
     flush();
 
     // In progress state after the click.
-    const spinner = importer.shadowRoot!.querySelector('paper-spinner-lite');
+    const spinner = importer.shadowRoot!.querySelector('.spinner');
     assertTrue(!!spinner);
-    assertTrue(spinner.active);
+    assertTrue(isVisible(spinner));
 
     assertFalse(
         !!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));
@@ -400,9 +400,9 @@ suite('PasswordsImporterTest', function() {
     flush();
 
     // In progress state after the click.
-    const spinner = importer.shadowRoot!.querySelector('paper-spinner-lite');
+    const spinner = importer.shadowRoot!.querySelector('.spinner');
     assertTrue(!!spinner);
-    assertTrue(spinner.active);
+    assertTrue(isVisible(spinner));
 
     assertFalse(
         !!importer.shadowRoot!.querySelector<CrDialogElement>('#dialog'));

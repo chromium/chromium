@@ -131,6 +131,13 @@ struct BLINK_COMMON_EXPORT
     return data.enable_encrypted_media;
   }
 
+#if BUILDFLAG(IS_CHROMEOS)
+  static const bool& use_overlay_scrollbar(
+      const ::blink::RendererPreferences& data) {
+    return data.use_overlay_scrollbar;
+  }
+#endif
+
   static const std::string& webrtc_ip_handling_policy(
       const ::blink::RendererPreferences& data) {
     return data.webrtc_ip_handling_policy;
@@ -252,11 +259,6 @@ struct BLINK_COMMON_EXPORT
   static const std::vector<uint16_t>& explicitly_allowed_network_ports(
       const ::blink::RendererPreferences& data) {
     return data.explicitly_allowed_network_ports;
-  }
-
-  static const std::optional<bool> prefixed_fullscreen_video_api_availability(
-      const ::blink::RendererPreferences& data) {
-    return data.prefixed_fullscreen_video_api_availability;
   }
 
   static bool Read(blink::mojom::RendererPreferencesDataView,

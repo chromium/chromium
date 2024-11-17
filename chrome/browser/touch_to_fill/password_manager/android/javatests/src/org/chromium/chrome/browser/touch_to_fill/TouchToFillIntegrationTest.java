@@ -9,17 +9,21 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.timeout;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.ThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.singleMouseClickView;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
@@ -30,7 +34,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -74,14 +79,12 @@ public class TouchToFillIntegrationTest {
 
     @Mock private BottomSheetFocusHelper mMockFocusHelper;
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private BottomSheetController mBottomSheetController;
-
-    public TouchToFillIntegrationTest() {
-        MockitoAnnotations.initMocks(this);
-    }
 
     @Before
     public void setUp() throws InterruptedException {
@@ -123,6 +126,25 @@ public class TouchToFillIntegrationTest {
                             mMockBridge,
                             mMockFocusHelper);
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testConsumesGenericMotionEventsToPreventMouseClicksThroughSheet() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFill.showCredentials(
+                            sExampleUrl,
+                            true,
+                            Collections.emptyList(),
+                            Collections.singletonList(sAna),
+                            /* submitCredential= */ false,
+                            /* managePasskeysHidesPasswords= */ false,
+                            /* showHybridPasskeyOption= */ false,
+                            /* showCredManEntry= */ false);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+        assert singleMouseClickView(getCredentials());
     }
 
     @Test
@@ -328,8 +350,9 @@ public class TouchToFillIntegrationTest {
                                         }
 
                                         @Override
-                                        public int getSheetContentDescriptionStringId() {
-                                            return 0;
+                                        public @NonNull String getSheetContentDescription(
+                                                Context context) {
+                                            return "";
                                         }
 
                                         @Override

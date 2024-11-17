@@ -56,7 +56,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.back_press.BackPressHelper;
 import org.chromium.chrome.browser.back_press.SecondaryActivityBackPressUma.SecondaryActivity;
 import org.chromium.chrome.browser.download.home.list.ListUtils;
@@ -96,7 +95,6 @@ import java.util.List;
 public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Mock private Tracker mTracker;
     @Mock private SnackbarManager mSnackbarManager;
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private UrlFormatter.Natives mUrlFormatterJniMock;
 
     @Rule
@@ -139,7 +137,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     public void setUpTest() throws Exception {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, mUrlFormatterJniMock);
+        UrlFormatterJni.setInstanceForTesting(mUrlFormatterJniMock);
         when(mUrlFormatterJniMock.formatUrlForSecurityDisplay(
                         any(), eq(SchemeDisplay.OMIT_HTTP_AND_HTTPS)))
                 .then(
@@ -177,7 +175,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     private void setUpUi() {
         DownloadManagerUiConfig config =
                 DownloadManagerUiConfigHelper.fromFlags()
-                        .setOTRProfileID(null)
+                        .setOtrProfileId(null)
                         .setIsSeparateActivity(true)
                         .build();
 
@@ -187,7 +185,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                 new ModalDialogManager(mAppModalPresenter, ModalDialogManager.ModalDialogType.APP);
 
         FaviconProvider faviconProvider = (url, faviconSizePx, callback) -> {};
-        Callback<Context> settingsLauncher = context -> {};
+        Callback<Context> settingsNavigation = context -> {};
         ObservableSupplierImpl<Boolean> isPrefetchEnabledSupplier = new ObservableSupplierImpl<>();
         isPrefetchEnabledSupplier.set(true);
 
@@ -196,7 +194,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
                         getActivity(),
                         config,
                         isPrefetchEnabledSupplier,
-                        settingsLauncher,
+                        settingsNavigation,
                         mSnackbarManager,
                         mModalDialogManager,
                         mTracker,
@@ -215,6 +213,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/372835715")
     public void testLaunchingActivity() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -560,6 +559,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/372835715")
     public void testSearchView() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -590,6 +590,7 @@ public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "https://crbug.com/372252512")
     public void testDismissSearchViewByBackPress() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

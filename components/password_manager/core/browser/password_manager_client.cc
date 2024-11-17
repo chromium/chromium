@@ -73,10 +73,7 @@ void PasswordManagerClient::AutofillHttpAuth(
     const PasswordFormManagerForUI* form_manager) {}
 
 void PasswordManagerClient::NotifyUserCredentialsWereLeaked(
-    password_manager::CredentialLeakType leak_type,
-    const GURL& origin,
-    const std::u16string& username,
-    bool in_account_store) {}
+    LeakedPasswordDetails details) {}
 
 void PasswordManagerClient::TriggerReauthForPrimaryAccount(
     signin_metrics::ReauthAccessPoint access_point,

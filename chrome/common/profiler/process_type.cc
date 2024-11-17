@@ -5,7 +5,7 @@
 #include "chrome/common/profiler/process_type.h"
 
 #include "base/command_line.h"
-#include "base/profiler/process_type.h"
+#include "components/sampling_profiler/process_type.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -27,35 +27,35 @@ bool IsExtensionRenderer(const base::CommandLine& command_line) {
 
 }  // namespace
 
-base::ProfilerProcessType GetProfilerProcessType(
+sampling_profiler::ProfilerProcessType GetProfilerProcessType(
     const base::CommandLine& command_line) {
   std::string process_type =
       command_line.GetSwitchValueASCII(switches::kProcessType);
   if (process_type.empty())
-    return base::ProfilerProcessType::kBrowser;
+    return sampling_profiler::ProfilerProcessType::kBrowser;
 
   // Renderer process exclusive of extension renderers.
   if (process_type == switches::kRendererProcess &&
       !IsExtensionRenderer(command_line)) {
-    return base::ProfilerProcessType::kRenderer;
+    return sampling_profiler::ProfilerProcessType::kRenderer;
   }
 
   if (process_type == switches::kGpuProcess)
-    return base::ProfilerProcessType::kGpu;
+    return sampling_profiler::ProfilerProcessType::kGpu;
 
   if (process_type == switches::kUtilityProcess) {
     auto utility_sub_type =
         command_line.GetSwitchValueASCII(switches::kUtilitySubType);
     if (utility_sub_type == network::mojom::NetworkService::Name_)
-      return base::ProfilerProcessType::kNetworkService;
-    return base::ProfilerProcessType::kUtility;
+      return sampling_profiler::ProfilerProcessType::kNetworkService;
+    return sampling_profiler::ProfilerProcessType::kUtility;
   }
 
   if (process_type == switches::kZygoteProcess)
-    return base::ProfilerProcessType::kZygote;
+    return sampling_profiler::ProfilerProcessType::kZygote;
 
   if (process_type == switches::kPpapiPluginProcess)
-    return base::ProfilerProcessType::kPpapiPlugin;
+    return sampling_profiler::ProfilerProcessType::kPpapiPlugin;
 
-  return base::ProfilerProcessType::kUnknown;
+  return sampling_profiler::ProfilerProcessType::kUnknown;
 }

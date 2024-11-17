@@ -191,6 +191,13 @@ void CommandBufferProxyImpl::RemoveDeletionObserver(
   deletion_observers_.RemoveObserver(observer);
 }
 
+void CommandBufferProxyImpl::UpdateLastFenceSyncRelease(
+    uint64_t release_count) {
+  CheckLock();
+  if (last_fence_sync_release_ < release_count) {
+    last_fence_sync_release_ = release_count;
+  }
+}
 void CommandBufferProxyImpl::OnSignalAck(uint32_t id,
                                          const CommandBuffer::State& state) {
   base::AutoLockMaybe lock(lock_.get());
@@ -665,8 +672,9 @@ void CommandBufferProxyImpl::TryUpdateStateDontReportError() {
     shared_state()->Read(&last_state_);
 }
 
-gpu::CommandBufferSharedState* CommandBufferProxyImpl::shared_state() const {
-  return reinterpret_cast<gpu::CommandBufferSharedState*>(
+const gpu::CommandBufferSharedState* CommandBufferProxyImpl::shared_state()
+    const {
+  return reinterpret_cast<const gpu::CommandBufferSharedState*>(
       shared_state_mapping_.memory());
 }
 

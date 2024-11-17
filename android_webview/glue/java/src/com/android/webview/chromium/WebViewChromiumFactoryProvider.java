@@ -40,6 +40,7 @@ import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.BrowserSafeModeActionList;
+import org.chromium.android_webview.ManifestMetadataUtil;
 import org.chromium.android_webview.R;
 import org.chromium.android_webview.WebViewChromiumRunQueue;
 import org.chromium.android_webview.common.AwSwitches;
@@ -121,8 +122,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     // WebLayerImpl.java for more info.
     private static final int SHARED_LIBRARY_MAX_ID = 36;
 
-    // When true, WebView will return Resources from its own Context rather than using the embedding
-    // app's.
+    // Stores the value of the cached SharedPref denoting whether we should use WebView's own
+    // Context for querying resources.
     private static boolean sUseWebViewContext;
 
     /**
@@ -180,7 +181,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     private ServiceWorkerController mServiceWorkerController;
 
-    public class InitInfo {
+    public static class InitInfo {
         // Timestamp of init start and duration, used in the
         // 'WebView.Startup.CreationTime.Stage1.FactoryInit' trace event.
         public long mStartTime;
@@ -255,7 +256,7 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
             // Use shared preference to check for package downgrade.
             int lastVersion = mWebViewPrefs.getInt(VERSION_CODE_PREF, 0);
             int currentVersion = packageInfo.versionCode;
-            if (!versionCodeGE(currentVersion, lastVersion)) {
+            if (isBranchDowngrade(currentVersion, lastVersion)) {
                 // The WebView package has been downgraded since we last ran in this
                 // application. Delete the WebView data directory's contents.
                 String dataDir = PathUtils.getDataDirectory();
@@ -283,7 +284,8 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     }
 
     void setWebViewContextExperimentValue(boolean enabled) {
-        if (enabled == sUseWebViewContext) return;
+        if (enabled == sUseWebViewContext
+                || Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) return;
         if (enabled) {
             mWebViewPrefs.edit().putBoolean(WEBVIEW_CONTEXT_EXPERIMENT_PREF, true).apply();
         } else {
@@ -336,42 +338,33 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 mWebViewPrefs = ctx.getSharedPreferences(CHROMIUM_PREFS_NAME, Context.MODE_PRIVATE);
                 // Read the experiment value and use it to determine which Context to use.
                 sUseWebViewContext =
-                        mWebViewPrefs.getBoolean(WEBVIEW_CONTEXT_EXPERIMENT_PREF, false)
-                                && Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+                        mWebViewPrefs.getBoolean(WEBVIEW_CONTEXT_EXPERIMENT_PREF, false);
             }
 
-            // Enable if the device is *not* a Samsung and any of the following are true:
-            // - We found a shared pref to enable the feature as part of an experiment.
-            // - The command line switch is enabled (overrides experiment value).
-            // - The app is one of Walton's launcher apps.
-            if (!"SAMSUNG".equalsIgnoreCase(Build.MANUFACTURER)
-                    && (sUseWebViewContext
-                            || CommandLine.getInstance()
-                                    .hasSwitch(AwSwitches.WEBVIEW_USE_SEPARATE_RESOURCE_CONTEXT)
-                            || "com.aurora.launcher".equals(ctx.getPackageName())
-                            || "com.qiku.android.launcher3".equals(ctx.getPackageName()))) {
+            if (shouldEnableContextExperiment(ctx)) {
                 try {
                     Context override =
                             ctx.createPackageContext(
                                     packageInfo.packageName,
                                     Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
-                    // Don't enable for standalone WebView. Check package id of the theme resource
-                    // to determine.
-                    // TODO(crbug.com/343756896): Make this work for standalone too.
-                    if ((override.getResources()
-                                            .getIdentifier(
-                                                    "WebViewBaseTheme",
-                                                    "style",
-                                                    packageInfo.packageName)
-                                    & 0xff000000)
-                            == 0x7f000000) {
-                        ClassLoaderContextWrapperFactory.setOverrideInfo(
-                                packageInfo.packageName,
-                                R.style.WebViewBaseTheme,
-                                Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
-                        // Use this to report the actual state of the feature at runtime.
-                        AwBrowserMainParts.setUseWebViewContext(true);
-                    }
+                    // Use standard Android theme for standalone WebView, use custom theme for
+                    // everything else. Check package id of the theme resource to determine.
+                    boolean isStandaloneWebView =
+                            (override.getResources()
+                                                    .getIdentifier(
+                                                            "WebViewBaseTheme",
+                                                            "style",
+                                                            packageInfo.packageName)
+                                            & 0xff000000)
+                                    != 0x7f000000;
+                    ClassLoaderContextWrapperFactory.setOverrideInfo(
+                            packageInfo.packageName,
+                            isStandaloneWebView || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
+                                    ? android.R.style.Theme_DeviceDefault_DayNight
+                                    : R.style.WebViewBaseTheme,
+                            Context.CONTEXT_INCLUDE_CODE | Context.CONTEXT_IGNORE_SECURITY);
+                    // Use this to report the actual state of the feature at runtime.
+                    AwBrowserMainParts.setUseWebViewContext(true);
                 } catch (PackageManager.NameNotFoundException e) {
                     Log.e(TAG, "Could not get resource override context.");
                 }
@@ -572,26 +565,21 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
     }
 
     /**
-     * Both versionCodes should be from a WebView provider package implemented by Chromium.
-     * VersionCodes from other kinds of packages won't make any sense in this method.
+     * Compare two WebView provider versionCodes to see if the current version is an older Chromium
+     * branch than the last-used version.
      *
-     * An introduction to Chromium versionCode scheme:
-     * "BBBBPPPAX"
-     * BBBB: 4 digit branch number. It monotonically increases over time.
-     * PPP: patch number in the branch. It is padded with zeroes to the left. These three digits may
-     * change their meaning in the future.
-     * A: architecture digit.
-     * X: A digit to differentiate APKs for other reasons.
-     *
-     * This method takes the "BBBB" of versionCodes and compare them.
-     *
-     * @return true if versionCode1 is higher than or equal to versionCode2.
+     * @return true if the branch portion of currentVersion is lower than the branch portion of
+     *     lastVersion.
      */
-    private static boolean versionCodeGE(int versionCode1, int versionCode2) {
-        int v1 = versionCode1 / 100000;
-        int v2 = versionCode2 / 100000;
+    private static boolean isBranchDowngrade(int currentVersion, int lastVersion) {
+        // The WebView versionCode is 9 decimal digits "BBBBPPPXX":
+        // BBBB: 4 digit branch number. It monotonically increases over time.
+        // PPP: patch number in the branch. It is padded with zeroes to the left.
+        // XX: differentiates different architectures/build types/etc.
+        int currentBranch = currentVersion / 100000;
+        int lastBranch = lastVersion / 100000;
 
-        return v1 >= v2;
+        return currentBranch < lastBranch;
     }
 
     private static void deleteContents(File dir) {
@@ -901,5 +889,37 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     public InitInfo getInitInfo() {
         return mInitInfo;
+    }
+
+    private boolean shouldEnableContextExperiment(Context ctx) {
+        // Command line switch overrides all other conditions.
+        if (CommandLine.getInstance().hasSwitch(AwSwitches.WEBVIEW_USE_SEPARATE_RESOURCE_CONTEXT)) {
+            return true;
+        }
+
+        // Disable for Samsung devices.
+        if ("SAMSUNG".equalsIgnoreCase(Build.MANUFACTURER)) {
+            return false;
+        }
+
+        // Don't enable on V+.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            return false;
+        }
+
+        // Allow the developer to opt in or opt out of the experiment.
+        ManifestMetadataUtil.ensureMetadataCacheInitialized(ctx);
+        Boolean valueFromManifest = ManifestMetadataUtil.shouldEnableContextExperiment();
+        if (valueFromManifest != null) {
+            return valueFromManifest;
+        }
+
+        // We also want to enable by default on the listed package names.
+        if ("com.aurora.launcher".equals(ctx.getPackageName())
+                || "com.qiku.android.launcher3".equals(ctx.getPackageName())) {
+            return true;
+        }
+
+        return sUseWebViewContext;
     }
 }

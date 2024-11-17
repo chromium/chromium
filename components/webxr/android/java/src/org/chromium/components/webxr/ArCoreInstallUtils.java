@@ -26,7 +26,7 @@ public class ArCoreInstallUtils {
      * Helper class to store a reference to the ArCoreInstallUtils instance and activity
      * that requested an install of ArCore, and await that activity being resumed.
      */
-    private class InstallRequest implements ActivityLifecycleCallbacks {
+    private static class InstallRequest implements ActivityLifecycleCallbacks {
         private ArCoreInstallUtils mInstallInstance;
         private ImmutableWeakReference<Activity> mWeakActivity;
         private ImmutableWeakReference<Application> mWeakApplication;
@@ -57,7 +57,7 @@ public class ArCoreInstallUtils {
         public void onActivityResumed(Activity activity) {
             if (mWeakActivity.get() != activity || mInstallInstance == null) return;
 
-            mInstallInstance.onArCoreRequestInstallReturned(activity);
+            mInstallInstance.onArCoreRequestInstallReturned();
         }
 
         // Unfortunately, ActivityLifecycleCallbacks force us to implement all of the methods, but
@@ -199,7 +199,7 @@ public class ArCoreInstallUtils {
         }
     }
 
-    private void onArCoreRequestInstallReturned(Activity activity) {
+    private void onArCoreRequestInstallReturned() {
         assert sInstallRequest != null;
         maybeNotifyNativeOnRequestInstallSupportedArCoreResult(
                 getArCoreInstallStatus() == ArCoreAvailability.SUPPORTED_INSTALLED);

@@ -38,9 +38,10 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
 
   // views::View
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   content::WebContents* GetWebContents();
+
+  views::View* GetWebView() { return web_view_; }
 
   void OpenUrl(const content::OpenURLParams& params);
 
@@ -102,6 +103,13 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
 
+  void OnAccessibleRoleChanged(ax::mojom::Role role);
+  void OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                       const std::optional<std::string>& name);
+  void UpdateAccessibleName(const std::string& name);
+  void OnAXChildTreeIdChanged(ax::mojom::StringAttribute attribute,
+                              const std::optional<std::string>& child_tree_id);
+
   // content::WebContentsDelegate:
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
@@ -122,6 +130,9 @@ class LensUnifiedSidePanelView : public views::FlexLayoutView,
   std::unique_ptr<content::OpenURLParams> side_panel_url_params_;
 
   base::RepeatingClosure update_new_tab_button_callback_;
+  base::CallbackListSubscription role_changed_subscription_;
+  base::CallbackListSubscription name_changed_subscription_;
+  base::CallbackListSubscription child_tree_id_changed_subscription_;
   base::WeakPtrFactory<LensUnifiedSidePanelView> weak_factory_{this};
 };
 

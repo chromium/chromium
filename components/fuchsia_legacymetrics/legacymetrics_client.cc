@@ -254,7 +254,7 @@ void LegacyMetricsClient::FlushAndDisconnect(
   if (is_flushing_)
     return;
 
-  report_timer_.AbandonAndStop();
+  report_timer_.Stop();
 
   is_flushing_ = true;
   if (notify_flush_callback_) {
@@ -287,7 +287,7 @@ void LegacyMetricsClient::CompleteFlush() {
 
 void LegacyMetricsClient::ResetMetricsRecorderState() {
   // Stop reporting metric events.
-  report_timer_.AbandonAndStop();
+  report_timer_.Stop();
 
   record_ack_pending_ = false;
 

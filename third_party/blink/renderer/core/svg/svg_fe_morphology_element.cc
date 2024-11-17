@@ -30,10 +30,10 @@ namespace blink {
 
 template <>
 const SVGEnumerationMap& GetEnumerationMap<MorphologyOperatorType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {FEMORPHOLOGY_OPERATOR_ERODE, "erode"},
-      {FEMORPHOLOGY_OPERATOR_DILATE, "dilate"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "erode",
+      "dilate",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }
@@ -90,13 +90,11 @@ void SVGFEMorphologyElement::SvgAttributeChanged(
   const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kOperatorAttr ||
       attr_name == svg_names::kRadiusAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     PrimitiveAttributeChanged(attr_name);
     return;
   }
 
   if (attr_name == svg_names::kInAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }

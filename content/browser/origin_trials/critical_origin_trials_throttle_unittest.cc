@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "content/browser/origin_trials/critical_origin_trials_throttle.h"
+
 #include <string>
 #include <string_view>
 #include <utility>
@@ -10,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
-#include "content/browser/origin_trials/critical_origin_trials_throttle.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -19,7 +20,7 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/common/origin_trials/scoped_test_origin_trial_policy.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -106,8 +107,8 @@ class MockOriginTrialsDelegate
       std::optional<ukm::SourceId> source_id) override {}
   void ClearPersistedTokens() override { persisted_trials_.clear(); }
 
-  void AddPersistedTrialForTest(const std::string_view url,
-                                const std::string_view trial_name) {
+  void AddPersistedTrialForTest(std::string_view url,
+                                std::string_view trial_name) {
     url::Origin key = url::Origin::Create(GURL(url));
     persisted_trials_[key].emplace(trial_name);
   }
@@ -123,7 +124,7 @@ class CriticalOriginTrialsThrottleTest : public ::testing::Test {
 
   ~CriticalOriginTrialsThrottleTest() override = default;
 
-  std::string CreateHeaderLines(const std::string_view prefix,
+  std::string CreateHeaderLines(std::string_view prefix,
                                 const base::span<std::string> values) {
     std::string line;
     for (const std::string& value : values)
@@ -132,7 +133,7 @@ class CriticalOriginTrialsThrottleTest : public ::testing::Test {
     return line;
   }
 
-  void StartRequest(const std::string_view url, ResourceType resource_type) {
+  void StartRequest(std::string_view url, ResourceType resource_type) {
     network::ResourceRequest request;
     request.url = GURL(url);
     request.resource_type = static_cast<int>(resource_type);
@@ -141,7 +142,7 @@ class CriticalOriginTrialsThrottleTest : public ::testing::Test {
   }
 
   blink::URLLoaderThrottle::RestartWithURLReset BeforeWillProcess(
-      const std::string_view url,
+      std::string_view url,
       const base::span<std::string> origin_trial_tokens = {},
       const base::span<std::string> critical_origin_trials = {}) {
     network::mojom::URLResponseHead response_head;

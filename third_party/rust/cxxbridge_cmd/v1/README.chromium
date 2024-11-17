@@ -1,9 +1,10 @@
 Name: cxxbridge-cmd
 URL: https://crates.io/crates/cxxbridge-cmd
-Description: C++ code generator for integrating `cxx` crate into a non-Cargo build.
-Version: 1.0.128
-Security Critical: yes
-Shipped: no
+Version: 1.0.129
+Revision: 121bb6f819db2d9aa9763e10c4069b8a464bb8a6
 License: Apache 2.0
-License File: //third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-1.0.128/LICENSE-APACHE
-Revision: 55bfb5444cd43bb594022a15c5ac61938edb380a
+License File: //third_party/rust/chromium_crates_io/vendor/cxxbridge-cmd-1.0.129/LICENSE-APACHE
+Shipped: no
+Security Critical: yes
+
+Description: C++ code generator for integrating `cxx` crate into a non-Cargo build.

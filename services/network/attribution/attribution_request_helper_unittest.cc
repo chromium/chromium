@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "net/http/http_request_headers.h"
 #include "net/http/structured_headers.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/redirect_info.h"
@@ -163,15 +164,13 @@ TEST_F(AttributionRequestHelperTest, CreateIfNeeded) {
 
 TEST_F(AttributionRequestHelperTest, SetAttributionReportingHeaders) {
   {
-    std::unique_ptr<net::URLRequest> request =
-        CreateTestUrlRequest(/*to_url=*/example_valid_request_url_);
-
     ResourceRequest resource_request;
     resource_request.attribution_reporting_eligibility =
         AttributionReportingEligibility::kUnset;
-    SetAttributionReportingHeaders(*request, resource_request);
-    EXPECT_FALSE(request->extra_request_headers().HasHeader(
-        kAttributionReportingEligible));
+    net::HttpRequestHeaders headers =
+        ComputeAttributionReportingHeaders(resource_request);
+
+    EXPECT_FALSE(headers.HasHeader(kAttributionReportingEligible));
   }
 
   const struct {
@@ -199,15 +198,12 @@ TEST_F(AttributionRequestHelperTest, SetAttributionReportingHeaders) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.eligibility);
 
-    std::unique_ptr<net::URLRequest> request =
-        CreateTestUrlRequest(/*to_url=*/example_valid_request_url_);
-
     ResourceRequest resource_request;
     resource_request.attribution_reporting_eligibility = test_case.eligibility;
-    SetAttributionReportingHeaders(*request, resource_request);
+    net::HttpRequestHeaders headers =
+        ComputeAttributionReportingHeaders(resource_request);
 
-    std::string actual = request->extra_request_headers()
-                             .GetHeader(kAttributionReportingEligible)
+    std::string actual = headers.GetHeader(kAttributionReportingEligible)
                              .value_or(std::string());
 
     auto dict = net::structured_headers::ParseDictionary(actual);
@@ -248,17 +244,14 @@ TEST_F(AttributionCrossAppWebRequestHelperTest,
   };
 
   for (const auto& test_case : kTestCases) {
-    std::unique_ptr<net::URLRequest> request =
-        CreateTestUrlRequest(/*to_url=*/example_valid_request_url_);
-
     ResourceRequest resource_request;
     resource_request.attribution_reporting_eligibility =
         AttributionReportingEligibility::kEventSource;
     resource_request.attribution_reporting_support = test_case.support;
-    SetAttributionReportingHeaders(*request, resource_request);
+    net::HttpRequestHeaders headers =
+        ComputeAttributionReportingHeaders(resource_request);
 
-    std::string actual = request->extra_request_headers()
-                             .GetHeader(kAttributionReportingEligible)
+    std::string actual = headers.GetHeader(kAttributionReportingEligible)
                              .value_or(std::string());
 
     auto dict = net::structured_headers::ParseDictionary(actual);

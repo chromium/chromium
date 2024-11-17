@@ -38,8 +38,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
+
 namespace {
 
 using CreatePayloadFilesResult =
@@ -433,5 +433,4 @@ TEST_F(CameraRollDownloadManagerImplTest, DeleteFile) {
   EXPECT_FALSE(base::PathExists(expected_path));
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

@@ -23,14 +23,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_RENDERING_CONTEXT_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_RENDERING_CONTEXT_BASE_H_
 
+#include <array>
 #include <memory>
 #include <optional>
 
@@ -135,7 +131,7 @@ class ScopedRGBEmulationColorMask {
 
  private:
   WebGLRenderingContextBase* context_;
-  GLboolean color_mask_[4];
+  std::array<GLboolean, 4> color_mask_;
   const bool requires_emulation_;
 };
 
@@ -720,6 +716,8 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
       std::unique_ptr<WebGraphicsContext3DProvider>,
       const Platform::GraphicsInfo& graphics_info);
   void SetupFlags();
+  bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
+                                             SourceDrawingBuffer);
 
   // CanvasRenderingContext implementation.
   bool IsComposited() const override { return true; }
@@ -727,8 +725,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   bool IsOriginTopLeft() const override;
   void PageVisibilityChanged() override;
   bool PaintRenderingResultsToCanvas(SourceDrawingBuffer) override;
-  bool CopyRenderingResultsFromDrawingBuffer(CanvasResourceProvider*,
-                                             SourceDrawingBuffer) override;
   bool CopyRenderingResultsToVideoFrame(
       WebGraphicsContext3DVideoFramePool*,
       SourceDrawingBuffer,
@@ -770,7 +766,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
       return;
     }
 
-    ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
+    ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_.data(),
                                                      drawing_buffer_.get());
     OnBeforeDrawCall(draw_type);
     draw_func();
@@ -924,7 +920,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   GLint max3d_texture_size_;
   GLint max_array_texture_layers_;
   GLint max_renderbuffer_size_;
-  GLint max_viewport_dims_[2];
+  std::array<GLint, 2> max_viewport_dims_;
   GLint max_texture_level_;
   GLint max_cube_map_texture_level_;
   GLint max3d_texture_level_;
@@ -947,14 +943,14 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   GLint unpack_skip_rows_ = 0;
   GLint unpack_row_length_ = 0;
 
-  GLfloat clear_color_[4];
+  std::array<GLfloat, 4> clear_color_;
   bool scissor_enabled_;
-  GLint scissor_box_[4];
+  std::array<GLint, 4> scissor_box_;
   GLfloat clear_depth_;
   GLint clear_stencil_;
   // State of the color mask - or the zeroth indexed color mask, if
   // OES_draw_buffers_indexed is enabled.
-  GLboolean color_mask_[4];
+  std::array<GLboolean, 4> color_mask_;
   GLboolean depth_mask_;
 
   bool depth_enabled_;
@@ -1060,7 +1056,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     Member<T> extension_;
   };
 
-  bool extension_enabled_[kWebGLExtensionNameCount];
+  std::array<bool, kWebGLExtensionNameCount> extension_enabled_;
   HeapVector<Member<ExtensionTracker>> extensions_;
   HashSet<String> disabled_extensions_;
 
@@ -1699,7 +1695,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
                         "size * elementSize, plus a constant, is too large");
       return false;
     }
-    *out_data = v + src_offset;
+    *out_data = UNSAFE_TODO(v + src_offset);
     *out_length = actual_size / required_min_size;
     return true;
   }

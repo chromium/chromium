@@ -70,10 +70,14 @@ source_set("ink") {
     "src/ink/geometry/rect.h",
     "src/ink/geometry/segment.cc",
     "src/ink/geometry/segment.h",
+    "src/ink/geometry/tessellator.cc",
+    "src/ink/geometry/tessellator.h",
     "src/ink/geometry/triangle.cc",
     "src/ink/geometry/triangle.h",
     "src/ink/geometry/vec.cc",
     "src/ink/geometry/vec.h",
+    "src/ink/rendering/bitmap.cc",
+    "src/ink/rendering/bitmap.h",
     "src/ink/rendering/skia/common_internal/mesh_specification_data.cc",
     "src/ink/rendering/skia/common_internal/mesh_specification_data.h",
     "src/ink/rendering/skia/common_internal/sksl_common_shader_helper_functions.h",
@@ -89,6 +93,8 @@ source_set("ink") {
     "src/ink/rendering/skia/native/internal/mesh_uniform_data.h",
     "src/ink/rendering/skia/native/internal/path_drawable.cc",
     "src/ink/rendering/skia/native/internal/path_drawable.h",
+    "src/ink/rendering/skia/native/internal/shader_cache.cc",
+    "src/ink/rendering/skia/native/internal/shader_cache.h",
     "src/ink/rendering/skia/native/skia_renderer.cc",
     "src/ink/rendering/skia/native/skia_renderer.h",
     "src/ink/strokes/in_progress_stroke.cc",
@@ -118,6 +124,7 @@ source_set("ink") {
     "src/ink/strokes/internal/brush_tip_extruder/side.h",
     "src/ink/strokes/internal/brush_tip_extruder/simplify.cc",
     "src/ink/strokes/internal/brush_tip_extruder/simplify.h",
+    "src/ink/strokes/internal/brush_tip_extrusion.cc",
     "src/ink/strokes/internal/brush_tip_extrusion.h",
     "src/ink/strokes/internal/brush_tip_modeler.cc",
     "src/ink/strokes/internal/brush_tip_modeler.h",
@@ -171,5 +178,111 @@ source_set("ink") {
     "//skia",
     "//third_party/abseil-cpp:absl",
     "//third_party/ink_stroke_modeler",
+  ]
+
+  deps = [ "//third_party/libtess2" ]
+}
+
+source_set("brush_test_support") {
+  testonly = true
+
+  sources = [
+    "src/ink/brush/type_matchers.cc",
+    "src/ink/brush/type_matchers.h",
+  ]
+
+  public_configs = [ ":public_config" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_deps = [
+    ":ink",
+    "//testing/gtest",
+  ]
+
+  deps = [
+    ":geometry_test_support",
+    ":types_test_support",
+    "//testing/gmock",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("geometry_test_support") {
+  testonly = true
+
+  visibility = [ ":*" ]
+
+  sources = [
+    "src/ink/geometry/type_matchers.cc",
+    "src/ink/geometry/type_matchers.h",
+  ]
+
+  public_configs = [ ":public_config" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_deps = [
+    ":ink",
+    "//testing/gtest",
+  ]
+
+  deps = [
+    "//testing/gmock",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+source_set("input_test_support") {
+  testonly = true
+
+  sources = [
+    "src/ink/strokes/input/type_matchers.cc",
+    "src/ink/strokes/input/type_matchers.h",
+  ]
+
+  public_configs = [ ":public_config" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_deps = [
+    ":ink",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/abseil-cpp:absl",
+  ]
+
+  deps = [
+    ":geometry_test_support",
+    ":types_test_support",
+  ]
+}
+
+source_set("types_test_support") {
+  testonly = true
+
+  visibility = [ ":*" ]
+
+  sources = [
+    "src/ink/types/type_matchers.cc",
+    "src/ink/types/type_matchers.h",
+  ]
+
+  public_configs = [ ":public_config" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_deps = [
+    ":ink",
+    "//testing/gtest",
+  ]
+
+  deps = [
+    "//testing/gmock",
+    "//third_party/abseil-cpp:absl",
   ]
 }

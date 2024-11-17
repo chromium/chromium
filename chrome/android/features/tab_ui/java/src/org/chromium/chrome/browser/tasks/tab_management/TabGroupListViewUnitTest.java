@@ -56,7 +56,7 @@ public class TabGroupListViewUnitTest {
 
     @Before
     public void setUp() {
-        mActivityScenarioRule.getScenario().onActivity((activity -> mActivity = activity));
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
 
         LayoutInflater inflater = LayoutInflater.from(mActivity);
         mTabGroupListView =

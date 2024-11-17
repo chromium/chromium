@@ -8,7 +8,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/login/security_token_request_controller.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/login/ui/login_data_dispatcher.h"
@@ -32,6 +32,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -232,13 +233,6 @@ void LoginScreenController::OnMaxIncorrectPasswordAttempted(
   client_->OnMaxIncorrectPasswordAttempted(account_id);
 }
 
-void LoginScreenController::FocusLockScreenApps(bool reverse) {
-  if (!client_) {
-    return;
-  }
-  client_->FocusLockScreenApps(reverse);
-}
-
 void LoginScreenController::ShowGaiaSignin(const AccountId& prefilled_account) {
   if (!client_) {
     return;
@@ -282,6 +276,7 @@ void LoginScreenController::LaunchPublicSession(
   if (!client_) {
     return;
   }
+  SYSLOG(INFO) << "MGS: Requesting manual launch";
   client_->LaunchPublicSession(account_id, locale, input_method);
 }
 

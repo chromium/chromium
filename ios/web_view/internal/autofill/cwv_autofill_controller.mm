@@ -104,8 +104,7 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
     passwordManagerClient:
         (std::unique_ptr<ios_web_view::WebViewPasswordManagerClient>)
             passwordManagerClient
-       passwordController:(SharedPasswordController*)passwordController
-        applicationLocale:(const std::string&)applicationLocale {
+       passwordController:(SharedPasswordController*)passwordController {
   self = [super init];
   if (self) {
     DCHECK(webState);
@@ -124,7 +123,7 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
     _autofillClient->set_bridge(self);
 
     autofill::AutofillDriverIOSFactory::CreateForWebState(
-        _webState, _autofillClient.get(), self, applicationLocale);
+        _webState, _autofillClient.get(), self);
 
     _passwordManagerClient = std::move(passwordManagerClient);
     _passwordManagerClient->set_bridge(self);
@@ -337,6 +336,11 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   return [_autofillAgent isLastQueriedField:fieldId];
 }
 
+- (void)showPlusAddressEmailOverrideNotification:
+    (base::OnceClosure)emailOverrideUndoCallback {
+  NOTIMPLEMENTED();
+}
+
 - (void)
     confirmSaveCreditCardToCloud:(const autofill::CreditCard&)creditCard
                legalMessageLines:(autofill::LegalMessageLines)legalMessageLines
@@ -479,9 +483,19 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   // Not supported.
 }
 
-- (void)scanFormsInWebState:(web::WebState*)webState
-                    inFrame:(web::WebFrame*)webFrame {
-  [_autofillAgent scanFormsInWebState:webState inFrame:webFrame];
+- (void)notifyFormsSeen:(const std::vector<autofill::FormData>&)updatedForms
+                inFrame:(web::WebFrame*)frame {
+  [_autofillAgent notifyFormsSeen:updatedForms inFrame:frame];
+}
+
+- (void)fetchFormsFiltered:(BOOL)filtered
+                  withName:(const std::u16string&)formName
+                   inFrame:(web::WebFrame*)frame
+         completionHandler:(FormFetchCompletion)completionHandler {
+  [_autofillAgent fetchFormsFiltered:filtered
+                            withName:formName
+                             inFrame:frame
+                   completionHandler:std::move(completionHandler)];
 }
 
 #pragma mark - CRWWebStateObserver
@@ -552,15 +566,14 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 }
 
 - (void)webState:(web::WebState*)webState
-    didSubmitDocumentWithFormNamed:(const std::string&)formName
-                          withData:(const std::string&)formData
-                    hasUserGesture:(BOOL)userInitiated
-                           inFrame:(web::WebFrame*)frame {
+    didSubmitDocumentWithFormData:(const autofill::FormData&)formData
+                   hasUserGesture:(BOOL)userInitiated
+                          inFrame:(web::WebFrame*)frame {
   if ([_delegate respondsToSelector:@selector
                  (autofillController:
                      didSubmitFormWithName:frameID:userInitiated:)]) {
     [_delegate autofillController:self
-            didSubmitFormWithName:base::SysUTF8ToNSString(formName)
+            didSubmitFormWithName:base::SysUTF16ToNSString(formData.name())
                           frameID:base::SysUTF8ToNSString(frame->GetFrameId())
                     userInitiated:userInitiated];
   }
@@ -711,6 +724,7 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
 - (void)sharedPasswordController:(SharedPasswordController*)controller
     showGeneratedPotentialPassword:(NSString*)generatedPotentialPassword
                          proactive:(BOOL)proactive
+                             frame:(base::WeakPtr<web::WebFrame>)frame
                    decisionHandler:(void (^)(BOOL accept))decisionHandler {
   if ([self.delegate
           respondsToSelector:@selector(autofillController:

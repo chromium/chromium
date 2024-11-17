@@ -35,17 +35,17 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.Promise;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.usage_stats.UsageStatsService;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
 import org.chromium.chrome.browser.webapps.WebApkServiceClient;
@@ -54,7 +54,7 @@ import org.chromium.components.browser_ui.notifications.BaseNotificationManagerP
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.browser_ui.notifications.PendingIntentProvider;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -102,8 +102,6 @@ public class NotificationPlatformBridge {
 
     private static NotificationPlatformBridge sInstance;
 
-    private static BaseNotificationManagerProxy sNotificationManagerOverride;
-
     private final long mNativeNotificationPlatformBridge;
 
     private final BaseNotificationManagerProxy mNotificationManager;
@@ -136,8 +134,6 @@ public class NotificationPlatformBridge {
     // the `PRE_UNSUBSCRIBE` intent was started. Used to measure the time, as perceived by the user,
     // that elapses until we see a duplicate intent being dispatched.
     private static long sLastPreUnsubscribePreNativeTaskStartRealMillis = -1;
-
-    private TrustedWebActivityClient mTwaClient;
 
     /** Encapsulates attributes that identify a notification and where it originates from. */
     private static class NotificationIdentifyingAttributes {
@@ -218,36 +214,9 @@ public class NotificationPlatformBridge {
         return sInstance;
     }
 
-    /**
-     * Overrides the notification manager which is to be used for displaying Notifications on the
-     * Android framework. Should only be used for testing. Tests are expected to clean up after
-     * themselves by setting this to NULL again.
-     *
-     * @param notificationManager The notification manager instance to use instead of the system's.
-     */
-    static void overrideNotificationManagerForTesting(
-            BaseNotificationManagerProxy notificationManager) {
-        sNotificationManagerOverride = notificationManager;
-    }
-
-    /**
-     * Retuns the abstraction around the NotificationManager that either delegates to the real thing
-     * in production code or to a fake in tests.
-     */
-    private static BaseNotificationManagerProxy createNotificationManagerProxy(Context context) {
-        BaseNotificationManagerProxy notificationManager;
-        if (sNotificationManagerOverride != null) {
-            notificationManager = sNotificationManagerOverride;
-        } else {
-            notificationManager = BaseNotificationManagerProxyFactory.create(context);
-        }
-        return notificationManager;
-    }
-
     private NotificationPlatformBridge(long nativeNotificationPlatformBridge) {
         mNativeNotificationPlatformBridge = nativeNotificationPlatformBridge;
-        Context context = ContextUtils.getApplicationContext();
-        mNotificationManager = createNotificationManagerProxy(context);
+        mNotificationManager = BaseNotificationManagerProxyFactory.create();
     }
 
     /**
@@ -285,9 +254,8 @@ public class NotificationPlatformBridge {
             // revoke the permission. Also keep the `sOriginsWithProvisionallyRevokedPermissions` in
             // place until native processing finishes in case there are other user interactions
             // racing with this intent.
-            Context context = ContextUtils.getApplicationContext();
             BaseNotificationManagerProxy notificationManager =
-                    createNotificationManagerProxy(context);
+                    BaseNotificationManagerProxyFactory.create();
             notificationManager.cancel(attributes.notificationId, PLATFORM_ID);
             return true;
         }
@@ -309,6 +277,7 @@ public class NotificationPlatformBridge {
             NotificationPlatformBridgeJni.get().initializeNotificationPlatformBridge();
             if (sInstance == null) {
                 Log.e(TAG, "Unable to initialize the native NotificationPlatformBridge.");
+                reportTrampolineTrackerJobCompleted(intent);
                 return false;
             }
         }
@@ -337,9 +306,13 @@ public class NotificationPlatformBridge {
             return true;
         } else if (NotificationConstants.ACTION_COMMIT_UNSUBSCRIBE.equals(intent.getAction())) {
             sInstance.onNotificationCommitUnsubscribe(attributes);
+            // No activity needs to be launched when unsubscribing a notification, report the job
+            // as completed.
+            reportTrampolineTrackerJobCompleted(intent);
             return true;
         }
 
+        reportTrampolineTrackerJobCompleted(intent);
         Log.e(TAG, "Unrecognized Notification action: " + intent.getAction());
         return false;
     }
@@ -352,10 +325,10 @@ public class NotificationPlatformBridge {
                             - intent.getLongExtra(
                                     NotificationConstants.EXTRA_JOB_SCHEDULED_TIME_MS, -1);
             if (duration < 0) return; // Possible if device rebooted before job started.
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Notifications.Android.JobStartDelay", duration);
             if (NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intent.getAction())) {
-                RecordHistogram.recordMediumTimesHistogram(
+                RecordHistogram.deprecatedRecordMediumTimesHistogram(
                         "Notifications.Android.JobStartDelay.PreUnsubscribe", duration);
             }
         }
@@ -367,10 +340,10 @@ public class NotificationPlatformBridge {
                     SystemClock.elapsedRealtime()
                             - intent.getLongExtra(
                                     NotificationConstants.EXTRA_JOB_STARTED_TIME_MS, -1);
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Notifications.Android.JobNativeStartupDuration", duration);
             if (NotificationConstants.ACTION_PRE_UNSUBSCRIBE.equals(intent.getAction())) {
-                RecordHistogram.recordMediumTimesHistogram(
+                RecordHistogram.deprecatedRecordMediumTimesHistogram(
                         "Notifications.Android.JobNativeStartupDuration.PreUnsubscribe", duration);
             }
         }
@@ -432,17 +405,16 @@ public class NotificationPlatformBridge {
                     SiteSettingsCategory.preferenceKey(SiteSettingsCategory.Type.NOTIFICATIONS));
             fragmentArguments.putString(
                     SingleCategorySettings.EXTRA_TITLE,
-                    applicationContext
-                            .getResources()
-                            .getString(R.string.push_notifications_permission_title));
+                    applicationContext.getString(R.string.push_notifications_permission_title));
         }
 
         Class<? extends PreferenceFragmentCompat> fragment =
                 launchSingleWebsitePreferences
                         ? SingleWebsiteSettings.class
                         : SingleCategorySettings.class;
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
-        settingsLauncher.launchSettingsActivity(applicationContext, fragment, fragmentArguments);
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
+        settingsNavigation.startSettings(applicationContext, fragment, fragmentArguments);
     }
 
     /**
@@ -979,6 +951,9 @@ public class NotificationPlatformBridge {
         Context context = ContextUtils.getApplicationContext();
         Resources res = context.getResources();
 
+        // TODO(crbug.com/41495650): Ideally we would not need native libraries here, find a way to
+        // format the `origin` using means other than the `UrlFormatter`.
+        LibraryLoader.getInstance().ensureInitialized();
         NotificationBuilderBase notificationBuilder =
                 prepareNotificationBuilder(
                         identifyingAttributes,
@@ -1036,7 +1011,8 @@ public class NotificationPlatformBridge {
         NotificationWrapper notification =
                 buildNotificationWrapper(notificationBuilder, identifyingAttributes.notificationId);
 
-        BaseNotificationManagerProxy notificationManager = createNotificationManagerProxy(context);
+        BaseNotificationManagerProxy notificationManager =
+                BaseNotificationManagerProxyFactory.create();
         notificationManager.notify(notification);
     }
 
@@ -1051,9 +1027,10 @@ public class NotificationPlatformBridge {
         // TODO(peter): Generalize the NotificationPlatformBridge sufficiently to not need
         // to care about the individual notification types.
         // Set up a pending intent for going to the settings screen for |origin|.
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
         Intent settingsIntent =
-                settingsLauncher.createSettingsActivityIntent(
+                settingsNavigation.createSettingsIntent(
                         context,
                         SingleWebsiteSettings.class,
                         SingleWebsiteSettings.createFragmentArgsForSite(origin));
@@ -1263,6 +1240,7 @@ public class NotificationPlatformBridge {
         if (identifyingAttributes.origin != null
                 && sOriginsWithProvisionallyRevokedPermissions.containsKey(
                         identifyingAttributes.origin)) {
+            onNotificationProcessed(identifyingAttributes.notificationId);
             return;
         }
 
@@ -1342,13 +1320,13 @@ public class NotificationPlatformBridge {
         sLastPreUnsubscribePreNativeTaskStartRealMillis = taskStartRealtimeMillis;
 
         Predicate<NotificationWrapper> isTappedNotification =
-                (nw -> {
+                nw -> {
                     if (nw.getMetadata().id != PLATFORM_ID) return false;
                     return nw.getMetadata().tag.equals(identifyingAttributes.notificationId);
-                });
+                };
 
         Context context = ContextUtils.getApplicationContext();
-        var notificationManager = createNotificationManagerProxy(context);
+        var notificationManager = BaseNotificationManagerProxyFactory.create();
         NotificationSuspender suspender =
                 new NotificationSuspender(/* profile= */ null, context, notificationManager);
         suspender.getActiveNotificationsForOrigins(
@@ -1415,13 +1393,13 @@ public class NotificationPlatformBridge {
                         otherNotificationsBackups != null);
 
         Predicate<BaseNotificationManagerProxy.StatusBarNotificationProxy> isTappedNotification =
-                (sbn -> {
+                sbn -> {
                     if (sbn.getId() != PLATFORM_ID) return false;
                     return sbn.getTag().equals(identifyingAttributes.notificationId);
-                });
+                };
 
         Context context = ContextUtils.getApplicationContext();
-        var notificationManager = createNotificationManagerProxy(context);
+        var notificationManager = BaseNotificationManagerProxyFactory.create();
         notificationManager.getActiveNotifications(
                 (activeNotifications) -> {
                     var tappedStatusBarNotification =
@@ -1535,10 +1513,17 @@ public class NotificationPlatformBridge {
     }
 
     private TrustedWebActivityClient getTwaClient() {
-        if (mTwaClient == null) {
-            mTwaClient = ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient();
-        }
-        return mTwaClient;
+        return TrustedWebActivityClient.getInstance();
+    }
+
+    private static void reportTrampolineTrackerJobCompleted(Intent intent) {
+        String notificationid = intent.getStringExtra(NotificationConstants.EXTRA_NOTIFICATION_ID);
+        TrampolineActivityTracker.getInstance().onIntentCompleted(notificationid);
+    }
+
+    @CalledByNative
+    private void onNotificationProcessed(String notificationId) {
+        TrampolineActivityTracker.getInstance().onIntentCompleted(notificationId);
     }
 
     @NativeMethods

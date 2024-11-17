@@ -28,14 +28,14 @@ std::unique_ptr<FormFieldParser> StandaloneCvcFieldParser::Parse(
     return nullptr;
   }
 
-  raw_ptr<AutofillField> field;
+  std::optional<FieldAndMatchInfo> match;
   base::span<const MatchPatternRef> cvc_patterns =
       GetMatchPatterns(CREDIT_CARD_VERIFICATION_CODE, context.page_language,
                        context.pattern_file);
 
-  if (ParseField(context, scanner, cvc_patterns, &field,
+  if (ParseField(context, scanner, cvc_patterns, &match,
                  "CREDIT_CARD_VERIFICATION_CODE(standalone)")) {
-    return std::make_unique<StandaloneCvcFieldParser>(field);
+    return std::make_unique<StandaloneCvcFieldParser>(std::move(*match));
   }
 
   return nullptr;
@@ -63,12 +63,12 @@ bool StandaloneCvcFieldParser::MatchGiftCard(ParsingContext& context,
   return gift_card_match;
 }
 
-StandaloneCvcFieldParser::StandaloneCvcFieldParser(const AutofillField* field)
-    : field_(field) {}
+StandaloneCvcFieldParser::StandaloneCvcFieldParser(FieldAndMatchInfo match)
+    : match_(std::move(match)) {}
 
 void StandaloneCvcFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
-  AddClassification(field_, CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
+  AddClassification(match_, CREDIT_CARD_STANDALONE_VERIFICATION_CODE,
                     kBaseCreditCardParserScore, field_candidates);
 }
 

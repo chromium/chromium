@@ -9,14 +9,13 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile_selections.h"
-#include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/features.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 base::FilePath GetDIPSFilePath(content::BrowserContext* context) {
   return context->GetPath().Append(kDIPSFilename);
@@ -61,22 +60,6 @@ std::ostream& operator<<(std::ostream& os, TimestampRange range) {
 }
 
 // SiteDataAccessType:
-
-std::string_view SiteDataAccessTypeToString(SiteDataAccessType type) {
-  switch (type) {
-    case SiteDataAccessType::kUnknown:
-      return "Unknown";
-    case SiteDataAccessType::kNone:
-      return "None";
-    case SiteDataAccessType::kRead:
-      return "Read";
-    case SiteDataAccessType::kWrite:
-      return "Write";
-    case SiteDataAccessType::kReadWrite:
-      return "ReadWrite";
-  }
-}
-
 std::ostream& operator<<(std::ostream& os, SiteDataAccessType access_type) {
   return os << SiteDataAccessTypeToString(access_type);
 }
@@ -100,15 +83,6 @@ std::string_view GetHistogramSuffix(DIPSCookieMode mode) {
   return std::string_view();
 }
 
-const char* DIPSCookieModeToString(DIPSCookieMode mode) {
-  switch (mode) {
-    case DIPSCookieMode::kBlock3PC:
-      return "Block3PC";
-    case DIPSCookieMode::kOffTheRecord_Block3PC:
-      return "OffTheRecord_Block3PC";
-  }
-}
-
 std::ostream& operator<<(std::ostream& os, DIPSCookieMode mode) {
   return os << DIPSCookieModeToString(mode);
 }
@@ -127,15 +101,6 @@ std::string_view GetHistogramPiece(DIPSRedirectType type) {
   return std::string_view();
 }
 
-const char* DIPSRedirectTypeToString(DIPSRedirectType type) {
-  switch (type) {
-    case DIPSRedirectType::kClient:
-      return "Client";
-    case DIPSRedirectType::kServer:
-      return "Server";
-  }
-}
-
 std::ostream& operator<<(std::ostream& os, DIPSRedirectType type) {
   return os << DIPSRedirectTypeToString(type);
 }
@@ -148,6 +113,12 @@ std::string GetSiteForDIPS(const GURL& url) {
   const auto domain = net::registry_controlled_domains::GetDomainAndRegistry(
       url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
   return domain.empty() ? url.host() : domain;
+}
+
+std::string GetSiteForDIPS(const url::Origin& origin) {
+  const auto domain = net::registry_controlled_domains::GetDomainAndRegistry(
+      origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  return domain.empty() ? origin.host() : domain;
 }
 
 bool HasSameSiteIframe(content::WebContents* web_contents, const GURL& url) {

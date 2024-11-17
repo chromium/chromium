@@ -1,0 +1,17 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("util") {
+  sources = [
+    "autofill_ai_util.cc",
+    "autofill_ai_util.h",
+  ]
+
+  deps = [
+    "//chrome/browser/profiles:profile",
+    "//components/optimization_guide/core:core",
+    "//components/signin/public/identity_manager:identity_manager",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}

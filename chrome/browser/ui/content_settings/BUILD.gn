@@ -7,16 +7,6 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 source_set("content_settings") {
   sources = []
   deps = []
-
-  if (!is_android) {
-    sources += [
-      "content_setting_bubble_model.h",
-      "content_setting_bubble_model_delegate.h",
-      "content_setting_image_model.h",
-      "content_setting_image_model_states.h",
-    ]
-  }
-
   public_deps = [
     "//base",
     "//chrome/app/vector_icons:vector_icons",
@@ -26,6 +16,16 @@ source_set("content_settings") {
     "//components/custom_handlers",
     "//services/device/public/cpp/geolocation:buildflags",
   ]
+
+  if (!is_android) {
+    sources += [
+      "content_setting_bubble_model.h",
+      "content_setting_bubble_model_delegate.h",
+      "content_setting_image_model.h",
+      "content_setting_image_model_states.h",
+    ]
+    public_deps += [ "//chrome/app/vector_icons" ]
+  }
 }
 
 source_set("impl") {
@@ -46,10 +46,14 @@ source_set("impl") {
     "//chrome/app:generated_resources",
     "//chrome/app/theme:theme_resources",
     "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/content_settings:content_settings_util",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/permissions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui:url_identity",
     "//chrome/browser/web_applications",
     "//chrome/browser/web_applications",
     "//chrome/common:non_code_constants",
@@ -80,6 +84,8 @@ source_set("browser_tests") {
     ":content_settings",
     ":test_support",
     "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/content_settings:content_settings_util",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
     "//components/content_settings/core/test:test_support",
@@ -121,6 +127,8 @@ source_set("unit_tests") {
   deps += [
     ":content_settings",
     ":test_support",
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/permissions",
     "//chrome/browser/permissions:unit_tests",
     "//chrome/browser/ui:ui_features",

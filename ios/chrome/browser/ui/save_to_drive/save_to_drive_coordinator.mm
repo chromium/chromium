@@ -67,12 +67,12 @@
                            forProtocol:@protocol(AccountPickerCommands)];
   [dispatcher startDispatchingToTarget:self
                            forProtocol:@protocol(ManageStorageAlertCommands)];
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   drive::DriveService* driveService =
-      drive::DriveServiceFactory::GetForBrowserState(browserState);
+      drive::DriveServiceFactory::GetForProfile(profile);
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
-  PrefService* prefService = browserState->GetPrefs();
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
+  PrefService* prefService = profile->GetPrefs();
   id<SaveToDriveCommands> saveToDriveHandler =
       HandlerForProtocol(dispatcher, SaveToDriveCommands);
   id<ApplicationCommands> applicationHandler =
@@ -140,12 +140,12 @@
                             ACCESS_POINT_SAVE_TO_DRIVE_IOS
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:^(SigninCoordinatorResult result,
+             completion:^(SigninCoordinatorResult result,
                           SigninCompletionInfo* completionInfo) {
-                 if (completion) {
-                   completion(completionInfo.identity);
-                 }
-               }];
+               if (completion) {
+                 completion(completionInfo.identity);
+               }
+             }];
   [applicationCommandsHandler
               showSignin:addAccountCommand
       baseViewController:accountPickerCoordinator.viewController];

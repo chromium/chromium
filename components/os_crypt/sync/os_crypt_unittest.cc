@@ -16,6 +16,7 @@
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/os_crypt/sync/os_crypt_metrics.h"
 #include "components/os_crypt/sync/os_crypt_mocker.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -155,6 +156,53 @@ TEST_F(OSCryptTest, DecryptError) {
   EXPECT_TRUE(result.empty());
 }
 
+TEST_F(OSCryptTest, Metrics) {
+  {
+    std::string ciphertext;
+    EXPECT_TRUE(OSCrypt::EncryptString("secret", &ciphertext));
+    base::HistogramTester histograms;
+    std::string plaintext;
+    EXPECT_TRUE(OSCrypt::DecryptString(ciphertext, &plaintext));
+#if BUILDFLAG(IS_WIN)
+    histograms.ExpectTotalCount("OSCrypt.EncryptionPrefixVersion", 0);
+#else
+#if BUILDFLAG(IS_LINUX)
+    // Linux defaults to using a `v11` key.
+    const os_crypt::EncryptionPrefixVersion expected =
+        os_crypt::EncryptionPrefixVersion::kVersion11;
+#else
+    // All other non-Windows platforms use a `v10` key.
+    const os_crypt::EncryptionPrefixVersion expected =
+        os_crypt::EncryptionPrefixVersion::kVersion10;
+#endif  // BUILDFLAG(IS_LINUX)
+    histograms.ExpectUniqueSample("OSCrypt.EncryptionPrefixVersion", expected,
+                                  1u);
+#endif  // BUILDFLAG(IS_WIN)
+  }
+  {
+    base::HistogramTester histograms;
+    std::string plaintext;
+    // Empty string should not log any histograms, but only returns success on
+    // non-Windows.
+    std::ignore = OSCrypt::DecryptString(std::string(), &plaintext);
+    histograms.ExpectTotalCount("OSCrypt.EncryptionPrefixVersion", 0);
+  }
+  {
+    base::HistogramTester histograms;
+    std::string plaintext;
+    // On Windows, this call will fail so ignore the return value. That's tested
+    // elsewhere and this test only cares about metrics.
+    std::ignore = OSCrypt::DecryptString("invaliddata!", &plaintext);
+#if BUILDFLAG(IS_WIN)
+    histograms.ExpectTotalCount("OSCrypt.EncryptionPrefixVersion", 0);
+#else
+    histograms.ExpectUniqueSample("OSCrypt.EncryptionPrefixVersion",
+                                  os_crypt::EncryptionPrefixVersion::kNoVersion,
+                                  1u);
+#endif  // BUILDFLAG(IS_WIN)
+  }
+}
+
 class OSCryptConcurrencyTest : public testing::Test {
  public:
   OSCryptConcurrencyTest() { OSCryptMocker::SetUp(); }
@@ -203,7 +251,7 @@ TEST_F(OSCryptConcurrencyTest, MAYBE_ConcurrentInitialization) {
 
 class OSCryptTestWin : public testing::Test {
  public:
-  OSCryptTestWin() {}
+  OSCryptTestWin() = default;
 
   OSCryptTestWin(const OSCryptTestWin&) = delete;
   OSCryptTestWin& operator=(const OSCryptTestWin&) = delete;
@@ -355,38 +403,5 @@ TEST_F(OSCryptTestWin, AuditMigrationTest) {
 }
 
 #endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) &&         \
-        !(BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CASTOS)) || \
-    BUILDFLAG(IS_FUCHSIA)
-// os_crypt_posix.cc has no mocker, so it can be a standalone fixture.
-TEST(OSCrypt, PosixMetric) {
-  {
-    std::string ciphertext;
-    EXPECT_TRUE(OSCrypt::EncryptString("secret", &ciphertext));
-    base::HistogramTester histograms;
-    std::string plaintext;
-    EXPECT_TRUE(OSCrypt::DecryptString(ciphertext, &plaintext));
-    histograms.ExpectUniqueSample("OSCrypt.Posix.NoEncryptionPrefixFound",
-                                  false, 1u);
-  }
-
-  {
-    base::HistogramTester histograms;
-    std::string plaintext;
-    EXPECT_TRUE(OSCrypt::DecryptString("invaliddata!", &plaintext));
-    histograms.ExpectUniqueSample("OSCrypt.Posix.NoEncryptionPrefixFound", true,
-                                  1u);
-  }
-
-  {
-    base::HistogramTester histograms;
-    std::string plaintext;
-    // Empty string should not set this histogram.
-    EXPECT_TRUE(OSCrypt::DecryptString(std::string(), &plaintext));
-    histograms.ExpectTotalCount("OSCrypt.Posix.NoEncryptionPrefixFound", 0u);
-  }
-}
-#endif
 
 }  // namespace

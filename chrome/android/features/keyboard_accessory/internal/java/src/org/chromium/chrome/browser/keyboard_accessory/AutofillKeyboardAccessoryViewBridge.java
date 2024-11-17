@@ -161,7 +161,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
      * @param iconId The resource ID for the icon associated with the suggestion, or 0 for no icon.
      * @param suggestionType Determines the type of the suggestion.
      * @param isDeletable Whether the item can be deleted by the user.
-     * @param featureForIPH The In-Product-Help feature used for displaying the bubble for the
+     * @param featureForIph The In-Product-Help feature used for displaying the bubble for the
      *     suggestion.
      * @param customIconUrl The url used to fetch the custom icon to be displayed in the autofill
      *     suggestion chip.
@@ -174,7 +174,7 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
             int iconId,
             @SuggestionType int suggestionType,
             boolean isDeletable,
-            @JniType("std::string") String featureForIPH,
+            @JniType("std::string") String featureForIph,
             @JniType("std::u16string") String iphDescriptionText,
             GURL customIconUrl,
             boolean applyDeactivatedStyle) {
@@ -188,8 +188,8 @@ public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
                 .setIsDeletable(isDeletable)
                 .setIsMultiLineLabel(false)
                 .setIsBoldLabel(false)
-                .setFeatureForIPH(featureForIPH)
-                .setIPHDescriptionText(iphDescriptionText)
+                .setFeatureForIph(featureForIph)
+                .setIphDescriptionText(iphDescriptionText)
                 .setCustomIconUrl(customIconUrl)
                 .setApplyDeactivatedStyle(applyDeactivatedStyle)
                 .build();

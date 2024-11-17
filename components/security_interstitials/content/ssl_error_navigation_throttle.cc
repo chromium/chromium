@@ -7,12 +7,13 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "build/buildflag.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/cert/cert_status_flags.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_GUEST_VIEW)
 #include "components/guest_view/browser/guest_view_base.h"
 #endif
 
@@ -28,7 +29,7 @@ bool WebContentsUsesInterstitials(content::NavigationHandle* handle) {
     return true;
   }
 
-#if BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(ENABLE_GUEST_VIEW)
   return false;
 #else
   guest_view::GuestViewBase* guest =
@@ -61,7 +62,7 @@ SSLErrorNavigationThrottle::SSLErrorNavigationThrottle(
               should_ignore_interstitial_because_navigation_defaulted_to_https_callback)) {
 }
 
-SSLErrorNavigationThrottle::~SSLErrorNavigationThrottle() {}
+SSLErrorNavigationThrottle::~SSLErrorNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
 SSLErrorNavigationThrottle::WillFailRequest() {

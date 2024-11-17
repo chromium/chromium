@@ -16,6 +16,7 @@
 
 #include "base/base64.h"
 #include "base/containers/contains.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -876,7 +877,7 @@ void FakeBluetoothDeviceClient::CreateDevice(
     properties->name.ReplaceValue(kConnectedTrustedNotPairedDeviceName);
     properties->name.set_valid(true);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   properties_map_.insert(std::make_pair(device_path, std::move(properties)));
@@ -1974,7 +1975,7 @@ void FakeBluetoothDeviceClient::CreateTestDevice(
       properties->type.ReplaceValue(BluetoothDeviceClient::kTypeDual);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   properties->type.set_valid(true);
 
@@ -1996,8 +1997,8 @@ void FakeBluetoothDeviceClient::CreateTestDevice(
 
 void FakeBluetoothDeviceClient::AddPrepareWriteRequest(
     const dbus::ObjectPath& object_path,
-    const std::vector<uint8_t>& value) {
-  prepare_write_requests_.emplace_back(object_path, value);
+    base::span<const uint8_t> value) {
+  prepare_write_requests_.emplace_back(object_path, base::ToVector(value));
 }
 
 }  // namespace bluez

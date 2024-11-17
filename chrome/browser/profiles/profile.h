@@ -52,7 +52,7 @@ class ProfileCloudPolicyManager;
 class UserCloudPolicyManager;
 class CloudPolicyManager;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class UserCloudPolicyManagerAsh;
 #endif
 }  // namespace policy
@@ -340,7 +340,7 @@ class Profile : public content::BrowserContext {
   // Returns the SchemaRegistryService.
   virtual policy::SchemaRegistryService* GetPolicySchemaRegistryService() = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns the UserCloudPolicyManagerAsh.
   virtual policy::UserCloudPolicyManagerAsh* GetUserCloudPolicyManagerAsh() = 0;
 #else
@@ -353,8 +353,7 @@ class Profile : public content::BrowserContext {
   // This function combine three Get*CloudPolicyManager functions above and
   // always returns the one that is currently activated.
   //
-  // Returns UserCloudPolicyManagerAsh on Ash
-  // Returns null for Lacros main profile
+  // Returns UserCloudPolicyManagerAsh on Ash.
   // For others, returns UserCloudPolicyManager if it exists, otherwise use
   // ProfileCloudPolicyManager.
   virtual policy::CloudPolicyManager* GetCloudPolicyManager() = 0;
@@ -394,7 +393,7 @@ class Profile : public content::BrowserContext {
 
   // Initializes Chrome OS's preferences.
   virtual void InitChromeOSPreferences() = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Returns the home page for this profile.
   virtual GURL GetHomePage() = 0;
@@ -406,7 +405,7 @@ class Profile : public content::BrowserContext {
   // IsRegularProfile(), IsSystemProfile(), IsIncognitoProfile(), and
   // IsGuestSession() are mutually exclusive.
   // Note: IsGuestSession() is not mutually exclusive with the rest of the
-  // methods mentioned above on Ash and Lacros. TODO(crbug.com/40233408).
+  // methods mentioned above on Ash. TODO(crbug.com/40233408).
   //
   // IsSystemProfile() returns true for both regular and off-the-record profile
   //   of the system profile.
@@ -418,9 +417,6 @@ class Profile : public content::BrowserContext {
 
   // Returns whether it is an Incognito profile. An Incognito profile is an
   // off-the-record profile that is used for incognito mode.
-  //
-  // TODO(crbug.com/40233408): Also returns true for Lacros in a Ash guest
-  // profile.
   bool IsIncognitoProfile() const;
 
   // Returns true if this is a primary OffTheRecord profile, which covers the
@@ -433,18 +429,6 @@ class Profile : public content::BrowserContext {
 
   // Returns whether it is a system profile.
   bool IsSystemProfile() const;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns `true` if this is the first/initial Profile path in Lacros, and -
-  // for regular sessions, if this Profile has the Device Account logged in.
-  // For non-regular sessions (Guest Sessions, Managed Guest Sessions) which do
-  // not have the concept of a Device Account, the latter condition is not
-  // checked.
-  static bool IsMainProfilePath(base::FilePath profile_path);
-
-  // Returns true if this is the main profile as defined above.
-  virtual bool IsMainProfile() const = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   bool CanUseDiskWhenOffTheRecord() override;
 
@@ -515,6 +499,9 @@ class Profile : public content::BrowserContext {
     return instant_service_;
   }
 
+  // Returns a debug information in std::string.
+  std::string ToDebugString();
+
 #if BUILDFLAG(IS_ANDROID)
   static Profile* FromJavaObject(const jni_zero::JavaRef<jobject>& obj);
   jni_zero::ScopedJavaLocalRef<jobject> GetJavaObject() const;
@@ -536,8 +523,13 @@ class Profile : public content::BrowserContext {
   // Returns whether the user has signed in this profile to an account.
   virtual bool IsSignedIn() = 0;
 
- protected:
   const std::optional<OTRProfileID> otr_profile_id_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // TODO(40233408): Remove this when migration is completed.
+  // True if the guest profile uses BrowserProfileType::kGuest.
+  bool new_guest_profile_impl_;
+#endif
 
  private:
   bool restored_last_session_ = false;

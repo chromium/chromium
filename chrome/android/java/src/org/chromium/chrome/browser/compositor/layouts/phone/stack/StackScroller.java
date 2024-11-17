@@ -9,11 +9,9 @@ import android.hardware.SensorManager;
 import android.util.Log;
 import android.view.ViewConfiguration;
 
-import org.chromium.base.MathUtils;
-
 /**
- * This class is vastly copied from {@link android.widget.OverScroller} but decouples the time
- * from the app time so it can be specified manually.
+ * This class is vastly copied from {@link android.widget.OverScroller} but decouples the time from
+ * the app time so it can be specified manually.
  */
 public class StackScroller {
     private int mMode;
@@ -29,10 +27,7 @@ public class StackScroller {
     private static float sViscousFluidScale;
     private static float sViscousFluidNormalize;
 
-    /**
-     * Creates an StackScroller with a viscous fluid scroll interpolator and flywheel.
-     * @param context
-     */
+    /** Creates an StackScroller with a viscous fluid scroll interpolator and flywheel. */
     public StackScroller(Context context) {
         mFlywheel = true;
         mScrollerX = new SplineStackScroller(context);
@@ -94,15 +89,15 @@ public class StackScroller {
     }
 
     /**
-     * Force the finished field to a particular value. Contrary to
-     * {@link #abortAnimation()}, forcing the animation to finished
-     * does NOT cause the scroller to move to the final x and y
+     * Force the finished field to a particular value. Contrary to {@link #abortAnimation()},
+     * forcing the animation to finished does NOT cause the scroller to move to the final x and y
      * position.
      *
      * @param finished The new finished value.
      */
     public final void forceFinished(boolean finished) {
-        mScrollerX.mFinished = mScrollerY.mFinished = finished;
+        mScrollerX.mFinished = finished;
+        mScrollerY.mFinished = finished;
     }
 
     /**
@@ -180,7 +175,7 @@ public class StackScroller {
 
                 final int duration = mScrollerX.mDuration;
                 if (elapsedTime < duration) {
-                    float q = (float) (elapsedTime) / duration;
+                    float q = (float) elapsedTime / duration;
                     q = viscousFluid(q);
                     mScrollerX.updateScroll(q);
                     mScrollerY.updateScroll(q);
@@ -550,21 +545,22 @@ public class StackScroller {
         boolean springback(int start, int min, int max, long time) {
             mFinished = true;
 
-            mStart = mFinal = start;
+            mStart = start;
+            mFinal = start;
             mVelocity = 0;
 
             mStartTime = time;
             mDuration = 0;
 
             if (start < min) {
-                startSpringback(start, min, 0);
+                startSpringback(start, min);
             } else if (start > max) {
-                startSpringback(start, max, 0);
+                startSpringback(start, max);
             }
             return !mFinished;
         }
 
-        private void startSpringback(int start, int end, int velocity) {
+        private void startSpringback(int start, int end) {
             // mStartTime has been set
             mFinished = false;
             mState = CUBIC;
@@ -589,22 +585,24 @@ public class StackScroller {
             // positions to scroll by.
             float increment =
                     (MAX_SNAP_SCROLL_MIN_VELOCITY - TRIPLE_SNAP_MIN_VELOCITY)
-                            / (MAX_SNAP_SCROLL - 3);
+                            / ((float) (MAX_SNAP_SCROLL - 3));
             return (int) ((Math.abs(velocity) - TRIPLE_SNAP_MIN_VELOCITY) / increment) + 3;
         }
 
         void fling(int start, int velocity, int min, int max, int over, long time) {
             if (mSnapDistance != 0) {
-                doSnapScroll(start, velocity, min, max, time);
+                doSnapScroll(start, velocity, time);
                 return;
             }
 
             mOver = over;
             mFinished = false;
-            mCurrVelocity = mVelocity = velocity;
+            mCurrVelocity = velocity;
+            mVelocity = velocity;
             mDuration = mSplineDuration = 0;
             mStartTime = time;
-            mCurrentPosition = mStart = start;
+            mCurrentPosition = start;
+            mStart = start;
 
             if (start > max || start < min) {
                 startAfterEdge(start, min, max, velocity, time);
@@ -615,7 +613,9 @@ public class StackScroller {
             double totalDistance = 0.0;
 
             if (velocity != 0) {
-                mDuration = mSplineDuration = getSplineFlingDuration(velocity);
+                int duration = getSplineFlingDuration(velocity);
+                mDuration = duration;
+                mSplineDuration = duration;
                 totalDistance = getSplineFlingDistance(velocity);
             }
 
@@ -634,7 +634,7 @@ public class StackScroller {
             }
         }
 
-        private void doSnapScroll(int start, int velocity, int min, int max, long time) {
+        private void doSnapScroll(int start, int velocity, long time) {
             boolean sameDirection = (Math.signum(velocity) == Math.signum(mCurrVelocity));
 
             int numTabsToScroll = computeSnapScrollDistance(velocity);
@@ -652,8 +652,6 @@ public class StackScroller {
                     mCenteredSnapIndexAtTouchDown - (int) Math.signum(velocity) * numTabsToScroll;
             double newPositionPostSnapping = -newCenteredTab * mSnapDistance;
 
-            double newPositionPostClamping =
-                    MathUtils.clamp((float) newPositionPostSnapping, min, max);
             if (newPositionPostSnapping == mCurrentPosition) {
                 // Don't apply the repeated fling boost right after a fling that didn't actually
                 // scroll anything.
@@ -672,7 +670,8 @@ public class StackScroller {
          * @param time The start time to use for the animation.
          */
         void flingTo(int startPosition, int finalPosition, long time) {
-            mCurrentPosition = mStart = startPosition;
+            mCurrentPosition = startPosition;
+            mStart = startPosition;
             mFinal = finalPosition;
             mStartTime = time;
             mSplineDistance = finalPosition - startPosition;
@@ -684,7 +683,9 @@ public class StackScroller {
                     (int)
                             (Math.signum(mSplineDistance)
                                     * getSplineFlingDistanceInverse(Math.abs(mSplineDistance)));
-            mDuration = mSplineDuration = getSplineFlingDuration((int) mCurrVelocity);
+            int duration = getSplineFlingDuration((int) mCurrVelocity);
+            mDuration = duration;
+            mSplineDuration = duration;
         }
 
         private double getSplineDeceleration(int velocity) {
@@ -772,7 +773,7 @@ public class StackScroller {
                             mOver,
                             time);
                 } else {
-                    startSpringback(start, edge, velocity);
+                    startSpringback(start, edge);
                 }
             }
         }
@@ -813,7 +814,7 @@ public class StackScroller {
                     break;
                 case BALLISTIC:
                     mStartTime += mDuration;
-                    startSpringback(mFinal, mStart, 0);
+                    startSpringback(mFinal, mStart);
                     break;
                 case CUBIC:
                     return false;
@@ -867,7 +868,7 @@ public class StackScroller {
 
                 case CUBIC:
                     {
-                        final float t = (float) (currentTime) / mDuration;
+                        final float t = (float) currentTime / mDuration;
                         final float t2 = t * t;
                         final float sign = Math.signum(mVelocity);
                         distance = sign * mOver * (3.0f * t2 - 2.0f * t * t2);

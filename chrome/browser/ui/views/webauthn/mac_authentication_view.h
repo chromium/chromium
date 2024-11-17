@@ -29,7 +29,7 @@ class API_AVAILABLE(macos(12)) MacAuthenticationView : public views::View {
   // indicates whether the operation was successful and if successful, the
   // authenticated LAContext.
   explicit MacAuthenticationView(Callback callback,
-                                 const std::u16string touch_id_reason);
+                                 std::u16string touch_id_reason);
   ~MacAuthenticationView() override;
 
   // views::View:

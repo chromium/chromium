@@ -13,6 +13,7 @@
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/enum_set.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
@@ -31,6 +32,7 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/user_manager/user_manager.h"
 
 namespace growth {
@@ -38,6 +40,9 @@ namespace growth {
 namespace {
 
 CampaignsManager* g_instance = nullptr;
+
+static constexpr auto kAllSlotsSet =
+    base::EnumSet<Slot, Slot::kMinValue, Slot::kMaxValue>::All();
 
 inline constexpr char kCampaignFileName[] = "campaigns.json";
 
@@ -314,19 +319,89 @@ void CampaignsManager::ClearEvent(std::string_view event) {
   client_->ClearConfig(conditions_params);
 }
 
+void CampaignsManager::ClearAllEvents() {
+  if (!ash::features::IsGrowthInternalsEnabled()) {
+    return;
+  }
+
+  for (const auto slot : kAllSlotsSet) {
+    const auto* targeted_campaigns = GetCampaignsBySlot(&campaigns_, slot);
+    if (!targeted_campaigns) {
+      continue;
+    }
+
+    for (auto& campaign_value : *targeted_campaigns) {
+      const auto* campaign = campaign_value.GetIfDict();
+      if (!campaign) {
+        continue;
+      }
+
+      const auto campaign_id = GetCampaignId(campaign);
+      if (!campaign_id) {
+        continue;
+      }
+
+      const auto* targetings = GetTargetings(campaign);
+      if (!targetings || targetings->empty()) {
+        continue;
+      }
+
+      for (const auto& targeting : *targetings) {
+        const auto* target = targeting.GetIfDict();
+        if (!target) {
+          continue;
+        }
+
+        const auto events_targeting =
+            RuntimeTargeting(target).GetEventsTargeting();
+        if (!events_targeting) {
+          continue;
+        }
+
+        ClearEventsByTargeting(*events_targeting, campaign_id.value(),
+                               GetCampaignGroupId(campaign));
+      }
+    }
+  }
+}
+
 void CampaignsManager::RecordEvent(const std::string& event,
                                    bool trigger_campaigns) {
-  // TODO: b/366053058 - Implementing the logic to wait for `campaigns_loaded_`.
+  const bool should_trigger_campaigns =
+      trigger_campaigns &&
+      ash::features::IsGrowthCampaignsTriggerByRecordEventEnabled();
+
   if (!campaigns_loaded_) {
+    // Event is recorded before campaigns are loaded and feature engagement
+    // tracker is initialized, defer recording and trigger to
+    // `OnCampaignsComponentLoaded()` where campaigns are loaded and feature
+    // engagement is ready.
+    if (should_trigger_campaigns) {
+      queued_events_record_and_trigger_.insert(event);
+    } else {
+      queued_events_record_only_.insert(event);
+    }
+
+    RecordCampaignsManagerError(
+        CampaignsManagerError::kRecordEventBeforeCampaignsLoaded);
     return;
   }
 
-  if (trigger_campaigns &&
-      !ash::features::IsGrowthCampaignsTriggerByRecordEventEnabled()) {
-    return;
-  }
+  client_->RecordEvent(event, should_trigger_campaigns);
+}
 
-  client_->RecordEvent(event, trigger_campaigns);
+void CampaignsManager::RecordQueuedEventsAndMaybeTrigger() {
+  CHECK(campaigns_loaded_);
+
+  for (const auto& event : queued_events_record_only_) {
+    RecordEvent(event, /*trigger_campaigns=*/false);
+  }
+  queued_events_record_only_.clear();
+
+  for (const auto& event : queued_events_record_and_trigger_) {
+    RecordEvent(event, /*trigger_campaigns=*/true);
+  }
+  queued_events_record_and_trigger_.clear();
 }
 
 void CampaignsManager::OnCampaignsComponentLoaded(
@@ -377,6 +452,7 @@ void CampaignsManager::OnCampaignsLoaded(
   campaigns_loaded_ = true;
 
   std::move(load_callback).Run();
+  RecordQueuedEventsAndMaybeTrigger();
   NotifyCampaignsLoaded();
 }
 
@@ -423,6 +499,14 @@ void CampaignsManager::NotifyCampaignsLoaded() {
   for (auto& observer : observers_) {
     observer.OnCampaignsLoadCompleted();
   }
+}
+
+void CampaignsManager::SetMantaCapabilityForTesting(signin::Tribool value) {
+  matcher_.SetMantaCapabilityForTesting(value);  // IN-TEST
+}
+
+void CampaignsManager::SetBoardForTesting(std::optional<std::string> board) {
+  matcher_.SetBoardForTesting(board);  // IN-TEST
 }
 
 void CampaignsManager::SetOobeCompleteTimeForTesting(base::Time time) {
@@ -506,6 +590,65 @@ void CampaignsManager::RegisterTrialForCampaign(
   CHECK(!GetTrigger().events.empty());
   group_name += GetTrigger().events[0];
   client_->RegisterSyntheticFieldTrial(trial_name, group_name);
+}
+
+void CampaignsManager::ClearEventsByTargeting(
+    const EventsTargeting& events_targeting,
+    int campaign_id,
+    std::optional<int> group_id) {
+  if (!ash::features::IsGrowthInternalsEnabled()) {
+    return;
+  }
+
+  std::map<std::string, std::string> conditions_params =
+      CreateBasicConditionParams();
+
+  // Clear group impression and dismissal events.
+  if (group_id) {
+    // The cap value can be any number. The string here will be parsed as an
+    // EventConfig and only the name of the EventConfig is used to clear the
+    // database.
+    conditions_params[kEventKey] = CreateConditionParamForCap(
+        "Group", group_id.value(), "Impression",
+        events_targeting.GetGroupImpressionCap().value_or(1));
+    client_->ClearConfig(conditions_params);
+
+    conditions_params[kEventKey] = CreateConditionParamForCap(
+        "Group", group_id.value(), "Dismissed",
+        events_targeting.GetGroupDismissalCap().value_or(1));
+    client_->ClearConfig(conditions_params);
+  }
+
+  // Clear campaign impression and dismissal events.
+  conditions_params[kEventKey] =
+      CreateConditionParamForCap("Campaign", campaign_id, "Impression",
+                                 events_targeting.GetImpressionCap());
+  client_->ClearConfig(conditions_params);
+
+  conditions_params[kEventKey] = CreateConditionParamForCap(
+      "Campaign", campaign_id, "Dismissed", events_targeting.GetDismissalCap());
+  client_->ClearConfig(conditions_params);
+
+  // Clear events used by the campaign targeting.
+  const base::Value::List* conditions = events_targeting.GetEventsConditions();
+  if (!conditions) {
+    return;
+  }
+
+  for (const auto& condition : *conditions) {
+    if (!condition.is_list()) {
+      continue;
+    }
+
+    for (const auto& param : condition.GetList()) {
+      if (!param.is_string()) {
+        continue;
+      }
+
+      conditions_params[kEventKey] = param.GetString();
+      client_->ClearConfig(conditions_params);
+    }
+  }
 }
 
 }  // namespace growth

@@ -35,6 +35,10 @@
   _playing = NO;
 }
 
+- (void)pause {
+  _playing = NO;
+}
+
 // Called to set a color for a key path.
 - (void)setColorValue:(UIColor*)color forKeypath:(NSString*)keypath {
 }

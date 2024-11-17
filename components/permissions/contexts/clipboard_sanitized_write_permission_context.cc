@@ -20,7 +20,7 @@ ClipboardSanitizedWritePermissionContext::
           blink::mojom::PermissionsPolicyFeature::kClipboardWrite) {}
 
 ClipboardSanitizedWritePermissionContext::
-    ~ClipboardSanitizedWritePermissionContext() {}
+    ~ClipboardSanitizedWritePermissionContext() = default;
 
 ContentSetting
 ClipboardSanitizedWritePermissionContext::GetPermissionStatusInternal(

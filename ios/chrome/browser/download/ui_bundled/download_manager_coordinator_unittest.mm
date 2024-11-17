@@ -16,6 +16,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/download/model/confirm_download_closing_overlay.h"
 #import "ios/chrome/browser/download/model/confirm_download_replacing_overlay.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
@@ -33,6 +34,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/test/fakes/fake_contained_presenter.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/fakes/fake_download_task.h"
@@ -62,8 +64,9 @@ const base::FilePath::CharType kTestSuggestedFileName[] =
 class DownloadManagerCoordinatorTest : public PlatformTest {
  protected:
   DownloadManagerCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    feature_list_.InitAndDisableFeature(kIOSSaveToDrive);
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     presenter_ = [[FakeContainedPresenter alloc] init];
     base_view_controller_ = [[UIViewController alloc] init];
     activity_view_controller_class_ =
@@ -105,8 +108,9 @@ class DownloadManagerCoordinatorTest : public PlatformTest {
     return task;
   }
 
+  base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   FakeContainedPresenter* presenter_;
   UIViewController* base_view_controller_;

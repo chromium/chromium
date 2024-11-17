@@ -254,6 +254,10 @@ def try_builder(
     if settings.project.startswith("chromium"):
         experiments.setdefault("swarming.prpc.cli", 100)
 
+    # TODO(crbug.com/355218109): Remove when the experiment is the default.
+    if settings.project.startswith("chromium"):
+        experiments.setdefault("chromium.use_per_builder_build_dir_name", 100)
+
     bq_dataset_name = "chrome"
     if settings.project.startswith("chromium"):
         bq_dataset_name = "chromium"
@@ -276,7 +280,7 @@ def try_builder(
             predicate = resultdb.test_result_predicate(
                 # Match the "blink_web_tests" target and all of its
                 # flag-specific versions, e.g. "vulkan_swiftshader_blink_web_tests".
-                test_id_regexp = "(ninja://[^/]*blink_web_tests/.+)|(ninja://[^/]*_wpt_tests/.+)",
+                test_id_regexp = "(ninja://[^/]*blink_web_tests/.+)|(ninja://[^/]*_wpt_tests/.+)|(ninja://[^/]*headless_shell_wpt/.+)",
             ),
         ),
     ]

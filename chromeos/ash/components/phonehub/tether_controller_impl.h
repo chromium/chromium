@@ -14,8 +14,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class UserActionRecorder;
 
@@ -178,7 +177,6 @@ class TetherControllerImpl
   base::WeakPtrFactory<TetherControllerImpl> weak_ptr_factory_{this};
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_TETHER_CONTROLLER_IMPL_H_

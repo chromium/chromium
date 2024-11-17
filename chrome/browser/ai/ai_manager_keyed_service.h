@@ -8,16 +8,25 @@
 #include <optional>
 
 #include "base/memory/weak_ptr.h"
+#include "base/supports_user_data.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/ai/ai_assistant.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
+#include "chrome/browser/ai/ai_create_on_device_session_task.h"
+#include "chrome/browser/ai/ai_language_model.h"
+#include "chrome/browser/ai/ai_on_device_model_component_observer.h"
 #include "chrome/browser/ai/ai_summarizer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom-forward.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom-forward.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom-forward.h"
+
+namespace base {
+class SupportsUserData;
+}  // namespace base
 
 // The browser-side implementation of `blink::mojom::AIManager`. There should
 // be one shared AIManagerKeyedService per BrowserContext.
@@ -31,14 +40,35 @@ class AIManagerKeyedService : public KeyedService,
   ~AIManagerKeyedService() override;
 
   void AddReceiver(mojo::PendingReceiver<blink::mojom::AIManager> receiver,
-                   AIContextBoundObjectSet::ReceiverContext host);
-  void CreateAssistantForCloning(
-      base::PassKey<AIAssistant> pass_key,
-      mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
-      blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
-      AIContextBoundObjectSet* context_bound_object_set,
-      const AIAssistant::Context& context,
-      CreateAssistantCallback callback);
+                   base::SupportsUserData& context_user_data);
+  void CreateLanguageModelForCloning(
+      base::PassKey<AILanguageModel> pass_key,
+      blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
+      AIContextBoundObjectSet& context_bound_object_set,
+      const AILanguageModel::Context& context,
+      mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+          client_remote);
+
+  size_t GetReceiversSizeForTesting() { return receivers_.size(); }
+  size_t GetDownloadProgressObserversSizeForTesting() {
+    return download_progress_observers_.size();
+  }
+  void SendDownloadProgressUpdateForTesting(uint64_t downloaded_bytes,
+                                            uint64_t total_bytes);
+
+  void OnTextModelDownloadProgressChange(
+      base::PassKey<AIOnDeviceModelComponentObserver> observer_key,
+      uint64_t downloaded_bytes,
+      uint64_t total_bytes);
+
+  // TODO(crbug.com/372349624): make the max sampling params configured from the
+  // model execution config as well.
+  // Return the max top k value for the LanguageModel API. Note that this value
+  // won't exceed the max top k defined by the underlying on-device model.
+  uint32_t GetLanguageModelMaxTopK();
+
+  // Return the default sampling params for the LanguageModel API.
+  optimization_guide::SamplingParams GetLanguageModelDefaultSamplingParams();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AIManagerKeyedServiceTest,
@@ -47,13 +77,11 @@ class AIManagerKeyedService : public KeyedService,
                            CreateSummarizerWithoutService);
 
   // `blink::mojom::AIManager` implementation.
-  void CanCreateAssistant(CanCreateAssistantCallback callback) override;
-  void CreateAssistant(
-      mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
-      blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
-      const std::optional<std::string>& system_prompt,
-      std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
-      CreateAssistantCallback callback) override;
+  void CanCreateLanguageModel(CanCreateLanguageModelCallback callback) override;
+  void CreateLanguageModel(
+      mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+          client,
+      blink::mojom::AILanguageModelCreateOptionsPtr options) override;
   void GetModelInfo(GetModelInfoCallback callback) override;
   void CreateWriter(
       mojo::PendingRemote<blink::mojom::AIManagerCreateWriterClient> client,
@@ -65,31 +93,50 @@ class AIManagerKeyedService : public KeyedService,
   void CreateRewriter(
       mojo::PendingRemote<blink::mojom::AIManagerCreateRewriterClient> client,
       blink::mojom::AIRewriterCreateOptionsPtr options) override;
+  void AddModelDownloadProgressObserver(
+      mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+          observer_remote) override;
 
   void OnModelPathValidationComplete(const std::string& model_path,
                                      bool is_valid_path);
 
-  void CheckModelPathOverrideCanCreateSession(
-      const std::string& model_path,
-      optimization_guide::ModelBasedCapabilityKey capability);
-  void CanOptimizationGuideKeyedServiceCreateGenericSession(
-      optimization_guide::ModelBasedCapabilityKey capability,
-      CanCreateAssistantCallback callback);
+  void CanCreateSession(optimization_guide::ModelBasedCapabilityKey capability,
+                        CanCreateLanguageModelCallback callback);
 
-  // Creates an `AIAssistant`, either as a new session, or as a clone of
-  // an existing session with its context copied.
-  std::unique_ptr<AIAssistant> CreateAssistantInternal(
-      mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
-      const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
-      AIContextBoundObjectSet* context_bound_object_set,
-      const std::optional<const AIAssistant::Context>& context = std::nullopt);
+  void RemoveReceiver(mojo::ReceiverId receiver_id);
+
+  // Creates an `AILanguageModel`, either as a new session, or as a clone of
+  // an existing session with its context copied. When this method is called
+  // during the session cloning, the optional `context` variable should be set
+  // to the existing `AILanguageModel`'s session.
+  // The `CreateLanguageModelOnDeviceSessionTask` will be returned and the
+  // caller is responsible for keeping it alive if the task is waiting for the
+  // model to be available.
+  std::unique_ptr<CreateLanguageModelOnDeviceSessionTask>
+  CreateLanguageModelInternal(
+      const blink::mojom::AILanguageModelSamplingParamsPtr& sampling_params,
+      AIContextBoundObjectSet& context_bound_object_set,
+      base::OnceCallback<void(std::unique_ptr<AILanguageModel>)> callback,
+      const std::optional<const AILanguageModel::Context>& context =
+          std::nullopt,
+      base::SupportsUserData* context_user_data = nullptr);
+
+  void SendDownloadProgressUpdate(uint64_t downloaded_bytes,
+                                  uint64_t total_bytes);
 
   // A `KeyedService` should never outlive the `BrowserContext`.
   raw_ptr<content::BrowserContext> browser_context_;
 
-  mojo::ReceiverSet<blink::mojom::AIManager,
-                    AIContextBoundObjectSet::ReceiverContext>
+  mojo::ReceiverSet<blink::mojom::AIManager, base::SupportsUserData*>
       receivers_;
+  mojo::RemoteSet<blink::mojom::ModelDownloadProgressObserver>
+      download_progress_observers_;
+  std::unique_ptr<AIOnDeviceModelComponentObserver> component_observer_;
+
+  // Since it requires creating a default session to fetch the default sampling
+  // params, we keep a lazy-initialized instance here as a cache.
+  std::optional<optimization_guide::SamplingParams>
+      default_language_model_sampling_params_;
 
   base::WeakPtrFactory<AIManagerKeyedService> weak_factory_{this};
 };

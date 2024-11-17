@@ -35,7 +35,7 @@ ResponseParser::Result ExtractProto(
 
 JsonResponseParser::JsonResponseParser(
     const proto::OnDeviceModelExecutionOutputConfig& config)
-    : proto_type_(config.proto_type()) {}
+    : proto_type_(config.proto_type()), config_(config) {}
 JsonResponseParser::~JsonResponseParser() = default;
 
 void JsonResponseParser::ParseAsync(const std::string& redacted_output,
@@ -43,6 +43,11 @@ void JsonResponseParser::ParseAsync(const std::string& redacted_output,
   data_decoder::DataDecoder::ParseJsonIsolated(
       redacted_output,
       base::BindOnce(&ExtractProto, proto_type_).Then(std::move(callback)));
+}
+
+bool JsonResponseParser::SuppressParsingIncompleteResponse() const {
+  // Json parser can only parse complete responses.
+  return true;
 }
 
 JsonResponseParserFactory::JsonResponseParserFactory() = default;

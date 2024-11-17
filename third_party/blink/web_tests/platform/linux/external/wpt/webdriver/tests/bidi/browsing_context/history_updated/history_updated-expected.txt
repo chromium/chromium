@@ -1,0 +1,4 @@
+This is a wdspec test.
+[FAIL] test_history_document_open
+  AssertionError
+Harness: the test ran to completion.

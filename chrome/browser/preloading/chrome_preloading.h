@@ -91,12 +91,16 @@ static constexpr content::PreloadingPredictor kMouseHoverOnBookmarkBar(
 
 // When a pointerdown (e.g. mousedown or touchstart) event happens on a
 // new tab page link to an HTTPS origin, we may attempt to preload the link.
+// TODO(crbug.com/376421273): This predictor would be replaced by
+// kMouseHoverOrMouseDownOnNewTabPage.
 static constexpr content::PreloadingPredictor kPointerDownOnNewTabPage(
     109,
     "PointerDownOnNewTabPage");
 
 // When a mousehover event happens on a new tab page link to an HTTPS origin,
 // we may attempt to preload the link.
+// TODO(crbug.com/376421273): This predictor would be replaced by
+// kMouseHoverOrMouseDownOnNewTabPage.
 static constexpr content::PreloadingPredictor kMouseHoverOnNewTabPage(
     110,
     "MouseHoverOnNewTabPage");
@@ -130,6 +134,14 @@ static constexpr content::PreloadingPredictor kTouchOnNewTabPage(
 static constexpr content::PreloadingPredictor kChromeCustomTabs(
     115,
     "ChromeCustomTabs");
+
+// When a mousehover or mousedown event happens on a new tab page linking to an
+// HTTPS origin, we may attempt to preload the link. This predictor, instead of
+// using kPointerDownOnNewTabPage or MouseHoverOnNewTabPage, is for solving
+// the problem in https://crbug.com/376421273.
+static constexpr content::PreloadingPredictor
+    kMouseHoverOrMouseDownOnNewTabPage(116,
+                                       "MouseHoverOrMouseDownOnNewTabPage");
 }  // namespace chrome_preloading_predictor
 // LINT.ThenChange()
 

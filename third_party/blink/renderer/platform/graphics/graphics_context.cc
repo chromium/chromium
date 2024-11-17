@@ -675,7 +675,7 @@ cc::PaintFlags::FilterQuality GraphicsContext::ComputeFilterQuality(
   if (printing_) {
     resampling = kInterpolationNone;
   } else if (image.CurrentFrameIsLazyDecoded()) {
-    resampling = kInterpolationDefault;
+    resampling = GetDefaultInterpolationQuality();
   } else {
     resampling = ComputeInterpolationQuality(
         SkScalarToFloat(src.width()), SkScalarToFloat(src.height()),

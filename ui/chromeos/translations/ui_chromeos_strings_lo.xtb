@@ -19,6 +19,7 @@
 <translation id="115443833402798225">ຮາງກຸລ ອັນມາແຕ</translation>
 <translation id="1155759005174418845">ພາສາຄາ​ຕາ​ລັນ</translation>
 <translation id="1168100932582989117">ເຊີບເວີຊື່ Google</translation>
+<translation id="1170788066030116158">ວັນທີຖ່າຍ</translation>
 <translation id="1172970565351728681">ເວລາຍັງເຫຼືອປະມານ <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">ໃສ່ຊື່ໃໝ່</translation>
 <translation id="1173916544412572294">ເຄືອຂ່າຍທີ <ph name="NETWORK_INDEX" /> ຈາກທັງໝົດ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ສັນຍານຄວາມແຮງ <ph name="SIGNAL_STRENGTH" />%, ແບັດເຕີຣີໂທລະສັບ <ph name="BATTERY_STATUS" />%, ລາຍລະອຽດ</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">ປະຕິເສດໃບຢັ້ງຢືນການຮັບຮອງທາງໄກແລ້ວ</translation>
 <translation id="4394214039309501350">ລິ້ງພາຍນອກ</translation>
 <translation id="4394980935660306080">ຕົ້ນອາທິດນີ້</translation>
+<translation id="4397435965699247285">OneDrive ບໍ່ມີໃຫ້ໃນລະຫວ່າງອອບລາຍ</translation>
 <translation id="4398096759193130964">ກູ້ຄືນລາຍການ ຫຼື ລາກພວກມັນໄປໃສ່ໂຟນເດີໃໝ່ທີ່ຢູ່ນອກຖັງຂີ້ເຫຍື້ອ</translation>
 <translation id="4401287888955153199">ແຕກໄຟລ໌ທັງໝົດ</translation>
 <translation id="4410695710508688828">ແຕກໄຟລ໌ບໍ່ສຳເລັດ. <ph name="ERROR_MESSAGE" /></translation>

@@ -73,7 +73,6 @@ import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
 import org.chromium.content_public.browser.StylusWritingImeCallback;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.mojo.bindings.Router;
 import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.mojo.system.impl.CoreImpl;
@@ -139,7 +138,6 @@ public class ImeAdapterImpl
 
     private final WebContentsImpl mWebContents;
     private ViewAndroidDelegate mViewDelegate;
-    private WindowAndroid mWindowAndroid;
 
     // This holds the information necessary for constructing CursorAnchorInfo, and notifies to
     // InputMethodManager on appropriate timing, depending on how IME requested the information
@@ -213,12 +211,11 @@ public class ImeAdapterImpl
             implements org.chromium.blink.mojom.ImeRenderWidgetHost {
         private final WeakReference<ImeAdapterImpl> mImeAdapter;
         private final MessagePipeHandle mHandle;
-        private final Router mRouter;
 
         ImeRenderWidgetHostImpl(ImeAdapterImpl imeAdapter, MessagePipeHandle handle) {
             mImeAdapter = new WeakReference<>(imeAdapter);
             mHandle = handle;
-            mRouter = org.chromium.blink.mojom.ImeRenderWidgetHost.MANAGER.bind(this, mHandle);
+            org.chromium.blink.mojom.ImeRenderWidgetHost.MANAGER.bind(this, mHandle);
         }
 
         @Override
@@ -375,6 +372,12 @@ public class ImeAdapterImpl
         return isTextInputType(mTextInputType);
     }
 
+    /** Whether the focused node is editable or not. */
+    @Override
+    public boolean focusedNodeEditable() {
+        return mTextInputType != TextInputType.NONE;
+    }
+
     private boolean isHardwareKeyboardAttached() {
         return mCurrentConfig.keyboard != Configuration.KEYBOARD_NOKEYS;
     }
@@ -382,6 +385,11 @@ public class ImeAdapterImpl
     @Override
     public void addEventObserver(ImeEventObserver eventObserver) {
         mEventObservers.add(eventObserver);
+    }
+
+    @Override
+    public void removeEventObserver(ImeEventObserver imeEventObserver) {
+        mEventObservers.remove(imeEventObserver);
     }
 
     private void createInputConnectionFactory() {
@@ -401,11 +409,6 @@ public class ImeAdapterImpl
     // should still be allowed with a physical keyboard so mInputConnection will be non-null.
     private boolean focusedNodeAllowsSoftKeyboard() {
         return mTextInputType != TextInputType.NONE && mTextInputMode != WebTextInputMode.NONE;
-    }
-
-    // Whether the focused node is editable or not.
-    private boolean focusedNodeEditable() {
-        return mTextInputType != TextInputType.NONE;
     }
 
     private View getContainerView() {

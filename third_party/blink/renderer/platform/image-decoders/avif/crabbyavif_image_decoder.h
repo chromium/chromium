@@ -28,6 +28,7 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   CrabbyAVIFImageDecoder(AlphaOption,
                          HighBitDepthDecodingOption,
                          ColorBehavior,
+                         cc::AuxImage,
                          wtf_size_t max_decoded_bytes,
                          AnimationOption);
   CrabbyAVIFImageDecoder(const CrabbyAVIFImageDecoder&) = delete;
@@ -128,6 +129,10 @@ class PLATFORM_EXPORT CrabbyAVIFImageDecoder final : public ImageDecoder {
   // Applies color profile correction to the rows [from_row, to_row) of
   // |buffer|, if desired.
   void ColorCorrectImage(int from_row, int to_row, ImageFrame* buffer);
+
+  // Returns decoder_->image or decoder_->image->gainMap->image depending on
+  // aux_image_.
+  crabbyavif::avifImage* GetDecoderImage() const;
 
   bool have_parsed_current_data_ = false;
   // The image width and height (before cropping, if any) from the container.

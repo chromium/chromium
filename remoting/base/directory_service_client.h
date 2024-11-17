@@ -28,7 +28,9 @@ namespace v1 {
 
 class DeleteHostResponse;
 class GetHostListResponse;
+class HeartbeatResponse;
 class RegisterHostResponse;
+class SendHeartbeatResponse;
 
 }  // namespace v1
 }  // namespace apis
@@ -45,9 +47,15 @@ class DirectoryServiceClient {
   using GetHostListCallback =
       base::OnceCallback<void(const ProtobufHttpStatus&,
                               std::unique_ptr<apis::v1::GetHostListResponse>)>;
+  using LegacyHeartbeatCallback =
+      base::OnceCallback<void(const ProtobufHttpStatus&,
+                              std::unique_ptr<apis::v1::HeartbeatResponse>)>;
   using RegisterHostCallback =
       base::OnceCallback<void(const ProtobufHttpStatus&,
                               std::unique_ptr<apis::v1::RegisterHostResponse>)>;
+  using SendHeartbeatCallback = base::OnceCallback<void(
+      const ProtobufHttpStatus&,
+      std::unique_ptr<apis::v1::SendHeartbeatResponse>)>;
 
   DirectoryServiceClient(
       OAuthTokenGetter* token_getter,
@@ -59,11 +67,21 @@ class DirectoryServiceClient {
 
   void DeleteHost(const std::string& host_id, DeleteHostCallback callback);
   void GetHostList(GetHostListCallback callback);
+  void LegacyHeartbeat(const std::string& directory_id,
+                       std::optional<std::string> signaling_id,
+                       std::optional<std::string> offline_reason,
+                       bool is_initial_heartbeat,
+                       bool set_fqdn,
+                       const std::string& os_name,
+                       const std::string& os_version,
+                       LegacyHeartbeatCallback callback);
   void RegisterHost(const std::string& host_id,
                     const std::string& host_name,
                     const std::string& public_key,
                     const std::string& host_client_id,
                     RegisterHostCallback callback);
+  void SendHeartbeat(const std::string& directory_id,
+                     SendHeartbeatCallback callback);
 
   void CancelPendingRequests();
 

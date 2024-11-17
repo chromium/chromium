@@ -28,7 +28,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_mediator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_mediator.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -50,18 +50,15 @@ class LegacyAccountsTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  public:
   LegacyAccountsTableViewControllerTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
@@ -72,11 +69,11 @@ class LegacyAccountsTableViewControllerTest
     [dispatcher startDispatchingToTarget:mock_application_handler
                              forProtocol:@protocol(ApplicationCommands)];
 
-    AccountsMediator* mediator =
-        [[AccountsMediator alloc] initWithSyncService:test_sync_service()
-                                accountManagerService:account_manager_service()
-                                          authService:authentication_service()
-                                      identityManager:identity_manager()];
+    ManageAccountsMediator* mediator = [[ManageAccountsMediator alloc]
+          initWithSyncService:test_sync_service()
+        accountManagerService:account_manager_service()
+                  authService:authentication_service()
+              identityManager:identity_manager()];
 
     LegacyAccountsTableViewController* controller =
         [[LegacyAccountsTableViewController alloc]
@@ -101,12 +98,11 @@ class LegacyAccountsTableViewControllerTest
 
   // Identity Services
   signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForProfile(browser_state_.get());
+    return IdentityManagerFactory::GetForProfile(profile_.get());
   }
 
   AuthenticationService* authentication_service() {
-    return AuthenticationServiceFactory::GetForBrowserState(
-        browser_state_.get());
+    return AuthenticationServiceFactory::GetForProfile(profile_.get());
   }
 
   FakeSystemIdentityManager* fake_system_identity_manager() {
@@ -116,23 +112,22 @@ class LegacyAccountsTableViewControllerTest
 
   syncer::TestSyncService* test_sync_service() {
     return static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForBrowserState(browser_state_.get()));
+        SyncServiceFactory::GetForProfile(profile_.get()));
   }
 
   ChromeAccountManagerService* account_manager_service() {
-    return ChromeAccountManagerServiceFactory::GetForBrowserState(
-        browser_state_.get());
+    return ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   }
 
  private:
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::MainThreadType::IO};
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
-  AccountsMediator* mediator_;
+  ManageAccountsMediator* mediator_;
 };
 
 // Tests that a valid identity is added to the model.

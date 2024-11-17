@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
@@ -90,10 +91,8 @@ class ProfileInfoHandlerTest : public testing::Test {
     EXPECT_TRUE(net::DataURL::Parse(GURL(*icon_url), &mime, &charset, &data));
 
     EXPECT_EQ("image/png", mime);
-    SkBitmap bitmap;
-    EXPECT_TRUE(gfx::PNGCodec::Decode(
-        reinterpret_cast<const unsigned char*>(data.data()), data.size(),
-        &bitmap));
+    SkBitmap bitmap = gfx::PNGCodec::Decode(base::as_byte_span(data));
+    EXPECT_FALSE(bitmap.isNull());
 #endif
   }
 

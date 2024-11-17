@@ -42,7 +42,7 @@ class BASE_EXPORT WorkQueueSets {
  public:
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     virtual void WorkQueueSetBecameEmpty(size_t set_index) = 0;
 

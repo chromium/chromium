@@ -23,7 +23,8 @@ class DOMTaskContinuation final : public GarbageCollected<DOMTaskContinuation> {
  public:
   DOMTaskContinuation(ScriptPromiseResolver<IDLUndefined>*,
                       AbortSignal*,
-                      DOMScheduler::DOMTaskQueue*);
+                      DOMScheduler::DOMTaskQueue*,
+                      uint64_t task_id_for_tracing);
 
   virtual void Trace(Visitor*) const;
 
@@ -43,6 +44,7 @@ class DOMTaskContinuation final : public GarbageCollected<DOMTaskContinuation> {
   // the associated WebSchedulingTaskQueue stays alive until after this task
   // runs, which is necessary to ensure throttling works correctly.
   Member<DOMScheduler::DOMTaskQueue> task_queue_;
+  const uint64_t task_id_for_tracing_;
 };
 
 }  // namespace blink

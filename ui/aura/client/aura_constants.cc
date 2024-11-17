@@ -5,6 +5,7 @@
 #include "ui/aura/client/aura_constants.h"
 
 #include "ui/base/class_property.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/types/display_constants.h"
@@ -23,7 +24,7 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, gfx::Rect*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, gfx::Size*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, gfx::SizeF*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, std::string*)
-DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, ui::WindowShowState)
+DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, ui::mojom::WindowShowState)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, void*)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, SkColor)
 DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(AURA_EXPORT, int32_t)
@@ -70,15 +71,15 @@ DEFINE_UI_CLASS_PROPERTY_KEY(gfx::NativeViewAccessible,
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Size, kPreferredSize, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(int, kResizeBehaviorKey, kResizeBehaviorCanResize)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(gfx::Rect, kRestoreBoundsKey, nullptr)
-DEFINE_UI_CLASS_PROPERTY_KEY(ui::WindowShowState,
+DEFINE_UI_CLASS_PROPERTY_KEY(ui::mojom::WindowShowState,
                              kShowStateKey,
-                             ui::SHOW_STATE_DEFAULT)
+                             ui::mojom::WindowShowState::kDefault)
 DEFINE_UI_CLASS_PROPERTY_KEY(int64_t,
                              kFullscreenTargetDisplayIdKey,
                              display::kInvalidDisplayId)
-DEFINE_UI_CLASS_PROPERTY_KEY(ui::WindowShowState,
+DEFINE_UI_CLASS_PROPERTY_KEY(ui::mojom::WindowShowState,
                              kRestoreShowStateKey,
-                             ui::SHOW_STATE_NORMAL)
+                             ui::mojom::WindowShowState::kNormal)
 DEFINE_UI_CLASS_PROPERTY_KEY(float, kRasterScale, 1.0f)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsRestoringKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSkipImeProcessing, false)

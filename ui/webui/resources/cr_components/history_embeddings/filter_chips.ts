@@ -5,7 +5,7 @@
 import '//resources/cr_elements/cr_chip/cr_chip.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/md_select.css.js';
 
 import {I18nMixin} from '//resources/cr_elements/i18n_mixin.js';

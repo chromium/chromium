@@ -18,6 +18,7 @@
 #include "ui/base/ime/input_method.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -103,8 +104,7 @@ TreeView::TreeView()
   text_offset_ = folder_icon_.Size().width() + kImagePadding + kImagePadding +
                  kArrowRegionSize;
 
-  GetViewAccessibility().SetRole(ax::mojom::Role::kTree);
-  GetViewAccessibility().SetIsVertical(true);
+  SetInitialAccessibilityAttributes();
 }
 
 TreeView::~TreeView() {
@@ -400,6 +400,16 @@ void TreeView::SetDrawingProvider(
   drawing_provider_ = std::move(provider);
 }
 
+void TreeView::SetInitialAccessibilityAttributes() {
+  GetViewAccessibility().SetRole(ax::mojom::Role::kTree);
+  GetViewAccessibility().SetIsVertical(true);
+  GetViewAccessibility().SetReadOnly(true);
+  GetViewAccessibility().SetDefaultActionVerb(
+      ax::mojom::DefaultActionVerb::kActivate);
+  GetViewAccessibility().SetName(
+      std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+}
+
 void TreeView::Layout(PassKey) {
   int width = preferred_size_.width();
   int height = preferred_size_.height();
@@ -439,10 +449,10 @@ void TreeView::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void TreeView::ShowContextMenu(const gfx::Point& p,
-                               ui::MenuSourceType source_type) {
+                               ui::mojom::MenuSourceType source_type) {
   if (!model_)
     return;
-  if (source_type == ui::MENU_SOURCE_MOUSE) {
+  if (source_type == ui::mojom::MenuSourceType::kMouse) {
     // Only invoke View's implementation (which notifies the
     // ContextMenuController) if over a node.
     gfx::Point local_point(p);
@@ -451,14 +461,6 @@ void TreeView::ShowContextMenu(const gfx::Point& p,
       return;
   }
   View::ShowContextMenu(p, source_type);
-}
-
-void TreeView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // ID, class name and relative bounds are added by ViewAccessibility for all
-  // non-virtual views, so we don't need to add them here.
-  node_data->SetRestriction(ax::mojom::Restriction::kReadOnly);
-  node_data->SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kActivate);
-  node_data->SetNameExplicitlyEmpty();
 }
 
 bool TreeView::HandleAccessibleAction(const ui::AXActionData& action_data) {
@@ -513,7 +515,7 @@ bool TreeView::HandleAccessibleAction(const ui::AXActionData& action_data) {
       if (!HasFocus())
         RequestFocus();
       ShowContextMenu(GetBoundsInScreen().CenterPoint(),
-                      ui::MENU_SOURCE_KEYBOARD);
+                      ui::mojom::MenuSourceType::kKeyboard);
       break;
 
     default:

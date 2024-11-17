@@ -54,7 +54,7 @@ Metrics which are easy to interpret are often easier to evaluate. For example, F
 
 ## Simple
 
-A metric is simple if the way its computed is easy to understand. There’s a strong correlation between being simple and being interpretable, but there are counter examples, such as FMP being interpretable, but not simple.
+A metric is simple if the way it is computed is easy to understand. There’s a strong correlation between being simple and being interpretable, but there are counter examples, such as FMP being interpretable, but not simple.
 
 A simple metric is less likely to have been overfit during the metric development / evaluation phase, and has other obvious advantages (easier to maintain, often faster to execute, less likely to contain bugs).
 

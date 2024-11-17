@@ -5,9 +5,19 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_state.h"
 
 #include "base/ranges/algorithm.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_observer.h"
 
 namespace blink {
+
+namespace {
+
+static constexpr char kNotSupportedErrorInfo[] =
+    "getAvailability() isn't supported at the moment. It can be due to "
+    "a permanent or temporary system limitation. It is recommended to "
+    "try to blindly start a presentation in that case.";
+
+}  // namespace
 
 PresentationAvailabilityState::PresentationAvailabilityState(
     mojom::blink::PresentationService* presentation_service)
@@ -17,11 +27,12 @@ PresentationAvailabilityState::~PresentationAvailabilityState() = default;
 
 void PresentationAvailabilityState::RequestAvailability(
     const Vector<KURL>& urls,
-    PresentationAvailabilityCallbacks* callback) {
+    ScriptPromiseResolver<PresentationAvailability>* resolver) {
   auto screen_availability = GetScreenAvailability(urls);
   // Reject Promise if screen availability is unsupported for all URLs.
   if (screen_availability == mojom::blink::ScreenAvailability::DISABLED) {
-    callback->RejectAvailabilityNotSupported();
+    resolver->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                     kNotSupportedErrorInfo);
     return;
   }
 
@@ -32,14 +43,16 @@ void PresentationAvailabilityState::RequestAvailability(
   }
 
   if (screen_availability != mojom::blink::ScreenAvailability::UNKNOWN) {
-    callback->Resolve(screen_availability ==
-                      mojom::blink::ScreenAvailability::AVAILABLE);
+    resolver->Resolve(PresentationAvailability::Take(
+        resolver->GetExecutionContext(), urls,
+        screen_availability == mojom::blink::ScreenAvailability::AVAILABLE));
   } else {
-    listener->availability_callbacks.push_back(callback);
+    listener->availability_resolvers.push_back(resolver);
   }
 
-  for (const auto& availability_url : urls)
+  for (const auto& availability_url : urls) {
     StartListeningToURL(availability_url);
+  }
 }
 
 void PresentationAvailabilityState::AddObserver(
@@ -51,11 +64,14 @@ void PresentationAvailabilityState::AddObserver(
     availability_listeners_.emplace_back(listener);
   }
 
-  if (listener->availability_observers.Contains(observer))
+  if (listener->availability_observers.Contains(observer)) {
     return;
+  }
+
   listener->availability_observers.push_back(observer);
-  for (const auto& availability_url : urls)
+  for (const auto& availability_url : urls) {
     StartListeningToURL(availability_url);
+  }
 }
 
 void PresentationAvailabilityState::RemoveObserver(
@@ -71,8 +87,9 @@ void PresentationAvailabilityState::RemoveObserver(
   if (slot != kNotFound) {
     listener->availability_observers.EraseAt(slot);
   }
-  for (const auto& availability_url : urls)
+  for (const auto& availability_url : urls) {
     MaybeStopListeningToURL(availability_url);
+  }
 
   TryRemoveAvailabilityListener(listener);
 }
@@ -81,21 +98,25 @@ void PresentationAvailabilityState::UpdateAvailability(
     const KURL& url,
     mojom::blink::ScreenAvailability availability) {
   auto* listening_status = GetListeningStatus(url);
-  if (!listening_status)
+  if (!listening_status) {
     return;
+  }
 
-  if (listening_status->listening_state == ListeningState::kWaiting)
+  if (listening_status->listening_state == ListeningState::kWaiting) {
     listening_status->listening_state = ListeningState::kActive;
+  }
 
-  if (listening_status->last_known_availability == availability)
+  if (listening_status->last_known_availability == availability) {
     return;
+  }
 
   listening_status->last_known_availability = availability;
 
   HeapVector<Member<AvailabilityListener>> listeners = availability_listeners_;
   for (auto& listener : listeners) {
-    if (!listener->urls.Contains<KURL>(url))
+    if (!listener->urls.Contains<KURL>(url)) {
       continue;
+    }
 
     auto screen_availability = GetScreenAvailability(listener->urls);
     DCHECK(screen_availability != mojom::blink::ScreenAvailability::UNKNOWN);
@@ -106,19 +127,23 @@ void PresentationAvailabilityState::UpdateAvailability(
     }
 
     if (screen_availability == mojom::blink::ScreenAvailability::DISABLED) {
-      for (auto& callback_ptr : listener->availability_callbacks) {
-        callback_ptr->RejectAvailabilityNotSupported();
+      for (auto& resolver_ptr : listener->availability_resolvers) {
+        resolver_ptr->RejectWithDOMException(
+            DOMExceptionCode::kNotSupportedError, kNotSupportedErrorInfo);
       }
     } else {
-      for (auto& callback_ptr : listener->availability_callbacks) {
-        callback_ptr->Resolve(screen_availability ==
-                              mojom::blink::ScreenAvailability::AVAILABLE);
+      for (auto& resolver_ptr : listener->availability_resolvers) {
+        resolver_ptr->Resolve(PresentationAvailability::Take(
+            resolver_ptr->GetExecutionContext(), listener->urls,
+            screen_availability ==
+                mojom::blink::ScreenAvailability::AVAILABLE));
       }
     }
-    listener->availability_callbacks.clear();
+    listener->availability_resolvers.clear();
 
-    for (const auto& availability_url : listener->urls)
+    for (const auto& availability_url : listener->urls) {
       MaybeStopListeningToURL(availability_url);
+    }
 
     TryRemoveAvailabilityListener(listener);
   }
@@ -136,8 +161,9 @@ void PresentationAvailabilityState::StartListeningToURL(const KURL& url) {
   }
 
   // Already listening.
-  if (listening_status->listening_state != ListeningState::kInactive)
+  if (listening_status->listening_state != ListeningState::kInactive) {
     return;
+  }
 
   listening_status->listening_state = ListeningState::kWaiting;
   presentation_service_->ListenForScreenAvailability(url);
@@ -145,11 +171,12 @@ void PresentationAvailabilityState::StartListeningToURL(const KURL& url) {
 
 void PresentationAvailabilityState::MaybeStopListeningToURL(const KURL& url) {
   for (const auto& listener : availability_listeners_) {
-    if (!listener->urls.Contains(url))
+    if (!listener->urls.Contains(url)) {
       continue;
+    }
 
     // URL is still observed by some availability object.
-    if (!listener->availability_callbacks.empty() ||
+    if (!listener->availability_resolvers.empty() ||
         !listener->availability_observers.empty()) {
       return;
     }
@@ -161,8 +188,9 @@ void PresentationAvailabilityState::MaybeStopListeningToURL(const KURL& url) {
     return;
   }
 
-  if (listening_status->listening_state == ListeningState::kInactive)
+  if (listening_status->listening_state == ListeningState::kInactive) {
     return;
+  }
 
   listening_status->listening_state = ListeningState::kInactive;
   presentation_service_->StopListeningForScreenAvailability(url);
@@ -197,13 +225,15 @@ PresentationAvailabilityState::GetScreenAvailability(
     }
   }
 
-  if (has_disabled)
+  if (has_disabled) {
     return mojom::blink::ScreenAvailability::DISABLED;
-  if (has_source_not_supported)
+  } else if (has_source_not_supported) {
     return mojom::blink::ScreenAvailability::SOURCE_NOT_SUPPORTED;
-  if (has_unavailable)
+  } else if (has_unavailable) {
     return mojom::blink::ScreenAvailability::UNAVAILABLE;
-  return mojom::blink::ScreenAvailability::UNKNOWN;
+  } else {
+    return mojom::blink::ScreenAvailability::UNKNOWN;
+  }
 }
 
 PresentationAvailabilityState::AvailabilityListener*
@@ -217,7 +247,7 @@ PresentationAvailabilityState::GetAvailabilityListener(
 void PresentationAvailabilityState::TryRemoveAvailabilityListener(
     AvailabilityListener* listener) {
   // URL is still observed by some availability object.
-  if (!listener->availability_callbacks.empty() ||
+  if (!listener->availability_resolvers.empty() ||
       !listener->availability_observers.empty()) {
     return;
   }
@@ -245,7 +275,7 @@ PresentationAvailabilityState::AvailabilityListener::~AvailabilityListener() =
 
 void PresentationAvailabilityState::AvailabilityListener::Trace(
     blink::Visitor* visitor) const {
-  visitor->Trace(availability_callbacks);
+  visitor->Trace(availability_resolvers);
   visitor->Trace(availability_observers);
 }
 

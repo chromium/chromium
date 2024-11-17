@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/aura/client/aura_constants.h"
@@ -33,6 +32,7 @@
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/ime/input_method.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/owned_window_anchor.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_types.h"
@@ -115,14 +115,6 @@ class DesktopNativeWidgetTopLevelHandler : public aura::WindowObserver {
         full_screen ? Widget::InitParams::TYPE_WINDOW
         : is_menu   ? Widget::InitParams::TYPE_MENU
                     : Widget::InitParams::TYPE_POPUP);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Evaluate if the window needs shadow.
-    init_params.shadow_type =
-        (wm::GetShadowElevationConvertDefault(child_window) > 0)
-            ? Widget::InitParams::ShadowType::kDrop
-            : Widget::InitParams::ShadowType::kNone;
-#endif
 
 #if BUILDFLAG(IS_WIN)
     // For menus, on Windows versions that support drop shadow remove
@@ -244,7 +236,7 @@ class DesktopNativeWidgetAuraWindowParentingClient
     // APIs provide the required functionality.
 #if !BUILDFLAG(IS_FUCHSIA)
     bool is_fullscreen = window->GetProperty(aura::client::kShowStateKey) ==
-                         ui::SHOW_STATE_FULLSCREEN;
+                         ui::mojom::WindowShowState::kFullscreen;
     bool is_menu = window->GetType() == aura::client::WINDOW_TYPE_MENU;
 
     if (is_fullscreen || is_menu) {
@@ -423,11 +415,6 @@ void DesktopNativeWidgetAura::NotifyAccessibilityEvent(
   if (!GetWidget() || !GetWidget()->GetRootView())
     return;
   GetWidget()->GetRootView()->NotifyAccessibilityEvent(event_type, true);
-}
-
-views::corewm::TooltipController*
-DesktopNativeWidgetAura::tooltip_controller() {
-  return tooltip_controller_.get();
 }
 
 void DesktopNativeWidgetAura::HandleActivationChanged(bool active) {
@@ -810,7 +797,7 @@ void DesktopNativeWidgetAura::CenterWindow(const gfx::Size& size) {
 
 void DesktopNativeWidgetAura::GetWindowPlacement(
     gfx::Rect* bounds,
-    ui::WindowShowState* maximized) const {
+    ui::mojom::WindowShowState* maximized) const {
   if (desktop_window_tree_host_)
     desktop_window_tree_host_->GetWindowPlacement(bounds, maximized);
 }
@@ -829,14 +816,6 @@ void DesktopNativeWidgetAura::SetWindowIcons(const gfx::ImageSkia& window_icon,
   if (content_window_)
     NativeWidgetAura::AssignIconToAuraWindow(content_window_, window_icon,
                                              app_icon);
-}
-
-const gfx::ImageSkia* DesktopNativeWidgetAura::GetWindowIcon() {
-  return nullptr;
-}
-
-const gfx::ImageSkia* DesktopNativeWidgetAura::GetWindowAppIcon() {
-  return nullptr;
 }
 
 void DesktopNativeWidgetAura::InitModalType(ui::mojom::ModalType modal_type) {
@@ -917,7 +896,7 @@ void DesktopNativeWidgetAura::CloseNow() {
     desktop_window_tree_host_->CloseNow();
 }
 
-void DesktopNativeWidgetAura::Show(ui::WindowShowState show_state,
+void DesktopNativeWidgetAura::Show(ui::mojom::WindowShowState show_state,
                                    const gfx::Rect& restore_bounds) {
   if (!desktop_window_tree_host_)
     return;

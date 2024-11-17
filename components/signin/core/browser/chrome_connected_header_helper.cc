@@ -14,8 +14,10 @@
 #include "build/chromeos_buildflags.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/core/browser/cookie_settings_util.h"
+#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "google_apis/gaia/gaia_urls.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
@@ -33,6 +35,7 @@ const char kConsistencyEnabledByDefaultAttrName[] =
 const char kContinueUrlAttrName[] = "continue_url";
 const char kEmailAttrName[] = "email";
 const char kEnableAccountConsistencyAttrName[] = "enable_account_consistency";
+const char kGaiaOriginAttrName[] = "gaia_origin";
 const char kGaiaIdAttrName[] = "id";
 const char kIsSameTabAttrName[] = "is_same_tab";
 const char kIsSamlAttrName[] = "is_saml";
@@ -195,6 +198,13 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
   if (!source.empty()) {
     parts.push_back(
         base::StringPrintf("%s=%s", kSourceAttrName, source.c_str()));
+  }
+
+  if (base::FeatureList::IsEnabled(kNonDefaultGaiaOriginCheck) &&
+      !GaiaUrls::GetInstance()->IsUsingDefaultGaiaOrigin()) {
+    parts.push_back(
+        base::StringPrintf("%s=%s", kGaiaOriginAttrName,
+                           GaiaUrls::GetInstance()->gaia_origin().host()));
   }
 // If we are on mobile or desktop, an empty |account_id| corresponds to the user
 // not signed into Sync. Do not enforce account consistency, unless Mice is

@@ -14,26 +14,46 @@
   [super viewDidLoad];
   self.view.backgroundColor = UIColor.systemBackgroundColor;
 
-  UIButton* copyButton = [UIButton
+  UIButton* copyRequestURL = [UIButton
       systemButtonWithImage:DefaultSymbolWithPointSize(kCopyActionSymbol,
                                                        kSymbolActionPointSize)
                      target:self
-                     action:@selector(didTapCopyButton)];
-  copyButton.translatesAutoresizingMaskIntoConstraints = NO;
-  [copyButton setTitle:@"Copy" forState:UIControlStateNormal];
+                     action:@selector(didTapCopyRequestURLButton)];
+  copyRequestURL.translatesAutoresizingMaskIntoConstraints = NO;
+  [copyRequestURL setTitle:@"Copy Request URL" forState:UIControlStateNormal];
 
-  UILabel* requestLabel = [[UILabel alloc] init];
-  requestLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  requestLabel.text = [self prettifyJsonString:self.event.requestBody];
-  requestLabel.numberOfLines = 0;
+  UIButton* copyResponseBodyButton = [UIButton
+      systemButtonWithImage:DefaultSymbolWithPointSize(kCopyActionSymbol,
+                                                       kSymbolActionPointSize)
+                     target:self
+                     action:@selector(didTapCopyResponseBodyButton)];
+  copyResponseBodyButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [copyResponseBodyButton setTitle:@"Copy Response"
+                          forState:UIControlStateNormal];
+
+  UIStackView* copyStackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ copyRequestURL, copyResponseBodyButton ]];
+  copyStackView.distribution = UIStackViewDistributionFillEqually;
+  copyStackView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  UILabel* requestURLLabel = [[UILabel alloc] init];
+  requestURLLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  requestURLLabel.text = self.event.requestURL;
+  requestURLLabel.numberOfLines = 0;
+
+  UILabel* requestBodyLabel = [[UILabel alloc] init];
+  requestBodyLabel.translatesAutoresizingMaskIntoConstraints = NO;
+  requestBodyLabel.text = [self prettifyJsonString:self.event.requestBody];
+  requestBodyLabel.numberOfLines = 0;
 
   UILabel* responseLabel = [[UILabel alloc] init];
   responseLabel.translatesAutoresizingMaskIntoConstraints = NO;
   responseLabel.text = [self prettifyJsonString:self.event.responseBody];
   responseLabel.numberOfLines = 0;
 
-  UIStackView* stackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ copyButton, requestLabel, responseLabel ]];
+  UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+    copyStackView, requestURLLabel, requestBodyLabel, responseLabel
+  ]];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisVertical;
 
@@ -51,9 +71,13 @@
   ]];
 }
 
-- (void)didTapCopyButton {
+- (void)didTapCopyResponseBodyButton {
   UIPasteboard.generalPasteboard.string =
       [self prettifyJsonString:self.event.responseBody];
+}
+
+- (void)didTapCopyRequestURLButton {
+  UIPasteboard.generalPasteboard.string = self.event.requestURL;
 }
 
 - (NSString*)prettifyJsonString:(NSString*)jsonString {

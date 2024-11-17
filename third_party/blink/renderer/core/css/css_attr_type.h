@@ -12,46 +12,32 @@
 
 namespace blink {
 
-struct CSSAttrType {
+class CORE_EXPORT CSSAttrType {
   STACK_ALLOCATED();
 
  public:
-  static CSSAttrType Parse(StringView attr_type);
+  static std::optional<CSSAttrType> Consume(CSSParserTokenStream&);
+  const CSSValue* Parse(StringView, const CSSParserContext&) const;
+  static CSSAttrType GetDefaultValue();
+  bool IsSyntax() const { return syntax_.has_value(); }
+  bool IsString() const { return is_string_; }
+  bool IsDimensionUnit() const { return dimension_unit_.has_value(); }
 
-  enum class Category {
-    kUnknown,
-    kString,
-    kIdent,
-    kColor,
-    kNumber,
-    kPercentage,
-    kLength,
-    kAngle,
-    kTime,
-    kFrequency,
-    kFlex,
-    kDimensionUnit
-  };
+ private:
+  CSSAttrType()
+      : syntax_(std::nullopt),
+        is_string_(true),
+        dimension_unit_(std::nullopt) {}
 
-  CSSAttrType() : category(Category::kUnknown) {}
-
-  explicit CSSAttrType(Category cat) : category(cat) {
-    DCHECK_NE(cat, Category::kUnknown);
-    DCHECK_NE(cat, Category::kDimensionUnit);
-  }
+  explicit CSSAttrType(CSSSyntaxDefinition syntax)
+      : syntax_(syntax), is_string_(false), dimension_unit_(std::nullopt) {}
 
   explicit CSSAttrType(CSSPrimitiveValue::UnitType unit)
-      : category(Category::kDimensionUnit), dimension_unit(unit) {
-    DCHECK_NE(unit, CSSPrimitiveValue::UnitType::kUnknown);
-  }
+      : syntax_(std::nullopt), is_string_(false), dimension_unit_(unit) {}
 
-  bool IsValid() const { return category != Category::kUnknown; }
-
-  std::optional<CSSSyntaxDefinition> ConvertToCSSSyntaxDefinition() const;
-
-  Category category;
-  // Used when |category| is |kDimensionUnit|
-  CSSPrimitiveValue::UnitType dimension_unit;
+  std::optional<CSSSyntaxDefinition> syntax_;
+  bool is_string_;
+  std::optional<CSSPrimitiveValue::UnitType> dimension_unit_;
 };
 
 }  // namespace blink

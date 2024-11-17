@@ -20,24 +20,24 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/label.h"
 
-class TestCertificateSelector : public chrome::CertificateSelector {
+class TestCertificateSelector : public CertificateSelector {
  public:
   TestCertificateSelector(net::ClientCertIdentityList identities,
                           content::WebContents* web_contents)
-      : chrome::CertificateSelector(std::move(identities), web_contents) {
+      : CertificateSelector(std::move(identities), web_contents) {
     std::unique_ptr<views::Label> label =
         std::make_unique<views::Label>(l10n_util::GetStringFUTF16(
             IDS_CLIENT_CERT_DIALOG_TEXT, u"example.com"));
     label->SetMultiLine(true);
     label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    label->SizeToFit(chrome::CertificateSelector::kTableViewWidth);
+    label->SizeToFit(CertificateSelector::kTableViewWidth);
     InitWithText(std::move(label));
   }
 
   TestCertificateSelector(const TestCertificateSelector&) = delete;
   TestCertificateSelector& operator=(const TestCertificateSelector&) = delete;
 
-  // chrome::CertificateSelector:
+  // CertificateSelector:
   void AcceptCertificate(
       std::unique_ptr<net::ClientCertIdentity> identity) override {}
 };

@@ -8,6 +8,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "components/live_caption/caption_bubble_context.h"
@@ -42,11 +43,16 @@ LiveCaptionController::LiveCaptionController(
     PrefService* profile_prefs,
     PrefService* global_prefs,
     const std::string& application_locale,
-    content::BrowserContext* browser_context)
+    content::BrowserContext* browser_context,
+    base::RepeatingCallback<void()> create_ui_callback_for_testing)
     : profile_prefs_(profile_prefs),
       global_prefs_(global_prefs),
       browser_context_(browser_context),
       application_locale_(application_locale) {
+  if (create_ui_callback_for_testing) {
+    create_ui_callback_for_testing_ = std::move(create_ui_callback_for_testing);
+  }
+
   base::UmaHistogramBoolean("Accessibility.LiveCaption.FeatureEnabled2",
                             IsLiveCaptionFeatureSupported());
 
@@ -74,7 +80,6 @@ LiveCaptionController::LiveCaptionController(
 
   enabled_ = IsLiveCaptionEnabled();
   base::UmaHistogramBoolean("Accessibility.LiveCaption2", enabled_);
-
   MaybeSetLiveCaptionLanguage();
 
   if (enabled_) {
@@ -94,9 +99,6 @@ void LiveCaptionController::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(
       prefs::kLiveCaptionBubbleExpanded, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
-      prefs::kLiveCaptionBubblePinned, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterBooleanPref(
       prefs::kLiveCaptionEnabled, false,
@@ -143,8 +145,7 @@ void LiveCaptionController::OnLiveCaptionEnabledChanged() {
 
 void LiveCaptionController::OnLiveCaptionLanguageChanged() {
   if (enabled_) {
-    const auto language_code =
-        prefs::GetLiveCaptionLanguageCode(profile_prefs_);
+    const auto language_code = GetLanguageCode();
     auto* soda_installer = speech::SodaInstaller::GetInstance();
     // Only trigger an install when the language is not already installed.
     if (!soda_installer->IsSodaInstalled(
@@ -155,7 +156,12 @@ void LiveCaptionController::OnLiveCaptionLanguageChanged() {
 }
 
 bool LiveCaptionController::IsLiveCaptionEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return enabled_for_babel_orca_ ||
+         profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled);
+#else
   return profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled);
+#endif
 }
 
 void LiveCaptionController::StartLiveCaption() {
@@ -165,8 +171,7 @@ void LiveCaptionController::StartLiveCaption() {
   // SODAInstaller calls OnSodaInstalled on its observers. The UI is created at
   // that time.
   if (speech::SodaInstaller::GetInstance()->IsSodaInstalled(
-          speech::GetLanguageCode(
-              prefs::GetLiveCaptionLanguageCode(profile_prefs_)))) {
+          speech::GetLanguageCode(GetLanguageCode()))) {
     CreateUI();
   } else {
     speech::SodaInstaller::GetInstance()->AddObserver(this);
@@ -182,15 +187,28 @@ void LiveCaptionController::StopLiveCaption() {
 
 void LiveCaptionController::OnSodaInstalled(
     speech::LanguageCode language_code) {
-  if (!prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_)) {
-    return;
-  }
   // Live Caption should always be enabled when this is called. If Live Caption
   // has been disabled, then this should not be observing the SodaInstaller
   // anymore.
   DCHECK(enabled_);
-  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
-  CreateUI();
+  bool is_language_code_for_live_caption =
+      prefs::IsLanguageCodeForLiveCaption(language_code, profile_prefs_);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  bool is_language_code_for_babel_orca =
+      prefs::IsLanguageCodeForMicrophoneCaption(language_code, profile_prefs_);
+
+  if ((enabled_for_babel_orca_ && is_language_code_for_babel_orca) ||
+      is_language_code_for_live_caption) {
+    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+    CreateUI();
+  }
+#else
+  if (is_language_code_for_live_caption) {
+    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+    CreateUI();
+  }
+#endif
 }
 
 void LiveCaptionController::OnSodaInstallError(
@@ -213,6 +231,17 @@ void LiveCaptionController::CreateUI() {
   }
 
   is_ui_constructed_ = true;
+
+  // In the unit test we don't need to verify the caption bubble displays
+  // properly, that's covered by the browser test and we don't want To
+  // initialize all of the dependencies necessary.  Instead we will
+  // let the test know that we were called after checking that
+  // the ui wasn't already constructed and use that event to assert
+  // the correct behavior.
+  if (create_ui_callback_for_testing_) {
+    create_ui_callback_for_testing_.Run();
+    return;
+  }
 
   caption_bubble_controller_ =
       CaptionBubbleController::Create(profile_prefs_, application_locale_);
@@ -237,6 +266,13 @@ void LiveCaptionController::DestroyUI() {
     return;
   }
   is_ui_constructed_ = false;
+
+  // See comment in CreateUI above, we don't want to destroy
+  // a UI we never created in tests.
+  if (create_ui_callback_for_testing_) {
+    return;
+  }
+
   caption_bubble_controller_.reset(nullptr);
 
   // Remove native theme observer.
@@ -247,6 +283,16 @@ void LiveCaptionController::DestroyUI() {
     DCHECK(pref_change_registrar_->IsObserved(pref_name));
     pref_change_registrar_->Remove(pref_name);
   }
+}
+
+const std::string LiveCaptionController::GetLanguageCode() const {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (enabled_for_babel_orca_) {
+    return prefs::GetUserMicrophoneCaptionLanguage(profile_prefs_);
+  }
+#endif
+
+  return prefs::GetLiveCaptionLanguageCode(profile_prefs_);
 }
 
 bool LiveCaptionController::DispatchTranscription(
@@ -301,6 +347,13 @@ void LiveCaptionController::OnToggleFullscreen(
   // in the workspace of the browser window that is transmitting captions.
   DestroyUI();
   CreateUI();
+}
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void LiveCaptionController::ToggleLiveCaptionForBabelOrca(bool enabled) {
+  enabled_for_babel_orca_ = enabled;
+  OnLiveCaptionEnabledChanged();
 }
 #endif
 

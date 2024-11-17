@@ -281,6 +281,10 @@ suite('AutoTabGroupsPageTest', () => {
   });
 
   test('Single organization create group accepts organization', async () => {
+    loadTimeData.overrideValues({
+      multiTabOrganizationEnabled: false,
+    });
+
     await autoTabGroupsPageSetup();
 
     testApiProxy.getCallbackRouterRemote().tabOrganizationSessionUpdated(
@@ -487,27 +491,5 @@ suite('AutoTabGroupsPageTest', () => {
     const header = autoTabGroupsPage.shadowRoot!.querySelector('#header');
     assertTrue(!!header);
     assertEquals(successString, header.textContent!.trim());
-  });
-
-  test('Shows back button when declutter is enabled', async () => {
-    loadTimeData.overrideValues({
-      declutterEnabled: true,
-    });
-    await autoTabGroupsPageSetup();
-
-    const backButton =
-        autoTabGroupsPage.shadowRoot!.querySelector('.back-button');
-    assertTrue(!!backButton);
-  });
-
-  test('Hides back button when declutter is disabled', async () => {
-    loadTimeData.overrideValues({
-      declutterEnabled: false,
-    });
-    await autoTabGroupsPageSetup();
-
-    const backButton =
-        autoTabGroupsPage.shadowRoot!.querySelector('.back-button');
-    assertFalse(!!backButton);
   });
 });

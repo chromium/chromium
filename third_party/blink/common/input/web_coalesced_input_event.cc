@@ -104,9 +104,6 @@ void WebCoalescedInputEvent::CoalesceWith(
   TRACE_EVENT2("input", "WebCoalescedInputEvent::CoalesceWith", "traceId",
                latency_.trace_id(), "coalescedTraceId",
                newer_event.latency_.trace_id());
-  // |newer_event| should be a newer event than |this|.
-  if (newer_event.latency_.trace_id() >= 0 && latency_.trace_id() >= 0)
-    DCHECK_GT(newer_event.latency_.trace_id(), latency_.trace_id());
 
   // New events get coalesced into older events, and the newer timestamp
   // should always be preserved.

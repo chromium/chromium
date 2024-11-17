@@ -86,8 +86,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
     credit_card_save_manager_ = credit_card_save_manager.get();
     credit_card_save_manager_->SetCreditCardUploadEnabled(true);
     auto local_card_migration_manager =
-        std::make_unique<TestLocalCardMigrationManager>(&autofill_client_,
-                                                        "en-US");
+        std::make_unique<TestLocalCardMigrationManager>(&autofill_client_);
     local_card_migration_manager_ = local_card_migration_manager.get();
     std::unique_ptr<TestStrikeDatabase> test_strike_database =
         std::make_unique<TestStrikeDatabase>();
@@ -96,7 +95,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
     autofill_client_.set_test_form_data_importer(
         std::make_unique<TestFormDataImporter>(
             &autofill_client_, std::move(credit_card_save_manager),
-            /*iban_save_manager=*/nullptr, "en-US",
+            /*iban_save_manager=*/nullptr,
             std::move(local_card_migration_manager)));
 
     browser_autofill_manager_ =
@@ -121,7 +120,7 @@ class LocalCardMigrationManagerTest : public testing::Test {
 
   void FormSubmitted(const FormData& form) {
     browser_autofill_manager_->OnFormSubmitted(
-        form, false, mojom::SubmissionSource::FORM_SUBMISSION);
+        form, mojom::SubmissionSource::FORM_SUBMISSION);
   }
 
   void EditCreditCardForm(FormData& credit_card_form,
@@ -597,8 +596,7 @@ TEST_F(LocalCardMigrationManagerTest,
   UseLocalCardWithOtherLocalCardsOnFile();
 
   // Confirm that the preflight request contained the correct UploadCardSource.
-  EXPECT_EQ(payments::PaymentsNetworkInterface::UploadCardSource::
-                LOCAL_CARD_MIGRATION_CHECKOUT_FLOW,
+  EXPECT_EQ(payments::UploadCardSource::LOCAL_CARD_MIGRATION_CHECKOUT_FLOW,
             payments_network_interface_->upload_card_source_in_request());
 }
 
@@ -623,8 +621,7 @@ TEST_F(LocalCardMigrationManagerTest,
   EXPECT_TRUE(local_card_migration_manager_->MainPromptWasShown());
 
   // Confirm that the preflight request contained the correct UploadCardSource.
-  EXPECT_EQ(payments::PaymentsNetworkInterface::UploadCardSource::
-                LOCAL_CARD_MIGRATION_SETTINGS_PAGE,
+  EXPECT_EQ(payments::UploadCardSource::LOCAL_CARD_MIGRATION_SETTINGS_PAGE,
             payments_network_interface_->upload_card_source_in_request());
 }
 
@@ -687,17 +684,17 @@ TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_MigrationSuccess) {
       local_card_migration_manager_->migratable_credit_cards_[0]
           .credit_card()
           .guid(),
-      autofill::kMigrationResultSuccess);
+      kMigrationResultSuccess);
 
   EXPECT_EQ(local_card_migration_manager_->migratable_credit_cards_[0]
                 .migration_status(),
-            autofill::MigratableCreditCard::MigrationStatus::UNKNOWN);
+            MigratableCreditCard::MigrationStatus::UNKNOWN);
 
   local_card_migration_manager_->AttemptToOfferLocalCardMigration(true);
 
   EXPECT_EQ(local_card_migration_manager_->migratable_credit_cards_[0]
                 .migration_status(),
-            autofill::MigratableCreditCard::MigrationStatus::SUCCESS_ON_UPLOAD);
+            MigratableCreditCard::MigrationStatus::SUCCESS_ON_UPLOAD);
 
   // Local card should *not* be present as it is migrated already.
   EXPECT_FALSE(personal_data().payments_data_manager().GetCreditCardByNumber(
@@ -731,18 +728,18 @@ TEST_F(LocalCardMigrationManagerTest,
       local_card_migration_manager_->migratable_credit_cards_[0]
           .credit_card()
           .guid(),
-      autofill::kMigrationResultTemporaryFailure);
+      kMigrationResultTemporaryFailure);
 
   EXPECT_EQ(local_card_migration_manager_->migratable_credit_cards_[0]
                 .migration_status(),
-            autofill::MigratableCreditCard::MigrationStatus::UNKNOWN);
+            MigratableCreditCard::MigrationStatus::UNKNOWN);
 
   // Start the migration.
   local_card_migration_manager_->AttemptToOfferLocalCardMigration(true);
 
   EXPECT_EQ(local_card_migration_manager_->migratable_credit_cards_[0]
                 .migration_status(),
-            autofill::MigratableCreditCard::MigrationStatus::FAILURE_ON_UPLOAD);
+            MigratableCreditCard::MigrationStatus::FAILURE_ON_UPLOAD);
 
   // Local card should be present as it is not migrated.
   EXPECT_TRUE(personal_data().payments_data_manager().GetCreditCardByNumber(
@@ -776,18 +773,18 @@ TEST_F(LocalCardMigrationManagerTest,
       local_card_migration_manager_->migratable_credit_cards_[0]
           .credit_card()
           .guid(),
-      autofill::kMigrationResultPermanentFailure);
+      kMigrationResultPermanentFailure);
 
   EXPECT_EQ(local_card_migration_manager_->migratable_credit_cards_[0]
                 .migration_status(),
-            autofill::MigratableCreditCard::MigrationStatus::UNKNOWN);
+            MigratableCreditCard::MigrationStatus::UNKNOWN);
 
   // Start the migration.
   local_card_migration_manager_->AttemptToOfferLocalCardMigration(true);
 
   EXPECT_EQ(local_card_migration_manager_->migratable_credit_cards_[0]
                 .migration_status(),
-            autofill::MigratableCreditCard::MigrationStatus::FAILURE_ON_UPLOAD);
+            MigratableCreditCard::MigrationStatus::FAILURE_ON_UPLOAD);
 
   // Local card should be present as it is not migrated.
   EXPECT_TRUE(personal_data().payments_data_manager().GetCreditCardByNumber(
@@ -1092,7 +1089,7 @@ TEST_F(
 TEST_F(LocalCardMigrationManagerTest, MigrateCreditCard_GetUploadDetailsFails) {
   // Anything other than "en-US" will cause GetUploadDetails to return a failure
   // response.
-  local_card_migration_manager_->SetAppLocaleForTesting("pt-BR");
+  autofill_client_.set_app_locale("pt-BR");
 
   UseLocalCardWithOtherLocalCardsOnFile();
 
@@ -1289,7 +1286,7 @@ TEST_F(LocalCardMigrationManagerTest,
        LogMigrationDecisionMetric_GetUploadDetailsFails) {
   // Anything other than "en-US" will cause GetUploadDetails to return a failure
   // response.
-  local_card_migration_manager_->SetAppLocaleForTesting("pt-BR");
+  autofill_client_.set_app_locale("pt-BR");
 
   base::HistogramTester histogram_tester;
   UseLocalCardWithOtherLocalCardsOnFile();

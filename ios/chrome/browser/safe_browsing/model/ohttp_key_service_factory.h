@@ -7,9 +7,9 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class KeyedService;
+class ProfileIOS;
 
 namespace safe_browsing {
 class OhttpKeyService;
@@ -22,10 +22,6 @@ class OhttpKeyServiceFactory : public BrowserStateKeyedServiceFactory {
   // Returns the instance of OhttpKeyService associated with this profile,
   // creating one if none exists.
   static safe_browsing::OhttpKeyService* GetForProfile(ProfileIOS* profile);
-
-  // Deprecated: use GetForProfile(...).
-  static safe_browsing::OhttpKeyService* GetForBrowserState(
-      ProfileIOS* profile);
 
   // Returns the singleton instance of OhttpKeyServiceFactory.
   static OhttpKeyServiceFactory* GetInstance();

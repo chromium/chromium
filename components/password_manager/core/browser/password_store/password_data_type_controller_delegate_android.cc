@@ -44,7 +44,7 @@ void PasswordDataTypeControllerDelegateAndroid::GetAllNodesForDebugging(
     AllNodesCallback callback) {
   // This is not implemented because it's not worth the hassle just to display
   // debug information in chrome://sync-internals.
-  std::move(callback).Run(syncer::PASSWORDS, base::Value::List());
+  std::move(callback).Run(base::Value::List());
 }
 
 void PasswordDataTypeControllerDelegateAndroid::
@@ -69,7 +69,7 @@ void PasswordDataTypeControllerDelegateAndroid::ClearMetadataIfStopped() {
 
 void PasswordDataTypeControllerDelegateAndroid::ReportBridgeErrorForTest() {
   // Not supported for Android.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 base::WeakPtr<syncer::DataTypeControllerDelegate>

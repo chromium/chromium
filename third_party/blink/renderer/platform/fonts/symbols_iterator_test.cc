@@ -45,7 +45,7 @@ class SymbolsIteratorTest : public testing::Test {
       expect.push_back(
           FallbackExpectedRun(text.length(), run.font_fallback_priority));
     }
-    SymbolsIterator symbols_iterator(text.Characters16(), text.length());
+    SymbolsIterator symbols_iterator(text.Span16());
     VerifyRuns(&symbols_iterator, expect);
   }
 
@@ -79,7 +79,7 @@ INSTANTIATE_TEST_SUITE_P(SymbolsIteratorTest,
 
 TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, Empty) {
   String empty(g_empty_string16_bit);
-  SymbolsIterator symbols_iterator(empty.Characters16(), empty.length());
+  SymbolsIterator symbols_iterator(empty.Span16());
   unsigned limit = 0;
   FontFallbackPriority symbols_font = FontFallbackPriority::kInvalid;
   DCHECK(!symbols_iterator.Consume(&limit, &symbols_font));
@@ -128,13 +128,19 @@ TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest,
   CheckRuns({{"0123456789#*", FontFallbackPriority::kText},
              {"0\uFE0F⃣1\uFE0F⃣2\uFE0F⃣3\uFE0F⃣4\uFE0F⃣5\uFE0F⃣6\uFE0F⃣7\uFE0F⃣8\uFE0F⃣9"
               "\uFE0F⃣*\uFE0F⃣",
-              FontFallbackPriority::kEmojiEmoji},
+              FontFallbackPriority::kEmojiEmojiWithVS},
              {"0123456789#*", FontFallbackPriority::kText}});
 }
 
 TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, VS16onDigits) {
   CheckRuns({{"#", FontFallbackPriority::kText},
-             {"#\uFE0F\u20E3", FontFallbackPriority::kEmojiEmoji},
+             {"#\uFE0F\u20E3", FontFallbackPriority::kEmojiEmojiWithVS},
+             {"#", FontFallbackPriority::kText}});
+}
+
+TEST_P(SymbolsIteratorWithFontVariantEmojiParamTest, VS15onDigits) {
+  CheckRuns({{"#", FontFallbackPriority::kText},
+             {"#\uFE0E\u20E3", FontFallbackPriority::kEmojiTextWithVS},
              {"#", FontFallbackPriority::kText}});
 }
 

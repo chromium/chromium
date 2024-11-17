@@ -475,6 +475,10 @@ size_t DeskSyncBridge::GetDeskTemplateEntryCount() const {
   return template_count + policy_entries_.size();
 }
 
+size_t DeskSyncBridge::GetCoralEntryCount() const {
+  return 0u;
+}
+
 // Chrome sync does not support save and recall desks yet. Return 0 for max
 // count.
 size_t DeskSyncBridge::GetMaxSaveAndRecallDeskEntryCount() const {
@@ -483,6 +487,10 @@ size_t DeskSyncBridge::GetMaxSaveAndRecallDeskEntryCount() const {
 
 size_t DeskSyncBridge::GetMaxDeskTemplateEntryCount() const {
   return kMaxTemplateCount + policy_entries_.size();
+}
+
+size_t DeskSyncBridge::GetMaxCoralEntryCount() const {
+  return 0u;
 }
 
 std::set<base::Uuid> DeskSyncBridge::GetAllEntryUuids() const {

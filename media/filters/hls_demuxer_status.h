@@ -25,7 +25,31 @@ struct HlsDemuxerStatusTraits {
     kInvalidManifest,
     kInvalidSegmentUri,
   };
+
   static constexpr StatusGroupType Group() { return "HlsDemuxerStatus"; }
+
+  static constexpr std::string ReadableCodeName(Codes code) {
+    switch (code) {
+      case Codes::kPlaylistUrlInvalid:
+        return "Playlist URL Invalid";
+      case Codes::kInvalidBitstream:
+        return "Invalid Bitstream";
+      case Codes::kUnsupportedContainer:
+        return "Unsupported Container";
+      case Codes::kUnsupportedCodec:
+        return "Unsupported Codec";
+      case Codes::kEncryptedMediaNotSupported:
+        return "Encrypted Media";
+      case Codes::kRecursiveMultivariantPlaylists:
+        return "Recursive Playlist";
+      case Codes::kNoRenditions:
+        return "Missing Playable Renditions";
+      case Codes::kInvalidManifest:
+        return "Invalid Manifest";
+      case Codes::kInvalidSegmentUri:
+        return "Invalid Segment URL";
+    }
+  }
 };
 
 using HlsDemuxerStatus = TypedStatus<HlsDemuxerStatusTraits>;

@@ -349,6 +349,11 @@ void LocalAuthenticationDialogActor::SubmitPassword(
   LoginScreenTestApi::SubmitPasswordLocalAuthenticationDialog(password);
 }
 
+void LocalAuthenticationDialogActor::SubmitPin(const std::string& pin) {
+  EXPECT_TRUE(IsVisible());
+  LoginScreenTestApi::SubmitPinLocalAuthenticationDialog(pin);
+}
+
 void LocalAuthenticationDialogActor::WaitUntilDismissed() {
   LocalAuthenticationDialogDismissWaiter()->Wait();
 }
@@ -477,6 +482,10 @@ void LocalPasswordSetupExpectBackButton() {
 
 void LocalPasswordSetupBackAction() {
   test::OobeJS().ClickOnPath(kLocalPasswordSetupBackButton);
+}
+
+UIPath LocalPasswordSetupBackActionPath() {
+  return kLocalPasswordSetupBackButton;
 }
 
 void LocalPasswordSetupExpectFirstInput() {

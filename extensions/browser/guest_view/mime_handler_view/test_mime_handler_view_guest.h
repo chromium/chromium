@@ -48,9 +48,9 @@ class TestMimeHandlerViewGuest : public MimeHandlerViewGuest {
   void WaitForGuestAttached();
 
   // MimeHandlerViewGuest override:
-  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
-                         const base::Value::Dict& create_params,
-                         WebContentsCreatedCallback callback) override;
+  void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       const base::Value::Dict& create_params,
+                       GuestPageCreatedCallback callback) override;
   void DidAttachToEmbedder() override;
 
   // In preparation for the migration of guest view from inner WebContents to
@@ -65,11 +65,10 @@ class TestMimeHandlerViewGuest : public MimeHandlerViewGuest {
  private:
   explicit TestMimeHandlerViewGuest(content::RenderFrameHost* owner_rfh);
 
-  // Used to call MimeHandlerViewGuest::CreateWebContents using a scoped_ptr for
-  // |create_params|.
-  void CallBaseCreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
-                                 base::Value::Dict create_params,
-                                 WebContentsCreatedCallback callback);
+  // Used to call MimeHandlerViewGuest::CreateInnerPage.
+  void CallBaseCreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                               base::Value::Dict create_params,
+                               GuestPageCreatedCallback callback);
 
   // A value in milliseconds that the next creation of a guest's WebContents
   // will be delayed. After this creation is delayed, |delay_| will be reset to

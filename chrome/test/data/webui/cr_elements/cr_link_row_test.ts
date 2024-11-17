@@ -45,7 +45,7 @@ suite('cr-link-row', function() {
     const iconButton =
         linkRow.shadowRoot!.querySelector<CrIconButtonElement>('#icon')!;
     assertFalse(linkRow.external);
-    assertEquals('cr:arrow-right', iconButton.ironIcon);
+    assertEquals('cr:chevron-right', iconButton.ironIcon);
     linkRow.external = true;
     await microtasksFinished();
     assertEquals('cr:open-in-new', iconButton.ironIcon);

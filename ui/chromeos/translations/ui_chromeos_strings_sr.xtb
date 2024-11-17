@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Хангул ахнмате</translation>
 <translation id="1155759005174418845">каталонски</translation>
 <translation id="1168100932582989117">Google сервери назива</translation>
+<translation id="1170788066030116158">Датум снимања</translation>
 <translation id="1172970565351728681">Преостало је око <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Преименуј</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />. мрежа од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />%, батерија телефона <ph name="BATTERY_STATUS" />%, детаљи</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Сертификат за потврду аутентичности је одбијен даљински</translation>
 <translation id="4394214039309501350">Спољни линк</translation>
 <translation id="4394980935660306080">Раније ове недеље</translation>
+<translation id="4397435965699247285">OneDrive није доступан офлајн</translation>
 <translation id="4398096759193130964">Вратите ставке или их превуците у нов фолдер изван отпада</translation>
 <translation id="4401287888955153199">Издвоји све</translation>
 <translation id="4410695710508688828">Операција издвајања није успела. <ph name="ERROR_MESSAGE" /></translation>

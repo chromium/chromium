@@ -9,6 +9,7 @@ import {InlineLoginBrowserProxyImpl} from 'chrome://chrome-signin/inline_login_b
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 import {fakeAuthenticationData, TestAuthenticator, TestInlineLoginBrowserProxy} from './inline_login_test_util.js';
 
@@ -33,8 +34,8 @@ suite('InlineLoginTest', () => {
     webUIListenerCallback('load-authenticator', fakeAuthenticationData);
     // The 'loading' spinner should be shown and 'initialize' should be called
     // on startup.
-    assertTrue(inlineLoginComponent.$.spinner.active);
-    assertTrue(inlineLoginComponent.$.signinFrame.hidden);
+    assertTrue(isVisible(inlineLoginComponent.$.spinner));
+    assertFalse(isVisible(inlineLoginComponent.$.signinFrame));
     assertEquals(1, testBrowserProxy.getCallCount('initialize'));
   });
 
@@ -58,10 +59,10 @@ suite('InlineLoginTest', () => {
   test('AuthenticatorCallbacks', async () => {
     const fakeUrl = 'www.google.com/fake';
 
-    assertTrue(inlineLoginComponent.$.spinner.active);
+    assertTrue(isVisible(inlineLoginComponent.$.spinner));
     testAuthenticator.dispatchEvent(new Event('ready'));
     assertEquals(1, testBrowserProxy.getCallCount('authenticatorReady'));
-    assertFalse(inlineLoginComponent.$.spinner.active);
+    assertFalse(isVisible(inlineLoginComponent.$.spinner));
 
     testAuthenticator.dispatchEvent(
         new CustomEvent('resize', {detail: fakeUrl}));
@@ -74,7 +75,7 @@ suite('InlineLoginTest', () => {
         new CustomEvent('authCompleted', {detail: fakeCredentials}));
     const completeLoginResult =
         await testBrowserProxy.whenCalled('completeLogin');
-    assertTrue(inlineLoginComponent.$.spinner.active);
+    assertTrue(isVisible(inlineLoginComponent.$.spinner));
 
     assertEquals(fakeCredentials, completeLoginResult);
 

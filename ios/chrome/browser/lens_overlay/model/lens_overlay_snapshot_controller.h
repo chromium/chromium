@@ -21,10 +21,10 @@ enum class FullscreenAnimatorStyle : short;
 class LensOverlaySnapshotController final
     : public FullscreenControllerObserver {
  public:
-  LensOverlaySnapshotController(
-      SnapshotTabHelper* snapshot_tab_helper,
-      FullscreenController* fullscreen_controller,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+  LensOverlaySnapshotController(SnapshotTabHelper* snapshot_tab_helper,
+                                FullscreenController* fullscreen_controller,
+                                UIWindow* window,
+                                bool is_bottom_omnibox);
 
   LensOverlaySnapshotController(const SnapshotTabHelper&) = delete;
   LensOverlaySnapshotController& operator=(const SnapshotTabHelper&) = delete;
@@ -49,12 +49,54 @@ class LensOverlaySnapshotController final
   // Returns the dimensions for the inset area of the lens overlay snapshot.
   UIEdgeInsets GetSnapshotInsets();
 
+  // Releases all auxiliary windows created as part of the snapshotting process.
+  void ReleaseAuxiliaryWindows();
+
+  // Captures a snapshot of the base `UIWindow`.
+  UIImage* CaptureSnapshotOfBaseWindow();
+  UIImage* CropSnapshotToWindowSafeArea(UIImage* snapshot);
+
   // Sets whether the current web state is of a PDF document or not.
   void SetIsPDFDocument(bool is_pdf_document) {
     is_pdf_document_ = is_pdf_document;
   }
 
+  // Sets whether the current page is an NTP or not.
+  void SetIsNTP(bool is_NTP) { is_NTP_ = is_NTP; }
+
  private:
+  // Invoked when `controller` has finished entering fullscreen.
+  void FullscreenDidAnimate(FullscreenController* controller,
+                            FullscreenAnimatorStyle style) override;
+
+  // Cover the viewport with static image of the base window.
+  void ShowStaticSnapshotOfBaseWindowIfNeeded();
+
+  // Begin executing the snapshotting process.
+  void StartSnapshotFlow();
+
+  // Process the raw snapshot by adjusting the size and ifilling the edges with
+  // the required colors.
+  void ProcessRawSnapshot(UIImage* snapshot);
+
+  // Notifies callers that a snapshot was taken. This method can be called with
+  // a `nil` snapshot, signifying that the capturing process either errored or
+  // was canceled.
+  void NotifySnapshotComplete(UIImage* snapshot);
+
+  // Marks the start of the capturing process and informs the delegate.
+  void BeginCapturing();
+
+  // Marks the end of the capturing process and cleans up.
+  void FinalizeCapturing();
+
+  // Whether or not it is necessary to show the 'mirror' window.
+  bool ShouldShowStaticSnapshot();
+
+  // Computes the insets applied to the content of the raw snapshot to match the
+  // size of the window.
+  UIEdgeInsets GetContentInsetsOnSnapshotCapture();
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   raw_ptr<SnapshotTabHelper> snapshot_tab_helper_ = nullptr;
@@ -62,27 +104,18 @@ class LensOverlaySnapshotController final
   base::WeakPtr<LensOverlaySnapshotControllerDelegate> delegate_ = nullptr;
 
   base::CancelableTaskTracker task_tracker_;
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
+  __weak UIWindow* base_window_ = nil;
+  UIWindow* mirror_window_ = nil;
   std::vector<SnapshotCallback> pending_snapshot_callbacks_;
   bool is_capturing_ = false;
+  bool is_bottom_omnibox_ = false;
   bool is_pdf_document_ = false;
+  bool is_NTP_ = false;
+  CGSize expected_window_size_;
+
   base::WeakPtrFactory<LensOverlaySnapshotController> weak_ptr_factory_{this};
-
-  void FullscreenDidAnimate(FullscreenController* controller,
-                            FullscreenAnimatorStyle style) override;
-
-  void OnSnapshotCallbackRecorded(SnapshotCallback);
-
-  void OnFullscreenStateSettled();
-
-  void OnSnapshotCaptured(UIImage*);
-
-  void BeginCapturing();
-
-  void FinalizeCapturing();
-
-  UIEdgeInsets GetContentInsetsOnSnapshotCapture();
 };
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_MODEL_LENS_OVERLAY_SNAPSHOT_CONTROLLER_H_

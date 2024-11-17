@@ -1,0 +1,14 @@
+[
+    RuntimeEnabled=LanguageDetectionAPI,
+    Exposed=(Window,Worker),
+    SecureContext
+]
+interface AILanguageDetectorCapabilities {
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  readonly attribute AICapabilityAvailability available;
+
+  AICapabilityAvailability languageAvailable(DOMString languageTag);
+};

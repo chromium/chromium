@@ -355,11 +355,14 @@ TEST_F(DesktopNotificationDisplayServiceImplTest, SnoozeDuringScreenCapture) {
   EXPECT_EQ(1u, GetDisplayedPlatformSync().count(kMuteNotificationId));
 
   // Emulate the user clicking on the "Snooze" action button.
+  base::RunLoop run_loop;
   service().ProcessNotificationOperation(
       NotificationOperation::kClick,
       NotificationHandler::Type::NOTIFICATIONS_MUTED, /*origin=*/GURL(),
       kMuteNotificationId, /*action_index=*/0, /*reply=*/std::nullopt,
-      /*by_user=*/true);
+      /*by_user=*/true,
+      base::BindOnce([](base::RunLoop* looper) { looper->Quit(); }, &run_loop));
+  run_loop.Run();
 
   // Clicking "Snooze" should remove the "Notifications Muted" notification.
   EXPECT_TRUE(GetDisplayedPlatformSync().empty());

@@ -88,6 +88,10 @@ ShoppingServiceAndroid::~ShoppingServiceAndroid() {
   Java_ShoppingService_destroy(base::android::AttachCurrentThread(), java_ref_);
 }
 
+ShoppingService* ShoppingServiceAndroid::GetShoppingService() {
+  return shopping_service_;
+}
+
 void ShoppingServiceAndroid::GetProductInfoForUrl(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,

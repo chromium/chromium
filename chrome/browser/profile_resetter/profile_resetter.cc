@@ -59,8 +59,12 @@
 #include "extensions/common/manifest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/input_method/input_method_manager_impl.h"
 #include "chromeos/ash/components/network/managed_network_configuration_handler.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "components/language/core/browser/pref_names.h"
+#include "components/proxy_config/proxy_config_pref_names.h"
+#include "components/spellcheck/browser/pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_WIN)
@@ -182,11 +186,13 @@ void ProfileResetter::ResetSettingsImpl(
   // These flags are set to false by the individual reset functions.
   pending_reset_flags_ = resettable_flags;
 
-  struct FlagMethod {
+  struct {
     Resettable flag;
     void (ProfileResetter::*method)();
-  };
-  std::vector<FlagMethod> flagToMethod = {
+  } flagToMethod[] = {
+      // Ordering of resets does matter here, extensions resets should
+      // always precede DNS and proxy resets as the former can impact
+      // the latter.
       {DEFAULT_SEARCH_ENGINE, &ProfileResetter::ResetDefaultSearchEngine},
       {HOMEPAGE, &ProfileResetter::ResetHomepage},
       {CONTENT_SETTINGS, &ProfileResetter::ResetContentSettings},
@@ -197,6 +203,11 @@ void ProfileResetter::ResetSettingsImpl(
       {SHORTCUTS, &ProfileResetter::ResetShortcuts},
       {NTP_CUSTOMIZATIONS, &ProfileResetter::ResetNtpCustomizations},
       {LANGUAGES, &ProfileResetter::ResetLanguages},
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      {DNS_CONFIGURATIONS, &ProfileResetter::ResetDnsConfigurations},
+      {PROXY_SETTINGS, &ProfileResetter::ResetProxySettings},
+      {KEYBOARD_SETTINGS, &ProfileResetter::ResetKeyboardInputSettings},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
 
   ResettableFlags reset_triggered_for_flags = 0;
@@ -207,7 +218,7 @@ void ProfileResetter::ResetSettingsImpl(
     }
   }
 
-  DCHECK_EQ(resettable_flags & ~PHASE_2_RESETS, reset_triggered_for_flags);
+  DCHECK_EQ(resettable_flags, reset_triggered_for_flags);
 }
 
 bool ProfileResetter::IsActive() const {
@@ -223,30 +234,6 @@ void ProfileResetter::MarkAsDone(Resettable resettable) {
 
   pending_reset_flags_ &= ~resettable;
 
-  // If all the flags have been reset except for the phase 2 reset flags,
-  // we can kickstart the second round of resets.
-  if (!phase_2_resets_started_ && pending_reset_flags_ &&
-      !(pending_reset_flags_ & ~PHASE_2_RESETS)) {
-    phase_2_resets_started_ = true;
-    struct FlagMethod {
-      Resettable flag;
-      void (ProfileResetter::*method)();
-    };
-    std::vector<FlagMethod> flagToMethod;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    flagToMethod.push_back(
-        {DNS_CONFIGURATIONS, &ProfileResetter::ResetDnsConfigurations});
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    for (size_t i = 0; i < std::size(flagToMethod); ++i) {
-      if (pending_reset_flags_ & flagToMethod[i].flag) {
-        (this->*flagToMethod[i].method)();
-      }
-    }
-    return;
-  }
-
-  // If all the phase 1 and phase 2 resets are complete, we can call the
-  // callback.
   if (!pending_reset_flags_) {
     content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
                                                  std::move(callback_));
@@ -464,6 +451,11 @@ void ProfileResetter::OnBrowsingDataRemoverDone(uint64_t failed_data_types) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ProfileResetter::ResetDnsConfigurations() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Since certain extensions can modify DNS configurations we want
+  // extensions to be reset beforehand.
+  CHECK(!(pending_reset_flags_ & EXTENSIONS));
+
   ash::ManagedNetworkConfigurationHandler* network_configuration_handler =
       ash::NetworkHandler::Get()->managed_network_configuration_handler();
   if (!network_configuration_handler) {
@@ -497,6 +489,73 @@ void ProfileResetter::ResetDnsConfigurations() {
     network_configuration_handler->ResetDNSProperties(network->path());
   }
   MarkAsDone(DNS_CONFIGURATIONS);
+}
+
+void ProfileResetter::ResetProxySettings() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Since certain extensions can modify proxy settings we want
+  // extensions to be reset beforehand.
+  CHECK(!(pending_reset_flags_ & EXTENSIONS));
+
+  PrefService* prefs = profile_->GetPrefs();
+  CHECK(prefs);
+
+  // Check that user profile isn't managed. Unlikely to happen in
+  // the backend, but still good to have as an extra check.
+  if (prefs->FindPreference(proxy_config::prefs::kUseSharedProxies)
+          ->IsManaged()) {
+    MarkAsDone(PROXY_SETTINGS);
+    return;
+  }
+
+  // Call to reset Proxy prefs set by disabling "Allow proxies for shared
+  // networks" in chrome://settings. Will always write to User Prefs (the only
+  // modifiable store). If a value is already set in a PrefStore with precedence
+  // over User Prefs, re-reading the value might not return the value you just
+  // set. A list of known sources that override User Prefs:
+  // Managed Prefs (cloud policy)
+  // Supervised User Prefs (parental controls)
+  // Extension Prefs (extension overrides)
+  // Command-line Prefs (command-line overrides)
+  prefs->SetBoolean(proxy_config::prefs::kUseSharedProxies, false);
+  MarkAsDone(PROXY_SETTINGS);
+}
+
+void ProfileResetter::ResetKeyboardInputSettings() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Since spellcheck settings depend on preferred languages, user language
+  // preferences need to be reset beforehand.
+  CHECK(!(pending_reset_flags_ & LANGUAGES));
+
+  PrefService* prefs = profile_->GetPrefs();
+  CHECK(prefs);
+
+  // 1. Call to reset the language of the Input methods, from the current device
+  // language.
+  if (g_browser_process && g_browser_process->local_state()) {
+    // Assume that the session will use the current UI locale.
+    std::string locale = g_browser_process->GetApplicationLocale();
+
+    // Derive kLanguagePreloadEngines from `locale`.
+    // Uses the first input method as the most popular one.
+    std::vector<std::string> input_method_ids;
+    ash::input_method::InputMethodManager* manager =
+        ash::input_method::InputMethodManager::Get();
+    manager->GetInputMethodUtil()->GetInputMethodIdsFromLanguageCode(
+        locale, ash::input_method::kAllInputMethods, &input_method_ids);
+    // Save the input method in the user's preference kLanguagePreloadEngines.
+    prefs->SetString(prefs::kLanguagePreloadEngines, input_method_ids.empty()
+                                                         ? std::string()
+                                                         : input_method_ids[0]);
+  }
+
+  // 2. Call to reset spell check languages, matching the default language and
+  // clearing the other options.
+  prefs->SetList(spellcheck::prefs::kSpellCheckDictionaries,
+                 base::Value::List().Append(
+                     prefs->GetString(language::prefs::kPreferredLanguages)));
+
+  MarkAsDone(KEYBOARD_SETTINGS);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

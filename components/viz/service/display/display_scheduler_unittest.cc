@@ -83,7 +83,7 @@ class FakeDisplaySchedulerClient : public DisplaySchedulerClient {
         draw_and_swap_count_(0),
         next_draw_and_swap_fails_(false) {}
 
-  ~FakeDisplaySchedulerClient() override {}
+  ~FakeDisplaySchedulerClient() override = default;
 
   bool DrawAndSwap(const DrawAndSwapParams& params) override {
     draw_and_swap_count_++;
@@ -182,7 +182,6 @@ class DisplaySchedulerTest : public testing::Test {
                          /*max_uncommitted_frames=*/0),
         resource_provider_(&shared_bitmap_manager_,
                            &shared_image_manager_,
-                           &sync_point_manager_,
                            &gpu_scheduler_),
         aggregator_(&surface_manager_, &resource_provider_, false),
         damage_tracker_(

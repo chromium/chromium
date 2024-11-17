@@ -73,7 +73,7 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   // Creation method meant for buffer resources originating as ID3D12Resources.
   static std::unique_ptr<D3DImageBacking> CreateFromD3D12Resource(
       const Mailbox& mailbox,
-      const uint32_t size,
+      const gfx::Size& size,
       gpu::SharedImageUsageSet usage,
       std::string debug_label,
       Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource);
@@ -117,6 +117,16 @@ class GPU_GLES2_EXPORT D3DImageBacking final
   bool BeginAccessD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
                         bool write_access);
   void EndAccessD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
+
+  // Get the availability fence for |dcomp_texture_|. Returns a fence if the
+  // texture is soon-to-be available, meaning that the caller must wait on the
+  // fence. Returns null if it would be immediately available or there is no
+  // |dcomp_texture_|, meaning there is no need to wait. The return value is
+  // only valid until the next DComp commit call.
+  //
+  // |dcomp_texture_| must not be "unavailable", i.e. attached to a DComp tree.
+  scoped_refptr<gfx::D3DSharedFence>
+  GetDCompTextureAvailabilityFenceForCurrentFrame() const;
 
   wgpu::Texture BeginAccessDawn(const wgpu::Device& device,
                                 wgpu::BackendType backend_type,

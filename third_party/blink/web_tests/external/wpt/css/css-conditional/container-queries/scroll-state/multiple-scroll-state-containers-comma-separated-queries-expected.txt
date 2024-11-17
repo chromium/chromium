@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Should match the named outer container for scroll-state(overflowing)
+  assert_equals: expected "yes" but got "no"
+[FAIL] Match the #combined outer container which is also a size container
+  assert_equals: expected "yes" but got "no"
+Harness: the test ran to completion.
+

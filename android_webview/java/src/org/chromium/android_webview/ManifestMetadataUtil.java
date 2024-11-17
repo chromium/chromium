@@ -35,6 +35,8 @@ public class ManifestMetadataUtil {
     // reporting. See https://developer.android.com/reference/android/webkit/WebView.html
     private static final String METRICS_OPT_OUT_METADATA_NAME =
             "android.webkit.WebView.MetricsOptOut";
+    private static final String CONTEXT_EXPERIMENT_VALUE_METADATA_NAME =
+            "android.webkit.WebView.UseWebViewResourceContext";
     private static final String SAFE_BROWSING_OPT_IN_METADATA_NAME =
             "android.webkit.WebView.EnableSafeBrowsing";
 
@@ -58,6 +60,8 @@ public class ManifestMetadataUtil {
     /** Used in tests. */
     @Nullable private static Set<String> sXrwAllowlistForTesting;
 
+    @Nullable private static volatile MetadataCache sMetadataCache;
+
     /**
      * Cache for all AndroidManifest.xml meta-data. All meta-data should be fetched at the time this
      * class is constructed.
@@ -65,6 +69,8 @@ public class ManifestMetadataUtil {
     @VisibleForTesting
     public static class MetadataCache {
         private final boolean mIsAppOptedOutFromMetricsCollection;
+
+        private final @Nullable Boolean mContextExperimentValue;
         private final @Nullable Boolean mSafeBrowsingOptInPreference;
         private final @Nullable Integer mAppMultiProfileProfileNameTagKey;
         private final @NonNull Set<String> mXRequestedAllowList;
@@ -80,27 +86,28 @@ public class ManifestMetadataUtil {
             Bundle metadataHolderServiceMetadata = getMetadataHolderServiceMetadata(context);
             mAppMultiProfileProfileNameTagKey =
                     getAppMultiProfileProfileNameTagKey(metadataHolderServiceMetadata);
+            mContextExperimentValue = shouldEnableContextExperiment(metadataHolderServiceMetadata);
             mXRequestedAllowList =
                     getXRequestedWithAllowList(context, metadataHolderServiceMetadata);
         }
     }
 
     /**
-     * The class loader will take care of synchronization as each class is only loaded once at the
-     * time it is needed.
+     * Used to ensure the Metadata cache is initialized. No-op if the cache already exists. Will
+     * initialize the cache with the given context otherwise.
      */
-    private static final class MetadataCacheHolder {
-
-        /** Do not instantiate. */
-        private MetadataCacheHolder() {}
-
-        private static final MetadataCache METADATA_CACHE =
-                new MetadataCache(ContextUtils.getApplicationContext());
+    public static void ensureMetadataCacheInitialized(Context context) {
+        if (sMetadataCache == null) {
+            sMetadataCache = new MetadataCache(context);
+        }
     }
 
     @VisibleForTesting
     public static MetadataCache getMetadataCache() {
-        return MetadataCacheHolder.METADATA_CACHE;
+        if (sMetadataCache == null) {
+            sMetadataCache = new MetadataCache(ContextUtils.getApplicationContext());
+        }
+        return sMetadataCache;
     }
 
     /**
@@ -122,6 +129,32 @@ public class ManifestMetadataUtil {
         } else {
             // getBoolean returns false if the key is not found, which is what we want.
             value = appMetadata.getBoolean(METRICS_OPT_OUT_METADATA_NAME);
+        }
+        return value;
+    }
+
+    /**
+     * Checks the application manifest for WebView's context experiment opt-in/opt-out preference.
+     *
+     * @return true if the app has opted in to the experiment, false if the app has opted out or
+     *     null if no value is specified.
+     */
+    @Nullable
+    public static Boolean shouldEnableContextExperiment() {
+        return getMetadataCache().mContextExperimentValue;
+    }
+
+    @VisibleForTesting
+    @Nullable
+    public static Boolean shouldEnableContextExperiment(
+            @Nullable Bundle metadataHolderServiceMetadata) {
+        Boolean value = null;
+        if (metadataHolderServiceMetadata != null
+                && metadataHolderServiceMetadata.containsKey(
+                        CONTEXT_EXPERIMENT_VALUE_METADATA_NAME)) {
+            value =
+                    metadataHolderServiceMetadata.getBoolean(
+                            CONTEXT_EXPERIMENT_VALUE_METADATA_NAME);
         }
         return value;
     }

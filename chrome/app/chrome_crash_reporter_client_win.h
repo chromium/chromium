@@ -29,13 +29,8 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
                                 std::wstring* version,
                                 std::wstring* special_build,
                                 std::wstring* channel_name) override;
-  bool ShouldShowRestartDialog(std::wstring* title,
-                               std::wstring* message,
-                               bool* is_rtl_locale) override;
-  bool AboutToRestart() override;
-  bool GetIsPerUserInstall() override;
+  void GetProductInfo(ProductInfo* product_info) override;
   bool GetShouldDumpLargerDumps() override;
-  int GetResultCodeRespawnFailed() override;
 
   bool GetCrashDumpLocation(std::wstring* crash_dir) override;
   bool GetCrashMetricsLocation(std::wstring* metrics_dir) override;

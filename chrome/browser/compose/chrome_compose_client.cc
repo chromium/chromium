@@ -49,6 +49,7 @@
 #include "components/compose/core/browser/compose_manager_impl.h"
 #include "components/compose/core/browser/compose_metrics.h"
 #include "components/compose/core/browser/config.h"
+#include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/unified_consent/pref_names.h"
@@ -205,7 +206,8 @@ void ChromeComposeClient::BindComposeDialog(
   if (origin ==
       url::Origin::Create(GURL(chrome::kChromeUIUntrustedComposeUrl))) {
     debug_session_ = std::make_unique<ComposeSession>(
-        &GetWebContents(), GetModelExecutor(), GetSessionId(),
+        &GetWebContents(), GetModelExecutor(),
+        GetModelQualityLogsUploaderService(), GetSessionId(),
         GetInnerTextProvider(),
         autofill::FieldGlobalId{{}, autofill::FieldRendererId(-1)},
         IsPageLanguageSupported(), this);
@@ -470,7 +472,8 @@ void ChromeComposeClient::CreateNewSession(
   }
 
   auto new_session = std::make_unique<ComposeSession>(
-      &GetWebContents(), GetModelExecutor(), GetSessionId(),
+      &GetWebContents(), GetModelExecutor(),
+      GetModelQualityLogsUploaderService(), GetSessionId(),
       GetInnerTextProvider(), trigger_field.global_id(),
       IsPageLanguageSupported(), this, std::move(callback));
   current_session = new_session.get();
@@ -505,12 +508,26 @@ void ChromeComposeClient::CreateNewSession(
       utf8_chars.has_value() ? utf8_chars.value() : 0);
 
   if (popup_clicked) {
-    // Set proactive nudge clicked metrics and state.
-    current_session->set_started_with_proactive_nudge();
-    page_ukm_tracker_->ProactiveNudgeOpened();
-    compose::LogComposeProactiveNudgeCtr(
-        compose::ComposeProactiveNudgeCtrEvent::kDialogOpened);
-    compose::LogStartSessionEntryPoint(most_recent_nudge_entry_point_);
+    switch (most_recent_nudge_entry_point_) {
+      case compose::ComposeEntryPoint::kProactiveNudge:
+        current_session->set_started_with_proactive_nudge();
+        page_ukm_tracker_->ProactiveNudgeOpened();
+        compose::LogComposeProactiveNudgeCtr(
+            compose::ComposeNudgeCtrEvent::kDialogOpened);
+        compose::LogStartSessionEntryPoint(
+            compose::ComposeEntryPoint::kProactiveNudge);
+        break;
+      case compose::ComposeEntryPoint::kSelectionNudge:
+        compose::LogComposeSelectionNudgeCtr(
+            compose::ComposeNudgeCtrEvent::kDialogOpened);
+        compose::LogStartSessionEntryPoint(
+            compose::ComposeEntryPoint::kSelectionNudge);
+        break;
+      case compose::ComposeEntryPoint::kContextMenu:
+      case compose::ComposeEntryPoint::kSavedStateNudge:
+      case compose::ComposeEntryPoint::kSavedStateNotification:
+        break;
+    }
   } else {
     compose::LogStartSessionEntryPoint(
         compose::ComposeEntryPoint::kContextMenu);
@@ -733,6 +750,22 @@ void ChromeComposeClient::DisableProactiveNudge() {
   nudge_tracker_.OnUserDisabledNudge(/*single_site_only=*/false);
   proactive_nudge_enabled_.SetValue(false);
 
+  switch (most_recent_nudge_entry_point_) {
+    case compose::ComposeEntryPoint::kProactiveNudge:
+      compose::LogComposeProactiveNudgeCtr(
+          compose::ComposeNudgeCtrEvent::kUserDisabledProactiveNudge);
+      GetPageUkmTracker()->ProactiveNudgeDisabledGlobally();
+      break;
+    case compose::ComposeEntryPoint::kSelectionNudge:
+      compose::LogComposeSelectionNudgeCtr(
+          compose::ComposeNudgeCtrEvent::kUserDisabledProactiveNudge);
+      break;
+    case compose::ComposeEntryPoint::kContextMenu:
+    case compose::ComposeEntryPoint::kSavedStateNudge:
+    case compose::ComposeEntryPoint::kSavedStateNotification:
+      break;
+  }
+
   if (base::FeatureList::IsEnabled(
           compose::features::kHappinessTrackingSurveysForComposeAcceptance)) {
     HatsService* hats_service = HatsServiceFactory::GetForProfile(
@@ -752,7 +785,27 @@ void ChromeComposeClient::OpenProactiveNudgeSettings() {
   // The session is created when that dialog is opened and it is destroyed if
   // its WebContents is destroyed.
   CHECK(browser);
-  chrome::ShowSettingsSubPage(browser, chrome::kOfferWritingHelpSubpage);
+
+  switch (most_recent_nudge_entry_point_) {
+    case compose::ComposeEntryPoint::kProactiveNudge:
+      compose::LogComposeProactiveNudgeCtr(
+          compose::ComposeNudgeCtrEvent::kOpenSettings);
+      break;
+    case compose::ComposeEntryPoint::kSelectionNudge:
+      compose::LogComposeSelectionNudgeCtr(
+          compose::ComposeNudgeCtrEvent::kOpenSettings);
+      break;
+    case compose::ComposeEntryPoint::kContextMenu:
+    case compose::ComposeEntryPoint::kSavedStateNudge:
+    case compose::ComposeEntryPoint::kSavedStateNotification:
+      break;
+  }
+
+  chrome::ShowSettingsSubPage(
+      browser, base::FeatureList::IsEnabled(
+                   optimization_guide::features::kAiSettingsPageRefresh)
+                   ? chrome::kAiHelpMeWriteSubpage
+                   : chrome::kOfferWritingHelpSubpage);
 }
 
 void ChromeComposeClient::AddSiteToNeverPromptList(const url::Origin& origin) {
@@ -760,6 +813,22 @@ void ChromeComposeClient::AddSiteToNeverPromptList(const url::Origin& origin) {
   ScopedDictPrefUpdate update(pref_service_,
                               prefs::kProactiveNudgeDisabledSitesWithTime);
   update->Set(origin.Serialize(), base::TimeToValue(base::Time::Now()));
+
+  switch (most_recent_nudge_entry_point_) {
+    case compose::ComposeEntryPoint::kProactiveNudge:
+      compose::LogComposeProactiveNudgeCtr(
+          compose::ComposeNudgeCtrEvent::kUserDisabledSite);
+      GetPageUkmTracker()->ProactiveNudgeDisabledForSite();
+      break;
+    case compose::ComposeEntryPoint::kSelectionNudge:
+      compose::LogComposeSelectionNudgeCtr(
+          compose::ComposeNudgeCtrEvent::kUserDisabledSite);
+      break;
+    case compose::ComposeEntryPoint::kContextMenu:
+    case compose::ComposeEntryPoint::kSavedStateNudge:
+    case compose::ComposeEntryPoint::kSavedStateNotification:
+      break;
+  }
 }
 
 bool ChromeComposeClient::ShouldTriggerContextMenu(
@@ -799,6 +868,14 @@ ChromeComposeClient::GetModelExecutor() {
           Profile::FromBrowserContext(GetWebContents().GetBrowserContext())));
 }
 
+optimization_guide::ModelQualityLogsUploaderService*
+ChromeComposeClient::GetModelQualityLogsUploaderService() {
+  return logs_uploader_service_for_test_.value_or(
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(GetWebContents().GetBrowserContext()))
+          ->GetModelQualityLogsUploaderService());
+}
+
 base::Token ChromeComposeClient::GetSessionId() {
   return session_id_for_test_.value_or(base::Token::CreateRandom());
 }
@@ -815,6 +892,12 @@ InnerTextProvider* ChromeComposeClient::GetInnerTextProvider() {
 void ChromeComposeClient::SetModelExecutorForTest(
     optimization_guide::OptimizationGuideModelExecutor* model_executor) {
   model_executor_for_test_ = model_executor;
+}
+
+void ChromeComposeClient::SetModelQualityLogsUploaderServiceForTest(
+    optimization_guide::ModelQualityLogsUploaderService*
+        logs_uploader_service) {
+  logs_uploader_service_for_test_ = logs_uploader_service;
 }
 
 void ChromeComposeClient::SetSkipShowDialogForTest(bool should_skip) {

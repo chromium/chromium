@@ -175,6 +175,12 @@ public class ShareHelper {
          */
         protected void sendChooserIntent(WindowAndroid window, Intent sharingIntent) {
             ThreadUtils.assertOnUiThread();
+
+            if (window.isDestroyed()) {
+                Log.e(TAG, "Can not send intent due to window being destroyed.");
+                return;
+            }
+
             Activity activity = window.getActivity().get();
             assert activity != null;
             final String packageName = activity.getPackageName();

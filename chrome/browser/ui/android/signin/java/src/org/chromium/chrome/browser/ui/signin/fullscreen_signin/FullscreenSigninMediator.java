@@ -63,15 +63,14 @@ public class FullscreenSigninMediator
                 UMADialogCoordinator.Listener {
     private static final String TAG = "SigninFRMediator";
 
-    /**
-     * Used for MobileFre.SlowestLoadPoint histogram. Should be treated as append-only.
-     * See {@code LoadPoint} in tools/metrics/histograms/enums.xml.
-     */
+    // LINT.IfChange(LoadPoint)
+    /** Used for MobileFre.SlowestLoadPoint histogram. Should be treated as append-only. */
     @VisibleForTesting
     @IntDef({
         LoadPoint.NATIVE_INITIALIZATION,
         LoadPoint.POLICY_LOAD,
         LoadPoint.CHILD_STATUS_LOAD,
+        LoadPoint.ACCOUNT_FETCHING,
         LoadPoint.MAX
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -79,8 +78,11 @@ public class FullscreenSigninMediator
         int NATIVE_INITIALIZATION = 0;
         int POLICY_LOAD = 1;
         int CHILD_STATUS_LOAD = 2;
-        int MAX = 3;
+        int ACCOUNT_FETCHING = 3;
+        int MAX = 4;
     }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/mobile/enums.xml:LoadPoint)
 
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
@@ -88,11 +90,10 @@ public class FullscreenSigninMediator
     private final Delegate mDelegate;
     private final PrivacyPreferencesManager mPrivacyPreferencesManager;
     private final @SigninAccessPoint int mAccessPoint;
+    private final FullscreenSigninConfig mConfig;
     private final PropertyModel mModel;
     private final ProfileDataCache mProfileDataCache;
     private boolean mDestroyed;
-
-    private @LoadPoint int mSlowestLoadPoint;
 
     /** Whether the initial load phase has been completed. See {@link #onInitialLoadCompleted}. */
     private boolean mInitialLoadCompleted;
@@ -109,13 +110,16 @@ public class FullscreenSigninMediator
             ModalDialogManager modalDialogManager,
             Delegate delegate,
             PrivacyPreferencesManager privacyPreferencesManager,
+            FullscreenSigninConfig config,
             @SigninAccessPoint int accessPoint) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
+        mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mDelegate = delegate;
         mPrivacyPreferencesManager = privacyPreferencesManager;
         mAccessPoint = accessPoint;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
+        mConfig = config;
         mModel =
                 FullscreenSigninProperties.createModel(
                         this::onSelectedAccountClicked,
@@ -123,8 +127,10 @@ public class FullscreenSigninMediator
                         this::onDismissClicked,
                         ExternalAuthUtils.getInstance().canUseGooglePlayServices()
                                 && !disableSignInForAutomotiveDevice(),
+                        mConfig.logoId,
                         R.string.fre_welcome,
-                        R.string.signin_fre_subtitle_legacy);
+                        mConfig.subtitleId,
+                        mConfig.dismissTextId);
 
         mDelegate
                 .getNativeInitializationPromise()
@@ -139,7 +145,6 @@ public class FullscreenSigninMediator
 
         mProfileDataCache.addObserver(this);
 
-        mAccountManagerFacade = AccountManagerFacadeProvider.getInstance();
         mAccountManagerFacade.addObserver(this);
         updateAccounts(
                 AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
@@ -172,23 +177,20 @@ public class FullscreenSigninMediator
         // the delegate after the mediator is destroyed. See https://crbug.com/1294998.
         if (mDestroyed) return;
 
-        mSlowestLoadPoint = LoadPoint.NATIVE_INITIALIZATION;
         mDelegate.recordNativeInitializedHistogram();
-        checkWhetherInitialLoadCompleted();
+        checkWhetherInitialLoadCompleted(LoadPoint.NATIVE_INITIALIZATION);
     }
 
     private void onChildAccountStatusAvailable() {
-        mSlowestLoadPoint = LoadPoint.CHILD_STATUS_LOAD;
-        checkWhetherInitialLoadCompleted();
+        checkWhetherInitialLoadCompleted(LoadPoint.CHILD_STATUS_LOAD);
     }
 
     private void onPolicyLoad() {
-        mSlowestLoadPoint = LoadPoint.POLICY_LOAD;
-        checkWhetherInitialLoadCompleted();
+        checkWhetherInitialLoadCompleted(LoadPoint.POLICY_LOAD);
     }
 
     /** Checks the initial load status. See {@link #onInitialLoadCompleted} for details. */
-    private void checkWhetherInitialLoadCompleted() {
+    private void checkWhetherInitialLoadCompleted(@LoadPoint int slowestLoadPoint) {
         // This happens asynchronously, so this check is necessary to ensure we don't interact with
         // the delegate after the mediator is destroyed. See https://crbug.com/1294998.
         if (mDestroyed) return;
@@ -196,6 +198,10 @@ public class FullscreenSigninMediator
         // The initialization flow requires native to be ready before the initial loading spinner
         // can be hidden.
         if (!mDelegate.getNativeInitializationPromise().isFulfilled()) return;
+
+        // We need the account fetching to be complete before we can hide the initial loading
+        // spinner.
+        if (!mAccountManagerFacade.getCoreAccountInfos().isFulfilled()) return;
 
         if (mDelegate.getChildAccountStatusSupplier().get() != null
                 && mDelegate.getPolicyLoadListener().get() != null
@@ -205,7 +211,7 @@ public class FullscreenSigninMediator
             // TODO(crbug.com/40235150): Rename this method and the corresponding histogram.
             mDelegate.recordNativePolicyAndChildStatusLoadedHistogram();
             RecordHistogram.recordEnumeratedHistogram(
-                    "MobileFre.SlowestLoadPoint", mSlowestLoadPoint, LoadPoint.MAX);
+                    "MobileFre.SlowestLoadPoint", slowestLoadPoint, LoadPoint.MAX);
         }
     }
 
@@ -252,7 +258,7 @@ public class FullscreenSigninMediator
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
             if (isSigninSupported) {
-                mModel.set(FullscreenSigninProperties.TITLE_STRING_ID, R.string.signin_fre_title);
+                mModel.set(FullscreenSigninProperties.TITLE_STRING_ID, mConfig.titleId);
             }
             SyncService syncService = SyncServiceFactory.getForProfile(profile);
             boolean isSyncDataManaged =
@@ -262,7 +268,7 @@ public class FullscreenSigninMediator
                     FullscreenSigninProperties.SUBTITLE_STRING_ID,
                     isSyncDataManaged
                             ? R.string.signin_fre_subtitle_without_sync
-                            : R.string.signin_fre_subtitle);
+                            : mConfig.subtitleId);
         }
 
         mAllowMetricsAndCrashUploading = !isMetricsReportingDisabledByPolicy;
@@ -282,6 +288,7 @@ public class FullscreenSigninMediator
     public void onCoreAccountInfosChanged() {
         // TODO(crbug.com/40065164): Replace onAccountsChanged() with this method.
         mAccountManagerFacade.getCoreAccountInfos().then(this::updateAccounts);
+        checkWhetherInitialLoadCompleted(LoadPoint.ACCOUNT_FETCHING);
     }
 
     @Override

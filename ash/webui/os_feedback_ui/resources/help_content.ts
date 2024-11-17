@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './help_resources_icons.html.js';
-import './strings.m.js';
+import '/strings.m.js';
 import '//resources/ash/common/cr_elements/cr_hidden_style.css.js';
 import '//resources/ash/common/cr_elements/cr_icons.css.js';
 import '//resources/ash/common/cr_elements/cr_shared_vars.css.js';

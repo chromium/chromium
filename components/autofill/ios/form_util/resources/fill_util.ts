@@ -9,12 +9,6 @@ import {findChildText} from '//components/autofill/ios/form_util/resources/fill_
 import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 import {trim} from '//ios/web/public/js_messaging/resources/utils.js';
 
-// Extends the Element to add the ability to access its properties
-// via the [] notation.
-declare interface IndexableElement extends Element {
-  [key: symbol]: number;
-}
-
 declare interface AutofillFormFieldData {
   name: string;
   value: string;
@@ -45,7 +39,7 @@ declare interface AutofillFormData {
   origin: string;
   action: string;
   fields: AutofillFormFieldData[];
-  frame_id: string;
+  host_frame: string;
   child_frames?: FrameTokenWithPredecessor[];
   name_attribute?: string;
   id_attribute?: string;
@@ -56,16 +50,11 @@ declare interface FrameTokenWithPredecessor {
   predecessor: number;
 }
 
-/**
- * Maps elements using their unique ID
+/*
+ Name of the html attribute used for storing the remote frame token assigned to
+ the current html document.
  */
-const elementMap = new Map();
-
-/**
- * Stores the next available ID for forms and fields. By convention, 0 means
- * null, so we start at 1 and increment from there.
- */
-document[gCrWeb.fill.ID_SYMBOL] = 1;
+const REMOTE_FRAME_TOKEN_ATTRIBUTE = '__gChrome_remoteFrameToken';
 
 /**
  * Acquires the specified DOM `attribute` from the DOM `element` and returns
@@ -105,7 +94,7 @@ function autoComplete(element: fillConstants.FormControlElement|null): boolean {
   if (getLowerCaseAttribute(element, 'autocomplete') === 'off') {
     return false;
   }
-  if (getLowerCaseAttribute(element.form, 'autocomplete') == 'off') {
+  if (getLowerCaseAttribute(element.form, 'autocomplete') === 'off') {
     return false;
   }
   return true;
@@ -674,43 +663,52 @@ gCrWeb.fill.isElementInsideFormOrFieldSet = function(
 
 /**
  * @param element Form or form input element.
+ * @return Unique stable ID converted to string..
  */
-gCrWeb.fill.setUniqueIDIfNeeded = function(element: IndexableElement): void {
+gCrWeb.fill.getUniqueID = function(element: any): string {
+  // `setUniqueIDIfNeeded` is only available in the isolated content world.
+  // Check before invoking it as this script is injected into the page content
+  // world as well.
+  if (gCrWeb.fill.setUniqueIDIfNeeded) {
+    gCrWeb.fill.setUniqueIDIfNeeded(element);
+  }
+
   try {
-    const uniqueID = gCrWeb.fill.ID_SYMBOL;
-    if (typeof element[uniqueID] === 'undefined') {
-      const elementID = document[uniqueID]!++;
-      element[uniqueID] = elementID;
+    const uniqueIDSymbol = gCrWeb.fill.ID_SYMBOL;
+    if (typeof element[uniqueIDSymbol] !== 'undefined' &&
+        !isNaN(element[uniqueIDSymbol]!)) {
+      return element[uniqueIDSymbol].toString();
+    } else {
+      // Use the fallback value stored in the DOM. This will happen when the
+      // script is running in the page content world. JavaScript properties are
+      // not shared across content worlds. This means that `element[uniqueID]`
+      // will not have value in the page content world because it was set in the
+      // isolated content world.
+      const valueInDOM =
+          element.getAttribute(fillConstants.UNIQUE_ID_ATTRIBUTE);
 
-      if (gCrWeb.autofill_form_features
-              .isAutofillIsolatedContentWorldEnabled()) {
-        //  Store a copy of the ID in the DOM. gCrWeb.fill.getUniqueID will use
-        //  the DOM copy when running in the page content world.
-        element.setAttribute(
-            fillConstants.UNIQUE_ID_ATTRIBUTE, elementID.toString());
-      }
-
-      // TODO(crbug.com/40856841): WeakRef starts in 14.5, remove checks once 14
-      // is deprecated.
-      elementMap.set(
-          elementID, window.WeakRef ? new WeakRef(element) : element);
+      // Check that there is a valid integer ID stored in the DOM. If not,
+      // return the fallback value.
+      return isNaN(parseInt(valueInDOM)) ? fillConstants.RENDERER_ID_NOT_SET :
+                                           valueInDOM;
     }
   } catch (e) {
+    return fillConstants.RENDERER_ID_NOT_SET;
   }
 };
 
-/**
- * @param id Unique ID.
- * @return element Form or form input element.
- */
-gCrWeb.fill.getElementByUniqueID = function(id: number): Element | null {
-  try {
-    // TODO(crbug.com/40856841): WeakRef starts in 14.5, remove checks once 14 is
-    // deprecated.
-    return window.WeakRef ? elementMap.get(id).deref() : elementMap.get(id);
-  } catch (e) {
-    return null;
-  }
-};
+function setRemoteFrameToken(token: string) {
+  document.documentElement.setAttribute(REMOTE_FRAME_TOKEN_ATTRIBUTE, token);
+}
 
-export {AutofillFormFieldData, AutofillFormData, FrameTokenWithPredecessor};
+function getRemoteFrameToken(): string|null {
+  return document.documentElement.getAttribute(REMOTE_FRAME_TOKEN_ATTRIBUTE);
+}
+
+export {
+  AutofillFormFieldData,
+  AutofillFormData,
+  FrameTokenWithPredecessor,
+  setRemoteFrameToken,
+  getRemoteFrameToken,
+};

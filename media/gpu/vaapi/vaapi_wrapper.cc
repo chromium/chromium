@@ -42,6 +42,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -328,8 +329,7 @@ uint32_t BufferFormatToVAFourCC(gfx::BufferFormat fmt) {
     case gfx::BufferFormat::P010:
       return VA_FOURCC_P010;
     default:
-      NOTREACHED_IN_MIGRATION() << gfx::BufferFormatToString(fmt);
-      return 0;
+      NOTREACHED() << gfx::BufferFormatToString(fmt);
   }
 }
 
@@ -2117,8 +2117,7 @@ uint32_t VaapiWrapper::BufferFormatToVARTFormat(gfx::BufferFormat fmt) {
     case gfx::BufferFormat::P010:
       return VA_RT_FORMAT_YUV420_10BPP;
     default:
-      NOTREACHED_IN_MIGRATION() << gfx::BufferFormatToString(fmt);
-      return 0;
+      NOTREACHED() << gfx::BufferFormatToString(fmt);
   }
 }
 
@@ -3169,7 +3168,7 @@ void VaapiWrapper::PreSandboxInitialization(bool allow_disabling_global_lock) {
 
   VADisplayStateSingleton::PreSandboxInitialization();
 
-  const std::string va_suffix(std::to_string(VA_MAJOR_VERSION + 1));
+  const std::string va_suffix(base::NumberToString(VA_MAJOR_VERSION + 1));
   StubPathMap paths;
 
   paths[kModuleVa].push_back(std::string("libva.so.") + va_suffix);

@@ -47,8 +47,7 @@ bool StartsWithDriveLetter(std::string_view path) {
 base::FilePath URLToPath(std::string_view url) {
   // Must start with 'file://' with at least 1 more char.
   std::string prefix(kFileUrlPrefix);
-  if (url.size() <= prefix.size() ||
-      !base::StartsWith(url, prefix, base::CompareCase::SENSITIVE)) {
+  if (url.size() <= prefix.size() || !url.starts_with(prefix)) {
     return base::FilePath();
   }
 

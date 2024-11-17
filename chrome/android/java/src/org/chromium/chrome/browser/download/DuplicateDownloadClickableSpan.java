@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.download;
 
-import android.content.Context;
 import android.net.Uri;
 import android.text.style.ClickableSpan;
 import android.view.View;
@@ -13,7 +12,7 @@ import android.webkit.MimeTypeMap;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.task.AsyncTask;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.download.DownloadCollectionBridge;
 
 import java.io.File;
@@ -24,28 +23,25 @@ import java.io.File;
  */
 public class DuplicateDownloadClickableSpan extends ClickableSpan {
     private final @Nullable Runnable mRunnable;
-    private final OTRProfileID mOTRProfileID;
-    private final Context mContext;
+    private final OtrProfileId mOtrProfileId;
     private final String mFilePath;
     private @DownloadOpenSource int mSource;
 
     /**
      * Constructor.
-     * @param context Context to be used.
+     *
      * @param filePath file path of the download files.
      * @param runnable Runnable that will be executed when clicking the file name.
-     * @param otrProfileID Off the record profile ID.
+     * @param otrProfileId Off the record profile ID.
      * @param source Enum for UMA reporting.
      */
     public DuplicateDownloadClickableSpan(
-            Context context,
             String filePath,
             Runnable runnable,
-            OTRProfileID otrProfileID,
+            OtrProfileId otrProfileId,
             @DownloadOpenSource int source) {
-        mContext = context;
         mRunnable = runnable;
-        mOTRProfileID = otrProfileID;
+        mOtrProfileId = otrProfileId;
         mFilePath = filePath;
         mSource = source;
     }
@@ -71,9 +67,9 @@ public class DuplicateDownloadClickableSpan extends ClickableSpan {
             if (mRunnable != null) mRunnable.run();
             if (filePath != null) {
                 DownloadUtils.openDownload(
-                        filePath, mMimeType, null, mOTRProfileID, null, null, mSource);
+                        filePath, mMimeType, null, mOtrProfileId, null, null, mSource);
             } else {
-                DownloadManagerService.openDownloadsPage(mOTRProfileID, mSource);
+                DownloadManagerService.openDownloadsPage(mOtrProfileId, mSource);
             }
         }
     }

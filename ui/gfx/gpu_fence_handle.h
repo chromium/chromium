@@ -5,9 +5,9 @@
 #ifndef UI_GFX_GPU_FENCE_HANDLE_H_
 #define UI_GFX_GPU_FENCE_HANDLE_H_
 
+#include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
-#include "ui/gfx/gfx_export.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/files/scoped_file.h"
@@ -24,7 +24,7 @@
 namespace gfx {
 
 // TODO(crbug.com/40728014): Make this a class instead of struct.
-struct GFX_EXPORT GpuFenceHandle {
+struct COMPONENT_EXPORT(GFX) GpuFenceHandle {
 #if BUILDFLAG(IS_POSIX)
   using ScopedPlatformFence = base::ScopedFD;
 #elif BUILDFLAG(IS_FUCHSIA)

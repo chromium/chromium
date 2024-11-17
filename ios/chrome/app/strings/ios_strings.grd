@@ -140,6 +140,21 @@
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
+      <message name="IDS_IOS_AI_PROTOTYPING_HEADER" translateable="false" desc="Header for AI prototyping menu [Length: unlimited].">
+        AI Prototyping
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_ON_DEVICE_SUBMIT" translateable="false" desc="On device submit button text for AI prototyping menu [Length: unlimited].">
+        On Device Submit
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_NAME_PLACEHOLDER" translateable="false" desc="Name placeholder text for AI prototyping menu [Length: unlimited].">
+        Insert your name... (Optional)
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_QUERY_PLACEHOLDER" translateable="false" desc="Query placeholder text for AI prototyping menu [Length: unlimited].">
+        Insert your query...
+      </message>
+      <message name="IDS_IOS_AI_PROTOTYPING_SERVER_SIDE_SUBMIT" translateable="false" desc="Server side submit button text for AI prototyping menu [Length: unlimited].">
+        Server Side Submit
+      </message>
       <message name="IDS_IOS_ACCNAME_CLEAR_TEXT" desc="The accessibility label for the clear text button in the location bar [Length: unlimited].">
         Clear text
       </message>
@@ -556,7 +571,7 @@
         Select
       </message>
       <message name="IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT" desc="Text on the bookmarks context menu to edit selected bookmark">
-        Edit bookmark
+        Edit Bookmark
       </message>
        <message name="IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER" desc="Text on the bookmarks context menu to edit selected bookmark folder">
         Edit folder
@@ -964,58 +979,64 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP" desc="The iOS context menu item for adding one or multiple tabs to a new tab group. [iOS only]">
         {count, plural,
-        =1 {Add tab to new group}
-        other {Add tabs to new group}}
+        =1 {Add Tab to New Group}
+        other {Add Tabs to New Group}}
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU" desc="The iOS context menu item for adding one or multiple tabs to a new tab group. [iOS only]">
-        New tab group
+        New Tab Group
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP" desc="The iOS context menu item for adding a tab to an existing tab group. [iOS only]">
         {count, plural,
-        =1 {Add tab to group}
-        other {Add tabs to group}}
+        =1 {Add Tab to Group}
+        other {Add Tabs to Group}}
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_ADDTOBOOKMARKS" desc="The iOS context menu item for adding the url of a tab to the bookmarks. [iOS only]">
-        Add to bookmarks
+        Add to Bookmarks
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_ADDTOREADINGLIST" desc="The iOS menu item for adding a link to the reading list.">
-        Add to reading list
+        Add to Reading List
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS" desc="The iOS context menu item for closing all the tabs in the grid. [iOS only]">
-        Close all tabs
+        Close All Tabs
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABSANDGROUPS" desc="The iOS context menu item for closing all the tabs and the groups in the grid. [iOS only]">
-        Close all tabs and groups
+        Close All Tabs and Groups
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_CLOSEOTHERTABS" desc="The iOS context menu item for closing all the tabs except the currently selected one.">
-        Close other tabs
+        Close Other Tabs
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_CLOSEPINNEDTAB" desc="The iOS context menu item for closing a pinned tab. [iOS only]" meaning="Close the current pinned tab.">
-        Close pinned tab
+        Close Pinned Tab
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_CLOSETAB" desc="The iOS context menu item for closing a tab. [iOS only]" meaning="Close the current tab.">
-        Close tab
+        Close Tab
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP" desc="The iOS context menu item for closing a tab group. [iOS only]">
-        Close group
+        Close Group
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_COPY" desc="The iOS menu item for copying a link's URL into the pasteboard. Shorter than the desktop version [iOS only]">
         Copy link URL
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_COPYIMAGE" desc="The name of the Copy Image command in the content area context menu.">
-        Copy image
+        Copy Image
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_DELETEGROUP" desc="The iOS context menu item for deleting a tab group. [iOS only]">
-        Delete group
+        Delete Group
+      </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_MANAGESHAREDGROUP" desc="The iOS context menu item for managing a shared tab group. [iOS only]">
+        Manage Sharing
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_MOVETABTOGROUP" desc="The iOS context menu item for moving a tab to an existing tab group. [iOS only]">
-        Move to tab group
+        Move to Tab Group
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_NEWTABINGROUP" desc="The iOS context menu item for adding a new tab in a tab group. [iOS only]">
-        New tab in group
+        New Tab in Group
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENLENSOVERLAY" desc="The iOS menu item for openning lens overlay.">
-        Lens overlay
+        Search screen with Google Lens
+      </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_SHARELOCALGROUP" desc="The iOS context menu item for sharing a local tab group. [iOS only]">
+        Share Group
       </message>
       <message name="IDS_IOS_CONTENT_NOTIFICATION_SNACKBAR_ACTION_MANAGE" desc="Text for the Chrome content notifications confirmation snackbar action.">
         Manage
@@ -1030,46 +1051,49 @@ See your search engine’s instructions for deleting your search history, if app
         Open image
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENIMAGENEWTAB" desc="The name of the Open Image in New Tab command in the content area context menu">
-        Open image in new tab
+        Open Image in New Tab
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW" desc="The iOS menu item for opening a link in a new window. [iOS only]">
-        Open in new window
+        Open in New Window
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB" desc="The iOS menu item for opening a link in a new Incognito tab. Shorter than the desktop version [Length: 25em] [iOS only]">
         Open in new Incognito tab
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB" desc="The iOS menu item for opening a link in another tab. Shorter than the desktop version [iOS only]">
-        Open in new tab
+        Open in New Tab
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPENLINKINNEWTABGROUP" desc="The iOS context menu item for opening a link in new tab group. [iOS only]">
-        Open in new tab group
+        Open in New Tab Group
       </message>
        <message name="IDS_IOS_CONTENT_CONTEXT_OPENLINKINTABGROUP" desc="The iOS context menu item for opening a link in a tab group. [iOS only]">
-        Open in tab group
+        Open in Tab Group
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_OPEN_ALL_LINKS" desc="The iOS menu item for opening a list of links in new tabs. Shorter than the desktop version [iOS only]">
-        Open all
+        Open All
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_PINTAB" desc="The iOS context menu item for pinning a tab.[iOS only]">
-        Pin tab
+        Pin Tab
+      </message>
+      <message name="IDS_IOS_CONTENT_CONTEXT_RECENTACTIVITY" desc="The iOS context menu item for showing the recent activity in a shared tab group. [iOS only]">
+        Recent activity
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_REMOVEFROMGROUP" desc="The iOS context menu item for removing a tab from a group. [iOS only]">
-        Remove from group
+        Remove From Group
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP" desc="The iOS context menu item for renaming a tab group. [iOS only]">
-        Rename group
+        Rename Group
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_SAVEIMAGE" desc="The name of the Save Image As command in the content area context menu">
         Save in Photos
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_SELECTTABS" desc="The iOS context menu item for entering into the selection mode, where users can select tabs to perform bulk actions on them.[iOS only]">
-        Select tabs
+        Select Tabs
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_UNGROUP" desc="The iOS context menu item for ungrouping a tab group. [iOS only]">
         Ungroup
       </message>
       <message name="IDS_IOS_CONTENT_CONTEXT_UNPINTAB" desc="The iOS context menu item for unpinning a tab.[iOS only]">
-        Unpin tab
+        Unpin Tab
       </message>
       <message name="IDS_IOS_CONTENT_COPYIMAGE_ALERT_COPYING" desc="The title of the alert while the image to be copied is being downloaded.">
         Copying…
@@ -1216,7 +1240,7 @@ See your search engine’s instructions for deleting your search history, if app
         What's New
       </message>
       <message name="IDS_IOS_CONTEXT_MENU_SEARCHIMAGEWITHGOOGLE" desc="Context menu text for option to search an image with Google [Length: 25em] [iOS only]">
-        Search image with Google
+        Search Image with Google
       </message>
       <message name="IDS_IOS_CONTEXT_MENU_SEARCHWEBFORIMAGE" desc="Context menu text for option to perform a search for image [Length: 25em] [iOS only]">
         Search <ph name="SEARCH_ENGINE">$1<ex>Google</ex></ph> for this image
@@ -1243,7 +1267,7 @@ See your search engine’s instructions for deleting your search history, if app
         Block in Incognito
       </message>
       <message name="IDS_IOS_COPY_LINK_ACTION_TITLE" desc="Title of the action used to copy a link to the pasteboard. [iOS only]">
-        Copy link
+        Copy Link
       </message>
       <message name="IDS_IOS_COPY_VERSION_HINT" desc="The accessibility hint for the label showing the Chrome version. [iOS only]">
         Double tap to copy.
@@ -1259,9 +1283,6 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_NO_THANKS" desc="Text of the secondary button in the inital and 'Learn More' step views of the Credential Provider Exention Promo. [iOS only]">
         No thanks
-      </message>
-      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_BELOW_IOS16" desc="Text of the menu item on the iOS Settings -&gt; Passwords page to turn on crendential provider, for iOS 15 and older. Translate using the same text as the OS Settings in that language. [iOS only]">
-        AutoFill passwords
       </message>
       <message name="IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16" desc="Text of the menu item on the iOS Settings -&gt; Passwords page to turn on crendential provider, for iOS 16 and above. Translate using the same text as the OS Settings in that language. [iOS only]">
         Password options
@@ -1644,8 +1665,29 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DOWNLOAD_MOBILECONFIG_FILE_WARNING_TITLE" desc="Title of the alert displaying a warning message before downloading a .mobileconfig file.[iOS only]">
           Configuration profile available
       </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_ALERT_THIS_FILE_COUND_NOT_BE_OPENED" desc="Title for an alert which is presented when a file selected by the user cannot be opened in the Drive file picker. [iOS only]">
+          <ph name="FILENAME">$1<ex>image.jpeg</ex></ph> couldn't be opened
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_ALERT_TRY_AGAIN" desc="Title for an alert button to try again the selection of a file in the Drive file picker. The alert is presented when a file selected by the user couldn't be opened. [iOS only]">
+          Try Again
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_ALERT_DISCARD_SELECTION_TITLE" desc="Title for an alert asking the user to confirm whether they really want to discard and cancel their file selection. [iOS only]">
+          Are you sure you want to discard your selection?
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_ALERT_DISCARD_SELECTION" desc="Title of a button inside an alert asking the user to confirm whether they really want to discard and cancel their file selection. This button discards and cancel the file selection. [iOS only]">
+          Discard selection
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_ALERT_KEEP_SELECTION" desc="Title of a button inside an alert asking the user to confirm whether they really want to discard and cancel their file selection. This button keeps the selection. [iOS only]">
+          Keep selection
+      </message>
       <message name="IDS_IOS_DRIVE_FILE_PICKER_CONFIRM" desc="Title for a button that confirms the file selection in a file picker. [iOS only]">
           Confirm
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_EMPTY_FOLDER_MESSAGE" desc="The message to display when a Drive folder is empty. [iOS only]">
+        This folder is empty
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_NO_MATCHING_RESULTS_MESSAGE" desc="The message to display when a Drive search/filter yields an empty list of results. [iOS only]">
+        No matching results
       </message>
       <message name="IDS_IOS_DRIVE_FILE_PICKER_MY_DRIVE" desc="Title for My Drive folder in the drive file picker table. [iOS only]" meaning="The title corresponds to the My Drive folder in Google Drive, the translation must be similar. [iOS only]">
         My Drive
@@ -1692,17 +1734,29 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DRIVE_FILE_PICKER_FILTER_ALL_FILES" desc="Title for a button that shows all files regardless of their type. [iOS only]" meaning="Title for a button that shows all files regardless of their type. [iOS only]">
           All Files
       </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_RECENT_TITLE" desc="Title of a section where recent Drive items are presented. [iOS only]" meaning="Title of a section where recent Drive items are presented. [iOS only]">
+          Recent
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_SUBTITLE_MODIFIED" desc="Subtitle of a Drive item indicating when the item was last modified. [iOS only]" meaning="Subtitle of a Drive item indicating when the item was last modified. [iOS only]">
+          Modified <ph name="LAST_MODIFICATION_DATE">$1<ex>22 Dec 2022</ex></ph>
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_SUBTITLE_OPENED" desc="Subtitle of a Drive item indicating when the item was last opened. [iOS only]" meaning="Subtitle of a Drive item indicating when the item was last opened. [iOS only]">
+          Opened <ph name="LAST_OPENING_DATE">$1<ex>22 Dec 2022</ex></ph>
+      </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_SUBTITLE_SHARED_WITH_ME" desc="Subtitle of a Drive item shared to the user indicating when the item was shared. [iOS only]" meaning="Subtitle of a Drive item shared to the user indicating when the item was shared. [iOS only]">
+          Shared with me <ph name="SHARED_WITH_ME_DATE">$1<ex>22 Dec 2022</ex></ph>
+      </message>
       <message name="IDS_IOS_DRIVE_SORT_BY_NAME" desc="Title of the context menu entry to sort Drive items by name. [iOS only]">
           Name
       </message>
       <message name="IDS_IOS_DRIVE_SORT_BY_MODIFICATION" desc="Title of the context menu entry to sort Drive items by modification time. [iOS only]">
-          Last modified
+          Last Modified
       </message>
       <message name="IDS_IOS_DRIVE_SORT_BY_OPENING" desc="Title of the context menu entry to sort Drive items by opening time. [iOS only]">
-          Last opened
+          Last Opened
       </message>
       <message name="IDS_IOS_DRIVE_ADD_ACCOUNT" desc="In Title Case: Title of the context menu entry to add another account to choose drive files from. [iOS only]">
-        Add account
+        Add Account
       </message>
       <message name="IDS_IOS_EDIT_ACTION_TITLE" desc="Title of the action used to edit a selected item. [iOS only]">
         Edit
@@ -1853,7 +1907,7 @@ See your search engine’s instructions for deleting your search history, if app
         Get the best from the desktop browser you know and love on your iPhone.
       </message>
       <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPAD" desc="Title for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on IPad">
-        The browser you love now on iPadOS
+        The browser you love now on iPad
       </message>
       <message name="IDS_IOS_FIRST_RUN_SEGMENTED_DEFAULT_BROWSER_DEVICE_SWITCHER_TITLE_IPHONE" desc="Title for Default Browser promo shown during First Run Experience to users identified as Cross Device Desktop Users on iPhone">
         The browser you love now on iOS
@@ -2119,6 +2173,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_TAB_RESUMPTION" desc="The subtitle text for the Tab Resumption toggle in the Home Customization menu.">
         Your last open tab across all your devices.
       </message>
+      <message name="IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_SUBTITLE_TIPS" desc="The subtitle text for the Tips toggle in the Home Customization menu.">
+        Helpful suggestions that make browsing better and easier.
+      </message>
       <message name="IDS_IOS_HOME_CUSTOMIZATION_MAGIC_STACK_TITLE" desc="The title of the Shortcuts toggle in the Home Customization menu's main page.">
         Cards
       </message>
@@ -2185,7 +2242,7 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_IDENTITY_DISC_WITH_NAME_AND_EMAIL_OPEN_ACCOUNT_MENU_WITH_ERROR" desc="The content description for a toolbar button displaying user profile picture. Tapping on this button opens the account menu [iOS only].">
           Signed in as <ph name="USER_NAME">$1<ex>Peter Parker</ex></ph>. <ph name="USER_EMAIL">$2<ex>peter.parker@gmail.com</ex></ph>. Google Account error. Open account menu.
       </message>
-      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL" desc="The label of the enter passphrase action button in the identity error info bar. [iOS only]">
+      <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_BUTTON_LABEL" meaning="An on-screen button that enters the user's input" desc="The label of the enter passphrase action button in the identity error info bar. [iOS only]">
         Enter
       </message>
       <message name="IDS_IOS_IDENTITY_ERROR_INFOBAR_ENTER_PASSPHRASE_TITLE" desc="The title of the identity error info bar when the passphrase is required. [iOS only]">
@@ -2258,11 +2315,17 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_URL_READ_MORE_BUTTON" desc="Button to unfold a URL which is being truncated, so as to let the user read more of the URL. [iOS only]">
         more
       </message>
+      <message name="IDS_IOS_INCOGNITO_REAUTH_CLOSE_INCOGNITO_TABS" desc="Button to close all Incognito tabs on a screen that blocks Incognito tabs until unlocked. [iOS only]">
+        Close Incognito tabs
+      </message>
+      <message name="IDS_IOS_INCOGNITO_REAUTH_CONTINUE_IN_INCOGNITO" desc="Button that unlocks Incognito content, behind the blurred lock screen, with a tap. [iOS only]">
+        Continue in Incognito
+      </message>
       <message name="IDS_IOS_INCOGNITO_REAUTH_GO_TO_NORMAL_TABS" desc="Button to go to non-Incognito tabs on a screen that blocks Incognito tabs until biometric authetication. [iOS only]">
-       See other tabs
+        See other tabs
       </message>
       <message name="IDS_IOS_INCOGNITO_REAUTH_PASSCODE" desc="The passcode (pin code or password) used instead of biometric authentication, e.g. Face ID or Touch ID, for device authentication. [iOS only]">
-       Passcode
+        Passcode
       </message>
       <message name="IDS_IOS_INCOGNITO_REAUTH_SET_UP_PASSCODE_HINT" desc="Explanatory text for the setting to protect Incognito tabs with biometric authentication, e.g. Face ID or Touch ID. Appears when the user has no Face ID, Touch ID, or passcode set up, and therefore the feature cannot be enabled. [iOS only]">
         To lock your Incognito tabs, set up Touch ID, Face ID, or a Passcode.
@@ -2504,6 +2567,15 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_LENS_LEARN_MORE" desc="The title for the overflow menu option leading to the 'Learn More' page for Lens Overlay [iOS only].">
         Learn more
       </message>
+      <message name="IDS_IOS_LENS_ALERT_CLOSE_ACTION" desc="The close button title for the Lens network connection alert [iOS only].">
+        Close
+      </message>
+      <message name="IDS_IOS_LENS_ALERT_SUBTITLE" desc="The title for the alert informing the user that something when wrong with Lens because of the network connection [iOS only].">
+        Check your connection and try again
+      </message>
+      <message name="IDS_IOS_LENS_ALERT_TITLE" desc="The title for the alert informing the user that something when wrong with Lens because of the network connection [iOS only].">
+        Something went wrong
+      </message>
       <message name="IDS_IOS_LENS_PROMO_INSTRUCTIONS_STEP1" desc="The text for step 1 in the Lens Promo instructions view.">
         Go to your homepage or keyboard
       </message>
@@ -2543,6 +2615,18 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_LENS_OVERLAY_CONSENT_TITLE" desc="The title for the lens overlay consent dialog. [iOS only].">
         Tap or highlight to search anything with Google Lens
       </message>
+      <message name="IDS_IOS_LENS_OVERLAY_ENTRYPOINT_BUTTON_ACCESSIBILITY_LABEL" desc=" The Lesn overlay entrypoint button accessibility label [iOS only].">
+        Search your screen with Google Lens
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_NEW_TAB_MESSAGE" desc="Message displayed when a context menu selection resuls in a new tab openening in the background [iOS only].">
+        Your selection opened in a new tab
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_GO_TO_NEW_TAB" desc="Call to action to go to a tab that has just been opened in the background.">
+        Go to tab
+      </message>
+      <message name="IDS_IOS_LENS_OVERLAY_TOOLTIP_TEXT" desc="The Lens overlay tooltip displayed text.">
+        Search your screen
+      </message>
       <message name="IDS_IOS_LINK_TO_TEXT_ERROR_DESCRIPTION" desc="Description message in the alert dialog shown when link-to-text link generation failed. [iOS only]">
         A link to the highlight can not be created.
       </message>
@@ -2581,6 +2665,66 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_MAGIC_STACK_TURN_ON_NOTIFICATIONS" desc="The notifications opt-in button in Magic Stack modules">
         Turn On Notifications
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_ADDRESS_BAR_TITLE" desc="The title of the Address Bar Position tip for the Magic Stack.">
+        Choose Address Bar Position
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_ADDRESS_BAR_DESCRIPTION" desc="The description of the Address Bar Position tip for the Magic Stack.">
+        Switch the position of your address bar for a customized experience.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TITLE" desc="The title of the Autofill Saved Passwords tip for the Magic Stack.">
+        Autofill Saved Passwords
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_DESCRIPTION" desc="The description of the Autofill Saved Passwords tip for the Magic Stack.">
+        Quickly sign in to sites and apps with your saved passwords.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TUTORIAL_STEP_1" desc="The first step of the Autofill Saved Passwords tutorial for the Magic Stack.">
+        On a site where you've saved a password, tap the sign-in password field.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TUTORIAL_STEP_2" desc="The second step of the Autofill Saved Passwords tutorial for the Magic Stack.">
+        Choose the password you want to use from the list that appears.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_AUTOFILL_PASSWORDS_TUTORIAL_STEP_3" desc="The third step of the Autofill Saved Passwords tutorial for the Magic Stack.">
+        Tap "Use Password" to sign in securely.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_CONTEXT_MENU_HIDE_CHROME_TIPS" desc="The description of the Hide Chrome Tips button located in the Chrome Tips Magic Stack context menu.">
+        Hide "<ph name= "Module_Name"><ex>Chrome Tips</ex>$1</ph>"
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_CONTEXT_MENU_TURN_ON_NOTIFICATIONS" desc="The description of the Turn On Chrome Tips button located in the Chrome Tips Magic Stack context menu.">
+        Turn on notifications for <ph name= "Module_Name"><ex>Chrome Tips</ex>$1</ph>
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_GOT_IT" desc="Button label to dismiss a full-screen tip promo triggered via the Magic Stack.">
+        Got It
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_DEFAULT_DESCRIPTION" desc="The default description of the Lens tip for the Magic Stack.">
+        Shop, translate, and identify what you see with your camera or photos.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_SHOP_DESCRIPTION" desc="The description of the use Lens for shopping tip for the Magic Stack.">
+        Shop what you see with your camera or photo gallery.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_TRANSLATE_DESCRIPTION" desc="The description of the use Lens for translation tip for the Magic Stack.">
+        Translate text in your photos or your surroundings with your camera.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORDS_TUTORIAL_STEP_1" desc="The first step of the Save Passwords tutorial for the Magic Stack.">
+        Sign in to a website.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORDS_TUTORIAL_STEP_3" desc="The third step of the Save Passwords tutorial for the Magic Stack.">
+        Tap "Save" to easily access this password the next time you sign in.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORD_DESCRIPTION" desc="The description of the Save Password tip for the Magic Stack.">
+        Save your passwords to easily sign in to sites and apps.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SAFE_BROWSING_DESCRIPTION" desc="The description of the Safe Browsing tip for the Magic Stack.">
+        Add an extra layer of protection against online threats.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SET_UP_COMPLETION_TITLE" desc="The title of the Set Up List completion for the Magic Stack.">
+        You're all set up
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SHOW_ME_HOW" desc="Button label to show the tutorial for a Magic Stack tip.">
+        Show Me How
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_TUTORIAL_TITLE" desc="The title of the full-screen tutorial for a Magic Stack tip.">
+        How do I use this feature?
       </message>
       <message name="IDS_IOS_MANAGE_STORAGE_ALERT_TITLE" desc="Title of an alert presented when the user tries to select a destination for an upload, without sufficient storage space in the destination. [iOS only]">
         Your storage is full
@@ -2681,8 +2825,8 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_MANUAL_FALLBACK_SHOW_ADDRESSES" desc="Label for the addresses icon in manual fallback. Read by Text To Speech" meaning="Voice Over will read this to the user followed by 'Button' when this button is focused.">
         Addresses
       </message>
-      <message name="IDS_IOS_MANUAL_FALLBACK_SHOW_CREDIT_CARDS" desc="Label for the credit cards icon in manual fallback. Read by Text To Speech" meaning="Voice Over will read this to the user followed by 'Button' when this button is focused.">
-        Credit cards
+      <message name="IDS_IOS_MANUAL_FALLBACK_SHOW_PAYMENT_METHODS" desc="Label for the payment methods icon in manual fallback. Read by Text To Speech" meaning="Voice Over will read this to the user followed by 'Button' when this button is focused.">
+        Payment methods
       </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_SHOW_KEYBOARD" desc="Label for the keyboard icon in manual fallback. Read by Text To Speech" meaning="Voice Over will read this to the user followed by 'button' when this button is focused.">
         Keyboard
@@ -2921,12 +3065,6 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_OPEN_IOS_SETTINGS" desc="Text of the primary button to open iOS settings page. [iOS only]">
         Go to Settings…
       </message>
-      <message name="IDS_IOS_OPEN_NEW_TAB_IPH_ANNOUNCEMENT" desc="Announcement for the New Tab Tip in-product help promotion, explaining that new tabs can be added.  Read by Text To Speech. [iOS only]" meaning="The user has never created a new tab, and a bubble is displayed pointing to the new tab button to inform users how to create tabs and switch between them.">
-        You can open a new tab from the <ph name="NEW_TAB_BUTTON_ACCESSIBILITY_LABEL">$1<ex>new tab</ex></ph> button.
-      </message>
-      <message name="IDS_IOS_OPEN_NEW_TAB_IPH_TEXT" desc="Text for the New Tab Button in-product help promotion, explaining that new tabs can be added. [iOS only]" meaning="The user has never created a new tab, and a bubble is displayed pointing to the new tab button to inform users how to create tabs and switch between them.">
-        You can open a new tab here.
-      </message>
       <message name="IDS_IOS_OPEN_REPEATEDLY_ANOTHER_APP" desc="Alert to let the user know that the website is trying repeatedly to open another application. [iOS only]">
         This site is repeatedly trying to open another application.
       </message>
@@ -2953,6 +3091,9 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_RESTRICTED_IDENTITIES" desc="Message shown in the settings account switcher when enterprise policy has restricted some unseen identities. [iOS only]">
         Your organization allows you to sign in only with certain accounts. Accounts that aren't allowed are hidden. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
+      </message>
+      <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGNIN_ACCESSIBILITY_LABEL" desc="This string is found on a button on a list of available Google Accounts that the user sees when they open the profile menu on Chrome on iOS. When the user taps this button, Chrome will sign the user in to the selected account (and sign them out of the previous account). This text is a verb phrase. The tone should be factual. [iOS only]">
+        Sign in as <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph>
       </message>
       <message name="IDS_IOS_OPTIONS_ACCOUNTS_SIGN_OUT_TURN_OFF_SYNC" desc="Title of the button to sign out and turn off sync. [iOS only]">
         Sign out and turn off sync
@@ -2997,7 +3138,7 @@ Handoff must also be enabled in the General section of Settings, and your device
           =1 {After 1 day}
           other {After {COUNT} days}}
       </message>
-      <message name="IDS_IOS_OPTIONS_MOVE_INACTIVE_TABS" desc="Title for opening the setting for when tabs should be considered inactive.">
+      <message name="IDS_IOS_OPTIONS_MOVE_INACTIVE_TABS" desc="Title for opening the setting for when tabs should be considered inactive." meaning="The title of the menu for the users to chose after how long should tabs be marked as inactives.">
         Inactive
       </message>
       <message name="IDS_IOS_OPTIONS_PRELOAD_WEBPAGES" desc="Title for opening the setting for if/when to preload webpages. [Length: 20em] [iOS only]">
@@ -3051,7 +3192,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Your cookies setting applies to all tabs. To apply a new setting to an open tab, reload the tab.
       </message>
       <message name="IDS_IOS_OPTIONS_REPORT_AN_ISSUE" desc="Title for the option on Settings page to report an issue. [Length: 20em] [iOS only]">
-        Report an issue
+        Report an Issue
       </message>
       <message name="IDS_IOS_OPTIONS_WEB_SERVICES_LABEL" desc="Title for group of web services items in Privacy settings table, including Show Suggestions, Preload Webpages, and Send Usage Data. [Length: 10em] [iOS only]">
         Web services
@@ -3069,7 +3210,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Customize menu
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_EDIT_ACTIONS" desc="The iOS menu item for starting the process to edit actions on the overflow menu." meaning="[iOS only] [Length: Unlimited]">
-        Customize menu
+        Customize Menu
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_EDIT_SECTION_HIDDEN_TITLE" desc="The title for the overflow menu edit section showing hidden destinations" meaning="[iOS only] [Length: Unlimited]">
         Hidden
@@ -3081,31 +3222,31 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Reading list is hidden
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_ADD_TO_BOOKMARKS" desc="The title for the context menu item to hide Add to Bookmarks. This should match the title of the Add to Bookmarks action in the menu." meaning="[iOS only] [Length: Unlimited]">
-        Hide Add to bookmarks
+        Hide Add to Bookmarks
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_CLEAR_BROWSING_DATA" desc="The title for the context menu item to hide Delete Browsing Data. This should match the title of the Delete Browsing Data action in the menu." meaning="[iOS only] [Length: Unlimited]">
-        Hide Delete browsing data
+        Hide Delete Browsing Data
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_DESKTOP_SITE" desc="The title for the context menu item to hide Request Desktop Site. This should match the title of the Request Desktop Site action in the menu." meaning="[iOS only] [Length: Unlimited]">
-        Hide Request desktop site
+        Hide Request Desktop Site
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_EDIT_BOOKMARK" desc="The title for the context menu item to hide Edit Bookmarks. This should match the title of the Edit Bookmarks action in the menu." meaning="[iOS only] [Length: Unlimited]">
-        Hide Edit bookmark
+        Hide Edit Bookmark
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FIND_IN_PAGE" desc="The title for the context menu item to hide Find in Page. This should match the title of the Find in Page action in the menu." meaning="[iOS only] [Length: Unlimited]">
-        Hide Find in page
+        Hide Find in Page
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_FOLLOW" desc="The title for the context menu item to hide Follow. This should match the title of the Follow action in the menu." meaning="[iOS only] [Length: Unlimited]">
         Hide Follow <ph name="DOMAIN_NAME">$1<ex>google.com</ex></ph>
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_MOBILE_SITE" desc="The title for the context menu item to hide Request Mobile Site. This should match the title of the Request Mobile Site action in the menu." meaning="[iOS only] [Length: Unlimited]">
-        Hide Request mobile site
+        Hide Request Mobile Site
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_READING_LIST" desc="The title for the context menu item to hide Add to Reading List. This should match the title of the Add to Reading List action in the menu." meaning="[iOS only] [Length: Unlimited]">
-        Hide Add to reading list
+        Hide Add to Reading List
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_TEXT_ZOOM" desc="The title for the context menu item to hide Zoom Text. This should match the title of the Zoom Text action in the menu." meaning="[iOS only] [Length: Unlimited]">
-        Hide Zoom text
+        Hide Zoom Text
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_ACTION_TRANSLATE" desc="The title for the context menu item to hide Translate. This should match the title of the Translate action in the menu." meaning="[iOS only] [Length: Unlimited]">
         Hide Translate
@@ -3126,7 +3267,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Hide Password Manager
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_PRICE_NOTIFICATIONS" desc="The title for the context menu item to hide Price Tracking. This should match the title of the Price Tracking destination in the menu." meaning="[iOS only] [Length: Unlimited]">
-        Hide Track price
+        Hide Track Price
       </message>
       <message name="IDS_IOS_OVERFLOW_MENU_HIDE_DESTINATION_READING_LIST" desc="The title for the context menu item to hide Reading List. This should match the title of the Reading List destination in the menu." meaning="[iOS only] [Length: Unlimited]">
         Hide Reading list
@@ -3173,9 +3314,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PAGE_INFO_OFFLINE_TITLE" desc="Title of the message to display in the page info bubble when the page you are on is an offline page.">
         Viewing offline version
       </message>
-      <message name="IDS_IOS_PAGE_INFO_PERMISSIONS_HEADER" desc="Header of the permissions section (in page info)">
-        Permissions
-      </message>
       <message name="IDS_IOS_PAGE_INFO_RELOAD" desc="Button title in the page info bubble that allows to reload the current page.">
         Reload
       </message>
@@ -3199,9 +3337,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PAGE_INFO_SITE_INFORMATION" desc="Title of the navigation controller to display when the page info is presented.">
         Site information
-      </message>
-      <message name="IDS_IOS_PAGE_INFO_SITE_SECURITY" desc="Title of the button opening the site security information (in page info)">
-        Site security
       </message>
       <message name="IDS_IOS_PAGE_LOADED_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement when a page has loaded. [Length: unlimited] [iOS only]">
         Webpage loaded
@@ -3543,6 +3678,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSWORD_SETTINGS_CHANGE_PIN" desc="Label of the button that allows to change the PIN for Google Password Manager in password settings. [iOS Only]">
         Change PIN
       </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_CHANGE_PIN_SET_UP_PASSCODE_CONTENT" desc="Message informing the user that in order to change their password manager PIN, a passcode or screen lock needs to be set up on the device. [iOS only]">
+        To change your PIN, first set up a passcode on your device.
+      </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_GOOGLE_PASSWORD_MANAGER_PIN_DESCRIPTION" desc="Help text explaining the functionality of a PIN for Google Password Manager. Refer to Glossary for the meaning of 'passkey', do not translate it as 'password'. [iOS Only]">
         Helps you access saved passkeys on any device
       </message>
@@ -3569,6 +3707,15 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_SAVE_BUTTON" desc="Save button text for adding a new credential manually via settings [Length: 10em]">
         Save
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_UPDATE_PIN_ERROR" desc="Text on the alert dialog explaining an error in the update PIN flow. [iOS only]">
+        Your PIN wasn't changed. Check your internet connection and try again
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_UPDATE_PIN_ERROR_BUTTON" desc="Text on the button in the alert dialog explaining an error in the update PIN flow. [iOS only]">
+        Got it
+      </message>
+      <message name="IDS_IOS_PASSWORD_SETTINGS_UPDATE_PIN_ERROR_TITLE" desc="Title text on the alert dialog explaining an error in the update PIN flow. [iOS only]">
+        Something went wrong
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_USERNAME_PLACEHOLDER_TEXT" desc="Placeholder text for the username field indicating that the field is optional when adding a new credential manually via settings [Length: 10em]">
         optional
@@ -3998,6 +4145,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_FRIENDLIER_SUMMARY" desc="Friendlier summary for Privacy Safe Browsing enhanced protection mode.">
         Real-time, proactive protection against dangerous sites, downloads, and extensions that’s based on your browsing data getting sent to Google
       </message>
+      <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY_UPDATED" desc="Summary for Privacy Safe Browsing enhanced protection mode.">
+        Real-time, AI-powered protection against dangerous sites, downloads, and extensions that’s based on your browsing data getting sent to Google
+      </message>
       <message name="IDS_IOS_PRIVACY_SAFE_BROWSING_ENHANCED_PROTECTION_SUMMARY" desc="Summary for Privacy Safe Browsing enhanced protection mode.">
         Faster, proactive protection against dangerous websites, downloads, and extensions. Warns you about password breaches. Requires browsing data to be sent to Google.
       </message>
@@ -4033,6 +4183,27 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_PROGRESS_BAR_ACCESSIBILITY" desc="Text read by voice over to inform the user about the progress of the page load. [Read by Text To Speech].">
         Page load progress bar, <ph name="EMAIL">$1<ex>20%</ex></ph> loaded.
+      </message>
+      <message name="IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_ALERT_DECRIPTION" desc="Description of alert informing users that notifications are being delivered silently. [iOS only]">
+        Get notifications on your Lock Screen and as Banners to never miss what matters to you
+      </message>
+      <message name="IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_ALERT_TITLE" desc="Title of alert informing users that notifications are being delivered silently. [iOS only]">
+        Your notifications are being delivered quietly
+      </message>
+      <message name="IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_BANNERS_TEXT" desc="Text in contextual image of prominent notification settings alert matching the 'Banners' selection in the app notification settings page. [iOS only]">
+        Banners
+      </message>
+      <message name="IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_LOCK_SCREEN_TEXT" desc="Text in contextual image of prominent notification settings alert matching the 'Lock Screen' selection in the app notification settings page. [iOS only]">
+        Lock Screen
+      </message>
+      <message name="IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_NOTIFICATION_CENTER_TEXT" desc="Text in contextual image of prominent notification settings alert matching the 'Notification Center' selection in the app notification settings page. [iOS only]">
+        Notification Center
+      </message>
+            <message name="IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_OPEN_SETTINGS_BUTTON" desc="Button text in prominence notification alert that takes users to the app's notification setting. [iOS only]">
+            Go to Settings...
+      </message>
+            <message name="IDS_IOS_PROMINENCE_NOTIFICATION_SETTINGS_NO_THANKS_BUTTON" desc="Button text in prominence notification alert for the user to say 'No thanks'. [iOS only]">
+            No thanks
       </message>
       <message name="IDS_IOS_PROMOS_MANAGER_ALERT_PROMO_DEFAULT_CANCEL_BUTTON_TEXT" desc="The default text for the cancel button alert promo. [iOS only]">
         Cancel
@@ -4119,10 +4290,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Mark all unread
       </message>
       <message name="IDS_IOS_READING_LIST_MARK_AS_READ_ACTION" desc="Label of the action button to mark a reading list entry as read. [Length: 25em]" meaning="Mark an entry as read. [Length: 25em]">
-        Mark as read
+        Mark as Read
       </message>
       <message name="IDS_IOS_READING_LIST_MARK_AS_UNREAD_ACTION" desc="Label of the action button to mark a reading list entry as unread. [Length: 25em]" meaning="Mark an entry as unread. [Length: 25em]">
-        Mark as unread
+        Mark as Unread
       </message>
       <message name="IDS_IOS_READING_LIST_MARK_BUTTON" desc="Label of the button to mark the selected reading list as either read or unread [Length: 25em]" meaning="Display options letting the user mark all the selected entries as read or as unread. [Length: 25em]">
         Mark…
@@ -4140,7 +4311,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
           You'll find your reading list here
       </message>
       <message name="IDS_IOS_READING_LIST_OPEN_OFFLINE_BUTTON" desc="Label of the button to display the Offline version instead of the Online one. [Length: 25em]">
-        Open offline version
+        Open Offline Version
       </message>
       <message name="IDS_IOS_READING_LIST_READ_HEADER" desc="Heading. Appears above a list of articles the user has already read, in their Reading List. Appears on the same page as an 'Unread' heading, which contains articles the user hasn't read yet. In English, 'Read' can be both verb and adjective so we needed to be more explicit. Does not need to be translated literally. [Length: 40em]" meaning="The entries below this header are read. [Length: 40em]">
         Pages you've read
@@ -4182,7 +4353,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Collapses the section.
       </message>
       <message name="IDS_IOS_RECENT_TABS_HIDE_MENU_OPTION" desc="Context menu option to remove a foreign session. [Length: 15em] [iOS only]">
-        Hide for now
+        Hide For Now
       </message>
       <message name="IDS_IOS_RECENT_TABS_OTHER_DEVICES" desc="The name of the section informing the user on how to view tabs from other devices.[Length: 25em]">
         Other devices
@@ -4594,10 +4765,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         None
       </message>
       <message name="IDS_IOS_SEARCH_ENGINE_SETTING_TITLE" desc="The title for Search Engine selection setting [iOS only]">
-        Search Engine
-      </message>
-      <message name="IDS_IOS_SEARCH_WITH_TITLE_SEARCH" desc="Edit menu button title to open a tab with a Search query of the current selection [Length: 25em]." meaning="Edit menu Search button [Length: 25em]">
-        Search
+        Search engine
       </message>
       <message name="IDS_IOS_SEARCH_ENGINE_SETTINS_CELL_VOICE_OVER" desc="This string is used to add the search engine name and the search engine domain. It is only used by VoiceOver. [iOS only]">
         <ph name="SEARCH_ENGINE_NAME">$1<ex>Google</ex></ph>, <ph name="SEARCH_ENGINE_DOMAIN">$2<ex>google.com</ex></ph>
@@ -4605,17 +4773,11 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SEARCH_WITH_TITLE_SEARCH_WITH" desc="Edit menu button title to open a tab with a Search query of the current selection. Will contain the search provider. [Length: 25em]." meaning="Edit menu Search button [Length: 25em]">
         Search with <ph name="SEARCH_PROVIDER">$1<ex>Google</ex></ph>
       </message>
-      <message name="IDS_IOS_SEARCH_WITH_TITLE_WEB_SEARCH" desc="Edit menu button title to open a tab with a Search query of the current selection. Should be similar to the Android equivalent. [Length: 25em]." meaning="Edit menu Search button [Length: 25em]">
-        Web Search
-      </message>
-      <message name="IDS_IOS_SEE_ALL_OPEN_TABS_IPH_ANNOUNCEMENT" desc="Announcement for the tab grid button's in-product help, explaining that all open tabs can be accessed from the Tab Switcher. Read by Text To Speech. [iOS only]">
-        You can access all your open tabs from the Tab Switcher.
-      </message>
-      <message name="IDS_IOS_SEE_ALL_OPEN_TABS_IPH_TEXT" desc="Text for the tab grid button's in-product help, explaining that all open tabs can be seen. [iOS only]">
-        You can find all your open tabs here.
-      </message>
       <message name="IDS_IOS_SEGMENTED_DEFAULT_BROWSER_VIDEO_PROMO_DEVICE_SWITCHER_TITLE" desc="Title for the segmented generic default browser promo view, shown to users identified as Desktop Users or Android switchers.">
         Get the best from the Browser you love
+      </message>
+      <message name="IDS_IOS_SEND_TAB_TO_SELF_HIDE_CONTEXT_MENU_DESCRIPTION" desc="Description for the long-press context menu hide action of the send tab to self module.">
+        Hide "<ph name="Module_Name"><ex>Get Tabs Notifications</ex>$1</ph>"
       </message>
       <message name="IDS_IOS_SEND_TAB_TO_SELF_NOTIFICATION_SETTINGS_BODY" desc="Body text of the Send Tabs notifications entry in the Notification Settings Screen.">
         Alerts when you receive tabs from your other devices.
@@ -4623,11 +4785,23 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SEND_TAB_TO_SELF_NOTIFICATION_SETTINGS_TITLE" desc="Title text of the Send Tabs notifications entry in the Notification Settings Screen.">
         Tabs
       </message>
+      <message name="IDS_IOS_SEND_TAB_PROMO_ALLOW_BUTTON" desc="Text for the Allow button for the Send Tab to Self promo Magic Stack module.">
+        Allow Tabs Notifications…
+      </message>
+      <message name="IDS_IOS_SEND_TAB_PROMO_FEATURE_NAME_FOR_SNACKBAR" desc="Send Tab to Self feature name for snackbar message that is displayed after enabling Send Tab push notifications from the Magic Stack module.">
+        Received Tabs
+      </message>
+      <message name="IDS_IOS_SEND_TAB_PROMO_BODY" desc="Body text for the Send Tab to Self promo Magic Stack module.">
+        Open tabs received from your other devices from the lock screen.
+      </message>
+      <message name="IDS_IOS_SEND_TAB_PROMO_TITLE" desc="Title for the Send Tab to Self promo Magic Stack module.">
+        Get Tabs Notifications
+      </message>
       <message name="IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE" desc="Message briefly displayed at the bottom of the screen to the user to inform that the tab is being sent to the target device. [Length: 35em]" meaning="The is being sent to the target device. [Length: 35em]">
         Sending to <ph name="DEVICE_NAME">$1<ex>IPhone</ex></ph>…
       </message>
       <message name="IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ACTION" desc="Button label for the Send Tab To Self modal dialog that sends the current tab to a user's other device. [iOS only]">
-        Send To your device
+        Send to your device
       </message>
       <message name="IDS_IOS_SEND_TAB_TO_SELF_TARGET_DEVICE_ITEM_SUBTITLE_DAY" desc="Text label for the Send Tab To Self modal dialog that shows the last active time of a user's device. [iOS only]">
         Active 1 day ago
@@ -4720,9 +4894,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION_IOS16" desc="The caption label below subtitle of the view that teaches users to turn off iOS auto-fill from Chrome password manager on iOS 16 and above">
         To turn off, open <ph name="BEGIN_LINK">BEGIN_LINK</ph>Settings<ph name="END_LINK">END_LINK</ph> and go to Password Options.
       </message>
-      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1" desc="Text of the row indicating the first step of shortened instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
-        Open AutoFill Password settings
-      </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1_IOS16" desc="Text of the row indicating the first step of shortened instruction of of turning on iOS auto-fill from Chrome password manager on iOS 16 and above [iOS only]">
         Open Password Options
       </message>
@@ -4734,9 +4905,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_2" desc="Text of the row indicating the second step of full instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
         2. Tap Passwords
-      </message>
-      <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3" desc="Text of the row indicating the third step of full instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
-        3. Tap AutoFill Passwords
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_STEP_3_IOS16" desc="Text of the row indicating the third step of full instruction of of turning on iOS auto-fill from Chrome password manager on iOS 16 and above [iOS only]">
         3. Tap Password Options
@@ -4802,7 +4970,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Can't verify your identity. Password not copied.
       </message>
       <message name="IDS_IOS_SETTINGS_PRIVACY_TITLE" desc="Title for the Privacy and Security preferences.">
-        Privacy and Security
+        Privacy and security
       </message>
       <message name="IDS_IOS_SETTINGS_SAFETY_CHECK_ISSUES_FOUND_TIME" desc="Footer for the safety check section telling the user when issues were found.">
         Issues found <ph name="TIME">$1<ex>10 minutes ago</ex></ph>.
@@ -4844,7 +5012,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Updates
       </message>
       <message name="IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER" desc="Label of the row that opens the Default Browser Settings page">
-          Default Browser
+          Default browser
       </message>
       <message name="IDS_IOS_SETTINGS_SET_UP_SCREENLOCK_CONTENT" desc="Message informing the user that in order to view or copy the password, a screen lock needs to be set up on the device. This is shown as an alert message after the user tries to view or copy the password from a settings page. [Length: about two lines]">
         To see passwords, you must first set a passcode on your device.
@@ -4966,6 +5134,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SET_UP_LIST_TRY_BUTTON_TEXT" desc="Button text next to a Set Up List item suggesting to the user to try the action.">
         Try
       </message>
+      <message name="IDS_IOS_SHARED_GROUP_SHARE_GROUP" desc="The Voice Over label for the button allowing the user to share a group.">
+        Share group
+      </message>
       <message name="IDS_IOS_SHARED_HIGHLIGHT_LEARN_MORE" desc="An option in a menu which appears after a user taps on a highlighted passage in a web page. When selected, the user will be taken to a help article explaining how the highlighting feature works. [Length: 25em]">
         Learn more…
       </message>
@@ -4980,6 +5151,30 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_SHARE_BUTTON_LABEL" desc="Label of a button which will initiate a share flow. [iOS only]">
         Share…
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_MANAGE_DISCLAIMER" desc="Disclaimer for managing a tab group.">
+        Anyone with the link can edit all tabs.
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_SHARE_GROUP_DISCLAIMER" desc="Disclaimer for sharing a tab group.">
+        Anyone with the link can edit all tabs, so share wisely. Link expires in 48 hours.
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_SHARE_GROUP_DISCLAIMER_LINK" desc="The link part of the disclaimer for sharing a tab group.">
+        Learn about shared tab groups
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_SHARE_GROUP_TITLE" desc="The title for sharing a tab group.">
+        Share "<ph name="GROUP_NAME">$1<ex>Vacation</ex></ph>" Tab Group
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_JOIN_ALERT_EXPIRED_ACTION_TITLE" desc="The title of the button in the alert displayed when the shared link has expired.">
+        Got it
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_JOIN_ALERT_EXPIRED_MESSAGE" desc="The message in the alert displayed when the shared link has expired.">
+        Contact the sender to ask for a new link
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_JOIN_ALERT_EXPIRED_TITLE" desc="The title of the alert displayed when the shared link has expired.">
+        This link doesn’t work
+      </message>
+      <message name="IDS_IOS_SHARE_KIT_JOIN_TAB_GROUP" desc="The type of element that the user will be opening when trying to join a shared group. Used in the context 'Join and open *tab group* with Ali'" meaning="You are trying to join a shared tab group">
+        tab group
       </message>
       <message name="IDS_IOS_SHOW_FULL_URL_BUTTON_ACCESSIBILITY_LABEL" desc="Accessibility Label of a button which will initiate the popup message with the full URL in the web context menu. [iOS only]">
         Show full URL
@@ -5003,37 +5198,31 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Copy
       </message>
       <message name="IDS_IOS_SHARE_MENU_FIND_IN_PAGE" desc="Text label to the Find in Page action in the extension menu that open the 'Find in Page' menu. [iOS only]">
-        Find in page
+        Find in Page
       </message>
       <message name="IDS_IOS_SHARE_MENU_GENERATE_QR_CODE_ACTION" desc="The text label of the action in the extension menu that generates and shows a QR code for the current page. [iOS only]" meaning="Action from the displayed menu after the user tap on the share button.">
-        Create a QR code
+        Create a QR Code
       </message>
       <message name="IDS_IOS_SHARE_MENU_PRINT_ACTION" desc="The text label of the Print action in the extension menu that starts the printing process. [Length: 13em] [iOS only]">
         Print
       </message>
       <message name="IDS_IOS_SHARE_MENU_READING_LIST_ACTION" desc="The text label of the Add to Reading List action in the extension menu that adds the current page to the Reading List. [Length: 25em] [iOS only]" meaning="Action from the displayed menu after the user tap on the share button.">
-        Add to reading list
+        Add to Reading List
       </message>
       <message name="IDS_IOS_SHARE_MENU_REQUEST_DESKTOP_SITE" desc="Text label to the Request Desktop Site action in the extension menu that request the desktop version of the current page. [iOS only]" meaning="Action from the displayed menu after the user tap on the share button.">
-        Request desktop site
+        Request Desktop Site
       </message>
       <message name="IDS_IOS_SHARE_MENU_REQUEST_MOBILE_SITE" desc="Text label to the Request Mobile Site action in the extension menu that request the mobile version of the current page. [iOS only]" meaning="Action from the displayed menu after the user tap on the share button.">
-        Request mobile site
+        Request Mobile Site
       </message>
       <message name="IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION" desc="Text label to the Send Tab To Self action in the extension menu that sends the current tab to the user's other devices. [iOS only]" meaning="Action from the displayed menu after the user tap on the share button.">
-        Send to your devices
+        Send to Your Devices
       </message>
       <message name="IDS_IOS_SHARE_MESSAGES_COMPLETE" desc="Message shown when message share has been sent. [Length: Unknown. Keep it short.] [iOS only]">
         Message sent.
       </message>
       <message name="IDS_IOS_SHARE_PAGE_BUTTON_LABEL" desc="Label of a button which will initiate a share flow for the current page. [iOS only]">
         Share page…
-      </message>
-      <message name="IDS_IOS_SHARE_THIS_PAGE_IPH_TEXT" desc="Text for the share button's in-product help, explaining that this button can be used to share this page. [iOS only]">
-        You can share this page here.
-      </message>
-      <message name="IDS_IOS_SHARE_THIS_PAGE_IPH_ANNOUNCEMENT" desc="The announcement of the share button's in-product help, explaining to the user they can share this page from the share button. The in-product help is displayed as a bubble pointing to the menu button. Read by Text To Speech. [iOS only]">
-        You can share this page here from the share button.
       </message>
       <message name="IDS_IOS_SHARE_TO_CLIPBOARD_SUCCESS" desc="Message displayed when the copy link (in Share… menu) action has succeeded. [Length: 30em] [iOS only]">
         Link copied
@@ -5089,8 +5278,20 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PASSKEY_CREATION_DATE" desc="Passkey creation date. [iOS only]">
         Created on <ph name="Date"><ex>2023/12/31</ex>$1</ph>
       </message>
+      <message name="IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_SAVED" desc="Notification that a newly created passkey was synced to the user's account. [iOS only]">
+        Passkey saved
+      </message>
+      <message name="IDS_IOS_CREDENTIAL_PROVIDER_VIEW_PASSKEY" desc="Button label to view a recently created passkey in the password manager. [iOS only]">
+        View
+      </message>
       <message name="IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE_WITH_USERNAME" desc="Notification title for the user's signed-in state that includes the user's full name [iOS only]">
       Signed in as <ph name="USER">$1<ex>Jane Doe</ex></ph>
+      </message>
+      <message name="IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_NAME_AND_EMAIL" is_accessibility_with_no_ui="true" desc="The content description for the account picker. Opens the 'Choose an account' dialog.">
+        <ph name="NAME">$1<ex>John Doe</ex></ph>, <ph name="EMAIL">$2<ex>john.doe@example.com</ex></ph> currently selected. Choose an account.
+      </message>
+      <message name="IDS_IOS_SIGNIN_ACCOUNT_PICKER_DESCRIPTION_WITH_EMAIL" is_accessibility_with_no_ui="true" desc="The content description for the account picker. Opens the 'Choose an account' dialog. Used when the user's name is not available.">
+        <ph name="EMAIL">$1<ex>john.doe@example.com</ex></ph> currently selected. Choose an account.
       </message>
       <message name="IDS_IOS_SIGNIN_PROMO_BOOKMARKS" desc="This string is on a promo intended to promote signing in to Chrome with the user's Google Account. It appears on the Bookmarks page when the user is not signed in. We want users to read this promo and click 'Continue as name' to sign in to their Google Account. The tone should be informative and lightweight. [Length: 90em]">
         Sign in to get your bookmarks on all your devices.
@@ -5143,8 +5344,14 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT" desc="Text to inform the managed user about why their their device data is being cleared on signout. [iOS only]">
         After you sign out, unsaved data will be deleted from this device. This could include passwords, history, and more.
       </message>
+            <message name="IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLOSES_TABS_AND_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT" desc="Text to inform the managed user about why their their device data is being cleared on signout. [iOS only]">
+        After you sign out, tabs will be closed and unsaved account data will be deleted from this device. This could include passwords, history, and more.
+      </message>
       <message name="IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT" desc="Text to inform the managed user about why their their device data is being cleared on signout. [iOS only]">
           To protect your organization's security, unsaved data will be deleted from this device. This could include passwords, history, and more.
+      </message>
+            <message name="IDS_IOS_SIGNOUT_CLOSES_TABS_AND_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT" desc="Text to inform the managed user about why their their device data is being cleared on signout. [iOS only]">
+          To protect your organization's security, tabs will be closed and unsaved account data will be deleted from this device. This could include passwords, history, and more.
       </message>
       <message name="IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_TITLE_WITH_MANAGED_ACCOUNT" desc="The signout dialog title. This is the new dialog that is used when the user have a managed account (other than gmail account) [iOS only].">
         Unsaved account data will be deleted
@@ -5317,7 +5524,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SYNC_CONFIRM_PASSPHRASE_LABEL" desc="The text for the confirm-passphrase field. [Length: 20em] [iOS only]">
         Confirm passphrase
       </message>
-      <message name="IDS_IOS_SYNC_DECRYPT_BUTTON" desc="The title for the decrypt button on the encryption password screen [Length: 10em] [iOS only]">
+      <message name="IDS_IOS_SYNC_DECRYPT_BUTTON" meaning="An on-screen button that enters the user's input" desc="The title for the decrypt button on the encryption password screen [Length: 10em] [iOS only]">
         Enter
       </message>
       <message name="IDS_IOS_SYNC_ENCRYPTION_CREATE_PASSPHRASE" desc="The title for passphrase page where the user creates the sync encryption passphrase [Length: 20em] [iOS only]">
@@ -5391,6 +5598,26 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TABS_MANAGEMENT_SETTINGS" desc="Title for the tabs management panel in settings [Length: 30em] [iOS only]">
         Tabs
+      </message>
+      <message name="IDS_IOS_INCOGNITO_LOCK_SETTING_STATE_REAUTH" desc="The state of the incognito lock setting when it is set to lock with biometric authentication, e.g. Passcode, Face ID or Touch ID. This is displayed on the privacy and security page in settings. [iOS only]">
+       <ph name="BIOMETRIC_AUTHENITCATION_TYPE">$1<ex>Face ID</ex></ph>
+      </message>
+      <message name="IDS_IOS_INCOGNITO_LOCK_SETTING_NAME" desc="Name of the Setting to protect Incognito tabs with either soft lock or biometric authentication, e.g. Face ID or Touch ID. [iOS only]">
+       Hide Incognito tabs
+      </message>
+      <message name="IDS_IOS_INCOGNITO_LOCK_DO_NOT_HIDE" desc="Incognito lock setting option to disable hiding Incognito tabs. This appears in the incognito lock settings page under privacy and security. [iOS only]">
+       Don't hide
+      </message>
+      <message name="IDS_IOS_INCOGNITO_LOCK_HIDE_WITH_SOFT_LOCK_TITLE" desc="Incognito lock setting option to enable hiding Incognito tabs with a soft lock.  This appears in the incognito lock settings page under privacy and security. [iOS only]">
+       {count, plural,
+          =1 {Hide after 1 minute}
+          other {Hide after {count} minutes}}
+      </message>
+      <message name="IDS_IOS_INCOGNITO_LOCK_HIDE_WITH_SOFT_LOCK_DESCRIPTION" desc="Description for enabling Incognito soft lock setting. This appears in the incognito lock settings page under privacy and security. [iOS only]">
+       When you return, tabs are blurred until you tap to continue
+      </message>
+      <message name="IDS_IOS_INCOGNITO_LOCK_HIDE_WITH_REAUTH" desc="Incognito lock setting option to enable hiding/locking Incognito tabs with a biometric authentication, e.g. Passcode, Face ID or Touch ID. This appears in the incognito lock settings page under privacy and security. [iOS only]">
+       Lock immediately with <ph name="BIOMETRIC_AUTHENITCATION_TYPE">$1<ex>Face ID</ex></ph>
       </message>
       <message name="IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT" desc="The number of the open tabs found as search results in the tab grid.">
         <ph name="COUNT">$1<ex>2</ex></ph> found
@@ -5553,6 +5780,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TAB_GRID_UNDO_CLOSE_ALL_BUTTON" desc="Title of the button in the tab grid UI that revert the close all action recently taken by the user. [iOS only]">
         Undo
       </message>
+      <message name="IDS_IOS_TAB_GROUP_ACTIVITY_SUMMARY_ACTIVITY_BUTTON" desc="Title of the button in the activity summary in a shared tab group.">
+        Activity
+      </message>
       <message name="IDS_IOS_TAB_GROUP_CELL_ACCESSIBILITY_TITLE" desc="Accessibility label, giving context to screen reader when users navigate the tab grouping cell in the tab grid. This is spoken by VoiceOver.">
         Tab group, <ph name="GROUP_TITLE">$1<ex>Group name</ex></ph>, <ph name="TABS_NUMBER">$2<ex>4</ex></ph> tabs.
       </message>
@@ -5597,6 +5827,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       </message>
       <message name="IDS_IOS_TAB_GROUP_INDICATOR_ACCESSIBILITY_TITLE" desc="Accessibility label for the tab group indicator view. This is spoken by VoiceOver.">
         Tab group, <ph name="GROUP_TITLE">$1<ex>Group name</ex></ph>, Menu.
+      </message>
+      <message name="IDS_IOS_TAB_GROUP_RECENT_ACTIVITY_SHEET_TITLE" desc="Title of a half sheet for recent activity logs in a shared tab group.">
+        Recent activity
       </message>
       <message name="IDS_IOS_TAB_GROUP_SNACKBAR_ACTION" desc="Button to access the Tab Groups panel. [iOS only]">
         View
@@ -5755,6 +5988,18 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TOOLBAR_MENU_TOP_OMNIBOX" desc="The iOS menu item for moving the address bar to the top of the screen [iOS only].">
         Move address bar to top
       </message>
+      <message name="IDS_IOS_TOOLBAR_OPEN_NEW_TAB" desc="The accessibility label for the toolbar open new tab button in Regular mode and out of a tab group [iOS only].">
+        New tab
+      </message>
+      <message name="IDS_IOS_TOOLBAR_OPEN_NEW_TAB_INCOGNITO" desc="The accessibility label for the toolbar open new tab button in Incognito mode and out of a tab group [iOS only].">
+        New Incognito tab
+      </message>
+      <message name="IDS_IOS_TOOLBAR_OPEN_NEW_TAB_IN_GROUP" desc="The accessibility label for the toolbar open new tab button in Regular mode and inside a tab group [iOS only].">
+        New tab in group
+      </message>
+      <message name="IDS_IOS_TOOLBAR_OPEN_NEW_TAB_INCOGNITO_IN_GROUP" desc="The accessibility label for the toolbar open new tab button in Incognito mode and inside a tab group [iOS only].">
+        New Incognito tab in group
+      </message>
       <message name="IDS_IOS_TOOLBAR_SEARCH" desc="Label of the button allowing the user to focus the address bar when tapped. As usual, when the address bar is focused, the user can type a URL or a text to be searched on the internet. Read by Text-to-Speech." meaning="Search the internet. Read by Text-to-Speech.">
         Search
       </message>
@@ -5765,7 +6010,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Show tabs
       </message>
       <message name="IDS_IOS_TOOLBAR_SHOW_TAB_GROUP" desc="The accessibility label for the toolbar show tab group button [iOS only].">
-        Show tabs in group
+        Show all tabs in tab group
       </message>
       <message name="IDS_IOS_TOOLBAR_SWIPE_IPH" desc="The text for the full screen in-product help for side swipe on the tab strip to navigate between tabs. [iOS only]">
         You can swipe the toolbar to switch between tabs.
@@ -5783,7 +6028,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         New
       </message>
       <message name="IDS_IOS_TOOLS_MENU_CLEAR_BROWSING_DATA" desc="The iOS menu item to open the Delete Browsing Data screen [iOS only]" meaning="[Length: unlimited]">
-        Delete browsing data
+        Delete Browsing Data
       </message>
       <message name="IDS_IOS_TOOLS_MENU_CLOSE_ALL_INCOGNITO_TABS" desc="The iOS menu item for closing all Incognito tabs [iOS only]" meaning="[Length: unlimited]">
         Close all Incognito tabs
@@ -5792,13 +6037,13 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Close all tabs
       </message>
       <message name="IDS_IOS_TOOLS_MENU_CLOSE_TAB" desc="The iOS menu item for closing a tab [iOS only]" meaning="[Length: unlimited]">
-        Close tab
+        Close Tab
       </message>
       <message name="IDS_IOS_TOOLS_MENU_DOWNLOADS" desc="The iOS menu item for opening the downloads folder [iOS only]" meaning="[Length: 16em] [iOS only] This is a feature name in title case.">
         Downloads
       </message>
       <message name="IDS_IOS_TOOLS_MENU_EDIT_BOOKMARK" desc="The iOS menu item for editing a bookmark. This is a verb." meaning="Edit the current bookmark [Length: unlimited] [Verb]">
-        Edit bookmark
+        Edit Bookmark
       </message>
       <message name="IDS_IOS_TOOLS_MENU_ENTERPRISE_LEARN_MORE" desc="Link displayed to allow the user to learn more why the browser is managed by Enterprise policies. Shown at the bottom of the overflow menu. [iOS only]">
         Learn more
@@ -5807,7 +6052,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Managed by your organization
       </message>
       <message name="IDS_IOS_TOOLS_MENU_FIND_IN_PAGE" desc="The iOS menu item for searching in the current page [iOS only]" meaning="Open the Find In Page menu [Length: unlimited]">
-        Find in page…
+        Find in Page…
       </message>
       <message name="IDS_IOS_TOOLS_MENU_CUSTOMIZE_FOLLOW" desc="The iOS menu item for customizing the follow item. [iOS only]" meaning="[iOS only] Overflow menu item">
         Follow
@@ -5825,28 +6070,28 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         History
       </message>
       <message name="IDS_IOS_TOOLS_MENU_LENS_CAMERA_SEARCH" desc="The iOS menu item for searching images with the device camera using Google Lens.">
-        Lens camera search
+        Lens Camera Search
       </message>
       <message name="IDS_IOS_TOOLS_MENU_LENS_COPIED_IMAGE" desc="If a user has an image on their clipboard, this string will appear as an option when the user long-presses on Chrome's search icon and Lens is enabled. The user can select this option to search the image using Lens. This string is a complete sentence. If necessary for your language, you can translate as 'Lens image that you copied.'" meaning="[Length:Unlimited]">
         Lens image you copied
       </message>
       <message name="IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH" desc="The iOS menu item for opening a new Incognito tab and doing a new search in that tab." meaning="Do a new search in a new Incognito tab">
-        Incognito search
+        Incognito Search
       </message>
       <message name="IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB" desc="The iOS menu item for opening a new Incognito tab [iOS only]" meaning="Tools menu entry to create a new Incognito tab. [Length: Unlimited]">
-        New Incognito tab
+        New Incognito Tab
       </message>
       <message name="IDS_IOS_TOOLS_MENU_CUSTOMIZATION_IPH" desc="The text on an IPH for the iOS menu telling users they can customize the menu">
         Customize your menu
       </message>
       <message name="IDS_IOS_TOOLS_MENU_NEW_SEARCH" desc="The iOS menu item for opening a new tab and doing a new search in that tab." meaning="Do a new search in a new tab">
-        New search
+        New Search
       </message>
       <message name="IDS_IOS_TOOLS_MENU_NEW_TAB" desc="The iOS menu item for opening a new tab [iOS only]" meaning="Tools menu entry to create a new tab. [Length: Unlimited]">
-        New tab
+        New Tab
       </message>
       <message name="IDS_IOS_TOOLS_MENU_NEW_WINDOW" desc="The iOS menu item for opening a new window [iOS only]" meaning="[Length: unlimited]">
-        New window
+        New Window
       </message>
       <message name="IDS_IOS_TOOLS_MENU_PARENT_LEARN_MORE" desc="Link displayed to allow the user to learn more why the browser is managed by their parent. Shown at the bottom of the overflow menu. [iOS only]">
         Learn more
@@ -5861,10 +6106,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Paste and go
       </message>
       <message name="IDS_IOS_TOOLS_MENU_PRICE_TRACKING" desc="The iOS menu item for Price Notifications" meaning="[Length: 16em] [iOS only].">
-        Track price
+        Track Price
       </message>
       <message name="IDS_IOS_TOOLS_MENU_QR_SCANNER" desc="The iOS menu item for opening the QR Code Scanner screen, allowing the user to scan QR code.">
-        Scan QR code
+        Scan QR Code
       </message>
       <message name="IDS_IOS_TOOLS_MENU_READING_LIST" desc="The iOS menu item for opening the reading list [iOS only]" meaning="[Length: 16em] [iOS only] This is a feature name in title case.">
         Reading List
@@ -5876,10 +6121,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Reload
       </message>
       <message name="IDS_IOS_TOOLS_MENU_REQUEST_DESKTOP_SITE" desc="The iOS menu item for requesting the desktop site [iOS only]" meaning="Request the desktop version of the current web site. [Length: Unlimited]">
-        Request desktop site
+        Request Desktop Site
       </message>
       <message name="IDS_IOS_TOOLS_MENU_REQUEST_MOBILE_SITE" desc="The iOS menu item for requesting the mobile site [iOS only]" meaning="Request the mobile version of the current web site. [Length: Unlimited]">
-        Request mobile site
+        Request Mobile Site
       </message>
       <message name="IDS_IOS_TOOLS_MENU_SAVE_IMAGE_IN" desc="The iOS menu item for saving images in either Google Photos or iOS Photos app.">
         Save image in…
@@ -5888,10 +6133,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Save in Google Photos
       </message>
       <message name="IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE" desc="If a user has an image on their clipboard, this string will appear as an option when the user long-presses on Chrome's search icon. The user can select this option to search the default search engine for the image. This string is a complete sentence. If necessary for your language, you can translate as 'Search for image that you copied.'" meaning="[Length:Unlimited]">
-        Search for image you copied
+        Search for Image You Copied
       </message>
       <message name="IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT" desc="If a user has some text on their clipboard, this string will appear as an option when the user long-presses on Chrome's search icon. The user can select this option to search the default search engine for the text. This string is a complete sentence. If necessary for your language, you can translate as 'Search for text that you copied.'" meaning="[Length:Unlimited]">
-        Search for text you copied
+        Search for Text You Copied
       </message>
       <message name="IDS_IOS_TOOLS_MENU_SETTINGS" desc="The iOS menu item for opening the settings [iOS only]" meaning="[Length: 16em] [iOS only].">
         Settings
@@ -5900,13 +6145,13 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Share…
       </message>
       <message name="IDS_IOS_TOOLS_MENU_SITE_INFORMATION" desc="The iOS menu item for getting the site informations." meaning="[Length: 16em] [iOS only]">
-        Site information
+        Site Information
       </message>
       <message name="IDS_IOS_TOOLS_MENU_STOP" desc="The iOS menu item for stoping the loading of the page.">
         Stop
       </message>
       <message name="IDS_IOS_TOOLS_MENU_TEXT_ZOOM" desc="The iOS menu item for zooming the page's text.">
-        Zoom text…
+        Zoom Text…
       </message>
       <message name="IDS_IOS_TOOLS_MENU_TRANSLATE" desc="The iOS menu item for translating the current page [iOS only]" meaning="Open the translate infobar [Length: unlimited]">
         Translate
@@ -5915,7 +6160,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Unfollow <ph name="DOMAIN_NAME">$1<ex>google.com</ex></ph>
       </message>
       <message name="IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK" desc="If a user has a URL on their clipboard, this string will appear as an option when the user long-presses on Chrome's search icon. The user can select this option to visit the URL. This string is a complete sentence. If necessary for your language, you can translate as 'Visit link that you copied.'" meaning="[Lenth: unlimited]">
-        Visit link you copied
+        Visit Link You Copied
       </message>
       <message name="IDS_IOS_TOOLS_MENU_VOICE_SEARCH" desc="The iOS menu item for opening Voice Search.">
         Voice Search
@@ -5962,10 +6207,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_TRANSLATE_INFOBAR_MODAL_SELECT_LANGUAGE_HINT" desc="Text alongside the language to indicate to the user change the language by selecting the row. [iOS only]">
         Tap to change to this language.
       </message>
-      <message name="IDS_IOS_TRANSLATE_INFOBAR_MODAL_SOURCE_LANGUAGE_FIELD_NAME" desc="The text field name for the source language in the Translate Infobar modal. [iOS only]">
+      <message name="IDS_IOS_TRANSLATE_INFOBAR_MODAL_SOURCE_LANGUAGE_FIELD_NAME" desc="The text field name for the source language in the Translate Infobar modal. [iOS only]" meaning="Translate *From* source language">
         From
       </message>
-      <message name="IDS_IOS_TRANSLATE_INFOBAR_MODAL_TARGET_LANGUAGE_FIELD_NAME" desc="The text field name for the target language in the Translate Infobar modal. [iOS only]">
+      <message name="IDS_IOS_TRANSLATE_INFOBAR_MODAL_TARGET_LANGUAGE_FIELD_NAME" desc="The text field name for the target language in the Translate Infobar modal. [iOS only]" meaning="Translate *To* destination language">
         To
       </message>
       <message name="IDS_IOS_TRANSLATE_INFOBAR_MODAL_TITLE" desc="The title of the Translate Infobar Modal. [iOS only]">
@@ -6083,7 +6328,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Default - <ph name="DEFAULT_LOCALE">$1<ex>English (United States)</ex></ph>
       </message>
       <message name="IDS_IOS_VOICE_SEARCH_SETTING_TITLE" desc="The title for Voice Search setting [Length: 29em] [iOS only]">
-        Voice Search
+        Voice search
       </message>
       <message name="IDS_IOS_VOICE_SEARCH_SETTING_TTS" desc="The label for setting switch enabling text-to-speech response after voice search [Length: 29em] [iOS only]">
         Speak answers back
@@ -6427,7 +6672,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Autofill form
       </message>
       <message name="IDS_IOS_SHOW_DETAILS_ACTION_TITLE" desc="Title of the action used to show the details of a selected item. [iOS only]">
-        Show details
+        Show Details
       </message>
       <message name="IDS_IOS_MANUAL_FALLBACK_ADDRESS_CELL_INDEX" desc="Accessibility label for the address suggestions in the manual fallback view to indicate the position of the address suggestion in the list of address suggestions.">
         {count, plural,

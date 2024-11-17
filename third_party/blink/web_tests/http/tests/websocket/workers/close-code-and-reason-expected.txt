@@ -1,5 +1,5 @@
 CONSOLE WARNING: WebSocket connection to 'ws://127.0.0.1:8880/echo' failed: WebSocket is closed before the connection is established.
-CONSOLE ERROR: WebSocket connection to 'ws://127.0.0.1:8880/close-code-and-reason' failed: Received a broken close frame containing an invalid size body.
+CONSOLE ERROR: WebSocket connection to 'ws://127.0.0.1:8880/close-code-and-reason' failed: Received a broken close frame with an invalid size of 1 byte.
 CONSOLE ERROR: WebSocket connection to 'ws://127.0.0.1:8880/close-code-and-reason' failed: Received a broken close frame containing a reserved status code.
 CONSOLE ERROR: WebSocket connection to 'ws://127.0.0.1:8880/close-code-and-reason' failed: Received a broken close frame containing a reserved status code.
 CONSOLE ERROR: WebSocket connection to 'ws://127.0.0.1:8880/close-code-and-reason' failed: Received a broken close frame containing a reserved status code.

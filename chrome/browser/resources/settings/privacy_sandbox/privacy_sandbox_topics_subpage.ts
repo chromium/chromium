@@ -20,7 +20,6 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import type {FocusConfig} from '../focus_config.js';
-import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import type {MetricsBrowserProxy} from '../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
@@ -32,12 +31,10 @@ import type {SettingsSimpleConfirmationDialogElement} from '../simple_confirmati
 import type {CanonicalTopic, PrivacySandboxBrowserProxy, PrivacySandboxInterest, TopicsState} from './privacy_sandbox_browser_proxy.js';
 import {PrivacySandboxBrowserProxyImpl} from './privacy_sandbox_browser_proxy.js';
 import {getTemplate} from './privacy_sandbox_topics_subpage.html.js';
-
 export interface SettingsPrivacySandboxTopicsSubpageElement {
   $: {
     topicsToggle: SettingsToggleButtonElement,
     footer: HTMLElement,
-    footerV2: HTMLElement,
   };
 }
 
@@ -90,11 +87,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
         value: false,
       },
 
-      isLearnMoreDialogOpen_: {
-        type: Boolean,
-        value: false,
-      },
-
       blockedTopicsExpanded_: {
         type: Boolean,
         value: false,
@@ -104,14 +96,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
       focusConfig: {
         type: Object,
         observer: 'focusConfigChanged_',
-      },
-
-      // Version 2 of Ad Topics Page should be displayed when Proactive Topics
-      // Blocking is enabled.
-      shouldShowV2_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isProactiveTopicsBlockingEnabled'),
       },
 
       blockTopicDialogTitle_: {
@@ -129,10 +113,10 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
         value: false,
       },
 
-      shouldShowV2EmptyState_: {
+      emptyState_: {
         type: Boolean,
-        computed: 'computeShouldShowV2EmptyState_(' +
-            'shouldShowV2, prefs.privacy_sandbox.m1.topics_enabled.value)',
+        computed: 'computeEmptyState_(' +
+            'prefs.privacy_sandbox.m1.topics_enabled.value)',
       },
     };
   }
@@ -148,11 +132,9 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   private focusConfig: FocusConfig;
 
   private isTopicsListLoaded_: boolean;
-  private shouldShowV2_: boolean;
-  private shouldShowV2EmptyState_: boolean;
+  private emptyState_: boolean;
   private blockedTopicsExpanded_: boolean;
 
-  private isLearnMoreDialogOpen_: boolean;
   private shouldShowBlockTopicDialog_: boolean;
   private blockTopicDialogTitle_: string;
   private blockTopicDialogBody_: string;
@@ -166,30 +148,21 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     this.$.footer.querySelectorAll('a').forEach(
         link =>
             link.setAttribute('aria-description', this.i18n('opensInNewTab')));
-    this.$.footerV2.querySelectorAll('a').forEach(
-        link =>
-            link.setAttribute('aria-description', this.i18n('opensInNewTab')));
   }
 
-  // Goal is to not show anything but the toggle and disclaimer when we
-  // should show V2 and the pref is false.
-  private computeShouldShowV2EmptyState_(): boolean {
-    return (
-        this.shouldShowV2_ &&
-        !this.getPref('privacy_sandbox.m1.topics_enabled').value);
+  // Goal is to not show anything but the toggle and disclaimer when the pref is
+  // false.
+  private computeEmptyState_(): boolean {
+    return !this.getPref('privacy_sandbox.m1.topics_enabled').value;
   }
 
   override currentRouteChanged(newRoute: Route) {
     if (newRoute === routes.PRIVACY_SANDBOX_TOPICS) {
-      HatsBrowserProxyImpl.getInstance().trustSafetyInteractionOccurred(
-          TrustSafetyInteraction.OPENED_TOPICS_SUBPAGE);
       // Updating the TopicsState because it can be changed by being
       // blocked/unblocked in the Manage Topics Page. Need to keep the data
       // between the two pages up to date.
-      if (this.shouldShowV2_) {
-        this.privacySandboxBrowserProxy_.getTopicsState().then(
-            state => this.onTopicsStateChanged_(state));
-      }
+      this.privacySandboxBrowserProxy_.getTopicsState().then(
+          state => this.onTopicsStateChanged_(state));
     }
   }
 
@@ -219,22 +192,11 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
   }
 
   private isTopicsListEmpty_(): boolean {
-    return this.topicsList_.length === 0 && !this.shouldShowV2_;
+    return this.topicsList_.length === 0;
   }
 
-  private isTopicsListEmptyV2_(): boolean {
-    return this.topicsList_.length === 0 && this.shouldShowV2_;
-  }
-
-  private isBlockedTopicsListEmptyV2_(): boolean {
-    return this.blockedTopicsList_.length === 0 && this.shouldShowV2_;
-  }
-
-  private computeBlockedTopicsDescription_(): string {
-    return this.i18n(
-        this.blockedTopicsList_.length === 0 ?
-            'topicsPageBlockedTopicsDescriptionEmpty' :
-            'topicsPageBlockedTopicsDescription');
+  private isBlockedTopicsListEmpty_(): boolean {
+    return this.blockedTopicsList_.length === 0;
   }
 
   private getBlockedTopicsDescriptionClass_(): string {
@@ -256,21 +218,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     // list should already be empty. From enabled -> disabled, the current list
     // is cleared.
     this.topicsList_ = [];
-  }
-
-  private onLearnMoreClick_() {
-    this.metricsBrowserProxy_.recordAction(
-        'Settings.PrivacySandbox.Topics.LearnMoreClicked');
-    this.isLearnMoreDialogOpen_ = true;
-  }
-
-  private onCloseDialog_() {
-    this.isLearnMoreDialogOpen_ = false;
-    afterNextRender(this, async () => {
-      // `learnMoreLink` might be null if the toggle was disabled after the
-      // dialog was opened.
-      this.shadowRoot!.querySelector<HTMLElement>('#learnMoreLink')?.focus();
-    });
   }
 
   private onBlockTopicDialogClose_() {
@@ -312,9 +259,12 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     });
   }
 
-  // In the V2 of the ad topics page, this function is invoked by
-  // onInterestedChanged_ to handle the blocking/allowing and updating state.
-  private async onInterestChangedV2_() {
+  // This function is run anytime the interest item changes. Which means that it
+  // runs when a user blocks/allows a topic.
+  private async onInterestChanged_(e: CustomEvent<PrivacySandboxInterest>) {
+    this.currentInterest_ = e.detail;
+    assert(!this.currentInterest_.site);
+
     assert(this.currentInterest_!.topic);
     assert(this.currentInterest_!.topic!.displayString);
 
@@ -348,18 +298,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     this.blockedTopicsExpanded_ = true;
   }
 
-  // This function is run anytime the interest item changes. Which means that it
-  // runs when a user blocks/allows a topic.
-  private onInterestChanged_(e: CustomEvent<PrivacySandboxInterest>) {
-    this.currentInterest_ = e.detail;
-    assert(!this.currentInterest_.site);
-    if (this.shouldShowV2_) {
-      this.onInterestChangedV2_();
-      return;
-    }
-    this.updateTopicsStateForSelectedTopic_(this.currentInterest_!);
-  }
-
   private onBlockedTopicsExpanded_() {
     if (this.blockedTopicsExpanded_) {
       this.metricsBrowserProxy_.recordAction(
@@ -387,36 +325,6 @@ export class SettingsPrivacySandboxTopicsSubpageElement extends
     const toast = this.shadowRoot!.querySelector('cr-toast');
     assert(toast);
     toast.hide();
-  }
-
-  private computeTopicsPageToggleSubLabel_(): string {
-    return this.i18n(
-        this.shouldShowV2_ ? 'topicsPageToggleSubLabelV2' :
-                             'topicsPageToggleSubLabel');
-  }
-
-  private computeTopicsPageCurrentTopicsHeading_(): string {
-    return this.i18n(
-        this.shouldShowV2_ ? 'topicsPageActiveTopicsHeading' :
-                             'topicsPageCurrentTopicsHeading');
-  }
-
-  private computeTopicsPageCurrentTopicsDescription_(): string {
-    return this.i18n(
-        this.shouldShowV2_ ? 'topicsPageActiveTopicsDescription' :
-                             'topicsPageCurrentTopicsDescription');
-  }
-
-  private computeTopicsPageCurrentTopicsDescriptionEmpty_(): string {
-    return this.i18n(
-        this.shouldShowV2_ ? 'topicsPageCurrentTopicsDescriptionEmptyPTB' :
-                             'topicsPageCurrentTopicsDescriptionEmpty');
-  }
-
-  private computeTopicsPageBlockedTopicsHeading_(): string {
-    return this.i18n(
-        this.shouldShowV2_ ? 'topicsPageBlockedTopicsHeadingNew' :
-                             'topicsPageBlockedTopicsHeading');
   }
 }
 

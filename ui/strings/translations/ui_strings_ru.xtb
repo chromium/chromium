@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">Не удалось загрузить страницу, поскольку не установлен модуль интерфейса разработчика (dev_ui)</translation>
 <translation id="5574202486608032840">Система <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Клавиша возврата (Backspace)</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">Стрелка влево</translation>
 <translation id="5633029987065897167">Пусто</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин.}one{# мин.}few{# мин.}many{# мин.}other{# мин.}}</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">ВВОД</translation>
 <translation id="8210608804940886430">Прокрутка вниз</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" /> и <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Tab</translation>
 <translation id="8259556432390118667">Шестнадцатеричный код цвета</translation>
 <translation id="8328145009876646418">Левый край</translation>
 <translation id="8331626408530291785">Прокрутка вверх</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 сек.}one{# сек.}few{# сек.}many{# сек.}other{# сек.}}</translation>
 <translation id="9059834730836941392">Свернуть уведомление</translation>
 <translation id="9170848237812810038">&amp;Отменить</translation>
+<translation id="9195990613383871904">Завтра</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">Главная страница</translation>
 <translation id="944069440740578670">Непрочитанные уведомления</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 секунду назад}one{# секунду назад}few{# секунды назад}many{# секунд назад}other{# секунды назад}}</translation>

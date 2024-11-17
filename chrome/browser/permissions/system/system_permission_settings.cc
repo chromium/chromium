@@ -19,6 +19,7 @@ namespace system_permission_settings {
 namespace {
 
 PlatformHandle* instance_for_testing_ = nullptr;
+bool g_mock_system_prompt_for_testing_ = false;
 
 std::map<ContentSettingsType, bool>& GlobalTestingBlockOverrides() {
   static std::map<ContentSettingsType, bool> g_testing_block_overrides;
@@ -42,7 +43,13 @@ void SetInstanceForTesting(PlatformHandle* instance_for_testing) {
 
 // static
 bool CanPrompt(ContentSettingsType type) {
-  return GetPlatformHandle()->CanPrompt(type);
+  return g_mock_system_prompt_for_testing_ ||
+         GetPlatformHandle()->CanPrompt(type);
+}
+
+// static
+base::AutoReset<bool> MockSystemPromptForTesting() {
+  return base::AutoReset<bool>(&g_mock_system_prompt_for_testing_, true);
 }
 
 // static
@@ -72,6 +79,11 @@ void OpenSystemSettings(content::WebContents* web_contents,
 // static
 void Request(ContentSettingsType type,
              SystemPermissionResponseCallback callback) {
+  // If 'g_mock_system_prompt_for_testing_' is true, don't request the
+  // permission.
+  if (g_mock_system_prompt_for_testing_) {
+    return;
+  }
   GetPlatformHandle()->Request(type, std::move(callback));
 }
 

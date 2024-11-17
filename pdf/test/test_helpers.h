@@ -5,6 +5,7 @@
 #ifndef PDF_TEST_TEST_HELPERS_H_
 #define PDF_TEST_TEST_HELPERS_H_
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -29,6 +30,19 @@ base::FilePath GetTestDataFilePath(const base::FilePath& path);
 testing::AssertionResult MatchesPngFile(
     const SkImage* actual_image,
     const base::FilePath& expected_png_file);
+
+// Same as MatchesPngFile() above, but with a fuzzy pixel comparator.
+testing::AssertionResult FuzzyMatchesPngFile(
+    const SkImage* actual_image,
+    const base::FilePath& expected_png_file);
+
+// Takes `pdf_data` and loads it using PDFium. Then renders the page at
+// `page_index` to a bitmap of `size_in_points` and checks if it matches
+// `expected_png_file`.
+void CheckPdfRendering(base::span<const uint8_t> pdf_data,
+                       int page_index,
+                       const gfx::Size& size_in_points,
+                       const base::FilePath& expected_png_file);
 
 // Creates a Skia surface with dimensions `size` and filled with `color`.
 sk_sp<SkSurface> CreateSkiaSurfaceForTesting(const gfx::Size& size,

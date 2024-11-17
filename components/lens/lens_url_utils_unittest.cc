@@ -93,28 +93,6 @@ TEST(LensUrlUtilsTest, GetRegionSearchSidePanelQueryParameterTest) {
   EXPECT_THAT(query_param, MatchesRegex("ep=crs&re=dcsp&s=4&st=\\d+"));
 }
 
-TEST(LensUrlUtilsTest, GetRegionSearchCompanionQueryParameterTest) {
-  lens::EntryPoint lens_region_search_ep =
-      lens::EntryPoint::CHROME_REGION_SEARCH_MENU_ITEM;
-  std::string query_param = lens::GetQueryParametersForLensRequest(
-      lens_region_search_ep, /*is_lens_side_panel_request=*/true,
-      /*is_full_screen_request=*/false,
-      /*is_companion_request=*/true);
-  EXPECT_THAT(query_param,
-              MatchesRegex("ep=crs&re=csc&s=4&source=chrome.gsc&st=\\d+"));
-}
-
-TEST(LensUrlUtilsTest, GetCompanionRegionSearchQueryParameterTest) {
-  lens::EntryPoint csc_region_search_ep =
-      lens::EntryPoint::COMPANION_REGION_SEARCH;
-  std::string query_param = lens::GetQueryParametersForLensRequest(
-      csc_region_search_ep, /*is_lens_side_panel_request=*/true,
-      /*is_full_screen_request=*/false,
-      /*is_companion_request=*/true);
-  EXPECT_THAT(query_param,
-              MatchesRegex("ep=cscidr&re=csc&s=4&source=chrome.gsc&st=\\d+"));
-}
-
 TEST(LensUrlUtilsTest, GetImageSearchSidePanelQueryParameterTest) {
   lens::EntryPoint lens_image_search_ep =
       lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
@@ -122,17 +100,6 @@ TEST(LensUrlUtilsTest, GetImageSearchSidePanelQueryParameterTest) {
       lens_image_search_ep, /*is_lens_side_panel_request=*/true,
       /*is_full_screen_request=*/false);
   EXPECT_THAT(query_param, MatchesRegex("ep=ccm&re=dcsp&s=4&st=\\d+"));
-}
-
-TEST(LensUrlUtilsTest, GetImageSearchCompanionQueryParameterTest) {
-  lens::EntryPoint lens_image_search_ep =
-      lens::EntryPoint::CHROME_SEARCH_WITH_GOOGLE_LENS_CONTEXT_MENU_ITEM;
-  std::string query_param = lens::GetQueryParametersForLensRequest(
-      lens_image_search_ep, /*is_lens_side_panel_request=*/true,
-      /*is_full_screen_request=*/false,
-      /*is_companion_request=*/true);
-  EXPECT_THAT(query_param,
-              MatchesRegex("ep=ccm&re=csc&s=4&source=chrome.gsc&st=\\d+"));
 }
 
 TEST(LensUrlUtilsTest, GetImageTranslateSidePanelQueryParameterTest) {
@@ -277,6 +244,16 @@ TEST(LensUrlUtilsTest, AppendFullscreenSearchQueryParameterTest) {
   GURL url = lens::AppendOrReplaceQueryParametersForLensRequest(
       original_url, lens_ep, re, /*is_side_panel_request=*/false);
   EXPECT_THAT(url.query(), MatchesRegex("ep=cfs&re=avsf&s=4&st=\\d+"));
+}
+
+TEST(LensUrlUtilsTest, AppendLensOverlayLocationBarQueryParameterTest) {
+  lens::EntryPoint lens_ep = lens::EntryPoint::CHROME_LENS_OVERLAY_LOCATION_BAR;
+  lens::RenderingEnvironment re =
+      lens::RenderingEnvironment::ONELENS_DESKTOP_WEB_FULLSCREEN;
+  GURL original_url = GURL("https://lens.google.com/");
+  GURL url = lens::AppendOrReplaceQueryParametersForLensRequest(
+      original_url, lens_ep, re, /*is_side_panel_request=*/false);
+  EXPECT_THAT(url.query(), MatchesRegex("ep=crmntob&re=df&s=4&st=\\d+"));
 }
 
 TEST(LensUrlUtilsTest, AppendUnknownEntryPointTest) {

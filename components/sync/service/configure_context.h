@@ -26,7 +26,7 @@ struct ConfigureContext {
   SyncMode sync_mode = SyncMode::kFull;
   ConfigureReason reason = CONFIGURE_REASON_UNKNOWN;
   base::Time configuration_start_time;
-  // TODO(mastiz): Consider adding |requested_types| here, but currently there
+  // TODO(mastiz): Consider adding `requested_types` here, but currently there
   // are subtle differences across layers (e.g. where control types are
   // enforced).
 };

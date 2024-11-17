@@ -643,7 +643,7 @@ void FuchsiaVideoEncodeAccelerator::OnStreamProcessorOutputPacket(
 
 void FuchsiaVideoEncodeAccelerator::OnStreamProcessorNoKey() {
   // This method is only used for decryption.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FuchsiaVideoEncodeAccelerator::OnStreamProcessorError() {

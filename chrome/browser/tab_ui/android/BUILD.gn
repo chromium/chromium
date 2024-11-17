@@ -25,7 +25,6 @@ android_library("java") {
   ]
   deps = [
     ":java_resources",
-    "//base:base_cached_flags_java",
     "//base:base_java",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
@@ -40,6 +39,7 @@ android_library("java") {
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/browser_ui/widget/android:java_resources",
+    "//components/cached_flags:java",
     "//components/embedder_support/android:util_java",
     "//components/tab_groups:tab_groups_java",
     "//content/public/android:content_full_java",
@@ -93,6 +93,7 @@ robolectric_library("junit") {
     ":java",
     ":java_resources",
     "//base:base_java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/ui/android/favicon:java",
@@ -101,6 +102,7 @@ robolectric_library("junit") {
     "//components/browser_ui/styles/android:java_resources",
     "//components/tab_groups:tab_groups_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/jni_zero:gendeps_java",
     "//third_party/junit:junit",
     "//third_party/mockito:mockito_java",
     "//url:gurl_java",

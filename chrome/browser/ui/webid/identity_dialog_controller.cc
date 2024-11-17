@@ -11,9 +11,7 @@
 // We add nognchecks on these includes so that Android bots do not fail
 // dependency checks.
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/tabs/public/tab_features.h"   // nogncheck
 #include "chrome/browser/ui/tabs/public/tab_interface.h"  // nogncheck
-#include "chrome/browser/ui/views/webid/fedcm_account_selection_view_controller.h"  // nogncheck
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"  // nogncheck
 #endif
 
@@ -136,11 +134,11 @@ void IdentityDialogController::OnAccountSelected(const GURL& idp_config_url,
                                                  const Account& account) {
   CHECK(on_account_selection_);
 
-  // We only allow dismiss after account selection on button flows and not on
-  // widget flows.
+  // We only allow dismiss after account selection on active modes and not on
+  // passive mode.
   // TODO(crbug.com/335886093): Figure out whether users can cancel after
-  // selecting an account on button flow modal.
-  if (rp_mode_ == blink::mojom::RpMode::kWidget) {
+  // selecting an account on active mode modal.
+  if (rp_mode_ == blink::mojom::RpMode::kPassive) {
     on_dismiss_.Reset();
   }
 
@@ -247,12 +245,14 @@ bool IdentityDialogController::TrySetAccountView() {
 #else
   tabs::TabInterface* tab =
       tabs::TabInterface::MaybeGetFromContents(rp_web_contents_);
-  if (!tab) {
+  // FedCM is supported in general web content, but not in chrome UI. Of the
+  // BrowserWindow types, devtools show Chrome UI and the rest show general web
+  // content.
+  if (!tab || tab->GetBrowserWindowInterface()->GetType() ==
+                  BrowserWindowInterface::Type::TYPE_DEVTOOLS) {
     return false;
   }
-  account_view_ = tab->GetTabFeatures()
-                      ->fedcm_account_selection_view_controller()
-                      ->CreateAccountSelectionView(this);
+  account_view_ = std::make_unique<FedCmAccountSelectionView>(this, tab);
 #endif
   return true;
 }

@@ -26,14 +26,16 @@ export function getHtml(this: ThemesElement) {
       <div class="tile theme" tabindex="0" role="radio"
           data-index="${index}" @click="${this.onSelectTheme_}"
           title="${item.attribution1}"
-          aria-checked="${this.isThemeSelected_(item.imageUrl.url)}">
+          aria-checked="${this.isThemeSelected_(item.imageUrl.url)}"
+          ?hidden="${!this.shouldShowTheme_(item.imageVerified)}">
         <customize-chrome-check-mark-wrapper
             ?checked="${this.isThemeSelected_(item.imageUrl.url)}">
           <div class="image-container">
-            <img is="cr-auto-img"
+            <img is="cr-auto-img" data-index="${index}"
                 .autoSrc="${item.previewImageUrl.url}"
                 draggable="false"
-                @load="${this.onPreviewImageLoad_}">
+                @load="${this.onPreviewImageLoad_}"
+                @error="${this.onPreviewImageError_}">
             </img>
           </div>
         </customize-chrome-check-mark-wrapper>

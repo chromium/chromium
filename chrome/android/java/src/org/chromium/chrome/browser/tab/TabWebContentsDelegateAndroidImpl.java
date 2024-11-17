@@ -18,9 +18,9 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList.RewindableIterator;
+import org.chromium.chrome.browser.ZoomController;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.app.usb.UsbNotificationService;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bluetooth.BluetoothNotificationManager;
 import org.chromium.chrome.browser.gesturenav.NativePageBitmapCapturer;
 import org.chromium.chrome.browser.media.MediaCaptureNotificationServiceImpl;
@@ -145,14 +145,14 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @Override
-    public void loadingStateChanged(boolean shouldShowLoadingUI) {
+    public void loadingStateChanged(boolean shouldShowLoadingUi) {
         boolean isLoading = mTab.getWebContents() != null && mTab.getWebContents().isLoading();
         if (isLoading) {
-            mTab.onLoadStarted(shouldShowLoadingUI);
+            mTab.onLoadStarted(shouldShowLoadingUi);
         } else {
             mTab.onLoadStopped();
         }
-        mDelegate.loadingStateChanged(shouldShowLoadingUI);
+        mDelegate.loadingStateChanged(shouldShowLoadingUi);
     }
 
     @Override
@@ -195,10 +195,9 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public void navigationStateChanged(int flags) {
-        if (BackPressManager.isEnabled()) {
-            RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-            while (observers.hasNext()) observers.next().onNavigationStateChanged();
-        }
+        RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+        while (observers.hasNext()) observers.next().onNavigationStateChanged();
+
         if ((flags & InvalidateTypes.TAB) != 0) {
             MediaCaptureNotificationServiceImpl.updateMediaNotificationForTab(
                     ContextUtils.getApplicationContext(),
@@ -225,7 +224,7 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
             mTab.updateTitle();
         }
         if ((flags & InvalidateTypes.URL) != 0) {
-            RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+            observers = mTab.getTabObservers();
             while (observers.hasNext()) observers.next().onUrlUpdated(mTab);
         }
         mDelegate.navigationStateChanged(flags);
@@ -392,6 +391,12 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
         return mDelegate.isModalContextMenu();
     }
 
+    @CalledByNative
+    @Override
+    protected boolean isDynamicSafeAreaInsetsEnabled() {
+        return mDelegate.isDynamicSafeAreaInsetsEnabled();
+    }
+
     @Override
     public int getTopControlsHeight() {
         return mDelegate.getTopControlsHeight();
@@ -450,6 +455,16 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     @Override
     public int getBackForwardTransitionFallbackUXPageBackgroundColor() {
         return ChromeColors.getSurfaceColor(mTab.getContext(), R.dimen.default_elevation_3);
+    }
+
+    @Override
+    public void contentsZoomChange(boolean zoomIn) {
+        WebContents wc = mTab.getWebContents();
+        if (zoomIn) {
+            ZoomController.zoomIn(wc);
+        } else {
+            ZoomController.zoomOut(wc);
+        }
     }
 
     void showFramebustBlockInfobarForTesting(String url) {

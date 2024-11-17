@@ -136,14 +136,14 @@ class MainContentExtractionTest : public InProcessBrowserTest {
       const ui::AXTreeUpdate& ax_tree_update,
       base::OnceCallback<void(const std::vector<int32_t>&)> callback) {
     main_content_extractor_->ExtractMainContent(
-        ax_tree_update, ukm::kInvalidSourceId, std::move(callback));
+        ax_tree_update, std::move(callback));
   }
 
   void ExtractMainContent(const ui::AXTreeUpdate& ax_tree_update,
                           std::vector<ui::AXNodeID>& main_content_ids) {
     base::test::TestFuture<const std::vector<ui::AXNodeID>&> future;
     main_content_extractor_->ExtractMainContent(
-        ax_tree_update, ukm::kInvalidSourceId, future.GetCallback());
+        ax_tree_update, future.GetCallback());
     ASSERT_TRUE(future.Wait()) << "Main content was not received.";
     main_content_ids = future.Get();
   }

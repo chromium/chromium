@@ -19,7 +19,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/detachable_base/detachable_base_pairing_status.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/auth_error_bubble.h"
@@ -36,7 +36,6 @@
 #include "ash/login/ui/login_public_account_user_view.h"
 #include "ash/login/ui/login_user_view.h"
 #include "ash/login/ui/non_accessible_view.h"
-#include "ash/login/ui/note_action_launch_button.h"
 #include "ash/login/ui/scrollable_users_list_view.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/media/media_controller_impl.h"
@@ -65,6 +64,7 @@
 #include "ash/system/status_area_widget_delegate.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -106,6 +106,7 @@
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/layout/layout_manager.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
@@ -161,6 +162,21 @@ bool IsTimeInFuture(cryptohome::PinLockAvailability available_time) {
   return available_time.has_value() &&
          available_time.value() > base::Time::Now() &&
          available_time.value() < base::Time::Max();
+}
+
+bool IsTimeInPast(cryptohome::PinLockAvailability available_time) {
+  return available_time.has_value() &&
+         available_time.value() <= base::Time::Now() &&
+         available_time.value() > base::Time::Min();
+}
+
+void InvalidateLayoutForAllDescendants(views::View* view) {
+  if (view->children().empty()) {
+    view->InvalidateLayout();
+  }
+  for (const auto& child : view->children()) {
+    InvalidateLayoutForAllDescendants(child);
+  }
 }
 
 //
@@ -285,13 +301,138 @@ END_METADATA
 // static
 const int LockContentsView::kLoginAttemptsBeforeGaiaDialog = 4;
 
+class LockContentsView::LockContentsViewLayout : public views::LayoutManager {
+ public:
+  explicit LockContentsViewLayout(LockContentsView* host) : host_(host) {
+    CHECK(host_);
+  }
+  LockContentsViewLayout(const LockContentsViewLayout&) = delete;
+  LockContentsViewLayout& operator=(const LockContentsViewLayout&) = delete;
+  ~LockContentsViewLayout() override = default;
+
+ private:
+  // views::LayoutManager:
+  void Layout(views::View* host) override {
+    CHECK_EQ(host_, host);
+    UseFillLayoutForChildren(
+        {host_->main_view_, host_->kiosk_default_message_});
+    LayoutTopHeader();
+    LayoutBottomStatusIndicator();
+    LayoutUserAddingScreenIndicator();
+    LayoutPublicSessionView();
+  }
+
+  gfx::Size GetPreferredSize(const views::View* host) const override {
+    if (!host_->GetWidget()) {
+      return gfx::Size();
+    }
+    const display::Display& display =
+        display::Screen::GetScreen()->GetDisplayNearestWindow(
+            host_->GetWidget()->GetNativeWindow());
+    gfx::Size preferred_size = display.size();
+    preferred_size.set_height(preferred_size.height() -
+                              keyboard::KeyboardUIController::Get()
+                                  ->GetWorkspaceOccludedBoundsInScreen()
+                                  .height());
+    return preferred_size;
+  }
+
+  gfx::Size GetPreferredSize(
+      const views::View* host,
+      const views::SizeBounds& available_size) const override {
+    return GetPreferredSize(host);
+  }
+
+  void LayoutMainView() {
+    host_->main_view_->SetBoundsRect(host_->GetContentsBounds());
+  }
+
+  void UseFillLayoutForChildren(const std::vector<views::View*>& children) {
+    for (views::View* child : children) {
+      if (child) {
+        child->SetBoundsRect(host_->GetContentsBounds());
+      }
+    }
+  }
+
+  // Triggered when the children of the top header change contents or
+  // visibility.
+  void LayoutTopHeader() {
+    const int preferred_width = host_->system_info_->GetPreferredSize().width();
+    const int preferred_height =
+        host_->system_info_->GetPreferredSize().height();
+    // Position the top header - the origin is offset to the left from the top
+    // right corner of the entire view by the width of this top header view.
+    const gfx::Point position =
+        host_->GetLocalBounds().top_right() - gfx::Vector2d(preferred_width, 0);
+    host_->top_header_->SetBoundsRect(
+        gfx::Rect(position, gfx::Size(preferred_width, preferred_height)));
+  }
+
+  // Triggered when system information is shown if ADB is enabled and at the
+  // initialization of lock screen if the device is enrolled.
+  void LayoutBottomStatusIndicator() {
+    const gfx::Size preferred_size =
+        host_->bottom_status_indicator_->GetPreferredSize();
+    // Position the warning indicator in the middle above the shelf.
+    const gfx::Point position =
+        host_->GetLocalBounds().bottom_center() -
+        gfx::Vector2d(preferred_size.width() / 2,
+                      ShelfConfig::Get()->shelf_size() +
+                          kBottomStatusIndicatorBottomMarginDp +
+                          preferred_size.height());
+    host_->bottom_status_indicator_->SetBoundsRect(
+        gfx::Rect(position, preferred_size));
+  }
+
+  // Triggered when a secondary user is being added.
+  void LayoutUserAddingScreenIndicator() {
+    if (Shell::Get()->session_controller()->GetSessionState() !=
+        session_manager::SessionState::LOGIN_SECONDARY) {
+      return;
+    }
+
+    // The primary big view may not be ready yet.
+    if (!host_->primary_big_view_) {
+      return;
+    }
+
+    const gfx::Size preferred_size =
+        host_->user_adding_screen_indicator_->GetPreferredSize();
+    // The element is placed at the middle of the screen horizontally. It is
+    // placed kDistanceFromBottomOfIndicatorToUserIconDp above the user icon.
+    // However, if the screen is too small, it is placed
+    // kMinDistanceFromTopOfScreenToIndicatorDp from top of screen.
+    const int y =
+        std::max(kMinDistanceFromTopOfScreenToIndicatorDp,
+                 host_->primary_big_view_->y() - preferred_size.height() -
+                     kDistanceFromBottomOfIndicatorToUserIconDp);
+    const gfx::Point position(
+        host_->bounds().width() / 2 - preferred_size.width() / 2, y);
+
+    host_->user_adding_screen_indicator_->SetBoundsRect(
+        gfx::Rect(position, preferred_size));
+  }
+
+  void LayoutPublicSessionView() {
+    gfx::Rect bounds = host_->GetContentsBounds();
+    bounds.set_height(bounds.height() - ShelfConfig::Get()->shelf_size());
+    const gfx::Size pref_size =
+        bounds.width() >= bounds.height()
+            ? host_->expanded_view_->GetPreferredSizeLandscape()
+            : host_->expanded_view_->GetPreferredSizePortrait();
+    bounds.ClampToCenteredSize(pref_size);
+    host_->expanded_view_->SetBoundsRect(bounds);
+  }
+
+  const raw_ptr<LockContentsView> host_;
+};
+
 LockContentsView::LockContentsView(
-    mojom::TrayActionState initial_note_action_state,
     LockScreen::ScreenType screen_type,
     LoginDataDispatcher* data_dispatcher,
     std::unique_ptr<LoginDetachableBaseModel> detachable_base_model)
-    : NonAccessibleView(),
-      screen_type_(screen_type),
+    : screen_type_(screen_type),
       data_dispatcher_(data_dispatcher),
       detachable_base_model_(std::move(detachable_base_model)) {
   data_dispatcher_->AddObserver(this);
@@ -306,7 +447,7 @@ LockContentsView::LockContentsView(
   SetFocusBehavior(FocusBehavior::ALWAYS);
   set_suppress_default_focus_handling();
 
-  SetLayoutManager(std::make_unique<views::FillLayout>());
+  SetLayoutManager(std::make_unique<LockContentsViewLayout>(this));
 
   main_view_ = AddChildView(std::make_unique<NonAccessibleView>());
 
@@ -339,11 +480,6 @@ LockContentsView::LockContentsView(
   bottom_status_indicator_->SetLayoutManager(
       std::move(bottom_status_indicator_layout));
 
-  // TODO(b/330527825): Implement the management disclosure client that will be
-  // used to display the new disclosure.
-  // SetManagementDisclosureClient(
-  // Shell::Get()->login_screen_controller()->GetManagementDisclosureClient());
-
   std::string enterprise_domain_manager = Shell::Get()
                                               ->system_tray_model()
                                               ->enterprise_domain()
@@ -351,9 +487,6 @@ LockContentsView::LockContentsView(
   if (!enterprise_domain_manager.empty()) {
     ShowEnterpriseDomainManager(enterprise_domain_manager);
   }
-
-  note_action_ = top_header_->AddChildView(
-      std::make_unique<NoteActionLaunchButton>(initial_note_action_state));
 
   // Public Session expanded view.
   expanded_view_ =
@@ -388,19 +521,14 @@ LockContentsView::LockContentsView(
     user_adding_screen_indicator_ =
         AddChildView(std::make_unique<UserAddingScreenIndicator>());
   }
-  OnLockScreenNoteStateChanged(initial_note_action_state);
   chromeos::PowerManagerClient::Get()->AddObserver(this);
   RegisterAccelerators();
 
-  // If feature is enabled, update the boolean kiosk_license_mode_. Otherwise,
-  // it's false by default.
-  if (features::IsKioskLoginScreenEnabled()) {
-    kiosk_license_mode_ =
-        Shell::Get()
-            ->system_tray_model()
-            ->enterprise_domain()
-            ->management_device_mode() == ManagementDeviceMode::kKioskSku;
-  }
+  kiosk_license_mode_ =
+      Shell::Get()
+          ->system_tray_model()
+          ->enterprise_domain()
+          ->management_device_mode() == ManagementDeviceMode::kKioskSku;
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kWindow);
   GetViewAccessibility().SetName(
@@ -548,8 +676,8 @@ void LockContentsView::ToggleSystemInfo() {
   bool system_info_visibility = GetSystemInfoVisibility();
   if (system_info_visibility != system_info_->GetVisible()) {
     system_info_->SetVisible(system_info_visibility);
-    LayoutTopHeader();
-    LayoutBottomStatusIndicator();
+    top_header_->InvalidateLayout();
+    bottom_status_indicator_->InvalidateLayout();
   }
 }
 
@@ -567,31 +695,38 @@ void LockContentsView::ShowParentAccessDialog() {
   Shell::Get()->login_screen_controller()->ShowParentAccessButton(false);
 }
 
+void LockContentsView::ShowManagementDisclosureDialog() {
+  if (management_disclosure_dialog_) {
+    // Do not create another dialog if one already exists.
+    return;
+  }
+
+  auto* dialog = new ManagementDisclosureDialog(
+      Shell::Get()->login_screen_controller()
+                  ->GetManagementDisclosureClient() != nullptr
+          ? Shell::Get()
+                ->login_screen_controller()
+                ->GetManagementDisclosureClient()
+                ->GetDisclosures()
+          : std::vector<std::u16string>(),
+      base::BindOnce(
+          [](base::WeakPtr<ManagementDisclosureDialog> dialog) {
+            dialog.reset();
+          },
+          management_disclosure_dialog_));
+  // Save the dialog so it doesn't go out of scope before it is
+  // used and closed.
+  management_disclosure_dialog_ = dialog->GetWeakPtr();
+}
+
 void LockContentsView::SetHasKioskApp(bool has_kiosk_apps) {
   has_kiosk_apps_ = has_kiosk_apps;
 
   UpdateKioskDefaultMessageVisibility();
 }
 
-void LockContentsView::SetManagementDisclosureClient(
-    ManagementDisclosureClient* client) {
-  management_disclosure_client_ = client;
-}
-
-void LockContentsView::Layout(PassKey) {
-  LayoutSuperclass<View>(this);
-  LayoutTopHeader();
-  LayoutBottomStatusIndicator();
-  LayoutUserAddingScreenIndicator();
-  LayoutPublicSessionView();
-
-  if (users_list_) {
-    users_list_->DeprecatedLayoutImmediately();
-  }
-}
-
 void LockContentsView::AddedToWidget() {
-  DoLayout();
+  RunDisplayLayoutActions();
 
   views::Widget* widget = GetWidget();
   CHECK(widget);
@@ -608,6 +743,8 @@ void LockContentsView::AddedToWidget() {
   if (primary_big_view_) {
     primary_big_view_->RequestFocus();
   }
+
+  UpdateAccessiblePreviousAndNextFocus();
 }
 
 void LockContentsView::RemovedFromWidget() {
@@ -619,6 +756,8 @@ void LockContentsView::RemovedFromWidget() {
     focus_manager->RemoveFocusChangeListener(this);
   }
   widget_ = nullptr;
+
+  UpdateAccessiblePreviousAndNextFocus();
 }
 
 void LockContentsView::OnFocus() {
@@ -632,22 +771,7 @@ void LockContentsView::OnFocus() {
 }
 
 void LockContentsView::AboutToRequestFocusFromTabTraversal(bool reverse) {
-  // The LockContentsView itself doesn't have anything to focus. If it gets
-  // focused we should change the currently focused widget (ie, to the shelf or
-  // status area, or lock screen apps, if they are active).
-  if (reverse && lock_screen_apps_active_) {
-    Shell::Get()->login_screen_controller()->FocusLockScreenApps(reverse);
-    return;
-  }
-
   FocusNextWidget(reverse);
-}
-
-void LockContentsView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
-  ShelfWidget* shelf_widget = shelf->shelf_widget();
-  GetViewAccessibility().SetNextFocus(shelf_widget);
-  GetViewAccessibility().SetPreviousFocus(shelf->GetStatusAreaWidget());
 }
 
 bool LockContentsView::AcceleratorPressed(const ui::Accelerator& accelerator) {
@@ -702,7 +826,7 @@ void LockContentsView::ApplyUserChanges(
     if (old_state) {
       new_users.push_back(std::move(*old_state));
     } else {
-      new_users.push_back(UserState(user));
+      new_users.emplace_back(user);
     }
   }
 
@@ -761,7 +885,7 @@ void LockContentsView::ApplyUserChanges(
 
   // Force layout.
   PreferredSizeChanged();
-  DeprecatedLayoutImmediately();
+  ForceSyncLayoutOfAllViews();
 
   // If one of the child views had focus before we deleted them, then this view
   // will get focused. Move focus back to the primary big view.
@@ -1018,9 +1142,6 @@ void LockContentsView::OnAuthEnabledForUser(const AccountId& user) {
   }
 
   state->disable_auth = false;
-  disable_lock_screen_note_ = state->disable_auth;
-  OnLockScreenNoteStateChanged(
-      Shell::Get()->tray_action()->GetLockScreenNoteState());
 
   LoginBigUserView* big_user =
       TryToFindBigUser(user, true /*require_auth_active*/);
@@ -1039,8 +1160,6 @@ void LockContentsView::OnAuthDisabledForUser(
   }
 
   state->disable_auth = true;
-  disable_lock_screen_note_ = state->disable_auth;
-  OnLockScreenNoteStateChanged(mojom::TrayActionState::kNotAvailable);
 
   if (auth_disabled_data.disable_lock_screen_media) {
     Shell::Get()->media_controller()->SuspendMediaSessions();
@@ -1120,25 +1239,6 @@ void LockContentsView::OnWarningMessageUpdated(const std::u16string& message) {
   warning_banner_bubble_->Show();
 }
 
-void LockContentsView::OnLockScreenNoteStateChanged(
-    mojom::TrayActionState state) {
-  if (disable_lock_screen_note_) {
-    state = mojom::TrayActionState::kNotAvailable;
-  }
-
-  bool old_lock_screen_apps_active = lock_screen_apps_active_;
-  lock_screen_apps_active_ = state == mojom::TrayActionState::kActive;
-  note_action_->UpdateVisibility(state);
-  LayoutTopHeader();
-
-  // If lock screen apps just got deactivated - request focus for primary auth,
-  // which should focus the password field.
-  if (old_lock_screen_apps_active && !lock_screen_apps_active_ &&
-      primary_big_view_) {
-    primary_big_view_->RequestFocus();
-  }
-}
-
 void LockContentsView::OnSystemInfoChanged(
     bool show,
     bool enforced,
@@ -1184,7 +1284,7 @@ void LockContentsView::OnSystemInfoChanged(
   update_label(1, enterprise_info_text);
   update_label(2, bluetooth_name);
 
-  LayoutTopHeader();
+  top_header_->InvalidateLayout();
 
   // TODO(crbug.com/40727114): Separate ADB sideloading from system info
   // changed. Note that if ADB is enabled and the device is enrolled, only the
@@ -1193,7 +1293,7 @@ void LockContentsView::OnSystemInfoChanged(
     ShowAdbEnabled();
   }
 
-  LayoutBottomStatusIndicator();
+  bottom_status_indicator_->InvalidateLayout();
 }
 
 void LockContentsView::OnPublicSessionDisplayNameChanged(
@@ -1290,14 +1390,6 @@ void LockContentsView::OnDetachableBasePairingStatusChanged(
   }
 }
 
-void LockContentsView::OnFocusLeavingLockScreenApps(bool reverse) {
-  if (!reverse || lock_screen_apps_active_) {
-    FocusNextWidget(reverse);
-  } else {
-    FocusFirstOrLastFocusableChild(this, reverse);
-  }
-}
-
 void LockContentsView::OnOobeDialogStateChanged(OobeDialogState state) {
   const bool oobe_dialog_was_visible = oobe_dialog_visible_;
   oobe_dialog_visible_ = state != OobeDialogState::HIDDEN &&
@@ -1351,11 +1443,6 @@ void LockContentsView::OnFocusLeavingSystemTray(bool reverse) {
   // to lock screen view, and can misbehave in case the focus is kept in it.
   FocusFirstOrLastFocusableChild(this, reverse);
 
-  if (lock_screen_apps_active_) {
-    Shell::Get()->login_screen_controller()->FocusLockScreenApps(reverse);
-    return;
-  }
-
   if (oobe_dialog_visible_) {
     Shell::Get()->login_screen_controller()->FocusOobeDialog();
   }
@@ -1371,7 +1458,8 @@ void LockContentsView::OnDisplayMetricsChanged(const display::Display& display,
     return;
   }
 
-  DoLayout();
+  RunDisplayLayoutActions();
+  InvalidateLayout();
 
   // Set bounds here so that the lock screen widget always shows up on the
   // primary display. Sometimes the widget bounds are incorrect in the case
@@ -1400,12 +1488,6 @@ void LockContentsView::SuspendImminent(
 }
 
 void LockContentsView::OnDeviceEnterpriseInfoChanged() {
-  // If feature is enabled, update the boolean kiosk_license_mode_. Otherwise,
-  // it's false by default.
-  if (!features::IsKioskLoginScreenEnabled()) {
-    return;
-  }
-
   kiosk_license_mode_ =
       Shell::Get()
           ->system_tray_model()
@@ -1483,7 +1565,7 @@ void LockContentsView::CreateMediaView() {
   AddDisplayLayoutAction(base::BindRepeating(
       &LockContentsView::SetMediaViewSpacing, base::Unretained(this)));
 
-  DeprecatedLayoutImmediately();
+  ForceSyncLayoutOfAllViews();
 }
 
 void LockContentsView::HideMediaView() {
@@ -1496,7 +1578,7 @@ void LockContentsView::HideMediaView() {
   // Don't allow media keys to be used on lock screen since controls are hidden.
   Shell::Get()->media_controller()->SetMediaControlsDismissed(true);
 
-  DeprecatedLayoutImmediately();
+  ForceSyncLayoutOfAllViews();
 }
 
 bool LockContentsView::AreMediaControlsEnabled() const {
@@ -1715,104 +1797,17 @@ void LockContentsView::CreateHighDensityLayout(
       users_list_));
 }
 
-void LockContentsView::DoLayout() {
-  const display::Display& display =
-      display::Screen::GetScreen()->GetDisplayNearestWindow(
-          GetWidget()->GetNativeWindow());
-
-  // Set preferred size before running layout actions, as layout actions may
-  // depend on the preferred size to determine layout.
-  gfx::Size preferred_size = display.size();
-  preferred_size.set_height(preferred_size.height() -
-                            keyboard::KeyboardUIController::Get()
-                                ->GetWorkspaceOccludedBoundsInScreen()
-                                .height());
-  SetPreferredSize(preferred_size);
-
-  bool landscape = login_views_utils::ShouldShowLandscape(GetWidget());
-  for (auto& action : layout_actions_) {
-    action.Run(landscape);
-  }
-
-  // SizeToPreferredSize will trigger layout.
-  SizeToPreferredSize();
-}
-
-void LockContentsView::LayoutTopHeader() {
-  int preferred_width = system_info_->GetPreferredSize().width() +
-                        note_action_->GetPreferredSize().width();
-  int preferred_height = std::max(system_info_->GetPreferredSize().height(),
-                                  note_action_->GetPreferredSize().height());
-  top_header_->SetPreferredSize(gfx::Size(preferred_width, preferred_height));
-  top_header_->SizeToPreferredSize();
-  top_header_->DeprecatedLayoutImmediately();
-  // Position the top header - the origin is offset to the left from the top
-  // right corner of the entire view by the width of this top header view.
-  top_header_->SetPosition(GetLocalBounds().top_right() -
-                           gfx::Vector2d(preferred_width, 0));
-}
-
-void LockContentsView::LayoutBottomStatusIndicator() {
-  bottom_status_indicator_->SizeToPreferredSize();
-
-  // Position the warning indicator in the middle above the shelf.
-  bottom_status_indicator_->SetPosition(
-      GetLocalBounds().bottom_center() -
-      gfx::Vector2d(bottom_status_indicator_->width() / 2,
-                    ShelfConfig::Get()->shelf_size() +
-                        kBottomStatusIndicatorBottomMarginDp +
-                        bottom_status_indicator_->height()));
-
-  // If the management bubble is currently displayed, we need to re-layout it as
-  // the bottom status indicator is its anchor view.
-  if (management_bubble_->GetVisible()) {
-    management_bubble_->DeprecatedLayoutImmediately();
-  }
-}
-
-void LockContentsView::LayoutUserAddingScreenIndicator() {
-  if (Shell::Get()->session_controller()->GetSessionState() !=
-      session_manager::SessionState::LOGIN_SECONDARY) {
-    return;
-  }
-
-  // The primary big view may not be ready yet.
-  if (!primary_big_view_) {
-    return;
-  }
-
-  user_adding_screen_indicator_->SizeToPreferredSize();
-  // The element is placed at the middle of the screen horizontally. It is
-  // placed kDistanceFromBottomOfIndicatorToUserIconDp above the user icon.
-  // However, if the screen is too small, it is placed
-  // kMinDistanceFromTopOfScreenToIndicatorDp from top of screen.
-  int y =
-      std::max(kMinDistanceFromTopOfScreenToIndicatorDp,
-               primary_big_view_->y() -
-                   user_adding_screen_indicator_->GetPreferredSize().height() -
-                   kDistanceFromBottomOfIndicatorToUserIconDp);
-  gfx::Point position(
-      bounds().width() / 2 -
-          user_adding_screen_indicator_->GetPreferredSize().width() / 2,
-      y);
-
-  user_adding_screen_indicator_->SetPosition(position);
-}
-
-void LockContentsView::LayoutPublicSessionView() {
-  gfx::Rect bounds = GetContentsBounds();
-  bounds.set_height(bounds.height() - ShelfConfig::Get()->shelf_size());
-  gfx::Size pref_size = bounds.width() >= bounds.height()
-                            ? expanded_view_->GetPreferredSizeLandscape()
-                            : expanded_view_->GetPreferredSizePortrait();
-  bounds.ClampToCenteredSize(pref_size);
-  expanded_view_->SetBoundsRect(bounds);
-}
-
 void LockContentsView::AddDisplayLayoutAction(
     const DisplayLayoutAction& layout_action) {
   layout_action.Run(login_views_utils::ShouldShowLandscape(GetWidget()));
   layout_actions_.push_back(layout_action);
+}
+
+void LockContentsView::RunDisplayLayoutActions() {
+  const bool landscape = login_views_utils::ShouldShowLandscape(GetWidget());
+  for (auto& action : layout_actions_) {
+    action.Run(landscape);
+  }
 }
 
 void LockContentsView::SwapActiveAuthBetweenPrimaryAndSecondary(
@@ -1822,19 +1817,20 @@ void LockContentsView::SwapActiveAuthBetweenPrimaryAndSecondary(
     return;
   }
 
-  if (is_primary) {
-    if (!primary_big_view_->IsAuthEnabled()) {
-      LayoutAuth(primary_big_view_, opt_secondary_big_view_, true /*animate*/);
+  LoginBigUserView* new_big_view =
+      is_primary ? primary_big_view_.get() : opt_secondary_big_view_.get();
+  LoginBigUserView* previous_big_view =
+      is_primary ? opt_secondary_big_view_.get() : primary_big_view_.get();
+
+  if (new_big_view) {
+    if (!new_big_view->IsAuthEnabled()) {
+      // Check if the pin is enabled again after the lock out period.
+      CheckIfPinEnabled(
+          new_big_view->GetCurrentUser().basic_user_info.account_id);
+      LayoutAuth(new_big_view, previous_big_view, true /*animate*/);
       OnBigUserChanged();
     } else {
-      primary_big_view_->RequestFocus();
-    }
-  } else if (!is_primary && opt_secondary_big_view_) {
-    if (!opt_secondary_big_view_->IsAuthEnabled()) {
-      LayoutAuth(opt_secondary_big_view_, primary_big_view_, true /*animate*/);
-      OnBigUserChanged();
-    } else {
-      opt_secondary_big_view_->RequestFocus();
+      new_big_view->RequestFocus();
     }
   }
 }
@@ -1879,7 +1875,7 @@ void LockContentsView::OnAuthenticate(bool auth_success,
     }
 
     if (display_error_messages) {
-      ShowAuthErrorMessage();
+      ShowAuthErrorMessage(authenticated_by_pin);
     }
   }
 }
@@ -1928,21 +1924,8 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
         // Currently the challenge-response authentication can't be combined
         // with the password or PIN based one.
         to_update_auth = LoginAuthUserView::AUTH_CHALLENGE_RESPONSE;
-      } else if (!state->show_password && !state->show_pin) {
-        CHECK(IsTimeInFuture(state->pin_available_at))
-            << "Password or pin factor must be present, if pin is not locked";
-        to_update_auth = LoginAuthUserView::AUTH_RECOVERY;
-        auth_metadata.pin_available_at = state->pin_available_at;
-        // The auth error message might be shown at the moment due to previous
-        // wrong attempts. We will hide it as it shows similar content as the
-        // recover button and the pin delay message.
-        HideAuthErrorMessage();
       } else {
-        if (features::IsAllowPasswordlessSetupEnabled()) {
-          to_update_auth = LoginAuthUserView::AUTH_NONE;
-        } else {
-          to_update_auth = LoginAuthUserView::AUTH_PASSWORD;
-        }
+        to_update_auth = LoginAuthUserView::AUTH_NONE;
         if (state->show_password) {
           to_update_auth |= LoginAuthUserView::AUTH_PASSWORD;
         }
@@ -1957,6 +1940,18 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
         auth_metadata.pin_available_at = state->pin_available_at;
         if (state->show_pin) {
           to_update_auth |= LoginAuthUserView::AUTH_PIN;
+        }
+        if (!state->show_password && !state->show_pin) {
+          CHECK(IsTimeInFuture(state->pin_available_at))
+              << "Password or pin factor must be present, if pin is not locked";
+          to_update_auth =
+              screen_type_ == LockScreen::ScreenType::kLogin
+                  ? LoginAuthUserView::AUTH_PIN_LOCKED_SHOW_RECOVERY
+                  : LoginAuthUserView::AUTH_PIN_LOCKED;
+          // The auth error message might be shown at the moment due to previous
+          // wrong attempts. We will hide it as it shows similar content as the
+          // recover button and the pin delay message.
+          HideAuthErrorMessage();
         }
         if (state->fingerprint_state != FingerprintState::UNAVAILABLE) {
           to_update_auth |= LoginAuthUserView::AUTH_FINGERPRINT;
@@ -2007,7 +2002,7 @@ void LockContentsView::LayoutAuth(LoginBigUserView* to_update,
   capture_animation_state_pre_layout(opt_to_hide);
   enable_auth(to_update);
   disable_auth(opt_to_hide);
-  DeprecatedLayoutImmediately();
+  ForceSyncLayoutOfAllViews();
   apply_animation_post_layout(to_update);
   apply_animation_post_layout(opt_to_hide);
   ongoing_auth_layout_ = false;
@@ -2027,6 +2022,8 @@ void LockContentsView::SwapToBigUser(int user_index) {
 
   view->UpdateForUser(previous_big_user, true /*animate*/);
   primary_big_view_->UpdateForUser(new_big_user);
+  // Check if the pin is enabled again after the lock out period.
+  CheckIfPinEnabled(new_big_user.basic_user_info.account_id);
   LayoutAuth(primary_big_view_, nullptr, true /*animate*/);
   OnBigUserChanged();
 }
@@ -2078,7 +2075,7 @@ LoginBigUserView* LockContentsView::CurrentBigUserView() {
   return primary_big_view_;
 }
 
-void LockContentsView::ShowAuthErrorMessage() {
+void LockContentsView::ShowAuthErrorMessage(bool authenticated_by_pin) {
   LoginBigUserView* big_view = CurrentBigUserView();
   if (!big_view->auth_user()) {
     return;
@@ -2099,7 +2096,7 @@ void LockContentsView::ShowAuthErrorMessage() {
   auth_error_bubble_->ShowAuthError(
       /*anchor_view = */ big_view->auth_user()->GetActiveInputView(),
       /*unlock_attempt = */ unlock_attempt,
-      /*show_pin = */ user_state->show_pin,
+      /*authenticated_by_pin = */ authenticated_by_pin,
       /*is_login_screen = */ screen_type_ == LockScreen::ScreenType::kLogin);
 }
 
@@ -2198,7 +2195,7 @@ std::unique_ptr<LoginBigUserView> LockContentsView::AllocateLoginBigUserView(
           &LockContentsView::OnAuthFactorIsHidingPasswordChanged,
           base::Unretained(this), user.basic_user_info.account_id);
   auth_user_callbacks.on_pin_unlock = base::BindRepeating(
-      &LockContentsView::OnPinUnlock, base::Unretained(this), is_primary);
+      &LockContentsView::OnPinUnlock, base::Unretained(this));
   auth_user_callbacks.on_recover_button_pressed = base::BindRepeating(
       &LockContentsView::RecoverUserButtonPressed, base::Unretained(this));
 
@@ -2257,7 +2254,7 @@ void LockContentsView::SetDisplayStyle(DisplayStyle style) {
   main_view_->SetVisible(!show_expanded_view);
   top_header_->SetVisible(!show_expanded_view);
   bottom_status_indicator_->SetVisible(!show_expanded_view);
-  DeprecatedLayoutImmediately();
+  ForceSyncLayoutOfAllViews();
 }
 
 bool LockContentsView::OnKeyPressed(const ui::KeyEvent& event) {
@@ -2394,7 +2391,14 @@ void LockContentsView::OnBottomStatusIndicatorTapped() {
   if (bottom_status_indicator_state_ != BottomIndicatorState::kManagedDevice) {
     return;
   }
-  management_bubble_->Show();
+
+  if (base::FeatureList::IsEnabled(
+          ash::features::kImprovedManagementDisclosure)) {
+    ShowManagementDisclosureDialog();
+  } else {
+    // Fallback to original bubble if management_disclosure not enabled.
+    management_bubble_->Show();
+  }
 }
 
 void LockContentsView::OnBackToSigninButtonTapped() {
@@ -2435,13 +2439,45 @@ void LockContentsView::RecordAndResetPasswordAttempts(
   unlock_attempt_by_user_[account_id] = 0;
 }
 
-void LockContentsView::OnPinUnlock(bool is_primary) {
-  LoginBigUserView* to_update =
-      is_primary ? primary_big_view_.get() : opt_secondary_big_view_.get();
-  AccountId user = to_update->GetCurrentUser().basic_user_info.account_id;
-  data_dispatcher_->SetPinEnabledForUser(user, true,
-                                         /*avaiable_at=*/ std::nullopt);
+void LockContentsView::OnPinUnlock(const AccountId& account_id) {
+  data_dispatcher_->SetPinEnabledForUser(account_id, true,
+                                         /*available_at=*/std::nullopt);
   HideAuthErrorMessage();
+}
+
+void LockContentsView::CheckIfPinEnabled(const AccountId& account_id) {
+  UserState* state = FindStateForUser(account_id);
+  if (!state) {
+    LOG(ERROR) << "Unable to find user when checking pin status";
+    return;
+  }
+  if (IsTimeInPast(state->pin_available_at)) {
+    data_dispatcher_->SetPinEnabledForUser(account_id, true,
+                                           /*available_at=*/std::nullopt);
+  }
+}
+
+// TODO(b/373480100): Remove this method. It's here temporarily to match old
+// functionality and prevent regressions as there are a number of places in the
+// code that perform a layout of the whole view tree. All
+// `DeprecatedLayoutImmediately()` calls should be replaced with
+// `InvalidateLayout()` on the specific view(s) in the hierarchy that requires
+// re-layout. This also requires accounting for layout being asynchronous.
+void LockContentsView::ForceSyncLayoutOfAllViews() {
+  InvalidateLayoutForAllDescendants(this);
+  DeprecatedLayoutImmediately();
+}
+
+void LockContentsView::UpdateAccessiblePreviousAndNextFocus() {
+  if (GetWidget() && GetWidget()->GetNativeWindow()) {
+    Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
+    ShelfWidget* shelf_widget = shelf->shelf_widget();
+    GetViewAccessibility().SetNextFocus(shelf_widget);
+    GetViewAccessibility().SetPreviousFocus(shelf->GetStatusAreaWidget());
+  } else {
+    GetViewAccessibility().SetNextFocus(nullptr);
+    GetViewAccessibility().SetPreviousFocus(nullptr);
+  }
 }
 
 BEGIN_METADATA(LockContentsView)

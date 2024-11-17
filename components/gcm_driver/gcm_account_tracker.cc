@@ -192,7 +192,7 @@ void GCMAccountTracker::ReportTokens() {
       // This should not happen, as we are making a check that there are no
       // pending requests above, stopping tracking of removed accounts, or start
       // fetching tokens.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 

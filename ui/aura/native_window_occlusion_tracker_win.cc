@@ -94,9 +94,7 @@ void NativeWindowOcclusionTrackerWin::DeleteInstanceForTesting() {
 void NativeWindowOcclusionTrackerWin::Enable(Window* window) {
   DCHECK(window->IsRootWindow());
   if (window->HasObserver(this)) {
-    NOTREACHED_IN_MIGRATION()
-        << "window shouldn't already be observing occlusion tracker";
-    return;
+    NOTREACHED() << "window shouldn't already be observing occlusion tracker";
   }
   // Add this as an observer so that we can be notified
   // when it's no longer true that all windows are minimized, and when the
@@ -268,7 +266,7 @@ bool NativeWindowOcclusionTrackerWin::IsWindowVisibleAndFullyOpaque(
   // Window or the Windows Taskbar
   if (::GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP) {
     std::wstring hwnd_class_name = gfx::GetClassName(hwnd);
-    if (!base::StartsWith(hwnd_class_name, L"Chrome_WidgetWin_") &&
+    if (!hwnd_class_name.starts_with(L"Chrome_WidgetWin_") &&
         hwnd_class_name != L"Shell_TrayWnd") {
       return false;
     }
@@ -364,11 +362,6 @@ void NativeWindowOcclusionTrackerWin::OnSessionChange(
 }
 
 void NativeWindowOcclusionTrackerWin::OnDisplayStateChanged(bool display_on) {
-  static bool screen_power_listener_enabled = base::FeatureList::IsEnabled(
-      features::kScreenPowerListenerForNativeWinOcclusion);
-  if (!screen_power_listener_enabled)
-    return;
-
   if (display_on == display_on_)
     return;
 
@@ -840,9 +833,8 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
   bool calculate_occlusion = true;
   if (::GetWindowLong(hwnd, GWL_STYLE) & WS_POPUP) {
     std::wstring hwnd_class_name = gfx::GetClassName(hwnd);
-    calculate_occlusion =
-        base::StartsWith(hwnd_class_name, L"Chrome_WidgetWin_") ||
-        hwnd_class_name == L"Shell_TrayWnd";
+    calculate_occlusion = hwnd_class_name.starts_with(L"Chrome_WidgetWin_") ||
+                          hwnd_class_name == L"Shell_TrayWnd";
   }
 
   // Detect if either the alt tab view or the task list thumbnail is being
@@ -894,9 +886,11 @@ void NativeWindowOcclusionTrackerWin::WindowOcclusionCalculator::
       // Ignore move events if it's not a root window that's being moved. If it
       // is a root window, we want to calculate occlusion to support tab
       // dragging to windows that were occluded when the drag was started but
-      // are no longer occluded.
-      if (root_window_hwnds_occlusion_state_.find(hwnd) ==
-          root_window_hwnds_occlusion_state_.end()) {
+      // are no longer occluded.  If there is only one root window, occlusion
+      // calculation is not needed.
+      if ((root_window_hwnds_occlusion_state_.size() <= 1) ||
+          (root_window_hwnds_occlusion_state_.find(hwnd) ==
+           root_window_hwnds_occlusion_state_.end())) {
         return;
       }
     } else {

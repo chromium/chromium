@@ -186,7 +186,7 @@ public class LanguageSplitInstaller {
             @SplitInstallSessionStatus int status) {
         switch (status) {
             case SplitInstallSessionStatus.INSTALLED:
-                return (mIsLanguageSplitInstalled)
+                return mIsLanguageSplitInstalled
                         ? LanguageSplitInstallStatus.ALREADY_INSTALLED
                         : LanguageSplitInstallStatus.SUCCESS;
             case SplitInstallSessionStatus.CANCELED:

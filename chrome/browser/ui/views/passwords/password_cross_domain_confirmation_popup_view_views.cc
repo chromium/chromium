@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/views/passwords/views_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
@@ -70,6 +72,7 @@ PasswordCrossDomainConfirmationPopupViewViews::
               IDS_PASSWORD_CROSS_DOMAIN_FILLING_CONFIRMATION_TITLE,
               password_origin))
           .SetTextStyle(views::style::TextStyle::STYLE_BODY_3_MEDIUM)
+          .SetAccessibleRole(ax::mojom::Role::kHeading)
           .Build());
 
   auto* body = AddChildView(
@@ -140,6 +143,9 @@ bool PasswordCrossDomainConfirmationPopupViewViews::
 void PasswordCrossDomainConfirmationPopupViewViews::Show() {
   DoShow();
 }
+
+BEGIN_METADATA(PasswordCrossDomainConfirmationPopupViewViews)
+END_METADATA
 
 // static
 base::WeakPtr<PasswordCrossDomainConfirmationPopupView>

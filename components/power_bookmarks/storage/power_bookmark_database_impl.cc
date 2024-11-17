@@ -39,9 +39,8 @@ std::unique_ptr<Power> CreatePowerFromSpecifics(
     case sync_pb::PowerBookmarkSpecifics::POWER_TYPE_NOTE:
       return std::make_unique<Power>(specifics);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 bool CheckIfPowerWithIdExists(sql::Database* db, const base::Uuid& guid) {

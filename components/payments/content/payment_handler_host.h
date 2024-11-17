@@ -32,7 +32,7 @@ class PaymentHandlerHost : public mojom::PaymentHandlerHost {
   // merchant's renderer process.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Notifies the merchant that the payment method has changed. Returns
     // "false" if the state is invalid.

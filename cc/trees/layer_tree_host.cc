@@ -31,11 +31,13 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/types/optional_ref.h"
 #include "build/build_config.h"
 #include "cc/base/devtools_instrumentation.h"
@@ -79,11 +81,11 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/tracing/public/cpp/perfetto/flow_event_utils.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/presentation_feedback.h"
+#include "ui/latency/latency_info.h"
 
 namespace {
 static base::AtomicSequenceNumber s_layer_tree_host_sequence_number;
@@ -526,17 +528,17 @@ void LayerTreeHost::NotifyImageDecodeFinished(int request_id,
 }
 
 void LayerTreeHost::NotifyTransitionRequestsFinished(
-    const std::vector<uint32_t>& sequence_ids) {
+    const uint32_t sequence_id,
+    const viz::ViewTransitionElementResourceRects& rects) {
   DCHECK(IsMainThread());
   // TODO(vmpstr): This might also be a good spot to expire long standing
   // requests if they were not finished.
-  for (auto& sequence_id : sequence_ids) {
-    auto it = view_transition_callbacks_.find(sequence_id);
-    if (it == view_transition_callbacks_.end())
-      continue;
-    std::move(it->second).Run();
-    view_transition_callbacks_.erase(it);
+  auto it = view_transition_callbacks_.find(sequence_id);
+  if (it == view_transition_callbacks_.end()) {
+    return;
   }
+  std::move(it->second).Run(rects);
+  view_transition_callbacks_.erase(it);
 }
 
 void LayerTreeHost::SetLayerTreeFrameSink(
@@ -1150,17 +1152,15 @@ void LayerTreeHost::ApplyCompositorChanges(CompositorCommitData* commit_data) {
   using perfetto::protos::pbzero::TrackEvent;
 
   for (auto& swap_promise : commit_data->swap_promises) {
-    TRACE_EVENT(
-        "input,benchmark", "LatencyInfo.Flow",
-        [&swap_promise](perfetto::EventContext ctx) {
-          auto* info = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-                           ->set_chrome_latency_info();
-          info->set_trace_id(swap_promise->GetTraceId());
-          info->set_step(perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
-                             STEP_MAIN_THREAD_SCROLL_UPDATE);
-          tracing::FillFlowEvent(ctx, TrackEvent::LegacyEvent::FLOW_INOUT,
-                                 swap_promise->GetTraceId());
-        });
+    int64_t trace_id = swap_promise->GetTraceId();
+    TRACE_EVENT("input,benchmark", "LatencyInfo.Flow",
+                [&](perfetto::EventContext ctx) {
+                  base::TaskAnnotator::EmitTaskTimingDetails(ctx);
+                  ui::LatencyInfo::FillTraceEvent(
+                      ctx, trace_id,
+                      perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
+                          STEP_MAIN_THREAD_SCROLL_UPDATE);
+                });
     swap_promise_manager_.QueueSwapPromise(std::move(swap_promise));
   }
 
@@ -2102,10 +2102,10 @@ void LayerTreeHost::SetDelegatedInkMetadata(
   SetNeedsCommit();
 }
 
-std::vector<base::OnceClosure>
+std::vector<ViewTransitionRequest::ViewTransitionCaptureCallback>
 LayerTreeHost::TakeViewTransitionCallbacksForTesting() {
   DCHECK(IsMainThread());
-  std::vector<base::OnceClosure> result;
+  std::vector<ViewTransitionRequest::ViewTransitionCaptureCallback> result;
   for (auto& item : view_transition_callbacks_)
     result.push_back(std::move(item.second));
   view_transition_callbacks_.clear();

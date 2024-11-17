@@ -81,8 +81,7 @@ static bool ShouldTypeOnlyIncludeDirectChildren(CollectionType type) {
     case kLabelsNodeListType:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 static NodeListSearchRoot SearchRootFromCollectionType(
@@ -127,8 +126,7 @@ static NodeListSearchRoot SearchRootFromCollectionType(
     case kLabelsNodeListType:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return NodeListSearchRoot::kOwnerNode;
+  NOTREACHED();
 }
 
 static NodeListInvalidationType InvalidationTypeExcludingIdAndNameAttributes(
@@ -177,8 +175,7 @@ static NodeListInvalidationType InvalidationTypeExcludingIdAndNameAttributes(
     case kLabelsNodeListType:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kDoNotInvalidateOnAttributeChanges;
+  NOTREACHED();
 }
 
 HTMLCollection::HTMLCollection(ContainerNode& owner_node,
@@ -281,7 +278,7 @@ static inline bool IsMatchingHTMLElement(const HTMLCollection& html_collection,
     case kRadioNodeListType:
     case kRadioImgNodeListType:
     case kLabelsNodeListType:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return false;
 }
@@ -339,8 +336,7 @@ static inline IsMatch<HTMLCollectionType> MakeIsMatch(
 }
 
 Element* HTMLCollection::VirtualItemAfter(Element*) const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // https://html.spec.whatwg.org/C/#all-named-elements

@@ -15,9 +15,11 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/data_model/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -160,6 +162,7 @@ CreditCard GetMaskedServerCardVisa();
 CreditCard GetMaskedServerCardAmex();
 CreditCard GetMaskedServerCardWithNickname();
 CreditCard GetMaskedServerCardEnrolledIntoVirtualCardNumber();
+CreditCard GetMaskedServerCardEnrolledIntoRuntimeRetrieval();
 
 // Returns a full server card full of dummy info.
 CreditCard GetFullServerCard();
@@ -347,33 +350,31 @@ std::string NextYear();
 std::string TenYearsFromNow();
 
 // Creates a `FieldPrediction` instance.
-::autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-    FieldPrediction
-    CreateFieldPrediction(FieldType type,
-                          ::autofill::AutofillQueryResponse::FormSuggestion::
-                              FieldSuggestion::FieldPrediction::Source source);
+AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
+CreateFieldPrediction(FieldType type,
+                      AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+                          FieldPrediction::Source source);
 
 // Creates a `FieldPrediction` instance, with a plausible value for `source()`.
-::autofill::AutofillQueryResponse::FormSuggestion::FieldSuggestion::
-    FieldPrediction
-    CreateFieldPrediction(FieldType type, bool is_override = false);
+AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
+CreateFieldPrediction(FieldType type, bool is_override = false);
 
 void AddFieldPredictionToForm(
-    const autofill::FormFieldData& field_data,
+    const FormFieldData& field_data,
     FieldType field_type,
-    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion,
+    AutofillQueryResponse_FormSuggestion* form_suggestion,
     bool is_override = false);
 
 void AddFieldPredictionsToForm(
-    const autofill::FormFieldData& field_data,
+    const FormFieldData& field_data,
     const std::vector<FieldType>& field_types,
-    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion);
+    AutofillQueryResponse_FormSuggestion* form_suggestion);
 
 void AddFieldPredictionsToForm(
-    const autofill::FormFieldData& field_data,
-    const std::vector<::autofill::AutofillQueryResponse::FormSuggestion::
-                          FieldSuggestion::FieldPrediction>& field_predictions,
-    ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion);
+    const FormFieldData& field_data,
+    const std::vector<AutofillQueryResponse::FormSuggestion::FieldSuggestion::
+                          FieldPrediction>& field_predictions,
+    AutofillQueryResponse_FormSuggestion* form_suggestion);
 
 Suggestion CreateAutofillSuggestion(
     SuggestionType type,
@@ -382,10 +383,13 @@ Suggestion CreateAutofillSuggestion(
 
 Suggestion CreateAutofillSuggestion(const std::u16string& main_text_value,
                                     const std::u16string& minor_text_value,
-                                    bool apply_deactivated_style);
+                                    bool has_deactivated_style);
 
 // Returns a bank account enabled for Pix with fake data.
 BankAccount CreatePixBankAccount(int64_t instrument_id);
+
+// Returns an eWallet account with fake data.
+Ewallet CreateEwalletAccount(int64_t instrument_id);
 
 // Returns a payment instrument with a bank account filled with fake data.
 sync_pb::PaymentInstrument CreatePaymentInstrumentWithBankAccount(
@@ -394,6 +398,13 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithBankAccount(
 // Returns a payment instrument with an IBAN filled with fake data.
 sync_pb::PaymentInstrument CreatePaymentInstrumentWithIban(
     int64_t instrument_id);
+
+// Returns a payment instrument with an eWallet account filled with fake data.
+sync_pb::PaymentInstrument CreatePaymentInstrumentWithEwalletAccount(
+    int64_t instrument_id);
+
+// Returns a BNPL issuer with fake data.
+BnplIssuer GetTestBnplIssuer();
 
 }  // namespace test
 }  // namespace autofill

@@ -5,6 +5,7 @@
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <list>
 #include <memory>
 
@@ -91,12 +92,28 @@ void FileSystemAccessWatcherManager::Observation::SetCallback(
   on_change_callback_ = std::move(on_change_callback);
 }
 
+void FileSystemAccessWatcherManager::Observation::SetUsageCallback(
+    OnUsageChangesCallback on_usage_change_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!on_usage_change_callback_);
+  on_usage_change_callback_ = std::move(on_usage_change_callback);
+}
+
 void FileSystemAccessWatcherManager::Observation::NotifyOfChanges(
     const std::optional<std::list<Change>>& changes_or_error,
     base::PassKey<FileSystemAccessWatcherManager> pass_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (on_change_callback_) {
     on_change_callback_.Run(std::move(changes_or_error));
+  }
+}
+
+void FileSystemAccessWatcherManager::Observation::NotifyOfUsageChange(
+    size_t old_usage,
+    size_t new_usage) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (on_usage_change_callback_) {
+    on_usage_change_callback_.Run(old_usage, new_usage);
   }
 }
 
@@ -210,9 +227,13 @@ void FileSystemAccessWatcherManager::OnRawChange(
             : std::make_optional(
                   std::list<Observation::Change>({{changed_url, change_info}}));
   for (auto& observation : observations_) {
-    // TODO(crbug.com/321980367): Currently, sharing partially overlapping
-    // observations are not supported, hence checking for the exact scope
-    // matching on Local FS.
+    // TODO(crbug.com/376134535): We identify a change source by its scope.
+    // Observations that have the same scope belong to that change source. The
+    // bucket file system being the exception.
+    //
+    // Eventually we will want Observations to directly watch their
+    // ChangeSource. However we will have to do some refactoring because of the
+    // bucket file system exception.
     if (scope.GetWatchType() != WatchType::kAllBucketFileSystems &&
         observation.scope() != scope) {
       continue;
@@ -267,6 +288,31 @@ void FileSystemAccessWatcherManager::OnRawChange(
     // as is.
     observation.NotifyOfChanges(
         changes_or_error, base::PassKey<FileSystemAccessWatcherManager>());
+  }
+}
+
+void FileSystemAccessWatcherManager::OnUsageChange(
+    size_t old_usage,
+    size_t new_usage,
+    const FileSystemAccessWatchScope& scope) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // The bucket file system's usage should not change.
+  CHECK(scope.GetWatchType() != WatchType::kAllBucketFileSystems);
+
+  for (auto& observation : observations_) {
+    // TODO(crbug.com/376134535): We identify a change source by its scope.
+    // Observations that have the same scope belong to that change source. The
+    // bucket file system being the exception.
+    //
+    // Eventually we will want Observations to directly watch their
+    // ChangeSource. However we will have to do some refactoring because of the
+    // bucket file system exception.
+    if (observation.scope() != scope) {
+      continue;
+    }
+
+    observation.NotifyOfUsageChange(old_usage, new_usage);
   }
 }
 

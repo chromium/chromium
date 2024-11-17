@@ -439,7 +439,7 @@ class ArcBluetoothBridge
 
   void OnGattNotifyStartDone(
       GattStatusCallback callback,
-      const std::string char_string_id,
+      std::string char_string_id,
       std::unique_ptr<device::BluetoothGattNotifySession> notify_session);
 
   // Indicates if a power change is initiated by Chrome / Android.

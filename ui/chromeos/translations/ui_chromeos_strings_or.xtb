@@ -19,6 +19,7 @@
 <translation id="115443833402798225">ହଂଗୁଲ୍ Ahnmatae</translation>
 <translation id="1155759005174418845">କାଟାଲାନ୍</translation>
 <translation id="1168100932582989117">Google ନାମ ସର୍ଭର୍</translation>
+<translation id="1170788066030116158">ଫଟୋ ଉଠାଯିବାର ତାରିଖ</translation>
 <translation id="1172970565351728681">ପ୍ରାୟ <ph name="REMAINING_TIME" /> ସମୟ ବାକି ଅଛି</translation>
 <translation id="1173894706177603556">ରିନେମ୍ କରନ୍ତୁ</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଫୋନ୍‌ ବ୍ୟାଟେରୀ <ph name="BATTERY_STATUS" />%, ବିବରଣୀ</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">ପ୍ରମାଣିକିକରଣ ସାର୍ଟିଫିକେଟ୍‌ ରିମୋଟ୍‍ ଭାବେ ଖାରଜ କରାଯାଇଛି</translation>
 <translation id="4394214039309501350">ଏକ୍ସଟର୍ନଲ୍ ଲିଙ୍କ୍</translation>
 <translation id="4394980935660306080">ଏହି ସପ୍ତାହର ଆରମ୍ଭରେ</translation>
+<translation id="4397435965699247285">ଅଫଲାଇନ ଥିବା ସମୟରେ OneDrive ଉପଲବ୍ଧ ହୋଇନଥାଏ</translation>
 <translation id="4398096759193130964">ଆଇଟମଗୁଡ଼ିକୁ ରିଷ୍ଟୋର କରନ୍ତୁ କିମ୍ବା ଟ୍ରାସ ବାହାରେ ଏକ ନୂଆ ଫୋଲ୍ଡରକୁ ସେଗୁଡ଼ିକୁ ଡ୍ରାଗ କରନ୍ତୁ</translation>
 <translation id="4401287888955153199">ସବୁ ଏକ୍ସଟ୍ରାକ୍ଟ କରନ୍ତୁ</translation>
 <translation id="4410695710508688828">ଏକ୍ସଟ୍ରାକ୍ଟ କରିବା ଅପରେସନ ବିଫଳ ହୋଇଛି। <ph name="ERROR_MESSAGE" /></translation>

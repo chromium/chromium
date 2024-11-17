@@ -141,7 +141,7 @@ public class WebApkValidator {
     private static void showDeprecationWarning(
             Context context, String appName, @StringRes int resId) {
         assert ThreadUtils.runningOnUiThread();
-        String text = context.getResources().getString(resId, appName);
+        String text = context.getString(resId, appName);
         Toast toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
         toast.show();
     }

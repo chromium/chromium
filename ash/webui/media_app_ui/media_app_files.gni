@@ -21,7 +21,17 @@ media_app_converted_ts_sources = [
   "receiver.ts",
 ]
 
-media_app_mojom_sources = [ "media_app_ui_untrusted.mojom-webui.ts" ]
+media_app_mojom_sources = [
+  "ash/webui/media_app_ui/media_app_ui_untrusted.mojom-webui.ts",
+  "chromeos/ash/components/mantis/mojom/mantis_processor.mojom-webui.ts",
+  "chromeos/ash/components/mantis/mojom/mantis_service.mojom-webui.ts",
+]
+
+# Contains only the file name (with extension) part of `media_app_mojom_sources`.
+media_app_mojom_files = []
+foreach(path, media_app_mojom_sources) {
+  media_app_mojom_files += [ get_path_info(path, "file") ]
+}
 
 # Corresponding .js outputs of compiled .ts that are consumed by rollup.
 media_app_compiled_sources =

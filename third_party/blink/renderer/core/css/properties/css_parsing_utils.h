@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_anchor_query_enums.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
+#include "third_party/blink/renderer/core/css/css_gap_decoration_property_enums.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -28,6 +29,7 @@ namespace blink {
 
 namespace cssvalue {
 class CSSFontFeatureValue;
+class CSSScopedKeywordValue;
 class CSSURIValue;
 }  // namespace cssvalue
 class CSSIdentifierValue;
@@ -159,13 +161,23 @@ CSSIdentifierValue* ConsumeIdentRange(CSSParserTokenStream&,
                                       CSSValueID upper);
 template <CSSValueID, CSSValueID...>
 inline bool IdentMatches(CSSValueID id);
+
+template <CSSValueID... allowedIdents>
+bool PeekedIdentMatches(CSSParserTokenStream&);
+
 template <CSSValueID... allowedIdents>
 CSSIdentifierValue* ConsumeIdent(CSSParserTokenStream&);
+
+template <CSSValueID... allowedIdents>
+cssvalue::CSSScopedKeywordValue* ConsumeScopedKeywordValue(
+    CSSParserTokenStream&);
 
 CSSCustomIdentValue* ConsumeCustomIdent(CSSParserTokenStream&,
                                         const CSSParserContext&);
 CSSCustomIdentValue* ConsumeDashedIdent(CSSParserTokenStream&,
                                         const CSSParserContext&);
+cssvalue::CSSScopedKeywordValue* ConsumeScopedKeywordValue(
+    CSSParserTokenStream&);
 CSSStringValue* ConsumeString(CSSParserTokenStream&);
 cssvalue::CSSURIValue* ConsumeUrl(CSSParserTokenStream&,
                                   const CSSParserContext&);
@@ -418,6 +430,10 @@ CSSValue* ParseBorderWidthSide(CSSParserTokenStream&,
 const CSSValue* ParseBorderStyleSide(CSSParserTokenStream&,
                                      const CSSParserContext&);
 
+CSSValue* ConsumeGapDecorationPropertyList(CSSParserTokenStream&,
+                                           const CSSParserContext&,
+                                           const CSSGapDecorationPropertyType);
+
 CSSValue* ConsumeShadow(CSSParserTokenStream&,
                         const CSSParserContext&,
                         AllowInsetAndSpread);
@@ -530,10 +546,10 @@ CSSValue* ConsumeBasicShape(
     AllowPathValue = AllowPathValue::kAllow,
     AllowBasicShapeRectValue = AllowBasicShapeRectValue::kAllow,
     AllowBasicShapeXYWHValue = AllowBasicShapeXYWHValue::kAllow);
-bool ConsumeRadii(CSSValue* horizontal_radii[4],
-                  CSSValue* vertical_radii[4],
-                  CSSParserTokenStream&,
-                  const CSSParserContext&,
+bool ConsumeRadii(std::array<CSSValue*, 4>& horizontal_radii,
+                  std::array<CSSValue*, 4>& vertical_radii,
+                  CSSParserTokenStream& stream,
+                  const CSSParserContext& context,
                   bool use_legacy_parsing);
 
 CSSValue* ConsumeTextDecorationLine(CSSParserTokenStream&);
@@ -607,6 +623,12 @@ inline bool IdentMatches(CSSValueID id) {
   return id == head || IdentMatches<tail...>(id);
 }
 
+template <CSSValueID... allowedIdents>
+bool PeekedIdentMatches(CSSParserTokenStream& stream) {
+  return stream.Peek().GetType() == kIdentToken &&
+         IdentMatches<allowedIdents...>(stream.Peek().Id());
+}
+
 template <typename...>
 bool IsCustomIdent(CSSValueID id) {
   return !IsCSSWideKeyword(id) && id != CSSValueID::kDefault;
@@ -619,11 +641,19 @@ bool IsCustomIdent(CSSValueID id) {
 
 template <CSSValueID... names>
 CSSIdentifierValue* ConsumeIdent(CSSParserTokenStream& stream) {
-  if (stream.Peek().GetType() != kIdentToken ||
-      !IdentMatches<names...>(stream.Peek().Id())) {
+  if (!PeekedIdentMatches<names...>(stream)) {
     return nullptr;
   }
   return CSSIdentifierValue::Create(stream.ConsumeIncludingWhitespace().Id());
+}
+
+template <CSSValueID... names>
+cssvalue::CSSScopedKeywordValue* ConsumeScopedKeywordValue(
+    CSSParserTokenStream& stream) {
+  if (!PeekedIdentMatches<names...>(stream)) {
+    return nullptr;
+  }
+  return ConsumeScopedKeywordValue(stream);
 }
 
 // ConsumeCommaSeparatedList and ConsumeSpaceSeparatedList take a callback

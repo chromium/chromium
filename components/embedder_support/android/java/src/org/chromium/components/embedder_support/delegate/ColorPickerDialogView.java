@@ -82,9 +82,9 @@ public class ColorPickerDialogView extends AlertDialog implements OnColorChanged
                     mMakeChoiceCallback.onResult(false);
                 });
         setOnCancelListener(
-                (dialog ->
+                dialog ->
                         mDialogDismissedCallback.onResult(
-                                ((ColorDrawable) mChosenColor.getBackground()).getColor())));
+                                ((ColorDrawable) mChosenColor.getBackground()).getColor()));
     }
 
     void setDialogDismissedCallback(Callback<Integer> dialogDismissedCallback) {
@@ -119,9 +119,7 @@ public class ColorPickerDialogView extends AlertDialog implements OnColorChanged
                                 AccessibilityNodeInfo.CollectionInfo.obtain(
                                         adapter.getCount(), 1, false, SELECTION_MODE_SINGLE));
                         info.setText(
-                                getContext()
-                                        .getResources()
-                                        .getString(R.string.color_picker_button_suggestions));
+                                getContext().getString(R.string.color_picker_button_suggestions));
                         info.setClassName(ListView.class.getName());
                     }
                 });
@@ -132,8 +130,7 @@ public class ColorPickerDialogView extends AlertDialog implements OnColorChanged
         // Set an updated content description on the chosen color container.
         String hexColor = String.format("#%06X", (0xFFFFFF & newColor));
         mChosenColorContainer.setContentDescription(
-                getContext().getResources().getString(R.string.color_picker_button_suggestions)
-                        + hexColor);
+                getContext().getString(R.string.color_picker_button_suggestions) + hexColor);
     }
 
     void setCustomColorPickedCallback(Callback<Integer> callback) {

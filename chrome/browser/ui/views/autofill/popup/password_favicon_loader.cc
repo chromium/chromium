@@ -96,8 +96,8 @@ void PasswordFaviconLoaderImpl::Load(
       /*min_source_size=*/
       favicon::LargeIconService::StandardIconSize::k16x16,
       /*size_to_resize_to=*/
-      favicon::LargeIconService::StandardIconSize::k16x16,
-      favicon::LargeIconService::NoBigEnoughIconBehavior::kReturnEmpty,
+      favicon::LargeIconService::StandardIconSize::k32x32,
+      favicon::LargeIconService::NoBigEnoughIconBehavior::kReturnBitmap,
       /*should_trim_page_url_path=*/false, kFaviconTrafficAnnotation,
       base::BindOnce(&PasswordFaviconLoaderImpl::OnFaviconResponse,
                      weak_ptr_factory_.GetWeakPtr(), favicon_details.domain_url,

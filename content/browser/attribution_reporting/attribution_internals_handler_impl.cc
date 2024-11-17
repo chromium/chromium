@@ -34,6 +34,7 @@
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/aggregatable_debug_report.h"
+#include "content/browser/attribution_reporting/aggregatable_named_budget_pair.h"
 #include "content/browser/attribution_reporting/attribution_debug_report.h"
 #include "content/browser/attribution_reporting/attribution_info.h"
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
@@ -74,6 +75,19 @@ using ReportStatusPtr = ::attribution_internals::mojom::ReportStatusPtr;
 using ::attribution_internals::mojom::WebUIAggregatableDebugReport;
 using ::attribution_internals::mojom::WebUIDebugReport;
 
+std::string SerializeBudgetsMap(
+    const StoredSource::AggregatableNamedBudgets& map) {
+  base::Value::Dict dict;
+  for (const auto& [key, value] : map) {
+    base::Value::Dict inner_dict;
+    inner_dict.Set("original_budget", value.original_budget());
+    inner_dict.Set("remaining_budget", value.remaining_budget());
+    dict.Set(key, std::move(inner_dict));
+  }
+
+  return SerializeAttributionJson(dict, /*pretty_print=*/true);
+}
+
 attribution_internals::mojom::WebUISourcePtr WebUISource(
     const StoredSource& source,
     Attributability attributability) {
@@ -98,7 +112,8 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
           }),
       source.remaining_aggregatable_attribution_budget(),
       source.aggregatable_dedup_keys(), source.trigger_data_matching(),
-      source.event_level_epsilon(), source.common_info().debug_cookie_set(),
+      source.event_level_epsilon(),
+      source.common_info().cookie_based_debug_allowed(),
       source.remaining_aggregatable_debug_budget(),
       attribution_reporting::HexEncodeAggregationKey(
           source.aggregatable_debug_key_piece()),
@@ -106,6 +121,7 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
           ? SerializeAttributionJson(source.attribution_scopes_data()->ToJson(),
                                      /*pretty_print=*/true)
           : "null",
+      SerializeBudgetsMap(source.aggregatable_named_budgets()),
       attributability);
 }
 
@@ -164,46 +180,37 @@ attribution_internals::mojom::WebUIReportPtr WebUIReport(
                     event_level_data.attributed_truthfully));
           },
 
-          [](const AttributionReport::AggregatableAttributionData&
-                 aggregatable_data) {
+          [](const AttributionReport::AggregatableData& aggregatable_data) {
             std::vector<ai_mojom::AggregatableHistogramContributionPtr>
                 contributions;
-            base::ranges::transform(
-                aggregatable_data.contributions,
-                std::back_inserter(contributions),
-                [](const auto& contribution) {
-                  return ai_mojom::AggregatableHistogramContribution::New(
-                      attribution_reporting::HexEncodeAggregationKey(
-                          contribution.bucket),
-                      base::checked_cast<uint32_t>(contribution.value));
-                });
+
+            if (aggregatable_data.is_null()) {
+              contributions.push_back(
+                  ai_mojom::AggregatableHistogramContribution::New(
+                      attribution_reporting::HexEncodeAggregationKey(0),
+                      /*value=*/0,
+                      /*filtering_id=*/0));
+            } else {
+              base::ranges::transform(
+                  aggregatable_data.contributions(),
+                  std::back_inserter(contributions),
+                  [](const auto& contribution) {
+                    return ai_mojom::AggregatableHistogramContribution::New(
+                        attribution_reporting::HexEncodeAggregationKey(
+                            contribution.bucket),
+                        base::checked_cast<uint32_t>(contribution.value),
+                        contribution.filtering_id.value_or(0));
+                  });
+            }
 
             return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
                 ai_mojom::WebUIReportAggregatableAttributionData::New(
                     std::move(contributions),
-                    aggregatable_data.common_data.aggregation_coordinator_origin
-                        ? aggregatable_data.common_data
-                              .aggregation_coordinator_origin->Serialize()
-                        : "",
-                    /*is_null_report=*/false));
-          },
-
-          [](const AttributionReport::NullAggregatableData& null_data)
-              -> ai_mojom::WebUIReportDataPtr {
-            std::vector<ai_mojom::AggregatableHistogramContributionPtr>
-                contributions;
-            contributions.push_back(
-                ai_mojom::AggregatableHistogramContribution::New(
-                    attribution_reporting::HexEncodeAggregationKey(0),
-                    /*value=*/0));
-            return ai_mojom::WebUIReportData::NewAggregatableAttributionData(
-                ai_mojom::WebUIReportAggregatableAttributionData::New(
-                    std::move(contributions),
-                    null_data.common_data.aggregation_coordinator_origin
-                        ? null_data.common_data.aggregation_coordinator_origin
+                    aggregatable_data.aggregation_coordinator_origin()
+                        ? aggregatable_data.aggregation_coordinator_origin()
                               ->Serialize()
                         : "",
-                    /*is_null_report=*/true));
+                    aggregatable_data.is_null()));
           },
       },
       report.data());

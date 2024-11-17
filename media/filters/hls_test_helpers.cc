@@ -4,6 +4,8 @@
 
 #include "media/filters/hls_test_helpers.h"
 
+#include <optional>
+
 #include "base/files/file_util.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/base/test_data_util.h"
@@ -52,17 +54,18 @@ std::unique_ptr<HlsDataSourceStream>
 FileHlsDataSourceStreamFactory::CreateStream(std::string filename,
                                              bool taint_origin) {
   base::FilePath file_path = GetTestDataFilePath(filename);
-  int64_t file_size = 0;
-  CHECK(base::GetFileSize(file_path, &file_size))
+  std::optional<int64_t> file_size = base::GetFileSize(file_path);
+  CHECK(file_size.has_value())
       << "Failed to get file size for '" << filename << "'";
   HlsDataSourceProvider::SegmentQueue segments;
   auto stream = std::make_unique<HlsDataSourceStream>(
       HlsDataSourceStream::StreamId::FromUnsafeValue(42), std::move(segments),
       base::DoNothing());
-  auto* buffer = stream->LockStreamForWriting(file_size);
-  CHECK_EQ(file_size, base::ReadFile(file_path, reinterpret_cast<char*>(buffer),
-                                     file_size));
-  stream->UnlockStreamPostWrite(file_size, true);
+  auto* buffer = stream->LockStreamForWriting(file_size.value());
+  CHECK_EQ(file_size.value(),
+           base::ReadFile(file_path, reinterpret_cast<char*>(buffer),
+                          file_size.value()));
+  stream->UnlockStreamPostWrite(file_size.value(), true);
   if (taint_origin) {
     stream->set_would_taint_origin();
   }

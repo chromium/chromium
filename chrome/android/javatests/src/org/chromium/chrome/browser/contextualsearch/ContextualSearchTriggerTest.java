@@ -29,7 +29,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.SelectionClient;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests the Related Searches Feature of Contextual Search using instrumentation tests. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -229,7 +229,7 @@ public class ContextualSearchTriggerTest extends ContextualSearchInstrumentation
     @Test
     @SmallTest
     @Feature({"ContextualSearch"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @DisabledTest(message = "See https://crbug.com/837998")
     public void testLongPressGestureFollowedByTapDoesntSelect() throws Exception {
         longPressNode("intelligence");

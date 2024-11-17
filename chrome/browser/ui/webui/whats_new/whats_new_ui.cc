@@ -75,7 +75,6 @@ bool WhatsNewUIConfig::IsWebUIEnabled(
 void WhatsNewUI::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(prefs::kWhatsNewEditionUsed);
   registry->RegisterListPref(prefs::kWhatsNewFirstEnabledOrder);
-  registry->RegisterIntegerPref(prefs::kWhatsNewHatsActivationThreshold, 100);
 }
 
 WhatsNewUI::WhatsNewUI(content::WebUI* web_ui)
@@ -111,7 +110,8 @@ void WhatsNewUI::CreatePageHandler(
   DCHECK(page);
   page_handler_ = std::make_unique<WhatsNewHandler>(
       std::move(receiver), std::move(page), profile_,
-      web_ui()->GetWebContents(), navigation_start_time_);
+      web_ui()->GetWebContents(), navigation_start_time_,
+      g_browser_process->GetFeatures()->whats_new_registry());
 }
 
 void WhatsNewUI::DidStartNavigation(
@@ -146,6 +146,7 @@ void WhatsNewUI::CreateBrowserCommandHandler(
         supported_commands.end(),
         {
             browser_command::mojom::Command::kOpenPaymentsSettings,
+            browser_command::mojom::Command::KOpenHistorySearchSettings,
         });
   }
 

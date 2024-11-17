@@ -61,9 +61,6 @@ class SplitViewMultiDisplayClamshellTest : public AshTestBase {
     }
     return std::make_pair(primary_bounds, secondary_bounds);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSnapGroup};
 };
 
 // Tests that using the shortcut to move the snapped window to another display

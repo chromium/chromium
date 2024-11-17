@@ -17,7 +17,6 @@ import static org.mockito.Mockito.when;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -28,7 +27,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager.DistillationStatus;
 import org.chromium.chrome.browser.dom_distiller.TabDistillabilityProvider.DistillabilityObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -52,8 +50,6 @@ import java.util.concurrent.TimeoutException;
 public class ReaderModeManagerTest {
     private static final GURL MOCK_DISTILLER_URL = new GURL("chrome-distiller://url");
     private static final GURL MOCK_URL = JUnitTestGURLs.GOOGLE_URL_CAT;
-
-    @Rule public JniMocker jniMocker = new JniMocker();
 
     @Mock private Tab mTab;
 
@@ -86,10 +82,9 @@ public class ReaderModeManagerTest {
     @Before
     public void setUp() throws TimeoutException {
         MockitoAnnotations.initMocks(this);
-        jniMocker.mock(
-                org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtilsJni.TEST_HOOKS,
+        org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtilsJni.setInstanceForTesting(
                 mDistillerTabUtilsJniMock);
-        jniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDistillerUrlUtilsJniMock);
+        DomDistillerUrlUtilsJni.setInstanceForTesting(mDistillerUrlUtilsJniMock);
 
         DomDistillerTabUtils.setExcludeMobileFriendlyForTesting(true);
 
@@ -128,7 +123,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    public void testUI_notTriggered() {
+    public void testUi_notTriggered() {
         mDistillabilityObserver.onIsPageDistillableResult(mTab, false, true, false);
         assertEquals(
                 "Distillation should not be possible.",
@@ -139,7 +134,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    public void testUI_notTriggered_navBeforeCallback() {
+    public void testUi_notTriggered_navBeforeCallback() {
         // Simulate a page navigation prior to the distillability callback happening.
         when(mTab.getUrl()).thenReturn(JUnitTestGURLs.URL_1);
 
@@ -152,7 +147,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    public void testUI_notTriggered_muted() {
+    public void testUi_notTriggered_muted() {
         mManager.muteSiteForTesting(mTab.getUrl());
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals(
@@ -164,7 +159,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    public void testUI_notTriggered_mutedByDomain() {
+    public void testUi_notTriggered_mutedByDomain() {
         mManager.muteSiteForTesting(JUnitTestGURLs.GOOGLE_URL_DOG);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals(
@@ -179,7 +174,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    public void testUI_notTriggered_contextualPageActionUiEnabled() {
+    public void testUi_notTriggered_contextualPageActionUiEnabled() {
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals(
                 "Distillation should be possible.",
@@ -195,7 +190,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    public void testUI_notTriggered_contextualPageActionUiEnabled_exceptOnCCT() {
+    public void testUi_notTriggered_contextualPageActionUiEnabled_exceptOnCct() {
         when(mTab.isCustomTab()).thenReturn(true);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals(
@@ -209,7 +204,7 @@ public class ReaderModeManagerTest {
 
     @Test
     @Feature("ReaderMode")
-    public void testUI_notTriggered_contextualPageActionUiEnabled_exceptOnIncognitoTabs() {
+    public void testUi_notTriggered_contextualPageActionUiEnabled_exceptOnIncognitoTabs() {
         when(mTab.isIncognito()).thenReturn(true);
         mDistillabilityObserver.onIsPageDistillableResult(mTab, true, true, false);
         assertEquals(

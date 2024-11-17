@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_context_menu.h"
@@ -18,6 +19,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node_data.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/view.h"
 
@@ -121,7 +123,7 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
   bool ShowContextMenu(views::MenuItemView* source,
                        int id,
                        const gfx::Point& p,
-                       ui::MenuSourceType source_type);
+                       ui::mojom::MenuSourceType source_type);
   bool CanDrag(views::MenuItemView* menu);
   void WriteDragData(views::MenuItemView* sender, ui::OSExchangeData* data);
   int GetDragOperations(views::MenuItemView* sender);
@@ -142,9 +144,22 @@ class BookmarkMenuDelegate : public bookmarks::BaseBookmarkModelObserver,
  private:
   friend class BookmarkMenuDelegateTest;
 
-  typedef std::map<int, const bookmarks::BookmarkNode*> MenuIDToNodeMap;
-  typedef std::map<const bookmarks::BookmarkNode*, views::MenuItemView*>
+  typedef std::map<int, raw_ptr<const bookmarks::BookmarkNode, CtnExperimental>>
+      MenuIDToNodeMap;
+  typedef std::map<const bookmarks::BookmarkNode*, raw_ptr<views::MenuItemView>>
       NodeToMenuMap;
+
+  struct DropParams {
+    BookmarkParentFolder drop_parent;
+    size_t index_to_drop_at = 0;
+  };
+
+  // Computes the parent and the index at which the dragged/copied node will be
+  // dropped.
+  // Returns `std::nullopt` if the drop is not valid.
+  std::optional<DropParams> GetDropParams(
+      views::MenuItemView* menu,
+      views::MenuDelegate::DropPosition* position);
 
   // Returns whether the menu should close id 'delete' is selected.
   bool ShouldCloseOnRemove(const bookmarks::BookmarkNode* node) const;

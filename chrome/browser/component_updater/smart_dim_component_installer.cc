@@ -80,7 +80,7 @@ std::optional<ComponentFileContents> ReadComponentFiles(
                          std::move(model_flatbuffer));
 }
 
-void UpdateSmartDimMlAgent(const std::optional<ComponentFileContents>& result) {
+void UpdateSmartDimMlAgent(std::optional<ComponentFileContents> result) {
   if (result == std::nullopt) {
     LogLoadComponentEvent(LoadComponentEvent::kReadComponentFilesError);
     return;

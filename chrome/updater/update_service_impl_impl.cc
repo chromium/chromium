@@ -26,6 +26,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
@@ -38,6 +39,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/enterprise_companion/global_constants.h"
 #include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/auto_run_on_os_upgrade_task.h"
 #include "chrome/updater/change_owners_task.h"
@@ -105,8 +107,7 @@ UpdateService::Result ToResult(update_client::Error error) {
     case update_client::Error::BAD_CRX_DATA_CALLBACK:
       return UpdateService::Result::kInvalidArgument;
     case update_client::Error::MAX_VALUE:
-      NOTREACHED_IN_MIGRATION();
-      return UpdateService::Result::kInvalidArgument;
+      NOTREACHED();
   }
 }
 
@@ -480,7 +481,6 @@ UpdateService::UpdateState::State ToUpdateState(
 
     case update_client::ComponentState::kDownloading:
     case update_client::ComponentState::kDownloadingDiff:
-    case update_client::ComponentState::kDownloaded:
       return UpdateService::UpdateState::State::kDownloading;
 
     case update_client::ComponentState::kCanUpdate:
@@ -499,11 +499,9 @@ UpdateService::UpdateState::State ToUpdateState(
     case update_client::ComponentState::kUpdateError:
       return UpdateService::UpdateState::State::kUpdateError;
 
-    case update_client::ComponentState::kPingOnly:
     case update_client::ComponentState::kRun:
     case update_client::ComponentState::kLastStatus:
-      NOTREACHED_IN_MIGRATION();
-      return UpdateService::UpdateState::State::kUnknown;
+      NOTREACHED();
   }
 }
 
@@ -538,7 +536,7 @@ MakeUpdateClientCrxStateChangeCallback(
          scoped_refptr<PersistedData> persisted_data, const bool new_install,
          base::RepeatingCallback<void(const UpdateService::UpdateState&)>
              callback,
-         update_client::CrxUpdateItem crx_update_item) {
+         const update_client::CrxUpdateItem& crx_update_item) {
         UpdateService::UpdateState update_state;
         update_state.app_id = crx_update_item.id;
         update_state.state = ToUpdateState(crx_update_item.state);
@@ -636,6 +634,39 @@ void UpdateServiceImplImpl::GetVersion(
       base::BindOnce(std::move(callback), base::Version(kUpdaterVersion)));
 }
 
+void UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA(
+    base::OnceClosure callback,
+    bool is_cloud_managed) {
+  VLOG(1) << __func__;
+
+  if (!is_cloud_managed) {
+    std::move(callback).Run();
+    return;
+  }
+
+  VLOG(1) << "Starting an OTA installation of the enterprise companion app.";
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          base::IgnoreResult(&update_client::UpdateClient::Install),
+          update_client_, enterprise_companion::kCompanionAppId,
+          base::BindOnce(
+              &internal::GetComponents, config_->GetPolicyService(),
+              config_->GetCrxVerifierFormat(),
+              config_->GetUpdaterPersistedData(), kEmptyFlatMap, kEmptyFlatMap,
+              kInstallSourcePolicy, Priority::kForeground,
+              /*update_blocked=*/false, PolicySameVersionUpdate::kNotAllowed),
+          MakeUpdateClientCrxStateChangeCallback(
+              config_, config_->GetUpdaterPersistedData(),
+              /*new_install=*/false, /*callback=*/base::DoNothing()),
+          MakeUpdateClientCallback(
+              base::BindOnce([](Result result) {
+                VLOG(1) << "OTA installation of the enterprise companion app "
+                           "completed with result: "
+                        << result;
+              }).Then(std::move(callback)))));
+}
+
 void UpdateServiceImplImpl::FetchPolicies(
     base::OnceCallback<void(int)> callback) {
   VLOG(1) << __func__;
@@ -645,7 +676,18 @@ void UpdateServiceImplImpl::FetchPolicies(
     VLOG(2) << "Policy fetch skipped for user updater.";
     std::move(callback).Run(0);
   } else {
-    config_->GetPolicyService()->FetchPolicies(std::move(callback));
+    if (config_->GetPolicyService()->IsCecaExperimentEnabled() &&
+        !config_->GetUpdaterPersistedData()
+             ->GetProductVersion(enterprise_companion::kCompanionAppId)
+             .IsValid()) {
+      config_->GetPolicyService()->IsCloudManaged(base::BindOnce(
+          &UpdateServiceImplImpl::MaybeInstallEnterpriseCompanionAppOTA,
+          base::WrapRefCounted(this),
+          base::BindOnce(&PolicyService::FetchPolicies,
+                         config_->GetPolicyService(), std::move(callback))));
+    } else {
+      config_->GetPolicyService()->FetchPolicies(std::move(callback));
+    }
   }
 }
 
@@ -747,14 +789,25 @@ void UpdateServiceImplImpl::RunPeriodicTasks(base::OnceClosure callback) {
       base::BindOnce(&CheckForUpdatesTask::Run,
                      base::MakeRefCounted<CheckForUpdatesTask>(
                          config_, GetUpdaterScope(),
-                         base::BindOnce(&UpdateServiceImplImpl::ForceInstall,
-                                        this, base::DoNothing()))));
-  new_tasks.push_back(
-      base::BindOnce(&CheckForUpdatesTask::Run,
-                     base::MakeRefCounted<CheckForUpdatesTask>(
-                         config_, GetUpdaterScope(),
+                         /*task_name=*/"UpdateAll",
                          base::BindOnce(&UpdateServiceImplImpl::UpdateAll, this,
                                         base::DoNothing()))));
+  new_tasks.push_back(base::BindOnce(
+      [](scoped_refptr<UpdateServiceImplImpl> self,
+         base::OnceClosure callback) {
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &UpdateServiceImplImpl::ForceInstall, self, base::DoNothing(),
+                base::BindOnce(
+                    [](base::OnceClosure closure,
+                       UpdateService::Result result) {
+                      VLOG(0) << "ForceInstall task complete: " << result;
+                      std::move(closure).Run();
+                    },
+                    std::move(callback))));
+      },
+      base::WrapRefCounted(this)));
   new_tasks.push_back(base::BindOnce(
       &AutoRunOnOsUpgradeTask::Run,
       base::MakeRefCounted<AutoRunOnOsUpgradeTask>(
@@ -779,7 +832,8 @@ void UpdateServiceImplImpl::RunPeriodicTasks(base::OnceClosure callback) {
 void UpdateServiceImplImpl::TaskStart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!tasks_.empty()) {
-    main_task_runner_->PostTask(FROM_HERE, std::move(tasks_.front()));
+    main_task_runner_->PostDelayedTask(FROM_HERE, std::move(tasks_.front()),
+                                       config_->InitialDelay());
   }
 }
 

@@ -27,6 +27,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "components/browsing_data/core/cookie_or_cache_deletion_choice.h"
 #include "content/browser/browsing_data/browsing_data_filter_builder_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -220,12 +221,12 @@ void BrowsingDataRemoverImpl::RemoveWithFilterAndReply(
 }
 
 void BrowsingDataRemoverImpl::RemoveStorageBucketsAndReply(
-    const std::optional<StoragePartitionConfig> storage_partition_config,
+    std::optional<StoragePartitionConfig> storage_partition_config,
     const blink::StorageKey& storage_key,
     const std::set<std::string>& storage_buckets,
     base::OnceClosure callback) {
   DCHECK(callback);
-  GetStoragePartition(storage_partition_config)
+  GetStoragePartition(std::move(storage_partition_config))
       ->ClearDataForBuckets(
           storage_key, storage_buckets,
           base::BindPostTaskToCurrentDefault(
@@ -354,18 +355,20 @@ void BrowsingDataRemoverImpl::RemoveImpl(
   failed_data_types_ = 0;
 
   // Record the combined deletion of cookies and cache.
-  CookieOrCacheDeletionChoice choice = NEITHER_COOKIES_NOR_CACHE;
+  browsing_data::CookieOrCacheDeletionChoice choice =
+      browsing_data::CookieOrCacheDeletionChoice::kNeitherCookiesNorCache;
   if (remove_mask & DATA_TYPE_COOKIES &&
       origin_type_mask_ & ORIGIN_TYPE_UNPROTECTED_WEB) {
     choice =
-        remove_mask & DATA_TYPE_CACHE ? BOTH_COOKIES_AND_CACHE : ONLY_COOKIES;
+        remove_mask & DATA_TYPE_CACHE
+            ? browsing_data::CookieOrCacheDeletionChoice::kBothCookiesAndCache
+            : browsing_data::CookieOrCacheDeletionChoice::kOnlyCookies;
   } else if (remove_mask & DATA_TYPE_CACHE) {
-    choice = ONLY_CACHE;
+    choice = browsing_data::CookieOrCacheDeletionChoice::kOnlyCache;
   }
 
   base::UmaHistogramEnumeration(
-      "History.ClearBrowsingData.UserDeletedCookieOrCache", choice,
-      MAX_CHOICE_VALUE);
+      "History.ClearBrowsingData.UserDeletedCookieOrCache", choice);
 
   //////////////////////////////////////////////////////////////////////////////
   // INITIALIZATION

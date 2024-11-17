@@ -10,7 +10,6 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/devices/x11/touch_factory_x11.h"
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
@@ -111,7 +110,7 @@ std::unique_ptr<KeyEvent> CreateKeyEvent(EventType event_type,
   // in KeyEvent::ApplyLayout() which makes it possible for CrOS/Linux, for
   // example, to support host system keyboard layouts.
   std::unique_ptr<KeyEvent> event =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       std::make_unique<KeyEvent>(event_type, key_code, event_flags,
                                  EventTimeFromXEvent(x11_event));
 #else
@@ -281,7 +280,7 @@ std::unique_ptr<Event> TranslateFromXEvent(const x11::Event& xev) {
         // buttons.
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   if (xev.As<x11::Input::DeviceEvent>())

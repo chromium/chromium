@@ -112,7 +112,7 @@ public class ReengagementNotificationController {
             return false;
         }
 
-        if (!mTracker.shouldTriggerHelpUI(feature)) return false;
+        if (!mTracker.shouldTriggerHelpUi(feature)) return false;
         mTracker.dismissed(feature);
 
         NotificationMetadata metadata =
@@ -136,7 +136,7 @@ public class ReengagementNotificationController {
                 .setAutoCancel(true);
 
         BaseNotificationManagerProxy notificationManager =
-                BaseNotificationManagerProxyFactory.create(mContext);
+                BaseNotificationManagerProxyFactory.create();
         NotificationWrapper notification = builder.buildNotificationWrapper();
         notificationManager.notify(notification);
 

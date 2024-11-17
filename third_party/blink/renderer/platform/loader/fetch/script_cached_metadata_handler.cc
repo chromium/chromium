@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 
 #include "base/metrics/histogram_macros.h"
@@ -165,9 +160,13 @@ void ScriptCachedMetadataHandlerWithHashing::SetSerializedCachedMetadata(
   if (data.size() < sizeof(CachedMetadataHeaderWithHash)) {
     return;
   }
+  auto [header_bytes, payload_bytes] =
+      base::span(data).split_at(sizeof(CachedMetadataHeaderWithHash));
+
   // Ensure the marker matches, otherwise discard the data.
   const CachedMetadataHeaderWithHash* header =
-      reinterpret_cast<const CachedMetadataHeaderWithHash*>(data.data());
+      reinterpret_cast<const CachedMetadataHeaderWithHash*>(
+          header_bytes.data());
   if (header->marker != CachedMetadataHandler::kSingleEntryWithHashAndPadding) {
     return;
   }
@@ -176,8 +175,7 @@ void ScriptCachedMetadataHandlerWithHashing::SetSerializedCachedMetadata(
   memcpy(hash_, header->hash, kSha256Bytes);
   hash_state_ = kDeserialized;
   cached_metadata_ = CachedMetadata::CreateFromSerializedData(
-      data.data() + sizeof(CachedMetadataHeaderWithHash),
-      data.size() - sizeof(CachedMetadataHeaderWithHash));
+      payload_bytes.data(), payload_bytes.size());
 }
 
 scoped_refptr<CachedMetadata>

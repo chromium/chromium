@@ -33,12 +33,6 @@ SearchEngineChoiceServiceFactory::GetInstance() {
 
 // static
 search_engines::SearchEngineChoiceService*
-SearchEngineChoiceServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-search_engines::SearchEngineChoiceService*
 SearchEngineChoiceServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<search_engines::SearchEngineChoiceService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
@@ -47,11 +41,11 @@ SearchEngineChoiceServiceFactory::GetForProfile(ProfileIOS* profile) {
 std::unique_ptr<KeyedService>
 SearchEngineChoiceServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<search_engines::SearchEngineChoiceService>(
-      CHECK_DEREF(browser_state->GetPrefs()),
+      CHECK_DEREF(profile->GetPrefs()),
       GetApplicationContext()->GetLocalState(),
+      /*is_profile_elibile_for_dse_guest_propagation=*/false,
       GetApplicationContext()->GetVariationsService());
 }
 

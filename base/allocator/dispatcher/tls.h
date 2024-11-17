@@ -111,7 +111,7 @@ class BASE_EXPORT PThreadTLSSystem {
   // @param thread_termination_function An optional function which will be
   // invoked upon termination of a thread.
   bool Setup(OnThreadTerminationFunction thread_termination_function,
-             const std::string_view instance_id);
+             std::string_view instance_id);
   // Tear down the TLS system. After completing tear down, the thread
   // termination function passed to Setup will not be invoked anymore.
   bool TearDownForTesting();
@@ -199,7 +199,7 @@ template <typename PayloadType,
           size_t AllocationChunkSize,
           bool IsDestructibleForTesting>
 struct ThreadLocalStorage {
-  explicit ThreadLocalStorage(const std::string_view instance_id)
+  explicit ThreadLocalStorage(std::string_view instance_id)
       : root_(AllocateAndInitializeChunk()) {
     Initialize(instance_id);
   }
@@ -207,7 +207,7 @@ struct ThreadLocalStorage {
   // Create a new instance of |ThreadLocalStorage| using the passed allocator
   // and TLS system. This initializes the underlying TLS system and creates the
   // first chunk of data.
-  ThreadLocalStorage(const std::string_view instance_id,
+  ThreadLocalStorage(std::string_view instance_id,
                      AllocatorType allocator,
                      TLSSystemType tls_system)
       : allocator_(std::move(allocator)),
@@ -360,7 +360,7 @@ struct ThreadLocalStorage {
   }
 
   // Perform common initialization during construction of an instance.
-  void Initialize(const std::string_view instance_id) {
+  void Initialize(std::string_view instance_id) {
     // The constructor must be called outside of the allocation path. Therefore,
     // it is secure to verify with CHECK.
 

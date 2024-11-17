@@ -5,9 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_AUTOFILL_EDIT_PROFILE_BOTTOM_SHEET_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_AUTOFILL_EDIT_PROFILE_BOTTOM_SHEET_TABLE_VIEW_CONTROLLER_H_
 
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_handler.h"
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_constants.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_handler.h"
 
 @protocol AutofillEditProfileBottomSheetTableViewControllerDelegate
 

@@ -4,14 +4,13 @@
 
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 
+#include "base/containers/to_vector.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 
-namespace autofill {
-
-namespace test {
+namespace autofill::test {
 
 testing::Message DescribeFormData(const FormData& form_data) {
   testing::Message result;
@@ -96,7 +95,9 @@ FormFieldData GetFormFieldData(const FieldDescription& fd) {
       !fd.select_options.empty()) {
     ff.set_options(fd.select_options);
   }
-
+  if (!fd.datalist_options.empty()) {
+    ff.set_datalist_options(fd.datalist_options);
+  }
   ff.set_renderer_id(fd.renderer_id.value_or(MakeFieldRendererId()));
   ff.set_host_form_id(MakeFormRendererId());
   ff.set_is_focusable(fd.is_focusable);
@@ -153,16 +154,13 @@ FormData GetFormData(const FormDescription& d) {
   if (d.main_frame_origin) {
     f.set_main_frame_origin(*d.main_frame_origin);
   }
-  std::vector<FormFieldData> fs;
-  fs.reserve(d.fields.size());
-  for (const FieldDescription& dd : d.fields) {
+  f.set_fields(base::ToVector(d.fields, [&f](const FieldDescription& dd) {
     FormFieldData ff = GetFormFieldData(dd);
     ff.set_host_frame(dd.host_frame.value_or(f.host_frame()));
     ff.set_origin(dd.origin.value_or(f.main_frame_origin()));
     ff.set_host_form_id(f.renderer_id());
-    fs.push_back(ff);
-  }
-  f.set_fields(std::move(fs));
+    return ff;
+  }));
   return f;
 }
 
@@ -177,25 +175,15 @@ FormData GetFormData(const std::vector<FieldType>& field_types) {
 
 std::vector<FieldType> GetHeuristicTypes(
     const FormDescription& form_description) {
-  std::vector<FieldType> heuristic_types;
-  heuristic_types.reserve(form_description.fields.size());
-
-  for (const auto& field : form_description.fields) {
-    heuristic_types.emplace_back(field.heuristic_type.value_or(field.role));
-  }
-
-  return heuristic_types;
+  return base::ToVector(form_description.fields, [](const auto& field) {
+    return field.heuristic_type.value_or(field.role);
+  });
 }
 
 std::vector<FieldType> GetServerTypes(const FormDescription& form_description) {
-  std::vector<FieldType> server_types;
-  server_types.reserve(form_description.fields.size());
-
-  for (const auto& field : form_description.fields) {
-    server_types.emplace_back(field.server_type.value_or(field.role));
-  }
-
-  return server_types;
+  return base::ToVector(form_description.fields, [](const auto& field) {
+    return field.server_type.value_or(field.role);
+  });
 }
 
 // static
@@ -209,8 +197,7 @@ void FormStructureTest::CheckFormStructureTestData(
     auto form_structure = std::make_unique<FormStructure>(form);
 
     if (test_case.form_flags.determine_heuristic_type)
-      form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                              nullptr);
+      form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
 
     if (test_case.form_flags.is_autofillable)
       EXPECT_TRUE(form_structure->IsAutofillable());
@@ -262,6 +249,4 @@ void FormStructureTest::CheckFormStructureTestData(
   }
 }
 
-}  // namespace test
-
-}  // namespace autofill
+}  // namespace autofill::test

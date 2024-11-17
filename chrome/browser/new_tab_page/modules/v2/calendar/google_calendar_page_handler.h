@@ -56,6 +56,8 @@ class GoogleCalendarPageHandler
   raw_ptr<PrefService> pref_service_;
   std::unique_ptr<google_apis::RequestSender> sender_;
   google_apis::calendar::CalendarApiUrlGenerator url_generator_;
+
+  base::WeakPtrFactory<GoogleCalendarPageHandler> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_MODULES_V2_CALENDAR_GOOGLE_CALENDAR_PAGE_HANDLER_H_

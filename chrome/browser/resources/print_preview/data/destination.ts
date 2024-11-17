@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../strings.m.js';
+import '/strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 
@@ -411,13 +411,6 @@ export class Destination {
             }
 
             this.printerStatusReason_ = statusReason;
-
-            // If this is the second printer status attempt, record the result.
-            if (this.printerStatusRetrySent_) {
-              NativeLayerCrosImpl.getInstance()
-                  .recordPrinterStatusRetrySuccessHistogram(
-                      !isPrinterUnreachable);
-            }
           }
           return Promise.resolve(this.key);
         });

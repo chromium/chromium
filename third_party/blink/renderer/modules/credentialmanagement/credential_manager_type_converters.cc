@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_field.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_provider_request_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_user_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
@@ -41,12 +42,14 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_remote_desktop_client_override.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_identityproviderfield_usvstring.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/password_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/public_key_credential.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
+#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -186,8 +189,7 @@ TypeConverter<blink::Credential*, CredentialInfoPtr>::Convert(
     case CredentialType::EMPTY:
       return nullptr;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -301,13 +303,13 @@ TypeConverter<Vector<uint8_t>, blink::V8UnionArrayBufferOrArrayBufferView*>::
 }
 
 // static
-PublicKeyCredentialType TypeConverter<PublicKeyCredentialType, String>::Convert(
+std::optional<PublicKeyCredentialType>
+TypeConverter<std::optional<PublicKeyCredentialType>, String>::Convert(
     const String& type) {
   if (type == "public-key") {
     return PublicKeyCredentialType::PUBLIC_KEY;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PublicKeyCredentialType::PUBLIC_KEY;
+  return std::nullopt;
 }
 
 // static
@@ -351,8 +353,7 @@ String TypeConverter<String, AuthenticatorTransport>::Convert(
   if (transport == AuthenticatorTransport::INTERNAL) {
     return "internal";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "usb";
+  NOTREACHED();
 }
 
 // static
@@ -525,10 +526,13 @@ PublicKeyCredentialDescriptorPtr
 TypeConverter<PublicKeyCredentialDescriptorPtr,
               blink::PublicKeyCredentialDescriptor>::
     Convert(const blink::PublicKeyCredentialDescriptor& descriptor) {
+  std::optional<PublicKeyCredentialType> type =
+      ConvertTo<std::optional<PublicKeyCredentialType>>(descriptor.type());
+  if (!type) {
+    return nullptr;
+  }
   auto mojo_descriptor = PublicKeyCredentialDescriptor::New();
-
-  mojo_descriptor->type = ConvertTo<PublicKeyCredentialType>(
-      blink::IDLEnumAsString(descriptor.type()));
+  mojo_descriptor->type = *type;
   mojo_descriptor->id = ConvertTo<Vector<uint8_t>>(descriptor.id());
   if (descriptor.hasTransports() && !descriptor.transports().empty()) {
     for (const auto& transport : descriptor.transports()) {
@@ -552,9 +556,13 @@ PublicKeyCredentialParametersPtr
 TypeConverter<PublicKeyCredentialParametersPtr,
               blink::PublicKeyCredentialParameters>::
     Convert(const blink::PublicKeyCredentialParameters& parameter) {
+  std::optional<PublicKeyCredentialType> type =
+      ConvertTo<std::optional<PublicKeyCredentialType>>(parameter.type());
+  if (!type) {
+    return nullptr;
+  }
   auto mojo_parameter = PublicKeyCredentialParameters::New();
-  mojo_parameter->type = ConvertTo<PublicKeyCredentialType>(
-      blink::IDLEnumAsString(parameter.type()));
+  mojo_parameter->type = *type;
 
   // A COSEAlgorithmIdentifier's value is a number identifying a cryptographic
   // algorithm. Values are registered in the IANA COSE Algorithms registry.
@@ -911,14 +919,26 @@ TypeConverter<IdentityProviderRequestOptionsPtr,
   // We do not need to check whether authz is enabled because the bindings
   // code will check that for us due to the RuntimeEnabled= flag in the IDL.
   if (options.hasFields()) {
-    mojo_options->fields = options.fields();
+    Vector<String> fields;
+    for (const auto& field : options.fields()) {
+      if (field->IsIdentityProviderField()) {
+        fields.push_back(field->GetAsIdentityProviderField()->name());
+      } else {
+        CHECK(field->IsUSVString());
+        fields.push_back(field->GetAsUSVString());
+      }
+    }
+    mojo_options->fields = std::move(fields);
   }
   if (options.hasParams()) {
-    HashMap<String, String> params;
-    for (const auto& pair : options.params()) {
-      params.Set(pair.first, pair.second);
+    v8::Isolate* isolate = options.params().GetIsolate();
+    v8::MaybeLocal<v8::String> json = v8::JSON::Stringify(
+        isolate->GetCurrentContext(), options.params().V8Value());
+    if (json.IsEmpty()) {
+      return nullptr;
     }
-    mojo_options->params = std::move(params);
+    mojo_options->params_json =
+        blink::ToCoreString(isolate, json.ToLocalChecked());
   }
 
   return mojo_options;
@@ -945,10 +965,14 @@ RpMode
 TypeConverter<RpMode, blink::V8IdentityCredentialRequestOptionsMode>::Convert(
     const blink::V8IdentityCredentialRequestOptionsMode& mode) {
   switch (mode.AsEnum()) {
+    case blink::V8IdentityCredentialRequestOptionsMode::Enum::kPassive:
+      return RpMode::kPassive;
+    case blink::V8IdentityCredentialRequestOptionsMode::Enum::kActive:
+      return RpMode::kActive;
     case blink::V8IdentityCredentialRequestOptionsMode::Enum::kWidget:
-      return RpMode::kWidget;
+      return RpMode::kPassive;
     case blink::V8IdentityCredentialRequestOptionsMode::Enum::kButton:
-      return RpMode::kButton;
+      return RpMode::kActive;
   }
 }
 

@@ -160,15 +160,13 @@ bool LinuxKeyPersistenceDelegate::StoreKeyPair(
         "Device trust key rotation failed. Could not format signing key "
         "information for storage.");
   }
-
-  if (file.WriteAtCurrentPos(keyinfo_str.c_str(), keyinfo_str.length()) > 0) {
-    return true;
+  if (!file.WriteAtCurrentPosAndCheck(base::as_byte_span(keyinfo_str))) {
+    return RecordFailure(KeyPersistenceOperation::kStoreKeyPair,
+                         KeyPersistenceError::kWritePersistenceStorageFailed,
+                         "Device trust key rotation failed. Could not write to "
+                         "the signing key storage.");
   }
-
-  return RecordFailure(KeyPersistenceOperation::kStoreKeyPair,
-                       KeyPersistenceError::kWritePersistenceStorageFailed,
-                       "Device trust key rotation failed. Could not write to "
-                       "the signing key storage.");
+  return true;
 }
 
 scoped_refptr<SigningKeyPair> LinuxKeyPersistenceDelegate::LoadKeyPair(

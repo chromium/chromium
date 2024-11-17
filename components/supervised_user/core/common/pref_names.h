@@ -128,14 +128,6 @@ inline constexpr char kSupervisedUserSharedSettings[] =
 inline constexpr char kDefaultSupervisedUserFilteringBehavior[] =
     "profile.managed.default_filtering_behavior";
 
-// An integer pref that stores the current state of the interstitial banner for
-// a supervised user (SupervisedUserFilter::FirstTimeInterstitialBannerState):
-// 0: kNeedToShow
-// 1: kSetupComplete
-// 2: kUnknown
-inline constexpr char kFirstTimeInterstitialBannerState[] =
-    "profile.managed.banner_state";
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // An integer pref that stores the current state of the local extension
@@ -158,8 +150,16 @@ inline constexpr char kSupervisedUserLocallyParentApprovedExtensions[] =
 // A string pref that stores the family member role of the primary account
 // as per kids_management::FamilyRole or
 // `supervised_user::kDefaultEmptyFamilyMemberRole` if not in a Family group.
+// TODO(crbug.com/372607761): Remove string-based pref in favor of an enum state
+// definition (see `prefs::kFamilyLinkUserState`).
 inline constexpr char kFamilyLinkUserMemberRole[] =
     "profile.family_member_role";
+
+// An integer pref that stores the enum value
+// supervised_user::FamilyLinkUserState of the primary account's Family
+// Link state as determined by capabilities and the result of querying
+// KidsManagementApi ListMembers API.
+inline constexpr char kFamilyLinkUserState[] = "profile.family_link_user_state";
 
 }  // namespace prefs
 

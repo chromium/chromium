@@ -344,7 +344,7 @@ public class AwVariationsSeedFetcher extends JobService {
             return null;
         }
 
-        private void saveMetrics(long startTime, long endTime) {
+        private void saveMetrics(long startTime) {
             Context context = ContextUtils.getApplicationContext();
             VariationsServiceMetricsHelper metrics =
                     VariationsServiceMetricsHelper.fromVariationsSharedPreferences(context);
@@ -385,7 +385,7 @@ public class AwVariationsSeedFetcher extends JobService {
                             .build();
             SeedFetchInfo fetchInfo = downloader.downloadContent(params, info);
 
-            saveMetrics(startTime, /* endTime= */ currentTimeMillis());
+            saveMetrics(startTime);
 
             if (isCancelled()) {
                 return new FetchSeedOutput(
@@ -419,7 +419,7 @@ public class AwVariationsSeedFetcher extends JobService {
             return new FetchSeedOutput(shouldFinish, needsReschedule, /* cancelled= */ false);
         }
 
-        private class FetchSeedOutput {
+        private static class FetchSeedOutput {
             private boolean mShouldFinish;
             private boolean mNeedsReschedule;
             private boolean mCancelled;

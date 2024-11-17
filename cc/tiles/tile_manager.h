@@ -432,6 +432,10 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   void DidFinishRunningTileTasksRequiredForActivation();
   void DidFinishRunningTileTasksRequiredForDraw();
   void DidFinishRunningAllTileTasks(bool has_pending_queries);
+  void ExternalDependencyCompletedForRasterTask(
+      scoped_refptr<TileTask> dependent);
+  void ExternalDependencyCompletedForNonRasterTask(
+      scoped_refptr<TileTask> dependent);
 
   scoped_refptr<TileTask> CreateTaskSetFinishedTask(
       void (TileManager::*callback)());
@@ -471,6 +475,13 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   static constexpr base::TimeDelta kDelayBeforeTimeReclaim = base::Minutes(5);
 
  private:
+  void InsertNodesForRasterTask(TileTask* raster_task,
+                                uint16_t priority,
+                                bool use_foreground_category);
+  void InsertNodeForDecodeTask(TileTask* task,
+                               uint16_t priority,
+                               bool use_foreground_category);
+
   raw_ptr<TileManagerClient, DanglingUntriaged> client_;
   raw_ptr<base::SequencedTaskRunner> task_runner_;
   raw_ptr<ResourcePool, DanglingUntriaged> resource_pool_;
@@ -484,7 +495,7 @@ class CC_EXPORT TileManager : CheckerImageTrackerClient,
   bool use_gpu_rasterization_;
   raw_ptr<RasterQueryQueue> pending_raster_queries_ = nullptr;
 
-  std::unordered_map<Tile::Id, Tile*> tiles_;
+  std::unordered_map<Tile::Id, raw_ptr<Tile, CtnExperimental>> tiles_;
 
   bool all_tiles_that_need_to_be_rasterized_are_scheduled_;
   MemoryHistory::Entry memory_stats_from_last_assign_;

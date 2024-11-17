@@ -23,6 +23,25 @@ if (use_blink) {
   import("//chrome/common/features.gni")
 }
 
+if (is_chromeos) {
+  # Folders hosting Ash-only WebUIs. Should be kept in sync with
+  # //tools/typescript/path_utils.py. This is used later in this file to choose
+  # a CrOS-specific default TS config file for some targets.
+  ash_folders = [
+    # Source code folders
+    "//ash/webui",
+    "//chrome/browser/resources/ash",
+    "//chrome/browser/resources/chromeos",
+    "//chrome/browser/resources/dlp_internals",
+    "//chromeos/ash/components/kiosk/vision/webui",
+    "//ui/file_manager",
+
+    # Test folders
+    "//chrome/test/data/webui/chromeos",
+    "//chrome/test/data/webui/cr_components/chromeos",
+  ]
+}
+
 # See documentation at https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webui_build_configuration.md#build_webui
 template("build_webui") {
   not_needed([ "target_name" ])
@@ -132,6 +151,11 @@ template("build_webui") {
         filter_include(invoker.static_files, non_preprocessed_files_filter)
     static_preprocessed_files =
         filter_exclude(invoker.static_files, non_preprocessed_files_filter)
+
+    static_js_files = filter_include(invoker.static_files, [ "*.js" ])
+    assert(static_js_files == [],
+           "JS files not allowed in static_files, found: " +
+               string_join(", ", static_js_files))
   }
 
   preprocessor_defines = []
@@ -340,6 +364,24 @@ template("build_webui") {
                          [ "//third_party/polymer/v3_0:library" ]) != []
       if (has_polymer) {
         tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
+
+        # Detect whether the target corresponds to an Ash-only WebUI and use
+        # tsconfig_base_polymer_cros.json instead in such cases.
+        if (is_chromeos) {
+          is_ash_webui = false
+          target_dir = get_label_info(":build_ts", "dir")
+
+          foreach(prefix, ash_folders) {
+            if (!is_ash_webui) {
+              is_ash_webui =
+                  string_replace(target_dir, prefix, "") != target_dir
+            }
+          }
+
+          if (is_ash_webui) {
+            tsconfig_base = "//tools/typescript/tsconfig_base_polymer_cros.json"
+          }
+        }
       } else {
         has_lit = filter_include(invoker.ts_deps,
                                  [ "//third_party/lit/v3_0:build_ts" ]) != []

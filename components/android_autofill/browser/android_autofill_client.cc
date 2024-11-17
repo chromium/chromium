@@ -52,6 +52,14 @@ AndroidAutofillClient::~AndroidAutofillClient() {
   HideAutofillSuggestions(autofill::SuggestionHidingReason::kTabGone);
 }
 
+base::WeakPtr<autofill::AutofillClient> AndroidAutofillClient::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+const std::string& AndroidAutofillClient::GetAppLocale() const {
+  NOTREACHED();
+}
+
 bool AndroidAutofillClient::IsOffTheRecord() const {
   auto* mutable_this = const_cast<AndroidAutofillClient*>(this);
   return mutable_this->GetWebContents().GetBrowserContext()->IsOffTheRecord();
@@ -84,6 +92,11 @@ autofill::PersonalDataManager* AndroidAutofillClient::GetPersonalDataManager() {
   return nullptr;
 }
 
+autofill::SingleFieldFillRouter&
+AndroidAutofillClient::GetSingleFieldFillRouter() {
+  NOTREACHED();
+}
+
 autofill::AutocompleteHistoryManager*
 AndroidAutofillClient::GetAutocompleteHistoryManager() {
   NOTREACHED();
@@ -103,6 +116,11 @@ syncer::SyncService* AndroidAutofillClient::GetSyncService() {
 }
 
 signin::IdentityManager* AndroidAutofillClient::GetIdentityManager() {
+  return nullptr;
+}
+
+const signin::IdentityManager* AndroidAutofillClient::GetIdentityManager()
+    const {
   return nullptr;
 }
 
@@ -166,13 +184,13 @@ void AndroidAutofillClient::ShowAutofillSettings(
 void AndroidAutofillClient::ShowEditAddressProfileDialog(
     const autofill::AutofillProfile& profile,
     AddressProfileSavePromptCallback on_user_decision_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AndroidAutofillClient::ShowDeleteAddressProfileDialog(
     const autofill::AutofillProfile& profile,
     AddressProfileDeleteDialogCallback delete_dialog_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AndroidAutofillClient::ConfirmSaveAddressProfile(
@@ -207,11 +225,23 @@ void AndroidAutofillClient::HideAutofillSuggestions(
   // TODO(321950502): Analyze hiding the datalist popup here.
 }
 
+bool AndroidAutofillClient::IsAutofillEnabled() const {
+  NOTREACHED();
+}
+
+bool AndroidAutofillClient::IsAutofillProfileEnabled() const {
+  NOTREACHED();
+}
+
+bool AndroidAutofillClient::IsAutofillPaymentMethodsEnabled() const {
+  NOTREACHED();
+}
+
 bool AndroidAutofillClient::IsAutocompleteEnabled() const {
   return false;
 }
 
-bool AndroidAutofillClient::IsPasswordManagerEnabled() {
+bool AndroidAutofillClient::IsPasswordManagerEnabled() const {
   // Android 3P mode and WebView rely on the AndroidAutofillManager which
   // doesn't call this function. If it ever does, the function needs to
   // be implemented in a meaningful way.

@@ -484,14 +484,21 @@ test(function() {
   test.editContext = editContext;
   test.focus();
   textInputController.setComposition("foo");
+  assert_equals(editContext.text, "foo");
   assert_equals(test.innerHTML, "FOO");
   textInputController.insertText("foo");
   textInputController.setMarkedTextFromExistingText(0, 3);
   textInputController.insertText("bar");
   assert_equals(editContext.text, "bar");
+  assert_equals(test.innerHTML, "BAR");
   textInputController.setMarkedTextFromExistingText(2, 3);
   textInputController.insertText("t");
   assert_equals(editContext.text, "bat");
+  assert_equals(test.innerHTML, "BAT");
+  textInputController.setMarkedTextFromExistingText(2, 2);
+  textInputController.insertText("ndi");
+  assert_equals(editContext.text, "bandit");
+  assert_equals(test.innerHTML, "BANDIT");
 }, 'Testing EditContext SetCompositionFromExistingText');
 
 promise_test(async function() {

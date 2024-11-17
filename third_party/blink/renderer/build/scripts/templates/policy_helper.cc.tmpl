@@ -168,8 +168,7 @@ String PermissionsPolicyFeatureToProtocol(mojom::blink::PermissionsPolicyFeature
     default:
       // This default case also handles the mojom entry for
       // mojom::blink::PermissionsPolicyFeature::kNotFound.
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 

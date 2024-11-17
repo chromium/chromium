@@ -25,6 +25,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard_constants.h"
+#include "ui/base/clipboard/clipboard_util.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
@@ -251,7 +252,8 @@ void Clipboard::DispatchPortableRepresentation(const ObjectMapParams& params) {
             WriteRTF(data.data);
           },
           [&](const BookmarkData& data) {
-            if (data.title.empty() || data.url.empty()) {
+            if (ui::clipboard_util::ShouldSkipBookmark(
+                    base::UTF8ToUTF16(data.title), data.url)) {
               return;
             }
 
@@ -294,16 +296,6 @@ void Clipboard::DispatchPortableRepresentation(const ObjectMapParams& params) {
             WriteData(ClipboardFormatType::WebCustomFormatMap(),
                       base::as_bytes(base::make_span(data.data)));
           },
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-          [&](const EncodedDataTransferEndpointData& data) {
-            if (data.data.empty()) {
-              return;
-            }
-
-            WriteData(ClipboardFormatType::DataTransferEndpointDataType(),
-                      base::as_bytes(base::make_span(data.data)));
-          },
-#endif
       },
       params.data);
 }
@@ -354,14 +346,13 @@ void Clipboard::RemoveObserver(ClipboardWriteObserver* observer) {
   write_observers_.RemoveObserver(observer);
 }
 
-void Clipboard::NotifyCopyWithUrl(const std::string_view text,
+void Clipboard::NotifyCopyWithUrl(std::string_view text,
                                   const GURL& frame,
                                   const GURL& main_frame) {
   GURL text_url(text);
   if (text_url.is_valid()) {
-    for (ClipboardWriteObserver& obs : write_observers_) {
-      obs.OnCopyURL(text_url, frame, main_frame);
-    }
+    write_observers_.Notify(&ClipboardWriteObserver::OnCopyURL, text_url, frame,
+                            main_frame);
   }
 }
 

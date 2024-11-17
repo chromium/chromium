@@ -215,9 +215,6 @@ TEST_F(AuthFactorConversionsTest, PinFactorStatusConversion) {
   // PinFactor indefinitely locked.
   {
     factor_with_status.clear_status_info();
-    factor_with_status.mutable_auth_factor()
-        ->mutable_pin_metadata()
-        ->set_auth_locked(true);
     auto* status_info = factor_with_status.mutable_status_info();
     status_info->set_time_available_in(std::numeric_limits<uint64_t>::max());
 
@@ -231,9 +228,6 @@ TEST_F(AuthFactorConversionsTest, PinFactorStatusConversion) {
   // PinFactor temporary locked with a timeout.
   {
     factor_with_status.clear_status_info();
-    factor_with_status.mutable_auth_factor()
-        ->mutable_pin_metadata()
-        ->set_auth_locked(true);
     auto* status_info = factor_with_status.mutable_status_info();
     status_info->set_time_available_in(in_a_while.InMilliseconds());
 

@@ -28,8 +28,7 @@ HotwordType HotwordTypeProtoToIdl(const mri::HotwordDetection::Type& type) {
     case mri::HotwordDetection::OK_GOOGLE:
       return HotwordType::kOkGoogle;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown hotword type: " << type;
-  return HotwordType::kUnknownType;
+  NOTREACHED() << "Unknown hotword type: " << type;
 }
 
 Hotword HotwordProtoToIdl(const mri::HotwordDetection::Hotword& hotword) {
@@ -159,8 +158,7 @@ LightCondition LightConditionProtoToIdl(
     case mri::VideoHumanPresenceDetection::BLACK_FRAME:
       return LightCondition::kBlackFrame;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown light condition: " << condition;
-      return LightCondition::kUnspecified;
+      NOTREACHED() << "Unknown light condition: " << condition;
   }
 }
 
@@ -262,7 +260,7 @@ DistanceUnits DistanceUnitsProtoToIdl(const mri::Distance& distance) {
       case mri::Distance::UNITS_UNSPECIFIED:
         return DistanceUnits::kUnspecified;
     }
-    NOTREACHED_IN_MIGRATION() << "Unknown distance units: " << distance.units();
+    NOTREACHED() << "Unknown distance units: " << distance.units();
   }
   return DistanceUnits::kUnspecified;
 }
@@ -288,8 +286,7 @@ FramePerceptionType FramePerceptionTypeProtoToIdl(int type) {
     case mri::FramePerception::MOTION_DETECTION:
       return FramePerceptionType::kMotionDetection;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown frame perception type: " << type;
-  return FramePerceptionType::kUnknownType;
+  NOTREACHED() << "Unknown frame perception type: " << type;
 }
 
 EntityType EntityTypeProtoToIdl(const mri::Entity& entity) {
@@ -306,7 +303,7 @@ EntityType EntityTypeProtoToIdl(const mri::Entity& entity) {
       case mri::Entity::UNSPECIFIED:
         return EntityType::kUnspecified;
     }
-    NOTREACHED_IN_MIGRATION() << "Unknown entity type: " << entity.type();
+    NOTREACHED() << "Unknown entity type: " << entity.type();
   }
   return EntityType::kUnspecified;
 }
@@ -403,8 +400,7 @@ ImageFormat ImageFormatProtoToIdl(const mri::ImageFrame& image_frame) {
       case mri::ImageFrame::FORMAT_UNSPECIFIED:
         return ImageFormat::kNone;
     }
-    NOTREACHED_IN_MIGRATION()
-        << "Unknown image format: " << image_frame.format();
+    NOTREACHED() << "Unknown image format: " << image_frame.format();
   }
   return ImageFormat::kNone;
 }
@@ -474,8 +470,7 @@ Status StateStatusProtoToIdl(const mri::State& state) {
     case mri::State::STATUS_UNSPECIFIED:
       return Status::kNone;
   }
-  NOTREACHED_IN_MIGRATION() << "Reached status not in switch.";
-  return Status::kNone;
+  NOTREACHED() << "Reached status not in switch.";
 }
 
 mri::State::Status StateStatusIdlToProto(const State& state) {
@@ -496,8 +491,7 @@ mri::State::Status StateStatusIdlToProto(const State& state) {
     case Status::kNone:
       return mri::State::STATUS_UNSPECIFIED;
   }
-  NOTREACHED_IN_MIGRATION() << "Reached status not in switch.";
-  return mri::State::STATUS_UNSPECIFIED;
+  NOTREACHED() << "Reached status not in switch.";
 }
 
 Feature FeatureProtoToIdl(int feature) {
@@ -515,8 +509,7 @@ Feature FeatureProtoToIdl(int feature) {
     case mri::State::FEATURE_UNSET:
       return Feature::kNone;
   }
-  NOTREACHED_IN_MIGRATION() << "Reached feature not in switch.";
-  return Feature::kNone;
+  NOTREACHED() << "Reached feature not in switch.";
 }
 
 mri::State::Feature FeatureIdlToProto(const Feature& feature) {
@@ -534,8 +527,7 @@ mri::State::Feature FeatureIdlToProto(const Feature& feature) {
     case Feature::kNone:
       return mri::State::FEATURE_UNSET;
   }
-  NOTREACHED_IN_MIGRATION() << "Reached feature not in switch.";
-  return mri::State::FEATURE_UNSET;
+  NOTREACHED() << "Reached feature not in switch.";
 }
 
 base::Value NamedTemplateArgumentValueProtoToValue(
@@ -548,9 +540,8 @@ base::Value NamedTemplateArgumentValueProtoToValue(
     case mri::State::NamedTemplateArgument::ValueCase::VALUE_NOT_SET:
       return base::Value();
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown NamedTemplateArgument::ValueCase "
-                            << named_template_argument.value_case();
-  return base::Value();
+  NOTREACHED() << "Unknown NamedTemplateArgument::ValueCase "
+               << named_template_argument.value_case();
 }
 
 bool NamedTemplateArgumentProtoToIdl(
@@ -585,9 +576,8 @@ mri::State::NamedTemplateArgument NamedTemplateArgumentIdlToProto(
       named_template_argument_proto.set_num(
           *named_template_argument.value->as_number);
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << "Failed to convert NamedTemplateARgument::Value IDL to "
-             "Proto, unkown value type.";
+      NOTREACHED() << "Failed to convert NamedTemplateARgument::Value IDL to "
+                      "Proto, unkown value type.";
     }
   }
 

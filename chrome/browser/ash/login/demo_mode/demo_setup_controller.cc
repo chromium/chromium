@@ -33,6 +33,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/demo_mode/utils/dimensions_utils.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
@@ -149,10 +150,7 @@ DemoSetupController::DemoSetupError CreateFromClientStatus(
       return DemoSetupController::DemoSetupError(
           ErrorCode::kArcError, RecoveryMethod::kUnknown, debug_message);
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Demo mode setup received unsupported client status";
-  return DemoSetupController::DemoSetupError(
-      ErrorCode::kUnexpectedError, RecoveryMethod::kUnknown, debug_message);
+  NOTREACHED() << "Demo mode setup received unsupported client status";
 }
 
 DemoSetupController::DemoSetupError CreateFromLockStatus(
@@ -178,10 +176,7 @@ DemoSetupController::DemoSetupError CreateFromLockStatus(
       return DemoSetupController::DemoSetupError(
           ErrorCode::kAlreadyLocked, RecoveryMethod::kPowerwash, debug_message);
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Demo mode setup received unsupported lock status";
-  return DemoSetupController::DemoSetupError(
-      ErrorCode::kUnexpectedError, RecoveryMethod::kUnknown, debug_message);
+  NOTREACHED() << "Demo mode setup received unsupported lock status";
 }
 
 }  //  namespace
@@ -242,10 +237,7 @@ DemoSetupController::DemoSetupError::CreateFromEnrollmentStatus(
       return DemoSetupError(ErrorCode::kUnexpectedError,
                             RecoveryMethod::kUnknown, debug_message);
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Demo mode setup received unsupported enrollment status";
-  return DemoSetupError(ErrorCode::kUnexpectedError, RecoveryMethod::kUnknown,
-                        debug_message);
+  NOTREACHED() << "Demo mode setup received unsupported enrollment status";
 }
 
 // static
@@ -262,10 +254,7 @@ DemoSetupController::DemoSetupError::CreateFromOtherEnrollmentError(
       return DemoSetupError(ErrorCode::kUnexpectedError,
                             RecoveryMethod::kUnknown, debug_message);
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Demo mode setup received unsupported enrollment error";
-  return DemoSetupError(ErrorCode::kUnexpectedError, RecoveryMethod::kUnknown,
-                        debug_message);
+  NOTREACHED() << "Demo mode setup received unsupported enrollment error";
 }
 
 // static
@@ -372,9 +361,7 @@ std::u16string DemoSetupController::DemoSetupError::GetLocalizedErrorMessage()
       // metrics only.
       return std::u16string();
   }
-  NOTREACHED_IN_MIGRATION()
-      << "No localized error message available for demo setup error.";
-  return std::u16string();
+  NOTREACHED() << "No localized error message available for demo setup error.";
 }
 
 std::u16string
@@ -393,9 +380,8 @@ DemoSetupController::DemoSetupError::GetLocalizedRecoveryMessage() const {
     case RecoveryMethod::kUnknown:
       return l10n_util::GetStringUTF16(IDS_DEMO_SETUP_RECOVERY_FATAL);
   }
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "No localized error message available for demo setup recovery method.";
-  return std::u16string();
 }
 
 std::string DemoSetupController::DemoSetupError::GetDebugDescription() const {
@@ -403,13 +389,6 @@ std::string DemoSetupController::DemoSetupError::GetDebugDescription() const {
                             static_cast<int>(error_code_),
                             static_cast<int>(recovery_method_),
                             debug_message_.c_str());
-}
-
-void DemoSetupController::RegisterLocalStatePrefs(
-    PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(
-      prefs::kDemoModeConfig,
-      static_cast<int>(DemoSession::DemoModeConfig::kNone));
 }
 
 // static
@@ -460,7 +439,7 @@ std::string DemoSetupController::GetSubOrganizationEmail() {
   std::string country_lowercase = base::ToLowerASCII(country);
 
   // Exclude US as it is the default country.
-  if (base::Contains(DemoSession::kSupportedCountries, country_uppercase)) {
+  if (base::Contains(demo_mode::kSupportedCountries, country_uppercase)) {
     if (chromeos::features::IsCloudGamingDeviceEnabled()) {
       return base::StringPrintf("admin-%s-blazey@%s", country_lowercase.c_str(),
                                 policy::kDemoModeDomain);
@@ -493,7 +472,7 @@ std::string DemoSetupController::GetDemoSetupStepString(
       return "complete";
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 DemoSetupController::DemoSetupController() = default;
@@ -532,7 +511,7 @@ void DemoSetupController::Enroll(
       return;
     case DemoSession::DemoModeConfig::kNone:
     case DemoSession::DemoModeConfig::kOfflineDeprecated:
-      NOTREACHED_IN_MIGRATION() << "No valid demo mode config specified";
+      NOTREACHED() << "No valid demo mode config specified";
   }
 }
 
@@ -650,7 +629,7 @@ void DemoSetupController::OnDemoComponentsLoaded() {
 }
 
 void DemoSetupController::OnAuthError(const GoogleServiceAuthError& error) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DemoSetupController::OnEnrollmentError(policy::EnrollmentStatus status) {
@@ -679,11 +658,11 @@ void DemoSetupController::OnDeviceEnrolled() {
 }
 
 void DemoSetupController::OnDeviceAttributeUploadCompleted(bool success) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DemoSetupController::OnDeviceAttributeUpdatePermission(bool granted) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DemoSetupController::SetCrOSComponentLoadErrorForTest(

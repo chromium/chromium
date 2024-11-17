@@ -100,7 +100,7 @@ QueryNodeWord::QueryNodeWord(const std::u16string& word,
                              MatchingAlgorithm matching_algorithm)
     : word_(word), literal_(false), matching_algorithm_(matching_algorithm) {}
 
-QueryNodeWord::~QueryNodeWord() {}
+QueryNodeWord::~QueryNodeWord() = default;
 
 int QueryNodeWord::AppendToSQLiteQuery(std::u16string* query) const {
   query->append(word_);
@@ -180,7 +180,7 @@ class QueryNodeList : public QueryNode {
   QueryNodeVector children_;
 };
 
-QueryNodeList::QueryNodeList() {}
+QueryNodeList::QueryNodeList() = default;
 
 QueryNodeList::~QueryNodeList() {
 }
@@ -214,19 +214,16 @@ bool QueryNodeList::IsWord() const {
 }
 
 bool QueryNodeList::Matches(const std::u16string& word, bool exact) const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool QueryNodeList::HasMatchIn(const QueryWordVector& words,
                                Snippet::MatchPositions* match_positions) const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool QueryNodeList::HasMatchIn(const QueryWordVector& words, bool exact) const {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void QueryNodeList::AppendWords(std::vector<std::u16string>* words) const {
@@ -266,9 +263,9 @@ class QueryNodePhrase : public QueryNodeList {
                   const QueryWord** last_word) const;
 };
 
-QueryNodePhrase::QueryNodePhrase() {}
+QueryNodePhrase::QueryNodePhrase() = default;
 
-QueryNodePhrase::~QueryNodePhrase() {}
+QueryNodePhrase::~QueryNodePhrase() = default;
 
 int QueryNodePhrase::AppendToSQLiteQuery(std::u16string* query) const {
   query->push_back(L'"');

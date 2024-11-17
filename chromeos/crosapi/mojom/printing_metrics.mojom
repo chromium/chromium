@@ -11,7 +11,7 @@ import "mojo/public/mojom/base/values.mojom";
 // sends them to lacros. See chrome.printingMetrics.onPrintJobFinished event.
 // Next version: 1
 // Next method id: 1
-[Stable, Uuid="64680b44-074e-4aa0-93ce-3c0956e192a0"]
+[Uuid="64680b44-074e-4aa0-93ce-3c0956e192a0"]
 interface PrintJobObserverForProfile {
   // Forwards OnPrintJobFinished() event from ash::PrintJobHistoryService
   // to the browser.
@@ -34,7 +34,7 @@ interface PrintJobObserverForProfile {
 // for the associated profile on the ash side.
 // Next version: 1
 // Next method id: 1
-[Stable, Uuid="27ba5fb3-5624-4b6d-8909-8243a0ffd7aa"]
+[Uuid="27ba5fb3-5624-4b6d-8909-8243a0ffd7aa"]
 interface PrintingMetricsForProfile {
   // Implements chrome.printingMetrics.getPrintJobs(...)
   //
@@ -60,7 +60,7 @@ interface PrintingMetricsForProfile {
 // on the ash side.
 // Next version: 1
 // Next method id: 1
-[Stable, Uuid="e27e7b78-f2ce-4d06-8bc9-e247f8edf355"]
+[Uuid="e27e7b78-f2ce-4d06-8bc9-e247f8edf355"]
 interface PrintingMetrics {
   // Registers a service for the main profile and allows ash to
   // send printing events via |observer|.

@@ -23,8 +23,9 @@ static void JNI_OriginJavaTestHelper_TestOriginEquivalence(JNIEnv* env) {
       Origin::Create(GURL("http://a.com:8000")).DeriveNewOpaqueOrigin(),
   };
   for (const Origin& origin : cases) {
-    base::android::ScopedJavaLocalRef<jobject> j_origin = origin.ToJavaObject();
-    Origin sameOrigin = Origin::FromJavaObject(j_origin);
+    base::android::ScopedJavaLocalRef<jobject> j_origin =
+        origin.ToJavaObject(env);
+    Origin sameOrigin = Origin::FromJavaObject(env, j_origin);
     if (origin != sameOrigin) {
       std::stringstream ss;
       ss << "Origin not equivalent: " << origin << ", " << sameOrigin;

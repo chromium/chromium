@@ -1,0 +1,18 @@
+<!--
+@BLINK-ALLOW:font*
+@BLINK-ALLOW:textStyle*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+
+<!-- Ensure that the style attribute affects the font and text style of an
+     svg <rect> element, so that the Google Docs annotated canvas is compatible
+     with Read Anything, e.g. so bold things show as bold, etc.
+     This approach replaces the nonstandard hack of data-font-css -->
+<svg>
+  <rect x="0" y="32" width="77" height="28" aria-label="xyz" style="font: 900 99px Cousine;"></rect>
+</svg>
+
+</body>
+</html>

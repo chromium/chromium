@@ -54,7 +54,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -122,6 +123,8 @@ public class TouchToFillViewTest {
     private final AtomicBoolean mHybridButtonClicked = new AtomicBoolean(false);
     private final AtomicBoolean mMorePasskeysClicked = new AtomicBoolean(false);
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Callback<Integer> mDismissHandler;
     @Mock private Callback<Credential> mCredentialCallback;
     @Mock private FillableItemCollectionInfo mItemCollectionInfo;
@@ -130,21 +133,18 @@ public class TouchToFillViewTest {
     private TouchToFillView mTouchToFillView;
     private BottomSheetController mBottomSheetController;
     private BottomSheetTestSupport mSheetTestSupport;
-    TouchToFillResourceProvider mResourceProvider;
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mBottomSheetController =
                 mActivityTestRule
                         .getActivity()
                         .getRootUiCoordinatorForTesting()
                         .getBottomSheetController();
-        mResourceProvider = new TouchToFillResourceProviderImpl();
         mSheetTestSupport = new BottomSheetTestSupport(mBottomSheetController);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -212,8 +212,8 @@ public class TouchToFillViewTest {
                                                                                     "www.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
-                                                                    mResourceProvider
-                                                                            .getHeaderImageDrawableId())
+                                                                    R.drawable
+                                                                            .touch_to_fill_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -254,8 +254,8 @@ public class TouchToFillViewTest {
                                                                                     "www.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
-                                                                    mResourceProvider
-                                                                            .getHeaderImageDrawableId())
+                                                                    R.drawable
+                                                                            .touch_to_fill_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -286,8 +286,8 @@ public class TouchToFillViewTest {
                                                             .with(SUBTITLE, "www.example.org")
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
-                                                                    mResourceProvider
-                                                                            .getHeaderImageDrawableId())
+                                                                    R.drawable
+                                                                            .touch_to_fill_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -320,8 +320,8 @@ public class TouchToFillViewTest {
                                                                                     "m.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
-                                                                    mResourceProvider
-                                                                            .getHeaderImageDrawableId())
+                                                                    R.drawable
+                                                                            .touch_to_fill_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -354,8 +354,8 @@ public class TouchToFillViewTest {
                                                                                     "m.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
-                                                                    mResourceProvider
-                                                                            .getHeaderImageDrawableId())
+                                                                    R.drawable
+                                                                            .touch_to_fill_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -388,8 +388,8 @@ public class TouchToFillViewTest {
                                                                                     "m.example.org"))
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
-                                                                    mResourceProvider
-                                                                            .getHeaderImageDrawableId())
+                                                                    R.drawable
+                                                                            .touch_to_fill_header_image)
                                                             .build()),
                                             buildFooterItem(false)));
                     mModel.set(VISIBLE, true);
@@ -849,8 +849,8 @@ public class TouchToFillViewTest {
                                                             .with(SUBTITLE, "www.example.org")
                                                             .with(
                                                                     IMAGE_DRAWABLE_ID,
-                                                                    mResourceProvider
-                                                                            .getHeaderImageDrawableId())
+                                                                    R.drawable
+                                                                            .touch_to_fill_header_image)
                                                             .build()),
                                             buildFooterItem(true)));
                     mModel.set(VISIBLE, true);

@@ -37,8 +37,9 @@ bool DownloadDirPolicyHandler::CheckPolicySettings(
     const policy::PolicyMap& policies,
     policy::PolicyErrorMap* errors) {
   const base::Value* value = nullptr;
-  if (!CheckAndGetValue(policies, errors, &value))
+  if (!CheckAndGetValue(policies, errors, &value)) {
     return false;
+  }
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Download directory can only be set as a user policy. If it is set through
@@ -59,8 +60,9 @@ void DownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
     PrefValueMap* prefs) {
   const base::Value* value =
       policies.GetValue(policy_name(), base::Value::Type::STRING);
-  if (!value)
+  if (!value) {
     return;
+  }
   std::string str_value = value->GetString();
   base::FilePath::StringType string_value =
 #if BUILDFLAG(IS_WIN)
@@ -87,33 +89,46 @@ void DownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
                   base::Value(expanded_value));
 #endif
 
+  const bool is_mandatory =
+      policies.Get(policy_name())->level == policy::POLICY_LEVEL_MANDATORY;
+
   // If the policy is mandatory, prompt for download should be disabled.
   // Otherwise, it would enable a user to bypass the mandatory policy.
-  // Also check if the LocalUserFilesAllowed is set to False, in that case set
-  // the pref to control the default folder in the Files App.
-  if (policies.Get(policy_name())->level == policy::POLICY_LEVEL_MANDATORY) {
+  if (is_mandatory) {
     prefs->SetBoolean(prefs::kPromptForDownload, false);
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  const bool download_to_drive =
+      download_dir_util::DownloadToDrive(string_value, parameters);
+  const bool download_to_one_drive =
+      download_dir_util::DownloadToOneDrive(string_value, parameters);
+
+  // If the policy enforces a cloud location, ensure the corresponding service
+  // remains enabled.
+  if (is_mandatory) {
     // Drive is disabled only in Ash and not Lacros, because Lacros respects
     // Drive availability status in Ash automatically.
-    if (download_dir_util::DownloadToDrive(string_value, parameters)) {
+    if (download_to_drive) {
       prefs->SetBoolean(drive::prefs::kDisableDrive, false);
-
-      prefs->SetString(prefs::kFilesAppDefaultLocation,
-                       download_dir_util::kLocationGoogleDrive);
-    } else if (download_dir_util::DownloadToOneDrive(string_value,
-                                                     parameters)) {
-      prefs->SetString(prefs::kFilesAppDefaultLocation,
-                       download_dir_util::kLocationOneDrive);
+    } else if (download_to_one_drive) {
       prefs->SetBoolean(prefs::kAllowUserToRemoveODFS, false);
     }
+  }
 
-#endif
-  }  // BUILDFLAG(IS_CHROMEOS_ASH)
+  // Set the Files App default folder, regardless of policy enforcement.
+  if (download_to_drive) {
+    prefs->SetString(prefs::kFilesAppDefaultLocation,
+                     download_dir_util::kLocationGoogleDrive);
+  } else if (download_to_one_drive) {
+    prefs->SetString(prefs::kFilesAppDefaultLocation,
+                     download_dir_util::kLocationOneDrive);
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void DownloadDirPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& /* policies */,
     PrefValueMap* /* prefs */) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }

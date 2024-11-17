@@ -141,7 +141,6 @@ END_METADATA
 FocusModeChipCarousel::FocusModeChipCarousel(
     ChipPressedCallback on_chip_pressed)
     : on_chip_pressed_(std::move(on_chip_pressed)) {
-  SetProperty(views::kBoxLayoutFlexKey, views::BoxLayoutFlexSpecification());
   SetBorder(views::CreateEmptyBorder(kCarouselInsets));
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
   SetNotifyEnterExitOnChild(true);

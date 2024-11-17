@@ -113,7 +113,7 @@ void VersionUpdater::StartNetworkCheck() {
       handler->AddObserver(this);
     const NetworkState* default_network = handler->DefaultNetwork();
     PortalStateChanged(default_network,
-                       default_network ? default_network->GetPortalState()
+                       default_network ? default_network->portal_state()
                                        : NetworkState::PortalState::kUnknown);
   }
 }
@@ -310,7 +310,7 @@ void VersionUpdater::UpdateStatusChanged(
     case update_engine::Operation::UPDATED_BUT_DEFERRED:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (time_estimator_.HasTotalTime(status.current_operation())) {
@@ -417,8 +417,7 @@ void VersionUpdater::UpdateErrorMessage(const NetworkState* network,
       network_name = network->name();
       break;
     case NetworkState::PortalState::kOnline:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   delegate_->UpdateErrorMessage(state, error_state, network_name);
 }

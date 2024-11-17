@@ -11,9 +11,9 @@
 #import "base/functional/callback.h"
 #import "base/functional/callback_helpers.h"
 #import "base/memory/raw_ptr.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
 
+class ProfileIOS;
 class TabGroup;
 class WebStateList;
 
@@ -57,7 +57,7 @@ class WebStateListBuilderFromDescription : public WebStateListObserver {
   // `web_state_list_` is unspecified.
   [[nodiscard]] bool BuildWebStateListFromDescription(
       std::string_view description,
-      ChromeBrowserState* browser_state = nullptr);
+      ProfileIOS* profile = nullptr);
   [[nodiscard]] bool BuildWebStateListFromDescription(
       std::string_view description,
       base::RepeatingCallback<std::unique_ptr<web::WebState>()>

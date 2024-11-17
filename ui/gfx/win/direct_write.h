@@ -10,30 +10,31 @@
 #include <optional>
 #include <string_view>
 
-#include "ui/gfx/gfx_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 namespace win {
 
-GFX_EXPORT void InitializeDirectWrite();
+COMPONENT_EXPORT(GFX) void InitializeDirectWrite();
 
 // Creates a DirectWrite factory.
-GFX_EXPORT void CreateDWriteFactory(IDWriteFactory** factory);
+COMPONENT_EXPORT(GFX) void CreateDWriteFactory(IDWriteFactory** factory);
 
 // Returns the global DirectWrite factory.
-GFX_EXPORT IDWriteFactory* GetDirectWriteFactory();
+COMPONENT_EXPORT(GFX) IDWriteFactory* GetDirectWriteFactory();
 
 // Retrieves the localized string for a given locale. If locale is empty,
 // retrieves the first element of |names|.
-GFX_EXPORT std::optional<std::string> RetrieveLocalizedString(
+COMPONENT_EXPORT(GFX)
+std::optional<std::string> RetrieveLocalizedString(
     IDWriteLocalizedStrings* names,
     const std::string& locale);
 
 // Retrieves the localized font name for a given locale. If locale is empty,
 // retrieves the default native font name.
-GFX_EXPORT std::optional<std::string> RetrieveLocalizedFontName(
-    std::string_view font_name,
-    const std::string& locale);
+COMPONENT_EXPORT(GFX)
+std::optional<std::string> RetrieveLocalizedFontName(std::string_view font_name,
+                                                     const std::string& locale);
 
 }  // namespace win
 }  // namespace gfx

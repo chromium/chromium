@@ -9,8 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class FeatureStatusProvider;
 
@@ -27,7 +26,10 @@ class UserActionRecorderImpl : public UserActionRecorder {
   FRIEND_TEST_ALL_PREFIXES(UserActionRecorderImplTest, RecordActions);
 
   // Types of user actions; numerical value should not be reused or reordered
-  // since this enum is used in metrics.
+  // since this enum is used in metrics. Keep in sync with PhoneHubUserAction
+  // enum in //tools/metrics/histograms/metadata/phonehub/enums.xml.
+  //
+  // LINT.IfChange(PhoneHubUserAction)
   enum class UserAction {
     kUiOpened = 0,
     kTether = 1,
@@ -40,6 +42,7 @@ class UserActionRecorderImpl : public UserActionRecorder {
     kAppStreamLauncherOpened = 8,
     kMaxValue = kAppStreamLauncherOpened,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/phonehub/enums.xml:PhoneHubUserAction)
 
   // UserActionRecorder:
   void RecordUiOpened() override;
@@ -57,7 +60,6 @@ class UserActionRecorderImpl : public UserActionRecorder {
   raw_ptr<FeatureStatusProvider> feature_status_provider_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_USER_ACTION_RECORDER_IMPL_H_

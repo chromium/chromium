@@ -8,6 +8,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -44,6 +45,17 @@ TranslateIconView::TranslateIconView(
   SetID(VIEW_ID_TRANSLATE_BUTTON);
   GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_TRANSLATE));
+
+  // browser_ can be nullptr when LocationBarView is used in non-browser
+  // contexts.
+  // Normally we'd want to start observing GetTranslateDriver() immediately, but
+  // TranslateIconView is constructed alongside BrowserWindow, which is before
+  // any tabs are added.
+  if (browser_) {
+    new_active_tab_subscription_ =
+        browser_->RegisterActiveTabDidChange(base::BindRepeating(
+            &TranslateIconView::ActiveTabChanged, base::Unretained(this)));
+  }
 }
 
 TranslateIconView::~TranslateIconView() = default;
@@ -73,6 +85,38 @@ views::BubbleDialogDelegate* TranslateIconView::GetPartialTranslateBubble()
   }
 
   return nullptr;
+}
+
+void TranslateIconView::ActiveTabChanged(
+    BrowserWindowInterface* browser_interface) {
+  // Track translate notifications for the new tab instead of the old tab.
+  translate_observation_.Reset();
+  translate_observation_.Observe(GetTranslateDriver());
+
+  // Track the current tab to stop observations when the tab is detached.
+  active_tab_will_detach_subscription_ =
+      browser_->GetActiveTabInterface()->RegisterWillDetach(base::BindRepeating(
+          &TranslateIconView::TabWillDetach, base::Unretained(this)));
+
+  // Update the UI if necessary.
+  Update();
+}
+
+void TranslateIconView::TabWillDetach(tabs::TabInterface* tab,
+                                      tabs::TabInterface::DetachReason reason) {
+  translate_observation_.Reset();
+  active_tab_will_detach_subscription_ = base::CallbackListSubscription();
+}
+
+void TranslateIconView::OnTranslateEnabledChanged(
+    content::WebContents* source) {
+  Update();
+}
+
+translate::ContentTranslateDriver* TranslateIconView::GetTranslateDriver() {
+  return ChromeTranslateClient::FromWebContents(
+             browser_->GetActiveTabInterface()->GetContents())
+      ->translate_driver();
 }
 
 bool TranslateIconView::IsBubbleShowing() const {

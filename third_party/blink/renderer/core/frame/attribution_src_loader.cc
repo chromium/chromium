@@ -20,6 +20,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
+#include "components/attribution_reporting/attribution_src_request_status.h"
 #include "components/attribution_reporting/data_host.mojom-blink.h"
 #include "components/attribution_reporting/eligibility.h"
 #include "components/attribution_reporting/os_registration.h"
@@ -86,6 +87,7 @@ namespace blink {
 
 namespace {
 
+using ::attribution_reporting::AttributionSrcRequestStatus;
 using ::attribution_reporting::IssueType;
 using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::attribution_reporting::mojom::SourceType;
@@ -93,18 +95,15 @@ using ::network::mojom::AttributionReportingEligibility;
 
 using mojom::blink::AttributionReportingIssueType;
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class AttributionSrcRequestStatus {
-  kRequested = 0,
-  kReceived = 1,
-  kFailed = 2,
-  kMaxValue = kFailed,
-};
-
-void RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus status) {
-  base::UmaHistogramEnumeration("Conversions.AttributionSrcRequestStatus",
+void RecordAttributionSrcRequestStatus(const ResourceRequestHead& request,
+                                       AttributionSrcRequestStatus status) {
+  base::UmaHistogramEnumeration("Conversions.AttributionSrcRequestStatus.All",
                                 status);
+  if (request.GetAttributionReportingEligibility() ==
+      AttributionReportingEligibility::kNavigationSource) {
+    base::UmaHistogramEnumeration(
+        "Conversions.AttributionSrcRequestStatus.Navigation", status);
+  }
 }
 
 void LogAuditIssue(ExecutionContext* execution_context,
@@ -422,6 +421,8 @@ class AttributionSrcLoader::ResourceClient
 
   const network::mojom::AttributionSupport support_;
 
+  bool redirected_ = false;
+
   SelfKeepAlive<ResourceClient> keep_alive_{this};
 };
 
@@ -460,7 +461,7 @@ void AttributionSrcLoader::Register(
 std::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
     const KURL& navigation_url,
     Vector<KURL> attribution_src_urls,
-    HTMLAnchorElement* element,
+    HTMLAnchorElementBase* element,
     bool has_transient_user_activation,
     network::mojom::ReferrerPolicy referrer_policy) {
   if (!has_transient_user_activation) {
@@ -497,7 +498,7 @@ std::optional<Impression> AttributionSrcLoader::RegisterNavigationInternal(
 std::optional<Impression> AttributionSrcLoader::RegisterNavigation(
     const KURL& navigation_url,
     const AtomicString& attribution_src,
-    HTMLAnchorElement* element,
+    HTMLAnchorElementBase* element,
     bool has_transient_user_activation,
     network::mojom::ReferrerPolicy referrer_policy) {
   CHECK(!attribution_src.IsNull());
@@ -614,7 +615,8 @@ bool AttributionSrcLoader::DoRegistration(
         MakeGarbageCollected<ResourceClient>(this, eligibility, source_type,
                                              data_host, GetSupport()));
 
-    RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kRequested);
+    RecordAttributionSrcRequestStatus(request,
+                                      AttributionSrcRequestStatus::kRequested);
   }
 
   return true;
@@ -853,6 +855,11 @@ bool AttributionSrcLoader::ResourceClient::RedirectReceived(
     Resource* resource,
     const ResourceRequest& request,
     const ResourceResponse& response) {
+  if (!redirected_) {
+    redirected_ = true;
+    RecordAttributionSrcRequestStatus(request,
+                                      AttributionSrcRequestStatus::kRedirected);
+  }
   HandleResponseHeaders(resource, response, request.InspectorId());
   return true;
 }
@@ -861,9 +868,15 @@ void AttributionSrcLoader::ResourceClient::NotifyFinished(Resource* resource) {
   ClearResource();
 
   if (resource->ErrorOccurred()) {
-    RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kFailed);
+    RecordAttributionSrcRequestStatus(
+        resource->GetResourceRequest(),
+        redirected_ ? AttributionSrcRequestStatus::kFailedAfterRedirected
+                    : AttributionSrcRequestStatus::kFailed);
   } else {
-    RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kReceived);
+    RecordAttributionSrcRequestStatus(
+        resource->GetResourceRequest(),
+        redirected_ ? AttributionSrcRequestStatus::kReceivedAfterRedirected
+                    : AttributionSrcRequestStatus::kReceived);
   }
 
   Finish();
@@ -1011,6 +1024,11 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
         return;
       }
 
+      // LINT.IfChange(DataAvailableCallSource)
+      base::UmaHistogramEnumeration(
+          "Conversions.DataAvailableCall.Source",
+          attribution_reporting::mojom::blink::DataAvailableCallsite::kBlink);
+      // LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:DataAvailableCallSource)
       data_host_->SourceDataAvailable(std::move(reporting_origin),
                                       *std::move(source_data),
                                       was_fetched_via_service_worker);
@@ -1039,8 +1057,13 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
         return;
       }
 
-      data_host_->OsSourceDataAvailable(std::move(reporting_origin),
-                                        *std::move(registration_items),
+      // LINT.IfChange(DataAvailableCallOsSource)
+      base::UmaHistogramEnumeration(
+          "Conversions.DataAvailableCall.OsSource",
+          attribution_reporting::mojom::blink::DataAvailableCallsite::kBlink);
+      // LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:DataAvailableCallOsSource)
+
+      data_host_->OsSourceDataAvailable(*std::move(registration_items),
                                         was_fetched_via_service_worker);
       ++num_registrations_;
     }
@@ -1085,6 +1108,11 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
         return;
       }
 
+      // LINT.IfChange(DataAvailableCallTrigger)
+      base::UmaHistogramEnumeration(
+          "Conversions.DataAvailableCall.Trigger",
+          attribution_reporting::mojom::blink::DataAvailableCallsite::kBlink);
+      // LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:DataAvailableCallTrigger)
       data_host_->TriggerDataAvailable(std::move(reporting_origin),
                                        *std::move(trigger_data),
                                        was_fetched_via_service_worker);
@@ -1112,8 +1140,12 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
             std::move(reporting_origin));
         return;
       }
-      data_host_->OsTriggerDataAvailable(std::move(reporting_origin),
-                                         *std::move(registration_items),
+      // LINT.IfChange(DataAvailableCallOsTrigger)
+      base::UmaHistogramEnumeration(
+          "Conversions.DataAvailableCall.OsTrigger",
+          attribution_reporting::mojom::blink::DataAvailableCallsite::kBlink);
+      // LINT.ThenChange(//content/browser/attribution_reporting/attribution_data_host_manager_impl.cc:DataAvailableCallOsTrigger)
+      data_host_->OsTriggerDataAvailable(*std::move(registration_items),
                                          was_fetched_via_service_worker);
       ++num_registrations_;
       break;

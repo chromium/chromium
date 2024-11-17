@@ -179,8 +179,12 @@ bool WebAppShimManagerDelegate::AppIsInstalled(Profile* profile,
     return fallback_delegate_->AppIsInstalled(profile, app_id);
   }
   return profile &&
-         WebAppProvider::GetForWebApps(profile)->registrar_unsafe().IsInstalled(
-             app_id);
+         WebAppProvider::GetForWebApps(profile)
+             ->registrar_unsafe()
+             .IsInstallState(
+                 app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                          proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                          proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
 }
 
 bool WebAppShimManagerDelegate::AppCanCreateHost(Profile* profile,
@@ -201,7 +205,10 @@ bool WebAppShimManagerDelegate::AppUsesRemoteCocoa(
   if (!profile)
     return false;
   auto& registrar = WebAppProvider::GetForWebApps(profile)->registrar_unsafe();
-  return registrar.IsInstalled(app_id) &&
+  return registrar.IsInstallState(
+             app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                      proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                      proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}) &&
          registrar.GetAppEffectiveDisplayMode(app_id) !=
              web_app::DisplayMode::kBrowser;
 }
@@ -399,8 +406,12 @@ bool WebAppShimManagerDelegate::UseFallback(
   // If |app_id| is installed via WebAppProvider, then use |this| as the
   // delegate.
   auto* provider = WebAppProvider::GetForWebApps(profile);
-  if (provider->registrar_unsafe().IsInstalled(app_id))
+  if (provider->registrar_unsafe().IsInstallState(
+          app_id, {proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+                   proto::InstallState::INSTALLED_WITH_OS_INTEGRATION})) {
     return false;
+  }
 
   // Use |fallback_delegate_| only if |app_id| is installed for |profile|
   // as an extension.

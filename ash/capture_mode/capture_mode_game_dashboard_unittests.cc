@@ -64,8 +64,7 @@ class GameDashboardCaptureModeTest : public AshTestBase {
  public:
   GameDashboardCaptureModeTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGameDashboard,
-                              features::
+        /*enabled_features=*/{features::
                                   kFeatureManagementGameDashboardRecordGame},
         /*disabled_features=*/{});
   }
@@ -80,7 +79,6 @@ class GameDashboardCaptureModeTest : public AshTestBase {
   // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
-    EXPECT_TRUE(features::IsGameDashboardEnabled());
 
     // Disable the Game Dashboard welcome dialog for all game windows.
     PrefService* active_user_prefs =

@@ -82,6 +82,7 @@ class DownloadObserver : public screen_ai::ScreenAIInstallState::Observer {
 
 }  // namespace
 
+// TODO(crbug.com/360803943): Remove this test when PDF Searchify is launched.
 class PdfOcrControllerBrowserTest : public base::test::WithFeatureOverride,
                                     public PDFExtensionTestBase {
  public:
@@ -130,7 +131,6 @@ class PdfOcrControllerBrowserTest : public base::test::WithFeatureOverride,
   std::vector<base::test::FeatureRefAndParams> GetEnabledFeatures()
       const override {
     auto enabled = PDFExtensionTestBase::GetEnabledFeatures();
-    enabled.push_back({features::kPdfOcr, {}});
 #if BUILDFLAG(IS_CHROMEOS)
     enabled.push_back({features::kAccessibilityPdfOcrForSelectToSpeak, {}});
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -182,8 +182,11 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, TestGetAllPdfWebContents) {
 IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
                        OpenPDFAfterTurningOnScreenReader) {
   // Forced accessibility contradicts with turning off the screen reader.
+  // When PDF Searchify is enabled, PDF OCR controller will not trigger OCR in
+  // renderer.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceRendererAccessibility)) {
+          switches::kForceRendererAccessibility) ||
+      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
     GTEST_SKIP();
   }
 
@@ -210,10 +213,14 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
 IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest,
                        OpenPDFBeforeTurningOnScreenReader) {
   // Forced accessibility contradicts with turning off the screen reader.
+  // When PDF Searchify is enabled, PDF OCR controller will not trigger OCR in
+  // renderer.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceRendererAccessibility)) {
+          switches::kForceRendererAccessibility) ||
+      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
     GTEST_SKIP();
   }
+
   ui::AXMode ax_mode =
       content::BrowserAccessibilityState::GetInstance()->GetAccessibilityMode();
   EXPECT_FALSE(ax_mode.has_mode(ui::AXMode::kPDFOcr));
@@ -258,8 +265,11 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, WithoutScreenReader) {
 // Retry download if it fails.
 IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, DownloadRetry) {
   // Forced accessibility affects counting.
+  // When PDF Searchify is enabled, PDF OCR controller will not trigger ScreenAI
+  // service initialization.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceRendererAccessibility)) {
+          switches::kForceRendererAccessibility) ||
+      base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
     GTEST_SKIP();
   }
 
@@ -291,6 +301,12 @@ IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, WithoutSelectToSpeak) {
 }
 
 IN_PROC_BROWSER_TEST_P(PdfOcrControllerBrowserTest, WithSelectToSpeak) {
+  // When PDF Searchify is enabled, PDF OCR controller will not trigger OCR in
+  // renderer.
+  if (base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify)) {
+    GTEST_SKIP();
+  }
+
   EnableSelectToSpeak(true);
 
   screen_ai::PdfOcrControllerFactory::GetForProfile(browser()->profile())

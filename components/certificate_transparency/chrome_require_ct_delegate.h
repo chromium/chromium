@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/component_export.h"
@@ -44,7 +45,7 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeRequireCTDelegate
 
   // RequireCTDelegate implementation
   CTRequirementLevel IsCTRequiredForHost(
-      const std::string& hostname,
+      std::string_view hostname,
       const net::X509Certificate* chain,
       const net::HashValueVector& spki_hashes) override;
 
@@ -62,7 +63,7 @@ class COMPONENT_EXPORT(CERTIFICATE_TRANSPARENCY) ChromeRequireCTDelegate
 
   // Returns true if a policy to disable Certificate Transparency for |hostname|
   // is found.
-  bool MatchHostname(const std::string& hostname) const;
+  bool MatchHostname(std::string_view hostname) const;
 
   // Returns true if a policy to disable Certificate Transparency for |chain|,
   // which contains the SPKI hashes |hashes|, is found.

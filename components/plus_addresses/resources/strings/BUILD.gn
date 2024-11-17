@@ -1,0 +1,42 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/locales.gni")
+import("//build/util/branding.gni")
+import("//tools/grit/grit_rule.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  android_strings_java_resources =
+      [ "java/res/values/plus_addresses_strings.xml" ] +
+      process_file_template(
+          android_bundle_locales_as_resources,
+          [ "java/res/values-{{source_name_part}}/plus_addresses_strings.xml" ])
+}
+
+grit("strings") {
+  if (is_chrome_branded) {
+    source = "../internal/strings/plus_addresses_internal_strings.grd"
+  } else {
+    source = "plus_addresses_strings.grd"
+  }
+
+  outputs = [ "../../grit/plus_addresses_strings.h" ] +
+            process_file_template(
+                all_chrome_locales,
+                [ "plus_addresses_strings_{{source_name_part}}.pak" ])
+  if (is_android) {
+    outputs += android_strings_java_resources
+  }
+}
+
+if (is_android) {
+  java_strings_grd_prebuilt("strings_grd") {
+    grit_output_dir =
+        "$root_gen_dir/components/plus_addresses/resources/strings/java/res"
+    generated_files =
+        rebase_path(android_strings_java_resources, "java/res", ".")
+    deps = [ ":strings" ]
+  }
+}

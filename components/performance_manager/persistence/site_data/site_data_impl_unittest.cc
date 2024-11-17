@@ -37,7 +37,7 @@ class TestSiteDataImpl : public SiteDataImpl {
   }
 
  protected:
-  ~TestSiteDataImpl() override {}
+  ~TestSiteDataImpl() override = default;
 };
 
 class MockDataStore : public testing::NoopSiteDataStore {

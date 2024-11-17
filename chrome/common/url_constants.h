@@ -426,6 +426,10 @@ inline constexpr char kAddressesAndPaymentMethodsLearnMoreURL[] =
     "https://support.google.com/chrome?p=settings_autofill";
 #endif
 
+// Help URL for Autofill Prediction Improvements.
+inline constexpr char16_t kAutofillPredictionImprovementsLearnMoreURL[] =
+    u"https://support.google.com/chrome?p=autofill_ai";
+
 // "Learn more" URL for the performance intervention notification setting.
 inline constexpr char16_t kPerformanceInterventionLearnMoreUrl[] =
     u"https://support.google.com/chrome?p=performance_personalization";
@@ -525,17 +529,51 @@ inline constexpr char kSyncGoogleDashboardURL[] =
 inline constexpr char16_t kSyncLearnMoreURL[] =
     u"https://support.google.com/chrome?p=settings_sign_in";
 
+// The URL for the "Learn more" page for AI settings for managed users.
+inline constexpr char16_t kAiSettingsLearnMorePageManagedUrl[] =
+    u"https://support.google.com/chrome/a?p=generative_ai_settings";
+
 // The URL for the "Learn more" page for Help me Write.
 inline constexpr char kComposeLearnMorePageURL[] =
     "https://support.google.com/chrome?p=help_me_write";
+
+// The URL for the "Learn more" page for Help me Write for managed users.
+inline constexpr char kComposeLearnMorePageManagedURL[] =
+    "https://support.google.com/chrome/a?p=help_me_write_settings";
 
 // The URL for the "Learn more" links for pages related to History search.
 inline constexpr char kHistorySearchLearnMorePageURL[] =
     "https://support.google.com/chrome?p=ai_history_search";
 
+// The URL for the "Learn more" links for pages related to History search for
+// managed users.
+inline constexpr char kHistorySearchLearnMorePageManagedURL[] =
+    "https://support.google.com/chrome/a?p=search_history";
+
 // The URL for the Settings page to enable history search.
 inline constexpr char16_t kHistorySearchSettingURL[] =
     u"chrome://settings/historySearch";
+
+// The URL for the Settings page to enable history search when
+// AiSettingsPageRefresh flag is enabled.
+inline constexpr char16_t kHistorySearchV2SettingURL[] =
+    u"chrome://settings/ai/historySearch";
+
+// The URL for the "Learn more" page for Wallpaper Search.
+inline constexpr char kWallpaperSearchLearnMorePageURL[] =
+    "https://support.google.com/chrome?p=create_themes_with_ai";
+
+// The URL for the "Learn more" page for Wallpaper Search for managed users.
+inline constexpr char kWallpaperSearchLearnMorePageManagedURL[] =
+    "https://support.google.com/chrome/a?p=create_theme_settings";
+
+// The URL for the "Learn more" page for Tab Organization.
+inline constexpr char kTabOrganizationLearnMorePageURL[] =
+    "https://support.google.com/chrome?p=auto_tab_group";
+
+// The URL for the "Learn more" page for Tab Organization for managed users.
+inline constexpr char kTabOrganizationLearnMorePageManagedURL[] =
+    "https://support.google.com/chrome/a?p=tab_organizer_settings";
 
 // The URL for the "Learn more" link in the enterprise disclaimer for managed
 // profile in the Signin Intercept bubble.
@@ -556,13 +594,6 @@ inline constexpr char kSyncTrustedVaultLearnMoreURL[] =
 // The URL for the Help Center page about Tracking Protection settings.
 inline constexpr char16_t kTrackingProtectionHelpCenterURL[] =
     u"https://support.google.com/chrome?p=tracking_protection";
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// The UK CMA's landing page about its investigation into the Privacy Sandbox.
-inline constexpr char16_t kUKCMAPrivacySandboxURL[] =
-    u"https://www.gov.uk/cma-cases/"
-    u"investigation-into-googles-privacy-sandbox-browser-changes";
-#endif
 
 // The URL for the Help Center page about User Bypass.
 inline constexpr char16_t kUserBypassHelpCenterURL[] =
@@ -881,7 +912,7 @@ inline constexpr char kFingerprintLearnMoreURL[] =
 // The URL for the help center article about local data recovery on Chrome OS
 // devices.
 inline constexpr char kRecoveryLearnMoreURL[] =
-    "https://support.google.com/chrome?p=local_data_recovery";
+    "https://support.google.com/chromebook?p=local_data_recovery";
 
 // The URL for the learn more link about extended automatic updates for
 // ChromeOS devices.

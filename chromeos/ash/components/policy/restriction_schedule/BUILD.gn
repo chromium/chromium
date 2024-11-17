@@ -7,6 +7,10 @@ import("//build/config/chromeos/ui_mode.gni")
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos")
 
 source_set("restriction_schedule") {
+  visibility = [
+    ":unit_tests",
+    "//chromeos/ash/components/policy",
+  ]
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_POLICY_IMPL" ]
 
   public = [
@@ -21,6 +25,7 @@ source_set("restriction_schedule") {
 
   public_deps = [
     "//base",
+    "//chromeos/strings",
     "//components/prefs",
   ]
 
@@ -28,11 +33,12 @@ source_set("restriction_schedule") {
     "//ash/public/cpp",
     "//base:i18n",
     "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/policy/weekly_time",
     "//chromeos/constants",
-    "//chromeos/strings",
     "//components/user_manager",
     "//components/vector_icons",
+    "//ui/base",
     "//ui/chromeos",
     "//ui/message_center",
     "//url",
@@ -48,6 +54,7 @@ source_set("unit_tests") {
     ":restriction_schedule",
     "//base",
     "//base/test:test_support",
+    "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/policy/weekly_time",
     "//chromeos/ash/components/policy/weekly_time:test_support",
     "//chromeos/constants",

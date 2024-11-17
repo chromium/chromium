@@ -23,7 +23,6 @@
 #include "third_party/isimpledom/ISimpleDOMNode.h"
 #include "third_party/isimpledom/ISimpleDOMText.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
 // This nonstandard GUID is taken directly from the Mozilla sources

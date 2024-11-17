@@ -143,7 +143,7 @@ constexpr const char kMainFrameLoadRulesetIsAvailableAnyActivationLevel[] =
 
 class SubresourceFilterAgentTest : public ::testing::Test {
  public:
-  SubresourceFilterAgentTest() {}
+  SubresourceFilterAgentTest() = default;
 
   SubresourceFilterAgentTest(const SubresourceFilterAgentTest&) = delete;
   SubresourceFilterAgentTest& operator=(const SubresourceFilterAgentTest&) =
@@ -287,17 +287,18 @@ class SubresourceFilterAgentTest : public ::testing::Test {
       std::string_view url_spec,
       blink::WebDocumentSubresourceFilter::LoadPolicy expected_policy) {
     blink::WebURL url = GURL(url_spec);
-    blink::mojom::RequestContextType request_context =
-        blink::mojom::RequestContextType::IMAGE;
+    network::mojom::RequestDestination request_destination =
+        network::mojom::RequestDestination::kImage;
     blink::WebDocumentSubresourceFilter::LoadPolicy actual_policy =
-        agent()->filter()->GetLoadPolicy(url, request_context);
+        agent()->filter()->GetLoadPolicy(url, request_destination);
     EXPECT_EQ(expected_policy, actual_policy);
 
     // If the load policy indicated the load was filtered, simulate a filtered
     // load callback. In production, this will be called in FrameFetchContext,
     // but we simulate the call here.
-    if (actual_policy == blink::WebDocumentSubresourceFilter::kDisallow)
+    if (actual_policy == blink::WebDocumentSubresourceFilter::kDisallow) {
       agent()->filter()->ReportDisallowedLoad();
+    }
   }
 
   SubresourceFilterAgentUnderTest* agent() { return agent_.get(); }

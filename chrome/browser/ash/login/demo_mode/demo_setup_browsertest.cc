@@ -66,6 +66,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
 #include "chromeos/ash/components/network/network_handler.h"
@@ -484,7 +485,7 @@ class DemoSetupArcSupportedTest : public DemoSetupTestBase {
   }
 
   std::string GetQueryForCountrySelectOptionFromCountryCode(
-      const std::string country_code) {
+      std::string_view country_code) {
     return base::StrCat({test::GetOobeElementPath(kDemoPreferencesCountry),
                          ".shadowRoot.querySelector('option[value=\"",
                          country_code, "\"]').innerHTML"});
@@ -672,7 +673,7 @@ IN_PROC_BROWSER_TEST_F(DemoSetupArcSupportedTest,
 
   UseOnlineModeOnNetworkScreen();
 
-  for (const std::string country_code : DemoSession::kSupportedCountries) {
+  for (const std::string country_code : demo_mode::kSupportedCountries) {
     const auto it = kCountryCodeToNameMap.find(country_code);
     ASSERT_NE(kCountryCodeToNameMap.end(), it);
     const std::string query =

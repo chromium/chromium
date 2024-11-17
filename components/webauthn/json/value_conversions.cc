@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/webauthn/json/value_conversions.h"
 
 #include <iterator>
@@ -14,6 +9,8 @@
 #include <string_view>
 
 #include "base/base64url.h"
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/ranges/ranges.h"
 #include "base/values.h"
@@ -38,10 +35,8 @@ std::string Base64UrlEncode(base::span<const uint8_t> input) {
   // Byte strings, which appear in the WebAuthn IDL as ArrayBuffer or
   // ByteSource, are base64url-encoded without trailing '=' padding.
   std::string output;
-  base::Base64UrlEncode(
-      std::string_view(reinterpret_cast<const char*>(input.data()),
-                       input.size()),
-      base::Base64UrlEncodePolicy::OMIT_PADDING, &output);
+  base::Base64UrlEncode(input, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &output);
   return output;
 }
 
@@ -94,8 +89,7 @@ std::tuple<bool, std::optional<std::string>> Base64UrlDecodeOptionalStringKey(
 }
 
 std::vector<uint8_t> ToByteVector(const std::string& in) {
-  const uint8_t* in_ptr = reinterpret_cast<const uint8_t*>(in.data());
-  return std::vector<uint8_t>(in_ptr, in_ptr + in.size());
+  return base::ToVector(base::as_byte_span(in));
 }
 
 base::Value ToValue(const device::PublicKeyCredentialRpEntity& relying_party) {
@@ -156,8 +150,7 @@ base::Value ToValue(
       return base::Value("platform");
     case device::AuthenticatorAttachment::kAny:
       // Any maps to the key being omitted, not a null value.
-      NOTREACHED_IN_MIGRATION();
-      return base::Value("invalid");
+      NOTREACHED();
   }
 }
 
@@ -228,8 +221,7 @@ base::Value ToValue(const blink::mojom::RemoteDesktopClientOverride&
 base::Value ToValue(const blink::mojom::ProtectionPolicy policy) {
   switch (policy) {
     case blink::mojom::ProtectionPolicy::UNSPECIFIED:
-      NOTREACHED_IN_MIGRATION();
-      return base::Value("invalid");
+      NOTREACHED();
     case blink::mojom::ProtectionPolicy::NONE:
       return base::Value("userVerificationOptional");
     case blink::mojom::ProtectionPolicy::UV_OR_CRED_ID_REQUIRED:
@@ -242,8 +234,7 @@ base::Value ToValue(const blink::mojom::ProtectionPolicy policy) {
 base::Value ToValue(const device::LargeBlobSupport large_blob) {
   switch (large_blob) {
     case device::LargeBlobSupport::kNotRequested:
-      NOTREACHED_IN_MIGRATION();
-      return base::Value("invalid");
+      NOTREACHED();
     case device::LargeBlobSupport::kRequired:
       return base::Value("required");
     case device::LargeBlobSupport::kPreferred:
@@ -255,8 +246,7 @@ base::Value ToValue(const device::CableDiscoveryData& cable_authentication) {
   base::Value::Dict value;
   switch (cable_authentication.version) {
     case device::CableDiscoveryData::Version::INVALID:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case device::CableDiscoveryData::Version::V1:
       value.Set("version", 1);
       value.Set("clientEid",
@@ -540,11 +530,6 @@ base::Value ToValue(
   }
 
   if (!options->extensions->prf_inputs.empty()) {
-    // Hashed PRF inputs are only used when Chrome is acting as a caBLE
-    // authenticator on Android. We can't convert the request to JSON in that
-    // context and should never try.
-    CHECK(!options->extensions->prf_inputs_hashed);
-
     base::Value::Dict prf_value;
     base::Value::Dict eval_by_cred;
     bool is_first = true;

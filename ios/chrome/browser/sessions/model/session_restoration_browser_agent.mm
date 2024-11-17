@@ -265,8 +265,8 @@ std::unique_ptr<web::WebState> CreateWebState(
     const web::WebState::CreateParams& params,
     CRWSessionStorage* session_storage) {
   __weak WebSessionStateCache* weak_cache =
-      WebSessionStateCacheFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(params.browser_state.get()));
+      WebSessionStateCacheFactory::GetForProfile(
+          ProfileIOS::FromBrowserState(params.browser_state.get()));
 
   const web::WebStateID web_state_id = session_storage.uniqueIdentifier;
   return web::WebState::CreateWithStorageSession(
@@ -345,9 +345,8 @@ void SessionRestorationBrowserAgent::RestoreSessionWindow(
       DeserializeWebStateList(
           browser_->GetWebStateList(), FilterInvalidTabs(window),
           enable_pinned_web_states_, enable_tab_groups_,
-          base::BindRepeating(
-              &CreateWebState,
-              web::WebState::CreateParams(browser_->GetBrowserState())));
+          base::BindRepeating(&CreateWebState, web::WebState::CreateParams(
+                                                   browser_->GetProfile())));
 
   for (auto& observer : observers_) {
     observer.SessionRestorationFinished(browser_, restored_web_states);
@@ -371,7 +370,7 @@ void SessionRestorationBrowserAgent::RestoreSession() {
 
   SessionWindowIOS* session_window = [session_service_
       loadSessionWithSessionID:session_identifier_
-                     directory:browser_->GetBrowserState()->GetStatePath()];
+                     directory:browser_->GetProfile()->GetStatePath()];
 
   RestoreSessionWindow(session_window);
   base::UmaHistogramTimes(kSessionHistogramLoadingTime,
@@ -397,7 +396,7 @@ void SessionRestorationBrowserAgent::SaveSession(bool immediately) {
 
   [session_service_ saveSession:session_window_ios_factory_
                       sessionID:session_identifier_
-                      directory:browser_->GetBrowserState()->GetStatePath()
+                      directory:browser_->GetProfile()->GetStatePath()
                     immediately:immediately];
 
   for (int i = 0; i < web_state_list->count(); ++i) {

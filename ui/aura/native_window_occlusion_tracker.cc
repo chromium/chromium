@@ -42,7 +42,7 @@ void NativeWindowOcclusionTracker::DisableNativeWindowOcclusionTracking(
 // static
 bool NativeWindowOcclusionTracker::IsNativeWindowOcclusionTrackingAlwaysEnabled(
     WindowTreeHost* host) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN)
   // chromedriver uses the environment variable CHROME_HEADLESS. In this case it
   // expected that native occlusion is not applied. CHROME_HEADLESS is also used
   // by tests, but often we want native occlusion enabled, e.g. in performance

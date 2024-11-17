@@ -110,10 +110,18 @@ void PersistentProtoInternal::QueueWrite() {
   // up to the user to verify that OnReadComplete() has finished with callback
   // |on_read_| before calling QueueWrite().
   CHECK(proto_);
+
+  // Serialize the proto into a buffer for write to occur. Because the IO
+  // happens on a separate sequence, serialization must happen on this sequence
+  // since PersistentProto is not thread-safe.
+  SerializeProtoForWrite();
+
   proto_file_->ScheduleWrite(this);
 }
 
 void PersistentProtoInternal::OnWriteAttempt(bool write_successful) {
+  write_buffer_.clear();
+
   if (write_successful) {
     OnWriteComplete(WriteStatus::kOk);
   } else {
@@ -135,11 +143,6 @@ void PersistentProtoInternal::Purge() {
 }
 
 std::optional<std::string> PersistentProtoInternal::SerializeData() {
-  std::string proto_str;
-  if (!proto_->SerializeToString(&proto_str)) {
-    OnWriteComplete(WriteStatus::kSerializationError);
-    return std::nullopt;
-  }
   proto_file_->RegisterOnNextWriteCallbacks(
       base::BindOnce(base::IgnoreResult(&base::CreateDirectory),
                      proto_file_->path().DirName()),
@@ -147,10 +150,12 @@ std::optional<std::string> PersistentProtoInternal::SerializeData() {
           base::SequencedTaskRunner::GetCurrentDefault(),
           base::BindOnce(&PersistentProtoInternal::OnWriteAttempt,
                          weak_factory_.GetWeakPtr())));
-  return proto_str;
+  return write_buffer_;
 }
 
 void PersistentProtoInternal::StartWriteForTesting() {
+  SerializeProtoForWrite();
+
   proto_file_->ScheduleWrite(this);
   proto_file_->DoScheduledWrite();
 }
@@ -161,9 +166,7 @@ void PersistentProtoInternal::UpdatePath(const base::FilePath& path,
   updating_path_.store(true);
 
   // Clean up the state of the current |proto_file_|.
-  if (proto_file_->HasPendingWrite()) {
-    proto_file_->DoScheduledWrite();
-  }
+  FlushQueuedWrites();
 
   // If the previous file should be cleaned up then schedule the cleanup on
   // separate thread.
@@ -210,6 +213,20 @@ void PersistentProtoInternal::QueueFileDelete() {
 void PersistentProtoInternal::FlushQueuedWrites() {
   if (proto_file_->HasPendingWrite()) {
     proto_file_->DoScheduledWrite();
+  }
+}
+
+void PersistentProtoInternal::SerializeProtoForWrite() {
+  // If the write buffer is not empty, it means that a write is already in
+  // progress.
+  if (!write_buffer_.empty()) {
+    return;
+  }
+
+  if (!proto_->SerializeToString(&write_buffer_)) {
+    write_buffer_.clear();
+    OnWriteComplete(WriteStatus::kSerializationError);
+    return;
   }
 }
 

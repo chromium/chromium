@@ -10,7 +10,6 @@
 #include "cc/paint/paint_op.h"
 
 #include <algorithm>
-#include <iterator>
 #include <limits>
 #include <memory>
 #include <type_traits>
@@ -43,6 +42,7 @@
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
+#include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
@@ -78,13 +78,13 @@ PaintFlags::FilterQuality sampling_to_quality(
 
 DrawImage CreateDrawImage(const PaintImage& image,
                           const PaintFlags* flags,
-                          const SkSamplingOptions& sampling,
+                          const PaintFlags::FilterQuality& quality,
                           const SkM44& matrix) {
   if (!image)
     return DrawImage();
   return DrawImage(image, flags->useDarkModeForImage(),
-                   SkIRect::MakeWH(image.width(), image.height()),
-                   sampling_to_quality(sampling), matrix);
+                   SkIRect::MakeWH(image.width(), image.height()), quality,
+                   matrix);
 }
 
 bool IsScaleAdjustmentIdentity(const SkSize& scale_adjustment) {
@@ -131,6 +131,16 @@ void DrawImageRect(SkCanvas* canvas,
   }
   SkTiledImageUtils::DrawImageRect(canvas, image, src, dst, options, paint,
                                    constraint);
+}
+
+PaintFlags::ScalingOperation MatrixToScalingOperation(SkMatrix m) {
+  SkSize scale;
+  if (m.decomposeScale(&scale)) {
+    return (scale.width() > 1 && scale.height() > 1)
+               ? PaintFlags::ScalingOperation::kUpscale
+               : PaintFlags::ScalingOperation::kUnknown;
+  }
+  return PaintFlags::ScalingOperation::kUnknown;
 }
 
 #define TYPES(M)             \
@@ -188,7 +198,7 @@ struct Rasterizer {
         !T::kHasPaintFlags,
         "This function should not be used for a PaintOp that has PaintFlags");
     DCHECK(op->IsValid());
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   static void Raster(const T* op,
                      SkCanvas* canvas,
@@ -472,9 +482,9 @@ void DrawImageOp::Serialize(PaintOpWriter& writer,
   writer.Write(*flags_to_serialize, current_ctm);
 
   SkSize serialized_scale_adjustment = SkSize::Make(1.f, 1.f);
-  writer.Write(
-      CreateDrawImage(image, flags_to_serialize, sampling, current_ctm),
-      &serialized_scale_adjustment);
+  writer.Write(CreateDrawImage(image, flags_to_serialize, GetImageQuality(),
+                               current_ctm),
+               &serialized_scale_adjustment);
   writer.Write(serialized_scale_adjustment.width());
   writer.Write(serialized_scale_adjustment.height());
 
@@ -494,8 +504,9 @@ void DrawImageRectOp::Serialize(PaintOpWriter& writer,
   // Note that we don't request subsets here since the GpuImageCache has no
   // optimizations for using subsets.
   SkSize serialized_scale_adjustment = SkSize::Make(1.f, 1.f);
-  writer.Write(CreateDrawImage(image, flags_to_serialize, sampling, matrix),
-               &serialized_scale_adjustment);
+  writer.Write(
+      CreateDrawImage(image, flags_to_serialize, GetImageQuality(), matrix),
+      &serialized_scale_adjustment);
   writer.Write(serialized_scale_adjustment.width());
   writer.Write(serialized_scale_adjustment.height());
 
@@ -568,7 +579,7 @@ void DrawRecordOp::Serialize(PaintOpWriter& writer,
                              const SkM44& current_ctm,
                              const SkM44& original_ctm) const {
   // These are flattened in PaintOpBufferSerializer.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DrawRectOp::Serialize(PaintOpWriter& writer,
@@ -592,7 +603,7 @@ void DrawScrollingContentsOp::Serialize(PaintOpWriter& writer,
                                         const SkM44& current_ctm,
                                         const SkM44& original_ctm) const {
   // These are flattened in PaintOpBufferSerializer.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void DrawVerticesOp::Serialize(PaintOpWriter& writer,
@@ -1102,8 +1113,7 @@ PaintOp* DrawSlugOp::Deserialize(PaintOpReader& reader, void* output) {
 }
 
 PaintOp* DrawTextBlobOp::Deserialize(PaintOpReader& reader, void* output) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 PaintOp* NoopOp::Deserialize(PaintOpReader& reader, void* output) {
@@ -1283,10 +1293,33 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     return;
   }
 
+  if (op->image.IsDeferredPaintRecord()) {
+    ImageProvider::ScopedResult result =
+        params.image_provider->GetRasterContent(DrawImage(op->image));
+
+    // Check that we are not using loopers with paint worklets, since converting
+    // PaintFlags to SkPaint drops loopers.
+    DCHECK(!flags->getLooper());
+
+    DCHECK(IsScaleAdjustmentIdentity(op->scale_adjustment));
+    SkAutoCanvasRestore save_restore(canvas, true);
+    canvas->translate(op->left, op->top);
+
+    // Compositor thread animations can cause PaintWorklet jobs to be dispatched
+    // to the worklet thread even after main has torn down the worklet (e.g.
+    // because a navigation is happening). In that case the PaintWorklet jobs
+    // will fail and there will be no result to raster here. This state is
+    // transient as the next main frame commit will remove the PaintWorklets.
+    if (result && result.has_paint_record()) {
+      result.ReleaseAsRecord().Playback(canvas, params);
+    }
+    return;
+  }
+
   // Dark mode is applied only for OOP raster during serialization.
-  DrawImage draw_image(
-      op->image, false, SkIRect::MakeWH(op->image.width(), op->image.height()),
-      sampling_to_quality(op->sampling), canvas->getLocalToDevice());
+  DrawImage draw_image(op->image, false,
+                       SkIRect::MakeWH(op->image.width(), op->image.height()),
+                       op->GetImageQuality(), canvas->getLocalToDevice());
   auto scoped_result = params.image_provider->GetRasterContent(draw_image);
   if (!scoped_result)
     return;
@@ -1306,10 +1339,12 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     canvas->scale(1.f / scale_adjustment.width(),
                   1.f / scale_adjustment.height());
   }
+  PaintFlags::ScalingOperation scale =
+      MatrixToScalingOperation(canvas->getLocalToDeviceAs3x3());
   SkTiledImageUtils::DrawImage(canvas, decoded_image.image().get(), op->left,
                                op->top,
                                PaintFlags::FilterQualityToSkSamplingOptions(
-                                   decoded_image.filter_quality()),
+                                   decoded_image.filter_quality(), scale),
                                &paint);
 }
 
@@ -1319,7 +1354,7 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
                                       const PlaybackParams& params) {
   // TODO(crbug.com/40613771): make sure to support the case where paint worklet
   // generated images are used in other raster work such as canvas2d.
-  if (op->image.IsPaintWorklet()) {
+  if (op->image.IsDeferredPaintRecord()) {
     // When rasterizing on the main thread (e.g. paint invalidation checking,
     // see https://crbug.com/990382), an image provider may not be available, so
     // we should draw nothing.
@@ -1356,7 +1391,15 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
 
   if (!params.image_provider) {
     SkRect adjusted_src = AdjustSrcRectForScale(op->src, op->scale_adjustment);
-    flags->DrawToSk(canvas, [op, adjusted_src](SkCanvas* c, const SkPaint& p) {
+    SkM44 matrix = canvas->getLocalToDevice() *
+                   SkM44(SkMatrix::RectToRect(adjusted_src, op->dst));
+    PaintFlags::ScalingOperation scale =
+        MatrixToScalingOperation(matrix.asM33());
+    PaintFlags::FilterQuality quality = sampling_to_quality(op->sampling);
+    SkSamplingOptions sampling =
+        PaintFlags::FilterQualityToSkSamplingOptions(quality, scale);
+    flags->DrawToSk(canvas, [op, adjusted_src, sampling](SkCanvas* c,
+                                                         const SkPaint& p) {
       sk_sp<SkImage> sk_image;
       if (op->image.IsTextureBacked()) {
         sk_image = op->image.GetAcceleratedSkImage();
@@ -1374,7 +1417,7 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
         skia::DrawGainmapImageRect(
             c, op->image.cached_sk_image_, op->image.gainmap_sk_image_,
             op->image.gainmap_info_.value(), op->image.target_hdr_headroom_,
-            adjusted_src, op->dst, op->sampling, p);
+            adjusted_src, op->dst, sampling, p);
         return;
       }
 
@@ -1386,12 +1429,12 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
             tonemap_paint, op->image, c->imageInfo().refColorSpace());
         sk_image =
             sk_image->reinterpretColorSpace(c->imageInfo().refColorSpace());
-        DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, op->sampling,
+        DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, sampling,
                       &tonemap_paint, op->constraint);
         return;
       }
 
-      DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, op->sampling, &p,
+      DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, sampling, &p,
                     op->constraint);
     });
     return;
@@ -1404,8 +1447,8 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
   op->src.roundOut(&int_src_rect);
 
   // Dark mode is applied only for OOP raster during serialization.
-  DrawImage draw_image(op->image, false, int_src_rect,
-                       sampling_to_quality(op->sampling), matrix);
+  DrawImage draw_image(op->image, false, int_src_rect, op->GetImageQuality(),
+                       matrix);
   auto scoped_result = params.image_provider->GetRasterContent(draw_image);
   if (!scoped_result)
     return;
@@ -1421,12 +1464,13 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
       op->src.makeOffset(decoded_image.src_rect_offset().width(),
                          decoded_image.src_rect_offset().height());
   adjusted_src = AdjustSrcRectForScale(adjusted_src, scale_adjustment);
-  flags->DrawToSk(canvas, [op, &decoded_image, adjusted_src](SkCanvas* c,
-                                                             const SkPaint& p) {
-    SkSamplingOptions options = PaintFlags::FilterQualityToSkSamplingOptions(
-        decoded_image.filter_quality());
+  PaintFlags::ScalingOperation scale = MatrixToScalingOperation(matrix.asM33());
+  SkSamplingOptions sampling = PaintFlags::FilterQualityToSkSamplingOptions(
+      decoded_image.filter_quality(), scale);
+  flags->DrawToSk(canvas, [op, &decoded_image, adjusted_src, sampling](
+                              SkCanvas* c, const SkPaint& p) {
     DrawImageRect(c, decoded_image.image().get(), adjusted_src, op->dst,
-                  options, &p, op->constraint);
+                  sampling, &p, op->constraint);
   });
 }
 
@@ -1464,6 +1508,49 @@ void DrawLineLiteOp::Raster(const DrawLineLiteOp* op,
   });
 }
 
+void DrawArcImpl(SkCanvas* canvas,
+                 const SkRect& oval,
+                 float start_angle_degrees,
+                 float sweep_angle_degrees,
+                 const SkPaint& paint,
+                 const PaintFlags& flags) {
+  if (!flags.isArcClosed()) {
+    // drawArc can only handle open arcs.
+    canvas->drawArc(oval, start_angle_degrees, sweep_angle_degrees, false,
+                    paint);
+    return;
+  }
+
+  SkScalar s180 = SkIntToScalar(180);
+  SkPath path;
+  if (SkScalarNearlyEqual(sweep_angle_degrees, SkIntToScalar(360))) {
+    // incReserve() results in a single allocation instead of multiple as is
+    // done by multiple calls to arcTo().
+    path.incReserve(10, 5, 4);
+    // SkPath::arcTo can't handle the sweepAngle that is equal to 2Pi.
+    path.arcTo(oval, start_angle_degrees, s180, false);
+    path.arcTo(oval, start_angle_degrees + s180, s180, false);
+    path.close();
+    canvas->drawPath(path, paint);
+    return;
+  }
+  if (SkScalarNearlyEqual(sweep_angle_degrees, SkIntToScalar(-360))) {
+    // incReserve() results in a single allocation instead of multiple as is
+    // done by multiple calls to arcTo().
+    path.incReserve(10, 5, 4);
+    // SkPath::arcTo can't handle the sweepAngle that is equal to 2Pi.
+    path.arcTo(oval, start_angle_degrees, -s180, false);
+    path.arcTo(oval, start_angle_degrees - s180, -s180, false);
+    path.close();
+    canvas->drawPath(path, paint);
+    return;
+  }
+    // Closed partial arcs -> general SkPath.
+    path.arcTo(oval, start_angle_degrees, sweep_angle_degrees, false);
+    path.close();
+    canvas->drawPath(path, paint);
+}
+
 void DrawArcOp::RasterWithFlags(const DrawArcOp* op,
                                 const PaintFlags* flags,
                                 SkCanvas* canvas,
@@ -1474,16 +1561,7 @@ void DrawArcOp::RasterWithFlags(const DrawArcOp* op,
 void DrawArcOp::RasterWithFlagsImpl(const PaintFlags* flags,
                                     SkCanvas* canvas) const {
   flags->DrawToSk(canvas, [this, flags](SkCanvas* c, const SkPaint& p) {
-    if (flags->isArcClosed() &&
-        !SkScalarNearlyEqual(sweep_angle_degrees, SkIntToScalar(360)) &&
-        !SkScalarNearlyEqual(sweep_angle_degrees, SkIntToScalar(-360))) {
-      SkPath path;
-      path.arcTo(oval, start_angle_degrees, sweep_angle_degrees, false);
-      path.close();
-      c->drawPath(path, p);
-      return;
-    }
-    c->drawArc(oval, start_angle_degrees, sweep_angle_degrees, false, p);
+    DrawArcImpl(c, oval, start_angle_degrees, sweep_angle_degrees, p, *flags);
   });
 }
 
@@ -1492,18 +1570,8 @@ void DrawArcLiteOp::Raster(const DrawArcLiteOp* op,
                            const PlaybackParams& params) {
   PaintFlags flags(op->core_paint_flags);
   flags.DrawToSk(canvas, [op, &flags](SkCanvas* c, const SkPaint& p) {
-    if (flags.isArcClosed() &&
-        !SkScalarNearlyEqual(op->sweep_angle_degrees, SkIntToScalar(360)) &&
-        !SkScalarNearlyEqual(op->sweep_angle_degrees, SkIntToScalar(-360))) {
-      SkPath path;
-      path.arcTo(op->oval, op->start_angle_degrees, op->sweep_angle_degrees,
-                 false);
-      path.close();
-      c->drawPath(path, p);
-      return;
-    }
-    c->drawArc(op->oval, op->start_angle_degrees, op->sweep_angle_degrees,
-               false, p);
+    DrawArcImpl(c, op->oval, op->start_angle_degrees, op->sweep_angle_degrees,
+                p, flags);
   });
 }
 
@@ -1614,6 +1682,7 @@ SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
     return SkottieWrapper::FrameDataFetchResult::kNoUpdate;
 
   const SkottieFrameData& frame_data = images_iter->second;
+  SkM44 matrix = canvas->getLocalToDevice();
   if (!frame_data.image) {
     sk_image = nullptr;
   } else if (params.image_provider) {
@@ -1622,7 +1691,7 @@ SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
     DrawImage draw_image(
         frame_data.image, /*use_dark_mode=*/false,
         SkIRect::MakeWH(frame_data.image.width(), frame_data.image.height()),
-        frame_data.quality, canvas->getLocalToDevice());
+        frame_data.quality, matrix);
     auto scoped_result = params.image_provider->GetRasterContent(draw_image);
     if (scoped_result) {
       sk_image = scoped_result.decoded_image().image();
@@ -1636,8 +1705,9 @@ SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
     if (!sk_image)
       sk_image = frame_data.image.GetSwSkImage();
   }
+  PaintFlags::ScalingOperation scale = MatrixToScalingOperation(matrix.asM33());
   sampling_out =
-      PaintFlags::FilterQualityToSkSamplingOptions(frame_data.quality);
+      PaintFlags::FilterQualityToSkSamplingOptions(frame_data.quality, scale);
   return SkottieWrapper::FrameDataFetchResult::kNewDataAvailable;
 }
 
@@ -2439,6 +2509,10 @@ bool DrawImageOp::HasDiscardableImages(
   return IsDiscardableImage(image, content_color_usage);
 }
 
+PaintFlags::FilterQuality DrawImageOp::GetImageQuality() const {
+  return sampling_to_quality(sampling);
+}
+
 DrawImageOp::~DrawImageOp() = default;
 
 DrawImageRectOp::DrawImageRectOp() : PaintOpWithFlags(kType) {}
@@ -2469,6 +2543,10 @@ DrawImageRectOp::DrawImageRectOp(const PaintImage& image,
 bool DrawImageRectOp::HasDiscardableImages(
     gfx::ContentColorUsage* content_color_usage) const {
   return IsDiscardableImage(image, content_color_usage);
+}
+
+PaintFlags::FilterQuality DrawImageRectOp::GetImageQuality() const {
+  return sampling_to_quality(sampling);
 }
 
 DrawImageRectOp::~DrawImageRectOp() = default;
@@ -2577,11 +2655,10 @@ DrawSlugOp::DrawSlugOp(sk_sp<sktext::gpu::Slug> slug, const PaintFlags& flags)
 
 DrawSlugOp::~DrawSlugOp() = default;
 
-SaveLayerFiltersOp::SaveLayerFiltersOp(base::span<sk_sp<PaintFilter>> filters,
-                                       const PaintFlags& flags)
-    : PaintOpWithFlags(kType, flags),
-      filters(std::make_move_iterator(filters.begin()),
-              std::make_move_iterator(filters.end())) {}
+SaveLayerFiltersOp::SaveLayerFiltersOp(
+    base::span<const sk_sp<PaintFilter>> filters,
+    const PaintFlags& flags)
+    : PaintOpWithFlags(kType, flags), filters(filters.begin(), filters.end()) {}
 
 SaveLayerFiltersOp::SaveLayerFiltersOp() : PaintOpWithFlags(kType) {}
 

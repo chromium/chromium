@@ -326,6 +326,10 @@ std::u16string ChromeContentClient::GetLocalizedString(
   return l10n_util::GetStringFUTF16(message_id, replacement);
 }
 
+bool ChromeContentClient::HasDataResource(int resource_id) const {
+  return ui::ResourceBundle::GetSharedInstance().HasDataResource(resource_id);
+}
+
 std::string_view ChromeContentClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) {
@@ -359,8 +363,7 @@ std::string ChromeContentClient::GetProcessTypeNameInEnglish(int type) {
   }
 #endif
 
-  NOTREACHED_IN_MIGRATION() << "Unknown child process type!";
-  return "Unknown";
+  NOTREACHED() << "Unknown child process type!";
 }
 
 blink::OriginTrialPolicy* ChromeContentClient::GetOriginTrialPolicy() {

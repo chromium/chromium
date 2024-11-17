@@ -525,27 +525,15 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
   ShowAndVerifyUi();
 }
 
-// crbug.com/1166152
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_ManyPermissions DISABLED_InvokeUi_ManyPermissions
-#else
-#define MAYBE_InvokeUi_ManyPermissions InvokeUi_ManyPermissions
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
-                       MAYBE_InvokeUi_ManyPermissions) {
+                       InvokeUi_ManyPermissions) {
   for (int i = 0; i < 20; i++)
     AddPermission("Example permission");
   ShowAndVerifyUi();
 }
 
-// TODO(crbug.com/40718668): Flaky on Win10.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_DetailedPermission DISABLED_InvokeUi_DetailedPermission
-#else
-#define MAYBE_InvokeUi_DetailedPermission InvokeUi_DetailedPermission
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
-                       MAYBE_InvokeUi_DetailedPermission) {
+                       InvokeUi_DetailedPermission) {
   AddPermissionWithDetails("Example header permission",
                            {u"Detailed permission 1", u"Detailed permission 2",
                             u"Very very very very very very long detailed "
@@ -553,15 +541,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
   ShowAndVerifyUi();
 }
 
-// TODO(crbug.com/40718673): Flaky on Win10.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_WithWithholdingOption \
-  DISABLED_InvokeUi_WithWithholdingOption
-#else
-#define MAYBE_InvokeUi_WithWithholdingOption InvokeUi_WithWithholdingOption
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
-                       MAYBE_InvokeUi_WithWithholdingOption) {
+                       InvokeUi_WithWithholdingOption) {
   // The permissions withholding UI requires a proper permission set to be used,
   // as it checks for host permissions to determine if it should be shown.
   auto permissions = std::make_unique<PermissionSet>(
@@ -574,14 +555,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
   ShowAndVerifyUi();
 }
 
-// TODO(crbug.com/40912720): Flaky on Win10.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_InvokeUi_AllInfoTypes DISABLED_InvokeUi_AllInfoTypes
-#else
-#define MAYBE_InvokeUi_AllInfoTypes InvokeUi_AllInfoTypes
-#endif
 IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
-                       MAYBE_InvokeUi_AllInfoTypes) {
+                       InvokeUi_AllInfoTypes) {
   AddPermission("Example permission");
   AddPermissionWithDetails(
       "This permission has details",

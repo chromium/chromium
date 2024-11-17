@@ -117,7 +117,7 @@ void VideoFrameCompositor::OnRendererStateUpdate(bool new_state) {
   if (!auto_open_close_) {
     auto_open_close_ = std::make_unique<
         base::trace_event::AutoOpenCloseEvent<kTracingCategory>>(
-        base::trace_event::AutoOpenCloseEvent<kTracingCategory>::Type::ASYNC,
+        base::trace_event::AutoOpenCloseEvent<kTracingCategory>::Type::kAsync,
         "VideoPlayback");
   }
 
@@ -339,18 +339,21 @@ VideoFrameCompositor::GetLastPresentedFrameMetadata() {
     frame_metadata->presented_frames = presentation_counter_;
   }
 
-  frame_metadata->width = last_frame->visible_rect().width();
-  frame_metadata->height = last_frame->visible_rect().height();
-
-  frame_metadata->media_time = last_frame->timestamp();
-
-  frame_metadata->metadata.MergeMetadataFrom(last_frame->metadata());
+  if (last_frame) {
+    frame_metadata->width = last_frame->visible_rect().width();
+    frame_metadata->height = last_frame->visible_rect().height();
+    frame_metadata->media_time = last_frame->timestamp();
+    frame_metadata->metadata.MergeMetadataFrom(last_frame->metadata());
+  }
 
   {
     base::AutoLock lock(callback_lock_);
     if (callback_) {
       frame_metadata->average_frame_duration =
           callback_->GetPreferredRenderInterval();
+    } else if (last_frame && last_frame->metadata().frame_duration) {
+      frame_metadata->average_frame_duration =
+          *last_frame->metadata().frame_duration;
     }
     frame_metadata->rendering_interval = last_interval_;
   }
@@ -488,7 +491,7 @@ void VideoFrameCompositor::OnContextLost() {
   // is not valid any more. current_frame_ should be reset. Now the compositor
   // has no concept of resetting current_frame_, so a black frame is set.
   base::AutoLock lock(current_frame_lock_);
-  if (!current_frame_ || (!current_frame_->HasTextures() &&
+  if (!current_frame_ || (!current_frame_->HasSharedImage() &&
                           !current_frame_->HasMappableGpuBuffer())) {
     return;
   }

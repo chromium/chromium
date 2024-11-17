@@ -47,11 +47,10 @@ TEST_F(HighlightTest, Properties) {
 
   auto* highlight = Highlight::Create(range_vector);
   highlight->setPriority(1);
-  AtomicString test_string("testType");
-  highlight->setType(test_string);
+  highlight->setType(V8HighlightType(V8HighlightType::Enum::kSpellingError));
 
   CHECK_EQ(1, highlight->priority());
-  CHECK_EQ(test_string, highlight->type());
+  CHECK_EQ("spelling-error", highlight->type().AsString());
 }
 
 }  // namespace blink

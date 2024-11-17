@@ -25,6 +25,6 @@
                             optional FileSystemReadWriteOptions options = {});
   [
     RaisesException, Measure
-  ] unsigned long long write(AllowSharedBufferSource buffer,
+  ] unsigned long long write([PassAsSpan] AllowSharedBufferSource buffer,
                             optional FileSystemReadWriteOptions options = {});
 };

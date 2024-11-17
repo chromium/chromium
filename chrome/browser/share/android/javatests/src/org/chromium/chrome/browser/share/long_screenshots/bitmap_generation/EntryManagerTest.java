@@ -18,7 +18,6 @@ import android.graphics.Rect;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -29,7 +28,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.paintpreview.player.CompositorStatus;
@@ -44,8 +42,6 @@ import org.chromium.url.GURL;
 @Config(manifest = Config.NONE)
 public class EntryManagerTest {
     private static final long FAKE_CAPTURE_ADDR = 123L;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private Tab mTabMock;
     @Mock private WebContents mWebContentsMock;
@@ -71,8 +67,7 @@ public class EntryManagerTest {
         initMocks(this);
         when(mTabMock.getWebContents()).thenReturn(mWebContentsMock);
 
-        mJniMocker.mock(
-                LongScreenshotsTabServiceFactoryJni.TEST_HOOKS,
+        LongScreenshotsTabServiceFactoryJni.setInstanceForTesting(
                 mLongScreenshotsTabServiceFactoryJniMock);
         mInOrder = inOrder(mTabServiceMock, mObserverMock);
         when(mLongScreenshotsTabServiceFactoryJniMock.getServiceInstanceForCurrentProfile())

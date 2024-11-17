@@ -250,9 +250,7 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   // WebViewImpl explicitly rather than via
   // ScrollingCoordinator::DidCompositorScroll() since it needs to be set in
   // tandem with the page scale delta.
-  void DidCompositorScroll(const gfx::PointF&) final {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void DidCompositorScroll(const gfx::PointF&) final { NOTREACHED(); }
 
   // Visual Viewport API implementation.
   double OffsetLeft() const;

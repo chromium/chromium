@@ -49,6 +49,7 @@ GL_EXPORT extern const char kCmdDecoderPassthroughName[];
 GL_EXPORT extern const char kSwapChainFormatNV12[];
 GL_EXPORT extern const char kSwapChainFormatYUY2[];
 GL_EXPORT extern const char kSwapChainFormatBGRA[];
+GL_EXPORT extern const char kSwapChainFormatP010[];
 
 }  // namespace gl
 

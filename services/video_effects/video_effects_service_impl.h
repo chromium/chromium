@@ -20,11 +20,18 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"
+#include "services/video_effects/webgpu_device.h"
 #include "services/viz/public/mojom/gpu.mojom-forward.h"
+#include "third_party/dawn/include/dawn/webgpu_cpp.h"
+
+namespace viz {
+class ContextProviderCommandBuffer;
+}
 
 namespace video_effects {
 
 class VideoEffectsProcessorImpl;
+class GpuChannelHostProvider;
 
 class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
  public:
@@ -50,9 +57,37 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
   void SetBackgroundSegmentationModel(base::File model_file) override;
 
  private:
+  // Creates `webgpu_device_` and initializes it asynchronously.  On completion,
+  // invokes `FinishCreatingEffectsProcessors()`.
+  void CreateWebGpuDeviceAndEffectsProcessors(
+      scoped_refptr<viz::ContextProviderCommandBuffer> context_provider);
+
+  // Callback functions for WebGpuDevice.
+  void OnDeviceCreated(wgpu::Device device);
+  void OnDeviceError(WebGpuDevice::Error error, std::string_view msg);
+  void OnDeviceLost(wgpu::DeviceLostReason reason, std::string_view msg);
+
+  // Finishes creation of pending effects processors in `pending_processors_`.
+  void FinishCreatingEffectsProcessors();
+
+  // Finishes creation of an effects processor and inserts it into
+  // `processors_`.
+  void FinishCreatingEffectsProcessor(
+      const std::string& device_id,
+      mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote,
+      mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver,
+      std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider);
+
   // Helper - used to clean up instances of `VideoEffectsProcessor`s that are
   // no longer functional.
   void RemoveProcessor(const std::string& id);
+
+  // Holder of wgpu::Device instance.
+  std::unique_ptr<WebGpuDevice> webgpu_device_;
+
+  // Reference wgpu::Device currently in use.  If empty, then there is no active
+  // wgpu::Device.
+  wgpu::Device device_;
 
   mojo::Receiver<mojom::VideoEffectsService> receiver_;
 
@@ -62,6 +97,23 @@ class VideoEffectsServiceImpl : public mojom::VideoEffectsService {
   // used to deduplicate processor creation requests.
   base::flat_map<std::string, std::unique_ptr<VideoEffectsProcessorImpl>>
       processors_;
+
+  // Holds arguments needed to create a VideoEffectsProcessor.
+  struct PendingEffectsProcessor {
+    PendingEffectsProcessor();
+    PendingEffectsProcessor(const PendingEffectsProcessor&) = delete;
+    PendingEffectsProcessor& operator=(const PendingEffectsProcessor&) = delete;
+    PendingEffectsProcessor(PendingEffectsProcessor&&);
+    PendingEffectsProcessor& operator=(PendingEffectsProcessor&&);
+    ~PendingEffectsProcessor();
+
+    mojo::PendingRemote<media::mojom::VideoEffectsManager> manager_remote;
+    mojo::PendingReceiver<mojom::VideoEffectsProcessor> processor_receiver;
+    std::unique_ptr<GpuChannelHostProvider> gpu_channel_host_provider;
+  };
+
+  // Mapping of device ID to pending requests to create effects processors.
+  base::flat_map<std::string, PendingEffectsProcessor> pending_processors_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

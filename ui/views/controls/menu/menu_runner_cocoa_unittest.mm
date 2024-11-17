@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ui/views/controls/menu/menu_runner_impl_cocoa.h"
-
 #import <Cocoa/Cocoa.h>
 
 #include "base/functional/bind.h"
@@ -15,12 +13,13 @@
 #include "base/test/test_timeouts.h"
 #import "testing/gtest_mac.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/base/cocoa/menu_controller.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/events/event_utils.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
+#include "ui/menus/cocoa/menu_controller.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_cocoa_watcher_mac.h"
 #include "ui/views/controls/menu/menu_runner_impl_adapter.h"
+#import "ui/views/controls/menu/menu_runner_impl_cocoa.h"
 #include "ui/views/test/views_test_base.h"
 
 namespace views::test {

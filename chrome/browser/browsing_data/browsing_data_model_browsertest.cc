@@ -483,10 +483,6 @@ class BrowsingDataModelBrowserTest
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back({media::kExternalClearKeyForTesting, {}});
-    enabled_features.push_back({features::kCdmStorageDatabase, {}});
-    // Refer to b/325351177 for more information on why this feature is
-    // disabled.
-    disabled_features.push_back(features::kCdmStorageDatabaseMigration);
 #endif
 
     feature_list_.InitWithFeaturesAndParameters(enabled_features,

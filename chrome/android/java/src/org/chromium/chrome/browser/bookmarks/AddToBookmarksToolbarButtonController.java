@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.BaseButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -160,8 +160,8 @@ public class AddToBookmarksToolbarButtonController extends BaseButtonDataProvide
     }
 
     @Override
-    protected IPHCommandBuilder getIphCommandBuilder(Tab tab) {
-        return new IPHCommandBuilder(
+    protected IphCommandBuilder getIphCommandBuilder(Tab tab) {
+        return new IphCommandBuilder(
                 tab.getContext().getResources(),
                 FeatureConstants
                         .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_ADD_TO_BOOKMARKS_FEATURE,

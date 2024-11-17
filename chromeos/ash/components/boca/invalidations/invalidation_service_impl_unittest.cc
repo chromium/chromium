@@ -47,9 +47,9 @@ class MockSessionClientImpl : public SessionClientImpl {
 class MockSessionManager : public BocaSessionManager {
  public:
   explicit MockSessionManager(SessionClientImpl* session_client_impl)
-      : BocaSessionManager(
-            session_client_impl,
-            AccountId::FromUserEmailGaiaId(kTestEmail, kGaiaId)) {}
+      : BocaSessionManager(session_client_impl,
+                           AccountId::FromUserEmailGaiaId(kTestEmail, kGaiaId),
+                           /*is_producer=*/false) {}
   MOCK_METHOD(void, LoadCurrentSession, (), (override));
   ~MockSessionManager() override = default;
 };
@@ -179,6 +179,33 @@ TEST_F(InvalidationServiceImplTest, HandleTokenUpload) {
 
   EXPECT_EQ(kGaiaId, request->gaia_id());
   EXPECT_EQ(token, request->token());
+}
+
+TEST_F(InvalidationServiceImplTest, HandleTokenUploadFailureWithBackoff) {
+  // Check that the handler gets the token through GetToken.
+  const char token[] = "token_2";
+  EXPECT_CALL(mock_instance_id_, GetToken)
+      .WillOnce(
+          RunOnceCallback<4>(token, instance_id::InstanceID::Result::SUCCESS));
+  std::unique_ptr<UploadTokenRequest> request;
+  EXPECT_CALL(*session_client_impl_, UploadToken(_))
+      .WillOnce([&](std::unique_ptr<UploadTokenRequest> request_1) {
+        request = std::move(request_1);
+        std::move(request->callback())
+            .Run(base::unexpected(google_apis::ApiErrorCode::HTTP_BAD_REQUEST));
+      });
+  // Adjust the time and check that validation will happen in time.
+  // The old token is invalid, so token observer should be informed.
+  task_environment_.FastForwardBy(
+      base::Minutes(kTokenValidationPeriodMinutesDefault));
+
+  // A retry and succeeded and stop uploading.
+  EXPECT_CALL(*session_client_impl_, UploadToken(_))
+      .WillOnce([&](std::unique_ptr<UploadTokenRequest> request_1) {
+        request = std::move(request_1);
+        std::move(request->callback()).Run(true);
+      });
+  task_environment_.FastForwardBy(base::Seconds(3));
 }
 }  // namespace
 }  // namespace ash::boca

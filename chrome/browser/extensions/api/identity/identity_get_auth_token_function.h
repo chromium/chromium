@@ -26,12 +26,8 @@
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_mint_token_flow.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/crosapi/device_oauth2_token_service_ash.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/lacros/device_oauth2_token_service_lacros.h"
 #endif
 
 namespace signin {
@@ -141,14 +137,8 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // Exposed for testing.
   std::string GetSelectedUserId() const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  using DeviceOAuth2TokenFetcher = crosapi::DeviceOAuth2TokenServiceAsh;
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  using DeviceOAuth2TokenFetcher = DeviceOAuth2TokenServiceLacros;
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
+  using DeviceOAuth2TokenFetcher = crosapi::DeviceOAuth2TokenServiceAsh;
   std::unique_ptr<DeviceOAuth2TokenFetcher> device_oauth2_token_fetcher_;
 #endif
 

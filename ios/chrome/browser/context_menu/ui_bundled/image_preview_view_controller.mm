@@ -178,6 +178,9 @@ constexpr base::TimeDelta kShowSpinnerDelay = base::Seconds(1);
   _webView.translatesAutoresizingMaskIntoConstraints = NO;
   _webView.accessibilityIdentifier =
       kContextMenuImagePreviewAccessibilityIdentifier;
+  _webView.backgroundColor = [UIColor clearColor];
+  _webView.scrollView.backgroundColor = [UIColor clearColor];
+  _webView.opaque = false;
   _webView.hidden = YES;
 
   [self.view addSubview:_webView];

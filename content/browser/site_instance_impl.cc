@@ -745,6 +745,16 @@ scoped_refptr<SiteInstanceImpl> SiteInstanceImpl::GetRelatedSiteInstanceImpl(
 }
 
 scoped_refptr<SiteInstanceImpl>
+SiteInstanceImpl::GetMaybeGroupRelatedSiteInstanceImpl(
+    const UrlInfo& url_info) {
+  // There has to be an existing SiteInstanceGroup in order to get one in the
+  // same group.
+  CHECK(site_instance_group_);
+  return browsing_instance_->GetMaybeGroupRelatedSiteInstanceForURL(
+      url_info, site_instance_group_.get());
+}
+
+scoped_refptr<SiteInstanceImpl>
 SiteInstanceImpl::GetCoopRelatedSiteInstanceImpl(const UrlInfo& url_info) {
   return browsing_instance_->GetCoopRelatedSiteInstanceForURL(
       url_info, /* allow_default_instance */ true);
@@ -755,6 +765,15 @@ AgentSchedulingGroupHost& SiteInstanceImpl::GetOrCreateAgentSchedulingGroup() {
     GetProcess();
 
   return site_instance_group_->agent_scheduling_group();
+}
+
+void SiteInstanceImpl::SetSiteInstanceGroup(SiteInstanceGroup* group) {
+  // At this point, `this` should not belong to a group. If `this` is being
+  // created, then there should be no group set. If the group is being set
+  // because the SiteInstance is getting a new process, the old one should have
+  // been cleared.
+  CHECK(!site_instance_group_);
+  site_instance_group_ = group;
 }
 
 void SiteInstanceImpl::ResetSiteInstanceGroup() {
@@ -1111,15 +1130,6 @@ bool SiteInstanceImpl::IsNavigationSameSite(
           browser_context, for_outermost_main_frame, dest_url);
   if (should_check_for_wrong_process && !IsSuitableForUrlInfo(dest_url_info))
     return false;
-
-  // If we don't have a last successful URL, we can't trust the origin or URL
-  // stored on the frame, so we fall back to the SiteInstance URL.  This case
-  // matters for newly created frames which haven't committed a navigation yet,
-  // as well as for net errors. Note that we use the SiteInstance's
-  // original_url() and not the site URL, so that we can do this comparison
-  // without the effective URL resolution if needed.
-  if (last_successful_url.is_empty())
-    return IsOriginalUrlSameSite(dest_url_info, should_compare_effective_urls);
 
   // In the common case, we use the last successful URL. Thus, we compare
   // against the last successful commit when deciding whether to swap this time.

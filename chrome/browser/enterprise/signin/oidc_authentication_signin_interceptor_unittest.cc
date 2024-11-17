@@ -96,7 +96,7 @@ class FakeBubbleHandle : public ScopedWebSigninInterceptionBubbleHandle {
  public:
   FakeBubbleHandle(
       signin::SigninChoice choice,
-      signin::SigninChoiceWithConfirmationCallback callback,
+      signin::SigninChoiceWithConfirmAndRetryCallback callback,
       base::OnceClosure done_callback,
       signin::SigninChoiceOperationResult expected_operation_result)
       : choice_(choice),
@@ -108,14 +108,25 @@ class FakeBubbleHandle : public ScopedWebSigninInterceptionBubbleHandle {
 
   void SimulateClick() {
     std::move(callback_).Run(
-        choice_, base::BindOnce(
-                     [](base::OnceClosure done,
-                        signin::SigninChoiceOperationResult expected_result,
-                        signin::SigninChoiceOperationResult result) {
-                       CHECK_EQ(result, expected_result);
-                       std::move(done).Run();
-                     },
-                     std::move(done_callback_), expected_operation_result_));
+        choice_,
+        base::BindOnce(
+            [](base::OnceClosure done,
+               signin::SigninChoiceOperationResult expected_result,
+               signin::SigninChoiceOperationResult result) {
+              CHECK_EQ(result, expected_result);
+              std::move(done).Run();
+            },
+            std::move(done_callback_), expected_operation_result_),
+        base::BindRepeating(
+            [](signin::SigninChoiceOperationResult expected_result,
+               signin::SigninChoiceOperationResult result) {
+              CHECK_EQ(result, expected_result);
+              // Retry callback should only be used in case of registration
+              // timeout.
+              CHECK_EQ(result,
+                       signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT);
+            },
+            expected_operation_result_));
   }
 
   base::WeakPtr<FakeBubbleHandle> AsWeakPtr() {
@@ -124,7 +135,7 @@ class FakeBubbleHandle : public ScopedWebSigninInterceptionBubbleHandle {
 
  private:
   const signin::SigninChoice choice_;
-  signin::SigninChoiceWithConfirmationCallback callback_;
+  signin::SigninChoiceWithConfirmAndRetryCallback callback_;
   base::OnceClosure done_callback_;
   const signin::SigninChoiceOperationResult expected_operation_result_;
 
@@ -312,8 +323,9 @@ class MockDelegate : public OidcAuthenticationSigninInterceptor::Delegate {
               ShowOidcInterceptionDialog,
               (content::WebContents*,
                const WebSigninInterceptor::Delegate::BubbleParameters&,
-               signin::SigninChoiceWithConfirmationCallback,
-               base::OnceClosure),
+               signin::SigninChoiceWithConfirmAndRetryCallback,
+               base::OnceClosure,
+               base::RepeatingClosure),
               (override));
   MOCK_METHOD(void,
               ShowFirstRunExperienceInNewProfile,
@@ -334,6 +346,7 @@ class OidcAuthenticationSigninInterceptorTest
     kNoRegistrationExpected,
     kSuccess,
     kFailure,
+    kTimeout,
   };
 
   OidcAuthenticationSigninInterceptorTest(bool will_policy_fetch_succeed = true,
@@ -448,20 +461,42 @@ class OidcAuthenticationSigninInterceptorTest
     auto* mock_client_ptr = mock_client.get();
 
     if (expect_registration_attempt == RegistrationResult::kFailure) {
-      EXPECT_CALL(*mock_client_ptr,
-                  RegisterWithOidcResponse(_, kExampleOidcTokens.auth_token,
-                                           kExampleOidcTokens.id_token, _, _))
-          .WillOnce(Invoke([&]() {
+      EXPECT_CALL(*mock_client_ptr, RegisterWithOidcResponse(
+                                        _, kExampleOidcTokens.auth_token,
+                                        kExampleOidcTokens.id_token, _, _, _))
+          .WillOnce(Invoke([&](const RegistrationParameters&,
+                               const std::string&, const std::string&,
+                               const std::string&, const base::TimeDelta&,
+                               CloudPolicyClient::ResultCallback callback) {
             mock_client_ptr->SetStatus(policy::DM_STATUS_TEMPORARY_UNAVAILABLE);
             mock_client_ptr->NotifyClientError();
+            std::move(callback).Run(CloudPolicyClient::Result(
+                policy::DM_STATUS_TEMPORARY_UNAVAILABLE, /*net_error=*/1));
             register_run_loop.Quit();
           }));
-
+    } else if (expect_registration_attempt == RegistrationResult::kTimeout) {
+      EXPECT_CALL(*mock_client_ptr, RegisterWithOidcResponse(
+                                        _, kExampleOidcTokens.auth_token,
+                                        kExampleOidcTokens.id_token, _, _, _))
+          .WillOnce(Invoke([&](const RegistrationParameters&,
+                               const std::string&, const std::string&,
+                               const std::string&, const base::TimeDelta&,
+                               CloudPolicyClient::ResultCallback callback) {
+            mock_client_ptr->SetStatus(policy::DM_STATUS_TEMPORARY_UNAVAILABLE);
+            mock_client_ptr->NotifyClientError();
+            std::move(callback).Run(CloudPolicyClient::Result(
+                policy::DM_STATUS_TEMPORARY_UNAVAILABLE,
+                /*net_error=*/net::ERR_TIMED_OUT));
+            register_run_loop.Quit();
+          }));
     } else if (expect_registration_attempt == RegistrationResult::kSuccess) {
-      EXPECT_CALL(*mock_client_ptr,
-                  RegisterWithOidcResponse(_, kExampleOidcTokens.auth_token,
-                                           kExampleOidcTokens.id_token, _, _))
-          .WillOnce(Invoke([&]() {
+      EXPECT_CALL(*mock_client_ptr, RegisterWithOidcResponse(
+                                        _, kExampleOidcTokens.auth_token,
+                                        kExampleOidcTokens.id_token, _, _, _))
+          .WillOnce(Invoke([&](const RegistrationParameters&,
+                               const std::string&, const std::string&,
+                               const std::string&, const base::TimeDelta&,
+                               CloudPolicyClient::ResultCallback callback) {
             mock_client_ptr->SetDMToken(kExampleDmToken);
             mock_client_ptr->SetStatus(policy::DM_STATUS_SUCCESS);
             mock_client_ptr->client_id_ = kExampleClientId;
@@ -473,6 +508,8 @@ class OidcAuthenticationSigninInterceptorTest
                                         : policy::ThirdPartyIdentityType::
                                               OIDC_MANAGEMENT_DASHERLESS;
             mock_client_ptr->NotifyRegistrationStateChanged();
+            std::move(callback).Run(CloudPolicyClient::Result(
+                policy::DM_STATUS_SUCCESS, /*net_error=*/0));
             register_run_loop.Quit();
           }));
     }
@@ -513,13 +550,13 @@ class OidcAuthenticationSigninInterceptorTest
                 return nullptr;
               }));
     } else if (expect_dialog_to_show) {
-      EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _))
+      EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _, _))
           .Times(1)
           .WillRepeatedly(Invoke(
               [&](content::WebContents*,
                   const WebSigninInterceptor::Delegate::BubbleParameters&,
-                  signin::SigninChoiceWithConfirmationCallback callback,
-                  base::OnceClosure done_callback) {
+                  signin::SigninChoiceWithConfirmAndRetryCallback callback,
+                  base::OnceClosure done_callback, base::RepeatingClosure) {
                 auto fake_bubble_handle = std::make_unique<FakeBubbleHandle>(
                     choice, std::move(callback), std::move(done_callback),
                     expected_operation_result);
@@ -527,7 +564,8 @@ class OidcAuthenticationSigninInterceptorTest
                 return fake_bubble_handle;
               }));
     } else {
-      EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _)).Times(0);
+      EXPECT_CALL(*delegate_, ShowOidcInterceptionDialog(_, _, _, _, _))
+          .Times(0);
     }
 
     base::RunLoop run_loop;
@@ -545,7 +583,9 @@ class OidcAuthenticationSigninInterceptorTest
       register_run_loop.Run();
     }
 
-    run_loop.Run();
+    if (expect_registration_attempt != RegistrationResult::kTimeout) {
+      run_loop.Run();
+    }
 
     int num_profiles_after = TestingBrowserProcess::GetGlobal()
                                  ->profile_manager()
@@ -789,6 +829,18 @@ TEST_P(OidcAuthenticationSigninInterceptorTest, RegistrationFailure) {
       signin::SigninChoice::SIGNIN_CHOICE_CONTINUE,
       /*expect_dialog_to_show=*/true,
       signin::SigninChoiceOperationResult::SIGNIN_ERROR);
+}
+
+TEST_P(OidcAuthenticationSigninInterceptorTest, RegistrationTimeout) {
+  TestProfileCreationOrSwitch(
+      kExampleOidcTokens, kExampleIssuerIdentifier, kExampleSubjectIdentifier,
+      /*expect_profile_created=*/false, /*expected_number_of_windows=*/0,
+      OidcInterceptionFunnelStep::kProfileRegistrationStarted,
+      OidcInterceptionResult::kRegistrationTimeout,
+      RegistrationResult::kTimeout,
+      signin::SigninChoice::SIGNIN_CHOICE_CONTINUE,
+      /*expect_dialog_to_show=*/true,
+      signin::SigninChoiceOperationResult::SIGNIN_TIMEOUT);
 }
 
 TEST_P(OidcAuthenticationSigninInterceptorTest, PolicyRecoveryFromPref) {

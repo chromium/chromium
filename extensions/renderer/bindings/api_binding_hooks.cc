@@ -95,8 +95,7 @@ class JSHookInterface final : public gin::Wrappable<JSHookInterface> {
         base::StringPrintf("%s.%s", api_name_.c_str(), method_name.c_str());
     v8::Global<v8::Function>& entry = (*map)[qualified_method_name];
     if (!entry.IsEmpty()) {
-      NOTREACHED_IN_MIGRATION() << "Hooks can only be set once.";
-      return;
+      NOTREACHED() << "Hooks can only be set once.";
     }
     entry.Reset(isolate, hook);
   }

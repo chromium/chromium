@@ -33,6 +33,9 @@ BuildGetModelsResponse();
 // Enables sign-in with the account having model execution capability.
 void EnableSigninAndModelExecutionCapability(Profile* profile);
 
+// Enables sign-in without the account having model execution capability.
+void EnableSigninWithoutModelExecutionCapability(Profile* profile);
+
 // Helper to receive modelinfo updates.
 class ModelFileObserver : public OptimizationTargetModelObserver {
  public:

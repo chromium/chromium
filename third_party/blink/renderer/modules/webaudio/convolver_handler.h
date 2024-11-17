@@ -40,7 +40,7 @@ class MODULES_EXPORT ConvolverHandler final : public AudioHandler {
   bool Normalize() const { return normalize_; }
   void SetNormalize(bool normalize) { normalize_ = normalize; }
   void SetChannelCount(unsigned, ExceptionState&) final;
-  void SetChannelCountMode(const String&, ExceptionState&) final;
+  void SetChannelCountMode(V8ChannelCountMode::Enum, ExceptionState&) final;
 
  private:
   ConvolverHandler(AudioNode&, float sample_rate);

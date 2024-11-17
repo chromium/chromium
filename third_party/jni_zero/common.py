@@ -72,6 +72,12 @@ class StringBuilder:
     self(';\n')
 
   @contextlib.contextmanager
+  def section(self, section_title):
+    self(f'// {section_title}\n')
+    yield
+    self('\n')
+
+  @contextlib.contextmanager
   def namespace(self, namespace_name):
     if namespace_name is None:
       yield

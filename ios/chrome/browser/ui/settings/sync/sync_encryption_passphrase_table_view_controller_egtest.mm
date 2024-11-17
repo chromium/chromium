@@ -41,14 +41,14 @@ NSString* const kPassphrase = @"hello";
 
 @implementation SyncEncryptionPassphraseTestCase
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [SigninEarlGrey signOut];
   [ChromeEarlGrey
       waitForSyncEngineInitialized:NO
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
   [ChromeEarlGrey clearFakeSyncServerData];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)setUp {
@@ -62,16 +62,6 @@ NSString* const kPassphrase = @"hello";
 // Tests to open the sync passphrase view, and to close it.
 // TODO(crbug.com/330012240): The test is flaky.
 - (void)DISABLED_testShowSyncPassphraseAndDismiss {
-  // TODO(crbug.com/40927750): Remove the disabling after fixing the root cause.
-  if (![ChromeEarlGrey isCompactWidth]) {
-    [[AppLaunchManager sharedManager]
-        ensureAppLaunchedWithFeaturesEnabled:{}
-                                    disabled:
-                                        {feature_engagement::
-                                             kIPHiOSTabGridToolbarItemFeature}
-                              relaunchPolicy:ForceRelaunchByCleanShutdown];
-  }
-
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   // Signin.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -125,16 +115,6 @@ NSString* const kPassphrase = @"hello";
 // passphrase.
 // TODO(crbug.com/330012240): Reenable this test.
 - (void)DISABLED_testShowAddSyncPassphrase {
-  // TODO(crbug.com/40927750): Remove the disabling after fixing the root cause.
-  if (![ChromeEarlGrey isCompactWidth]) {
-    [[AppLaunchManager sharedManager]
-        ensureAppLaunchedWithFeaturesEnabled:{}
-                                    disabled:
-                                        {feature_engagement::
-                                             kIPHiOSTabGridToolbarItemFeature}
-                              relaunchPolicy:ForceRelaunchByCleanShutdown];
-  }
-
   [ChromeEarlGrey addSyncPassphrase:kPassphrase];
   // Signin.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];

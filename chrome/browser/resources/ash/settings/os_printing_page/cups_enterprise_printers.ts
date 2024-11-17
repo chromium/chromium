@@ -16,7 +16,7 @@ import './cups_printer_types.js';
 import './cups_printers_browser_proxy.js';
 import './cups_printers_entry.js';
 
-import {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrActionMenuElement} from 'chrome://resources/ash/common/cr_elements/cr_action_menu/cr_action_menu.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -24,8 +24,9 @@ import {castExists} from '../assert_extras.js';
 
 import {getTemplate} from './cups_enterprise_printers.html.js';
 import {matchesSearchTerm, sortPrinters} from './cups_printer_dialog_util.js';
-import {PrinterListEntry} from './cups_printer_types.js';
-import {CupsPrinterInfo, CupsPrintersBrowserProxy, CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
+import type {PrinterListEntry} from './cups_printer_types.js';
+import type {CupsPrinterInfo, CupsPrintersBrowserProxy} from './cups_printers_browser_proxy.js';
+import {CupsPrintersBrowserProxyImpl} from './cups_printers_browser_proxy.js';
 import {CupsPrintersEntryListMixin} from './cups_printers_entry_list_mixin.js';
 
 /**

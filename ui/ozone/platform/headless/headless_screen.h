@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/observer_list.h"
 #include "build/chromeos_buildflags.h"
 #include "ui/display/display_list.h"
 #include "ui/gfx/geometry/point.h"
@@ -44,8 +43,6 @@ class HeadlessScreen : public PlatformScreen {
 
  private:
   display::DisplayList display_list_;
-
-  base::ObserverList<display::DisplayObserver> observers_;
 };
 
 }  // namespace ui

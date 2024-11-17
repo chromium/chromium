@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.webapps;
 
-import static org.chromium.chrome.browser.dependency_injection.ChromeCommonQualifiers.ACTIVITY_CONTEXT;
 import static org.chromium.components.webapk.lib.common.WebApkConstants.WEBAPK_PACKAGE_PREFIX;
 
 import android.content.Context;
@@ -41,7 +40,7 @@ import org.chromium.chrome.browser.browserservices.metrics.WebApkUmaRecorder;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
@@ -60,7 +59,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 
 /**
  * WebApkUpdateManager manages when to check for updates to the WebAPK's Web Manifest, and sends an
@@ -85,12 +83,10 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     private static final int CHANGING_APP_NAME = 1 << 2;
     private static final int CHANGING_SHORTNAME = 1 << 3;
     private static final int CHANGING_ICON_BELOW_THRESHOLD = 1 << 4;
-    private static final int CHANGING_ICON_SHELL_UPDATE = 1 << 5;
+    // Removed CHANGING_ICON_SHELL_UPDATE = 1 << 5;
     private static final int HISTOGRAM_SCOPE = 1 << 6;
 
     private static final int WEB_APK_ICON_UPDATE_BLOCKED_AT_PERCENTAGE = 11;
-
-    private static final String PARAM_SHELL_VERSION = "shell_version";
 
     private final ActivityTabProvider mTabProvider;
 
@@ -137,12 +133,10 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
 
     @Inject
     public WebApkUpdateManager(
-            @Named(ACTIVITY_CONTEXT) Context context,
-            ActivityTabProvider tabProvider,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
-        mContext = context;
+            AsyncInitializationActivity activity, ActivityTabProvider tabProvider) {
+        mContext = activity;
         mTabProvider = tabProvider;
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
     }
 
     /**
@@ -351,8 +345,6 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                 mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_HASH_DIFFERS)
                         || mUpdateReasons.contains(
                                 WebApkUpdateReason.PRIMARY_ICON_MASKABLE_DIFFERS);
-        boolean shellUpdateInProgress =
-                mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_CHANGE_SHELL_UPDATE);
         boolean iconChangeBelowThreshold =
                 mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_CHANGE_BELOW_THRESHOLD);
         boolean shortNameChanging = mUpdateReasons.contains(WebApkUpdateReason.SHORT_NAME_DIFFERS);
@@ -364,9 +356,6 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
         }
         if (mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_CHANGE_BELOW_THRESHOLD)) {
             histogramAction |= CHANGING_ICON_BELOW_THRESHOLD;
-        }
-        if (mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_CHANGE_SHELL_UPDATE)) {
-            histogramAction |= CHANGING_ICON_SHELL_UPDATE;
         }
         if (mUpdateReasons.contains(WebApkUpdateReason.PRIMARY_ICON_MASKABLE_DIFFERS)) {
             histogramAction |= CHANGING_ICON_MASK;
@@ -382,8 +371,7 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
                         && TextUtils.equals(hash, mStorage.getLastWebApkUpdateHashAccepted());
         boolean showDialogForName =
                 (nameChanging || shortNameChanging) && nameUpdateDialogEnabled();
-        boolean showDialogForIcon =
-                iconChanging && !iconChangeBelowThreshold && !shellUpdateInProgress;
+        boolean showDialogForIcon = iconChanging && !iconChangeBelowThreshold;
 
         if ((showDialogForName || showDialogForIcon) && !alreadyUserApproved) {
             RecordHistogram.recordEnumeratedHistogram(
@@ -417,12 +405,6 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
     protected boolean nameUpdateDialogEnabled() {
         // TODO(finnur): Remove this function when future of the icon flag is clear.
         return true;
-    }
-
-    private static boolean allowIconUpdateForShellVersion(int shellVersion) {
-        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                        ChromeFeatureList.WEB_APK_ALLOW_ICON_UPDATE, PARAM_SHELL_VERSION, 0)
-                >= shellVersion;
     }
 
     /**
@@ -756,11 +738,6 @@ public class WebApkUpdateManager implements WebApkUpdateDataFetcher.Observer, De
             if (belowAppIdIconUpdateThreshold(iconDiffValue)) {
                 shouldUpdateIcon = true;
                 updateReasons.add(WebApkUpdateReason.PRIMARY_ICON_CHANGE_BELOW_THRESHOLD);
-            }
-
-            if (allowIconUpdateForShellVersion(oldInfo.shellApkVersion())) {
-                updateReasons.add(WebApkUpdateReason.PRIMARY_ICON_CHANGE_SHELL_UPDATE);
-                shouldUpdateIcon = true;
             }
 
             if (iconUpdateDialogEnabled) {

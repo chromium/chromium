@@ -2,7 +2,6 @@ set noparent
 # NOTE: keep this in sync with global-owners-override@chromium.org owners
 # by emailing lsc-policy@chromium.org when this list changes.
 agrieve@chromium.org
-brucedawson@chromium.org
 dpranke@google.com
 sdefresne@chromium.org
 thakis@chromium.org
@@ -17,6 +16,7 @@ file://tools/clang/scripts/OWNERS
 # For java build changes:
 smaier@chromium.org
 wnwen@chromium.org
+mheikal@chromium.org
 
 # NOTE: keep this in sync with global-owners-override@chromium.org owners
 # by emailing lsc-policy@chromium.org when this list changes.

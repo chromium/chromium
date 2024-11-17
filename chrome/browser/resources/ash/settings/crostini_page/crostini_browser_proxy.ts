@@ -11,9 +11,9 @@ import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
 
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
+import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 
-import {GuestId, TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';
+import {type GuestId, TERMINA_VM_TYPE} from '../guest_os/guest_os_browser_proxy.js';
 
 // Identifiers for the default Crostini VM and container.
 export const DEFAULT_CROSTINI_VM = TERMINA_VM_TYPE;

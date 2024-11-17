@@ -1,0 +1,100 @@
+<style include="cr-shared-style settings-shared iron-flex
+    settings-columned-section">
+  .cr-row {
+    border-top: none;
+  }
+
+  .list-frame {
+    padding-inline-start: var(--cr-section-indent-width);
+  }
+
+  #disabledSitesList > div:not(:first-child) {
+    border-top: var(--cr-separator-line);
+  }
+
+  cr-icon {
+    flex-shrink: 0;
+  }
+
+  settings-toggle-button.hr {
+    padding-top: 16px;
+  }
+</style>
+
+<template is="dom-if" if="[[enableAiSettingsPageRefresh_]]" restamp>
+  <div class="cr-row first">
+    <div class="flex cr-padded-text">
+      <div id="helpMeWriteLabel">$i18n{aiComposeLabel}</div>
+      <div class="secondary">
+        $i18n{aiComposeSublabelV2}$i18n{sentenceEnd}
+        <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+            aria-label="$i18n{aiComposeSettingLearnMoreA11y}"
+            on-click="onLearnMoreClick_" target="_blank">
+          $i18n{learnMore}
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="settings-columned-section">
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingWhenUsed}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:pen-spark" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{aiComposeWhenOnWritingHelp}</div>
+        </li>
+      </ul>
+    </div>
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:psychiatry" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{aiSubpageSublabelAi}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{aiComposeComposeConsiderData}</div>
+        </li>
+        <settings-ai-logging-info-bullet pref="[[enterprisePref_]]">
+        </settings-ai-logging-info-bullet>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<template is="dom-if" if="[[enableComposeProactiveNudge_]]" restamp>
+  <settings-toggle-button
+      class$="[[getProactiveNudgeToggleHrCssClass_(
+          enableAiSettingsPageRefresh_)]]"
+      pref="{{prefs.compose.proactive_nudge_enabled}}"
+      label="$i18n{offerWritingHelpToggleLabel}"
+      sub-label="$i18n{offerWritingHelpToggleSublabel}"
+      on-settings-boolean-control-change="onComposeProactiveNudgeToggleChange_">
+  </settings-toggle-button>
+  <div class="cr-row">
+    <div id="disabledSitesHeading" class="flex">
+      [[disabledSitesLabel_]]
+    </div>
+  </div>
+  <div id="noDisabledSitesLabel" class="list-frame"
+      hidden$="[[hasSites_(siteList_.*)]]">
+    <div class="list-item secondary">
+      $i18n{offerWritingHelpNoDisabledSites}
+    </div>
+  </div>
+  <div id="disabledSitesList" class="layout vertical list-frame" role="list">
+    <template is="dom-repeat" items="[[siteList_]]">
+      <div class="list-item" role="listitem">
+        <div class="start cr-padded-text">[[item]]</div>
+        <cr-icon-button
+            class="icon-delete-gray"
+            aria-label="[[i18n('offerWritingHelpRemoveDisabledSiteAriaLabel',
+                          item)]]"
+            on-click="onDeleteClick_"
+            title="$i18n{delete}">
+        </cr-icon-button>
+      </div>
+    </template>
+  </div>
+</template>

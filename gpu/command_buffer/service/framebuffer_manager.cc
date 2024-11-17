@@ -61,10 +61,7 @@ class RenderbufferAttachment
 
   GLuint object_name() const override { return renderbuffer_->client_id(); }
 
-  GLint level() const override {
-    NOTREACHED_IN_MIGRATION();
-    return -1;
-  }
+  GLint level() const override { NOTREACHED(); }
 
   bool cleared() const override { return renderbuffer_->cleared(); }
 

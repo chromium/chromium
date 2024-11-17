@@ -22,6 +22,14 @@ static_library("wm") {
   deps = [
     "//ash/public/cpp",
     "//base",
+    "//chrome/browser/ash/app_restore:app_restore",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:browser_list",
+    "//chrome/browser/ui/ash/desks",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/services/coral/public/mojom",
+    "//chromeos/ui/wm",
+    "//components/app_constants",
     "//content/public/browser",
   ]
 }
@@ -33,6 +41,7 @@ source_set("browser_tests") {
 
   sources = [
     "coral_browsertest.cc",
+    "float_controller_browsertest.cc",
     "snap_group_browsertest.cc",
     "wmp_browsertest.cc",
   ]
@@ -43,6 +52,7 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ash/app_restore",
+    "//chrome/browser/ash/app_restore:test_support",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ui",
     "//chrome/browser/ui/ash/birch:test_support",
@@ -50,6 +60,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/test:test_support",
     "//chrome/test/base/ash/util:test_support",
+    "//chromeos/ash/services/coral/public/mojom",
     "//content/test:test_support",
     "//ui/display",
     "//ui/display:test_support",

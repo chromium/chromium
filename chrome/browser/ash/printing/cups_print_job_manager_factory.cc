@@ -47,7 +47,8 @@ CupsPrintJobManagerFactory::CupsPrintJobManagerFactory()
 
 CupsPrintJobManagerFactory::~CupsPrintJobManagerFactory() = default;
 
-KeyedService* CupsPrintJobManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CupsPrintJobManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   return CupsPrintJobManager::CreateInstance(
       Profile::FromBrowserContext(context));

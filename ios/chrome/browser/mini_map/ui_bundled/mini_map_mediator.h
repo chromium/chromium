@@ -56,6 +56,9 @@ class WebState;
 // User opened a URL from the MiniMap.
 - (void)userOpenedURLFromMiniMap;
 
+// User opened a query from the MiniMap.
+- (void)userOpenedQueryFromMiniMap;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_MINI_MAP_UI_BUNDLED_MINI_MAP_MEDIATOR_H_

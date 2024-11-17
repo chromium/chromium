@@ -75,6 +75,8 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
   // Report bubble action metrics
   void ReportBubbleAction(BubbleAction action);
 
+  void OnTitleTextChanged();
+
   raw_ptr<views::ImageView> icon_ = nullptr;
   raw_ptr<views::Label> title_ = nullptr;
   raw_ptr<views::LabelButton> cancel_ = nullptr;
@@ -85,6 +87,8 @@ class ASH_EXPORT ShelfShutdownConfirmationBubble : public ShelfBubble {
 
   // A simple state machine to keep track of the dialog result.
   DialogResult dialog_result_{DialogResult::kNone};
+
+  base::CallbackListSubscription title_text_changed_subscription_;
 };
 
 }  // namespace ash

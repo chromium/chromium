@@ -8,14 +8,16 @@
  * saved and nearby printers.
  */
 
-import {ListPropertyUpdateMixin, ListPropertyUpdateMixinInterface} from 'chrome://resources/ash/common/cr_elements/list_property_update_mixin.js';
+import type {ListPropertyUpdateMixinInterface} from 'chrome://resources/ash/common/cr_elements/list_property_update_mixin.js';
+import {ListPropertyUpdateMixin} from 'chrome://resources/ash/common/cr_elements/list_property_update_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {Constructor} from '../common/types.js';
+import type {Constructor} from '../common/types.js';
 
 import {findDifference} from './cups_printer_dialog_util.js';
-import {PrinterListEntry} from './cups_printer_types.js';
+import type {PrinterListEntry} from './cups_printer_types.js';
 import {CupsPrintersEntryManager} from './cups_printers_entry_manager.js';
 
 export interface CupsPrintersEntryListMixinInterface extends

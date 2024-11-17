@@ -1,0 +1,21 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+assert(is_chromeos_ash)
+
+mojom("mojom") {
+  sources = [
+    "mantis_processor.mojom",
+    "mantis_service.mojom",
+  ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  webui_module_path = "/"
+
+  # The generated Mojo needs to be imported into the internal repository.
+  # The source is out/chromeos-Debug/ which currently only supports JS.
+  # http://google3/third_party/chromium_mojom_bindings/.
+  generate_legacy_js_bindings = true
+}

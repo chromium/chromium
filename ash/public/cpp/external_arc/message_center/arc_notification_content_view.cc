@@ -311,6 +311,8 @@ ArcNotificationContentView::ArcNotificationContentView(
   }
 
   UpdateAccessibleRole();
+  UpdateAccessibleRoleDescription();
+  UpdateAccessibleChildTreeId();
   // Creates the control_buttons_view_, which collects all control buttons into
   // a horizontal box.
   control_buttons_view_.set_owned_by_client();
@@ -482,6 +484,8 @@ void ArcNotificationContentView::SetSurface(ArcNotificationSurface* surface) {
 
   surface_ = surface;
   UpdateAccessibleRole();
+  UpdateAccessibleRoleDescription();
+  UpdateAccessibleChildTreeId();
 
   if (surface_) {
     DCHECK(surface_->GetWindow());
@@ -826,18 +830,6 @@ views::FocusTraversable* ArcNotificationContentView::GetFocusTraversable() {
   return nullptr;
 }
 
-void ArcNotificationContentView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  if (surface_ && surface_->GetAXTreeId() != ui::AXTreeIDUnknown()) {
-    GetViewAccessibility().SetChildTreeID(surface_->GetAXTreeId());
-  } else {
-    node_data->AddStringAttribute(
-        ax::mojom::StringAttribute::kRoleDescription,
-        l10n_util::GetStringUTF8(
-            IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
-  }
-}
-
 void ArcNotificationContentView::OnAccessibilityEvent(ax::mojom::Event event) {
   if (event == ax::mojom::Event::kTextSelectionChanged) {
     // Activate and request focus on notification content view. If text
@@ -934,6 +926,8 @@ void ArcNotificationContentView::OnNotificationSurfaceAXTreeIdChanged(
   }
 
   UpdateAccessibleRole();
+  UpdateAccessibleRoleDescription();
+  UpdateAccessibleChildTreeId();
 }
 
 void ArcNotificationContentView::UpdateAccessibleRole() {
@@ -941,6 +935,23 @@ void ArcNotificationContentView::UpdateAccessibleRole() {
     GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
   } else {
     GetViewAccessibility().SetRole(ax::mojom::Role::kButton);
+  }
+}
+
+void ArcNotificationContentView::UpdateAccessibleRoleDescription() {
+  if (surface_ && surface_->GetAXTreeId() != ui::AXTreeIDUnknown()) {
+    GetViewAccessibility().RemoveRoleDescription();
+  } else {
+    GetViewAccessibility().SetRoleDescription(l10n_util::GetStringUTF16(
+        IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
+  }
+}
+
+void ArcNotificationContentView::UpdateAccessibleChildTreeId() {
+  if (surface_ && surface_->GetAXTreeId() != ui::AXTreeIDUnknown()) {
+    GetViewAccessibility().SetChildTreeID(surface_->GetAXTreeId());
+  } else {
+    GetViewAccessibility().RemoveChildTreeID();
   }
 }
 

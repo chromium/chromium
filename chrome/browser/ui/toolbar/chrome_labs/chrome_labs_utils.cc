@@ -26,6 +26,10 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #endif
 
+namespace {
+bool force_activation_for_testing = false;
+}
+
 bool IsFeatureSupportedOnChannel(const LabInfo& lab) {
   return chrome::GetChannel() <= lab.allowed_channel;
 }
@@ -140,11 +144,8 @@ bool AreNewChromeLabsExperimentsAvailable(const ChromeLabsModel* model,
 }
 
 bool IsChromeLabsEnabled() {
-  // Always early out on the stable channel or if manually disabled regardless
-  // of other conditions. The feature is enabled by default so if IsEnabled
-  // returns false the feature will have been disabled.
-  if (chrome::GetChannel() == version_info::Channel::STABLE ||
-      !base::FeatureList::IsEnabled(features::kChromeLabs)) {
+  // Always early out on the stable channel regardless of other conditions.
+  if (chrome::GetChannel() == version_info::Channel::STABLE) {
     return false;
   }
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -162,10 +163,19 @@ bool IsChromeLabsEnabled() {
         chrome_labs_prefs::kChromeLabsActivationThreshold,
         base::RandInt(1, 100));
   }
-  if (g_browser_process->local_state()->GetInteger(
+
+  // The percentage of users that should see the feature.
+  const int kChromeLabsActivationPercentage = 99;
+
+  if (force_activation_for_testing ||
+      g_browser_process->local_state()->GetInteger(
           chrome_labs_prefs::kChromeLabsActivationThreshold) <=
-      features::kChromeLabsActivationPercentage.Get()) {
+          kChromeLabsActivationPercentage) {
     return true;
   }
   return false;
+}
+
+void ForceChromeLabsActivationForTesting() {
+  force_activation_for_testing = true;
 }

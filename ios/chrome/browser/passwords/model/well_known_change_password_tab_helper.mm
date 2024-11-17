@@ -24,7 +24,7 @@ using password_manager::WellKnownChangePasswordTabHelper;
 WellKnownChangePasswordTabHelper::WellKnownChangePasswordTabHelper(
     web::WebState* web_state)
     : web::WebStatePolicyDecider(web_state), web_state_(web_state) {
-  affiliation_service_ = IOSChromeAffiliationServiceFactory::GetForBrowserState(
+  affiliation_service_ = IOSChromeAffiliationServiceFactory::GetForProfile(
       ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
   web_state->AddObserver(this);
 }

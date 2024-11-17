@@ -20,14 +20,14 @@ MerchantPromoCodeManager::MerchantPromoCodeManager() = default;
 MerchantPromoCodeManager::~MerchantPromoCodeManager() = default;
 
 bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
-    const FormStructure* form_structure,
+    const FormStructure& form_structure,
     const FormFieldData& field,
-    const AutofillField* autofill_field,
+    const AutofillField& autofill_field,
     const AutofillClient& client,
-    OnSuggestionsReturnedCallback on_suggestions_returned) {
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback&
+        on_suggestions_returned) {
   // The field is eligible only if it's focused on a merchant promo code.
-  if (!autofill_field ||
-      autofill_field->Type().GetStorableType() != MERCHANT_PROMO_CODE) {
+  if (autofill_field.Type().GetStorableType() != MERCHANT_PROMO_CODE) {
     return false;
   }
 
@@ -37,7 +37,7 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
     const std::vector<const AutofillOfferData*> promo_code_offers =
         personal_data_manager_->payments_data_manager()
             .GetActiveAutofillPromoCodeOffersForOrigin(
-                form_structure->main_frame_origin().GetURL());
+                form_structure.main_frame_origin().GetURL());
     if (!promo_code_offers.empty()) {
       SendPromoCodeSuggestions(std::move(promo_code_offers), field,
                                std::move(on_suggestions_returned));
@@ -46,15 +46,6 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
   }
   return false;
 }
-
-void MerchantPromoCodeManager::OnWillSubmitFormWithFields(
-    const std::vector<FormFieldData>& fields,
-    bool is_autocomplete_enabled) {}
-
-void MerchantPromoCodeManager::OnRemoveCurrentSingleFieldSuggestion(
-    const std::u16string& field_name,
-    const std::u16string& value,
-    SuggestionType type) {}
 
 void MerchantPromoCodeManager::OnSingleFieldSuggestionSelected(
     const Suggestion& suggestion) {
@@ -142,7 +133,8 @@ void MerchantPromoCodeManager::UMARecorder::OnOfferSuggestionSelected(
 void MerchantPromoCodeManager::SendPromoCodeSuggestions(
     std::vector<const AutofillOfferData*> promo_code_offers,
     const FormFieldData& field,
-    OnSuggestionsReturnedCallback on_suggestions_returned) {
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback
+        on_suggestions_returned) {
   // If the input box content equals any of the available promo codes, then
   // assume the promo code has been filled, and don't show any suggestions.
   for (const AutofillOfferData* promo_code_offer : promo_code_offers) {

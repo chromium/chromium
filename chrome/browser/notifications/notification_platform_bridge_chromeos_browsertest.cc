@@ -6,6 +6,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -48,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(NotificationPlatformBridgeChromeOsBrowserTest,
       base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
           weak_ptr_factory_.GetWeakPtr()));
 
-  NotificationDisplayService::GetForProfile(browser()->profile())
+  NotificationDisplayServiceFactory::GetForProfile(browser()->profile())
       ->Display(NotificationHandler::Type::TRANSIENT, notification,
                 /*metadata=*/nullptr);
   expected_close_count_ = 1;

@@ -83,7 +83,7 @@ class DirectWritingServiceCallback
     }
 
     private final Handler mHandler =
-            new Handler((android.os.Looper.getMainLooper())) {
+            new Handler(android.os.Looper.getMainLooper()) {
                 @Override
                 public void handleMessage(Message msg) {
                     if (mStylusWritingImeCallback == null) return;

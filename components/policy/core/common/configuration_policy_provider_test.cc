@@ -128,9 +128,9 @@ const char kKeyDictionary[] = "DictionaryPolicy";
 
 }  // namespace test_keys
 
-PolicyTestBase::PolicyTestBase() {}
+PolicyTestBase::PolicyTestBase() = default;
 
-PolicyTestBase::~PolicyTestBase() {}
+PolicyTestBase::~PolicyTestBase() = default;
 
 void PolicyTestBase::SetUp() {
   const PolicyNamespace ns(POLICY_DOMAIN_CHROME, "");
@@ -161,7 +161,7 @@ PolicyProviderTestHarness::PolicyProviderTestHarness(PolicyLevel level,
                                                      PolicySource source)
     : level_(level), scope_(scope), source_(source) {}
 
-PolicyProviderTestHarness::~PolicyProviderTestHarness() {}
+PolicyProviderTestHarness::~PolicyProviderTestHarness() = default;
 
 PolicyLevel PolicyProviderTestHarness::policy_level() const {
   return level_;
@@ -180,9 +180,9 @@ void PolicyProviderTestHarness::Install3rdPartyPolicy(
   FAIL();
 }
 
-ConfigurationPolicyProviderTest::ConfigurationPolicyProviderTest() {}
+ConfigurationPolicyProviderTest::ConfigurationPolicyProviderTest() = default;
 
-ConfigurationPolicyProviderTest::~ConfigurationPolicyProviderTest() {}
+ConfigurationPolicyProviderTest::~ConfigurationPolicyProviderTest() = default;
 
 void ConfigurationPolicyProviderTest::SetUp() {
   PolicyTestBase::SetUp();
@@ -358,10 +358,10 @@ TEST_P(ConfigurationPolicyProviderTest, RefreshPolicies) {
 }
 
 Configuration3rdPartyPolicyProviderTest::
-    Configuration3rdPartyPolicyProviderTest() {}
+    Configuration3rdPartyPolicyProviderTest() = default;
 
 Configuration3rdPartyPolicyProviderTest::
-    ~Configuration3rdPartyPolicyProviderTest() {}
+    ~Configuration3rdPartyPolicyProviderTest() = default;
 
 TEST_P(Configuration3rdPartyPolicyProviderTest, Load3rdParty) {
   base::Value::Dict policy_dict;

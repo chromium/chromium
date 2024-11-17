@@ -83,7 +83,7 @@ class MockClientAndObserver : public media::mojom::AudioInputStreamClient,
 
   MOCK_METHOD1(OnError, void(media::mojom::InputStreamErrorCode));
   MOCK_METHOD0(DidStartRecording, void());
-  void OnMutedStateChanged(bool) override { NOTREACHED_IN_MIGRATION(); }
+  void OnMutedStateChanged(bool) override { NOTREACHED(); }
 
  private:
   mojo::Receiver<media::mojom::AudioInputStreamClient> client_receiver_{this};
@@ -108,7 +108,6 @@ class FakeSyncWriter : public FakeConsumer, public InputController::SyncWriter {
   // media::AudioInputController::SyncWriter implementation.
   void Write(const media::AudioBus* data,
              double volume,
-             bool key_pressed,
              base::TimeTicks capture_time,
              const media::AudioGlitchInfo& audio_glitch_info) final {
     FakeConsumer::Consume(*data);

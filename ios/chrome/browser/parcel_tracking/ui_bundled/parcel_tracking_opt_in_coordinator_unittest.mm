@@ -20,8 +20,8 @@
 class ParcelTrackingOptInCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() override {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     NSArray<CustomTextCheckingResult*>* array = [[NSArray alloc] init];
     coordinator_ = [[ParcelTrackingOptInCoordinator alloc]
         initWithBaseViewController:[[UIViewController alloc] init]
@@ -31,7 +31,7 @@ class ParcelTrackingOptInCoordinatorTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   ParcelTrackingOptInCoordinator* coordinator_;
 };
@@ -41,9 +41,9 @@ class ParcelTrackingOptInCoordinatorTest : public PlatformTest {
 TEST_F(ParcelTrackingOptInCoordinatorTest, AlwaysTrack) {
   base::HistogramTester histogram_tester;
   [coordinator_ alwaysTrackTapped];
-  EXPECT_EQ(static_cast<int>(IOSParcelTrackingOptInStatus::kAlwaysTrack),
-            browser_state_->GetPrefs()->GetInteger(
-                prefs::kIosParcelTrackingOptInStatus));
+  EXPECT_EQ(
+      static_cast<int>(IOSParcelTrackingOptInStatus::kAlwaysTrack),
+      profile_->GetPrefs()->GetInteger(prefs::kIosParcelTrackingOptInStatus));
   histogram_tester.ExpectUniqueSample(
       parcel_tracking::kOptInPromptActionHistogramName,
       parcel_tracking::OptInPromptActionType::kAlwaysTrack, 1);
@@ -54,9 +54,9 @@ TEST_F(ParcelTrackingOptInCoordinatorTest, AlwaysTrack) {
 TEST_F(ParcelTrackingOptInCoordinatorTest, NeverTrack) {
   base::HistogramTester histogram_tester;
   [coordinator_ noThanksTapped];
-  EXPECT_EQ(static_cast<int>(IOSParcelTrackingOptInStatus::kNeverTrack),
-            browser_state_->GetPrefs()->GetInteger(
-                prefs::kIosParcelTrackingOptInStatus));
+  EXPECT_EQ(
+      static_cast<int>(IOSParcelTrackingOptInStatus::kNeverTrack),
+      profile_->GetPrefs()->GetInteger(prefs::kIosParcelTrackingOptInStatus));
   histogram_tester.ExpectUniqueSample(
       parcel_tracking::kOptInPromptActionHistogramName,
       parcel_tracking::OptInPromptActionType::kNoThanks, 1);
@@ -67,9 +67,9 @@ TEST_F(ParcelTrackingOptInCoordinatorTest, NeverTrack) {
 TEST_F(ParcelTrackingOptInCoordinatorTest, AskToTrack) {
   base::HistogramTester histogram_tester;
   [coordinator_ askToTrackTapped];
-  EXPECT_EQ(static_cast<int>(IOSParcelTrackingOptInStatus::kAskToTrack),
-            browser_state_->GetPrefs()->GetInteger(
-                prefs::kIosParcelTrackingOptInStatus));
+  EXPECT_EQ(
+      static_cast<int>(IOSParcelTrackingOptInStatus::kAskToTrack),
+      profile_->GetPrefs()->GetInteger(prefs::kIosParcelTrackingOptInStatus));
   histogram_tester.ExpectUniqueSample(
       parcel_tracking::kOptInPromptActionHistogramName,
       parcel_tracking::OptInPromptActionType::kAskEveryTime, 1);

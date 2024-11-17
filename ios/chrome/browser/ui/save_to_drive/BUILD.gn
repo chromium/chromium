@@ -125,6 +125,7 @@ source_set("eg2_tests") {
   deps = [
     ":file_destination_picker_constants",
     "//components/policy:policy_code_generate",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/account_picker/ui_bundled/account_picker_confirmation:constants",
     "//ios/chrome/browser/account_picker/ui_bundled/account_picker_screen:account_picker_screen",
     "//ios/chrome/browser/download/ui_bundled:constants",
@@ -141,6 +142,7 @@ source_set("eg2_tests") {
     "//ios/testing:embedded_test_server_support",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//net:test_support",
+    "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
 }

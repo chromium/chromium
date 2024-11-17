@@ -93,8 +93,7 @@ int ListMarker::ListItemValue(const LayoutObject& list_item) const {
   if (auto* inline_list_item = DynamicTo<LayoutInlineListItem>(list_item)) {
     return inline_list_item->Value();
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // If the value of ListStyleType changed, we need to update the marker text.
@@ -211,8 +210,7 @@ ListMarker::MarkerTextType ListMarker::MarkerText(
       return kOrdinalValue;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return kStatic;
+  NOTREACHED();
 }
 
 String ListMarker::MarkerTextWithSuffix(const LayoutObject& marker) const {

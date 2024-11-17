@@ -268,10 +268,12 @@ void PasswordStore::RemoveLoginsCreatedBetween(
     const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
-    base::OnceCallback<void(bool)> completion) {
+    base::OnceCallback<void(bool)> completion,
+    base::OnceCallback<void(bool)> sync_completion) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   if (!backend_) {
     std::move(completion).Run(false);
+    std::move(sync_completion).Run(false);
     return;  // Once the shutdown started, ignore new requests.
   }
 
@@ -280,7 +282,8 @@ void PasswordStore::RemoveLoginsCreatedBetween(
         std::move(post_init_callback_)
             .Then(base::BindOnce(&PasswordStore::RemoveLoginsCreatedBetween,
                                  this, location, delete_begin, delete_end,
-                                 std::move(completion)));
+                                 std::move(completion),
+                                 std::move(sync_completion)));
     return;
   }
 
@@ -288,7 +291,7 @@ void PasswordStore::RemoveLoginsCreatedBetween(
       base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this,
                      LoginsChangedTrigger::BatchDeletion);
   backend_->RemoveLoginsCreatedBetweenAsync(
-      location, delete_begin, delete_end,
+      location, delete_begin, delete_end, std::move(sync_completion),
       base::BindOnce(&InvokeCallbacksForSuspectedChanges, std::move(callback),
                      std::move(completion)));
 }

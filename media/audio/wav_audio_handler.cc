@@ -135,7 +135,7 @@ bool ParseFmtChunk(base::span<const uint8_t> data, WavAudioParameters* params) {
 }
 
 // The `wav_data` is encoded in little endian, as will be `audio_data_out`.
-bool ParseWavData(const std::string_view wav_data,
+bool ParseWavData(std::string_view wav_data,
                   std::string_view* audio_data_out,
                   WavAudioParameters* params_out) {
   DCHECK(audio_data_out);
@@ -286,10 +286,9 @@ bool WavAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
               reinterpret_cast<const int32_t*>(source), frames);
           break;
         default:
-          NOTREACHED_IN_MIGRATION()
+          NOTREACHED()
               << "Unsupported bytes per sample encountered for integer PCM: "
               << bytes_per_frame;
-          bus->ZeroFrames(frames);
       }
       break;
     case AudioFormat::kAudioFormatFloat:
@@ -303,16 +302,14 @@ bool WavAudioHandler::CopyTo(AudioBus* bus, size_t* frames_written) {
               reinterpret_cast<const double*>(source), frames);
           break;
         default:
-          NOTREACHED_IN_MIGRATION()
+          NOTREACHED()
               << "Unsupported bytes per sample encountered for float PCM: "
               << bytes_per_frame;
-          bus->ZeroFrames(frames);
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported audio format encountered: "
-                                << static_cast<uint16_t>(audio_format_);
-      bus->ZeroFrames(frames);
+      NOTREACHED() << "Unsupported audio format encountered: "
+                   << static_cast<uint16_t>(audio_format_);
   }
   *frames_written = frames;
   cursor_ += frames * bytes_per_frame;

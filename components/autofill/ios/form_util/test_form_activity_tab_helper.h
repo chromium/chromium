@@ -5,9 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_FORM_UTIL_TEST_FORM_ACTIVITY_TAB_HELPER_H_
 #define COMPONENTS_AUTOFILL_IOS_FORM_UTIL_TEST_FORM_ACTIVITY_TAB_HELPER_H_
 
-#include <string>
-
-#include "base/memory/raw_ptr.h"
+#import "base/memory/raw_ptr.h"
 
 namespace web {
 class WebFrame;
@@ -18,6 +16,7 @@ namespace autofill {
 
 struct FormActivityParams;
 struct FormRemovalParams;
+class FormData;
 
 class TestFormActivityTabHelper {
  public:
@@ -34,8 +33,7 @@ class TestFormActivityTabHelper {
   void FormRemovalRegistered(web::WebFrame* sender_frame,
                              const FormRemovalParams& params);
   void DocumentSubmitted(web::WebFrame* sender_frame,
-                         const std::string& form_name,
-                         const std::string& form_data,
+                         const FormData& form_data,
                          bool has_user_gesture);
 
  private:

@@ -64,12 +64,19 @@ class CONTENT_EXPORT PhysicsModel {
     // Switch to `kSpringCommitPending` because the user lifts the finger and
     // signals to start the navigation.
     kGestureInvoked,
-    // Switch to `kSpringCancel` because the browser has dispatched the
-    // BeforeUnload message to the renderer.
+    // Switch to `kSpringCommitPending` because the user lifts the finger but
+    // the navigation does not start. The navigation is waiting for the renderer
+    // to run the BeforeUnload handler to start.
     kBeforeUnloadDispatched,
+    // Switch to `kSpringCancel` because the BeforeUnload dialog is shown.
+    kBeforeUnloadShown,
     // Switch to `kSpringCommitPending` because the renderer has acked to
     // proceed the navigation, in response to the BeforeUnload message.
     kBeforeUnloadAckProceed,
+    // Switch to `kSpringCancel` because the navigation is cancelled before it
+    // starts. The renderer can ack the BeforeUnload to not start the navigation
+    // without showing a BeforeUnload dialog.
+    kCancelledBeforeStart,
   };
   // Switch to a different spring model for various reasons.
   void SwitchSpringForReason(SwitchSpringReason reason);
@@ -78,6 +85,10 @@ class CONTENT_EXPORT PhysicsModel {
   // request). The caller is responsible for reacting to the targeted navigation
   // request (when there are multiple navigation requests).
   void OnNavigationFinished(bool navigation_committed);
+
+  // Returns true if the current animation is driven by the commit-pending
+  // spring, and the animation has reached the commit-pending position.
+  bool ReachedCommitPending() const;
 
  private:
   // The "state" of the physics model. The animations can be driven by four
@@ -145,24 +156,29 @@ class CONTENT_EXPORT PhysicsModel {
   // Tracks the current state of the navigation.
   enum class NavigationState {
     kNotStarted = 0,
-    // The navigation never starts. This is a terminal state for
-    // `OnGestureCancelled()`.
-    kNeverStarted,
-    // The navigation has started, WITHOUT a BeforeUnload handler.
-    kStarted,
-    // The browser has sent the BeforeUnload message to the renderer.
+
+    // The browser has asked the renderer to run the BeforeUnload handler.
+    //
+    // Note: the navigation starts in this state if the navigation starts
+    // without showing a BeforeUnload dialog. In this case we never switch away
+    // from the commit-pending spring during the BeforeUnload IPC exchange
+    // between the browser and the renderer.
     kBeforeUnloadDispatched,
+    // The browser has shown a BeforeUnload dialog.
+    kBeforeUnloadShown,
     // The renderer has acked the BeforeUnload message and to start the
     // navigation.
     kBeforeUnloadAckedProceed,
 
-    // No state when BeforeUnload ack'ed to not proceed.
+    // The navigation has started, WITHOUT a BeforeUnload handler.
+    kStarted,
 
     // The navigation has committed in the browser. This is one of the two
     // terminal states for `OnNavigationFinished()`.
     kCommitted,
     // The navigation is cancelled. This is another terminal state for
-    // `OnNavigationFinished()`.
+    // `OnNavigationFinished()`. Also used to signal the navigation is cancelled
+    // before it even starts.
     kCancelled,
   };
   NavigationState navigation_state_ = NavigationState::kNotStarted;

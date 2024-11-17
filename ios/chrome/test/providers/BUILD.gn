@@ -35,6 +35,7 @@ group("providers") {
     "//ios/chrome/test/providers/push_notification",
     "//ios/chrome/test/providers/raccoon",
     "//ios/chrome/test/providers/risk_data",
+    "//ios/chrome/test/providers/share_kit",
     "//ios/chrome/test/providers/signin",
     "//ios/chrome/test/providers/text_classifier",
     "//ios/chrome/test/providers/text_zoom",

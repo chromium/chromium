@@ -17,6 +17,9 @@ BASE_DECLARE_FEATURE(kSensitiveContent);
 COMPONENT_EXPORT(SENSITIVE_CONTENT_FEATURES)
 extern const base::FeatureParam<bool> kSensitiveContentUsePwmHeuristicsParam;
 
+COMPONENT_EXPORT(SENSITIVE_CONTENT_FEATURES)
+BASE_DECLARE_FEATURE(kSensitiveContentWhileSwitchingTabs);
+
 }  // namespace sensitive_content::features
 
 #endif  // COMPONENTS_SENSITIVE_CONTENT_FEATURES_H_

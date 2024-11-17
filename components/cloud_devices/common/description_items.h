@@ -193,12 +193,12 @@ class BooleanCapability {
 template <class Traits>
 class EmptyCapability {
  public:
-  EmptyCapability() {}
+  EmptyCapability() = default;
 
   EmptyCapability(const EmptyCapability&) = delete;
   EmptyCapability& operator=(const EmptyCapability&) = delete;
 
-  ~EmptyCapability() {}
+  ~EmptyCapability() = default;
 
   bool LoadFrom(const CloudDeviceDescription& description);
   void SaveTo(CloudDeviceDescription* description) const;

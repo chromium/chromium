@@ -55,5 +55,5 @@ dictionary AudioSinkOptions {
     [RaisesException, MeasureAs=AudioContextCreateMediaStreamDestination] MediaStreamAudioDestinationNode createMediaStreamDestination();
 
     // https://wicg.github.io/web_audio_playout
-    [RuntimeEnabled=AudioContextPlayoutStats, SameObject] readonly attribute AudioPlayoutStats playoutStats;
+    [RuntimeEnabled=AudioContextPlayoutStats, MeasureAs=AudioContextPlayoutStats, SameObject] readonly attribute AudioPlayoutStats playoutStats;
 };

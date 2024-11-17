@@ -38,6 +38,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
@@ -156,15 +157,6 @@ std::optional<size_t> GetWindowZOrderForDeskAndRoot(const aura::Window* window,
   }
 
   return std::nullopt;
-}
-
-// Returns the total number of layers that are descendants of `root`.
-size_t GetNumDescendants(ui::Layer* root) {
-  size_t num_descendants = root->children().size();
-  for (const auto& child : root->children()) {
-    num_descendants += GetNumDescendants(child);
-  }
-  return num_descendants;
 }
 
 // Recursively mirrors `source_layer` and its children and adds them as children
@@ -430,6 +422,8 @@ DeskPreviewView::DeskPreviewView(
 
   RecreateDeskContentsMirrorLayers();
 
+  GetViewAccessibility().SetRoleDescription(
+      l10n_util::GetStringUTF8(IDS_ASH_DESKS_DESK_PREVIEW_ROLE_DESCRIPTION));
   UpdateAccessibleName();
 
   AddAccelerator(ui::Accelerator(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN));
@@ -480,11 +474,14 @@ void DeskPreviewView::RecreateDeskContentsMirrorLayers() {
   }
   aura::Window::Windows parent_windows_to_mirror = {desk_container};
   // If there is a floated window that belongs to this desk, since it doesn't
-  // belong to `desk_container`, we need to add it separately.
+  // belong to `desk_container`, we need to add it separately. Note: this
+  // function may be called *while* a floated window is in the process of being
+  // un-floated. In that case, its parent will temporarily be null and we
+  // shouldn't include it here.
   aura::Window* floated_window =
       Shell::Get()->float_controller()->FindFloatedWindowOfDesk(
           mini_view_->desk());
-  if (floated_window) {
+  if (floated_window && floated_window->parent()) {
     parent_windows_to_mirror.push_back(floated_window);
     force_float_occlusion_tracker_visible_.emplace(floated_window);
   } else {
@@ -598,18 +595,6 @@ void DeskPreviewView::AcceptSelection() {
           : DesksSwitchSource::kMiniViewButton);
 }
 
-size_t DeskPreviewView::GetNumLayersMirrored() const {
-  return GetNumDescendants(desk_mirrored_contents_layer_tree_owner_->root());
-}
-
-void DeskPreviewView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  views::Button::GetAccessibleNodeData(node_data);
-
-  node_data->AddStringAttribute(
-      ax::mojom::StringAttribute::kRoleDescription,
-      l10n_util::GetStringUTF8(IDS_ASH_DESKS_DESK_PREVIEW_ROLE_DESCRIPTION));
-}
-
 void DeskPreviewView::Layout(PassKey) {
   const gfx::Rect bounds = GetContentsBounds();
   wallpaper_preview_->SetBoundsRect(bounds);
@@ -638,7 +623,7 @@ bool DeskPreviewView::OnMousePressed(const ui::MouseEvent& event) {
   // If we have a right click we should open the context menu.
   if (event.IsRightMouseButton()) {
     DeskNameView::CommitChanges(GetWidget());
-    mini_view_->OpenContextMenu(ui::MENU_SOURCE_MOUSE);
+    mini_view_->OpenContextMenu(ui::mojom::MenuSourceType::kMouse);
   } else {
     mini_view_->owner_bar()->HandlePressEvent(mini_view_, event);
   }

@@ -222,6 +222,12 @@ std::string SysInfo::HardwareModelName() {
 }
 #endif
 
+#if !BUILDFLAG(IS_ANDROID)
+std::string SysInfo::SocManufacturer() {
+  return std::string();
+}
+#endif
+
 void SysInfo::GetHardwareInfo(base::OnceCallback<void(HardwareInfo)> callback) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   constexpr base::TaskTraits kTraits = {base::MayBlock()};

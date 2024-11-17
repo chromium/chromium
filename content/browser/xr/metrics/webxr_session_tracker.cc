@@ -86,6 +86,7 @@ void WebXRSessionTracker::ReportFeatureUsed(
     case XRSessionFeature::SECONDARY_VIEWS:
     case XRSessionFeature::LAYERS:
     case XRSessionFeature::FRONT_FACING:
+    case XRSessionFeature::WEBGPU:
       // Not recording metrics for these features currently.
       // TODO(crbug.com/41460317): Add metrics for the AR-related features
       // that are enabled by default.
@@ -131,6 +132,7 @@ void WebXRSessionTracker::SetFeatureRequest(
     case XRSessionFeature::SECONDARY_VIEWS:
     case XRSessionFeature::LAYERS:
     case XRSessionFeature::FRONT_FACING:
+    case XRSessionFeature::WEBGPU:
       // Not recording metrics for these features currently.
       // TODO(crbug.com/41460317): Add metrics for the AR-related features
       // that are enabled by default.

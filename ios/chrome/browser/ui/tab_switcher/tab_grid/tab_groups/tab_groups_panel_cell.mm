@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_cell.h"
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_favicon_grid.h"
+#import "ios/chrome/browser/saved_tab_groups/favicon/ui/tab_group_favicons_grid.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -30,7 +30,7 @@ const CGFloat kDotSize = 14;
     self.isAccessibilityElement = YES;
     self.accessibilityTraits |= UIAccessibilityTraitButton;
 
-    _faviconsGrid = [[TabGroupsPanelFaviconGrid alloc] init];
+    _faviconsGrid = [[TabGroupFaviconsGrid alloc] init];
     _faviconsGrid.translatesAutoresizingMaskIntoConstraints = NO;
     [self.contentView addSubview:_faviconsGrid];
 

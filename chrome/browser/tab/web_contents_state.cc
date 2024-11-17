@@ -49,7 +49,7 @@ WebContentsStateByteBuffer::WebContentsStateByteBuffer(
     : state_version(saved_state_version) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_buffer.Reset(web_contents_byte_buffer_result);
-  backing_buffer = base::android::JavaByteBufferToSpan(env, java_buffer);
+  backing_buffer = base::android::JavaByteBufferToSpan(env, java_buffer.obj());
 }
 
 WebContentsStateByteBuffer::WebContentsStateByteBuffer(
@@ -350,7 +350,7 @@ std::unique_ptr<content::NavigationEntry> CreatePendingNavigationEntry(
 
   url::Origin initiator_origin;
   if (jinitiator_origin) {
-    initiator_origin = url::Origin::FromJavaObject(jinitiator_origin);
+    initiator_origin = url::Origin::FromJavaObject(env, jinitiator_origin);
   }
   // TODO(crbug.com/40062134): Deal with getting initiator_base_url
   // plumbed here too.
@@ -476,7 +476,7 @@ ScopedJavaLocalRef<jstring> WebContentsState::GetVirtualUrlFromByteBuffer(
 
 ScopedJavaLocalRef<jobject> WebContentsState::RestoreContentsFromByteBuffer(
     JNIEnv* env,
-    const base::android::JavaRef<jobject>& state,
+    jobject state,
     jint saved_state_version,
     jboolean initially_hidden,
     jboolean no_renderer) {

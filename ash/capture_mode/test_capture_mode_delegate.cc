@@ -4,15 +4,19 @@
 
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 
+#include <utility>
+
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/fake_video_source_provider.h"
 #include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/files/file_util.h"
+#include "base/functional/callback.h"
 #include "base/threading/thread_restrictions.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "chromeos/ash/services/recording/recording_service_test_api.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace ash {
 
@@ -204,7 +208,8 @@ void TestCaptureModeDelegate::NotifyDeviceUsedWhileDisabled(
 void TestCaptureModeDelegate::FinalizeSavedFile(
     base::OnceCallback<void(bool, const base::FilePath&)> callback,
     const base::FilePath& path,
-    const gfx::Image& thumbnail) {
+    const gfx::Image& thumbnail,
+    bool for_video) {
   std::move(callback).Run(/*success=*/true, path);
 }
 
@@ -217,6 +222,22 @@ std::unique_ptr<AshWebView> TestCaptureModeDelegate::CreateSearchResultsView()
     const {
   // In ash unit and pixel tests we only need an `AshWebView` instance.
   return AshWebViewFactory::Get()->Create(AshWebView::InitParams());
+}
+
+void TestCaptureModeDelegate::SendRegionSearch(
+    const SkBitmap& image,
+    const gfx::Rect& region,
+    OnSearchUrlFetchedCallback callback) {
+  std::move(callback).Run(GURL("kTestUrl"));
+}
+
+void TestCaptureModeDelegate::SendMultimodalSearch(
+    const SkBitmap& image,
+    const gfx::Rect& region,
+    const std::string& text,
+    ash::OnSearchUrlFetchedCallback callback) {
+  ++num_multimodal_search_requests_;
+  std::move(callback).Run(GURL("kTestUrl"));
 }
 
 }  // namespace ash

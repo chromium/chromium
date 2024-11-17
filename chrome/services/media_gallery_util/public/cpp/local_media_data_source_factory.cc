@@ -21,10 +21,6 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/content_uri_utils.h"
-#endif  // BUILDFLAG(IS_ANDROID)
-
 namespace {
 
 using MediaDataCallback =
@@ -47,20 +43,7 @@ void ReadFile(const base::FilePath& file_path,
               int64_t length,
               scoped_refptr<base::SequencedTaskRunner> main_task_runner,
               ReadFileCallback cb) {
-  base::File file;
-#if BUILDFLAG(IS_ANDROID)
-  if (file_path.IsContentUri()) {
-    file = base::OpenContentUri(file_path,
-                                base::File::FLAG_OPEN | base::File::FLAG_READ);
-    if (!file.IsValid()) {
-      OnReadComplete(main_task_runner, std::move(cb), false /*success*/,
-                     std::vector<char>());
-      return;
-    }
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-  if (!file.IsValid())
-    file = base::File(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid()) {
     OnReadComplete(main_task_runner, std::move(cb), false /*success*/,
                    std::vector<char>());

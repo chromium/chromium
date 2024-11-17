@@ -16,7 +16,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -26,7 +25,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/pinned_tabs/pinned_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
-#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
@@ -66,8 +66,6 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
 
 // The list from the browser.
 @property(nonatomic, assign) WebStateList* webStateList;
-// The browser state from the browser.
-@property(nonatomic, readonly) ChromeBrowserState* browserState;
 // The UI consumer to which updates are made.
 @property(nonatomic, weak) id<PinnedTabCollectionConsumer> consumer;
 
@@ -84,6 +82,9 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
   std::unique_ptr<
       base::ScopedMultiSourceObservation<web::WebState, web::WebStateObserver>>
       _scopedWebStateObservation;
+
+  // URL loader to open tabs when needed.
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
 }
 
 - (instancetype)initWithConsumer:(id<PinnedTabCollectionConsumer>)consumer {
@@ -114,7 +115,7 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
   _browser = browser;
 
   _webStateList = browser ? browser->GetWebStateList() : nullptr;
-  _browserState = browser ? browser->GetBrowserState() : nullptr;
+  _URLLoader = browser ? UrlLoadingBrowserAgent::FromBrowser(browser) : nullptr;
 
   if (_webStateList) {
     _scopedWebStateListObservation->AddObservation(_webStateList);
@@ -457,21 +458,13 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
     DCHECK(false) << "Reentrant web state insertion!";
     return;
   }
+  CHECK(_URLLoader);
 
-  DCHECK(self.browserState);
-  web::WebState::CreateParams params(self.browserState);
-  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
-
-  web::NavigationManager::WebLoadParams loadParams(newTabURL);
-  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
-  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
-
-  // Insert a new pinned webState and activate it.
-  self.webStateList->InsertWebState(
-      std::move(webState),
-      WebStateList::InsertionParams::AtIndex(base::checked_cast<int>(index))
-          .Pinned()
-          .Activate());
+  UrlLoadParams params = UrlLoadParams::InNewTab(newTabURL);
+  params.append_to = OpenPosition::kSpecifiedIndex;
+  params.insertion_index = index;
+  params.load_pinned = true;
+  _URLLoader->Load(params);
 }
 
 // Inserts/removes a pinned item to/from the collection.

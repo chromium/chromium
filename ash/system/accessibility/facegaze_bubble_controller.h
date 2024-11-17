@@ -32,16 +32,17 @@ class ASH_EXPORT FaceGazeBubbleController : public views::ViewObserver {
   void OnViewIsDeleting(views::View* observed_view) override;
 
   // Updates the bubble's visibility and text content.
-  void UpdateBubble(const std::u16string& text);
+  void UpdateBubble(const std::u16string& text, bool is_warning);
 
  private:
+  friend class AccessibilityPrivateApiTest;
   friend class FaceGazeBubbleControllerTest;
 
   // Performs initialization if necessary.
   void MaybeInitialize();
 
   // Updates the view and widget.
-  void Update(const std::u16string& text);
+  void Update(const std::u16string& text, bool is_warning);
 
   // Owned by views hierarchy.
   raw_ptr<FaceGazeBubbleView> facegaze_bubble_view_ = nullptr;

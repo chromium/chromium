@@ -1,0 +1,8 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++comboBoxSelect collapsed value='Dog'
+++++++++menuListPopup invisible ispopup=auto
+++++++++++menuListOption name='Dog' selected=true
+++++++++++menuListOption invisible name='Cat' selected=false
+++++++++++menuListOption invisible name='Donkey' selected=false

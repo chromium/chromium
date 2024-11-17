@@ -2,6 +2,8 @@
 
 This is a list of changes to [Largest Contentful Paint](https://web.dev/lcp).
 
+* Chrome 130
+  * Launch feature: [Exclude transparent text from being LCP eligible](2024_10_lcp.md)
 * Chrome 126
   * Launch feature: [Enable NewPresentationFeedbackTimeStamps on Mac to improve the accuracy of the frame display time](2024_06_inp_lcp_fcp.md)
 * Chrome 118

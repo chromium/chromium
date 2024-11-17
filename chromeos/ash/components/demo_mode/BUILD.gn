@@ -14,8 +14,10 @@ component("demo_mode") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/ash/components/install_attributes",
+    "//components/prefs",
     "//third_party/abseil-cpp:absl",
     "//third_party/icu",
   ]

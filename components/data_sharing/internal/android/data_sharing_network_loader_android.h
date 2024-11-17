@@ -14,12 +14,14 @@
 #include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/data_sharing/public/data_sharing_network_loader.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 
 using base::android::JavaRef;
 using base::android::ScopedJavaGlobalRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace data_sharing {
+class DataSharingNetworkLoader;
 
 // Helper class responsible for bridging the DataSharingNetworkLoader between
 // C++ and Java.
@@ -44,6 +46,10 @@ class DataSharingNetworkLoaderAndroid {
   void OnResponseAvailable(
       ScopedJavaGlobalRef<jobject> j_callback,
       std::unique_ptr<DataSharingNetworkLoader::LoadResult> response);
+
+  // Called to get NetworkTrafficAnnotationTag from RequestType from Server.
+  const net::NetworkTrafficAnnotationTag& GetNetworkTrafficAnnotationTag(
+      DataSharingNetworkLoader::DataSharingRequestType request_type);
 
   // A reference to the Java counterpart of this class.  See
   // DataSharingNetworkLoaderImpl.java.

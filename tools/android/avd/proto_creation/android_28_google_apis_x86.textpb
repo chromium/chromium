@@ -6,20 +6,17 @@
 
 emulator_package {
   package_name: "chromium/third_party/android_sdk/public/emulator"
-  version: "5biVQLkXXVm61beRTyVfmPBrmjEJFBJTpdzAUcXY378C"  # 34.2.16 (Stable)
-  dest_path: "android_28_google_apis_x86"
+  version: "XS__KK27esI_4qZkc_Ybb_ooYjPfcIQ7DDOPUZGYW5wC"  # 35.1.21 (Stable)
 }
 
 system_image_package {
   package_name: "chromium/third_party/android_sdk/public/system-images/android-28/google_apis/x86"
   version: "n5ghWmdJtOyffzCTuQwcIHCz34tTB6Cac9gJGU5pCMAC"  # r12
-  dest_path: "android_28_google_apis_x86"
 }
 system_image_name: "system-images;android-28;google_apis;x86"
 
 avd_package {
   package_name: "chromium/third_party/android_sdk/public/avds/android-28/google_apis/x86"
-  dest_path: "android_28_google_apis_x86"
 }
 avd_name: "android_28_google_apis_x86"
 
@@ -33,11 +30,34 @@ avd_settings {
     key: "GLESDynamicVersion"
     value: "on"
   }
+  # Incrase ram to 2048MB, and vm heap size to 512MB to avoid low memory issue.
+  ram_size: 2048
+  avd_properties {
+    key: "vm.heapSize"
+    value: "512"
+  }
+}
+avd_variants {
+  key: "swarming"
+  value {
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "4G"
+    }
+  },
+}
+avd_variants {
+  key: "local"
+  value {
+    avd_properties {
+      key: "disk.dataPartition.size"
+      value: "12G"
+    }
+  }
 }
 
 min_sdk: 28
 additional_apk {
   package_name: "chrome_internal/third_party/google3/apks/gmscore/x86"
   version: "-rCzVFgS21dIKhLDnLwcldFij4xnnS0scaKnB44WlfoC" # 24.26.32
-  dest_path: "android_28_google_apis_x86/gmscore_apks"
 }

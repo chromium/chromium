@@ -5,12 +5,10 @@
 #ifndef ASH_WALLPAPER_TEST_SEA_PEN_WALLPAPER_MANAGER_SESSION_DELEGATE_H_
 #define ASH_WALLPAPER_TEST_SEA_PEN_WALLPAPER_MANAGER_SESSION_DELEGATE_H_
 
-#include <map>
-
 #include "ash/wallpaper/sea_pen_wallpaper_manager.h"
+#include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "components/account_id/account_id.h"
-#include "components/prefs/testing_pref_service.h"
 
 namespace ash {
 
@@ -28,11 +26,9 @@ class TestSeaPenWallpaperManagerSessionDelegate
 
   // SeaPenWallpaperManager::SessionDelegate:
   base::FilePath GetStorageDirectory(const AccountId& account_id) override;
-  PrefService* GetPrefService(const AccountId& account_id) override;
 
  private:
   base::ScopedTempDir scoped_temp_dir_;
-  std::map<AccountId, TestingPrefServiceSimple> pref_services_;
 };
 
 }  // namespace ash

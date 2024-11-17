@@ -431,7 +431,7 @@ TEST_F(AsanBackupRefPtrTest, AccessOnThreadPoolThread) {
         EXPECT_DEATH_IF_SUPPORTED(protected_ptr->func(),
                                   kAsanBrpMaybeProtected_ThreadPool);
       }),
-      base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+      base::BindLambdaForTesting([&run_loop] { run_loop.Quit(); }));
   run_loop.Run();
 }
 

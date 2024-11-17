@@ -34,11 +34,14 @@ class TrustedVaultClientBackend : public KeyedService {
   using Observer = trusted_vault::TrustedVaultClient::Observer;
 
   // Types for the different callbacks.
-  using KeyFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;
+  using KeysFetchedCallback = base::OnceCallback<void(const SharedKeyList&)>;
+  using KeyFetchedCallback = KeysFetchedCallback;
   using CompletionBlock = void (^)(BOOL success, NSError* error);
   using GetPublicKeyCallback = base::OnceCallback<void(const PublicKey&)>;
   using CancelDialogCallback =
       base::OnceCallback<void(BOOL animated, ProceduralBlock cancel_done)>;
+  using UpdateGPMPinCompletionCallback =
+      base::OnceCallback<void(NSError* error)>;
 
   // Callback used to verify local device registration and log the result to
   // UMA metrics. The argument represents the gaia ID subject to verification.
@@ -68,7 +71,7 @@ class TrustedVaultClientBackend : public KeyedService {
   // `callback` with the fetched keys.
   virtual void FetchKeys(id<SystemIdentity> identity,
                          trusted_vault::SecurityDomainId security_domain_id,
-                         KeyFetchedCallback completion) = 0;
+                         KeysFetchedCallback completion) = 0;
 
   // Invoked when the result of FetchKeys() contains keys that are not
   // up-to-date. During the execution, before `callback` is invoked, the
@@ -118,6 +121,18 @@ class TrustedVaultClientBackend : public KeyedService {
   // Returns the member public key used to enroll the local device.
   virtual void GetPublicKeyForIdentity(id<SystemIdentity> identity,
                                        GetPublicKeyCallback callback) = 0;
+
+  // Starts the flow to change a GPM Pin for `identity`. This should only be
+  // used for hw_protected (passkeys) `security_domain_id` until further notice.
+  // The UI will be presented by the `navigationController` with a
+  // `brandedNavigationItemTitleView` on top. Once the flow is done,
+  // `completion` is called (unless the flow is cancelled).
+  virtual void UpdateGPMPinForAccount(
+      id<SystemIdentity> identity,
+      trusted_vault::SecurityDomainId security_domain_id,
+      UINavigationController* navigationController,
+      UIView* brandedNavigationItemTitleView,
+      UpdateGPMPinCompletionCallback completion) = 0;
 
  protected:
   // Functions to notify observers.

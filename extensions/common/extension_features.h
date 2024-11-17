@@ -45,6 +45,10 @@ BASE_DECLARE_FEATURE(kApiContentSettingsClipboard);
 // Controls the availability of the enterprise.kioskInput API.
 BASE_DECLARE_FEATURE(kApiEnterpriseKioskInput);
 
+// Controls the availability of the runtime.actionData API.
+// TODO(crbug.com/376354347): Remove this when the experiment is finished.
+BASE_DECLARE_FEATURE(kApiRuntimeActionData);
+
 // Controls the availability of adding and removing site access requests with
 // the permissions API.
 BASE_DECLARE_FEATURE(kApiPermissionsSiteAccessRequests);
@@ -55,9 +59,6 @@ BASE_DECLARE_FEATURE(kApiUserScriptsMultipleWorlds);
 
 // Controls the availability of the odfsConfigPrivate API.
 BASE_DECLARE_FEATURE(kApiOdfsConfigPrivate);
-
-// Controls the availability of navigation to file URLs.
-BASE_DECLARE_FEATURE(kRestrictFileURLNavigation);
 
 // If enabled, allows using the
 // `enterprise.reportingPrivate.reportDataMaskingEvent` API.
@@ -93,6 +94,9 @@ BASE_DECLARE_FEATURE(kCheckingNoExtensionIdInExtensionIpcs);
 // If enabled, <webview>s will be allowed to request permission from an
 // embedding Chrome App to request access to Human Interface Devices.
 BASE_DECLARE_FEATURE(kEnableWebHidInWebView);
+
+// If enabled, disables unpacked extensions if developer mode is off.
+BASE_DECLARE_FEATURE(kExtensionDisableUnsupportedDeveloper);
 
 // Determine if dynamic extension URLs are handled and redirected.
 BASE_DECLARE_FEATURE(kExtensionDynamicURLRedirection);
@@ -161,22 +165,11 @@ BASE_DECLARE_FEATURE(kForceWebRequestProxyForTest);
 // cmd.exe process as a proxy.
 BASE_DECLARE_FEATURE(kLaunchWindowsNativeHostsDirectly);
 
-#if BUILDFLAG(IS_MAC)
-// Controls whether extension resource file paths ending with a separator are
-// rejected. See https://crbug.com/356878412.
-// TODO(crbug.com/357636604): Remove this feature flag in M132.
-BASE_DECLARE_FEATURE(kMacRejectFilePathsEndingWithSeparator);
-#endif
-
 // Controls whether extensions can use the new favicon fetching in Manifest V3.
 BASE_DECLARE_FEATURE(kNewExtensionFaviconHandling);
 
 // To investigate signal beacon loss in crrev.com/c/2262402.
 BASE_DECLARE_FEATURE(kReportKeepaliveUkm);
-
-// When enabled, causes extensions to allow access to certain APIs only if the
-// user is in the developer mode.
-BASE_DECLARE_FEATURE(kRestrictDeveloperModeAPIs);
 
 // Reports Extensions.WebRequest.KeepaliveRequestFinished when enabled.
 // Automatically disable extensions not included in the Safe Browsing CRX
@@ -217,11 +210,6 @@ BASE_DECLARE_FEATURE(kDeclarativeNetRequestResponseHeaderMatching);
 // limit.
 BASE_DECLARE_FEATURE(kDeclarativeNetRequestSafeRuleLimits);
 
-// If enabled, extensions installed from .zip files (from dev mode) are changed
-// from installing in base::TEMP_DIR to .../<profile_dir>/UnpackedExtensions and
-// persist until removed by the user.
-BASE_DECLARE_FEATURE(kExtensionsZipFileInstalledInProfileDir);
-
 // If enabled, include JS call stack data in the extension API request
 // sent to the browser process. This data is used for telemetry purpose
 // only.
@@ -241,6 +229,13 @@ BASE_DECLARE_FEATURE(kUseNewServiceWorkerTaskQueue);
 // Enables declarative net request rules to specify a header substitution action
 // type for modifying headers.
 BASE_DECLARE_FEATURE(kDeclarativeNetRequestHeaderSubstitution);
+
+// Show no warning banner when an extension uses CDP's `chrome.debugger`.
+BASE_DECLARE_FEATURE(kSilentDebuggerExtensionAPI);
+
+// Whether to use commit time for registering extension frames in the process
+// manager.
+BASE_DECLARE_FEATURE(kUseReadyToCommitForExtensionFrameSetup);
 
 }  // namespace extensions_features
 

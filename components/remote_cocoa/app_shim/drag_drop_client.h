@@ -17,7 +17,7 @@ namespace remote_cocoa {
 // drag-drop behavior does not work in RemoteMacViews).
 class REMOTE_COCOA_APP_SHIM_EXPORT DragDropClient {
  public:
-  virtual ~DragDropClient() {}
+  virtual ~DragDropClient() = default;
 
   // Called when mouse is dragged during a drag and drop.
   virtual NSDragOperation DragUpdate(id<NSDraggingInfo>) = 0;

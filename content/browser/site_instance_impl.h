@@ -141,6 +141,12 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   scoped_refptr<SiteInstanceImpl> GetRelatedSiteInstanceImpl(
       const UrlInfo& url_info);
 
+  // Returns a SiteInstance in the same SiteInstanceGroup as `this` if possible.
+  // This function may return an existing SiteInstance (possibly in a different
+  // group), or create a SiteInstance in `site_instance_group_`.
+  scoped_refptr<SiteInstanceImpl> GetMaybeGroupRelatedSiteInstanceImpl(
+      const UrlInfo& url_info);
+
   // This function is used during navigation to get a SiteInstance in the same
   // CoopRelatedGroup. If the provided `url_info` matches one of the existing
   // BrowsingInstance of that group, a new or already existing SiteInstance in
@@ -154,6 +160,9 @@ class CONTENT_EXPORT SiteInstanceImpl final : public SiteInstance {
   // Returns an AgentSchedulingGroupHost, or creates one if
   // `site_instance_group_` doesn't have one.
   AgentSchedulingGroupHost& GetOrCreateAgentSchedulingGroup();
+
+  // Set the group this SiteInstance belongs in.
+  void SetSiteInstanceGroup(SiteInstanceGroup* group);
 
   // Resets the `site_instance_group_` refptr, and must be called when its
   // RenderProcessHost goes away. `site_instance_group_` can be reassigned later

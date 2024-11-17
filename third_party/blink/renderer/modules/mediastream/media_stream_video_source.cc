@@ -333,7 +333,7 @@ void MediaStreamVideoSource::Restart(
 
 void MediaStreamVideoSource::RestartSourceImpl(
     const media::VideoCaptureFormat& new_format) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MediaStreamVideoSource::OnRestartDone(bool did_restart) {
@@ -359,8 +359,6 @@ void MediaStreamVideoSource::OnRestartDone(bool did_restart) {
 
 void MediaStreamVideoSource::OnRestartBySourceSwitchDone(bool did_restart) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kAllowSourceSwitchOnPausedVideoMediaStream));
   if (state_ == ENDED)
     return;
   DCHECK_EQ(state_, STOPPED_FOR_RESTART);
@@ -441,11 +439,6 @@ void MediaStreamVideoSource::DoChangeSource(
   DVLOG(1) << "MediaStreamVideoSource::DoChangeSource: "
            << ", new device id = " << new_device.id
            << ", session id = " << new_device.session_id();
-  if (!base::FeatureList::IsEnabled(
-          features::kAllowSourceSwitchOnPausedVideoMediaStream) &&
-      state_ != STARTED) {
-    return;
-  }
   if (state_ != STARTED && state_ != STOPPED_FOR_RESTART) {
     return;
   }
@@ -483,6 +476,10 @@ void MediaStreamVideoSource::OnStartDone(
     StartFrameMonitoring();
   } else {
     StopSource();
+  }
+
+  if (start_callback_) {
+    std::move(start_callback_).Run(this, result);
   }
 
   // This object can be deleted after calling FinalizeAddPendingTracks. See
@@ -598,6 +595,11 @@ uint32_t MediaStreamVideoSource::GetSubCaptureTargetVersion() const {
 VideoCaptureFeedbackCB MediaStreamVideoSource::GetFeedbackCallback() const {
   // Each source implementation has to implement its own feedback callbacks.
   return base::DoNothing();
+}
+
+void MediaStreamVideoSource::SetStartCallback(SourceStartCallback callback) {
+  DCHECK(GetTaskRunner()->BelongsToCurrentThread());
+  start_callback_ = std::move(callback);
 }
 
 scoped_refptr<VideoTrackAdapter> MediaStreamVideoSource::GetTrackAdapter() {

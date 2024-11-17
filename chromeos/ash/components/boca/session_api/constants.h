@@ -10,13 +10,14 @@
 namespace ash::boca {
 
 inline constexpr char kSchoolToolsApiBaseUrl[] =
-    "https://staging-schooltools-pa.sandbox.googleapis.com";
+    "https://schooltools-pa.googleapis.com";
 
 inline constexpr char kCreateSessionUrlTemplate[] = "v1/teachers/$1/sessions";
 
 inline constexpr char kContentTypeApplicationJson[] = "application/json";
 
 inline constexpr char kMainStudentGroupName[] = "main";
+inline constexpr char kAccessCodeGroupName[] = "accessCode";
 
 inline constexpr char kSchoolToolsAuthScope[] =
     "https://www.googleapis.com/auth/chromeosschooltools";
@@ -28,6 +29,17 @@ inline constexpr char kUploadFCMTokenTemplate[] = "v1/users/$1";
 
 inline constexpr char kUpdateSessionUrlTemplate[] =
     "v1/teachers/$1/sessions/$2?updateMask=$3";
+
+inline constexpr char kInsertStudentActivity[] =
+    "v1/sessions/$1/students/$2/devices/$3/activities:insert";
+
+inline constexpr char kRemoveStudentUrlTemplate[] =
+    "v1/teachers/$1/sessions/$2/students:remove";
+
+inline constexpr char kJoinTachyonGroupUrlTemplate[] =
+    "/v1/students/$1/sessions/$2/tachyon:join";
+
+inline constexpr char kJoinSessionUrlTemplate[] = "v1/students/$1/session:join";
 
 inline constexpr char kSessionId[] = "sessionId";
 inline constexpr char kTeacher[] = "teacher";
@@ -60,6 +72,21 @@ inline constexpr char kLockedNavigationOptions[] = "lockedNavigationOptions";
 inline constexpr char kNavigationType[] = "navigationType";
 inline constexpr char kSeconds[] = "seconds";
 inline constexpr char kNanos[] = "nanos";
+inline constexpr char kRequestTime[] = "requestTime";
+inline constexpr char kActivities[] = "activities";
+inline constexpr char kActiveTab[] = "activeTab";
+inline constexpr char kDevices[] = "devices";
+inline constexpr char kDeviceId[] = "deviceId";
+inline constexpr char kActivity[] = "activity";
+inline constexpr char kUsers[] = "users";
+inline constexpr char kTachyonGroupId[] = "tachyonGroupId";
+inline constexpr char kJoinCode[] = "joinCode";
+inline constexpr char kJoinCodeEnabled[] = "enabled";
+inline constexpr char kCode[] = "code";
+inline constexpr char kSessionJoinCode[] = "sessionJoinCode";
+inline constexpr char kDeviceInfo[] = "deviceInfo";
+inline constexpr char kStudent[] = "student";
+inline constexpr char kGroupSource[] = "groupSource";
 
 inline constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("boca_classroom_integration", R"(

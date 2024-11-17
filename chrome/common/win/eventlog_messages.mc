@@ -11,6 +11,7 @@ SeverityNames=(Informational=0x0:STATUS_SEVERITY_INFORMATIONAL
               )
 FacilityNames=(Browser=0x0:FACILITY_SYSTEM
                ElevationService=0x1:FACILITY_ELEVATION_SERVICE
+               EtwService=0x2:FACILITY_TRACING_SERVICE
               )
 LanguageNames=(English=0x409:MSG00409)
 
@@ -29,6 +30,12 @@ Language=English
 Elevation Service Events
 .
 
+MessageId=0x3
+SymbolicName=TRACING_SERVICE_CATEGORY
+Language=English
+ETW Service Events
+.
+
 MessageIdTypedef=DWORD
 
 MessageId=0x100
@@ -42,6 +49,13 @@ Language=English
 MessageId=0x101
 Facility=ElevationService
 SymbolicName=MSG_ELEVATION_SERVICE_LOG_MESSAGE
+Language=English
+%1!S!
+.
+
+MessageId=0x102
+Facility=EtwService
+SymbolicName=MSG_TRACING_SERVICE_LOG_MESSAGE
 Language=English
 %1!S!
 .

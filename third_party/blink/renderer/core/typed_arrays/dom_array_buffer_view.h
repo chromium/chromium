@@ -125,10 +125,7 @@ class CORE_EXPORT DOMArrayBufferView : public ScriptWrappable {
   }
 
   // ScriptWrappable overrides:
-  v8::Local<v8::Value> Wrap(ScriptState*) override {
-    NOTREACHED_IN_MIGRATION();
-    return v8::Local<v8::Value>();
-  }
+  v8::Local<v8::Value> Wrap(ScriptState*) override { NOTREACHED(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(dom_array_buffer_);

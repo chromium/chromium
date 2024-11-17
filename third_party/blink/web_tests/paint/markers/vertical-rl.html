@@ -52,7 +52,6 @@ function addTextMatchMarker(elem, start, end) {
     range.setEnd(textNode, end);
     if (typeof internals !== 'undefined') {
         internals.addTextMatchMarker(range, 'kActive');
-        internals.setMarkedTextMatchesAreHighlighted(document, true);
     }
 };
 

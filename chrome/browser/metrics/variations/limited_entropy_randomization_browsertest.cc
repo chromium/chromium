@@ -123,11 +123,10 @@ IN_PROC_BROWSER_TEST_F(LimitedEntropyRandomizationBrowserTest,
                        MANUAL_SyntheticTrialAndStudyRegistrationSubTest) {
   EXPECT_TRUE(base::FieldTrialList::TrialExists(kTestStudyName));
 
-  std::vector<ActiveGroupId> synthetic_trials;
-  g_browser_process->metrics_service()
-      ->GetSyntheticTrialRegistry()
-      ->GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(),
-                                         &synthetic_trials);
+  std::vector<ActiveGroupId> synthetic_trials =
+      g_browser_process->metrics_service()
+          ->GetSyntheticTrialRegistry()
+          ->GetCurrentSyntheticFieldTrialsForTest();
   EXPECT_TRUE(
       ContainsTrialName(synthetic_trials, kLimitedEntropySyntheticTrialName));
 }

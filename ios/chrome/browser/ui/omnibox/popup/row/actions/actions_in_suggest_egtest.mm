@@ -80,8 +80,9 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
 
 - (void)setUp {
   [super setUp];
-
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 
   [OmniboxAppInterface
       setUpFakeSuggestionsService:@"fake_suggestion_actions.json"];
@@ -92,9 +93,9 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
   _callURI = GURL("tel://0123456789");
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [OmniboxAppInterface tearDownFakeSuggestionsService];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)testDisplayActions {

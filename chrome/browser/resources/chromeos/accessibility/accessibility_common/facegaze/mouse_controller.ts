@@ -5,17 +5,15 @@
 import {AsyncUtil} from '/common/async_util.js';
 import {EventGenerator} from '/common/event_generator.js';
 import {EventHandler} from '/common/event_handler.js';
-import {NodeUtils} from '/common/node_utils.js';
-import {RectUtil} from '/common/rect_util.js';
 import {TestImportManager} from '/common/testing/test_import_manager.js';
 import type {FaceLandmarkerResult} from '/third_party/mediapipe/vision.js';
 
+import {BubbleController} from './bubble_controller.js';
 import {ScrollModeController} from './scroll_mode_controller.js';
 
-import AutomationNode = chrome.automation.AutomationNode;
-import RoleType = chrome.automation.RoleType;
 import ScreenRect = chrome.accessibilityPrivate.ScreenRect;
 import ScreenPoint = chrome.accessibilityPrivate.ScreenPoint;
+import SyntheticMouseEventButton = chrome.accessibilityPrivate.SyntheticMouseEventButton;
 
 type PrefObject = chrome.settingsPrivate.PrefObject;
 
@@ -55,7 +53,7 @@ export class MouseController {
   private spdUp_ = MouseController.DEFAULT_MOUSE_SPEED;
   private spdDown_ = MouseController.DEFAULT_MOUSE_SPEED;
   private velocityThreshold_ = 0;
-  private velocityThresholdFactor_ = 0.3;
+  private velocityThresholdFactor_ = MouseController.DEFAULT_VELOCITY_FACTOR;
   private useVelocityThreshold_ = true;
 
   /** The most recent raw face landmark mouse locations. */
@@ -75,19 +73,12 @@ export class MouseController {
   private landmarkWeights_: Map<string, number>;
   private paused_ = false;
 
-  private useGravity_ = false;
-  // Vector fields to track how the cursor should be adjusted toward controls.
-  private gravityField_: FloatingPoint2D[] = [];
-  // Timer to refresh the gravity field.
-  private refreshGravityInterval_: number = -1;
-  // Set of gravity nodes currently affecting the cursor mapping.
-  private gravityNodes_: Map<string, ScreenRect> = new Map();
-  // Reference to the accessibility tree.
-  private desktop_: AutomationNode|undefined;
-
   private scrollModeController_: ScrollModeController;
+  private bubbleController_: BubbleController;
+  private longClickActive_ = false;
 
-  constructor() {
+  constructor(bubbleController: BubbleController) {
+    this.bubbleController_ = bubbleController;
     this.onMouseMovedHandler_ = new EventHandler(
         [], chrome.automation.EventType.MOUSE_MOVED,
         event => this.onMouseMovedOrDragged_(event));
@@ -120,7 +111,14 @@ export class MouseController {
     this.onMouseMovedHandler_.start();
     this.onMouseDraggedHandler_.setNodes(desktop);
     this.onMouseDraggedHandler_.start();
-    this.desktop_ = desktop;
+  }
+
+  isScrollModeActive(): boolean {
+    return this.scrollModeController_.active();
+  }
+
+  isLongClickActive(): boolean {
+    return this.longClickActive_;
   }
 
   async start(): Promise<void> {
@@ -148,26 +146,9 @@ export class MouseController {
       this.resetLocation();
     }
 
-    chrome.accessibilityPrivate.isFeatureEnabled(
-        chrome.accessibilityPrivate.AccessibilityFeature
-            .FACE_GAZE_GRAVITY_WELLS,
-        enabled => {
-          this.useGravity_ = enabled;
-          if (this.useGravity_) {
-            this.resetGravity_();
-            this.refreshGravityInterval_ = setInterval(
-                () => this.refreshGravity_(),
-                MouseController.GRAVITY_INTERVAL_MS);
-          }
-        });
-
     // Start the logic to move the mouse.
     this.mouseInterval_ = setInterval(
         () => this.updateMouseLocation_(), MouseController.MOUSE_INTERVAL_MS);
-  }
-
-  updateLandmarkWeights(weights: Map<string, number>): void {
-    this.landmarkWeights_ = weights;
   }
 
   /** Update the current location of the tracked face landmark. */
@@ -265,11 +246,13 @@ export class MouseController {
       scaledVel.y *= this.applySigmoidAcceleration_(scaledVel.y);
     }
 
-    if (!this.exceedsVelocityThreshold_(scaledVel.x) &&
+    if (!this.scrollModeController_.active() &&
+        !this.exceedsVelocityThreshold_(scaledVel.x) &&
         !this.exceedsVelocityThreshold_(scaledVel.y)) {
       // The velocity threshold wasn't exceeded, so we shouldn't update the
       // mouse location. We do this to avoid unintended jitteriness of the
-      // mouse.
+      // mouse. When we're in scroll mode, we don't want to apply the velocity
+      // threshold because we're not visibly moving the mouse.
       return;
     }
 
@@ -302,165 +285,9 @@ export class MouseController {
     // touched their physical mouse or trackpad.
     if (new Date().getTime() - this.lastMouseMovedTime_ >
         MouseController.IGNORE_UPDATES_AFTER_MOUSE_MOVE_MS) {
-      let mappedLocation = this.mouseLocation_;
-      if (this.useGravity_) {
-        // If gravity is enabled, adjust the cursor position.
-        mappedLocation = this.mapPoint_(mappedLocation);
-      }
-      EventGenerator.sendMouseMove(mappedLocation.x, mappedLocation.y);
-      chrome.accessibilityPrivate.setCursorPosition(mappedLocation);
-    }
-  }
-
-  /**
-   * Maps a point from screen space to screen space, adjusting the position to
-   * pull the cursor toward buttons.
-   */
-  private mapPoint_(point: FloatingPoint2D): FloatingPoint2D {
-    if (!this.screenBounds_) {
-      // Early return if things aren't initialized.
-      return point;
-    }
-
-    // TODO(b/309121742): Remove this test when the fencepost bug in the
-    // position is fixed.
-    if (point.x < 0 || point.y < 0 || point.x >= this.screenBounds_.width ||
-        point.y >= this.screenBounds_.height) {
-      // Ignore points off the screen.
-      return point;
-    }
-
-    // Get the position delta from the gravity field and adjust the point.
-    const offset = this.gravityField_[this.gravityOffset_(point.x, point.y)];
-    return {
-      x: Math.floor(point.x + offset.x),
-      y: Math.floor(point.y + offset.y),
-    };
-  }
-
-  /**
-   * Reset the Gravity field to zero vectors and remove cached nodes.
-   */
-  private resetGravity_(): void {
-    if (!this.useGravity_ || !this.screenBounds_) {
-      return;
-    }
-    this.gravityField_ =
-        new Array(this.screenBounds_.width * this.screenBounds_.height);
-    this.gravityField_.fill({x: 0, y: 0});
-    this.gravityNodes_.clear();
-  }
-
-  /**
-   * Update the gravity field to the current state of the screen.  This is
-   * called every GRAVITY_INTERVAL_MS.
-   */
-  private refreshGravity_(): void {
-    if (!this.desktop_) {
-      return;
-    }
-
-    const added: Map<string, ScreenRect> = new Map();
-
-    // Add all buttons to the current set.
-    const buttons = this.desktop_.findAll({role: RoleType.BUTTON});
-    buttons.forEach(button => {
-      if (!NodeUtils.isNodeInvisible(button, /*includeOffscreen*/ false)) {
-        // ScreenRects don't work with Set(), so use the string representation
-        // as the key.
-        const id = RectUtil.toString(button.location);
-        added.set(id, button.location);
-      }
-    });
-
-    // Check the cached nodes for deleted nodes.
-    this.gravityNodes_.forEach((bounds, id) => {
-      if (!added.has(id)) {
-        this.adjustGravityWell_(id, bounds, /*add*/ false);
-      }
-    });
-
-    // Update the gravity field with the existing nodes.
-    added.forEach((bounds, id) => {
-      this.adjustGravityWell_(id, bounds, /*add*/ true);
-    });
-  }
-
-  /**
-   * Returns the offset in the gravity field for a given coordinate.
-   */
-  private gravityOffset_(x: number, y: number): number {
-    if (!this.screenBounds_) {
-      throw 'screenBounds_ is not set';
-    }
-    return Math.floor(x) + this.screenBounds_.width * Math.floor(y);
-  }
-
-  private adjustGravityWell_(id: string, bounds: ScreenRect, add: boolean):
-      void {
-    if (!this.screenBounds_) {
-      return;
-    }
-
-    // Check if we're adding or removing.
-    if (this.gravityNodes_.has(id)) {
-      if (add) {
-        // Adding the node, return if the node already exists.
-        return;
-      } else {
-        // Removing the node.
-        this.gravityNodes_.delete(id);
-      }
-    } else {
-      if (!add) {
-        // Removing the node, return if the node doesn't exist.
-        return;
-      } else {
-        // Adding the node.
-        this.gravityNodes_.set(id, bounds);
-      }
-    }
-
-    // Bounds of the region that will be affected.
-    const startX = Math.floor(Math.max(
-        0, bounds.left - bounds.width * MouseController.GRAVITY_SCALE));
-    const startY = Math.floor(Math.max(
-        0, bounds.top - bounds.height * MouseController.GRAVITY_SCALE));
-    const endX = Math.floor(Math.min(
-        this.screenBounds_.width,
-        RectUtil.right(bounds) + bounds.width * MouseController.GRAVITY_SCALE));
-    const endY = Math.floor(Math.min(
-        this.screenBounds_.height,
-        RectUtil.bottom(bounds) +
-            bounds.height * MouseController.GRAVITY_SCALE));
-    const center = RectUtil.center(bounds);
-    const xRange = bounds.width * MouseController.GRAVITY_SCALE;
-    const yRange = bounds.height * MouseController.GRAVITY_SCALE;
-
-    for (let y = startY; y < endY; y++) {
-      for (let x = startX; x < endX; x++) {
-        // Gravity is applied as a factor of the square of the size of the
-        // control, increasing with proximity.
-        let deltaX = center.x - x;
-        let deltaY = center.y - y;
-        const scaleX = 1 - Math.abs(deltaX / xRange);
-        const scaleY = 1 - Math.abs(deltaY / yRange);
-        deltaX = deltaX * scaleX * scaleX;
-        deltaY = deltaY * scaleY * scaleY;
-
-        if (!add) {
-          // If the node is being removed, subtract the vector.
-          deltaX = -deltaX;
-          deltaY = -deltaY;
-        }
-
-        // Read the current value from the field and adjust it.
-        const delta = this.gravityField_[this.gravityOffset_(x, y)];
-        this.gravityField_[this.gravityOffset_(x, y)] = {
-          x: delta.x + deltaX,
-          y: delta.y + deltaY,
-        };
-      }
+      EventGenerator.sendMouseMove(
+          this.mouseLocation_.x, this.mouseLocation_.y, {useRewriters: true});
+      chrome.accessibilityPrivate.setCursorPosition(this.mouseLocation_);
     }
   }
 
@@ -500,17 +327,17 @@ export class MouseController {
   }
 
   stop(): void {
+    if (this.longClickActive_ && this.mouseLocation_) {
+      // Release the existing long click action when the mouse controller is
+      // stopped to ensure we do not leave the user in a permanent "drag" state.
+      EventGenerator.sendMouseRelease(
+          this.mouseLocation_.x, this.mouseLocation_.y);
+      this.longClickActive_ = false;
+    }
     if (this.mouseInterval_ !== -1) {
       clearInterval(this.mouseInterval_);
       this.mouseInterval_ = -1;
     }
-    if (this.refreshGravityInterval_ !== -1) {
-      clearInterval(this.refreshGravityInterval_);
-      this.refreshGravityInterval_ = -1;
-    }
-    this.desktop_ = undefined;
-    this.gravityField_ = [];
-    this.gravityNodes_.clear();
 
     this.lastLandmarkLocation_ = undefined;
     this.previousSmoothedLocation_ = undefined;
@@ -530,6 +357,34 @@ export class MouseController {
 
   toggleScrollMode(): void {
     this.scrollModeController_.toggle(this.mouseLocation_, this.screenBounds_);
+    if (!this.isScrollModeActive()) {
+      this.bubbleController_.resetBubble();
+    }
+  }
+
+  toggleLongClick(): void {
+    if (!this.mouseLocation_) {
+      return;
+    }
+
+    this.longClickActive_ = !this.longClickActive_;
+
+    if (this.longClickActive_) {
+      EventGenerator.sendMousePress(
+          this.mouseLocation_.x, this.mouseLocation_.y,
+          SyntheticMouseEventButton.LEFT);
+      // Enable the DragEventRewriter so that mouse moved events get rewritten
+      // into mouse dragged events.
+      chrome.accessibilityPrivate.enableDragEventRewriter(true);
+    } else {
+      EventGenerator.sendMouseRelease(
+          this.mouseLocation_.x, this.mouseLocation_.y);
+      chrome.accessibilityPrivate.enableDragEventRewriter(false);
+    }
+
+    if (!this.isLongClickActive()) {
+      this.bubbleController_.resetBubble();
+    }
   }
 
   /** Listener for when the mouse position changes. */
@@ -540,6 +395,19 @@ export class MouseController {
       // Assume all synthesized mouse movements come from within FaceGaze.
       this.mouseLocation_ = {x: event.mouseX, y: event.mouseY};
       this.lastMouseMovedTime_ = new Date().getTime();
+
+      if (this.scrollModeController_.active()) {
+        // Scroll mode honors physical mouse movements.
+        this.scrollModeController_.updateScrollLocation(this.mouseLocation_);
+      }
+
+      if (this.longClickActive_) {
+        // Send a synthetic drag event from the user's mouse move event.
+        // FaceGaze cursor control should already have sent a synthetic drag
+        // event, so this only needs to occur on user mouse movements.
+        EventGenerator.sendMouseMove(
+            event.mouseX, event.mouseY, {useRewriters: true});
+      }
     }
   }
 
@@ -644,15 +512,6 @@ export class MouseController {
             this.calcVelocityThreshold_();
           }
           break;
-        case MouseController.PREF_CURSOR_SMOOTHING:
-          if (pref.value) {
-            this.targetBufferSize_ = pref.value;
-            this.calcSmoothKernel_();
-            while (this.buffer_.length > this.targetBufferSize_) {
-              this.buffer_.shift();
-            }
-          }
-          break;
         case MouseController.PREF_CURSOR_USE_ACCELERATION:
           if (pref.value !== undefined) {
             this.useMouseAcceleration_ = pref.value;
@@ -714,6 +573,14 @@ export class MouseController {
   setVelocityThresholdForTesting(useThreshold: boolean): void {
     this.useVelocityThreshold_ = useThreshold;
   }
+
+  setBufferSizeForTesting(size: number): void {
+    this.targetBufferSize_ = size;
+    this.calcSmoothKernel_();
+    while (this.buffer_.length > this.targetBufferSize_) {
+      this.buffer_.shift();
+    }
+  }
 }
 
 export namespace MouseController {
@@ -753,21 +620,16 @@ export namespace MouseController {
   export const PREF_SPD_DOWN = 'settings.a11y.face_gaze.cursor_speed_down';
   export const PREF_SPD_LEFT = 'settings.a11y.face_gaze.cursor_speed_left';
   export const PREF_SPD_RIGHT = 'settings.a11y.face_gaze.cursor_speed_right';
-  export const PREF_CURSOR_SMOOTHING =
-      'settings.a11y.face_gaze.cursor_smoothing';
   export const PREF_CURSOR_USE_ACCELERATION =
       'settings.a11y.face_gaze.cursor_use_acceleration';
   export const PREF_VELOCITY_THRESHOLD =
       'settings.a11y.face_gaze.velocity_threshold';
 
   // Default values. Will be overwritten by prefs.
-  export const DEFAULT_MOUSE_SPEED = 20;
+  export const DEFAULT_MOUSE_SPEED = 10;
   export const DEFAULT_USE_MOUSE_ACCELERATION = true;
-  export const DEFAULT_BUFFER_SIZE = 6;
-
-  export const GRAVITY_INTERVAL_MS = 500;
-  // How far the gravity reaches, relative to the size of the control.
-  export const GRAVITY_SCALE = 4;
+  export const DEFAULT_BUFFER_SIZE = 7;
+  export const DEFAULT_VELOCITY_FACTOR = 0.45;
 
   export function calculateRotationFromFacialTransformationMatrix(
       facialTransformationMatrix: Matrix): {x: number, y: number}|undefined {

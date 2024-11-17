@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
@@ -65,24 +66,30 @@ class WebUIBubbleManagerTest : public ChromeViewsTestBase {
   // ChromeViewsTestBase:
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
+    testing_profile_ = profile_manager_.CreateTestingProfile("Person 1");
+    browser_window_interface_ = std::make_unique<MockBrowserWindowInterface>();
+    ON_CALL(*browser_window_interface_, GetProfile)
+        .WillByDefault(::testing::Return(testing_profile_.get()));
     ChromeViewsTestBase::SetUp();
   }
 
-  TestingProfileManager* profile_manager() { return &profile_manager_; }
+  BrowserWindowInterface* browser_window_interface() {
+    return browser_window_interface_.get();
+  }
 
  private:
   TestingProfileManager profile_manager_;
+  raw_ptr<TestingProfile> testing_profile_;
+  std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
 };
 
 TEST_F(WebUIBubbleManagerTest, CreateWebUIBubbleDialogWithAnchorProvided) {
-  const char* kProfileName = "Person 1";
-  auto* test_profile = profile_manager()->CreateTestingProfile(kProfileName);
-
   std::unique_ptr<views::Widget> anchor_widget =
       CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
                        views::Widget::InitParams::TYPE_WINDOW);
   auto bubble_manager = WebUIBubbleManager::Create<TestWebUIController>(
-      anchor_widget->GetContentsView(), test_profile, GURL(kTestURL), 1);
+      anchor_widget->GetContentsView(), browser_window_interface(),
+      GURL(kTestURL), 1);
   bubble_manager->DisableCloseBubbleHelperForTesting();
 
   gfx::Rect anchor(666, 666, 0, 0);

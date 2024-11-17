@@ -9,6 +9,7 @@ import org.chromium.base.test.transit.CarryOn;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tabmodel.TabModel;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** CarryOn to check for existence of all tab thumbnails on disk for a TabModel. */
 public class TabThumbnailsCapturedCarryOn extends CarryOn {
@@ -27,13 +28,14 @@ public class TabThumbnailsCapturedCarryOn extends CarryOn {
         elements.declareElementFactory(
                 tabModelSelectorCondition,
                 delayedElements -> {
-                    TabModel tabModel = tabModelSelectorCondition.get().getModel(mIsIncognito);
+                    TabModelSelector tabModelSelector = tabModelSelectorCondition.get();
+                    TabModel tabModel = tabModelSelector.getModel(mIsIncognito);
                     int tabCount = tabModel.getCount();
                     for (int i = 0; i < tabCount; i++) {
                         delayedElements.declareEnterCondition(
-                                TabThumbnailCondition.etc1(tabModel, i));
+                                TabThumbnailCondition.etc1(tabModelSelector, tabModel.getTabAt(i)));
                         delayedElements.declareEnterCondition(
-                                TabThumbnailCondition.jpeg(tabModel, i));
+                                TabThumbnailCondition.jpeg(tabModelSelector, tabModel.getTabAt(i)));
                     }
                 });
     }

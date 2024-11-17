@@ -21,6 +21,10 @@
 #include "chrome/grit/app_service_internals_resources_map.h"
 #include "content/public/browser/web_ui_data_source.h"
 
+AppServiceInternalsUIConfig::AppServiceInternalsUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIAppServiceInternalsHost) {}
+
 AppServiceInternalsUI::AppServiceInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui), profile_(Profile::FromWebUI(web_ui)) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(

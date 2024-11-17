@@ -18,13 +18,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/files/file_path.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/system_logs/app_service_log_source.h"
 #include "chrome/browser/ash/system_logs/bluetooth_log_source.h"
 #include "chrome/browser/ash/system_logs/command_line_log_source.h"
 #include "chrome/browser/ash/system_logs/connected_input_devices_log_source.h"
-#include "chrome/browser/ash/system_logs/crosapi_system_log_source.h"
 #include "chrome/browser/ash/system_logs/dbus_log_source.h"
 #include "chrome/browser/ash/system_logs/debug_daemon_log_source.h"
 #include "chrome/browser/ash/system_logs/device_data_manager_input_devices_log_source.h"
@@ -41,10 +38,6 @@
 #include "chrome/browser/feedback/system_logs/log_sources/device_event_log_source.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/feedback/system_logs/log_sources/lacros_log_files_log_source.h"
-#endif
-
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 #include "chrome/browser/feedback/system_logs/log_sources/family_info_log_source.h"
 #include "chrome/browser/profiles/profile.h"
@@ -53,14 +46,6 @@
 #endif
 
 namespace system_logs {
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace {
-
-constexpr char kLacrosUserLogKey[] = "lacros_user_log";
-
-}  // namespace
-#endif
 
 SystemLogsFetcher* BuildChromeSystemLogsFetcher(Profile* profile,
                                                 bool scrub_data) {
@@ -111,24 +96,7 @@ SystemLogsFetcher* BuildChromeSystemLogsFetcher(Profile* profile,
 
   fetcher->AddSource(std::make_unique<ShillLogSource>(scrub_data));
   fetcher->AddSource(std::make_unique<UiHierarchyLogSource>(scrub_data));
-
-  // Add CrosapiSystemLogSource to get lacros system information log data
-  // if Lacros is running and the crosapi version supports the Lacros remote
-  // data source.
-  if (crosapi::BrowserManager::Get()->IsRunning()) {
-    fetcher->AddSource(std::make_unique<CrosapiSystemLogSource>());
-  }
 #endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (crosapi::browser_util::IsLacrosEnabled()) {
-    // Lacros logs are saved in the user data directory, so we provide that
-    // path to the LacrosLogFilesLogSource.
-    base::FilePath log_base_path = crosapi::browser_util::GetUserDataDir();
-    fetcher->AddSource(std::make_unique<LacrosLogFilesLogSource>(
-        log_base_path, kLacrosUserLogKey));
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return fetcher;
 }

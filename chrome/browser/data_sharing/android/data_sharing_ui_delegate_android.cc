@@ -10,7 +10,7 @@
 #include "url/gurl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/browser/data_sharing/jni_headers/DataSharingUIDelegateAndroid_jni.h"
+#include "chrome/browser/data_sharing/jni_headers/DataSharingUiDelegateAndroid_jni.h"
 
 namespace data_sharing {
 
@@ -18,14 +18,16 @@ DataSharingUIDelegateAndroid::DataSharingUIDelegateAndroid(Profile* profile) {
   JNIEnv* env = base::android::AttachCurrentThread();
   auto j_profile = profile->GetJavaObject();
   java_obj_.Reset(
-      env, Java_DataSharingUIDelegateAndroid_create(env, j_profile).obj());
+      env, Java_DataSharingUiDelegateAndroid_create(env, j_profile).obj());
 }
 
 DataSharingUIDelegateAndroid::~DataSharingUIDelegateAndroid() = default;
 
-void DataSharingUIDelegateAndroid::HandleShareURLIntercepted(const GURL& url) {
+void DataSharingUIDelegateAndroid::HandleShareURLIntercepted(
+    const GURL& url,
+    std::unique_ptr<ShareURLInterceptionContext> context) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_DataSharingUIDelegateAndroid_handleShareURLIntercepted(
+  Java_DataSharingUiDelegateAndroid_handleShareURLIntercepted(
       env, java_obj_, url::GURLAndroid::FromNativeGURL(env, url));
 }
 

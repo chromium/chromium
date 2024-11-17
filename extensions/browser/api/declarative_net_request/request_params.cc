@@ -5,6 +5,7 @@
 #include "extensions/browser/api/declarative_net_request/request_params.h"
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 
 #include "base/check.h"
@@ -77,9 +78,9 @@ bool HasHeaderValue(const net::HttpResponseHeaders& response_headers,
   auto pattern = CreateString<std::string_view>(*flat_pattern);
 
   size_t iter = 0;
-  std::string temp;
-  while (response_headers.EnumerateHeader(&iter, header, &temp)) {
-    if (base::MatchPattern(base::ToLowerASCII(temp), pattern)) {
+  std::optional<std::string_view> temp;
+  while ((temp = response_headers.EnumerateHeader(&iter, header))) {
+    if (base::MatchPattern(base::ToLowerASCII(*temp), pattern)) {
       return true;
     }
   }

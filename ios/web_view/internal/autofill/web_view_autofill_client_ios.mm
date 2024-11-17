@@ -84,6 +84,15 @@ WebViewAutofillClientIOS::~WebViewAutofillClientIOS() {
   HideAutofillSuggestions(SuggestionHidingReason::kTabGone);
 }
 
+base::WeakPtr<AutofillClient> WebViewAutofillClientIOS::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
+const std::string& WebViewAutofillClientIOS::GetAppLocale() const {
+  return ios_web_view::ApplicationContext::GetInstance()
+      ->GetApplicationLocale();
+}
+
 bool WebViewAutofillClientIOS::IsOffTheRecord() const {
   return web_state_->GetBrowserState()->IsOffTheRecord();
 }
@@ -112,6 +121,10 @@ PersonalDataManager* WebViewAutofillClientIOS::GetPersonalDataManager() {
   return personal_data_manager_;
 }
 
+SingleFieldFillRouter& WebViewAutofillClientIOS::GetSingleFieldFillRouter() {
+  return single_field_fill_router_;
+}
+
 AutocompleteHistoryManager*
 WebViewAutofillClientIOS::GetAutocompleteHistoryManager() {
   return autocomplete_history_manager_;
@@ -130,16 +143,19 @@ syncer::SyncService* WebViewAutofillClientIOS::GetSyncService() {
 }
 
 signin::IdentityManager* WebViewAutofillClientIOS::GetIdentityManager() {
+  return const_cast<signin::IdentityManager*>(
+      std::as_const(*this).GetIdentityManager());
+}
+
+const signin::IdentityManager* WebViewAutofillClientIOS::GetIdentityManager()
+    const {
   return identity_manager_;
 }
 
 FormDataImporter* WebViewAutofillClientIOS::GetFormDataImporter() {
   if (!form_data_importer_) {
-    form_data_importer_ = std::make_unique<FormDataImporter>(
-        this,
-        /*history_service=*/nullptr,
-        ios_web_view::ApplicationContext::GetInstance()
-            ->GetApplicationLocale());
+    form_data_importer_ =
+        std::make_unique<FormDataImporter>(this, /*history_service=*/nullptr);
   }
   return form_data_importer_.get();
 }
@@ -192,7 +208,7 @@ translate::TranslateDriver* WebViewAutofillClientIOS::GetTranslateDriver() {
 
 void WebViewAutofillClientIOS::ShowAutofillSettings(
     SuggestionType suggestion_type) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WebViewAutofillClientIOS::ConfirmSaveAddressProfile(
@@ -210,7 +226,7 @@ void WebViewAutofillClientIOS::ShowEditAddressProfileDialog(
     AddressProfileSavePromptCallback on_user_decision_callback) {
   // Please note: This method is only implemented on desktop and is therefore
   // unreachable here.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog(
@@ -218,7 +234,7 @@ void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog(
     AddressProfileDeleteDialogCallback delete_dialog_callback) {
   // Please note: This method is only implemented on desktop and is therefore
   // unreachable here.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 AutofillClient::SuggestionUiSessionId
@@ -243,11 +259,23 @@ void WebViewAutofillClientIOS::HideAutofillSuggestions(
   [bridge_ hideAutofillPopup];
 }
 
+bool WebViewAutofillClientIOS::IsAutofillEnabled() const {
+  return IsAutofillProfileEnabled() || IsAutofillPaymentMethodsEnabled();
+}
+
+bool WebViewAutofillClientIOS::IsAutofillProfileEnabled() const {
+  return prefs::IsAutofillProfileEnabled(GetPrefs());
+}
+
+bool WebViewAutofillClientIOS::IsAutofillPaymentMethodsEnabled() const {
+  return prefs::IsAutofillPaymentMethodsEnabled(GetPrefs());
+}
+
 bool WebViewAutofillClientIOS::IsAutocompleteEnabled() const {
   return false;
 }
 
-bool WebViewAutofillClientIOS::IsPasswordManagerEnabled() {
+bool WebViewAutofillClientIOS::IsPasswordManagerEnabled() const {
   return GetPrefs()->GetBoolean(
       password_manager::prefs::kCredentialsEnableService);
 }

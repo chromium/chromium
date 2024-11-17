@@ -58,11 +58,7 @@ public class GeolocationTest {
         ThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 
-    /**
-     * Verify Geolocation creates a dialog and receives a mock location.
-     *
-     * @throws Exception
-     */
+    /** Verify Geolocation creates a dialog and receives a mock location. */
     @Test
     @MediumTest
     @Feature({"Location", "Main"})
@@ -73,8 +69,6 @@ public class GeolocationTest {
     /**
      * Verify Geolocation creates a dialog and receives a mock location when dialogs are enabled and
      * there is no user gesture.
-     *
-     * @throws Exception
      */
     @Test
     @MediumTest
@@ -83,11 +77,7 @@ public class GeolocationTest {
         runTest("initiate_getCurrentPosition()", 1, false, true);
     }
 
-    /**
-     * Verify Geolocation creates a dialog and receives multiple locations.
-     *
-     * @throws Exception
-     */
+    /** Verify Geolocation creates a dialog and receives multiple locations. */
     @Test
     @MediumTest
     @Feature({"Location"})

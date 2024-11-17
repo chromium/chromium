@@ -23,7 +23,7 @@ UserCloudPolicyStoreBase::UserCloudPolicyStoreBase(
     : background_task_runner_(background_task_runner),
       policy_scope_(policy_scope) {}
 
-UserCloudPolicyStoreBase::~UserCloudPolicyStoreBase() {}
+UserCloudPolicyStoreBase::~UserCloudPolicyStoreBase() = default;
 
 std::unique_ptr<UserCloudPolicyValidator>
 UserCloudPolicyStoreBase::CreateValidator(

@@ -60,6 +60,20 @@ class SyncHandler : public content::WebUIMessageHandler,
   // Handles the request for the primary account information.
   void HandleGetAccountInfo(const base::Value::List& args);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Opens the Batch Upload Dialog.
+  void HandleOpenBatchUploadDialog(const base::Value::List& args);
+#endif
+
+  // Handles getitng the local password count from the `syncer::SyncService`
+  // API.
+  void HandleGetLocalPasswordCount(const base::Value::List& args);
+  void FireOnGetLocalDataDescriptionReceived(
+      std::map<syncer::DataType, syncer::LocalDataDescription> data);
+  void HandleOnGetLocalDataDescriptionReceived(
+      base::Value callback_id,
+      std::map<syncer::DataType, syncer::LocalDataDescription> data);
+
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync_service) override;
 

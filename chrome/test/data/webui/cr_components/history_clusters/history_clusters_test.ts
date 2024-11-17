@@ -192,11 +192,10 @@ suite('history-clusters', () => {
 
     urlVisitHeader!.click();
 
-    const openHistoryClusterArgs =
-        await handler.whenCalled('openHistoryCluster');
+    const openHistoryUrlArgs = await handler.whenCalled('openHistoryUrl');
 
-    assertEquals(urlVisit!.$.url.innerHTML, openHistoryClusterArgs[0].url);
-    assertEquals(1, handler.getCallCount('openHistoryCluster'));
+    assertEquals(urlVisit!.$.url.innerHTML, openHistoryUrlArgs[0].url);
+    assertEquals(1, handler.getCallCount('openHistoryUrl'));
   });
 
   test('Navigate to url visit via keyboard', async () => {
@@ -225,12 +224,11 @@ suite('history-clusters', () => {
     urlVisitHeader!.dispatchEvent(shiftEnter);
 
     // Navigates to the first match is selected.
-    const openHistoryClusterArgs =
-        await handler.whenCalled('openHistoryCluster');
+    const openHistoryUrlArgs = await handler.whenCalled('openHistoryUrl');
 
-    assertEquals(urlVisit!.$.url.innerHTML, openHistoryClusterArgs[0].url);
-    assertEquals(true, openHistoryClusterArgs[1].shiftKey);
-    assertEquals(1, handler.getCallCount('openHistoryCluster'));
+    assertEquals(urlVisit!.$.url.innerHTML, openHistoryUrlArgs[0].url);
+    assertEquals(true, openHistoryUrlArgs[1].shiftKey);
+    assertEquals(1, handler.getCallCount('openHistoryUrl'));
   });
 
   test('url visit requests image', async () => {
@@ -301,7 +299,7 @@ suite('history-clusters', () => {
     assertEquals(123, clustersElement.$.clusters.scrollOffset);
   });
 
-  test('loads more results for tall monitors', async () => {
+  test('loads and renders more results for tall monitors', async () => {
     const clustersElement = new HistoryClustersElement();
     clustersElement.scrollTarget = document.body;
     document.body.appendChild(clustersElement);
@@ -336,5 +334,18 @@ suite('history-clusters', () => {
     assertEquals(
         1, handler.getCallCount('loadMoreClusters'),
         'should load more results for tall scroll target');
+    await microtasksFinished();
+    // Initial 2 results are rendered.
+    assertEquals(
+        2,
+        clustersElement.shadowRoot!.querySelectorAll('history-cluster').length);
+
+    // More clusters requested. Simulate a response.
+    callbackRouterRemote.onClustersQueryResult(Object.assign(
+        getTestResult(), {canLoadMore: false, isContinuation: true}));
+    await microtasksFinished();
+    assertEquals(
+        4,
+        clustersElement.shadowRoot!.querySelectorAll('history-cluster').length);
   });
 });

@@ -1,0 +1,42 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+config("public_config") {
+  include_dirs = [ "//third_party/libtess2" ]
+}
+
+config("private_config") {
+  include_dirs = [
+    "//third_party/libtess2/src/Include",
+    "//third_party/libtess2/src/Source",
+  ]
+}
+
+source_set("libtess2") {
+  sources = [
+    "libtess2/tesselator.h",
+    "src/Include/tesselator.h",
+    "src/Source/bucketalloc.c",
+    "src/Source/bucketalloc.h",
+    "src/Source/dict.c",
+    "src/Source/dict.h",
+    "src/Source/geom.c",
+    "src/Source/geom.h",
+    "src/Source/mesh.c",
+    "src/Source/mesh.h",
+    "src/Source/priorityq.c",
+    "src/Source/priorityq.h",
+    "src/Source/sweep.c",
+    "src/Source/sweep.h",
+    "src/Source/tess.c",
+    "src/Source/tess.h",
+  ]
+
+  public_configs = [ ":public_config" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  configs += [ ":private_config" ]
+}

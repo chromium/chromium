@@ -12,6 +12,8 @@ static_library("back_gesture") {
     "back_gesture_contextual_nudge_delegate.h",
   ]
 
+  deps = [ "//chrome/browser/ui/tabs:tab_strip" ]
+
   public_deps = [
     "//ash/public/cpp",
     "//base",
@@ -33,6 +35,7 @@ source_set("browser_tests") {
     "//ash:test_support",
     "//base",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/test:test_support_ui",
     "//content/public/browser",
     "//content/test:test_support",

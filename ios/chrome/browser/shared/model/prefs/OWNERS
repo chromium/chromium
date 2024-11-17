@@ -5,6 +5,7 @@ file://components/prefs/OWNERS
 # for non-trivial changes like re-naming a pref or changing the type of a pref.
 adamta@google.com
 ajuma@chromium.org
+fedegermi@google.com
 gujen@google.com
 huitingyu@google.com
 olivierrobin@chromium.org

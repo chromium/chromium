@@ -1,6 +1,7 @@
 Name: zlib
 Short Name: zlib
 URL: https://zlib.net/
+Version: N/A
 Revision: See zlib/README.chromium
 License: zlib
 License File: zlib/LICENSE

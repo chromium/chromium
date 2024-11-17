@@ -25,7 +25,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -45,7 +44,6 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 @Features.EnableFeatures(ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID)
 public class ChromeSurveyControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock UserPrefs.Natives mUserPrefsJniMock;
     @Mock PrefService mPrefServiceMock;
@@ -60,7 +58,7 @@ public class ChromeSurveyControllerTest {
         ChromeSurveyController.setEnableForTesting();
         doReturn(Mockito.mock(Resources.class)).when(mActivity).getResources();
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefServiceMock);
         when(mPrefServiceMock.getBoolean(Pref.FEEDBACK_SURVEYS_ENABLED)).thenReturn(true);
         SurveyClientFactory.initialize(null);

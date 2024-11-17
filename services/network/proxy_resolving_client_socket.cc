@@ -226,9 +226,7 @@ int ProxyResolvingClientSocket::DoLoop(int result) {
         rv = DoInitConnectionComplete(rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = net::ERR_FAILED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != net::ERR_IO_PENDING && next_state_ != STATE_NONE);
   return rv;

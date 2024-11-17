@@ -96,7 +96,7 @@ class CONTENT_EXPORT BrowserAccessibilityStateImpl
       ui::AXMode mode) override;
   void SetAXModeChangeAllowed(bool allowed) override;
   bool IsAXModeChangeAllowed() const override;
-
+  void NotifyWebContentsPreferencesChanged() const override;
 
   // ui::AXPlatform::Delegate:
   ui::AXMode GetProcessMode() override;

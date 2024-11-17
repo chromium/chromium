@@ -68,7 +68,6 @@ component("x") {
   deps = [
     "//base",
     "//base:i18n",
-    "//build:chromeos_buildflags",
     "//components/device_event_log",
     "//net",
     "//skia",

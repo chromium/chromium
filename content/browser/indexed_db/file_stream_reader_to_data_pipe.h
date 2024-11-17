@@ -5,22 +5,17 @@
 #ifndef CONTENT_BROWSER_INDEXED_DB_FILE_STREAM_READER_TO_DATA_PIPE_H_
 #define CONTENT_BROWSER_INDEXED_DB_FILE_STREAM_READER_TO_DATA_PIPE_H_
 
+#include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 
-namespace storage {
-class FileStreamReader;
-}
-
 namespace content::indexed_db {
 
-// A convenience function to read out data from a FileStreamReader
-// and write them into a data pipe. Must be called on an IO thread.
-void MakeFileStreamAdapterAndRead(
-    std::unique_ptr<storage::FileStreamReader> reader,
-    mojo::ScopedDataPipeProducerHandle dest,
-    base::OnceCallback<void(int)> completion_callback,
-    uint64_t read_length);
+void OpenFileAndReadIntoPipe(const base::FilePath& file_path,
+                             uint64_t offset,
+                             uint64_t read_length,
+                             mojo::ScopedDataPipeProducerHandle dest,
+                             base::OnceCallback<void(int)> completion_callback);
 
 }  // namespace content::indexed_db
 

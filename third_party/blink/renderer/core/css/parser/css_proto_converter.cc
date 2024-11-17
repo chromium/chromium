@@ -95,6 +95,7 @@ const std::string Converter::kPseudoLookupTable[] = {
     "focus-within",
     "fullscreen",
     "future",
+    "has-slotted",
     "horizontal",
     "host",
     "hover",
@@ -374,7 +375,7 @@ void Converter::Visit(const Length& length) {
   } else if (length.unit() == Length::PC) {
     string_ += "pc";
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -387,7 +388,7 @@ void Converter::Visit(const Angle& angle) {
   } else if (angle.unit() == Angle::GRAD) {
     string_ += "grad";
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -398,7 +399,7 @@ void Converter::Visit(const Time& time) {
   } else if (time.unit() == Time::S) {
     string_ += "s";
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -410,7 +411,7 @@ void Converter::Visit(const Freq& freq) {
   } else if (freq.unit() == Freq::KHZ) {
     string_ += "kHz";
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

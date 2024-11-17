@@ -97,8 +97,8 @@ class MockLensSearchboxClient : public LensSearchboxClient {
               (),
               (override, const));
   MOCK_METHOD(std::string&, GetThumbnail, (), (override));
-  MOCK_METHOD(const lens::proto::LensOverlayInteractionResponse&,
-              GetLensResponse,
+  MOCK_METHOD(const lens::proto::LensOverlaySuggestInputs&,
+              GetLensSuggestInputs,
               (),
               (override, const));
   MOCK_METHOD(void, OnTextModified, (), (override));
@@ -107,7 +107,9 @@ class MockLensSearchboxClient : public LensSearchboxClient {
               OnSuggestionAccepted,
               (const GURL&, AutocompleteMatchType::Type, bool),
               (override));
+  MOCK_METHOD(void, OnFocusChanged, (bool focused), (override));
   MOCK_METHOD(void, OnPageBound, (), (override));
+  MOCK_METHOD(void, OnAutocompleteStopTimerTriggered, (), (override));
 };
 
 class TestObserver : public OmniboxWebUIPopupChangeObserver {
@@ -281,7 +283,7 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
     EXPECT_EQ(input.current_url().spec(), "");
     EXPECT_EQ(input.current_page_classification(),
               metrics::OmniboxEventProto::NTP_REALBOX);
-    EXPECT_FALSE(input.lens_overlay_interaction_response().has_value());
+    EXPECT_FALSE(input.lens_overlay_suggest_inputs().has_value());
 
     testing::Mock::VerifyAndClearExpectations(omnibox_edit_model_);
     testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
@@ -308,7 +310,7 @@ TEST_F(RealboxHandlerTest, AutocompleteController_Start) {
     EXPECT_EQ(input.current_url().spec(), "");
     EXPECT_EQ(input.current_page_classification(),
               metrics::OmniboxEventProto::NTP_REALBOX);
-    EXPECT_FALSE(input.lens_overlay_interaction_response().has_value());
+    EXPECT_FALSE(input.lens_overlay_suggest_inputs().has_value());
 
     testing::Mock::VerifyAndClearExpectations(omnibox_edit_model_);
     testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
@@ -360,10 +362,13 @@ TEST_F(RealboxHandlerTest, Lens_AutocompleteController_Start) {
         .Times(1)
         .WillOnce(ReturnRef(page_url));
 
-    lens::proto::LensOverlayInteractionResponse lens_response;
-    lens_response.set_suggest_signals("xyz");
-    EXPECT_CALL(*lens_searchbox_client_, GetLensResponse())
-        .WillRepeatedly(ReturnRef(lens_response));
+    lens::proto::LensOverlaySuggestInputs suggest_inputs;
+    suggest_inputs.set_encoded_image_signals("xyz");
+    suggest_inputs.set_encoded_request_id("abc");
+    suggest_inputs.set_search_session_id("123");
+    suggest_inputs.set_encoded_visual_search_interaction_log_data("321");
+    EXPECT_CALL(*lens_searchbox_client_, GetLensSuggestInputs())
+        .WillRepeatedly(ReturnRef(suggest_inputs));
 
     handler_->QueryAutocomplete(u"", /*prevent_inline_autocomplete=*/false);
 
@@ -373,8 +378,15 @@ TEST_F(RealboxHandlerTest, Lens_AutocompleteController_Start) {
     EXPECT_EQ(input.current_url(), page_url);
     EXPECT_EQ(input.current_page_classification(),
               metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
-    EXPECT_EQ(input.lens_overlay_interaction_response()->suggest_signals(),
-              lens_response.suggest_signals());
+    EXPECT_EQ(input.lens_overlay_suggest_inputs()->encoded_image_signals(),
+              suggest_inputs.encoded_image_signals());
+    EXPECT_EQ(input.lens_overlay_suggest_inputs()->encoded_request_id(),
+              suggest_inputs.encoded_request_id());
+    EXPECT_EQ(input.lens_overlay_suggest_inputs()->search_session_id(),
+              suggest_inputs.search_session_id());
+    EXPECT_EQ(input.lens_overlay_suggest_inputs()
+                  ->encoded_visual_search_interaction_log_data(),
+              suggest_inputs.encoded_visual_search_interaction_log_data());
 
     testing::Mock::VerifyAndClearExpectations(omnibox_edit_model_);
     testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);
@@ -402,10 +414,13 @@ TEST_F(RealboxHandlerTest, Lens_AutocompleteController_Start) {
         .Times(1)
         .WillOnce(ReturnRef(page_url));
 
-    lens::proto::LensOverlayInteractionResponse lens_response;
-    EXPECT_CALL(*lens_searchbox_client_, GetLensResponse())
-        .Times(1)
-        .WillOnce(ReturnRef(lens_response));
+    lens::proto::LensOverlaySuggestInputs suggest_inputs;
+    suggest_inputs.set_encoded_image_signals("xyz");
+    suggest_inputs.set_encoded_request_id("abc");
+    suggest_inputs.set_search_session_id("123");
+    suggest_inputs.set_encoded_visual_search_interaction_log_data("321");
+    EXPECT_CALL(*lens_searchbox_client_, GetLensSuggestInputs())
+        .WillRepeatedly(ReturnRef(suggest_inputs));
 
     handler_->QueryAutocomplete(u"a", /*prevent_inline_autocomplete=*/false);
 
@@ -416,7 +431,15 @@ TEST_F(RealboxHandlerTest, Lens_AutocompleteController_Start) {
     EXPECT_EQ(input.current_url(), page_url);
     EXPECT_EQ(input.current_page_classification(),
               metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX);
-    EXPECT_FALSE(input.lens_overlay_interaction_response().has_value());
+    EXPECT_EQ(input.lens_overlay_suggest_inputs()->encoded_image_signals(),
+              suggest_inputs.encoded_image_signals());
+    EXPECT_EQ(input.lens_overlay_suggest_inputs()->encoded_request_id(),
+              suggest_inputs.encoded_request_id());
+    EXPECT_EQ(input.lens_overlay_suggest_inputs()->search_session_id(),
+              suggest_inputs.search_session_id());
+    EXPECT_EQ(input.lens_overlay_suggest_inputs()
+                  ->encoded_visual_search_interaction_log_data(),
+              suggest_inputs.encoded_visual_search_interaction_log_data());
 
     testing::Mock::VerifyAndClearExpectations(omnibox_edit_model_);
     testing::Mock::VerifyAndClearExpectations(autocomplete_controller_);

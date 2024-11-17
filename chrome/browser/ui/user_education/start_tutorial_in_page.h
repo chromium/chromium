@@ -10,8 +10,8 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/user_education/common/tutorial_identifier.h"
-#include "components/user_education/common/tutorial_service.h"
+#include "components/user_education/common/tutorial/tutorial_identifier.h"
+#include "components/user_education/common/tutorial/tutorial_service.h"
 #include "url/gurl.h"
 
 class Browser;

@@ -8,6 +8,7 @@
 
 #include "base/json/json_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace google_apis::classroom {
 
@@ -33,7 +34,8 @@ TEST(ClassroomApiStudentsResponseTypesTest, ConvertsStudents) {
                   "name":{
                      "fullName":"Student1 full"
                   },
-                  "emailAddress":"student1@foo.com"
+                  "emailAddress":"student1@foo.com",
+                  "photoUrl":"//s1"
                }
             },
             {
@@ -42,7 +44,8 @@ TEST(ClassroomApiStudentsResponseTypesTest, ConvertsStudents) {
                   "name":{
                      "fullName":"Student2 full"
                   },
-                  "emailAddress":"student2@foo.com"
+                  "emailAddress":"student2@foo.com",
+                  "photoUrl":"//s2"
                }
             }
          ]
@@ -59,12 +62,14 @@ TEST(ClassroomApiStudentsResponseTypesTest, ConvertsStudents) {
             "Student1 full");
   EXPECT_EQ(students->items().at(0)->profile().email_address(),
             "student1@foo.com");
+  EXPECT_EQ(students->items().at(0)->profile().photo_url(), GURL("https://s1"));
 
   EXPECT_EQ(students->items().at(1)->profile().id(), "student-2");
   EXPECT_EQ(students->items().at(1)->profile().name().full_name(),
             "Student2 full");
   EXPECT_EQ(students->items().at(1)->profile().email_address(),
             "student2@foo.com");
+  EXPECT_EQ(students->items().at(1)->profile().photo_url(), GURL("https://s2"));
 }
 
 TEST(ClassroomApiStudentsResponseTypesTest, ConvertsNextPageToken) {

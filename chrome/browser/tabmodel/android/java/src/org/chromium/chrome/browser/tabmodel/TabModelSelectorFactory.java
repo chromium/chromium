@@ -9,6 +9,7 @@ import android.content.Context;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** A factory interface for building a {@link TabModelSelector} instance. */
 public interface TabModelSelectorFactory {
@@ -16,6 +17,7 @@ public interface TabModelSelectorFactory {
      * Builds a {@link TabModelSelector}.
      *
      * @param context An {@link Context} instance.
+     * @param modalDialogManager The {@link ModalDialogManager}.
      * @param profileProviderSupplier Provides the Profiles used in this selector.
      * @param tabCreatorManager A {@link TabCreatorManager} instance.
      * @param nextTabPolicySupplier A {@link NextTabPolicySupplier} instance.
@@ -23,6 +25,7 @@ public interface TabModelSelectorFactory {
      */
     TabModelSelector buildSelector(
             Context context,
+            ModalDialogManager modalDialogManager,
             OneshotSupplier<ProfileProvider> profileProviderSupplier,
             TabCreatorManager tabCreatorManager,
             NextTabPolicySupplier nextTabPolicySupplier);

@@ -6,6 +6,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/notreached.h"
+#include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
@@ -23,6 +24,7 @@
 namespace {
 
 constexpr char kAuthHeaderBearer[] = "Bearer ";
+constexpr char kServerTimeoutHeader[] = "X-Server-Timeout";
 
 optimization_guide::proto::Platform GetPlatform() {
 #if BUILDFLAG(IS_WIN)
@@ -82,11 +84,17 @@ std::string_view GetStringNameForModelExecutionFeature(
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_HISTORY_SEARCH:
       return "HistorySearch";
     case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_HISTORY_QUERY_INTENT:
+      return "HistoryQueryIntent";
+    case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_FORMS_PREDICTIONS:
       return "FormsPredictions";
     case proto::ModelExecutionFeature::
         MODEL_EXECUTION_FEATURE_FORMS_ANNOTATIONS:
       return "FormsAnnotations";
+    case proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_BLING_PROTOTYPING:
+      return "BlingPrototyping";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in
@@ -118,8 +126,7 @@ std::string GetStringForOptimizationGuideDecision(
     case OptimizationGuideDecision::kFalse:
       return "False";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 optimization_guide::proto::OriginInfo GetClientOriginInfo() {
@@ -179,6 +186,14 @@ void PopulateApiKeyRequestHeader(network::ResourceRequest* resource_request,
                                  std::string_view api_key) {
   CHECK(!api_key.empty());
   google_apis::AddAPIKeyToRequest(*resource_request, api_key);
+}
+
+void PopulateServerTimeoutRequestHeader(
+    network::ResourceRequest* resource_request,
+    base::TimeDelta timeout) {
+  CHECK(timeout.is_positive());
+  resource_request->headers.SetHeader(
+      kServerTimeoutHeader, base::NumberToString(timeout.InSeconds()));
 }
 
 bool ShouldStartModelValidator() {

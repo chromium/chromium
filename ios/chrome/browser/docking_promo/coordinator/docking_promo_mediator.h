@@ -9,8 +9,6 @@
 
 #import "base/time/time.h"
 
-@protocol DockingPromoConsumer;
-
 class PromosManager;
 
 namespace feature_engagement {
@@ -20,9 +18,6 @@ class Tracker;
 // Mediator that evaluates whether or not the Docking Promo can be displayed,
 // and updates its consumer with the latest Docking Promo content.y
 @interface DockingPromoMediator : NSObject
-
-// The main consumer for this mediator.
-@property(nonatomic, weak) id<DockingPromoConsumer> consumer;
 
 // The feature engagement tracker to alert of promo events.
 @property(nonatomic, assign) feature_engagement::Tracker* tracker;
@@ -38,9 +33,6 @@ class Tracker;
 
 // Returns YES if the user conditions are met to present the Docking Promo.
 - (BOOL)canShowDockingPromo;
-
-// Configures the consumer.
-- (void)configureConsumer;
 
 // Registers the Docking Promo (Remind Me Later version) for single display with
 // the Promos Manager.

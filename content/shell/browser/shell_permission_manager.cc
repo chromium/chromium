@@ -26,7 +26,6 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
   switch (permission) {
     case PermissionType::GEOLOCATION:
     case PermissionType::SENSORS:
-    case PermissionType::ACCESSIBILITY_EVENTS:
     case PermissionType::PAYMENT_HANDLER:
     case PermissionType::WAKE_LOCK_SCREEN:
 
@@ -80,8 +79,7 @@ bool IsAllowlistedPermissionType(PermissionType permission) {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace

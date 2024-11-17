@@ -455,10 +455,6 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
 
   source->AddString(kLoadTimeClassesKey, GetLoadTimeClasses(in_dev_mode));
 
-  source->AddBoolean(
-      "safetyCheckExtensionsReviewEnabled",
-      base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
-
   source->AddBoolean(kEnableEnhancedSiteControls,
                      base::FeatureList::IsEnabled(
                          extensions_features::kExtensionsMenuAccessControl));
@@ -469,9 +465,6 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
       "enableUserPermittedSites",
       base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControlWithPermittedSites));
-  source->AddBoolean(
-      "safetyCheckShowReviewPanel",
-      base::FeatureList::IsEnabled(features::kSafetyCheckExtensions));
   source->AddBoolean("safetyHubShowReviewPanel",
                      base::FeatureList::IsEnabled(features::kSafetyHub));
 
@@ -516,11 +509,7 @@ ExtensionsUIConfig::CreateWebUIController(content::WebUI* web_ui,
   return std::make_unique<ExtensionsUI>(web_ui);
 }
 
-ExtensionsUI::ExtensionsUI(content::WebUI* web_ui)
-    : WebUIController(web_ui),
-      webui_load_timer_(web_ui->GetWebContents(),
-                        "Extensions.WebUi.DocumentLoadedInMainFrameTime",
-                        "Extensions.WebUi.LoadCompletedInMainFrame") {
+ExtensionsUI::ExtensionsUI(content::WebUI* web_ui) : WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
   content::WebUIDataSource* source = nullptr;
 

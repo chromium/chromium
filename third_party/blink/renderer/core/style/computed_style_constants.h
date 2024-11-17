@@ -65,8 +65,10 @@ enum PseudoId : uint8_t {
   kPseudoIdNone,
   kPseudoIdFirstLine,
   kPseudoIdFirstLetter,
+  kPseudoIdCheck,
   kPseudoIdBefore,
   kPseudoIdAfter,
+  kPseudoIdSelectArrow,
   kPseudoIdMarker,
   kPseudoIdBackdrop,
   kPseudoIdSelection,
@@ -104,8 +106,6 @@ enum PseudoId : uint8_t {
   kPseudoIdPlaceholder,
   kPseudoIdFileSelectorButton,
   kPseudoIdDetailsContent,
-  kPseudoIdSelectFallbackButton,
-  kPseudoIdSelectFallbackButtonText,
   kPseudoIdPickerSelect,
   // Special values follow:
   kAfterLastInternalPseudoId,
@@ -402,6 +402,8 @@ enum class TextEmphasisPosition : unsigned {
   kUnderRight,
   kUnderLeft,
 };
+
+enum class StyleViewTransitionCaptureMode : unsigned { kFlat, kLayered };
 
 inline bool IsOver(TextEmphasisPosition position) {
   return position == TextEmphasisPosition::kOverRight ||

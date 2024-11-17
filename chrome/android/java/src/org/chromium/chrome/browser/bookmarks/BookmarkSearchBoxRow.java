@@ -95,7 +95,7 @@ public class BookmarkSearchBoxRow extends LinearLayout {
     private boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
         assert textView == mSearchText;
         if (actionId == EditorInfo.IME_ACTION_SEARCH
-                || keyEvent != null && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                || (keyEvent != null && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER)) {
             KeyboardVisibilityDelegate.getInstance().hideKeyboard(textView);
             mSearchText.clearFocus();
             return true;

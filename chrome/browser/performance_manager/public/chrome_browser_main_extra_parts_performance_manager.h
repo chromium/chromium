@@ -34,6 +34,7 @@ class PageLoadMetricsObserver;
 class PageLoadTrackerDecoratorHelper;
 class PerformanceManagerFeatureObserverClient;
 class PerformanceManagerLifetime;
+class ScopedGlobalScenarioMemory;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 class ExtensionWatcher;
@@ -111,6 +112,9 @@ class ChromeBrowserMainExtraPartsPerformanceManager
   // Needed to maintain the PageNode::IsLoading() property.
   std::unique_ptr<performance_manager::PageLoadTrackerDecoratorHelper>
       page_load_tracker_decorator_helper_;
+
+  std::unique_ptr<performance_manager::ScopedGlobalScenarioMemory>
+      global_performance_scenario_memory_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<performance_manager::ExtensionWatcher> extension_watcher_;

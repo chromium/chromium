@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -59,9 +60,49 @@ std::unique_ptr<TrustedKVv2Signals> TrustedKVv2Signals::LoadKVv2BiddingSignals(
           std::move(devtools_pending_remote), std::move(v8_helper),
           std::move(load_kvv2_signals_callback)));
 
+  std::string post_body = request_helper->TakePostRequestBody();
+  base::UmaHistogramCounts100000(
+      "Ads.InterestGroup.Net.RequestSizeBytes.TrustedKVv2Bidding",
+      post_body.size());
+
   trusted_kvv2_signals->StartKVv2Download(
-      url_loader_factory, trusted_bidding_signals_url,
-      request_helper->TakePostRequestBody());
+      url_loader_factory, trusted_bidding_signals_url, std::move(post_body));
+
+  return trusted_kvv2_signals;
+}
+
+std::unique_ptr<TrustedKVv2Signals> TrustedKVv2Signals::LoadKVv2ScoringSignals(
+    network::mojom::URLLoaderFactory* url_loader_factory,
+    mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
+        devtools_pending_remote,
+    std::set<std::string> render_urls,
+    std::set<std::string> ad_component_render_urls,
+    const GURL& trusted_scoring_signals_url,
+    std::unique_ptr<TrustedScoringSignalsKVv2RequestHelperBuilder>
+        request_helper_builder,
+    scoped_refptr<AuctionV8Helper> v8_helper,
+    LoadKVv2SignalsCallback load_kvv2_signals_callback) {
+  DCHECK(!render_urls.empty());
+
+  std::unique_ptr<TrustedSignalsKVv2RequestHelper> request_helper =
+      request_helper_builder->Build();
+
+  std::unique_ptr<TrustedKVv2Signals> trusted_kvv2_signals =
+      base::WrapUnique(new TrustedKVv2Signals(
+          /*interest_group_names=*/std::nullopt,
+          /*bidding_signals_keys=*/std::nullopt, std::move(render_urls),
+          std::move(ad_component_render_urls), trusted_scoring_signals_url,
+          request_helper->TakeOHttpRequestContext(),
+          std::move(devtools_pending_remote), std::move(v8_helper),
+          std::move(load_kvv2_signals_callback)));
+
+  std::string post_body = request_helper->TakePostRequestBody();
+  base::UmaHistogramCounts100000(
+      "Ads.InterestGroup.Net.RequestSizeBytes.TrustedKVv2Scoring",
+      post_body.size());
+
+  trusted_kvv2_signals->StartKVv2Download(
+      url_loader_factory, trusted_scoring_signals_url, std::move(post_body));
 
   return trusted_kvv2_signals;
 }
@@ -183,12 +224,52 @@ void TrustedKVv2Signals::HandleKVv2DownloadResultOnV8Thread(
   v8::Context::Scope context_scope(v8_helper->scratch_context());
 
   if (bidding_signals_keys) {
+    base::UmaHistogramCounts10M(
+        "Ads.InterestGroup.Net.ResponseSizeBytes.TrustedKVv2Bidding",
+        body->size());
+    base::UmaHistogramTimes(
+        "Ads.InterestGroup.Net.DownloadTime.TrustedKVv2Bidding", download_time);
+
     CHECK(interest_group_names.has_value());
     TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMapOrError
         maybe_result_map = TrustedSignalsKVv2ResponseParser::
             ParseBiddingSignalsFetchResultToResultMap(
                 v8_helper.get(), interest_group_names.value(),
                 bidding_signals_keys.value(), maybe_fetch_result.value());
+
+    base::UmaHistogramBoolean(
+        "Ads.InterestGroup.TrustedKVv2BiddingResponseParsed",
+        maybe_result_map.has_value());
+
+    if (!maybe_result_map.has_value()) {
+      PostKVv2CallbackToUserThread(
+          std::move(user_thread_task_runner), weak_instance,
+          /*result_map=*/std::nullopt,
+          std::move(maybe_result_map).error().error_msg);
+      return;
+    }
+
+    PostKVv2CallbackToUserThread(
+        std::move(user_thread_task_runner), weak_instance,
+        std::move(maybe_result_map).value(), std::move(error_msg));
+  } else {
+    // Handle scoring signals case.
+    base::UmaHistogramCounts10M(
+        "Ads.InterestGroup.Net.ResponseSizeBytes.TrustedKVv2Scoring",
+        body->size());
+    base::UmaHistogramTimes(
+        "Ads.InterestGroup.Net.DownloadTime.TrustedKVv2Scoring", download_time);
+
+    CHECK(render_urls.has_value());
+    TrustedSignalsKVv2ResponseParser::TrustedSignalsResultMapOrError
+        maybe_result_map = TrustedSignalsKVv2ResponseParser::
+            ParseScoringSignalsFetchResultToResultMap(
+                v8_helper.get(), render_urls.value(),
+                ad_component_render_urls.value(), maybe_fetch_result.value());
+
+    base::UmaHistogramBoolean(
+        "Ads.InterestGroup.TrustedKVv2ScoringResponseParsed",
+        maybe_result_map.has_value());
 
     if (!maybe_result_map.has_value()) {
       PostKVv2CallbackToUserThread(

@@ -36,19 +36,17 @@ class AutofillCreditCardTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  protected:
   AutofillCreditCardTableViewControllerTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
+    TestProfileIOS::Builder builder;
     // Credit card import requires a PersonalDataManager which itself needs the
-    // WebDataService; this is not initialized on a TestChromeBrowserState by
+    // WebDataService; this is not initialized on a TestProfileIOS by
     // default.
-    test_cbs_builder.AddTestingFactory(
-        ios::WebDataServiceFactory::GetInstance(),
-        ios::WebDataServiceFactory::GetDefaultFactory());
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    builder.AddTestingFactory(ios::WebDataServiceFactory::GetInstance(),
+                              ios::WebDataServiceFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     // Set circular SyncService dependency to null.
-    autofill::PersonalDataManagerFactory::GetForBrowserState(
-        chrome_browser_state_.get())
+    autofill::PersonalDataManagerFactory::GetForProfile(profile_.get())
         ->SetSyncServiceForTest(nullptr);
   }
 
@@ -67,8 +65,7 @@ class AutofillCreditCardTableViewControllerTest
                      const std::string& card_holder_name,
                      const std::string& card_number) {
     autofill::PersonalDataManager* personal_data_manager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        autofill::PersonalDataManagerFactory::GetForProfile(profile_.get());
     autofill::PersonalDataChangedWaiter waiter(*personal_data_manager);
 
     autofill::CreditCard credit_card(
@@ -110,7 +107,7 @@ class AutofillCreditCardTableViewControllerTest
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
 };
 
@@ -164,8 +161,7 @@ TEST_F(AutofillCreditCardTableViewControllerTest,
 TEST_F(AutofillCreditCardTableViewControllerTest,
        TestMandatoryReauthSwitchExists) {
   autofill::PersonalDataManager* personal_data_manager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(
-          chrome_browser_state_.get());
+      autofill::PersonalDataManagerFactory::GetForProfile(profile_.get());
   EXPECT_TRUE(personal_data_manager->payments_data_manager()
                   .IsPaymentMethodsMandatoryReauthEnabled());
 

@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
@@ -148,10 +148,19 @@ export class ViewerDownloadControlsElement extends CrLitElement {
   }
 
   protected onDownloadEditedClick_() {
+    this.$.menu.close();
+
+    // <if expr="enable_pdf_ink2">
+    // Only save as annotation when there are edits.
+    if (this.hasInk2Edits) {
+      this.dispatchSaveEvent_(SaveRequestType.ANNOTATION);
+      return;
+    }
+    // </if>
+
     this.dispatchSaveEvent_(
         this.hasEnteredAnnotationMode ? SaveRequestType.ANNOTATION :
                                         SaveRequestType.EDITED);
-    this.$.menu.close();
   }
 }
 

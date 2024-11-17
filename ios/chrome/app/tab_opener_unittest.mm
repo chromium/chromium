@@ -4,17 +4,16 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/threading/thread.h"
-#import "components/sync_preferences/pref_service_mock_factory.h"
-#import "components/sync_preferences/pref_service_syncable.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
 #import "ios/chrome/app/application_delegate/url_opener.h"
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller_testing.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/stub_browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
@@ -28,14 +27,16 @@
 
 namespace {
 
-// A block that takes the arguments of
-// +handleLaunchOptions:applicationActive:tabOpener:startupInformation: and
-// returns nothing.
-typedef void (^HandleLaunchOptions)(id self,
-                                    NSDictionary* options,
-                                    id<TabOpening> tabOpener,
-                                    id<StartupInformation> startupInformation,
-                                    AppState* appState);
+// Prototype of the block used to swizzle the method under test of URLOpener.
+using HandleLaunchOptions = void (^)(id,
+                                     URLOpenerParams*,
+                                     id<TabOpening>,
+                                     id<ConnectionInformation>,
+                                     id<StartupInformation>,
+                                     PrefService*,
+                                     ProfileInitStage);
+
+}  // namespace
 
 class TabOpenerTest : public PlatformTest {
  protected:
@@ -47,54 +48,53 @@ class TabOpenerTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  BOOL swizzleHasBeenCalled() { return swizzle_block_executed_; }
+  BOOL HasSwizzledMethodBeenCalled() { return swizzle_block_executed_; }
 
-  void swizzleHandleLaunchOptions(
-      URLOpenerParams* expectedParams,
-      id<ConnectionInformation> expectedConnectionInformation,
-      id<StartupInformation> expectedStartupInformation,
-      AppState* expectedAppState) {
+  void InstallSwizzleForHandleLauncheOptionsMethod(
+      URLOpenerParams* expected_params,
+      id<ConnectionInformation> expected_connection_information,
+      id<StartupInformation> expected_startup_information,
+      ProfileInitStage expected_init_stage) {
     swizzle_block_executed_ = NO;
     swizzle_block_ =
-        [^(id self, URLOpenerParams* params, id<TabOpening> tabOpener,
-           id<ConnectionInformation> connectionInformation,
-           id<StartupInformation> startupInformation, AppState* appState) {
+        ^(id self, URLOpenerParams* params, id<TabOpening> tab_opener,
+          id<ConnectionInformation> connection_information,
+          id<StartupInformation> startup_information, PrefService* pref_service,
+          ProfileInitStage init_stage) {
           swizzle_block_executed_ = YES;
-          EXPECT_EQ(expectedParams, params);
-          EXPECT_EQ(expectedConnectionInformation, connectionInformation);
-          EXPECT_EQ(expectedStartupInformation, startupInformation);
-          EXPECT_EQ(scene_controller_, tabOpener);
-          EXPECT_EQ(expectedAppState, appState);
-        } copy];
-    URL_opening_handle_launch_swizzler_.reset(new ScopedBlockSwizzler(
+          EXPECT_EQ(expected_params, params);
+          EXPECT_EQ(expected_connection_information, connection_information);
+          EXPECT_EQ(expected_startup_information, startup_information);
+          EXPECT_EQ(scene_controller_, tab_opener);
+          EXPECT_EQ(expected_init_stage, init_stage);
+        };
+    URL_opening_handle_launch_swizzler_ = std::make_unique<ScopedBlockSwizzler>(
         [URLOpener class],
         @selector(handleLaunchOptions:
                             tabOpener:connectionInformation:startupInformation
-                                     :appState:prefService:),
-        swizzle_block_));
+                                     :prefService:initStage:),
+        swizzle_block_);
   }
 
   SceneController* GetSceneController() {
     if (!scene_controller_) {
-      id mock_wrangled_browser = OCMClassMock(WrangledBrowser.class);
+      profile_ = TestProfileIOS::Builder().Build();
 
-      sync_preferences::PrefServiceMockFactory factory;
-      scoped_refptr<user_prefs::PrefRegistrySyncable> registry(
-          new user_prefs::PrefRegistrySyncable);
-      RegisterBrowserStatePrefs(registry.get());
+      profile_state_ = OCMClassMock([ProfileState class]);
+      OCMStub([profile_state_ initStage]).andReturn(ProfileInitStage::kFinal);
 
-      TestChromeBrowserState::Builder builder;
-      builder.SetPrefService(factory.CreateSyncable(registry.get()));
-      browser_state_ = std::move(builder).Build();
-
-      OCMStub([mock_wrangled_browser browserState])
-          .andReturn(browser_state_.get());
+      scene_state_ = [[FakeSceneState alloc] initWithAppState:nil
+                                                      profile:profile_.get()];
+      scene_state_.profileState = profile_state_;
 
       SceneController* controller =
           [[SceneController alloc] initWithSceneState:scene_state_];
 
-      mockController_ = OCMPartialMock(controller);
-      OCMStub([mockController_ currentInterface])
+      id mock_wrangled_browser = OCMClassMock([WrangledBrowser class]);
+      OCMStub([mock_wrangled_browser profile]).andReturn(profile_.get());
+
+      scene_controller_ = OCMPartialMock(controller);
+      OCMStub([scene_controller_ currentInterface])
           .andReturn(mock_wrangled_browser);
 
       scene_controller_ = controller;
@@ -104,14 +104,12 @@ class TabOpenerTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  // Keep the partial mock object alive to avoid automatic deallocation when out
-  // of scope.
-  id mockController_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  ProfileState* profile_state_;
   SceneState* scene_state_;
   SceneController* scene_controller_;
 
-  __block BOOL swizzle_block_executed_;
+  BOOL swizzle_block_executed_;
   HandleLaunchOptions swizzle_block_;
   std::unique_ptr<ScopedBlockSwizzler> URL_opening_handle_launch_swizzler_;
 };
@@ -127,43 +125,40 @@ TEST_F(TabOpenerTest, openTabFromLaunchWithParamsWithOptions) {
       [[URLOpenerParams alloc] initWithURL:nil
                          sourceApplication:sourceApplication];
 
-  id startupInformationMock =
+  id mock_startup_information =
       [OCMockObject mockForProtocol:@protocol(StartupInformation)];
-  id appStateMock = [OCMockObject mockForClass:[AppState class]];
 
-  id<TabOpening> tabOpener = GetSceneController();
-  id<ConnectionInformation> connectionInformation = GetSceneController();
+  id<TabOpening> tab_opener = GetSceneController();
+  id<ConnectionInformation> connection_information = GetSceneController();
 
-  swizzleHandleLaunchOptions(params, connectionInformation,
-                             startupInformationMock, appStateMock);
+  InstallSwizzleForHandleLauncheOptionsMethod(params, connection_information,
+                                              mock_startup_information,
+                                              ProfileInitStage::kFinal);
 
   // Action.
-  [tabOpener openTabFromLaunchWithParams:params
-                      startupInformation:startupInformationMock
-                                appState:appStateMock];
+  [tab_opener openTabFromLaunchWithParams:params
+                       startupInformation:mock_startup_information];
 
   // Test.
-  EXPECT_TRUE(swizzleHasBeenCalled());
+  EXPECT_TRUE(HasSwizzledMethodBeenCalled());
 }
 
 // Tests that -newTabFromLaunchOptions do nothing if launchOptions is nil.
 TEST_F(TabOpenerTest, openTabFromLaunchWithParamsWithNil) {
   // Setup.
-  id startupInformationMock =
+  id mock_startup_information =
       [OCMockObject mockForProtocol:@protocol(StartupInformation)];
-  id appStateMock = [OCMockObject mockForClass:[AppState class]];
 
-  id<TabOpening> tabOpener = GetSceneController();
-  id<ConnectionInformation> connectionInformation = GetSceneController();
-  swizzleHandleLaunchOptions(nil, connectionInformation, startupInformationMock,
-                             appStateMock);
+  id<TabOpening> tab_opener = GetSceneController();
+  id<ConnectionInformation> connection_information = GetSceneController();
+  InstallSwizzleForHandleLauncheOptionsMethod(nil, connection_information,
+                                              mock_startup_information,
+                                              ProfileInitStage::kFinal);
 
   // Action.
-  [tabOpener openTabFromLaunchWithParams:nil
-                      startupInformation:startupInformationMock
-                                appState:appStateMock];
+  [tab_opener openTabFromLaunchWithParams:nil
+                       startupInformation:mock_startup_information];
 
   // Test.
-  EXPECT_FALSE(swizzleHasBeenCalled());
+  EXPECT_FALSE(HasSwizzledMethodBeenCalled());
 }
-}  // namespace

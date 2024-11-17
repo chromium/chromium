@@ -229,7 +229,7 @@ LegacySessionRestorationService::CreateUnrealizedWebState(
     web::proto::WebStateStorage storage) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return web::WebState::CreateWithStorageSession(
-      web::WebState::CreateParams(browser->GetBrowserState()),
+      web::WebState::CreateParams(browser->GetProfile()),
       [[CRWSessionStorage alloc] initWithProto:storage
                               uniqueIdentifier:web::WebStateID::NewUnique()
                               stableIdentifier:[[NSUUID UUID] UUIDString]],

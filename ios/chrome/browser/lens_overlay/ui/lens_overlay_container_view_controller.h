@@ -26,6 +26,9 @@
 /// Currently should be set by `viewDidLoad` and only set once.
 @property(nonatomic, strong) UIViewController* selectionViewController;
 
+/// Disables the interaction with the presented overlay.
+@property(nonatomic, assign) BOOL selectionInteractionDisabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_LENS_OVERLAY_UI_LENS_OVERLAY_CONTAINER_VIEW_CONTROLLER_H_

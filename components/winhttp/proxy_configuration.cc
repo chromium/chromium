@@ -4,6 +4,9 @@
 
 #include "components/winhttp/proxy_configuration.h"
 
+#include <optional>
+#include <string>
+
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/sys_string_conversions.h"
@@ -18,7 +21,7 @@ namespace winhttp {
 
 void SetProxyForRequest(
     HINTERNET request_handle,
-    const std::optional<ScopedWinHttpProxyInfo>& winhttp_proxy_info) {
+    std::optional<ScopedWinHttpProxyInfo> winhttp_proxy_info) {
   if (winhttp_proxy_info.has_value() && winhttp_proxy_info.value().IsValid()) {
     const ScopedWinHttpProxyInfo& proxy_info = winhttp_proxy_info.value();
     VLOG(1) << "Setting proxy: " << *(proxy_info.get());

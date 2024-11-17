@@ -26,8 +26,9 @@ class AudioParameters;
 class Mp4MuxerDelegateFragment;
 enum VideoCodecProfile;
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-class H264AnnexBToAvcBitstreamConverter;
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) || \
+    BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+class H26xAnnexBToBitstreamConverter;
 #endif
 
 class Mp4MuxerDelegateInterface {
@@ -36,14 +37,13 @@ class Mp4MuxerDelegateInterface {
 
   virtual void AddVideoFrame(
       const Muxer::VideoParameters& params,
-      std::string encoded_data,
+      scoped_refptr<DecoderBuffer> encoded_data,
       std::optional<VideoEncoder::CodecDescription> codec_description,
-      base::TimeTicks timestamp,
-      bool is_key_frame) = 0;
+      base::TimeTicks timestamp) = 0;
 
   virtual void AddAudioFrame(
       const AudioParameters& params,
-      std::string encoded_data,
+      scoped_refptr<DecoderBuffer> encoded_data,
       std::optional<AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) = 0;
 
@@ -60,6 +60,7 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
  public:
   Mp4MuxerDelegate(
       AudioCodec audio_codec,
+      VideoCodec video_codec,
       std::optional<VideoCodecProfile> profile,
       std::optional<VideoCodecLevel> level,
       Muxer::WriteDataCB write_callback,
@@ -70,14 +71,13 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
 
   void AddVideoFrame(
       const Muxer::VideoParameters& params,
-      std::string encoded_data,
+      scoped_refptr<DecoderBuffer> encoded_data,
       std::optional<VideoEncoder::CodecDescription> codec_description,
-      base::TimeTicks timestamp,
-      bool is_key_frame) override;
+      base::TimeTicks timestamp) override;
 
   void AddAudioFrame(
       const AudioParameters& params,
-      std::string encoded_data,
+      scoped_refptr<DecoderBuffer> encoded_data,
       std::optional<AudioEncoder::CodecDescription> codec_description,
       base::TimeTicks timestamp) override;
   // Write to the big endian ISO-BMFF boxes and call `write_callback`.
@@ -95,14 +95,14 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
 
   void BuildMovieVideoTrack(
       const Muxer::VideoParameters& params,
-      std::string_view encoded_data,
+      const DecoderBuffer& encoded_data,
       std::optional<VideoEncoder::CodecDescription> codec_description);
-  void AddDataToVideoFragment(std::string_view encoded_data, bool is_key_frame);
+  void AddDataToVideoFragment(scoped_refptr<DecoderBuffer> encoded_data);
   void BuildMovieAudioTrack(
       const AudioParameters& params,
-      std::string_view encoded_data,
+      const DecoderBuffer& encoded_data,
       std::optional<AudioEncoder::CodecDescription> codec_description);
-  void AddDataToAudioFragment(std::string_view encoded_data);
+  void AddDataToAudioFragment(scoped_refptr<DecoderBuffer> encoded_data);
 
   void AddLastSampleTimestamp(int track_index, base::TimeDelta inverse_of_rate);
   int GetNextTrackIndex();
@@ -118,8 +118,10 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
   void MaybeFlushMoofAndMfraBoxes(size_t written_offset);
   size_t GetAudioOnlyFragmentCount() const;
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  std::string ConvertNALUData(std::string_view encoded_data);
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) || \
+    BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  scoped_refptr<DecoderBuffer> ConvertNALUData(
+      scoped_refptr<DecoderBuffer> encoded_data);
 #endif
 
   std::unique_ptr<Mp4MuxerContext> context_;
@@ -172,8 +174,9 @@ class MEDIA_EXPORT Mp4MuxerDelegate : public Mp4MuxerDelegateInterface {
 
   const size_t audio_sample_count_per_fragment_;
 
-#if BUILDFLAG(USE_PROPRIETARY_CODECS)
-  std::unique_ptr<media::H264AnnexBToAvcBitstreamConverter> h264_converter_;
+#if BUILDFLAG(USE_PROPRIETARY_CODECS) || \
+    BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+  std::unique_ptr<H26xAnnexBToBitstreamConverter> h26x_converter_;
 #endif
 
   Muxer::WriteDataCB write_data_callback_ GUARDED_BY_CONTEXT(sequence_checker_);

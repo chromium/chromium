@@ -37,7 +37,7 @@ class PersistentBookmarkEntity : public LoopbackServerEntity {
       const std::string& originator_cache_guid);
 
   // Factory function for PersistentBookmarkEntity. The server's current entity
-  // for this ID, |current_server_entity|, is passed here because the client
+  // for this ID, `current_server_entity`, is passed here because the client
   // does not always send the complete entity over the wire. This requires
   // copying of some of the existing entity when creating a new entity.
   static std::unique_ptr<LoopbackServerEntity> CreateUpdatedVersion(

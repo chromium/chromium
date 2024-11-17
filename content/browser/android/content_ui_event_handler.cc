@@ -13,7 +13,7 @@
 #include "ui/events/android/gesture_event_android.h"
 #include "ui/events/android/gesture_event_type.h"
 #include "ui/events/android/key_event_android.h"
-#include "ui/events/android/motion_event_android.h"
+#include "ui/events/android/motion_event_android_java.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event_utils.h"
 
@@ -93,7 +93,9 @@ void ContentUiEventHandler::SendMouseWheelEvent(
     jfloat x,
     jfloat y,
     jfloat ticks_x,
-    jfloat ticks_y) {
+    jfloat ticks_y,
+    jint meta_state,
+    jint source) {
   auto* event_handler = GetRenderWidgetHostView();
   if (!event_handler)
     return;
@@ -110,13 +112,13 @@ void ContentUiEventHandler::SendMouseWheelEvent(
   float pixels_per_tick =
       window ? window->mouse_wheel_scroll_factor()
              : ui::kDefaultMouseWheelTickMultiplier * view->GetDipScale();
-  ui::MotionEventAndroid event(
+  ui::MotionEventAndroidJava event(
       env, nullptr, 1.f / view->GetDipScale(), ticks_x, ticks_y,
       pixels_per_tick, base::TimeTicks::FromJavaNanoTime(time_ns),
       0 /* action */, 1 /* pointer_count */, 0 /* history_size */,
-      0 /* action_index */, 0, 0, 0, 0, 0 /* raw_offset_x_pixels */,
-      0 /* raw_offset_y_pixels */, false /* for_touch_handle */, &pointer,
-      nullptr);
+      0 /* action_index */, 0, 0, 0, meta_state, source,
+      0 /* raw_offset_x_pixels */, 0 /* raw_offset_y_pixels */,
+      false /* for_touch_handle */, &pointer, nullptr);
   event_handler->OnMouseWheelEvent(event);
 }
 
@@ -144,15 +146,15 @@ void ContentUiEventHandler::SendMouseEvent(JNIEnv* env,
   ui::MotionEventAndroid::Pointer pointer(
       pointer_id, x, y, 0.0f /* touch_major */, 0.0f /* touch_minor */,
       orientation, tilt, android_tool_type);
-  ui::MotionEventAndroid event(
+  ui::MotionEventAndroidJava event(
       env, nullptr /* event */,
       1.f / web_contents_->GetNativeView()->GetDipScale(), 0.f, 0.f, 0.f,
       base::TimeTicks::FromJavaNanoTime(time_ns), android_action,
       1 /* pointer_count */, 0 /* history_size */, 0 /* action_index */,
       android_action_button, 0 /* gesture_classification */,
-      android_button_state, android_meta_state, 0 /* raw_offset_x_pixels */,
-      0 /* raw_offset_y_pixels */, false /* for_touch_handle */, &pointer,
-      nullptr);
+      android_button_state, android_meta_state, 0 /* source */,
+      0 /* raw_offset_x_pixels */, 0 /* raw_offset_y_pixels */,
+      false /* for_touch_handle */, &pointer, nullptr);
   event_handler->OnMouseEvent(event);
 }
 

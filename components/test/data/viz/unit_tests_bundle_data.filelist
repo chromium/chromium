@@ -77,6 +77,7 @@
 //components/test/data/viz/delegated_ink_trail_graphite.png
 //components/test/data/viz/delegated_ink_trail_no_prediction.png
 //components/test/data/viz/delegated_ink_trail_no_prediction_graphite.png
+//components/test/data/viz/delegated_ink_trail_non_root_render_pass.png
 //components/test/data/viz/delegated_ink_trail_on_batched_quads.png
 //components/test/data/viz/delegated_ink_trail_on_batched_quads_graphite.png
 //components/test/data/viz/delegated_ink_two_trails_first.png
@@ -151,6 +152,7 @@
 //components/test/data/viz/mixed_filters_zoom_offset_1x.png
 //components/test/data/viz/mixed_filters_zoom_offset_2x.png
 //components/test/data/viz/multi_linear_gradient_render_pass.png
+//components/test/data/viz/no-trail-white.png
 //components/test/data/viz/offset_backdrop_filter_1x.png
 //components/test/data/viz/offset_backdrop_filter_1x_sw.png
 //components/test/data/viz/offset_backdrop_filter_2x.png

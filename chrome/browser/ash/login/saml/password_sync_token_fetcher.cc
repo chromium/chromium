@@ -241,7 +241,7 @@ void PasswordSyncTokenFetcher::FetchSyncToken(const std::string& access_token) {
       break;
     case RequestType::kNone:
       // Error: request type needs to be already set.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   resource_request->load_flags =
       net::LOAD_DISABLE_CACHE | net::LOAD_BYPASS_CACHE;
@@ -382,7 +382,7 @@ void PasswordSyncTokenFetcher::ProcessValidTokenResponse(
       break;
     }
     case RequestType::kNone:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

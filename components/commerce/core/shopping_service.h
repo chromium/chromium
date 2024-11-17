@@ -26,6 +26,7 @@
 #include "components/commerce/core/commerce_info_cache.h"
 #include "components/commerce/core/commerce_types.h"
 #include "components/commerce/core/compare/cluster_manager.h"
+#include "components/commerce/core/product_specifications/product_specifications_cache.h"
 #include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/proto/commerce_subscription_db_content.pb.h"
@@ -68,6 +69,10 @@ class OptimizationMetadata;
 namespace power_bookmarks {
 class PowerBookmarkService;
 }  // namespace power_bookmarks
+
+namespace sessions {
+class TabRestoreService;
+}  // namespace sessions
 
 namespace signin {
 class IdentityManager;
@@ -195,7 +200,8 @@ using UrlProductIdentifierTupleCallback =
 
 class ShoppingService : public KeyedService,
                         public base::SupportsUserData,
-                        public history::HistoryServiceObserver {
+                        public history::HistoryServiceObserver,
+                        public ProductSpecificationsSet::Observer {
  public:
   ShoppingService(
       const std::string& country_on_startup,
@@ -216,7 +222,8 @@ class ShoppingService : public KeyedService,
       SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
           parcel_tracking_proto_db,
       history::HistoryService* history_service,
-      std::unique_ptr<commerce::WebExtractor> web_extractor);
+      std::unique_ptr<commerce::WebExtractor> web_extractor,
+      sessions::TabRestoreService* tab_restore_service);
   ~ShoppingService() override;
 
   ShoppingService(const ShoppingService&) = delete;
@@ -433,6 +440,10 @@ class ShoppingService : public KeyedService,
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
 
+  // ProductSpecificationsSet::Observer:
+  void OnProductSpecificationsSetRemoved(
+      const ProductSpecificationsSet& set) override;
+
   // Get a weak pointer for this service instance.
   base::WeakPtr<ShoppingService> AsWeakPtr();
 
@@ -635,12 +646,6 @@ class ShoppingService : public KeyedService,
   void OnGetOnDemandProductInfo(const GURL& url,
                                 const std::optional<const ProductInfo>& info);
 
-  // TODO(b/362316113): Remove once history service is passed through handler
-  // constructor.
-  virtual void QueryHistoryForUrl(
-      const GURL& url,
-      history::HistoryService::QueryURLCallback callback);
-
   // The two-letter country code as detected on startup.
   std::string country_on_startup_;
 
@@ -677,6 +682,8 @@ class ShoppingService : public KeyedService,
   // A cache that retains commerce information for a URL as long as at least one
   // instance of the URL is open in a tab or mainteined by some other subsystem.
   CommerceInfoCache commerce_info_cache_;
+
+  ProductSpecificationsCache product_specifications_cache_;
 
   std::unique_ptr<ProductSpecificationsServerProxy> product_specs_server_proxy_;
 
@@ -723,7 +730,11 @@ class ShoppingService : public KeyedService,
                           history::HistoryServiceObserver>
       history_service_observation_{this};
 
-  const raw_ptr<history::HistoryService> history_service_;
+  const raw_ptr<sessions::TabRestoreService> tab_restore_service_{nullptr};
+
+  base::ScopedObservation<ProductSpecificationsService,
+                          ProductSpecificationsSet::Observer>
+      product_specifications_observation_{this};
 
   base::CancelableTaskTracker cancelable_task_tracker_;
 

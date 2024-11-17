@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -25,7 +26,6 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.PendingTabClosureManager.PendingTabClosureDelegate;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -66,6 +66,7 @@ public class TabModelImpl extends TabModelJniBridge {
     private final TabModelOrderController mOrderController;
     private final TabContentManager mTabContentManager;
     private final TabModelDelegate mModelDelegate;
+    private final TabRemover mTabRemover;
     private final ObserverList<TabModelObserver> mObservers;
     private final NextTabPolicySupplier mNextTabPolicySupplier;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
@@ -142,6 +143,13 @@ public class TabModelImpl extends TabModelJniBridge {
             TabModelImpl.this.notifyOnFinishingMultipleTabClosure(
                     tabs, /* saveToTabRestoreService= */ true);
         }
+
+        @Override
+        public void notifyOnCancelingTabClosure(@Nullable Runnable undoRunnable) {
+            if (undoRunnable != null) {
+                undoRunnable.run();
+            }
+        }
     }
 
     public TabModelImpl(
@@ -154,6 +162,7 @@ public class TabModelImpl extends TabModelJniBridge {
             NextTabPolicySupplier nextTabPolicySupplier,
             AsyncTabParamsManager asyncTabParamsManager,
             TabModelDelegate modelDelegate,
+            @NonNull TabRemover tabRemover,
             boolean supportUndo,
             boolean isArchivedTabModel) {
         super(profile, activityType, isArchivedTabModel);
@@ -165,6 +174,7 @@ public class TabModelImpl extends TabModelJniBridge {
         mNextTabPolicySupplier = nextTabPolicySupplier;
         mAsyncTabParamsManager = asyncTabParamsManager;
         mModelDelegate = modelDelegate;
+        mTabRemover = tabRemover;
         mTabCountSupplier.set(0);
         if (supportUndo && !isIncognito()) {
             mPendingTabClosureManager =
@@ -247,9 +257,14 @@ public class TabModelImpl extends TabModelJniBridge {
         return mTabCountSupplier;
     }
 
+    @Override
+    public @NonNull TabCreator getTabCreator() {
+        return isIncognitoBranded() ? mIncognitoTabCreator : mRegularTabCreator;
+    }
+
     /**
-     * Initializes the newly created tab, adds it to controller, and dispatches creation
-     * step notifications.
+     * Initializes the newly created tab, adds it to controller, and dispatches creation step
+     * notifications.
      */
     @Override
     public void addTab(
@@ -500,6 +515,8 @@ public class TabModelImpl extends TabModelJniBridge {
      *     {@link TabModelObserver#willCloseTab}. This should be {@code TabCloseType.SINGLE} if
      *     closing the tab by itself, {@code TabCloseType.MULTIPLE} if closing multiple tabs or
      *     {@code TabCloseType.ALL} all tabs (which also does additional optimization).
+     * @param undoRunnable The runnable to invoke if the operation is undone. Only applicable if
+     *     {@code allowUndo} and {@code notifyPending} are both true.
      * @return true if the closure succeeds and false otherwise.
      */
     private boolean closeTab(
@@ -508,7 +525,8 @@ public class TabModelImpl extends TabModelJniBridge {
             boolean uponExit,
             boolean allowUndo,
             boolean notifyPending,
-            @TabCloseType int tabCloseType) {
+            @TabCloseType int tabCloseType,
+            @Nullable Runnable undoRunnable) {
         if (tabToClose == null) {
             assert false : "Tab is null!";
             return false;
@@ -523,7 +541,8 @@ public class TabModelImpl extends TabModelJniBridge {
 
         startTabClosure(tabToClose, recommendedNextTab, uponExit, allowUndo, tabCloseType);
         if (notifyPending && allowUndo) {
-            mPendingTabClosureManager.addTabClosureEvent(Collections.singletonList(tabToClose));
+            mPendingTabClosureManager.addTabClosureEvent(
+                    Collections.singletonList(tabToClose), undoRunnable);
             for (TabModelObserver obs : mObservers) obs.tabPendingClosure(tabToClose);
         }
         if (!allowUndo) {
@@ -537,7 +556,10 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     private void closeMultipleTabs(
-            List<Tab> tabs, boolean allowUndo, boolean saveToTabRestoreService) {
+            List<Tab> tabs,
+            boolean allowUndo,
+            boolean saveToTabRestoreService,
+            @Nullable Runnable undoRunnable) {
         assert (!allowUndo || saveToTabRestoreService)
                 : "saveToTabRestoreService == false is ignored if allowUndo == true.";
 
@@ -554,15 +576,24 @@ public class TabModelImpl extends TabModelJniBridge {
         }
         for (TabModelObserver obs : mObservers) obs.willCloseMultipleTabs(allowUndo, tabs);
         for (Tab tab : tabs) {
-            closeTab(tab, null, false, allowUndo, false, TabCloseType.MULTIPLE);
+            // Pass a null undoRunnable here as we want to attach it to the latter tab closure
+            // event.
+            closeTab(
+                    tab,
+                    null,
+                    false,
+                    allowUndo,
+                    false,
+                    TabCloseType.MULTIPLE,
+                    /* undoRunnable= */ null);
         }
         if (allowUndo) {
-            mPendingTabClosureManager.addTabClosureEvent(tabs);
+            mPendingTabClosureManager.addTabClosureEvent(tabs, undoRunnable);
             for (TabModelObserver obs : mObservers) obs.multipleTabsPendingClosure(tabs, false);
         }
     }
 
-    private void closeAllTabs(boolean uponExit) {
+    private void closeAllTabs(boolean uponExit, @Nullable Runnable undoRunnable) {
         for (TabModelObserver obs : mObservers) obs.willCloseAllTabs(isIncognito());
 
         // Force close immediately upon exit or if Chrome needs to close with a zero-state.
@@ -573,7 +604,16 @@ public class TabModelImpl extends TabModelJniBridge {
             notifyOnFinishingMultipleTabClosure(mTabs, /* saveToTabRestoreService= */ true);
             while (getCount() > 0) {
                 Tab tab = getTabAt(0);
-                closeTab(tab, null, uponExit, false, false, TabCloseType.ALL);
+                // Pass a null undoRunnable here as we want to attach it to the latter tab closure
+                // event.
+                closeTab(
+                        tab,
+                        null,
+                        uponExit,
+                        false,
+                        false,
+                        TabCloseType.ALL,
+                        /* undoRunnable= */ null);
             }
             return;
         }
@@ -586,11 +626,13 @@ public class TabModelImpl extends TabModelJniBridge {
         }
         while (getCount() > 0) {
             Tab tab = getTabAt(0);
-            closeTab(tab, null, false, true, false, TabCloseType.ALL);
+            // Pass a null undoRunnable here as we want to attach it to the latter tab closure
+            // event.
+            closeTab(tab, null, false, true, false, TabCloseType.ALL, /* undoRunnable= */ null);
         }
 
         if (supportsPendingClosures()) {
-            mPendingTabClosureManager.addTabClosureEvent(closedTabs);
+            mPendingTabClosureManager.addTabClosureEvent(closedTabs, undoRunnable);
             for (TabModelObserver obs : mObservers) {
                 obs.multipleTabsPendingClosure(closedTabs, true);
             }
@@ -610,6 +652,12 @@ public class TabModelImpl extends TabModelJniBridge {
     }
 
     @Override
+    public @NonNull TabRemover getTabRemover() {
+        assert mTabRemover != null;
+        return mTabRemover;
+    }
+
+    @Override
     public boolean closeTabs(TabClosureParams tabClosureParams) {
         // TODO(crbug.com/356445932): Respect the provided params more broadly.
         switch (tabClosureParams.tabCloseType) {
@@ -622,15 +670,17 @@ public class TabModelImpl extends TabModelJniBridge {
                         tabClosureParams.uponExit,
                         tabClosureParams.allowUndo,
                         notifyPending,
-                        tabClosureParams.tabCloseType);
+                        tabClosureParams.tabCloseType,
+                        tabClosureParams.undoRunnable);
             case TabCloseType.MULTIPLE:
                 closeMultipleTabs(
                         tabClosureParams.tabs,
                         tabClosureParams.allowUndo,
-                        tabClosureParams.saveToTabRestoreService);
+                        tabClosureParams.saveToTabRestoreService,
+                        tabClosureParams.undoRunnable);
                 return true;
             case TabCloseType.ALL:
-                closeAllTabs(tabClosureParams.uponExit);
+                closeAllTabs(tabClosureParams.uponExit, tabClosureParams.undoRunnable);
                 return true;
             default:
                 assert false : "Not reached.";
@@ -943,17 +993,23 @@ public class TabModelImpl extends TabModelJniBridge {
         List<Tab> tabsToClose = getTabsNavigatedInTimeWindow(beginTimeMs, endTimeMs);
         if (tabsToClose.isEmpty()) return;
 
-        final TabModelFilter filter = TabModelUtils.getTabModelFilterByTab(tabsToClose.get(0));
-
-        assert filter instanceof TabGroupModelFilter;
-        final TabGroupModelFilter groupingFilter = (TabGroupModelFilter) filter;
-
         var params =
                 TabClosureParams.closeTabs(tabsToClose)
                         .allowUndo(false)
                         .saveToTabRestoreService(false)
                         .build();
-        groupingFilter.closeTabs(params);
+
+        getTabRemover().closeTabs(params, /* allowDialog= */ false);
+
+        // Open a new tab if all tabs are closed and the respective experiment arm is eanbled.
+        if (QuickDeleteController.isQuickDeleteFollowupEnabledOpenNewTabOnEmptyState()) {
+            for (Tab tab : mTabs) {
+                if (!tab.isCustomTab()) {
+                    return;
+                }
+            }
+            getTabCreator(false).launchNtp();
+        }
     }
 
     @VisibleForTesting

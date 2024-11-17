@@ -1,0 +1,39 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions,
+       "Cannot depend on extensions because enable_extensions=false.")
+
+source_set("content_settings") {
+  sources = [
+    "content_settings_api.cc",
+    "content_settings_api.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//extensions/browser",
+    "//ppapi/buildflags",
+  ]
+
+  deps = [
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common:non_code_constants",
+    "//chrome/common/extensions/api",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//content/public/browser",
+    "//content/public/common",
+    "//extensions/browser/api/content_settings",
+    "//extensions/common",
+    "//extensions/common/api",
+    "//net",
+  ]
+}

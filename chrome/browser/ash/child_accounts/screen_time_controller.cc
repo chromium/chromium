@@ -10,7 +10,6 @@
 
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/clock.h"
@@ -23,7 +22,6 @@
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -59,8 +57,7 @@ AuthDisabledReason ConvertLockReason(
     case usage_time_limit::PolicyType::kNoPolicy:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return AuthDisabledReason();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -219,11 +216,8 @@ void ScreenTimeController::ForceScreenLockByPolicy() {
   // Avoid abrupt session restart that looks like a crash and happens when lock
   // screen is requested before sign in completion. It is safe, because time
   // limits will be reevaluated when session state changes to active.
-  // TODO(agawronska): Remove the flag when it is confirmed that this does not
-  // cause a bug (https://crbug.com/924844).
-  if (base::FeatureList::IsEnabled(features::kDMServerOAuthForChildUser) &&
-      session_manager::SessionManager::Get()->session_state() !=
-          session_manager::SessionState::ACTIVE) {
+  if (session_manager::SessionManager::Get()->session_state() !=
+      session_manager::SessionState::ACTIVE) {
     return;
   }
 

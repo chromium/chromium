@@ -49,6 +49,7 @@ class LocalPasskeysChangedChecker : public StatusChangeChecker,
   void OnPasskeysChanged(
       const std::vector<webauthn::PasskeyModelChange>& changes) override;
   void OnPasskeyModelShuttingDown() override;
+  void OnPasskeyModelIsReady(bool is_ready) override;
 
  private:
   int profile_;
@@ -74,6 +75,7 @@ class LocalPasskeysMatchChecker : public StatusChangeChecker,
   void OnPasskeysChanged(
       const std::vector<webauthn::PasskeyModelChange>& changes) override;
   void OnPasskeyModelShuttingDown() override;
+  void OnPasskeyModelIsReady(bool is_ready) override;
 
  private:
   const int profile_;
@@ -117,6 +119,7 @@ class PasskeyChangeObservationChecker
   void OnPasskeysChanged(
       const std::vector<webauthn::PasskeyModelChange>& changes) override;
   void OnPasskeyModelShuttingDown() override;
+  void OnPasskeyModelIsReady(bool is_ready) override;
 
  private:
   const int profile_;
@@ -137,6 +140,7 @@ class MockPasskeyModelObserver : public webauthn::PasskeyModel::Observer {
               (const std::vector<webauthn::PasskeyModelChange>&),
               (override));
   MOCK_METHOD(void, OnPasskeyModelShuttingDown, (), (override));
+  MOCK_METHOD(void, OnPasskeyModelIsReady, (bool), (override));
 
  private:
   base::ScopedObservation<webauthn::PasskeyModel,
@@ -171,6 +175,12 @@ MATCHER_P(EntityHasUsername, expected_username, "") {
 MATCHER_P(EntityHasDisplayName, expected_display_name, "") {
   return arg.specifics().webauthn_credential().user_display_name() ==
          expected_display_name;
+}
+
+MATCHER_P(EntityHasLastUsedTime, expected_last_used_time, "") {
+  return arg.specifics()
+             .webauthn_credential()
+             .last_used_time_windows_epoch_micros() == expected_last_used_time;
 }
 
 // Matches a `sync_pb::WebauthnCredentialSpecifics` against another field by

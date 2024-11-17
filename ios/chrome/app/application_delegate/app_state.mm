@@ -24,10 +24,13 @@
 #import "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"
 #import "ios/chrome/app/application_delegate/app_state+Testing.h"
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
 #import "ios/chrome/app/application_delegate/memory_warning_helper.h"
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/app/deferred_initialization_queue.h"
 #import "ios/chrome/app/deferred_initialization_runner.h"
+#import "ios/chrome/app/deferred_initialization_task_names.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/browsing_data/model/sessions_storage_util.h"
@@ -66,7 +69,6 @@
 #import "ui/base/device_form_factor.h"
 
 namespace {
-NSString* const kStartupAttemptReset = @"StartupAttemptReset";
 
 // Flushes the CookieStore on the IO thread and invoke `closure` upon
 // completion. The sequence where `closure` is invoked is unspecified.
@@ -77,6 +79,13 @@ void FlushCookieStoreOnIOThread(
   getter->GetURLRequestContext()->cookie_store()->FlushStore(
       std::move(closure));
 }
+
+// Returns YES if the UIApplication is currently in the background, regardless
+// of where it is in the lifecycle.
+BOOL ApplicationIsInBackground() {
+  return [[UIApplication sharedApplication] applicationState] ==
+         UIApplicationStateBackground;
+}
 }  // namespace
 
 #pragma mark - AppStateObserverList
@@ -85,32 +94,30 @@ void FlushCookieStoreOnIOThread(
 @end
 
 @implementation AppStateObserverList
+
++ (instancetype)list {
+  return [self observersWithProtocol:@protocol(AppStateObserver)];
+}
+
 @end
 
-#pragma mark - AppStateObserverList
+#pragma mark - UIBlockerManagerObserverList
 
 @interface UIBlockerManagerObserverList
     : CRBProtocolObservers <UIBlockerManagerObserver>
 @end
 
 @implementation UIBlockerManagerObserverList
+
++ (instancetype)list {
+  return [self observersWithProtocol:@protocol(UIBlockerManagerObserver)];
+}
+
 @end
 
 #pragma mark - AppState
 
-@interface AppState () <AppStateObserver>
-
-// Container for observers.
-@property(nonatomic, strong) AppStateObserverList* observers;
-
-// Container for observers.
-@property(nonatomic, strong)
-    UIBlockerManagerObserverList* uiBlockerManagerObservers;
-
-// YES if cookies are currently being flushed to disk. Declared as a property
-// to allow modifying it in a block via a __weak pointer without checking if
-// the pointer is nil or not.
-@property(nonatomic, assign) BOOL savingCookies;
+@interface AppState ()
 
 // This method is the first to be called when user launches the application.
 // This performs the minimal amount of browser initialization that is needed by
@@ -120,47 +127,52 @@ void FlushCookieStoreOnIOThread(
 // step cannot be included in the `startUpBrowserToStage:` method.
 - (void)initializeUIPreSafeMode;
 
-// Complete the browser initialization for a regular startup.
-- (void)completeUIInitialization;
-
 // Saves the current launch details to user defaults.
 - (void)saveLaunchDetailsToDefaults;
-
-// Redefined as readwrite.
-@property(nonatomic, assign) BOOL firstSceneHasInitializedUI;
-
-// The current blocker target if any.
-@property(nonatomic, weak, readwrite) id<UIBlockerTarget> uiBlockerTarget;
-
-// The counter of currently shown blocking UIs. Do not use this directly,
-// instead use incrementBlockingUICounterForScene: and
-// incrementBlockingUICounterForScene or the ScopedUIBlocker.
-@property(nonatomic, assign) NSUInteger blockingUICounter;
-
-// Agents attached to this app state.
-@property(nonatomic, strong) NSMutableArray<id<AppStateAgent>>* agents;
-
-// A flag that tracks if the init stage is currently being incremented. Used to
-// prevent reentrant calls to queueTransitionToNextInitStage originating from
-// stage change notifications.
-@property(nonatomic, assign) BOOL isIncrementingInitStage;
-
-// A flag that tracks if another increment of init stage needs to happen after
-// this one is complete. Will be set if queueTransitionToNextInitStage is called
-// while queueTransitionToNextInitStage is already on the call stack.
-@property(nonatomic, assign) BOOL needsIncrementInitStage;
 
 @end
 
 @implementation AppState {
+  // Container for observers.
+  AppStateObserverList* _observers;
+
+  // Container for observers.
+  UIBlockerManagerObserverList* _uiBlockerManagerObservers;
+
+  // Agents attached to this app state.
+  NSMutableArray<id<AppStateAgent>>* _agents;
+
+  // The current blocker target if any.
+  __weak id<UIBlockerTarget> _uiBlockerTarget;
+
+  // Counter of number of object that want to force the device in the
+  // portrait orientation (orientation is locked if non-zero).
+  NSUInteger _forcePortraitOrientationCounter;
+
+  // Counter of currently shown blocking UIs.
+  NSUInteger _blockingUICounter;
+
   // Whether the application is currently in the background.
   // This is a workaround for rdar://22392526 where
   // -applicationDidEnterBackground: can be called twice.
   // TODO(crbug.com/41211311): Remove this once rdar://22392526 is fixed.
   BOOL _applicationInBackground;
-  // The counter of the number of views which want to block the screen to
-  // portrait mode for iPhone. This counter should always be 0 for iPad.
-  NSUInteger _iphonePortraitOnlyCounter;
+
+  // A flag that tracks if the init stage is currently being incremented. Used
+  // to prevent reentrant calls to queueTransitionToNextInitStage originating
+  // from stage change notifications.
+  BOOL _isIncrementingInitStage;
+
+  // A flag that tracks if another increment of init stage needs to happen after
+  // this one is complete. Will be set if queueTransitionToNextInitStage is
+  // called while queueTransitionToNextInitStage is already on the call stack.
+  BOOL _needsIncrementInitStage;
+
+  // A flag set when the first scene has initialized its UI and never resets.
+  BOOL _firstSceneHasInitializedUI;
+
+  // YES if cookies are currently being flushed to disk.
+  BOOL _savingCookies;
 }
 
 @synthesize userInteracted = _userInteracted;
@@ -169,13 +181,13 @@ void FlushCookieStoreOnIOThread(
     (id<StartupInformation>)startupInformation {
   self = [super init];
   if (self) {
-    _observers = [AppStateObserverList
-        observersWithProtocol:@protocol(AppStateObserver)];
-    _uiBlockerManagerObservers = [UIBlockerManagerObserverList
-        observersWithProtocol:@protocol(UIBlockerManagerObserver)];
+    _observers = [AppStateObserverList list];
+    _uiBlockerManagerObservers = [UIBlockerManagerObserverList list];
     _agents = [[NSMutableArray alloc] init];
     _startupInformation = startupInformation;
     _appCommandDispatcher = [[CommandDispatcher alloc] init];
+    _deferredRunner = [[DeferredInitializationRunner alloc]
+        initWithQueue:[DeferredInitializationQueue sharedInstance]];
 
     // Subscribe to scene connection notifications.
     [[NSNotificationCenter defaultCenter]
@@ -191,8 +203,6 @@ void FlushCookieStoreOnIOThread(
                name:UIAccessibilityVoiceOverStatusDidChangeNotification
              object:nil];
     crash_keys::SetVoiceOverRunning(UIAccessibilityIsVoiceOverRunning());
-
-    [self addObserver:self];
   }
   return self;
 }
@@ -212,9 +222,9 @@ void FlushCookieStoreOnIOThread(
 
 // Do not use this setter directly, instead use -queueTransitionToInitStage:
 // that provides reentry guards.
-- (void)setInitStage:(InitStage)newInitStage {
-  DCHECK(newInitStage >= InitStageStart);
-  DCHECK(newInitStage <= InitStageFinal);
+- (void)setInitStage:(AppInitStage)newInitStage {
+  DCHECK_GE(newInitStage, AppInitStage::kStart);
+  DCHECK_LE(newInitStage, AppInitStage::kFinal);
   // As of writing this, it seems reasonable for init stages to be strictly
   // incremented by one only: if a stage needs to be skipped, it can just be a
   // no-op, but the observers will get a chance to react to it normally. If in
@@ -222,41 +232,58 @@ void FlushCookieStoreOnIOThread(
   // 1. Check that all observers will support this change
   // 2. Keep the previous init stage and modify addObserver: code to send the
   // previous init stage instead.
-  DCHECK(newInitStage == _initStage + 1 ||
-         (newInitStage == InitStageStart && _initStage == InitStageStart));
-  // It's probably a programming error to set the same init stage twice, except
-  // for InitStageStart to kick off the startup.
-  DCHECK(newInitStage == InitStageStart || _initStage != newInitStage);
+  if (newInitStage == AppInitStage::kStart) {
+    DCHECK_EQ(_initStage, AppInitStage::kStart);
+  } else {
+    DCHECK_EQ(base::to_underlying(newInitStage),
+              base::to_underlying(_initStage) + 1);
+  }
 
-  InitStage previousInitStage = _initStage;
-  [self.observers appState:self willTransitionToInitStage:newInitStage];
+  AppInitStage previousInitStage = _initStage;
+  [_observers appState:self willTransitionToInitStage:newInitStage];
   _initStage = newInitStage;
-  [self.observers appState:self didTransitionFromInitStage:previousInitStage];
+  [_observers appState:self didTransitionFromInitStage:previousInitStage];
+
+  // TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
+  // AppInitStage are fully decoupled.
+  if (_initStage >= AppInitStage::kLoadProfiles) {
+    for (ProfileState* profileState in self.connectedProfileStates) {
+      ProfileInitStage currStage = profileState.initStage;
+      ProfileInitStage nextStage = ProfileInitStageFromAppInitStage(_initStage);
+      while (currStage != nextStage) {
+        // The ProfileInitStage enum has more values than AppInitStage, so move
+        // over all stage that have no representation in AppInitStage to avoid
+        // failing CHECK in -[ProfileState setInitStage:].
+        currStage =
+            static_cast<ProfileInitStage>(base::to_underlying(currStage) + 1);
+        profileState.initStage = currStage;
+      }
+    }
+  }
 }
 
 - (BOOL)portraitOnly {
-  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
-    return NO;
-  }
-  if (_iphonePortraitOnlyCounter > 0) {
-    return YES;
-  }
-  // Return YES if the First Run UI is showing.
-  return self.initStage > InitStageSafeMode &&
-         self.initStage <= InitStageFirstRun &&
-         self.startupInformation.isFirstRun;
+  return _forcePortraitOrientationCounter > 0;
 }
 
 - (NSArray<id<AppStateAgent>>*)connectedAgents {
-  return [self.agents copy];
+  return [_agents copy];
 }
 
 #pragma mark - Public methods.
 
 - (void)applicationDidEnterBackground:(UIApplication*)application
                          memoryHelper:(MemoryWarningHelper*)memoryHelper {
+  // Reset `startupHadExternalIntent` for all scenes in case external intents
+  // were triggered while the application was in the foreground.
+  for (SceneState* scene in self.connectedScenes) {
+    if (scene.startupHadExternalIntent) {
+      scene.startupHadExternalIntent = NO;
+    }
+  }
+
   // Exit the app if backgrounding the app while being in safe mode.
-  if (self.initStage == InitStageSafeMode) {
+  if (_initStage == AppInitStage::kSafeMode) {
     exit(0);
   }
 
@@ -267,7 +294,7 @@ void FlushCookieStoreOnIOThread(
 
   crash_keys::SetCurrentlyInBackground(true);
 
-  if (self.initStage < InitStageBrowserObjectsForUI) {
+  if (_initStage < AppInitStage::kBrowserObjectsForUI) {
     // The clean-up done in `-applicationDidEnterBackground:` is only valid for
     // the case when the application is started in foreground, so there is
     // nothing to clean up as the application was not initialized for
@@ -280,9 +307,9 @@ void FlushCookieStoreOnIOThread(
     return;
   }
 
-  for (ChromeBrowserState* browserState :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    enterprise_idle::IdleServiceFactory::GetForBrowserState(browserState)
+    enterprise_idle::IdleServiceFactory::GetForProfile(profile)
         ->OnApplicationWillEnterBackground();
   }
 
@@ -292,7 +319,7 @@ void FlushCookieStoreOnIOThread(
 
   [self.startupInformation expireFirstUserActionRecorder];
 
-  // TODO(crbug.com/325596562): Update this for multiple browser states and for
+  // TODO(crbug.com/325596562): Update this for multiple profiles and for
   // per-state cookie storage.
   if (!_savingCookies) {
     NSSet<ProfileState*>* profileStates = self.connectedProfileStates;
@@ -314,7 +341,7 @@ void FlushCookieStoreOnIOThread(
                              base::MakeCriticalClosure(
                                  "applicationDidEnterBackground:_savingCookies",
                                  base::BindOnce(^{
-                                   weakSelf.savingCookies = NO;
+                                   [weakSelf cookiesSaved];
                                  }),
                                  /*is_immediate=*/true)));
 
@@ -331,8 +358,8 @@ void FlushCookieStoreOnIOThread(
   }
 
   // Mark the startup as clean if it hasn't already been.
-  [[DeferredInitializationRunner sharedInstance]
-      runBlockIfNecessary:kStartupAttemptReset];
+  [_deferredRunner runBlockNamed:kStartupResetAttemptCount];
+
   // Set date/time that the background fetch handler was called in the user
   // defaults.
   [MetricsMediator logDateInUserDefaults];
@@ -346,11 +373,12 @@ void FlushCookieStoreOnIOThread(
 - (void)applicationWillEnterForeground:(UIApplication*)application
                        metricsMediator:(MetricsMediator*)metricsMediator
                           memoryHelper:(MemoryWarningHelper*)memoryHelper {
+  // Invariant: The app has passed AppInitStage::kStart.
+  CHECK_GT(_initStage, AppInitStage::kStart);
+
   // Fully initialize the browser objects for the browser UI if it is not
   // already the case. This is especially needed for scene startup.
-  if (self.initStage < InitStageBrowserObjectsForUI) {
-    // Invariant: The app has passed InitStageStart.
-    CHECK(self.initStage != InitStageStart);
+  if (_initStage < AppInitStage::kBrowserObjectsForUI) {
     // TODO(crbug.com/40760092): This function should only be called once
     // during a specific stage, but this requires non-trivial refactoring, so
     // for now #initializeUIPreSafeMode will just return early if called more
@@ -360,19 +388,20 @@ void FlushCookieStoreOnIOThread(
     [self initializeUIPreSafeMode];
     return;
   }
+
   // Don't go further with foregrounding the app when the app has not passed
   // safe mode yet or was initialized from the background.
-  if (self.initStage <= InitStageSafeMode || !_applicationInBackground) {
+  if (_initStage <= AppInitStage::kSafeMode || !_applicationInBackground) {
     return;
   }
 
   _applicationInBackground = NO;
-  for (ChromeBrowserState* chromeBrowserState :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
-    AuthenticationServiceFactory::GetForBrowserState(chromeBrowserState)
+    AuthenticationServiceFactory::GetForProfile(profile)
         ->OnApplicationWillEnterForeground();
 
-    enterprise_idle::IdleServiceFactory::GetForBrowserState(chromeBrowserState)
+    enterprise_idle::IdleServiceFactory::GetForProfile(profile)
         ->OnApplicationWillEnterForeground();
   }
 
@@ -394,11 +423,10 @@ void FlushCookieStoreOnIOThread(
                              connectedScenes:self.connectedScenes];
   [memoryHelper resetForegroundMemoryWarningCount];
 
-  for (ChromeBrowserState* chromeBrowserState :
+  for (ProfileIOS* profile :
        GetApplicationContext()->GetProfileManager()->GetLoadedProfiles()) {
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            chromeBrowserState);
+        feature_engagement::TrackerFactory::GetForProfile(profile);
     // Send the "Chrome Opened" event to the feature_engagement::Tracker on a
     // warm start.
     tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
@@ -434,7 +462,7 @@ void FlushCookieStoreOnIOThread(
   // closing the tabs. Set the BVC to inactive to cancel all the dialogs.
   // Don't do this if there are no scenes, since there's no defined interface
   // provider (and no tabs).
-  if (self.initStage >= InitStageBrowserObjectsForUI) {
+  if (_initStage >= AppInitStage::kBrowserObjectsForUI) {
     for (SceneState* sceneState in self.connectedScenes) {
       Browser* browser =
           sceneState.browserProviderInterface.currentBrowserProvider.browser;
@@ -450,7 +478,7 @@ void FlushCookieStoreOnIOThread(
 
 - (void)application:(UIApplication*)application
     didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions {
-  DCHECK_GE(self.initStage, InitStageBrowserObjectsForBackgroundHandlers);
+  DCHECK_GE(_initStage, AppInitStage::kBrowserObjectsForBackgroundHandlers);
 
   GetApplicationContext()
       ->GetSystemIdentityManager()
@@ -474,11 +502,15 @@ void FlushCookieStoreOnIOThread(
 }
 
 - (void)willResignActive {
+  if (_initStage <= AppInitStage::kSafeMode) {
+    return;
+  }
+
   // Regardless of app state, if the user is able to background the app, reset
   // the failed startup count.
   crash_util::ResetFailedStartupAttemptCount();
 
-  if (self.initStage < InitStageBrowserObjectsForUI) {
+  if (_initStage < AppInitStage::kBrowserObjectsForUI) {
     // If the application did not pass the foreground initialization stage,
     // there is no active tab model to resign.
     return;
@@ -494,50 +526,52 @@ void FlushCookieStoreOnIOThread(
     SessionMetrics::FromProfile(profile)->RecordAndClearSessionMetrics(
         MetricsToRecordFlags::kActivatedTabCount);
 
-    if (profile->HasOffTheRecordChromeBrowserState()) {
-      ProfileIOS* otrProifle = profile->GetOffTheRecordChromeBrowserState();
-      SessionMetrics::FromProfile(otrProifle)
+    if (profile->HasOffTheRecordProfile()) {
+      ProfileIOS* otrProfile = profile->GetOffTheRecordProfile();
+      SessionMetrics::FromProfile(otrProfile)
           ->RecordAndClearSessionMetrics(MetricsToRecordFlags::kNoMetrics);
     }
   }
 }
 
 - (void)addObserver:(id<AppStateObserver>)observer {
-  [self.observers addObserver:observer];
+  [_observers addObserver:observer];
 
   if ([observer respondsToSelector:@selector(appState:
                                        didTransitionFromInitStage:)] &&
-      self.initStage > InitStageStart) {
-    InitStage previousInitStage = static_cast<InitStage>(self.initStage - 1);
+      _initStage > AppInitStage::kStart) {
+    AppInitStage previousInitStage =
+        static_cast<AppInitStage>(base::to_underlying(_initStage) - 1);
     // Trigger an update on the newly added agent.
     [observer appState:self didTransitionFromInitStage:previousInitStage];
   }
 }
 
 - (void)removeObserver:(id<AppStateObserver>)observer {
-  [self.observers removeObserver:observer];
+  [_observers removeObserver:observer];
 }
 
 - (void)addAgent:(id<AppStateAgent>)agent {
   DCHECK(agent);
-  [self.agents addObject:agent];
+  [_agents addObject:agent];
   [agent setAppState:self];
 }
 
 - (void)removeAgent:(id<AppStateAgent>)agent {
   DCHECK(agent);
-  DCHECK([self.agents containsObject:agent]);
-  [self.agents removeObject:agent];
+  DCHECK([_agents containsObject:agent]);
+  [_agents removeObject:agent];
 }
 
 - (void)queueTransitionToNextInitStage {
-  InitStage nextInitStage = static_cast<InitStage>(self.initStage + 1);
-  DCHECK(nextInitStage <= InitStageFinal);
+  DCHECK_LT(_initStage, AppInitStage::kFinal);
+  AppInitStage nextInitStage =
+      static_cast<AppInitStage>(base::to_underlying(_initStage) + 1);
   [self queueTransitionToInitStage:nextInitStage];
 }
 
 - (void)startInitialization {
-  [self queueTransitionToInitStage:InitStageStart];
+  [self queueTransitionToInitStage:AppInitStage::kStart];
 }
 
 #pragma mark - Multiwindow-related
@@ -596,10 +630,6 @@ void FlushCookieStoreOnIOThread(
   [self queueTransitionToNextInitStage];
 }
 
-- (void)completeUIInitialization {
-  DCHECK([self.startupInformation isColdStart]);
-}
-
 #pragma mark - Internal methods.
 
 - (void)saveLaunchDetailsToDefaults {
@@ -618,102 +648,117 @@ void FlushCookieStoreOnIOThread(
   [[PreviousSessionInfo sharedInstance] beginRecordingCurrentSession];
 }
 
-- (void)queueTransitionToInitStage:(InitStage)initStage {
-  if (self.isIncrementingInitStage) {
+- (void)queueTransitionToInitStage:(AppInitStage)initStage {
+  if (_isIncrementingInitStage) {
     // It is an error to queue more than one transition at once.
-    DCHECK(!self.needsIncrementInitStage);
+    DCHECK(!_needsIncrementInitStage);
 
     // Set a flag to increment after the observers are notified of the current
     // change.
-    self.needsIncrementInitStage = YES;
+    _needsIncrementInitStage = YES;
     return;
   }
 
-  self.isIncrementingInitStage = YES;
-  self.initStage = initStage;
-  // TODO(crbug.com/353683675) Improve this logic once ProfileInitStage and
-  // (app) InitStage are fully decoupled.
-  if (initStage >= InitStageBrowserObjectsForBackgroundHandlers) {
-    for (ProfileState* profileState in self.connectedProfileStates) {
-      ProfileInitStage currStage = profileState.initStage;
-      ProfileInitStage nextStage = ProfileInitStageFromAppInitStage(initStage);
-      while (currStage != nextStage) {
-        // The ProfileInitStage enum has more values than InitStage, so move
-        // over all stage that have no representation in InitStage to avoid
-        // failing CHECK in -[ProfileState setInitStage:].
-        currStage =
-            static_cast<ProfileInitStage>(base::to_underlying(currStage) + 1);
-        profileState.initStage = currStage;
-      }
-    }
-  }
-  self.isIncrementingInitStage = NO;
+  _isIncrementingInitStage = YES;
+  [self setInitStage:initStage];
+  _isIncrementingInitStage = NO;
 
-  if (self.needsIncrementInitStage) {
-    self.needsIncrementInitStage = NO;
+  if (_needsIncrementInitStage) {
+    _needsIncrementInitStage = NO;
     [self queueTransitionToNextInitStage];
   }
 }
 
-#pragma mark - IphonePortraitOnlyManager
+#pragma mark - BackgroundRefreshAudience
 
-- (void)incrementIphonePortraitOnlyCounter {
-  ++_iphonePortraitOnlyCounter;
+- (void)backgroundRefreshDidStart {
+  // If  refresh is starting, and the app is in the background, then let the
+  // application state know so it can enable the clean exit beacon while work
+  // is underway.
+  if (ApplicationIsInBackground()) {
+    GetApplicationContext()->OnAppStartedBackgroundProcessing();
+  }
 }
 
-- (void)decrementIphonePortraitOnlyCounter {
-  CHECK_GT(_iphonePortraitOnlyCounter, 0ul);
-  --_iphonePortraitOnlyCounter;
+- (void)backgroundRefreshDidEnd {
+  // If  refresh has completed, and the app is in the background, then let the
+  // application state know so it can disable the clean exit beacon. If iOS
+  // kills the app in the background at this point it should not be a crash for
+  // the purposes of metrics or experiments.
+  if (ApplicationIsInBackground()) {
+    GetApplicationContext()->OnAppFinishedBackgroundProcessing();
+  }
+}
+
+#pragma mark - PortraitOrientationManager
+
+- (void)incrementForcePortraitOrientationCounter {
+  if (!_forcePortraitOrientationCounter) {
+    for (SceneState* sceneState in self.connectedScenes) {
+      [sceneState.browserProviderInterface.currentBrowserProvider
+              .viewController setNeedsUpdateOfSupportedInterfaceOrientations];
+    }
+  }
+  ++_forcePortraitOrientationCounter;
+}
+
+- (void)decrementForcePortraitOrientationCounter {
+  CHECK_GT(_forcePortraitOrientationCounter, 0ul);
+  --_forcePortraitOrientationCounter;
+  if (!_forcePortraitOrientationCounter) {
+    for (SceneState* sceneState in self.connectedScenes) {
+      [sceneState.browserProviderInterface.currentBrowserProvider
+              .viewController setNeedsUpdateOfSupportedInterfaceOrientations];
+    }
+  }
 }
 
 #pragma mark - UIBlockerManager
 
 - (void)incrementBlockingUICounterForTarget:(id<UIBlockerTarget>)target {
-  DCHECK(self.uiBlockerTarget == nil || target == self.uiBlockerTarget)
+  CHECK(_uiBlockerTarget == nil || target == _uiBlockerTarget)
       << "Another scene is already showing a blocking UI!";
-  self.blockingUICounter++;
-  if (!self.uiBlockerTarget) {
-    self.uiBlockerTarget = target;
-  }
+  _blockingUICounter++;
+  [self setUiBlockerTarget:target];
 }
 
 - (void)decrementBlockingUICounterForTarget:(id<UIBlockerTarget>)target {
-  DCHECK(self.blockingUICounter > 0 && self.uiBlockerTarget == target);
-  self.blockingUICounter--;
-  if (self.blockingUICounter == 0) {
-    self.uiBlockerTarget = nil;
-    [self.uiBlockerManagerObservers currentUIBlockerRemoved];
+  CHECK_GT(_blockingUICounter, 0u);
+  CHECK_EQ(_uiBlockerTarget, target);
+  if (--_blockingUICounter == 0) {
+    [self setUiBlockerTarget:nil];
+    [_uiBlockerManagerObservers currentUIBlockerRemoved];
   }
 }
 
 - (id<UIBlockerTarget>)currentUIBlocker {
-  return self.uiBlockerTarget;
+  return _uiBlockerTarget;
 }
 
 - (void)addUIBlockerManagerObserver:(id<UIBlockerManagerObserver>)observer {
-  [self.uiBlockerManagerObservers addObserver:observer];
+  [_uiBlockerManagerObservers addObserver:observer];
 }
 
 - (void)removeUIBlockerManagerObserver:(id<UIBlockerManagerObserver>)observer {
-  [self.uiBlockerManagerObservers removeObserver:observer];
+  [_uiBlockerManagerObservers removeObserver:observer];
 }
 
 #pragma mark - SceneStateObserver
 
 - (void)sceneStateDidEnableUI:(SceneState*)sceneState {
-  if (self.firstSceneHasInitializedUI) {
+  if (_firstSceneHasInitializedUI) {
     return;
   }
-  self.firstSceneHasInitializedUI = YES;
-  [self.observers appState:self firstSceneHasInitializedUI:sceneState];
+  _firstSceneHasInitializedUI = YES;
+  [_observers appState:self firstSceneHasInitializedUI:sceneState];
 }
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
   if (level >= SceneActivationLevelForegroundActive) {
     sceneState.presentingModalOverlay =
-        (self.uiBlockerTarget != nil) && (self.uiBlockerTarget != sceneState);
-    [self.observers appState:self sceneDidBecomeActive:sceneState];
+        (_uiBlockerTarget != nil) && (_uiBlockerTarget != sceneState);
+    [_observers appState:self sceneDidBecomeActive:sceneState];
   }
   crash_keys::SetForegroundScenesCount([self foregroundScenes].count);
 }
@@ -735,7 +780,7 @@ void FlushCookieStoreOnIOThread(
   SceneState* sceneState = sceneDelegate.sceneState;
   DCHECK(sceneState);
 
-  [self.observers appState:self sceneConnected:sceneState];
+  [_observers appState:self sceneConnected:sceneState];
   crash_keys::SetConnectedScenesCount([self connectedScenes].count);
 }
 
@@ -743,18 +788,6 @@ void FlushCookieStoreOnIOThread(
 
 - (void)voiceOverStatusDidChange:(NSNotification*)notification {
   crash_keys::SetVoiceOverRunning(UIAccessibilityIsVoiceOverRunning());
-}
-
-#pragma mark - AppStateObserver
-
-// TODO(crbug.com/40756629): Move this logic to a specific agent.
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (previousInitStage != InitStageBrowserObjectsForUI) {
-    return;
-  }
-
-  [self completeUIInitialization];
 }
 
 #pragma mark - Private
@@ -771,6 +804,10 @@ void FlushCookieStoreOnIOThread(
     }
   }
   return profileStates;
+}
+
+- (void)cookiesSaved {
+  _savingCookies = NO;
 }
 
 @end

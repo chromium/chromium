@@ -8,7 +8,8 @@ import {CrExpandButtonElement} from 'chrome://resources/ash/common/cr_elements/c
 import {assert} from 'chrome://resources/js/assert.js';
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {SanitizeDoneElement} from 'chrome://sanitize/sanitize_done.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {SanitizeInitialElement} from 'chrome://sanitize/sanitize_initial.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 
@@ -149,5 +150,18 @@ suite('SanitizeUITest', function() {
     chromeLanguagesButton.click();
     const chromeLanguagesUrl = await openWindowProxy.whenCalled('openUrl');
     assertEquals(chromeLanguagesUrl, 'chrome://settings/languages');
+  });
+
+  test('PerformSanitize', async function() {
+    const appElement = new SanitizeInitialElement();
+    document.body.appendChild(appElement);
+    await flushTasks();
+
+    // Click the Safety reset button to begin the process.
+    const button =
+        appElement.shadowRoot!.querySelector<HTMLElement>('#sanitizeButton');
+    assertTrue(!!button);
+    button.click();
+    flushTasks();
   });
 });

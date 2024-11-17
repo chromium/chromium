@@ -16,8 +16,7 @@ EnumTraits<audio::mojom::DebugRecordingStreamType,
     case media::AudioDebugRecordingStreamType::kOutput:
       return audio::mojom::DebugRecordingStreamType::kOutput;
   }
-  NOTREACHED_IN_MIGRATION();
-  return audio::mojom::DebugRecordingStreamType::kInput;
+  NOTREACHED();
 }
 
 bool EnumTraits<audio::mojom::DebugRecordingStreamType,
@@ -32,8 +31,7 @@ bool EnumTraits<audio::mojom::DebugRecordingStreamType,
       *out = media::AudioDebugRecordingStreamType::kOutput;
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

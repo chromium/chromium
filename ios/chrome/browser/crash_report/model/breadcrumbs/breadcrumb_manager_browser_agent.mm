@@ -58,7 +58,7 @@ void BreadcrumbManagerBrowserAgent::BrowserDestroyed(Browser* browser) {
 
 void BreadcrumbManagerBrowserAgent::PlatformLogEvent(const std::string& event) {
   BreadcrumbManagerKeyedServiceFactory::GetInstance()
-      ->GetForBrowserState(browser_->GetBrowserState())
+      ->GetForProfile(browser_->GetProfile())
       ->AddEvent(event);
 }
 
@@ -188,7 +188,7 @@ void BreadcrumbManagerBrowserAgent::WillShowOverlay(OverlayPresenter* presenter,
   } else if (request->GetConfig<alert_overlays::AlertRequest>()) {
     event.push_back(kBreadcrumbOverlayAlert);
   } else {
-    NOTREACHED_IN_MIGRATION();  // Missing breadcrumbs for the dialog.
+    NOTREACHED();  // Missing breadcrumbs for the dialog.
   }
 
   if (!initial_presentation) {

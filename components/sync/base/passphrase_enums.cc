@@ -23,8 +23,7 @@ bool IsExplicitPassphrase(PassphraseType type) {
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 sync_pb::NigoriSpecifics::PassphraseType ProtoPassphraseInt32ToProtoEnum(
@@ -70,8 +69,7 @@ sync_pb::NigoriSpecifics::PassphraseType EnumPassphraseTypeToProto(
       return sync_pb::NigoriSpecifics::TRUSTED_VAULT_PASSPHRASE;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return sync_pb::NigoriSpecifics::IMPLICIT_PASSPHRASE;
+  NOTREACHED();
 }
 
 std::optional<KeyDerivationMethod> ProtoKeyDerivationMethodToEnum(
@@ -103,8 +101,7 @@ sync_pb::NigoriSpecifics::KeyDerivationMethod EnumKeyDerivationMethodToProto(
       return sync_pb::NigoriSpecifics::SCRYPT_8192_8_11;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return sync_pb::NigoriSpecifics::UNSPECIFIED;
+  NOTREACHED();
 }
 
 }  // namespace syncer

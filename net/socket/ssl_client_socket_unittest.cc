@@ -589,7 +589,7 @@ class DeleteSocketCallback : public TestCompletionCallbackBase {
 class MockRequireCTDelegate : public TransportSecurityState::RequireCTDelegate {
  public:
   MOCK_METHOD3(IsCTRequiredForHost,
-               CTRequirementLevel(const std::string& host,
+               CTRequirementLevel(std::string_view host,
                                   const X509Certificate* chain,
                                   const HashValueVector& hashes));
 };
@@ -2987,7 +2987,7 @@ TEST_F(SSLClientSocketTest, SessionResumption_RSA) {
               ssl_info.handshake_type);
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
   }

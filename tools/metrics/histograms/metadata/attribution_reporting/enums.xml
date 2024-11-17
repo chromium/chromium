@@ -26,14 +26,6 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
-<enum name="AttributionDestinationRateLimitResult">
-  <int value="0" label="Allowed"/>
-  <int value="1" label="Disallowed (global limit)"/>
-  <int value="2" label="Disallowed (reporting site limit)"/>
-  <int value="3" label="Disallowed (both limits)"/>
-  <int value="4" label="Internal error"/>
-</enum>
-
 <!-- LINT.IfChange(AttributionSourceDestinationLimitResult) -->
 
 <enum name="AttributionSourceDestinationLimitResult">
@@ -132,11 +124,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_resolver_impl.cc:AttributionResult) -->
 
+<!-- LINT.IfChange(ConversionAttributionSrcRequestStatus) -->
+
 <enum name="ConversionAttributionSrcRequestStatus">
   <int value="0" label="Requested"/>
   <int value="1" label="Received"/>
   <int value="2" label="Failed"/>
+  <int value="3" label="Redirected"/>
+  <int value="4" label="Received afer redirect"/>
+  <int value="5" label="Failed after redirect"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/attribution_reporting/attribution_src_request_status.h:AttributionSrcRequestStatus) -->
 
 <!-- LINT.IfChange(ConversionBackgroundNavigationOutcome) -->
 
@@ -194,6 +193,8 @@ chromium-metrics-reviews@google.com.
       label="Corresponding source - invalid randomized response rate"/>
   <int value="32"
       label="Corresponding source - invalid attribution scopes data"/>
+  <int value="33"
+      label="Corresponding source - invalid aggregatable named budgets"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_storage_sql.h:ReportCorruptionStatus) -->
@@ -215,6 +216,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Deduplicated"/>
   <int value="12" label="Report window has passed"/>
   <int value="13" label="Excessive reports"/>
+  <int value="14" label="Insufficient aggregatable named budget"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/aggregatable_result.mojom:AggregatableResult) -->
@@ -256,7 +258,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Passed to OS"/>
   <int value="2" label="Invalid registration url"/>
   <int value="3" label="Prohibited by browser policy"/>
-  <int value="4" label="Excessive queue size"/>
+  <int value="4" label="(Obsolete) Excessive queue size"/>
   <int value="5" label="Rejected by OS"/>
 </enum>
 
@@ -300,6 +302,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/attribution_reporting/registrar_info.h:RegistrarIssue) -->
 
+<!-- LINT.IfChange(ConversionReportDebugKeyUsage) -->
+
+<enum name="ConversionReportDebugKeyUsage">
+  <int value="0" label="None"/>
+  <int value="1" label="Source only"/>
+  <int value="2" label="Trigger only"/>
+  <int value="3" label="Both"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_resolver_impl.cc:DebugKeyUsage) -->
+
 <!-- LINT.IfChange(ConversionReportSendOutcome) -->
 
 <enum name="ConversionReportSendOutcome">
@@ -321,6 +334,18 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_manager_impl.cc:ConversionReportSendRetryCount) -->
+
+<!-- LINT.IfChange(ConversionReportSendRetryCountThirdRetryEnabled) -->
+
+<enum name="ConversionReportSendRetryCountThirdRetryEnabled">
+  <int value="0" label="None"/>
+  <int value="1" label="One retry"/>
+  <int value="2" label="Two retries"/>
+  <int value="3" label="Three retries"/>
+  <int value="4" label="Failed"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/attribution_reporting/attribution_manager_impl.cc:ConversionReportSendRetryCountThirdRetryEnabled) -->
 
 <!-- LINT.IfChange(ConversionReportStatus) -->
 
@@ -402,6 +427,9 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="attribution_scopes not a valid dictionary"/>
   <int value="47" label="attribution_scopes' values not a valid list"/>
   <int value="48" label="attribution_scopes' values list value is invalid"/>
+  <int value="49" label="named_budgets not a valid dictionary"/>
+  <int value="50" label="named_budgets key too long"/>
+  <int value="51" label="named_budgets value is invalid"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/attribution_reporting/source_registration_error.mojom:SourceRegistrationError) -->
@@ -553,6 +581,8 @@ chromium-metrics-reviews@google.com.
              for aggregatable_source_registration_time"/>
   <int value="32" label="attribution_scopes value not a valid list"/>
   <int value="33" label="attribution_scopes list value is invalid"/>
+  <int value="34" label="named_budgets wrong type"/>
+  <int value="35" label="named_budgets's name invalid"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/attribution_reporting/trigger_registration_error.mojom:TriggerRegistrationError) -->
@@ -598,9 +628,19 @@ chromium-metrics-reviews@google.com.
   <int value="36" label="source-destination-per-day-rate-limit"/>
   <int value="38" label="source-scopes-channel-capacity-limit"/>
   <int value="39" label="source-max-event-states-limit"/>
+  <int value="40" label="trigger-aggregate-insufficient-named-budget"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/attribution_reporting/debug_types.mojom:DebugDataType) -->
+
+<!-- LINT.IfChange(DataAvailableCallsite) -->
+
+<enum name="DataAvailableCallsite">
+  <int value="0" label="Blink"/>
+  <int value="1" label="Browser"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/attribution_reporting/data_host.mojom:DataAvailableCallsite) -->
 
 <!-- LINT.IfChange(SourceRegistrationTimeConfig) -->
 

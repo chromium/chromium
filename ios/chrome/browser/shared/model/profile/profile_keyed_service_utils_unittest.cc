@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/shared/model/profile/profile_keyed_service_utils.h"
 
+#import "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,7 +20,7 @@ class ProfileKeyedServiceUtilsTest : public PlatformTest {
   ProfileIOS* GetRegularProfile() { return test_profile_.get(); }
 
   ProfileIOS* GetOffTheRecordProfile() {
-    return test_profile_->GetOffTheRecordChromeBrowserState();
+    return test_profile_->GetOffTheRecordProfile();
   }
 
  private:
@@ -31,8 +32,8 @@ class ProfileKeyedServiceUtilsTest : public PlatformTest {
 // profile according to the context and the ProfileSelection.
 TEST_F(ProfileKeyedServiceUtilsTest, GetContextToUseForKeyedServiceFactory) {
   struct TestCase {
-    web::BrowserState* context;
-    web::BrowserState* expects;
+    raw_ptr<web::BrowserState> context;
+    raw_ptr<web::BrowserState> expects;
     ProfileSelection profile_selection;
   };
 

@@ -28,7 +28,6 @@ suite('HighlightMenu', () => {
     chrome.readingMode = readingMode as unknown as typeof chrome.readingMode;
     chrome.readingMode.isReadAloudEnabled = true;
     chrome.readingMode.isPhraseHighlightingEnabled = true;
-    chrome.readingMode.isAutomaticWordHighlightingEnabled = true;
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);

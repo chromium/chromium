@@ -26,13 +26,19 @@ public interface TabModel extends TabList {
     @Nullable
     Tab getTabById(int tabId);
 
+    /** Returns the tab remover for this tab model. */
+    @NonNull
+    TabRemover getTabRemover();
+
     /**
      * Closes tabs based on the provided parameters. Refer to {@link TabClosureParams} for different
      * ways to close tabs.
      *
      * @param tabClosureParams The parameters to follow when closing tabs.
      * @return Whether the tab closure succeeded (only possibly false for single tab closure).
+     * @deprecated Use {@link TabRemover#closeTabs(TabClosureParams, boolean)} instead.
      */
+    @Deprecated
     boolean closeTabs(TabClosureParams tabClosureParams);
 
     /**
@@ -123,19 +129,15 @@ public interface TabModel extends TabList {
     void moveTab(int id, int newIndex);
 
     /**
-     * To be called when this model should be destroyed. The model should no longer be used after
-     * this.
-     *
-     * <p>As a result of this call, all {@link Tab}s owned by this model should be destroyed.
-     */
-    void destroy();
-
-    /**
      * Returns a supplier for the number of tabs in this tab model. This does not count tabs that
      * are pending closure.
      */
     @NonNull
     ObservableSupplier<Integer> getTabCountSupplier();
+
+    /** Returns the tab creator for this tab model. */
+    @NonNull
+    TabCreator getTabCreator();
 
     /**
      * Adds a newly created tab to this model.
@@ -148,34 +150,18 @@ public interface TabModel extends TabList {
     void addTab(Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState);
 
     /**
-     * Removes the given tab from the model without destroying it. The tab should be inserted into
-     * another model to avoid leaking as after this the link to the old Activity will be broken.
-     * @param tab The tab to remove.
-     */
-    void removeTab(Tab tab);
-
-    /**
      * Subscribes a {@link TabModelObserver} to be notified about changes to this model.
+     *
      * @param observer The observer to be subscribed.
      */
     void addObserver(TabModelObserver observer);
 
     /**
      * Unsubscribes a previously subscribed {@link TabModelObserver}.
+     *
      * @param observer The observer to be unsubscribed.
      */
     void removeObserver(TabModelObserver observer);
-
-    /**
-     * Set when tab model become active and inactive.
-     *
-     * @param active Whether the tab model is active.
-     *     <p>TODO(crbug.com/40726458): This function is only called by TabModelSelectorBase class,
-     *     so we should create a package private TabModelInternal interface which inherits from
-     *     TabModel. TabModelInternal interface should have this method and change
-     *     TabModelSelectorBase#mTabModels to hold the impls.
-     */
-    void setActive(boolean active);
 
     /**
      * Returns the count of non-custom tabs that have a {@link

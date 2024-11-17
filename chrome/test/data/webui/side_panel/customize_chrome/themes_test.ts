@@ -4,26 +4,29 @@
 
 import 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
 
-import {CustomizeChromeAction} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
+import {CustomizeChromeAction, NtpImageType} from 'chrome://customize-chrome-side-panel.top-chrome/common.js';
 import type {BackgroundCollection, CollectionImage, CustomizeChromePageRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromePageCallbackRouter, CustomizeChromePageHandlerRemote} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome.mojom-webui.js';
 import {CustomizeChromeApiProxy} from 'chrome://customize-chrome-side-panel.top-chrome/customize_chrome_api_proxy.js';
 import type {ThemesElement} from 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
 import {CHROME_THEME_BACK_ELEMENT_ID, CHROME_THEME_ELEMENT_ID} from 'chrome://customize-chrome-side-panel.top-chrome/themes.js';
 import {WindowProxy} from 'chrome://customize-chrome-side-panel.top-chrome/window_proxy.js';
+import type {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
-import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
-import {createBackgroundImage, createTheme, installMock} from './test_support.js';
+import {$$, createBackgroundImage, createTheme, installMock} from './test_support.js';
 
 function createTestCollection(name: string): BackgroundCollection {
   const testCollection: BackgroundCollection = {
     id: `${name}_id`,
     label: name,
     previewImageUrl: {url: `https://collection-${name}.jpg`},
+    imageVerified: false,
   };
   return testCollection;
 }
@@ -38,6 +41,7 @@ function createTestImages(length: number): CollectionImage[] {
       imageUrl: {url: `https://image_${i}.jpg`},
       previewImageUrl: {url: `https://preview_${i}.jpg`},
       collectionId: `collectionId_${i}`,
+      imageVerified: false,
     });
   }
   return testImages;
@@ -94,12 +98,13 @@ suite('ThemesTest', () => {
   });
 
   test('get collection images when collection changes', async () => {
-    await setCollection('test1', 3);
+    let numImages = 3;
+    await setCollection('test1', numImages);
 
     let header = themesElement.$.heading;
     assertEquals('test1', header.textContent!.trim());
     let themes = themesElement.shadowRoot!.querySelectorAll('.theme');
-    assertEquals(themes.length, 3);
+    assertEquals(themes.length, numImages);
     assertEquals(
         'https://preview_1.jpg',
         themes[0]!.querySelector('img')!.getAttribute('auto-src'));
@@ -110,12 +115,13 @@ suite('ThemesTest', () => {
         'https://preview_3.jpg',
         themes[2]!.querySelector('img')!.getAttribute('auto-src'));
 
-    await setCollection('test2', 5);
+    numImages = 5;
+    await setCollection('test2', numImages);
 
     header = themesElement.$.heading;
     assertEquals('test2', header.textContent!.trim());
     themes = themesElement.shadowRoot!.querySelectorAll('.theme');
-    assertEquals(themes.length, 5);
+    assertEquals(themes.length, numImages);
     assertEquals(
         'https://preview_1.jpg',
         themes[0]!.querySelector('img')!.getAttribute('auto-src'));
@@ -333,5 +339,80 @@ suite('ThemesTest', () => {
         metrics.count(
             'NewTabPage.CustomizeChromeSidePanelAction',
             CustomizeChromeAction.FIRST_PARTY_COLLECTION_THEME_SELECTED));
+  });
+
+  [true, false].forEach((errorDetectionEnabled) => {
+    suite(`ImageErrorDetectionEnabled_${errorDetectionEnabled}`, () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          imageErrorDetectionEnabled: errorDetectionEnabled,
+        });
+      });
+
+      test('theme visibility based on error detection', async () => {
+        const numImages = 2;
+        await setCollection('test1', numImages);
+
+        const themes = themesElement.shadowRoot!.querySelectorAll('.theme');
+        assertEquals(numImages, themes.length);
+        if (!errorDetectionEnabled) {
+          assertTrue(isVisible(themes[0]!));
+          assertTrue(isVisible(themes[1]!));
+        } else {
+          assertFalse(isVisible(themes[0]!));
+          assertFalse(isVisible(themes[1]!));
+        }
+      });
+
+      test('themes show if they load successfully', async () => {
+        await setCollection('test1', 1);
+
+        const theme = $$(themesElement, '.theme');
+        assertTrue(!!theme);
+        const img = theme!.querySelector<CrAutoImgElement>('img');
+        assertTrue(!!img);
+
+        if (errorDetectionEnabled) {
+          assertFalse(isVisible(theme));
+        }
+
+        img.dispatchEvent(new Event('load'));
+        await microtasksFinished();
+
+        assertTrue(isVisible(theme));
+      });
+    });
+
+    suite('ImageErrorDetectionMetric', () => {
+      suiteSetup(() => {
+        loadTimeData.overrideValues({
+          imageErrorDetectionEnabled: true,
+        });
+      });
+
+      test('error detection metrics fire correctly', async () => {
+        const numImages = 1;
+        await setCollection('test1', numImages);
+        const img = $$(themesElement, '.theme img');
+        assertTrue(!!img);
+
+        const metricCount = metrics.count(
+            'NewTabPage.BackgroundService.Images.Headers.ErrorDetected');
+        if (metricCount !== numImages) {
+          await eventToPromise('error', img);
+          await microtasksFinished();
+        }
+
+        assertEquals(
+            numImages,
+            metrics.count(
+                'NewTabPage.BackgroundService.Images.Headers.ErrorDetected'));
+        assertEquals(
+            numImages,
+            metrics.count(
+                'NewTabPage.BackgroundService.Images.Headers.ErrorDetected',
+                NtpImageType.BACKGROUND_IMAGE));
+      });
+    });
   });
 });

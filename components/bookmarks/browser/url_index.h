@@ -44,13 +44,13 @@ class UrlIndex : public HistoryBookmarkModel {
 
   BookmarkNode* root() { return root_.get(); }
 
-  // Adds |node| to |parent| at |index|.
+  // Adds `node` to `parent` at `index`.
   void Add(BookmarkNode* parent,
            size_t index,
            std::unique_ptr<BookmarkNode> node);
 
-  // Removes |node| and all its descendants from the map, adds urls that are no
-  // longer contained in the index to the |removed_urls| set if provided
+  // Removes `node` and all its descendants from the map, adds urls that are no
+  // longer contained in the index to the `removed_urls` set if provided
   // (doesn't clean up existing items in the set).
   std::unique_ptr<BookmarkNode> Remove(BookmarkNode* node,
                                        std::set<GURL>* removed_urls);
@@ -60,7 +60,7 @@ class UrlIndex : public HistoryBookmarkModel {
   void SetUrl(BookmarkNode* node, const GURL& url);
   void SetTitle(BookmarkNode* node, const std::u16string& title);
 
-  // Returns the nodes whose icon_url is |icon_url|.
+  // Returns the nodes whose icon_url is `icon_url`.
   void GetNodesWithIconUrl(const GURL& icon_url,
                            std::set<const BookmarkNode*>* nodes);
 
@@ -109,8 +109,8 @@ class UrlIndex : public HistoryBookmarkModel {
 
   // Set of nodes ordered by URL. This is not a map to avoid copying the
   // urls.
-  // WARNING: |nodes_ordered_by_url_set_| is accessed on multiple threads. As
-  // such, be sure and wrap all usage of it around |url_lock_|.
+  // WARNING: `nodes_ordered_by_url_set_` is accessed on multiple threads. As
+  // such, be sure and wrap all usage of it around `url_lock_`.
   using NodesOrderedByUrlSet = std::multiset<BookmarkNode*, NodeUrlComparator>;
   NodesOrderedByUrlSet nodes_ordered_by_url_set_;
   mutable base::Lock url_lock_;

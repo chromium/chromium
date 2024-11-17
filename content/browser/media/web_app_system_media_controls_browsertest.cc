@@ -272,14 +272,7 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
   WaitForStop(shell());
 }
 
-// TODO: crbug.com/361543620 - Fix the test on Win11 arm64 debug platform.
-#if BUILDFLAG(IS_WIN) && !defined(NDEBUG) && defined(ARCH_CPU_ARM64)
-#define MAYBE_ThreeBrowserTest DISABLED_ThreeBrowserTest
-#else
-#define MAYBE_ThreeBrowserTest ThreeBrowserTest
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
-                       MAYBE_ThreeBrowserTest) {
+IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest, ThreeBrowserTest) {
   GURL http_url(https_server()->GetURL("/media/session/media-session.html"));
 
   Shell* browser2 = CreateBrowser();
@@ -310,8 +303,14 @@ IN_PROC_BROWSER_TEST_F(WebAppSystemMediaControlsBrowserTest,
       BrowserMainLoop::GetInstance()->media_keys_listener_manager();
   media_keys_listener_manager_impl->OnPause(GetBrowserSystemMediaControls());
 
-  // Check audio is paused for browser3.
-  WaitForStop(browser3);
+  // crbug.com/361543620 tracks a disablement of this test on Win11 arm64 debug
+  // due to a timeout in `WaitForStop`. I have been unable to repro this locally
+  // so add a sanity check to ensure the audio is still playing before we wait
+  // for it to stop, and reenable for now.
+  if (IsPlaying(browser3, "long-video-loop")) {
+    // Check audio is paused for browser3.
+    WaitForStop(browser3);
+  }
 
   // The other stuff should be continuing to loop.
   EXPECT_TRUE(IsPlaying(browser2, "long-video-loop"));

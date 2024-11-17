@@ -69,6 +69,12 @@
 // Sets the height of the separators.
 - (void)setSeparatorsHeight:(CGFloat)height;
 
+// Sets the visibility of the close button.
+- (void)setCloseButtonVisibility:(CGFloat)visibility;
+
+// Sets the visibility of the cell.
+- (void)setCellVisibility:(CGFloat)visibility;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_STRIP_UI_TAB_STRIP_TAB_CELL_H_

@@ -127,7 +127,7 @@ class DeviceSyncCryptAuthGCMManagerImplTest
 
  protected:
   DeviceSyncCryptAuthGCMManagerImplTest()
-      : gcm_manager_(&mock_instance_id_driver_, &pref_service_) {}
+      : gcm_manager_(&gcm_driver_, &mock_instance_id_driver_, &pref_service_) {}
 
   // testing::Test:
   void SetUp() override {

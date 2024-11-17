@@ -62,6 +62,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/search/ntp_features.h"
 #include "components/session_proto_db/session_proto_storage.h"
+#include "components/sessions/core/tab_restore_service.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
 #include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
@@ -184,7 +185,8 @@ ShoppingService::ShoppingService(
     SessionProtoStorage<parcel_tracking_db::ParcelTrackingContent>*
         parcel_tracking_proto_db,
     history::HistoryService* history_service,
-    std::unique_ptr<commerce::WebExtractor> web_extractor)
+    std::unique_ptr<commerce::WebExtractor> web_extractor,
+    sessions::TabRestoreService* tab_restore_service)
     : country_on_startup_(country_on_startup),
       locale_on_startup_(locale_on_startup),
       opt_guide_(opt_guide),
@@ -200,7 +202,7 @@ ShoppingService::ShoppingService(
                   /*require_sync_feature_enabled=*/!base::FeatureList::
                       IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos))),
       web_extractor_(std::move(web_extractor)),
-      history_service_(history_service),
+      tab_restore_service_(tab_restore_service),
       weak_ptr_factory_(this) {
   // Register for the types of information we're allowed to receive from
   // optimization guide.
@@ -307,8 +309,13 @@ ShoppingService::ShoppingService(
     }
   }
 
-  if (history_service_) {
-    history_service_observation_.Observe(history_service_);
+  if (history_service) {
+    history_service_observation_.Observe(history_service);
+  }
+
+  if (product_specifications_service_) {
+    product_specifications_observation_.Observe(
+        product_specifications_service_);
   }
 }
 
@@ -764,9 +771,33 @@ void ShoppingService::GetProductSpecificationsForUrls(
                   std::move(callback).Run(std::move(cluster_ids), std::nullopt);
                   return;
                 }
+
+                const ProductSpecifications* cached_specs =
+                    service->product_specifications_cache_.GetEntry(
+                        cluster_ids);
+                if (cached_specs) {
+                  std::move(callback).Run(std::move(cluster_ids),
+                                          *cached_specs);
+                  return;
+                }
+
                 service->product_specs_server_proxy_
                     ->GetProductSpecificationsForClusterIds(
-                        cluster_ids, std::move(callback));
+                        cluster_ids,
+                        base::BindOnce(
+                            [](ProductSpecificationsCallback callback,
+                               base::WeakPtr<ShoppingService> service,
+                               std::vector<uint64_t> cluster_ids,
+                               std::optional<ProductSpecifications> specs) {
+                              if (specs.has_value()) {
+                                service->product_specifications_cache_.SetEntry(
+                                    cluster_ids, specs.value());
+                              }
+
+                              std::move(callback).Run(std::move(cluster_ids),
+                                                      std::move(specs));
+                            },
+                            std::move(callback), service));
               },
               std::move(callback), weak_ptr_factory_.GetWeakPtr()));
 
@@ -1073,6 +1104,18 @@ std::unique_ptr<ProductInfo> ShoppingService::OptGuideResultToProductInfo(
 
   if (buyable_product.has_category_data()) {
     info->category_data = buyable_product.category_data();
+  }
+
+  // TODO(376128060): Remove the feature check after M132.
+  if (CanLoadProductSpecificationsFullPageUi(account_checker_.get())) {
+    for (int i = 0; i < buyable_product.price_summary_size(); ++i) {
+      info->price_summary.push_back(buyable_product.price_summary(i));
+    }
+
+    if (buyable_product.has_price_display_recommendation()) {
+      info->price_display_recommendation =
+          buyable_product.price_display_recommendation();
+    }
   }
 
   return info;
@@ -1643,7 +1686,9 @@ void ShoppingService::GetAllSubscriptions(
   if (subscriptions_manager_) {
     subscriptions_manager_->GetAllSubscriptions(type, std::move(callback));
   } else {
-    CHECK_IS_TEST();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  std::vector<CommerceSubscription>()));
   }
 }
 
@@ -1653,18 +1698,15 @@ void ShoppingService::IsSubscribed(CommerceSubscription subscription,
     subscriptions_manager_->IsSubscribed(std::move(subscription),
                                          std::move(callback));
   } else {
-    CHECK_IS_TEST();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), false));
   }
 }
 
 bool ShoppingService::IsSubscribedFromCache(
     const CommerceSubscription& subscription) {
-  if (subscriptions_manager_) {
-    return subscriptions_manager_->IsSubscribedFromCache(subscription);
-  } else {
-    CHECK_IS_TEST();
-  }
-  return false;
+  return subscriptions_manager_ &&
+         subscriptions_manager_->IsSubscribedFromCache(subscription);
 }
 
 void ShoppingService::FetchPriceEmailPref() {
@@ -1714,14 +1756,6 @@ void ShoppingService::StartTrackingParcels(
 }
 
 void ShoppingService::GetAllParcelStatuses(GetParcelStatusCallback callback) {
-  if (base::FeatureList::IsEnabled(kParcelTrackingTestData)) {
-    auto statuses = std::make_unique<std::vector<ParcelTrackingStatus>>();
-    statuses->push_back(GetParcelTrackingStatusTestData());
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback), true, std::move(statuses)));
-    return;
-  }
   if (parcels_manager_) {
     parcels_manager_->GetAllParcelStatuses(std::move(callback));
   } else {
@@ -1856,16 +1890,18 @@ void ShoppingService::OnHistoryDeletions(
   recently_visited_tabs_.clear();
 }
 
-void ShoppingService::QueryHistoryForUrl(
-    const GURL& url,
-    history::HistoryService::QueryURLCallback callback) {
-  if (!history_service_) {
-    std::move(callback).Run(history::QueryURLResult());
+void ShoppingService::OnProductSpecificationsSetRemoved(
+    const ProductSpecificationsSet& set) {
+  if (!tab_restore_service_) {
     return;
   }
 
-  history_service_->QueryURL(url, false, std::move(callback),
-                             &cancelable_task_tracker_);
+  tab_restore_service_->DeleteNavigationEntries(base::BindRepeating(
+      [](const std::string& base_url,
+         const sessions::SerializedNavigationEntry& entry) {
+        return entry.virtual_url().spec().starts_with(base_url);
+      },
+      GetProductSpecsTabUrlForID(set.uuid()).spec()));
 }
 
 base::WeakPtr<ShoppingService> ShoppingService::AsWeakPtr() {

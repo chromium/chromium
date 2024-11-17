@@ -29,7 +29,6 @@ void SetUpSupervisedUserPolicies(
           policy::DeveloperToolsPolicyHandler::Availability::kDisallowed));
   policy_payload->mutable_educoexistencetosversion()->set_value(
       kEduCoexistenceToSVersion);
-  policy_payload->mutable_lacrossecondaryprofilesallowed()->set_value(false);
 
   std::string parent_access_config;
   base::JSONWriter::Write(parent_access::PolicyFromConfigs(

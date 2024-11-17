@@ -43,12 +43,17 @@ static_library("core") {
     "//components/prefs",
     "//components/strings",
     "//components/sync",
+    "//components/user_annotations",
     "//components/version_info",
     "//components/webdata/common",
     "//ui/base",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+source_set("cookie_or_cache_deletion_choice") {
+  sources = [ "cookie_or_cache_deletion_choice.h" ]
 }
 
 if (is_android) {
@@ -62,11 +67,17 @@ if (is_android) {
     visibility = [ ":*" ]
     sources = [ "clear_browsing_data_tab.h" ]
   }
+  java_cpp_enum("cookie_or_cache_deletion_choice_javagen") {
+    # External code should depend on ":java" instead.
+    visibility = [ ":*" ]
+    sources = [ "cookie_or_cache_deletion_choice.h" ]
+  }
 
   android_library("java") {
     srcjar_deps = [
       ":browsing_data_utils_javagen",
       ":clear_browsing_data_tab_javagen",
+      ":cookie_or_cache_deletion_choice_javagen",
     ]
     deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
   }
@@ -80,6 +91,11 @@ source_set("unit_tests") {
     "counters/browsing_data_counter_unittest.cc",
     "history_notice_utils_unittest.cc",
   ]
+
+  if (is_ios) {
+    # pref_names_unittest.cc tests a method only available in iOS.
+    sources += [ "pref_names_unittest.cc" ]
+  }
 
   deps = [
     ":core",

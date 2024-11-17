@@ -116,15 +116,12 @@ class RASTER_EXPORT RasterImplementation : public RasterInterface,
   // RasterInterface implementation.
   void CopySharedImage(const gpu::Mailbox& source_mailbox,
                        const gpu::Mailbox& dest_mailbox,
-                       GLenum dest_target,
                        GLint xoffset,
                        GLint yoffset,
                        GLint x,
                        GLint y,
                        GLsizei width,
-                       GLsizei height,
-                       GLboolean unpack_flip_y,
-                       GLboolean unpack_premultiply_alpha) override;
+                       GLsizei height) override;
 
   void WritePixels(const gpu::Mailbox& dest_mailbox,
                    int dst_x_offset,

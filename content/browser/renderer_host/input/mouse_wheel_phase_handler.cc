@@ -98,7 +98,7 @@ void MouseWheelPhaseHandler::AddPhaseIfNeededAndScheduleEndEvent(
         mouse_wheel_event.phase = blink::WebMouseWheelEvent::kPhaseChanged;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

@@ -28,17 +28,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_CACHED_METADATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_CACHED_METADATA_H_
 
 #include <stdint.h>
 
 #include "base/check_op.h"
+#include "base/containers/buffer_iterator.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
@@ -114,28 +110,13 @@ class PLATFORM_EXPORT CachedMetadata : public RefCounted<CachedMetadata> {
   CachedMetadata(const mojo_base::BigBuffer* data,
                  base::PassKey<CachedMetadata>);
 
-  base::span<const uint8_t> SerializedData() const {
-    return base::make_span(RawData(), RawSize());
-  }
+  base::span<const uint8_t> SerializedData() const;
 
-  uint32_t DataTypeID() const {
-    DCHECK_GE(RawSize(), sizeof(CachedMetadataHeader));
-    return (reinterpret_cast<const CachedMetadataHeader*>(RawData()))->type;
-  }
+  uint32_t DataTypeID() const { return GetHeader().type; }
+  uint64_t tag() const { return GetHeader().tag; }
 
-  const uint8_t* Data() const {
-    DCHECK_GE(RawSize(), sizeof(CachedMetadataHeader));
-    return RawData() + sizeof(CachedMetadataHeader);
-  }
-
-  uint32_t size() const {
-    DCHECK_GE(RawSize(), sizeof(CachedMetadataHeader));
-    return RawSize() - sizeof(CachedMetadataHeader);
-  }
-
-  uint64_t tag() const {
-    CHECK_GE(RawSize(), sizeof(CachedMetadataHeader));
-    return (reinterpret_cast<const CachedMetadataHeader*>(RawData()))->tag;
+  base::span<const uint8_t> Data() const {
+    return SerializedData().subspan<sizeof(CachedMetadataHeader)>();
   }
 
   // Drains the serialized data as a Vector<uint8_t> or BigBuffer.
@@ -145,8 +126,10 @@ class PLATFORM_EXPORT CachedMetadata : public RefCounted<CachedMetadata> {
   friend class RefCounted<CachedMetadata>;
   ~CachedMetadata() = default;
 
-  const uint8_t* RawData() const;
-  uint32_t RawSize() const;
+  const CachedMetadataHeader& GetHeader() const {
+    base::BufferIterator iterator(SerializedData());
+    return *iterator.Object<CachedMetadataHeader>();
+  }
 
   // Since the serialization format supports random access, storing it in
   // serialized form avoids need for a copy during serialization.

@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/modules/service_worker/wait_until_observer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "v8/include/v8.h"
 
@@ -25,77 +24,42 @@ void RespondWithObserver::WillDispatchEvent() {
 void RespondWithObserver::DidDispatchEvent(
     ScriptState* script_state,
     DispatchEventResult dispatch_result) {
-  if (state_ != kInitial)
+  if (has_started_) {
     return;
+  }
 
   if (dispatch_result == DispatchEventResult::kNotCanceled) {
     OnNoResponse(script_state);
   } else {
     OnResponseRejected(ServiceWorkerResponseError::kDefaultPrevented);
   }
-
-  state_ = kDone;
+  has_started_ = true;
 }
 
 // https://w3c.github.io/ServiceWorker/#fetch-event-respondwith
-void RespondWithObserver::RespondWith(ScriptState* script_state,
-                                      ScriptPromiseUntyped script_promise,
-                                      ExceptionState& exception_state) {
+bool RespondWithObserver::StartRespondWith(ExceptionState& exception_state) {
   // 1. `If the dispatch flag is unset, throw an "InvalidStateError"
   //    DOMException.`
   if (!observer_->IsDispatchingEvent()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The event handler is already finished.");
-    return;
+    return false;
   }
 
   // 2. `If the respond-with entered flag is set, throw an "InvalidStateError"
   //    DOMException.`
-  if (state_ != kInitial) {
+  if (has_started_) {
     // Non-initial state during event dispatch means respondWith() was already
     // called.
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "respondWith() was already called.");
-    return;
+    return false;
   }
-
-  // 3. `Add r to the extend lifetime promises.`
-  // 4. `Increment the pending promises count by one.`
-  // This is accomplised by WaitUntil().
-  state_ = kPending;
-  bool will_wait = observer_->WaitUntil(
-      script_state, script_promise, exception_state,
-      WTF::BindRepeating(&RespondWithObserver::ResponseWasFulfilled,
-                         WrapPersistent(this), WrapPersistent(script_state),
-                         exception_state.GetContext()),
-      WTF::BindRepeating(&RespondWithObserver::ResponseWasRejected,
-                         WrapPersistent(this),
-                         ServiceWorkerResponseError::kPromiseRejected));
-  // If the WaitUntilObserver won't observe the response promise, the event can
-  // end before the response result is reported back to the
-  // ServiceWorkerContextClient, which it doesn't expect (e.g., for fetch
-  // events, RespondToFetchEvent*() must be called before
-  // DidHandleFetchEvent()). So WaitUntilObserver must observe the promise and
-  // call our callbacks before it determines the event is done.
-  DCHECK(will_wait);
-}
-
-void RespondWithObserver::ResponseWasRejected(ServiceWorkerResponseError error,
-                                              const ScriptValue& value) {
-  OnResponseRejected(error);
-  state_ = kDone;
-}
-
-void RespondWithObserver::ResponseWasFulfilled(
-    ScriptState* script_state,
-    const ExceptionContext& exception_context,
-    const ScriptValue& value) {
-  OnResponseFulfilled(script_state, value, exception_context);
-  state_ = kDone;
+  return true;
 }
 
 bool RespondWithObserver::WaitUntil(ScriptState* script_state,
-                                    ScriptPromiseUntyped promise,
+                                    const ScriptPromise<IDLUndefined>& promise,
                                     ExceptionState& exception_state) {
   return observer_->WaitUntil(script_state, promise, exception_state);
 }
@@ -105,12 +69,27 @@ RespondWithObserver::RespondWithObserver(ExecutionContext* context,
                                          WaitUntilObserver* observer)
     : ExecutionContextClient(context),
       event_id_(event_id),
-      state_(kInitial),
       observer_(observer) {}
 
 void RespondWithObserver::Trace(Visitor* visitor) const {
   visitor->Trace(observer_);
   ExecutionContextClient::Trace(visitor);
+}
+
+void RespondWithObserver::RespondWithReject::Trace(Visitor* visitor) const {
+  visitor->Trace(observer_);
+  ThenCallable<IDLAny, RespondWithReject, IDLAny>::Trace(visitor);
+}
+
+ScriptValue RespondWithObserver::RespondWithReject::React(
+    ScriptState* script_state,
+    ScriptValue value) {
+  DCHECK(observer_);
+  observer_->OnResponseRejected(
+      mojom::blink::ServiceWorkerResponseError::kPromiseRejected);
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ScriptPromise<IDLUndefined>::Reject(script_state, value).V8Promise());
 }
 
 }  // namespace blink

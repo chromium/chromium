@@ -62,7 +62,9 @@ namespace {
 bool CanBeHitTestTargetPseudoNodeStyle(const ComputedStyle& style) {
   switch (style.StyleType()) {
     case kPseudoIdBefore:
+    case kPseudoIdCheck:
     case kPseudoIdAfter:
+    case kPseudoIdSelectArrow:
     case kPseudoIdFirstLetter:
       return true;
     default:
@@ -265,9 +267,7 @@ void LayoutInline::UpdateShouldCreateBoxFragment() {
   }
 }
 
-PhysicalRect LayoutInline::LocalCaretRect(
-    int,
-    LayoutUnit* extra_width_to_end_of_line) const {
+PhysicalRect LayoutInline::LocalCaretRect(int) const {
   NOT_DESTROYED();
   if (FirstChild()) {
     // This condition is possible if the LayoutInline is at an editing boundary,
@@ -279,11 +279,8 @@ PhysicalRect LayoutInline::LocalCaretRect(
     return PhysicalRect();
   }
 
-  if (extra_width_to_end_of_line)
-    *extra_width_to_end_of_line = LayoutUnit();
-
-  LogicalRect logical_caret_rect = LocalCaretRectForEmptyElement(
-      BorderAndPaddingLogicalWidth(), LayoutUnit());
+  LogicalRect logical_caret_rect =
+      LocalCaretRectForEmptyElement(BorderAndPaddingInlineSize(), LayoutUnit());
 
   if (IsInLayoutNGInlineFormattingContext()) {
     InlineCursor cursor;
@@ -434,7 +431,7 @@ LayoutBox* LayoutInline::CreateAnonymousBoxToSplit(
 
 void LayoutInline::Paint(const PaintInfo& paint_info) const {
   NOT_DESTROYED();
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 template <typename PhysicalRectCollector>
@@ -765,21 +762,6 @@ PhysicalRect LayoutInline::LinesVisualOverflowBoundingBox() const {
   return PhysicalRect();
 }
 
-PhysicalRect LayoutInline::VisualRectInDocument(VisualRectFlags flags) const {
-  NOT_DESTROYED();
-  PhysicalRect rect = VisualOverflowRect();
-  MapToVisualRectInAncestorSpace(View(), rect, flags);
-  return rect;
-}
-
-PhysicalRect LayoutInline::LocalVisualRectIgnoringVisibility() const {
-  NOT_DESTROYED();
-  if (IsInLayoutNGInlineFormattingContext()) {
-    return FragmentItem::LocalVisualRectFor(*this);
-  }
-  return PhysicalRect();
-}
-
 PhysicalRect LayoutInline::VisualOverflowRect() const {
   NOT_DESTROYED();
   PhysicalRect overflow_rect = LinesVisualOverflowBoundingBox();
@@ -974,7 +956,7 @@ gfx::RectF LayoutInline::LocalBoundingBoxRectForAccessibility() const {
 void LayoutInline::AddDraggableRegions(Vector<DraggableRegionValue>& regions) {
   NOT_DESTROYED();
   // Convert the style regions to absolute coordinates.
-  if (StyleRef().UsedVisibility() != EVisibility::kVisible) {
+  if (StyleRef().Visibility() != EVisibility::kVisible) {
     return;
   }
 

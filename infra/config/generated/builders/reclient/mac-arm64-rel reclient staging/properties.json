@@ -43,7 +43,8 @@
           "builder": "mac-arm64-rel reclient staging",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/reclient/mac-arm64-rel reclient staging/targets"
     }
   },
   "$build/reclient": {

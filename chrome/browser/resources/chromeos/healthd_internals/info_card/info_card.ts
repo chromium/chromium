@@ -36,11 +36,11 @@ export class HealthdInternalsInfoCardElement extends PolymerElement {
   private displayedInfoList: DisplayedCardInfo[] = [];
 
   // Append a new row in the displayed card.
-  appendCardRow(header: string) {
+  appendCardRow(header: string, isExpanded: boolean = false) {
     this.displayedInfoList.push({
       infoHeader: header,
       detailedInfo: '',
-      isExpanded: false,
+      isExpanded: isExpanded,
     });
   }
 
@@ -61,6 +61,14 @@ export class HealthdInternalsInfoCardElement extends PolymerElement {
     this.set(
         `displayedInfoList.${rowIndex}.detailedInfo`,
         this.encodeJsonString(data));
+  }
+
+  // Update the `isExpanded` state for all rows.
+  updateExpanded(isExpanded: boolean) {
+    for (let i = 0; i < this.displayedInfoList.length; ++i) {
+      // Update the property by the `set` function to trigger a change.
+      this.set(`displayedInfoList.${i}.isExpanded`, isExpanded);
+    }
   }
 
   private encodeJsonString(data: any) {

@@ -38,7 +38,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
@@ -52,7 +51,7 @@ import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbar
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer.ToolbarViewResourceAdapter.ToolbarInMotionStage;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.TestActivity;
 
@@ -69,7 +68,6 @@ public class ToolbarControlContainerTest {
     private static final String MOTION_STAGE_NAME = "Android.TopToolbar.InMotionStage";
 
     @Rule public MockitoRule rule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private ResourceFactory.Natives mResourceFactoryJni;
     @Mock private View mToolbarContainer;
@@ -188,7 +186,7 @@ public class ToolbarControlContainerTest {
 
     @Before
     public void before() {
-        mJniMocker.mock(ResourceFactoryJni.TEST_HOOKS, mResourceFactoryJni);
+        ResourceFactoryJni.setInstanceForTesting(mResourceFactoryJni);
         when(mToolbarContainer.getWidth()).thenReturn(1);
         when(mToolbarContainer.getHeight()).thenReturn(1);
         when(mToolbarContainer.findViewById(anyInt())).thenReturn(mToolbarHairline);

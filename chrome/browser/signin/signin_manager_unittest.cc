@@ -440,7 +440,7 @@ TEST_P(SigninManagerTest,
   // sufficient to clear it.
   identity_test_env()->SetFreshnessOfAccountsInGaiaCookie(false);
   identity_test_env()->RemoveRefreshTokenForAccount(account.account_id);
-  ASSERT_FALSE(identity_manager()->GetAccountsInCookieJar().accounts_are_fresh);
+  ASSERT_FALSE(identity_manager()->GetAccountsInCookieJar().AreAccountsFresh());
 
   // Unconsented account was removed.
   if (is_signout_allowed()) {
@@ -475,7 +475,7 @@ TEST_P(SigninManagerTest,
   // Make the cookies stale and remove the main account.
   identity_test_env()->SetFreshnessOfAccountsInGaiaCookie(false);
   identity_test_env()->RemoveRefreshTokenForAccount(main_account.account_id);
-  ASSERT_FALSE(identity_manager()->GetAccountsInCookieJar().accounts_are_fresh);
+  ASSERT_FALSE(identity_manager()->GetAccountsInCookieJar().AreAccountsFresh());
 
   // Unconsented account was removed.
   EXPECT_NE(is_signout_allowed(),

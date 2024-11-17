@@ -294,7 +294,7 @@ public class Encoder {
     /**
      * Packs a boolean array to bitfield so that only 1 bit is needed to represent a bool value.
      *
-     * @param bool the boolean array.
+     * @param bools the boolean array.
      * @param alignmentBytes Determines the width of the bitfield. If a bitfield size is not a
      *     multiple of alignmentBytes, additional padding will be added so that the final size is a
      *     multiple of alignmentBytes.

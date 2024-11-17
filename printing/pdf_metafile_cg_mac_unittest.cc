@@ -99,20 +99,17 @@ void ExpectedPngSha1(const base::FilePath::StringType& expected_png_filename,
                      base::SHA1Digest* expected_hash) {
   base::FilePath expected_png_file = GetPrintingTestData(expected_png_filename);
   ASSERT_FALSE(expected_png_file.empty());
-  std::string expected_png_data;
-  ASSERT_TRUE(base::ReadFileToString(expected_png_file, &expected_png_data));
+  std::optional<std::vector<uint8_t>> expected_png_data =
+      base::ReadFileToBytes(expected_png_file);
+  ASSERT_TRUE(expected_png_data);
 
   // Decode expected PNG and calculate the output hash.
-  std::vector<uint8_t> expected_png_bitmap;
-  int png_width;
-  int png_height;
-  ASSERT_TRUE(gfx::PNGCodec::Decode(
-      reinterpret_cast<const uint8_t*>(expected_png_data.data()),
-      expected_png_data.size(), gfx::PNGCodec::FORMAT_BGRA,
-      &expected_png_bitmap, &png_width, &png_height));
-  ASSERT_EQ(expected_png_size.width(), png_width);
-  ASSERT_EQ(expected_png_size.height(), png_height);
-  *expected_hash = base::SHA1Hash(expected_png_bitmap);
+  std::optional<gfx::PNGCodec::DecodeOutput> decoded = gfx::PNGCodec::Decode(
+      expected_png_data.value(), gfx::PNGCodec::FORMAT_BGRA);
+  ASSERT_TRUE(decoded);
+  ASSERT_EQ(expected_png_size.width(), decoded->width);
+  ASSERT_EQ(expected_png_size.height(), decoded->height);
+  *expected_hash = base::SHA1Hash(decoded->output);
 }
 
 void TestRenderPageWithTransformParams(

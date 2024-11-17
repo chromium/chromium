@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_accelerators.h"
 #include "base/check.h"
@@ -22,13 +21,14 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/crash_recovery_launcher.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_data.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
@@ -39,6 +39,8 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "chrome/browser/ash/login/screens/app_launch_splash_screen.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
@@ -76,6 +78,18 @@ std::optional<KioskApp> ChromeAppById(const KioskChromeAppManager& manager,
       manager_app.name, manager_app.icon);
 }
 
+std::optional<KioskApp> IsolatedWebAppById(const KioskIwaManager& manager,
+                                           const AccountId& account_id) {
+  const KioskIwaData* app_data = manager.GetApp(account_id);
+
+  if (!app_data) {
+    return std::nullopt;
+  }
+
+  return KioskApp(KioskAppId::ForIsolatedWebApp(account_id), app_data->name(),
+                  app_data->icon());
+}
+
 KioskApp EmptyKioskApp(const KioskAppId& app_id) {
   switch (app_id.type) {
     case KioskAppType::kChromeApp:
@@ -106,9 +120,7 @@ std::vector<KioskApp> KioskControllerImpl::GetApps() const {
   std::vector<KioskApp> apps;
   AppendWebApps(apps);
   AppendChromeApps(apps);
-  if (ash::features::IsIsolatedWebAppKioskEnabled()) {
-    AppendIsolatedWebApps(apps);
-  }
+  AppendIsolatedWebApps(apps);
   return apps;
 }
 
@@ -122,8 +134,7 @@ std::optional<KioskApp> KioskControllerImpl::GetAppById(
     case KioskAppType::kChromeApp:
       return ChromeAppById(chrome_app_manager_, app_id.app_id.value());
     case KioskAppType::kIsolatedWebApp:
-      // TODO(crbug.com/359774056): add IsolatedWebAppById.
-      return EmptyKioskApp(app_id);
+      return IsolatedWebAppById(iwa_manager_, app_id.account_id);
   }
 }
 
@@ -133,10 +144,18 @@ std::optional<KioskApp> KioskControllerImpl::GetAutoLaunchApp() const {
   if (const auto& web_account_id = web_app_manager_.GetAutoLaunchAccountId();
       web_account_id.is_valid()) {
     return WebAppById(web_app_manager_, web_account_id);
-  } else if (std::string chrome_app_id = chrome_app_manager_.GetAutoLaunchApp();
-             !chrome_app_id.empty()) {
+  }
+
+  if (const auto& chrome_app_id = chrome_app_manager_.GetAutoLaunchApp();
+      !chrome_app_id.empty()) {
     return ChromeAppById(chrome_app_manager_, chrome_app_id);
   }
+
+  if (const auto& iwa_account_id = iwa_manager_.GetAutoLaunchAccountId();
+      iwa_account_id.has_value()) {
+    return IsolatedWebAppById(iwa_manager_, *iwa_account_id);
+  }
+
   return std::nullopt;
 }
 
@@ -159,15 +178,15 @@ void KioskControllerImpl::InitializeKioskSystemSession(
       chrome_app_manager_.OnKioskSessionStarted(kiosk_app_id);
       break;
     case KioskAppType::kIsolatedWebApp:
-      // TODO(crbug.com/361017701): add iwa_manager_.OnKioskSessionStarted.
-      NOTIMPLEMENTED();
+      iwa_manager_.OnKioskSessionStarted(kiosk_app_id);
       break;
   }
 }
 
 void KioskControllerImpl::StartSession(const KioskAppId& app_id,
                                        bool is_auto_launch,
-                                       LoginDisplayHost* host) {
+                                       LoginDisplayHost* host,
+                                       AppLaunchSplashScreen* splash_screen) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CHECK_EQ(launch_controller_, nullptr);
@@ -179,10 +198,11 @@ void KioskControllerImpl::StartSession(const KioskAppId& app_id,
   KioskApp app = std::move(app_maybe).value_or(EmptyKioskApp(app_id));
 
   launch_controller_ = std::make_unique<KioskLaunchController>(
-      host, host->GetOobeUI(),
+      host,
       /*app_launched_callback=*/
       base::BindOnce(&KioskControllerImpl::OnAppLaunched,
                      base::Unretained(this)),
+      /*splash_screen=*/splash_screen,
       /*done_callback=*/
       base::BindOnce(&KioskControllerImpl::OnLaunchComplete,
                      base::Unretained(this)));

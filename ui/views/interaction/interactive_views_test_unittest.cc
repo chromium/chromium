@@ -65,9 +65,12 @@ class InteractiveViewsTestTest : public InteractiveViewsTest {
                 Builder<TabbedPane>()
                     .CopyAddressTo(&tabs_)
                     .SetProperty(kElementIdentifierKey, kTabbedPaneId)
-                    .AddTab(kTab1Title, std::make_unique<Label>(kTab1Contents))
-                    .AddTab(kTab2Title, std::make_unique<Label>(kTab2Contents))
-                    .AddTab(kTab3Title, std::make_unique<Label>(kTab3Contents)),
+                    .AddTab(kTab1Title, std::make_unique<Label>(kTab1Contents),
+                            nullptr)
+                    .AddTab(kTab2Title, std::make_unique<Label>(kTab2Contents),
+                            nullptr)
+                    .AddTab(kTab3Title, std::make_unique<Label>(kTab3Contents),
+                            nullptr),
                 Builder<FlexLayoutView>()
                     .SetProperty(kElementIdentifierKey, kButtonsId)
                     .SetOrientation(LayoutOrientation::kHorizontal)

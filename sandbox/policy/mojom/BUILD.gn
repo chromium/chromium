@@ -28,20 +28,8 @@ mojom("mojom") {
   if (enable_oop_printing) {
     enabled_features += [ "enable_oop_printing" ]
   }
-  if (enable_ppapi) {
-    enabled_features += [ "enable_ppapi" ]
-  }
-  if (is_linux || is_mac) {
-    enabled_features += [ "is_linux_or_mac" ]
-  }
-  if (is_linux || is_chromeos) {
-    enabled_features += [
-      "has_zygote",
-      "is_linux_or_chromeos",
-    ]
-  }
-  if (is_linux || is_chromeos_ash) {
-    enabled_features += [ "is_linux_or_chromeos_ash" ]
+  if (enable_ppapi && !is_win) {
+    enabled_features += [ "enable_ppapi_sandbox" ]
   }
   if (enable_cros_libassistant) {
     enabled_features += [ "enable_cros_libassistant" ]

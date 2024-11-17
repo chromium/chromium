@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/webui/ash/settings/search/search_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/fake_hierarchy.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/fake_os_settings_sections.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -164,7 +164,7 @@ class OsSettingsProviderTest : public testing::Test {
         ->OverrideInnerIconLoaderForTesting(&stub_icon_loader);
 
     // Insert dummy map values so that the stub_icon_loader knows of the app.
-    stub_icon_loader.update_version_by_app_id_[web_app::kOsSettingsAppId] = 1;
+    stub_icon_loader.update_version_by_app_id_[ash::kOsSettingsAppId] = 1;
 
     // Populate the fake hierarchy with data.
     fake_hierarchy_.AddSubpageMetadata(

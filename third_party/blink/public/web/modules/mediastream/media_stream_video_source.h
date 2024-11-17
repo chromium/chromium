@@ -67,6 +67,12 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // RestartCallback is used for both the StopForRestart and Restart operations.
   using RestartCallback = base::OnceCallback<void(RestartResult)>;
 
+  // Callback for starting the source. It is used for video source only now, but
+  // can be extend to the audio source in the future.
+  using SourceStartCallback =
+      base::OnceCallback<void(WebPlatformMediaStreamSource* source,
+                              mojom::MediaStreamRequestResult result)>;
+
   explicit MediaStreamVideoSource(
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner);
   MediaStreamVideoSource(const MediaStreamVideoSource&) = delete;
@@ -233,6 +239,8 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
     DCHECK(GetTaskRunner()->BelongsToCurrentThread());
     return tracks_.size();
   }
+
+  void SetStartCallback(SourceStartCallback callback);
 
   using WebPlatformMediaStreamSource::GetTaskRunner;
 
@@ -417,6 +425,11 @@ class BLINK_MODULES_EXPORT MediaStreamVideoSource
   // This flag enables a heuristic to detect device rotation based on frame
   // size.
   bool enable_device_rotation_detection_ = false;
+
+  // Callback that needs to trigger after starting the source. It is an
+  // optional callback so the client doesn't have to set if not interested in
+  // source start.
+  SourceStartCallback start_callback_;
 
   // Callback that needs to trigger after removing the track. If this object
   // died before this callback is resolved, we still need to trigger the

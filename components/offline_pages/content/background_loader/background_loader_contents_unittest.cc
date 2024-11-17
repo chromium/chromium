@@ -65,7 +65,7 @@ BackgroundLoaderContentsTest::BackgroundLoaderContentsTest()
       waiter_(base::WaitableEvent::ResetPolicy::MANUAL,
               base::WaitableEvent::InitialState::NOT_SIGNALED) {}
 
-BackgroundLoaderContentsTest::~BackgroundLoaderContentsTest() {}
+BackgroundLoaderContentsTest::~BackgroundLoaderContentsTest() = default;
 
 void BackgroundLoaderContentsTest::SetUp() {
   contents_.reset(new BackgroundLoaderContents());

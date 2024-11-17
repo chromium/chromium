@@ -66,7 +66,8 @@ class FullscreenControllerTestWindow : public TestBrowserWindow,
       ExclusiveAccessBubbleHideCallback first_hide_callback) override;
   bool IsExclusiveAccessBubbleDisplayed() const override;
   void OnExclusiveAccessUserInput() override;
-  bool CanUserExitFullscreen() const override;
+  bool CanUserEnterFullscreen() const override { return true; }
+  bool CanUserExitFullscreen() const override { return true; }
 
   // Simulates the window changing state.
   void ChangeWindowFullscreenState();
@@ -122,8 +123,7 @@ const char* FullscreenControllerTestWindow::GetWindowStateString(
     ENUM_TO_STRING(TO_FULLSCREEN);
     ENUM_TO_STRING(TO_NORMAL);
     default:
-      NOTREACHED_IN_MIGRATION() << "No string for state " << state;
-      return "WindowState-Unknown";
+      NOTREACHED() << "No string for state " << state;
   }
 }
 
@@ -190,10 +190,6 @@ bool FullscreenControllerTestWindow::IsExclusiveAccessBubbleDisplayed() const {
 }
 
 void FullscreenControllerTestWindow::OnExclusiveAccessUserInput() {}
-
-bool FullscreenControllerTestWindow::CanUserExitFullscreen() const {
-  return true;
-}
 
 }  // namespace
 
@@ -280,7 +276,7 @@ void FullscreenControllerStateUnitTest::VerifyWindowState() {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << GetAndClearDebugLog();
+      NOTREACHED() << GetAndClearDebugLog();
   }
 
   FullscreenControllerStateTest::VerifyWindowState();
@@ -440,7 +436,8 @@ TEST_F(FullscreenControllerStateUnitTest,
 TEST_F(FullscreenControllerStateUnitTest,
        RunOrDeferUntilTransitionIsCompleteDefer) {
   AddTab(browser(), GURL(url::kAboutBlankURL));
-  GetFullscreenController()->ToggleBrowserFullscreenMode();
+  GetFullscreenController()->ToggleBrowserFullscreenMode(
+      /*user_initiated=*/false);
   bool lambda_called = false;
   GetFullscreenController()->RunOrDeferUntilTransitionIsComplete(
       base::BindLambdaForTesting([&lambda_called]() { lambda_called = true; }));

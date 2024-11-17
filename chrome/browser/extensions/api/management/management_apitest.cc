@@ -50,7 +50,6 @@ using extensions::mojom::ManifestLocation;
 
 namespace {
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Find a browser other than |browser|.
 Browser* FindOtherBrowser(Browser* browser) {
   Browser* found = nullptr;
@@ -69,7 +68,6 @@ bool ExpectChromeAppsDefaultEnabled() {
   return true;
 #endif
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace
 
@@ -353,20 +351,12 @@ IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest, NotInstallableWebApp) {
           kBackground, true /* from_webstore */);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40211465): Run these tests on Chrome OS with both Ash and
-// Lacros processes active.
 IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest, InstallableWebApp) {
   static constexpr char kGoodWebAppURL[] =
       "/management/install_replacement_web_app/acceptable_web_app/index.html";
 
   RunInstallableWebAppTest(kManifest, kGoodWebAppURL, kGoodWebAppURL);
 }
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40211465): Run these tests on Chrome OS with both Ash and
-// Lacros processes active.
 
 // Check that web app still installs and launches correctly when start_url does
 // not match replacement_web_app_url.
@@ -391,7 +381,6 @@ IN_PROC_BROWSER_TEST_P(InstallReplacementWebAppApiTest,
 
   RunInstallableWebAppTest(kAppManifest, kGoodWebAppURL, kGoodWebAppURL);
 }
-#endif
 
 // Tests actions on extensions when no management policy is in place.
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyAllowed) {
@@ -435,10 +424,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, ManagementPolicyProhibited) {
   ASSERT_TRUE(RunExtensionTest("management/management_policy",
                                {.custom_arg = "runProhibitedTests"}));
 }
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-// TODO(crbug.com/40211465): Run these tests on Chrome OS with both Ash and
-// Lacros processes active.
 
 IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, LaunchPanelApp) {
   // Load an extension that calls launchApp() on any app that gets
@@ -600,7 +585,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionManagementApiTest, NoLaunchTabAppDeprecated) {
     EXPECT_FALSE(launched_app.was_satisfied());
   }
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Flaky on MacOS: crbug.com/915339
 #if BUILDFLAG(IS_MAC)

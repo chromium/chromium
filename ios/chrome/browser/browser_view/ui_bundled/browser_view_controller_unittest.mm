@@ -121,7 +121,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         ios::BookmarkModelFactory::GetDefaultFactory());
     test_profile_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     test_profile_builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
@@ -130,9 +131,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     profile_ =
         profile_manager_.AddProfileWithBuilder(std::move(test_profile_builder));
-
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        GetProfile(), std::make_unique<FakeAuthenticationServiceDelegate>());
 
     browser_ = std::make_unique<TestBrowser>(GetProfile(), scene_state_);
     WebUsageEnablerBrowserAgent::CreateForBrowser(browser_.get());

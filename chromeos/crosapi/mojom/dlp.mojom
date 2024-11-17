@@ -9,7 +9,7 @@ import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 
 // Corresponds to DlpRulesManager::Level enum.
-[Stable, Extensible]
+[Extensible]
 enum DlpRestrictionLevel {
   kAllow = 0,
   kReport = 1,
@@ -19,14 +19,12 @@ enum DlpRestrictionLevel {
 };
 
 // Corresponds to RestrictionLevelAndUrl struct.
-[Stable]
 struct DlpRestrictionLevelAndUrl {
   DlpRestrictionLevel level@0;
   url.mojom.Url url@1;
 };
 
 // Corresponds to DlpContentRestrictionSet class.
-[Stable]
 struct DlpRestrictionSet {
   DlpRestrictionLevelAndUrl screenshot@0;
   DlpRestrictionLevelAndUrl privacy_screen@1;
@@ -35,7 +33,6 @@ struct DlpRestrictionSet {
 };
 
 // Captured area.
-[Stable]
 struct ScreenShareArea {
   // All root windows if |window_id| is null.
   string? window_id@0;
@@ -45,7 +42,6 @@ struct ScreenShareArea {
 };
 
 // Callback to control the state (pause/resume) of a remote screen share.
-[Stable]
 interface StateChangeDelegate {
   // Request to pause the screen share.
   OnPause@0();
@@ -56,7 +52,7 @@ interface StateChangeDelegate {
 };
 
 // Corresponds to the dlp::FileAction enum.
-[Stable, Extensible]
+[Extensible]
 enum FileAction {
   [Default] kUnknown = 0,
   kDownload = 1,
@@ -77,7 +73,7 @@ enum FileAction {
 //
 // Next MinVersion: 5
 // Next ID: 5
-[Stable, Uuid="793ee9c6-3873-4ea8-a541-894412ddfc0b"]
+[Uuid="793ee9c6-3873-4ea8-a541-894412ddfc0b"]
 interface Dlp {
   // Called when |restrictions| are changed for window with |window_id|.
   DlpRestrictionsUpdated@0(string window_id, DlpRestrictionSet restrictions);

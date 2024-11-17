@@ -17,6 +17,7 @@
 #include "media/base/decoder.h"
 #include "media/base/media_serializers_base.h"
 #include "media/base/media_track.h"
+#include "media/base/ranges.h"
 #include "media/base/renderer.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder_config.h"
@@ -429,7 +430,7 @@ struct MediaSerializer<SerializableBufferingState<T>> {
 
 // Class (complex)
 template <typename T>
-struct MediaSerializer<TypedStatus<T>> {
+struct MediaSerializerDebug<TypedStatus<T>> {
   static base::Value Serialize(const TypedStatus<T>& status) {
     // TODO: replace this with some kind of static "description"
     // of the default type, instead of "Ok".
@@ -564,6 +565,20 @@ template <>
 struct MediaSerializer<MediaTrack::Id> {
   static inline base::Value Serialize(MediaTrack::Id id) {
     return base::Value(id.value());
+  }
+};
+
+template <typename T>
+struct MediaSerializer<Ranges<T>> {
+  static inline base::Value Serialize(Ranges<T> ranges) {
+    base::Value::List result;
+    for (size_t i = 0; i < ranges.size(); i++) {
+      base::Value::List tuple;
+      tuple.Append(MediaSerializer<T>::Serialize(ranges.start(i)));
+      tuple.Append(MediaSerializer<T>::Serialize(ranges.end(i)));
+      result.Append(std::move(tuple));
+    }
+    return base::Value(std::move(result));
   }
 };
 

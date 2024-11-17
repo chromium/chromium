@@ -44,6 +44,10 @@ std::string DataTypeToString(OperandDataType type) {
       return "int64";
     case OperandDataType::kUint64:
       return "uint64";
+    case OperandDataType::kUint4:
+      return "uint4";
+    case OperandDataType::kInt4:
+      return "int4";
   }
 }
 

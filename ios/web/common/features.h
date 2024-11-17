@@ -74,9 +74,6 @@ BASE_DECLARE_FEATURE(kSmoothScrollingDefault);
 // purpose of this flag it to allow to testing this code path.
 BASE_DECLARE_FEATURE(kForceSynthesizedRestoreSession);
 
-// Feature flag to remove the UnsafeRestore code path.
-BASE_DECLARE_FEATURE(kRemoveOldWebStateRestoration);
-
 // Feature flag to enable detecting destroyed NavigationContexts. This is
 // intended to be used as a kill switch.
 BASE_DECLARE_FEATURE(kDetectDestroyedNavigationContexts);
@@ -98,6 +95,10 @@ BASE_DECLARE_FEATURE(kUserAgentBugFixVersion);
 
 // Enables logging JavaScript errors.
 BASE_DECLARE_FEATURE(kLogJavaScriptErrors);
+
+// Feature flag to let WebKit handle MarketplaceKit links. This is intended to
+// be used as a kill switch.
+BASE_DECLARE_FEATURE(kWebKitHandlesMarketplaceKitLinks);
 
 }  // namespace features
 }  // namespace web

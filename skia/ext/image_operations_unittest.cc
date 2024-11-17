@@ -170,18 +170,17 @@ void DrawCheckerToBitmap(int w, int h,
 
 #if DEBUG_BITMAP_GENERATION
 void SaveBitmapToPNG(const SkBitmap& bmp, const char* path) {
-  std::vector<unsigned char> png;
-  gfx::PNGCodec::ColorFormat color_format = gfx::PNGCodec::FORMAT_RGBA;
-  if (!gfx::PNGCodec::Encode(
-          reinterpret_cast<const unsigned char*>(bmp.getPixels()),
-          color_format, gfx::Size(bmp.width(), bmp.height()),
-          static_cast<int>(bmp.rowBytes()),
-          false, std::vector<gfx::PNGCodec::Comment>(), &png)) {
+  std::optional<std::vector<uint8_t>> png = gfx::PNGCodec::Encode(
+      reinterpret_cast<const unsigned char*>(bmp.getPixels()),
+      gfx::PNGCodec::FORMAT_RGBA, gfx::Size(bmp.width(), bmp.height()),
+      static_cast<int>(bmp.rowBytes()), false,
+      std::vector<gfx::PNGCodec::Comment>());
+  if (!png) {
     FAIL() << "Failed to encode image";
   }
 
   const base::FilePath fpath(path);
-  if (!base::WriteFile(fpath, png)) {
+  if (!base::WriteFile(fpath, png.value())) {
     FAIL() << "Failed to write dest \"" << path << '"';
   }
 }

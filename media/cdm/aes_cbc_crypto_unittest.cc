@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_span.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
@@ -66,8 +67,8 @@ class AesCbcCryptoTest : public testing::Test {
         key2_(crypto::SymmetricKey::Import(
             crypto::SymmetricKey::AES,
             std::string(std::begin(kKey2), std::end(kKey2)))),
-        iv_(std::begin(kIv), std::end(kIv)),
-        one_block_(std::begin(kOneBlock), std::end(kOneBlock)) {}
+        iv_(kIv),
+        one_block_(base::ToVector(kOneBlock)) {}
 
   // Encrypt |original| using AES-CBC encryption with |key| and |iv|.
   std::vector<uint8_t> Encrypt(const std::vector<uint8_t>& original,

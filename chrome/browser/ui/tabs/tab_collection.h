@@ -14,6 +14,7 @@
 
 namespace tabs {
 
+class TabInterface;
 class TabModel;
 
 // This is an interface that representing the hierarchical storage of tabs.
@@ -29,18 +30,18 @@ class TabCollection {
   TabCollection& operator=(const TabCollection&) = delete;
 
   // Returns true if the tab model is a direct child of the collection.
-  virtual bool ContainsTab(TabModel* tab_model) const = 0;
+  virtual bool ContainsTab(const TabInterface* tab) const = 0;
 
   // Returns true if the tab collection tree contains the tab.
-  virtual bool ContainsTabRecursive(TabModel* tab_model) const = 0;
+  virtual bool ContainsTabRecursive(const TabInterface* tab) const = 0;
 
   // Returns true is the tab collection contains the collection. This is a
   // non-recursive check.
   virtual bool ContainsCollection(TabCollection* collection) const = 0;
 
-  // Recursively get the index of the tab_model among all the leaf tab_models.
+  // Recursively get the index of the tab among all the leaf tabs.
   virtual std::optional<size_t> GetIndexOfTabRecursive(
-      const TabModel* tab_model) const = 0;
+      const TabInterface* tab) const = 0;
 
   // Non-recursively get the index of a collection.
   virtual std::optional<size_t> GetIndexOfCollection(
@@ -51,7 +52,12 @@ class TabCollection {
   virtual size_t ChildCount() const = 0;
 
   // Total number of tabs the collection contains.
-  virtual size_t TabCountRecursive() const = 0;
+  size_t TabCountRecursive() const { return recursive_tab_count_; }
+
+  void OnCollectionAddedToTree(TabCollection* collection);
+  void OnCollectionRemovedFromTree(TabCollection* collection);
+  void OnTabAddedToTree();
+  void OnTabRemovedFromTree();
 
   // Removes the tab if it is a direct child of this collection. This is then
   // returned to the caller as an unique_ptr. If the tab is not present it will
@@ -78,6 +84,9 @@ class TabCollection {
   base::PassKey<TabCollection> GetPassKey() const {
     return base::PassKey<TabCollection>();
   }
+
+  // Total number of tabs in the collection.
+  size_t recursive_tab_count_ = 0;
 
  private:
   raw_ptr<TabCollection> parent_ = nullptr;

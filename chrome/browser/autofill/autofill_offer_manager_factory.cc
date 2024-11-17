@@ -41,9 +41,10 @@ AutofillOfferManagerFactory::AutofillOfferManagerFactory()
 
 AutofillOfferManagerFactory::~AutofillOfferManagerFactory() = default;
 
-KeyedService* AutofillOfferManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AutofillOfferManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new AutofillOfferManager(
+  return std::make_unique<AutofillOfferManager>(
       PersonalDataManagerFactory::GetForBrowserContext(context));
 }
 

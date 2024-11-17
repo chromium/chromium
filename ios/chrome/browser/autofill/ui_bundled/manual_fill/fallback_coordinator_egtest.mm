@@ -82,7 +82,7 @@ void OpenAddressManualFillView() {
   [ChromeEarlGrey waitForWebStateContainingText:"Profile form"];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearProfilesStore];
 
   // Leaving a picker on iPads causes problems with the docking logic. This
@@ -99,7 +99,7 @@ void OpenAddressManualFillView() {
                                      grey_not(grey_notVisible()), nil)]
         assertWithMatcher:grey_nil()];
   }
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that the when tapping the outside the popover on iPad, suggestions

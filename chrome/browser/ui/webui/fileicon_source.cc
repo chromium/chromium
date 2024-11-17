@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
@@ -88,10 +89,14 @@ void FileIconSource::FetchFileIcon(
 
   if (icon) {
     scoped_refptr<base::RefCountedBytes> icon_data(new base::RefCountedBytes);
-    gfx::PNGCodec::EncodeBGRASkBitmap(
-        icon->ToImageSkia()->GetRepresentation(scale_factor).GetBitmap(), false,
-        &icon_data->as_vector());
 
+    std::optional<std::vector<uint8_t>> data =
+        gfx::PNGCodec::EncodeBGRASkBitmap(
+            icon->ToImageSkia()->GetRepresentation(scale_factor).GetBitmap(),
+            /*discard_transparency=*/false);
+    if (data) {
+      icon_data->as_vector() = std::move(data.value());
+    }
     std::move(callback).Run(icon_data.get());
   } else {
     // Attach the ChromeURLDataManager request ID to the history request.
@@ -136,14 +141,20 @@ bool FileIconSource::AllowCaching() {
 void FileIconSource::OnFileIconDataAvailable(IconRequestDetails details,
                                              gfx::Image icon) {
   if (!icon.IsEmpty()) {
-    scoped_refptr<base::RefCountedBytes> icon_data(new base::RefCountedBytes);
-    gfx::PNGCodec::EncodeBGRASkBitmap(
-        icon.ToImageSkia()->GetRepresentation(details.scale_factor).GetBitmap(),
-        false, &icon_data->as_vector());
-
-    std::move(details.callback).Run(icon_data.get());
-  } else {
-    // TODO(glen): send a dummy icon.
-    std::move(details.callback).Run(nullptr);
+    std::optional<std::vector<uint8_t>> data =
+        gfx::PNGCodec::EncodeBGRASkBitmap(
+            icon.ToImageSkia()
+                ->GetRepresentation(details.scale_factor)
+                .GetBitmap(),
+            /*discard_transparency=*/false);
+    if (data) {
+      std::move(details.callback)
+          .Run(base::MakeRefCounted<base::RefCountedBytes>(
+              std::move(data.value())));
+      return;
+    }
   }
+
+  // TODO(glen): send a dummy icon.
+  std::move(details.callback).Run(nullptr);
 }

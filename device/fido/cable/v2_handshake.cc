@@ -17,6 +17,7 @@
 #include <type_traits>
 
 #include "base/base64url.h"
+#include "base/feature_list.h"
 #include "base/functional/overloaded.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
@@ -30,6 +31,7 @@
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/aead.h"
 #include "device/fido/cable/v2_constants.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "third_party/boringssl/src/include/openssl/aes.h"
@@ -87,7 +89,7 @@ std::array<uint8_t, 32> PairingSignature(
   CHECK(HMAC(EVP_sha256(), /*key=*/shared_secret, sizeof(shared_secret),
              handshake_hash.data(), handshake_hash.size(),
              expected_signature.data(), &expected_signature_len) != nullptr);
-  CHECK_EQ(expected_signature_len, EXTENT(expected_signature));
+  CHECK_EQ(expected_signature_len, expected_signature.size());
   return expected_signature;
 }
 
@@ -200,12 +202,13 @@ std::array<uint8_t, kAdvertSize> Encrypt(
   DCHECK(ReservedBitsAreZero(eid));
 
   std::array<uint8_t, kAdvertSize> ret;
-  static_assert(EXTENT(ret) == AES_BLOCK_SIZE + 4, "");
+  static_assert(ret.size() == AES_BLOCK_SIZE + 4);
 
   AES_KEY aes_key;
-  static_assert(EXTENT(key) == 32 + 32, "");
+  static_assert(key.size() == 32 + 32);
   CHECK(AES_set_encrypt_key(key.data(), /*bits=*/8 * 32, &aes_key) == 0);
-  static_assert(EXTENT(eid) == AES_BLOCK_SIZE, "EIDs are not AES blocks");
+  static_assert(std::tuple_size_v<CableEidArray> == AES_BLOCK_SIZE,
+                "EIDs are not AES blocks");
   AES_encrypt(/*in=*/eid.data(), /*out=*/ret.data(), &aes_key);
 
   uint8_t hmac[SHA256_DIGEST_LENGTH];
@@ -224,8 +227,9 @@ std::optional<CableEidArray> Decrypt(
     const std::array<uint8_t, kAdvertSize>& advert,
     base::span<const uint8_t, kEIDKeySize> key) {
   // See |Encrypt| about the format.
-  static_assert(EXTENT(advert) == AES_BLOCK_SIZE + 4, "");
-  static_assert(EXTENT(key) == 32 + 32, "");
+  static_assert(std::tuple_size_v<std::remove_cvref_t<decltype(advert)>> ==
+                AES_BLOCK_SIZE + 4);
+  static_assert(key.size() == 32 + 32);
 
   uint8_t calculated_hmac[SHA256_DIGEST_LENGTH];
   unsigned calculated_hmac_len;
@@ -240,7 +244,7 @@ std::optional<CableEidArray> Decrypt(
   AES_KEY aes_key;
   CHECK(AES_set_decrypt_key(key.data(), /*bits=*/8 * 32, &aes_key) == 0);
   CableEidArray plaintext;
-  static_assert(EXTENT(plaintext) == AES_BLOCK_SIZE, "EIDs are not AES blocks");
+  static_assert(plaintext.size() == AES_BLOCK_SIZE, "EIDs are not AES blocks");
   AES_decrypt(/*in=*/advert.data(), /*out=*/plaintext.data(), &aes_key);
 
   // Ensure that reserved bits are zero. They might be used for new features in
@@ -252,9 +256,9 @@ std::optional<CableEidArray> Decrypt(
   }
 
   uint16_t tunnel_server_domain;
-  static_assert(EXTENT(plaintext) >= sizeof(tunnel_server_domain), "");
+  static_assert(plaintext.size() >= sizeof(tunnel_server_domain));
   memcpy(&tunnel_server_domain,
-         &plaintext[EXTENT(plaintext) - sizeof(tunnel_server_domain)],
+         &plaintext[plaintext.size() - sizeof(tunnel_server_domain)],
          sizeof(tunnel_server_domain));
   if (!tunnelserver::ToKnownDomainID(tunnel_server_domain)) {
     return std::nullopt;
@@ -265,10 +269,9 @@ std::optional<CableEidArray> Decrypt(
 
 CableEidArray FromComponents(const Components& components) {
   CableEidArray eid;
-  static_assert(EXTENT(components.nonce) == kNonceSize, "");
-  static_assert(EXTENT(eid) == 1 + kNonceSize + sizeof(components.routing_id) +
-                                   sizeof(components.tunnel_server_domain),
-                "");
+  static_assert(std::tuple_size_v<decltype(components.nonce)> == kNonceSize);
+  static_assert(eid.size() == 1 + kNonceSize + sizeof(components.routing_id) +
+                                  sizeof(components.tunnel_server_domain));
 
   eid[0] = 0;
   memcpy(&eid[1], components.nonce.data(), kNonceSize);
@@ -283,10 +286,10 @@ CableEidArray FromComponents(const Components& components) {
 
 Components ToComponents(const CableEidArray& eid) {
   Components ret;
-  static_assert(EXTENT(ret.nonce) == kNonceSize, "");
-  static_assert(EXTENT(eid) == 1 + kNonceSize + sizeof(ret.routing_id) +
-                                   sizeof(ret.tunnel_server_domain),
-                "");
+  static_assert(ret.nonce.size() == kNonceSize);
+  static_assert(std::tuple_size_v<CableEidArray> ==
+                1 + kNonceSize + sizeof(ret.routing_id) +
+                    sizeof(ret.tunnel_server_domain));
 
   memcpy(ret.nonce.data(), &eid[1], kNonceSize);
   memcpy(ret.routing_id.data(), &eid[1 + kNonceSize], sizeof(ret.routing_id));
@@ -434,7 +437,7 @@ std::string Encode(base::span<const uint8_t, kQRKeySize> qr_key,
 
   qr_contents.emplace(3, static_cast<int64_t>(base::Time::Now().ToTimeT()));
 
-  qr_contents.emplace(4, true);  // client supports storing linking information.
+  qr_contents.emplace(4, ShouldOfferLinking(request_type));
 
   qr_contents.emplace(5, RequestTypeToString(request_type));
 
@@ -615,7 +618,7 @@ RequestType RequestTypeFromString(const std::string& s) {
 
 bssl::UniquePtr<EC_KEY> IdentityKey(base::span<const uint8_t, 32> root_secret) {
   std::array<uint8_t, 32> seed;
-  seed = device::cablev2::Derive<EXTENT(seed)>(
+  seed = device::cablev2::Derive<seed.size()>(
       root_secret, /*nonce=*/base::span<uint8_t>(),
       device::cablev2::DerivedValueType::kIdentityKeySeed);
   bssl::UniquePtr<EC_GROUP> p256(
@@ -671,6 +674,19 @@ std::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
          &num_padding_bytes16, sizeof(num_padding_bytes16));
 
   return *cbor_bytes;
+}
+
+bool ShouldOfferLinking(RequestType request_type) {
+  return absl::visit(
+      base::Overloaded{[](const FidoRequestType&) {
+                         return base::FeatureList::IsEnabled(
+                             device::kWebAuthnHybridLinking);
+                       },
+                       [](const CredentialRequestType&) {
+                         return base::FeatureList::IsEnabled(
+                             device::kDigitalCredentialsHybridLinking);
+                       }},
+      request_type);
 }
 
 namespace {
@@ -765,8 +781,7 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
   padded_size_checked = (padded_size_checked + kPaddingGranularity - 1) &
                         ~(kPaddingGranularity - 1);
   if (!padded_size_checked.IsValid()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   const size_t padded_size = padded_size_checked.ValueOrDie();
@@ -1098,9 +1113,9 @@ bool VerifyPairingSignature(
   std::array<uint8_t, SHA256_DIGEST_LENGTH> expected_signature =
       PairingSignature(identity_key.get(), peer_public_key_x962,
                        handshake_hash);
-  return signature.size() == EXTENT(expected_signature) &&
+  return signature.size() == expected_signature.size() &&
          CRYPTO_memcmp(expected_signature.data(), signature.data(),
-                       EXTENT(expected_signature)) == 0;
+                       expected_signature.size()) == 0;
 }
 
 std::vector<uint8_t> CalculatePairingSignature(

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.EDGE_TO_EDGE_BOTTOM_INSETS;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
 
@@ -115,8 +116,12 @@ public class HubPaneHostViewRenderTest {
                 () -> mPropertyModel.set(ACTION_BUTTON_DATA, disabledButtonData));
         mRenderTestRule.render(mPaneHost, prefix + "_disabledIncognitoButton");
 
+        ThreadUtils.runOnUiThreadBlocking(() -> mPropertyModel.set(EDGE_TO_EDGE_BOTTOM_INSETS, 10));
+        mRenderTestRule.render(mPaneHost, prefix + "_paddedButton");
+
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
+                    mPropertyModel.set(EDGE_TO_EDGE_BOTTOM_INSETS, 0);
                     mPropertyModel.set(HAIRLINE_VISIBILITY, false);
                     mPropertyModel.set(PANE_ROOT_VIEW, null);
                     mPropertyModel.set(ACTION_BUTTON_DATA, null);

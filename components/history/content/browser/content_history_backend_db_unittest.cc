@@ -34,8 +34,8 @@ namespace {
 // HistoryBackend to work.
 class ContentHistoryBackendDBTest : public HistoryBackendDBBaseTest {
  public:
-  ContentHistoryBackendDBTest() {}
-  ~ContentHistoryBackendDBTest() override {}
+  ContentHistoryBackendDBTest() = default;
+  ~ContentHistoryBackendDBTest() override = default;
 };
 
 struct InterruptReasonAssociation {

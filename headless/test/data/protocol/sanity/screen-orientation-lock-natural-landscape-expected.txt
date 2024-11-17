@@ -1,0 +1,12 @@
+Tests screen orientation lock with natural landscape device.
+Initial screen orientation landscape-primary
+Locking screen orientation portrait-primary
+Locked screen orientation: portrait-primary
+Locking screen orientation portrait-secondary
+Locked screen orientation: portrait-secondary
+Locking screen orientation landscape-primary
+Locked screen orientation: landscape-primary
+Locking screen orientation landscape-secondary
+Locked screen orientation: landscape-secondary
+Locking screen orientation natural
+Locked screen orientation: landscape-primary

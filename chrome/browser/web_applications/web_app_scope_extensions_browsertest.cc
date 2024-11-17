@@ -41,11 +41,6 @@
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/extensions/extension_keeplist_chromeos.h"
-#include "chrome/browser/web_applications/app_service/test/loopback_crosapi_app_service_proxy.h"
-#endif
-
 namespace web_app {
 
 class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
@@ -78,11 +73,6 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
   void SetUpOnMainThread() override {
     WebAppNavigationBrowserTest::SetUpOnMainThread();
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    extensions::SetEmptyAshKeeplistForTest();
-    loopback_crosapi_.emplace(browser()->profile());
-#endif
-
     primary_server_.AddDefaultHandlers(GetChromeTestDataDir());
     primary_server_.RegisterRequestHandler(
         base::BindRepeating(&WebAppScopeExtensionsBrowserTest::RequestHandler,
@@ -102,13 +92,7 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
     unrelated_url_ = unrelated_server_.GetURL("/simple.html");
   }
 
-  void TearDownOnMainThread() override {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    loopback_crosapi_.reset();
-#endif
-
-    app_ = nullptr;
-  }
+  void TearDownOnMainThread() override { app_ = nullptr; }
 
   std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
       const net::test_server::HttpRequest& request) {
@@ -184,10 +168,6 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
   }
 
  protected:
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::optional<LoopbackCrosapiAppServiceProxy> loopback_crosapi_;
-#endif
-
   net::EmbeddedTestServer primary_server_;
   url::Origin primary_origin_;
 
@@ -205,6 +185,8 @@ class WebAppScopeExtensionsBrowserTest : public WebAppNavigationBrowserTest {
   content::ContentMockCertVerifier cert_verifier_;
 };
 
+// TODO(crbug.com/376498171): Add test that verifies functionality of 'scope'
+// field in the well-known file.
 IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
                        ExtendedLinkCapturingBasic) {
   InstallScopeExtendedWebApp(
@@ -222,9 +204,7 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
       /*association_file=*/base::ReplaceStringPlaceholders(
           R"(
           {
-            "web_apps": [{
-              "web_app_identity": "$1"
-            }]
+            "$1" : {}
           })",
           {primary_origin_.Serialize()}, nullptr));
 
@@ -259,9 +239,7 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsBrowserTest,
       /*association_file=*/base::ReplaceStringPlaceholders(
           R"(
           {
-            "web_apps": [{
-              "web_app_identity": "$1"
-            }]
+            "$1" : {}
           })",
           {primary_server_.GetURL("/simple.html").spec()}, nullptr));
 
@@ -352,9 +330,7 @@ IN_PROC_BROWSER_TEST_F(WebAppScopeExtensionsDisabledBrowserTest,
       /*association_file=*/base::ReplaceStringPlaceholders(
           R"(
           {
-            "web_apps": [{
-              "web_app_identity": "$1"
-            }]
+            "$1" : {}
           })",
           {primary_origin_.Serialize()}, nullptr));
 
@@ -431,9 +407,7 @@ constexpr char kTestManifestBody[] = R"({
 })";
 constexpr char kTestAssociatedOrigin[] = "https://test.com/";
 constexpr char kTestOriginAssociationFile[] = R"({
-  "web_apps": [{
-    "web_app_identity": "http://127.0.0.1:8000/"
-  }]
+    "http://127.0.0.1:8000/" : {}
 })";
 
 // Generated from script:

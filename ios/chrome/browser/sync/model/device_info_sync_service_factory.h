@@ -9,7 +9,8 @@
 #import <vector>
 
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace base {
 template <typename T>
@@ -22,12 +23,9 @@ class DeviceInfoTracker;
 }  // namespace syncer
 
 // Singleton that owns all DeviceInfoSyncService and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class DeviceInfoSyncServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static syncer::DeviceInfoSyncService* GetForBrowserState(ProfileIOS* profile);
-
   static syncer::DeviceInfoSyncService* GetForProfile(ProfileIOS* profile);
   static DeviceInfoSyncServiceFactory* GetInstance();
 
@@ -35,7 +33,7 @@ class DeviceInfoSyncServiceFactory : public BrowserStateKeyedServiceFactory {
   DeviceInfoSyncServiceFactory& operator=(const DeviceInfoSyncServiceFactory&) =
       delete;
 
-  // Iterates over browser states and returns any trackers that can be found.
+  // Iterates over profiles and returns any trackers that can be found.
   static void GetAllDeviceInfoTrackers(
       std::vector<const syncer::DeviceInfoTracker*>* trackers);
 

@@ -10,6 +10,7 @@
 #include "ui/gfx/linux/gbm_wrapper.h"
 
 #include <gbm.h>
+#include <sys/mman.h>
 
 #include <memory>
 #include <utility>
@@ -205,12 +206,13 @@ class Buffer final : public ui::GbmBuffer {
   sk_sp<SkSurface> GetSurface() override {
     DCHECK(!mmap_data_);
     uint32_t stride;
-    void* addr;
-    addr = gbm_bo_map(bo_, 0, 0, gbm_bo_get_width(bo_), gbm_bo_get_height(bo_),
-                      GBM_BO_TRANSFER_READ_WRITE, &stride, &mmap_data_);
+    void* addr =
+        gbm_bo_map(bo_, 0, 0, gbm_bo_get_width(bo_), gbm_bo_get_height(bo_),
+                   GBM_BO_TRANSFER_READ_WRITE, &stride, &mmap_data_);
 
-    if (!addr)
+    if (addr == nullptr || addr == MAP_FAILED) {
       return nullptr;
+    }
     SkImageInfo info =
         SkImageInfo::MakeN32Premul(size_.width(), size_.height());
     SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();

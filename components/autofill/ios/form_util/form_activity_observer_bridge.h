@@ -19,10 +19,9 @@
 
 // Invoked by FormActivityObserverBridge::DidSubmitDocument.
 - (void)webState:(web::WebState*)webState
-    didSubmitDocumentWithFormNamed:(const std::string&)formName
-                          withData:(const std::string&)formData
-                    hasUserGesture:(BOOL)hasUserGesture
-                           inFrame:(web::WebFrame*)frame;
+    didSubmitDocumentWithFormData:(const autofill::FormData&)formData
+                   hasUserGesture:(BOOL)hasUserGesture
+                          inFrame:(web::WebFrame*)frame;
 
 // Invoked by FormActivityObserverBridge::FormRemoved.
 - (void)webState:(web::WebState*)webState
@@ -59,8 +58,7 @@ class FormActivityObserverBridge : public FormActivityObserver {
 
   void DocumentSubmitted(web::WebState* web_state,
                          web::WebFrame* sender_frame,
-                         const std::string& form_name,
-                         const std::string& form_data,
+                         const FormData& form_data,
                          bool has_user_gesture) override;
 
   void FormRemoved(web::WebState* web_state,

@@ -50,7 +50,6 @@ InfobarType InfobarTypeForBadgeType(BadgeType badge_type) {
     case kBadgeTypeParcelTracking:
       return InfobarType::kInfobarTypeParcelTracking;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported badge type.";
-      return InfobarType::kInfobarTypeConfirm;
+      NOTREACHED() << "Unsupported badge type.";
   }
 }

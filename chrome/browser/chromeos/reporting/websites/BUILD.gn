@@ -10,35 +10,22 @@ static_library("websites") {
   sources = [
     "website_events_observer.cc",
     "website_events_observer.h",
+    "website_metrics_retriever_ash.cc",
+    "website_metrics_retriever_ash.h",
     "website_metrics_retriever_interface.h",
     "website_usage_observer.cc",
     "website_usage_observer.h",
+    "website_usage_telemetry_periodic_collector_ash.cc",
+    "website_usage_telemetry_periodic_collector_ash.h",
     "website_usage_telemetry_sampler.cc",
     "website_usage_telemetry_sampler.h",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [
-      "website_metrics_retriever_ash.cc",
-      "website_metrics_retriever_ash.h",
-      "website_usage_telemetry_periodic_collector_ash.cc",
-      "website_usage_telemetry_periodic_collector_ash.h",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "website_metrics_retriever_lacros.cc",
-      "website_metrics_retriever_lacros.h",
-      "website_usage_telemetry_periodic_collector_lacros.cc",
-      "website_usage_telemetry_periodic_collector_lacros.h",
-    ]
-  }
 
   deps = [
     "//base",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/login/session",
     "//components/prefs",
     "//components/reporting/metrics:metrics_data_collection",
     "//components/reporting/proto:metric_data_proto",
@@ -46,10 +33,6 @@ static_library("websites") {
     "//third_party/abseil-cpp:absl",
     "//url",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [ "//chromeos/ash/components/login/session" ]
-  }
 }
 
 source_set("unit_tests") {
@@ -57,23 +40,11 @@ source_set("unit_tests") {
 
   sources = [
     "website_events_observer_unittest.cc",
+    "website_metrics_retriever_ash_unittest.cc",
     "website_usage_observer_unittest.cc",
+    "website_usage_telemetry_periodic_collector_ash_unittest.cc",
     "website_usage_telemetry_sampler_unittest.cc",
   ]
-
-  if (is_chromeos_ash) {
-    sources += [
-      "website_metrics_retriever_ash_unittest.cc",
-      "website_usage_telemetry_periodic_collector_ash_unittest.cc",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "website_metrics_retriever_lacros_unittest.cc",
-      "website_usage_telemetry_periodic_collector_lacros_unittest.cc",
-    ]
-  }
 
   deps = [
     ":websites",
@@ -84,6 +55,8 @@ source_set("unit_tests") {
     "//chrome/browser/chromeos/reporting",
     "//chrome/browser/profiles:profile",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/login/session",
     "//components/content_settings/core/common",
     "//components/prefs",
     "//components/reporting/metrics/fakes:test_support",
@@ -93,49 +66,40 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//chromeos/ash/components/dbus/session_manager",
-      "//chromeos/ash/components/login/session",
-    ]
-  }
 }
 
-if (is_chromeos_ash) {
-  source_set("browser_tests") {
-    testonly = true
+source_set("browser_tests") {
+  testonly = true
 
-    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-    sources = [
-      "website_events_observer_ash_browsertest.cc",
-      "website_usage_telemetry_sampler_ash_browsertest.cc",
-    ]
+  sources = [
+    "website_events_observer_ash_browsertest.cc",
+    "website_usage_telemetry_sampler_ash_browsertest.cc",
+  ]
 
-    deps = [
-      "//base",
-      "//chrome/browser",
-      "//chrome/browser/ash/login/test:test_support",
-      "//chrome/browser/ash/policy/affiliation:test_support",
-      "//chrome/browser/ash/policy/core:test_support",
-      "//chrome/browser/ash/profiles",
-      "//chrome/browser/chromeos/reporting",
-      "//chrome/browser/profiles:profile",
-      "//chrome/test:test_support",
-      "//chrome/test:test_support_ui",
-      "//chromeos/ash/components/login/session",
-      "//chromeos/dbus/missive:test_support",
-      "//components/content_settings/core/common",
-      "//components/policy/core/common",
-      "//components/prefs",
-      "//components/reporting/proto:metric_data_proto",
-      "//components/reporting/proto:record_constants",
-      "//components/reporting/proto:record_proto",
-      "//components/reporting/util:test_callbacks_support",
-      "//content/test:test_support",
-      "//testing/gmock",
-      "//testing/gtest",
-    ]
-  }
+  deps = [
+    "//base",
+    "//chrome/browser",
+    "//chrome/browser/ash/login/test:test_support",
+    "//chrome/browser/ash/policy/affiliation:test_support",
+    "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/profiles",
+    "//chrome/browser/chromeos/reporting",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//chromeos/ash/components/login/session",
+    "//chromeos/dbus/missive:test_support",
+    "//components/content_settings/core/common",
+    "//components/policy/core/common",
+    "//components/prefs",
+    "//components/reporting/proto:metric_data_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:test_callbacks_support",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

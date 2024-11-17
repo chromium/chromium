@@ -38,9 +38,8 @@ std::string CookiePriorityToString(CookiePriority priority) {
     case COOKIE_PRIORITY_LOW:
       return kPriorityLow;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return std::string();
 }
 
 CookiePriority StringToCookiePriority(const std::string& priority) {

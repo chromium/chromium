@@ -169,6 +169,10 @@ DnsQuery& DnsQuery::operator=(const DnsQuery& query) {
   return *this;
 }
 
+DnsQuery::DnsQuery(DnsQuery&& query) = default;
+
+DnsQuery& DnsQuery::operator=(DnsQuery&& query) = default;
+
 DnsQuery::~DnsQuery() = default;
 
 std::unique_ptr<DnsQuery> DnsQuery::CloneWithNewId(uint16_t id) const {

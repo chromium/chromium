@@ -26,15 +26,14 @@ class CORE_EXPORT MediaQueryParser {
   MediaQueryParser(const MediaQueryParser&) = delete;
   MediaQueryParser& operator=(const MediaQueryParser&) = delete;
 
-  static MediaQuerySet* ParseMediaQuerySet(const String&,
-                                           const ExecutionContext*);
+  static MediaQuerySet* ParseMediaQuerySet(StringView, ExecutionContext*);
   static MediaQuerySet* ParseMediaQuerySet(CSSParserTokenStream&,
-                                           const ExecutionContext*);
+                                           ExecutionContext*);
   static MediaQuerySet* ParseMediaCondition(CSSParserTokenStream&,
-                                            const ExecutionContext*);
+                                            ExecutionContext*);
   static MediaQuerySet* ParseMediaQuerySetInMode(CSSParserTokenStream&,
                                                  CSSParserMode,
-                                                 const ExecutionContext*);
+                                                 ExecutionContext*);
 
   // Passed to ConsumeFeature to determine which features are allowed.
   class FeatureSet {
@@ -42,14 +41,14 @@ class CORE_EXPORT MediaQueryParser {
 
    public:
     // Returns true if the feature name is allowed in this set.
-    virtual bool IsAllowed(const String& feature) const = 0;
+    virtual bool IsAllowed(const AtomicString& feature) const = 0;
 
     // Returns true if the feature can be queried without a value.
-    virtual bool IsAllowedWithoutValue(const String& feature,
+    virtual bool IsAllowedWithoutValue(const AtomicString& feature,
                                        const ExecutionContext*) const = 0;
 
     // Returns true is the feature name is case sensitive.
-    virtual bool IsCaseSensitive(const String& feature) const = 0;
+    virtual bool IsCaseSensitive(const AtomicString& feature) const = 0;
 
     // Whether the features support range syntax. This is typically false for
     // style container queries.
@@ -73,14 +72,14 @@ class CORE_EXPORT MediaQueryParser {
 
   MediaQueryParser(ParserType,
                    CSSParserMode,
-                   const ExecutionContext*,
+                   ExecutionContext*,
                    SyntaxLevel = SyntaxLevel::kAuto);
 
   // [ not | only ]
   static MediaQuery::RestrictorType ConsumeRestrictor(CSSParserTokenStream&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-media-type
-  static String ConsumeType(CSSParserTokenStream&);
+  static AtomicString ConsumeType(CSSParserTokenStream&);
 
   // https://drafts.csswg.org/mediaqueries-4/#typedef-mf-comparison
   static MediaQueryOperator ConsumeComparison(CSSParserTokenStream&);
@@ -89,11 +88,11 @@ class CORE_EXPORT MediaQueryParser {
   //
   // The <mf-name> is only consumed if the name is allowed by the specified
   // FeatureSet.
-  String ConsumeAllowedName(CSSParserTokenStream&, const FeatureSet&);
+  AtomicString ConsumeAllowedName(CSSParserTokenStream&, const FeatureSet&);
 
   // Like ConsumeAllowedName, except returns null if the name has a min-
   // or max- prefix.
-  String ConsumeUnprefixedName(CSSParserTokenStream&, const FeatureSet&);
+  AtomicString ConsumeUnprefixedName(CSSParserTokenStream&, const FeatureSet&);
 
   enum class NameAffinity {
     // <mf-name> appears on the left, e.g. width < 10px.
@@ -138,9 +137,11 @@ class CORE_EXPORT MediaQueryParser {
 
   MediaQuerySet* ParseImpl(CSSParserTokenStream&);
 
+  void UseCountRangeSyntax();
+
   ParserType parser_type_;
   CSSParserMode mode_;
-  const ExecutionContext* execution_context_;
+  ExecutionContext* execution_context_;
   SyntaxLevel syntax_level_;
   // A fake CSSParserContext for use counter only.
   // TODO(xiaochengh): Plumb the real CSSParserContext from the document.

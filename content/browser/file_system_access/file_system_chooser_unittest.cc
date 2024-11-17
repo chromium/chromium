@@ -17,6 +17,7 @@
 #include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/public/test/web_contents_tester.h"
 #include "content/test/test_render_view_host.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -33,12 +34,12 @@ class FileSystemChooserTest : public RenderViewHostImplTestHarness {
     ui::SelectFileDialog::SetFactory(nullptr);
   }
 
-  std::vector<FileSystemChooser::ResultEntry> SyncShowDialog(
+  std::vector<PathInfo> SyncShowDialog(
       WebContents* web_contents,
       std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
       bool include_accepts_all) {
     base::test::TestFuture<blink::mojom::FileSystemAccessErrorPtr,
-                           std::vector<FileSystemChooser::ResultEntry>>
+                           std::vector<PathInfo>>
         future;
     FileSystemChooser::CreateAndShow(
         web_contents,
@@ -74,6 +75,9 @@ TEST_F(FileSystemChooserTest, EmptyAccepts) {
   EXPECT_EQ(0u,
             dialog_params_.file_types->extension_description_overrides.size());
   EXPECT_EQ(0, dialog_params_.file_type_index);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(0u, dialog_params_.accept_types.size());
+#endif
 }
 
 TEST_F(FileSystemChooserTest, EmptyAcceptsIgnoresIncludeAcceptsAll) {
@@ -88,6 +92,9 @@ TEST_F(FileSystemChooserTest, EmptyAcceptsIgnoresIncludeAcceptsAll) {
   EXPECT_EQ(0u,
             dialog_params_.file_types->extension_description_overrides.size());
   EXPECT_EQ(0, dialog_params_.file_type_index);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_EQ(0u, dialog_params_.accept_types.size());
+#endif
 }
 
 TEST_F(FileSystemChooserTest, AcceptsMimeTypes) {
@@ -129,6 +136,10 @@ TEST_F(FileSystemChooserTest, AcceptsMimeTypes) {
   EXPECT_EQ(u"", dialog_params_.file_types->extension_description_overrides[0]);
   EXPECT_EQ(u"Images",
             dialog_params_.file_types->extension_description_overrides[1]);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(dialog_params_.accept_types,
+              testing::UnorderedElementsAre(u"image/*", u"tExt/Plain"));
+#endif
 }
 
 TEST_F(FileSystemChooserTest, AcceptsExtensions) {
@@ -155,6 +166,10 @@ TEST_F(FileSystemChooserTest, AcceptsExtensions) {
   ASSERT_EQ(1u,
             dialog_params_.file_types->extension_description_overrides.size());
   EXPECT_EQ(u"", dialog_params_.file_types->extension_description_overrides[0]);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(dialog_params_.accept_types,
+              testing::UnorderedElementsAre(u"text/plain", u"text/javascript"));
+#endif
 }
 
 TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
@@ -187,6 +202,11 @@ TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
   ASSERT_EQ(1u,
             dialog_params_.file_types->extension_description_overrides.size());
   EXPECT_EQ(u"", dialog_params_.file_types->extension_description_overrides[0]);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(
+      dialog_params_.accept_types,
+      testing::UnorderedElementsAre(u"image/*", u"text/plain", u"image/jpeg"));
+#endif
 }
 
 TEST_F(FileSystemChooserTest, IgnoreShellIntegratedExtensions) {
@@ -212,6 +232,10 @@ TEST_F(FileSystemChooserTest, IgnoreShellIntegratedExtensions) {
   ASSERT_EQ(1u,
             dialog_params_.file_types->extension_description_overrides.size());
   EXPECT_EQ(u"", dialog_params_.file_types->extension_description_overrides[0]);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(dialog_params_.accept_types,
+              testing::UnorderedElementsAre(u"text/plain"));
+#endif
 }
 
 TEST_F(FileSystemChooserTest, LocalPath) {
@@ -224,7 +248,7 @@ TEST_F(FileSystemChooserTest, LocalPath) {
   auto results = SyncShowDialog(/*web_contents=*/nullptr, {},
                                 /*include_accepts_all=*/true);
   ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(results[0].type, FileSystemChooser::PathType::kLocal);
+  EXPECT_EQ(results[0].type, PathType::kLocal);
   EXPECT_EQ(results[0].path, local_path);
 }
 
@@ -241,7 +265,7 @@ TEST_F(FileSystemChooserTest, ExternalPath) {
   auto results = SyncShowDialog(/*web_contents=*/nullptr, {},
                                 /*include_accepts_all=*/true);
   ASSERT_EQ(results.size(), 1u);
-  EXPECT_EQ(results[0].type, FileSystemChooser::PathType::kExternal);
+  EXPECT_EQ(results[0].type, PathType::kExternal);
   EXPECT_EQ(results[0].path, virtual_path);
 }
 
@@ -280,6 +304,10 @@ TEST_F(FileSystemChooserTest, DescriptionSanitization) {
       u"Unbalanced RTL \u202e section in a "
       u"otherwise very long description t…\u202c",
       dialog_params_.file_types->extension_description_overrides[3]);
+#if BUILDFLAG(IS_ANDROID)
+  EXPECT_THAT(dialog_params_.accept_types,
+              testing::UnorderedElementsAre(u"text/plain", u"text/javascript"));
+#endif
 }
 
 TEST_F(FileSystemChooserTest, DialogCaller) {

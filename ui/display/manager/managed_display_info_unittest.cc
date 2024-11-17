@@ -5,7 +5,6 @@
 #include "ui/display/manager/managed_display_info.h"
 
 #include "base/test/gtest_util.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/display_change_observer.h"

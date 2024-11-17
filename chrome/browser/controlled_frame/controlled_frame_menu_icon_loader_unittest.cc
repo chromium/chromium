@@ -29,8 +29,8 @@
 #include "content/public/common/content_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/favicon_size.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace controlled_frame {
 

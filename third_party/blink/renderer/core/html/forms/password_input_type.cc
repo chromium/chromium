@@ -61,13 +61,12 @@ bool PasswordInputType::ShouldSaveAndRestoreFormControlState() const {
 
 FormControlState PasswordInputType::SaveFormControlState() const {
   // Should never save/restore password fields.
-  NOTREACHED_IN_MIGRATION();
-  return FormControlState();
+  NOTREACHED();
 }
 
 void PasswordInputType::RestoreFormControlState(const FormControlState&) {
   // Should never save/restore password fields.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool PasswordInputType::ShouldRespectListAttribute() {

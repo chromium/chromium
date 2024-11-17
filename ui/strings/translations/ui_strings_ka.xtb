@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">გვერდის ჩატვირთვა ვერ მოხერხდა, რადგან დეველოპერული UI-მოდული (dev_ui) დაინსტალირებული არ არის</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> სისტემა</translation>
 <translation id="5583640892426849032">უკუშლა</translation>
+<translation id="5606865426897221650">ჩანართი</translation>
 <translation id="5613020302032141669">მარცხენა ისარი</translation>
 <translation id="5633029987065897167">ცარიელი</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 წთ}other{# წთ}}</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">ერთი გვერდით ქვემოთ</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">ჩანართი</translation>
 <translation id="8259556432390118667">ფერის თექვსმეტობითი მნიშვნელობა</translation>
 <translation id="8328145009876646418">მარცხენა კიდე</translation>
 <translation id="8331626408530291785">გადაადგილება ზევით</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 წმ}other{# წმ}}</translation>
 <translation id="9059834730836941392">შეტყობინების ჩაკეცვა</translation>
 <translation id="9170848237812810038">მოქმედების დაბრ&amp;უნება</translation>
+<translation id="9195990613383871904">ხვალ</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">საწყისი გვერდი</translation>
 <translation id="944069440740578670">წაუკითხავი შეტყობინებები</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 წამის წინ}other{# წამის წინ}}</translation>

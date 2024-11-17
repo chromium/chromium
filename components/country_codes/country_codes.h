@@ -12,6 +12,8 @@
 
 #include <string>
 
+#include "base/component_export.h"
+
 class PrefRegistrySimple;
 class PrefService;
 
@@ -22,34 +24,41 @@ namespace country_codes {
 // new search engine choices if prepopulation runs when the user's Country ID
 // differs from their previous Country ID.  This pref does not exist until
 // prepopulation has been run at least once.
-extern const char kCountryIDAtInstall[];
+inline constexpr char kCountryIDAtInstall[] = "countryid_at_install";
 
-constexpr int kCountryIDUnknown = -1;
-constexpr char kCountryCodeUnknown[] = "";
+inline constexpr int kCountryIDUnknown = -1;
+inline constexpr char kCountryCodeUnknown[] = "";
 
 // Takes in each of the two characters of a ISO 3166-1 country code, and
 // converts it into an int value to be used as a reference to that country.
+COMPONENT_EXPORT(COMPONENTS_COUNTRY_CODES)
 constexpr int CountryCharsToCountryID(char c1, char c2) {
   return c1 << 8 | c2;
 }
 
+COMPONENT_EXPORT(COMPONENTS_COUNTRY_CODES)
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Returns the identifier for the user current country.
+COMPONENT_EXPORT(COMPONENTS_COUNTRY_CODES)
 int GetCurrentCountryID();
 
 // Converts a country's ID to its corresponding two-letter code. If unknown or
 // invalid, |kCountryCodeUnknown| is returned.
+COMPONENT_EXPORT(COMPONENTS_COUNTRY_CODES)
 std::string CountryIDToCountryString(int country_id);
 
 // Gets the two-letter code for the user's current country.
+COMPONENT_EXPORT(COMPONENTS_COUNTRY_CODES)
 std::string GetCurrentCountryCode();
 
 // Converts a two-letter country code to an integer-based country identifier.
+COMPONENT_EXPORT(COMPONENTS_COUNTRY_CODES)
 int CountryStringToCountryID(const std::string& country);
 
 // Returns the country identifier that was stored at install. If no such pref
 // is available, it will return identifier of the current country instead.
+COMPONENT_EXPORT(COMPONENTS_COUNTRY_CODES)
 int GetCountryIDFromPrefs(PrefService* prefs);
 
 }  // namespace country_codes

@@ -15,26 +15,28 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/shared_storage_worklet_devtools_manager.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
+#include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
-#include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/page_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/shared_storage/shared_storage_code_cache_host_proxy.h"
 #include "content/browser/shared_storage/shared_storage_document_service_impl.h"
 #include "content/browser/shared_storage/shared_storage_render_thread_worklet_driver.h"
+#include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 #include "content/browser/shared_storage/shared_storage_url_loader_factory_proxy.h"
 #include "content/browser/shared_storage/shared_storage_worklet_driver.h"
-#include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/shared_storage.mojom.h"
 #include "storage/browser/blob/blob_url_loader_factory.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
@@ -49,7 +51,7 @@ namespace content {
 namespace {
 
 using AccessType =
-    SharedStorageWorkletHostManager::SharedStorageObserverInterface::AccessType;
+    SharedStorageRuntimeManager::SharedStorageObserverInterface::AccessType;
 
 constexpr base::TimeDelta kKeepAliveTimeout = base::Seconds(2);
 
@@ -127,6 +129,7 @@ SharedStorageURNMappingResult CreateSharedStorageURNMappingResult(
     std::vector<blink::mojom::SharedStorageUrlWithMetadataPtr>
         urls_with_metadata,
     uint32_t index,
+    bool use_page_budgets,
     double budget_remaining,
     blink::SharedStorageSelectUrlBudgetStatus& budget_status) {
   DCHECK_EQ(budget_status, blink::SharedStorageSelectUrlBudgetStatus::kOther);
@@ -139,11 +142,14 @@ SharedStorageURNMappingResult CreateSharedStorageURNMappingResult(
   // If we are running out of budget, consider this mapping to be failed. Use
   // the default URL, and there's no need to further charge the budget.
   if (budget_to_charge > 0.0) {
-    budget_status = (budget_to_charge > budget_remaining)
-                        ? blink::SharedStorageSelectUrlBudgetStatus::
-                              kInsufficientSiteNavigationBudget
-                        : page->CheckAndMaybeDebitSelectURLBudgets(
-                              shared_storage_site, budget_to_charge);
+    budget_status =
+        (budget_to_charge > budget_remaining)
+            ? blink::SharedStorageSelectUrlBudgetStatus::
+                  kInsufficientSiteNavigationBudget
+            : (use_page_budgets ? page->CheckAndMaybeDebitSelectURLBudgets(
+                                      shared_storage_site, budget_to_charge)
+                                : blink::SharedStorageSelectUrlBudgetStatus::
+                                      kSufficientBudget);
     if (budget_status !=
         blink::SharedStorageSelectUrlBudgetStatus::kSufficientBudget) {
       index = 0;
@@ -177,6 +183,25 @@ bool IsValidFencedFrameReportingURL(const GURL& url) {
     return false;
   }
   return url.SchemeIs(url::kHttpsScheme);
+}
+
+blink::mojom::SharedStorageWorkletPermissionsPolicyStatePtr
+GetSharedStorageWorkletPermissionsPolicyState(
+    RenderFrameHostImpl& creator_document,
+    const url::Origin& shared_storage_origin) {
+  const blink::PermissionsPolicy* permissions_policy =
+      creator_document.permissions_policy();
+
+  return blink::mojom::SharedStorageWorkletPermissionsPolicyState::New(
+      permissions_policy->IsFeatureEnabledForOrigin(
+          blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
+          shared_storage_origin),
+      permissions_policy->IsFeatureEnabledForOrigin(
+          blink::mojom::PermissionsPolicyFeature::kJoinAdInterestGroup,
+          shared_storage_origin),
+      permissions_policy->IsFeatureEnabledForOrigin(
+          blink::mojom::PermissionsPolicyFeature::kRunAdAuction,
+          shared_storage_origin));
 }
 
 }  // namespace
@@ -249,8 +274,8 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
       storage_partition_(static_cast<StoragePartitionImpl*>(
           document_service.render_frame_host().GetStoragePartition())),
       shared_storage_manager_(storage_partition_->GetSharedStorageManager()),
-      shared_storage_worklet_host_manager_(
-          storage_partition_->GetSharedStorageWorkletHostManager()),
+      shared_storage_runtime_manager_(
+          storage_partition_->GetSharedStorageRuntimeManager()),
       browser_context_(
           document_service.render_frame_host().GetBrowserContext()),
       shared_storage_origin_(data_origin),
@@ -259,6 +284,8 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
       is_same_origin_worklet_(document_service.render_frame_host()
                                   .GetLastCommittedOrigin()
                                   .IsSameOriginWith(shared_storage_origin_)),
+      saved_queries_enabled_(base::FeatureList::IsEnabled(
+          blink::features::kSharedStorageSelectURLSavedQueries)),
       creation_time_(base::TimeTicks::Now()) {
   GetContentClient()->browser()->OnSharedStorageWorkletHostCreated(
       &(document_service.render_frame_host()));
@@ -309,7 +336,7 @@ SharedStorageWorkletHost::SharedStorageWorkletHost(
               document_service_->render_frame_host())
               .ComputeSiteForCookies());
 
-  shared_storage_worklet_host_manager_->NotifySharedStorageAccessed(
+  shared_storage_runtime_manager_->NotifySharedStorageAccessed(
       AccessType::kDocumentAddModule, document_service_->main_frame_id(),
       shared_storage_origin_.Serialize(),
       SharedStorageEventParams::CreateForAddModule(script_source_url));
@@ -338,8 +365,9 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
             elapsed_time_since_creation);
   }
 
-  if (!page_)
+  if (!page_) {
     return;
+  }
 
   // If the worklet is destructed and there are still unresolved URNs (i.e. the
   // keep-alive timeout is reached), consider the mapping to be failed.
@@ -353,14 +381,14 @@ SharedStorageWorkletHost::~SharedStorageWorkletHost() {
     std::optional<FencedFrameConfig> config =
         page_->fenced_frame_urls_map()
             .OnSharedStorageURNMappingResultDetermined(
-                urn_uuid,
-                CreateSharedStorageURNMappingResult(
-                    storage_partition_, browser_context_, page_.get(),
-                    main_frame_origin_, shared_storage_origin_,
-                    shared_storage_site_, std::move(it->second),
-                    /*index=*/0, /*budget_remaining=*/0.0, budget_status));
+                urn_uuid, CreateSharedStorageURNMappingResult(
+                              storage_partition_, browser_context_, page_.get(),
+                              main_frame_origin_, shared_storage_origin_,
+                              shared_storage_site_, std::move(it->second),
+                              /*index=*/0, /*use_page_budgets=*/false,
+                              /*budget_remaining=*/0.0, budget_status));
 
-    shared_storage_worklet_host_manager_->NotifyConfigPopulated(config);
+    shared_storage_runtime_manager_->NotifyConfigPopulated(config);
 
     it = unresolved_urns_.erase(it);
   }
@@ -373,6 +401,7 @@ void SharedStorageWorkletHost::SelectURL(
     blink::CloneableMessage serialized_data,
     bool keep_alive_after_operation,
     blink::mojom::PrivateAggregationConfigPtr private_aggregation_config,
+    const std::u16string& saved_query_name,
     SelectURLCallback callback) {
   CHECK(private_aggregation_config);
   // `page_` can be null. See test
@@ -512,9 +541,9 @@ void SharedStorageWorkletHost::SelectURL(
 
   DCHECK_LE(shared_storage_fenced_frame_root_count, fenced_frame_depth);
 
-  size_t max_allowed_fenced_frame_depth = base::checked_cast<size_t>(
+  size_t max_allowed_fenced_frame_depth =
       blink::features::kSharedStorageMaxAllowedFencedFrameDepthForSelectURL
-          .Get());
+          .Get();
 
   if (fenced_frame_depth > max_allowed_fenced_frame_depth) {
     std::move(callback).Run(
@@ -577,8 +606,9 @@ void SharedStorageWorkletHost::SelectURL(
   IncrementPendingOperationsCount();
 
   std::vector<GURL> urls;
-  for (const auto& url_with_metadata : urls_with_metadata)
+  for (const auto& url_with_metadata : urls_with_metadata) {
     urls.emplace_back(url_with_metadata->url);
+  }
 
   bool emplace_succeeded =
       unresolved_urns_.emplace(urn_uuid, std::move(urls_with_metadata)).second;
@@ -592,13 +622,39 @@ void SharedStorageWorkletHost::SelectURL(
       /*result_config=*/
       config.RedactFor(FencedFrameEntity::kEmbedder));
 
-  shared_storage_worklet_host_manager_->NotifyUrnUuidGenerated(urn_uuid);
+  shared_storage_runtime_manager_->NotifyUrnUuidGenerated(urn_uuid);
 
-  shared_storage_worklet_host_manager_->NotifySharedStorageAccessed(
+  shared_storage_runtime_manager_->NotifySharedStorageAccessed(
       AccessType::kDocumentSelectURL, document_service_->main_frame_id(),
       shared_storage_origin_.Serialize(),
       SharedStorageEventParams::CreateForSelectURL(name, serialized_data,
                                                    std::move(converted_urls)));
+
+  if (saved_queries_enabled_ && !saved_query_name.empty()) {
+    auto saved_query_callback = base::BindOnce(
+        &SharedStorageWorkletHost::OnSelectURLSavedQueryFound,
+        weak_ptr_factory_.GetWeakPtr(), urn_uuid, base::TimeTicks::Now(), name);
+    int32_t index = page_->GetSavedQueryResultIndexOrStoreCallback(
+        shared_storage_origin_, script_source_url_, name, saved_query_name,
+        std::move(saved_query_callback));
+    if (index >= 0) {
+      // The result index has been stored from a previously resolved worklet
+      // operation.
+      OnSelectURLSavedQueryFound(urn_uuid, base::TimeTicks::Now(), name, index);
+      return;
+    }
+    if (index == -1) {
+      // The result index will be determined when a previously initiated worklet
+      // operation finishes running. A callback (`saved_query_callback`) will
+      // notify us of the result.
+      return;
+    }
+
+    // The result index will be determined by running the registered worklet
+    // operation via
+    // `blink::mojom::SharedStorageWorkletService::RunURLSelectionOperation()`.
+    CHECK_EQ(index, -2);
+  }
 
   GetAndConnectToSharedStorageWorkletService()->RunURLSelectionOperation(
       name, urls, std::move(serialized_data),
@@ -607,7 +663,8 @@ void SharedStorageWorkletHost::SelectURL(
       base::BindOnce(
           &SharedStorageWorkletHost::
               OnRunURLSelectionOperationOnWorkletScriptExecutionFinished,
-          weak_ptr_factory_.GetWeakPtr(), urn_uuid, base::TimeTicks::Now()));
+          weak_ptr_factory_.GetWeakPtr(), urn_uuid, base::TimeTicks::Now(),
+          name, saved_query_name));
 }
 
 void SharedStorageWorkletHost::Run(
@@ -720,7 +777,7 @@ void SharedStorageWorkletHost::Run(
 
   std::move(callback).Run(/*success=*/true, /*error_message=*/{});
 
-  shared_storage_worklet_host_manager_->NotifySharedStorageAccessed(
+  shared_storage_runtime_manager_->NotifySharedStorageAccessed(
       AccessType::kDocumentRun, document_service_->main_frame_id(),
       shared_storage_origin_.Serialize(),
       SharedStorageEventParams::CreateForRun(name, serialized_data));
@@ -756,168 +813,130 @@ void SharedStorageWorkletHost::EnterKeepAliveOnDocumentDestroyed(
   destroyed_status_ = blink::SharedStorageWorkletDestroyedStatus::kOther;
 }
 
-void SharedStorageWorkletHost::SharedStorageSet(
-    const std::u16string& key,
-    const std::u16string& value,
-    bool ignore_if_present,
-    SharedStorageSetCallback callback) {
+void SharedStorageWorkletHost::SharedStorageUpdate(
+    network::mojom::SharedStorageModifierMethodPtr method,
+    SharedStorageUpdateCallback callback) {
   std::string debug_message;
   if (!IsSharedStorageAllowed(&debug_message)) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/GetSharedStorageErrorMessage(
-            debug_message, kSharedStorageDisabledMessage));
+    std::move(callback).Run(GetSharedStorageErrorMessage(
+        debug_message, kSharedStorageDisabledMessage));
     return;
   }
 
-  if (document_service_) {
-    shared_storage_worklet_host_manager_->NotifySharedStorageAccessed(
-        AccessType::kWorkletSet, document_service_->main_frame_id(),
-        shared_storage_origin_.Serialize(),
-        SharedStorageEventParams::CreateForSet(base::UTF16ToUTF8(key),
-                                               base::UTF16ToUTF8(value),
-                                               ignore_if_present));
+  if (method->is_set_method()) {
+    network::mojom::SharedStorageSetMethodPtr& set_method =
+        method->get_set_method();
+
+    if (document_service_) {
+      shared_storage_runtime_manager_->NotifySharedStorageAccessed(
+          AccessType::kWorkletSet, document_service_->main_frame_id(),
+          shared_storage_origin_.Serialize(),
+          SharedStorageEventParams::CreateForSet(
+              base::UTF16ToUTF8(set_method->key),
+              base::UTF16ToUTF8(set_method->value),
+              set_method->ignore_if_present));
+    }
+
+    auto operation_completed_callback = base::BindOnce(
+        [](SharedStorageUpdateCallback callback, OperationResult result) {
+          if (result != OperationResult::kSet &&
+              result != OperationResult::kIgnored) {
+            std::move(callback).Run(
+                /*error_message=*/"sharedStorage.set() failed");
+            return;
+          }
+
+          std::move(callback).Run(/*error_message=*/{});
+        },
+        std::move(callback));
+
+    storage::SharedStorageDatabase::SetBehavior set_behavior =
+        set_method->ignore_if_present
+            ? storage::SharedStorageDatabase::SetBehavior::kIgnoreIfPresent
+            : storage::SharedStorageDatabase::SetBehavior::kDefault;
+
+    shared_storage_manager_->Set(
+        shared_storage_origin_, set_method->key, set_method->value,
+        std::move(operation_completed_callback), set_behavior);
+  } else if (method->is_append_method()) {
+    network::mojom::SharedStorageAppendMethodPtr& append_method =
+        method->get_append_method();
+
+    if (document_service_) {
+      shared_storage_runtime_manager_->NotifySharedStorageAccessed(
+          AccessType::kWorkletAppend, document_service_->main_frame_id(),
+          shared_storage_origin_.Serialize(),
+          SharedStorageEventParams::CreateForAppend(
+              base::UTF16ToUTF8(append_method->key),
+              base::UTF16ToUTF8(append_method->value)));
+    }
+
+    auto operation_completed_callback = base::BindOnce(
+        [](SharedStorageUpdateCallback callback, OperationResult result) {
+          if (result != OperationResult::kSet) {
+            std::move(callback).Run(
+                /*error_message=*/"sharedStorage.append() failed");
+            return;
+          }
+
+          std::move(callback).Run(/*error_message=*/{});
+        },
+        std::move(callback));
+
+    shared_storage_manager_->Append(shared_storage_origin_, append_method->key,
+                                    append_method->value,
+                                    std::move(operation_completed_callback));
+  } else if (method->is_delete_method()) {
+    network::mojom::SharedStorageDeleteMethodPtr& delete_method =
+        method->get_delete_method();
+
+    if (document_service_) {
+      shared_storage_runtime_manager_->NotifySharedStorageAccessed(
+          AccessType::kWorkletDelete, document_service_->main_frame_id(),
+          shared_storage_origin_.Serialize(),
+          SharedStorageEventParams::CreateForGetOrDelete(
+              base::UTF16ToUTF8(delete_method->key)));
+    }
+
+    auto operation_completed_callback = base::BindOnce(
+        [](SharedStorageUpdateCallback callback, OperationResult result) {
+          if (result != OperationResult::kSuccess) {
+            std::move(callback).Run(
+                /*error_message=*/"sharedStorage.delete() failed");
+            return;
+          }
+
+          std::move(callback).Run(/*error_message=*/{});
+        },
+        std::move(callback));
+
+    shared_storage_manager_->Delete(shared_storage_origin_, delete_method->key,
+                                    std::move(operation_completed_callback));
+  } else {
+    CHECK(method->is_clear_method());
+
+    if (document_service_) {
+      shared_storage_runtime_manager_->NotifySharedStorageAccessed(
+          AccessType::kWorkletClear, document_service_->main_frame_id(),
+          shared_storage_origin_.Serialize(),
+          SharedStorageEventParams::CreateDefault());
+    }
+
+    auto operation_completed_callback = base::BindOnce(
+        [](SharedStorageUpdateCallback callback, OperationResult result) {
+          if (result != OperationResult::kSuccess) {
+            std::move(callback).Run(
+                /*error_message=*/"sharedStorage.clear() failed");
+            return;
+          }
+
+          std::move(callback).Run(/*error_message=*/{});
+        },
+        std::move(callback));
+
+    shared_storage_manager_->Clear(shared_storage_origin_,
+                                   std::move(operation_completed_callback));
   }
-
-  auto operation_completed_callback = base::BindOnce(
-      [](SharedStorageSetCallback callback, OperationResult result) {
-        if (result != OperationResult::kSet &&
-            result != OperationResult::kIgnored) {
-          std::move(callback).Run(
-              /*success=*/false,
-              /*error_message=*/"sharedStorage.set() failed");
-          return;
-        }
-
-        std::move(callback).Run(
-            /*success=*/true,
-            /*error_message=*/{});
-      },
-      std::move(callback));
-
-  storage::SharedStorageDatabase::SetBehavior set_behavior =
-      ignore_if_present
-          ? storage::SharedStorageDatabase::SetBehavior::kIgnoreIfPresent
-          : storage::SharedStorageDatabase::SetBehavior::kDefault;
-
-  shared_storage_manager_->Set(shared_storage_origin_, key, value,
-                               std::move(operation_completed_callback),
-                               set_behavior);
-}
-
-void SharedStorageWorkletHost::SharedStorageAppend(
-    const std::u16string& key,
-    const std::u16string& value,
-    SharedStorageAppendCallback callback) {
-  std::string debug_message;
-  if (!IsSharedStorageAllowed(&debug_message)) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/GetSharedStorageErrorMessage(
-            debug_message, kSharedStorageDisabledMessage));
-    return;
-  }
-
-  if (document_service_) {
-    shared_storage_worklet_host_manager_->NotifySharedStorageAccessed(
-        AccessType::kWorkletAppend, document_service_->main_frame_id(),
-        shared_storage_origin_.Serialize(),
-        SharedStorageEventParams::CreateForAppend(base::UTF16ToUTF8(key),
-                                                  base::UTF16ToUTF8(value)));
-  }
-
-  auto operation_completed_callback = base::BindOnce(
-      [](SharedStorageAppendCallback callback, OperationResult result) {
-        if (result != OperationResult::kSet) {
-          std::move(callback).Run(
-              /*success=*/false,
-              /*error_message=*/"sharedStorage.append() failed");
-          return;
-        }
-
-        std::move(callback).Run(
-            /*success=*/true,
-            /*error_message=*/{});
-      },
-      std::move(callback));
-
-  shared_storage_manager_->Append(shared_storage_origin_, key, value,
-                                  std::move(operation_completed_callback));
-}
-
-void SharedStorageWorkletHost::SharedStorageDelete(
-    const std::u16string& key,
-    SharedStorageDeleteCallback callback) {
-  std::string debug_message;
-  if (!IsSharedStorageAllowed(&debug_message)) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/GetSharedStorageErrorMessage(
-            debug_message, kSharedStorageDisabledMessage));
-    return;
-  }
-
-  if (document_service_) {
-    shared_storage_worklet_host_manager_->NotifySharedStorageAccessed(
-        AccessType::kWorkletDelete, document_service_->main_frame_id(),
-        shared_storage_origin_.Serialize(),
-        SharedStorageEventParams::CreateForGetOrDelete(base::UTF16ToUTF8(key)));
-  }
-
-  auto operation_completed_callback = base::BindOnce(
-      [](SharedStorageDeleteCallback callback, OperationResult result) {
-        if (result != OperationResult::kSuccess) {
-          std::move(callback).Run(
-              /*success=*/false,
-              /*error_message=*/"sharedStorage.delete() failed");
-          return;
-        }
-
-        std::move(callback).Run(
-            /*success=*/true,
-            /*error_message=*/{});
-      },
-      std::move(callback));
-
-  shared_storage_manager_->Delete(shared_storage_origin_, key,
-                                  std::move(operation_completed_callback));
-}
-
-void SharedStorageWorkletHost::SharedStorageClear(
-    SharedStorageClearCallback callback) {
-  std::string debug_message;
-  if (!IsSharedStorageAllowed(&debug_message)) {
-    std::move(callback).Run(
-        /*success=*/false,
-        /*error_message=*/GetSharedStorageErrorMessage(
-            debug_message, kSharedStorageDisabledMessage));
-    return;
-  }
-
-  if (document_service_) {
-    shared_storage_worklet_host_manager_->NotifySharedStorageAccessed(
-        AccessType::kWorkletClear, document_service_->main_frame_id(),
-        shared_storage_origin_.Serialize(),
-        SharedStorageEventParams::CreateDefault());
-  }
-
-  auto operation_completed_callback = base::BindOnce(
-      [](SharedStorageClearCallback callback, OperationResult result) {
-        if (result != OperationResult::kSuccess) {
-          std::move(callback).Run(
-              /*success=*/false,
-              /*error_message=*/"sharedStorage.clear() failed");
-          return;
-        }
-
-        std::move(callback).Run(
-            /*success=*/true,
-            /*error_message=*/{});
-      },
-      std::move(callback));
-
-  shared_storage_manager_->Clear(shared_storage_origin_,
-                                 std::move(operation_completed_callback));
 }
 
 void SharedStorageWorkletHost::SharedStorageGet(
@@ -934,7 +953,7 @@ void SharedStorageWorkletHost::SharedStorageGet(
   }
 
   if (document_service_) {
-    shared_storage_worklet_host_manager_->NotifySharedStorageAccessed(
+    shared_storage_runtime_manager_->NotifySharedStorageAccessed(
         AccessType::kWorkletGet, document_service_->main_frame_id(),
         shared_storage_origin_.Serialize(),
         SharedStorageEventParams::CreateForGetOrDelete(base::UTF16ToUTF8(key)));
@@ -985,7 +1004,7 @@ void SharedStorageWorkletHost::SharedStorageKeys(
   }
 
   if (document_service_) {
-    shared_storage_worklet_host_manager_->NotifySharedStorageAccessed(
+    shared_storage_runtime_manager_->NotifySharedStorageAccessed(
         AccessType::kWorkletKeys, document_service_->main_frame_id(),
         shared_storage_origin_.Serialize(),
         SharedStorageEventParams::CreateDefault());
@@ -1011,7 +1030,7 @@ void SharedStorageWorkletHost::SharedStorageEntries(
   }
 
   if (document_service_) {
-    shared_storage_worklet_host_manager_->NotifySharedStorageAccessed(
+    shared_storage_runtime_manager_->NotifySharedStorageAccessed(
         AccessType::kWorkletEntries, document_service_->main_frame_id(),
         shared_storage_origin_.Serialize(),
         SharedStorageEventParams::CreateDefault());
@@ -1035,7 +1054,7 @@ void SharedStorageWorkletHost::SharedStorageLength(
   }
 
   if (document_service_) {
-    shared_storage_worklet_host_manager_->NotifySharedStorageAccessed(
+    shared_storage_runtime_manager_->NotifySharedStorageAccessed(
         AccessType::kWorkletLength, document_service_->main_frame_id(),
         shared_storage_origin_.Serialize(),
         SharedStorageEventParams::CreateDefault());
@@ -1077,7 +1096,7 @@ void SharedStorageWorkletHost::SharedStorageRemainingBudget(
   }
 
   if (document_service_) {
-    shared_storage_worklet_host_manager_->NotifySharedStorageAccessed(
+    shared_storage_runtime_manager_->NotifySharedStorageAccessed(
         AccessType::kWorkletRemainingBudget, document_service_->main_frame_id(),
         shared_storage_origin_.Serialize(),
         SharedStorageEventParams::CreateDefault());
@@ -1104,6 +1123,63 @@ void SharedStorageWorkletHost::SharedStorageRemainingBudget(
       shared_storage_site_, std::move(operation_completed_callback));
 }
 
+void SharedStorageWorkletHost::GetInterestGroups(
+    GetInterestGroupsCallback callback) {
+  InterestGroupManagerImpl* interest_group_manager =
+      static_cast<InterestGroupManagerImpl*>(
+          storage_partition_->GetInterestGroupManager());
+
+  if (!interest_group_manager) {
+    std::move(callback).Run(
+        blink::mojom::GetInterestGroupsResult::NewErrorMessage(
+            "InterestGroupManager unavailable."));
+    return;
+  }
+
+  RenderFrameHost* rfh =
+      document_service_ ? &document_service_->render_frame_host() : nullptr;
+
+  if (!GetContentClient()->browser()->IsInterestGroupAPIAllowed(
+          browser_context_, rfh, InterestGroupApiOperation::kRead,
+          main_frame_origin_, shared_storage_origin_)) {
+    std::move(callback).Run(
+        blink::mojom::GetInterestGroupsResult::NewErrorMessage(
+            "interestGroups() is not allowed."));
+    return;
+  }
+
+  interest_group_manager->GetInterestGroupsForOwner(
+      /*devtools_auction_id=*/{},
+      /*owner=*/shared_storage_origin_,
+      base::BindOnce(
+          [](base::ElapsedTimer timer, GetInterestGroupsCallback callback,
+             scoped_refptr<StorageInterestGroups> groups) {
+            std::vector<blink::mojom::StorageInterestGroupPtr> mojom_groups;
+
+            for (SingleStorageInterestGroup& group :
+                 groups->GetInterestGroups()) {
+              blink::mojom::StorageInterestGroupPtr mojom_group =
+                  blink::mojom::StorageInterestGroup::New(
+                      group->interest_group,
+                      group->bidding_browser_signals->Clone(),
+                      group->joining_origin, group->join_time,
+                      group->last_updated, group->next_update_after,
+                      group->interest_group.EstimateSize());
+
+              mojom_groups.push_back(std::move(mojom_group));
+            }
+
+            base::UmaHistogramTimes(
+                "Storage.SharedStorage.InterestGroups.InBrowserRetrievalTime",
+                timer.Elapsed());
+
+            std::move(callback).Run(
+                blink::mojom::GetInterestGroupsResult::NewGroups(
+                    std::move(mojom_groups)));
+          },
+          base::ElapsedTimer(), std::move(callback)));
+}
+
 void SharedStorageWorkletHost::DidAddMessageToConsole(
     blink::mojom::ConsoleMessageLevel level,
     const std::string& message) {
@@ -1124,13 +1200,20 @@ void SharedStorageWorkletHost::RecordUseCounters(
     const std::vector<blink::mojom::WebFeature>& features) {
   // If the worklet host has outlived the page, we unfortunately can't count the
   // feature.
-  if (!page_)
+  if (!page_) {
     return;
+  }
 
   for (blink::mojom::WebFeature feature : features) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         &page_->GetMainDocument(), feature);
   }
+}
+
+void SharedStorageWorkletHost::GetLockManager(
+    mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
+  shared_storage_runtime_manager_->BindLockManager(shared_storage_origin_,
+                                                   std::move(receiver));
 }
 
 void SharedStorageWorkletHost::ReportNoBinderForInterface(
@@ -1204,6 +1287,8 @@ void SharedStorageWorkletHost::
     OnRunURLSelectionOperationOnWorkletScriptExecutionFinished(
         const GURL& urn_uuid,
         base::TimeTicks start_time,
+        const std::string& operation_name,
+        const std::u16string& saved_query_name_to_cache,
         bool success,
         const std::string& error_message,
         uint32_t index) {
@@ -1229,15 +1314,19 @@ void SharedStorageWorkletHost::
       base::BindOnce(&SharedStorageWorkletHost::
                          OnRunURLSelectionOperationOnWorkletFinished,
                      weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time,
-                     success, error_message, index));
+                     operation_name, saved_query_name_to_cache, success,
+                     error_message, index, /*use_page_budgets=*/true));
 }
 
 void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
     const GURL& urn_uuid,
     base::TimeTicks start_time,
+    const std::string& operation_name,
+    const std::u16string& saved_query_name_to_cache,
     bool script_execution_succeeded,
     const std::string& script_execution_error_message,
     uint32_t index,
+    bool use_page_budgets,
     BudgetResult budget_result) {
   auto it = unresolved_urns_.find(urn_uuid);
   CHECK(it != unresolved_urns_.end(), base::NotFatalUntil::M130);
@@ -1254,8 +1343,8 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
         CreateSharedStorageURNMappingResult(
             storage_partition_, browser_context_, page_.get(),
             main_frame_origin_, shared_storage_origin_, shared_storage_site_,
-            std::move(urls_with_metadata), index, budget_result.bits,
-            budget_status);
+            std::move(urls_with_metadata), index, use_page_budgets,
+            budget_result.bits, budget_status);
 
     // Log histograms. These do not need the `document_service_`.
     blink::LogSharedStorageSelectURLBudgetStatus(budget_status);
@@ -1297,7 +1386,16 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
             .OnSharedStorageURNMappingResultDetermined(
                 urn_uuid, std::move(mapping_result));
 
-    shared_storage_worklet_host_manager_->NotifyConfigPopulated(config);
+    shared_storage_runtime_manager_->NotifyConfigPopulated(config);
+
+    // If the query is named and not previously cached, cache the query's
+    // `index` for later and run any callbacks stored to make use of this
+    // result.
+    if (saved_queries_enabled_ && !saved_query_name_to_cache.empty()) {
+      page_->SetSavedQueryResultIndexAndRunCallbacks(
+          shared_storage_origin_, script_source_url_, operation_name,
+          saved_query_name_to_cache, index);
+    }
   } else {
     LogSharedStorageWorkletError(
         blink::SharedStorageWorkletErrorType::kSelectURLWebVisible);
@@ -1309,13 +1407,39 @@ void SharedStorageWorkletHost::OnRunURLSelectionOperationOnWorkletFinished(
   DecrementPendingOperationsCount();
 }
 
+void SharedStorageWorkletHost::OnSelectURLSavedQueryFound(
+    const GURL& urn_uuid,
+    base::TimeTicks start_time,
+    const std::string& operation_name,
+    uint32_t index) {
+  auto it = unresolved_urns_.find(urn_uuid);
+  CHECK(it != unresolved_urns_.end(), base::NotFatalUntil::M130);
+
+  if (index >= it->second.size()) {
+    // Return the default index if the saved index is out-of-range for the
+    // current vector of URLs.
+    index = 0;
+  }
+
+  shared_storage_manager_->GetRemainingBudget(
+      shared_storage_site_,
+      base::BindOnce(&SharedStorageWorkletHost::
+                         OnRunURLSelectionOperationOnWorkletFinished,
+                     weak_ptr_factory_.GetWeakPtr(), urn_uuid, start_time,
+                     operation_name,
+                     /*saved_query_name_to_cache=*/std::u16string(),
+                     /*script_execution_succeeded=*/true,
+                     /*script_execution_error_message=*/std::string(), index,
+                     /*use_page_budgets=*/false));
+}
+
 void SharedStorageWorkletHost::ExpireWorklet() {
   // `this` is not in keep-alive.
   DCHECK(document_service_);
-  DCHECK(shared_storage_worklet_host_manager_);
+  DCHECK(shared_storage_runtime_manager_);
 
   // This will remove this worklet host from the manager.
-  shared_storage_worklet_host_manager_->ExpireWorkletHostForDocumentService(
+  shared_storage_runtime_manager_->ExpireWorkletHostForDocumentService(
       document_service_.get(), this);
 
   // Do not add code after this. SharedStorageWorkletHost has been destroyed.
@@ -1354,8 +1478,9 @@ void SharedStorageWorkletHost::DecrementPendingOperationsCount() {
   base::CheckedNumeric<uint32_t> count = pending_operations_count_;
   pending_operations_count_ = (--count).ValueOrDie();
 
-  if (pending_operations_count_)
+  if (pending_operations_count_) {
     return;
+  }
 
   // This time will be overridden if another operation is subsequently queued
   // and completed.
@@ -1421,13 +1546,10 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
         shared_storage_worklet_service_.BindNewPipeAndPassReceiver(),
         std::move(global_scope_creation_params));
 
-    const blink::PermissionsPolicy* permissions_policy =
-        rfh.permissions_policy();
-
-    bool private_aggregation_permissions_policy_allowed =
-        permissions_policy->IsFeatureEnabledForOrigin(
-            blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
-            shared_storage_origin_);
+    blink::mojom::SharedStorageWorkletPermissionsPolicyStatePtr
+        permissions_policy_state =
+            GetSharedStorageWorkletPermissionsPolicyState(
+                rfh, shared_storage_origin_);
 
     auto embedder_context = static_cast<RenderFrameHostImpl&>(
                                 document_service_->render_frame_host())
@@ -1436,7 +1558,7 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
 
     shared_storage_worklet_service_->Initialize(
         shared_storage_worklet_service_client_.BindNewEndpointAndPassRemote(),
-        private_aggregation_permissions_policy_allowed, embedder_context);
+        std::move(permissions_policy_state), embedder_context);
   }
 
   return shared_storage_worklet_service_.get();
@@ -1462,13 +1584,14 @@ SharedStorageWorkletHost::MaybeConstructPrivateAggregationOperationDetails(
           mojo::PendingRemote<blink::mojom::PrivateAggregationHost>(),
           private_aggregation_config->filtering_id_max_bytes);
 
-  std::optional<base::TimeDelta> timeout =
-      (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118) &&
-       private_aggregation_config->context_id)
-          ? std::optional<base::TimeDelta>(base::Seconds(5))
-          : std::nullopt;
+  std::optional<base::TimeDelta> timeout;
+  if (base::FeatureList::IsEnabled(blink::features::kSharedStorageAPIM118) &&
+      PrivateAggregationManager::ShouldSendReportDeterministically(
+          private_aggregation_config->context_id,
+          private_aggregation_config->filtering_id_max_bytes)) {
+    timeout = base::Seconds(5);
+  }
 
-  // TODO(crbug.com/330744610): Allow filtering ID byte size to be set.
   bool success = private_aggregation_manager->BindNewReceiver(
       shared_storage_origin_, main_frame_origin_,
       PrivateAggregationCallerApi::kSharedStorage,

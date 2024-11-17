@@ -29,10 +29,8 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::GpuPeakMemoryAllocationSource,
       case gpu::GpuPeakMemoryAllocationSource::SKIA:
         return gpu::mojom::GpuPeakMemoryAllocationSource::SKIA;
     }
-    NOTREACHED_IN_MIGRATION()
-        << "Invalid GpuPeakMemoryAllocationSource:"
-        << static_cast<int>(gpu_peak_memory_allocation_source);
-    return gpu::mojom::GpuPeakMemoryAllocationSource::UNKNOWN;
+    NOTREACHED() << "Invalid GpuPeakMemoryAllocationSource:"
+                 << static_cast<int>(gpu_peak_memory_allocation_source);
   }
 
   static bool FromMojom(gpu::mojom::GpuPeakMemoryAllocationSource input,
@@ -54,9 +52,7 @@ struct GPU_EXPORT EnumTraits<gpu::mojom::GpuPeakMemoryAllocationSource,
         *out = gpu::GpuPeakMemoryAllocationSource::SKIA;
         return true;
     }
-    NOTREACHED_IN_MIGRATION()
-        << "Invalid GpuPeakMemoryAllocationSource: " << input;
-    return false;
+    NOTREACHED() << "Invalid GpuPeakMemoryAllocationSource: " << input;
   }
 };
 

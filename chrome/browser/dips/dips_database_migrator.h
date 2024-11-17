@@ -51,6 +51,10 @@ class DIPSDatabaseMigrator {
   // Hence the minimum compatible schema version stays the same.
   bool MigrateSchemaVersionFrom6To7();
 
+  // Migrates from v7 to v8 of the DIPS database schema. This migration adds an
+  // `is_authentication_interaction` field to the Popups table.
+  bool MigrateSchemaVersionFrom7To8();
+
   DIPSDatabaseMigrator(const DIPSDatabaseMigrator&) = delete;
   DIPSDatabaseMigrator& operator=(const DIPSDatabaseMigrator&) = delete;
 

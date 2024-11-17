@@ -35,6 +35,7 @@
 #include "chromeos/crosapi/mojom/video_conference.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_state.h"
 #include "ui/views/widget/widget.h"
@@ -1105,6 +1106,18 @@ TEST_F(VideoConferenceTrayTest, BubbleWithOnlyLinuxApps) {
 
   EXPECT_EQ(video_conference::BubbleViewID::kMainBubbleView,
             bubble_view->GetID());
+}
+
+TEST_F(VideoConferenceTrayTest, BubbleViewAccessibleName) {
+  SetTrayAndButtonsVisible();
+  LeftClickOn(toggle_bubble_button());
+  auto* bubble_view = video_conference_tray()->GetBubbleView();
+  ASSERT_TRUE(bubble_view);
+
+  ui::AXNodeData node_data;
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            video_conference_tray()->GetAccessibleNameForBubble());
 }
 
 // Tests the tray when there's a delay in `GetMediaApps()`.

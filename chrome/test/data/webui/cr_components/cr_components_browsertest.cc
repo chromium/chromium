@@ -64,6 +64,12 @@ IN_PROC_BROWSER_TEST_F(CrComponentsHistoryEmbeddingsTest,
           "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsHistoryEmbeddingsTest,
+                       HistoryEmbeddingsResultImage) {
+  RunTest("cr_components/history_embeddings/result_image_test.js",
+          "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, ManagedDialog) {
   RunTest("cr_components/managed_dialog_test.js", "mocha.run()");
 }

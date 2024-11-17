@@ -4,6 +4,9 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -11,23 +14,32 @@
 #include "ash/capture_mode/capture_mode_ash_notification_view.h"
 #include "ash/capture_mode/capture_mode_behavior.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
+#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_education_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_observer.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/capture_mode/capture_mode_util.h"
+#include "ash/capture_mode/disclaimer_view.h"
 #include "ash/capture_mode/null_capture_mode_session.h"
 #include "ash/capture_mode/search_results_panel.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/system/toast_data.h"
+#include "ash/public/cpp/system/toast_manager.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
+#include "ash/scanner/scanner_action_view_model.h"
+#include "ash/scanner/scanner_controller.h"
+#include "ash/scanner/scanner_metrics.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -45,19 +57,23 @@
 #include "base/location.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "capture_mode_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/aura/env.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -66,10 +82,12 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/vector_icon_types.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 #include "ui/snapshot/snapshot.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/window_util.h"
 
@@ -118,6 +136,14 @@ constexpr char kShareToYouTubeURL[] = "https://youtube.com/upload";
 // way that the nudge no longer needs to be displayed again.
 constexpr char kCanShowDemoToolsNudge[] =
     "ash.capture_mode.can_show_demo_tools_nudge";
+
+// The name of a boolean pref that records whether the sunfish consent
+// disclaimer has been accepted.
+constexpr char kSunfishConsentDisclaimerAccepted[] =
+    "ash.capture_mode.sunfish_consent_disclaimer_accepted";
+
+// The ID for the toast shown when text is copied to clipboard.
+constexpr char kCaptureModeTextCopiedToastId[] = "capture_mode_text_copied";
 
 // An invalid IDS value used as a placeholder to not show a message in a
 // notification.
@@ -356,6 +382,10 @@ void CopyImageToClipboard(const gfx::Image& image) {
       .WriteImage(image.AsBitmap());
 }
 
+void CopyTextToClipboard(const std::u16string& text) {
+  ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste).WriteText(text);
+}
+
 // Emits UMA samples for the |status| of the recording as reported by the
 // recording service.
 void EmitServiceRecordingStatus(recording::mojom::RecordingStatus status) {
@@ -403,15 +433,6 @@ void EmitServiceRecordingStatus(recording::mojom::RecordingStatus status) {
   }
 }
 
-PrefService* GetActiveUserPrefService() {
-  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
-
-  auto* pref_service =
-      Shell::Get()->session_controller()->GetActivePrefService();
-  DCHECK(pref_service);
-  return pref_service;
-}
-
 base::FilePath GetTempDir() {
   base::FilePath temp_dir;
   if (!base::GetTempDir(&temp_dir))
@@ -435,12 +456,12 @@ int GetNotificationTitleIdForFile(const base::FilePath& file_path) {
 // Returns the size of the file at the given `file_path` in KBs. Returns -1 when
 // a failure occurs.
 int GetFileSizeInKB(const base::FilePath& file_path) {
-  int64_t size_in_bytes = 0;
-  if (!base::GetFileSize(file_path, &size_in_bytes)) {
+  std::optional<int64_t> size_in_bytes = base::GetFileSize(file_path);
+  if (!size_in_bytes.has_value()) {
     return -1;
   }
   // Convert the value to KBs.
-  return size_in_bytes / 1024;
+  return size_in_bytes.value() / 1024;
 }
 
 // Creates a new `CaptureModeSession` based on the given `session_type`. Can be
@@ -480,7 +501,11 @@ void MaybeUnlockCursor(bool was_cursor_originally_blocked) {
     if (!display::Screen::GetScreen()->InTabletMode()) {
       cursor_manager->ShowCursor();
     }
-    cursor_manager->UnlockCursor();
+    // TODO(crbug.com/376171009): Investigate why the cursor may have already
+    // been unlocked even though image capture should have locked the cursor.
+    if (cursor_manager->IsCursorLocked()) {
+      cursor_manager->UnlockCursor();
+    }
   }
 }
 
@@ -491,14 +516,62 @@ BehaviorType ToBehaviorType(CaptureModeEntryType entry_type) {
     case CaptureModeEntryType::kProjector:
       return BehaviorType::kProjector;
     case CaptureModeEntryType::kGameDashboard:
-      CHECK(features::IsGameDashboardEnabled());
       return BehaviorType::kGameDashboard;
     case CaptureModeEntryType::kSunfish:
-      CHECK(features::IsSunfishFeatureEnabled());
+      DCHECK(IsSunfishAllowedAndEnabled());
       return BehaviorType::kSunfish;
     default:
       return BehaviorType::kDefault;
   }
+}
+
+// Returns true if text detection should be performed on a captured image with
+// the given `capture_type`.
+bool ShouldPerformTextDetection(PerformCaptureType capture_type) {
+  return Shell::Get()->scanner_controller() &&
+         (capture_type == PerformCaptureType::kSunfish ||
+          capture_type == PerformCaptureType::kTextDetection);
+}
+
+// Returns true if Scanner actions should be fetched for a captured image with
+// the given `capture_type`.
+bool ShouldFetchScannerActions(PerformCaptureType capture_type) {
+  return Shell::Get()->scanner_controller() &&
+         (capture_type == PerformCaptureType::kSunfish ||
+          capture_type == PerformCaptureType::kScanner);
+}
+
+// Returns true if region search should be performed on a captured image with
+// the given `capture_type`.
+bool ShouldSendRegionSearch(PerformCaptureType capture_type) {
+  return IsSunfishFeatureEnabledWithFeatureKey() &&
+         (capture_type == PerformCaptureType::kSunfish ||
+          capture_type == PerformCaptureType::kSearch);
+}
+
+gfx::Rect CalculateSearchResultPanelBounds(aura::Window* root,
+                                           const gfx::Rect& feedback_bounds) {
+  // TODO: crbug.com/362284723 - Ensure tooltips are visible over overlay
+  // container.
+  const gfx::Rect work_area(
+      display::Screen::GetScreen()->GetDisplayNearestWindow(root).work_area());
+
+  gfx::Rect bounds(work_area.right() - capture_mode::kSearchResultsPanelWidth -
+                       capture_mode::kPanelWorkAreaSpacing,
+                   work_area.bottom() -
+                       capture_mode::kSearchResultsPanelHeight -
+                       capture_mode::kPanelWorkAreaSpacing,
+                   capture_mode::kSearchResultsPanelWidth,
+                   capture_mode::kSearchResultsPanelHeight);
+
+  // If the panel would overlap with the feedback button when it is created,
+  // instead place it just above the button.
+  if (bounds.Intersects(feedback_bounds)) {
+    bounds.set_y(feedback_bounds.y() - capture_mode::kSearchResultsPanelHeight -
+                 capture_mode::kPanelButtonSpacing);
+  }
+
+  return bounds;
 }
 
 }  // namespace
@@ -592,6 +665,91 @@ void CaptureModeController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                 /*default_value=*/false);
   registry->RegisterBooleanPref(kCanShowDemoToolsNudge,
                                 /*default_value=*/true);
+  registry->RegisterBooleanPref(prefs::kSunfishEnabled,
+                                /*default_value=*/true);
+  registry->RegisterBooleanPref(kSunfishConsentDisclaimerAccepted,
+                                /*default_value=*/false);
+}
+
+// static
+void CaptureModeController::ShowTextCopiedToast() {
+  // TODO(crbug.com/375967525): Finalize and translate the toast string.
+  ToastManager::Get()->Show(ToastData(kCaptureModeTextCopiedToastId,
+                                      ToastCatalogName::kCaptureModeTextCopied,
+                                      u"Text copied to clipboard"));
+}
+
+SearchResultsPanel* CaptureModeController::GetSearchResultsPanel() const {
+  return search_results_panel_widget_
+             ? views::AsViewClass<SearchResultsPanel>(
+                   search_results_panel_widget_->GetContentsView())
+             : nullptr;
+}
+
+void CaptureModeController::MaybeShowDisclaimer(
+    base::RepeatingClosure accept_callback) {
+  if (capture_mode_util::GetActiveUserPrefService()->GetBoolean(
+          kSunfishConsentDisclaimerAccepted)) {
+    if (accept_callback) {
+      std::move(accept_callback).Run();
+    }
+    return;
+  }
+  disclaimer_ = DisclaimerView::CreateWidget(
+      capture_mode_util::GetPreferredRootWindow(),
+      base::BindRepeating(&CaptureModeController::OnDisclaimerAccepted,
+                          weak_ptr_factory_.GetWeakPtr(),
+                          std::move(accept_callback)),
+      base::BindRepeating(&CaptureModeController::OnDisclaimerDeclined,
+                          weak_ptr_factory_.GetWeakPtr()));
+  disclaimer_->Show();
+}
+
+void CaptureModeController::ShowSearchResultsPanel(const gfx::ImageSkia& image,
+                                                   GURL url) {
+  DCHECK(IsSunfishFeatureEnabledWithFeatureKey());
+  const bool is_active = IsActive();
+  if (!search_results_panel_widget_) {
+    // A session must be active when the panel is first loaded, because it is
+    // used to determine the panel bounds. If the user ends the session before
+    // the panel loads, it will not be shown.
+    if (!is_active) {
+      return;
+    }
+    const gfx::Rect panel_bounds = CalculateSearchResultPanelBounds(
+        capture_mode_session_->current_root(),
+        capture_mode_session_->GetFeedbackWidgetScreenBounds());
+    search_results_panel_widget_ = SearchResultsPanel::CreateWidget(
+        capture_mode_session_->current_root(), panel_bounds);
+
+    RecordSearchResultsPanelEntryType(capture_mode_session_->active_behavior());
+  }
+
+  // If the panel was not visible beforehand (either the panel was not created
+  // yet or the panel was hidden from making a new selection), emit a metric.
+  if (!search_results_panel_widget_->IsVisible()) {
+    search_results_panel_widget_->Show();
+    RecordSearchResultsPanelShown();
+  }
+
+  // Note at this point the session may no longer be active.
+  auto* search_results_panel = GetSearchResultsPanel();
+  search_results_panel->SetSearchBoxImage(image);
+  search_results_panel->Navigate(url);
+  if (is_active && capture_mode_session_->active_behavior()
+                       ->ShouldEndSessionOnShowingSearchResults()) {
+    Stop();
+  }
+}
+
+void CaptureModeController::OnLocatedEventDragged() {
+  if (IsSearchResultsPanelVisible()) {
+    // Clear the search box text for the next time the panel is opened. Note we
+    // don't need to reset the image or URL since the panel will always be
+    // re-opened with those.
+    GetSearchResultsPanel()->SetSearchBoxText(std::u16string());
+    search_results_panel_widget_->Hide();
+  }
 }
 
 bool CaptureModeController::IsActive() const {
@@ -621,6 +779,22 @@ bool CaptureModeController::IsAudioRecordingInProgress() const {
 
 bool CaptureModeController::IsShowingCameraPreview() const {
   return !!camera_controller_->camera_preview_widget();
+}
+
+bool CaptureModeController::IsEventOnSearchResultsPanel(
+    const gfx::Point& screen_location) const {
+  // We check if the panel contains the event location, not just as the event
+  // target, because the panel may not be the target of certain events (e.g.
+  // right clicks), and lose focus, after which the panel will no longer be able
+  // to be targeted (b/377019438).
+  return search_results_panel_widget_ &&
+         search_results_panel_widget_->GetWindowBoundsInScreen().Contains(
+             screen_location);
+}
+
+bool CaptureModeController::IsSearchResultsPanelVisible() const {
+  return search_results_panel_widget_ &&
+         search_results_panel_widget_->IsVisible();
 }
 
 bool CaptureModeController::SupportsBehaviorChange(
@@ -714,8 +888,13 @@ void CaptureModeController::StartRecordingInstantlyForGameDashboard(
 }
 
 void CaptureModeController::StartSunfishSession() {
-  DCHECK(features::IsSunfishFeatureEnabled());
-  // TODO(b/357658506): Determine whether to close the results panel.
+  RecordScannerFeatureUserState(
+      ScannerFeatureUserState::kSunfishScreenEnteredViaShortcut);
+  DCHECK(IsSunfishAllowedAndEnabled());
+  if (!capture_mode_util::GetActiveUserPrefService()->GetBoolean(
+          prefs::kSunfishEnabled)) {
+    return;
+  }
   StartInternal(SessionType::kReal, CaptureModeEntryType::kSunfish);
 }
 
@@ -762,6 +941,7 @@ bool CaptureModeController::CanShowUserNudge() const {
     case user_manager::UserType::kPublicAccount:
     case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
       return false;
   }
 
@@ -771,13 +951,14 @@ bool CaptureModeController::CanShowUserNudge() const {
 }
 
 void CaptureModeController::DisableUserNudgeForever() {
-  GetActiveUserPrefService()->SetBoolean(kCanShowDemoToolsNudge, false);
+  capture_mode_util::GetActiveUserPrefService()->SetBoolean(
+      kCanShowDemoToolsNudge, false);
 }
 
 void CaptureModeController::SetUsesDefaultCaptureFolder(bool value) {
   DCHECK(!IsCustomFolderManagedByPolicy());
-  GetActiveUserPrefService()->SetBoolean(kUsesDefaultCapturePathPrefName,
-                                         value);
+  capture_mode_util::GetActiveUserPrefService()->SetBoolean(
+      kUsesDefaultCapturePathPrefName, value);
 
   if (IsActive())
     capture_mode_session_->OnDefaultCaptureFolderSelectionChanged();
@@ -785,7 +966,7 @@ void CaptureModeController::SetUsesDefaultCaptureFolder(bool value) {
 
 void CaptureModeController::SetCustomCaptureFolder(const base::FilePath& path) {
   DCHECK(!IsCustomFolderManagedByPolicy());
-  auto* pref_service = GetActiveUserPrefService();
+  auto* pref_service = capture_mode_util::GetActiveUserPrefService();
   pref_service->SetFilePath(kCustomCapturePathPrefName, path);
 
   // When this function is called, it means the user is switching back to the
@@ -799,7 +980,8 @@ void CaptureModeController::SetCustomCaptureFolder(const base::FilePath& path) {
 
 base::FilePath CaptureModeController::GetCustomCaptureFolder() const {
   base::FilePath custom_path =
-      GetActiveUserPrefService()->GetFilePath(kCustomCapturePathPrefName);
+      capture_mode_util::GetActiveUserPrefService()->GetFilePath(
+          kCustomCapturePathPrefName);
   const auto policy_path = delegate_->GetPolicyCapturePath();
   // If admin forced or recommended and there is no user chosen value - use it.
   if (policy_path.enforcement ==
@@ -873,7 +1055,7 @@ void CaptureModeController::CaptureScreenshotOfGivenWindow(
       BehaviorType::kGameDashboard);
 }
 
-void CaptureModeController::PerformCapture() {
+void CaptureModeController::PerformCapture(PerformCaptureType capture_type) {
   DCHECK(IsActive());
 
   if (pending_dlp_check_)
@@ -886,31 +1068,48 @@ void CaptureModeController::PerformCapture() {
   DCHECK(!pending_dlp_check_);
   pending_dlp_check_ = true;
   capture_mode_session_->OnWaitingForDlpConfirmationStarted();
-  capture_mode_session_->MaybeDismissUserNudgeForever();
+  if (capture_type != PerformCaptureType::kTextDetection) {
+    capture_mode_session_->MaybeDismissUserNudgeForever();
+  }
   delegate_->CheckCaptureOperationRestrictionByDlp(
       capture_params->window, capture_params->bounds,
       base::BindOnce(
           &CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture,
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr(), capture_type));
 }
 
-void CaptureModeController::PerformImageSearch() {
-  DCHECK_EQ(capture_mode_session_->active_behavior()->behavior_type(),
-            BehaviorType::kSunfish);
+void CaptureModeController::PerformImageSearch(
+    PerformCaptureType capture_type) {
+  if (!IsActive()) {
+    // This function gets called asynchronously, and until it gets called, the
+    // session could end due to e.g. locking the screen, suspending, or
+    // switching users.
+    return;
+  }
+
   DCHECK(delegate_->IsCaptureAllowedByPolicy());
 
   const std::optional<CaptureParams> capture_params = GetCaptureParams();
   CHECK(capture_params);
 
+  base::WeakPtr<BaseCaptureModeSession> image_search_token =
+      capture_mode_session_->GetImageSearchToken();
+  if (!image_search_token) {
+    // In theory, this should only be possible if the capture mode session is
+    // the null session, which should not be able to perform image searches.
+    return;
+  }
+
   const bool was_cursor_originally_blocked = MaybeLockCursor();
+  capture_mode_session_->OnPerformCaptureForSearchStarting(capture_type);
 
   // Capture the image for search. We use JPEG bytes for low file size and fast
   // compression speed.
   ui::GrabWindowSnapshotAsJPEG(
       capture_params->window, capture_params->bounds,
       base::BindOnce(&CaptureModeController::OnImageCapturedForSearch,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     was_cursor_originally_blocked));
+                     weak_ptr_factory_.GetWeakPtr(), capture_type,
+                     was_cursor_originally_blocked, image_search_token));
 
   delegate_->OnCaptureImageAttempted(capture_params->window,
                                      capture_params->bounds);
@@ -1095,6 +1294,17 @@ bool CaptureModeController::IsAnnotatingSupported() const {
   return video_recording_watcher_ &&
          video_recording_watcher_->active_behavior()
              ->ShouldCreateAnnotationsOverlayController();
+}
+
+void CaptureModeController::SendMultimodalSearch(const gfx::ImageSkia& image,
+                                                 const std::string& text) {
+  delegate_->SendMultimodalSearch(
+      *image.bitmap(), user_capture_region_, text,
+      base::BindRepeating(&CaptureModeController::OnSearchUrlFetched,
+                          weak_ptr_factory_.GetWeakPtr(), user_capture_region_,
+                          image));
+
+  RecordMultimodalSearchRequest();
 }
 
 void CaptureModeController::OnRecordingEnded(
@@ -1348,6 +1558,7 @@ void CaptureModeController::EndSessionOrRecording(EndRecordingReason reason) {
     // finished yet.
     Stop();
   }
+  search_results_panel_widget_.reset();
 
   if (!is_recording_in_progress())
     return;
@@ -1681,24 +1892,139 @@ void CaptureModeController::OnImageCaptured(
 }
 
 void CaptureModeController::OnImageCapturedForSearch(
+    PerformCaptureType capture_type,
     bool was_cursor_originally_blocked,
+    base::WeakPtr<BaseCaptureModeSession> image_search_token,
     scoped_refptr<base::RefCountedMemory> jpeg_bytes) {
-  // Capture mode session may end before the `jpeg_bytes` are received, no-op if
-  // the session is no longer active.
-  if (!IsActive()) {
+  absl::Cleanup run_test_callback_on_return = [this, capture_type] {
+    if (on_image_captured_for_search_callback_for_test_) {
+      on_image_captured_for_search_callback_for_test_.Run(capture_type);
+    }
+  };
+  // From here on, no matter where the function exits, the cursor must be
+  // unlocked and re-shown.
+  MaybeUnlockCursor(was_cursor_originally_blocked);
+  // The capture parameters / region / session may have changed before
+  // `jpeg_bytes` were received.
+  if (!image_search_token) {
     return;
   }
-  MaybeUnlockCursor(was_cursor_originally_blocked);
-  // TODO(b/356878705): Send the image data to the backend. This currently shows
-  // the results panel immediately for debugging purposes.
-  const std::unique_ptr<SkBitmap> bitmap =
-      gfx::JPEGCodec::Decode(jpeg_bytes->data(), jpeg_bytes->size());
-  const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(*bitmap);
-  capture_mode_session_->ShowSearchResultsPanel(image);
+  capture_mode_session_->OnPerformCaptureForSearchEnded(capture_type);
 
-  if (on_image_captured_for_search_callback_for_test_) {
-    std::move(on_image_captured_for_search_callback_for_test_).Run();
+  const SkBitmap bitmap = gfx::JPEGCodec::Decode(*jpeg_bytes);
+  if (ShouldPerformTextDetection(capture_type)) {
+    delegate_->DetectTextInImage(
+        bitmap, base::BindOnce(&CaptureModeController::OnTextDetectionComplete,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               image_search_token, base::TimeTicks::Now()));
   }
+
+  if (ShouldFetchScannerActions(capture_type)) {
+    if (capture_type == PerformCaptureType::kSunfish) {
+      RecordScannerFeatureUserState(
+          ScannerFeatureUserState::
+              kSunfishScreenInitialScreenCaptureSentToScannerServer);
+    }
+    if (capture_type == PerformCaptureType::kScanner) {
+      RecordScannerFeatureUserState(
+          ScannerFeatureUserState::
+              kScreenCaptureModeInitialScreenCaptureSentToScannerServer);
+    }
+
+    Shell::Get()->scanner_controller()->FetchActionsForImage(
+        jpeg_bytes,
+        base::BindOnce(&CaptureModeController::OnScannerActionsFetched,
+                       weak_ptr_factory_.GetWeakPtr(), image_search_token));
+  }
+
+  if (ShouldSendRegionSearch(capture_type)) {
+    const gfx::ImageSkia image = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
+    // `OnSearchUrlFetched()` will be invoked with `image` when the server
+    // response is fetched.
+    delegate_->SendRegionSearch(
+        bitmap, user_capture_region_,
+        base::BindRepeating(&CaptureModeController::OnSearchUrlFetched,
+                            weak_ptr_factory_.GetWeakPtr(),
+                            user_capture_region_, image));
+  }
+}
+
+void CaptureModeController::OnTextDetectionComplete(
+    base::WeakPtr<BaseCaptureModeSession> image_search_token,
+    base::TimeTicks ocr_attempt_start_time,
+    std::string detected_text) {
+  RecordOnDeviceOcrTimerCompleted(ocr_attempt_start_time);
+  if (!image_search_token || detected_text.empty()) {
+    return;
+  }
+
+  // TODO(crbug.com/375967525): Finalize and translate the copy text label.
+  capture_mode_util::AddActionButton(
+      base::BindOnce(&CaptureModeController::OnCopyTextButtonClicked,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     base::UTF8ToUTF16(detected_text)),
+      u"Copy text", &vector_icons::kContentCopyIcon,
+      ActionButtonRank{ActionButtonType::kCopyText, /*weight=*/0},
+      ActionButtonViewID::kCopyTextButton);
+
+  capture_mode_session_->OnTextDetected();
+}
+
+void CaptureModeController::OnCopyTextButtonClicked(
+    const std::u16string& text) {
+  CopyTextToClipboard(text);
+  ShowTextCopiedToast();
+  Stop();
+}
+
+void CaptureModeController::OnDisclaimerDeclined() {
+  RecordScannerFeatureUserState(
+      ScannerFeatureUserState::kConsentDisclaimerRejected);
+
+  if (disclaimer_.get() != nullptr) {
+    disclaimer_.reset();
+  }
+}
+
+void CaptureModeController::OnDisclaimerAccepted(
+    base::RepeatingClosure callback) {
+  RecordScannerFeatureUserState(
+      ScannerFeatureUserState::kConsentDisclaimerAccepted);
+  capture_mode_util::GetActiveUserPrefService()->SetBoolean(
+      kSunfishConsentDisclaimerAccepted, true);
+
+  disclaimer_.reset();
+  if (callback) {
+    std::move(callback).Run();
+  }
+}
+
+void CaptureModeController::OnScannerActionsFetched(
+    base::WeakPtr<BaseCaptureModeSession> image_search_token,
+    std::vector<ScannerActionViewModel> scanner_actions) {
+  if (!image_search_token) {
+    return;
+  }
+  capture_mode_session_->AddScannerActionButtons(std::move(scanner_actions));
+}
+
+void CaptureModeController::OnSearchUrlFetched(const gfx::Rect& captured_region,
+                                               const gfx::ImageSkia& image,
+                                               GURL url) {
+  if (captured_region == user_capture_region_) {
+    ShowSearchResultsPanel(image, url);
+  }
+}
+
+void CaptureModeController::OnSearchResultClicked() {
+  // End capture mode session when a result link is clicked, as the assumed user
+  // intention is to interact with the newly opened link.
+  if (IsActive() && capture_mode_session_->active_behavior()
+                        ->ShouldEndSessionOnSearchResultClicked()) {
+    Stop();
+  }
+
+  RecordSearchResultClicked();
 }
 
 void CaptureModeController::OnImageFileSaved(
@@ -1714,7 +2040,7 @@ void CaptureModeController::OnImageFileSaved(
   delegate_->FinalizeSavedFile(
       base::BindOnce(&CaptureModeController::OnImageFileFinalized,
                      weak_ptr_factory_.GetWeakPtr(), image, behavior),
-      file_saved_path, image);
+      file_saved_path, image, /*for_video=*/false);
 }
 
 void CaptureModeController::OnImageFileFinalized(
@@ -2091,6 +2417,7 @@ void CaptureModeController::InterruptVideoRecording() {
 }
 
 void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
+    PerformCaptureType capture_type,
     bool proceed) {
   pending_dlp_check_ = false;
 
@@ -2103,11 +2430,12 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
 
   // We don't need to bring capture mode UIs back if `proceed` is false or if
   // the session is about to shutdown. See also
-  // `CaptureModeBehavior::ShouldReShowUisAtPerformingCapture()`.
+  // `CaptureModeBehavior::ShouldReShowUisAtPerformingCapture`.
+  // TODO(b/374381937): Determine whether to reshow UIs or end the session.
   auto* active_behavior = capture_mode_session_->active_behavior();
   capture_mode_session_->OnWaitingForDlpConfirmationEnded(
       /*reshow_uis=*/proceed &&
-      active_behavior->ShouldReShowUisAtPerformingCapture());
+      active_behavior->ShouldReShowUisAtPerformingCapture(capture_type));
 
   if (!proceed) {
     Stop();
@@ -2124,13 +2452,11 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
   }
 
   if (type_ == CaptureModeType::kImage) {
-    if (active_behavior->behavior_type() == BehaviorType::kSunfish) {
-      // Sunfish behavior doesn't need the file path and does specific image
-      // capture handling.
-      PerformImageSearch();
-    } else {
+    if (capture_type == PerformCaptureType::kCapture) {
       CaptureImage(*capture_params, BuildImagePath(),
                    capture_mode_session_->active_behavior());
+    } else {
+      PerformImageSearch(capture_type);
     }
   } else {
     // HDCP affects only video recording.
@@ -2254,6 +2580,10 @@ void CaptureModeController::OnDlpRestrictionCheckedAtSessionInit(
     return;
   }
 
+  // Close any previously opened panel to ensure a clean slate.
+  // TODO(b/377370403): Revisit this decision.
+  search_results_panel_widget_.reset();
+
   // Before we start the session, if video recording is in progress, we need to
   // set the current type to image (except if the new behavior type is sunfish),
   // as we can't have more than one recording at a time. The video toggle button
@@ -2313,7 +2643,7 @@ void CaptureModeController::OnDlpRestrictionCheckedAtVideoEnd(
                                  weak_ptr_factory_.GetWeakPtr(),
                                  /*should_delete_file=*/false,
                                  video_thumbnail)),
-        video_file_path, gfx::Image(video_thumbnail));
+        video_file_path, gfx::Image(video_thumbnail), /*for_video=*/true);
   }
 }
 

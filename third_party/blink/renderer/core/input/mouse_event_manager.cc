@@ -297,6 +297,19 @@ MouseEventManager::SetElementUnderMouseAndDispatchMouseEvent(
           web_mouse_event.pointer_type));
 }
 
+namespace {
+
+bool HasClickListenersInAncestor(Node* node) {
+  for (; node; node = FlatTreeTraversal::Parent(*node)) {
+    if (node->HasEventListeners(event_type_names::kClick)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
 WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
     Element* mouse_release_target,
     Element* captured_click_target,
@@ -322,29 +335,35 @@ WebInputEventResult MouseEventManager::DispatchMouseClickIfNeeded(
     return WebInputEventResult::kNotHandled;
 
   Node* click_target_node = nullptr;
+  Node* common_ancestor = mouse_release_target->CommonAncestor(
+      *mousedown_element_, event_handling_util::ParentForClickEvent);
+
   if (RuntimeEnabledFeatures::ClickToCapturedPointerEnabled() &&
       captured_click_target) {
     click_target_node = captured_click_target;
   } else if (mousedown_element_->GetDocument() ==
              mouse_release_target->GetDocument()) {
-    click_target_node = mouse_release_target->CommonAncestor(
-        *mousedown_element_, event_handling_util::ParentForClickEvent);
+    click_target_node = common_ancestor;
   }
 
   if (!click_target_node)
     return WebInputEventResult::kNotHandled;
 
-  if (captured_click_target && (click_target_node != captured_click_target)) {
+  const AtomicString click_event_type =
+      (mouse_event.button == WebPointerProperties::Button::kLeft)
+          ? event_type_names::kClick
+          : event_type_names::kAuxclick;
+
+  if (captured_click_target && (common_ancestor != captured_click_target) &&
+      (click_event_type == event_type_names::kClick) &&
+      (HasClickListenersInAncestor(common_ancestor) ||
+       HasClickListenersInAncestor(captured_click_target))) {
     UseCounter::Count(frame_->GetDocument(),
                       WebFeature::kExplicitPointerCaptureClickTargetDiff);
   }
 
-  return DispatchMouseEvent(
-      click_target_node,
-      (mouse_event.button == WebPointerProperties::Button::kLeft)
-          ? event_type_names::kClick
-          : event_type_names::kAuxclick,
-      mouse_event, nullptr, nullptr, false, pointer_id, pointer_type);
+  return DispatchMouseEvent(click_target_node, click_event_type, mouse_event,
+                            nullptr, nullptr, false, pointer_id, pointer_type);
 }
 
 void MouseEventManager::RecomputeMouseHoverStateIfNeeded() {
@@ -576,7 +595,10 @@ WebInputEventResult MouseEventManager::HandleMouseFocus(
   // default behavior).
   if (element && !element->IsMouseFocusable() &&
       SlideFocusOnShadowHostIfNecessary(*element)) {
-    return WebInputEventResult::kHandledSystem;
+    return RuntimeEnabledFeatures::
+                   SelectionOnShadowDOMWithDelegatesFocusEnabled()
+               ? WebInputEventResult::kNotHandled
+               : WebInputEventResult::kHandledSystem;
   }
 
   // We call setFocusedElement even with !element in order to blur
@@ -690,8 +712,10 @@ WebInputEventResult MouseEventManager::HandleMousePressEvent(
   // |SelectionController| calls |PositionForPoint()| which requires
   // |kPrePaintClean|. |FocusDocumentView| above is the last possible
   // modifications before we call |SelectionController|.
-  if (LocalFrameView* frame_view = frame_->View())
-    frame_view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInput);
+  if (LocalFrameView* frame_view = frame_->View()) {
+    frame_view->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kInput);
+  }
 
   Node* inner_node = event.InnerNode();
 
@@ -728,8 +752,10 @@ WebInputEventResult MouseEventManager::HandleMouseReleaseEvent(
   // |SelectionController| calls |PositionForPoint()| which requires
   // |kPrePaintClean|. |FocusDocumentView| above is the last possible
   // modifications before we call |SelectionController|.
-  if (LocalFrameView* frame_view = frame_->View())
-    frame_view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInput);
+  if (LocalFrameView* frame_view = frame_->View()) {
+    frame_view->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kInput);
+  }
 
   return frame_->GetEventHandler()
                  .GetSelectionController()
@@ -839,8 +865,10 @@ WebInputEventResult MouseEventManager::HandleMouseDraggedEvent(
 
   // |SelectionController| calls |PositionForPoint()| which requires
   // |kPrePaintClean|.
-  if (LocalFrameView* frame_view = frame_->View())
-    frame_view->UpdateLifecycleToPrePaintClean(DocumentUpdateReason::kInput);
+  if (LocalFrameView* frame_view = frame_->View()) {
+    frame_view->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kInput);
+  }
 
   mouse_down_may_start_drag_ = false;
 

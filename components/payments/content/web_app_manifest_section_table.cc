@@ -64,9 +64,9 @@ bool DeserializeFingerPrints(
 
 }  // namespace
 
-WebAppManifestSectionTable::WebAppManifestSectionTable() {}
+WebAppManifestSectionTable::WebAppManifestSectionTable() = default;
 
-WebAppManifestSectionTable::~WebAppManifestSectionTable() {}
+WebAppManifestSectionTable::~WebAppManifestSectionTable() = default;
 
 WebAppManifestSectionTable* WebAppManifestSectionTable::FromWebDatabase(
     WebDatabase* db) {
@@ -84,8 +84,7 @@ bool WebAppManifestSectionTable::CreateTablesIfNecessary() {
                      "id VARCHAR, "
                      "min_version INTEGER NOT NULL DEFAULT 0, "
                      "fingerprints BLOB) ")) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   return true;

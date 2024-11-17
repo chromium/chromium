@@ -26,8 +26,7 @@
 #include "third_party/webrtc_overrides/task_queue_factory.h"
 #include "unicode/locid.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -377,6 +376,13 @@ void WebRtcMedium::CreatePeerConnection(
                                 std::move(callback)));
 }
 
+void WebRtcMedium::CreatePeerConnection(
+    std::optional<webrtc::PeerConnectionFactoryInterface::Options> options,
+    webrtc::PeerConnectionObserver* observer,
+    PeerConnectionCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 void WebRtcMedium::FetchIceServers(webrtc::PeerConnectionObserver* observer,
                                    PeerConnectionCallback callback) {
   ice_config_fetcher_->GetIceServers(base::BindOnce(
@@ -568,5 +574,4 @@ WebRtcMedium::GetSignalingMessenger(
       std::string(self_id), location_hint, webrtc_signaling_messenger_);
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

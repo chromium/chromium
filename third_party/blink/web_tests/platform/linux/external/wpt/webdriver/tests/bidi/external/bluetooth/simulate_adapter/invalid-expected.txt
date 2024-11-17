@@ -1,0 +1,28 @@
+This is a wdspec test.
+[FAIL] test_state_invalid_type[None]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_state_invalid_type[False]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_state_invalid_type[42]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_state_invalid_type[state3]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_state_invalid_type[state4]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_state_invalid_value[]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_state_invalid_value[invalid]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_context_invalid_type[None]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_context_invalid_type[False]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_context_invalid_type[42]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_context_invalid_type[context3]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_context_invalid_type[context4]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_context_unknown_value
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+Harness: the test ran to completion.

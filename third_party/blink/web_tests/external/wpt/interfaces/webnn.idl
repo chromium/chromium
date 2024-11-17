@@ -90,13 +90,13 @@ enum MLOperandDataType {
 
 dictionary MLOperandDescriptor {
   required MLOperandDataType dataType;
-  sequence<[EnforceRange] unsigned long> dimensions = [];
+  required sequence<[EnforceRange] unsigned long> shape;
 };
 
 [SecureContext, Exposed=(Window, DedicatedWorker)]
 interface MLOperand {
-  MLOperandDataType dataType();
-  sequence<unsigned long> shape();
+  readonly attribute MLOperandDataType dataType;
+  readonly attribute FrozenArray<unsigned long> shape;
 };
 
 dictionary MLOperatorOptions {
@@ -872,7 +872,7 @@ dictionary MLSplitSupportLimits {
 };
 
 partial dictionary MLOpSupportLimits {
-  MLSingleInputSupportLimits split;
+  MLSplitSupportLimits split;
 };
 
 partial interface MLGraphBuilder {

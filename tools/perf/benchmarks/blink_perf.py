@@ -588,6 +588,18 @@ class BlinkPerfLayout(_BlinkPerfBenchmark):
     return 'blink_perf.layout'
 
 
+@benchmark.Info(emails=['pmeenan@chromium.org', 'kouhei@chromium.org'],
+                component='Blink>Loader',
+                documentation_url='https://bit.ly/blink-perf-benchmarks')
+class BlinkPerfLoading(_BlinkPerfBenchmark):
+  SUBDIR = 'loading'
+  TAGS = _BlinkPerfBenchmark.TAGS + ['all']
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_blink_perf.loading'
+
+
 @benchmark.Info(emails=['ayui@chromium.org'],
                 component='Blink>Storage',
                 documentation_url='https://bit.ly/blink-perf-benchmarks')

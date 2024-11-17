@@ -7,8 +7,11 @@
 # Lit JS files.
 /lit-element/LICENSE
 /lit-element/lit-element.js
-/lit-html/is-server.js
+/lit-html/async-directive.js
+/lit-html/directive.js
+/lit-html/directive-helpers.js
 /lit-html/lit-html.js
+/lit-html/is-server.js
 /lit/index.js
 /@lit/reactive-element/css-tag.js
 /@lit/reactive-element/reactive-element.js

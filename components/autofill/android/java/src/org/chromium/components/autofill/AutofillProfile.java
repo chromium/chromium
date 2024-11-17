@@ -66,7 +66,6 @@ public class AutofillProfile {
         private ValueWithStatus mCountryCode = ValueWithStatus.EMPTY;
         private ValueWithStatus mPhoneNumber = ValueWithStatus.EMPTY;
         private ValueWithStatus mEmailAddress = ValueWithStatus.EMPTY;
-        private String mLabel = "";
         private String mLanguageCode = "";
 
         public Builder setGUID(String guid) {
@@ -188,11 +187,6 @@ public class AutofillProfile {
 
         public Builder setEmailAddress(String emailAddress, @VerificationStatus int status) {
             mEmailAddress = new ValueWithStatus(emailAddress, status);
-            return this;
-        }
-
-        public Builder setLabel(String label) {
-            mLabel = label;
             return this;
         }
 

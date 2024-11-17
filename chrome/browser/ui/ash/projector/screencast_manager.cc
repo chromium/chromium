@@ -81,9 +81,8 @@ void GetVideoMetadata(const base::FilePath& video_path,
                       projector::mojom::VideoInfoPtr video,
                       ProjectorAppClient::OnGetVideoCallback callback) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
-  int64_t size_in_byte;
-  if (!base::PathExists(video_path) ||
-      !base::GetFileSize(video_path, &size_in_byte)) {
+  std::optional<int64_t> size_in_byte = base::GetFileSize(video_path);
+  if (!size_in_byte.has_value()) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -97,7 +96,7 @@ void GetVideoMetadata(const base::FilePath& video_path,
   }
 
   auto parser = std::make_unique<SafeMediaMetadataParser>(
-      size_in_byte, kProjectorMediaMimeType,
+      size_in_byte.value(), kProjectorMediaMimeType,
       /*get_attached_images=*/false,
       std::make_unique<LocalMediaDataSourceFactory>(
           video_path, base::SingleThreadTaskRunner::GetCurrentDefault()));

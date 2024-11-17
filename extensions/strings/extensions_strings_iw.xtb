@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">ערך קלט עבור מפתח פרטי חייב להיות נתיב חוקי.</translation>
 <translation id="388442998277590542">לא היתה אפשרות לטעון את דף האפשרויות '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">שגיאה בחתימה על התוסף.</translation>
-<translation id="4115165561519362854">מנהל המערכת של מחשב זה דורש שהגרסה המינימלית של <ph name="EXTENSION_NAME" /> תהיה <ph name="EXTENSION_VERSION" />. ההפעלה אינה אפשרית עד לעדכון לגרסה זו (ואילך).</translation>
 <translation id="4233778200880751280">לא ניתן לטעון את דף המידע '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">נכשל בפלט מפתח פרטי.</translation>
 <translation id="4811956658694082538">‏לא ניתן היה להתקין את החבילה מפני שתהליך כלי השירות קרס. יש לאתחל את Chrome ולנסות שוב.</translation>

@@ -125,7 +125,7 @@ TEST(TraceEventArgumentTest, StringAndPointerConstructors) {
           {"literal_var", "literal"},
           {"std_string_var", std::string("std::string value")},
           {"string_from_function", SayHello()},
-          {"string_from_lambda", []() { return std::string("hello"); }()},
+          {"string_from_lambda", [] { return std::string("hello"); }()},
           {"base_string_piece_var", std::string_view("std::string_view value")},
           {"const_char_ptr_var", const_char_ptr_var},
           {"void_nullptr", static_cast<void*>(nullptr)},

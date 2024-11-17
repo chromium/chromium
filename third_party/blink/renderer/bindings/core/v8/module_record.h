@@ -63,7 +63,6 @@ class CORE_EXPORT ModuleRecord final {
       const ModuleScriptCreationParams& params,
       const ScriptFetchOptions&,
       const TextPosition&,
-      TryRethrowScope&,
       mojom::blink::V8CacheOptions = mojom::blink::V8CacheOptions::kDefault,
       ModuleRecordProduceCacheData** out_produce_cache_data = nullptr);
 

@@ -155,9 +155,6 @@
 # TODO(crbug.com/40276950): This test is flaky.
 -BackForwardCacheBrowserTest.NavigateToTwoPagesOnSameSiteWithSubframes
 
-# TODO(crbug.com/40280396): This test is flaky.
--All/DumpAccessibilityTreeTest.AccessibilitySelectList/blink
-
 # TODO(crbug.com/40281785): These consistently fail.
 -All/DumpAccessibilityTreeTest.AccessibilityInputSubmit/blink
 
@@ -314,7 +311,6 @@
 
 # These tests are flaky.
 -All/CoopRestrictPropertiesReportingBrowserTest.NavigationVirtualBrowsingContextGroup/RDCrashedFrame_BFCacheDisabled
--All/DumpAccessibilityTreeTest.AccessibilitySelectListOpen/blink
 -All/SitePerProcessBrowserTest.ChildFrameCrashMetrics_NeverShown/0
 -All/SitePerProcessBrowserTest.ChildFrameCrashMetrics_NeverShown/1
 -All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/0
@@ -668,7 +664,7 @@
 # TODO(crbug.com/341991542): The below tests related to the accessibility
 # have been failing since https://crrev.com/c/5513503.
 -All/DumpAccessibilityTreeTest.SelectExpandManyOptionsCrash/blink
--CrossPlatformAccessibilityBrowserTest.SelectListWithOptgroupActiveDescendant
+-CrossPlatformAccessibilityBrowserTest.SelectWithOptgroupActiveDescendant
 -CrossPlatformAccessibilityBrowserTest.SelectSizeChangeWithOpenedPopupDoesNotCrash
 -CrossPlatformAccessibilityBrowserTest.SelectWithOptgroupActiveDescendant
 
@@ -704,8 +700,91 @@
 -All/DocumentIsolationPolicyBrowserTest.NonDipPageCrashIntoDip/RDCrashedFrame_BFCacheDisabled
 -All/DocumentIsolationPolicyBrowserTest.NonDipPageCrashIntoDip/RDCrashedFrame_BFCacheEnabled
 
+# TODO(crbug.com/373168865): The test has been failing since
+# https://crrev.com/c/5867191.
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoDip/RDAllFrames_BFCacheDisabled_Credentialless
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoDip/RDAllFrames_BFCacheDisabled_RequireCorp
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoDip/RDAllFrames_BFCacheEnabled_Credentialless
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoDip/RDAllFrames_BFCacheEnabled_RequireCorp
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoDip/RDCrashedFrame_BFCacheDisabled_Credentialless
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoDip/RDCrashedFrame_BFCacheDisabled_RequireCorp
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoDip/RDCrashedFrame_BFCacheEnabled_Credentialless
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoDip/RDCrashedFrame_BFCacheEnabled_RequireCorp
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoNonDip/RDAllFrames_BFCacheDisabled_Credentialless
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoNonDip/RDAllFrames_BFCacheDisabled_RequireCorp
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoNonDip/RDAllFrames_BFCacheEnabled_Credentialless
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoNonDip/RDAllFrames_BFCacheEnabled_RequireCorp
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoNonDip/RDCrashedFrame_BFCacheDisabled_Credentialless
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoNonDip/RDCrashedFrame_BFCacheDisabled_RequireCorp
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoNonDip/RDCrashedFrame_BFCacheEnabled_Credentialless
+-All/DocumentIsolationPolicyBrowserTest.DipPageCrashIntoNonDip/RDCrashedFrame_BFCacheEnabled_RequireCorp
+-All/DocumentIsolationPolicyBrowserTest.NonDipPageCrashIntoDip/RDAllFrames_BFCacheDisabled_Credentialless
+-All/DocumentIsolationPolicyBrowserTest.NonDipPageCrashIntoDip/RDAllFrames_BFCacheDisabled_RequireCorp
+-All/DocumentIsolationPolicyBrowserTest.NonDipPageCrashIntoDip/RDAllFrames_BFCacheEnabled_Credentialless
+-All/DocumentIsolationPolicyBrowserTest.NonDipPageCrashIntoDip/RDAllFrames_BFCacheEnabled_RequireCorp
+-All/DocumentIsolationPolicyBrowserTest.NonDipPageCrashIntoDip/RDCrashedFrame_BFCacheDisabled_Credentialless
+-All/DocumentIsolationPolicyBrowserTest.NonDipPageCrashIntoDip/RDCrashedFrame_BFCacheDisabled_RequireCorp
+-All/DocumentIsolationPolicyBrowserTest.NonDipPageCrashIntoDip/RDCrashedFrame_BFCacheEnabled_Credentialless
+-All/DocumentIsolationPolicyBrowserTest.NonDipPageCrashIntoDip/RDCrashedFrame_BFCacheEnabled_RequireCorp
+
 # TODO(crbug.com/365913979): The test has been failing since
 # https://crrev.com/c/5571105.
 -SecurityExploitBrowserTest.InvalidBeginNavigationOpaqueInitiator
 -SecurityExploitBrowserTest.PostMessageOpaqueSourceOrigin
 -SecurityExploitViaDisabledWebSecurityTest.ValidateInitiatorBaseUrlNotEmpty
+
+# TODO(crbug.com/369224662): These tests have been failing since
+# https://crrev.com/c/5831814 and https://crrev.com/c/5840289.
+-All/DumpAccessibilityTreeTest.AccessibilityInputColorWithPopupOpen/blink
+-All/DumpAccessibilityTreeTest.AccessibilityInputColorWithPopupOpen/blink
+-All/DumpAccessibilityTreeTest.AccessibilityInputDateWithPopupOpen/blink
+-All/DumpAccessibilityTreeTest.AccessibilityInputDateWithPopupOpen/blink
+-All/DumpAccessibilityTreeTest.AccessibilityInputTypes/blink
+-All/DumpAccessibilityTreeTest.AccessibilityInputTypes/blink
+-All/DumpAccessibilityTreeTest.AccessibilityOptgroupMenulist/blink
+-All/DumpAccessibilityTreeTest.AccessibilityOptgroupMenulist/blink
+-All/DumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
+-All/DumpAccessibilityTreeTest.AccessibilitySelectOpen/blink
+
+# TODO(crbug.com/368335261): These tests have been failing since
+# https://crrev.com/c/5464569.
+-SensorBackForwardCacheBrowserTest.AccelerometerPausedWhileCached
+-SensorBackForwardCacheBrowserTest.AccelerometerPausedWhileCached
+-SensorBackForwardCacheBrowserTest.AmbientLightPausedWhileCached
+-SensorBackForwardCacheBrowserTest.AmbientLightPausedWhileCached
+-SensorBackForwardCacheBrowserTest.GravityPausedWhileCached
+-SensorBackForwardCacheBrowserTest.GravityPausedWhileCached
+-SensorBackForwardCacheBrowserTest.GyroscopePausedWhileCached
+-SensorBackForwardCacheBrowserTest.GyroscopePausedWhileCached
+-SensorBackForwardCacheBrowserTest.LinearAccelerationPausedWhileCached
+-SensorBackForwardCacheBrowserTest.LinearAccelerationPausedWhileCached
+
+# TODO(crbug.com/370751355): These tests have been failing since
+# https://crrev.com/c/5642354.
+-All/SitePerProcessWithMainFrameThresholdLocalhostTest.AllowReuseLocalHost/1
+-All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/0
+-All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/0
+-All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/1
+-All/SitePerProcessWithMainFrameThresholdTest.ReuseProcessUpToThreshold/1
+-All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/0
+-All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/0
+-All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/1
+-All/SitePerProcessWithMainFrameThresholdWithTotalLimitTest.ExcessiveAllocation/1
+
+# TODO(crbug.com/372062085): These tests have been failing since
+# https://crrev.com/c/5854463.
+-RenderFrameHostImplPartitionedPopinBrowserTest.CreateNewWindow_FailsWithAboutBlankTargetUrl
+-RenderFrameHostImplPartitionedPopinBrowserTest.CreateNewWindow_FailsWithEmptyTargetUrl
+-RenderFrameHostImplPartitionedPopinBrowserTest.CreateNewWindow_FailsWithHttpTargetUrl
+
+# TODO(crbug.com/373461927): This test has been failing since
+# https://crrev.com/c/5716290.
+-PrerenderBrowserTest.BackgroundedPage_ActivateOnLinkClick_TargetBlank_WithTargetHintBlank
+
+# TODO(crbug.com/374127248): This test has been failing since
+# https://crrev.com/c/5645306.
+-DeferSpeculativeRFHCreationTest.NavigationFromCrashedFrameNotDeferred
+
+# TODO(crbug.com/374094212): This test has been failing since
+# https://crrev.com/c/5773370.
+-RenderFrameHostImplWithTokensBrowserTest.ReloadedCrashedFrameWithHeaderOriginTrialShouldHaveValidRuntimeFeatureStateDocumentData

@@ -53,7 +53,6 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -65,14 +64,14 @@ import org.chromium.chrome.browser.privacy_sandbox.FakePrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridgeJni;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -107,15 +106,14 @@ public class PrivacySettingsFragmentTest {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(ChromeRenderTestRule.Component.UI_SETTINGS_PRIVACY)
+                    .setRevision(1)
                     .build();
-
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Rule public MockitoRule mockito = MockitoJUnit.rule();
 
     private FakePrivacySandboxBridge mFakePrivacySandboxBridge;
     private UserActionTester mActionTester;
-    @Mock private SettingsLauncher mSettingsLauncher;
+    @Mock private SettingsNavigation mSettingsNavigation;
 
     private void waitForOptionsMenu() {
         CriteriaHelper.pollUiThread(
@@ -210,7 +208,7 @@ public class PrivacySettingsFragmentTest {
     public void setUp() {
         NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
         mFakePrivacySandboxBridge = new FakePrivacySandboxBridge();
-        mocker.mock(PrivacySandboxBridgeJni.TEST_HOOKS, mFakePrivacySandboxBridge);
+        PrivacySandboxBridgeJni.setInstanceForTesting(mFakePrivacySandboxBridge);
         mActionTester = new UserActionTester();
     }
 
@@ -297,9 +295,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
-    @Features.DisableFeatures({
-        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-    })
     public void testIpProtectionFragment() throws IOException {
         setShowTrackingProtection(false);
         mSettingsActivityTestRule.startSettingsActivity();
@@ -363,21 +358,51 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    public void testTrackingProtectionWithSandboxV4() throws IOException {
+    @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX)
+    public void testTrackingProtection() throws IOException {
         setShowTrackingProtection(true);
         mSettingsActivityTestRule.startSettingsActivity();
-        // Verify that the Tracking Protection row is shown and 3PC/DNT is not.
+
+        // Verify that the Tracking Protection row is shown and 3PC/DNT are not.
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        Preference trackingProtectionPreference =
+                fragment.findPreference(PrivacySettings.PREF_TRACKING_PROTECTION);
+        assertTrue(trackingProtectionPreference.isVisible());
         onView(withText(R.string.tracking_protection_title)).check(matches(isDisplayed()));
-        onView(withText(R.string.third_party_cookies_link_row_label)).check(doesNotExist());
-        onView(withText(R.string.do_not_track_title)).check(doesNotExist());
+
+        Preference thirdPartyCookiesPreference =
+                fragment.findPreference(PrivacySettings.PREF_THIRD_PARTY_COOKIES);
+        assertFalse(thirdPartyCookiesPreference.isVisible());
+
+        Preference dntPreference = fragment.findPreference(PrivacySettings.PREF_DO_NOT_TRACK);
+        assertFalse(dntPreference.isVisible());
+    }
+
+    @Test
+    @LargeTest
+    @Features.DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX)
+    public void testTrackingProtectionRewind() throws IOException {
+        setShowTrackingProtection(true);
+        mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the 3PC and DNT rows are shown instead of Tracking Protection.
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        Preference trackingProtectionPreference =
+                fragment.findPreference(PrivacySettings.PREF_TRACKING_PROTECTION);
+        assertTrue(trackingProtectionPreference.isVisible());
+        onView(withText(R.string.third_party_cookies_link_row_label)).check(matches(isDisplayed()));
+
+        Preference dntPreference = fragment.findPreference(PrivacySettings.PREF_DO_NOT_TRACK);
+        assertTrue(dntPreference.isVisible());
+
+        Preference thirdPartyCookiesPreference =
+                fragment.findPreference(PrivacySettings.PREF_THIRD_PARTY_COOKIES);
+        assertFalse(thirdPartyCookiesPreference.isVisible());
     }
 
     @Test
     @LargeTest
     @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
-    @Features.DisableFeatures({
-        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-    })
     public void testIpProtectionSettingsE2E() throws ExecutionException {
         setIpProtection(false);
         setShowTrackingProtection(false);
@@ -394,9 +419,6 @@ public class PrivacySettingsFragmentTest {
     @Test
     @LargeTest
     @Features.EnableFeatures(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)
-    @Features.DisableFeatures({
-        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-    })
     public void testFingerprintingProtectionSettingsE2E() throws ExecutionException {
         setFpProtection(false);
         setShowTrackingProtection(false);
@@ -414,12 +436,10 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.IP_PROTECTION_UX,
-        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-    })
+    @Features.EnableFeatures(ChromeFeatureList.IP_PROTECTION_UX)
     public void testIpProtectionSettingsWithTrackingProtectionEnabled() {
         setIpProtection(false);
+        setShowTrackingProtection(true);
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
 
@@ -432,12 +452,10 @@ public class PrivacySettingsFragmentTest {
 
     @Test
     @LargeTest
-    @Features.EnableFeatures({
-        ChromeFeatureList.FINGERPRINTING_PROTECTION_UX,
-        ChromeFeatureList.TRACKING_PROTECTION_3PCD,
-    })
+    @Features.EnableFeatures(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX)
     public void testFingerprintingProtectionSettingsWithTrackingProtectionEnabled() {
         setFpProtection(false);
+        setShowTrackingProtection(true);
         mSettingsActivityTestRule.startSettingsActivity();
         waitForOptionsMenu();
 
@@ -582,7 +600,7 @@ public class PrivacySettingsFragmentTest {
     @Features.EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
     public void testSignedOutFooterLink() {
         mSettingsActivityTestRule.startSettingsActivity();
-        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
 
         onView(withId(R.id.recycler_view)).perform(RecyclerViewActions.scrollToLastPosition());
         String footer =
@@ -595,7 +613,7 @@ public class PrivacySettingsFragmentTest {
                         .toString();
         onView(withText(containsString(footerWithoutSpans))).perform(clickOnClickableSpan(0));
 
-        verify(mSettingsLauncher).launchSettingsActivity(any(), eq(GoogleServicesSettings.class));
+        verify(mSettingsNavigation).startSettings(any(), eq(GoogleServicesSettings.class));
     }
 
     @Test
@@ -608,7 +626,7 @@ public class PrivacySettingsFragmentTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         "Settings.FragmentAttached", expectedValue)) {
             mSettingsActivityTestRule.startSettingsActivity();
-            SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
+            SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         }
     }
 }

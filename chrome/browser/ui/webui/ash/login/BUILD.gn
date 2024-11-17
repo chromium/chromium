@@ -93,10 +93,6 @@ static_library("login") {
     "install_attributes_error_screen_handler.h",
     "l10n_util.cc",
     "l10n_util.h",
-    "lacros_data_backward_migration_screen_handler.cc",
-    "lacros_data_backward_migration_screen_handler.h",
-    "lacros_data_migration_screen_handler.cc",
-    "lacros_data_migration_screen_handler.h",
     "local_password_setup_handler.cc",
     "local_password_setup_handler.h",
     "local_state_error_screen_handler.cc",
@@ -287,6 +283,7 @@ static_library("login") {
     "//chrome/browser/ui/webui/ash/login/osauth",
     "//chrome/browser/ui/webui/ash/login/testapi",
     "//chrome/browser/ui/webui/signin",
+    "//chrome/browser/ui/webui/signin:signin_utils",
     "//chrome/common:channel_info",
     "//chrome/common:chrome_features",
     "//chrome/common:constants",
@@ -362,8 +359,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "fake_app_launch_splash_screen_handler.cc",
-    "fake_app_launch_splash_screen_handler.h",
     "fake_update_required_screen_handler.cc",
     "fake_update_required_screen_handler.h",
   ]

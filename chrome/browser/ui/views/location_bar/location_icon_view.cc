@@ -75,8 +75,8 @@ LocationIconView::LocationIconView(
 
   SetAccessibleProperties(/*is_initialization*/ true);
 
-    ConfigureInkDropForRefresh2023(this, kColorPageInfoIconHover,
-                                   kColorPageInfoIconPressed);
+  ConfigureInkDropForRefresh2023(this, kColorOmniboxIconHover,
+                                 kColorOmniboxIconPressed);
 
   UpdateBorder();
 }
@@ -328,7 +328,7 @@ void LocationIconView::UpdateBackground() {
     const ui::ColorId id =
         delegate_->GetLocationIconBackgroundColorOverride().value_or(
             is_text_dangerous ? kColorOmniboxSecurityChipDangerousBackground
-                              : kColorPageInfoBackground);
+                              : kColorOmniboxIconBackground);
 
     SetBackground(views::CreateRoundedRectBackground(
         GetColorProvider()->GetColor(id), height() / 2));
@@ -338,8 +338,8 @@ void LocationIconView::UpdateBackground() {
                                      kColorOmniboxSecurityChipInkDropHover,
                                      kColorOmniboxSecurityChipInkDropRipple);
     } else {
-      ConfigureInkDropForRefresh2023(this, kColorPageInfoIconHover,
-                                     kColorPageInfoIconPressed);
+      ConfigureInkDropForRefresh2023(this, kColorOmniboxIconHover,
+                                     kColorOmniboxIconPressed);
     }
 }
 

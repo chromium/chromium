@@ -4,8 +4,8 @@
 
 import type {ExtensionsToolbarElement} from 'chrome://extensions/extensions.js';
 import {getToastManager} from 'chrome://extensions/extensions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {createExtensionInfo, testVisible} from './test_util.js';
@@ -23,7 +23,7 @@ suite('ExtensionToolbarTest', function() {
     toolbar.isChildAccount = false;
 
     mockDelegate = new TestService();
-    toolbar.set('delegate', mockDelegate);
+    toolbar.delegate = mockDelegate;
 
     // The toast manager is normally a child of the <extensions-manager>
     // element, so add it separately for this test.
@@ -31,15 +31,15 @@ suite('ExtensionToolbarTest', function() {
     document.body.appendChild(toastManager);
   });
 
-  test('Layout', function() {
+  test('Layout', async () => {
     const boundTestVisible = testVisible.bind(null, toolbar);
     boundTestVisible('#devMode', true);
     assertEquals(toolbar.$.devMode.disabled, false);
     boundTestVisible('#loadUnpacked', false);
     boundTestVisible('#packExtensions', false);
     boundTestVisible('#updateNow', false);
-    toolbar.set('inDevMode', true);
-    flush();
+    toolbar.inDevMode = true;
+    await microtasksFinished();
 
     boundTestVisible('#devMode', true);
     assertEquals(toolbar.$.devMode.disabled, false);
@@ -47,8 +47,8 @@ suite('ExtensionToolbarTest', function() {
     boundTestVisible('#packExtensions', true);
     boundTestVisible('#updateNow', true);
 
-    toolbar.set('canLoadUnpacked', false);
-    flush();
+    toolbar.canLoadUnpacked = false;
+    await microtasksFinished();
 
     boundTestVisible('#devMode', true);
     boundTestVisible('#loadUnpacked', false);
@@ -56,28 +56,28 @@ suite('ExtensionToolbarTest', function() {
     boundTestVisible('#updateNow', true);
   });
 
-  test('DevModeToggle', function() {
+  test('DevModeToggle', async () => {
     const toggle = toolbar.$.devMode;
     assertFalse(toggle.disabled);
 
     // Test that the dev-mode toggle is disabled when a policy exists.
-    toolbar.set('devModeControlledByPolicy', true);
-    flush();
+    toolbar.devModeControlledByPolicy = true;
+    await microtasksFinished();
     assertTrue(toggle.disabled);
 
-    toolbar.set('devModeControlledByPolicy', false);
-    flush();
+    toolbar.devModeControlledByPolicy = false;
+    await microtasksFinished();
     assertFalse(toggle.disabled);
 
     // Test that the dev-mode toggle is disabled for child account users.
-    toolbar.set('isChildAccount', true);
-    flush();
+    toolbar.isChildAccount = true;
+    await microtasksFinished();
     assertTrue(toggle.disabled);
   });
 
   test('ClickHandlers', async function() {
-    toolbar.set('inDevMode', true);
-    flush();
+    toolbar.inDevMode = true;
+    await microtasksFinished();
     const toastManager = getToastManager();
     toolbar.$.devMode.click();
     let arg = await mockDelegate.whenCalled('setProfileInDevMode');
@@ -109,7 +109,7 @@ suite('ExtensionToolbarTest', function() {
     assertEquals(1, mockDelegate.getCallCount('updateAllExtensions'));
     assertFalse(!!toolbar.shadowRoot!.querySelector('extensions-pack-dialog'));
     toolbar.$.packExtensions.click();
-    flush();
+    await microtasksFinished();
     const dialog = toolbar.shadowRoot!.querySelector('extensions-pack-dialog');
     assertTrue(!!dialog);
   });
@@ -118,14 +118,14 @@ suite('ExtensionToolbarTest', function() {
   test(
       'FailedUpdateFiresLoadError', async function() {
         const item = document.createElement('extensions-item');
-        item.data = createExtensionInfo();
+        item.data = createExtensionInfo(
+            {location: chrome.developerPrivate.Location.UNPACKED});
         item.delegate = mockDelegate;
         document.body.appendChild(item);
-        item.set('inDevMode', true);
-        item.set('data.location', chrome.developerPrivate.Location.UNPACKED);
+        item.inDevMode = true;
 
-        toolbar.set('inDevMode', true);
-        flush();
+        toolbar.inDevMode = true;
+        await microtasksFinished();
 
         const proxyDelegate = new TestService();
         toolbar.delegate = proxyDelegate;
@@ -145,6 +145,7 @@ suite('ExtensionToolbarTest', function() {
         }
 
         toolbar.$.devMode.click();
+        await microtasksFinished();
         toolbar.$.updateNow.click();
         await proxyDelegate.whenCalled('updateAllExtensions');
         await verifyLoadErrorFired(false);
@@ -156,11 +157,13 @@ suite('ExtensionToolbarTest', function() {
         await verifyLoadErrorFired(true);
       });
 
-  test('NarrowModeShowsMenu', function() {
+  test('NarrowModeShowsMenu', async () => {
     toolbar.narrow = true;
+    await microtasksFinished();
     assertTrue(toolbar.$.toolbar.showMenu);
 
     toolbar.narrow = false;
+    await microtasksFinished();
     assertFalse(toolbar.$.toolbar.showMenu);
   });
 });

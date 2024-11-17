@@ -22,6 +22,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_HASH_MAP_H_
 
 #include <initializer_list>
+#include <iterator>
 
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -128,6 +129,11 @@ class HashMap {
   HashMap(std::initializer_list<ValueType> elements);
   HashMap& operator=(std::initializer_list<ValueType> elements);
 
+  // Useful for constructing from, for example, STL and base maps.
+  template <typename It>
+    requires(std::forward_iterator<It>)
+  HashMap(It begin, It end);
+
   typedef HashTableIteratorAdapter<HashTableType, ValueType> iterator;
   typedef HashTableConstIteratorAdapter<HashTableType, ValueType>
       const_iterator;
@@ -179,8 +185,19 @@ class HashMap {
   template <typename IncomingKeyType, typename IncomingMappedType>
   AddResult insert(IncomingKeyType&&, IncomingMappedType&&);
 
+  // NOTE: You cannot continue using an iterator after erase()
+  // (no modifications are allowed during iteration). Consider erase_if()
+  // or RemoveAll().
   void erase(KeyPeekInType);
   void erase(iterator);
+
+  // Erases all elements for which pred(element) returns true.
+  //
+  // The predicate should have a signature compatible with:
+  //   bool pred(const WTF::KeyValuePair<KeyType, MappedType>&);
+  template <typename Pred>
+  void erase_if(Pred pred);
+
   void clear();
   template <typename Collection>
   void RemoveAll(const Collection& to_be_removed) {
@@ -364,6 +381,24 @@ auto HashMap<T, U, V, W, X>::operator=(
   return *this;
 }
 
+template <typename KeyArg,
+          typename MappedArg,
+          typename KeyTraitsArg,
+          typename MappedTraitsArg,
+          typename Allocator>
+template <typename It>
+  requires(std::forward_iterator<It>)
+HashMap<KeyArg, MappedArg, KeyTraitsArg, MappedTraitsArg, Allocator>::HashMap(
+    It begin,
+    It end) {
+  if constexpr (std::random_access_iterator<It>) {
+    ReserveCapacityForSize(base::checked_cast<wtf_size_t>(end - begin));
+  }
+  for (; begin != end; ++begin) {
+    insert(begin->first, begin->second);
+  }
+}
+
 template <typename T, typename U, typename V, typename W, typename X>
 inline wtf_size_t HashMap<T, U, V, W, X>::size() const {
   return impl_.size();
@@ -493,6 +528,12 @@ inline void HashMap<T, U, V, W, X>::erase(iterator it) {
 template <typename T, typename U, typename V, typename W, typename X>
 inline void HashMap<T, U, V, W, X>::erase(KeyPeekInType key) {
   erase(find(key));
+}
+
+template <typename T, typename U, typename V, typename W, typename X>
+template <typename Pred>
+inline void HashMap<T, U, V, W, X>::erase_if(Pred pred) {
+  impl_.erase_if(std::forward<Pred>(pred));
 }
 
 template <typename T, typename U, typename V, typename W, typename X>

@@ -610,7 +610,7 @@ def build_new_actions(interface: module.Interface) -> MojoLPMActionSet:
           type=MojoLPMActionType.NEW_ACTION,
           namespace=interface.qualified_name,
           identifier=camel_to_snake_case(interface.mojom_name),
-          dependencies=frozenset(),
+          dependencies=frozenset([f"{interface.module.path}"]),
       )
   ])
 

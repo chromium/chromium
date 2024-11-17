@@ -18,6 +18,7 @@
 #include "components/viz/common/hit_test/hit_test_data_provider.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "third_party/blink/public/mojom/page/widget.mojom-shared.h"
 #include "ui/events/blink/did_overscroll_params.h"
 #include "ui/events/event.h"
 
@@ -122,8 +123,7 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput
   // the top-level frame's renderer this is a no-op as they are already
   // properly transformed; however, coordinates received from an out-of-process
   // iframe renderer process require transformation.
-  virtual gfx::PointF TransformPointToRootCoordSpaceF(
-      const gfx::PointF& point) = 0;
+  virtual gfx::PointF TransformPointToRootCoordSpaceF(const gfx::PointF& point);
 
   // Converts a point in the root view's coordinate space to the coordinate
   // space of whichever view is used to call this method.
@@ -228,17 +228,12 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput
   // Initiate stylus handwriting.
   virtual void OnStartStylusWriting() {}
 
-  // This is called after ensuring content eligible for handwriting in the
-  // renderer has focus via mojom::blink::FrameWidget::OnStartStylusWriting.
-  // It receives the focused edit element bounds and the current caret bounds
-  // needed for stylus writing service.
+  // This is called after the renderer attempts to focus content eligible for
+  // handwriting via mojom::blink::FrameWidget::OnStartStylusWriting. If content
+  // eligible for stylus handwriting has focus, then `focus_result` will be set,
+  // otherwise it will be nullptr.
   virtual void OnEditElementFocusedForStylusWriting(
-      const gfx::Rect& focused_edit_bounds,
-      const gfx::Rect& caret_bounds) {}
-
-  // This is called after failing to ensure content eligible for handwriting in
-  // the renderer has focus via mojom::blink::FrameWidget::OnStartStylusWriting.
-  virtual void OnEditElementFocusClearedForStylusWriting() {}
+      blink::mojom::StylusWritingFocusResultPtr focus_result) {}
 
   virtual void OnAutoscrollStart() = 0;
 
@@ -250,17 +245,17 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostViewInput
 
   virtual const viz::DisplayHitTestQueryMap& GetDisplayHitTestQuery() const = 0;
 
- protected:
-  RenderWidgetHostViewInput();
-  ~RenderWidgetHostViewInput() override;
-
-  virtual void UpdateFrameSinkIdRegistration() = 0;
-
   // Stops flinging if a GSU event with momentum phase is sent to the renderer
   // but not consumed.
   virtual void StopFlingingIfNecessary(
       const blink::WebGestureEvent& event,
       blink::mojom::InputEventResultState ack_result);
+
+ protected:
+  RenderWidgetHostViewInput();
+  ~RenderWidgetHostViewInput() override;
+
+  virtual void UpdateFrameSinkIdRegistration() = 0;
 
   // If |event| is a touchpad pinch or double tap event for which we've sent a
   // synthetic wheel event, forward the |event| to the renderer, subject to

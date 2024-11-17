@@ -51,27 +51,26 @@ class OmniboxTextView : public views::View {
   // Returns the render text, or an empty string if there is none.
   const std::u16string& GetText() const;
 
-  // Sets the render text with default rendering for the given |new_text|. The
-  // |classifications| are used to style the text. An ImageLine incorporates
-  // both the text and the styling.
-  // |deemphasize| specifies whether to use a slightly smaller font than normal.
+  // Used for content/description separator & tail suggest ellipses.
   void SetText(const std::u16string& new_text);
+
+  // Used for standard suggestions.
   void SetTextWithStyling(const std::u16string& new_text,
-                          const ACMatchClassifications& classifications,
-                          bool deemphasize = false);
-  void SetTextWithStyling(const SuggestionAnswer::ImageLine& line,
-                          bool deemphasize);
-  // Sets the styling for FormattedString's FormattedStringFragments.
-  // |fragment_index| specifies where to start appending and styling text from.
-  void SetTextWithStyling(const omnibox::FormattedString& formatted_string,
-                          size_t fragment_index,
-                          const omnibox::AnswerType& answer_type);
-  // Sets |render_text_| to be multiline whenever necessary.
+                          const ACMatchClassifications& classifications);
+
+  // Used for search answers using `RichAnswerTemplate`.
+  // Sets the styling for `FormattedString`'s `FormattedStringFragment`s.
+  // `fragment_index` specifies where to start appending and styling text from.
+  void AppendTextWithStyling(const omnibox::FormattedString& formatted_string,
+                             size_t fragment_index,
+                             const omnibox::AnswerType& answer_type);
+
+  // Used for suggestions using `RichAnswerTemplate`.
   void SetMultilineText(const omnibox::FormattedString& formatted_string,
                         const omnibox::AnswerType& answer_type);
 
-  // Adds the "additional" and "status" text from |line|, if any.
-  void AppendExtraText(const SuggestionAnswer::ImageLine& line);
+  // Used for history embedding answers.
+  void SetMultilineText(const std::u16string& text);
 
   // Get the height of one line of text.  This is handy if the view might have
   // multiple lines.
@@ -87,11 +86,6 @@ class OmniboxTextView : public views::View {
       const std::u16string& text) const;
 
  private:
-  // Adds text from an answer field to the render text using appropriate style.
-  // A prefix (such as separating space) may also be prepended to field text.
-  void AppendText(const SuggestionAnswer::TextField& field,
-                  const std::u16string& prefix);
-
   // Updates the cached maximum line height and recomputes the preferred size.
   void OnStyleChanged();
 
@@ -101,15 +95,17 @@ class OmniboxTextView : public views::View {
   // Font settings for this view.
   int font_height_ = 0;
 
-  // Whether to apply deemphasized font instead of primary omnibox font.
-  // TODO(orinj): Use a more general ChromeTextContext for flexibility, or
-  //   otherwise clean up & unify the different ways of selecting fonts &
-  //   styles.
-  // TODO(manukh): Confirm this is always false and remove.
-  bool use_deemphasized_font_ = false;
-
   // Whether to wrap lines if the width is too narrow for the whole string.
-  // TODO(manukh): Confirm this is always false and remove.
+  // TODO(crbug.com/370088101): Ensure `wrap_text_lines_` is set correctly in
+  //   the `SetTextWithStyling()` and related methods above. Can we use
+  //   `render_text_->multiline()` instead? Ideally, all the text setting
+  //   methods should detect if nothing has changed (i.e. text, style, and other
+  //   options like wrapping / multiline, etc are all unchanged). If nothing has
+  //   changed, then they should early exit because those methods are called
+  //   1000's of times per keystroke and cause noticeable lag when not
+  //   early-exiting. Otherwise, if something has changed, the methods should
+  //   explicitly set all these states and not assume they still hold their
+  //   default values from initialization since `OmniboxTextView`s are reused.
   bool wrap_text_lines_ = false;
 
   // The primary data for this class.
@@ -118,6 +114,20 @@ class OmniboxTextView : public views::View {
   // early instead of setting text when the text and classifications
   // match the current state of the view.
   std::unique_ptr<ACMatchClassifications> cached_classifications_;
+
+  // Caches the param and return value of `CalculatePreferredSize()` for
+  // multiline texts. `CalculatePreferredSize()` is called 100's of times per
+  // keystroke. For 1-line texts, it's cached via `View::SetPreferredSize()`.
+  // But the size of multiline texts depends on `available_size`. Caching for
+  // the most recent `available_size` reduces the need to recompute preferred
+  // size from 300 to 4 times per keystroke. Increasing the cache size to 2
+  // would reduce it further to 0 times per keystroke, but that seems
+  // unnecessary. Unused for 1-line texts.
+  // The most recent `available_size` param passed to
+  // `CalculatePreferredSize()`.
+  mutable views::SizeBounds cached_available_size_;
+  // The most recent return value from `CalculatePreferredSize()`.
+  mutable gfx::Size cached_calculate_preferred_size_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_TEXT_VIEW_H_

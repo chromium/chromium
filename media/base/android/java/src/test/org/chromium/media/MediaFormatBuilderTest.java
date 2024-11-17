@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import android.media.MediaCodecInfo;
 import android.media.MediaCodecInfo.CodecCapabilities;
 import android.media.MediaFormat;
 
@@ -26,6 +27,7 @@ public class MediaFormatBuilderTest {
     private static final String VIDEO_DECODER_MIME = MediaFormat.MIMETYPE_VIDEO_AVC;
     private static final int VIDEO_WIDTH = 640;
     private static final int VIDEO_HEIGHT = 480;
+    private static final int VIDEO_PROFILE = VideoCodecProfile.H264PROFILE_BASELINE;
     private static final byte[] AVC_SPS_EXAMPLE = {
         0x00, 0x00, 0x00, 0x01, 0x67, 0x42, 0x00, 0x0a, (byte) 0xf8, 0x41, (byte) 0xa2
     };
@@ -62,7 +64,13 @@ public class MediaFormatBuilderTest {
         byte[][] csds = {};
         MediaFormat format =
                 MediaFormatBuilder.createVideoDecoderFormat(
-                        VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, null, false);
+                        VIDEO_DECODER_MIME,
+                        VIDEO_WIDTH,
+                        VIDEO_HEIGHT,
+                        csds,
+                        null,
+                        false,
+                        VIDEO_PROFILE);
         assertFalse(format.containsKey("csd-0"));
         assertFalse(format.containsKey("csd-1"));
         assertFalse(format.containsKey("csd-2"));
@@ -74,7 +82,13 @@ public class MediaFormatBuilderTest {
         byte[][] csds = {csd0};
         MediaFormat format =
                 MediaFormatBuilder.createVideoDecoderFormat(
-                        VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, null, false);
+                        VIDEO_DECODER_MIME,
+                        VIDEO_WIDTH,
+                        VIDEO_HEIGHT,
+                        csds,
+                        null,
+                        false,
+                        VIDEO_PROFILE);
         assertEquals(format.getByteBuffer("csd-0"), ByteBuffer.wrap(csd0));
         assertFalse(format.containsKey("csd-1"));
         assertFalse(format.containsKey("csd-2"));
@@ -87,7 +101,13 @@ public class MediaFormatBuilderTest {
         byte[][] csds = {csd0, csd1};
         MediaFormat format =
                 MediaFormatBuilder.createVideoDecoderFormat(
-                        VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, null, false);
+                        VIDEO_DECODER_MIME,
+                        VIDEO_WIDTH,
+                        VIDEO_HEIGHT,
+                        csds,
+                        null,
+                        false,
+                        VIDEO_PROFILE);
         assertEquals(format.getByteBuffer("csd-0"), ByteBuffer.wrap(csd0));
         assertEquals(format.getByteBuffer("csd-1"), ByteBuffer.wrap(csd1));
         assertFalse(format.containsKey("csd-2"));
@@ -99,7 +119,13 @@ public class MediaFormatBuilderTest {
         MockHdrMetadata hdrMetadata = new MockHdrMetadata();
         MediaFormat format =
                 MediaFormatBuilder.createVideoDecoderFormat(
-                        VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, hdrMetadata, false);
+                        VIDEO_DECODER_MIME,
+                        VIDEO_WIDTH,
+                        VIDEO_HEIGHT,
+                        csds,
+                        hdrMetadata,
+                        false,
+                        VIDEO_PROFILE);
         assertTrue(hdrMetadata.was_called);
     }
 
@@ -108,7 +134,13 @@ public class MediaFormatBuilderTest {
         byte[][] csds = {};
         MediaFormat format =
                 MediaFormatBuilder.createVideoDecoderFormat(
-                        VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, null, false);
+                        VIDEO_DECODER_MIME,
+                        VIDEO_WIDTH,
+                        VIDEO_HEIGHT,
+                        csds,
+                        null,
+                        false,
+                        VIDEO_PROFILE);
         assertFalse(format.containsKey(MediaFormat.KEY_MAX_WIDTH));
         assertFalse(format.containsKey(MediaFormat.KEY_MAX_HEIGHT));
     }
@@ -118,9 +150,68 @@ public class MediaFormatBuilderTest {
         byte[][] csds = {};
         MediaFormat format =
                 MediaFormatBuilder.createVideoDecoderFormat(
-                        VIDEO_DECODER_MIME, VIDEO_WIDTH, VIDEO_HEIGHT, csds, null, true);
+                        VIDEO_DECODER_MIME,
+                        VIDEO_WIDTH,
+                        VIDEO_HEIGHT,
+                        csds,
+                        null,
+                        true,
+                        VIDEO_PROFILE);
         assertTrue(format.containsKey(MediaFormat.KEY_MAX_WIDTH));
         assertTrue(format.containsKey(MediaFormat.KEY_MAX_HEIGHT));
+    }
+
+    @Test
+    public void testCreateDolbyVisionDecoderWithProfile() {
+        String dvVideoDecoderMime = MediaFormat.MIMETYPE_VIDEO_DOLBY_VISION;
+        int dvProfile5 = VideoCodecProfile.DOLBYVISION_PROFILE5;
+        int dvProfile8 = VideoCodecProfile.DOLBYVISION_PROFILE8;
+        byte[][] csds = {};
+
+        MediaFormat format =
+                MediaFormatBuilder.createVideoDecoderFormat(
+                        dvVideoDecoderMime,
+                        VIDEO_WIDTH,
+                        VIDEO_HEIGHT,
+                        csds,
+                        null,
+                        true,
+                        dvProfile5);
+        assertEquals(
+                format.getInteger(MediaFormat.KEY_PROFILE),
+                MediaCodecInfo.CodecProfileLevel.DolbyVisionProfileDvheStn);
+
+        format =
+                MediaFormatBuilder.createVideoDecoderFormat(
+                        dvVideoDecoderMime,
+                        VIDEO_WIDTH,
+                        VIDEO_HEIGHT,
+                        csds,
+                        null,
+                        true,
+                        dvProfile8);
+        assertEquals(
+                format.getInteger(MediaFormat.KEY_PROFILE),
+                MediaCodecInfo.CodecProfileLevel.DolbyVisionProfileDvheSt);
+    }
+
+    @Test
+    public void testDolbyVisionDecoderMaxInputSize() {
+        byte[][] csds = {};
+
+        // Estimate the maximum input size assuming three channel 4:2:0 subsampled input frames.
+        int minCompressionRatio = 4;
+        int expectedMaxInputSize = (VIDEO_WIDTH * VIDEO_HEIGHT * 3) / (2 * minCompressionRatio);
+        MediaFormat format =
+                MediaFormatBuilder.createVideoDecoderFormat(
+                        MediaFormat.MIMETYPE_VIDEO_DOLBY_VISION,
+                        VIDEO_WIDTH,
+                        VIDEO_HEIGHT,
+                        csds,
+                        null,
+                        true,
+                        VideoCodecProfile.DOLBYVISION_PROFILE5);
+        assertEquals(format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE), expectedMaxInputSize);
     }
 
     @Test

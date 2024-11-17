@@ -11,11 +11,13 @@
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/unified_consent/pref_names.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_earl_grey.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
+#import "ios/chrome/browser/first_run/ui_bundled/first_run_test_case_base.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -28,9 +30,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_app_interface.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
-#import "ios/chrome/browser/first_run/ui_bundled/first_run_test_case_base.h"
+#import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_app_interface.h"
@@ -68,36 +68,6 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 @end
 
 @implementation FirstRunWithoutSearchEngineChoiceTestCase
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config = [super appConfigurationForTestCase];
-
-  if ([self isRunningTest:@selector
-            (testHistorySyncShownWithEquallyWeightedButtons)] ||
-      [self isRunningTest:@selector
-            (testHistorySyncShownWithoutMinorModeRestrictions)] ||
-      [self
-          isRunningTest:@selector
-          (testHistorySyncShownWithEquallyWeightedButtonsOnCapabilitiesFetchTimeout
-              )] ||
-      [self
-          isRunningTest:@selector
-          (testHistorySyncShownWithEquallyWeightedButtonsOnCapabilitiesFetchTimeoutThenDeclined
-              )]) {
-    config.features_enabled.push_back(
-        switches::kMinorModeRestrictionsForHistorySyncOptIn);
-  }
-  if ([self isRunningTest:@selector(testHistorySyncShownAfterSignIn)]) {
-    config.features_disabled.push_back(
-        switches::kMinorModeRestrictionsForHistorySyncOptIn);
-  }
-  if ([self isRunningTest:@selector
-            (testHistorySyncShownWithEquallyWeightedButtons)]) {
-    config.features_enabled.push_back(switches::kAlwaysLoadDeviceAccounts);
-  }
-
-  return config;
-}
 
 #pragma mark - Tests
 
@@ -246,14 +216,8 @@ id<GREYMatcher> ManageUMALinkMatcher() {
 }
 
 // Tests to turn off UMA, and open the UMA dialog to turn it back on.
-// TODO(crbug.com/40073685): Test fails on official builds.
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-#define MAYBE_testUMAUncheckedAndCheckItAgain \
-  DISABLED_testUMAUncheckedAndCheckItAgain
-#else
-#define MAYBE_testUMAUncheckedAndCheckItAgain testUMAUncheckedAndCheckItAgain
-#endif
-- (void)MAYBE_testUMAUncheckedAndCheckItAgain {
+// TODO(crbug.com/377227225): Reenable when flakiness is fixed.
+- (void)DISABLED_testUMAUncheckedAndCheckItAgain {
   // Verify 2 steps FRE.
   [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
             FRESigninIntentRegular];
@@ -564,6 +528,50 @@ id<GREYMatcher> ManageUMALinkMatcher() {
       @"kMetricsReportingEnabled pref was unexpectedly false by default.");
   // Check signed out.
   [SigninEarlGrey verifySignedOut];
+}
+
+// Tests that incognito can be forced with the FRE.
+- (void)testIncognitoForcedByPolicyWithAddAccount {
+  // Configure the policy to force sign-in.
+  [self relaunchAppWithPolicyKey:policy::key::kIncognitoModeAvailability
+                  xmlPolicyValue:"<integer>2</integer>"];
+
+  // Verify 2 steps FRE.
+  [self verifyEnterpriseWelcomeScreenIsDisplayedWithFRESigninIntent:
+            FRESigninIntentSigninWithPolicy];
+
+  // Add the identity list.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kIdentityButtonControlIdentifier)]
+      performAction:grey_tap()];
+  // Open the fake add identity screen.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kIdentityPickerAddAccountIdentifier)]
+      performAction:grey_tap()];
+  // Setup the identity to add.
+  FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
+  [SigninEarlGrey addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity2];
+  // Confirm the fake add identity screen.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(
+                                       kFakeAuthAddAccountButtonIdentifier),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Accept sign-in.
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Accept sync.
+  [self acceptSyncOrHistory];
+  // Check that UMA is on.
+  GREYAssertTrue(
+      [FirstRunAppInterface isUMACollectionEnabled],
+      @"kMetricsReportingEnabled pref was unexpectedly false by default.");
+  // Check signed in.
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity2];
 }
 
 // Tests that the UMA link does not appear in  FRE when UMA is disabled by

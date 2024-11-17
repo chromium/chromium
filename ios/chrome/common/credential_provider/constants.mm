@@ -69,6 +69,10 @@ NSURL* CredentialProviderSharedArchivableStoreURL() {
       groupURL = [NSURL fileURLWithPath:NSTemporaryDirectory()];
   }
 
+  // Outside of Earl Grey tests,
+  // containerURLForSecurityApplicationGroupIdentifier: should not return nil.
+  CHECK(groupURL);
+
   NSURL* credentialProviderURL =
       [groupURL URLByAppendingPathComponent:kCredentialProviderContainer];
   NSString* filename =

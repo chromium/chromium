@@ -70,7 +70,7 @@ unit tests.
      encoded as the empty byte string.
 
 - client_with_ec_key.p12 : A PKCS #12 file containing a client certificate and
-     a private EC key created for testing.  The password is "12345".
+     a private EC key created for testing.  The password is "123456".
 
 - unittest.selfsigned.der : A self-signed certificate generated using private
      key in unittest.key.bin. The common name is "unittest".
@@ -155,19 +155,6 @@ unit tests.
 
 - sha1_2016.pem
     Used to test the handling of SHA1 certificates expiring in 2016.
-
-- 10_year_validity.pem
-- 11_year_validity.pem
-- 39_months_after_2015_04.pem
-- 40_months_after_2015_04.pem
-- 60_months_after_2012_07.pem
-- 61_months_after_2012_07.pem
-- pre_br_validity_bad_121.pem
-- pre_br_validity_bad_2020.pem
-- pre_br_validity_ok.pem
-- start_after_expiry.pem
-    Certs to test that the maximum validity durations set by the CA/Browser
-    Forum Baseline Requirements are enforced.
 
 - may_2018.pem
    An 825-day certificate issued on May 1, 2018, the official start of

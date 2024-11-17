@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 #include "ui/views/test/test_views_delegate.h"
@@ -44,12 +45,15 @@ class TestMenuDelegate : public MenuDelegate {
   void set_should_execute_command_without_closing_menu(bool val) {
     should_execute_command_without_closing_menu_ = val;
   }
+  void set_should_close_on_drag_complete(bool val) {
+    should_close_on_drag_complete_ = val;
+  }
 
   // MenuDelegate:
   bool ShowContextMenu(MenuItemView* source,
                        int id,
                        const gfx::Point& p,
-                       ui::MenuSourceType source_type) override;
+                       ui::mojom::MenuSourceType source_type) override;
   void ExecuteCommand(int id) override;
   void OnMenuClosed(MenuItemView* menu) override;
   views::View::DropCallback GetDropCallback(
@@ -61,6 +65,7 @@ class TestMenuDelegate : public MenuDelegate {
   void WillHideMenu(MenuItemView* menu) override;
   bool ShouldExecuteCommandWithoutClosingMenu(int id,
                                               const ui::Event& e) override;
+  bool ShouldCloseOnDragComplete() override;
 
  private:
   // Performs the drop operation and updates |output_drag_op| accordingly.
@@ -92,6 +97,8 @@ class TestMenuDelegate : public MenuDelegate {
   bool is_drop_performed_ = false;
 
   bool should_execute_command_without_closing_menu_ = false;
+
+  bool should_close_on_drag_complete_ = false;
 };
 
 // Test api which caches the currently active MenuController. Can be used to

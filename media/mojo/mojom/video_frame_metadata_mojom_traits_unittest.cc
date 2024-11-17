@@ -76,7 +76,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.power_efficient);
   EXPECT_FALSE(metadata_out.read_lock_fences_enabled);
   EXPECT_FALSE(metadata_out.interactive_content);
-  EXPECT_FALSE(metadata_out.overlay_plane_id.has_value());
+  EXPECT_FALSE(metadata_out.tracking_token.has_value());
   EXPECT_FALSE(metadata_out.device_scale_factor.has_value());
   EXPECT_FALSE(metadata_out.page_scale_factor.has_value());
   EXPECT_FALSE(metadata_out.root_scroll_offset_x.has_value());
@@ -94,6 +94,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.frame_duration.has_value());
   EXPECT_FALSE(metadata_out.wallclock_frame_duration.has_value());
   EXPECT_FALSE(metadata_out.frame_sequence.has_value());
+  EXPECT_FALSE(metadata_out.background_blur.has_value());
 }
 
 TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
@@ -125,7 +126,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   metadata_in.interactive_content = true;
 
   // base::UnguessableTokens
-  metadata_in.overlay_plane_id = base::UnguessableToken::Create();
+  metadata_in.tracking_token = base::UnguessableToken::Create();
 
   // doubles
   metadata_in.device_scale_factor = 2.0;
@@ -150,6 +151,8 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   metadata_in.frame_duration = base::Milliseconds(16);
   metadata_in.wallclock_frame_duration = base::Milliseconds(17);
 
+  metadata_in.background_blur = media::EffectInfo{.enabled = true};
+
   VideoFrameMetadata metadata_out;
 
   ASSERT_TRUE(RoundTrip(metadata_in, &metadata_out));
@@ -171,7 +174,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   EXPECT_EQ(metadata_in.read_lock_fences_enabled,
             metadata_out.read_lock_fences_enabled);
   EXPECT_EQ(metadata_in.interactive_content, metadata_out.interactive_content);
-  EXPECT_EQ(metadata_in.overlay_plane_id, metadata_out.overlay_plane_id);
+  EXPECT_EQ(metadata_in.tracking_token, metadata_out.tracking_token);
   EXPECT_EQ(metadata_in.device_scale_factor, metadata_out.device_scale_factor);
   EXPECT_EQ(metadata_in.page_scale_factor, metadata_out.page_scale_factor);
   EXPECT_EQ(metadata_in.root_scroll_offset_x,
@@ -193,6 +196,8 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
   EXPECT_EQ(metadata_in.wallclock_frame_duration,
             metadata_out.wallclock_frame_duration);
   EXPECT_EQ(metadata_in.frame_sequence, metadata_out.frame_sequence);
+  EXPECT_EQ(metadata_in.background_blur->enabled,
+            metadata_out.background_blur->enabled);
 }
 
 }  // namespace media

@@ -178,6 +178,9 @@ void MessengerImpl::HandleMessage(const std::string& message) {
   if (pending_message_->type == kMessageTypeUnlockRequest) {
     expected_type = kMessageTypeUnlockResponse;
   } else {
+    // (crbug.com/286944516): Unexpected path occurring.
+    PA_LOG(ERROR) << "Response received from unexpected message type: "
+                  << pending_message_->type;
     DUMP_WILL_BE_NOTREACHED();  // There are no other message types
                                 // that expect a response.
   }
@@ -192,8 +195,7 @@ void MessengerImpl::HandleMessage(const std::string& message) {
   if (*type == kMessageTypeUnlockResponse) {
     HandleUnlockResponseMessage(message_dictionary);
   } else {
-    NOTREACHED_IN_MIGRATION();  // There are no other message types that expect
-                                // a response.
+    NOTREACHED();  // There are no other message types that expect a response.
   }
 
   pending_message_.reset();

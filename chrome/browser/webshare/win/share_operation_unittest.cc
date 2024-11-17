@@ -221,10 +221,9 @@ TEST_F(ShareOperationUnitTest, WithoutTitle) {
           }));
 
   base::RunLoop run_loop;
-  std::vector<blink::mojom::SharedFilePtr> files;
-  ShareOperation operation{"", "shared Text", GURL(), std::move(files),
-                           web_contents()};
+  ShareOperation operation{"", "shared Text", GURL(), web_contents()};
   operation.Run(
+      std::vector<blink::mojom::SharedFilePtr>(),
       base::BindLambdaForTesting([&run_loop](blink::mojom::ShareError error) {
         ASSERT_EQ(error, blink::mojom::ShareError::OK);
         run_loop.Quit();
@@ -250,11 +249,10 @@ TEST_F(ShareOperationUnitTest, BasicFields) {
           }));
 
   base::RunLoop run_loop;
-  std::vector<blink::mojom::SharedFilePtr> files;
   ShareOperation operation{"shared title", "shared text",
-                           GURL("https://www.contoso.com"), std::move(files),
-                           web_contents()};
+                           GURL("https://www.contoso.com"), web_contents()};
   operation.Run(
+      std::vector<blink::mojom::SharedFilePtr>(),
       base::BindLambdaForTesting([&run_loop](blink::mojom::ShareError error) {
         ASSERT_EQ(error, blink::mojom::ShareError::OK);
         run_loop.Quit();
@@ -270,11 +268,10 @@ TEST_F(ShareOperationUnitTest, ShowShareUIForWindowFailure) {
           FailImmediately);
 
   base::RunLoop run_loop;
-  std::vector<blink::mojom::SharedFilePtr> files;
   ShareOperation operation{"shared title", "shared text",
-                           GURL("https://www.contoso.com"), std::move(files),
-                           web_contents()};
+                           GURL("https://www.contoso.com"), web_contents()};
   operation.Run(
+      std::vector<blink::mojom::SharedFilePtr>(),
       base::BindLambdaForTesting([&run_loop](blink::mojom::ShareError error) {
         ASSERT_EQ(error, blink::mojom::ShareError::INTERNAL_ERROR);
         run_loop.Quit();
@@ -301,9 +298,9 @@ TEST_F(ShareOperationUnitTest, BasicFile) {
   std::vector<blink::mojom::SharedFilePtr> files;
   files.push_back(CreateSharedFile(FILE_PATH_LITERAL("MyFile.txt"),
                                    "text/plain", "Contents of the file"));
-  ShareOperation operation{"shared title", "", GURL(), std::move(files),
-                           web_contents()};
+  ShareOperation operation{"shared title", "", GURL(), web_contents()};
   operation.Run(
+      std::move(files),
       base::BindLambdaForTesting([&run_loop](blink::mojom::ShareError error) {
         ASSERT_EQ(error, blink::mojom::ShareError::OK);
         run_loop.Quit();
@@ -335,8 +332,9 @@ TEST_F(ShareOperationUnitTest, SingleFileAtSizeLimit) {
   files.push_back(
       CreateSharedFile(FILE_PATH_LITERAL("MyFile.txt"), "text/plain",
                        std::string(kMaxSharedFileBytesForTest, '*')));
-  ShareOperation operation{"", "", GURL(), std::move(files), web_contents()};
+  ShareOperation operation{"", "", GURL(), web_contents()};
   operation.Run(
+      std::move(files),
       base::BindLambdaForTesting([&run_loop](blink::mojom::ShareError error) {
         ASSERT_EQ(error, blink::mojom::ShareError::OK);
         run_loop.Quit();
@@ -368,8 +366,9 @@ TEST_F(ShareOperationUnitTest, SingleFileLargerThanSizeLimit) {
   files.push_back(
       CreateSharedFile(FILE_PATH_LITERAL("MyFile.txt"), "text/plain",
                        std::string(kMaxSharedFileBytesForTest + 1, '*')));
-  ShareOperation operation{"", "", GURL(), std::move(files), web_contents()};
+  ShareOperation operation{"", "", GURL(), web_contents()};
   operation.Run(
+      std::move(files),
       base::BindLambdaForTesting([&run_loop](blink::mojom::ShareError error) {
         ASSERT_EQ(error, blink::mojom::ShareError::OK);
         run_loop.Quit();
@@ -406,8 +405,9 @@ TEST_F(ShareOperationUnitTest, FilesTotallingSizeLimit) {
   files.push_back(
       CreateSharedFile(FILE_PATH_LITERAL("File2.txt"), "text/plain",
                        std::string(kMaxSharedFileBytesForTest / 2, '*')));
-  ShareOperation operation{"", "", GURL(), std::move(files), web_contents()};
+  ShareOperation operation{"", "", GURL(), web_contents()};
   operation.Run(
+      std::move(files),
       base::BindLambdaForTesting([&run_loop](blink::mojom::ShareError error) {
         ASSERT_EQ(error, blink::mojom::ShareError::OK);
         run_loop.Quit();
@@ -448,8 +448,9 @@ TEST_F(ShareOperationUnitTest, FilesTotallingLargerThanSizeLimit) {
   files.push_back(
       CreateSharedFile(FILE_PATH_LITERAL("File2.txt"), "text/plain",
                        std::string((kMaxSharedFileBytesForTest / 2) + 1, '*')));
-  ShareOperation operation{"", "", GURL(), std::move(files), web_contents()};
+  ShareOperation operation{"", "", GURL(), web_contents()};
   operation.Run(
+      std::move(files),
       base::BindLambdaForTesting([&run_loop](blink::mojom::ShareError error) {
         ASSERT_EQ(error, blink::mojom::ShareError::OK);
         run_loop.Quit();

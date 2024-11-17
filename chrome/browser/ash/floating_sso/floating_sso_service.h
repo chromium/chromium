@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/floating_sso/floating_sso_sync_bridge.h"
@@ -17,6 +18,7 @@
 #include "components/url_matcher/url_matcher.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_result.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace syncer {
@@ -31,9 +33,13 @@ class FloatingSsoService : public KeyedService,
                            public network::mojom::CookieChangeListener,
                            public FloatingSsoSyncBridge::Observer {
  public:
+  // Callback used to get a CookieManager.
+  using CookieManagerGetter =
+      base::RepeatingCallback<network::mojom::CookieManager*()>;
+
   FloatingSsoService(PrefService* prefs,
                      std::unique_ptr<FloatingSsoSyncBridge> bridge,
-                     network::mojom::CookieManager* cookie_manager);
+                     CookieManagerGetter cookie_manager_getter);
   FloatingSsoService(const FloatingSsoService&) = delete;
   FloatingSsoService& operator=(const FloatingSsoService&) = delete;
 
@@ -51,6 +57,11 @@ class FloatingSsoService : public KeyedService,
   void OnCookiesRemovedRemotely(
       const std::vector<net::CanonicalCookie>& cookies) override;
 
+  bool IsFloatingSsoEnabled();
+  // `callback` will be run once there are no cookie manager changes in
+  // progress. This can be called repeatedly but only the latest callback will
+  // be executed.
+  void RunWhenCookiesAreReady(base::OnceClosure callback);
   base::WeakPtr<syncer::DataTypeControllerDelegate> GetControllerDelegate();
 
   FloatingSsoSyncBridge* GetBridgeForTesting() { return bridge_.get(); }
@@ -68,7 +79,6 @@ class FloatingSsoService : public KeyedService,
   // apply cookies from Sync if needed. If not, stop all of the above.
   void StartOrStop();
 
-  bool IsFloatingSsoEnabled();
   void MaybeStartListening();
   void StopListening();
   void BindToCookieManager();
@@ -76,10 +86,14 @@ class FloatingSsoService : public KeyedService,
   bool ShouldSyncCookie(const net::CanonicalCookie& cookie) const;
   void OnConnectionError();
   bool IsDomainAllowed(const net::CanonicalCookie& cookie) const;
-  bool IsFloatingWorkspaceEnabled() const;
+  void OnCookieSet(net::CookieAccessResult result);
+  void OnCookieDeleted(bool success);
+  void DecrementChangesCountAndMaybeNotify();
 
   raw_ptr<PrefService> prefs_ = nullptr;
-  const raw_ptr<network::mojom::CookieManager> cookie_manager_;
+  // TODO(crbug.com/378091718): investigated lifetime issues when using
+  // raw_ptr<network::mojom::CookieManager> instead of a callback here.
+  CookieManagerGetter cookie_manager_getter_;
   std::unique_ptr<FloatingSsoSyncBridge> bridge_;
   base::ScopedObservation<FloatingSsoSyncBridge,
                           FloatingSsoSyncBridge::Observer>
@@ -91,6 +105,14 @@ class FloatingSsoService : public KeyedService,
   // We do not fetch accumulated cookies when the connection to the cookie
   // manager is disrupted because we attempt to reconnect right away.
   bool fetch_accumulated_cookies_ = true;
+
+  // Count of changes (additions or deletions of cookies) currently being
+  // performed by `cookie_manager_`.
+  // TODO(crbug.com/377471962): Add explicit tests for this counter and for
+  // `on_no_changes_in_progress_callback_`.
+  int changes_in_progress_count_ = 0;
+
+  base::OnceClosure on_no_changes_in_progress_callback_;
 
   mojo::Receiver<network::mojom::CookieChangeListener> receiver_{this};
 

@@ -23,7 +23,6 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
-
 namespace {
 
 // Space between the site info label.
@@ -72,6 +71,9 @@ class SubtleNotificationView::InstructionView : public views::View {
   void SetText(const std::u16string& text);
   void SetTextAndImages(const std::u16string& text,
                         std::vector<std::unique_ptr<views::View>> key_images);
+
+  base::CallbackListSubscription AddTextChangedCallback(
+      views::PropertyChangedCallback callback);
 
  private:
   // Adds a label to the end of the notification text. If |format_as_key|,
@@ -145,6 +147,7 @@ void SubtleNotificationView::InstructionView::SetTextAndImages(
   }
 
   text_ = text;
+  OnPropertyChanged(&text_, views::kPropertyEffectsPaint);
 }
 
 void SubtleNotificationView::InstructionView::AddTextSegment(
@@ -180,6 +183,12 @@ void SubtleNotificationView::InstructionView::AddTextSegment(
   AddChildView(key);
 }
 
+base::CallbackListSubscription
+SubtleNotificationView::InstructionView::AddTextChangedCallback(
+    views::PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&text_, std::move(callback));
+}
+
 BEGIN_METADATA(SubtleNotificationView, InstructionView)
 ADD_PROPERTY_METADATA(std::u16string, Text)
 END_METADATA
@@ -203,9 +212,13 @@ SubtleNotificationView::SubtleNotificationView() : instruction_view_(nullptr) {
       kMiddlePaddingPx));
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kAlert);
+  UpdateAccessibleName();
+  text_changed_callback_ = instruction_view_->AddTextChangedCallback(
+      base::BindRepeating(&SubtleNotificationView::OnInstructionViewTextChanged,
+                          base::Unretained(this)));
 }
 
-SubtleNotificationView::~SubtleNotificationView() {}
+SubtleNotificationView::~SubtleNotificationView() = default;
 
 void SubtleNotificationView::UpdateContent(
     const std::u16string& instruction_text) {
@@ -259,11 +272,15 @@ views::Widget* SubtleNotificationView::CreatePopupWidget(
   return popup;
 }
 
-void SubtleNotificationView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
+void SubtleNotificationView::OnInstructionViewTextChanged() {
+  UpdateAccessibleName();
+}
+
+void SubtleNotificationView::UpdateAccessibleName() {
   std::u16string accessible_name;
   base::RemoveChars(instruction_view_->GetText(), kKeyNameDelimiter,
                     &accessible_name);
-  node_data->SetNameChecked(accessible_name);
+  GetViewAccessibility().SetName(accessible_name);
 }
 
 std::u16string SubtleNotificationView::GetInstructionTextForTest() const {

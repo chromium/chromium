@@ -72,7 +72,8 @@
           "builder": "win10-updater-tester-dbg",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/win-updater-try-builder-dbg/targets"
     }
   },
   "$build/flakiness": {

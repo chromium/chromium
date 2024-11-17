@@ -85,26 +85,25 @@ class SpotlightBookmarkModelBridge;
   // Number of times the indexing was interrupted by model updates.
   NSInteger _reindexInterruptionCount;
 
-  // PrefService per a browser state.
-  PrefService* _prefService;
+  // PrefService per a profile.
+  raw_ptr<PrefService> _prefService;
 }
 
-+ (BookmarksSpotlightManager*)bookmarksSpotlightManagerWithBrowserState:
-    (ChromeBrowserState*)browserState {
++ (BookmarksSpotlightManager*)bookmarksSpotlightManagerWithProfile:
+    (ProfileIOS*)profile {
   favicon::LargeIconService* largeIconService =
-      IOSChromeLargeIconServiceFactory::GetForBrowserState(browserState);
+      IOSChromeLargeIconServiceFactory::GetForProfile(profile);
 
   return [[BookmarksSpotlightManager alloc]
       initWithLargeIconService:largeIconService
-                 bookmarkModel:ios::BookmarkModelFactory::GetForBrowserState(
-                                   browserState)
+                 bookmarkModel:ios::BookmarkModelFactory::GetForProfile(profile)
             spotlightInterface:[SpotlightInterface defaultInterface]
          searchableItemFactory:
              [[SearchableItemFactory alloc]
                  initWithLargeIconService:largeIconService
                                    domain:spotlight::DOMAIN_BOOKMARKS
                     useTitleInIdentifiers:YES]
-                   prefService:browserState->GetPrefs()];
+                   prefService:profile->GetPrefs()];
 }
 
 - (instancetype)

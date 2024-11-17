@@ -25,14 +25,12 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/feed_top_section/feed_top_section_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_delegate.h"
 #import "ios/chrome/browser/ui/push_notification/notifications_alert_presenter.h"
-#import "ios/chrome/browser/ui/push_notification/notifications_confirmation_presenter.h"
 
 using base::RecordAction;
 using base::UmaHistogramEnumeration;
@@ -342,6 +340,7 @@ using base::UserMetricsAction;
       enrollUserToProvisionalNotificationsForClientIds:
           {PushNotificationClientId::kContent,
            PushNotificationClientId::kSports}
+                           clientEnabledForProvisional:YES
                                        withAuthService:
                                            self.authenticationService
                                  deviceInfoSyncService:nil];

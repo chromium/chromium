@@ -145,6 +145,11 @@ class ExtensionWebContentsObserver
   void PepperInstanceCreated() override;
   void PepperInstanceDeleted() override;
 
+  // Temporarily needed to host common code between RenderFrameCreated and
+  // ReadyToCommitNavigation.
+  virtual void SetUpRenderFrameHost(
+      content::RenderFrameHost* render_frame_host);
+
  private:
   using PassKey = base::PassKey<ExtensionWebContentsObserver>;
 

@@ -109,6 +109,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
@@ -217,7 +218,7 @@ class BASE_EXPORT FilePath {
     return path_ < that.path_;
   }
 
-  const StringType& value() const { return path_; }
+  const StringType& value() const LIFETIME_BOUND { return path_; }
 
   [[nodiscard]] bool empty() const { return path_.empty(); }
 

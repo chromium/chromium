@@ -313,6 +313,15 @@ interface PageHandler {
   // Increment the number of times the user has seen the wallpaper search
   // button.
   IncrementWallpaperSearchButtonShownCount();
+  // Returns a base64 webp encoded string representing the image for the QR code
+  // on the mobile promo.
+  GetMobilePromoQrCode() => (string qrCode);
+  // Called when the mobile promo is shown.
+  OnMobilePromoShown();
+  // Called when the mobile promo is dismissed.
+  OnDismissMobilePromo();
+  // Called when the mobile promo's dismissal is undone.
+  OnUndoDismissMobilePromo();
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at

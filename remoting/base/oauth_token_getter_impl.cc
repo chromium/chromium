@@ -68,7 +68,7 @@ void OAuthTokenGetterImpl::OnGetTokensResponse(const std::string& refresh_token,
 
   // At this point we don't know the email address so we need to fetch it.
   email_discovery_ = true;
-  gaia_oauth_client_->GetTokenInfo(access_token, kMaxRetries, this);
+  gaia_oauth_client_->GetUserEmail(access_token, kMaxRetries, this);
 }
 
 void OAuthTokenGetterImpl::OnRefreshTokenResponse(
@@ -82,30 +82,24 @@ void OAuthTokenGetterImpl::OnRefreshTokenResponse(
   UpdateAccessToken(access_token, expires_seconds);
 
   if (!authorization_credentials_->is_service_account && !email_verified_) {
-    gaia_oauth_client_->GetTokenInfo(access_token, kMaxRetries, this);
+    gaia_oauth_client_->GetUserEmail(access_token, kMaxRetries, this);
   } else {
-    NotifyTokenCallbacks(OAuthTokenGetterImpl::SUCCESS,
-                         authorization_credentials_->login, oauth_access_token_,
-                         scopes_);
+    NotifyTokenCallbacks(
+        OAuthTokenGetterImpl::SUCCESS,
+        OAuthTokenInfo(oauth_access_token_, authorization_credentials_->login));
   }
 }
 
-void OAuthTokenGetterImpl::OnGetTokenInfoResponse(
-    const base::Value::Dict& token_info) {
+void OAuthTokenGetterImpl::OnGetUserEmailResponse(
+    const std::string& user_email) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(authorization_credentials_);
-  VLOG(1) << "Received token info.";
-
-  const std::string* user_email = token_info.FindString("email");
-  if (!user_email) {
-    OnOAuthError();
-    return;
-  }
+  VLOG(1) << "Received user email.";
 
   if (email_discovery_) {
-    authorization_credentials_->login = *user_email;
+    authorization_credentials_->login = user_email;
     email_discovery_ = false;
-  } else if (*user_email != authorization_credentials_->login) {
+  } else if (user_email != authorization_credentials_->login) {
     LOG(ERROR) << "OAuth token and email address do not refer to "
                   "the same account.";
     OnOAuthError();
@@ -113,17 +107,9 @@ void OAuthTokenGetterImpl::OnGetTokenInfoResponse(
   }
 
   email_verified_ = true;
-
-  if (!token_info.FindString("scope")) {
-    LOG(ERROR) << "Missing scopes in token info.";
-    OnOAuthError();
-    return;
-  }
-
-  scopes_ = *token_info.FindString("scope");
-  NotifyTokenCallbacks(OAuthTokenGetterImpl::SUCCESS,
-                       authorization_credentials_->login, oauth_access_token_,
-                       scopes_);
+  NotifyTokenCallbacks(
+      OAuthTokenGetterImpl::SUCCESS,
+      OAuthTokenInfo(oauth_access_token_, authorization_credentials_->login));
 }
 
 void OAuthTokenGetterImpl::UpdateAccessToken(const std::string& access_token,
@@ -141,10 +127,9 @@ void OAuthTokenGetterImpl::UpdateAccessToken(const std::string& access_token,
   }
 }
 
-void OAuthTokenGetterImpl::NotifyTokenCallbacks(Status status,
-                                                const std::string& user_email,
-                                                const std::string& access_token,
-                                                const std::string& scopes) {
+void OAuthTokenGetterImpl::NotifyTokenCallbacks(
+    Status status,
+    const OAuthTokenInfo& token_info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SetResponsePending(false);
@@ -153,7 +138,9 @@ void OAuthTokenGetterImpl::NotifyTokenCallbacks(Status status,
   callbacks.swap(pending_callbacks_);
 
   while (!callbacks.empty()) {
-    std::move(callbacks.front()).Run(status, user_email, access_token, scopes);
+    std::move(callbacks.front())
+        .Run(status, OAuthTokenInfo(token_info.access_token(),
+                                    token_info.user_email()));
     callbacks.pop();
   }
 }
@@ -168,16 +155,14 @@ void OAuthTokenGetterImpl::OnOAuthError() {
   access_token_expiry_time_ = base::Time();
   email_verified_ = false;
 
-  NotifyTokenCallbacks(OAuthTokenGetterImpl::AUTH_ERROR, std::string(),
-                       std::string(), std::string());
+  NotifyTokenCallbacks(OAuthTokenGetterImpl::AUTH_ERROR, OAuthTokenInfo());
 }
 
 void OAuthTokenGetterImpl::OnNetworkError(int response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LOG(ERROR) << "Network error when trying to update OAuth token: "
              << response_code;
-  NotifyTokenCallbacks(OAuthTokenGetterImpl::NETWORK_ERROR, std::string(),
-                       std::string(), std::string());
+  NotifyTokenCallbacks(OAuthTokenGetterImpl::NETWORK_ERROR, OAuthTokenInfo());
 }
 
 void OAuthTokenGetterImpl::CallWithToken(TokenCallback on_access_token) {
@@ -187,7 +172,7 @@ void OAuthTokenGetterImpl::CallWithToken(TokenCallback on_access_token) {
 
   if (intermediate_credentials_) {
     if (!IsResponsePending()) {
-      GetOauthTokensFromAuthCode();
+      GetOAuthTokensFromAuthCode();
     }
   } else {
     bool need_new_auth_token =
@@ -204,8 +189,8 @@ void OAuthTokenGetterImpl::CallWithToken(TokenCallback on_access_token) {
       // when the response is received.
       if (!IsResponsePending()) {
         NotifyTokenCallbacks(OAuthTokenGetterImpl::SUCCESS,
-                             authorization_credentials_->login,
-                             oauth_access_token_, scopes_);
+                             OAuthTokenInfo(oauth_access_token_,
+                                            authorization_credentials_->login));
       }
     }
   }
@@ -220,7 +205,7 @@ base::WeakPtr<OAuthTokenGetterImpl> OAuthTokenGetterImpl::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void OAuthTokenGetterImpl::GetOauthTokensFromAuthCode() {
+void OAuthTokenGetterImpl::GetOAuthTokensFromAuthCode() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Fetching OAuth token from Auth Code.";
   DCHECK(!IsResponsePending());
@@ -295,7 +280,7 @@ void OAuthTokenGetterImpl::OnResponseTimeout() {
   LOG(ERROR) << "GaiaOAuthClient response timeout";
   gaia_oauth_client_ =
       std::make_unique<gaia::GaiaOAuthClient>(url_loader_factory_);
-  NotifyTokenCallbacks(OAuthTokenGetterImpl::NETWORK_ERROR, {}, {}, {});
+  NotifyTokenCallbacks(OAuthTokenGetterImpl::NETWORK_ERROR, OAuthTokenInfo());
 }
 
 }  // namespace remoting

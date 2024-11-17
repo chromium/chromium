@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.ui.UiUtils;
 
@@ -17,7 +18,8 @@ import org.chromium.ui.UiUtils;
  * This view is used to obscure content and bring focus to a foreground view (i.e. the bottom sheet
  * or the omnibox suggestions).
  */
-class ScrimView extends View {
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+public class ScrimView extends View {
     /** The view that the scrim should exist in. */
     private final ViewGroup mParent;
 

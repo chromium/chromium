@@ -39,7 +39,7 @@ QuicSessionKey::QuicSessionKey(
                      require_dns_https_alpn) {}
 
 QuicSessionKey::QuicSessionKey(
-    const std::string& host,
+    std::string host,
     uint16_t port,
     PrivacyMode privacy_mode,
     const ProxyChain& proxy_chain,
@@ -48,7 +48,7 @@ QuicSessionKey::QuicSessionKey(
     const NetworkAnonymizationKey& network_anonymization_key,
     SecureDnsPolicy secure_dns_policy,
     bool require_dns_https_alpn)
-    : QuicSessionKey(quic::QuicServerId(host, port),
+    : QuicSessionKey(quic::QuicServerId(std::move(host), port),
                      privacy_mode,
                      proxy_chain,
                      session_usage,
@@ -79,6 +79,10 @@ QuicSessionKey::QuicSessionKey(
       require_dns_https_alpn_(require_dns_https_alpn) {}
 
 QuicSessionKey::QuicSessionKey(const QuicSessionKey& other) = default;
+QuicSessionKey::QuicSessionKey(QuicSessionKey&& other) = default;
+QuicSessionKey& QuicSessionKey::operator=(const QuicSessionKey& other) =
+    default;
+QuicSessionKey& QuicSessionKey::operator=(QuicSessionKey&& other) = default;
 
 bool QuicSessionKey::operator<(const QuicSessionKey& other) const {
   const uint16_t port = server_id_.port();

@@ -36,6 +36,7 @@ StylusBatteryView::StylusBatteryView() {
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody2, *label_);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kLabelText);
+  UpdateAccessibleName();
 }
 
 void StylusBatteryView::OnThemeChanged() {
@@ -44,13 +45,6 @@ void StylusBatteryView::OnThemeChanged() {
       &StylusBatteryView::OnBatteryLevelUpdated, base::Unretained(this)));
 
   OnBatteryLevelUpdated();
-}
-
-void StylusBatteryView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetName(l10n_util::GetStringFUTF16(
-      IDS_ASH_STYLUS_BATTERY_PERCENT_ACCESSIBLE,
-      base::NumberToString16(
-          stylus_battery_delegate_.battery_level().value_or(0))));
 }
 
 void StylusBatteryView::OnBatteryLevelUpdated() {
@@ -64,6 +58,14 @@ void StylusBatteryView::OnBatteryLevelUpdated() {
                      stylus_battery_delegate_.IsBatteryStatusEligible() &&
                      !stylus_battery_delegate_.IsBatteryStatusStale() &&
                      !stylus_battery_delegate_.IsBatteryCharging());
+  UpdateAccessibleName();
+}
+
+void StylusBatteryView::UpdateAccessibleName() {
+  GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
+      IDS_ASH_STYLUS_BATTERY_PERCENT_ACCESSIBLE,
+      base::NumberToString16(
+          stylus_battery_delegate_.battery_level().value_or(0))));
 }
 
 BEGIN_METADATA(StylusBatteryView)

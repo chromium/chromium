@@ -18,8 +18,10 @@ TEST(DbusTypesTest, GetSignatureDynamic) {
   EXPECT_EQ("v", MakeDbusVariant(DbusInt32(0)).GetSignatureDynamic());
   EXPECT_EQ("ai", MakeDbusArray(DbusInt32(0)).GetSignatureDynamic());
   std::vector<unsigned char> buf{1, 2, 3};
-  EXPECT_EQ("ay", DbusByteArray(base::RefCountedBytes::TakeVector(&buf))
-                      .GetSignatureDynamic());
+  EXPECT_EQ(
+      "ay",
+      DbusByteArray(base::MakeRefCounted<base::RefCountedBytes>(std::move(buf)))
+          .GetSignatureDynamic());
   EXPECT_EQ("(ib)",
             MakeDbusStruct(DbusInt32(0), DbusBoolean(0)).GetSignatureDynamic());
   EXPECT_EQ(
@@ -54,10 +56,14 @@ TEST(DbusTypesTest, IsEqual) {
   // pointers.
   std::vector<unsigned char> buf1{1, 2, 3};
   std::vector<unsigned char> buf2{1, 2, 3};
-  EXPECT_EQ(DbusByteArray(base::RefCountedBytes::TakeVector(&buf1)),
-            DbusByteArray(base::RefCountedBytes::TakeVector(&buf2)));
+  EXPECT_EQ(DbusByteArray(
+                base::MakeRefCounted<base::RefCountedBytes>(std::move(buf1))),
+            DbusByteArray(
+                base::MakeRefCounted<base::RefCountedBytes>(std::move(buf2))));
   buf1 = {1, 2, 3};
   buf2 = {3, 2, 1};
-  EXPECT_NE(DbusByteArray(base::RefCountedBytes::TakeVector(&buf1)),
-            DbusByteArray(base::RefCountedBytes::TakeVector(&buf2)));
+  EXPECT_NE(DbusByteArray(
+                base::MakeRefCounted<base::RefCountedBytes>(std::move(buf1))),
+            DbusByteArray(
+                base::MakeRefCounted<base::RefCountedBytes>(std::move(buf2))));
 }

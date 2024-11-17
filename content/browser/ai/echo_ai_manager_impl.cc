@@ -6,51 +6,60 @@
 
 #include "base/no_destructor.h"
 #include "base/supports_user_data.h"
+#include "base/time/time.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "content/browser/ai/echo_ai_assistant.h"
+#include "content/browser/ai/echo_ai_language_model.h"
 #include "content/browser/ai/echo_ai_rewriter.h"
 #include "content/browser/ai/echo_ai_summarizer.h"
 #include "content/browser/ai/echo_ai_writer.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 
 namespace content {
 
-EchoAIManagerImpl::EchoAIManagerImpl(content::BrowserContext* browser_context,
-                                     ReceiverContext context) {}
+namespace {
+
+const int kMockDownloadPreperationTimeMillisecond = 300;
+const int kMockModelSizeBytes = 3000;
+
+}  // namespace
+
+EchoAIManagerImpl::EchoAIManagerImpl() = default;
 
 EchoAIManagerImpl::~EchoAIManagerImpl() = default;
 
 // static
 void EchoAIManagerImpl::Create(
-    content::BrowserContext* browser_context,
-    ReceiverContext context,
+    base::SupportsUserData& context_user_data,
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
-  static base::NoDestructor<EchoAIManagerImpl> ai(browser_context, context);
-  ai->receivers_.Add(ai.get(), std::move(receiver), context);
+  static base::NoDestructor<EchoAIManagerImpl> ai;
+  ai->receivers_.Add(ai.get(), std::move(receiver));
 }
 
-void EchoAIManagerImpl::CanCreateAssistant(
-    CanCreateAssistantCallback callback) {
+void EchoAIManagerImpl::CanCreateLanguageModel(
+    CanCreateLanguageModelCallback callback) {
   std::move(callback).Run(
-      /*result=*/blink::mojom::ModelAvailabilityCheckResult::kReadily);
+      blink::mojom::ModelAvailabilityCheckResult::kAfterDownload);
 }
 
-void EchoAIManagerImpl::CreateAssistant(
-    mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
-    blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
-    const std::optional<std::string>& system_prompt,
-    std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
-    CreateAssistantCallback callback) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIAssistant>(),
-                              std::move(receiver));
-  std::move(callback).Run(blink::mojom::AIAssistantInfo::New(
-      optimization_guide::features::GetOnDeviceModelMaxTokensForContext(),
-      blink::mojom::AIAssistantSamplingParams::New(
-          optimization_guide::features::GetOnDeviceModelDefaultTopK(),
-          optimization_guide::features::GetOnDeviceModelDefaultTemperature())));
+void EchoAIManagerImpl::CreateLanguageModel(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+        client,
+    blink::mojom::AILanguageModelCreateOptionsPtr options) {
+  mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient> client_remote(
+      std::move(client));
+
+  // In order to test the model download progress handling, the
+  // `EchoAIManagerImpl` will always start from the `after-download` state, and
+  // we simulate the downloading time by posting a delayed task.
+  content::GetUIThreadTaskRunner()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&EchoAIManagerImpl::DoMockDownloadingAndReturn,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(client_remote)),
+      base::Milliseconds(kMockDownloadPreperationTimeMillisecond));
 }
 
 void EchoAIManagerImpl::CanCreateSummarizer(
@@ -64,10 +73,10 @@ void EchoAIManagerImpl::CreateSummarizer(
     blink::mojom::AISummarizerCreateOptionsPtr options) {
   mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
       std::move(client));
-  mojo::PendingRemote<blink::mojom::AISummarizer> summarzier;
+  mojo::PendingRemote<blink::mojom::AISummarizer> summarizer;
   mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAISummarizer>(),
-                              summarzier.InitWithNewPipeAndPassReceiver());
-  client_remote->OnResult(std::move(summarzier));
+                              summarizer.InitWithNewPipeAndPassReceiver());
+  client_remote->OnResult(std::move(summarizer));
 }
 
 void EchoAIManagerImpl::GetModelInfo(GetModelInfoCallback callback) {
@@ -97,6 +106,44 @@ void EchoAIManagerImpl::CreateRewriter(
   mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAIRewriter>(),
                               rewriter.InitWithNewPipeAndPassReceiver());
   client_remote->OnResult(std::move(rewriter));
+}
+
+void EchoAIManagerImpl::ReturnAILanguageModelCreationResult(
+    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+        client_remote) {
+  mojo::PendingRemote<blink::mojom::AILanguageModel> language_model;
+  mojo::MakeSelfOwnedReceiver(std::make_unique<EchoAILanguageModel>(),
+                              language_model.InitWithNewPipeAndPassReceiver());
+  client_remote->OnResult(
+      std::move(language_model),
+      blink::mojom::AILanguageModelInfo::New(
+          kMaxContextSizeInTokens,
+          blink::mojom::AILanguageModelSamplingParams::New(
+              optimization_guide::features::GetOnDeviceModelDefaultTopK(),
+              optimization_guide::features::
+                  GetOnDeviceModelDefaultTemperature())));
+}
+
+void EchoAIManagerImpl::DoMockDownloadingAndReturn(
+    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+        client_remote) {
+  // Mock the downloading process update for testing.
+  for (auto& observer : download_progress_observers_) {
+    observer->OnDownloadProgressUpdate(kMockModelSizeBytes / 3,
+                                       kMockModelSizeBytes);
+    observer->OnDownloadProgressUpdate(kMockModelSizeBytes / 3 * 2,
+                                       kMockModelSizeBytes);
+    observer->OnDownloadProgressUpdate(kMockModelSizeBytes,
+                                       kMockModelSizeBytes);
+  }
+
+  ReturnAILanguageModelCreationResult(std::move(client_remote));
+}
+
+void EchoAIManagerImpl::AddModelDownloadProgressObserver(
+    mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+        observer_remote) {
+  download_progress_observers_.Add(std::move(observer_remote));
 }
 
 }  // namespace content

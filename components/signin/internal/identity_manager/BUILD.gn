@@ -30,6 +30,10 @@ source_set("identity_manager") {
     "oauth_multilogin_helper.h",
     "oauth_multilogin_token_fetcher.cc",
     "oauth_multilogin_token_fetcher.h",
+    "oauth_multilogin_token_request.cc",
+    "oauth_multilogin_token_request.h",
+    "oauth_multilogin_token_response.cc",
+    "oauth_multilogin_token_response.h",
     "primary_account_manager.cc",
     "primary_account_manager.h",
     "primary_account_mutator_impl.cc",
@@ -65,6 +69,7 @@ source_set("identity_manager") {
     "//components/signin/public/webdata",
     "//components/supervised_user/core/common:features",
     "//components/version_info",
+    "//crypto",
     "//services/network/public/cpp",
     "//ui/gfx",
   ]

@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Tiếng Catalan</translation>
 <translation id="1168100932582989117">Máy chủ có tên của Google</translation>
+<translation id="1170788066030116158">Ngày chụp</translation>
 <translation id="1172970565351728681">Còn khoảng <ph name="REMAINING_TIME" /> nữa</translation>
 <translation id="1173894706177603556">Đổi tên</translation>
 <translation id="1173916544412572294">Mạng <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />%, Pin điện thoại <ph name="BATTERY_STATUS" />%, Thông tin chi tiết</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Chứng chỉ xác thực bị từ chối từ xa</translation>
 <translation id="4394214039309501350">Đường liên kết ngoài</translation>
 <translation id="4394980935660306080">Đầu tuần này</translation>
+<translation id="4397435965699247285">OneDrive không hoạt động khi không có kết nối mạng</translation>
 <translation id="4398096759193130964">Khôi phục hoặc kéo các mục này vào một thư mục mới bên ngoài thùng rác</translation>
 <translation id="4401287888955153199">Trích xuất tất cả</translation>
 <translation id="4410695710508688828">Thao tác trích xuất không thành công. <ph name="ERROR_MESSAGE" /></translation>

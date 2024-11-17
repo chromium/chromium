@@ -79,8 +79,8 @@ class BrowsingHistoryDriver {
       base::OnceCallback<void(bool)> callback) = 0;
 
  protected:
-  BrowsingHistoryDriver() {}
-  virtual ~BrowsingHistoryDriver() {}
+  BrowsingHistoryDriver() = default;
+  virtual ~BrowsingHistoryDriver() = default;
 };
 
 }  // namespace history

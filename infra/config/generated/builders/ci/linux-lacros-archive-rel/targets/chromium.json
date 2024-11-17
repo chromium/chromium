@@ -1,7 +1,0 @@
-{
-  "linux-lacros-archive-rel": {
-    "additional_compile_targets": [
-      "chrome"
-    ]
-  }
-}

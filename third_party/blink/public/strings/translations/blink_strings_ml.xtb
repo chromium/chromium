@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">സാധാരണം</translation>
 <translation id="1591562245178063882">ഈ മാസം</translation>
 <translation id="1637811476055996098">ഫയലുകൾ തിരഞ്ഞെടുക്കുക</translation>
-<translation id="1680090928918677457">ക്യാമറ ഉപയോഗിക്കുക</translation>
 <translation id="1729654308190250600">ശൂന്യമായിടാതെ, ഇമെയിൽ വിലാസം നൽകുക.</translation>
 <translation id="1758486001363313524">മറ്റുള്ളവ...</translation>
 <translation id="1921819250265091946">തീയതി</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">ഈ വാചകത്തെ <ph name="MAX_CHARACTERS" /> അല്ലെങ്കില്‍ അതില്‍‌ക്കുറവ് പ്രതീകങ്ങളായി ദയവായി കുറയ്ക്കുക (നിങ്ങള്‍ നിലവില്‍ <ph name="CURRENT_LENGTH" /> പ്രതീകങ്ങള്‍ ഉപയോഗിക്കുകയാണ്).</translation>
 <translation id="2247351761944213033">ആഴ്‌ച <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ട്രാക്ക് <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">ക്യാമറയും മൈക്രോഫോണും അനുവദനീയം</translation>
 <translation id="2507943997699731163">ദയവായി ഈ ഫീല്‍ഡ് പൂരിപ്പിക്കുക.</translation>
 <translation id="2613802280814924224">സാധുവായ ഒരു മൂല്യം നൽകുക. ഏറ്റവുമടുത്ത സാധുവായ മൂല്യം <ph name="VALID_VALUE" /> ആണ്.</translation>
 <translation id="2653659639078652383">സമര്‍പ്പിക്കുക</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">ഈ ടെക്‌സ്റ്റിന്‍റെ ദൈർഘ്യം <ph name="MIN_CHARACTERS" /> അല്ലെങ്കിൽ അതിൽക്കൂടുതൽ പ്രതീകങ്ങൾ നൽകി കൂട്ടുക. (നിങ്ങൾ നിലവിൽ <ph name="CURRENT_LENGTH" /> പ്രതീകങ്ങളാണ് ഉപയോഗിക്കുന്നത്).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' എന്നതിനുശേഷം വരുന്ന ഒരു ഭാഗത്തിൽ '<ph name="INVALIDCHARACTER" />' ചിഹ്നം ഉണ്ടാകരുത്.</translation>
 <translation id="3846214748874656680">പൂർണ്ണ സ്‌ക്രീനിൽ നിന്ന് പുറത്തുകടക്കുക</translation>
-<translation id="4031179711345676612">മൈക്രോഫോൺ അനുവദനീയം</translation>
 <translation id="4360991593054037559">സാധുവായ മൂല്യം നൽകുക. സാധുവായ ഏറ്റവുമടുത്ത രണ്ട് മൂല്യങ്ങൾ <ph name="VALID_VALUE_LOW" />, <ph name="VALID_VALUE_HIGHER" /> എന്നിവയാണ്.</translation>
 <translation id="4522570452068850558">വിശദാംശങ്ങൾ‌</translation>
-<translation id="4663373278480897665">ക്യാമറ അനുവദനീയം</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' എന്നതിനുശേഷം വരുന്ന ഭാഗത്തിൽ '<ph name="INVALIDCHARACTER" />' ചിഹ്നം ഉണ്ടാകരുത്.</translation>
 <translation id="4718048029184481307">ചിത്രത്തിനുള്ളിൽ ചിത്രത്തിൽ പ്ലേ ചെയ്യുന്നു</translation>
-<translation id="4792862212177489858">ലൊക്കേഷൻ പങ്കിടുക</translation>
 <translation id="4812940957355064477">ഒരു നമ്പർ നൽകുക.</translation>
-<translation id="49269513399674318">മൈക്രോഫോൺ ഉപയോഗിക്കുക</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> തിരഞ്ഞെടുത്തു</translation>
 <translation id="4992066212339426712">അൺമ്യൂട്ടുചെയ്യുക</translation>
 <translation id="49969490063480558">'<ph name="ATSIGN" />' എന്നതിനുശേഷം ഒരു ഭാഗം നൽകുക.'<ph name="INVALIDADDRESS" />' അപൂർണ്ണമാണ്.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">പ്ലഗിൻ ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">ഈ ടെക്‌സ്റ്റിന്‍റെ ദൈർഘ്യം <ph name="MIN_CHARACTERS" /> പ്രതീകങ്ങളോ അതിൽ കൂടുതലോ ആയി വർദ്ധിപ്പിക്കുക (നിങ്ങൾ നിലവിൽ ഒരു പ്രതീകം മാത്രമേ ഉപയോഗിക്കുന്നുള്ളൂ).</translation>
-<translation id="7080893216867146095">ലൊക്കേഷൻ പങ്കിടൽ അനുവദനീയമാണ്</translation>
 <translation id="709897737746224366">അഭ്യര്‍ത്ഥി ച്ചഫോര്‍മാറ്റ് ദയവായി പൊരുത്തപ്പെടുത്തുക.</translation>
-<translation id="7134810312945846184">മൈക്രോഫോണും ക്യാമറയും ഉപയോഗിക്കുക</translation>
 <translation id="7263440858009898357">പട്ടികയിലെ ഒരു ഇനം ദയവായി തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7364796246159120393">ഫയല്‍ തിരഞ്ഞെടുക്കൂ</translation>
 <translation id="739024184232394898">മറ്റുള്ളവ...</translation>

@@ -65,6 +65,8 @@ std::string PasswordSelectionScreen::GetResultString(Result result) {
       return "GaiaPasswordFallback";
     case Result::GAIA_PASSWORD_ENTERPRISE:
       return "GaiaPasswordEnterprise";
+    case Result::PIN_RESET:
+      return "PinReset";
   }
   // LINT.ThenChange(//tools/metrics/histograms/metadata/oobe/histograms.xml)
 }
@@ -163,6 +165,14 @@ void PasswordSelectionScreen::ProcessOptions() {
     case WizardContext::AuthChangeFlow::kRecovery:
       if (!auth_factors_config_.HasConfiguredFactor(
               cryptohome::AuthFactorType::kPassword)) {
+        // User may have a PIN-only setup. Reset their PIN.
+        if (features::IsAllowPasswordlessRecoveryEnabled() &&
+            auth_factors_config_.HasConfiguredFactor(
+                cryptohome::AuthFactorType::kPin)) {
+          exit_callback_.Run(Result::PIN_RESET);
+          return;
+        }
+
         // Here if the user does not have any password configured then we can
         // let them set their password according to the same condition as OOBE.
         // What is to note here is that after recovery, we already know the GAIA
@@ -237,6 +247,14 @@ void PasswordSelectionScreen::ProcessOptions() {
 
 void PasswordSelectionScreen::ShowPasswordChoice() {
   view_->ShowPasswordChoice();
+
+  // The back button is only visible to go back to PIN setup as a main factor.
+  const bool should_show_back_button =
+      context()->knowledge_factor_setup.pin_setup_mode ==
+      WizardContext::PinSetupMode::kUserChosePasswordInstead;
+  if (should_show_back_button) {
+    view_->ShowBackButton();
+  }
 }
 
 }  // namespace ash

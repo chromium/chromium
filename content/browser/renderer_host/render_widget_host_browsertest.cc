@@ -50,7 +50,7 @@
 #include "ui/latency/latency_info.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "third_party/blink/public/mojom/choosers/popup_menu.mojom-blink.h"
+#include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #endif
 
@@ -1542,6 +1542,49 @@ class ItemSequenceNumberObserver : public RenderFrameMetadataProvider::Observer,
   bool observed_expected_number_ = false;
 };
 
+class ItemSequenceNumberTracker : public RenderFrameMetadataProvider::Observer {
+ public:
+  explicit ItemSequenceNumberTracker(RenderFrameMetadataProviderImpl* provider)
+      : provider_(provider),
+        last_sequence_number_(provider_->LastRenderFrameMetadata()
+                                  .primary_main_frame_item_sequence_number) {
+    provider_->AddObserver(this);
+  }
+  ~ItemSequenceNumberTracker() override { provider_->RemoveObserver(this); }
+
+  // `RenderFrameMetadataProvider::Observer`:
+  void OnRenderFrameMetadataChangedBeforeActivation(
+      const cc::RenderFrameMetadata& metadata) override {}
+  void OnRenderFrameMetadataChangedAfterActivation(
+      base::TimeTicks activation_time) override {
+    last_sequence_number_ = provider_->LastRenderFrameMetadata()
+                                .primary_main_frame_item_sequence_number;
+    if (run_loop_ && last_sequence_number_ == expected_sequence_number_) {
+      run_loop_->Quit();
+    }
+  }
+  void OnRenderFrameSubmission() override {}
+  void OnLocalSurfaceIdChanged(
+      const cc::RenderFrameMetadata& metadata) override {}
+
+  void WaitForExpectedItemSequenceNumber(int64_t expected_sequence_number) {
+    expected_sequence_number_ = expected_sequence_number;
+    if (expected_sequence_number_ == last_sequence_number_) {
+      return;
+    }
+    run_loop_ = std::make_unique<base::RunLoop>();
+    run_loop_->Run();
+  }
+
+ private:
+  raw_ptr<RenderFrameMetadataProviderImpl> provider_;
+
+  int64_t expected_sequence_number_;
+  int64_t last_sequence_number_;
+
+  std::unique_ptr<base::RunLoop> run_loop_;
+};
+
 class RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest
     : public RenderWidgetHostBrowserTest,
       public ::testing::WithParamInterface<TestConfig> {
@@ -1554,8 +1597,8 @@ class RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest
     auto test_config = GetParam();
     switch (test_config) {
       case TestConfig::kSameDoc: {
-        first_url_ = "/session_history/fragment.html";
-        second_url_ = "/session_history/fragment.html#a";
+        first_url_ = "/changing_color.html#red";
+        second_url_ = "/changing_color.html#green";
         break;
       }
       case TestConfig::kBFCacheEnabled: {
@@ -1595,15 +1638,9 @@ class RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest
 
 }  // namespace
 
-// TODO(crbug.com/362200328): Re-enable test.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ItemSequenceNumberExpected DISABLED_ItemSequenceNumberExpected
-#else
-#define MAYBE_ItemSequenceNumberExpected ItemSequenceNumberExpected
-#endif
 IN_PROC_BROWSER_TEST_P(
     RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest,
-    MAYBE_ItemSequenceNumberExpected) {
+    ItemSequenceNumberExpected) {
   ASSERT_TRUE(NavigateToURL(shell(), FirstURL()));
   ASSERT_TRUE(NavigateToURL(shell(), SecondURL()));
 
@@ -1627,6 +1664,41 @@ IN_PROC_BROWSER_TEST_P(
 
   nav_observer.WaitForNavigationFinished();
   ASSERT_TRUE(obs.WaitForExpectedItemSequenceNumber());
+}
+
+IN_PROC_BROWSER_TEST_P(
+    RenderWidgetHostItemSequenceNumberInRenderFrameMetadataTest,
+    ItemSequenceNumberExpectedNoContentChange) {
+  if (GetParam() != TestConfig::kSameDoc) {
+    return;
+  }
+
+  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "/session_history/fragment.html")));
+
+  auto* controller = static_cast<NavigationControllerImpl*>(
+      &(web_contents()->GetController()));
+  ItemSequenceNumberTracker tracker(
+      view()->host()->render_frame_metadata_provider());
+
+  tracker.WaitForExpectedItemSequenceNumber(
+      controller->GetEntryAtIndex(0)
+          ->GetFrameEntry(controller->frame_tree().root())
+          ->item_sequence_number());
+
+  ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
+                                         "/session_history/fragment.html#a")));
+  tracker.WaitForExpectedItemSequenceNumber(
+      controller->GetEntryAtIndex(1)
+          ->GetFrameEntry(controller->frame_tree().root())
+          ->item_sequence_number());
+
+  ASSERT_TRUE(web_contents()->GetController().CanGoBack());
+  web_contents()->GetController().GoBack();
+  tracker.WaitForExpectedItemSequenceNumber(
+      controller->GetEntryAtIndex(0)
+          ->GetFrameEntry(controller->frame_tree().root())
+          ->item_sequence_number());
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -47,6 +47,7 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="ai.summarizer.summarizeStreaming"/>
   <int value="16" label="ai.summarizer.create"/>
   <int value="17" label="ai.summarizer.destroy"/>
+  <int value="18" label="ai.assistant.countPromptTokens"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:AIAPI) -->
@@ -104,7 +105,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(LoadTranslateKitResult) -->
 
 <enum name="LoadTranslateKitResult">
-  <int value="0" label="Unknown"/>
+  <int value="0" label="[deprecated] Unknown"/>
   <int value="1" label="Success">Success to load TranslateKit binary.</int>
   <int value="2" label="InvalidBinary">
     Fails due to invalid TranslateKit binary.

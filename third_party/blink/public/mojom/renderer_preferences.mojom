@@ -6,8 +6,8 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
-import "ui/gfx/mojom/font_render_params.mojom";
 import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
+import "ui/gfx/mojom/font_render_params.mojom";
 
 const int64 kDefaultCaretBlinkIntervalInMilliseconds = 500;
 
@@ -35,7 +35,7 @@ struct RendererPreferences {
   // The type of subpixel rendering to use for text.
   // Currently only used by Linux and Windows.
   gfx.mojom.SubpixelRendering subpixel_rendering =
-    gfx.mojom.SubpixelRendering.kNone;
+      gfx.mojom.SubpixelRendering.kNone;
 
   // Whether subpixel positioning should be used, permitting fractional X
   // positions for glyphs.  Currently only used by Linux.
@@ -45,6 +45,7 @@ struct RendererPreferences {
   // only used by Windows.
   [EnableIf=is_win]
   float text_contrast = 0.5;
+
   [EnableIf=is_win]
   float text_gamma = 0.0;
 
@@ -54,8 +55,10 @@ struct RendererPreferences {
   // The colors used in selection text. Currently only used on Linux and Ash.
   // Note: these must match the values in renderer_preferences.h.
   uint32 active_selection_bg_color = 0xFF1967D2;
+
   [EnableIf=is_android]
   uint32 active_selection_fg_color = 0xFF000000;
+
   [EnableIfNot=is_android]
   uint32 active_selection_fg_color = 0xFFFFFFFF;
   uint32 inactive_selection_bg_color = 0xFFC8C8C8;
@@ -66,13 +69,18 @@ struct RendererPreferences {
 
   // Cursor blink rate.
   // On Linux, uses |gtk-cursor-blink| from GtkSettings.
-  // On platforms with views toolkit, uses the system value from ui::NativeTheme.
+  // On platforms with views toolkit, uses the system value from
+  // ui::NativeTheme.
   // Note: Null |caret_blink_interval| should be interpreted as the default
   // value kDefaultCaretBlinkIntervalInMilliseconds.
   mojo_base.mojom.TimeDelta? caret_blink_interval;
 
   // Whether or not to set custom colors at all.
   bool use_custom_colors = true;
+
+  // Whether or not to use overlay scrollbar.
+  [EnableIf=is_chromeos]
+  bool use_overlay_scrollbar = false;
 
   // Set to false to not send referrers.
   bool enable_referrers = true;
@@ -109,7 +117,8 @@ struct RendererPreferences {
   string accept_languages;
 
   // Whether renderers need to send SubresourceResponseStarted IPC to
-  // the browser. Renderers send the IPC if user has allowed any certificate or HTTP
+  // the browser. Renderers send the IPC if user has allowed any certificate or
+  // HTTP
   // exceptions and we keep sending subresource notifications to the browser
   // until all HTTPS-related warning exceptions have been revoked and the
   // browser is restarted.
@@ -121,7 +130,7 @@ struct RendererPreferences {
   // Whether or not caret browsing is enabled.
   bool caret_browsing_enabled = false;
 
-  [EnableIf=renderer_pref_system_font_family_name]
+  [EnableIf=is_chromeos|is_linux]
   string system_font_family_name;
 
   // The default system font settings for caption, small caption, menu and
@@ -130,26 +139,31 @@ struct RendererPreferences {
   // Win-only mojom struct to avoid using a [EnableIf=is_win] for each of them.
   [EnableIf=is_win]
   mojo_base.mojom.String16 caption_font_family_name;
+
   [EnableIf=is_win]
   int32 caption_font_height = 0;
 
   [EnableIf=is_win]
   mojo_base.mojom.String16 small_caption_font_family_name;
+
   [EnableIf=is_win]
   int32 small_caption_font_height = 0;
 
   [EnableIf=is_win]
   mojo_base.mojom.String16 menu_font_family_name;
+
   [EnableIf=is_win]
   int32 menu_font_height = 0;
 
   [EnableIf=is_win]
   mojo_base.mojom.String16 status_font_family_name;
+
   [EnableIf=is_win]
   int32 status_font_height = 0;
 
   [EnableIf=is_win]
   mojo_base.mojom.String16 message_font_family_name;
+
   [EnableIf=is_win]
   int32 message_font_height = 0;
 
@@ -175,13 +189,4 @@ struct RendererPreferences {
   bool selection_clipboard_buffer_available = false;
 
   array<uint16> explicitly_allowed_network_ports;
-
-  // Whether the prefixed video-specific fullscreen APIs (e.g.
-  // video.webkitEnterFullscreen() and others) are available or not.
-  // - If not set, the availability of the APIs is determined by the
-  //   PrefixedVideoFullscreen RuntimeEnabled feature.
-  // - If set, enables/disables the APIs by overriding the
-  //   PrefixedVideoFullscreen RuntimeEnabled feature.
-  // TODO(crbug.com/40352864): Remove this when the APIs are removed for good.
-  bool? prefixed_fullscreen_video_api_availability;
 };

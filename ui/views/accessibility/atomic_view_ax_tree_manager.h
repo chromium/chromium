@@ -33,16 +33,16 @@ class VIEWS_EXPORT AtomicViewAXTreeManager : public ui::AXPlatformTreeManager {
 
   // AXTreeManager overrides.
   bool IsView() const override;
-  ui::AXNode* GetNodeFromTree(const ui::AXTreeID& tree_id,
-                              const ui::AXNodeID node_id) const override;
-  ui::AXNode* GetNode(const ui::AXNodeID node_id) const override;
-  ui::AXPlatformNode* GetPlatformNodeFromTree(
-      const ui::AXNodeID node_id) const override;
-  ui::AXPlatformNode* GetPlatformNodeFromTree(const ui::AXNode&) const override;
-  ui::AXPlatformNodeDelegate* RootDelegate() const override;
+  ui::AXNode* GetNode(ui::AXNodeID node_id) const override;
   ui::AXTreeID GetParentTreeID() const override;
   ui::AXNode* GetRoot() const override;
   ui::AXNode* GetParentNodeFromParentTree() const override;
+
+  // AXPlatformTreeManager overrides.
+  ui::AXPlatformNode* GetPlatformNodeFromTree(
+      ui::AXNodeID node_id) const override;
+  ui::AXPlatformNode* GetPlatformNodeFromTree(const ui::AXNode&) const override;
+  ui::AXPlatformNodeDelegate* RootDelegate() const override;
 
   void ClearComputedRootData();
 

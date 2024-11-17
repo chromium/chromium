@@ -74,18 +74,14 @@ enum WebCryptoAlgorithmId {
   kWebCryptoAlgorithmIdPbkdf2,
   kWebCryptoAlgorithmIdEd25519,
   kWebCryptoAlgorithmIdX25519,
-#if INSIDE_BLINK
   kWebCryptoAlgorithmIdLast = kWebCryptoAlgorithmIdX25519,
-#endif
 };
 
 enum WebCryptoNamedCurve {
   kWebCryptoNamedCurveP256,
   kWebCryptoNamedCurveP384,
   kWebCryptoNamedCurveP521,
-#if INSIDE_BLINK
   kWebCryptoNamedCurveLast = kWebCryptoNamedCurveP521,
-#endif
 };
 
 enum WebCryptoAlgorithmParamsType {
@@ -153,11 +149,9 @@ class WebCryptoAlgorithmPrivate;
 // methods on it (other than destruction, assignment, or IsNull()).
 class BLINK_PLATFORM_EXPORT WebCryptoAlgorithm {
  public:
-#if INSIDE_BLINK
   WebCryptoAlgorithm() = default;
   WebCryptoAlgorithm(WebCryptoAlgorithmId,
                      std::unique_ptr<WebCryptoAlgorithmParams>);
-#endif
 
   static WebCryptoAlgorithm CreateNull();
   static WebCryptoAlgorithm AdoptParamsAndCreate(WebCryptoAlgorithmId,

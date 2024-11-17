@@ -293,6 +293,9 @@ ToProtoEnum(ScriptTimingInfo::InvokerType type) {
       return ProtoType::PROMISE_RESOLVE;
     case ScriptTimingInfo::InvokerType::kPromiseReject:
       return ProtoType::PROMISE_REJECT;
+    case ScriptTimingInfo::InvokerType::kUserEntryPoint:
+      // Need to add perfetto support separately.
+      return ProtoType::UNDEFINED;
   }
   return ProtoType::UNDEFINED;
 }
@@ -463,6 +466,8 @@ void AnimationFrameTimingMonitor::RecordLongAnimationFrameUKMAndTrace(
         script_type_duration_user_callback += execution_duration;
         third_party_script_callback_contributors |= technology_bits;
         break;
+      case ScriptTimingInfo::InvokerType::kUserEntryPoint:
+        break;
     }
   }
   builder.SetDuration_LongScript_JSCompilation(
@@ -518,8 +523,6 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
     ScriptState* script_state,
     const probe::ProbeBase* probe,
     base::TimeTicks end_time) {
-  CHECK(script_state);
-  ExecutionContext* context = ToExecutionContext(script_state);
   if (!entry_point_depth_) {
     return nullptr;
   }
@@ -527,53 +530,64 @@ ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPoint(
   if (entry_point_depth_ > 0 || !pending_script_info_) {
     return nullptr;
   }
-
-  std::optional<PendingScriptInfo> script_info;
-  std::swap(script_info, pending_script_info_);
-
-  if (!enabled_ || !context || !context->IsWindow() ||
-      !client_.ShouldReportLongAnimationFrameTiming()) {
-    return nullptr;
-  }
-
   CHECK(probe || !end_time.is_null());
 
   if (probe && end_time.is_null()) {
     end_time = probe->CaptureEndTime();
   }
 
-  if ((end_time - script_info->start_time) < kLongScriptDuration) {
+  // script_state can be null in situations such as the frame being in a
+  // provisional state.
+  ExecutionContext* context =
+      script_state ? ToExecutionContext(script_state) : nullptr;
+
+  ScriptTimingInfo* timing_info =
+      PopScriptEntryPointInternal(context, end_time, *pending_script_info_);
+  pending_script_info_ = std::nullopt;
+  return timing_info;
+}
+
+ScriptTimingInfo* AnimationFrameTimingMonitor::PopScriptEntryPointInternal(
+    ExecutionContext* context,
+    base::TimeTicks end_time,
+    const PendingScriptInfo& script_info) {
+  if (!enabled_ || !context || !context->IsWindow() ||
+      !client_.ShouldReportLongAnimationFrameTiming()) {
     return nullptr;
   }
 
-  if (!ShouldAllowScriptURL(script_info->source_location.url) ||
+  if ((end_time - script_info.start_time) < kLongScriptDuration) {
+    return nullptr;
+  }
+
+  if (!ShouldAllowScriptURL(script_info.source_location.url) ||
       state_ == State::kIdle) {
     return nullptr;
   }
 
   ScriptTimingInfo* script_timing_info = MakeGarbageCollected<ScriptTimingInfo>(
-      context, script_info->invoker_type, script_info->start_time,
-      script_info->execution_start_time, end_time, script_info->style_duration,
-      script_info->layout_duration);
+      context, script_info.invoker_type, script_info.start_time,
+      script_info.execution_start_time, end_time, script_info.style_duration,
+      script_info.layout_duration);
 
-  script_timing_info->SetSourceLocation(script_info->source_location);
-  if (script_info->class_like_name) {
+  script_timing_info->SetSourceLocation(script_info.source_location);
+  if (script_info.class_like_name) {
     script_timing_info->SetClassLikeName(
-        AtomicString(script_info->class_like_name));
+        AtomicString(script_info.class_like_name));
   }
 
   if (const auto* property_name =
-          std::get_if<const char*>(&script_info->property_like_name)) {
+          std::get_if<const char*>(&script_info.property_like_name)) {
     script_timing_info->SetPropertyLikeName(AtomicString(*property_name));
   } else if (auto* property_name_string =
-                 std::get_if<String>(&script_info->property_like_name)) {
+                 std::get_if<String>(&script_info.property_like_name)) {
     if (!property_name_string->IsNull()) {
       script_timing_info->SetPropertyLikeName(
           AtomicString(*property_name_string));
     }
   }
 
-  script_timing_info->SetPauseDuration(script_info->pause_duration);
+  script_timing_info->SetPauseDuration(script_info.pause_duration);
 
   current_scripts_.push_back(script_timing_info);
   return script_timing_info;
@@ -598,7 +612,7 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
   // Make sure we only monitor top-level promise resolvers that are outside the
   // update-the-rendering phase (promise resolvers directly handled from a
   // posted task).
-  if (state_ != State::kProcessingTask) {
+  if (state_ != State::kProcessingTask && state_ != State::kPendingFrame) {
     return;
   }
 
@@ -615,12 +629,12 @@ void AnimationFrameTimingMonitor::WillHandlePromise(
 
 void AnimationFrameTimingMonitor::Will(
     const probe::EvaluateScriptBlock& probe_data) {
-  if (!PushScriptEntryPoint(probe_data.script_state)) {
+  if (!PushScriptEntryPoint(&probe_data.script_state)) {
     return;
   }
   KURL url(probe_data.source_url);
   if (url.IsEmpty() || url.IsNull()) {
-    url = ToExecutionContext(probe_data.script_state)->Url();
+    url = ToExecutionContext(&probe_data.script_state)->Url();
   }
 
   pending_script_info_ = PendingScriptInfo{
@@ -700,33 +714,68 @@ ScriptTimingInfo::ScriptSourceLocation CaptureScriptSourceLocation(
 
 void AnimationFrameTimingMonitor::Will(
     const probe::InvokeCallback& probe_data) {
-  if (!PushScriptEntryPoint(probe_data.script_state)) {
+  if (!PushScriptEntryPoint(&probe_data.script_state)) {
     return;
   }
 
-  ScriptState::Scope scope(probe_data.script_state);
+  ScriptState::Scope scope(&probe_data.script_state);
   pending_script_info_ = PendingScriptInfo{
       .invoker_type = ScriptTimingInfo::InvokerType::kUserCallback,
       .start_time = probe_data.CaptureStartTime(),
       .execution_start_time = probe_data.CaptureStartTime(),
       .property_like_name = probe_data.name,
       .source_location = CaptureScriptSourceLocation(
-          probe_data.script_state->GetIsolate(),
+          probe_data.script_state.GetIsolate(),
           probe_data.callback ? probe_data.callback->CallbackObject()
                               : probe_data.function)};
 }
 
 void AnimationFrameTimingMonitor::Will(
-    const probe::InvokeEventHandler& probe_data) {
-  ScriptState::Scope scope(probe_data.script_state);
-  if (!PushScriptEntryPoint(probe_data.script_state)) {
+    const probe::UserEntryPoint& probe_data) {
+  CHECK(RuntimeEnabledFeatures::UserDefinedEntryPointTimingEnabled());
+  probe_data.CaptureStartTime();
+  user_entry_points_.insert(probe_data.index, PendingScriptInfo{});
+}
+
+void AnimationFrameTimingMonitor::Did(const probe::UserEntryPoint& probe_data) {
+  CHECK(RuntimeEnabledFeatures::UserDefinedEntryPointTimingEnabled());
+  // TODO(crbug.com/378698650) Perhaps we don't need all the null-checks?
+  if (!pending_script_info_ || user_entry_points_.empty()) {
+    return;
+  }
+  auto it = user_entry_points_.find(probe_data.index);
+  if (it == user_entry_points_.end()) {
     return;
   }
 
+  PendingScriptInfo& user_entry_point = it->value;
+
+  user_entry_point.start_time = probe_data.CaptureStartTime();
+  user_entry_point.execution_start_time = user_entry_point.start_time;
+  user_entry_point.invoker_type =
+      ScriptTimingInfo::InvokerType::kUserEntryPoint;
+  user_entry_point.source_location = CaptureScriptSourceLocation(
+      probe_data.callback_object->GetIsolate(), probe_data.callback_object);
+  PopScriptEntryPointInternal(probe_data.context, probe_data.CaptureEndTime(),
+                              user_entry_point);
+  user_entry_points_.erase(it);
+}
+
+void AnimationFrameTimingMonitor::Will(
+    const probe::InvokeEventHandler& probe_data) {
+  ScriptState::Scope scope(&probe_data.script_state);
+  if (!PushScriptEntryPoint(&probe_data.script_state)) {
+    return;
+  }
+
+  EventTarget* target = probe_data.event->currentTarget();
   pending_script_info_ = PendingScriptInfo{
       .invoker_type = ScriptTimingInfo::InvokerType::kEventHandler,
       .start_time = probe_data.CaptureStartTime(),
-      .execution_start_time = probe_data.CaptureStartTime()};
+      .execution_start_time = probe_data.CaptureStartTime(),
+      .source_location = CaptureScriptSourceLocation(
+          probe_data.script_state.GetIsolate(),
+          probe_data.listener->GetListenerObject(*target))};
 }
 
 void AnimationFrameTimingMonitor::Did(
@@ -737,7 +786,7 @@ void AnimationFrameTimingMonitor::Did(
   did_see_ui_events_ = true;
 
   ScriptTimingInfo* info =
-      PopScriptEntryPoint(probe_data.script_state, &probe_data);
+      PopScriptEntryPoint(&probe_data.script_state, &probe_data);
   if (!info) {
     return;
   }
@@ -762,11 +811,6 @@ void AnimationFrameTimingMonitor::Did(
   } else {
     info->SetClassLikeName(target->InterfaceName());
   }
-
-  v8::HandleScope scope(probe_data.script_state->GetIsolate());
-  info->SetSourceLocation(CaptureScriptSourceLocation(
-      probe_data.script_state->GetIsolate(),
-      probe_data.listener->GetListenerObject(*target)));
 }
 
 void AnimationFrameTimingMonitor::Will(

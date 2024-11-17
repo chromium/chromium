@@ -20,7 +20,6 @@ public class SpacingRecyclerViewItemDecoration extends ItemDecoration {
     private @Px int mElementSpace;
 
     /**
-     * @param parent the RecyclerView component receiving the decoration
      * @param leadInSpace the space before the first element
      * @param elementSpace the total space between each two elements, applied evenly to each side of
      *     every child

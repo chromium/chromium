@@ -45,7 +45,7 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
 }
 
 bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
-    const std::string& mime_type,
+    std::string_view mime_type,
     base::FilePath::StringType* ext) const {
   UTType* uttype = [UTType typeWithMIMEType:base::SysUTF8ToNSString(mime_type)];
   if (uttype.dynamic || uttype.preferredFilenameExtension == nil) {
@@ -56,7 +56,7 @@ bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
 }
 
 void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
-    const std::string& mime_type,
+    std::string_view mime_type,
     std::unordered_set<base::FilePath::StringType>* extensions) const {
   NSArray<UTType*>* types =
       [UTType typesWithTag:base::SysUTF8ToNSString(mime_type)

@@ -134,7 +134,7 @@ def CheckCpp17CompatibleHeaders(input_api, output_api):
     CPP_20_HEADERS = [
         "barrier",
         "bit",
-        "compare",
+        #"compare",  Three-way comparison may be used under appropriate guards.
         "format",
         "numbers",
         "ranges",
@@ -161,7 +161,10 @@ def CheckCpp17CompatibleHeaders(input_api, output_api):
 
     sources = lambda affected_file: input_api.FilterSourceFile(
         affected_file,
-        files_to_skip=[],
+        # compiler_specific.h may use these headers in guarded ways.
+        files_to_skip=[
+            r'.*partition_alloc_base/augmentations/compiler_specific\.h'
+        ],
         files_to_check=[_SOURCE_FILE_PATTERN])
 
     errors = []

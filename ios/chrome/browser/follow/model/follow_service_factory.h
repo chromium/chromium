@@ -7,17 +7,14 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class FollowService;
+class ProfileIOS;
 
 // Singleton that owns all FollowServices and associates them with
 // ProfileIOS.
 class FollowServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static FollowService* GetForBrowserState(ChromeBrowserState* browser_state);
-
   static FollowService* GetForProfile(ProfileIOS* profile);
   static FollowServiceFactory* GetInstance();
 

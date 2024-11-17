@@ -275,16 +275,19 @@ class MediaDrmProvisionHelper {
     origin_id_ = base::UnguessableToken::Create();
 
     // Try provisioning for L3 first.
-    media_drm_bridge_ = media::MediaDrmBridge::CreateWithoutSessionSupport(
+    auto result = media::MediaDrmBridge::CreateWithoutSessionSupport(
         kWidevineKeySystem, origin_id_.ToString(),
         media::MediaDrmBridge::SECURITY_LEVEL_3, "L3 provisioning",
         create_fetcher_cb_);
-    if (!media_drm_bridge_) {
+    if (!result.has_value()) {
       // Unable to create mediaDrm for L3, so try L1.
-      DVLOG(1) << "Unable to create MediaDrmBridge for L3.";
+      DVLOG(1) << "Unable to create MediaDrmBridge for L3, CreateCdmStatus: "
+               << (media::StatusCodeType)result.code();
       ProvisionLevel1(false);
       return;
     }
+
+    media_drm_bridge_ = std::move(result).value();
 
     // Use of base::Unretained() is safe as ProvisionLevel1() eventually calls
     // ProvisionDone() which destructs this object.
@@ -303,17 +306,20 @@ class MediaDrmProvisionHelper {
     // Try L1. This replaces the previous |media_drm_bridge_| as it is no longer
     // needed.
     media_drm_bridge_.reset();
-    media_drm_bridge_ = media::MediaDrmBridge::CreateWithoutSessionSupport(
+    auto result = media::MediaDrmBridge::CreateWithoutSessionSupport(
         kWidevineKeySystem, origin_id_.ToString(),
         media::MediaDrmBridge::SECURITY_LEVEL_1, "L1 provisioning",
         create_fetcher_cb_);
-    if (!media_drm_bridge_) {
+    if (!result.has_value()) {
       // Unable to create MediaDrm for L1, so quit. Note that L3 provisioning
       // may or may not have worked.
-      DVLOG(1) << "Unable to create MediaDrmBridge for L1.";
+      DVLOG(1) << "Unable to create MediaDrmBridge for L1, CreateCdmStatus: "
+               << (media::StatusCodeType)result.code();
       ProvisionDone(L3_success, false);
       return;
     }
+
+    media_drm_bridge_ = std::move(result).value();
 
     // Use of base::Unretained() is safe as ProvisionDone() destructs this
     // object.

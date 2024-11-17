@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/one_shot_event.h"
 #include "base/strings/string_util.h"
@@ -198,7 +199,7 @@ class ApiInfoDatabase {
   // The map is keyed by API name only, since API names aren't be repeated
   // across multiple action types in kApiInfoTable.  However, the action type
   // should still be checked before returning a positive match.
-  std::map<std::string, const ApiInfo*> api_database_;
+  std::map<std::string, raw_ptr<const ApiInfo, CtnExperimental>> api_database_;
 
   friend struct base::DefaultSingletonTraits<ApiInfoDatabase>;
 };
@@ -211,15 +212,15 @@ bool GetUrlForTabId(int tab_id,
                     GURL* url,
                     bool* is_incognito) {
   content::WebContents* contents = nullptr;
-  Browser* browser = nullptr;
+  WindowController* window = nullptr;
   bool found =
       ExtensionTabUtil::GetTabById(tab_id, profile,
                                    true,  // Search incognito tabs, too.
-                                   &browser, nullptr, &contents, nullptr);
+                                   &window, &contents, nullptr);
 
-  if (found) {
+  if (found && window) {
     *url = contents->GetURL();
-    *is_incognito = browser->profile()->IsOffTheRecord();
+    *is_incognito = window->profile()->IsOffTheRecord();
     return true;
   } else {
     return false;
@@ -336,7 +337,7 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (arg_url.is_valid()) {
@@ -527,7 +528,7 @@ void ActivityLog::SetDatabasePolicy(
       database_policy_ = new CountingPolicy(profile_);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   database_policy_->Init();
   database_policy_type_ = policy_type;

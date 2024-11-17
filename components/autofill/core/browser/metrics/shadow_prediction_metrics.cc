@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/buildflags.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -74,14 +73,14 @@ void LogMlShadowPredictions(const AutofillField& field) {
       "Autofill.ShadowPredictions.DefaultServerToMLModel",
       GetShadowPrediction(
           field.server_type(),
-          field.heuristic_type(HeuristicSource::kMachineLearning),
+          field.heuristic_type(HeuristicSource::kAutofillMachineLearning),
           submitted_types));
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   base::UmaHistogramSparse(
       "Autofill.ShadowPredictions.DefaultPatternSourceToMLModel",
       GetShadowPrediction(
           field.heuristic_type(HeuristicSource::kDefaultRegexes),
-          field.heuristic_type(HeuristicSource::kMachineLearning),
+          field.heuristic_type(HeuristicSource::kAutofillMachineLearning),
           submitted_types));
 #endif  // BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

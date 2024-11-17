@@ -13,7 +13,7 @@ async_test(t => {
         var offscreen = new OffscreenCanvas(300,300);
         var ctx = offscreen.getContext('2d');
         var img = offscreen.transferToImageBitmap();
-        internals.forceLoseCanvasContext(canvas, "2d");
+        internals.forceLoseCanvasContext(ctx);
         ctx.createPattern(img, "repeat-y");
     }
     t.done();

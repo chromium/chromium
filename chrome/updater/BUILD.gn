@@ -6,6 +6,8 @@ import("//build/config/chrome_build.gni")
 import("//build/config/python.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/util/process_version.gni")
+import("//chrome/enterprise_companion/branding.gni")
+import("//chrome/updater/apply_updater_branding.gni")
 import("//chrome/updater/branding.gni")
 import("//chrome/updater/zip.gni")
 import("//components/crx_file/crx3.gni")
@@ -28,6 +30,7 @@ group("updater") {
 
   if (is_win || is_mac || is_linux) {
     deps += [
+      ":updater_license",
       "//chrome/updater/test/qualification_app",
       "//chrome/updater/tools",
     ]
@@ -50,6 +53,40 @@ group("all") {
 }
 
 if (is_win || is_mac || is_linux) {
+  action("updater_license") {
+    script = "//chrome/updater/fix_licenses.py"
+    deps = [ ":generate_updater_license" ]
+    _trimmed_license_path =
+        "$root_out_dir/LICENSE.$updater_product_full_name_dashed_lowercase"
+    _orig_license_path = "$target_gen_dir/UNTRIMMED_LICENSE.$updater_product_full_name_dashed_lowercase"
+    args = [
+      "--src",
+      rebase_path(_orig_license_path, root_build_dir),
+      "--dest",
+      rebase_path(_trimmed_license_path, root_build_dir),
+    ]
+    outputs = [ _trimmed_license_path ]
+  }
+  action("generate_updater_license") {
+    script = "//tools/licenses/licenses.py"
+    _license_path = "$target_gen_dir/UNTRIMMED_LICENSE.$updater_product_full_name_dashed_lowercase"
+    depfile = "$target_gen_dir/$target_name.d"
+
+    args = [
+      "license_file",
+      rebase_path(_license_path, root_build_dir),
+      "--depfile",
+      rebase_path(depfile, root_build_dir),
+      "--gn-target",
+      "//chrome/updater:updater",
+      "--gn-out-dir",
+      ".",
+      "--target-os",
+      target_os,
+    ]
+    outputs = [ _license_path ]
+  }
+
   source_set("base") {
     sources = [
       "action_handler.h",
@@ -109,6 +146,10 @@ if (is_win || is_mac || is_linux) {
       "net/network.h",
       "persisted_data.cc",
       "persisted_data.h",
+      "ping_configurator.cc",
+      "ping_configurator.h",
+      "ping_persisted_data.cc",
+      "ping_persisted_data.h",
       "policy/dm_policy_manager.cc",
       "policy/dm_policy_manager.h",
       "policy/manager.cc",
@@ -124,6 +165,7 @@ if (is_win || is_mac || is_linux) {
       "prefs_impl.h",
       "remove_uninstalled_apps_task.cc",
       "remove_uninstalled_apps_task.h",
+      "setup.cc",
       "setup.h",
       "update_block_check.cc",
       "update_block_check.h",
@@ -192,6 +234,8 @@ if (is_win || is_mac || is_linux) {
       ":external_constants",
     ]
 
+    defines = []
+
     if (is_mac) {
       sources += [
         "activity_impl_util_mac.cc",
@@ -202,7 +246,7 @@ if (is_win || is_mac || is_linux) {
         "ipc/ipc_security_mac.cc",
         "mac/install_from_archive.h",
         "mac/install_from_archive.mm",
-        "mac/setup/setup.mm",
+        "mac/setup/mac_setup.mm",
         "mac/setup/wake_task.h",
         "mac/setup/wake_task.mm",
         "net/fetcher_callback_adapter.cc",
@@ -247,12 +291,12 @@ if (is_win || is_mac || is_linux) {
         "app/server/win/com_classes.h",
         "app/server/win/com_classes_legacy.cc",
         "app/server/win/com_classes_legacy.h",
-        "app/server/win/service_main.cc",
-        "app/server/win/service_main.h",
         "app/server/win/update_service_internal_stub_win.cc",
         "app/server/win/update_service_internal_stub_win.h",
         "app/server/win/update_service_stub_win.cc",
         "app/server/win/update_service_stub_win.h",
+        "app/server/win/updater_service_delegate.cc",
+        "app/server/win/updater_service_delegate.h",
         "app/server/win/wrl_classes.cc",
         "change_owners_task_win.cc",
         "ipc/update_service_internal_proxy_win.cc",
@@ -279,12 +323,12 @@ if (is_win || is_mac || is_linux) {
         "win/protocol_parser_xml.h",
         "win/scoped_impersonation.cc",
         "win/scoped_impersonation.h",
-        "win/setup/setup.cc",
-        "win/setup/setup.h",
         "win/setup/setup_util.cc",
         "win/setup/setup_util.h",
         "win/setup/uninstall.cc",
         "win/setup/uninstall.h",
+        "win/setup/win_setup.cc",
+        "win/setup/win_setup.h",
         "win/task_scheduler.cc",
         "win/task_scheduler.h",
         "win/ui/complete_wnd.cc",
@@ -319,6 +363,8 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/app/server/win:updater_legacy_idl_user",
         "//chrome/updater/win/ui/resources",
         "//chrome/updater/win/ui/resources:strings",
+        "//chrome/windows_services/service_program:delegate",
+        "//chrome/windows_services/service_program:lib",
         "//components/winhttp",
         "//third_party/wtl",
       ]
@@ -329,7 +375,7 @@ if (is_win || is_mac || is_linux) {
         "//chrome/updater/win:wrl_strict",
       ]
 
-      defines = [ "SECURITY_WIN32" ]
+      defines += [ "SECURITY_WIN32" ]
 
       libs = [
         "msxml2.lib",
@@ -368,7 +414,7 @@ if (is_win || is_mac || is_linux) {
         "app/app_server_posix_linux.cc",
         "installer_linux.cc",
         "ipc/ipc_security_linux.cc",
-        "linux/setup/setup.cc",
+        "linux/setup/linux_setup.cc",
         "linux/systemd_util.cc",
         "linux/systemd_util.h",
         "net/network_fetcher_linux.cc",
@@ -472,63 +518,7 @@ if (is_win || is_mac || is_linux) {
     output = "$target_gen_dir/updater_version.h"
   }
 
-  process_version("branding_header") {
-    sources = [ "//chrome/VERSION" ]
-    extra_args = [
-      "-e",
-      "BROWSER_NAME=\"$browser_name\"",
-      "-e",
-      "BROWSER_PRODUCT_NAME=\"$browser_product_name\"",
-      "-e",
-      "COMPANY_FULLNAME=\"$updater_company_full_name\"",
-      "-e",
-      "COMPANY_SHORTNAME=\"$updater_company_short_name\"",
-      "-e",
-      "COMPANY_SHORTNAME_LOWERCASE=\"$updater_company_short_name_lowercase\"",
-      "-e",
-      "COMPANY_SHORTNAME_UPPERCASE=\"$updater_company_short_name_uppercase\"",
-      "-e",
-      "COPYRIGHT=\"updater_copyright\"",
-      "-e",
-      "CRASH_PRODUCT_NAME=\"$crash_product_name\"",
-      "-e",
-      "CRASH_UPLOAD_URL=\"$crash_upload_url\"",
-      "-e",
-      "DEVICE_MANAGEMENT_SERVER_URL=\"$device_management_server_url\"",
-      "-e",
-      "HELP_CENTER_URL=\"$help_center_url\"",
-      "-e",
-      "APP_LOGO_URL=\"$app_logo_url\"",
-      "-e",
-      "KEYSTONE_NAME=\"$keystone_app_name\"",
-      "-e",
-      "PRIVILEGED_HELPER_NAME=\"$privileged_helper_name\"",
-      "-e",
-      "PRODUCT_FULLNAME=\"$updater_product_full_name\"",
-      "-e",
-      "PRODUCT_FULLNAME_DASHED_LOWERCASE=\"$updater_product_full_name_dashed_lowercase\"",
-      "-e",
-      "MAC_BROWSER_BUNDLE_IDENTIFIER=\"$mac_browser_bundle_identifier\"",
-      "-e",
-      "MAC_BUNDLE_IDENTIFIER=\"$mac_updater_bundle_identifier\"",
-      "-e",
-      "MAC_TEAM_IDENTIFIER=\"$mac_team_identifier\"",
-      "-e",
-      "UPDATE_CHECK_URL=\"$update_check_url\"",
-      "-e",
-      "UPDATER_APPID=\"$updater_appid\"",
-      "-e",
-      "QUALIFICATION_APPID=\"$qualification_appid\"",
-      "-e",
-      "LEGACY_GOOGLE_UPDATE_APPID=\"$legacy_google_update_appid\"",
-      "-e",
-      "LEGACY_SERVICE_NAME_PREFIX=\"$legacy_service_name_prefix\"",
-      "-e",
-      "PREFS_ACCESS_MUTEX=\"$prefs_access_mutex\"",
-      "-e",
-      "SETUP_MUTEX=\"$setup_mutex_prefix.%s.%s.%s.%s\"%(MAJOR,MINOR,BUILD,PATCH)",
-    ]
-
+  apply_updater_branding("branding_header") {
     template_file = "updater_branding.h.in"
     output = "$target_gen_dir/updater_branding.h"
   }
@@ -591,6 +581,7 @@ if (is_win || is_mac || is_linux) {
       ":tagging",
       ":version_header",
       "//base",
+      "//chrome/enterprise_companion:installer_paths",
       "//components/update_client",
       "//mojo/core/embedder",
       "//url",
@@ -610,7 +601,10 @@ if (is_win || is_mac || is_linux) {
         "win/win_constants.h",
       ]
 
-      deps += [ "//chrome/updater/app/server/win:updater_idl" ]
+      deps += [
+        "//chrome/updater/app/server/win:updater_idl",
+        "//chrome/windows_services/service_program:common",
+      ]
 
       configs -= [ "//build/config/win:winver" ]
       configs += [
@@ -710,6 +704,12 @@ if (is_win || is_mac || is_linux) {
         inputs = [ "$root_build_dir/UpdaterSetup_test.exe" ]
         deps = [ "//chrome/updater/win/installer:installer_test" ]
 
+        if (is_asan) {
+          # TODO(crbug.com/367746304): Get the inputs from //build/win:runtime.
+          deps += [ "//build/config/sanitizers:copy_sanitizer_runtime" ]
+          inputs += [ "$root_build_dir/clang_rt.asan_dynamic-x86_64.dll" ]
+        }
+
         if (is_component_build) {
           inputs += [
             "$root_build_dir/base.dll",
@@ -723,6 +723,91 @@ if (is_win || is_mac || is_linux) {
           deps += [ "//ui/base" ]
         }
       }
+    }
+
+    if (is_mac) {
+      process_version("enterprise_companion_test_crx_install_script") {
+        extra_args = [
+          "-e",
+          "PRODUCT_NAME=\"${enterprise_companion_product_full_name}\"",
+        ]
+        process_only = true
+        executable = true
+        template_file = "test/data/enterprise_companion_install_script.sh.in"
+        output =
+            "$target_gen_dir/enterprise_companion_test_crx_contents/.install"
+      }
+
+      _enterprise_companion_app_name =
+          "${enterprise_companion_product_full_name}.app"
+      _source_bundle_path = "$root_build_dir/EnterpriseCompanionTestApp/${_enterprise_companion_app_name}"
+      copy("enterprise_companion_test_crx_exe") {
+        sources = [ "${_source_bundle_path}/Contents/MacOS/${enterprise_companion_product_full_name}" ]
+        outputs = [ "$target_gen_dir/enterprise_companion_test_crx_contents/${_enterprise_companion_app_name}/Contents/MacOS/{{source_file_part}}" ]
+        deps = [
+          "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test",
+        ]
+      }
+      copy("enterprise_companion_test_crx_pkginfo") {
+        sources = [ "${_source_bundle_path}/Contents/PkgInfo" ]
+        outputs = [ "$target_gen_dir/enterprise_companion_test_crx_contents/${_enterprise_companion_app_name}/Contents/{{source_file_part}}" ]
+        deps = [
+          "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test",
+        ]
+      }
+      copy("enterprise_companion_test_crx_plist") {
+        sources = [ "${_source_bundle_path}/Contents/Info.plist" ]
+        outputs = [ "$target_gen_dir/enterprise_companion_test_crx_contents/${_enterprise_companion_app_name}/Contents/{{source_file_part}}" ]
+        deps = [
+          "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test",
+        ]
+      }
+      if (is_asan) {
+        copy("enterprise_companion_test_crx_asan_dylib") {
+          sources = [ "${_source_bundle_path}/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+          outputs = [ "$target_gen_dir/enterprise_companion_test_crx_contents/${_enterprise_companion_app_name}/Contents/MacOS/{{source_file_part}}" ]
+          deps = [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test" ]
+        }
+      }
+      zip("enterprise_companion_test_crx_contents_zip") {
+        inputs = get_target_outputs(
+                     ":enterprise_companion_test_crx_install_script") +
+                 get_target_outputs(":enterprise_companion_test_crx_exe") +
+                 get_target_outputs(":enterprise_companion_test_crx_pkginfo") +
+                 get_target_outputs(":enterprise_companion_test_crx_plist")
+        base_dir = "$target_gen_dir/enterprise_companion_test_crx_contents/"
+        output = "$target_gen_dir/enterprise_companion_test.zip"
+        deps = [
+          ":enterprise_companion_test_crx_exe",
+          ":enterprise_companion_test_crx_install_script",
+          ":enterprise_companion_test_crx_pkginfo",
+          ":enterprise_companion_test_crx_plist",
+        ]
+
+        if (is_asan) {
+          inputs +=
+              get_target_outputs(":enterprise_companion_test_crx_asan_dylib")
+          deps += [ ":enterprise_companion_test_crx_asan_dylib" ]
+        }
+      }
+    }
+
+    crx3("enterprise_companion_test_crx") {
+      testonly = true
+      if (is_linux) {
+        inputs = [ "$root_build_dir/enterprise_companion_test" ]
+        deps = [ "//chrome/enterprise_companion:enterprise_companion_test" ]
+      } else if (is_mac) {
+        inputs =
+            get_target_outputs(":enterprise_companion_test_crx_contents_zip")
+        deps = [ ":enterprise_companion_test_crx_contents_zip" ]
+        base_dir = "$target_gen_dir"
+      } else if (is_win) {
+        inputs = [ "$root_build_dir/enterprise_companion_test.exe" ]
+        deps = [ "//chrome/enterprise_companion:enterprise_companion_test" ]
+      }
+      key = "//chrome/updater/test/data/selfupdate_test_key.der"
+      output = "$root_build_dir/enterprise_companion_test.crx3"
     }
   }
 
@@ -857,10 +942,12 @@ if (is_win || is_mac || is_linux) {
     ]
 
     data_deps = [
+      ":enterprise_companion_test_crx",
       ":updater_selfupdate_test_crx",
-      "//chrome/enterprise_companion:enterprise_companion_test",
       "//chrome/updater/test/test_installer:app_installers",
     ]
+
+    defines = []
 
     if (is_win) {
       sources += [
@@ -904,6 +991,7 @@ if (is_win || is_mac || is_linux) {
       ]
 
       data_deps += [
+        "//chrome/enterprise_companion:enterprise_companion_test",
         "//chrome/updater/win:updater",
         "//chrome/updater/win:updater_test",
         "//chrome/updater/win/installer:installer_test",
@@ -950,7 +1038,7 @@ if (is_win || is_mac || is_linux) {
         ]
       }
 
-      defines = [ "SECURITY_WIN32" ]
+      defines += [ "SECURITY_WIN32" ]
 
       libs = [
         "secur32.lib",
@@ -1036,6 +1124,7 @@ if (is_win || is_mac || is_linux) {
       ]
 
       data_deps += [
+        "//chrome/enterprise_companion/mac:enterprise_companion_bundle_test",
         "//chrome/updater/mac:ksadmin_test",
         "//chrome/updater/mac:updater_bundle_test",
         "//chrome/updater/mac/client_lib/test_helpers/app_bundle:registration_test_app_bundle",
@@ -1072,7 +1161,10 @@ if (is_win || is_mac || is_linux) {
       sources += [ "test/integration_tests_linux.cc" ]
 
       data += [ "//chrome/test/data/updater/updater_qualification_app.crx" ]
-      data_deps += [ "//chrome/updater/linux:updater_test" ]
+      data_deps += [
+        "//chrome/enterprise_companion:enterprise_companion_test",
+        "//chrome/updater/linux:updater_test",
+      ]
       libs = [ "systemd" ]
     }
 

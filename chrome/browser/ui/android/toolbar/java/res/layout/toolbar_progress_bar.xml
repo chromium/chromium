@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/toolbar_progress_bar_height">
+<org.chromium.chrome.browser.toolbar.ToolbarProgressBar
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/toolbar_progress_bar"/>
+  <org.chromium.chrome.browser.toolbar.ToolbarProgressBarAnimatingView
+      android:layout_width="1dp"
+      android:layout_height="match_parent"
+      android:id="@+id/progress_bar_animating_view"/>
+</FrameLayout>

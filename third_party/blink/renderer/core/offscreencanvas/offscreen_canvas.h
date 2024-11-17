@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
@@ -83,7 +84,7 @@ class CORE_EXPORT OffscreenCanvas final
   void SetNeutered();
   CanvasRenderingContext* GetCanvasRenderingContext(
       ExecutionContext*,
-      const String&,
+      CanvasRenderingContext::CanvasRenderingAPI,
       const CanvasContextCreationAttributesCore&);
 
   static void RegisterRenderingContextFactory(
@@ -140,7 +141,13 @@ class CORE_EXPORT OffscreenCanvas final
   // Because OffscreenCanvas is not tied to a DOM, it's visibility cannot be
   // determined synchronously.
   // TODO(junov): Propagate changes in visibility from the placeholder canvas.
-  bool IsPageVisible() override { return true; }
+  bool IsPageVisible() const override { return true; }
+  void SetTransferToGPUTextureWasInvoked() override {
+    transfer_to_gpu_texture_was_invoked_ = true;
+  }
+  bool TransferToGPUTextureWasInvoked() override {
+    return transfer_to_gpu_texture_was_invoked_;
+  }
 
   // EventTarget implementation
   const AtomicString& InterfaceName() const final {
@@ -289,6 +296,7 @@ class CORE_EXPORT OffscreenCanvas final
   uint32_t sink_id_ = 0;
 
   bool restoring_gpu_context_ = false;
+  bool transfer_to_gpu_texture_was_invoked_ = false;
 
   NO_UNIQUE_ADDRESS V8ExternalMemoryAccounterBase external_memory_accounter_;
 };

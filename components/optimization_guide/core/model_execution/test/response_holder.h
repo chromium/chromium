@@ -17,7 +17,8 @@ class ResponseHolder {
   ResponseHolder();
   ~ResponseHolder();
 
-  OptimizationGuideModelExecutionResultStreamingCallback callback();
+  OptimizationGuideModelExecutionResultCallback GetCallback();
+  OptimizationGuideModelExecutionResultStreamingCallback GetStreamingCallback();
 
   // Wait for and get the final execution status (true if completed without
   // error).
@@ -36,15 +37,35 @@ class ResponseHolder {
     return provided_by_on_device_;
   }
   ModelQualityLogEntry* log_entry() { return log_entry_received_.get(); }
+  proto::ModelExecutionInfo* model_execution_info() {
+    return model_execution_info_received_.get();
+  }
+  const auto& logged_executions() {
+    return log_entry()
+        ->log_ai_data_request()
+        ->model_execution_info()
+        .on_device_model_execution_info()
+        .execution_infos();
+  }
+
+  void ClearLogEntry() {
+    log_entry_received_.reset();
+    model_execution_info_received_.reset();
+  }
 
  private:
-  void OnResponse(OptimizationGuideModelStreamingExecutionResult result);
+  void Clear();
+  void OnResponse(OptimizationGuideModelExecutionResult result,
+                  std::unique_ptr<ModelQualityLogEntry> log_entry);
+  void OnStreamingResponse(
+      OptimizationGuideModelStreamingExecutionResult result);
 
   base::test::TestFuture<bool> final_status_future_;
   std::vector<std::string> streamed_responses_;
   std::optional<std::string> response_received_;
   std::optional<bool> provided_by_on_device_;
   std::unique_ptr<ModelQualityLogEntry> log_entry_received_;
+  std::unique_ptr<proto::ModelExecutionInfo> model_execution_info_received_;
   std::optional<OptimizationGuideModelExecutionError::ModelExecutionError>
       response_error_;
   base::WeakPtrFactory<ResponseHolder> weak_ptr_factory_;

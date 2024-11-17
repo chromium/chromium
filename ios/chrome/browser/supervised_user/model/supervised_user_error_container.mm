@@ -51,10 +51,10 @@ const char kSupervisedUserInterstitialType[] = "kSupervisedUserInterstitial";
 SupervisedUserErrorContainer::SupervisedUserErrorContainer(
     web::WebState* web_state)
     : supervised_user_service_(*SupervisedUserServiceFactory::GetForProfile(
-          ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()))),
+          ProfileIOS::FromBrowserState(web_state->GetBrowserState()))),
       web_state_(web_state) {
   CHECK(SupervisedUserServiceFactory::GetForProfile(
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState())));
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState())));
   supervised_user_service_->AddObserver(this);
 }
 
@@ -227,10 +227,6 @@ void SupervisedUserInterstitialBlockingPage::HandleCommand(
     security_interstitials::SecurityInterstitialCommand command) {
   CHECK(error_container_);
   error_container_->HandleCommand(*interstitial_, command);
-
-  // If the page was pre-rendered, the first time banner was not marked
-  // on page loading.
-  MaybeUpdateFirstTimeInterstitialBanner();
 }
 
 bool SupervisedUserInterstitialBlockingPage::ShouldCreateNewNavigation() const {
@@ -257,31 +253,4 @@ void SupervisedUserInterstitialBlockingPage::WebStateDestroyed(
   DCHECK(scoped_observation_.IsObservingSource(web_state));
   error_container_ = nullptr;
   scoped_observation_.Reset();
-}
-
-void SupervisedUserInterstitialBlockingPage::PageLoaded(
-    web::WebState* web_state,
-    web::PageLoadCompletionStatus load_completion_status) {
-  MaybeUpdateFirstTimeInterstitialBanner();
-}
-
-void SupervisedUserInterstitialBlockingPage::
-    MaybeUpdateFirstTimeInterstitialBanner() {
-  if (!interstitial_->web_content_handler()->IsMainFrame()) {
-    return;
-  }
-  if (!web_state_->IsVisible()) {
-    // Only mark the banner if the loaded page is visible (it might be
-    // pre-rendered).
-    return;
-  }
-
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
-  CHECK(chrome_browser_state);
-  supervised_user::SupervisedUserService* supervised_user_service =
-      SupervisedUserServiceFactory::GetForProfile(chrome_browser_state);
-
-  CHECK(supervised_user_service);
-  supervised_user_service->MarkFirstTimeInterstitialBannerShown();
 }

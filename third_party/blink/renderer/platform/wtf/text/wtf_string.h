@@ -67,7 +67,6 @@ class WTF_EXPORT String {
 
   // Construct a string with UTF-16 data.
   explicit String(base::span<const UChar> utf16_data);
-  String(const UChar* characters, unsigned length);
 
   // Construct a string by copying the contents of a vector.
   // This method will never create a null string. Vectors with size() == 0
@@ -84,16 +83,9 @@ class WTF_EXPORT String {
 
   // Construct a string with latin1 data.
   explicit String(base::span<const LChar> latin1_data);
-  String(const LChar* characters, unsigned length);
-  String(const char* characters, unsigned length);
-  explicit String(const std::string& s) : String(s.c_str(), s.length()) {}
-
-#if defined(ARCH_CPU_64_BITS)
-  // Only define size_t constructors if size_t is 64 bit otherwise
-  // we'd have a duplicate define.
-  String(const UChar* characters, size_t length);
-  String(const char* characters, size_t length);
-#endif  // defined(ARCH_CPU_64_BITS)
+  explicit String(base::span<const char> latin1_data)
+      : String(base::as_bytes(latin1_data)) {}
+  explicit String(const std::string& s) : String(base::as_byte_span(s)) {}
 
   // Construct a string with latin1 data, from a null-terminated source. The
   // `LChar` constructor is explicit to avoid misinterpreting byte arrays.
@@ -102,8 +94,8 @@ class WTF_EXPORT String {
   // `uint8_t[N]`.
   explicit String(const LChar* characters)
       : String(reinterpret_cast<const char*>(characters)) {}
-  String(const char* characters)
-      : String(characters, characters ? strlen(characters) : 0) {}
+  String(const char* characters)  // NOLINT(google-explicit-constructor)
+      : String(base::span(characters, characters ? strlen(characters) : 0)) {}
 
   // Construct a string referencing an existing StringImpl.
   String(StringImpl* impl) : impl_(impl) {}
@@ -211,7 +203,7 @@ class WTF_EXPORT String {
   template <typename IntegerType>
   static String Number(IntegerType number) {
     IntegerToStringConverter<IntegerType> converter(number);
-    return StringImpl::Create(converter.Characters8(), converter.length());
+    return StringImpl::Create(converter.Span());
   }
 
   [[nodiscard]] static String Number(float);
@@ -432,8 +424,8 @@ class WTF_EXPORT String {
   }
 
   // Copy characters out of the string. See StringImpl.h for detailed docs.
-  unsigned CopyTo(UChar* buffer, unsigned start, unsigned max_length) const {
-    return impl_ ? impl_->CopyTo(buffer, start, max_length) : 0;
+  size_t CopyTo(base::span<UChar> buffer, wtf_size_t start) const {
+    return impl_ ? impl_->CopyTo(buffer, start) : 0;
   }
   template <typename BufferType>
   void AppendTo(BufferType&,
@@ -528,28 +520,22 @@ class WTF_EXPORT String {
   [[nodiscard]] static String Make8BitFrom16BitSource(base::span<const UChar>);
   [[nodiscard]] static String Make16BitFrom8BitSource(base::span<const LChar>);
 
-  // String::fromUTF8 will return a null string if
+  // String::FromUTF8 will return a null string if
   // the input data contains invalid UTF-8 sequences.
   // Does not strip BOMs.
-  [[nodiscard]] static String FromUTF8(const LChar*, size_t);
-  [[nodiscard]] static String FromUTF8(const LChar*);
-  [[nodiscard]] static String FromUTF8(const char* s, size_t length) {
-    return FromUTF8(reinterpret_cast<const LChar*>(s), length);
+  [[nodiscard]] static String FromUTF8(base::span<const uint8_t>);
+  [[nodiscard]] static String FromUTF8(const char* s);
+  [[nodiscard]] static String FromUTF8(std::string_view s) {
+    return FromUTF8(base::as_byte_span(s));
   }
-  [[nodiscard]] static String FromUTF8(const char* s) {
-    return FromUTF8(reinterpret_cast<const LChar*>(s));
-  }
-  [[nodiscard]] static String FromUTF8(std::string_view);
 
   // Tries to convert the passed in string to UTF-8, but will fall back to
   // Latin-1 if the string is not valid UTF-8.
-  [[nodiscard]] static String FromUTF8WithLatin1Fallback(const LChar*, size_t);
-  [[nodiscard]] static String FromUTF8WithLatin1Fallback(const char* s,
-                                                         size_t length) {
-    return FromUTF8WithLatin1Fallback(reinterpret_cast<const LChar*>(s),
-                                      length);
+  [[nodiscard]] static String FromUTF8WithLatin1Fallback(
+      base::span<const uint8_t>);
+  [[nodiscard]] static String FromUTF8WithLatin1Fallback(std::string_view s) {
+    return FromUTF8WithLatin1Fallback(base::as_byte_span(s));
   }
-  [[nodiscard]] static String FromUTF8WithLatin1Fallback(std::string_view);
 
   bool IsLowerASCII() const { return !impl_ || impl_->IsLowerASCII(); }
 
@@ -620,8 +606,7 @@ inline void swap(String& a, String& b) {
 
 template <wtf_size_t inlineCapacity>
 String::String(const Vector<UChar, inlineCapacity>& vector)
-    : impl_(vector.size() ? StringImpl::Create(vector.data(), vector.size())
-                          : StringImpl::empty_) {}
+    : impl_(vector.size() ? StringImpl::Create(vector) : StringImpl::empty_) {}
 
 template <>
 inline const LChar* String::GetCharacters<LChar>() const {

@@ -77,8 +77,13 @@ source_set("sync") {
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+
+    # TODO(crbug.com/374910357): Investigate for a better dependency injection.
+    "//chrome/browser/autofill",
     "//chrome/browser/favicon",
+    "//chrome/browser/prefs:util",
     "//chrome/browser/promos:utils",
+    "//chrome/browser/reading_list",
     "//chrome/browser/search_engines",
     "//chrome/browser/tab_group_sync:utils",
     "//chrome/browser/ui:ui_features",
@@ -104,8 +109,7 @@ source_set("sync") {
     "//components/plus_addresses/webdata",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/privacy_sandbox:tracking_protection_prefs",
-    "//components/saved_tab_groups:core",
-    "//components/saved_tab_groups:model",
+    "//components/saved_tab_groups/public",
     "//components/send_tab_to_self",
     "//components/sharing_message",
     "//components/spellcheck:buildflags",
@@ -158,6 +162,7 @@ source_set("sync") {
     ]
     deps += [
       "//chrome/browser/themes",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/browser/web_applications",
     ]
 
@@ -183,12 +188,12 @@ source_set("sync") {
       "//ash/public/cpp",
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",
-      "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/arc",
+      "//chrome/browser/ash/arc:arc_util",
       "//chrome/browser/ash/arc/tracing",
       "//chrome/browser/ash/crosapi:browser_util",
       "//chrome/browser/ash/floating_sso",
-      "//chrome/browser/ash/floating_workspace",
+      "//chrome/browser/ash/floating_workspace:utils",
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/login/session",
       "//chrome/browser/ash/printing",
@@ -204,7 +209,6 @@ source_set("sync") {
     allow_circular_includes_from = [
       "//chrome/browser/ash/app_list",
       "//chrome/browser/ash/app_list/arc",
-      "//chrome/browser/ash/floating_workspace",
       "//chrome/browser/ash/login/session",
     ]
   }

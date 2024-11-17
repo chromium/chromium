@@ -29,6 +29,7 @@
 #include "base/process/process.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
@@ -204,6 +205,8 @@ scoped_refptr<device::JSONRequest> JSONFromString(std::string_view json_str) {
   base::Value json_request = base::JSONReader::Read(json_str).value();
   return base::MakeRefCounted<device::JSONRequest>(std::move(json_request));
 }
+
+}  // namespace
 
 class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
  public:
@@ -540,9 +543,13 @@ TEST_F(EnclaveManagerTest, Basic) {
   EXPECT_EQ(security_domain_service_->num_physical_members(), 1u);
   EXPECT_EQ(security_domain_service_->num_pin_members(), 0u);
 
+  base::HistogramTester histogram_tester;
   DoCreate(/*claimed_pin=*/nullptr, /*out_specifics=*/nullptr);
   DoAssertion(GetTestEntity(), /*claimed_pin=*/nullptr,
               GetAssertionResponseExpectation());
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.EnclaveTransactionResult",
+      device::enclave::EnclaveTransactionResult::kSuccess, 2);
 }
 
 TEST_F(EnclaveManagerTest, SecretsArriveBeforeRegistrationRequested) {
@@ -1816,10 +1823,101 @@ TEST_F(EnclaveUVTest, UnregisterOnFailedDeferredUVKeyCreation) {
   EXPECT_FALSE(manager_.is_registered());
 }
 
+// Test that signing with a key that is unknown to the service unregisters
+// the local client.
+TEST_F(EnclaveUVTest, UnregisterOnMissingUserVerifyingKey) {
+  base::HistogramTester histogram_tester;
+  security_domain_service_->pretend_there_are_members();
+  NoArgFuture loaded_future;
+  manager_.Load(loaded_future.GetCallback());
+  EXPECT_TRUE(loaded_future.Wait());
+
+  BoolFuture register_future;
+  manager_.RegisterIfNeeded(register_future.GetCallback());
+  ASSERT_FALSE(manager_.is_idle());
+  EXPECT_TRUE(register_future.Wait());
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  ASSERT_FALSE(manager_.has_pending_keys());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
+  ASSERT_TRUE(manager_.is_idle());
+  ASSERT_TRUE(manager_.has_pending_keys());
+
+  BoolFuture add_future;
+  ASSERT_TRUE(manager_.AddDeviceToAccount(
+      /*pin_metadata=*/std::nullopt, add_future.GetCallback()));
+  ASSERT_FALSE(manager_.is_idle());
+  EXPECT_TRUE(add_future.Wait());
+
+  base::RepeatingClosure quit_closure;
+
+  EXPECT_EQ(manager_.uv_key_state(/*platform_has_biometrics=*/false),
+            EnclaveManager::UvKeyState::kUsesSystemUIDeferredCreation);
+
+  // Generate a UV key and reset the deferred UV key flag, without sending a
+  // public key to the service.
+  base::test::TestFuture<
+      base::expected<std::unique_ptr<crypto::UserVerifyingSigningKey>,
+                     crypto::UserVerifyingKeyCreationError>>
+      key_future;
+  std::unique_ptr<crypto::UserVerifyingKeyProvider> key_provider =
+      crypto::GetUserVerifyingKeyProvider(/*config=*/{});
+  key_provider->GenerateUserVerifyingSigningKey(
+      std::array{crypto::SignatureVerifier::ECDSA_SHA256},
+      key_future.GetCallback());
+  EXPECT_TRUE(key_future.Wait());
+  manager_.local_state_for_testing()
+      .mutable_users()
+      ->begin()
+      ->second.set_uv_public_key(
+          ToString(key_future.Get().value()->GetPublicKey()));
+  manager_.local_state_for_testing()
+      .mutable_users()
+      ->begin()
+      ->second.set_wrapped_uv_private_key(
+          key_future.Get().value()->GetKeyLabel());
+  manager_.local_state_for_testing()
+      .mutable_users()
+      ->begin()
+      ->second.set_deferred_uv_key_creation(false);
+  std::unique_ptr<crypto::UserVerifyingSigningKey> key_temp =
+      std::move(key_future.Take().value());
+  manager_.user_verifying_key_ =
+      base::MakeRefCounted<crypto::RefCountedUserVerifyingSigningKey>(
+          std::move(key_temp));
+
+  base::RunLoop run_loop;
+  auto ui_request = std::make_unique<enclave::CredentialRequest>();
+  ui_request->signing_callback =
+      manager_.UserVerifyingKeySigningCallback(/*options=*/{});
+  ui_request->wrapped_secret =
+      *manager_.GetWrappedSecret(/*version=*/kSecretVersion);
+  ui_request->entity = GetTestEntity();
+  ui_request->claimed_pin = nullptr;
+  ui_request->save_passkey_callback = base::BindOnce(
+      [](sync_pb::WebauthnCredentialSpecifics) { NOTREACHED(); });
+  ui_request->user_verified = true;
+  ui_request->unregister_callback =
+      base::BindOnce(&EnclaveManager::Unenroll, manager_.GetWeakPtr(),
+                     base::BindLambdaForTesting(
+                         [&run_loop](bool) { run_loop.QuitWhenIdle(); }));
+
+  GetAssertionResponseExpectation expected_response;
+  expected_response.result = device::GetAssertionStatus::kEnclaveError;
+  expected_response.size = 0;
+  DoAssertion(GetTestEntity(), /*claimed_pin=*/nullptr, expected_response,
+              std::move(ui_request));
+  run_loop.Run();
+
+  EXPECT_FALSE(manager_.is_registered());
+  histogram_tester.ExpectBucketCount(
+      "WebAuthentication.EnclaveTransactionResult",
+      device::enclave::EnclaveTransactionResult::kMissingKey, 1);
+}
+
 #endif  // BUILDFLAG(IS_WIN)
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
-
-}  // namespace
 
 #endif  // !defined(MEMORY_SANITIZER)

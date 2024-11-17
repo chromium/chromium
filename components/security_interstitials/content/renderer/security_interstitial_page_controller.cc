@@ -52,7 +52,8 @@ SecurityInterstitialPageController::SecurityInterstitialPageController(
     content::RenderFrame* render_frame)
     : RenderFrameObserver(render_frame) {}
 
-SecurityInterstitialPageController::~SecurityInterstitialPageController() {}
+SecurityInterstitialPageController::~SecurityInterstitialPageController() =
+    default;
 
 void SecurityInterstitialPageController::DontProceed() {
   SendCommand(
@@ -177,7 +178,7 @@ void SecurityInterstitialPageController::SendCommand(
     default:
       // Other values in the enum are only used by tests so this
       // method should not be called with them.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

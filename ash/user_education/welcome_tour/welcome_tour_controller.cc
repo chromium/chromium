@@ -38,10 +38,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
+#include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/constants/devicetype.h"
-#include "components/user_education/common/events.h"
-#include "components/user_education/common/help_bubble.h"
-#include "components/user_education/common/tutorial_description.h"
+#include "components/user_education/common/help_bubble/help_bubble.h"
+#include "components/user_education/common/tutorial/tutorial_description.h"
+#include "components/user_education/common/user_education_events.h"
 #include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -501,6 +502,13 @@ void WelcomeTourController::MaybeStartWelcomeTour() {
     if (session_controller->IsActiveAccountManaged()) {
       welcome_tour_metrics::RecordTourPrevented(
           prefs, welcome_tour_metrics::PreventedReason::kManagedAccount);
+      return;
+    }
+
+    // TODO(crbugs.com/375519646): Figure out how to handle for demo mode use
+    // case. Skip for now.
+    if (demo_mode::IsDeviceInDemoMode()) {
+      // TODO(crbugs.com/375519646): Add exit metrics.
       return;
     }
 

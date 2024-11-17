@@ -34,12 +34,10 @@ namespace blink {
 InspectorOverlayHost::InspectorOverlayHost(Delegate* delegate)
     : delegate_(delegate) {}
 
-void InspectorOverlayHost::send(const ScriptValue& message,
-                                ExceptionState& exception_state) {
+void InspectorOverlayHost::send(const ScriptValue& message) {
   if (!delegate_)
     return;
-  delegate_->Dispatch(message, exception_state);
-  DCHECK(!exception_state.HadException()) << exception_state.Message();
+  delegate_->Dispatch(message, ASSERT_NO_EXCEPTION);
 }
 
 void InspectorOverlayHost::ClearDelegate() {

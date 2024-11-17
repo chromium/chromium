@@ -39,6 +39,7 @@ namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTabSearchPageElementId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
 constexpr char kDocumentWithButtonURL[] = "/button.html";
+constexpr char kDocumentWithIframe[] = "/iframe_elements.html";
 }  // namespace
 
 class WebContentsInteractionTestUtilInteractiveUiTest
@@ -262,8 +263,105 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
 
+// This test verifies that the bounds of an element can be retrieved.
 IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
-                       UseElementBoundsInScreenToSendInput) {
+                       GetIframeElementBoundsInScreen) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithIframe);
+  auto page = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+      browser(), kWebContentsElementId);
+  const WebContentsInteractionTestUtil::DeepQuery kContainerQuery = {
+      "#container"};
+  const WebContentsInteractionTestUtil::DeepQuery kIframeQuery = {"#iframe"};
+  const WebContentsInteractionTestUtil::DeepQuery kTopElementQuery = {"#iframe",
+                                                                      "p"};
+  const WebContentsInteractionTestUtil::DeepQuery kLinkQuery = {"#iframe",
+                                                                "#ref"};
+
+  auto sequence =
+      ui::InteractionSequence::Builder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+          .SetContext(browser()->window()->GetElementContext())
+          // Navigate to the test page.
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetElementID(kWebContentsElementId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [url](ui::InteractionSequence*,
+                            ui::TrackedElement* element) {
+                        auto* const owner =
+                            element->AsA<TrackedElementWebContents>()->owner();
+                        owner->LoadPage(url);
+                      }))
+                  .Build())
+          // Wait for the navigation to complete and check the button bounds.
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetElementID(kWebContentsElementId)
+                  .SetTransitionOnlyOnEvent(true)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&, url](ui::InteractionSequence*,
+                               ui::TrackedElement* element) {
+                        auto* const owner =
+                            element->AsA<TrackedElementWebContents>()->owner();
+                        const gfx::Rect window_rect =
+                            browser()->window()->GetBounds();
+                        const gfx::Rect container_rect =
+                            owner->GetElementBoundsInScreen(kContainerQuery);
+
+                        const gfx::Rect iframe_rect =
+                            owner->GetElementBoundsInScreen(kIframeQuery);
+                        EXPECT_FALSE(iframe_rect.IsEmpty());
+                        EXPECT_TRUE(window_rect.Contains(iframe_rect))
+                            << "Expected window rect " << window_rect.ToString()
+                            << " to contain element rect "
+                            << iframe_rect.ToString();
+                        EXPECT_TRUE(container_rect.Contains(iframe_rect))
+                            << "Expected container rect "
+                            << container_rect.ToString()
+                            << " to contain element rect "
+                            << iframe_rect.ToString();
+
+                        const gfx::Rect top_element_rect =
+                            owner->GetElementBoundsInScreen(kTopElementQuery);
+                        EXPECT_FALSE(top_element_rect.IsEmpty());
+                        EXPECT_TRUE(iframe_rect.Contains(top_element_rect))
+                            << "Expected iframe rect " << iframe_rect.ToString()
+                            << " to contain element rect "
+                            << top_element_rect.ToString();
+
+                        const gfx::Rect link_rect =
+                            owner->GetElementBoundsInScreen(kLinkQuery);
+                        EXPECT_FALSE(link_rect.IsEmpty());
+                        EXPECT_TRUE(iframe_rect.Contains(link_rect))
+                            << "Expected iframe rect " << iframe_rect.ToString()
+                            << " to contain element rect "
+                            << link_rect.ToString();
+                        EXPECT_GT(link_rect.y(), top_element_rect.y())
+                            << "Expected element rect " << link_rect.ToString()
+                            << " to be strictly lower on the page than the top "
+                               "element "
+                            << top_element_rect.ToString();
+                      }))
+                  .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+// TODO(https://crbug.com/372873264): Re-enable on chrome linux builders.
+#if BUILDFLAG(IS_LINUX) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#define MAYBE_UseElementBoundsInScreenToSendInput \
+  DISABLED_UseElementBoundsInScreenToSendInput
+#else
+#define MAYBE_UseElementBoundsInScreenToSendInput \
+  UseElementBoundsInScreenToSendInput
+#endif
+IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
+                       MAYBE_UseElementBoundsInScreenToSendInput) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kMouseMoveCustomEvent);

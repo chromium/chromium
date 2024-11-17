@@ -5,5 +5,11 @@ include_rules = [
   "+components/user_manager",
   "+content/public/test",
   "+components/signin/public/identity_manager",
-  "+components/gcm_driver"
+  "+components/gcm_driver",
+  "+components/sessions/core/session_id.h",
+  "+ui/base/l10n/l10n_util.h",
+  "+ui/message_center/fake_message_center.h",
+  "+ui/message_center/message_center.h",
+  "+ui/message_center/public/cpp/notification.h",
+  "+ui/message_center/public/cpp/notification_types.h",
 ]

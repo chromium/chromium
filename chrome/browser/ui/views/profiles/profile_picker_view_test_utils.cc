@@ -25,14 +25,6 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
-#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
-#include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 #error This file should only be included on desktop.
 #endif
@@ -334,39 +326,5 @@ void ExpectPickerManagedUserNoticeScreenTypeAndProceed(
   // Simulate clicking on the next button.
   handler->CallProceedCallbackForTesting(choice);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void CompleteLacrosFirstRun(
-    LoginUIService::SyncConfirmationUIClosedResult result) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile& profile = profiles::testing::CreateProfileSync(
-      profile_manager, profile_manager->GetPrimaryUserProfilePath());
-
-  WaitForPickerWidgetCreated();
-  WaitForPickerLoadStop(GURL(chrome::kChromeUIIntroURL));
-
-  ASSERT_TRUE(ProfilePicker::IsFirstRunOpen());
-  EXPECT_EQ(0u, BrowserList::GetInstance()->size());
-
-  base::Value::List args;
-  GetPickerWebContents()->GetWebUI()->ProcessWebUIMessage(
-      GetPickerWebContents()->GetURL(), "continueWithAccount", std::move(args));
-
-  WaitForPickerLoadStop(AppendSyncConfirmationQueryParams(
-      GURL("chrome://sync-confirmation/"), SyncConfirmationStyle::kWindow,
-      /*is_sync_promo=*/true));
-
-  if (result == LoginUIService::UI_CLOSED) {
-    // `UI_CLOSED` is not provided via webui handlers. Instead, it gets sent
-    // when the profile picker gets closed by some external source. If we only
-    // send the result notification like for other types, the view will stay
-    // open.
-    ProfilePicker::Hide();
-  } else {
-    LoginUIServiceFactory::GetForProfile(&profile)->SyncConfirmationUIClosed(
-        result);
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace profiles::testing

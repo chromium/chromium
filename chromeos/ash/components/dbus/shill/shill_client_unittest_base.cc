@@ -309,7 +309,7 @@ void ShillClientUnittestBase::ExpectValueDictionaryArgument(
         ASSERT_FALSE(value->is_none());
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     ASSERT_TRUE(value.get());
     const base::Value* expected_value = expected_dictionary->Find(key);

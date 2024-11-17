@@ -10,10 +10,9 @@
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 
-// Responsible for receiving message updates from the remote phone device.
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
+// Responsible for receiving message updates from the remote phone device.
 class MessageReceiver {
  public:
   class Observer : public base::CheckedObserver {
@@ -92,7 +91,6 @@ class MessageReceiver {
   base::ObserverList<Observer> observer_list_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_MESSAGE_RECEIVER_H_

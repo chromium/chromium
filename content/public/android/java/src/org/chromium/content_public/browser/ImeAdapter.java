@@ -48,9 +48,13 @@ public interface ImeAdapter {
 
     /**
      * Add {@link ImeEventObserver} object to {@link ImeAdapter}.
+     *
      * @param observer imeEventObserver instance to add.
      */
     void addEventObserver(ImeEventObserver observer);
+
+    /** Remove the given event observer. */
+    void removeEventObserver(ImeEventObserver imeEventObserver);
 
     /**
      * @see View#onCreateInputConnection(EditorInfo)
@@ -62,9 +66,13 @@ public interface ImeAdapter {
      */
     boolean onCheckIsTextEditor();
 
+    /** Whether the focused node is editable or not. */
+    boolean focusedNodeEditable();
+
     /**
      * Overrides the InputMethodManagerWrapper that ImeAdapter uses to make calls to
      * InputMethodManager.
+     *
      * @param immw InputMethodManagerWrapper that should be used to call InputMethodManager.
      */
     void setInputMethodManagerWrapper(InputMethodManagerWrapper immw);

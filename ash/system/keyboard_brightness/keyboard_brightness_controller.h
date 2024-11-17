@@ -62,6 +62,8 @@ class ASH_EXPORT KeyboardBrightnessController
       const power_manager::AmbientLightSensorChange& change) override;
   void KeyboardBrightnessChanged(
       const power_manager::BacklightBrightnessChange& change) override;
+  void LidEventReceived(chromeos::PowerManagerClient::LidState state,
+                        base::TimeTicks timestamp) override;
 
   // LoginDataDispatcher::Observer:
   void OnFocusPod(const AccountId& account_id) override;
@@ -94,6 +96,8 @@ class ASH_EXPORT KeyboardBrightnessController
   void OnReceiveHasAmbientLightSensor(std::optional<bool> has_sensor);
   void OnReceiveKeyboardBrightnessAfterLogin(
       std::optional<double> keyboard_brightness);
+  void OnReceiveSwitchStates(
+      std::optional<chromeos::PowerManagerClient::SwitchStates> switch_states);
 
   void RecordHistogramForBrightnessAction(BrightnessAction brightness_action);
 
@@ -126,6 +130,9 @@ class ASH_EXPORT KeyboardBrightnessController
 
   // True if the keyboard has keyboard backlight.
   std::optional<bool> has_keyboard_backlight_ = false;
+
+  chromeos::PowerManagerClient::LidState lid_state_ =
+      chromeos::PowerManagerClient::LidState::OPEN;
 
   // This PrefChangeRegistrar is used to check when the synced profile pref for
   // the keyboard ambient light sensor value has finished syncing.

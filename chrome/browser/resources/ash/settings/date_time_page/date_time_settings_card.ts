@@ -21,12 +21,12 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isChild, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {isChild} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import {type Route, Router, routes} from '../router.js';
 
-import {DateTimeBrowserProxy, DateTimePageCallbackRouter, DateTimePageHandlerRemote} from './date_time_browser_proxy.js';
+import {DateTimeBrowserProxy, type DateTimePageCallbackRouter, type DateTimePageHandlerRemote} from './date_time_browser_proxy.js';
 import {getTemplate} from './date_time_settings_card.html.js';
 
 const DateTimeSettingsCardElementBase =
@@ -87,30 +87,11 @@ export class DateTimeSettingsCardElement extends
             prefs.generated.resolve_timezone_by_geolocation_on_off.value,
             prefs.generated.resolve_timezone_by_geolocation_method_short.value)`,
       },
-
-      rowIcons_: {
-        type: Object,
-        value() {
-          if (isRevampWayfindingEnabled()) {
-            return {
-              timezone: 'os-settings:clock',
-              use24hour: 'os-settings:24hour',
-              setDateTime: 'os-settings:set-date-time',
-            };
-          }
-          return {
-            timezone: '',
-            use24hour: '',
-            setDateTime: '',
-          };
-        },
-      },
     };
   }
 
   activeTimeZoneDisplayName: string;
   private canSetDateTime_: boolean;
-  private rowIcons_: Record<string, string>;
   private shouldShowManagedByParentIcon_: boolean;
   private timeZoneSettingSublabel_: string;
 
@@ -132,8 +113,7 @@ export class DateTimeSettingsCardElement extends
     super();
 
     /** RouteOriginMixin override */
-    this.route = isRevampWayfindingEnabled() ? routes.SYSTEM_PREFERENCES :
-                                               routes.DATETIME;
+    this.route = routes.SYSTEM_PREFERENCES;
   }
 
   override connectedCallback(): void {

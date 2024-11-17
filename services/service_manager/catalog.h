@@ -8,6 +8,7 @@
 #include <map>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "services/service_manager/public/cpp/manifest.h"
 
 namespace service_manager {
@@ -40,12 +41,16 @@ class Catalog {
   // Maintains a mapping from service name to manifest for quick lookup of any
   // manifest regardless of whether it's packaged. The values in this map refer
   // to objects owned by |manifests_| above.
-  const std::map<Manifest::ServiceName, const Manifest*> manifest_map_;
+  const std::map<Manifest::ServiceName,
+                 raw_ptr<const Manifest, CtnExperimental>>
+      manifest_map_;
 
   // Maintains a mapping from service name to parent manifest for quick
   // reverse-lookup of packaged service relationships. The values in this map
   // refer to objects owned by |manifests_| above.
-  const std::map<Manifest::ServiceName, const Manifest*> parent_manifest_map_;
+  const std::map<Manifest::ServiceName,
+                 raw_ptr<const Manifest, CtnExperimental>>
+      parent_manifest_map_;
 };
 
 }  // namespace service_manager

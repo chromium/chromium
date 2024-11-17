@@ -36,37 +36,28 @@ class FakeSyncableServiceBasedBridge : public DataTypeSyncBridge {
 
   // DataTypeSyncBridge implementation.
   std::unique_ptr<MetadataChangeList> CreateMetadataChangeList() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   std::optional<ModelError> MergeFullSyncData(
       std::unique_ptr<MetadataChangeList> /*metadata_change_list*/,
       EntityChangeList /*entity_data*/) override {
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
   std::optional<ModelError> ApplyIncrementalSyncChanges(
       std::unique_ptr<MetadataChangeList> /*metadata_change_list*/,
       EntityChangeList /*entity_changes*/) override {
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
   std::unique_ptr<DataBatch> GetDataForCommit(
       StorageKeyList /*storage_keys*/) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
-  std::unique_ptr<DataBatch> GetAllDataForDebugging() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  std::unique_ptr<DataBatch> GetAllDataForDebugging() override { NOTREACHED(); }
   std::string GetClientTag(const EntityData& /*entity_data*/) override {
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
   std::string GetStorageKey(const EntityData& /*entity_data*/) override {
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
 };
 
@@ -87,7 +78,7 @@ class BridgeBuilder {
     DCHECK(store_factory);
     DCHECK(syncable_service_provider);
 
-    // Unretained is safe because destruction also happens on |task_runner_| and
+    // Unretained is safe because destruction also happens on `task_runner_` and
     // can't overtake this task.
     task_runner_->PostTask(
         FROM_HERE,
@@ -123,7 +114,7 @@ class BridgeBuilder {
     auto processor =
         std::make_unique<ClientTagBasedDataTypeProcessor>(type, dump_stack);
 
-    // |syncable_service| can be null in tests.
+    // `syncable_service` can be null in tests.
     // TODO(crbug.com/40894683): Remove test-only code-path.
     if (syncable_service) {
       bridge_ = std::make_unique<SyncableServiceBasedBridge>(

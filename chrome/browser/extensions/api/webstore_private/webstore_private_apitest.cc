@@ -377,7 +377,7 @@ class SupervisedUserExtensionWebstorePrivateApiTest
     // test by about 19 seconds.
     // TODO (crbug.com/995575): figure out why this switch speeds up the test,
     // and fix the test setup so this is not required.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     command_line->AppendSwitch(::switches::kShortMergeSessionTimeoutForTest);
 #endif
   }

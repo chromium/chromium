@@ -76,6 +76,19 @@ TEST_F(DBusSchedQOSStateHandlerTest, InitializeProcessPriority) {
                                resource_manager::ProcessState::kNormal)));
 }
 
+TEST_F(DBusSchedQOSStateHandlerTest, RecoverFromUnavailableService) {
+  // WaitForServiceToBeAvailable() notifies false and then true.
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(false));
+  task_environment_.RunUntilIdle();
+  task_environment_.FastForwardBy(base::Seconds(10));
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
+  process_.InitializePriority();
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(resourced_client_->GetProcessStateHistory().size(), 1ul);
+}
+
 TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriority) {
   ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
   task_environment_.RunUntilIdle();
@@ -87,7 +100,9 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriority) {
   ASSERT_EQ(resourced_client_->GetProcessStateHistory().size(), 2ul);
 
   process_.SetPriority(base::Process::Priority::kUserBlocking);
+  task_environment_.RunUntilIdle();
   dummy_process.SetPriority(base::Process::Priority::kBestEffort);
+  task_environment_.RunUntilIdle();
   dummy_process.SetPriority(base::Process::Priority::kUserVisible);
   task_environment_.RunUntilIdle();
 
@@ -225,6 +240,35 @@ TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriorityRetryOnDisconnect) {
       UnorderedElementsAre(
           Pair(process_.Pid(), resource_manager::ProcessState::kBackground),
           Pair(dummy_process1.Pid(), resource_manager::ProcessState::kNormal)));
+}
+
+TEST_F(DBusSchedQOSStateHandlerTest,
+       SetProcessPriorityDuringServiceUnavailable) {
+  resourced_client_->SetProcessStateResult(
+      dbus::DBusResult::kErrorServiceUnknown);
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
+  process_.InitializePriority();
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ(resourced_client_->GetProcessStateHistory().size(), 1ul);
+
+  // WaitForServiceToBeAvailable() notifies false and then true.
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(false));
+  task_environment_.RunUntilIdle();
+  // Schedqos request gets pending.
+  ASSERT_TRUE(process_.SetPriority(base::Process::Priority::kBestEffort));
+  task_environment_.RunUntilIdle();
+  ASSERT_EQ(resourced_client_->GetProcessStateHistory().size(), 1ul);
+  // The request is re-sent when the service is ready.
+  resourced_client_->SetProcessStateResult(dbus::DBusResult::kSuccess);
+  task_environment_.FastForwardBy(base::Seconds(10));
+  ASSERT_TRUE(resourced_client_->TriggerServiceAvailable(true));
+  task_environment_.RunUntilIdle();
+
+  EXPECT_EQ(resourced_client_->GetProcessStateHistory().size(), 2ul);
+  EXPECT_THAT(
+      resourced_client_->GetProcessStateHistory()[1],
+      Pair(process_.Pid(), resource_manager::ProcessState::kBackground));
 }
 
 TEST_F(DBusSchedQOSStateHandlerTest, SetProcessPriorityUMA) {

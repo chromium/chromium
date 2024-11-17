@@ -102,26 +102,29 @@ void ScriptPromiseResolverBase::RejectWithSecurityError(
   Reject(exception);
 }
 
+String AddContext(const ExceptionContext& context, const String& message) {
+  return ExceptionMessages::AddContextToMessage(
+      context.GetType(), context.GetClassName(), context.GetPropertyName(),
+      message);
+}
+
 void ScriptPromiseResolverBase::RejectWithTypeError(const String& message) {
   ScriptState::Scope scope(script_state_.Get());
   Reject(V8ThrowException::CreateTypeError(
-      script_state_->GetIsolate(),
-      ExceptionMessages::AddContextToMessage(exception_context_, message)));
+      script_state_->GetIsolate(), AddContext(exception_context_, message)));
 }
 
 void ScriptPromiseResolverBase::RejectWithRangeError(const String& message) {
   ScriptState::Scope scope(script_state_.Get());
   Reject(V8ThrowException::CreateRangeError(
-      script_state_->GetIsolate(),
-      ExceptionMessages::AddContextToMessage(exception_context_, message)));
+      script_state_->GetIsolate(), AddContext(exception_context_, message)));
 }
 
 void ScriptPromiseResolverBase::RejectWithWasmCompileError(
     const String& message) {
   ScriptState::Scope scope(script_state_.Get());
   Reject(V8ThrowException::CreateWasmCompileError(
-      script_state_->GetIsolate(),
-      ExceptionMessages::AddContextToMessage(exception_context_, message)));
+      script_state_->GetIsolate(), AddContext(exception_context_, message)));
 }
 
 void ScriptPromiseResolverBase::Detach() {
@@ -155,10 +158,10 @@ void ScriptPromiseResolverBase::ResolveOrRejectImmediately() {
   DCHECK(!GetExecutionContext()->IsContextDestroyed());
   DCHECK(!GetExecutionContext()->IsContextPaused());
 
-  probe::WillHandlePromise(
-      GetExecutionContext(), script_state_, state_ == kResolving,
-      exception_context_.GetClassName(),
-      exception_context_.GetPropertyNameVariant(), script_url_);
+  probe::WillHandlePromise(GetExecutionContext(), script_state_,
+                           state_ == kResolving,
+                           exception_context_.GetClassName(),
+                           exception_context_.GetPropertyName(), script_url_);
 
   v8::MicrotasksScope microtasks_scope(
       script_state_->GetIsolate(), ToMicrotaskQueue(script_state_),

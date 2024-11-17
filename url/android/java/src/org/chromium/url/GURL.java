@@ -381,8 +381,8 @@ public class GURL {
      * Returns the instance of {@link Natives}. The Robolectric Shadow intercepts invocations of
      * this method.
      *
-     * <p>Unlike {@code GURLJni.TEST_HOOKS.setInstanceForTesting}, shadowing this method doesn't
-     * rely on tests correctly cleaning up global state.
+     * <p>Unlike {@code GURLJni.setInstanceForTesting}, shadowing this method doesn't rely on tests
+     * correctly cleaning up global state.
      */
     private static Natives getNatives() {
         return GURLJni.get();

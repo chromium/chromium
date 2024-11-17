@@ -35,6 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #include "device/bluetooth/test/bluetooth_test_android.h"
 #elif BUILDFLAG(IS_APPLE)
 #include "device/bluetooth/test/bluetooth_test_mac.h"
@@ -742,6 +743,13 @@ TEST_P(BluetoothTestWinrt, ConstructDefaultAdapter) {
 #else
 TEST_F(BluetoothTest, MAYBE_ConstructDefaultAdapter) {
 #endif
+#if BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SDK_VERSION_S) {
+    GTEST_SKIP() << "Android S+ requires runtime permissions that can't be "
+                    "granted automatically, skipping unit test.";
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   InitWithDefaultAdapter();
   if (!adapter_->IsPresent() || !adapter_->IsPowered()) {
     GTEST_SKIP()
@@ -930,6 +938,11 @@ TEST_F(BluetoothTest, MAYBE_NoPermissions) {
 TEST_F(BluetoothTest, NoLocationServices) {
   if (!PlatformSupportsLowEnergy()) {
     GTEST_SKIP() << "Low Energy Bluetooth unavailable, skipping unit test.";
+  }
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SDK_VERSION_S) {
+    GTEST_SKIP() << "Android S+ doesn't require location services perform "
+                    "Bluetooth scanning, skipping unit test.";
   }
   InitWithFakeAdapter();
   TestBluetoothAdapterObserver observer(adapter_);

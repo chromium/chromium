@@ -63,6 +63,7 @@ constexpr char kUsageMsg[] =
     "           [--md5[=<checksum path>]]\n"
     "           [--visible]\n"
     "           [--loop[=<n>]]\n"
+    "           [--progress]\n"
     "           [--v=<log verbosity>]\n"
     "           [--help]\n";
 
@@ -123,6 +124,9 @@ constexpr char kHelpMsg[] =
     "        If specified with --frames, loops decoding that number of\n"
     "        leading frames. If specified with --out-prefix, loops decoding,\n"
     "        but only saves the first iteration of decoded frames.\n"
+    "    --progress\n"
+    "        Optional. If specified, prints each frame number before it is\n"
+    "        decoded.\n"
     "    --help\n"
     "        Display this help message and exit.\n";
 
@@ -282,6 +286,8 @@ int main(int argc, char** argv) {
     return EXIT_FAILURE;
   }
 
+  const bool show_progress = cmd->HasSwitch("progress");
+
   do {
     const std::unique_ptr<VideoDecoder> dec = CreateDecoder(
         codec, va_device, *fetch_policy, stream.data(), stream.length());
@@ -291,6 +297,8 @@ int main(int argc, char** argv) {
     }
 
     for (int i = 0; i < n_frames || n_frames == 0; i++) {
+      LOG_IF(INFO, show_progress) << "Decoding frame " << i;
+
       const VideoDecoder::Result res = dec->DecodeNextFrame();
 
       if (res == VideoDecoder::kEOStream) {

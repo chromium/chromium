@@ -198,7 +198,7 @@ void FileSystemAccessHandleBase::DidRequestPermission(
           writable ? GetWritePermissionStatus() : GetReadPermissionStatus());
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FileSystemAccessHandleBase::DoMove(
@@ -228,8 +228,8 @@ void FileSystemAccessHandleBase::DoRename(
   DCHECK_EQ(GetWritePermissionStatus(),
             blink::mojom::PermissionStatus::GRANTED);
 
-  if (!FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
-          url().type(), new_entry_name)) {
+  if (!manager()->IsSafePathComponent(
+          url().type(), context_.storage_key.origin(), new_entry_name)) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kInvalidArgument));
     return;
@@ -255,7 +255,9 @@ void FileSystemAccessHandleBase::DoRename(
       url().type() == storage::FileSystemType::kFileSystemTypeTemporary
           ? manager()->GetSharedHandleStateForSandboxedPath()
           : manager()->GetSharedHandleStateForNonSandboxedPath(
-                destination_url.virtual_path(), context().storage_key,
+                content::PathInfo(destination_url.virtual_path(),
+                                  new_entry_name),
+                context().storage_key,
                 // TODO(crbug.com/40198034): Support directory moves.
                 FileSystemAccessPermissionContext::HandleType::kFile,
                 FileSystemAccessPermissionContext::UserAction::kNone);
@@ -300,8 +302,9 @@ void FileSystemAccessHandleBase::DidResolveTokenToMove(
     return;
   }
 
-  if (!FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
-          resolved_destination_directory->url().type(), new_entry_name)) {
+  if (!manager()->IsSafePathComponent(
+          resolved_destination_directory->url().type(),
+          context_.storage_key.origin(), new_entry_name)) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kInvalidArgument));
     return;
@@ -472,7 +475,8 @@ void FileSystemAccessHandleBase::DidMove(
     if (ShouldTrackUsage(url_) && ShouldTrackUsage(destination_url) &&
         manager()->permission_context()) {
       manager()->permission_context()->NotifyEntryMoved(
-          context_.storage_key.origin(), url_.path(), destination_url.path());
+          context_.storage_key.origin(), content::PathInfo(url_.path()),
+          content::PathInfo(destination_url.path()));
     }
     url_ = std::move(destination_url);
   }

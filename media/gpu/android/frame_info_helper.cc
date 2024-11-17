@@ -339,6 +339,7 @@ class FrameInfoHelperImpl : public FrameInfoHelper,
 
         // To avoid glitches during size changes, guess a likely coded size.
         auto info = GuessFrameInfo(*request.buffer_renderer);
+        info.ycbcr_info = frame_info_->ycbcr_info;
         waiting_for_real_frame_info_ = true;
 
         // Ensure we get the real coded size for the next frame.

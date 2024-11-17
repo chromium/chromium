@@ -4,21 +4,21 @@
 
 // This file exposes services in the browser to the utility process.
 
-#include "content/browser/utility_process_host.h"
-
 #include "build/build_config.h"
+#include "content/browser/utility_process_host.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "media/media_buildflags.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "components/services/font/public/mojom/font_service.mojom.h"  // nogncheck
 #include "content/browser/font_service.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 #include "components/viz/host/gpu_client.h"
 #include "content/public/browser/gpu_client.h"
-#endif
+#endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
 
 namespace content {
 
@@ -30,7 +30,7 @@ void UtilityProcessHost::BindHostReceiver(
     return;
   }
 #endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
   if (allowed_gpu_) {
     // TODO(crbug.com/328099369) Remove once all clients get this directly.
     if (auto gpu_receiver = receiver.As<viz::mojom::Gpu>()) {
@@ -38,7 +38,7 @@ void UtilityProcessHost::BindHostReceiver(
       return;
     }
   }
-#endif
+#endif  // BUILDFLAG(ENABLE_GPU_CHANNEL_MEDIA_CAPTURE)
   GetContentClient()->browser()->BindUtilityHostReceiver(std::move(receiver));
 }
 

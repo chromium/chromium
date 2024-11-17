@@ -408,7 +408,7 @@ TEST_F(PushNotificationServiceDesktopImplTest,
                                       /*bucket: success=*/1, 1);
 }
 
-TEST_F(PushNotificationServiceDesktopImplTest, OnMessageRecieved) {
+TEST_F(PushNotificationServiceDesktopImplTest, OnMessageReceived) {
   // No need to invoke the scheduler here because we aren't performing any
   // actions that require initialization to be complete.
 
@@ -428,7 +428,7 @@ TEST_F(PushNotificationServiceDesktopImplTest, OnMessageRecieved) {
                                         std::move(message));
   EXPECT_EQ(
       kTestMessage,
-      fake_push_notification_client->GetMostRecentMessageDataRecieved().at(
+      fake_push_notification_client->GetMostRecentMessageDataReceived().at(
           kNotificationPayloadKey));
 }
 

@@ -39,7 +39,7 @@ public class SurveyThrottlerUnitTest {
         SurveyMetadata.initializeForTesting(mSurveyMetadata, null);
 
         FirstRunStatus.setFirstRunTriggeredForTesting(false);
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
+        ThreadUtils.hasSubtleSideEffectsSetThreadAssertsDisabledForTesting(true);
     }
 
     @Test

@@ -16,11 +16,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/avatar_menu.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/browser.h"
@@ -84,6 +85,7 @@ AvatarToolbarButton::AvatarToolbarButton(BrowserView* browser_view)
                                         /*is_source_accelerator=*/false)),
       browser_(browser_view->browser()),
       creation_time_(base::TimeTicks::Now()) {
+  CHECK(browser_);
   delegate_ = std::make_unique<AvatarToolbarButtonDelegate>(this, browser_);
 
   // Activate on press for left-mouse-button only to mimic other MenuButtons
@@ -132,9 +134,7 @@ void AvatarToolbarButton::UpdateIcon() {
   SetImageModel(ButtonState::STATE_DISABLED,
                 ui::GetDefaultDisabledIconFromImageModel(icon));
 
-  for (auto& observer : observer_list_) {
-    observer.OnIconUpdated();
-  }
+  observer_list_.Notify(&Observer::OnIconUpdated);
 }
 
 void AvatarToolbarButton::AddedToWidget() {
@@ -345,20 +345,46 @@ void AvatarToolbarButton::MaybeShowProfileSwitchIPH() {
   }
 }
 
-void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH(
-    const AccountInfo& account_info) {
-  // TODO(b/351333491): Likely to need a delaying mechanism similar to
-  // `MaybeShowProfileSwitchIPH`. To be decided when implementing the
-  // invocation.
+void AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH() {
+  if (!base::FeatureList::IsEnabled(
+          feature_engagement::kIPHSupervisedUserProfileSigninFeature)) {
+    return;
+  }
+  signin::IdentityManager* const identity_manager =
+      IdentityManagerFactory::GetForProfile(browser_->profile());
+  CHECK(identity_manager);
+  if (!identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return;
+  }
+
+  auto account_info = identity_manager->FindExtendedAccountInfoByAccountId(
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
   if (account_info.capabilities.is_subject_to_parental_controls() !=
       signin::Tribool::kTrue) {
     return;
   }
-  user_education::FeaturePromoParams params(
-      feature_engagement::kIPHSupervisedUserProfileSigninFeature,
-      account_info.gaia);
-  params.title_params = base::UTF8ToUTF16(account_info.given_name);
+  if (account_info.IsEmpty()) {
+    return;
+  }
 
+  // Prevent showing the promo right when the browser was created.
+  // This is not just used for smoother animation, but it gives the anchor
+  // element enough time to become visible and display the IPH.
+  // TODO(crbug.com/372689164): investigate alternative rescheduling,
+  // using `CanShowFeaturePromo`.
+  base::TimeDelta time_since_creation = base::TimeTicks::Now() - creation_time_;
+  if (time_since_creation < g_iph_min_delay_after_creation) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&AvatarToolbarButton::MaybeShowSupervisedUserSignInIPH,
+                       weak_ptr_factory_.GetWeakPtr()),
+        g_iph_min_delay_after_creation - time_since_creation);
+    return;
+  }
+
+  user_education::FeaturePromoParams params(
+      feature_engagement::kIPHSupervisedUserProfileSigninFeature);
+  params.title_params = base::UTF8ToUTF16(account_info.given_name);
   browser_->window()->MaybeShowFeaturePromo(std::move(params));
 }
 
@@ -378,16 +404,12 @@ void AvatarToolbarButton::MaybeShowWebSignoutIPH(const std::string& gaia_id) {
 }
 
 void AvatarToolbarButton::OnMouseExited(const ui::MouseEvent& event) {
-  for (auto& observer : observer_list_) {
-    observer.OnMouseExited();
-  }
+  observer_list_.Notify(&Observer::OnMouseExited);
   ToolbarButton::OnMouseExited(event);
 }
 
 void AvatarToolbarButton::OnBlur() {
-  for (auto& observer : observer_list_) {
-    observer.OnBlur();
-  }
+  observer_list_.Notify(&Observer::OnBlur);
   ToolbarButton::OnBlur();
 }
 
@@ -403,9 +425,11 @@ void AvatarToolbarButton::OnThemeChanged() {
 }
 
 // static
-void AvatarToolbarButton::SetIPHMinDelayAfterCreationForTesting(
+base::AutoReset<base::TimeDelta>
+AvatarToolbarButton::SetScopedIPHMinDelayAfterCreationForTesting(
     base::TimeDelta delay) {
-  g_iph_min_delay_after_creation = delay;
+  return base::AutoReset<base::TimeDelta>(&g_iph_min_delay_after_creation,
+                                          delay);
 }
 
 void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
@@ -426,10 +450,9 @@ void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
 void AvatarToolbarButton::AfterPropertyChange(const void* key,
                                               int64_t old_value) {
   if (key == user_education::kHasInProductHelpPromoKey) {
-    for (auto& observer : observer_list_) {
-      observer.OnIPHPromoChanged(
-          GetProperty(user_education::kHasInProductHelpPromoKey));
-    }
+    observer_list_.Notify(
+        &Observer::OnIPHPromoChanged,
+        GetProperty(user_education::kHasInProductHelpPromoKey));
   }
   ToolbarButton::AfterPropertyChange(key, old_value);
 }

@@ -215,6 +215,19 @@ void OverviewSession::Init(
     birch_bar_controller_ = std::make_unique<BirchBarController>(
         /*is_informed_restore=*/enter_exit_overview_type_ ==
         OverviewEnterExitType::kInformedRestore);
+    if (enter_exit_overview_type_ == OverviewEnterExitType::kInformedRestore) {
+      PostLoginMetricsRecorder* post_login_metrics_recorder =
+          Shell::Get()
+              ->login_unlock_throughput_recorder()
+              ->post_login_metrics_recorder();
+      if (birch_bar_controller_->GetShowBirchSuggestions()) {
+        post_login_metrics_recorder->set_post_login_ui_status(
+            PostLoginMetricsRecorder::PostLoginUIStatus::kShownWithBirchBar);
+      } else {
+        post_login_metrics_recorder->set_post_login_ui_status(
+            PostLoginMetricsRecorder::PostLoginUIStatus::kShownWithoutBirchBar);
+      }
+    }
   }
 
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
@@ -369,6 +382,8 @@ void OverviewSession::Shutdown() {
   // Stop observing screen metrics changes first to avoid auto-positioning
   // windows in response to work area changes from window activation.
   display_observer_.reset();
+
+  weak_ptr_factory_.InvalidateWeakPtrs();
 
   // Stop observing split view state changes before restoring window focus.
   // Otherwise the activation of the window triggers OnSplitViewStateChanged()
@@ -1284,6 +1299,10 @@ void OverviewSession::UpdateFrameThrottling() {
   }
   Shell::Get()->frame_throttling_controller()->StartThrottling(
       windows_to_throttle);
+}
+
+base::WeakPtr<OverviewSession> OverviewSession::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void OverviewSession::OnDeskActivationChanged(const Desk* activated,

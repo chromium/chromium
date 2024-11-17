@@ -59,6 +59,11 @@ void AccountCapabilitiesTestMutator::set_can_use_chrome_ip_protection(
   capabilities_->capabilities_map_[kCanUseChromeIpProtectionName] = value;
 }
 
+void AccountCapabilitiesTestMutator::set_can_use_copyeditor_feature(
+    bool value) {
+  capabilities_->capabilities_map_[kCanUseCopyEditorFeatureName] = value;
+}
+
 void AccountCapabilitiesTestMutator::
     set_can_use_devtools_generative_ai_features(bool value) {
   capabilities_
@@ -102,6 +107,16 @@ void AccountCapabilitiesTestMutator::set_is_subject_to_parental_controls(
     bool value) {
   capabilities_->capabilities_map_[kIsSubjectToParentalControlsCapabilityName] =
       value;
+}
+
+void AccountCapabilitiesTestMutator::set_can_use_speaker_label_in_recorder_app(
+    bool value) {
+  capabilities_->capabilities_map_[kCanUseSpeakerLabelInRecorderApp] = value;
+}
+
+void AccountCapabilitiesTestMutator::set_can_use_generative_ai_in_recorder_app(
+    bool value) {
+  capabilities_->capabilities_map_[kCanUseGenerativeAiInRecorderApp] = value;
 }
 
 void AccountCapabilitiesTestMutator::SetAllSupportedCapabilities(bool value) {

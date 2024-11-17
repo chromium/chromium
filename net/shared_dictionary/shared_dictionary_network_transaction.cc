@@ -132,8 +132,9 @@ int SharedDictionaryNetworkTransaction::Start(const HttpRequestInfo* request,
 SharedDictionaryNetworkTransaction::SharedDictionaryEncodingType
 SharedDictionaryNetworkTransaction::ParseSharedDictionaryEncodingType(
     const HttpResponseHeaders& headers) {
-  std::string content_encoding;
-  if (!headers.GetNormalizedHeader("Content-Encoding", &content_encoding)) {
+  std::optional<std::string> content_encoding =
+      headers.GetNormalizedHeader("Content-Encoding");
+  if (!content_encoding) {
     return SharedDictionaryEncodingType::kNotUsed;
   } else if (content_encoding ==
              shared_dictionary::kSharedBrotliContentEncodingName) {
@@ -483,7 +484,7 @@ int SharedDictionaryNetworkTransaction::ResumeNetworkStart() {
 void SharedDictionaryNetworkTransaction::SetModifyRequestHeadersCallback(
     base::RepeatingCallback<void(HttpRequestHeaders*)> callback) {
   // This method should not be called for this class.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SharedDictionaryNetworkTransaction::

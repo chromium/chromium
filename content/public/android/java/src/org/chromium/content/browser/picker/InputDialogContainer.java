@@ -410,11 +410,9 @@ public class InputDialogContainer {
     }
 
     private class DateTimeListener implements OnDateTimeSetListener {
-        private final boolean mLocal;
         private final int mDialogType;
 
         public DateTimeListener(int dialogType) {
-            mLocal = dialogType == TextInputType.DATE_TIME_LOCAL;
             mDialogType = dialogType;
         }
 
@@ -467,13 +465,14 @@ public class InputDialogContainer {
             mInputActionDelegate.replaceDateTime((year - 1970) * 12 + month);
         } else if (dialogType == TextInputType.WEEK) {
             mInputActionDelegate.replaceDateTime(
-                    WeekPicker.createDateFromWeek(year, week).getTimeInMillis());
+                    (double) WeekPicker.createDateFromWeek(year, week).getTimeInMillis());
         } else if (dialogType == TextInputType.TIME) {
             mInputActionDelegate.replaceDateTime(
-                    TimeUnit.HOURS.toMillis(hourOfDay)
-                            + TimeUnit.MINUTES.toMillis(minute)
-                            + TimeUnit.SECONDS.toMillis(second)
-                            + millis);
+                    (double)
+                            (TimeUnit.HOURS.toMillis(hourOfDay)
+                                    + TimeUnit.MINUTES.toMillis(minute)
+                                    + TimeUnit.SECONDS.toMillis(second)
+                                    + millis));
         } else {
             Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
             cal.clear();
@@ -484,7 +483,7 @@ public class InputDialogContainer {
             cal.set(Calendar.MINUTE, minute);
             cal.set(Calendar.SECOND, second);
             cal.set(Calendar.MILLISECOND, millis);
-            mInputActionDelegate.replaceDateTime(cal.getTimeInMillis());
+            mInputActionDelegate.replaceDateTime((double) cal.getTimeInMillis());
         }
     }
 }

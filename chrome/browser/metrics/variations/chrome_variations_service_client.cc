@@ -5,6 +5,7 @@
 #include "chrome/browser/metrics/variations/chrome_variations_service_client.h"
 
 #include "base/feature_list.h"
+#include "base/path_service.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/variations/pref_names.h"
@@ -111,18 +113,10 @@ bool ChromeVariationsServiceClient::OverridesRestrictParameter(
 #endif
 }
 
-bool ChromeVariationsServiceClient::IsEnterprise() {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-  return base::IsEnterpriseDevice();
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return ash::InstallAttributes::Get()->IsEnterpriseManaged();
-#else
-  return false;
-#endif
-}
-
-version_info::Channel ChromeVariationsServiceClient::GetChannel() {
-  return chrome::GetChannel();
+base::FilePath ChromeVariationsServiceClient::GetVariationsSeedFileDir() {
+  base::FilePath seed_file_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &seed_file_dir);
+  return seed_file_dir;
 }
 
 std::unique_ptr<variations::SeedResponse>
@@ -134,6 +128,16 @@ ChromeVariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
   return seed;
 #else
   return nullptr;
+#endif
+}
+
+bool ChromeVariationsServiceClient::IsEnterprise() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+  return base::IsEnterpriseDevice();
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  return ash::InstallAttributes::Get()->IsEnterpriseManaged();
+#else
+  return false;
 #endif
 }
 
@@ -162,4 +166,8 @@ void ChromeVariationsServiceClient::
   for (const auto& profile : variations_profiles_to_delete) {
     variations_prefs_dict.Remove(profile);
   }
+}
+
+version_info::Channel ChromeVariationsServiceClient::GetChannel() {
+  return chrome::GetChannel();
 }

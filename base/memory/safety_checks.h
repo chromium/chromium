@@ -213,7 +213,7 @@ NOINLINE void HandleMemorySafetyCheckedOperatorDelete(
 #define MEMORY_SAFETY_CHECKS_INTERNAL(SPECIFIER, DEFAULT_CHECKS,               \
                                       ENABLED_CHECKS, DISABLED_CHECKS, ...)    \
  public:                                                                       \
-  static constexpr auto kMemorySafetyChecks = []() {                           \
+  static constexpr auto kMemorySafetyChecks = [] {                             \
     using enum base::internal::MemorySafetyCheck;                              \
     return (DEFAULT_CHECKS | ENABLED_CHECKS) & ~(DISABLED_CHECKS);             \
   }();                                                                         \

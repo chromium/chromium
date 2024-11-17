@@ -5,11 +5,10 @@
 // Utilities that are used in multiple tests.
 
 import type {Bookmark, DocumentDimensions, LayoutOptions, PdfViewerElement, ViewerToolbarElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {resetForTesting as resetMetricsForTesting, UserAction, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // <if expr="enable_pdf_ink2">
-import {BeforeUnloadProxyImpl} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import type {BeforeUnloadProxy, PluginController} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
-import {PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import type {AnnotationBrush, BeforeUnloadProxy, InkBrushSelectorElement, InkColorSelectorElement, InkSizeSelectorElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {AnnotationBrushType, BeforeUnloadProxyImpl, PluginController, PluginControllerEventType} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 // </if>
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement, html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -34,7 +33,7 @@ export class MockElement {
     this.sizer = sizer;
 
     if (sizer) {
-      sizer.resizeCallback_ = () =>
+      sizer.resizeCallbackImpl = () =>
           this.scrollTo(this.scrollLeft, this.scrollTop);
     }
   }
@@ -75,7 +74,7 @@ export class MockSizer {
   private width_: string = '0px';
   private height_: string = '0px';
 
-  resizeCallback_: (() => void)|null = null;
+  resizeCallbackImpl: (() => void)|null = null;
   style: {
     height: string,
     width: string,
@@ -92,8 +91,8 @@ export class MockSizer {
 
       set height(height: string) {
         sizer.height_ = height;
-        if (sizer.resizeCallback_) {
-          sizer.resizeCallback_();
+        if (sizer.resizeCallbackImpl) {
+          sizer.resizeCallbackImpl();
         }
       },
 
@@ -103,8 +102,8 @@ export class MockSizer {
 
       set width(width: string) {
         sizer.width_ = width;
-        if (sizer.resizeCallback_) {
-          sizer.resizeCallback_();
+        if (sizer.resizeCallbackImpl) {
+          sizer.resizeCallbackImpl();
         }
       },
     };
@@ -173,6 +172,10 @@ export class MockDocumentDimensions implements DocumentDimensions {
 
 export class MockPdfPluginElement extends HTMLEmbedElement {
   private messages_: any[] = [];
+  // <if expr="enable_pdf_ink2">
+  private messageReply_: Object|null = null;
+  private replyType_: string;
+  // </if>
 
   get messages(): any[] {
     return this.messages_;
@@ -187,8 +190,36 @@ export class MockPdfPluginElement extends HTMLEmbedElement {
   }
 
   postMessage(message: any, _transfer: Transferable[]) {
+    assert(message.type);
+    // <if expr="enable_pdf_ink2">
+    if (message.type === this.replyType_) {
+      assert(this.messageReply_);
+      assert(message.messageId);
+
+      this.dispatchEvent(new MessageEvent('message', {
+        data: {
+          messageId: message.messageId,
+          ...this.messageReply_,
+        },
+        origin: '*',
+      }));
+    }
+    // </if>
     this.messages_.push(message);
   }
+
+  // <if expr="enable_pdf_ink2">
+  /**
+   * Sets what the plugin's reply should be to a message posted using
+   * postMessage() with `type`.
+   * @param type The message type that should receive a reply.
+   * @param reply The reply to the message.
+   */
+  setMessageReply(type: string, reply: Object) {
+    this.replyType_ = type;
+    this.messageReply_ = reply;
+  }
+  // </if>
 }
 customElements.define(
     'mock-pdf-plugin', MockPdfPluginElement, {extends: 'embed'});
@@ -235,6 +266,39 @@ customElements.define(TestBookmarksElement.is, TestBookmarksElement);
  */
 export function createBookmarksForTest(): TestBookmarksElement {
   return document.createElement('test-bookmarks');
+}
+
+export class MockMetricsPrivate {
+  actionCounter: Map<UserAction, number> = new Map();
+
+  recordValue(metric: chrome.metricsPrivate.MetricType, value: number) {
+    chrome.test.assertEq('PDF.Actions', metric.metricName);
+    chrome.test.assertEq(
+        chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG, metric.type);
+    chrome.test.assertEq(1, metric.min);
+    chrome.test.assertEq(UserAction.NUMBER_OF_ACTIONS, metric.max);
+    chrome.test.assertEq(UserAction.NUMBER_OF_ACTIONS + 1, metric.buckets);
+
+    const counter = this.actionCounter.get(value) || 0;
+    this.actionCounter.set(value, counter + 1);
+  }
+
+  assertCount(action: UserAction, count: number) {
+    chrome.test.assertEq(count, this.actionCounter.get(action) || 0);
+  }
+
+  reset() {
+    resetMetricsForTesting();
+    this.actionCounter.clear();
+  }
+}
+
+export function setupMockMetricsPrivate(): MockMetricsPrivate {
+  resetMetricsForTesting();
+  const mockMetricsPrivate = new MockMetricsPrivate();
+  chrome.metricsPrivate.recordValue =
+      mockMetricsPrivate.recordValue.bind(mockMetricsPrivate);
+  return mockMetricsPrivate;
 }
 
 /**
@@ -407,4 +471,128 @@ export function getNewTestBeforeUnloadProxy(): TestBeforeUnloadProxy {
   BeforeUnloadProxyImpl.setInstance(testProxy);
   return testProxy;
 }
+
+export function setupTestMockPluginForInk(): MockPdfPluginElement {
+  const controller = PluginController.getInstance();
+  const mockPlugin = createMockPdfPluginForTest();
+  controller.setPluginForTesting(mockPlugin);
+  mockPlugin.setMessageReply('getAnnotationBrush', {
+    data: {
+      type: AnnotationBrushType.PEN,
+      size: 3,
+      color: {r: 0, g: 0, b: 0},
+    },
+  });
+  return mockPlugin;
+}
+
+/**
+ * Sets the reply to any getAnnotationBrush messages to `mockPlugin`.
+ * @param mockPlugin The mock plugin receiving and replying to messages.
+ * @param type The brush type in the reply message.
+ * @param size The brush size in the reply message.
+ * @param color The brush color in the reply message.
+ */
+export function setGetAnnotationBrushReply(
+    mockPlugin: MockPdfPluginElement, type: AnnotationBrushType, size: number,
+    color?: {r: number, g: number, b: number}) {
+  mockPlugin.setMessageReply('getAnnotationBrush', {data: {type, size, color}});
+}
+
+/**
+ * Tests that the current annotation brush matches `expectedBrush`. Clears all
+ * messages from `mockPlugin` after, otherwise subsequent calls would continue
+ * to find and use the same message.
+ * @param mockPlugin The mock plugin receiving messages.
+ * @param expectedBrush The expected brush that the current annotation brush
+ * should match.
+ */
+export function assertAnnotationBrush(
+    mockPlugin: MockPdfPluginElement, expectedBrush: AnnotationBrush) {
+  const setAnnotationBrushMessage =
+      mockPlugin.findMessage('setAnnotationBrush');
+  chrome.test.assertTrue(setAnnotationBrushMessage !== undefined);
+  chrome.test.assertEq('setAnnotationBrush', setAnnotationBrushMessage.type);
+  chrome.test.assertEq(expectedBrush.type, setAnnotationBrushMessage.data.type);
+  const hasColor = expectedBrush.color !== undefined;
+  chrome.test.assertEq(
+      hasColor, setAnnotationBrushMessage.data.color !== undefined);
+  if (hasColor) {
+    chrome.test.assertEq(
+        expectedBrush.color!.r, setAnnotationBrushMessage.data.color.r);
+    chrome.test.assertEq(
+        expectedBrush.color!.g, setAnnotationBrushMessage.data.color.g);
+    chrome.test.assertEq(
+        expectedBrush.color!.b, setAnnotationBrushMessage.data.color.b);
+  }
+  chrome.test.assertEq(expectedBrush.size, setAnnotationBrushMessage.data.size);
+
+  mockPlugin.clearMessages();
+}
+
+/**
+ * @param parentElement The parent element containing the
+ *     InkBrushSelectorElement.
+ * @returns The non-null brush type selector.
+ */
+export function getBrushSelector(parentElement: HTMLElement):
+    InkBrushSelectorElement {
+  return getRequiredElement(parentElement, 'ink-brush-selector');
+}
+
+
+/**
+ * Helper to get a non-empty list of brush size buttons.
+ * @param selector The ink size selector element.
+ * @returns A list of exactly 5 size buttons.
+ */
+export function getSizeButtons(selector: InkSizeSelectorElement):
+    NodeListOf<HTMLElement> {
+  const sizeButtons =
+      selector.shadowRoot!.querySelectorAll<HTMLElement>('cr-icon-button');
+  assert(sizeButtons);
+  assert(sizeButtons.length === 5);
+  return sizeButtons;
+}
+
+/**
+ * Tests that the ink size options have correct values for the selected
+ * attribute. The size button with index `buttonIndex` should be selected.
+ * @sizeButtons A list of ink size buttons.
+ * @param buttonIndex The expected selected size button.
+ */
+export function assertSelectedSize(
+    sizeButtons: NodeListOf<HTMLElement>, buttonIndex: number) {
+  for (let i = 0; i < sizeButtons.length; ++i) {
+    const buttonSelected = sizeButtons[i].dataset['selected'];
+    chrome.test.assertEq(i === buttonIndex ? 'true' : 'false', buttonSelected);
+  }
+}
+
+/**
+ * Helper to get a non-empty list of brush color buttons.
+ * @param selector The ink color selector element.
+ * @returns A list of color buttons.
+ */
+export function getColorButtons(selector: InkColorSelectorElement):
+    NodeListOf<HTMLElement> {
+  const colorButtons = selector.shadowRoot!.querySelectorAll('input');
+  assert(colorButtons);
+  return colorButtons;
+}
+
+/**
+ * Tests that the color options have corrected values for the selected
+ * attribute. The color button with index `buttonIndex` should be selected.
+ * @param colorButtons A list of ink color buttons.
+ * @param buttonIndex The expected selected color button.
+ */
+export function assertSelectedColor(
+    colorButtons: NodeListOf<HTMLElement>, buttonIndex: number) {
+  for (let i = 0; i < colorButtons.length; ++i) {
+    chrome.test.assertEq(
+        i === buttonIndex, colorButtons[i].hasAttribute('checked'));
+  }
+}
+
 // </if>

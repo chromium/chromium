@@ -106,20 +106,16 @@ class GL_EXPORT DCompPresenter : public Presenter,
 
  private:
   struct PendingFrame {
-    PendingFrame(Microsoft::WRL::ComPtr<ID3D11Query> query,
-                 PresentationCallback callback);
+    PendingFrame(PresentationCallback callback);
     PendingFrame(PendingFrame&& other);
     ~PendingFrame();
     PendingFrame& operator=(PendingFrame&& other);
-
-    // Event query issued after frame is presented.
-    Microsoft::WRL::ComPtr<ID3D11Query> query;
 
     // Presentation callback enqueued in SwapBuffers().
     PresentationCallback callback;
   };
 
-  void EnqueuePendingFrame(PresentationCallback callback, bool create_query);
+  void EnqueuePendingFrame(PresentationCallback callback);
   void CheckPendingFrames();
 
   void StartOrStopVSyncThread();
@@ -143,11 +139,6 @@ class GL_EXPORT DCompPresenter : public Presenter,
   base::TimeDelta last_vsync_interval_;
 
   std::unique_ptr<DCLayerTree> layer_tree_;
-
-  // Set in |SetDrawRectangle| and cleared in |SwapBuffers|. Used to determine
-  // if a D3D query should be created for this frame, due to a non-empty draw
-  // rectangle.
-  bool create_query_this_frame_ = false;
 
   // Set in the ctor. Indicates whether vsync is enabled for the process.
   bool use_gpu_vsync_ = false;

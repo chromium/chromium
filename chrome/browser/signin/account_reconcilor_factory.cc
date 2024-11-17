@@ -77,8 +77,7 @@ class ChromeOSLimitedAccessAccountReconcilorDelegate
         // 60 seconds is enough to cover about 99% of all reconcile cases.
         return base::Seconds(60);
       default:
-        NOTREACHED_IN_MIGRATION();
-        return MirrorAccountReconcilorDelegate::GetReconcileTimeout();
+        NOTREACHED();
     }
   }
 
@@ -121,9 +120,7 @@ AccountReconcilorFactory::AccountReconcilorFactory()
           "AccountReconcilor",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
-              // TODO(crbug.com/40257657): Check if this service is needed in
-              // Guest mode.
-              .WithGuest(ProfileSelection::kOriginalOnly)
+              .WithGuest(ProfileSelection::kNone)
               .Build()) {
   DependsOn(ChromeSigninClientFactory::GetInstance());
   DependsOn(IdentityManagerFactory::GetInstance());
@@ -143,7 +140,8 @@ AccountReconcilorFactory* AccountReconcilorFactory::GetInstance() {
   return instance.get();
 }
 
-KeyedService* AccountReconcilorFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AccountReconcilorFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   signin::IdentityManager* identity_manager =
@@ -151,14 +149,16 @@ KeyedService* AccountReconcilorFactory::BuildServiceInstanceFor(
   SigninClient* signin_client =
       ChromeSigninClientFactory::GetForProfile(profile);
 #if BUILDFLAG(IS_CHROMEOS)
-  AccountReconcilor* reconcilor = new AccountReconcilor(
-      identity_manager, signin_client,
-      ::GetAccountManagerFacade(profile->GetPath().value()),
-      CreateAccountReconcilorDelegate(profile));
+  std::unique_ptr<AccountReconcilor> reconcilor =
+      std::make_unique<AccountReconcilor>(
+          identity_manager, signin_client,
+          ::GetAccountManagerFacade(profile->GetPath().value()),
+          CreateAccountReconcilorDelegate(profile));
 #else
-  AccountReconcilor* reconcilor =
-      new AccountReconcilor(identity_manager, signin_client,
-                            CreateAccountReconcilorDelegate(profile));
+  std::unique_ptr<AccountReconcilor> reconcilor =
+      std::make_unique<AccountReconcilor>(
+          identity_manager, signin_client,
+          CreateAccountReconcilorDelegate(profile));
 #endif  // BUILDFLAG(IS_CHROMEOS)
   reconcilor->Initialize(true /* start_reconcile_if_tokens_available */);
   return reconcilor;
@@ -220,11 +220,9 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
           IdentityManagerFactory::GetForProfile(profile),
           ChromeSigninClientFactory::GetForProfile(profile));
 #else
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
 #endif
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }

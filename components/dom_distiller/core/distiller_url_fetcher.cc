@@ -17,7 +17,7 @@ DistillerURLFetcherFactory::DistillerURLFetcherFactory(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(url_loader_factory) {}
 
-DistillerURLFetcherFactory::~DistillerURLFetcherFactory() {}
+DistillerURLFetcherFactory::~DistillerURLFetcherFactory() = default;
 
 DistillerURLFetcher* DistillerURLFetcherFactory::CreateDistillerURLFetcher()
     const {
@@ -28,7 +28,7 @@ DistillerURLFetcher::DistillerURLFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : url_loader_factory_(url_loader_factory) {}
 
-DistillerURLFetcher::~DistillerURLFetcher() {}
+DistillerURLFetcher::~DistillerURLFetcher() = default;
 
 void DistillerURLFetcher::FetchURL(const std::string& url,
                                    URLFetcherCallback callback) {

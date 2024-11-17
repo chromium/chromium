@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './mobile_promo.js';
+
 import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -15,7 +17,7 @@ import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
 import {getCss} from './middle_slot_promo.css.js';
 import {getHtml} from './middle_slot_promo.html.js';
-import type {Promo} from './new_tab_page.mojom-webui.js';
+import type {PageHandlerRemote, Promo} from './new_tab_page.mojom-webui.js';
 import {NewTabPageProxy} from './new_tab_page_proxy.js';
 import {WindowProxy} from './window_proxy.js';
 
@@ -138,6 +140,7 @@ export interface MiddleSlotPromoElement {
     promoAndDismissContainer: HTMLElement,
     dismissPromoButtonToast: CrToastElement,
     dismissPromoButtonToastMessage: HTMLElement,
+    mobilePromo: HTMLElement,
     undoDismissPromoButton: HTMLElement,
   };
 }
@@ -160,21 +163,35 @@ export class MiddleSlotPromoElement extends CrLitElement {
 
   static override get properties() {
     return {
+      mobilePromoEnabled_: {type: Boolean},
+
       shownMiddleSlotPromoId_: {
         type: String,
         reflect: true,
       },
 
+      hasDefaultPromo_: {type: Boolean},
+      hasMobilePromoContent_: {type: Boolean},
       promo_: {type: Object},
     };
   }
 
-  private eventTracker_: EventTracker = new EventTracker();
+  protected mobilePromoEnabled_: boolean =
+      loadTimeData.getBoolean('mobilePromoEnabled');
   protected shownMiddleSlotPromoId_: string;
-  private blocklistedMiddleSlotPromoId_: string;
+  private hasDefaultPromo_: boolean|null = null;
+  private hasMobilePromoContent_: boolean|null = null;
   private promo_: Promo;
 
+  private blocklistedMiddleSlotPromoId_: string;
+  private eventTracker_: EventTracker = new EventTracker();
+  private pageHandler_: PageHandlerRemote;
   private setPromoListenerId_: number|null = null;
+
+  constructor() {
+    super();
+    this.pageHandler_ = NewTabPageProxy.getInstance().handler;
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -184,7 +201,7 @@ export class MiddleSlotPromoElement extends CrLitElement {
               this.promo_ = promo;
             });
     this.eventTracker_.add(window, 'keydown', this.onWindowKeydown_.bind(this));
-    NewTabPageProxy.getInstance().handler.updatePromoData();
+    this.pageHandler_.updatePromoData();
   }
 
   override disconnectedCallback() {
@@ -203,12 +220,58 @@ export class MiddleSlotPromoElement extends CrLitElement {
     if (changedPrivateProperties.has('promo_')) {
       this.onPromoChange_();
     }
+
+    if (changedPrivateProperties.has('hasDefaultPromo_') ||
+        changedPrivateProperties.has('hasMobilePromoContent_')) {
+      this.updatePromoVisibility_();
+    }
+  }
+
+  private updatePromoVisibility_() {
+    if (this.hasDefaultPromo_ === null) {
+      return;
+    }
+
+    // Up to one promo type can show at any given time.
+    // Note: This logic doesn't apply when handling promo dismissal to avoid
+    // immediately showing a new promo after one is dismissed.
+    this.$.promoAndDismissContainer.hidden = !this.hasDefaultPromo_;
+    if (this.mobilePromoEnabled_) {
+      const showMobilePromo =
+          !this.hasDefaultPromo_ && this.hasMobilePromoContent_;
+      this.$.mobilePromo.hidden = !showMobilePromo;
+      if (showMobilePromo) {
+        this.pageHandler_.onMobilePromoShown();
+      }
+    }
+
+    // Don't fire a load event until we've verified that one or neither of the
+    // promo types (default or mobile) can show. this.mobilePromoEnabled_
+    // becomes false in renderPromo() whenever a default promo is about to
+    // render.
+    if (!this.mobilePromoEnabled_ || this.hasMobilePromoContent_ !== null) {
+      this.fire('ntp-middle-slot-promo-loaded');
+    }
+  }
+
+  protected onMobilePromoQrCodeChanged_(e: CustomEvent<{value: string}>) {
+    this.hasMobilePromoContent_ = !!e.detail.value;
   }
 
   private onPromoChange_() {
+    if (this.mobilePromoEnabled_) {
+      if (this.hasMobilePromoContent_ && this.hasDefaultPromo_ !== null) {
+        // Skip calling renderPromo() if we already attempted to render a promo
+        // before AND there is mobile promo content to display. This prevents
+        // the default promo from showing if the mobile promo has already been
+        // displayed, and vice versa.
+        return;
+      }
+    }
+
     renderPromo(this.promo_).then(promo => {
       if (!promo) {
-        this.$.promoAndDismissContainer.hidden = true;
+        this.hasDefaultPromo_ = false;
       } else {
         const promoContainer =
             this.shadowRoot!.getElementById('promoContainer');
@@ -221,9 +284,10 @@ export class MiddleSlotPromoElement extends CrLitElement {
         const renderedPromoContainer = promo.container;
         assert(renderedPromoContainer);
         this.$.promoAndDismissContainer.prepend(renderedPromoContainer);
-        this.$.promoAndDismissContainer.hidden = false;
+        // Disable the mobile promo since a default promo is going to render.
+        this.mobilePromoEnabled_ = false;
+        this.hasDefaultPromo_ = true;
       }
-      this.fire('ntp-middle-slot-promo-loaded');
     });
   }
 
@@ -240,8 +304,7 @@ export class MiddleSlotPromoElement extends CrLitElement {
   protected onDismissPromoButtonClick_() {
     assert(this.$.promoAndDismissContainer);
     this.$.promoAndDismissContainer.hidden = true;
-    NewTabPageProxy.getInstance().handler.blocklistPromo(
-        this.shownMiddleSlotPromoId_);
+    this.pageHandler_.blocklistPromo(this.shownMiddleSlotPromoId_);
     this.blocklistedMiddleSlotPromoId_ = this.shownMiddleSlotPromoId_;
     this.$.dismissPromoButtonToast.show();
     recordPromoDismissAction(PromoDismissAction.DISMISS);
@@ -249,8 +312,7 @@ export class MiddleSlotPromoElement extends CrLitElement {
 
   protected onUndoDismissPromoButtonClick_() {
     assert(this.$.promoAndDismissContainer);
-    NewTabPageProxy.getInstance().handler.undoBlocklistPromo(
-        this.blocklistedMiddleSlotPromoId_);
+    this.pageHandler_.undoBlocklistPromo(this.blocklistedMiddleSlotPromoId_);
     this.$.promoAndDismissContainer.hidden = false;
     this.$.dismissPromoButtonToast.hide();
     recordPromoDismissAction(PromoDismissAction.RESTORE);

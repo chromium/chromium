@@ -1195,6 +1195,9 @@
   <message name="IDS_FILE_BROWSER_METADATA_BOX_MODIFIED_BY" desc="Label for who modified the file.">
     Modified by
   </message>
+  <message name="IDS_FILE_BROWSER_METADATA_BOX_DATE_TAKEN" desc="Label for the date that the image/photo was taken.">
+    Date taken
+  </message>
   <message name="IDS_FILE_BROWSER_METADATA_BOX_PAGE_COUNT" desc="Label for pdf page count.">
     Page count
   </message>
@@ -1876,5 +1879,8 @@
   </message>
   <message name="IDS_FILE_BROWSER_ONEDRIVE_FROZEN_ACCOUNT_SUBTITLE" desc="Subtitle of an empty state section displayed in OneDrive folder when the user's OneDrive account is frozen.">
     Visit <ph name="LINK_BEGIN">&lt;a href="https://onedrive.live.com" target="_blank"&gt;</ph>onedrive.live.com<ph name="LINK_END">&lt;/a&gt;</ph> for more information
+  </message>
+  <message name="IDS_FILE_BROWSER_ONEDRIVE_OFFLINE_TITLE" desc="Title of banner informing the user that OneDrive can't be used while the device is offline.">
+    OneDrive isn't available while offline
   </message>
 </grit-part>

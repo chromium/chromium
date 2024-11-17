@@ -128,29 +128,20 @@ CGFloat const kHalfSheetCornerRadius = 13;
   sheetPresentationController.prefersEdgeAttachedInCompactHeight = YES;
   sheetPresentationController.preferredCornerRadius = kHalfSheetCornerRadius;
 
-  if (@available(iOS 16, *)) {
-    __weak UnitConversionCoordinator* weakSelf = self;
-    auto resolver = ^CGFloat(
-        id<UISheetPresentationControllerDetentResolutionContext> context) {
-      CGFloat sheetHeight =
-          weakSelf.viewController.preferredContentSize.height +
-          kHalfSheetDetentHeightOffset;
-      BOOL tooLarge = (sheetHeight > context.maximumDetentValue);
-      return tooLarge ? context.maximumDetentValue : sheetHeight;
-    };
+  __weak UnitConversionCoordinator* weakSelf = self;
+  auto resolver = ^CGFloat(
+      id<UISheetPresentationControllerDetentResolutionContext> context) {
+    CGFloat sheetHeight = weakSelf.viewController.preferredContentSize.height +
+                          kHalfSheetDetentHeightOffset;
+    BOOL tooLarge = (sheetHeight > context.maximumDetentValue);
+    return tooLarge ? context.maximumDetentValue : sheetHeight;
+  };
 
-    UISheetPresentationControllerDetent* customDetent =
-        [UISheetPresentationControllerDetent
-            customDetentWithIdentifier:nil
-                              resolver:resolver];
+  UISheetPresentationControllerDetent* customDetent =
+      [UISheetPresentationControllerDetent customDetentWithIdentifier:nil
+                                                             resolver:resolver];
 
-    sheetPresentationController.detents = @[ customDetent ];
-  } else {
-    sheetPresentationController.detents = @[
-      UISheetPresentationControllerDetent.mediumDetent,
-      UISheetPresentationControllerDetent.largeDetent
-    ];
-  }
+  sheetPresentationController.detents = @[ customDetent ];
 
   [self.baseViewController presentViewController:navigationController
                                         animated:YES

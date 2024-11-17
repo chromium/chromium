@@ -66,7 +66,7 @@ class ChromeAppsIconFactoryTest : public extensions::ExtensionServiceTestBase {
     ASSERT_EQ(4U, registry()->enabled_extensions().size());
   }
 
-  void GenerateExtensionAppIcon(const std::string app_id,
+  void GenerateExtensionAppIcon(const std::string& app_id,
                                 gfx::ImageSkia& output_image_skia,
                                 bool skip_effects = false) {
     extensions::ExtensionRegistry* registry =
@@ -86,21 +86,21 @@ class ChromeAppsIconFactoryTest : public extensions::ExtensionServiceTestBase {
             : apps::CreateStandardIconImage(result.Take().AsImageSkia());
   }
 
-  void GenerateExtensionAppCompressedIcon(const std::string app_id,
-                                          float scale,
-                                          std::vector<uint8_t>& result,
-                                          bool skip_effects = false) {
+  std::vector<uint8_t> GenerateExtensionAppCompressedIcon(
+      const std::string& app_id,
+      float scale,
+      bool skip_effects = false) {
     gfx::ImageSkia image_skia;
     GenerateExtensionAppIcon(app_id, image_skia, skip_effects);
 
     const gfx::ImageSkiaRep& image_skia_rep =
         image_skia.GetRepresentation(scale);
-    ASSERT_EQ(image_skia_rep.scale(), scale);
+    CHECK_EQ(image_skia_rep.scale(), scale);
 
     const SkBitmap& bitmap = image_skia_rep.GetBitmap();
-    const bool discard_transparency = false;
-    ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency,
-                                                  &result));
+    return gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
+                                             /*discard_transparency=*/false)
+        .value();
   }
 
   IconValuePtr LoadIconFromExtension(const std::string& app_id,
@@ -150,8 +150,8 @@ TEST_F(ChromeAppsIconFactoryTest, LoadStandardIcon) {
 
 TEST_F(ChromeAppsIconFactoryTest, LoadCompressedIcon) {
   // Generate the source compressed icon for comparing.
-  std::vector<uint8_t> src_data;
-  GenerateExtensionAppCompressedIcon(kPackagedApp1Id, /*scale=*/1.0, src_data);
+  std::vector<uint8_t> src_data =
+      GenerateExtensionAppCompressedIcon(kPackagedApp1Id, /*scale=*/1.0);
 
   IconValuePtr iv = LoadIconFromExtension(
       kPackagedApp1Id, IconType::kCompressed, IconEffects::kCrOsStandardIcon);
@@ -162,9 +162,9 @@ TEST_F(ChromeAppsIconFactoryTest, LoadCompressedIcon) {
 
 TEST_F(ChromeAppsIconFactoryTest, LoadCompressedIconWithoutEffect) {
   // Generate the source compressed icon for comparing.
-  std::vector<uint8_t> src_data;
-  GenerateExtensionAppCompressedIcon(kPackagedApp1Id, /*scale=*/1.0, src_data,
-                                     /*skip_effects=*/true);
+  std::vector<uint8_t> src_data =
+      GenerateExtensionAppCompressedIcon(kPackagedApp1Id, /*scale=*/1.0,
+                                         /*skip_effects=*/true);
 
   IconValuePtr iv = LoadIconFromExtension(
       kPackagedApp1Id, IconType::kCompressed, IconEffects::kNone);
@@ -176,12 +176,12 @@ TEST_F(ChromeAppsIconFactoryTest, LoadCompressedIconWithoutEffect) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(ChromeAppsIconFactoryTest, GetCompressedIconData) {
   // Generate the source uncompressed icon for comparing.
-  std::vector<uint8_t> src_data1;
-  std::vector<uint8_t> src_data2;
-  GenerateExtensionAppCompressedIcon(kPackagedApp1Id, /*scale=*/1.0, src_data1,
-                                     /*skip_effects=*/true);
-  GenerateExtensionAppCompressedIcon(kPackagedApp1Id, /*scale=*/2.0, src_data2,
-                                     /*skip_effects=*/true);
+  std::vector<uint8_t> src_data1 =
+      GenerateExtensionAppCompressedIcon(kPackagedApp1Id, /*scale=*/1.0,
+                                         /*skip_effects=*/true);
+  std::vector<uint8_t> src_data2 =
+      GenerateExtensionAppCompressedIcon(kPackagedApp1Id, /*scale=*/2.0,
+                                         /*skip_effects=*/true);
 
   IconValuePtr icon1 = GetCompressedIconData(
       kPackagedApp1Id, ui::ResourceScaleFactor::k100Percent);
@@ -254,9 +254,9 @@ class AppServiceChromeAppIconTest : public ChromeAppsIconFactoryTest {
 
 TEST_F(AppServiceChromeAppIconTest, GetCompressedIconDataForCompressedIcon) {
   // Generate the source compressed icon for comparing.
-  std::vector<uint8_t> src_data;
-  GenerateExtensionAppCompressedIcon(kPackagedApp1Id, /*scale=*/1.0, src_data,
-                                     /*skip_effects=*/true);
+  std::vector<uint8_t> src_data =
+      GenerateExtensionAppCompressedIcon(kPackagedApp1Id, /*scale=*/1.0,
+                                         /*skip_effects=*/true);
 
   // Verify the icon reading and writing function in AppService for the
   // compressed icon.

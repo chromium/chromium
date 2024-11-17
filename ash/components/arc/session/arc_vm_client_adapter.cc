@@ -23,7 +23,6 @@
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_client_adapter.h"
-#include "ash/components/arc/session/arc_dlc_installer.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/session/arc_session.h"
 #include "ash/components/arc/session/connection_holder.h"
@@ -86,6 +85,16 @@ namespace {
 
 constexpr const char kArcVmBootNotificationServerSocketPath[] =
     "/run/arcvm_boot_notification_server/host.socket";
+
+// Controls the interval between MGLRU reclaims in milliseconds.
+// A value of 0 will disable the MGLRU reclaim feature.
+constexpr const int kArcMglruReclaimIntervalMs = 30000;
+// Controls the swappiness of MGLRU reclaims, in the range of 0 to 200.
+// A value of 0 means only filecache will be used.
+// A lower value increases the proportion of filecache pages reclaimed.
+// Implementation and a more detailed description can be found in ChromeOS.
+// linux/mm/vmscan.c
+constexpr const int kArcMglruReclaimSwappiness = 0;
 
 constexpr int64_t kInvalidCid = -1;
 
@@ -200,8 +209,6 @@ std::vector<std::string> GenerateUpgradeProps(
 void AppendParamsFromStartParams(
     vm_tools::concierge::StartArcVmRequest& request,
     const StartParams& start_params) {
-  request.set_enable_keyboard_shortcut_helper_integration(
-      start_params.enable_keyboard_shortcut_helper_integration);
 
   switch (IdentifyBinaryTranslationType(start_params)) {
     case ArcBinaryTranslationType::NONE:
@@ -247,11 +254,6 @@ int GetDefaultVmMemoryMiB(ArcVmClientAdapterDelegate* delegate) {
 
 // Returns whether an LVM-provided disk should be used for virtio-blk /data.
 bool ShouldUseLvmApplicationContainerForVirtioBlkData() {
-  // Allow tests to override use_lvm param.
-  if (base::FeatureList::IsEnabled(kVirtioBlkDataConfigOverride)) {
-    return kVirtioBlkDataConfigUseLvm.Get();
-  }
-
   // Use LVM backend if LVM application containers feature is supported and
   // user cryptohome data is not ephemeral (b/278305150).
   return base::FeatureList::IsEnabled(kLvmApplicationContainers) &&
@@ -274,15 +276,12 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   request.set_owner_id(user_id_hash);
   request.set_use_per_vm_core_scheduling(use_per_vm_core_scheduling);
 
-  const bool should_set_blocksize =
-      !base::FeatureList::IsEnabled(arc::kUseDefaultBlockSize);
   constexpr uint32_t kBlockSize = 4096;
 
   // Add rootfs as /dev/vda.
   request.set_rootfs_writable(file_system_status.is_host_rootfs_writable() &&
                               file_system_status.is_system_image_ext_format());
-  if (should_set_blocksize)
-    request.set_rootfs_block_size(kBlockSize);
+  request.set_rootfs_block_size(kBlockSize);
 
   // Enable O_DIRECT for ARC system image (rootfs) and vendor image if the
   // images are formatted with EROFS. (b/287383456)
@@ -301,8 +300,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   disk_image->set_writable(false);
   disk_image->set_do_mount(true);
   disk_image->set_o_direct(is_arc_erofs_enabled);
-  if (should_set_blocksize)
-    disk_image->set_block_size(kBlockSize);
+  disk_image->set_block_size(kBlockSize);
 
   // Add /run/imageloader/.../android_demo_apps.squash as /dev/block/vdc if
   // needed. If it's not needed we pass /dev/null so that /dev/block/vdc
@@ -313,8 +311,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   disk_image->set_do_mount(true);
   if (!demo_session_apps_path.empty()) {
     disk_image->set_path(demo_session_apps_path.value());
-    if (should_set_blocksize)
-      disk_image->set_block_size(kBlockSize);
+    disk_image->set_block_size(kBlockSize);
   } else {
     // This should never be mounted as it's only mounted if
     // ro.boot.arc_demo_mode is set.
@@ -346,9 +343,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     disk_image->set_multiple_workers(
         base::FeatureList::IsEnabled(kEnableVirtioBlkMultipleWorkers));
     disk_image->set_writable(true);
-    if (should_set_blocksize) {
-      disk_image->set_block_size(kBlockSize);
-    }
+    disk_image->set_block_size(kBlockSize);
     // Set the O_DIRECT option only when the disk image is backed by LVM
     // application container, because the option is invalidated on disk images
     // in ext4 crypto.
@@ -381,6 +376,19 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     disk_image->set_writable(false);
   }
 
+  // Always add the ARCVM runtime system properties file as a disk at path
+  // /dev/block/vdg. We share this file as a disk image instead of using a
+  // shared directory because it needs to be accessed during early init before
+  // virtio-fs is available in Android.
+  const std::string sysprop_disk_path =
+      base::StringPrintf("/run/daemon-store/crosvm/%s/%s.runtime.prop",
+                         user_id_hash.c_str(), kArcvmEncodedName);
+  disk_image = request.add_disks();
+  disk_image->set_image_type(vm_tools::concierge::DISK_IMAGE_RAW);
+  disk_image->set_do_mount(true);
+  disk_image->set_path(sysprop_disk_path);
+  disk_image->set_writable(false);
+
   // Add cpus.
   request.set_cpus(cpus);
 
@@ -410,8 +418,6 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       const int ram_percentage = kVmMemorySizePercentage.Get();
       int vm_ram_mib =
           std::min(max_mib, ram_percentage * ram_mib / 100 + shift_mib);
-      constexpr int kVmRamMinMib = 2048;
-
       if (delegate->IsCrosvm32bit()) {
         // This is a workaround for ARM Chromebooks where userland including
         // crosvm is compiled in 32 bit.
@@ -423,15 +429,8 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
         }
       }
 
-      if (vm_ram_mib > kVmRamMinMib) {
-        request.set_memory_mib(vm_ram_mib);
-        VLOG(2) << "VmMemorySize is enabled. memory_mib=" << vm_ram_mib;
-      } else {
-        VLOG(2) << "VmMemorySize is enabled, but computed size is "
-                << "min(" << ram_mib << " + " << shift_mib << "," << max_mib
-                << ") == " << vm_ram_mib << "MiB, less than " << kVmRamMinMib
-                << " MiB safe minium.";
-      }
+      request.set_memory_mib(vm_ram_mib);
+      VLOG(2) << "VmMemorySize is enabled. memory_mib=" << vm_ram_mib;
     } else {
       VLOG(2) << "VmMemorySize is enabled, but GetSystemMemoryInfo failed.";
     }
@@ -442,9 +441,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   AppendParamsFromStartParams(request, start_params);
 
   auto* mini_instance_request = request.mutable_mini_instance_request();
-  mini_instance_request->set_enable_consumer_auto_update_toggle(
-      base::FeatureList::IsEnabled(
-          ash::features::kConsumerAutoUpdateToggleAllowed));
+  mini_instance_request->set_enable_consumer_auto_update_toggle(true);
 
   mini_instance_request->set_enable_privacy_hub_for_chrome(
       base::FeatureList::IsEnabled(ash::features::kCrosPrivacyHub));
@@ -490,13 +487,8 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     }
   }
 
-  if (base::FeatureList::IsEnabled(kMglruReclaim)) {
-    request.set_mglru_reclaim_interval(kMglruReclaimInterval.Get());
-    request.set_mglru_reclaim_swappiness(kMglruReclaimSwappiness.Get());
-  } else {
-    request.set_mglru_reclaim_interval(0);
-    request.set_mglru_reclaim_swappiness(0);
-  }
+  request.set_mglru_reclaim_interval(kArcMglruReclaimIntervalMs);
+  request.set_mglru_reclaim_swappiness(kArcMglruReclaimSwappiness);
 
   if (base::FeatureList::IsEnabled(kVmMemoryPSIReports))
     request.set_vm_memory_psi_period(kVmMemoryPSIReportsPeriod.Get());
@@ -556,6 +548,11 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
       break;
     default:
       NOTREACHED();
+  }
+
+  if (request.memory_mib() < kMinVmMemorySizeMiB) {
+    request.set_memory_mib(kMinVmMemorySizeMiB);
+    VLOG(2) << "Overriding VM memory size to 3243 MiB for app compatibility";
   }
 
   request.set_use_gki(base::FeatureList::IsEnabled(kArcVmGki));
@@ -942,18 +939,6 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     if (file_system_status_rewriter_for_testing_)
       file_system_status_rewriter_for_testing_.Run(&file_system_status);
 
-    VLOG(2) << "Wait for DLC installation if necessary";
-    // Waits for a stable state (kInstalled/kUninstalled) and proceeds
-    // regardless of installation result because even if the installation
-    // has failed, it will only affect limited functionality (e.g. without
-    // Houdini library for ARM apps). ARCVM should still continue to start.
-    ArcDlcInstaller::Get()->WaitForStableState(base::BindOnce(
-        &ArcVmClientAdapter::LoadDemoResources, weak_factory_.GetWeakPtr(),
-        std::move(callback), std::move(file_system_status)));
-  }
-
-  void LoadDemoResources(chromeos::VoidDBusMethodCallback callback,
-                         FileSystemStatus file_system_status) {
     VLOG(2) << "Retrieving demo session apps path";
     DCHECK(demo_mode_delegate_);
     demo_mode_delegate_->EnsureResourcesLoaded(base::BindOnce(

@@ -1,0 +1,82 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSS Overflow Test: ::scroll-next-button and ::scroll-prev-button activation with column scroll markers</title>
+<link rel="help" href="https://github.com/flackr/carousel/tree/main/scroll-button">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+  }
+
+  #scroller {
+    width: 600px;
+    height: 300px;
+    overflow: auto;
+    columns: 1;
+    gap: 0;
+    column-fill: auto;
+    scroll-marker-group: after;
+    white-space: nowrap;
+  }
+
+  #scroller div {
+    background: green;
+    display: inline-block;
+    width: 600px;
+    height: 270px;
+  }
+
+  #scroller :first-child {
+    background: purple;
+  }
+
+  #scroller::scroll-marker-group {
+    border: 3px solid black;
+    padding: 5px;
+    display: flex;
+    height: 20px;
+    width: 40px;
+  }
+
+  #scroller::scroll-next-button {
+    content: ">";
+    background: blue;
+    display: flex;
+    height: 20px;
+    width: 20px;
+    top: 0px;
+    left: 0px;
+    position: absolute;
+    z-index: 99;
+  }
+
+  #scroller::column::scroll-marker {
+    content: "";
+    width: 10px;
+    height: 10px;
+    background-color: blue;
+    border-radius: 100%;
+    display: inline-block;
+  }
+</style>
+<div id="scroller">
+  <div></div>
+  <br>
+  <div></div>
+</div>
+<script>
+  promise_test(async t => {
+    actions_promise = new test_driver.Actions()
+    .pointerMove(5, 5)
+    .pointerDown()
+    .pointerUp()
+    .send();
+    await actions_promise;
+    assert_equals(scroller.scrollLeft, 600);
+  });
+</script>

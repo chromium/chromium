@@ -50,7 +50,7 @@ class ASH_EXPORT TouchHudRenderer : public views::WidgetObserver {
   raw_ptr<views::Widget> parent_widget_;
 
   // A map of touch ids to TouchPointView.
-  std::map<int, TouchPointView*> points_;
+  std::map<int, raw_ptr<TouchPointView, CtnExperimental>> points_;
 };
 
 }  // namespace ash

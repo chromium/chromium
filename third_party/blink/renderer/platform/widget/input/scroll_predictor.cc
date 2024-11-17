@@ -6,12 +6,18 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/common/task_annotator.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/widget/input/prediction/predictor_factory.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/latency/latency_info.h"
 
 namespace blink {
+
+using ::perfetto::protos::pbzero::ChromeLatencyInfo2;
 
 ScrollPredictor::ScrollPredictor()
     : metrics_handler_("Event.InputEventPrediction.Scroll") {
@@ -63,8 +69,23 @@ std::unique_ptr<EventWithCallback> ScrollPredictor::ResampleScrollEvents(
   if (!should_resample_scroll_events_)
     return event_with_callback;
 
+  int64_t trace_id = event_with_callback->latency_info().trace_id();
   const EventWithCallback::OriginalEventList& original_events =
       event_with_callback->original_events();
+  TRACE_EVENT(
+      "input,benchmark,latencyInfo", "LatencyInfo.Flow",
+      [&](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
+        ChromeLatencyInfo2* latency_info = ui::LatencyInfo::FillTraceEvent(
+            ctx, trace_id,
+            ChromeLatencyInfo2::Step::STEP_RESAMPLE_SCROLL_EVENTS);
+        for (const EventWithCallback::OriginalEventWithCallback&
+                 coalesced_event : original_events) {
+          int64_t coalesced_event_trace_id =
+              coalesced_event.event_->latency_info().trace_id();
+          latency_info->add_coalesced_trace_ids(coalesced_event_trace_id);
+        }
+      });
 
   if (event_with_callback->event().GetType() ==
       WebInputEvent::Type::kGestureScrollUpdate) {
@@ -118,8 +139,7 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
   ResampleEvent(frame_time, frame_interval, &gesture_event);
 
   ui::LatencyInfo latency_info;
-  static int64_t trace_id = std::numeric_limits<uint32_t>::max();
-  latency_info.set_trace_id(--trace_id);
+  latency_info.set_trace_id(base::trace_event::GetNextGlobalTraceId());
   // TODO(b/329346768): We should also add a new `BEGIN` stage, instead of
   // re-using the one that is explicitly about the `content::RenderWidgetHost`.
   latency_info.AddLatencyNumberWithTraceName(
@@ -148,10 +168,17 @@ ScrollPredictor::GenerateSyntheticScrollUpdate(
                             overscroll_params,
                         const WebInputEventAttribution& attribution,
                         std::unique_ptr<cc::EventMetrics> metrics) {
-        ui::LatencyInfo::TraceIntermediateFlowEvents(
-            {event->latency_info()},
-            ::perfetto::protos::pbzero::ChromeLatencyInfo::
-                STEP_DID_HANDLE_INPUT_AND_OVERSCROLL);
+        int64_t trace_id = event->latency_info().trace_id();
+        TRACE_EVENT(
+            "input,benchmark,latencyInfo", "LatencyInfo.Flow",
+            [&](perfetto::EventContext ctx) {
+              base::TaskAnnotator::EmitTaskTimingDetails(ctx);
+              ui::LatencyInfo::FillTraceEvent(
+                  ctx, trace_id,
+                  ChromeLatencyInfo2::Step::
+                      STEP_DID_HANDLE_INPUT_AND_OVERSCROLL,
+                  ChromeLatencyInfo2::InputType::GESTURE_SCROLL_UPDATE_EVENT);
+            });
       }),
       std::move(metrics));
 }

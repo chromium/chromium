@@ -14,8 +14,13 @@ namespace cc {
 // top controls, but more can be added here in the future when more UI elements
 // are moved by viz without browser involvement.
 struct CC_EXPORT BrowserControlsOffsetTagsInfo {
+  viz::OffsetTag bottom_controls_offset_tag;
+  viz::OffsetTag content_offset_tag;
   viz::OffsetTag top_controls_offset_tag;
-  int top_controls_height;
+  int bottom_controls_height = 0;
+  int bottom_controls_additional_height = 0;
+  int top_controls_height = 0;
+  int top_controls_hairline_height = 0;
 };
 
 }  // namespace cc

@@ -54,7 +54,7 @@ AccountConsistencyServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<AccountConsistencyService>(
       std::move(cookie_manager_callback),
       ios::AccountReconcilorFactory::GetForProfile(profile),
-      ios::CookieSettingsFactory::GetForBrowserState(profile),
+      ios::CookieSettingsFactory::GetForProfile(profile),
       IdentityManagerFactory::GetForProfile(profile));
 }
 

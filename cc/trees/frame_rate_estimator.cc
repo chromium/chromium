@@ -33,9 +33,7 @@ FrameRateEstimator::FrameRateEstimator(base::SequencedTaskRunner* task_runner)
 FrameRateEstimator::~FrameRateEstimator() = default;
 
 void FrameRateEstimator::SetVideoConferenceMode(bool enabled) {
-  static const bool feature_allowed =
-      base::FeatureList::IsEnabled(features::kReducedFrameRateEstimation);
-  if (!feature_allowed || enabled == in_video_conference_mode_) {
+  if (enabled == in_video_conference_mode_) {
     return;
   }
 

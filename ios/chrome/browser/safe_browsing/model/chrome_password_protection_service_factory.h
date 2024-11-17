@@ -9,10 +9,10 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class ChromePasswordProtectionService;
 class KeyedService;
+class ProfileIOS;
 
 // Singleton that owns ChromePasswordProtectionService objects, one for each
 // active Profile.
@@ -22,10 +22,6 @@ class ChromePasswordProtectionServiceFactory
   // Returns the instance of ChromePasswordProtectionService associated with
   // this profile, creating one if none exists.
   static ChromePasswordProtectionService* GetForProfile(ProfileIOS* profile);
-
-  // Deprecated: use GetForProfile(...).
-  static ChromePasswordProtectionService* GetForBrowserState(
-      ProfileIOS* profile);
 
   // Returns the singleton instance of ChromePasswordProtectionServiceFactory.
   static ChromePasswordProtectionServiceFactory* GetInstance();

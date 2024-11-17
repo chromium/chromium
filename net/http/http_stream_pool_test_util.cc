@@ -159,6 +159,12 @@ ServiceEndpointBuilder& ServiceEndpointBuilder::set_alpns(
   return *this;
 }
 
+ServiceEndpointBuilder& ServiceEndpointBuilder::set_ech_config_list(
+    std::vector<uint8_t> ech_config_list) {
+  endpoint_.metadata.ech_config_list = std::move(ech_config_list);
+  return *this;
+}
+
 // static
 std::unique_ptr<FakeStreamSocket> FakeStreamSocket::CreateForSpdy() {
   auto stream = std::make_unique<FakeStreamSocket>();

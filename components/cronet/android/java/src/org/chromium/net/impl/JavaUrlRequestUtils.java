@@ -52,9 +52,34 @@ public final class JavaUrlRequestUtils {
         int CANCELLED = 8;
     }
 
+    public static String stateToString(@State int state) {
+        switch (state) {
+            case State.NOT_STARTED:
+                return "NOT_STARTED";
+            case State.STARTED:
+                return "STARTED";
+            case State.REDIRECT_RECEIVED:
+                return "REDIRECT_RECEIVED";
+            case State.AWAITING_FOLLOW_REDIRECT:
+                return "AWAITING_FOLLOW_REDIRECT";
+            case State.AWAITING_READ:
+                return "AWAITING_READ";
+            case State.READING:
+                return "READING";
+            case State.ERROR:
+                return "ERROR";
+            case State.COMPLETE:
+                return "COMPLETE";
+            case State.CANCELLED:
+                return "CANCELLED";
+            default:
+                throw new IllegalArgumentException("Unknown state " + state);
+        }
+    }
+
     /**
-     *  Interface used to run commands that could throw an exception. Specifically useful for
-     *  calling {@link UrlRequest.Callback}s on a user-supplied executor.
+     * Interface used to run commands that could throw an exception. Specifically useful for calling
+     * {@link UrlRequest.Callback}s on a user-supplied executor.
      */
     public interface CheckedRunnable {
         void run() throws Exception;

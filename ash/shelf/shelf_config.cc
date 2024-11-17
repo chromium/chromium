@@ -454,22 +454,27 @@ ui::ColorId ShelfConfig::GetShelfBaseLayerColorId() const {
     return cros_tokens::kCrosSysSystemBase;
   }
 
-  return cros_tokens::kCrosSysSystemBaseElevated;
+  return chromeos::features::IsSystemBlurEnabled()
+             ? cros_tokens::kCrosSysSystemBaseElevated
+             : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
 }
 
 SkColor ShelfConfig::GetDefaultShelfColor(const views::Widget* widget) const {
   DCHECK(widget);
 
   const auto* color_provider = widget->GetColorProvider();
-  if (!features::IsBackgroundBlurEnabled())
+  if (!features::IsBackgroundBlurEnabled()) {
     return color_provider->GetColor(kColorAshShieldAndBase90);
+  }
 
   return color_provider->GetColor(GetShelfBaseLayerColorId());
 }
 
 int ShelfConfig::GetShelfControlButtonBlurRadius() const {
-  if (features::IsBackgroundBlurEnabled() && in_tablet_mode_ && !is_in_app_)
+  if (features::IsBackgroundBlurEnabled() && in_tablet_mode_ && !is_in_app_ &&
+      chromeos::features::IsSystemBlurEnabled()) {
     return shelf_blur_radius_;
+  }
   return 0;
 }
 

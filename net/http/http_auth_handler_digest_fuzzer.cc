@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/http/http_auth_handler_digest.h"
+
 #include <fuzzer/FuzzedDataProvider.h>
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "net/base/network_anonymization_key.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_auth_challenge_tokenizer.h"
 #include "net/http/http_auth_handler.h"
-#include "net/http/http_auth_handler_digest.h"
 #include "net/log/net_log_with_source.h"
 #include "net/ssl/ssl_info.h"
 #include "url/gurl.h"
@@ -37,7 +39,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   if (handler) {
     auto followup = "Digest " + data_provider.ConsumeRemainingBytesAsString();
-    net::HttpAuthChallengeTokenizer tokenizer{followup.begin(), followup.end()};
+    net::HttpAuthChallengeTokenizer tokenizer{followup};
     handler->HandleAnotherChallenge(&tokenizer);
   }
   return 0;

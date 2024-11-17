@@ -37,7 +37,7 @@ class Manager : public common::ManagerBase, public Parser::Observer {
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Used to update downstream isolated services with a fresh copy to the
     // grants.
@@ -77,7 +77,7 @@ class Manager : public common::ManagerBase, public Parser::Observer {
   class RandGenerator {
    public:
     RandGenerator() = default;
-    virtual ~RandGenerator() {}
+    virtual ~RandGenerator() = default;
 
     RandGenerator(const RandGenerator&) = delete;
     RandGenerator& operator=(const RandGenerator&) = delete;

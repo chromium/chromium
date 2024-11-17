@@ -7,6 +7,7 @@
 
 #include <optional>
 
+#include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -22,6 +23,18 @@ class CORE_EXPORT ClipPathClipper {
   STATIC_ONLY(ClipPathClipper);
 
  public:
+  // Returns true if the given layout object a resolved clip path status
+  static bool ClipPathStatusResolved(const LayoutObject& layout_object);
+
+  // Checks the composited paint status for a LO and checks whether it contains
+  // a composited clip path animation. Assumes ResolveClipPathStatus has been
+  // called, will fail otherwise.
+  static bool HasCompositeClipPathAnimation(const LayoutObject& layout_object);
+
+  // Resolves the composited clip path status for a layout object, running all
+  // the required checks to ensure an animation can definitely be painted on
+  // main and started on cc. This must be called prior to checking
+  // HasCompositeClipPathAnimation.
   static void ResolveClipPathStatus(const LayoutObject& layout_object,
                                     bool is_in_block_fragmentation);
 

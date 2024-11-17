@@ -26,6 +26,7 @@ namespace blink {
 using HighlightRegistryMap =
     HeapLinkedHashSet<Member<HighlightRegistryMapEntry>>;
 using HighlightRegistryMapIterable = Maplike<HighlightRegistry>;
+class HighlightsFromPointOptions;
 class LocalFrame;
 class Text;
 
@@ -87,6 +88,11 @@ class CORE_EXPORT HighlightRegistry : public ScriptWrappable,
     wtf_size_t index_;
     HeapVector<Member<HighlightRegistryMapEntry>> highlights_snapshot_;
   };
+
+  HeapVector<Member<Highlight>> highlightsFromPoint(
+      float x,
+      float y,
+      const HighlightsFromPointOptions* options);
 
  private:
   HighlightRegistryMap highlights_;

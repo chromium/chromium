@@ -19,8 +19,7 @@ String ToString(FontVariantEmoji variant_emoji) {
     case FontVariantEmoji::kUnicodeVariantEmoji:
       return "Unicode";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Unknown";
+  NOTREACHED();
 }
 
 }  // namespace blink

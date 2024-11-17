@@ -45,7 +45,7 @@ public class PromoCardCoordinatorUnitTest {
 
     private void setupCoordinator(@LayoutStyle int layoutStyle) {
         mPromoCardCoordinator =
-                new PromoCardCoordinator(mActivity, mModel, "test-feature", layoutStyle);
+                PromoCardCoordinator.create(mActivity, mModel, "test-feature", layoutStyle);
         mView = (PromoCardView) mPromoCardCoordinator.getView();
         Assert.assertNotNull("PromoCardView is null", mView);
     }
@@ -146,6 +146,7 @@ public class PromoCardCoordinatorUnitTest {
         setupCoordinator(LayoutStyle.LARGE);
         final CallbackHelper primaryClickCallback = new CallbackHelper();
         final CallbackHelper secondaryClickCallback = new CallbackHelper();
+        final CallbackHelper closeClickCallback = new CallbackHelper();
 
         mModel.set(
                 PromoCardProperties.PRIMARY_BUTTON_CALLBACK,
@@ -153,6 +154,9 @@ public class PromoCardCoordinatorUnitTest {
         mModel.set(
                 PromoCardProperties.SECONDARY_BUTTON_CALLBACK,
                 (v) -> secondaryClickCallback.notifyCalled());
+        mModel.set(
+                PromoCardProperties.CLOSE_BUTTON_CALLBACK,
+                (v) -> closeClickCallback.notifyCalled());
 
         mView.mPrimaryButton.performClick();
         primaryClickCallback.waitForCallback("Primary button callback is never called.", 0);
@@ -165,5 +169,10 @@ public class PromoCardCoordinatorUnitTest {
                 "Secondary button should be clicked once.",
                 1,
                 secondaryClickCallback.getCallCount());
+
+        mView.mCloseButton.performClick();
+        closeClickCallback.waitForCallback("Secondary button callback is never called.", 0);
+        Assert.assertEquals(
+                "Close button should be clicked once.", 1, closeClickCallback.getCallCount());
     }
 }

@@ -11,5 +11,5 @@ jboolean JNI_UsbBridge_IsWebContentsConnectedToUsbDevice(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_web_contents) {
   return content::WebContents::FromJavaWebContents(java_web_contents)
-      ->IsConnectedToUsbDevice();
+      ->IsCapabilityActive(content::WebContents::CapabilityType::kUSB);
 }

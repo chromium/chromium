@@ -26,6 +26,7 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/signin/web_signin_interceptor.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -70,8 +71,9 @@ class MockDiceWebSigninInterceptorDelegate
               ShowOidcInterceptionDialog,
               (content::WebContents*,
                const WebSigninInterceptor::Delegate::BubbleParameters&,
-               signin::SigninChoiceWithConfirmationCallback,
-               base::OnceClosure),
+               signin::SigninChoiceWithConfirmAndRetryCallback,
+               base::OnceClosure,
+               base::RepeatingClosure),
               (override));
   void ShowFirstRunExperienceInNewProfile(
       Browser* browser,
@@ -495,7 +497,7 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
        NoForcedInterceptionShowsDialogIfFeatureEnabled) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeature(
-      kShowEnterpriseDialogForAllManagedAccountsSignin);
+      features::kEnterpriseUpdatedProfileCreationScreen);
   // Reauth intercepted if enterprise confirmation not shown yet for forced
   // managed separation.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -523,7 +525,7 @@ TEST_P(
     NoForcedInterceptionShowsNoDialogIfFeatureEnabledButDisabledDialogByPolicy) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndEnableFeature(
-      kShowEnterpriseDialogForAllManagedAccountsSignin);
+      features::kEnterpriseUpdatedProfileCreationScreen);
   // Reauth intercepted if enterprise confirmation not shown yet for forced
   // managed separation.
   AccountInfo account_info = identity_test_env()->MakePrimaryAccountAvailable(
@@ -769,6 +771,11 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
 
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
        EnforceManagedAccountSecondaryAccountNotAllowed) {
+  base::Value::List profile_separation_exception_list;
+  profile_separation_exception_list.Append(base::Value("notexample.com"));
+  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
+                                 std::move(profile_separation_exception_list));
+
   AccountInfo primary_account_info =
       identity_test_env()->MakePrimaryAccountAvailable(
           "alice@example.com", signin::ConsentLevel::kSignin);
@@ -779,11 +786,6 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
   MakeValidAccountInfo(&account_info, "example.com");
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
-
-  base::Value::List profile_separation_exception_list;
-  profile_separation_exception_list.Append(base::Value("notexample.com"));
-  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
-                                 std::move(profile_separation_exception_list));
 
   // Check that interception works otherwise, as a sanity check.
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
@@ -801,16 +803,16 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
 
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
        EnforceManagedAccountSecondaryAccountAllowedReauth) {
+  base::Value::List profile_separation_exception_list;
+  profile_separation_exception_list.Append(base::Value("notexample.com"));
+  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
+                                 std::move(profile_separation_exception_list));
+
   AccountInfo primary_account_info =
       identity_test_env()->MakePrimaryAccountAvailable(
           "alice@example.com", signin::ConsentLevel::kSignin);
   MakeValidAccountInfo(&primary_account_info, "example.com");
   identity_test_env()->UpdateAccountInfoForAccount(primary_account_info);
-
-  base::Value::List profile_separation_exception_list;
-  profile_separation_exception_list.Append(base::Value("notexample.com"));
-  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
-                                 std::move(profile_separation_exception_list));
 
   TestSynchronousInterception(
       primary_account_info, /*is_new_account=*/false, /*is_sync_signin=*/false,
@@ -821,6 +823,11 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
 
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
        EnforceManagedAccountSecondaryAccountNotAllowedReauth) {
+  base::Value::List profile_separation_exception_list;
+  profile_separation_exception_list.Append(base::Value("notexample.com"));
+  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
+                                 std::move(profile_separation_exception_list));
+
   AccountInfo primary_account_info =
       identity_test_env()->MakePrimaryAccountAvailable(
           "alice@example.com", signin::ConsentLevel::kSignin);
@@ -831,11 +838,6 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
   MakeValidAccountInfo(&account_info, "example.com");
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
-
-  base::Value::List profile_separation_exception_list;
-  profile_separation_exception_list.Append(base::Value("notexample.com"));
-  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
-                                 std::move(profile_separation_exception_list));
 
   // Check that interception works otherwise, as a sanity check.
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
@@ -853,6 +855,11 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
 
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
        EnforceManagedAccountSecondaryConsumerAccountNotAllowed) {
+  base::Value::List profile_separation_exception_list;
+  profile_separation_exception_list.Append(base::Value("example.com"));
+  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
+                                 std::move(profile_separation_exception_list));
+
   AccountInfo primary_account_info =
       identity_test_env()->MakePrimaryAccountAvailable(
           "alice@example.com", signin::ConsentLevel::kSignin);
@@ -863,11 +870,6 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
   MakeValidAccountInfo(&account_info);
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
-
-  base::Value::List profile_separation_exception_list;
-  profile_separation_exception_list.Append(base::Value("example.com"));
-  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
-                                 std::move(profile_separation_exception_list));
 
   // Check that interception works otherwise, as a sanity check.
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
@@ -885,6 +887,11 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
 
 TEST_P(DiceWebSigninInterceptorManagedAccountTest,
        EnforceManagedAccountSecondaryAccountAllowed) {
+  base::Value::List profile_separation_exception_list;
+  profile_separation_exception_list.Append(base::Value("gmail.com"));
+  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
+                                 std::move(profile_separation_exception_list));
+
   AccountInfo primary_account_info =
       identity_test_env()->MakePrimaryAccountAvailable(
           "alice@example.com", signin::ConsentLevel::kSignin);
@@ -895,11 +902,6 @@ TEST_P(DiceWebSigninInterceptorManagedAccountTest,
   AccountInfo account_info = identity_test_env()->MakeAccountAvailable(email);
   MakeValidAccountInfo(&account_info);
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
-
-  base::Value::List profile_separation_exception_list;
-  profile_separation_exception_list.Append(base::Value("gmail.com"));
-  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
-                                 std::move(profile_separation_exception_list));
 
   if (!profile()->GetPrefs()->GetBoolean(prefs::kSigninInterceptionEnabled)) {
     TestSynchronousInterception(
@@ -1660,16 +1662,16 @@ TEST_F(DiceWebSigninInterceptorTest, WaitForAccountCapabilitiesTimeout) {
 
 TEST_F(DiceWebSigninInterceptorTest,
        ConsumerAccountForcedEnterpriseInterceptionOnEmptyProfile) {
+  base::Value::List profile_separation_exception_list;
+  profile_separation_exception_list.Append(base::Value("notexample.com"));
+  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
+                                 std::move(profile_separation_exception_list));
+
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@gmail.com");
   MakeValidAccountInfo(&account_info);
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
-
-  base::Value::List profile_separation_exception_list;
-  profile_separation_exception_list.Append(base::Value("notexample.com"));
-  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
-                                 std::move(profile_separation_exception_list));
 
   // Account info is already available, interception happens immediately.
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(
@@ -1687,6 +1689,11 @@ TEST_F(DiceWebSigninInterceptorTest,
 }
 
 TEST_F(DiceWebSigninInterceptorTest, ConsumerAccountAllowedOnEmptyProfile) {
+  base::Value::List profile_separation_exception_list;
+  profile_separation_exception_list.Append(base::Value("gmail.com"));
+  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
+                                 std::move(profile_separation_exception_list));
+
   base::HistogramTester histogram_tester;
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("alice@gmail.com");
@@ -1700,11 +1707,6 @@ TEST_F(DiceWebSigninInterceptorTest, ConsumerAccountAllowedOnEmptyProfile) {
             account_info.gaia, ChromeSigninUserChoice::kDoNotSignin);
   }
 
-  base::Value::List profile_separation_exception_list;
-  profile_separation_exception_list.Append(base::Value("gmail.com"));
-  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
-                                 std::move(profile_separation_exception_list));
-
   MaybeIntercept(account_info.account_id);
   histogram_tester.ExpectUniqueSample(
       "Signin.Intercept.HeuristicOutcome",
@@ -1713,6 +1715,11 @@ TEST_F(DiceWebSigninInterceptorTest, ConsumerAccountAllowedOnEmptyProfile) {
 
 TEST_F(DiceWebSigninInterceptorTest,
        ConsumerAccountForcedEnterpriseInterceptionOnManagedProfile) {
+  base::Value::List profile_separation_exception_list;
+  profile_separation_exception_list.Append(base::Value("notexample.com"));
+  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
+                                 std::move(profile_separation_exception_list));
+
   base::HistogramTester histogram_tester;
   AccountInfo primary_account_info =
       identity_test_env()->MakePrimaryAccountAvailable(
@@ -1724,11 +1731,6 @@ TEST_F(DiceWebSigninInterceptorTest,
       identity_test_env()->MakeAccountAvailable("alice@gmail.com");
   MakeValidAccountInfo(&account_info);
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
-
-  base::Value::List profile_separation_exception_list;
-  profile_separation_exception_list.Append(base::Value("notexample.com"));
-  profile()->GetPrefs()->SetList(prefs::kProfileSeparationDomainExceptionList,
-                                 std::move(profile_separation_exception_list));
 
   // Account info is already available, interception happens immediately.
   WebSigninInterceptor::Delegate::BubbleParameters expected_parameters(

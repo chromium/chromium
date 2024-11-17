@@ -15,34 +15,6 @@
 
 namespace ui {
 
-const DomCode writing_system_key_domcodes[] = {
-    // Keyboard Row E
-    DomCode::BACKQUOTE, DomCode::DIGIT1, DomCode::DIGIT2, DomCode::DIGIT3,
-    DomCode::DIGIT4, DomCode::DIGIT5, DomCode::DIGIT6, DomCode::DIGIT7,
-    DomCode::DIGIT8, DomCode::DIGIT9, DomCode::DIGIT0, DomCode::MINUS,
-    DomCode::EQUAL, DomCode::INTL_YEN,
-
-    // Keyboard Row D
-    DomCode::US_Q, DomCode::US_W, DomCode::US_E, DomCode::US_R, DomCode::US_T,
-    DomCode::US_Y, DomCode::US_U, DomCode::US_I, DomCode::US_O, DomCode::US_P,
-    DomCode::BRACKET_LEFT, DomCode::BRACKET_RIGHT, DomCode::BACKSLASH,
-
-    // Keyboard Row C
-    DomCode::US_A, DomCode::US_S, DomCode::US_D, DomCode::US_F, DomCode::US_G,
-    DomCode::US_H, DomCode::US_J, DomCode::US_K, DomCode::US_L,
-    DomCode::SEMICOLON, DomCode::QUOTE,
-
-    // Keyboard Row B
-    DomCode::INTL_BACKSLASH, DomCode::US_Z, DomCode::US_X, DomCode::US_C,
-    DomCode::US_V, DomCode::US_B, DomCode::US_N, DomCode::US_M, DomCode::COMMA,
-    DomCode::PERIOD, DomCode::SLASH, DomCode::INTL_RO,
-};
-
-const size_t kWritingSystemKeyDomCodeEntries =
-    std::size(writing_system_key_domcodes);
-
-const uint32_t kHankakuZenkakuPlaceholder = 0x89d2;
-
 // Mapping from Unicode combining characters to corresponding printable
 // character.
 const static struct {
@@ -66,8 +38,7 @@ void DomKeyboardLayout::AddKeyMapping(DomCode code, uint32_t unicode) {
 
 base::flat_map<std::string, std::string> DomKeyboardLayout::GetMap() {
   auto dom_map = base::flat_map<std::string, std::string>();
-  for (size_t i = 0; i < kWritingSystemKeyDomCodeEntries; ++i) {
-    ui::DomCode dom_code = ui::writing_system_key_domcodes[i];
+  for (const ui::DomCode dom_code : ui::kWritingSystemKeyDomCodes) {
     uint16_t unicode = layout_[dom_code];
 
     // Map combining accents into the corresponding printable character.

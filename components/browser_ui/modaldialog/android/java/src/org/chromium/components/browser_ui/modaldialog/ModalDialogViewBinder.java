@@ -8,11 +8,10 @@ import android.text.TextUtils;
 import android.view.View;
 
 import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modaldialog.ModalDialogProperties.ModalDialogButtonSpec;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-
-import java.util.Arrays;
 
 /**
  * This class is responsible for binding view properties from {@link ModalDialogProperties} to a
@@ -23,7 +22,9 @@ public class ModalDialogViewBinder
                 PropertyModel, ModalDialogView, PropertyKey> {
     @Override
     public void bind(PropertyModel model, ModalDialogView view, PropertyKey propertyKey) {
-        if (ModalDialogProperties.TITLE == propertyKey) {
+        if (ModalDialogProperties.NAME == propertyKey) {
+            /* Do nothing. */
+        } else if (ModalDialogProperties.TITLE == propertyKey) {
             view.setTitle(model.get(ModalDialogProperties.TITLE));
         } else if (ModalDialogProperties.TITLE_MAX_LINES == propertyKey) {
             view.setTitleMaxLines(model.get(ModalDialogProperties.TITLE_MAX_LINES));
@@ -195,9 +196,16 @@ public class ModalDialogViewBinder
     }
 
     private static boolean isButtongroupWithTextButtonsConfigured(PropertyModel model) {
-        return model.get(ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST) != null
-                && Arrays.stream(model.get(ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST))
-                        .anyMatch(buttonSpec -> !TextUtils.isEmpty(buttonSpec.getText()));
+        ModalDialogButtonSpec[] buttonSpecList =
+                model.get(ModalDialogProperties.BUTTON_GROUP_BUTTON_SPEC_LIST);
+        if (buttonSpecList != null) {
+            for (var buttonSpec : buttonSpecList) {
+                if (!TextUtils.isEmpty(buttonSpec.getText())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private static boolean isAnyDefaultButtonWithTextConfigured(PropertyModel model) {

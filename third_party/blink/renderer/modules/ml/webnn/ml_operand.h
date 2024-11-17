@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_descriptor.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
@@ -57,6 +58,7 @@ class MODULES_EXPORT MLOperand : public ScriptWrappable {
   webnn::mojom::blink::Operand::Kind Kind() const;
   const String& Name() const;
   const MLOperator* Operator() const;
+  const HeapHashSet<Member<const MLOperator>>& DependentOperators() const;
 
   // Convenience methods for accessing native types, which avoid a copy
   // compared to using the corresponding methods which return blink types.
@@ -80,6 +82,8 @@ class MODULES_EXPORT MLOperand : public ScriptWrappable {
 
   MLConstantOperand const* AsConstantOperand() const;
 
+  void AddDependentOperator(const MLOperator* ml_operator);
+
  protected:
   Member<MLGraphBuilder> builder_;
 
@@ -97,6 +101,9 @@ class MODULES_EXPORT MLOperand : public ScriptWrappable {
   // operator that produces the operand by an operator build method of
   // MLGraphBuilder interface.
   Member<const MLOperator> operator_;
+
+  // Operators that use this operand as an input.
+  HeapHashSet<Member<const MLOperator>> dependent_operators_;
 };
 
 }  // namespace blink

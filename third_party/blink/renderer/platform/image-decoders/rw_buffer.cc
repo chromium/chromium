@@ -36,12 +36,12 @@ struct RWBuffer::BufferBlock {
   explicit BufferBlock(size_t capacity)
       : next_(nullptr), used_(0), capacity_(capacity) {}
 
-  const void* startData() const { return this + 1; }
+  const uint8_t* startData() const {
+    return reinterpret_cast<const uint8_t*>(this + 1);
+  }
 
   size_t avail() const { return capacity_ - used_; }
-  void* avail_data() {
-    return reinterpret_cast<char*>(const_cast<void*>(startData())) + used_;
-  }
+  uint8_t* avail_data() { return const_cast<uint8_t*>(startData()) + used_; }
 
   static RWBuffer::BufferBlock* Alloc(size_t length) {
     size_t capacity = LengthToCapacity(length);
@@ -158,7 +158,7 @@ RWBuffer::ROIter::ROIter(RWBuffer* rw_buffer, size_t available)
   block_ = &rw_buffer_->head_->block_;
 }
 
-const void* RWBuffer::ROIter::data() const {
+const uint8_t* RWBuffer::ROIter::data() const {
   return remaining_ ? block_->startData() : nullptr;
 }
 
@@ -225,7 +225,7 @@ void ROBuffer::Iter::Reset(const ROBuffer* buffer) {
   }
 }
 
-const void* ROBuffer::Iter::data() const {
+const uint8_t* ROBuffer::Iter::data() const {
   return remaining_ ? block_->startData() : nullptr;
 }
 
@@ -259,15 +259,15 @@ RWBuffer::RWBuffer(size_t initial_capacity) {
   }
 }
 
-RWBuffer::RWBuffer(base::OnceCallback<size_t(void*, size_t)> writer,
+RWBuffer::RWBuffer(base::OnceCallback<size_t(base::span<uint8_t>)> writer,
                    size_t initial_capacity) {
   if (initial_capacity) {
     head_ = RWBuffer::BufferHead::Alloc(initial_capacity);
     tail_ = &head_->block_;
   }
 
-  size_t written = std::move(writer).Run(const_cast<void*>(tail_->startData()),
-                                         initial_capacity);
+  base::span<uint8_t> buffer(tail_->avail_data(), initial_capacity);
+  size_t written = std::move(writer).Run(buffer);
   total_used_ += written;
   tail_->used_ += written;
 

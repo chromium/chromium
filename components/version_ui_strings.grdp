@@ -86,7 +86,13 @@
     Variations Seed Type
   </message>
   <message name="IDS_VERSION_UI_VARIATIONS_CMD" desc="label for the variations information in command-line format on the about:version page">
-    Command-line variations
+    Command-line Variations
+  </message>
+  <message name="IDS_VERSION_UI_COPY_VARIATIONS_LABEL" desc="label for the button to copy the variations string">
+    Copy variations string
+  </message>
+  <message name="IDS_VERSION_UI_COPY_VARIATIONS_NOTICE" desc="text to be read by a screenreader when the variations string is done being copied">
+    Copied variations string to clipboard
   </message>
   <if expr="is_win">
     <message translateable="false" name="IDS_VERSION_UI_COHORT_NAME" desc="Update cohort substring included in the version number line on the about:version page.">

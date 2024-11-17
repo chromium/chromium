@@ -22,7 +22,7 @@
 
 namespace autofill {
 
-CardNameFixFlowControllerImpl::CardNameFixFlowControllerImpl() {}
+CardNameFixFlowControllerImpl::CardNameFixFlowControllerImpl() = default;
 
 CardNameFixFlowControllerImpl::~CardNameFixFlowControllerImpl() {
   MaybeDestroyCardNameFixFlowView(true);

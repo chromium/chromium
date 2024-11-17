@@ -693,7 +693,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         customTabsIntent.intent.setClassName(activity, CustomTabActivity.class.getName());
 
         // Customize items on menu as Reader Mode UI to show 'Find in page' and 'Preference' only.
-        CustomTabIntentDataProvider.addReaderModeUIExtras(customTabsIntent.intent);
+        CustomTabIntentDataProvider.addReaderModeUiExtras(customTabsIntent.intent);
 
         // Add the parent ID as an intent extra for back button functionality.
         customTabsIntent.intent.putExtra(EXTRA_READER_MODE_PARENT, mTab.getId());
@@ -701,7 +701,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         // Use Incognito CCT if the source page is in Incognito mode.
         if (mTab.isIncognito()) {
             IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
-                    customTabsIntent.intent, IntentHandler.IncognitoCCTCallerId.READER_MODE);
+                    customTabsIntent.intent, IntentHandler.IncognitoCctCallerId.READER_MODE);
         }
 
         customTabsIntent.launchUrl(activity, Uri.parse(distillerUrl));

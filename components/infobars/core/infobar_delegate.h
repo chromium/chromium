@@ -130,7 +130,7 @@ class InfoBarDelegate {
     // Removed: UPDATE_PASSWORD_INFOBAR_DELEGATE_MOBILE = 63,
     // Removed: DATA_REDUCTION_PROMO_INFOBAR_DELEGATE_ANDROID = 64,
     // Removed: AUTOFILL_CREDIT_CARD_FILLING_INFOBAR_DELEGATE_ANDROID = 65,
-    ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID = 66,
+    // Removed: ADS_BLOCKED_INFOBAR_DELEGATE_ANDROID = 66,
     // Removed: INSTANT_APPS_INFOBAR_DELEGATE_ANDROID = 67,
     // Removed: DATA_REDUCTION_PROXY_PREVIEW_INFOBAR_DELEGATE = 68,
     // Removed: SCREEN_CAPTURE_INFOBAR_DELEGATE_ANDROID = 69,
@@ -186,6 +186,7 @@ class InfoBarDelegate {
     ENABLE_LINK_CAPTURING_INFOBAR_DELEGATE = 119,
     DEV_TOOLS_SHARED_PROCESS_DELEGATE = 120,
     ENHANCED_SAFE_BROWSING_INFOBAR_DELEGATE = 121,
+    CREDENTIAL_PROVIDER_INFOBAR_DELEGATE_IOS = 122,
   };
 
   // Describes navigation events, used to decide whether infobars should be
@@ -286,7 +287,9 @@ class InfoBarDelegate {
   virtual blocked_content::PopupBlockedInfoBarDelegate*
   AsPopupBlockedInfoBarDelegate();
   virtual ThemeInstalledInfoBarDelegate* AsThemePreviewInfobarDelegate();
+#if BUILDFLAG(IS_IOS)
   virtual translate::TranslateInfoBarDelegate* AsTranslateInfoBarDelegate();
+#endif
 #if BUILDFLAG(IS_ANDROID)
   virtual offline_pages::OfflinePageInfoBarDelegate*
   AsOfflinePageInfoBarDelegate();

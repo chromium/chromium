@@ -1,0 +1,10 @@
+{
+  "WebRTC Chromium FYI Android Builder": {
+    "additional_compile_targets": [
+      "capture_unittests",
+      "content_browsertests",
+      "content_unittests",
+      "remoting_unittests"
+    ]
+  }
+}

@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "base/uuid.h"
@@ -172,55 +171,7 @@ TEST(AuctionConfigMojomTraitsTest, SellerDecisionAndTrustedSignalsUrlsTooLong) {
   EXPECT_TRUE(SerializeAndDeserialize(auction_config_clone));
 }
 
-TEST(AuctionConfigMojomTraitsTest,
-     SellerScoringSignalsUrlCrossOriginDisallowed) {
-  AuctionConfig auction_config =
-      CreateBasicAuctionConfig(GURL("https://seller.test"));
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      blink::features::kFledgePermitCrossOriginTrustedSignals);
-
-  // Different origin than seller, but same scheme.
-  auction_config.trusted_scoring_signals_url =
-      GURL("https://not.seller.test/foo");
-  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
-
-  auction_config = CreateBasicAuctionConfig(GURL("https://seller.test"));
-  // This blob URL should be considered same-origin to the seller, but the
-  // scheme is wrong.
-  auction_config.trusted_scoring_signals_url =
-      GURL("blob:https://seller.test/foo");
-  ASSERT_EQ(auction_config.seller,
-            url::Origin::Create(*auction_config.trusted_scoring_signals_url));
-  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
-}
-
-TEST(AuctionConfigMojomTraitsTest,
-     SellerScoringSignalsUrlCrossOriginPermitted) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kFledgePermitCrossOriginTrustedSignals);
-
-  AuctionConfig auction_config =
-      CreateBasicAuctionConfig(GURL("https://seller.test"));
-  auction_config.trusted_scoring_signals_url =
-      GURL("https://not.seller.org/foo");
-
-  // With kFledgePermitCrossOriginTrustedSignals on, this is OK.
-  EXPECT_TRUE(SerializeAndDeserialize(auction_config));
-
-  auction_config = CreateBasicAuctionConfig(GURL("https://seller.test"));
-  // This blob URL should be considered same-origin to the seller, but the
-  // scheme is wrong. That restriction still applies even if the cross-origin
-  // check is off.
-  auction_config.trusted_scoring_signals_url =
-      GURL("blob:https://seller.test/foo");
-  ASSERT_EQ(auction_config.seller,
-            url::Origin::Create(*auction_config.trusted_scoring_signals_url));
-  EXPECT_FALSE(SerializeAndDeserialize(auction_config));
-}
-
-TEST(AuctionConfigMojomTraitsTest, TrustedScoringSignalsFields) {
+TEST(AuctionConfigMojomTraitsTest, TrustedScoringSignalsUrl) {
   AuctionConfig auction_config =
       CreateBasicAuctionConfig(GURL("https://seller.test"));
 
@@ -234,8 +185,14 @@ TEST(AuctionConfigMojomTraitsTest, TrustedScoringSignalsFields) {
       {"https://seller.test/foo.json#foo"},
       {"https://seller.test/foo.json#"},
       {"https://user:pass@seller.test/foo.json"},
+      // Cross-site and cross-origin URLs are allowed.
+      {"https://not.seller.test/foo.json", /*expected_ok=*/true},
+      {"https://not-seller.test/foo.json", /*expected_ok=*/true},
       // This is actually the same as https://seller.test/foo.json
       {"https://:@seller.test/foo.json", /*expected_ok=*/true},
+      // This blob URL should be considered same-origin to the seller, but the
+      // scheme is wrong.
+      {"blob:https://seller.test/foo"},
   };
 
   for (const auto& test : kTests) {

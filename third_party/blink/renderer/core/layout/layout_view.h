@@ -283,8 +283,6 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   // media queries when printing.
   gfx::SizeF DefaultPageAreaSize() const;
 
-  PhysicalRect LocalVisualRectIgnoringVisibility() const override;
-
   // Invalidates paint for the entire view, including composited descendants,
   // but not including child frames.
   // It is very likely you do not want to call this method.

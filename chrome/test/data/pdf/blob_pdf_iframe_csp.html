@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <title>Blob PDF iframe with embedder CSP</title>
+    <meta http-equiv="Content-Security-Policy" content="style-src 'none'">
+  </head>
+  <script>
+    const openBlobPdfInIframe = () => {
+      fetch('/pdf/test.pdf').then(response => response.blob()).then(blob => {
+        const iframe = document.createElement('iframe');
+        iframe.src = URL.createObjectURL(blob);
+        document.body.appendChild(iframe);
+      });
+    };
+  </script>
+</html>

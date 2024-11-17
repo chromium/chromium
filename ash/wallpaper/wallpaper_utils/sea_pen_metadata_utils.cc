@@ -191,7 +191,7 @@ base::Value::Dict SeaPenQueryToDict(
   return query_dict;
 }
 
-std::string ExtractDcDescriptionContents(const std::string_view data) {
+std::string ExtractDcDescriptionContents(std::string_view data) {
   re2::RE2 tag_pattern("<dc:description>(.*)</dc:description>");
   std::string result;
   if (!re2::RE2::PartialMatch(data, tag_pattern, &result)) {

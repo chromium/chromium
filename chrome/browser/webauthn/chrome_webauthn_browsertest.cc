@@ -11,10 +11,13 @@
 #include <sstream>
 #include <vector>
 
+#include "base/base64url.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -41,7 +44,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/password_manager/core/common/password_manager_ui.h"
-#include "components/sync/base/features.h"
 #include "components/sync/protocol/webauthn_credential_specifics.pb.h"
 #include "components/webauthn/core/browser/passkey_change_quota_tracker.h"
 #include "components/webauthn/core/browser/test_passkey_model.h"
@@ -70,6 +72,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_WIN)
+#include "device/fido/win/authenticator.h"
 #include "device/fido/win/fake_webauthn_api.h"
 #include "device/fido/win/webauthn_api.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -86,6 +89,45 @@ constexpr char kUsername1[] = "flandre";
 constexpr char kDisplayName1[] = "Flandre Scarlet";
 constexpr char kUsername2[] = "sakuya";
 constexpr char kDisplayName2[] = "Sakuya Izayoi";
+
+static constexpr char kSignalUnknownCredentialId[] = R"(
+PublicKeyCredential.signalUnknownCredential({
+  rpId: "www.example.com",
+  credentialId: "$1",
+}).then(c => 'webauthn: OK', e => 'error ' + e);
+)";
+
+std::string GetSignalUnknownCredentialScript(
+    base::span<const uint8_t> credential_id) {
+  std::string b64_credential_id;
+  base::Base64UrlEncode(credential_id,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &b64_credential_id);
+  return base::ReplaceStringPlaceholders(kSignalUnknownCredentialId,
+                                         {b64_credential_id},
+                                         /*offsets=*/nullptr);
+}
+
+std::string GetSignalAllAcceptedCredentials(
+    base::span<const uint8_t> credential_id,
+    base::span<const uint8_t> user_id) {
+  static constexpr char kSignalAllAcceptedCredentials[] = R"(
+  PublicKeyCredential.signalAllAcceptedCredentials({
+    rpId: "www.example.com",
+    allAcceptedCredentialIds: ["$1"],
+    userId: "$2",
+  }).then(c => 'webauthn: OK', e => 'error ' + e);
+  )";
+  std::string b64_credential_id, b64_user_id;
+  base::Base64UrlEncode(credential_id,
+                        base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &b64_credential_id);
+  base::Base64UrlEncode(user_id, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                        &b64_user_id);
+  return base::ReplaceStringPlaceholders(kSignalAllAcceptedCredentials,
+                                         {b64_credential_id, b64_user_id},
+                                         /*offsets=*/nullptr);
+}
 
 sync_pb::WebauthnCredentialSpecifics CreateWebAuthnCredentialSpecifics(
     base::span<const uint8_t> credential_id,
@@ -147,12 +189,28 @@ class WebAuthnBrowserTest : public CertVerifierBrowserTest {
     testing::Mock::AllowLeak(mock_bluetooth_adapter_.get());
   }
 
+  void SetUpInProcessBrowserTestFixture() override {
+    subscription_ =
+        BrowserContextDependencyManager::GetInstance()
+            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
+                &WebAuthnBrowserTest::OnWillCreateBrowserContextServices,
+                base::Unretained(this)));
+  }
+
  protected:
+  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
+    PasskeyModelFactory::GetInstance()->SetTestingFactory(
+        context,
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<webauthn::TestPasskeyModel>();
+            }));
+  }
+
+  base::CallbackListSubscription subscription_;
   scoped_refptr<device::MockBluetoothAdapter> mock_bluetooth_adapter_ = nullptr;
   device::FidoRequestHandlerBase::ScopedAlwaysAllowBLECalls always_allow_ble_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  const base::test::ScopedFeatureList scoped_feature_list{
-      device::kWebAuthnRelatedOrigin};
 };
 
 static constexpr char kGetAssertionCredID1234[] = R"((() => {
@@ -300,20 +358,65 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ChromeExtensions) {
 }
 
 #if BUILDFLAG(IS_WIN)
+
+class WinWebAuthnBrowserTest
+    : public WebAuthnBrowserTest,
+      device::WinWebAuthnApiAuthenticator::TestObserver {
+ public:
+  void SetUpOnMainThread() override {
+    WebAuthnBrowserTest::SetUpOnMainThread();
+    signal_unknown_credential_run_loop_ = std::make_unique<base::RunLoop>();
+    signal_all_accepted_credentials_run_loop_ =
+        std::make_unique<base::RunLoop>();
+    auto virtual_device_factory =
+        std::make_unique<device::test::VirtualFidoDeviceFactory>();
+    virtual_device_factory->set_discover_win_webauthn_api_authenticator(true);
+    auth_env_ =
+        std::make_unique<content::ScopedAuthenticatorEnvironmentForTesting>(
+            std::move(virtual_device_factory));
+    device::WinWebAuthnApiAuthenticator::SetGlobalObserverForTesting(this);
+  }
+
+  void TearDownOnMainThread() override {
+    device::WinWebAuthnApiAuthenticator::SetGlobalObserverForTesting(nullptr);
+    WebAuthnBrowserTest::TearDownOnMainThread();
+  }
+
+  void WaitForSignalUnknownCredential() {
+    signal_unknown_credential_run_loop_->Run();
+    signal_unknown_credential_run_loop_ = std::make_unique<base::RunLoop>();
+  }
+
+  void WaitForSignalAllAcceptedCredentials() {
+    signal_all_accepted_credentials_run_loop_->Run();
+    signal_all_accepted_credentials_run_loop_ =
+        std::make_unique<base::RunLoop>();
+  }
+
+  // device::WinWebAuthnApiAuthenticator::TestObserver:
+  void OnSignalUnknownCredential() override {
+    signal_unknown_credential_run_loop_->Quit();
+  }
+
+  void OnSignalAllAcceptedCredentials() override {
+    signal_all_accepted_credentials_run_loop_->Quit();
+  }
+
+ protected:
+  std::unique_ptr<base::RunLoop> signal_unknown_credential_run_loop_;
+  std::unique_ptr<base::RunLoop> signal_all_accepted_credentials_run_loop_;
+  device::FakeWinWebAuthnApi win_api_;
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override_{&win_api_};
+  std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting> auth_env_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnHelloSignal};
+};
+
 // Integration test for Large Blob on Windows.
-IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, WinLargeBlob) {
+IN_PROC_BROWSER_TEST_F(WinWebAuthnBrowserTest, WinLargeBlob) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
-
-  device::FakeWinWebAuthnApi fake_api;
-  fake_api.set_version(WEBAUTHN_API_VERSION_3);
-  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&fake_api);
-
-  auto virtual_device_factory =
-      std::make_unique<device::test::VirtualFidoDeviceFactory>();
-  virtual_device_factory->set_discover_win_webauthn_api_authenticator(true);
-  content::ScopedAuthenticatorEnvironmentForTesting auth_env(
-      std::move(virtual_device_factory));
+  win_api_.set_version(WEBAUTHN_API_VERSION_3);
 
   constexpr char kMakeCredentialLargeBlob[] = R"(
     let cred_id;
@@ -371,147 +474,72 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, WinLargeBlob) {
       content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
                       kMakeCredentialLargeBlob));
 }
-#endif  // BUILDFLAG(IS_WIN)
 
-class WebAuthnGpmPasskeyTest : public WebAuthnBrowserTest {
- public:
-  class Observer : public ChromeAuthenticatorRequestDelegate::TestObserver {
-   public:
-    virtual ~Observer() = default;
-
-    std::optional<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
-    transport_availability_info() {
-      return transport_availability_info_;
-    }
-
-    void WaitForUI() { run_loop_.Run(); }
-
-    // ChromeAuthenticatorRequestDelegate::TestObserver:
-    void Created(ChromeAuthenticatorRequestDelegate* delegate) override {}
-
-    std::vector<std::unique_ptr<device::cablev2::Pairing>>
-    GetCablePairingsFromSyncedDevices() override {
-      std::vector<std::unique_ptr<device::cablev2::Pairing>> ret;
-      ret.emplace_back(TestPhone("phone", /*public_key=*/0,
-                                 /*last_updated=*/base::Time::FromTimeT(1),
-                                 /*channel_priority=*/1));
-      return ret;
-    }
-
-    void OnTransportAvailabilityEnumerated(
-        ChromeAuthenticatorRequestDelegate* delegate,
-        device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai)
-        override {
-      transport_availability_info_ = *tai;
-    }
-
-    void UIShown(ChromeAuthenticatorRequestDelegate* delegate) override {
-      run_loop_.Quit();
-    }
-
-    void CableV2ExtensionSeen(
-        base::span<const uint8_t> server_link_data) override {}
-
-    void AccountSelectorShown(
-        const std::vector<device::AuthenticatorGetAssertionResponse>& responses)
-        override {}
-
-   private:
-    base::RunLoop run_loop_;
-    std::optional<device::FidoRequestHandlerBase::TransportAvailabilityInfo>
-        transport_availability_info_;
-  };
-
-  WebAuthnGpmPasskeyTest() {
-    scoped_feature_list_.InitWithFeatures({syncer::kSyncWebauthnCredentials},
-                                          /*disabled_features=*/{});
-  }
-
-  void SetUpOnMainThread() override {
-    WebAuthnBrowserTest::SetUpOnMainThread();
-    observer_ = std::make_unique<Observer>();
-    ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(
-        observer_.get());
-  }
-
-  void PostRunTestOnMainThread() override {
-    ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(nullptr);
-    WebAuthnBrowserTest::PostRunTestOnMainThread();
-  }
-
-  void SetUpInProcessBrowserTestFixture() override {
-    WebAuthnBrowserTest::SetUpInProcessBrowserTestFixture();
-    subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &WebAuthnGpmPasskeyTest::OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
-  }
-
- protected:
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    PasskeyModelFactory::GetInstance()->SetTestingFactory(
-        context,
-        base::BindRepeating(
-            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
-              return std::make_unique<webauthn::TestPasskeyModel>();
-            }));
-  }
-
-  std::unique_ptr<Observer> observer_;
-  base::test::ScopedFeatureList scoped_feature_list_;
-  base::CallbackListSubscription subscription_;
-};
-
-// Tests that chrome filters out GPM passkeys that don't appear on a request
-// allow list.
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, FilterGPMPasskeys) {
+// Integration test for signalUnknownCredentialId on Windows.
+IN_PROC_BROWSER_TEST_F(WinWebAuthnBrowserTest, WinSignalUnknownCredential) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+  win_api_.set_version(WEBAUTHN_API_VERSION_4);
+  win_api_.set_supports_silent_discovery(true);
 
-  // Set up two GPM passkeys.
-  auto* passkey_model = static_cast<webauthn::TestPasskeyModel*>(
-      PasskeyModelFactory::GetForProfile(browser()->profile()));
-  passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
-      kCredentialID, kUserId1, kUsername1, kDisplayName1));
-  passkey_model->AddNewPasskeyForTesting(CreateWebAuthnCredentialSpecifics(
-      kCredentialID2, kUserId2, kUsername2, kDisplayName2));
+  // Set up a Windows Hello passkey.
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kMakeDiscoverableCredential));
+  ASSERT_EQ(win_api_.registrations().size(), 1u);
+  const std::vector<uint8_t> credential_id =
+      win_api_.registrations().begin()->first;
 
-  auto virtual_device_factory =
-      std::make_unique<device::test::VirtualFidoDeviceFactory>();
-  virtual_device_factory->SetTransport(device::FidoTransportProtocol::kHybrid);
-  virtual_device_factory->mutable_state()->InjectResidentKey(
-      kCredentialID, "www.example.com", kUserId1, kUsername1, kDisplayName1);
-  virtual_device_factory->mutable_state()->InjectResidentKey(
-      kCredentialID2, "www.example.com", kUserId2, kUsername2, kDisplayName2);
-  virtual_device_factory->mutable_state()->fingerprints_enrolled = true;
-  device::VirtualCtap2Device::Config config;
-  config.resident_key_support = true;
-  config.internal_uv_support = true;
-  virtual_device_factory->SetCtap2Config(std::move(config));
-  auto auth_env =
-      std::make_unique<content::ScopedAuthenticatorEnvironmentForTesting>(
-          std::move(virtual_device_factory));
+  // Signal the passkey as unknown, which should delete it.
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      GetSignalUnknownCredentialScript(credential_id)));
 
-  // Request an assertion with a credential ID matching only the first passkey.
-  content::ExecuteScriptAsync(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      kGetAssertionCredID1234);
-
-  observer_->WaitForUI();
-
-  // Only the first passkey should be in the recognized credentials list.
-  device::DiscoverableCredentialMetadata expected(
-      device::AuthenticatorType::kPhone, "www.example.com",
-      device::fido_parsing_utils::Materialize(kCredentialID),
-      device::PublicKeyCredentialUserEntity(
-          device::fido_parsing_utils::Materialize(kUserId1), kUsername1,
-          kDisplayName1));
-  EXPECT_THAT(observer_->transport_availability_info()->recognized_credentials,
-              testing::ElementsAre(expected));
+  WaitForSignalUnknownCredential();
+  EXPECT_TRUE(win_api_.registrations().empty());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
+// Integration test for signalAllAcceptedCredentials on Windows.
+IN_PROC_BROWSER_TEST_F(WinWebAuthnBrowserTest,
+                       WinSignalAllAcceptedCredentials) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("www.example.com", "/title1.html")));
+  win_api_.set_version(WEBAUTHN_API_VERSION_4);
+  win_api_.set_supports_silent_discovery(true);
+
+  // Set up a Windows Hello passkey.
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      kMakeDiscoverableCredential));
+  ASSERT_EQ(win_api_.registrations().size(), 1u);
+  const std::vector<uint8_t>& credential_id =
+      win_api_.registrations().begin()->first;
+  const std::vector<uint8_t>& user_id =
+      win_api_.registrations().begin()->second.user->id;
+
+  // Signal the passkey as known, which should keep it.
+  EXPECT_EQ(
+      "webauthn: OK",
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      GetSignalAllAcceptedCredentials(credential_id, user_id)));
+  WaitForSignalAllAcceptedCredentials();
+  EXPECT_EQ(win_api_.registrations().size(), 1u);
+
+  // Signal a different passkey as known, which should delete the existing one.
+  EXPECT_EQ("webauthn: OK",
+            content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(),
+                GetSignalAllAcceptedCredentials(kCredentialID2, user_id)));
+  WaitForSignalAllAcceptedCredentials();
+  EXPECT_TRUE(win_api_.registrations().empty());
+}
+
+#endif  // BUILDFLAG(IS_WIN)
+
+IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest,
                        SignalUnknownCredentialGPMPasskeys) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
@@ -524,12 +552,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
 
   // Reports the credential ID matching the passkey created.
   EXPECT_TRUE(ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                     R"(
-  PublicKeyCredential.signalUnknownCredential({
-    rpId: "www.example.com",
-    credentialId: "AQIDBAUGBwgJCgsMDQ4PEA",
-  }).then(c => 'webauthn: OK', e => 'error ' + e);
-  )"));
+                     GetSignalUnknownCredentialScript(kCredentialID)));
 
   // After reporting the passkey, it should be deleted from the credentials
   // list, so the vector of passkeys matching the relying party should be empty.
@@ -537,7 +560,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
       passkey_model->GetPasskeysForRelyingPartyId("www.example.com").empty());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
+IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest,
                        SignalAllAcceptedCredsNoPasskeyDeletion) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
@@ -549,16 +572,10 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
 
   // Reports the user ID and credential ID matching the created passkey.
   // The passkey will not be deleted.
-  EXPECT_EQ(
-      "webauthn: OK",
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      R"(
-  PublicKeyCredential.signalAllAcceptedCredentials({
-    rpId: "www.example.com",
-    userId: "AQIDBA",
-    allAcceptedCredentialIds: ["AQIDBAUGBwgJCgsMDQ4PEA"],
-  }).then(c => 'webauthn: OK', e => 'error ' + e);
-  )"));
+  EXPECT_EQ("webauthn: OK",
+            content::EvalJs(
+                browser()->tab_strip_model()->GetActiveWebContents(),
+                GetSignalAllAcceptedCredentials(kCredentialID, kUserId1)));
 
   // Check that the passkey with kCredentialID was not deleted.
   EXPECT_TRUE(passkey_model->GetPasskeyByCredentialId(
@@ -575,7 +592,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
   EXPECT_EQ(model_state, password_manager::ui::INACTIVE_STATE);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
+IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest,
                        SignalAllAcceptedCredsPasskeyDeletion) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
@@ -612,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
   EXPECT_EQ(model_state, password_manager::ui::PASSKEY_NOT_ACCEPTED_STATE);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportInvalidStrings) {
+IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, ReportInvalidStrings) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
 
@@ -661,18 +678,15 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, ReportInvalidStrings) {
   // This should fail with a TypeError due to an invalid base64url
   // string in the credentialId report.
   EXPECT_THAT(
-      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
-                      R"(
-  PublicKeyCredential.signalUnknownCredential({
-    rpId: "www.example.com",
-    credentialId: "A+/+A",
-  }).then(c => 'webauthn: OK', e => 'error ' + e);
-  )")
+      content::EvalJs(
+          browser()->tab_strip_model()->GetActiveWebContents(),
+          base::ReplaceStringPlaceholders(kSignalUnknownCredentialId, {"A+/+A"},
+                                          /*offsets=*/nullptr))
           .ExtractString(),
       testing::HasSubstr("Invalid base64url string for credentialId."));
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
+IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest,
                        SignalCurrentUserDetailsGPMPasskeys) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
@@ -715,7 +729,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
             password_manager::ui::PASSKEY_UPDATED_CONFIRMATION_STATE);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, SignalCurrentUserDetailsQuota) {
+IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, SignalCurrentUserDetailsQuota) {
   constexpr char kRequest[] = R"(
     PublicKeyCredential.signalCurrentUserDetails({
       rpId: "www.example.com",
@@ -757,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest, SignalCurrentUserDetailsQuota) {
   EXPECT_NE(passkey->user_name(), kUsername1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAuthnGpmPasskeyTest,
+IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest,
                        SignalCurrentUserDetailsWithNoChanges) {
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server_.GetURL("www.example.com", "/title1.html")));
@@ -1007,9 +1021,8 @@ IN_PROC_BROWSER_TEST_F(WebAuthnConditionalUITest,
   // Make a Conditional UI request. The authenticator should not be dispatched
   // to before the user clicks the "Sign in with another device…" button.
   virtual_device_factory_->mutable_state()->simulate_press_callback =
-      base::BindLambdaForTesting([](device::VirtualFidoDevice* device) {
-        CHECK(false) << "Virtual device should not have been dispatched to";
-        return false;
+      base::BindLambdaForTesting([](device::VirtualFidoDevice* device) -> bool {
+        NOTREACHED() << "Virtual device should not have been dispatched to";
       });
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1024,7 +1037,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnConditionalUITest,
       base::BindLambdaForTesting(
           [&](device::VirtualFidoDevice* device) { return true; });
   ChromeWebAuthnCredentialsDelegate delegate(web_contents);
-  delegate.LaunchWebAuthnFlow();
+  delegate.LaunchSecurityKeyOrHybridFlow();
 
   std::string result;
   ASSERT_TRUE(message_queue.WaitForMessage(&result));
@@ -1142,6 +1155,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnCableExtension, ServerLink) {
 // It mocks out the discovery process and thus allows the caBLE UI to be tested.
 // It uses a trace-based approach: events are recorded (as strings) in an event
 // trace which is then compared against the expected trace at the end.
+// TODO(crbug.com/372493822): remove when hybrid linking is cleaned up.
 class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
  public:
   WebAuthnCableSecondFactor() {
@@ -1245,7 +1259,7 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
                 break;
 
               default:
-                CHECK(false);
+                NOTREACHED();
             }
 
             contact_step_number_++;
@@ -1401,6 +1415,8 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
   device::WinWebAuthnApi::ScopedOverride override_win_webauthn_api_{
       &fake_win_webauthn_api_};
 #endif
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnHybridLinking};
 };
 
 // TODO(crbug.com/40186172): this test is flaky on Mac.

@@ -203,10 +203,11 @@ interface Source {
   aggregatableDedupKeys: bigint[];
   triggerDataMatching: string;
   eventLevelEpsilon: number;
-  debugCookieSet: boolean;
+  cookieBasedDebugAllowed: boolean;
   remainingAggregatableDebugBudget: number;
   aggregatableDebugKeyPiece: string;
   attributionScopesData: string;
+  aggregatableNamedBudgets: string;
 }
 
 function newSource(mojo: WebUISource): Source {
@@ -234,10 +235,11 @@ function newSource(mojo: WebUISource): Source {
     triggerDataMatching: triggerDataMatchingText[mojo.triggerDataMatching],
     eventLevelEpsilon: mojo.eventLevelEpsilon,
     status: attributabilityText[mojo.attributability],
-    debugCookieSet: mojo.debugCookieSet,
+    cookieBasedDebugAllowed: mojo.cookieBasedDebugAllowed,
     remainingAggregatableDebugBudget: mojo.remainingAggregatableDebugBudget,
     aggregatableDebugKeyPiece: mojo.aggregatableDebugKeyPiece,
     attributionScopesData: mojo.attributionScopesDataJson,
+    aggregatableNamedBudgets: mojo.aggregatableNamedBudgets,
   };
 }
 
@@ -264,9 +266,18 @@ function initSourceTable(panel: HTMLElement):
       [
         valueColumn('Priority', 'priority', asNumber),
         valueColumn('Filter Data', 'filterData', asCode),
-        valueColumn('Debug Cookie Set', 'debugCookieSet', asStringOrBool),
-        'Event-Level Fields',
+        valueColumn(
+            'Cookie-Based Debug Allowed', 'cookieBasedDebugAllowed',
+            asStringOrBool),
         valueColumn('Attribution Scopes Data', 'attributionScopesData', asCode),
+        valueColumn(
+            'Remaining Aggregatable Debug Budget',
+            'remainingAggregatableDebugBudget',
+            asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
+        valueColumn(
+            'Aggregatable Debug Key Piece', 'aggregatableDebugKeyPiece',
+            asStringOrBool),
+        'Event-Level Fields',
         valueColumn(
             'Epsilon', 'eventLevelEpsilon',
             asCustomNumber((v: number) => v.toFixed(3))),
@@ -281,15 +292,10 @@ function initSourceTable(panel: HTMLElement):
             'Remaining Aggregatable Attribution Budget',
             'remainingAggregatableAttributionBudget',
             asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
+        valueColumn(
+            'Named Budgets', 'aggregatableNamedBudgets', asCode),
         valueColumn('Aggregation Keys', 'aggregationKeys', asCode),
         valueColumn('Dedup Keys', 'aggregatableDedupKeys', asList(asNumber)),
-        valueColumn(
-            'Remaining Aggregatable Debug Budget',
-            'remainingAggregatableDebugBudget',
-            asCustomNumber((v) => `${v} / ${BUDGET_PER_SOURCE}`)),
-        valueColumn(
-            'Aggregatable Debug Key Piece', 'aggregatableDebugKeyPiece',
-            asStringOrBool),
       ]);
 }
 
@@ -563,7 +569,6 @@ const osRegistrationResultText:
           'Invalid registration URL',
       [OsRegistrationResult.kProhibitedByBrowserPolicy]:
           'Prohibited by browser policy',
-      [OsRegistrationResult.kExcessiveQueueSize]: 'Excessive queue size',
       [OsRegistrationResult.kRejectedByOs]: 'Rejected by OS',
     };
 
@@ -832,6 +837,8 @@ const aggregatableResultText: Readonly<Record<AggregatableResult, string>> = {
   [AggregatableResult.kProhibitedByBrowserPolicy]:
       commonResult.prohibitedByBrowserPolicy,
   [AggregatableResult.kExcessiveReports]: commonResult.excessiveReports,
+  [AggregatableResult.kInsufficientNamedBudget]:
+      'Failure: Insufficient budget with selected name',
 };
 
 const attributionSupportText: Readonly<Record<AttributionSupport, string>> = {

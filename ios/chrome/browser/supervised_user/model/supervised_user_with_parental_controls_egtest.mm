@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "base/test/ios/wait_util.h"
+#import "components/browsing_data/core/pref_names.h"
 #import "components/policy/policy_constants.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/supervised_user/core/browser/supervised_user_url_filter.h"
@@ -47,8 +48,6 @@ static const char* kInterstitialContent = "Ask your parent";
 static const char* kInterstitialWaitingContent = "Waiting for permission";
 static const char* kInterstitialBlockReason = "This site is blocked";
 static const char* kInterstitialDetails = "Details";
-static const char* kInterstitialFirstTimeBanner =
-    "Family Link choices for Chrome apply here";
 }  // namespace
 
 // Tests the core user journeys of a supervised user with FamilyLink parental
@@ -81,12 +80,12 @@ static const char* kInterstitialFirstTimeBanner =
   [SupervisedUserSettingsAppInterface setUpTestUrlLoaderFactoryHelper];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey closeCurrentTab];
   [SupervisedUserSettingsAppInterface resetSupervisedUserURLFilterBehavior];
   [SupervisedUserSettingsAppInterface resetManualUrlFiltering];
   [SupervisedUserSettingsAppInterface tearDownTestUrlLoaderFactoryHelper];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)checkRequestSentMessageVisibility:(BOOL)isVisible {
@@ -140,6 +139,11 @@ static const char* kInterstitialFirstTimeBanner =
 }
 
 - (void)clearBrowsingData {
+  // Disable closing tabs as it's on by default in delete browsing data, so the
+  // tab closure animation is not run in iPads.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+
   // Clear the browsing data.
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI
@@ -659,27 +663,6 @@ static const char* kInterstitialFirstTimeBanner =
   // displayed.
   [ChromeEarlGrey loadURL:blockedURL];
   [self checkInterstitalIsShownInWaitingScreen];
-}
-
-// Tests that users are shown the First Time Banner on the interstitial on their
-// first navigation to a blocked page.
-- (void)testSupervisedUserInterstitialDisplaysFirstTimeBanner {
-  [self signInSupervisedUser];
-  [SupervisedUserSettingsAppInterface resetFirstTimeBanner];
-  [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
-
-  // On the first blocked site the interstitial displays the first time banner.
-  GURL blockedURL = self.testServer->GetURL(kEchoPath);
-  [ChromeEarlGrey loadURL:blockedURL];
-  [self checkInterstitalIsShown];
-  [ChromeEarlGrey waitForWebStateContainingText:kInterstitialFirstTimeBanner];
-  [self checkElementDisplayStyleVisibility:@"banner" isVisible:YES];
-
-  // Navigate to another blocked site. The banner should not be visible anymore.
-  blockedURL = self.testServer->GetURL("other.host", kEchoPath);
-  [ChromeEarlGrey loadURL:blockedURL];
-  [self checkInterstitalIsShown];
-  [self checkElementDisplayStyleVisibility:@"banner" isVisible:NO];
 }
 
 // Tests that the Zoom Text option is available for the interstitial.

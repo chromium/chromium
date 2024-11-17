@@ -449,6 +449,15 @@ void CheckSavePasswordsInAccountSectionHidden() {
               kPasswordSettingsBulkMovePasswordsToAccountButtonTableViewId)];
 }
 
+// Checks that the section for udpating GPM PIN is visible.
+void CheckChangePinVisibleInSettings() {
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kPasswordSettingsChangePinDescriptionId)];
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      grey_accessibilityID(kPasswordSettingsChangePinButtonId)];
+}
+
 // Verifies reauthentication UI histogram was recorded.
 void CheckReauthenticationUIEventMetric(ReauthenticationEvent event) {
   NSString* histogram = base::SysUTF8ToNSString(
@@ -606,6 +615,12 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   CheckPasswordManagerWidgetPromoInstructionScreenVisible();
 }
 
+#define REQUIRE_PASSKEYS                                         \
+  if (!syncer::IsWebauthnCredentialSyncEnabled()) {              \
+    EARL_GREY_TEST_DISABLED(                                     \
+        @"This build configuration does not support passkeys."); \
+  }
+
 }  // namespace
 
 // Various tests for the main Password Manager UI.
@@ -672,7 +687,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
                                     ReauthenticationResult::kSuccess];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Snackbars triggered by tests stay up for a limited time even if the
   // settings get closed. Ensure that they are closed to avoid interference with
   // other tests.
@@ -688,7 +703,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -715,12 +730,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
           (testOpeningPasswordManagerWidgetPromoInstructionsWithFailedAuth)] ||
       [self isRunningTest:@selector(testDeletingLastAffiliatedGroup)]) {
     config.iph_feature_enabled = "IPH_iOSPromoPasswordManagerWidget";
-  }
-
-  if ([self isRunningTest:@selector(testEditPasskeyUsername)] ||
-      [self isRunningTest:@selector(testEditPasskeyUserDisplayName)] ||
-      [self isRunningTest:@selector(testDeletePasskey)]) {
-    config.features_enabled.push_back(syncer::kSyncWebauthnCredentials);
   }
 
   return config;
@@ -1761,6 +1770,46 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       performAction:grey_tap()];
 }
 
+// Tests that an alert is displayed when update GPM PIN flow returns an error.
+// For now, fake trusted vault backend returns the error unconditionally.
+- (void)testUpdateGPMPinErrorAlert {
+  OpenPasswordManager();
+  OpenSettingsSubmenu();
+  CheckChangePinVisibleInSettings();
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordSettingsChangePinButtonId)]
+      performAction:grey_tap()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  id<GREYMatcher> pinErrorTitleMatcher = grey_accessibilityLabel(
+      l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_UPDATE_PIN_ERROR_TITLE));
+  CheckVisibilityOfElement(pinErrorTitleMatcher, /*is_visible=*/true);
+
+  [[EarlGrey selectElementWithMatcher:
+                 chrome_test_util::ButtonWithAccessibilityLabelId(
+                     IDS_IOS_PASSWORD_SETTINGS_UPDATE_PIN_ERROR_BUTTON)]
+      performAction:grey_tap()];
+  CheckVisibilityOfElement(pinErrorTitleMatcher, /*is_visible=*/false);
+}
+
+// Tests that attempting to change GPM PIN with no passcode does not show the
+// dialog and displays an alert prompting the user to set a passcode.
+- (void)testUpdateGPMPinWithoutPasscodeSet {
+  OpenPasswordManager();
+  OpenSettingsSubmenu();
+  CheckChangePinVisibleInSettings();
+
+  [PasswordSettingsAppInterface mockReauthenticationModuleCanAttempt:NO];
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kPasswordSettingsChangePinButtonId)]
+      performAction:grey_tap()];
+  CheckVisibilityOfElement(
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_PASSWORD_SETTINGS_CHANGE_PIN_SET_UP_PASSCODE_CONTENT)),
+      /*is_visible=*/true);
+}
+
 // Test export flow
 - (void)testExportFlow {
   // Saving a form is needed for exporting passwords.
@@ -2164,6 +2213,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 - (void)testEditPasskeyUsername {
+  REQUIRE_PASSKEYS
   SaveExamplePasskeyToStore();
 
   OpenPasswordManager();
@@ -2210,6 +2260,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 - (void)testEditPasskeyUserDisplayName {
+  REQUIRE_PASSKEYS
   SaveExamplePasskeyToStore();
 
   OpenPasswordManager();
@@ -2256,6 +2307,7 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 }
 
 - (void)testDeletePasskey {
+  REQUIRE_PASSKEYS
   SaveExamplePasskeyToStore();
 
   OpenPasswordManager();

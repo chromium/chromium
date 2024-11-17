@@ -84,7 +84,7 @@ const ComputedStyle* SVGLengthContext::ComputedStyleForLengthResolving(
   }
   // We can end up here if trying to resolve values for elements in an
   // inactive document.
-  return &document.GetStyleResolver().InitialStyle();
+  return ComputedStyle::GetInitialStyleSingleton();
 }
 
 float SVGLengthContext::ResolveValue(const CSSMathFunctionValue& math_function,

@@ -228,13 +228,7 @@ class MediaClientTest : public BrowserWithTestWindowTest {
 
 class MediaClientAppUsingCameraTest : public testing::Test {
  public:
-  MediaClientAppUsingCameraTest() {
-    auto delegate = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_ = delegate.get();
-    window_delegate_provider_ =
-        std::make_unique<ash::TestNewWindowDelegateProvider>(
-            std::move(delegate));
-  }
+  MediaClientAppUsingCameraTest() = default;
 
   void LaunchAppUsingCamera(int active_client_count) {
     media_client_.active_camera_client_count_ = active_client_count;
@@ -305,9 +299,7 @@ class MediaClientAppUsingCameraTest : public testing::Test {
 
   MediaClientImpl media_client_;
   SystemNotificationHelper system_notification_helper_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_ =
-      nullptr;
-  std::unique_ptr<ash::TestNewWindowDelegateProvider> window_delegate_provider_;
+  MockNewWindowDelegate new_window_delegate_;
   std::vector<media::VideoCaptureDeviceInfo> video_capture_devices_;
 };
 
@@ -424,7 +416,7 @@ TEST_F(MediaClientAppUsingCameraTest, LearnMoreButtonInteraction) {
   ShowCameraOffNotification("device_id", "device_name");
 
   EXPECT_EQ(notification_display_service->NumberOfActiveNotifications(), 1u);
-  EXPECT_CALL(*new_window_delegate_, OpenUrl).Times(1);
+  EXPECT_CALL(new_window_delegate_, OpenUrl).Times(1);
 
   notification_display_service->SimulateClick(
       "ash.media.camera.activity_with_privacy_switch_on.device_id", 0);

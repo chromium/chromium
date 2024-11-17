@@ -62,7 +62,7 @@ void WriteNumberAttribute(dbus::MessageWriter* writer,
         writer->AppendVariantOfUint32(static_cast<uint32_t>(value));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -100,7 +100,7 @@ void WriteAttribute(dbus::MessageWriter* writer,
     }
     case bluez::BluetoothServiceAttributeValueBlueZ::NULLTYPE:
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   writer->CloseContainer(&struct_writer);
 }
@@ -477,8 +477,7 @@ class BluetoothAdapterClientImpl : public BluetoothAdapterClient,
           address_type_value = kBluezAddressTypeRandom;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       };
       dict.Set(bluetooth_device::kAddressTypeProperty, address_type_value);
     }

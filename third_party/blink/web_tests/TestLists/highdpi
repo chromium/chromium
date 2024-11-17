@@ -452,6 +452,8 @@ external/wpt/css/css-overflow/overflow-clip-margin-005.html
 external/wpt/css/css-overflow/parsing/scrollbar-gutter-valid.html
 external/wpt/css/css-overscroll-behavior/inheritance.html
 external/wpt/css/css-overscroll-behavior/parsing/overscroll-behavior-invalid.html
+external/wpt/css/css-page/body-background-vlr-print.html
+external/wpt/css/css-page/body-background-vrl-print.html
 external/wpt/css/css-page/page-rule-declarations-001.html
 external/wpt/css/css-page/parsing/page-invalid.html
 external/wpt/css/css-paint-api/parse-input-arguments-003.https.html
@@ -848,7 +850,7 @@ external/wpt/html/semantics/forms/the-option-element/option-text-backslash.html
 external/wpt/html/semantics/forms/the-output-element/output-setcustomvalidity.html
 external/wpt/html/semantics/forms/the-progress-element/progress.html
 external/wpt/html/semantics/forms/the-select-element/select-add.html
-external/wpt/html/semantics/forms/the-selectlist-element/selectlist-events.tentative.html
+external/wpt/html/semantics/forms/the-select-element/select-events.tentative.html
 external/wpt/html/semantics/forms/the-textarea-element/wrap-enumerated-ascii-case-insensitive.html
 external/wpt/html/semantics/grouping-content/the-dd-element/grouping-dd.html
 external/wpt/html/semantics/grouping-content/the-div-element/grouping-div.html
@@ -1436,8 +1438,6 @@ printing/css2.1/page-break-inside-000.html
 printing/fixed-positioned-headers-and-footers.html
 printing/multicol-2-pages.html
 printing/thead-repeats-with-translucent-text-and-borders.html
-printing/vertical-lr.html
-printing/vertical-rl.html
 printing/width-overflow.html
 svg/W3C-I18N/text-anchor-dirLTR-anchorMiddle.svg
 svg/W3C-I18N/text-anchor-dirRTL-anchorMiddle.svg
@@ -1551,7 +1551,6 @@ transforms/svg-vs-css.xhtml
 transforms/transform-on-inline.html
 transforms/transformed-document-element.html
 virtual/android/fullscreen/video-controls-timeline.html
-virtual/compositor-threaded-percent-based-scrolling/fast/events/wheel/continuous-platform-wheelevent-in-scrolling-div.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-visibility-auto-shared-element.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/content-with-clip-max-texture-size.html
 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/new-content-with-overflow-zoomed.html
@@ -1567,7 +1566,6 @@ virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mo
 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-32.html
 virtual/forced-high-contrast-colors/html/details_summary/color-scheme-validation/details-with-summary-open.html
 
-virtual/main-threaded-percent-based-scrolling/fast/events/wheel/continuous-platform-wheelevent-in-scrolling-div.html
 virtual/off-main-thread-css-paint/http/tests/csspaint/border-color.html
 virtual/off-main-thread-css-paint/http/tests/csspaint/entire-canvas-visible-zoom.html
 virtual/off-main-thread-css-paint/http/tests/csspaint/geometry-background-image-zoom.html

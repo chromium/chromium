@@ -60,7 +60,7 @@ void Unmap(void* addr, size_t size) {
 }
 
 std::optional<size_t> CountResidentBytesInSharedMemory(
-    const WritableSharedMemoryMapping& mapping) {
+    WritableSharedMemoryMapping& mapping) {
   // SAFETY: We need the actual mapped memory size here. There's no public
   // method to get this as a span, so we need to construct it unsafely. The
   // mapped_size() is larger than `mem.size()` but represents the actual memory
@@ -154,9 +154,9 @@ TEST(ProcessMemoryDumpTest, Clear) {
   ASSERT_EQ(nullptr, pmd1->GetAllocatorDump("mad2"));
   ASSERT_EQ(mad3, pmd1->GetAllocatorDump("mad3"));
   ASSERT_EQ(shared_mad1, pmd1->GetSharedGlobalAllocatorDump(shared_mad_guid1));
-  ASSERT_EQ(MemoryAllocatorDump::Flags::DEFAULT, shared_mad1->flags());
+  ASSERT_EQ(MemoryAllocatorDump::Flags::kDefault, shared_mad1->flags());
   ASSERT_EQ(shared_mad2, pmd1->GetSharedGlobalAllocatorDump(shared_mad_guid2));
-  ASSERT_EQ(MemoryAllocatorDump::Flags::WEAK, shared_mad2->flags());
+  ASSERT_EQ(MemoryAllocatorDump::Flags::kWeak, shared_mad2->flags());
 
   traced_value = std::make_unique<TracedValue>();
   pmd1->SerializeAllocatorDumpsInto(traced_value.get());
@@ -219,7 +219,7 @@ TEST(ProcessMemoryDumpTest, TakeAllDumpsFrom) {
   ASSERT_EQ(2u, pmd1->allocator_dumps_edges().size());
   ASSERT_EQ(shared_mad1, pmd1->GetSharedGlobalAllocatorDump(shared_mad_guid1));
   ASSERT_EQ(shared_mad2, pmd1->GetSharedGlobalAllocatorDump(shared_mad_guid2));
-  ASSERT_TRUE(MemoryAllocatorDump::Flags::WEAK & shared_mad2->flags());
+  ASSERT_TRUE(MemoryAllocatorDump::Flags::kWeak & shared_mad2->flags());
 
   // Check that calling serialization routines doesn't cause a crash.
   traced_value = std::make_unique<TracedValue>();
@@ -345,23 +345,23 @@ TEST(ProcessMemoryDumpTest, GlobalAllocatorDumpTest) {
   MemoryAllocatorDumpGuid shared_mad_guid(1);
   auto* shared_mad1 = pmd->CreateWeakSharedGlobalAllocatorDump(shared_mad_guid);
   ASSERT_EQ(shared_mad_guid, shared_mad1->guid());
-  ASSERT_EQ(MemoryAllocatorDump::Flags::WEAK, shared_mad1->flags());
+  ASSERT_EQ(MemoryAllocatorDump::Flags::kWeak, shared_mad1->flags());
 
   auto* shared_mad2 = pmd->GetSharedGlobalAllocatorDump(shared_mad_guid);
   ASSERT_EQ(shared_mad1, shared_mad2);
-  ASSERT_EQ(MemoryAllocatorDump::Flags::WEAK, shared_mad1->flags());
+  ASSERT_EQ(MemoryAllocatorDump::Flags::kWeak, shared_mad1->flags());
 
   auto* shared_mad3 = pmd->CreateWeakSharedGlobalAllocatorDump(shared_mad_guid);
   ASSERT_EQ(shared_mad1, shared_mad3);
-  ASSERT_EQ(MemoryAllocatorDump::Flags::WEAK, shared_mad1->flags());
+  ASSERT_EQ(MemoryAllocatorDump::Flags::kWeak, shared_mad1->flags());
 
   auto* shared_mad4 = pmd->CreateSharedGlobalAllocatorDump(shared_mad_guid);
   ASSERT_EQ(shared_mad1, shared_mad4);
-  ASSERT_EQ(MemoryAllocatorDump::Flags::DEFAULT, shared_mad1->flags());
+  ASSERT_EQ(MemoryAllocatorDump::Flags::kDefault, shared_mad1->flags());
 
   auto* shared_mad5 = pmd->CreateWeakSharedGlobalAllocatorDump(shared_mad_guid);
   ASSERT_EQ(shared_mad1, shared_mad5);
-  ASSERT_EQ(MemoryAllocatorDump::Flags::DEFAULT, shared_mad1->flags());
+  ASSERT_EQ(MemoryAllocatorDump::Flags::kDefault, shared_mad1->flags());
 }
 
 TEST(ProcessMemoryDumpTest, SharedMemoryOwnershipTest) {

@@ -1,0 +1,20 @@
+include_rules = [
+  "+chrome/browser/browser_process.h",
+  "+chrome/browser/ui/ash/quick_answers",
+  "+chrome/browser/ui/chromeos/magic_boost",
+  "+chrome/browser/ui/ash/editor_menu",
+  "+chrome/browser/ui/views/mahi",
+]
+
+specific_include_rules = {
+  "read_write_cards_ui_controller_unittest\.cc": [
+    "+chrome/test/views",
+  ],
+  "read_write_cards_manager_impl_unittest\.cc": [
+    "+ash/system/mahi",
+    # TODO(crbug.com/374896328): Remove references to croapi.
+    "+chrome/browser/ash/crosapi",
+    "+chrome/browser/ash/magic_boost",
+    "+chrome/common/chrome_constants.h",
+  ],
+}

@@ -84,7 +84,7 @@ class FakeURLLoader final : public URLLoader {
                          scoped_refptr<BlobDataHandle>& downloaded_blob,
                          std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
                              resource_load_info_notifier_wrapper) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void LoadAsynchronously(

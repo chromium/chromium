@@ -34,7 +34,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content.browser.input.ChromiumBaseInputConnection;
 import org.chromium.content.browser.input.ImeTestUtils;
@@ -45,6 +44,7 @@ import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionMenuGroup;
 import org.chromium.content_public.browser.SelectionMenuItem;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.selection.SelectionActionMenuDelegate;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
@@ -127,6 +127,7 @@ public class ContentTextSelectionTest {
         public void modifyDefaultMenuItems(
                 List<SelectionMenuItem.Builder> menuItemBuilders,
                 boolean isSelectionPassword,
+                boolean isSelectionReadOnly,
                 String selectedText) {
             // No-op because we are testing default menu item ordering with no modifications.
         }
@@ -300,8 +301,8 @@ public class ContentTextSelectionTest {
         Assert.assertTrue(mSelectionPopupController.hasSelection());
 
         View webContentsView = mWebContents.getViewAndroidDelegate().getContainerView();
-        float mCurrentX = webContentsView.getWidth() / 2;
-        float mCurrentY = webContentsView.getHeight() / 2;
+        float mCurrentX = webContentsView.getWidth() / 2f;
+        float mCurrentY = webContentsView.getHeight() / 2f;
 
         // Perform a scroll.
         TouchCommon.performDrag(
@@ -329,8 +330,8 @@ public class ContentTextSelectionTest {
         waitForSelectActionBarVisible(false);
 
         View webContentsView = mWebContents.getViewAndroidDelegate().getContainerView();
-        float mCurrentX = webContentsView.getWidth() / 2;
-        float mCurrentY = webContentsView.getHeight() / 2;
+        float mCurrentX = webContentsView.getWidth() / 2f;
+        float mCurrentY = webContentsView.getHeight() / 2f;
 
         // Perform a scroll.
         TouchCommon.performDrag(
@@ -585,7 +586,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testPastePopupPasteAsPlainTextPlainTextRichEditor() throws Throwable {
         copyStringToClipboard("SampleTextToCopy");
         DOMUtils.longPressNode(mWebContents, "rich_div");
@@ -597,7 +597,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testPastePopupPasteAsPlainTextPlainTextNormalEditor() throws Throwable {
         copyStringToClipboard("SampleTextToCopy");
         DOMUtils.longPressNode(mWebContents, "empty_input_text");
@@ -621,7 +620,6 @@ public class ContentTextSelectionTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
-    @MinAndroidSdkLevel(Build.VERSION_CODES.O)
     public void testPastePopupPasteAsPlainTextHtmlTextNormalEditor() throws Throwable {
         copyHtmlToClipboard("SampleTextToCopy", "<span style=\"color: red;\">HTML</span>");
         DOMUtils.longPressNode(mWebContents, "empty_input_text");
@@ -1153,9 +1151,9 @@ public class ContentTextSelectionTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     if (show) {
-                        webContents.onShow();
+                        webContents.updateWebContentsVisibility(Visibility.VISIBLE);
                     } else {
-                        webContents.onHide();
+                        webContents.updateWebContentsVisibility(Visibility.HIDDEN);
                     }
                 });
     }

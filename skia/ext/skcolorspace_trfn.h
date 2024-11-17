@@ -58,11 +58,9 @@ static constexpr skcms_TransferFunction kSMPTE_ST_240 = {2.222222222222f,
 // IEC 61966-2-4, value 11, same as kRec709 (but is explicitly extended).
 static constexpr skcms_TransferFunction kIEC61966_2_4 = kRec709;
 
-// IEC 61966-2-1 sRGB, value 13. This is almost equal to
-// SkNamedTransferFnExt::kSRGB. The differences are rounding errors that
-// cause test failures (and should be unified).
-static constexpr skcms_TransferFunction kIEC61966_2_1 = {
-    2.4f, 0.947867345704f, 0.052132654296f, 0.077399380805f, 0.040449937172f};
+// IEC 61966-2-1 sRGB, value 13.
+static constexpr skcms_TransferFunction kIEC61966_2_1 =
+    SkNamedTransferFn::kSRGB;
 
 // Rec. ITU-R BT.2020-2 (10-bit system), value 14.
 static constexpr skcms_TransferFunction kRec2020_10bit = kRec709;

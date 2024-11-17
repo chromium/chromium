@@ -5,7 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 
 import {AccountManagerBrowserProxy, AccountManagerBrowserProxyImpl} from 'chrome://os-settings/lazy_load.js';
-import {CrIconButtonElement, CrRadioGroupElement, OsSettingsPeoplePageElement, OsSettingsRoutes, PageStatus, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl, Router, routes, settingMojom, SyncBrowserProxy, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
+import {CrIconButtonElement, CrRadioGroupElement, OsSettingsPeoplePageElement, OsSettingsRoutes, PageStatus, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl, Router, routes, setGraduationHandlerProviderForTesting, settingMojom, SyncBrowserProxy, SyncBrowserProxyImpl} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -18,6 +18,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 import {TestSyncBrowserProxy} from '../test_os_sync_browser_proxy.js';
 
 import {TestAccountManagerBrowserProxy} from './test_account_manager_browser_proxy.js';
+import {TestGraduationHandler} from './test_graduation_handler_provider.js';
 import {TestProfileInfoBrowserProxy} from './test_profile_info_browser_proxy.js';
 
 interface SubpageTriggerData {
@@ -28,6 +29,8 @@ interface SubpageTriggerData {
 suite('<os-settings-people-page>', () => {
   const isRevampWayfindingEnabled =
       loadTimeData.getBoolean('isRevampWayfindingEnabled');
+  const isGraduationFlagEnabled =
+      loadTimeData.getBoolean('isGraduationFlagEnabled');
   let peoplePage: OsSettingsPeoplePageElement;
   let browserProxy: ProfileInfoBrowserProxy&TestProfileInfoBrowserProxy;
   let syncBrowserProxy: SyncBrowserProxy&TestSyncBrowserProxy;
@@ -415,5 +418,75 @@ suite('<os-settings-people-page>', () => {
 
           assertNull(parentalControlsSettingsCard);
         });
+
+    if (isGraduationFlagEnabled) {
+      test(
+          'Graduation settings card is shown when app is enabled', async () => {
+            loadTimeData.overrideValues({
+              isGraduationAppEnabled: true,
+            });
+            const handler = new TestGraduationHandler();
+            setGraduationHandlerProviderForTesting(handler);
+
+            createPage();
+            await accountManagerBrowserProxy.whenCalled('getAccounts');
+            await syncBrowserProxy.whenCalled('getSyncStatus');
+            flush();
+
+            const graduationSettingsCard = peoplePage.shadowRoot!.querySelector(
+                'graduation-settings-card');
+            assertTrue(isVisible(graduationSettingsCard));
+
+            // Simulate pref change to disable app.
+            const observer = handler.getObserverRemote();
+            assertTrue(!!observer);
+            observer.onGraduationAppUpdated(false);
+            await waitAfterNextRender(peoplePage);
+
+            assertFalse(isVisible(peoplePage.shadowRoot!.querySelector(
+                'graduation-settings-card')));
+          });
+
+      test(
+          'Graduation settings card is not shown when app is disabled',
+          async () => {
+            loadTimeData.overrideValues({
+              isGraduationAppEnabled: false,
+            });
+            const handler = new TestGraduationHandler();
+            setGraduationHandlerProviderForTesting(handler);
+
+            createPage();
+            await accountManagerBrowserProxy.whenCalled('getAccounts');
+            await syncBrowserProxy.whenCalled('getSyncStatus');
+            flush();
+
+            const graduationSettingsCard = peoplePage.shadowRoot!.querySelector(
+                'graduation-settings-card');
+            assertNull(graduationSettingsCard);
+
+            // Simulate pref change to enable app.
+            const observer = handler.getObserverRemote();
+            assertTrue(!!observer);
+            observer.onGraduationAppUpdated(true);
+            await waitAfterNextRender(peoplePage);
+
+            assertTrue(isVisible(peoplePage.shadowRoot!.querySelector(
+                'graduation-settings-card')));
+          });
+    } else {
+      test(
+          'Graduation settings card is not shown when feature is disabled',
+          async () => {
+            createPage();
+            await accountManagerBrowserProxy.whenCalled('getAccounts');
+            await syncBrowserProxy.whenCalled('getSyncStatus');
+            flush();
+
+            const graduationSettingsCard = peoplePage.shadowRoot!.querySelector(
+                'graduation-settings-card');
+            assertNull(graduationSettingsCard);
+          });
+    }
   }
 });

@@ -2417,8 +2417,8 @@ HRESULT VideoCaptureDeviceMFWin::DeliverExternalBufferToClient(
           gfx::ColorSpace());
   client_->OnIncomingCapturedExternalBuffer(
       std::move(external_buffer), reference_time, timestamp,
-      MaybeForwardCaptureBeginTime(capture_begin_time),
-      gfx::Rect(texture_size));
+      MaybeForwardCaptureBeginTime(capture_begin_time), gfx::Rect(texture_size),
+      /*metadata=*/std::nullopt);
   return hr;
 }
 
@@ -2483,7 +2483,8 @@ void VideoCaptureDeviceMFWin::OnIncomingCapturedDataInternal() {
         locked_buffer.data(), locked_buffer.length(),
         selected_video_capability_->supported_format, color_space_,
         camera_rotation_.value(), false /* flip_y */, reference_time, timestamp,
-        MaybeForwardCaptureBeginTime(capture_begin_time));
+        MaybeForwardCaptureBeginTime(capture_begin_time),
+        /*metadata=*/std::nullopt);
   }
 
   while (!video_stream_take_photo_callbacks_.empty()) {

@@ -5,11 +5,11 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_groups_panel_mediator.h"
 
 #import "base/test/metrics/user_action_tester.h"
-#import "components/saved_tab_groups/fake_tab_group_sync_service.h"
-#import "components/saved_tab_groups/mock_tab_group_sync_service.h"
-#import "components/saved_tab_groups/saved_tab_group.h"
-#import "components/saved_tab_groups/saved_tab_group_test_utils.h"
-#import "components/saved_tab_groups/types.h"
+#import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/public/types.h"
+#import "components/saved_tab_groups/test_support/fake_tab_group_sync_service.h"
+#import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
+#import "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -65,18 +65,17 @@ const char* kSelectTabGroupsUMA = "MobileTabGridSelectTabGroups";
 class TabGroupsPanelMediatorTest : public PlatformTest {
  protected:
   TabGroupsPanelMediatorTest() : web_state_list_(&web_state_list_delegate_) {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
     // Create a regular browser.
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     browser_list_->AddBrowser(browser_.get());
     mode_holder_ = [[TabGridModeHolder alloc] init];
   }
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestBrowser> browser_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<BrowserList> browser_list_;
   FakeWebStateListDelegate web_state_list_delegate_;
   WebStateList web_state_list_;

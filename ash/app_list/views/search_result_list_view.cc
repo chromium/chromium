@@ -78,10 +78,10 @@ SearchResultListView::SearchResultListView(
     AppListViewDelegate* view_delegate,
     SearchResultPageDialogController* dialog_controller,
     SearchResultView::SearchResultViewType search_result_view_type,
-    std::optional<size_t> productivity_launcher_index)
+    std::optional<size_t> search_result_category_index)
     : SearchResultContainerView(view_delegate),
       results_container_(new views::View),
-      productivity_launcher_index_(productivity_launcher_index),
+      search_result_category_index_(search_result_category_index),
       search_result_view_type_(search_result_view_type) {
   auto* layout = results_container_->SetLayoutManager(
       std::make_unique<views::FlexLayout>());
@@ -266,13 +266,13 @@ void SearchResultListView::OnSelectedResultChanged() {
 }
 
 int SearchResultListView::DoUpdate() {
-  if (productivity_launcher_index_.has_value()) {
+  if (search_result_category_index_.has_value()) {
     std::vector<ash::AppListSearchResultCategory>* ordered_categories =
         AppListModelProvider::Get()->search_model()->ordered_categories();
-    if (productivity_launcher_index_ < ordered_categories->size()) {
+    if (search_result_category_index_ < ordered_categories->size()) {
       enabled_ = true;
       SetListType(CategoryToListType(
-          (*ordered_categories)[productivity_launcher_index_.value()]));
+          (*ordered_categories)[search_result_category_index_.value()]));
     } else {
       enabled_ = false;
       list_type_.reset();

@@ -20,6 +20,8 @@ std::string ClientIdToString(mojom::ClientId client_id) {
       return "Bookmarks";
     case mojom::ClientId::NtpTabResumption:
       return "NtpTabResumption";
+    case mojom::ClientId::HistoryEmbeddings:
+      return "HistoryEmbeddings";
       // No default case and no final statement, so that the compiler will force
       // developers to update this function if the ClientId enum is updated.
       // Developers must ALSO update the PageImageServiceClientId variants in

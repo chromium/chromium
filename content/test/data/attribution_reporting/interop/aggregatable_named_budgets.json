@@ -1,0 +1,515 @@
+{
+  "description": "Aggregatable named budgets",
+  "api_config": {
+    "needs_aggregatable_debug": true,
+    "needs_aggregatable_named_budgets": true
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "source_event_id": "123",
+                "aggregatable_debug_reporting": {
+                  "budget": 1000,
+                  "key_piece": "0x15"
+                },
+                "aggregation_keys": {
+                  "a": "0x159"
+                },
+                "filter_data": {
+                  "product": ["123"]
+                },
+                "named_budgets": {
+                  "biddable": 100,
+                  "non-biddable": 200,
+                  "third-thing": 0,
+                  "fourth-thing": 65536
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Should result in an aggregatable report deducting from 'biddable' named
+      // budget.
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": [
+                  {
+                    "values": {
+                      "a": 100
+                    }
+                  }
+                ],
+                "named_budgets": [
+                  {
+                    "name": "biddable",
+                    "filters": {
+                      "product": ["123"]
+                    }
+                  },
+                  {
+                    "name": "non-biddable"
+                  }
+                ],
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Should be dropped due to insufficient aggregatable named budget,
+      // produces an aggregatable debug report.
+      {
+        "timestamp": "2000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": [
+                  {
+                    "values": {
+                      "a": 1
+                    }
+                  }
+                ],
+                "named_budgets": [
+                  {
+                    "name": "biddable",
+                    "filters": {
+                      "product": ["123"]
+                    }
+                  },
+                  {
+                    "name": "non-biddable"
+                  }
+                ],
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x2",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-aggregate-insufficient-named-budget"],
+                      "key_piece": "0x8",
+                      "value": 100
+                    }
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Should be dropped due to insufficient aggregatable budget,
+      // produces an aggregatable debug report.
+      {
+        "timestamp": "3000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": [
+                  {
+                    "values": {
+                      "a": 65536
+                    }
+                  }
+                ],
+                "named_budgets": [
+                  {
+                    "name": "biddable",
+                    "filters": {
+                      "product": ["123"]
+                    }
+                  },
+                  {
+                    "name": "non-biddable"
+                  }
+                ],
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x2",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-aggregate-insufficient-named-budget"],
+                      "key_piece": "0x8",
+                      "value": 100
+                    },
+                    {
+                      "types": ["trigger-aggregate-insufficient-budget"],
+                      "key_piece": "0x8",
+                      "value": 200
+                    }
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Should result in an aggregatable report deducting from 'non-biddable'
+      // named budget because the filters for 'biddable' don't match.
+      {
+        "timestamp": "4000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": [
+                  {
+                    "values": {
+                      "a": 200
+                    }
+                  }
+                ],
+                "named_budgets": [
+                  {
+                    "name": "biddable",
+                    "filters": {
+                      "product": ["000"]
+                    }
+                  },
+                  {
+                    "name": "non-biddable"
+                  }
+                ],
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Should be dropped due to insufficient aggregatable named budget,
+      // produces an aggregatable debug report.
+      {
+        "timestamp": "5000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": [
+                  {
+                    "values": {
+                      "a": 1
+                    }
+                  }
+                ],
+                "named_budgets": [
+                  {
+                    "name": "third-thing",
+                    "filters": {
+                      "product": ["123"]
+                    }
+                  },
+                  {
+                    "name": "non-biddable"
+                  }
+                ],
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x2",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-aggregate-insufficient-named-budget"],
+                      "key_piece": "0x8",
+                      "value": 100
+                    },
+                    {
+                      "types": ["trigger-aggregate-insufficient-budget"],
+                      "key_piece": "0x8",
+                      "value": 200
+                    }
+                  ]
+                },
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Should result in an aggregatable report because 'foo' doesn't match
+      // with any named budget.
+      {
+        "timestamp": "6000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_trigger_data": [
+                  {
+                    "source_keys": ["a"],
+                    "key_piece": "0x400"
+                  }
+                ],
+                "aggregatable_values": [
+                  {
+                    "values": {
+                      "a": 60000
+                    }
+                  }
+                ],
+                "named_budgets": [
+                  {
+                    "name": "foo"
+                  }
+                ],
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "limit": "100",
+              "name": "biddable",
+              "source_event_id": "123",
+              "source_site": "https://source.test"
+            },
+            "type": "trigger-aggregate-insufficient-named-budget"
+          }
+        ],
+        "report_time": "2000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [
+            {
+              "id": "0",
+              "key": "0x1f",
+              "value": 100
+            }
+          ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "2",
+            "version": "1.0"
+          }
+        },
+        "report_time": "2000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "limit": "65536",
+              "source_event_id": "123",
+              "source_site": "https://source.test"
+            },
+            "type": "trigger-aggregate-insufficient-budget"
+          }
+        ],
+        "report_time": "3000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [
+            {
+              "id": "0",
+              "key": "0x1f",
+              "value": 200
+            }
+          ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3",
+            "version": "1.0"
+          }
+        },
+        "report_time": "3000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": [
+          {
+            "body": {
+              "attribution_destination": "https://destination.test",
+              "limit": "0",
+              "name": "third-thing",
+              "source_event_id": "123",
+              "source_site": "https://source.test"
+            },
+            "type": "trigger-aggregate-insufficient-named-budget"
+          }
+        ],
+        "report_time": "5000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [
+            {
+              "id": "0",
+              "key": "0x1f",
+              "value": 100
+            }
+          ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "5",
+            "version": "1.0"
+          }
+        },
+        "report_time": "5000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [
+            {
+              "id": "0",
+              "key": "0x559",
+              "value": 100
+            }
+          ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3601",
+            "version": "1.0"
+          }
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
+        "report_time": "3601000"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [
+            {
+              "id": "0",
+              "key": "0x559",
+              "value": 200
+            }
+          ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3604",
+            "version": "1.0"
+          }
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
+        "report_time": "3604000"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [
+            {
+              "id": "0",
+              "key": "0x559",
+              "value": 60000
+            }
+          ],
+          "shared_info": {
+            "api": "attribution-reporting",
+            "attribution_destination": "https://destination.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "3606",
+            "version": "1.0"
+          }
+        },
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/report-aggregate-attribution",
+        "report_time": "3606000"
+      }
+    ]
+  }
+}

@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
+#include "services/webnn/public/mojom/webnn_error.mojom.h"
 
 namespace webnn {
 

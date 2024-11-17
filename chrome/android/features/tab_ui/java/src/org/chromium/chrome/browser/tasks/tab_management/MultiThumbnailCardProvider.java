@@ -35,7 +35,7 @@ import org.chromium.chrome.browser.tab_ui.TabContentManagerThumbnailProvider;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.url.GURL;
@@ -52,8 +52,9 @@ import java.util.concurrent.atomic.AtomicReference;
 public class MultiThumbnailCardProvider implements ThumbnailProvider {
     private final TabContentManager mTabContentManager;
     private final TabContentManagerThumbnailProvider mTabContentManagerThumbnailProvider;
-    private final ObservableSupplier<TabModelFilter> mCurrentTabModelFilterSupplier;
-    private final Callback<TabModelFilter> mOnTabModelFilterChanged = this::onTabModelFilterChanged;
+    private final ObservableSupplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
+    private final Callback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
+            this::onTabGroupModelFilterChanged;
 
     private final float mRadius;
     private final float mFaviconFrameCornerRadius;
@@ -70,19 +71,19 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
 
     private class MultiThumbnailFetcher {
+        private static final int MAX_THUMBNAIL_COUNT = 4;
         private final Tab mInitialTab;
         private final Callback<Drawable> mResultCallback;
         private final boolean mIsTabSelected;
-        private final List<Tab> mTabs = new ArrayList<>(4);
         private final AtomicInteger mThumbnailsToFetch = new AtomicInteger();
 
         private Canvas mCanvas;
         private Bitmap mMultiThumbnailBitmap;
         private String mText;
 
-        private final List<Rect> mFaviconRects = new ArrayList<>(4);
-        private final List<RectF> mThumbnailRects = new ArrayList<>(4);
-        private final List<RectF> mFaviconBackgroundRects = new ArrayList<>(4);
+        private final List<Rect> mFaviconRects = new ArrayList<>(MAX_THUMBNAIL_COUNT);
+        private final List<RectF> mThumbnailRects = new ArrayList<>(MAX_THUMBNAIL_COUNT);
+        private final List<RectF> mFaviconBackgroundRects = new ArrayList<>(MAX_THUMBNAIL_COUNT);
         private final int mThumbnailWidth;
         private final int mThumbnailHeight;
 
@@ -198,42 +199,23 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
 
             // Initialize Tabs.
             List<Tab> relatedTabList =
-                    mCurrentTabModelFilterSupplier.get().getRelatedTabList(initialTab.getId());
-            if (relatedTabList.size() <= 4) {
-                int thumbnailCount = relatedTabList.size();
-                mThumbnailsToFetch.set(thumbnailCount);
-
-                mTabs.add(initialTab);
-
-                for (int i = 0; i < thumbnailCount; i++) {
-                    if (relatedTabList.get(i) == initialTab) continue;
-
-                    mTabs.add(relatedTabList.get(i));
-                }
-                for (int i = 0; i < 4 - thumbnailCount; i++) {
-                    mTabs.add(null);
-                }
-            } else {
-                int thumbnailCount = 3;
-                mText = "+" + (relatedTabList.size() - thumbnailCount);
-                mThumbnailsToFetch.set(thumbnailCount);
-
-                mTabs.add(initialTab);
-
-                for (int i = 0; i < thumbnailCount; i++) {
-                    if (relatedTabList.get(i) == initialTab) continue;
-
-                    mTabs.add(relatedTabList.get(i));
-                    if (mTabs.size() == thumbnailCount) break;
-                }
-                mTabs.add(null);
+                    mCurrentTabGroupModelFilterSupplier.get().getRelatedTabList(initialTab.getId());
+            int relatedTabCount = relatedTabList.size();
+            boolean showPlus = relatedTabCount > MAX_THUMBNAIL_COUNT;
+            int tabsToShow = showPlus ? MAX_THUMBNAIL_COUNT - 1 : relatedTabCount;
+            Tab[] tabs = new Tab[MAX_THUMBNAIL_COUNT];
+            mText = showPlus ? "+" + (relatedTabList.size() - tabsToShow) : null;
+            mThumbnailsToFetch.set(tabsToShow);
+            for (int i = 0; i < tabsToShow; i++) {
+                tabs[i] = relatedTabList.get(i);
             }
 
             // Fetch and draw all.
-            for (int i = 0; i < 4; i++) {
-                Tab tab = mTabs.get(i);
+            for (int i = 0; i < MAX_THUMBNAIL_COUNT; i++) {
+                Tab tab = tabs[i];
                 RectF thumbnailRect = mThumbnailRects.get(i);
                 if (tab != null) {
+                    // Create final copies to get lambda captures to compile.
                     final int index = i;
                     final GURL url = tab.getUrl();
                     final boolean isIncognito = tab.isIncognito();
@@ -347,7 +329,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
             @NonNull Context context,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
             @NonNull TabContentManager tabContentManager,
-            @NonNull ObservableSupplier<TabModelFilter> currentTabModelFilterSupplier) {
+            @NonNull ObservableSupplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier) {
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         Resources resources = context.getResources();
@@ -355,7 +337,7 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         mTabContentManager = tabContentManager;
         mTabContentManagerThumbnailProvider =
                 new TabContentManagerThumbnailProvider(tabContentManager);
-        mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
+        mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
         mRadius = resources.getDimension(R.dimen.tab_list_mini_card_radius);
         mFaviconFrameCornerRadius =
                 resources.getDimension(R.dimen.tab_grid_thumbnail_favicon_frame_corner_radius);
@@ -415,14 +397,14 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
         // tabs thumbnails before the post task normally run by ObservableSupplier#addObserver is
         // run.
         @Nullable
-        TabModelFilter currentFilter =
-                mCurrentTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged);
+        TabGroupModelFilter currentFilter =
+                mCurrentTabGroupModelFilterSupplier.addObserver(mOnTabGroupModelFilterChanged);
         if (currentFilter != null) {
-            mOnTabModelFilterChanged.onResult(currentFilter);
+            mOnTabGroupModelFilterChanged.onResult(currentFilter);
         }
     }
 
-    private void onTabModelFilterChanged(TabModelFilter filter) {
+    private void onTabGroupModelFilterChanged(TabGroupModelFilter filter) {
         boolean isIncognito = filter.isIncognito();
         mEmptyThumbnailPaint.setColor(
                 TabUiThemeUtils.getMiniThumbnailPlaceholderColor(mContext, isIncognito, false));
@@ -448,13 +430,13 @@ public class MultiThumbnailCardProvider implements ThumbnailProvider {
 
     /** Destroy any member that needs clean up. */
     public void destroy() {
-        mCurrentTabModelFilterSupplier.removeObserver(mOnTabModelFilterChanged);
+        mCurrentTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
     }
 
     @Override
     public void getTabThumbnailWithCallback(
             int tabId, Size thumbnailSize, boolean isSelected, Callback<Drawable> callback) {
-        TabModelFilter filter = mCurrentTabModelFilterSupplier.get();
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         assert filter.isTabModelRestored();
         Tab tab = filter.getTabModel().getTabById(tabId);
         boolean useMultiThumbnail = filter.isTabInTabGroup(tab);

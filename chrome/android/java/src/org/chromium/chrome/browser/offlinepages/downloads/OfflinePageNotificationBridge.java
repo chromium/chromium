@@ -40,7 +40,7 @@ public class OfflinePageNotificationBridge {
                         .setDownloadGuid(guid)
                         .setFileName(displayName)
                         .setIsResumable(false)
-                        .setOTRProfileId(null)
+                        .setOtrProfileId(null)
                         .setBytesTotalSize(networkBytesUsed)
                         .build();
 
@@ -92,7 +92,7 @@ public class OfflinePageNotificationBridge {
                         .setFileName(displayName)
                         .setFilePath(url)
                         .setBytesReceived(bytesReceived)
-                        .setOTRProfileId(null)
+                        .setOtrProfileId(null)
                         .setIsResumable(true)
                         .setTimeRemainingInMillis(0)
                         .build();
@@ -162,7 +162,7 @@ public class OfflinePageNotificationBridge {
     public static void showDownloadingToast() {
         intializeOfflineItemsCollection();
         DownloadManagerService.getDownloadManagerService()
-                .getMessageUiController(/* otrProfileID= */ null)
+                .getMessageUiController(/* otrProfileId= */ null)
                 .onDownloadStarted();
     }
 

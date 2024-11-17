@@ -71,7 +71,6 @@ public class SideSlideLayout extends ViewGroup {
 
     private final DecelerateInterpolator mDecelerateInterpolator;
     private final float mTotalDragDistance;
-    private final int mMediumAnimationDuration;
     private final int mCircleWidth;
 
     // Metrics
@@ -138,9 +137,6 @@ public class SideSlideLayout extends ViewGroup {
     public SideSlideLayout(Context context) {
         super(context);
 
-        mMediumAnimationDuration =
-                getResources().getInteger(android.R.integer.config_mediumAnimTime);
-
         setWillNotDraw(false);
         mDecelerateInterpolator = new DecelerateInterpolator(DECELERATE_INTERPOLATION_FACTOR);
 
@@ -204,7 +200,8 @@ public class SideSlideLayout extends ViewGroup {
         if (mHidingAnimation == null || mAnimationViewWidth != mArrowViewWidth) {
             mAnimationViewWidth = mArrowViewWidth;
             ScaleAnimation scalingDown =
-                    new ScaleAnimation(1, 0, 1, 0, mArrowViewWidth / 2, mArrowView.getHeight() / 2);
+                    new ScaleAnimation(
+                            1, 0, 1, 0, mArrowViewWidth / 2f, mArrowView.getHeight() / 2f);
             scalingDown.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
             scalingDown.setDuration(SCALE_DOWN_DURATION_MS);
             Animation fadingOut = new AlphaAnimation(1, 0);
@@ -392,7 +389,7 @@ public class SideSlideLayout extends ViewGroup {
         // See ACTION_UP handling in {@link #onTouchEvent(...)}.
         mIsBeingDragged = false;
 
-        boolean activated = mMaxOverscroll >= mArrowViewWidth / 3;
+        boolean activated = mMaxOverscroll >= mArrowViewWidth / 3f;
         if (activated) {
             GestureNavMetrics.recordHistogram("GestureNavigation.Activated2", mIsForward);
         }

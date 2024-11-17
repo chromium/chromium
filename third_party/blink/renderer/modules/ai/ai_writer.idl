@@ -12,7 +12,8 @@ dictionary AIWriterWriteOptions {
 
 [
   Exposed=(Window,Worker),
-  RuntimeEnabled=AIWriterAPI
+  RuntimeEnabled=AIWriterAPI,
+  SecureContext
 ]
 interface AIWriter {
   [

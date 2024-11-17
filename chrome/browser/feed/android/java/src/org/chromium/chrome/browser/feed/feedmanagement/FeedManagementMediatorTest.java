@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.net.Uri;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -23,7 +22,6 @@ import org.robolectric.shadows.ShadowActivity;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedServiceBridgeJni;
 import org.chromium.chrome.browser.feed.StreamKind;
@@ -41,8 +39,6 @@ public class FeedManagementMediatorTest {
     private ModelList mModelList;
     private FeedManagementMediator mFeedManagementMediator;
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     @Mock private FeedServiceBridge.Natives mFeedServiceBridgeJniMock;
 
     @Before
@@ -51,7 +47,7 @@ public class FeedManagementMediatorTest {
         mShadowActivity = Shadows.shadowOf(mActivity);
         mModelList = new ModelList();
         MockitoAnnotations.initMocks(this);
-        mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
+        FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
 
         mFeedManagementMediator =
                 new FeedManagementMediator(mActivity, mModelList, TEST_STREAM_KIND);

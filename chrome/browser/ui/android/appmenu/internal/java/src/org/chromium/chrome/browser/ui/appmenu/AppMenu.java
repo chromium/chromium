@@ -41,6 +41,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
@@ -70,7 +71,6 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
     private final int mItemRowHeight;
     private final int mVerticalFadeDistance;
     private final int mNegativeSoftwareVerticalOffset;
-    private final int mNegativeVerticalOffsetNotTopAnchored;
     private final int mChipHighlightExtension;
     private final int[] mTempLocation;
 
@@ -101,8 +101,6 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         mNegativeSoftwareVerticalOffset =
                 res.getDimensionPixelSize(R.dimen.menu_negative_software_vertical_offset);
         mVerticalFadeDistance = res.getDimensionPixelSize(R.dimen.menu_vertical_fade_distance);
-        mNegativeVerticalOffsetNotTopAnchored =
-                res.getDimensionPixelSize(R.dimen.menu_negative_vertical_offset_not_top_anchored);
         mChipHighlightExtension =
                 res.getDimensionPixelOffset(R.dimen.menu_chip_highlight_extension);
 
@@ -111,10 +109,10 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
 
     /**
      * Notifies the menu that the contents of the menu item specified by {@code menuRowId} have
-     * changed.  This should be called if icons, titles, etc. are changing for a particular menu
-     * item while the menu is open.
-     * @param menuRowId The id of the menu item to change.  This must be a row id and not a child
-     *                  id.
+     * changed. This should be called if icons, titles, etc. are changing for a particular menu item
+     * while the menu is open.
+     *
+     * @param menuRowId The id of the menu item to change. This must be a row id and not a child id.
      */
     public void menuItemContentChanged(int menuRowId) {
         // Make sure we have all the valid state objects we need.
@@ -149,29 +147,25 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
     /**
      * Creates and shows the app menu anchored to the specified view.
      *
-     * @param context               The context of the AppMenu (ensure the proper theme is set on
-     *                              this context).
-     * @param anchorView            The anchor {@link View} of the {@link PopupWindow}.
-     * @param isByPermanentButton   Whether or not permanent hardware button triggered it. (oppose
-     *                              to software button or keyboard).
-     * @param screenRotation        Current device screen rotation.
-     * @param visibleDisplayFrame   The display area rect in which AppMenu is supposed to fit in.
-     * @param footerResourceId      The resource id for a view to add as a fixed view at the bottom
-     *                              of the menu.  Can be 0 if no such view is required.  The footer
-     *                              is always visible and overlays other app menu items if
-     *                              necessary.
-     * @param headerResourceId      The resource id for a view to add as the first item in menu
-     *                              list. Can be null if no such view is required. See
-     *                              {@link ListView#addHeaderView(View)}.
-     * @param highlightedItemId     The resource id of the menu item that should be highlighted.
-     *                              Can be {@code null} if no item should be highlighted.  Note that
-     *                              {@code 0} is dedicated to custom menu items and can be declared
-     *                              by external apps.
-     * @param groupDividerResourceId     The resource id of divider menu items. This will be used to
-     *         determine the number of dividers that appear in the menu.
-     * @param customViewBinders     See {@link AppMenuPropertiesDelegate#getCustomViewBinders()}.
-     * @param isMenuIconAtStart     Whether the menu is being shown from a menu icon positioned at
-     *                              the start.
+     * @param context The context of the AppMenu (ensure the proper theme is set on this context).
+     * @param anchorView The anchor {@link View} of the {@link PopupWindow}.
+     * @param isByPermanentButton Whether or not permanent hardware button triggered it. (oppose to
+     *     software button or keyboard).
+     * @param screenRotation Current device screen rotation.
+     * @param visibleDisplayFrame The display area rect in which AppMenu is supposed to fit in.
+     * @param footerResourceId The resource id for a view to add as a fixed view at the bottom of
+     *     the menu. Can be 0 if no such view is required. The footer is always visible and overlays
+     *     other app menu items if necessary.
+     * @param headerResourceId The resource id for a view to add as the first item in menu list. Can
+     *     be null if no such view is required. See {@link ListView#addHeaderView(View)}.
+     * @param highlightedItemId The resource id of the menu item that should be highlighted. Can be
+     *     {@code null} if no item should be highlighted. Note that {@code 0} is dedicated to custom
+     *     menu items and can be declared by external apps.
+     * @param groupDividerResourceId The resource id of divider menu items. This will be used to
+     *     determine the number of dividers that appear in the menu.
+     * @param customViewBinders See {@link AppMenuPropertiesDelegate#getCustomViewBinders()}.
+     * @param isMenuIconAtStart Whether the menu is being shown from a menu icon positioned at the
+     *     start.
      */
     void show(
             Context context,
@@ -184,7 +178,8 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             @IdRes int groupDividerResourceId,
             Integer highlightedItemId,
             @Nullable List<CustomViewBinder> customViewBinders,
-            boolean isMenuIconAtStart) {
+            boolean isMenuIconAtStart,
+            @ControlsPosition int controlsPosition) {
         mPopup = new PopupWindow(context);
         mPopup.setFocusable(true);
         mPopup.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
@@ -225,7 +220,11 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
 
         if (!isByPermanentButton) {
             mPopup.setAnimationStyle(
-                    isMenuIconAtStart ? R.style.StartIconMenuAnim : R.style.EndIconMenuAnim);
+                    isMenuIconAtStart
+                            ? R.style.StartIconMenuAnim
+                            : (controlsPosition == ControlsPosition.TOP
+                                    ? R.style.EndIconMenuAnim
+                                    : R.style.EndIconMenuAnimBottom));
         }
 
         // Turn off window animations for low end devices.
@@ -725,7 +724,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
                 "Mobile.AppMenu.TimeToTakeAction."
                         + (mSelectedItemBeforeDismiss ? "SelectedItem" : "Abandoned");
         final long timeToTakeActionMs = SystemClock.elapsedRealtime() - mMenuShownTimeMs;
-        RecordHistogram.recordMediumTimesHistogram(histogramName, timeToTakeActionMs);
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(histogramName, timeToTakeActionMs);
     }
 
     private int getMenuItemHeight(
@@ -742,7 +741,9 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         return mItemRowHeight;
     }
 
-    /** @param reporter A means of reporting an exception without crashing. */
+    /**
+     * @param reporter A means of reporting an exception without crashing.
+     */
     static void setExceptionReporter(Callback<Throwable> reporter) {
         sExceptionReporter = reporter;
     }

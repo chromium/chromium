@@ -255,10 +255,9 @@ public interface Observable<T> {
         return observer -> {
             logger.accept("subscribe");
             Scope subscription = subscribe(data -> {
-                logger.accept(new StringBuilder("open ").append(data).toString());
+                logger.accept("open " + data);
                 Scope scope = observer.open(data);
-                Scope debugClose =
-                        () -> logger.accept(new StringBuilder("close ").append(data).toString());
+                Scope debugClose = () -> logger.accept("close " + data);
                 return scope.and(debugClose);
             });
             Scope debugUnsubscribe = () -> logger.accept("unsubscribe");

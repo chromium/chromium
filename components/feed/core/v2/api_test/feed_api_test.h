@@ -288,7 +288,11 @@ class TestFeedNetwork : public FeedNetwork {
   template <typename API>
   void InjectApiResponse(const typename API::Response& response_message) {
     RawResponse response;
-    response.response_info.status_code = 200;
+    if (error != net::Error::OK) {
+      response.response_info.status_code = error;
+    } else {
+      response.response_info.status_code = http_status_code;
+    }
     response.response_bytes = response_message.SerializeAsString();
     response.response_info.response_body_bytes = response.response_bytes.size();
     response.response_info.account_info = last_account_info;

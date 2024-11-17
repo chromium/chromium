@@ -16,6 +16,8 @@
 
 namespace ash {
 
+class AppLaunchSplashScreen;
+
 // Fake implementation of the `KioskController`. Instantiating this class
 // automatically sets the singleton returned by `KioskController::Get()`.
 class FakeKioskController : public KioskController {
@@ -29,7 +31,8 @@ class FakeKioskController : public KioskController {
   std::optional<KioskApp> GetAutoLaunchApp() const override;
   void StartSession(const KioskAppId& app,
                     bool is_auto_launch,
-                    LoginDisplayHost* host) override;
+                    LoginDisplayHost* host,
+                    AppLaunchSplashScreen* splash_screen) override;
   void StartSessionAfterCrash(const KioskAppId& app, Profile* profile) override;
   bool IsSessionStarting() const override;
   void CancelSessionStart() override;

@@ -4,8 +4,6 @@
 
 // This file exposes services from the browser to child processes.
 
-#include "chrome/browser/chrome_content_browser_client.h"
-
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -13,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_interface_binders.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "chrome/browser/content_settings/content_settings_manager_delegate.h"
 #include "chrome/browser/headless/headless_mode_util.h"
@@ -30,6 +29,9 @@
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
+#include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/fingerprinting_protection_filter/mojom/fingerprinting_protection_filter.mojom.h"
 #include "components/metrics/call_stacks/call_stack_profile_collector.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
@@ -40,6 +42,7 @@
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
+#include "content/public/browser/browser_child_process_host.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
@@ -293,6 +296,13 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
   for (auto& ep : extra_parts_) {
     ep->ExposeInterfacesToRenderer(registry, associated_registry,
                                    render_process_host);
+  }
+}
+
+void ChromeContentBrowserClient::ExposeInterfacesToChild(
+    mojo::BinderMapWithContext<content::BrowserChildProcessHost*>* map) {
+  for (auto& ep : extra_parts_) {
+    ep->ExposeInterfacesToChild(map);
   }
 }
 
@@ -601,6 +611,20 @@ void ChromeContentBrowserClient::
             BindReceiver(std::move(receiver), render_frame_host);
       },
       &render_frame_host));
+  if (fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionFeatureEnabled()) {
+    associated_registry.AddInterface<
+        fingerprinting_protection_filter::mojom::FingerprintingProtectionHost>(
+        base::BindRepeating(
+            [](content::RenderFrameHost* render_frame_host,
+               mojo::PendingAssociatedReceiver<
+                   fingerprinting_protection_filter::mojom::
+                       FingerprintingProtectionHost> receiver) {
+              fingerprinting_protection_filter::ThrottleManager::BindReceiver(
+                  std::move(receiver), render_frame_host);
+            },
+            &render_frame_host));
+  }
   associated_registry
       .AddInterface<supervised_user::mojom::SupervisedUserCommands>(
           base::BindRepeating(

@@ -145,8 +145,7 @@ permissions::ElementAnchoredBubbleVariant GetVariant(
       return permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_DENIED;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return permissions::ElementAnchoredBubbleVariant::UNINITIALIZED;
+  NOTREACHED();
 }
 }  // namespace
 
@@ -160,7 +159,7 @@ EmbeddedPermissionPrompt::EmbeddedPermissionPrompt(
 }
 
 EmbeddedPermissionPrompt::~EmbeddedPermissionPrompt() {
-  CloseView();
+  CloseViewAndScrim();
 }
 
 EmbeddedPermissionPrompt::Variant
@@ -293,17 +292,19 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
           permissions::ElementAnchoredBubbleVariant::ADMINISTRATOR_DENIED);
       break;
     case Variant::kUninitialized:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (prompt_view) {
     prompt_view_tracker_.SetView(prompt_view);
-    content_scrim_widget_ =
-        EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
-            weak_factory_.GetWeakPtr(),
-            SkColorSetA(web_contents()->GetColorProvider().GetColor(
-                            ui::kColorRefNeutral20),
-                        0.8 * SK_AlphaOPAQUE));
+    if (!content_scrim_widget_) {
+      content_scrim_widget_ =
+          EmbeddedPermissionPromptContentScrimView::CreateScrimWidget(
+              weak_factory_.GetWeakPtr(),
+              SkColorSetA(web_contents()->GetColorProvider().GetColor(
+                              ui::kColorRefNeutral20),
+                          0.8 * SK_AlphaOPAQUE));
+    }
     // If the tab/native view is closed, the `content_scrim_widget_` may be
     // nullptr. In this scenario, skip showing the prompt.
     if (!content_scrim_widget_) {
@@ -311,6 +312,10 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
     }
     prompt_view->UpdateAnchor(content_scrim_widget_.get());
     prompt_view->Show();
+  }
+
+  if (prompt_view->GetWidget()) {
+    prompt_view->GetWidget()->UpdateAccessibleNameForRootView();
   }
 }
 
@@ -569,7 +574,7 @@ void EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse(
         RecordOsMetrics(permissions::OsScreenAction::OS_PROMPT_ALLOWED);
         break;
       case system_permission_settings::SystemPermission::kNotDetermined:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 #endif  // BUILDFLAG(IS_MAC)
 
@@ -579,7 +584,7 @@ void EmbeddedPermissionPrompt::OnRequestSystemPermissionResponse(
       FinalizePrompt();
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -626,14 +631,19 @@ void EmbeddedPermissionPrompt::CloseView() {
     prompt_types_.clear();
     embedded_prompt_variant_ = Variant::kUninitialized;
   }
+}
+
+void EmbeddedPermissionPrompt::CloseViewAndScrim() {
+  CloseView();
 
   if (content_scrim_widget_) {
     content_scrim_widget_->Close();
+    content_scrim_widget_ = nullptr;
   }
 }
 
 void EmbeddedPermissionPrompt::FinalizePrompt() {
-  CloseView();
+  CloseViewAndScrim();
 
   // If by this point we've not sent an action to the delegate, send a dismiss
   // action.

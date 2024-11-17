@@ -47,9 +47,6 @@ CWSInfoServiceFactory::CWSInfoServiceFactory()
 std::unique_ptr<KeyedService>
 CWSInfoServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (base::FeatureList::IsEnabled(kCWSInfoService) == false) {
-    return nullptr;
-  }
   return std::make_unique<CWSInfoService>(Profile::FromBrowserContext(context));
 }
 

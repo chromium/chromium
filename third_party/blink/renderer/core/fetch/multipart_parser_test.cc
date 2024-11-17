@@ -17,12 +17,6 @@ namespace blink {
 
 namespace {
 
-String toString(const Vector<char>& data) {
-  if (data.empty())
-    return String("");
-  return String(data.data(), data.size());
-}
-
 class MockMultipartParserClient final
     : public GarbageCollected<MockMultipartParserClient>,
       public MultipartParser::Client {
@@ -91,18 +85,18 @@ TEST(MultipartParserTest, AppendDataInChunks) {
     EXPECT_EQ(1u, client->GetPart(1).header_fields.size());
     EXPECT_EQ("application/xhtml+xml",
               client->GetPart(1).header_fields.Get(http_names::kContentType));
-    EXPECT_EQ("1", toString(client->GetPart(1).data));
+    EXPECT_EQ("1", String(client->GetPart(1).data));
     EXPECT_TRUE(client->GetPart(1).data_fully_received);
     EXPECT_EQ(1u, client->GetPart(2).header_fields.size());
     EXPECT_EQ("text/html",
               client->GetPart(2).header_fields.Get(http_names::kContentType));
     EXPECT_EQ("2\r\n--\r\n--bound--\r\n--\r\n2\r\n",
-              toString(client->GetPart(2).data));
+              String(client->GetPart(2).data));
     EXPECT_TRUE(client->GetPart(2).data_fully_received);
     EXPECT_EQ(1u, client->GetPart(3).header_fields.size());
     EXPECT_EQ("text/plain; charset=iso-8859-1",
               client->GetPart(3).header_fields.Get(http_names::kContentType));
-    EXPECT_EQ("333", toString(client->GetPart(3).data));
+    EXPECT_EQ("333", String(client->GetPart(3).data));
     EXPECT_TRUE(client->GetPart(3).data_fully_received);
   }
 }
@@ -138,24 +132,24 @@ TEST(MultipartParserTest, Epilogue) {
     EXPECT_EQ(1u, client->GetPart(1).header_fields.size());
     EXPECT_EQ("application/xhtml+xml",
               client->GetPart(1).header_fields.Get(http_names::kContentType));
-    EXPECT_EQ("1", toString(client->GetPart(1).data));
+    EXPECT_EQ("1", String(client->GetPart(1).data));
     EXPECT_TRUE(client->GetPart(1).data_fully_received);
     EXPECT_EQ(1u, client->GetPart(2).header_fields.size());
     EXPECT_EQ("text/html",
               client->GetPart(2).header_fields.Get(http_names::kContentType));
     EXPECT_EQ("2\r\n--\r\n--bound--\r\n--\r\n2\r\n",
-              toString(client->GetPart(2).data));
+              String(client->GetPart(2).data));
     EXPECT_TRUE(client->GetPart(2).data_fully_received);
     EXPECT_EQ(1u, client->GetPart(3).header_fields.size());
     EXPECT_EQ("text/plain; charset=iso-8859-1",
               client->GetPart(3).header_fields.Get(http_names::kContentType));
     switch (end) {
       case 15u:
-        EXPECT_EQ("333\r\n--boundar", toString(client->GetPart(3).data));
+        EXPECT_EQ("333\r\n--boundar", String(client->GetPart(3).data));
         EXPECT_FALSE(client->GetPart(3).data_fully_received);
         break;
       default:
-        EXPECT_EQ("333", toString(client->GetPart(3).data));
+        EXPECT_EQ("333", String(client->GetPart(3).data));
         EXPECT_TRUE(client->GetPart(3).data_fully_received);
         break;
     }
@@ -180,7 +174,7 @@ TEST(MultipartParserTest, NoEndBoundary) {
   EXPECT_EQ(1u, client->GetPart(0).header_fields.size());
   EXPECT_EQ("application/xhtml+xml",
             client->GetPart(0).header_fields.Get(http_names::kContentType));
-  EXPECT_EQ("1", toString(client->GetPart(0).data));
+  EXPECT_EQ("1", String(client->GetPart(0).data));
   EXPECT_FALSE(client->GetPart(0).data_fully_received);
 }
 
@@ -246,19 +240,19 @@ TEST(MultipartParserTest, Preamble) {
         EXPECT_EQ(1u, client->GetPart(0).header_fields.size());
         EXPECT_EQ("application/xhtml+xml", client->GetPart(0).header_fields.Get(
                                                http_names::kContentType));
-        EXPECT_EQ("1", toString(client->GetPart(0).data));
+        EXPECT_EQ("1", String(client->GetPart(0).data));
         EXPECT_TRUE(client->GetPart(0).data_fully_received);
         EXPECT_EQ(1u, client->GetPart(1).header_fields.size());
         EXPECT_EQ("text/html", client->GetPart(1).header_fields.Get(
                                    http_names::kContentType));
         EXPECT_EQ("2\r\n--\r\n--bound--\r\n--\r\n2\r\n",
-                  toString(client->GetPart(1).data));
+                  String(client->GetPart(1).data));
         EXPECT_TRUE(client->GetPart(1).data_fully_received);
         EXPECT_EQ(1u, client->GetPart(2).header_fields.size());
         EXPECT_EQ(
             "text/plain; charset=iso-8859-1",
             client->GetPart(2).header_fields.Get(http_names::kContentType));
-        EXPECT_EQ("333", toString(client->GetPart(2).data));
+        EXPECT_EQ("333", String(client->GetPart(2).data));
         EXPECT_TRUE(client->GetPart(2).data_fully_received);
         break;
       default:
@@ -269,19 +263,19 @@ TEST(MultipartParserTest, Preamble) {
         EXPECT_EQ(1u, client->GetPart(1).header_fields.size());
         EXPECT_EQ("application/xhtml+xml", client->GetPart(1).header_fields.Get(
                                                http_names::kContentType));
-        EXPECT_EQ("1", toString(client->GetPart(1).data));
+        EXPECT_EQ("1", String(client->GetPart(1).data));
         EXPECT_TRUE(client->GetPart(1).data_fully_received);
         EXPECT_EQ(1u, client->GetPart(2).header_fields.size());
         EXPECT_EQ("text/html", client->GetPart(2).header_fields.Get(
                                    http_names::kContentType));
         EXPECT_EQ("2\r\n--\r\n--bound--\r\n--\r\n2\r\n",
-                  toString(client->GetPart(2).data));
+                  String(client->GetPart(2).data));
         EXPECT_TRUE(client->GetPart(2).data_fully_received);
         EXPECT_EQ(1u, client->GetPart(3).header_fields.size());
         EXPECT_EQ(
             "text/plain; charset=iso-8859-1",
             client->GetPart(3).header_fields.Get(http_names::kContentType));
-        EXPECT_EQ("333", toString(client->GetPart(3).data));
+        EXPECT_EQ("333", String(client->GetPart(3).data));
         EXPECT_TRUE(client->GetPart(3).data_fully_received);
         break;
     }

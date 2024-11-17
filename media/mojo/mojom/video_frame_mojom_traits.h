@@ -21,16 +21,6 @@
 namespace mojo {
 
 template <>
-struct EnumTraits<media::mojom::SharedImageFormatType,
-                  media::SharedImageFormatType> {
-  static media::mojom::SharedImageFormatType ToMojom(
-      media::SharedImageFormatType type);
-
-  static bool FromMojom(media::mojom::SharedImageFormatType input,
-                        media::SharedImageFormatType* out);
-};
-
-template <>
 struct StructTraits<media::mojom::VideoFrameDataView,
                     scoped_refptr<media::VideoFrame>> {
   static bool IsNull(const scoped_refptr<media::VideoFrame>& input) {
@@ -76,11 +66,6 @@ struct StructTraits<media::mojom::VideoFrameDataView,
   static const std::optional<gfx::HDRMetadata>& hdr_metadata(
       const scoped_refptr<media::VideoFrame>& input) {
     return input->hdr_metadata();
-  }
-
-  static media::SharedImageFormatType shared_image_format_type(
-      const scoped_refptr<media::VideoFrame>& input) {
-    return input->shared_image_format_type();
   }
 
   static const std::optional<gpu::VulkanYCbCrInfo>& ycbcr_info(

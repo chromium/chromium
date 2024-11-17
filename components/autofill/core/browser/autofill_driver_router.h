@@ -159,10 +159,9 @@ class AutofillDriverRouter {
                  std::vector<FormData> updated_forms,
                  const std::vector<FormGlobalId>& removed_forms);
   void FormSubmitted(
-      RoutedCallback<const FormData&, bool, mojom::SubmissionSource> callback,
+      RoutedCallback<const FormData&, mojom::SubmissionSource> callback,
       AutofillDriver& source,
       FormData form,
-      bool known_success,
       mojom::SubmissionSource submission_source);
   void CaretMovedInFormField(
       RoutedCallback<const FormData&, const FieldGlobalId&, const gfx::Rect&>
@@ -225,10 +224,9 @@ class AutofillDriverRouter {
                                         const FieldGlobalId& field_id,
                                         const std::u16string& old_value,
                                         bool formatting_only);
-  void SelectOrSelectListFieldOptionsDidChange(
-      RoutedCallback<const FormData&> callback,
-      AutofillDriver& source,
-      FormData form);
+  void SelectFieldOptionsDidChange(RoutedCallback<const FormData&> callback,
+                                   AutofillDriver& source,
+                                   FormData form);
 
   // Events called by the browser, passed to the renderer:
   // Keep in alphabetic order.

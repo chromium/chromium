@@ -63,6 +63,7 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
   void RecordBackgroundMainThreadTaskLoad(base::TimeTicks time, double load);
 
   void ResetForTest(base::TimeTicks now);
+  void DisableMetricsSubsamplingForTesting();
 
  private:
   void ReportLowThreadLoadForPageAlmostIdleSignal(int load_percentage);
@@ -89,6 +90,7 @@ class PLATFORM_EXPORT MainThreadMetricsHelper : public MetricsHelper {
       TaskPriority::kPriorityCount)];
 
   MainThreadTaskLoadState main_thread_task_load_state_;
+  float sampling_ratio_ = .01;
   base::MetricsSubSampler metrics_subsampler_;
 };
 

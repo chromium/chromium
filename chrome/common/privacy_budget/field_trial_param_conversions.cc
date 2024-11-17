@@ -16,7 +16,7 @@
 
 namespace privacy_budget_internal {
 
-bool DecodeIdentifiabilityType(const std::string_view s,
+bool DecodeIdentifiabilityType(std::string_view s,
                                blink::IdentifiableSurface* out) {
   uint64_t hash = 0;
   if (!base::StringToUint64(s, &hash))
@@ -25,7 +25,7 @@ bool DecodeIdentifiabilityType(const std::string_view s,
   return true;
 }
 
-bool DecodeIdentifiabilityType(const std::string_view s,
+bool DecodeIdentifiabilityType(std::string_view s,
                                blink::IdentifiableSurface::Type* out) {
   uint64_t hash = 0;
   if (!base::StringToUint64(s, &hash))
@@ -36,30 +36,30 @@ bool DecodeIdentifiabilityType(const std::string_view s,
   return true;
 }
 
-bool DecodeIdentifiabilityType(const std::string_view s, int* out) {
+bool DecodeIdentifiabilityType(std::string_view s, int* out) {
   return base::StringToInt(s, out);
 }
 
-bool DecodeIdentifiabilityType(const std::string_view s, uint64_t* out) {
+bool DecodeIdentifiabilityType(std::string_view s, uint64_t* out) {
   return base::StringToUint64(s, out);
 }
 
-bool DecodeIdentifiabilityType(const std::string_view s, unsigned int* out) {
+bool DecodeIdentifiabilityType(std::string_view s, unsigned int* out) {
   return base::StringToUint(s, out);
 }
 
-bool DecodeIdentifiabilityType(const std::string_view s, double* out) {
+bool DecodeIdentifiabilityType(std::string_view s, double* out) {
   return base::StringToDouble(s, out);
 }
 
-bool DecodeIdentifiabilityType(const std::string_view s,
+bool DecodeIdentifiabilityType(std::string_view s,
                                std::vector<blink::IdentifiableSurface>* out) {
   *out = DecodeIdentifiabilityFieldTrialParam<
       std::vector<blink::IdentifiableSurface>, ';'>(s);
   return !out->empty();
 }
 
-bool DecodeIdentifiabilityType(const std::string_view s, std::string* out) {
+bool DecodeIdentifiabilityType(std::string_view s, std::string* out) {
   *out = std::string(s);
   return true;
 }

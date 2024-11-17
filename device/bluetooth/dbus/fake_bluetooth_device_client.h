@@ -210,7 +210,7 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothDeviceClient
 
   // Adds a pending prepare write request to |object_path|.
   void AddPrepareWriteRequest(const dbus::ObjectPath& object_path,
-                              const std::vector<uint8_t>& value);
+                              base::span<const uint8_t> value);
 
   static const char kTestPinCode[];
   static const int kTestPassKey;

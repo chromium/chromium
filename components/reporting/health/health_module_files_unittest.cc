@@ -40,8 +40,8 @@ class HealthModuleFilesTest : public ::testing::Test {
         auto call = AddEnqueueRecordCall();
         *initial_health_data_.add_history() = call;
         ASSERT_TRUE(AppendLine(directory_.GetPath().AppendASCII(file_name),
-                               base::HexEncode(base::as_bytes(
-                                   base::make_span(call.SerializeAsString()))))
+                               base::HexEncode(base::as_byte_span(
+                                   call.SerializeAsString())))
                         .ok());
       }
     }
@@ -108,8 +108,8 @@ TEST_F(HealthModuleFilesTest, TestFullStorage) {
   ASSERT_TRUE(files != nullptr);
   for (int i = 0; i < 1000; i++) {
     auto call = AddEnqueueRecordCall();
-    ASSERT_OK(files->Write(base::HexEncode(
-        base::as_bytes(base::make_span(call.SerializeAsString())))));
+    ASSERT_OK(files->Write(
+        base::HexEncode(base::as_byte_span(call.SerializeAsString()))));
     if (i + total_records_stored >= 1000) {
       *history.add_history() = call;
     }
@@ -128,8 +128,8 @@ TEST_F(HealthModuleFilesTest, NotEnoughStorage) {
   ASSERT_THAT(history.history(), IsEmpty());
 
   ASSERT_FALSE(files
-                   ->Write(base::HexEncode(base::as_bytes(base::make_span(
-                       AddEnqueueRecordCall().SerializeAsString()))))
+                   ->Write(base::HexEncode(base::as_byte_span(
+                       AddEnqueueRecordCall().SerializeAsString())))
                    .ok());
   files->PopulateHistory(&history);
   ASSERT_THAT(history.history(), IsEmpty());
@@ -149,10 +149,10 @@ TEST_F(HealthModuleFilesTest, JustEnoughStorage) {
   history.mutable_history()->Clear();
   auto call = AddEnqueueRecordCall();
   *initial_health_data_.mutable_history(0) = call;
-  ASSERT_TRUE(files
-                  ->Write(base::HexEncode(base::as_bytes(
-                      base::make_span(call.SerializeAsString()))))
-                  .ok());
+  ASSERT_TRUE(
+      files
+          ->Write(base::HexEncode(base::as_byte_span(call.SerializeAsString())))
+          .ok());
   files->PopulateHistory(&history);
   EXPECT_THAT(history.SerializeAsString(),
               StrEq(initial_health_data_.SerializeAsString()));

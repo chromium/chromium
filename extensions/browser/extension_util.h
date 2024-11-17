@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
@@ -137,6 +139,15 @@ std::string GetExtensionIdFromFrame(
 bool CanRendererHostExtensionOrigin(int render_process_id,
                                     const ExtensionId& extension_id,
                                     bool is_sandboxed);
+
+// Returns `true` if `render_process_host` can legitimately claim to send IPC
+// messages on behalf of `extension_id`.  `render_frame_host` parameter is
+// needed to account for scenarios involving a Chrome Web Store frame.
+bool CanRendererActOnBehalfOfExtension(
+    const ExtensionId& extension_id,
+    content::RenderFrameHost* render_frame_host,
+    content::RenderProcessHost& render_process_host,
+    bool include_user_scripts);
 
 // Returns true if the extension associated with `extension_id` is a Chrome App.
 bool IsChromeApp(const ExtensionId& extension_id,

@@ -33,10 +33,10 @@ import androidx.browser.trusted.TrustedWebActivityServiceConnectionPool;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.Connection;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.ConnectionPool;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
@@ -54,11 +54,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import java.util.List;
 import java.util.Set;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
 /** A client for calling methods on a {@link TrustedWebActivityService}. */
-@Singleton
 public class TrustedWebActivityClient {
     private static final String TAG = "TWAClient";
 
@@ -82,8 +78,8 @@ public class TrustedWebActivityClient {
     private static final String EXTRA_MESSENGER = "messenger";
 
     private final ConnectionPool mConnectionPool;
-    private final InstalledWebappPermissionManager mPermissionManager;
-    private final TrustedWebActivityUmaRecorder mRecorder;
+
+    private static TrustedWebActivityClient sInstance;
 
     /** Interface for callbacks to get a permission setting from a TWA app. */
     public interface PermissionCallback {
@@ -101,23 +97,28 @@ public class TrustedWebActivityClient {
         void onNoTwaFound();
     }
 
+    public static TrustedWebActivityClient getInstance() {
+        if (sInstance == null) sInstance = new TrustedWebActivityClient();
+        return sInstance;
+    }
+
+    public static void setInstanceForTesting(TrustedWebActivityClient connection) {
+        var oldValue = sInstance;
+        sInstance = connection;
+        ResettersForTesting.register(() -> sInstance = oldValue);
+    }
+
     /** Creates a TrustedWebActivityClient. */
-    @Inject
-    public TrustedWebActivityClient(
-            TrustedWebActivityServiceConnectionPool connectionPool,
-            InstalledWebappPermissionManager permissionManager,
-            TrustedWebActivityUmaRecorder recorder) {
-        this(TrustedWebActivityClientWrappers.wrap(connectionPool), permissionManager, recorder);
+    private TrustedWebActivityClient() {
+        this(
+                TrustedWebActivityClientWrappers.wrap(
+                        TrustedWebActivityServiceConnectionPool.create(
+                                ContextUtils.getApplicationContext())));
     }
 
     /** Creates a TrustedWebActivityClient for tests. */
-    public TrustedWebActivityClient(
-            ConnectionPool connectionPool,
-            InstalledWebappPermissionManager permissionManager,
-            TrustedWebActivityUmaRecorder recorder) {
+    public TrustedWebActivityClient(ConnectionPool connectionPool) {
         mConnectionPool = connectionPool;
-        mPermissionManager = permissionManager;
-        mRecorder = recorder;
     }
 
     /**
@@ -129,20 +130,20 @@ public class TrustedWebActivityClient {
     public boolean twaExistsForScope(Uri scope) {
         Origin origin = Origin.create(scope);
         if (origin == null) return false;
-        Set<Token> possiblePackages = mPermissionManager.getAllDelegateApps(origin);
+        Set<Token> possiblePackages = InstalledWebappPermissionManager.getAllDelegateApps(origin);
         if (possiblePackages == null) return false;
         return mConnectionPool.serviceExistsForScope(scope, possiblePackages);
     }
 
     /**
      * Gets the notification permission setting of the TWA for the given origin.
+     *
      * @param url The url of the web page that requesting the permission.
      * @param permissionCallback To be called with the permission setting.
      */
     public void checkNotificationPermission(String url, PermissionCallback permissionCallback) {
         String channelName =
                 ContextUtils.getApplicationContext()
-                        .getResources()
                         .getString(R.string.notification_category_group_general);
 
         connectAndExecute(
@@ -163,7 +164,7 @@ public class TrustedWebActivityClient {
                                 commandResult == null
                                         ? false
                                         : commandResult.getBoolean(EXTRA_COMMAND_SUCCESS);
-                        mRecorder.recordExtraCommandSuccess(
+                        TrustedWebActivityUmaRecorder.recordExtraCommandSuccess(
                                 COMMAND_CHECK_NOTIFICATION_PERMISSION, commandSuccess);
                         // The command might fail if the app is too old to support it. To handle
                         // that case, fall back to the old flow.
@@ -201,13 +202,13 @@ public class TrustedWebActivityClient {
 
     /**
      * Requests notification permission for the TWA for the given url using a dialog.
+     *
      * @param url The url of the web page that requesting the permission.
      * @param permissionCallback To be called with the permission setting.
      */
     public void requestNotificationPermission(String url, PermissionCallback permissionCallback) {
         String channelName =
                 ContextUtils.getApplicationContext()
-                        .getResources()
                         .getString(R.string.notification_category_group_general);
         connectAndExecute(
                 Uri.parse(url),
@@ -232,7 +233,7 @@ public class TrustedWebActivityClient {
                                         ? commandResult.getParcelable(
                                                 KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT)
                                         : null;
-                        mRecorder.recordExtraCommandSuccess(
+                        TrustedWebActivityUmaRecorder.recordExtraCommandSuccess(
                                 COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT,
                                 commandSuccess && pendingIntent != null);
                         if (!commandSuccess || pendingIntent == null) {
@@ -434,7 +435,7 @@ public class TrustedWebActivityClient {
                     public void onConnected(Origin origin, Connection service)
                             throws RemoteException {
                         if (!service.areNotificationsEnabled(channelDisplayName)) {
-                            mPermissionManager.updatePermission(
+                            InstalledWebappPermissionManager.updatePermission(
                                     origin,
                                     service.getComponentName().getPackageName(),
                                     ContentSettingsType.NOTIFICATIONS,
@@ -499,11 +500,12 @@ public class TrustedWebActivityClient {
     }
 
     private void recordFallback(@DelegatedNotificationSmallIconFallback int fallback) {
-        mRecorder.recordDelegatedNotificationSmallIconFallback(fallback);
+        TrustedWebActivityUmaRecorder.recordDelegatedNotificationSmallIconFallback(fallback);
     }
 
     /**
      * Cancels a notification through a Trusted Web Activity client.
+     *
      * @param scope The scope of the Service Worker that triggered the notification.
      * @param platformTag The tag of the notification to cancel.
      * @param platformId The id of the notification to cancel.
@@ -532,7 +534,7 @@ public class TrustedWebActivityClient {
             return;
         }
 
-        Set<Token> possiblePackages = mPermissionManager.getAllDelegateApps(origin);
+        Set<Token> possiblePackages = InstalledWebappPermissionManager.getAllDelegateApps(origin);
         if (possiblePackages == null || possiblePackages.isEmpty()) {
             callback.onNoTwaFound();
             return;
@@ -546,17 +548,10 @@ public class TrustedWebActivityClient {
      * that is verified for the given url. If such an Activity is found, an Intent to start that
      * Activity as a Trusted Web Activity is returned. Otherwise {@code null} is returned.
      *
-     * If multiple {@link ResolveInfo}s in the list match this criteria, the first will be chosen.
+     * <p>If multiple {@link ResolveInfo}s in the list match this criteria, the first will be
+     * chosen.
      */
-    public static @Nullable Intent createLaunchIntentForTwa(
-            Context appContext, String url, List<ResolveInfo> resolveInfosForUrl) {
-        // This is ugly, but the call site for this is static and called by native.
-        TrustedWebActivityClient client =
-                ChromeApplicationImpl.getComponent().resolveTrustedWebActivityClient();
-        return client.createLaunchIntentForTwaInternal(appContext, url, resolveInfosForUrl);
-    }
-
-    private @Nullable Intent createLaunchIntentForTwaInternal(
+    public @Nullable Intent createLaunchIntentForTwa(
             Context appContext, String url, List<ResolveInfo> resolveInfosForUrl) {
         Origin origin = Origin.create(url);
         if (origin == null) return null;
@@ -567,7 +562,7 @@ public class TrustedWebActivityClient {
         ComponentName componentName =
                 searchVerifiedApps(
                         appContext.getPackageManager(),
-                        mPermissionManager.getAllDelegateApps(origin),
+                        InstalledWebappPermissionManager.getAllDelegateApps(origin),
                         resolveInfosForUrl);
 
         if (componentName == null) return null;

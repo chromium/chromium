@@ -7,9 +7,9 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_export.h"
 
@@ -22,6 +22,7 @@ GL_EXPORT bool UseGpuVsync();
 // All features in alphabetical order. The features should be documented
 // alongside the definition of their values in the .cc file.
 GL_EXPORT BASE_DECLARE_FEATURE(kDefaultPassthroughCommandDecoder);
+GL_EXPORT BASE_DECLARE_FEATURE(kAddDelayToGLCompileShader);
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -61,6 +62,9 @@ GL_EXPORT bool IsSwiftShaderAllowedByFeature();
 // IsSwiftShaderAllowedByFeature.
 GL_EXPORT bool IsSwiftShaderAllowed(const base::CommandLine* command_line);
 
+// Query the delay we add to glCompileShader.
+// Default is 0 if kAddDelayToGLCompileShader is off.
+GL_EXPORT base::TimeDelta GetGLCompileShaderDelay();
 }  // namespace features
 
 #endif  // UI_GL_GL_FEATURES_H_

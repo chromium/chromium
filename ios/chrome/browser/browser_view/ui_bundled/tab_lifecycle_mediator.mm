@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/parcel_tracking/parcel_tracking_prefs.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
 #import "ios/chrome/browser/prerender/model/prerender_service.h"
+#import "ios/chrome/browser/print/coordinator/print_coordinator.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -32,6 +33,7 @@
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/mini_map_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/unit_conversion_commands.h"
 #import "ios/chrome/browser/shared/public/commands/web_content_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -39,7 +41,6 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/ssl/model/captive_portal_tab_helper.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
-#import "ios/chrome/browser/ui/print/print_coordinator.h"
 #import "ios/chrome/browser/web/model/annotations/annotations_tab_helper.h"
 #import "ios/chrome/browser/web/model/print/print_tab_helper.h"
 #import "ios/chrome/browser/web/model/repost_form_tab_helper.h"
@@ -135,7 +136,9 @@
   autofillTabHelper->SetBaseViewController(_baseViewController);
   id<AutofillCommands> autofillHandler =
       HandlerForProtocol(_commandDispatcher, AutofillCommands);
-  autofillTabHelper->SetCommandsHandler(autofillHandler);
+  autofillTabHelper->SetAutofillHandler(autofillHandler);
+  autofillTabHelper->SetSnackbarHandler(
+      static_cast<id<SnackbarCommands>>(_commandDispatcher));
 
   DCHECK(_printCoordinator);
   PrintTabHelper::GetOrCreateForWebState(webState)->set_printer(
@@ -227,7 +230,8 @@
   AutofillTabHelper* autofillTabHelper =
       AutofillTabHelper::FromWebState(webState);
   autofillTabHelper->SetBaseViewController(nil);
-  autofillTabHelper->SetCommandsHandler(nil);
+  autofillTabHelper->SetAutofillHandler(nil);
+  autofillTabHelper->SetSnackbarHandler(nil);
 
   PrintTabHelper::GetOrCreateForWebState(webState)->set_printer(nil);
 

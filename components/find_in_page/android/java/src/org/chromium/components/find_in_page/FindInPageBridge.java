@@ -12,12 +12,10 @@ import org.chromium.content_public.browser.WebContents;
 /** Allows issuing find in page related requests for a given WebContents. */
 @JNINamespace("find_in_page")
 public class FindInPageBridge {
-    private final WebContents mWebContents;
     private long mNativeFindInPageBridge;
 
     public FindInPageBridge(WebContents webContents) {
         assert webContents != null;
-        mWebContents = webContents;
         mNativeFindInPageBridge =
                 FindInPageBridgeJni.get().init(FindInPageBridge.this, webContents);
     }

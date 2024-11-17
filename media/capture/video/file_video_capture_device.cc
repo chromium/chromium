@@ -56,7 +56,7 @@ static const char kY4MSimpleFrameDelimiter[] = "FRAME";
 static const int kY4MSimpleFrameDelimiterSize = 6;
 static const float kMJpegFrameRate = 30.0f;
 
-int ParseY4MInt(const std::string_view token) {
+int ParseY4MInt(std::string_view token) {
   int temp_int;
   CHECK(base::StringToInt(token, &temp_int)) << token;
   return temp_int;
@@ -64,7 +64,7 @@ int ParseY4MInt(const std::string_view token) {
 
 // Extract numerator and denominator out of a token that must have the aspect
 // numerator:denominator, both integer numbers.
-void ParseY4MRational(const std::string_view token,
+void ParseY4MRational(std::string_view token,
                       int* numerator,
                       int* denominator) {
   size_t index_divider = token.find(':');
@@ -698,16 +698,19 @@ void FileVideoCaptureDevice::OnCaptureTask() {
     // NV12.
     VideoCaptureFormat gmb_format = ptz_format;
     gmb_format.pixel_format = PIXEL_FORMAT_NV12;
-    client_->OnIncomingCapturedBuffer(
-        std::move(capture_buffer), gmb_format, current_time,
-        current_time - first_ref_time_, std::nullopt);
+    client_->OnIncomingCapturedBuffer(std::move(capture_buffer), gmb_format,
+                                      current_time,
+                                      current_time - first_ref_time_,
+                                      /*capture_begin_timestamp=*/std::nullopt,
+                                      /*metadata=*/std::nullopt);
   } else {
     // Leave the color space unset for compatibility purposes but this
     // information should be retrieved from the container when possible.
     client_->OnIncomingCapturedData(
         ptz_frame.data(), ptz_frame.size(), ptz_format, gfx::ColorSpace(),
         0 /* clockwise_rotation */, false /* flip_y */, current_time,
-        current_time - first_ref_time_, std::nullopt);
+        current_time - first_ref_time_,
+        /*capture_begin_timestamp=*/std::nullopt, VideoFrameMetadata{});
   }
 
   // Process waiting photo callbacks

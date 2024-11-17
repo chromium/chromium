@@ -18,8 +18,6 @@ class PlusAddressCreationView {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressCancelButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressConfirmButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressDescriptionTextElementId);
-  // TODO(crbug.com/363720961): Remove once the new error state is launched.
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressErrorTextElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
       kPlusAddressGenerationMessageElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPlusAddressNoticeElementId);

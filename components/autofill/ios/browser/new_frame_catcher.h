@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_IOS_BROWSER_NEW_FRAME_CATCHER_H_
 #define COMPONENTS_AUTOFILL_IOS_BROWSER_NEW_FRAME_CATCHER_H_
 
+#import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
@@ -25,7 +26,7 @@ class NewFrameCatcher : public web::WebFramesManager::Observer {
   void WebFrameBecameAvailable(web::WebFramesManager* web_frames_manager,
                                web::WebFrame* web_frame) override;
 
-  web::WebFrame* latest_new_frame_ = nullptr;
+  raw_ptr<web::WebFrame> latest_new_frame_ = nullptr;
   base::ScopedObservation<web::WebFramesManager,
                           web::WebFramesManager::Observer>
       scoped_observer_{this};

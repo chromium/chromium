@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/containers/to_vector.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -90,7 +91,7 @@ void BluetoothRemoteGattDescriptorFloss::ReadRemoteDescriptor(
 }
 
 void BluetoothRemoteGattDescriptorFloss::WriteRemoteDescriptor(
-    const std::vector<uint8_t>& new_value,
+    base::span<const uint8_t> new_value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   AuthRequired auth = characteristic_->GetAuthForWrite();
@@ -98,7 +99,7 @@ void BluetoothRemoteGattDescriptorFloss::WriteRemoteDescriptor(
   FlossDBusManager::Get()->GetGattManagerClient()->WriteDescriptor(
       base::BindOnce(&BluetoothRemoteGattDescriptorFloss::OnWriteDescriptor,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(error_callback), new_value),
+                     std::move(error_callback), base::ToVector(new_value)),
       service_->GetDevice()->GetAddress(), descriptor_->instance_id, auth,
       new_value);
 }

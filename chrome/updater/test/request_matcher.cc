@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/test/http_request.h"
 #include "chrome/updater/update_service.h"
@@ -79,8 +80,9 @@ Matcher GetHeaderMatcher(
   });
 }
 
-Matcher GetUpdaterUserAgentMatcher() {
-  return GetHeaderMatcher({{"User-Agent", GetUpdaterUserAgent()}});
+Matcher GetUpdaterUserAgentMatcher(const base::Version& updater_version) {
+  return GetHeaderMatcher(
+      {{"User-Agent", GetUpdaterUserAgent(updater_version)}});
 }
 
 Matcher GetTargetURLMatcher(GURL target_url) {

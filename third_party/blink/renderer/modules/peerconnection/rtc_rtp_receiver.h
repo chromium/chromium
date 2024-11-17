@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_contributing_source.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_receive_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_synchronization_source.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_transceiver_direction.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
@@ -95,8 +96,8 @@ class RTCRtpReceiver final : public ScriptWrappable,
   void set_transceiver(RTCRtpTransceiver*);
   void set_transport(RTCDtlsTransport*);
 
-  String TransceiverDirection();
-  String TransceiverCurrentDirection();
+  V8RTCRtpTransceiverDirection TransceiverDirection();
+  std::optional<V8RTCRtpTransceiverDirection> TransceiverCurrentDirection();
 
   // ExecutionContextLifecycleObserver
   void ContextDestroyed() override;

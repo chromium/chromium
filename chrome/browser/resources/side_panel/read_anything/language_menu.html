@@ -44,11 +44,8 @@
         ${this.i18nWraper(item.notification.text)}
       </span>
     `)}
-    <cr-toast id="toast-in-dialog" duration="${this.toastDuration_}">
-      <div id="toastDiv">
-        <span id="toastTitle">${this.toastTitle_}</span>
-        <span id="toastMessage">$i18n{readingModeVoiceDownloadedMessage}</span>
-      </div>
-    </cr-toast>
+    <language-toast .showErrors="${false}"
+        .availableVoices="${this.availableVoices}">
+    </language-toast>
   </div>
 </cr-dialog>

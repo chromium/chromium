@@ -6,6 +6,7 @@
 
 #include <dawn/webgpu.h>
 
+#include "base/android/android_image_reader_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -18,7 +19,6 @@
 #include "gpu/command_buffer/service/shared_image/video_image_reader_image_backing.h"
 #include "gpu/command_buffer/service/shared_image/video_surface_texture_image_backing.h"
 #include "gpu/command_buffer/service/texture_owner.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_implementation.h"
 #include "ui/gfx/gpu_fence.h"
@@ -65,7 +65,7 @@ std::unique_ptr<AndroidVideoImageBacking> AndroidVideoImageBacking::Create(
     scoped_refptr<StreamTextureSharedImageInterface> stream_texture_sii,
     scoped_refptr<SharedContextState> context_state,
     scoped_refptr<RefCountedLock> drdc_lock) {
-  if (features::IsAImageReaderEnabled()) {
+  if (base::android::EnableAndroidImageReader()) {
     return std::make_unique<VideoImageReaderImageBacking>(
         mailbox, size, color_space, surface_origin, alpha_type,
         std::move(debug_label), std::move(stream_texture_sii),

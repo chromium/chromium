@@ -1,8 +1,0 @@
-Tests that sourcemap sources are updated when a new sourcemap is added
-Evaluating script with new source map..
-console.log(1);
-Evaluating script with new source map..
-console.log(2);
-Evaluating script with new source map..
-console.log(11);
-

@@ -35,6 +35,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/events/event.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -60,12 +61,10 @@ using bookmarks::BookmarkNode;
 
 BookmarkEditorView::BookmarkEditorView(
     Profile* profile,
-    const BookmarkNode* parent,
     const EditDetails& details,
     BookmarkEditor::Configuration configuration,
     BookmarkEditor::OnSaveCallback on_save_callback)
     : profile_(profile),
-      parent_(parent),
       details_(details),
       bb_model_(BookmarkModelFactory::GetForBrowserContext(profile)),
       expanded_state_tracker_(
@@ -75,7 +74,7 @@ BookmarkEditorView::BookmarkEditorView(
   DCHECK(profile);
   DCHECK(bb_model_);
   DCHECK(expanded_state_tracker_);
-  DCHECK(!bb_model_->client()->IsNodeManaged(parent));
+  DCHECK(!bb_model_->client()->IsNodeManaged(details_.parent_node));
   SetCanResize(true);
   SetModalType(ui::mojom::ModalType::kWindow);
   SetShowCloseButton(false);
@@ -205,7 +204,7 @@ void BookmarkEditorView::Show(gfx::NativeWindow parent) {
 void BookmarkEditorView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   DCHECK_EQ(tree_view_, source);
   if (!tree_view_->GetActiveNode())
     return;
@@ -243,7 +242,7 @@ void BookmarkEditorView::BookmarkNodeRemoved(const BookmarkNode* parent,
                                              const base::Location& location) {
   if ((details_.type == EditDetails::EXISTING_NODE &&
        details_.existing_node->HasAncestor(node)) ||
-      (parent_ && parent_->HasAncestor(node))) {
+      (details_.parent_node && details_.parent_node->HasAncestor(node))) {
     // The node, or its parent was removed. Close the dialog.
     GetWidget()->Close();
   } else {
@@ -408,7 +407,7 @@ void BookmarkEditorView::ExpandAndSelect() {
       tree_view_->Expand(editor_node);
   }
 
-  const BookmarkNode* to_select = parent_;
+  const BookmarkNode* to_select = details_.parent_node;
   if (details_.type == EditDetails::EXISTING_NODE)
     to_select = details_.existing_node->parent();
   int64_t folder_id_to_select = to_select->id();
@@ -425,13 +424,23 @@ BookmarkEditorView::CreateRootNode() {
   std::unique_ptr<EditorNode> root_node =
       std::make_unique<EditorNode>(std::u16string(), 0);
   const BookmarkNode* bb_root_node = bb_model_->root_node();
-  CreateNodes(bb_root_node, root_node.get());
-  DCHECK_GE(root_node->children().size(), 2u);
-  DCHECK_LE(root_node->children().size(), 4u);
-  DCHECK_EQ(BookmarkNode::BOOKMARK_BAR, bb_root_node->children()[0]->type());
-  DCHECK_EQ(BookmarkNode::OTHER_NODE, bb_root_node->children()[1]->type());
-  if (root_node->children().size() >= 3)
-    DCHECK_EQ(BookmarkNode::MOBILE, bb_root_node->children()[2]->type());
+  if (bb_model_->account_bookmark_bar_node()) {
+    // TODO(crbug.com/370844777): Create fake-node parents for account vs.
+    // local. This is checked in in an intermittent state because the DCHECKs
+    // below don't apply when there are "account" bookmarks. Creating fake-node
+    // parents requires handling non-folder entries in the tree view which needs
+    // to be supported first.
+    CreateNodes(bb_root_node, root_node.get());
+  } else {
+    CreateNodes(bb_root_node, root_node.get());
+    DCHECK_GE(root_node->children().size(), 2u);
+    DCHECK_LE(root_node->children().size(), 4u);
+    DCHECK_EQ(BookmarkNode::BOOKMARK_BAR, bb_root_node->children()[0]->type());
+    DCHECK_EQ(BookmarkNode::OTHER_NODE, bb_root_node->children()[1]->type());
+    if (root_node->children().size() >= 3) {
+      DCHECK_EQ(BookmarkNode::MOBILE, bb_root_node->children()[2]->type());
+    }
+  }
   return root_node;
 }
 
@@ -484,16 +493,16 @@ void BookmarkEditorView::ApplyEdits(EditorNode* parent) {
   std::u16string new_title(title_tf_->GetText());
 
   if (!show_tree_) {
-    BookmarkEditor::ApplyEditsWithNoFolderChange(
-        bb_model_, parent_, details_, new_title, new_url);
+    BookmarkEditor::ApplyEdits(bb_model_, details_.parent_node, details_,
+                               new_title, new_url);
   } else {
     // Create the new folders and update the titles.
     const BookmarkNode* new_parent = nullptr;
     ApplyNameChangesAndCreateNewFolders(
         bb_model_->root_node(), tree_model_->GetRoot(), parent, &new_parent);
 
-    BookmarkEditor::ApplyEditsWithPossibleFolderChange(
-        bb_model_, new_parent, details_, new_title, new_url);
+    BookmarkEditor::ApplyEdits(bb_model_, new_parent, details_, new_title,
+                               new_url);
 
     BookmarkExpandedStateTracker::Nodes expanded_nodes;
     UpdateExpandedNodes(tree_model_->GetRoot(), &expanded_nodes);

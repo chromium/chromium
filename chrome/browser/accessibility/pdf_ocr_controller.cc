@@ -210,7 +210,14 @@ void PdfOcrController::OnAccessibilityStatusEvent(
 #endif  // BUIDLFLAG(IS_CHROMEOS_ASH)
 
 void PdfOcrController::OnActivationChanged() {
-  bool enable = IsAccessibilityEnabled(profile_);
+  // PDF Searchify feature performs OCR on all inaccessible PDFs regardless of
+  // accessibility settings. Therefore if it is enabled, we don't need to enable
+  // OCR in PDF viewer.
+  // TODO(crbug.com/360803943): Remove this class when PDF Searchify is
+  // launched.
+  bool enable =
+      (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfSearchify) &&
+       IsAccessibilityEnabled(profile_));
 
   if (enable == IsEnabled()) {
     return;  // No change in activation.

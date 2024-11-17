@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
 #include "chrome/browser/ash/mahi/mahi_availability.h"
-#include "chrome/browser/ash/mahi/mahi_browser_delegate_ash.h"
 #include "chrome/browser/ash/mahi/mahi_cache_manager.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -45,6 +44,7 @@
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/mahi_media_app_content_manager.h"
+#include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
@@ -58,10 +58,9 @@
 
 namespace {
 
-ash::MahiBrowserDelegateAsh* g_overriding_delegate_ptr_ = nullptr;
-
 // Aliases ---------------------------------------------------------------------
 
+using chromeos::MahiGetContentResponseStatus;
 using chromeos::MahiResponseStatus;
 using crosapi::mojom::MahiContextMenuActionType;
 
@@ -161,15 +160,6 @@ class OnConsentStateUpdateClosureRunner
       magic_boost_state_observation_{this};
 };
 
-// Helpers ---------------------------------------------------------------------
-
-ash::MahiBrowserDelegateAsh* GetBrowserDelegate() {
-  return g_overriding_delegate_ptr_ ? g_overriding_delegate_ptr_
-                                    : crosapi::CrosapiManager::Get()
-                                          ->crosapi_ash()
-                                          ->mahi_browser_delegate_ash();
-}
-
 MahiResponseStatus GetMahiResponseStatusFromMantaStatus(
     manta::MantaStatusCode code) {
   switch (code) {
@@ -245,7 +235,7 @@ MahiManagerImpl::MahiManagerImpl()
 
 MahiManagerImpl::~MahiManagerImpl() {
   mahi_provider_.reset();
-  mahi_browser_delegate_ash_ = nullptr;
+  mahi_web_contents_manager_ = nullptr;
 }
 
 std::u16string MahiManagerImpl::GetContentTitle() {
@@ -260,7 +250,52 @@ GURL MahiManagerImpl::GetContentUrl() {
   return current_page_info_->url;
 }
 
+std::u16string MahiManagerImpl::GetSelectedText() {
+  // This is called only when selected text is eligible for elucidation, so
+  // the selected text should not be empty.
+  CHECK(!current_selected_text_.empty());
+  return current_selected_text_;
+}
+
+void MahiManagerImpl::GetContent(MahiContentCallback callback) {
+  if (!MaybeInitializeAndDiscardPendingRequests()) {
+    std::move(callback).Run(u"", MahiGetContentResponseStatus::kUnknownError);
+    LOG(ERROR) << "Initialized unsuccessfully.";
+    return;
+  }
+
+  // Uses page content if it is already in the cache.
+  const auto cached_content =
+      cache_manager_->GetPageContentForUrl(current_page_info_->url.spec());
+  if (!cached_content.empty()) {
+    OnGetPageContent(current_page_info_->Clone(), std::move(callback),
+                     crosapi::mojom::MahiPageContent::New(
+                         /*client_id=*/base::UnguessableToken(),
+                         /*page_id=*/base::UnguessableToken(), cached_content));
+
+    base::UmaHistogramEnumeration(kMahiCacheHit, CacheHit::kContent);
+    return;
+  }
+
+  base::UmaHistogramEnumeration(kMahiCacheHit, CacheHit::kNoHit);
+  auto get_content_done_callback =
+      base::BindOnce(&MahiManagerImpl::OnGetPageContent,
+                     weak_ptr_factory_for_requests_.GetWeakPtr(),
+                     current_page_info_->Clone(), std::move(callback));
+
+  if (media_app_pdf_focused_) {
+    chromeos::MahiMediaAppContentManager::Get()->GetContent(
+        media_app_client_id_, std::move(get_content_done_callback));
+  } else {
+    mahi_web_contents_manager_->RequestContent(
+        current_page_info_->page_id, std::move(get_content_done_callback));
+  }
+}
+
 void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
+  // Resets latest_elucidation_ to avoid messing up the feedback body.
+  latest_elucidation_ = std::u16string();
+
   if (!MaybeInitializeAndDiscardPendingRequests()) {
     latest_response_status_ = MahiResponseStatus::kUnknownError;
     std::move(callback).Run(u"", latest_response_status_);
@@ -314,9 +349,62 @@ void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
     chromeos::MahiMediaAppContentManager::Get()->GetContent(
         media_app_client_id_, std::move(get_content_done_callback));
   } else {
-    mahi_browser_delegate_ash_->GetContentFromClient(
-        current_panel_info_->client_id, current_panel_info_->page_id,
-        std::move(get_content_done_callback));
+    mahi_web_contents_manager_->RequestContent(
+        current_page_info_->page_id, std::move(get_content_done_callback));
+  }
+}
+
+void MahiManagerImpl::GetElucidation(MahiElucidationCallback callback) {
+  // Resets latest_summary_ to avoid messing up feedback.
+  latest_summary_ = std::u16string();
+
+  if (!MaybeInitializeAndDiscardPendingRequests()) {
+    latest_response_status_ = MahiResponseStatus::kUnknownError;
+    std::move(callback).Run(u"", latest_response_status_);
+    LOG(ERROR) << "Initialized unsuccessfully.";
+    return;
+  }
+
+  current_panel_info_ = current_page_info_->Clone();
+
+  // Do not CHECK and crash here. It's true that Elucidation button should only
+  // show when the selected text passed the eligiblity check, but this may also
+  // be called by clicking `retry` link when error happens, and because of
+  // crbug.com/375292907, the current_selected_text may change and not eligible
+  // anymore (e.g. becomes empty). In such cases we returns an error.
+  if (current_selected_text_.empty()) {
+    std::move(callback).Run(u"", MahiResponseStatus::kInappropriate);
+    return;
+  }
+
+  const auto cached_content =
+      cache_manager_->GetPageContentForUrl(current_panel_info_->url.spec());
+
+  // Uses page content if it is already in the cache.
+  if (!cached_content.empty()) {
+    OnGetPageContentForElucidation(
+        current_selected_text_, current_panel_info_->Clone(),
+        std::move(callback),
+        crosapi::mojom::MahiPageContent::New(
+            /*client_id=*/base::UnguessableToken(),
+            /*page_id=*/base::UnguessableToken(), cached_content));
+
+    base::UmaHistogramEnumeration(kMahiCacheHit, CacheHit::kContent);
+    return;
+  }
+
+  base::UmaHistogramEnumeration(kMahiCacheHit, CacheHit::kNoHit);
+  auto get_content_done_callback = base::BindOnce(
+      &MahiManagerImpl::OnGetPageContentForElucidation,
+      weak_ptr_factory_for_requests_.GetWeakPtr(), current_selected_text_,
+      current_panel_info_->Clone(), std::move(callback));
+
+  if (media_app_pdf_focused_) {
+    chromeos::MahiMediaAppContentManager::Get()->GetContent(
+        media_app_client_id_, std::move(get_content_done_callback));
+  } else {
+    mahi_web_contents_manager_->RequestContent(
+        current_page_info_->page_id, std::move(get_content_done_callback));
   }
 }
 
@@ -379,9 +467,8 @@ void MahiManagerImpl::AnswerQuestion(const std::u16string& question,
     chromeos::MahiMediaAppContentManager::Get()->GetContent(
         media_app_client_id_, std::move(get_content_done_callback));
   } else {
-    mahi_browser_delegate_ash_->GetContentFromClient(
-        current_panel_info_->client_id, current_panel_info_->page_id,
-        std::move(get_content_done_callback));
+    mahi_web_contents_manager_->RequestContent(
+        current_panel_info_->page_id, std::move(get_content_done_callback));
   }
 }
 
@@ -420,6 +507,18 @@ void MahiManagerImpl::OnContextMenuClicked(
   }
 
   switch (action_type) {
+    case MahiContextMenuActionType::kElucidation:
+      // Retrieves selected text from corresponding content manager, so that the
+      // result panel ui can get this info from Mahi Manager directly instead of
+      // contacting content managers.
+      UpdateCurrentSelectedText();
+
+      OpenMahiPanelForElucidation(
+          context_menu_request->display_id,
+          context_menu_request->mahi_menu_bounds.has_value()
+              ? context_menu_request->mahi_menu_bounds.value()
+              : gfx::Rect());
+      return;
     case MahiContextMenuActionType::kSummary:
     case MahiContextMenuActionType::kOutline:
       // TODO(b/318565610): Update the behaviour of kOutline.
@@ -475,17 +574,26 @@ void MahiManagerImpl::OnContextMenuClicked(
 
 void MahiManagerImpl::OpenFeedbackDialog() {
   std::string description_template = base::StringPrintf(
-      "#Mahi user feedback:\n\n-----------\nlatest status code: %d\nlatest "
-      "summary: %s",
-      static_cast<int>(latest_response_status_),
-      base::UTF16ToUTF8(latest_summary_).c_str());
+      "#Mahi user feedback:\n\n-----------\nlatest status code: %d",
+      static_cast<int>(latest_response_status_));
 
-  if (!current_panel_qa_.empty()) {
-    base::StringAppendF(&description_template, "\nQA history:");
-    for (const auto& [question, answer] : current_panel_qa_) {
-      base::StringAppendF(&description_template, "\nQ:%s\nA:%s\n",
-                          question.c_str(), answer.c_str());
+  if (!latest_summary_.empty()) {
+    base::StringAppendF(&description_template, "\nlatest summary: %s",
+                        base::UTF16ToUTF8(latest_summary_).c_str());
+
+    if (!current_panel_qa_.empty()) {
+      base::StringAppendF(&description_template, "\nQA history:");
+      for (const auto& [question, answer] : current_panel_qa_) {
+        base::StringAppendF(&description_template, "\nQ:%s\nA:%s\n",
+                            question.c_str(), answer.c_str());
+      }
     }
+  } else if (!latest_elucidation_.empty()) {
+    base::StringAppendF(
+        &description_template,
+        "\nlatest simplified text: %s\n\nfor the selected text: %s\n",
+        base::UTF16ToUTF8(latest_elucidation_).c_str(),
+        base::UTF16ToUTF8(current_selected_text_).c_str());
   }
 
   base::Value::Dict ai_metadata;
@@ -505,7 +613,15 @@ void MahiManagerImpl::OpenFeedbackDialog() {
 
 void MahiManagerImpl::OpenMahiPanel(int64_t display_id,
                                     const gfx::Rect& mahi_menu_bounds) {
-  ui_controller_.OpenMahiPanel(display_id, mahi_menu_bounds);
+  ui_controller_.OpenMahiPanel(display_id, mahi_menu_bounds,
+                               /*elucidation_in_use=*/false);
+}
+
+void MahiManagerImpl::OpenMahiPanelForElucidation(
+    int64_t display_id,
+    const gfx::Rect& mahi_menu_bounds) {
+  ui_controller_.OpenMahiPanel(display_id, mahi_menu_bounds,
+                               /*elucidation_in_use=*/true);
 }
 
 bool MahiManagerImpl::IsEnabled() {
@@ -620,8 +736,8 @@ bool MahiManagerImpl::MaybeInitializeAndDiscardPendingRequests() {
     mahi_provider_ = CreateProvider();
   }
 
-  if (!mahi_browser_delegate_ash_) {
-    mahi_browser_delegate_ash_ = GetBrowserDelegate();
+  if (!mahi_web_contents_manager_) {
+    mahi_web_contents_manager_ = chromeos::MahiWebContentsManager::Get();
   }
 
   if (weak_ptr_factory_for_requests_.HasWeakPtrs()) {
@@ -630,7 +746,7 @@ bool MahiManagerImpl::MaybeInitializeAndDiscardPendingRequests() {
 
   MaybeObserveHistoryService();
 
-  return mahi_provider_ && mahi_browser_delegate_ash_;
+  return mahi_provider_ != nullptr && mahi_web_contents_manager_ != nullptr;
 }
 
 void MahiManagerImpl::MaybeObserveHistoryService() {
@@ -683,6 +799,24 @@ void MahiManagerImpl::InterrputRequestHandlingWithDisclaimerView(
           OptInFeatures::kOrcaAndHmr);
 }
 
+void MahiManagerImpl::OnGetPageContent(
+    crosapi::mojom::MahiPageInfoPtr request_page_info,
+    MahiContentCallback callback,
+    crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
+  if (!mahi_content_ptr || mahi_content_ptr->page_content.empty()) {
+    std::move(callback).Run(
+        u"", MahiGetContentResponseStatus::kContentExtractionError);
+    // TODO(b:371080356) add histogram metrics.
+    return;
+  }
+
+  // Cache current panel content.
+  CacheCurrentPanelContent(*request_page_info, *mahi_content_ptr);
+
+  std::move(callback).Run(mahi_content_ptr->page_content,
+                          MahiGetContentResponseStatus::kSuccess);
+}
+
 void MahiManagerImpl::OnGetPageContentForSummary(
     crosapi::mojom::MahiPageInfoPtr request_page_info,
     MahiSummaryCallback callback,
@@ -697,18 +831,7 @@ void MahiManagerImpl::OnGetPageContentForSummary(
   // Assign current panel content and clear the current panel QA
   current_panel_content_ = std::move(mahi_content_ptr);
   current_panel_qa_.clear();
-
-  // Add page content to the cache.
-  // TODO(b:338140794): consider adding the QA to the cache.
-  if (!request_page_info->is_incognito) {
-    cache_manager_->AddCacheForUrl(
-        request_page_info->url.spec(),
-        MahiCacheManager::MahiData(
-            request_page_info->url.spec(), request_page_info->title,
-            current_panel_content_->page_content,
-            request_page_info->favicon_image, /*summary=*/std::nullopt,
-            /*previous_qa=*/{}));
-  }
+  CacheCurrentPanelContent(*request_page_info, *current_panel_content_);
 
   CHECK(mahi_provider_);
 
@@ -719,6 +842,36 @@ void MahiManagerImpl::OnGetPageContentForSummary(
       base::BindOnce(&MahiManagerImpl::OnMahiProviderSummaryResponse,
                      weak_ptr_factory_for_requests_.GetWeakPtr(),
                      std::move(request_page_info), std::move(callback)));
+}
+
+void MahiManagerImpl::OnGetPageContentForElucidation(
+    const std::u16string& selected_text,
+    crosapi::mojom::MahiPageInfoPtr request_page_info,
+    MahiElucidationCallback callback,
+    crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
+  if (!mahi_content_ptr || mahi_content_ptr->page_content.empty()) {
+    latest_response_status_ = MahiResponseStatus::kContentExtractionError;
+    std::move(callback).Run(u"", latest_response_status_);
+    base::UmaHistogramEnumeration(kMahiResponseStatus, latest_response_status_);
+    return;
+  }
+
+  // Assign current panel content and clear the current panel QA
+  current_panel_content_ = std::move(mahi_content_ptr);
+  current_panel_qa_.clear();
+  CacheCurrentPanelContent(*request_page_info, *current_panel_content_);
+
+  CHECK(mahi_provider_);
+
+  mahi_provider_->Elucidate(
+      base::UTF16ToUTF8(selected_text),
+      base::UTF16ToUTF8(current_panel_content_->page_content),
+      base::UTF16ToUTF8(request_page_info->title),
+      MaybeGetUrl(request_page_info),
+      base::BindOnce(&MahiManagerImpl::OnMahiProviderElucidationResponse,
+                     weak_ptr_factory_for_requests_.GetWeakPtr(),
+                     std::move(request_page_info), selected_text,
+                     std::move(callback)));
 }
 
 void MahiManagerImpl::OnGetPageContentForQA(
@@ -737,19 +890,7 @@ void MahiManagerImpl::OnGetPageContentForQA(
   current_panel_content_ = std::move(mahi_content_ptr);
   current_panel_qa_.clear();
 
-  // Add page content to the cache. The summary would be the summary that
-  // is already in the cache (if any).
-  // TODO(b:338140794): consider adding the QA to the cache.
-  if (!request_page_info->is_incognito) {
-    cache_manager_->AddCacheForUrl(
-        request_page_info->url.spec(),
-        MahiCacheManager::MahiData(
-            request_page_info->url.spec(), request_page_info->title,
-            current_panel_content_->page_content,
-            request_page_info->favicon_image,
-            cache_manager_->GetSummaryForUrl(request_page_info->url.spec()),
-            {}));
-  }
+  CacheCurrentPanelContent(*request_page_info, *current_panel_content_);
 
   mahi_provider_->QuestionAndAnswer(
       base::UTF16ToUTF8(current_panel_content_->page_content),
@@ -793,6 +934,39 @@ void MahiManagerImpl::OnMahiProviderSummaryResponse(
   base::UmaHistogramEnumeration(kMahiResponseStatus, latest_response_status_);
 }
 
+void MahiManagerImpl::OnMahiProviderElucidationResponse(
+    crosapi::mojom::MahiPageInfoPtr request_page_info,
+    const std::u16string& selected_text,
+    MahiElucidationCallback elucidation_callback,
+    base::Value::Dict dict,
+    manta::MantaStatus status) {
+  CHECK(current_selected_text_ == selected_text);
+
+  latest_elucidation_ = u"...";
+  if (status.status_code != manta::MantaStatusCode::kOk) {
+    latest_response_status_ =
+        GetMahiResponseStatusFromMantaStatus(status.status_code);
+    std::move(elucidation_callback)
+        .Run(u"Couldn't get elucidation", latest_response_status_);
+    base::UmaHistogramEnumeration(kMahiResponseStatus, latest_response_status_);
+    return;
+  }
+
+  if (auto* text = dict.FindString("outputData")) {
+    latest_response_status_ = MahiResponseStatus::kSuccess;
+    latest_elucidation_ = base::UTF8ToUTF16(*text);
+    // TODO(b:372741602): maybe also cache the elucidation result.
+    std::move(elucidation_callback)
+        .Run(latest_elucidation_, latest_response_status_);
+  } else {
+    latest_response_status_ = MahiResponseStatus::kCantFindOutputData;
+    std::move(elucidation_callback)
+        .Run(u"Cannot find output data", latest_response_status_);
+  }
+
+  base::UmaHistogramEnumeration(kMahiResponseStatus, latest_response_status_);
+}
+
 void MahiManagerImpl::OnMahiProviderQAResponse(
     crosapi::mojom::MahiPageInfoPtr request_page_info,
     const std::u16string& question,
@@ -819,6 +993,32 @@ void MahiManagerImpl::OnMahiProviderQAResponse(
   base::UmaHistogramEnumeration(kMahiResponseStatus, latest_response_status_);
 }
 
+void MahiManagerImpl::CacheCurrentPanelContent(
+    crosapi::mojom::MahiPageInfo request_page_info,
+    crosapi::mojom::MahiPageContent mahi_content) {
+  // Add page content to the cache.
+  // TODO(b:338140794): consider adding the QA to the cache.
+  if (!request_page_info.is_incognito) {
+    cache_manager_->AddCacheForUrl(
+        request_page_info.url.spec(),
+        MahiCacheManager::MahiData(
+            request_page_info.url.spec(), request_page_info.title,
+            mahi_content.page_content, request_page_info.favicon_image,
+            /*summary=*/std::nullopt,
+            /*previous_qa=*/{}));
+  }
+}
+
+void MahiManagerImpl::UpdateCurrentSelectedText() {
+  if (media_app_pdf_focused_) {
+    current_selected_text_ = base::UTF8ToUTF16(
+        chromeos::MahiMediaAppContentManager::Get()->GetSelectedText());
+  } else {
+    current_selected_text_ =
+        chromeos::MahiWebContentsManager::Get()->GetSelectedText();
+  }
+}
+
 // Repeating answers are not allowed for Mahi as all questions must only return
 // one answer.
 bool MahiManagerImpl::AllowRepeatingAnswers() {
@@ -831,18 +1031,5 @@ void MahiManagerImpl::AnswerQuestionRepeating(
     const std::u16string& question,
     bool current_panel_content,
     MahiAnswerQuestionCallbackRepeating callback) {}
-
-// ScopedMahiBrowserDelegateOverrider----------------------------------------
-
-ScopedMahiBrowserDelegateOverrider::ScopedMahiBrowserDelegateOverrider(
-    MahiBrowserDelegateAsh* delegate) {
-  CHECK(g_overriding_delegate_ptr_ == nullptr);
-  g_overriding_delegate_ptr_ = delegate;
-}
-
-ScopedMahiBrowserDelegateOverrider::~ScopedMahiBrowserDelegateOverrider() {
-  CHECK(g_overriding_delegate_ptr_ != nullptr);
-  g_overriding_delegate_ptr_ = nullptr;
-}
 
 }  // namespace ash

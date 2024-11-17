@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoCoordinator;
+import org.chromium.chrome.browser.ui.signin.signin_promo.SigninPromoDelegate;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountsChangeObserver;
@@ -94,12 +95,11 @@ public class BookmarkPromoHeader
             mSigninPromoCoordinator =
                     new SigninPromoCoordinator(
                             mContext,
-                            org.chromium.chrome.browser.ui.signin.R.string
-                                    .signin_promo_title_bookmarks,
-                            org.chromium.chrome.browser.ui.signin.R.string
-                                    .signin_promo_description_bookmarks,
-                            false,
-                            false);
+                            mProfile,
+                            SigninPromoDelegate.forBookmarkManager(
+                                    mContext,
+                                    mProfile,
+                                    SigninAndHistorySyncActivityLauncherImpl.get()));
             mSyncPromoController = null;
         } else if (!ChromeFeatureList.isEnabled(ChromeFeatureList.UNO_PHASE_2_FOLLOW_UP)
                 && syncPromoController.canShowSyncPromo()) {

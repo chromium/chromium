@@ -5,7 +5,7 @@
 [
   SecureContext,
   Exposed=Window,
-  RuntimeEnabled=WebXRLayers
+  RuntimeEnabled=WebXRGPUBinding
 ] interface XRGPUSubImage : XRSubImage {
   [SameObject] readonly attribute GPUTexture colorTexture;
   [SameObject] readonly attribute GPUTexture? depthStencilTexture;

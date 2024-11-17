@@ -51,6 +51,7 @@ class Browser;
                                    browser:(Browser*)browser
                                       rect:(CGRect)rect
                                       view:(UIView*)view
+                  forceSnackbarOverToolbar:(BOOL)forceSnackbarOverToolbar
                                 withSource:(signin_metrics::ProfileSignout)
                                                signout_source_metric
     NS_DESIGNATED_INITIALIZER;
@@ -65,7 +66,8 @@ class Browser;
 @property(nonatomic, strong, readonly) NSString* message;
 
 // Required callback to be used after sign-out is completed.
-@property(nonatomic, copy) signin_ui::CompletionCallback completion;
+@property(nonatomic, copy)
+    signin_ui::SignoutCompletionCallback signoutCompletion;
 
 // Whether to warns feature won’t be available anymore when user is not
 // synced.

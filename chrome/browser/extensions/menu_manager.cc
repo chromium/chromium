@@ -423,8 +423,7 @@ bool MenuManager::DescendantOf(MenuItem* item,
       return true;
     MenuItem* next = GetItemById(*id);
     if (!next) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
     id = next->parent_id();
   }
@@ -448,8 +447,7 @@ bool MenuManager::ChangeParent(const MenuItem::Id& child_id,
   if (old_parent_id != nullptr) {
     MenuItem* old_parent = GetItemById(*old_parent_id);
     if (!old_parent) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
     child = old_parent->ReleaseChild(child_id, false /* non-recursive search*/);
     DCHECK(child.get() == child_ptr);
@@ -460,15 +458,13 @@ bool MenuManager::ChangeParent(const MenuItem::Id& child_id,
     const MenuItem::ExtensionKey& child_key = child_ptr->id().extension_key;
     auto i = context_items_.find(child_key);
     if (i == context_items_.end()) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
     MenuItem::OwnedList& list = i->second;
     auto j =
         base::ranges::find(list, child_ptr, &std::unique_ptr<MenuItem>::get);
     if (j == list.end()) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
     child = std::move(*j);
     list.erase(j);
@@ -496,8 +492,7 @@ bool MenuManager::RemoveContextMenuItem(const MenuItem::Id& id) {
   const MenuItem::ExtensionKey extension_key = id.extension_key;
   auto i = context_items_.find(extension_key);
   if (i == context_items_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   bool result = false;
@@ -579,15 +574,13 @@ void MenuManager::RadioItemSelected(MenuItem* item) {
   if (item->parent_id()) {
     MenuItem* parent = GetItemById(*item->parent_id());
     if (!parent) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     list = &(parent->children());
   } else {
     const MenuItem::ExtensionKey& key = item->id().extension_key;
     if (context_items_.find(key) == context_items_.end()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     list = &context_items_[key];
   }
@@ -600,8 +593,7 @@ void MenuManager::RadioItemSelected(MenuItem* item) {
       break;
   }
   if (item_location == list->end()) {
-    NOTREACHED_IN_MIGRATION();  // We should have found the item.
-    return;
+    NOTREACHED();  // We should have found the item.
   }
 
   // Iterate backwards from |item| and uncheck any adjacent radio items.
@@ -817,8 +809,7 @@ bool MenuManager::ItemUpdated(const MenuItem::Id& id) {
   if (!menu_item->parent_id()) {
     auto i = context_items_.find(menu_item->id().extension_key);
     if (i == context_items_.end()) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
   }
 

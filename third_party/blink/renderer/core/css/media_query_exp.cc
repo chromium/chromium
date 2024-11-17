@@ -27,11 +27,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/media_query_exp.h"
 
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
@@ -206,6 +201,25 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
         case CSSValueID::kInline:
         case CSSValueID::kX:
         case CSSValueID::kY:
+          return true;
+        default:
+          return false;
+      }
+    }
+  }
+
+  if (RuntimeEnabledFeatures::CSSOverflowContainerQueriesEnabled()) {
+    if (media_feature == media_feature_names::kOverflowingMediaFeature) {
+      switch (ident) {
+        case CSSValueID::kNone:
+        case CSSValueID::kTop:
+        case CSSValueID::kLeft:
+        case CSSValueID::kBottom:
+        case CSSValueID::kRight:
+        case CSSValueID::kBlockStart:
+        case CSSValueID::kBlockEnd:
+        case CSSValueID::kInlineStart:
+        case CSSValueID::kInlineEnd:
           return true;
         default:
           return false;
@@ -404,12 +418,12 @@ MediaQueryExp::MediaQueryExp(const String& media_feature,
                              const MediaQueryExpBounds& bounds)
     : media_feature_(media_feature), bounds_(bounds) {}
 
-MediaQueryExp MediaQueryExp::Create(const String& media_feature,
+MediaQueryExp MediaQueryExp::Create(const AtomicString& media_feature,
                                     CSSParserTokenStream& stream,
                                     const CSSParserContext& context) {
-  String feature = AttemptStaticStringCreation(media_feature);
-  if (auto value = MediaQueryExpValue::Consume(feature, stream, context)) {
-    return MediaQueryExp(feature, *value);
+  if (auto value =
+          MediaQueryExpValue::Consume(media_feature, stream, context)) {
+    return MediaQueryExp(media_feature, *value);
   }
   return Invalid();
 }
@@ -520,13 +534,12 @@ const char* MediaQueryOperatorToString(MediaQueryOperator op) {
       return ">=";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace
 
-MediaQueryExp MediaQueryExp::Create(const String& media_feature,
+MediaQueryExp MediaQueryExp::Create(const AtomicString& media_feature,
                                     const MediaQueryExpBounds& bounds) {
   return MediaQueryExp(media_feature, bounds);
 }
@@ -595,7 +608,7 @@ String MediaQueryExpValue::CssText() const {
       output.Append(Denominator().CssText());
       break;
     case Type::kId:
-      output.Append(getValueName(Id()));
+      output.Append(GetCSSValueNameAs<StringView>(Id()));
       break;
   }
 
@@ -746,6 +759,9 @@ MediaQueryExpNode::FeatureFlags MediaQueryFeatureExpNode::CollectFeatureFlags()
     return kFeatureSticky;
   } else if (exp_.MediaFeature() == media_feature_names::kSnappedMediaFeature) {
     return kFeatureSnap;
+  } else if (exp_.MediaFeature() ==
+             media_feature_names::kOverflowingMediaFeature) {
+    return kFeatureOverflow;
   } else if (exp_.IsInlineSizeDependent()) {
     return kFeatureInlineSize;
   } else if (exp_.IsBlockSizeDependent()) {

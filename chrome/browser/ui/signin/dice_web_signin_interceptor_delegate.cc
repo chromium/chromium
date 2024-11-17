@@ -54,8 +54,9 @@ class OidcEnterpriseSigninInterceptionHandle
   OidcEnterpriseSigninInterceptionHandle(
       Browser* browser,
       const WebSigninInterceptor::Delegate::BubbleParameters& bubble_parameters,
-      signin::SigninChoiceWithConfirmationCallback callback,
-      base::OnceClosure dialog_closed_closure)
+      signin::SigninChoiceWithConfirmAndRetryCallback callback,
+      base::OnceClosure dialog_closed_closure,
+      base::RepeatingClosure retry_callback)
       : browser_(browser->AsWeakPtr()),
         bubble_parameters_(bubble_parameters),
         callback_(std::move(callback)) {
@@ -64,18 +65,20 @@ class OidcEnterpriseSigninInterceptionHandle
     CHECK(bubble_parameters.interception_type ==
           WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC);
     browser_->signin_view_controller()->ShowModalManagedUserNoticeDialog(
-        bubble_parameters.intercepted_account,
-        /*is_OIDC_account=*/true,
-        /*profile_creation_required_by_policy=*/true,
-        /*show_link_data_option=*/false,
-        /*process_user_choice_callback=*/
-        base::BindOnce(&OidcEnterpriseSigninInterceptionHandle::
-                           OnEnterpriseInterceptionUserChoice,
-                       weak_ptr_factory_.GetWeakPtr()),
-        /*done_callback=*/
-        base::BindOnce(&SigninViewController::CloseModalSignin,
-                       browser_->signin_view_controller()->AsWeakPtr())
-            .Then(std::move(dialog_closed_closure)));
+        std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+            bubble_parameters.intercepted_account,
+            /*is_OIDC_account=*/true,
+            /*profile_creation_required_by_policy=*/true,
+            /*show_link_data_option=*/false,
+            /*process_user_choice_callback=*/
+            base::BindOnce(&OidcEnterpriseSigninInterceptionHandle::
+                               OnEnterpriseInterceptionUserChoice,
+                           weak_ptr_factory_.GetWeakPtr()),
+            /*done_callback=*/
+            base::BindOnce(&SigninViewController::CloseModalSignin,
+                           browser_->signin_view_controller()->AsWeakPtr())
+                .Then(std::move(dialog_closed_closure)),
+            /*retry_callback=*/std::move(retry_callback)));
   }
 
   ~OidcEnterpriseSigninInterceptionHandle() override {
@@ -86,14 +89,16 @@ class OidcEnterpriseSigninInterceptionHandle
       DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
           bubble_parameters_, browser_->profile(),
           SigninInterceptionResult::kDeclined);
-      std::move(callback_).Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing());
+      std::move(callback_).Run(signin::SIGNIN_CHOICE_CANCEL, base::DoNothing(),
+                               base::DoNothing());
     }
   }
 
  private:
   void OnEnterpriseInterceptionUserChoice(
       signin::SigninChoice result,
-      signin::SigninChoiceOperationDoneCallback done_callback) {
+      signin::SigninChoiceOperationDoneCallback done_callback,
+      signin::SigninChoiceOperationRetryCallback retry_callback) {
     SigninInterceptionResult interception_result =
         SigninInterceptionResult::kDeclined;
     switch (result) {
@@ -110,12 +115,13 @@ class OidcEnterpriseSigninInterceptionHandle
     }
     DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
         bubble_parameters_, browser_->profile(), interception_result);
-    std::move(callback_).Run(result, std::move(done_callback));
+    std::move(callback_).Run(result, std::move(done_callback),
+                             std::move(retry_callback));
   }
 
   base::WeakPtr<Browser> browser_;
   WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters_;
-  signin::SigninChoiceWithConfirmationCallback callback_;
+  signin::SigninChoiceWithConfirmAndRetryCallback callback_;
   base::WeakPtrFactory<OidcEnterpriseSigninInterceptionHandle>
       weak_ptr_factory_{this};
 };
@@ -137,17 +143,18 @@ class ForcedEnterpriseSigninInterceptionHandle
     DCHECK(browser_);
     DCHECK(callback_);
     browser_->signin_view_controller()->ShowModalManagedUserNoticeDialog(
-        bubble_parameters.intercepted_account,
-        /*is_OIDC_account=*/bubble_parameters.interception_type ==
-            WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC,
-        profile_creation_required_by_policy_, show_link_data_option_,
-        /*process_user_choice_callback=*/
-        base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
-                           OnEnterpriseInterceptionDialogClosed,
-                       weak_ptr_factory_.GetWeakPtr()),
-        /*done_callback=*/
-        base::BindOnce(&SigninViewController::CloseModalSignin,
-                       browser_->signin_view_controller()->AsWeakPtr()));
+        std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+            bubble_parameters.intercepted_account,
+            /*is_OIDC_account=*/bubble_parameters.interception_type ==
+                WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC,
+            profile_creation_required_by_policy_, show_link_data_option_,
+            /*process_user_choice_callback=*/
+            base::BindOnce(&ForcedEnterpriseSigninInterceptionHandle::
+                               OnEnterpriseInterceptionDialogClosed,
+                           weak_ptr_factory_.GetWeakPtr()),
+            /*done_callback=*/
+            base::BindOnce(&SigninViewController::CloseModalSignin,
+                           browser_->signin_view_controller()->AsWeakPtr())));
   }
 
   ~ForcedEnterpriseSigninInterceptionHandle() override {
@@ -181,8 +188,7 @@ class ForcedEnterpriseSigninInterceptionHandle
         break;
       case signin::SIGNIN_CHOICE_SIZE:
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     DiceWebSigninInterceptorDelegate::RecordInterceptionResult(
         bubble_parameters_, browser_->profile(), interception_result);
@@ -251,13 +257,15 @@ std::unique_ptr<ScopedWebSigninInterceptionBubbleHandle>
 DiceWebSigninInterceptorDelegate::ShowOidcInterceptionDialog(
     content::WebContents* web_contents,
     const DiceWebSigninInterceptorDelegate::BubbleParameters& bubble_parameters,
-    signin::SigninChoiceWithConfirmationCallback callback,
-    base::OnceClosure dialog_closed_closure) {
+    signin::SigninChoiceWithConfirmAndRetryCallback callback,
+    base::OnceClosure dialog_closed_closure,
+    base::RepeatingClosure retry_callback) {
   CHECK_EQ(bubble_parameters.interception_type,
            WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC);
   return std::make_unique<OidcEnterpriseSigninInterceptionHandle>(
       chrome::FindBrowserWithTab(web_contents), bubble_parameters,
-      std::move(callback), std::move(dialog_closed_closure));
+      std::move(callback), std::move(dialog_closed_closure),
+      std::move(retry_callback));
 }
 
 void DiceWebSigninInterceptorDelegate::ShowFirstRunExperienceInNewProfile(

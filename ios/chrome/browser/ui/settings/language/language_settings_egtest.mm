@@ -147,10 +147,10 @@ id<GREYMatcher> SettingToolbarEditButton() {
   [LanguageSettingsAppInterface addLanguage:@"en"];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey dismissSettings];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Test Cases

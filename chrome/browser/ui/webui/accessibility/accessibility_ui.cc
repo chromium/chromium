@@ -601,8 +601,7 @@ void AccessibilityUIMessageHandler::SetGlobalFlag(
   } else if (flag_name == kHTML) {
     new_mode = ui::AXMode::kHTML;
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // It doesn't make sense to enable one of the flags that depends on

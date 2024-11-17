@@ -4,8 +4,7 @@
 
 #include "chromeos/ash/components/phonehub/fake_find_my_device_controller.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 FakeFindMyDeviceController::FakeFindMyDeviceController() = default;
 
@@ -40,5 +39,4 @@ void FakeFindMyDeviceController::SetShouldRequestFail(
   should_request_fail_ = should_request_fail;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

@@ -120,8 +120,7 @@ memory_instrumentation::mojom::ProcessType GetCoordinatorClientProcessType(
     case PROCESS_TYPE_PPAPI_BROKER:
       return memory_instrumentation::mojom::ProcessType::PLUGIN;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return memory_instrumentation::mojom::ProcessType::OTHER;
+      NOTREACHED();
   }
 }
 void BindTracedProcessFromUIThread(
@@ -197,6 +196,7 @@ BrowserChildProcessHostImpl::BrowserChildProcessHostImpl(
 
   g_child_process_list.Get().push_back(this);
   GetContentClient()->browser()->BrowserChildProcessHostCreated(this);
+  GetContentClient()->browser()->ExposeInterfacesToChild(&binder_map_);
 }
 
 BrowserChildProcessHostImpl::~BrowserChildProcessHostImpl() {
@@ -530,8 +530,7 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
       }
       case base::TERMINATION_STATUS_LAUNCH_FAILED: {
         // This is handled in OnProcessLaunchFailed.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       }
       case base::TERMINATION_STATUS_NORMAL_TERMINATION: {
         // TODO(wfh): This should not be hit but is sometimes. Investigate.
@@ -548,8 +547,7 @@ void BrowserChildProcessHostImpl::OnChildDisconnected() {
       }
 #endif  // BUILDFLAG(IS_WIN)
       case base::TERMINATION_STATUS_MAX_ENUM: {
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       }
     }
 #endif  // BUILDFLAG(IS_ANDROID)

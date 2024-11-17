@@ -27,7 +27,7 @@ class TestCardExpirationDateFixFlowView : public CardExpirationDateFixFlowView {
 
 class CardExpirationDateFixFlowControllerImplGenericTest {
  public:
-  CardExpirationDateFixFlowControllerImplGenericTest() {}
+  CardExpirationDateFixFlowControllerImplGenericTest() = default;
 
   CardExpirationDateFixFlowControllerImplGenericTest(
       const CardExpirationDateFixFlowControllerImplGenericTest&) = delete;
@@ -64,7 +64,7 @@ class CardExpirationDateFixFlowControllerImplTest
     : public CardExpirationDateFixFlowControllerImplGenericTest,
       public testing::Test {
  public:
-  CardExpirationDateFixFlowControllerImplTest() {}
+  CardExpirationDateFixFlowControllerImplTest() = default;
 
   CardExpirationDateFixFlowControllerImplTest(
       const CardExpirationDateFixFlowControllerImplTest&) = delete;

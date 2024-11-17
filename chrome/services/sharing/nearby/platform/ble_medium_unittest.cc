@@ -19,8 +19,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -373,5 +372,4 @@ TEST_F(BleMediumTest, TestConnect) {
   EXPECT_FALSE(ble_medium_->Connect(ble_peripheral, kServiceId1, nullptr));
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

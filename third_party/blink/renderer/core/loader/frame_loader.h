@@ -256,11 +256,11 @@ class CORE_EXPORT FrameLoader final {
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
+  bool AllowRequestForThisFrame(const FrameLoadRequest&);
+
   mojo::PendingRemote<mojom::blink::CodeCacheHost> CreateWorkerCodeCacheHost();
 
  private:
-  bool AllowRequestForThisFrame(const FrameLoadRequest&);
-
   bool ShouldPerformFragmentNavigation(bool is_form_submission,
                                        const String& http_method,
                                        WebFrameLoadType,

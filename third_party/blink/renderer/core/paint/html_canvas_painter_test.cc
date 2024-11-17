@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
@@ -81,10 +80,8 @@ TEST_F(HTMLCanvasPainterTest, Canvas2DLayerAppearsInLayerTree) {
   CanvasRenderingContext* context =
       element->GetCanvasRenderingContext("2d", attributes);
   gfx::Size size(300, 200);
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      std::make_unique<Canvas2DLayerBridge>(element);
   element->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
-  element->SetResourceProviderForTesting(nullptr, std::move(bridge), size);
+  element->SetResourceProviderForTesting(nullptr, size);
   ASSERT_EQ(context, element->RenderingContext());
 
   // Force the page to paint.

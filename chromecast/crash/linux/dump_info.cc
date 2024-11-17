@@ -12,6 +12,7 @@
 
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 
@@ -89,7 +90,7 @@ base::Value DumpInfo::GetAsValue() const {
                                dump_time_, "yyyy-MM-dd HH:mm:ss"));
 
   result.Set(kDumpKey, crashed_process_dump_);
-  std::string uptime = std::to_string(params_.process_uptime);
+  std::string uptime = base::NumberToString(params_.process_uptime);
   result.Set(kUptimeKey, uptime);
   result.Set(kLogfileKey, logfile_);
 

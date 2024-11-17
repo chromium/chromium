@@ -153,7 +153,7 @@ arc::mojom::BluetoothGattStatus ConvertGattErrorCodeToStatus(
 // Convert the last 4 characters of |identifier| to an
 // int, by interpreting them as hexadecimal digits.
 std::optional<uint16_t> ConvertGattIdentifierToId(
-    const std::string identifier) {
+    const std::string& identifier) {
   uint32_t result;
   if (identifier.size() < 4 ||
       !base::HexStringToUInt(identifier.substr(identifier.size() - 4), &result))
@@ -1854,7 +1854,8 @@ void ArcBluetoothBridge::WriteGattDescriptor(
           device::BluetoothGattCharacteristic::NotificationType::kNotification,
           base::BindOnce(&ArcBluetoothBridge::OnGattNotifyStartDone,
                          weak_factory_.GetWeakPtr(),
-                         std::move(split_callback.first), char_id_str),
+                         std::move(split_callback.first),
+                         std::move(char_id_str)),
           base::BindOnce(&OnGattOperationError,
                          std::move(split_callback.second)));
       return;
@@ -1865,7 +1866,8 @@ void ArcBluetoothBridge::WriteGattDescriptor(
           device::BluetoothGattCharacteristic::NotificationType::kIndication,
           base::BindOnce(&ArcBluetoothBridge::OnGattNotifyStartDone,
                          weak_factory_.GetWeakPtr(),
-                         std::move(split_callback.first), char_id_str),
+                         std::move(split_callback.first),
+                         std::move(char_id_str)),
           base::BindOnce(&OnGattOperationError,
                          std::move(split_callback.second)));
       return;
@@ -1902,7 +1904,7 @@ void ArcBluetoothBridge::ExecuteWrite(mojom::BluetoothAddressPtr remote_addr,
 
 void ArcBluetoothBridge::OnGattNotifyStartDone(
     ArcBluetoothBridge::GattStatusCallback callback,
-    const std::string char_string_id,
+    std::string char_string_id,
     std::unique_ptr<BluetoothGattNotifySession> notify_session) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Hold on to |notify_session|. Destruction of |notify_session| is equivalent

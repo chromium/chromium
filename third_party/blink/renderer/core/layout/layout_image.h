@@ -54,6 +54,8 @@ class CORE_EXPORT LayoutImage : public LayoutReplaced {
 
   static LayoutImage* CreateAnonymous(Document&);
 
+  bool IsUnsizedImage() const;
+
   void SetImageResource(LayoutImageResource*);
 
   LayoutImageResource* ImageResource() {

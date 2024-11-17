@@ -16,7 +16,7 @@ TestOmniboxEditModel::TestOmniboxEditModel(
       popup_is_open_(false),
       pref_service_(pref_service) {}
 
-TestOmniboxEditModel::~TestOmniboxEditModel() {}
+TestOmniboxEditModel::~TestOmniboxEditModel() = default;
 
 bool TestOmniboxEditModel::PopupIsOpen() const {
   return popup_is_open_;
@@ -57,7 +57,12 @@ void TestOmniboxEditModel::OnPopupDataChanged(
   is_temporary_text_ = is_temporary_text;
 }
 
-PrefService* TestOmniboxEditModel::GetPrefService() const {
+PrefService* TestOmniboxEditModel::GetPrefService() {
+  return const_cast<PrefService*>(
+      const_cast<const TestOmniboxEditModel*>(this)->GetPrefService());
+}
+
+const PrefService* TestOmniboxEditModel::GetPrefService() const {
   return pref_service_ == nullptr ? OmniboxEditModel::GetPrefService()
                                   : pref_service_.get();
 }

@@ -185,14 +185,14 @@ void CreateIframe(content::RenderFrameHost* parent_frame,
 // TODO(crbug.com/40274184): This function should probably be built on top of
 // `test::InstallDummyWebApp`, instead of committing the update and triggering
 // `NotifyWebAppInstalled` manually. However, the `InstallFromInfoCommand` used
-// by that function does not currently allow setting the `WebApp::IsolationData`
+// by that function does not currently allow setting the `IsolationData`
 // (which is good for non-test-code, as all real IWA installs must go through
 // the `InstallIsolatedWebAppCommand`).
 webapps::AppId AddDummyIsolatedAppToRegistry(
     Profile* profile,
     const GURL& start_url,
     const std::string& name,
-    const WebApp::IsolationData& isolation_data,
+    const IsolationData& isolation_data,
     webapps::WebappInstallSource install_source) {
   CHECK(profile);
   WebAppProvider* provider = WebAppProvider::GetForTest(profile);

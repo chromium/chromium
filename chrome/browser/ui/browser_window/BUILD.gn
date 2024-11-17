@@ -11,6 +11,7 @@ source_set("browser_window") {
   sources = [
     "public/browser_window_features.h",
     "public/browser_window_interface.h",
+    "public/browser_window_interface_iterator.h",
   ]
   public_deps = [
     "//base",
@@ -20,11 +21,15 @@ source_set("browser_window") {
 }
 
 source_set("impl") {
-  sources = [ "browser_window_features.cc" ]
+  sources = [
+    "browser_window_features.cc",
+    "browser_window_interface_iterator.cc",
+  ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":browser_window",
     "//chrome/browser/extensions",
+    "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/commerce",
@@ -32,9 +37,11 @@ source_set("impl") {
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/browser/ui/views/toolbar",
+    "//components/collaboration/public:public",
     "//components/commerce/core:feature_list",
+    "//components/data_sharing/public:public",
     "//components/lens:features",
     "//components/profile_metrics",
-    "//components/saved_tab_groups:model",
+    "//components/saved_tab_groups/public",
   ]
 }

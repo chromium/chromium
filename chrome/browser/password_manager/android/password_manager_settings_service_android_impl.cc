@@ -504,11 +504,8 @@ void PasswordManagerSettingsServiceAndroidImpl::FetchSettings() {
     // account has just signed out. So the account can't be queried via
     // `sync_service_->GetAccountInfo().email` but instead needs to be retrieved
     // via kGoogleServices*Last*SignedInUsername.
-    std::string last_account_pref = pref_service_->GetString(
-        base::FeatureList::IsEnabled(
-            syncer::kEnablePasswordsAccountStorageForNonSyncingUsers)
-            ? prefs::kGoogleServicesLastSignedInUsername
-            : prefs::kGoogleServicesLastSyncingUsername);
+    std::string last_account_pref =
+        pref_service_->GetString(prefs::kGoogleServicesLastSignedInUsername);
     account = SyncingAccount(last_account_pref);
   }
   for (PasswordManagerSetting setting : GetAllPasswordSettings()) {

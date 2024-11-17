@@ -341,8 +341,7 @@ void ThreadCacheRegistry::ResetForTesting() {
 void ThreadCache::EnsureThreadSpecificDataInitialized() {
   // Using the registry lock to protect from concurrent initialization without
   // adding a special-pupose lock.
-  internal::ScopedGuard scoped_locker(
-      ThreadCacheRegistry::Instance().GetLock());
+  internal::ScopedGuard scoped_locker(ThreadCacheRegistry::GetLock());
   if (g_thread_cache_key_created) {
     return;
   }

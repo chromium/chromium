@@ -6,11 +6,12 @@
 #define CHROME_RENDERER_PLUGINS_CHROME_PLUGIN_PLACEHOLDER_H_
 
 #include <stdint.h>
+
 #include <string>
 
 #include "chrome/common/buildflags.h"
 #include "chrome/common/plugin.mojom.h"
-#include "components/no_state_prefetch/renderer/prerender_observer.h"
+#include "components/no_state_prefetch/renderer/no_state_prefetch_observer.h"
 #include "components/plugins/renderer/loadable_plugin_placeholder.h"
 #include "content/public/renderer/render_thread_observer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -20,7 +21,7 @@ class ChromePluginPlaceholder final
     : public plugins::LoadablePluginPlaceholder,
       public content::RenderThreadObserver,
       public blink::mojom::ContextMenuClient,
-      public prerender::PrerenderObserver,
+      public prerender::NoStatePrefetchObserver,
       public gin::Wrappable<ChromePluginPlaceholder> {
  public:
   static gin::WrapperInfo kWrapperInfo;
@@ -73,8 +74,8 @@ class ChromePluginPlaceholder final
   void CustomContextMenuAction(uint32_t action) override;
   void ContextMenuClosed(const GURL& link_followed) override;
 
-  // prerender::PrerenderObserver methods:
-  void SetIsPrerendering(bool is_prerendering) override;
+  // prerender::NoStatePrefetchObserver methods:
+  void SetIsNoStatePrefetching(bool is_no_state_prefetching) override;
 
   chrome::mojom::PluginStatus status_;
 

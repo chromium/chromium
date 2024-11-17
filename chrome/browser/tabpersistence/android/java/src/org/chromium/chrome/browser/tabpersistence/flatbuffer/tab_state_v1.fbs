@@ -45,5 +45,8 @@ table TabStateFlatBufferV1 {
 
     // Tab group ID.
     tab_group_id:TabGroupIdToken;
+
+    // Tab has sensitive content.
+    tab_has_sensitive_content:bool;
 }
 

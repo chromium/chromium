@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/ash/login/signin/authentication_flow_auto_reload_manager.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
 #include "chrome/browser/profiles/profile.h"
@@ -133,12 +134,12 @@ LockScreenReauthDialogTestHelper::InitForShownDialog() {
 
 void LockScreenReauthDialogTestHelper::ClickCancelButtonOnErrorScreen() {
   ExpectErrorScreenVisible();
-  DialogJS().TapOnPath(kErrorCancelButton);
+  DialogJS().TapOnPathAsync(kErrorCancelButton);
 }
 
 void LockScreenReauthDialogTestHelper::ClickCancelButtonOnSamlScreen() {
   ExpectSigninWebviewVisible();
-  DialogJS().TapOnPath(kSamlCancelButton);
+  DialogJS().TapOnPathAsync(kSamlCancelButton);
 }
 
 void LockScreenReauthDialogTestHelper::ClickChangeIdPButtonOnSamlScreen() {
@@ -367,7 +368,7 @@ void LockScreenReauthDialogTestHelper::ExpectNetworkDialogHidden() {
 }
 
 void LockScreenReauthDialogTestHelper::ClickCloseNetworkButton() {
-  NetworkJS().TapOnPath(kNetworkCancelButton);
+  NetworkJS().TapOnPathAsync(kNetworkCancelButton);
 }
 
 void LockScreenReauthDialogTestHelper::ExpectCaptivePortalDialogVisible() {
@@ -381,6 +382,18 @@ void LockScreenReauthDialogTestHelper::ExpectCaptivePortalDialogHidden() {
 void LockScreenReauthDialogTestHelper::CloseCaptivePortalDialogAndWait() {
   captive_portal_dialog_->Close();
   WaitForCaptivePortalDialogToClose();
+}
+
+void LockScreenReauthDialogTestHelper::ExpectAutoReloadEnabled() {
+  EXPECT_TRUE(main_handler_->GetAutoReloadManager().IsActiveForTesting());
+}
+
+void LockScreenReauthDialogTestHelper::ExpectAutoReloadDisabled() {
+  EXPECT_FALSE(main_handler_->GetAutoReloadManager().IsActiveForTesting());
+}
+
+void LockScreenReauthDialogTestHelper::ResumeAutoReloadTimer() {
+  main_handler_->GetAutoReloadManager().ResumeTimerForTesting();
 }
 
 }  // namespace ash

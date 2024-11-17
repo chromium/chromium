@@ -74,7 +74,8 @@
           "builder": "Mac FYI Retina Debug (AMD)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-mac-amd-retina-dbg/targets"
     }
   },
   "$build/reclient": {

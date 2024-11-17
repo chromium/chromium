@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.searchwidget;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -18,13 +19,13 @@ import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
 import android.app.PendingIntent;
 import android.view.KeyEvent;
-import android.view.View;
 
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -46,10 +47,8 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.app.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -67,12 +66,14 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.searchwidget.SearchActivity.SearchActivityDelegate;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
@@ -173,7 +174,6 @@ public class SearchActivityTest {
     // Needed for CT connection cleanup.
     public @Rule CustomTabActivityTestRule mCustomTabActivityTestRule =
             new CustomTabActivityTestRule();
-    public @Rule JniMocker mJniMocker = new JniMocker();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
@@ -189,7 +189,7 @@ public class SearchActivityTest {
         MockitoAnnotations.initMocks(this);
         doReturn(true).when(mHandler).isVoiceSearchEnabled();
 
-        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
+        AutocompleteControllerJni.setInstanceForTesting(mAutocompleteControllerJniMock);
         doReturn(mAutocompleteController).when(mAutocompleteControllerJniMock).getForProfile(any());
 
         doAnswer(
@@ -200,7 +200,7 @@ public class SearchActivityTest {
                 .when(mAutocompleteController)
                 .addOnSuggestionsReceivedListener(any());
 
-        doReturn(buildDummyAutocompleteMatch(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL))
+        doReturn(buildSimpleAutocompleteMatch(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL))
                 .when(mAutocompleteController)
                 .classify(any());
 
@@ -208,7 +208,12 @@ public class SearchActivityTest {
         SearchActivity.setDelegateForTests(mTestDelegate);
     }
 
-    private AutocompleteMatch buildDummyAutocompleteMatch(String url) {
+    @After
+    public void tearDown() {
+        AutocompleteControllerJni.setInstanceForTesting(null);
+    }
+
+    private AutocompleteMatch buildSimpleAutocompleteMatch(String url) {
         return AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                 .setDisplayText(url)
                 .setDescription(url)
@@ -216,11 +221,11 @@ public class SearchActivityTest {
                 .build();
     }
 
-    private AutocompleteResult buildDummyAutocompleteResult() {
+    private AutocompleteResult buildSimpleAutocompleteResult() {
         return AutocompleteResult.fromCache(
                 List.of(
-                        buildDummyAutocompleteMatch("https://www.google.com"),
-                        buildDummyAutocompleteMatch("https://android.com")),
+                        buildSimpleAutocompleteMatch("https://www.google.com"),
+                        buildSimpleAutocompleteMatch("https://android.com")),
                 null);
     }
 
@@ -262,13 +267,12 @@ public class SearchActivityTest {
                         eq(""),
                         any(/* DSE URL*/ ),
                         eq(PageClassification.ANDROID_SEARCH_WIDGET_VALUE),
-                        eq(""),
-                        /* isOnFocusContext= */ eq(false));
+                        eq(""));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mOnSuggestionsReceivedListener.onSuggestionsReceived(
-                                buildDummyAutocompleteResult(), true));
+                                buildSimpleAutocompleteResult(), true));
         mOmnibox.checkSuggestionsShown();
 
         // Type in anything.
@@ -287,13 +291,12 @@ public class SearchActivityTest {
                         eq(""),
                         any(/* DSE URL*/ ),
                         eq(PageClassification.ANDROID_SEARCH_WIDGET_VALUE),
-                        eq(""),
-                        /* isOnFocusContext= */ eq(false));
+                        eq(""));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         mOnSuggestionsReceivedListener.onSuggestionsReceived(
-                                buildDummyAutocompleteResult(), true));
+                                buildSimpleAutocompleteResult(), true));
         mOmnibox.checkSuggestionsShown();
     }
 
@@ -306,7 +309,7 @@ public class SearchActivityTest {
     @Test
     @SmallTest
     public void testStartsBrowserAfterUrlSubmitted_chromeUrl() throws Exception {
-        doReturn(buildDummyAutocompleteMatch("chrome://flags/"))
+        doReturn(buildSimpleAutocompleteMatch("chrome://flags/"))
                 .when(mAutocompleteController)
                 .classify(any());
         verifyUrlLoads("chrome://flags/");
@@ -369,12 +372,6 @@ public class SearchActivityTest {
         verify(mHandler)
                 .startVoiceRecognition(
                         VoiceRecognitionHandler.VoiceInteractionSource.SEARCH_WIDGET);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return WarmupManager.getInstance().hasSpareWebContents()
-                            || WarmupManager.getInstance()
-                                    .hasSpareTab(ProfileManager.getLastUsedRegularProfile());
-                });
     }
 
     @Test
@@ -466,7 +463,8 @@ public class SearchActivityTest {
                                     });
                 });
 
-        CachedZeroSuggestionsManager.saveToCache(buildDummyAutocompleteResult());
+        CachedZeroSuggestionsManager.saveToCache(
+                PageClassification.ANDROID_SEARCH_WIDGET_VALUE, buildSimpleAutocompleteResult());
 
         // Wait for the activity to load, but don't let it load the native library.
         mTestDelegate.shouldDelayLoadingNative = true;
@@ -515,8 +513,7 @@ public class SearchActivityTest {
                         eq(""),
                         any(/* DSE URL */ ),
                         eq(PageClassification.ANDROID_SEARCH_WIDGET_VALUE),
-                        any(),
-                        /* isOnFocusContext= */ eq(false));
+                        any());
     }
 
     @Test
@@ -533,41 +530,37 @@ public class SearchActivityTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarCoordinator.onUrlChangedForTesting();
-                    Assert.assertTrue(urlBar.getText().toString().isEmpty());
+                    assertTrue(urlBar.getText().toString().isEmpty());
                 });
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     locationBarCoordinator.clearOmniboxFocus();
                     locationBarCoordinator.onUrlChangedForTesting();
-                    Assert.assertTrue(urlBar.getText().toString().isEmpty());
+                    assertTrue(urlBar.getText().toString().isEmpty());
                 });
     }
 
     @Test
-    @SmallTest
-    @DisabledTest(message = "crbug.com/346528506")
-    public void testupdateAnchorViewLayout() {
-        SearchActivity searchActivity = startSearchActivity();
-        View anchorView = searchActivity.findViewById(R.id.toolbar);
-        var layoutParams = anchorView.getLayoutParams();
-
-        int focusedHeight =
-                searchActivity
-                        .getResources()
-                        .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow_focused);
-        int expectedHeight =
-                searchActivity
-                                .getResources()
-                                .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                        + searchActivity
-                                .getResources()
-                                .getDimensionPixelSize(R.dimen.toolbar_url_focus_height_increase);
-        int expectedBottomPadding = 0;
-
-        Assert.assertEquals(expectedHeight, focusedHeight);
-        Assert.assertEquals(expectedHeight, layoutParams.height);
-        Assert.assertEquals(expectedBottomPadding, anchorView.getPaddingBottom());
+    @MediumTest
+    public void testLaunchIncognitoSearchActivity() {
+        mActivityTestRule.startMainActivityOnBlankPage();
+        SearchActivity searchActivity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SearchActivity.class,
+                        () -> {
+                            SearchActivityClientImpl client =
+                                    new SearchActivityClientImpl(
+                                            mActivityTestRule.getActivity(), IntentOrigin.HUB);
+                            client.requestOmniboxForResult(
+                                    client.newIntentBuilder()
+                                            .setPageUrl(new GURL(UrlConstants.NTP_NON_NATIVE_URL))
+                                            .setIncognito(true)
+                                            .setResolutionType(ResolutionType.SEND_TO_CALLER)
+                                            .build());
+                        });
+        assertTrue(searchActivity.getProfileSupplierForTesting().get().isOffTheRecord());
     }
 
     private SearchActivity startSearchActivity() {
@@ -595,13 +588,13 @@ public class SearchActivityTest {
         try {
             SearchWidgetProvider.createIntent(instrumentation.getContext(), isVoiceSearch).send();
         } catch (PendingIntent.CanceledException e) {
-            Assert.assertTrue("Intent canceled", false);
+            assertTrue("Intent canceled", false);
         }
         Activity searchActivity =
                 instrumentation.waitForMonitorWithTimeout(
                         searchMonitor, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
         Assert.assertNotNull("Activity didn't start", searchActivity);
-        Assert.assertTrue("Wrong activity started", searchActivity instanceof SearchActivity);
+        assertTrue("Wrong activity started", searchActivity instanceof SearchActivity);
         instrumentation.removeMonitor(searchMonitor);
         mOmnibox = new OmniboxTestUtils(searchActivity);
         return (SearchActivity) searchActivity;

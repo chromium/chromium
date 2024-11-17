@@ -16,7 +16,7 @@ class SupervisedUserServiceObserver {
   virtual void OnCustodianInfoChanged() {}
 
  protected:
-  virtual ~SupervisedUserServiceObserver() {}
+  virtual ~SupervisedUserServiceObserver() = default;
 };
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_SUPERVISED_USER_SERVICE_OBSERVER_H_

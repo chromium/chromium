@@ -56,7 +56,7 @@ let autoScrollActive = false;  // True iff autoscroll is currently scrolling.
 let autoScrollTimer = null;    // Timer for resetting |autoScrollActive|.
 
 function needsScrollDown() {
-  const checkbox = document.getElementById('enable-autoscroll');
+  const checkbox = document.getElementById('EnableAutoscroll');
   return autoScrollActive || (isScrolledDown() && checkbox && checkbox.checked);
 }
 
@@ -114,8 +114,7 @@ function getUrlHashParam(key) {
 // is explicit set by the user that PII values can be displayed.
 function nodeToDomNode(node, parentContainsPII = false) {
   if (node.type === 'text') {
-    const displayPIIEnabled =
-        document.getElementById('display-pii-on-submission').checked;
+    const displayPIIEnabled = document.getElementById('DisplayPii').checked;
     const canDisplayNodeValue = !parentContainsPII || displayPIIEnabled;
     return document.createTextNode(
         canDisplayNodeValue ? node.value : 'PII stripped');
@@ -183,9 +182,9 @@ function setUpStopRecording() {
   let countdown = undefined;
 
   const currentlyRecordingChkBox =
-      document.getElementById('currently-recording');
+      document.getElementById('CurrentlyRecording');
   const autoStopRecordingChkBox =
-      document.getElementById('automatically-stop-recording');
+      document.getElementById('AutomaticallyStopRecording');
 
   // Formats a number of seconds into a [M]M:SS format.
   const secondsToString = (seconds) => {
@@ -201,7 +200,7 @@ function setUpStopRecording() {
     document.getElementById('stop-recording-time').innerText =
         secondsToString(remainingSeconds);
 
-    if (remainingSeconds == 0) {
+    if (remainingSeconds === 0) {
       recordLogs = false;
       currentlyRecordingChkBox.checked = false;
       resetTimeout();
@@ -251,7 +250,8 @@ function setUpAutofillInternals() {
       captured when all autofill-internals pages are closed.';
   document.getElementById('logging-note-incognito').innerText =
       'Captured autofill logs are not available in Incognito.';
-  setUpLogDisplayConfig();
+  setUpScopeCheckboxes();
+  setUpSettingCheckboxe();
   setUpMarker();
   setUpSubmittedFormsJSONDataDownload();
   setUpDownload('autofill');
@@ -267,6 +267,7 @@ function setUpPasswordManagerInternals() {
       no longer captured when all password-manager-internals pages are closed.';
   document.getElementById('logging-note-incognito').innerText =
       'Captured password manager logs are not available in Incognito.';
+  setUpSettingCheckboxe();
   setUpMarker();
   setUpDownload('password-manager');
   setUpStopRecording();
@@ -386,7 +387,7 @@ function getSubmittedFormTopLevelData(form) {
     formTopLevelData[childTableElement.innerText] =
         childTableElement.nextSibling.innerText;
     // If all interested top level entries were found, we can early return.
-    if (Object.keys(formTopLevelData).length == formLevelDataOfInterest.size) {
+    if (Object.keys(formTopLevelData).length === formLevelDataOfInterest.size) {
       break;
     }
   }
@@ -437,7 +438,7 @@ function getSubmittedFormFieldsData(form) {
       // It is expected two children, in the example above that would be:
       // <td>Label: </td>
       // <td>First name</td>
-      if (row.children.length != 2) {
+      if (row.children.length !== 2) {
         continue;
       }
 
@@ -500,50 +501,61 @@ function setUpSubmittedFormsJSONDataDownload() {
   // </if>
 }
 
-// Sets up the top bar with checkboxes to show/hide the different sorts of log
-// event types, a checkbox to enable/disable autoscroll.
-function setUpLogDisplayConfig() {
-  const FAST_CHECKOUT = 'FastCheckout';
-  const SCOPES = [
-    'Context',
-    'Parsing',
-    'AbortParsing',
-    'Filling',
-    'Submission',
-    'AutofillServer',
-    'Metrics',
-    'AddressProfileFormImport',
-    'WebsiteModifiedFieldValue',
-    FAST_CHECKOUT,
-  ];
-  const DEFAULT_UNCHECKED_SCOPES = new Set([
-    FAST_CHECKOUT,
-  ]);
-  const logDiv = document.getElementById('log-entries');
-  const autoScrollInput = document.getElementById('enable-autoscroll');
-  const checkboxPlaceholder = document.getElementById('checkbox-placeholder');
-
-  // Initialize the auto-scroll checkbox.
-  autoScrollInput.checked = getUrlHashParam('autoscroll') !== 'n';
-  autoScrollInput.addEventListener('change', (event) => {
-    setUrlHashParam('autoscroll', autoScrollInput.checked ? 'y' : 'n');
+// Creates a checkbox for a given JSON struct `info`. Given
+//   {id: "Foo", label: "Bar", uncheckedByDefault: someBool }
+// this creates
+//   <label><input type=checkbox id="Foo"> Bar</label>
+// and returns the <input> element.
+//
+// Whether the checkbox is checked depends on the current URL's hash param or,
+// as a fallback, `info.uncheckedByDefault`.
+//
+// `info.id` is mandatory.
+// `info.label` defaults to `info.id`.
+// `info.uncheckedByDefault` defaults to false.
+function createCheckbox(info) {
+  const input = document.createElement('input');
+  input.setAttribute('type', 'checkbox');
+  input.setAttribute('id', info.id);
+  input.checked = info.uncheckedByDefault ? getUrlHashParam(info.id) === 'y' :
+                                            getUrlHashParam(info.id) !== 'n';
+  input.addEventListener('change', (event) => {
+    setUrlHashParam(info.id, input.checked ? 'y' : 'n');
   });
+  const label = document.createElement('label');
+  label.appendChild(input);
+  label.appendChild(document.createTextNode(' ' + (info.label || info.id)));
+  return input;
+}
+
+// Sets up the top bar with checkboxes to show/hide the different sorts of log
+// event types.
+function setUpScopeCheckboxes() {
+  const logDiv = document.getElementById('log-entries');
+  const scopesPlaceholder =
+      document.getElementById('scopes-checkbox-placeholder');
 
   // Create and initialize filter checkboxes: remove/add hide-<Scope> class to
   // |logDiv| when (un)checked.
+  const SCOPES = [
+    {id: 'Context'},
+    {id: 'Parsing'},
+    {id: 'AbortParsing'},
+    {id: 'Filling'},
+    {id: 'Submission'},
+    {id: 'AutofillServer'},
+    {id: 'Metrics'},
+    {id: 'AddressProfileFormImport'},
+    {id: 'WebsiteModifiedFieldValue'},
+    {id: 'FastCheckout', uncheckedByDefault: true},
+    {id: 'TouchToFill'},
+    {id: 'AutofillAi'},
+  ];
   for (const scope of SCOPES) {
-    const input = document.createElement('input');
-    input.setAttribute('type', 'checkbox');
-    input.setAttribute('id', `checkbox-${scope}`);
-    const urlHashParam = getUrlHashParam(scope);
-    if (DEFAULT_UNCHECKED_SCOPES.has(scope) && urlHashParam === undefined) {
-      input.checked = false;
-    } else {
-      input.checked = getUrlHashParam(scope) !== 'n';
-    }
+    const input = createCheckbox(scope);
+    scopesPlaceholder.appendChild(input.parentElement);
     function changeHandler() {
-      setUrlHashParam(scope, input.checked ? 'y' : 'n');
-      const cls = `hide-${scope}`;
+      const cls = `hide-${scope.id}`;
       const scrollAfterInsert = needsScrollDown();
       if (!input.checked) {
         logDiv.classList.add(cls);
@@ -556,10 +568,33 @@ function setUpLogDisplayConfig() {
     }
     input.addEventListener('change', changeHandler);
     changeHandler();  // Call once to initialize |logDiv|'s classes.
-    const label = document.createElement('label');
-    label.appendChild(input);
-    label.appendChild(document.createTextNode(' ' + scope));
-    checkboxPlaceholder.appendChild(label);
+  }
+}
+
+// Sets up another bar of checkboxes to configure the page's behavior.
+function setUpSettingCheckboxe() {
+  const logDiv = document.getElementById('log-entries');
+  const settingsPlaceholder =
+      document.getElementById('settings-checkbox-placeholder');
+
+  // Create and initialize the settings checkboxes.
+  const SETTINGS = [
+    {id: 'EnableAutoscroll', label: 'Scroll down'},
+    {id: 'CurrentlyRecording', label: 'Record new events'},
+    {id: 'AutomaticallyStopRecording', label: 'Stop recording in '},
+    {id: 'DisplayPii', label: 'Display PII', uncheckedByDefault: true},
+  ];
+  for (const setting of SETTINGS) {
+    const input = createCheckbox(setting);
+    settingsPlaceholder.appendChild(input.parentElement);
+  }
+  {
+    // Add the timestamp for AutomaticallyStopRecording.
+    const span = document.createElement('span');
+    span.id = 'stop-recording-time';
+    span.innerText = 'M:SS';
+    document.getElementById('AutomaticallyStopRecording')
+        .parentElement.appendChild(span);
   }
 }
 

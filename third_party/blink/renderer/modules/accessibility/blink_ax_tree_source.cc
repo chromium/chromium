@@ -6,13 +6,8 @@
 
 #include <stddef.h>
 
-#include <algorithm>
-#include <set>
-
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html/html_link_element.h"
@@ -22,20 +17,14 @@
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_selection.h"
-#include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
-#include "ui/accessibility/ax_common.h"
-#include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_tree_id.h"
-#include "ui/gfx/geometry/transform.h"
-#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
 BlinkAXTreeSource::BlinkAXTreeSource(AXObjectCacheImpl& ax_object_cache,
-                                     bool truncate_inline_textboxes)
-    : ax_object_cache_(ax_object_cache),
-      truncate_inline_textboxes_(truncate_inline_textboxes) {}
+                                     bool is_snapshot)
+    : ax_object_cache_(ax_object_cache), is_snapshot_(is_snapshot) {}
 
 BlinkAXTreeSource::~BlinkAXTreeSource() = default;
 
@@ -46,8 +35,7 @@ static ax::mojom::blink::TextAffinity ToAXAffinity(TextAffinity affinity) {
     case TextAffinity::kDownstream:
       return ax::mojom::blink::TextAffinity::kDownstream;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ax::mojom::blink::TextAffinity::kDownstream;
+      NOTREACHED();
   }
 }
 
@@ -233,7 +221,7 @@ int32_t BlinkAXTreeSource::GetId(const AXObject* node) const {
 }
 
 size_t BlinkAXTreeSource::GetChildCount(const AXObject* node) const {
-  if (truncate_inline_textboxes_ &&
+  if (ShouldTruncateInlineTextBoxes() &&
       ui::CanHaveInlineTextBoxChildren(node->RoleValue())) {
     return 0;
   }
@@ -241,7 +229,7 @@ size_t BlinkAXTreeSource::GetChildCount(const AXObject* node) const {
 }
 
 AXObject* BlinkAXTreeSource::ChildAt(const AXObject* node, size_t index) const {
-  if (truncate_inline_textboxes_) {
+  if (ShouldTruncateInlineTextBoxes()) {
     CHECK(!ui::CanHaveInlineTextBoxChildren(node->RoleValue()));
   }
   auto* child = node->ChildAtIncludingIgnored(static_cast<int>(index));
@@ -309,14 +297,10 @@ void BlinkAXTreeSource::SerializeNode(const AXObject* src,
 #endif
 
   if (!src || src->IsDetached() || !src->IsIncludedInTree()) {
-    dst->AddState(ax::mojom::blink::State::kIgnored);
-    dst->id = -1;
-    dst->role = ax::mojom::blink::Role::kUnknown;
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
-  src->Serialize(dst, ax_object_cache_->GetAXMode());
+  src->Serialize(dst, ax_object_cache_->GetAXMode(), is_snapshot_);
 }
 
 void BlinkAXTreeSource::Trace(Visitor* visitor) const {

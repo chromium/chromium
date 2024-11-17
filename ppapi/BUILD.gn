@@ -15,6 +15,10 @@ if (is_mac) {
 
 assert(enable_ppapi)
 
+# PPAPI is not supported (e.g. there is no effective sandbox) and must not be
+# shipped for Chrome on Windows.
+assert(!(is_win && is_official_build))
+
 # Test files shared between several targets below.
 #
 # TODO(brettw) it seems like it should be possible to factor this in a source

@@ -1,5 +1,0 @@
-specific_include_rules = {
-  "desktop_window_tree_host_lacros.*": [
-    "+chromeos/ui/base",
-  ],
-}

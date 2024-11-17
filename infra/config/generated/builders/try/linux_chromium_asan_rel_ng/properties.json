@@ -80,7 +80,8 @@
           "builder": "Linux ASan LSan Tests (1)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux_chromium_asan_rel_ng/targets"
     }
   },
   "$build/flakiness": {
@@ -94,11 +95,15 @@
   },
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "remote-link"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
+    "output_local_strategy": "minimum",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": -1
   },

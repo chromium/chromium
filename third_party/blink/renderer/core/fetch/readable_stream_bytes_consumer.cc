@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
 
 #include <string.h>
@@ -83,10 +78,8 @@ ReadableStreamBytesConsumer::ReadableStreamBytesConsumer(
 ReadableStreamBytesConsumer::~ReadableStreamBytesConsumer() {}
 
 BytesConsumer::Result ReadableStreamBytesConsumer::BeginRead(
-    const char** buffer,
-    size_t* available) {
-  *buffer = nullptr;
-  *available = 0;
+    base::span<const char>& buffer) {
+  buffer = {};
   if (state_ == PublicState::kErrored)
     return Result::kError;
   if (state_ == PublicState::kClosed)
@@ -102,9 +95,8 @@ BytesConsumer::Result ReadableStreamBytesConsumer::BeginRead(
     }
 
     DCHECK_LE(pending_offset_, pending_buffer_->length());
-    *buffer = reinterpret_cast<const char*>(pending_buffer_->Data()) +
-              pending_offset_;
-    *available = pending_buffer_->length() - pending_offset_;
+    buffer =
+        base::as_chars(pending_buffer_->ByteSpan().subspan(pending_offset_));
     return Result::kOk;
   }
   if (!is_reading_) {

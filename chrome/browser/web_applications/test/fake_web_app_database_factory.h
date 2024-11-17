@@ -16,8 +16,11 @@
 namespace syncer {
 class DataTypeStore;
 }  // namespace syncer
-
 namespace web_app {
+
+namespace proto {
+class DatabaseMetadata;
+}  // namespace proto
 
 class WebAppProto;
 
@@ -33,7 +36,9 @@ class FakeWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
 
   // AbstractWebAppDatabaseFactory interface implementation.
   syncer::OnceDataTypeStoreFactory GetStoreFactory() override;
+  bool IsSyncingApps() override;
 
+  proto::DatabaseMetadata ReadMetadata();
   Registry ReadRegistry();
 
   std::set<webapps::AppId> ReadAllAppIds();
@@ -41,8 +46,13 @@ class FakeWebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
   void WriteProtos(const std::vector<std::unique_ptr<WebAppProto>>& protos);
   void WriteRegistry(const Registry& registry);
 
+  void set_is_syncing_apps(bool is_syncing_apps) {
+    is_syncing_apps_ = is_syncing_apps;
+  }
+
  private:
   std::unique_ptr<syncer::DataTypeStore> store_;
+  bool is_syncing_apps_ = true;
 };
 
 }  // namespace web_app

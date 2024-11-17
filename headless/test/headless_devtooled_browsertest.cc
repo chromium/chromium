@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check_deref.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -31,42 +32,58 @@ void HeadlessDevTooledBrowserTest::RunTest() {
   web_contents_builder.SetEnableBeginFrameControl(GetEnableBeginFrameControl());
   CustomizeHeadlessWebContents(web_contents_builder);
   web_contents_ = web_contents_builder.Build();
-  web_contents_->AddObserver(this);
+  Observe(HeadlessWebContentsImpl::From(web_contents_)->web_contents());
 
   PreRunAsynchronousTest();
   RunAsynchronousTest();
   PostRunAsynchronousTest();
 
   devtools_client_.DetachClient();
-  web_contents_->RemoveObserver(this);
-  web_contents_->Close();
-  web_contents_ = nullptr;
-
-  browser_devtools_client_.DetachClient();
-  browser_context_->Close();
-  browser_context_ = nullptr;
+  Observe(nullptr);
+  {
+    // Keep raw_ptr<> happy and clear it before WC dies.
+    HeadlessWebContents& wc = *web_contents_;
+    web_contents_ = nullptr;
+    wc.Close();
+  }
+  {
+    HeadlessBrowserContext& bc = *browser_context_;
+    browser_context_ = nullptr;
+    browser_devtools_client_.DetachClient();
+    bc.Close();
+  }
 
   // Let the tasks that might have beein scheduled during web contents
   // being closed run (see https://crbug.com/1036627 for details).
   base::RunLoop().RunUntilIdle();
 }
 
-void HeadlessDevTooledBrowserTest::DevToolsTargetReady() {
+void HeadlessDevTooledBrowserTest::RenderViewReady() {
+  if (had_render_view_ready_) {
+    return;
+  }
+  had_render_view_ready_ = true;
+
+  CHECK(HeadlessWebContentsImpl::From(web_contents_)
+            ->web_contents()
+            ->GetPrimaryMainFrame()
+            ->IsRenderFrameLive());
+
+  DevToolsTargetReady();
+
   devtools_client_.AttachToWebContents(
       HeadlessWebContentsImpl::From(web_contents_)->web_contents());
 
   RunDevTooledTest();
 }
 
-void HeadlessDevTooledBrowserTest::RenderProcessExited(
-    base::TerminationStatus status,
-    int exit_code) {
+void HeadlessDevTooledBrowserTest::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
   if (status == base::TERMINATION_STATUS_NORMAL_TERMINATION)
     return;
 
   FinishAsynchronousTest();
-  FAIL() << "Abnormal renderer termination "
-         << "(status=" << status << ", exit_code=" << exit_code << ")";
+  FAIL() << "Abnormal renderer termination (status=" << status << ")";
 }
 
 bool HeadlessDevTooledBrowserTest::GetEnableBeginFrameControl() {

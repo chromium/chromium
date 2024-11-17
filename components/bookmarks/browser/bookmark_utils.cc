@@ -81,7 +81,7 @@ bool MoreRecentlyModified(const BookmarkNode* n1, const BookmarkNode* n2) {
   return n1->date_folder_modified() > n2->date_folder_modified();
 }
 
-// Returns true if |text| contains each string in |words|. This is used when
+// Returns true if `text` contains each string in `words`. This is used when
 // searching for bookmarks.
 bool DoesBookmarkTextContainWords(const std::u16string& text,
                                   const std::vector<std::u16string>& words) {
@@ -116,7 +116,7 @@ bool HasSelectedAncestor(
   return HasSelectedAncestor(model, selected_nodes, node->parent());
 }
 
-// Recursively searches for a node satisfying the functor |pred| . Returns
+// Recursively searches for a node satisfying the functor `pred` . Returns
 // nullptr if not found.
 template <typename Predicate>
 const BookmarkNode* FindNode(const BookmarkNode* node, Predicate pred) {
@@ -220,8 +220,8 @@ bool HasUserCreatedBookmarks(BookmarkModel* model) {
 
 }  // namespace
 
-QueryFields::QueryFields() {}
-QueryFields::~QueryFields() {}
+QueryFields::QueryFields() = default;
+QueryFields::~QueryFields() = default;
 
 VectorIterator::VectorIterator(
     std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>* nodes)
@@ -245,8 +245,7 @@ void CloneBookmarkNode(BookmarkModel* model,
                        size_t index_to_add_at,
                        bool reset_node_times) {
   if (!parent->is_folder() || !model) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   for (size_t i = 0; i < elements.size(); ++i) {
     CloneBookmarkNodeImpl(model, elements[i], parent, index_to_add_at + i,
@@ -282,8 +281,8 @@ void CopyToClipboard(
   }
 }
 
-// Updates |title| such that |url| and |title| pair are unique among the
-// children of |parent|.
+// Updates `title` such that `url` and `title` pair are unique among the
+// children of `parent`.
 void MakeTitleUnique(const BookmarkModel* model,
                      const BookmarkNode* parent,
                      const GURL& url,
@@ -311,7 +310,7 @@ void MakeTitleUnique(const BookmarkModel* model,
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PasteFromClipboard(BookmarkModel* model,
@@ -477,7 +476,7 @@ std::vector<std::u16string> ParseBookmarkQuery(
   return query_words;
 }
 
-// Returns true if |node|s title or url contains the strings in |words|.
+// Returns true if `node`s title or url contains the strings in `words`.
 bool DoesBookmarkContainWords(const std::u16string& title,
                               const GURL& url,
                               const std::vector<std::u16string>& words) {
@@ -595,17 +594,6 @@ std::u16string CleanUpUrlForMatching(
 
 std::u16string CleanUpTitleForMatching(const std::u16string& title) {
   return base::i18n::ToLower(title.substr(0u, kCleanedUpTitleMaxLength));
-}
-
-bool CanAllBeEditedByUser(
-    BookmarkClient* client,
-    const std::vector<raw_ptr<const BookmarkNode, VectorExperimental>>& nodes) {
-  for (size_t i = 0; i < nodes.size(); ++i) {
-    if (client->IsNodeManaged(nodes[i])) {
-      return false;
-    }
-  }
-  return true;
 }
 
 bool IsBookmarkedByUser(BookmarkModel* model, const GURL& url) {

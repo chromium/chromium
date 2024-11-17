@@ -48,6 +48,68 @@ void fct() {
   // std::array<funcHasName, 4> funcNamedBufferButNotInline;
   std::array<funcHasName, 4> funcNamedBufferButNotInline;
 
+  // Expected rewrite:
+  // struct FuncBuffer2 {
+  //   int val;
+  // };
+  // static const auto func_buffer2 =
+  //     std::to_array<FuncBuffer2>({{1}, {2}, {3}, {4}});
+  struct FuncBuffer2 {
+    int val;
+  };
+  static const auto func_buffer2 =
+      std::to_array<FuncBuffer2>({{1}, {2}, {3}, {4}});
+
+  // Expected rewrite
+  // struct FuncBufferWithComment {
+  //   int val; // Comment
+  // };
+  // std::array<FuncBuffer, 4> funcBufferWithComment;
+  struct FuncBufferWithComment {
+    int val;  // Comment
+  };
+  std::array<FuncBufferWithComment, 4> funcBufferWithComment;
+
+  // Classes can also be used in a similar way.
+  // Expected rewrite
+  // class UnnamedClassBuffer {
+  //  public:
+  //   int val;
+  // };
+  // std::array<UnnamedClassBuffer, 4> unnamedClassBuffer;
+  class UnnamedClassBuffer {
+   public:
+    int val;
+  };
+  std::array<UnnamedClassBuffer, 4> unnamedClassBuffer;
+
+  // Unions can also be used in a similar way.
+  // Expected rewrite
+  // union UnnamedUnionBuffer {
+  //   int val;
+  //   float fval;
+  // };
+  // std::array<UnnamedUnionBuffer, 4> unnamedUnionBuffer;
+  union UnnamedUnionBuffer {
+    int val;
+    float fval;
+  };
+  std::array<UnnamedUnionBuffer, 4> unnamedUnionBuffer;
+
+  // Expected rewrite
+  // struct NestedStructBuffer {
+  //   struct {
+  //     int val;
+  //   } inner;
+  // };
+  // std::array<NestedStructBuffer, 3> nestedStructBuffer;
+  struct NestedStructBuffer {
+    struct {
+      int val;
+    } inner;
+  };
+  std::array<NestedStructBuffer, 4> nestedStructBuffer;
+
   // Buffer accesses to trigger spanification.
   func_buffer[2].val = 3;
   globalBuffer[2].val = 3;
@@ -55,4 +117,9 @@ void fct() {
   globalNamedBuffer[2].val = 3;
   globalNamedBufferButNotInline[2].val = 3;
   funcNamedBufferButNotInline[3].val = 3;
+  (void)func_buffer2[2].val;
+  funcBufferWithComment[2].val = 3;
+  unnamedClassBuffer[2].val = 3;
+  unnamedUnionBuffer[2].val = 3;
+  nestedStructBuffer[2].inner.val = 3;
 }

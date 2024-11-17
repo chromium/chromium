@@ -719,7 +719,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
 
   ASSERT_EQ(credential_store_.credentials.count, 1u);
 
-  // Don't add passkey with invalid URL to store.
+  // Add passkey with invalid URL to store.
   // No favicon should be fetched for invalid URLs.
   EXPECT_CALL(large_icon_service_,
               GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
@@ -729,7 +729,20 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
   test_passkey_model_->AddNewPasskeyForTesting(invalid_passkey);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 1u);
+  ASSERT_EQ(credential_store_.credentials.count, 2u);
+
+  // Don't add hidden passkeys to the store.
+  // No favicon should be fetched for hidden passkeys.
+  EXPECT_CALL(large_icon_service_,
+              GetLargeIconRawBitmapOrFallbackStyleForPageUrl(_, _, _, _, _))
+      .Times(0);
+  sync_pb::WebauthnCredentialSpecifics hidden_passkey = CreatePasskey(
+      "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
+  hidden_passkey.set_hidden(true);
+  test_passkey_model_->AddNewPasskeyForTesting(hidden_passkey);
+  task_environment_.RunUntilIdle();
+
+  ASSERT_EQ(credential_store_.credentials.count, 2u);
 
   // Add 2nd passkey with valid URL to store.
   EXPECT_CALL(large_icon_service_,
@@ -740,7 +753,7 @@ TEST_F(CredentialProviderServiceTest, AddPasskeys) {
   test_passkey_model_->AddNewPasskeyForTesting(valid_passkey2);
   task_environment_.RunUntilIdle();
 
-  ASSERT_EQ(credential_store_.credentials.count, 2u);
+  ASSERT_EQ(credential_store_.credentials.count, 3u);
 }
 
 TEST_F(CredentialProviderServiceTest, DeletePasskey) {
@@ -773,6 +786,10 @@ TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
   // Add passkey with valid URL to store.
   sync_pb::WebauthnCredentialSpecifics passkey = CreatePasskey(
       "g.com", {1, 2, 3, 4}, "passkey_username", "passkey_display_name");
+  const base::Time timestamp =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(10));
+  passkey.set_last_used_time_windows_epoch_micros(
+      timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds() - 1);
   test_passkey_model_->AddNewPasskeyForTesting(passkey);
   task_environment_.RunUntilIdle();
 
@@ -785,6 +802,10 @@ TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
           .user_display_name = "new_passkey_display_name",
       },
       /*updated_by_user=*/true);
+
+  test_passkey_model_->UpdatePasskeyTimestamp(passkey.credential_id(),
+                                              timestamp);
+
   task_environment_.RunUntilIdle();
 
   ASSERT_EQ(credential_store_.credentials.count, 1u);
@@ -792,6 +813,8 @@ TEST_F(CredentialProviderServiceTest, UpdatePasskey) {
               @"new_passkey_username");
   EXPECT_NSEQ(credential_store_.credentials[0].userDisplayName,
               @"new_passkey_display_name");
+  ASSERT_EQ(credential_store_.credentials[0].lastUsedTime,
+            timestamp.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
 }  // namespace

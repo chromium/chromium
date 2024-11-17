@@ -118,7 +118,8 @@ MediaItemUIFooterView::MediaItemUIFooterView(
 MediaItemUIFooterView::~MediaItemUIFooterView() = default;
 
 void MediaItemUIFooterView::OnMediaItemUIDeviceSelectorUpdated(
-    const std::map<int, DeviceEntryUI*>& device_entries_map) {
+    const std::map<int, raw_ptr<DeviceEntryUI, CtnExperimental>>&
+        device_entries_map) {
   RemoveAllChildViews();
 
   for (const auto& entry : device_entries_map) {

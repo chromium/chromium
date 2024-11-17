@@ -17,8 +17,10 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/extension_app_utils.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -84,8 +86,7 @@ extensions::LaunchType ConvertLaunchTypeCommandToExtensionLaunchType(
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
       [[fallthrough]];
     default:
-      NOTREACHED_IN_MIGRATION();
-      return extensions::LAUNCH_TYPE_INVALID;
+      NOTREACHED();
   }
 }
 
@@ -97,6 +98,14 @@ std::string GetAppId(const ash::ShelfID& shelf_id) {
     return arc_shelf_id.app_id();
 
   return shelf_id.app_id;
+}
+
+void MaybeCloseFullRestoreServiceNotification(Profile* profile) {
+  if (auto* full_restore_service =
+          ash::full_restore::FullRestoreServiceFactory::GetForProfile(
+              profile)) {
+    full_restore_service->MaybeCloseNotification();
+  }
 }
 
 }  // namespace
@@ -169,8 +178,7 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
   switch (command_id) {
     case ash::SHOW_APP_INFO:
       ShowAppInfo();
-      ash::full_restore::FullRestoreService::MaybeCloseNotification(
-          controller()->profile());
+      MaybeCloseFullRestoreServiceNotification(controller()->profile());
       break;
 
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
@@ -185,8 +193,7 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
             /*incognito=*/false,
             /*should_trigger_session_restore=*/false);
       }
-      ash::full_restore::FullRestoreService::MaybeCloseNotification(
-          controller()->profile());
+      MaybeCloseFullRestoreServiceNotification(controller()->profile());
       break;
 
     case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
@@ -198,8 +205,7 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
             /*incognito=*/true,
             /*should_trigger_session_restore=*/false);
       }
-      ash::full_restore::FullRestoreService::MaybeCloseNotification(
-          controller()->profile());
+      MaybeCloseFullRestoreServiceNotification(controller()->profile());
       break;
 
     case ash::SHUTDOWN_GUEST_OS:
@@ -218,7 +224,8 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
 
     case ash::SHUTDOWN_BRUSCHETTA_OS:
       if (item().id.app_id == guest_os::kTerminalSystemAppId) {
-        bruschetta::BruschettaService::GetForProfile(controller()->profile())
+        bruschetta::BruschettaServiceFactory::GetForProfile(
+            controller()->profile())
             ->StopRunningVms();
       } else {
         LOG(ERROR) << "App " << item().id.app_id
@@ -237,8 +244,7 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
 
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case ash::CROSTINI_USE_LOW_DENSITY:
     case ash::CROSTINI_USE_HIGH_DENSITY: {
@@ -255,8 +261,7 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
     case ash::SETTINGS:
       if (item().id.app_id == guest_os::kTerminalSystemAppId) {
         guest_os::LaunchTerminalSettings(controller()->profile(), display_id());
-        ash::full_restore::FullRestoreService::MaybeCloseNotification(
-            controller()->profile());
+        MaybeCloseFullRestoreServiceNotification(controller()->profile());
       }
       return;
 
@@ -593,8 +598,7 @@ void AppServiceShelfContextMenu::SetExtensionLaunchType(int command_id) {
     case ash::USE_LAUNCH_TYPE_TABBED_WINDOW:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_FULLSCREEN:
     case ash::DEPRECATED_USE_LAUNCH_TYPE_PINNED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     default:
       return;
   }

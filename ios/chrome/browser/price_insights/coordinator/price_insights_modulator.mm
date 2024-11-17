@@ -82,16 +82,15 @@ NSDate* getNSDateFromString(std::string date) {
 - (void)start {
   PushNotificationService* pushNotificationService =
       GetApplicationContext()->GetPushNotificationService();
-  self.shoppingService = commerce::ShoppingServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  self.shoppingService = commerce::ShoppingServiceFactory::GetForProfile(
+      self.browser->GetProfile());
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      ios::BookmarkModelFactory::GetForProfile(self.browser->GetProfile());
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
       std::make_unique<image_fetcher::ImageDataFetcher>(
-          self.browser->GetBrowserState()->GetSharedURLLoaderFactory());
+          self.browser->GetProfile()->GetSharedURLLoaderFactory());
   self.mediator = [[PriceNotificationsPriceTrackingMediator alloc]
       initWithShoppingService:self.shoppingService
                 bookmarkModel:bookmarkModel

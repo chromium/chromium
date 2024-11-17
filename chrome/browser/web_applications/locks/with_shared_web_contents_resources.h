@@ -20,17 +20,22 @@ class WebAppLockManager;
 // `WebAppCommandManager`. A lock class that needs access to
 // `content::WebContents` can inherit from this class.
 //
-// Note: Accessing a lock will CHECK-fail if the WebAppProvider system has
-// shutdown (or the profile has shut down).
+// Note: Accessing resources before the lock is granted or after the
+// WebAppProvider system has shutdown (or the profile has shut down) will
+// CHECK-fail.
 class WithSharedWebContentsResources {
  public:
   ~WithSharedWebContentsResources();
 
+  // Will CHECK-fail if accessed before the lock is granted.
   content::WebContents& shared_web_contents() const;
 
  protected:
-  WithSharedWebContentsResources(base::WeakPtr<WebAppLockManager> lock_manager,
-                                 content::WebContents& shared_web_contents);
+  WithSharedWebContentsResources();
+
+  void GrantWithSharedWebContentsResources(
+      WebAppLockManager& lock_manager,
+      content::WebContents& shared_web_contents);
 
  private:
   base::WeakPtr<WebAppLockManager> lock_manager_;

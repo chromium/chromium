@@ -17,9 +17,6 @@ class TabSwitcherIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBa
     /** A manager which allows to pass the re-auth view to the tab switcher. */
     private final @NonNull TabSwitcherCustomViewManager mTabSwitcherCustomViewManager;
 
-    /** The {@link Context} to use for fetching Incognito re-auth resources. */
-    private final @NonNull Context mContext;
-
     /** A runnable to handle back presses which shows the regular overview mode. */
     private final @NonNull Runnable mBackPressRunnable;
 
@@ -44,7 +41,6 @@ class TabSwitcherIncognitoReauthCoordinator extends IncognitoReauthCoordinatorBa
             @NonNull Runnable backPressRunnable,
             @NonNull TabSwitcherCustomViewManager tabSwitcherCustomViewManager) {
         super(context, incognitoReauthManager, incognitoReauthCallback, seeOtherTabsRunnable);
-        mContext = context;
         mTabSwitcherCustomViewManager = tabSwitcherCustomViewManager;
         mBackPressRunnable = backPressRunnable;
     }

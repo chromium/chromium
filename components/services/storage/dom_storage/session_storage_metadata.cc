@@ -84,9 +84,9 @@ SessionStorageMetadata::MapData::MapData(int64_t map_number,
       storage_key_(std::move(storage_key)) {}
 SessionStorageMetadata::MapData::~MapData() = default;
 
-SessionStorageMetadata::SessionStorageMetadata() {}
+SessionStorageMetadata::SessionStorageMetadata() = default;
 
-SessionStorageMetadata::~SessionStorageMetadata() {}
+SessionStorageMetadata::~SessionStorageMetadata() = default;
 
 std::vector<AsyncDomStorageDatabase::BatchDatabaseTask>
 SessionStorageMetadata::SetupNewDatabase() {

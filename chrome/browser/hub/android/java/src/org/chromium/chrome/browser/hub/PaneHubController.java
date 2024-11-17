@@ -50,4 +50,13 @@ public interface PaneHubController {
      */
     @Nullable
     View getFloatingActionButton();
+
+    /**
+     * Set whether the search box background should show in the hub toolbar. The visibility for this
+     * component is defaulted to gone and should only be shown for the shrink and expand animations
+     * when transiting between a tab view and hub to prevent ghosting behind the hub search box.
+     *
+     * @param shouldShow Whether the search box background should be showing.
+     */
+    void setSearchBoxBackgroundProperties(boolean shouldShow);
 }

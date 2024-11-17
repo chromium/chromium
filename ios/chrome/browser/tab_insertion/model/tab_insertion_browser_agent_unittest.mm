@@ -229,3 +229,28 @@ TEST_F(TabInsertionBrowserAgentTest, ShouldSkipNewTabAnimationFalse) {
   const auto* helper = NewTabAnimationTabHelper::FromWebState(web_state);
   EXPECT_EQ(helper, nullptr);
 }
+
+// Tests inserting a pinned tab.
+TEST_F(TabInsertionBrowserAgentTest, InsertPinned) {
+  TabInsertion::Params insertion_params;
+  insertion_params.index = 0;
+  web::WebState* web_state0 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  web::WebState* web_state1 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+  insertion_params.index = 1;
+  web::WebState* web_state2 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+
+  insertion_params.index = TabInsertion::kPositionAutomatically;
+  insertion_params.insert_pinned = true;
+  web::WebState* web_state3 =
+      agent_->InsertWebState(LoadParams(GURL(kURL1)), insertion_params);
+
+  ASSERT_EQ(4, browser_->GetWebStateList()->count());
+  ASSERT_EQ(1, browser_->GetWebStateList()->pinned_tabs_count());
+  EXPECT_EQ(web_state3, browser_->GetWebStateList()->GetWebStateAt(0));
+  EXPECT_EQ(web_state1, browser_->GetWebStateList()->GetWebStateAt(1));
+  EXPECT_EQ(web_state2, browser_->GetWebStateList()->GetWebStateAt(2));
+  EXPECT_EQ(web_state0, browser_->GetWebStateList()->GetWebStateAt(3));
+}

@@ -23,7 +23,7 @@ TopDomainTrieEntry::TopDomainTrieEntry(
       huffman_builder_(huffman_builder),
       entry_(entry) {}
 
-TopDomainTrieEntry::~TopDomainTrieEntry() {}
+TopDomainTrieEntry::~TopDomainTrieEntry() = default;
 
 std::string TopDomainTrieEntry::name() const {
   return entry_->skeleton;

@@ -181,7 +181,7 @@ public class AudioTrackOutputStreamTest {
         List<Byte> generatedData = provider.getGeneratedData();
         List<Byte> receivedData = provider.getReceivedData();
 
-        assertEquals(3 * provider.getBufferSize(), generatedData.size());
+        assertEquals(3L * provider.getBufferSize(), generatedData.size());
         assertArrayEquals(generatedData.toArray(), receivedData.toArray());
 
         stream.stop();

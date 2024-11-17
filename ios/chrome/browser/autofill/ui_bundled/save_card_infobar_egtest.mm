@@ -198,7 +198,7 @@ void FillAndSubmitXframeCreditCardForm() {
   [AutofillAppInterface setUpFakeCreditCardServer];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Clear existing credit cards.
   [AutofillAppInterface clearCreditCardStore];
 
@@ -211,8 +211,7 @@ void FillAndSubmitXframeCreditCardForm() {
   // Release the histogram tester.
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
-  [super tearDown];
-
+  [super tearDownHelper];
 }
 
 #pragma mark - Page interaction helper methods

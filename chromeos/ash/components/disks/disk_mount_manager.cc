@@ -11,12 +11,14 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
 #include "base/barrier_closure.h"
 #include "base/containers/contains.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -24,6 +26,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
@@ -34,6 +37,10 @@ namespace ash::disks {
 namespace {
 
 using base::BindOnce;
+
+std::string Redact(std::string_view s) {
+  return LOG_IS_ON(INFO) ? base::StrCat({"'", s, "'"}) : "(redacted)";
+}
 
 DiskMountManager* g_disk_mount_manager = nullptr;
 
@@ -62,9 +69,7 @@ std::string FormatFileSystemTypeToString(FormatFileSystemType filesystem) {
     case FormatFileSystemType::kNtfs:
       return "ntfs";
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unknown filesystem type " << static_cast<int>(filesystem);
-  return "";
+  NOTREACHED() << "Unknown filesystem type " << static_cast<int>(filesystem);
 }
 
 // The DiskMountManager implementation.
@@ -78,13 +83,16 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   ~DiskMountManagerImpl() override { cros_disks_client_->RemoveObserver(this); }
 
+ private:
+  using DiskMountManager::Observer;
+
   // DiskMountManager override.
-  void AddObserver(DiskMountManager::Observer* observer) override {
+  void AddObserver(Observer* observer) override {
     observers_.AddObserver(observer);
   }
 
   // DiskMountManager override.
-  void RemoveObserver(DiskMountManager::Observer* observer) override {
+  void RemoveObserver(Observer* observer) override {
     observers_.RemoveObserver(observer);
   }
 
@@ -135,6 +143,28 @@ class DiskMountManagerImpl : public DiskMountManager,
                    UnmountPathCallback callback) override {
     UnmountChildMounts(mount_path);
     VLOG(1) << "Unmounting '" << mount_path << "'...";
+
+    const base::FilePath mount_file_path(mount_path);
+    if (arc_delegate_ &&
+        cros_disks_client_->GetRemovableDiskMountPoint().IsParent(
+            mount_file_path)) {
+      VLOG(1) << "Dropping ARC caches for " << Redact(mount_path);
+      arc_delegate_->DropArcCaches(
+          mount_file_path, BindOnce(&DiskMountManagerImpl::UnmountPathContinue,
+                                    weak_ptr_factory_.GetWeakPtr(), mount_path,
+                                    std::move(callback)));
+      return;
+    }
+
+    UnmountPathContinue(mount_path, std::move(callback), true /* success */);
+  }
+
+  void UnmountPathContinue(const std::string& mount_path,
+                           UnmountPathCallback callback,
+                           bool success) {
+    if (!success) {
+      LOG(ERROR) << "Cannot drop ARC caches for " << Redact(mount_path);
+    }
     cros_disks_client_->Unmount(mount_path,
                                 BindOnce(&DiskMountManagerImpl::OnUnmountPath,
                                          weak_ptr_factory_.GetWeakPtr(),
@@ -162,7 +192,7 @@ class DiskMountManagerImpl : public DiskMountManager,
                            const std::string& label) override {
     MountPoints::const_iterator mount_point = mount_points_.find(mount_path);
     if (mount_point == mount_points_.end()) {
-      LOG(ERROR) << "Cannot find mount point '" << mount_path << "'";
+      LOG(ERROR) << "Cannot find mount point " << Redact(mount_path);
       // We can't call OnFormatCompleted until |pending_format_changes_| has
       // been populated.
       NotifyFormatStatusUpdate(FORMAT_COMPLETED, FormatError::kUnknownError,
@@ -360,7 +390,6 @@ class DiskMountManagerImpl : public DiskMountManager,
     return ok;
   }
 
- private:
   // A struct to represent information about a format changes.
   struct FormatChange {
     // new file system type
@@ -387,8 +416,9 @@ class DiskMountManagerImpl : public DiskMountManager,
   void OnMount(const std::string& source_path, MountType type, bool result) {
     // When succeeds, OnMountCompleted will be called by "MountCompleted",
     // signal instead. Do nothing now.
-    if (result)
+    if (result) {
       return;
+    }
 
     OnMountCompleted({source_path, {}, type, MountError::kInternalError});
   }
@@ -399,7 +429,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (mount_point == mount_points_.end()) {
       // Not in mount_points_. This happens when the mount_points and disks_ are
       // inconsistent.
-      LOG(ERROR) << "Cannot find mount point '" << mount_path << "'";
+      LOG(ERROR) << "Cannot find mount point " << Redact(mount_path);
       OnMountCompleted({disk.device_path(), mount_path, MountType::kDevice,
                         MountError::kPathNotMounted});
       return;
@@ -418,23 +448,26 @@ class DiskMountManagerImpl : public DiskMountManager,
     DCHECK(!mount_path.empty());
 
     // Let's make sure mount path has trailing slash.
-    if (mount_path.back() != '/')
+    if (mount_path.back() != '/') {
       mount_path += '/';
+    }
 
     // Paths to unmount, indexed by source path.
     std::map<std::string, std::string> paths_to_unmount;
 
     // For the already known mount points, use the mount path.
     for (const MountPoint& mount_point : mount_points_) {
-      if (base::StartsWith(mount_point.source_path, mount_path))
+      if (base::StartsWith(mount_point.source_path, mount_path)) {
         paths_to_unmount.try_emplace(mount_point.source_path,
                                      mount_point.mount_path);
+      }
     }
 
     // For the mount points that are not registered yet, use the source path.
     for (const auto& [source_path, _] : mount_callbacks_) {
-      if (base::StartsWith(source_path, mount_path))
+      if (base::StartsWith(source_path, mount_path)) {
         paths_to_unmount.try_emplace(source_path, source_path);
+      }
     }
 
     for (const auto& [_, path_to_unmount] : paths_to_unmount) {
@@ -452,7 +485,7 @@ class DiskMountManagerImpl : public DiskMountManager,
       // Do standard processing for Unmount event.
       OnUnmountPath(UnmountPathCallback(), mount_path, error);
     } else {
-      LOG(ERROR) << "Cannot unmount '" << mount_path << "': " << error;
+      LOG(ERROR) << "Cannot unmount " << Redact(mount_path) << ": " << error;
       // This causes the last non-success error to be reported.
       cb_data->error_code = error;
     }
@@ -500,8 +533,9 @@ class DiskMountManagerImpl : public DiskMountManager,
       }
     } else {
       if (base::SysInfo::IsRunningOnChromeOS()) {
-        LOG(ERROR) << "Cannot mount '" << mount_info.source_path << "' as '"
-                   << mount_info.mount_path << "': " << entry.mount_error;
+        LOG(ERROR) << "Cannot mount " << Redact(mount_info.source_path)
+                   << " as " << Redact(mount_info.mount_path) << ": "
+                   << entry.mount_error;
       }
       if (const MountPoints::const_iterator it =
               mount_points_.find(mount_info.mount_path);
@@ -537,11 +571,11 @@ class DiskMountManagerImpl : public DiskMountManager,
         it != mount_callbacks_.end()) {
       DCHECK_EQ(it->first, entry.source_path);
       VLOG(1) << "Calling mount callback for '" << entry.source_path
-              << "' with error = " << entry.mount_error;
+              << "' with result = " << entry.mount_error;
       std::move(it->second).Run(entry.mount_error, mount_info);
       mount_callbacks_.erase(std::move(it));
     } else {
-      LOG(ERROR) << "No mount callback for '" << entry.source_path << "'";
+      VLOG(1) << "No mount callback for " << Redact(entry.source_path);
     }
 
     NotifyMountStatusUpdate(MOUNTING, entry.mount_error, mount_info);
@@ -590,7 +624,7 @@ class DiskMountManagerImpl : public DiskMountManager,
     if (error == MountError::kSuccess) {
       VLOG(1) << "Unmounted '" << mount_path << "'";
     } else {
-      LOG(ERROR) << "Cannot unmount '" << mount_path << "': " << error;
+      LOG(ERROR) << "Cannot unmount " << Redact(mount_path) << ": " << error;
       if (error == MountError::kPathNotMounted ||
           error == MountError::kInvalidPath) {
         // The path was already unmounted by something else.
@@ -616,8 +650,9 @@ class DiskMountManagerImpl : public DiskMountManager,
       }
     }
 
-    if (callback)
+    if (callback) {
       std::move(callback).Run(error);
+    }
   }
 
   void OnUnmountPathForFormat(const std::string& device_path,
@@ -853,8 +888,9 @@ class DiskMountManagerImpl : public DiskMountManager,
       DCHECK(disk);
 
       if (pending_change != pending_rename_changes_.end() &&
-          error_code == RenameError::kSuccess)
+          error_code == RenameError::kSuccess) {
         disk->set_device_label(pending_change->second);
+      }
     }
 
     pending_rename_changes_.erase(device_path);
@@ -867,12 +903,14 @@ class DiskMountManagerImpl : public DiskMountManager,
   // GetDeviceProperties() call.
   void RunDeferredMountEvents(const std::string& device_path) {
     auto mount_events_iter = deferred_mount_events_.find(device_path);
-    if (mount_events_iter == deferred_mount_events_.end())
+    if (mount_events_iter == deferred_mount_events_.end()) {
       return;
+    }
     std::vector<MountPoint> entries = std::move(mount_events_iter->second);
     deferred_mount_events_.erase(mount_events_iter);
-    for (const MountPoint& entry : entries)
+    for (const MountPoint& entry : entries) {
       OnMountCompleted(entry);
+    }
   }
 
   // Callback for GetDeviceProperties.
@@ -962,16 +1000,18 @@ class DiskMountManagerImpl : public DiskMountManager,
   // Part of EnsureMountInfoRefreshed(). Called after mount entries are listed.
   void RefreshAfterEnumerateMountEntries(
       const std::vector<MountPoint>& entries) {
-    for (const MountPoint& entry : entries)
+    for (const MountPoint& entry : entries) {
       OnMountCompleted(entry);
+    }
     RefreshCompleted(true);
   }
 
   // Part of EnsureMountInfoRefreshed(). Called when the refreshing is done.
   void RefreshCompleted(bool success) {
     already_refreshed_ = true;
-    for (auto& callback : refresh_callbacks_)
+    for (auto& callback : refresh_callbacks_) {
       std::move(callback).Run(success);
+    }
     refresh_callbacks_.clear();
   }
 
@@ -1024,7 +1064,7 @@ class DiskMountManagerImpl : public DiskMountManager,
 
   // Notifies all observers about disk status update.
   void NotifyDiskStatusUpdate(DiskEvent event, const Disk& disk) {
-    for (auto& observer : observers_) {
+    for (Observer& observer : observers_) {
       // Skip mounting of new partitioned disks while waiting for the format.
       if (IsPendingPartitioningDisk(disk.device_path())) {
         continue;
@@ -1037,40 +1077,45 @@ class DiskMountManagerImpl : public DiskMountManager,
   // Notifies all observers about device status update.
   void NotifyDeviceStatusUpdate(DeviceEvent event,
                                 const std::string& device_path) {
-    for (auto& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnDeviceEvent(event, device_path);
+    }
   }
 
   // Notifies all observers about mount completion.
   void NotifyMountStatusUpdate(MountEvent event,
                                MountError error_code,
                                const MountPoint& mount_info) {
-    for (auto& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnMountEvent(event, error_code, mount_info);
+    }
   }
 
   void NotifyFormatStatusUpdate(FormatEvent event,
                                 FormatError error_code,
                                 const std::string& device_path,
                                 const std::string& device_label) {
-    for (auto& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnFormatEvent(event, error_code, device_path, device_label);
+    }
   }
 
   void NotifyPartitionStatusUpdate(PartitionEvent event,
                                    PartitionError error_code,
                                    const std::string& device_path,
                                    const std::string& device_label) {
-    for (auto& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnPartitionEvent(event, error_code, device_path, device_label);
+    }
   }
 
   void NotifyRenameStatusUpdate(RenameEvent event,
                                 RenameError error_code,
                                 const std::string& device_path,
                                 const std::string& device_label) {
-    for (auto& observer : observers_)
+    for (Observer& observer : observers_) {
       observer.OnRenameEvent(event, error_code, device_path, device_label);
+    }
   }
 
   bool IsPendingPartitioningDisk(const std::string& device_path) {
@@ -1088,7 +1133,7 @@ class DiskMountManagerImpl : public DiskMountManager,
   }
 
   // Mount event change observers.
-  base::ObserverList<DiskMountManager::Observer> observers_;
+  base::ObserverList<Observer> observers_;
 
   const raw_ptr<CrosDisksClient> cros_disks_client_ = CrosDisksClient::Get();
 

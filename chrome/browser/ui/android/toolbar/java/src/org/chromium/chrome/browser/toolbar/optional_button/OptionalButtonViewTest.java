@@ -806,7 +806,7 @@ public class OptionalButtonViewTest {
                         originalButtonSpec.getOnLongClickListener(),
                         originalButtonSpec.getContentDescription(),
                         originalButtonSpec.getSupportsTinting(),
-                        originalButtonSpec.getIPHCommandBuilder(),
+                        originalButtonSpec.getIphCommandBuilder(),
                         originalButtonSpec.getButtonVariant(),
                         originalButtonSpec.getActionChipLabelResId(),
                         originalButtonSpec.getHoverTooltipTextId(),

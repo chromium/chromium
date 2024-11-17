@@ -38,18 +38,19 @@ using ::testing::IsEmpty;
 using ::testing::Matcher;
 using ::testing::NiceMock;
 using ::testing::Pointee;
+using ::testing::Property;
 using ::testing::Ref;
 using ::testing::Return;
 
 Matcher<Suggestion> EqualsSuggestionFields(const std::u16string& main_text,
                                            const std::u16string& minor_text,
-                                           bool apply_deactivated_style) {
+                                           bool has_deactivated_style) {
   return AllOf(
       Field(&Suggestion::main_text,
             Suggestion::Text(main_text, Suggestion::Text::IsPrimary(false))),
       Field(&Suggestion::minor_text,
             Suggestion::Text(minor_text, Suggestion::Text::IsPrimary(false))),
-      Field(&Suggestion::apply_deactivated_style, apply_deactivated_style));
+      Property(&Suggestion::HasDeactivatedStyle, has_deactivated_style));
 }
 
 class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
@@ -137,22 +138,21 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
               FillOrPreviewCreditCardForm,
               (mojom::ActionPersistence action_persistence,
                const FormData& form,
-               const FormFieldData& field,
+               const FieldGlobalId& field_id,
                const CreditCard& credit_card,
-               const std::u16string& cvc,
                const AutofillTriggerDetails& trigger_details),
               (override));
   MOCK_METHOD(void,
               AuthenticateThenFillCreditCardForm,
               (const FormData& form,
-               const FormFieldData& field,
+               const FieldGlobalId& field,
                const CreditCard& credit_card,
                const AutofillTriggerDetails& trigger_details));
   MOCK_METHOD(void,
               DidShowSuggestions,
               (DenseSet<SuggestionType> shown_suggestion_types,
                const FormData& form,
-               const FormFieldData& field),
+               const FieldGlobalId& field_id),
               (override));
   MOCK_METHOD(bool, CanShowAutofillUi, (), (const, override));
   MOCK_METHOD(AutofillField*,
@@ -734,12 +734,12 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
                   credit_cards[0]->CardNameForAutofillDisplay(
                       credit_cards[0]->nickname()),
                   credit_cards[0]->ObfuscatedNumberWithVisibleLastFourDigits(),
-                  /*apply_deactivated_style=*/false),
+                  /*has_deactivated_style=*/false),
               EqualsSuggestionFields(
                   credit_cards[1]->CardNameForAutofillDisplay(
                       credit_cards[1]->nickname()),
                   credit_cards[1]->ObfuscatedNumberWithVisibleLastFourDigits(),
-                  /*apply_deactivated_style=*/false))));
+                  /*has_deactivated_style=*/false))));
 
   TryToShowTouchToFill(/*expected_success=*/true);
 }
@@ -770,7 +770,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
           ElementsAre(EqualsSuggestionFields(
               credit_card.CardNameForAutofillDisplay(credit_card.nickname()),
               credit_card.ObfuscatedNumberWithVisibleLastFourDigits(),
-              /*apply_deactivated_style=*/false))));
+              /*has_deactivated_style=*/false))));
 
   TryToShowTouchToFill(/*expected_success=*/true);
 }
@@ -795,8 +795,8 @@ TEST_F(
       .WillByDefault(testing::Return(true));
 
   // Since merchant has opted out of virtual cards and gray-out feature is
-  // disabled, ‘apply_deactivated_style` property should be set to false for the
-  // virtual card suggestion.
+  // disabled, `HasDeactivatedStyle()` should return false for the virtual card
+  // suggestion.
   EXPECT_CALL(
       payments_autofill_client(),
       ShowTouchToFillCreditCard(
@@ -804,7 +804,7 @@ TEST_F(
           ElementsAre(EqualsSuggestionFields(
               credit_card.CardNameForAutofillDisplay(credit_card.nickname()),
               credit_card.ObfuscatedNumberWithVisibleLastFourDigits(),
-              /*apply_deactivated_style=*/false))));
+              /*has_deactivated_style=*/false))));
   TryToShowTouchToFill(/*expected_success=*/true);
 }
 
@@ -836,12 +836,12 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
                   virtual_card.CardNameForAutofillDisplay(
                       virtual_card.nickname()),
                   virtual_card.ObfuscatedNumberWithVisibleLastFourDigits(),
-                  /*apply_deactivated_style=*/false),
+                  /*has_deactivated_style=*/false),
               EqualsSuggestionFields(
                   credit_card.CardNameForAutofillDisplay(
                       credit_card.nickname()),
                   credit_card.ObfuscatedNumberWithVisibleLastFourDigits(),
-                  /*apply_deactivated_style=*/false))));
+                  /*has_deactivated_style=*/false))));
 
   TryToShowTouchToFill(/*expected_success=*/true);
 }
@@ -889,12 +889,12 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
                   credit_cards[0]->CardNameForAutofillDisplay(
                       credit_cards[0]->nickname()),
                   credit_cards[0]->ObfuscatedNumberWithVisibleLastFourDigits(),
-                  /*apply_deactivated_style=*/false),
+                  /*has_deactivated_style=*/false),
               EqualsSuggestionFields(
                   credit_cards[1]->CardNameForAutofillDisplay(
                       credit_cards[1]->nickname()),
                   credit_cards[1]->ObfuscatedNumberWithVisibleLastFourDigits(),
-                  /*apply_deactivated_style=*/false))));
+                  /*has_deactivated_style=*/false))));
 
   TryToShowTouchToFill(/*expected_success=*/true);
 
@@ -1158,10 +1158,10 @@ TEST_F(TouchToFillDelegateAndroidImplVcnGrayOutForMerchantOptOutUnitTest,
 
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
-  // Since VCN gray-out feature is active, the `apply_deactivated_style`
-  // property should be true for the virtual card suggestion. However, the
-  // `apply_deactivated_style` property should be set to false for the
-  // associated real credit card suggestion.
+  // Since VCN gray-out feature is active, the `HasDeactivatedStyle()`
+  // should return true for the virtual card suggestion. However,
+  // `HasDeactivatedStyle()` should return false for the associated real credit
+  // card suggestion.
   EXPECT_CALL(
       payments_autofill_client(),
       ShowTouchToFillCreditCard(
@@ -1171,12 +1171,12 @@ TEST_F(TouchToFillDelegateAndroidImplVcnGrayOutForMerchantOptOutUnitTest,
                   virtual_card.CardNameForAutofillDisplay(
                       virtual_card.nickname()),
                   virtual_card.ObfuscatedNumberWithVisibleLastFourDigits(),
-                  /*apply_deactivated_style=*/true),
+                  /*has_deactivated_style=*/true),
               EqualsSuggestionFields(
                   credit_card.CardNameForAutofillDisplay(
                       credit_card.nickname()),
                   credit_card.ObfuscatedNumberWithVisibleLastFourDigits(),
-                  /*apply_deactivated_style=*/false))));
+                  /*has_deactivated_style=*/false))));
 
   TryToShowTouchToFill(/*expected_success=*/true);
 }

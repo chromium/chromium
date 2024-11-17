@@ -6,19 +6,19 @@
 #define CHROME_BROWSER_ASH_LOGIN_USERS_USER_MANAGER_DELEGATE_IMPL_H_
 
 #include "chromeos/ash/components/login/auth/mount_performer.h"
-#include "components/user_manager/user_manager_base.h"
+#include "components/user_manager/user_manager_impl.h"
 
 namespace ash {
 
-// Implementation of UserManagerBase::Delegate to inject //chrome/* behavior.
-class UserManagerDelegateImpl : public user_manager::UserManagerBase::Delegate {
+// Implementation of UserManagerImpl::Delegate to inject //chrome/* behavior.
+class UserManagerDelegateImpl : public user_manager::UserManagerImpl::Delegate {
  public:
   UserManagerDelegateImpl();
   UserManagerDelegateImpl(const UserManagerDelegateImpl&) = delete;
   UserManagerDelegateImpl& operator=(const UserManagerDelegateImpl&) = delete;
   ~UserManagerDelegateImpl() override;
 
-  // UserManagerBase::Delegate:
+  // UserManagerImpl::Delegate:
   const std::string& GetApplicationLocale() override;
   void OverrideDirHome(const user_manager::User& primary_user) override;
   bool IsUserSessionRestoreInProgress() override;

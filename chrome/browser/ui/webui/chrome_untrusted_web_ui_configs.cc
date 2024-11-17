@@ -10,11 +10,9 @@
 #include "printing/buildflags/buildflags.h"
 
 #if defined(TOOLKIT_VIEWS)
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 #include "chrome/browser/ui/webui/hats/hats_ui.h"
 #include "chrome/browser/ui/webui/privacy_sandbox/privacy_sandbox_dialog_untrusted_ui.h"
-#include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "components/compose/buildflags.h"
 #include "components/lens/buildflags.h"
@@ -45,8 +43,6 @@ void RegisterChromeUntrustedWebUIConfigs() {
 #endif  // defined(TOOLKIT_VIEWS) || BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
 #if defined(TOOLKIT_VIEWS)
-  map.AddUntrustedWebUIConfig(
-      std::make_unique<CompanionSidePanelUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(
       std::make_unique<lens::LensOverlayUntrustedUIConfig>());
   map.AddUntrustedWebUIConfig(

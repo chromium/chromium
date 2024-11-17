@@ -83,6 +83,13 @@ class ProcessManager : public KeyedService,
 
   static ProcessManager* Get(content::BrowserContext* context);
 
+  // |context| is incognito pass the original context as |original_context|.
+  // Otherwise pass the same context for both. Pass the ExtensionRegistry for
+  // |context| as |registry|, or override it for testing.
+  ProcessManager(content::BrowserContext* context,
+                 content::BrowserContext* original_context,
+                 ExtensionRegistry* registry);
+
   ProcessManager(const ProcessManager&) = delete;
   ProcessManager& operator=(const ProcessManager&) = delete;
 
@@ -284,14 +291,8 @@ class ProcessManager : public KeyedService,
   std::vector<WorkerId> GetAllWorkersIdsForTesting();
 
  protected:
-  static ProcessManager* Create(content::BrowserContext* context);
-
-  // |context| is incognito pass the original context as |original_context|.
-  // Otherwise pass the same context for both. Pass the ExtensionRegistry for
-  // |context| as |registry|, or override it for testing.
-  ProcessManager(content::BrowserContext* context,
-                 content::BrowserContext* original_context,
-                 ExtensionRegistry* registry);
+  static std::unique_ptr<ProcessManager> Create(
+      content::BrowserContext* context);
 
   // Not owned. Also used by IncognitoProcessManager.
   raw_ptr<ExtensionRegistry> extension_registry_;
@@ -431,7 +432,8 @@ class ProcessManager : public KeyedService,
   // extension URLRequest is constructed and then destroyed without ever
   // starting, we can receive a completion notification without a corresponding
   // start notification. In that case we want to avoid decrementing keepalive.
-  std::map<int, ExtensionHost*> pending_network_requests_;
+  std::map<int, raw_ptr<ExtensionHost, CtnExperimental>>
+      pending_network_requests_;
 
   // Observers of Service Worker RPH this ProcessManager manages.
   base::ScopedMultiSourceObservation<content::RenderProcessHost,

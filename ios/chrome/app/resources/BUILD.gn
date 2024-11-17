@@ -64,6 +64,8 @@ repack("repack_unscaled_resources") {
     "$root_gen_dir/components/dev_ui_components_resources.pak",
     "$root_gen_dir/components/download_internals_resources.pak",
     "$root_gen_dir/components/flags_ui_resources.pak",
+    "$root_gen_dir/components/metrics/metrics_url_constants.pak",
+    "$root_gen_dir/components/ntp_tiles_internals_resources.pak",
     "$root_gen_dir/components/optimization_guide_internals_resources.pak",
     "$root_gen_dir/components/policy_resources.pak",
     "$root_gen_dir/components/sync_service_sync_internals_resources.pak",
@@ -79,6 +81,8 @@ repack("repack_unscaled_resources") {
     ":ios_resources",
     "//components/commerce/core/internals/resources",
     "//components/download/resources/download_internals:resources",
+    "//components/metrics:url_constants",
+    "//components/ntp_tiles/webui/resources:resources",
     "//components/optimization_guide/optimization_guide_internals/resources",
     "//components/policy/resources/webui:resources",
     "//components/resources",
@@ -153,11 +157,16 @@ bundle_data_xcassets("launchscreen_assets") {
 # The scene startup flow (which is needed for multi-window) requires both
 # additional plist entries (handled in ../BUILD.gn) and an additional storyboard
 # file.
-bundle_data_ib_file("base_scene_storyboard") {
+bundle_data_storyboard_file("base_scene_storyboard") {
   source = "BaseScene.storyboard"
+  bundle_files = [
+    "Info.plist",
+    "j72-TL-eGS-view-6ef-rW-4AQ.nib",
+    "UIViewController-j72-TL-eGS.nib",
+  ]
 }
 
-bundle_data_ib_file("launchscreen_xib") {
+bundle_data_xib_file("launchscreen_xib") {
   source = "LaunchScreen.xib"
   deps = [ ios_launchscreen_assets_target ]
 }

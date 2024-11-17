@@ -68,6 +68,10 @@ void LogTimeCost(const MantaMetricType request_type,
       base::UmaHistogramTimes("Ash.MantaService.OrcaProvider.TimeCost",
                               time_cost);
       break;
+    case MantaMetricType::kScanner:
+      base::UmaHistogramTimes("Ash.MantaService.ScannerProvider.TimeCost",
+                              time_cost);
+      break;
     case MantaMetricType::kSnapper:
       base::UmaHistogramTimes("Ash.MantaService.SnapperProvider.TimeCost",
                               time_cost);
@@ -75,6 +79,10 @@ void LogTimeCost(const MantaMetricType request_type,
     case MantaMetricType::kMahiSummary:
       base::UmaHistogramTimes("Ash.MantaService.MahiProvider.Summary.TimeCost",
                               time_cost);
+      break;
+    case MantaMetricType::kMahiElucidation:
+      base::UmaHistogramTimes(
+          "Ash.MantaService.MahiProvider.Elucidation.TimeCost", time_cost);
       break;
     case MantaMetricType::kMahiQA:
       base::UmaHistogramTimes("Ash.MantaService.MahiProvider.QA.TimeCost",
@@ -88,6 +96,10 @@ void LogTimeCost(const MantaMetricType request_type,
       base::UmaHistogramTimes("Ash.MantaService.AnchovyProvider.TimeCost",
                               time_cost);
       break;
+    case MantaMetricType::kWalrus:
+      base::UmaHistogramTimes("Ash.MantaService.WalrusProvider.TimeCost",
+                              time_cost);
+      break;
   }
 }
 
@@ -98,6 +110,10 @@ void LogMantaStatusCode(const MantaMetricType request_type,
       base::UmaHistogramEnumeration("Ash.MantaService.OrcaProvider.StatusCode",
                                     status_code);
       break;
+    case MantaMetricType::kScanner:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.ScannerProvider.StatusCode", status_code);
+      break;
     case MantaMetricType::kSnapper:
       base::UmaHistogramEnumeration(
           "Ash.MantaService.SnapperProvider.StatusCode", status_code);
@@ -105,6 +121,10 @@ void LogMantaStatusCode(const MantaMetricType request_type,
     case MantaMetricType::kMahiSummary:
       base::UmaHistogramEnumeration(
           "Ash.MantaService.MahiProvider.Summary.StatusCode", status_code);
+      break;
+    case MantaMetricType::kMahiElucidation:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.MahiProvider.Elucidation.StatusCode", status_code);
       break;
     case MantaMetricType::kMahiQA:
       base::UmaHistogramEnumeration(
@@ -117,6 +137,10 @@ void LogMantaStatusCode(const MantaMetricType request_type,
     case MantaMetricType::kAnchovy:
       base::UmaHistogramEnumeration(
           "Ash.MantaService.AnchovyProvider.StatusCode", status_code);
+      break;
+    case MantaMetricType::kWalrus:
+      base::UmaHistogramEnumeration(
+          "Ash.MantaService.WalrusProvider.StatusCode", status_code);
       break;
   }
 }

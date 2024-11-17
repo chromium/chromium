@@ -21,8 +21,9 @@ CookieControlsServiceFactory* CookieControlsServiceFactory::GetInstance() {
 }
 
 // static
-KeyedService* CookieControlsServiceFactory::BuildInstanceFor(Profile* profile) {
-  return new CookieControlsService(profile);
+std::unique_ptr<KeyedService> CookieControlsServiceFactory::BuildInstanceFor(
+    Profile* profile) {
+  return std::make_unique<CookieControlsService>(profile);
 }
 
 CookieControlsServiceFactory::CookieControlsServiceFactory()
@@ -42,7 +43,8 @@ CookieControlsServiceFactory::CookieControlsServiceFactory()
 
 CookieControlsServiceFactory::~CookieControlsServiceFactory() = default;
 
-KeyedService* CookieControlsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+CookieControlsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* profile) const {
   return BuildInstanceFor(Profile::FromBrowserContext(profile));
 }

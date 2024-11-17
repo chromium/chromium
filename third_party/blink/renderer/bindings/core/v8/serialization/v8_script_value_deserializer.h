@@ -105,9 +105,7 @@ class CORE_EXPORT V8ScriptValueDeserializer
   File* ReadFile();
   File* ReadFileIndex();
 
-  scoped_refptr<BlobDataHandle> GetOrCreateBlobDataHandle(const String& uuid,
-                                                          const String& type,
-                                                          uint64_t size);
+  scoped_refptr<BlobDataHandle> GetBlobDataHandle(const String& uuid);
 
   // v8::ValueDeserializer::Delegate
   v8::MaybeLocal<v8::Object> ReadHostObject(v8::Isolate*) override;

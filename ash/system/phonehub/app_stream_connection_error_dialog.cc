@@ -17,6 +17,7 @@
 #include "ash/style/typography.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/phonehub/url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -78,8 +79,11 @@ class ConnectionErrorDialogDelegateView : public views::WidgetDelegateView {
     SetModalType(ui::mojom::ModalType::kWindow);
 
     SetPaintToLayer();
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    if (chromeos::features::IsSystemBlurEnabled()) {
+      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    }
+
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF(kDialogRoundedCornerRadius));
 

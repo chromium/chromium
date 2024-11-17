@@ -79,11 +79,8 @@ class PublicIpAddressLocationNotifier
   void MakeNetworkLocationRequest();
 
   // Completion callback for network_location_request_.
-  void OnNetworkLocationResponse(
-      mojom::GeopositionResultPtr result,
-      bool server_error,
-      const WifiData& wifi_data,
-      mojom::NetworkLocationResponsePtr response_data);
+  void OnNetworkLocationResponse(LocationResponseResult result,
+                                 const WifiData& wifi_data);
 
   // Cancelable closure to absorb overlapping delayed calls to
   // ReactToNetworkChange.

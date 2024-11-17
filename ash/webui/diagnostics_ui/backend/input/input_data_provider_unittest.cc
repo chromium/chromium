@@ -16,7 +16,6 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/shell.h"
 #include "ash/system/diagnostics/diagnostics_log_controller.h"
@@ -268,7 +267,8 @@ class FakeDeviceManager : public ui::DeviceManager {
 };
 
 class FakeInputDataEventWatcher;
-typedef std::map<uint32_t, FakeInputDataEventWatcher*> watchers_t;
+typedef std::map<uint32_t, raw_ptr<FakeInputDataEventWatcher, CtnExperimental>>
+    watchers_t;
 
 // Fake evdev watcher class that lets us manually post input
 // events into an InputDataProvider; this keeps an external
@@ -885,12 +885,6 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_HasInternalKeyboard) {
 TEST_F(InputDataProviderTest, GetConnectedDevices_SplitModifierKeyboard) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
-  auto ignore_modifier_split_secret_key =
-      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
-
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
 
   // Initialize one split modifier keyboard in DeviceDataManager.
   std::vector<ui::KeyboardDevice> keyboard_devices;
@@ -913,12 +907,6 @@ TEST_F(InputDataProviderTest, GetConnectedDevices_SplitModifierKeyboard) {
 TEST_F(InputDataProviderTest, FilterOutSplitModifierKeyboard) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
-  auto ignore_modifier_split_secret_key =
-      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
-
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
 
   // Initialize one split modifier keyboard in DeviceDataManager.
   std::vector<ui::KeyboardDevice> keyboard_devices;

@@ -3,18 +3,25 @@
 <translationbundle lang="fi">
 <translation id="1444443021901415601">Chrome havaitsee viimeaikaiseen selaushistoriaasi perustuvia kiinnostavia aiheita.</translation>
 <translation id="2252052615723281030">Tämä asetus auttaa pitämään IP-osoitteen yksityisenä, kun olet kirjautuneena Chromeen. Jos Chrome epäilee, että sivusto saattaa seurata sinua, osa liikenteestä voidaan lähettää yksityisten palvelimien kautta.</translation>
+<translation id="235789365079050412">Googlen tietosuojakäytäntö</translation>
 <translation id="2793385791865768072">Chromium havaitsee viimeaikaiseen selaushistoriaasi perustuvia kiinnostavia aiheita.</translation>
+<translation id="2979365474350987274">Kolmannen osapuolen evästeitä on rajoitettu</translation>
 <translation id="33479675708419823">Tämä asetus auttaa pitämään IP-osoitteen yksityisenä, kun olet kirjautuneena sisään Chromeen. Jos Chrome epäilee, että sivusto saattaa seurata sinua, osa liikenteestä voidaan lähettää yksityisten palvelimien kautta. Lue lisää siitä, miten <ph name="LINK_BEGIN" />IP-suojaus toimii<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Lue lisää IP-osoitteen piilottamisesta</translation>
+<translation id="385051799172605136">Takaisin</translation>
 <translation id="4041687306270459969">Yli neljä viikkoa vanhat mainosaiheet poistetaan automaattisesti. Aiheita ovat esimerkiksi urheilu ja vaatteet.</translation>
 <translation id="4177501066905053472">Mainosaiheet</translation>
 <translation id="4301151630239508244">Mainosaiheet ovat vain yksi monista asioista, joita sivusto voi käyttää mainosten personointiin. Sivustot voivat näyttää sinulle mainoksia myös ilman mainosaiheita, mutta ne voivat olla vähemmän personoituja. Lue lisää <ph name="BEGIN_LINK_1" />mainosyksityisyysasetusten muuttamisesta<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Lue <ph name="BEGIN_LINK" />tietosuojakäytännöstä<ph name="END_LINK" />, miten Google suojaa dataasi.</translation>
 <translation id="453692855554576066">Voit tarkistaa mainosaiheet Chromiumin asetuksista ja estää sellaiset, joita et halua jakaa sivustoille.</translation>
 <translation id="4598427486995631491">Piilota IP-osoite</translation>
 <translation id="4692439979815346597">Voit tarkistaa mainosaiheet Chromen asetuksista ja estää sellaiset, joita et halua jakaa sivustoille.</translation>
 <translation id="5413586988657235240">Avaamasi sivustot voivat pyytää Chromiumilta aiheita, joiden perusteella ne voivat näyttää sinulle olennaisia mainoksia. Samalla ne suojaavat selaushistoriaasi ja henkilöllisyyttäsi.</translation>
+<translation id="6053735090575989697">Lue tietosuojakäytännöstä, miten Google suojaa dataasi.</translation>
 <translation id="6186536480878693792">Avaamasi sivustot voivat pyytää Chromelta aiheita, joiden perusteella ne voivat näyttää sinulle olennaisia mainoksia. Samalla ne suojaavat selaushistoriaasi ja henkilöllisyyttäsi.</translation>
+<translation id="6195163219142236913">Kolmannen osapuolen evästeitä rajoitettu</translation>
 <translation id="6371812158043974664">Tämä asetus auttaa pitämään IP-osoitteen yksityisenä, kun olet kirjautuneena sisään Chromiumiin. Jos Chromium epäilee, että sivusto saattaa seurata sinua, osa liikenteestä voidaan lähettää yksityisten palvelimien kautta. Lue lisää siitä, miten <ph name="LINK_BEGIN" />IP-suojaus toimii<ph name="LINK_END" /></translation>
+<translation id="6398358690696005758">Lue <ph name="BEGIN_LINK1" />tietosuojakäytännöstä<ph name="LINK_END1" />, miten Google suojaa dataasi.</translation>
 <translation id="7040031291654706261">Lue lisää <ph name="BEGIN_LINK" />IP-suojauksesta<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Tarkista mainosaiheasetus</translation>
 </translationbundle>

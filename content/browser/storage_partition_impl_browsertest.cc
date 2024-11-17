@@ -194,10 +194,7 @@ IN_PROC_BROWSER_TEST_F(StoragePartitionImplBrowsertest, NetworkContext) {
   ASSERT_TRUE(client.response_head()->headers);
   EXPECT_EQ(200, client.response_head()->headers->response_code());
 
-  std::string foo_header_value;
-  ASSERT_TRUE(client.response_head()->headers->GetNormalizedHeader(
-      "foo", &foo_header_value));
-  EXPECT_EQ("bar", foo_header_value);
+  EXPECT_EQ(client.response_head()->headers->GetNormalizedHeader("foo"), "bar");
 }
 
 // Make sure the factory info returned from

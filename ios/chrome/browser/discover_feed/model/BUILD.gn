@@ -54,8 +54,73 @@ source_set("discover_feed_factory") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/sync/model",
     "//ios/public/provider/chrome/browser/discover_feed:discover_feed_api",
+  ]
+}
+
+source_set("discover_feed_app_agent") {
+  sources = [
+    "discover_feed_app_agent.h",
+    "discover_feed_app_agent.mm",
+    "discover_feed_profile_helper.h",
+  ]
+  deps = [
+    ":constants",
+    ":discover_feed_factory",
+    ":model",
+    "//base",
+    "//components/metrics",
+    "//components/search_engines",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/app:constants",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/content_notification/model:util",
+    "//ios/chrome/browser/ntp/shared/metrics",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/push_notification/model:push_notification_util",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/start_surface/ui_bundled:feature_flags",
+  ]
+  frameworks = [
+    "BackgroundTasks.framework",
+    "UserNotifications.framework",
+  ]
+}
+
+source_set("discover_feed_profile_agent") {
+  sources = [
+    "discover_feed_profile_agent.h",
+    "discover_feed_profile_agent.mm",
+  ]
+  deps = [
+    ":discover_feed_app_agent",
+    ":discover_feed_factory",
+    ":model",
+    "//base",
+    "//components/push_notification",
+    "//components/search_engines",
+    "//components/signin/public/base",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/content_notification/model:util",
+    "//ios/chrome/browser/ntp/shared/metrics:constants",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
   ]
 }
 

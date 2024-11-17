@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/permissions/chip/permission_prompt_chip_model.h"
 
+#include <algorithm>
+
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,32 +18,61 @@
 #include "ui/gfx/vector_icon_types.h"
 
 namespace {
+
+bool ContainsAllRequestTypes(
+    const std::vector<
+        raw_ptr<permissions::PermissionRequest, VectorExperimental>>& requests,
+    const std::vector<permissions::RequestType>& request_types) {
+  if (requests.size() != request_types.size()) {
+    return false;
+  }
+
+  for (const auto& type : request_types) {
+    if (!std::any_of(requests.begin(), requests.end(), [&](const auto& ptr) {
+          return ptr->request_type() == type;
+        })) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool IsMicAndCameraRequest(
+    const std::vector<raw_ptr<permissions::PermissionRequest,
+                              VectorExperimental>>& requests) {
+  return ContainsAllRequestTypes(requests,
+                                 {permissions::RequestType::kCameraStream,
+                                  permissions::RequestType::kMicStream});
+}
+
 const gfx::VectorIcon& GetBlockedPermissionIconId(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
   auto requests = delegate->Requests();
-  if (requests.size() == 1)
-    return requests[0]->GetBlockedIconForChip();
 
-  // When we have two requests, it must be microphone & camera. Then we need to
-  // use the icon from the camera request.
-  return permissions::RequestType::kCameraStream == requests[0]->request_type()
-             ? requests[0]->GetBlockedIconForChip()
-             : requests[1]->GetBlockedIconForChip();
+  // We need to use the icon from the camera request when it's an request for
+  // Microphone and Camera.
+  if (IsMicAndCameraRequest(requests)) {
+    return permissions::GetBlockedIconId(
+        permissions::RequestType::kCameraStream);
+  }
+
+  return requests[0]->GetBlockedIconForChip();
 }
 
 const gfx::VectorIcon& GetPermissionIconId(
     permissions::PermissionPrompt::Delegate* delegate) {
   DCHECK(delegate);
   auto requests = delegate->Requests();
-  if (requests.size() == 1)
-    return requests[0]->GetIconForChip();
 
-  // When we have two requests, it must be microphone & camera. Then we need to
-  // use the icon from the camera request.
-  return permissions::RequestType::kCameraStream == requests[0]->request_type()
-             ? requests[0]->GetIconForChip()
-             : requests[1]->GetIconForChip();
+  // We need to use the icon from the camera request when it's an request for
+  // Microphone and Camera.
+  if (IsMicAndCameraRequest(requests)) {
+    return permissions::GetIconId(permissions::RequestType::kCameraStream);
+  }
+
+  return requests[0]->GetIconForChip();
 }
 
 std::u16string GetQuietPermissionMessage(
@@ -69,14 +100,19 @@ std::u16string GetLoudPermissionMessage(
   DCHECK(delegate);
 
   auto requests = delegate->Requests();
-
-  return requests.size() == 1
-             ? requests[0]
-                   ->GetRequestChipText(
-                       permissions::PermissionRequest::LOUD_REQUEST)
-                   .value()
-             : l10n_util::GetStringUTF16(
-                   IDS_MEDIA_CAPTURE_VIDEO_AND_AUDIO_PERMISSION_CHIP);
+  if (IsMicAndCameraRequest(requests)) {
+    return l10n_util::GetStringUTF16(
+        IDS_MEDIA_CAPTURE_VIDEO_AND_AUDIO_PERMISSION_CHIP);
+  } else if (ContainsAllRequestTypes(
+                 requests, {permissions::RequestType::kKeyboardLock,
+                            permissions::RequestType::kPointerLock})) {
+    return l10n_util::GetStringUTF16(
+        IDS_KEYBOARD_AND_POINTER_LOCK_PERMISSION_CHIP);
+  } else {
+    return requests[0]
+        ->GetRequestChipText(permissions::PermissionRequest::LOUD_REQUEST)
+        .value_or(u"");
+  }
 }
 
 bool ShouldPermissionBubbleExpand(
@@ -135,9 +171,7 @@ PermissionPromptChipModel::PermissionPromptChipModel(
   accessibility_chip_text_ = l10n_util::GetStringUTF16(
       IDS_PERMISSIONS_REQUESTED_SCREENREADER_ANNOUNCEMENT);
 
-  if (delegate->Requests().size() > 1) {
-    // Multiple requests allowed for `MEDIASTREAM_CAMERA` and `MEDIASTREAM_MIC`.
-    // In that case we show only a camera indicator.
+  if (IsMicAndCameraRequest(delegate->Requests())) {
     content_settings_type_ = ContentSettingsType::MEDIASTREAM_CAMERA;
   } else {
     content_settings_type_ = delegate->Requests()[0]->GetContentSettingsType();
@@ -202,15 +236,18 @@ void PermissionPromptChipModel::UpdateWithUserDecision(
       NOTREACHED();
   }
 
-  chip_text_ = delegate_->Requests()[0]
-                   ->GetRequestChipText(chip_text_type)
-                   .value_or(u"");
-  if (delegate_->Requests().size() == 1) {
-    accessibility_chip_text_ = delegate_->Requests()[0]
-                                   ->GetRequestChipText(accessibility_text_type)
-                                   .value_or(u"");
-  } else {
+  auto requests = delegate_->Requests();
+  chip_text_ = requests[0]->GetRequestChipText(chip_text_type).value_or(u"");
+  if (IsMicAndCameraRequest(requests)) {
     accessibility_chip_text_ =
         l10n_util::GetStringUTF16(cam_mic_combo_accessibility_text_id);
+  } else if (ContainsAllRequestTypes(
+                 requests, {permissions::RequestType::kKeyboardLock,
+                            permissions::RequestType::kPointerLock})) {
+    accessibility_chip_text_ = l10n_util::GetStringUTF16(
+        IDS_KEYBOARD_AND_POINTER_LOCK_PERMISSION_CHIP);
+  } else {
+    accessibility_chip_text_ =
+        requests[0]->GetRequestChipText(accessibility_text_type).value_or(u"");
   }
 }

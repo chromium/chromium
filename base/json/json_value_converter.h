@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
@@ -102,7 +103,7 @@ class FieldConverterBase {
   virtual ~FieldConverterBase() = default;
   virtual bool ConvertField(const base::Value& value,
                             StructType* obj) const = 0;
-  const std::string& field_path() const { return field_path_; }
+  const std::string& field_path() const LIFETIME_BOUND { return field_path_; }
 
  private:
   std::string field_path_;

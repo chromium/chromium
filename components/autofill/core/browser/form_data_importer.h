@@ -63,8 +63,7 @@ class FormDataImporter : public AddressDataManager::Observer,
 
   // The parameters should outlive the FormDataImporter.
   FormDataImporter(AutofillClient* client,
-                   history::HistoryService* history_service,
-                   const std::string& app_locale);
+                   history::HistoryService* history_service);
 
   FormDataImporter(const FormDataImporter&) = delete;
   FormDataImporter& operator=(const FormDataImporter&) = delete;
@@ -348,8 +347,6 @@ class FormDataImporter : public AddressDataManager::Observer,
   // migration. Will be passed to `credit_card_save_manager_` for metrics. If no
   // credit card was found in the form, the type will be `kNoCard`.
   CreditCardImportType credit_card_import_type_ = CreditCardImportType::kNoCard;
-
-  std::string app_locale_;
 
   // Used to store the last four digits of the fetched virtual cards.
   base::flat_set<std::u16string> fetched_virtual_cards_;

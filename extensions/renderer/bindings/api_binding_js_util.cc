@@ -76,13 +76,11 @@ void APIBindingJSUtil::SendRequest(
   v8::Local<v8::Function> custom_callback;
   if (!options.IsEmpty() && !options->IsUndefined() && !options->IsNull()) {
     if (!options->IsObject()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     v8::Local<v8::Object> options_obj = options.As<v8::Object>();
     if (!options_obj->GetPrototype()->IsNull()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     gin::Dictionary options_dict(isolate, options_obj);
     // NOTE: We don't throw any errors here if customCallback is of an invalid
@@ -136,8 +134,7 @@ void APIBindingJSUtil::CreateCustomEvent(gin::Arguments* arguments,
   std::string event_name;
   if (!v8_event_name->IsUndefined()) {
     if (!v8_event_name->IsString()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     event_name = gin::V8ToString(isolate, v8_event_name);
   }
@@ -283,8 +280,7 @@ void APIBindingJSUtil::ValidateType(gin::Arguments* arguments,
   if (!spec) {
     // We shouldn't be asked to validate unknown specs, but since this comes
     // from JS, assume nothing.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   std::string error;
@@ -307,15 +303,13 @@ void APIBindingJSUtil::AddCustomSignature(
     return;
 
   if (!signature->IsArray()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   std::unique_ptr<base::Value> base_signature =
       content::V8ValueConverter::Create()->FromV8Value(signature, context);
   if (!base_signature->is_list()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   type_refs_->AddCustomSignature(
@@ -335,13 +329,12 @@ void APIBindingJSUtil::ValidateCustomSignature(
   const APISignature* signature =
       type_refs_->GetCustomSignature(custom_signature_name);
   if (!signature) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   v8::LocalVector<v8::Value> vector_arguments(isolate);
   if (!gin::ConvertFromV8(isolate, arguments_to_validate, &vector_arguments)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   APISignature::V8ParseResult parse_result =

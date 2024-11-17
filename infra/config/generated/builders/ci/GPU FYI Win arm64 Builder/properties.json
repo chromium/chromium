@@ -80,7 +80,8 @@
           "builder": "gpu-fyi-try-win11-qualcomm-rel-64",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Win arm64 Builder/targets"
     }
   },
   "$build/reclient": {

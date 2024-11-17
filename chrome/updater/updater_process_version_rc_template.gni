@@ -1,0 +1,53 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/process_version_rc_template.gni")
+import("//chrome/updater/branding.gni")
+
+# Generates a `.rc` file specific to the `updater`.
+#
+# Parameters
+#
+#   original_filename [required]
+#       filename for which this resource is being generated.
+#
+#   rc [required]
+#       the name of the final generated `.rc` file.
+#
+#   product_fullname [optional]
+#       the name used as the `PRODUCT_FULLNAME`, as well as the prefix for
+#       `INTERNAL_NAME`. Defaults to `$updater_product_full_display_name`.
+#
+#   suffix [optional]
+#       suffix attached to the `INTERNAL_NAME` in the resource.
+#
+template("updater_process_version_rc_template") {
+  # `process_version_rc_template` invokes `process_version` with the default
+  # template rc file which is at //chrome/app/chrome_version.rc.version.
+  process_version_rc_template(target_name) {
+    _product_fullname = "$updater_product_full_display_name"
+    if (defined(invoker.product_fullname)) {
+      _product_fullname = invoker.product_fullname
+    }
+    _internal_name = _product_fullname
+    if (defined(invoker.suffix)) {
+      _internal_name += " " + invoker.suffix
+    }
+    _internal_name += " ($current_cpu)"
+    if (is_debug) {
+      _internal_name += " (debug)"
+    }
+    extra_args = [
+      "-e",
+      "PRODUCT_FULLNAME=\"$_product_fullname\"",
+      "-e",
+      "INTERNAL_NAME=\"$_internal_name\"",
+      "-e",
+      "ORIGINAL_FILENAME=\"${invoker.original_filename}\"",
+      "-e",
+      "PRODUCT_SHORTNAME=\"$updater_product_full_name\"",
+    ]
+    output = "$target_gen_dir/${invoker.rc}"
+  }
+}

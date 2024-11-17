@@ -20,8 +20,8 @@
 #include "ui/base/menu_source_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/events/event.h"
@@ -406,7 +406,7 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
       e.key_code() != ui::VKEY_END) {
     return false;
   }
-  ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);
+  ShowDropDownMenu(ui::mojom::MenuSourceType::kKeyboard);
   return true;
 #else
   const auto index_at_or_after = [](ui::ComboboxModel* model,
@@ -433,13 +433,13 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
     case ui::VKEY_F4:
       if (e.IsAltDown() || e.IsAltGrDown() || e.IsControlDown())
         return false;
-      ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);
+      ShowDropDownMenu(ui::mojom::MenuSourceType::kKeyboard);
       return true;
 
     // Move to the next item if any, or show the menu on Alt+Down like Windows.
     case ui::VKEY_DOWN:
       if (e.IsAltDown()) {
-        ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);
+        ShowDropDownMenu(ui::mojom::MenuSourceType::kKeyboard);
         return true;
       }
       new_index = index_at_or_after(GetModel(), selected_index_.value() + 1);
@@ -464,7 +464,7 @@ bool Combobox::OnKeyPressed(const ui::KeyEvent& e) {
 
     case ui::VKEY_RETURN:
     case ui::VKEY_SPACE:
-      ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);
+      ShowDropDownMenu(ui::mojom::MenuSourceType::kKeyboard);
       return true;
 
     default:
@@ -512,7 +512,7 @@ bool Combobox::HandleAccessibleAction(const ui::AXActionData& action_data) {
   // mouse event it generates to |arrow_button_| to have it forward back to the
   // callback on |this|, just handle the action explicitly here and bypass View.
   if (GetEnabled() && action_data.action == ax::mojom::Action::kDoDefault) {
-    ShowDropDownMenu(ui::MENU_SOURCE_KEYBOARD);
+    ShowDropDownMenu(ui::mojom::MenuSourceType::kKeyboard);
     return true;
   }
   return View::HandleAccessibleAction(action_data);
@@ -654,7 +654,7 @@ void Combobox::ArrowButtonPressed(const ui::Event& event) {
     ShowDropDownMenu(ui::GetMenuSourceTypeForEvent(event));
 }
 
-void Combobox::ShowDropDownMenu(ui::MenuSourceType source_type) {
+void Combobox::ShowDropDownMenu(ui::mojom::MenuSourceType source_type) {
   on_menu_will_show_.Notify();
 
   constexpr int kMenuBorderWidthTop = 1;

@@ -127,11 +127,7 @@ void SetCookieForPartition(
 user_manager::UserType GetUsertypeFromServicesString(
     const ::login::StringList& services) {
   bool is_child = false;
-  const bool support_usm =
-      base::FeatureList::IsEnabled(::features::kCrOSEnableUSMUserService);
-  using KnownFlags = base::flat_set<std::string>;
-  const KnownFlags known_flags =
-      support_usm ? KnownFlags({"uca", "usm"}) : KnownFlags({"uca"});
+  const base::flat_set<std::string> known_flags({"uca", "usm"});
 
   for (const std::string& item : services) {
     if (known_flags.find(item) != known_flags.end()) {

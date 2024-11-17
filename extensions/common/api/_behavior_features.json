@@ -43,7 +43,7 @@
       "85DA1AC24AF23CDA9F5A19858EB9C6E9E1BA57F6",  // Sign-in Screen Test App
       "EC3DE21E048B67319893889529354DFBFA96FD23",  // https://crbug.com/1233881
       "A19608AC34215B127FF9D7C006D67F5C8ED8146D",  // https://crbug.com/1233881
-      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",  // CSSI Smart Card Middleware
+      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",  // DriveLock Smart Card Middleware
       // http://b/297940831
       "D95D50CDFE6F14769DA2D1E59DF853BFA56BFC3C"   // Net iD for Chrome OS
     ]
@@ -58,10 +58,11 @@
       "EC3DE21E048B67319893889529354DFBFA96FD23",   // https://crbug.com/1233881
       "A19608AC34215B127FF9D7C006D67F5C8ED8146D",   // https://crbug.com/1233881
       // https://crbug.com/1194693
-      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // CSSI Smart Card Middleware
-      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA",   // Beta CSSI Smart Card Middleware
+      "6B748A5C005F21B7CBCF4170C2F883E435DEB511",   // DriveLock Smart Card Middleware
+      "075FF17D52ED6E3C2E5EC4D99F188E7A25AF47EA",   // Beta DriveLock Smart Card Middleware
       // http://b/297940831
-      "D95D50CDFE6F14769DA2D1E59DF853BFA56BFC3C"    // Net iD for Chrome OS
+      "D95D50CDFE6F14769DA2D1E59DF853BFA56BFC3C",   // Net iD for Chrome OS
+      "5C825E850034490380BCB756D43ABB2CF537AA91"    // b/359290130
     ]
   }, {
     // Explicitly allowlist extensions that should always be available
@@ -83,8 +84,10 @@
       "1CF709D51B2B96CF79D00447300BD3BFBE401D21",  // Mobile activation
       "40FF1103292F40C34066E023B8BE8CAE18306EAE",  // Chromeos help
       "3C654B3B6682CA194E75AD044CEDE927675DDEE8",  // Easy unlock
-      "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E",  // ChromeVox
-      "7910EAFDAF64B947E1CB31B333A9BD14CA556B6C"   // Feedback extension
+      "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E",  // Screen Reader
+      "7910EAFDAF64B947E1CB31B333A9BD14CA556B6C",  // Feedback extension
+      "75C7F4B720314B6CB1B5817CD86089DB95CD2461",  // ChromeVox
+      "0681F449CC5742B51148D9968C2C38B7396184A7"   // eSpeakNG
     ]
   },
   // Extensions that are force-installed on the login screen through policy will
@@ -159,7 +162,7 @@
     "channel": "stable",
     "extension_types": ["extension"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "A24DE1B21A67E25FB62AC8491642038FE25DA75B",
       "6B25164FFE2BADB5F1DBBD301CC022170267022D",

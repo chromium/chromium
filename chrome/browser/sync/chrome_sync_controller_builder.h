@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
+#include "components/prefs/pref_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -44,7 +45,7 @@ class WebAppProvider;
 class SpellcheckService;
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace app_list {
 class AppListSyncableService;
 }  // namespace app_list
@@ -76,7 +77,7 @@ class DeskSyncService;
 namespace sync_preferences {
 class PrefServiceSyncable;
 }  // namespace sync_preferences
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Class responsible for instantiating sync controllers (DataTypeController)
 // for datatypes / features under chrome/.
@@ -113,7 +114,7 @@ class ChromeSyncControllerBuilder {
   void SetWebApkSyncService(webapk::WebApkSyncService* web_apk_sync_service);
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetAppListSyncableService(
       app_list::AppListSyncableService* app_list_syncable_service);
   void SetAuthorizationZonesManager(
@@ -127,12 +128,13 @@ class ChromeSyncControllerBuilder {
       ash::floating_sso::FloatingSsoService* floating_sso_service);
   void SetOsPrefServiceSyncable(
       sync_preferences::PrefServiceSyncable* os_pref_service_syncable);
+  void SetPrefService(PrefService* pref_service);
   void SetSyncedPrintersManager(
       ash::SyncedPrintersManager* synced_printer_manager);
   void SetWifiConfigurationSyncService(
       ash::sync_wifi::WifiConfigurationSyncService*
           wifi_configuration_sync_service);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Actually builds the controllers. All setters above must have been called
   // beforehand (null may or may not be allowed).
@@ -186,7 +188,7 @@ class ChromeSyncControllerBuilder {
   SafeOptional<raw_ptr<webapk::WebApkSyncService>> web_apk_sync_service_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   SafeOptional<raw_ptr<app_list::AppListSyncableService>>
       app_list_syncable_service_;
   SafeOptional<raw_ptr<ash::printing::oauth2::AuthorizationZonesManager>>
@@ -202,10 +204,11 @@ class ChromeSyncControllerBuilder {
       floating_sso_service_;
   SafeOptional<raw_ptr<sync_preferences::PrefServiceSyncable>>
       os_pref_service_syncable_;
+  SafeOptional<raw_ptr<PrefService>> pref_service_;
   SafeOptional<raw_ptr<ash::SyncedPrintersManager>> synced_printer_manager_;
   SafeOptional<raw_ptr<ash::sync_wifi::WifiConfigurationSyncService>>
       wifi_configuration_sync_service_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 #endif  // CHROME_BROWSER_SYNC_CHROME_SYNC_CONTROLLER_BUILDER_H_

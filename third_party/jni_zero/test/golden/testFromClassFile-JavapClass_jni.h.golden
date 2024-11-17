@@ -10,7 +10,7 @@
 
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_zero_helper.h"
-// Class Accessors.
+// Class Accessors
 #ifndef org_jni_1zero_JavapClass_clazz_defined
 #define org_jni_1zero_JavapClass_clazz_defined
 inline jclass org_jni_1zero_JavapClass_clazz(JNIEnv* env) {
@@ -20,11 +20,14 @@ inline jclass org_jni_1zero_JavapClass_clazz(JNIEnv* env) {
 }
 #endif
 
+
 namespace JNI_JavapClass {
+
 // Constants
 enum Java_JavapClass_constant_fields {
   CONST_INT = 3,
 };
+
 
 // Native to Java functions
 [[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor(
@@ -214,5 +217,7 @@ enum Java_JavapClass_constant_fields {
 }
 
 
+
 }  // namespace JNI_JavapClass
+
 #endif  // org_jni_1zero_JavapClass_JNI

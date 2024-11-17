@@ -1,0 +1,39 @@
+This is a testharness.js-based test.
+[FAIL] ":has-slotted(bar)" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(bar)' is not a valid selector.
+[FAIL] ":has-slotted([attr=\\"foo\\"])" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted([attr="foo"])' is not a valid selector.
+[FAIL] ":has-slotted(*)" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(*)' is not a valid selector.
+[FAIL] ":has-slotted(.class)" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(.class)' is not a valid selector.
+[FAIL] ":has-slotted(#id)" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(#id)' is not a valid selector.
+[FAIL] ":has-slotted(:not(foo))" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(:not(foo))' is not a valid selector.
+[FAIL] ":has-slotted(:not(:nth-last-of-type(2)):not([slot=\\"foo\\"]))" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(:not(:nth-last-of-type(2)):not([slot="foo"]))' is not a valid selector.
+[FAIL] ":has-slotted(:first-child)" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(:first-child)' is not a valid selector.
+[FAIL] ":has-slotted(:hover)" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(:hover)' is not a valid selector.
+[FAIL] ":has-slotted(foo):first-child" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(foo):first-child' is not a valid selector.
+[FAIL] ":has-slotted(foo):hover" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(foo):hover' is not a valid selector.
+[FAIL] ":has-slotted(foo):focus" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(foo):focus' is not a valid selector.
+[FAIL] ":has-slotted(foo):lang(en)" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(foo):lang(en)' is not a valid selector.
+[FAIL] ":has-slotted(foo):dir(ltr)" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(foo):dir(ltr)' is not a valid selector.
+[FAIL] ":has-slotted(foo) + :has-slotted(bar)" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(foo) + :has-slotted(bar)' is not a valid selector.
+[FAIL] ":not(:has-slotted(foo))" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':not(:has-slotted(foo))' is not a valid selector.
+[FAIL] ":has-slotted(div + div)" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(div + div)' is not a valid selector.
+[FAIL] ":has-slotted(div:has(> span))" should be a valid selector
+  Failed to execute 'querySelector' on 'Document': ':has-slotted(div:has(> span))' is not a valid selector.
+Harness: the test ran to completion.
+

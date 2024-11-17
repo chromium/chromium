@@ -419,6 +419,9 @@ static bool MonochromeMediaFeatureEval(const MediaQueryExpValue& value,
 static bool DisplayModeMediaFeatureEval(const MediaQueryExpValue& value,
                                         MediaQueryOperator,
                                         const MediaValues& media_values) {
+  UseCounter::Count(media_values.GetDocument(),
+                    WebFeature::kDisplayModeMediaQuery);
+
   // isValid() is false if there is no parameter. Without parameter we should
   // return true to indicate that displayModeMediaFeature is enabled in the
   // browser.
@@ -453,8 +456,7 @@ static bool DisplayModeMediaFeatureEval(const MediaQueryExpValue& value,
     case CSSValueID::kPictureInPicture:
       return mode == blink::mojom::DisplayMode::kPictureInPicture;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -576,6 +578,9 @@ static bool DeviceAspectRatioMediaFeatureEval(const MediaQueryExpValue& value,
 static bool DynamicRangeMediaFeatureEval(const MediaQueryExpValue& value,
                                          MediaQueryOperator op,
                                          const MediaValues& media_values) {
+  UseCounter::Count(media_values.GetDocument(),
+                    WebFeature::kDynamicRangeMediaQuery);
+
   if (!value.IsId()) {
     return false;
   }
@@ -594,8 +599,7 @@ static bool DynamicRangeMediaFeatureEval(const MediaQueryExpValue& value,
       return media_values.DeviceSupportsHDR();
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -1044,8 +1048,7 @@ static bool AnyHoverMediaFeatureEval(const MediaQueryExpValue& value,
       return available_hover_types &
              static_cast<int>(HoverType::kHoverHoverType);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -1178,8 +1181,7 @@ static bool AnyPointerMediaFeatureEval(const MediaQueryExpValue& value,
     case CSSValueID::kNone:
       return available_pointers & static_cast<int>(PointerType::kPointerNone);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -1248,13 +1250,10 @@ static bool ColorGamutMediaFeatureEval(const MediaQueryExpValue& value,
       return value.Id() == CSSValueID::kSRGB || value.Id() == CSSValueID::kP3 ||
              value.Id() == CSSValueID::kRec2020;
     case ColorSpaceGamut::kEnd:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
-  // This is for some compilers that do not understand that it can't be reached.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 static bool PrefersColorSchemeMediaFeatureEval(
@@ -1313,8 +1312,7 @@ static bool PrefersContrastMediaFeatureEval(const MediaQueryExpValue& value,
     case CSSValueID::kCustom:
       return preferred_contrast == mojom::blink::PreferredContrast::kCustom;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -1419,6 +1417,9 @@ static bool VerticalViewportSegmentsMediaFeatureEval(
 static bool OverflowInlineMediaFeatureEval(const MediaQueryExpValue& value,
                                            MediaQueryOperator,
                                            const MediaValues& media_values) {
+  UseCounter::Count(media_values.GetDocument(),
+                    WebFeature::kOverflowMediaQuery);
+
   bool can_scroll = !EqualIgnoringASCIICase(media_values.MediaType(),
                                             media_type_names::kPrint);
   // No value = boolean context:
@@ -1433,14 +1434,16 @@ static bool OverflowInlineMediaFeatureEval(const MediaQueryExpValue& value,
     case CSSValueID::kScroll:
       return can_scroll;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
 static bool OverflowBlockMediaFeatureEval(const MediaQueryExpValue& value,
                                           MediaQueryOperator,
                                           const MediaValues& media_values) {
+  UseCounter::Count(media_values.GetDocument(),
+                    WebFeature::kOverflowMediaQuery);
+
   bool can_scroll = !EqualIgnoringASCIICase(media_values.MediaType(),
                                             media_type_names::kPrint);
   // No value = boolean context:
@@ -1457,8 +1460,7 @@ static bool OverflowBlockMediaFeatureEval(const MediaQueryExpValue& value,
     case CSSValueID::kPaged:
       return !can_scroll;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -1488,14 +1490,15 @@ static bool DevicePostureMediaFeatureEval(const MediaQueryExpValue& value,
     case CSSValueID::kFolded:
       return device_posture == DevicePostureType::kFolded;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
 static bool UpdateMediaFeatureEval(const MediaQueryExpValue& value,
                                    MediaQueryOperator,
                                    const MediaValues& media_values) {
+  UseCounter::Count(media_values.GetDocument(), WebFeature::kUpdateMediaQuery);
+
   bool can_update = !EqualIgnoringASCIICase(media_values.MediaType(),
                                             media_type_names::kPrint);
   // No value = boolean context:
@@ -1518,8 +1521,7 @@ static bool UpdateMediaFeatureEval(const MediaQueryExpValue& value,
              device_update_ability_type ==
                  mojom::blink::OutputDeviceUpdateAbilityType::kFastType;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -1551,8 +1553,7 @@ static bool StuckMediaFeatureEval(const MediaQueryExpValue& value,
     case CSSValueID::kInlineEnd:
       return media_values.StuckInline() == ContainerStuckLogical::kEnd;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -1574,8 +1575,50 @@ static bool SnappedMediaFeatureEval(const MediaQueryExpValue& value,
     case CSSValueID::kInline:
       return media_values.SnappedInline();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
+  }
+}
+
+static bool OverflowingMediaFeatureEval(const MediaQueryExpValue& value,
+                                        MediaQueryOperator op,
+                                        const MediaValues& media_values) {
+  if (!value.IsValid()) {
+    return media_values.Overflowing();
+  }
+  switch (value.Id()) {
+    case CSSValueID::kNone:
+      return !media_values.Overflowing();
+    case CSSValueID::kTop:
+      return media_values.OverflowingVertical() &
+             static_cast<ContainerOverflowingFlags>(
+                 ContainerOverflowing::kStart);
+    case CSSValueID::kLeft:
+      return media_values.OverflowingHorizontal() &
+             static_cast<ContainerOverflowingFlags>(
+                 ContainerOverflowing::kStart);
+    case CSSValueID::kBottom:
+      return media_values.OverflowingVertical() &
+             static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+    case CSSValueID::kRight:
+      return media_values.OverflowingHorizontal() &
+             static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+    case CSSValueID::kBlockStart:
+      return media_values.OverflowingBlock() &
+             static_cast<ContainerOverflowingFlags>(
+                 ContainerOverflowing::kStart);
+      ;
+    case CSSValueID::kBlockEnd:
+      return media_values.OverflowingBlock() &
+             static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+    case CSSValueID::kInlineStart:
+      return media_values.OverflowingInline() &
+             static_cast<ContainerOverflowingFlags>(
+                 ContainerOverflowing::kStart);
+    case CSSValueID::kInlineEnd:
+      return media_values.OverflowingInline() &
+             static_cast<ContainerOverflowingFlags>(ContainerOverflowing::kEnd);
+    default:
+      NOTREACHED();
   }
 }
 
@@ -1624,8 +1667,7 @@ static bool ScriptingMediaFeatureEval(const MediaQueryExpValue& value,
     case CSSValueID::kEnabled:
       return media_values.GetScripting() == Scripting::kEnabled;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -1644,8 +1686,7 @@ static MediaQueryOperator ReverseOperator(MediaQueryOperator op) {
       return MediaQueryOperator::kLe;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return MediaQueryOperator::kNone;
+  NOTREACHED();
 }
 
 void MediaQueryEvaluator::Init() {
@@ -1665,8 +1706,7 @@ KleeneValue MediaQueryEvaluator::EvalFeature(
     // media_values_ should only be nullptr when parsing UA stylesheets. The
     // only media queries we support in UA stylesheets are media type queries.
     // If HasValues() return false, it means the document frame is nullptr.
-    NOTREACHED_IN_MIGRATION();
-    return KleeneValue::kFalse;
+    NOTREACHED();
   }
 
   if (!media_values_->Width().has_value() && feature.IsWidthDependent()) {
@@ -1728,9 +1768,8 @@ KleeneValue MediaQueryEvaluator::EvalStyleFeature(
     const MediaQueryFeatureExpNode& feature,
     MediaQueryResultFlags* result_flags) const {
   if (!media_values_ || !media_values_->HasValues()) {
-    NOTREACHED_IN_MIGRATION()
+    NOTREACHED()
         << "media_values has to be initialized for style() container queries";
-    return KleeneValue::kFalse;
   }
 
   const MediaQueryExpBounds& bounds = feature.Bounds();

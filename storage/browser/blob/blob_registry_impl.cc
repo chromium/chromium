@@ -587,29 +587,6 @@ void BlobRegistryImpl::RegisterFromStream(
                           std::move(progress_client));
 }
 
-void BlobRegistryImpl::GetBlobFromUUID(
-    mojo::PendingReceiver<blink::mojom::Blob> blob,
-    const std::string& uuid,
-    GetBlobFromUUIDCallback callback) {
-  if (!context_) {
-    std::move(callback).Run();
-    return;
-  }
-
-  if (uuid.empty()) {
-    receivers_.ReportBadMessage(
-        "Invalid UUID passed to BlobRegistry::GetBlobFromUUID");
-    return;
-  }
-  if (!context_->registry().HasEntry(uuid)) {
-    LOG(ERROR) << "Invalid UUID: " << uuid;
-    std::move(callback).Run();
-    return;
-  }
-  BlobImpl::Create(context_->GetBlobDataFromUUID(uuid), std::move(blob));
-  std::move(callback).Run();
-}
-
 void BlobRegistryImpl::BlobBuildAborted(const std::string& uuid) {
   blobs_under_construction_.erase(uuid);
 }

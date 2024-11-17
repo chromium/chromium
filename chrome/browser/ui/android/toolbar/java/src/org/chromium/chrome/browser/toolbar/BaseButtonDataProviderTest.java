@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -41,7 +41,7 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 @Config(manifest = Config.NONE)
 @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2})
 public class BaseButtonDataProviderTest {
-    private class TestButtonDataProvider extends BaseButtonDataProvider {
+    private static class TestButtonDataProvider extends BaseButtonDataProvider {
         public TestButtonDataProvider(
                 Supplier<Tab> activeTabSupplier,
                 @Nullable ModalDialogManager modalDialogManager,
@@ -64,9 +64,9 @@ public class BaseButtonDataProviderTest {
         }
 
         @Override
-        protected IPHCommandBuilder getIphCommandBuilder(Tab tab) {
-            IPHCommandBuilder iphCommandBuilder =
-                    new IPHCommandBuilder(
+        protected IphCommandBuilder getIphCommandBuilder(Tab tab) {
+            IphCommandBuilder iphCommandBuilder =
+                    new IphCommandBuilder(
                             tab.getContext().getResources(),
                             FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT,
                             /* stringId= */ R.string.iph_price_tracking_menu_item,
@@ -114,8 +114,8 @@ public class BaseButtonDataProviderTest {
                         AdaptiveToolbarButtonVariant.READER_MODE);
         ButtonData buttonData = testButtonDataProvider.get(mMockTab);
 
-        // Quiet variation uses an IPHCommandBuilder to highlight the action.
-        Assert.assertNotNull(buttonData.getButtonSpec().getIPHCommandBuilder());
+        // Quiet variation uses an IphCommandBuilder to highlight the action.
+        Assert.assertNotNull(buttonData.getButtonSpec().getIphCommandBuilder());
     }
 
     @Test
@@ -139,7 +139,7 @@ public class BaseButtonDataProviderTest {
         ButtonData buttonData = testButtonDataProvider.get(mMockTab);
 
         // Action chip variation should not set an IPH command builder.
-        Assert.assertNull(buttonData.getButtonSpec().getIPHCommandBuilder());
+        Assert.assertNull(buttonData.getButtonSpec().getIphCommandBuilder());
     }
 
     @Test

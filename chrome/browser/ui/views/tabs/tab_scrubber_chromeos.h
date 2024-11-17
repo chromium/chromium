@@ -10,7 +10,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_observer.h"
 #include "ui/events/event_handler.h"
@@ -92,10 +91,6 @@ class TabScrubberChromeOS : public ui::EventHandler,
   void UpdateHighlightedTab(Tab* new_tab, int new_index);
 
   bool GetEnabledForTesting() const { return enabled_; }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  static bool MaybeDelegateHandlingToLacros(ui::ScrollEvent* event);
-#endif
 
   // Are we currently scrubbing?.
   bool scrubbing_ = false;

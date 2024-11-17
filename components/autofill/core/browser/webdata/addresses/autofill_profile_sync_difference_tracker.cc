@@ -241,8 +241,7 @@ optional<ModelError>
 AutofillProfileInitialSyncDifferenceTracker::IncorporateRemoteDelete(
     const std::string& storage_key) {
   // Remote delete is not allowed in initial sync.
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 optional<ModelError> AutofillProfileInitialSyncDifferenceTracker::FlushToSync(

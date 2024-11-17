@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "components/prefs/testing_pref_service.h"
@@ -22,7 +23,9 @@ TEST(PersistedDataTest, Simple) {
   base::test::TaskEnvironment env;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata = CreatePersistedData(pref.get(), nullptr);
+  auto metadata = CreatePersistedData(
+      base::BindRepeating([](PrefService* pref) { return pref; }, pref.get()),
+      nullptr);
   EXPECT_EQ(-2, metadata->GetDateLastRollCall("someappid"));
   EXPECT_EQ(-2, metadata->GetDateLastActive("someappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someappid"));
@@ -58,7 +61,10 @@ TEST(PersistedDataTest, Simple) {
   EXPECT_EQ(-2, metadata->GetDateLastActive("someotherappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someotherappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastActive("someotherappid"));
+
   EXPECT_EQ(-2, metadata->GetInstallDate("someotherappid"));
+  metadata->SetInstallDate("someotherappid", 3386);
+  EXPECT_EQ(3386, metadata->GetInstallDate("someotherappid"));
 
   const std::string pf2 = metadata->GetPingFreshness("someappid");
   EXPECT_FALSE(pf2.empty());
@@ -90,7 +96,9 @@ TEST(PersistedDataTest, MixedCase) {
   base::test::TaskEnvironment env;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata = CreatePersistedData(pref.get(), nullptr);
+  auto metadata = CreatePersistedData(
+      base::BindRepeating([](PrefService* pref) { return pref; }, pref.get()),
+      nullptr);
   std::vector<std::string> items;
   items.push_back("someappid");
   items.push_back("someAPPid.withdot");
@@ -101,11 +109,71 @@ TEST(PersistedDataTest, MixedCase) {
   EXPECT_EQ(3383, metadata->GetDateLastRollCall("someappID.withDOT"));
 }
 
+TEST(PersistedDataTest, NullPtrPrefService) {
+  base::test::TaskEnvironment env;
+  auto metadata = CreatePersistedData(
+      base::BindRepeating([]() -> PrefService* { return nullptr; }), nullptr);
+  EXPECT_EQ(-2, metadata->GetDateLastRollCall("someappid"));
+  EXPECT_EQ(-2, metadata->GetDateLastActive("someappid"));
+  EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someappid"));
+  EXPECT_EQ(-2, metadata->GetDaysSinceLastActive("someappid"));
+  EXPECT_EQ(-2, metadata->GetDaysSinceLastActive("someappid.withdot"));
+  EXPECT_EQ(-2, metadata->GetInstallDate("someappid"));
+  EXPECT_EQ(-2, metadata->GetInstallDate("someappid.withdot"));
+  std::vector<std::string> items;
+  items.push_back("someappid");
+  items.push_back("someappid.withdot");
+  test::SetDateLastData(metadata.get(), items, 3383);
+  EXPECT_EQ(-2, metadata->GetDateLastRollCall("someappid"));
+  EXPECT_EQ(-2, metadata->GetDateLastRollCall("someappid.withdot"));
+  EXPECT_EQ(-2, metadata->GetInstallDate("someappid"));
+  EXPECT_EQ(-2, metadata->GetInstallDate("someappid.withdot"));
+  EXPECT_EQ(-2, metadata->GetDateLastActive("someappid"));
+  EXPECT_EQ(-2, metadata->GetDateLastActive("someappid.withdot"));
+  EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someappid"));
+  EXPECT_EQ(-2, metadata->GetDaysSinceLastActive("someappid"));
+  EXPECT_EQ(-2, metadata->GetDateLastRollCall("someotherappid"));
+  EXPECT_EQ(-2, metadata->GetDateLastActive("someotherappid"));
+  EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someotherappid"));
+  EXPECT_EQ(-2, metadata->GetDaysSinceLastActive("someotherappid"));
+  const std::string pf1 = metadata->GetPingFreshness("someappid");
+  EXPECT_TRUE(pf1.empty());
+  test::SetDateLastData(metadata.get(), items, 3386);
+  metadata->SetInstallDate("someappid", 3386);
+  EXPECT_EQ(-2, metadata->GetDateLastRollCall("someappid"));
+  EXPECT_EQ(-2, metadata->GetInstallDate("someappid"));
+  EXPECT_EQ(-2, metadata->GetDateLastActive("someappid"));
+  EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someappid"));
+  EXPECT_EQ(-2, metadata->GetDaysSinceLastActive("someappid"));
+  EXPECT_EQ(-2, metadata->GetDateLastRollCall("someotherappid"));
+  EXPECT_EQ(-2, metadata->GetDateLastActive("someotherappid"));
+  EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someotherappid"));
+  EXPECT_EQ(-2, metadata->GetDaysSinceLastActive("someotherappid"));
+  EXPECT_EQ(-2, metadata->GetInstallDate("someotherappid"));
+
+  const std::string pf2 = metadata->GetPingFreshness("someappid");
+  EXPECT_TRUE(pf2.empty());
+
+  EXPECT_FALSE(metadata->GetProductVersion("someappid").IsValid());
+  metadata->SetProductVersion("someappid", base::Version("1.0"));
+  EXPECT_FALSE(metadata->GetProductVersion("someappid").IsValid());
+
+  EXPECT_FALSE(metadata->GetMaxPreviousProductVersion("someappid").IsValid());
+  metadata->SetMaxPreviousProductVersion("someappid", base::Version("1.0"));
+  EXPECT_FALSE(metadata->GetMaxPreviousProductVersion("someappid").IsValid());
+
+  EXPECT_TRUE(metadata->GetFingerprint("someappid").empty());
+  metadata->SetFingerprint("someappid", "somefingerprint");
+  EXPECT_TRUE(metadata->GetFingerprint("someappid").empty());
+}
+
 TEST(PersistedDataTest, SharedPref) {
   base::test::TaskEnvironment env;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata = CreatePersistedData(pref.get(), nullptr);
+  auto metadata = CreatePersistedData(
+      base::BindRepeating([](PrefService* pref) { return pref; }, pref.get()),
+      nullptr);
   EXPECT_EQ(-2, metadata->GetDateLastRollCall("someappid"));
   EXPECT_EQ(-2, metadata->GetDateLastActive("someappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someappid"));
@@ -117,7 +185,9 @@ TEST(PersistedDataTest, SharedPref) {
 
   // Now, create a new PersistedData reading from the same path, verify
   // that it loads the value.
-  metadata = CreatePersistedData(pref.get(), nullptr);
+  metadata = CreatePersistedData(
+      base::BindRepeating([](PrefService* pref) { return pref; }, pref.get()),
+      nullptr);
   EXPECT_EQ(3383, metadata->GetDateLastRollCall("someappid"));
   EXPECT_EQ(-2, metadata->GetDateLastActive("someappid"));
   EXPECT_EQ(-2, metadata->GetDaysSinceLastRollCall("someappid"));
@@ -134,7 +204,9 @@ TEST(PersistedDataTest, SimpleCohort) {
   base::test::TaskEnvironment env;
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata = CreatePersistedData(pref.get(), nullptr);
+  auto metadata = CreatePersistedData(
+      base::BindRepeating([](PrefService* pref) { return pref; }, pref.get()),
+      nullptr);
   EXPECT_EQ("", metadata->GetCohort("someappid"));
   EXPECT_EQ("", metadata->GetCohort("someotherappid"));
   EXPECT_EQ("", metadata->GetCohortHint("someappid"));
@@ -173,8 +245,9 @@ TEST(PersistedDataTest, ActivityData) {
   auto activity_service_unique = std::make_unique<TestActivityDataService>();
   TestActivityDataService* activity_service = activity_service_unique.get();
   RegisterPersistedDataPrefs(pref->registry());
-  auto metadata =
-      CreatePersistedData(pref.get(), std::move(activity_service_unique));
+  auto metadata = CreatePersistedData(
+      base::BindRepeating([](PrefService* pref) { return pref; }, pref.get()),
+      std::move(activity_service_unique));
 
   std::vector<std::string> items({"id1", "id2", "id3"});
 
@@ -240,7 +313,8 @@ TEST(PersistedDataTest, LastUpdateCheckError) {
   auto pref = std::make_unique<TestingPrefServiceSimple>();
   RegisterPersistedDataPrefs(pref->registry());
   auto metadata = CreatePersistedData(
-      pref.get(), std::make_unique<TestActivityDataService>());
+      base::BindRepeating([](PrefService* pref) { return pref; }, pref.get()),
+      std::make_unique<TestActivityDataService>());
 
   metadata->SetLastUpdateCheckError(
       {.category_ = ErrorCategory::kDownload, .code_ = 5, .extra_ = 10});

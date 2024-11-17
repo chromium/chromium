@@ -5,8 +5,8 @@
 package org.chromium.chrome.browser.tab_group_sync;
 
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -102,6 +102,13 @@ public class StartupHelper {
             SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(tabGroupId);
             if (savedTabGroup != null) continue;
 
+            // Skip if the group is ineligible for syncing, e.g. hasn't been accessed in recent
+            // times.
+            if (!TabGroupSyncUtils.isTabGroupEligibleForSyncing(tabGroupId, mTabGroupModelFilter)) {
+                LogUtils.log(TAG, "Skipping the tab group as it is too old");
+                return;
+            }
+
             mRemoteTabGroupMutationHelper.createRemoteTabGroup(tabGroupId);
         }
     }
@@ -110,7 +117,8 @@ public class StartupHelper {
         LogUtils.log(TAG, "reconcileGroupsToSync");
         for (LocalTabGroupId tabGroupId : getLocalTabGroupIds()) {
             SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(tabGroupId);
-            assert savedTabGroup != null;
+            // At this point every tab group should be already in sync unless they are too old.
+            if (savedTabGroup == null) continue;
             mLocalTabGroupMutationHelper.reconcileGroupOnStartup(savedTabGroup);
         }
     }

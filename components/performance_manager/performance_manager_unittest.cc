@@ -28,7 +28,7 @@ class PerformanceManagerTest : public PerformanceManagerTestHarness {
  public:
   using Super = PerformanceManagerTestHarness;
 
-  PerformanceManagerTest() {}
+  PerformanceManagerTest() = default;
 
   void SetUp() override {
     EXPECT_FALSE(PerformanceManager::IsAvailable());
@@ -45,7 +45,7 @@ class PerformanceManagerTest : public PerformanceManagerTestHarness {
   PerformanceManagerTest(const PerformanceManagerTest&) = delete;
   PerformanceManagerTest& operator=(const PerformanceManagerTest&) = delete;
 
-  ~PerformanceManagerTest() override {}
+  ~PerformanceManagerTest() override = default;
 };
 
 TEST_F(PerformanceManagerTest, NodeAccessors) {

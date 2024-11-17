@@ -126,7 +126,7 @@ void LogTouchEvents(const std::list<ui::TouchEvent>& events) {
 
 std::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     const base::Value::Dict& value,
-    const std::string_view key_name) {
+    std::string_view key_name) {
   const std::string* key = value.FindString(kKey);
   if (!key) {
     LOG(ERROR) << "No key-value for {" << key_name << "}.";
@@ -311,11 +311,6 @@ void Action::PrepareToBindInput(std::unique_ptr<InputElement> input_element) {
     pending_input_.reset();
   }
   pending_input_ = std::move(input_element);
-
-  if (IsBeta() || !action_view_) {
-    return;
-  }
-  action_view_->SetViewContent(BindingOption::kPending);
 }
 
 void Action::BindPending() {
@@ -373,11 +368,7 @@ void Action::PrepareToBindPosition(const gfx::Point& new_touch_center) {
   pending_position_->Normalize(new_touch_center,
                                touch_injector_->content_bounds_f());
 
-  // "Restore to default" and "Cancel" functions are removed for Beta version,
-  // so the change is applied immediately after change.
-  if (IsBeta()) {
-    BindPending();
-  }
+  BindPending();
 }
 
 void Action::RestoreToDefault() {
@@ -545,33 +536,18 @@ bool Action::VerifyOnKeyRelease(ui::DomCode code) {
   return true;
 }
 
-void Action::PostUnbindInputProcess() {
-  if (IsBeta() || !action_view_) {
-    return;
-  }
-  action_view_->SetViewContent(BindingOption::kPending);
-  const int label_index = action_view_->unbind_label_index();
-  action_view_->SetDisplayMode(DisplayMode::kEditedUnbound,
-                               (label_index == kDefaultLabelIndex
-                                    ? nullptr
-                                    : action_view_->labels()[label_index]));
-  action_view_->set_unbind_label_index(kDefaultLabelIndex);
-}
-
 std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
   auto proto = std::make_unique<ActionProto>();
   proto->set_id(id_);
+  proto->set_name_index(name_label_index_);
 
   if (IsDefaultAction()) {
     // Check if the default action is customized.
     bool customized = false;
 
-    if (IsBeta()) {
-      DCHECK(original_type_);
-      if (*original_type_ != GetType()) {
-        customized = true;
-      }
-      proto->set_name_index(name_label_index_);
+    DCHECK(original_type_);
+    if (*original_type_ != GetType()) {
+      customized = true;
     }
 
     if (*original_input_ != *current_input_) {
@@ -591,16 +567,13 @@ std::unique_ptr<ActionProto> Action::ConvertToProtoIfCustomized() const {
     if (!customized) {
       return nullptr;
     }
-  } else if (IsBeta()) {
+  } else {
     // Save everything for user-added action.
     proto->set_allocated_input_element(
         current_input_->ConvertToProto().release());
     auto pos_proto = current_positions_[0].ConvertToProto();
     *proto->add_positions() = *pos_proto;
     pos_proto.reset();
-    proto->set_name_index(name_label_index_);
-  } else {
-    // Disregard the user-added actions if the beta flag is off.
   }
 
   return proto;

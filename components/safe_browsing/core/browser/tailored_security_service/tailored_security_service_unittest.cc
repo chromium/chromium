@@ -16,6 +16,7 @@
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service_observer_util.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "net/http/http_status_code.h"
@@ -614,6 +615,26 @@ TEST_F(TailoredSecurityServiceTest,
           URLLoaderFactory(), prefs(),
           /*sync_service=*/nullptr);
   EXPECT_FALSE(tailored_security_service->HistorySyncEnabledForUser());
+}
+
+TEST_F(TailoredSecurityServiceTest, CanQueryTailoredSecurityForUrl) {
+  // Test cases for URLs that should be allowed.
+  EXPECT_TRUE(CanQueryTailoredSecurityForUrl(GURL("https://google.com")));
+  EXPECT_TRUE(CanQueryTailoredSecurityForUrl(GURL("https://google.ae")));
+  EXPECT_TRUE(CanQueryTailoredSecurityForUrl(GURL("https://google.com.bz")));
+  EXPECT_TRUE(CanQueryTailoredSecurityForUrl(GURL("https://google.se")));
+  EXPECT_TRUE(CanQueryTailoredSecurityForUrl(GURL("https://www.google.com")));
+  EXPECT_TRUE(
+      CanQueryTailoredSecurityForUrl(GURL("https://subdomain.google.com")));
+  // Non-standard port
+  EXPECT_TRUE(
+      CanQueryTailoredSecurityForUrl(GURL("https://www.google.com:8080")));
+  EXPECT_TRUE(CanQueryTailoredSecurityForUrl(GURL("https://youtube.com")));
+  EXPECT_TRUE(CanQueryTailoredSecurityForUrl(GURL("https://www.youtube.com")));
+  // Test cases for URLs that should not be allowed.
+  EXPECT_FALSE(CanQueryTailoredSecurityForUrl(GURL("https://example.com")));
+  EXPECT_FALSE(
+      CanQueryTailoredSecurityForUrl(GURL("https://google.com.example.com")));
 }
 
 }  // namespace safe_browsing

@@ -9,8 +9,15 @@ import("//tools/grit/grit_rule.gni")
 assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //ash")
 
 mojom("mojo_bindings") {
-  sources = [ "emoji_search.mojom" ]
-  public_deps = [ "//mojo/public/mojom/base" ]
+  sources = [
+    "emoji_search.mojom",
+    "tenor_types.mojom",
+  ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
   webui_module_path = "/"
 }
 
@@ -21,10 +28,17 @@ source_set("unit_tests") {
     ":resources",
     "//base/test:test_support",
     "//build:branding_buildflags",
+    "//components/endpoint_fetcher",
+    "//content/test:test_support",
+    "//services/data_decoder/public/cpp:test_support",
     "//testing/gtest",
     "//ui/base:test_support",
+    "//url",
   ]
-  sources = [ "emoji_search_unittest.cc" ]
+  sources = [
+    "emoji_search_unittest.cc",
+    "gif_tenor_api_fetcher_unittest.cc",
+  ]
 }
 
 action_foreach("emoji_data") {
@@ -671,12 +685,23 @@ grit("resources") {
 source_set("emoji") {
   deps = [
     ":resources",
-    "//base",
+    "//base/version_info",
     "//build:branding_buildflags",
+    "//chromeos/ash/components/channel",
+    "//components/endpoint_fetcher",
+    "//services/network/public/cpp",
     "//ui/base",
+    "//url",
   ]
   sources = [
     "emoji_search.cc",
     "emoji_search.h",
+    "gif_tenor_api_fetcher.cc",
+    "gif_tenor_api_fetcher.h",
+  ]
+  public_deps = [
+    ":mojo_bindings",
+    "//base",
+    "//services/data_decoder/public/cpp",
   ]
 }

@@ -1,7 +1,6 @@
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SEEKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SEEKER_H_
@@ -29,11 +28,10 @@ class Seeker {
     DCHECK_GE(rule_position, last_rule_position_);
     last_rule_position_ = rule_position;
 #endif
-
-    while (iter_ != intervals_.end() &&
-           iter_->start_position <= rule_position) {
-      ++iter_;
-    }
+    iter_ = std::find_if(iter_, intervals_.end(),
+                         [rule_position](const RuleSet::Interval<T>& interval) {
+                           return interval.start_position > rule_position;
+                         });
     if (iter_ == intervals_.begin()) {
       return nullptr;
     }

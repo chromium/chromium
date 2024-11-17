@@ -35,7 +35,9 @@ class AppActivity : public CastActivity {
   AppActivity(const MediaRoute& route,
               const std::string& app_id,
               cast_channel::CastMessageHandler* message_handler,
-              CastSessionTracker* session_tracker);
+              CastSessionTracker* session_tracker,
+              mojo::Remote<mojom::Logger>& logger,
+              mojo::Remote<mojom::Debugger>& debugger);
   ~AppActivity() override;
 
   void SendMediaStatusToClients(const base::Value::Dict& media_status,

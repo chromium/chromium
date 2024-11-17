@@ -753,7 +753,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   webapps::AppId app_id = InstallWebApp();
 
-  EXPECT_EQ(GetResultAfterPageLoad(GURL("http://example.org")),
+  EXPECT_EQ(GetResultAfterPageLoad(GURL("https://example.org")),
             ManifestUpdateResult::kNoAppInScope);
 
   histogram_tester_.ExpectTotalCount(kUpdateHistogramName, 0);
@@ -1159,9 +1159,9 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   WebAppInstallManagerObserverAdapter install_observer(
       &GetProvider().install_manager());
   install_observer.SetWebAppInstalledDelegate(base::BindLambdaForTesting(
-      [](const webapps::AppId& app_id) { NOTREACHED_IN_MIGRATION(); }));
+      [](const webapps::AppId& app_id) { NOTREACHED(); }));
   install_observer.SetWebAppUninstalledDelegate(base::BindLambdaForTesting(
-      [](const webapps::AppId& app_id) { NOTREACHED_IN_MIGRATION(); }));
+      [](const webapps::AppId& app_id) { NOTREACHED(); }));
 
   // CSS #RRGGBBAA syntax.
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "#00FF00F0"});
@@ -4166,11 +4166,7 @@ class ManifestUpdateManagerBrowserTest_ScopeExtensions
   std::string OriginAssociationFileFromAppIdentity(const GURL& app_identity) {
     constexpr char kOriginAssociationTemplate[] = R"(
     {
-      "web_apps": [
-        {
-          "web_app_identity": "$1"
-        }
-      ]
+      "$1" : {}
     })";
     return base::ReplaceStringPlaceholders(kOriginAssociationTemplate,
                                            {app_identity.spec()}, nullptr);
@@ -5509,7 +5505,7 @@ IN_PROC_BROWSER_TEST_P(
     ending_stage = starting_stage;  // No icon change.
     expected_shortcut_colors_if_updated = expected_shortcut_colors_before;
   } else {
-    NOTREACHED_IN_MIGRATION();  // Unhandled test input.
+    NOTREACHED();  // Unhandled test input.
   }
 
   OverrideManifest(kManifestTemplate, {app_name, starting_stage});
@@ -5524,7 +5520,7 @@ IN_PROC_BROWSER_TEST_P(
   } else if (IsWebApp()) {
     app_id = InstallWebApp();
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   const WebApp* web_app = GetProvider().registrar_unsafe().GetAppById(app_id);

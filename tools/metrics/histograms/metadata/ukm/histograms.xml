@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="UKM.AppVersionDifferentWhenPurging" enum="BooleanChanged"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>rkaplow@google.com</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <summary>

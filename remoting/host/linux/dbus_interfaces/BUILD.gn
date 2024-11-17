@@ -1,0 +1,17 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+executable("gen_dbus_interface") {
+  sources = [ "gen_dbus_interface.cc" ]
+  deps = [ "//base" ]
+  configs += [ "//build/linux:gio_config" ]
+}
+
+source_set("interface_headers") {
+  sources = [
+    "org_chromium_TestInterface.h",
+    "org_freedesktop_DBus_Properties.h",
+  ]
+  deps = [ "//remoting/host/linux:gvariant" ]
+}

@@ -22,6 +22,7 @@ class WebState;
 class InfoBarIOS;
 class OverlayRequestQueue;
 class InfobarOverlayRequestInserter;
+class TipsManagerIOS;
 
 // Helper object that inserts a Translate banner request when Translate finishes
 // for an infobar.
@@ -100,6 +101,8 @@ class TranslateOverlayTabHelper
         infobar_manager_scoped_observation_{this};
     // TranslateOverlayTabHelper instance.
     raw_ptr<TranslateOverlayTabHelper> tab_helper_;
+    // Weak pointer to the `TipsManagerIOS`.
+    raw_ptr<TipsManagerIOS> tips_manager_;
   };
 
   // Listens for a WebStateDestroyed callback to null out any WebState-scoped

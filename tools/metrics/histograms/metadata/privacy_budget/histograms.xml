@@ -16,18 +16,8 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histograms>
 
-<histogram name="PrivacyBudget.Identifiability.FinchConfigValidationResult"
-    enum="BooleanSuccess" expires_after="2024-10-28">
-  <owner>antoniosartori@chromium.org</owner>
-  <owner>mkwst@chromium.org</owner>
-  <summary>
-    Indicates whether the Finch configuration for the privacy budget
-    identifiability study was validated successfully.
-  </summary>
-</histogram>
-
 <histogram name="PrivacyBudget.Identifiability.RecordedSample"
-    enum="PrivacyBudgetRecordedSample" expires_after="2024-11-17">
+    enum="PrivacyBudgetRecordedSample" expires_after="2025-11-17">
   <owner>antoniosartori@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
   <summary>

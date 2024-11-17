@@ -254,7 +254,7 @@ class AutocompleteInputConnection extends InputConnectionWrapper {
      * @return {@code true} if the batch edit is still in progress. {@code false} otherwise.
      */
     public boolean onEndImeCommand() {
-        if (DEBUG) Log.i(TAG, "onEndImeCommand: " + (mInputDelegate.isInBatchEdit()));
+        if (DEBUG) Log.i(TAG, "onEndImeCommand: " + mInputDelegate.isInBatchEdit());
         AutocompleteState currentState = mInputDelegate.getCurrentState();
         String diff = currentState.getBackwardDeletedTextFrom(mPreBatchEditState);
         if (diff != null) {

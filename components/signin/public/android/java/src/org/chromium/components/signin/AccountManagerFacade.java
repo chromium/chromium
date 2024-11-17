@@ -163,4 +163,12 @@ public interface AccountManagerFacade {
     /** Whether fetching the list of accounts from the device eventually succeeded. */
     // TODO(crbug.com/330304719): Handle this with exceptions rather than a boolean.
     boolean didAccountFetchSucceed();
+
+    /**
+     * Used in live tests to prevent subsequent token requests from going through. After this method
+     * is invoked - all subsequent calls to `getAccessToken` and `invalidateAccessToken` will
+     * immediately fail. Should only be used in live tests.
+     */
+    @MainThread
+    void disallowTokenRequestsForTesting();
 }

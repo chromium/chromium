@@ -23,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
@@ -136,9 +137,8 @@ class NetworkRequestMetricsBrowserTest
         return base::StringPrintf("<script src='%s'></script>",
                                   subresource_path.c_str());
       case RequestType::kMainFrame:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
-    return std::string();
   }
 
   void StartNavigatingAndWaitForRequest() {
@@ -456,8 +456,8 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest, Download) {
   }
 
   browser()->profile()->GetPrefs()->SetInteger(
-      prefs::kDownloadRestrictions,
-      static_cast<int>(DownloadPrefs::DownloadRestriction::ALL_FILES));
+      policy::policy_prefs::kDownloadRestrictions,
+      static_cast<int>(policy::DownloadRestriction::ALL_FILES));
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kPromptForDownload,
                                                false);
 

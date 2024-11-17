@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/style/style_crossfade_image.h"
 
 #include "third_party/blink/renderer/core/css/css_crossfade_value.h"
@@ -138,8 +133,8 @@ IntrinsicSizingInfo StyleCrossfadeImage::GetNaturalSizingInfo(
   }
 
   // (See `StyleCrossfadeImage::ImageSize()`)
-  const bool all_equal = std::all_of(
-      sizing_info.begin() + 1, sizing_info.end(),
+  const bool all_equal = std::ranges::all_of(
+      base::span(sizing_info).subspan(1u),
       [first_sizing_info{sizing_info[0]}](
           const IntrinsicSizingInfo& sizing_info) {
         return sizing_info.size == first_sizing_info.size &&
@@ -198,8 +193,8 @@ gfx::SizeF StyleCrossfadeImage::ImageSize(float multiplier,
   // Rounding issues can cause transitions between images of equal size to
   // return a different fixed size; avoid performing the interpolation if the
   // images are the same size.
-  const bool all_equal = std::all_of(
-      image_sizes.begin() + 1, image_sizes.end(),
+  const bool all_equal = std::ranges::all_of(
+      base::span(image_sizes).subspan(1u),
       [first_image_size{image_sizes[0]}](const gfx::SizeF& image_size) {
         return image_size == first_image_size;
       });

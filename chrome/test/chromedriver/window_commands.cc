@@ -17,6 +17,7 @@
 #include <vector>
 
 #include "base/containers/adapters.h"
+#include "base/containers/flat_set.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -65,6 +66,11 @@ const double kDefaultCookieExpiryTime = 20*365*24*60*60;
 
 // for pointer actions
 enum class PointerActionType { NOT_INITIALIZED, PRESS, MOVE, RELEASE, IDLE };
+
+const base::flat_set<StatusCode> kNavigationHints = {
+    kNoSuchExecutionContext,
+    kAbortedByNavigation,
+};
 
 Status GetMouseButton(const base::Value::Dict& params, MouseButton* button) {
   // Default to left mouse button.
@@ -721,13 +727,13 @@ Status ExecuteWindowCommand(const WindowCommand& command,
     }
 
     status = command.Run(session, web_view, params, value, &timeout);
-    if (status.code() == kNoSuchExecutionContext) {
+    if (kNavigationHints.contains(status.code())) {
       // Navigation was detected while running the command. Retry.
       continue;
     }
     if (status.code() == kTimeout) {
       // If the command timed out, let WaitForPendingNavigations cancel
-      // the navigation if there is one.
+      // the navigation if there is any.
       continue;
     } else if (status.code() == kUnknownError && web_view->IsNonBlocking() &&
                status.message().find(kTargetClosedMessage) !=
@@ -735,10 +741,11 @@ Status ExecuteWindowCommand(const WindowCommand& command,
       // When pageload strategy is None, new navigation can occur during
       // execution of a command. Retry the command.
       continue;
-    } else if (status.code() == kDisconnected) {
+    } else if (status.code() == kDisconnected ||
+               status.code() == kTargetDetached) {
       // Some commands, like clicking a button or link which closes the window,
-      // may result in a kDisconnected error code. |web_view| may be invalid at
-      // at this point.
+      // may result in a kDisconnected or kTargetDetached error code.
+      // |web_view| may be invalid at this point.
       return status;
     } else if (status.IsError()) {
       // If the command failed while a new page or frame started loading, retry
@@ -767,10 +774,11 @@ Status ExecuteWindowCommand(const WindowCommand& command,
   if (status.code() == kUnexpectedAlertOpen_Keep) {
     return Status(kUnexpectedAlertOpen, status.message());
   }
-  if (status.code() == kNoSuchExecutionContext) {
+  if (kNavigationHints.contains(status.code())) {
     // The command has failed to run due to pending navigation three times.
-    // Giving up with an appropriate standard error.
-    return Status{kUnknownError, status};
+    // Returning a "timeout" error because infinite retries would, presumably,
+    // never end.
+    return Status{kTimeout, status};
   }
   return status;
 }
@@ -820,9 +828,8 @@ Status ExecuteExecuteScript(Session* session,
                                    session->script_timeout, value);
   switch (status.code()) {
     case kTimeout:
-    // Navigation has happened during script execution. Further wait would lead
-    // to timeout.
-    case kNavigationDetectedByRemoteEnd:
+    // If the target has been detached the script will never return
+    case kTargetDetached:
       return Status(kScriptTimeout);
     default:
       return status;
@@ -854,7 +861,7 @@ Status ExecuteExecuteAsyncScript(Session* session,
     case kTimeout:
     // Navigation has happened during script execution. Further wait would lead
     // to timeout.
-    case kNavigationDetectedByRemoteEnd:
+    case kAbortedByNavigation:
       return Status(kScriptTimeout);
     default:
       return status;
@@ -916,7 +923,8 @@ Status ExecuteSwitchToFrame(Session* session,
   base::Value::List args;
   const base::Value::Dict* id_dict = id->GetIfDict();
   if (id_dict) {
-    const std::string* element_id = id_dict->FindString(GetElementKey());
+    const std::string* element_id =
+        id_dict->FindString(GetElementKey(session->w3c_compliant));
     if (!element_id)
       return Status(kInvalidArgument, "missing 'ELEMENT'");
     bool is_displayed = false;
@@ -1514,13 +1522,13 @@ Status ProcessInputActionSequence(Session* session,
               return Status(kInvalidArgument,
                             "'origin' must be either a string or a dictionary");
             const std::string* element_id =
-                origin_dict->FindString(GetElementKey());
+                origin_dict->FindString(GetElementKey(session->w3c_compliant));
             if (!element_id)
               return Status(kInvalidArgument, "'element' is missing");
             base::Value* origin_result =
                 action_dict.Set("origin", base::Value(base::Value::Type::DICT));
-            origin_result->GetDict().SetByDottedPath(GetElementKey(),
-                                                     *element_id);
+            origin_result->GetDict().SetByDottedPath(
+                GetElementKey(session->w3c_compliant), *element_id);
           } else {
             const std::string& origin = origin_val->GetString();
             if (origin != "viewport" && origin != "pointer")
@@ -1779,7 +1787,9 @@ Status ExecutePerformActions(Session* session,
               if (const base::Value* origin_val = action.Find("origin")) {
                 if (const base::Value::Dict* origin_dict =
                         origin_val->GetIfDict()) {
-                  GetOptionalString(*origin_dict, GetElementKey(), &element_id);
+                  GetOptionalString(*origin_dict,
+                                    GetElementKey(session->w3c_compliant),
+                                    &element_id);
                   if (!element_id.empty()) {
                     int center_x = 0, center_y = 0;
                     Status status = ElementInViewCenter(

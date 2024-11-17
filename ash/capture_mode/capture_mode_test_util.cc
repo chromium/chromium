@@ -417,7 +417,7 @@ void SelectCaptureModeRegion(ui::test::EventGenerator* event_generator,
   auto* controller = CaptureModeController::Get();
   ASSERT_TRUE(controller->IsActive());
   ASSERT_EQ(CaptureModeSource::kRegion, controller->source());
-  event_generator->set_current_screen_location(region_in_screen.origin());
+  event_generator->MoveMouseTo(region_in_screen.origin());
   event_generator->PressLeftButton();
   event_generator->MoveMouseTo(region_in_screen.bottom_right());
   if (release_mouse) {

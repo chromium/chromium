@@ -12,42 +12,9 @@
 #include "chrome/common/extensions/api/enterprise_networking_attributes.h"
 #include "net/base/ip_address.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#else
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-namespace {
-
-const char kUnsupportedByAsh[] = "Not implemented.";
-const char kUnsupportedProfile[] = "Not available for this profile.";
-
-// Performs common crosapi validation. These errors are not caused by the
-// extension so they are considered recoverable. Returns an error message on
-// error, or empty string on success. |context| is the browser context in which
-// the extension is hosted.
-std::string ValidateCrosapi(content::BrowserContext* context) {
-  if (!chromeos::LacrosService::Get()
-           ->IsAvailable<crosapi::mojom::NetworkingAttributes>()) {
-    return kUnsupportedByAsh;
-  }
-
-  // These APIs are used in security-sensitive contexts. We need to ensure that
-  // the user for ash is the same as the user for lacros. We do this by
-  // restricting the API to the default profile, which is guaranteed to be the
-  // same user.
-  if (!Profile::FromBrowserContext(context)->IsMainProfile())
-    return kUnsupportedProfile;
-
-  return "";
-}
-
-}  // namespace
-#endif
 
 namespace extensions {
 
@@ -59,25 +26,14 @@ EnterpriseNetworkingAttributesGetNetworkDetailsFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseNetworkingAttributesGetNetworkDetailsFunction::Run() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::string error = ValidateCrosapi(browser_context());
-  if (!error.empty()) {
-    return RespondNow(Error(error));
-  }
-#endif
   auto callback = base::BindOnce(
       &EnterpriseNetworkingAttributesGetNetworkDetailsFunction::OnResult, this);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService::Get()
-      ->GetRemote<crosapi::mojom::NetworkingAttributes>()
-      ->GetNetworkDetails(std::move(callback));
-#else
   crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->networking_attributes_ash()
       ->GetNetworkDetails(std::move(callback));
-#endif
+
   return RespondLater();
 }
 

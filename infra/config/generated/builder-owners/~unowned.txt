@@ -35,7 +35,6 @@ ci/android-11-x86-rel
 ci/android-12-x64-dbg-tests
 ci/android-12-x64-fyi-rel
 ci/android-12l-x64-fyi-dbg
-ci/android-13-x64-fyi-rel
 ci/android-annotator-rel
 ci/android-arm64-archive-rel
 ci/android-avd-packager
@@ -72,8 +71,6 @@ ci/ios17-sdk-device
 ci/ios17-sdk-simulator
 ci/ios18-beta-simulator
 ci/ios18-sdk-simulator
-ci/lacros-arm64-archive-rel
-ci/lacros-arm64-generic-rel
 ci/linux-annotator-rel
 ci/linux-blink-heap-verification
 ci/linux-blink-web-tests-force-accessibility-rel
@@ -86,13 +83,11 @@ ci/linux-fieldtrial-rel
 ci/linux-fuzz-coverage
 ci/linux-headless-shell-rel
 ci/linux-js-code-coverage
-ci/linux-lacros-archive-rel
 ci/linux-official
 ci/linux-perfetto-rel
 ci/linux-rel-no-external-ip
 ci/linux-rust-x64-dbg
 ci/linux-rust-x64-rel
-ci/linux-ubsan-fyi-rel
 ci/linux-updater-builder-dbg
 ci/linux-updater-builder-rel
 ci/linux-updater-tester-dbg
@@ -112,7 +107,6 @@ ci/mac-updater-builder-arm64-rel
 ci/mac-updater-builder-asan-dbg
 ci/mac-updater-builder-dbg
 ci/mac-updater-builder-rel
-ci/mac-upload-perfetto
 ci/mac11-arm64-updater-tester-dbg
 ci/mac11-arm64-updater-tester-rel
 ci/mac11-x64-updater-tester-dbg
@@ -149,7 +143,6 @@ codesearch/gen-android-try
 codesearch/gen-chromiumos-try
 codesearch/gen-fuchsia-try
 codesearch/gen-ios-try
-codesearch/gen-lacros-try
 codesearch/gen-linux-try
 codesearch/gen-mac-try
 codesearch/gen-webview-try
@@ -158,7 +151,6 @@ findit/gofindit-culprit-verification
 findit/test-single-revision
 flaky-reproducer/runner
 infra/autosharder
-reclient/Comparison Linux (reclient vs reclient remote links)
 reclient/Comparison Linux (reclient)
 reclient/Comparison Linux (reclient)(CQ)
 reclient/Linux Builder (canonical wd) (reclient compare)
@@ -206,7 +198,6 @@ try/android-arm-compile-dbg
 try/android-arm64-all-targets-dbg
 try/android-arm64-rel
 try/android-arm64-rel-compilator
-try/android-asan-compile-dbg
 try/android-bfcache-rel
 try/android-binary-size
 try/android-chrome-pie-x86-wpt-fyi-rel
@@ -230,7 +221,6 @@ try/android-webview-13-x64-dbg
 try/android-webview-oreo-arm64-dbg
 try/android-webview-pie-arm64-dbg
 try/android-webview-pie-x86-wpt-fyi-rel
-try/android-x64-cast
 try/android_arm64_dbg_recipe
 try/android_blink_rel
 try/android_compile_dbg
@@ -242,7 +232,6 @@ try/builder-config-verifier
 try/chromeos-amd64-generic-asan-rel
 try/chromeos-amd64-generic-cfi-thin-lto-rel
 try/chromeos-amd64-generic-dbg
-try/chromeos-amd64-generic-lacros-dbg
 try/chromeos-arm-generic-dbg
 try/chromeos-arm-generic-rel
 try/chromeos-arm64-generic-rel
@@ -277,9 +266,6 @@ try/ios17-beta-simulator
 try/ios17-sdk-simulator
 try/ios18-beta-simulator
 try/ios18-sdk-simulator
-try/lacros-amd64-generic-rel
-try/lacros-arm-generic-rel
-try/lacros-arm64-generic-rel
 try/layout_test_leak_detection
 try/leak_detection_linux
 try/linux-afl-asan-rel
@@ -314,10 +300,6 @@ try/linux-gcc-rel
 try/linux-headless-shell-rel
 try/linux-js-code-coverage
 try/linux-js-coverage-rel
-try/linux-lacros-clang-tidy-rel
-try/linux-lacros-dbg
-try/linux-lacros-rel
-try/linux-lacros-rel-compilator
 try/linux-layout-tests-edit-ng
 try/linux-libfuzzer-asan-rel
 try/linux-msan-chained-origins-rel
@@ -336,9 +318,7 @@ try/linux-swangle-try-x64
 try/linux-swangle-try-x64-exp
 try/linux-tsan-dbg
 try/linux-tsan-rel
-try/linux-ubsan-fyi-rel
 try/linux-ubsan-rel
-try/linux-ubsan-vptr
 try/linux-ubsan-vptr-rel
 try/linux-updater-try-builder-dbg
 try/linux-updater-try-builder-rel

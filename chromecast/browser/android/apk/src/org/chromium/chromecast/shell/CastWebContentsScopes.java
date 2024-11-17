@@ -17,6 +17,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chromecast.base.Observer;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.components.embedder_support.view.ContentViewRenderView;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
@@ -33,34 +34,56 @@ class CastWebContentsScopes {
     public static Observer<WebContents> onLayoutActivity(
             Activity activity, FrameLayout layout, @ColorInt int backgroundColor) {
         layout.setBackgroundColor(backgroundColor);
-        return onLayoutInternal(activity, layout, () -> {
-            return new ActivityWindowAndroid(activity, /* listenToActivityState= */ true,
-                    IntentRequestTracker.createFromActivity(activity));
-        }, backgroundColor);
+        return onLayoutInternal(
+                activity,
+                layout,
+                () -> {
+                    return new ActivityWindowAndroid(
+                            activity,
+                            /* listenToActivityState= */ true,
+                            IntentRequestTracker.createFromActivity(activity),
+                            /* insetObserver= */ null,
+                            /* trackOcclusion= */ false);
+                },
+                backgroundColor);
     }
 
     public static Observer<WebContents> onLayoutFragment(
             Activity activity, FrameLayout layout, @ColorInt int backgroundColor) {
         layout.setBackgroundColor(backgroundColor);
         return onLayoutInternal(
-                activity, layout, () -> new WindowAndroid(activity), backgroundColor);
+                activity,
+                layout,
+                () -> new WindowAndroid(activity, /* trackOcclusion= */ false),
+                backgroundColor);
     }
 
-    static Observer<WebContents> onLayoutView(Context context, FrameLayout layout,
-            @ColorInt int backgroundColor, WindowTokenProvider windowTokenProvider) {
+    static Observer<WebContents> onLayoutView(
+            Context context,
+            FrameLayout layout,
+            @ColorInt int backgroundColor,
+            WindowTokenProvider windowTokenProvider) {
         layout.setBackgroundColor(backgroundColor);
-        return onLayoutInternal(context, layout, () -> new WindowAndroid(context) {
-            @Override
-            public IBinder getWindowToken() {
-                return windowTokenProvider.provideWindowToken();
-            }
-        }, backgroundColor);
+        return onLayoutInternal(
+                context,
+                layout,
+                () ->
+                        new WindowAndroid(context, /* trackOcclusion= */ false) {
+                            @Override
+                            public IBinder getWindowToken() {
+                                return windowTokenProvider.provideWindowToken();
+                            }
+                        },
+                backgroundColor);
     }
 
     // Note: the |windowFactory| should create a new instance of a WindowAndroid each time it is
     // invoked.
-    private static Observer<WebContents> onLayoutInternal(Context context, FrameLayout layout,
-            Supplier<WindowAndroid> windowFactory, @ColorInt int backgroundColor) {
+    private static Observer<WebContents> onLayoutInternal(
+            Context context,
+            FrameLayout layout,
+            Supplier<WindowAndroid> windowFactory,
+            @ColorInt int backgroundColor) {
         return (WebContents webContents) -> {
             WindowAndroid window = windowFactory.get();
             ContentViewRenderView contentViewRenderView =
@@ -87,7 +110,7 @@ class CastWebContentsScopes {
             WebContentsRegistry.initializeWebContents(webContents, contentView, window);
 
             // Enable display of current webContents.
-            webContents.onShow();
+            webContents.updateWebContentsVisibility(Visibility.VISIBLE);
             layout.addView(contentView, matchParent);
             // Ensure that the foreground doesn't interfere with accessibility overlays.
             layout.setForeground(null);
@@ -108,16 +131,16 @@ class CastWebContentsScopes {
 
     public static Observer<WebContents> withoutLayout(Context context) {
         return (WebContents webContents) -> {
-            WindowAndroid window = new WindowAndroid(context);
+            WindowAndroid window = new WindowAndroid(context, /* trackOcclusion= */ false);
             ContentView contentView = ContentView.createContentView(context, webContents);
             WebContentsRegistry.initializeWebContents(webContents, contentView, window);
             // Enable display of current webContents.
-            webContents.onShow();
+            webContents.updateWebContentsVisibility(Visibility.VISIBLE);
             return () -> {
                 if (!webContents.isDestroyed()) {
                     // WebContents can be destroyed by the app before CastWebContentsComponent
                     // unbinds, which is why we need this check.
-                    webContents.onHide();
+                    webContents.updateWebContentsVisibility(Visibility.HIDDEN);
 
                     if (webContents.getTopLevelNativeWindow() == window) {
                         webContents.setTopLevelNativeWindow(null);

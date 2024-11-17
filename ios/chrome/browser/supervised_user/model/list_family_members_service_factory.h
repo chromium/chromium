@@ -7,8 +7,9 @@
 
 #import "base/no_destructor.h"
 #import "components/supervised_user/core/browser/list_family_members_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
+
+class ProfileIOS;
 
 // Singleton that owns ListFamilyMembersService objects and associates
 // them with Profiles.

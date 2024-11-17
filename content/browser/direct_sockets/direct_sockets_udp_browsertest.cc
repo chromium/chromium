@@ -49,8 +49,6 @@ constexpr char kLocalhostAddress[] = "127.0.0.1";
 
 class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
  public:
-  ~DirectSocketsUdpBrowserTest() override = default;
-
   GURL GetTestPageURL() {
     return embedded_test_server()->GetURL("/direct_sockets/udp.html");
   }
@@ -103,7 +101,7 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
         std::move(listener_receiver_remote));
 
     server_socket_.set_disconnect_handler(
-        base::BindLambdaForTesting([]() { NOTREACHED_IN_MIGRATION(); }));
+        base::BindLambdaForTesting([]() { NOTREACHED(); }));
 
     net::IPEndPoint server_addr(net::IPAddress::IPv4Localhost(), 0);
     auto server_helper =
@@ -122,7 +120,6 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
     return shell()->web_contents()->GetBrowserContext();
   }
 
-  base::test::ScopedFeatureList feature_list_{blink::features::kDirectSockets};
   mojo::Remote<network::mojom::UDPSocket> server_socket_;
 
   std::unique_ptr<test::IsolatedWebAppContentBrowserClient> client_;

@@ -154,10 +154,6 @@ class WebAppUiManager {
   virtual bool IsInAppWindow(content::WebContents* web_contents) const = 0;
   virtual const webapps::AppId* GetAppIdForWindow(
       const content::WebContents* web_contents) const = 0;
-  virtual void NotifyOnAssociatedAppChanged(
-      content::WebContents* web_contents,
-      const std::optional<webapps::AppId>& previous_app_id,
-      const std::optional<webapps::AppId>& new_app_id) const = 0;
 
   virtual bool CanReparentAppTabToWindow(const webapps::AppId& app_id,
                                          bool shortcut_created) const = 0;

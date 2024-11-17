@@ -19,7 +19,10 @@ namespace blink {
 namespace {
 
 const char kNotHighTrustedAppExceptionMessage[] =
-    "This API is available only for managed apps.";
+    "Managed configuration is empty. This API is available only for "
+    "managed apps.";
+const char kServiceConnectionExceptionMessage[] =
+    "Service connection error. This API is available only for managed apps.";
 
 #if BUILDFLAG(IS_ANDROID)
 const char kManagedConfigNotSupported[] =
@@ -122,7 +125,7 @@ void NavigatorManagedData::OnServiceConnectionError() {
   for (ScriptPromiseResolverBase* resolver : pending_promises_) {
     resolver->Reject(
         MakeGarbageCollected<DOMException>(DOMExceptionCode::kNotAllowedError,
-                                           kNotHighTrustedAppExceptionMessage));
+                                           kServiceConnectionExceptionMessage));
   }
 }
 
@@ -252,10 +255,9 @@ void NavigatorManagedData::OnConfigurationReceived(
 
   HeapVector<std::pair<String, ScriptValue>> result;
   for (const auto& config_pair : *configurations) {
-    v8::Local<v8::Value> v8_object;
-    if (v8::JSON::Parse(script_state->GetContext(),
-                        V8String(script_state->GetIsolate(), config_pair.value))
-            .ToLocal(&v8_object)) {
+    v8::Local<v8::Value> v8_object =
+        FromJSONString(script_state, config_pair.value);
+    if (!v8_object.IsEmpty()) {
       result.emplace_back(config_pair.key,
                           ScriptValue(script_state->GetIsolate(), v8_object));
     }

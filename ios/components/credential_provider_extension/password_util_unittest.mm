@@ -18,6 +18,10 @@ namespace credential_provider_extension {
 NSString* kCredentialKey1 = @"key1";
 NSString* kCredentialKey2 = @"key2";
 
+NSString* kAccountInfoEmail1 = @"peter.parker@gmail.com";
+NSString* kAccountInfoEmail2 = @"mary.jane@gmail.com";
+NSString* kAccountInfoGaia1 = @"123456789";
+NSString* kAccountInfoGaia2 = @"987654321";
 NSString* kCredentialPassword1 = @"pa55word1";
 NSString* kCredentialPassword2 = @"p4ssw0rd2";
 
@@ -100,12 +104,12 @@ TEST_F(PasswordUtilKeychainTest, CheckRestoreOfSavedPasswords) {
 
 // Tests retrieval of saved passwords, using an empty string as arg.
 TEST_F(PasswordUtilKeychainTest, EmptyArgument) {
-  EXPECT_NSEQ(PasswordWithKeychainIdentifier(@""), @"");
+  EXPECT_NSEQ(PasswordWithKeychainIdentifier(@""), nil);
 }
 
 // Tests retrieval of saved passwords, nil as arg.
 TEST_F(PasswordUtilKeychainTest, NilArgument) {
-  EXPECT_NSEQ(PasswordWithKeychainIdentifier(nil), @"");
+  EXPECT_NSEQ(PasswordWithKeychainIdentifier(nil), nil);
 }
 
 // Tests storing passwords with StorePassword.
@@ -128,6 +132,26 @@ TEST_F(PasswordUtilKeychainTest, CheckSavingPasswords) {
 // Tests storing a password with an empty identifier
 TEST_F(PasswordUtilKeychainTest, StoreEmptyIdentifier) {
   EXPECT_FALSE(StorePasswordInKeychain(kCredentialPassword1, @""));
+}
+
+// Tests storing and loading the account info (gaia and email).
+TEST_F(PasswordUtilKeychainTest, StoreAccountInfo) {
+  EXPECT_TRUE(
+      StoreAccountInfoInKeychain(kAccountInfoGaia1, kAccountInfoEmail1));
+  EXPECT_NSEQ(LoadAccountInfoFromKeychain().gaia, kAccountInfoGaia1);
+  EXPECT_NSEQ(LoadAccountInfoFromKeychain().email, kAccountInfoEmail1);
+}
+
+// Tests updating an existing account info (gaia and email).
+TEST_F(PasswordUtilKeychainTest, UpdateAccountInfo) {
+  EXPECT_TRUE(
+      StoreAccountInfoInKeychain(kAccountInfoGaia2, kAccountInfoEmail2));
+  EXPECT_NSEQ(LoadAccountInfoFromKeychain().gaia, kAccountInfoGaia2);
+  EXPECT_NSEQ(LoadAccountInfoFromKeychain().email, kAccountInfoEmail2);
+  EXPECT_TRUE(
+      StoreAccountInfoInKeychain(kAccountInfoGaia2, kAccountInfoEmail2));
+  EXPECT_NSEQ(LoadAccountInfoFromKeychain().gaia, kAccountInfoGaia2);
+  EXPECT_NSEQ(LoadAccountInfoFromKeychain().email, kAccountInfoEmail2);
 }
 
 }  // credential_provider_extension

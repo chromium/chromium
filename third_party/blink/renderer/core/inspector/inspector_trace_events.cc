@@ -322,6 +322,7 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoWebKitAutofill)
     DEFINE_STRING_MAPPING(PseudoAutofillPreviewed)
     DEFINE_STRING_MAPPING(PseudoAutofillSelected)
+    DEFINE_STRING_MAPPING(PseudoHasSlotted)
     DEFINE_STRING_MAPPING(PseudoHover)
     DEFINE_STRING_MAPPING(PseudoDrag)
     DEFINE_STRING_MAPPING(PseudoFocus)
@@ -346,8 +347,10 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoInvalid)
     DEFINE_STRING_MAPPING(PseudoIndeterminate)
     DEFINE_STRING_MAPPING(PseudoTarget)
+    DEFINE_STRING_MAPPING(PseudoCheck)
     DEFINE_STRING_MAPPING(PseudoBefore)
     DEFINE_STRING_MAPPING(PseudoAfter)
+    DEFINE_STRING_MAPPING(PseudoSelectArrow)
     DEFINE_STRING_MAPPING(PseudoMarker)
     DEFINE_STRING_MAPPING(PseudoBackdrop)
     DEFINE_STRING_MAPPING(PseudoLang)
@@ -387,12 +390,13 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoFullScreenAncestor)
     DEFINE_STRING_MAPPING(PseudoFullscreen)
     DEFINE_STRING_MAPPING(PseudoPaused)
+    DEFINE_STRING_MAPPING(PseudoPermissionElementInvalidStyle)
+    DEFINE_STRING_MAPPING(PseudoPermissionElementOccluded)
     DEFINE_STRING_MAPPING(PseudoPermissionGranted)
     DEFINE_STRING_MAPPING(PseudoPictureInPicture)
     DEFINE_STRING_MAPPING(PseudoPlaying)
     DEFINE_STRING_MAPPING(PseudoInRange)
     DEFINE_STRING_MAPPING(PseudoOutOfRange)
-    DEFINE_STRING_MAPPING(PseudoTrue)
     DEFINE_STRING_MAPPING(PseudoWebKitCustomElement)
     DEFINE_STRING_MAPPING(PseudoBlinkInternalElement)
     DEFINE_STRING_MAPPING(PseudoCue)
@@ -409,7 +413,6 @@ const char* PseudoTypeToString(CSSSelector::PseudoType pseudo_type) {
     DEFINE_STRING_MAPPING(PseudoMultiSelectFocus)
     DEFINE_STRING_MAPPING(PseudoOpen)
     DEFINE_STRING_MAPPING(PseudoClosed)
-    DEFINE_STRING_MAPPING(PseudoSelectHasChildButton)
     DEFINE_STRING_MAPPING(PseudoPicker)
     DEFINE_STRING_MAPPING(PseudoDialogInTopLayer)
     DEFINE_STRING_MAPPING(PseudoPopoverInTopLayer)
@@ -1667,7 +1670,9 @@ void inspector_animation_event::Data(perfetto::TracedValue context,
                                      const Animation& animation) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("id", String::Number(animation.SequenceNumber()));
-  dict.Add("state", animation.PlayStateString());
+  dict.Add(
+      "state",
+      V8AnimationPlayState(animation.CalculateAnimationPlayState()).AsCStr());
   if (const AnimationEffect* effect = animation.effect()) {
     dict.Add("displayName",
              InspectorAnimationAgent::AnimationDisplayName(animation));
@@ -1682,7 +1687,9 @@ void inspector_animation_event::Data(perfetto::TracedValue context,
 void inspector_animation_state_event::Data(perfetto::TracedValue context,
                                            const Animation& animation) {
   auto dict = std::move(context).WriteDictionary();
-  dict.Add("state", animation.PlayStateString());
+  dict.Add(
+      "state",
+      V8AnimationPlayState(animation.CalculateAnimationPlayState()).AsCStr());
 }
 
 void inspector_animation_compositor_event::Data(
@@ -1725,6 +1732,64 @@ void inspector_async_task::Data(perfetto::TracedValue context,
                                 const StringView& name) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("name", name.ToString());
+}
+
+namespace {
+const char* WebSchedulingPriorityToString(WebSchedulingPriority priority) {
+  switch (priority) {
+    case WebSchedulingPriority::kUserBlockingPriority:
+      return "user-blocking";
+    case WebSchedulingPriority::kUserVisiblePriority:
+      return "user-visible";
+    case WebSchedulingPriority::kBackgroundPriority:
+      return "background";
+  }
+}
+void SchedulerBaseData(perfetto::TracedDictionary& dict,
+                       ExecutionContext* context,
+                       uint64_t task_id) {
+  dict.Add("taskId", task_id);
+  // TODO(crbug.com/376069345): Add identifier for worker contexts.
+  if (auto* frame = FrameForExecutionContext(context)) {
+    dict.Add("frame", IdentifiersFactory::FrameId(frame));
+  }
+}
+}  // namespace
+
+void inspector_scheduler_schedule_event::Data(
+    perfetto::TracedValue trace_context,
+    ExecutionContext* execution_context,
+    uint64_t task_id,
+    WebSchedulingPriority priority,
+    std::optional<double> delay) {
+  auto dict = std::move(trace_context).WriteDictionary();
+  SchedulerBaseData(dict, execution_context, task_id);
+  dict.Add("priority", WebSchedulingPriorityToString(priority));
+  if (delay) {
+    dict.Add("delay", delay.value());
+  }
+  SetCallStack(execution_context->GetIsolate(), dict);
+}
+
+void inspector_scheduler_run_event::Data(perfetto::TracedValue trace_context,
+                                         ExecutionContext* execution_context,
+                                         uint64_t task_id,
+                                         WebSchedulingPriority priority,
+                                         std::optional<double> delay) {
+  auto dict = std::move(trace_context).WriteDictionary();
+  SchedulerBaseData(dict, execution_context, task_id);
+  dict.Add("priority", WebSchedulingPriorityToString(priority));
+  if (delay) {
+    dict.Add("delay", delay.value());
+  }
+}
+
+void inspector_scheduler_abort_event::Data(perfetto::TracedValue trace_context,
+                                           ExecutionContext* execution_context,
+                                           uint64_t task_id) {
+  auto dict = std::move(trace_context).WriteDictionary();
+  SchedulerBaseData(dict, execution_context, task_id);
+  SetCallStack(execution_context->GetIsolate(), dict);
 }
 
 }  // namespace blink

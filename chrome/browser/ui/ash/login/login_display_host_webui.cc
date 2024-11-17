@@ -71,8 +71,6 @@
 #include "chrome/browser/ui/webui/ash/login/device_disabled_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/install_attributes_error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
@@ -85,6 +83,7 @@
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/language_preferences/language_preferences.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -247,8 +246,7 @@ bool ShouldPreserveUserContext() {
   }
   WizardContext* wizard_context =
       LoginDisplayHost::default_host()->GetWizardContext();
-  if (!wizard_context || !wizard_context->add_user_from_cached_credentials ||
-      !wizard_context->user_context) {
+  if (!wizard_context || !wizard_context->timebound_user_context_holder) {
     return false;
   }
   return true;
@@ -269,14 +267,14 @@ void ShowLoginWizardFinish(
     return;
   }
 
-  std::unique_ptr<UserContext> user_context;
+  std::unique_ptr<TimeboundUserContextHolder> user_context;
   if (ShouldShowSigninScreen(first_screen)) {
     if (ShouldPreserveUserContext()) {
       // Move the user context to the local variable before it's destroyed.
       WizardContext* wizard_context =
           LoginDisplayHost::default_host()->GetWizardContext();
       CHECK(wizard_context);
-      user_context = std::move(wizard_context->user_context);
+      user_context = std::move(wizard_context->timebound_user_context_holder);
     }
     // Shutdown WebUI host to replace with the Mojo one.
     MaybeShutdownLoginDisplayHostWebUI();
@@ -293,18 +291,6 @@ void ShowLoginWizardFinish(
     display_host = LoginDisplayHost::default_host();
   } else if (ShouldShowSigninScreen(first_screen)) {
     display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
-  } else if (first_screen == LacrosDataMigrationScreenView::kScreenId) {
-    // TODO(crbug.com/40169227): Once lacros is officially released,
-    // `ShowLoginWizard()` will no longer be called with lacros screen id.
-    // Instead simply call `SigninUI::StartBrowserDataMigration()` as part of
-    // the login flow.
-    display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
-    DCHECK(session_manager::SessionManager::Get());
-    session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
-  } else if (first_screen == LacrosDataBackwardMigrationScreenView::kScreenId) {
-    display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
-    DCHECK(session_manager::SessionManager::Get());
-    session_manager::SessionManager::Get()->NotifyLoginOrLockScreenVisible();
   } else if (first_screen == ArcVmDataMigrationScreenView::kScreenId) {
     display_host = new LoginDisplayHostMojo(DisplayedScreen::SIGN_IN_SCREEN);
     DCHECK(session_manager::SessionManager::Get());
@@ -317,8 +303,7 @@ void ShowLoginWizardFinish(
     // Restore the user context within the wizard context.
     WizardContext* wizard_context = display_host->GetWizardContext();
     CHECK(wizard_context);
-    wizard_context->user_context = std::move(user_context);
-    wizard_context->add_user_from_cached_credentials = true;
+    wizard_context->timebound_user_context_holder = std::move(user_context);
   }
 
   // Restore system timezone.
@@ -538,7 +523,6 @@ LoginDisplayHostWebUI::~LoginDisplayHostWebUI() {
 
   ResetKeyboardOverscrollBehavior();
 
-  views::FocusManager::set_arrow_key_traversal_enabled(false);
   ResetLoginWindowAndView();
 
   CHECK(!views::WidgetObserver::IsInObserverList());
@@ -630,7 +614,9 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
   DVLOG(1) << "Starting wizard, first_screen: " << first_screen;
 
   // Create and show the wizard.
-  if (wizard_controller_) {
+  if (wizard_controller_ && !wizard_controller_->is_initialized()) {
+    wizard_controller_->Init(first_screen);
+  } else if (wizard_controller_) {
     wizard_controller_->AdvanceToScreen(first_screen);
   } else {
     wizard_controller_ = std::make_unique<WizardController>(GetWizardContext());
@@ -639,9 +625,10 @@ void LoginDisplayHostWebUI::StartWizard(OobeScreenId first_screen) {
   }
 
   if (ash::features::IsBootAnimationEnabled()) {
-    auto* welcome_screen = GetWizardController()->GetScreen<WelcomeScreen>();
     const bool should_show =
-        wizard_controller_->current_screen() == welcome_screen;
+        wizard_controller_->HasScreen(WelcomeView::kScreenId) &&
+        wizard_controller_->current_screen() ==
+            GetWizardController()->GetScreen<WelcomeScreen>();
     if (should_show) {
       ash::Shell::Get()
           ->booting_animation_controller()
@@ -661,11 +648,11 @@ WizardController* LoginDisplayHostWebUI::GetWizardController() {
 }
 
 void LoginDisplayHostWebUI::OnStartUserAdding() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LoginDisplayHostWebUI::CancelUserAdding() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LoginDisplayHostWebUI::OnStartSignInScreen() {
@@ -700,6 +687,10 @@ void LoginDisplayHostWebUI::OnStartAppLaunch() {
   }
 
   login_view_->set_should_emit_login_prompt_visible(false);
+  if (!wizard_controller_) {
+    wizard_controller_ = std::make_unique<WizardController>(GetWizardContext());
+    NotifyWizardCreated();
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -937,7 +928,7 @@ void LoginDisplayHostWebUI::LoadURL(const GURL& url) {
 
 void LoginDisplayHostWebUI::ShowWebUI() {
   session_observation_.Reset();
-  show_webui_guard_.AbandonAndStop();
+  show_webui_guard_.Stop();
 
   DCHECK(login_window_);
   DCHECK(login_view_);
@@ -960,7 +951,7 @@ void LoginDisplayHostWebUI::InitLoginWindowAndView() {
   }
 
   if (system::InputDeviceSettings::ForceKeyboardDrivenUINavigation()) {
-    views::FocusManager::set_arrow_key_traversal_enabled(true);
+    arrow_key_traversal_enabler_.emplace();
     focus_ring_controller_ = std::make_unique<FocusRingController>();
     focus_ring_controller_->SetVisible(true);
 
@@ -1097,11 +1088,11 @@ void LoginDisplayHostWebUI::HandleDisplayCaptivePortal() {
 void LoginDisplayHostWebUI::OnCancelPasswordChangedFlow() {}
 
 void LoginDisplayHostWebUI::UpdateAddUserButtonStatus() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LoginDisplayHostWebUI::RequestSystemInfoUpdate() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool LoginDisplayHostWebUI::HasUserPods() {
@@ -1109,7 +1100,7 @@ bool LoginDisplayHostWebUI::HasUserPods() {
 }
 
 void LoginDisplayHostWebUI::StartUserRecovery(const AccountId& account_id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LoginDisplayHostWebUI::UseAlternativeAuthentication(
@@ -1120,11 +1111,7 @@ void LoginDisplayHostWebUI::UseAlternativeAuthentication(
 
 void LoginDisplayHostWebUI::RunLocalAuthentication(
     std::unique_ptr<UserContext> user_context) {
-  NOTREACHED_IN_MIGRATION();
-}
-
-void LoginDisplayHostWebUI::StartBrowserDataMigration() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LoginDisplayHostWebUI::AddObserver(LoginDisplayHost::Observer* observer) {

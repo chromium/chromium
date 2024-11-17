@@ -81,8 +81,7 @@ bool Value::ToBoolean() const {
     case kStringValue:
       return !data_->string_.empty();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 double Value::ToNumber() const {
@@ -112,8 +111,7 @@ double Value::ToNumber() const {
     case kBooleanValue:
       return bool_;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0.0;
+  NOTREACHED();
 }
 
 String Value::ToString() const {
@@ -135,8 +133,7 @@ String Value::ToString() const {
     case kBooleanValue:
       return bool_ ? "true" : "false";
   }
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 }  // namespace xpath

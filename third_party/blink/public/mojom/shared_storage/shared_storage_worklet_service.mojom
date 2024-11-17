@@ -7,11 +7,23 @@ module blink.mojom;
 import "mojo/public/mojom/base/string16.mojom";
 import "third_party/blink/public/mojom/private_aggregation/private_aggregation_host.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
+import "services/network/public/mojom/shared_storage.mojom";
 import "third_party/blink/public/mojom/shared_storage/shared_storage.mojom";
 import "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom";
 import "third_party/blink/public/mojom/messaging/cloneable_message.mojom";
 import "third_party/blink/public/mojom/devtools/console_message.mojom";
+import "third_party/blink/public/mojom/interest_group/interest_group_types.mojom";
 import "url/mojom/url.mojom";
+
+// The permissions policy features state of the shared storage worklet. Only a
+// few features exist in the worklet, so rather than propagating the state of
+// all available permissions policy features, we only propagate the state of the
+// features that are potentially needed in the worklet.
+struct SharedStorageWorkletPermissionsPolicyState {
+  bool private_aggregation_allowed;
+  bool join_ad_interest_group_allowed;
+  bool run_ad_auction_allowed;
+};
 
 // Used to denote a shared storage's key, value, or the [key, value] pair. This
 // would unify the handling for different type of iterators, such as for
@@ -39,34 +51,25 @@ interface SharedStorageEntriesListener {
       int32 total_queued_to_send);
 };
 
+union GetInterestGroupsResult {
+  // A string describing the error on failure.
+  string error_message;
+
+  // A list of interest groups on success. It can be empty.
+  array<StorageInterestGroup> groups;
+};
+
 // Used by the shared storage worklet environment to access the shared storage,
 // log messages, etc.
 interface SharedStorageWorkletServiceClient {
- // Handle sharedStorage.set(): set `key`’s entry to `value`. If
-  // `ignoreIfPresent` is true, the entry is not updated if `key` already
-  // exists.
-  SharedStorageSet(SharedStorageKeyArgument key,
-                   SharedStorageValueArgument value,
-                   bool ignore_if_present)
-    => (bool success, string error_message);
-
-  // Handle sharedStorage.append(): append `value` to the entry for `key`.
-  // Equivalent to "set" if the `key` is not present.
-  SharedStorageAppend(SharedStorageKeyArgument key,
-                      SharedStorageValueArgument value)
-    => (bool success, string error_message);
-
-  // Handle sharedStorage.delete(): delete the entry at the given `key`.
-  SharedStorageDelete(SharedStorageKeyArgument key)
-    => (bool success, string error_message);
-
-  // Handle sharedStorage.clear(): delete all entries.
-  SharedStorageClear()
-    => (bool success, string error_message);
+  // Handle the modifier method `method`. Return an empty `error_message` on
+  // success, and return an non-empty `error_message` on failure.
+  SharedStorageUpdate(network.mojom.SharedStorageModifierMethod method)
+      => (string error_message);
 
   // Handle sharedStorage.get(): get the entry at `key`, or an empty string if
   // `key` is not present.
-  SharedStorageGet(SharedStorageKeyArgument key)
+  SharedStorageGet(network.mojom.SharedStorageKeyArgument key)
     => (SharedStorageGetStatus status, string error_message,
       mojo_base.mojom.String16 value);
 
@@ -85,6 +88,10 @@ interface SharedStorageWorkletServiceClient {
   // in the privacy budget.
   SharedStorageRemainingBudget()
     => (bool success, string error_message, double bits);
+
+  // Returns the interest groups associated with the shared storage origin's
+  // owner on success, or the error message on failure.
+  GetInterestGroups() => (GetInterestGroupsResult result);
 
   // Observer method for DevTools console outputs.
   DidAddMessageToConsole(ConsoleMessageLevel log_level, string message);
@@ -108,7 +115,7 @@ interface SharedStorageWorkletService {
   // be the first call on this interface.
   Initialize(
     pending_associated_remote<SharedStorageWorkletServiceClient> client,
-    bool private_aggregation_permissions_policy_allowed,
+    SharedStorageWorkletPermissionsPolicyState permissions_policy_state,
     mojo_base.mojom.String16? embedder_context);
 
   // Handle sharedStorage.worklet.addModule(): download and load the script in

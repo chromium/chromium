@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
@@ -69,10 +70,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleChunkedBuffer {
     Chunk& operator=(const Chunk&) = default;
     Chunk& operator=(Chunk&&) = default;
 
-    uint64_t start_pos() const;
-    uint64_t end_pos() const;
-    size_t size() const;
-    const uint8_t* data() const;
+    uint64_t start_pos() const { return start_pos_; }
+    uint64_t end_pos() const { return start_pos_ + bytes_->size(); }
+    size_t size() const { return bytes_->size(); }
+    const uint8_t* data() const { return bytes_->data(); }
+    auto begin() const { return bytes_->begin(); }
+    auto end() const { return bytes_->end(); }
 
    private:
     uint64_t start_pos_;

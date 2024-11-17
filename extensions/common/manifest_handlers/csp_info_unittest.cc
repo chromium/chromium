@@ -117,7 +117,7 @@ TEST_F(CSPInfoUnitTest, CSPStringKey) {
             CSPInfo::GetExtensionPagesCSP(extension.get()));
 
   // Manifest V2 extensions bypass the main world CSP in their isolated worlds.
-  const std::string* isolated_world_csp =
+  std::optional<std::string> isolated_world_csp =
       CSPInfo::GetIsolatedWorldCSP(*extension);
   ASSERT_TRUE(isolated_world_csp);
   EXPECT_TRUE(isolated_world_csp->empty());
@@ -375,10 +375,14 @@ TEST_F(CSPInfoUnitTest, CSPDictionaryMandatoryForV3) {
         LoadAndExpectSuccess(filename, mojom::ManifestLocation::kInternal);
     ASSERT_TRUE(extension);
 
-    const std::string* isolated_world_csp =
+    std::optional<std::string> isolated_world_csp =
         CSPInfo::GetIsolatedWorldCSP(*extension);
     ASSERT_TRUE(isolated_world_csp);
-    EXPECT_EQ(CSPHandler::GetMinimumMV3CSPForTesting(), *isolated_world_csp);
+    std::string expected_csp = base::StringPrintf(
+        "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules' "
+        "%s; object-src 'self';",
+        extension->dynamic_url().spec().c_str());
+    EXPECT_EQ(expected_csp, *isolated_world_csp);
 
     EXPECT_EQ(kDefaultSandboxedPageCSP,
               CSPInfo::GetSandboxContentSecurityPolicy(extension.get()));
@@ -399,11 +403,14 @@ TEST_F(CSPInfoUnitTest, CSPDictionaryMandatoryForV3) {
         LoadAndExpectSuccess(filename, mojom::ManifestLocation::kUnpacked);
     ASSERT_TRUE(extension);
 
-    const std::string* isolated_world_csp =
+    std::optional<std::string> isolated_world_csp =
         CSPInfo::GetIsolatedWorldCSP(*extension);
     ASSERT_TRUE(isolated_world_csp);
-    EXPECT_EQ(CSPHandler::GetMinimumUnpackedMV3CSPForTesting(),
-              *isolated_world_csp);
+    std::string expected_csp = base::StringPrintf(
+        "script-src 'self' 'wasm-unsafe-eval' 'inline-speculation-rules' "
+        "http://localhost:* http://127.0.0.1:* %s; object-src 'self';",
+        extension->dynamic_url().spec().c_str());
+    EXPECT_EQ(expected_csp, *isolated_world_csp);
 
     EXPECT_EQ(kDefaultSandboxedPageCSP,
               CSPInfo::GetSandboxContentSecurityPolicy(extension.get()));

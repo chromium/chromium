@@ -1,0 +1,42 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (!is_android && !is_fuchsia) {
+  # webui dependency makes this not available for android or fuchsia.
+  static_library("test_support") {
+    testonly = true
+    sources = [
+      "account_capabilities_observer.cc",
+      "account_capabilities_observer.h",
+      "accounts_removed_waiter.cc",
+      "accounts_removed_waiter.h",
+      "live_test.cc",
+      "live_test.h",
+      "sign_in_test_observer.cc",
+      "sign_in_test_observer.h",
+      "signin_util.cc",
+      "signin_util.h",
+    ]
+
+    deps = [ "//chrome/browser/ui/webui/signin:test_support_ui" ]
+
+    public_deps = [
+      "//base",
+      "//chrome/browser",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/sync",
+      "//chrome/browser/ui:ui",
+      "//chrome/browser/ui/webui/signin",
+      "//chrome/test:test_support_ui",
+      "//components/signin/core/browser",
+      "//components/signin/public/identity_manager:test_support",
+      "//content/test:test_support",
+      "//mojo/public/mojom/base",
+      "//skia/public/mojom",
+      "//testing/gmock",
+      "//testing/gtest",
+      "//ui/views:test_support",
+    ]
+  }
+}

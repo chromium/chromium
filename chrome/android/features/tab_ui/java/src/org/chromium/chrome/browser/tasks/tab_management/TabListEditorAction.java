@@ -16,8 +16,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiMetricsHelper.TabListEditorExitMetricGroups;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -118,7 +117,7 @@ public abstract class TabListEditorAction {
 
     private ObserverList<ActionObserver> mObsevers = new ObserverList<>();
     private PropertyModel mModel;
-    private Supplier<TabModelFilter> mCurrentTabModelFilterSupplier;
+    private Supplier<TabGroupModelFilter> mCurrentTabGroupModelFilterSupplier;
     private ActionDelegate mActionDelegate;
     private SelectionDelegate<Integer> mSelectionDelegate;
     private Boolean mEditorSupportsActionOnRelatedTabs;
@@ -214,10 +213,10 @@ public abstract class TabListEditorAction {
     }
 
     /**
-     * Actions should override this to decide if an action should be enabled and
-     * to provide the enabled state and count to the PropertyModel.
+     * Actions should override this to decide if an action should be enabled and to provide the
+     * enabled state and count to the PropertyModel.
+     *
      * @param tabIds the list of selected tab ids.
-     * @return Whether the action should be enabled.
      */
     public abstract void onSelectionStateChange(List<Integer> tabIds);
 
@@ -236,11 +235,12 @@ public abstract class TabListEditorAction {
 
     /**
      * Processes the selected tabs from the selection list.
+     *
      * @return whether an action was taken.
      */
     public boolean perform() {
         assert mActionDelegate != null;
-        assert mCurrentTabModelFilterSupplier != null;
+        assert mCurrentTabGroupModelFilterSupplier != null;
         assert mSelectionDelegate != null;
 
         List<Tab> tabs = getTabsOrTabsAndRelatedTabsFromSelection();
@@ -272,18 +272,18 @@ public abstract class TabListEditorAction {
     /**
      * Called by {@link TabListEditorMediator} to supply additional dependencies.
      *
-     * @param currentTabModelFilterSupplier that this action should act on.
+     * @param currentTabGroupModelFilterSupplier that this action should act on.
      * @param selectionDelegate to get selected tab IDs from.
      * @param actionDelegate to control the TabListEditor.
      * @param editorSupportsActionOnRelatedTabs whether the TabListEditor supports actions on
      *     related tabs.
      */
     void configure(
-            @NonNull Supplier<TabModelFilter> currentTabModelFilterSupplier,
+            @NonNull Supplier<TabGroupModelFilter> currentTabGroupModelFilterSupplier,
             @NonNull SelectionDelegate<Integer> selectionDelegate,
             @NonNull ActionDelegate actionDelegate,
             boolean editorSupportsActionOnRelatedTabs) {
-        mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
+        mCurrentTabGroupModelFilterSupplier = currentTabGroupModelFilterSupplier;
         mSelectionDelegate = selectionDelegate;
         mActionDelegate = actionDelegate;
         mEditorSupportsActionOnRelatedTabs = editorSupportsActionOnRelatedTabs;
@@ -295,7 +295,7 @@ public abstract class TabListEditorAction {
     }
 
     protected @NonNull TabGroupModelFilter getTabGroupModelFilter() {
-        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
         assert filter != null;
         return filter;
     }
@@ -322,7 +322,7 @@ public abstract class TabListEditorAction {
     }
 
     private List<Tab> getTabsAndRelatedTabsFromSelection() {
-        TabGroupModelFilter filter = (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get();
+        TabGroupModelFilter filter = mCurrentTabGroupModelFilterSupplier.get();
 
         List<Tab> tabs = new ArrayList<>();
         for (int tabId : mSelectionDelegate.getSelectedItems()) {

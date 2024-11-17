@@ -7,7 +7,8 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace breadcrumbs {
 class BreadcrumbManagerKeyedService;
@@ -18,9 +19,6 @@ class BreadcrumbManagerKeyedServiceFactory
  public:
   static BreadcrumbManagerKeyedServiceFactory* GetInstance();
   static breadcrumbs::BreadcrumbManagerKeyedService* GetForProfile(
-      ProfileIOS* profile);
-  // Deprecated: use GetForProfile(...).
-  static breadcrumbs::BreadcrumbManagerKeyedService* GetForBrowserState(
       ProfileIOS* profile);
 
  private:

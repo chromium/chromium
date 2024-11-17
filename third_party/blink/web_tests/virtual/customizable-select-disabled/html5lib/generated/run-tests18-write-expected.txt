@@ -1,0 +1,26 @@
+CONSOLE WARNING: A plaintext tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE WARNING: A plaintext tag was parsed inside of a <select> which was not inserted into the document. This is not valid HTML and the behavior may be changed in future versions of chrome.
+CONSOLE ERROR: Uncaught SyntaxError: Failed to execute 'write' on 'Document': Unexpected token '<'
+CONSOLE ERROR: Uncaught SyntaxError: Failed to execute 'write' on 'Document': Unexpected token '<'
+CONSOLE ERROR: Uncaught SyntaxError: Failed to execute 'write' on 'Document': Unexpected token '<'
+CONSOLE ERROR: Uncaught SyntaxError: Failed to execute 'write' on 'Document': Unexpected token '<'
+../resources/tests18.dat:
+5
+
+Test 5 of 36 in ../resources/tests18.dat failed. Input:
+<!doctype html><html><noscript><plaintext></plaintext>
+Got:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|     <noscript>
+|       "<plaintext></plaintext>"
+|   <body>
+Expected:
+| <!DOCTYPE html>
+| <html>
+|   <head>
+|     <noscript>
+|   <body>
+|     <plaintext>
+|       "</plaintext>"

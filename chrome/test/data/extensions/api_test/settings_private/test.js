@@ -21,11 +21,6 @@ var kTestEnforcedPrefName = 'homepage_is_newtabpage';
 // preference is disabled.
 var kTestDisabledPrefName = 'generated.https_first_mode_enabled';
 
-// Device policies are applied in settings_private_apitest.cc such that this
-// preference is partially managed.
-var kPartiallyManagedPrefName = 'generated.cookie_primary_setting';
-var kUserSelectableValues = [0, 1, 2];
-
 var kTestPageId = 'pageId';
 
 var kTestSupervisedPrefName = 'signin.allowed_on_next_startup';
@@ -112,17 +107,6 @@ var availableTests = [
       chrome.test.assertEq('object', typeof value);
       callbackResult(true);
       chrome.test.assertTrue(value.userControlDisabled);
-      chrome.test.succeed();
-    });
-  },
-  function getPartiallyManagedPref() {
-    chrome.settingsPrivate.getPref(kPartiallyManagedPrefName, function(value) {
-      chrome.test.assertEq('object', typeof value);
-      callbackResult(true);
-      chrome.test.assertEq(
-          chrome.settingsPrivate.Enforcement.ENFORCED, value.enforcement);
-      value.userSelectableValues.sort();
-      chrome.test.assertEq(kUserSelectableValues, value.userSelectableValues);
       chrome.test.succeed();
     });
   },

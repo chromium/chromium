@@ -16,7 +16,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory.Type;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -31,7 +31,9 @@ import org.chromium.content_public.browser.BrowserContextHandle;
  * browser-wide.
  */
 public class SiteSettings extends BaseSiteSettingsFragment
-        implements SettingsPage, Preference.OnPreferenceClickListener, CustomDividerFragment {
+        implements EmbeddableSettingsPage,
+                Preference.OnPreferenceClickListener,
+                CustomDividerFragment {
     // The keys for each category shown on the Site Settings page
     // are defined in the SiteSettingsCategory. The only exception is the permission autorevocation
     // switch at the bottom of the page and its top divider.
@@ -70,7 +72,7 @@ public class SiteSettings extends BaseSiteSettingsFragment
     }
 
     private void configurePreferences() {
-        if (getSiteSettingsDelegate().shouldShowTrackingProtectionUI()) {
+        if (getSiteSettingsDelegate().shouldShowTrackingProtectionUi()) {
             findPreference(Type.THIRD_PARTY_COOKIES).setVisible(false);
             findPreference(Type.TRACKING_PROTECTION).setVisible(true);
         }
@@ -150,8 +152,11 @@ public class SiteSettings extends BaseSiteSettingsFragment
                 p.setSummary(ContentSettingsResources.getSiteDataListSummary(checked));
             } else if (Type.THIRD_PARTY_COOKIES == prefCategory) {
                 p.setSummary(
-                        ContentSettingsResources.getThirdPartyCookieListSummary(
-                                cookieControlsMode));
+                        getSiteSettingsDelegate().isAlwaysBlock3pcsIncognitoEnabled()
+                                        && cookieControlsMode == CookieControlsMode.INCOGNITO_ONLY
+                                ? R.string.third_party_cookies_link_row_sub_label_enabled
+                                : ContentSettingsResources.getThirdPartyCookieListSummary(
+                                        cookieControlsMode));
             } else if (Type.DEVICE_LOCATION == prefCategory
                     && checked
                     && WebsitePreferenceBridge.isLocationAllowedByPolicy(browserContextHandle)) {
@@ -166,6 +171,8 @@ public class SiteSettings extends BaseSiteSettingsFragment
                 p.setSummary(ContentSettingsResources.getDesktopSiteListSummary(checked));
             } else if (Type.AUTO_DARK_WEB_CONTENT == prefCategory) {
                 p.setSummary(ContentSettingsResources.getAutoDarkWebContentListSummary(checked));
+            } else if (Type.JAVASCRIPT_OPTIMIZER == prefCategory) {
+                p.setSummary(ContentSettingsResources.getJavascriptOptimizerListSummary(checked));
             } else if (Type.ZOOM == prefCategory) {
                 // Don't want to set a summary for Zoom because we don't want any message to display
                 // under the Zoom row on site settings.
@@ -200,13 +207,17 @@ public class SiteSettings extends BaseSiteSettingsFragment
         p = findPreference(Type.ZOOM);
         if (p != null) p.setOnPreferenceClickListener(this);
         // Handle Tracking Protection separately.
-        if (getSiteSettingsDelegate().shouldShowTrackingProtectionUI()) {
+        if (getSiteSettingsDelegate().shouldShowTrackingProtectionUi()) {
             p = findPreference(Type.TRACKING_PROTECTION);
             if (p != null) {
+                if (getSiteSettingsDelegate().shouldShowTrackingProtectionBrandedUi()) {
+                    p.setTitle(R.string.tracking_protection_settings_title);
+                    p.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.ic_eye_crossed));
+                }
                 p.setSummary(
                         ContentSettingsResources.getTrackingProtectionListSummary(
                                 getSiteSettingsDelegate()
-                                        .isBlockAll3PCDEnabledInTrackingProtection()));
+                                        .isBlockAll3pcEnabledInTrackingProtection()));
             }
         }
 

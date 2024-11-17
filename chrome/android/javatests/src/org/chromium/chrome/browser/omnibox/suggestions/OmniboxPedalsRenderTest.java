@@ -33,6 +33,7 @@ import org.chromium.chrome.test.util.OmniboxTestUtils.SuggestionInfo;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.action.OmniboxPedalId;
 
@@ -63,6 +64,7 @@ public class OmniboxPedalsRenderTest {
     private OmniboxTestUtils mOmniboxUtils;
 
     public OmniboxPedalsRenderTest(boolean nightMode) {
+        OmniboxFeatures.setShouldRetainOmniboxOnFocusForTesting(false);
         ChromeNightModeTestUtils.setUpNightModeForChromeActivity(nightMode);
         mRenderTestRule.setNightModeEnabled(nightMode);
         mRenderTestRule.setVariantPrefix("RegularTab");

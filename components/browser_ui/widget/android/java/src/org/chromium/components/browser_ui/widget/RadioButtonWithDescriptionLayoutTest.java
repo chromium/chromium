@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.widget;
 
-import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
@@ -295,49 +294,49 @@ public class RadioButtonWithDescriptionLayoutTest {
         Assert.assertEquals(
                 PRIMARY_MATCH_FROM_XML_ASSERT_MESSAGE,
                 b1.getPrimaryText().toString(),
-                mContext.getResources().getString(R.string.test_primary_1));
+                mContext.getString(R.string.test_primary_1));
         Assert.assertEquals(
                 PRIMARY_MATCH_FROM_XML_ASSERT_MESSAGE,
                 b2.getPrimaryText().toString(),
-                mContext.getResources().getString(R.string.test_primary_2));
+                mContext.getString(R.string.test_primary_2));
         Assert.assertEquals(
                 PRIMARY_MATCH_FROM_XML_ASSERT_MESSAGE,
                 b3.getPrimaryText().toString(),
-                mContext.getResources().getString(R.string.test_primary_3));
+                mContext.getString(R.string.test_primary_3));
         Assert.assertEquals(
                 PRIMARY_MATCH_FROM_XML_ASSERT_MESSAGE,
                 b4.getPrimaryText().toString(),
-                mContext.getResources().getString(R.string.test_primary_4));
+                mContext.getString(R.string.test_primary_4));
         Assert.assertEquals(
                 PRIMARY_MATCH_FROM_XML_ASSERT_MESSAGE,
                 b5.getPrimaryText().toString(),
-                mContext.getResources().getString(R.string.test_primary_5));
+                mContext.getString(R.string.test_primary_5));
 
         Assert.assertTrue(
                 DESC_MATCH_FROM_XML_ASSERT_MESSAGE, TextUtils.isEmpty(b1.getDescriptionText()));
         Assert.assertEquals(
                 DESC_MATCH_FROM_XML_ASSERT_MESSAGE,
                 b2.getDescriptionText().toString(),
-                mContext.getResources().getString(R.string.test_desc_2));
+                mContext.getString(R.string.test_desc_2));
         Assert.assertTrue(
                 DESC_MATCH_FROM_XML_ASSERT_MESSAGE, TextUtils.isEmpty(b3.getDescriptionText()));
         Assert.assertEquals(
                 DESC_MATCH_FROM_XML_ASSERT_MESSAGE,
                 b4.getDescriptionText().toString(),
-                mContext.getResources().getString(R.string.test_desc_4));
+                mContext.getString(R.string.test_desc_4));
         Assert.assertEquals(
                 DESC_MATCH_FROM_XML_ASSERT_MESSAGE,
                 b5.getDescriptionText().toString(),
-                mContext.getResources().getString(R.string.test_desc_5));
+                mContext.getString(R.string.test_desc_5));
 
         Assert.assertEquals(
                 HINT_MATCH_FROM_XML_ASSERT_MESSAGE,
                 ((EditText) b3.getPrimaryTextView()).getHint().toString(),
-                mContext.getResources().getString(R.string.test_uri));
+                mContext.getString(R.string.test_uri));
         Assert.assertEquals(
                 HINT_MATCH_FROM_XML_ASSERT_MESSAGE,
                 ((EditText) b4.getPrimaryTextView()).getHint().toString(),
-                mContext.getResources().getString(R.string.test_uri));
+                mContext.getString(R.string.test_uri));
 
         Assert.assertFalse(b1.isChecked());
         Assert.assertFalse(b2.isChecked());
@@ -418,7 +417,7 @@ public class RadioButtonWithDescriptionLayoutTest {
         try {
             layout.onButtonCheckedStateChanged(b1);
         } catch (NullPointerException e) {
-            fail("No exception should be thrown when the observer is null");
+            throw new AssertionError("No exception should be thrown when the observer is null", e);
         }
     }
 

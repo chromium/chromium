@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import './icons.html.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
@@ -72,7 +72,7 @@ export class TraceReportElement extends CrLitElement {
 
   protected onCopyUuidClick_(): void {
     // Get the text field
-    navigator.clipboard.writeText(this.getTokenAsString_());
+    navigator.clipboard.writeText(this.getTokenAsUuidString_());
   }
 
   protected getTraceSize_(): string {
@@ -103,6 +103,7 @@ export class TraceReportElement extends CrLitElement {
       'Not anonymized',
       'Scenario quota exceeded',
       'Upload timed out',
+      'Local scenario',
     ];
 
     return skipReasonMap[this.trace.skipReason] ??
@@ -156,9 +157,10 @@ export class TraceReportElement extends CrLitElement {
     const {trace} =
         await this.traceReportProxy_.handler.downloadTrace(this.trace.uuid);
     if (trace !== null) {
-      this.downloadData_(`${this.getTokenAsString_()}.gz`, trace);
+      this.downloadData_(`${this.getTokenAsUuidString_()}.gz`, trace);
     } else {
-      this.dispatchToast_(`Failed to download trace ${this.getTokenAsString_()}.`);
+      this.dispatchToast_(
+          `Failed to download trace ${this.getTokenAsUuidString_()}.`);
     }
     this.isLoading_ = false;
   }
@@ -166,7 +168,7 @@ export class TraceReportElement extends CrLitElement {
   private downloadData_(fileName: string, data: BigBuffer): void {
     if (data.invalidBuffer) {
       this.dispatchToast_(
-          `Invalid buffer received for ${this.getTokenAsString_()}.`);
+          `Invalid buffer received for ${this.getTokenAsUuidString_()}.`);
       return;
     }
     try {
@@ -185,8 +187,8 @@ export class TraceReportElement extends CrLitElement {
           new Blob([bytes], {type: 'application/octet-stream'}));
       downloadUrl(fileName, url);
     } catch (e) {
-      this.dispatchToast_(
-          `Unable to create blob from trace data for ${this.getTokenAsString_()}.`);
+      this.dispatchToast_(`Unable to create blob from trace data for ${
+          this.getTokenAsUuidString_()}.`);
     }
   }
 
@@ -195,7 +197,7 @@ export class TraceReportElement extends CrLitElement {
     const {success} =
         await this.traceReportProxy_.handler.deleteSingleTrace(this.trace.uuid);
     if (!success) {
-      this.dispatchToast_(`Failed to delete ${this.getTokenAsString_()}.`);
+      this.dispatchToast_(`Failed to delete ${this.getTokenAsUuidString_()}.`);
     } else {
       this.dispatchReloadRequest_();
     }
@@ -208,7 +210,8 @@ export class TraceReportElement extends CrLitElement {
         await this.traceReportProxy_.handler.userUploadSingleTrace(
             this.trace.uuid);
     if (!success) {
-      this.dispatchToast_(`Failed to upload trace ${this.getTokenAsString_()}.`);
+      this.dispatchToast_(
+          `Failed to upload trace ${this.getTokenAsUuidString_()}.`);
     } else {
       this.dispatchReloadRequest_();
     }
@@ -219,9 +222,11 @@ export class TraceReportElement extends CrLitElement {
     return this.trace.uploadState === state;
   }
 
-  protected getTokenAsString_(): string {
-    return `${this.trace.uuid.high.toString(16)}-${
-        this.trace.uuid.low.toString(16)}`;
+  protected getTokenAsUuidString_(): string {
+    const highHex = this.trace.uuid.high.toString(16);
+    const lowHex = this.trace.uuid.low.toString(16);
+    return `${lowHex.slice(0, 8)}-${lowHex.slice(8, 12)}-${
+        lowHex.slice(12, 16)}-${highHex.slice(0, 4)}-${highHex.slice(4)}`;
   }
 
   private dispatchToast_(message: string): void {
@@ -261,7 +266,7 @@ export class TraceReportElement extends CrLitElement {
   protected getStateText_(): string {
     switch (this.trace.uploadState) {
       case ReportUploadState.kNotUploaded:
-        return `Skip reason: ${this.getSkipReason_()}`;
+        return `Upload skipped: ${this.getSkipReason_()}`;
       case ReportUploadState.kPending:
         return 'Pending upload';
       case ReportUploadState.kPending_UserRequested:

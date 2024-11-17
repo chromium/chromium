@@ -129,7 +129,7 @@ struct FileMetricsProvider::SourceInfo {
   SourceInfo(const SourceInfo&) = delete;
   SourceInfo& operator=(const SourceInfo&) = delete;
 
-  ~SourceInfo() {}
+  ~SourceInfo() = default;
 
   struct FoundFile {
     base::FilePath path;
@@ -243,9 +243,8 @@ void FileMetricsProvider::RegisterSource(const Params& params,
 }
 
 // static
-void FileMetricsProvider::RegisterSourcePrefs(
-    PrefRegistrySimple* prefs,
-    const std::string_view prefs_key) {
+void FileMetricsProvider::RegisterSourcePrefs(PrefRegistrySimple* prefs,
+                                              std::string_view prefs_key) {
   prefs->RegisterInt64Pref(
       metrics::prefs::kMetricsLastSeenPrefix + std::string(prefs_key), 0);
 }
@@ -686,10 +685,7 @@ FileMetricsProvider::AccessResult FileMetricsProvider::HandleFilterSource(
       return ACCESS_RESULT_FILTER_SKIP_FILE;
   }
 
-  // Code never gets here but some compilers don't realize that and so complain
-  // that "not all control paths return a value".
-  NOTREACHED_IN_MIGRATION();
-  return ACCESS_RESULT_SUCCESS;
+  NOTREACHED();
 }
 
 /* static */

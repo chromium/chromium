@@ -61,8 +61,7 @@ void SysColorChangeObserver::OnWndProc(HWND hwnd,
                                        LPARAM lparam) {
   if (message == WM_SYSCOLORCHANGE ||
       (message == WM_SETTINGCHANGE && wparam == SPI_SETHIGHCONTRAST)) {
-    for (SysColorChangeListener& observer : listeners_)
-      observer.OnSysColorChange();
+    listeners_.Notify(&SysColorChangeListener::OnSysColorChange);
   }
 }
 

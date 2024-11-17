@@ -228,6 +228,14 @@ viz_component("service") {
     "hit_test/hit_test_manager.h",
     "input/input_manager.cc",
     "input/input_manager.h",
+    "input/render_input_router_delegate_impl.cc",
+    "input/render_input_router_delegate_impl.h",
+    "input/render_input_router_iterator_impl.cc",
+    "input/render_input_router_iterator_impl.h",
+    "input/render_input_router_support_base.cc",
+    "input/render_input_router_support_base.h",
+    "input/render_input_router_support_child_frame.cc",
+    "input/render_input_router_support_child_frame.h",
     "layers/layer_context_impl.cc",
     "layers/layer_context_impl.h",
     "performance_hint/boost_manager.cc",
@@ -267,6 +275,7 @@ viz_component("service") {
   deps = [
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
+    "//cc/animation",
     "//cc/base",
     "//cc/paint",
     "//components/crash/core/common:crash_key",
@@ -296,9 +305,11 @@ viz_component("service") {
     "//services/webnn/public/mojom",
     "//skia",
     "//skia:skcms",
+    "//third_party/blink/public/common",
     "//third_party/libyuv",
     "//ui/base:ozone_buildflags",
     "//ui/display/types",
+    "//ui/gfx/animation",
     "//ui/gfx/animation/keyframe",
   ]
 
@@ -307,7 +318,6 @@ viz_component("service") {
     ":viz_service_export",
     "//base",
     "//cc",
-    "//cc/animation",
     "//cc/debug",
     "//components/viz/common",
     "//gpu/command_buffer/service:gles2",
@@ -411,9 +421,17 @@ viz_component("service") {
       "frame_sinks/external_begin_frame_source_android.h",
       "gl/throw_uncaught_exception.cc",
       "gl/throw_uncaught_exception.h",
+      "input/android_input_callback.cc",
+      "input/android_input_callback.h",
+      "input/render_input_router_support_android.cc",
+      "input/render_input_router_support_android.h",
     ]
 
-    deps += [ ":service_jni_headers" ]
+    deps += [
+      ":service_jni_headers",
+      "//ui/events:gesture_detection",
+      "//ui/events/blink",
+    ]
   }
 
   if (use_ozone) {

@@ -264,8 +264,7 @@ void ToolbarIconContainerView::UpdateHighlight() {
 
   if (showing_before == (border_.layer()->GetTargetOpacity() == 1))
     return;
-  for (Observer& observer : observers_)
-    observer.OnHighlightChanged();
+  observers_.Notify(&Observer::OnHighlightChanged);
 }
 
 void ToolbarIconContainerView::OnButtonHighlightedChanged(

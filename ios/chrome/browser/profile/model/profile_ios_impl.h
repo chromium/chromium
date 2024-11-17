@@ -29,19 +29,12 @@ class PrefProxyConfigTracker;
 
 // This class is the implementation of ProfileIOS used for non-incognito
 // browsing.
-class ChromeBrowserStateImpl final : public ChromeBrowserState {
+class ProfileIOSImpl final : public ProfileIOS {
  public:
-  ChromeBrowserStateImpl(const ChromeBrowserStateImpl&) = delete;
-  ChromeBrowserStateImpl& operator=(const ChromeBrowserStateImpl&) = delete;
+  ProfileIOSImpl(const ProfileIOSImpl&) = delete;
+  ProfileIOSImpl& operator=(const ProfileIOSImpl&) = delete;
 
-  ~ChromeBrowserStateImpl() override;
-
-  // ChromeBrowserState:
-  // TODO(crbug.com/358299863): Remove these functions once fully migrated.
-  ChromeBrowserState* GetOriginalChromeBrowserState() override;
-  bool HasOffTheRecordChromeBrowserState() const override;
-  ChromeBrowserState* GetOffTheRecordChromeBrowserState() override;
-  void DestroyOffTheRecordChromeBrowserState() override;
+  ~ProfileIOSImpl() override;
 
   // ProfileIOS:
   ProfileIOS* GetOriginalProfile() override;
@@ -49,29 +42,30 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   ProfileIOS* GetOffTheRecordProfile() override;
   void DestroyOffTheRecordProfile() override;
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
-  BrowserStatePolicyConnector* GetPolicyConnector() override;
+  ProfilePolicyConnector* GetPolicyConnector() override;
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
   sync_preferences::PrefServiceSyncable* GetSyncablePrefs() override;
+  const sync_preferences::PrefServiceSyncable* GetSyncablePrefs()
+      const override;
   ProfileIOSIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,
                                    base::OnceClosure completion) override;
   net::URLRequestContextGetter* CreateRequestContext(
       ProtocolHandlerMap* protocol_handlers) override;
-  base::WeakPtr<ChromeBrowserState> AsWeakPtr() override;
+  base::WeakPtr<ProfileIOS> AsWeakPtr() override;
 
   // BrowserState:
   bool IsOffTheRecord() const override;
   const std::string& GetWebKitStorageID() const override;
 
  private:
-  friend class ChromeBrowserState;
+  friend class ProfileIOS;
 
-  ChromeBrowserStateImpl(
-      const base::FilePath& state_path,
-      std::string_view profile_name,
-      scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-      CreationMode creation_mode,
-      Delegate* delegate);
+  ProfileIOSImpl(const base::FilePath& state_path,
+                 std::string_view profile_name,
+                 scoped_refptr<base::SequencedTaskRunner> io_task_runner,
+                 CreationMode creation_mode,
+                 Delegate* delegate);
 
   // Sets the OffTheRecordProfileIOS.
   void SetOffTheRecordProfileIOS(std::unique_ptr<ProfileIOS> otr_state);
@@ -102,7 +96,7 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   // `user_cloud_policy_manager_` which depends on `policy_schema_registry_`.
   std::unique_ptr<policy::SchemaRegistry> policy_schema_registry_;
   std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
-  std::unique_ptr<BrowserStatePolicyConnector> policy_connector_;
+  std::unique_ptr<ProfilePolicyConnector> policy_connector_;
 
   // Keep `prefs_` above the rest for destruction order because `io_data_` and
   // others store pointers to `prefs_` and shall be destructed first.
@@ -116,12 +110,12 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   // stored in PrefService. Use a default data store if it's empty.
   std::string storage_uuid_;
 
-  base::WeakPtrFactory<ChromeBrowserStateImpl> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ProfileIOSImpl> weak_ptr_factory_{this};
 
   // STOP!!!! DO NOT ADD ANY MORE ITEMS HERE!!!!
   //
   // Instead, make your Service/Manager/whatever object you're hanging off the
-  // BrowserState use our BrowserStateKeyedServiceFactory system instead.
+  // Profile use our BrowserStateKeyedServiceFactory system instead.
   // You can find the design document here:
   //
   //   https://sites.google.com/a/chromium.org/dev/developers/design-documents/profile-architecture
@@ -132,7 +126,5 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   // components/keyed_service/core/keyed_service.h
   // components/keyed_service/ios/browser_state_keyed_service_factory.*
 };
-
-using ProfileIOSImpl = ChromeBrowserStateImpl;
 
 #endif  // IOS_CHROME_BROWSER_PROFILE_MODEL_PROFILE_IOS_IMPL_H_

@@ -28,16 +28,10 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/common/chrome_constants.h"
-#include "components/sync/service/sync_service_impl.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace web_app {
 
@@ -57,7 +51,7 @@ class DisplayModeChangeWaiter : public WebAppRegistrarObserver {
 
   void Wait() { run_loop_.Run(); }
 
-  void OnAppRegistrarDestroyed() override { NOTREACHED_IN_MIGRATION(); }
+  void OnAppRegistrarDestroyed() override { NOTREACHED(); }
 
  private:
   base::RunLoop run_loop_;
@@ -78,16 +72,6 @@ class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
 
   void SetUpOnMainThread() override {
     SyncTest::SetUpOnMainThread();
-    ASSERT_TRUE(SetupClients());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Apps sync is controlled by a dedicated preference on Lacros,
-    // corresponding to the Apps toggle in OS Sync settings.
-    // We need to enable the Apps toggle for both Client
-    if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
-      GetSyncService(0)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-      GetSyncService(1)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-    }
-#endif
     ASSERT_TRUE(SetupSync());
     ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
   }
@@ -474,57 +458,5 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
   EXPECT_EQ(registrar1.GetAppUserDisplayMode(app_id),
             mojom::UserDisplayMode::kTabbed);
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// On Lacros, syncing of Apps is only enabled in the "main" profile.
-// TwoClientWebAppsSyncTest (via WebAppsSyncTestBase) bypasses the "main profile"
-// check, so that syncing actually happens. This class does not, so that the
-// Lacros restriction (Apps sync only in main profile) applies.
-class TwoClientLacrosWebAppsSyncTest : public SyncTest {
- public:
-  TwoClientLacrosWebAppsSyncTest() : SyncTest(TWO_CLIENT) {}
-  ~TwoClientLacrosWebAppsSyncTest() override = default;
-
-  // SyncTest:
-  base::FilePath GetProfileBaseName(int index) override {
-    if (index == 0)
-      return base::FilePath(chrome::kInitialProfile);
-    return SyncTest::GetProfileBaseName(index);
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(TwoClientLacrosWebAppsSyncTest,
-                       SyncDisabledUnlessPrimary) {
-  ASSERT_TRUE(SetupClients());
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Apps sync is controlled by a dedicated preference on Lacros,
-  // corresponding to the Apps toggle in OS Sync settings.
-  // Enable the Apps toggle for both clients.
-  if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
-    GetSyncService(0)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-    GetSyncService(1)->GetUserSettings()->SetAppsSyncEnabledByOs(true);
-  }
-#endif
-  ASSERT_TRUE(SetupSync());
-
-  {
-    EXPECT_TRUE(GetProfile(0)->IsMainProfile());
-    syncer::SyncServiceImpl* service = GetSyncService(0);
-    syncer::DataTypeSet types = service->GetActiveDataTypes();
-    EXPECT_TRUE(types.Has(syncer::APPS));
-    EXPECT_TRUE(types.Has(syncer::APP_SETTINGS));
-    EXPECT_TRUE(types.Has(syncer::WEB_APPS));
-  }
-
-  {
-    EXPECT_FALSE(GetProfile(1)->IsMainProfile());
-    syncer::SyncServiceImpl* service = GetSyncService(1);
-    syncer::DataTypeSet types = service->GetActiveDataTypes();
-    EXPECT_FALSE(types.Has(syncer::APPS));
-    EXPECT_FALSE(types.Has(syncer::APP_SETTINGS));
-    EXPECT_FALSE(types.Has(syncer::WEB_APPS));
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace web_app

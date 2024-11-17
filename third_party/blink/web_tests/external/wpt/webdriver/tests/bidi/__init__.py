@@ -75,6 +75,14 @@ def int_interval(start: int, end: int) -> Callable[[Any], None]:
     return _
 
 
+def number_interval(start: float, end: float) -> Callable[[Any], None]:
+    def _(actual: Any) -> None:
+        any_number(actual)
+        assert start <= actual <= end
+
+    return _
+
+
 def assert_cookies(cookies, expected_cookies):
     assert len(cookies) == len(expected_cookies)
 

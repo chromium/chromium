@@ -1,8 +1,21 @@
 include_rules = [
-  "+components/saved_tab_groups",
+  "+components/data_sharing/public",
+  "+components/saved_tab_groups/delegate",
+  "+components/saved_tab_groups/public",
+  "+components/saved_tab_groups/test_support",
   "+ios/chrome/browser/optimization_guide/model",
+  "+ios/chrome/browser/signin/model/identity_manager_factory.h",
   "+ios/chrome/browser/sync/model/data_type_store_service_factory.h",
-  "+ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h",
   "+ios/chrome/browser/sync/model/device_info_sync_service_factory.h",
+  "+ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h",
   "+ios/chrome/browser/sessions/model",
 ]
+
+specific_include_rules = {
+  "tab_group_sync_service_factory\.mm": [
+    "+components/collaboration/internal/collaboration_finder_impl.h",
+    "+components/saved_tab_groups",
+    "+ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h",
+  ]
+}
+

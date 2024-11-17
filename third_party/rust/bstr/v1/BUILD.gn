@@ -1,0 +1,70 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# @generated from third_party/rust/chromium_crates_io/BUILD.gn.hbs by
+# tools/crates/gnrt.
+# Do not edit!
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "bstr"
+  epoch = "1"
+  crate_type = "rlib"
+  crate_root =
+      "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/lib.rs"
+  sources = [
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/ascii.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/bstr.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/bstring.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/byteset/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/byteset/scalar.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/escape_bytes.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/ext_slice.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/ext_vec.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/impls.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/io.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/unicode/fsm/grapheme_break_fwd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/unicode/fsm/grapheme_break_rev.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/unicode/fsm/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/unicode/fsm/regional_indicator_rev.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/unicode/fsm/sentence_break_fwd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/unicode/fsm/simple_word_fwd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/unicode/fsm/whitespace_anchored_fwd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/unicode/fsm/whitespace_anchored_rev.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/unicode/fsm/word_break_fwd.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/unicode/grapheme.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/unicode/mod.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/unicode/sentence.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/unicode/whitespace.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/unicode/word.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bstr-1.10.0/src/utf8.rs",
+  ]
+  inputs = []
+
+  build_native_rust_unit_tests = false
+  edition = "2021"
+  cargo_pkg_version = "1.10.0"
+  cargo_pkg_authors = "Andrew Gallant <jamslam@gmail.com>"
+  cargo_pkg_name = "bstr"
+  cargo_pkg_description =
+      "A string type that is not required to be valid UTF-8."
+  library_configs -= [ "//build/config/compiler:chromium_code" ]
+  library_configs += [ "//build/config/compiler:no_chromium_code" ]
+  executable_configs -= [ "//build/config/compiler:chromium_code" ]
+  executable_configs += [ "//build/config/compiler:no_chromium_code" ]
+  proc_macro_configs -= [ "//build/config/compiler:chromium_code" ]
+  proc_macro_configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [
+    "//third_party/rust/memchr/v2:lib",
+    "//third_party/rust/serde/v1:lib",
+  ]
+  features = [
+    "alloc",
+    "serde",
+    "std",
+  ]
+}

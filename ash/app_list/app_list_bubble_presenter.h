@@ -13,8 +13,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/shelf/shelf.h"
-#include "ash/shelf/shelf_observer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -25,6 +23,10 @@
 namespace aura {
 class Window;
 }  // namespace aura
+
+namespace ui {
+class LocatedEvent;
+}  // namespace ui
 
 namespace ash {
 
@@ -38,8 +40,7 @@ enum class AppListSortOrder;
 // can be visible at a time, across all displays.
 class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver,
                                           public wm::ActivationChangeObserver,
-                                          public display::DisplayObserver,
-                                          public ShelfObserver {
+                                          public display::DisplayObserver {
  public:
   explicit AppListBubblePresenter(AppListControllerImpl* controller);
   AppListBubblePresenter(const AppListBubblePresenter&) = delete;
@@ -100,9 +101,6 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver,
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
-  // ShelfObserver:
-  void OnShelfShuttingDown() override;
-
   // Returns the preferred width for the bubble launcher for the |root_window|.
   int GetPreferredBubbleWidth(aura::Window* root_window) const;
 
@@ -146,8 +144,6 @@ class ASH_EXPORT AppListBubblePresenter : public views::WidgetObserver,
 
   // Observes display configuration changes.
   display::ScopedDisplayObserver display_observer_{this};
-
-  base::ScopedObservation<Shelf, ShelfObserver> shelf_observer_{this};
 
   base::WeakPtrFactory<AppListBubblePresenter> weak_factory_{this};
 };

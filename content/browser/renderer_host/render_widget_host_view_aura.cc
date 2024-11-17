@@ -26,8 +26,8 @@
 #include "cc/layers/layer.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "components/input/cursor_manager.h"
+#include "components/input/events_helper.h"
 #include "components/input/render_widget_host_input_event_router.h"
-#include "components/stylus_handwriting/win/features.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -50,7 +50,6 @@
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/renderer_host/visible_time_request_trigger.h"
-#include "content/common/input/events_helper.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/render_view_host.h"
@@ -109,6 +108,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/time/time.h"
+#include "components/stylus_handwriting/win/features.h"
+#include "content/browser/renderer_host/input/stylus_handwriting_controller_win.h"
 #include "content/browser/renderer_host/legacy_render_widget_host_win.h"
 #include "ui/accessibility/platform/ax_fragment_root_win.h"
 #include "ui/accessibility/platform/browser_accessibility_manager_win.h"
@@ -119,7 +120,7 @@
 #include "ui/base/win/hidden_window.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/gfx/gdi_util.h"
-#endif
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/accessibility/platform/browser_accessibility_auralinux.h"
@@ -841,6 +842,17 @@ void RenderWidgetHostViewAura::ComputeDisplayFeature() {
   }
 }
 
+#if BUILDFLAG(IS_WIN)
+void RenderWidgetHostViewAura::UpdateProximateCharacterBounds(
+    blink::mojom::ProximateCharacterRangeBoundsPtr proximate_bounds) {
+  if (!text_input_manager_) {
+    return;
+  }
+  text_input_manager_->UpdateProximateCharacterBounds(
+      *this, std::move(proximate_bounds));
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 std::optional<DisplayFeature> RenderWidgetHostViewAura::GetDisplayFeature() {
   return display_feature_;
 }
@@ -1214,9 +1226,7 @@ void RenderWidgetHostViewAura::ProcessAckedTouchEvent(
       required_state = blink::WebTouchPoint::State::kStateCancelled;
       break;
     default:
-      required_state = blink::WebTouchPoint::State::kStateUndefined;
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Only send acks for one changed touch point.
@@ -1226,7 +1236,7 @@ void RenderWidgetHostViewAura::ProcessAckedTouchEvent(
       CHECK(!sent_ack);
       window_host->dispatcher()->ProcessedTouchEvent(
           touch.event.unique_touch_event_id, window_, result,
-          InputEventResultStateIsSetBlocking(ack_result));
+          input::InputEventResultStateIsSetBlocking(ack_result));
       if (touch.event.touch_start_or_first_touch_move &&
           result == ui::ER_HANDLED && host()->delegate() &&
           host()->delegate()->GetInputEventRouter()) {
@@ -1537,6 +1547,24 @@ gfx::Rect RenderWidgetHostViewAura::GetSelectionBoundingBox() const {
   return ConvertRectToScreen(bounding_box);
 }
 
+#if BUILDFLAG(IS_WIN)
+std::optional<gfx::Rect> RenderWidgetHostViewAura::GetProximateCharacterBounds(
+    const gfx::Range& range) const {
+  // TODO(crbug.com/355578906): Implement character bounds collection to satisfy
+  // ITextStoreACP::GetTextExt.
+  return std::nullopt;
+}
+
+std::optional<size_t>
+RenderWidgetHostViewAura::GetProximateCharacterIndexFromPoint(
+    const gfx::Point& point,
+    ui::IndexFromPointFlags flags) const {
+  // TODO(crbug.com/355578906): Implement point to character offset collection
+  // to satisfy ITextStoreACP::GetACPFromPoint.
+  return std::nullopt;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 bool RenderWidgetHostViewAura::GetCompositionCharacterBounds(
     size_t index,
     gfx::Rect* rect) const {
@@ -1687,7 +1715,7 @@ void RenderWidgetHostViewAura::ExtendSelectionAndDelete(
 void RenderWidgetHostViewAura::ExtendSelectionAndReplace(
     size_t before,
     size_t after,
-    const std::u16string_view replacement_text) {
+    std::u16string_view replacement_text) {
   auto* input_handler = GetFrameWidgetInputHandlerForFocusedWidget();
   if (!input_handler) {
     return;
@@ -2041,7 +2069,7 @@ void RenderWidgetHostViewAura::OnCaptureLost() {
 }
 
 void RenderWidgetHostViewAura::OnPaint(const ui::PaintContext& context) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void RenderWidgetHostViewAura::OnDeviceScaleFactorChanged(
@@ -2189,38 +2217,50 @@ void RenderWidgetHostViewAura::FocusedNodeChanged(
 #endif
 }
 
-bool RenderWidgetHostViewAura::ShouldInitiateStylusWriting() {
 #if BUILDFLAG(IS_WIN)
-  // TODO(crbug.com/355578906): Check whether Windows Text Services Framework
-  // Shell Handwriting API is available or supported by the OS.
-  // return stylus_handwriting::win::IsStylusHandwritingWinEnabled();
-  return false;
-#else   // BUILDFLAG(IS_WIN)
-  return false;
-#endif  // BUILDFLAG(IS_WIN)
+bool RenderWidgetHostViewAura::ShouldInitiateStylusWriting() {
+  return StylusHandwritingControllerWin::IsHandwritingAPIAvailable();
 }
 
 void RenderWidgetHostViewAura::OnStartStylusWriting() {
-  // TODO(crbug.com/355578906): Call Windows Text Services Framework Shell
-  // Handwriting API. Will call ITfHandwriting::RequestHandwritingForPointer to
+  StylusHandwritingControllerWin* handwriting_controller =
+      StylusHandwritingControllerWin::GetInstance();
+  if (!handwriting_controller) {
+    mojo::ReportBadMessage(
+        "OnStartStylusWriting(): unexpected state. "
+        "StylusHandwritingControllerWin instance is nullptr");
+    return;
+  }
+  // Call Windows Text Services Framework Shell Handwriting API.
+  // Will call ITfHandwriting::RequestHandwritingForPointer to
   // display ink, then ITfHandwritingRequest::SetInputEvaluation to confirm
   // intent. RequestHandwritingForPointer is an asynchronous request, however
   // this method will be called after GestureScrollBegin, so intent can be
-  // confirmed immediately. After intent is confirmed, the API will request that
-  // focus is updated by calling ITfHandwritingSink::FocusHandwritingTarget.
+  // confirmed immediately. After intent is confirmed, the API will request
+  // that the focus is updated by calling
+  // ITfHandwritingSink::FocusHandwritingTarget.
   //
   // To handle ITfHandwritingSink::FocusHandwritingTarget, the browser will
   // request that focus be updated in the renderer based on the RECT from
-  // ITfFocusHandwritingTargetArgs::GetPointerTargetInfo, which will be handled
-  // via mojom::blink::FrameWidget::OnStartStylusWriting. Focus will only be set
-  // on content eligible for handwriting. If focus cannot be set on content
-  // eligible for handwriting with the RECT provided by GetPointerTargetInfo,
-  // then focus will fallback to the eligible element that was initially tapped.
+  // ITfFocusHandwritingTargetArgs::GetPointerTargetInfo, which will be
+  // handled via mojom::blink::FrameWidget::OnStartStylusWriting. Focus will
+  // only be set on content eligible for handwriting. If focus cannot be set
+  // on content eligible for handwriting with the RECT provided by
+  // GetPointerTargetInfo, then focus will fallback to the eligible element
+  // that was initially tapped.
+  // TODO(crbug.com/355578906): Propagate valid pointer and stroke ids.
+  // TODO(crbug.com/355578906): Pass and save the identifier of the currently
+  // focused RWHA in case the views focus is changed while we waiting for the
+  // callback response from the renderer process. This will be used to discard
+  // responses in OnFocusHandled()/OnFocusFailed() later for such cases.
+  handwriting_controller->OnStartStylusWriting(
+      base::BindRepeating(&RenderWidgetHostViewAura::OnFocusHandwritingTarget,
+                          weak_ptr_factory_.GetWeakPtr()),
+      /*pointer_id=*/0, /*stroke_id=*/0, *this);
 }
 
 void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
-    const gfx::Rect& focused_edit_bounds,
-    const gfx::Rect& caret_bounds) {
+    blink::mojom::StylusWritingFocusResultPtr focus_result) {
   // TODO(crbug.com/355578906): Update Windows Text Services Framework (TSF)
   // focus, stash relevant character bounds from the renderer, and notify the
   // TSF Shell Handwriting API that focus is set.
@@ -2245,14 +2285,34 @@ void RenderWidgetHostViewAura::OnEditElementFocusedForStylusWriting(
   // in the inability of Shell Handwriting to perform gestures (selection,
   // scratch out, split/join word, new-line) and may result in text being
   // inserted instead.
+  StylusHandwritingControllerWin* handwriting_controller =
+      StylusHandwritingControllerWin::GetInstance();
+  if (!handwriting_controller) {
+    mojo::ReportBadMessage(
+        "OnEditElementFocusedForStylusWriting(): Unexpected state. "
+        "StylusHandwritingControllerWin instance is nullptr");
+    return;
+  }
+
+  if (!focus_result) {
+    handwriting_controller->OnFocusFailed(*this);
+    return;
+  }
+
+  UpdateProximateCharacterBounds(std::move(focus_result->proximate_bounds));
+  handwriting_controller->OnFocusHandled(*this);
 }
 
-void RenderWidgetHostViewAura::OnEditElementFocusClearedForStylusWriting() {
-  // TODO(crbug.com/355578906): Notify Windows Text Services Framework (TSF)
-  // Shell Handwriting API [1] to cancel the inking session, causing ink to
-  // disappear without making any modifications.
-  // [1] `ITfFocusHandwritingTargetArgs::SetResponse(TF_NO_HANDWRITING_TARGET)`
+void RenderWidgetHostViewAura::OnFocusHandwritingTarget(
+    const gfx::Rect& rect_in_screen,
+    const gfx::Size& distance_tolerance) {
+  // TODO(crbug.com/355578906): Consider `distance_tolerance`.
+  if (host()) {
+    host()->UpdateElementFocusForStylusWriting(
+        ConvertRectFromScreen(rect_in_screen));
+  }
 }
+#endif  // BUILDFLAG(IS_WIN)
 
 void RenderWidgetHostViewAura::OnScrollEvent(ui::ScrollEvent* event) {
   event_handler_->OnScrollEvent(event);
@@ -2260,6 +2320,29 @@ void RenderWidgetHostViewAura::OnScrollEvent(ui::ScrollEvent* event) {
 
 void RenderWidgetHostViewAura::OnTouchEvent(ui::TouchEvent* event) {
   last_pointer_type_ = event->pointer_details().pointer_type;
+
+#if BUILDFLAG(IS_WIN)
+  if (stylus_handwriting::win::IsStylusHandwritingWinEnabled() &&
+      last_pointer_type_ == ui::EventPointerType::kPen &&
+      event->type() == ui::EventType::kTouchPressed) {
+    // The raw pointer and stroke id will be later used during the stylus
+    // handwriting request in OnStartStylusWriting().
+    last_stylus_handwriting_properties_ =
+        ui::GetStylusHandwritingProperties(*event);
+    TRACE_EVENT2(
+        "ime", "RenderWidgetHostViewAura::OnTouchEvent",
+        "handwriting_pointer_id",
+        last_stylus_handwriting_properties_.has_value()
+            ? last_stylus_handwriting_properties_->handwriting_pointer_id
+            : 0,
+        "handwriting_stroke_id",
+        last_stylus_handwriting_properties_.has_value()
+            ? last_stylus_handwriting_properties_->handwriting_stroke_id
+            : 0);
+    // TODO(crbug.com/355578906): Add telemetry.
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   event_handler_->OnTouchEvent(event);
 }
 
@@ -2326,8 +2409,7 @@ void RenderWidgetHostViewAura::OnWindowFocused(aura::Window* gained_focus,
   }
 
   if (window_ != lost_focus) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   UpdateActiveState(false);

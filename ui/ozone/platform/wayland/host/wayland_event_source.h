@@ -57,7 +57,7 @@ class WaylandEventSource : public PlatformEventSource,
                            public WaylandZwpPointerGestures::Delegate,
                            public WaylandZwpRelativePointerManager::Delegate {
  public:
-  static void ConvertEventToTarget(const EventTarget* new_target,
+  static void ConvertEventToTarget(EventTarget* new_target,
                                    LocatedEvent* event);
 
   WaylandEventSource(wl_display* display,
@@ -134,7 +134,6 @@ class WaylandEventSource : public PlatformEventSource,
   void OnPointerStylusToolChanged(EventPointerType pointer_type) override;
   void OnPointerStylusForceChanged(float force) override;
   void OnPointerStylusTiltChanged(const gfx::Vector2dF& tilt) override;
-  const WaylandWindow* GetPointerTarget() const override;
 
   // WaylandTouch::Delegate
   void OnTouchPressEvent(WaylandWindow* window,

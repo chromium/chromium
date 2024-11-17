@@ -4,8 +4,9 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/date_time_section.h"
 
-#include "ash/constants/ash_features.h"
-#include "base/no_destructor.h"
+#include <array>
+
+#include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -27,7 +28,6 @@
 namespace ash::settings {
 
 namespace mojom {
-using ::chromeos::settings::mojom::kDateAndTimeSectionPath;
 using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
 using ::chromeos::settings::mojom::kTimeZoneSubpagePath;
 using ::chromeos::settings::mojom::Section;
@@ -37,18 +37,16 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetDateTimeSearchConcepts(
-    mojom::Section section,
-    const char* section_path) {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDateTimeSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_DATE_TIME,
-       section_path,
+       mojom::kSystemPreferencesSectionPath,
        mojom::SearchResultIcon::kClock,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSection,
-       {.section = section}},
+       {.section = mojom::Section::kSystemPreferences}},
       {IDS_OS_SETTINGS_TAG_DATE_TIME_MILITARY_CLOCK,
-       section_path,
+       mojom::kSystemPreferencesSectionPath,
        mojom::SearchResultIcon::kClock,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -56,11 +54,11 @@ const std::vector<SearchConcept>& GetDateTimeSearchConcepts(
        {IDS_OS_SETTINGS_TAG_DATE_TIME_MILITARY_CLOCK_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetFineGrainedTimeZoneSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetFineGrainedTimeZoneSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_DATE_TIME_ZONE,
        mojom::kTimeZoneSubpagePath,
        mojom::SearchResultIcon::kClock,
@@ -68,20 +66,19 @@ const std::vector<SearchConcept>& GetFineGrainedTimeZoneSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kChangeTimeZone}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetNoFineGrainedTimeZoneSearchConcepts(
-    const char* section_path) {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetNoFineGrainedTimeZoneSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_DATE_TIME_ZONE,
-       section_path,
+       mojom::kSystemPreferencesSectionPath,
        mojom::SearchResultIcon::kClock,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kChangeTimeZone}},
   });
-  return *tags;
+  return tags;
 }
 
 bool IsFineGrainedTimeZoneEnabled() {
@@ -97,22 +94,18 @@ DateTimeSection::DateTimeSection(Profile* profile,
   CHECK(profile);
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
-  const char* section_path = GetSectionPath();
-  updater.AddSearchTags(GetDateTimeSearchConcepts(GetSection(), section_path));
+  updater.AddSearchTags(GetDateTimeSearchConcepts());
 
   if (IsFineGrainedTimeZoneEnabled()) {
     updater.AddSearchTags(GetFineGrainedTimeZoneSearchConcepts());
   } else {
-    updater.AddSearchTags(GetNoFineGrainedTimeZoneSearchConcepts(section_path));
+    updater.AddSearchTags(GetNoFineGrainedTimeZoneSearchConcepts());
   }
 }
 
 DateTimeSection::~DateTimeSection() = default;
 
 void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
       {"dateTimePageTitle", IDS_SETTINGS_DATE_TIME},
       {"timeZone", IDS_SETTINGS_TIME_ZONE},
@@ -128,9 +121,7 @@ void DateTimeSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"setTimeZoneAutomaticallyOff",
        IDS_SETTINGS_TIME_ZONE_DETECTION_CHOOSE_FROM_LIST},
       {"setTimeZoneAutomaticallyIpOnlyDefault",
-       kIsRevampEnabled
-           ? IDS_OS_SETTINGS_REVAMP_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT
-           : IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT},
+       IDS_OS_SETTINGS_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT},
       {"setTimeZoneAutomaticallyWithWiFiAccessPointsData",
        IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_SEND_WIFI_AP},
       {"setTimeZoneAutomaticallyWithAllLocationInfo",
@@ -174,9 +165,7 @@ int DateTimeSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section DateTimeSection::GetSection() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::Section::kSystemPreferences
-             : mojom::Section::kDateAndTime;
+  return mojom::Section::kSystemPreferences;
 }
 
 mojom::SearchResultIcon DateTimeSection::GetSectionIcon() const {
@@ -184,9 +173,7 @@ mojom::SearchResultIcon DateTimeSection::GetSectionIcon() const {
 }
 
 const char* DateTimeSection::GetSectionPath() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kSystemPreferencesSectionPath
-             : mojom::kDateAndTimeSectionPath;
+  return mojom::kSystemPreferencesSectionPath;
 }
 
 bool DateTimeSection::LogMetric(mojom::Setting setting,

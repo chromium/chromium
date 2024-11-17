@@ -10,8 +10,7 @@
 #include "chromeos/ash/components/phonehub/notification.h"
 #include "chromeos/ash/components/phonehub/notification_interaction_handler.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class FakeNotificationInteractionHandler
     : public NotificationInteractionHandler {
@@ -39,7 +38,6 @@ class FakeNotificationInteractionHandler
   size_t notification_click_handler_count_ = 0;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_NOTIFICATION_INTERACTION_HANDLER_H_

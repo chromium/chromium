@@ -9,7 +9,8 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#include "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace commerce {
 
@@ -24,10 +25,6 @@ class ShoppingServiceFactory : public BrowserStateKeyedServiceFactory {
 
   static ShoppingService* GetForProfile(ProfileIOS* profile);
   static ShoppingService* GetForProfileIfExists(ProfileIOS* profile);
-
-  // Deprecated: use GetForProfile(...)/GetForProfileIfExists(...).
-  static ShoppingService* GetForBrowserState(ProfileIOS* profile);
-  static ShoppingService* GetForBrowserStateIfExists(ProfileIOS* profile);
 
  private:
   friend class base::NoDestructor<ShoppingServiceFactory>;

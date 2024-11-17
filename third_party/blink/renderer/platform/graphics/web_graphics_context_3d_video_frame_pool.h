@@ -9,7 +9,6 @@
 #include "base/cancelable_callback.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
@@ -21,7 +20,8 @@ class Size;
 
 namespace gpu {
 class GpuMemoryBufferManager;
-struct MailboxHolder;
+class ClientSharedImage;
+struct SyncToken;
 namespace raster {
 class RasterInterface;
 }  // namespace raster
@@ -58,18 +58,15 @@ class PLATFORM_EXPORT WebGraphicsContext3DVideoFramePool {
   // On success, this function will issue return true and will call the
   // specified FrameCallback with the resulting VideoFrame when the frame is
   // ready. On failure this will return false. The resulting VideoFrame will
-  // always be NV12. Note: In some paths `src_color_space` is ignored in favor
-  // of the SharedImage color space associated with `src_mailbox_holder`. Note:
-  // If the YUV to RGB matrix of `dst_color_space` is not Rec601, then this
-  // function will use the matrix for Rec709 (it supports no other values). See
-  // https://crbug.com/skia/12545.
-  bool CopyRGBATextureToVideoFrame(viz::SharedImageFormat src_format,
-                                   const gfx::Size& src_size,
-                                   const gfx::ColorSpace& src_color_space,
-                                   GrSurfaceOrigin src_surface_origin,
-                                   const gpu::MailboxHolder& src_mailbox_holder,
-                                   const gfx::ColorSpace& dst_color_space,
-                                   FrameReadyCallback callback);
+  // always be NV12. Note: If the YUV to RGB matrix of
+  // `dst_color_space` is not Rec601, then this function will use the matrix for
+  // Rec709 (it supports no other values). See https://crbug.com/skia/12545.
+  bool CopyRGBATextureToVideoFrame(
+      const gfx::Size& src_size,
+      scoped_refptr<gpu::ClientSharedImage> src_shared_image,
+      const gpu::SyncToken& acquire_sync_token,
+      const gfx::ColorSpace& dst_color_space,
+      FrameReadyCallback callback);
 
   // Same as CopyRGBATextureToVideoFrame, but obtains the arguments from
   // src_video_frame, and applies relevant metadata to the resulting VideoFrame.

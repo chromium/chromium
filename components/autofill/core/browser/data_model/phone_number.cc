@@ -272,8 +272,7 @@ std::u16string PhoneNumber::GetInfoImpl(const AutofillType& type,
       return std::u16string();
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 

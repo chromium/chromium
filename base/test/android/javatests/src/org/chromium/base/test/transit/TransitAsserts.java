@@ -62,7 +62,7 @@ public class TransitAsserts {
      * @param allowNull whether no active station is considered an expected state
      */
     public static void assertCurrentStationType(
-            Class<? extends Station> stationType, String situation, boolean allowNull) {
+            Class<? extends Station<?>> stationType, String situation, boolean allowNull) {
         Station activeStation = TrafficControl.getActiveStation();
         if ((activeStation == null && !allowNull)
                 || (activeStation != null && !stationType.isInstance(activeStation))) {
@@ -77,14 +77,14 @@ public class TransitAsserts {
     }
 
     private static void raiseAssertion(String message) {
-        List<Pair<String, Station>> allStations = TrafficControl.getAllStations();
+        List<Pair<String, Station<?>>> allStations = TrafficControl.getAllStations();
         assert false : message + "\n" + stationListToString(allStations);
     }
 
-    private static String stationListToString(List<Pair<String, Station>> allStations) {
+    private static String stationListToString(List<Pair<String, Station<?>>> allStations) {
         StringBuilder builder = new StringBuilder();
         int i = 1;
-        for (Pair<String, Station> pair : allStations) {
+        for (Pair<String, Station<?>> pair : allStations) {
             Station station = pair.second;
             String testName = pair.first != null ? pair.first : "__outside_test__";
             builder.append(

@@ -7,10 +7,8 @@
 #include <initializer_list>
 #include <memory>
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
-#include <tuple>
 #include <utility>
 
 #include "base/command_line.h"
@@ -34,12 +32,8 @@
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/scoped_run_loop_timeout.h"
-#include "base/test/test_future.h"
-#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "components/input/timeout_monitor.h"
-#include "components/ukm/test_ukm_recorder.h"
 #include "components/viz/common/features.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -47,7 +41,6 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/sms/test/mock_sms_provider.h"
 #include "content/browser/web_contents/web_contents_impl.h"
-#include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
 #include "content/common/frame.mojom-forward.h"
@@ -67,7 +60,6 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/page_visibility_state.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/back_forward_cache_util.h"
@@ -95,15 +87,11 @@
 #include "content/test/data/mojo_web_test_helper_test.mojom.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/frame_host_test_interface.mojom.h"
-#include "content/test/navigation_simulator_impl.h"
 #include "content/test/test_render_frame_host_factory.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/features.h"
-#include "net/base/ip_address.h"
-#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/schemeful_site.h"
-#include "net/cookies/cookie_constants.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/connection_tracker.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -120,7 +108,7 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/switches.h"
@@ -128,7 +116,6 @@
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
-#include "url/url_canon.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -311,6 +298,55 @@ bool NavigateToURLAndDoNotWaitForLoadStop(Shell* window, const GURL& url) {
   EXPECT_TRUE(observer.WaitForNavigationFinished());
   return url ==
          window->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL();
+}
+
+// Navigates an iframe nested within another iframe to the specified URL via
+// Javascript executed from the outer document. Also, this waits for the
+// navigation to finish.
+void NavigateToURLFromGrandparentDocument(Shell* window, const GURL& url) {
+  RenderFrameHostImpl* rfh_grandparent =
+      static_cast<WebContentsImpl*>(window->web_contents())
+          ->GetPrimaryMainFrame();
+  RenderFrameHostImpl* rfh_parent =
+      rfh_grandparent->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_child =
+      rfh_parent->child_at(0)->current_frame_host();
+
+  // If we are navigating from a.com/ to a.com/#x or vice versa, we expect this
+  // to be a same-document navigation.
+  bool expected_is_same_document =
+      rfh_child->GetLastCommittedURL().GetWithoutRef() == url.GetWithoutRef();
+
+  TestNavigationManager navigation_manager(window->web_contents(), url);
+  NavigationHandleObserver navigation_observer(window->web_contents(), url);
+  ASSERT_TRUE(
+      ExecJs(rfh_grandparent,
+             JsReplace("frames[0].frames[0].location.href = $1;", url)));
+
+  ASSERT_TRUE(navigation_manager.WaitForNavigationFinished());
+
+  ASSERT_FALSE(navigation_observer.is_error());
+  ASSERT_EQ(navigation_observer.last_committed_url(), url);
+  rfh_child = rfh_parent->child_at(0)->current_frame_host();
+  ASSERT_EQ(navigation_observer.frame_tree_node_id(),
+            rfh_child->GetFrameTreeNodeId());
+
+  EXPECT_EQ(navigation_observer.is_same_document(), expected_is_same_document);
+}
+
+// Returns the `initiator_origin` member of the last committed frame navigation
+// entry corresponding to `rfh`. For more information on the returned value, see
+// `FrameNavigationEntry::initiator_origin()`.
+std::optional<url::Origin> GetInitiatorOrigin(RenderFrameHostImpl* rfh) {
+  FrameTreeNode* frame_tree_node = rfh->frame_tree_node();
+  FrameNavigationEntry* frame_navigation_entry =
+      frame_tree_node->frame_tree()
+          .controller()
+          .GetLastCommittedEntry()
+          ->GetFrameEntry(frame_tree_node);
+  EXPECT_TRUE(frame_navigation_entry);
+
+  return frame_navigation_entry->initiator_origin();
 }
 
 using blink::mojom::BlockingDetails;
@@ -3826,10 +3862,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 
   // Call RequestAXSnapshotTree method. The browser process should not crash.
   auto params = mojom::SnapshotAccessibilityTreeParams::New();
-  rfh->RequestAXTreeSnapshot(base::BindOnce([](ui::AXTreeUpdate& snapshot) {
-                               NOTREACHED_IN_MIGRATION();
-                             }),
-                             std::move(params));
+  rfh->RequestAXTreeSnapshot(
+      base::BindOnce([](ui::AXTreeUpdate& snapshot) { NOTREACHED(); }),
+      std::move(params));
 
   base::RunLoop().RunUntilIdle();
 
@@ -4184,6 +4219,157 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                               ->ComputeIsolationInfoForNavigation(secure_url)
                               .site_for_cookies()));
   }
+}
+
+// Verifies that when a document navigates a cross-origin grandchild frame to
+// a new origin, the corresponding FrameNavigationEntry initiator origin equals
+// the document origin.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    InitiatorOriginForCrossDocumentNavigationInCrossOriginGrandchild) {
+  GURL a_url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(c))");
+  EXPECT_TRUE(NavigateToURL(shell(), a_url));
+
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_c = rfh_b->child_at(0)->current_frame_host();
+
+  // The initiator origin should begin as b.com since it created the iframe.
+  EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"),
+            GetInitiatorOrigin(rfh_c));
+
+  // Navigate to d.com/title1.html from the outer document.
+  GURL d_url = embedded_test_server()->GetURL("d.com", "/title1.html");
+  NavigateToURLFromGrandparentDocument(shell(), d_url);
+
+  RenderFrameHostImpl* rfh_d = rfh_b->child_at(0)->current_frame_host();
+
+  // A navigation initiated by the outer document should update the initiator to
+  // the origin of that document.
+  EXPECT_EQ(url::Origin::Create(a_url), GetInitiatorOrigin(rfh_d));
+}
+
+class RenderFrameHostImplSiteIsolationBrowserTest
+    : public RenderFrameHostImplBrowserTest,
+      public testing::WithParamInterface<bool> {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    if (disable_site_isolation_) {
+      command_line->AppendSwitch(switches::kDisableSiteIsolation);
+    } else {
+      command_line->AppendSwitch(switches::kSitePerProcess);
+    }
+    RenderFrameHostImplBrowserTest::SetUpCommandLine(command_line);
+  }
+
+ private:
+  bool disable_site_isolation_ = GetParam();
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderFrameHostImplSiteIsolationBrowserTest,
+                         testing::Bool(),
+                         [](const testing::TestParamInfo<bool>& info) {
+                           return info.param ? "SiteIsolationDisabled"
+                                             : "SiteIsolationEnabled";
+                         });
+
+// Verifies that when a document navigates a cross-origin grandchild frame to
+// a fragment URL (i.e. a same-document navigation), the corresponding
+// FrameNavigationEntry initiator origin equals the document origin.
+IN_PROC_BROWSER_TEST_P(
+    RenderFrameHostImplSiteIsolationBrowserTest,
+    InitiatorOriginForSameDocumentNavigationInCrossOriginGrandchild) {
+  GURL a_url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(c))");
+
+  EXPECT_TRUE(NavigateToURL(shell(), a_url));
+
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_c = rfh_b->child_at(0)->current_frame_host();
+
+  // The initiator origin should begin as b.com since it created the iframe.
+  EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"),
+            GetInitiatorOrigin(rfh_c));
+
+  // Do a same-document navigation from the outer document.
+  GURL c_url_with_fragment =
+      GURL(base::StrCat({rfh_c->GetLastCommittedURL().spec(), "#x"}));
+  NavigateToURLFromGrandparentDocument(shell(), c_url_with_fragment);
+
+  // A navigation initiated by the outer document should update the initiator to
+  // the origin of that document.
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_EQ(url::Origin::Create(a_url), GetInitiatorOrigin(rfh_c));
+  } else {
+    // TODO(crbug.com/367440964): The origin of the same-document navigation is
+    // currently used in place of the actual initiator_origin:
+    // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/renderer_host/navigation_request.cc;l=1495-1497;drc=e66b343b5554785a32ad988bfe5c3c524f5e1857
+    EXPECT_EQ(url::Origin::Create(c_url_with_fragment),
+              GetInitiatorOrigin(rfh_c));
+  }
+}
+
+// Verifies that when a document navigates a same-origin grandchild frame to
+// a new origin, the corresponding FrameNavigationEntry initiator origin equals
+// the document origin.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    InitiatorOriginForCrossDocumentNavigationInSameOriginGrandchild) {
+  GURL a_url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(a))");
+
+  EXPECT_TRUE(NavigateToURL(shell(), a_url));
+
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_a2 = rfh_b->child_at(0)->current_frame_host();
+
+  // The initiator origin should begin as b.com since it created the iframe.
+  EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"),
+            GetInitiatorOrigin(rfh_a2));
+
+  // Navigate to d.com/title1.html from the outer document.
+  GURL d_url = embedded_test_server()->GetURL("d.com", "/title1.html");
+  NavigateToURLFromGrandparentDocument(shell(), d_url);
+
+  RenderFrameHostImpl* rfh_d = rfh_b->child_at(0)->current_frame_host();
+
+  // A navigation initiated by the outer document should update the initiator to
+  // the origin of that document.
+  EXPECT_EQ(embedded_test_server()->GetOrigin("a.com"),
+            GetInitiatorOrigin(rfh_d));
+}
+
+// Verifies that when a document navigates a same-origin grandchild frame to a
+// fragment URL (i.e. a same-document navigation), the corresponding
+// FrameNavigationEntry initiator origin equals the document origin.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTest,
+    InitiatorOriginForSameDocumentNavigationInSameOriginGrandchild) {
+  GURL a_url = embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(a))");
+
+  EXPECT_TRUE(NavigateToURL(shell(), a_url));
+
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* rfh_a2 = rfh_b->child_at(0)->current_frame_host();
+
+  // The initiator origin should begin as b.com since it created the iframe.
+  EXPECT_EQ(embedded_test_server()->GetOrigin("b.com"),
+            GetInitiatorOrigin(rfh_a2));
+
+  // Do a same-document navigation from the outer document.
+  GURL a_url_with_fragment =
+      GURL(base::StrCat({rfh_a2->GetLastCommittedURL().spec(), "#x"}));
+  NavigateToURLFromGrandparentDocument(shell(), a_url_with_fragment);
+
+  // A navigation initiated by the outer document should update the initiator to
+  // the origin of that document.
+  EXPECT_EQ(embedded_test_server()->GetOrigin("a.com"),
+            GetInitiatorOrigin(rfh_a2));
 }
 
 // Test that when ancestor iframes differ in scheme that the SiteForCookies
@@ -6959,7 +7145,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplCredentiallessIframeNikBrowserTest,
         ->PreconnectSockets(1, fetch_url.DeprecatedGetOriginAsURL(),
                             network::mojom::CredentialsMode::kInclude,
                             main_rfh->GetIsolationInfoForSubresources()
-                                .network_anonymization_key());
+                                .network_anonymization_key(),
+                            net::MutableNetworkTrafficAnnotationTag(
+                                TRAFFIC_ANNOTATION_FOR_TESTS));
 
     connection_tracker_->WaitForAcceptedConnections(1);
     EXPECT_EQ(1u, connection_tracker_->GetAcceptedSocketCount());
@@ -7790,8 +7978,20 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_NE(dnt_a, dnt_b);
 }
 
+class RenderFrameHostImplNewProcessUsedBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  RenderFrameHostImplNewProcessUsedBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kProcessPerSiteUpToMainFrameThreshold);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplBrowserTest,
+    RenderFrameHostImplNewProcessUsedBrowserTest,
     RecordNewProcessUsedForNavigationWhenSameSiteProcessExists_SameSite) {
   base::HistogramTester histogram;
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
@@ -7819,7 +8019,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplBrowserTest,
+    RenderFrameHostImplNewProcessUsedBrowserTest,
     RecordNewProcessUsedForNavigationWhenSameSiteProcessExists_OtherSiteToSameSite) {
   base::HistogramTester histogram;
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
@@ -7878,7 +8078,7 @@ IN_PROC_BROWSER_TEST_F(
 // There is no plan to analyze the histogram on Android for now.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplBrowserTest,
+    RenderFrameHostImplNewProcessUsedBrowserTest,
     RecordNewProcessUsedForNavigationWhenSameSiteProcessExists_DifferentProfile) {
   base::HistogramTester histogram;
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
@@ -7908,7 +8108,7 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 
 IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplBrowserTest,
+    RenderFrameHostImplNewProcessUsedBrowserTest,
     RecordNewProcessUsedForNavigationWhenSameSiteProcessExists_SameSiteNavigateTwice) {
   base::HistogramTester histogram;
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
@@ -8142,6 +8342,41 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPartitionedPopinBrowserTest,
   // The test passes if the renderer crashes but not the browser.
 }
 
+// Test that a popin doesn't crash the browser if the opener goes away during
+// navigation. This simulates a case where the opening frame gets deleted before
+// the popin is closed by `PartitionedPopinController`.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplPartitionedPopinBrowserTest,
+                       PopinNavigationAfterOpenerCleared) {
+  // Navigate to a.test.
+  ASSERT_TRUE(NavigateToURL(web_contents(), embedded_https_test_server().GetURL(
+                                                "a.test", "/empty.html")));
+
+  // Open a popin.
+  WebContentsAddedObserver new_tab_observer;
+  const GURL old_url = embedded_https_test_server().GetURL(
+      "a.test", "/partitioned_popins/wildcard_policy.html");
+  EXPECT_TRUE(content::ExecJs(web_contents(), "window.open('" + old_url.spec() +
+                                                  "', '_blank', 'popin')"));
+  WebContentsImpl* popin_web_contents =
+      static_cast<WebContentsImpl*>(new_tab_observer.GetWebContents());
+  EXPECT_TRUE(popin_web_contents->IsPartitionedPopin());
+  EXPECT_EQ(popin_web_contents->GetPrimaryMainFrame()->GetStorageKey(),
+            blink::StorageKey::CreateFromStringForTesting(old_url.spec()));
+
+  // Clear opener so the popin cannot use it as a source of data.
+  popin_web_contents->ClearPartitionedPopinOpenerForTesting();
+
+  // Navigate the popin and see it work.
+  const GURL new_url = embedded_https_test_server().GetURL(
+      "b.test", "/partitioned_popins/wildcard_policy.html");
+  EXPECT_TRUE(NavigateToURL(popin_web_contents, new_url));
+  EXPECT_TRUE(popin_web_contents->IsPartitionedPopin());
+  EXPECT_EQ(popin_web_contents->GetPrimaryMainFrame()->GetStorageKey(),
+            blink::StorageKey::Create(
+                url::Origin::Create(new_url), net::SchemefulSite(GURL(old_url)),
+                blink::mojom::AncestorChainBit::kCrossSite));
+}
+
 class RenderFrameHostImplBrowserTestWithBFCache
     : public RenderFrameHostImplBrowserTest {
  public:
@@ -8252,6 +8487,11 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
   bool timer_should_set =
       !rwhvb_a->GetLocalSurfaceId().is_valid() || rwhvb_a->is_evicted();
 
+  // Ensure there is an activation to allow cross-origin paint holding.
+  web_contents()->GetPrimaryMainFrame()->ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType::kInteraction,
+      /*sticky_only=*/true);
+
   // Navigate back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(rfh_a, web_contents()->GetPrimaryMainFrame());
@@ -8276,12 +8516,47 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
       static_cast<RenderViewHostImpl*>(rfh_a->GetRenderViewHost());
   std::vector<viz::SurfaceId> ids = rvh_a->CollectSurfaceIdsForEviction();
 
+  web_contents()->GetPrimaryMainFrame()->ActivateUserActivation(
+      blink::mojom::UserActivationNotificationType::kInteraction,
+      /*sticky_only=*/true);
+
   // Navigate back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(rfh_a, web_contents()->GetPrimaryMainFrame());
   RenderWidgetHostImpl* rwhi_a =
       RenderWidgetHostImpl::From(rfh_a->GetView()->GetRenderWidgetHost());
   EXPECT_TRUE(rwhi_a->IsContentRenderingTimeoutRunning());
+}
+
+// Test that the new content timeout only applies when there is a user
+// activation, since cross-origin paint holding does not apply otherwise. See
+// also NewContentTimeoutIsSetWhenLeavingBFCacheWithoutSurface and
+// crbug.com/40942531.
+IN_PROC_BROWSER_TEST_F(
+    RenderFrameHostImplBrowserTestWithBFCache,
+    IsNotSetWhenLeavingBFCacheWithoutSurfaceOrUserActivation) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
+
+  // Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
+
+  // Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  RenderViewHostImpl* rvh_a =
+      static_cast<RenderViewHostImpl*>(rfh_a->GetRenderViewHost());
+  std::vector<viz::SurfaceId> ids = rvh_a->CollectSurfaceIdsForEviction();
+
+  // Navigate back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  EXPECT_EQ(rfh_a, web_contents()->GetPrimaryMainFrame());
+  RenderWidgetHostImpl* rwhi_a =
+      RenderWidgetHostImpl::From(rfh_a->GetView()->GetRenderWidgetHost());
+  // Here we verify that the timeout is not running as a proxy to say that there
+  // is no paint holding. It would be nice to directly check this instead.
+  EXPECT_FALSE(rwhi_a->IsContentRenderingTimeoutRunning());
 }
 
 namespace {
@@ -8296,8 +8571,6 @@ class RenderFrameHostImplBrowserTestWithBFCacheAndViewTransition
     enabled_features.push_back(
         {blink::features::kViewTransitionOnNavigation, {{}}});
     enabled_features.push_back({blink::features::kPageSwapEvent, {{}}});
-    enabled_features.push_back(
-        {features::kInvalidateLocalSurfaceIdPreCommit, {{}}});
     scoped_feature_list_.InitWithFeaturesAndParameters(
         enabled_features,
         GetDefaultDisabledBackForwardCacheFeaturesForTesting());

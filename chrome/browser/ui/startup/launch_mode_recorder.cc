@@ -217,8 +217,7 @@ std::optional<LaunchMode> GetLaunchModeFast(
 #elif BUILDFLAG(IS_MAC)
 std::optional<LaunchMode> GetLaunchModeSlow(
     const base::CommandLine command_line) {
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 std::optional<LaunchMode> GetLaunchModeFast(
@@ -255,8 +254,7 @@ std::optional<LaunchMode> GetLaunchModeFast(
 #else  //  !IS_WIN && !IS_MAC
 std::optional<LaunchMode> GetLaunchModeSlow(
     const base::CommandLine command_line) {
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 std::optional<LaunchMode> GetLaunchModeFast(

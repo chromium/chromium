@@ -21,12 +21,6 @@ import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
 public class SafetyHubModuleViewBinder {
-    /**
-     * This should match the default value for {@link
-     * org.chromium.chrome.browser.preferences.Pref.BREACHED_CREDENTIALS_COUNT}.
-     */
-    private static final int INVALID_BREACHED_CREDENTIALS_COUNT = -1;
-
     public static void bindCommonProperties(
             PropertyModel model,
             SafetyHubExpandablePreference preference,
@@ -44,6 +38,7 @@ public class SafetyHubModuleViewBinder {
             PropertyKey propertyKey) {
         bindCommonProperties(model, preference, propertyKey);
         if (SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey
+                || SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT == propertyKey
                 || SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT == propertyKey
                 || SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY == propertyKey
                 || SafetyHubModuleProperties.IS_SIGNED_IN == propertyKey
@@ -102,7 +97,9 @@ public class SafetyHubModuleViewBinder {
                         == propertyKey
                 || SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT == propertyKey
                 || SafetyHubModuleProperties.UPDATE_STATUS == propertyKey
+                || SafetyHubModuleProperties.IS_SIGNED_IN == propertyKey
                 || SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT == propertyKey
+                || SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT == propertyKey
                 || SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT == propertyKey) {
             updateBrowserStateModule(preference, model);
         }
@@ -194,119 +191,10 @@ public class SafetyHubModuleViewBinder {
 
     private static void updatePasswordCheckModule(
             SafetyHubExpandablePreference preference, PropertyModel model) {
+        SafetyHubPasswordModuleHelper.updatePreference(preference, model);
         @ModuleOption int option = ModuleOption.ACCOUNT_PASSWORDS;
-        int compromisedPasswordsCount =
-                model.get(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
-        int totalPasswordsCount = model.get(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT);
-        boolean managed = model.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
-        boolean isSignedIn = model.get(SafetyHubModuleProperties.IS_SIGNED_IN);
         @ModuleState int state = getModuleState(model, option);
-        String account = model.get(SafetyHubModuleProperties.ACCOUNT_EMAIL);
-        String title;
-        String summary;
-        String primaryButtonText = null;
-        String secondaryButtonText = null;
-        View.OnClickListener primaryButtonListener = null;
-        View.OnClickListener secondaryButtonListener = null;
-
-        if (!isSignedIn || compromisedPasswordsCount == INVALID_BREACHED_CREDENTIALS_COUNT) {
-            title =
-                    preference
-                            .getContext()
-                            .getString(R.string.safety_hub_password_check_unavailable_title);
-            if (isSignedIn) {
-                summary =
-                        preference.getContext().getString(R.string.safety_hub_unavailable_summary);
-                secondaryButtonText =
-                        preference
-                                .getContext()
-                                .getString(R.string.safety_hub_passwords_navigation_button);
-            } else {
-                summary =
-                        preference
-                                .getContext()
-                                .getString(R.string.safety_hub_password_check_signed_out_summary);
-                secondaryButtonText = preference.getContext().getString(R.string.sign_in_to_chrome);
-            }
-            secondaryButtonListener =
-                    model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
-        } else if (totalPasswordsCount == 0) {
-            title = preference.getContext().getString(R.string.safety_hub_no_passwords_title);
-            summary = preference.getContext().getString(R.string.safety_hub_no_passwords_summary);
-            secondaryButtonText =
-                    preference
-                            .getContext()
-                            .getString(R.string.safety_hub_passwords_navigation_button);
-            secondaryButtonListener =
-                    model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
-        } else if (compromisedPasswordsCount > 0) {
-            title =
-                    preference
-                            .getContext()
-                            .getResources()
-                            .getQuantityString(
-                                    R.plurals.safety_check_passwords_compromised_exist,
-                                    compromisedPasswordsCount,
-                                    compromisedPasswordsCount);
-            summary =
-                    preference
-                            .getContext()
-                            .getResources()
-                            .getQuantityString(
-                                    R.plurals.safety_hub_compromised_passwords_summary,
-                                    compromisedPasswordsCount,
-                                    compromisedPasswordsCount);
-            if (managed) {
-                secondaryButtonText =
-                        preference
-                                .getContext()
-                                .getString(R.string.safety_hub_passwords_navigation_button);
-                secondaryButtonListener =
-                        model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
-            } else {
-                primaryButtonText =
-                        preference
-                                .getContext()
-                                .getString(R.string.safety_hub_passwords_navigation_button);
-                primaryButtonListener =
-                        model.get(SafetyHubModuleProperties.PRIMARY_BUTTON_LISTENER);
-            }
-        } else {
-            title =
-                    preference
-                            .getContext()
-                            .getString(R.string.safety_hub_no_compromised_passwords_title);
-            if (account != null) {
-                summary =
-                        preference
-                                .getContext()
-                                .getString(
-                                        R.string.safety_hub_password_check_time_recently, account);
-            } else {
-                summary = preference.getContext().getString(R.string.safety_hub_checked_recently);
-            }
-            secondaryButtonText =
-                    preference
-                            .getContext()
-                            .getString(R.string.safety_hub_passwords_navigation_button);
-            secondaryButtonListener =
-                    model.get(SafetyHubModuleProperties.SAFE_STATE_BUTTON_LISTENER);
-        }
-
-        if (managed) {
-            summary =
-                    preference
-                            .getContext()
-                            .getString(R.string.safety_hub_no_passwords_summary_managed);
-        }
-
-        preference.setTitle(title);
-        preference.setSummary(summary);
-        preference.setPrimaryButtonText(primaryButtonText);
-        preference.setSecondaryButtonText(secondaryButtonText);
-        preference.setPrimaryButtonClickListener(primaryButtonListener);
-        preference.setSecondaryButtonClickListener(secondaryButtonListener);
-
+        boolean managed = model.get(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY);
         preference.setIcon(getIconForModuleState(preference.getContext(), state, managed));
         preference.setOrder(getOrderForModuleState(option, state, managed));
     }
@@ -585,45 +473,21 @@ public class SafetyHubModuleViewBinder {
     static @ModuleState int getModuleState(PropertyModel model, @ModuleOption int option) {
         switch (option) {
             case ModuleOption.ACCOUNT_PASSWORDS:
-                int compromisedPasswordsCount =
-                        model.get(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT);
-                int totalPasswordsCount =
-                        model.get(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT);
-                if (totalPasswordsCount == 0) {
-                    return ModuleState.INFO;
-                }
-                if (compromisedPasswordsCount == INVALID_BREACHED_CREDENTIALS_COUNT) {
-                    return ModuleState.UNAVAILABLE;
-                }
-                return compromisedPasswordsCount > 0 ? ModuleState.WARNING : ModuleState.SAFE;
+                return SafetyHubPasswordModuleHelper.getModuleState(model);
             case ModuleOption.UPDATE_CHECK:
-                UpdateStatusProvider.UpdateStatus updateStatus =
-                        model.get(SafetyHubModuleProperties.UPDATE_STATUS);
-                if (updateStatus == null
-                        || updateStatus.updateState
-                                == UpdateStatusProvider.UpdateState.UNSUPPORTED_OS_VERSION) {
-                    return ModuleState.UNAVAILABLE;
-                }
-                if (updateStatus.updateState == UpdateStatusProvider.UpdateState.UPDATE_AVAILABLE) {
-                    return ModuleState.WARNING;
-                }
-                return ModuleState.SAFE;
+                return SafetyHubUtils.getUpdateCheckModuleState(
+                        model.get(SafetyHubModuleProperties.UPDATE_STATUS));
             case ModuleOption.UNUSED_PERMISSIONS:
-                int permissionsCount =
-                        model.get(SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT);
-                return permissionsCount > 0 ? ModuleState.INFO : ModuleState.SAFE;
+                return SafetyHubUtils.getPermissionsModuleState(
+                        model.get(SafetyHubModuleProperties.SITES_WITH_UNUSED_PERMISSIONS_COUNT));
             case ModuleOption.NOTIFICATION_REVIEW:
-                int notificationsCount =
+                return SafetyHubUtils.getNotificationModuleState(
                         model.get(
                                 SafetyHubModuleProperties
-                                        .NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT);
-                return notificationsCount > 0 ? ModuleState.INFO : ModuleState.SAFE;
+                                        .NOTIFICATION_PERMISSIONS_FOR_REVIEW_COUNT));
             case ModuleOption.SAFE_BROWSING:
-                @SafeBrowsingState
-                int safeBrowsingState = model.get(SafetyHubModuleProperties.SAFE_BROWSING_STATE);
-                return safeBrowsingState == SafeBrowsingState.NO_SAFE_BROWSING
-                        ? ModuleState.WARNING
-                        : ModuleState.SAFE;
+                return SafetyHubUtils.getSafeBrowsingModuleState(
+                        model.get(SafetyHubModuleProperties.SAFE_BROWSING_STATE));
             default:
                 throw new IllegalArgumentException();
         }

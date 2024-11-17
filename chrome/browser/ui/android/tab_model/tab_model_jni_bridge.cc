@@ -115,7 +115,7 @@ void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
   ScopedJavaLocalRef<jobject> jurl = url::GURLAndroid::FromNativeGURL(env, url);
   ScopedJavaLocalRef<jobject> jinitiator_origin =
-      params->initiator_origin ? params->initiator_origin->ToJavaObject()
+      params->initiator_origin ? params->initiator_origin->ToJavaObject(env)
                                : nullptr;
   ScopedJavaLocalRef<jobject> jpost_data =
       content::ConvertResourceRequestBodyToJavaObject(env, params->post_data);

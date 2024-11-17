@@ -243,6 +243,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
                        MAYBE_SyncDoubleInstallationDifferentUserDisplayMode) {
   ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
 
@@ -259,8 +260,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   webapps::AppId app_id2 = InstallApp(std::move(info), GetProfile(1));
 
   EXPECT_EQ(app_id, app_id2);
-
-  ASSERT_TRUE(SetupSync());
 
   ASSERT_TRUE(AwaitWebAppQuiescence());
 
@@ -320,6 +319,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
                        MAYBE_DoubleInstallWithUninstall) {
   ASSERT_TRUE(SetupClients());
+  ASSERT_TRUE(SetupSync());
   ASSERT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1))));
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -328,8 +328,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   webapps::AppId app_id = InstallAppAsUserInitiated(GetProfile(0));
   webapps::AppId app_id2 = InstallAppAsUserInitiated(GetProfile(1));
   EXPECT_EQ(app_id, app_id2);
-
-  ASSERT_TRUE(SetupSync());
 
   // Uninstall the app from one of the profiles.
   test::UninstallWebApp(GetProfile(0), app_id);
@@ -358,7 +356,13 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSynced) {
   // profile 1.
   EXPECT_THAT(GetAllAppIdsForProfile(GetProfile(0)),
               Not(ElementsAreArray(GetAllAppIdsForProfile(GetProfile(1)))));
-  EXPECT_FALSE(GetRegistrar(GetProfile(1)).IsInstalled(app_id));
+  EXPECT_FALSE(
+      GetRegistrar(GetProfile(1))
+          .IsInstallState(
+              app_id,
+              {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+               web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION}));
 }
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, NotSyncedThenSynced) {

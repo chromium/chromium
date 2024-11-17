@@ -1,0 +1,27 @@
+<div id="promoContainer">
+  <div id="titleAndDismissContainer">
+    <h2 id="title">$i18n{mobilePromoHeader}</h2>
+    <cr-icon-button id="dismissButton"
+        class="icon-clear"
+        aria-label="$i18n{close}"
+        title="$i18n{close}"
+        @click="${this.onDismissButtonClick_}">
+    </cr-icon-button>
+  </div>
+  <div id="descriptionAndQrCodeContainer">
+    <div id="description">$i18n{mobilePromoDescription}</div>
+    <img id="qrCode" src="data:image/webp;base64,${this.qrCode}"
+        aria-label="$i18n{mobilePromoQrCode}"
+        ?hidden="${!this.qrCode}">
+  </div>
+</div>
+<cr-toast id="dismissPromoButtonToast" duration="10000">
+  <div id="dismissPromoButtonToastMessage">
+    $i18n{undoDismissPromoButtonToast}
+  </div>
+  <cr-button id="undoDismissPromoButton"
+      aria-label="$i18n{undoDescription}"
+      @click="${this.onUndoDismissPromoButtonClick_}">
+    $i18n{undo}
+  </cr-button>
+</cr-toast>

@@ -155,7 +155,7 @@ TEST_F(CallbackTest, NullAfterMoveRun) {
 }
 
 TEST_F(CallbackTest, MaybeValidReturnsTrue) {
-  RepeatingCallback<void()> cb = BindRepeating([]() {});
+  RepeatingCallback<void()> cb = BindRepeating([] {});
   // By default, MaybeValid() just returns true all the time.
   EXPECT_TRUE(cb.MaybeValid());
   cb.Run();
@@ -165,29 +165,28 @@ TEST_F(CallbackTest, MaybeValidReturnsTrue) {
 TEST_F(CallbackTest, ThenResetsOriginalCallback) {
   {
     // OnceCallback::Then() always destroys the original callback.
-    OnceClosure orig = base::BindOnce([]() {});
+    OnceClosure orig = base::BindOnce([] {});
     EXPECT_TRUE(!!orig);
-    OnceClosure joined = std::move(orig).Then(base::BindOnce([]() {}));
+    OnceClosure joined = std::move(orig).Then(base::BindOnce([] {}));
     EXPECT_TRUE(!!joined);
     EXPECT_FALSE(!!orig);
   }
   {
     // RepeatingCallback::Then() destroys the original callback if it's an
     // rvalue.
-    RepeatingClosure orig = base::BindRepeating([]() {});
+    RepeatingClosure orig = base::BindRepeating([] {});
     EXPECT_TRUE(!!orig);
-    RepeatingClosure joined =
-        std::move(orig).Then(base::BindRepeating([]() {}));
+    RepeatingClosure joined = std::move(orig).Then(base::BindRepeating([] {}));
     EXPECT_TRUE(!!joined);
     EXPECT_FALSE(!!orig);
   }
   {
     // RepeatingCallback::Then() doesn't destroy the original callback if it's
     // not an rvalue.
-    RepeatingClosure orig = base::BindRepeating([]() {});
+    RepeatingClosure orig = base::BindRepeating([] {});
     RepeatingClosure copy = orig;
     EXPECT_TRUE(!!orig);
-    RepeatingClosure joined = orig.Then(base::BindRepeating([]() {}));
+    RepeatingClosure joined = orig.Then(base::BindRepeating([] {}));
     EXPECT_TRUE(!!joined);
     EXPECT_TRUE(!!orig);
     // The original callback is not changed.
@@ -201,8 +200,8 @@ TEST_F(CallbackTest, ThenResetsOriginalCallback) {
 // that holds 2 OnceCallbacks which it will run.
 TEST_F(CallbackTest, ThenCanConvertRepeatingToOnce) {
   {
-    RepeatingClosure repeating_closure = base::BindRepeating([]() {});
-    OnceClosure once_closure = base::BindOnce([]() {});
+    RepeatingClosure repeating_closure = base::BindRepeating([] {});
+    OnceClosure once_closure = base::BindOnce([] {});
     std::move(once_closure).Then(repeating_closure).Run();
 
     RepeatingCallback<int(int)> repeating_callback =
@@ -212,8 +211,8 @@ TEST_F(CallbackTest, ThenCanConvertRepeatingToOnce) {
     EXPECT_EQ(3, std::move(once_callback).Then(repeating_callback).Run(1));
   }
   {
-    RepeatingClosure repeating_closure = base::BindRepeating([]() {});
-    OnceClosure once_closure = base::BindOnce([]() {});
+    RepeatingClosure repeating_closure = base::BindRepeating([] {});
+    OnceClosure once_closure = base::BindOnce([] {});
     std::move(once_closure).Then(std::move(repeating_closure)).Run();
 
     RepeatingCallback<int(int)> repeating_callback =

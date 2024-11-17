@@ -218,6 +218,12 @@ class COMPONENT_EXPORT(OZONE_BASE) SurfaceFactoryOzone {
   virtual std::vector<gfx::BufferFormat> GetSupportedFormatsForTexturing()
       const;
 
+  // Enumerates the BufferFormats that the platform can import via
+  // CreateNativePixmapFromHandle() to use for GL, or returns empty if those
+  // could not be retrieved or the platform doesn't know in advance.
+  // Enumeration should not be assumed to take a trivial amount of time.
+  std::vector<gfx::BufferFormat> GetSupportedFormatsForGLNativePixmapImport();
+
   // This returns a preferred format for solid color image on Wayland.
   virtual std::optional<gfx::BufferFormat> GetPreferredFormatForSolidColor()
       const;

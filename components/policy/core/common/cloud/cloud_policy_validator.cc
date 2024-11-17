@@ -117,7 +117,7 @@ const char* CloudPolicyValidatorBase::StatusToString(Status status) {
 CloudPolicyValidatorBase::ValidationResult::ValidationResult() = default;
 CloudPolicyValidatorBase::ValidationResult::~ValidationResult() = default;
 
-CloudPolicyValidatorBase::~CloudPolicyValidatorBase() {}
+CloudPolicyValidatorBase::~CloudPolicyValidatorBase() = default;
 
 std::unique_ptr<CloudPolicyValidatorBase::ValidationResult>
 CloudPolicyValidatorBase::GetValidationResult() const {

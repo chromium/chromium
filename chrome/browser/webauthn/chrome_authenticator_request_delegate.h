@@ -34,8 +34,9 @@ class PrefService;
 class Profile;
 
 namespace base {
-class Clock;
-}
+class SequencedTaskRunner;
+class TickClock;
+}  // namespace base
 
 namespace chromeos {
 class PasskeyDialogController;
@@ -116,7 +117,6 @@ class ChromeWebAuthenticationDelegate final
       const std::string& relying_party_id) override;
   bool SupportsResidentKeys(
       content::RenderFrameHost* render_frame_host) override;
-  bool SupportsPasskeyMetadataSyncing() override;
   bool IsFocused(content::WebContents* web_contents) override;
   void IsUserVerifyingPlatformAuthenticatorAvailableOverride(
       content::RenderFrameHost* render_frame_host,
@@ -178,6 +178,11 @@ class ChromeAuthenticatorRequestDelegate
         ChromeAuthenticatorRequestDelegate* delegate,
         device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai) {}
 
+    // Called when TAI enumeration has finished but it might have to wait for
+    // enclave availability.
+    virtual void OnPreTransportAvailabilityEnumerated(
+        ChromeAuthenticatorRequestDelegate* delegate) {}
+
     virtual void UIShown(ChromeAuthenticatorRequestDelegate* delegate) {}
 
     virtual void CableV2ExtensionSeen(
@@ -229,6 +234,7 @@ class ChromeAuthenticatorRequestDelegate
 
   // content::AuthenticatorRequestClientDelegate:
   void SetRelyingPartyId(const std::string& rp_id) override;
+  void SetUIPresentation(UIPresentation ui_presentation) override;
   bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override;
   void RegisterActionCallbacks(
       base::OnceClosure cancel_callback,
@@ -259,16 +265,11 @@ class ChromeAuthenticatorRequestDelegate
       std::vector<device::AuthenticatorGetAssertionResponse> responses,
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
           callback) override;
-  void DisableUI() override;
-  bool IsWebAuthnUIEnabled() override;
-  void SetConditionalRequest(bool is_conditional) override;
   void SetAmbientCredentialTypes(int credential_type_flags) override;
   void SetCredentialIdFilter(std::vector<device::PublicKeyCredentialDescriptor>
                                  credential_list) override;
   void SetUserEntityForMakeCredentialRequest(
       const device::PublicKeyCredentialUserEntity& user_entity) override;
-  std::vector<std::unique_ptr<device::FidoDiscoveryBase>>
-  CreatePlatformDiscoveries() override;
 
   // device::FidoRequestHandlerBase::Observer:
   void OnTransportAvailabilityEnumerated(
@@ -295,21 +296,17 @@ class ChromeAuthenticatorRequestDelegate
   void OnCancelRequest() override;
   void OnManageDevicesClicked() override;
 
-  // SetPassEmptyUsbDeviceManagerForTesting controls whether the
-  // `DiscoveryFactory` will be given an empty USB device manager. This is
-  // needed in tests because creating a real `device::mojom::UsbDeviceManager`
-  // can create objects on thread-pool threads. Those objects aren't scheduled
-  // for deletion until after the thread-pool is shutdown when testing, causing
-  // "leaks" to be reported.
-  void SetPassEmptyUsbDeviceManagerForTesting(bool value);
-
   // Allows setting a mock `TrustedVaultConnection` so a real one will not be
   // created. This is only used for a single request, and is destroyed
   // afterward.
   void SetTrustedVaultConnectionForTesting(
       std::unique_ptr<trusted_vault::TrustedVaultConnection> connection);
 
-  void SetClockForTesting(base::Clock*);
+  // Overrides the tick clock and task runner used to track the vault connection
+  // timeout.
+  void SetMockTimeForTesting(
+      base::TickClock const* tick_clock,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegatePrivateTest,
@@ -326,6 +323,8 @@ class ChromeAuthenticatorRequestDelegate
   content::RenderFrameHost* GetRenderFrameHost() const;
 
   content::BrowserContext* GetBrowserContext() const;
+
+  bool webauthn_ui_enabled() const;
 
   void ShowUI(device::FidoRequestHandlerBase::TransportAvailabilityInfo data);
 
@@ -398,15 +397,6 @@ class ChromeAuthenticatorRequestDelegate
   AccountPreselectedCallback account_preselected_callback_;
   device::FidoRequestHandlerBase::RequestCallback request_callback_;
 
-  // If in the TransportAvailabilityInfo reported by the request handler,
-  // disable_embedder_ui is set, this will be set to true. No UI must be
-  // rendered and all request handler callbacks will be ignored.
-  bool disable_ui_ = false;
-
-  // If true, show a more subtle UI unless the user has platform discoverable
-  // credentials on the device.
-  bool is_conditional_ = false;
-
   // The number of credential types that have been requested to be displayed
   // in the Ambient credential UI.
   int ambient_credential_types_ =
@@ -417,9 +407,6 @@ class ChromeAuthenticatorRequestDelegate
   // requests. When empty, no filter is applied and all passkeys are displayed.
   std::vector<device::PublicKeyCredentialDescriptor> credential_filter_;
 
-  // See `SetPassEmptyUsbDeviceManagerForTesting`.
-  bool pass_empty_usb_device_manager_ = false;
-
   // cable_device_ready_ is true if a caBLE handshake has completed. At this
   // point we assume that any errors were communicated on the caBLE device and
   // don't show errors on the desktop too.
@@ -428,11 +415,6 @@ class ChromeAuthenticatorRequestDelegate
   // can_use_synced_phone_passkeys_ is true if there is a phone pairing
   // available that can service requests for synced GPM passkeys.
   bool can_use_synced_phone_passkeys_ = false;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<chromeos::PasskeyDialogController>
-      chromeos_passkey_controller_;
-#endif
 
   // TODO(crbug.com/40187814): Don't define this on ChromeOS.
   std::unique_ptr<GPMEnclaveController> enclave_controller_;
@@ -451,7 +433,8 @@ class ChromeAuthenticatorRequestDelegate
   // `enclave_controller_` when it is created.
   std::unique_ptr<trusted_vault::TrustedVaultConnection>
       pending_trusted_vault_connection_;
-  raw_ptr<base::Clock> clock_ = nullptr;
+  raw_ptr<const base::TickClock> tick_clock_ = nullptr;
+  scoped_refptr<base::SequencedTaskRunner> timer_task_runner_;
 
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};

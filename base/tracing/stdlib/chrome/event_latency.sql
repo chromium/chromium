@@ -2,7 +2,22 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
-INCLUDE PERFETTO MODULE deprecated.v42.common.slices;
+-- Finds the start timestamp for a given slice's descendant with a given name.
+-- If there are multiple descendants with a given name, the function will return
+-- the first one, so it's most useful when working with a timeline broken down
+-- into phases, where each subphase can happen only once.
+CREATE PERFETTO FUNCTION _descendant_slice_begin(
+  -- Id of the parent slice.
+  parent_id INT,
+  -- Name of the child with the desired start TS.
+  child_name STRING
+)
+-- Start timestamp of the child or NULL if it doesn't exist.
+RETURNS INT AS
+SELECT s.ts
+FROM descendant_slice($parent_id) s
+WHERE s.name GLOB $child_name
+LIMIT 1;
 
 -- Finds the end timestamp for a given slice's descendant with a given name.
 -- If there are multiple descendants with a given name, the function will return
@@ -24,6 +39,22 @@ SELECT
 FROM descendant_slice($parent_id) s
 WHERE s.name GLOB $child_name
 LIMIT 1;
+
+-- Checks if slice has a descendant with provided name.
+CREATE PERFETTO FUNCTION _has_descendant_slice_with_name(
+  -- Id of the slice to check descendants of.
+  id INT,
+  -- Name of potential descendant slice.
+  descendant_name STRING
+)
+-- Whether `descendant_name` is a name of an descendant slice.
+RETURNS BOOL AS
+SELECT EXISTS(
+  SELECT 1
+  FROM descendant_slice($id)
+  WHERE name = $descendant_name
+  LIMIT 1
+);
 
 -- Returns the presentation timestamp for a given EventLatency slice.
 -- This is either the end of
@@ -59,7 +90,24 @@ CREATE PERFETTO TABLE chrome_event_latencies(
   -- EventLatency event type.
   event_type STRING,
   -- Perfetto track this slice is found on.
-  track_id INT
+  track_id INT,
+  -- Vsync interval (in milliseconds).
+  vsync_interval_ms DOUBLE,
+  -- Whether the corresponding frame is janky.
+  is_janky_scrolled_frame BOOL,
+  -- Timestamp of the BufferAvailableToBufferReady substage.
+  buffer_available_timestamp INT,
+  -- Timestamp of the BufferReadyToLatch substage.
+  buffer_ready_timestamp INT,
+  -- Timestamp of the LatchToSwapEnd substage.
+  latch_timestamp INT,
+  -- Timestamp of the SwapEndToPresentationCompositorFrame substage.
+  swap_end_timestamp INT,
+  -- Frame presentation timestamp aka the timestamp of the
+  -- SwapEndToPresentationCompositorFrame substage.
+  -- TODO(b/341047059): temporarily use LatchToSwapEnd as a workaround if
+  -- SwapEndToPresentationCompositorFrame is missing due to b/247542163.
+  presentation_timestamp INT
 ) AS
 SELECT
   slice.id,
@@ -67,12 +115,24 @@ SELECT
   slice.ts,
   slice.dur,
   EXTRACT_arg(arg_set_id, 'event_latency.event_latency_id') AS scroll_update_id,
-  has_descendant_slice_with_name(
+  _has_descendant_slice_with_name(
     slice.id,
     'SubmitCompositorFrameToPresentationCompositorFrame')
-  AS is_presented,
+    AS is_presented,
   EXTRACT_ARG(arg_set_id, 'event_latency.event_type') AS event_type,
-  slice.track_id
+  slice.track_id,
+  EXTRACT_ARG(arg_set_id, 'event_latency.vsync_interval_ms')
+    AS vsync_interval_ms,
+  COALESCE(EXTRACT_ARG(arg_set_id, 'event_latency.is_janky_scrolled_frame'), 0)
+    AS is_janky_scrolled_frame,
+  _descendant_slice_begin(slice.id, 'BufferAvailableToBufferReady')
+    AS buffer_available_timestamp,
+  _descendant_slice_begin(slice.id, 'BufferReadyToLatch')
+    AS buffer_ready_timestamp,
+  _descendant_slice_begin(slice.id, 'LatchToSwapEnd') AS latch_timestamp,
+  _descendant_slice_begin(slice.id, 'SwapEndToPresentationCompositorFrame')
+    AS swap_end_timestamp,
+  _get_presentation_timestamp(slice.id) AS presentation_timestamp
 FROM slice
 WHERE name = 'EventLatency';
 
@@ -96,7 +156,7 @@ WHERE (
   event_type GLOB '*GESTURE_SCROLL*'
   -- Pinches are only relevant if the frame was presented.
   OR (event_type GLOB '*GESTURE_PINCH_UPDATE'
-    AND has_descendant_slice_with_name(
+    AND _has_descendant_slice_with_name(
       id,
       'SubmitCompositorFrameToPresentationCompositorFrame')
   )

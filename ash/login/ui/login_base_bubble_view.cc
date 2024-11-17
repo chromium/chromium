@@ -153,9 +153,12 @@ LoginBaseBubbleView::LoginBaseBubbleView(base::WeakPtr<views::View> anchor_view,
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kStart);
 
-  ui::ColorId background_color_id =
-      chromeos::features::IsJellyrollEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
+  const ui::ColorId background_color_id =
+      chromeos::features::IsJellyEnabled()
+          ? static_cast<ui::ColorId>(
+                chromeos::features::IsSystemBlurEnabled()
+                    ? cros_tokens::kCrosSysSystemBaseElevated
+                    : cros_tokens::kCrosSysSystemBaseElevatedOpaque)
           : kColorAshShieldAndBase80;
 
   SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
@@ -178,9 +181,11 @@ void LoginBaseBubbleView::EnsureLayer() {
   }
   // Layer rendering is needed for animation.
   SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 }
 
 LoginBaseBubbleView::~LoginBaseBubbleView() = default;

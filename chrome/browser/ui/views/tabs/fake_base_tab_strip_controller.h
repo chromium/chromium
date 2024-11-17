@@ -16,6 +16,9 @@
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/models/list_selection_model.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
+
+class TabGroup;
 
 class FakeBaseTabStripController : public TabStripController {
  public:
@@ -61,7 +64,7 @@ class FakeBaseTabStripController : public TabStripController {
       ToggleTabGroupCollapsedStateOrigin origin) override;
   void ShowContextMenuForTab(Tab* tab,
                              const gfx::Point& p,
-                             ui::MenuSourceType source_type) override;
+                             ui::mojom::MenuSourceType source_type) override;
   int HasAvailableDragActions() const override;
   void OnDropIndexUpdate(std::optional<int> index, bool drop_before) override;
   void CreateNewTab() override;
@@ -95,9 +98,11 @@ class FakeBaseTabStripController : public TabStripController {
   std::optional<int> GetCustomBackgroundId(
       BrowserFrameActiveState active_state) const override;
   std::u16string GetAccessibleTabName(const Tab* tab) const override;
+  TabGroup* GetTabGroup(const tab_groups::TabGroupId& group_id) const override;
   Profile* GetProfile() const override;
+  BrowserWindowInterface* GetBrowserWindowInterface() override;
   const Browser* GetBrowser() const override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;
 
   // Sets OnTask locked for testing purposes. Only relevant for non-web browser
@@ -114,7 +119,7 @@ class FakeBaseTabStripController : public TabStripController {
   int num_tabs_ = 0;
   int num_pinned_tabs_ = 0;
   std::optional<int> active_index_ = std::nullopt;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool on_task_locked_ = false;
 #endif
 

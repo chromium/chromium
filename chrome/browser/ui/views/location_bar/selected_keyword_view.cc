@@ -101,7 +101,8 @@ void SelectedKeywordView::SetCustomImage(const gfx::Image& image) {
     vector_icon = &omnibox::kSparkIcon;
   } else if (history_embeddings::IsHistoryEmbeddingsEnabledForProfile(
                  profile_) &&
-             history_embeddings::kOmniboxScoped.Get() && template_url &&
+             history_embeddings::GetFeatureParameters().omnibox_scoped &&
+             template_url &&
              template_url->starter_pack_id() ==
                  TemplateURLStarterPackData::kHistory) {
     vector_icon = &omnibox::kSearchSparkIcon;

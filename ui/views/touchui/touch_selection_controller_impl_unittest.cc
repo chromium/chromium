@@ -24,7 +24,6 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/events/base_event_utils.h"
@@ -35,6 +34,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/render_text.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -673,7 +673,7 @@ TEST_F(TouchSelectionControllerImplTest,
 }
 
 // Touch selection menu is not supported on Cast.
-#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(TouchSelectionControllerImplTest,
        MenuAppearsAfterDraggingSelectionHandles) {
   CreateTextfield();

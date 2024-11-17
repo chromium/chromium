@@ -4,11 +4,6 @@
 
 #include "chrome/browser/safe_browsing/client_side_detection_service_factory.h"
 
-#include "base/command_line.h"
-#include "base/memory/scoped_refptr.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
@@ -61,13 +56,9 @@ ClientSideDetectionServiceFactory::BuildServiceInstanceForBrowserContext(
     return nullptr;
   }
 
-  scoped_refptr<base::SequencedTaskRunner> background_task_runner =
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-
   return std::make_unique<ClientSideDetectionService>(
       std::make_unique<ChromeClientSideDetectionServiceDelegate>(profile),
-      opt_guide, background_task_runner);
+      opt_guide);
 }
 
 bool ClientSideDetectionServiceFactory::ServiceIsCreatedWithBrowserContext()

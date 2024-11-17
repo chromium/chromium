@@ -20,11 +20,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/command_updater.h"
-#include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
@@ -45,7 +43,6 @@
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_prefs.h"
@@ -54,7 +51,6 @@
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 #include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
-#include "chrome/browser/ui/views/enterprise/management_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -72,7 +68,6 @@
 #include "chrome/browser/ui/views/performance_controls/battery_saver_button.h"
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_button.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_icon_view.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/back_forward_button.h"
@@ -130,12 +125,8 @@
 #include "chrome/browser/recovery/recovery_install_global_error_factory.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/bookmarks/bookmark_bubble_sign_in_delegate.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #endif
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -155,7 +146,7 @@ namespace {
 
 // Gets the display mode for a given browser.
 ToolbarView::DisplayMode GetDisplayMode(Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (browser->is_type_custom_tab())
     return ToolbarView::DisplayMode::CUSTOM_TAB;
 #endif
@@ -370,8 +361,12 @@ void ToolbarView::Init() {
     toolbar_divider = std::make_unique<views::View>();
   }
   std::unique_ptr<media_router::CastToolbarButton> cast;
-  if (media_router::MediaRouterEnabled(browser_->profile()))
-    cast = media_router::CastToolbarButton::Create(browser_);
+  if (!(features::IsToolbarPinningEnabled() &&
+      base::FeatureList::IsEnabled(features::kPinnedCastButton))) {
+    if (media_router::MediaRouterEnabled(browser_->profile())) {
+      cast = media_router::CastToolbarButton::Create(browser_);
+    }
+  }
 
   std::unique_ptr<MediaToolbarButtonView> media_button;
   if (base::FeatureList::IsEnabled(media::kGlobalMediaControls)) {
@@ -469,16 +464,10 @@ void ToolbarView::Init() {
     send_tab_to_self_button_ =
         container_view_->AddChildView(std::move(send_tab_to_self_button));
 
-#if !BUILDFLAG(IS_CHROMEOS)
-  management_toolbar_button_ =
-      container_view_->AddChildView(std::make_unique<ManagementToolbarButton>(
-          browser_view_, browser_->profile()));
-#endif
-
   avatar_ = container_view_->AddChildView(
       std::make_unique<AvatarToolbarButton>(browser_view_));
   bool show_avatar_toolbar_button = true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ChromeOS only badges Incognito, Guest, and captive portal signin icons in
   // the browser window.
   show_avatar_toolbar_button =
@@ -486,8 +475,6 @@ void ToolbarView::Init() {
       browser_->profile()->IsGuestSession() ||
       (browser_->profile()->IsOffTheRecord() &&
        browser_->profile()->GetOTRProfileID().IsCaptivePortal());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  show_avatar_toolbar_button = !chromeos::IsManagedGuestSession();
 #else
   // DevTools profiles are OffTheRecord, so hide it there.
   show_avatar_toolbar_button = browser_->profile()->IsIncognitoProfile() ||
@@ -692,7 +679,7 @@ void ToolbarView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
       GetPageActionIconView(PageActionIconType::kBookmarkStar);
 
   std::unique_ptr<BubbleSignInPromoDelegate> delegate;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   delegate =
       std::make_unique<BookmarkBubbleSignInDelegate>(browser_->profile());
 #endif
@@ -709,6 +696,17 @@ views::Button* ToolbarView::GetChromeLabsButton() const {
 
 ExtensionsToolbarButton* ToolbarView::GetExtensionsButton() const {
   return extensions_container_->GetExtensionsButton();
+}
+
+ToolbarButton* ToolbarView::GetCastButton() const {
+  if (features::IsToolbarPinningEnabled() &&
+      base::FeatureList::IsEnabled(features::kPinnedCastButton)) {
+    return pinned_toolbar_actions_container()
+               ? pinned_toolbar_actions_container()->GetButtonFor(
+                     kActionRouteMedia)
+               : nullptr;
+  }
+  return cast_;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1188,10 +1186,6 @@ void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
 
 AvatarToolbarButton* ToolbarView::GetAvatarToolbarButton() {
   return avatar_;
-}
-
-ManagementToolbarButton* ToolbarView::GetManagementToolbarButton() {
-  return management_toolbar_button_;
 }
 
 ToolbarButton* ToolbarView::GetBackButton() {

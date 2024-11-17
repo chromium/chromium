@@ -16,7 +16,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 // ash-chrome to enable automation and to perform actions.
 // Next version: 3
 // Next method id: 7
-[Stable, Uuid="8dd5f2a7-c24b-47c3-a096-a5d28c4764bb"]
+[Uuid="8dd5f2a7-c24b-47c3-a096-a5d28c4764bb"]
 interface AutomationClient {
   // Deprecated.
   PerformActionDeprecated@2(
@@ -54,7 +54,7 @@ interface AutomationClient {
 // Interface for automation. Implemented by ash-chrome.
 // Next version: 5
 // Next method id: 6
-[Stable, Uuid="356a895e-b41a-4c45-9336-d8dc6d332f98"]
+[Uuid="356a895e-b41a-4c45-9336-d8dc6d332f98"]
 interface Automation {
   // Deprecated.
   RegisterAutomationClientDeprecated@0(
@@ -94,7 +94,7 @@ interface Automation {
 // processes for automation.
 // Next version: 1
 // Next method id: 1
-[Stable, Uuid="87004779-69b3-4f35-980b-be259f002ac7"]
+[Uuid="87004779-69b3-4f35-980b-be259f002ac7"]
 interface AutomationFactory {
   // A binder which sends accessibility data, and receives accessibility actions
   // (e.g. Lacros).

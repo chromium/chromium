@@ -23,10 +23,9 @@ namespace {
 
 // Helpers for ROBufferSegmentReader and ParkableImageSegmentReader
 template <class Iter>
-size_t BufferGetSomeData(Iter& iter,
-                         size_t& position_of_block,
-                         const char*& data,
-                         size_t position) {
+base::span<const uint8_t> BufferGetSomeData(Iter& iter,
+                                            size_t& position_of_block,
+                                            size_t position) {
   for (size_t size_of_block = iter.size(); size_of_block != 0;
        position_of_block += size_of_block, size_of_block = iter.size()) {
     DCHECK_LE(position_of_block, position);
@@ -34,8 +33,7 @@ size_t BufferGetSomeData(Iter& iter,
     if (position_of_block + size_of_block > position) {
       // |position| is in this block.
       const size_t position_in_block = position - position_of_block;
-      data = static_cast<const char*>(iter.data()) + position_in_block;
-      return size_of_block - position_in_block;
+      return base::span(iter.data(), iter.size()).subspan(position_in_block);
     }
 
     // Move to next block.
@@ -43,7 +41,7 @@ size_t BufferGetSomeData(Iter& iter,
       break;
     }
   }
-  return 0;
+  return {};
 }
 
 template <class Iter>
@@ -70,7 +68,7 @@ class SharedBufferSegmentReader final : public SegmentReader {
   SharedBufferSegmentReader& operator=(const SharedBufferSegmentReader&) =
       delete;
   size_t size() const override;
-  size_t GetSomeData(const char*& data, size_t position) const override;
+  base::span<const uint8_t> GetSomeData(size_t position) const override;
   sk_sp<SkData> GetAsSkData() const override;
 
  private:
@@ -86,15 +84,13 @@ size_t SharedBufferSegmentReader::size() const {
   return shared_buffer_->size();
 }
 
-size_t SharedBufferSegmentReader::GetSomeData(const char*& data,
-                                              size_t position) const {
-  data = nullptr;
+base::span<const uint8_t> SharedBufferSegmentReader::GetSomeData(
+    size_t position) const {
   auto it = shared_buffer_->GetIteratorAt(position);
   if (it == shared_buffer_->cend()) {
-    return 0;
+    return {};
   }
-  data = it->data();
-  return it->size();
+  return base::as_byte_span(*it);
 }
 
 sk_sp<SkData> SharedBufferSegmentReader::GetAsSkData() const {
@@ -118,7 +114,7 @@ class DataSegmentReader final : public SegmentReader {
   DataSegmentReader(const DataSegmentReader&) = delete;
   DataSegmentReader& operator=(const DataSegmentReader&) = delete;
   size_t size() const override;
-  size_t GetSomeData(const char*& data, size_t position) const override;
+  base::span<const uint8_t> GetSomeData(size_t position) const override;
   sk_sp<SkData> GetAsSkData() const override;
 
  private:
@@ -133,14 +129,13 @@ size_t DataSegmentReader::size() const {
   return data_->size();
 }
 
-size_t DataSegmentReader::GetSomeData(const char*& data,
-                                      size_t position) const {
+base::span<const uint8_t> DataSegmentReader::GetSomeData(
+    size_t position) const {
   if (position >= data_->size()) {
-    return 0;
+    return {};
   }
-
-  data = reinterpret_cast<const char*>(data_->bytes() + position);
-  return data_->size() - position;
+  auto data_span = base::span(data_->bytes(), data_->size());
+  return data_span.subspan(position);
 }
 
 sk_sp<SkData> DataSegmentReader::GetAsSkData() const {
@@ -156,7 +151,7 @@ class ROBufferSegmentReader final : public SegmentReader {
   ROBufferSegmentReader& operator=(const ROBufferSegmentReader&) = delete;
 
   size_t size() const override;
-  size_t GetSomeData(const char*& data, size_t position) const override;
+  base::span<const uint8_t> GetSomeData(size_t position) const override;
   sk_sp<SkData> GetAsSkData() const override;
 
  private:
@@ -177,10 +172,10 @@ size_t ROBufferSegmentReader::size() const {
   return ro_buffer_ ? ro_buffer_->size() : 0;
 }
 
-size_t ROBufferSegmentReader::GetSomeData(const char*& data,
-                                          size_t position) const {
+base::span<const uint8_t> ROBufferSegmentReader::GetSomeData(
+    size_t position) const {
   if (!ro_buffer_) {
-    return 0;
+    return {};
   }
 
   base::AutoLock lock(read_lock_);
@@ -191,7 +186,7 @@ size_t ROBufferSegmentReader::GetSomeData(const char*& data,
     position_of_block_ = 0;
   }
 
-  size_t size = BufferGetSomeData(iter_, position_of_block_, data, position);
+  auto data = BufferGetSomeData(iter_, position_of_block_, position);
 
   if (!iter_.data()) {
     // Reset to the beginning, so future calls can succeed.
@@ -199,7 +194,7 @@ size_t ROBufferSegmentReader::GetSomeData(const char*& data,
     position_of_block_ = 0;
   }
 
-  return size;
+  return data;
 }
 
 static void UnrefROBuffer(const void* ptr, void* context) {
@@ -250,11 +245,11 @@ sk_sp<SkData> SegmentReader::RWBufferCopyAsSkData(RWBuffer::ROIter iter,
 }
 
 // static
-size_t SegmentReader::RWBufferGetSomeData(RWBuffer::ROIter& iter,
-                                          size_t& position_of_block,
-                                          const char*& data,
-                                          size_t position) {
-  return BufferGetSomeData(iter, position_of_block, data, position);
+base::span<const uint8_t> SegmentReader::RWBufferGetSomeData(
+    RWBuffer::ROIter& iter,
+    size_t& position_of_block,
+    size_t position) {
+  return BufferGetSomeData(iter, position_of_block, position);
 }
 
 }  // namespace blink

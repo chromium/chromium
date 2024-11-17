@@ -267,14 +267,9 @@ void MarketingOptInScreen::SetCountryFromTimezoneIfAvailable(
   // Set the country
   country_.clear();
   const bool is_default_country = default_countries_.count(region.value());
-  const bool is_extended_country =
-      additional_countries_.count(region.value()) &&
-      base::FeatureList::IsEnabled(
-          ::features::kOobeMarketingAdditionalCountriesSupported);
+  const bool is_extended_country = additional_countries_.count(region.value());
   const bool is_double_optin_country =
-      double_opt_in_countries_.count(region.value()) &&
-      base::FeatureList::IsEnabled(
-          ::features::kOobeMarketingDoubleOptInCountriesSupported);
+      double_opt_in_countries_.count(region.value());
 
   if (is_default_country || is_extended_country || is_double_optin_country) {
     country_ = region.value();

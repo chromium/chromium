@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.metrics.SimpleStartupForegroundSessionDetector;
 import org.chromium.chrome.browser.metrics.UmaUtils;
 import org.chromium.chrome.browser.policy.PolicyServiceFactory;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
@@ -41,7 +41,8 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 
 /** Base class for First Run Experience. */
-// TODO(b/41493788): Consider renaming it now that it is also the base for the upgrade promo.
+// TODO(crbug.com/349787455): Consider renaming it now that it is also the base for non-FRE
+// fullscreen sign-in flows.
 public abstract class FirstRunActivityBase extends AsyncInitializationActivity
         implements BackPressHandler {
     private static final String TAG = "FirstRunActivity";
@@ -159,7 +160,7 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
         return new ActivityProfileProvider(getLifecycleDispatcher()) {
             @Nullable
             @Override
-            protected OTRProfileID createOffTheRecordProfileID() {
+            protected OtrProfileId createOffTheRecordProfileId() {
                 throw new IllegalStateException("Attempting to access incognito in the FRE");
             }
         };
@@ -204,14 +205,14 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
     protected final boolean sendFirstRunCompletePendingIntent() {
         PendingIntent pendingIntent =
                 IntentUtils.safeGetParcelableExtra(getIntent(), EXTRA_FRE_COMPLETE_LAUNCH_INTENT);
-        boolean pendingIntentIsCCT =
+        boolean pendingIntentIsCct =
                 IntentUtils.safeGetBooleanExtra(
                         getIntent(), EXTRA_CHROME_LAUNCH_INTENT_IS_CCT, false);
         if (pendingIntent == null) return false;
 
         try {
             PendingIntent.OnFinished onFinished = null;
-            if (pendingIntentIsCCT) {
+            if (pendingIntentIsCct) {
                 // After the PendingIntent has been sent, send a first run callback to custom tabs
                 // if necessary.
                 onFinished =
@@ -264,17 +265,18 @@ public abstract class FirstRunActivityBase extends AsyncInitializationActivity
     }
 
     /**
-     * If the first run activity was triggered by a custom tab, notify app associated with
-     * custom tab whether first run was completed.
+     * If the first run activity was triggered by a custom tab, notify app associated with custom
+     * tab whether first run was completed.
+     *
      * @param freIntent First run activity intent.
-     * @param complete  Whether first run completed successfully.
+     * @param complete Whether first run completed successfully.
      */
     public static void notifyCustomTabCallbackFirstRunIfNecessary(
             Intent freIntent, boolean complete) {
-        boolean launchedByCCT =
+        boolean launchedByCct =
                 IntentUtils.safeGetBooleanExtra(
                         freIntent, EXTRA_CHROME_LAUNCH_INTENT_IS_CCT, false);
-        if (!launchedByCCT) return;
+        if (!launchedByCct) return;
 
         Bundle launchIntentExtras =
                 IntentUtils.safeGetBundleExtra(freIntent, EXTRA_CHROME_LAUNCH_INTENT_EXTRAS);

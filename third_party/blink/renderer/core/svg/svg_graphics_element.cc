@@ -106,7 +106,6 @@ void SVGGraphicsElement::SvgAttributeChanged(
   // Reattach so the isValid() check will be run again during layoutObject
   // creation.
   if (SVGTests::IsKnownAttribute(attr_name)) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     SetForceReattachLayoutTree();
     return;
   }

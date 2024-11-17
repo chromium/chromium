@@ -306,7 +306,8 @@ class BASE_EXPORT CurrentIOThread : public CurrentThread {
 
 #if BUILDFLAG(IS_WIN)
   // Please see MessagePumpWin for definitions of these methods.
-  HRESULT RegisterIOHandler(HANDLE file, MessagePumpForIO::IOHandler* handler);
+  [[nodiscard]] bool RegisterIOHandler(HANDLE file,
+                                       MessagePumpForIO::IOHandler* handler);
   bool RegisterJobObject(HANDLE job, MessagePumpForIO::IOHandler* handler);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Please see WatchableIOMessagePumpPosix for definition.

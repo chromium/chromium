@@ -519,7 +519,7 @@ void HatsNextWebDialog::LoadTimedOut() {
 // TODO(crbug.com/40285934): Remove this whole function after HaTSWebUI is
 // launched.
 void HatsNextWebDialog::OnSurveyStateUpdateReceived(std::string state) {
-  loading_timer_.AbandonAndStop();
+  loading_timer_.Stop();
 
   if (state == "loaded") {
     OnSurveyLoaded();

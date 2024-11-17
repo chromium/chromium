@@ -96,9 +96,7 @@ TEST(FetchRequestDataTest, CheckServiceworkerRaceNetworkRequestToken) {
   EXPECT_EQ(token, request_data->ServiceWorkerRaceNetworkRequestToken());
 
   // Token is not cloned.
-  auto exception_state = ExceptionState(
-      nullptr, ExceptionContext(v8::ExceptionContext::kUnknown, nullptr));
-  auto* cloned_request_data = request_data->Clone(nullptr, exception_state);
+  auto* cloned_request_data = request_data->Clone(nullptr, IGNORE_EXCEPTION);
   EXPECT_TRUE(
       cloned_request_data->ServiceWorkerRaceNetworkRequestToken().is_empty());
 }

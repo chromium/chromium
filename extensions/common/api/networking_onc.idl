@@ -575,7 +575,7 @@ namespace networking.onc {
   };
 
   [noinline_doc] dictionary WiFiProperties {
-    // Whether ARP polling of default gateway is allowed. Defaults to true.
+    [deprecated="Removed in M131. There is no active ARP polling now."]
     boolean? AllowGatewayARPPolling;
     // Whether the WiFi network should be connected automatically when in range.
     boolean? AutoConnect;

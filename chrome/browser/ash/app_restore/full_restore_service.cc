@@ -14,6 +14,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/glanceables/post_login_glanceables_metrics_recorder.h"
 #include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/public/cpp/notification_utils.h"
@@ -26,33 +27,31 @@
 #include "ash/wm/window_restore/window_restore_metrics.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/barrier_callback.h"
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
+#include "base/version.h"
 #include "base/version_info/version_info.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler_factory.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_data_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
-#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/app_restore/new_user_restore_pref_handler.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/full_restore/full_restore_util.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
@@ -68,6 +67,7 @@
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_info.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -82,6 +82,11 @@
 namespace ash::full_restore {
 
 namespace {
+
+bool g_restore_for_testing = true;
+
+// If true, do not show any full restore UI.
+bool g_last_session_sanitized = false;
 
 // This flag forces full session restore on startup regardless of potential
 // non-clean shutdown. It could be used in tests to ignore crashes on shutdown.
@@ -118,7 +123,6 @@ void MaybeInitiateAdminTemplateAutoLaunch() {
 }
 
 // Collects window id and app id of normal browser windows.
-// Note that this collects both Lacros and Ash browser windows.
 std::vector<LoginUnlockThroughputRecorder::RestoreWindowID>
 CollectRestoreIDsForNormalBrowserWindows(
     ::app_restore::RestoreData* restore_data) {
@@ -129,9 +133,8 @@ CollectRestoreIDsForNormalBrowserWindows(
   std::vector<LoginUnlockThroughputRecorder::RestoreWindowID> app_restore_ids;
   for (const auto& [app_id, launch_list] :
        restore_data->app_id_to_launch_list()) {
-    const bool is_browser = app_id == app_constants::kChromeAppId ||
-                            app_id == app_constants::kLacrosAppId;
-    // We are only interested in Ash or Lacros browsers.
+    const bool is_browser = app_id == app_constants::kChromeAppId;
+    // We are only interested in Ash browsers.
     if (!is_browser) {
       continue;
     }
@@ -154,36 +157,12 @@ CollectRestoreIDsForNormalBrowserWindows(
 
 }  // namespace
 
-bool g_restore_for_testing = true;
-
 const char kRestoreForCrashNotificationId[] = "restore_for_crash_notification";
 const char kRestoreNotificationId[] = "restore_notification";
 
 const char kRestoreNotificationHistogramName[] = "Apps.RestoreNotification";
 const char kRestoreForCrashNotificationHistogramName[] =
     "Apps.RestoreForCrashNotification";
-
-bool MaybeCreateFullRestoreServiceForLacros() {
-  // Full restore for Lacros depends on BrowserAppInstanceRegistry to save and
-  // restore Lacros windows, so check the web apps crosapi flag to make sure
-  // BrowserAppInstanceRegistry is created.
-  if (!::full_restore::features::IsFullRestoreForLacrosEnabled() ||
-      !web_app::IsWebAppsCrosapiEnabled()) {
-    return false;
-  }
-
-  const user_manager::User* user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  DCHECK(user);
-  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
-  DCHECK(profile);
-
-  // Lacros can be launched at the very early stage during the system startup
-  // phase. So create FullRestoreService to construct LacrosWindowHandler to
-  // observe BrowserAppInstanceRegistry for Lacros windows before the first
-  // Lacros window is created, to avoid missing any Lacros windows.
-  return FullRestoreService::GetForProfile(profile);
-}
 
 class DelegateImpl : public FullRestoreService::Delegate {
  public:
@@ -231,20 +210,6 @@ class DelegateImpl : public FullRestoreService::Delegate {
   }
 };
 
-// static
-FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {
-  TRACE_EVENT0("ui", "FullRestoreService::GetForProfile");
-  return static_cast<FullRestoreService*>(
-      FullRestoreServiceFactory::GetInstance()->GetForProfile(profile));
-}
-
-// static
-void FullRestoreService::MaybeCloseNotification(Profile* profile) {
-  auto* full_restore_service = FullRestoreService::GetForProfile(profile);
-  if (full_restore_service)
-    full_restore_service->MaybeCloseNotification();
-}
-
 FullRestoreService::FullRestoreService(Profile* profile)
     : profile_(profile),
       app_launch_handler_(std::make_unique<FullRestoreAppLaunchHandler>(
@@ -258,8 +223,7 @@ FullRestoreService::FullRestoreService(Profile* profile)
 
   auto* full_restore_save_handler =
       ::full_restore::FullRestoreSaveHandler::GetInstance();
-  full_restore_save_handler->InsertIgnoreApplicationId(
-      web_app::kOsFeedbackAppId);
+  full_restore_save_handler->InsertIgnoreApplicationId(ash::kOsFeedbackAppId);
 
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
@@ -314,6 +278,11 @@ FullRestoreService::~FullRestoreService() {
   }
 }
 
+// static
+void FullRestoreService::SetLastSessionSanitized() {
+  g_last_session_sanitized = true;
+}
+
 void FullRestoreService::Init(bool& show_notification) {
   // If it is the first time to migrate to the full restore release, we don't
   // have other restore data, so we don't need to consider restoration.
@@ -363,6 +332,11 @@ void FullRestoreService::Init(bool& show_notification) {
     return;
   }
 
+  const bool is_primary_user = ProfileHelper::IsPrimaryProfile(profile_);
+  const RestoreOption restore_pref = static_cast<RestoreOption>(
+      prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
+  const bool restore_automatically = restore_pref == RestoreOption::kAlways;
+
   // If either OS pref setting nor Chrome pref setting exist, that means we
   // don't have restore data, so we don't need to consider restoration, and call
   // NewUserRestorePrefHandler to set OS pref setting.
@@ -371,11 +345,28 @@ void FullRestoreService::Init(bool& show_notification) {
         std::make_unique<NewUserRestorePrefHandler>(profile_);
     ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
     MaybeInitiateAdminTemplateAutoLaunch();
+
+    if (session_manager::SessionManager::Get() &&
+        session_manager::SessionManager::Get()->session_state() ==
+            session_manager::SessionState::RMA) {
+      // RMA browser tests load stub user profile and get here. In production,
+      // RMA should run with the sign-in profile and `FullRestoreService` should
+      // be not be created.
+      CHECK_IS_TEST();
+    } else {
+      // Notifies `LoginUnlockThroughputRecorder` so that it does not wait for
+      // restore data and can start deferred post-login tasks when shelf icon
+      // animation finishes and the login metrics concludes.
+      if (is_primary_user && Shell::HasInstance() &&
+          Shell::Get()->login_unlock_throughput_recorder()) {
+        Shell::Get()
+            ->login_unlock_throughput_recorder()
+            ->FullSessionRestoreDataLoaded({}, restore_automatically);
+      }
+    }
     return;
   }
 
-  RestoreOption restore_pref = static_cast<RestoreOption>(
-      prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
   base::UmaHistogramEnumeration(kRestoreInitSettingHistogramName, restore_pref);
 
   ::app_restore::RestoreData* restore_data =
@@ -396,13 +387,13 @@ void FullRestoreService::Init(bool& show_notification) {
 
   // LoginUnlockThroughputRecorder needs to track when session
   // restore is done. Here we notify it of the set of normal browser windows.
-  if (ProfileHelper::IsPrimaryProfile(profile_) && Shell::HasInstance() &&
+  if (is_primary_user && Shell::HasInstance() &&
       Shell::Get()->login_unlock_throughput_recorder()) {
     Shell::Get()
         ->login_unlock_throughput_recorder()
         ->FullSessionRestoreDataLoaded(
             CollectRestoreIDsForNormalBrowserWindows(restore_data),
-            /*restore_automatically=*/restore_pref == RestoreOption::kAlways);
+            restore_automatically);
   }
 
   switch (restore_pref) {
@@ -460,7 +451,7 @@ void FullRestoreService::MaybeCloseNotification(bool allow_save) {
   crashed_lock_.reset();
 
   if (notification_ && !is_shut_down_) {
-    NotificationDisplayService::GetForProfile(profile_)->Close(
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, notification_->id());
     accelerator_controller_observer_.Reset();
   }
@@ -676,6 +667,10 @@ void FullRestoreService::InitInformedRestoreContentsData(
 void FullRestoreService::MaybeShowRestoreNotification(
     InformedRestoreContentsData::DialogType dialog_type,
     bool& show_notification) {
+  if (g_last_session_sanitized) {
+    return;
+  }
+
   if (!app_launch_handler_) {
     return;
   }
@@ -729,14 +724,6 @@ void FullRestoreService::MaybeShowRestoreNotification(
 
     InitInformedRestoreContentsData(dialog_type);
 
-    if (crosapi::browser_util::IsLacrosEnabled()) {
-      crosapi::CrosapiManager::Get()
-          ->crosapi_ash()
-          ->full_restore_ash()
-          ->GetSessionInformation(
-              base::BindOnce(&FullRestoreService::OnGotAllSessionsLacros,
-                             weak_ptr_factory_.GetWeakPtr()));
-    } else {
       // Retrieves session service data from browser and app browsers, which
       // will be used to display favicons and tab titles.
       SessionServiceBase* service =
@@ -758,7 +745,6 @@ void FullRestoreService::MaybeShowRestoreNotification(
       } else {
         OnGotAllSessionsAsh(/*all_session_windows=*/{});
       }
-    }
 
     // Set to true as we might want to show the post reboot notification.
     show_notification = true;
@@ -819,7 +805,7 @@ void FullRestoreService::MaybeShowRestoreNotification(
   notification_->set_priority(message_center::SYSTEM_PRIORITY);
 
   auto* notification_display_service =
-      NotificationDisplayService::GetForProfile(profile_);
+      NotificationDisplayServiceFactory::GetForProfile(profile_);
   DCHECK(notification_display_service);
   notification_display_service->Display(NotificationHandler::Type::TRANSIENT,
                                         *notification_,
@@ -853,7 +839,8 @@ void FullRestoreService::OnPreferenceChanged(const std::string& pref_name) {
 
 void FullRestoreService::OnAppTerminating() {
   if (auto* arc_task_handler =
-          app_restore::AppRestoreArcTaskHandler::GetForProfile(profile_)) {
+          app_restore::AppRestoreArcTaskHandlerFactory::GetForProfile(
+              profile_)) {
     arc_task_handler->Shutdown();
   }
   app_launch_handler_.reset();
@@ -883,32 +870,14 @@ void FullRestoreService::OnGotSessionAsh(
 void FullRestoreService::OnGotAllSessionsAsh(
     const std::vector<SessionWindows>& all_session_windows) {
   // Place all the session windows in map so we don't have to do so many O(n)
-  // lookups below. Note that this has the additional overhead of creating the
-  // full_restore.mojom struct. This is so we can share more code with Lacros,
-  // which is the final goal.
+  // lookups below.
   SessionWindowsMap session_windows_map;
   for (const SessionWindows& session_windows : all_session_windows) {
     for (const std::unique_ptr<sessions::SessionWindow>& session_window :
          session_windows) {
-      session_windows_map.emplace(
-          session_window->window_id.id(),
-          ::full_restore::ToSessionWindowPtr(*session_window,
-                                             /*lacros_profile_id=*/0));
+      session_windows_map.emplace(session_window->window_id.id(),
+                                  session_window.get());
     }
-  }
-
-  OnSessionInformationReceived(session_windows_map);
-}
-
-void FullRestoreService::OnGotAllSessionsLacros(
-    std::vector<crosapi::mojom::SessionWindowPtr> all_session_windows) {
-  // Place all the session windows in map so we don't have to do so many O(n)
-  // lookups below.
-  SessionWindowsMap session_windows_map;
-  for (const crosapi::mojom::SessionWindowPtr& session_window :
-       all_session_windows) {
-    session_windows_map.emplace(session_window->window_id,
-                                session_window->Clone());
   }
 
   OnSessionInformationReceived(session_windows_map);
@@ -935,17 +904,16 @@ void FullRestoreService::OnSessionInformationReceived(
 
     // For non browsers, the app id and title is sufficient for the UI we want
     // to display.
-    if (app_id != app_constants::kChromeAppId &&
-        app_id != app_constants::kLacrosAppId) {
+    if (app_id != app_constants::kChromeAppId) {
       continue;
     }
 
-    // Find the `crosapi::mojom::SessionWindow` associated with `window_id` if
-    // it exists.
+    // Find the `sessions::SessionWindow` associated with `window_id` if it
+    // exists.
     auto it = session_windows_map.find(window_id);
 
-    crosapi::mojom::SessionWindow* session_window =
-        it == session_windows_map.end() ? nullptr : it->second.get();
+    sessions::SessionWindow* session_window =
+        it == session_windows_map.end() ? nullptr : it->second;
 
     // Default to using the app id if we cannot find the associated window for
     // whatever reason.
@@ -968,10 +936,63 @@ void FullRestoreService::OnSessionInformationReceived(
       continue;
     }
 
+    // If there is no selected tab index or it is invalid, we can just pass the
+    // URLs as they are. If the selected tab index is one of the first five
+    // elements, then we place that URL at the front and place the remaining
+    // four URLs afterwards. Otherwise, we put the selected tab index at the
+    // front and insert the first four URLs after it.
+    std::string active_tab_title;
+    const std::vector<std::unique_ptr<sessions::SessionTab>>& tabs =
+        session_window->tabs;
+    std::vector<InformedRestoreContentsData::TabInfo> tab_infos;
+    tab_infos.reserve(tabs.size());
+
+    auto maybe_add_display_tab =
+        [&tab_infos, &active_tab_title](sessions::SessionTab* tab) -> void {
+      const auto& navigations = tab->navigations;
+      const int index = tab->current_navigation_index;
+
+      // `index` can actually be larger than the size of `navigations`. See
+      // `sessions::SessionTab::current_navigation_index` for more details.
+      if (navigations.size() > static_cast<size_t>(index)) {
+        const sessions::SerializedNavigationEntry& entry = navigations[index];
+
+        // Use the tab title if possible. If no tab title is available and it is
+        // a chrome WebUI, use the host piece (history, extensions, etc.).
+        // Otherwise we will default to the app title, "Chrome".
+        std::string tab_title = base::UTF16ToUTF8(entry.title());
+        if (tab_title.empty() &&
+            entry.original_request_url().SchemeIs(content::kChromeUIScheme)) {
+          tab_title = entry.original_request_url().host_piece();
+        }
+
+        if (active_tab_title.empty()) {
+          active_tab_title = tab_title;
+        }
+
+        tab_infos.push_back(InformedRestoreContentsData::TabInfo(
+            entry.original_request_url(), tab_title));
+      }
+    };
+
+    // Add the selected tab first if possible.
+    const int selected_tab_index = session_window->selected_tab_index;
+    if (selected_tab_index > -1 &&
+        selected_tab_index < static_cast<int>(tabs.size())) {
+      maybe_add_display_tab(tabs[selected_tab_index].get());
+    }
+
+    // Add the other tabs in order until there are no more tabs or we reach the
+    // limit.
+    for (int i = 0; i < static_cast<int>(tabs.size()); ++i) {
+      if (i == selected_tab_index) {
+        continue;
+      }
+      maybe_add_display_tab(tabs[i].get());
+    }
+
     info = InformedRestoreContentsData::AppInfo(
-        app_id, session_window->active_tab_title, window_id,
-        session_window->urls, session_window->tab_count,
-        session_window->profile_id);
+        app_id, active_tab_title, window_id, std::move(tab_infos));
   }
 
   // Start the post-login session if not yet and pass the contents data to
@@ -990,14 +1011,23 @@ void FullRestoreService::OnSessionInformationReceived(
 }
 
 void FullRestoreService::MaybeShowInformedRestoreOnboarding(bool restore_on) {
-  if (Shell::HasInstance() && !profile_->IsNewProfile() &&
-      !base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kNoFirstRun)) {
-    CHECK(Shell::Get()->informed_restore_controller());
-    Shell::Get()
-        ->informed_restore_controller()
-        ->MaybeShowInformedRestoreOnboarding(restore_on);
+  if (!Shell::HasInstance()) {
+    return;
   }
+
+  if (profile_->IsNewProfile()) {
+    return;
+  }
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kNoFirstRun)) {
+    return;
+  }
+
+  auto* informed_restore_controller =
+      Shell::Get()->informed_restore_controller();
+  CHECK(informed_restore_controller);
+  informed_restore_controller->MaybeShowInformedRestoreOnboarding(restore_on);
 }
 
 ScopedRestoreForTesting::ScopedRestoreForTesting() {

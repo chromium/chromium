@@ -52,6 +52,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/prefs",
     "//chrome/browser/web_applications",
     "//chrome/test:test_support",
     "//components/services/app_service/public/cpp:app_types",

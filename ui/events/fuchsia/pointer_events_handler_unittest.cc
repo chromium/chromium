@@ -499,7 +499,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventWithButtonPressed) {
           auto e = event->AsMouseEvent()->Clone();
           mouse_events.push_back(std::move(e));
         } else {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
       }));
   RunLoopUntilIdle();  // Server gets watch call.
@@ -537,7 +537,7 @@ TEST_F(PointerEventsHandlerTest, MouseWheelEventWithButtonDownBundled) {
           auto e = event->AsMouseEvent()->Clone();
           mouse_events.push_back(std::move(e));
         } else {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
       }));
   RunLoopUntilIdle();  // Server gets watch call.

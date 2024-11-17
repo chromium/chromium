@@ -373,13 +373,16 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   // RenderPass. The DrawQuads are owned by their RenderPasses, which outlive
   // the drawn frame, so it is safe to store these pointers until the end of
   // DrawFrame().
-  base::flat_map<AggregatedRenderPassId, const DrawQuad*>
+  base::flat_map<AggregatedRenderPassId,
+                 raw_ptr<const DrawQuad, CtnExperimental>>
       render_pass_bypass_quads_;
 
   // A map from RenderPass id to the filters used when drawing the RenderPass.
-  base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>
+  base::flat_map<AggregatedRenderPassId,
+                 raw_ptr<cc::FilterOperations, CtnExperimental>>
       render_pass_filters_;
-  base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>
+  base::flat_map<AggregatedRenderPassId,
+                 raw_ptr<cc::FilterOperations, CtnExperimental>>
       render_pass_backdrop_filters_;
   base::flat_map<AggregatedRenderPassId, std::optional<gfx::RRectF>>
       render_pass_backdrop_filter_bounds_;
@@ -423,9 +426,17 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
       std::unique_ptr<DelegatedInkPointRendererSkia> renderer) {}
 
  private:
-  virtual void DrawDelegatedInkTrail();
+  // Update the damage rect of the render pass that will contain the drawn ink
+  // trail, or had drawn the ink trail in the previous frame.
+  void AddInkDamageToRenderPass(const AggregatedRenderPass* render_pass,
+                                gfx::Rect& output_damage_rect);
 
   bool initialized_ = false;
+
+  // Track the id of the render pass that received delegated ink in the latest
+  // frame. This will be used when the the ink trail is cleared and damage
+  // needs to be applied to the correct render pass.
+  std::optional<AggregatedRenderPassId> last_pass_with_delegated_ink_;
 
   gfx::Rect last_root_render_pass_scissor_rect_;
   gfx::Size enlarge_pass_texture_amount_;

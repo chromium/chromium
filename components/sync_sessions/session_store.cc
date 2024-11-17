@@ -407,6 +407,21 @@ void SessionStore::OnReadAllData(
            std::move(builder->metadata_batch));
 }
 
+// static
+std::unique_ptr<SessionStore> SessionStore::RecreateEmptyStore(
+    SessionStore::SessionInfo local_session_info_without_session_tag,
+    std::unique_ptr<syncer::DataTypeStore> underlying_store,
+    const std::string& cache_guid,
+    SyncSessionsClient* sessions_client) {
+  local_session_info_without_session_tag.session_tag = GetSessionTagWithPrefs(
+      cache_guid, sessions_client->GetSessionSyncPrefs());
+  // WrapUnique() used because constructor is private.
+  return base::WrapUnique(new SessionStore(
+      local_session_info_without_session_tag, std::move(underlying_store),
+      std::map<std::string, sync_pb::SessionSpecifics>(),
+      syncer::EntityMetadataMap(), sessions_client));
+}
+
 SessionStore::SessionStore(
     const SessionInfo& local_session_info,
     std::unique_ptr<syncer::DataTypeStore> underlying_store,
@@ -545,15 +560,31 @@ std::unique_ptr<SessionStore::WriteBatch> SessionStore::CreateWriteBatch(
       std::move(error_handler), &session_tracker_);
 }
 
-void SessionStore::DeleteAllDataAndMetadata() {
-  session_tracker_.Clear();
-  store_->DeleteAllDataAndMetadata(base::DoNothing());
-  sessions_client_->GetSessionSyncPrefs()->ClearLegacySyncSessionsGUID();
+// static
+SessionStore::RecreateEmptyStoreCallback SessionStore::DeleteAllDataAndMetadata(
+    std::unique_ptr<SessionStore> session_store) {
+  CHECK(session_store);
 
-  // At all times, the local session must be tracked.
-  session_tracker_.InitLocalSession(
-      local_session_info_.session_tag, local_session_info_.client_name,
-      local_session_info_.device_type, local_session_info_.device_form_factor);
+  // Clear the store and related info.
+  session_store->session_tracker_.Clear();
+  session_store->store_->DeleteAllDataAndMetadata(base::DoNothing());
+  session_store->sessions_client_->GetSessionSyncPrefs()
+      ->ClearLegacySyncSessionsGUID();
+
+  // Grab the necessary stuff for (synchronously) recreating a store later.
+  SessionInfo local_session_info = session_store->local_session_info_;
+  // After clearing data and metadata, the session tag may not be valid anymore.
+  // Clear it to prevent accidental reuse.
+  local_session_info.session_tag.clear();
+
+  std::unique_ptr<syncer::DataTypeStore> underlying_store =
+      std::move(session_store->store_);
+
+  session_store.reset();
+
+  return base::BindOnce(&SessionStore::RecreateEmptyStore,
+                        std::move(local_session_info),
+                        std::move(underlying_store));
 }
 
 }  // namespace sync_sessions

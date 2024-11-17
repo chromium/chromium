@@ -289,12 +289,11 @@ bool CanSupportPersistentLicense() {
 // Remove `kPersistentLicense` support if it's not supported by the platform.
 base::flat_set<CdmSessionType> UpdatePersistentLicenseSupport(
     bool can_persist_data,
-    const base::flat_set<CdmSessionType> session_types) {
-  auto updated_session_types = session_types;
+    base::flat_set<CdmSessionType> session_types) {
   if (!can_persist_data || !CanSupportPersistentLicense()) {
-    updated_session_types.erase(CdmSessionType::kPersistentLicense);
+    session_types.erase(CdmSessionType::kPersistentLicense);
   }
-  return updated_session_types;
+  return session_types;
 }
 
 void AddWidevine(const media::KeySystemCapability& capability,
@@ -322,11 +321,13 @@ void AddWidevine(const media::KeySystemCapability& capability,
   base::flat_set<CdmSessionType> session_types;
   base::flat_set<CdmSessionType> hw_secure_session_types;
 
-  if (capability.sw_secure_capability) {
-    codecs = GetSupportedCodecs(capability.sw_secure_capability.value());
-    encryption_schemes = capability.sw_secure_capability->encryption_schemes;
+  if (capability.sw_cdm_capability_or_status.has_value()) {
+    const auto& sw_secure_capability =
+        capability.sw_cdm_capability_or_status.value();
+    codecs = GetSupportedCodecs(sw_secure_capability);
+    encryption_schemes = sw_secure_capability.encryption_schemes;
     session_types = UpdatePersistentLicenseSupport(
-        can_persist_data, capability.sw_secure_capability->session_types);
+        can_persist_data, sw_secure_capability.session_types);
     if (!base::Contains(session_types, CdmSessionType::kTemporary)) {
       DVLOG(1) << "Temporary sessions must be supported.";
       return;
@@ -336,25 +337,26 @@ void AddWidevine(const media::KeySystemCapability& capability,
     DVLOG(2) << "Software secure Widevine NOT supported";
   }
 
-  if (capability.hw_secure_capability) {
+  if (capability.hw_cdm_capability_or_status.has_value()) {
+    const auto& hw_secure_capability =
+        capability.hw_cdm_capability_or_status.value();
     // For the default Widevine key system, we support a codec only when it
     // supports clear lead, unless `force_support_clear_lead` is set to true.
     const bool force_support_clear_lead =
         media::kHardwareSecureDecryptionForceSupportClearLead.Get();
-    hw_secure_codecs = GetSupportedCodecs(
-        capability.hw_secure_capability.value(), !force_support_clear_lead);
+    hw_secure_codecs =
+        GetSupportedCodecs(hw_secure_capability, !force_support_clear_lead);
 #if BUILDFLAG(IS_WIN)
     // For the experimental Widevine key system, we do not have to filter the
     // hardware secure codecs by whether they support clear lead or not.
     hw_secure_codecs_clear_lead_support_not_required =
-        GetSupportedCodecs(capability.hw_secure_capability.value(),
+        GetSupportedCodecs(hw_secure_capability,
                            /*requires_clear_lead_support=*/false);
 #endif  // BUILDFLAG(IS_WIN)
 
-    hw_secure_encryption_schemes =
-        capability.hw_secure_capability->encryption_schemes;
+    hw_secure_encryption_schemes = hw_secure_capability.encryption_schemes;
     hw_secure_session_types = UpdatePersistentLicenseSupport(
-        can_persist_data, capability.hw_secure_capability->session_types);
+        can_persist_data, hw_secure_capability.session_types);
     if (!base::Contains(hw_secure_session_types, CdmSessionType::kTemporary)) {
       DVLOG(1) << "Temporary sessions must be supported.";
       return;
@@ -495,8 +497,10 @@ void AddMediaFoundationClearKey(
       // MediaFoundation Clear Key Key System uses Windows Media Foundation's
       // decoders. H264 ("avc1.64001E") for video and MP4 AAC ("mp4a.40.2") for
       // audio are always supported. VideoCodec::kH264 is an EME_CODEC_AVC1.
-      // AudioCodec::kAAC is an EME_CODEC_AAC.
-      media::EME_CODEC_AVC1 | media::EME_CODEC_AAC,
+      // AudioCodec::kAAC is an EME_CODEC_AAC. DolbyVision Profile 5
+      // ("dvh1.05.06") and 8.1/8.4 ("dvhe.08.07") are also always supported.
+      media::EME_CODEC_AVC1 | media::EME_CODEC_AAC |
+          media::EME_CODEC_DOLBY_VISION_HEVC,
       // On Windows, MediaFoundation Clear Key CDM requires identifier,
       // persistent state and HW secure codecs. We pretent to require these for
       // testing purposes.
@@ -530,19 +534,19 @@ void AddAndroidPlatformKeySystem(const std::string& key_system,
   base::flat_set<::media::EncryptionScheme> sw_secure_encryption_schemes;
   base::flat_set<::media::EncryptionScheme> hw_secure_encryption_schemes;
 
-  if (capability.sw_secure_capability) {
-    sw_secure_codecs =
-        GetSupportedCodecs(capability.sw_secure_capability.value());
-    sw_secure_encryption_schemes =
-        capability.sw_secure_capability->encryption_schemes;
+  if (capability.sw_cdm_capability_or_status.has_value()) {
+    const auto sw_secure_capability =
+        capability.sw_cdm_capability_or_status.value();
+    sw_secure_codecs = GetSupportedCodecs(sw_secure_capability);
+    sw_secure_encryption_schemes = sw_secure_capability.encryption_schemes;
     DVLOG(2) << "Software secure " << key_system << " supported";
   }
 
-  if (capability.hw_secure_capability) {
-    hw_secure_codecs =
-        GetSupportedCodecs(capability.hw_secure_capability.value());
-    hw_secure_encryption_schemes =
-        capability.hw_secure_capability->encryption_schemes;
+  if (capability.hw_cdm_capability_or_status.has_value()) {
+    const auto hw_secure_capability =
+        capability.hw_cdm_capability_or_status.value();
+    hw_secure_codecs = GetSupportedCodecs(hw_secure_capability);
+    hw_secure_encryption_schemes = hw_secure_capability.encryption_schemes;
     DVLOG(2) << "Hardware secure " << key_system << " supported";
   }
 

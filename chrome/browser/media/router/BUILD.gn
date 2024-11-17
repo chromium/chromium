@@ -75,7 +75,6 @@ static_library("router") {
   ]
   public_deps = [
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/media/webrtc",
     "//components/media_router/browser",
     "//components/media_router/common",
     "//components/media_router/common/mojom:media_router",
@@ -107,13 +106,9 @@ static_library("router") {
 
   if (!is_android) {
     sources += [
-      "mojo/media_router_debugger_impl.cc",
       "mojo/media_router_debugger_impl.h",
-      "mojo/media_router_desktop.cc",
       "mojo/media_router_desktop.h",
-      "mojo/media_router_mojo_metrics.cc",
       "mojo/media_router_mojo_metrics.h",
-      "mojo/media_sink_service_status.cc",
       "mojo/media_sink_service_status.h",
       "providers/cast/app_activity.cc",
       "providers/cast/app_activity.h",
@@ -153,10 +148,8 @@ static_library("router") {
       "providers/dial/dial_media_route_provider.h",
       "providers/dial/dial_media_route_provider_metrics.cc",
       "providers/dial/dial_media_route_provider_metrics.h",
-      "providers/wired_display/wired_display_media_route_provider.cc",
       "providers/wired_display/wired_display_media_route_provider.h",
       "providers/wired_display/wired_display_presentation_receiver.h",
-      "providers/wired_display/wired_display_presentation_receiver_factory.cc",
       "providers/wired_display/wired_display_presentation_receiver_factory.h",
     ]
 
@@ -219,6 +212,44 @@ static_library("router") {
       "//extensions/buildflags",
       "//extensions/common",
     ]
+  }
+}
+
+if (!is_android) {
+  source_set("mojo_impl") {
+    sources = [
+      "mojo/media_router_debugger_impl.cc",
+      "mojo/media_router_desktop.cc",
+      "mojo/media_router_mojo_metrics.cc",
+      "mojo/media_sink_service_status.cc",
+    ]
+    deps = [
+      ":media_router_feature",
+      ":router",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
+      "//chrome/browser/media/webrtc",
+      "//components/media_router/common/providers/cast/channel",
+      "//components/openscreen_platform",
+      "//media/cast:common",
+      "//services/metrics/public/cpp:ukm_builders",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  }
+}
+
+if (!is_android) {
+  source_set("providers_wired_display_impl") {
+    sources = [
+      "providers/wired_display/wired_display_media_route_provider.cc",
+      "providers/wired_display/wired_display_presentation_receiver_factory.cc",
+    ]
+    deps = [
+      ":router",
+      "//chrome/browser/media/router:media_router_feature",
+      "//chrome/browser/ui/media_router",
+    ]
+    public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   }
 }
 
@@ -293,6 +324,7 @@ source_set("unittests") {
       # In-browser discovery is not used by Android for now.
       "discovery/access_code/access_code_cast_discovery_interface_unittest.cc",
       "discovery/access_code/access_code_cast_feature_unittest.cc",
+      "discovery/access_code/access_code_cast_pref_updater_impl_unittest.cc",
       "discovery/access_code/access_code_cast_pref_updater_unittest.cc",
       "discovery/access_code/access_code_cast_sink_service_factory_unittest.cc",
       "discovery/access_code/access_code_cast_sink_service_unittest.cc",
@@ -356,6 +388,7 @@ source_set("unittests") {
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
       "//chrome/browser/media/router/discovery/access_code:discovery_resources_proto",
+      "//chrome/browser/prefs",
       "//chrome/test:test_support",
       "//components/sync_preferences:test_support",
       "//content/test:test_support",
@@ -363,17 +396,6 @@ source_set("unittests") {
       "//services/preferences/public/cpp",
       "//third_party/openscreen/src/cast/common:public",
     ]
-
-    if (is_chromeos_lacros) {
-      deps += [
-        "//chromeos/crosapi/mojom",
-        "//chromeos/lacros",
-      ]
-    } else {
-      sources += [
-        "discovery/access_code/access_code_cast_pref_updater_impl_unittest.cc",
-      ]
-    }
   }
 
   if (enable_openscreen_protocol) {

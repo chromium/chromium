@@ -21,6 +21,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content.browser.androidoverlay.DialogOverlayImplTestRule.Client;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.ui.base.ImmutableWeakReference;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -80,7 +81,9 @@ public class DialogOverlayImplTest {
     public void testCreateOverlayFailsIfWebContentsHidden() {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mActivityTestRule.getWebContents().onHide();
+                    mActivityTestRule
+                            .getWebContents()
+                            .updateWebContentsVisibility(Visibility.HIDDEN);
                 });
 
         DialogOverlayImpl overlay = mActivityTestRule.createOverlay(0, 0, 10, 10);
@@ -100,7 +103,9 @@ public class DialogOverlayImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mActivityTestRule.getWebContents().onHide();
+                    mActivityTestRule
+                            .getWebContents()
+                            .updateWebContentsVisibility(Visibility.HIDDEN);
                 });
 
         // We should be notified that the overlay is destroyed.

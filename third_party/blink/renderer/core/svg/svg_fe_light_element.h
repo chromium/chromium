@@ -105,10 +105,6 @@ class SVGFELightElement : public SVGElement {
 };
 
 template <>
-inline bool IsElementOfType<const SVGFELightElement>(const Node& node) {
-  return IsA<SVGFELightElement>(node);
-}
-template <>
 struct DowncastTraits<SVGFELightElement> {
   static bool AllowFrom(const Node& node) {
     auto* svg_element = DynamicTo<SVGElement>(node);

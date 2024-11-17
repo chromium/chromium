@@ -102,7 +102,7 @@ void AwIpProtectionCoreHost::SetUpForTesting(
                               weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AwIpProtectionCoreHost::GetProxyList(GetProxyListCallback callback) {
+void AwIpProtectionCoreHost::GetProxyConfig(GetProxyConfigCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!is_shutting_down_);
   SetUp();
@@ -129,7 +129,7 @@ void AwIpProtectionCoreHost::AuthenticateCallback(
 
 void AwIpProtectionCoreHost::TryGetAuthTokens(
     uint32_t batch_size,
-    network::mojom::IpProtectionProxyLayer proxy_layer,
+    ip_protection::mojom::ProxyLayer proxy_layer,
     TryGetAuthTokensCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!is_shutting_down_);
@@ -151,7 +151,7 @@ void AwIpProtectionCoreHost::TryGetAuthTokens(
   }
 
   auto quiche_proxy_layer =
-      proxy_layer == network::mojom::IpProtectionProxyLayer::kProxyA
+      proxy_layer == ip_protection::mojom::ProxyLayer::kProxyA
           ? quiche::ProxyLayer::kProxyA
           : quiche::ProxyLayer::kProxyB;
   FetchBlindSignedToken(base::checked_cast<int>(batch_size), quiche_proxy_layer,
@@ -318,10 +318,8 @@ AwIpProtectionCoreHost* AwIpProtectionCoreHost::Get(
 }
 
 void AwIpProtectionCoreHost::AddNetworkService(
-    mojo::PendingReceiver<network::mojom::IpProtectionConfigGetter>
-        pending_receiver,
-    mojo::PendingRemote<network::mojom::IpProtectionProxyDelegate>
-        pending_remote) {
+    mojo::PendingReceiver<ip_protection::mojom::CoreHost> pending_receiver,
+    mojo::PendingRemote<ip_protection::mojom::CoreControl> pending_remote) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!is_shutting_down_);
   receivers_.Add(this, std::move(pending_receiver));

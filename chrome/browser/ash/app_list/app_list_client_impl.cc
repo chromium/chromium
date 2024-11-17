@@ -41,13 +41,11 @@
 #include "chrome/browser/ash/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ash/app_list/search/search_controller.h"
 #include "chrome/browser/ash/app_list/search/search_controller_factory.h"
-#include "chrome/browser/ash/scalable_iph/scalable_iph_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -59,6 +57,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_factory.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/session_manager/core/session_manager.h"
@@ -337,7 +336,7 @@ void AppListClientImpl::ActivateItem(int profile_id,
                                      int event_flags,
                                      ash::AppListLaunchedFrom launched_from,
                                      bool is_above_the_fold) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  auto* requested_model_updater = profile_model_mappings_[profile_id].get();
 
   // Pointless to notify the AppListModelUpdater of the activated item if the
   // |requested_model_updater| is not the current one, which means that the
@@ -388,7 +387,7 @@ void AppListClientImpl::GetContextMenuModel(
     const std::string& id,
     ash::AppListItemContext item_context,
     GetContextMenuModelCallback callback) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  auto* requested_model_updater = profile_model_mappings_[profile_id].get();
   if (requested_model_updater != current_model_updater_ ||
       !requested_model_updater) {
     std::move(callback).Run(nullptr);
@@ -755,7 +754,7 @@ AppListClientImpl::CreateLauncherSearchIphSession() {
 }
 
 void AppListClientImpl::LoadIcon(int profile_id, const std::string& app_id) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
+  auto* requested_model_updater = profile_model_mappings_[profile_id].get();
   if (requested_model_updater != current_model_updater_ ||
       !requested_model_updater) {
     return;

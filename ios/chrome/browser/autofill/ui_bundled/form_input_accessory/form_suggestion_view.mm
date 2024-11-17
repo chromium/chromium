@@ -73,7 +73,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
     case FillingProduct::kPredictionImprovements:
     case FillingProduct::kMerchantPromoCode:
       // These cases are currently not available on iOS.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
   UmaHistogramSparse(
       base::StrCat({"Autofill.UserAcceptedSuggestionAtIndex.",

@@ -19,12 +19,11 @@ namespace blink {
 
 // static
 PresentationAvailability* PresentationAvailability::Take(
-    PresentationAvailabilityProperty* resolver,
+    ExecutionContext* context,
     const WTF::Vector<KURL>& urls,
     bool value) {
   PresentationAvailability* presentation_availability =
-      MakeGarbageCollected<PresentationAvailability>(
-          resolver->GetExecutionContext(), urls, value);
+      MakeGarbageCollected<PresentationAvailability>(context, urls, value);
   presentation_availability->UpdateStateIfNeeded();
   presentation_availability->UpdateListening();
   return presentation_availability;

@@ -356,8 +356,7 @@ class PaintOpHelper {
       case SkColorChannel::kA:
         return "kA";
     }
-    NOTREACHED_IN_MIGRATION();
-    return "unknown";
+    NOTREACHED();
   }
 
   static std::string ToString(const SkBlendMode& mode) {

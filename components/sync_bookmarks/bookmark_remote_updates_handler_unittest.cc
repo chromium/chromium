@@ -1965,7 +1965,8 @@ TEST_F(BookmarkRemoteUpdatesHandlerWithInitialMergeTest,
 
 TEST(BookmarkRemoteUpdatesHandlerTest,
      ShouldComputeRightChildNodeIndexForEmptyParent) {
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
+  const syncer::UniquePosition::Suffix suffix =
+      syncer::UniquePosition::RandomSuffix();
   const syncer::UniquePosition pos1 =
       syncer::UniquePosition::InitialPosition(suffix);
 
@@ -1987,7 +1988,8 @@ TEST(BookmarkRemoteUpdatesHandlerTest, ShouldComputeRightChildNodeIndex) {
 
   const bookmarks::BookmarkNode* bookmark_bar_node =
       bookmark_model.bookmark_bar_node();
-  const std::string suffix = syncer::UniquePosition::RandomSuffix();
+  const syncer::UniquePosition::Suffix suffix =
+      syncer::UniquePosition::RandomSuffix();
 
   const syncer::UniquePosition pos1 =
       syncer::UniquePosition::InitialPosition(suffix);

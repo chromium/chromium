@@ -179,7 +179,7 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest {
     // bots and to avoid false positives from the "value holds" checks.
     //
     command_line->AppendSwitchASCII(
-        cc::switches::kCCScrollAnimationDurationForTesting, "1");
+        switches::kCCScrollAnimationDurationForTesting, "1");
   }
 
   void LoadURL(const std::string page_url) {

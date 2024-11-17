@@ -25,7 +25,7 @@ FakeSoftwareVideoEncoder::FakeSoftwareVideoEncoder(
     : video_config_(video_config),
       next_frame_is_key_(true),
       frame_id_(FrameId::first()),
-      frame_size_(0) {
+      frame_size_(0u) {
   DCHECK_GT(video_config_.max_frame_rate, 0);
 }
 
@@ -64,9 +64,14 @@ void FakeSoftwareVideoEncoder::Encode(
                           encoded_frame->referenced_frame_id.lower_32_bits()))
           .Set("id", static_cast<int>(encoded_frame->frame_id.lower_32_bits()))
           .Set("size", frame_size_);
-  base::JSONWriter::Write(values, &encoded_frame->data);
-  encoded_frame->data.resize(
-      std::max<size_t>(encoded_frame->data.size(), frame_size_), ' ');
+
+  std::string raw_data;
+  base::JSONWriter::Write(values, &raw_data);
+  if (static_cast<size_t>(frame_size_) > raw_data.size()) {
+    raw_data.append(' ', frame_size_ - raw_data.size());
+  }
+  encoded_frame->data = base::HeapArray<uint8_t>::CopiedFrom(
+      base::as_bytes(base::span(raw_data)));
 
   if (encoded_frame->dependency == Dependency::kKeyFrame) {
     encoded_frame->encoder_utilization = 1.0;

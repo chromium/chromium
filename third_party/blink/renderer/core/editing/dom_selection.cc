@@ -605,21 +605,24 @@ const StaticRangeVector DOMSelection::getComposedRanges(
     return ranges;
   }
   TemporaryRange temp_range(this, PrimaryRangeOrNull());
-  Range* range = temp_range.GetRange();
-  if (!range) {
+  if (!temp_range.GetRange()) {
     return ranges;
   }
+
+  const SelectionInDOMTree& selection = Selection().GetSelectionInDOMTree();
   // 2. Otherwise, let startNode be start node of the range associated with
   // this, and let startOffset be start offset of the range.
-  Node* startNode = range->composedStartContainer();
-  unsigned startOffset = range->composedStartOffset();
+  const Position& start = selection.ComputeStartPosition();
+  Node* startNode = start.ComputeContainerNode();
+  unsigned startOffset = start.ComputeOffsetInContainerNode();
   // 3. Rescope startNode and startOffset with listed shadow roots.
   Rescope(startNode, startOffset, options->shadowRoots(), /*isEnd=*/false);
 
   // 4. Let endNode be end node of the range associated with this, and let
   // endOffset be end offset of the range.
-  Node* endNode = range->composedEndContainer();
-  unsigned endOffset = range->composedEndOffset();
+  const Position& end = selection.ComputeEndPosition();
+  Node* endNode = end.ComputeContainerNode();
+  unsigned endOffset = end.ComputeOffsetInContainerNode();
   // 5. Rescope endNode and endOffset with listed shadow roots.
   Rescope(endNode, endOffset, options->shadowRoots(), /*isEnd=*/true);
 

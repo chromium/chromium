@@ -140,18 +140,15 @@ feedwire::Request CreateFeedQueryRequest(
         Capability::INFINITE_FEED, Capability::PREFETCH_METADATA,
         Capability::REQUEST_SCHEDULE, Capability::UI_THEME_V2,
         Capability::UNDO_FOR_DISMISS_COMMAND,
+#if BUILDFLAG(IS_ANDROID)
+        Capability::SYNC_STRING_REMOVAL,
+#endif
         Capability::SPORTS_IN_GAME_UPDATE}) {
     feed_request.add_client_capability(capability);
   }
 
   for (auto capability : GetFeedConfig().experimental_capabilities)
     feed_request.add_client_capability(capability);
-
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(kFeedBottomSyncStringRemoval)) {
-    feed_request.add_client_capability(Capability::SYNC_STRING_REMOVAL);
-  }
-#endif
 
   if (base::FeatureList::IsEnabled(kInterestFeedV2Hearts)) {
     feed_request.add_client_capability(Capability::HEART);

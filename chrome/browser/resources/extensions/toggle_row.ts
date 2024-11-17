@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 
 import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './toggle_row.html.js';
+import {getCss} from './toggle_row.css.js';
+import {getHtml} from './toggle_row.html.js';
 
 
 /**
@@ -25,30 +25,34 @@ export interface ExtensionsToggleRowElement {
   };
 }
 
-export class ExtensionsToggleRowElement extends PolymerElement {
+export class ExtensionsToggleRowElement extends CrLitElement {
   static get is() {
     return 'extensions-toggle-row';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
-    return {
-      checked: Boolean,
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-      disabled: Boolean,
+  static override get properties() {
+    return {
+      checked: {
+        type: Boolean,
+        reflect: true,
+      },
+      disabled: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
-  checked: boolean;
-  disabled: boolean;
-
-  private fire_(eventName: string, detail?: any) {
-    this.dispatchEvent(
-        new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
-  }
+  checked: boolean = false;
+  disabled: boolean = false;
 
   /**
    * Exposing the clickable part of extensions-toggle-row for testing
@@ -58,35 +62,34 @@ export class ExtensionsToggleRowElement extends PolymerElement {
     return this.$.label;
   }
 
-  private onNativeClick_(e: Event) {
+  protected onNativeClick_(e: Event) {
     // Even though the native checkbox is hidden and can't be actually
-    // cilcked/tapped by the user, because it resides within the <label> the
+    // clicked/tapped by the user, because it resides within the <label> the
     // browser emits an extraneous event when the label is clicked. Stop
     // propagation so that it does not interfere with |onLabelClick_| listener.
     e.stopPropagation();
+  }
+
+  private async updateChecked_(value: boolean) {
+    this.checked = value;
+
+    // Sync value of native checkbox and cr-toggle and |checked|.
+    await this.updateComplete;
+    this.fire('change', this.checked);
   }
 
   /**
    * Fires when the native checkbox changes value. This happens when the user
    * clicks directly on the <label>.
    */
-  private onNativeChange_(e: Event) {
+  protected onNativeChange_(e: Event) {
     e.stopPropagation();
-
-    // Sync value of native checkbox and cr-toggle and |checked|.
-    this.$.crToggle.checked = this.$.native.checked;
-    this.checked = this.$.native.checked;
-
-    this.fire_('change', this.checked);
+    this.updateChecked_(this.$.native.checked);
   }
 
-  private onCrToggleChange_(e: CustomEvent<boolean>) {
+  protected onCrToggleChange_(e: CustomEvent<boolean>) {
     e.stopPropagation();
-
-    // Sync value of native checkbox and cr-toggle.
-    this.$.native.checked = e.detail;
-
-    this.fire_('change', this.checked);
+    this.updateChecked_(e.detail);
   }
 }
 

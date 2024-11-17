@@ -22,7 +22,6 @@
 #include "ash/system/input_device_settings/input_device_settings_metrics_manager.h"
 #include "ash/system/input_device_settings/input_device_settings_notification_controller.h"
 #include "ash/system/input_device_settings/input_device_settings_policy_handler.h"
-#include "ash/system/input_device_settings/modifier_split_bypass_checker.h"
 #include "ash/system/input_device_settings/pref_handlers/graphics_tablet_pref_handler.h"
 #include "ash/system/input_device_settings/pref_handlers/keyboard_pref_handler.h"
 #include "ash/system/input_device_settings/pref_handlers/mouse_pref_handler.h"
@@ -278,7 +277,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   void RefreshCompanionAppInfoForConnectedDevices();
   void OnCompanionAppInfoReceived(
       DeviceId id,
-      const std::string& device_key,
+      const std::string device_key,
       const std::optional<mojom::CompanionAppInfo>& info);
 
   void DispatchMouseCompanionAppInfoChanged(const mojom::Mouse& mouse);
@@ -355,8 +354,6 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   std::unique_ptr<InputDeviceSettingsPolicyHandler> policy_handler_;
 
   raw_ptr<PrefService> local_state_ = nullptr;  // Not owned.
-
-  std::unique_ptr<ModifierSplitBypassChecker> modifier_split_bypass_checker_;
 
   std::unique_ptr<KeyboardPrefHandler> keyboard_pref_handler_;
   std::unique_ptr<TouchpadPrefHandler> touchpad_pref_handler_;

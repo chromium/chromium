@@ -1,0 +1,83 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("constants") {
+  sources = [
+    "autofill_constants.h",
+    "autofill_constants.mm",
+  ]
+  deps = [ "//ios/chrome/browser/shared/ui/list_model" ]
+}
+
+source_set("autofill_shared_ui") {
+  sources = [
+    "autofill_country_selection_table_view_controller.h",
+    "autofill_country_selection_table_view_controller.mm",
+    "autofill_profile_address_field.h",
+    "autofill_profile_address_field.mm",
+    "autofill_profile_edit_consumer.h",
+    "autofill_profile_edit_handler.h",
+    "autofill_profile_edit_mediator.h",
+    "autofill_profile_edit_mediator.mm",
+    "autofill_profile_edit_mediator_delegate.h",
+    "autofill_profile_edit_table_view_controller.h",
+    "autofill_profile_edit_table_view_controller.mm",
+    "autofill_profile_edit_table_view_controller_delegate.h",
+  ]
+  deps = [
+    ":constants",
+    "//base:base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/common:features",
+    "//components/autofill/ios/common",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/autofill/ui_bundled:ui_type",
+    "//ios/chrome/browser/autofill/ui_bundled/address_editor/cells",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/table_view",
+    "//ios/chrome/browser/shared/ui/table_view:constants",
+    "//ios/chrome/browser/shared/ui/table_view:utils",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/ui/settings/autofill:shared_ui",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/table_view:cells_constants",
+    "//ios/chrome/common/ui/util",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "autofill_profile_edit_mediator_unittest.mm",
+    "autofill_profile_edit_table_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":autofill_shared_ui",
+    ":constants",
+    "//base",
+    "//components/autofill/core/browser",
+    "//components/autofill/core/browser:test_support",
+    "//components/autofill/core/common:features",
+    "//components/autofill/ios/common",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/autofill/model",
+    "//ios/chrome/browser/autofill/ui_bundled/address_editor/cells",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/ui/list_model",
+    "//ios/chrome/browser/shared/ui/table_view:test_support",
+    "//ios/chrome/browser/shared/ui/table_view/cells:cells",
+    "//ios/chrome/browser/webdata_services/model",
+    "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

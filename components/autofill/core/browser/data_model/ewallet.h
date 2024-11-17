@@ -32,7 +32,8 @@ class Ewallet {
           GURL display_icon_url,
           std::u16string ewallet_name,
           std::u16string account_display_name,
-          base::flat_set<std::u16string> supported_payment_link_uris);
+          base::flat_set<std::u16string> supported_payment_link_uris,
+          bool is_fido_enrolled);
   Ewallet(const Ewallet& other);
   Ewallet& operator=(const Ewallet& other);
   ~Ewallet();
@@ -53,6 +54,10 @@ class Ewallet {
   const PaymentInstrument& payment_instrument() const {
     return payment_instrument_;
   }
+
+  // Checks if the ewallet supports the given payment link by supported payment
+  // link URI regexes match.
+  bool SupportsPaymentLink(std::string_view payment_link) const;
 
  private:
   // Name of the ewallet provider.

@@ -21,6 +21,7 @@ static_library("storage") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ui/webui/ash/settings/calculator",
+    "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/disks",
     "//third_party/re2",
   ]
@@ -31,6 +32,7 @@ static_library("storage") {
     "//ash/public/cpp",
     "//chrome/app:generated_resources",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/profiles",

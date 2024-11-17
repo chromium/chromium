@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/html/track/text_track_cue.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/invalidation_set_to_selector_map.h"
@@ -297,6 +298,7 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoAnyLink:
         case CSSSelector::kPseudoFocusVisible:
         case CSSSelector::kPseudoPlaceholder:
+        case CSSSelector::kPseudoDetailsContent:
         case CSSSelector::kPseudoFileSelectorButton:
         case CSSSelector::kPseudoHost:
         case CSSSelector::kPseudoHostContext:
@@ -310,7 +312,6 @@ static void ExtractSelectorValues(const CSSSelector* selector,
           break;
         case CSSSelector::kPseudoWebKitCustomElement:
         case CSSSelector::kPseudoBlinkInternalElement:
-        case CSSSelector::kPseudoDetailsContent:
           custom_pseudo_element_name = selector->Value();
           break;
         case CSSSelector::kPseudoPart:
@@ -403,7 +404,9 @@ static void MarkAsCoveredByBucketing(CSSSelector& selector,
     // more common, but we currently don't bucket on & at all.)
     //
     // We could also have taken universal selectors no matter what
-    // should_mark_func() says, but again, we consider that not worth it.
+    // should_mark_func() says, but again, we consider that not worth it
+    // (though if the selector is being put in the universal bucket,
+    // there will be an explicit check).
 
     if (s->IsLastInComplexSelector() ||
         s->Relation() != CSSSelector::kSubSelector) {
@@ -481,15 +484,49 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
     return;
   }
 
+  auto get_ua_shadow_pseudo = [&]() -> const AtomicString& {
+    if (picker_name == "select") {
+      return shadow_element_names::kPickerSelect;
+    } else if (pseudo_type != CSSSelector::kPseudoUnknown) {
+      return shadow_element_utils::StringForUAShadowPseudoId(
+          CSSSelector::GetPseudoId(pseudo_type));
+    }
+    return g_null_atom;
+  };
+
+  AtomicString ua_shadow_pseudo = get_ua_shadow_pseudo();
+
+  if (RuntimeEnabledFeatures::CSSCascadeCorrectScopeEnabled()) {
+    // Any selector with or following ::part() or a UA shadow pseudo-element
+    // must go in the bucket for the *innermost* such pseudo-element.
+
+    // TODO(dbaron): Should this eventually check kShadowSlot as well?
+    if (part_name.empty() && ua_shadow_pseudo == g_null_atom && it &&
+        (it->Relation() == CSSSelector::RelationType::kUAShadow ||
+         it->Relation() == CSSSelector::RelationType::kShadowPart)) {
+      const CSSSelector* previous = it->NextSimpleSelector();
+      if (previous->Match() == CSSSelector::kPseudoElement) {
+        ExtractSelectorValues(previous, id, class_name, attr_name, attr_value,
+                              is_exact_attr, custom_pseudo_element_name,
+                              tag_name, part_name, picker_name, pseudo_type);
+        ua_shadow_pseudo = get_ua_shadow_pseudo();
+      }
+    }
+  }
+
   // Any selector with or following ::part() must go in the part bucket,
   // because we look in that bucket in higher scopes to find rules that need
   // to match inside the shadow tree.
-  if (!part_name.empty() || (it && it->FollowsPart())) {
+  if (!part_name.empty() ||
+      (it && it->FollowsPart() &&
+       !RuntimeEnabledFeatures::CSSCascadeCorrectScopeEnabled())) {
     // NOTE: Cannot mark as covered by bucketing because the part buckets are
     // shared between the part itself and pseudo-elements inside of them.
     // (Though we do check at least some of the relevant conditions *before*
     // we check whether the selector is covered by bucketing, so it might be
     // doable if we want.)
+    // TODO(https://crbug.com/40280846): When the CSSCascadeCorrectScope flag
+    // is removed (and enabled), we can revisit this.
     AddToRuleSet(part_pseudo_rules_, rule_data);
     return;
   }
@@ -507,10 +544,15 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
     return;
   }
 
-  if (!picker_name.empty()) {
-    if (picker_name == "select") {
-      AddToRuleSet(shadow_element_names::kPickerSelect,
-                   ua_shadow_pseudo_element_rules_, rule_data);
+  if (ua_shadow_pseudo != g_null_atom) {
+    // TODO(dbaron): This needs further work to support multiple
+    // pseudo-elements after ::slotted().  This likely requires reorganization
+    // of how MatchSlottedRules interacts with MatchOuterScopeRules.
+    if (it->FollowsSlotted()) {
+      AddToRuleSet(slotted_pseudo_element_rules_, rule_data);
+    } else {
+      AddToRuleSet(ua_shadow_pseudo, ua_shadow_pseudo_element_rules_,
+                   rule_data);
     }
     return;
   }
@@ -557,26 +599,6 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
       }
       AddToRuleSet(focus_visible_pseudo_class_rules_, rule_data);
       return;
-    case CSSSelector::kPseudoPlaceholder:
-    case CSSSelector::kPseudoFileSelectorButton:
-      if (it->FollowsSlotted()) {
-        AddToRuleSet(slotted_pseudo_element_rules_, rule_data);
-      } else {
-        AtomicString name;
-        switch (pseudo_type) {
-          case CSSSelector::kPseudoPlaceholder:
-            name = shadow_element_names::kPseudoInputPlaceholder;
-            break;
-          case CSSSelector::kPseudoFileSelectorButton:
-            name = shadow_element_names::kPseudoFileUploadButton;
-            break;
-          default:
-            NOTREACHED_IN_MIGRATION();
-            break;
-        }
-        AddToRuleSet(name, ua_shadow_pseudo_element_rules_, rule_data);
-      }
-      return;
     case CSSSelector::kPseudoHost:
     case CSSSelector::kPseudoHostContext:
       AddToRuleSet(shadow_host_rules_, rule_data);
@@ -612,10 +634,9 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
     return;
   }
 
-  // The selector parser prepends a :true pseudo-class with
-  // relation=kScopeActivation to any compound that contains :scope
-  // or the parent pseudo-class (&).
-  if (component.Relation() == CSSSelector::kScopeActivation) {
+  // The ':scope' pseudo-class (bucketed as universal) may match the host
+  // when the selector is scoped (e.g. using '@scope') to that host.
+  if (component.IsScopeContaining()) {
     must_check_universal_bucket_for_shadow_host_ = true;
   }
 
@@ -628,6 +649,10 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
 
   // If we didn't find a specialized map to stick it in, file under universal
   // rules.
+  MarkAsCoveredByBucketing(component, [](const CSSSelector& selector) {
+    return selector.Match() == CSSSelector::kTag &&
+           selector.TagQName() == AnyQName();
+  });
   AddToRuleSet(universal_rules_, rule_data);
 }
 
@@ -898,7 +923,8 @@ bool RuleSet::MatchMediaForAddRules(const MediaQueryEvaluator& evaluator,
 
 void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
                                 const MediaQueryEvaluator& medium,
-                                CascadeLayer* cascade_layer) {
+                                CascadeLayer* cascade_layer,
+                                const StyleScope* style_scope) {
   TRACE_EVENT0("blink", "RuleSet::addRulesFromSheet");
   DCHECK(sheet);
 
@@ -924,13 +950,14 @@ void RuleSet::AddRulesFromSheet(StyleSheetContents* sheet,
           GetOrAddSubLayer(cascade_layer, import_rule->GetLayerName());
     }
     if (import_rule->GetStyleSheet()) {
-      AddRulesFromSheet(import_rule->GetStyleSheet(), medium, import_layer);
+      AddRulesFromSheet(import_rule->GetStyleSheet(), medium, import_layer,
+                        import_rule->GetScope());
     }
   }
 
   AddChildRules(/*parent_rule=*/nullptr, sheet->ChildRules(), medium,
                 kRuleHasNoSpecialState, nullptr /* container_query */,
-                cascade_layer, nullptr, /*within_mixin=*/false);
+                cascade_layer, style_scope, /*within_mixin=*/false);
 }
 
 // If there's a reference to the parent selector (implicit or explicit)

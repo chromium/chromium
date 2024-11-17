@@ -361,14 +361,6 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormatImpl(
     return OutputFormat::UNDEFINED;
   }
 
-  if (pixel_format == media::PIXEL_FORMAT_I420A) {
-#if SK_PMCOLOR_BYTE_ORDER(B, G, R, A)
-    return OutputFormat::BGRA;
-#elif SK_PMCOLOR_BYTE_ORDER(R, G, B, A)
-    return OutputFormat::RGBA;
-#endif
-  }
-
 #if BUILDFLAG(IS_FUCHSIA)
   // Hardware support for NV12 GMBs is expected to be present on all supported
   // Fuchsia devices.
@@ -421,6 +413,11 @@ GpuVideoAcceleratorFactoriesImpl::GetTaskRunner() {
 std::optional<media::VideoEncodeAccelerator::SupportedProfiles>
 GpuVideoAcceleratorFactoriesImpl::GetVideoEncodeAcceleratorSupportedProfiles() {
   return codec_factory_->GetVideoEncodeAcceleratorSupportedProfiles();
+}
+
+std::optional<media::SupportedVideoDecoderConfigs>
+GpuVideoAcceleratorFactoriesImpl::GetSupportedVideoDecoderConfigs() {
+  return codec_factory_->GetSupportedVideoDecoderConfigs();
 }
 
 viz::RasterContextProvider*

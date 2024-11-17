@@ -1,0 +1,10 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++region name='current' flowtoIds=footer
+++++++++staticText name='Lorem ipsum'
+++++++++++inlineTextBox name='Lorem ipsum'
+++++++genericContainer
+++++++++footer name='next'
+++++++++++staticText name='dolor sit amet'
+++++++++++++inlineTextBox name='dolor sit amet'

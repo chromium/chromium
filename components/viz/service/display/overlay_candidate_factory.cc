@@ -291,7 +291,8 @@ bool OverlayCandidateFactory::IsOccludedByFilteredQuad(
     const OverlayCandidate& candidate,
     QuadList::ConstIterator quad_list_begin,
     QuadList::ConstIterator quad_list_end,
-    const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+    const base::flat_map<AggregatedRenderPassId,
+                         raw_ptr<cc::FilterOperations, CtnExperimental>>&
         render_pass_backdrop_filters) const {
   gfx::RectF target_rect =
       OverlayCandidate::DisplayRectInTargetSpace(candidate);

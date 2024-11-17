@@ -979,6 +979,50 @@ TEST_F(CrashReportDatabaseTest, GetReportSize_RightSizeWithAttachments) {
                 sizeof(attachment_2_data));
 }
 
+TEST_F(CrashReportDatabaseTest, InitializeFromLargerFileRetainsClientId) {
+  // Initialize the database for the first time, creating it.
+  ASSERT_TRUE(db());
+
+  const base::FilePath settings_path =
+      path().Append(FILE_PATH_LITERAL("settings.dat"));
+  EXPECT_FALSE(FileExists(settings_path));
+
+  Settings* settings = db()->GetSettings();
+  ASSERT_TRUE(settings);
+  EXPECT_TRUE(FileExists(settings_path));
+
+  UUID client_id;
+  ASSERT_TRUE(settings->GetClientID(&client_id));
+  EXPECT_NE(client_id, UUID());
+
+  // Close and reopen the database at the same path.
+  ResetDatabase();
+  EXPECT_FALSE(db());
+  EXPECT_TRUE(FileExists(settings_path));
+
+  // Append some data, to ensure that we can open settings even if a future
+  // version has added additional field to Settings (forwards compatible).
+  FileWriter settings_writer;
+  ASSERT_TRUE(settings_writer.Open(
+      settings_path, FileWriteMode::kReuseOrFail, FilePermissions::kOwnerOnly));
+  ASSERT_NE(settings_writer.Seek(0, SEEK_END), 0);
+  constexpr uint64_t extra_garbage = 0xBADF00D;
+  ASSERT_TRUE(settings_writer.Write(&extra_garbage, sizeof(extra_garbage)));
+  settings_writer.Close();
+
+  auto db = CrashReportDatabase::InitializeWithoutCreating(path());
+  ASSERT_TRUE(db);
+
+  settings = db->GetSettings();
+  ASSERT_TRUE(settings);
+
+  // Make sure that the reopened settings retained the original client id and
+  // wasn't recreated.
+  UUID reopened_client_id;
+  ASSERT_TRUE(settings->GetClientID(&reopened_client_id));
+  EXPECT_EQ(client_id, reopened_client_id);
+}
+
 }  // namespace
 }  // namespace test
 }  // namespace crashpad

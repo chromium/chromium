@@ -13,15 +13,8 @@
 
 std::unique_ptr<KeyedService> BuildPrerenderService(
     web::BrowserState* context) {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
-  return std::make_unique<PrerenderServiceImpl>(browser_state);
-}
-
-// static
-PrerenderService* PrerenderServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
+  return std::make_unique<PrerenderServiceImpl>(profile);
 }
 
 // static

@@ -62,22 +62,6 @@ message LocalTrustedVaultDegradedRecoverabilityState {
   optional DegradedRecoverabilityValue degraded_recoverability_value = 3;
 }
 
-message RecoveryKeyStoreState {
-  // Whether LSKF-wrapped recovery keys should be uploaded to the Recovery Key
-  // Store service periodically.
-  optional bool recovery_key_store_upload_enabled = 1;
-
-  // The last time an update to recovery key store succeeded.
-  optional int64 last_recovery_key_store_update_millis_since_unix_epoch = 2;
-
-  // The public part of the LSKF-wrapped application key pair that was uploaded
-  // to the recovery key store service.
-  optional bytes public_key = 3;
-
-  // Whether `public_key` is registered as a member of the security domain.
-  optional bool recovery_key_is_registered_to_security_domain = 4;
-};
-
 message LocalTrustedVaultPerUser {
   // User identifier.
   optional bytes gaia_id = 1;
@@ -112,7 +96,7 @@ message LocalTrustedVaultPerUser {
   optional LocalTrustedVaultDegradedRecoverabilityState
       degraded_recoverability_state = 8;
 
-  optional RecoveryKeyStoreState recovery_key_store_state = 9;
+  reserved 9;
 }
 
 message LocalTrustedVault {

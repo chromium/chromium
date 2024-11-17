@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.customtabs;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -15,6 +16,9 @@ import java.util.BitSet;
 
 /** Records a histogram that tracks usage of all the CCT features of interest. */
 public class CustomTabsFeatureUsage {
+    @VisibleForTesting
+    public static final String CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM = "CustomTabs.FeatureUsage";
+
     // NOTE: This must be kept in sync with the definition |CustomTabsFeatureUsed|
     // in tools/metrics/histograms/enums.xml.
     @IntDef({
@@ -76,6 +80,10 @@ public class CustomTabsFeatureUsage {
         CustomTabsFeature.EXTRA_ENABLE_GOOGLE_BOTTOM_BAR,
         CustomTabsFeature.EXTRA_GOOGLE_BOTTOM_BAR_BUTTONS,
         CustomTabsFeature.EXTRA_NETWORK,
+        CustomTabsFeature.EXTRA_LAUNCH_AUTH_TAB,
+        CustomTabsFeature.EXTRA_REDIRECT_SCHEME,
+        CustomTabsFeature.EXTRA_HTTPS_REDIRECT_HOST,
+        CustomTabsFeature.EXTRA_HTTPS_REDIRECT_PATH,
         CustomTabsFeature.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -140,9 +148,13 @@ public class CustomTabsFeatureUsage {
         int EXTRA_ENABLE_GOOGLE_BOTTOM_BAR = 56;
         int EXTRA_GOOGLE_BOTTOM_BAR_BUTTONS = 57;
         int EXTRA_NETWORK = 58;
+        int EXTRA_LAUNCH_AUTH_TAB = 59;
+        int EXTRA_REDIRECT_SCHEME = 60;
+        int EXTRA_HTTPS_REDIRECT_HOST = 61;
+        int EXTRA_HTTPS_REDIRECT_PATH = 62;
 
         /** Total count of entries. */
-        int COUNT = 59;
+        int COUNT = 63;
     }
 
     // Whether flag-enabled or not.
@@ -178,6 +190,6 @@ public class CustomTabsFeatureUsage {
 
         mUsed.set(feature);
         RecordHistogram.recordEnumeratedHistogram(
-                "CustomTabs.FeatureUsage", feature, CustomTabsFeature.COUNT);
+                CUSTOM_TABS_FEATURE_USAGE_HISTOGRAM, feature, CustomTabsFeature.COUNT);
     }
 }

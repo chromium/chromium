@@ -73,7 +73,7 @@
 #include "ui/display/screen_info.h"
 #include "ui/display/screen_infos.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/native_theme_utils.h"
 
 using blink::WebURLRequest;
 
@@ -178,7 +178,7 @@ class RenderFrameImplTest : public RenderViewTest {
         /*web_view=*/nullptr,
         /*previous_frame_token=*/std::nullopt,
         /*opener_frame_token=*/std::nullopt,
-        /*parent_frame_token=*/remote_child_token,
+        /*parent_frame_token=*/blink::FrameToken(remote_child_token),
         /*previous_sibling_frame_token=*/std::nullopt,
         base::UnguessableToken::Create(),
         blink::mojom::TreeScopeType::kDocument,

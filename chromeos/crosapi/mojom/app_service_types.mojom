@@ -23,7 +23,6 @@ import "url/mojom/url.mojom";
 // to be versioned.
 // See components/services/app_service/public/cpp/app_types.h for details for
 // the structs in this file.
-[Stable]
 struct App {
   AppType app_type@0;
   string app_id@1;
@@ -127,7 +126,7 @@ struct App {
 };
 
 // The types of apps available in the registry.
-[Stable, Extensible]
+[Extensible]
 enum AppType {
   [Default] kUnknown = 0,
   kArc,           // Android app.
@@ -140,7 +139,7 @@ enum AppType {
 };
 
 // Whether an app is ready to launch, i.e. installed.
-[Stable, Extensible]
+[Extensible]
 enum Readiness {
   [Default] kUnknown = 0,
   kReady,                // Installed and launchable.
@@ -160,7 +159,7 @@ enum Readiness {
 };
 
 // The reason why the app was installed.
-[Stable, Extensible, RenamedFrom="crosapi.mojom.InstallSource"]
+[Extensible, RenamedFrom="crosapi.mojom.InstallSource"]
 enum InstallReason {
   [Default] kUnknown = 0,
   kSystem,     // Installed with the system and is considered a part of the OS.
@@ -175,7 +174,7 @@ enum InstallReason {
 };
 
 // Augments a bool to include an 'unknown' value.
-[Stable, Extensible]
+[Extensible]
 enum OptionalBool {
   [Default] kUnknown = 0,
   kFalse,
@@ -209,13 +208,11 @@ enum OptionalBool {
 // publish a new icon image.
 //
 // See components/services/app_service/public/cpp/icon_types.h for details
-[Stable]
 union IconUpdateVersion {
   bool raw_icon_updated;
   int32 timeline;
 };
 
-[Stable]
 struct IconKey {
   // A monotonically increasing number so that, after an icon update, a new
   // IconKey, one that is different in terms of field-by-field equality, can be
@@ -262,7 +259,7 @@ struct IconKey {
 };
 
 // The intent filter matching condition types.
-[Stable, Extensible]
+[Extensible]
 enum ConditionType {
   [Default] kScheme,  // Matches the URL scheme (e.g. https, tel).
   kAuthority,         // Matches the URL host and optionally the port
@@ -275,7 +272,7 @@ enum ConditionType {
 };
 
 // The pattern match type for intent filter pattern condition.
-[Stable, Extensible]
+[Extensible]
 enum PatternMatchType {
   [Default] kNone = 0,
   kLiteral,
@@ -290,7 +287,6 @@ enum PatternMatchType {
 // For pattern type of condition, the value match will be based on the pattern
 // match type. If the match_type is kNone, then an exact match with the value
 // will be required.
-[Stable]
 struct ConditionValue {
   string value;
   PatternMatchType match_type; // This will be None for non pattern conditions.
@@ -299,7 +295,6 @@ struct ConditionValue {
 // The condition for an intent filter. It matches if the intent contains this
 // condition type and the corresponding value matches with any of the
 // condition_values.
-[Stable]
 struct Condition {
   ConditionType condition_type;
   array<ConditionValue> condition_values;
@@ -308,7 +303,6 @@ struct Condition {
 // An intent filter is defined by an app, and contains a list of conditions that
 // an intent needs to match. If all conditions match, then this intent filter
 // matches against an intent.
-[Stable]
 struct IntentFilter {
   array<Condition> conditions;
 
@@ -321,7 +315,7 @@ struct IntentFilter {
 };
 
 // What caused the app to be uninstalled.
-[Stable, Extensible]
+[Extensible]
 enum UninstallSource {
   [Default] kUnknown = 0,
   kAppList,       // Uninstall by the user from the App List (Launcher)
@@ -332,7 +326,6 @@ enum UninstallSource {
 
 // Information about whether an app is accessing some capability, e.g. camera,
 // microphone.
-[Stable]
 struct CapabilityAccess {
   string app_id;
 
@@ -343,7 +336,7 @@ struct CapabilityAccess {
   OptionalBool microphone;
 };
 
-[Stable, Extensible]
+[Extensible]
 enum IconType {
   // Sentinel value used in error cases.
   [Default] kUnknown,
@@ -357,7 +350,6 @@ enum IconType {
 };
 
 // The icon value for each app.
-[Stable]
 struct IconValue {
   // The icon format and whether it uses Chrome OS mask.
   IconType icon_type@0;
@@ -375,21 +367,19 @@ struct IconValue {
 };
 
 // MenuItems are used to populate context menus.
-[Stable]
 struct MenuItems {
   array<MenuItem> items@0;
 };
 
 // The context menu model for each app. For web apps currently it's the info
 // for shortcut items.
-[Stable]
 struct MenuItem {
   string label@0;                      // The string label, may be empty.
   gfx.mojom.ImageSkia? image@1;        // The image icon, may be null.
   [MinVersion=3]string? id@2;          // The id of the item.
 };
 
-[Stable, Extensible]
+[Extensible]
 // The mode that the app will be opened in (e.g. standalone window or browser
 // tab).
 enum WindowMode {
@@ -403,7 +393,6 @@ enum WindowMode {
 };
 
 // Metadata for a single file shared through an intent.
-[Stable]
 struct IntentFile {
   // The file path of the file to share.
   mojo_base.mojom.FilePath file_path@0;
@@ -415,7 +404,6 @@ struct IntentFile {
 // Action and resource handling request. This should
 // be kept in sync with ConvertIntentToValue and ConvertValueToIntent in
 // components/services/app_service/public/cpp/intent_util.*
-[Stable]
 struct Intent {
   string action@0;       // Intent action. e.g. view, send.
   url.mojom.Url? url@1;  // The URL of the intent. e.g. https://www.google.com/.
@@ -431,7 +419,7 @@ struct Intent {
   [MinVersion=15] map<string, string>? extras@9;  // Optional string extras.
 };
 
-[Stable, Extensible]
+[Extensible]
 enum LaunchResultState {
   [Default] kFailed,
   kFailedDirectoryNotShared,
@@ -439,7 +427,6 @@ enum LaunchResultState {
 };
 
 // The result from launching an app.
-[Stable]
 struct LaunchResult {
   // The id to represent which instance the app is launched in. Deprecated: use
   // `instance_ids`.
@@ -450,7 +437,7 @@ struct LaunchResult {
 };
 
 // Enumeration of app launch sources.
-[Stable, Extensible]
+[Extensible]
 enum LaunchSource {
   [Default] kUnknown = 0,
   kFromAppListGrid,              // Grid of apps, not the search box.
@@ -491,9 +478,10 @@ enum LaunchSource {
   [MinVersion=14] kFromWelcomeTour,              // Welcome Tour.
   [MinVersion=15] kFromFocusMode,                // Focus Mode panel.
   [MinVersion=16] kFromSparky,                   // Sparky.
+  [MinVersion=36] kFromNavigationCapturing,      // WebApp Navigation Capturing.
 };
 
-[Stable, Extensible]
+[Extensible]
 // The container type to launch the application in.
 enum LaunchContainer {
   [Default] kLaunchContainerNone, // No specified container
@@ -501,7 +489,7 @@ enum LaunchContainer {
   kLaunchContainerTab,            // Tab container
 };
 
-[Stable, Extensible]
+[Extensible]
 // Controls how a tab is opened in a window.
 enum WindowOpenDisposition {
   [Default] kUnknown,
@@ -512,7 +500,6 @@ enum WindowOpenDisposition {
   [MinVersion=1] kNewPopup,
 };
 
-[Stable]
 // The parameters to launch an app.
 struct LaunchParams {
   string app_id@0;               // The app id of the app.
@@ -526,7 +513,6 @@ struct LaunchParams {
   [MinVersion=15]int64 display_id@5;
 };
 
-[Stable]
 struct Permission {
   PermissionType permission_type@0;
   PermissionValue value@1;
@@ -535,7 +521,7 @@ struct Permission {
 };
 
 // The types of permissions in App Service.
-[Stable, Extensible]
+[Extensible]
 enum PermissionType {
   [Default] kUnknown              = 0,
   kCamera                         = 1,
@@ -547,14 +533,12 @@ enum PermissionType {
   [MinVersion=10] kFileHandling   = 7,
 };
 
-[Stable]
 enum TriState {
   kAllow,
   kBlock,
   kAsk,
 };
 
-[Stable]
 union PermissionValue {
   bool bool_value;
   TriState tristate_value;
@@ -564,20 +548,18 @@ union PermissionValue {
 // adding new filters and removing existing filters. The map is keyed by
 // |app_id|, and the value is the list of the filters that is added/removed
 // for that |app_id|.
-[Stable]
 struct PreferredAppChanges {
   map<string, array<IntentFilter>> added_filters;
   map<string, array<IntentFilter>> removed_filters;
 };
 
 // Represents the entry of the preferred apps list.
-[Stable]
 struct PreferredApp {
   IntentFilter intent_filter;
   string app_id;
 };
 
-[Stable, Extensible]
+[Extensible]
 enum PackageIdType {
   [Default] kUnknown = 0,
   kWeb = 1,
@@ -585,7 +567,6 @@ enum PackageIdType {
 };
 
 // A globally unique stable identifier for an installable app package.
-[Stable]
 struct PackageId {
   // The app type of the package.
   PackageIdType package_type;
@@ -604,7 +585,6 @@ struct PackageId {
 //
 // See components/services/app_service/public/cpp/shortcut/shortcut.h for
 // details for the structs in this file.
-[Stable]
 struct AppShortcut {
   // 'host_app_id' and 'local_id' should not be changeable after creation.
   // The host app of the shortcut.
@@ -626,7 +606,7 @@ struct AppShortcut {
 };
 
 // DEPRECATED
-[Stable, RenamedFrom="crosapi.mojom.Shortcut"]
+[RenamedFrom="crosapi.mojom.Shortcut"]
 struct REMOVED_01 {
   // DEPRECATED
   string shortcut_id@0;
@@ -639,7 +619,7 @@ struct REMOVED_01 {
 };
 
 // Controller registration result in App Service.
-[Stable, Extensible]
+[Extensible]
 enum ControllerRegistrationResult {
   [Default] kSuccess              = 0,
   kFailed                         = 1,
@@ -648,11 +628,10 @@ enum ControllerRegistrationResult {
 
 // Represents parameters for installing an app.
 // Next version: 2
-[Stable]
 struct InstallAppParams {
   // Represents the origin of the installation.
   // Next version: 3
-  [Stable, Extensible]
+  [Extensible]
   enum Surface {
     [Default] kUnknown = 0,
     kAppInstallUriUnknown = 1,
@@ -675,6 +654,5 @@ struct InstallAppParams {
 
 // Represents the result of an InstallApp() request.
 // Currently empty but will be extended with fields as needed.
-[Stable]
 struct AppInstallResult {
 };

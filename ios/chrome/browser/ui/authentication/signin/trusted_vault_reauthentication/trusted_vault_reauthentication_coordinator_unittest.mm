@@ -36,36 +36,34 @@ class TrustedVaultReauthenticationCoordinatorTest : public PlatformTest {
     base_view_controller_ = [[UIViewController alloc] init];
     base_view_controller_.view.backgroundColor = UIColor.blueColor;
     [scoped_key_window_.Get() setRootViewController:base_view_controller_];
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
     id<SystemIdentity> identity = [FakeSystemIdentity fakeIdentity1];
     FakeSystemIdentityManager* system_identity_manager =
         FakeSystemIdentityManager::FromSystemIdentityManager(
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity);
     AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
     authentication_service->SignIn(
         identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
   }
 
   Browser* browser() { return browser_.get(); }
 
  protected:
-  // Needed for test browser state created by TestChromeBrowserState().
+  // Needed for test profile created by TestProfileIOS().
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 
   ScopedKeyWindow scoped_key_window_;
   UIViewController* base_view_controller_ = nil;
@@ -122,8 +120,7 @@ TEST_F(TrustedVaultReauthenticationCoordinatorTest, TestCancel) {
   // This means that it is safe to cast the `TrustedVaultClientBackend` to
   // `FakeTrustedVaultClientBackend` at runtime.
   static_cast<FakeTrustedVaultClientBackend*>(
-      TrustedVaultClientBackendFactory::GetForBrowserState(
-          browser_state_.get()))
+      TrustedVaultClientBackendFactory::GetForProfile(profile_.get()))
       ->SimulateUserCancel();
 
   // Test the completion block.

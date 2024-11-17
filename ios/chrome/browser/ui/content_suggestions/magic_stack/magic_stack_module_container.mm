@@ -186,7 +186,7 @@ const CGFloat kSeparatorHeight = 0.5;
 
     if (@available(iOS 17, *)) {
       NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-          @[ UITraitPreferredContentSizeCategory.self ]);
+          @[ UITraitPreferredContentSizeCategory.class ]);
       __weak __typeof(self) weakSelf = self;
       UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
                                        UITraitCollection* previousCollection) {
@@ -248,19 +248,25 @@ const CGFloat kSeparatorHeight = 0.5;
 
 - (void)configureWithConfig:(MagicStackModule*)config {
   [self resetView];
+  // By default, the container is in the magic stack.
+  BOOL inMagicStack = YES;
   // Ensures that the modules conforms to a height of kModuleMaxHeight. For
   // the MVT when it lives outside of the Magic Stack to stay as close to its
   // intrinsic size as possible, the constraint is configured to be less than
   // or equal to.
-  if (config.type == ContentSuggestionsModuleType::kMostVisited &&
-      !ShouldPutMostVisitedSitesInMagicStack()) {
-    self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
-    self.layer.cornerRadius = kCornerRadius;
-    self.clipsToBounds = YES;
-    _containerHeightAnchor.active = NO;
-    _containerHeightAnchor = [self.heightAnchor
-        constraintLessThanOrEqualToConstant:kModuleMaxHeight];
-    [NSLayoutConstraint activateConstraints:@[ _containerHeightAnchor ]];
+  if (config.type == ContentSuggestionsModuleType::kMostVisited) {
+    MostVisitedTilesConfig* mvtConfig =
+        static_cast<MostVisitedTilesConfig*>(config);
+    inMagicStack = mvtConfig.inMagicStack;
+    if (!inMagicStack) {
+      self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+      self.layer.cornerRadius = kCornerRadius;
+      self.clipsToBounds = YES;
+      _containerHeightAnchor.active = NO;
+      _containerHeightAnchor = [self.heightAnchor
+          constraintLessThanOrEqualToConstant:kModuleMaxHeight];
+      [NSLayoutConstraint activateConstraints:@[ _containerHeightAnchor ]];
+    }
   }
 
   if (config.type == ContentSuggestionsModuleType::kPlaceholder) {
@@ -276,16 +282,21 @@ const CGFloat kSeparatorHeight = 0.5;
   }
   _type = config.type;
 
-  _title.text = [MagicStackModuleContainer titleStringForModule:_type];
+  _title.text = [MagicStackModuleContainer titleStringForModule:_type
+                                                   inMagicStack:inMagicStack];
   _title.accessibilityIdentifier =
-      [MagicStackModuleContainer accessibilityIdentifierForModule:_type];
+      [MagicStackModuleContainer accessibilityIdentifierForModule:_type
+                                                     inMagicStack:inMagicStack];
 
   _seeMoreButton.hidden = !config.shouldShowSeeMore;
 
-  // The "See More" button takes precedence over the notifications opt-in
-  // button.
-  _notificationsOptInButton.hidden =
-      config.shouldShowSeeMore || !config.showNotificationsOptIn;
+  // The notifications opt-in button is hidden if either the "See More"
+  // button or the module's subtitle is displayed, or if the option is disabled
+  // in the configuration. This ensures the user focuses on the primary
+  // elements (See More/subtitle) before being presented with the opt-in.
+  _notificationsOptInButton.hidden = !_seeMoreButton.isHidden ||
+                                     !_subtitle.isHidden ||
+                                     !config.showNotificationsOptIn;
 
   if ([self shouldShowSubtitle]) {
     // TODO(crbug.com/40279482): Update MagicStackModuleContainer to take an id
@@ -298,7 +309,7 @@ const CGFloat kSeparatorHeight = 0.5;
   }
 
   if ([_title.text length] == 0) {
-    [_titleStackView removeFromSuperview];
+    _titleStackView.hidden = YES;
   }
 
   _separator.hidden = ![self shouldShowSeparator];
@@ -332,6 +343,7 @@ const CGFloat kSeparatorHeight = 0.5;
 
 - (void)resetView {
   _title.text = nil;
+  _titleStackView.hidden = NO;
   _subtitle.text = nil;
   _isPlaceholder = NO;
   if (_placeholderImage) {
@@ -345,13 +357,14 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 // Returns the module's title, if any, given the Magic Stack module `type`.
-+ (NSString*)titleStringForModule:(ContentSuggestionsModuleType)type {
++ (NSString*)titleStringForModule:(ContentSuggestionsModuleType)type
+                     inMagicStack:(BOOL)inMagicStack {
   switch (type) {
     case ContentSuggestionsModuleType::kShortcuts:
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_SHORTCUTS_MODULE_TITLE);
     case ContentSuggestionsModuleType::kMostVisited:
-      if (ShouldPutMostVisitedSitesInMagicStack()) {
+      if (inMagicStack) {
         return l10n_util::GetNSString(
             IDS_IOS_CONTENT_SUGGESTIONS_MOST_VISITED_MODULE_TITLE);
       }
@@ -371,17 +384,20 @@ const CGFloat kSeparatorHeight = 0.5;
       return l10n_util::GetNSString(
           IDS_IOS_CONTENT_SUGGESTIONS_PARCEL_TRACKING_MODULE_TITLE);
     case ContentSuggestionsModuleType::kPriceTrackingPromo:
-      // Price Tracking Promo design does not use title.
+    case ContentSuggestionsModuleType::kSendTabPromo:
+      // Send Tab and Price Tracking Promo design do not use title.
       return @"";
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTips:
+      return l10n_util::GetNSString(IDS_IOS_MAGIC_STACK_TIP_TITLE);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return @"";
+      NOTREACHED();
   }
 }
 
 // Returns the accessibility identifier given the Magic Stack module `type`.
-+ (NSString*)accessibilityIdentifierForModule:
-    (ContentSuggestionsModuleType)type {
++ (NSString*)accessibilityIdentifierForModule:(ContentSuggestionsModuleType)type
+                                 inMagicStack:(BOOL)inMagicStack {
   switch (type) {
     case ContentSuggestionsModuleType::kTabResumption:
       return kMagicStackContentSuggestionsModuleTabResumptionAccessibilityIdentifier;
@@ -389,7 +405,7 @@ const CGFloat kSeparatorHeight = 0.5;
     default:
       // TODO(crbug.com/40946679): the code should use constants for
       // accessibility identifiers, and not localized strings.
-      return [self titleStringForModule:type];
+      return [self titleStringForModule:type inMagicStack:inMagicStack];
   }
 }
 
@@ -445,9 +461,23 @@ const CGFloat kSeparatorHeight = 0.5;
 
 #pragma mark - MagicStackModuleContentViewDelegate
 
+- (void)updateNotificationsOptInVisibility:(BOOL)showNotificationsOptIn {
+  _notificationsOptInButton.hidden = !showNotificationsOptIn;
+  _subtitle.hidden = ![self shouldShowSubtitle];
+}
+
 - (void)setSubtitle:(NSString*)subtitle {
   _subtitle.text = subtitle;
   _subtitle.accessibilityIdentifier = subtitle;
+}
+
+- (void)updateSeparatorVisibility:(BOOL)isHidden {
+  // Do nothing if the new value is the same as the old value
+  if (isHidden == _separator.hidden) {
+    return;
+  }
+
+  _separator.hidden = isHidden;
 }
 
 #pragma mark - Helpers
@@ -462,15 +492,11 @@ const CGFloat kSeparatorHeight = 0.5;
   [_delegate enableNotifications:_type];
 }
 
-// Determines if a subtitle should be displayed based on the
-// `ContentSuggestionsModuleType`. Returns `NO` if a Magic Stack module action
-// button is currently displayed.
+// Determines if a subtitle should be displayed. Currently, a subtitle is
+// shown only when both the "See More" button and the notifications opt-in
+// button are hidden.
 - (BOOL)shouldShowSubtitle {
-  if (!_seeMoreButton.isHidden || !_notificationsOptInButton.isHidden) {
-    return NO;
-  }
-
-  if (_type == ContentSuggestionsModuleType::kSafetyCheck) {
+  if (_seeMoreButton.isHidden && _notificationsOptInButton.isHidden) {
     return YES;
   }
 
@@ -499,9 +525,12 @@ const CGFloat kSeparatorHeight = 0.5;
     case ContentSuggestionsModuleType::kSetUpListAllSet:
     case ContentSuggestionsModuleType::kSetUpListNotifications:
     case ContentSuggestionsModuleType::kSafetyCheck:
+    case ContentSuggestionsModuleType::kTips:
       return YES;
     case ContentSuggestionsModuleType::kTabResumption:
       return !IsTabResumption1_5Enabled();
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+      return NO;
     default:
       return NO;
   }

@@ -8,12 +8,14 @@ import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 
 import java.lang.ref.WeakReference;
@@ -36,11 +38,14 @@ public class ActivityWindowAndroid extends WindowAndroid
      * @param context Context wrapping an activity associated with the WindowAndroid.
      * @param listenToActivityState Whether to listen to activity state changes.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
+     * @param trackOcclusion Whether to track occlusion of the window.
      */
     public ActivityWindowAndroid(
             Context context,
             boolean listenToActivityState,
-            IntentRequestTracker intentRequestTracker) {
+            IntentRequestTracker intentRequestTracker,
+            @Nullable InsetObserver insetObserver,
+            boolean trackOcclusion) {
         this(
                 context,
                 listenToActivityState,
@@ -48,7 +53,9 @@ public class ActivityWindowAndroid extends WindowAndroid
                         new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
                 new ActivityKeyboardVisibilityDelegate(
                         new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
-                intentRequestTracker);
+                intentRequestTracker,
+                insetObserver,
+                trackOcclusion);
     }
 
     /**
@@ -58,19 +65,24 @@ public class ActivityWindowAndroid extends WindowAndroid
      * @param listenToActivityState Whether to listen to activity state changes.
      * @param keyboardVisibilityDelegate Delegate which handles keyboard visibility.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
+     * @param trackOcclusion Whether to track occlusion of the window.
      */
     public ActivityWindowAndroid(
             Context context,
             boolean listenToActivityState,
             @NonNull ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
-            IntentRequestTracker intentRequestTracker) {
+            IntentRequestTracker intentRequestTracker,
+            InsetObserver insetObserver,
+            boolean trackOcclusion) {
         this(
                 context,
                 listenToActivityState,
                 new ActivityAndroidPermissionDelegate(
                         new WeakReference<Activity>(ContextUtils.activityFromContext(context))),
                 keyboardVisibilityDelegate,
-                intentRequestTracker);
+                intentRequestTracker,
+                insetObserver,
+                trackOcclusion);
     }
 
     /**
@@ -80,14 +92,17 @@ public class ActivityWindowAndroid extends WindowAndroid
      * @param listenToActivityState Whether to listen to activity state changes.
      * @param activityAndroidPermissionDelegate Delegates which handles android permissions.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
+     * @param trackOcclusion Whether to track occlusion of the window.
      */
     private ActivityWindowAndroid(
             Context context,
             boolean listenToActivityState,
             ActivityAndroidPermissionDelegate activityAndroidPermissionDelegate,
             ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate,
-            IntentRequestTracker intentRequestTracker) {
-        super(context, intentRequestTracker);
+            IntentRequestTracker intentRequestTracker,
+            InsetObserver insetObserver,
+            boolean trackOcclusion) {
+        super(context, intentRequestTracker, insetObserver, trackOcclusion);
         Activity activity = ContextUtils.activityFromContext(context);
         if (activity == null) {
             throw new IllegalArgumentException("Context is not and does not wrap an Activity");
@@ -101,10 +116,7 @@ public class ActivityWindowAndroid extends WindowAndroid
         activityKeyboardVisibilityDelegate.setLazyKeyboardInsetSupplier(
                 LazyOneshotSupplier.fromSupplier(
                         () -> {
-                            // `getInsetObserver()` implicitly checks for a window and for the
-                            // activity to not be finishing.
-                            var insetObserver = getInsetObserver();
-                            if (insetObserver == null) {
+                            if (getInsetObserver() == null) {
                                 // An InsetObserver can no longer be created. Stub this out so
                                 // calls continue to succeed.
                                 return new ObservableSupplierImpl<Integer>();

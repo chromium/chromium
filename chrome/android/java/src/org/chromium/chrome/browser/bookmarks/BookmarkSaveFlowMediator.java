@@ -22,6 +22,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkSaveFlowProperties.FolderText;
 import org.chromium.chrome.browser.bookmarks.PowerBookmarkMetrics.PriceTrackingState;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
@@ -40,14 +41,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/**
- * Controls the bookmarks save-flow, which has 2 variants: standard, improved. The two variants have
- * different properties, so each of the methods is branched to reflect that.
- * BookmarkSaveFlowProperties shouldn't be used for the improved variant (it'll crash), and the same
- * is true for ImprovedBookmarkSaveFlow properties with the standard variant. standard: The default
- * save experience prior to android-improved-bookmarks. improved: The new experience for saving when
- * android-improved-bookmarks is enabled.
- */
+/** Controls the bookmarks save-flow. */
 public class BookmarkSaveFlowMediator extends BookmarkModelObserver
         implements SubscriptionsObserver {
     private static final String FOLDER_TEXT_TOKEN = "%1$s";
@@ -152,13 +146,12 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
         }
 
         BookmarkItem item = mBookmarkModel.getBookmarkById(bookmarkId);
-        bindBookmarkProperties(item, mPowerBookmarkMeta, mWasBookmarkMoved);
-        bindPowerBookmarkProperties(mPowerBookmarkMeta, fromExplicitTrackUi);
+        bindBookmarkProperties(item, mWasBookmarkMoved);
+        bindPowerBookmarkProperties(mPowerBookmarkMeta);
         bindImage(item, meta);
     }
 
-    private void bindBookmarkProperties(
-            BookmarkItem item, PowerBookmarkMeta meta, boolean wasBookmarkMoved) {
+    private void bindBookmarkProperties(BookmarkItem item, boolean wasBookmarkMoved) {
         mFolderName = mBookmarkModel.getBookmarkTitle(item.getParentId());
 
         mPropertyModel.set(ImprovedBookmarkSaveFlowProperties.TITLE, createTitleCharSequence());
@@ -213,8 +206,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
         return ss;
     }
 
-    private void bindPowerBookmarkProperties(
-            @Nullable PowerBookmarkMeta meta, boolean fromExplicitTrackUi) {
+    private void bindPowerBookmarkProperties(@Nullable PowerBookmarkMeta meta) {
         if (meta == null) return;
 
         if (meta.hasShoppingSpecifics()) {
@@ -246,7 +238,11 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
                             ImprovedBookmarkSaveFlowProperties.BOOKMARK_ROW_ICON, drawable);
                 };
 
-        mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(item, callback);
+        mBookmarkImageFetcher.fetchImageForBookmarkWithFaviconFallback(
+                item,
+                BookmarkUtils.getImageIconSize(
+                        mContext.getResources(), BookmarkRowDisplayPref.VISUAL),
+                callback);
     }
 
     void handlePriceTrackingSwitchToggle(CompoundButton view, boolean toggled) {
@@ -316,7 +312,7 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
         }
 
         BookmarkItem item = mBookmarkModel.getBookmarkById(mBookmarkId);
-        bindBookmarkProperties(item, mPowerBookmarkMeta, mWasBookmarkMoved);
+        bindBookmarkProperties(item, mWasBookmarkMoved);
     }
 
     // SubscriptionsObserver implementation
@@ -368,11 +364,16 @@ public class BookmarkSaveFlowMediator extends BookmarkModelObserver
         mCloseRunnable.run();
     }
 
-    private void onFolderSelectClicked(View v) {
+    private void onFolderSelectClicked() {
         RecordUserAction.record("MobileBookmark.SaveFlow.EditFolder");
         BookmarkUtils.startFolderPickerActivity(mContext, mBookmarkId);
         TrackerFactory.getTrackerForProfile(mProfile)
                 .notifyEvent(EventConstants.SHOPPING_LIST_SAVE_FLOW_FOLDER_TAP);
         mCloseRunnable.run();
+    }
+
+    @NonNull
+    String getFolderName() {
+        return mFolderName;
     }
 }

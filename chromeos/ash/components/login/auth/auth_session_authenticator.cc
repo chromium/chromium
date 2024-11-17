@@ -152,7 +152,7 @@ void AuthSessionAuthenticator::RemoveStaleUserForEphemeral(
     AuthSessionIntent intent,
     StartAuthSessionCallback callback) {
   if (auth_session_id.empty()) {
-    NOTREACHED_IN_MIGRATION() << "Auth session should exist";
+    NOTREACHED() << "Auth session should exist";
   }
   LOGIN_LOG(EVENT) << "Deleting stale ephemeral user";
   user_data_auth::RemoveRequest remove_request;
@@ -657,6 +657,13 @@ void AuthSessionAuthenticator::LoginAsWebKioskAccount(
                    /*force_dircrypto=*/false, /*ephemeral=*/ephemeral);
 }
 
+void AuthSessionAuthenticator::LoginAsIwaKioskAccount(
+    const AccountId& app_account_id,
+    bool ephemeral) {
+  LoginAsKioskImpl(app_account_id, user_manager::UserType::kKioskIWA,
+                   /*force_dircrypto=*/false, /*ephemeral=*/ephemeral);
+}
+
 void AuthSessionAuthenticator::LoginAsKioskImpl(
     const AccountId& app_account_id,
     user_manager::UserType user_type,
@@ -1007,11 +1014,9 @@ bool AuthSessionAuthenticator::ResolveCryptohomeError(
   // repo.
   // However, we should seek to handle all CryptohomeErrorCode and not let
   // any of them hit the default block.
-  NOTREACHED_IN_MIGRATION()
-      << "Unhandled CryptohomeError in ProcessCryptohomeError"
-         ": "
-      << error.get_cryptohome_error();
-  return false;
+  NOTREACHED() << "Unhandled CryptohomeError in ProcessCryptohomeError"
+                  ": "
+               << error.get_cryptohome_error();
 }
 
 void AuthSessionAuthenticator::ProcessCryptohomeError(
@@ -1034,12 +1039,10 @@ void AuthSessionAuthenticator::ProcessCryptohomeError(
   }
   bool handled = ResolveCryptohomeError(default_error, error);
   if (!handled) {
-    NOTREACHED_IN_MIGRATION()
-        << "Unhandled cryptohome error: " << error.get_cryptohome_error();
     SCOPED_CRASH_KEY_NUMBER("Cryptohome", "error_code",
                             error.get_cryptohome_error().code());
-    base::debug::DumpWithoutCrashing();
-    error.ResolveToFailure(default_error);
+    NOTREACHED() << "Unhandled cryptohome error: "
+                 << error.get_cryptohome_error();
   }
 
   NotifyFailure(error.get_resolved_failure(), std::move(context));

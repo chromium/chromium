@@ -139,10 +139,14 @@ class CORE_EXPORT AnchorScope {
       case CSSPropertyID::kWidth:
       case CSSPropertyID::kMinWidth:
       case CSSPropertyID::kMaxWidth:
+      case CSSPropertyID::kMarginLeft:
+      case CSSPropertyID::kMarginRight:
         return Mode::kWidth;
       case CSSPropertyID::kHeight:
       case CSSPropertyID::kMinHeight:
       case CSSPropertyID::kMaxHeight:
+      case CSSPropertyID::kMarginTop:
+      case CSSPropertyID::kMarginBottom:
         return Mode::kHeight;
       default:
         return Mode::kNone;

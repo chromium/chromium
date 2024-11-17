@@ -28,9 +28,7 @@ CWVUnsafeURLThreatType CWVUnsafeURLThreatTypeFromSBThreatType(
     case SB_THREAT_TYPE_URL_PHISHING:
       return CWVUnsafeURLThreatTypePhishing;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Update CWVUnsafeURLThreatType for new threat type.";
-      return CWVUnsafeURLThreatTypeUnknown;
+      NOTREACHED() << "Update CWVUnsafeURLThreatType for new threat type.";
   }
 }
 

@@ -9,7 +9,6 @@ import "mojo/public/mojom/base/file_path.mojom";
 
 // Interface for drive mount point path observers. Implemented by lacros-chrome.
 // Used by ash-chrome to send drive availability updates.
-[Stable]
 interface DriveIntegrationServiceObserver {
   // Called when an observed drive availability changes.
   [MinVersion=1]
@@ -18,7 +17,6 @@ interface DriveIntegrationServiceObserver {
 
 // Interface used to allow ash-chrome to initiate a connection with an extension
 // in lacros-chrome. Implemented by lacros-chrome.
-[Stable]
 interface DriveFsNativeMessageHostBridge {
   // Initiates a connection to the extension specified in `params`.
   ConnectToExtension@0(
@@ -34,7 +32,7 @@ interface DriveFsNativeMessageHostBridge {
 // Implemented by ash-chrome.
 //
 // Next version: 3
-[Stable, Uuid="60fd345d-0f72-4941-a035-910b93c141fa"]
+[Uuid="60fd345d-0f72-4941-a035-910b93c141fa"]
 interface DriveIntegrationService {
   // Deprecated: Use DriveIntegrationServiceObserver::OnMountPointPathChanged()
   // to listen for changes to the DriveFS mount point. These changes are stashed

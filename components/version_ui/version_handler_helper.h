@@ -22,7 +22,7 @@ base::Value::List GetVariationsList();
 
 // Returns the variations information in command line format to be displayed on
 // the chrome:://version page.
-base::Value GetVariationsCommandLineAsValue();
+std::string GetVariationsCommandLine();
 
 }  // namespace version_ui
 

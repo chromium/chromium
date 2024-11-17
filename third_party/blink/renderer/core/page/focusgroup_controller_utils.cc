@@ -113,8 +113,7 @@ Element* FocusgroupControllerUtils::FindNearestFocusgroupAncestor(
             return ancestor;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       return nullptr;
     }

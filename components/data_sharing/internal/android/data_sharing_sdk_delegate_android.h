@@ -67,6 +67,8 @@ class DataSharingSDKDelegateAndroid : public DataSharingSDKDelegate {
                  GetStatusCallback callback) override;
   void RemoveMember(const data_sharing_pb::RemoveMemberParams& params,
                     GetStatusCallback callback) override;
+  void LeaveGroup(const data_sharing_pb::LeaveGroupParams& params,
+                  GetStatusCallback callback) override;
   void DeleteGroup(const data_sharing_pb::DeleteGroupParams& params,
                    GetStatusCallback callback) override;
   void LookupGaiaIdByEmail(

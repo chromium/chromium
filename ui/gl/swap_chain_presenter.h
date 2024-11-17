@@ -94,7 +94,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // video processor input view.  Returns nullptr on failure.
   UNSAFE_BUFFER_USAGE Microsoft::WRL::ComPtr<ID3D11Texture2D> UploadVideoImage(
       const gfx::Size& size,
-      const uint8_t* nv12_pixmap,
+      const uint8_t* shm_video_pixmap,
       size_t stride);
 
   // Releases resources that might hold indirect references to the swap chain.
@@ -110,7 +110,8 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // Returns DXGI format that swap chain uses.
   // This changes over time based on stats recorded in |presentation_history|.
   DXGI_FORMAT GetSwapChainFormat(gfx::ProtectedVideoType protected_video_type,
-                                 bool content_is_hdr);
+                                 bool use_hdr_swap_chain,
+                                 bool use_p010_sdr_swap_chain);
 
   // Perform a blit using video processor from given input texture to swap chain
   // backbuffer. |input_texture| is the input texture (array), and |input_level|
@@ -204,7 +205,7 @@ class SwapChainPresenter : public base::PowerStateObserver {
       const std::optional<gfx::Rect> target_rect);
 
   // Present to a decode swap chain created from compatible video decoder
-  // buffers using given |nv12_image|.
+  // buffers using given |texture|.
   // Use |dest_size| for destination size and |target_rect| for target rectangle
   // if valid. Otherwise, |swap_chain_size| would be used instead.
   // Returns true on success.

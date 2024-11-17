@@ -8,6 +8,7 @@
 #include <sys/statfs.h>
 
 #include <map>
+#include <optional>
 #include <set>
 #include <string>
 #include <utility>
@@ -18,6 +19,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
@@ -33,7 +35,9 @@
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/login/configuration_keys.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
@@ -50,6 +54,7 @@
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/embedder_support/user_agent_utils.h"
@@ -135,6 +140,9 @@ bool g_disallow_for_testing = false;
 // during test runs. Doesn't affect public session.
 bool g_arc_blocked_due_to_incompatible_filesystem_for_testing = false;
 
+// Indicates whether the ARCVM DLC image is available on the device.
+std::optional<bool> g_is_arcvm_dlc_image_available;
+
 // TODO(kinaba): Temporary workaround for crbug.com/729034.
 //
 // Some type of accounts don't have user prefs. As a short-term workaround,
@@ -210,6 +218,26 @@ void StoreCompatibilityCheckResult(const AccountId& account_id,
   std::move(callback).Run();
 }
 
+// Returns whether the ARCVM DLC image is already installed on the reven device.
+// This function performs a blocking IO operation and should only be called on
+// threads that allow blocking IO, such as worker threads or IO threads. It
+// must not be called on the UI thread.
+bool IsArcVmDlcImageExist() {
+  DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  const char arc_vm_dlc_image_path[] = "/opt/google/vms/android/system.raw.img";
+  return base::PathExists(base::FilePath(arc_vm_dlc_image_path));
+}
+
+// Stores the result of IsArcVmDlcImageExist posted back from the blocking
+// task runner.
+void StoreArcVmDlcImageCheckResult(base::OnceClosure callback,
+                                   bool is_available) {
+  g_is_arcvm_dlc_image_available = is_available;
+  std::move(callback).Run();
+}
+
 bool IsUnaffiliatedArcAllowed() {
   bool arc_allowed;
   ArcSessionManager* arc_session_manager = ArcSessionManager::Get();
@@ -247,6 +275,23 @@ ArcStatus GetArcStatusForProfile(const Profile* profile,
   if (!IsArcAvailable()) {
     VLOG_IF(1, should_report_reason) << "ARC is not available.";
     return ArcStatus::kNotAvailable;
+  }
+
+  if (ash::switches::IsRevenBranding()) {
+    CHECK(g_is_arcvm_dlc_image_available.has_value());
+
+    if (!g_is_arcvm_dlc_image_available.value()) {
+      VLOG_IF(1, should_report_reason)
+          << "ARC unavailable on reven board due to no arcvm dlc images.";
+      return ArcStatus::kNotAvailable;
+    }
+
+    if (!policy_util::IsAccountManaged(profile) ||
+        !ash::InstallAttributes::Get()->IsEnterpriseManaged()) {
+      VLOG_IF(1, should_report_reason) << "ARC unavailable on reven board due "
+                                          "to unmanaged device or account.";
+      return ArcStatus::kNotAvailable;
+    }
   }
 
   if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
@@ -322,8 +367,8 @@ void SharePathIfRequired(ConvertToContentUrlsAndShareCallback callback,
   Profile* const profile = ProfileManager::GetPrimaryUserProfile();
   DCHECK(profile);
   for (const auto& path : paths_to_share) {
-    if (!guest_os::GuestOsSharePath::GetForProfile(profile)->IsPathShared(
-            kArcVmName, path)) {
+    if (!guest_os::GuestOsSharePathFactory::GetForProfile(profile)
+             ->IsPathShared(kArcVmName, path)) {
       path_list.push_back(path);
     }
   }
@@ -333,14 +378,14 @@ void SharePathIfRequired(ConvertToContentUrlsAndShareCallback callback,
   }
 
   const auto& vm_info =
-      guest_os::GuestOsSessionTracker::GetForProfile(profile)->GetVmInfo(
+      guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile)->GetVmInfo(
           kArcVmName);
   if (!vm_info) {
     LOG(WARNING) << "ARCVM not running, cannot share paths";
     std::move(callback).Run(std::vector<GURL>());
     return;
   }
-  guest_os::GuestOsSharePath::GetForProfile(profile)->SharePaths(
+  guest_os::GuestOsSharePathFactory::GetForProfile(profile)->SharePaths(
       kArcVmName, vm_info->seneschal_server_handle(), path_list,
       base::BindOnce(
           [](ConvertToContentUrlsAndShareCallback callback,
@@ -410,11 +455,10 @@ bool IsArcAllowedForProfile(const Profile* profile) {
 
   // This is next check. We should be persistent and report the same result.
   if (result != it->second) {
-    NOTREACHED_IN_MIGRATION()
-        << "ARC allowed was changed for the current user session "
-        << "and profile " << profile->GetPath().MaybeAsASCII()
-        << ". This may lead to unexpected behavior. ARC allowed is"
-        << " forced to " << it->second;
+    NOTREACHED() << "ARC allowed was changed for the current user session "
+                 << "and profile " << profile->GetPath().MaybeAsASCII()
+                 << ". This may lead to unexpected behavior. ARC allowed is"
+                 << " forced to " << it->second;
   }
   return it->second;
 }
@@ -455,6 +499,10 @@ bool IsArcBlockedDueToIncompatibleFileSystem(const Profile* profile) {
 
 void SetArcBlockedDueToIncompatibleFileSystemForTesting(bool block) {
   g_arc_blocked_due_to_incompatible_filesystem_for_testing = block;
+}
+
+void SetArcvmDlcImageStatusForTesting(std::optional<bool> availability) {
+  g_is_arcvm_dlc_image_available = availability;
 }
 
 bool IsArcCompatibleFileSystemUsedForUser(const user_manager::User* user) {
@@ -713,6 +761,20 @@ void UpdateArcFileSystemCompatibilityPrefIfNeeded(
       base::BindOnce(&IsArcCompatibleFilesystem, profile_path),
       base::BindOnce(&StoreCompatibilityCheckResult, account_id,
                      std::move(callback)));
+}
+
+void CheckArcVmDlcImageExist(base::OnceClosure callback) {
+  if (!ash::switches::IsRevenBranding()) {
+    std::move(callback).Run();
+    return;
+  }
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      base::BindOnce(&IsArcVmDlcImageExist),
+      base::BindOnce(&StoreArcVmDlcImageCheckResult, std::move(callback)));
 }
 
 ArcManagementTransition GetManagementTransition(const Profile* profile) {

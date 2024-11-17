@@ -178,24 +178,32 @@ void PositionView(UIView* view, CGPoint point) {
                                    constant:-kGridCellPriceDropTrailingSpacing],
     ];
     [NSLayoutConstraint activateConstraints:constraints];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitPreferredContentSizeCategory.class ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateUIOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
 
 #pragma mark - UIView
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  BOOL isPreviousAccessibilityCategory =
-      UIContentSizeCategoryIsAccessibilityCategory(
-          previousTraitCollection.preferredContentSizeCategory);
-  BOOL isCurrentAccessibilityCategory =
-      UIContentSizeCategoryIsAccessibilityCategory(
-          self.traitCollection.preferredContentSizeCategory);
-  if (isPreviousAccessibilityCategory ^ isCurrentAccessibilityCategory) {
-    [self updateTopBarSize];
+  if (@available(iOS 17, *)) {
+    return;
   }
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 - (void)didMoveToWindow {
   if (self.theme == GridThemeLight) {
@@ -629,7 +637,7 @@ void PositionView(UIView* view, CGPoint point) {
   }
   if (@available(iOS 17, *)) {
     [self.window.windowScene
-        registerForTraitChanges:@[ UITraitUserInterfaceStyle.self ]
+        registerForTraitChanges:@[ UITraitUserInterfaceStyle.class ]
                      withTarget:self
                          action:@selector(interfaceStyleChangedForWindow:
                                                          traitCollection:)];
@@ -644,6 +652,19 @@ void PositionView(UIView* view, CGPoint point) {
                        traitCollection:(UITraitCollection*)traitCollection {
   self.overrideUserInterfaceStyle =
       self.window.windowScene.traitCollection.userInterfaceStyle;
+}
+
+// Updates the size of the 'top bar' UI when the view's UITraits change.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  BOOL isPreviousAccessibilityCategory =
+      UIContentSizeCategoryIsAccessibilityCategory(
+          previousTraitCollection.preferredContentSizeCategory);
+  BOOL isCurrentAccessibilityCategory =
+      UIContentSizeCategoryIsAccessibilityCategory(
+          self.traitCollection.preferredContentSizeCategory);
+  if (isPreviousAccessibilityCategory ^ isCurrentAccessibilityCategory) {
+    [self updateTopBarSize];
+  }
 }
 
 @end
@@ -674,7 +695,7 @@ void PositionView(UIView* view, CGPoint point) {
 
 - (void)setTopCellView:(UIView*)topCellView {
   // The top cell view is `topBar` and can't be changed.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (UIView*)topCellView {
@@ -690,7 +711,7 @@ void PositionView(UIView* view, CGPoint point) {
 
 - (void)setMainCellView:(UIView*)mainCellView {
   // The main cell view is the snapshot view and can't be changed.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (UIView*)mainCellView {

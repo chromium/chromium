@@ -49,7 +49,7 @@ class GmbVideoFramePoolContext
     sequence_->ScheduleTask(
         base::BindOnce(&GmbVideoFramePoolContext::InitializeOnGpu,
                        base::Unretained(this), &event),
-        {});
+        /*sync_token_fences=*/{}, gpu::SyncToken());
 
     event.Wait();
   }
@@ -64,20 +64,11 @@ class GmbVideoFramePoolContext
     sequence_->ScheduleTask(
         base::BindOnce(&GmbVideoFramePoolContext::DestroyOnGpu,
                        base::Unretained(this), &event),
-        {});
+        /*sync_token_fences=*/{}, gpu::SyncToken());
 
     event.Wait();
 
     sequence_ = nullptr;
-  }
-
-  // Allocate a GpuMemoryBuffer.
-  std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage) override {
-    return gpu_memory_buffer_manager_->CreateGpuMemoryBuffer(
-        size, format, usage, gpu::kNullSurfaceHandle, nullptr);
   }
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
@@ -149,15 +140,11 @@ class GmbVideoFramePoolContext
   }
 
   // Destroy a SharedImage created by this interface.
-  void DestroySharedImage(const gpu::SyncToken& sync_token,
-                          scoped_refptr<gpu::ClientSharedImage> shared_image,
-                          const bool is_mappable_si_enabled) override {
+  void DestroySharedImage(
+      const gpu::SyncToken& sync_token,
+      scoped_refptr<gpu::ClientSharedImage> shared_image) override {
     CHECK(shared_image);
-    if (is_mappable_si_enabled) {
-      shared_image->UpdateDestructionSyncToken(sync_token);
-    } else {
-      sii_in_process_->DestroySharedImage(sync_token, std::move(shared_image));
-    }
+    shared_image->UpdateDestructionSyncToken(sync_token);
   }
 
  private:
@@ -175,8 +162,7 @@ class GmbVideoFramePoolContext
     // necessary to dereference `shared_context_state_` to grab the memory
     // tracker from it.
     sii_in_process_ = base::MakeRefCounted<gpu::SharedImageInterfaceInProcess>(
-        sequence_.get(), gpu_service_->sync_point_manager(),
-        gpu_service_->gpu_preferences(),
+        sequence_.get(), gpu_service_->gpu_preferences(),
         gpu_service_->gpu_driver_bug_workarounds(),
         gpu_service_->gpu_feature_info(), shared_context_state_.get(),
         gpu_service_->shared_image_manager(),

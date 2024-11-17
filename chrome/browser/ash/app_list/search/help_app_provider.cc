@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/webui/help_app_ui/help_app_manager.h"
@@ -21,7 +22,6 @@
 #include "chrome/browser/ash/app_list/vector_icons/vector_icons.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/session_manager/core/session_manager.h"
@@ -232,7 +232,7 @@ ash::AppListSearchResultType HelpAppProvider::ResultType() const {
 }
 
 void HelpAppProvider::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() == web_app::kHelpAppId && update.ReadinessChanged() &&
+  if (update.AppId() == ash::kHelpAppId && update.ReadinessChanged() &&
       update.Readiness() == apps::Readiness::kReady) {
     LoadIcon();
   }
@@ -264,7 +264,7 @@ void HelpAppProvider::OnLoadIcon(apps::IconValuePtr icon_value) {
 void HelpAppProvider::LoadIcon() {
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
   proxy->LoadIcon(
-      web_app::kHelpAppId, apps::IconType::kStandard,
+      ash::kHelpAppId, apps::IconType::kStandard,
       ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
       /*allow_placeholder_icon=*/false,
       base::BindOnce(&HelpAppProvider::OnLoadIcon, weak_factory_.GetWeakPtr()));

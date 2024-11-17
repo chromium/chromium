@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Карэйскі алфавіт (хангыль), рэжым AhnMaTae</translation>
 <translation id="1155759005174418845">Каталанская</translation>
 <translation id="1168100932582989117">Серверы даменных імён Google</translation>
+<translation id="1170788066030116158">Дата здымка</translation>
 <translation id="1172970565351728681">Прыблізны час да завяршэння: <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Перайменаваць</translation>
 <translation id="1173916544412572294">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" />%, падрабязныя звесткі</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Сертыфікат аўтэнтыфікацыі адхілены аддалена</translation>
 <translation id="4394214039309501350">Знешняя спасылка</translation>
 <translation id="4394980935660306080">Раней на гэтым тыдні</translation>
+<translation id="4397435965699247285">OneDrive недаступны па-за сеткай</translation>
 <translation id="4398096759193130964">Аднавіце элементы або перацягніце іх са сметніцы ў новую папку</translation>
 <translation id="4401287888955153199">Выняць усё</translation>
 <translation id="4410695710508688828">Збой вымання. <ph name="ERROR_MESSAGE" /></translation>

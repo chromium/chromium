@@ -28,6 +28,7 @@ class ProfileOAuth2TokenService;
 namespace signin {
 
 enum class SetAccountsInCookieResult;
+class OAuthMultiloginTokenResponse;
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 class BoundSessionOAuthMultiLoginDelegate;
@@ -63,10 +64,9 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
   void StartFetchingTokens();
 
   // Callbacks for OAuthMultiloginTokenFetcher.
-  void OnAccessTokensSuccess(
-      const std::vector<OAuthMultiloginTokenFetcher::AccountIdTokenPair>&
-          account_token_pairs);
-  void OnAccessTokensFailure(const GoogleServiceAuthError& error);
+  void OnMultiloginTokensSuccess(
+      base::flat_map<CoreAccountId, OAuthMultiloginTokenResponse> tokens);
+  void OnMultiloginTokensFailure(const GoogleServiceAuthError& error);
 
   // Actual call to the multilogin endpoint.
   void StartFetchingMultiLogin();
@@ -93,15 +93,16 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
   int fetcher_retries_ = 0;
 
   gaia::MultiloginMode mode_;
-  // Account ids to set in the cookie.
+  // Account IDs to set in the cookie.
   const std::vector<AccountIdGaiaIdPair> accounts_;
   // See GaiaCookieManagerService::ExternalCcResultFetcher for details.
   const std::string external_cc_result_;
   // The Gaia source to be passed when creating GaiaAuthFetchers for the
   // OAuthmultilogin request.
   const gaia::GaiaSource gaia_source_;
-  // Access tokens, in the same order as the account ids.
-  std::vector<GaiaAuthFetcher::MultiloginTokenIDPair> gaia_id_token_pairs_;
+  // OAuth tokens for each account ID in `accounts_`, or empty if is not
+  // populated yet.
+  base::flat_map<CoreAccountId, OAuthMultiloginTokenResponse> tokens_;
 
   base::OnceCallback<void(SetAccountsInCookieResult)> callback_;
   std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;

@@ -28,6 +28,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -51,6 +52,7 @@
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_generation_frame_helper.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -184,8 +186,7 @@ class MockPasswordManagerClient : public StubPasswordManagerClient {
         .WillByDefault(Return(&webauthn_credentials_delegate_));
     ON_CALL(webauthn_credentials_delegate_, GetPasskeys)
         .WillByDefault(ReturnRef(passkeys_));
-    ON_CALL(webauthn_credentials_delegate_,
-            OfferPasskeysFromAnotherDeviceOption)
+    ON_CALL(webauthn_credentials_delegate_, IsSecurityKeyOrHybridFlowAvailable)
         .WillByDefault(Return(true));
   }
 
@@ -916,6 +917,81 @@ TEST_P(PasswordManagerTest, GeneratedPasswordFormSubmitEmptyStore) {
 }
 
 #if BUILDFLAG(IS_IOS)
+
+// Tests that the information held by the field data manager is propagated on
+// user input. Also verifies that it is reflected in the filling assistance
+// metric.
+TEST_P(PasswordManagerTest,
+       PropagationOfFieldDataManagerInformationOnUserInput) {
+  base::HistogramTester histogram_tester;
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  PasswordForm password_form = MakeSimpleForm();
+  FormData form_data = password_form.form_data;
+  const std::u16string username = form_data.fields()[0].value();
+  const std::u16string password = form_data.fields()[1].value();
+  const FieldRendererId username_element = form_data.fields()[0].renderer_id();
+  const FieldRendererId password_element = form_data.fields()[1].renderer_id();
+
+  // A credential so the filling assistance metric is recorded as manual
+  // filling.
+  store_->AddLogin(password_form);
+
+  EXPECT_CALL(driver_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(form_data.url()));
+
+  // A form is found by PasswordManager.
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  manager()->OnPasswordFormsRendered(&driver_, {form_data});
+  task_environment_.RunUntilIdle();
+
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
+  // Set both fields as autofilled on user trigger.
+  field_data_manager->UpdateFieldDataMap(
+      password_element, password,
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
+  field_data_manager->UpdateFieldDataMap(
+      username_element, username,
+      autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger);
+
+  // Update on user input which will submit the form.
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(), username_element,
+                                    username);
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(), password_element,
+                                    password);
+  task_environment_.RunUntilIdle();
+
+  // Verify that the information from the field data manager was propagated to
+  // the submitted form upon calling UpdateStateOnUserInput().
+  PasswordFormManager* submitted_manager =
+      manager()->GetSubmittedManagerForTest();
+  ASSERT_TRUE(submitted_manager);
+  const std::vector<FormFieldData>& fields =
+      submitted_manager->GetSubmittedForm()->form_data.fields();
+  EXPECT_THAT(fields,
+              ::testing::Each(::testing::Property(
+                  &FormFieldData::properties_mask,
+                  autofill::FieldPropertiesFlags::kAutofilledOnUserTrigger)));
+
+  // Detect form submission through form removal.
+  manager()->OnPasswordFormsRemoved(&driver_, *field_data_manager,
+                                    {form_data.renderer_id()}, {});
+
+  // Delete password manager to record metrics.
+  manager_.reset();
+
+  // Verify that the filling assistance is correctly recorded as manually
+  // autofilled.
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.FillingAssistance",
+      PasswordFormMetricsRecorder::FillingAssistance::kManual, 1);
+}
+
 TEST_P(PasswordManagerTest, EditingGeneratedPasswordOnIOS) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(Return(true));
@@ -945,11 +1021,15 @@ TEST_P(PasswordManagerTest, EditingGeneratedPasswordOnIOS) {
                   ElementsAre(FormUsernamePasswordAre(
                       form_data.fields()[0].value(), generated_password)))));
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Test when the user is changing the generated password, presaved credential
   // is updated.
   generated_password += u"1";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
-                                    generation_element, generated_password);
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(), generation_element,
+                                    generated_password);
   task_environment_.RunUntilIdle();
   EXPECT_THAT(store_->stored_passwords(),
               ElementsAre(Pair(
@@ -960,8 +1040,9 @@ TEST_P(PasswordManagerTest, EditingGeneratedPasswordOnIOS) {
   // Test when the user is changing the username, presaved credential is
   // updated.
   username += u"1";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
-                                    username_element, username);
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(), username_element,
+                                    username);
   task_environment_.RunUntilIdle();
   EXPECT_THAT(store_->stored_passwords(),
               ElementsAre(Pair(GetSignonRealm(form_data.url()),
@@ -979,14 +1060,18 @@ TEST_P(PasswordManagerTest, ShowHideManualFallbackOnIOS) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Check that the saving manual fallback is shown the user typed in a password
   // field.
   std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
   EXPECT_CALL(client_, ShowManualFallbackForSaving(_, false, false))
       .WillOnce(MoveArg<0>(&form_manager_to_save));
   std::u16string typed_password = u"password";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
-                                    password_element, typed_password);
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(), password_element,
+                                    typed_password);
   Mock::VerifyAndClearExpectations(&client_);
 
   ASSERT_TRUE(form_manager_to_save);
@@ -996,8 +1081,9 @@ TEST_P(PasswordManagerTest, ShowHideManualFallbackOnIOS) {
   // Check that the saving manual is hidden when the user cleared the password
   // field value.
   EXPECT_CALL(client_, HideManualFallbackForSaving());
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
-                                    password_element, std::u16string());
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(), password_element,
+                                    std::u16string());
 }
 
 // Tests that there is no manual fallback for saving when there is a mismatch
@@ -1021,8 +1107,11 @@ TEST_P(PasswordManagerTest,
   std::u16string typed_password = u"password";
   MockPasswordManagerDriver fake_driver;
   ASSERT_NE(&fake_driver, &driver_);
-  manager()->UpdateStateOnUserInput(&fake_driver, form_data.renderer_id(),
-                                    password_element, typed_password);
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+  manager()->UpdateStateOnUserInput(&fake_driver, *field_data_manager,
+                                    form_data.renderer_id(), password_element,
+                                    typed_password);
 }
 
 // Tests that the user input in a single username form is correctly added to
@@ -1043,9 +1132,13 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the single username form.
   std::u16string typed_username = u"test_user";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(),
                                     username_renderer_id, typed_username);
 
   // Verify that the user input was cached as a possible username.
@@ -1087,9 +1180,12 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_BasedOnFieldId) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the single username form.
   std::u16string typed_username = u"test_user";
-  manager()->UpdateStateOnUserInput(&driver_, std::nullopt,
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager, std::nullopt,
                                     username_renderer_id, typed_username);
 
   // Do a spot check that the user input state was correctly updated.
@@ -1121,9 +1217,13 @@ TEST_P(PasswordManagerTest,
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the single username form.
   std::u16string typed_username = u"test_user";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(),
                                     username_renderer_id, typed_username);
 
   // Verify that that the autocomplete bit is correctly set in the possible
@@ -1157,9 +1257,13 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_LikelyOtp) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the single username form.
   std::u16string typed_username = u"test_user";
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(),
                                     username_renderer_id, typed_username);
 
   // Verify that the otp bit is correctly set.
@@ -1185,8 +1289,12 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_DisabledByDefault) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the password form.
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(),
                                     password_renderer_id, u"test_password");
 
   // Verify that there was no user input cached as possible username because the
@@ -1213,8 +1321,12 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_OnPasswordInput) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the password form.
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(),
                                     password_renderer_id, u"test_password");
 
   // Verify that there was no user input cached as possible username because the
@@ -1248,8 +1360,12 @@ TEST_P(PasswordManagerTest, AddUserInputToPossibleUsernames_OnNonTextInput) {
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the password form.
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(),
                                     element_renderer_id, u"on");
 
   // Verify that there was no user input cached as possible username because the
@@ -1282,8 +1398,12 @@ TEST_P(PasswordManagerTest,
   manager()->OnPasswordFormsParsed(&driver_, {form_data});
   task_environment_.RunUntilIdle();
 
+  const scoped_refptr<autofill::FieldDataManager> field_data_manager =
+      base::MakeRefCounted<autofill::FieldDataManager>();
+
   // Take the user input in the single username form.
-  manager()->UpdateStateOnUserInput(&driver_, form_data.renderer_id(),
+  manager()->UpdateStateOnUserInput(&driver_, *field_data_manager,
+                                    form_data.renderer_id(),
                                     username_renderer_id, u"test_username");
 
   // Verify that there was no user input cached as possible username because the
@@ -4321,27 +4441,23 @@ TEST_P(PasswordManagerTest, FillSingleUsernameForgotPassword) {
 TEST_P(PasswordManagerTest,
        MarkServerPredictedClearTextPasswordFieldEligibleForGeneration) {
   PasswordFormManager::set_wait_for_server_predictions_for_filling(true);
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
-      .WillRepeatedly(Return(true));
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   PasswordForm saved_match(MakeSavedForm());
   store_->AddLogin(saved_match);
 
-  // Create FormdData for a form with 1 text field.
+  // Create FormData for a form with 1 text field.
   FormData form_data;
-  constexpr FormRendererId form_id(1001);
-  form_data.set_renderer_id(form_id);
+  form_data.set_renderer_id(FormRendererId(1001));
   form_data.set_url(GURL("http://example.com"));
 
   FormFieldData username_field;
   username_field.set_form_control_type(autofill::FormControlType::kInputText);
-  constexpr FieldRendererId username_field_id(10);
-  username_field.set_renderer_id(username_field_id);
+  username_field.set_renderer_id(FieldRendererId(10));
   test_api(form_data).Append(username_field);
 
   FormFieldData password_field;
   password_field.set_form_control_type(autofill::FormControlType::kInputText);
-  constexpr FieldRendererId password_field_id(11);
-  password_field.set_renderer_id(password_field_id);
+  password_field.set_renderer_id(FieldRendererId(11));
   test_api(form_data).Append(password_field);
 
   // No automatic generation should be offered on the text field.
@@ -4357,6 +4473,40 @@ TEST_P(PasswordManagerTest,
       &driver_, form_data,
       CreateServerPredictions(form_data,
                               {{1, FieldType::ACCOUNT_CREATION_PASSWORD}}));
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(password_generation_frame_helper.IsManualGenerationEnabledField(
+      password_field.renderer_id()));
+}
+
+// Checks that manual generation is available for a text field with password in
+// name attribute.
+TEST_P(PasswordManagerTest,
+       MarkTextFieldWithPasswordInNameAsManualGenerationEnabledField) {
+  PasswordFormManager::set_wait_for_server_predictions_for_filling(false);
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  // Create FormData for a form with 1 text field.
+  FormFieldData password_field;
+  password_field.set_form_control_type(autofill::FormControlType::kInputText);
+  password_field.set_renderer_id(FieldRendererId(11));
+  password_field.set_name_attribute(u"password");
+  FormData form_data;
+  form_data.set_renderer_id(FormRendererId(1001));
+  form_data.set_url(GURL("http://example.com"));
+  test_api(form_data).Append(password_field);
+
+  // No automatic generation should be offered on the text field.
+  EXPECT_CALL(driver_, FormEligibleForGenerationFound).Times(0);
+
+  PasswordGenerationFrameHelper password_generation_frame_helper =
+      PasswordGenerationFrameHelper(&client_, &driver_);
+  EXPECT_CALL(driver_, GetPasswordGenerationHelper)
+      .WillRepeatedly(Return(&password_generation_frame_helper));
+  EXPECT_CALL(driver_, GetLastCommittedURL)
+      .WillRepeatedly(ReturnRef(form_data.url()));
+  manager()->OnPasswordFormsParsed(&driver_, {form_data});
+  // Wait for PasswordStore to return no credentials.
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(password_generation_frame_helper.IsManualGenerationEnabledField(
@@ -4429,12 +4579,6 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithServerPredictions) {
 // field and no username server prediction inside the password form, username is
 // overwritten.
 TEST_P(PasswordManagerTest, UsernameFirstFlowSignUpFormWithIntermediaryFields) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUsernameFirstFlowStoreSeveralValues,
-       password_manager::features::kUsernameFirstFlowWithIntermediateValues},
-      /*disabled_features_*/ {});
   // Simulate the user typed a previously not saved username in the username
   // form.
   PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
@@ -4523,12 +4667,6 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSignUpFormWithIntermediaryFields) {
 // prioritized, even if there is more recently user typed possible username
 // candidate that is without server prediction.
 TEST_P(PasswordManagerTest, UsernameFirstFlowSignInFormWithIntermediaryFields) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUsernameFirstFlowStoreSeveralValues,
-       password_manager::features::kUsernameFirstFlowWithIntermediateValues},
-      /*disabled_features_*/ {});
   // Simulate the user typed a previously not saved username in the username
   // form.
   PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
@@ -4595,12 +4733,6 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSignInFormWithIntermediaryFields) {
 // suggested as a username in "save password" prompt, even though there are text
 // fields in the password form.
 TEST_P(PasswordManagerTest, UsernameFirstFlowSavingOnPasswordFormWithCaptcha) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUsernameFirstFlowStoreSeveralValues,
-       password_manager::features::kUsernameFirstFlowWithIntermediateValues},
-      /*disabled_features_*/ {});
   // Simulate the user typed a previously not saved username in the username
   // form.
   PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
@@ -4669,13 +4801,6 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingOnPasswordFormWithCaptcha) {
 // sign-up form.
 TEST_P(PasswordManagerTest,
        UsernameFirstFlowSavingSignUpFormWithServerOverride) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUsernameFirstFlowStoreSeveralValues,
-       password_manager::features::kUsernameFirstFlowWithIntermediateValues},
-      /*disabled_features_*/ {});
-
   // Simulate the user typed a previously not saved username in the username
   // form.
   PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
@@ -4761,13 +4886,6 @@ TEST_P(PasswordManagerTest,
 // show username in save password prompt.
 TEST_P(PasswordManagerTest,
        UsernameFirstFlowSavingSignInFormWithStaleServerOverride) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUsernameFirstFlowStoreSeveralValues,
-       password_manager::features::kUsernameFirstFlowWithIntermediateValues},
-      /*disabled_features=*/{});
-
   // Simulate that user typed into a text field outside of the password form.
   PasswordForm stale_username_form(MakeSimpleFormWithOnlyUsernameField());
   const std::u16string stale_single_username = u"stale_single_username";
@@ -4780,9 +4898,7 @@ TEST_P(PasswordManagerTest,
       /*is_likely_otp=*/false);
 
   // Make single username form stale by fast forwarding time.
-  task_environment_.FastForwardBy(
-      base::Minutes(features::kSingleUsernameTimeToLive.Get()) +
-      base::Seconds(5));
+  task_environment_.FastForwardBy(kSingleUsernameTimeToLive + base::Seconds(5));
   EXPECT_TRUE(manager()->possible_usernames().begin()->second.IsStale());
 
   // Simulate that a password form which contains no username, but other text
@@ -4828,12 +4944,6 @@ TEST_P(PasswordManagerTest,
 // candidate that is without server prediction.
 TEST_P(PasswordManagerTest,
        UsernameFirstFlowWithIntermediaryFieldsAndAutocomplete) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/
-      {password_manager::features::kUsernameFirstFlowStoreSeveralValues,
-       password_manager::features::kUsernameFirstFlowWithIntermediateValues},
-      /*disabled_features_*/ {});
   // Simulate the user typed a previously not saved username in the username
   // form.
   PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
@@ -4981,68 +5091,6 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowKeepServerPredictions) {
                   ->possible_usernames()
                   .begin()
                   ->second.HasSingleUsernameServerPrediction());
-}
-
-// Tests that Password Manager's behavior on usernames outside of the password
-// form can be controlled by Finch config param. Modifies LRU cache's size that
-// stores possible single usernames by a finch param. Then, single username
-// override will not be considered as a candidate for password form with
-// username and password fields.
-TEST_P(PasswordManagerTest, UsernameFirstFlowCacheSizeFromFinchParam) {
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(test_form_url_))
-      .WillRepeatedly(Return(true));
-  base::test::ScopedFeatureList features;
-  base::FieldTrialParams feature_parameters{
-      {features::kMaxSingleUsernameFieldsToStore.name, "1"}};
-  features.InitAndEnableFeatureWithParameters(
-      features::kUsernameFirstFlowStoreSeveralValues, feature_parameters);
-  // Reinitialize `PasswordManager` class, so that cache size is picked from the
-  // finch feature param.
-  manager_ = std::make_unique<PasswordManager>(&client_);
-  manager_->set_leak_factory(
-      std::make_unique<testing::NiceMock<MockLeakDetectionCheckFactory>>());
-
-  // Simulate the user typed in a username form.
-  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
-  const std::u16string username = u"newusername@gmail.com";
-  EXPECT_CALL(driver_, GetLastCommittedURL())
-      .WillRepeatedly(ReturnRef(username_form.url));
-  manager()->OnUserModifiedNonPasswordField(
-      &driver_, username_form.form_data.fields()[0].renderer_id(),
-      /*value=*/username,
-      /*autocomplete_attribute_has_username=*/false,
-      /*is_likely_otp=*/false);
-  manager()->ProcessAutofillPredictions(
-      &driver_, username_form.form_data,
-      CreateServerPredictions(username_form.form_data,
-                              {{0, FieldType::SINGLE_USERNAME}},
-                              /*is_override=*/true));
-
-  // Simulate that a form which contains username and password fields is added
-  // to the page.
-  PasswordForm password_form(MakeSimpleForm());
-  manager()->OnPasswordFormsParsed(&driver_, {password_form.form_data});
-  manager()->OnPasswordFormsRendered(
-      &driver_, /*visible_forms_data=*/{password_form.form_data});
-
-  // Simulate user modifying the text fields inside password form.
-  manager()->OnUserModifiedNonPasswordField(
-      &driver_, password_form.form_data.fields()[0].renderer_id(),
-      /*value=*/password_form.form_data.fields()[0].value(),
-      /*autocomplete_attribute_has_username=*/false,
-      /*is_likely_otp=*/false);
-
-  std::unique_ptr<PasswordFormManagerForUI> form_manager;
-  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword)
-      .WillOnce(MoveArgAndReturn<0>(&form_manager, false));
-  task_environment_.RunUntilIdle();
-  OnPasswordFormSubmitted(password_form.form_data);
-  manager()->OnPasswordFormsRendered(&driver_, /*visible_forms_data=*/{});
-  ASSERT_TRUE(form_manager);
-  // Even though there was a text field with single username override, it
-  // wasn't picked since the LRU cache size is limited to 1.
-  EXPECT_THAT(form_manager->GetPendingCredentials(),
-              FormMatches(password_form));
 }
 
 // Tests submitting an OTP password form after a single username form.
@@ -5316,6 +5364,58 @@ TEST_P(PasswordManagerTest,
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
   manager()->OnPasswordFormCleared(&driver_, form_data);
 }
+
+#if !BUILDFLAG(IS_IOS)
+// Expect no automatic save prompt when user fills grouped match credentials.
+TEST_P(PasswordManagerTest, NoAutomaticPromptOnGroupedMatchSave) {
+  base::test::ScopedFeatureList feature_list{
+      password_manager::features::kPasswordFormGroupedAffiliations};
+
+  PasswordForm saved_match(MakeSavedForm());
+  saved_match.signon_realm = "https://affiliated.example.com/";
+  saved_match.url = GURL(saved_match.signon_realm);
+  store_->AddLogin(saved_match);
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+
+  PasswordForm password_form(MakeSimpleForm());
+  test_api(password_form.form_data)
+      .field(0)
+      .set_value(saved_match.username_value);
+  test_api(password_form.form_data)
+      .field(1)
+      .set_value(saved_match.password_value);
+
+  // `saved_match` credential will be considered as a grouped match.
+  mock_match_helper_->ExpectCallToGetAffiliatedAndGrouped(
+      PasswordFormDigest(password_form),
+      /*affiliated_realms=*/{password_form.signon_realm},
+      /*grouped_realms=*/{saved_match.signon_realm, password_form.signon_realm},
+      /*repeatedly=*/true);
+
+  manager()->OnPasswordFormsParsed(&driver_, {password_form.form_data});
+  manager()->OnPasswordFormsRendered(&driver_, {password_form.form_data});
+  // Load the credentials from `PasswordStore`.
+  task_environment_.RunUntilIdle();
+
+  // After user input `password_form` becomes available for submission from
+  // `PasswordManager` perspective.
+  manager()->OnInformAboutUserInput(&driver_, password_form.form_data);
+
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePassword).Times(0);
+
+  // Form is submitted and credentials are added to `PasswordStore`.
+  manager()->OnPasswordFormsRendered(&driver_, {});
+  // Wait for `PasswordStore` to get updated.
+  task_environment_.RunUntilIdle();
+
+  EXPECT_THAT(
+      store_->stored_passwords(),
+      UnorderedElementsAre(
+          Pair(saved_match.signon_realm, ElementsAre(FormMatches(saved_match))),
+          Pair(password_form.signon_realm,
+               ElementsAre(FormMatches(password_form)))));
+}
+#endif  // !BUILDFLAG(IS_IOS)
 
 // Similar test as above with fields that have empty names.
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNamelessForm) {

@@ -137,25 +137,19 @@ void WritableStreamDefaultController::SetUp(
   // In this implementation, start_algorithm returns a Promise when it doesn't
   // throw.
   // 16. Let startPromise be a promise resolved with startResult.
-  v8::Local<v8::Promise> start_promise;
-  if (!start_algorithm->Run(script_state, exception_state)
-           .ToLocal(&start_promise)) {
-    if (!exception_state.HadException()) {
-      // Is this block really needed? Can we make this a DCHECK?
-      exception_state.ThrowException(
-          static_cast<int>(DOMExceptionCode::kInvalidStateError),
-          "start algorithm failed with no exception thrown");
-    }
+  TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
+  auto start_promise = start_algorithm->Run(script_state);
+  if (start_promise.IsEmpty()) {
+    CHECK(rethrow_scope.HasCaught());
     return;
   }
-  DCHECK(!exception_state.HadException());
 
-  class ResolvePromiseFunction final : public PromiseHandler {
+  class ResolvePromiseFunction final
+      : public ThenCallable<IDLUndefined, ResolvePromiseFunction> {
    public:
     explicit ResolvePromiseFunction(WritableStream* stream) : stream_(stream) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value>) override {
+    void React(ScriptState* script_state) {
       // 17. Upon fulfillment of startPromise
       //      a. Assert: stream.[[state]] is "writable" or "erroring".
       const auto state = stream_->GetState();
@@ -174,19 +168,19 @@ void WritableStreamDefaultController::SetUp(
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(stream_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLUndefined, ResolvePromiseFunction>::Trace(visitor);
     }
 
    private:
     Member<WritableStream> stream_;
   };
 
-  class RejectPromiseFunction final : public PromiseHandler {
+  class RejectPromiseFunction final
+      : public ThenCallable<IDLAny, RejectPromiseFunction> {
    public:
     explicit RejectPromiseFunction(WritableStream* stream) : stream_(stream) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> r) override {
+    void React(ScriptState* script_state, ScriptValue r) {
       // 18. Upon rejection of startPromise with reason r,
       //      a. Assert: stream.[[state]] is "writable" or "erroring".
       const auto state = stream_->GetState();
@@ -198,24 +192,21 @@ void WritableStreamDefaultController::SetUp(
       controller->started_ = true;
 
       //      c. Perform ! WritableStreamDealWithRejection(stream, r).
-      WritableStream::DealWithRejection(script_state, stream_, r);
+      WritableStream::DealWithRejection(script_state, stream_, r.V8Value());
     }
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(stream_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLAny, RejectPromiseFunction>::Trace(visitor);
     }
 
    private:
     Member<WritableStream> stream_;
   };
 
-  StreamThenPromise(
-      script_state->GetContext(), start_promise,
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<ResolvePromiseFunction>(stream)),
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<RejectPromiseFunction>(stream)));
+  start_promise.Then(script_state,
+                     MakeGarbageCollected<ResolvePromiseFunction>(stream),
+                     MakeGarbageCollected<RejectPromiseFunction>(stream));
 
   class ProcessWriteResolveFunction final : public PromiseHandler {
    public:
@@ -304,12 +295,12 @@ void WritableStreamDefaultController::SetUp(
     Member<WritableStreamDefaultController> controller_;
   };
 
-  controller->resolve_function_ = MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<ProcessWriteResolveFunction>(
-                        controller->controlled_writable_stream_, controller));
-  controller->reject_function_ = MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<ProcessWriteRejectFunction>(
-                        controller->controlled_writable_stream_, controller));
+  controller->resolve_function_ =
+      MakeGarbageCollected<ProcessWriteResolveFunction>(
+          controller->controlled_writable_stream_, controller);
+  controller->reject_function_ =
+      MakeGarbageCollected<ProcessWriteRejectFunction>(
+          controller->controlled_writable_stream_, controller);
 }
 
 // TODO(ricea): Should this be a constructor?
@@ -394,8 +385,7 @@ void WritableStreamDefaultController::Close(
 double WritableStreamDefaultController::GetChunkSize(
     ScriptState* script_state,
     WritableStreamDefaultController* controller,
-    v8::Local<v8::Value> chunk,
-    ExceptionState& exception_state) {
+    v8::Local<v8::Value> chunk) {
   if (!controller->strategy_size_algorithm_) {
     DCHECK_NE(controller->controlled_writable_stream_->GetState(),
               WritableStream::kWritable);
@@ -407,15 +397,15 @@ double WritableStreamDefaultController::GetChunkSize(
   //  1. Let returnValue be the result of performing
   //     controller.[[strategySizeAlgorithm]], passing in chunk, and
   //     interpreting the result as an ECMAScript completion value.
-  auto return_value = controller->strategy_size_algorithm_->Run(
-      script_state, chunk, exception_state);
+  v8::TryCatch try_catch(script_state->GetIsolate());
+  auto return_value =
+      controller->strategy_size_algorithm_->Run(script_state, chunk);
 
   //  2. If returnValue is an abrupt completion,
   if (!return_value.has_value()) {
     //      a. Perform ! WritableStreamDefaultControllerErrorIfNeeded(
     //         controller, returnValue.[[Value]]).
-    ErrorIfNeeded(script_state, controller, exception_state.GetException());
-    exception_state.ClearException();
+    ErrorIfNeeded(script_state, controller, try_catch.Exception());
 
     //      b. Return 1.
     return 1;
@@ -445,16 +435,17 @@ void WritableStreamDefaultController::Write(
   {
     //  2. Let enqueueResult be EnqueueValueWithSize(controller, writeRecord,
     //     chunkSize).
-    controller->queue_->EnqueueValueWithSize(script_state->GetIsolate(), chunk,
-                                             chunk_size, exception_state);
+    v8::Isolate* isolate = script_state->GetIsolate();
+    v8::TryCatch try_catch(isolate);
+    controller->queue_->EnqueueValueWithSize(isolate, chunk, chunk_size,
+                                             PassThroughException(isolate));
 
     //  3. If enqueueResult is an abrupt completion,
-    if (exception_state.HadException()) {
+    if (try_catch.HasCaught()) {
       //      a. Perform ! WritableStreamDefaultControllerErrorIfNeeded(
       //         controller, enqueueResult.[[Value]]).
 
-      ErrorIfNeeded(script_state, controller, exception_state.GetException());
-      exception_state.ClearException();
+      ErrorIfNeeded(script_state, controller, try_catch.Exception());
 
       //      b. Return.
       return;
@@ -646,12 +637,9 @@ void WritableStreamDefaultController::ProcessClose(
     Member<WritableStream> stream_;
   };
 
-  StreamThenPromise(
-      script_state->GetContext(), sinkClosePromise,
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<ResolveFunction>(stream)),
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<RejectFunction>(stream)));
+  StreamThenPromise(script_state, sinkClosePromise,
+                    MakeGarbageCollected<ResolveFunction>(stream),
+                    MakeGarbageCollected<RejectFunction>(stream));
 }
 
 void WritableStreamDefaultController::ProcessWrite(
@@ -670,7 +658,7 @@ void WritableStreamDefaultController::ProcessWrite(
   const auto sinkWritePromise =
       controller->write_algorithm_->Run(script_state, 1, &chunk);
 
-  StreamThenPromise(script_state->GetContext(), sinkWritePromise,
+  StreamThenPromise(script_state, sinkWritePromise,
                     controller->resolve_function_,
                     controller->reject_function_);
 }

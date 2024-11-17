@@ -161,7 +161,7 @@ void MojoVideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (gpu_factories_ &&
       gpu_factories_->IsDecoderConfigSupported(config) ==
           GpuVideoAcceleratorFactories::Supported::kFalse &&
-      IsBuiltInVideoCodec(config.codec())) {
+      IsDecoderBuiltInVideoCodec(config.codec())) {
     FailInit(std::move(init_cb), DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }

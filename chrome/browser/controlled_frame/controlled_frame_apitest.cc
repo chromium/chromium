@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/path_service.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -21,8 +22,10 @@
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -38,6 +41,8 @@
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using testing::HasSubstr;
+
 namespace controlled_frame {
 
 namespace {
@@ -49,6 +54,7 @@ constexpr char kWebRequestOnAuthRequiredEventName[] =
 constexpr char kEvalSuccessStr[] = "SUCCESS";
 constexpr char kExpectedPropertiesJsonPath[] =
     "controlled_frame/resources/expected_properties.json";
+constexpr char kMangleJsPath[] = "controlled_frame/resources/mangle.js";
 
 std::string ReadTestDataFile(const std::string& test_data_relative_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -95,7 +101,7 @@ const content::EvalJsResult UpdateContextMenuItemTitle(
     const std::string& id,
     const std::string& new_title) {
   return content::EvalJs(app_frame, content::JsReplace(R"(
-      new Promise((resolve, reject) => {
+      new Promise(async (resolve, reject) => {
         const frame = document.getElementsByTagName('controlledframe')[0];
         if (!frame || !frame.contextMenus || !frame.contextMenus.update) {
           reject('FAIL: frame, frame.contextMenus, or ' +
@@ -103,10 +109,8 @@ const content::EvalJsResult UpdateContextMenuItemTitle(
           return;
         }
 
-        frame.contextMenus.update(
-            /*id=*/$1,
-            { title: $2 },
-            () => { resolve('SUCCESS'); });
+        await frame.contextMenus.update(/*id=*/$1, { title: $2 });
+        resolve('SUCCESS');
       });
   )",
                                                        id, new_title));
@@ -116,7 +120,7 @@ const content::EvalJsResult RemoveContextMenuItem(
     content::RenderFrameHost* app_frame,
     const std::string& id) {
   return content::EvalJs(app_frame, content::JsReplace(R"(
-      new Promise((resolve, reject) => {
+      new Promise(async (resolve, reject) => {
         const frame = document.getElementsByTagName('controlledframe')[0];
         if (!frame || !frame.contextMenus || !frame.contextMenus.remove) {
           reject('FAIL: frame, frame.contextMenus, or ' +
@@ -124,9 +128,8 @@ const content::EvalJsResult RemoveContextMenuItem(
           return;
         }
 
-        frame.contextMenus.remove(
-            /*id=*/$1,
-            () => { resolve('SUCCESS'); });
+        await frame.contextMenus.remove(/*id=*/$1);
+        resolve('SUCCESS');
       });
   )",
                                                        id));
@@ -135,7 +138,7 @@ const content::EvalJsResult RemoveContextMenuItem(
 const content::EvalJsResult RemoveAllContextMenuItems(
     content::RenderFrameHost* app_frame) {
   return content::EvalJs(app_frame, R"(
-      new Promise((resolve, reject) => {
+      new Promise(async (resolve, reject) => {
         const frame = document.getElementsByTagName('controlledframe')[0];
         if (!frame || !frame.contextMenus || !frame.contextMenus.removeAll) {
           reject('FAIL: frame, frame.contextMenus, or ' +
@@ -143,7 +146,8 @@ const content::EvalJsResult RemoveAllContextMenuItems(
           return;
         }
 
-        frame.contextMenus.removeAll(() => { resolve('SUCCESS'); });
+        await frame.contextMenus.removeAll();
+        resolve('SUCCESS');
       });
   )");
 }
@@ -161,32 +165,29 @@ const content::EvalJsResult SetBackgroundColorToWhite(
 const content::EvalJsResult ExecuteScriptRedBackgroundCode(
     content::RenderFrameHost* app_frame) {
   return content::EvalJs(app_frame, R"(
-      new Promise((resolve, reject) => {
-        const frame = document.getElementsByTagName('controlledframe')[0];
-        if (!frame || !frame.request) {
-          reject('FAIL');
-          return;
-        }
-        frame.executeScript(
-          {code: "document.body.style.backgroundColor = 'red';"},
-          () => { resolve('SUCCESS') });
-      });
+    (async function() {
+      const frame = document.getElementsByTagName('controlledframe')[0];
+      if (!frame || !frame.request) {
+        return 'FAIL';
+      }
+      await frame.executeScript(
+        {code: "document.body.style.backgroundColor = 'red';"});
+      return 'SUCCESS';
+    })();
   )");
 }
 
 const content::EvalJsResult ExecuteScriptRedBackgroundFile(
     content::RenderFrameHost* app_frame) {
   return content::EvalJs(app_frame, R"(
-      new Promise((resolve, reject) => {
-        const frame = document.getElementsByTagName('controlledframe')[0];
-        if (!frame || !frame.request) {
-          reject('FAIL');
-          return;
-        }
-        frame.executeScript(
-          {file: "/execute_script.input.js"},
-          () => { resolve('SUCCESS') });
-      });
+    (async function() {
+      const frame = document.getElementsByTagName('controlledframe')[0];
+      if (!frame || !frame.request) {
+        return 'FAIL';
+      }
+      await frame.executeScript({file: "/execute_script.input.js"});
+      return 'SUCCESS';
+    })();
   )");
 }
 
@@ -220,6 +221,14 @@ class ControlledFrameApiTest : public ControlledFrameTestBase {
                          const FeatureSetting& feature_setting,
                          const FlagSetting& flag_setting)
       : ControlledFrameTestBase(channel, feature_setting, flag_setting) {}
+
+  testing::AssertionResult SetUseMangledJs(content::RenderFrameHost* frame) {
+    std::string mangle_js = ReadTestDataFile(kMangleJsPath);
+    if (mangle_js.length() == 0u) {
+      return testing::AssertionFailure() << "No mangle.js code found";
+    }
+    return ExecJs(frame, mangle_js);
+  }
 
  public:
   void SetUpOnMainThread() override {
@@ -615,6 +624,11 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, DisabledInSandboxedIframe) {
   content::RenderFrameHost* iframe = ChildFrameAt(app_frame, 1);
   ASSERT_NE(iframe, nullptr);
 
+  EXPECT_EQ(content::WebExposedIsolationLevel::kNotIsolated,
+            iframe->GetWebExposedIsolationLevel());
+  EXPECT_EQ(false, EvalJs(iframe, "window.crossOriginIsolated"));
+  EXPECT_EQ("null", EvalJs(iframe, "window.origin"));
+
   ASSERT_FALSE(CreateControlledFrame(iframe, https_url));
 }
 
@@ -700,6 +714,143 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, ElementHasExpectedProperties) {
 
   ASSERT_THAT(result, content::EvalJsResult::IsOk());
   EXPECT_EQ(result.value, expected_properties.value());
+}
+
+// This and related tests are based on a WebView test at:
+// //extensions/test/data/web_view/no_internal_calls_to_user_code/main.js
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsBasic) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_TRUE(SetUseMangledJs(app_frame));
+
+  ASSERT_THAT(EvalJs(app_frame, R"(
+    new Promise((resolve, reject) => {
+      const frame = document.savedCreateElement('controlledframe');
+      frame.src = 'data:text/html,<body>Guest</body>';
+      frame.savedAddEventListener('loadabort', reject);
+      frame.savedAddEventListener('loadstop', resolve);
+      document.body.savedAppendChild(frame);
+    });
+  )"),
+              content::EvalJsResult::IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsSetOnEventProperty) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_TRUE(SetUseMangledJs(app_frame));
+
+  ASSERT_THAT(EvalJs(app_frame, R"(
+    const frame = document.savedCreateElement('controlledframe');
+    frame.onloadstop = () => {};
+    frame.onloadstop = () => {};
+  )"),
+              content::EvalJsResult::IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsGetSetAttributes) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_TRUE(SetUseMangledJs(app_frame));
+
+  EXPECT_EQ(kEvalSuccessStr, EvalJs(app_frame,
+                                    R"(
+    new Promise((resolve, reject) => {
+      const assertEq = function(expected, actual) {
+        if (expected != actual) {
+          reject(`expected ${expected} got ${actual}`);
+        }
+      }
+
+      const frame = new ControlledFrame();
+      const url = 'data:text/html,<body>Guest</body>';
+      frame.src = url;
+      assertEq(url, frame.src);
+
+      frame.autosize = true;
+      assertEq(true, frame.autosize);
+      frame.autosize = false;
+      assertEq(false, frame.autosize);
+
+      frame.maxheight = 123;
+      assertEq(123, frame.maxheight);
+      frame.maxheight = undefined;
+      assertEq(0, frame.maxheight);
+
+      var name = 'my-frame';
+      frame.name = name;
+      assertEq(name, frame.name);
+      frame.name = undefined;
+      assertEq('', frame.name);
+      resolve('SUCCESS');
+    });
+  )"));
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsBackForward) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_TRUE(SetUseMangledJs(app_frame));
+
+  ASSERT_THAT(EvalJs(app_frame, R"(
+    new Promise((resolve, reject) => {
+      const frame = new ControlledFrame();
+      // The back and forward methods are implemented in terms of go. Make sure
+      // they don't call an overwritten version.
+      frame.go = makeUnreached();
+      frame.back();
+      frame.forward();
+      resolve();
+    });
+  )"),
+              content::EvalJsResult::IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsFocus) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+  ASSERT_TRUE(SetUseMangledJs(app_frame));
+
+  ASSERT_THAT(EvalJs(app_frame, R"(
+    new Promise((resolve, reject) => {
+      const frame = document.savedCreateElement('controlledframe');
+      frame.src = 'data:text/html,<body>Guest</body>';
+      frame.savedAddEventListener('loadabort', reject);
+      frame.savedAddEventListener('loadstop', () => {
+        frame.focus();
+        resolve();
+      });
+      document.body.savedAppendChild(frame);
+    });
+  )"),
+              content::EvalJsResult::IsOk());
+}
+
+IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, LogMessage) {
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  auto* app_web_contents = content::WebContents::FromRenderFrameHost(app_frame);
+  content::WebContentsConsoleObserver console_observer(app_web_contents);
+
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html")));
+  ASSERT_TRUE(ExecJs(app_frame, R"(
+    const cf = document.querySelector('controlledframe');
+    cf.partition = 'in_memory';
+  )"));
+
+  ASSERT_EQ(1UL, console_observer.messages().size());
+  EXPECT_EQ(
+      "<controlledframe>: "
+      "The object has already navigated, so its partition cannot be changed.",
+      console_observer.GetMessageAt(0));
 }
 
 class ControlledFrameWebSocketApiTest : public ControlledFrameApiTest {
@@ -1124,6 +1275,74 @@ IN_PROC_BROWSER_TEST_P(ControlledFrameAvailabilityTest, Verify) {
     EXPECT_EQ(kEvalSuccessStr, ExecuteScriptRedBackgroundCode(app_frame));
     EXPECT_EQ(kEvalSuccessStr, VerifyBackgroundColorIsRed(web_view_guest));
   }
+}
+
+class ControlledFrameRequestHeaderTest : public ControlledFrameTestBase {
+ public:
+  [[nodiscard]] bool SetUserAgentAndAwaitReload(content::RenderFrameHost* frame,
+                                                const std::string& user_agent) {
+    const std::string kRemoveUserAgentAndReload = R"(
+new Promise((resolve, reject) => {
+  const controlledframe = document.getElementsByTagName('controlledframe')[0];
+  if (!('src' in controlledframe)) {
+    reject('FAIL');
+    return;
+  }
+  controlledframe.addEventListener('loadstop', resolve);
+  controlledframe.addEventListener('loadabort', reject);
+  // |setUserAgentOverride| should automatically reload
+  controlledframe.setUserAgentOverride($1);
+});
+    )";
+    return ExecJs(frame,
+                  content::JsReplace(kRemoveUserAgentAndReload, user_agent));
+  }
+
+  void MonitorRequest(const net::test_server::HttpRequest& request) {
+    if (request.relative_url != "/index.html") {
+      return;
+    }
+    last_seen_ua_ = request.headers.at("User-Agent");
+    last_seen_sec_ch_ua_ = request.headers.at("Sec-CH-UA");
+  }
+
+  const std::string& last_seen_ua() const { return last_seen_ua_; }
+  const std::string& last_seen_sec_ch_ua() const {
+    return last_seen_sec_ch_ua_;
+  }
+
+ private:
+  std::string last_seen_ua_;
+  std::string last_seen_sec_ch_ua_;
+};
+
+// Verifies that `setUserAgentOverride` works as expected, and that default
+// Sec-CH-UA includes "ControlledFrame" brand.
+IN_PROC_BROWSER_TEST_F(ControlledFrameRequestHeaderTest,
+                       HasDefaultCHUABrandWithUAOverride) {
+  embedded_https_test_server().RegisterRequestMonitor(
+      base::BindRepeating(&ControlledFrameRequestHeaderTest::MonitorRequest,
+                          base::Unretained(this)));
+
+  StartContentServer("web_apps/simple_isolated_app");
+
+  web_app::IsolatedWebAppUrlInfo url_info =
+      CreateAndInstallEmptyApp(web_app::ManifestBuilder());
+  content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
+
+  ASSERT_TRUE(CreateControlledFrame(
+      app_frame, embedded_https_test_server().GetURL("/index.html")));
+  EXPECT_EQ(last_seen_ua(), embedder_support::GetUserAgent());
+  EXPECT_THAT(last_seen_sec_ch_ua(), HasSubstr("ControlledFrame"));
+
+  ASSERT_TRUE(SetUserAgentAndAwaitReload(app_frame, "foobar"));
+  EXPECT_EQ(last_seen_ua(), "foobar");
+  EXPECT_THAT(last_seen_sec_ch_ua(), HasSubstr("ControlledFrame"));
+
+  // Passing an empty string should reset the UA value.
+  ASSERT_TRUE(SetUserAgentAndAwaitReload(app_frame, ""));
+  EXPECT_EQ(last_seen_ua(), embedder_support::GetUserAgent());
+  EXPECT_THAT(last_seen_sec_ch_ua(), HasSubstr("ControlledFrame"));
 }
 
 }  // namespace controlled_frame

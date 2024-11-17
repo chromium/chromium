@@ -8,7 +8,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/media/router/media_router_feature.h"
@@ -32,7 +31,7 @@
 #include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "chromeos/ui/frame/desks/move_to_desks_menu_delegate.h"
 #include "chromeos/ui/frame/desks/move_to_desks_menu_model.h"
@@ -76,7 +75,7 @@ bool WebAppMenuModel::IsCommandIdEnabled(int command_id) const {
     case IDC_OPEN_IN_CHROME: {
       return ShouldAllowOpenInChrome(browser());
     }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case chromeos::MoveToDesksMenuModel::kMenuCommandId:
       return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
           browser()->window()->GetNativeWindow());
@@ -90,7 +89,7 @@ bool WebAppMenuModel::IsCommandIdVisible(int command_id) const {
   switch (command_id) {
     case IDC_OPEN_IN_CHROME:
       return ShouldAllowOpenInChrome(browser());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     case chromeos::MoveToDesksMenuModel::kMenuCommandId:
       return chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
           browser()->window()->GetNativeWindow());
@@ -170,7 +169,7 @@ void WebAppMenuModel::Build() {
 
   AddItemWithStringId(IDC_OPEN_IN_CHROME, IDS_OPEN_IN_CHROME);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (chromeos::MoveToDesksMenuDelegate::ShouldShowMoveToDesksMenu(
           browser()->window()->GetNativeWindow())) {
     AddSeparator(ui::NORMAL_SEPARATOR);

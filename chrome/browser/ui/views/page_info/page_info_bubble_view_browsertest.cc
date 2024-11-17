@@ -71,6 +71,7 @@
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -194,7 +195,6 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     // PageInfoBubbleViewBrowserTestCookiesSubpage.
     feature_list_.InitWithFeatures(
         {features::kFileSystemAccessPersistentPermissions,
-         features::kFileSystemAccessPersistentPermissionsUpdatedPageInfo,
          permissions::features::kOneTimePermission},
         {});
   }
@@ -393,10 +393,10 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest, SiteSettingsLink) {
 // an origin and does punycode conversion as well as URL canonicalization.
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
                        SiteSettingsLinkWithNonAsciiUrl) {
-  GURL url = GURL("http://🥄.ws/other/stuff.htm");
+  GURL url = GURL("https://🥄.ws/other/stuff.htm");
   std::string expected_url =
       base::StrCat({chrome::kChromeUISettingsURL, chrome::kSiteDetailsSubpage});
-  std::string expected_query = "?site=http%3A%2F%2Fxn--9q9h.ws";
+  std::string expected_query = "?site=https%3A%2F%2Fxn--9q9h.ws";
   EXPECT_EQ(GURL(expected_url + expected_query),
             OpenSiteSettingsForUrl(browser(), url));
 }
@@ -712,7 +712,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
   views::Label* label = static_cast<views::Label*>(
       scroll_panel->contents()->children()[0]->children()[1]);
   const std::u16string expected_file_path =
-      file_system_access_ui_helper::GetPathForDisplayAsParagraph(test_file);
+      file_system_access_ui_helper::GetPathForDisplayAsParagraph(
+          content::PathInfo(test_file));
   EXPECT_EQ(label->GetText(), expected_file_path);
 
   // Simulate clicking the subpage manage button for File System.
@@ -1387,7 +1388,8 @@ class PageInfoBubbleViewBrowserTestCookiesSubpage
   void OpenPageInfoAndGoToCookiesSubpage(
       std::optional<std::u16string> rws_owner) {
     EXPECT_FALSE(prefs_->GetBoolean(prefs::kInContextCookieControlsOpened));
-    EXPECT_CALL(*mock_service(), GetFirstPartySetOwnerForDisplay(testing::_))
+    EXPECT_CALL(*mock_service(),
+                GetRelatedWebsiteSetOwnerForDisplay(testing::_))
         .WillRepeatedly(testing::Return(rws_owner));
     base::RunLoop run_loop;
     GetPageInfoDialogCreatedCallbackForTesting() = run_loop.QuitClosure();

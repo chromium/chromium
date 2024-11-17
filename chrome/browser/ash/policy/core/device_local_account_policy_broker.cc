@@ -18,6 +18,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/default_clock.h"
 #include "base/values.h"
@@ -94,15 +95,12 @@ std::unique_ptr<CloudPolicyClient> CreateClient(
 
 base::Value::Dict GetAshPrefsFromPolicy(const policy::PolicyMap& policy_map) {
   extensions::ExtensionInstallForceListPolicyHandler policy_handler;
-  return policy_handler.GetAshPolicyDict(policy_map)
-      .value_or(base::Value::Dict());
+  return policy_handler.GetPolicyDict(policy_map).value_or(base::Value::Dict());
 }
 
 base::Value::Dict GetLacrosPrefsFromPolicy(
     const policy::PolicyMap& policy_map) {
-  extensions::ExtensionInstallForceListPolicyHandler policy_handler;
-  return policy_handler.GetLacrosPolicyDict(policy_map)
-      .value_or(base::Value::Dict());
+  return base::Value::Dict();
 }
 
 void SendExtensionsToAsh(
@@ -276,6 +274,7 @@ std::string DeviceLocalAccountPolicyBroker::GetDisplayName() const {
 }
 
 void DeviceLocalAccountPolicyBroker::OnStoreLoaded(CloudPolicyStore* store) {
+  SYSLOG(INFO) << "Loaded device local account policy for " << account_id_;
   UpdateRefreshDelay();
   UpdateExtensionListFromStore();
   policy_update_callback_.Run();

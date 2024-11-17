@@ -11,8 +11,8 @@
 #include "chromeos/ui/clipboard_history/clipboard_history_submenu_model.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/menu_source_utils.h"
-#include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 #include "ui/views/controls/textfield/textfield.h"
 
 namespace ash {

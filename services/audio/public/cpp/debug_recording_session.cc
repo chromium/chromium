@@ -31,8 +31,7 @@ const base::FilePath::CharType* StreamTypeToStringType(
     case media::AudioDebugRecordingStreamType::kOutput:
       return FILE_PATH_LITERAL("output");
   }
-  NOTREACHED_IN_MIGRATION();
-  return FILE_PATH_LITERAL("output");
+  NOTREACHED();
 }
 
 // Asynchronously creates a file and passes it to |reply_callback|.

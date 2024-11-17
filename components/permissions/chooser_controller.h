@@ -62,7 +62,7 @@ class ChooserController {
     virtual void OnRefreshStateChanged(bool refreshing) = 0;
 
    protected:
-    virtual ~View() {}
+    virtual ~View() = default;
   };
 
   // Returns the text to be displayed in the chooser title.

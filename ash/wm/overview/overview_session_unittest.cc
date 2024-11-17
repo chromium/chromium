@@ -284,9 +284,7 @@ class OverviewSessionTest
   // OverviewTestBase:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatureStates(
-        {{features::kDesksTemplates, DeskTemplatesOn()},
-         {features::kSnapGroup, true},
-         {features::kDeskBarWindowOcclusionOptimization, true}});
+        {{features::kDesksTemplates, DeskTemplatesOn()}});
 
     OverviewTestBase::SetUp();
     Shell::Get()->overview_controller()->set_windows_have_snapshot_for_test(
@@ -3382,7 +3380,8 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
     return;
   }
 
-  SavedDeskSaveDeskButton* save_button = grid->GetSaveDeskForLaterButton();
+  SavedDeskSaveDeskButton* save_button =
+      OverviewGridTestApi(grid).GetSaveDeskForLaterButton();
   ASSERT_TRUE(save_button);
   views::Widget* save_widget = save_button->GetWidget();
 
@@ -3562,57 +3561,6 @@ TEST_P(OverviewSessionTest, FrameThrottlingBrowser) {
     grid->RemoveItem(item, /*item_destroying=*/false, /*reposition=*/false);
     EXPECT_THAT(frame_throttling_controller->GetFrameSinkIdsToThrottle(),
                 testing::UnorderedElementsAreArray(ids));
-  }
-}
-
-TEST_P(OverviewSessionTest, FrameThrottlingLacros) {
-  FrameThrottlingController* frame_throttling_controller =
-      Shell::Get()->frame_throttling_controller();
-  const int window_count = 5;
-  std::vector<viz::FrameSinkId> ids{
-      {1u, 1u}, {2u, 2u}, {3u, 3u}, {4u, 4u}, {5u, 5u}};
-  std::vector<std::unique_ptr<aura::Window>> windows;
-  windows.reserve(window_count + 1);
-  for (int i = 0; i < window_count; ++i) {
-    windows.emplace_back(
-        CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect()));
-    windows[i]->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::LACROS);
-    windows[i]->SetEmbedFrameSinkId(ids[i]);
-  }
-  for (auto& w : windows)
-    EXPECT_FALSE(w->GetProperty(ash::kFrameRateThrottleKey));
-
-  ToggleOverview();
-  EXPECT_THAT(frame_throttling_controller->GetFrameSinkIdsToThrottle(),
-              testing::UnorderedElementsAreArray(ids));
-  for (auto& w : windows)
-    EXPECT_TRUE(w->GetProperty(ash::kFrameRateThrottleKey));
-
-  // Add a new window to overview.
-  std::unique_ptr<aura::Window> new_window(
-      CreateTestWindowInShellWithDelegate(nullptr, -1, gfx::Rect()));
-  constexpr viz::FrameSinkId new_window_id{6u, 6u};
-  new_window->SetEmbedFrameSinkId(new_window_id);
-  new_window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::LACROS);
-  OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
-  grid->AppendItem(new_window.get(), /*reposition=*/false, /*animate=*/false,
-                   /*use_spawn_animation=*/false);
-  windows.push_back(std::move(new_window));
-  ids.push_back(new_window_id);
-  EXPECT_THAT(frame_throttling_controller->GetFrameSinkIdsToThrottle(),
-              testing::UnorderedElementsAreArray(ids));
-  for (auto& w : windows)
-    EXPECT_TRUE(w->GetProperty(ash::kFrameRateThrottleKey));
-
-  // Remove windows one by one.
-  for (int i = 0; i < window_count + 1; ++i) {
-    aura::Window* window = windows[i].get();
-    ids.erase(ids.begin());
-    auto* item = grid->GetOverviewItemContaining(window);
-    grid->RemoveItem(item, /*item_destroying=*/false, /*reposition=*/false);
-    EXPECT_THAT(frame_throttling_controller->GetFrameSinkIdsToThrottle(),
-                testing::UnorderedElementsAreArray(ids));
-    EXPECT_FALSE(window->GetProperty(ash::kFrameRateThrottleKey));
   }
 }
 
@@ -6304,8 +6252,7 @@ class ContinuousOverviewAnimationTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kContinuousOverviewScrollAnimation,
-                              features::kDeskButton,
-                              features::kDeskBarWindowOcclusionOptimization},
+                              features::kDeskButton},
         /*disabled_features=*/{});
     OverviewTestBase::SetUp();
 
@@ -7178,9 +7125,8 @@ class SplitViewOverviewSessionTest : public OverviewTestBase {
  public:
   SplitViewOverviewSessionTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding,
-                              features::kDeskBarWindowOcclusionOptimization},
+        /*enabled_features=*/{chromeos::features::
+                                  kOverviewSessionInitOptimizations},
         /*disabled_features=*/{});
   }
 
@@ -11278,9 +11224,7 @@ class OverviewWallpaperTest : public OverviewTestBase {
  public:
   OverviewWallpaperTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kForestFeature, features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding,
-                              features::kDeskBarWindowOcclusionOptimization},
+        /*enabled_features=*/{features::kForestFeature},
         /*disabled_features=*/{});
   }
   OverviewWallpaperTest(const OverviewWallpaperTest&) = delete;

@@ -32,7 +32,6 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FORM_CONTROL_ELEMENT_H_
 
 #include "base/i18n/rtl.h"
-#include "third_party/blink/public/common/metrics/form_element_pii_type.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_string.h"
@@ -152,11 +151,6 @@ class BLINK_EXPORT WebFormControlElement : public WebElement {
   // Returns the ax node id of the form control element in the accessibility
   // tree. The ax node id is consistent across renderer and browser processes.
   int32_t GetAxId() const;
-
-  // Getter and setter for the PII type of the element derived from the autofill
-  // field semantic prediction.
-  FormElementPiiType GetFormElementPiiType() const;
-  void SetFormElementPiiType(FormElementPiiType form_element_pii_type);
 
 #if INSIDE_BLINK
   WebFormControlElement(HTMLFormControlElement*);

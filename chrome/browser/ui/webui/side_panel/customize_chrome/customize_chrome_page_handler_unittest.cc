@@ -196,6 +196,10 @@ class MockNtpBackgroundService : public NtpBackgroundService {
   MOCK_CONST_METHOD0(collection_images, std::vector<CollectionImage>&());
   MOCK_METHOD(void, FetchCollectionInfo, ());
   MOCK_METHOD(void, FetchCollectionImageInfo, (const std::string&));
+  MOCK_METHOD(void,
+              FetchReplacementCollectionPreviewImage,
+              (const std::string&,
+               NtpBackgroundService::FetchReplacementImageCallback));
   MOCK_METHOD(void, AddObserver, (NtpBackgroundServiceObserver*));
 };
 
@@ -597,6 +601,17 @@ TEST_F(CustomizeChromePageHandlerTest, GetBackgroundImages) {
   EXPECT_EQ(test_collection_images[0].image_url, images[0]->image_url);
   EXPECT_EQ(test_collection_images[0].thumbnail_image_url,
             images[0]->preview_image_url);
+}
+
+TEST_F(CustomizeChromePageHandlerTest, GetReplacementCollectionPreviewImage) {
+  base::MockCallback<
+      CustomizeChromePageHandler::GetReplacementCollectionPreviewImageCallback>
+      callback;
+  EXPECT_CALL(mock_ntp_background_service(),
+              FetchReplacementCollectionPreviewImage)
+      .Times(1);
+
+  handler().GetReplacementCollectionPreviewImage("test_id", callback.Get());
 }
 
 TEST_F(CustomizeChromePageHandlerTest, SetDefaultColor) {

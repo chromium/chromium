@@ -453,16 +453,6 @@ void LayerTreeImpl::GenerateCompositorFrame(
     viz::CompositorFrame& out_frame,
     base::flat_set<viz::ResourceId>& out_resource_ids,
     viz::HitTestRegionList& out_hit_test_region_list) {
-  TRACE_EVENT(
-      "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
-      perfetto::Flow::Global(args.trace_id), [&](perfetto::EventContext ctx) {
-        auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
-        auto* data = event->set_chrome_graphics_pipeline();
-        data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
-                           StepName::STEP_GENERATE_COMPOSITOR_FRAME);
-        data->set_display_trace_id(args.trace_id);
-      });
-
   for (auto& resource_request :
        ui_resource_manager_.TakeUIResourcesRequests()) {
     switch (resource_request.GetType()) {
@@ -626,6 +616,15 @@ void LayerTreeImpl::Draw(Layer& layer,
       registered_offset_tags_.contains(layer.offset_tag())) {
     // A layer can't have a different offset tag than it's ancestor.
     CHECK(!data.offset_tag);
+
+    // If a mask filter from a parent layer that applies to tagged `layer` then
+    // the mask filter bounds shouldn't move based on offset. Currently viz
+    // assumes that mask bounds should move so don't allow this case. Allowing
+    // this would require plumbing a bool to viz that indicates if
+    // `SharedQuadState::mask_filter_info` should be translated, see
+    // crbug.com/361804880 for details
+    CHECK(!data.mask_filter_info_in_target.HasRoundedCorners() &&
+          !data.mask_filter_info_in_target.HasGradientMask());
 
     offset_tag_reset.emplace(&data.offset_tag, layer.offset_tag());
 

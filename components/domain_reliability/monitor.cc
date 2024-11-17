@@ -159,7 +159,7 @@ void DomainReliabilityMonitor::ClearBrowsingData(
       context_manager_.RemoveContexts(origin_filter);
       break;
     case MAX_CLEAR_MODE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -208,7 +208,7 @@ DomainReliabilityMonitor::RequestInfo::RequestInfo(
 DomainReliabilityMonitor::RequestInfo::RequestInfo(const RequestInfo& other) =
     default;
 
-DomainReliabilityMonitor::RequestInfo::~RequestInfo() {}
+DomainReliabilityMonitor::RequestInfo::~RequestInfo() = default;
 
 // static
 bool DomainReliabilityMonitor::RequestInfo::ShouldReportRequest(

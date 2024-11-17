@@ -165,7 +165,7 @@ TEST(AccountConsistencyModeManagerTest, DiceOnlyForRegularProfile) {
     EXPECT_FALSE(AccountConsistencyModeManager::IsDiceEnabledForProfile(
         incognito_profile));
     EXPECT_FALSE(
-        AccountConsistencyModeManager::GetForProfile(incognito_profile));
+        AccountConsistencyModeManagerFactory::GetForProfile(incognito_profile));
     EXPECT_EQ(
         signin::AccountConsistencyMethod::kDisabled,
         AccountConsistencyModeManager::GetMethodForProfile(incognito_profile));
@@ -178,7 +178,8 @@ TEST(AccountConsistencyModeManagerTest, DiceOnlyForRegularProfile) {
         /*create_if_needed=*/true);
     EXPECT_FALSE(
         AccountConsistencyModeManager::IsDiceEnabledForProfile(otr_profile));
-    EXPECT_FALSE(AccountConsistencyModeManager::GetForProfile(otr_profile));
+    EXPECT_FALSE(
+        AccountConsistencyModeManagerFactory::GetForProfile(otr_profile));
     EXPECT_EQ(signin::AccountConsistencyMethod::kDisabled,
               AccountConsistencyModeManager::GetMethodForProfile(otr_profile));
     EXPECT_FALSE(AccountConsistencyModeManager::ShouldBuildServiceForProfile(

@@ -18,11 +18,11 @@ BASE_DECLARE_FEATURE(kToastFramework);
 // is used for demo mode.
 extern const base::FeatureParam<bool> kToastDemoMode;
 
-// The amount of time an ephemeral toast should show before automatically
+// The amount of time a toast should show before automatically
 // closing.
 extern const base::FeatureParam<base::TimeDelta> kToastTimeout;
 
-// The amount of time an ephemeral toast without an action should show before
+// The amount of time a toast without an action should show before
 // automatically closing.
 extern const base::FeatureParam<base::TimeDelta> kToastWithoutActionTimeout;
 
@@ -32,6 +32,7 @@ BASE_DECLARE_FEATURE(kImageCopiedToast);
 BASE_DECLARE_FEATURE(kLinkToHighlightCopiedToast);
 BASE_DECLARE_FEATURE(kReadingListToast);
 BASE_DECLARE_FEATURE(kLensOverlayToast);
+BASE_DECLARE_FEATURE(kClearBrowsingDataToast);
 
 // Wrapper function used to check if a specific toast feature is enabled. Must
 // be used for toasts that are part of demo mode.

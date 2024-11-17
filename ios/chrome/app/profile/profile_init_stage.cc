@@ -6,27 +6,27 @@
 
 #include "base/notreached.h"
 
-ProfileInitStage ProfileInitStageFromAppInitStage(InitStage app_init_stage) {
+ProfileInitStage ProfileInitStageFromAppInitStage(AppInitStage app_init_stage) {
   switch (app_init_stage) {
-    case InitStageStart:
-    case InitStageBrowserBasic:
-    case InitStageSafeMode:
-    case InitStageVariationsSeed:
+    case AppInitStage::kStart:
+    case AppInitStage::kBrowserBasic:
+    case AppInitStage::kSafeMode:
+    case AppInitStage::kVariationsSeed:
+    case AppInitStage::kBrowserObjectsForBackgroundHandlers:
+    case AppInitStage::kEnterprise:
       NOTREACHED();
 
-    case InitStageBrowserObjectsForBackgroundHandlers:
-      return ProfileInitStage::InitStageProfileLoaded;
-    case InitStageEnterprise:
-      return ProfileInitStage::InitStageEnterprise;
-    case InitStageBrowserObjectsForUI:
-      return ProfileInitStage::InitStagePrepareUI;
-    case InitStageNormalUI:
-      return ProfileInitStage::InitStageUIReady;
-    case InitStageFirstRun:
-      return ProfileInitStage::InitStageFirstRun;
-    case InitStageChoiceScreen:
-      return ProfileInitStage::InitStageChoiceScreen;
-    case InitStageFinal:
-      return ProfileInitStage::InitStageFinal;
+    case AppInitStage::kLoadProfiles:
+      return ProfileInitStage::kLoadProfile;
+    case AppInitStage::kBrowserObjectsForUI:
+      return ProfileInitStage::kPrepareUI;
+    case AppInitStage::kNormalUI:
+      return ProfileInitStage::kUIReady;
+    case AppInitStage::kFirstRun:
+      return ProfileInitStage::kFirstRun;
+    case AppInitStage::kChoiceScreen:
+      return ProfileInitStage::kChoiceScreen;
+    case AppInitStage::kFinal:
+      return ProfileInitStage::kFinal;
   }
 }

@@ -4,37 +4,28 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.ArchivedTabsDialogCoordinator.ArchiveDelegate;
 import org.chromium.chrome.tab_ui.R;
 
 import java.util.List;
 
 /** Restore all archived tabs action for the {@link TabListEditorMenu}. */
 public class TabListEditorCloseArchivedTabsAction extends TabListEditorAction {
-    private final @NonNull Context mContext;
     private final @NonNull ArchivedTabsDialogCoordinator.ArchiveDelegate mArchiveDelegate;
 
     /**
      * Create an action for restoring archived tabs.
      *
-     * @param context to load drawable from.
      * @param archiveDelegate delegate which supports archive operations.
      */
-    public static TabListEditorAction createAction(
-            @NonNull Context context,
-            @NonNull ArchivedTabsDialogCoordinator.ArchiveDelegate archiveDelegate) {
-        return new TabListEditorCloseArchivedTabsAction(context, archiveDelegate);
+    public static TabListEditorAction createAction(@NonNull ArchiveDelegate archiveDelegate) {
+        return new TabListEditorCloseArchivedTabsAction(archiveDelegate);
     }
 
-    @VisibleForTesting
-    TabListEditorCloseArchivedTabsAction(
-            @NonNull Context context,
-            @NonNull ArchivedTabsDialogCoordinator.ArchiveDelegate archiveDelegate) {
+    private TabListEditorCloseArchivedTabsAction(@NonNull ArchiveDelegate archiveDelegate) {
         super(
                 R.id.tab_list_editor_close_archived_tabs_menu_item,
                 ShowMode.MENU_ONLY,
@@ -44,7 +35,6 @@ public class TabListEditorCloseArchivedTabsAction extends TabListEditorAction {
                 R.plurals.accessibility_tab_selection_editor_close_tabs,
                 null);
 
-        mContext = context;
         mArchiveDelegate = archiveDelegate;
     }
 

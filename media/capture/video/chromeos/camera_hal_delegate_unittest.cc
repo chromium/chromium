@@ -64,6 +64,7 @@ class CameraHalDelegateTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(nullptr);
     camera_hal_delegate_.reset();
     task_environment_.RunUntilIdle();
   }

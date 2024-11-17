@@ -47,7 +47,8 @@ class NET_EXPORT RegistrationFetcherParam {
       GURL registration_endpoint,
       std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
           supported_algos,
-      std::string challenge);
+      std::string challenge,
+      std::optional<std::string> authorization);
 
   const GURL& registration_endpoint() const { return registration_endpoint_; }
 
@@ -58,12 +59,25 @@ class NET_EXPORT RegistrationFetcherParam {
 
   const std::string& challenge() const { return challenge_; }
 
+  const std::optional<std::string>& authorization() const {
+    return authorization_;
+  }
+
+  GURL TakeRegistrationEndpoint() { return std::move(registration_endpoint_); }
+
+  std::string TakeChallenge() { return std::move(challenge_); }
+
+  std::optional<std::string> TakeAuthorization() {
+    return std::move(authorization_);
+  }
+
  private:
   RegistrationFetcherParam(
       GURL registration_endpoint,
       std::vector<crypto::SignatureVerifier::SignatureAlgorithm>
           supported_algos,
-      std::string challenge);
+      std::string challenge,
+      std::optional<std::string> authorization);
 
   static std::optional<RegistrationFetcherParam> ParseItem(
       const GURL& request_url,
@@ -74,6 +88,7 @@ class NET_EXPORT RegistrationFetcherParam {
   GURL registration_endpoint_;
   std::vector<crypto::SignatureVerifier::SignatureAlgorithm> supported_algos_;
   std::string challenge_;
+  std::optional<std::string> authorization_;
 };
 
 }  // namespace net::device_bound_sessions

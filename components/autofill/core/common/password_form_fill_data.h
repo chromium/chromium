@@ -34,6 +34,7 @@ struct PasswordAndMetadata {
   std::u16string password_value;
   std::string realm;
   bool uses_account_store = false;
+  bool is_grouped_affiliation = false;
 };
 
 // Structure used to trigger password suggestion generation.

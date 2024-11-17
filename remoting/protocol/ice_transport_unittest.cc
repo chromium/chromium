@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
@@ -20,6 +21,7 @@
 #include "remoting/protocol/chromium_port_allocator_factory.h"
 #include "remoting/protocol/connection_tester.h"
 #include "remoting/protocol/fake_authenticator.h"
+#include "remoting/protocol/ice_config_fetcher.h"
 #include "remoting/protocol/message_channel_factory.h"
 #include "remoting/protocol/message_pipe.h"
 #include "remoting/protocol/transport_context.h"
@@ -123,9 +125,9 @@ class IceTransportTest : public testing::Test {
     rtc::SocketFactory* socket_factory =
         webrtc::ThreadWrapper::current()->SocketServer();
     host_transport_ = std::make_unique<IceTransport>(
-        new TransportContext(std::make_unique<ChromiumPortAllocatorFactory>(),
-                             socket_factory, nullptr, nullptr,
-                             TransportRole::SERVER),
+        base::MakeRefCounted<TransportContext>(
+            std::make_unique<ChromiumPortAllocatorFactory>(), socket_factory,
+            /*ice_config_fetcher=*/nullptr, TransportRole::SERVER),
         &host_event_handler_);
     host_transport_->ApplyNetworkSettings(network_settings_);
     if (!host_authenticator_) {
@@ -134,9 +136,9 @@ class IceTransportTest : public testing::Test {
     }
 
     client_transport_ = std::make_unique<IceTransport>(
-        new TransportContext(std::make_unique<ChromiumPortAllocatorFactory>(),
-                             socket_factory, nullptr, nullptr,
-                             TransportRole::CLIENT),
+        base::MakeRefCounted<TransportContext>(
+            std::make_unique<ChromiumPortAllocatorFactory>(), socket_factory,
+            /*ice_config_fetcher=*/nullptr, TransportRole::CLIENT),
         &client_event_handler_);
     client_transport_->ApplyNetworkSettings(network_settings_);
     if (!client_authenticator_) {

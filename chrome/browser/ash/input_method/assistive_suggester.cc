@@ -32,6 +32,7 @@
 #include "ui/base/ime/ash/input_method_ukm.h"
 #include "ui/base/ime/ash/text_input_target.h"
 #include "ui/base/ime/text_input_client.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/geometry/rect.h"
@@ -253,15 +254,8 @@ bool AssistiveSuggester::IsMultiWordSuggestEnabled() {
                                         active_engine_id_);
 }
 
-bool AssistiveSuggester::IsExpandedMultiWordSuggestEnabled() {
-  return IsMultiWordSuggestEnabled() &&
-         base::FeatureList::IsEnabled(features::kAssistMultiWordExpanded);
-}
-
 bool AssistiveSuggester::IsDiacriticsOnPhysicalKeyboardLongpressEnabled() {
-  return base::FeatureList::IsEnabled(
-             features::kDiacriticsOnPhysicalKeyboardLongpress) &&
-         IsUsEnglishEngine(active_engine_id_) &&
+  return IsUsEnglishEngine(active_engine_id_) &&
          IsDiacriticsOnLongpressPrefEnabled(profile_->GetPrefs(),
                                             active_engine_id_);
 }
@@ -486,7 +480,7 @@ void AssistiveSuggester::OnLongpressDetected() {
   if (IsLongpressEnabledControlV(current_longpress_keydown_.value())) {
     if (Shell::Get()->clipboard_history_controller()->ShowMenu(
             GetClipboardHistoryMenuAnchor(),
-            ui::MenuSourceType::MENU_SOURCE_KEYBOARD,
+            ui::mojom::MenuSourceType::kKeyboard,
             crosapi::mojom::ClipboardHistoryControllerShowSource::
                 kControlVLongpress,
             base::BindOnce(&AssistiveSuggester::OnClipboardHistoryMenuClosing,
@@ -530,8 +524,7 @@ void AssistiveSuggester::ProcessExternalSuggestions(
     const AssistiveSuggesterSwitch::EnabledSuggestions& enabled_suggestions) {
   RecordSuggestionsMatch(suggestions);
 
-  if (!enabled_suggestions.multi_word_suggestions &&
-      !IsExpandedMultiWordSuggestEnabled()) {
+  if (!enabled_suggestions.multi_word_suggestions) {
     if (IsTopResultMultiWord(suggestions)) {
       RecordAssistiveDisabledReasonForMultiWord(
           GetDisabledReasonForMultiWord(enabled_suggestions));
@@ -704,9 +697,7 @@ void AssistiveSuggester::OnActivate(const std::string& engine_id) {
     RecordAssistiveUserPrefForMultiWord(
         IsPredictiveWritingPrefEnabled(*profile_->GetPrefs(), engine_id));
   }
-  if (base::FeatureList::IsEnabled(
-          features::kDiacriticsOnPhysicalKeyboardLongpress) &&
-      IsUsEnglishEngine(active_engine_id_)) {
+  if (IsUsEnglishEngine(active_engine_id_)) {
     RecordAssistiveUserPrefForDiacriticsOnLongpress(
         IsDiacriticsOnLongpressPrefEnabled(profile_->GetPrefs(), engine_id));
   }

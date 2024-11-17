@@ -269,10 +269,23 @@ LIBHUNSPELL_DLL_EXPORTED void store_pointer(char* dest, char* source);
 // conversion function for protected memory
 LIBHUNSPELL_DLL_EXPORTED char* get_stored_pointer(const char* s);
 
+
+// to avoid unnecessary string copies and Unicode conversions
+// we simply check the ignored_chars characters in the word
+// (in the case of UTF-8 encoded strings, "false" means
+// "likely false", if ignored_chars characters are not ASCII)
+inline bool has_no_ignored_chars(const std::string& word,
+                            const std::string& ignored_chars) {
+  for (std::string::const_iterator it = ignored_chars.begin(), end = ignored_chars.end(); it != end; ++it)
+    if (word.find(*it) != std::string::npos)
+      return false;
+  return true;
+}
+
 // hash entry macros
-LIBHUNSPELL_DLL_EXPORTED inline char* HENTRY_DATA(struct hentry* h) {
+inline char* HENTRY_DATA(struct hentry* h) {
   char* ret;
-  if (!h->var)
+  if (!(h->var & H_OPT))
     ret = NULL;
   else if (h->var & H_OPT_ALIASM)
     ret = get_stored_pointer(HENTRY_WORD(h) + h->blen + 1);
@@ -281,10 +294,10 @@ LIBHUNSPELL_DLL_EXPORTED inline char* HENTRY_DATA(struct hentry* h) {
   return ret;
 }
 
-LIBHUNSPELL_DLL_EXPORTED inline const char* HENTRY_DATA(
+inline const char* HENTRY_DATA(
     const struct hentry* h) {
   const char* ret;
-  if (!h->var)
+  if (!(h->var & H_OPT))
     ret = NULL;
   else if (h->var & H_OPT_ALIASM)
     ret = get_stored_pointer(HENTRY_WORD(h) + h->blen + 1);
@@ -294,10 +307,10 @@ LIBHUNSPELL_DLL_EXPORTED inline const char* HENTRY_DATA(
 }
 
 // NULL-free version for warning-free OOo build
-LIBHUNSPELL_DLL_EXPORTED inline const char* HENTRY_DATA2(
+inline const char* HENTRY_DATA2(
     const struct hentry* h) {
   const char* ret;
-  if (!h->var)
+  if (!(h->var & H_OPT))
     ret = "";
   else if (h->var & H_OPT_ALIASM)
     ret = get_stored_pointer(HENTRY_WORD(h) + h->blen + 1);
@@ -306,7 +319,7 @@ LIBHUNSPELL_DLL_EXPORTED inline const char* HENTRY_DATA2(
   return ret;
 }
 
-LIBHUNSPELL_DLL_EXPORTED inline char* HENTRY_FIND(struct hentry* h,
+inline char* HENTRY_FIND(struct hentry* h,
                                                   const char* p) {
   return (HENTRY_DATA(h) ? strstr(HENTRY_DATA(h), p) : NULL);
 }

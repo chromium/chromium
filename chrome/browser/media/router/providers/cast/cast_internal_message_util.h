@@ -140,6 +140,8 @@ class CastInternalMessage {
   const base::Value message_body_;
 };
 
+std::string CastInternalMessageTypeToString(CastInternalMessage::Type type);
+
 // Represents a Cast session on a Cast device. Cast sessions are derived from
 // RECEIVER_STATUS messages sent by Cast devices.
 //

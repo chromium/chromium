@@ -11,10 +11,14 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/send_tab_to_self/features.h"
+#include "components/send_tab_to_self/pref_names.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/model/entity_change.h"
@@ -126,6 +130,11 @@ class SendTabToSelfBridgeTest : public testing::Test {
   SendTabToSelfBridgeTest()
       : store_(syncer::DataTypeStoreTestUtil::CreateInMemoryStoreForTest()) {}
 
+  void SetUp() override {
+    pref_service_.registry()->RegisterStringPref(
+        prefs::kIOSSendTabToSelfLastReceivedTabURLPref, std::string());
+  }
+
   void InitializeLocalDeviceIfNeeded() {
     if (local_device_) {
       return;
@@ -151,7 +160,7 @@ class SendTabToSelfBridgeTest : public testing::Test {
     bridge_ = std::make_unique<SendTabToSelfBridge>(
         mock_processor_.CreateForwardingProcessor(), &clock_,
         syncer::DataTypeStoreTestUtil::MoveStoreToFactory(std::move(store_)),
-        /*history_service=*/nullptr, &device_info_tracker_);
+        /*history_service=*/nullptr, &device_info_tracker_, &pref_service_);
     bridge_->AddObserver(&mock_observer_);
     base::RunLoop().RunUntilIdle();
   }
@@ -227,6 +236,8 @@ class SendTabToSelfBridgeTest : public testing::Test {
 
   SendTabToSelfBridge* bridge() { return bridge_.get(); }
 
+  TestingPrefServiceSimple* pref_service() { return &pref_service_; }
+
   MockSendTabToSelfModelObserver* mock_observer() { return &mock_observer_; }
 
   base::SimpleTestClock* clock() { return &clock_; }
@@ -246,6 +257,8 @@ class SendTabToSelfBridgeTest : public testing::Test {
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;
 
   syncer::FakeDeviceInfoTracker device_info_tracker_;
+
+  TestingPrefServiceSimple pref_service_;
 
   std::unique_ptr<SendTabToSelfBridge> bridge_;
 
@@ -916,6 +929,41 @@ TEST_F(SendTabToSelfBridgeTest, NotifyRemoteSendTabToSelfEntryOpened) {
 
   EXPECT_EQ(2ul, bridge()->GetAllGuids().size());
 }
+
+#if BUILDFLAG(IS_IOS)
+TEST_F(SendTabToSelfBridgeTest, WriteToLastTabReceivedPref) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{send_tab_to_self::kSendTabToSelfIOSPushNotifications,
+        {{send_tab_to_self::kSendTabIOSPushNotificationsWithMagicStackCardParam,
+          "true"}}}},
+      {});
+
+  InitializeBridge();
+
+  // Add two remote entries.
+  SendTabToSelfEntry entry("guid1", GURL("http://www.example.com/"), "title",
+                           AdvanceAndGetTime(), "device",
+                           kLocalDeviceCacheGuid);
+  SendTabToSelfEntry entry2("guid2", GURL("http://www.example2.com/"), "title",
+                            AdvanceAndGetTime(), "device",
+                            kLocalDeviceCacheGuid);
+  syncer::EntityChangeList add_changes;
+  add_changes.push_back(
+      syncer::EntityChange::CreateAdd("guid1", MakeEntityData(entry)));
+  add_changes.push_back(
+      syncer::EntityChange::CreateAdd("guid2", MakeEntityData(entry2)));
+  auto metadata_change_list =
+      std::make_unique<syncer::InMemoryMetadataChangeList>();
+  bridge()->ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                        std::move(add_changes));
+
+  // Assert that the URL for the latest entry is written to the pref.
+  EXPECT_TRUE(pref_service()->GetString(
+                  prefs::kIOSSendTabToSelfLastReceivedTabURLPref) ==
+              "http://www.example2.com/");
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 TEST_F(SendTabToSelfBridgeTest, SendTabToSelfEntryOpened_QueueUnknownGuid) {
   InitializeBridge();

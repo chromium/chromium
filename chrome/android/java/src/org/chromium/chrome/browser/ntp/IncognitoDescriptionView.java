@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.document.ChromeAsyncTabLauncher;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.base.ViewUtils;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.ChromeBulletSpan;
@@ -134,9 +133,7 @@ public class IncognitoDescriptionView extends LinearLayout {
             return;
         }
 
-        String text =
-                context.getResources()
-                        .getString(R.string.new_tab_otr_third_party_blocked_cookie_part_two);
+        String text = context.getString(R.string.new_tab_otr_third_party_blocked_cookie_part_two);
         ClickableSpan span =
                 new ClickableSpan() {
                     @Override
@@ -148,8 +145,7 @@ public class IncognitoDescriptionView extends LinearLayout {
                     @Override
                     public void updateDrawState(TextPaint textPaint) {
                         super.updateDrawState(textPaint);
-                        textPaint.setColor(
-                                context.getColor(R.color.default_text_color_secondary_light_list));
+                        textPaint.setColor(context.getColor(R.color.default_text_color_link_light));
                     }
                 };
         view.setText(
@@ -179,7 +175,7 @@ public class IncognitoDescriptionView extends LinearLayout {
 
     @NonNull
     static SpannableString getSpannedBulletText(Context context, @StringRes int content) {
-        String text = context.getResources().getString(content);
+        String text = context.getString(content);
         // Some translations don't have a line break between list entries.
         text = text.replaceAll("([^\n ]) *(<li>|</?ul>)", "$1\n$2");
 
@@ -202,7 +198,7 @@ public class IncognitoDescriptionView extends LinearLayout {
                 "Format error. Locale: "
                         + context.getResources().getConfiguration().getLocales()
                         + " \nstring: "
-                        + context.getResources().getString(content);
+                        + context.getString(content);
         assert text.contains("<li1>") : error;
         assert text.contains("<li2>") : error;
         assert text.contains("<li3>") : error;
@@ -355,14 +351,33 @@ public class IncognitoDescriptionView extends LinearLayout {
     /** Adjust the "Learn More" link. */
     private void adjustLearnMore() {
         final String subtitleText =
-                getContext()
-                        .getResources()
-                        .getString(R.string.new_tab_otr_subtitle_with_reading_list);
-        boolean learnMoreInSubtitle = mWidthDp > WIDE_LAYOUT_THRESHOLD_DP;
+                getContext().getString(R.string.new_tab_otr_subtitle_with_reading_list);
 
+        final ClickableSpan learnMoreSpan =
+                new ClickableSpan() {
+                    @Override
+                    public void onClick(View view) {
+                        mLearnMore.callOnClick();
+                    }
+
+                    @Override
+                    public void updateDrawState(TextPaint textPaint) {
+                        super.updateDrawState(textPaint);
+                        textPaint.setColor(
+                                getContext().getColor(R.color.default_text_color_link_light));
+                    }
+                };
+
+        boolean learnMoreInSubtitle = mWidthDp > WIDE_LAYOUT_THRESHOLD_DP;
         mLearnMore.setVisibility(learnMoreInSubtitle ? View.GONE : View.VISIBLE);
 
         if (!learnMoreInSubtitle) {
+            // Format the "Learn more" link.
+            SpannableString learnMoreLink =
+                    new SpannableString(getContext().getString(R.string.learn_more));
+            learnMoreLink.setSpan(learnMoreSpan, 0, learnMoreLink.length(), /* flags= */ 0);
+            mLearnMore.setText(learnMoreLink);
+
             // Revert to the original text.
             mSubtitle.setText(subtitleText);
             mSubtitle.setMovementMethod(null);
@@ -373,16 +388,14 @@ public class IncognitoDescriptionView extends LinearLayout {
         StringBuilder concatenatedText = new StringBuilder();
         concatenatedText.append(subtitleText);
         concatenatedText.append(" ");
-        concatenatedText.append(getContext().getResources().getString(R.string.learn_more));
+        concatenatedText.append(getContext().getString(R.string.learn_more));
         SpannableString textWithLearnMoreLink = new SpannableString(concatenatedText.toString());
 
-        NoUnderlineClickableSpan span =
-                new NoUnderlineClickableSpan(
-                        getContext(),
-                        R.color.baseline_primary_80,
-                        (view) -> mLearnMore.callOnClick());
         textWithLearnMoreLink.setSpan(
-                span, subtitleText.length() + 1, textWithLearnMoreLink.length(), /* flags= */ 0);
+                learnMoreSpan,
+                subtitleText.length() + 1,
+                textWithLearnMoreLink.length(),
+                /* flags= */ 0);
         mSubtitle.setText(textWithLearnMoreLink);
         mSubtitle.setMovementMethod(LinkMovementMethod.getInstance());
     }

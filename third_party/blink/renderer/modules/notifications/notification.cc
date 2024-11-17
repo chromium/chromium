@@ -291,8 +291,7 @@ String Notification::dir() const {
       return "auto";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
 String Notification::lang() const {
@@ -377,8 +376,7 @@ v8::LocalVector<v8::Value> Notification::actions(
         action->setType("text");
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unknown action type: " << actions[i]->type;
+        NOTREACHED() << "Unknown action type: " << actions[i]->type;
     }
 
     action->setAction(actions[i]->action);
@@ -405,36 +403,34 @@ String Notification::scenario() const {
       return "incoming-call";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return String();
+  NOTREACHED();
 }
 
-String Notification::PermissionString(
+V8NotificationPermission::Enum Notification::PermissionToV8Enum(
     mojom::blink::PermissionStatus permission) {
   switch (permission) {
     case mojom::blink::PermissionStatus::GRANTED:
-      return "granted";
+      return V8NotificationPermission::Enum::kGranted;
     case mojom::blink::PermissionStatus::DENIED:
-      return "denied";
+      return V8NotificationPermission::Enum::kDenied;
     case mojom::blink::PermissionStatus::ASK:
-      return "default";
+      return V8NotificationPermission::Enum::kDefault;
   }
-
-  NOTREACHED_IN_MIGRATION();
-  return "denied";
+  NOTREACHED();
 }
 
-String Notification::permission(ExecutionContext* context) {
+V8NotificationPermission Notification::permission(ExecutionContext* context) {
   // Permission is always denied for insecure contexts. Skip the sync IPC call.
-  if (!context->IsSecureContext())
-    return PermissionString(mojom::blink::PermissionStatus::DENIED);
+  if (!context->IsSecureContext()) {
+    return V8NotificationPermission(V8NotificationPermission::Enum::kDenied);
+  }
 
   // If the current global object's browsing context is a prerendering browsing
   // context, then return "default".
   // https://wicg.github.io/nav-speculation/prerendering.html#patch-notifications
   if (auto* window = DynamicTo<LocalDOMWindow>(context)) {
     if (Document* document = window->document(); document->IsPrerendering()) {
-      return PermissionString(mojom::blink::PermissionStatus::ASK);
+      return V8NotificationPermission(V8NotificationPermission::Enum::kDefault);
     }
   }
 
@@ -453,7 +449,7 @@ String Notification::permission(ExecutionContext* context) {
       status = mojom::blink::PermissionStatus::DENIED;
   }
 
-  return PermissionString(status);
+  return V8NotificationPermission(PermissionToV8Enum(status));
 }
 
 ScriptPromise<V8NotificationPermission> Notification::requestPermission(

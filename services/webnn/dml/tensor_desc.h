@@ -30,6 +30,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) TensorDesc final {
     kTrailing,
   };
 
+  TensorDesc();
   TensorDesc(DML_TENSOR_DATA_TYPE data_type, std::vector<uint32_t> dimensions);
   TensorDesc(DML_TENSOR_DATA_TYPE data_type,
              DML_TENSOR_FLAGS flags,

@@ -64,7 +64,7 @@ bool IsShowingFrame(bool use_custom_frame,
   return use_custom_frame &&
          window_state != ui::PlatformWindowState::kMaximized &&
          window_state != ui::PlatformWindowState::kMinimized &&
-         !ui::IsPlatformWindowStateFullscreen(window_state);
+         window_state != ui::PlatformWindowState::kFullScreen;
 }
 
 }  // namespace
@@ -354,8 +354,8 @@ void BrowserDesktopWindowTreeHostLinux::OnWindowStateChanged(
     ui::PlatformWindowState new_state) {
   DesktopWindowTreeHostLinux::OnWindowStateChanged(old_state, new_state);
 
-  bool fullscreen_changed = ui::IsPlatformWindowStateFullscreen(new_state) ||
-                            ui::IsPlatformWindowStateFullscreen(old_state);
+  bool fullscreen_changed = new_state == ui::PlatformWindowState::kFullScreen ||
+                            old_state == ui::PlatformWindowState::kFullScreen;
   if (old_state != new_state && fullscreen_changed) {
     // If the browser view initiated this state change,
     // BrowserView::ProcessFullscreen will no-op, so this call is harmless.

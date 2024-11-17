@@ -67,7 +67,6 @@ public class GoogleCloudMessagingV2 implements GoogleCloudMessagingSubscriber {
         }
         data.putString(EXTRA_SUBTYPE, subtype);
         unsubscribe(source, data);
-        return;
     }
 
     /**

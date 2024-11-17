@@ -38,6 +38,8 @@ class LocalPrefs : virtual public UpdaterPrefs {
 
   virtual bool GetQualified() const = 0;
   virtual void SetQualified(bool value) = 0;
+  virtual bool GetCecaExperimentEnabled() = 0;
+  virtual void SetCecaExperimentEnabled(bool value) = 0;
 
  protected:
   ~LocalPrefs() override = default;

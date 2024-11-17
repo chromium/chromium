@@ -30,7 +30,7 @@ public abstract class Features {
     /** Returns true if the given feature is enabled. */
     public boolean isEnabled() {
         // FeatureFlags set for testing override the native default value.
-        Boolean testValue = FeatureList.getTestValueForFeature(getName());
+        Boolean testValue = FeatureList.getTestValueForFeatureStrict(getName());
         if (testValue != null) return testValue;
         return FeaturesJni.get().isEnabled(getFeaturePointer());
     }
@@ -52,9 +52,8 @@ public abstract class Features {
      * Returns a field trial param as a string for the specified feature.
      *
      * @param paramName The name of the param.
-     * @param defaultValue The String value to use if the param is not available.
      * @return The parameter value as a String. Empty string if the feature does not exist or the
-     *         specified parameter does not exist.
+     *     specified parameter does not exist.
      */
     public String getFieldTrialParamByFeatureAsString(String paramName) {
         return FeaturesJni.get()

@@ -4,11 +4,15 @@
 
 #include "chrome/browser/ash/accessibility/select_to_speak_test_utils.h"
 
+#include <string>
+
 #include "ash/constants/ash_pref_names.h"
+#include "base/strings/stringprintf.h"
+#include "base/threading/thread_restrictions.h"
+#include "base/values.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/browser/browsertest_util.h"

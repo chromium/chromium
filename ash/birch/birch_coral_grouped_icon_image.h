@@ -16,7 +16,7 @@ namespace ash {
 class CoralGroupedIconImage : public gfx::CanvasImageSource {
  public:
   CoralGroupedIconImage(const std::vector<gfx::ImageSkia>& icon_images,
-                        const int extra_tabs_number,
+                        int extra_number,
                         const ui::ColorProvider* color_provider);
   CoralGroupedIconImage(const CoralGroupedIconImage&) = delete;
   CoralGroupedIconImage& operator=(const CoralGroupedIconImage&) = delete;
@@ -26,7 +26,7 @@ class CoralGroupedIconImage : public gfx::CanvasImageSource {
   // image used in `BirchCoralItem` based on the number of icons.
   static ui::ImageModel DrawCoralGroupedIconImage(
       const std::vector<gfx::ImageSkia>& icons_images,
-      const int extra_tabs_number);
+      int extra_number);
 
   // gfx::CanvasImageSource:
   void Draw(gfx::Canvas* canvas) override;
@@ -35,9 +35,9 @@ class CoralGroupedIconImage : public gfx::CanvasImageSource {
   // Represents the icon images (maximum of 4 non-unique icons) that will make
   // up the coral image.
   std::vector<gfx::ImageSkia> icon_images_;
-  // Represents the number of extra tabs that are part of the coral grouping,
-  // will be painted as a label in the coral image.
-  const int extra_tabs_number_;
+  // Represents the number of extra tabs or apps that are part of the coral
+  // grouping, will be painted as a label in the coral image.
+  const int extra_number_;
   raw_ptr<const ui::ColorProvider> color_provider_;
 };
 

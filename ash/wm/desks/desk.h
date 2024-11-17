@@ -35,6 +35,12 @@ class DeskContainerObserver;
 // the desk is inactive, those containers are hidden.
 class ASH_EXPORT Desk {
  public:
+  enum class Type {
+    kRestored,  // A restored desk.
+    kCoral,     // A desk created from a coral group.
+    kNormal,    // Other normal type of desks.
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     // Called when the desk's content change as a result of windows addition or
@@ -94,7 +100,7 @@ class ASH_EXPORT Desk {
     size_t order = 0;
   };
 
-  explicit Desk(int associated_container_id, bool desk_being_restored = false);
+  explicit Desk(int associated_container_id, Type type = Type::kNormal);
 
   Desk(const Desk&) = delete;
   Desk& operator=(const Desk&) = delete;
@@ -103,6 +109,8 @@ class ASH_EXPORT Desk {
 
   static void SetWeeklyActiveDesks(int weekly_active_desks);
   static int GetWeeklyActiveDesks();
+
+  Type type() const { return type_; }
 
   int container_id() const { return container_id_; }
 
@@ -177,11 +185,8 @@ class ASH_EXPORT Desk {
 
   // Sets the desk's lacros profile id to `lacros_profile_id`. The value 0
   // (which is the default value) indicates that the desk is associated with the
-  // primary user. `source` should be specified when the action is directly
-  // initiated by a user (metrics will be emitted). When `skip_prefs_update` is
-  // true, prefs are not updated.
+  // primary user. When `skip_prefs_update` is true, prefs are not updated.
   void SetLacrosProfileId(uint64_t lacros_profile_id,
-                          std::optional<DeskProfilesSelectProfileSource> source,
                           bool skip_prefs_update = false);
 
   // Prepares for the animation to activate this desk (i.e. this desk is not
@@ -330,6 +335,8 @@ class ASH_EXPORT Desk {
 
   // The associated container ID with this desk.
   const int container_id_;
+
+  const Type type_;
 
   // Windows tracked on this desk. Clients of the DesksController can use this
   // list when they're notified of desk change events.

@@ -149,8 +149,7 @@ base::Value TabCapturePerformanceTestBase::SendMessageToExtension(
                  "'sendMessage' retry...";
     ContinueBrowserFor(kSendMessageRetryPeriod);
   }
-  NOTREACHED_IN_MIGRATION();
-  return base::Value();
+  NOTREACHED();
 }
 
 TabCapturePerformanceTestBase::TraceAnalyzerUniquePtr

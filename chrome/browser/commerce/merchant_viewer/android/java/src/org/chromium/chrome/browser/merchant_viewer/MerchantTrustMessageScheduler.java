@@ -20,6 +20,7 @@ import org.chromium.components.messages.MessageScopeType;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Abstracts the logic needed to schedule a message using {@link MessageDispatcher} framework. */
+@SuppressWarnings("SynchronizeOnNonFinalField") // Non-final in tests.
 public class MerchantTrustMessageScheduler {
     public static final long MESSAGE_ENQUEUE_NO_DELAY = 0;
 

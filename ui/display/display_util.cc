@@ -104,8 +104,7 @@ mojom::ScreenOrientation DisplayUtil::GetOrientationTypeForMobile(
       return natural_portrait ? mojom::ScreenOrientation::kLandscapeSecondary
                               : mojom::ScreenOrientation::kPortraitPrimary;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::ScreenOrientation::kPortraitPrimary;
+      NOTREACHED();
   }
 }
 

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/strings/strcat.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 
@@ -18,34 +19,30 @@ namespace cc {
 
 bool WritePNGFile(const SkBitmap& bitmap, const base::FilePath& file_path,
     bool discard_transparency) {
-  std::vector<unsigned char> png_data;
-  if (gfx::PNGCodec::EncodeBGRASkBitmap(bitmap,
-                                        discard_transparency,
-                                        &png_data) &&
-      base::CreateDirectory(file_path.DirName())) {
-    return base::WriteFile(file_path, png_data);
+  std::optional<std::vector<uint8_t>> png_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency);
+  if (png_data && base::CreateDirectory(file_path.DirName())) {
+    return base::WriteFile(file_path, png_data.value());
   }
   return false;
 }
 
 std::string GetPNGDataUrl(const SkBitmap& bitmap) {
-  std::vector<unsigned char> png_data;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &png_data);
-  std::string data_url;
-  data_url.insert(data_url.end(), png_data.begin(), png_data.end());
-  data_url = base::Base64Encode(data_url);
-  data_url.insert(0, "data:image/png;base64,");
-
-  return data_url;
+  std::optional<std::vector<uint8_t>> png_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  return base::StrCat(
+      {"data:image/png;base64,",
+       base::Base64Encode(png_data.value_or(std::vector<uint8_t>()))});
 }
 
-bool ReadPNGFile(const base::FilePath& file_path, SkBitmap* bitmap) {
-  DCHECK(bitmap);
-  std::string png_data;
-  return base::ReadFileToString(file_path, &png_data) &&
-         gfx::PNGCodec::Decode(reinterpret_cast<unsigned char*>(&png_data[0]),
-                               png_data.length(),
-                               bitmap);
+SkBitmap ReadPNGFile(const base::FilePath& file_path) {
+  std::optional<std::vector<uint8_t>> png_data =
+      base::ReadFileToBytes(file_path);
+  if (!png_data) {
+    return SkBitmap();
+  }
+
+  return gfx::PNGCodec::Decode(png_data.value());
 }
 
 bool MatchesBitmap(const SkBitmap& gen_bmp,
@@ -85,8 +82,8 @@ bool MatchesBitmap(const SkBitmap& gen_bmp,
 bool MatchesPNGFile(const SkBitmap& gen_bmp,
                     base::FilePath ref_img_path,
                     const PixelComparator& comparator) {
-  SkBitmap ref_bmp;
-  if (!ReadPNGFile(ref_img_path, &ref_bmp)) {
+  SkBitmap ref_bmp = ReadPNGFile(ref_img_path);
+  if (ref_bmp.isNull()) {
     LOG(ERROR) << "Cannot read reference image: " << ref_img_path.value();
     return false;
   }

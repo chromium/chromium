@@ -37,6 +37,11 @@
   #button.showing-menu > #hoverLayer {
     display: block;
   }
+
+  cr-icon {
+    --iron-icon-fill-color: var(
+        --color-product-specifications-tonal-button-icon);
+  }
 </style>
 
 <div id="button"
@@ -51,5 +56,7 @@
 
 <product-selection-menu id="productSelectionMenu"
     excluded-urls="[[excludedUrls]]"
+    is-table-full="[[isTableFull]]"
+    for-new-column="true"
     on-close-menu="onCloseMenu_">
 </product-selection-menu>

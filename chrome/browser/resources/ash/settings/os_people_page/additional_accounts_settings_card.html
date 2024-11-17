@@ -164,12 +164,10 @@
              $i18n{accountNotUsedInArcLabel}
             </span>
           </template>
-          <template is="dom-if" if="[[isArcManagedAccountRestrictionEnabled_]]">
-            <span class="arc-availability secondary" id="arcStatus_[[index]]"
+          <span class="arc-availability secondary" id="arcStatus_[[index]]"
                aria-hidden="true" hidden$="[[item.isAvailableInArc]]">
              $i18n{accountNotAllowedInArcLabel}
-            </span>
-          </template>
+          </span>
         </div>
       </div>
       <template is="dom-if"
@@ -196,11 +194,6 @@
     <button class="dropdown-item" on-click="onRemoveAccountClick_">
       $i18n{removeAccountLabel}
     </button>
-    <template is="dom-if" if="[[isArcAccountRestrictionsEnabled_]]">
-      <button class="dropdown-item" on-click="onChangeArcAvailability_">
-        [[getChangeArcAvailabilityLabel_(actionMenuAccount_)]]
-      </button>
-    </template>
   </cr-action-menu>
 
   <!-- Add account button -->

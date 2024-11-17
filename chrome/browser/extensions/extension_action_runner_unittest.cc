@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/extensions/extension_action_runner.h"
+
 #include <stddef.h>
 
 #include <map>
@@ -11,7 +13,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
 #include "chrome/browser/extensions/permissions/permissions_updater.h"
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
@@ -87,9 +88,10 @@ class ExtensionActionRunnerUnitTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override;
 
+  void TearDown() override;
+
   // The associated ExtensionActionRunner.
-  raw_ptr<ExtensionActionRunner, DanglingUntriaged> extension_action_runner_ =
-      nullptr;
+  raw_ptr<ExtensionActionRunner> extension_action_runner_ = nullptr;
 
   // The map of observed executions, keyed by extension id.
   std::map<ExtensionId, int> extension_executions_;
@@ -187,6 +189,11 @@ void ExtensionActionRunnerUnitTest::SetUp() {
   DCHECK(tab_helper);
   extension_action_runner_ = tab_helper->extension_action_runner();
   DCHECK(extension_action_runner_);
+}
+
+void ExtensionActionRunnerUnitTest::TearDown() {
+  extension_action_runner_ = nullptr;
+  ChromeRenderViewHostTestHarness::TearDown();
 }
 
 // TODO(crbug.com/40883928): Split the test by need for refresh or not to

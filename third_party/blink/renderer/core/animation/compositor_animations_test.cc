@@ -361,7 +361,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     StringKeyframe* keyframe = CreateReplaceOpKeyframe(id, first, 0);
@@ -458,8 +458,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
       bool IsRevert() const final { return false; }
       bool IsRevertLayer() const final { return false; }
       PropertySpecificKeyframe* CloneWithOffset(double) const final {
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
       }
       bool PopulateCompositorKeyframeValue(
           const PropertyHandle&,
@@ -474,8 +473,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
       PropertySpecificKeyframe* NeutralKeyframe(
           double,
           scoped_refptr<TimingFunction>) const final {
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
       }
 
       void Trace(Visitor* visitor) const override {

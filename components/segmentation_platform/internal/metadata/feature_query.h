@@ -61,6 +61,15 @@ struct FeatureQuery {
   const std::optional<MetadataWriter::CustomInput> custom_input;
 };
 
+// Helper function to create a `FeatureQuery` from a custom input name.
+constexpr FeatureQuery CreateFeatureQueryFromCustomInputName(
+    const char* input_name) {
+  return FeatureQuery::FromCustomInput(MetadataWriter::CustomInput{
+      .tensor_length = 1,
+      .fill_policy = proto::CustomInput::FILL_FROM_INPUT_CONTEXT,
+      .name = input_name});
+}
+
 }  // namespace segmentation_platform
 
 #endif  // COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_METADATA_FEATURE_QUERY_H_

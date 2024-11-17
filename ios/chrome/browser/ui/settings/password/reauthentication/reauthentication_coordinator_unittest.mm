@@ -66,9 +66,8 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
     mocked_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
     [browser_->GetCommandDispatcher()
@@ -155,7 +154,7 @@ class ReauthenticationCoordinatorTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   SceneState* scene_state_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<ProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_window_;
   UINavigationController* base_navigation_controller_ = nil;

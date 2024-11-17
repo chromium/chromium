@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -22,7 +23,7 @@ IbanAccessManager::IbanAccessManager(AutofillClient* client)
 
 IbanAccessManager::~IbanAccessManager() = default;
 
-void IbanAccessManager::FetchValue(const Suggestion::BackendId& backend_id,
+void IbanAccessManager::FetchValue(const Suggestion::Payload& payload,
                                    OnIbanFetchedCallback on_iban_fetched) {
   if (auto* form_data_importer = client_->GetFormDataImporter()) {
     // Reset the variable in FormDataImporter that denotes if non-interactive
@@ -36,8 +37,7 @@ void IbanAccessManager::FetchValue(const Suggestion::BackendId& backend_id,
   // If `Guid` has a value then that means that it's a local IBAN suggestion.
   // In this case, retrieving the complete IBAN value requires accessing the
   // saved IBAN from the PersonalDataManager.
-  if (const Suggestion::Guid* guid =
-          absl::get_if<Suggestion::Guid>(&backend_id)) {
+  if (const Suggestion::Guid* guid = absl::get_if<Suggestion::Guid>(&payload)) {
     const Iban* iban = client_->GetPersonalDataManager()
                            ->payments_data_manager()
                            .GetIbanByGUID(guid->value());
@@ -66,12 +66,11 @@ void IbanAccessManager::FetchValue(const Suggestion::BackendId& backend_id,
     return;
   }
 
-  int64_t instrument_id =
-      absl::get<Suggestion::InstrumentId>(backend_id).value();
+  int64_t instrument_id = absl::get<Suggestion::InstrumentId>(payload).value();
 
   // The suggestion is now presumed to be a masked server IBAN.
   // If there are no server IBANs in the PersonalDataManager that have the same
-  // instrument ID as the provided BackendId, then abort the operation.
+  // instrument ID as the provided `instrument_id`, then abort the operation.
   if (!client_->GetPersonalDataManager()
            ->payments_data_manager()
            .GetIbanByInstrumentId(instrument_id)) {
@@ -94,9 +93,7 @@ void IbanAccessManager::FetchValue(const Suggestion::BackendId& backend_id,
   Iban iban_copy = *iban;
   client_->GetPersonalDataManager()->payments_data_manager().RecordUseOfIban(
       iban_copy);
-  payments::PaymentsNetworkInterface::UnmaskIbanRequestDetails request_details;
-  request_details.billable_service_number =
-      payments::kUnmaskPaymentMethodBillableServiceNumber;
+  payments::UnmaskIbanRequestDetails request_details;
   request_details.billing_customer_number = payments::GetBillingCustomerId(
       &client_->GetPersonalDataManager()->payments_data_manager());
   request_details.instrument_id = instrument_id;
@@ -154,6 +151,11 @@ void IbanAccessManager::OnUnmaskResponseReceived(
     }
     return;
   }
+
+  // Immediately close the progress dialog before showing the error dialog.
+  client_->GetPaymentsAutofillClient()->CloseAutofillProgressDialog(
+      /*show_confirmation_before_closing=*/false,
+      /*no_interactive_authentication_callback=*/base::OnceClosure());
   AutofillErrorDialogContext error_context;
   error_context.type =
       AutofillErrorDialogType::kMaskedServerIbanUnmaskingTemporaryError;

@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_SCHEDULER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_SCHEDULER_H_
 
+#include <atomic>
+
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/scheduler/task_attribution_id.h"
@@ -135,6 +137,11 @@ class CORE_EXPORT DOMScheduler : public ScriptWrappable,
       HeapVector<Member<DOMTaskQueue>, kWebSchedulingPriorityCount>;
   using SignalToTaskQueueMap =
       HeapHashMap<WeakMember<DOMTaskSignal>, WeakMember<DOMTaskQueue>>;
+
+  static uint64_t NextIdForTracing() {
+    static std::atomic<uint64_t> next_id(0);
+    return next_id.fetch_add(1, std::memory_order_relaxed);
+  }
 
   // Creates and enqueues one fixed priority task queue for each priority with
   // the given queue type in the given vector.

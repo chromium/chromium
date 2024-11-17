@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/metrics/payments/payments_window_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/payments_window_manager_util.h"
@@ -48,9 +49,9 @@ gfx::Rect GetPopupSizeForVcn3ds() {
 DesktopPaymentsWindowManager::DesktopPaymentsWindowManager(
     ContentAutofillClient* client)
     : client_(CHECK_DEREF(client)) {
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   scoped_observation_.Observe(BrowserList::GetInstance());
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 DesktopPaymentsWindowManager::~DesktopPaymentsWindowManager() = default;
@@ -108,11 +109,11 @@ void DesktopPaymentsWindowManager::WebContentsDestroyed() {
   }
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 void DesktopPaymentsWindowManager::OnBrowserSetLastActive(Browser* browser) {
   // If there is an ongoing payments window manager pop-up flow, and the
   // original tab's WebContents become active, activate the pop-up's
-  // WebContents. This functionality is only required on Linux and LaCros, as on
+  // WebContents. This functionality is only required on Linux, as on
   // other desktop platforms the pop-up will always be the top-most browser
   // window due to differences in window management on these platforms.
   if (web_contents()) {
@@ -123,7 +124,7 @@ void DesktopPaymentsWindowManager::OnBrowserSetLastActive(Browser* browser) {
     }
   }
 }
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
 void DesktopPaymentsWindowManager::CreatePopup(const GURL& url,
                                                gfx::Rect popup_size) {
@@ -252,7 +253,7 @@ void DesktopPaymentsWindowManager::OnDidLoadRiskDataForVcn3ds(
 
 void DesktopPaymentsWindowManager::OnVcn3dsAuthenticationResponseReceived(
     PaymentsAutofillClient::PaymentsRpcResult result,
-    const PaymentsNetworkInterface::UnmaskResponseDetails& response_details) {
+    const UnmaskResponseDetails& response_details) {
   Vcn3dsAuthenticationResponse response =
       CreateVcn3dsAuthenticationResponseFromServerResult(
           result, response_details, std::move(vcn_3ds_context_->card));

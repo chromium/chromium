@@ -22,6 +22,7 @@ cast_source_set("mock_shlib") {
 
   deps = [
     ":shlib",
+    "//base",
     "//chromecast/public",
     "//testing/gmock:gmock",
   ]

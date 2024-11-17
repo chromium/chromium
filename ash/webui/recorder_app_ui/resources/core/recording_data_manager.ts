@@ -664,7 +664,7 @@ export class RecordingDataManager {
 
     switch (format) {
       case ExportTranscriptionFormat.TXT: {
-        const text = transcription.toPlainText();
+        const text = transcription.toExportText();
         const blob = new Blob([text], {type: 'text/plain'});
         const filename = getDefaultFileNameWithoutExtension(metadata) + '.txt';
         downloadFile(filename, blob);

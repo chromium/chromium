@@ -5,7 +5,7 @@
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/cr_input/cr_input.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/ash/common/assert.js';

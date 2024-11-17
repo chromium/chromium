@@ -20,6 +20,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "components/os_crypt/sync/key_storage_config_linux.h"
 #include "components/os_crypt/sync/key_storage_linux.h"
+#include "components/os_crypt/sync/os_crypt_metrics.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
 
@@ -194,15 +195,24 @@ bool OSCryptImpl::DecryptString(const std::string& ciphertext,
   // with prefix won't happen.
   crypto::SymmetricKey* encryption_key = nullptr;
   std::string obfuscation_prefix;
+  os_crypt::EncryptionPrefixVersion encryption_version =
+      os_crypt::EncryptionPrefixVersion::kNoVersion;
+
   if (base::StartsWith(ciphertext, kObfuscationPrefixV10,
                        base::CompareCase::SENSITIVE)) {
     encryption_key = GetPasswordV10();
     obfuscation_prefix = kObfuscationPrefixV10;
+    encryption_version = os_crypt::EncryptionPrefixVersion::kVersion10;
   } else if (base::StartsWith(ciphertext, kObfuscationPrefixV11,
                               base::CompareCase::SENSITIVE)) {
     encryption_key = GetPasswordV11(/*probe=*/false);
     obfuscation_prefix = kObfuscationPrefixV11;
-  } else {
+    encryption_version = os_crypt::EncryptionPrefixVersion::kVersion11;
+  }
+
+  os_crypt::LogEncryptionVersion(encryption_version);
+
+  if (encryption_version == os_crypt::EncryptionPrefixVersion::kNoVersion) {
     // If the prefix is not found then we'll assume we're dealing with
     // old data saved as clear text and we'll return it directly.
     *plaintext = ciphertext;

@@ -30,6 +30,10 @@ void SimpleResponseParser::ParseAsync(const std::string& redacted_output,
   std::move(result_callback).Run(*result);
 }
 
+bool SimpleResponseParser::SuppressParsingIncompleteResponse() const {
+  return config_.suppress_parsing_incomplete_output();
+}
+
 SimpleResponseParserFactory::SimpleResponseParserFactory() = default;
 SimpleResponseParserFactory::~SimpleResponseParserFactory() = default;
 

@@ -254,7 +254,8 @@ void HTMLSlotElement::UpdateFlatTreeNodeDataForAssignedNodes() {
   Node* previous = nullptr;
   for (auto& current : assigned_nodes_) {
     bool flat_tree_parent_changed = false;
-    if (!current->NeedsStyleRecalc() && !current->GetComputedStyle()) {
+    if (!current->NeedsStyleRecalc() &&
+        !current->GetComputedStyleForElementOrLayoutObject()) {
       if (auto* node_data = current->GetFlatTreeNodeData())
         flat_tree_parent_changed = !node_data->AssignedSlot();
     }
@@ -689,6 +690,7 @@ void HTMLSlotElement::SetShadowRootNeedsAssignmentRecalc() {
 
 void HTMLSlotElement::DidSlotChange(SlotChangeType slot_change_type) {
   DCHECK(SupportsAssignment());
+  PseudoStateChanged(CSSSelector::kPseudoHasSlotted);
   if (slot_change_type == SlotChangeType::kSignalSlotChangeEvent)
     EnqueueSlotChangeEvent();
   SetShadowRootNeedsAssignmentRecalc();

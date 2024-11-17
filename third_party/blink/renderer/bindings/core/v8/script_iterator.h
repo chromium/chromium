@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCRIPT_ITERATOR_H_
 
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -13,8 +15,11 @@
 
 namespace blink {
 
+class ExceptionContext;
 class ExceptionState;
 class ExecutionContext;
+template <typename IDLResolvedType>
+class ScriptPromise;
 
 // This class provides a wrapper for iterating over any ES object that
 // implements either the async iterable and async iterator protocols, or the
@@ -68,17 +73,15 @@ class ExecutionContext;
 //     // one.
 //     void GetNextValue() {
 //       DCHECK(!iterator_.IsNull());
-//       ExceptionState exception_state = ...;
+//       v8::Isolate* isolate = script_state->GetIsolate();
+//       v8::TryCatch try_catch(sisolate);
 //       ExecutionContext* execution_context = ...;
 //
-//       iterator_.Next(execution_context, exception_state);
+//       iterator_.Next(execution_context, PassThroughException();
 //
-//       if (exception_state.HadException()) {
-//         v8::Local<v8::Value> v8_exception = exception_state.GetException();
-//         exception_state.ClearException();
-//
-//         next_promise_ =
-//             ScriptPromise<IDLAny>::Reject(script_state, v8_exception);
+//       if (try_catch.HasCaught()) {
+//         next_promise_ = ScriptPromise<IDLAny>::Reject(
+//             script_state, try_catch.Exception());
 //       } else {
 //         next_promise_ = ToResolvedPromise<IDLAny>(
 //             script_state, iterator_.GetValue().ToLocalChecked());
@@ -86,14 +89,14 @@ class ExecutionContext;
 //
 //       // `on_fulfilled` fulfills to an Iterator Result, and calls
 //       // `GetNextValue()` again if the result is not done.
-//       ScriptFunction* on_fulfilled = ...;
-//       ScriptFunction* on_rejected = ...;
-//       next_promise_.Then(on_fulfilled, on_rejected);
+//       ThenCallableDerived* on_fulfilled = ...;
+//       ThenCallableDerived* on_rejected = ...;
+//       next_promise_.Then(script_State, on_fulfilled, on_rejected);
 //     }
 //
 //    private:
 //     ScriptIterator iterator_;
-//     ScriptPromiseUntyped next_promise_;
+//     ScriptPromise<IDLAny> next_promise_;
 //   };
 //
 // Sync iterable usage:
@@ -161,6 +164,30 @@ class CORE_EXPORT ScriptIterator {
   // Returns true if the iterator is still not done.
   bool Next(ExecutionContext* execution_context,
             ExceptionState& exception_state);
+
+  // This method implements both:
+  //  - https://tc39.es/ecma262/#sec-iteratorclose
+  //  - https://whatpr.org/webidl/1397.html#async-iterator-close
+  //
+  // It should be called when the consumer of an iterator (sync or async) needs
+  // to signal to the iterator that it will stop consuming values before the
+  // iterator is exhausted. Specifically, this method calls the `return()`
+  // method on the underlying `iterator_`. If `kind_` is `kAsync`, any errors
+  // are swallowed on the stack and returned in the form of a rejected Promise.
+  // In the `kSync` case, any errors encountered are rethrown. Otherwise:
+  //
+  //   1. If `kind_` is `kAsync`, returns a Promise that resolves to undefined
+  //      unless `return()` fails to return an Object, in which case the
+  //      returned Promise is rejected.
+  //   2. If `kind_` is `kSync`, returns `reason`, per the ECMAScript Standard,
+  //      and throws an error if `return()` fails to return an Object.
+  ScriptValue CloseSync(ScriptState* script_state,
+                        ExceptionState& exception_state,
+                        v8::Local<v8::Value> reason);
+  ScriptPromise<IDLAny> CloseAsync(
+      ScriptState* script_state,
+      const ExceptionContext& exception_context,
+      v8::Local<v8::Value> reason = v8::Local<v8::Value>());
 
   v8::MaybeLocal<v8::Value> GetValue() {
     return value_.Get(ScriptState::ForCurrentRealm(isolate_));

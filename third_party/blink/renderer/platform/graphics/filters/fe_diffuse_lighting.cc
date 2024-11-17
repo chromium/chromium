@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/fe_diffuse_lighting.h"
 
 #include "third_party/blink/renderer/platform/graphics/filters/light_source.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -55,8 +55,9 @@ bool FEDiffuseLighting::SetDiffuseConstant(float diffuse_constant) {
   return true;
 }
 
-WTF::TextStream& FEDiffuseLighting::ExternalRepresentation(WTF::TextStream& ts,
-                                                           int indent) const {
+StringBuilder& FEDiffuseLighting::ExternalRepresentation(
+    StringBuilder& ts,
+    wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feDiffuseLighting";
   FilterEffect::ExternalRepresentation(ts);

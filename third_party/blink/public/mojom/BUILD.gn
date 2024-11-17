@@ -27,11 +27,12 @@ mojom("mojom_platform") {
   sources = [
     "ad_tagging/ad_evidence.mojom",
     "aggregation_service/aggregatable_report.mojom",
-    "ai/ai_assistant.mojom",
+    "ai/ai_language_model.mojom",
     "ai/ai_manager.mojom",
     "ai/ai_rewriter.mojom",
     "ai/ai_summarizer.mojom",
     "ai/ai_writer.mojom",
+    "ai/model_download_progress_observer.mojom",
     "ai/model_streaming_responder.mojom",
     "annotation/annotation.mojom",
     "app_banner/app_banner.mojom",
@@ -55,6 +56,7 @@ mojom("mojom_platform") {
     "commit_result/commit_result.mojom",
     "compute_pressure/web_pressure_manager.mojom",
     "compute_pressure/web_pressure_manager_automation.mojom",
+    "confidence_level.mojom",
     "content_extraction/inner_html.mojom",
     "content_extraction/inner_text.mojom",
     "content_index/content_index.mojom",
@@ -133,6 +135,7 @@ mojom("mojom_platform") {
     "loader/javascript_framework_detection.mojom",
     "loader/keep_alive_handle.mojom",
     "loader/keep_alive_handle_factory.mojom",
+    "loader/local_resource_loader_config.mojom",
     "loader/mixed_content.mojom",
     "loader/navigation_predictor.mojom",
     "loader/pause_subresource_loading_handle.mojom",
@@ -287,7 +290,6 @@ mojom("mojom_platform") {
 
   public_deps = [
     ":android_mojo_bindings",
-    ":authenticator_test_mojo_bindings",
     ":color_scheme_mojo_bindings",
     ":mojom_mhtml_load_result",
     ":script_type_mojo_bindings",
@@ -311,8 +313,8 @@ mojom("mojom_platform") {
     "//services/viz/public/mojom",
     "//skia/public/mojom",
     "//third_party/blink/public/mojom/gpu",
-    "//third_party/blink/public/mojom/origin_trial_feature",
-    "//third_party/blink/public/mojom/origin_trial_state",
+    "//third_party/blink/public/mojom/origin_trials:origin_trial_feature",
+    "//third_party/blink/public/mojom/origin_trials:origin_trial_state",
     "//third_party/blink/public/mojom/private_network_device",
     "//third_party/blink/public/mojom/quota",
     "//third_party/blink/public/mojom/service_worker:storage",
@@ -373,17 +375,8 @@ mojom("mojom_platform") {
   }
 
   enabled_features = []
-  if (is_linux || is_chromeos) {
-    enabled_features += [ "renderer_pref_system_font_family_name" ]
-  }
   if (use_ozone) {
     enabled_features += [ "is_selection_clipboard_buffer_possible" ]
-  }
-  if (is_android || is_ios) {
-    enabled_features += [ "is_using_open_color_chooser" ]
-  }
-  if (is_android || is_ios) {
-    enabled_features += [ "is_android_or_ios" ]
   }
 
   shared_cpp_typemaps = [
@@ -559,6 +552,7 @@ mojom("mojom_platform") {
         },
       ]
       traits_headers = [ "//third_party/blink/public/common/context_menu_data/context_menu_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/base/mojom:ui_base_types" ]
     },
     {
       types = [
@@ -1645,6 +1639,7 @@ mojom("mojom_modules") {
     ":android_mojo_bindings",
     ":mojom_core",
     "//mojo/public/mojom/base",
+    "//services/network/public/mojom:mojom_shared_storage",
     "//url/mojom:url_mojom_gurl",
     "//url/mojom:url_mojom_origin",
   ]
@@ -1713,19 +1708,6 @@ mojom("mojom_modules") {
       ]
       traits_deps = [ "//third_party/blink/renderer/platform/wtf" ]
     },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.SharedStorageKeyArgument"
-          cpp = "::WTF::String"
-        },
-        {
-          mojom = "blink.mojom.SharedStorageValueArgument"
-          cpp = "::WTF::String"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/renderer/modules/shared_storage/shared_storage_blink_mojom_traits.h" ]
-    },
   ]
 
   cpp_typemaps = [
@@ -1774,19 +1756,6 @@ mojom("mojom_modules") {
       ]
       traits_private_headers = [ "//third_party/blink/public/common/indexeddb/indexed_db_default_mojom_traits.h" ]
     },
-    {
-      types = [
-        {
-          mojom = "blink.mojom.SharedStorageKeyArgument"
-          cpp = "::std::u16string"
-        },
-        {
-          mojom = "blink.mojom.SharedStorageValueArgument"
-          cpp = "::std::u16string"
-        },
-      ]
-      traits_headers = [ "//third_party/blink/public/common/shared_storage/shared_storage_mojom_traits.h" ]
-    },
   ]
 }
 
@@ -1806,7 +1775,10 @@ mojom("web_bluetooth_mojo_bindings") {
 
   sources = [ "bluetooth/web_bluetooth.mojom" ]
 
-  public_deps = [ "//device/bluetooth/public/mojom" ]
+  public_deps = [
+    "//device/bluetooth/public/mojom",
+    "//mojo/public/mojom/base",
+  ]
 
   shared_cpp_typemaps = [
     {
@@ -1912,48 +1884,6 @@ mojom("embedded_frame_sink_mojo_bindings") {
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/public/platform/web_common.h"
-}
-
-# This is a separate target because it needs unscrambled message IDs.
-mojom("authenticator_test_mojo_bindings") {
-  generate_java = true
-  sources = [ "webauthn/virtual_authenticator.mojom" ]
-
-  public_deps = [
-    ":android_mojo_bindings",
-    "//url/mojom:url_mojom_gurl",
-  ]
-
-  export_class_attribute = "BLINK_COMMON_EXPORT"
-  export_define = "BLINK_COMMON_IMPLEMENTATION=1"
-  export_header = "third_party/blink/public/common/common_export.h"
-
-  export_class_attribute_blink = "PLATFORM_EXPORT"
-  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
-  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
-
-  # Don't scramble message IDs so they are redistributable to external tests.
-  scramble_message_ids = false
-
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "blink.test.mojom.ClientToAuthenticatorProtocol"
-          cpp = "::device::ProtocolVersion"
-        },
-        {
-          mojom = "blink.test.mojom.Ctap2Version"
-          cpp = "::device::Ctap2Version"
-        },
-      ]
-      traits_headers =
-          [ "//content/browser/webauth/virtual_authenticator_mojom_traits.h" ]
-      traits_sources =
-          [ "//content/browser/webauth/virtual_authenticator_mojom_traits.cc" ]
-      traits_public_deps = [ "//device/fido" ]
-    },
-  ]
 }
 
 mojom("memory_usage_monitor_linux_mojo_bindings") {

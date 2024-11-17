@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SPEECH_SPEECH_RECOGNITION_H_
 
+#include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/speech_recognizer.mojom-blink.h"
 #include "third_party/blink/public/platform/web_private_ptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
@@ -42,6 +43,10 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+
+namespace media {
+class AudioParameters;
+}  // namespace media
 
 namespace blink {
 
@@ -145,6 +150,12 @@ class MODULES_EXPORT SpeechRecognition final
  private:
   void OnConnectionError();
   void StartInternal(ExceptionState* exception_state);
+  void StartController(
+      std::optional<media::AudioParameters> audio_parameters = std::nullopt,
+      mojo::PendingReceiver<
+          media::mojom::blink::SpeechRecognitionAudioForwarder>
+          audio_forwarder_receiver = mojo::NullReceiver());
+
   Member<MediaStreamTrack> stream_track_;
   Member<SpeechGrammarList> grammars_;
   String lang_;

@@ -13,7 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/arc/common/intent_helper/link_handler_model.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
 
 class RenderViewContextMenuProxy;

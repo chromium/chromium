@@ -35,6 +35,7 @@
 #include "media/base/video_facing.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device.h"
+#include "services/video_effects/public/cpp/buildflags.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom-forward.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
@@ -482,8 +483,12 @@ void VideoCaptureManager::ConnectClient(
     EmitLogMessage(string_stream.str(), 1);
     mojo::PendingRemote<video_effects::mojom::VideoEffectsProcessor>
         video_effects_processor;
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
-    if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+    // Only create the video effects processor for DEVICE_VIDEO_CAPTURE media
+    // streams, i.e. cameras.
+    if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
+        controller->stream_type() ==
+            blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
       auto* content_client = GetContentClient();
       if (browser_context && content_client && content_client->browser()) {
         content_client->browser()->BindVideoEffectsProcessor(
@@ -491,7 +496,7 @@ void VideoCaptureManager::ConnectClient(
             video_effects_processor.InitWithNewPipeAndPassReceiver());
       }
     }
-#endif
+#endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
     QueueStartDevice(session_id, controller, params,
                      std::move(video_effects_processor));
   }
@@ -550,8 +555,9 @@ void VideoCaptureManager::PauseCaptureForClient(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(controller);
   DCHECK(client_handler);
-  if (!IsControllerPointerValid(controller))
-    NOTREACHED_IN_MIGRATION() << "Got Null controller while pausing capture";
+  if (!IsControllerPointerValid(controller)) {
+    NOTREACHED() << "Got Null controller while pausing capture";
+  }
 
   const bool had_active_client = controller->HasActiveClient();
   controller->PauseClient(client_id, client_handler);
@@ -572,13 +578,13 @@ void VideoCaptureManager::ResumeCaptureForClient(
   DCHECK(controller);
   DCHECK(client_handler);
 
-  if (!IsControllerPointerValid(controller))
-    NOTREACHED_IN_MIGRATION() << "Got Null controller while resuming capture";
+  if (!IsControllerPointerValid(controller)) {
+    NOTREACHED() << "Got Null controller while resuming capture";
+  }
 
-  const bool had_active_client = controller->HasActiveClient();
-  controller->ResumeClient(client_id, client_handler);
-  if (had_active_client || !controller->HasActiveClient())
+  if (!controller->ResumeClient(client_id, client_handler)) {
     return;
+  }
   if (!controller->IsDeviceAlive())
     return;
   controller->Resume();

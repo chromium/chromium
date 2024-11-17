@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -38,11 +39,11 @@ class CORE_EXPORT ExceptionToRejectPromiseScope final {
   STACK_ALLOCATED();
 
  public:
-  ExceptionToRejectPromiseScope(const v8::FunctionCallbackInfo<v8::Value>& info,
-                                ExceptionState& exception_state)
-      : info_(info), exception_state_(exception_state) {}
+  explicit ExceptionToRejectPromiseScope(
+      const v8::FunctionCallbackInfo<v8::Value>& info)
+      : info_(info), try_catch_(info.GetIsolate()) {}
   ~ExceptionToRejectPromiseScope() {
-    if (!exception_state_.HadException()) [[likely]] {
+    if (!try_catch_.HasCaught()) [[likely]] {
       return;
     }
 
@@ -53,7 +54,7 @@ class CORE_EXPORT ExceptionToRejectPromiseScope final {
   void ConvertExceptionToRejectPromise();
 
   const v8::FunctionCallbackInfo<v8::Value>& info_;
-  ExceptionState& exception_state_;
+  v8::TryCatch try_catch_;
 };
 
 CORE_EXPORT bool IsCallbackFunctionRunnable(
@@ -142,7 +143,7 @@ CORE_EXPORT std::optional<size_t> FindIndexInEnumStringTable(
     ExceptionState& exception_state);
 
 CORE_EXPORT std::optional<size_t> FindIndexInEnumStringTable(
-    const String& str_value,
+    const StringView& str_value,
     base::span<const char* const> enum_value_table);
 
 CORE_EXPORT void ReportInvalidEnumSetToAttribute(
@@ -186,6 +187,7 @@ CORE_EXPORT v8::Local<v8::Array> EnumerateIndexedProperties(
     v8::Isolate* isolate,
     uint32_t length);
 
+
 // Performs the ES value to IDL value conversion of IDL dictionary member.
 // Sets a dictionary member |value| and |presence| to the resulting values.
 // Returns true on success, otherwise returns false and throws an exception.
@@ -199,6 +201,7 @@ bool GetDictionaryMemberFromV8Object(v8::Isolate* isolate,
                                      v8::Local<v8::Name> v8_member_name,
                                      bool& presence,
                                      ValueType& value,
+                                     const char* dictionary_name,
                                      ExceptionState& exception_state) {
   v8::Local<v8::Value> v8_value;
   if (!v8_dictionary->Get(current_context, v8_member_name).ToLocal(&v8_value)) {

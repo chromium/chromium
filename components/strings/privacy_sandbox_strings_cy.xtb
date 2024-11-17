@@ -3,18 +3,25 @@
 <translationbundle lang="cy">
 <translation id="1444443021901415601">Mae Chrome yn nodi pynciau o ddiddordeb yn seiliedig ar eich hanes pori diweddar</translation>
 <translation id="2252052615723281030">Pan fyddwch wedi mewngofnodi i Chrome, mae'r gosodiad hwn yn helpu i gadw'ch cyfeiriad IP yn breifat. Os yw Chrome yn amau bod gwefan yn eich olrhain, mae'n bosib y bydd rhywfaint o'ch traffig yn cael ei anfon trwy weinyddion preifatrwydd.</translation>
+<translation id="235789365079050412">Polisi Preifatrwydd Google</translation>
 <translation id="2793385791865768072">Mae Chrome yn nodi pynciau o ddiddordeb yn seiliedig ar eich hanes pori diweddar</translation>
+<translation id="2979365474350987274">Mae cwcis trydydd parti yn gyfyngedig</translation>
 <translation id="33479675708419823">Pan fyddwch wedi mewngofnodi i Chrome, mae'r gosodiad hwn yn helpu i gadw'ch cyfeiriad IP yn breifat. Os yw Chrome yn amau bod gwefan yn eich olrhain, mae'n bosib y bydd rhywfaint o'ch traffig yn cael ei anfon trwy weinyddion preifatrwydd. Dysgu rhagor am <ph name="LINK_BEGIN" />sut mae diogelu IP yn gweithio<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Dysgu rhagor am guddio'ch cyfeiriad IP</translation>
+<translation id="385051799172605136">Yn ôl</translation>
 <translation id="4041687306270459969">Mae pynciau hysbyseb sy'n hŷn na 4 wythnos yn cael eu dileu'n awtomatig. Mae'r pynciau'n cynnwys pethau megis Chwaraeon, Dillad, a rhagor</translation>
 <translation id="4177501066905053472">Pynciau hysbyseb</translation>
 <translation id="4301151630239508244">Mae pynciau hysbysebion yn un o lawer o bethau y gall gwefan eu defnyddio i bersonoleiddio hysbysebion. Hyd yn oed heb bynciau hysbysebion, gall gwefannau ddangos hysbysebion i chi o hyd ond gallant fod yn llai personol. Dysgu rhagor am <ph name="BEGIN_LINK_1" />reoli eich preifatrwydd hysbysebion<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Dysgu rhagor am sut mae Google yn gwarchod eich data yn ein <ph name="BEGIN_LINK" />Polisi Preifatrwydd<ph name="END_LINK" />.</translation>
 <translation id="453692855554576066">Gallwch weld eich pynciau hysbyseb yng ngosodiadau Chromium a rhwystro'r rhai nad ydych am eu rhannu â gwefannau</translation>
 <translation id="4598427486995631491">Cuddio'ch cyfeiriad IP</translation>
 <translation id="4692439979815346597">Gallwch weld eich pynciau hysbyseb yng ngosodiadau Chrome a rhwystro'r rhai nad ydych chi am eu rhannu â gwefannau</translation>
 <translation id="5413586988657235240">Gall gwefannau rydych yn ymweld â nhw ofyn i Chromium am bynciau i ddangos hysbysebion perthnasol i chi wrth amddiffyn eich hanes pori a'ch hunaniaeth</translation>
+<translation id="6053735090575989697">Dysgu rhagor am sut mae Google yn gwarchod eich data yn ein Polisi Preifatrwydd.</translation>
 <translation id="6186536480878693792">Gall gwefannau rydych yn ymweld â nhw ofyn i Chrome am bynciau i ddangos hysbysebion perthnasol i chi wrth amddiffyn eich hanes pori a'ch hunaniaeth</translation>
+<translation id="6195163219142236913">Mae cwcis trydydd parti yn gyfyngedig</translation>
 <translation id="6371812158043974664">Pan fyddwch wedi mewngofnodi i Chromium, mae'r gosodiad hwn yn helpu i gadw'ch cyfeiriad IP yn breifat. Os yw Chromium yn amau bod gwefan yn eich olrhain, mae'n bosib y bydd rhywfaint o'ch traffig yn cael ei anfon trwy weinyddion preifatrwydd. Dysgu rhagor am <ph name="LINK_BEGIN" />sut mae diogelu IP yn gweithio<ph name="LINK_END" /></translation>
+<translation id="6398358690696005758">Dysgu rhagor am sut mae Google yn gwarchod eich data yn ein <ph name="BEGIN_LINK1" />Polisi Preifatrwydd<ph name="LINK_END1" />.</translation>
 <translation id="7040031291654706261">Dysgu <ph name="BEGIN_LINK" />sut mae diogelu IP yn gweithio<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Adolygu eich gosodiad pynciau hysbyseb</translation>
 </translationbundle>

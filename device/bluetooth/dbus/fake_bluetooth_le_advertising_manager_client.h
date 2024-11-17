@@ -10,6 +10,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
@@ -85,8 +86,9 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothLEAdvertisingManagerClient
   // registered for it; maintained by RegisterAdvertisementServiceProvider() and
   // UnregisterProfileServiceProvicer() called by the constructor and
   // destructor of FakeBluetoothAdvertisementServiceProvider.
-  typedef std::map<dbus::ObjectPath,
-                   FakeBluetoothLEAdvertisementServiceProvider*>
+  typedef std::map<
+      dbus::ObjectPath,
+      raw_ptr<FakeBluetoothLEAdvertisementServiceProvider, CtnExperimental>>
       ServiceProviderMap;
   ServiceProviderMap service_provider_map_;
 

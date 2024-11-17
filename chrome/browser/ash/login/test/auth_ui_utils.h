@@ -118,6 +118,7 @@ class LocalAuthenticationDialogActor {
   bool IsVisible();
   void CancelDialog();
   void SubmitPassword(const std::string& password);
+  void SubmitPin(const std::string& pin);
   void WaitUntilDismissed();
 };
 
@@ -175,6 +176,7 @@ void LocalPasswordSetupExpectNextButton();
 void LocalPasswordSetupNextAction();
 void LocalPasswordSetupExpectBackButton();
 void LocalPasswordSetupBackAction();
+UIPath LocalPasswordSetupBackActionPath();
 void LocalPasswordSetupExpectFirstInput();
 void LocalPasswordSetupTypeFirstPassword(const std::string& pw);
 void LocalPasswordSetupExpectConfirmInput();

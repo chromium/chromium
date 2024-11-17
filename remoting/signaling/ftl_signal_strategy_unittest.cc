@@ -36,7 +36,6 @@ using testing::Return;
 constexpr char kFakeLocalUsername[] = "fake_local_user@domain.com";
 constexpr char kFakeRemoteUsername[] = "fake_remote_user@domain.com";
 constexpr char kFakeOAuthToken[] = "fake_oauth_token";
-constexpr char kFakeScopes[] = "fake_scopes";
 constexpr char kFakeFtlAuthToken[] = "fake_auth_token";
 constexpr char kFakeLocalRegistrationId[] = "fake_local_registration_id";
 constexpr char kFakeRemoteRegistrationId[] = "fake_remote_registration_id";
@@ -217,7 +216,7 @@ class FtlSignalStrategyTest : public testing::Test,
   void ExpectGetOAuthTokenFails(OAuthTokenGetter::Status status) {
     EXPECT_CALL(*token_getter_, CallWithToken(_))
         .WillOnce([=](OAuthTokenGetter::TokenCallback token_callback) {
-          std::move(token_callback).Run(status, {}, {}, {});
+          std::move(token_callback).Run(status, OAuthTokenInfo());
         });
   }
 
@@ -225,8 +224,8 @@ class FtlSignalStrategyTest : public testing::Test,
     EXPECT_CALL(*token_getter_, CallWithToken(_))
         .WillOnce([](OAuthTokenGetter::TokenCallback token_callback) {
           std::move(token_callback)
-              .Run(OAuthTokenGetter::SUCCESS, kFakeLocalUsername,
-                   kFakeOAuthToken, kFakeScopes);
+              .Run(OAuthTokenGetter::SUCCESS,
+                   OAuthTokenInfo(kFakeOAuthToken, kFakeLocalUsername));
         });
   }
 

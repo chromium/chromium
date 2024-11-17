@@ -449,7 +449,7 @@ public class PickerVideoPlayer extends FrameLayout
 
         // A click to the left (of the center of) the Play button counts as rewinding, and a click
         // to the right of it counts as fast forwarding.
-        float midX = mLargePlayButton.getX() + (mLargePlayButton.getWidth() / 2);
+        float midX = mLargePlayButton.getX() + (mLargePlayButton.getWidth() / 2f);
         videoPos += (x > midX) ? SKIP_LENGTH_IN_MS : -SKIP_LENGTH_IN_MS;
         MathUtils.clamp(videoPos, 0, duration);
 
@@ -747,12 +747,10 @@ public class PickerVideoPlayer extends FrameLayout
         }
 
         String formattedProgress =
-                mContext.getResources()
-                        .getString(R.string.photo_picker_video_duration, current, total);
+                mContext.getString(R.string.photo_picker_video_duration, current, total);
         mRemainingTime.setText(formattedProgress);
         mRemainingTime.setContentDescription(
-                mContext.getResources()
-                        .getString(R.string.accessibility_playback_time, current, total));
+                mContext.getString(R.string.accessibility_playback_time, current, total));
         int percentage =
                 mVideoView.getDuration() == 0
                         ? 0
@@ -789,13 +787,13 @@ public class PickerVideoPlayer extends FrameLayout
     private void switchToPlayButton() {
         mLargePlayButton.setImageResource(R.drawable.ic_play_circle_filled_white_24dp);
         mLargePlayButton.setContentDescription(
-                mContext.getResources().getString(R.string.accessibility_play_video));
+                mContext.getString(R.string.accessibility_play_video));
     }
 
     private void switchToPauseButton() {
         mLargePlayButton.setImageResource(R.drawable.ic_pause_circle_outline_white_24dp);
         mLargePlayButton.setContentDescription(
-                mContext.getResources().getString(R.string.accessibility_pause_video));
+                mContext.getString(R.string.accessibility_pause_video));
     }
 
     private void toggleMute() {
@@ -804,12 +802,12 @@ public class PickerVideoPlayer extends FrameLayout
             mMediaPlayer.setVolume(1f, 1f);
             mMuteButton.setImageResource(R.drawable.ic_volume_on_white_24dp);
             mMuteButton.setContentDescription(
-                    mContext.getResources().getString(R.string.accessibility_mute_video));
+                    mContext.getString(R.string.accessibility_mute_video));
         } else {
             mMediaPlayer.setVolume(0f, 0f);
             mMuteButton.setImageResource(R.drawable.ic_volume_off_white_24dp);
             mMuteButton.setContentDescription(
-                    mContext.getResources().getString(R.string.accessibility_unmute_video));
+                    mContext.getString(R.string.accessibility_unmute_video));
         }
     }
 
@@ -817,7 +815,7 @@ public class PickerVideoPlayer extends FrameLayout
         assert !mFullScreenEnabled;
         mFullscreenButton.setImageResource(R.drawable.ic_full_screen_exit_white_24dp);
         mFullscreenButton.setContentDescription(
-                mContext.getResources().getString(R.string.accessibility_exit_full_screen));
+                mContext.getString(R.string.accessibility_exit_full_screen));
         mFullScreenEnabled = true;
     }
 
@@ -825,7 +823,7 @@ public class PickerVideoPlayer extends FrameLayout
         assert mFullScreenEnabled;
         mFullscreenButton.setImageResource(R.drawable.ic_full_screen_white_24dp);
         mFullscreenButton.setContentDescription(
-                mContext.getResources().getString(R.string.accessibility_full_screen));
+                mContext.getString(R.string.accessibility_full_screen));
         mFullScreenEnabled = false;
     }
 

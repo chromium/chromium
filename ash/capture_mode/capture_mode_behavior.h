@@ -44,7 +44,7 @@ class CaptureModeBehavior {
  public:
   CaptureModeBehavior(const CaptureModeBehavior&) = delete;
   CaptureModeBehavior& operator=(const CaptureModeBehavior&) = delete;
-  virtual ~CaptureModeBehavior() = default;
+  virtual ~CaptureModeBehavior();
 
   // Creates an instance of the `CaptureModeBehavior` given the `behavior_type`.
   static std::unique_ptr<CaptureModeBehavior> Create(
@@ -65,6 +65,16 @@ class CaptureModeBehavior {
   // or when its session ends to start recording right after recording begins.
   virtual void DetachFromSession();
 
+  // Returns true if the behavior supports paint capture region overlay. Note
+  // this differs from `CanPaintRegionOverlay()` which checks if the behavior
+  // can *currently* paint region overlay.
+  virtual bool ShouldRegionOverlayBeAllowed() const;
+
+  // Returns true if the behavior can currently paint capture region overlay.
+  // Note that this can change dynamically throughout the lifetime of this
+  // behavior.
+  virtual bool CanPaintRegionOverlay() const;
+
   virtual bool ShouldImageCaptureTypeBeAllowed() const;
   virtual bool ShouldVideoCaptureTypeBeAllowed() const;
   virtual bool ShouldFulscreenCaptureSourceBeAllowed() const;
@@ -84,7 +94,18 @@ class CaptureModeBehavior {
   virtual bool RequiresCaptureFolderCreation() const;
   // Returns true if the behavior should re-show after hiding of all the capture
   // mode UIs while waiting for DLP confirmation.
-  virtual bool ShouldReShowUisAtPerformingCapture() const;
+  virtual bool ShouldReShowUisAtPerformingCapture(
+      PerformCaptureType capture_type) const;
+  // Returns true if the behavior should show default action buttons such as
+  // search and copy text after region selection.
+  virtual bool ShouldShowDefaultActionButtonsAfterRegionSelected() const;
+  virtual bool CanShowSmartActionsButton() const;
+  // Returns true if the behavior can show action buttons at all.
+  // TODO(b/377570562): Consolidate these APIs.
+  virtual bool CanShowActionButtons() const;
+  virtual bool ShouldShowCaptureButtonAfterRegionSelected() const;
+  virtual bool ShouldEndSessionOnShowingSearchResults() const;
+  virtual bool ShouldEndSessionOnSearchResultClicked() const;
   // Returns the full path for the capture file. If the creation of the path
   // failed, the path provided will be empty.
   using OnCaptureFolderCreatedCallback =
@@ -126,9 +147,9 @@ class CaptureModeBehavior {
   // settings restoration or not.
   virtual void OnDemoToolsSettingsChanged();
 
-  // Notifies the behavior that a region was selected. By default this will do
-  // nothing.
-  virtual void OnRegionSelected();
+  // Notifies the behavior that a region was selected or adjusted. By default
+  // this will do nothing.
+  virtual void OnRegionSelectedOrAdjusted();
 
   // Called when the `Enter` key is pressed. By default this will perform image
   // capture.

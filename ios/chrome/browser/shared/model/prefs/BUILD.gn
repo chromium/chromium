@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
+
 source_set("prefs") {
   sources = [
     "pref_backed_boolean.h",
@@ -36,6 +38,7 @@ source_set("browser_prefs") {
     "//components/content_settings/core/browser",
     "//components/dom_distiller/core",
     "//components/enterprise",
+    "//components/enterprise/connectors/core",
     "//components/enterprise/idle",
     "//components/feed/core/v2/public/ios:feed_ios_public",
     "//components/flags_ui",
@@ -50,8 +53,10 @@ source_set("browser_prefs") {
     "//components/network_time",
     "//components/ntp_tiles",
     "//components/omnibox/browser",
+    "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/core",
     "//components/password_manager/core/browser",
+    "//components/password_manager/core/common",
     "//components/payments/core",
     "//components/plus_addresses:prefs",
     "//components/policy/core/browser",
@@ -61,10 +66,12 @@ source_set("browser_prefs") {
     "//components/proxy_config",
     "//components/reading_list/core",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
-    "//components/saved_tab_groups:model",
+    "//components/saved_tab_groups/public",
     "//components/search_engines",
     "//components/segmentation_platform/embedder/default_model:default_model",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:public",
     "//components/segmentation_platform/public",
+    "//components/send_tab_to_self",
     "//components/sessions",
     "//components/sharing_message",
     "//components/signin/core/browser",
@@ -109,14 +116,16 @@ source_set("browser_prefs") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/tips_notifications/model:client",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication/history_sync",
     "//ios/chrome/browser/ui/authentication/signin",
     "//ios/chrome/browser/ui/content_suggestions",
+    "//ios/chrome/browser/ui/content_suggestions/price_tracking_promo:price_tracking_promo",
     "//ios/chrome/browser/ui/content_suggestions/safety_check:prefs",
+    "//ios/chrome/browser/ui/content_suggestions/tips",
     "//ios/chrome/browser/ui/reading_list:reading_list_constants",
+    "//ios/chrome/browser/ui/settings/clear_browsing_data:features",
     "//ios/chrome/browser/upgrade/model:public",
     "//ios/chrome/browser/voice/model:prefs",
     "//ios/chrome/browser/web/model",
@@ -126,6 +135,10 @@ source_set("browser_prefs") {
     "//ios/web/common:features",
     "//ui/base",
   ]
+
+  if (build_with_internal_optimization_guide) {
+    deps += [ "//components/optimization_guide/core:features" ]
+  }
 }
 
 source_set("unit_tests") {
@@ -138,6 +151,7 @@ source_set("unit_tests") {
     ":browser_prefs",
     ":prefs",
     "//base",
+    "//components/password_manager/core/common",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/signin/public/identity_manager:identity_manager",

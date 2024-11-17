@@ -202,7 +202,6 @@ class NonMainThreadImpl;
 }
 }  // namespace blink
 namespace cc {
-class CategorizedWorkerPoolImpl;
 class CategorizedWorkerPoolJob;
 class CategorizedWorkerPool;
 class CompletionEvent;
@@ -217,6 +216,7 @@ class CrashUtil;
 }
 namespace chromeos {
 class BlockingMethodCaller;
+class ChromeOsCdmFactory;
 namespace system {
 bool IsCoreSchedulingAvailable();
 int NumberOfPhysicalCores();
@@ -246,12 +246,12 @@ class SandboxHostLinux;
 class ScopedAllowWaitForDebugURL;
 class ServiceWorkerContextClient;
 class ShellPathProvider;
+class SlowWebPreferenceCache;
 class SynchronousCompositor;
 class SynchronousCompositorHost;
 class SynchronousCompositorSyncCallBridge;
 class ScopedAllowBlockingForViewAura;
 class TextInputClientMac;
-class WebContentsImpl;
 class WebContentsViewMac;
 base::File CreateFileForDrop(base::FilePath*);
 }  // namespace content
@@ -298,6 +298,9 @@ namespace init {
 bool InitializeStaticGLBindings(GLImplementationParts);
 }
 }  // namespace gl
+namespace gpu {
+class GpuMemoryBufferImplDXGI;
+}
 namespace history_report {
 class HistoryReportJniBridge;
 }
@@ -533,15 +536,9 @@ class BooleanWithOptionalStack {
 #endif
 };
 
-namespace internal {
-
-// Asserts that blocking calls are allowed in the current scope. This is an
-// internal call, external code should use ScopedBlockingCall instead, which
-// serves as a precise annotation of the scope that may/will block.
+// Asserts that blocking calls are allowed in the current scope.
 NOT_TAIL_CALLED BASE_EXPORT void AssertBlockingAllowed();
 NOT_TAIL_CALLED BASE_EXPORT void AssertBlockingDisallowedForTesting();
-
-}  // namespace internal
 
 // Disallows blocking on the current thread.
 NOT_TAIL_CALLED BASE_EXPORT void DisallowBlocking();
@@ -657,7 +654,7 @@ class BASE_EXPORT ScopedAllowBlocking {
 #endif
 #if BUILDFLAG(IS_WIN)
   friend class base::win::OSInfo;
-  friend class content::WebContentsImpl;  // http://crbug.com/1262162
+  friend class content::SlowWebPreferenceCache;  // http://crbug.com/1262162
   friend class media::GpuMojoMediaClientWin;  // https://crbug.com/360642944
 #endif
 #if BUILDFLAG(IS_IOS)
@@ -755,7 +752,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class blink::VideoTrackRecorderImplContextProvider;
   friend class blink::WorkerThread;
   friend class blink::scheduler::NonMainThreadImpl;
-  friend class cc::CategorizedWorkerPoolImpl;
   friend class cc::CategorizedWorkerPoolJob;
   friend class content::BrowserMainLoop;
   friend class content::BrowserProcessIOThread;
@@ -799,6 +795,7 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitives {
   friend class android_webview::
       OverlayProcessorWebView;                     // http://crbug.com/341151462
   friend class blink::VideoFrameResourceProvider;  // http://crbug.com/878070
+  friend class chromeos::ChromeOsCdmFactory;       // http://crbug.com/368792274
   friend class viz::
       DisplayCompositorMemoryAndTaskController;  // http://crbug.com/341151462
   friend class viz::SkiaOutputSurfaceImpl;       // http://crbug.com/341151462
@@ -851,7 +848,6 @@ class BASE_EXPORT
   friend class blink::RTCVideoDecoderAdapter;
   friend class blink::RTCVideoEncoder;
   friend class blink::WebRtcVideoFrameAdapter;
-  friend class cc::CategorizedWorkerPoolImpl;
   friend class cc::CategorizedWorkerPoolJob;
   friend class cc::CategorizedWorkerPool;
   friend class cc::TileTaskManagerImpl;
@@ -864,6 +860,7 @@ class BASE_EXPORT
   friend class content::SynchronousCompositor;
   friend class content::SynchronousCompositorHost;
   friend class content::SynchronousCompositorSyncCallBridge;
+  friend class gpu::GpuMemoryBufferImplDXGI;
   friend class media::AudioInputDevice;
   friend class media::AudioOutputDevice;
   friend class media::PaintCanvasVideoRenderer;

@@ -135,10 +135,9 @@ void ExtensionErrorController::IdentifyAlertableExtensions() {
     // Extensions disabled by policy. Note: this no longer includes blocklisted
     // extensions. We use similar triggering logic for the dialog, but the
     // strings will be different.
-    if (!management_policy->UserMayLoad(extension,
-                                        nullptr /*=ignore error */)) {
-      if (!prefs->IsBlocklistedExtensionAcknowledged(extension->id()))
-        blocklisted_extensions_.Insert(extension);
+    if (!management_policy->UserMayLoad(extension) &&
+        !prefs->IsBlocklistedExtensionAcknowledged(extension->id())) {
+      blocklisted_extensions_.Insert(extension);
     }
   }
 }

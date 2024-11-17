@@ -62,16 +62,21 @@ signin_metrics::ReauthAccessPoint GetReauthAccessPointForReauthConfirmationURL(
   if (!net::GetValueForKeyInQuery(url, kAccessPointParamKey, &value))
     return signin_metrics::ReauthAccessPoint::kUnknown;
 
-  int access_point = -1;
-  base::StringToInt(value, &access_point);
-  if (access_point <=
-          static_cast<int>(signin_metrics::ReauthAccessPoint::kUnknown) ||
-      access_point >
-          static_cast<int>(signin_metrics::ReauthAccessPoint::kMaxValue)) {
-    return signin_metrics::ReauthAccessPoint::kUnknown;
+  int access_point_int = -1;
+  base::StringToInt(value, &access_point_int);
+  auto access_point_enum =
+      static_cast<signin_metrics::ReauthAccessPoint>(access_point_int);
+  switch (access_point_enum) {
+    case signin_metrics::ReauthAccessPoint::kUnknown:
+    case signin_metrics::ReauthAccessPoint::kAutofillDropdown:
+    case signin_metrics::ReauthAccessPoint::kPasswordSaveBubble:
+    case signin_metrics::ReauthAccessPoint::kPasswordSettings:
+    case signin_metrics::ReauthAccessPoint::kGeneratePasswordDropdown:
+    case signin_metrics::ReauthAccessPoint::kGeneratePasswordContextMenu:
+    case signin_metrics::ReauthAccessPoint::kPasswordSaveLocallyBubble:
+      return access_point_enum;
   }
-
-  return static_cast<signin_metrics::ReauthAccessPoint>(access_point);
+  return signin_metrics::ReauthAccessPoint::kUnknown;
 }
 
 GURL GetReauthConfirmationURL(signin_metrics::ReauthAccessPoint access_point) {

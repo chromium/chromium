@@ -133,7 +133,7 @@ public class CafMediaRouteProviderTest {
         inOrder.verify(mManager)
                 .onRouteCreated(anyString(), eq("sink-id"), eq(1), eq(mProvider), eq(false));
         assertEquals(mProvider.mRoutes.size(), 1);
-        MediaRoute route = (MediaRoute) (mProvider.mRoutes.values().toArray()[0]);
+        MediaRoute route = (MediaRoute) mProvider.mRoutes.values().toArray()[0];
         assertEquals(route.sinkId, "sink-id");
         assertEquals(route.getSourceId(), "source-id-1");
         assertEquals(route.presentationId, "presentation-id-1");

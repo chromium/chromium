@@ -20,7 +20,7 @@ class ListFamilyMembersServiceFactoryTest : public PlatformTest {
   ProfileIOS* GetRegularProfile() { return profile_.get(); }
 
   ProfileIOS* GetOffTheRecordProfile() {
-    return profile_->GetOffTheRecordChromeBrowserState();
+    return profile_->GetOffTheRecordProfile();
   }
 
  private:
@@ -37,7 +37,7 @@ TEST_F(ListFamilyMembersServiceFactoryTest, CreateService) {
 }
 
 // Tests that ListFamilyMembersServiceFactory retuns null
-// with an off-the-record ChromeBrowserState.
+// with an off-the-record ProfileIOS.
 TEST_F(ListFamilyMembersServiceFactoryTest,
        ReturnsNullOnOffTheRecordBrowserState) {
   ProfileIOS* otr_profile = GetOffTheRecordProfile();

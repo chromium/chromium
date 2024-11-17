@@ -43,8 +43,8 @@ std::unique_ptr<PrefService> CreateLocalState(
     policy::PolicyService* policy_service,
     policy::BrowserPolicyConnector* policy_connector);
 
-std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateBrowserStatePrefs(
-    const base::FilePath& browser_state_path,
+std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
+    const base::FilePath& profile_path,
     base::SequencedTaskRunner* pref_io_task_runner,
     const scoped_refptr<user_prefs::PrefRegistrySyncable>& pref_registry,
     policy::PolicyService* policy_service,
@@ -55,7 +55,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateBrowserStatePrefs(
 // Creates an incognito copy of `pref_service` that shares most prefs but uses
 // a fresh non-persistent overlay for the user pref store.
 std::unique_ptr<sync_preferences::PrefServiceSyncable>
-CreateIncognitoBrowserStatePrefs(
+CreateIncognitoProfilePrefs(
     sync_preferences::PrefServiceSyncable* main_pref_store);
 
 #endif  // IOS_CHROME_BROWSER_PREFS_MODEL_IOS_CHROME_PREF_SERVICE_FACTORY_H_

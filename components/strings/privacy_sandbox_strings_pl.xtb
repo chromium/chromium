@@ -3,18 +3,25 @@
 <translationbundle lang="pl">
 <translation id="1444443021901415601">Chrome określa interesujące Cię tematy na podstawie najnowszej historii przeglądania</translation>
 <translation id="2252052615723281030">Gdy logujesz się w Chrome, to ustawienie pomaga chronić prywatność Twojego adresu IP. Kiedy Chrome przypuszcza, że jakaś witryna może Cię śledzić, wysyła część Twojego ruchu przez serwery prywatności.</translation>
+<translation id="235789365079050412">Polityka prywatności Google</translation>
 <translation id="2793385791865768072">Chromium określa interesujące Cię tematy na podstawie najnowszej historii przeglądania</translation>
+<translation id="2979365474350987274">Pliki cookie innych firm są ograniczone</translation>
 <translation id="33479675708419823">Gdy logujesz się w Chrome, to ustawienie pomaga chronić prywatność Twojego adresu IP. Kiedy Chrome przypuszcza, że jakaś witryna może Cię śledzić, wysyła część Twojego ruchu przez serwery prywatności. Dowiedz się więcej na temat <ph name="LINK_BEGIN" />działania ochrony IP<ph name="LINK_END" />.</translation>
 <translation id="3529311220178827364">Więcej informacji na temat ukrywania adresu IP</translation>
+<translation id="385051799172605136">Wstecz</translation>
 <translation id="4041687306270459969">Tematy reklam, które mają ponad 4 tygodnie, są automatycznie usuwane. Tematy to na przykład Sport, Odzież i inne</translation>
 <translation id="4177501066905053472">Tematy reklam</translation>
 <translation id="4301151630239508244">Tematy reklam to tylko 1 z wielu czynników, na podstawie których witryna może personalizować reklamy. Nawet jeśli nie wybierzesz tematów reklam, witryny nadal będą mogły wyświetlać reklamy, ale mogą być one mniej spersonalizowane. Dowiedz się więcej o <ph name="BEGIN_LINK_1" />zarządzaniu prywatnością w reklamach<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Więcej informacji o tym, jak Google chroni Twoje dane, znajdziesz w naszej <ph name="BEGIN_LINK" />Polityce prywatności<ph name="END_LINK" />.</translation>
 <translation id="453692855554576066">W ustawieniach Chromium możesz wyświetlić tematy reklam i zablokować te, których nie chcesz udostępniać witrynom</translation>
 <translation id="4598427486995631491">Ukryj swój adres IP</translation>
 <translation id="4692439979815346597">W ustawieniach Chrome możesz wyświetlić tematy reklam i zablokować te, których nie chcesz udostępniać witrynom</translation>
 <translation id="5413586988657235240">Witryny, które odwiedzasz, mogą pytać Chromium o tematy, aby wyświetlać Ci trafne reklamy, chroniąc przy tym Twoją historię przeglądania i tożsamość</translation>
+<translation id="6053735090575989697">Więcej informacji o tym, jak Google chroni Twoje dane, znajdziesz w naszej Polityce prywatności.</translation>
 <translation id="6186536480878693792">Witryny, które odwiedzasz, mogą pytać Chrome o tematy, aby wyświetlać Ci trafne reklamy, chroniąc przy tym Twoją historię przeglądania i tożsamość</translation>
+<translation id="6195163219142236913">Pliki cookie innych firm są ograniczone</translation>
 <translation id="6371812158043974664">Gdy logujesz się w Chromium, to ustawienie pomaga chronić prywatność Twojego adresu IP. Kiedy Chromium przypuszcza, że jakaś witryna może Cię śledzić, wysyła część Twojego ruchu przez serwery prywatności. Dowiedz się więcej na temat <ph name="LINK_BEGIN" />działania ochrony IP<ph name="LINK_END" />.</translation>
+<translation id="6398358690696005758">Więcej informacji o tym, jak Google chroni Twoje dane, znajdziesz w naszej <ph name="BEGIN_LINK1" />Polityce prywatności<ph name="LINK_END1" />.</translation>
 <translation id="7040031291654706261">Dowiedz się, <ph name="BEGIN_LINK" />jak działa ochrona IP<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Sprawdź ustawienia tematów reklam</translation>
 </translationbundle>

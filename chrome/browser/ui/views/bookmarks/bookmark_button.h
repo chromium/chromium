@@ -34,8 +34,6 @@ class BookmarkButtonBase : public views::LabelButton {
   std::unique_ptr<views::LabelButtonBorder> CreateDefaultBorder()
       const override;
 
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-
  private:
   std::unique_ptr<gfx::SlideAnimation> show_animation_;
 };
@@ -57,7 +55,6 @@ class BookmarkButton : public BookmarkButtonBase {
 
   // views::View:
   std::u16string GetTooltipText(const gfx::Point& p) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void AdjustAccessibleName(std::u16string& new_name,
                             ax::mojom::NameFrom& name_from) override;
   void SetText(const std::u16string& text) override;

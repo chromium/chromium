@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_ACTIONS_MODEL_H_
 
 #include <stddef.h>
+
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
+#include "chrome/browser/extensions/extension_action_dispatcher.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -39,11 +40,12 @@ class ExtensionActionManager;
 // overflow menu on a per-window basis. Callers interested in the arrangement of
 // actions in a particular window should check that window's instance of
 // ExtensionsContainer, which is responsible for the per-window layout.
-class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
-                            public extensions::ExtensionRegistryObserver,
-                            public extensions::ExtensionManagement::Observer,
-                            public extensions::PermissionsManager::Observer,
-                            public KeyedService {
+class ToolbarActionsModel
+    : public extensions::ExtensionActionDispatcher::Observer,
+      public extensions::ExtensionRegistryObserver,
+      public extensions::ExtensionManagement::Observer,
+      public extensions::PermissionsManager::Observer,
+      public KeyedService {
  public:
   using ActionId = std::string;
 
@@ -145,7 +147,7 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
                               const extensions::Extension* extension,
                               extensions::UninstallReason reason) override;
 
-  // ExtensionActionAPI::Observer:
+  // ExtensionActionDispatcher::Observer:
   void OnExtensionActionUpdated(
       extensions::ExtensionAction* extension_action,
       content::WebContents* web_contents,
@@ -211,8 +213,8 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   raw_ptr<extensions::ExtensionPrefs> extension_prefs_;
   raw_ptr<PrefService> prefs_;
 
-  // The ExtensionActionAPI object, cached for convenience.
-  raw_ptr<extensions::ExtensionActionAPI> extension_action_api_;
+  // The ExtensionActionDispatcher object, cached for convenience.
+  raw_ptr<extensions::ExtensionActionDispatcher> extension_action_dispatcher_;
 
   // The ExtensionRegistry object, cached for convenience.
   raw_ptr<extensions::ExtensionRegistry> extension_registry_;
@@ -230,8 +232,8 @@ class ToolbarActionsModel : public extensions::ExtensionActionAPI::Observer,
   // appear on the toolbar.
   std::vector<ActionId> pinned_action_ids_;
 
-  base::ScopedObservation<extensions::ExtensionActionAPI,
-                          extensions::ExtensionActionAPI::Observer>
+  base::ScopedObservation<extensions::ExtensionActionDispatcher,
+                          extensions::ExtensionActionDispatcher::Observer>
       extension_action_observation_{this};
 
   // Listen to extension load, unloaded notifications.

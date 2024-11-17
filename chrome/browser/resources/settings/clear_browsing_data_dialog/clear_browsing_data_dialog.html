@@ -1,4 +1,4 @@
-    <style include="settings-shared">
+    <style include="settings-shared cr-spinner-style">
       :host {
         /* Fixed height to allow multiple tabs with different height.
          * The last entry in the advanced tab should show half an entry.
@@ -53,7 +53,7 @@
         min-height: 40px;
       }
 
-      paper-spinner-lite {
+      .spinner {
         margin-bottom: auto;
         margin-inline-end: 16px;
         margin-top: auto;
@@ -321,8 +321,7 @@
         </cr-page-selector>
       </div>
       <div slot="button-container">
-        <paper-spinner-lite active="[[clearingInProgress_]]">
-        </paper-spinner-lite>
+        <div class="spinner" hidden$="[[!clearingInProgress_]]"></div>
         <cr-button class="cancel-button" autofocus
             disabled="[[clearingInProgress_]]"
             on-click="onCancelClick_">

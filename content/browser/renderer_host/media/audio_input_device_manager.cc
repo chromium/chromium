@@ -46,9 +46,8 @@ const char* TypeToString(blink::mojom::MediaStreamType type) {
     case blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
       return "DISPLAY_AUDIO_CAPTURE";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "INVALID";
 }
 
 std::string GetOpenLogString(const base::UnguessableToken& session_id,

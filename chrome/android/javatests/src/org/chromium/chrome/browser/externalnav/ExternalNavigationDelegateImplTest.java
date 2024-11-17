@@ -38,7 +38,7 @@ import java.util.function.Function;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class ExternalNavigationDelegateImplTest {
 
-    class ExternalNavigationDelegateImplForTesting extends ExternalNavigationDelegateImpl {
+    static class ExternalNavigationDelegateImplForTesting extends ExternalNavigationDelegateImpl {
         private Function<Intent, Boolean> mCanExternalAppHandleIntent;
 
         public ExternalNavigationDelegateImplForTesting(Tab activityTab) {

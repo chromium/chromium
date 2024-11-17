@@ -34,8 +34,7 @@ public class ChannelsUpdater {
                     new ChannelsUpdater(
                             ChromeSharedPreferences.getInstance(),
                             new ChannelsInitializer(
-                                    BaseNotificationManagerProxyFactory.create(
-                                            ContextUtils.getApplicationContext()),
+                                    BaseNotificationManagerProxyFactory.create(),
                                     ChromeChannelDefinitions.getInstance(),
                                     ContextUtils.getApplicationContext().getResources()),
                             ChromeChannelDefinitions.CHANNELS_VERSION);

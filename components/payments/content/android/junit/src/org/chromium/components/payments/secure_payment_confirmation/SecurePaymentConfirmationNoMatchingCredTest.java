@@ -26,7 +26,6 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
@@ -54,7 +53,6 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
             InputProtector.POTENTIALLY_UNINTENDED_INPUT_THRESHOLD;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.WARN);
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private WebContents mWebContents;
@@ -92,7 +90,7 @@ public class SecurePaymentConfirmationNoMatchingCredTest {
 
         // Create formatter mocks
         UrlFormatter.Natives urlFormatterJniMock = Mockito.mock(UrlFormatter.Natives.class);
-        mJniMocker.mock(UrlFormatterJni.TEST_HOOKS, urlFormatterJniMock);
+        UrlFormatterJni.setInstanceForTesting(urlFormatterJniMock);
         Mockito.doReturn("example.test")
                 .when(urlFormatterJniMock)
                 .formatStringUrlForSecurityDisplay(

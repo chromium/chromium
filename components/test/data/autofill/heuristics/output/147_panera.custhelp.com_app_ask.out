@@ -26,10 +26,10 @@ UNKNOWN_TYPE | Incident.CustomFields.c.gift_card_request_type | Gift Card Reques
 UNKNOWN_TYPE | Incident.CustomFields.c.gift_card_action | Gift Card Action |  | -default
 UNKNOWN_TYPE | Incident.CustomFields.c.gift_card_issuer_person | Gift Card Issuer (person) | 588 | -default
 UNKNOWN_TYPE | Incident.CustomFields.c.gift_card_appeasement_amt | Gift Card Appeasement $ Optional Optional |  | -default
-NUMERIC_QUANTITY | Incident.CustomFields.c.gift_card_amount_new | Gift Card Amount (new) Optional Optional |  | -default
+UNKNOWN_TYPE | Incident.CustomFields.c.gift_card_amount_new | Gift Card Amount (new) Optional Optional |  | -default
 UNKNOWN_TYPE | Incident.CustomFields.c.gift_card_new_card | Gift Card - New Card # Optional Optional |  | -default
 UNKNOWN_TYPE | Incident.CustomFields.c.gift_card_box_number | Gift Card Box # Optional Optional |  | -default
-NUMERIC_QUANTITY | Incident.CustomFields.c.gift_card_frozen_amount | Gift Card Amount (frozen) Optional Optional |  | -default
+UNKNOWN_TYPE | Incident.CustomFields.c.gift_card_frozen_amount | Gift Card Amount (frozen) Optional Optional |  | -default
 UNKNOWN_TYPE | Incident.CustomFields.c.gift_card_frozen_card_number | Gift Card Frozen Card # Optional Optional |  | -default
 UNKNOWN_TYPE | Incident.CustomFields.c.gift_card_issuing_location | Gift Card Issuing Location Optional Optional |  | -default
 UNKNOWN_TYPE | Incident.CustomFields.c.chat_type | Chat Topic Please select the Chat topic that best fits the issue |  | -default

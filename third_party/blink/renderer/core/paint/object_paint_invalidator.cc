@@ -52,7 +52,7 @@ ObjectPaintInvalidatorWithContext::ComputePaintInvalidationReason() {
   bool previous_visibility_visible = object_.PreviousVisibilityVisible();
   object_.GetMutableForPainting().UpdatePreviousVisibilityVisible();
   if (object_.VisualRectRespectsVisibility() && !previous_visibility_visible &&
-      object_.StyleRef().UsedVisibility() != EVisibility::kVisible) {
+      object_.StyleRef().Visibility() != EVisibility::kVisible) {
     return PaintInvalidationReason::kNone;
   }
 

@@ -6,13 +6,16 @@
 #define CHROME_BROWSER_AI_AI_TEST_UTILS_H_
 
 #include "base/supports_user_data.h"
+#include "chrome/browser/ai/ai_manager_keyed_service.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 
 class AITestUtils {
@@ -31,15 +34,66 @@ class AITestUtils {
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
     BindNewPipeAndPassRemote();
 
+    MOCK_METHOD(void, OnStreaming, (const std::string& text), (override));
     MOCK_METHOD(void,
-                OnResponse,
-                (blink::mojom::ModelStreamingResponseStatus status,
-                 const std::optional<std::string>& text,
-                 std::optional<uint64_t> current_tokens),
+                OnError,
+                (blink::mojom::ModelStreamingResponseStatus status),
+                (override));
+    MOCK_METHOD(void,
+                OnCompletion,
+                (blink::mojom::ModelExecutionContextInfoPtr context_info),
                 (override));
 
    private:
     mojo::Receiver<blink::mojom::ModelStreamingResponder> receiver_{this};
+  };
+
+  class MockModelDownloadProgressMonitor
+      : public blink::mojom::ModelDownloadProgressObserver {
+   public:
+    MockModelDownloadProgressMonitor();
+    ~MockModelDownloadProgressMonitor() override;
+    MockModelDownloadProgressMonitor(const MockModelDownloadProgressMonitor&) =
+        delete;
+    MockModelDownloadProgressMonitor& operator=(
+        const MockModelDownloadProgressMonitor&) = delete;
+
+    mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
+    BindNewPipeAndPassRemote();
+
+    // `blink::mojom::ModelDownloadProgressObserver` implementation.
+    MOCK_METHOD(void,
+                OnDownloadProgressUpdate,
+                (uint64_t downloaded_bytes, uint64_t total_bytes),
+                (override));
+
+   private:
+    mojo::Receiver<blink::mojom::ModelDownloadProgressObserver> receiver_{this};
+  };
+
+  class MockCreateLanguageModelClient
+      : public blink::mojom::AIManagerCreateLanguageModelClient {
+   public:
+    MockCreateLanguageModelClient();
+    ~MockCreateLanguageModelClient() override;
+    MockCreateLanguageModelClient(const MockCreateLanguageModelClient&) =
+        delete;
+    MockCreateLanguageModelClient& operator=(
+        const MockCreateLanguageModelClient&) = delete;
+
+    mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+    BindNewPipeAndPassRemote();
+
+    MOCK_METHOD(
+        void,
+        OnResult,
+        (mojo::PendingRemote<blink::mojom::AILanguageModel> language_model,
+         blink::mojom::AILanguageModelInfoPtr info),
+        (override));
+
+   private:
+    mojo::Receiver<blink::mojom::AIManagerCreateLanguageModelClient> receiver_{
+        this};
   };
 
   class AITestBase : public ChromeRenderViewHostTestHarness {
@@ -55,17 +109,21 @@ class AITestUtils {
     void SetupNullOptimizationGuideKeyedService();
 
     mojo::Remote<blink::mojom::AIManager> GetAIManagerRemote();
-    MockSupportsUserData* mock_host() { return mock_host_.get(); }
+    MockSupportsUserData& mock_host() { return *mock_host_.get(); }
     void ResetMockHost();
+    size_t GetAIManagerReceiversSize();
+    size_t GetAIManagerDownloadProgressObserversSize();
+    void MockDownloadProgressUpdate(uint64_t downloaded_bytes,
+                                    uint64_t total_bytes);
 
     raw_ptr<MockOptimizationGuideKeyedService>
         mock_optimization_guide_keyed_service_;
 
    private:
+    AIManagerKeyedService* GetAIManager();
     std::unique_ptr<MockSupportsUserData> mock_host_;
   };
 
-  static std::string GetTypeURLForProto(std::string type_name);
   static const optimization_guide::TokenLimits& GetFakeTokenLimits();
   static const optimization_guide::proto::Any& GetFakeFeatureMetadata();
 };

@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">Produciuse un erro ao cargar a páxina porque o módulo da interface para programadores (dev_ui) non está instalado</translation>
 <translation id="5574202486608032840">Sistema <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Retroceso</translation>
+<translation id="5606865426897221650">Tabulador</translation>
 <translation id="5613020302032141669">Frecha para a esquerda</translation>
 <translation id="5633029987065897167">Baleiro</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{Un minuto}other{# minutos}}</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">Intro</translation>
 <translation id="8210608804940886430">Avanzar páxina</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Tabulador</translation>
 <translation id="8259556432390118667">Valor hexadecimal da cor</translation>
 <translation id="8328145009876646418">Bordo esquerdo</translation>
 <translation id="8331626408530291785">Desprazar para arriba</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{Un segundo}other{# segundos}}</translation>
 <translation id="9059834730836941392">Contraer notificación</translation>
 <translation id="9170848237812810038">&amp;Desfacer</translation>
+<translation id="9195990613383871904">Mañá</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">Inicio</translation>
 <translation id="944069440740578670">Notificacións sen ler</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{Hai 1 segundo}other{Hai # segundos}}</translation>

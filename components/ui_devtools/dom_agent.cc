@@ -107,7 +107,7 @@ struct DOMAgent::Query {
   QueryType query_type_;
 };
 
-DOMAgent::DOMAgent() {}
+DOMAgent::DOMAgent() = default;
 
 DOMAgent::~DOMAgent() {
   Reset();

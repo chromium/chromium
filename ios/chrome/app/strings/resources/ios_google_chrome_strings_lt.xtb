@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="lt">
 <translation id="1066101356081285416">„Chrome“ aptiks stebėjimo numerius svetainėse, kuriose lankotės, ir rodys siuntinių atnaujinimus naujo skirtuko puslapyje. Siuntinio stebėjimo numeris ir svetainės pavadinimas bus siunčiami „Google“, kad būtų galima teikti šią funkciją ir tobulinti „Google“ apsipirkimo funkcijas visiems žmonėms. Tai galite bet kada atnaujinti <ph name="BEGIN_LINK" />siuntinio stebėjimo nustatymuose<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Paieška naudojant „Google Lens“</translation>
 <translation id="1143896152279775643">Slaptažodis bus išsaugotas „Google“ slaptažodžių tvarkytuvėje kaip priskirtas el. pašto adresui <ph name="EMAIL" /></translation>
 <translation id="1146503048444965320">Atidarykite naują skirtuką naršyklėje „Chrome“</translation>
 <translation id="1166460004393506534">Naršymo duomenų ištrynimas naršyklėje „Chrome“.</translation>
@@ -38,7 +39,9 @@
 <translation id="1670609221633730681">„Chrome“ patarimas: pasirinkite adreso juostos padėtį</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Pridedami įvesti URL prie žymių naršyklėje „Chrome“.</translation>
+<translation id="1799920918471566157">„Chrome“ patarimai</translation>
 <translation id="1830634592642484976">Šis adresas šiuo metu išsaugotas naršyklėje „Chrome“. Jei norite jį naudoti „Google“ produktuose, išsaugokite „Google“ paskyroje (<ph name="USER_EMAIL" />).</translation>
+<translation id="1891812034154776216">Nustatykite atidarytų inkognito skirtukų slėpimą, kai išeinate iš „Chrome“</translation>
 <translation id="1917964099031477364">Ši paskyra ir bet kokie neišsaugoti duomenys bus pašalinti iš „Chrome“ bei kitų šiame įrenginyje įdiegtų „Google“ programų.</translation>
 <translation id="1919130412786645364">Leisti „Chrome“ prisijungti</translation>
 <translation id="1965935827552890526">Pabaikite tai, ką darėte, kitame atidarytame „Chrome“ lange.</translation>
@@ -70,6 +73,7 @@
 <translation id="2689064829982324496">Jei norite atsijungti nuo „Google“ paskyros visose svetainėse, <ph name="BEGIN_LINK" />atsijunkite nuo „Chrome“<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">„Chrome“ nepavyko patikrinti, ar yra naujinių. Bandykite dar kartą vėliau.</translation>
 <translation id="2703746758996815929">Jei norite gauti naudingų „Chrome“ patarimų, įjunkite pranešimus „iOS“ nustatymuose.</translation>
+<translation id="2728851697704606655">Vertimas naudojant „Google Lens“</translation>
 <translation id="2736805085127235148">„Chrome“ pranešimai šiuo metu išjungti įrenginio nustatymuose.</translation>
 <translation id="2754428955276778271">Kai kurie „Chrome“ duomenys dar neišsaugoti „Google“ paskyroje.
 
@@ -247,6 +251,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="7581063337314642333">Apsilankykite „Chrome“ skirtukų tinklelyje</translation>
 <translation id="7599894504325210080">„Chrome“ automatinio pildymo išplėstinis rodinys</translation>
 <translation id="7642373780953416937">Gaukite įspėjimus apie bet kokias privatumo ar saugos problemas, kurias „Chrome“ automatiškai aptinka.</translation>
+<translation id="7660356333829433649">Čia rasite daugiau naudingų patarimų, kaip išnaudoti visas „Chrome“ galimybes.</translation>
 <translation id="7662994914830945754">Kad matytumėte skirtukus iš visų įrenginių, kuriuose naudojate „Chrome“, prisijunkite ir įjunkite sinchronizavimą</translation>
 <translation id="7693590760643069321">Dabar galite naudoti „Chrome“ bet kada palietę nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="7698568245838009292">„Chrome“ nori pasiekti fotoaparatą</translation>
@@ -261,6 +266,7 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="7948283758957877064">„Chrome“ naujienos</translation>
 <translation id="8000174216052461231">„Chrome“ patarimas: gaukite patikimiausią „Chrome“ apsaugą</translation>
 <translation id="8006014511203279255">Naudokite „Chrome“ bet kada palietę nuorodas pranešimuose ir kitose programose.</translation>
+<translation id="8014670471808569312">„Chrome“ pasiūlys išsaugoti slaptažodį.</translation>
 <translation id="8018153653741938705">Saugos užtikrinimas naudojant „Google Chrome“</translation>
 <translation id="8022947259858476807">Naudokite „Chrome“ pagal numatytuosius nustatymus, kad atidarytumėte nuorodas, ieškotumėte iš valdiklių ir automatiškai pildytumėte slaptažodžius kitose programose</translation>
 <translation id="804638182476029347">Leiskite „Chrome“ pranešimams gauti įspėjimus apie sumažintas kainas</translation>
@@ -292,6 +298,7 @@ Duomenys užšifruoti naudojant slaptafrazę <ph name="TIME" />. Įveskite ją, 
 <translation id="8558480467877843976">Dabar galite naudoti „Chrome“ bet kada naršydami ar paliesdami nuorodas pranešimuose, dokumentuose ir kitose programose.</translation>
 <translation id="8603022514504485810">„Google“ slaptažodžių tvarkyklei nepavyko patikrinti visų slaptažodžių. Bandykite dar kartą rytoj arba <ph name="BEGIN_LINK" />patikrinkite slaptažodžius „Google“ paskyroje<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Įjunkite parinktį „Užrakinti inkognito skirtukus uždarius „Chrome“.</translation>
+<translation id="8673726683583791503">Apsipirkimas naudojant „Google Lens“</translation>
 <translation id="8727043961453758442">Išnaudokite visas „Chrome“ galimybes</translation>
 <translation id="8765470054473112089">Kai įvedate tekstą adreso juostoje ar paieškos laukelyje, „Chrome“ siunčia tai, ką įvedate, į numatytąjį paieškos variklį, kad gautų geresnių pasiūlymų. Ši funkcija inkognito režimu išjungta.</translation>
 <translation id="8772179140489533211">Rodomi raginimai prisijungti prie „Chrome“.</translation>

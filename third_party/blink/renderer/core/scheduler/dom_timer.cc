@@ -27,6 +27,7 @@
 
 #include <limits>
 
+#include "base/check_deref.h"
 #include "base/message_loop/message_pump.h"
 #include "base/numerics/clamped_math.h"
 #include "base/task/single_thread_task_runner.h"
@@ -367,7 +368,7 @@ void DOMTimer::Fired() {
   probe::UserCallback probe(context, is_interval ? "setInterval" : "setTimeout",
                             g_null_atom, true);
   probe::InvokeCallback invoke_probe(
-      action_->GetScriptState(),
+      CHECK_DEREF(action_->GetScriptState()),
       is_interval ? "TimerHandler:setInterval" : "TimerHandler:setTimeout",
       action_->CallbackFunction());
   probe::AsyncTask async_task(context, &async_task_context_,

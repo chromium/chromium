@@ -5,14 +5,14 @@ implements its accessibility support on Android.
 
 Chrome plays an important role on Android - not only is it the default
 browser, but Chrome powers WebView, which is used by many built-in and
-third-party apps to display all sorts of content. Android includes a lightweight
+third-party apps to display web content. Android includes a lightweight
 implementation called Chrome Custom Tabs, which is also powered by Chrome.
-All of these implementations must be accessible, and the Chrome & Chrome OS Accessibility
-team provides the support to make these accessibility through the Android API.
+All of these implementations must be accessible, and the Chrome Accessibility
+team provides the support to make these accessible through the Android API.
 
 Accessibility on Android is heavily used. There are many apps that hijack the
 Android accessibility API to act on the user's behalf (e.g. password managers,
-screen clickers, anti-virus software, etc). Because of this, roughly **16%** of all
+screen clickers, anti-virus software, etc). Because of this, roughly **7%** of all
 Android users are running the accessibility code (even if they do not realize it).
 
 As background reading, you should be familiar with
@@ -81,6 +81,15 @@ WebContentsAccessibilityImpl object has the same lifecycle as the Tab for which
 it was created, and although it won't fire events or serve anything to downstream
 AT if the tab is backgrounded/hidden, the object will continue to exist and will
 not be destroyed until the Tab is destroyed/closed.
+
+The Chrome accessibility code comes at a steep performance cost. We continually evolve this code and improve its performance, but accessibility is inherently heavy. In addition to the lazy initialization, we have added other performance improvements.
+
+* **On-Demand AccessibilityEvents** - When AccessibilityServices register with the Android OS, they provide a list of AccessibilityEvents that they are interested in / would like to receive from the framework when they occur. The Chrome Android code queries the list of running services and finds the union of all requested event types. When the AccessibilityEventDispatcher is sent an event to add to its queue to dispatch, if that event type is not in the list of AccessibilityEvents requested by the currently running accessibility services, the Dispatcher simply drops/ignores the request.
+
+* **Custom AXModes** - This feature queries the list of running services, and sets a specific [AXMode](https://source.chromium.org/chromium/chromium/src/+/main:ui/accessibility/ax_mode.h)
+based on the services that are running, to tailor the native accessibility engine to the current situation. Each AXMode filters out a different level of information to improve performance while preserving necessary functionality. For example, a password manager may use the accessibility engine, but it may only be interested in form fields. We can use an AXMode bespoke to Android to tell the native accessibility engine to serialize/populate only nodes related to forms. This greatly improves performance by reducing the size of the accessibility tree and the number of events sent to the browser process.
+
+* **Automatically disabling accessibility** - Typically the accessibility engine is an all-or-one system, and once it is running for a given tab, it does not stop until that tab is closed (even if accessibility is no longer needed for that tab, such as when a user disables their running services). When we detect that a user has not been using the accessibility engine and no longer has an accessibility service running, we stop the engine and teardown all the related objects to improve performance. This is not done on any of the other platforms.
 
 ## AccessibilityNodeInfo
 
@@ -303,228 +312,6 @@ many events that can be dropped, and there is no reason to construct an event un
 we are sure it will be dispatched. So we do not construct the AccessibilityEvents
 until the moment the Dispatcher has started the request to send the event to the
 Android framework.
-
-## Testing on Android
-
-Testing on Android happens through a couple of build targets depending on what it
-is that we want to test. Android has tests present in the **content\_browsertests**
-target, same as the other platforms, which tests the BrowserAccessibilityManagerAndroid
-and BrowserAccessibilityAndroid through the various DumpAccessibilityTreeTests
-and DumpAccessibilityEventsTests. However, these tests do not cover the
-web\_contents\_accessibility\_android layer, or any of the Java-side code. The
-web\_contents\_accessibility\_android object and the associated WebContentsAccessibilityImpl
-object are not created for content\_browsertests and require a full browser instance
-to be available (or at least the content shell). To handle these types of tests
-we must use the **content\_shell\_test\_apk** target, which will run an instance of a
-web contents and allow the creation/execution of WebContentsAccessibilityImpl and
-the corresponding native object. And finally there is the **chrome\_public\_test\_apk**,
-which is used to test the Chrome Android UI, outside the web contents, which is
-necessary for testing accessibility features that have a user-facing Android UI, such as
-image descriptions, the accessibility settings pages, and page zoom.
-
-### Testing the "missing layer"
-
-The "missing layer" in testing refers to the gap in testing for WebContentsAccessibilityImpl,
-and namely web\_contents\_accessibility\_android mentioned above. There are three main
-classes we use to test these. They are:
-
-- WebContentsAccessibilityTest
-
-    This test suite is used to test the methods of WebContentsAccessibilityImpl.java. It tests
-    the various actions of performAction, construction of AccessibilityEvents, and
-    various helper methods we use throughout the code.
-
-- WebContentsAccessibilityTreeTest
-
-    This class is the Java-side equivalent of the DumpAccessibilityTreeTests. This test suite
-    opens a given html file (shared with the content\_browsertests), generates an
-    AccessibilityNodeInfo tree for the page, and then dumps this tree and compares with
-    an expectation file (denoted with the `...-expected-android-external.txt` suffix). We continue
-    to keep around the content\_browsertests because a failure in one and not the other
-    would provide insight into a potential bug location.
-
-- WebContentsAccessibilityEventsTest
-
-    This class is the Java-side equivalent of the DumpAccessibilityEventsTests. Same as the
-    suite above, it shares the same html files as the content\_browsertests, opens them,
-    runs the Javascript, and records the AccessibilityEvents that are dispatched to
-    downstream AT. There is no Android version of the DumpAccessibilityEventsTests though,
-    so these expectation files are suffixed with the usual `...-expected-android.txt`.
-
-When new tests are added for content_browsertests, the associated test should also
-be added in WebContentsAccessibility\*Test, and there are PRESUBMIT warnings to
-remind developers of this (although they are non-blocking).
-
-### Writing new tests
-
-Adding tests is as easy on Android as it is on the other platforms because the
-mechanism is in place and only a single new method needs to be added for the test.
-
-If you are adding a new events test, "example-test.html", you would
-first create the html file as normal (content/test/data/accessibility/event/example-test.html),
-and add the test to the existing `dump_accessibility_events_browsertests.cc`:
-
-```
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, AccessibilityEventsExampleTest) {
-  RunEventTest(FILE_PATH_LITERAL("example-test.html"));
-}
-```
-
-To include this test on Android, you would add a similar block to the
-`WebContentsAccessibilityEventsTest.java` class:
-
-```
-@Test
-@SmallTest
-public void test_exampleTest() {
-    performTest("example-test.html", "example-test-expected-android.txt");
-}
-```
-
-Some tests on Android won't produce any events. For these you do not need to
-create an empty file, but can instead make the test line:
-
-```
-    performTest("example-test.html", EMPTY_EXPECTATIONS_FILE);
-```
-
-The easiest approach is to use the above line, run the tests, and if it fails,
-the error message will give you the exact text to add to the
-`-expected-android.txt` file. The `-expected-android.txt` file should go in the
-same directory as the others (content/test/data/accessibility/event).
-
-For adding a new WebContentsAccessibilityTreeTest, you follow the same method but
-include the function in the corresponding Java file.
-
-Note: Writing WebContentsAccessibilityTests is much more involved and there is no
-general approach that can be encapsulated here, same with the UI tests. For those
-there are many existing examples to reference, or you can reach out to an Android developer.
-
-### Running tests and tracking down flakiness
-
-Running tests for Android can seem a bit daunting because it requires new build
-targets, an emulator, and different command-line arguments and syntax. But Android
-has a few nifty tricks that don't exist on every platform. For example, Android
-tests can be run on repeat indefinitely, but set to break on their first failure. This
-is great for tracking down flakiness. It is also possible to use a local repository
-to test directly on the build bots, which is great when a test works locally but flakes
-or fails during builds. Let's look at some basic examples.
-
-First ensure that you have followed the basic [Android setup](https://chromium.googlesource.com/chromium/src/+/main/docs/android_build_instructions.md) guides and can
-successfully build the code. You should not proceed further until you can
-successfully run the command:
-
-```
-autoninja -C out/Debug chrome_apk
-```
-
-One of the most important things to remember when building for unit tests is to use
-the `x86` architecture, because most emulators use this. (Note: For running on try
-bots however, you'll want `arm64`, more on that below). Your gn args should contain
-at least:
-
-```
-target_os = "android"
-target_cpu = "x86"
-```
-
-To run the types of tests mentioned above, you'll build with a command similar to:
-
-```
-autoninja -C out/Debug content_shell_test_apk
-```
-
-The filtering argument for tests is `-f` rather than the `--gtest_filter` that it is
-used with content\_browsertests. So to run an example WebContentsAccessibilityTreeTest test,
-you may use a command such as:
-
-```
-out/Debug/bin/run_content_shell_test_apk --num_retries=0 -f "*WebContentsAccessibilityTreeTest*testExample"
-```
-
-This would look for an x86 phone to deploy to, which should be your emulator. You can
-choose to setup an emulator in Android Studio, or you can use some of the emulators
-that come pre-built in the repo. [More information here](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/android_emulator.md). In general it is best to run on one of the
-newer Android versions, but sometimes the newest is unstable. To specify an
-emulator to use, you include the `--avd-config` argument, along with the desired
-emulator (see link above for full list). This will run the test without opening a
-window, but if you'd like to see an emulator window you can add the `--emulator-window`
-argument. The `--repeat=#` argument allows repeats, and if set to `-1` along with
-the `--break-on-failure` argument, the test will run repeatedly until it fails once.
-
-Putting this all together, to run the example test with no retries per run, run
-repeatedly until failure, on the Android 11 emulator, with a window available, you would
-use the command:
-
-```
-out/Debug/bin/run_content_shell_test_apk \
-    --num_retries=0 \
-    --repeat=-1 \
-    --break-on-failure \
-    --emulator window \
-    --avd-config tools/android/avd/proto/android_30_google_apis_x86.textpb \
-    -f "*WebContentsAccessibilityTreeTest*testExample"
-```
-
-All of this information also applies to the UI tests, which use the target:
-
-```
-autoninja -C out/Debug chrome_public_test_apk
-```
-
-In this case we would have a similar command to run an ImageDescriptions or Settings
-related test:
-
-```
-out/Debug/bin/run_chrome_public_test_apk \
-    --num_retries=0 \
-    --repeat=-1 \
-    --break-on-failure \
-    --emulator window \
-    --avd-config tools/android/avd/proto/android_30_google_apis_x86.textpb \
-    -f "*ImageDescriptions*"
-```
-
-#### Running on try bots
-
-For more information you should reference the `mb.py` [user guide](https://source.chromium.org/chromium/chromium/src/+/main:tools/mb/docs/user_guide.md).
-
-Note: When running on the trybots, you often need to use `target_cpu = "arm64"`, since
-these are actual devices and not emulators.
-
-It is not uncommon when working on the Android accessibility code to have a test that
-works fine locally, but consistently fails on the try bots. These can be difficult
-to debug, but if you run the test directly on the bots it is easier to gain insights.
-This is done using the `mb.py` script. You should first build the target exactly as
-outlined above (or mb.py will build it for you), and then you use the `mb.py run` command
-to start a test. You provide a series of arguments to specify which properties you
-want the try bot to have (e.g. which OS, architecture, etc), and you also can include
-arguments for the test apk, same as above. Note: It is recommended to at least provide
-the argument for the test filter to save time.
-
-With `mb.py`, you use `-s` to specify swarming, and `-d` to specify dimensions, which
-narrow down the choice in try bot. The dimensions are added in the form: `-d dimension_name dimension_value`.
-You should specify the `pool` as `chromium.tests`, the `device_os_type` as `userdebug`,
-and the `device_os` for whichever Android version you're interested in (e.g. `M`, `N`, `O`, etc).
-After specifying all your arguments to `mb.py`, include a `--`, and after this `--`
-all further arguments are what is passed to the build target (e.g. content\_shell\_test\_apk).
-
-Putting this all together, to run the same tests as above, in the same way, but
-on the Android M try bots, you would use the command:
-
-```
-tools/mb/mb.py run -s --no-default-dimensions \
-    -d pool chromium.tests \
-    -d device_os_type userdebug \
-    -d device_os M \
-    out/Debug \
-    content_shell_test_apk \
-    -- \
-    --num_retries=0 \
-    --repeat=-1 \
-    --break-on-failure \
-    -f "*WebContentsAccessibilityTreeTest*testExample"
-```
 
 ## Common Android accessibility "gotchas"
 
@@ -753,74 +540,27 @@ tools/mb/mb.py run -s --no-default-dimensions \
     and there are methods on the Java-side that can give signals of whether the current
     instance is a WebView or Chrome custom tab. [Example: isCustomTab](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/Tab.java?q=isCustomTab).
 
-## Recent Progress and Features
-
-The Chrome Android accessibility code continues to evolve each quarter. We have
-strengthened our testing and the stability of the code, but we also continue to
-add new features and improvements. Beyond the usual bug fixes, below is a quick
-summary of some features in the pipeline.
-
-### OnDemand AT
-
-We have recently implemented a feature we refer to as "OnDemand AT" for short.
-This feature is still rolling out and we intend to eventually have it enabled
-on 100% stable by default. The feature modifies the AccessibilityEventDispatcher
-that is explained above. If the feature is enabled, then WebContentsAccessibilityImpl
-will query the Android system to determine the currently enabled accessibility
-services, as well as the types of data they are interested in, namely the types of
-AccessibilityEvents they want to know about. When the AccessibilityEventDispatcher
-is sent an event to add to its queue or dispatch, if that event type is not in
-the list of AccessibilityEvents relevant to currently enabled accessibility services,
-the Dispatcher simply drops/ignores the request. Preliminary data shows that this
-has created a noticeable improvement for accessibility services that do not require
-the entire suite to function.
-
-### AccessibilityPerformanceFiltering
-
-Loosely related to the OnDemand feature above, the "AccessibilityPerformanceFiltering" feature is also
-a recent addition to improve overall performance. This feature uses the same
-mechanism as OnDemand to query the currently enabled services and the information
-they are interested in. AccessibilityPerformanceFiltering then takes this information and uses a different
-[AXMode](https://source.chromium.org/chromium/chromium/src/+/main:ui/accessibility/ax_mode.h)
-based on the situation. Each AXMode filters out a different level of information
-to improve performance while preserving necessary functionality. This effectively does the same thing as
-OnDemand, but further left/up-the-chain, giving a more significant performance
-improvement. This feature is still rolling out, and it currently only has three
-AXModes (basic, form controls only, and complete). As it rolls out and we gather more data
-we will potentially add more AXModes in the future.
-
-### AutoDisableAccessibility
-
-The "AutoDisable" accessibility feature has also been ported to Android. This feature
-tracks timing between user inputs and accessibility actions to make a determination
-of whether or not accessibility services are still required. If they are no longer
-needed by the user, then the accessibility code is disabled. Before this feature,
-once the code was enabled it would continue to run for the life of the current
-browser session. This feature is still being rolled out to stable.
-
-
-## Accessibility code in the ClankUI
+## Accessibility code in the Clank UI
 
 Most of this document is focused on the accessibility code and work as it relates
-to the web contents, which is where the Chrome & Chrome OS Accessibility team
+to the web contents, which is where the Chrome Accessibility team
 focuses most of its work. However, some features require a native UI in the browser
 app, outside the web contents. When these features are added, the line between
-the accessibility team and the Clank UI team becomes blurred. We traditionally
+the Chrome Accessibility team and the Clank team becomes blurred. We traditionally
 are the owners of this code, but seek regular guidance and approvals from the
 Clank team as the front-end code must conform to the Clank standards.
 
 ### AccessibilitySettings
 
 The AccessibilitySettings page is found under the overflow/3-dot menu (Menu\>Settings\>Accessibility).
-The page currently contains a slider to change the font scaling of the web contents,
-options to force enable zoom, show simplified pages, enable image descriptions (see below),
+The page currently contains settings such as a slider to control the default page zoom of the web contents, options to force enable zoom, show simplified pages, enable image descriptions (see below),
 and live captions.
 
 The main entry point for this code is [here](https://source.chromium.org/chromium/chromium/src/+/main:components/browser_ui/accessibility/android/java/src/org/chromium/components/browser_ui/accessibility/AccessibilitySettings.java).
-The code leverages the PreferenceFragment of Android, and so much of the UI and
-navigation is available out of the box, and the code is relatively simple in that
+The code leverages the PreferenceFragment of Android, so much of the UI and
+navigation is available out-of-the-box, so the code is relatively simple in that
 it only needs to respond to user actions/changes and pass this information to the
-native C++ code.
+native C++ code or update the associated SharedPreference.
 
 The settings code is heavily unit tested and stable, so it is rare to have to
 work in this area.
@@ -831,20 +571,201 @@ The Clank-side code for the image descriptions feature is a bit more involved.
 The image descriptions has to track state, determine whether or not to display the
 option in the overflow menu, show dialogs, and provide toasts to the user. This
 code is mostly controlled by the [ImageDescriptionsController](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/image_descriptions/android/java/src/org/chromium/chrome/browser/image_descriptions/ImageDescriptionsController.java).
-The image descriptions feature is written using Clank's 'component' model, and so
-almost all the code exists in the directory:
-[chrome/browser/image_descriptions](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/image_descriptions/)
-
-(The exception being the few hooks that connect this code to the other parts of the
+Most of the image descriptions feature code exists in the
+[chrome/browser/image_descriptions](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/image_descriptions/) directory. (The exception being the few hooks that connect this code to the other parts of the
 Clank UI).
 
 The image descriptions code is heavily unit tested and stable, so it is rare to
 have to work in this area.
 
-### (Upcoming) Page Zoom
+## Testing on Android
 
-An upcoming feature is the page zoom feature, which will allow a more robust way
-to zoom web contents than the currently existing text scaling of AccessibilitySettings
-(which will be replaced).
+The accessibility code for Android has tests in multiple build targets.
 
-The Clank UI code for this feature has not been developed. More to come.
+* **content_browsertests**\
+This target tests the BrowserAccessibilityManagerAndroid
+and BrowserAccessibilityAndroid classes via DumpAccessibilityTreeTests (same as the other platforms). However, Android does not run any DumpAccessibilityEventsTests because the events sent to the Android framework are handled within the Java-side code. This target cannot build the Java-side objects for accessibility, and so we use other targets for those cases.
+
+* **content_shell_test_apk**\
+This target will create/run an instance of a `WebContents`, which will construct a `WebContentsAccessibilityImpl` object along with a corresponding `web_contents_accessibility_android` object. This target is used to test the "extra layer" that exists only for Android. The accessibility tests in this target have parallels with those in the `content_browsertests` target.
+
+	- *WebContentsAccessibilityTest* - This test suite is used to test the methods of `WebContentsAccessibilityImpl.java`. It tests the various actions of performAction, construction of `AccessibilityEvents`, and various helper methods we use throughout the code.
+
+	- *WebContentsAccessibilityTreeTest* -This class is the Java-side equivalent of the `DumpAccessibilityTreeTests`. This test suite opens a given html file (shared with the `content_browsertests` suite), generates an `AccessibilityNodeInfo` tree for the page, and then dumps this tree and compares it with an expectation file (denoted with the `...-expected-android-external.txt` suffix). We use both the `content_browsertests` and this target because a failure in one and not the other would provide insight into a potential bug location.
+
+	- WebContentsAccessibilityEventsTest - This class is the Java-side equivalent of the DumpAccessibilityEventsTests. It shares the same html files as the `content_browsertests`, opens them, runs the Javascript, and records the `AccessibilityEvents` that are dispatched to the Android framework. There is no Android version of the DumpAccessibilityEventsTests though, so these expectation files are suffixed with the usual `...-expected-android.txt`.
+
+* **chrome_public_test_apk**\
+This target is used to test our user-facing features that are within the Clank UI code, and outside the web contents. This is where we test features such as the AccessibilitySettings page, the Image Descriptions feature, and the Page Zoom feature.
+
+### Writing new tests
+
+Adding tests is as easy on Android as it is on the other; only a single new method needs to be added for the test.
+
+If you are adding a new **events** test, "example-test.html", you would
+first create the html file as normal (content/test/data/accessibility/event/example-test.html),
+and add the test to the existing `dump_accessibility_events_browsertests.cc` (this will run the test on all platforms but Android):
+
+```
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest, AccessibilityEventsExampleTest) {
+  RunEventTest(FILE_PATH_LITERAL("example-test.html"));
+}
+```
+
+To include this test on Android, you would add a similar block to the
+`WebContentsAccessibilityEventsTest.java` class:
+
+```
+@Test
+@SmallTest
+public void test_exampleTest() {
+    performTest("example-test.html", "example-test-expected-android.txt");
+}
+```
+
+Some event tests on Android won't produce any events. For these you do not need to
+create an empty file, but can instead make the test line:
+
+```
+    performTest("example-test.html", EMPTY_EXPECTATIONS_FILE);
+```
+
+The easiest approach is to use the above line, run the tests, and if it fails,
+the error message will give you the exact text to add to the
+`-expected-android.txt` file. The `-expected-android.txt` file should go in the
+same directory as the others (content/test/data/accessibility/event).
+
+For adding a new **tree dump**, you follow the same method but
+include the function in the corresponding `WebContentsAccessibilityTreeTest.Java` file.
+
+Note: Writing WebContentsAccessibilityTests is much more involved and there is no
+general approach that can be encapsulated here, same with the UI tests. For those
+there are many existing examples to reference, or you can reach out to an Android developer.
+
+### Running tests and tracking down flakiness
+
+Running tests for Android can seem a bit daunting because it requires new build
+targets, an emulator, and different command-line arguments and syntax. But Android
+has a few nifty tricks that don't exist on every platform. For example, Android
+tests can be run on repeat indefinitely, but set to break on their first failure. This
+is great for tracking down flakiness. It is also possible to use a local repository
+to test directly on the build bots, which is great when a test works locally but flakes
+or fails during builds. Let's look at some basic examples.
+
+First ensure that you have followed the basic [Android setup](https://chromium.googlesource.com/chromium/src/+/main/docs/android_build_instructions.md) guides and can
+successfully build the code. You should not proceed further until you can
+successfully run the command:
+
+```
+autoninja -C out/Debug chrome_apk
+```
+
+One of the most important things to remember when building for unit tests is to use
+the `x86` architecture, because most emulators use this. (Note: For running on try
+bots or a physical test device, you'll want `arm64`, more on that below). Your gn args should contain
+at least:
+
+```
+target_os = "android"
+target_cpu = "x86"
+```
+
+To run the types of tests mentioned above, you'll build with a command similar to:
+
+```
+autoninja -C out/Debug content_shell_test_apk
+```
+
+The filtering argument for tests is `-f` rather than the `--gtest_filter` that it is
+used with content\_browsertests. So to run an example WebContentsAccessibilityTreeTest test,
+you may use a command such as:
+
+```
+out/Debug/bin/run_content_shell_test_apk --num_retries=0 -f "*WebContentsAccessibilityTreeTest*testExample"
+```
+
+This would look for an x86 phone to deploy to, which should be your emulator. You can
+choose to setup an emulator in Android Studio, or you can use some of the emulators
+that come pre-built in the repo. [More information here](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/android_emulator.md). In general it is best to run on one of the
+newer Android versions, but sometimes the newest is unstable. To specify an
+emulator to use, you include the `--avd-config` argument, along with the desired
+emulator (see link above for full list). This will run the test without opening a
+window, but if you'd like to see an emulator window you can add the `--emulator-window`
+argument. The `--repeat=#` argument allows repeats, and if set to `-1` along with
+the `--break-on-failure` argument, the test will run repeatedly until it fails once.
+
+Putting this all together, to run the example test with no retries per run, run
+repeatedly until failure, on the Android 11 emulator, with a window available, you would
+use the command:
+
+```
+out/Debug/bin/run_content_shell_test_apk \
+    --num_retries=0 \
+    --repeat=-1 \
+    --break-on-failure \
+    --emulator window \
+    --avd-config tools/android/avd/proto/android_30_google_apis_x86.textpb \
+    -f "*WebContentsAccessibilityTreeTest*testExample"
+```
+
+All of this information also applies to the UI tests, which use the target:
+
+```
+autoninja -C out/Debug chrome_public_test_apk
+```
+
+In this case we would have a similar command to run an ImageDescriptions or Settings
+related test:
+
+```
+out/Debug/bin/run_chrome_public_test_apk \
+    --num_retries=0 \
+    --repeat=-1 \
+    --break-on-failure \
+    --emulator window \
+    --avd-config tools/android/avd/proto/android_30_google_apis_x86.textpb \
+    -f "*ImageDescriptions*"
+```
+
+#### Running on try bots
+
+For more information you should reference the `mb.py` [user guide](https://source.chromium.org/chromium/chromium/src/+/main:tools/mb/docs/user_guide.md).
+
+Note: When running on the trybots, you often need to use `target_cpu = "arm64"`, since
+these are actual devices and not emulators.
+
+It is not uncommon when working on the Android accessibility code to have a test that
+passes locally, but consistently fails on the try bots. These can be difficult
+to debug, but if you run the test directly on the bots it is easier to gain insights.
+This is done using the `mb.py` script. You should first build the target exactly as
+outlined above (or mb.py will build it for you), and then you use the `mb.py run` command
+to start a test. You provide a series of arguments to specify which properties you
+want the try bot to have (e.g. which OS, architecture, etc), and you also can include
+arguments for the test apk, same as above. Note: It is recommended to at least provide
+the argument for the test filter to save time.
+
+With `mb.py`, you use `-s` to specify swarming, and `-d` to specify dimensions, which
+narrow down the choice in try bot. The dimensions are added in the form: `-d dimension_name dimension_value`.
+You should specify the `pool` as `chromium.tests`, the `device_os_type` as `userdebug`,
+and the `device_os` for whichever Android version you're interested in (e.g. `O`, `P`, `Q`, etc).
+After specifying all your arguments to `mb.py`, include a `--`, and after this `--`
+all further arguments are what is passed to the build target (e.g. content\_shell\_test\_apk).
+
+Putting this all together, to run the same tests as above, in the same way, but
+on the Android P try bots, you would use the command:
+
+```
+tools/mb/mb.py run -s --no-default-dimensions \
+    -d pool chromium.tests \
+    -d device_os_type userdebug \
+    -d device_os P \
+    out/Debug \
+    content_shell_test_apk \
+    -- \
+    --num_retries=0 \
+    --repeat=-1 \
+    --break-on-failure \
+    -f "*WebContentsAccessibilityTreeTest*testExample"
+```
+
+This is a great way to save time, as opposed to uploading patchsets and running the full CQ Try Bot suite and waiting for the results of one test.

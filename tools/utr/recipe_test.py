@@ -42,6 +42,11 @@ class LegacyRunnerTests(unittest.TestCase):
     self.mock_input = patch_input.start()
     self.addCleanup(patch_input.stop)
 
+    patch_terminal_size = mock.patch('os.get_terminal_size')
+    mock_terminal_size = patch_terminal_size.start()
+    mock_terminal_size.return_value = (128, 1)
+    self.addCleanup(patch_terminal_size.stop)
+
   def testProps(self):
     runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-project',
                                  'some-bucket', 'some-builder', [], False,

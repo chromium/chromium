@@ -109,19 +109,28 @@ void PaintedScrollbarLayerImpl::AppendThumbQuads(
     AppendQuadsData* append_quads_data) const {
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
-  if (thumb_color_.has_value()) {
-    const gfx::Rect thumb_rect = ComputeThumbQuadRect();
-    if (thumb_rect.IsEmpty()) {
-      return;
-    }
-    gfx::Rect visible_thumb_rect =
-        draw_properties().occlusion_in_content_space.GetUnoccludedContentRect(
-            thumb_rect);
-    visible_thumb_rect.Intersect(visible_layer_rect());
-    if (visible_thumb_rect.IsEmpty()) {
-      return;
-    }
+  // The thumb sqs must be non-opaque so that the track and buttons will not be
+  // occluded in viz by the thumb's 'quad_layer_rect'.
+  constexpr bool kContentsOpaque = false;
+  PopulateScaledSharedQuadState(shared_quad_state, internal_contents_scale_,
+                                kContentsOpaque);
 
+  AppendDebugBorderQuad(render_pass, gfx::Rect(internal_content_bounds_),
+                        shared_quad_state, append_quads_data);
+
+  const gfx::Rect thumb_quad_rect = ComputeThumbQuadRect();
+  const gfx::Rect scaled_thumb_quad_rect =
+      gfx::ScaleToEnclosingRect(thumb_quad_rect, internal_contents_scale_);
+  const gfx::Rect visible_thumb_quad_rect =
+      draw_properties().occlusion_in_content_space.GetUnoccludedContentRect(
+          thumb_quad_rect);
+  if (visible_thumb_quad_rect.IsEmpty()) {
+    return;
+  }
+  const gfx::Rect scaled_visible_thumb_quad_rect = gfx::ScaleToEnclosingRect(
+      visible_thumb_quad_rect, internal_contents_scale_);
+
+  if (thumb_color_.has_value()) {
     gfx::MaskFilterInfo rounded_corners_mask =
         draw_properties().mask_filter_info;
     // Web tests draw the thumb as a square to avoid issues that come with the
@@ -130,24 +139,18 @@ void PaintedScrollbarLayerImpl::AppendThumbQuads(
     if (!is_web_test() && IsFluentScrollbarEnabled()) {
       const int rounded_corner_radius =
           orientation() == ScrollbarOrientation::kHorizontal
-              ? thumb_rect.height()
-              : thumb_rect.width();
-      rounded_corners_mask = gfx::MaskFilterInfo(
-          gfx::RRectF(gfx::RectF(thumb_rect), rounded_corner_radius));
-      rounded_corners_mask.ApplyTransform(
+              ? thumb_quad_rect.height()
+              : thumb_quad_rect.width();
+      shared_quad_state->mask_filter_info = gfx::MaskFilterInfo(
+          gfx::RRectF(gfx::RectF(thumb_quad_rect), rounded_corner_radius));
+      shared_quad_state->mask_filter_info.ApplyTransform(
           draw_properties().target_space_transform);
     }
-    shared_quad_state->SetAll(
-        draw_properties().target_space_transform, thumb_rect,
-        visible_thumb_rect, rounded_corners_mask, /*clip=*/std::nullopt,
-        /*contents_opaque=*/false, draw_properties().opacity,
-        /*blend=*/SkBlendMode::kSrcOver, GetSortingContextId(),
-        static_cast<uint32_t>(id()),
-        /*fast_rounded_corner=*/true);
     auto* thumb_quad =
         render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-    thumb_quad->SetNew(shared_quad_state, thumb_rect, visible_thumb_rect,
-                       thumb_color_.value(), /*anti_aliasing_off=*/false);
+    thumb_quad->SetNew(shared_quad_state, scaled_thumb_quad_rect,
+                       scaled_visible_thumb_quad_rect, thumb_color_.value(),
+                       /*anti_aliasing_off=*/false);
     ValidateQuadResources(thumb_quad);
     return;
   }
@@ -159,26 +162,9 @@ void PaintedScrollbarLayerImpl::AppendThumbQuads(
     return;
   }
 
-  // The thumb sqs must be non-opaque so that the track and buttons will not be
-  // occluded in viz by the thumb's 'quad_layer_rect'.
-  constexpr bool kContentsOpaque = false;
-  PopulateScaledSharedQuadState(shared_quad_state, internal_contents_scale_,
-                                kContentsOpaque);
-
-  AppendDebugBorderQuad(render_pass, gfx::Rect(internal_content_bounds_),
-                        shared_quad_state, append_quads_data);
-  gfx::Rect thumb_quad_rect = ComputeThumbQuadRect();
-  gfx::Rect scaled_thumb_quad_rect =
-      gfx::ScaleToEnclosingRect(thumb_quad_rect, internal_contents_scale_);
-  gfx::Rect visible_thumb_quad_rect =
-      draw_properties().occlusion_in_content_space.GetUnoccludedContentRect(
-          thumb_quad_rect);
-  gfx::Rect scaled_visible_thumb_quad_rect = gfx::ScaleToEnclosingRect(
-      visible_thumb_quad_rect, internal_contents_scale_);
   viz::ResourceId thumb_resource_id =
       layer_tree_impl()->ResourceIdForUIResource(thumb_ui_resource_id_);
-
-  if (!thumb_resource_id || visible_thumb_quad_rect.IsEmpty()) {
+  if (!thumb_resource_id) {
     return;
   }
 

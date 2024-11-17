@@ -71,11 +71,11 @@ namespace {
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSafeBrowsingEnhanced];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Reset preferences back to default values.
   [ChromeEarlGrey setBoolValue:YES forUserPref:prefs::kSafeBrowsingEnabled];
   [ChromeEarlGrey setBoolValue:NO forUserPref:prefs::kSafeBrowsingEnhanced];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (void)testOpenPrivacySafeBrowsingSettings {

@@ -10,7 +10,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -29,8 +28,11 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
+import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
+import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.embedder_support.util.Origin;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -41,9 +43,9 @@ import java.util.Set;
 @Config(manifest = Config.NONE)
 public class InstalledWebappBroadcastReceiverTest {
     @Mock public Context mContext;
-    @Mock public InstalledWebappDataRegister mDataRegister;
     @Mock public InstalledWebappBroadcastReceiver.ClearDataStrategy mMockStrategy;
-    @Mock public PermissionUpdater mPermissionUpdater;
+    @Mock public InstalledWebappPermissionStore mStore;
+    @Mock public SiteChannelsManager mSiteChannelsManager;
 
     private InstalledWebappBroadcastReceiver mReceiver;
 
@@ -51,12 +53,10 @@ public class InstalledWebappBroadcastReceiverTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mReceiver =
-                new InstalledWebappBroadcastReceiver(
-                        mMockStrategy,
-                        mDataRegister,
-                        mock(BrowserServicesStore.class),
-                        mPermissionUpdater);
+        WebappRegistry.getInstance().setPermissionStoreForTesting(mStore);
+        SiteChannelsManager.setInstanceForTesting(mSiteChannelsManager);
+
+        mReceiver = new InstalledWebappBroadcastReceiver(mMockStrategy);
         mContext = RuntimeEnvironment.application;
     }
 
@@ -67,18 +67,11 @@ public class InstalledWebappBroadcastReceiverTest {
         return intent;
     }
 
-    private void addToRegister(
-            int id, String appName, Set<String> domainAndRegistries, Set<String> origins) {
-        doReturn(true).when(mDataRegister).chromeHoldsDataForPackage(eq(id));
-        doReturn(appName).when(mDataRegister).getAppNameForRegisteredUid(eq(id));
-        doReturn(domainAndRegistries).when(mDataRegister).getDomainsForRegisteredUid(eq(id));
-
-        if (origins == null) return;
-        doReturn(origins).when(mDataRegister).getOriginsForRegisteredUid(eq(id));
-    }
-
-    private void addToRegister(int id, String appName, Set<String> domainAndRegistries) {
-        addToRegister(id, appName, domainAndRegistries, null);
+    private void addToRegister(int id, String appName, Set<GURL> urls) {
+        for (GURL gurl : urls) {
+            InstalledWebappDataRegister.registerPackageForOrigin(
+                    id, appName, "com.package", gurl.getHost(), Origin.create(gurl.getSpec()));
+        }
     }
 
     /** Makes sure we don't show a notification if we don't have any data for the app. */
@@ -87,7 +80,7 @@ public class InstalledWebappBroadcastReceiverTest {
     public void chromeHoldsNoData() {
         mReceiver.onReceive(mContext, createMockIntent(12, Intent.ACTION_PACKAGE_FULLY_REMOVED));
 
-        verify(mMockStrategy, never()).execute(any(), any(), any(), anyInt(), anyBoolean());
+        verify(mMockStrategy, never()).execute(any(), anyInt(), anyBoolean());
     }
 
     /** Tests the basic flow. */
@@ -96,14 +89,14 @@ public class InstalledWebappBroadcastReceiverTest {
     public void chromeHoldsData() {
         int id = 23;
         String appName = "App Name";
-        String domain = "example.com";
-        Set<String> domains = new HashSet<>(Arrays.asList(domain));
+        GURL url = new GURL("https://www.example.com");
+        Set<GURL> urls = new HashSet<>(Arrays.asList(url));
 
-        addToRegister(id, appName, domains);
+        addToRegister(id, appName, urls);
 
         mReceiver.onReceive(mContext, createMockIntent(id, Intent.ACTION_PACKAGE_FULLY_REMOVED));
 
-        verify(mMockStrategy).execute(any(), any(), any(), eq(id), eq(true));
+        verify(mMockStrategy).execute(any(), eq(id), eq(true));
     }
 
     /** Tests we plumb the correct information to the {@link ClearDataDialogActivity}. */
@@ -112,16 +105,16 @@ public class InstalledWebappBroadcastReceiverTest {
     public void execute_ValidIntent() {
         mReceiver =
                 new InstalledWebappBroadcastReceiver(
-                        new InstalledWebappBroadcastReceiver.ClearDataStrategy(),
-                        mDataRegister,
-                        mock(BrowserServicesStore.class),
-                        mPermissionUpdater);
+                        new InstalledWebappBroadcastReceiver.ClearDataStrategy());
 
         int id = 67;
         String appName = "App Name 3";
-        Set<String> domains = new HashSet<>(Arrays.asList("example.com", "example2.com"));
+        GURL url1 = new GURL("https://www.example.com");
+        GURL url2 = new GURL("https://www.example2.com");
+        Set<GURL> urls = new HashSet<>(Arrays.asList(url1, url2));
+        Set<String> domains = new HashSet<>(Arrays.asList(url1.getHost(), url2.getHost()));
 
-        addToRegister(id, appName, domains);
+        addToRegister(id, appName, urls);
 
         Context context = mock(Context.class);
 
@@ -143,25 +136,20 @@ public class InstalledWebappBroadcastReceiverTest {
     public void execute_UpdatePermissions() {
         mReceiver =
                 new InstalledWebappBroadcastReceiver(
-                        new InstalledWebappBroadcastReceiver.ClearDataStrategy(),
-                        mDataRegister,
-                        mock(BrowserServicesStore.class),
-                        mPermissionUpdater);
+                        new InstalledWebappBroadcastReceiver.ClearDataStrategy());
 
         int id = 67;
         String appName = "App Name 3";
-        Set<String> domains = new HashSet<>(Arrays.asList("example.com", "example2.com"));
+        GURL url1 = new GURL("https://www.example.com");
+        GURL url2 = new GURL("https://www.example2.com");
+        Set<GURL> urls = new HashSet<>(Arrays.asList(url1, url2));
 
-        Origin origin1 = Origin.create("https://www.example.com");
-        Origin origin2 = Origin.create("https://www.example2.com");
-        Set<String> origins = new HashSet<>(Arrays.asList(origin1.toString(), origin2.toString()));
-
-        addToRegister(id, appName, domains, origins);
+        addToRegister(id, appName, urls);
 
         mReceiver.onReceive(mContext, createMockIntent(id, Intent.ACTION_PACKAGE_FULLY_REMOVED));
 
-        verify(mPermissionUpdater).onClientAppUninstalled(origin1);
-        verify(mPermissionUpdater).onClientAppUninstalled(origin2);
+        verify(mStore).resetPermission(eq(Origin.create(url1.getSpec())), anyInt());
+        verify(mStore).resetPermission(eq(Origin.create(url2.getSpec())), anyInt());
     }
 
     /** Tests we differentiate between app uninstalled and data cleared. */
@@ -170,12 +158,11 @@ public class InstalledWebappBroadcastReceiverTest {
     public void onDataClear() {
         int id = 23;
         String appName = "App Name";
-        String domain = "example.com";
-        Set<String> domains = new HashSet<>(Arrays.asList(domain));
+        Set<GURL> urls = new HashSet<>(Arrays.asList(new GURL("https://www.example.com")));
 
-        addToRegister(id, appName, domains);
+        addToRegister(id, appName, urls);
 
         mReceiver.onReceive(mContext, createMockIntent(id, Intent.ACTION_PACKAGE_DATA_CLEARED));
-        verify(mMockStrategy).execute(any(), any(), any(), eq(id), eq(false));
+        verify(mMockStrategy).execute(any(), eq(id), eq(false));
     }
 }

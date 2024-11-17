@@ -368,10 +368,8 @@ TEST_F(DriveFsEventRouterTest, DisplayConfirmDialog_UnmountBeforeResult) {
   reason.type = drivefs::mojom::DialogReason::Type::kEnableDocsOffline;
   reason.path = base::FilePath("a");
   event_router_.DisplayConfirmDialog(
-      reason,
-      base::BindLambdaForTesting([&](drivefs::mojom::DialogResult result) {
-        NOTREACHED_IN_MIGRATION();
-      }));
+      reason, base::BindLambdaForTesting(
+                  [&](drivefs::mojom::DialogResult result) { NOTREACHED(); }));
   Unmount();
   event_router_.OnDialogResult(drivefs::mojom::DialogResult::kAccept);
 

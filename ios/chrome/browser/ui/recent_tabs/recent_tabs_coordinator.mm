@@ -103,25 +103,22 @@
       dismissButton;
 
   // Initialize and configure RecentTabsMediator. Make sure to use the
-  // OriginalChromeBrowserState since the mediator services need a SignIn
-  // manager which is not present in an OffTheRecord BrowserState.
+  // OriginalProfile since the mediator services need a SignIn
+  // manager which is not present in an OffTheRecord Profile.
   DCHECK(!self.mediator);
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   sync_sessions::SessionSyncService* syncService =
-      SessionSyncServiceFactory::GetForBrowserState(browserState);
+      SessionSyncServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browserState);
+      IdentityManagerFactory::GetForProfile(profile);
   sessions::TabRestoreService* restoreService =
-      IOSChromeTabRestoreServiceFactory::GetForBrowserState(browserState);
+      IOSChromeTabRestoreServiceFactory::GetForProfile(profile);
   FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
-  syncer::SyncService* service =
-      SyncServiceFactory::GetForBrowserState(browserState);
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(browserState);
+      IOSChromeFaviconLoaderFactory::GetForProfile(profile);
+  syncer::SyncService* service = SyncServiceFactory::GetForProfile(profile);
+  BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
   SceneState* currentSceneState = self.browser->GetSceneState();
-  BOOL isDisabled =
-      IsIncognitoModeForced(self.browser->GetBrowserState()->GetPrefs());
+  BOOL isDisabled = IsIncognitoModeForced(profile->GetPrefs());
   self.mediator = [[RecentTabsMediator alloc]
       initWithSessionSyncService:syncService
                  identityManager:identityManager
@@ -132,7 +129,7 @@
                       sceneState:currentSceneState
                 disabledByPolicy:isDisabled
                engagementTracker:feature_engagement::TrackerFactory::
-                                     GetForBrowserState(browserState)
+                                     GetForProfile(profile)
                       modeHolder:nil];
 
   // Set the consumer first before calling [self.mediator initObservers] and
@@ -194,7 +191,7 @@
       "Mobile.RecentTabsManager.TotalTabsFromOtherDevicesOpenAll",
       session->tabs.size());
 
-  BOOL inIncognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  BOOL inIncognito = self.browser->GetProfile()->IsOffTheRecord();
   UrlLoadingBrowserAgent* URLLoader =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   OpenDistantSessionInBackground(session, inIncognito,

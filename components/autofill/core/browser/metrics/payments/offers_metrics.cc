@@ -27,8 +27,7 @@ void LogOfferNotificationBubbleOfferMetric(
       break;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   base::UmaHistogramBoolean(histogram_name, is_reshow);
 }
@@ -46,8 +45,7 @@ void LogOfferNotificationBubblePromoCodeButtonClicked(
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   base::UmaHistogramBoolean(histogram_name, true);
 }
@@ -68,8 +66,7 @@ void LogOfferNotificationBubbleResultMetric(
       break;
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   // Add subhistogram for |is_reshow| decision.
   histogram_name += is_reshow ? "Reshows" : "FirstShow";
@@ -88,8 +85,7 @@ void LogOfferNotificationBubbleSuppressed(
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   base::UmaHistogramBoolean(histogram_name, true);
 }
@@ -113,8 +109,7 @@ void LogStoredOfferMetrics(
         break;
       case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
       case AutofillOfferData::OfferType::UNKNOWN:
-        NOTREACHED_IN_MIGRATION();
-        continue;
+        NOTREACHED();
     }
     base::UmaHistogramCounts1000(related_merchant_count_histogram_name,
                                  offer->GetMerchantOrigins().size());
@@ -141,16 +136,14 @@ void LogOffersSuggestionsPopupShown(bool first_time_being_logged) {
     // while autofilling if it is the first time being logged.
     base::UmaHistogramEnumeration(
         "Autofill.Offer.SuggestionsPopupShown2",
-        autofill::autofill_metrics::OffersSuggestionsPopupEvent::
-            kOffersSuggestionsPopupShownOnce);
+        OffersSuggestionsPopupEvent::kOffersSuggestionsPopupShownOnce);
   }
 
   // We log every time the offers suggestions popup is shown, regardless if the
   // user is repeatedly clicking the same field.
   base::UmaHistogramEnumeration(
       "Autofill.Offer.SuggestionsPopupShown2",
-      autofill::autofill_metrics::OffersSuggestionsPopupEvent::
-          kOffersSuggestionsPopupShown);
+      OffersSuggestionsPopupEvent::kOffersSuggestionsPopupShown);
 }
 
 void LogIndividualOfferSuggestionEvent(
@@ -166,8 +159,7 @@ void LogIndividualOfferSuggestionEvent(
     case AutofillOfferData::OfferType::GPAY_CARD_LINKED_OFFER:
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   base::UmaHistogramEnumeration(histogram_name, event);

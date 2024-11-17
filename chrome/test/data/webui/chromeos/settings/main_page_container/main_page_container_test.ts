@@ -182,10 +182,6 @@ suite('<main-page-container>', () => {
 
         // Advanced section pages
         {
-          pageName: 'kDateAndTime',
-          elementName: 'settings-date-time-page',
-        },
-        {
           pageName: 'kLanguagesAndInput',
           elementName: 'os-settings-languages-section',
         },
@@ -200,10 +196,6 @@ suite('<main-page-container>', () => {
         {
           pageName: 'kCrostini',
           elementName: 'settings-crostini-page',
-        },
-        {
-          pageName: 'kReset',
-          elementName: 'os-settings-reset-page',
         },
 
         // About page

@@ -15,6 +15,8 @@ import android.graphics.Point;
 import android.graphics.PointF;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.SystemClock;
 import android.util.DisplayMetrics;
 import android.view.DragEvent;
@@ -42,8 +44,8 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.ui.base.MimeTypeUtils;
 import org.chromium.ui.base.WindowAndroid;
@@ -64,15 +66,21 @@ public class TabDragSource implements View.OnDragListener {
     private static final String TAG = "TabDragSource";
 
     private final WindowAndroid mWindowAndroid;
-    private MultiInstanceManager mMultiInstanceManager;
-    private DragAndDropDelegate mDragAndDropDelegate;
-    private Supplier<StripLayoutHelper> mStripLayoutHelperSupplier;
-    private Supplier<Boolean> mStripLayoutVisibilitySupplier;
-    private Supplier<TabContentManager> mTabContentManagerSupplier;
-    private Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
-    private BrowserControlsStateProvider mBrowserControlStateProvider;
-    private float mPxToDp;
+    private final MultiInstanceManager mMultiInstanceManager;
+    private final DragAndDropDelegate mDragAndDropDelegate;
+    private final Supplier<StripLayoutHelper> mStripLayoutHelperSupplier;
+    private final Supplier<Boolean> mStripLayoutVisibilitySupplier;
+    private final Supplier<TabContentManager> mTabContentManagerSupplier;
+    private final Supplier<LayerTitleCache> mLayerTitleCacheSupplier;
+    private final BrowserControlsStateProvider mBrowserControlStateProvider;
+    private final float mPxToDp;
     private final ObservableSupplier<Integer> mTabStripHeightSupplier;
+
+    /** Handler and runnable to post/cancel an #onDragExit when the drag starts. */
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
+
+    private final Runnable mOnDragExitRunnable = this::onDragExit;
+
     @Nullable private TabModelSelector mTabModelSelector;
 
     /** Drag shadow properties * */
@@ -90,6 +98,7 @@ public class TabDragSource implements View.OnDragListener {
     private float mLastXDp;
     private int mLastAction;
     private boolean mHoveringInStrip;
+
     // Local state used by Drag Drop metrics. Not-null when a tab dragging is in progress.
     private @Nullable DragLocalUmaState mUmaState;
 
@@ -97,15 +106,16 @@ public class TabDragSource implements View.OnDragListener {
      * Prepares the toolbar view to listen to the drag events and data drop after the drag is
      * initiated.
      *
-     * @param context @{@link Context} to get resources.
-     * @param stripLayoutHelperSupplier Supplier for @{@link StripLayoutHelper} to perform strip
-     *     actions.
-     * @param multiInstanceManager @{link MultiInstanceManager} to perform move action when drop
-     *     completes.
-     * @param dragAndDropDelegate @{@link DragAndDropDelegate} to initiate tab drag and drop.
-     * @param browserControlStateProvider @{@link BrowserControlsStateProvider} to compute
-     *     drag-shadow dimens.
-     * @param windowAndroid @{@link WindowAndroid} to access activity.
+     * @param context Context to get resources.
+     * @param stripLayoutHelperSupplier Supplier for StripLayoutHelper to perform strip actions.
+     * @param stripLayoutVisibilitySupplier Supplier for if the given tab strip is visible.
+     * @param tabContentManagerSupplier Supplier for the TabContentManager.
+     * @param layerTitleCacheSupplier Supplier for the LayerTitleCache.
+     * @param multiInstanceManager MultiInstanceManager to perform move action when drop completes.
+     * @param dragAndDropDelegate DragAndDropDelegate to initiate tab drag and drop.
+     * @param browserControlStateProvider BrowserControlsStateProvider to compute drag-shadow
+     *     dimens.
+     * @param windowAndroid WindowAndroid to access activity.
      * @param tabStripHeightSupplier Supplier of the tab strip height.
      */
     public TabDragSource(
@@ -135,11 +145,10 @@ public class TabDragSource implements View.OnDragListener {
     }
 
     /**
-     * Starts the tab drag action by initiating the process by calling @{link
-     * View.startDragAndDrop}.
+     * Starts the tab drag action by initiating the process by calling View.startDragAndDrop.
      *
-     * @param dragSourceView @{link View} used to create the drag shadow.
-     * @param tabBeingDragged @{link Tab} is the selected tab being dragged.
+     * @param dragSourceView View used to create the drag shadow.
+     * @param tabBeingDragged Tab is the selected tab being dragged.
      * @param startPoint Position of the drag start point in view coordinates.
      * @param tabPositionX Horizontal position of the dragged tab in view coordinates. Used to
      *     calculate the relative position of the touch point in the tab strip.
@@ -172,7 +181,7 @@ public class TabDragSource implements View.OnDragListener {
             Log.w(TAG, "Attempting to start drag before clearing state from prior drag");
         }
 
-        /** Allow drag to create new instance based on feature checks / current instance count. */
+        // Allow drag to create new instance based on feature checks / current instance count.
         boolean allowDragToCreateInstance =
                 shouldAllowTabDragToCreateInstance()
                         && (TabUiFeatureUtilities.doesOEMSupportDragToCreateInstance()
@@ -180,8 +189,7 @@ public class TabDragSource implements View.OnDragListener {
                                         < MultiWindowUtils.getMaxInstances());
 
         TabGroupModelFilter tabGroupModelFilter =
-                (TabGroupModelFilter)
-                        mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
+                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
         boolean isTabInGroup = tabGroupModelFilter.isTabInTabGroup(tabBeingDragged);
 
         // Build shared state with all info.
@@ -318,6 +326,13 @@ public class TabDragSource implements View.OnDragListener {
             return Boolean.TRUE.equals(mStripLayoutVisibilitySupplier.get());
         }
 
+        // If the tab is quickly dragged off the source strip on drag start with a mouse, the source
+        // strip may not receive an enter/exit event, preventing the drag shadow from being made
+        // visible. Post an #onDragExit here that will be cancelled if the source strip gets that
+        // initial drag enter event.
+        // See crbug.com/374480348 for additional info.
+        mHandler.postDelayed(mOnDragExitRunnable, /* delayMillis= */ 50L);
+
         mStartScreenPos = new PointF(xPx, yPx);
         mLastXDp = xPx * mPxToDp;
         return true;
@@ -329,7 +344,11 @@ public class TabDragSource implements View.OnDragListener {
         if (!isDragSource && mUmaState.mTabEnteringDestStripSystemElapsedTime < 0) {
             mUmaState.mTabEnteringDestStripSystemElapsedTime = SystemClock.elapsedRealtime();
         }
-        if (isDragSource || TabUiFeatureUtilities.isTabDragAsWindowEnabled()) {
+        if (isDragSource) {
+            mHandler.removeCallbacks(mOnDragExitRunnable);
+            showDragShadow(false);
+        }
+        if (TabUiFeatureUtilities.isTabDragAsWindowEnabled()) {
             showDragShadow(false);
         }
         mStripLayoutHelperSupplier
@@ -427,7 +446,7 @@ public class TabDragSource implements View.OnDragListener {
                 && tabBeingDragged != null) {
             // Following call is device specific and is intended for specific platform
             // SysUI.
-            sendPositionInfoToSysUI(view, mStartScreenPos.x, mStartScreenPos.y, xPx, yPx);
+            sendPositionInfoToSysUi(view, mStartScreenPos.x, mStartScreenPos.y, xPx, yPx);
 
             // Record user action if a grouped tab is moved to a new window.
             recordTabRemovedFromGroupUserAction();
@@ -658,7 +677,7 @@ public class TabDragSource implements View.OnDragListener {
         return new TabDragShadowBuilder(dragSourceView, imageView, dragShadowOffset, mAppIcon);
     }
 
-    private void sendPositionInfoToSysUI(
+    private void sendPositionInfoToSysUi(
             View view,
             float startXInView,
             float startYInView,

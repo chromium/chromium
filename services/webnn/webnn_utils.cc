@@ -136,6 +136,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kResample2d;
     case mojom::Operation::Tag::kReshape:
       return ops::kReshape;
+    case mojom::Operation::Tag::kScatterElements:
+      return ops::kScatterElements;
     case mojom::Operation::Tag::kScatterNd:
       return ops::kScatterND;
     case mojom::Operation::Tag::kSigmoid:
@@ -198,6 +200,12 @@ std::string OpKindToString(mojom::ElementWiseBinary::Kind kind) {
       return ops::kLesser;
     case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
       return ops::kLesserOrEqual;
+    case mojom::ElementWiseBinary::Kind::kLogicalAnd:
+      return ops::kLogicalAnd;
+    case mojom::ElementWiseBinary::Kind::kLogicalOr:
+      return ops::kLogicalOr;
+    case mojom::ElementWiseBinary::Kind::kLogicalXor:
+      return ops::kLogicalXor;
   }
 }
 
@@ -326,11 +334,25 @@ std::vector<uint32_t> PermuteArray(base::span<const uint32_t> array,
 }
 
 bool IsLogicalElementWiseBinary(mojom::ElementWiseBinary::Kind kind) {
-  return kind == mojom::ElementWiseBinary::Kind::kEqual ||
-         kind == mojom::ElementWiseBinary::Kind::kGreater ||
-         kind == mojom::ElementWiseBinary::Kind::kGreaterOrEqual ||
-         kind == mojom::ElementWiseBinary::Kind::kLesser ||
-         kind == mojom::ElementWiseBinary::Kind::kLesserOrEqual;
+  switch (kind) {
+    case mojom::ElementWiseBinary::Kind::kAdd:
+    case mojom::ElementWiseBinary::Kind::kSub:
+    case mojom::ElementWiseBinary::Kind::kMul:
+    case mojom::ElementWiseBinary::Kind::kDiv:
+    case mojom::ElementWiseBinary::Kind::kMax:
+    case mojom::ElementWiseBinary::Kind::kMin:
+    case mojom::ElementWiseBinary::Kind::kPow:
+      return false;
+    case mojom::ElementWiseBinary::Kind::kEqual:
+    case mojom::ElementWiseBinary::Kind::kGreater:
+    case mojom::ElementWiseBinary::Kind::kGreaterOrEqual:
+    case mojom::ElementWiseBinary::Kind::kLesser:
+    case mojom::ElementWiseBinary::Kind::kLesserOrEqual:
+    case mojom::ElementWiseBinary::Kind::kLogicalAnd:
+    case mojom::ElementWiseBinary::Kind::kLogicalOr:
+    case mojom::ElementWiseBinary::Kind::kLogicalXor:
+      return true;
+  }
 }
 
 }  // namespace webnn

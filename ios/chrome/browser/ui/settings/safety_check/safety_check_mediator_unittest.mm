@@ -124,46 +124,41 @@ UIColor* RedColor() {
 class SafetyCheckMediatorTest : public PlatformTest {
  public:
   SafetyCheckMediatorTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    builder.AddTestingFactory(
         SyncServiceFactory::GetInstance(),
         base::BindRepeating(
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
               return std::make_unique<syncer::MockSyncService>();
             }));
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
                                                   TestPasswordStore>));
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         IOSChromeAffiliationServiceFactory::GetInstance(),
         base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
           return std::unique_ptr<KeyedService>(
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
-    browser_state_ =
-        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    auth_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
-            browser_state_.get()));
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
 
     store_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-            IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-                browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+            IOSChromeProfilePasswordStoreFactory::GetForProfile(
+                profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
 
-    password_check_ = IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-        browser_state_.get());
+    password_check_ =
+        IOSChromePasswordCheckManagerFactory::GetForProfile(profile_.get());
 
     pref_service_ = SetPrefService();
     local_pref_service_ =
@@ -180,7 +175,7 @@ class SafetyCheckMediatorTest : public PlatformTest {
   }
 
   syncer::SyncService* syncService() {
-    return SyncServiceFactory::GetForBrowserState(browser_state_.get());
+    return SyncServiceFactory::GetForProfile(profile_.get());
   }
 
   void RunUntilIdle() { environment_.RunUntilIdle(); }
@@ -242,8 +237,8 @@ class SafetyCheckMediatorTest : public PlatformTest {
 
   TestPasswordStore& GetTestStore() {
     return *static_cast<TestPasswordStore*>(
-        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-            browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+        IOSChromeProfilePasswordStoreFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
   }
 
@@ -268,7 +263,7 @@ class SafetyCheckMediatorTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   scoped_refptr<TestPasswordStore> store_;
   raw_ptr<AuthenticationService> auth_service_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
@@ -369,9 +364,6 @@ TEST_F(SafetyCheckMediatorTest, TimestampResetIfNoIssuesInCheck) {
 // Checks the timestamp of the latest run is set after the Safety Check
 // completes its run.
 TEST_F(SafetyCheckMediatorTest, TimestampSetForLatestRun) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures({kSafetyCheckMagicStack}, {});
-
   mediator_.checkDidRun = true;
 
   mediator_.passwordCheckRowState =

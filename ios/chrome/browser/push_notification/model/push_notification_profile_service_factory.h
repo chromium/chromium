@@ -6,13 +6,13 @@
 #define IOS_CHROME_BROWSER_PUSH_NOTIFICATION_MODEL_PUSH_NOTIFICATION_PROFILE_SERVICE_FACTORY_H_
 
 #import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
+class ProfileIOS;
 class PushNotificationProfileService;
 
 // Singleton that creates the PushNotificationProfileService and associates that
-// service with ChromeBrowserState.
+// service with ProfileIOS.
 class PushNotificationProfileServiceFactory
     : public ProfileKeyedServiceFactoryIOS {
  public:

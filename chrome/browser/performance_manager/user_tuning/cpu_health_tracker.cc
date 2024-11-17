@@ -256,8 +256,9 @@ void CpuHealthTracker::ProcessCpuProbeResult(
     return;
   }
 
-  const CpuPercent total_system_cpu_usage{cpu_sample.value().cpu_utilization *
-                                          100};
+  const CpuPercent total_system_cpu_usage{
+      static_cast<int>(cpu_sample.value().cpu_utilization * 100)};
+
   if (GetHealthLevelForMeasurement(total_system_cpu_usage) !=
       HealthLevel::kHealthy) {
     // Query for tab CPU usage to determine actionability
@@ -325,7 +326,7 @@ CpuHealthTracker::FilterForPossibleActionablePages(
     }
   }
 
-  return base::MakeFlatMap<resource_attribution::PageContext, CpuPercent>(
+  return base::flat_map<resource_attribution::PageContext, CpuPercent>(
       std::move(eligible_pages));
 }
 }  // namespace performance_manager::user_tuning

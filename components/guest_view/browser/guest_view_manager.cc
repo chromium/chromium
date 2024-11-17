@@ -19,11 +19,13 @@
 #include "components/guest_view/common/guest_view_constants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/child_process_host.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 
 using content::BrowserContext;
 using content::RenderProcessHost;
@@ -253,9 +255,10 @@ SiteInstance* GuestViewManager::GetGuestSiteInstance(
   return nullptr;
 }
 
-void GuestViewManager::ForEachUnattachedGuest(
+void GuestViewManager::ForEachUnattachedGuestContents(
     content::WebContents* owner_web_contents,
     base::FunctionRef<void(content::WebContents*)> fn) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
   for (auto [id, guest] : guests_by_instance_id_) {
     if (guest->owner_web_contents() == owner_web_contents &&
         !guest->attached() && guest->web_contents()) {
@@ -264,9 +267,23 @@ void GuestViewManager::ForEachUnattachedGuest(
   }
 }
 
+void GuestViewManager::ForEachUnattachedGuestPage(
+    content::Page& owner_page,
+    base::FunctionRef<void(content::GuestPageHolder&)> fn) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  for (auto [id, guest] : guests_by_instance_id_) {
+    if (guest->owned_guest_page() && guest->GetGuestMainFrame() &&
+        &guest->owner_rfh()->GetPage() == &owner_page) {
+      CHECK(!guest->attached());
+      fn(*guest->owned_guest_page());
+    }
+  }
+}
+
 bool GuestViewManager::ForEachGuest(
     WebContents* owner_web_contents,
     base::FunctionRef<bool(content::WebContents*)> fn) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
   for (auto [id, guest] : guests_by_instance_id_) {
     if (!guest->web_contents() ||
         guest->owner_web_contents() != owner_web_contents) {
@@ -298,7 +315,6 @@ WebContents* GuestViewManager::GetFullPageGuest(
 
 void GuestViewManager::AddGuest(GuestViewBase* guest) {
   const int guest_instance_id = guest->guest_instance_id();
-  WebContents* guest_web_contents = guest->web_contents();
 
   CHECK(CanUseGuestInstanceID(guest_instance_id));
   const auto [it, success] =
@@ -308,15 +324,28 @@ void GuestViewManager::AddGuest(GuestViewBase* guest) {
   // re-adding it here.
   CHECK(success || it->second == guest);
 
-  webcontents_guestview_map_.insert({guest_web_contents, guest});
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    guest_page_frame_id_guestview_map_.insert(
+        {guest->guest_main_frame_tree_node_id(), guest});
+    // There's no need for an MPArch equivalent of `OnGuestAdded`, as features
+    // can use existing WebContentsObservers.
+  } else {
+    WebContents* guest_web_contents = guest->web_contents();
+    webcontents_guestview_map_.insert({guest_web_contents, guest});
 
-  delegate_->OnGuestAdded(guest_web_contents);
+    delegate_->OnGuestAdded(guest_web_contents);
+  }
 }
 
 void GuestViewManager::RemoveGuest(GuestViewBase* guest, bool invalidate_id) {
   const int guest_instance_id = guest->guest_instance_id();
 
-  webcontents_guestview_map_.erase(guest->web_contents());
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    guest_page_frame_id_guestview_map_.erase(
+        guest->guest_main_frame_tree_node_id());
+  } else {
+    webcontents_guestview_map_.erase(guest->web_contents());
+  }
 
   auto id_iter = reverse_instance_id_map_.find(guest_instance_id);
   if (id_iter != reverse_instance_id_map_.end()) {
@@ -359,8 +388,52 @@ void GuestViewManager::RemoveGuest(GuestViewBase* guest, bool invalidate_id) {
 
 GuestViewBase* GuestViewManager::GetGuestFromWebContents(
     content::WebContents* web_contents) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
   auto it = webcontents_guestview_map_.find(web_contents);
   return it == webcontents_guestview_map_.end() ? nullptr : it->second;
+}
+
+GuestViewBase* GuestViewManager::GetGuestFromRenderFrameHost(
+    content::RenderFrameHost& rfh) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  content::RenderFrameHost* outermost_rfh = rfh.GetOutermostMainFrame();
+  return GetGuestFromOutermostFrameTreeNodeId(
+      outermost_rfh->GetFrameTreeNodeId());
+}
+
+GuestViewBase* GuestViewManager::GetGuestFromNavigationHandle(
+    content::NavigationHandle& navigation_handle) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  if (content::RenderFrameHost* parent_or_outer =
+          navigation_handle.GetParentFrameOrOuterDocument()) {
+    return GetGuestFromRenderFrameHost(*parent_or_outer);
+  }
+
+  CHECK(navigation_handle.IsInOutermostMainFrame());
+  return GetGuestFromOutermostFrameTreeNodeId(
+      navigation_handle.GetFrameTreeNodeId());
+}
+
+GuestViewBase* GuestViewManager::GetGuestFromFrameTreeNodeId(
+    content::FrameTreeNodeId frame_tree_node_id) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  content::WebContents* web_contents =
+      content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
+  // This lookup is safe, since we're only using it to get to the parent.
+  content::RenderFrameHost* rfh =
+      web_contents->UnsafeFindFrameByFrameTreeNodeId(frame_tree_node_id);
+  if (rfh && rfh->GetParentOrOuterDocument()) {
+    return GetGuestFromRenderFrameHost(*rfh->GetParentOrOuterDocument());
+  }
+
+  return GetGuestFromOutermostFrameTreeNodeId(frame_tree_node_id);
+}
+
+GuestViewBase* GuestViewManager::GetGuestFromOutermostFrameTreeNodeId(
+    content::FrameTreeNodeId outermost_ftn_id) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  auto it = guest_page_frame_id_guestview_map_.find(outermost_ftn_id);
+  return it == guest_page_frame_id_guestview_map_.end() ? nullptr : it->second;
 }
 
 void GuestViewManager::EmbedderProcessDestroyed(int embedder_process_id) {
@@ -452,8 +525,7 @@ std::unique_ptr<GuestViewBase> GuestViewManager::CreateGuestInternal(
 
   auto it = guest_view_registry_.find(view_type);
   if (it == guest_view_registry_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   return it->second.create_function.Run(owner_rfh);

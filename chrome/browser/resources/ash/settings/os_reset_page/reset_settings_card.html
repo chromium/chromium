@@ -15,9 +15,7 @@
 
 <settings-card header-text="$i18n{resetPageTitle}">
   <div class="settings-box two-line first">
-    <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-      <iron-icon id="powerwashIcon" icon="os-settings:startup"></iron-icon>
-    </template>
+    <iron-icon id="powerwashIcon" icon="os-settings:startup"></iron-icon>
     <div class="start" id="title" aria-hidden="true">
       $i18n{powerwashTitle}
       <div class="secondary" id="secondaryText" aria-hidden="true">
@@ -35,9 +33,7 @@
   </div>
   <template is="dom-if" if="[[isSanitizeAllowed_]]">
     <div class="settings-box two-line hr" id="sanitizeCard">
-      <template is="dom-if" if="[[isRevampWayfindingEnabled_]]">
-        <iron-icon id="sanitizeIcon" icon="os-settings:sanitize"></iron-icon>
-      </template>
+      <iron-icon id="sanitizeIcon" icon="os-settings:sanitize"></iron-icon>
       <div class="start" id="sanitizeTitle" aria-hidden="true">
         $i18n{sanitizeTitle}
         <div class="secondary" aria-hidden="true">

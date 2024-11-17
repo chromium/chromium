@@ -79,7 +79,8 @@
           "builder": "Dawn Linux x64 Release (Intel UHD 770)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/dawn-try-linux-x64-intel-uhd770-rel/targets"
     }
   },
   "$build/reclient": {

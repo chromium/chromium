@@ -54,7 +54,6 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
     std::optional<bool> auto_gain_control;
     std::optional<bool> noise_supression;
     std::optional<bool> voice_isolation;
-    String echo_cancellation_type;
     int32_t sample_rate = -1;
     int32_t sample_size = -1;
     int32_t channel_count = -1;
@@ -150,8 +149,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
 
   virtual VideoFrameStats GetVideoFrameStats() const {
     // This method is only callable on video tracks.
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
 
   // Gets the audio frame stats if the platform is an audio track. This also
@@ -160,7 +158,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   // consecutive but non-overlaping intervals.
   virtual void TransferAudioFrameStatsTo(AudioFrameStats& destination) {
     // This method is only callable on audio tracks.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   virtual CaptureHandle GetCaptureHandle();
@@ -184,9 +182,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
   // Add an audio sink to the track. This function must only be called for audio
   // tracks. It will trigger a OnSetFormat() call on the |sink| before the first
   // chunk of audio is delivered.
-  virtual void AddSink(WebMediaStreamAudioSink* sink) {
-    NOTREACHED_IN_MIGRATION();
-  }
+  virtual void AddSink(WebMediaStreamAudioSink* sink) { NOTREACHED(); }
   // Add a video sink to track. This function must only be called for video
   // tracks.  The |sink| will receive video track state changes on the main
   // render thread and video frames in the |callback| method on the IO-thread.
@@ -195,7 +191,7 @@ class PLATFORM_EXPORT MediaStreamTrackPlatform {
                        const VideoCaptureDeliverFrameCB& callback,
                        MediaStreamVideoSink::IsSecure is_secure,
                        MediaStreamVideoSink::UsesAlpha uses_alpha) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:

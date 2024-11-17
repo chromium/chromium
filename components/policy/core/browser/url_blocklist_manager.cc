@@ -284,7 +284,7 @@ URLBlocklistManager::URLBlocklistManager(
   // |pref_service_| lives on.
   ui_task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
   background_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-      {base::TaskPriority::BEST_EFFORT});
+      {base::TaskPriority::USER_VISIBLE});
 
   default_blocklist_source_ = std::make_unique<DefaultBlocklistSource>(
       pref_service, blocklist_pref_path, allowlist_pref_path);

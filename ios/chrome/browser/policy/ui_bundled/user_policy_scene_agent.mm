@@ -11,21 +11,23 @@
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/policy/model/cloud/user_policy_signin_service.h"
+#import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_coordinator.h"
+#import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_coordinator_delegate.h"
+#import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_ui_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_coordinator.h"
-#import "ios/chrome/browser/policy/ui_bundled/user_policy/user_policy_prompt_coordinator_delegate.h"
-#import "ios/chrome/browser/policy/ui_bundled/user_policy_util.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/scoped_ui_blocker.h"
 #import "url/gurl.h"
 
-@interface UserPolicySceneAgent () <AppStateObserver> {
+@interface UserPolicySceneAgent () <ProfileStateObserver> {
   // Scoped UI blocker that blocks the other scenes/windows if the dialog is
   // shown on this scene.
   std::unique_ptr<ScopedUIBlocker> _uiBlocker;
@@ -96,14 +98,14 @@
 - (void)setSceneState:(SceneState*)sceneState {
   [super setSceneState:sceneState];
 
-  [self.sceneState.appState addObserver:self];
+  [self.sceneState.profileState addObserver:self];
 }
 
 #pragma mark - SceneStateObserver
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
   // Tear down objects tied to the scene state before it is deleted.
-  [self.sceneState.appState removeObserver:self];
+  [self.sceneState.profileState removeObserver:self];
   [self stopUserPolicyPromptCoordinator];
 }
 
@@ -123,12 +125,13 @@
   [self maybeShowUserPolicyNotification];
 }
 
-#pragma mark - AppStateObserver
+#pragma mark - ProfileStateObserver
 
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  // Monitor the app intialization stages to consider showing the sign-in
-  // prompts at a point in the initialization of the app that allows it.
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  // Monitor the profile intialization stages to consider showing the sign-in
+  // prompts at a point in the initialization of the profile that allows it.
   [self maybeShowUserPolicyNotification];
 }
 
@@ -157,7 +160,7 @@
 
 // Returns YES if the scene UI is available to show the notification dialog.
 - (BOOL)isUIAvailableToShowNotification {
-  if (self.sceneState.appState.initStage < InitStageFinal) {
+  if (self.sceneState.profileState.initStage < ProfileInitStage::kFinal) {
     // Return NO when the app isn't yet fully initialized.
     return NO;
   }
@@ -169,7 +172,7 @@
 
   // Return NO when the scene cannot present views because it is blocked. This
   // is what prevents showing more than one dialog at a time.
-  return !self.sceneState.appState.currentUIBlocker;
+  return !self.sceneState.profileState.currentUIBlocker;
 }
 
 // Shows the User Policy notification dialog if the requirements are fulfilled.
@@ -194,7 +197,12 @@
 - (void)showNotification {
   DCHECK(self.sceneState.UIEnabled);
 
-  _uiBlocker = std::make_unique<ScopedUIBlocker>(self.sceneState);
+  // Raise a UI blocker with the UIBlockerExtent::kProfile extent since the
+  // user policies concern a specific account hence profile. Other profiles that
+  // aren't subject to user policies shouldn't be concerned by the User Policy
+  // dialog.
+  _uiBlocker = std::make_unique<ScopedUIBlocker>(self.sceneState,
+                                                 UIBlockerExtent::kProfile);
 
   __weak __typeof(self) weakSelf = self;
   [self.applicationCommandsHandler dismissModalDialogsWithCompletion:^{

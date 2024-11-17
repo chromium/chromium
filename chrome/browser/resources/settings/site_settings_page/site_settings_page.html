@@ -3,21 +3,10 @@
         min-height: 0;
       }
 
-      img {
-        width: 100%;
-      }
-
       #safetyHubModule {
         padding: 0 var(--cr-section-padding);
       }
     </style>
-    <picture>
-      <source
-          srcset="chrome://settings/images/permissions_banner_dark.svg"
-          media="(prefers-color-scheme: dark)">
-      <img id="banner" alt=""
-          src="chrome://settings/images/permissions_banner.svg">
-    </picture>
     <template is="dom-if" if="[[showUnusedSitePermissions_]]">
       <template is="dom-if" if="[[enableSafetyHub_]]">
         <div class="cr-row first">
@@ -93,8 +82,8 @@
           id="unusedSitePermissionsRevocationToggle"
           pref="{{
               prefs.safety_hub.unused_site_permissions_revocation.enabled}}"
-          label=$i18n{safetyCheckUnusedSitePermissionsSettingLabel}
+          label="$i18n{safetyCheckUnusedSitePermissionsSettingLabel}"
           sub-label=
-              $i18n{safetyCheckUnusedSitePermissionsSettingSublabel}>
+              "$i18n{safetyCheckUnusedSitePermissionsSettingSublabel}">
       </settings-toggle-button>
     </template>

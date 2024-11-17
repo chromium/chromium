@@ -8,10 +8,10 @@
 #import <memory>
 
 #import "base/no_destructor.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/model/profile/profile_keyed_service_factory_ios.h"
 
 class OptimizationGuideService;
+class ProfileIOS;
 
 // Singleton that owns all OptimizationGuideService objects and associates them
 // with Profiles.

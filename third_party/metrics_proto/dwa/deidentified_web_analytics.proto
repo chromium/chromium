@@ -11,7 +11,6 @@ option java_outer_classname = "DeidentifiedWebAnalyticsProtos";
 
 package dwa;
 
-import "histogram_event.proto";
 import "system_profile.proto";
 
 // A report containing deidentified web analytics data. One report is sent per
@@ -66,6 +65,7 @@ message CoarseSystemInfo {
     PLATFORM_MACOS = 9;
     PLATFORM_LINUX = 10;
     PLATFORM_CHROMEOS = 11;
+    PLATFORM_ANDROID = 12;
   }
   optional Platform platform = 2;
 
@@ -117,11 +117,9 @@ message EncryptedPageLoadEvents {
       optional bytes encrypted_event = 1;
       optional fixed64 field_trials_hash = 2;
     }
-
     repeated EncryptedDeidentifiedWebAnalyticsEvent
         encrypted_deidentified_web_analytics_events = 1;
   }
-
   repeated EncryptedPageLoadEvent encrypted_page_load_events = 1;
 }
 
@@ -148,11 +146,22 @@ message DeidentifiedWebAnalyticsEvent {
     // http://cs.chromium.org/chromium/src/base/metrics/metrics_hashes.cc?q=HashMetricName
     optional fixed64 content_hash = 2;
 
-    // Metrics associated with the content, name hash and values behave the
-    // same as in UMA.
-    repeated metrics.HistogramEventProto metrics = 3;
-  }
+    // A set of metrics collected as part of a single entry. A single entry
+    // defines a series of metrics collected in one instance.
+    // https://source.chromium.org/chromium/chromium/src/+/main:components/metrics/dwa/mojom/dwa_interface.mojom
+    message EntryMetrics {
+      // A single metric, which is defined by a name hash and a value.
+      message Metric {
+        optional fixed64 name_hash = 1;
+        optional int64 value = 2;
+      }
 
+      repeated Metric metric = 1;
+    }
+
+    // Metrics associated with the content.
+    repeated EntryMetrics metrics = 3;
+  }
   repeated ContentMetric content_metrics = 2;
 
   // Field trials that we want to associate with this event, name id and

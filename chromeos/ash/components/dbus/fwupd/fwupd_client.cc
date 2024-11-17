@@ -20,6 +20,7 @@
 #include "chromeos/ash/components/dbus/fwupd/fake_fwupd_client.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties_dbus.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/device_event_log/device_event_log.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -46,6 +47,8 @@ const int kSha256Length = 64;
 
 // Dict key for the IsInternal device flag.
 const char kIsInternalKey[] = "IsInternal";
+// Dict key for the Reboot device flag.
+const char kNeedsRebootKey[] = "NeedsReboot";
 // Dict key for the HasTrustedReport release flag.
 const char kHasTrustedReportKey[] = "HasTrustedReport";
 
@@ -345,8 +348,10 @@ class FwupdClientImpl : public FwupdClient {
           const bool is_internal =
               (value_uint64 & kInternalDeviceFlag) == kInternalDeviceFlag;
           result.Set(kIsInternalKey, is_internal);
-        }
-        if (key == "TrustFlags") {
+          const bool needs_reboot =
+              (value_uint64 & kNeedsRebootDeviceFlag) == kNeedsRebootDeviceFlag;
+          result.Set(kNeedsRebootKey, needs_reboot);
+        } else if (key == "TrustFlags") {
           uint64_t value_uint64 = 0;
           variant_reader.PopUint64(&value_uint64);
           const bool has_trusted_report =
@@ -493,6 +498,10 @@ class FwupdClientImpl : public FwupdClient {
       return;
     }
 
+    const bool allow_internal =
+        features::IsFlexFirmwareUpdateEnabled() &&
+        !InstallAttributes::Get()->IsEnterpriseManaged();
+
     FwupdDeviceList devices;
     while (array_reader.HasMoreData()) {
       // Parse device description.
@@ -505,8 +514,7 @@ class FwupdClientImpl : public FwupdClient {
       std::optional<bool> is_internal = dict.FindBool(kIsInternalKey);
       const std::string* name = dict.FindString("Name");
       // Ignore internal devices unless firmware updates for Flex are enabled.
-      if (is_internal.has_value() && is_internal.value() &&
-          !features::IsFlexFirmwareUpdateEnabled()) {
+      if (!allow_internal && is_internal.has_value() && is_internal.value()) {
         if (name) {
           FIRMWARE_LOG(DEBUG) << "Ignoring internal device: " << *name;
         } else {
@@ -524,8 +532,10 @@ class FwupdClientImpl : public FwupdClient {
         return;
       }
 
+      std::optional<bool> needs_reboot = dict.FindBool(kNeedsRebootKey);
+
       FIRMWARE_LOG(DEBUG) << "fwupd: Device found: " << *id << " " << *name;
-      devices.emplace_back(*id, *name);
+      devices.emplace_back(*id, *name, needs_reboot.value_or(false));
     }
 
     FIRMWARE_LOG(USER) << "fwupd: Devices found: " << devices.size();

@@ -9,6 +9,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import android.app.Activity;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -18,25 +19,38 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.annotation.UiThreadTest;
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
+import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link MessageCardViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class MessageCardViewBinderTest extends BlankUiTestActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class MessageCardViewBinderTest {
     private static final String ACTION_TEXT = "actionText";
     private static final String DESCRIPTION_TEXT = "descriptionText";
     private static final String DISMISS_BUTTON_CONTENT_DESCRIPTION = "dismiss";
+
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
 
     private ViewGroup mItemView;
     private PropertyModel mItemViewModel;
@@ -56,19 +70,22 @@ public class MessageCardViewBinderTest extends BlankUiTestActivityTestCase {
     private MessageCardView.DismissActionProvider mMessageServiceDismissHandler =
             (int messageType) -> mMessageServiceDismissCallbackRan.set(true);
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
-        ViewGroup view = new LinearLayout(getActivity());
+    @Before
+    public void setUp() throws Exception {
+        ViewGroup view = new LinearLayout(sActivity);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    getActivity().setContentView(view);
+                    sActivity.setContentView(view);
 
                     mItemView =
                             (ViewGroup)
-                                    getActivity()
+                                    sActivity
                                             .getLayoutInflater()
                                             .inflate(R.layout.tab_grid_message_card_item, null);
                     view.addView(mItemView);
@@ -151,7 +168,7 @@ public class MessageCardViewBinderTest extends BlankUiTestActivityTestCase {
     public void testSetIconVisibility() {
         int margin =
                 (int)
-                        getActivity()
+                        sActivity
                                 .getResources()
                                 .getDimension(R.dimen.tab_grid_iph_item_description_margin);
         ViewGroup.MarginLayoutParams params =
@@ -188,7 +205,7 @@ public class MessageCardViewBinderTest extends BlankUiTestActivityTestCase {
                 equalTo(SemanticColorUtils.getDefaultTextColorLink(mItemView.getContext())));
         assertThat(
                 closeButton.getImageTintList().getDefaultColor(),
-                equalTo(getActivity().getColor(R.color.default_icon_color_tint_list)));
+                equalTo(sActivity.getColor(R.color.default_icon_color_tint_list)));
 
         mItemViewModel.set(MessageCardViewProperties.IS_INCOGNITO, true);
         assertThat(
@@ -199,12 +216,11 @@ public class MessageCardViewBinderTest extends BlankUiTestActivityTestCase {
                 equalTo(mItemView.getContext().getColor(R.color.default_text_color_link_light)));
         assertThat(
                 closeButton.getImageTintList().getDefaultColor(),
-                equalTo(getActivity().getColor(R.color.default_icon_color_light)));
+                equalTo(sActivity.getColor(R.color.default_icon_color_light)));
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(mItemMCP::destroy);
-        super.tearDownTest();
     }
 }

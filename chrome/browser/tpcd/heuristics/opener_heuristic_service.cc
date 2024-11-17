@@ -4,21 +4,21 @@
 
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_service.h"
 
-#include "chrome/browser/content_settings/cookie_settings_factory.h"
-#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_service_factory.h"
-#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
+#include "url/origin.h"
 
 OpenerHeuristicService::OpenerHeuristicService(
     base::PassKey<OpenerHeuristicServiceFactory>,
     content::BrowserContext* context)
-    : dips_(DIPSServiceImpl::Get(context)),
-      cookie_settings_(CookieSettingsFactory::GetForProfile(
-          Profile::FromBrowserContext(context))),
+    : browser_context_(context),
+      dips_(DIPSServiceImpl::Get(context)),
       tracking_protection_settings_(
           TrackingProtectionSettingsFactory::GetForProfile(
               Profile::FromBrowserContext(context))) {
@@ -38,7 +38,6 @@ OpenerHeuristicService* OpenerHeuristicService::Get(
 
 void OpenerHeuristicService::Shutdown() {
   dips_ = nullptr;
-  cookie_settings_.reset();
   tracking_protection_settings_ = nullptr;
   tracking_protection_settings_observation_.Reset();
 }
@@ -83,12 +82,20 @@ void OpenerHeuristicService::BackfillPopupHeuristicGrants(
       continue;
     }
 
-    // Create cookie access grants scoped to the schemeless pattern, since the
-    // scheme is not available.
-    GURL popup_url = GURL(base::StrCat({"http://", popup.popup_site}));
-    GURL opener_url = GURL(base::StrCat({"http://", popup.opener_site}));
-    cookie_settings_->SetTemporaryCookieGrantForHeuristic(
-        popup_url, opener_url, grant_duration,
-        /*use_schemeless_patterns=*/true);
+    // `popup_site` and `opener_site` were read from the DIPS database,
+    // and were originally computed by calling GetSiteForDIPS().
+    // GrantCookieAccessDueToHeuristic() takes SchemefulSites, so we create some
+    // here, but since we pass ignore_schemes=true the scheme doesn't matter
+    // (and port never matters for SchemefulSites), so we hardcode http and 80.
+    net::SchemefulSite popup_site(
+        url::Origin::CreateFromNormalizedTuple("http", popup.popup_site, 80));
+    net::SchemefulSite opener_site(
+        url::Origin::CreateFromNormalizedTuple("http", popup.opener_site, 80));
+
+    // TODO: crbug.com/40883201 - When we move to //content, we will call
+    // this via ContentBrowserClient instead of as a standalone function.
+    dips_move::GrantCookieAccessDueToHeuristic(browser_context_, opener_site,
+                                               popup_site, grant_duration,
+                                               /*ignore_schemes=*/true);
   }
 }

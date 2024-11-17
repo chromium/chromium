@@ -21,7 +21,7 @@ import("//build_overrides/build.gni")
 # swift compiler (as it does not include support for catalyst). Remove it
 # once the support is available.
 if (is_ios) {
-  import("//build/config/ios/config.gni")
+  import("//build/config/apple/mobile_config.gni")
   import("//build/config/ios/ios_sdk.gni")
 }
 

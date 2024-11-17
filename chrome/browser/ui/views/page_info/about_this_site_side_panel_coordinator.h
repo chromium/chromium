@@ -14,6 +14,7 @@
 
 class BrowserView;
 class AboutThisSiteSidePanelView;
+class SidePanelEntryScope;
 class SidePanelUI;
 
 namespace views {
@@ -49,7 +50,8 @@ class AboutThisSideSidePanelCoordinator
   SidePanelUI* GetSidePanelUI();
 
   // Called when SidePanel is opened.
-  std::unique_ptr<views::View> CreateAboutThisSiteWebView();
+  std::unique_ptr<views::View> CreateAboutThisSiteWebView(
+      SidePanelEntryScope& scope);
 
   // Called to get the URL for the "open in new tab" button.
   GURL GetOpenInNewTabUrl();
@@ -86,4 +88,4 @@ class AboutThisSideSidePanelCoordinator
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
-#endif // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_ABOUT_THIS_SITE_SIDE_PANEL_COORDINATOR_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_ABOUT_THIS_SITE_SIDE_PANEL_COORDINATOR_H_

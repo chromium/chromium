@@ -142,9 +142,12 @@ void* GetCdmHost(int host_interface_version, void* user_data) {
       return static_cast<cdm::Host_10*>(cdm_adapter);
     case cdm::Host_11::kVersion:
       return static_cast<cdm::Host_11*>(cdm_adapter);
+    // When future Host versions are used, update to include them over here.
+    // Older Chrome versions that don't support new host versions would return
+    // nullptr.
+    default:
+      return nullptr;
   }
-  NOTREACHED() << "Unexpected host interface version "
-               << host_interface_version;
 }
 
 void ReportSystemCodeUMA(const std::string& key_system, uint32_t system_code) {

@@ -25,8 +25,9 @@ std::pair<std::string_view, const Feature*> MakeNameToFeaturePair(
 }
 
 FeatureMap::FeatureMap(std::vector<const Feature*> features_exposed_to_java) {
-  mapping_ = MakeFlatMap<std::string_view, const Feature*>(
-      features_exposed_to_java, {}, &MakeNameToFeaturePair);
+  mapping_ =
+      MakeFlatMap<std::string_view, raw_ptr<const Feature, CtnExperimental>>(
+          features_exposed_to_java, {}, &MakeNameToFeaturePair);
 }
 
 FeatureMap::~FeatureMap() = default;

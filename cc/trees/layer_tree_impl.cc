@@ -25,6 +25,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/notreached.h"
+#include "base/parameter_pack.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -57,7 +58,9 @@
 #include "cc/trees/transform_node.h"
 #include "cc/trees/tree_synchronizer.h"
 #include "cc/view_transition/view_transition_request.h"
+#include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/traced_value.h"
+#include "components/viz/common/view_transition_element_resource_id.h"
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -147,11 +150,13 @@ void LayerTreeLifecycle::AdvanceTo(LifecycleState next_state) {
 
 LayerTreeImpl::LayerTreeImpl(
     LayerTreeHostImpl& host_impl,
+    viz::BeginFrameArgs begin_frame_args,
     scoped_refptr<SyncedScale> page_scale_factor,
     scoped_refptr<SyncedBrowserControls> top_controls_shown_ratio,
     scoped_refptr<SyncedBrowserControls> bottom_controls_shown_ratio,
     scoped_refptr<SyncedElasticOverscroll> elastic_overscroll)
     : host_impl_(&host_impl),
+      created_begin_frame_args_(begin_frame_args),
       source_frame_number_(-1),
       is_first_frame_after_commit_tracker_(-1),
       hud_layer_(nullptr),
@@ -953,6 +958,7 @@ void LayerTreeImpl::PushPropertiesTo(LayerTreeImpl* target_tree) {
   // Make sure that property tree based changes are moved to layers
   // and draw properties are invalidated.
   target_tree->MoveChangeTrackingToLayers();
+  target_tree->SetCreatedBeginFrameArgs(std::move(created_begin_frame_args_));
 }
 
 void LayerTreeImpl::HandleTickmarksVisibilityChange() {
@@ -1036,10 +1042,6 @@ void LayerTreeImpl::SetTransformMutated(ElementId element_id,
   DCHECK_EQ(1u,
             property_trees()->transform_tree().element_id_to_node_index().count(
                 element_id));
-  if (!base::FeatureList::IsEnabled(features::kNoPreserveLastMutation) &&
-      (IsSyncTree() || IsRecycleTree())) {
-    element_id_to_transform_animations_[element_id] = transform;
-  }
   if (property_trees()->transform_tree_mutable().OnTransformAnimated(element_id,
                                                                      transform))
     set_needs_update_draw_properties();
@@ -1049,10 +1051,6 @@ void LayerTreeImpl::SetOpacityMutated(ElementId element_id, float opacity) {
   DCHECK_EQ(1u,
             property_trees()->effect_tree().element_id_to_node_index().count(
                 element_id));
-  if (!base::FeatureList::IsEnabled(features::kNoPreserveLastMutation) &&
-      (IsSyncTree() || IsRecycleTree())) {
-    element_id_to_opacity_animations_[element_id] = opacity;
-  }
   if (property_trees()->effect_tree_mutable().OnOpacityAnimated(element_id,
                                                                 opacity))
     set_needs_update_draw_properties();
@@ -1063,10 +1061,6 @@ void LayerTreeImpl::SetFilterMutated(ElementId element_id,
   DCHECK_EQ(1u,
             property_trees()->effect_tree().element_id_to_node_index().count(
                 element_id));
-  if (!base::FeatureList::IsEnabled(features::kNoPreserveLastMutation) &&
-      (IsSyncTree() || IsRecycleTree())) {
-    element_id_to_filter_animations_[element_id] = filters;
-  }
   if (property_trees()->effect_tree_mutable().OnFilterAnimated(element_id,
                                                                filters))
     set_needs_update_draw_properties();
@@ -1078,10 +1072,6 @@ void LayerTreeImpl::SetBackdropFilterMutated(
   DCHECK_EQ(1u,
             property_trees()->effect_tree().element_id_to_node_index().count(
                 element_id));
-  if (!base::FeatureList::IsEnabled(features::kNoPreserveLastMutation) &&
-      (IsSyncTree() || IsRecycleTree())) {
-    element_id_to_backdrop_filter_animations_[element_id] = backdrop_filters;
-  }
   if (property_trees()->effect_tree_mutable().OnBackdropFilterAnimated(
           element_id, backdrop_filters))
     set_needs_update_draw_properties();
@@ -1185,70 +1175,6 @@ void LayerTreeImpl::UpdatePropertyTreeAnimationFromMainThread() {
   // then synced when the tree is activated. See http://crbug.com/916512
   DCHECK(IsSyncTree());
   auto& transform_tree = property_trees_.transform_tree_mutable();
-
-  if (!base::FeatureList::IsEnabled(features::kNoPreserveLastMutation)) {
-    auto& effect_tree = property_trees_.effect_tree_mutable();
-    auto element_id_to_opacity = element_id_to_opacity_animations_.begin();
-    while (element_id_to_opacity != element_id_to_opacity_animations_.end()) {
-      const ElementId id = element_id_to_opacity->first;
-      EffectNode* node = effect_tree.FindNodeFromElementId(id);
-      if (!node || !node->is_currently_animating_opacity ||
-          node->opacity == element_id_to_opacity->second) {
-        element_id_to_opacity_animations_.erase(element_id_to_opacity++);
-        continue;
-      }
-      node->opacity = element_id_to_opacity->second;
-      effect_tree.set_needs_update(true);
-      ++element_id_to_opacity;
-    }
-
-    auto element_id_to_filter = element_id_to_filter_animations_.begin();
-    while (element_id_to_filter != element_id_to_filter_animations_.end()) {
-      const ElementId id = element_id_to_filter->first;
-      EffectNode* node = effect_tree.FindNodeFromElementId(id);
-      if (!node || !node->is_currently_animating_filter ||
-          node->filters == element_id_to_filter->second) {
-        element_id_to_filter_animations_.erase(element_id_to_filter++);
-        continue;
-      }
-      node->filters = element_id_to_filter->second;
-      effect_tree.set_needs_update(true);
-      ++element_id_to_filter;
-    }
-
-    auto element_id_to_backdrop_filter =
-        element_id_to_backdrop_filter_animations_.begin();
-    while (element_id_to_backdrop_filter !=
-           element_id_to_backdrop_filter_animations_.end()) {
-      const ElementId id = element_id_to_backdrop_filter->first;
-      EffectNode* node = effect_tree.FindNodeFromElementId(id);
-      if (!node || !node->is_currently_animating_backdrop_filter ||
-          node->backdrop_filters == element_id_to_backdrop_filter->second) {
-        element_id_to_backdrop_filter_animations_.erase(
-            element_id_to_backdrop_filter++);
-        continue;
-      }
-      node->backdrop_filters = element_id_to_backdrop_filter->second;
-      effect_tree.set_needs_update(true);
-      ++element_id_to_backdrop_filter;
-    }
-
-    auto element_id_to_transform = element_id_to_transform_animations_.begin();
-    while (element_id_to_transform !=
-           element_id_to_transform_animations_.end()) {
-      const ElementId id = element_id_to_transform->first;
-      TransformNode* node = transform_tree.FindNodeFromElementId(id);
-      if (!node || !node->is_currently_animating ||
-          node->local == element_id_to_transform->second) {
-        element_id_to_transform_animations_.erase(element_id_to_transform++);
-        continue;
-      }
-      node->local = element_id_to_transform->second;
-      node->needs_local_transform_update = true;
-      transform_tree.set_needs_update(true);
-      ++element_id_to_transform;
-    }
-  }
 
   for (auto iter : transform_tree.element_id_to_node_index())
     UpdateTransformAnimation(iter.first, iter.second);
@@ -1854,7 +1780,7 @@ LayerImpl* LayerTreeImpl::LayerByElementId(ElementId element_id) const {
 }
 
 void LayerTreeImpl::SetSurfaceRanges(
-    const base::flat_set<viz::SurfaceRange> surface_ranges) {
+    base::flat_set<viz::SurfaceRange> surface_ranges) {
   DCHECK(surface_layer_ranges_.empty());
   surface_layer_ranges_ = std::move(surface_ranges);
   needs_surface_ranges_sync_ = true;
@@ -2021,6 +1947,14 @@ const viz::BeginFrameArgs& LayerTreeImpl::CurrentBeginFrameArgs() const {
   return host_impl_->CurrentBeginFrameArgs();
 }
 
+const viz::BeginFrameArgs& LayerTreeImpl::CreatedBeginFrameArgs() const {
+  return created_begin_frame_args_;
+}
+
+void LayerTreeImpl::SetCreatedBeginFrameArgs(viz::BeginFrameArgs new_args) {
+  created_begin_frame_args_ = std::move(new_args);
+}
+
 base::TimeDelta LayerTreeImpl::CurrentBeginFrameInterval() const {
   return host_impl_->CurrentBeginFrameInterval();
 }
@@ -2055,8 +1989,7 @@ LayerTreeImpl::CreateScrollbarAnimationController(ElementId scroll_element_id,
               thinning_duration, initial_opacity, idle_thickness_scale);
     }
     case LayerTreeSettings::NO_ANIMATOR:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return nullptr;
 }
@@ -2365,10 +2298,8 @@ static bool PointHitsRect(
   // Transform the hit test point from screen space to the local space of the
   // given rect.
   bool clipped = false;
-  gfx::Point3F planar_point = MathUtil::ProjectPoint3D(
+  gfx::PointF hit_test_point_in_local_space = MathUtil::ProjectPoint(
       inverse_local_space_to_screen_space, screen_space_point, &clipped);
-  gfx::PointF hit_test_point_in_local_space =
-      gfx::PointF(planar_point.x(), planar_point.y());
 
   // If ProjectPoint could not project to a valid value, then we assume that
   // this point doesn't hit this rect.
@@ -2383,7 +2314,8 @@ static bool PointHitsRect(
     // and pull it back to world space and compute the displacement along the
     // z-axis.
     gfx::Point3F planar_point_in_screen_space =
-        local_space_to_screen_space_transform.MapPoint(planar_point);
+        local_space_to_screen_space_transform.MapPoint(
+            gfx::Point3F(hit_test_point_in_local_space));
     *distance_to_camera = planar_point_in_screen_space.z();
   }
 
@@ -3065,6 +2997,20 @@ bool LayerTreeImpl::HasViewTransitionSaveRequest() const {
   }
 
   return false;
+}
+
+void LayerTreeImpl::SetViewTransitionContentRect(
+    const viz::ViewTransitionElementResourceId& id,
+    const gfx::RectF& rect) {
+  // TODO(noamr) this could be more efficient, but usually there would be only 1
+  // or 2 anyway.
+  for (const auto& request : view_transition_requests_) {
+    if (request->type() == ViewTransitionRequest::Type::kSave &&
+        request->token() == id.transition_token()) {
+      host_impl_->SetViewTransitionContentRect(request->sequence_id(), id,
+                                               rect);
+    }
+  }
 }
 
 bool LayerTreeImpl::IsReadyToActivate() const {

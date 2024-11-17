@@ -60,10 +60,11 @@ WITH
                            "TIMED_OUT_SILENCE"])
   ),
 {mixin_selector_and_stat_queries}
+{combined_stats_query}
 SELECT
   *
 FROM
-{all_mixin_names}
+  combined_stats
 ORDER BY mixin, bot_id, test_suite
 """
 
@@ -146,35 +147,41 @@ def _GenerateMixinSelectorAndStatQueries(
   return f'{task_selector_query}{stats_query}'
 
 
-def _GenerateAllMixinNames(mixin_names: List[str]) -> str:
-  """Generates the string for |all_mixin_names| in
-  SWARMING_TASK_COUNTS_QUERY_TEMPLATE.
-  """
+def _GenerateCombinedStatsQuery(mixin_names: List[str]) -> str:
+  """Generates the string for |combined_stats_query| in
+  SWARMING_TASK_COUNTS_QUERY_TEMPLATE."""
   components = []
   for m in mixin_names:
-    components.append(f'  {m}_stats')
-  return ',\n'.join(components)
+    mixin_component = f"""\
+    SELECT
+      *
+    FROM
+      {m}_stats"""
+    components.append(mixin_component)
+  union = '\n    UNION ALL\n'.join(components)
+  combined_stats_query = f"""\
+  combined_stats AS (
+{union}
+  )"""
+  return combined_stats_query
 
 
 def _GenerateQuery(dimensions_by_mixin: Dict[str, test_specs.DimensionSet],
                    sample_period: int) -> str:
   """Generates a complete query using SWARMING_TASK_COUNTS_QUERY_TEMPLATE."""
-  all_mixin_names = _GenerateAllMixinNames(list(dimensions_by_mixin.keys()))
+  combined_stats_query = _GenerateCombinedStatsQuery(
+      list(dimensions_by_mixin.keys()))
   mixin_queries = []
   for mixin_name in sorted(list(dimensions_by_mixin.keys())):
     dimensions = dimensions_by_mixin[mixin_name]
     mixin_queries.append(
         _GenerateMixinSelectorAndStatQueries(mixin_name, dimensions))
   mixin_selector_and_stat_queries = ''.join(mixin_queries)
-  # Remove the trailing comma and newline.
-  trailing_comma_index = mixin_selector_and_stat_queries.rfind(',')
-  mixin_selector_and_stat_queries = (
-      mixin_selector_and_stat_queries[:trailing_comma_index] +
-      mixin_selector_and_stat_queries[trailing_comma_index + 1:])
+  # Remove the trailing newline.
   mixin_selector_and_stat_queries = mixin_selector_and_stat_queries.rstrip()
   return SWARMING_TASK_COUNTS_QUERY_TEMPLATE.format(
       mixin_selector_and_stat_queries=mixin_selector_and_stat_queries,
-      all_mixin_names=all_mixin_names,
+      combined_stats_query=combined_stats_query,
       sample_period=sample_period)
 
 

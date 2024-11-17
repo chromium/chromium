@@ -5,14 +5,21 @@
 package org.chromium.chrome.browser.autofill.vcn;
 
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 
+import androidx.annotation.DrawableRes;
+
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.function.Function;
 
 /** The model of the autofill virtual card number (VCN) enrollment bottom sheet UI. */
 /*package*/ abstract class AutofillVcnEnrollBottomSheetProperties {
@@ -101,6 +108,12 @@ import java.util.List;
         /** The bitmap for the issuer icon. */
         final Bitmap mBitmap;
 
+        /** The resource id for the issuer icon. */
+        final @DrawableRes int mIconResource;
+
+        /** The url for an issuer icon. */
+        final GURL mIconUrl;
+
         /** The width of the issuer icon. */
         final int mWidth;
 
@@ -109,11 +122,35 @@ import java.util.List;
 
         /** Constructs an issuer icon. */
         IssuerIcon(Bitmap bitmap, int width, int height) {
+            assert !ChromeFeatureList.isEnabled(
+                    AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER);
             mBitmap = bitmap;
+            mIconResource = 0;
+            mIconUrl = null;
             mWidth = width;
             mHeight = height;
         }
+
+        /* Constructs an issuer icon given a default icon resource and an optional custom url. */
+        IssuerIcon(@DrawableRes int iconResource, GURL iconUrl) {
+            assert ChromeFeatureList.isEnabled(
+                    AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER);
+            mBitmap = null;
+            mIconResource = iconResource;
+            mIconUrl = iconUrl;
+            mWidth = 0;
+            mHeight = 0;
+        }
     }
+
+    /**
+     * A call back to retrieve the drawable for the given issuer icon when the issuer icon.
+     *
+     * <p>This callback does not apply to IssuerIcons initialized with a bitmap, constructed via
+     * {@link IssuerIcon#IssuerIcon(Bitmap, int, int)}.
+     */
+    static final ReadableObjectPropertyKey<Function<IssuerIcon, Drawable>>
+            ISSUER_ICON_FETCH_CALLBACK = new ReadableObjectPropertyKey<>();
 
     /** The prompt message for the bottom sheet. */
     static final ReadableObjectPropertyKey<String> MESSAGE_TEXT = new ReadableObjectPropertyKey<>();
@@ -168,6 +205,7 @@ import java.util.List;
         DESCRIPTION,
         CARD_CONTAINER_ACCESSIBILITY_DESCRIPTION,
         ISSUER_ICON,
+        ISSUER_ICON_FETCH_CALLBACK,
         CARD_LABEL,
         CARD_DESCRIPTION,
         GOOGLE_LEGAL_MESSAGES,

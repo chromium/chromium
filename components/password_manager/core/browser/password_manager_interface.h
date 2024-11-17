@@ -170,6 +170,7 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   // than in Blink.
   virtual void UpdateStateOnUserInput(
       PasswordManagerDriver* driver,
+      const autofill::FieldDataManager& field_data_manager,
       std::optional<autofill::FormRendererId> form_id,
       autofill::FieldRendererId field_id,
       const std::u16string& field_value) = 0;

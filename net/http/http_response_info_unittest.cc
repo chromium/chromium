@@ -163,7 +163,7 @@ TEST_F(HttpResponseInfoTest, KeyExchangeGroupECDHE) {
   SSLConnectionStatusSetCipherSuite(
       0xcca8 /* TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256 */,
       &response_info_.ssl_info.connection_status);
-  response_info_.ssl_info.key_exchange_group = 23;  // X25519
+  response_info_.ssl_info.key_exchange_group = 23;  // secp256r1
   HttpResponseInfo restored_response_info;
   PickleAndRestore(response_info_, &restored_response_info);
   EXPECT_EQ(23, restored_response_info.ssl_info.key_exchange_group);
@@ -177,7 +177,7 @@ TEST_F(HttpResponseInfoTest, KeyExchangeGroupTLS13) {
                                 &response_info_.ssl_info.connection_status);
   SSLConnectionStatusSetCipherSuite(0x1303 /* TLS_CHACHA20_POLY1305_SHA256 */,
                                     &response_info_.ssl_info.connection_status);
-  response_info_.ssl_info.key_exchange_group = 23;  // X25519
+  response_info_.ssl_info.key_exchange_group = 23;  // secp256r1
   HttpResponseInfo restored_response_info;
   PickleAndRestore(response_info_, &restored_response_info);
   EXPECT_EQ(23, restored_response_info.ssl_info.key_exchange_group);

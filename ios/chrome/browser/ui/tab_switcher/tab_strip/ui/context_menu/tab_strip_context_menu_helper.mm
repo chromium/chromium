@@ -5,7 +5,13 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/context_menu/tab_strip_context_menu_helper.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_utils.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_utils.h"
@@ -182,47 +188,76 @@ UIContextMenuConfiguration* CreateUIContextMenuConfiguration(
       [[ActionFactory alloc] initWithScenario:scenario];
   __weak __typeof(self) weakSelf = self;
 
+  base::WeakPtr<const TabGroup> tabGroup = tabGroupItem.tabGroup->GetWeakPtr();
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(_profile);
+  BOOL isSharedTabGroupSupported =
+      shareKitService && shareKitService->IsSupported();
+  BOOL isTabGroupShared =
+      isSharedTabGroupSupported &&
+      tab_groups::utils::IsTabGroupShared(
+          tabGroup.get(),
+          tab_groups::TabGroupSyncServiceFactory::GetForProfile(_profile));
+
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
-  // Add menu to edit group e.g. rename it, add a new tab to it or ungroup it.
-  NSMutableArray<UIMenuElement*>* editGroupMenuElements =
-      [[NSMutableArray alloc] init];
-
-  base::WeakPtr<const TabGroup> tabGroup = tabGroupItem.tabGroup->GetWeakPtr();
-
-  [editGroupMenuElements
-      addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
-        [weakSelf.handler showTabStripGroupEditionForGroup:tabGroup];
-      }]];
-  [editGroupMenuElements
-      addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{
-        [weakSelf.mutator addNewTabInGroup:tabGroupItem];
-      }]];
-  [editGroupMenuElements
-      addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
-        [weakSelf.mutator ungroupGroup:tabGroupItem sourceView:originView];
-      }]];
-  UIMenu* editGroupMenu = CreateDisplayInlineUIMenu(editGroupMenuElements);
-  [menuElements addObject:editGroupMenu];
-
-  if (IsTabGroupSyncEnabled()) {
-    [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
-                    [weakSelf.mutator closeGroup:tabGroupItem];
-                  }]];
-    if (!self.incognito) {
-      [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                      [weakSelf.mutator deleteGroup:tabGroupItem
-                                         sourceView:originView];
-                    }]];
-    }
-  } else {
-    [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                    [weakSelf.mutator deleteGroup:tabGroupItem
-                                       sourceView:originView];
-                  }]];
+  // Shared actions.
+  NSMutableArray<UIAction*>* sharedActions = [[NSMutableArray alloc] init];
+  if (isTabGroupShared) {
+    [sharedActions addObject:[actionFactory actionToManageTabGroupWithBlock:^{
+                     [weakSelf.handler manageTabGroup:tabGroup];
+                   }]];
+    [sharedActions addObject:[actionFactory actionToShowRecentActivity:^{
+                     [weakSelf.handler showRecentActivityForTabGroup:tabGroup];
+                   }]];
+  } else if (isSharedTabGroupSupported &&
+             IsSharedTabGroupsCreateEnabled(_profile)) {
+    [sharedActions addObject:[actionFactory actionToShareTabGroupWithBlock:^{
+                     [weakSelf.handler shareTabGroup:tabGroup];
+                   }]];
+  }
+  if ([sharedActions count] > 0) {
+    [menuElements addObject:CreateDisplayInlineUIMenu([sharedActions copy])];
   }
 
-  return menuElements;
+  // Edit actions.
+  NSMutableArray<UIAction*>* editActions = [[NSMutableArray alloc] init];
+  [editActions addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
+                 [weakSelf.handler showTabStripGroupEditionForGroup:tabGroup];
+               }]];
+  [editActions addObject:[actionFactory actionToAddNewTabInGroupWithBlock:^{
+                 [weakSelf.mutator addNewTabInGroup:tabGroupItem];
+               }]];
+  if (!isTabGroupShared) {
+    [editActions addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
+                   [weakSelf.mutator ungroupGroup:tabGroupItem
+                                       sourceView:originView];
+                 }]];
+  }
+  [menuElements addObject:CreateDisplayInlineUIMenu([editActions copy])];
+
+  // Destructive actions.
+  NSMutableArray<UIAction*>* destructiveActions = [[NSMutableArray alloc] init];
+  if (IsTabGroupSyncEnabled()) {
+    [destructiveActions
+        addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
+          [weakSelf.mutator closeGroup:tabGroupItem];
+        }]];
+    if (!self.incognito) {
+      [destructiveActions
+          addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+            [weakSelf.mutator deleteGroup:tabGroupItem sourceView:originView];
+          }]];
+    }
+  } else {
+    [destructiveActions
+        addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+          [weakSelf.mutator deleteGroup:tabGroupItem sourceView:originView];
+        }]];
+  }
+  [menuElements addObject:CreateDisplayInlineUIMenu([destructiveActions copy])];
+
+  return [menuElements copy];
 }
 
 @end

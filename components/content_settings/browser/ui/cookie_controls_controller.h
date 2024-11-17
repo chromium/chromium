@@ -202,7 +202,7 @@ class CookieControlsController final
   bool SiteDataAccessed(int third_party_allowed_sites,
                         int third_party_blocked_sites);
 
-  bool ShouldHighlightUserBypass();
+  bool ShouldHighlightUserBypass(bool protections_on);
   bool ShouldUserBypassIconBeVisible(
       std::vector<TrackingProtectionFeature> features,
       bool protections_on,

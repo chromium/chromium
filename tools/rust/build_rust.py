@@ -65,36 +65,12 @@ from update_rust import (RUST_REVISION, RUST_TOOLCHAIN_OUT_DIR,
                          GetRustClangRevision)
 
 EXCLUDED_TESTS = [
-    # https://github.com/rust-lang/rust/issues/45222 which appears to have
-    # regressed as of a recent LLVM update. This test is purely performance
-    # related, not correctness.
-    os.path.join('tests', 'codegen', 'issue-45222.rs'),
-    # https://github.com/rust-lang/rust/issues/96497
-    os.path.join('tests', 'codegen', 'issue-96497-slice-size-nowrap.rs'),
-    # TODO(crbug.com/342026487): benign failure; remove when fixed.
-    os.path.join('tests', 'codegen', 'vec-in-place.rs'),
-    # TODO(crbug.com/360916952): Benign, remove when fixed.
-    os.path.join('tests', 'assembly', 'x86_64-cmp.rs'),
-    os.path.join('tests', 'assembly', 'x86_64-cmp.rs#OPTIM'),
-    os.path.join('tests', 'codegen', 'integer-cmp.rs'),
-    os.path.join('tests', 'codegen', 'comparison-operators-2-tuple.rs'),
 ]
 EXCLUDED_TESTS_WINDOWS = [
-    # https://github.com/rust-lang/rust/issues/96464
-    os.path.join('tests', 'codegen', 'vec-shrink-panik.rs'),
 ]
 EXCLUDED_TESTS_MAC = [
-    # https://crbug.com/1521497 These fail on Mac.
-    os.path.join('tests', 'ui', 'abi', 'stack-probes-lto.rs#x64'),
-    os.path.join('tests', 'ui', 'abi', 'stack-probes.rs#x64'),
 ]
 EXCLUDED_TESTS_MAC_ARM64 = [
-    # https://crbug.com/1519640 This fails on Mac/ARM64. We didn't even run it
-    # until recently, so ignore it for now.
-    os.path.join('tests', 'ui', 'extern',
-                 'issue-64655-extern-rust-must-allow-unwind.rs#fat0'),
-    os.path.join('tests', 'ui', 'extern',
-                 'issue-64655-extern-rust-must-allow-unwind.rs#thin0'),
 ]
 
 CLANG_SCRIPTS_DIR = os.path.join(CHROMIUM_DIR, 'tools', 'clang', 'scripts')
@@ -538,6 +514,7 @@ def BuildLLVMLibraries(skip_build):
             os.path.join(CLANG_SCRIPTS_DIR, 'build.py'),
             '--disable-asserts',
             '--no-tools',
+            '--no-runtimes',
             # PIC needed for Rust build (links LLVM into shared object)
             '--pic',
             '--with-ml-inliner-model=',
@@ -604,24 +581,6 @@ def GitApplyCherryPicks():
     # with `GitMoveSubmoduleBranch()`.
     #############################
 
-    # TODO Remove once LLVM rolls past llvmorg-20-init-3909-ge61d6066e267
-    RunCommand([
-        'git',
-        '-C',
-        RUST_SRC_DIR,
-        'revert',
-        '--no-edit',
-        '-m',
-        '1',
-        '8c7a7e346be4cdf13e77ab4acbfb5ade819a4e60',
-    ])
-
-    # TODO(b/363219692): Remove once
-    # https://github.com/rust-lang/rust/pull/129894 or a similar fix has been
-    # merged.
-    GitCherryPick(RUST_SRC_DIR, 'https://github.com/rust-lang/rust.git',
-                  'f20103f9f3e35dad241dd81cd3ae9eb2dafb3f44')
-
     print('Finished applying cherry-picks.')
 
 
@@ -679,7 +638,27 @@ def main():
         'running specified command, skipping all normal build steps. For '
         'debugging. Running x.py directly will not set the appropriate env '
         'variables nor update config.toml')
+    if sys.platform == 'win32':
+        parser.add_argument('--sh', help='path to the sh.exe to use')
     args, rest = parser.parse_known_args()
+
+    if sys.platform == 'win32':
+        if args.sh:
+            assert args.sh.endswith('sh.exe')
+            p = os.environ['PATH']
+            shdir = os.path.dirname(args.sh)
+            os.environ['PATH'] = f'{shdir};{p}'
+        where = subprocess.check_output(['where.exe', 'sh'], text=True)
+        if '\\gnubby\\' in where.splitlines()[0]:
+            print("WARNING: It looks like you have gnubby sh.exe in your ")
+            print(" PATH, but it does not support normalized paths of the ")
+            print(" form `/c/foo` and will fail at the install step. Put the ")
+            print(" sh.exe from the Git installation into your PATH first ")
+            print(" when running this script or use --sh to specify the path ")
+            print(" to sh.exe.")
+            print("where sh.exe:")
+            print(where)
+            return 1
 
     debian_sysroot = None
     if sys.platform.startswith('linux') and not args.sync_for_gnrt:
@@ -690,7 +669,7 @@ def main():
 
     # Require zlib compression.
     if sys.platform == 'win32':
-        zlib_path = AddZlibToPath()
+        zlib_path = AddZlibToPath(dry_run=args.skip_checkout)
     else:
         zlib_path = None
 
@@ -700,9 +679,9 @@ def main():
     else:
         libxml2_dirs = None
 
-    # TODO(crbug.com/40205621): OpenSSL is somehow already present on the Windows
-    # builder, but we should change to using a package from 3pp when it is
-    # available.
+    # TODO(crbug.com/40205621): OpenSSL is somehow already present on the
+    # Windows builder, but we should change to using a package from 3pp when it
+    # is available.
     if (sys.platform != 'win32' and not args.sync_for_gnrt):
         # Building cargo depends on OpenSSL.
         AddOpenSSLToEnv()
@@ -805,8 +784,8 @@ def main():
     if args.prepare_run_xpy:
         return 0
 
-    building_on_host_triple = RustTargetTriple()
-    xpy_args = ['--build', building_on_host_triple]
+    target_triple = RustTargetTriple()
+    xpy_args = ['--build', target_triple]
 
     # Delete the build directory.
     if not args.skip_clean:
@@ -833,7 +812,7 @@ def main():
     if os.path.exists(RUST_TOOLCHAIN_OUT_DIR):
         RmTree(RUST_TOOLCHAIN_OUT_DIR)
 
-    xpy.run('install', [])
+    xpy.run('install', xpy_args + [])
 
     # The Rust stdlib deps are vendored to rust-src/library/vendor, and later
     # the x.py install process copies all subdirs of rust-src/library to the

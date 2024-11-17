@@ -228,9 +228,8 @@ class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
 
 TEST_F(PageLiveStateDecoratorTest, Usb) {
   auto setter = [](content::WebContents* contents, bool value) {
-    PageLiveStateDecorator::OnDeviceConnectionTypesChanged(
-        contents, content::WebContentsObserver::DeviceConnectionType::kUSB,
-        value);
+    PageLiveStateDecorator::OnCapabilityTypesChanged(
+        contents, content::WebContents::CapabilityType::kUSB, value);
   };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
@@ -242,9 +241,9 @@ TEST_F(PageLiveStateDecoratorTest, Usb) {
 
 TEST_F(PageLiveStateDecoratorTest, Bluetooth) {
   auto setter = [](content::WebContents* contents, bool value) {
-    PageLiveStateDecorator::OnDeviceConnectionTypesChanged(
-        contents,
-        content::WebContentsObserver::DeviceConnectionType::kBluetooth, value);
+    PageLiveStateDecorator::OnCapabilityTypesChanged(
+        contents, content::WebContents::CapabilityType::kBluetoothConnected,
+        value);
   };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
@@ -256,9 +255,8 @@ TEST_F(PageLiveStateDecoratorTest, Bluetooth) {
 
 TEST_F(PageLiveStateDecoratorTest, Hid) {
   auto setter = [](content::WebContents* contents, bool value) {
-    PageLiveStateDecorator::OnDeviceConnectionTypesChanged(
-        contents, content::WebContentsObserver::DeviceConnectionType::kHID,
-        value);
+    PageLiveStateDecorator::OnCapabilityTypesChanged(
+        contents, content::WebContents::CapabilityType::kHID, value);
   };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
@@ -270,9 +268,8 @@ TEST_F(PageLiveStateDecoratorTest, Hid) {
 
 TEST_F(PageLiveStateDecoratorTest, Serial) {
   auto setter = [](content::WebContents* contents, bool value) {
-    PageLiveStateDecorator::OnDeviceConnectionTypesChanged(
-        contents, content::WebContentsObserver::DeviceConnectionType::kSerial,
-        value);
+    PageLiveStateDecorator::OnCapabilityTypesChanged(
+        contents, content::WebContents::CapabilityType::kSerial, value);
   };
   testing::EndToEndBooleanPropertyTest(
       web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,

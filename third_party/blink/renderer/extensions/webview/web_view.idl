@@ -10,7 +10,8 @@ dictionary GetMediaIntegrityTokenProviderParams {
 // WebView extension APIs.
 [
     RuntimeEnabled=BlinkExtensionWebView,
-    TargetOfExposed=AndroidWebView
+    TargetOfExposed=AndroidWebView,
+    ImplementedAs=WebViewAndroid
 ] interface WebView {
     // Get a MediaIntegrityTokenProvider, which can be used to request tokens
     // from Google Play Services.

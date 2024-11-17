@@ -65,6 +65,10 @@ class CSSValueKeywordsWriter(json5_generator.Writer):
             keyword_offsets.append(current_offset)
             current_offset += len(keyword["name"].original) + 1
 
+        # Add an additional offset to be able to compute the length of each
+        # keyword string based on consecutive offsets.
+        keyword_offsets.append(current_offset)
+
         return {
             'value_keywords':
             self._value_keywords,

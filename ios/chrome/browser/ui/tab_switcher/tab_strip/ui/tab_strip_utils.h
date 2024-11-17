@@ -13,6 +13,9 @@
 // The background color to be used.
 @property(class, nonatomic, readonly) UIColor* backgroundColor;
 
+// The background color of the cells.
+@property(class, nonatomic, readonly) UIColor* cellBackgroundColor;
+
 // The color of the symbol of the new tab button.
 @property(class, nonatomic, readonly) UIColor* newTabButtonSymbolColor;
 

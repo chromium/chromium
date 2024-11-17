@@ -9,9 +9,6 @@
 #include <utility>
 
 #include "base/functional/callback.h"
-#include "base/time/time.h"
-#include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
-#include "third_party/blink/public/mojom/navigation/renderer_content_settings.mojom.h"
 
 namespace blink {
 
@@ -58,9 +55,6 @@ class WebContentSettingsClient {
   // Controls whether access to write the clipboard is allowed for this frame.
   virtual bool AllowWriteToClipboard() { return false; }
 
-  // Controls whether enabling Web Components API for this frame.
-  virtual bool AllowWebComponents(bool default_value) { return default_value; }
-
   // Controls whether to enable MutationEvents for this frame.
   // The common use case of this method is actually to selectively disable
   // MutationEvents, but it's been named for consistency with the rest of the
@@ -78,20 +72,9 @@ class WebContentSettingsClient {
   // enabled.
   virtual void DidNotAllowImage() {}
 
-  // Called to persist the received client hint preferences when |url| was
-  // fetched. The preferences should be persisted for |duration|.
-  virtual void PersistClientHints(
-      const EnabledClientHints& enabled_client_hints,
-      base::TimeDelta duration,
-      const blink::WebURL& url) {}
-
   // Controls whether mixed content autoupgrades should be allowed in this
   // frame.
   virtual bool ShouldAutoupgradeMixedContent() { return true; }
-
-  // Controls whether the ViewTransition callback needs to be larger than
-  // default.
-  virtual bool IncreaseViewTransitionCallbackTimeout() const { return false; }
 
   virtual ~WebContentSettingsClient() = default;
 };

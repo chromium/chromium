@@ -8,20 +8,16 @@
 #include <memory>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
-#include "base/threading/platform_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/typed_macros.h"
 #include "build/build_config.h"
@@ -31,10 +27,6 @@
 
 namespace cc {
 namespace {
-
-BASE_FEATURE(kUseCompositorJob,
-             "UseCompositorJob",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Task categories running at normal thread priority.
 constexpr TaskCategory kNormalThreadPriorityCategories[] = {
@@ -55,35 +47,6 @@ constexpr TaskCategory kForegroundCategories[] = {
 constexpr TaskCategory kBackgroundCategories[] = {
     TASK_CATEGORY_BACKGROUND,
     TASK_CATEGORY_BACKGROUND_WITH_NORMAL_THREAD_PRIORITY};
-
-// A thread which forwards to CategorizedWorkerPool::Run with the runnable
-// categories.
-class CategorizedWorkerPoolThread : public base::SimpleThread {
- public:
-  CategorizedWorkerPoolThread(
-      const std::string& name_prefix,
-      const Options& options,
-      CategorizedWorkerPoolImpl* pool,
-      std::vector<TaskCategory> categories,
-      base::ConditionVariable* has_ready_to_run_tasks_cv)
-      : SimpleThread(name_prefix, options),
-        pool_(pool),
-        categories_(categories),
-        has_ready_to_run_tasks_cv_(has_ready_to_run_tasks_cv) {}
-
-  // base::SimpleThread:
-  void BeforeRun() override { pool_->ThreadWillRun(tid()); }
-
-  void Run() override { pool_->Run(categories_, has_ready_to_run_tasks_cv_); }
-
- private:
-  const raw_ptr<CategorizedWorkerPoolImpl> pool_;
-  const std::vector<TaskCategory> categories_;
-  const raw_ptr<base::ConditionVariable> has_ready_to_run_tasks_cv_;
-
-  base::OnceCallback<void(base::PlatformThreadId)> backgrounding_callback_;
-  scoped_refptr<base::SingleThreadTaskRunner> background_task_runner_;
-};
 
 scoped_refptr<CategorizedWorkerPool>& GetWorkerPool() {
   static base::NoDestructor<scoped_refptr<CategorizedWorkerPool>> worker_pool;
@@ -176,245 +139,6 @@ class CategorizedWorkerPool::CategorizedWorkerPoolSequencedTaskRunner
   Task::Vector completed_tasks_;
 };
 
-CategorizedWorkerPoolImpl::CategorizedWorkerPoolImpl(Delegate* delegate)
-    : delegate_(delegate),
-      has_task_for_normal_priority_thread_cv_(&lock_),
-      has_task_for_background_priority_thread_cv_(&lock_),
-      shutdown_(false) {
-  // Declare the two ConditionVariables which are used by worker threads to
-  // sleep-while-idle as such to avoid throwing off //base heuristics.
-  has_task_for_normal_priority_thread_cv_.declare_only_used_while_idle();
-  has_task_for_background_priority_thread_cv_.declare_only_used_while_idle();
-}
-
-CategorizedWorkerPoolImpl::~CategorizedWorkerPoolImpl() = default;
-
-void CategorizedWorkerPoolImpl::Start(int max_concurrency_foreground) {
-  DCHECK(threads_.empty());
-
-  // |max_concurrency_foreground| normal threads and 1 background threads are
-  // created.
-  const size_t num_threads = max_concurrency_foreground + 1;
-  threads_.reserve(num_threads);
-
-  // Start |max_concurrency_foreground| normal priority threads, which run
-  // foreground work and background work that cannot run at background thread
-  // priority.
-  std::vector<TaskCategory> normal_thread_prio_categories(
-      std::begin(kNormalThreadPriorityCategories),
-      std::end(kNormalThreadPriorityCategories));
-
-  for (int i = 0; i < max_concurrency_foreground; i++) {
-    auto thread = std::make_unique<CategorizedWorkerPoolThread>(
-        base::StringPrintf("CompositorTileWorker%d", i + 1),
-        base::SimpleThread::Options(), this, normal_thread_prio_categories,
-        &has_task_for_normal_priority_thread_cv_);
-    thread->StartAsync();
-    threads_.push_back(std::move(thread));
-  }
-
-  // Start a single thread running at background thread priority.
-  std::vector<TaskCategory> background_thread_prio_categories{
-      std::begin(kBackgroundThreadPriorityCategories),
-      std::end(kBackgroundThreadPriorityCategories)};
-
-  base::SimpleThread::Options thread_options;
-// TODO(crbug.com/40226019): Figure out whether !IS_MAC can be lifted here.
-#if !BUILDFLAG(IS_MAC)
-  thread_options.thread_type = base::ThreadType::kBackground;
-#endif
-
-  auto thread = std::make_unique<CategorizedWorkerPoolThread>(
-      "CompositorTileWorkerBackground", thread_options, this,
-      background_thread_prio_categories,
-      &has_task_for_background_priority_thread_cv_);
-  thread->StartAsync();
-  threads_.push_back(std::move(thread));
-
-  DCHECK_EQ(num_threads, threads_.size());
-}
-
-void CategorizedWorkerPoolImpl::Shutdown() {
-  {
-    base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-    WaitForTasksToFinishRunning(namespace_token_);
-  }
-
-  CollectCompletedTasks(namespace_token_, &completed_tasks_);
-  // Shutdown raster threads.
-  {
-    base::AutoLock lock(lock_);
-
-    DCHECK(!work_queue_.HasReadyToRunTasks());
-    DCHECK(!work_queue_.HasAnyNamespaces());
-
-    DCHECK(!shutdown_);
-    shutdown_ = true;
-
-    // Wake up all workers so they exit.
-    has_task_for_normal_priority_thread_cv_.Broadcast();
-    has_task_for_background_priority_thread_cv_.Broadcast();
-  }
-  while (!threads_.empty()) {
-    threads_.back()->Join();
-    threads_.pop_back();
-  }
-}
-
-void CategorizedWorkerPoolImpl::ThreadWillRun(base::PlatformThreadId tid) {
-  if (delegate_) {
-    delegate_->NotifyThreadWillRun(tid);
-  }
-}
-
-// Overridden from base::TaskRunner:
-bool CategorizedWorkerPoolImpl::PostDelayedTask(const base::Location& from_here,
-                                                base::OnceClosure task,
-                                                base::TimeDelta delay) {
-  base::AutoLock lock(lock_);
-
-  // Remove completed tasks.
-  DCHECK(completed_tasks_.empty());
-  CollectCompletedTasksWithLockAcquired(namespace_token_, &completed_tasks_);
-
-  std::erase_if(tasks_, [this](const scoped_refptr<Task>& e)
-                            EXCLUSIVE_LOCKS_REQUIRED(lock_) {
-                              return base::Contains(this->completed_tasks_, e);
-                            });
-
-  tasks_.push_back(base::MakeRefCounted<ClosureTask>(std::move(task)));
-  graph_.Reset();
-  for (const auto& graph_task : tasks_) {
-    // Delayed tasks are assigned FOREGROUND category, ensuring that they run as
-    // soon as possible once their delay has expired.
-    graph_.nodes.push_back(
-        TaskGraph::Node(graph_task.get(), TASK_CATEGORY_FOREGROUND,
-                        0u /* priority */, 0u /* dependencies */));
-  }
-
-  ScheduleTasksWithLockAcquired(namespace_token_, &graph_);
-  completed_tasks_.clear();
-  return true;
-}
-
-void CategorizedWorkerPoolImpl::Run(
-    const std::vector<TaskCategory>& categories,
-    base::ConditionVariable* has_ready_to_run_tasks_cv) {
-  base::AutoLock lock(lock_);
-
-  while (true) {
-    if (!RunTaskWithLockAcquired(categories)) {
-      // We are no longer running tasks, which may allow another category to
-      // start running. Signal other worker threads.
-      SignalHasReadyToRunTasksWithLockAcquired();
-
-      // Exit when shutdown is set and no more tasks are pending.
-      if (shutdown_) {
-        break;
-      }
-
-      // Wait for more tasks.
-      has_ready_to_run_tasks_cv->Wait();
-      continue;
-    }
-  }
-}
-
-void CategorizedWorkerPoolImpl::FlushForTesting() {
-  base::AutoLock lock(lock_);
-
-  while (!work_queue_.HasFinishedRunningTasksInAllNamespaces()) {
-    has_namespaces_with_finished_running_tasks_cv_.Wait();
-  }
-}
-
-void CategorizedWorkerPoolImpl::ScheduleTasks(NamespaceToken token,
-                                              TaskGraph* graph) {
-  TRACE_EVENT2("disabled-by-default-cc.debug",
-               "CategorizedWorkerPool::ScheduleTasks", "num_nodes",
-               graph->nodes.size(), "num_edges", graph->edges.size());
-  {
-    base::AutoLock lock(lock_);
-    ScheduleTasksWithLockAcquired(token, graph);
-  }
-}
-
-void CategorizedWorkerPoolImpl::ScheduleTasksWithLockAcquired(
-    NamespaceToken token,
-    TaskGraph* graph) {
-  DCHECK(token.IsValid());
-  DCHECK(!TaskGraphWorkQueue::DependencyMismatch(graph));
-  DCHECK(!shutdown_);
-
-  work_queue_.ScheduleTasks(token, graph);
-
-  // There may be more work available, so wake up another worker thread.
-  SignalHasReadyToRunTasksWithLockAcquired();
-}
-
-bool CategorizedWorkerPoolImpl::RunTaskWithLockAcquired(
-    const std::vector<TaskCategory>& categories) {
-  for (const auto& category : categories) {
-    if (ShouldRunTaskForCategoryWithLockAcquired(category)) {
-      RunTaskInCategoryWithLockAcquired(category);
-      return true;
-    }
-  }
-  return false;
-}
-
-void CategorizedWorkerPoolImpl::RunTaskInCategoryWithLockAcquired(
-    TaskCategory category) {
-  lock_.AssertAcquired();
-
-  auto prioritized_task = work_queue_.GetNextTaskToRun(category);
-
-  TRACE_EVENT(
-      "toplevel", "TaskGraphRunner::RunTask",
-      perfetto::Flow::Global(prioritized_task.task->trace_task_id()),
-      [&](perfetto::EventContext ctx) {
-        ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
-            ->set_chrome_raster_task()
-            ->set_source_frame_number(prioritized_task.task->frame_number());
-      });
-
-  // There may be more work available, so wake up another worker thread.
-  SignalHasReadyToRunTasksWithLockAcquired();
-
-  {
-    base::AutoUnlock unlock(lock_);
-    prioritized_task.task->RunOnWorkerThread();
-  }
-
-  auto* task_namespace = prioritized_task.task_namespace.get();
-  work_queue_.CompleteTask(std::move(prioritized_task));
-
-  // If namespace has finished running all tasks, wake up origin threads.
-  if (work_queue_.HasFinishedRunningTasksInNamespace(task_namespace)) {
-    has_namespaces_with_finished_running_tasks_cv_.Signal();
-  }
-}
-
-void CategorizedWorkerPoolImpl::SignalHasReadyToRunTasksWithLockAcquired() {
-  lock_.AssertAcquired();
-
-  for (TaskCategory category : kNormalThreadPriorityCategories) {
-    if (ShouldRunTaskForCategoryWithLockAcquired(category)) {
-      has_task_for_normal_priority_thread_cv_.Signal();
-      return;
-    }
-  }
-
-  // Due to the early return in the previous loop, this only runs when there are
-  // no tasks to run on normal priority threads.
-  for (TaskCategory category : kBackgroundThreadPriorityCategories) {
-    if (ShouldRunTaskForCategoryWithLockAcquired(category)) {
-      has_task_for_background_priority_thread_cv_.Signal();
-      return;
-    }
-  }
-}
-
 CategorizedWorkerPoolJob::CategorizedWorkerPoolJob() = default;
 CategorizedWorkerPoolJob::~CategorizedWorkerPoolJob() = default;
 
@@ -468,6 +192,7 @@ void CategorizedWorkerPoolJob::Shutdown() {
   if (background_job_handle_) {
     background_job_handle_.Cancel();
   }
+  workers_are_idle_cv_.Broadcast();
 }
 
 // Overridden from base::TaskRunner:
@@ -531,6 +256,11 @@ void CategorizedWorkerPoolJob::Run(base::span<const TaskCategory> categories,
 
     // There's no pending task to run, quit the worker until notified again.
     if (!prioritized_task) {
+      if (!job_handle_to_notify) {
+        // No pending task to run and no other category or job handle with tasks
+        // to run, so the workers are going idle.
+        workers_are_idle_cv_.Signal();
+      }
       return;
     }
     TRACE_EVENT(
@@ -584,6 +314,24 @@ void CategorizedWorkerPoolJob::ScheduleTasks(NamespaceToken token,
   {
     base::AutoLock lock(lock_);
     job_handle_to_notify = ScheduleTasksWithLockAcquired(token, graph);
+  }
+  if (job_handle_to_notify) {
+    job_handle_to_notify->NotifyConcurrencyIncrease();
+  }
+}
+
+void CategorizedWorkerPoolJob::ExternalDependencyCompletedForTask(
+    NamespaceToken token,
+    scoped_refptr<Task> task) {
+  base::JobHandle* job_handle_to_notify = nullptr;
+  {
+    base::AutoLock lock(lock_);
+    if (work_queue_.ExternalDependencyCompletedForTask(token,
+                                                       std::move(task))) {
+      // If the task became ready to run, we may need to tell its JobHandle to
+      // start a worker.
+      job_handle_to_notify = GetJobHandleToNotifyWithLockAcquired();
+    }
   }
   if (job_handle_to_notify) {
     job_handle_to_notify->NotifyConcurrencyIncrease();
@@ -684,10 +432,7 @@ CategorizedWorkerPool* CategorizedWorkerPool::GetOrCreate(Delegate* delegate) {
   }
 
   scoped_refptr<CategorizedWorkerPool> categorized_worker_pool =
-      base::FeatureList::IsEnabled(kUseCompositorJob)
-          ? scoped_refptr<CategorizedWorkerPool>(new CategorizedWorkerPoolJob())
-          : scoped_refptr<CategorizedWorkerPool>(
-                new CategorizedWorkerPoolImpl(delegate));
+      scoped_refptr<CategorizedWorkerPool>(new CategorizedWorkerPoolJob());
   categorized_worker_pool->Start(num_raster_threads);
   GetWorkerPool() = std::move(categorized_worker_pool);
   return GetWorkerPool().get();
@@ -695,7 +440,8 @@ CategorizedWorkerPool* CategorizedWorkerPool::GetOrCreate(Delegate* delegate) {
 
 CategorizedWorkerPool::CategorizedWorkerPool()
     : namespace_token_(GenerateNamespaceToken()),
-      has_namespaces_with_finished_running_tasks_cv_(&lock_) {}
+      has_namespaces_with_finished_running_tasks_cv_(&lock_),
+      workers_are_idle_cv_(&lock_) {}
 
 scoped_refptr<base::SequencedTaskRunner>
 CategorizedWorkerPool::CreateSequencedTaskRunner() {
@@ -743,6 +489,14 @@ void CategorizedWorkerPool::CollectCompletedTasks(
   {
     base::AutoLock lock(lock_);
     CollectCompletedTasksWithLockAcquired(token, completed_tasks);
+  }
+}
+
+void CategorizedWorkerPool::RunTasksUntilIdleForTest() {
+  base::AutoLock lock(lock_);
+  while (work_queue_.HasReadyToRunTasks() ||
+         work_queue_.NumRunningTasks() > 0) {
+    workers_are_idle_cv_.Wait();
   }
 }
 

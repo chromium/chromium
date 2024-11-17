@@ -25,6 +25,11 @@ class WebViewAppStateObserver {
     // AwContentsLifecycleNotifier::has_aw_contents_ever_created() to find if A
     // WebView has ever been created.
     kDestroyed,
+    // Browser process initialization is not yet complete. When the browser
+    // process is ready the state will change to foreground or background if
+    // startup was triggered by creating a WebView, or to destroyed if no
+    // WebView has yet been created.
+    kStartup,
   };
 
   WebViewAppStateObserver();

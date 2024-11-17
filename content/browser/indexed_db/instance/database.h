@@ -60,8 +60,7 @@ class CONTENT_EXPORT Database {
   using Identifier = std::pair<storage::BucketLocator, std::u16string>;
   // Used to report irrecoverable backend errors. The second argument can be
   // null.
-  using ErrorCallback =
-      base::RepeatingCallback<void(leveldb::Status, const char*)>;
+  using ErrorCallback = base::RepeatingCallback<void(Status, const char*)>;
 
   static const int64_t kInvalidId = 0;
   static const int64_t kMinimumIndexId = 30;
@@ -89,13 +88,13 @@ class CONTENT_EXPORT Database {
   const list_set<Connection*>& connections() const { return connections_; }
 
   enum class RunTasksResult { kDone, kError, kCanBeDestroyed };
-  std::tuple<RunTasksResult, leveldb::Status> RunTasks();
+  std::tuple<RunTasksResult, Status> RunTasks();
   void RegisterAndScheduleTransaction(Transaction* transaction);
 
   // The database object (this object) must be kept alive for the duration of
   // this call. This means the caller should own an
   // BucketContextHandle while calling this methods.
-  leveldb::Status ForceCloseAndRunTasks();
+  Status ForceCloseAndRunTasks();
 
   void ScheduleOpenConnection(std::unique_ptr<PendingConnection> connection);
 
@@ -131,60 +130,57 @@ class CONTENT_EXPORT Database {
 
   // The following methods are all of the ones actually scheduled asynchronously
   // within transctions:
-  leveldb::Status CreateObjectStoreOperation(
-      int64_t object_store_id,
-      const std::u16string& name,
-      const blink::IndexedDBKeyPath& key_path,
-      bool auto_increment,
-      Transaction* transaction);
+  Status CreateObjectStoreOperation(int64_t object_store_id,
+                                    const std::u16string& name,
+                                    const blink::IndexedDBKeyPath& key_path,
+                                    bool auto_increment,
+                                    Transaction* transaction);
 
   void CreateObjectStoreAbortOperation(int64_t object_store_id);
 
-  leveldb::Status DeleteObjectStoreOperation(int64_t object_store_id,
-                                             Transaction* transaction);
+  Status DeleteObjectStoreOperation(int64_t object_store_id,
+                                    Transaction* transaction);
   void DeleteObjectStoreAbortOperation(
       blink::IndexedDBObjectStoreMetadata object_store_metadata);
 
-  leveldb::Status RenameObjectStoreOperation(int64_t object_store_id,
-                                             const std::u16string& new_name,
-                                             Transaction* transaction);
+  Status RenameObjectStoreOperation(int64_t object_store_id,
+                                    const std::u16string& new_name,
+                                    Transaction* transaction);
   void RenameObjectStoreAbortOperation(int64_t object_store_id,
                                        std::u16string old_name);
 
-  leveldb::Status VersionChangeOperation(int64_t version,
-                                         Transaction* transaction);
+  Status VersionChangeOperation(int64_t version, Transaction* transaction);
   void VersionChangeAbortOperation(int64_t previous_version);
 
-  leveldb::Status CreateIndexOperation(int64_t object_store_id,
-                                       int64_t index_id,
-                                       const std::u16string& name,
-                                       const blink::IndexedDBKeyPath& key_path,
-                                       bool unique,
-                                       bool multi_entry,
-                                       Transaction* transaction);
+  Status CreateIndexOperation(int64_t object_store_id,
+                              int64_t index_id,
+                              const std::u16string& name,
+                              const blink::IndexedDBKeyPath& key_path,
+                              bool unique,
+                              bool multi_entry,
+                              Transaction* transaction);
   void CreateIndexAbortOperation(int64_t object_store_id, int64_t index_id);
 
-  leveldb::Status DeleteIndexOperation(int64_t object_store_id,
-                                       int64_t index_id,
-                                       Transaction* transaction);
+  Status DeleteIndexOperation(int64_t object_store_id,
+                              int64_t index_id,
+                              Transaction* transaction);
   void DeleteIndexAbortOperation(int64_t object_store_id,
                                  blink::IndexedDBIndexMetadata index_metadata);
 
-  leveldb::Status RenameIndexOperation(int64_t object_store_id,
-                                       int64_t index_id,
-                                       const std::u16string& new_name,
-                                       Transaction* transaction);
+  Status RenameIndexOperation(int64_t object_store_id,
+                              int64_t index_id,
+                              const std::u16string& new_name,
+                              Transaction* transaction);
   void RenameIndexAbortOperation(int64_t object_store_id,
                                  int64_t index_id,
                                  std::u16string old_name);
 
-  leveldb::Status GetOperation(
-      int64_t object_store_id,
-      int64_t index_id,
-      std::unique_ptr<blink::IndexedDBKeyRange> key_range,
-      indexed_db::CursorType cursor_type,
-      blink::mojom::IDBDatabase::GetCallback callback,
-      Transaction* transaction);
+  Status GetOperation(int64_t object_store_id,
+                      int64_t index_id,
+                      std::unique_ptr<blink::IndexedDBKeyRange> key_range,
+                      indexed_db::CursorType cursor_type,
+                      blink::mojom::IDBDatabase::GetCallback callback,
+                      Transaction* transaction);
 
   struct CONTENT_EXPORT PutOperationParams {
     PutOperationParams();
@@ -200,17 +196,16 @@ class CONTENT_EXPORT Database {
     blink::mojom::IDBTransaction::PutCallback callback;
     std::vector<blink::IndexedDBIndexKeys> index_keys;
   };
-  leveldb::Status PutOperation(std::unique_ptr<PutOperationParams> params,
-                               Transaction* transaction);
+  Status PutOperation(std::unique_ptr<PutOperationParams> params,
+                      Transaction* transaction);
 
-  leveldb::Status SetIndexKeysOperation(
+  Status SetIndexKeysOperation(
       int64_t object_store_id,
       std::unique_ptr<blink::IndexedDBKey> primary_key,
       const std::vector<blink::IndexedDBIndexKeys>& index_keys,
       Transaction* transaction);
 
-  leveldb::Status SetIndexesReadyOperation(size_t index_count,
-                                           Transaction* transaction);
+  Status SetIndexesReadyOperation(size_t index_count, Transaction* transaction);
 
   struct OpenCursorOperationParams {
     OpenCursorOperationParams();
@@ -228,42 +223,40 @@ class CONTENT_EXPORT Database {
     blink::mojom::IDBTaskType task_type;
     blink::mojom::IDBDatabase::OpenCursorCallback callback;
   };
-  leveldb::Status OpenCursorOperation(
-      std::unique_ptr<OpenCursorOperationParams> params,
-      const storage::BucketLocator& bucket_locator,
-      Transaction* transaction);
+  Status OpenCursorOperation(std::unique_ptr<OpenCursorOperationParams> params,
+                             const storage::BucketLocator& bucket_locator,
+                             Transaction* transaction);
 
-  leveldb::Status CountOperation(
-      int64_t object_store_id,
-      int64_t index_id,
-      std::unique_ptr<blink::IndexedDBKeyRange> key_range,
-      blink::mojom::IDBDatabase::CountCallback callback,
-      Transaction* transaction);
+  Status CountOperation(int64_t object_store_id,
+                        int64_t index_id,
+                        std::unique_ptr<blink::IndexedDBKeyRange> key_range,
+                        blink::mojom::IDBDatabase::CountCallback callback,
+                        Transaction* transaction);
 
-  leveldb::Status DeleteRangeOperation(
+  Status DeleteRangeOperation(
       int64_t object_store_id,
       std::unique_ptr<blink::IndexedDBKeyRange> key_range,
       blink::mojom::IDBDatabase::DeleteRangeCallback success_callback,
       Transaction* transaction);
 
-  leveldb::Status GetKeyGeneratorCurrentNumberOperation(
+  Status GetKeyGeneratorCurrentNumberOperation(
       int64_t object_store_id,
       blink::mojom::IDBDatabase::GetKeyGeneratorCurrentNumberCallback callback,
       Transaction* transaction);
 
-  leveldb::Status ClearOperation(
-      int64_t object_store_id,
-      blink::mojom::IDBDatabase::ClearCallback callback,
-      Transaction* transaction);
+  Status ClearOperation(int64_t object_store_id,
+                        blink::mojom::IDBDatabase::ClearCallback callback,
+                        Transaction* transaction);
 
   // Use this factory function for GetAll instead of creating the operation
   // directly.
-  base::OnceCallback<leveldb::Status(Transaction*)> CreateGetAllOperation(
+  base::OnceCallback<Status(Transaction*)> CreateGetAllOperation(
       int64_t object_store_id,
       int64_t index_id,
       std::unique_ptr<blink::IndexedDBKeyRange> key_range,
-      indexed_db::CursorType cursor_type,
+      blink::mojom::IDBGetAllResultType result_type,
       int64_t max_count,
+      blink::mojom::IDBCursorDirection direction,
       blink::mojom::IDBDatabase::GetAllCallback callback,
       Transaction* transaction);
 
@@ -296,6 +289,11 @@ class CONTENT_EXPORT Database {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(DatabaseTest, OpenDeleteClear);
+  FRIEND_TEST_ALL_PREFIXES(DatabaseOperationTest,
+                           ObjectStoreGetAllKeysWithInvalidObjectStoreId);
+  FRIEND_TEST_ALL_PREFIXES(DatabaseOperationTest,
+                           IndexGetAllKeysWithInvalidIndexId);
+  friend class DatabaseOperationTest;
 
   void CallUpgradeTransactionStartedForTesting(int64_t old_version);
 
@@ -303,13 +301,13 @@ class CONTENT_EXPORT Database {
   class OpenRequest;
   class DeleteRequest;
 
-  leveldb::Status OpenInternal();
+  Status OpenInternal();
 
   // This class informs its result sink of an error if a `GetAllOperation` is
   // deleted without being run. This functionality mimics that of
   // AbortOnDestruct callbacks. `GetAll()` cannot easily be shoe-horned into the
   // abort-on-destruct callback templating.
-  class GetAllResultSinkWrapper {
+  class CONTENT_EXPORT GetAllResultSinkWrapper {
    public:
     GetAllResultSinkWrapper(base::WeakPtr<Transaction> transaction,
                             blink::mojom::IDBDatabase::GetAllCallback callback);
@@ -317,21 +315,28 @@ class CONTENT_EXPORT Database {
 
     mojo::AssociatedRemote<blink::mojom::IDBDatabaseGetAllResultSink>& Get();
 
+    // An override for unit tests to bind the associated receiver successfully
+    // without a pre-existing endpoint entanglement.
+    void UseDedicatedReceiverForTesting() {
+      use_dedicated_receiver_for_testing_ = true;
+    }
+
    private:
     base::WeakPtr<Transaction> transaction_;
     blink::mojom::IDBDatabase::GetAllCallback callback_;
     mojo::AssociatedRemote<blink::mojom::IDBDatabaseGetAllResultSink>
         result_sink_;
+    bool use_dedicated_receiver_for_testing_ = false;
   };
 
-  leveldb::Status GetAllOperation(
-      int64_t object_store_id,
-      int64_t index_id,
-      std::unique_ptr<blink::IndexedDBKeyRange> key_range,
-      indexed_db::CursorType cursor_type,
-      int64_t max_count,
-      std::unique_ptr<GetAllResultSinkWrapper> result_sink,
-      Transaction* transaction);
+  Status GetAllOperation(int64_t object_store_id,
+                         int64_t index_id,
+                         std::unique_ptr<blink::IndexedDBKeyRange> key_range,
+                         blink::mojom::IDBGetAllResultType result_type,
+                         int64_t max_count,
+                         blink::mojom::IDBCursorDirection direction,
+                         std::unique_ptr<GetAllResultSinkWrapper> result_sink,
+                         Transaction* transaction);
 
   // If there is no active request, grab a new one from the pending queue and
   // start it. Afterwards, possibly release the database by calling

@@ -105,7 +105,7 @@ template <typename ServiceType>
 KeyedServiceTemplatedFactory<ServiceType>::ServicePtr
 KeyedServiceTemplatedFactory<ServiceType>::GetServiceForContext(void* context,
                                                                 bool create) {
-  TRACE_EVENT("browser,startup", "KeyedServiceFactory::GetServiceForContext",
+  TRACE_EVENT("browser", "KeyedServiceFactory::GetServiceForContext",
               [this](perfetto::EventContext ctx) {
                 ctx.event()->set_chrome_keyed_service()->set_name(name());
               });

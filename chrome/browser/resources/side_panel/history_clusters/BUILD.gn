@@ -14,6 +14,7 @@ build_webui("build") {
   non_web_component_files = [
     "app.ts",
     "app.html.ts",
+    "history_clusters.ts",
   ]
   css_files = [ "app.css" ]
 
@@ -38,7 +39,7 @@ build_webui("build") {
   optimize = optimize_webui
   if (optimize) {
     optimize_webui_host = "history-clusters-side-panel.top-chrome"
-    optimize_webui_in_files = [ "app.js" ]
+    optimize_webui_in_files = [ "history_clusters.js" ]
     optimize_webui_external_paths =
         [ "chrome://history-clusters-side-panel.top-chrome/shared|" +
           rebase_path(

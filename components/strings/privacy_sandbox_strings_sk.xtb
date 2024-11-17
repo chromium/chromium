@@ -3,18 +3,25 @@
 <translationbundle lang="sk">
 <translation id="1444443021901415601">Chrome zaznamenáva témy, ktoré vás zaujímajú, na základe vašej nedávnej histórie prehliadania</translation>
 <translation id="2252052615723281030">Keď sa prihlásite do Chromu, toto nastavenie vám pomôže zachovať vašu adresu IP v súkromí. Ak bude mať Chrome podozrenie, že nejaký web vás zrejme sleduje, niektorá vaša návštevnosť môže byť odoslaná prostredníctvom serverov chrániacich súkromie.</translation>
+<translation id="235789365079050412">Pravidlá ochrany súkromia spoločnosti Google</translation>
 <translation id="2793385791865768072">Chromium zaznamenáva témy, ktoré vás zaujímajú, na základe vašej nedávnej histórie prehliadania</translation>
+<translation id="2979365474350987274">Súbory cookie tretích strán sú obmedzené</translation>
 <translation id="33479675708419823">Keď sa prihlásite do Chromu, toto nastavenie vám pomôže zachovať vašu adresu IP v súkromí. Ak bude mať Chrome podozrenie, že nejaký web vás zrejme sleduje, niektorá vaša návštevnosť môže byť odoslaná prostredníctvom serverov chrániacich súkro <ph name="LINK_BEGIN" />Ako funguje ochrana adresy IP<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Ďalšie informácie o skrytí adresy IP</translation>
+<translation id="385051799172605136">Späť</translation>
 <translation id="4041687306270459969">Témy reklám staršie ako štyri týždne sa automaticky odstraňujú. Medzi témy patria napríklad šport, oblečenie a ďalšie.</translation>
 <translation id="4177501066905053472">Témy reklám</translation>
 <translation id="4301151630239508244">Témy reklám sú len jednou z mnohých možností, pomocou ktorých môže web prispôsobovať reklamy. Aj keď nie sú témy reklám povolené, weby vám stále môžu zobrazovať reklamy, ktoré však môžu byť menej prispôsobené. Prečítajte si viac o <ph name="BEGIN_LINK_1" />správe ochrany súkromia pri reklamách<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Viac o tom, ako Google chráni vaše údaje, sa dozviete v našich <ph name="BEGIN_LINK" />pravidlách ochrany súkromia<ph name="END_LINK" />.</translation>
 <translation id="453692855554576066">V nastaveniach prehliadača Chromium si môžete pozrieť témy reklám a zablokovať tie, ktoré nechcete zdieľať s webmi</translation>
 <translation id="4598427486995631491">Skryť adresu IP</translation>
 <translation id="4692439979815346597">V nastaveniach Chromu si môžete pozrieť témy reklám a zablokovať tie, ktoré nechcete zdieľať s webmi</translation>
 <translation id="5413586988657235240">Weby, ktoré navštívite, môžu požiadať Chromium o témy, aby vám mohli zobrazovať relevantné reklamy a zároveň chránili vašu históriu prehliadania a totožnosť</translation>
+<translation id="6053735090575989697">Viac o tom, ako Google chráni vaše údaje, sa dozviete v našich pravidlách ochrany súkromia.</translation>
 <translation id="6186536480878693792">Weby, ktoré navštívite, môžu požiadať Chrome o témy, aby vám mohli zobrazovať relevantné reklamy a zároveň chránili vašu históriu prehliadania a totožnosť</translation>
+<translation id="6195163219142236913">Súbory cookie tretích strán sú obmedzené</translation>
 <translation id="6371812158043974664">Keď sa prihlásite do prehliadača Chromium, toto nastavenie vám pomôže zachovať vašu adresu IP v súkromí. Ak bude mať Chromium podozrenie, že nejaký web vás zrejme sleduje, niektorá vaša návštevnosť môže byť odoslaná prostredníctvom serverov chrániacich súkromie. <ph name="LINK_BEGIN" />Ako funguje ochrana adresy IP<ph name="LINK_END" /></translation>
+<translation id="6398358690696005758">Viac o tom, ako Google chráni vaše údaje, sa dozviete v našich <ph name="BEGIN_LINK1" />pravidlách ochrany súkromia<ph name="LINK_END1" />.</translation>
 <translation id="7040031291654706261"><ph name="BEGIN_LINK" />Ako funguje ochrana adresy IP<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Skontrolujte nastavenie tém reklám</translation>
 </translationbundle>

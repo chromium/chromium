@@ -12,6 +12,7 @@
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ash/system/focus_mode/sounds/playlist_image_button.h"
+#include "ash/system/focus_mode/sounds/sound_section_view.h"
 #include "base/functional/bind.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -83,10 +84,13 @@ PlaylistView::PlaylistView(focus_mode_util::SoundType type,
 PlaylistView::~PlaylistView() = default;
 
 void PlaylistView::UpdateContents(
+    uint8_t position,
     const FocusModeSoundsController::Playlist& playlist) {
+  CHECK_LT(position, kFocusModePlaylistViewsNum);
   playlist_data_.id = playlist.playlist_id;
   playlist_data_.title = playlist.title;
   playlist_data_.thumbnail = playlist.thumbnail;
+  playlist_data_.list_position = position;
 
   // Remove the loading state styling.
   playlist_image_button_->SetBackground(nullptr);

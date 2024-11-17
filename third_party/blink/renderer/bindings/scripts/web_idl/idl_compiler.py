@@ -991,8 +991,6 @@ class IdlCompiler(object):
                         return idl_type
                 elif isinstance(idl_type, _ArrayLikeType):
                     idl_type = idl_type.element_type
-                elif isinstance(idl_type, PromiseType):
-                    idl_type = idl_type.result_type
                 elif isinstance(idl_type, NullableType):
                     idl_type = idl_type.inner_type
                 else:
@@ -1025,6 +1023,11 @@ class IdlCompiler(object):
                     visit_type(member_type, target_set)
             elif isinstance(idl_type, RecordType):
                 visit_type(idl_type.value_type, target_set)
+            elif isinstance(idl_type, PromiseType):
+                visit_type(idl_type.result_type, target_set)
+                # Because of how we convert Promise<> input parameters, we need
+                # to be able to covert the result type back to V8.
+                visit_type(idl_type.result_type, outputs)
             else:
                 assert isinstance(idl_type, SimpleType), type(idl_type)
 

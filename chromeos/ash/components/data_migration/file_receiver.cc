@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/data_migration/file_receiver.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/check.h"
@@ -40,15 +41,16 @@ bool DidFileTransferComplete(const base::FilePath& path,
     return false;
   }
 
-  int64_t actual_file_size_in_bytes = 0;
-  if (!base::GetFileSize(path, &actual_file_size_in_bytes)) {
+  std::optional<int64_t> actual_file_size_in_bytes = base::GetFileSize(path);
+
+  if (!actual_file_size_in_bytes.has_value()) {
     LOG(DFATAL) << kFailureLogPrefix << "Failed to get file size.";
     return false;
   }
 
-  if (actual_file_size_in_bytes != expected_size_in_bytes) {
-    LOG(DFATAL) << kFailureLogPrefix
-                << "actual_file_size_in_bytes=" << actual_file_size_in_bytes
+  if (actual_file_size_in_bytes.value() != expected_size_in_bytes) {
+    LOG(DFATAL) << kFailureLogPrefix << "actual_file_size_in_bytes="
+                << actual_file_size_in_bytes.value()
                 << " expected_size_in_bytes=" << expected_size_in_bytes;
     return false;
   }

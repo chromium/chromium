@@ -29,7 +29,6 @@
 
 namespace ash {
 
-class ApplicationDragAndDropHost;
 class AppListFolderItem;
 class AppListFolderView;
 class AppListKeyboardController;
@@ -42,8 +41,8 @@ class SearchResultPageAnchoredDialog;
 
 // AppsContainerView contains a root level AppsGridView to render the root level
 // app items, and a AppListFolderView to render the app items inside the active
-// folder. With productivity launcher, it also contains the continue section,
-// recent apps, and an optional separator.
+// folder. It also contains the continue section, recent apps, and an optional
+// separator.
 class ASH_EXPORT AppsContainerView
     : public AppListPage,
       public AppListModelProvider::Observer,
@@ -71,11 +70,6 @@ class ASH_EXPORT AppsContainerView
   // hides and then shows it.
   void ResetForShowApps();
 
-  // Sets |drag_and_drop_host_| for the current app list in both
-  // app_list_folder_view_ and root level apps_grid_view_.
-  void SetDragAndDropHostOfCurrentAppList(
-      ApplicationDragAndDropHost* drag_and_drop_host);
-
   // Returns true if it is currently showing an active folder page.
   bool IsInFolderView() const;
 
@@ -89,8 +83,7 @@ class ASH_EXPORT AppsContainerView
 
   // The minimal top margin for the apps grid (measured from the top of the
   // search box to the top of the apps grid). This margin includes space for
-  // search box and suggestion chips.
-  // For productivity launcher UI, this will not include space for continue
+  // search box and suggestion chips. This will not include space for continue
   // section and recent apps.
   int GetMinTopMarginForAppsGrid(const gfx::Size& search_box_size) const;
 

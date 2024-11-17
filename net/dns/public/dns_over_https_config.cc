@@ -56,7 +56,7 @@ std::optional<DnsOverHttpsConfig> FromValue(base::Value::Dict value) {
       return std::nullopt;
     servers.push_back(std::move(*parsed));
   }
-  return DnsOverHttpsConfig(servers);
+  return DnsOverHttpsConfig(std::move(servers));
 }
 
 std::optional<DnsOverHttpsConfig> FromJson(std::string_view json) {
@@ -87,7 +87,7 @@ std::optional<DnsOverHttpsConfig> DnsOverHttpsConfig::FromTemplates(
     std::vector<std::string> server_templates) {
   // All templates must be valid for the group to be considered valid.
   std::vector<DnsOverHttpsServerConfig> servers;
-  for (auto& server_config : ParseTemplates(server_templates)) {
+  for (auto& server_config : ParseTemplates(std::move(server_templates))) {
     if (!server_config)
       return std::nullopt;
     servers.push_back(std::move(*server_config));

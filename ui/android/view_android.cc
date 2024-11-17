@@ -93,12 +93,11 @@ ViewAndroid::ScopedAnchorView::view() const {
 ViewAndroid::ViewAndroid(LayoutType layout_type)
     : parent_(nullptr), layout_type_(layout_type) {}
 
-ViewAndroid::ViewAndroid() : ViewAndroid(LayoutType::NORMAL) {}
+ViewAndroid::ViewAndroid() : ViewAndroid(LayoutType::kNormal) {}
 
 ViewAndroid::~ViewAndroid() {
   RemoveAllChildren(GetWindowAndroid() != nullptr);
-  for (auto& observer : observer_list_)
-    observer.OnViewAndroidDestroyed();
+  observer_list_.Notify(&ViewAndroidObserver::OnViewAndroidDestroyed);
   observer_list_.Clear();
   RemoveFromParent();
 }
@@ -337,16 +336,14 @@ std::unique_ptr<viz::CopyOutputRequest> ViewAndroid::MaybeRequestCopyOfView(
 }
 
 void ViewAndroid::OnAttachedToWindow() {
-  for (auto& observer : observer_list_)
-    observer.OnAttachedToWindow();
+  observer_list_.Notify(&ViewAndroidObserver::OnAttachedToWindow);
   for (ViewAndroid* child : children_) {
     child->OnAttachedToWindow();
   }
 }
 
 void ViewAndroid::OnDetachedFromWindow() {
-  for (auto& observer : observer_list_)
-    observer.OnDetachedFromWindow();
+  observer_list_.Notify(&ViewAndroidObserver::OnDetachedFromWindow);
   for (ViewAndroid* child : children_) {
     child->OnDetachedFromWindow();
   }

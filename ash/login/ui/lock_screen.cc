@@ -82,7 +82,6 @@ LockScreen::LockScreen(ScreenType type) : type_(type) {
     }
   }
 
-  tray_action_observation_.Observe(Shell::Get()->tray_action());
   if (Shell::Get()->session_controller()->GetSessionState() !=
       session_manager::SessionState::LOGIN_SECONDARY) {
     saved_clipboard_ = ui::Clipboard::TakeForCurrentThread();
@@ -103,12 +102,9 @@ LockScreen::~LockScreen() {
 }
 
 std::unique_ptr<views::View> LockScreen::MakeContentsView() {
-  auto initial_note_action_state =
-      Shell::Get()->tray_action()->GetLockScreenNoteState();
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kShowLoginDevOverlay)) {
-    auto debug_view =
-        std::make_unique<LockDebugView>(initial_note_action_state, type_);
+    auto debug_view = std::make_unique<LockDebugView>(type_);
     contents_view_ = debug_view->lock();
     return debug_view;
   }
@@ -116,8 +112,7 @@ std::unique_ptr<views::View> LockScreen::MakeContentsView() {
   auto detachable_base_model =
       LoginDetachableBaseModel::Create(Shell::Get()->detachable_base_handler());
   auto view = std::make_unique<LockContentsView>(
-      initial_note_action_state, type_,
-      Shell::Get()->login_screen_controller()->data_dispatcher(),
+      type_, Shell::Get()->login_screen_controller()->data_dispatcher(),
       std::move(detachable_base_model));
   contents_view_ = view.get();
   return view;
@@ -197,15 +192,12 @@ void LockScreen::ShowParentAccessDialog() {
   contents_view_->ShowParentAccessDialog();
 }
 
-void LockScreen::SetHasKioskApp(bool has_kiosk_apps) {
-  contents_view_->SetHasKioskApp(has_kiosk_apps);
+void LockScreen::ShowManagementDisclosureDialog() {
+  contents_view_->ShowManagementDisclosureDialog();
 }
 
-void LockScreen::OnLockScreenNoteStateChanged(mojom::TrayActionState state) {
-  Shell::Get()
-      ->login_screen_controller()
-      ->data_dispatcher()
-      ->SetLockScreenNoteState(state);
+void LockScreen::SetHasKioskApp(bool has_kiosk_apps) {
+  contents_view_->SetHasKioskApp(has_kiosk_apps);
 }
 
 void LockScreen::OnSessionStateChanged(session_manager::SessionState state) {

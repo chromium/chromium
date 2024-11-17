@@ -49,8 +49,7 @@ std::optional<base::Value> ParseJsonAndUnnestKey(
       unnested_is_empty = unnested->GetDict().empty();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (unnested_is_empty) {

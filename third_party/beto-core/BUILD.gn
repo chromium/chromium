@@ -83,7 +83,10 @@ rust_static_library("crypto_provider_boringssl") {
     ":crypto_provider_stubs",
     "//third_party/boringssl:bssl_crypto",
   ]
-  test_deps = [ ":crypto_provider_test" ]
+  test_deps = [
+    ":crypto_provider_test",
+    "//third_party/rust/rstest_reuse/v0_7:lib",
+  ]
 }
 
 rust_static_library("crypto_provider") {
@@ -141,8 +144,8 @@ rust_static_library("crypto_provider_test") {
     "//third_party/rust/hex/v0_4:lib",
     "//third_party/rust/hex_literal/v0_4:lib",
     "//third_party/rust/rand/v0_8:lib",
-    "//third_party/rust/rstest/v0_17:lib",
-    "//third_party/rust/rstest_reuse/v0_5:lib",
+    "//third_party/rust/rstest/v0_22:lib",
+    "//third_party/rust/rstest_reuse/v0_7:lib",
     "//third_party/rust/wycheproof/v0_4:lib",
   ]
   inputs = [

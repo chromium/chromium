@@ -10,6 +10,6 @@ namespace embedder_support::features {
 
 BASE_FEATURE(kInputStreamOptimizations,
              "InputStreamOptimizations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace embedder_support::features

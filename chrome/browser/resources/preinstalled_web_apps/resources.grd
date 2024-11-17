@@ -12,6 +12,7 @@
   </outputs>
   <release seq="1">
     <includes>
+      <include name="IDR_PREINSTALLED_WEB_APPS_GOOGLE_CHAT_ICON_192_PNG" file="internal/google_chat_192.png" type="BINDATA" />
       <include name="IDR_PREINSTALLED_WEB_APPS_GOOGLE_DOCS_ICON_192_PNG" file="internal/google_docs_192.png" type="BINDATA" />
       <include name="IDR_PREINSTALLED_WEB_APPS_GOOGLE_DRIVE_ICON_192_PNG" file="internal/google_drive_192.png" type="BINDATA" />
       <include name="IDR_PREINSTALLED_WEB_APPS_GOOGLE_SHEETS_ICON_192_PNG" file="internal/google_sheets_192.png" type="BINDATA" />
@@ -19,7 +20,7 @@
       <include name="IDR_PREINSTALLED_WEB_APPS_GMAIL_ICON_192_PNG" file="internal/gmail_192.png" type="BINDATA" />
       <include name="IDR_PREINSTALLED_WEB_APPS_YOUTUBE_ICON_192_PNG" file="internal/youtube_192.png" type="BINDATA" />
       <if expr="is_chromeos">
-        <include name="IDR_PREINSTALLED_WEB_APPS_CONTAINER_ICON_192_PNG" file="internal/container_192.png" type="BINDATA" />
+        <include name="IDR_PREINSTALLED_WEB_APPS_GEMINI_ICON_192_PNG" file="internal/gemini_192.png" type="BINDATA" />
         <include name="IDR_PREINSTALLED_WEB_APPS_GOOGLE_CALENDAR_ICON_192_PNG" file="internal/google_calendar_192.png" type="BINDATA" />
       </if>
     </includes>

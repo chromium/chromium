@@ -187,8 +187,7 @@ void ServiceWorkerInstalledScriptsSender::Abort(
   switch (reason) {
     case ServiceWorkerInstalledScriptReader::FinishedReason::kNotFinished:
     case ServiceWorkerInstalledScriptReader::FinishedReason::kSuccess:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case ServiceWorkerInstalledScriptReader::FinishedReason::
         kNoResponseHeadError:
     case ServiceWorkerInstalledScriptReader::FinishedReason::

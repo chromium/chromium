@@ -12,6 +12,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
+#include "chrome/browser/task_manager/providers/task.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "ui/base/models/table_model.h"
 
@@ -20,6 +21,17 @@ class WebContents;
 }
 
 namespace task_manager {
+
+// Determines what OTHER processes to filter out from the Task List.
+// For example, if the selected DisplayCategory is kTabs, Tab processes will be
+// kept, and Extension and System processes will be filtered out.
+enum class DisplayCategory : uint8_t {
+  kAll = 0,
+  kTabs = 1,
+  kExtensions = 2,
+  kSystem = 3,
+  kMax = kSystem
+};
 
 class TaskManagerValuesStringifier;
 
@@ -67,7 +79,9 @@ class TableViewDelegate {
 class TaskManagerTableModel : public TaskManagerObserver,
                               public ui::TableModel {
  public:
-  explicit TaskManagerTableModel(TableViewDelegate* delegate);
+  explicit TaskManagerTableModel(
+      TableViewDelegate* delegate,
+      DisplayCategory initial_display_category = DisplayCategory::kAll);
   TaskManagerTableModel(const TaskManagerTableModel&) = delete;
   TaskManagerTableModel& operator=(const TaskManagerTableModel&) = delete;
   ~TaskManagerTableModel() override;
@@ -78,6 +92,8 @@ class TaskManagerTableModel : public TaskManagerObserver,
   ui::ImageModel GetIcon(size_t row) override;
   void SetObserver(ui::TableModelObserver* observer) override;
   int CompareValues(size_t row1, size_t row2, int column_id) override;
+
+  void FilterTaskList(TaskIdList& tasks);
 
   // task_manager::TaskManagerObserver:
   void OnTaskAdded(TaskId id) override;
@@ -136,6 +152,9 @@ class TaskManagerTableModel : public TaskManagerObserver,
   // group of tasks.
   bool IsTaskFirstInGroup(size_t row_index) const;
 
+  // Determines whether a TaskId should be kept based on the DisplayCategory.
+  bool ShouldKeepTask(TaskId task_id) const;
+
   // The delegate that will be used to communicate with the platform-specific
   // TableView.
   raw_ptr<TableViewDelegate> table_view_delegate_;
@@ -159,6 +178,9 @@ class TaskManagerTableModel : public TaskManagerObserver,
 
   // The status of the flag #enable-nacl-debug.
   bool is_nacl_debugging_flag_enabled_;
+
+  // Determines which rows should be kept from GetTaskIdsList().
+  DisplayCategory display_category_;
 
   // Active task id when task manager is open. This variable will only set once
   // after task manager is open. In desktop platforms other than Lacros, active

@@ -15,7 +15,7 @@
 #include "chromeos/ash/components/dbus/vm_applications/apps.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
 
-class TestingProfile;
+class Profile;
 
 namespace crostini {
 
@@ -25,8 +25,7 @@ class CrostiniTestHelper {
  public:
   // For convenience, instantiating this allows Crostini, and enables it
   // unless enable_crostini is false. The destructor resets these.
-  explicit CrostiniTestHelper(TestingProfile* profile,
-                              bool enable_crostini = true);
+  explicit CrostiniTestHelper(Profile* profile, bool enable_crostini = true);
   ~CrostiniTestHelper();
 
   // Creates the apps named "dummy1" and "dummy2" in the default container.
@@ -50,8 +49,8 @@ class CrostiniTestHelper {
   void ReInitializeAppServiceIntegration();
 
   // Set/unset the the CrostiniEnabled pref
-  static void EnableCrostini(TestingProfile* profile);
-  static void DisableCrostini(TestingProfile* profile);
+  static void EnableCrostini(Profile* profile);
+  static void DisableCrostini(Profile* profile);
 
   // Returns the app id that the registry would use for the given desktop file.
   static std::string GenerateAppId(
@@ -76,7 +75,7 @@ class CrostiniTestHelper {
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<Profile> profile_;
   vm_tools::apps::ApplicationList current_apps_;
 
   // This are used to allow Crostini.

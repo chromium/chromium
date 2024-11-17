@@ -36,6 +36,12 @@ void SynchronousTaskGraphRunner::ScheduleTasks(NamespaceToken token,
   work_queue_.ScheduleTasks(token, graph);
 }
 
+void SynchronousTaskGraphRunner::ExternalDependencyCompletedForTask(
+    NamespaceToken token,
+    scoped_refptr<Task> task) {
+  work_queue_.ExternalDependencyCompletedForTask(token, std::move(task));
+}
+
 void SynchronousTaskGraphRunner::WaitForTasksToFinishRunning(
     NamespaceToken token) {
   TRACE_EVENT0("cc", "SynchronousTaskGraphRunner::WaitForTasksToFinishRunning");
@@ -64,6 +70,10 @@ void SynchronousTaskGraphRunner::CollectCompletedTasks(
 void SynchronousTaskGraphRunner::RunUntilIdle() {
   while (RunTask()) {
   }
+}
+
+void SynchronousTaskGraphRunner::RunTasksUntilIdleForTest() {
+  RunUntilIdle();
 }
 
 bool SynchronousTaskGraphRunner::RunTask() {

@@ -57,47 +57,6 @@ namespace arc {
 
 namespace {
 
-// Singleton factory for CertStoreService.
-class CertStoreServiceFactory : public ProfileKeyedServiceFactory {
- public:
-  static CertStoreService* GetForBrowserContext(
-      content::BrowserContext* context) {
-    return static_cast<CertStoreService*>(
-        GetInstance()->GetServiceForBrowserContext(context, true));
-  }
-
-  static CertStoreServiceFactory* GetInstance() {
-    return base::Singleton<CertStoreServiceFactory>::get();
-  }
-
-  CertStoreServiceFactory(const CertStoreServiceFactory&) = delete;
-  CertStoreServiceFactory& operator=(const CertStoreServiceFactory&) = delete;
-
- private:
-  friend base::DefaultSingletonTraits<CertStoreServiceFactory>;
-  CertStoreServiceFactory()
-      : ProfileKeyedServiceFactory(
-            "CertStoreService",
-            ProfileSelections::Builder()
-                .WithRegular(ProfileSelection::kOwnInstance)
-                // TODO(crbug.com/40257657): Check if this service is needed in
-                // Guest mode.
-                .WithGuest(ProfileSelection::kOwnInstance)
-                // TODO(crbug.com/41488885): Check if this service is needed for
-                // Ash Internals.
-                .WithAshInternals(ProfileSelection::kOwnInstance)
-                .Build()) {
-    DependsOn(NssServiceFactory::GetInstance());
-  }
-
-  bool ServiceIsNULLWhileTesting() const override { return true; }
-
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override {
-    return new CertStoreService(context);
-  }
-};
-
 // The following series of functions related to ListCerts make use of the
 // NSSCertDatabase to fulfill its goal of listing certificates. The cert
 // database is accessed through a raw pointer with limited lifetime guarantees
@@ -386,17 +345,6 @@ std::vector<keymint::mojom::ChromeOsKeyPtr> PrepareChromeOsKeysForKeyMint(
 
 }  // namespace
 
-// static
-CertStoreService* CertStoreService::GetForBrowserContext(
-    content::BrowserContext* context) {
-  return CertStoreServiceFactory::GetForBrowserContext(context);
-}
-
-// static
-BrowserContextKeyedServiceFactory* CertStoreService::GetFactory() {
-  return CertStoreServiceFactory::GetInstance();
-}
-
 CertStoreService::CertStoreService(content::BrowserContext* context)
     : CertStoreService(context, std::make_unique<ArcCertInstaller>(context)) {}
 
@@ -634,11 +582,6 @@ void CertStoreService::OnArcCertsInstalled(bool need_policy_update,
                                      policy::PolicyMap(), policy::PolicyMap());
     }
   }
-}
-
-// static
-void CertStoreService::EnsureFactoryBuilt() {
-  CertStoreServiceFactory::GetInstance();
 }
 
 }  // namespace arc

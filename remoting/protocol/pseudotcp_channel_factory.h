@@ -34,7 +34,8 @@ class PseudoTcpChannelFactory : public StreamChannelFactory {
   void CancelChannelCreation(const std::string& name) override;
 
  private:
-  typedef std::map<std::string, P2PStreamSocket*> PendingSocketsMap;
+  typedef std::map<std::string, raw_ptr<P2PStreamSocket, CtnExperimental>>
+      PendingSocketsMap;
 
   void OnDatagramChannelCreated(const std::string& name,
                                 ChannelCreatedCallback callback,

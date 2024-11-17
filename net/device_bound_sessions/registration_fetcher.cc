@@ -4,20 +4,26 @@
 
 #include "net/device_bound_sessions/registration_fetcher.h"
 
+#include <memory>
 #include <utility>
+#include <vector>
 
 #include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/base/io_buffer.h"
+#include "net/device_bound_sessions/registration_request_param.h"
 #include "net/device_bound_sessions/session_binding_utils.h"
+#include "net/device_bound_sessions/session_challenge_param.h"
 #include "net/device_bound_sessions/session_json_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 
 namespace net::device_bound_sessions {
 
 namespace {
 
+constexpr char kSessionIdHeaderName[] = "Sec-Session-Id";
 constexpr char kJwtSessionHeaderName[] = "Sec-Session-Response";
 constexpr net::NetworkTrafficAnnotationTag kRegistrationTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("dbsc_registration", R"(
@@ -47,17 +53,12 @@ constexpr net::NetworkTrafficAnnotationTag kRegistrationTrafficAnnotation =
         policy {
           cookies_allowed: YES
           cookies_store: "user"
-          setting: "There is no seperate setting for this feature, but it will "
+          setting: "There is no separate setting for this feature, but it will "
             "follow the cookie settings."
           policy_exception_justification: "Not implemented."
         })");
 
 constexpr int kBufferSize = 4096;
-
-// A server will provide a list of acceptable algorithms in the future.
-constexpr crypto::SignatureVerifier::SignatureAlgorithm
-    kAcceptableAlgorithms[] = {crypto::SignatureVerifier::ECDSA_SHA256,
-                               crypto::SignatureVerifier::RSA_PKCS1_SHA256};
 
 // New session registration doesn't block the user and can be done with a delay.
 constexpr unexportable_keys::BackgroundTaskPriority kTaskPriority =
@@ -89,20 +90,15 @@ void OnDataSigned(
       registration_token.value(), key_id));
 }
 
-void OnKeyGenerated(
+void SignChallengeWithKey(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    std::string_view challenge,
+    unexportable_keys::UnexportableKeyId& key_id,
     const GURL& registration_url,
-    base::OnceCallback<void(
-        std::optional<RegistrationFetcher::RegistrationTokenResult>)> callback,
-    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
-        result) {
-  if (!result.has_value()) {
-    std::move(callback).Run(std::nullopt);
-    return;
-  }
-  unexportable_keys::UnexportableKeyId key_id = result.value();
-
+    std::string_view challenge,
+    std::optional<std::string> authorization,
+    base::OnceCallback<
+        void(std::optional<RegistrationFetcher::RegistrationTokenResult>)>
+        callback) {
   auto expected_algorithm = unexportable_key_service.GetAlgorithm(key_id);
   auto expected_public_key =
       unexportable_key_service.GetSubjectPublicKeyInfo(key_id);
@@ -114,33 +110,23 @@ void OnKeyGenerated(
   std::optional<std::string> optional_header_and_payload =
       CreateKeyRegistrationHeaderAndPayload(
           challenge, registration_url, expected_algorithm.value(),
-          expected_public_key.value(), base::Time::Now());
+          expected_public_key.value(), base::Time::Now(),
+          std::move(authorization));
 
   if (!optional_header_and_payload.has_value()) {
     std::move(callback).Run(std::nullopt);
     return;
   }
 
-  std::string header_and_payload = optional_header_and_payload.value();
+  std::string header_and_payload =
+      std::move(optional_header_and_payload.value());
   unexportable_key_service.SignSlowlyAsync(
       key_id, base::as_bytes(base::make_span(header_and_payload)),
       kTaskPriority,
       base::BindOnce(&OnDataSigned, expected_algorithm.value(),
-                     std::ref(unexportable_key_service), header_and_payload,
-                     key_id, std::move(callback)));
-}
-
-void CreateTokenAsync(
-    unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    std::string challenge,
-    const GURL& registration_url,
-    base::OnceCallback<
-        void(std::optional<RegistrationFetcher::RegistrationTokenResult>)>
-        callback) {
-  unexportable_key_service.GenerateSigningKeySlowlyAsync(
-      kAcceptableAlgorithms, kTaskPriority,
-      base::BindOnce(&OnKeyGenerated, std::ref(unexportable_key_service),
-                     challenge, registration_url, std::move(callback)));
+                     std::ref(unexportable_key_service),
+                     std::move(header_and_payload), key_id,
+                     std::move(callback)));
 }
 
 class RegistrationFetcherImpl : public URLRequest::Delegate {
@@ -175,7 +161,17 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
     }
 
     HttpResponseHeaders* headers = request->response_headers();
-    int response_code = headers ? headers->response_code() : 0;
+    const int response_code = headers ? headers->response_code() : 0;
+
+    if (response_code == 401) {
+      auto challenge_params =
+          device_bound_sessions::SessionChallengeParam::CreateIfValid(
+              fetcher_endpoint_, headers);
+      OnChallengeNeeded(std::move(challenge_params));
+      // *this is preserved here.
+      return;
+    }
+
     if (response_code < 200 || response_code >= 300) {
       OnResponseCompleted();
       // *this is deleted here
@@ -208,13 +204,17 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   }
 
   RegistrationFetcherImpl(
-      RegistrationFetcherParam registration_params,
+      const GURL& fetcher_endpoint,
+      std::optional<std::string> session_identifier,
       unexportable_keys::UnexportableKeyService& key_service,
+      const unexportable_keys::UnexportableKeyId& key_id,
       const URLRequestContext* context,
       const IsolationInfo& isolation_info,
       RegistrationFetcher::RegistrationCompleteCallback callback)
-      : registration_params_(std::move(registration_params)),
+      : fetcher_endpoint_(fetcher_endpoint),
+        session_identifier_(std::move(session_identifier)),
         key_service_(key_service),
+        key_id_(key_id),
         context_(context),
         isolation_info_(isolation_info),
         callback_(std::move(callback)),
@@ -222,6 +222,27 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
 
   ~RegistrationFetcherImpl() override { CHECK(!callback_); }
 
+  void Start(std::optional<std::string> challenge,
+             std::optional<std::string> authorization) {
+    if (challenge.has_value()) {
+      SignChallengeWithKey(
+          *key_service_, key_id_, fetcher_endpoint_, *challenge,
+          std::move(authorization),
+          base::BindOnce(&RegistrationFetcherImpl::OnRegistrationTokenCreated,
+                         base::Unretained(this)));
+      return;
+    }
+
+    // Start a request to get a challenge with the session identifier.
+    // `RegistrationRequestParam::Create` guarantees `session_identifier_` is
+    // set when `challenge_` is missing.
+    if (session_identifier_.has_value()) {
+      request_ = CreateBaseRequest();
+      request_->Start();
+    }
+  }
+
+ private:
   void OnRegistrationTokenCreated(
       std::optional<RegistrationFetcher::RegistrationTokenResult> result) {
     if (!result) {
@@ -229,27 +250,43 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
       return;
     }
 
-    key_id_ = result->key_id;
-    StartFetchingRegistration(result->registration_token);
+    request_ = CreateBaseRequest();
+    request_->SetExtraRequestHeaderByName(
+        kJwtSessionHeaderName, result->registration_token, /*overwrite*/ true);
+    request_->Start();
   }
 
- private:
-  void StartFetchingRegistration(const std::string& registration_token) {
-    request_ =
-        context_->CreateRequest(registration_params_.registration_endpoint(),
-                                IDLE, this, kRegistrationTrafficAnnotation);
-    request_->set_method("POST");
-    request_->SetLoadFlags(LOAD_DISABLE_CACHE);
-    request_->set_allow_credentials(true);
+  std::unique_ptr<net::URLRequest> CreateBaseRequest() {
+    std::unique_ptr<net::URLRequest> request = context_->CreateRequest(
+        fetcher_endpoint_, IDLE, this, kRegistrationTrafficAnnotation);
+    request->set_method("POST");
+    request->SetLoadFlags(LOAD_DISABLE_CACHE);
+    request->set_allow_credentials(true);
 
-    request_->set_site_for_cookies(isolation_info_.site_for_cookies());
-    // TODO(kristianm): Set initiator to the URL of the registration header
-    request_->set_initiator(url::Origin());
-    request_->set_isolation_info(isolation_info_);
+    request->set_site_for_cookies(isolation_info_.site_for_cookies());
+    // TODO(kristianm): Set initiator to the URL of the registration header.
+    request->set_initiator(url::Origin());
+    request->set_isolation_info(isolation_info_);
 
-    request_->SetExtraRequestHeaderByName(
-        kJwtSessionHeaderName, registration_token, /*overwrite*/ true);
-    request_->Start();
+    if (session_identifier_.has_value()) {
+      request->SetExtraRequestHeaderByName(
+          kSessionIdHeaderName, *session_identifier_, /*overwrite*/ true);
+    }
+
+    return request;
+  }
+
+  void OnChallengeNeeded(
+      std::optional<std::vector<SessionChallengeParam>> challenge_params) {
+    if (!challenge_params || challenge_params->empty()) {
+      RunCallbackAndDeleteSelf(std::nullopt);
+      return;
+    }
+
+    // TODO(kristianm): Log if there is more than one challenge
+    // TODO(kristianm): Handle if session identifiers don't match
+    const std::string& challenge = (*challenge_params)[0].challenge();
+    Start(challenge, std::nullopt);
   }
 
   void OnResponseCompleted() {
@@ -258,15 +295,14 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
           ParseSessionInstructionJson(data_received_);
       if (params) {
         RunCallbackAndDeleteSelf(
-            RegistrationFetcher::RegistrationCompleteParams(
-                std::move(*params), *key_id_, request_->url()));
-      } else {
-        RunCallbackAndDeleteSelf(std::nullopt);
+            std::make_optional<RegistrationFetcher::RegistrationCompleteParams>(
+                std::move(*params), key_id_, request_->url(),
+                std::move(session_identifier_)));
+        return;
       }
-    } else {
-      RunCallbackAndDeleteSelf(std::nullopt);
     }
-    // *this is deleted here
+
+    RunCallbackAndDeleteSelf(std::nullopt);
   }
 
   // Running callback when fetching is complete or on error.
@@ -278,16 +314,13 @@ class RegistrationFetcherImpl : public URLRequest::Delegate {
   }
 
   // State passed in to constructor
-  RegistrationFetcherParam registration_params_;
+  GURL fetcher_endpoint_;
+  std::optional<std::string> session_identifier_;
   const raw_ref<unexportable_keys::UnexportableKeyService> key_service_;
+  unexportable_keys::UnexportableKeyId key_id_;
   raw_ptr<const URLRequestContext> context_;
   IsolationInfo isolation_info_;
   RegistrationFetcher::RegistrationCompleteCallback callback_;
-
-  // Set during key creation, before sending request to fetch data.
-  // Should always be nullopt before that, and always a valid key after key
-  // creation.
-  std::optional<unexportable_keys::UnexportableKeyId> key_id_ = std::nullopt;
 
   // Created to fetch data
   std::unique_ptr<URLRequest> request_;
@@ -300,6 +333,26 @@ std::optional<RegistrationFetcher::RegistrationCompleteParams> (
 
 }  // namespace
 
+RegistrationFetcher::RegistrationCompleteParams::RegistrationCompleteParams(
+    SessionParams params,
+    unexportable_keys::UnexportableKeyId key_id,
+    const GURL& url,
+    std::optional<std::string> referral_session_identifier)
+    : params(std::move(params)),
+      key_id(std::move(key_id)),
+      url(url),
+      referral_session_identifier(std::move(referral_session_identifier)) {}
+
+RegistrationFetcher::RegistrationCompleteParams::RegistrationCompleteParams(
+    RegistrationFetcher::RegistrationCompleteParams&& other) noexcept = default;
+RegistrationFetcher::RegistrationCompleteParams&
+RegistrationFetcher::RegistrationCompleteParams::operator=(
+    RegistrationFetcher::RegistrationCompleteParams&& other) noexcept = default;
+
+RegistrationFetcher::RegistrationCompleteParams::~RegistrationCompleteParams() =
+    default;
+
+// static
 void RegistrationFetcher::StartCreateTokenAndFetch(
     RegistrationFetcherParam registration_params,
     unexportable_keys::UnexportableKeyService& key_service,
@@ -314,19 +367,46 @@ void RegistrationFetcher::StartCreateTokenAndFetch(
     return;
   }
 
-  GURL registration_endpoint = registration_params.registration_endpoint();
-  std::string challenge = registration_params.challenge();
+  const auto supported_algos = registration_params.supported_algos();
+  auto request_params =
+      RegistrationRequestParam::Create(std::move(registration_params));
+  // `key_service` is created along with `SessionService` and will be valid
+  // until the browser ends, hence `std::ref` is safe here.
+  key_service.GenerateSigningKeySlowlyAsync(
+      supported_algos, kTaskPriority,
+      base::BindOnce(&RegistrationFetcher::StartFetchWithExistingKey,
+                     std::move(request_params), std::ref(key_service), context,
+                     isolation_info, std::move(callback)));
+}
 
-  RegistrationFetcherImpl* fetcher =
-      new RegistrationFetcherImpl(std::move(registration_params), key_service,
-                                  context, isolation_info, std::move(callback));
+// static
+void RegistrationFetcher::StartFetchWithExistingKey(
+    RegistrationRequestParam request_params,
+    unexportable_keys::UnexportableKeyService& unexportable_key_service,
+    const URLRequestContext* context,
+    const IsolationInfo& isolation_info,
+    RegistrationFetcher::RegistrationCompleteCallback callback,
+    unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>
+        key_id) {
+  // Using mock fetcher for testing.
+  if (g_mock_fetcher) {
+    std::move(callback).Run(g_mock_fetcher());
+    return;
+  }
 
-  // base::Unretained() is safe because the fetcher cannot be destroyed until
-  // after this callback is run, as it controls its own lifetime.
-  CreateTokenAsync(
-      key_service, std::move(challenge), registration_endpoint,
-      base::BindOnce(&RegistrationFetcherImpl::OnRegistrationTokenCreated,
-                     base::Unretained(fetcher)));
+  if (!key_id.has_value()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  // RegistrationFetcherImpl manages its own lifetime.
+  RegistrationFetcherImpl* fetcher = new RegistrationFetcherImpl(
+      request_params.TakeRegistrationEndpoint(),
+      request_params.TakeSessionIdentifier(), unexportable_key_service,
+      key_id.value(), context, isolation_info, std::move(callback));
+
+  fetcher->Start(request_params.TakeChallenge(),
+                 request_params.TakeAuthorization());
 }
 
 void RegistrationFetcher::SetFetcherForTesting(FetcherType func) {
@@ -342,11 +422,35 @@ void RegistrationFetcher::CreateTokenAsyncForTesting(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
     std::string challenge,
     const GURL& registration_url,
+    std::optional<std::string> authorization,
     base::OnceCallback<
         void(std::optional<RegistrationFetcher::RegistrationTokenResult>)>
         callback) {
-  CreateTokenAsync(unexportable_key_service, challenge, registration_url,
-                   std::move(callback));
+  static constexpr crypto::SignatureVerifier::SignatureAlgorithm
+      kSupportedAlgos[] = {crypto::SignatureVerifier::ECDSA_SHA256,
+                           crypto::SignatureVerifier::RSA_PKCS1_SHA256};
+  unexportable_key_service.GenerateSigningKeySlowlyAsync(
+      kSupportedAlgos, kTaskPriority,
+      base::BindOnce(
+          [](unexportable_keys::UnexportableKeyService& key_service,
+             const GURL& registration_url, const std::string& challenge,
+             std::optional<std::string>&& authorization,
+             base::OnceCallback<void(
+                 std::optional<RegistrationFetcher::RegistrationTokenResult>)>
+                 callback,
+             unexportable_keys::ServiceErrorOr<
+                 unexportable_keys::UnexportableKeyId> key_result) {
+            if (!key_result.has_value()) {
+              std::move(callback).Run(std::nullopt);
+              return;
+            }
+
+            SignChallengeWithKey(key_service, key_result.value(),
+                                 registration_url, challenge,
+                                 std::move(authorization), std::move(callback));
+          },
+          std::ref(unexportable_key_service), registration_url,
+          std::move(challenge), std::move(authorization), std::move(callback)));
 }
 
 }  // namespace net::device_bound_sessions

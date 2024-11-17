@@ -13,9 +13,8 @@ AccessibilityExtensionEventGeneratorTest = class extends CommonE2ETestBase {
     await importModule('EventGenerator', '/common/event_generator.js');
   }
 
-  runMovePressDragReleaseTest(button) {
+  runMovePressReleaseTest(button) {
     const MOVE = chrome.accessibilityPrivate.SyntheticMouseEventType.MOVE;
-    const DRAG = chrome.accessibilityPrivate.SyntheticMouseEventType.DRAG;
     const PRESS = chrome.accessibilityPrivate.SyntheticMouseEventType.PRESS;
     const RELEASE = chrome.accessibilityPrivate.SyntheticMouseEventType.RELEASE;
 
@@ -40,11 +39,11 @@ AccessibilityExtensionEventGeneratorTest = class extends CommonE2ETestBase {
     assertFalse(EventGenerator.sendMousePress(84, 1973, button));
     assertEquals(2, mouseEventLog.length);
 
-    // Move while pressed is a drag with the mouse key used
+    // Move while pressed is a move with the mouse key used
     // during the press event.
     EventGenerator.sendMouseMove(126, 42);
     assertEquals(3, mouseEventLog.length);
-    assertEquals(DRAG, mouseEventLog[2].type);
+    assertEquals(MOVE, mouseEventLog[2].type);
     assertEquals(button, mouseEventLog[2].mouseButton);
     assertEquals(126, mouseEventLog[2].x);
     assertEquals(42, mouseEventLog[2].y);
@@ -139,13 +138,93 @@ AX_TEST_F(
 AX_TEST_F(
     'AccessibilityExtensionEventGeneratorTest', 'MouseMovePressDragReleaseLeft',
     function() {
-      this.runMovePressDragReleaseTest(
+      this.runMovePressReleaseTest(
           chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT);
     });
 
 AX_TEST_F(
     'AccessibilityExtensionEventGeneratorTest',
     'MouseMovePressDragReleaseRight', function() {
-      this.runMovePressDragReleaseTest(
+      this.runMovePressReleaseTest(
           chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT);
+    });
+
+AX_TEST_F(
+    'AccessibilityExtensionEventGeneratorTest', 'DoubleClick', function() {
+      const log = [];
+      chrome.accessibilityPrivate.sendSyntheticMouseEvent = event =>
+          log.push(event);
+
+      const mouseButton =
+          chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT;
+      EventGenerator.sendMousePress(10, 20, mouseButton, {isDoubleClick: true});
+      assertEquals(log.length, 1);
+      assertTrue(log[0].isDoubleClick);
+      assertNullOrUndefined(log[0].isTripleClick);
+
+      EventGenerator.sendMouseRelease(10, 20, {isDoubleClick: true});
+      assertEquals(log.length, 2);
+      assertTrue(log[1].isDoubleClick);
+      assertNullOrUndefined(log[1].isTripleClick);
+    });
+
+AX_TEST_F(
+    'AccessibilityExtensionEventGeneratorTest', 'TripleClick', function() {
+      const log = [];
+      chrome.accessibilityPrivate.sendSyntheticMouseEvent = event =>
+          log.push(event);
+
+      const mouseButton =
+          chrome.accessibilityPrivate.SyntheticMouseEventButton.LEFT;
+      EventGenerator.sendMousePress(10, 20, mouseButton, {isTripleClick: true});
+      assertEquals(log.length, 1);
+      assertTrue(log[0].isTripleClick);
+      assertNullOrUndefined(log[0].isDoubleClick);
+
+      EventGenerator.sendMouseRelease(10, 20, {isTripleClick: true});
+      assertEquals(log.length, 2);
+      assertTrue(log[1].isTripleClick);
+      assertNullOrUndefined(log[1].isDoubleClick);
+    });
+
+AX_TEST_F(
+    'AccessibilityExtensionEventGeneratorTest', 'KeyDownRepeat', function() {
+      const keyEventLog = [];
+      chrome.accessibilityPrivate.sendSyntheticKeyEvent =
+          (event, useRewriters, isRepeat) => keyEventLog.push(
+              {event: event, useRewriters: useRewriters, isRepeat: isRepeat});
+
+      EventGenerator.sendKeyDown(KeyCode.A, {});
+      assertEquals(1, keyEventLog.length);
+
+      let keyEvent = keyEventLog[0];
+      assertEquals(
+          keyEvent.event.type,
+          chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN);
+      assertEquals(keyEvent.event.keyCode, KeyCode.A);
+      assertObjectEquals(keyEvent.event.modifiers, {});
+      assertFalse(keyEvent.isRepeat);
+
+      EventGenerator.sendKeyDown(KeyCode.V, {ctrl: true});
+      assertEquals(2, keyEventLog.length);
+
+      keyEvent = keyEventLog[1];
+      assertEquals(
+          keyEvent.event.type,
+          chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN);
+      assertEquals(keyEvent.event.keyCode, KeyCode.V);
+      assertObjectEquals(keyEvent.event.modifiers, {ctrl: true});
+      assertFalse(keyEvent.isRepeat);
+
+      EventGenerator.sendKeyDown(
+          KeyCode.V, {ctrl: true}, /**useRewriters=*/ false,
+          /**isRepeat=*/ true);
+      keyEvent = keyEventLog[2]
+      assertEquals(3, keyEventLog.length);
+      assertEquals(
+          keyEvent.event.type,
+          chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN);
+      assertEquals(keyEvent.event.keyCode, KeyCode.V);
+      assertObjectEquals(keyEvent.event.modifiers, {ctrl: true});
+      assertTrue(keyEvent.isRepeat);
     });

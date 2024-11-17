@@ -15,5 +15,5 @@ proto_library("proto") {
     "update_device_rpc.proto",
   ]
 
-  link_deps = [ "//chromeos/ash/components/nearby/common/proto" ]
+  deps = [ "//chromeos/ash/components/nearby/common/proto" ]
 }

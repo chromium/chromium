@@ -48,13 +48,9 @@ class AutoPipSettingViewTest : public views::ViewsTestBase,
     auto* anchor_view =
         anchor_view_widget_->SetContentsView(std::make_unique<views::View>());
 
-    // Define the browser view overridden bounds.
-    const gfx::Rect browser_view_overridden_bounds(0, 0, 500, 500);
-
     // Create the Auto PiP Setting View.
     setting_view_ = std::make_unique<AutoPipSettingView>(
-        result_cb().Get(), hide_view_cb().Get(), origin_,
-        browser_view_overridden_bounds, anchor_view,
+        result_cb().Get(), hide_view_cb().Get(), origin_, anchor_view,
         views::BubbleBorder::TOP_CENTER);
   }
 
@@ -155,7 +151,7 @@ TEST_F(AutoPipSettingViewTest, TestBubbleTitleElideBehaviorForNonFileURL) {
       anchor_view_widget->SetContentsView(std::make_unique<views::View>());
 
   auto setting_view = std::make_unique<AutoPipSettingView>(
-      result_cb().Get(), hide_view_cb().Get(), origin, gfx::Rect(), anchor_view,
+      result_cb().Get(), hide_view_cb().Get(), origin, anchor_view,
       views::BubbleBorder::TOP_CENTER);
 
   // Get the origin text for testing.
@@ -183,7 +179,7 @@ TEST_F(AutoPipSettingViewTest, TestBubbleTitleElideBehaviorForFileURL) {
       anchor_view_widget->SetContentsView(std::make_unique<views::View>());
 
   auto setting_view = std::make_unique<AutoPipSettingView>(
-      result_cb().Get(), hide_view_cb().Get(), origin, gfx::Rect(), anchor_view,
+      result_cb().Get(), hide_view_cb().Get(), origin, anchor_view,
       views::BubbleBorder::TOP_CENTER);
 
   // Get the origin text for testing.
@@ -210,7 +206,7 @@ TEST_F(AutoPipSettingViewTest, TestOriginLabelForGURLWithLocalHost) {
       anchor_view_widget->SetContentsView(std::make_unique<views::View>());
 
   auto setting_view = std::make_unique<AutoPipSettingView>(
-      result_cb().Get(), hide_view_cb().Get(), origin, gfx::Rect(), anchor_view,
+      result_cb().Get(), hide_view_cb().Get(), origin, anchor_view,
       views::BubbleBorder::TOP_CENTER);
 
   // Get the origin text for testing.
@@ -251,7 +247,7 @@ TEST_F(AutoPipSettingViewTest, MAYBE_WidgetIsCenteredWhenArrowIsFloat) {
   // Set up the setting view.
   auto setting_view = std::make_unique<AutoPipSettingView>(
       result_cb().Get(), hide_view_cb().Get(), GURL("https://example.com"),
-      gfx::Rect(), anchor_view, views::BubbleBorder::FLOAT);
+      anchor_view, views::BubbleBorder::FLOAT);
 
   // Create and show bubble.
   views::Widget* widget =

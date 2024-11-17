@@ -7,7 +7,7 @@
 
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace ui {
 class Cursor;
@@ -31,7 +31,7 @@ class TouchEmulatorClient {
   // |target| is the view associated with the corresponding input event.
   virtual void ShowContextMenuAtPoint(
       const gfx::Point& point,
-      const ui::MenuSourceType source_type,
+      const ui::mojom::MenuSourceType source_type,
       RenderWidgetHostViewInput* target) = 0;
 };
 

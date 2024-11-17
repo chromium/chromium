@@ -71,7 +71,7 @@ public class PaymentRequestShowPromiseSingleOptionShippingTest {
     public void testFastApp() throws TimeoutException {
         mRule.addPaymentAppFactory(
                 "https://example.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
-        mRule.triggerUIAndWait("buy", mRule.getReadyToPay());
+        mRule.triggerUiAndWait("buy", mRule.getReadyToPay());
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
         Assert.assertEquals("$0.00", mRule.getShippingOptionCostSummaryOnBottomSheet());
         mRule.clickInShippingAddressAndWait(R.id.payments_section, mRule.getReadyForInput());
@@ -89,7 +89,7 @@ public class PaymentRequestShowPromiseSingleOptionShippingTest {
                 AppPresence.HAVE_APPS,
                 FactorySpeed.SLOW_FACTORY,
                 AppSpeed.SLOW_APP);
-        mRule.triggerUIAndWait("buy", mRule.getReadyToPay());
+        mRule.triggerUiAndWait("buy", mRule.getReadyToPay());
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
         Assert.assertEquals("$0.00", mRule.getShippingOptionCostSummaryOnBottomSheet());
         mRule.clickInShippingAddressAndWait(R.id.payments_section, mRule.getReadyForInput());

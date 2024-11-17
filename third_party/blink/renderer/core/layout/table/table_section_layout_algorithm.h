@@ -24,8 +24,7 @@ class CORE_EXPORT TableSectionLayoutAlgorithm
 
   MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) {
     // Table layout doesn't compute min/max sizes on table sections.
-    NOTREACHED_IN_MIGRATION();
-    return MinMaxSizesResult();
+    NOTREACHED();
   }
 };
 

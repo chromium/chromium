@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.preferences;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.cached_flags.CachedFlagsSharedPreferences;
 import org.chromium.base.shared_preferences.KnownPreferenceKeyRegistries;
 import org.chromium.base.shared_preferences.PreferenceKeyRegistry;
 import org.chromium.build.annotations.CheckDiscard;
+import org.chromium.components.cached_flags.CachedFlagsSharedPreferences;
 
 import java.util.Set;
 

@@ -16,6 +16,7 @@
 #import "components/sync_preferences/pref_service_mock_factory.h"
 #import "components/sync_preferences/pref_service_syncable.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -47,7 +48,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService() {
       new user_prefs::PrefRegistrySyncable);
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs =
       factory.CreateSyncable(registry.get());
-  RegisterBrowserStatePrefs(registry.get());
+  RegisterProfilePrefs(registry.get());
   return prefs;
 }
 
@@ -72,26 +73,24 @@ void PassphraseTableViewControllerTest::SetUp() {
   DefaultValue<const GoogleServiceAuthError&>::Set(default_auth_error_);
   DefaultValue<syncer::SyncCycleSnapshot>::Set(default_sync_cycle_snapshot_);
 
-  TestChromeBrowserState::Builder test_cbs_builder;
-  test_cbs_builder.AddTestingFactory(
+  TestProfileIOS::Builder builder;
+  builder.AddTestingFactory(
       AuthenticationServiceFactory::GetInstance(),
-      AuthenticationServiceFactory::GetDefaultFactory());
-  test_cbs_builder.AddTestingFactory(
-      SyncServiceFactory::GetInstance(),
-      base::BindRepeating(&CreateNiceMockSyncService));
-  RegisterTestingFactories(test_cbs_builder);
-  test_cbs_builder.SetPrefService(CreatePrefService());
-  chrome_browser_state_ = std::move(test_cbs_builder).Build();
-  AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-      chrome_browser_state_.get(),
-      std::make_unique<FakeAuthenticationServiceDelegate>());
+      AuthenticationServiceFactory::GetFactoryWithDelegate(
+          std::make_unique<FakeAuthenticationServiceDelegate>()));
+  builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                            base::BindRepeating(&CreateNiceMockSyncService));
+  RegisterTestingFactories(builder);
+  builder.SetPrefService(CreatePrefService());
+  profile_ = std::move(builder).Build();
   app_state_ = [[AppState alloc] initWithStartupInformation:nil];
+  profile_state_ = [[ProfileState alloc] initWithAppState:app_state_];
   scene_state_ = [[SceneState alloc] initWithAppState:app_state_];
-  browser_ =
-      std::make_unique<TestBrowser>(chrome_browser_state_.get(), scene_state_);
+  scene_state_.profileState = profile_state_;
+  browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
   fake_sync_service_ = static_cast<syncer::MockSyncService*>(
-      SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get()));
+      SyncServiceFactory::GetForProfile(profile_.get()));
 
   // Set up non-default return values for our sync service mock.
   ON_CALL(*fake_sync_service_->GetMockUserSettings(), IsPassphraseRequired())
@@ -106,11 +105,9 @@ void PassphraseTableViewControllerTest::SetUp() {
   fake_system_identity_manager->AddIdentity(fake_identity);
 
   ChromeAccountManagerService* account_manager_service =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          chrome_browser_state_.get());
+      ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   AuthenticationService* auth_service =
-      AuthenticationServiceFactory::GetForBrowserState(
-          chrome_browser_state_.get());
+      AuthenticationServiceFactory::GetForProfile(profile_.get());
   auth_service->SignIn(account_manager_service->GetDefaultIdentity(),
                        signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 }
@@ -124,7 +121,7 @@ void PassphraseTableViewControllerTest::TearDown() {
 }
 
 void PassphraseTableViewControllerTest::RegisterTestingFactories(
-    TestChromeBrowserState::Builder& builder) {
+    TestProfileIOS::Builder& builder) {
   // nothing to do, this is for sub-classes to override
 }
 

@@ -37,15 +37,8 @@ class FeatureUtilsTest : public testing::Test {
  protected:
   // Set up so that all product specs checks pass by default.
   void SetupProductSpecificationsEnabled() {
-    ON_CALL(*account_checker_, IsSyncTypeEnabled)
-        .WillByDefault(testing::Return(true));
-    account_checker_->SetAnonymizedUrlDataCollectionEnabled(true);
-    account_checker_->SetSignedIn(true);
-    account_checker_->SetIsSubjectToParentalControls(false);
-    account_checker_->SetCanUseModelExecutionFeatures(true);
-
-    // 0 is the enabled enterprise state for the feature.
-    SetTabCompareEnterprisePolicyPref(prefs_.get(), 0);
+    commerce::EnableProductSpecificationsDataFetch(account_checker_.get(),
+                                                   prefs_.get());
 
     // Default to having no sets.
     ON_CALL(*specifications_service_, GetAllProductSpecifications())

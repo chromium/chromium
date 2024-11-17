@@ -30,7 +30,6 @@ import java.util.function.Function;
  */
 public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         implements OnMenuItemClickListener, OnClickListener {
-    private BookmarkOpener mBookmarkOpener;
     private SelectionDelegate<BookmarkId> mSelectionDelegate;
 
     private boolean mEditButtonVisible;
@@ -60,9 +59,7 @@ public class BookmarkToolbar extends SelectableListToolbar<BookmarkId>
         setOnMenuItemClickListener(this);
     }
 
-    void setBookmarkOpener(BookmarkOpener bookmarkOpener) {
-        mBookmarkOpener = bookmarkOpener;
-    }
+    void setBookmarkOpener(BookmarkOpener bookmarkOpener) {}
 
     void setSelectionDelegate(SelectionDelegate selectionDelegate) {
         mSelectionDelegate = selectionDelegate;

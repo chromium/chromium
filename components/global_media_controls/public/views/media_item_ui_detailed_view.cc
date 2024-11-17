@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/global_media_controls/media_view_utils.h"
+#include "components/global_media_controls/public/format_duration.h"
 #include "components/global_media_controls/public/views/media_action_button.h"
 #include "components/global_media_controls/public/views/media_progress_view.h"
 #include "components/media_message_center/media_notification_container.h"
@@ -712,7 +714,7 @@ void MediaItemUIDetailedView::StartCastingButtonPressed() {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -961,7 +963,7 @@ views::Label* MediaItemUIDetailedView::GetTotalDurationViewForTesting() {
   return total_duration_view_;
 }
 
-base::flat_map<int, ChapterItemView*>
+base::flat_map<int, raw_ptr<ChapterItemView, CtnExperimental>>
 MediaItemUIDetailedView::GetChaptersForTesting() {
   return chapters_;
 }

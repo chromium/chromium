@@ -17,13 +17,15 @@
 #include "components/network_session_configurator/common/network_features.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/variations/variations_associated_data.h"
+#include "net/base/features.h"
 #include "net/base/host_mapping_rules.h"
 #include "net/base/host_port_pair.h"
+#include "net/disk_cache/backend_experiment.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_factory.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/crypto_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 #include "net/url_request/url_request_context_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -90,7 +92,7 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_FALSE(quic_params_.retry_on_alternate_network_before_handshake);
   EXPECT_FALSE(quic_params_.migrate_idle_sessions);
   EXPECT_TRUE(quic_params_.initial_rtt_for_handshake.is_zero());
-  EXPECT_FALSE(quic_params_.allow_server_migration);
+  EXPECT_TRUE(quic_params_.allow_server_migration);
   EXPECT_TRUE(params_.quic_host_allowlist.empty());
   EXPECT_TRUE(quic_params_.retransmittable_on_wire_timeout.is_zero());
   EXPECT_FALSE(quic_params_.disable_tls_zero_rtt);
@@ -106,8 +108,8 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_FALSE(quic_params_.delay_main_job_with_available_spdy_session);
   EXPECT_FALSE(quic_params_.use_new_alps_codepoint);
   EXPECT_FALSE(quic_params_.report_ecn);
-  EXPECT_FALSE(quic_params_.enable_origin_frame);
-  EXPECT_FALSE(quic_params_.skip_dns_with_origin_frame);
+  EXPECT_TRUE(quic_params_.enable_origin_frame);
+  EXPECT_TRUE(quic_params_.skip_dns_with_origin_frame);
   EXPECT_FALSE(quic_params_.ignore_ip_matching_when_finding_existing_sessions);
 }
 
@@ -313,17 +315,6 @@ TEST_F(NetworkSessionConfiguratorTest,
   EXPECT_FALSE(quic_params_.delay_main_job_with_available_spdy_session);
 }
 
-TEST_F(NetworkSessionConfiguratorTest, EnableOriginFrame) {
-  std::map<std::string, std::string> field_trial_params;
-  field_trial_params["enable_origin_frame"] = "true";
-  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
-  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
-
-  ParseFieldTrials();
-
-  EXPECT_TRUE(quic_params_.enable_origin_frame);
-}
-
 TEST_F(NetworkSessionConfiguratorTest, DonotEnableOriginFrame) {
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["enable_origin_frame"] = "false";
@@ -333,17 +324,6 @@ TEST_F(NetworkSessionConfiguratorTest, DonotEnableOriginFrame) {
   ParseFieldTrials();
 
   EXPECT_FALSE(quic_params_.enable_origin_frame);
-}
-
-TEST_F(NetworkSessionConfiguratorTest, SkipDnsWithOriginFrame) {
-  std::map<std::string, std::string> field_trial_params;
-  field_trial_params["skip_dns_with_origin_frame"] = "true";
-  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
-  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
-
-  ParseFieldTrials();
-
-  EXPECT_TRUE(quic_params_.skip_dns_with_origin_frame);
 }
 
 TEST_F(NetworkSessionConfiguratorTest, DonotSkipDnsWithOriginFrame) {
@@ -381,6 +361,17 @@ TEST_F(NetworkSessionConfiguratorTest,
   ParseFieldTrials();
 
   EXPECT_FALSE(quic_params_.ignore_ip_matching_when_finding_existing_sessions);
+}
+
+TEST_F(NetworkSessionConfiguratorTest, DonotAllowServerMigration) {
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["allow_server_migration"] = "false";
+  base::AssociateFieldTrialParams("QUIC", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
+
+  ParseFieldTrials();
+
+  EXPECT_FALSE(quic_params_.allow_server_migration);
 }
 
 TEST_F(NetworkSessionConfiguratorTest,
@@ -854,32 +845,34 @@ TEST_F(NetworkSessionConfiguratorTest, HostRules) {
 }
 
 TEST_F(NetworkSessionConfiguratorTest, DefaultCacheBackend) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC)
-  EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
-            ChooseCacheType());
-#else
-  EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
-            ChooseCacheType());
-#endif
+  if constexpr (disk_cache::IsSimpleBackendEnabledByDefaultPlatform()) {
+    EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
+              ChooseCacheType());
+  } else {
+    EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
+              ChooseCacheType());
+  }
 }
 
-TEST_F(NetworkSessionConfiguratorTest, SimpleCacheTrialExperimentYes) {
-  base::FieldTrialList::CreateFieldTrial("SimpleCacheTrial", "ExperimentYes");
+TEST_F(NetworkSessionConfiguratorTest, DiskCacheExperimentSimpleBackend) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment, {{"backend", "simple"}});
   EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
             ChooseCacheType());
 }
 
-TEST_F(NetworkSessionConfiguratorTest, SimpleCacheTrialDisable) {
-  base::FieldTrialList::CreateFieldTrial("SimpleCacheTrial", "Disable");
-#if !BUILDFLAG(IS_ANDROID)
-  EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
-            ChooseCacheType());
-#else  // BUILDFLAG(IS_ANDROID)
-  // Android always uses the simple cache.
-  EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
-            ChooseCacheType());
-#endif
+TEST_F(NetworkSessionConfiguratorTest, DiskCacheExperimentBlockfileBackend) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      net::features::kDiskCacheBackendExperiment, {{"backend", "blockfile"}});
+  if constexpr (disk_cache::IsSimpleBackendEnabledByDefaultPlatform()) {
+    EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
+              ChooseCacheType());
+  } else {
+    EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
+              ChooseCacheType());
+  }
 }
 
 TEST_F(NetworkSessionConfiguratorTest, Http2GreaseSettingsFromCommandLine) {

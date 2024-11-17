@@ -1,0 +1,15 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++genericContainer ignored invisible
+++++++textField
+++++++++genericContainer
+=== Start Continuation ===
+rootWebArea name='set-describedby'
+++genericContainer ignored
+++++genericContainer
+++++++genericContainer ignored invisible
+++++++++genericContainer ignored invisible
+++++++++++staticText ignored invisible
+++++++textField description='mmddyy' descriptionFrom=relatedElement
+++++++++genericContainer

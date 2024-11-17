@@ -5,6 +5,7 @@
 #include "components/sync/base/unique_position.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <functional>
 #include <memory>
 #include <vector>
@@ -13,6 +14,7 @@
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/protocol/unique_position.pb.h"
@@ -79,7 +81,7 @@ class UniquePositionTest : public ::testing::Test {
       kBiggerPosition};
 };
 
-static constexpr char kMinSuffix[] = {
+static constexpr uint8_t kMinSuffix[] = {
     '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
     '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
     '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
@@ -87,15 +89,15 @@ static constexpr char kMinSuffix[] = {
 static_assert(std::size(kMinSuffix) == UniquePosition::kSuffixLength,
               "Wrong size of kMinSuffix.");
 
-static constexpr char kMaxSuffix[] = {
-    '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF',
-    '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF',
-    '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF',
-    '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF', '\xFF'};
+static constexpr uint8_t kMaxSuffix[] = {
+    u'\xFF', u'\xFF', u'\xFF', u'\xFF', u'\xFF', u'\xFF', u'\xFF',
+    u'\xFF', u'\xFF', u'\xFF', u'\xFF', u'\xFF', u'\xFF', u'\xFF',
+    u'\xFF', u'\xFF', u'\xFF', u'\xFF', u'\xFF', u'\xFF', u'\xFF',
+    u'\xFF', u'\xFF', u'\xFF', u'\xFF', u'\xFF', u'\xFF', u'\xFF'};
 static_assert(std::size(kMaxSuffix) == UniquePosition::kSuffixLength,
               "Wrong size of kMaxSuffix.");
 
-static constexpr char kNormalSuffix[] = {
+static constexpr uint8_t kNormalSuffix[] = {
     '\x68', '\x44', '\x6C', '\x6B', '\x32', '\x58', '\x78',
     '\x34', '\x69', '\x70', '\x46', '\x34', '\x79', '\x49',
     '\x44', '\x4F', '\x66', '\x4C', '\x58', '\x41', '\x31',
@@ -185,7 +187,7 @@ struct PositionLessThan {
 
 // Returns true iff the given position's suffix matches the input parameter.
 static bool IsSuffixInUse(const UniquePosition& pos,
-                          const std::string& suffix) {
+                          const UniquePosition::Suffix& suffix) {
   return pos.GetSuffixForTest() == suffix;
 }
 
@@ -240,12 +242,13 @@ TEST_F(RelativePositioningTest, ReverseSortPositions) {
   }
 }
 
-class PositionInsertTest : public RelativePositioningTest,
-                           public ::testing::WithParamInterface<std::string> {};
+class PositionInsertTest
+    : public RelativePositioningTest,
+      public ::testing::WithParamInterface<UniquePosition::Suffix> {};
 
 // Exercise InsertBetween with various insertion operations.
 TEST_P(PositionInsertTest, InsertBetween) {
-  const std::string suffix = GetParam();
+  const UniquePosition::Suffix suffix = GetParam();
   ASSERT_TRUE(UniquePosition::IsValidSuffix(suffix));
 
   for (size_t i = 0; i < kSortedPositionArray.size(); ++i) {
@@ -273,7 +276,7 @@ TEST_P(PositionInsertTest, InsertBetween) {
 }
 
 TEST_P(PositionInsertTest, InsertBefore) {
-  const std::string suffix = GetParam();
+  const UniquePosition::Suffix suffix = GetParam();
   for (size_t i = 0; i < kSortedPositionArray.size(); ++i) {
     const UniquePosition& successor = kSortedPositionArray[i];
     // Verify our suffixes are unique before we continue.
@@ -288,7 +291,7 @@ TEST_P(PositionInsertTest, InsertBefore) {
 }
 
 TEST_P(PositionInsertTest, InsertAfter) {
-  const std::string suffix = GetParam();
+  const UniquePosition::Suffix suffix = GetParam();
   for (size_t i = 0; i < kSortedPositionArray.size(); ++i) {
     const UniquePosition& predecessor = kSortedPositionArray[i];
     // Verify our suffixes are unique before we continue.
@@ -304,13 +307,13 @@ TEST_P(PositionInsertTest, InsertAfter) {
 
 TEST_P(PositionInsertTest, StressInsertAfter) {
   // Use two different suffixes to not violate our suffix uniqueness guarantee.
-  const std::string& suffix_a = GetParam();
-  std::string suffix_b = suffix_a;
+  const UniquePosition::Suffix suffix_a = GetParam();
+  UniquePosition::Suffix suffix_b = suffix_a;
   suffix_b[10] = suffix_b[10] ^ 0xff;
 
   UniquePosition pos = UniquePosition::InitialPosition(suffix_a);
   for (int i = 0; i < 1024; i++) {
-    const std::string& suffix = (i % 2 == 0) ? suffix_b : suffix_a;
+    const UniquePosition::Suffix& suffix = (i % 2 == 0) ? suffix_b : suffix_a;
     UniquePosition next_pos = UniquePosition::After(pos, suffix);
     ASSERT_PRED_FORMAT2(LessThan, pos, next_pos);
     pos = next_pos;
@@ -321,13 +324,13 @@ TEST_P(PositionInsertTest, StressInsertAfter) {
 
 TEST_P(PositionInsertTest, StressInsertBefore) {
   // Use two different suffixes to not violate our suffix uniqueness guarantee.
-  const std::string& suffix_a = GetParam();
-  std::string suffix_b = suffix_a;
+  const UniquePosition::Suffix& suffix_a = GetParam();
+  UniquePosition::Suffix suffix_b = suffix_a;
   suffix_b[10] = suffix_b[10] ^ 0xff;
 
   UniquePosition pos = UniquePosition::InitialPosition(suffix_a);
   for (int i = 0; i < 1024; i++) {
-    const std::string& suffix = (i % 2 == 0) ? suffix_b : suffix_a;
+    const UniquePosition::Suffix& suffix = (i % 2 == 0) ? suffix_b : suffix_a;
     UniquePosition prev_pos = UniquePosition::Before(pos, suffix);
     ASSERT_PRED_FORMAT2(LessThan, prev_pos, pos);
     pos = prev_pos;
@@ -338,16 +341,16 @@ TEST_P(PositionInsertTest, StressInsertBefore) {
 
 TEST_P(PositionInsertTest, StressLeftInsertBetween) {
   // Use different suffixes to not violate our suffix uniqueness guarantee.
-  const std::string& suffix_a = GetParam();
-  std::string suffix_b = suffix_a;
+  const UniquePosition::Suffix& suffix_a = GetParam();
+  UniquePosition::Suffix suffix_b = suffix_a;
   suffix_b[10] = suffix_b[10] ^ 0xff;
-  std::string suffix_c = suffix_a;
+  UniquePosition::Suffix suffix_c = suffix_a;
   suffix_c[10] = suffix_c[10] ^ 0xf0;
 
   UniquePosition right_pos = UniquePosition::InitialPosition(suffix_c);
   UniquePosition left_pos = UniquePosition::Before(right_pos, suffix_a);
   for (int i = 0; i < 1024; i++) {
-    const std::string& suffix = (i % 2 == 0) ? suffix_b : suffix_a;
+    const UniquePosition::Suffix& suffix = (i % 2 == 0) ? suffix_b : suffix_a;
     UniquePosition new_pos =
         UniquePosition::Between(left_pos, right_pos, suffix);
     ASSERT_PRED_FORMAT2(LessThan, left_pos, new_pos);
@@ -360,16 +363,16 @@ TEST_P(PositionInsertTest, StressLeftInsertBetween) {
 
 TEST_P(PositionInsertTest, StressRightInsertBetween) {
   // Use different suffixes to not violate our suffix uniqueness guarantee.
-  const std::string& suffix_a = GetParam();
-  std::string suffix_b = suffix_a;
+  const UniquePosition::Suffix& suffix_a = GetParam();
+  UniquePosition::Suffix suffix_b = suffix_a;
   suffix_b[10] = suffix_b[10] ^ 0xff;
-  std::string suffix_c = suffix_a;
+  UniquePosition::Suffix suffix_c = suffix_a;
   suffix_c[10] = suffix_c[10] ^ 0xf0;
 
   UniquePosition right_pos = UniquePosition::InitialPosition(suffix_a);
   UniquePosition left_pos = UniquePosition::Before(right_pos, suffix_c);
   for (int i = 0; i < 1024; i++) {
-    const std::string& suffix = (i % 2 == 0) ? suffix_b : suffix_a;
+    const UniquePosition::Suffix& suffix = (i % 2 == 0) ? suffix_b : suffix_a;
     UniquePosition new_pos =
         UniquePosition::Between(left_pos, right_pos, suffix);
     ASSERT_PRED_FORMAT2(LessThan, left_pos, new_pos);
@@ -387,12 +390,16 @@ class SuffixGenerator {
   explicit SuffixGenerator(const std::string& cache_guid)
       : cache_guid_(cache_guid) {}
 
-  std::string NextSuffix() {
+  UniquePosition::Suffix NextSuffix() {
     // This is not entirely realistic, but that should be OK.  The current
     // suffix format is a base64'ed SHA1 hash, which should be fairly close to
     // random anyway.
     std::string input = cache_guid_ + base::NumberToString(next_id_--);
-    return base::Base64Encode(base::SHA1Hash(base::as_byte_span(input)));
+    std::string suffix_str =
+        base::Base64Encode(base::SHA1Hash(base::as_byte_span(input)));
+    UniquePosition::Suffix suffix;
+    base::ranges::copy(suffix_str, suffix.begin());
+    return suffix;
   }
 
  private:
@@ -411,9 +418,13 @@ class PositionScenariosTest : public UniquePositionTest {
         generator2_(
             std::string(kCacheGuidStr2, std::size(kCacheGuidStr2) - 1)) {}
 
-  std::string NextClient1Suffix() { return generator1_.NextSuffix(); }
+  UniquePosition::Suffix NextClient1Suffix() {
+    return generator1_.NextSuffix();
+  }
 
-  std::string NextClient2Suffix() { return generator2_.NextSuffix(); }
+  UniquePosition::Suffix NextClient2Suffix() {
+    return generator2_.NextSuffix();
+  }
 
  private:
   SuffixGenerator generator1_;
@@ -424,7 +435,7 @@ class PositionScenariosTest : public UniquePositionTest {
 TEST_F(PositionScenariosTest, OneClientInsertAtEnd) {
   UniquePosition pos = UniquePosition::InitialPosition(NextClient1Suffix());
   for (int i = 0; i < 1024; i++) {
-    const std::string suffix = NextClient1Suffix();
+    const UniquePosition::Suffix suffix = NextClient1Suffix();
     UniquePosition new_pos = UniquePosition::After(pos, suffix);
     ASSERT_PRED_FORMAT2(LessThan, pos, new_pos);
     pos = new_pos;
@@ -443,7 +454,7 @@ TEST_F(PositionScenariosTest, OneClientInsertAtEnd) {
 TEST_F(PositionScenariosTest, TwoClientsInsertAtEnd_A) {
   UniquePosition pos = UniquePosition::InitialPosition(NextClient1Suffix());
   for (int i = 0; i < 1024; i++) {
-    std::string suffix;
+    UniquePosition::Suffix suffix;
     if (i % 5 == 0) {
       suffix = NextClient2Suffix();
     } else {
@@ -463,7 +474,7 @@ TEST_F(PositionScenariosTest, TwoClientsInsertAtEnd_A) {
 TEST_F(PositionScenariosTest, TwoClientsInsertAtEnd_B) {
   UniquePosition pos = UniquePosition::InitialPosition(NextClient1Suffix());
   for (int i = 0; i < 1024; i++) {
-    std::string suffix;
+    UniquePosition::Suffix suffix;
     if (i % 2 == 0) {
       suffix = NextClient1Suffix();
     } else {
@@ -481,16 +492,13 @@ TEST_F(PositionScenariosTest, TwoClientsInsertAtEnd_B) {
 
 INSTANTIATE_TEST_SUITE_P(MinSuffix,
                          PositionInsertTest,
-                         ::testing::Values(std::string(kMinSuffix,
-                                                       std::size(kMinSuffix))));
+                         ::testing::Values(std::to_array(kMinSuffix)));
 INSTANTIATE_TEST_SUITE_P(MaxSuffix,
                          PositionInsertTest,
-                         ::testing::Values(std::string(kMaxSuffix,
-                                                       std::size(kMaxSuffix))));
-INSTANTIATE_TEST_SUITE_P(
-    NormalSuffix,
-    PositionInsertTest,
-    ::testing::Values(std::string(kNormalSuffix, std::size(kNormalSuffix))));
+                         ::testing::Values(std::to_array(kMaxSuffix)));
+INSTANTIATE_TEST_SUITE_P(NormalSuffix,
+                         PositionInsertTest,
+                         ::testing::Values(std::to_array(kNormalSuffix)));
 
 class PositionFromIntTest : public UniquePositionTest {
  public:
@@ -541,7 +549,7 @@ class PositionFromIntTest : public UniquePositionTest {
                               INT64_MIN,
                               INT64_MIN + 1,
                               INT64_MAX - 1});
-  std::string NextSuffix() { return generator_.NextSuffix(); }
+  UniquePosition::Suffix NextSuffix() { return generator_.NextSuffix(); }
 
  private:
   SuffixGenerator generator_;
@@ -560,20 +568,20 @@ class IndexedLessThan {
  public:
   explicit IndexedLessThan(base::span<const T> values) : values_(values) {}
 
-  bool operator()(int i1, int i2) {
+  bool operator()(size_t i1, size_t i2) {
     return less_than_(values_[i1], values_[i2]);
   }
 
  private:
-  base::span<const T> values_;
+  base::raw_span<const T> values_;
   LessThan less_than_;
 };
 
 TEST_F(PositionFromIntTest, ConsistentOrdering) {
   std::array<UniquePosition, kTestValues.size()> positions;
-  std::vector<int> original_ordering(kTestValues.size());
-  std::vector<int> int64_ordering(kTestValues.size());
-  std::vector<int> position_ordering(kTestValues.size());
+  std::vector<size_t> original_ordering(kTestValues.size());
+  std::vector<size_t> int64_ordering(kTestValues.size());
+  std::vector<size_t> position_ordering(kTestValues.size());
   for (size_t i = 0; i < kTestValues.size(); ++i) {
     positions[i] = UniquePosition::FromInt64(kTestValues[i], NextSuffix());
     original_ordering[i] = int64_ordering[i] = position_ordering[i] = i;

@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/uninstall_dialog.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_dialog_view.h"
@@ -82,7 +81,7 @@ class AppUninstallDialogView : public ProfileObserver,
   void GetSubAppsInfo(const std::string& short_app_name,
                       const std::vector<std::string>& sub_app_ids);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void InitializeViewForArcApp(Profile* profile, const std::string& app_id);
   void InitializeViewWithMessage(const std::u16string& message);
 #endif

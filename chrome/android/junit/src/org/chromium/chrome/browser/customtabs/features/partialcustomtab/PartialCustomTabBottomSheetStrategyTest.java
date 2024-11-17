@@ -54,6 +54,7 @@ import org.robolectric.annotation.LooperMode.Mode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.BaseSwitches;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -101,7 +102,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                         /* startMaximized= */ false,
                         mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(
-                mPCCTTestRule.mNavbar,
                 mPCCTTestRule.mSpinnerView,
                 mPCCTTestRule.mSpinner,
                 mPCCTTestRule.mToolbarView,
@@ -134,7 +134,6 @@ public class PartialCustomTabBottomSheetStrategyTest {
                         /* startMaxmized= */ false,
                         mPCCTTestRule.mHandleStrategyFactory);
         pcct.setMockViewForTesting(
-                mPCCTTestRule.mNavbar,
                 mPCCTTestRule.mSpinnerView,
                 mPCCTTestRule.mSpinner,
                 mPCCTTestRule.mToolbarView,
@@ -597,7 +596,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
 
         assertTabIsAtInitialPos(mPCCTTestRule.mAttributeResults.get(0));
 
-        strategy.onShowSoftInput(() -> {});
+        strategy.onShowSoftInput(CallbackUtils.emptyRunnable());
         shadowOf(Looper.getMainLooper()).idle();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
 
@@ -626,7 +625,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500, true);
         assertTabIsAtInitialPos(getWindowAttributes());
 
-        strategy.onShowSoftInput(() -> {});
+        strategy.onShowSoftInput(CallbackUtils.emptyRunnable());
         PartialCustomTabTestRule.waitForAnimationToFinish();
         // assertTabBelowStatusBar instead of assertTabIsFullHeight since
         // the height in mock is configured to return the device height minus
@@ -649,7 +648,7 @@ public class PartialCustomTabBottomSheetStrategyTest {
         PartialCustomTabBottomSheetStrategy strategy = createPcctAtHeight(500, true);
         assertTabIsAtInitialPos(getWindowAttributes());
 
-        strategy.onShowSoftInput(() -> {});
+        strategy.onShowSoftInput(CallbackUtils.emptyRunnable());
         PartialCustomTabTestRule.waitForAnimationToFinish();
         assertTabIsFullHeight(getWindowAttributes());
 

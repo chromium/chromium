@@ -11,7 +11,7 @@ namespace nacl {
 NaClHelper::NaClHelper(content::RenderFrame* render_frame)
     : RenderFrameObserver(render_frame) {}
 
-NaClHelper::~NaClHelper() {}
+NaClHelper::~NaClHelper() = default;
 
 void NaClHelper::DidCreatePepperPlugin(content::RendererPpapiHost* host) {
   // The Native Client plugin is a host for external plugins.

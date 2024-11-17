@@ -11,6 +11,7 @@
 #include "ash/webui/help_app_ui/buildflags.h"
 #include "ash/webui/help_app_ui/help_app_manager.h"
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"
+#include "ash/webui/help_app_ui/help_app_prefs.h"
 #include "ash/webui/help_app_ui/search/search.mojom.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
 #include "ash/webui/help_app_ui/url_constants.h"
@@ -24,6 +25,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -60,6 +62,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/prefs/pref_test_utils.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/package_id.h"
 #include "components/supervised_user/core/common/pref_names.h"
@@ -127,6 +130,20 @@ class HelpAppIntegrationTestWithAutoTriggerDisabled
   HelpAppIntegrationTestWithAutoTriggerDisabled() {
     scoped_feature_list_.InitAndDisableFeature(
         features::kHelpAppAutoTriggerInstallDialog);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class HelpAppIntegrationTestWithAppMallEnabled : public HelpAppIntegrationTest {
+ public:
+  HelpAppIntegrationTestWithAppMallEnabled() {
+    scoped_feature_list_.InitWithFeatures(
+        {
+            chromeos::features::kCrosMall,
+        },
+        {});
   }
 
  private:
@@ -263,14 +280,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 }
 
 IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppV2ShowHelp) {
-  // TODO(b/287166176): Fix the test and remove this.
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287166176.";
-  }
-#endif
-
   WaitForTestSystemAppInstall();
 
   GURL expected_url = GURL("chrome://help-app/");
@@ -651,6 +660,89 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                 SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
 }
 
+// Test that the Help App can call openSettings to open a page in OS Settings.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2OpenSettings) {
+  WaitForTestSystemAppInstall();
+  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
+
+  // There should be two browser windows, one regular and one for the newly
+  // opened help app.
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+
+  const GURL expected_url("chrome://os-settings/osAccessibility");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  constexpr char kScript[] = R"(
+    (async () => {
+      await window.customLaunchData.delegate.openSettings(1);
+    })();
+  )";
+  // Trigger the script, then wait for settings to open. Use ExecJs
+  // instead of EvalJsInAppFrame because the script needs to run in the same
+  // world as the page's code.
+  EXPECT_TRUE(content::ExecJs(
+      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
+  navigation_observer.Wait();
+
+  // Settings should be active in a new window.
+  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
+}
+
+// Test that the Help App can call setHasCompletedNewDeviceChecklist to update
+// the pref.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
+                       HelpAppV2SetHasCompletedNewDeviceChecklist) {
+  WaitForTestSystemAppInstall();
+  profile()->GetPrefs()->SetBoolean(
+      help_app::prefs::kHelpAppHasCompletedNewDeviceChecklist, false);
+  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
+
+  constexpr char kScript[] = R"(
+    (() => {
+      window.customLaunchData.delegate.setHasCompletedNewDeviceChecklist();
+    })();
+  )";
+  // Trigger the script. Use ExecJs instead of EvalJsInAppFrame because the
+  // script needs to run in the same world as the page's code.
+  EXPECT_TRUE(content::ExecJs(
+      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
+  WaitForPrefValue(profile()->GetPrefs(),
+                   help_app::prefs::kHelpAppHasCompletedNewDeviceChecklist,
+                   base::Value(true));
+
+  EXPECT_EQ(profile()->GetPrefs()->GetBoolean(
+                help_app::prefs::kHelpAppHasCompletedNewDeviceChecklist),
+            true);
+}
+
+// Test that the Help App can call setHasVisitedHowToPage to update the pref.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
+                       HelpAppV2SetHasVisitedHowToPage) {
+  WaitForTestSystemAppInstall();
+  profile()->GetPrefs()->SetBoolean(
+      help_app::prefs::kHelpAppHasVisitedHowToPage, false);
+  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
+
+  constexpr char kScript[] = R"(
+    (() => {
+      window.customLaunchData.delegate.setHasVisitedHowToPage();
+    })();
+  )";
+  // Trigger the script. Use ExecJs instead of EvalJsInAppFrame because the
+  // script needs to run in the same world as the page's code.
+  EXPECT_TRUE(content::ExecJs(
+      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
+  WaitForPrefValue(profile()->GetPrefs(),
+                   help_app::prefs::kHelpAppHasVisitedHowToPage,
+                   base::Value(true));
+
+  EXPECT_EQ(profile()->GetPrefs()->GetBoolean(
+                help_app::prefs::kHelpAppHasVisitedHowToPage),
+            true);
+}
+
 // Test that the Help App can open the on device app controls part section in OS
 // Settings.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
@@ -715,6 +807,38 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2ShowParentalControls) {
   EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
 }
 
+// Test that the Help App's `openAppMallPath` opens the App Mall SWA.
+IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithAppMallEnabled,
+                       HelpAppV2ShowAppMallSWA) {
+  WaitForTestSystemAppInstall();
+  content::WebContents* web_contents = LaunchApp(SystemWebAppType::HELP);
+
+  // There should be two browser windows, one regular and one for the newly
+  // opened help app.
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+
+  const GURL expected_url("chrome://mall/");
+  content::TestNavigationObserver navigation_observer(expected_url);
+  navigation_observer.StartWatchingNewWebContents();
+
+  // Script that tells the Help App to show parental controls.
+  constexpr char kScript[] = R"(
+    (async () => {
+      await window.customLaunchData.delegate.openAppMallPath('');
+    })();
+  )";
+  // Trigger the script, then wait for settings to open. Use ExecJs
+  // instead of EvalJsInAppFrame because the script needs to run in the same
+  // world as the page's code.
+  EXPECT_TRUE(content::ExecJs(
+      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript));
+  navigation_observer.Wait();
+
+  // The app mall should be active in a new window.
+  EXPECT_EQ(3u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(expected_url, GetActiveWebContents()->GetVisibleURL());
+}
+
 // Test that the Help App's `openUrlInBrowserAndTriggerInstallDialog` can open
 // valid URLs if the `kHelpAppAutoTriggerInstallDialog` feature is disabled.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithAutoTriggerDisabled,
@@ -770,10 +894,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTestWithAutoTriggerDisabled,
 // and triggers the install dialog by default.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HelpAppV2CanTriggerInstallDialogForValidHttpsUrls) {
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    // TODO(b/282099820): Test the interaction with the Lacros browser.
-    GTEST_SKIP();
-  }
   ASSERT_TRUE(https_server()->Start());
   const GURL test_url =
       https_server()->GetURL("/banners/manifest_test_page.html");
@@ -836,12 +956,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 // for invalid URLs.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HelpAppV2CrashesForInvalidUrlsInBrowser) {
-  // TODO(b/287166176): Fix the test and remove this.
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287166176.";
-  }
-
   // There should be only be one regular browser with one tab.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   // The regular browser should only have 1 tab.
@@ -1178,14 +1292,6 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppOpenGestures) {
 // Test that the Help App opens from keyboard shortcut.
 IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
                        HelpAppOpenKeyboardShortcut) {
-  // TODO(b/287166176): Fix the test and remove this.
-#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287166176.";
-  }
-#endif
-
   WaitForTestSystemAppInstall();
   base::HistogramTester histogram_tester;
 
@@ -1259,4 +1365,7 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     HelpAppIntegrationTestWithBirchFeatureEnabled);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    HelpAppIntegrationTestWithAppMallEnabled);
 }  // namespace ash

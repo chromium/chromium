@@ -4,6 +4,9 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
 
+#include <optional>
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -49,6 +52,7 @@ class IsolatedWebAppDownloaderTest : public ::testing::Test {
 
   base::ScopedTempDir temp_dir_;
 };
+}  // namespace
 
 TEST_F(IsolatedWebAppDownloaderTest, SuccessfulDownload) {
   test_factory_.AddResponse(download_url().spec(), "test bundle content",
@@ -80,5 +84,47 @@ TEST_F(IsolatedWebAppDownloaderTest, FailedDownload) {
   EXPECT_THAT(base::PathExists(bundle_path()), IsFalse());
 }
 
-}  // namespace
+TEST_F(IsolatedWebAppDownloaderTest,
+       SuccessfulPartialDownloadServerIgnoresRange) {
+  test_factory_.AddResponse(download_url().spec(), std::string(10 * 1024, 'x'),
+                            net::HttpStatusCode::HTTP_OK);
+
+  base::test::TestFuture<std::optional<std::string>> future;
+  auto downloader =
+      IsolatedWebAppDownloader::Create(shared_url_loader_factory_);
+  downloader->DownloadInitialBytes(download_url(),
+                                   PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
+                                   future.GetCallback());
+
+  EXPECT_THAT(future.Take(), Eq(std::string(8 * 1024, 'x')));
+}
+
+TEST_F(IsolatedWebAppDownloaderTest, SuccessfulPartialDownload) {
+  test_factory_.AddResponse(download_url().spec(), std::string(8 * 1024, 'x'),
+                            net::HttpStatusCode::HTTP_PARTIAL_CONTENT);
+
+  base::test::TestFuture<std::optional<std::string>> future;
+  auto downloader =
+      IsolatedWebAppDownloader::Create(shared_url_loader_factory_);
+  downloader->DownloadInitialBytes(download_url(),
+                                   PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
+                                   future.GetCallback());
+
+  EXPECT_THAT(future.Take(), Eq(std::string(8 * 1024, 'x')));
+}
+
+TEST_F(IsolatedWebAppDownloaderTest, SuccessfulPartialDownloadOfSmallContent) {
+  test_factory_.AddResponse(download_url().spec(), "cthulhu",
+                            net::HttpStatusCode::HTTP_OK);
+
+  base::test::TestFuture<std::optional<std::string>> future;
+  auto downloader =
+      IsolatedWebAppDownloader::Create(shared_url_loader_factory_);
+  downloader->DownloadInitialBytes(download_url(),
+                                   PARTIAL_TRAFFIC_ANNOTATION_FOR_TESTS,
+                                   future.GetCallback());
+
+  EXPECT_THAT(future.Take(), Eq("cthulhu"));
+}
+
 }  // namespace web_app

@@ -8,7 +8,8 @@ import {InputDeviceSettingsProvider} from '../mojom-webui/input_device_settings_
 
 import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, fakeKeyboards, fakeMice, fakeMouseButtonActions, fakePointingSticks, fakeStyluses, fakeTouchpads} from './fake_input_device_data.js';
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
-import {InputDeviceSettingsProviderInterface, MetaKey} from './input_device_settings_types.js';
+import type {InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
+import {MetaKey} from './input_device_settings_types.js';
 
 /**
  * @fileoverview

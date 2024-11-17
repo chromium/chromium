@@ -5,12 +5,12 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/app_list/search/app_search_provider_test_base.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_prefs.h"
@@ -100,8 +100,8 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
   // There are four default web apps. We use real app IDs here, as these are
   // used internally by the ranking logic. We can use arbitrary app names.
   const std::vector<std::string> kDefaultRecommendedWebAppIds = {
-      web_app::kCanvasAppId, web_app::kHelpAppId, web_app::kOsSettingsAppId,
-      web_app::kCameraAppId};
+      ash::kCanvasAppId, ash::kHelpAppId, ash::kOsSettingsAppId,
+      ash::kCameraAppId};
   const std::vector<std::string> kDefaultRecommendedWebAppNames = {
       "Canvas", "Help", "OsSettings", "Camera"};
 
@@ -153,7 +153,7 @@ TEST_F(AppZeroStateProviderTest, DefaultRecommendedAppRanking) {
 
   // Simulate launching one of the default apps. Expect that this brings it to
   // higher precedence than all the others.
-  prefs->SetLastLaunchTime(web_app::kCanvasAppId, base::Time::Now());
+  prefs->SetLastLaunchTime(ash::kCanvasAppId, base::Time::Now());
   InitializeSearchProvider();
   EXPECT_EQ("Canvas," + std::string(kNormalAppName) +
                 ",OsSettings,Help,Play Store,Camera",

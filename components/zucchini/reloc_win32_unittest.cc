@@ -26,7 +26,7 @@ class RelocUtilsWin32Test : public testing::Test {
  protected:
   using Units = std::vector<RelocUnitWin32>;
 
-  RelocUtilsWin32Test() {}
+  RelocUtilsWin32Test() = default;
 
   // Resets all tester data, calls RelocRvaReaderWin32::FindRelocBlocks(), and
   // returns its results.

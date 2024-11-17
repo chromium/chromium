@@ -65,9 +65,6 @@ import org.chromium.ui.text.EmptyTextWatcher;
 public class NewTabPageLayout extends LinearLayout {
     private static final String TAG = "NewTabPageLayout";
 
-    // Used to signify the cached resource value is unset.
-    private static final int UNSET_RESOURCE_FLAG = -1;
-
     private int mSearchBoxTwoSideMargin;
     private final Context mContext;
 
@@ -123,8 +120,6 @@ public class NewTabPageLayout extends LinearLayout {
     private int mSearchBoxBoundsVerticalInset;
 
     private FeedSurfaceScrollDelegate mScrollDelegate;
-
-    private NewTabPageUma mNewTabPageUma;
 
     private int mTileViewWidth;
     private Integer mInitialTileNum;
@@ -189,7 +184,6 @@ public class NewTabPageLayout extends LinearLayout {
      *     events are allowed.
      * @param uiConfig UiConfig that provides display information about this view.
      * @param lifecycleDispatcher Activity lifecycle dispatcher.
-     * @param uma {@link NewTabPageUma} object recording user metrics.
      * @param profile The {@link Profile} associated with the NTP.
      * @param windowAndroid An instance of a {@link WindowAndroid}.
      * @param isTablet {@code true} if the NTP surface is in tablet mode.
@@ -205,7 +199,6 @@ public class NewTabPageLayout extends LinearLayout {
             TouchEnabledDelegate touchEnabledDelegate,
             UiConfig uiConfig,
             ActivityLifecycleDispatcher lifecycleDispatcher,
-            NewTabPageUma uma,
             Profile profile,
             WindowAndroid windowAndroid,
             boolean isTablet,
@@ -216,7 +209,6 @@ public class NewTabPageLayout extends LinearLayout {
         mActivity = activity;
         mProfile = profile;
         mUiConfig = uiConfig;
-        mNewTabPageUma = uma;
         mWindowAndroid = windowAndroid;
         mIsLogoPolishFlagEnabled = LogoUtils.isLogoPolishEnabled();
         mIsLogoPolishEnabled =
@@ -382,9 +374,6 @@ public class NewTabPageLayout extends LinearLayout {
                                             mShowingNonStandardGoogleLogo);
                         });
 
-        // If pull up Feed position is enabled, doodle is not supported since there is not enough
-        // room, we don't need to fetch logo image.
-        boolean shouldFetchDoodle = !FeedPositionUtils.isFeedPullUpEnabled();
         mLogoView = findViewById(R.id.search_provider_logo);
 
         mLogoCoordinator =
@@ -392,7 +381,6 @@ public class NewTabPageLayout extends LinearLayout {
                         mContext,
                         logoClickedCallback,
                         mLogoView,
-                        shouldFetchDoodle,
                         mOnLogoAvailableCallback,
                         /* visibilityObserver= */ null,
                         mIsLogoPolishFlagEnabled);
@@ -675,7 +663,7 @@ public class NewTabPageLayout extends LinearLayout {
     }
 
     void onUrlFocusAnimationChanged() {
-        /**
+        /*
          * Avoid Y-translation when animation is disabled, view is moving or on tablet form-factor.
          * Context for tablets - Unlike phones, this method is not called on tablets during URL
          * focus post NTP load. However when physical keyboard is present, we try to auto-focus URL
@@ -811,8 +799,6 @@ public class NewTabPageLayout extends LinearLayout {
     // TODO(crbug.com/40226731): Remove this method when the Feed position experiment is
     // cleaned up.
     private int getLogoMargin(boolean isTopMargin) {
-        if (FeedPositionUtils.isFeedPullUpEnabled() && mSearchProviderHasLogo) return 0;
-
         return isTopMargin ? getLogoTopMargin() : getLogoBottomMargin();
     }
 

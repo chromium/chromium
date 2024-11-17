@@ -12,8 +12,7 @@ namespace base {
 class OneShotTimer;
 }  // namespace base
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class PhoneModel;
 
@@ -53,7 +52,6 @@ class InvalidConnectionDisconnector
   std::unique_ptr<base::OneShotTimer> timer_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_INVALID_CONNECTION_DISCONNECTOR_H_

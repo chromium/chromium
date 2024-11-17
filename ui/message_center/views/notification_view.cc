@@ -443,8 +443,7 @@ void NotificationView::CreateOrUpdateInlineSettingsViews(
       [[fallthrough]];
     // PhoneHub notifications do not have inline settings.
     case NotifierType::PHONE_HUB:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   DCHECK_NE(block_notifications_message_id, 0);
 

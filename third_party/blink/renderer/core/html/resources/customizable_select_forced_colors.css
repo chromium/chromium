@@ -7,6 +7,9 @@
  * forced_colors.css when CustomizableSelect is enabled and the flag is removed.
  */
 
-select {
-  background-color: -internal-appearance-auto-base-select(Canvas, transparent);
+/* The duplicated :not(:-internal-list-box) is to ensure specificity over
+ * another stylesheet. TODO(crbug.com/378869807): Replace this with at-rules to
+ * ensure correct specificity. */
+select:not(:-internal-list-box):not(:-internal-list-box) {
+    background-color: -internal-appearance-auto-base-select(Canvas, color-mix(in lab, currentColor 10%, transparent));
 }

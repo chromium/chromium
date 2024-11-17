@@ -66,6 +66,12 @@ constexpr char kReadahead[] = "readahead";
 constexpr char kGenerate[] = "generate";
 constexpr char kDisabled[] = "disabled";
 
+constexpr const char kArcvmInstallAndroidImageDlc[] =
+    "arcvm_2dinstall_2dandroid_2dimage_2ddlc";
+
+// 10 minutes in ms.
+constexpr int kArcvmInstallAndroidImageDlcTimeoutMs = 10 * 60 * 1000;
+
 // Decodes a job name that may have "_2d" e.g. |kArcCreateDataJobName|
 // and returns a decoded string.
 std::string DecodeJobName(const std::string& raw_job_name) {
@@ -180,6 +186,11 @@ bool IsArcAvailable() {
 bool IsArcVmEnabled() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       ash::switches::kEnableArcVm);
+}
+
+bool IsArcVmDlcEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      ash::switches::kEnableArcVmDlc);
 }
 
 int GetArcAndroidSdkVersionAsInt() {
@@ -462,8 +473,15 @@ void ConfigureUpstartJobs(std::deque<JobDesc> jobs,
                                          std::move(jobs), std::move(callback));
   switch (operation) {
     case UpstartOperation::JOB_START:
-      ash::UpstartClient::Get()->StartJob(job_name, environment,
-                                          std::move(wrapped_callback));
+      // DLC installation may take a longer time to respond.
+      if (job_name == kArcvmInstallAndroidImageDlc) {
+        ash::UpstartClient::Get()->StartJobWithTimeout(
+            job_name, environment, std::move(wrapped_callback),
+            kArcvmInstallAndroidImageDlcTimeoutMs);
+      } else {
+        ash::UpstartClient::Get()->StartJob(job_name, environment,
+                                            std::move(wrapped_callback));
+      }
       break;
     case UpstartOperation::JOB_STOP:
       ash::UpstartClient::Get()->StopJob(job_name, environment,
@@ -530,7 +548,9 @@ bool ShouldUseArcKeyMint() {
 bool ShouldUseArcAttestation() {
   // Attesation depends on keymint.
   return ShouldUseArcKeyMint() &&
-         base::FeatureList::IsEnabled(kEnableArcAttestation);
+         (base::FeatureList::IsEnabled(kEnableArcAttestation) ||
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              ash::switches::kArcEnableAttestation));
 }
 
 int GetDaysUntilArcVmDataMigrationDeadline(PrefService* prefs) {
@@ -639,8 +659,7 @@ uint64_t GetRequiredFreeDiskSpaceForArcVmDataMigrationInBytes(
 }
 
 bool IsReadOnlyPermissionsEnabled() {
-  return base::FeatureList::IsEnabled(arc::kEnableReadOnlyPermissions) &&
-         GetArcAndroidSdkVersionAsInt() >= kArcVersionT;
+  return GetArcAndroidSdkVersionAsInt() >= kArcVersionT;
 }
 
 void EnsureStaleArcVmAndArcVmUpstartJobsStopped(

@@ -29,6 +29,7 @@ include_rules = [
   #      (see for example ui/views)
   "-ui",
   "+ui/base",
+  "+ui/menus",
   "+ui/gfx",
   "+ui/events",
 

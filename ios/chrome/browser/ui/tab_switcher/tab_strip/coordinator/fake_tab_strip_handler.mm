@@ -9,9 +9,6 @@
 
 @implementation FakeTabStripHandler
 
-- (void)setNewTabButtonOnTabStripIPHHighlighted:(BOOL)IPHHighlighted {
-}
-
 - (void)showTabStripGroupCreationForTabs:
     (const std::set<web::WebStateID>&)identifiers {
   _identifiersForTabGroupCreation = identifiers;
@@ -41,6 +38,15 @@
 
 - (void)showTabStripTabGroupSnackbarAfterClosingGroups:
     (int)numberOfClosedGroups {
+}
+
+- (void)manageTabGroup:(base::WeakPtr<const TabGroup>)group {
+}
+
+- (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group {
+}
+
+- (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup {
 }
 
 @end

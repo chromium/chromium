@@ -35,12 +35,6 @@ WorkerGlobalScope* FontFaceSetWorker::GetWorker() const {
   return To<WorkerGlobalScope>(GetExecutionContext());
 }
 
-AtomicString FontFaceSetWorker::status() const {
-  DEFINE_STATIC_LOCAL(AtomicString, loading, ("loading"));
-  DEFINE_STATIC_LOCAL(AtomicString, loaded, ("loaded"));
-  return is_loading_ ? loading : loaded;
-}
-
 void FontFaceSetWorker::BeginFontLoading(FontFace* font_face) {
   AddToLoadingFonts(font_face);
 }

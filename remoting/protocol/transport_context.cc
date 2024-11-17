@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "components/webrtc/thread_wrapper.h"
@@ -16,8 +17,8 @@
 #include "remoting/base/logging.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
+#include "remoting/protocol/ice_config_fetcher.h"
 #include "remoting/protocol/port_allocator_factory.h"
-#include "remoting/protocol/remoting_ice_config_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
 
@@ -58,34 +59,32 @@ void PrintIceConfig(const IceConfig& ice_config) {
 // static
 scoped_refptr<TransportContext> TransportContext::ForTests(TransportRole role) {
   webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
-  return new protocol::TransportContext(
+  return base::MakeRefCounted<TransportContext>(
       std::make_unique<protocol::ChromiumPortAllocatorFactory>(),
-      webrtc::ThreadWrapper::current()->SocketServer(), nullptr, nullptr,
-      role);
+      webrtc::ThreadWrapper::current()->SocketServer(),
+      /*ice_config_fetcher=*/nullptr, role);
 }
 
 TransportContext::TransportContext(
     std::unique_ptr<PortAllocatorFactory> port_allocator_factory,
     rtc::SocketFactory* socket_factory,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    OAuthTokenGetter* oauth_token_getter,
+    std::unique_ptr<IceConfigFetcher> ice_config_fetcher,
     TransportRole role)
     : port_allocator_factory_(std::move(port_allocator_factory)),
       socket_factory_(socket_factory),
-      url_loader_factory_(url_loader_factory),
-      oauth_token_getter_(oauth_token_getter),
-      role_(role) {
+      role_(role),
+      ice_config_fetcher_(std::move(ice_config_fetcher)) {
   DCHECK(socket_factory_);
 }
 
 TransportContext::~TransportContext() = default;
 
-void TransportContext::GetIceConfig(GetIceConfigCallback callback) {
+void TransportContext::GetIceConfig(OnIceConfigCallback callback) {
   EnsureFreshIceConfig();
 
   // If there is a pending |ice_config_request_| then delay the callback until
   // the request is finished.
-  if (ice_config_request_) {
+  if (ice_config_request_in_flight_) {
     pending_ice_config_callbacks_.push_back(std::move(callback));
   } else {
     HOST_LOG << "Using cached ICE Config.";
@@ -96,7 +95,7 @@ void TransportContext::GetIceConfig(GetIceConfigCallback callback) {
 
 void TransportContext::EnsureFreshIceConfig() {
   // Check if request is already pending.
-  if (ice_config_request_) {
+  if (ice_config_request_in_flight_) {
     HOST_LOG << "ICE Config request is already pending.";
     return;
   }
@@ -108,18 +107,17 @@ void TransportContext::EnsureFreshIceConfig() {
 
   if (base::Time::Now() >
       (last_request_completion_time_ + kIceConfigRequestCooldown)) {
-    ice_config_request_ = std::make_unique<RemotingIceConfigRequest>(
-        url_loader_factory_, oauth_token_getter_);
-    ice_config_request_->Send(
+    ice_config_request_in_flight_ = true;
+    ice_config_fetcher_->GetIceConfig(
         base::BindOnce(&TransportContext::OnIceConfig, base::Unretained(this)));
   } else {
     HOST_LOG << "Skipping ICE Config request made during the cooldown period.";
   }
 }
 
-void TransportContext::OnIceConfig(const IceConfig& ice_config) {
-  ice_config_ = ice_config;
-  ice_config_request_.reset();
+void TransportContext::OnIceConfig(std::optional<IceConfig> ice_config) {
+  ice_config_ = ice_config.value_or(IceConfig());
+  ice_config_request_in_flight_ = false;
 
   if (!ice_config_.is_null()) {
     // Only reset |last_request_completion_time_| if we received a valid config.
@@ -130,11 +128,11 @@ void TransportContext::OnIceConfig(const IceConfig& ice_config) {
   }
 
   HOST_LOG << "Using newly requested ICE Config.";
-  PrintIceConfig(ice_config);
+  PrintIceConfig(ice_config_);
 
   auto& callback_list = pending_ice_config_callbacks_;
   while (!callback_list.empty()) {
-    std::move(callback_list.front()).Run(ice_config);
+    std::move(callback_list.front()).Run(ice_config_);
     callback_list.pop_front();
   }
 }

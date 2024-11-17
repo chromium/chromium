@@ -204,11 +204,12 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
   }
   if (switches.HasSwitch("user-data-dir")) {
     if (capabilities.browser_name == kHeadlessShellCapabilityName ||
-        switches.HasSwitch("headless")) {
-      // The old headless mode fails to start without a starting page provided
-      // See: https://crbug.com/1414672
-      // TODO(https://crbub.com/chromedriver/4358): Remove this workaround
-      // after the migration to the New Headless
+        capabilities.web_socket_url) {
+      // Chrome-headless-shell fails to start without a starting page provided
+      // See: https://crbug.com/40096990
+      // Also the first page has to be empty in BiDi mode. Neither the user
+      // supplied url nor the url specified in the profile must affect this.
+      // See: crbug.com/366886096.
       command.AppendArg("data:,");
     }
     base::FilePath::StringType user_data_dir_value =
@@ -708,9 +709,10 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
 #else
     const int chrome_exit_code = WEXITSTATUS(exit_code);
 #endif
-    if (chrome_exit_code == chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED) {
-      return Status(kInvalidArgument,
-                    "user data directory is already in use, "
+    if (chrome_exit_code == chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED ||
+        chrome_exit_code == content::RESULT_CODE_NORMAL_EXIT) {
+      return Status(kSessionNotCreated,
+                    "probably user data directory is already in use, "
                     "please specify a unique value for --user-data-dir "
                     "argument, or don't use --user-data-dir");
     }
@@ -1322,11 +1324,9 @@ std::string GetTerminationReason(base::TerminationStatus status) {
       return "integrity failure";
 #endif
     case base::TERMINATION_STATUS_MAX_ENUM:
-      NOTREACHED_IN_MIGRATION();
-      return "max enum";
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown Termination Status.";
-  return "unknown";
+  NOTREACHED() << "Unknown Termination Status.";
 }
 
 }  // namespace internal

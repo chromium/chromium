@@ -10,6 +10,7 @@
 #include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
+#include "components/history/core/browser/history_backend.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/passages_util.h"
 #include "components/history_embeddings/proto/history_embeddings.pb.h"
@@ -23,6 +24,12 @@ namespace history_embeddings {
 // These database versions should roll together unless we develop migrations.
 constexpr int kLowestSupportedDatabaseVersion = 1;
 constexpr int kCurrentDatabaseVersion = 1;
+
+// This embeddings data version can be rolled to force recompute of all
+// embeddings, useful when we change how source passages are preprocessed.
+// Rolling this is preferable to rolling `kCurrentDatabaseVersion` in that
+// source passages can be preserved; only the embeddings table will be cleared.
+constexpr int kEmbeddingsDataVersion = 1;
 
 namespace {
 
@@ -163,20 +170,50 @@ sql::InitStatus SqlDatabase::InitInternal(const base::FilePath& storage_dir,
     return sql::INIT_FAILURE;
   }
 
+  // Delete passages and embeddings for visits that are beyond the data
+  // retention window. The history system automatically expires data while
+  // Chrome is running, but it's possible to miss events or start Chrome after
+  // some down time, so this prevents long term accidental retention edge cases.
+  DeleteExpiredData(/*expiration_time=*/base::Time::Now() -
+                    base::Days(history::HistoryBackend::kExpireDaysThreshold));
+
   // It's possible to get here without `embedder_metadata_` if forcing for
   // data deletion. In that case, don't check or change meta table.
   if (embedder_metadata_.has_value()) {
     constexpr char kKeyModelVersion[] = "model_version";
+    constexpr char kKeyEmbeddingsDataVersion[] = "embeddings_data_version";
+
     int model_version = 0;
     meta_table.GetValue(kKeyModelVersion, &model_version);
-    if (model_version != embedder_metadata_->model_version ||
-        kDeleteEmbeddings.Get()) {
+
+    bool delete_embeddings =
+        model_version != embedder_metadata_->model_version ||
+        GetFeatureParameters().delete_embeddings;
+
+    // TODO(crbug.com/375502129): Remove this guard and the related guard below
+    //  for more complete data version handling.
+    if (GetFeatureParameters().erase_non_ascii_characters) {
+      int embeddings_data_version = 0;
+      meta_table.GetValue(kKeyEmbeddingsDataVersion, &embeddings_data_version);
+      delete_embeddings |= embeddings_data_version != kEmbeddingsDataVersion;
+    }
+
+    if (delete_embeddings) {
       // Old version embeddings can't be used with new model. Simply delete them
       // all and set new version. Passages can be used for reconstruction later.
       constexpr char kSqlDeleteFromEmbeddings[] = "DELETE FROM embeddings;";
       if (!db_.Execute(kSqlDeleteFromEmbeddings) ||
           !meta_table.SetValue(kKeyModelVersion,
                                embedder_metadata_->model_version)) {
+        return sql::InitStatus::INIT_FAILURE;
+      }
+      // Only write the meta table with this first data version change if
+      // doing so will result in the embeddings being rebuilt with the
+      // non-ASCII character changes.
+      // TODO(crbug.com/375502129): See above TODO comment; remove this guard.
+      if (GetFeatureParameters().erase_non_ascii_characters &&
+          !meta_table.SetValue(kKeyEmbeddingsDataVersion,
+                               kEmbeddingsDataVersion)) {
         return sql::InitStatus::INIT_FAILURE;
       }
     }
@@ -215,8 +252,30 @@ bool SqlDatabase::InsertOrReplacePassages(const UrlPassages& url_passages) {
     return false;
   }
   statement.BindBlob(3, blob);
+  bool result = statement.Run();
 
-  return statement.Run();
+  if (result) {
+    size_t ascii_passages_count = 0;
+    size_t non_ascii_passages_count = 0;
+    for (const std::string& passage : url_passages.passages.passages()) {
+      if (base::IsStringASCII(passage)) {
+        ascii_passages_count++;
+      } else {
+        non_ascii_passages_count++;
+      }
+    }
+    base::UmaHistogramCounts100(
+        "History.Embeddings.DatabaseStoredAsciiPassages", ascii_passages_count);
+    base::UmaHistogramCounts100(
+        "History.Embeddings.DatabaseStoredNonAsciiPassages",
+        non_ascii_passages_count);
+    base::UmaHistogramPercentage(
+        "History.Embeddings.DatabaseStoredNonAsciiPassageRatio",
+        100 * non_ascii_passages_count /
+            (ascii_passages_count + non_ascii_passages_count));
+  }
+
+  return result;
 }
 
 bool SqlDatabase::InsertOrReplaceEmbeddings(
@@ -345,6 +404,60 @@ std::optional<UrlPassagesEmbeddings> SqlDatabase::GetUrlData(
   base::UmaHistogramBoolean("History.Embeddings.LoadedMissizedEmbedding",
                             loaded_missized_embedding);
   return url_data;
+}
+
+std::vector<UrlPassagesEmbeddings> SqlDatabase::GetUrlDataInTimeRange(
+    base::Time from_time,
+    base::Time to_time,
+    size_t limit,
+    size_t offset) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!LazyInit()) {
+    return {};
+  }
+
+  constexpr char kSqlSelectOrderedPassagesAndEmbeddingsWithinTimeRange[] =
+      "SELECT passages.url_id, passages.visit_id, passages.visit_time, "
+      "passages.passages_blob, embeddings.embeddings_blob "
+      "FROM passages "
+      "INNER JOIN embeddings ON passages.url_id = embeddings.url_id "
+      "WHERE passages.visit_time >= ? AND passages.visit_time < ? "
+      "ORDER BY passages.visit_time LIMIT ? OFFSET ?";
+  DCHECK(db_.IsSQLValid(kSqlSelectOrderedPassagesAndEmbeddingsWithinTimeRange));
+  sql::Statement statement(db_.GetCachedStatement(
+      SQL_FROM_HERE, kSqlSelectOrderedPassagesAndEmbeddingsWithinTimeRange));
+  statement.BindTime(0, from_time);
+  statement.BindTime(1, to_time);
+  statement.BindInt(2, static_cast<int>(limit));
+  statement.BindInt(3, static_cast<int>(offset));
+
+  std::vector<UrlPassagesEmbeddings> url_datas;
+  while (statement.Step()) {
+    history::URLID url_id = statement.ColumnInt64(0);
+    history::VisitID visit_id = statement.ColumnInt64(1);
+    base::Time visit_time = statement.ColumnTime(2);
+    UrlPassagesEmbeddings& url_data =
+        url_datas.emplace_back(url_id, visit_id, visit_time);
+
+    std::optional<proto::PassagesValue> passages =
+        PassagesBlobToProto(statement.ColumnBlob(3), *encryptor_);
+    if (passages.has_value()) {
+      url_data.url_passages.passages = std::move(passages.value());
+    }
+
+    proto::EmbeddingsValue value;
+    base::span<const uint8_t> embeddings_blob = statement.ColumnBlob(4);
+    if (value.ParseFromArray(embeddings_blob.data(), embeddings_blob.size())) {
+      for (const proto::EmbeddingVector& vector : value.vectors()) {
+        url_data.url_embeddings.embeddings.emplace_back(
+            std::vector(vector.floats().cbegin(), vector.floats().cend()),
+            vector.passage_word_count());
+      }
+    }
+  }
+
+  return url_datas;
 }
 
 std::vector<UrlPassages> SqlDatabase::GetUrlPassagesWithoutEmbeddings() {
@@ -628,7 +741,8 @@ void SqlDatabase::DatabaseErrorCallback(int extended_error,
                                         sql::Statement* statement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(b/325524013): Handle razing the database on catastrophic error.
+  // TODO(crbug.com/325524013): Handle razing the database on catastrophic
+  // error.
 
   // The default handling is to assert on debug and to ignore on release.
   // This is because database errors happen in the wild due to faulty hardware,
@@ -636,6 +750,27 @@ void SqlDatabase::DatabaseErrorCallback(int extended_error,
   if (!sql::Database::IsExpectedSqliteError(extended_error)) {
     DLOG(FATAL) << db_.GetErrorMessage();
   }
+}
+
+void SqlDatabase::DeleteExpiredData(base::Time expiration_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  constexpr char kSqlDeleteExpiredPassages[] =
+      "DELETE FROM passages WHERE visit_time < ?;";
+  constexpr char kSqlDeleteExpiredEmbeddings[] =
+      "DELETE FROM embeddings WHERE visit_time < ?;";
+  DCHECK(db_.IsSQLValid(kSqlDeleteExpiredPassages));
+  DCHECK(db_.IsSQLValid(kSqlDeleteExpiredEmbeddings));
+
+  sql::Statement expire_passages(
+      db_.GetUniqueStatement(kSqlDeleteExpiredPassages));
+  expire_passages.BindTime(0, expiration_time);
+  expire_passages.Run();
+
+  sql::Statement expire_embeddings(
+      db_.GetUniqueStatement(kSqlDeleteExpiredEmbeddings));
+  expire_embeddings.BindTime(0, expiration_time);
+  expire_embeddings.Run();
 }
 
 }  // namespace history_embeddings

@@ -5,7 +5,6 @@
 package org.chromium.chrome.test.transit.settings;
 
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.transit.ActivityElement;
 import org.chromium.base.test.transit.Elements;
 import org.chromium.base.test.transit.FragmentElement;
 import org.chromium.base.test.transit.Station;
@@ -18,15 +17,19 @@ import org.chromium.chrome.browser.settings.SettingsActivity;
  *
  * <p>TODO(crbug.com/328277614): This is a stub; add more elements and methods.
  */
-public class SettingsStation extends Station {
+public class SettingsStation extends Station<SettingsActivity> {
     private FragmentElement<MainSettings, SettingsActivity> mMainSettings;
+
+    public SettingsStation() {
+        super(SettingsActivity.class);
+    }
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        ActivityElement<SettingsActivity> activityElement =
-                elements.declareActivity(SettingsActivity.class);
+        super.declareElements(elements);
         mMainSettings =
-                elements.declareElement(new FragmentElement<>(MainSettings.class, activityElement));
+                elements.declareElement(
+                        new FragmentElement<>(MainSettings.class, mActivityElement));
     }
 
     public PreferenceFacility scrollToPref(String prefKey) {

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PDF_COMMON_PDF_UTIL_H_
 #define COMPONENTS_PDF_COMMON_PDF_UTIL_H_
 
+#include "third_party/skia/include/core/SkColor.h"
+
 namespace url {
 class Origin;
 }  // namespace url
@@ -30,5 +32,8 @@ bool IsPdfExtensionOrigin(const url::Origin& origin);
 // Note that for the Pepper-free plugin, this applies to the origin of the
 // parent of the frame that contains the in-process plugin.
 bool IsPdfInternalPluginAllowedOrigin(const url::Origin& origin);
+
+// Returns the background color of the PDF extension.
+SkColor GetPdfBackgroundColor();
 
 #endif  // COMPONENTS_PDF_COMMON_PDF_UTIL_H_

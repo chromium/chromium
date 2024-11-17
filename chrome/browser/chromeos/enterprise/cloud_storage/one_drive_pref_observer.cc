@@ -4,10 +4,14 @@
 
 #include "chrome/browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer.h"
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/enterprise/cloud_storage/policy_utils.h"
 #include "chrome/browser/chromeos/extensions/odfs_config_private/odfs_config_private_api.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
@@ -20,6 +24,7 @@
 #include "chromeos/constants/chromeos_features.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/event_router_factory.h"
@@ -39,7 +44,8 @@ namespace chromeos::cloud_storage {
 namespace {
 
 // This class is responsible for watching the prefs for a particular profile.
-class OneDrivePrefObserver : public KeyedService {
+class OneDrivePrefObserver : public KeyedService,
+                             public apps::AppRegistryCache::Observer {
  public:
   ~OneDrivePrefObserver() override;
 
@@ -53,6 +59,11 @@ class OneDrivePrefObserver : public KeyedService {
 
   // Sets up watchers.
   void Init();
+
+  // apps::AppRegistryCache::Observer:
+  void OnAppUpdate(const apps::AppUpdate& update) override;
+  void OnAppRegistryCacheWillBeDestroyed(
+      apps::AppRegistryCache* cache) override;
 
   // Serves as callback for pref changes.
   void OnMicrosoftOneDriveMountPrefChanged();
@@ -75,6 +86,10 @@ class OneDrivePrefObserver : public KeyedService {
 
   // The registrar used to watch prefs changes.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  base::ScopedObservation<apps::AppRegistryCache,
+                          apps::AppRegistryCache::Observer>
+      app_registry_cache_observer_{this};
 };
 
 OneDrivePrefObserver::OneDrivePrefObserver(Profile* profile)
@@ -105,6 +120,13 @@ void OneDrivePrefObserver::Init() {
                           base::Unretained(this)));
   OnMicrosoftOneDriveMountPrefChanged();
   OnMicrosoftOneDriveAccountRestrictionsPrefChanged();
+
+  if (apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile_)) {
+    apps::AppRegistryCache& cache =
+        apps::AppServiceProxyFactory::GetForProfile(profile_)
+            ->AppRegistryCache();
+    app_registry_cache_observer_.Observe(&cache);
+  }
 }
 
 void OneDrivePrefObserver::Shutdown() {
@@ -226,6 +248,35 @@ void OneDrivePrefObserver::BroadcastAccountRestrictionsChanged(
       profile_);
 
   event_router_->BroadcastEvent(std::move(event));
+}
+
+void OneDrivePrefObserver::OnAppUpdate(const apps::AppUpdate& update) {
+  // Set the default for the M365 PWA to open supported links inside the PWA for
+  // the automated Clippy flow. This will only be done once when the M365 PWA is
+  // ready (either on install or after user session start) to allow the user to
+  // modify this behavior.
+  if (update.AppId() != ash::kMicrosoft365AppId || !update.ReadinessChanged() ||
+      update.Readiness() != apps::Readiness::kReady) {
+    return;
+  }
+
+  if (!cloud_upload::IsMicrosoftOfficeOneDriveIntegrationAutomated(profile_)) {
+    return;
+  }
+
+  PrefService* pref_service = profile_->GetPrefs();
+  if (pref_service->GetBoolean(prefs::kM365SupportedLinkDefaultSet)) {
+    return;
+  }
+
+  pref_service->SetBoolean(prefs::kM365SupportedLinkDefaultSet, true);
+  apps::AppServiceProxyFactory::GetForProfile(profile_)
+      ->SetSupportedLinksPreference(ash::kMicrosoft365AppId);
+}
+
+void OneDrivePrefObserver::OnAppRegistryCacheWillBeDestroyed(
+    apps::AppRegistryCache* cache) {
+  app_registry_cache_observer_.Reset();
 }
 
 }  // namespace chromeos::cloud_storage

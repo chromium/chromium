@@ -17,8 +17,7 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -403,5 +402,4 @@ void NotificationProcessor::RemoveNotificationsAndProcessNextRequest(
   CompleteRequest();
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

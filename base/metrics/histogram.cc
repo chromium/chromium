@@ -589,8 +589,8 @@ std::unique_ptr<HistogramSamples> Histogram::SnapshotFinalDelta() const {
   return SnapshotUnloggedSamples();
 }
 
-void Histogram::AddSamples(const HistogramSamples& samples) {
-  unlogged_samples_->Add(samples);
+bool Histogram::AddSamples(const HistogramSamples& samples) {
+  return unlogged_samples_->Add(samples);
 }
 
 bool Histogram::AddSamplesFromPickle(PickleIterator* iter) {
@@ -638,7 +638,7 @@ Histogram::Histogram(const char* name,
 
 Histogram::~Histogram() = default;
 
-const std::string Histogram::GetAsciiBucketRange(size_t i) const {
+std::string Histogram::GetAsciiBucketRange(size_t i) const {
   return GetSimpleAsciiBucketRange(ranges(i));
 }
 
@@ -904,7 +904,7 @@ LinearHistogram::LinearHistogram(
     HistogramSamples::Metadata* logged_meta)
     : Histogram(name, ranges, counts, logged_counts, meta, logged_meta) {}
 
-const std::string LinearHistogram::GetAsciiBucketRange(size_t i) const {
+std::string LinearHistogram::GetAsciiBucketRange(size_t i) const {
   int range = ranges(i);
   BucketDescriptionMap::const_iterator it = bucket_description_.find(range);
   if (it == bucket_description_.end())
@@ -1361,6 +1361,11 @@ void SetSharedLastForegroundTimeForMetrics(
     const std::atomic<TimeTicks>* last_foreground_time_ref) {
   g_last_foreground_time_ref.store(last_foreground_time_ref,
                                    std::memory_order_release);
+}
+
+const std::atomic<TimeTicks>*
+GetSharedLastForegroundTimeForMetricsForTesting() {
+  return g_last_foreground_time_ref.load(std::memory_order_acquire);
 }
 
 bool OverlapsBestEffortRange(TimeTicks sample_time, TimeDelta sample_interval) {

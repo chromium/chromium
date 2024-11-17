@@ -53,7 +53,7 @@ const char kImageFetcherEventHistogramName[] = "ImageFetcher.Events";
 
 class ReducedModeImageFetcherTest : public testing::Test {
  public:
-  ReducedModeImageFetcherTest() {}
+  ReducedModeImageFetcherTest() = default;
 
   ReducedModeImageFetcherTest(const ReducedModeImageFetcherTest&) = delete;
   ReducedModeImageFetcherTest& operator=(const ReducedModeImageFetcherTest&) =

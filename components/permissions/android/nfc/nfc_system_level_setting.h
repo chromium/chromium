@@ -16,7 +16,7 @@ namespace permissions {
 // This class determines whether NFC is enabled system-wide on the device.
 class NfcSystemLevelSetting {
  public:
-  virtual ~NfcSystemLevelSetting() {}
+  virtual ~NfcSystemLevelSetting() = default;
 
   // Returns true if the NFC system level setting can be enabled.
   virtual bool IsNfcAccessPossible() = 0;

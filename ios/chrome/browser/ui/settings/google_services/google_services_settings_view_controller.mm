@@ -43,7 +43,7 @@
 
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-        @[ UITraitPreferredContentSizeCategory.self ]);
+        @[ UITraitPreferredContentSizeCategory.class ]);
     [self registerForTraitChanges:traits
                        withAction:@selector(closePopoverOnTraitChange)];
   }

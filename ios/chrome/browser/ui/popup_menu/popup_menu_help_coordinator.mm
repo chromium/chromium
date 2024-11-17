@@ -54,9 +54,9 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* overflowMenuBubblePresenter;
 
-// The browser state. May return null after the coordinator has been stopped
+// The profile. May return null after the coordinator has been stopped
 // (thus the returned value must be checked for null).
-@property(nonatomic, readonly) ChromeBrowserState* browserState;
+@property(nonatomic, readonly) ProfileIOS* profile;
 
 // The layout guide installed in the base view controller on which to anchor the
 // potential IPH bubble.
@@ -85,7 +85,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
                                    browser:(Browser*)browser {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
-    if (!browser->GetBrowserState()->IsOffTheRecord()) {
+    if (!browser->GetProfile()->IsOffTheRecord()) {
       _deviceSwitcherResultDispatcher =
           segmentation_platform::SegmentationPlatformServiceFactory::
               GetDispatcherForProfile(browser->GetProfile());
@@ -96,16 +96,17 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 
 #pragma mark - Getters
 
-- (ChromeBrowserState*)browserState {
-  return self.browser ? self.browser->GetBrowserState() : nullptr;
+- (ProfileIOS*)profile {
+  return self.browser ? self.browser->GetProfile() : nullptr;
 }
 
 - (feature_engagement::Tracker*)featureEngagementTracker {
-  ChromeBrowserState* browserState = self.browserState;
-  if (!browserState)
+  ProfileIOS* profile = self.profile;
+  if (!profile) {
     return nullptr;
+  }
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+      feature_engagement::TrackerFactory::GetForProfile(profile);
   DCHECK(tracker);
   return tracker;
 }
@@ -195,7 +196,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 // Possibly shows the IPH for the Overflow Menu Customization feature. Returns
 // whether or not the IPH was shown.
 - (BOOL)showCustomizationIPHInMenu:(UIViewController*)menu {
-  if (!IsOverflowMenuCustomizationEnabled()) {
+  if (!IsNewOverflowMenuEnabled()) {
     return NO;
   }
 
@@ -236,11 +237,17 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 
 // Returns whether blue dot should be shown.
 - (BOOL)shouldShowBlueDot {
+  // Don't show blue dot if cannot make a decision.
+  ProfileIOS* profile = self.profile;
+  if (!profile) {
+    return NO;
+  }
+
   // As sync error takes precendence on blue dot for settings destination in the
   // overflow menu. In that case don't show blue dot as the full path from
   // toolbar to default browser settings cannot be highlighted.
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+      SyncServiceFactory::GetForProfile(self.profile);
   if (syncService && ShouldIndicateIdentityErrorInOverflowMenu(syncService)) {
     return NO;
   }

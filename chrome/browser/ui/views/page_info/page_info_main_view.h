@@ -65,7 +65,8 @@ class PageInfoMainView : public views::View,
                    ChromePageInfoUiDelegate* ui_delegate,
                    PageInfoNavigationHandler* navigation_handler,
                    PageInfoHistoryController* history_controller,
-                   base::OnceClosure initialized_callback);
+                   base::OnceClosure initialized_callback,
+                   bool allow_about_this_site);
   ~PageInfoMainView() override;
 
   // PageInfoUI implementations.

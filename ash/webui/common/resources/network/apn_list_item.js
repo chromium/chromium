@@ -28,7 +28,7 @@ import {getTemplate} from './apn_list_item.html.js';
 const ApnListItemBase = mixinBehaviors([I18nBehavior], PolymerElement);
 
 /** @polymer */
-class ApnListItem extends ApnListItemBase {
+export class ApnListItem extends ApnListItemBase {
   static get is() {
     return 'apn-list-item';
   }
@@ -86,6 +86,7 @@ class ApnListItem extends ApnListItemBase {
         computed: 'computeIsDisabled_(apn)',
       },
 
+      /** @private */
       isApnRevampAndAllowApnModificationPolicyEnabled_: {
         type: Boolean,
         value() {

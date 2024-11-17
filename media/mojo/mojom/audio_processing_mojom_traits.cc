@@ -30,14 +30,11 @@ bool StructTraits<media::mojom::AudioProcessingSettingsDataView,
   *out_settings = media::AudioProcessingSettings();
   out_settings->echo_cancellation = input.echo_cancellation();
   out_settings->noise_suppression = input.noise_suppression();
-  out_settings->transient_noise_suppression =
-      input.transient_noise_suppression();
   out_settings->automatic_gain_control = input.automatic_gain_control();
   out_settings->high_pass_filter = input.high_pass_filter();
   out_settings->multi_channel_capture_processing =
       input.multi_channel_capture_processing();
   out_settings->stereo_mirroring = input.stereo_mirroring();
-  out_settings->force_apm_creation = input.force_apm_creation();
   return true;
 }
 

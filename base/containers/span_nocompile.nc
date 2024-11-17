@@ -9,10 +9,9 @@
 
 #include <array>
 #include <set>
+#include <string>
 #include <string_view>
 #include <vector>
-
-
 
 namespace base {
 
@@ -70,7 +69,9 @@ void PtrToConstPtrConversionDisallowed() {
 // A const container should not be convertible to a mutable span.
 void ConstContainerToMutableConversionDisallowed() {
   const std::vector<int> v = {1, 2, 3};
-  span<int> span(v);  // expected-error {{no matching constructor for initialization of 'span<int>'}}
+  span<int> span1(v);             // expected-error {{no matching constructor for initialization of 'span<int>'}}
+  span<int, 2u> span2({1, 2});    // expected-error {{no matching constructor for initialization of 'span<int, 2U>'}}
+  span<int> span3(make_span(v));  // expected-error {{no matching constructor for initialization of 'span<int>'}}
 }
 
 // A dynamic const container should not be implicitly convertible to a static span.
@@ -85,15 +86,20 @@ void ImplicitConversionFromDynamicMutableContainerToStaticSpanDisallowed() {
   span<int, 3u> span = v;  // expected-error {{no viable conversion from 'std::vector<int>' to 'span<int, 3U>'}}
 }
 
+// Fixed-extent span construction from an initializer list is explicit.
+void InitializerListConstructionIsExplicit() {
+  span<const int, 3u> s = {{1, 2, 3}};  // expected-error {{chosen constructor is explicit in copy-initialization}}
+}
+
 // A std::set() should not satisfy the requirements for conversion to a span.
 void StdSetConversionDisallowed() {
   std::set<int> set;
   span<int> span1(set.begin(), 0u);                // expected-error {{no matching constructor for initialization of 'span<int>'}}
   span<int> span2(set.begin(), set.end());         // expected-error {{no matching constructor for initialization of 'span<int>'}}
   span<int> span3(set);                            // expected-error {{no matching constructor for initialization of 'span<int>'}}
-  auto span4 = make_span(set.begin(), 0u);         // expected-error@*:* {{no matching constructor for initialization of 'span<T>' (aka 'span<const int>')}}
-  auto span5 = make_span(set.begin(), set.end());  // expected-error@*:* {{no matching constructor for initialization of 'span<T>' (aka 'span<const int>')}}
-  auto span6 = make_span(set);                     // expected-error@*:* {{no matching function for call to 'data'}}
+  auto span4 = make_span(set.begin(), 0u);         // expected-error@*:* {{no matching function for call to 'make_span'}}
+  auto span5 = make_span(set.begin(), set.end());  // expected-error@*:* {{no matching function for call to 'make_span'}}
+  auto span6 = make_span(set);                     // expected-error@*:* {{no matching function for call to 'make_span'}}
 }
 
 // Static views of spans with static extent must not exceed the size.
@@ -138,16 +144,100 @@ void ConstVectorDeducesAsConstSpan() {
   span<int> s = make_span(v);  // expected-error-re@*:* {{no viable conversion from 'span<{{.*}}, [...]>' to 'span<int, [...]>'}}
 }
 
-// EXTENT should not result in |dynamic_extent|, it should be a compile-time
-// error.
-void ExtentNoDynamicExtent() {
-  std::vector<uint8_t> vector;
-  constexpr size_t extent = EXTENT(vector);  // expected-error@*:* {{EXTENT should only be used for containers with a static extent}}
+// A span can only be constructed from a range rvalue when the element type is
+// read-only or the range is a borrowed range.
+void SpanFromNonConstRvalueRange() {
+  std::array<bool, 3> arr = {true, false, true};
+  [[maybe_unused]] auto a = span(std::move(arr));  // expected-error {{no matching conversion}}
+
+  std::string str = "ok";
+  [[maybe_unused]] auto b = span(std::move(str));  // expected-error {{no matching conversion}}
+
+  std::u16string str16 = u"ok";
+  [[maybe_unused]] auto c = span(std::move(str16));  // expected-error {{no matching conversion}}
+
+  std::vector<int> vec = {1, 2, 3, 4, 5};
+  [[maybe_unused]] auto d = span(std::move(vec));  // expected-error {{no matching conversion}}
+}
+
+// make_span can only be called on a range rvalue when the element type is
+// read-only or the range is a borrowed range.
+void MakeSpanFromNonConstRvalueRange() {
+  std::array<bool, 3> arr = {true, false, true};
+  [[maybe_unused]] auto a = make_span(std::move(arr));  // expected-error {{no matching function for call to 'make_span'}}
+
+  std::string str = "ok";
+  [[maybe_unused]] auto b = make_span(std::move(str));  // expected-error {{no matching function for call to 'make_span'}}
+
+  std::u16string str16 = u"ok";
+  [[maybe_unused]] auto c = make_span(std::move(str16));  // expected-error {{no matching function for call to 'make_span'}}
+
+  std::vector<int> vec = {1, 2, 3, 4, 5};
+  [[maybe_unused]] auto d = make_span(std::move(vec));  // expected-error {{no matching function for call to 'make_span'}}
 }
 
 void Dangling() {
-  span<const int, 3u> s1{std::array<int, 3>()};     // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
-  span<const int> s2{std::vector<int>({1, 2, 3})};  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+  // `std::array` destroyed at the end of the full expression.
+  [[maybe_unused]] auto a = span<const int>(std::to_array({1, 2, 3}));     // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto b = span<const int, 3>(std::to_array({1, 2, 3}));  // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
+
+  // Range destroyed at the end of the full expression.
+  [[maybe_unused]] auto c = span<const int>(std::vector<int>({1, 2, 3}));     // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto d = span<const int, 3>(std::vector<int>({1, 2, 3}));  // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
+
+  // Here the `std::string` is an lvalue, but the `std::vector`s that copy its
+  // data aren't.
+  std::string str = "123";
+  [[maybe_unused]] auto e =
+      span<const char>(std::vector<char>(str.begin(), str.end()));  // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto f =
+      span<const char, 3>(std::vector<char>(str.begin(), str.end()));  // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
+
+  // `std::string_view`'s safety depends on the life of the referred-to buffer.
+  // Here the underlying data is destroyed before the end of the full
+  // expression.
+  [[maybe_unused]] auto g =
+      span<const char>(std::string_view(std::string("123")));  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto h =
+      span<const char, 3>(std::string_view(std::string("123")));  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+  // TODO(https://github.com/llvm/llvm-project/issues/111768) Detect dangling
+  // usage sufficient to enable this testcase.
+#if 0
+  [[maybe_unused]] auto i = as_byte_span(std::string_view(std::string("123")));  // expected-error {{object backing the pointer will be destroyed at the end of the full-expression}}
+#endif
+
+  // Spans must not outlast a referred-to C-style array. It's tricky to create
+  // an object of C-style array type (not an initializer list) that is destroyed
+  // before the end of the full expression, so instead test the case where the
+  // referred-to array goes out of scope before the referring span.
+  [] {
+    int arr[3] = {1, 2, 3};
+    return span<int>(arr);  // expected-error-re {{address of stack memory associated with local variable {{.*}}returned}}
+  }();
+  [] {
+    int arr[3] = {1, 2, 3};
+    return span<int, 3>(arr);  // expected-error-re {{address of stack memory associated with local variable {{.*}}returned}}
+  }();
+
+  // TODO(https://github.com/llvm/llvm-project/issues/99685) Detect dangling
+  // usage sufficient to enable this testcase.
+#if 0
+  []() -> std::optional<span<int>> {
+    int arr[3] = {1, 2, 3};
+    return span<int>(arr);  // expected-error-re {{address of stack memory associated with local variable {{.*}}returned}}
+  }();
+#endif
+
+  // span's `std::array` constructor takes lvalue refs, so to test the non-const
+  // `element_type` case, use the same technique as above.
+  [] {
+    std::array arr{1, 2, 3};
+    return span<int>(arr);  // expected-error-re + {{address of stack memory associated with local variable {{.*}}returned}}
+  }();
+  [] {
+    std::array arr{1, 2, 3};
+    return span<int, 3>(arr);  // expected-error-re + {{address of stack memory associated with local variable {{.*}}returned}}
+  }();
 }
 
 void NotSizeTSize() {
@@ -156,19 +246,19 @@ void NotSizeTSize() {
   // we get assertion failures below where we expect.
   enum Length1 { kSize1 = -1 };
   enum Length2 { kSize2 = -1 };
-  auto s1 = make_span(vector.data(), kSize1);  // expected-error@*:* {{The source type is out of range for the destination type}}
-  span s2(vector.data(), kSize2);              // expected-error@*:* {{The source type is out of range for the destination type}}
+  auto s1 = make_span(vector.data(), kSize1);  // expected-error@*:* {{no matching function for call to 'strict_cast'}}
+  span s2(vector.data(), kSize2);              // expected-error@*:* {{no matching function for call to 'strict_cast'}}
 }
 
 void BadConstConversionsWithStdSpan() {
   int kData[] = {10, 11, 12};
   {
-    base::span<const int, 3u> fixed_base_span(kData);
+    span<const int, 3u> fixed_base_span(kData);
     std::span<int, 3u> s(fixed_base_span);  // expected-error {{no matching constructor}}
   }
   {
     std::span<const int, 3u> fixed_std_span(kData);
-    base::span<int, 3u> s(fixed_std_span);  // expected-error {{no matching constructor}}
+    span<int, 3u> s(fixed_std_span);  // expected-error {{no matching constructor}}
   }
 }
 
@@ -180,56 +270,48 @@ void FromVolatileArrayDisallowed() {
 void FixedSizeCopyTooSmall() {
   const int src[] = {1, 2, 3};
   int dst[2];
-  base::span(dst).copy_from(base::span(src));  // expected-error@*:* {{no matching member function}}
+  span(dst).copy_from(span(src));  // expected-error@*:* {{no matching member function}}
 
-  base::span(dst).copy_from(src);  // expected-error@*:* {{no matching member function}}
+  span(dst).copy_from(src);  // expected-error@*:* {{no matching member function}}
 
-  base::span(dst).copy_prefix_from(src);  // expected-error@*:* {{no matching member function}}
+  span(dst).copy_prefix_from(src);  // expected-error@*:* {{no matching member function}}
 }
 
 void FixedSizeCopyFromNonSpan() {
   int dst[2];
   // The copy_from() template overload is not selected.
-  base::span(dst).copy_from(5);  // expected-error@*:* {{no matching member function for call to 'copy_from'}}
+  span(dst).copy_from(5);  // expected-error@*:* {{no matching member function for call to 'copy_from'}}
 }
 
 void FixedSizeSplitAtOutOfBounds() {
   const int arr[] = {1, 2, 3};
-  base::span(arr).split_at<4u>();  // expected-error@*:* {{no matching member function for call to 'split_at'}}
-}
-
-void FromRefNoSuchFunctionForIntLiteral() {
-  // Expectations of this test just capture the current behavior which is not
-  // necessarily desirable or required. This test expects that when we ask the
-  // compiler to deduce the template arguments for `span_from_ref` (the only
-  // difference from `FromRefLifetimeBoundErrorForIntLiteral` below) then it
-  // will fail to find a suitable function to invoke.
-  auto wont_work = span_from_ref(123);  // expected-error@*:* {{no matching function for call to 'span_from_ref'}}
+  span(arr).split_at<4u>();  // expected-error@*:* {{no matching member function for call to 'split_at'}}
 }
 
 void FromRefLifetimeBoundErrorForIntLiteral() {
   // Testing that `LIFETIME_BOUND` works as intended.
-  [[maybe_unused]] auto wont_work =
-      span_from_ref<const int>(123);  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto wont_work = span_from_ref<const int>(123);        // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto wont_work2 = byte_span_from_ref<const int>(123);  // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
 }
 
 void FromRefLifetimeBoundErrorForTemporaryStringObject() {
   // Testing that `LIFETIME_BOUND` works as intended.
   [[maybe_unused]] auto wont_work =
-      span_from_ref<const std::string>("temporary string");  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
+      span_from_ref<const std::string>("temporary string");  // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto wont_work2 =
+      as_byte_span(std::string("temporary string"));  // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
 }
 
-void RvalueArrayLifetime() {
-  [[maybe_unused]] auto wont_work =
-      as_byte_span({1, 2});  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
+void InitializerListLifetime() {
+  // `std::initializer_list` destroyed at the end of the full expression.
+  [[maybe_unused]] auto wont_work = span<const int>({1, 2});      // expected-error-re {{array backing local initializer list {{.*}}will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto wont_work2 = span<const int, 3>({1, 2});  // expected-error-re {{array backing local initializer list {{.*}}will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto wont_work3 = as_byte_span({1, 2});        // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
 }
 
 void FromCStringThatIsntStaticLifetime() {
-  [[maybe_unused]] auto wont_work =
-      span_from_cstring({'a', 'b', '\0'});  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work' will be destroyed at the end of the full-expression}}
-
-  [[maybe_unused]] auto wont_work2 =
-      byte_span_from_cstring({'a', 'b', '\0'});  // expected-error@*:* {{temporary whose address is used as value of local variable 'wont_work2' will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto wont_work = span_from_cstring({'a', 'b', '\0'});        // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
+  [[maybe_unused]] auto wont_work2 = byte_span_from_cstring({'a', 'b', '\0'});  // expected-error-re {{temporary whose address is used as value of local variable {{.*}}will be destroyed at the end of the full-expression}}
 }
 
 void CompareFixedSizeMismatch() {
@@ -274,20 +356,20 @@ void CompareNotComparable() {
 
 void AsStringViewNotBytes() {
   const int arr[] = {1, 2, 3};
-  as_string_view(base::span(arr));  // expected-error@*:* {{no matching function for call to 'as_string_view'}}
+  as_string_view(span(arr));  // expected-error@*:* {{no matching function for call to 'as_string_view'}}
 }
 
 void SpanFromCstrings() {
   static const char with_null[] = { 'a', 'b', '\0' };
-  base::span_from_cstring(with_null);
+  span_from_cstring(with_null);
 
   // Can't call span_from_cstring and friends with a non-null-terminated char
   // array.
   static const char no_null[] = { 'a', 'b' };
-  base::span_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'span_from_cstring'}}
-  base::span_with_nul_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'span_with_nul_from_cstring'}}
-  base::byte_span_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'byte_span_from_cstring'}}
-  base::byte_span_with_nul_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'byte_span_with_nul_from_cstring'}}
+  span_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'span_from_cstring'}}
+  span_with_nul_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'span_with_nul_from_cstring'}}
+  byte_span_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'byte_span_from_cstring'}}
+  byte_span_with_nul_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'byte_span_with_nul_from_cstring'}}
 }
 
 }  // namespace base

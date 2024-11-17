@@ -35,7 +35,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
@@ -128,8 +128,8 @@ const LayoutObject* FEImage::ReferencedLayoutObject() const {
   return element_->GetLayoutObject();
 }
 
-WTF::TextStream& FEImage::ExternalRepresentation(WTF::TextStream& ts,
-                                                 int indent) const {
+StringBuilder& FEImage::ExternalRepresentation(StringBuilder& ts,
+                                               wtf_size_t indent) const {
   gfx::Size image_size;
   if (image_) {
     image_size = image_->Size();

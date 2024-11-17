@@ -97,7 +97,7 @@ TEST_F(SharingCoordinatorTest, Start_ShareCurrentPage) {
   test_web_state->SetNavigationManager(
       std::make_unique<web::FakeNavigationManager>());
   test_web_state->SetCurrentURL(test_url);
-  test_web_state->SetBrowserState(browser_->GetBrowserState());
+  test_web_state->SetBrowserState(browser_->GetProfile());
 
   auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
   web::FakeWebFramesManager* frames_manager_ptr = frames_manager.get();

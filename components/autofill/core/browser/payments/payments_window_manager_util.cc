@@ -54,13 +54,12 @@ ParseUrlForVcn3ds(const GURL& url,
                               kAuthenticationNotCompleted);
 }
 
-PaymentsNetworkInterface::UnmaskRequestDetails
-CreateUnmaskRequestDetailsForVcn3ds(
+UnmaskRequestDetails CreateUnmaskRequestDetailsForVcn3ds(
     AutofillClient& client,
     const PaymentsWindowManager::Vcn3dsContext& context,
     PaymentsWindowManager::RedirectCompletionResult
         redirect_completion_result) {
-  payments::PaymentsNetworkInterface::UnmaskRequestDetails request_details;
+  UnmaskRequestDetails request_details;
   request_details.card = context.card;
   request_details.billing_customer_number = GetBillingCustomerId(
       &client.GetPersonalDataManager()->payments_data_manager());
@@ -73,11 +72,6 @@ CreateUnmaskRequestDetailsForVcn3ds(
     request_details.last_committed_primary_main_frame_origin = origin.GetURL();
   }
 
-  if (!client.IsOffTheRecord()) {
-    request_details.merchant_domain_for_footprints =
-        client.GetLastCommittedPrimaryMainFrameOrigin();
-  }
-
   request_details.selected_challenge_option = context.challenge_option;
   request_details.redirect_completion_result =
       std::move(redirect_completion_result);
@@ -87,7 +81,7 @@ CreateUnmaskRequestDetailsForVcn3ds(
 PaymentsWindowManager::Vcn3dsAuthenticationResponse
 CreateVcn3dsAuthenticationResponseFromServerResult(
     PaymentsAutofillClient::PaymentsRpcResult result,
-    const PaymentsNetworkInterface::UnmaskResponseDetails& response_details,
+    const UnmaskResponseDetails& response_details,
     CreditCard card) {
   PaymentsWindowManager::Vcn3dsAuthenticationResponse response;
   if (result == PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {

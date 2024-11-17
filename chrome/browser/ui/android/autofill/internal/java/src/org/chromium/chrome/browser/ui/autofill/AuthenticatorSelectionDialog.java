@@ -11,11 +11,8 @@ import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.DrawableRes;
-import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.autofill.data.AuthenticatorOption;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -96,19 +93,18 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
         switch (authenticatorOptionType) {
             case CardUnmaskChallengeOptionType.SMS_OTP:
             case CardUnmaskChallengeOptionType.EMAIL_OTP:
-                return mContext.getResources()
-                        .getString(
-                                R.string
-                                        .autofill_card_unmask_authentication_selection_dialog_ok_button_label_send);
+                return mContext.getString(
+                        R.string
+                                .autofill_card_unmask_authentication_selection_dialog_ok_button_label_send);
             case CardUnmaskChallengeOptionType.CVC:
-                return mContext.getResources()
-                        .getString(
-                                R.string
-                                        .autofill_card_unmask_authentication_selection_dialog_ok_button_label_continue);
+                return mContext.getString(
+                        R.string
+                                .autofill_card_unmask_authentication_selection_dialog_ok_button_label_continue);
             case CardUnmaskChallengeOptionType.UNKNOWN_TYPE:
                 // This will never happen.
                 assert false
-                        : "Attempted to get positive button text for an authenticator option with Unknown type.";
+                        : "Attempted to get positive button text for an authenticator option with"
+                                + " Unknown type.";
         }
         return "";
     }
@@ -125,25 +121,22 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
                 LayoutInflater.from(mContext)
                         .inflate(R.layout.authenticator_selection_dialog, null);
 
-        boolean useCustomTitleView =
-                ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK);
-        int titleIconId =
-                useCustomTitleView ? R.drawable.google_pay : R.drawable.google_pay_with_divider;
         String title =
-                mContext.getResources()
-                        .getString(
-                                authenticatorOptions.size() > 1
-                                        ? R.string
-                                                .autofill_card_auth_selection_dialog_title_multiple_options
-                                        : R.string.autofill_card_unmask_verification_title);
+                mContext.getString(
+                        authenticatorOptions.size() > 1
+                                ? R.string
+                                        .autofill_card_auth_selection_dialog_title_multiple_options
+                                : R.string.autofill_card_unmask_verification_title);
+        ViewStub title_view_stub =
+                mAuthenticatorSelectionDialogView.findViewById(R.id.title_with_icon_stub);
+        title_view_stub.setLayoutResource(R.layout.icon_after_title_view);
+        title_view_stub.inflate();
+        TextView titleView = (TextView) mAuthenticatorSelectionDialogView.findViewById(R.id.title);
+        titleView.setText(title);
+        ImageView iconView =
+                (ImageView) mAuthenticatorSelectionDialogView.findViewById(R.id.title_icon);
+        iconView.setImageResource(R.drawable.google_pay);
 
-        if (useCustomTitleView) {
-            ViewStub stub =
-                    mAuthenticatorSelectionDialogView.findViewById(R.id.title_with_icon_stub);
-            stub.setLayoutResource(R.layout.icon_after_title_view);
-            stub.inflate();
-        }
         mAuthenticatorSelectionDialogContentsView =
                 mAuthenticatorSelectionDialogView.findViewById(
                         R.id.authenticator_selection_dialog_contents);
@@ -165,50 +158,17 @@ public class AuthenticatorSelectionDialog implements AuthenticatorOptionsAdapter
                         .with(ModalDialogProperties.CUSTOM_VIEW, mAuthenticatorSelectionDialogView)
                         .with(
                                 ModalDialogProperties.NEGATIVE_BUTTON_TEXT,
-                                mContext.getResources()
-                                        .getString(
-                                                R.string
-                                                        .autofill_payments_authenticator_selection_dialog_negative_button_label))
+                                mContext.getString(
+                                        R.string
+                                                .autofill_payments_authenticator_selection_dialog_negative_button_label))
                         .with(
                                 ModalDialogProperties.POSITIVE_BUTTON_TEXT,
                                 getPositiveButtonText(mSelectedAuthenticatorOption.getType()))
                         .with(
                                 ModalDialogProperties.BUTTON_STYLES,
                                 ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
-        updateTitleView(useCustomTitleView, title, titleIconId, builder);
         mDialogModel = builder.build();
         mModalDialogManager.showDialog(mDialogModel, ModalDialogManager.ModalDialogType.TAB);
-    }
-
-    /**
-     * Updates the title and icon view. If AUTOFILL_ENABLE_MOVING_GPAY_LOGO_TO_THE_RIGHT_ON_CLANK
-     * feature is enabled, sets title and icon in the customView otherwise uses
-     * PropertyModel.Builder for title and icon.
-     *
-     * @param useCustomTitleView Indicates true/false to use custom title view.
-     * @param title Title of the prompt dialog.
-     * @param titleIcon Icon near the title.
-     * @param builder The PropertyModel.Builder instance.
-     */
-    private void updateTitleView(
-            boolean useCustomTitleView,
-            String title,
-            @DrawableRes int titleIcon,
-            PropertyModel.Builder builder) {
-        if (useCustomTitleView) {
-            TextView titleView =
-                    (TextView) mAuthenticatorSelectionDialogView.findViewById(R.id.title);
-            titleView.setText(title);
-            ImageView iconView =
-                    (ImageView) mAuthenticatorSelectionDialogView.findViewById(R.id.title_icon);
-            iconView.setImageResource(titleIcon);
-        } else {
-            builder.with(ModalDialogProperties.TITLE, title);
-            builder.with(
-                    ModalDialogProperties.TITLE_ICON,
-                    ResourcesCompat.getDrawable(
-                            mContext.getResources(), titleIcon, mContext.getTheme()));
-        }
     }
 
     /**

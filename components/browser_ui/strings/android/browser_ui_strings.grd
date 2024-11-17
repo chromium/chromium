@@ -555,11 +555,6 @@
       <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TODAY_TITLE" desc="Subtitle shown on the Page Info UI when cookies are allowed temporarily, indicating how long until they are no longer allowed. Used for the Today's variation.">
         Chrome will block cookies again today
       </message>
-      <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TITLE" desc="Subtitle shown on the Page Info UI when cookies are allowed temporarily, indicating how long until they are no longer allowed.">
-        {DAYS, plural,
-          =1 {Chrome will block cookies again tomorrow}
-          other {# days until Chrome blocks cookies again}}
-      </message>
       <message name="IDS_PAGE_INFO_COOKIES_BLOCKING_RESTART_TRACKING_PROTECTION_TITLE" desc="Subtitle shown on the Page Info UI when cookies are allowed temporarily, indicating how long until they are no longer allowed.">
         {DAYS, plural,
           =1 {Chrome will block cookies again tomorrow}
@@ -580,13 +575,13 @@
         You temporarily allowed this site to use third-party cookies, which means less browsing protection but site features are more likely to work as expected. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Send feedback<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_PERMANENT_ALLOWED_TITLE" desc="A subtitle in the Page Info UI if cookies were allowed by the user and they won't be automatically blocked again the future.">
-        You allowed third-party cookies for this site
+        You allowed third-party cookies on this site
+      </message>
+      <message name="IDS_PAGE_INFO_COOKIES_TRACKING_PROTECTION_PERMANENT_ALLOWED_DESCRIPTION" desc="Descriptive text in the page info third-party cookies subpage if the user is visiting a site on their third-party cookies allow list." formatter_data="android_java">
+        This means site features should work as expected, but you may have less browsing protection. <ph name="BEGIN_LINK">&lt;link&gt;</ph>Send feedback<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_TITLE" desc="Label shown on a dialog that allows users to turn off third-party cookie blocking for a specific site.">
         Site not working?
-      </message>
-      <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_TEMPORARY" desc="Descriptive text in the Page Info UI explaining the trade-off of temporarily allowing third-party cookies for this site, a change that will automatically expire in the future.">
-        Try temporarily allowing third-party cookies, which means less protection but site features are more likely to work
       </message>
       <message name="IDS_PAGE_INFO_COOKIES_SITE_NOT_WORKING_DESCRIPTION_PERMANENT" desc="Descriptive text in the Page Info UI explaining the trade-off of allowing third-party cookies for this site, a change that will not automatically expire in the future.">
         Try allowing third-party cookies, which means less protection but site features are more likely to work
@@ -618,17 +613,17 @@
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE" desc="The header label of Tracking Protection page.">
         Tracking Protection
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info view. Contains a link to the Tracking Protection settings page.">
-        Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage your tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view. Contains a link to the 'Third-party cookies' settings page.">
+        Chrome limits most sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info view for when a site has a TPCD grant. Contains a link to the Tracking Protection settings page.">
-        Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services.\n\nVisit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage your tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>.
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_GRANT_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view for when a site has a TPCD grant. Contains a link to the 'Third-party cookies' settings page.">
+        Chrome limits most sites from using third-party cookies. But third-party cookies are allowed on this site because it relies on them to provide basic services.\n\nVisit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info view if all cookies are blocked. Contains a link to the Tracking Protection settings page.">
-        You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage your tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>.
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view if all cookies are blocked. Contains a link to the 'Third-party cookies' settings page.">
+        You blocked sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the Tracking Protection subpage in the page info view in incognito mode when cookies are blocked. Contains a link to the Tracking Protection settings page.">
-        Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage your tracking protections<ph name="END_LINK">&lt;/link&gt;</ph>.
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_INCOGNITO_BLOCKED_COOKIES_DESCRIPTION" desc="Description text for the 'Cookies and site data' subpage in the page info view in incognito mode when cookies are blocked. Contains a link to the 'Third-party cookies' settings page.">
+        Chrome blocks sites from using third-party cookies to track you as you browse. Visit settings to <ph name="BEGIN_LINK">&lt;link&gt;</ph>manage access to third-party cookies<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_SUBTITLE_COOKIES_LIMITED" desc="Description text in the Page Info dialog to indicate that third-party cookies are limited on this site.">
         Third-party cookies limited
@@ -675,6 +670,9 @@
       </message>
       <message name="IDS_ACCESSIBILITY_TOOLBAR_VIEW_SITE_INFO" desc="Spoken by screen readers to explain that clicking on the status icon will show more site information when clicked. The string is read in the context of the 'Double tap to...' Android screen reader accessibility prompt e.g. 'Double tap to view site information'.">
         View site information
+      </message>
+      <message name="IDS_ACCESSIBILITY_TOOLBAR_EXIT_HUB_SEARCH" desc="Spoken by screen readers to explain that clicking on the status icon will show more site information when clicked. The string is read in the context of the 'Double tap to...' Android screen reader accessibility prompt e.g. 'Double tap to exit hub search'.">
+        Exit hub search
       </message>
 
       <!-- Media Capture and Streams -->
@@ -929,6 +927,9 @@
       <message name="IDS_IMMERSIVE_FULLSCREEN_API_NOTIFICATION_AUTOMOTIVE" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit.">
         Press the back button to exit full screen.
       </message>
+      <message name="IDS_IMMERSIVE_FULLSCREEN_AUTOMOTIVE_TOOLBAR_IMPROVEMENTS" desc="Notification message when a site has entered immersive fullscreen and the directions of how to exit by swiping left.">
+        Drag from the side of the screen to exit full screen.
+      </message>
 
       <!-- WebApk name/icon report abuse dialog -->
       <message name="IDS_WEBAPK_REPORT_ABUSE_DIALOG_TITLE" desc="The title at the top of the report abuse dialog.">
@@ -980,14 +981,8 @@
       <message name="IDS_PREFS_ACCESSIBILITY" desc="Title of Accessibility settings, which allows the user to change webpage font sizes. [CHAR_LIMIT=32]">
         Accessibility
       </message>
-      <message name="IDS_FONT_SIZE" desc="Title for font size preference.">
-        Text scaling
-      </message>
       <message name="IDS_FONT_SIZE_ACCESSIBILITY_LABEL" desc="Accessibility label for control to allow user to change font size.">
         Text scaling set to <ph name="TEXT_SCALING">%1$s<ex>100%</ex></ph>
-      </message>
-      <message name="IDS_FONT_SIZE_PREVIEW_TEXT" desc="Preview text for font-size slider.">
-        Drag the slider until you can read this comfortably. Text should look at least this big after double-tapping on a paragraph.
       </message>
       <message name="IDS_FORCE_ENABLE_ZOOM_TITLE" desc="Title of preference that allows the user to zoom in on any webpage, even if the page tries to disable zooming.">
         Force enable zoom
@@ -998,14 +993,20 @@
       <message name="IDS_READER_FOR_ACCESSIBILITY_TITLE" desc="Title of preference that allows the user to use simplified view on any articles, even if the page is mobile-friendly. Simplified view is the new user-facing name for Reader Mode, which extracts the content of an article and removes clutter from a web page and puts the result in a easier-to-read format.">
         Simplified view for web pages
       </message>
-      <message name="IDS_ZOOM_INFO_PREFERENCE_TITLE" translateable="false" desc="Summary of preference that allows the user to view the set zoom levels for all websites.">
-        Saved zoom levels
+      <message name="IDS_ZOOM_INFO_PREFERENCE_TITLE" desc="Summary of preference that allows the user to view the set zoom levels for all websites.">
+        Saved zoom for sites
       </message>
       <message name="IDS_READER_FOR_ACCESSIBILITY_SUMMARY" desc="Summary of preference that allows the user to use simplified view on any supported articles, even if the page is mobile-friendly.">
         Get notified when an article can be shown in simplified view
       </message>
       <message name="IDS_ACCESSIBILITY_CAPTIONS_TITLE" desc="Title of the preference that allows the user to update caption settings.">
         Captions
+      </message>
+      <message name="IDS_JUMP_START_OMNIBOX_TITLE" desc="When this preference is enabled, Chrome start-up time is reduced, and the user is taken directly to an active Omnibox">
+        Jump-start Omnibox
+      </message>
+      <message name="IDS_JUMP_START_OMNIBOX_SUMMARY" desc="When this preference is enabled, Chrome start-up time is reduced, and the user is taken directly to an active Omnibox">
+        Launch Chrome with the Omnibox focused, reducing start-up time on low-end devices.
       </message>
 
       <!-- Text Size Contrast -->
@@ -1176,9 +1177,23 @@
       <message name="IDS_EDUCATIONAL_TIP_QUICK_DELETE_DESCRIPTION" desc="Description of the quick delete promo in the educational tip module on NTP.">
         You can delete some or all of your history, cookies, site data and more
       </message>
-
-      <message name="IDS_GO_TO_OS_SETTINGS" desc="When the user clicks on this text button, Chrome sends them to the device OS Settings. One use is the text button shown below the text 'Get alerts for price drops?', which takes the user to the Android notification settings. Another use is in the primary button of the dialog prompting the user to create a device lock, which takes the user to the Android security settings.">
-        Go to Settings
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_TITLE" desc="Title of the default browser section's bottom sheet in the educational tip module on NTP.">
+        Use Chrome By Default
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_DESCRIPTION" desc="Description of the default browser section's bottom sheet in the educational tip module on NTP.">
+        You can now use Chrome anytime you browse or tap links in messages, documents, and other apps.
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_FIRST_STEP" desc="The first step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
+        On your phone, open Settings
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_SECOND_STEP" desc="The second step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
+        Tap Apps  > Default apps
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_THIRD_STEP" desc="The third step in the bottom sheet of the default browser section within the educational tip module on the NTP.">
+        Tap Browser app > Chrome
+      </message>
+      <message name="IDS_EDUCATIONAL_TIP_DEFAULT_BROWSER_BOTTOM_SHEET_BUTTON" desc="The name of the button in the bottom sheet of the default browser section within the educational tip module on the NTP">
+        Settings
       </message>
 
       <!-- Safety Hub Magic Stack strings -->
@@ -1210,6 +1225,11 @@
       </message>
       <message name="IDS_IPH_DRAG_AND_DROP_CONTENT" desc="This text shows on the in-product help dialog for drag-and-drop. It gives instructions on how to drag and drop to create a group.">
         To group tabs, touch &amp; hold a tab. Then, drag it onto another tab.
+      </message>
+
+      <!-- Action confirmation dialog strings -->
+      <message name="IDS_CONFIRMATION_STOP_SHOWING" desc="Text next to a checkbox asking if confirmation should not be shown again. Used for various tab operations.">
+        Don&apos;t ask again
       </message>
     </messages>
   </release>

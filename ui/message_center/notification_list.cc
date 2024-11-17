@@ -13,7 +13,6 @@
 #include "base/not_fatal_until.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_blocker.h"
@@ -21,11 +20,11 @@
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include <vector>
 
 #include "ash/constants/ash_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace message_center {
 
@@ -33,13 +32,13 @@ namespace {
 
 // Constants -------------------------------------------------------------------
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // A notification created within this time period is exempted from over-limit
 // removal. NOTE: Used only if the notification limit feature is enabled.
 constexpr base::TimeDelta kRemovalExemptionPeriod = base::Seconds(1);
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Helpers ---------------------------------------------------------------------
 
@@ -95,7 +94,7 @@ NotificationList::NotificationList(MessageCenter* message_center)
 
 NotificationList::~NotificationList() = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::vector<std::string> NotificationList::GetTopKRemovableNotificationIds(
     size_t count) const {
   CHECK(ash::features::IsNotificationLimitEnabled());
@@ -123,7 +122,7 @@ std::vector<std::string> NotificationList::GetTopKRemovableNotificationIds(
 
   return found_ids;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void NotificationList::SetNotificationsShown(
     const NotificationBlockers& blockers,
@@ -513,7 +512,7 @@ void NotificationList::PushNotification(
     // For critical ChromeOS system notifications, we ignore the standard quiet
     // mode behaviour and show the notification anyways.
     bool effective_quiet_mode = quiet_mode_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     effective_quiet_mode &= notification->system_notification_warning_level() !=
                             SystemNotificationWarningLevel::CRITICAL_WARNING;
 #endif

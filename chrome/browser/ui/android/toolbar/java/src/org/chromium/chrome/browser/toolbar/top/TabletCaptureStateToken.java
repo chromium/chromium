@@ -81,7 +81,7 @@ class TabletCaptureStateToken {
 
         @Override
         public int hashCode() {
-            return super.hashCode()
+            return System.identityHashCode(this)
                     + Integer.hashCode(mVisibility)
                     + Boolean.hashCode(mIsEnabled)
                     + Integer.hashCode(mLevel)

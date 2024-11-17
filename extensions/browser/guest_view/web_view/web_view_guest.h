@@ -123,9 +123,12 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   // Reload the guest.
   void Reload();
 
-  // Overrides the user agent for this guest.
-  // This affects subsequent guest navigations.
-  void SetUserAgentOverride(const std::string& user_agent_override);
+  // Overrides the "User-Agent" header for this guest if `ua_string_override` is
+  // non-empty. This override is applied on top of the default
+  // `UserAgentOverride` of the guest, see
+  // `WebViewGuestDelegate::GetDefaultUserAgentOverride`. This affects
+  // subsequent guest navigations.
+  void SetUserAgentOverride(const std::string& ua_string_override);
 
   // Stop loading the guest.
   void Stop();
@@ -175,14 +178,15 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool GuestMadeEmbedderFullscreen() const;
   void SetFullscreenState(bool is_fullscreen);
 
-  void RequestPointerLockPermission(bool user_gesture,
+  void RequestPointerLockPermission(content::WebContents* web_contents,
+                                    bool user_gesture,
                                     bool last_unlocked_by_target,
                                     base::OnceCallback<void(bool)> callback);
 
   // GuestViewBase implementation.
-  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
-                         const base::Value::Dict& create_params,
-                         WebContentsCreatedCallback callback) final;
+  void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       const base::Value::Dict& create_params,
+                       GuestPageCreatedCallback callback) final;
   void DidAttachToEmbedder() final;
   void DidInitialize(const base::Value::Dict& create_params) final;
   void MaybeRecreateGuestContents(
@@ -209,6 +213,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool IsPermissionRequestable(ContentSettingsType type) const final;
   std::optional<content::PermissionResult> OverridePermissionResult(
       ContentSettingsType type) const final;
+
+  // GuestpageHolder::Delegate implementation.
+  bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
+                              const content::ContextMenuParams& params) final;
 
   // WebContentsDelegate implementation.
   void CloseContents(content::WebContents* source) final;
@@ -262,7 +270,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   void ExitFullscreenModeForTab(content::WebContents* web_contents) final;
   bool IsFullscreenForTabOrPending(
       const content::WebContents* web_contents) final;
-  void RequestPointerLock(content::WebContents* web_contents,
+  void RequestPointerLock(content::WebContents* guest_web_contents,
                           bool user_gesture,
                           bool last_unlocked_by_target) override;
 
@@ -332,10 +340,10 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
 
   void SetTransparency(content::RenderFrameHost* render_frame_host);
 
-  void CreateWebContentsWithStoragePartition(
+  void CreateInnerPageWithStoragePartition(
       std::unique_ptr<GuestViewBase> owned_this,
       const base::Value::Dict& create_params,
-      WebContentsCreatedCallback callback,
+      GuestPageCreatedCallback callback,
       std::optional<content::StoragePartitionConfig> storage_partition_config);
 
   // Identifies the set of rules registries belonging to this guest.

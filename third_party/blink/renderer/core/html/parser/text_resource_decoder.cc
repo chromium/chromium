@@ -337,10 +337,9 @@ void TextResourceDecoder::AutoDetectEncodingIfAllowed(
     return;
 
   WTF::TextEncoding detected_encoding;
-  if (DetectTextEncoding(data.data(), base::checked_cast<uint32_t>(data.size()),
-                         options_.HintEncoding().Utf8().c_str(),
-                         options_.HintURL(), options_.HintLanguage(),
-                         &detected_encoding)) {
+  if (DetectTextEncoding(
+          base::as_bytes(data), options_.HintEncoding().Utf8().c_str(),
+          options_.HintURL(), options_.HintLanguage(), &detected_encoding)) {
     SetEncoding(detected_encoding, kEncodingFromContentSniffing);
   }
   if (detected_encoding != WTF::UnknownEncoding())

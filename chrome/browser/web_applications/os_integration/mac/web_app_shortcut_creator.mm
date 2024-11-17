@@ -38,6 +38,7 @@
 #include "base/synchronization/lock.h"
 #include "base/version_info/version_info.h"
 #include "chrome/browser/shortcuts/platform_util_mac.h"
+#include "chrome/browser/web_applications/mojom/web_app_shortcut_copier.mojom.h"
 #include "chrome/browser/web_applications/os_integration/mac/bundle_info_plist.h"
 #include "chrome/browser/web_applications/os_integration/mac/icns_encoder.h"
 #include "chrome/browser/web_applications/os_integration/mac/icon_utils.h"
@@ -45,8 +46,13 @@
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #import "chrome/common/mac/app_mode_common.h"
+#include "components/variations/active_field_trials.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "mojo/public/cpp/platform/platform_channel.h"
+#include "mojo/public/cpp/system/invitation.h"
 
 #if defined(COMPONENT_BUILD)
 #include <mach-o/loader.h>
@@ -76,9 +82,6 @@ OSStatus SecCodeSignerAddSignatureWithErrors(SecCodeSignerRef signer,
                                              SecCSFlags flags,
                                              CFErrorRef* errors);
 
-// Key used within CoreFoundation for loaded Info plists
-extern const CFStringRef _kCFBundleNumericVersionKey;
-
 }  // extern "C"
 
 namespace web_app {
@@ -86,6 +89,10 @@ namespace web_app {
 BASE_FEATURE(kWebAppMaskableIconsOnMac,
              "WebAppMaskableIconsOnMac",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+class WebAppShortcutCopierSyncCallHelper {
+  mojo::SyncCallRestrictions::ScopedAllowSyncCall scoped_allow_;
+};
 
 namespace {
 
@@ -245,43 +252,43 @@ bool CopyStagingBundleToDestination(bool use_ad_hoc_signing_for_web_app_shims,
       base::apple::FrameworkBundlePath().Append("Helpers").Append(
           "web_app_shortcut_copier");
   base::CommandLine command_line(web_app_shortcut_copier_path);
-  command_line.AppendArgPath(staging_path);
-  command_line.AppendArgPath(dst_app_path);
+  base::LaunchOptions options;
+  mojo::PlatformChannel channel;
+  channel.PrepareToPassRemoteEndpoint(&options, &command_line);
 
-  // Pass NSBundle's cached copy of the app's Info.plist data to the helper tool
-  // for use in dynamic signature validation. The data is validated against a
-  // hash recorded in the code signature before being used during requirement
-  // validation. NSBundle's cached copy is used to ensure that any changes to
-  // Info.plist on disk due to pending updates do not result in a version of the
-  // data being used that doesn't match the code signature of the running app.
-  NSMutableDictionary* info_plist_dictionary =
-      [base::apple::OuterBundle().infoDictionary mutableCopy];
-  // NSBundle inserts CFBundleNumericVersion into its in-memory copy of the info
-  // dictionary despite it not being present on disk. Remove it so that the
-  // serialized dictionary matches the Info.plist that was present at signing
-  // time.
-  info_plist_dictionary[base::apple::CFToNSPtrCast(
-      _kCFBundleNumericVersionKey)] = nil;
-  NS_VALID_UNTIL_END_OF_SCOPE NSData* info_plist_xml_data =
-      [NSPropertyListSerialization
-          dataWithPropertyList:info_plist_dictionary
-                        format:NSPropertyListXMLFormat_v1_0
-                       options:0
-                         error:nullptr];
-  command_line.AppendArg(
-      std::string_view(static_cast<const char*>(info_plist_xml_data.bytes),
-                       info_plist_xml_data.length));
+  // Ensure that the helper tool sees the same feature state as the browser.
+  variations::PopulateLaunchOptionsWithVariationsInfo(&command_line, &options);
 
-  // Synchronously wait for the copy to complete to match the semantics of
-  // `base::CopyDirectory`.
-  std::string command_output;
-  int exit_code;
-  if (base::GetAppOutputWithExitCode(command_line, &command_output,
-                                     &exit_code)) {
-    return !exit_code;
+  base::Process copier_process = base::LaunchProcess(command_line, options);
+  if (!copier_process.IsValid()) {
+    LOG(ERROR) << "Failed to launch web_app_shortcut_copier.";
+    return false;
+  }
+  channel.RemoteProcessLaunchAttempted();
+
+  mojo::ScopedMessagePipeHandle pipe = mojo::OutgoingInvitation::SendIsolated(
+      channel.TakeLocalEndpoint(), {}, copier_process.Handle());
+  if (!pipe) {
+    LOG(ERROR) << "Failed to send Mojo invitation to web_app_shortcut_copier.";
+    return false;
+  }
+  mojo::PendingRemote<mojom::WebAppShortcutCopier> pending_remote(
+      std::move(pipe), mojom::WebAppShortcutCopier::Version_);
+  if (!pending_remote) {
+    LOG(ERROR)
+        << "Failed to establish Mojo connection with web_app_shortcut_copier.";
+    return false;
   }
 
-  return false;
+  mojo::Remote<mojom::WebAppShortcutCopier> copier(std::move(pending_remote));
+  WebAppShortcutCopierSyncCallHelper sync_calls_allowed;
+  bool copy_result = false;
+  if (!copier->CopyWebAppShortcut(staging_path, dst_app_path, &copy_result)) {
+    LOG(ERROR)
+        << "Failed to call CopyWebAppShortcut in web_app_shortcut_copier.";
+    return false;
+  }
+  return copy_result;
 }
 
 // Remove the leading . from the entries of |extensions|. Any items that do not
@@ -1002,7 +1009,11 @@ bool WebAppShortcutCreator::UpdateIcon(const base::FilePath& app_path) const {
   if (!has_valid_icons) {
     for (gfx::ImageFamily::const_iterator it = info_->favicon.begin();
          it != info_->favicon.end(); ++it) {
-      if (icns_encoder.AddImage(*it)) {
+      if (info_->is_diy_app) {
+        if (icns_encoder.AddImage(MaskDiyAppIcon(*it))) {
+          has_valid_icons = true;
+        }
+      } else if (icns_encoder.AddImage(*it)) {
         has_valid_icons = true;
       }
     }
@@ -1071,9 +1082,8 @@ bool WebAppShortcutCreator::UpdateSignature(
 
   CFDataRef cd_hash_data = base::apple::GetValueFromDictionary<CFDataRef>(
       app_shim_info.get(), kSecCodeInfoUnique);
-  std::vector<uint8_t> cd_hash(
-      CFDataGetBytePtr(cd_hash_data),
-      CFDataGetBytePtr(cd_hash_data) + CFDataGetLength(cd_hash_data));
+  auto cd_hash_span = base::apple::CFDataToSpan(cd_hash_data);
+  std::vector<uint8_t> cd_hash(cd_hash_span.begin(), cd_hash_span.end());
 
   content::GetUIThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&AppShimRegistry::SaveCdHashForApp,

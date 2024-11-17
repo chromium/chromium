@@ -42,7 +42,8 @@
           "builder": "linux-rel-no-external-ip",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-rel-no-external-ip/targets"
     }
   },
   "$build/reclient": {

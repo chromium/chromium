@@ -127,8 +127,6 @@
 #define EGL_ANGLE_feature_control 1
 #define EGL_FEATURE_NAME_ANGLE 0x3460
 #define EGL_FEATURE_CATEGORY_ANGLE 0x3461
-#define EGL_FEATURE_DESCRIPTION_ANGLE 0x3462
-#define EGL_FEATURE_BUG_ANGLE 0x3463
 #define EGL_FEATURE_STATUS_ANGLE 0x3464
 #define EGL_FEATURE_COUNT_ANGLE 0x3465
 #define EGL_FEATURE_OVERRIDES_ENABLED_ANGLE 0x3466
@@ -229,7 +227,7 @@ EGLDisplay GetPlatformANGLEDisplay(
         display_attribs.push_back(EGL_HIGH_POWER_ANGLE);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -376,8 +374,7 @@ EGLDisplay GetDisplayFromType(
           display, EGL_PLATFORM_ANGLE_TYPE_METAL_ANGLE, enabled_angle_features,
           disabled_angle_features, extra_display_attribs);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return EGL_NO_DISPLAY;
+      NOTREACHED();
   }
 }
 
@@ -452,8 +449,7 @@ const char* DisplayTypeString(DisplayType display_type) {
     case ANGLE_METAL_NULL:
       return "MetalNull";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "Err";
+      NOTREACHED();
   }
 }
 
@@ -536,8 +532,7 @@ GLDisplayPlatform* GLDisplay::GetAs() {
   bool type_checked = false;
   switch (type_) {
     case NONE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case EGL:
       type_checked = std::is_same<GLDisplayPlatform, GLDisplayEGL>::value;

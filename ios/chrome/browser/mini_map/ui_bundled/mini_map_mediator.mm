@@ -35,7 +35,8 @@ enum class MiniMapOutcome {
   kOpenedURL = 1,
   kReportedAnIssue = 2,
   kOpenedSettings = 3,
-  kMaxValue = kOpenedSettings,
+  kOpenedQuery = 4,
+  kMaxValue = kOpenedQuery,
 };
 
 }  // namespace
@@ -153,6 +154,11 @@ enum class MiniMapOutcome {
 - (void)userClosedMiniMap {
   base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
                                 MiniMapOutcome::kNormalOutcome);
+}
+
+- (void)userOpenedQueryFromMiniMap {
+  base::UmaHistogramEnumeration("IOS.MiniMap.Outcome",
+                                MiniMapOutcome::kOpenedQuery);
 }
 
 @end

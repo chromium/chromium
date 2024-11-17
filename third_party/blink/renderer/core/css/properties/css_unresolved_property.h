@@ -40,18 +40,11 @@ class CORE_EXPORT CSSUnresolvedProperty {
   }
 
   virtual bool IsResolvedProperty() const { return false; }
-  virtual const char* GetPropertyName() const {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  virtual const char* GetPropertyName() const { NOTREACHED(); }
   virtual const WTF::AtomicString& GetPropertyNameAtomicString() const {
-    NOTREACHED_IN_MIGRATION();
-    return g_empty_atom;
+    NOTREACHED();
   }
-  virtual const char* GetJSPropertyName() const {
-    NOTREACHED_IN_MIGRATION();
-    return "";
-  }
+  virtual const char* GetJSPropertyName() const { NOTREACHED(); }
   WTF::String GetPropertyNameString() const {
     // We share the StringImpl with the AtomicStrings.
     return GetPropertyNameAtomicString().GetString();

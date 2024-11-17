@@ -32,6 +32,7 @@
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection_delegate.h"
 #include "components/password_manager/core/browser/password_form_cache_impl.h"
+#include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
@@ -113,10 +114,12 @@ class PasswordManager : public PasswordManagerInterface {
 #if BUILDFLAG(IS_IOS)
   void OnSubframeFormSubmission(PasswordManagerDriver* driver,
                                 const autofill::FormData& form_data) override;
-  void UpdateStateOnUserInput(PasswordManagerDriver* driver,
-                              std::optional<autofill::FormRendererId> form_id,
-                              autofill::FieldRendererId field_id,
-                              const std::u16string& field_value) override;
+  void UpdateStateOnUserInput(
+      PasswordManagerDriver* driver,
+      const autofill::FieldDataManager& field_data_manager,
+      std::optional<autofill::FormRendererId> form_id,
+      autofill::FieldRendererId field_id,
+      const std::u16string& field_value) override;
   void OnPasswordNoLongerGenerated() override;
   void OnPasswordFormsRemoved(
       PasswordManagerDriver* driver,
@@ -449,10 +452,7 @@ class PasswordManager : public PasswordManagerInterface {
   base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
       possible_usernames_ =
           base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>(
-              base::FeatureList::IsEnabled(
-                  features::kUsernameFirstFlowStoreSeveralValues)
-                  ? features::kMaxSingleUsernameFieldsToStore.Get()
-                  : 1);
+              kMaxSingleUsernameFieldsToStore);
 };
 
 }  // namespace password_manager

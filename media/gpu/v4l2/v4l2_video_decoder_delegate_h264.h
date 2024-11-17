@@ -107,6 +107,7 @@ class V4L2VideoDecoderDelegateH264 : public H264Decoder::H264Accelerator {
   // result and can immediately return it.
   std::vector<uint8_t> last_parsed_encrypted_slice_header_;
   bool encrypted_slice_header_parsing_failed_ = false;
+  bool encrypted_slice_header_parsing_active_ = false;
 
   // For multi-slice CENCv1 H264 content we will need to track the size of the
   // headers already processed so we know where the subsequent headers are at in

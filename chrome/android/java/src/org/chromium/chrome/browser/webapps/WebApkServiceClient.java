@@ -211,12 +211,11 @@ public class WebApkServiceClient {
                             return;
                         }
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                            InstalledWebappPermissionManager.get()
-                                    .updatePermission(
-                                            origin,
-                                            webApkPackage,
-                                            ContentSettingsType.NOTIFICATIONS,
-                                            settingValue);
+                            InstalledWebappPermissionManager.updatePermission(
+                                    origin,
+                                    webApkPackage,
+                                    ContentSettingsType.NOTIFICATIONS,
+                                    settingValue);
                         }
                         return;
                     }

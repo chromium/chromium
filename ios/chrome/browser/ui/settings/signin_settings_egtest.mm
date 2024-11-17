@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "components/policy/policy_constants.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
@@ -38,25 +37,10 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
 @implementation SigninSettingsTestCase
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [PolicyAppInterface clearPolicies];
 
-  [super tearDown];
-}
-
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  if ([self isRunningTest:@selector(testSigninWithHistorySync)] ||
-      [self isRunningTest:@selector
-            (testSigninWithHistorySyncWithUnknownCapabilities)] ||
-      [self isRunningTest:@selector(testSigninWithNoAccountOnDevice)] ||
-      [self isRunningTest:@selector
-            (testSigninWithNoAccountOnDeviceWithUnknownCapabilities)]) {
-    config.features_enabled.push_back(
-        switches::kMinorModeRestrictionsForHistorySyncOptIn);
-  }
-  return config;
+  [super tearDownHelper];
 }
 
 - (void)testPromoCardHidden {

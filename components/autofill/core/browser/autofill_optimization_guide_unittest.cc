@@ -24,7 +24,7 @@
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
-#include "components/optimization_guide/core/optimization_guide_decider.h"
+#include "components/optimization_guide/core/mock_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_decision.h"
 #include "components/optimization_guide/core/optimization_metadata.h"
 #include "components/prefs/pref_service.h"
@@ -38,42 +38,12 @@ namespace autofill {
 using test::CreateTestCreditCardFormData;
 using test::CreateTestIbanFormData;
 
-class MockOptimizationGuideDecider
-    : public optimization_guide::OptimizationGuideDecider {
- public:
-  MOCK_METHOD(void,
-              RegisterOptimizationTypes,
-              (const std::vector<optimization_guide::proto::OptimizationType>&),
-              (override));
-  MOCK_METHOD(void,
-              CanApplyOptimization,
-              (const GURL&,
-               optimization_guide::proto::OptimizationType,
-               optimization_guide::OptimizationGuideDecisionCallback),
-              (override));
-  MOCK_METHOD(optimization_guide::OptimizationGuideDecision,
-              CanApplyOptimization,
-              (const GURL&,
-               optimization_guide::proto::OptimizationType,
-               optimization_guide::OptimizationMetadata*),
-              (override));
-  MOCK_METHOD(
-      void,
-      CanApplyOptimizationOnDemand,
-      (const std::vector<GURL>&,
-       const base::flat_set<optimization_guide::proto::OptimizationType>&,
-       optimization_guide::proto::RequestContext,
-       optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback,
-       std::optional<optimization_guide::proto::RequestContextMetadata>
-           request_context_metadata),
-      (override));
-};
-
 class AutofillOptimizationGuideTest : public testing::Test {
  public:
   AutofillOptimizationGuideTest()
       : pref_service_(test::PrefServiceForTesting()),
-        decider_(std::make_unique<MockOptimizationGuideDecider>()),
+        decider_(std::make_unique<
+                 optimization_guide::MockOptimizationGuideDecider>()),
         personal_data_manager_(std::make_unique<TestPersonalDataManager>()),
         autofill_optimization_guide_(
             std::make_unique<AutofillOptimizationGuide>(decider_.get())) {
@@ -111,7 +81,7 @@ class AutofillOptimizationGuideTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   std::unique_ptr<PrefService> pref_service_;
   syncer::TestSyncService sync_service_;
-  std::unique_ptr<MockOptimizationGuideDecider> decider_;
+  std::unique_ptr<optimization_guide::MockOptimizationGuideDecider> decider_;
   std::unique_ptr<TestPersonalDataManager> personal_data_manager_;
   std::unique_ptr<AutofillOptimizationGuide> autofill_optimization_guide_;
 };
@@ -150,9 +120,8 @@ TEST_F(AutofillOptimizationGuideTest, CreditCardFormFound_VcnMerchantOptOut) {
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(
-      GeoIpCountryCode(""),
-      /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                         /*log_manager=*/nullptr);
 
   EXPECT_CALL(*decider_,
               RegisterOptimizationTypes(testing::ElementsAre(
@@ -174,9 +143,8 @@ TEST_F(AutofillOptimizationGuideTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(
-      GeoIpCountryCode(""),
-      /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                         /*log_manager=*/nullptr);
 
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
@@ -198,9 +166,8 @@ TEST_F(AutofillOptimizationGuideTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(
-      GeoIpCountryCode(""),
-      /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                         /*log_manager=*/nullptr);
 
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
@@ -219,9 +186,8 @@ TEST_F(AutofillOptimizationGuideTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(
-      GeoIpCountryCode(""),
-      /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                         /*log_manager=*/nullptr);
 
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
 
@@ -237,9 +203,8 @@ TEST_F(AutofillOptimizationGuideTest,
   FormStructure form_structure{
       CreateTestCreditCardFormData(/*is_https=*/true,
                                    /*use_month_type=*/true)};
-  form_structure.DetermineHeuristicTypes(
-      GeoIpCountryCode(""),
-      /*form_interactions_ukm_logger=*/nullptr, /*log_manager=*/nullptr);
+  form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""),
+                                         /*log_manager=*/nullptr);
   personal_data_manager_.reset();
 
   EXPECT_CALL(*decider_, RegisterOptimizationTypes).Times(0);
@@ -741,7 +706,6 @@ TEST_F(
       *decider_,
       RegisterOptimizationTypes(testing::IsSupersetOf(
           {optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM})));
-
   autofill_optimization_guide_->OnDidParseForm(form_structure,
                                                personal_data_manager_.get());
 }
@@ -767,7 +731,6 @@ TEST_F(AutofillOptimizationGuideTest,
       *decider_,
       RegisterOptimizationTypes(testing::IsSupersetOf(
           {optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP})));
-
   autofill_optimization_guide_->OnDidParseForm(form_structure,
                                                personal_data_manager_.get());
 }
@@ -839,6 +802,108 @@ TEST_F(AutofillOptimizationGuideTest,
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
                                                personal_data_manager_.get());
+}
+
+// Test that we allow BNPL for Affirm on an allowlisted URL.
+TEST_F(AutofillOptimizationGuideTest,
+       IsEligibleForBuyNowPayLater_AffirmUrlAllowed) {
+  // Ensure that `IsEligibleForBuyNowPayLater()` returns the right
+  // response.
+  ON_CALL(
+      *decider_,
+      CanApplyOptimization(
+          testing::Eq(GURL("https://www.abercrombie.com")),
+          testing::Eq(
+              optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+
+  // abercrombie.com is in the allowlist.
+  EXPECT_TRUE(autofill_optimization_guide_->IsEligibleForBuyNowPayLater(
+      /*issuer_id=*/"affirm", GURL("https://www.abercrombie.com")));
+}
+
+// Test that we do not allow BNPL for Affirm on a non-allowlisted URL.
+TEST_F(AutofillOptimizationGuideTest,
+       IsEligibleForBuyNowPayLater_AffirmUrlBlocked) {
+  // Ensure that `IsEligibleForBuyNowPayLater()` returns the right
+  // response.
+  ON_CALL(
+      *decider_,
+      CanApplyOptimization(
+          testing::Eq(GURL("https://www.abc.com")),
+          testing::Eq(
+              optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kFalse));
+
+  // abc.com is not in the allowlist.
+  EXPECT_FALSE(autofill_optimization_guide_->IsEligibleForBuyNowPayLater(
+      /*issuer_id=*/"affirm", GURL("https://www.abc.com")));
+}
+
+// Test that we allow BNPL for Zip on an allowlisted URL.
+TEST_F(AutofillOptimizationGuideTest,
+       IsEligibleForBuyNowPayLater_ZipUrlAllowed) {
+  // Ensure that `IsEligibleForBuyNowPayLater()` returns the right
+  // response.
+  ON_CALL(*decider_,
+          CanApplyOptimization(
+              testing::Eq(GURL("https://www.abercrombie.com")),
+              testing::Eq(
+                  optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
+              testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                  testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+
+  // abercrombie.com is in the allowlist.
+  EXPECT_TRUE(autofill_optimization_guide_->IsEligibleForBuyNowPayLater(
+      /*issuer_id=*/"zip", GURL("https://www.abercrombie.com")));
+}
+
+// Test that we do not allow BNPL for Zip on a non-allowlisted URL.
+TEST_F(AutofillOptimizationGuideTest,
+       IsEligibleForBuyNowPayLater_ZipUrlBlocked) {
+  // Ensure that `IsEligibleForBuyNowPayLater()` returns the right
+  // response.
+  ON_CALL(*decider_,
+          CanApplyOptimization(
+              testing::Eq(GURL("https://www.abc.com")),
+              testing::Eq(
+                  optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
+              testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                  testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kFalse));
+
+  // abc.com is not in the allowlist.
+  EXPECT_FALSE(autofill_optimization_guide_->IsEligibleForBuyNowPayLater(
+      /*issuer_id=*/"zip", GURL("https://www.abc.com")));
+}
+
+// Test that we do not allow BNPL for unknown issuer id.
+TEST_F(AutofillOptimizationGuideTest,
+       IsEligibleForBuyNowPayLater_UnknownIssuerIdBlocked) {
+  // Ensure that `IsEligibleForBuyNowPayLater()` returns the right
+  // response.
+  ON_CALL(*decider_,
+          CanApplyOptimization(
+              testing::Eq(GURL("https://www.abercrombie.com")),
+              testing::Eq(
+                  optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
+              testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                  testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+
+  // abercrombie.com is in the allowlist but issuer_id is not matched.
+  EXPECT_FALSE(autofill_optimization_guide_->IsEligibleForBuyNowPayLater(
+      /*issuer_id=*/"zipp", GURL("https://www.abercrombie.com")));
 }
 #endif
 

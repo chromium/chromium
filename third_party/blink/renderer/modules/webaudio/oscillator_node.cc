@@ -29,6 +29,7 @@
 #include <limits>
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_oscillator_type.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/periodic_wave.h"
@@ -127,13 +128,13 @@ OscillatorHandler& OscillatorNode::GetOscillatorHandler() const {
   return static_cast<OscillatorHandler&>(Handler());
 }
 
-String OscillatorNode::type() const {
-  return GetOscillatorHandler().GetType();
+V8OscillatorType OscillatorNode::type() const {
+  return V8OscillatorType(GetOscillatorHandler().GetType());
 }
 
-void OscillatorNode::setType(const String& type,
+void OscillatorNode::setType(const V8OscillatorType& type,
                              ExceptionState& exception_state) {
-  GetOscillatorHandler().SetType(type, exception_state);
+  GetOscillatorHandler().SetType(type.AsEnum(), exception_state);
 }
 
 AudioParam* OscillatorNode::frequency() {

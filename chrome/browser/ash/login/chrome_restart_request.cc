@@ -44,6 +44,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "components/user_manager/user_names.h"
+#include "components/variations/variations_switches.h"
 #include "components/viz/common/switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_switches.h"
@@ -159,6 +160,9 @@ void DeriveCommandLine(const GURL& start_url,
       ::switches::kEnableWebGPUDeveloperFeatures,
       ::switches::kOzonePlatform,
       switches::kAshClearFastInkBuffer,
+      switches::kAshConstrainPointerToRoot,
+      switches::kAshDebugShortcuts,
+      switches::kAshDeveloperShortcuts,
       switches::kAshEnablePaletteOnAllDisplays,
       switches::kAshEnableTabletMode,
       switches::kAshEnableWaylandServer,
@@ -190,22 +194,22 @@ void DeriveCommandLine(const GURL& start_url,
       // Please keep these in alphabetical order. Non-UI Compositor switches
       // here should also be added to
       // content/browser/renderer_host/render_process_host_impl.cc.
-      cc::switches::kCheckDamageEarly,
-      cc::switches::kDisableCompositedAntialiasing,
-      cc::switches::kDisableMainFrameBeforeActivation,
-      cc::switches::kDisableThreadedAnimation,
-      cc::switches::kEnableGpuBenchmarking,
-      cc::switches::kEnableMainFrameBeforeActivation,
-      cc::switches::kHighlightNonLCDTextLayers,
-      cc::switches::kNumRasterThreads,
-      cc::switches::kShowCompositedLayerBorders,
-      cc::switches::kShowFPSCounter,
-      cc::switches::kShowLayerAnimationBounds,
-      cc::switches::kShowPropertyChangedRects,
-      cc::switches::kShowScreenSpaceRects,
-      cc::switches::kShowSurfaceDamageRects,
-      cc::switches::kSlowDownRasterScaleFactor,
-      cc::switches::kUIShowFPSCounter,
+      ::switches::kCheckDamageEarly,
+      ::switches::kDisableCompositedAntialiasing,
+      ::switches::kDisableMainFrameBeforeActivation,
+      ::switches::kDisableThreadedAnimation,
+      ::switches::kEnableGpuBenchmarking,
+      ::switches::kEnableMainFrameBeforeActivation,
+      ::switches::kHighlightNonLCDTextLayers,
+      ::switches::kNumRasterThreads,
+      ::switches::kShowCompositedLayerBorders,
+      ::switches::kShowFPSCounter,
+      ::switches::kShowLayerAnimationBounds,
+      ::switches::kShowPropertyChangedRects,
+      ::switches::kShowScreenSpaceRects,
+      ::switches::kShowSurfaceDamageRects,
+      ::switches::kSlowDownRasterScaleFactor,
+      ::switches::kUIShowFPSCounter,
       extensions::switches::kLoadGuestModeTestExtension,
       switches::kArcAvailability,
       switches::kArcAvailable,
@@ -230,6 +234,7 @@ void DeriveCommandLine(const GURL& start_url,
       chromeos::switches::kSystemInDevMode,
       switches::kTouchscreenUsableWhileScreenOff,
       policy::switches::kDeviceManagementUrl,
+      variations::switches::kEnableFieldTrialTestingConfig,
       wm::switches::kWindowAnimationsDisabled,
   };
   command_line->CopySwitchesFrom(base_command_line, kForwardSwitches);
@@ -406,7 +411,7 @@ void RestartChrome(const base::CommandLine& command_line,
 
   static bool restart_requested = false;
   if (restart_requested) {
-    NOTREACHED_IN_MIGRATION() << "Request chrome restart for more than once.";
+    NOTREACHED() << "Request chrome restart for more than once.";
   }
   restart_requested = true;
 

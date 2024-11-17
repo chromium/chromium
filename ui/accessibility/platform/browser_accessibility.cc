@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/ranges/algorithm.h"
@@ -43,7 +42,6 @@ namespace ui {
 
 #if DCHECK_IS_ON()
 static int browser_accessibility_count = 0;
-static bool has_dumped_possible_leak = false;
 // If there are more than 10 million objects alive at once, dump.
 // It is likely to be a leak if we have > 100 tabs x 10000 objects.
 constexpr int kDumpBrowserAccessibilityLeakNumObjects = 10000000;
@@ -76,10 +74,9 @@ BrowserAccessibility::BrowserAccessibility(BrowserAccessibilityManager* manager,
   DCHECK(node);
   DCHECK(node->IsDataValid());
 #if DCHECK_IS_ON()
-  if (++browser_accessibility_count > kDumpBrowserAccessibilityLeakNumObjects &&
-      !has_dumped_possible_leak) {
-    NOTREACHED_IN_MIGRATION();
-    has_dumped_possible_leak = true;
+  if (++browser_accessibility_count > kDumpBrowserAccessibilityLeakNumObjects) {
+    // Possible leak.
+    NOTREACHED();
   }
 #endif
 }
@@ -913,8 +910,7 @@ BrowserAccessibility::GetUIADirectChildrenInRange(AXPlatformNodeDelegate* start,
                                                   AXPlatformNodeDelegate* end) {
   // This method is only called on Windows. Other platforms should not call it.
   // The BrowserAccessibilityWin subclass overrides this method.
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 //
@@ -1958,8 +1954,7 @@ void BrowserAccessibility::MergeSpellingAndGrammarIntoTextAttributes(
     int start_offset,
     TextAttributeMap* text_attributes) {
   if (!text_attributes) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   TextAttributeList prev_attributes;

@@ -363,6 +363,7 @@ TEST_F(BrowserControlsTest,
   ScopedDynamicSafeAreaInsetsOnScrollForTest on_scroll(false);
 
   WebViewImpl* web_view = Initialize();
+  web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
   SetSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(30));
 
   // initialize browser controls to be shown.
@@ -396,6 +397,7 @@ TEST_F(BrowserControlsTest, MAYBE(DynamicSafeAreaInsetBottomScrollDown)) {
   ScopedDynamicSafeAreaInsetsOnScrollForTest on_scroll(true);
 
   WebViewImpl* web_view = Initialize();
+  web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
   SetSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(30));
 
   // initialize browser controls to be shown.
@@ -498,6 +500,7 @@ TEST_F(BrowserControlsTest,
   ScopedDynamicSafeAreaInsetsOnScrollForTest on_scroll(false);
 
   WebViewImpl* web_view = Initialize();
+  web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
   SetSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(30));
 
   // initialize browser controls to be shown.
@@ -533,6 +536,7 @@ TEST_F(BrowserControlsTest, MAYBE(DynamicSafeAreaInsetBottomScrollUp)) {
   ScopedDynamicSafeAreaInsetsOnScrollForTest on_scroll(true);
 
   WebViewImpl* web_view = Initialize();
+  web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
   SetSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(30));
 
   // initialize browser controls to be shown.
@@ -895,6 +899,7 @@ TEST_F(BrowserControlsTest,
   ScopedDynamicSafeAreaInsetsForTest dynamic_safe_area_insets(true);
 
   WebViewImpl* web_view = Initialize();
+  web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
   SetSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(30));
 
   // initialize browser controls to be shown.
@@ -914,9 +919,8 @@ TEST_F(BrowserControlsTest,
 }
 
 TEST_F(BrowserControlsTest, MAYBE(SetMaxSafeAreaInsetWithSubFrames)) {
-  ScopedDynamicSafeAreaInsetsForTest dynamic_safe_area_insets(false);
-
   WebViewImpl* web_view = Initialize("fullscreen_iframe.html");
+  web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(false);
   SetSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(30));
 
   // initialize browser controls to be shown.
@@ -948,6 +952,7 @@ TEST_F(BrowserControlsTest,
   ScopedDynamicSafeAreaInsetsForTest dynamic_safe_area_insets(true);
 
   WebViewImpl* web_view = Initialize("fullscreen_iframe.html");
+  web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);
   SetSafeAreaInsets(GetFrame(), gfx::Insets().set_bottom(30));
 
   // initialize browser controls to be shown.

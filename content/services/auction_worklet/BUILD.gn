@@ -90,6 +90,8 @@ source_set("auction_worklet") {
     "trusted_signals.h",
     "trusted_signals_kvv2_helper.cc",
     "trusted_signals_kvv2_helper.h",
+    "trusted_signals_kvv2_manager.cc",
+    "trusted_signals_kvv2_manager.h",
     "trusted_signals_request_manager.cc",
     "trusted_signals_request_manager.h",
     "webidl_compat.cc",
@@ -134,7 +136,10 @@ source_set("auction_worklet") {
 
 # See comment at the top of //content/BUILD.gn for how this works.
 group("for_content_tests") {
-  visibility = [ ":tests" ]
+  visibility = [
+    ":tests",
+    "//content/test:test_support",
+  ]
   if (!is_component_build) {
     public_deps = [ ":auction_worklet" ]
   } else {
@@ -165,6 +170,7 @@ source_set("tests") {
     "seller_worklet_unittest.cc",
     "trusted_kvv2_signals_unittest.cc",
     "trusted_signals_kvv2_helper_unittest.cc",
+    "trusted_signals_kvv2_manager_unittest.cc",
     "trusted_signals_request_manager_unittest.cc",
     "trusted_signals_unittest.cc",
     "webidl_compat_unittest.cc",

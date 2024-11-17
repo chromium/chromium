@@ -22,7 +22,7 @@
 #include "ui/display/util/edid_parser.h"
 #include "ui/gfx/icc_profile.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/display/display_features.h"
 #endif
 
@@ -172,7 +172,7 @@ gfx::ColorSpace GetColorSpaceFromEdid(const display::EdidParser& edid_parser) {
     if (base::Contains(edid_parser.supported_color_transfer_ids(),
                        gfx::ColorSpace::TransferID::PQ)) {
       transfer_id = gfx::ColorSpace::TransferID::PQ;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       if (base::FeatureList::IsEnabled(
               display::features::kEnableExternalDisplayHDR10Mode) &&
           edid_parser.is_external_display() &&
@@ -342,7 +342,7 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
     display_color_spaces.SetHDRMaxLuminanceRelative(1.1f);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (allow_high_bit_depth &&
       snapshot_color_space == gfx::ColorSpace::CreateHDR10() &&
       base::FeatureList::IsEnabled(
@@ -354,9 +354,10 @@ gfx::DisplayColorSpaces CreateDisplayColorSpaces(
         gfx::ColorSpace::CreateHDR10(), gfx::BufferFormat::RGBA_1010102);
     // TODO(b/165822222): Set initial luminance values based on display
     // brightness
+    display_color_spaces.SetSDRMaxLuminanceNits(
+        hdr_static_metadata->max / kDefaultHdrMaxLuminanceRelative);
     display_color_spaces.SetHDRMaxLuminanceRelative(
-        hdr_static_metadata->max /
-        display_color_spaces.GetSDRMaxLuminanceNits());
+        kDefaultHdrMaxLuminanceRelative);
   }
 #endif
   return display_color_spaces;

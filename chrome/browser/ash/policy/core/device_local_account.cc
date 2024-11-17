@@ -248,6 +248,7 @@ std::vector<DeviceLocalAccount> GetDeviceLocalAccounts(
       }
     }
   }
+
   return accounts;
 }
 

@@ -54,10 +54,10 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void SetSameOwner(SetSameOwnerCallback callback) override;
   void SetDifferentOwner(SetDifferentOwnerCallback callback) override;
   void SetWipeDevice(bool wipe_device, SetWipeDeviceCallback) override;
-  void ChooseManuallyDisableWriteProtect(
-      ChooseManuallyDisableWriteProtectCallback callback) override;
-  void ChooseRsuDisableWriteProtect(
-      ChooseRsuDisableWriteProtectCallback callback) override;
+  void SetManuallyDisableWriteProtect(
+      SetManuallyDisableWriteProtectCallback callback) override;
+  void SetRsuDisableWriteProtect(
+      SetRsuDisableWriteProtectCallback callback) override;
   void GetRsuDisableWriteProtectChallenge(
       GetRsuDisableWriteProtectChallengeCallback callback) override;
   void GetRsuDisableWriteProtectHwid(

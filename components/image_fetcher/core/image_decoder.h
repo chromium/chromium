@@ -27,12 +27,12 @@ using ImageDecodedCallback = base::OnceCallback<void(const gfx::Image&)>;
 // sure to decode safely.
 class ImageDecoder {
  public:
-  ImageDecoder() {}
+  ImageDecoder() = default;
 
   ImageDecoder(const ImageDecoder&) = delete;
   ImageDecoder& operator=(const ImageDecoder&) = delete;
 
-  virtual ~ImageDecoder() {}
+  virtual ~ImageDecoder() = default;
 
   // Decodes the passed |image_data| and runs the given callback. The callback
   // is run even if decoding the image fails. In case an error occured during

@@ -9,6 +9,7 @@
 
 #include "device/vr/public/mojom/pose.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_image_tracking_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -39,7 +40,7 @@ class XRImageTrackingResult : public ScriptWrappable {
 
   float measuredWidthInMeters() { return width_in_meters_; }
 
-  const String& trackingState() { return tracking_state_string_; }
+  V8XRImageTrackingState trackingState() { return tracking_state_; }
 
   bool IsStationary() const { return false; }
 
@@ -48,7 +49,8 @@ class XRImageTrackingResult : public ScriptWrappable {
  private:
   Member<XRSession> session_;
   uint32_t index_;
-  String tracking_state_string_;
+  V8XRImageTrackingState tracking_state_ =
+      V8XRImageTrackingState(V8XRImageTrackingState::Enum::kEmulated);
   std::optional<device::Pose> mojo_from_this_;
   float width_in_meters_;
 

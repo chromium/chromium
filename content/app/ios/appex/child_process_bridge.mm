@@ -7,13 +7,13 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#import <pthread.h>
-#import <xpc/xpc.h>
+#include <pthread.h>
+#include <xpc/xpc.h>
 
-#import "base/check_op.h"
-#import "base/logging.h"
-#import "base/mac/mach_port_rendezvous.h"
-#import "base/apple/bundle_locations.h"
+#include "base/apple/bundle_locations.h"
+#include "base/apple/mach_port_rendezvous.h"
+#include "base/check_op.h"
+#include "base/logging.h"
 
 // Leaked variables for now.
 static size_t g_argc = 0;
@@ -53,7 +53,7 @@ extern "C" IOS_INIT_EXPORT void ChildProcessHandleNewConnection(
     mach_port_t port = xpc_dictionary_copy_mach_send(msg, "port");
     base::apple::ScopedMachSendRight server_port(port);
     bool res =
-        base::MachPortRendezvousClient::Initialize(std::move(server_port));
+        base::MachPortRendezvousClientIOS::Initialize(std::move(server_port));
     CHECK(res) << "MachPortRendezvousClient failed";
     // TODO(dtapuska): For now we create our own main thread, figure out if we
     // can use the ExtensionMain (thread 0) as the main thread but calling

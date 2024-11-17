@@ -23,6 +23,7 @@
 #include "base/big_endian.h"
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -77,11 +78,11 @@ constexpr size_t kMaximumCloseReasonLength = 125 - kWebSocketCloseCodeLength;
 
 // Check a close status code for strict compliance with RFC6455. This is only
 // used for close codes received from a renderer that we are intending to send
-// out over the network. See ParseClose() for the restrictions on incoming close
-// codes. The |code| parameter is type int for convenience of implementation;
-// the real type is uint16_t. Code 1005 is treated specially; it cannot be set
-// explicitly by Javascript but the renderer uses it to indicate we should send
-// a Close frame with no payload.
+// out over the network. See ParseCloseFrame() for the restrictions on incoming
+// close codes. The |code| parameter is type int for convenience of
+// implementation; the real type is uint16_t. Code 1005 is treated specially; it
+// cannot be set explicitly by Javascript but the renderer uses it to indicate
+// we should send a Close frame with no payload.
 bool IsStrictlyValidCloseStatusCode(int code) {
   static constexpr int kInvalidRanges[] = {
       // [BAD, OK)
@@ -177,10 +178,11 @@ class WebSocketChannel::SendBuffer {
   std::vector<std::unique_ptr<WebSocketFrame>>* frames() { return &frames_; }
 
  private:
-  // The frames_ that will be sent in the next call to WriteFrames().
-  std::vector<std::unique_ptr<WebSocketFrame>> frames_;
   // References of each WebSocketFrame.data;
   std::vector<scoped_refptr<IOBuffer>> buffers_;
+  // The frames_ that will be sent in the next call to WriteFrames().
+  // Note: The frames_ can contain non-owning pointers to buffers_.
+  std::vector<std::unique_ptr<WebSocketFrame>> frames_;
 
   // The total size of the payload data in |frames_|. This will be used to
   // measure the throughput of the link.
@@ -708,10 +710,8 @@ ChannelState WebSocketChannel::HandleFrame(
   }
 
   // Respond to the frame appropriately to its type.
-  return HandleFrameByState(
-      opcode, frame->header.final,
-      base::make_span(frame->payload, base::checked_cast<size_t>(
-                                          frame->header.payload_length)));
+  return HandleFrameByState(opcode, frame->header.final,
+                            base::as_chars(frame->payload));
 }
 
 ChannelState WebSocketChannel::HandleFrameByState(
@@ -910,7 +910,8 @@ ChannelState WebSocketChannel::SendFrameInternal(
   header.final = fin;
   header.masked = true;
   header.payload_length = buffer_size;
-  frame->payload = buffer->data();
+  frame->payload =
+      buffer->span().first(base::checked_cast<size_t>(buffer_size));
 
   if (data_being_sent_) {
     // Either the link to the WebSocket server is saturated, or several messages
@@ -981,53 +982,14 @@ bool WebSocketChannel::ParseClose(base::span<const char> payload,
                                   uint16_t* code,
                                   std::string* reason,
                                   std::string* message) {
-  const uint64_t size = static_cast<uint64_t>(payload.size());
-  reason->clear();
-  if (size < kWebSocketCloseCodeLength) {
-    if (size == 0U) {
-      *code = kWebSocketErrorNoStatusReceived;
-      return true;
-    }
-
-    DVLOG(1) << "Close frame with payload size " << size << " received "
-             << "(the first byte is " << std::hex
-             << static_cast<int>(payload[0]) << ")";
-    *code = kWebSocketErrorProtocolError;
-    *message =
-        "Received a broken close frame containing an invalid size body.";
+  auto result = ParseCloseFrame(payload);
+  *code = result.code;
+  *reason = result.reason;
+  if (result.error.has_value()) {
+    *message = result.error.value();
     return false;
   }
-
-  const char* data = payload.data();
-  uint16_t unchecked_code =
-      base::U16FromBigEndian(base::as_byte_span(payload).first<2>());
-  static_assert(sizeof(unchecked_code) == kWebSocketCloseCodeLength,
-                "they should both be two bytes");
-
-  switch (unchecked_code) {
-    case kWebSocketErrorNoStatusReceived:
-    case kWebSocketErrorAbnormalClosure:
-    case kWebSocketErrorTlsHandshake:
-      *code = kWebSocketErrorProtocolError;
-      *message =
-          "Received a broken close frame containing a reserved status code.";
-      return false;
-
-    default:
-      *code = unchecked_code;
-      break;
-  }
-
-  std::string text(data + kWebSocketCloseCodeLength, data + size);
-  if (StreamingUtf8Validator::Validate(text)) {
-    reason->swap(text);
-    return true;
-  }
-
-  *code = kWebSocketErrorProtocolError;
-  *reason = "Invalid UTF-8 in Close frame";
-  *message = "Received a broken close frame containing invalid UTF-8.";
-  return false;
+  return true;
 }
 
 void WebSocketChannel::DoDropChannel(bool was_clean,

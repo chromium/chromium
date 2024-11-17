@@ -74,10 +74,10 @@ public class TestWebServer extends WebServer {
 
     /**
      * Create and start a local HTTP server instance.
+     *
      * @param port Port number the server must use, or 0 to automatically choose a free port.
      * @param ssl True if the server should be using secure sockets.
      * @param additional True if creating an additional server instance.
-     * @throws Exception
      */
     private TestWebServer(int port, boolean ssl, boolean additional) throws Exception {
         super(port, ssl, additional);

@@ -132,8 +132,8 @@ const net::HttpStatusCode kRedirectStatusCodes[] = {
 // requests to https://{foo|bar}.com/non-existing-{image.jpg|iframe.html}.
 class ThirdPartyURLLoaderInterceptor {
  public:
-  explicit ThirdPartyURLLoaderInterceptor(const std::set<GURL> intercepted_urls)
-      : intercepted_urls_(intercepted_urls),
+  explicit ThirdPartyURLLoaderInterceptor(std::set<GURL> intercepted_urls)
+      : intercepted_urls_(std::move(intercepted_urls)),
         interceptor_(base::BindRepeating(
             &ThirdPartyURLLoaderInterceptor::InterceptURLRequest,
             base::Unretained(this))) {}
@@ -363,8 +363,8 @@ class AlternatingCriticalCHRequestHandler {
 void ExpectUKMSeen(const ukm::TestAutoSetUkmRecorder& ukm_recorder,
                    const std::vector<network::mojom::WebClientHintsType>& hints,
                    size_t loads,
-                   const std::string_view metric_name,
-                   const std::string_view type_name) {
+                   std::string_view metric_name,
+                   std::string_view type_name) {
   auto ukm_entries = ukm_recorder.GetEntriesByName(metric_name);
   // We expect the same series of `hints` to appear `loads` times.
   ASSERT_EQ(ukm_entries.size(), hints.size() * loads);
@@ -1257,14 +1257,6 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
         continue;
       }
 
-      // Skip over `Sec-CH-Prefers-Reduced-Transparency` when its feature is
-      // disabled
-      if (header == "sec-ch-prefers-reduced-transparency" &&
-          !base::FeatureList::IsEnabled(
-              blink::features::kClientHintsPrefersReducedTransparency)) {
-        continue;
-      }
-
       EXPECT_EQ(expect_client_hints, base::Contains(request.headers, header));
     }
   }
@@ -1311,7 +1303,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
       } else if (expected_ect == net::EFFECTIVE_CONNECTION_TYPE_3G) {
         EXPECT_NEAR(450, rtt_value, 90);
       } else {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
 
       // Effective connection type is forced to 2G using command line in these
@@ -1322,7 +1314,7 @@ class ClientHintsBrowserTest : public policy::PolicyTest {
       } else if (expected_ect == net::EFFECTIVE_CONNECTION_TYPE_3G) {
         EXPECT_NEAR(0.4, mbps_value, 0.1);
       } else {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
 
       EXPECT_EQ(expected_ect == net::EFFECTIVE_CONNECTION_TYPE_2G ? "2g" : "3g",
@@ -3447,10 +3439,10 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     std::unique_ptr<base::FeatureList> feature_list =
         std::make_unique<base::FeatureList>();
     // Don't include ClientHintsDPR in the enabled features; we will verify that
-    // sec-ch-dpr is not included.
+    // dpr is not included.
     feature_list->InitFromCommandLine(
         "CriticalClientHint,AcceptCHFrame",
-        "ClientHintsDPR,UseNewAlpsCodepointHttp2");
+        "ClientHintsDPR_DEPRECATED,UseNewAlpsCodepointHttp2");
     scoped_feature_list_.InitWithFeatureList(std::move(feature_list));
 
     InProcessBrowserTest::SetUp();
@@ -3466,8 +3458,8 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     return https_server_.GetURL("/critical_ch_ua_full_version.html");
   }
 
-  GURL critical_ch_dpr_url() const {
-    return https_server_.GetURL("/critical_ch_dpr.html");
+  GURL critical_ch_dpr_deprecated_url() const {
+    return https_server_.GetURL("/critical_ch_dpr_deprecated.html");
   }
 
   GURL critical_ch_viewport_url() const {
@@ -3502,9 +3494,9 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     return ch_ua_full_version_list_;
   }
 
-  const std::optional<std::string>& observed_ch_dpr() {
-    base::AutoLock lock(ch_dpr_lock_);
-    return ch_dpr_;
+  const std::optional<std::string>& observed_ch_dpr_deprecated() {
+    base::AutoLock lock(ch_dpr_deprecated_lock_);
+    return ch_dpr_deprecated_;
   }
 
   const std::vector<std::string>& observed_ch_viewport_heights() {
@@ -3531,8 +3523,8 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
         request.headers.end()) {
       SetChUaFullVersionList(request.headers.at("sec-ch-ua-full-version-list"));
     }
-    if (request.headers.find("sec-ch-dpr") != request.headers.end()) {
-      SetChDpr(request.headers.at("sec-ch-dpr"));
+    if (request.headers.find("dpr") != request.headers.end()) {
+      SetChDprDeprecated(request.headers.at("dpr"));
     }
     if (request.headers.find("sec-ch-viewport-height") !=
         request.headers.end()) {
@@ -3595,9 +3587,9 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
     ch_ua_full_version_list_ = ch_ua_full_version_list;
   }
 
-  void SetChDpr(const std::string& ch_dpr) {
-    base::AutoLock lock(ch_dpr_lock_);
-    ch_dpr_ = ch_dpr;
+  void SetChDprDeprecated(const std::string& ch_dpr_deprecated) {
+    base::AutoLock lock(ch_dpr_deprecated_lock_);
+    ch_dpr_deprecated_ = ch_dpr_deprecated;
   }
 
   void AppendChViewportHeight(const std::string& ch_viewport_heights) {
@@ -3624,8 +3616,9 @@ class CriticalClientHintsBrowserTest : public InProcessBrowserTest {
   base::Lock ch_ua_full_version_list_lock_;
   std::optional<std::string> ch_ua_full_version_list_
       GUARDED_BY(ch_ua_full_version_list_lock_);
-  base::Lock ch_dpr_lock_;
-  std::optional<std::string> ch_dpr_ GUARDED_BY(ch_dpr_lock_);
+  base::Lock ch_dpr_deprecated_lock_;
+  std::optional<std::string> ch_dpr_deprecated_
+      GUARDED_BY(ch_dpr_deprecated_lock_);
   base::Lock ch_viewport_heights_lock_;
   std::vector<std::string> ch_viewport_heights_
       GUARDED_BY(ch_viewport_heights_lock_);
@@ -3649,7 +3642,6 @@ IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
   const std::string expected_ch_ua_full_version = "\"" + ua.full_version + "\"";
   EXPECT_THAT(observed_ch_ua_full_version(),
               Optional(Eq(expected_ch_ua_full_version)));
-  EXPECT_EQ(observed_ch_dpr(), std::nullopt);
   EXPECT_EQ(observed_ch_ua_full_version_list(), std::nullopt);
   // One navigation occurred but it was restarted.
   ExpectAcceptCHHeaderUKMSeen(
@@ -3674,10 +3666,9 @@ IN_PROC_BROWSER_TEST_F(CriticalClientHintsBrowserTest,
       ua.SerializeBrandFullVersionList();
   EXPECT_THAT(observed_ch_ua_full_version_list(),
               Optional(Eq(expected_ch_ua_full_version_list)));
-  // The request should not have been resent, so ch-ua-full-version and dpr
+  // The request should not have been resent, so ch-ua-full-version
   // should also not be present.
   EXPECT_EQ(observed_ch_ua_full_version(), std::nullopt);
-  EXPECT_EQ(observed_ch_dpr(), std::nullopt);
   // One navigation occurred but it was restarted.
   ExpectAcceptCHHeaderUKMSeen(
       *ukm_recorder_,
@@ -3696,22 +3687,23 @@ IN_PROC_BROWSER_TEST_F(
     CriticalClientHintsBrowserTest,
     CriticalClientHintFilteredOutOfAcceptChNotInRequestHeader) {
   // On the first navigation request, the client hints in the Critical-CH
-  // should be set on the request header, but in this case, the kClientHintsDPR
-  // is not enabled, so the critical client hint won't be set in the request
-  // header.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), critical_ch_dpr_url()));
-  EXPECT_EQ(observed_ch_dpr(), std::nullopt);
+  // should be set on the request header, but in this case, the
+  // kClientHintsDPR_DEPRECATED is not enabled, so the critical client hint
+  // won't be set in the request header.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           critical_ch_dpr_deprecated_url()));
+  EXPECT_EQ(observed_ch_dpr_deprecated(), std::nullopt);
   // The request should not have been resent, so ch-ua-full-version should also
   // not be present.
   EXPECT_EQ(observed_ch_ua_full_version(), std::nullopt);
   ExpectAcceptCHHeaderUKMSeen(
       *ukm_recorder_,
-      {network::mojom::WebClientHintsType::kDpr,
+      {network::mojom::WebClientHintsType::kDpr_DEPRECATED,
        network::mojom::WebClientHintsType::kUAFullVersion},
       /*loads=*/1);
-  ExpectCriticalCHHeaderUKMSeen(*ukm_recorder_,
-                                {network::mojom::WebClientHintsType::kDpr},
-                                /*loads=*/1);
+  ExpectCriticalCHHeaderUKMSeen(
+      *ukm_recorder_, {network::mojom::WebClientHintsType::kDpr_DEPRECATED},
+      /*loads=*/1);
 }
 
 // Some bots disable DCHECK, but GetRenderWidgetHostViewFromFrameTreeNode
@@ -4581,7 +4573,7 @@ class ThirdPartyUaReductionBrowserTest : public UaReductionBrowserTest {
     if (value != nullptr) {
       last_user_agent_ = *value;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 
@@ -4969,31 +4961,6 @@ IN_PROC_BROWSER_TEST_F(RedirectUaReductionBrowserTest, NormalRedirectRequest) {
       /*expected_ua_reduced=*/
       base::FeatureList::IsEnabled(
           blink::features::kReduceUserAgentMinorVersion));
-}
-
-class PrefersReducedTransparencyExplicitlyDisabledBrowserTest
-    : public ClientHintsBrowserTestWithEmulatedMedia {
- public:
-  PrefersReducedTransparencyExplicitlyDisabledBrowserTest()
-      : ClientHintsBrowserTestWithEmulatedMedia(
-            "",
-            "ClientHintsPrefersReducedTransparency") {}
-};
-
-IN_PROC_BROWSER_TEST_F(PrefersReducedTransparencyExplicitlyDisabledBrowserTest,
-                       PrefersReducedTransparencyDisabled) {
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
-  EXPECT_EQ(prefers_reduced_transparency_observed(), "");
-  Attach();
-
-  EmulateMedia(
-      R"([{"name": "prefers-reduced-transparency", "value": "reduce"}])");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
-  EXPECT_EQ(prefers_reduced_transparency_observed(), "");
-
-  EmulateMedia(R"([{"name": "prefers-reduced-transparency", "value": ""}])");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url()));
-  EXPECT_EQ(prefers_reduced_transparency_observed(), "");
 }
 
 class QUICClientHintsTest : public ClientHintsBrowserTest {

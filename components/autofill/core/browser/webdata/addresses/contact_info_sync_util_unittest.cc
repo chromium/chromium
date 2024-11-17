@@ -61,6 +61,12 @@ AutofillProfile ConstructBaseProfile(
                                            VerificationStatus::kParsed);
   profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"John K. Doe",
                                            VerificationStatus::kUserVerified);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FAMILY_NAME, u"Doe",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_GIVEN_NAME, u"John",
+                                           VerificationStatus::kParsed);
+  profile.SetRawInfoWithVerificationStatus(ALTERNATIVE_FULL_NAME, u"John Doe",
+                                           VerificationStatus::kUserVerified);
 
   // Set address-related values and statuses.
   profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Mountain View",
@@ -352,6 +358,12 @@ ContactInfoSpecifics ConstructBaseSpecifics() {
   SetToken(specifics.mutable_name_last_second(), "e",
            ContactInfoSpecifics::PARSED);
   SetToken(specifics.mutable_name_full(), "John K. Doe",
+           ContactInfoSpecifics::USER_VERIFIED);
+  SetToken(specifics.mutable_alternative_family_name(), "Doe",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_alternative_given_name(), "John",
+           ContactInfoSpecifics::PARSED);
+  SetToken(specifics.mutable_alternative_full_name(), "John Doe",
            ContactInfoSpecifics::USER_VERIFIED);
 
   // Set address-related values and statuses.
@@ -683,7 +695,8 @@ class ContactInfoSyncUtilTest
                                 features::kAutofillUseFRAddressModel,
                                 features::kAutofillUseINAddressModel,
                                 features::kAutofillUseITAddressModel,
-                                features::kAutofillTrackMultipleUseDates},
+                                features::kAutofillUseNLAddressModel,
+                                features::kAutofillSupportPhoneticNameForJP},
                                {});
   }
 

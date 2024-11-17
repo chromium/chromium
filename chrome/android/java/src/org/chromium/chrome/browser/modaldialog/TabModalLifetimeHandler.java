@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.DestroyObserver;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
-import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter.TabModalBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
@@ -80,7 +79,6 @@ public class TabModalLifetimeHandler
     private final Supplier<BrowserControlsVisibilityManager>
             mBrowserControlsVisibilityManagerSupplier;
     private final Supplier<FullscreenManager> mFullscreenManagerSupplier;
-    private final TabModalBrowserControlsVisibilityDelegate mVisibilityDelegate;
     private final ObservableSupplierImpl<Boolean> mHandleBackPressChangedSupplier =
             new ObservableSupplierImpl<>();
     private final BackPressManager mBackPressManager;
@@ -128,18 +126,16 @@ public class TabModalLifetimeHandler
         mToolbarManagerSupplier = toolbarManagerSupplier;
         mFullscreenManagerSupplier = fullscreenManagerSupplier;
         mBrowserControlsVisibilityManagerSupplier = browserControlsVisibilityManagerSupplier;
-        mVisibilityDelegate = new TabModalBrowserControlsVisibilityDelegate();
         mHideContextualSearch = hideContextualSearch;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mBackPressManager = backPressManager;
-        if (BackPressManager.isEnabled()) {
-            mManager.addObserver(this);
-            backPressManager.addHandler(this, Type.TAB_MODAL_HANDLER);
-        }
+        mManager.addObserver(this);
+        backPressManager.addHandler(this, Type.TAB_MODAL_HANDLER);
     }
 
     /**
      * Notified when the focus of the omnibox has changed.
+     *
      * @param hasFocus Whether the omnibox currently has focus.
      */
     public void onOmniboxFocusChanged(boolean hasFocus) {

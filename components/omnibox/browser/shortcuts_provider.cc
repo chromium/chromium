@@ -75,20 +75,21 @@ class DestinationURLEqualsURL {
 
 // Helpers for extracting aggregated factors from a vector of shortcuts.
 const ShortcutsDatabase::Shortcut* ShortestShortcutText(
-    std::vector<const ShortcutsDatabase::Shortcut*> shortcuts) {
+    const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts) {
   return *base::ranges::min_element(shortcuts, {}, [](const auto* shortcut) {
     return shortcut->text.length();
   });
 }
 
 const ShortcutsDatabase::Shortcut* MostRecentShortcut(
-    std::vector<const ShortcutsDatabase::Shortcut*> shortcuts) {
+    const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts) {
   return *base::ranges::max_element(shortcuts, {}, [](const auto* shortcut) {
     return shortcut->last_access_time;
   });
 }
 
-int SumNumberOfHits(std::vector<const ShortcutsDatabase::Shortcut*> shortcuts) {
+int SumNumberOfHits(
+    const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts) {
   return std::accumulate(shortcuts.begin(), shortcuts.end(), 0,
                          [](int sum, const auto* shortcut) {
                            return sum + shortcut->number_of_hits;
@@ -96,7 +97,7 @@ int SumNumberOfHits(std::vector<const ShortcutsDatabase::Shortcut*> shortcuts) {
 }
 
 const ShortcutsDatabase::Shortcut* ShortestShortcutContent(
-    std::vector<const ShortcutsDatabase::Shortcut*> shortcuts) {
+    const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts) {
   return *base::ranges::min_element(shortcuts, {}, [](const auto* shortcut) {
     return shortcut->match_core.contents.length();
   });
@@ -499,7 +500,7 @@ AutocompleteMatch ShortcutsProvider::ShortcutMatchToACMatch(
     int relevance,
     const AutocompleteInput& input,
     const std::u16string& fixed_up_input_text,
-    const std::u16string lower_input) {
+    const std::u16string& lower_input) {
   DCHECK(!input.text().empty());
   AutocompleteMatch match;
   match.provider = this;

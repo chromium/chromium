@@ -676,8 +676,7 @@ bool LayoutMultiColumnFlowThread::DescendantIsValidColumnSpanner(
     if (!CanContainSpannerInParentFragmentationContext(*ancestor))
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void LayoutMultiColumnFlowThread::AddColumnSetToThread(

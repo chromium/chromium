@@ -1,0 +1,159 @@
+<style include="settings-shared settings-columned-section">
+  .bullet-one {
+    margin-bottom: 1lh;
+  }
+
+  .separator {
+    margin: 0 4px;
+  }
+
+  .separator + settings-toggle-button {
+    margin-inline-end: 12px;
+  }
+
+  cr-icon {
+    flex-shrink: 0;
+  }
+</style>
+
+<template is="dom-if" if="[[!enableAiSettingsPageRefresh_]]" restamp>
+  <settings-toggle-button label="$i18n{historySearchSettingLabel}"
+      sub-label="[[toggleSubLabel_]]"
+      learn-more-url="$i18n{historySearchLearnMoreUrl}"
+      learn-more-aria-label="$i18n{historySearchLearnMoreA11yLabel}"
+      pref="{{prefs.optimization_guide.history_search_setting_state}}"
+      numeric-unchecked-values="[[numericUncheckedValues_]]"
+      numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]">
+  </settings-toggle-button>
+  <div class="settings-columned-section">
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:astrophotography-mode" aria-hidden="true">
+          </cr-icon>
+          <div class="secondary" hidden="[[isAnswersFeatureEnabled_]]">
+            $i18n{historySearchWhenOnBulletOne}
+          </div>
+          <div class="secondary" hidden="[[!isAnswersFeatureEnabled_]]" >
+            <div class="bullet-one">
+              $i18n{historySearchAnswersWhenOnBulletOne}
+            </div>
+            <div>$i18n{historySearchAnswersWhenOnBulletTwo}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:find-in-path" aria-hidden="true"></cr-icon>
+          <div class="secondary" hidden="[[isAnswersFeatureEnabled_]]">
+            <div class="bullet-one">$i18n{historySearchConsiderBulletOne}</div>
+            <div>$i18n{historySearchConsiderBulletTwo}</div>
+          </div>
+          <div class="secondary" hidden="[[!isAnswersFeatureEnabled_]]">
+            <div class="bullet-one">
+              $i18n{historySearchAnswersConsiderBulletOne}
+            </div>
+            <div>$i18n{historySearchAnswersConsiderBulletTwo}</div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>
+
+<template is="dom-if" if="[[enableAiSettingsPageRefresh_]]" restamp>
+  <div class="settings-row first">
+    <cr-link-row label="$i18n{historySearchSettingLabel}"
+        on-click="onHistorySearchLinkoutClick_" external>
+      <div slot="sub-label">
+        <span id="linkoutText" hidden="[[isAnswersFeatureEnabled_]]">
+          $i18n{historySearchSettingSublabelV2}$i18n{sentenceEnd}
+        </span>
+        <span id="linkoutTextWithAnswers"
+            hidden="[[!isAnswersFeatureEnabled_]]">
+          $i18n{historySearchWithAnswersSettingSublabelV2}$i18n{sentenceEnd}
+        </span>
+        <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+            aria-label="$i18n{historySearchLearnMoreA11yLabel}"
+            on-click="onLearnMoreClick_" target="_blank">
+          $i18n{learnMore}
+        </a>
+      </div>
+    </cr-link-row>
+    <div class="separator"></div>
+    <settings-toggle-button aria-label="$i18n{historySearchSettingLabel}"
+        learn-more-url="[[getLearnMoreUrl_(enterprisePref_)]]"
+        learn-more-aria-label="$i18n{historySearchLearnMoreA11yLabel}"
+        pref="{{prefs.optimization_guide.history_search_setting_state}}"
+        numeric-unchecked-values="[[numericUncheckedValues_]]"
+        numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
+        on-settings-boolean-control-change="onHistorySearchToggleChange_">
+    </settings-toggle-button>
+  </div>
+  <div class="settings-columned-section">
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:search-spark" aria-hidden="true"></cr-icon>
+          <div id="whenOnPageContentText" class="secondary"
+              hidden="[[isAnswersFeatureEnabled_]]">
+            $i18n{historySearchWhenOnPageContent}
+          </div>
+          <div id="whenOnPageContentTextWithAnswers" class="secondary"
+              hidden="[[!isAnswersFeatureEnabled_]]">
+            $i18n{historySearchWithAnswersWhenOnPageContent}
+          </div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:quick-reference-all" aria-hidden="true">
+          </cr-icon>
+          <div class="secondary">$i18n{historySearchWhenOnSearchFrom}</div>
+        </li>
+        <li id="whenOnLogStartItem" hidden="[[!isAnswersFeatureEnabled_]]">
+          <cr-icon icon="settings20:summarize" aria-hidden="true">
+          </cr-icon>
+          <div class="secondary">
+            $i18n{historySearchWithAnswersWhenOnLogStart}
+          </div>
+        </li>
+      </ul>
+    </div>
+    <div class="column">
+      <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+      <ul class="icon-bulleted-list">
+        <li>
+          <cr-icon icon="settings20:psychiatry" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{aiSubpageSublabelAi}</div>
+        </li>
+        <li>
+          <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
+          <div class="secondary">$i18n{historySearchConsiderData}</div>
+        </li>
+        <settings-ai-logging-info-bullet pref="[[enterprisePref_]]">
+        </settings-ai-logging-info-bullet>
+        <li>
+          <cr-icon icon="settings20:file-save" aria-hidden="true"></cr-icon>
+          <div id="considerDataEncryptedText" class="secondary"
+              hidden="[[isAnswersFeatureEnabled_]]">
+            $i18n{historySearchConsiderDataEncrypted}
+          </div>
+          <div id="considerDataEncryptedTextWithAnswers" class="secondary"
+              hidden="[[!isAnswersFeatureEnabled_]]">
+            $i18n{historySearchWithAnswersConsiderDataEncrypted}
+          </div>
+        </li>
+        <li id="considerOutDatedItem" hidden="[[!isAnswersFeatureEnabled_]]">
+          <cr-icon icon="settings20:difference" aria-hidden="true"></cr-icon>
+          <div class="secondary">
+            $i18n{historySearchWithAnswersConsiderOutdated}
+          </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</template>

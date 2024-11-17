@@ -29,8 +29,7 @@ blink::mojom::FaviconIconType ToType(std::string type) {
     return blink::mojom::FaviconIconType::kTouchIcon;
   else if (type == "touch precomposed icon")
     return blink::mojom::FaviconIconType::kTouchPrecomposedIcon;
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::FaviconIconType::kInvalid;
+  NOTREACHED();
 }
 
 }  // namespace

@@ -57,7 +57,7 @@ public class NavigationObserver extends TabModelSelectorTabObserver {
             return;
         }
 
-        TabGroupSyncUtils.updateTabRedirectChain(tab, navigationHandle);
+        TabGroupSyncUtils.onDidFinishNavigation(tab, navigationHandle);
 
         if (!mEnableObservers) return;
 

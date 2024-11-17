@@ -395,6 +395,9 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   bool should_warm_up_compositor() const {
     return attributes_.should_warm_up_compositor;
   }
+  bool should_prepare_paint_tree() const {
+    return attributes_.should_prepare_paint_tree;
+  }
 
   bool IsInitialNavigation(const NavigationRequest& navigation_request) const;
 
@@ -409,6 +412,17 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
   // Called when we stop blocking navigation while waiting for headers.
   void OnWaitingForHeadersFinished(NavigationHandle& navigation_handle,
                                    WaitingForHeadersFinishedReason reason);
+
+  // Returns true iff prefetch ahead of prerender is not available for this
+  // prerender and this prerender should be aborted.
+  //
+  // If `kPrerender2FallbackPrefetchSpecRules` is enabled, `PrerendererImpl`
+  // triggers a prefetch ahead of prerender to reduce fetch in the case of that
+  // the prerender failed. If the prefetch failed, prerender initial navigation
+  // tries to fall back to normal request, i.e. without prefetch, which can be a
+  // second fetch if the prefetch reached to fetch phase. To avoid the second
+  // fetch, we need to abort the prerender. This method judges a condition.
+  bool ShouldAbortNavigationBecausePrefetchUnavailable() const;
 
  private:
   void RecordFailedFinalStatusImpl(const PrerenderCancellationReason& reason);

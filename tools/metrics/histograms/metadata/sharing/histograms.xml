@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="SharedHighlights.AndroidShareSheet.SharedState"
-    enum="LinkGenerationSharedStatus" expires_after="2025-02-23">
+    enum="LinkGenerationSharedStatus" expires_after="2025-04-27">
   <owner>sebsg@chromium.org</owner>
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
@@ -73,7 +73,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error"
-    enum="LinkGenerationError" expires_after="2025-02-02">
+    enum="LinkGenerationError" expires_after="2025-04-06">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -94,7 +94,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SharedHighlights.LinkGenerated.Error.Requested"
-    enum="LinkGenerationError" expires_after="2025-02-02">
+    enum="LinkGenerationError" expires_after="2025-04-06">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-shared-highlighting@google.com</owner>
   <summary>
@@ -268,7 +268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.DefaultSharesheetAndroid.Opened" enum="ShareOrigin"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>wenyufu@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
@@ -290,7 +290,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.MessageReceivedType" enum="SharingMessageType"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -301,75 +301,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.PreparePreviewFaviconDuration" units="ms"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
     The time to download the favicon as the image preview for sharing an link
     using Android share sheet. Recorded when sharing a link with Android share
     sheet only.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.QRCodeGeneration.Duration" units="ms"
-    expires_after="2025-01-26">
-  <owner>danakj@chromium.org</owner>
-  <owner>lukasza@chromium.org</owner>
-  <owner>petewil@chromium.org</owner>
-  <summary>
-    The end-to-end time to encode a QR image.
-
-    This metric captures end-to-end time which may include the overhead of
-    spawning a utility process as well as the time needed to translate input
-    bytes into QR pixels (see also the &quot;BytesToQrPixels2&quot; metric) and
-    into QR image (see also the &quot;QrPixelsToQrImage2&quot; metric).
-
-    Recorded whenever `chrome/services/qrcode_generator` generates a QR code.
-    For example: when using the omnibox to share the URL via QR code, when using
-    WebAuthn, or when generating an RMA.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.QRCodeGeneration.Duration.BytesToQrPixels2"
-    units="microseconds" expires_after="2024-11-24">
-  <owner>danakj@chromium.org</owner>
-  <owner>lukasza@chromium.org</owner>
-  <owner>petewil@chromium.org</owner>
-  <summary>
-    The time to translate the sequence of input bytes into a vector of QR pixels
-    (this is not a QR _image_ just yet - see &quot;QrPixelsToQrImage2&quot;
-    metric for that).
-
-    Recorded whenever `chrome/services/qrcode_generator` generates a QR code.
-    For example: when using the omnibox to share the URL via QR code, when using
-    WebAuthn, or when generating an RMA.
-
-    The metric is reported for only clients with high-resolution clocks (i.e.
-    excludes a small percentage of Windows users population). This is okay,
-    because we are mostly interested in comparing C++ vs Rust and it seems okay
-    to assume that such comparison would give similar results for the filtered
-    and non-filtered population.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.QRCodeGeneration.Duration.QrPixelsToQrImage2"
-    units="microseconds" expires_after="2025-01-26">
-  <owner>danakj@chromium.org</owner>
-  <owner>lukasza@chromium.org</owner>
-  <owner>petewil@chromium.org</owner>
-  <summary>
-    The time to translate QR pixels (a vector of light/dark QR pixels) into a QR
-    image (an upscaled `SkBitmap` with an optional Dino painted in the middle).
-
-    Recorded whenever `chrome/services/qrcode_generator` generates a QR code.
-    For example: when using the omnibox to share the URL via QR code, when using
-    WebAuthn, or when generating an RMA.
-
-    The metric is reported for only clients with high-resolution clocks (i.e.
-    excludes a small percentage of Windows users population). This is okay,
-    because we are mostly interested in comparing C++ vs Rust and it seems okay
-    to assume that such comparison would give similar results for the filtered
-    and non-filtered population.
   </summary>
 </histogram>
 
@@ -417,7 +355,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendMessageResult" enum="SharingSendMessageResult"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
 <!-- Name completed by histogram_suffixes SharingChannelType,
     SharingDevicePlatform, SharingMessage, and SharingPulseInterval. -->
 
@@ -431,7 +369,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendMessageUsingSync" enum="Boolean"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>rushans@google.com</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -441,7 +379,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendMessageWithSyncAckFcmConfiguration" enum="Boolean"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>rushans@google.com</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -451,7 +389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SendTabToSelf.NotificationStatus"
-    enum="SendTabToSelfNotificationStatus" expires_after="2025-02-10">
+    enum="SendTabToSelfNotificationStatus" expires_after="2025-04-13">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -494,7 +432,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.CustomAction"
-    enum="ShareCustomAction" expires_after="2025-03-02">
+    enum="ShareCustomAction" expires_after="2025-05-04">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -504,7 +442,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.Opened" enum="ShareOrigin"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>wenyufu@chromium.org</owner>
   <owner>sophey@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
@@ -526,7 +464,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SharingHubAndroid.TimeToCustomAction" units="ms"
-    expires_after="2025-03-02">
+    expires_after="2025-05-04">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
@@ -585,7 +523,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SmsFetcherAvailableDeviceCount" units="devices"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>yigu@chromium.org</owner>
   <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
@@ -595,19 +533,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.SmsFetcherClientNameIsEmpty" enum="BooleanEmpty"
-    expires_after="2024-11-17">
-  <owner>yigu@chromium.org</owner>
-  <owner>src/content/browser/sms/OWNERS</owner>
-  <summary>
-    Records whether the remote client name is empty. This could happen on early
-    version of Chrome. This is logged once per notification when asking for user
-    permission to submit the one-time-passwords on the remote device.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.SmsFetcherScreenOnAndUnlocked" enum="Boolean"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>yigu@chromium.org</owner>
   <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
@@ -618,7 +545,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.SmsFetcherTapWithChromeDestroyed" enum="Boolean"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>yigu@chromium.org</owner>
   <owner>src/content/browser/sms/OWNERS</owner>
   <summary>
@@ -640,7 +567,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sharing.{ShareSurface}.ShareContentType"
-    enum="SharingContentTypeAndroid" expires_after="2025-02-10">
+    enum="SharingContentTypeAndroid" expires_after="2025-04-13">
   <owner>wenyufu@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>

@@ -9,7 +9,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/tribool.h"
-#import "components/supervised_user/core/browser/supervised_user_capabilities.h"
+#import "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -18,23 +18,23 @@
 
 namespace supervised_user {
 
-bool IsSubjectToParentalControls(ChromeBrowserState* browserState) {
-  CHECK(browserState);
-  if (browserState->IsOffTheRecord()) {
-    // An OTR browser state cannot be under parental controls.
+bool IsSubjectToParentalControls(ProfileIOS* profile) {
+  CHECK(profile);
+  if (profile->IsOffTheRecord()) {
+    // An OTR profile cannot be under parental controls.
     return false;
   }
   if (base::FeatureList::IsEnabled(
           supervised_user::
               kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS)) {
-    // If the capability is kUnknown, the browser state should not be subjected
+    // If the capability is kUnknown, the profile should not be subjected
     // to parental controls. Additionally, the retiring prefs-based
     // `IsSubjectToParentalControls` will also return false.
     return IsPrimaryAccountSubjectToParentalControls(
-               IdentityManagerFactory::GetForProfile(browserState)) ==
+               IdentityManagerFactory::GetForProfile(profile)) ==
            signin::Tribool::kTrue;
   } else {
-    return IsSubjectToParentalControls(*browserState->GetPrefs());
+    return IsSubjectToParentalControls(*profile->GetPrefs());
   }
 }
 

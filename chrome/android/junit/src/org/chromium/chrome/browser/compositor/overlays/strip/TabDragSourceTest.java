@@ -52,6 +52,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowToast;
 import org.robolectric.util.ReflectionHelpers;
 
@@ -79,10 +80,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
 import org.chromium.ui.dragdrop.DragDropGlobalState;
@@ -129,7 +130,7 @@ public class TabDragSourceTest {
     @Mock private MultiInstanceManager mSourceMultiInstanceManager;
     @Mock private MultiInstanceManager mDestMultiInstanceManager;
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
-    @Mock private TabModelFilterProvider mTabModelFilterProvider;
+    @Mock private TabGroupModelFilterProvider mTabGroupModelFilterProvider;
     private TabDragSource mSourceInstance;
     private TabDragSource mDestInstance;
 
@@ -177,8 +178,10 @@ public class TabDragSourceTest {
         when(mTabModelSelector.getCurrentModel()).thenReturn(mTabModel);
 
         when(mTabStripHeightSupplier.get()).thenReturn(mTabStripHeight);
-        when(mTabModelSelector.getTabModelFilterProvider()).thenReturn(mTabModelFilterProvider);
-        when(mTabModelFilterProvider.getCurrentTabModelFilter()).thenReturn(mTabGroupModelFilter);
+        when(mTabModelSelector.getTabGroupModelFilterProvider())
+                .thenReturn(mTabGroupModelFilterProvider);
+        when(mTabGroupModelFilterProvider.getCurrentTabGroupModelFilter())
+                .thenReturn(mTabGroupModelFilter);
 
         mSourceInstance =
                 new TabDragSource(
@@ -515,6 +518,9 @@ public class TabDragSourceTest {
      *  G.1] invalid mimetype.
      *  G.2] invalid clip data.
      *  G.3] destination strip is not visible.
+     * H] drag start special cases (see crbug.com/374480348):
+     *  H.1] drag starts outside of the source strip - we trigger an #onDragExit after 50ms.
+     *  H.2] drag starts outside of the source strip - we cancel the runnable after drag enter.
      *  </pre>
      */
     private static final String ONDRAG_TEST_CASES = "";
@@ -963,6 +969,66 @@ public class TabDragSourceTest {
                         mTabsToolbarView,
                         mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY));
         assertFalse("onDrag should return false.", res);
+    }
+
+    /** Test for {@link #ONDRAG_TEST_CASES} - Scenario H.1 */
+    @Test
+    public void test_onDrag_startsOutsideSourceStrip_runnableSuccess() {
+        // Start tab drag action. Forgo DragEventInvoker, since it mocks the drag enter on start.
+        mSourceInstance.startTabDragAction(
+                mTabsToolbarView,
+                mTabBeingDragged,
+                new PointF(POS_X, mPosY),
+                TAB_POSITION_X,
+                TAB_WIDTH);
+
+        // Verify the drag shadow begins invisible after ACTION_DRAG_STARTED.
+        mSourceInstance.onDrag(
+                mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY));
+        assertFalse(
+                "Drag shadow should not yet be visible.",
+                ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
+                        .getShadowShownForTesting());
+
+        // Verify the drag shadow is visible after the runnable completes.
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertTrue(
+                "Drag shadow should now be visible.",
+                ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
+                        .getShadowShownForTesting());
+    }
+
+    /** Test for {@link #ONDRAG_TEST_CASES} - Scenario H.2 */
+    @Test
+    public void test_onDrag_startsOutsideSourceStrip_runnableCancelled() {
+        // Start tab drag action. Forgo DragEventInvoker, since it mocks the drag enter on start.
+        mSourceInstance.startTabDragAction(
+                mTabsToolbarView,
+                mTabBeingDragged,
+                new PointF(POS_X, mPosY),
+                TAB_POSITION_X,
+                TAB_WIDTH);
+
+        // Verify the drag shadow begins invisible after ACTION_DRAG_STARTED.
+        mSourceInstance.onDrag(
+                mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_STARTED, POS_X, mPosY));
+        assertFalse(
+                "Drag shadow should not yet be visible.",
+                ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
+                        .getShadowShownForTesting());
+
+        // Verify the drag shadow is not visible as the runnable has been cancelled after
+        // #onDragEnter. Not triggered until ACTiON_DRAG_LOCATION since the drag's y-position is
+        // needed to verify the tab strip part of the view was entered.
+        mSourceInstance.onDrag(
+                mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_ENTERED, POS_X, mPosY));
+        mSourceInstance.onDrag(
+                mTabsToolbarView, mockDragEvent(DragEvent.ACTION_DRAG_LOCATION, POS_X, mPosY));
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertFalse(
+                "Drag shadow should still not visible.",
+                ((TabDragShadowBuilder) DragDropGlobalState.getDragShadowBuilder())
+                        .getShadowShownForTesting());
     }
 
     @Test

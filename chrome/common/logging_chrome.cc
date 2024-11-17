@@ -116,8 +116,8 @@ const GUID kChromeTraceProviderName = {
 // with that error in the str parameter.
 NOINLINE void SilentRuntimeAssertHandler(const char* file,
                                          int line,
-                                         const std::string_view message,
-                                         const std::string_view stack_trace) {
+                                         std::string_view message,
+                                         std::string_view stack_trace) {
   base::debug::BreakDebugger();
 }
 
@@ -356,8 +356,9 @@ void RemoveSymlinkAndLog(const base::FilePath& link_path,
 base::FilePath GetSessionLogDir(const base::CommandLine& command_line) {
   std::string log_dir;
   std::unique_ptr<base::Environment> env(base::Environment::Create());
-  if (!env->GetVar(env_vars::kSessionLogDir, &log_dir))
-    NOTREACHED_IN_MIGRATION();
+  if (!env->GetVar(env_vars::kSessionLogDir, &log_dir)) {
+    NOTREACHED();
+  }
   return base::FilePath(log_dir);
 }
 

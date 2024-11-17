@@ -7,13 +7,15 @@
 
 namespace ash::babelorca {
 
-// TODO(b/356929723): We should not launch with IntegTest. Set the right app
-// name after onboarding to Tachyon.
-inline constexpr char kTachyonAppName[] = "IntegTest";
+inline constexpr char kTachyonAppName[] = "SchoolTools";
 inline constexpr char kSigninGaiaUrl[] =
     "https://instantmessaging-pa.googleapis.com/v1/registration:signingaia";
 inline constexpr char kSendMessageUrl[] =
     "https://instantmessaging-pa.googleapis.com/v1/message:send";
+inline constexpr char kReceiveMessagesUrl[] =
+    "https://instantmessaging-pa.googleapis.com/v1/messages:receive";
+
+inline constexpr char kOauthHeaderTemplate[] = "Authorization: Bearer %s";
 
 }  // namespace ash::babelorca
 

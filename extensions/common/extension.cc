@@ -177,8 +177,7 @@ bool ComputeExtensionID(const base::Value::Dict& manifest,
   // reloading the extension.
   *extension_id = crx_file::id_util::GenerateIdForPath(path);
   if (extension_id->empty()) {
-    NOTREACHED_IN_MIGRATION() << "Could not create ID from path.";
-    return false;
+    NOTREACHED() << "Could not create ID from path.";
   }
   return true;
 }
@@ -279,14 +278,16 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
   scoped_refptr<Extension> extension = new Extension(path, std::move(manifest));
   extension->install_warnings_.swap(install_warnings);
 
+  // Some manifest parsing may require the dynamic URL to be present on the
+  // extension; instantiate it now.
+  extension->guid_ = base::Uuid::GenerateRandomV4();
+  extension->dynamic_url_ = Extension::GetBaseURLFromExtensionId(
+      extension->guid_.AsLowercaseString());
+
   if (!extension->InitFromValue(flags, &error)) {
     *utf8_error = base::UTF16ToUTF8(error);
     return nullptr;
   }
-
-  extension->guid_ = base::Uuid::GenerateRandomV4();
-  extension->dynamic_url_ = Extension::GetBaseURLFromExtensionId(
-      extension->guid_.AsLowercaseString());
 
   return extension;
 }
@@ -298,13 +299,13 @@ Manifest::Type Extension::GetType() const {
 
 // static
 GURL Extension::GetResourceURL(const GURL& extension_url,
-                               const std::string& relative_path) {
+                               std::string_view relative_path) {
   DCHECK(extension_url.SchemeIs(kExtensionScheme));
   return extension_url.Resolve(relative_path);
 }
 
 bool Extension::ResourceMatches(const URLPatternSet& pattern_set,
-                                const std::string& resource) const {
+                                std::string_view resource) const {
   return pattern_set.MatchesURL(extension_url_.Resolve(resource));
 }
 
@@ -342,14 +343,13 @@ ExtensionResource Extension::GetResource(
 // util class in base:
 // http://code.google.com/p/chromium/issues/detail?id=13572
 // static
-bool Extension::ParsePEMKeyBytes(const std::string& input,
-                                 std::string* output) {
+bool Extension::ParsePEMKeyBytes(std::string_view input, std::string* output) {
   DCHECK(output);
   if (!output || input.length() == 0 || input.length() > kMaxInputSizeBytes) {
     return false;
   }
 
-  std::string working = input;
+  std::string working{input};
   if (base::StartsWith(working, kKeyBeginHeaderMarker,
                        base::CompareCase::SENSITIVE)) {
     working = base::CollapseWhitespaceASCII(working, true);
@@ -377,7 +377,7 @@ bool Extension::ParsePEMKeyBytes(const std::string& input,
 }
 
 // static
-bool Extension::ProducePEM(const std::string& input, std::string* output) {
+bool Extension::ProducePEM(std::string_view input, std::string* output) {
   DCHECK(output);
   if (input.empty()) {
     return false;
@@ -387,7 +387,7 @@ bool Extension::ProducePEM(const std::string& input, std::string* output) {
 }
 
 // static
-bool Extension::FormatPEMForFileOutput(const std::string& input,
+bool Extension::FormatPEMForFileOutput(std::string_view input,
                                        std::string* output,
                                        bool is_public) {
   DCHECK(output);
@@ -455,8 +455,8 @@ bool Extension::OverlapsWithOrigin(const GURL& origin) const {
   return web_extent().OverlapsWith(origin_only_pattern_list);
 }
 
-Extension::ManifestData* Extension::GetManifestData(const std::string& key)
-    const {
+Extension::ManifestData* Extension::GetManifestData(
+    std::string_view key) const {
   DCHECK(finished_parsing_manifest_ || thread_checker_.CalledOnValidThread());
   auto iter = manifest_data_.find(key);
   if (iter != manifest_data_.end()) {
@@ -465,10 +465,12 @@ Extension::ManifestData* Extension::GetManifestData(const std::string& key)
   return nullptr;
 }
 
-void Extension::SetManifestData(const std::string& key,
+void Extension::SetManifestData(std::string_view key,
                                 std::unique_ptr<Extension::ManifestData> data) {
   DCHECK(!finished_parsing_manifest_ && thread_checker_.CalledOnValidThread());
-  manifest_data_[key] = std::move(data);
+  // TODO(crbug.com/376532871): remove explicit std::string constructor once
+  // std::map::operator[] supports heterogeneous overloads (in C++23).
+  manifest_data_[std::string{key}] = std::move(data);
 }
 
 void Extension::SetGUID(const ExtensionGuid& guid) {

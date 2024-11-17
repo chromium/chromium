@@ -88,8 +88,7 @@ void WebSelectionJavaScriptFeature::ScriptMessageReceived(
   }
   base::Value* response = script_message.body();
   if (!response || !response->is_dict()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   WebSelectionResponse* web_response =
       ParseResponse(web_state->GetWeakPtr(), response->GetDict());

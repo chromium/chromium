@@ -32,6 +32,7 @@
 #include "content/browser/interest_group/auction_shared_storage_host.h"
 #include "content/browser/interest_group/auction_url_loader_factory_proxy.h"
 #include "content/browser/interest_group/debuggable_auction_worklet.h"
+#include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/subresource_url_authorizations.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -89,7 +90,8 @@ FrameTreeNodeId AuctionWorkletManager::GetFrameTreeNodeID() {
 }
 
 class AuctionWorkletManager::WorkletOwner
-    : public base::RefCounted<AuctionWorkletManager::WorkletOwner> {
+    : public base::RefCounted<AuctionWorkletManager::WorkletOwner>,
+      public auction_worklet::mojom::LoadSellerWorkletClient {
  public:
   // Attempts to immediately create a worklet. If that fails, the WorkletOwner
   // will immediately start waiting for a process to be available, and once one
@@ -109,21 +111,17 @@ class AuctionWorkletManager::WorkletOwner
 
   auction_worklet::mojom::BidderWorklet* bidder_worklet() {
     DCHECK(bidder_worklet_);
+    DCHECK(can_hand_out_worklet_);
     return bidder_worklet_.get();
   }
 
   auction_worklet::mojom::SellerWorklet* seller_worklet() {
     DCHECK(seller_worklet_);
+    DCHECK(can_hand_out_worklet_);
     return seller_worklet_.get();
   }
 
   const WorkletKey& worklet_info() const { return worklet_info_; }
-
-  // Whether or not a worklet has been created. Once a worklet has been created,
-  // always returns true, even after disconnect or error.
-  bool worklet_created() const {
-    return bidder_worklet_.is_bound() || seller_worklet_.is_bound();
-  }
 
   SubresourceUrlAuthorizations* subresource_url_authorizations() {
     if (!url_loader_factory_proxy_) {
@@ -141,10 +139,17 @@ class AuctionWorkletManager::WorkletOwner
   void NotifyAuctionMetricsRecorderWhenReady(
       AuctionMetricsRecorder* auction_metrics_recorder);
 
+  // Returns whether signals are allowed to be requested from the trusted
+  // scoring signals URL associated with the worklet. May only be called when
+  // this is a seller worklet with a KVv2 trusted scoring signals URL, and KVv2
+  // signals and the KVv2 cache are enabled, and after the SellerWorkletLoaded()
+  // method has been invoked.
+  bool TrustedScoringSignalsUrlAllowed() const;
+
  private:
   friend class base::RefCounted<WorkletOwner>;
 
-  ~WorkletOwner();
+  ~WorkletOwner() override;
 
   void MaybeQueueNotifications();
 
@@ -159,11 +164,24 @@ class AuctionWorkletManager::WorkletOwner
   // to use the unusable one.
   void WorkletNoLongerUsable();
 
+  // Check if the process is assigned, then attempt to load the worklet after
+  // `trusted_signals_kvv2_public_key_` is fetched.
+  void OnTrustedSignalsKVv2KeyFetched(
+      size_t number_of_bidder_threads,
+      base::expected<BiddingAndAuctionServerKey, std::string> key_or_error);
+
   // Called once the AuctionProcessManager provides a process to load a worklet
-  // in. Immediately loads the worklet and informs WorkletHandles. If this is
-  // for a bidder worklet, `number_of_bidder_threads` specifies
-  // the number of threads to allocate to the bidder.
+  // in. If feature `kFledgeTrustedSignalsKVv2Support` is enabled, it will be
+  // interrupted if `trusted_signals_kvv2_public_key_` is still in fetching
+  // progress.
   void OnProcessAssigned(size_t number_of_bidder_threads);
+
+  // Immediately load the worklet and inform WorkletHandles. For a bidder
+  // worklet, `number_of_bidder_threads` specifies the number of threads to
+  // allocate to the bidder. When the `kFledgeTrustedSignalsKVv2Support` feature
+  // is enabled, this will only be executed when the process is assigned, and
+  // `trusted_signals_kvv2_public_key_` is fetched.
+  void LoadWorkletIfReady(size_t number_of_bidder_threads);
 
   // Called when a PID for a worklet process thread has a PID assigned, a proxy
   // for its readiness to begin processing requests. This is used to record
@@ -177,6 +195,9 @@ class AuctionWorkletManager::WorkletOwner
   // associated WorkletHandles.
   void OnWorkletDisconnected(uint32_t /* custom_reason */,
                              const std::string& description);
+
+  // auction_worklet::mojom::LoadSellerWorkletClient implementation:
+  void SellerWorkletLoaded(bool trusted_signals_url_allowed) override;
 
   static std::vector<std::string> GetDevtoolsAuctionIds(
       base::WeakPtr<WorkletOwner> self);
@@ -220,6 +241,15 @@ class AuctionWorkletManager::WorkletOwner
   // Map from devtools auction ID to number of handles from that auction.
   std::map<std::string, int> registered_devtools_auction_ids_;
 
+  // Public key that can be loaded into the worklet for trusted signals KVv2
+  // support.
+  auction_worklet::mojom::TrustedSignalsPublicKeyPtr
+      trusted_signals_kvv2_public_key_ = nullptr;
+  // A flag to indicate if the `trusted_signals_kvv2_public_key_` has been
+  // fetched or not.
+  bool waiting_on_trusted_signals_kvv2_public_key_ = false;
+  bool process_assigned_ = false;
+
   // When a worklet is requested before it's ready, we store the
   // AuctionMetricsRecorder here so that it can be notified when the worklet
   // is ready. There's an AuctionMetricsRecorder for each auction, and since
@@ -233,6 +263,18 @@ class AuctionWorkletManager::WorkletOwner
   // `auction_metrics_recorders_to_notify_`, defined above.
   bool is_worklet_ready_ = false;
 
+  // Set to true once the worklet pipe has been created and, if necessary, the
+  // LoadSellerWorkletClient callback has been invoked, informating `this` of
+  // whether trusted signals may be requested using the provided URL.
+  bool can_hand_out_worklet_ = false;
+
+  // Whether the trusted signals URL is allowed to receive data about the
+  // auction.
+  std::optional<bool> trusted_signals_url_allowed_;
+
+  mojo::Receiver<auction_worklet::mojom::LoadSellerWorkletClient>
+      load_seller_worklet_client_receiver_{this};
+
   base::WeakPtrFactory<WorkletOwner> weak_ptr_factory_{this};
 };
 
@@ -244,6 +286,32 @@ AuctionWorkletManager::WorkletOwner::WorkletOwner(
       worklet_info_(std::move(worklet_info)),
       split_up_notifications_(
           base::FeatureList::IsEnabled(kFledgeSplitUpWorkletAssignment)) {
+  // If `trusted_signals_coordinator` in `worklet_info_` has a value and
+  // `kFledgeTrustedSignalsKVv2Support` is enabled, call
+  // `GetBiddingAndAuctionServerKey` to fetch `trusted_signals_kvv2_public_key_`
+  // with the bound callback `OnTrustedSignalsKVv2KeyFetched()`.
+  if (worklet_info_.trusted_signals_coordinator.has_value() &&
+      base::FeatureList::IsEnabled(
+          blink::features::kFledgeTrustedSignalsKVv2Support)) {
+    DCHECK(!waiting_on_trusted_signals_kvv2_public_key_);
+    DCHECK(!trusted_signals_kvv2_public_key_);
+
+    // When `kFledgeUseKVv2SignalsCache` is enabled, the TrustedSignalsCache
+    // manages KVv2 fetches in the browser process, so don't need get a key to
+    // pass to the worklet process. It's currently only supported for bidder
+    // signals, though, so still need the key for seller signals.
+    if (!base::FeatureList::IsEnabled(features::kFledgeUseKVv2SignalsCache) ||
+        worklet_info_.type != WorkletType::kBidder) {
+      waiting_on_trusted_signals_kvv2_public_key_ = true;
+      worklet_manager->delegate()->GetBiddingAndAuctionServerKey(
+          std::move(worklet_info_.trusted_signals_coordinator),
+          base::BindOnce(&AuctionWorkletManager::WorkletOwner::
+                             OnTrustedSignalsKVv2KeyFetched,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         number_of_bidder_threads));
+    }
+  }
+
   if (worklet_manager_->auction_process_manager()->RequestWorkletService(
           worklet_info_.type, url::Origin::Create(worklet_info_.script_url),
           worklet_manager_->delegate()->GetFrameSiteInstance(),
@@ -258,7 +326,10 @@ AuctionWorkletManager::WorkletOwner::WorkletOwner(
 void AuctionWorkletManager::WorkletOwner::RegisterHandle(HandleKey handle) {
   handles_waiting_for_process_.insert(handle);
   ++registered_devtools_auction_ids_[handle.second->devtools_auction_id_];
-  if (worklet_created()) {
+  // The `notify_error_type_` check should technically not be needed, since a
+  // worklet should not be handed out to a new listener after there's been an
+  // error, but handle that case to future-proof the code.
+  if (can_hand_out_worklet_ || notify_error_type_) {
     MaybeQueueNotifications();
   }
 }
@@ -299,6 +370,12 @@ void AuctionWorkletManager::WorkletOwner::NotifyAuctionMetricsRecorderWhenReady(
   }
 }
 
+bool AuctionWorkletManager::WorkletOwner::TrustedScoringSignalsUrlAllowed()
+    const {
+  CHECK(trusted_signals_url_allowed_.has_value());
+  return *trusted_signals_url_allowed_;
+}
+
 AuctionWorkletManager::WorkletOwner::~WorkletOwner() {
   DCHECK(handles_waiting_for_process_.empty());
   DCHECK(handles_with_process_.empty());
@@ -306,6 +383,10 @@ AuctionWorkletManager::WorkletOwner::~WorkletOwner() {
 }
 
 void AuctionWorkletManager::WorkletOwner::MaybeQueueNotifications() {
+  // Should either have a worklet ready for use or an error to send
+  // notifications.
+  DCHECK(can_hand_out_worklet_ || notify_error_type_);
+
   if (notifications_pending_) {
     return;
   }
@@ -397,8 +478,45 @@ void AuctionWorkletManager::WorkletOwner::WorkletNoLongerUsable() {
   }
 }
 
+void AuctionWorkletManager::WorkletOwner::OnTrustedSignalsKVv2KeyFetched(
+    size_t number_of_bidder_threads,
+    base::expected<BiddingAndAuctionServerKey, std::string> key_or_error) {
+  waiting_on_trusted_signals_kvv2_public_key_ = false;
+
+  // Pass an empty trusted signals KVv2 key to the worklet even if the fetching
+  // process fails. The error will be handled in the worklet process when a key
+  // is required but is empty.
+  //
+  // TODO(crbug.com/337917489): Find a better way to handle the fetch error with
+  // more debugging information rather than just pass a nullptr to bidder/seller
+  // worklet.
+  if (key_or_error.has_value()) {
+    trusted_signals_kvv2_public_key_ =
+        auction_worklet::mojom::TrustedSignalsPublicKey::New(key_or_error->key,
+                                                             key_or_error->id);
+  }
+
+  LoadWorkletIfReady(number_of_bidder_threads);
+}
+
 void AuctionWorkletManager::WorkletOwner::OnProcessAssigned(
     size_t number_of_bidder_threads) {
+  process_assigned_ = true;
+  LoadWorkletIfReady(number_of_bidder_threads);
+}
+
+void AuctionWorkletManager::WorkletOwner::LoadWorkletIfReady(
+    size_t number_of_bidder_threads) {
+  // Still waiting on the process handle.
+  if (!process_assigned_) {
+    return;
+  }
+
+  // Still waiting on fetching public key.
+  if (waiting_on_trusted_signals_kvv2_public_key_) {
+    return;
+  }
+
   DCHECK(!bidder_worklet_.is_bound());
   DCHECK(!seller_worklet_.is_bound());
 
@@ -476,7 +594,8 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned(
           worklet_manager_->top_window_origin(),
           GetAuctionWorkletPermissionsPolicyState(delegate->GetFrame(),
                                                   worklet_info_.script_url),
-          worklet_info_.experiment_group_id, /*public_key=*/nullptr);
+          worklet_info_.experiment_group_id,
+          std::move(trusted_signals_kvv2_public_key_));
       bidder_worklet_.set_disconnect_with_reason_handler(base::BindOnce(
           &WorkletOwner::OnWorkletDisconnected, base::Unretained(this)));
       break;
@@ -517,6 +636,28 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned(
                 url::Origin::Create(worklet_info_.script_url)));
       }
 
+      // If this is a seller worklet using KVv2, and the cache (and KVv2) are
+      // enabled, need to figure out if the scoring signals are allowed to be
+      // fetched from the signals URL.
+      mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
+          load_seller_worklet_client_remote;
+      if (worklet_info_.signals_url &&
+          worklet_info_.trusted_signals_coordinator &&
+          base::FeatureList::IsEnabled(
+              blink::features::kFledgeTrustedSignalsKVv2Support) &&
+          base::FeatureList::IsEnabled(features::kFledgeUseKVv2SignalsCache)) {
+        if (url::Origin::Create(worklet_info_.script_url)
+                .IsSameOriginWith(*worklet_info_.signals_url)) {
+          // If the script and signals URLs are same-origin, they may always be
+          // fetched.
+          trusted_signals_url_allowed_ = true;
+        } else {
+          // Otherwise, have to wait for the seller worklet load notification to
+          // learn if it's ok to fetch them.
+          load_seller_worklet_client_remote =
+              load_seller_worklet_client_receiver_.BindNewPipeAndPassRemote();
+        }
+      }
       process_handle_.GetService()->LoadSellerWorklet(
           std::move(worklet_receiver), std::move(shared_storage_hosts),
           worklet_debugs_[0]->should_pause_on_start(),
@@ -525,14 +666,21 @@ void AuctionWorkletManager::WorkletOwner::OnProcessAssigned(
           worklet_info_.signals_url, worklet_manager_->top_window_origin(),
           GetAuctionWorkletPermissionsPolicyState(delegate->GetFrame(),
                                                   worklet_info_.script_url),
-          worklet_info_.experiment_group_id);
+          worklet_info_.experiment_group_id,
+          std::move(trusted_signals_kvv2_public_key_),
+          std::move(load_seller_worklet_client_remote));
       seller_worklet_.set_disconnect_with_reason_handler(base::BindOnce(
           &WorkletOwner::OnWorkletDisconnected, base::Unretained(this)));
       break;
     }
   }
 
-  MaybeQueueNotifications();
+  // If not waiting to be notified of the seller load completing, the worklet is
+  // ready for use.
+  if (!load_seller_worklet_client_receiver_.is_bound()) {
+    can_hand_out_worklet_ = true;
+    MaybeQueueNotifications();
+  }
 }
 
 void AuctionWorkletManager::WorkletOwner::OnThreadReady(
@@ -571,6 +719,19 @@ void AuctionWorkletManager::WorkletOwner::OnWorkletDisconnected(
         base::StrCat({worklet_info_.script_url.spec(), " crashed."}));
   }
 
+  // If waiting for a load script success notification, stop waiting for it, to
+  // avoid potentially getting a delayed notification.
+  load_seller_worklet_client_receiver_.reset();
+
+  MaybeQueueNotifications();
+}
+
+void AuctionWorkletManager::WorkletOwner::SellerWorkletLoaded(
+    bool trusted_signals_url_allowed) {
+  trusted_signals_url_allowed_ = trusted_signals_url_allowed;
+  load_seller_worklet_client_receiver_.reset();
+  // Worklet may now be handed out.
+  can_hand_out_worklet_ = true;
   MaybeQueueNotifications();
 }
 
@@ -678,6 +839,11 @@ AuctionWorkletManager::WorkletHandle::GetSellerWorklet() {
   return worklet_owner_->seller_worklet();
 }
 
+bool AuctionWorkletManager::WorkletHandle::TrustedScoringSignalsUrlAllowed()
+    const {
+  return worklet_owner_->TrustedScoringSignalsUrlAllowed();
+}
+
 const SubresourceUrlAuthorizations& AuctionWorkletManager::WorkletHandle::
     GetSubresourceUrlAuthorizationsForTesting() {
   DCHECK(authorized_subresources_);
@@ -755,10 +921,6 @@ void AuctionWorkletManager::WorkletHandle::AuthorizeSubresourceUrls(
       this, std::move(authorized_subresource_urls));
 }
 
-bool AuctionWorkletManager::WorkletHandle::worklet_created() const {
-  return worklet_owner_->worklet_created();
-}
-
 AuctionWorkletManager::AuctionWorkletManager(
     AuctionProcessManager* auction_process_manager,
     url::Origin top_window_origin,
@@ -832,6 +994,7 @@ void AuctionWorkletManager::RequestSellerWorklet(
     const GURL& decision_logic_url,
     const std::optional<GURL>& trusted_scoring_signals_url,
     std::optional<uint16_t> experiment_group_id,
+    const std::optional<url::Origin>& trusted_scoring_signals_coordinator,
     base::OnceClosure worklet_available_callback,
     FatalErrorCallback fatal_error_callback,
     std::unique_ptr<WorkletHandle>& out_worklet_handle,
@@ -843,7 +1006,7 @@ void AuctionWorkletManager::RequestSellerWorklet(
                           /*needs_cors_for_additional_bid=*/false,
                           experiment_group_id,
                           /*trusted_bidding_signals_slot_size_param=*/"",
-                          /*trusted_signals_coordinator=*/std::nullopt);
+                          trusted_scoring_signals_coordinator);
   RequestWorkletByKey(std::move(worklet_info), std::move(devtools_auction_id),
                       std::move(worklet_available_callback),
                       std::move(fatal_error_callback), out_worklet_handle,
@@ -877,6 +1040,13 @@ void AuctionWorkletManager::RequestWorkletByKey(
   out_worklet_handle.reset(new WorkletHandle(
       std::move(devtools_auction_id), std::move(worklet),
       std::move(worklet_available_callback), std::move(fatal_error_callback)));
+}
+
+void AuctionWorkletManager::MaybeStartAnticipatoryProcess(
+    const url::Origin& origin,
+    WorkletType worklet_type) {
+  auction_process_manager()->MaybeStartAnticipatoryProcess(
+      origin, delegate_->GetFrameSiteInstance().get(), worklet_type);
 }
 
 void AuctionWorkletManager::OnWorkletNoLongerUsable(WorkletOwner* worklet) {

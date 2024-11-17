@@ -1,7 +1,8 @@
 Name: Google Chrome Content Analysis Connector Agent SDK
 Short Name: content_analysis_sdk
 URL: https://github.com/chromium/content_analysis_sdk
-Version: 0
+Version: N/A
+Revision: DEPS
 License: BSD
 License File: ./LICENSE
 Security Critical: yes

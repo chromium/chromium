@@ -225,10 +225,13 @@ class OnDemandUpdater {
   friend class OnDemandTester;
   friend class policy::ComponentUpdaterPolicyTest;
   friend class ::ComponentsHandler;
+  friend class OptimizationGuideOnDeviceModelInstallerPolicy;
   friend class ::PluginObserver;
   friend class SwReporterOnDemandFetcher;
   friend class SodaComponentInstallerPolicy;
   friend class SodaLanguagePackComponentInstallerPolicy;
+  friend class TranslateKitComponentInstallerPolicy;
+  friend class TranslateKitLanguagePackComponentInstallerPolicy;
   friend class ::extensions::AutotestPrivateLoadSmartDimComponentFunction;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class ash::SmartDimComponentIntegrationTest;

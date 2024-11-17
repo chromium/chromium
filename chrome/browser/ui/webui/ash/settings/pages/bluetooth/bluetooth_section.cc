@@ -4,13 +4,15 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/bluetooth/bluetooth_section.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "ash/webui/settings/public/constants/setting.mojom.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/ash/bluetooth/bluetooth_shared_load_time_data_provider.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/bluetooth/bluetooth_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/bluetooth/fast_pair_saved_devices_handler.h"
@@ -50,8 +52,8 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetBluetoothSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetBluetoothSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_BLUETOOTH,
        mojom::kBluetoothDevicesSubpagePath,
        mojom::SearchResultIcon::kBluetooth,
@@ -59,11 +61,11 @@ const std::vector<SearchConcept>& GetBluetoothSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kBluetoothDevices}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetBluetoothOnSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetBluetoothOnSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_BLUETOOTH_TURN_OFF,
        mojom::kBluetoothDevicesSubpagePath,
        mojom::SearchResultIcon::kBluetooth,
@@ -73,11 +75,11 @@ const std::vector<SearchConcept>& GetBluetoothOnSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_BLUETOOTH_TURN_OFF_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetBluetoothOffSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetBluetoothOffSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_BLUETOOTH_TURN_ON,
        mojom::kBluetoothDevicesSubpagePath,
        mojom::SearchResultIcon::kBluetooth,
@@ -86,11 +88,11 @@ const std::vector<SearchConcept>& GetBluetoothOffSearchConcepts() {
        {.setting = mojom::Setting::kBluetoothOnOff},
        {IDS_OS_SETTINGS_TAG_BLUETOOTH_TURN_ON_ALT1, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetBluetoothPairableSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetBluetoothPairableSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_BLUETOOTH_PAIR,
        mojom::kBluetoothDevicesSubpagePath,
        mojom::SearchResultIcon::kBluetooth,
@@ -98,11 +100,11 @@ const std::vector<SearchConcept>& GetBluetoothPairableSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kBluetoothPairDevice}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetFastPairOffSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetFastPairOffSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_FAST_PAIR_TURN_ON,
        mojom::kBluetoothDevicesSubpagePath,
        mojom::SearchResultIcon::kBluetooth,
@@ -111,11 +113,11 @@ const std::vector<SearchConcept>& GetFastPairOffSearchConcepts() {
        {.setting = mojom::Setting::kFastPairOnOff},
        {IDS_OS_SETTINGS_TAG_FAST_PAIR_TURN_ON_ALT1, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetFastPairOnSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetFastPairOnSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_FAST_PAIR_TURN_OFF,
        mojom::kBluetoothDevicesSubpagePath,
        mojom::SearchResultIcon::kBluetooth,
@@ -125,11 +127,11 @@ const std::vector<SearchConcept>& GetFastPairOnSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_FAST_PAIR_TURN_OFF_ALT1,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetFastPairSavedDevicesSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetFastPairSavedDevicesSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_FAST_PAIR_SAVED_DEVICES,
        mojom::kBluetoothSavedDevicesSubpagePath,
        mojom::SearchResultIcon::kBluetooth,
@@ -137,7 +139,7 @@ const std::vector<SearchConcept>& GetFastPairSavedDevicesSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kFastPairSavedDevices}},
   });
-  return *tags;
+  return tags;
 }
 
 }  // namespace
@@ -346,12 +348,6 @@ void BluetoothSection::AddHandlers(content::WebUI* web_ui) {
   if (features::IsFastPairEnabled() &&
       features::IsFastPairSavedDevicesEnabled()) {
     web_ui->AddMessageHandler(std::make_unique<FastPairSavedDevicesHandler>());
-  }
-
-  if (features::IsFastPairSoftwareScanningSupportEnabled()) {
-    web_ui->AddMessageHandler(std::make_unique<FastPairSoftwareScanningHandler>(
-        std::make_unique<quick_pair::BatterySaverActiveProvider>(),
-        std::make_unique<quick_pair::HardwareOffloadingSupportedProvider>()));
   }
 }
 

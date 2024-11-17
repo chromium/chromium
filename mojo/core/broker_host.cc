@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "mojo/buildflags.h"
 #include "mojo/core/broker_messages.h"
+#include "mojo/core/ipcz_driver/envelope.h"
 #include "mojo/core/platform_handle_utils.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -157,9 +158,11 @@ void BrokerHost::OnBufferRequest(uint32_t num_bytes) {
   channel_->Write(std::move(message));
 }
 
-void BrokerHost::OnChannelMessage(const void* payload,
-                                  size_t payload_size,
-                                  std::vector<PlatformHandle> handles) {
+void BrokerHost::OnChannelMessage(
+    const void* payload,
+    size_t payload_size,
+    std::vector<PlatformHandle> handles,
+    scoped_refptr<ipcz_driver::Envelope> envelope) {
   if (payload_size < sizeof(BrokerMessageHeader))
     return;
 

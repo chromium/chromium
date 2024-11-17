@@ -1,0 +1,63 @@
+{
+  "WebRTC Chromium FYI Android Builder ARM64 (dbg)": {},
+  "WebRTC Chromium FYI Android Tests ARM64 (dbg)": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--gtest_filter=WebRtc*",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromium.webrtc.fyi.android.tests.dbg.content_browsertests.filter",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "content_browsertests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "content_browsertests",
+        "swarming": {
+          "dimensions": {
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
+      },
+      {
+        "args": [
+          "--gtest_filter=UsingRealWebcam*",
+          "--test-launcher-jobs=1",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
+            "content_browsertests_sequential"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "name": "content_browsertests_sequential",
+        "swarming": {
+          "dimensions": {
+            "device_os_type": "userdebug",
+            "device_type": "walleye",
+            "os": "Android"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "content_browsertests",
+        "test_id_prefix": "ninja://content/test:content_browsertests/"
+      }
+    ]
+  }
+}

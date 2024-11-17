@@ -9,17 +9,18 @@ import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/iron-media-query/iron-media-query.js';
 import '../settings_shared.css.js';
 
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
-import {FingerprintProgressElement} from 'chrome://resources/ash/common/quick_unlock/fingerprint_progress.js';
+import type {FingerprintProgressElement} from 'chrome://resources/ash/common/quick_unlock/fingerprint_progress.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
-import {FingerprintBrowserProxy, FingerprintBrowserProxyImpl, FingerprintResultType, FingerprintScan} from './fingerprint_browser_proxy.js';
+import type {FingerprintBrowserProxy, FingerprintScan} from './fingerprint_browser_proxy.js';
+import {FingerprintBrowserProxyImpl, FingerprintResultType} from './fingerprint_browser_proxy.js';
 import {getTemplate} from './setup_fingerprint_dialog.html.js';
 
 

@@ -12,6 +12,7 @@ desc: |-
   DevTools Generative AI features include:
 
   - Console Insights: explains console messages and offers suggestions on how to fix console errors.
+  - AI assistance: helps users to understand CSS styles with AI-powered insights.
 default: 0
 example_value: 2
 features:

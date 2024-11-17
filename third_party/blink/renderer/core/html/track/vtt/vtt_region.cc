@@ -64,9 +64,6 @@ constexpr int kDefaultHeightInLines = 3;
 constexpr double kDefaultAnchorPointX = 0;
 constexpr double kDefaultAnchorPointY = 100;
 
-// The region doesn't have scrolling text, by default.
-constexpr bool kDefaultScroll = false;
-
 // Default region line-height (vh units)
 constexpr float kLineHeight = 5.33;
 
@@ -95,7 +92,6 @@ VTTRegion::VTTRegion(Document& document)
       lines_(kDefaultHeightInLines),
       region_anchor_(gfx::PointF(kDefaultAnchorPointX, kDefaultAnchorPointY)),
       viewport_anchor_(gfx::PointF(kDefaultAnchorPointX, kDefaultAnchorPointY)),
-      scroll_(kDefaultScroll),
       current_top_(0),
       scroll_timer_(document.GetTaskRunner(TaskType::kInternalMedia),
                     this,
@@ -150,14 +146,12 @@ void VTTRegion::setViewportAnchorY(double value,
   viewport_anchor_.set_y(value);
 }
 
-const AtomicString VTTRegion::scroll() const {
-  DEFINE_STATIC_LOCAL(const AtomicString, up_scroll_value_keyword, ("up"));
-  return scroll_ ? up_scroll_value_keyword : g_empty_atom;
+V8ScrollSetting VTTRegion::scroll() const {
+  return V8ScrollSetting(scroll_);
 }
 
-void VTTRegion::setScroll(const AtomicString& value) {
-  DCHECK(value == "up" || value == g_empty_atom);
-  scroll_ = value != g_empty_atom;
+void VTTRegion::setScroll(const V8ScrollSetting& value) {
+  scroll_ = value.AsEnum();
 }
 
 void VTTRegion::SetRegionSettings(const String& input_string) {
@@ -251,7 +245,7 @@ void VTTRegion::ParseSettingValue(RegionSetting setting, VTTScanner& input) {
     }
     case kScroll:
       if (value_input.Scan("up") && value_input.IsAtEnd()) {
-        scroll_ = true;
+        scroll_ = V8ScrollSetting::Enum::kUp;
       } else {
         DVLOG(VTT_LOG_LEVEL) << "parseSettingValue, invalid Scroll";
       }

@@ -41,7 +41,7 @@ MetricsReportingService::MetricsReportingService(
                          client->GetUploadSigningKey(),
                          logs_event_manager_) {}
 
-MetricsReportingService::~MetricsReportingService() {}
+MetricsReportingService::~MetricsReportingService() = default;
 
 LogStore* MetricsReportingService::log_store() {
   return &metrics_log_store_;

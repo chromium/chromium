@@ -34,11 +34,14 @@
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/counters_attachment_context.h"
+#include "third_party/blink/renderer/core/css/invalidation/invalidation_tracing_flag.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer_options.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
@@ -347,11 +350,17 @@ class CORE_EXPORT Node : public EventTarget {
     return GetElementNamespaceType() == ElementNamespaceType::kSVG;
   }
 
+  DISABLE_CFI_PERF bool IsCheckPseudoElement() const {
+    return GetPseudoId() == kPseudoIdCheck;
+  }
   DISABLE_CFI_PERF bool IsBeforePseudoElement() const {
     return GetPseudoId() == kPseudoIdBefore;
   }
   DISABLE_CFI_PERF bool IsAfterPseudoElement() const {
     return GetPseudoId() == kPseudoIdAfter;
+  }
+  DISABLE_CFI_PERF bool IsSelectArrowPseudoElement() const {
+    return GetPseudoId() == kPseudoIdSelectArrow;
   }
   DISABLE_CFI_PERF bool IsScrollMarkerGroupBeforePseudoElement() const {
     return GetPseudoId() == kPseudoIdScrollMarkerGroupBefore;
@@ -390,6 +399,7 @@ class CORE_EXPORT Node : public EventTarget {
   void SetCustomElementState(CustomElementState);
 
   virtual bool IsPseudoElement() const { return false; }
+  virtual bool IsColumnPseudoElement() const { return false; }
   virtual bool IsScrollMarkerPseudoElement() const { return false; }
   virtual bool IsScrollMarkerGroupPseudoElement() const { return false; }
   virtual bool IsScrollButtonPseudoElement() const { return false; }
@@ -483,7 +493,7 @@ class CORE_EXPORT Node : public EventTarget {
   };
   virtual void NotifyLoadedSheetAndAllCriticalSubresources(
       LoadedSheetErrorStatus) {}
-  virtual void SetToPendingState() { NOTREACHED_IN_MIGRATION(); }
+  virtual void SetToPendingState() { NOTREACHED(); }
 
   bool HasName() const {
     DCHECK(!IsTextNode());
@@ -564,6 +574,15 @@ class CORE_EXPORT Node : public EventTarget {
     DCHECK(isConnected());
     if (ShouldSkipMarkingStyleDirty())
       return;
+    if (InvalidationTracingFlag::IsEnabled()) [[unlikely]] {
+      DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
+          TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
+          "StyleRecalcInvalidationTracking",
+          inspector_style_recalc_invalidation_tracking_event::Data, this,
+          kLocalStyleChange,
+          StyleChangeReasonForTracing::Create(
+              style_change_reason::kNodeInserted));
+    }
     if (!NeedsStyleRecalc())
       SetStyleChange(kLocalStyleChange);
     MarkAncestorsWithChildNeedsStyleRecalc();
@@ -771,6 +790,14 @@ class CORE_EXPORT Node : public EventTarget {
     CountersAttachmentContext counters_context;
 
     AttachContext() = default;
+    AttachContext(const AttachContext& other)
+        : previous_in_flow(other.previous_in_flow),
+          parent(other.parent),
+          next_sibling(other.next_sibling),
+          performing_reattach(other.performing_reattach),
+          use_previous_in_flow(other.use_previous_in_flow),
+          next_sibling_valid(other.next_sibling_valid),
+          counters_context(other.counters_context.ShallowClone()) {}
   };
 
   // Attaches this node to the layout tree. This calculates the style to be
@@ -793,7 +820,13 @@ class CORE_EXPORT Node : public EventTarget {
   // Note that the following 'inline' function is not defined in this header,
   // but in node_computed_style.h. Please include that file if you want to use
   // this function.
-  inline const ComputedStyle* GetComputedStyle() const;
+  //
+  // DO NOT USE - TO BE REMOVED: Only elements have computed styles. This method
+  // falls back to retrieve a ComputedStyle from the LayoutObject for LayoutText
+  // and LayoutView. Use Element::GetComputedStyle() or LayoutObject::Style()
+  // instead.
+  inline const ComputedStyle* GetComputedStyleForElementOrLayoutObject() const;
+
   bool ShouldSkipMarkingStyleDirty() const;
 
   // ---------------------------------------------------------------------------
@@ -841,6 +874,11 @@ class CORE_EXPORT Node : public EventTarget {
   // RemovedFrom() implementations must not modify the DOM tree, and must not
   // dispatch synchronous events.
   virtual void RemovedFrom(ContainerNode& insertion_point);
+
+  // Notifies the node that it has moved from a different parent.
+  // This corresponds to "moving steps"
+  // (https://dom.spec.whatwg.org/#concept-node-move-ext)
+  virtual void MovedFrom(ContainerNode& old_parent);
 
   // FIXME(dominicc): This method is not debug-only--it is used by
   // Tracing--rename it to something indicative.
@@ -995,19 +1033,23 @@ class CORE_EXPORT Node : public EventTarget {
   void SetHasDisplayLockContext() { SetFlag(kHasDisplayLockContext); }
   bool HasDisplayLockContext() const { return GetFlag(kHasDisplayLockContext); }
 
-  // Creates a DocumentFragment, appends all of |nodes| to it, and returns the
-  // DocumentFragment. Returns nullptr if an exception was thrown.
-  static Node* ConvertNodesIntoNode(const Node* parent,
-                                    const HeapVector<Member<Node>>& nodes,
-                                    Document& document,
-                                    ExceptionState& exception_state);
-
   // Creates a DocumentFragment, converts |node_unions| from bindings into
   // actual Nodes by converting strings and script into text nodes via
-  // NodeOrStringToNode, appends all resulting Nodes to the DocumentFragment,
-  // and returns it. Returns nullptr if exceptions are thrown.
+  // NodeOrStringToNode.  If there is more than one node, appends all
+  // resulting Nodes to the DocumentFragment, and returns it. Returns nullptr
+  // if exceptions are thrown.
   static Node* ConvertNodeUnionsIntoNode(
-      const Node* parent,
+      const ContainerNode* parent,
+      const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
+      Document& document,
+      const char* property_name,
+      ExceptionState& exception_state);
+  // Converts |node_unions| from bindings into actual Nodes by converting
+  // strings and script into text nodes, and if more than one node resulted,
+  // removes them from their old parent (as though they had been inserted into
+  // a DocumentFragment).
+  static HeapVector<Member<Node>> ConvertNodeUnionsIntoNodes(
+      const ContainerNode* parent,
       const HeapVector<Member<V8UnionNodeOrStringOrTrustedScript>>& node_unions,
       Document& document,
       const char* property_name,

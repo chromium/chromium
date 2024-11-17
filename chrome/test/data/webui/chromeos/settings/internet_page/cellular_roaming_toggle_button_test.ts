@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://os-settings/lazy_load.js';
-import 'chrome://webui-test/cr_components/chromeos/network/cr_policy_strings.js';
+import 'chrome://webui-test/chromeos/network/cr_policy_strings.js';
 
 import {CellularRoamingToggleButtonElement} from 'chrome://os-settings/lazy_load.js';
 import {CrToggleElement} from 'chrome://os-settings/os_settings.js';

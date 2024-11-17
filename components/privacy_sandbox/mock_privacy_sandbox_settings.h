@@ -16,7 +16,6 @@ class MockPrivacySandboxSettings
  public:
   MockPrivacySandboxSettings();
   ~MockPrivacySandboxSettings() override;
-  void SetUpDefaultResponse();
 
   // PrivacySandboxSettings:
   MOCK_METHOD(bool, IsTopicsAllowed, (), (override, const));
@@ -90,7 +89,7 @@ class MockPrivacySandboxSettings
               (const url::Origin&, const url::Origin&, std::string*, bool*),
               (override, const));
   MOCK_METHOD(bool,
-              IsLocalUnpartitionedDataAccessAllowed,
+              IsFencedStorageReadAllowed,
               (const url::Origin&,
                const url::Origin&,
                content::RenderFrameHost*),

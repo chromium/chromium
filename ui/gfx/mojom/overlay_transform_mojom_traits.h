@@ -39,8 +39,7 @@ struct EnumTraits<gfx::mojom::OverlayTransform, gfx::OverlayTransform> {
         return gfx::mojom::OverlayTransform::
             OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270;
     }
-    NOTREACHED_IN_MIGRATION();
-    return gfx::mojom::OverlayTransform::OVERLAY_TRANSFORM_INVALID;
+    NOTREACHED();
   }
 
   static bool FromMojom(gfx::mojom::OverlayTransform input,
@@ -78,8 +77,7 @@ struct EnumTraits<gfx::mojom::OverlayTransform, gfx::OverlayTransform> {
             OVERLAY_TRANSFORM_FLIP_VERTICAL_CLOCKWISE_270;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

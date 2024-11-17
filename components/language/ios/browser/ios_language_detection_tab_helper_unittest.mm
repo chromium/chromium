@@ -27,7 +27,7 @@ namespace language {
 
 class IOSLanguageDetectionTabHelperTest : public PlatformTest {
  public:
-  IOSLanguageDetectionTabHelperTest() {}
+  IOSLanguageDetectionTabHelperTest() = default;
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -52,8 +52,8 @@ class IOSLanguageDetectionTabHelperTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
   TestingPrefServiceSimple pref_service_;
-  language_detection::LanguageDetectionModel tf_model_;
-  translate::LanguageDetectionModel model_{&tf_model_};
+  translate::LanguageDetectionModel model_{
+      std::make_unique<language_detection::LanguageDetectionModel>()};
   web::FakeWebState web_state_;
 };
 
@@ -79,9 +79,9 @@ TEST_F(IOSLanguageDetectionTabHelperTest,
       "Translate.LanguageDetection.TFLiteModelEvaluationDuration", 0);
 
   base::RunLoop run_loop;
-  tf_model_.UpdateWithFileAsync(GetValidModelFile(), run_loop.QuitClosure());
+  model_.UpdateWithFileAsync(GetValidModelFile(), run_loop.QuitClosure());
   run_loop.Run();
-  EXPECT_TRUE(tf_model_.IsAvailable());
+  EXPECT_TRUE(model_.IsAvailable());
 
   base::Value text_content("hello world");
   language_detection_tab_helper->OnTextRetrieved(true, "en", "en", GURL(""),

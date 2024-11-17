@@ -18,8 +18,7 @@ bool PrefetchProbeResultIsSuccess(PrefetchProbeResult result) {
     case PrefetchProbeResult::kDNSProbeFailure:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace content

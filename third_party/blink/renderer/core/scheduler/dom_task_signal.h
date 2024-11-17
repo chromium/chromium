@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCHEDULER_DOM_TASK_SIGNAL_H_
 
 #include "base/functional/callback_forward.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_task_priority.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/abort_signal_composition_type.h"
@@ -26,14 +27,14 @@ class CORE_EXPORT DOMTaskSignal final : public AbortSignal {
  public:
   static DOMTaskSignal* CreateFixedPriorityTaskSignal(
       ScriptState*,
-      const AtomicString& priority);
+      V8TaskPriority::Enum priority);
 
   // Constructor for non-composite signals.
-  DOMTaskSignal(ExecutionContext*, const AtomicString& priority, SignalType);
+  DOMTaskSignal(ExecutionContext*, V8TaskPriority::Enum priority, SignalType);
 
   // Constructor for composite signals.
   DOMTaskSignal(ScriptState*,
-                const AtomicString& priority,
+                V8TaskPriority::Enum priority,
                 DOMTaskSignal* source_task_signal,
                 const HeapVector<Member<AbortSignal>>& source_abort_signals);
   ~DOMTaskSignal() override;
@@ -42,12 +43,12 @@ class CORE_EXPORT DOMTaskSignal final : public AbortSignal {
   static DOMTaskSignal* any(ScriptState*,
                             HeapVector<Member<AbortSignal>> signals,
                             TaskSignalAnyInit*);
-  AtomicString priority();
+  V8TaskPriority priority();
   DEFINE_ATTRIBUTE_EVENT_LISTENER(prioritychange, kPrioritychange)
 
   [[nodiscard]] DOMTaskSignal::AlgorithmHandle* AddPriorityChangeAlgorithm(
       base::RepeatingClosure algorithm);
-  void SignalPriorityChange(const AtomicString& priority, ExceptionState&);
+  void SignalPriorityChange(V8TaskPriority::Enum priority, ExceptionState&);
 
   bool IsTaskSignal() const override { return true; }
 
@@ -63,7 +64,7 @@ class CORE_EXPORT DOMTaskSignal final : public AbortSignal {
   void OnSignalSettled(AbortSignalCompositionType) override;
   bool IsSettledFor(AbortSignalCompositionType) const override;
 
-  AtomicString priority_;
+  V8TaskPriority::Enum priority_;
   HeapLinkedHashSet<WeakMember<AlgorithmHandle>> priority_change_algorithms_;
   Member<AbortSignalCompositionManager> priority_composition_manager_;
   bool is_priority_changing_ = false;

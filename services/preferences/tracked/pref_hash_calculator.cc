@@ -25,8 +25,7 @@ std::string GetDigestString(const std::string& key,
   crypto::HMAC hmac(crypto::HMAC::SHA256);
   std::vector<uint8_t> digest(hmac.DigestLength());
   if (!hmac.Init(key) || !hmac.Sign(message, &digest[0], digest.size())) {
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
+    NOTREACHED();
   }
   return base::HexEncode(digest);
 }

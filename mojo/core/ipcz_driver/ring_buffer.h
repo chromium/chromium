@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "mojo/core/ipcz_driver/shared_buffer.h"
 #include "mojo/core/ipcz_driver/shared_buffer_mapping.h"
@@ -52,7 +53,8 @@ class MOJO_SYSTEM_IMPL_EXPORT RingBuffer {
 
    private:
     raw_ptr<RingBuffer> buffer_;
-    const Bytes bytes_;
+    // TODO(367764863) Rewrite to base::raw_span
+    RAW_PTR_EXCLUSION const Bytes bytes_;
   };
 
   // A DirectReader exposes the first contiguous span of data within a
@@ -82,7 +84,8 @@ class MOJO_SYSTEM_IMPL_EXPORT RingBuffer {
 
    private:
     raw_ptr<RingBuffer> buffer_;
-    const Bytes bytes_;
+    // TODO(367764863) Rewrite to base::raw_span
+    RAW_PTR_EXCLUSION const Bytes bytes_;
   };
 
   // Constructs a new empty RingBuffer backed by the entire region of `mapping`.

@@ -1039,13 +1039,20 @@ class CrosNetworkConfigTest : public testing::Test {
   }
 
   void AssertCreateCustomApnResultBucketCount(size_t num_success,
-                                              size_t num_failure) {
+                                              size_t num_network_not_found,
+                                              size_t num_shill_error) {
     histogram_tester_.ExpectBucketCount(
-        CellularNetworkMetricsLogger::kCreateCustomApnResultHistogram, true,
+        CellularNetworkMetricsLogger::kCreateCustomApnResultHistogram,
+        CellularNetworkMetricsLogger::CreateCustomApnResult::kSuccess,
         num_success);
     histogram_tester_.ExpectBucketCount(
-        CellularNetworkMetricsLogger::kCreateCustomApnResultHistogram, false,
-        num_failure);
+        CellularNetworkMetricsLogger::kCreateCustomApnResultHistogram,
+        CellularNetworkMetricsLogger::CreateCustomApnResult::kNetworkNotFound,
+        num_network_not_found);
+    histogram_tester_.ExpectBucketCount(
+        CellularNetworkMetricsLogger::kCreateCustomApnResultHistogram,
+        CellularNetworkMetricsLogger::CreateCustomApnResult::kShillError,
+        num_shill_error);
     histogram_tester_.ExpectTotalCount(
         CellularNetworkMetricsLogger::
             kCreateCustomApnAuthenticationTypeHistogram,
@@ -1701,9 +1708,8 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateListFlashing) {
 }
 
 TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCellularProvider) {
-  auto set_home_provider = [this](const std::string_view name,
-                                  const std::string_view code,
-                                  const std::string_view country) {
+  auto set_home_provider = [this](std::string_view name, std::string_view code,
+                                  std::string_view country) {
     base::Value::Dict home_provider;
     home_provider.Set("name", name);
     home_provider.Set("code", code);
@@ -1715,9 +1721,9 @@ TEST_F(CrosNetworkConfigTest, GetManagedPropertiesCellularProvider) {
     base::RunLoop().RunUntilIdle();
   };
 
-  auto check_home_provider = [this](const std::string_view name,
-                                    const std::string_view code,
-                                    const std::string_view country) {
+  auto check_home_provider = [this](std::string_view name,
+                                    std::string_view code,
+                                    std::string_view country) {
     mojom::ManagedPropertiesPtr properties =
         GetManagedProperties(kCellularGuid);
     ASSERT_TRUE(properties);
@@ -2287,7 +2293,8 @@ TEST_F(CrosNetworkConfigTest,
     EXPECT_TRUE(
         CustomApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
-  AssertCreateCustomApnResultBucketCount(/*num_success=*/1, /*num_failure=*/0);
+  AssertCreateCustomApnResultBucketCount(
+      /*num_success=*/1, /*num_network_not_found=*/0, /*num_shill_error=*/0);
   AssertCreateCustomApnPropertiesBucketCount(
       mojom::ApnAuthenticationType::kAutomatic,
       /*auth_type_count=*/1, mojom::ApnIpType::kAutomatic,
@@ -2328,7 +2335,8 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
     EXPECT_TRUE(
         CustomApnsInManagedPropertiesMatch(kCellularGuid, empty_apn_list));
   }
-  AssertCreateCustomApnResultBucketCount(/*num_success=*/0, /*num_failure=*/0);
+  AssertCreateCustomApnResultBucketCount(
+      /*num_success=*/0, /*num_network_not_found=*/0, /*num_shill_error=*/0);
   AssertCreateCustomApnPropertiesBucketCount(
       mojom::ApnAuthenticationType::kAutomatic,
       /*auth_type_count=*/0, mojom::ApnIpType::kAutomatic,
@@ -2359,7 +2367,8 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
     EXPECT_TRUE(
         CustomApnsInManagedPropertiesMatch(kCellularGuid, empty_apn_list));
   }
-  AssertCreateCustomApnResultBucketCount(/*num_success=*/0, /*num_failure=*/1);
+  AssertCreateCustomApnResultBucketCount(
+      /*num_success=*/0, /*num_network_not_found=*/0, /*num_shill_error=*/1);
   AssertCreateCustomApnPropertiesBucketCount(
       mojom::ApnAuthenticationType::kAutomatic,
       /*auth_type_count=*/0, mojom::ApnIpType::kAutomatic,
@@ -2378,7 +2387,8 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
     EXPECT_TRUE(
         CustomApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
-  AssertCreateCustomApnResultBucketCount(/*num_success=*/1, /*num_failure=*/1);
+  AssertCreateCustomApnResultBucketCount(
+      /*num_success=*/1, /*num_network_not_found=*/0, /*num_shill_error=*/1);
   AssertCreateCustomApnPropertiesBucketCount(
       mojom::ApnAuthenticationType::kAutomatic,
       /*auth_type_count=*/1, mojom::ApnIpType::kAutomatic,
@@ -2406,7 +2416,8 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApnList) {
     EXPECT_TRUE(
         CustomApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
-  AssertCreateCustomApnResultBucketCount(/*num_success=*/2, /*num_failure=*/1);
+  AssertCreateCustomApnResultBucketCount(
+      /*num_success=*/2, /*num_network_not_found=*/0, /*num_shill_error=*/1);
   AssertCreateCustomApnPropertiesBucketCount(
       mojom::ApnAuthenticationType::kAutomatic,
       /*auth_type_count=*/2, mojom::ApnIpType::kAutomatic,
@@ -2578,7 +2589,8 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApnList) {
     EXPECT_TRUE(
         CustomApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
-  AssertCreateCustomApnResultBucketCount(/*num_success=*/1, /*num_failure=*/0);
+  AssertCreateCustomApnResultBucketCount(
+      /*num_success=*/1, /*num_network_not_found=*/0, /*num_shill_error=*/0);
   AssertCreateCustomApnPropertiesBucketCount(
       mojom::ApnAuthenticationType::kAutomatic,
       /*auth_type_count=*/1, mojom::ApnIpType::kAutomatic,
@@ -2611,7 +2623,8 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApnList) {
     EXPECT_TRUE(
         CustomApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
-  AssertCreateCustomApnResultBucketCount(/*num_success=*/2, /*num_failure=*/0);
+  AssertCreateCustomApnResultBucketCount(
+      /*num_success=*/2, /*num_network_not_found=*/0, /*num_shill_error=*/0);
   AssertCreateCustomApnPropertiesBucketCount(
       mojom::ApnAuthenticationType::kAutomatic,
       /*auth_type_count=*/2, mojom::ApnIpType::kAutomatic,
@@ -2663,7 +2676,8 @@ TEST_F(CrosNetworkConfigTest, RemoveCustomApnList) {
     EXPECT_TRUE(
         CustomApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
-  AssertCreateCustomApnResultBucketCount(/*num_success=*/3, /*num_failure=*/0);
+  AssertCreateCustomApnResultBucketCount(
+      /*num_success=*/3, /*num_network_not_found=*/0, /*num_shill_error=*/0);
   AssertCreateCustomApnPropertiesBucketCount(
       mojom::ApnAuthenticationType::kAutomatic,
       /*auth_type_count=*/3, mojom::ApnIpType::kAutomatic,
@@ -2788,7 +2802,8 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_NoListSaved) {
     EXPECT_TRUE(
         CustomApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
-  AssertCreateCustomApnResultBucketCount(/*num_success=*/1, /*num_failure=*/0);
+  AssertCreateCustomApnResultBucketCount(
+      /*num_success=*/1, /*num_network_not_found=*/0, /*num_shill_error=*/0);
   AssertCreateCustomApnPropertiesBucketCount(
       mojom::ApnAuthenticationType::kAutomatic,
       /*auth_type_count=*/1, mojom::ApnIpType::kAutomatic,
@@ -2878,7 +2893,8 @@ TEST_F(CrosNetworkConfigTest, ModifyCustomApnList) {
     EXPECT_TRUE(
         CustomApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
-  AssertCreateCustomApnResultBucketCount(/*num_success=*/2, /*num_failure=*/0);
+  AssertCreateCustomApnResultBucketCount(
+      /*num_success=*/2, /*num_network_not_found=*/0, /*num_shill_error=*/0);
   AssertCreateCustomApnPropertiesBucketCount(
       mojom::ApnAuthenticationType::kAutomatic,
       /*auth_type_count=*/2, mojom::ApnIpType::kAutomatic,
@@ -3019,7 +3035,8 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
     EXPECT_TRUE(
         CustomApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
-  AssertCreateCustomApnResultBucketCount(/*num_success=*/1, /*num_failure=*/0);
+  AssertCreateCustomApnResultBucketCount(
+      /*num_success=*/1, /*num_network_not_found=*/0, /*num_shill_error=*/0);
   AssertCreateCustomApnPropertiesBucketCount(
       mojom::ApnAuthenticationType::kPap,
       /*auth_type_count=*/1, mojom::ApnIpType::kIpv4,
@@ -3055,7 +3072,8 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_EmptyList) {
     EXPECT_TRUE(
         CustomApnsInManagedPropertiesMatch(kCellularGuid, expected_apns));
   }
-  AssertCreateCustomApnResultBucketCount(/*num_success=*/2, /*num_failure=*/0);
+  AssertCreateCustomApnResultBucketCount(
+      /*num_success=*/2, /*num_network_not_found=*/0, /*num_shill_error=*/0);
   AssertCreateCustomApnPropertiesBucketCount(
       mojom::ApnAuthenticationType::kChap,
       /*auth_type_count=*/1, mojom::ApnIpType::kIpv4Ipv6,
@@ -3096,7 +3114,8 @@ TEST_F(CrosNetworkConfigTest, CreateCustomApn_InvalidGuid) {
                                                 network_config_observer));
     EXPECT_TRUE(CustomApnsInManagedPropertiesMatch(guid, expected_apns));
   }
-  AssertCreateCustomApnResultBucketCount(/*num_success=*/0, /*num_failure=*/1);
+  AssertCreateCustomApnResultBucketCount(
+      /*num_success=*/0, /*num_network_not_found=*/1, /*num_shill_error=*/0);
 }
 
 TEST_F(CrosNetworkConfigTest, RemoveCustomApn) {

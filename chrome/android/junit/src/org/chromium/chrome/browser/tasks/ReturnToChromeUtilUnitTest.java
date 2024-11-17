@@ -30,7 +30,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -49,7 +48,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeInactivityTracker;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -94,8 +92,6 @@ public class ReturnToChromeUtilUnitTest {
 
     private static final int ON_RETURN_THRESHOLD_SECOND = 1000;
     private static final int DELTA_MS = 100;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
     @Mock private Context mContext;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private ChromeInactivityTracker mInactivityTracker;
@@ -452,7 +448,7 @@ public class ReturnToChromeUtilUnitTest {
 
     @Test
     @SmallTest
-    public void testLogFailToShowHomeSurfaceUI() {
+    public void testLogFailToShowHomeSurfaceUi() {
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
                         .expectIntRecords(

@@ -28,11 +28,11 @@
 #include "ash/app_list/views/search_result_page_dialog_controller.h"
 #include "ash/ash_element_identifiers.h"
 #include "ash/bubble/bubble_constants.h"
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -205,36 +205,37 @@ class ButtonFocusSkipper : public ui::EventHandler {
   std::vector<raw_ptr<views::View, VectorExperimental>> buttons_;
 };
 
-AppListBubbleView::AppListBubbleView(
-    AppListViewDelegate* view_delegate,
-    ApplicationDragAndDropHost* drag_and_drop_host)
+AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate)
     : view_delegate_(view_delegate) {
   DCHECK(view_delegate);
-  DCHECK(drag_and_drop_host);
   SetProperty(views::kElementIdentifierKey, kAppListBubbleViewElementId);
-
-  const float corner_radius = GetBubbleCornerRadius();
   // Set up rounded corners and background blur, similar to TrayBubbleView.
   // Layer background is set in OnThemeChanged().
   SetPaintToLayer();
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{corner_radius});
-  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
   layer()->SetIsFastRoundedCorner(true);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 
-  ui::ColorId background_color_id = cros_tokens::kCrosSysSystemBaseElevated;
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
   SetBackground(views::CreateThemedRoundedRectBackground(background_color_id,
-                                                         corner_radius));
+                                                         kBubbleCornerRadius));
 
   SetBorder(std::make_unique<views::HighlightBorder>(
-      corner_radius, views::HighlightBorder::Type::kHighlightBorderOnShadow,
+      kBubbleCornerRadius,
+      views::HighlightBorder::Type::kHighlightBorderOnShadow,
       /*insets_type=*/views::HighlightBorder::InsetsType::kHalfInsets));
 
   SetLayoutManager(std::make_unique<views::FillLayout>());
   a11y_announcer_ = std::make_unique<AppListA11yAnnouncer>(
       AddChildView(std::make_unique<views::View>()));
-  InitContentsView(drag_and_drop_host);
+  InitContentsView();
 
   // Add assistant page as a top-level child so it will fill the bubble and
   // suggestion chips will appear at the bottom of the bubble view.
@@ -242,7 +243,7 @@ AppListBubbleView::AppListBubbleView(
       view_delegate_->GetAssistantViewDelegate()));
   assistant_page_->SetVisible(false);
 
-  InitFolderView(drag_and_drop_host);
+  InitFolderView();
   // Folder view is laid out manually based on its contents.
   folder_view_->SetProperty(views::kViewIgnoredByLayoutKey, true);
 
@@ -269,16 +270,7 @@ void AppListBubbleView::UpdateSuggestions() {
   apps_page_->UpdateSuggestions();
 }
 
-void AppListBubbleView::SetDragAndDropHostOfCurrentAppList(
-    ApplicationDragAndDropHost* drag_and_drop_host) {
-  apps_page_->scrollable_apps_grid_view()->SetDragAndDropHostOfCurrentAppList(
-      drag_and_drop_host);
-  folder_view_->items_grid_view()->SetDragAndDropHostOfCurrentAppList(
-      drag_and_drop_host);
-}
-
-void AppListBubbleView::InitContentsView(
-    ApplicationDragAndDropHost* drag_and_drop_host) {
+void AppListBubbleView::InitContentsView() {
   auto* contents = AddChildView(std::make_unique<views::View>());
 
   auto* layout = contents->SetLayoutManager(
@@ -291,7 +283,7 @@ void AppListBubbleView::InitContentsView(
 
   // Skip the assistant button on arrow up/down in app list.
   button_focus_skipper_ = std::make_unique<ButtonFocusSkipper>();
-  if (features::IsSunfishFeatureEnabled()) {
+  if (IsSunfishAllowedAndEnabled()) {
     button_focus_skipper_->AddButton(search_box_view_->sunfish_button());
   }
   button_focus_skipper_->AddButton(search_box_view_->assistant_button());
@@ -320,8 +312,8 @@ void AppListBubbleView::InitContentsView(
   // another root window.
   apps_page_ =
       pages_container->AddChildView(std::make_unique<AppListBubbleAppsPage>(
-          view_delegate_, drag_and_drop_host, GetAppListConfig(),
-          a11y_announcer_.get(), /*folder_controller=*/this,
+          view_delegate_, GetAppListConfig(), a11y_announcer_.get(),
+          /*folder_controller=*/this,
           /*search_box=*/search_box_view_));
 
   apps_collections_page_ = pages_container->AddChildView(
@@ -387,13 +379,10 @@ views::View::DropCallback AppListBubbleView::GetDropCallback(
       GetTranslatedDropTargetEvent(event, this, scrollable_apps_grid));
 }
 
-void AppListBubbleView::InitFolderView(
-    ApplicationDragAndDropHost* drag_and_drop_host) {
+void AppListBubbleView::InitFolderView() {
   auto folder_view = std::make_unique<AppListFolderView>(
       this, apps_page_->scrollable_apps_grid_view(), a11y_announcer_.get(),
       view_delegate_, /*tablet_mode=*/false);
-  folder_view->items_grid_view()->SetDragAndDropHostOfCurrentAppList(
-      drag_and_drop_host);
   folder_view->UpdateAppListConfig(GetAppListConfig());
   folder_background_view_ =
       AddChildView(std::make_unique<FolderBackgroundView>(folder_view.get()));

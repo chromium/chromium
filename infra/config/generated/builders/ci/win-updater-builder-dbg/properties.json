@@ -144,7 +144,8 @@
           "builder": "win-updater-try-builder-dbg",
           "group": "tryserver.chromium.updater"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/win-updater-builder-dbg/targets"
     }
   },
   "$build/reclient": {

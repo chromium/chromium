@@ -39,15 +39,23 @@ class TestingApplicationContext : public ApplicationContext {
   // Sets the last shutdown "clean" state.
   void SetLastShutdownClean(bool clean);
 
-  // Sets the ProfileManager.
-  void SetProfileManager(ProfileManagerIOS* manager);
+  // Sets the ProfileManager and the AccountProfileMapper. If this isn't called,
+  // GetProfileManager() will return null, and GetAccountProfileMapper() will
+  // return a default instance.
+  // Since the real AccountProfileMapper depends on the ProfileManagerIOS, a
+  // ProfileManagerIOS should always be set together with a corresponding
+  // AccountProfileMapper.
+  // This must be called before GetAccountProfileMapper(), i.e. before creating
+  // a TestProfileIOS.
+  void SetProfileManagerAndAccountProfileMapper(ProfileManagerIOS* manager,
+                                                AccountProfileMapper* mapper);
 
   // Sets the VariationsService.
   void SetVariationsService(variations::VariationsService* variations_service);
 
   // Sets the SystemIdentityManager.
   // Must be set before `GetSystemIdentityManager` is called (i.e. before
-  // creating a TestChromeBrowserState).
+  // creating a TestProfileIOS).
   void SetSystemIdentityManager(
       std::unique_ptr<SystemIdentityManager> system_identity_manager);
 
@@ -57,6 +65,9 @@ class TestingApplicationContext : public ApplicationContext {
   // ApplicationContext implementation.
   void OnAppEnterForeground() override;
   void OnAppEnterBackground() override;
+  void OnAppStartedBackgroundProcessing() override;
+  void OnAppFinishedBackgroundProcessing() override;
+
   bool WasLastShutdownClean() override;
 
   PrefService* GetLocalState() override;
@@ -91,6 +102,12 @@ class TestingApplicationContext : public ApplicationContext {
   PushNotificationService* GetPushNotificationService() override;
   os_crypt_async::OSCryptAsync* GetOSCryptAsync() override;
   AdditionalFeaturesController* GetAdditionalFeaturesController() override;
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  optimization_guide::OnDeviceModelServiceController*
+  GetOnDeviceModelServiceController(
+      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+          on_device_component_manager) override;
+#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -98,7 +115,7 @@ class TestingApplicationContext : public ApplicationContext {
   std::string application_country_;
   raw_ptr<PrefService> local_state_;
 
-  // Must be destroyed after `local_state_`. BrowserStatePolicyConnector isn't a
+  // Must be destroyed after `local_state_`. profilePolicyConnector isn't a
   // keyed service because the pref service, which isn't a keyed service, has a
   // hard dependency on the policy infrastructure. In order to outlive the pref
   // service, the policy connector must live outside the keyed services.
@@ -106,6 +123,7 @@ class TestingApplicationContext : public ApplicationContext {
   std::unique_ptr<MockPromosManager> promos_manager_;
 
   raw_ptr<ProfileManagerIOS> profile_manager_;
+  raw_ptr<AccountProfileMapper> custom_account_profile_mapper_;
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
   bool was_last_shutdown_clean_;
   std::unique_ptr<network::TestURLLoaderFactory> test_url_loader_factory_;
@@ -114,7 +132,7 @@ class TestingApplicationContext : public ApplicationContext {
       test_network_connection_tracker_;
   __strong id<SingleSignOnService> single_sign_on_service_ = nil;
   std::unique_ptr<SystemIdentityManager> system_identity_manager_;
-  std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
+  std::unique_ptr<AccountProfileMapper> default_account_profile_mapper_;
   std::unique_ptr<PushNotificationService> push_notification_service_;
   raw_ptr<variations::VariationsService> variations_service_;
   std::unique_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;

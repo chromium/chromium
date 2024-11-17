@@ -68,7 +68,6 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_Normal) {
   const uint8_t kAlphaData[] = "sideshow bob";
   const uint32_t kSpatialLayers[] = {36, 24, 36};
   const size_t kDataSize = std::size(kData);
-  const size_t kAlphaDataSize = std::size(kAlphaData);
   const size_t kSpatialLayersSize = std::size(kSpatialLayers);
   const size_t kSecureHandle = 42;
 
@@ -78,8 +77,8 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_Normal) {
   buffer->set_duration(base::Milliseconds(456));
   buffer->set_discard_padding(DecoderBuffer::DiscardPadding(
       base::Milliseconds(5), base::Milliseconds(6)));
-  buffer->WritableSideData().alpha_data.assign(kAlphaData,
-                                               kAlphaData + kAlphaDataSize);
+  buffer->WritableSideData().alpha_data =
+      base::HeapArray<uint8_t>::CopiedFrom(kAlphaData);
   buffer->WritableSideData().spatial_layers.assign(
       kSpatialLayers, kSpatialLayers + kSpatialLayersSize);
   buffer->WritableSideData().secure_handle = kSecureHandle;
@@ -93,7 +92,7 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_Normal) {
   // DecoderBuffer; no need to check the data here.
   EXPECT_EQ(kDataSize, result->size());
   EXPECT_TRUE(result->has_side_data());
-  EXPECT_TRUE(buffer->side_data()->Matches(result->side_data().value()));
+  EXPECT_TRUE(buffer->side_data()->Matches(*result->side_data()));
   EXPECT_EQ(buffer->timestamp(), result->timestamp());
   EXPECT_EQ(buffer->duration(), result->duration());
   EXPECT_EQ(buffer->is_key_frame(), result->is_key_frame());
@@ -145,56 +144,6 @@ TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS_Audio_NextConfig) {
   ASSERT_TRUE(result->next_config());
   EXPECT_TRUE(absl::get<AudioDecoderConfig>(*result->next_config())
                   .Matches(TestAudioConfig::Normal()));
-}
-
-TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_EOS_NextConfig_Invalid) {
-  // Original.
-  const uint8_t kData[] = "hello, world";
-  auto buffer = DecoderBuffer::CopyFrom(kData);
-  // Ensure some side data exists.
-  buffer->WritableSideData().secure_handle = 1;
-
-  {
-    auto ptr = mojom::DecoderBuffer::From(*buffer);
-    ASSERT_TRUE(ptr);
-    auto result = ptr.To<scoped_refptr<DecoderBuffer>>();
-    EXPECT_TRUE(result);
-
-    // Next audio config should only be on EOS buffers.
-    ptr->side_data->next_config =
-        mojom::DecoderBufferSideDataNextConfig::NewNextAudioConfig(
-            TestAudioConfig::Normal());
-    result = ptr.To<scoped_refptr<DecoderBuffer>>();
-    EXPECT_FALSE(result);
-  }
-
-  {
-    auto ptr = mojom::DecoderBuffer::From(*buffer);
-    ASSERT_TRUE(ptr);
-    auto result = ptr.To<scoped_refptr<DecoderBuffer>>();
-    EXPECT_TRUE(result);
-
-    // Next video config should only be on EOS buffers.
-    ptr->side_data->next_config =
-        mojom::DecoderBufferSideDataNextConfig::NewNextVideoConfig(
-            TestVideoConfig::Normal());
-    result = ptr.To<scoped_refptr<DecoderBuffer>>();
-    EXPECT_FALSE(result);
-  }
-
-  {
-    buffer = DecoderBuffer::CreateEOSBuffer();
-    auto ptr = mojom::DecoderBuffer::From(*buffer);
-    ASSERT_TRUE(ptr);
-    auto result = ptr.To<scoped_refptr<DecoderBuffer>>();
-    EXPECT_TRUE(result);
-
-    // The only side data allowed on EOS buffers is a next config.
-    ptr->side_data = media::mojom::DecoderBufferSideData::New();
-    ptr->side_data->secure_handle = 3;
-    result = ptr.To<scoped_refptr<DecoderBuffer>>();
-    EXPECT_FALSE(result);
-  }
 }
 
 TEST(MediaTypeConvertersTest, ConvertDecoderBuffer_KeyFrame) {

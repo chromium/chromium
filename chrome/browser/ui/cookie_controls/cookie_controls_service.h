@@ -34,6 +34,9 @@ class CookieControlsService : public KeyedService,
     virtual void OnThirdPartyCookieBlockingPolicyChanged() {}
   };
 
+  // Use |CookieControlsServiceFactory::GetForProfile(..)| to get
+  // an instance of this service.
+  explicit CookieControlsService(Profile* profile);
   CookieControlsService(const CookieControlsService&) = delete;
   CookieControlsService& operator=(const CookieControlsService&) = delete;
 
@@ -53,10 +56,6 @@ class CookieControlsService : public KeyedService,
 
  private:
   friend class CookieControlsServiceFactory;
-
-  // Use |CookieControlsServiceFactory::GetForProfile(..)| to get
-  // an instance of this service.
-  explicit CookieControlsService(Profile* profile);
 
   void OnThirdPartyCookieBlockingChanged(
       bool block_third_party_cookies) override;

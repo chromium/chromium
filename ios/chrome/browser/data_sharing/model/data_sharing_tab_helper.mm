@@ -4,9 +4,15 @@
 
 #import "ios/chrome/browser/data_sharing/model/data_sharing_tab_helper.h"
 
+#import "base/check.h"
 #import "components/data_sharing/public/data_sharing_service.h"
 #import "ios/chrome/browser/data_sharing/model/data_sharing_service_factory.h"
+#import "ios/chrome/browser/data_sharing/model/ios_share_url_interception_context.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
@@ -19,16 +25,39 @@ void DataSharingTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
     web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(web_state()->GetBrowserState());
+  web::WebState* current_web_state = web_state();
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(current_web_state->GetBrowserState());
   data_sharing::DataSharingService* data_sharing_service =
-      data_sharing::DataSharingServiceFactory::GetForBrowserState(
-          chrome_browser_state);
+      data_sharing::DataSharingServiceFactory::GetForProfile(profile);
 
   GURL url = net::GURLWithNSURL(request.URL);
   if (data_sharing_service &&
       data_sharing_service->ShouldInterceptNavigationForShareURL(url)) {
-    data_sharing_service->HandleShareURLNavigationIntercepted(url);
+    BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
+
+    std::set<Browser*> regular_browsers =
+        browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular);
+    Browser* current_browser = nullptr;
+    if (regular_browsers.size() == 1) {
+      current_browser = *regular_browsers.begin();
+    } else {
+      for (Browser* browser : regular_browsers) {
+        if (browser->GetWebStateList()->GetIndexOfWebState(current_web_state) !=
+            WebStateList::kInvalidIndex) {
+          current_browser = browser;
+          break;
+        }
+      }
+    }
+
+    CHECK(current_browser, base::NotFatalUntil::M138);
+
+    auto context =
+        std::make_unique<data_sharing::IOSShareURLInterceptionContext>(
+            current_browser);
+    data_sharing_service->HandleShareURLNavigationIntercepted(
+        url, std::move(context));
     std::move(callback).Run(PolicyDecision::Cancel());
 
     // Close the tab if the url interception ends with an empty page.

@@ -22,8 +22,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "build/build_config.h"
+#include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/enterprise_companion/enterprise_companion.h"
 #include "chrome/enterprise_companion/event_logger.h"
+#include "chrome/enterprise_companion/proxy_config_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -53,14 +55,33 @@ namespace enterprise_companion {
 
 namespace {
 
+std::unique_ptr<net::ProxyConfigService> CreateDefaultProxyConfigService(
+    scoped_refptr<base::SingleThreadTaskRunner> network_task_runner) {
+  std::unique_ptr<net::ProxyConfigService> system_config_service =
+      net::ProxyConfigService::CreateSystemProxyConfigService(
+          network_task_runner);
+  // The Chromium updater only respects policy-provided proxy configurations on
+  // Windows. For parity, the enterprise companion should do the same. Once the
+  // product has launched, it would be worth experimenting with this
+  // functionality on Mac. The updater is not productized on Linux so parity is
+  // not a requirement.
+#if BUILDFLAG(IS_MAC)
+  return system_config_service;
+#else
+  return CreatePolicyProxyConfigService(
+      device_management_storage::GetDefaultDMStorage(),
+      GetDefaultSystemPolicyProxyConfigProvider(),
+      std::move(system_config_service));
+#endif
+}
+
 class URLRequestContextGetter : public net::URLRequestContextGetter {
  public:
   explicit URLRequestContextGetter(
       scoped_refptr<base::SingleThreadTaskRunner> network_task_runner)
       : network_task_runner_(network_task_runner),
         proxy_config_service_(
-            net::ProxyConfigService::CreateSystemProxyConfigService(
-                network_task_runner)) {}
+            CreateDefaultProxyConfigService(network_task_runner_)) {}
 
   URLRequestContextGetter(const URLRequestContextGetter&) = delete;
   URLRequestContextGetter& operator=(const URLRequestContextGetter&) = delete;

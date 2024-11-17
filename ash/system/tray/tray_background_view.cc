@@ -10,7 +10,7 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/tray_background_view_catalog.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -46,7 +46,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/animation_throughput_reporter.h"
@@ -298,7 +298,7 @@ TrayBackgroundView::TrayBackgroundView(
   // Use layer color to provide background color. Note that children views
   // need to have their own layers to be visible.
   SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  layer()->SetFillsBoundsOpaquely(false);
+  layer()->SetFillsBoundsOpaquely(!chromeos::features::IsSystemBlurEnabled());
 
   // Start the tray items not visible, because visibility changes are animated.
   views::View::SetVisible(false);
@@ -546,7 +546,7 @@ void TrayBackgroundView::OnVisibilityAnimationFinished(
 void TrayBackgroundView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   context_menu_model_ = CreateContextMenuModel();
   if (!context_menu_model_) {
     return;
@@ -661,9 +661,12 @@ void TrayBackgroundView::UpdateAfterStatusAreaCollapseChange() {
 void TrayBackgroundView::UpdateBackground() {
   layer()->SetRoundedCornerRadius(GetRoundedCorners());
   layer()->SetIsFastRoundedCorner(true);
-  layer()->SetBackgroundBlur(
-      ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetBackgroundBlur(
+        ShelfConfig::Get()->GetShelfControlButtonBlurRadius());
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
+
   layer()->SetClipRect(GetBackgroundBounds());
 
   const views::Widget* widget = GetWidget();
@@ -1048,12 +1051,14 @@ void TrayBackgroundView::UpdateBackgroundColor(bool active) {
 
   // The shelf is not transparent when 1)the shelf is in app mode OR 2) the
   // shelf is in the regular logged in page (not session blocked).
-  bool is_shelf_opaque =
+  const bool is_shelf_opaque =
       (!Shell::Get()->IsInTabletMode() || ShelfConfig::Get()->is_in_app()) &&
       !Shell::Get()->session_controller()->IsUserSessionBlocked();
-  ui::ColorId non_active_color_id =
-      is_shelf_opaque ? cros_tokens::kCrosSysSystemOnBase
-                      : cros_tokens::kCrosSysSystemBaseElevated;
+
+  const ui::ColorId non_active_color_id =
+      (is_shelf_opaque || !chromeos::features::IsSystemBlurEnabled())
+          ? cros_tokens::kCrosSysSystemOnBase
+          : cros_tokens::kCrosSysSystemBaseElevated;
   layer()->SetColor(widget->GetColorProvider()->GetColor(
       active ? cros_tokens::kCrosSysSystemPrimaryContainer
              : non_active_color_id));

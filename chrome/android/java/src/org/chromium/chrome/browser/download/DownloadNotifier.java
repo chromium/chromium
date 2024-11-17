@@ -30,17 +30,19 @@ public interface DownloadNotifier {
 
     /**
      * Update the download progress notification.
+     *
      * @param downloadInfo info about in progress download.
      * @param startTimeInMillis the startTime of the download, measured in milliseconds, between the
-     *        current time and midnight, January 1, 1970 UTC. Useful to keep progress notifications
-     *        sorted by time.
-     * @param canDownloadWhileMetered Wheter the download can take place on metered network.
+     *     current time and midnight, January 1, 1970 UTC. Useful to keep progress notifications
+     *     sorted by time.
+     * @param canDownloadWhileMetered Whether the download can take place on metered network.
      */
     void notifyDownloadProgress(
-            DownloadInfo downloadInfo, long startTimeInMillis, boolean mCanDownloadWhileMetered);
+            DownloadInfo downloadInfo, long startTimeInMillis, boolean canDownloadWhileMetered);
 
     /**
      * Update the download notification to paused.
+     *
      * @param downloadInfo info about in progress download.
      */
     void notifyDownloadPaused(DownloadInfo downloadInfo);

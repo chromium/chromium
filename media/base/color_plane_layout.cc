@@ -4,12 +4,17 @@
 
 #include "media/base/color_plane_layout.h"
 
+#include "base/check_op.h"
+
 namespace media {
 
 ColorPlaneLayout::ColorPlaneLayout() = default;
 
 ColorPlaneLayout::ColorPlaneLayout(int32_t stride, size_t offset, size_t size)
-    : stride(stride), offset(offset), size(size) {}
+    : stride(stride), offset(offset), size(size) {
+  // TODO(crbug.com/338570700): Make strides unsigned and remove the CHECK().
+  CHECK_GE(stride, 0);
+}
 
 ColorPlaneLayout::~ColorPlaneLayout() = default;
 

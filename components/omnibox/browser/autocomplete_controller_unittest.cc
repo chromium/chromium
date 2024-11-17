@@ -25,6 +25,7 @@
 #include "components/omnibox/browser/fake_autocomplete_controller.h"
 #include "components/omnibox/browser/fake_autocomplete_provider.h"
 #include "components/omnibox/browser/fake_autocomplete_provider_client.h"
+#include "components/omnibox/browser/fake_tab_matcher.h"
 #include "components/omnibox/browser/omnibox_feature_configs.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
@@ -40,13 +41,14 @@ namespace {
 
 bool ParseAnswer(const std::string& answer_json,
                  omnibox::AnswerType answer_type,
-                 SuggestionAnswer* answer) {
+                 omnibox::RichAnswerTemplate* answer) {
   std::optional<base::Value> value = base::JSONReader::Read(answer_json);
   if (!value || !value->is_dict()) {
     return false;
   }
 
-  return SuggestionAnswer::ParseAnswer(value->GetDict(), answer_type, answer);
+  return omnibox::answer_data_parser::ParseJsonToAnswerData(value->GetDict(),
+                                                            answer);
 }
 
 }  // namespace
@@ -162,9 +164,9 @@ class AutocompleteControllerTest : public testing::Test {
     AutocompleteMatch match = CreateSearchMlScoredMatch(
         name, allowed_to_be_default_match, traditional_relevance, ml_output);
     match.answer_type = answer_type;
-    SuggestionAnswer answer;
+    omnibox::RichAnswerTemplate answer;
     EXPECT_TRUE(ParseAnswer(answer_json, match.answer_type, &answer));
-    match.answer = answer;
+    match.answer_template = answer;
     return match;
   }
 
@@ -653,7 +655,7 @@ TEST_F(AutocompleteControllerTest, UpdateResult_ZPSEnabledAndShownInSession) {
 
   // Create a zero-suggest input.
   auto zps_input = FakeAutocompleteController::CreateInput(u"");
-  zps_input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_CLOBBER);
+  zps_input.set_focus_type(metrics::OmniboxFocusType::INTERACTION_FOCUS);
 
   {
     SCOPED_TRACE("Zero-prefix suggestions are offered synchronously");
@@ -1866,7 +1868,7 @@ TEST_F(AutocompleteControllerTest, ExplicitStop) {
         "`OnResultChanged()` - there's no change to notify of.");
     controller_.SimulateAutocompletePass(true, false, matches);
     controller_.Stop(false);
-    controller_.ExpectStopAfter(0);
+    controller_.ExpectStopAfter(0, true);
     EXPECT_FALSE(controller_.published_result_.empty());
     controller_.ExpectNoNotificationOrStop();
   }
@@ -1879,7 +1881,7 @@ TEST_F(AutocompleteControllerTest, ExplicitStop) {
     controller_.SimulateAutocompletePass(false, false, matches);
     controller_.Stop(false);
     EXPECT_FALSE(controller_.published_result_.empty());
-    controller_.ExpectStopAfter(0);
+    controller_.ExpectStopAfter(0, true);
     controller_.ExpectNoNotificationOrStop();
   }
   {
@@ -2019,6 +2021,10 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
         std::make_unique<TemplateURL>(std::move(*turl_data)));
   }
 
+  const std::string expected_gemini_url =
+      "https://gemini.google.com/prompt?"
+      "utm_source=chrome_omnibox&utm_medium=owned&utm_campaign=gemini_shortcut";
+
   {
     SCOPED_TRACE("@gemini starter pack match gets an extra header.");
     auto match = CreateStarterPackMatch(u"@gemini");
@@ -2028,7 +2034,7 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
 
     controller_.SetMatchDestinationURL(&match);
     EXPECT_EQ(match.extra_headers, "X-Omnibox-Gemini:search%20term");
-    EXPECT_EQ(match.destination_url, "https://gemini.google.com/prompt");
+    EXPECT_EQ(match.destination_url, expected_gemini_url);
   }
   {
     SCOPED_TRACE("@gemini starter pack match with url override");
@@ -2056,7 +2062,7 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
 
     controller_.SetMatchDestinationURL(&match);
     EXPECT_EQ(match.extra_headers, "X-Omnibox-Gemini:search%20term%0A");
-    EXPECT_EQ(match.destination_url, "https://gemini.google.com/prompt");
+    EXPECT_EQ(match.destination_url, expected_gemini_url);
   }
   {
     SCOPED_TRACE("@gemini starter pack with url in the input");
@@ -2068,7 +2074,7 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
     controller_.SetMatchDestinationURL(&match);
     EXPECT_EQ(match.extra_headers,
               "X-Omnibox-Gemini:what%20is%20http%3A%2F%2Fexample.com%20for%3F");
-    EXPECT_EQ(match.destination_url, "https://gemini.google.com/prompt");
+    EXPECT_EQ(match.destination_url, expected_gemini_url);
   }
   {
     SCOPED_TRACE("@gemini starter pack with non-ascii input");
@@ -2081,7 +2087,7 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
     EXPECT_EQ(
         match.extra_headers,
         "X-Omnibox-Gemini:%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF%0A");
-    EXPECT_EQ(match.destination_url, "https://gemini.google.com/prompt");
+    EXPECT_EQ(match.destination_url, expected_gemini_url);
   }
   {
     SCOPED_TRACE("@bookmarks starter pack match does not get an extra header.");
@@ -2278,6 +2284,44 @@ TEST_F(AutocompleteControllerTest, ShouldRunProvider_LensSearchbox) {
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+TEST_F(AutocompleteControllerTest, ShouldRunProvider_AndroidHubSearch) {
+  // For Lens searchboxes, run search provider only.
+  std::set<AutocompleteProvider::Type> expected_provider_types = {
+      AutocompleteProvider::TYPE_SEARCH, AutocompleteProvider::TYPE_OPEN_TAB};
+
+  controller_.input_ =
+      AutocompleteInput(u"a", 1u, metrics::OmniboxEventProto::ANDROID_HUB,
+                        TestSchemeClassifier());
+  for (auto& provider : controller_.providers()) {
+    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
+              expected_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kAndroidHubSearch, {{"enable_bookmark_provider", "true"},
+                                   {"enable_history_provider", "true"}});
+
+  expected_provider_types = {AutocompleteProvider::TYPE_SEARCH,
+                             AutocompleteProvider::TYPE_OPEN_TAB,
+                             AutocompleteProvider::TYPE_BOOKMARK,
+                             AutocompleteProvider::TYPE_HISTORY_QUICK};
+
+  controller_.input_ =
+      AutocompleteInput(u"a", 1u, metrics::OmniboxEventProto::ANDROID_HUB,
+                        TestSchemeClassifier());
+  for (auto& provider : controller_.providers()) {
+    EXPECT_EQ(controller_.ShouldRunProvider(provider.get()),
+              expected_provider_types.contains(provider->type()))
+        << "Provider Type: "
+        << AutocompleteProvider::TypeToString(provider->type());
+  }
+}
+#endif
+
 TEST_F(AutocompleteControllerTest, UpdateSearchboxStatsForAnswerAction) {
   // Populate TemplateURLService with a keyword.
   TemplateURLData turl_data;
@@ -2314,7 +2358,7 @@ TEST_F(AutocompleteControllerTest, UpdateSearchboxStatsForAnswerAction) {
 
 // Anroid and iOS have different handling for pedals.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(AutocompleteControllerTest, NoPedalsAttachedToLensSearchboxMatches) {
+TEST_F(AutocompleteControllerTest, NoActionsAttachedToLensSearchboxMatches) {
   std::unordered_map<OmniboxPedalId, scoped_refptr<OmniboxPedal>> pedals;
   const auto add = [&](OmniboxPedal* pedal) {
     pedals.insert(
@@ -2330,35 +2374,44 @@ TEST_F(AutocompleteControllerTest, NoPedalsAttachedToLensSearchboxMatches) {
       u"Clear History", metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX,
       TestSchemeClassifier());
 
-  SetAutocompleteMatches({
-      CreateSearchMatch(u"Clear History"),
-      CreateSearchMatch(u"search 1"),
-      CreateSearchMatch(u"search 2"),
-  });
+  SetAutocompleteMatches(
+      {CreateSearchMatch(u"Clear History"), CreateSearchMatch(u"search 1"),
+       CreateSearchMatch(u"search 2"),
+       CreateHistoryURLMatch(
+           /*destination_url=*/"http://this-site-matches.com")});
+
+  static_cast<FakeTabMatcher&>(
+      const_cast<TabMatcher&>(provider_client()->GetTabMatcher()))
+      .set_url_substring_match("matches");
 
   controller_.AttachActions();
 
   // For a Lens Searchbox, AttachActions should not attach a pedal to the
   // first match, and therefore it won't get split out into a separate pedal
+  // match. It also shouldn't attach a switch to this tab action to the last
   // match.
   EXPECT_EQ(nullptr, controller_.internal_result_.match_at(1)->takeover_action);
+  EXPECT_FALSE(
+      controller_.internal_result_.match_at(3)->has_tab_match.value_or(false));
 
   controller_.input_ =
       AutocompleteInput(u"Clear History", metrics::OmniboxEventProto::OTHER,
                         TestSchemeClassifier());
 
-  SetAutocompleteMatches({
-      CreateSearchMatch(u"Clear History"),
-      CreateSearchMatch(u"search 1"),
-      CreateSearchMatch(u"search 2"),
-  });
+  SetAutocompleteMatches(
+      {CreateSearchMatch(u"Clear History"),
+       CreateHistoryURLMatch(
+           /*destination_url=*/"http://this-site-matches.com"),
+       CreateSearchMatch(u"search 1"), CreateSearchMatch(u"search 2")});
 
   controller_.AttachActions();
 
-  // For any other page classification, AttachActions should attach a pedal to
-  // the first match and split it out into a separate action.
+  // For any other page classification, AttachActions should attach a pedal
+  // and a switch to this tab action to the relevant matches.
   EXPECT_EQ(
       OmniboxActionId::PEDAL,
       controller_.internal_result_.match_at(1)->takeover_action->ActionId());
+  EXPECT_TRUE(
+      controller_.internal_result_.match_at(2)->has_tab_match.value_or(false));
 }
 #endif

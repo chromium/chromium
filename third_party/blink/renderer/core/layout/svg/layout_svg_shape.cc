@@ -362,10 +362,6 @@ SVGLayoutResult LayoutSVGShape::UpdateSVGLayout(
     result.bounds_changed = true;
   }
 
-  if (result.bounds_changed) {
-    DeprecatedInvalidateIntersectionObserverCachedRects();
-  }
-
   DCHECK(!needs_shape_update_);
   DCHECK(!needs_boundaries_update_);
   DCHECK(!needs_transform_update_);
@@ -479,7 +475,7 @@ bool LayoutSVGShape::NodeAtPoint(HitTestResult& result,
       PointerEventsHitRules::kSvgGeometryHitTesting, result.GetHitTestRequest(),
       style.UsedPointerEvents());
   if (hit_rules.require_visible &&
-      style.UsedVisibility() != EVisibility::kVisible) {
+      style.Visibility() != EVisibility::kVisible) {
     return false;
   }
 

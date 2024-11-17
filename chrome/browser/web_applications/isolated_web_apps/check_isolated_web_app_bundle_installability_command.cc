@@ -55,12 +55,11 @@ void CheckIsolatedWebAppBundleInstallabilityCommand::StartWithLock(
     return;
   }
 
-  const std::optional<WebApp::IsolationData>& isolation_data =
-      app->isolation_data();
+  const std::optional<IsolationData>& isolation_data = app->isolation_data();
   // If there is an app with the same app ID, it must be an IWA.
   CHECK(isolation_data.has_value());
 
-  base::Version installed_version = isolation_data.value().version;
+  base::Version installed_version = isolation_data->version();
   bool is_dev_mode_install = IsIwaDevModeEnabled(profile_);
 
   if (is_dev_mode_install && bundle_metadata_.version() < installed_version) {

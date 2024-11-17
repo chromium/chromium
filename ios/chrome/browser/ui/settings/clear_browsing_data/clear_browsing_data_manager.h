@@ -6,17 +6,16 @@
 #define IOS_CHROME_BROWSER_UI_SETTINGS_CLEAR_BROWSING_DATA_CLEAR_BROWSING_DATA_MANAGER_H_
 
 #import "components/browsing_data/core/counters/browsing_data_counter.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 
-class Browser;
-class BrowsingDataRemover;
-enum class BrowsingDataRemoveMask;
-
 @class ActionSheetCoordinator;
+class Browser;
 @class BrowsingDataCounterWrapperProducer;
+enum class BrowsingDataRemoveMask;
+class BrowsingDataRemover;
 @protocol ClearBrowsingDataConsumer;
 @protocol CollectionViewFooterLinkDelegate;
+class ProfileIOS;
 
 // Only used in this folder to offer the user to log out
 extern const char kCBDSignOutOfChromeURL[];
@@ -68,11 +67,11 @@ enum ClearBrowsingDataItemType {
 // The manager's consumer.
 @property(nonatomic, weak) id<ClearBrowsingDataConsumer> consumer;
 
-// Default init method. `browserState` can't be nil.
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState;
+// Default init method. `profile` can't be nil.
+- (instancetype)initWithProfile:(ProfileIOS*)profile;
 
 // Designated initializer to allow dependency injection (in tests).
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
+- (instancetype)initWithProfile:(ProfileIOS*)profile
                    browsingDataRemover:(BrowsingDataRemover*)remover
     browsingDataCounterWrapperProducer:
         (BrowsingDataCounterWrapperProducer*)producer NS_DESIGNATED_INITIALIZER;

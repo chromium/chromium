@@ -114,7 +114,7 @@ class MediaLicenseManagerTest : public testing::Test {
   // `expected_data`.
   void ExpectFileContents(
       const mojo::AssociatedRemote<media::mojom::CdmFile>& cdm_file,
-      const std::string_view expected_data) {
+      std::string_view expected_data) {
     base::test::TestFuture<media::mojom::CdmFile::Status, std::vector<uint8_t>>
         future;
     cdm_file->Read(future.GetCallback<media::mojom::CdmFile::Status,

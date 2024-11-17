@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/ash/assistant/assistant_test_mixin.h"
-#include "base/memory/raw_ptr.h"
 
 #include <utility>
 #include <vector>
@@ -16,10 +15,12 @@
 #include "ash/public/cpp/test/assistant_test_api.h"
 #include "base/auto_reset.h"
 #include "base/containers/to_vector.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -436,8 +437,8 @@ void AssistantTestMixin::SendTextQuery(const std::string& query) {
 template <typename T>
 T AssistantTestMixin::SyncCall(
     base::OnceCallback<void(base::OnceCallback<void(T)>)> func) {
-  const base::test::ScopedRunLoopTimeout run_timeout(FROM_HERE,
-                                                     kDefaultWaitTimeout);
+  const base::test::ScopedRunLoopTimeout run_timeout(
+      FROM_HERE, TestTimeouts::action_timeout());
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   T result;

@@ -24,6 +24,8 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 
+#include "base/feature_list.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
@@ -41,9 +43,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_listbox_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
-#include "third_party/blink/renderer/core/html/forms/html_select_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/listed_element.h"
 #include "third_party/blink/renderer/core/html/forms/validity_state.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -273,11 +273,25 @@ HTMLFormElement* HTMLFormControlElement::formOwner() const {
 }
 
 bool HTMLFormControlElement::IsDisabledFormControl() const {
-  // Since the MHTML is loaded in sandboxing mode with form submission and
-  // script execution disabled, we should gray out all form control elements
-  // to indicate that the form cannot be worked on.
-  if (GetDocument().Fetcher()->Archive())
-    return true;
+  // When an MHTML page is loaded through a HTTPS URL, it's considered a trusted
+  // offline page. This can only happen on Android, and happens automatically
+  // sometimes to show cached pages rather than an error page.
+  // For this circumstance, it's beneficial to disable form controls so that
+  // users do not waste time trying to edit them.
+  //
+  // For MHTML pages loaded through other means, we do not disable forms. This
+  // avoids modification of the original page, and more closely matches other
+  // saved page formats.
+  if (GetDocument().Fetcher()->Archive()) {
+    if (base::FeatureList::IsEnabled(blink::features::kMHTML_Improvements)) {
+      if (GetDocument().Url().ProtocolIsInHTTPFamily()) {
+        return true;
+      }
+    } else {
+      // Without `kMHTML_Improvements`, MHTML forms are always disabled.
+      return true;
+    }
+  }
 
   return IsActuallyDisabled();
 }
@@ -349,17 +363,6 @@ HTMLFormControlElement::popoverTargetElement() {
   target_element = GetElementAttributeResolvingReferenceTarget(
       html_names::kPopovertargetAttr);
 
-  // The selectlist element's button which opens its listbox forms an implicit
-  // popover trigger for the listbox in order to function properly with light
-  // dismiss.
-  if (!target_element && RuntimeEnabledFeatures::HTMLSelectListElementEnabled(
-                             GetDocument().GetExecutionContext())) {
-    if (auto* button = DynamicTo<HTMLButtonElement>(this)) {
-      if (auto* selectlist = button->OwnerSelectList()) {
-        target_element = selectlist->ListBoxPart();
-      }
-    }
-  }
 
   if (!target_element) {
     return no_element;
@@ -381,19 +384,6 @@ HTMLFormControlElement::popoverTargetElement() {
     action = PopoverTriggerAction::kHover;
   }
   return PopoverTargetElement{.popover = target_popover, .action = action};
-}
-
-Element* HTMLFormControlElement::commandForElement() {
-  if (!IsInTreeScope() || IsDisabledFormControl() ||
-      (Form() && IsSuccessfulSubmitButton())) {
-    return nullptr;
-  }
-
-  if (!RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled()) {
-    return nullptr;
-  }
-
-  return GetElementAttribute(html_names::kCommandforAttr);
 }
 
 Element* HTMLFormControlElement::interestTargetElement() {
@@ -427,103 +417,6 @@ void HTMLFormControlElement::setPopoverTargetAction(const AtomicString& value) {
   setAttribute(html_names::kPopovertargetactionAttr, value);
 }
 
-AtomicString HTMLFormControlElement::command() const {
-  DCHECK(RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled());
-  const AtomicString& attribute_value =
-      FastGetAttribute(html_names::kCommandAttr);
-  if (attribute_value && !attribute_value.IsNull() &&
-      !attribute_value.empty()) {
-    return attribute_value;
-  }
-  return g_empty_atom;
-}
-
-CommandEventType HTMLFormControlElement::GetCommandEventType() const {
-  auto action = command();
-  if (action.empty()) {
-    return CommandEventType::kNone;
-  }
-
-  // Custom Invoke Action
-  if (action.Contains('-')) {
-    return CommandEventType::kCustom;
-  }
-
-  // Popover Cases
-  if (EqualIgnoringASCIICase(action, keywords::kTogglePopover)) {
-    return CommandEventType::kTogglePopover;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kShowPopover)) {
-    return CommandEventType::kShowPopover;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kHidePopover)) {
-    return CommandEventType::kHidePopover;
-  }
-
-  // Dialog Cases
-  if (EqualIgnoringASCIICase(action, keywords::kClose)) {
-    return CommandEventType::kClose;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kShowModal)) {
-    return CommandEventType::kShowModal;
-  }
-
-  // V2 InvokeActions Go Below this
-
-  if (!RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled()) {
-    return CommandEventType::kNone;
-  }
-
-  // Input/Select Cases
-  if (EqualIgnoringASCIICase(action, keywords::kShowPicker)) {
-    return CommandEventType::kShowPicker;
-  }
-
-  // Number Input Cases
-  if (EqualIgnoringASCIICase(action, keywords::kStepUp)) {
-    return CommandEventType::kStepUp;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kStepDown)) {
-    return CommandEventType::kStepDown;
-  }
-
-  // Fullscreen Cases
-  if (EqualIgnoringASCIICase(action, keywords::kToggleFullscreen)) {
-    return CommandEventType::kToggleFullscreen;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kRequestFullscreen)) {
-    return CommandEventType::kRequestFullscreen;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kExitFullscreen)) {
-    return CommandEventType::kExitFullscreen;
-  }
-
-  // Details cases
-  if (EqualIgnoringASCIICase(action, keywords::kToggle)) {
-    return CommandEventType::kToggle;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kOpen)) {
-    return CommandEventType::kOpen;
-  }
-  // CommandEventType::kClose handled above in Dialog
-
-  // Media cases
-  if (EqualIgnoringASCIICase(action, keywords::kPlaypause)) {
-    return CommandEventType::kPlaypause;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kPause)) {
-    return CommandEventType::kPause;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kPlay)) {
-    return CommandEventType::kPlay;
-  }
-  if (EqualIgnoringASCIICase(action, keywords::kToggleMuted)) {
-    return CommandEventType::kToggleMuted;
-  }
-
-  return CommandEventType::kNone;
-}
-
 AtomicString HTMLFormControlElement::interestAction() const {
   CHECK(RuntimeEnabledFeatures::HTMLInterestTargetAttributeEnabled());
   const AtomicString& attribute_value =
@@ -540,34 +433,14 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
   // buttons.
   if (event.type() == event_type_names::kDOMActivate && IsInTreeScope() &&
       !IsDisabledFormControl() && (!Form() || !IsSuccessfulSubmitButton())) {
-    auto* command_target = commandForElement();
     auto popover = popoverTargetElement();
 
-    // invoketarget & popovertarget shouldn't be combined, so warn.
-    if (command_target && popover.popover) {
-      AddConsoleMessage(
-          mojom::blink::ConsoleMessageSource::kOther,
-          mojom::blink::ConsoleMessageLevel::kWarning,
-          "popovertarget is ignored on elements with invoketarget set.");
-    }
+    // CommandFor should have been handled in
+    // HTMLButtonElement::DefaultEventHandler
+    DCHECK(!IsA<HTMLButtonElement>(this) ||
+           !DynamicTo<HTMLButtonElement>(this)->commandForElement());
 
-    // Buttons with an invoketarget will dispatch an CommandEvent on the
-    // Invoker, and run HandleCommandInternal to perform default logic.
-    if (command_target) {
-      auto action = GetCommandEventType();
-      bool is_valid_builtin = command_target->IsValidCommand(*this, action);
-      bool should_dispatch =
-          is_valid_builtin || action == CommandEventType::kCustom;
-      if (should_dispatch) {
-        Event* commandEvent =
-            CommandEvent::Create(event_type_names::kCommand, command(), this);
-        command_target->DispatchEvent(*commandEvent);
-        if (is_valid_builtin && !commandEvent->defaultPrevented()) {
-          command_target->HandleCommandInternal(*this, action);
-        }
-      }
-
-    } else if (popover.popover) {
+    if (popover.popover) {
       // Buttons with a popovertarget will invoke popovers, which is the same
       // logic as an invoketarget with an appropriate command (e.g.
       // togglePopover), sans the `CommandEvent` dispatch. Calling
@@ -580,7 +453,6 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
       // We must check to ensure the action is one of the available popover
       // invoker actions so that popovertargetaction cannot be set to something
       // like showModal.
-      CHECK(!command_target);
       auto trigger_support = SupportsPopoverTriggering();
       CHECK_NE(trigger_support, PopoverTriggerSupport::kNone);
       CHECK_NE(popover.action, PopoverTriggerAction::kNone);
@@ -601,12 +473,10 @@ void HTMLFormControlElement::DefaultEventHandler(Event& event) {
           action = CommandEventType::kShowPopover;
           break;
         case PopoverTriggerAction::kNone:
-          action = CommandEventType::kNone;
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
 
-      CHECK(popover.popover->IsValidCommand(*this, action));
+      CHECK(popover.popover->IsValidBuiltinCommand(*this, action));
       popover.popover->HandleCommandInternal(*this, action);
     }
   }
@@ -622,9 +492,13 @@ void HTMLFormControlElement::HandlePopoverInvokerHovered(bool hovered) {
   if (!IsInTreeScope()) {
     return;
   }
-  if (commandForElement() ||
-      (RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled() &&
-       interestTargetElement())) {
+  if (auto* button = DynamicTo<HTMLButtonElement>(this)) {
+    if (button->commandForElement()) {
+      return;
+    }
+  }
+  if (RuntimeEnabledFeatures::HTMLInvokeTargetAttributeEnabled() &&
+      interestTargetElement()) {
     return;
   }
   auto target_info = popoverTargetElement();

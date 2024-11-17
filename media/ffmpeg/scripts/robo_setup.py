@@ -83,7 +83,7 @@ def CreateAndInitOutputDirectory(robo_configuration, relative_directory, opts):
 
     shell.log(f"Cleaning {relative_directory}")
     if robo_configuration.Call(
-        ["ninja", "clean", "-C", relative_directory, "-t", "clean"]):
+        ["autoninja", "clean", "-C", relative_directory, "-t", "clean"]):
         raise Exception(f"Unable to clean {relative_directory}")
 
 

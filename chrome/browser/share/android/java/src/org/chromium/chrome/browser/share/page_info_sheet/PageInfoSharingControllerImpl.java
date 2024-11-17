@@ -112,9 +112,7 @@ public class PageInfoSharingControllerImpl implements PageInfoSharingController 
         if (!shouldShowInShareSheetInternal(tab, false)) return;
         if (sErrorMessage == null) {
             // TODO(salg): Improve the way this resource is fetched.
-            sErrorMessage =
-                    context.getResources()
-                            .getString(R.string.share_with_summary_sheet_error_message);
+            sErrorMessage = context.getString(R.string.share_with_summary_sheet_error_message);
         }
 
         mCurrentRequestInfoSupplier = new ObservableSupplierImpl<>();

@@ -231,8 +231,8 @@ class DecoderSelectorTest : public ::testing::Test {
   DecoderSelectorTest(const DecoderSelectorTest&) = delete;
   DecoderSelectorTest& operator=(const DecoderSelectorTest&) = delete;
 
-  void OnWaiting(WaitingReason reason) { NOTREACHED_IN_MIGRATION(); }
-  void OnOutput(scoped_refptr<Output> output) { NOTREACHED_IN_MIGRATION(); }
+  void OnWaiting(WaitingReason reason) { NOTREACHED(); }
+  void OnOutput(scoped_refptr<Output> output) { NOTREACHED(); }
 
   MOCK_METHOD0_T(NoDecoderSelected, void());
   MOCK_METHOD1_T(OnDecoderSelected, void(int));
@@ -340,7 +340,7 @@ class DecoderSelectorTest : public ::testing::Test {
                 RunOnceCallbackRepeatedly<1>(capability == kDecryptAndDecode));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 

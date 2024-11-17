@@ -20,23 +20,28 @@
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
+#include "base/test/test_mock_time_task_runner.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager.h"
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
+#include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager_test_api.h"
+#include "chrome/browser/ash/login/signin/authentication_flow_auto_reload_manager.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
 #include "chrome/browser/ash/login/test/test_condition_waiter.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
+#include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -58,6 +63,7 @@
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_manager/user_manager.h"
@@ -218,13 +224,7 @@ class LockscreenWebUiTest : public MixinBasedInProcessBrowserTest {
   FakeSamlIdpMixin fake_saml_idp_{&mixin_host_, fake_gaia_mixin()};
 };
 
-// TODO(b/276829737): Flaky on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ShowNetworkDialog DISABLED_ShowNetworkDialog
-#else
-#define MAYBE_ShowNetworkDialog ShowNetworkDialog
-#endif
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ShowNetworkDialog) {
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, ShowNetworkDialog) {
   Login();
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.
@@ -245,13 +245,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_ShowNetworkDialog) {
   reauth_dialog_helper->WaitForReauthDialogToClose();
 }
 
-// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN and linux-chromeos-rel.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_TriggerDialogOnNetworkOff DISABLED_TriggerDialogOnNetworkOff
-#else
-#define MAYBE_TriggerDialogOnNetworkOff TriggerDialogOnNetworkOff
-#endif
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, MAYBE_TriggerDialogOnNetworkOff) {
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerDialogOnNetworkOff) {
   Login();
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.
@@ -361,16 +355,7 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, CaptivePortal) {
   reauth_dialog_helper->ExpectNetworkDialogHidden();
 }
 
-// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
-#if BUILDFLAG(IS_CHROMEOS) || defined(MEMORY_SANITIZER)
-#define MAYBE_TriggerAndHideCaptivePortalDialog \
-  DISABLED_TriggerAndHideCaptivePortalDialog
-#else
-#define MAYBE_TriggerAndHideCaptivePortalDialog \
-  TriggerAndHideCaptivePortalDialog
-#endif
-IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest,
-                       MAYBE_TriggerAndHideCaptivePortalDialog) {
+IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest, TriggerAndHideCaptivePortalDialog) {
   Login();
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.
@@ -421,7 +406,151 @@ IN_PROC_BROWSER_TEST_F(LockscreenWebUiTest,
 
   // Close all dialogs at the end of the test - otherwise these tests crash
   reauth_dialog_helper->ClickCloseNetworkButton();
+  // Ensures that the re-auth dialog is closed.
   reauth_dialog_helper->WaitForReauthDialogToClose();
+}
+
+// TODO(crbug.com/378074596) Add test for proxy auth cases.
+// Class for testing `DeviceAuthenticationFlowAutoReloadInterval` policy cases
+// on the lock screen.
+class AutoReloadLockscreenWebUiTest : public LockscreenWebUiTest {
+ public:
+  AutoReloadLockscreenWebUiTest() = default;
+  AutoReloadLockscreenWebUiTest(const AutoReloadLockscreenWebUiTest&) = delete;
+  AutoReloadLockscreenWebUiTest& operator=(
+      const AutoReloadLockscreenWebUiTest&) = delete;
+
+  ~AutoReloadLockscreenWebUiTest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    LockscreenWebUiTest::SetUpInProcessBrowserTestFixture();
+
+    task_runner_ = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+    AuthenticationFlowAutoReloadManager::SetClockForTesting(
+        task_runner_->GetMockClock(), task_runner_->GetMockTickClock());
+  }
+
+  void SetAutoReloadInterval(const int& reload_interval_in_minutes) {
+    policy::DevicePolicyCrosTestHelper device_policy_test_helper;
+    device_policy_test_helper.device_policy()
+        ->payload()
+        .mutable_deviceauthenticationflowautoreloadinterval()
+        ->set_value(reload_interval_in_minutes);
+
+    PrefChangeRegistrar registrar;
+    base::test::TestFuture<const char*> pref_changed_future;
+    registrar.Init(g_browser_process->local_state());
+    registrar.Add(
+        prefs::kAuthenticationFlowAutoReloadInterval,
+        base::BindRepeating(pref_changed_future.GetRepeatingCallback(),
+                            prefs::kAuthenticationFlowAutoReloadInterval));
+
+    device_policy_test_helper.RefreshDevicePolicy();
+
+    EXPECT_EQ(prefs::kAuthenticationFlowAutoReloadInterval,
+              pref_changed_future.Take());
+  }
+
+  void ShowLockScreenDialog() {
+    Login();
+
+    // Lock the screen and trigger the lock screen SAML reauth dialog.
+    ScreenLockerTester().Lock();
+
+    reauth_dialog_helper_ =
+        LockScreenReauthDialogTestHelper::StartSamlAndWaitForIdpPageLoad();
+    ASSERT_TRUE(reauth_dialog_helper_);
+  }
+
+  void AdvanceTime(base::TimeDelta time_change) {
+    // TODO(crbug.com/353919505): Introduce a function for testing to advance
+    // time and reschedule the timer in one call.
+    task_runner()->FastForwardBy(time_change);
+    reauth_dialog_helper()->ResumeAutoReloadTimer();
+  }
+
+  void WaitForLockScreenReload() {
+    content::DOMMessageQueue message_queue(
+        reauth_dialog_helper()->DialogWebContents());
+
+    ASSERT_TRUE(content::ExecJs(
+        reauth_dialog_helper()->DialogWebContents(),
+        "$('main-element').authenticator.addEventListener('ready', function() {"
+        "  window.domAutomationController.send('ready');"
+        "});"));
+
+    std::string message;
+    do {
+      ASSERT_TRUE(message_queue.WaitForMessage(&message));
+    } while (message != "\"ready\"");
+  }
+
+  base::TestMockTimeTaskRunner* task_runner() { return task_runner_.get(); }
+
+  std::optional<LockScreenReauthDialogTestHelper>& reauth_dialog_helper() {
+    return reauth_dialog_helper_;
+  }
+
+ private:
+  scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
+
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper_;
+
+  DeviceStateMixin device_state_{
+      &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
+};
+
+IN_PROC_BROWSER_TEST_F(AutoReloadLockscreenWebUiTest, AutoReloadDisabled) {
+  ShowLockScreenDialog();
+  reauth_dialog_helper()->ExpectAutoReloadDisabled();
+}
+
+IN_PROC_BROWSER_TEST_F(AutoReloadLockscreenWebUiTest, AutoReloadEnabled) {
+  SetAutoReloadInterval(/*reload_interval_in_minutes=*/10);
+
+  ShowLockScreenDialog();
+
+  reauth_dialog_helper()->ExpectAutoReloadEnabled();
+
+  // Advance time and wait for webview to reload.
+  AdvanceTime(base::Minutes(10));
+
+  WaitForLockScreenReload();
+}
+
+IN_PROC_BROWSER_TEST_F(AutoReloadLockscreenWebUiTest,
+                       DisableAutoReloadOnNetworkDialogShown) {
+  SetAutoReloadInterval(/*reload_interval_in_minutes=*/10);
+
+  ShowLockScreenDialog();
+
+  AdvanceTime(base::Minutes(5));
+  reauth_dialog_helper()->ExpectAutoReloadEnabled();
+
+  // Disconnect from network in order to trigger the network dialog.
+  SetDisconnected(kWifiServicePath);
+  SetDisconnected(kEthServicePath);
+
+  // No networks are connected so we should see the network dialog.
+  reauth_dialog_helper()->WaitForNetworkDialogAndSetHandlers();
+
+  // The network dialog is shown on top of the lock screen reauth dialog (i.e
+  // the lock screen reauth dialog is not closed).
+  reauth_dialog_helper()->ExpectNetworkDialogVisible();
+
+  // Autoreload should be terminated since network dialog is shown.
+  reauth_dialog_helper()->ExpectAutoReloadDisabled();
+
+  // Connect to a network.
+  SetConnected(kEthServicePath);
+
+  reauth_dialog_helper()->ExpectNetworkDialogHidden();
+
+  // Autoreload should be reactivated automatically once the network dialog is
+  // closed. No reload is expected at this point because lock screen reauth
+  // dialog was never closed, so we just need to check that the auto reload
+  // timer is active again.
+  reauth_dialog_helper()->ExpectAutoReloadEnabled();
 }
 
 // Sets up proxy server which requires authentication.
@@ -534,16 +663,7 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
   EXPECT_FALSE(HttpAuthDialog::IsEnabled());
 }
 
-// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
-// TODO(crbug.com/40272814): Flaky on linux-chromeos-rel.
-#if defined(MEMORY_SANITIZER) || \
-    (defined(NDEBUG) && !defined(ADDRESS_SANITIZER))
-#define MAYBE_ProxyAuthCanBeCancelled DISABLED_ProxyAuthCanBeCancelled
-#else
-#define MAYBE_ProxyAuthCanBeCancelled ProxyAuthCanBeCancelled
-#endif
-IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
-                       MAYBE_ProxyAuthCanBeCancelled) {
+IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, ProxyAuthCanBeCancelled) {
   Login();
 
   // Lock the screen and trigger the lock screen SAML reauth dialog.
@@ -570,6 +690,8 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest,
 
   // Close all dialogs at the end of the test - otherwise these tests crash
   reauth_dialog_helper->ClickCloseNetworkButton();
+  // Ensures that the re-auth dialog is closed.
+  reauth_dialog_helper->WaitForReauthDialogToClose();
 }
 
 class AutoStartTest : public LockscreenWebUiTest {
@@ -645,6 +767,37 @@ IN_PROC_BROWSER_TEST_F(AutoStartTest, DialogShownOnReauthEnforcement) {
   ExpectSuccessfulAutoStart();
 }
 
+// Verify that the "Enter Google Account Info" is shown during
+// AutoStart flow and pressing it initiates the standard reauth flow.
+IN_PROC_BROWSER_TEST_F(AutoStartTest, ChangeIdPButtonPresence) {
+  Login();
+  ForceOnlineReauthOnLockScreen();
+  ScreenLockerTester().Lock();
+
+  std::optional<LockScreenReauthDialogTestHelper> reauth_dialog_helper =
+      LockScreenReauthDialogTestHelper::InitForShownDialog();
+  // `reauth_dialog_helper` not being empty confirms that online reauth
+  // dialog is shown.
+  EXPECT_TRUE(reauth_dialog_helper);
+
+  // Wait for the webview and SAML IdP page to load.
+  reauth_dialog_helper->WaitForSigninWebview();
+  reauth_dialog_helper->WaitForSamlIdpPageLoad();
+
+  // EGAI button should be visible during the AutoStart flow,
+  // but not during normal reauth.
+  reauth_dialog_helper->ExpectChangeIdPButtonVisible();
+  reauth_dialog_helper->ClickChangeIdPButtonOnSamlScreen();
+
+  // With reauth endpoint we start on a Gaia page where user needs to click
+  // "Next" before being redirected to SAML IdP page.
+  reauth_dialog_helper->WaitForPrimaryGaiaButtonToBeEnabled();
+  reauth_dialog_helper->ClickPrimaryGaiaButton();
+
+  reauth_dialog_helper->WaitForSamlIdpPageLoad();
+  reauth_dialog_helper->ExpectChangeIdPButtonHidden();
+}
+
 class SamlUnlockTest : public LockscreenWebUiTest {
  public:
   SamlUnlockTest() = default;
@@ -706,8 +859,9 @@ IN_PROC_BROWSER_TEST_F(SamlUnlockTest, SamlNoticeMessage) {
   reauth_dialog_helper->DialogJS().ExpectTrue(js);
 }
 
-// Tests that we can switch from SAML page to Gaia page on the lock screen.
-IN_PROC_BROWSER_TEST_F(SamlUnlockTest, SamlSwitchToGaia) {
+// Tests that "Enter Google Account Info" button is hidden when reauth endpoint
+// is initiated on the lock screen.
+IN_PROC_BROWSER_TEST_F(SamlUnlockTest, SamlEgaiButtonHidden) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
 
   Login();
@@ -723,15 +877,7 @@ IN_PROC_BROWSER_TEST_F(SamlUnlockTest, SamlSwitchToGaia) {
   reauth_dialog_helper->ExpectChangeIdPButtonHidden();
 }
 
-// Tests the close button in SAML Screen.
-// TODO(crbug.com/1401612): re-enable this test. Flakily times out on
-// linux-chromeos-rel.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_SamlScreenCancel DISABLED_SamlScreenCancel
-#else
-#define MAYBE_SamlScreenCancel SamlScreenCancel
-#endif
-IN_PROC_BROWSER_TEST_F(SamlUnlockTest, MAYBE_SamlScreenCancel) {
+IN_PROC_BROWSER_TEST_F(SamlUnlockTest, SamlScreenCancel) {
   fake_saml_idp()->SetLoginHTMLTemplate("saml_login.html");
 
   Login();
@@ -913,15 +1059,7 @@ IN_PROC_BROWSER_TEST_F(SamlUnlockTest, MAYBE_ScrapedNone) {
   ScreenLockerTester().WaitForUnlock();
 }
 
-// Tests another account is authenticated other than the one used in sign
-// in.
-// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_VerifyAgainFlow DISABLED_VerifyAgainFlow
-#else
-#define MAYBE_VerifyAgainFlow VerifyAgainFlow
-#endif
-IN_PROC_BROWSER_TEST_F(SamlUnlockTest, MAYBE_VerifyAgainFlow) {
+IN_PROC_BROWSER_TEST_F(SamlUnlockTest, VerifyAgainFlow) {
   fake_gaia_mixin()->fake_gaia()->SetConfigurationHelper(
       FakeGaiaMixin::kEnterpriseUser2, kTestAuthSIDCookie1,
       kTestAuthLSIDCookie1);
@@ -956,13 +1094,7 @@ IN_PROC_BROWSER_TEST_F(SamlUnlockTest, MAYBE_VerifyAgainFlow) {
   ASSERT_TRUE(session_manager::SessionManager::Get()->IsScreenLocked());
 }
 
-// TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_LoadAbort DISABLED_LoadAbort
-#else
-#define MAYBE_LoadAbort LoadAbort
-#endif
-IN_PROC_BROWSER_TEST_F(SamlUnlockTest, MAYBE_LoadAbort) {
+IN_PROC_BROWSER_TEST_F(SamlUnlockTest, LoadAbort) {
   Login();
 
   // Make gaia landing page unreachable
@@ -984,6 +1116,8 @@ IN_PROC_BROWSER_TEST_F(SamlUnlockTest, MAYBE_LoadAbort) {
 
   // Close dialog at the end of the test - otherwise test will crash on exit
   reauth_dialog_helper->ClickCloseNetworkButton();
+  // Ensures that the re-auth dialog is closed.
+  reauth_dialog_helper->WaitForReauthDialogToClose();
 }
 
 IN_PROC_BROWSER_TEST_F(SamlUnlockTest, SAMLBlocklistNavigationDisallowed) {

@@ -1,0 +1,17 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("interventions") {
+  sources = [
+    "intervention_delegate.h",
+    "intervention_infobar_delegate.cc",
+    "intervention_infobar_delegate.h",
+  ]
+  public_deps = [
+    "//base",
+    "//components/infobars/core",
+  ]
+}

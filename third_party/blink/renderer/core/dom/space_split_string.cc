@@ -18,17 +18,13 @@
  * Boston, MA 02111-1307, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
@@ -39,26 +35,30 @@ namespace blink {
 template <typename CharacterType>
 ALWAYS_INLINE void SpaceSplitString::Data::CreateVector(
     const AtomicString& source,
-    const CharacterType* characters,
-    unsigned length) {
-  DCHECK_EQ(0u, vector_.size());
+    base::span<const CharacterType> characters) {
+  DCHECK(vector_.empty());
   HashSet<AtomicString> token_set;
-  unsigned start = 0;
+  size_t start = 0;
   while (true) {
-    while (start < length && IsHTMLSpace<CharacterType>(characters[start]))
+    while (start < characters.size() &&
+           IsHTMLSpace<CharacterType>(characters[start])) {
       ++start;
-    if (start >= length)
+    }
+    if (start >= characters.size()) {
       break;
-    unsigned end = start + 1;
-    while (end < length && IsNotHTMLSpace<CharacterType>(characters[end]))
+    }
+    size_t end = start + 1;
+    while (end < characters.size() &&
+           IsNotHTMLSpace<CharacterType>(characters[end])) {
       ++end;
+    }
 
-    if (start == 0 && end == length) {
+    if (start == 0 && end == characters.size()) {
       vector_.push_back(source);
       return;
     }
 
-    AtomicString token(characters + start, end - start);
+    AtomicString token(characters.subspan(start, end - start));
     // We skip adding |token| to |token_set| for the first token to reduce the
     // cost of HashSet<>::insert(), and adjust |token_set| when the second
     // unique token is found.
@@ -79,14 +79,8 @@ ALWAYS_INLINE void SpaceSplitString::Data::CreateVector(
 }
 
 void SpaceSplitString::Data::CreateVector(const AtomicString& string) {
-  unsigned length = string.length();
-
-  if (string.Is8Bit()) {
-    CreateVector(string, string.Characters8(), length);
-    return;
-  }
-
-  CreateVector(string, string.Characters16(), length);
+  WTF::VisitCharacters(string,
+                       [&](auto chars) { CreateVector(string, chars); });
 }
 
 bool SpaceSplitString::Data::ContainsAll(Data& other) {

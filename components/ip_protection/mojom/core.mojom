@@ -1,0 +1,54 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ip_protection.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "components/ip_protection/mojom/data_types.mojom";
+import "services/network/public/mojom/network_param.mojom";
+
+// Access to the IP Protection state in the network service process.
+//
+// For more information on this interface, see
+// `ip_protection::IpProtectionControl`.
+interface CoreControl {
+  // Informs the CoreControl that auth tokens may now be available, such as when
+  // a user signs in or some other error condition clears.
+  AuthTokensMayBeAvailable();
+
+  // Informs the CoreControl that the enabled status of IP Protection in the
+  // browser has changed.
+  SetIpProtectionEnabled(bool value);
+
+  // Testing support.
+  VerifyIpProtectionCoreHostForTesting()
+      => (BlindSignedAuthToken? bsa_token,
+          mojo_base.mojom.Time? try_again_after);
+
+  // Check whether IP Protection is enabled in the core, for testing.
+  IsIpProtectionEnabledForTesting() => (bool value);
+};
+
+// Host (browser) support for the IP Protection core.
+interface CoreHost {
+  // Try to get a batch of new tokens.
+  //
+  // This may take some time, if external network requests are required. If no
+  // tokens are available, it will return nullopt for `bsa_tokens` and
+  // `try_again_after` will contain the time after which the getter suggests
+  // trying again, as a form of backoff.
+  TryGetAuthTokens(uint32 batch_size, ProxyLayer proxy_layer) =>
+    (array<BlindSignedAuthToken>? bsa_tokens,
+     mojo_base.mojom.Time? try_again_after);
+
+  // Get the list of IP Protection proxy chains. The list contains lists of
+  // proxy chain hostnames, in order of preference. Callers should prefer
+  // the first proxy, falling back to later proxies in the list. All proxies
+  // are implicitly HTTPS.
+  //
+  // This method will return an up-to-date list, possibly fetching that list
+  // remotely before returning it.
+  GetProxyConfig() => (array<network.mojom.ProxyChain>? proxy_list,
+                       GeoHint? geo_hint);
+};

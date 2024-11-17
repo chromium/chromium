@@ -492,7 +492,7 @@ void HomeButton::ButtonPressed(views::Button* sender,
     }
 
     if (label_nudge_timer_.IsRunning())
-      label_nudge_timer_.AbandonAndStop();
+      label_nudge_timer_.Stop();
     AnimateNudgeLabelFadeOut();
   }
 }

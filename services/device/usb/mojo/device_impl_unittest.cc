@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -471,7 +473,8 @@ class USBDeviceImplTest : public testing::Test {
   bool is_device_open_ = false;
   bool allow_reset_ = false;
 
-  std::map<uint8_t, const mojom::UsbConfigurationInfo*> mock_configs_;
+  std::map<uint8_t, raw_ptr<const mojom::UsbConfigurationInfo, CtnExperimental>>
+      mock_configs_;
 
   base::queue<std::vector<uint8_t>> mock_inbound_data_;
   base::queue<std::vector<uint8_t>> mock_outbound_data_;
@@ -590,7 +593,7 @@ TEST_F(USBDeviceImplTest, OpenDelayedFailure) {
   EXPECT_CALL(device_client, OnDeviceClosed()).Times(0);
 
   device->Open(base::BindOnce(
-      [](mojom::UsbOpenDeviceResultPtr result) { NOTREACHED_IN_MIGRATION(); }));
+      [](mojom::UsbOpenDeviceResultPtr result) { NOTREACHED(); }));
   device.reset();
   base::RunLoop().RunUntilIdle();
 
@@ -804,7 +807,7 @@ TEST_F(USBDeviceImplTest, ClaimAndReleaseInterface) {
 
 TEST_F(USBDeviceImplTest, ClaimProtectedInterface) {
   mojo::Remote<mojom::UsbDevice> device =
-      GetMockDeviceProxyWithBlockedInterfaces({{2}});
+      GetMockDeviceProxyWithBlockedInterfaces(base::span_from_ref(uint8_t{2}));
 
   EXPECT_CALL(mock_device(), OpenInternal(_));
 

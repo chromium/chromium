@@ -13,7 +13,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -37,10 +36,8 @@ class ProfilePicker {
     // The user completed the FRE and is continuing to launch the browser.
     kCompleted = 0,
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // The user exited the FRE before going through the mandatory steps.
-    kQuitEarly = 1,
-#endif
+    // `kQuitEarly = 1` used to be a lacros-only status. It has been removed
+    // but in order to keep backward compatibility, its value has been retired.
 
     // The user finished the mandatory FRE steps but abandoned their task
     // (closed the browser app).
@@ -77,17 +74,14 @@ class ProfilePicker {
     kProfileLocked = 5,
     kUnableToCreateBrowser = 6,
     kBackgroundModeManager = 7,
-    // May only be used on lacros, opens an account picker, listing all accounts
-    // that are not used in the provided profile, yet.
-    kLacrosSelectAvailableAccount = 8,
-    // May only be used on lacros, opens a first run experience (provided no
-    // policies prevent it) to let the user opt in to sync, etc. for the primary
-    // profile.
-    // TODO(crbug.com/40242849): Migrate to only using kFirstRun.
-    kLacrosPrimaryProfileFirstRun = 9,
+
+    // `8` and `9` used to be lacros-only entry points. They has been removed
+    // but in order to keep backward compatibility, their values have been
+    // retired.
+
     // The Profile became idle, due to the IdleProfileCloseTimeout policy.
     kProfileIdle = 10,
-    // Opens the first run experience on non-Lacros desktop platforms to let the
+    // Opens the first run experience on desktop platforms to let the
     // user sign in, opt in to sync, etc.
     kFirstRun = 11,
     // There was no usable profile on startup (e.g. the profiles were locked by
@@ -134,33 +128,9 @@ class ProfilePicker {
       return on_select_profile_target_url_;
     }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Builds parameter with the `kLacrosSelectAvailableAccount` entry point.
+    // Builds parameter with the `kFirstRun` (on Dice) entry point.
     //
-    // `profile_path` specifies the profile that should be used to render
-    // the profile picker. If `profile_path` matches the current value
-    // for an existing picker, then `Show()` reactivates the existing picker.
-    // Otherwise `Show()` hides the current window and shows a new one.
-    //
-    // `account_selected_callback` is called when the user picks an account on
-    // the account selection screen. If the user closes the window, it is called
-    // with the empty string. If the user clicks "Use another account" and
-    // starts an OS account addition, this callback is passed to
-    // `ShowAddAccountDialog()` and will be called with its result.
-    static Params ForLacrosSelectAvailableAccount(
-        const base::FilePath& profile_path,
-        base::OnceCallback<void(const std::string&)> account_selected_callback);
-
-    // Calls `account_selected_callback_`. See
-    // `ForLacrosSelectAvailableAccount()` for more details.
-    void NotifyAccountSelected(const std::string& gaia_id);
-#endif
-
-    // Builds parameter with the `kFirstRun` (on Dice) or the
-    //  `kLacrosPrimaryProfileFirstRun` (on Lacros) entry point.
-    //
-    // `profile_path` is the profile for which to open the FRE. On Lacros we
-    // expect it to be the main profile path.
+    // `profile_path` is the profile for which to open the FRE.
     // `first_run_exited_callback` is called when the first run experience is
     // exited, with a `FirstRunExitStatus` indicating how the user responded to
     // it.
@@ -188,10 +158,6 @@ class ProfilePicker {
     GURL on_select_profile_target_url_;
     base::FilePath profile_path_;
     FirstRunExitedCallback first_run_exited_callback_;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    base::OnceCallback<void(const std::string&)> account_selected_callback_;
-
-#endif
   };
 
   // Values for the ProfilePickerOnStartupAvailability policy. Should not be
@@ -261,13 +227,6 @@ class ProfilePicker {
       base::TimeTicks profile_picked_time_on_startup,
       base::OnceCallback<void(bool)> switch_finished_callback);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Starts the flow to set-up a signed-in profile. `signed_in_profile` must
-  // have an unconsented primary account.
-  static void SwitchToSignedInFlow(std::optional<SkColor> profile_color,
-                                   Profile* signed_in_profile);
-#endif
-
   // Cancel the signed-in flow and returns back to the main picker screen (if
   // the original EntryPoint was to open the picker). Must only be called from
   // within the signed-in flow. This will delete the profile previously created
@@ -327,12 +286,6 @@ class ProfilePicker {
   // startup or when Chrome is re-opened, e.g. when clicking on the dock icon on
   // MacOS when there are no windows, or from Windows tray icon.
   static StartupProfileModeReason GetStartupModeReason();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Calls the callback passed to
-  // `ProfilePicker::Params::ForLacrosSelectAvailableAccount()`.
-  static void NotifyAccountSelected(const std::string& gaia_id);
-#endif
 
   // Show the dialog and display local sign in error message without browser.
   static void ShowDialogAndDisplayErrorMessage(Profile* profile);

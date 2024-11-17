@@ -87,7 +87,6 @@ buildflag_header("buildflags") {
   flags = [
     "RTC_USE_H264=$rtc_use_h264",
     "RTC_USE_H265=$rtc_use_h265",
-    "ENABLE_RUST_CRASH=$enable_rust_crash",
   ]
 }
 
@@ -236,7 +235,6 @@ source_set("headers") {
     "messaging/web_message_port.h",
     "metrics/accept_language_and_content_language_usage.h",
     "metrics/document_update_reason.h",
-    "metrics/form_element_pii_type.h",
     "mime_util/mime_util.h",
     "navigation/impression.h",
     "navigation/navigation_params.h",
@@ -269,6 +267,8 @@ source_set("headers") {
     "page_state/page_state_serialization.h",
     "peerconnection/webrtc_ip_handling_policy.h",
     "performance/largest_contentful_paint_type.h",
+    "performance/performance_scenario_observer.h",
+    "performance/performance_scenarios.h",
     "performance/performance_timeline_constants.h",
     "permissions/permission_utils.h",
     "permissions_policy/document_policy.h",
@@ -296,7 +296,6 @@ source_set("headers") {
     "service_worker/service_worker_type_converters.h",
     "service_worker/service_worker_types.h",
     "shared_storage/module_script_downloader.h",
-    "shared_storage/shared_storage_mojom_traits.h",
     "shared_storage/shared_storage_utils.h",
     "sms/webotp_constants.h",
     "sms/webotp_service_outcome.h",
@@ -336,7 +335,7 @@ source_set("headers") {
     "//third_party/blink/public/mojom:mojom_modules_headers",
     "//third_party/blink/public/mojom:mojom_platform_shared",
     "//third_party/blink/public/mojom:web_bluetooth_mojo_bindings_headers",
-    "//third_party/blink/public/mojom/origin_trial_feature",
+    "//third_party/blink/public/mojom/origin_trials:origin_trial_feature",
     "//third_party/liburlpattern",
     "//ui/base/mojom:ui_base_types",
     "//ui/display/mojom",

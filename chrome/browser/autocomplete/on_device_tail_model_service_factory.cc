@@ -11,7 +11,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/on_device_tail_model_service.h"
 
 // static
@@ -48,9 +47,6 @@ OnDeviceTailModelServiceFactory::~OnDeviceTailModelServiceFactory() = default;
 std::unique_ptr<KeyedService>
 OnDeviceTailModelServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  if (!OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled()) {
-    return nullptr;
-  }
   Profile* profile = Profile::FromBrowserContext(context);
   OptimizationGuideKeyedService* optimization_guide =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);

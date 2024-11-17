@@ -98,10 +98,6 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnShowSanitizeDialog(const base::Value::List& args);
-  // Resets most profile settings.
-  void SanitizeSettings(const base::Value::List& args);
-  // Resets the DNS configurations and marks sanitize as done.
-  void OnSanitizeDone();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   const raw_ptr<Profile> profile_;

@@ -80,7 +80,8 @@
           "builder": "Mac Tests Siso FYI",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/build/Mac Builder Siso FYI/targets"
     }
   },
   "$build/reclient": {

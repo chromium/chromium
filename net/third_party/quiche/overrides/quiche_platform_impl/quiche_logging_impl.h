@@ -78,7 +78,9 @@
 #define QUICHE_CHROMIUM_DLOG_IF_0 QUICHE_CHROMIUM_DLOG_IF_ERROR
 #endif
 
-#define QUICHE_NOTREACHED_IMPL() NOTREACHED_IN_MIGRATION()
+// TODO(crbug.com/40580068): Make QUICHE_NOTREACHED_IMPL() [[noreturn]] upstream
+// too, then use NOTREACHED() instead of CHECK(false).
+#define QUICHE_NOTREACHED_IMPL() CHECK(false)
 
 #define QUICHE_PLOG_IMPL(severity) DVLOG(1)
 

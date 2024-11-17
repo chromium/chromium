@@ -3,18 +3,25 @@
 <translationbundle lang="ca">
 <translation id="1444443021901415601">Chrome pren nota dels temes d'interès basant-se en el teu historial de navegació recent</translation>
 <translation id="2252052615723281030">Si tens la sessió iniciada a Chrome, aquesta opció de configuració t'ajudarà a mantenir l'adreça IP privada. En cas que Chrome sospiti que un lloc web podria estar fent un seguiment de la teva activitat, és possible que part del teu trànsit s'enviï a través de servidors de privadesa.</translation>
+<translation id="235789365079050412">Política de privadesa de Google</translation>
 <translation id="2793385791865768072">Chromium pren nota dels temes d'interès basant-se en el teu historial de navegació recent</translation>
+<translation id="2979365474350987274">Les galetes de tercers estan limitades</translation>
 <translation id="33479675708419823">Si tens la sessió iniciada a Chrome, aquesta opció de configuració t'ajudarà a mantenir l'adreça IP privada. En cas que Chrome sospiti que un lloc web podria estar fent un seguiment de la teva activitat, és possible que part del teu trànsit s'enviï a través de servidors de privadesa. Més informació sobre <ph name="LINK_BEGIN" />com funciona la protecció d'IP<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Més informació sobre com pots amagar l'adreça IP</translation>
+<translation id="385051799172605136">Enrere</translation>
 <translation id="4041687306270459969">Els temes d'anunci que tinguin més de 4 setmanes d'antiguitat se suprimiran automàticament. Els temes inclouen coses com ara esports, roba i més.</translation>
 <translation id="4177501066905053472">Temes d'anunci</translation>
 <translation id="4301151630239508244">Els temes d'anunci només són un dels molts elements que un lloc web pot utilitzar per personalitzar anuncis. Encara que no hi hagi temes d'anunci, els llocs web podran continuar mostrant-te anuncis, però pot ser que estiguin menys personalitzats. Obtén més informació sobre com pots <ph name="BEGIN_LINK_1" />gestionar la privadesa d'anuncis<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Per obtenir més informació sobre com Google protegeix les teves dades, consulta la nostra <ph name="BEGIN_LINK" />política de privadesa<ph name="END_LINK" />.</translation>
 <translation id="453692855554576066">Pots veure els teus temes d'anunci a la configuració de Chromium i bloquejar els que no vulguis que es comparteixin amb els llocs web</translation>
 <translation id="4598427486995631491">Amaga l'adreça IP</translation>
 <translation id="4692439979815346597">Pots veure els teus temes d'anunci a la configuració de Chrome i bloquejar els que no vulguis que es comparteixin amb els llocs web</translation>
 <translation id="5413586988657235240">Els llocs web que visites poden demanar a Chromium temes per mostrar-te anuncis rellevants i, alhora, protegir el teu historial de navegació i la teva identitat</translation>
+<translation id="6053735090575989697">Per obtenir més informació sobre com Google protegeix les teves dades, consulta la nostra política de privadesa.</translation>
 <translation id="6186536480878693792">Els llocs web que visites poden demanar a Chrome temes per mostrar-te anuncis rellevants i, alhora, protegir el teu historial de navegació i la teva identitat</translation>
+<translation id="6195163219142236913">Galetes de tercers limitades</translation>
 <translation id="6371812158043974664">Si tens la sessió iniciada a Chromium, aquesta opció de configuració t'ajudarà a mantenir l'adreça IP privada. En cas que Chromium sospiti que un lloc web podria estar fent un seguiment de la teva activitat, és possible que part del teu trànsit s'enviï a través de servidors de privadesa. Més informació sobre <ph name="LINK_BEGIN" />com funciona la protecció d'IP<ph name="LINK_END" /></translation>
+<translation id="6398358690696005758">Per obtenir més informació sobre com Google protegeix les teves dades, consulta la nostra <ph name="BEGIN_LINK1" />política de privadesa<ph name="LINK_END1" />.</translation>
 <translation id="7040031291654706261">Obtén informació sobre <ph name="BEGIN_LINK" />com funciona la protecció d'IP<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Revisa l'opció de configuració dels temes d'anunci</translation>
 </translationbundle>

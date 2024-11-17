@@ -106,8 +106,9 @@ void AutofillProgressDialogViews::Dismiss(bool show_confirmation_before_closing,
         controller_->GetConfirmationMessage());
     progress_throbber_->SetChecked(true);
     GetBubbleFrameView()->SetTitleView(
-        CreateTitleView(controller_->GetConfirmationTitle(),
-                        TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+        std::make_unique<TitleWithIconAfterLabelView>(
+            controller_->GetConfirmationTitle(),
+            TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&AutofillProgressDialogViews::CloseWidget,
@@ -133,8 +134,9 @@ void AutofillProgressDialogViews::AddedToWidget() {
   DCHECK(progress_throbber_);
   progress_throbber_->Start();
 
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
 std::u16string AutofillProgressDialogViews::GetWindowTitle() const {

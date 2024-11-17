@@ -128,7 +128,7 @@ TEST_F(SyncAuthManagerTest, ForwardsPrimaryAccountEvents) {
   EXPECT_CALL(account_state_changed, Run());
   // Note: The ordering of removing the refresh token and the actual sign-out is
   // undefined, see comment on IdentityManager::Observer. So we might or might
-  // not get a |credentials_changed| call here.
+  // not get a `credentials_changed` call here.
   EXPECT_CALL(credentials_changed, Run()).Times(testing::AtMost(1));
   identity_env()->ClearPrimaryAccount();
   EXPECT_TRUE(

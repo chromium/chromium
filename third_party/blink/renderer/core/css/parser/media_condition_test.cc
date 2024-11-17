@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query.h"
@@ -48,20 +43,18 @@ TEST(MediaConditionParserTest, Basic) {
       {"(width: 1px), screen", "not all"},
       {"screen, (width: 1px)", "not all"},
       {"screen, (width: 1px), print", "not all"},
-
-      {nullptr, nullptr}  // Do not remove the terminator line.
   };
 
-  for (unsigned i = 0; test_cases[i].input; ++i) {
-    SCOPED_TRACE(test_cases[i].input);
-    StringView str(test_cases[i].input);
+  for (const MediaConditionTestCase& test_case : test_cases) {
+    SCOPED_TRACE(test_case.input);
+    StringView str(test_case.input);
     CSSParserTokenStream stream(str);
     MediaQuerySet* media_condition_query_set =
         MediaQueryParser::ParseMediaCondition(stream, nullptr);
     String query_text =
         stream.AtEnd() ? media_condition_query_set->MediaText() : "not all";
     const char* expected_text =
-        test_cases[i].output ? test_cases[i].output : test_cases[i].input;
+        test_case.output ? test_case.output : test_case.input;
     EXPECT_EQ(String(expected_text), query_text);
   }
 }

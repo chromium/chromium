@@ -58,12 +58,6 @@ void LayoutSVGModelObject::MapLocalToAncestor(
   SVGLayoutSupport::MapLocalToAncestor(this, ancestor, transform_state, flags);
 }
 
-PhysicalRect LayoutSVGModelObject::VisualRectInDocument(
-    VisualRectFlags flags) const {
-  NOT_DESTROYED();
-  return SVGLayoutSupport::VisualRectInAncestorSpace(*this, *View(), flags);
-}
-
 void LayoutSVGModelObject::MapAncestorToLocal(
     const LayoutBoxModelObject* ancestor,
     TransformState& transform_state,
@@ -126,8 +120,7 @@ bool LayoutSVGModelObject::CheckForImplicitTransformChange(
     case ETransformBox::kBorderBox:
       return bbox_changed;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void LayoutSVGModelObject::ImageChanged(WrappedImagePtr image,

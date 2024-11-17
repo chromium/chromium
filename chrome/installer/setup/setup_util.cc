@@ -236,8 +236,7 @@ bool DeleteFileFromTempProcess(const base::FilePath& path,
       PAPCFUNC exit_process =
           reinterpret_cast<PAPCFUNC>(::GetProcAddress(kernel32, "ExitProcess"));
       if (!sleep || !delete_file || !exit_process) {
-        NOTREACHED_IN_MIGRATION();
-        ok = FALSE;
+        NOTREACHED();
       } else {
         ::QueueUserAPC(sleep, pi.hThread, delay_before_delete_ms);
         ::QueueUserAPC(delete_file, pi.hThread,
@@ -746,6 +745,12 @@ base::FilePath GetElevationServicePath(const base::FilePath& target_path,
                                        const base::Version& version) {
   return target_path.AppendASCII(version.GetString())
       .Append(kElevationServiceExe);
+}
+
+base::FilePath GetTracingServicePath(const base::FilePath& target_path,
+                                     const base::Version& version) {
+  return target_path.AppendASCII(version.GetString())
+      .Append(kElevatedTracingServiceExe);
 }
 
 void AddUpdateDowngradeVersionItem(HKEY root,

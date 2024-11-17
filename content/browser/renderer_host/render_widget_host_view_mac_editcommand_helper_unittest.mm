@@ -171,8 +171,8 @@ TEST_F(RenderWidgetHostViewMacEditCommandHelperWithTaskEnvTest,
     // ARC conversion note: the previous version of this code held this view
     // strongly throughout with a scoped_nsobject. The precise lifetime
     // attribute replicates that but it's not clear if it's necessary.
-    [[maybe_unused]] RenderWidgetHostViewCocoa* __attribute__((
-        objc_precise_lifetime)) rwhv_cocoa = rwhv_mac->GetInProcessNSView();
+    [[maybe_unused]] NS_VALID_UNTIL_END_OF_SCOPE RenderWidgetHostViewCocoa*
+        rwhv_cocoa = rwhv_mac->GetInProcessNSView();
 
     NSArray* edit_command_strings = RenderWidgetHostViewMacEditCommandHelper::
         GetEditSelectorNamesForTesting();

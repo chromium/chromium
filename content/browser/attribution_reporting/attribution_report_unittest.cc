@@ -208,7 +208,7 @@ TEST(AttributionReportTest, ReportBody_DebugKeys) {
                       SourceBuilder(base::Time::UnixEpoch())
                           .SetSourceEventId(100)
                           .SetDebugKey(test_case.source_debug_key)
-                          .SetDebugCookieSet(true)
+                          .SetCookieBasedDebugAllowed(true)
                           .SetRandomizedResponseRate(0.2)
                           .BuildStored())
             .SetTriggerData(5)
@@ -262,9 +262,8 @@ TEST(AttributionReportTest, NullAggregatableReport) {
             GURL("https://report.test/.well-known/attribution-reporting/"
                  "report-aggregate-attribution"));
 
-  auto& data =
-      absl::get<AttributionReport::NullAggregatableData>(report.data());
-  data.common_data.assembled_report =
+  auto& data = absl::get<AttributionReport::AggregatableData>(report.data());
+  data.SetAssembledReport(
       AggregatableReport({AggregatableReport::AggregationServicePayload(
                              /*payload=*/kABCD1234AsBytes,
                              /*key_id=*/"key",
@@ -272,7 +271,7 @@ TEST(AttributionReportTest, NullAggregatableReport) {
                          "example_shared_info",
                          /*debug_key=*/std::nullopt,
                          /*additional_fields=*/{},
-                         /*aggregation_coordinator_origin=*/std::nullopt);
+                         /*aggregation_coordinator_origin=*/std::nullopt));
 
   EXPECT_THAT(report.ReportBody(), IsJson(expected));
 }
@@ -304,9 +303,8 @@ TEST(AttributionReportTest, ReportBody_AggregatableAttributionReport) {
                   /*bucket=*/1, /*value=*/2, /*filtering_id=*/std::nullopt)})
           .BuildAggregatableAttribution();
 
-  auto& data =
-      absl::get<AttributionReport::AggregatableAttributionData>(report.data());
-  data.common_data.assembled_report =
+  auto& data = absl::get<AttributionReport::AggregatableData>(report.data());
+  data.SetAssembledReport(
       AggregatableReport({AggregatableReport::AggregationServicePayload(
                              /*payload=*/kABCD1234AsBytes,
                              /*key_id=*/"key",
@@ -314,7 +312,7 @@ TEST(AttributionReportTest, ReportBody_AggregatableAttributionReport) {
                          "example_shared_info",
                          /*debug_key=*/std::nullopt,
                          /*additional_fields=*/{},
-                         /*aggregation_coordinator_origin=*/std::nullopt);
+                         /*aggregation_coordinator_origin=*/std::nullopt));
 
   EXPECT_THAT(report.ReportBody(), IsJson(expected));
 }

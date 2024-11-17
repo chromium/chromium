@@ -212,7 +212,7 @@ class PrintingOAuth2AuthorizationZonesManagerTest : public testing::Test {
 
   raw_ptr<testing::NiceMock<MockClientIdsDatabase>, DanglingUntriaged>
       client_ids_database_;
-  std::map<GURL, AuthZoneMock*> auth_zones_;
+  std::map<GURL, raw_ptr<AuthZoneMock, CtnExperimental>> auth_zones_;
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   testing::NiceMock<syncer::MockDataTypeLocalChangeProcessor> mock_processor_;

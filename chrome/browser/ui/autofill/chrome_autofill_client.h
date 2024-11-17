@@ -24,19 +24,21 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/autofill_ablation_study.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
-#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/password_form_classification.h"
+#include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/user_annotations/user_annotations_types.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/autofill/autofill_snackbar_controller_impl.h"
 #include "components/autofill/core/browser/ui/fast_checkout_client.h"
 #else
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
@@ -52,6 +54,7 @@ class SaveUpdateAddressProfileFlowManager;
 #endif
 
 class AutofillOptimizationGuide;
+class AutofillAiDelegate;
 class FormFieldData;
 enum class SuggestionType;
 
@@ -66,8 +69,7 @@ enum class SuggestionType;
 // implementations of ContentAutofillClient without causing invalid casts to
 // ChromeAutofillClient.
 class ChromeAutofillClient : public ContentAutofillClient,
-                             public content::WebContentsObserver
-{
+                             public content::WebContentsObserver {
  public:
   // Creates a new ChromeAutofillClient for the given `web_contents` if no
   // ContentAutofillClient is associated with the `web_contents` yet. Otherwise,
@@ -90,20 +92,25 @@ class ChromeAutofillClient : public ContentAutofillClient,
   ~ChromeAutofillClient() override;
 
   // AutofillClient:
+  base::WeakPtr<AutofillClient> GetWeakPtr() override;
+  const std::string& GetAppLocale() const override;
   version_info::Channel GetChannel() const override;
   bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   AutofillOptimizationGuide* GetAutofillOptimizationGuide() const override;
-  AutofillMlPredictionModelHandler* GetAutofillMlPredictionModelHandler()
+  FieldClassificationModelHandler* GetAutofillFieldClassificationModelHandler()
       override;
+  FieldClassificationModelHandler*
+  GetPasswordManagerFieldClassificationModelHandler() override;
   PersonalDataManager* GetPersonalDataManager() override;
+  SingleFieldFillRouter& GetSingleFieldFillRouter() override;
   AutocompleteHistoryManager* GetAutocompleteHistoryManager() override;
   AutofillComposeDelegate* GetComposeDelegate() override;
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() override;
-  AutofillPredictionImprovementsDelegate*
-  GetAutofillPredictionImprovementsDelegate() override;
+  AutofillAiDelegate* GetAutofillAiDelegate() override;
   void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
+                                bool is_manual_fallback,
                                 PlusAddressCallback callback) override;
   void ShowPlusAddressError(PlusAddressErrorDialogType error_dialog_type,
                             base::OnceClosure on_accepted) override;
@@ -114,6 +121,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
+  const signin::IdentityManager* GetIdentityManager() const override;
   FormDataImporter* GetFormDataImporter() override;
   payments::ChromePaymentsAutofillClient* GetPaymentsAutofillClient() override;
   StrikeDatabase* GetStrikeDatabase() override;
@@ -143,6 +151,9 @@ class ChromeAutofillClient : public ContentAutofillClient,
   SuggestionUiSessionId ShowAutofillSuggestions(
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate) override;
+  void ShowPlusAddressEmailOverrideNotification(
+      const std::string& original_email,
+      EmailOverrideUndoCallback email_override_undo_callback) override;
   void UpdateAutofillDataListValues(
       base::span<const SelectOption> datalist) override;
   base::span<const Suggestion> GetAutofillSuggestions() const override;
@@ -159,26 +170,30 @@ class ChromeAutofillClient : public ContentAutofillClient,
       FillingProduct filling_product,
       const std::map<std::string, std::string>& field_filling_stats_data)
       override;
+  bool IsAutofillEnabled() const override;
+  bool IsAutofillProfileEnabled() const override;
+  bool IsAutofillPaymentMethodsEnabled() const override;
   bool IsAutocompleteEnabled() const override;
-  bool IsPasswordManagerEnabled() override;
+  bool IsPasswordManagerEnabled() const override;
   void DidFillOrPreviewForm(mojom::ActionPersistence action_persistence,
                             AutofillTriggerSource trigger_source,
                             bool is_refill) override;
   bool IsContextSecure() const override;
   LogManager* GetLogManager() const override;
   const AutofillAblationStudy& GetAblationStudy() const override;
+#if BUILDFLAG(IS_ANDROID)
+  // The AutofillSnackbarController is used to show a snackbar notification
+  // on Android.
+  AutofillSnackbarControllerImpl* GetAutofillSnackbarController() override;
+#endif
   FormInteractionsFlowId GetCurrentFormInteractionsFlowId() override;
   std::unique_ptr<device_reauth::DeviceAuthenticator> GetDeviceAuthenticator()
       override;
-  void ShowAutofillFieldIphForManualFallbackFeature(
-      const FormFieldData& field) override;
-  void HideAutofillFieldIphForManualFallbackFeature() override;
-  void NotifyAutofillManualFallbackUsed() override;
-  void ShowSaveAutofillPredictionImprovementsBubble(
-      const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
-          to_be_upserted_entries,
-      base::OnceCallback<void(bool prompt_was_accepted)>
-          prompt_acceptance_callback) override;
+  bool ShowAutofillFieldIphForFeature(
+      const FormFieldData& field,
+      AutofillClient::IphFeature feature) override;
+  void HideAutofillFieldIph() override;
+  void NotifyIphFeatureUsed(AutofillClient::IphFeature feature) override;
   void set_test_addresses(std::vector<AutofillProfile> test_addresses) override;
   base::span<const AutofillProfile> GetTestAddresses() const override;
   PasswordFormClassification ClassifyAsPasswordForm(
@@ -199,11 +214,18 @@ class ChromeAutofillClient : public ContentAutofillClient,
           keep_popup_open_for_testing);
     }
   }
-  void SetAutofillFieldPromoControllerManualFallbackForTesting(
+  void SetAutofillFieldPromoTesting(
       std::unique_ptr<AutofillFieldPromoController> test_controller) {
-    autofill_field_promo_controller_manual_fallback_ =
-        std::move(test_controller);
+    autofill_field_promo_controller_ = std::move(test_controller);
   }
+#if BUILDFLAG(IS_ANDROID)
+  void SetAutofillSnackbarControllerImplForTesting(
+      std::unique_ptr<AutofillSnackbarControllerImpl>
+          autofill_snackbar_controller_impl) {
+    autofill_snackbar_controller_impl_ =
+        std::move(autofill_snackbar_controller_impl);
+  }
+#endif
 #endif  // defined(UNIT_TEST)
 
   // ContentAutofillClient:
@@ -221,7 +243,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
       SuggestionUiSessionId session_id,
       const PopupOpenArgs& open_args,
       base::WeakPtr<AutofillSuggestionDelegate> delegate);
-  base::WeakPtr<ChromeAutofillClient> GetWeakPtr();
 
   std::unique_ptr<LogManager> log_manager_;
 
@@ -231,6 +252,12 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<FormDataImporter> form_data_importer_;
 
   payments::ChromePaymentsAutofillClient payments_autofill_client_{this};
+  SingleFieldFillRouter single_field_fill_router_{
+      // This call is during construction, so GetAutocompleteHistoryManager()
+      // does not dispatch to more-derived classes, should there be any.
+      GetAutocompleteHistoryManager(),
+      payments_autofill_client_.GetIbanManager(),
+      payments_autofill_client_.GetMerchantPromoCodeManager()};
 
   base::WeakPtr<AutofillSuggestionController> suggestion_controller_;
   FormInteractionsFlowId flow_id_;
@@ -242,9 +269,11 @@ class ChromeAutofillClient : public ContentAutofillClient,
   std::unique_ptr<SaveUpdateAddressProfileFlowManager>
       save_update_address_profile_flow_manager_;
   std::unique_ptr<FastCheckoutClient> fast_checkout_client_;
+  std::unique_ptr<AutofillSnackbarControllerImpl>
+      autofill_snackbar_controller_impl_;
 #endif
   std::unique_ptr<AutofillFieldPromoController>
-      autofill_field_promo_controller_manual_fallback_;
+      autofill_field_promo_controller_;
   // Test addresses used to allow developers to test their forms.
   std::vector<AutofillProfile> test_addresses_;
   const AutofillAblationStudy ablation_study_;

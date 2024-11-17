@@ -22,7 +22,7 @@ class DMPolicyManager : public PolicyManagerInterface {
   explicit DMPolicyManager(
       const ::wireless_android_enterprise_devicemanagement::
           OmahaSettingsClientProto& omaha_settings,
-      const std::optional<bool>& override_is_managed_device = std::nullopt);
+      std::optional<bool> override_is_managed_device = std::nullopt);
   DMPolicyManager(const DMPolicyManager&) = delete;
   DMPolicyManager& operator=(const DMPolicyManager&) = delete;
 
@@ -72,7 +72,7 @@ GetOmahaPolicySettings(
 
 // A factory method to create a DM policy manager.
 scoped_refptr<PolicyManagerInterface> CreateDMPolicyManager(
-    const std::optional<bool>& override_is_managed_device);
+    std::optional<bool> override_is_managed_device);
 
 }  // namespace updater
 

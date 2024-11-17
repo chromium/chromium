@@ -114,6 +114,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="132346741904777634">Camera snapped to the top-left corner. Conflict with system surface.</translation>
 <translation id="132415371743256095">Close <ph name="DESK_NAME" /> and windows</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> connected</translation>
+<translation id="1337081488893096731">Use the Content Transfer app to move your school account data to your personal account</translation>
 <translation id="1340378040547539434">Zoom out on page</translation>
 <translation id="1341651618736211726">Overflow</translation>
 <translation id="1341926407152459446">Use '<ph name="DEVICE_NAME" />' for audio input and output</translation>
@@ -215,7 +216,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1703117532528082099">Active window docked on left.</translation>
 <translation id="1708345662127501511">Desk: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Network settings</translation>
-<translation id="171610090693716835">Stay on track with personalised Focus playlists. Get YouTube Music and YouTube, ad-free, with three months of YouTube Premium at no cost.</translation>
 <translation id="1719094688023114093">Live Caption is on.</translation>
 <translation id="1720011244392820496">Turn on Wi-Fi Sync</translation>
 <translation id="1720230731642245863">Hotspot is off</translation>
@@ -243,6 +243,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="17722141032474077">Calculations</translation>
 <translation id="1774796056689732716">Calendar, <ph name="CURRENT_MONTH_YEAR" />, currently <ph name="DATE" /> is selected.</translation>
 <translation id="178347895271755507">Set up viewing your phone's recent photos, media and notifications</translation>
+<translation id="1786487376942610288">Switch between the maximum or current size of the picture-in-picture window</translation>
 <translation id="1787955149152357925">Off</translation>
 <translation id="1796561540704213354">Websites including pages you've visited and open pages</translation>
 <translation id="179842970735685253">Google's Terms of Service</translation>
@@ -307,7 +308,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2041220428661959602">Battery level: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848">The <ph name="SIX_PACK_KEY_NAME" /> shortcut is currently off</translation>
 <translation id="2049240716062114887">Desk name was changed to <ph name="DESK_NAME" /></translation>
-<translation id="2050339315714019657">Portrait</translation>
 <translation id="2064048859448024834">Camera preview on</translation>
 <translation id="2065098273523946419">Learn more link. Redirect to the browser when activated</translation>
 <translation id="2067220651560163985">Show temperature in Celsius</translation>
@@ -398,6 +398,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2412593942846481727">Update available</translation>
 <translation id="2416438829169535743">Exit view?</translation>
 <translation id="2417486498593892439">Sign in to network</translation>
+<translation id="2423619675829330672">Too many PIN attempts. Wait <ph name="TIME_LEFT" /> and try again.</translation>
 <translation id="2426051945783024481">Camera frame automatically centred</translation>
 <translation id="2427507373259914951">Left click</translation>
 <translation id="2429753432712299108">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Before accepting, please confirm that this passkey is shown on that device: <ph name="PASSKEY" /></translation>
@@ -440,6 +441,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2530896289327917474">Turn caret browsing on or off</translation>
 <translation id="2531025035050312891">device slow</translation>
 <translation id="2531107890083353124">While dragging the tab, press <ph name="KEY_ONE" /></translation>
+<translation id="2545334090614121435">Trying to use Home? Use</translation>
 <translation id="254900897760075745">Copy selected content to clipboard</translation>
 <translation id="2549711466868162843">Improve lighting</translation>
 <translation id="2549985041256363841">Start recording</translation>
@@ -498,6 +500,9 @@ Here are some things that you can try to get started.</translation>
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> to <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> managed by <ph name="MANAGER" /></translation>
+<translation id="2781658180588759579">The built-in touchpad is disabled. Use your keyboard or another pointer device to confirm the change.
+
+Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2782591952652094792">Exit capture mode</translation>
 <translation id="2785499565474703580">One device connected</translation>
 <translation id="2791421900609674576">You’ll see recommendations so that you can continue where you left off. You can touch &amp; hold to remove recommendations.</translation>
@@ -558,6 +563,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2985148236010982088">See all apps</translation>
 <translation id="2992272421330787632">Hide all media suggestions</translation>
 <translation id="2992327365391326550">Device's microphone button is turned off.</translation>
+<translation id="2993956882370897557">Trying to use End? Use</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3001391739687111021">Edit screen size</translation>
 <translation id="3009178788565917040">Output</translation>
@@ -594,6 +600,9 @@ Here are some things that you can try to get started.</translation>
 <translation id="3113492864356515707">Highlight previous item on shelf</translation>
 <translation id="311799651966070385">Close nudge</translation>
 <translation id="3120421559657122717">Shut down device?</translation>
+<translation id="3121411970001795539">The built-in touchpad is disabled because a mouse is connected. Use the mouse or keyboard to confirm the change.
+
+Otherwise, the built-in touchpad will be re-enabled in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Classwork type</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -610,6 +619,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="316356270129335934"><ph name="MANAGER" /> is rolling back your <ph name="DEVICE_TYPE" />. Your device will reset and all data will be deleted.</translation>
 <translation id="316798519864381606">Google Slide</translation>
 <translation id="3171170659304083361">Input methods settings</translation>
+<translation id="3174897399179348329">Trying to use Page up? Use</translation>
 <translation id="3176221688814061633">Your Chromebook or Bluetooth device is using an older version of Bluetooth. Turn on the Bluetooth Super Resolution or use internal microphone for better audio quality.</translation>
 <translation id="3181441307743005334">Restart may take a while</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{Connected to a device}other{Connected to # devices}}</translation>
@@ -634,7 +644,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3265032511221679826">Turn on precise location access?</translation>
 <translation id="3269597722229482060">Right-click</translation>
 <translation id="3271554781793662131">Search to insert</translation>
-<translation id="3273040715184276344">Caps lock off.</translation>
 <translation id="3274634049061007184">View your phone's apps</translation>
 <translation id="3289364673986435196">Power menu</translation>
 <translation id="3289544412142055976">Linux apps aren’t currently supported</translation>
@@ -642,7 +651,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3290356915286466215">Unsecured</translation>
 <translation id="3291862315280588024">Move to start of previous word</translation>
 <translation id="3294437725009624529">Guest</translation>
-<translation id="3298690094479023523">Your PIN or password still couldn't be verified. Try again.</translation>
 <translation id="3300193645498960160">You’ll be notified if you talk while muted. Audio never leaves your device.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> devices connected to <ph name="DEVICE_NAME" /> hotspot</translation>
 <translation id="3307642347673023554">Switched to laptop mode</translation>
@@ -965,13 +973,13 @@ Some features are limited to increase battery life.</translation>
 <translation id="4322742403972824594">The Ctrl + Alt + up arrow keyboard shortcut has changed. To use the Home key, press the <ph name="LAUNCHER_KEY_NAME" /> key + left arrow.</translation>
 <translation id="4324840740119394760">This allows camera access for <ph name="APP_NAME" /> and all apps and websites with the camera permission</translation>
 <translation id="4327147325944669226">Record game</translation>
-<translation id="4333628967105022692">Lacros is not supported while multiple users are signed in.</translation>
 <translation id="4338109981321384717">Magnifying glass</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, muted</translation>
 <translation id="4351244548802238354">Close dialogue</translation>
 <translation id="4356872429719185452">Show hotspot details. Hotspot is turning on.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  Recording</translation>
 <translation id="4371348193907997655">Cast settings</translation>
+<translation id="4371834685492830207">PIN must contain only valid characters</translation>
 <translation id="4375482231364171368">Search in address bar</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, signal strength <ph name="SIGNAL_STRENGTH" /> per cent.</translation>
 <translation id="4378551569595875038">Connecting...</translation>
@@ -1137,6 +1145,7 @@ One device connected.</translation>
 <translation id="4902797682482387055">Suggested task to focus on</translation>
 <translation id="490375751687810070">Vertical</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" />% battery</translation>
+<translation id="4911191962826748981">This is an experimental AI feature and won't always get it right.</translation>
 <translation id="491504982845934899">Activate after device setup <ph name="NETWORK_NAME" /></translation>
 <translation id="4917385247580444890">Strong</translation>
 <translation id="4918086044614829423">Accept</translation>
@@ -1258,6 +1267,7 @@ You can also use the keyboard shortcut. First, highlight text, then press <ph na
 <translation id="5297704307811127955">Off</translation>
 <translation id="5300589172476337783">Show</translation>
 <translation id="5302048478445481009">Language</translation>
+<translation id="5302531370473608800">Update your <ph name="DEVICE_TYPE" /> to use YouTube Music</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% battery left.
 Some features are limited to increase battery life.</translation>
 <translation id="5308380583665731573">Connect</translation>
@@ -1294,6 +1304,7 @@ No devices connected.</translation>
 <translation id="5393156353051693207">Touch &amp; hold anywhere to reorder your apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> on top of <ph name="IN_PLACE_APP" />, release to create folder.</translation>
 <translation id="5397578532367286026">Usage and history of this user can be reviewed by the manager (<ph name="MANAGER_EMAIL" />) on chrome.com.</translation>
+<translation id="540338817371815859">Landscape</translation>
 <translation id="540713187982329711">Toggle hotspot. Hotspot is on, no device connected.</translation>
 <translation id="5409208741270395213">Mark task as completed</translation>
 <translation id="5413656666631274079">Settings page</translation>
@@ -1465,11 +1476,11 @@ No devices connected.</translation>
 <translation id="5975235751479998104">Cycle forward through windows</translation>
 <translation id="5978382165065462689">Sharing control of your screen via Remote Assistance.</translation>
 <translation id="5980301590375426705">Exit guest</translation>
-<translation id="5982119059638483922">Press Fn+Search or shift to cancel.</translation>
 <translation id="5983567367406220847">Due to inactivity, hotspot has been turned off.</translation>
 <translation id="598407983968395253">Use template</translation>
 <translation id="5986723678596105470">Join with Google Meet</translation>
 <translation id="598882571027504733">To get the update, restart your Chromebook with the keyboard attached.</translation>
+<translation id="5990992855591814753">Stay on track with personalised Focus playlists. Get YouTube Music and YouTube, ad-free, with three months of YouTube Premium at no cost. Terms apply.</translation>
 <translation id="5998374579424866922">Turn off game controls</translation>
 <translation id="6000279412553873020">Keys, buttons and more</translation>
 <translation id="6012623610530968780">Page <ph name="SELECTED_PAGE" /> of <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1534,7 +1545,6 @@ No devices connected.</translation>
 <translation id="6166852626429024716">Search your device, apps, settings, web…</translation>
 <translation id="6168318496333165060">Open Diagnostics app</translation>
 <translation id="6168622430237609329">Your installed apps</translation>
-<translation id="6173151025443907148">Signing in a second user is not supported if Lacros is enabled. Please use a second browser profile in Lacros instead, or disable Lacros and try again.</translation>
 <translation id="6179832488876878285">You can pin your important files here. Open Files app to get started.</translation>
 <translation id="6180193585172850042">Back button</translation>
 <translation id="6180651297859206670">Forward button</translation>
@@ -1556,6 +1566,7 @@ No devices connected.</translation>
 <translation id="6232416233079464213">From <ph name="SESSION_NAME" /></translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> is currently using your camera and microphone</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">Password must contain only valid characters</translation>
 <translation id="6240603910551255087">Top button</translation>
 <translation id="6240821072888636753">Ask every time</translation>
 <translation id="6247728804802644171">Open notifications</translation>
@@ -1578,12 +1589,14 @@ No devices connected.</translation>
 <translation id="6330012934079202188">Showing windows from all desks; press the Up arrow key to show windows from the current desk</translation>
 <translation id="6337159624125741244">Full-screen magnifier is on</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is a managed session managed by <ph name="MANAGER" /></translation>
+<translation id="6340148837564298498">If you forgot your PIN, try recovering this user.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> connected</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, then <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> or <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">APP SUGGESTIONS</translation>
 <translation id="6352082849089527770">Unknown networks</translation>
 <translation id="6359587239691116345">Get the latest features and security improvements. If you decline this update, your device may no longer work properly and you may experience security and performance issues.</translation>
 <translation id="6362833380917912748">Get to know your built-in apps</translation>
+<translation id="6364386432014869981">Built-in touchpad is turned on</translation>
 <translation id="6376931439017688372">Bluetooth is on</translation>
 <translation id="6378515133128829137">Pin window to right</translation>
 <translation id="6381109794406942707">To unlock the device, enter your PIN.</translation>
@@ -1634,6 +1647,7 @@ No devices connected.</translation>
 <translation id="6539852571005954999">Download scanning <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Casting to <ph name="RECEIVER_NAME" /></translation>
 <translation id="6542891623636520977">Emojis, GIFs and more</translation>
+<translation id="6545382064335350438">Your PIN still couldn't be verified. Try again.</translation>
 <translation id="6555373427270923730">Type a web address in the address bar, then press <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 New install</translation>
@@ -1683,11 +1697,11 @@ New install</translation>
 <translation id="6682029141988159141">Paste content from clipboard</translation>
 <translation id="6683022854667115063">Headphones</translation>
 <translation id="6686023075541098243">Set up viewing your phone's notifications</translation>
+<translation id="6694462491298752106">Built-in touchpad is disabled</translation>
 <translation id="6694973220096431421">Search Google Drive</translation>
 <translation id="6696025732084565524">Your detachable keyboard needs a critical update</translation>
 <translation id="6697913454192220372">Add new desk</translation>
 <translation id="6700713906295497288">IME menu button</translation>
-<translation id="6704375469818246414">Quality may vary when using generative AI.</translation>
 <translation id="6706742084323792866">Pin keyboard</translation>
 <translation id="6710213216561001401">Previous</translation>
 <translation id="6723839937902243910">Power</translation>
@@ -1702,6 +1716,7 @@ New install</translation>
 <translation id="6751826523481687655">Performance tracing is turned on</translation>
 <translation id="6752912906630585008">Desk <ph name="REMOVED_DESK" /> removed and merged with Desk <ph name="RECEIVE_DESK" /></translation>
 <translation id="6753390234084146956">tabs</translation>
+<translation id="6754918760968695779">Quick Insert</translation>
 <translation id="6757237461819837179">No media playing</translation>
 <translation id="6760438044935091345">Game Dashboard</translation>
 <translation id="6768043681523654438">storage</translation>
@@ -1751,6 +1766,7 @@ New install</translation>
 <translation id="6921427376813842559">Update device</translation>
 <translation id="6929081673585394903">Show controls</translation>
 <translation id="6931576957638141829">Save to</translation>
+<translation id="6935857786205183008">Portrait</translation>
 <translation id="6942518653766415536">Recording format menu</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6945922087561257829">Your phone is using a mobile network. Make sure your phone and Chromebook are on the same Wi-Fi network and then try again. <ph name="LEARN_MORE" /></translation>
@@ -1811,6 +1827,7 @@ New install</translation>
 <translation id="7144942256906679589">Battery status</translation>
 <translation id="7145639536026937076">Battery at <ph name="PERCENTAGE" />% and charging. Battery Saver is on.</translation>
 <translation id="7147587499155271409">No browsing history</translation>
+<translation id="7147657298465433425">To access F keys, press fn key + top row keys</translation>
 <translation id="7149149900052329230">Manage your local files and your Google Drive files, all in the Files app.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1917,6 +1934,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7557816257942363084"><ph name="APP_NAME" /> is currently using your microphone</translation>
 <translation id="7561982940498449837">Close menu</translation>
 <translation id="7564874036684306347">Moving windows to another desktop may result in unexpected behaviour. Subsequent notifications, windows and dialogues may be split between desktops.</translation>
+<translation id="7568154670718626683">Trying to delete? Use</translation>
 <translation id="7568790562536448087">Updating</translation>
 <translation id="7569509451529460200">Braille and ChromeVox are enabled</translation>
 <translation id="7569886975397378678">Dismiss setting up viewing your phone's notifications and apps</translation>
@@ -1951,7 +1969,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7670953955701272011">Open this date in Google Calendar</translation>
 <translation id="7671610481353807627">Apps are sorted by colour</translation>
 <translation id="7672095158465655885">Connected to <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
-<translation id="7680417644536099065">Caps lock on</translation>
 <translation id="7682351277038250258">Paste content from clipboard as plain text</translation>
 <translation id="7684531502177797067">Camera input set to <ph name="CAMERA_NAME" />.</translation>
 <translation id="7687172143976244806">You opened</translation>
@@ -1992,6 +2009,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="780301667611848630">No, thanks</translation>
 <translation id="7807067443225230855">Search and Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> and <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">Thumbs up would submit the feedback that you like this suggestion</translation>
 <translation id="7825412704590278437">From upcoming calendar event</translation>
 <translation id="7829386189513694949">Strong signal</translation>
 <translation id="7830453190047749513">You can personalise button actions, cursor speed and more for your <ph name="PERIPHERAL_NAME" /></translation>
@@ -2030,6 +2048,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7904094684485781019">The administrator for this account has disallowed multiple sign-in.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> devices connected</translation>
+<translation id="7921565901396407357">Your PIN couldn't be verified. Try again.</translation>
 <translation id="7923534281713082605">Weather</translation>
 <translation id="7926080067315048321">See all tasks on Google tasks on web</translation>
 <translation id="7930731167419639574">Speech is now processed locally and dictation works offline</translation>
@@ -2119,6 +2138,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="820256110035940528"><ph name="TITLE" /> You've just focused for <ph name="FOCUSED_TIME" />. Open Quick Settings to focus again.</translation>
 <translation id="8203224998425013577">Show more emojis and GIFs</translation>
 <translation id="8203795194971602413">Right click</translation>
+<translation id="8205469348819768313">Trying to use Page down? Use</translation>
 <translation id="8214996719228530800">Canary channel</translation>
 <translation id="8219451629189078428">Your Chromebook needs to stay on and connected to power during this time. Make sure that the charger or adaptor cables are completely plugged in, both to your Chromebook and the power socket. Do not turn off your Chromebook.</translation>
 <translation id="8220076512072059941">Add <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -2144,6 +2164,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="830868413617744215">Beta</translation>
 <translation id="8314772463905284467">Caps Lock is on</translation>
 <translation id="8315514906653279104">Turning on…</translation>
+<translation id="8319634750346253957">Thumbs down would submit the feedback that you dislike this suggestion</translation>
 <translation id="8331351032546853669">Download pending</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2289,11 +2310,11 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8845001906332463065">Get help</translation>
 <translation id="8847100217801213944">Show temperature in Fahrenheit</translation>
 <translation id="8849001918648564819">Hidden</translation>
-<translation id="8853703225951107899">Your PIN or password still couldn't be verified. Note: If you recently changed your password, use your old password. Your new password will be applied once you've signed out.</translation>
 <translation id="8855885154700222542">Full-screen key</translation>
 <translation id="8858369206579825206">Privacy controls</translation>
 <translation id="8860366331836346216">Add eSIM</translation>
 <translation id="8870509716567206129">App does not support split-screen.</translation>
+<translation id="8873203135446552888">Confirm that you want to disable the built-in touchpad</translation>
 <translation id="8874184842967597500">Not connected</translation>
 <translation id="8875021410787719674">Move between bottom-right corner, Launcher, address bar, bookmarks bar, website that's open and downloads</translation>
 <translation id="8876148469852588625">Event <ph name="EVENT_POSITION" /> of <ph name="EVENT_TOTAL_COUNT" /></translation>
@@ -2311,6 +2332,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">The Google Assistant doesn’t speak this language.</translation>
 <translation id="8926951137623668982">Shelf always hidden</translation>
+<translation id="8929566928381252430">Trying to use Caps lock? Use</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 file}other{# files}}</translation>
 <translation id="8936501819958976551">deactivated</translation>
 <translation id="8938800817013097409">USB-C device (right port in the back)</translation>
@@ -2328,6 +2350,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8982906748181120328">Nearby visibility</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590">Using <ph name="IME_NAME" /></translation>
+<translation id="8991648557324317894">Press fn + Quick Insert or shift to cancel.</translation>
 <translation id="899350903320462459">Unlock device as <ph name="LOGIN_ID" /> to perform the notification action</translation>
 <translation id="8993733019280019776">Are you talking? Your mic is off. Select the mic to turn it on.</translation>
 <translation id="9000771174482730261">MANAGE STORAGE</translation>
@@ -2410,9 +2433,9 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="974545358917229949">Displaying <ph name="RESULT_COUNT" /> results for <ph name="QUERY" /></translation>
 <translation id="981011780479609956">No due date</translation>
 <translation id="98120814841227350">Go to end of document</translation>
-<translation id="98515147261107953">Landscape</translation>
 <translation id="987589956647469042">Mobile data is turned on</translation>
 <translation id="989374776391122812">Camera and audio controls</translation>
+<translation id="990263227494928142">Press shift 5 times to enable the touchpad</translation>
 <translation id="990277280839877440">Window <ph name="WINDOW_TITILE" /> closed.</translation>
 <translation id="993398562350683614">Tour step <ph name="STEP" /> of <ph name="TOTAL_STEPS" />. Use apps to do everything that you need on your <ph name="PRODUCT_NAME" />. You can find your apps in the Launcher. Press Alt + shift + L to focus on the Launcher button.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

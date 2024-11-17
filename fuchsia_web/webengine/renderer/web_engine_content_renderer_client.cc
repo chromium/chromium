@@ -278,12 +278,12 @@ WebEngineContentRendererClient::GetSupportedKeySystems(
   return nullptr;
 }
 
-bool WebEngineContentRendererClient::IsSupportedVideoType(
+bool WebEngineContentRendererClient::IsDecoderSupportedVideoType(
     const media::VideoType& type) {
   // Fall back to default codec querying logic if software-only codecs are
   // enabled.
   if (base::FeatureList::IsEnabled(features::kEnableSoftwareOnlyVideoCodecs)) {
-    return ContentRendererClient::IsSupportedVideoType(type);
+    return ContentRendererClient::IsDecoderSupportedVideoType(type);
   }
 
   return IsSupportedHardwareVideoCodec(type);

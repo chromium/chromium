@@ -125,9 +125,7 @@ OmniboxActionId OmniboxAction::ActionId() const {
 #if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject> OmniboxAction::GetOrCreateJavaObject(
     JNIEnv* env) const {
-  NOTREACHED_IN_MIGRATION()
-      << "This implementation does not have a java counterpart";
-  return {};
+  NOTREACHED() << "This implementation does not have a java counterpart";
 }
 #endif
 

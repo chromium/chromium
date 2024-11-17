@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/cr_components/searchbox/searchbox_dropdown.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
 import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter} from '//resources/cr_components/searchbox/searchbox.mojom-webui.js';

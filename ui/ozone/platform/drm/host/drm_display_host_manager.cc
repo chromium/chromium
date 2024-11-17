@@ -88,7 +88,7 @@ base::FilePath MapDevPathToSysPath(const base::FilePath& device_path) {
     // corresponding USB touch device. If the symlink doesn't exist, use the
     // normal sysfs path. In order to ensure that the sysfs path remains unique,
     // append the card name to it.
-    if (base::StartsWith(component, "evdi", base::CompareCase::SENSITIVE)) {
+    if (component.starts_with("evdi")) {
       base::FilePath usb_device_path;
       if (base::ReadSymbolicLink(path_thus_far.Append("device"),
                                  &usb_device_path)) {

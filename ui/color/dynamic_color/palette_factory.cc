@@ -205,8 +205,7 @@ std::unique_ptr<Palette> GeneratePalette(SkColor seed_color,
     case SchemeVariant::kNeutral: {
       const auto hues = std::to_array<double>({0, 260, 315, 360});
       const auto chromas = std::to_array<double>({12.0, 12.0, 20.0, 12.0});
-      const base::flat_map<double, double> chroma_transforms =
-          Zip(hues, chromas);
+      base::flat_map<double, double> chroma_transforms = Zip(hues, chromas);
       config = {Transform(std::move(chroma_transforms)), Chroma(8.0),
                 Chroma(16.0), Chroma(2.0), Chroma(2.0)};
       break;

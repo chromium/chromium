@@ -13,17 +13,20 @@
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/dips/dips_bounce_detector.h"
-#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tpcd/experiment/tpcd_experiment_features.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_metrics.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_service.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_utils.h"
+#include "components/content_settings/core/common/features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "net/base/schemeful_site.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -82,7 +85,8 @@ void OpenerHeuristicTabHelper::InitPopup(
 }
 
 void OpenerHeuristicTabHelper::GotPopupDipsState(const DIPSState& state) {
-  popup_observer_->SetPastInteractionTime(state.user_interaction_times());
+  popup_observer_->SetPastInteractionTime(state.user_interaction_times(),
+                                          state.web_authn_assertion_times());
 }
 
 void OpenerHeuristicTabHelper::PrimaryPageChanged(content::Page& page) {
@@ -165,24 +169,33 @@ OpenerHeuristicTabHelper::PopupObserver::PopupObserver(
       opener_page_id_(opener->page_id()),
       opener_source_id_(
           opener->web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()),
-      opener_url_(
-          opener->web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL()),
-      cookie_settings_(CookieSettingsFactory::GetForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {}
+      opener_origin_(opener->web_contents()
+                         ->GetPrimaryMainFrame()
+                         ->GetLastCommittedOrigin()) {}
 
 OpenerHeuristicTabHelper::PopupObserver::~PopupObserver() = default;
 
 void OpenerHeuristicTabHelper::PopupObserver::SetPastInteractionTime(
-    TimestampRange interaction_times) {
+    TimestampRange interaction_times,
+    TimestampRange web_authn_assertion_times) {
   CHECK(absl::holds_alternative<FieldNotSet>(time_since_interaction_))
       << "SetPastInteractionTime() called more than once";
 
-  if (interaction_times.has_value()) {
+  base::Time most_recent_user_activation =
+      interaction_times ? interaction_times.value().second : base::Time::Min();
+  base::Time most_recent_authentication =
+      web_authn_assertion_times ? web_authn_assertion_times.value().second
+                                : base::Time::Min();
+  base::Time most_recent_interaction =
+      most_recent_user_activation > most_recent_authentication
+          ? most_recent_user_activation
+          : most_recent_authentication;
+
+  if (most_recent_interaction != base::Time::Min()) {
     // Technically we should use the time when the pop-up first opened. But
     // since we only report this metric at hourly granularity, it shouldn't
     // matter.
-    time_since_interaction_ =
-        GetClock()->Now() - interaction_times.value().second;
+    time_since_interaction_ = GetClock()->Now() - most_recent_interaction;
   } else {
     time_since_interaction_ = NoInteraction();
   }
@@ -219,6 +232,7 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitPastInteractionIfReady() {
 
   EmitTopLevelAndCreateGrant(
       initial_url_, has_iframe, /*is_current_interaction=*/false,
+      /*interaction_type=*/InteractionType::UserActivation,
       /*should_record_popup_and_maybe_grant=*/
       absl::holds_alternative<base::TimeDelta>(time_since_interaction_),
       /*grant_duration=*/
@@ -261,6 +275,19 @@ void OpenerHeuristicTabHelper::PopupObserver::DidFinishNavigation(
 
 void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
     RenderFrameHost* render_frame_host) {
+  RecordInteractionAndCreateGrant(render_frame_host,
+                                  InteractionType::UserActivation);
+}
+
+void OpenerHeuristicTabHelper::PopupObserver::WebAuthnAssertionRequestSucceeded(
+    RenderFrameHost* render_frame_host) {
+  RecordInteractionAndCreateGrant(render_frame_host,
+                                  InteractionType::Authentication);
+}
+
+void OpenerHeuristicTabHelper::PopupObserver::RecordInteractionAndCreateGrant(
+    RenderFrameHost* render_frame_host,
+    InteractionType interaction_type) {
   if (!render_frame_host->IsInPrimaryMainFrame()) {
     return;
   }
@@ -294,7 +321,7 @@ void OpenerHeuristicTabHelper::PopupObserver::FrameReceivedUserActivation(
 
   EmitTopLevelAndCreateGrant(
       interaction_url, has_iframe,
-      /*is_current_interaction=*/true,
+      /*is_current_interaction=*/true, interaction_type,
       /*should_record_popup_and_maybe_grant=*/true,
       /*grant_duration=*/
       tpcd::experiment::kTpcdWritePopupCurrentInteractionHeuristicsGrants
@@ -366,6 +393,7 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevelAndCreateGrant(
     const GURL& popup_url,
     OptionalBool has_iframe,
     bool is_current_interaction,
+    InteractionType interaction_type,
     bool should_record_popup_and_maybe_grant,
     base::TimeDelta grant_duration) {
   uint64_t access_id = base::RandUint64();
@@ -375,9 +403,11 @@ void OpenerHeuristicTabHelper::PopupObserver::EmitTopLevelAndCreateGrant(
             DIPSServiceImpl::Get(web_contents()->GetBrowserContext())) {
       dips->storage()
           ->AsyncCall(&DIPSStorage::WritePopup)
-          .WithArgs(GetSiteForDIPS(opener_url_), GetSiteForDIPS(popup_url),
+          .WithArgs(GetSiteForDIPS(opener_origin_), GetSiteForDIPS(popup_url),
                     access_id,
-                    /*popup_time=*/GetClock()->Now(), is_current_interaction)
+                    /*popup_time=*/GetClock()->Now(), is_current_interaction,
+                    /*is_authentication_interaction=*/interaction_type ==
+                        InteractionType::Authentication)
           .Then(base::BindOnce([](bool succeeded) { DCHECK(succeeded); }));
     }
 
@@ -412,8 +442,12 @@ void OpenerHeuristicTabHelper::PopupObserver::MaybeCreateOpenerHeuristicGrant(
     return;
   }
 
-  cookie_settings_->SetTemporaryCookieGrantForHeuristic(url, opener_url_,
-                                                        grant_duration);
+  // TODO: crbug.com/40883201 - When we move to //content, we will call
+  // this via ContentBrowserClient instead of as a standalone function.
+  dips_move::GrantCookieAccessDueToHeuristic(
+      web_contents()->GetBrowserContext(), net::SchemefulSite(opener_origin_),
+      net::SchemefulSite(url::Origin::Create(url)), grant_duration,
+      /*ignore_schemes=*/false);
 }
 
 OptionalBool

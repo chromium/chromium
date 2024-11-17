@@ -141,6 +141,17 @@ void PasswordStoreBuiltInBackend::NotifyCredentialsChangedForTesting(
           changes));
 }
 
+void PasswordStoreBuiltInBackend::NotifyDeletionsHaveSyncedForTesting(
+    bool success) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  background_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &PasswordStoreSync::NotifyDeletionsHaveSynced,
+          base::Unretained(static_cast<PasswordStoreSync*>(helper_.get())),
+          success));
+}
+
 void PasswordStoreBuiltInBackend::Shutdown(
     base::OnceClosure shutdown_completed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -260,7 +271,7 @@ void PasswordStoreBuiltInBackend::GetAutofillableLoginsAsync(
 void PasswordStoreBuiltInBackend::GetAllLoginsForAccountAsync(
     std::string account,
     LoginsOrErrorReply callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PasswordStoreBuiltInBackend::FillMatchingLoginsAsync(
@@ -344,6 +355,7 @@ void PasswordStoreBuiltInBackend::RemoveLoginsCreatedBetweenAsync(
     const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
+    base::OnceCallback<void(bool)> sync_completion,
     PasswordChangesOrErrorReply callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(helper_);
@@ -352,7 +364,7 @@ void PasswordStoreBuiltInBackend::RemoveLoginsCreatedBetweenAsync(
       base::BindOnce(
           &LoginDatabaseAsyncHelper::RemoveLoginsCreatedBetween,
           base::Unretained(helper_.get()),  // Safe until `Shutdown()`.
-          location, delete_begin, delete_end),
+          location, delete_begin, delete_end, std::move(sync_completion)),
       ReportMetricsForResultCallback<PasswordChangesOrError>(
           MethodName("RemoveLoginsCreatedBetweenAsync"))
           .Then(std::move(callback)));
@@ -395,7 +407,7 @@ void PasswordStoreBuiltInBackend::DisableAutoSignInForOriginsAsync(
 }
 
 SmartBubbleStatsStore* PasswordStoreBuiltInBackend::GetSmartBubbleStatsStore() {
-  return this;
+  return is_database_initialized_successfully_ ? this : nullptr;
 }
 
 std::unique_ptr<syncer::DataTypeControllerDelegate>

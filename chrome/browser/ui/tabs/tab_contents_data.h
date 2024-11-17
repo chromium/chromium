@@ -11,6 +11,7 @@
 
 namespace tabs {
 class TabModel;
+class TabInterface;
 }  // namespace tabs
 
 namespace tab_groups {
@@ -29,13 +30,13 @@ class TabContentsData {
   TabContentsData(const TabContentsData&) = delete;
   TabContentsData& operator=(const TabContentsData&) = delete;
 
-  virtual size_t TabCountRecursive() const = 0;
+  virtual size_t TotalTabCount() const = 0;
   virtual size_t IndexOfFirstNonPinnedTab() const = 0;
 
   virtual tabs::TabModel* GetTabAtIndexRecursive(size_t index) const = 0;
 
   virtual std::optional<size_t> GetIndexOfTabRecursive(
-      const tabs::TabModel* tab_model) const = 0;
+      const tabs::TabInterface* tab_model) const = 0;
 
   virtual void AddTabRecursive(
       std::unique_ptr<tabs::TabModel> tab_model,

@@ -20,8 +20,8 @@ import '../settings_shared.css.js';
 import 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
-import {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import type {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import type {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -29,16 +29,19 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
-import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {DevicePageBrowserProxy} from '../device_page/device_page_browser_proxy.js';
+import {DevicePageBrowserProxyImpl} from '../device_page/device_page_browser_proxy.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getTemplate} from './cursor_and_touchpad_page.html.js';
-import {CursorAndTouchpadPageBrowserProxy, CursorAndTouchpadPageBrowserProxyImpl} from './cursor_and_touchpad_page_browser_proxy.js';
+import type {CursorAndTouchpadPageBrowserProxy} from './cursor_and_touchpad_page_browser_proxy.js';
+import {CursorAndTouchpadPageBrowserProxyImpl} from './cursor_and_touchpad_page_browser_proxy.js';
+import {DisableTouchpadMode} from './disable_touchpad_constants.js';
 
 const DEFAULT_BLACK_CURSOR_COLOR = 0;
-
 interface Option {
   name: string;
   value: number;
@@ -187,16 +190,16 @@ export class SettingsCursorAndTouchpadPageElement extends
         },
       },
 
-      disableTrackpadOptions_: {
+      disableTouchpadOptions_: {
         readOnly: true,
         type: Array,
         value() {
           return [
-            {value: 0, name: loadTimeData.getString('disableTrackpadNever')},
-            {value: 1, name: loadTimeData.getString('disableTrackpadAlways')},
+            {value: 0, name: loadTimeData.getString('disableTouchpadNever')},
+            {value: 1, name: loadTimeData.getString('disableTouchpadAlways')},
             {
               value: 2,
-              name: loadTimeData.getString('disableTrackpadMouseConnected'),
+              name: loadTimeData.getString('disableTouchpadMouseConnected'),
             },
           ];
         },
@@ -236,6 +239,12 @@ export class SettingsCursorAndTouchpadPageElement extends
             'computeShowShelfNavigationButtonsSettings_(isKioskModeActive_)',
       },
 
+      /** Whether or not the facegaze settings row should be displayed. */
+      showFaceGazeRow_: {
+        type: Boolean,
+        computed: 'computeShowFaceGazeRow_(isKioskModeActive_)',
+      },
+
       /**
        * Boolean indicating whether shelf navigation buttons should implicitly
        * be enabled in tablet mode - the navigation buttons are implicitly
@@ -266,22 +275,11 @@ export class SettingsCursorAndTouchpadPageElement extends
        * Whether the controlling the mouse cursor with the keyboard feature is
        * enabled.
        */
-      isAccessibilityDisableTrackpadEnabled_: {
+      isAccessibilityDisableTouchpadEnabled_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean(
-              'isAccessibilityDisableTrackpadEnabled');
-        },
-      },
-
-      /**
-       * Whether the face movements mouse cursor and keyboard control feature is
-       * enabled.
-       */
-      isAccessibilityFaceGazeEnabled_: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('isAccessibilityFaceGazeEnabled');
+              'isAccessibilityDisableTouchpadEnabled');
         },
       },
 
@@ -293,17 +291,6 @@ export class SettingsCursorAndTouchpadPageElement extends
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('isAccessibilityMouseKeysEnabled');
-        },
-      },
-
-      /**
-       * Whether to show the overscroll history navigation setting.
-       */
-      isAccessibilityOverscrollSettingFeatureEnabled_: {
-        type: Boolean,
-        value: () => {
-          return loadTimeData.getBoolean(
-              'isAccessibilityOverscrollSettingFeatureEnabled');
         },
       },
 
@@ -358,16 +345,15 @@ export class SettingsCursorAndTouchpadPageElement extends
   private cursorAndTouchpadBrowserProxy_: CursorAndTouchpadPageBrowserProxy;
   private cursorColorOptions_: Option[];
   private deviceBrowserProxy_: DevicePageBrowserProxy;
-  private disableTrackpadOptions_: Option[];
+  private disableTouchpadOptions_: Option[];
   private readonly isKioskModeActive_: boolean;
   private shelfNavigationButtonsImplicitlyEnabled_: boolean;
   private shelfNavigationButtonsPref_:
       chrome.settingsPrivate.PrefObject<boolean>;
   private showShelfNavigationButtonsSettings_: boolean;
-  private readonly isAccessibilityDisableTrackpadEnabled_: boolean;
+  private readonly isAccessibilityDisableTouchpadEnabled_: boolean;
   private readonly isAccessibilityFaceGazeEnabled_: boolean;
   private readonly isAccessibilityMouseKeysEnabled_: boolean;
-  private readonly isAccessibilityOverscrollSettingFeatureEnabled_: boolean;
   private readonly largeCursorMaxSize_: number;
   private hasMouse_: boolean;
   private hasTouchpad_: boolean;
@@ -544,6 +530,11 @@ export class SettingsCursorAndTouchpadPageElement extends
         loadTimeData.getBoolean('showTabletModeShelfNavigationButtonsSettings');
   }
 
+  private computeShowFaceGazeRow_(): boolean {
+    return !this.isKioskModeActive_ &&
+        loadTimeData.getBoolean('isAccessibilityFaceGazeEnabled');
+  }
+
   /**
    * @return Whether shelf navigation buttons should implicitly be
    *     enabled in tablet mode (due to accessibility settings different than
@@ -613,6 +604,10 @@ export class SettingsCursorAndTouchpadPageElement extends
         DEFAULT_BLACK_CURSOR_COLOR;
     this.set(
         'prefs.settings.a11y.cursor_color_enabled.value', a11yCursorColorOn);
+  }
+
+  private showTouchpadEnableMessage_(trackpadMode: number): boolean {
+    return trackpadMode !== DisableTouchpadMode.NEVER;
   }
 }
 

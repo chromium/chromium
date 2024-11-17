@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import android.animation.Animator;
+import android.animation.ValueAnimator;
 import android.app.Activity;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -42,6 +44,7 @@ import org.chromium.components.metrics.LowEntropySource;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.LocalizationUtils;
+import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 
@@ -53,15 +56,92 @@ import java.util.function.BooleanSupplier;
 /**
  * Handles the First Run Experience sequences shown to the user launching Chrome for the first time.
  * It supports only a simple format of FRE:
+ *
+ * <pre>
  *   [Welcome]
  *   [Intro pages...]
  *   [Sign-in page]
+ * </pre>
+ *
  * The activity might be run more than once, e.g. 1) for ToS and sign-in, and 2) for intro.
  */
 public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPageDelegate {
+
     /**
-     * Alerted about various events when FirstRunActivity performs them.
-     * TODO(crbug.com/40710744): Rework and use a better testing setup.
+     * A simple page transformer for transitions between successive Fragment, aiming to be as close
+     * as possible to inter-Activity transitions.
+     */
+    class FirstRunPageTransformer implements ViewPager2.PageTransformer {
+        // The exiting page fades out, then tne entering page fades in. This is the alpha boundary
+        // expressed as fraction of total animation duration.
+        private static final float ALPHA_BOUNDARY_FRAC = 100f / 450f;
+
+        // Absolute horizontal shift of a page at position 1 or -1 as fraction of screen width.
+        private static final float MAX_X_SHIFT_FRACTION = 0.2f;
+
+        // The direction in which content moves, and is opposite to page view change; thus if
+        // transformPage() expects calls with increasing {@param position} for each {@param view},
+        // then this would be negative.
+        private int mDir = 1;
+
+        public void setDirection(int dir) {
+            mDir = dir;
+        }
+
+        @Override
+        public void transformPage(View view, float position) {
+            int pageWidth = view.getWidth();
+
+            if (position <= -1 || position >= 1) { // [-Infinity,-1] or [1,+infinity]
+                // Page is way off-screen to the left or right.
+                view.setAlpha(0f);
+            } else {
+                // Position opposes direction of travel means page is entering; else exiting.
+                boolean isEnter = mDir * position <= 0;
+                // Value that linearly increases from 0 to 1 throughout transition.
+                float progress = isEnter ? 1f - Math.abs(position) : Math.abs(position);
+                // Full extent of motion: Start value if enter; final value if exit.
+                float xShift = MAX_X_SHIFT_FRACTION * pageWidth * ((position < 0) ? -1f : 1f);
+                // API idiosyncrasy: Assigning setTranslationX(0f) always leads to page shift:
+                // * LTR: From right edge when `position` = 1 and fully seen when 0.
+                // * RTL: From left edge when `position` = 1 and fully seen when 0.
+                // Custom delta X translation is done by first counteracting this default shift:
+                // * LTR: setTranslationX(-position * pageWidth + (custom delta X)).
+                // * RTL: setTranslationX(position * pageWidth - (custom delta X)).
+                // Since signs are simply opposite, we can thus initialize `x` to
+                // `-position * pageWidth`, compute desired delta X assuming LTR, and then pass the
+                // result (negated if RTL) to setTranslationX().
+                float x = -position * pageWidth;
+
+                if (isEnter) {
+                    // Alpha: Wait for alpha boundary, then fade in.
+                    float alphaProgress =
+                            Math.max(
+                                    0f,
+                                    (progress - ALPHA_BOUNDARY_FRAC) / (1f - ALPHA_BOUNDARY_FRAC));
+                    view.setAlpha(Interpolators.LEGACY_DECELERATE.getInterpolation(alphaProgress));
+                    // `x` delta: Changes from `xShift` to 0.
+                    x += (1f - Interpolators.EMPHASIZED.getInterpolation(progress)) * xShift;
+                    // Place in front of page that's exiting.
+                    view.setTranslationZ(1f);
+                } else {
+                    // Alpha: Fade out up to alpha boundary.
+                    float alphaProgress = Math.min(progress / ALPHA_BOUNDARY_FRAC, 1f);
+                    view.setAlpha(
+                            1f - Interpolators.LEGACY_ACCELERATE.getInterpolation(alphaProgress));
+                    // `x` delta: Changes from 0 to `xShift`.
+                    x += Interpolators.EMPHASIZED.getInterpolation(progress) * xShift;
+                    // Place behind page that's entering.
+                    view.setTranslationZ(-1f);
+                }
+
+                view.setTranslationX((isRtl() ? -1f : 1f) * x);
+            }
+        }
+    }
+
+    /**
+     * Alerted about various events when FirstRunActivity performs them. TODO(crbug.com/40710744):
      * Rework and use a better testing setup.
      */
     public interface FirstRunActivityObserver {
@@ -84,9 +164,13 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         void onExitFirstRun(FirstRunActivity caller);
     }
 
+    private static final int TRANSITION_DELAY_MS = 450;
+
     private final BitSet mFreProgressStepsRecorded = new BitSet(MobileFreProgress.MAX);
 
     @Nullable private static FirstRunActivityObserver sObserver;
+
+    private static boolean sIsAnimationDisabled;
 
     private boolean mPostNativeAndPolicyPagesCreated;
 
@@ -103,7 +187,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
      */
     private boolean mLaunchedFromChromeIcon;
 
-    private boolean mLaunchedFromCCT;
+    private boolean mLaunchedFromCct;
 
     /**
      * {@link SystemClock} timestamp from when the FRE intent was initially created. This marks when
@@ -114,7 +198,10 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     private final List<FirstRunPage> mPages = new ArrayList<>();
     private final List<Integer> mFreProgressStates = new ArrayList<>();
 
+    private FirstRunPageTransformer mPageTransformer;
     private ViewPager2 mPager;
+
+    private ValueAnimator mAnimator;
 
     /** The pager adapter, which provides the pages to the view pager widget. */
     private FirstRunPagerAdapter mPagerAdapter;
@@ -130,6 +217,9 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         mFreProgressStates.add(MobileFreProgress.WELCOME_SHOWN);
         mPagerAdapter = new FirstRunPagerAdapter(FirstRunActivity.this, mPages);
         mPager.setAdapter(mPagerAdapter);
+        mPageTransformer = new FirstRunPageTransformer();
+        mPager.setPageTransformer(mPageTransformer);
+
         // Other pages will be created by createPostNativeAndPoliciesPageSequence() after
         // native and policy service have been initialized.
     }
@@ -383,6 +473,27 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 && this.getPolicyLoadListener().get() != null;
     }
 
+    /**
+     * @param {boolean} smoothScroll Whether to animate transition. This should be true for user
+     *     triggered transition, and false for quick skips by software.
+     * @return Whether advancing to the next page succeeded.
+     */
+    private boolean advanceToNextPageInternal(boolean smoothScroll) {
+        // Debounce page changes while animation is in flight.
+        if (mAnimator != null) return false;
+
+        mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);
+
+        int position = mPager.getCurrentItem() + 1;
+        while (position < mPagerAdapter.getItemCount() && !mPages.get(position).shouldShow()) {
+            ++position;
+        }
+        if (!setCurrentItemForPager(position, smoothScroll)) return false;
+
+        recordFreProgressHistogram(mFreProgressStates.get(position));
+        return true;
+    }
+
     // Activity:
 
     @Override
@@ -454,7 +565,8 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         if (position < 0) {
             abortFirstRunExperience();
         } else {
-            setCurrentItemForPager(position);
+            // Might be debounced if animation is in flight, but consider this SUCCESS anyway.
+            setCurrentItemForPager(position, true);
         }
         return BackPressResult.SUCCESS;
     }
@@ -472,16 +584,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     @Override
     public boolean advanceToNextPage() {
-        mFirstRunFlowSequencer.updateFirstRunProperties(mFreProperties);
-
-        int position = mPager.getCurrentItem() + 1;
-        while (position < mPagerAdapter.getItemCount() && !mPages.get(position).shouldShow()) {
-            ++position;
-        }
-        if (!setCurrentItemForPager(position)) return false;
-
-        recordFreProgressHistogram(mFreProgressStates.get(position));
-        return true;
+        return advanceToNextPageInternal(true);
     }
 
     @Override
@@ -494,7 +597,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     @Override
     public void completeFirstRunExperience() {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "MobileFre.FromLaunch.FreCompleted",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
 
@@ -551,7 +654,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
     @Override
     public boolean isLaunchedFromCct() {
-        return mLaunchedFromCCT;
+        return mLaunchedFromCct;
     }
 
     @Override
@@ -560,7 +663,7 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
 
         // If default is true then it corresponds to opt-out and false corresponds to opt-in.
         UmaUtils.recordMetricsReportingDefaultOptIn(!DEFAULT_METRICS_AND_CRASH_REPORTING);
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "MobileFre.FromLaunch.TosAccepted",
                 SystemClock.elapsedRealtime() - mIntentCreationElapsedRealtimeMs);
         FirstRunUtils.acceptTermsOfService(allowMetricsAndCrashUploading);
@@ -575,14 +678,22 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         if (getIntent() != null) {
             mLaunchedFromChromeIcon =
                     getIntent().getBooleanExtra(EXTRA_COMING_FROM_CHROME_ICON, false);
-            mLaunchedFromCCT =
+            mLaunchedFromCct =
                     getIntent().getBooleanExtra(EXTRA_CHROME_LAUNCH_INTENT_IS_CCT, false);
             mIntentCreationElapsedRealtimeMs =
                     getIntent().getLongExtra(EXTRA_FRE_INTENT_CREATION_ELAPSED_REALTIME_MS, 0);
         }
     }
 
-    private boolean setCurrentItemForPager(int position) {
+    private boolean isRtl() {
+        return LocalizationUtils.isLayoutRtl();
+    }
+
+    /** Returns whether the set attempt will lead to transition to an existing Fragment. */
+    private boolean setCurrentItemForPager(int position, boolean smoothScroll) {
+        // Debounce page changes while animation is in flight.
+        if (mAnimator != null) return false;
+
         if (sObserver != null) sObserver.onJumpToPage(this, position);
 
         if (position >= mPagerAdapter.getItemCount()) {
@@ -591,7 +702,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         }
 
         int oldPosition = mPager.getCurrentItem();
-        mPager.setCurrentItem(position, false);
 
         // Set A11y focus if possible. See https://crbug.com/1094064 for more context.
         // The screen reader can lose focus when switching between pages with ViewPager2.
@@ -603,11 +713,76 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                 currentFragment.reset();
             }
         }
+
+        if (!sIsAnimationDisabled && smoothScroll) {
+            // Use fake drags to control transition time and interpolation in ViewPager2.
+
+            // Direction of content shift: Forward -> negative; backward -> positive (assuming LTR).
+            int direction = (position > oldPosition) ? -1 : 1;
+            mPageTransformer.setDirection(direction);
+            // Direction of drag, which is flipped if RTL.
+            float dragSign = direction * (isRtl() ? -1f : 1f);
+            // Use linear interpolation to enable custom interpolators usage of various properties.
+            mAnimator = ValueAnimator.ofFloat(0f, 1f);
+            mAnimator.setInterpolator(Interpolators.LINEAR_INTERPOLATOR);
+
+            class UpdateListener implements ValueAnimator.AnimatorUpdateListener {
+                /** Previous animated value to calculate fake drag delta for transitions. */
+                private int mPrevAnimatedValue; // Initializes to 0, as desired.
+
+                @Override
+                public void onAnimationUpdate(ValueAnimator animation) {
+                    float frac = ((Float) animation.getAnimatedValue()).floatValue();
+                    // Get the up-to-date width, which is subject to user change, e.g., by
+                    // orientation changes or window resize.
+                    int width = mPager.getWidth();
+                    int animatedValue = Math.round(frac * width);
+                    float deltaPx = dragSign * (animatedValue - mPrevAnimatedValue);
+                    mPager.fakeDragBy(deltaPx);
+                    mPrevAnimatedValue = animatedValue;
+                }
+            }
+
+            mAnimator.addUpdateListener(new UpdateListener());
+
+            mAnimator.addListener(
+                    new ValueAnimator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            mPager.beginFakeDrag();
+                        }
+
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            mPager.endFakeDrag();
+                            mAnimator = null;
+                            // No need to call `mPager.setCurrentItem(position, false)`.
+                        }
+
+                        @Override
+                        public void onAnimationCancel(Animator animation) {
+                            mAnimator = null;
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(Animator animation) {
+                            /* Ignored */
+                        }
+                    });
+
+            mAnimator.setDuration(TRANSITION_DELAY_MS);
+            mAnimator.start();
+
+        } else {
+            mPager.setCurrentItem(position, false);
+        }
+
         return true;
     }
 
     private void skipPagesIfNecessary() {
-        while (!mPages.get(mPager.getCurrentItem()).shouldShow() && advanceToNextPage()) {}
+        while (!mPages.get(mPager.getCurrentItem()).shouldShow()
+                && advanceToNextPageInternal(false)) {}
     }
 
     @Override
@@ -660,9 +835,17 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         sObserver = observer;
     }
 
+    public static void disableAnimationForTesting(boolean isAnimationDisabled) {
+        sIsAnimationDisabled = isAnimationDisabled;
+    }
+
     @Override
     protected ActivityWindowAndroid createWindowAndroid() {
         return new ActivityWindowAndroid(
-                this, /* listenToActivityState= */ true, getIntentRequestTracker());
+                this,
+                /* listenToActivityState= */ true,
+                getIntentRequestTracker(),
+                getInsetObserver(),
+                /* trackOcclusion= */ false);
     }
 }

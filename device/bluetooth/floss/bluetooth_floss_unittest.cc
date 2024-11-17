@@ -600,6 +600,15 @@ TEST_F(BluetoothFlossTest, UpdatesDeviceConnectionState) {
 
   GetFakeAdapterClient()->NotifyObservers(
       base::BindRepeating([](FlossAdapterClient::Observer* observer) {
+        observer->AdapterDeviceConnectionFailed(
+            FlossDeviceId{.address = FakeFlossAdapterClient::kJustWorksAddress,
+                          .name = ""},
+            0x01);
+      }));
+  EXPECT_FALSE(device->IsConnected());
+
+  GetFakeAdapterClient()->NotifyObservers(
+      base::BindRepeating([](FlossAdapterClient::Observer* observer) {
         observer->AdapterDeviceConnected(FlossDeviceId{
             .address = FakeFlossAdapterClient::kJustWorksAddress, .name = ""});
       }));

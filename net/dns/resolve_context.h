@@ -15,6 +15,8 @@
 #include "base/metrics/sample_vector.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/default_clock.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "net/base/isolation_info.h"
@@ -84,7 +86,11 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
     ~DohStatusObserver() override = default;
   };
 
-  ResolveContext(URLRequestContext* url_request_context, bool enable_caching);
+  ResolveContext(URLRequestContext* url_request_context,
+                 bool enable_caching,
+                 const base::Clock& clock = *base::DefaultClock::GetInstance(),
+                 const base::TickClock& tick_clock =
+                     *base::DefaultTickClock::GetInstance());
 
   ResolveContext(const ResolveContext&) = delete;
   ResolveContext& operator=(const ResolveContext&) = delete;

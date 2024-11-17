@@ -521,16 +521,9 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
 + (void)setGoogleAPIKey:(NSString*)googleAPIKey
                clientID:(NSString*)clientID
            clientSecret:(NSString*)clientSecret {
-  google_apis::SetAPIKey(base::SysNSStringToUTF8(googleAPIKey));
-
-  std::string clientIDString = base::SysNSStringToUTF8(clientID);
-  std::string clientSecretString = base::SysNSStringToUTF8(clientSecret);
-  for (size_t i = 0; i < google_apis::CLIENT_NUM_ITEMS; ++i) {
-    google_apis::OAuth2Client client =
-        static_cast<google_apis::OAuth2Client>(i);
-    google_apis::SetOAuth2ClientID(client, clientIDString);
-    google_apis::SetOAuth2ClientSecret(client, clientSecretString);
-  }
+  google_apis::InitializeAndOverrideAPIKeyAndOAuthClient(
+      base::SysNSStringToUTF8(googleAPIKey), base::SysNSStringToUTF8(clientID),
+      base::SysNSStringToUTF8(clientSecret));
 }
 
 + (CWVWebView*)webViewForWebState:(web::WebState*)webState {
@@ -874,7 +867,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
   } else if (micPermissionRequested) {
     mediaCaptureType = CWVMediaCaptureTypeMicrophone;
   } else {
-    NOTREACHED_IN_MIGRATION() << "Unknown media permissions";
+    NOTREACHED() << "Unknown media permissions";
   }
 
   SEL selector = @selector(webView:
@@ -1029,9 +1022,7 @@ WEB_STATE_USER_DATA_KEY_IMPL(WebViewHolder)
               autofillAgent:autofillAgent
             passwordManager:std::move(passwordManager)
       passwordManagerClient:std::move(passwordManagerClient)
-         passwordController:passwordController
-          applicationLocale:ios_web_view::ApplicationContext::GetInstance()
-                                ->GetApplicationLocale()];
+         passwordController:passwordController];
 }
 
 #pragma mark - Find In Page

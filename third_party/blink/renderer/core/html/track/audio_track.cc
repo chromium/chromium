@@ -12,13 +12,12 @@ AudioTrack::AudioTrack(const String& id,
                        const AtomicString& kind,
                        const AtomicString& label,
                        const AtomicString& language,
-                       bool enabled)
-    : TrackBase(WebMediaPlayer::kAudioTrack,
-                IsValidKindKeyword(kind) ? kind : g_empty_atom,
-                label,
-                language,
-                id),
-      enabled_(enabled) {}
+                       bool enabled,
+                       bool exclusive)
+    : TrackBase(WebMediaPlayer::kAudioTrack, label, language, id),
+      enabled_(enabled),
+      exclusive_(exclusive),
+      kind_(IsValidKindKeyword(kind) ? kind : g_empty_atom) {}
 
 AudioTrack::~AudioTrack() = default;
 

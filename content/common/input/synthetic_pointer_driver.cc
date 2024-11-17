@@ -26,8 +26,7 @@ std::unique_ptr<SyntheticPointerDriver> SyntheticPointerDriver::Create(
     case content::mojom::GestureSourceType::kDefaultInput:
       return nullptr;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // static

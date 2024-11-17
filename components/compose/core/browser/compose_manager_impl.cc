@@ -98,10 +98,9 @@ void ComposeManagerImpl::OpenComposeWithUpdatedSelection(
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kComposeTextSelection) &&
-      IsWordCountWithinBounds(
+  // Select all text if the current selection is one or zero words.
+  if (IsWordCountWithinBounds(
           base::UTF16ToUTF8(form_field_data->selected_text()), 0, 1)) {
-    // Select all words.
     driver->ApplyFieldAction(autofill::mojom::FieldActionType::kSelectAll,
                              autofill::mojom::ActionPersistence::kFill,
                              field_id, u"");
@@ -234,20 +233,15 @@ std::optional<Suggestion> ComposeManagerImpl::GetSuggestion(
 
 void ComposeManagerImpl::NeverShowComposeForOrigin(const url::Origin& origin) {
   client_->AddSiteToNeverPromptList(origin);
-  LogComposeProactiveNudgeCtr(ComposeProactiveNudgeCtrEvent::kUserDisabledSite);
-  client_->GetPageUkmTracker()->ProactiveNudgeDisabledForSite();
 }
 
 void ComposeManagerImpl::DisableCompose() {
   client_->DisableProactiveNudge();
-  LogComposeProactiveNudgeCtr(
-      ComposeProactiveNudgeCtrEvent::kUserDisabledProactiveNudge);
-  client_->GetPageUkmTracker()->ProactiveNudgeDisabledGlobally();
 }
 
 void ComposeManagerImpl::GoToSettings() {
   client_->OpenProactiveNudgeSettings();
-  LogComposeProactiveNudgeCtr(ComposeProactiveNudgeCtrEvent::kOpenSettings);
+  LogComposeProactiveNudgeCtr(ComposeNudgeCtrEvent::kOpenSettings);
 }
 
 bool ComposeManagerImpl::ShouldAnchorNudgeOnCaret() {

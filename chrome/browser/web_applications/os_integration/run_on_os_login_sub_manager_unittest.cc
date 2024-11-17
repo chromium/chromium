@@ -89,7 +89,7 @@ class RunOnOsLoginSubManagerTestBase : public WebAppTest {
     return result.Get<webapps::AppId>();
   }
 
-  void SetWebAppSettingsListPref(const std::string_view pref) {
+  void SetWebAppSettingsListPref(std::string_view pref) {
     ASSERT_OK_AND_ASSIGN(
         auto result,
         base::JSONReader::ReadAndReturnValueWithError(

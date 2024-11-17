@@ -34,8 +34,7 @@ proto::CookieMatchType CookieMatchTypeToProto(
     case ::network::mojom::CookieMatchType::STARTS_WITH:
       return proto::CookieMatchType::STARTS_WITH;
   }
-  NOTREACHED_IN_MIGRATION();
-  return proto::CookieMatchType::EQUALS;
+  NOTREACHED();
 }
 
 network::mojom::CookieMatchType CookieMatchTypeFromProto(

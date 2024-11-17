@@ -61,12 +61,9 @@ const char* GcmResultToError(gcm::GCMClient::Result result) {
     case gcm::GCMClient::UNKNOWN_ERROR:
       return kUnknownError;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected value of result cannot be converted: " << result;
+      NOTREACHED() << "Unexpected value of result cannot be converted: "
+                   << result;
   }
-
-  // Never reached, but prevents missing return statement warning.
-  return "";
 }
 
 bool IsMessageKeyValid(const std::string& key) {

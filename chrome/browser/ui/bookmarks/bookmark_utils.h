@@ -17,8 +17,11 @@
 class GURL;
 class Profile;
 
+struct BookmarkParentFolder;
+
 namespace bookmarks {
 class BookmarkNode;
+class ManagedBookmarkService;
 struct BookmarkNodeData;
 }
 
@@ -61,10 +64,6 @@ std::u16string FormatBookmarkURLForDisplay(const GURL& url);
 // context menu.
 bool IsAppsShortcutEnabled(Profile* profile);
 
-// Returns true when the TabGroupsSave feature should be added to the
-// bookmarks bar.
-bool IsSavedTabGroupsEnabled(Profile* profile);
-
 // Returns true if the Apps shortcut should be displayed in the bookmark bar.
 bool ShouldShowAppsShortcutInBookmarkBar(Profile* profile);
 
@@ -86,24 +85,21 @@ ui::mojom::DragOperation GetPreferredBookmarkDropOperation(
     int operations);
 
 // Returns the preferred drop operation on a bookmark menu/bar.
-// |parent| is the parent node the drop is to occur on and |index| the index the
+// `parent` is the parent node the drop is to occur on and `index` the index the
 // drop is over.
 ui::mojom::DragOperation GetBookmarkDropOperation(
     Profile* profile,
     const ui::DropTargetEvent& event,
     const bookmarks::BookmarkNodeData& data,
-    const bookmarks::BookmarkNode* parent,
+    const BookmarkParentFolder& parent,
     size_t index);
 
-// Returns true if the bookmark data can be dropped on |drop_parent| at
-// |index|. A drop from a separate profile is always allowed, where as
-// a drop from the same profile is only allowed if none of the nodes in
-// |data| are an ancestor of |drop_parent| and one of the nodes isn't already
-// a child of |drop_parent| at |index|.
-bool IsValidBookmarkDropLocation(Profile* profile,
-                                 const bookmarks::BookmarkNodeData& data,
-                                 const bookmarks::BookmarkNode* drop_parent,
-                                 size_t index);
+// Returns true if all the |nodes| can be edited by the user, which means they
+// aren't enterprise-managed, as per `ManagedBookmarkService::IsNodeManaged()`.
+bool CanAllBeEditedByUser(
+    bookmarks::ManagedBookmarkService* managed_bookmark_service,
+    const std::vector<
+        raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>& nodes);
 
 #if defined(TOOLKIT_VIEWS)
 enum class BookmarkFolderIconType {

@@ -87,6 +87,8 @@ base::expected<base::TimeDelta, ParseError> ParseDuration(const base::Value&);
 base::expected<std::optional<SuitableOrigin>, ParseError>
 ParseAggregationCoordinator(const base::Value::Dict&);
 
+base::expected<int, ParseError> ParseAggregatableValue(const base::Value&);
+
 void SerializeUint64(base::Value::Dict&, std::string_view key, uint64_t value);
 
 void SerializeInt64(base::Value::Dict&, std::string_view key, int64_t value);

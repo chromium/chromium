@@ -6,6 +6,7 @@ import {html} from '//resources/lit/v3_0/lit.rollup.js';
 import type {LegacyManagedUserProfileNoticeAppElement} from './legacy_managed_user_profile_notice_app.js';
 
 export function getHtml(this: LegacyManagedUserProfileNoticeAppElement) {
+  // clang-format off
   return html`<!--_html_template_start_-->
 ${this.useLegacyUi_ ? html`
   <div class="main-container tangible-sync-style
@@ -59,4 +60,5 @@ ${this.useLegacyUi_ ? html`
   </div>
 ` : ''}
 <!--_html_template_end_-->`;
+  // clang-format on
 }

@@ -837,15 +837,12 @@ void ArcSettingsServiceImpl::SyncReportingConsent(bool initial_sync) const {
 }
 
 void ArcSettingsServiceImpl::SyncPictureInPictureEnabled() const {
-  bool isPipEnabled =
-      base::FeatureList::IsEnabled(arc::kPictureInPictureFeature);
-
   auto* instance = ARC_GET_INSTANCE_FOR_METHOD(arc_bridge_service_->pip(),
                                                SetPipSuppressionStatus);
   if (!instance)
     return;
 
-  instance->SetPipSuppressionStatus(!isPipEnabled);
+  instance->SetPipSuppressionStatus(false);
 }
 
 void ArcSettingsServiceImpl::SyncTimeZone() const {

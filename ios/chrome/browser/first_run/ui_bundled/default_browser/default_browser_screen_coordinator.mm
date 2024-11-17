@@ -11,12 +11,13 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
-#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_mediator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/default_browser/default_browser_screen_view_controller.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_screen_delegate.h"
+#import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 @implementation DefaultBrowserScreenCoordinator {
   DefaultBrowserScreenViewController* _viewController;
@@ -43,11 +44,11 @@
 - (void)start {
   [super start];
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
   base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                 first_run::kDefaultBrowserScreenStart);
   default_browser::NotifyDefaultBrowserFREPromoShown(
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
+      feature_engagement::TrackerFactory::GetForProfile(profile));
 
   _viewController = [[DefaultBrowserScreenViewController alloc] init];
   _viewController.delegate = self;
@@ -60,11 +61,11 @@
   if (IsSegmentedDefaultBrowserPromoEnabled()) {
     segmentation_platform::SegmentationPlatformService* segmentationService =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetForProfile(browserState);
+            GetForProfile(profile);
 
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
-            GetDispatcherForProfile(browserState);
+            GetDispatcherForProfile(profile);
 
     _mediator = [[DefaultBrowserScreenMediator alloc]
            initWithSegmentationService:segmentationService

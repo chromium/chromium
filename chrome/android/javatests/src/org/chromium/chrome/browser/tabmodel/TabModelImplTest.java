@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import androidx.test.filters.SmallTest;
@@ -28,6 +29,8 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabCreationState;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -50,7 +53,7 @@ public class TabModelImplTest {
     @ClassRule public static EmbeddedTestServerRule sTestServerRule = new EmbeddedTestServerRule();
 
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+    public BlankCTATabInitialStateRule mBlankCtaTabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private ChromeTabbedActivity mActivity;
@@ -173,6 +176,59 @@ public class TabModelImplTest {
                     assertTrue(TabModelImpl.isTabInTabGroup(tab1));
 
                     tab1.setTabGroupId(null);
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testTabRemover_RemoveTab() {
+        createTabs(1, false, mTestUrl);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+                    assertEquals(2, tabModel.getCount());
+
+                    Tab tab1 = tabModel.getTabAt(1);
+                    assertNotNull(tab1);
+
+                    tabModel.getTabRemover().removeTab(tab1, /* allowDialog= */ false);
+                    assertEquals(1, tabModel.getCount());
+
+                    assertFalse(tab1.isClosing());
+                    assertFalse(tab1.isDestroyed());
+
+                    // Reattach to avoid leak.
+                    tabModel.addTab(
+                            tab1,
+                            TabModel.INVALID_TAB_INDEX,
+                            TabLaunchType.FROM_REPARENTING,
+                            TabCreationState.LIVE_IN_BACKGROUND);
+                });
+    }
+
+    @Test
+    @SmallTest
+    public void testTabRemover_CloseTabs() {
+        createTabs(1, false, mTestUrl);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabModel tabModel =
+                            sActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+                    assertEquals(2, tabModel.getCount());
+
+                    Tab tab1 = tabModel.getTabAt(1);
+                    assertNotNull(tab1);
+
+                    tabModel.getTabRemover()
+                            .closeTabs(
+                                    TabClosureParams.closeTab(tab1).allowUndo(false).build(),
+                                    /* allowDialog= */ true);
+                    assertEquals(1, tabModel.getCount());
+
+                    assertTrue(tab1.isDestroyed());
                 });
     }
 }

@@ -7,6 +7,8 @@
 #ifndef CHROME_INSTALLER_SETUP_SETUP_CONSTANTS_H_
 #define CHROME_INSTALLER_SETUP_SETUP_CONSTANTS_H_
 
+#include <string_view>
+
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
@@ -26,12 +28,21 @@ extern const wchar_t kMediaPlayerRegPath[];
 extern const wchar_t kOsUpdateHandlerExe[];
 #endif
 
+inline constexpr std::wstring_view kElevatedTracingServiceExe =
+    L"elevated_tracing_service.exe";
+
 namespace switches {
 
 extern const char kCleanupForDowngradeOperation[];
 extern const char kCleanupForDowngradeVersion[];
 
 extern const char kConfigureBrowserInDirectory[];
+
+inline constexpr std::string_view kDeveloper = "developer";
+inline constexpr std::string_view kDisableSystemTracing =
+    "disable-system-tracing";
+inline constexpr std::string_view kEnableSystemTracing =
+    "enable-system-tracing";
 
 extern const char kSetDisplayVersionProduct[];
 extern const char kSetDisplayVersionValue[];

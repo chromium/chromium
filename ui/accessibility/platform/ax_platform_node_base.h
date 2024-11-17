@@ -185,10 +185,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   bool GetStringListAttribute(ax::mojom::StringListAttribute attribute,
                               std::vector<std::string>* value) const;
 
-  bool HasHtmlAttribute(const char* attribute) const;
   const base::StringPairs& GetHtmlAttributes() const;
-  bool GetHtmlAttribute(const char* attribute, std::string* value) const;
-  bool GetHtmlAttribute(const char* attribute, std::u16string* value) const;
 
   AXTextAttributes GetTextAttributes() const;
 
@@ -357,6 +354,9 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeBase : public AXPlatformNode {
   // IAccessibleText::get_text, indicating the position where a non-static text
   // child object appears.
   static const char16_t kEmbeddedCharacter;
+
+  // Prefix for the name of an action from the aria-actions attribute.
+  static const std::string kAriaActionsPrefix;
 
   // Get a node given its unique id or null in the case that the id is unknown.
   static AXPlatformNode* GetFromUniqueId(int32_t unique_id);

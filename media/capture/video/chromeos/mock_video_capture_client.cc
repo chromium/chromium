@@ -48,6 +48,7 @@ void MockVideoCaptureClient::OnIncomingCapturedData(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_time,
+    const std::optional<media::VideoFrameMetadata>& metadata,
     int frame_feedback_id) {
   ASSERT_GT(length, 0);
   ASSERT_TRUE(data);
@@ -62,6 +63,7 @@ void MockVideoCaptureClient::OnIncomingCapturedGfxBuffer(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_time,
+    const std::optional<media::VideoFrameMetadata>& metadata,
     int frame_feedback_id) {
   ASSERT_TRUE(buffer);
   ASSERT_GT(buffer->GetSize().width() * buffer->GetSize().height(), 0);
@@ -74,7 +76,8 @@ void MockVideoCaptureClient::OnIncomingCapturedExternalBuffer(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_time,
-    const gfx::Rect& visible_rect) {
+    const gfx::Rect& visible_rect,
+    const std::optional<media::VideoFrameMetadata>& metadata) {
   if (frame_cb_)
     std::move(frame_cb_).Run();
 }
@@ -89,8 +92,7 @@ MockVideoCaptureClient::ReserveOutputBuffer(
     int* require_new_buffer_id,
     int* retire_old_buffer_id) {
   DoReserveOutputBuffer();
-  NOTREACHED_IN_MIGRATION() << "This should never be called";
-  return ReserveResult::kSucceeded;
+  NOTREACHED();
 }
 
 void MockVideoCaptureClient::OnIncomingCapturedBuffer(
@@ -98,7 +100,8 @@ void MockVideoCaptureClient::OnIncomingCapturedBuffer(
     const VideoCaptureFormat& format,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
-    std::optional<base::TimeTicks> capture_begin_time) {
+    std::optional<base::TimeTicks> capture_begin_time,
+    const std::optional<media::VideoFrameMetadata>& metadata) {
   DoOnIncomingCapturedBuffer();
 }
 
@@ -110,7 +113,7 @@ void MockVideoCaptureClient::OnIncomingCapturedBufferExt(
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_time,
     gfx::Rect visible_rect,
-    const VideoFrameMetadata& additional_metadata) {
+    const std::optional<VideoFrameMetadata>& additional_metadata) {
   DoOnIncomingCapturedVideoFrame();
 }
 

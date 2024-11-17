@@ -80,7 +80,7 @@
   E(kActionWebauthn, IDC_WEBAUTHN) \
   E(kActionSharingHub, IDC_SHARING_HUB) \
   E(kActionSharingHubMenu, IDC_SHARING_HUB_MENU) \
-  E(kActionVirtualCardManualFallback, IDC_VIRTUAL_CARD_MANUAL_FALLBACK) \
+  E(kActionFilledCardInformation, IDC_FILLED_CARD_INFORMATION) \
   E(kActionSharingHubScreenshot, IDC_SHARING_HUB_SCREENSHOT) \
   E(kActionVirtualCardEnroll, IDC_VIRTUAL_CARD_ENROLL) \
   E(kActionFollow, IDC_FOLLOW) \
@@ -488,6 +488,8 @@
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD) \
   E(kActionContentContextAutofillFallbackPasswordsNoSavedPasswords, \
     IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS) \
+  E(kActionContentContextUsePasskeyFromAnotherDevice, \
+    IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE) \
   /* Live Caption */ \
   E(kActionLiveCaption, IDC_LIVE_CAPTION) \
   /* Device API system tray icon */ \

@@ -8,8 +8,7 @@
 #include "chromeos/ash/components/phonehub/message_sender.h"
 #include "chromeos/ash/components/phonehub/user_action_recorder.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 DoNotDisturbControllerImpl::DoNotDisturbControllerImpl(
     MessageSender* message_sender,
@@ -62,5 +61,4 @@ bool DoNotDisturbControllerImpl::CanRequestNewDndState() const {
   return can_request_new_dnd_state_;
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

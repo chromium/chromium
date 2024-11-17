@@ -59,6 +59,8 @@ ASH_EXPORT aura::Window* GetActiveDeskContainerForRoot(aura::Window* root);
 
 ASH_EXPORT bool BelongsToActiveDesk(aura::Window* window);
 
+ASH_EXPORT bool BelongsToDesk(aura::Window* window, const Desk* desk);
+
 // Returns active desk's associated lacros profile ID when Desk Profiles feature
 // is enabled; returns null otherwise.
 ASH_EXPORT std::optional<uint64_t> GetActiveDeskLacrosProfileId();

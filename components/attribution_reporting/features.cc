@@ -17,16 +17,12 @@ BASE_FEATURE(kAttributionAggregatableDebugReporting,
              "AttributionAggregatableDebugReporting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kAttributionSourceDestinationLimit,
-             "AttributionSourceDestinationLimit",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAttributionReportingAggregatableFilteringIds,
-             "AttributionReportingAggregatableFilteringIds",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kAttributionScopes,
              "AttributionScopes",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAttributionAggregatableNamedBudgets,
+             "AttributionAggregatableNamedBudgets",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace attribution_reporting::features

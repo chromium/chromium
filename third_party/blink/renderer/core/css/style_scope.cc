@@ -52,8 +52,8 @@ StyleScope* StyleScope::Parse(CSSParserTokenStream& stream,
                               StyleSheetContents* style_sheet) {
   HeapVector<CSSSelector> arena;
 
-  std::optional<base::span<CSSSelector>> from;
-  std::optional<base::span<CSSSelector>> to;
+  base::span<CSSSelector> from;
+  base::span<CSSSelector> to;
 
   stream.ConsumeWhitespace();
 
@@ -64,18 +64,17 @@ StyleScope* StyleScope::Parse(CSSParserTokenStream& stream,
     from = CSSSelectorParser::ParseScopeBoundary(
         stream, context, nesting_type, parent_rule_for_nesting, is_within_scope,
         style_sheet, arena);
-    if (!from.has_value()) {
+    if (from.empty()) {
       return nullptr;
     }
   }
   stream.ConsumeWhitespace();
 
   StyleRule* from_rule = nullptr;
-  if (from.has_value() && !from.value().empty()) {
-    auto* properties = MakeGarbageCollected<ImmutableCSSPropertyValueSet>(
-        /* properties */ nullptr, /* count */ 0,
-        CSSParserMode::kHTMLStandardMode);
-    from_rule = StyleRule::Create(from.value(), properties);
+  if (!from.empty()) {
+    auto* properties = ImmutableCSSPropertyValueSet::Create(
+        base::span<CSSPropertyValue>(), CSSParserMode::kHTMLStandardMode);
+    from_rule = StyleRule::Create(from, properties);
   }
 
   // to (<scope-end>)
@@ -96,17 +95,16 @@ StyleScope* StyleScope::Parse(CSSParserTokenStream& stream,
         stream, context, CSSNestingType::kScope,
         /* parent_rule_for_nesting */ from_rule,
         /* is_within_scope */ true, style_sheet, arena);
-    if (!to.has_value()) {
+    if (to.empty()) {
       return nullptr;
     }
   }
   stream.ConsumeWhitespace();
 
   CSSSelectorList* to_list =
-      to.has_value() ? CSSSelectorList::AdoptSelectorVector(to.value())
-                     : nullptr;
+      !to.empty() ? CSSSelectorList::AdoptSelectorVector(to) : nullptr;
 
-  if (!from.has_value()) {
+  if (from.empty()) {
     // Implicitly rooted.
     return MakeGarbageCollected<StyleScope>(style_sheet, to_list);
   }

@@ -10,9 +10,9 @@
 #import <vector>
 
 #import "base/functional/callback.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class ProfileAttributesStorageIOS;
+class ProfileIOS;
 class ProfileManagerObserverIOS;
 
 // Provides methods that allow for various ways of creating non-incognito
@@ -34,19 +34,18 @@ class ProfileManagerIOS {
   // Loads the last active profiles. *Deprecated*.
   virtual void LoadProfiles() = 0;
 
-  // Returns the Profile that was last used. Only use this method for the very
-  // specific purpose of finding which of the several available browser states
-  // was used last. Do *not* use it as a singleton getter to fetch "the"
-  // profile. Always assume there could be profiles and use GetLoadedProfiles()
-  // instead.
-  virtual ProfileIOS* GetLastUsedProfileDeprecatedDoNotUse() = 0;
-
   // Returns the Profile known by `name` or nullptr if there is no loaded
   // Profiles with that `name`.
   virtual ProfileIOS* GetProfileWithName(std::string_view name) = 0;
 
   // Returns the list of loaded Profiles. The order is arbitrary.
-  virtual std::vector<ProfileIOS*> GetLoadedProfiles() = 0;
+  virtual std::vector<ProfileIOS*> GetLoadedProfiles() const = 0;
+
+  // Returns whether a profile with `name` exists (it may not be loaded yet).
+  virtual bool HasProfileWithName(std::string_view name) const = 0;
+
+  // Returns whether a profile with `name` can be created.
+  virtual bool CanCreateProfileWithName(std::string_view name) const = 0;
 
   // Asynchronously loads a Profile known by `name` if it exists. The
   // `created_callback` will be called with the Profile when it has been created
@@ -89,6 +88,10 @@ class ProfileManagerIOS {
   // during the initialisation when blocking is possible or for tests. Returns
   // null if loading or creating the Profile failed.
   virtual ProfileIOS* CreateProfile(std::string_view name) = 0;
+
+  // Destroys all loaded Profile objects. Meant to be called right before the
+  // ProfileManagerIOS itself is destroyed.
+  virtual void DestroyAllProfiles() = 0;
 
   // Returns the ProfileAttributesStorageIOS associated with this manager.
   virtual ProfileAttributesStorageIOS* GetProfileAttributesStorage() = 0;

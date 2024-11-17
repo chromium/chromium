@@ -320,7 +320,8 @@ Color StyleColor::UnresolvedRelativeColor::Resolve(
 
   Color result = Color::FromColorSpace(color_interpolation_space_, params[0],
                                        params[1], params[2], param_alpha);
-  if (Color::IsLegacyColorSpace(result.GetColorSpace())) {
+  if (Color::IsLegacyColorSpace(result.GetColorSpace()) &&
+      !RuntimeEnabledFeatures::CSSRelativeColorPreserveNoneEnabled()) {
     result.ConvertToColorSpace(Color::ColorSpace::kSRGB);
   }
   return result;
@@ -350,8 +351,13 @@ Color StyleColor::Resolve(const Color& current_color,
                           mojom::blink::ColorScheme color_scheme,
                           bool* is_current_color) const {
   if (IsUnresolvedColorFunction()) {
-    return color_or_unresolved_color_function_.unresolved_color_function
-        ->Resolve(current_color);
+    Color result =
+        color_or_unresolved_color_function_.unresolved_color_function->Resolve(
+            current_color);
+    if (Color::IsLegacyColorSpace(result.GetColorSpace())) {
+      result.ConvertToColorSpace(Color::ColorSpace::kSRGB);
+    }
+    return result;
   }
 
   if (is_current_color) {
@@ -390,15 +396,23 @@ StyleColor StyleColor::ResolveSystemColor(
   return StyleColor(color, color_keyword_);
 }
 
+const CSSValue* StyleColor::ToCSSValue() const {
+  if (IsUnresolvedColorFunction()) {
+    return GetUnresolvedColorFunction().ToCSSValue();
+  }
+  if (IsCurrentColor()) {
+    return CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);
+  }
+  return cssvalue::CSSColor::Create(GetColor());
+}
+
 Color StyleColor::ColorFromKeyword(CSSValueID keyword,
                                    mojom::blink::ColorScheme color_scheme,
                                    const ui::ColorProvider* color_provider,
                                    bool is_in_web_app_scope) {
-  if (const char* value_name = getValueName(keyword)) {
-    if (const NamedColor* named_color = FindColor(
-            value_name, static_cast<wtf_size_t>(strlen(value_name)))) {
-      return Color::FromRGBA32(named_color->argb_value);
-    }
+  std::string_view value_name = GetCSSValueName(keyword);
+  if (const NamedColor* named_color = FindColor(value_name)) {
+    return Color::FromRGBA32(named_color->argb_value);
   }
 
   return LayoutTheme::GetTheme().SystemColor(
@@ -506,7 +520,7 @@ CORE_EXPORT std::ostream& operator<<(std::ostream& stream,
   } else if (color.IsUnresolvedColorFunction()) {
     return stream << color.GetUnresolvedColorFunction();
   } else if (color.HasColorKeyword() && !color.IsNumeric()) {
-    return stream << getValueName(color.GetColorKeyword());
+    return stream << GetCSSValueName(color.GetColorKeyword());
   } else {
     return stream << color.GetColor();
   }

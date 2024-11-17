@@ -46,7 +46,7 @@ std::vector<base::FilePath> AndroidFontFilesList() {
 }
 
 std::vector<base::FilePath> SplitFontFilesList(
-    const std::vector<base::FilePath> font_files,
+    const std::vector<base::FilePath>& font_files,
     bool return_second_half) {
   CHECK_GT(font_files.size(), 2u);
   auto start_copy = font_files.begin();
@@ -112,18 +112,18 @@ TEST_F(FontUniqueNameLookupTest, TestHandleFailedRead) {
   ASSERT_TRUE(font_unique_name_lookup_->PersistToFile());
   ASSERT_TRUE(base::PathExists(
       font_unique_name_lookup_->TableCacheFilePathForTesting()));
-  int64_t file_size;
-  ASSERT_TRUE(base::GetFileSize(
-      font_unique_name_lookup_->TableCacheFilePathForTesting(), &file_size));
+  std::optional<int64_t> file_size = base::GetFileSize(
+      font_unique_name_lookup_->TableCacheFilePathForTesting());
+  ASSERT_TRUE(file_size.has_value());
   // For 10 fonts, assume we have at least 256 bytes of data, it's
   // around 30k in practice on Kitkat with 81 fonts.
-  ASSERT_GT(file_size, 256);
+  ASSERT_GT(file_size.value(), 256);
   ASSERT_TRUE(font_unique_name_lookup_->LoadFromFile());
 
   // For each truncated size, reading must fail, otherwise we successfully read
   // a truncated protobuf.
-  for (int64_t truncated_size = file_size - 1; truncated_size >= 0;
-       truncated_size -= file_size) {
+  for (int64_t truncated_size = file_size.value() - 1; truncated_size >= 0;
+       truncated_size -= file_size.value()) {
     TruncateFileToLength(
         font_unique_name_lookup_->TableCacheFilePathForTesting(),
         truncated_size);

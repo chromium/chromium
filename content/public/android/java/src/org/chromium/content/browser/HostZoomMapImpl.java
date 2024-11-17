@@ -17,8 +17,6 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.HostZoomMap;
 import org.chromium.content_public.browser.SiteZoomInfo;
 import org.chromium.content_public.browser.WebContents;
@@ -31,10 +29,13 @@ public class HostZoomMapImpl {
     // Private constructor to prevent unwanted construction.
     private HostZoomMapImpl() {}
 
+    private static boolean sShouldAdjustForOSLevelForTesting;
+
     /**
      * Set a new zoom level for the given web contents.
-     * @param webContents   WebContents to update
-     * @param newZoomLevel  double - new zoom level
+     *
+     * @param webContents WebContents to update
+     * @param newZoomLevel double - new zoom level
      */
     public static void setZoomLevel(
             WebContents webContents, double newZoomLevel, double adjustedZoomLevel) {
@@ -98,10 +99,8 @@ public class HostZoomMapImpl {
     @CalledByNative
     public static double getAdjustedZoomLevel(double zoomLevel) {
         float systemFontScale = getSystemFontScale();
-        // The OS |fontScale| will not be factored in zoom estimation if Page Zoom is disabled; a
-        // systemFontScale = 1 will be used in this case.
-        if (!ContentFeatureMap.isEnabled(ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM)
-                || !shouldAdjustForOSLevel()) {
+        // The OS |fontScale| will not be factored in by default; a value of 1 will be instead.
+        if (!shouldAdjustForOSLevel()) {
             systemFontScale = 1;
         }
         return adjustZoomLevel(zoomLevel, systemFontScale);
@@ -124,11 +123,10 @@ public class HostZoomMapImpl {
      * @return bool True if zoom should be adjusted.
      */
     public static boolean shouldAdjustForOSLevel() {
-        return ContentFeatureMap.getInstance()
-                .getFieldTrialParamByFeatureAsBoolean(
-                        ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM,
-                        ContentFeatureList.ACCESSIBILITY_PAGE_ZOOM_PARAM,
-                        false);
+        // The Accessibility Page Zoom feature shipped with an AdjustForOsLevel parameter of false.
+        // This method has been kept for posterity and for convenience for future experiments that
+        // may alter the default behavior of adjusting zoom based on OS-level settings.
+        return /* FeatureParam: AdjustForOSLevel=false || */ sShouldAdjustForOSLevelForTesting;
     }
 
     /**
@@ -161,6 +159,13 @@ public class HostZoomMapImpl {
         var oldValue = getSystemFontScale();
         setSystemFontScale(scale);
         ResettersForTesting.register(() -> setSystemFontScale(oldValue));
+    }
+
+    @CalledByNativeForTesting
+    public static void setShouldAdjustForOSLevelForTesting(boolean shouldAdjustForOSLevel) {
+        var oldValue = sShouldAdjustForOSLevelForTesting;
+        sShouldAdjustForOSLevelForTesting = shouldAdjustForOSLevel;
+        ResettersForTesting.register(() -> sShouldAdjustForOSLevelForTesting = oldValue);
     }
 
     @NativeMethods

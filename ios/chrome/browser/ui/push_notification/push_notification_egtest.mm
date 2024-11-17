@@ -67,9 +67,9 @@ void TapMenuItem(int labelId) {
   return config;
 }
 
-+ (void)setUpForTestCase {
-  [super setUpForTestCase];
-
+- (void)setUp {
+  [super setUp];
+  [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey writeFirstRunSentinel];
   [ChromeEarlGrey clearDefaultBrowserPromoData];
   [ChromeEarlGrey
@@ -79,12 +79,13 @@ void TapMenuItem(int labelId) {
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
   [NewTabPageAppInterface resetSetUpListPrefs];
+  [ChromeEarlGrey openNewTab];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that the settings page is dismissed by swiping down from the top.

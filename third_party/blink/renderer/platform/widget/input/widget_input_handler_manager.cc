@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/platform/widget/input/widget_input_handler_impl.h"
 #include "third_party/blink/renderer/platform/widget/widget_base.h"
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
+#include "ui/latency/latency_info.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "third_party/blink/renderer/platform/widget/compositing/android_webview/synchronous_compositor_registry.h"
@@ -48,7 +50,7 @@
 
 namespace blink {
 
-using ::perfetto::protos::pbzero::ChromeLatencyInfo;
+using ::perfetto::protos::pbzero::ChromeLatencyInfo2;
 using ::perfetto::protos::pbzero::TrackEvent;
 
 namespace {
@@ -81,8 +83,15 @@ void CallCallback(
     const ui::LatencyInfo& latency_info,
     mojom::blink::DidOverscrollParamsPtr overscroll_params,
     std::optional<cc::TouchAction> touch_action) {
-  ui::LatencyInfo::TraceIntermediateFlowEvents(
-      {latency_info}, ChromeLatencyInfo::STEP_HANDLED_INPUT_EVENT_IMPL);
+  int64_t trace_id = latency_info.trace_id();
+  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
+              [&](perfetto::EventContext ctx) {
+                base::TaskAnnotator::EmitTaskTimingDetails(ctx);
+                ui::LatencyInfo::FillTraceEvent(
+                    ctx, trace_id,
+                    ChromeLatencyInfo2::Step::STEP_HANDLED_INPUT_EVENT_IMPL);
+              });
+
   std::move(callback).Run(
       mojom::blink::InputEventResultSource::kMainThread, latency_info,
       result_state, std::move(overscroll_params),
@@ -106,8 +115,7 @@ mojom::blink::InputEventResultState InputEventDispositionToAck(
       return mojom::blink::InputEventResultState::kSetNonBlocking;
     case InputHandlerProxy::REQUIRES_MAIN_THREAD_HIT_TEST:
     default:
-      NOTREACHED_IN_MIGRATION();
-      return mojom::blink::InputEventResultState::kUnknown;
+      NOTREACHED();
   }
 }
 
@@ -139,17 +147,20 @@ class SynchronousCompositorProxyRegistry
     proxy_->Init();
 
     if (base::FeatureList::IsEnabled(::features::kWebViewEnableADPF)) {
-      Vector<base::PlatformThreadId> renderer_thread_ids;
-      renderer_thread_ids.push_back(base::PlatformThread::CurrentId());
+      Vector<viz::Thread> renderer_threads;
+      renderer_threads.push_back(viz::Thread{base::PlatformThread::CurrentId(),
+                                             viz::Thread::Type::kCompositor});
       if (io_thread_id_ != base::kInvalidThreadId) {
-        renderer_thread_ids.push_back(io_thread_id_);
+        renderer_threads.push_back(
+            viz::Thread{io_thread_id_, viz::Thread::Type::kIO});
       }
       if (main_thread_id_ != base::kInvalidThreadId &&
           base::FeatureList::IsEnabled(
               ::features::kWebViewEnableADPFRendererMain)) {
-        renderer_thread_ids.push_back(main_thread_id_);
+        renderer_threads.push_back(
+            viz::Thread{main_thread_id_, viz::Thread::Type::kMain});
       }
-      proxy_->SetThreadIds(renderer_thread_ids);
+      proxy_->SetThreads(renderer_threads);
     }
 
     if (sink_)
@@ -975,6 +986,17 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
   TRACE_EVENT1("input",
                "WidgetInputHandlerManager::DidHandleInputEventSentToCompositor",
                "Disposition", event_disposition);
+
+  int64_t trace_id = event->latency_info().trace_id();
+  TRACE_EVENT(
+      "input,benchmark,latencyInfo", "LatencyInfo.Flow",
+      [&](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
+        ui::LatencyInfo::FillTraceEvent(
+            ctx, trace_id,
+            ChromeLatencyInfo2::Step::STEP_DID_HANDLE_INPUT_AND_OVERSCROLL);
+      });
+
   DCHECK(InputThreadTaskRunner()->BelongsToCurrentThread());
 
   if (event_disposition == InputHandlerProxy::DROP_EVENT &&
@@ -1001,10 +1023,6 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToCompositor(
       }
     }
   }
-
-  ui::LatencyInfo::TraceIntermediateFlowEvents(
-      {event->latency_info()},
-      ChromeLatencyInfo::STEP_DID_HANDLE_INPUT_AND_OVERSCROLL);
 
   if (event_disposition == InputHandlerProxy::REQUIRES_MAIN_THREAD_HIT_TEST) {
     TRACE_EVENT_INSTANT0("input", "PostingHitTestToMainThread",
@@ -1109,8 +1127,16 @@ void WidgetInputHandlerManager::DidHandleInputEventSentToMain(
   TRACE_EVENT1("input",
                "WidgetInputHandlerManager::DidHandleInputEventSentToMain",
                "ack_state", ack_state);
-  ui::LatencyInfo::TraceIntermediateFlowEvents(
-      {latency_info}, ChromeLatencyInfo::STEP_HANDLED_INPUT_EVENT_MAIN_OR_IMPL);
+
+  int64_t trace_id = latency_info.trace_id();
+  TRACE_EVENT(
+      "input,benchmark,latencyInfo", "LatencyInfo.Flow",
+      [&](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
+        ui::LatencyInfo::FillTraceEvent(
+            ctx, trace_id,
+            ChromeLatencyInfo2::Step::STEP_HANDLED_INPUT_EVENT_MAIN_OR_IMPL);
+      });
 
   std::optional<cc::TouchAction> touch_action_for_ack = touch_action_from_main;
   if (!touch_action_for_ack.has_value()) {

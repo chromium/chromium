@@ -524,8 +524,7 @@ std::string KeySystemsImpl::GetBaseKeySystemName(
 
   const auto* key_system_info = GetKeySystemInfo(key_system);
   if (!key_system_info) {
-    NOTREACHED_IN_MIGRATION() << "Key system support should have been checked";
-    return key_system;
+    NOTREACHED() << "Key system support should have been checked";
   }
 
   return key_system_info->GetBaseKeySystemName();
@@ -543,8 +542,7 @@ bool KeySystemsImpl::ShouldUseBaseKeySystemName(
 
   const auto* key_system_info = GetKeySystemInfo(key_system);
   if (!key_system_info) {
-    NOTREACHED_IN_MIGRATION() << "Key system support should have been checked";
-    return false;
+    NOTREACHED() << "Key system support should have been checked";
   }
 
   return key_system_info->ShouldUseBaseKeySystemName();
@@ -588,8 +586,7 @@ EmeConfig::Rule KeySystemsImpl::GetContentTypeConfigRule(
   // Double check whether the key system is supported.
   const auto* key_system_info = GetKeySystemInfo(key_system);
   if (!key_system_info) {
-    NOTREACHED_IN_MIGRATION() << "Key system support should have been checked";
-    return EmeConfig::UnsupportedRule();
+    NOTREACHED() << "Key system support should have been checked";
   }
 
   // Look up the key system's supported codecs and secure codecs.

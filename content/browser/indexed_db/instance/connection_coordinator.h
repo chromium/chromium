@@ -14,8 +14,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/indexed_db/instance/bucket_context.h"
+#include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
-#include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace content::indexed_db {
 class FactoryClient;
@@ -42,7 +42,7 @@ class CONTENT_EXPORT ConnectionCoordinator {
 
   // Call this method to prune any tasks that don't want to be run during
   // force close. Returns any error caused by rolling back changes.
-  leveldb::Status PruneTasksForForceClose();
+  Status PruneTasksForForceClose();
 
   void OnConnectionClosed(Connection* connection);
 
@@ -72,8 +72,7 @@ class CONTENT_EXPORT ConnectionCoordinator {
     // There are no more tasks to run.
     kDone,
   };
-  std::tuple<ExecuteTaskResult, leveldb::Status> ExecuteTask(
-      bool has_connections);
+  std::tuple<ExecuteTaskResult, Status> ExecuteTask(bool has_connections);
 
   bool HasTasks() const { return !request_queue_.empty(); }
 

@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
 #include "content/browser/devtools/protocol/bluetooth_emulation.h"
 #include "device/bluetooth/emulation/fake_central.h"
@@ -25,7 +26,8 @@ base::flat_map<uint16_t, std::vector<uint8_t>> ToManufacturerData(
         in_manufacturer_data) {
   base::flat_map<uint16_t, std::vector<uint8_t>> out_manufacturer_data;
   for (auto& data : *in_manufacturer_data) {
-    auto span = base::span<const uint8_t>(data->GetData());
+    const auto& binary_data = data->GetData();
+    auto span = base::as_byte_span(binary_data);
     out_manufacturer_data[data->GetKey()] =
         std::vector<uint8_t>(span.begin(), span.end());
   }

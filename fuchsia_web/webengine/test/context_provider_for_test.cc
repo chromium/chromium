@@ -58,6 +58,7 @@ namespace {
                // Optional capabilities offered to web-instance.cm:
                ::component_testing::Protocol{"fuchsia.camera3.DeviceWatcher"},
                ::component_testing::Protocol{"fuchsia.media.ProfileProvider"},
+               ::component_testing::Protocol{"fuchsia.scheduler.RoleManager"},
                ::component_testing::Protocol{"fuchsia.settings.Display"},
                ::component_testing::Protocol{
                    "fuchsia.tracing.perfetto.ProducerConnector"},

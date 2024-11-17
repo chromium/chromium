@@ -9,6 +9,8 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries_impl.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_impl.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
@@ -19,10 +21,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "content/public/browser/storage_partition.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -58,7 +56,6 @@ PrivacySandboxService* PrivacySandboxServiceFactory::GetForProfile(
       GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
-// LINT.IfChange(PrivacySandboxService)
 PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
     : ProfileKeyedServiceFactory(
           "PrivacySandboxService",
@@ -78,9 +75,6 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
   DependsOn(HostContentSettingsMapFactory::GetInstance());
   DependsOn(browsing_topics::BrowsingTopicsServiceFactory::GetInstance());
   DependsOn(TrackingProtectionSettingsFactory::GetInstance());
-#if !BUILDFLAG(IS_ANDROID)
-  DependsOn(TrustSafetySentimentServiceFactory::GetInstance());
-#endif
   DependsOn(
       first_party_sets::FirstPartySetsPolicyServiceFactory::GetInstance());
 
@@ -89,14 +83,14 @@ PrivacySandboxServiceFactory::PrivacySandboxServiceFactory()
   // eligibility.
   DependsOn(tpcd::experiment::EligibilityServiceFactory::GetInstance());
 }
-// LINT.ThenChange(/chrome/browser/privacy_sandbox/privacy_sandbox_notice_service_factory.cc:PrivacySandboxNoticeService)
 
 std::unique_ptr<KeyedService>
 PrivacySandboxServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
+  static PrivacySandboxCountriesImpl countries_instance;
   return std::make_unique<PrivacySandboxServiceImpl>(
-      PrivacySandboxSettingsFactory::GetForProfile(profile),
+      profile, PrivacySandboxSettingsFactory::GetForProfile(profile),
       TrackingProtectionSettingsFactory::GetForProfile(profile),
       CookieSettingsFactory::GetForProfile(profile), profile->GetPrefs(),
       profile->GetDefaultStoragePartition()->GetInterestGroupManager(),
@@ -105,10 +99,8 @@ PrivacySandboxServiceFactory::BuildServiceInstanceForBrowserContext(
           ? profile->GetBrowsingDataRemover()
           : nullptr,
       HostContentSettingsMapFactory::GetForProfile(profile),
-#if !BUILDFLAG(IS_ANDROID)
-      TrustSafetySentimentServiceFactory::GetForProfile(profile),
-#endif
       browsing_topics::BrowsingTopicsServiceFactory::GetForProfile(profile),
       first_party_sets::FirstPartySetsPolicyServiceFactory::
-          GetForBrowserContext(context));
+          GetForBrowserContext(context),
+      &countries_instance);
 }

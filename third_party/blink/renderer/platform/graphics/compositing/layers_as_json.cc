@@ -11,7 +11,6 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
@@ -19,9 +18,7 @@ namespace blink {
 namespace {
 
 String PointerAsString(const void* ptr) {
-  WTF::TextStream ts;
-  ts << ptr;
-  return ts.Release();
+  return String::Format("%p", ptr);
 }
 
 double RoundCloseToZero(double number) {

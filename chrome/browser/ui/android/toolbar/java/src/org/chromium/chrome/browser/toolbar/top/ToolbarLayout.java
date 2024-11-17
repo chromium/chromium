@@ -15,7 +15,6 @@ import android.util.AttributeSet;
 import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -63,7 +62,6 @@ import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 import org.chromium.url.GURL;
@@ -124,28 +122,6 @@ public abstract class ToolbarLayout extends FrameLayout
         super(context, attrs);
         mDefaultTint = ThemeUtils.getThemedToolbarIconTint(getContext(), false);
         mDestroyChecker = new DestroyChecker();
-
-        addOnLayoutChangeListener(
-                new OnLayoutChangeListener() {
-                    @Override
-                    public void onLayoutChange(
-                            View view,
-                            int left,
-                            int top,
-                            int right,
-                            int bottom,
-                            int oldLeft,
-                            int oldTop,
-                            int oldRight,
-                            int oldBottom) {
-                        if (isNativeLibraryReady() && mProgressBar.getParent() != null) {
-                            mProgressBar.initializeAnimation();
-                        }
-
-                        // Since this only needs to happen once, remove this listener from the view.
-                        removeOnLayoutChangeListener(this);
-                    }
-                });
     }
 
     /**
@@ -171,16 +147,19 @@ public abstract class ToolbarLayout extends FrameLayout
             BooleanSupplier partnerHomepageEnabledSupplier,
             OfflineDownloader offlineDownloader,
             UserEducationHelper userEducationHelper,
-            ObservableSupplier<Tracker> trackerSupplier) {
+            ObservableSupplier<Tracker> trackerSupplier,
+            ToolbarProgressBar progressBar) {
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mTabSwitcherButtonCoordinator = tabSwitcherButtonCoordinator;
         mPartnerHomepageEnabledSupplier = partnerHomepageEnabledSupplier;
-        mProgressBar = createProgressBar();
+        mProgressBar = progressBar;
     }
 
-    /** @param overlay The coordinator for the texture version of the top toolbar. */
+    /**
+     * @param overlay The coordinator for the texture version of the top toolbar.
+     */
     void setOverlayCoordinator(TopToolbarOverlayCoordinator overlay) {
         mOverlayCoordinator = overlay;
         mOverlayCoordinator.setIsAndroidViewVisible(getVisibility() == View.VISIBLE);
@@ -303,22 +282,6 @@ public abstract class ToolbarLayout extends FrameLayout
 
     @Override
     public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {}
-
-    /**
-     * Set the height that the progress bar should be.
-     *
-     * @return The progress bar height in px.
-     */
-    int getProgressBarHeight() {
-        return getResources().getDimensionPixelSize(R.dimen.toolbar_progress_bar_height);
-    }
-
-    /**
-     * @return A progress bar for Chrome to use.
-     */
-    private ToolbarProgressBar createProgressBar() {
-        return new ToolbarProgressBar(getContext(), getProgressBarHeight(), this, false);
-    }
 
     /** TODO comment */
     @CallSuper
@@ -456,7 +419,6 @@ public abstract class ToolbarLayout extends FrameLayout
     /** This function handles native dependent initialization for this class. */
     protected void onNativeLibraryReady() {
         mNativeLibraryReady = true;
-        if (mProgressBar.getParent() != null) mProgressBar.initializeAnimation();
     }
 
     @Override
@@ -465,11 +427,6 @@ public abstract class ToolbarLayout extends FrameLayout
 
         mToolbarShadow = getRootView().findViewById(R.id.toolbar_hairline);
         updateShadowVisibility();
-
-        // TODO(crbug.com/40657306): lazy initialize progress bar.
-        // Posting adding progress bar can prevent parent view group from using a stale children
-        // count, which can cause a crash in rare cases.
-        post(this::addProgressBarToHierarchy);
     }
 
     /**
@@ -508,15 +465,6 @@ public abstract class ToolbarLayout extends FrameLayout
      */
     boolean isNativeLibraryReady() {
         return mNativeLibraryReady;
-    }
-
-    /** Add the toolbar's progress bar to the view hierarchy. */
-    void addProgressBarToHierarchy() {
-        ViewGroup controlContainer = (ViewGroup) getRootView().findViewById(R.id.control_container);
-        int progressBarPosition =
-                UiUtils.insertAfter(controlContainer, mProgressBar, (View) getParent());
-        assert progressBarPosition >= 0;
-        mProgressBar.setProgressBarContainer(controlContainer);
     }
 
     /**

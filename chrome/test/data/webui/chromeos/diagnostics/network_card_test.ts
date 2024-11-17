@@ -308,7 +308,7 @@ suite('networkCardTestSuite', function() {
   });
 
   test('TimerResetsOnNetworkChange', async () => {
-    await initializeNetworkCard('wifiGuidNoIpAddress', 0);
+    await initializeNetworkCard('wifiGuidNoIpAddress');
     assert(networkCardElement);
     assertEquals('wifiGuidNoIpAddress', networkCardElement.guid);
     // Timer should be in progress since this network is missing an
@@ -324,6 +324,10 @@ suite('networkCardTestSuite', function() {
 
   test('IpMissingShowsTroubleshootingAfterDelay', async () => {
     await initializeNetworkCard('wifiGuidNoIpAddress', 0);
+
+    // Wait for tasks and DOM updates to complete before making assertions.
+    // This ensures that the setTimeout callback in onNetworkStateChanged
+    // has had a chance to execute and update the DOM.
     await flushTasks();
     assertTrue(isVisible(getTroubleConnectingElement()));
     // Verify banner header and link text.

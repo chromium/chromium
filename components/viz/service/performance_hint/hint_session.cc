@@ -4,10 +4,14 @@
 
 #include "components/viz/service/performance_hint/hint_session.h"
 
+#include <string>
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/string_split.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
@@ -45,6 +49,9 @@ using pAPerformanceHint_reportActualWorkDuration =
     int (*)(APerformanceHintSession* session, int64_t actualDurationNanos);
 using pAPerformanceHint_closeSession =
     void (*)(APerformanceHintSession* session);
+using pAPerformanceHint_setThreads = int (*)(APerformanceHintSession* session,
+                                             const int32_t* threadIds,
+                                             size_t size);
 }
 
 namespace viz {
@@ -83,6 +90,11 @@ struct AdpfMethods {
     LOAD_FUNCTION(main_dl_handle, APerformanceHint_updateTargetWorkDuration);
     LOAD_FUNCTION(main_dl_handle, APerformanceHint_reportActualWorkDuration);
     LOAD_FUNCTION(main_dl_handle, APerformanceHint_closeSession);
+#if BUILDFLAG(IS_ANDROID)
+    if (android_get_device_api_level() >= __ANDROID_API_U__) {
+      LOAD_FUNCTION(main_dl_handle, APerformanceHint_setThreads);
+    }
+#endif
   }
 
   ~AdpfMethods() = default;
@@ -95,19 +107,23 @@ struct AdpfMethods {
   pAPerformanceHint_reportActualWorkDuration
       APerformanceHint_reportActualWorkDurationFn;
   pAPerformanceHint_closeSession APerformanceHint_closeSessionFn;
+  pAPerformanceHint_setThreads APerformanceHint_setThreadsFn;
 };
 
 class AdpfHintSession : public HintSession {
  public:
   AdpfHintSession(APerformanceHintSession* session,
                   HintSessionFactoryImpl* factory,
-                  base::TimeDelta target_duration);
+                  base::TimeDelta target_duration,
+                  SessionType type);
   ~AdpfHintSession() override;
 
   void UpdateTargetDuration(base::TimeDelta target_duration) override;
   void ReportCpuCompletionTime(base::TimeDelta actual_duration,
                                base::TimeTicks draw_start,
                                BoostType preferable_boost_type) override;
+  void SetThreads(
+      const base::flat_set<base::PlatformThreadId>& thread_ids) override;
 
   void WakeUp();
 
@@ -115,6 +131,7 @@ class AdpfHintSession : public HintSession {
   const raw_ptr<APerformanceHintSession> hint_session_;
   const raw_ptr<HintSessionFactoryImpl> factory_;
   base::TimeDelta target_duration_;
+  const SessionType type_;
   BoostManager boost_manager_;
 };
 
@@ -127,8 +144,12 @@ class HintSessionFactoryImpl : public HintSessionFactory {
 
   std::unique_ptr<HintSession> CreateSession(
       base::flat_set<base::PlatformThreadId> transient_thread_ids,
-      base::TimeDelta target_duration) override;
+      base::TimeDelta target_duration,
+      HintSession::SessionType type) override;
   void WakeUp() override;
+  base::flat_set<base::PlatformThreadId> GetSessionThreadIds(
+      base::flat_set<base::PlatformThreadId> transient_thread_ids,
+      HintSession::SessionType type) override;
 
  private:
   friend class AdpfHintSession;
@@ -142,10 +163,12 @@ class HintSessionFactoryImpl : public HintSessionFactory {
 
 AdpfHintSession::AdpfHintSession(APerformanceHintSession* session,
                                  HintSessionFactoryImpl* factory,
-                                 base::TimeDelta target_duration)
+                                 base::TimeDelta target_duration,
+                                 SessionType type)
     : hint_session_(session),
       factory_(factory),
-      target_duration_(target_duration) {
+      target_duration_(target_duration),
+      type_(type) {
   DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
   factory_->hint_sessions_.insert(this);
 }
@@ -162,7 +185,8 @@ void AdpfHintSession::UpdateTargetDuration(base::TimeDelta target_duration) {
     return;
   target_duration_ = target_duration;
   TRACE_EVENT_INSTANT("android.adpf", "UpdateTargetDuration",
-                      "target_duration_ms", target_duration.InMillisecondsF());
+                      "target_duration_ms", target_duration.InMillisecondsF(),
+                      "type", type_);
   AdpfMethods::Get().APerformanceHint_updateTargetWorkDurationFn(
       hint_session_, target_duration.InNanoseconds());
 }
@@ -171,6 +195,12 @@ void AdpfHintSession::ReportCpuCompletionTime(base::TimeDelta actual_duration,
                                               base::TimeTicks draw_start,
                                               BoostType preferable_boost_type) {
   DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
+  // At the moment, we don't have a good way to distinguish repeating animation
+  // work from other workloads on CrRendererMain, so we don't report any timing
+  // durations.
+  if (type_ == SessionType::kRendererMain) {
+    return;
+  }
 
   base::TimeDelta frame_duration =
       boost_manager_.GetFrameDurationAndMaybeUpdateBoostType(
@@ -180,6 +210,23 @@ void AdpfHintSession::ReportCpuCompletionTime(base::TimeDelta actual_duration,
                       "target_duration_ms", target_duration_.InMillisecondsF());
   AdpfMethods::Get().APerformanceHint_reportActualWorkDurationFn(
       hint_session_, frame_duration.InNanoseconds());
+}
+
+void AdpfHintSession::SetThreads(
+    const base::flat_set<base::PlatformThreadId>& thread_ids) {
+  DCHECK_CALLED_ON_VALID_THREAD(factory_->thread_checker_);
+  // Passing an empty list of threads to the underlying API can cause a process
+  // crash. So we have to return early.
+  if (thread_ids.empty()) {
+    TRACE_EVENT_INSTANT("android.adpf", "SkipSetThreadsNoThreads", "type",
+                        type_);
+    return;
+  }
+  std::vector<int32_t> tids(thread_ids.begin(), thread_ids.end());
+  int retval = AdpfMethods::Get().APerformanceHint_setThreadsFn(
+      hint_session_, tids.data(), tids.size());
+  TRACE_EVENT_INSTANT("android.adpf", "SetThreads", "thread_ids", thread_ids,
+                      "type", type_, "success", retval == 0);
 }
 
 void AdpfHintSession::WakeUp() {
@@ -204,30 +251,84 @@ HintSessionFactoryImpl::~HintSessionFactoryImpl() {
 
 std::unique_ptr<HintSession> HintSessionFactoryImpl::CreateSession(
     base::flat_set<base::PlatformThreadId> transient_thread_ids,
-    base::TimeDelta target_duration) {
+    base::TimeDelta target_duration,
+    HintSession::SessionType type) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  transient_thread_ids.insert(permanent_thread_ids_.cbegin(),
-                              permanent_thread_ids_.cend());
-  std::vector<int32_t> thread_ids(transient_thread_ids.begin(),
-                                  transient_thread_ids.end());
+  const auto combined_thread_ids =
+      GetSessionThreadIds(transient_thread_ids, type);
+  std::vector<int32_t> thread_ids(combined_thread_ids.begin(),
+                                  combined_thread_ids.end());
+  // Passing an empty list of threads to the underlying API can cause a process
+  // crash. So we have to return early.
+  if (thread_ids.empty()) {
+    TRACE_EVENT_INSTANT("android.adpf", "SkipCreateSessionNoThreads", "type",
+                        type);
+    return nullptr;
+  }
   APerformanceHintSession* hint_session =
       AdpfMethods::Get().APerformanceHint_createSessionFn(
           manager_, thread_ids.data(), thread_ids.size(),
           target_duration.InNanoseconds());
   if (!hint_session) {
-    TRACE_EVENT_INSTANT("android.adpf", "FailedToCreateSession");
+    TRACE_EVENT_INSTANT("android.adpf", "FailedToCreateSession", "type", type);
     return nullptr;
   }
   TRACE_EVENT_INSTANT("android.adpf", "CreateSession", "thread_ids", thread_ids,
-                      "target_duration_ms", target_duration.InMillisecondsF());
-  return std::make_unique<AdpfHintSession>(hint_session, this, target_duration);
+                      "target_duration_ms", target_duration.InMillisecondsF(),
+                      "type", type);
+  return std::make_unique<AdpfHintSession>(hint_session, this, target_duration,
+                                           type);
 }
 
 void HintSessionFactoryImpl::WakeUp() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (hint_sessions_.empty())
-    return;
-  (*hint_sessions_.begin())->WakeUp();
+  for (auto& session : hint_sessions_) {
+    session->WakeUp();
+  }
+}
+
+base::flat_set<base::PlatformThreadId>
+HintSessionFactoryImpl::GetSessionThreadIds(
+    base::flat_set<base::PlatformThreadId> transient_thread_ids,
+    HintSession::SessionType type) {
+  if (type == HintSession::SessionType::kAnimation) {
+    transient_thread_ids.insert(permanent_thread_ids_.cbegin(),
+                                permanent_thread_ids_.cend());
+  }
+  return transient_thread_ids;
+}
+
+// Returns true if Chrome should use ADPF.
+bool IsAdpfEnabled() {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableAdpf)) {
+    return false;
+  }
+  if (base::android::BuildInfo::GetInstance()->sdk_int() <
+      base::android::SDK_VERSION_S) {
+    return false;
+  }
+  if (!AdpfMethods::Get().supported) {
+    return false;
+  }
+  if (!base::FeatureList::IsEnabled(features::kAdpf)) {
+    return false;
+  }
+
+  std::string allowlist_param = features::kADPFSocManufacturerAllowlist.Get();
+  std::vector<std::string_view> allowlist = base::SplitStringPiece(
+      allowlist_param, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::string blocklist_param = features::kADPFSocManufacturerBlocklist.Get();
+  std::vector<std::string_view> blocklist = base::SplitStringPiece(
+      blocklist_param, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  std::string soc = base::SysInfo::SocManufacturer();
+  // If there's no allowlist, soc must be absent from the blocklist.
+  if (allowlist.empty()) {
+    return !base::Contains(blocklist, soc);
+  }
+  // If there's an allowlist, soc must be in the allowlist.
+  // Blocklist is ignored in this case.
+  return base::Contains(allowlist, soc);
 }
 
 }  // namespace
@@ -235,13 +336,9 @@ void HintSessionFactoryImpl::WakeUp() {
 // static
 std::unique_ptr<HintSessionFactory> HintSessionFactory::Create(
     base::flat_set<base::PlatformThreadId> permanent_thread_ids) {
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kDisableAdpf))
+  if (!IsAdpfEnabled()) {
     return nullptr;
-  if (base::android::BuildInfo::GetInstance()->sdk_int() <
-      base::android::SDK_VERSION_S)
-    return nullptr;
-  if (!AdpfMethods::Get().supported)
-    return nullptr;
+  }
 
   APerformanceHintManager* manager =
       AdpfMethods::Get().APerformanceHint_getManagerFn();
@@ -253,7 +350,8 @@ std::unique_ptr<HintSessionFactory> HintSessionFactory::Create(
   // CreateSession is allowed to return null on unsupported device. Detect this
   // at run time to avoid polluting any experiments with unsupported devices.
   {
-    auto session = factory->CreateSession({}, base::Milliseconds(10));
+    auto session = factory->CreateSession({}, base::Milliseconds(10),
+                                          HintSession::SessionType::kAnimation);
     if (!session)
       return nullptr;
   }

@@ -349,7 +349,7 @@ void MultiDeviceSetupImpl::TriggerEventForDebugging(
           kTestDeviceNameForDebugNotification);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   std::move(callback).Run(true /* success */);
@@ -412,13 +412,6 @@ bool MultiDeviceSetupImpl::AttemptSetHost(
   auto it = base::ranges::find_if(
       eligible_devices,
       [&host_instance_id_or_legacy_device_id](const auto& eligible_device) {
-        if (features::ShouldUseV1DeviceSync()) {
-          return eligible_device.instance_id() ==
-                     host_instance_id_or_legacy_device_id ||
-                 eligible_device.GetDeviceId() ==
-                     host_instance_id_or_legacy_device_id;
-        }
-
         return eligible_device.instance_id() ==
                host_instance_id_or_legacy_device_id;
       });

@@ -8,9 +8,15 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_ICON_BITMAP;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_TRANSACTION_LIMIT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.ACCOUNT_DISPLAY_NAME;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.EWALLET_DRAWABLE_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.EWALLET_ICON_BITMAP;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.EWALLET_NAME;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.EwalletProperties.ON_EWALLET_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE_ID;
@@ -20,6 +26,7 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.UNINITIALIZED;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.UI_EVENT_LISTENER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE_STATE;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.HIDDEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SHOWN;
@@ -108,6 +115,8 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
             // update the {@code view} for this property. Intentional fall-through.
         } else if (propertyKey == DISMISS_HANDLER) {
             view.setDismissHandler(model.get(DISMISS_HANDLER));
+        } else if (propertyKey == UI_EVENT_LISTENER) {
+            view.setUiEventListener(model.get(UI_EVENT_LISTENER));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -139,11 +148,10 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
     static void bindHeaderView(PropertyModel model, View view, PropertyKey propertyKey) {
         if (propertyKey == TITLE_ID) {
             TextView sheetTitleText = view.findViewById(R.id.sheet_title);
-            sheetTitleText.setText(view.getContext().getResources().getString(model.get(TITLE_ID)));
+            sheetTitleText.setText(view.getContext().getString(model.get(TITLE_ID)));
         } else if (propertyKey == DESCRIPTION_ID) {
             TextView sheetDescriptionText = view.findViewById(R.id.description_text);
-            sheetDescriptionText.setText(
-                    view.getContext().getResources().getString(model.get(DESCRIPTION_ID)));
+            sheetDescriptionText.setText(view.getContext().getString(model.get(DESCRIPTION_ID)));
         } else if (propertyKey == IMAGE_DRAWABLE_ID) {
             ImageView sheetHeaderImage = view.findViewById(R.id.branding_icon);
             sheetHeaderImage.setImageDrawable(
@@ -206,10 +214,20 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
             TextView buttonTitleText =
                     view.findViewById(R.id.facilitated_payments_continue_button_title);
             buttonTitleText.setText(R.string.autofill_payment_method_continue_button);
+        } else if (propertyKey == ON_EWALLET_CLICK_ACTION) {
+            view.setOnClickListener(unusedView -> model.get(ON_EWALLET_CLICK_ACTION).run());
+            TextView buttonTitleText =
+                    view.findViewById(R.id.facilitated_payments_continue_button_title);
+            buttonTitleText.setText(R.string.autofill_payment_method_continue_button);
         } else if (propertyKey == BANK_NAME
                 || propertyKey == BANK_ACCOUNT_SUMMARY
+                || propertyKey == BANK_ACCOUNT_TRANSACTION_LIMIT
                 || propertyKey == BANK_ACCOUNT_DRAWABLE_ID
-                || propertyKey == BANK_ACCOUNT_ICON_BITMAP) {
+                || propertyKey == BANK_ACCOUNT_ICON_BITMAP
+                || propertyKey == ACCOUNT_DISPLAY_NAME
+                || propertyKey == EWALLET_ICON_BITMAP
+                || propertyKey == EWALLET_NAME
+                || propertyKey == EWALLET_DRAWABLE_ID) {
             // Skip, because none of these changes affect the button
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
@@ -249,7 +267,7 @@ class FacilitatedPaymentsPaymentMethodsViewBinder {
     static SpannableString getSpannableStringWithClickableSpansToOpenLinks(
             Context context, int stringResourceId, Runnable callback) {
         return SpanApplier.applySpans(
-                context.getResources().getString(stringResourceId),
+                context.getString(stringResourceId),
                 new SpanApplier.SpanInfo(
                         "<link1>",
                         "</link1>",

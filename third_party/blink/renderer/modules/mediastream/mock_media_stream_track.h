@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MOCK_MEDIA_STREAM_TRACK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MOCK_MEDIA_STREAM_TRACK_H_
 
-#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
-
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 
 namespace blink {
 
@@ -38,8 +38,10 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   void SetContentHint(const String& content_hint) override {
     content_hint_ = content_hint;
   }
-  String readyState() const override { return ready_state_; }
-  void SetReadyState(const String& ready_state) { ready_state_ = ready_state; }
+  V8MediaStreamTrackState readyState() const override { return ready_state_; }
+  void SetReadyState(V8MediaStreamTrackState::Enum ready_state) {
+    ready_state_ = V8MediaStreamTrackState(ready_state);
+  }
 
   MediaTrackCapabilities* getCapabilities() const override {
     return capabilities_.Get();
@@ -160,7 +162,8 @@ class MockMediaStreamTrack : public blink::MediaStreamTrack {
   bool enabled_;
   bool muted_;
   String content_hint_;
-  String ready_state_;
+  V8MediaStreamTrackState ready_state_ =
+      V8MediaStreamTrackState(V8MediaStreamTrackState::Enum::kLive);
   Member<MediaTrackCapabilities> capabilities_;
   Member<MediaTrackConstraints> constraints_;
   Member<MediaTrackSettings> settings_;

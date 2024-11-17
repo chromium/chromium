@@ -36,7 +36,7 @@ const char kTestURL[] = "http://foo.bar";
 class NewTabPageTabHelperTest : public PlatformTest {
  protected:
   NewTabPageTabHelperTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
+    TestProfileIOS::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
@@ -44,7 +44,7 @@ class NewTabPageTabHelperTest : public PlatformTest {
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
 
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(test_cbs_builder).Build();
 
     auto fake_navigation_manager =
         std::make_unique<web::FakeNavigationManager>();
@@ -53,7 +53,7 @@ class NewTabPageTabHelperTest : public PlatformTest {
     pending_item_->SetURL(GURL(kChromeUIAboutNewTabURL));
     fake_navigation_manager->SetPendingItem(pending_item_.get());
     fake_web_state_.SetNavigationManager(std::move(fake_navigation_manager));
-    fake_web_state_.SetBrowserState(chrome_browser_state_.get());
+    fake_web_state_.SetBrowserState(profile_.get());
 
     delegate_ = OCMProtocolMock(@protocol(NewTabPageTabHelperDelegate));
   }
@@ -70,7 +70,7 @@ class NewTabPageTabHelperTest : public PlatformTest {
   id delegate_;
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<WebStateList> web_state_list_;
   FakeWebStateListDelegate web_state_list_delegate_;
   std::unique_ptr<web::NavigationItem> pending_item_;

@@ -15,6 +15,7 @@ proto_library("proto") {
     "common.proto",
     "manta.proto",
     "rpc_status.proto",
+    "scanner.proto",
     "sparky.proto",
   ]
 

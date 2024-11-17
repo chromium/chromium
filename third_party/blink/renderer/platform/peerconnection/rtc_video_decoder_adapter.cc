@@ -130,7 +130,15 @@ struct EncodedImageExternalMemory
   }
 
   const base::span<const uint8_t> Span() const override {
-    return *buffer_interface_;
+    // This cast forces span's implicit constructor to treat the provided type
+    // as reference-to-const instead of reference-to-non-const, which is
+    // necessary for `std::contiguous_range<>` to be true, since this type
+    // exposes both const and non-const `data()` methods and only the former
+    // will match the span element type.
+    // TODO(bugs.webrtc.org/9378): When the non-const `data()` method is
+    // eliminated, this cast can be removed.
+    return static_cast<const webrtc::EncodedImageBufferInterface&>(
+        *buffer_interface_);
   }
 
  private:
@@ -202,6 +210,9 @@ class RTCVideoDecoderAdapter::Impl {
        WTF::CrossThreadRepeatingFunction<void(Status)> change_status_callback,
        base::WeakPtr<Impl>& weak_this_for_client)
       : gpu_factories_(gpu_factories),
+        frame_adapter_shared_resources_(
+            base::MakeRefCounted<WebRtcVideoFrameAdapter::SharedResources>(
+                gpu_factories_)),
         change_status_callback_(std::move(change_status_callback)) {
     // This is called on webrtc decoder sequence.
     DETACH_FROM_SEQUENCE(media_sequence_checker_);
@@ -237,6 +248,8 @@ class RTCVideoDecoderAdapter::Impl {
   void OnOutput(scoped_refptr<media::VideoFrame> frame);
 
   const raw_ptr<media::GpuVideoAcceleratorFactories> gpu_factories_;
+  const scoped_refptr<WebRtcVideoFrameAdapter::SharedResources>
+      frame_adapter_shared_resources_;
 
   // Set on Initialize().
   std::unique_ptr<media::MediaLog> media_log_;
@@ -474,7 +487,7 @@ void RTCVideoDecoderAdapter::Impl::OnOutput(
       webrtc::VideoFrame::Builder()
           .set_video_frame_buffer(rtc::scoped_refptr<WebRtcVideoFrameAdapter>(
               new rtc::RefCountedObject<WebRtcVideoFrameAdapter>(
-                  std::move(frame))))
+                  std::move(frame), frame_adapter_shared_resources_)))
           .set_rtp_timestamp(static_cast<uint32_t>(timestamp.InMicroseconds()))
           .set_timestamp_us(0)
           .set_rotation(webrtc::kVideoRotation_0)

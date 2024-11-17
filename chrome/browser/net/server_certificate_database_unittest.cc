@@ -5,23 +5,18 @@
 #include "chrome/browser/net/server_certificate_database.h"
 
 #include "base/containers/span.h"
-#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/test/protobuf_matchers.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/net/server_certificate_database.pb.h"
-#include "crypto/sha2.h"
+#include "chrome/browser/net/server_certificate_database_test_util.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
 
-using ::base::test::EqualsProto;
 using chrome_browser_server_certificate_database::CertificateTrust;
-using ::testing::Matches;
 using ::testing::UnorderedElementsAre;
 
 class ServerCertificateDatabaseTest : public testing::Test {
@@ -47,26 +42,9 @@ class ServerCertificateDatabaseTest : public testing::Test {
   std::unique_ptr<ServerCertificateDatabase> database_;
 };
 
-MATCHER_P(CertInfoEquals, expected_value, "") {
-  return expected_value.get().sha256hash_hex == arg.sha256hash_hex &&
-         expected_value.get().der_cert == arg.der_cert &&
-         Matches(EqualsProto(expected_value.get().cert_metadata))(
-             arg.cert_metadata);
-}
-
-ServerCertificateDatabase::CertInformation MakeCertInfo(
-    const std::string der_cert,
-    CertificateTrust::CertificateTrustType trust_type) {
-  ServerCertificateDatabase::CertInformation cert_info;
-  cert_info.sha256hash_hex =
-      base::HexEncode(crypto::SHA256HashString(der_cert));
-  cert_info.cert_metadata.mutable_trust()->set_trust_type(trust_type);
-  cert_info.der_cert = base::ToVector(base::as_byte_span(der_cert));
-  return cert_info;
-}
-
 TEST_F(ServerCertificateDatabaseTest, StoreAndRetrieve) {
   EXPECT_TRUE(database_->RetrieveAllCertificates().empty());
+  EXPECT_EQ(database_->RetrieveCertificatesCount(), 0u);
 
   auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
 
@@ -83,6 +61,7 @@ TEST_F(ServerCertificateDatabaseTest, StoreAndRetrieve) {
       database_->RetrieveAllCertificates(),
       UnorderedElementsAre(CertInfoEquals(std::ref(root_cert_info)),
                            CertInfoEquals(std::ref(intermediate_cert_info))));
+  EXPECT_EQ(database_->RetrieveCertificatesCount(), 2u);
 
   // Reopen the database, and it should have the entries.
   database_.reset();
@@ -91,6 +70,7 @@ TEST_F(ServerCertificateDatabaseTest, StoreAndRetrieve) {
       database_->RetrieveAllCertificates(),
       UnorderedElementsAre(CertInfoEquals(std::ref(intermediate_cert_info)),
                            CertInfoEquals(std::ref(root_cert_info))));
+  EXPECT_EQ(database_->RetrieveCertificatesCount(), 2u);
 }
 
 TEST_F(ServerCertificateDatabaseTest, Update) {
@@ -121,6 +101,77 @@ TEST_F(ServerCertificateDatabaseTest, Update) {
       database_->RetrieveAllCertificates(),
       UnorderedElementsAre(CertInfoEquals(std::ref(root_cert_info)),
                            CertInfoEquals(std::ref(intermediate_cert_info))));
+}
+
+TEST_F(ServerCertificateDatabaseTest, Delete) {
+  EXPECT_TRUE(database_->RetrieveAllCertificates().empty());
+
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  ServerCertificateDatabase::CertInformation root_cert_info = MakeCertInfo(
+      root->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED);
+  ServerCertificateDatabase::CertInformation intermediate_cert_info =
+      MakeCertInfo(intermediate->GetDER(),
+                   CertificateTrust::CERTIFICATE_TRUST_TYPE_UNSPECIFIED);
+
+  EXPECT_TRUE(database_->InsertOrUpdateCert(root_cert_info));
+  EXPECT_TRUE(database_->InsertOrUpdateCert(intermediate_cert_info));
+
+  EXPECT_THAT(
+      database_->RetrieveAllCertificates(),
+      UnorderedElementsAre(CertInfoEquals(std::ref(root_cert_info)),
+                           CertInfoEquals(std::ref(intermediate_cert_info))));
+
+  EXPECT_TRUE(
+      database_->DeleteCertificate(intermediate_cert_info.sha256hash_hex));
+
+  EXPECT_THAT(database_->RetrieveAllCertificates(),
+              UnorderedElementsAre(CertInfoEquals(std::ref(root_cert_info))));
+
+  // Trying to delete a certificate hash that doesn't exist in the database
+  // should return false.
+  EXPECT_FALSE(
+      database_->DeleteCertificate(intermediate_cert_info.sha256hash_hex));
+}
+
+TEST(ServerCertificateDatabaseTrustTest, TestTrustMappings) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+
+  EXPECT_EQ(bssl::CertificateTrustType::UNSPECIFIED,
+            ServerCertificateDatabase::GetUserCertificateTrust(MakeCertInfo(
+                intermediate->GetDER(),
+                CertificateTrust::CERTIFICATE_TRUST_TYPE_UNSPECIFIED)));
+
+  EXPECT_EQ(bssl::CertificateTrustType::DISTRUSTED,
+            ServerCertificateDatabase::GetUserCertificateTrust(MakeCertInfo(
+                root->GetDER(),
+                CertificateTrust::CERTIFICATE_TRUST_TYPE_DISTRUSTED)));
+
+  EXPECT_EQ(bssl::CertificateTrustType::TRUSTED_ANCHOR,
+            ServerCertificateDatabase::GetUserCertificateTrust(MakeCertInfo(
+                intermediate->GetDER(),
+                CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED)));
+
+  EXPECT_EQ(
+      bssl::CertificateTrustType::TRUSTED_LEAF,
+      ServerCertificateDatabase::GetUserCertificateTrust(MakeCertInfo(
+          leaf->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED)));
+
+  leaf->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
+  EXPECT_EQ(
+      bssl::CertificateTrustType::TRUSTED_ANCHOR_OR_LEAF,
+      ServerCertificateDatabase::GetUserCertificateTrust(MakeCertInfo(
+          leaf->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED)));
+
+  EXPECT_EQ(
+      bssl::CertificateTrustType::TRUSTED_ANCHOR,
+      ServerCertificateDatabase::GetUserCertificateTrust(MakeCertInfo(
+          root->GetDER(), CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED)));
+
+  EXPECT_EQ(
+      std::nullopt,
+      ServerCertificateDatabase::GetUserCertificateTrust(MakeCertInfo(
+          "invalidcertder", CertificateTrust::CERTIFICATE_TRUST_TYPE_TRUSTED)));
 }
 
 }  // namespace net

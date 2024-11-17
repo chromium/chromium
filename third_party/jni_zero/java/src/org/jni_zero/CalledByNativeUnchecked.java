@@ -21,6 +21,7 @@ import java.lang.annotation.Target;
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.CLASS)
+@UsedReflectively
 public @interface CalledByNativeUnchecked {
     /*
      *  If present, tells which inner class the method belongs to.

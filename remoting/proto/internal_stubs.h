@@ -64,7 +64,7 @@ extern const std::string& GetHostId(const ProvisionCorpMachineResponse&);
 using ReportProvisioningErrorRequest = DoNothingProto;
 extern std::string GetReportProvisioningErrorRequestPath();
 extern std::unique_ptr<ReportProvisioningErrorRequest>
-GetReportProvisioningErrorRequest(const std::string& host_id,
+GetReportProvisioningErrorRequest(const std::string& directory_id,
                                   const std::string& error_message,
                                   const std::string& version);
 
@@ -72,13 +72,18 @@ GetReportProvisioningErrorRequest(const std::string& host_id,
 using SendHeartbeatRequest = DoNothingProto;
 extern std::string GetSendHeartbeatRequestPath();
 extern std::unique_ptr<SendHeartbeatRequest> GetSendHeartbeatRequest(
-    const std::string& host_id);
+    const std::string& directory_id);
 
 // UpdateRemoteAccessHost
 using UpdateRemoteAccessHostRequest = DoNothingProto;
 extern std::string GetUpdateRemoteAccessHostRequestPath();
 extern std::unique_ptr<UpdateRemoteAccessHostRequest>
-GetUpdateRemoteAccessHostRequest(const std::string& host_id);
+GetUpdateRemoteAccessHostRequest(const std::string& directory_id,
+                                 std::optional<std::string> host_version,
+                                 std::optional<std::string> signaling_id,
+                                 std::optional<std::string> offline_reason,
+                                 std::optional<std::string> os_name,
+                                 std::optional<std::string> os_version);
 
 // ===========================
 // SessionAuthzService helpers

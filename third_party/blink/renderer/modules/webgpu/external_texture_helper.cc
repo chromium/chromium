@@ -42,7 +42,7 @@ wgpu::ExternalTextureRotation FromVideoRotation(media::VideoRotation rotation) {
     case media::VIDEO_ROTATION_270:
       return wgpu::ExternalTextureRotation::Rotate270Degrees;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // TODO(crbug.com/40227105): Support HDR color space and color range in
@@ -241,18 +241,39 @@ ExternalTexture CreateExternalTexture(
 
   wgpu::ExternalTextureDescriptor external_texture_desc = {};
 
-  // Set ExternalTexture visibleSize and visibleOrigin. 0-copy path
+  // Set the ExternalTexture cropSize/Origin and apparentSize. The 0-copy path
   // uses this metadata.
   gfx::Rect visible_rect = media_video_frame->visible_rect();
+  gfx::Size natural_size = media_video_frame->natural_size();
   DCHECK(visible_rect.x() >= 0 && visible_rect.y() >= 0 &&
          visible_rect.width() >= 0 && visible_rect.height() >= 0);
+  DCHECK(natural_size.width() >= 0 && natural_size.height() >= 0);
 
+  // TODO(377574981): Remove once Dawn starts using cropSize/Origin and
+  // apparentSize;
   external_texture_desc.visibleOrigin = {
       static_cast<uint32_t>(visible_rect.x()),
       static_cast<uint32_t>(visible_rect.y())};
   external_texture_desc.visibleSize = {
       static_cast<uint32_t>(visible_rect.width()),
       static_cast<uint32_t>(visible_rect.height())};
+
+  // The visible_rect denotes the part of the coded image that's visible when
+  // displaying the frame. For Dawn it is considered as a crop rectangle applied
+  // in plane0 (and adapted for plane1 if present).
+  external_texture_desc.cropOrigin = {static_cast<uint32_t>(visible_rect.x()),
+                                      static_cast<uint32_t>(visible_rect.y())};
+  external_texture_desc.cropSize = {
+      static_cast<uint32_t>(visible_rect.width()),
+      static_cast<uint32_t>(visible_rect.height())};
+
+  // The natural_size is shown as VideoFrame.displayWidth/Height in JS and
+  // WebGPU requires that the imported GPUExternalTexture appears to be that
+  // size when used in WGSL. It is the apparent size of the texture from the
+  // perspective of the WGSL author.
+  external_texture_desc.apparentSize = {
+      static_cast<uint32_t>(natural_size.width()),
+      static_cast<uint32_t>(natural_size.height())};
 
   // Set ExternalTexture rotation and mirrored state.
   const media::VideoFrameMetadata& metadata = media_video_frame->metadata();
@@ -263,7 +284,7 @@ ExternalTexture CreateExternalTexture(
   }
 
   const bool zero_copy =
-      (media_video_frame->HasTextures() &&
+      (media_video_frame->HasSharedImage() &&
        (media_video_frame->format() == media::PIXEL_FORMAT_NV12) &&
        device_support_zero_copy &&
        media_video_frame->metadata().is_webgpu_compatible &&
@@ -348,10 +369,13 @@ ExternalTexture CreateExternalTexture(
   // However, the formats this path supports are quite limited. Check whether
   // the current video frame could be uploaded through this one copy upload
   // path. If not, fallback to DrawVideoFrameIntoResourceProvider().
+  // CopyVideoFrameToSharedImage also doesn't support rescaling the image so we
+  // cannot use it if the visible_rect isn't the same size as natural_size.
   // TODO(crbug.com/327270287): Expand CopyVideoFrameToSharedImage() to
   // support all valid video frame formats and remove the draw path.
   bool use_copy_to_shared_image =
-      video_renderer->CanUseCopyVideoFrameToSharedImage(*media_video_frame);
+      video_renderer->CanUseCopyVideoFrameToSharedImage(*media_video_frame) &&
+      visible_rect.size() == natural_size;
 
   // Get a recyclable resource for producing WebGPU-compatible shared images.
   // The recyclable resource's color space is the same as source color space
@@ -371,8 +395,8 @@ ExternalTexture CreateExternalTexture(
 
   std::unique_ptr<RecyclableCanvasResource> recyclable_canvas_resource =
       device->GetDawnControlClient()->GetOrCreateCanvasResource(
-          SkImageInfo::MakeN32Premul(visible_rect.width(),
-                                     visible_rect.height(),
+          SkImageInfo::MakeN32Premul(natural_size.width(),
+                                     natural_size.height(),
                                      resource_color_space.ToSkColorSpace()));
   if (!recyclable_canvas_resource) {
     return external_texture;
@@ -402,7 +426,7 @@ ExternalTexture CreateExternalTexture(
         raster_context_provider, std::move(media_video_frame), dst_mailbox,
         /*use_visible_rect=*/true);
   } else {
-    const gfx::Rect dest_rect = media_video_frame->visible_rect();
+    const gfx::Rect dest_rect = gfx::Rect(media_video_frame->natural_size());
     // Delegate video transformation to Dawn.
     if (!DrawVideoFrameIntoResourceProvider(
             std::move(media_video_frame), resource_provider,

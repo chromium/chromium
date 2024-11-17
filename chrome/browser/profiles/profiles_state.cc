@@ -39,7 +39,7 @@
 #include "chrome/browser/ui/browser.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -48,10 +48,6 @@
 #include "chrome/browser/profiles/gaia_info_update_service.h"
 #include "chrome/browser/profiles/gaia_info_update_service_factory.h"
 #include "components/signin/public/base/signin_pref_names.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
 #endif
 
 namespace profiles {
@@ -89,12 +85,10 @@ void RegisterPrefs(PrefRegistrySimple* registry) {
       prefs::kBrowserProfilePickerAvailabilityOnStartup,
       static_cast<int>(ProfilePicker::AvailabilityOnStartup::kEnabled));
   registry->RegisterBooleanPref(prefs::kBrowserProfilePickerShown, false);
-#if BUILDFLAG(IS_CHROMEOS)
-  registry->RegisterBooleanPref(prefs::kLacrosSecondaryProfilesAllowed, true);
-#elif !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   registry->RegisterBooleanPref(
       prefs::kEnterpriseProfileCreationKeepBrowsingData, false);
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 }
 
 void SetLastUsedProfile(const base::FilePath& profile_dir) {
@@ -160,7 +154,7 @@ std::u16string GetAvatarNameForProfile(const base::FilePath& profile_path) {
   return email.empty() ? profile_name_to_display : email;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void UpdateProfileName(Profile* profile,
                        const std::u16string& new_profile_name) {
   ProfileAttributesEntry* entry =
@@ -185,7 +179,7 @@ void UpdateProfileName(Profile* profile,
                           base::UTF16ToUTF8(new_profile_name));
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 bool IsRegularOrGuestSession(Browser* browser) {
   Profile* profile = browser->profile();
@@ -215,11 +209,6 @@ bool IsGuestModeRequested(const base::CommandLine& command_line,
 }
 
 bool IsProfileCreationAllowed() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!AreSecondaryProfilesAllowed())
-    return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   const PrefService* const pref_service = g_browser_process->local_state();
   DCHECK(pref_service);
   return pref_service->GetBoolean(prefs::kBrowserAddPersonEnabled);
@@ -227,12 +216,6 @@ bool IsProfileCreationAllowed() {
 
 // Whether guest mode is globally disabled (for all entry points and users).
 bool IsGuestModeGloballyDisabledInternal() {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!AreSecondaryProfilesAllowed()) {
-    return true;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
   const PrefService* const pref_service = g_browser_process->local_state();
   DCHECK(pref_service);
   return !pref_service->GetBoolean(prefs::kBrowserGuestModeEnabled);
@@ -250,7 +233,10 @@ bool IsGuestModeEnabled() {
       base::ranges::any_of(g_browser_process->profile_manager()
                                ->GetProfileAttributesStorage()
                                .GetAllProfilesAttributes(),
-                           &ProfileAttributesEntry::IsSupervised)) {
+                           [](const ProfileAttributesEntry* entry) {
+                             return entry->IsSupervised() &&
+                                    !entry->IsOmitted();
+                           })) {
     return false;
   }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -275,16 +261,6 @@ bool IsGuestModeEnabled(const Profile& profile) {
   return !IsGuestModeGloballyDisabledInternal();
 }
 
-#if BUILDFLAG(IS_CHROMEOS)
-bool AreSecondaryProfilesAllowed() {
-  const PrefService* const pref_service = g_browser_process->local_state();
-  DCHECK(pref_service);
-  // This Lacros policy is used on Ash, as it impacts the Ash UI where the user
-  // can launch Lacros Guest mode window.
-  return pref_service->GetBoolean(prefs::kLacrosSecondaryProfilesAllowed);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 bool IsProfileLocked(const base::FilePath& profile_path) {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
@@ -297,7 +273,7 @@ bool IsProfileLocked(const base::FilePath& profile_path) {
   return entry->IsSigninRequired();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 void UpdateGaiaProfileInfoIfNeeded(Profile* profile) {
   DCHECK(profile);
 
@@ -308,7 +284,7 @@ void UpdateGaiaProfileInfoIfNeeded(Profile* profile) {
     service->UpdatePrimaryAccount();
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
   // The BrowsingDataRemover relies on many objects that aren't created in unit
@@ -330,7 +306,7 @@ void RemoveBrowsingDataForProfile(const base::FilePath& profile_path) {
 }
 
 bool IsDemoSession() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return ash::DemoSession::IsDeviceInDemoMode();
 #else
   return false;
@@ -338,36 +314,14 @@ bool IsDemoSession() {
 }
 
 bool IsChromeAppKioskSession() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return user_manager::UserManager::Get()->IsLoggedInAsKioskApp();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  crosapi::mojom::SessionType session_type =
-      chromeos::BrowserParamsProxy::Get()->SessionType();
-  return session_type == crosapi::mojom::SessionType::kAppKioskSession;
 #else
   return false;
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool IsWebKioskSession() {
-  crosapi::mojom::SessionType session_type =
-      chromeos::BrowserParamsProxy::Get()->SessionType();
-  return session_type == crosapi::mojom::SessionType::kWebKioskSession;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Implemented to have the same logic as user_manager::User::HasGaiaAccount()
-bool SessionHasGaiaAccount() {
-  crosapi::mojom::SessionType session_type =
-      chromeos::BrowserParamsProxy::Get()->SessionType();
-  return session_type == crosapi::mojom::SessionType::kRegularSession ||
-         session_type == crosapi::mojom::SessionType::kChildSession;
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 std::u16string GetDefaultNameForNewEnterpriseProfile(
     const std::string& hosted_domain) {
   if (AccountInfo::IsManaged(hosted_domain)) {
@@ -402,7 +356,7 @@ std::u16string GetDefaultNameForNewSignedInProfileWithIncompleteInfo(
   CHECK(!account_info.email.empty());
   return base::UTF8ToUTF16(account_info.email);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 

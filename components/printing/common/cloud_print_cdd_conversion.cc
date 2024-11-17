@@ -41,9 +41,8 @@ printer::DuplexType ToCloudDuplexType(printing::mojom::DuplexMode mode) {
     case printing::mojom::DuplexMode::kShortEdge:
       return printer::DuplexType::SHORT_EDGE;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return printer::DuplexType::NO_DUPLEX;
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -59,9 +58,8 @@ printer::TypedValueVendorCapability::ValueType ToCloudValueType(
     case printing::AdvancedCapability::Type::kString:
       return printer::TypedValueVendorCapability::ValueType::STRING;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return printer::TypedValueVendorCapability::ValueType::STRING;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
@@ -141,6 +140,19 @@ gfx::Rect FakeTextInputClient::GetSelectionBoundingBox() const {
   return {};
 }
 
+#if BUILDFLAG(IS_WIN)
+std::optional<gfx::Rect> FakeTextInputClient::GetProximateCharacterBounds(
+    const gfx::Range& range) const {
+  return std::nullopt;
+}
+
+std::optional<size_t> FakeTextInputClient::GetProximateCharacterIndexFromPoint(
+    const gfx::Point& point,
+    IndexFromPointFlags flags) const {
+  return std::nullopt;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 bool FakeTextInputClient::GetCompositionCharacterBounds(size_t index,
                                                         gfx::Rect* rect) const {
   return false;
@@ -247,6 +259,11 @@ bool FakeTextInputClient::SetAutocorrectRange(const gfx::Range& range) {
 void FakeTextInputClient::GetActiveTextInputControlLayoutBounds(
     std::optional<gfx::Rect>* control_bounds,
     std::optional<gfx::Rect>* selection_bounds) {}
+
+ui::TextInputClient::EditingContext
+FakeTextInputClient::GetTextEditingContext() {
+  return EditingContext{.page_url = url_};
+}
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -254,13 +271,6 @@ void FakeTextInputClient::SetActiveCompositionForAccessibility(
     const gfx::Range& range,
     const std::u16string& active_composition_text,
     bool is_composition_committed) {}
-#endif
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
-ui::TextInputClient::EditingContext
-FakeTextInputClient::GetTextEditingContext() {
-  return EditingContext{.page_url = url_};
-}
 #endif
 
 }  // namespace ui

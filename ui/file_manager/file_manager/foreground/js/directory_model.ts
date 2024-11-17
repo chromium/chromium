@@ -16,7 +16,7 @@ import {isDlpEnabled, isDriveFsBulkPinningEnabled, isSkyvaultV2Enabled} from '..
 import {recordMediumCount} from '../../common/js/metrics.js';
 import {getEntryLabel} from '../../common/js/translations.js';
 import {testSendMessage} from '../../common/js/util.js';
-import {FileSystemType, getVolumeTypeFromRootType, isNative, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
+import {getVolumeTypeFromRootType, isNative, RootType, Source, VolumeType} from '../../common/js/volume_manager_types.js';
 import {getMyFiles} from '../../state/ducks/all_entries.js';
 import {changeDirectory} from '../../state/ducks/current_directory.js';
 import {clearSearch, getDefaultSearchOptions, updateSearch} from '../../state/ducks/search.js';
@@ -390,14 +390,6 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
    */
   isOnDrive(): boolean {
     return this.isCurrentRootVolumeType_(VolumeType.DRIVE);
-  }
-
-  /**
-   * @return True if the current volume is provided by FuseBox.
-   */
-  isOnFuseBox(): boolean {
-    const info = this.getCurrentVolumeInfo();
-    return info ? info.diskFileSystemType === FileSystemType.FUSEBOX : false;
   }
 
   /**
@@ -1514,18 +1506,6 @@ export class DirectoryModel extends FilesEventTarget<DirectoryModelEventMap> {
       if (isSameEntry(currentDir, volume.prefixEntry)) {
         this.rescan(false);
         break;
-      }
-    }
-
-    // If the current directory is the Drive placeholder and the real Drive is
-    // mounted, switch to it.
-    if (this.getCurrentRootType() === RootType.DRIVE_FAKE_ROOT) {
-      for (const newVolume of spliceEventDetail.added) {
-        if (newVolume.volumeType === VolumeType.DRIVE) {
-          newVolume.resolveDisplayRoot().then((displayRoot: DirectoryEntry) => {
-            this.changeDirectoryEntry(displayRoot);
-          });
-        }
       }
     }
 

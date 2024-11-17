@@ -67,10 +67,6 @@ class CORE_EXPORT HTMLTableCellElement final : public HTMLTablePartElement {
 };
 
 template <>
-inline bool IsElementOfType<const HTMLTableCellElement>(const Node& node) {
-  return IsA<HTMLTableCellElement>(node);
-}
-template <>
 struct DowncastTraits<HTMLTableCellElement> {
   static bool AllowFrom(const Node& node) {
     auto* html_element = DynamicTo<HTMLElement>(node);

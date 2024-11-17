@@ -13,7 +13,6 @@
 // Since cc is used from the render process, anything that goes here also needs
 // to be added to render_process_host_impl.cc.
 
-namespace cc {
 namespace switches {
 
 // Switches for the renderer compositor only.
@@ -70,6 +69,5 @@ CC_BASE_EXPORT extern const char kCCLayerTreeTestLongTimeout[];
 CC_BASE_EXPORT extern const char kCCScrollAnimationDurationForTesting[];
 
 }  // namespace switches
-}  // namespace cc
 
 #endif  // CC_BASE_SWITCHES_H_

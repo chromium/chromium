@@ -17,6 +17,9 @@ import UIKit
   // The unique ID for WebState's snapshot.
   let snapshotID: SnapshotIDWrapper
 
+  // The timestamp associated to the latest snapshot stored.
+  private var latestCommitedTimestamp: Date = .distantPast
+
   // Designated initializer.
   init(generator: SnapshotGenerator, snapshotID: SnapshotIDWrapper) {
     assert(snapshotID.valid(), "snapshot ID should be valid")
@@ -54,10 +57,15 @@ import UIKit
   // snapshot image.
   func updateSnapshot(completion: ((UIImage?) -> Void)?) {
     weak var weakSelf = self
+
+    // Since the snapshotting strategy may change, the order of snapshot updates
+    // cannot be guaranteed. To prevent older snapshots from overwriting newer
+    // ones, the timestamp of each snapshot request is recorded.
+    let timestamp: Date = .now
     let wrappedCompletion: (UIImage?) -> Void = { image in
       // Update the snapshot storage with the latest snapshot. The old image is deleted if `image`
       // is nil.
-      weakSelf?.updateSnapshotStorage(image: image)
+      weakSelf?.updateSnapshotStorage(image: image, timestamp: timestamp)
 
       // Callback is called if it exists.
       completion?(image)
@@ -83,13 +91,31 @@ import UIKit
     snapshotGenerator.delegate = delegate
   }
 
-  // Updates the snapshot storage with `snapshot`. Removes any stale snapshot when `image` is nil.
-  private func updateSnapshotStorage(image: UIImage?) {
-    if let image = image {
-      snapshotStorage?.setImage(image, snapshotID: snapshotID)
-    } else {
-      snapshotStorage?.removeImage(snapshotID: snapshotID)
+  // Updates the snapshot storage with `image`.
+  func updateSnapshotStorage(image: UIImage?) {
+    // This method is bridging into Objective-C and cannot have a default value
+    // for timestamp. For this reason, fallback to clasic method overloading
+    // approach.
+    updateSnapshotStorage(image: image, timestamp: .now)
+  }
+
+  /// Updates the snapshot storage with the provided image.
+  ///
+  /// - Parameters:
+  ///   - image: The image to store as a snapshot. If `nil`, any existing
+  ///   snapshot is removed.
+  ///   - timestamp: The timestamp of when the snapshot was taken. If the
+  ///    timestamp is earlier than the last commited one this method is NO-OP.
+  private func updateSnapshotStorage(image: UIImage?, timestamp: Date) {
+    guard let image = image else {
+      latestCommitedTimestamp = .distantPast
+      return
     }
+
+    guard timestamp > latestCommitedTimestamp else { return }
+
+    latestCommitedTimestamp = timestamp
+    snapshotStorage?.setImage(image, snapshotID: snapshotID)
   }
 
   // Helper method used to retrieve a grey snapshot.

@@ -10,6 +10,7 @@
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/content/browser/bad_message.h"
@@ -230,28 +231,34 @@ void ContentPasswordManagerDriver::FocusNextFieldAfterPasswords() {
   GetPasswordGenerationAgent()->FocusNextFieldAfterPasswords();
 }
 
-void ContentPasswordManagerDriver::FillField(const std::u16string& value) {
+void ContentPasswordManagerDriver::FillField(
+    const std::u16string& value,
+    autofill::AutofillSuggestionTriggerSource suggestion_source) {
   if (const auto& agent = GetPasswordAutofillAgent()) {
     LogFilledFieldType();
-    agent->FillField(last_triggering_field_id_, value);
+    agent->FillField(last_triggering_field_id_, value, suggestion_source);
   }
 }
 
 void ContentPasswordManagerDriver::FillSuggestion(
     const std::u16string& username,
-    const std::u16string& password) {
+    const std::u16string& password,
+    base::OnceCallback<void(bool)> success_callback) {
   LogFilledFieldType();
-  GetPasswordAutofillAgent()->FillPasswordSuggestion(username, password);
+  GetPasswordAutofillAgent()->FillPasswordSuggestion(
+      username, password, std::move(success_callback));
 }
 
 void ContentPasswordManagerDriver::FillSuggestionById(
     autofill::FieldRendererId username_element_id,
     autofill::FieldRendererId password_element_id,
     const std::u16string& username,
-    const std::u16string& password) {
+    const std::u16string& password,
+    autofill::AutofillSuggestionTriggerSource suggestion_source) {
   LogFilledFieldType();
   GetPasswordAutofillAgent()->FillPasswordSuggestionById(
-      username_element_id, password_element_id, username, password);
+      username_element_id, password_element_id, username, password,
+      suggestion_source);
 }
 
 void ContentPasswordManagerDriver::FillIntoFocusedField(
@@ -367,13 +374,10 @@ void ContentPasswordManagerDriver::GeneratePassword(
 
 bool ContentPasswordManagerDriver::IsPasswordFieldForPasswordManager(
     autofill::FieldRendererId field_renderer_id,
-    const content::ContextMenuParams& params) {
-  if (params.form_control_type ==
-          blink::mojom::FormControlType::kInputPassword ||
-      params.is_password_type_by_heuristics) {
+    std::optional<blink::mojom::FormControlType> form_control_type) {
+  if (form_control_type == blink::mojom::FormControlType::kInputPassword) {
     return true;
   }
-
   password_manager::PasswordGenerationFrameHelper*
       password_generation_frame_helper = GetPasswordGenerationHelper();
   if (!password_generation_frame_helper) {

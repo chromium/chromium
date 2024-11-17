@@ -16,6 +16,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/dialog_model.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -252,10 +253,9 @@ void SiteDataRowView::OnMenuIconClicked() {
       dialog_model_.get(), views::MenuRunner::HAS_MNEMONICS,
       base::BindRepeating(&SiteDataRowView::OnMenuClosed,
                           base::Unretained(this)));
-  menu_runner_->RunMenuAt(GetWidget(), nullptr,
-                          menu_button_->GetAnchorBoundsInScreen(),
-                          views::MenuAnchorPosition::kTopRight,
-                          ui::MenuSourceType::MENU_SOURCE_MOUSE);
+  menu_runner_->RunMenuAt(
+      GetWidget(), nullptr, menu_button_->GetAnchorBoundsInScreen(),
+      views::MenuAnchorPosition::kTopRight, ui::mojom::MenuSourceType::kMouse);
   menu_button_->SetState(views::Button::ButtonState::STATE_PRESSED);
 }
 

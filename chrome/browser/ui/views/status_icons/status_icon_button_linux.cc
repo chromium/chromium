@@ -11,12 +11,14 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/wm_role_names_linux.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/ozone/public/ozone_platform.h"
 
 namespace {
 
@@ -52,6 +54,12 @@ void StatusIconButtonLinux::UpdatePlatformContextMenu(ui::MenuModel* model) {
 }
 
 void StatusIconButtonLinux::OnSetDelegate() {
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformRuntimeProperties()
+           .supports_system_tray_windowing) {
+    return;
+  }
+
   widget_ = std::make_unique<StatusIconWidget>();
 
   const int width = std::max(1, delegate_->GetImage().width());
@@ -95,7 +103,7 @@ void StatusIconButtonLinux::OnSetDelegate() {
 void StatusIconButtonLinux::ShowContextMenuForViewImpl(
     View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   ui::MenuModel* menu = delegate_->GetMenuModel();
   if (!menu) {
     return;

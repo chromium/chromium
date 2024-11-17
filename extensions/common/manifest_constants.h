@@ -13,6 +13,18 @@ namespace extensions {
 // Keys used in JSON representation of extensions.
 namespace manifest_keys {
 
+// A list of keys that do not generate warnings when specified in the manifest,
+// despite the fact that they are not recognized by Chrome. Keys should be
+// added here if they are widely adopted but a developer is unlikely to expect
+// that it would do anything in Chrome, and so wouldn't benefit from a warning.
+inline constexpr const char* const kIgnoredUnrecognizedKeys[] = {
+    // This is used by non-Chromium browsers:
+    // https://developer.mozilla.org/docs/Mozilla/Add-ons/WebExtensions/manifest.json/browser_specific_settings
+    "browser_specific_settings",
+    // This is part of the JSON schema definition:
+    // https://json-schema.org/understanding-json-schema/reference/schema#schema
+    "$schema"};
+
 inline constexpr char kAboutPage[] = "about_page";
 inline constexpr char kAction[] = "action";
 inline constexpr char kActionDefaultIcon[] = "default_icon";
@@ -171,8 +183,6 @@ inline constexpr char kFileSystemProviderCapabilities[] =
     "file_system_provider_capabilities";
 inline constexpr char kActionHandlers[] = "action_handlers";
 inline constexpr char kActionHandlerActionKey[] = "action";
-inline constexpr char kActionHandlerEnabledOnLockScreenKey[] =
-    "enabled_on_lock_screen";
 #endif
 
 }  // namespace manifest_keys
@@ -711,6 +721,7 @@ inline constexpr char16_t kOneUISurfaceOnly[] =
     u"Only one of 'browser_action', 'page_action', and 'app' can be specified.";
 inline constexpr char kPageCaptureNeeded[] =
     "'pageCapture' permission is required.";
+inline constexpr char kPatternMalformed[] = "URL pattern '*' is malformed.";
 inline constexpr char kPermissionCannotBeOptional[] =
     "Permission '*' cannot be listed as optional. This permission will be "
     "omitted.";
@@ -719,6 +730,7 @@ inline constexpr char kPermissionMarkedOptionalAndRequired[] =
     "this permission will be omitted.";
 inline constexpr char kPermissionNotAllowed[] =
     "Access to permission '*' denied.";
+inline constexpr char kPermissionUnknown[] = "Permission '*' is unknown.";
 inline constexpr char kPermissionUnknownOrMalformed[] =
     "Permission '*' is unknown or URL pattern is malformed.";
 inline constexpr char kPluginsRequirementDeprecated[] =

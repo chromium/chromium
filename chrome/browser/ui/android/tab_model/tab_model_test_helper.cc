@@ -49,7 +49,11 @@ bool TestTabModel::IsSessionRestoreInProgress() const {
 }
 
 bool TestTabModel::IsActiveModel() const {
-  return false;
+  return is_active_;
+}
+
+void TestTabModel::SetIsActiveModel(bool is_active) {
+  is_active_ = is_active;
 }
 
 TabAndroid* TestTabModel::GetTabAt(int index) const {

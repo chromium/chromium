@@ -108,6 +108,7 @@ struct BrowserContextFactoryDependencies {
 template <typename T>
 class BrowserContextKeyedAPIFactory : public BrowserContextKeyedServiceFactory {
  public:
+  using PassKey = base::PassKey<BrowserContextKeyedAPIFactory<T>>;
   static T* Get(content::BrowserContext* context) {
     return static_cast<T*>(
         T::GetFactoryInstance()->GetServiceForBrowserContext(context, true));
@@ -149,21 +150,33 @@ class BrowserContextKeyedAPIFactory : public BrowserContextKeyedServiceFactory {
   }
 
   // BrowserContextKeyedServiceFactory implementation.
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
+      content::BrowserContext* context) const override {
+    // Use `WrapUnique()` because `T` constructor is not always public,
+    // so `make_unique` would not work.
+    return base::WrapUnique(BuildServiceInstanceFor(context));
+  }
+
+  // BrowserContextKeyedServiceFactory implementation.
   // These can be effectively overridden with template specializations.
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override {
-    if (T::kServiceRedirectedInIncognito) {
-      return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-          context, T::kServiceIsCreatedInGuestMode);
+    // The GetContext...() implementations below treat guest sessions like
+    // normal ones, so explicitly exclude guest sessions here if necessary.
+    auto* const client = ExtensionsBrowserClient::Get();
+    if constexpr (!T::kServiceIsCreatedInGuestMode) {
+      if (client->IsGuestSession(context)) {
+        return nullptr;
+      }
     }
 
-    if (T::kServiceHasOwnInstanceInIncognito) {
-      return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
-          context, T::kServiceIsCreatedInGuestMode);
+    if constexpr (T::kServiceRedirectedInIncognito) {
+      return client->GetContextRedirectedToOriginal(context);
+    } else if constexpr (T::kServiceHasOwnInstanceInIncognito) {
+      return client->GetContextOwnInstance(context);
+    } else {
+      return client->GetContextForOriginalOnly(context);
     }
-
-    return ExtensionsBrowserClient::Get()->GetContextForOriginalOnly(
-        context, T::kServiceIsCreatedInGuestMode);
   }
 
   bool ServiceIsCreatedWithBrowserContext() const override {

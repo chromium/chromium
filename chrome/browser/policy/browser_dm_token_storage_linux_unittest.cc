@@ -26,14 +26,17 @@ namespace policy {
 namespace {
 
 const char kDmTokenBaseDir[] = FILE_PATH_LITERAL("Policy/Enrollment/");
-const char kEnrollmentTokenFilename[] =
-    FILE_PATH_LITERAL("enrollment/CloudManagementEnrollmentToken");
 
 const char kMachineId[] = "a1254c624234b270985170c3549725f1";
 const char kExpectedClientId[] =
     "JXduKRDItaY72B6vHikFl9U95m8";  // Corresponds to kMachineId.
-const char kEnrollmentToken[] = "fake-enrollment-token";
 const char kDMToken[] = "fake-dm-token";
+
+#if !BUILDFLAG(IS_CHROMEOS)
+const char kEnrollmentTokenFilename[] =
+    FILE_PATH_LITERAL("enrollment/CloudManagementEnrollmentToken");
+const char kEnrollmentToken[] = "fake-enrollment-token";
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -53,6 +56,10 @@ TEST_F(BrowserDMTokenStorageLinuxTest, InitClientId) {
 }
 
 TEST_F(BrowserDMTokenStorageLinuxTest, InitEnrollmentToken) {
+#if BUILDFLAG(IS_CHROMEOS)
+  MockBrowserDMTokenStorageLinux storage;
+  EXPECT_EQ(std::string(), storage.InitEnrollmentToken());
+#else
   std::unique_ptr<base::ScopedPathOverride> path_override;
   base::ScopedTempDir fake_policy_dir;
 
@@ -73,6 +80,7 @@ TEST_F(BrowserDMTokenStorageLinuxTest, InitEnrollmentToken) {
 
   MockBrowserDMTokenStorageLinux storage;
   EXPECT_EQ(kEnrollmentToken, storage.InitEnrollmentToken());
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 TEST_F(BrowserDMTokenStorageLinuxTest, InitDMToken) {

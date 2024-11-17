@@ -24,11 +24,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/web_applications/web_app_utils.h"
-#include "chromeos/constants/chromeos_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 WebAppInternalsUI::WebAppInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
@@ -52,13 +47,6 @@ WebAppInternalsUI::WebAppInternalsUI(content::WebUI* web_ui)
 #else
   internals->AddBoolean("isIwaPolicyInstallEnabled", false);
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  internals->AddBoolean(
-      "experimentalIsolationEnabled",
-      base::FeatureList::IsEnabled(
-          chromeos::features::kExperimentalWebAppStoragePartitionIsolation));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(WebAppInternalsUI)

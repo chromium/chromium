@@ -347,7 +347,7 @@ v8::Local<v8::Value> V8ValueConverterImpl::ToArrayBuffer(
     v8::Isolate* isolate,
     v8::Local<v8::Object> creation_context,
     const base::Value::BlobStorage& value) const {
-  DCHECK(creation_context->GetCreationContextChecked() ==
+  DCHECK(creation_context->GetCreationContextChecked(isolate) ==
          isolate->GetCurrentContext());
   v8::Local<v8::ArrayBuffer> buffer =
       v8::ArrayBuffer::New(isolate, value.size());
@@ -457,9 +457,10 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Array(
   // If val was created in a different context than our current one, change to
   // that context, but change back after val is converted.
   v8::Local<v8::Context> creation_context;
-  if (val->GetCreationContext().ToLocal(&creation_context) &&
-      creation_context != isolate->GetCurrentContext())
+  if (val->GetCreationContext(isolate).ToLocal(&creation_context) &&
+      creation_context != isolate->GetCurrentContext()) {
     scope = std::make_unique<v8::Context::Scope>(creation_context);
+  }
 
   if (strategy_) {
     std::unique_ptr<base::Value> out;
@@ -523,9 +524,7 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8ArrayBuffer(
     return std::make_unique<base::Value>(std::move(buffer));
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Only ArrayBuffer and ArrayBufferView should get here.";
-  return nullptr;
+  NOTREACHED() << "Only ArrayBuffer and ArrayBufferView should get here.";
 }
 
 std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
@@ -540,9 +539,10 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
   // If val was created in a different context than our current one, change to
   // that context, but change back after val is converted.
   v8::Local<v8::Context> creation_context;
-  if (val->GetCreationContext().ToLocal(&creation_context) &&
-      creation_context != isolate->GetCurrentContext())
+  if (val->GetCreationContext(isolate).ToLocal(&creation_context) &&
+      creation_context != isolate->GetCurrentContext()) {
     scope = std::make_unique<v8::Context::Scope>(creation_context);
+  }
 
   if (strategy_) {
     std::unique_ptr<base::Value> out;
@@ -581,11 +581,9 @@ std::unique_ptr<base::Value> V8ValueConverterImpl::FromV8Object(
     // Extend this test to cover more types as necessary and if sensible.
     if (!key->IsString() &&
         !key->IsNumber()) {
-      NOTREACHED_IN_MIGRATION()
-          << "Key \"" << *v8::String::Utf8Value(isolate, key)
-          << "\" "
-             "is neither a string nor a number";
-      continue;
+      NOTREACHED() << "Key \"" << *v8::String::Utf8Value(isolate, key)
+                   << "\" "
+                      "is neither a string nor a number";
     }
 
     v8::String::Utf8Value name_utf8(isolate, key);

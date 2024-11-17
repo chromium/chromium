@@ -9,10 +9,10 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
-class KeyedService;
 class AutocompleteScoringModelService;
+class KeyedService;
+class ProfileIOS;
 
 namespace content {
 class BrowserState;
@@ -25,10 +25,6 @@ namespace ios {
 class AutocompleteScoringModelServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static AutocompleteScoringModelService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static AutocompleteScoringModelService* GetForProfile(ProfileIOS* profile);
   static AutocompleteScoringModelServiceFactory* GetInstance();
 

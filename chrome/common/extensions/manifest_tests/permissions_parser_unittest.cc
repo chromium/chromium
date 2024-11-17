@@ -145,9 +145,9 @@ TEST_F(PermissionsParserTest, OptionalHostPermissionsInvalidScheme) {
 TEST_F(PermissionsParserTest, HostPermissionsKey) {
   std::vector<std::string> expected_warnings;
   expected_warnings.push_back(ErrorUtils::FormatErrorMessage(
-      manifest_errors::kPermissionUnknownOrMalformed, "https://google.com/*"));
+      manifest_errors::kPermissionUnknown, "https://google.com/*"));
   expected_warnings.push_back(ErrorUtils::FormatErrorMessage(
-      manifest_errors::kPermissionUnknownOrMalformed, "http://chromium.org/*"));
+      manifest_errors::kPermissionUnknown, "http://chromium.org/*"));
 
   scoped_refptr<Extension> extension(
       LoadAndExpectWarnings("host_permissions_key.json", expected_warnings));
@@ -172,10 +172,9 @@ TEST_F(PermissionsParserTest, HostPermissionsKey) {
 TEST_F(PermissionsParserTest, HostPermissionsKeyInvalidHosts) {
   std::vector<std::string> expected_warnings;
   expected_warnings.push_back(ErrorUtils::FormatErrorMessage(
-      manifest_errors::kPermissionUnknownOrMalformed, "malformed_host"));
+      manifest_errors::kPatternMalformed, "malformed_host"));
   expected_warnings.push_back(ErrorUtils::FormatErrorMessage(
-      manifest_errors::kPermissionUnknownOrMalformed,
-      "optional_malformed_host"));
+      manifest_errors::kPatternMalformed, "optional_malformed_host"));
 
   scoped_refptr<Extension> extension(LoadAndExpectWarnings(
       "host_permissions_key_invalid_hosts.json", expected_warnings));
@@ -293,9 +292,9 @@ TEST_F(PermissionsParserTest, InternalPermissionsAreNotAllowedInTheManifest) {
            "version": "0.1",
            "permissions": ["searchProvider"]
          })";
-  scoped_refptr<const Extension> extension = LoadAndExpectWarning(
-      ManifestData::FromJSON(kManifest),
-      "Permission 'searchProvider' is unknown or URL pattern is malformed.");
+  scoped_refptr<const Extension> extension =
+      LoadAndExpectWarning(ManifestData::FromJSON(kManifest),
+                           "Permission 'searchProvider' is unknown.");
 
   ASSERT_TRUE(extension);
   EXPECT_FALSE(extension->permissions_data()->HasAPIPermission(

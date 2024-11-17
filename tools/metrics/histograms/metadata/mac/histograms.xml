@@ -43,7 +43,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppCodeSignCloneCreationTime" units="ms"
-    expires_after="2025-03-06">
+    expires_after="2025-05-11">
   <owner>bur@google.com</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppFileSystemType" enum="MacFileSystemType"
-    expires_after="2025-03-06">
+    expires_after="2025-05-11">
   <owner>bur@google.com</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
@@ -84,13 +84,65 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Mac.AppUpgradeCodeSignatureValidationStatus"
-    enum="CodeSigningOSStatus" expires_after="2025-03-06">
+    enum="CodeSigningOSStatus" expires_after="2025-05-11">
   <owner>bur@google.com</owner>
   <owner>src/ui/base/cocoa/OWNERS</owner>
   <summary>
     The dynamic code signature validation status of Chrome with a pending Chrome
     update on disk. A single metric is emitted about an hour after an update to
     the running instance of Chrome has been staged on disk.
+  </summary>
+</histogram>
+
+<histogram name="Mac.Fullscreen.LocationBarViewScreenY" units="px"
+    expires_after="2025-04-27">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>lgrey@chromium.org</owner>
+  <summary>
+    Records the location bar's screen Y coordinate when the omnibox popup is
+    shown while the browser is in fullscreen mode.
+
+    This histogram is for debugging crbug.com/365733574, that bubbles are
+    misplaced in mac fullscreen.
+  </summary>
+</histogram>
+
+<histogram name="Mac.Fullscreen.OmniboxPopupTargetScreenY" units="px"
+    expires_after="2025-04-27">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>lgrey@chromium.org</owner>
+  <summary>
+    Records the target Y coordinate of the omnibox popup when it is shown while
+    the browser is in fullscreen mode.
+
+    This histogram is for debugging crbug.com/365733574, that bubbles are
+    misplaced in mac fullscreen.
+  </summary>
+</histogram>
+
+<histogram name="Mac.Fullscreen.OverlayNSWindowScreenY" units="px"
+    expires_after="2025-04-27">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>lgrey@chromium.org</owner>
+  <summary>
+    Records the overlay NSWindow's screen Y coordinate when the omnibox popup is
+    shown while the browser is in fullscreen mode.
+
+    This histogram is for debugging crbug.com/365733574, that bubbles are
+    misplaced in mac fullscreen.
+  </summary>
+</histogram>
+
+<histogram name="Mac.Fullscreen.OverlayWidgetScreenY" units="px"
+    expires_after="2025-04-27">
+  <owner>kerenzhu@chromium.org</owner>
+  <owner>lgrey@chromium.org</owner>
+  <summary>
+    Records the overlay widget's screen Y coordinate when the omnibox popup is
+    shown while the browser is in fullscreen mode.
+
+    This histogram is for debugging crbug.com/365733574, that bubbles are
+    misplaced in mac fullscreen.
   </summary>
 </histogram>
 
@@ -102,6 +154,104 @@ chromium-metrics-reviews@google.com.
     The result of calls to base::mac::LaunchApplication, logged once for every
     invocation of that method.
   </summary>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.CurrentProcessValid"
+    enum="BooleanSuccess" expires_after="2025-06-01">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    The result of validating the current process against a same signing identity
+    process requirement. This histogram is emitted once at browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.FallbackValidationCategory.Result"
+    enum="CodeSigningOSStatus" expires_after="2025-06-01">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    The result of retrieving the validation category of the current process via
+    the fallback code path. 0 on success, or an`OSStatus` value. This histogram
+    is emitted once at browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.TeamIdentifier.Result" enum="MacErrno"
+    expires_after="2025-06-01">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    The result of retrieving the team identifier of the current process. 0 on
+    success, the `errno` value from the `csops` system call otherwise. This
+    histogram is emitted once at browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.Timing.{Operation}" units="ms"
+    expires_after="2025-06-01">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    The time taken to {Operation}. This histogram is emitted once at browser
+    startup.
+  </summary>
+  <token key="Operation">
+    <variant name="BuildSameIdentityRequirement"
+        summary="build a same identity requirement"/>
+    <variant name="ValidateSameIdentity"
+        summary="validate the current process against a same identity
+                 requirement"/>
+  </token>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.ValidationCategory.Result"
+    enum="MacErrno" expires_after="2025-06-01">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    The result of retrieving the validation category of the current process. 0
+    on success, the `errno` value from the `csops` system call otherwise. This
+    histogram is emitted once at browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.ValidationRequired"
+    enum="BooleanSuccess" expires_after="2025-06-01">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    Whether ProcessRequirement validation was short-circuited due to the
+    requirement not needing code signature validation. This histogram is emitted
+    whenever a ProcessRequirement is used to validate a process.
+  </summary>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.ValidationResult"
+    enum="CodeSigningOSStatus" expires_after="2025-06-01">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    The result of validating a ProcessRequirement. This histogram is emitted
+    whenever a ProcessRequirement is used to validate a process.
+  </summary>
+</histogram>
+
+<histogram name="Mac.ProcessRequirement.{Field}.HasExpectedValue"
+    enum="BooleanSuccess" expires_after="2025-06-01">
+  <owner>markrowe@chromium.org</owner>
+  <owner>src/base/mac/OWNERS</owner>
+  <summary>
+    Whether the {Field} retrieved for the current process matched the expected
+    value. This will only be emitted if the {Field} was successfully retrieved.
+    This histogram is emitted once at browser startup.
+  </summary>
+  <token key="Field">
+    <variant name="FallbackValidationCategory"
+        summary="fallback validation category"/>
+    <variant name="TeamIdentifier" summary="team identifier"/>
+    <variant name="ValidationCategory" summary="validation category"/>
+  </token>
 </histogram>
 
 </histograms>

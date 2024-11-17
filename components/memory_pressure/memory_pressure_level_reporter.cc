@@ -69,8 +69,7 @@ void MemoryPressureLevelReporter::OnMemoryPressureLevelChanged(
       }
       case MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_NONE:
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     base::UmaHistogramCustomTimes(histogram_name,

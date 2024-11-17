@@ -54,8 +54,7 @@ history::VisitSource ConvertImporterVisitSourceToHistoryVisitSource(
     case importer::VISIT_SOURCE_SAFARI_IMPORTED:
       return history::SOURCE_SAFARI_IMPORTED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return history::SOURCE_SYNCED;
+  NOTREACHED();
 }
 
 password_manager::PasswordForm::Scheme ConvertToPasswordFormScheme(
@@ -67,8 +66,7 @@ password_manager::PasswordForm::Scheme ConvertToPasswordFormScheme(
       return password_manager::PasswordForm::Scheme::kBasic;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return password_manager::PasswordForm::Scheme::kHtml;
+  NOTREACHED();
 }
 
 password_manager::PasswordForm ConvertImportedPasswordForm(

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 import 'chrome://resources/js/action_link.js';
 // <if expr="is_ios">
 import 'chrome://resources/js/ios/web_ui.js';
@@ -10,6 +10,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 import './status_box.js';
 import './policy_table.js';
+import './policy_promotion.js';
 
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
@@ -19,7 +20,6 @@ import {getRequiredElement} from 'chrome://resources/js/util.js';
 import type {Policy} from './policy_row.js';
 import type {PolicyTableElement, PolicyTableModel} from './policy_table.js';
 import type {Status, StatusBoxElement} from './status_box.js';
-
 export interface PolicyNamesResponse {
   [id: string]: {name: string, policyNames: NonNullable<string[]>};
 }
@@ -63,6 +63,35 @@ export class Page {
     this.mainSection = getRequiredElement('main-section');
 
     const policyElement = getRequiredElement('policy-ui');
+
+    sendWithPromise('shouldShowPromotion').then((shouldShowPromo: boolean) => {
+      if (!shouldShowPromo) {
+        return;
+      }
+      const promotionSection =
+          document.createElement('promotion-banner-section-container') as
+          HTMLElement;
+      policyElement.insertBefore(
+          promotionSection, getRequiredElement('status-section'));
+
+      const promotionDismissButton =
+          promotionSection.shadowRoot!.getElementById(
+              'promotion-dismiss-button');
+
+      promotionDismissButton?.addEventListener('click', () => {
+        chrome.send('setBannerDismissed');
+        promotionSection.remove();
+      });
+
+      const promotionRedirectButton =
+          promotionSection.shadowRoot!.getElementById(
+              'promotion-redirect-button');
+
+      promotionRedirectButton?.addEventListener('click', () => {
+        chrome.send('recordBannerRedirected');
+      });
+    });
+
     // Add or remove header shadow based on scroll position.
     policyElement.addEventListener('scroll', () => {
       document.getElementsByTagName('header')[0]!.classList.toggle(
@@ -201,8 +230,10 @@ export class Page {
 
     // <if expr="not is_chromeos">
     this.updateReportButton(
-      !!policyValues['chrome']?.policies['CloudReportingEnabled']?.value ||
-      !!policyValues['chrome']?.policies['CloudProfileReportingEnabled']?.value,
+        !!policyValues['chrome']?.policies['CloudReportingEnabled']?.value ||
+            !!policyValues['chrome']
+                  ?.policies['CloudProfileReportingEnabled']
+                  ?.value,
     );
     // </if>
     this.reloadPoliciesDone();

@@ -87,7 +87,8 @@
           "builder": "win11-arm64-rel-tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/win-arm64-rel/targets"
     }
   },
   "$build/code_coverage": {

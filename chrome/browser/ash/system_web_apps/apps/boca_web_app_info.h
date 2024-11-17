@@ -8,8 +8,12 @@
 #include <memory>
 
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 #include "url/gurl.h"
+
+// Forward declare browser and profile.
+class Browser;
+class Profile;
 
 namespace web_app {
 struct WebAppInstallInfo;
@@ -34,14 +38,17 @@ class BocaSystemAppDelegate : public ash::SystemWebAppDelegate {
   bool ShouldPinTab(GURL url) const override;
   bool IsAppEnabled() const override;
   bool HasCustomTabMenuModel() const override;
+  bool ShouldShowInSearchAndShelf() const override;
+  bool ShouldShowInLauncher() const override;
+
+  gfx::Size GetMinimumWindowSize() const override;
   std::unique_ptr<ui::SimpleMenuModel> GetTabMenuModel(
       ui::SimpleMenuModel::Delegate* delegate) const override;
+  Browser* LaunchAndNavigateSystemWebApp(
+      Profile* profile,
+      web_app::WebAppProvider* provider,
+      const GURL& url,
+      const apps::AppLaunchParams& params) const override;
 };
-
-std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForBocaApp();
-
-// Returns true if the specified profile is a Boca consumer profile. False
-// otherwise.
-bool IsConsumerProfile(Profile* profile);
 
 #endif  // CHROME_BROWSER_ASH_SYSTEM_WEB_APPS_APPS_BOCA_WEB_APP_INFO_H_

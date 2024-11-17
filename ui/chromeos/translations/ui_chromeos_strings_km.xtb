@@ -19,6 +19,7 @@
 <translation id="115443833402798225">អាន់ម៉ាទាហានគុល</translation>
 <translation id="1155759005174418845">កាតាឡាន</translation>
 <translation id="1168100932582989117">ម៉ាស៊ីនមេ​ឈ្មោះ Google</translation>
+<translation id="1170788066030116158">កាលបរិច្ឆេទ​ថត</translation>
 <translation id="1172970565351728681">នៅសល់​ប្រហែល <ph name="REMAINING_TIME" /> ទៀត</translation>
 <translation id="1173894706177603556">ប្តូរឈ្មោះ</translation>
 <translation id="1173916544412572294">បណ្ដាញ <ph name="NETWORK_INDEX" /> នៃ <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, កម្លាំង​រលកសញ្ញា <ph name="SIGNAL_STRENGTH" />%, ថ្មទូរសព្ទ <ph name="BATTERY_STATUS" />%, ព័ត៌មាន​លម្អិត</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">វិញ្ញាបនប័ត្រសម្គាល់អត្តសញ្ញាណបានបដិសេធពីចម្ងាយ</translation>
 <translation id="4394214039309501350">តំណ​ខាង​ក្រៅ</translation>
 <translation id="4394980935660306080">ដើម​សប្ដាហ៍​នេះ</translation>
+<translation id="4397435965699247285">មិនអាច​ប្រើ OneDrive បានទេ ពេលគ្មាន​អ៊ីនធឺណិត</translation>
 <translation id="4398096759193130964">ស្ដារធាតុ ឬអូសធាតុទាំងនេះទៅក្នុងថតថ្មីនៅក្រៅធុងសំរាម</translation>
 <translation id="4401287888955153199">ដកទាំងអស់</translation>
 <translation id="4410695710508688828">ការស្រង់​ប្រតិបត្តិការ​មិនបានសម្រេចទេ។ <ph name="ERROR_MESSAGE" /></translation>

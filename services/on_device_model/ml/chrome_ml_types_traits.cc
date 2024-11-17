@@ -19,7 +19,7 @@ EnumTraits<on_device_model::mojom::Token, ml::Token>::ToMojom(ml::Token input) {
     case ml::Token::kEnd:
       return on_device_model::mojom::Token::kEnd;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static
@@ -52,7 +52,7 @@ UnionTraits<on_device_model::mojom::InputPieceDataView, ml::InputPiece>::GetTag(
   } else if (std::holds_alternative<std::string>(input_piece)) {
     return on_device_model::mojom::InputPieceDataView::Tag::kText;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // static

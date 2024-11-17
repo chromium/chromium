@@ -57,11 +57,14 @@ void RemoteFrameOwner::AddResourceTiming(
     mojom::blink::ResourceTimingInfoPtr info) {
   DCHECK(info);
   LocalFrame* frame = To<LocalFrame>(frame_.Get());
+  CHECK(!frame->IsProvisional());
   frame->GetLocalFrameHostRemote().ForwardResourceTimingToParent(
       std::move(info));
 }
 
 void RemoteFrameOwner::DispatchLoad() {
+  LocalFrame* frame = To<LocalFrame>(frame_.Get());
+  CHECK(!frame->IsProvisional());
   auto& local_frame_host = To<LocalFrame>(*frame_).GetLocalFrameHostRemote();
   local_frame_host.DispatchLoad();
 }

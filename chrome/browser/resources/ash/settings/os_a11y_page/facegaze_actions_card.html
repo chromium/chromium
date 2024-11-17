@@ -16,6 +16,16 @@
   .settings-box .action-row {
     align-items: flex-start;
   }
+
+  .visually-hidden {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+  }
 </style>
 
 <template is="dom-if" if="[[showAddActionDialog_]]" restamp>
@@ -30,7 +40,6 @@
   </facegaze-actions-add-dialog>
 </template>
 
-<!-- TODO(b:341770753): Localize strings. -->
 <settings-card header-text="$i18n{faceGazeActionsSectionTitle}">
   <settings-toggle-button
       id="faceGazeActionsEnabledButton"
@@ -38,16 +47,19 @@
       pref="{{prefs.settings.a11y.face_gaze.actions_enabled}}"
       disabled="[[disabled]]">
   </settings-toggle-button>
-  <dom-repeat items="[[commandPairs_]]">
+  <dom-repeat id="faceGazeActionsCommandPairs"
+      items="[[commandPairs_]]">
     <template>
-      <div class="settings-box">
+      <div class="command-pair settings-box">
         <div class="start settings-box-text two-line single-column action-row">
-          <div>[[getActionDisplayText_(item.action)]]</div>
+          <template is="dom-if" if="[[getKeyComboDisplayText_(item)]]">
+            <div>[[getKeyComboDisplayText_(item)]]</div>
+          </template>
+          <template is="dom-if" if="[[!getKeyComboDisplayText_(item)]]">
+            <div>[[getActionDisplayText_(item.action)]]</div>
+          </template>
           <template is="dom-if" if="[[getSubLabel_(item.action)]]">
             <div class="secondary">[[getSubLabel_(item.action)]]</div>
-          </template>
-          <template is="dom-if" if="[[getKeyComboDisplayText_(item)]]">
-            <div class="secondary">[[getKeyComboDisplayText_(item)]]</div>
           </template>
         </div>
         <template is="dom-if" if="[[item.gesture]]" restamp>
@@ -63,18 +75,27 @@
         <template is="dom-if" if="[[!item.gesture]]" restamp>
           <cros-chip
               type="input"
-              label="Assign a gesture"
+              label="$i18n{faceGazeActionsAssignGestureLabel}"
               on-click="onAssignGestureButtonClick_"
               disabled="[[disableConfigureControls_]]">
             <iron-icon icon="cr:add" slot="icon"></iron-icon>
           </cros-chip>
         </template>
-        <cr-icon-button class="icon-clear" on-click="onRemoveCommandPairButtonClick_">
+        <cr-icon-button
+            class="icon-clear"
+            aria-label="[[getRemoveButtonLabel_(item.action)]]"
+            on-click="onRemoveCommandPairButtonClick_">
         </cr-icon-button>
       </div>
     </template>
   </dom-repeat>
   <div class="settings-box">
+    <template is="dom-if" if="[[shouldAnnounceA11yActionFeedback_]]"
+        restamp>
+      <span id="faceGazeActionsAlert" role="alert" class="visually-hidden">
+        [[faceGazeActionsAlert_]]
+      </span>
+    </template>
     <cr-button
         id="addActionButton"
         class="button"

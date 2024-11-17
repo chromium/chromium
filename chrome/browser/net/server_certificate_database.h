@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_NET_SERVER_CERTIFICATE_DATABASE_H_
 #define CHROME_BROWSER_NET_SERVER_CERTIFICATE_DATABASE_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "chrome/browser/net/server_certificate_database.pb.h"
 #include "sql/database.h"
 #include "sql/init_status.h"
+#include "third_party/boringssl/src/pki/trust_store.h"
 
 namespace net {
 
@@ -40,6 +43,9 @@ class ServerCertificateDatabase {
       delete;
   ~ServerCertificateDatabase();
 
+  static std::optional<bssl::CertificateTrustType> GetUserCertificateTrust(
+      const net::ServerCertificateDatabase::CertInformation& cert_info);
+
   // Insert a new certificate into the database, or if the certificate is
   // already present (as indicated by cert_info.sha256hash_hex), update the
   // entry in the database.
@@ -47,6 +53,11 @@ class ServerCertificateDatabase {
 
   // Retrieve all of the certificates from the database.
   std::vector<CertInformation> RetrieveAllCertificates();
+
+  uint32_t RetrieveCertificatesCount();
+
+  // Delete the certificate with a matching hash from the database.
+  bool DeleteCertificate(const std::string& sha256hash_hex);
 
  private:
   sql::InitStatus InitInternal(const base::FilePath& storage_dir);

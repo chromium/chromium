@@ -2009,9 +2009,6 @@ interface Functions {
   // result of the onDriveConfirmDialog event.
   static void notifyDriveDialogResult(DriveDialogResult result);
 
-  // Opens a new browser tab and navigates to `url`.
-  static void openURL(DOMString url);
-
   // Creates a new Files app window in the directory provided in `params`.
   [doesNotSupportPromises]
   static void openWindow(OpenWindowParams params, BooleanCallback callback);

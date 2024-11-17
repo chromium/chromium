@@ -18,18 +18,18 @@
 #import "ios/chrome/browser/profile/model/ios_chrome_url_request_context_getter.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 
-OffTheRecordChromeBrowserStateImpl::OffTheRecordChromeBrowserStateImpl(
+OffTheRecordProfileIOSImpl::OffTheRecordProfileIOSImpl(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-    ChromeBrowserState* original_chrome_browser_state,
+    ProfileIOS* original_profile,
     const base::FilePath& otr_path)
-    : ChromeBrowserState(otr_path,
-                         /*browser_state_name=*/std::string(),
-                         std::move(io_task_runner)),
-      original_chrome_browser_state_(original_chrome_browser_state),
+    : ProfileIOS(otr_path,
+                 /*profile_name=*/std::string(),
+                 std::move(io_task_runner)),
+      original_profile_(original_profile),
       start_time_(base::Time::Now()),
-      prefs_(CreateIncognitoBrowserStatePrefs(
+      prefs_(CreateIncognitoProfilePrefs(
           static_cast<sync_preferences::PrefServiceSyncable*>(
-              original_chrome_browser_state->GetPrefs()))) {
+              original_profile_->GetPrefs()))) {
   BrowserStateDependencyManager::GetInstance()->MarkBrowserStateLive(this);
 
   user_prefs::UserPrefs::Set(this, GetPrefs());
@@ -40,13 +40,13 @@ OffTheRecordChromeBrowserStateImpl::OffTheRecordChromeBrowserStateImpl(
 
   // DO NOT ADD ANY INITIALISATION AFTER THIS LINE.
 
-  // The initialisation of the ChromeBrowserState is now complete and the
+  // The initialisation of the ProfileIOS is now complete and the
   // service can be safely created.
   BrowserStateDependencyManager::GetInstance()->CreateBrowserStateServices(
       this);
 }
 
-OffTheRecordChromeBrowserStateImpl::~OffTheRecordChromeBrowserStateImpl() {
+OffTheRecordProfileIOSImpl::~OffTheRecordProfileIOSImpl() {
   BrowserStateDependencyManager::GetInstance()->DestroyBrowserStateServices(
       this);
   if (pref_proxy_config_tracker_) {
@@ -63,28 +63,8 @@ OffTheRecordChromeBrowserStateImpl::~OffTheRecordChromeBrowserStateImpl() {
   GetApplicationContext()->GetIOSChromeIOThread()->ChangedToOnTheRecord();
 }
 
-ChromeBrowserState*
-OffTheRecordChromeBrowserStateImpl::GetOriginalChromeBrowserState() {
-  return GetOriginalProfile();
-}
-
-bool OffTheRecordChromeBrowserStateImpl::HasOffTheRecordChromeBrowserState()
-    const {
-  return HasOffTheRecordProfile();
-}
-
-ChromeBrowserState*
-OffTheRecordChromeBrowserStateImpl::GetOffTheRecordChromeBrowserState() {
-  return GetOffTheRecordProfile();
-}
-
-void OffTheRecordChromeBrowserStateImpl::
-    DestroyOffTheRecordChromeBrowserState() {
-  return DestroyOffTheRecordProfile();
-}
-
 ProfileIOS* OffTheRecordProfileIOSImpl::GetOriginalProfile() {
-  return original_chrome_browser_state_;
+  return original_profile_;
 }
 
 bool OffTheRecordProfileIOSImpl::HasOffTheRecordProfile() const {
@@ -96,32 +76,35 @@ ProfileIOS* OffTheRecordProfileIOSImpl::GetOffTheRecordProfile() {
 }
 
 void OffTheRecordProfileIOSImpl::DestroyOffTheRecordProfile() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
-BrowserStatePolicyConnector*
-OffTheRecordChromeBrowserStateImpl::GetPolicyConnector() {
-  // Forward the call to the original (non-OTR) browser state.
-  return GetOriginalChromeBrowserState()->GetPolicyConnector();
+ProfilePolicyConnector* OffTheRecordProfileIOSImpl::GetPolicyConnector() {
+  // Forward the call to the original (non-OTR) profile.
+  return GetOriginalProfile()->GetPolicyConnector();
 }
 
 policy::UserCloudPolicyManager*
-OffTheRecordChromeBrowserStateImpl::GetUserCloudPolicyManager() {
-  // Forward the call to the original (non-OTR) browser state.
-  return GetOriginalChromeBrowserState()->GetUserCloudPolicyManager();
+OffTheRecordProfileIOSImpl::GetUserCloudPolicyManager() {
+  // Forward the call to the original (non-OTR) profile.
+  return GetOriginalProfile()->GetUserCloudPolicyManager();
 }
 
 sync_preferences::PrefServiceSyncable*
-OffTheRecordChromeBrowserStateImpl::GetSyncablePrefs() {
+OffTheRecordProfileIOSImpl::GetSyncablePrefs() {
   return prefs_.get();
 }
 
-bool OffTheRecordChromeBrowserStateImpl::IsOffTheRecord() const {
+const sync_preferences::PrefServiceSyncable*
+OffTheRecordProfileIOSImpl::GetSyncablePrefs() const {
+  return prefs_.get();
+}
+
+bool OffTheRecordProfileIOSImpl::IsOffTheRecord() const {
   return true;
 }
 
-PrefProxyConfigTracker*
-OffTheRecordChromeBrowserStateImpl::GetProxyConfigTracker() {
+PrefProxyConfigTracker* OffTheRecordProfileIOSImpl::GetProxyConfigTracker() {
   if (!pref_proxy_config_tracker_) {
     pref_proxy_config_tracker_ =
         ProxyServiceFactory::CreatePrefProxyConfigTrackerOfProfile(
@@ -130,22 +113,20 @@ OffTheRecordChromeBrowserStateImpl::GetProxyConfigTracker() {
   return pref_proxy_config_tracker_.get();
 }
 
-ProfileIOSIOData* OffTheRecordChromeBrowserStateImpl::GetIOData() {
+ProfileIOSIOData* OffTheRecordProfileIOSImpl::GetIOData() {
   return io_data_->io_data();
 }
 
-net::URLRequestContextGetter*
-OffTheRecordChromeBrowserStateImpl::CreateRequestContext(
+net::URLRequestContextGetter* OffTheRecordProfileIOSImpl::CreateRequestContext(
     ProtocolHandlerMap* protocol_handlers) {
   return io_data_->CreateMainRequestContextGetter(protocol_handlers).get();
 }
 
-base::WeakPtr<ChromeBrowserState>
-OffTheRecordChromeBrowserStateImpl::AsWeakPtr() {
+base::WeakPtr<ProfileIOS> OffTheRecordProfileIOSImpl::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
-void OffTheRecordChromeBrowserStateImpl::ClearNetworkingHistorySince(
+void OffTheRecordProfileIOSImpl::ClearNetworkingHistorySince(
     base::Time time,
     base::OnceClosure completion) {
   // Nothing to do here, our transport security state is read-only.

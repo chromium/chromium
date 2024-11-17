@@ -16,11 +16,13 @@
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
+#include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/status.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/chromeos/dmabuf_video_frame_pool.h"
 #include "media/gpu/chromeos/fourcc.h"
+#include "media/gpu/chromeos/platform_video_frame_utils.h"
 #include "media/gpu/chromeos/vda_video_frame_pool.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/media_gpu_export.h"
@@ -47,8 +49,8 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
       public VdaVideoFramePool::VdaDelegate {
  public:
   // Callback for creating VideoDecoder instance.
-  using CreateVideoDecoderCb = base::RepeatingCallback<
-      decltype(VideoDecoderPipeline::CreateForVDAAdapterForARC)>;
+  using CreateVideoDecoderCb =
+      base::RepeatingCallback<decltype(VideoDecoderPipeline::CreateForARC)>;
 
   // Create VdVideoDecodeAccelerator instance, and call Initialize().
   // Return nullptr if Initialize() failed.
@@ -140,9 +142,12 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
   gfx::Size coded_size_;
   std::optional<VideoFrameLayout> layout_;
 
-  // Mapping from a frame's GenericSharedMemoryId to picture buffer id.
-  std::map<gfx::GenericSharedMemoryId, int32_t /* picture_buffer_id */>
-      frame_id_to_picture_id_;
+  // Used to guarantee that frames are produced with unique tracking tokens.
+  media::UniqueTrackingTokenHelper frame_tracking_token_helper_;
+
+  // Mapping from a frame's UnguessableToken to picture buffer id.
+  std::map<base::UnguessableToken, int32_t /* picture_buffer_id */>
+      frame_token_to_picture_id_;
   // Record how many times the picture is sent to the client, and keep a refptr
   // of corresponding VideoFrame when the client owns the buffers.
   std::map<int32_t /* picture_buffer_id */,

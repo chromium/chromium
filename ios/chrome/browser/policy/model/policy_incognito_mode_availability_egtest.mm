@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/testing/earl_grey/earl_grey_test.h"
-
 #import "base/json/json_string_value_serializer.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/policy_constants.h"
+#import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
 #import "ios/chrome/browser/policy/model/policy_earl_grey_matchers.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_metrics.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -19,7 +19,12 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
+#import "ios/testing/earl_grey/earl_grey_test.h"
 
+using chrome_test_util::ContainsPartialText;
+using chrome_test_util::TabGridIncognitoTabsPanelButton;
+using chrome_test_util::TabGridNewIncognitoTabButton;
+using chrome_test_util::TabGridOpenTabsPanelButton;
 using chrome_test_util::ToolsMenuView;
 using policy::AssertContextMenuItemDisabled;
 using policy::AssertContextMenuItemEnabled;
@@ -27,6 +32,14 @@ using policy::AssertOverflowMenuElementDisabled;
 using policy::AssertOverflowMenuElementEnabled;
 
 namespace {
+
+// Message shown in the disabled regular tab grid.
+NSString* const kDisabledRegularTabGridMessage =
+    @"Your organization requires you to browse privately.\nLearn more";
+
+// Message shown in the disabled incognito tab grid.
+NSString* const kDisabledIncognitoTabGridMessage =
+    @"Your organization turned off private browsing.";
 
 // Values of the incognito mode availability.
 enum class IncognitoAvailability {
@@ -57,6 +70,9 @@ id<GREYMatcher> TabGridButton() {
 // Test case to verify that the IncognitoModeAvailability policy is set and
 // respected.
 @interface PolicyIncognitoModeAvailabilityTestCase : ChromeTestCase
+
+@property BOOL histogramTesterCreated;
+
 @end
 
 @implementation PolicyIncognitoModeAvailabilityTestCase
@@ -70,8 +86,34 @@ id<GREYMatcher> TabGridButton() {
   return config;
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)setupAndRegisterHistogramTester {
+  GREYAssertNil([MetricsAppInterface setupHistogramTester],
+                @"Failed to set up histogram tester.");
+  self.histogramTesterCreated = YES;
+}
+
+- (void)tearDownHelper {
+  if (self.histogramTesterCreated) {
+    GREYAssertNil([MetricsAppInterface releaseHistogramTester],
+                  @"Failed to release histogram tester.");
+    self.histogramTesterCreated = NO;
+  }
+  [super tearDownHelper];
+}
+
+// Restarts the app with the given incognito policy.
+- (void)restartWithIncognitoPolicy:(IncognitoAvailability)availability {
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  // Configure the policy to force sign-in.
+  config.additional_args.push_back(
+      "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
+  std::string incognito_availability_arg = base::SysNSStringToUTF8(
+      [NSString stringWithFormat:@"<dict><key>IncognitoModeAvailability</"
+                                 @"key><integer>%d</integer></dict>",
+                                 static_cast<int>(availability)]);
+  config.additional_args.push_back(incognito_availability_arg);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 }
 
 // When the IncognitoModeAvailability policy is set to available, the tools
@@ -143,19 +185,141 @@ id<GREYMatcher> TabGridButton() {
   AssertContextMenuItemEnabled(IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB);
 }
 
+// Tests the incognito tab grid when the IncognitoModeAvailability policy is set
+// to available.
+- (void)testIncognitoTabGridWhenIncognitoAvailable {
+  // The tab grid is only updated on restart.
+  [self restartWithIncognitoPolicy:IncognitoAvailability::kAvailable];
+  [self setupAndRegisterHistogramTester];
+
+  // Restart the app with the incognito policy.
+  AppLaunchConfiguration config;
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+
+  // Open the tab switcher.
+  [ChromeEarlGrey showTabSwitcher];
+
+  // Messages from the disabled regular tab grid should not be displayed.
+  [[EarlGrey selectElementWithMatcher:ContainsPartialText(
+                                          kDisabledRegularTabGridMessage)]
+      assertWithMatcher:grey_nil()];
+
+  // Open incognito tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
+      performAction:grey_tap()];
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          IncognitoGridStatus::
+                                              kEnabledByEnterprisePolicies)
+                         forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+      @"Should record incognito grid status metrics");
+
+  // New Incognito Tab button `(+)` should be enabled.
+  [[EarlGrey selectElementWithMatcher:TabGridNewIncognitoTabButton()]
+      assertWithMatcher:grey_enabled()];
+
+  // Messages from the disabled incognito tab grid should not be displayed.
+  [[EarlGrey selectElementWithMatcher:ContainsPartialText(
+                                          kDisabledIncognitoTabGridMessage)]
+      assertWithMatcher:grey_nil()];
+
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:1
+                        forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+                @"Incognito grid metrics have incorrect total count.");
+}
+
+// Tests the incognito tab grid when the IncognitoModeAvailability policy is set
+// to disabled.
+- (void)testIncognitoTabGridWhenIncognitoDisabled {
+  // The tab grid is only updated on restart.
+  [self restartWithIncognitoPolicy:IncognitoAvailability::kDisabled];
+  [self setupAndRegisterHistogramTester];
+
+  // Open incognito tab grid.
+  [ChromeEarlGrey showTabSwitcher];
+  [[EarlGrey selectElementWithMatcher:TabGridIncognitoTabsPanelButton()]
+      performAction:grey_tap()];
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          IncognitoGridStatus::
+                                              kDisabledByEnterprisePolicies)
+                         forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+      @"Should record incognito grid status metrics");
+
+  // New Incognito Tab button `(+)` should be disabled.
+  [[EarlGrey selectElementWithMatcher:TabGridNewIncognitoTabButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  // The disabled incognito tab grid should display a message.
+  [[EarlGrey selectElementWithMatcher:ContainsPartialText(
+                                          kDisabledIncognitoTabGridMessage)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the edit button is disabled.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:1
+                        forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+                @"Incognito grid metrics have incorrect total count.");
+}
+
+// Tests the incognito tab grid when the IncognitoModeAvailability policy is set
+// to forced.
+- (void)testIncognitoTabGridWhenIncognitoOnly {
+  // The tab grid is only updated on restart.
+  [self restartWithIncognitoPolicy:IncognitoAvailability::kOnly];
+  [self setupAndRegisterHistogramTester];
+
+  // Open the tab switcher. The incognito tab grid is displayed by default.
+  [ChromeEarlGrey showTabSwitcher];
+
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          IncognitoGridStatus::
+                                              kEnabledByEnterprisePolicies)
+                         forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+      @"Should record incognito grid status metrics");
+
+  // New Incognito Tab button `(+)` should be enabled.
+  [[EarlGrey selectElementWithMatcher:TabGridNewIncognitoTabButton()]
+      assertWithMatcher:grey_enabled()];
+
+  // Messages from the disabled incognito tab grid should not be displayed.
+  [[EarlGrey selectElementWithMatcher:ContainsPartialText(
+                                          kDisabledIncognitoTabGridMessage)]
+      assertWithMatcher:grey_nil()];
+
+  // Open the regular tab grid.
+  [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
+      performAction:grey_tap()];
+
+  // The disabled regular tab grid should display a message.
+  [[EarlGrey selectElementWithMatcher:ContainsPartialText(
+                                          kDisabledRegularTabGridMessage)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  GREYAssertNil([MetricsAppInterface
+                    expectTotalCount:1
+                        forHistogram:@(kUMAIncognitoGridStatusHistogram)],
+                @"Incognito grid metrics have incorrect total count.");
+}
+
 // Tests that when the IncognitoModeAvailability policy is set to forced, the
 // "New Tab" keyboard shortcut action is disabled and can't open a new regular
 // tab. This doesn't verify the tab grid UI.
 - (void)testOpenNewTab_FromPhysicalKeyboard_ForcedIncognito {
-  // Restart the app with the incognito policy.
-  AppLaunchConfiguration config;
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  // Configure the policy to force sign-in.
-  config.additional_args.push_back(
-      "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
-  config.additional_args.push_back(
-      "<dict><key>IncognitoModeAvailability</key><integer>2</integer></dict>");
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  [self restartWithIncognitoPolicy:IncognitoAvailability::kOnly];
 
   // Use the `CMD + n` keyboard shorcut to try opening a regular tab.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"n"
@@ -170,15 +334,7 @@ id<GREYMatcher> TabGridButton() {
 // "New Incognito Tab" keyboard shortcut action is disabled and can't open a new
 // incognito tab. This doesn't verify the tab grid UI.
 - (void)testOpenNewTab_FromPhysicalKeyboard__DisabledIncognito {
-  // Restart the app to take into consideration the policy value.
-  AppLaunchConfiguration config;
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  // Configure the policy to force sign-in.
-  config.additional_args.push_back(
-      "-" + base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey));
-  config.additional_args.push_back(
-      "<dict><key>IncognitoModeAvailability</key><integer>1</integer></dict>");
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+  [self restartWithIncognitoPolicy:IncognitoAvailability::kDisabled];
 
   // Use the `CMD + SHIFT + n` keyboard shorcut to try opening an incognito tab.
   [ChromeEarlGrey

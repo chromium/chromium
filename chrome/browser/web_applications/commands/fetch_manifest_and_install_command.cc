@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
@@ -30,6 +31,7 @@
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
@@ -458,17 +460,18 @@ void FetchManifestAndInstallCommand::OnDidPerformInstallableCheck(
   GetMutableDebugValue().Set("skip_page_favicons_on_initial_download",
                              skip_page_favicons_on_initial_download_);
 
+  app_lock_ = std::make_unique<AppLock>();
   command_manager()->lock_manager().UpgradeAndAcquireLock(
-      std::move(noop_lock_),
+      std::move(noop_lock_), *app_lock_,
       {GenerateAppIdFromManifestId(web_app_info_->manifest_id())},
       base::BindOnce(
           &FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons(
-    std::unique_ptr<AppLock> app_lock) {
-  app_lock_ = std::move(app_lock);
+void FetchManifestAndInstallCommand::CheckForPlayStoreIntentOrGetIcons() {
+  CHECK(app_lock_);
+  CHECK(app_lock_->IsGranted());
 
   bool is_create_shortcut =
       install_surface_ == webapps::WebappInstallSource::MENU_CREATE_SHORTCUT;
@@ -686,14 +689,28 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
 
   bool is_shortcut_created = IsShortcutCreated(app_lock_->registrar(), app_id);
   DCHECK(app_lock_);
-  const bool can_reparent_tab = app_lock_->install_finalizer().CanReparentTab(
-      app_id, is_shortcut_created);
+  const bool can_reparent_tab =
+      app_lock_->ui_manager().CanReparentAppTabToWindow(app_id,
+                                                        is_shortcut_created);
+
+  SCOPED_CRASH_KEY_NUMBER("PWA", "install_surface",
+                          static_cast<int>(install_surface_));
+  SCOPED_CRASH_KEY_STRING256(
+      "PWA", "install_url",
+      web_contents_->GetLastCommittedURL().possibly_invalid_spec());
+  SCOPED_CRASH_KEY_STRING64("PWA", "install_app_id", app_id);
+  WebAppTabHelper* tab_helper =
+      WebAppTabHelper::FromWebContents(web_contents_.get());
+  if (tab_helper) {
+    SCOPED_CRASH_KEY_STRING64("PWA", "source_window_app_id",
+                              tab_helper->window_app_id().value_or("<none>"));
+  }
 
   if (can_reparent_tab &&
       (web_app_info_->user_display_mode != mojom::UserDisplayMode::kBrowser) &&
       (install_surface_ != webapps::WebappInstallSource::DEVTOOLS)) {
-    app_lock_->install_finalizer().ReparentTab(app_id, is_shortcut_created,
-                                               web_contents_.get());
+    app_lock_->ui_manager().ReparentAppTabToWindow(web_contents_.get(), app_id,
+                                                   is_shortcut_created);
   }
 
   OnInstallCompleted(app_id, code);

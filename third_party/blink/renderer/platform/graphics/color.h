@@ -28,8 +28,10 @@
 
 #include <iosfwd>
 #include <optional>
+#include <string_view>
 #include <tuple>
 
+#include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -52,7 +54,7 @@ struct NamedColor {
   unsigned argb_value;
 };
 
-PLATFORM_EXPORT const NamedColor* FindColor(const char* str, unsigned len);
+PLATFORM_EXPORT const NamedColor* FindColor(std::string_view str);
 
 class PLATFORM_EXPORT Color {
   DISALLOW_NEW();
@@ -357,8 +359,8 @@ class PLATFORM_EXPORT Color {
   Color BlendWithWhite() const;
 
   static bool ParseHexColor(const StringView&, Color&);
-  static bool ParseHexColor(const LChar*, unsigned, Color&);
-  static bool ParseHexColor(const UChar*, unsigned, Color&);
+  static bool ParseHexColor(base::span<const LChar>, Color&);
+  static bool ParseHexColor(base::span<const UChar>, Color&);
 
   static const Color kBlack;
   static const Color kWhite;

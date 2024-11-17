@@ -18,6 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/system/system_monitor.h"
+#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/common/content_export.h"
@@ -51,6 +52,10 @@ using MediaDeviceEnumeration =
     std::array<blink::WebMediaDeviceInfoArray,
                static_cast<size_t>(MediaDeviceType::kNumMediaDeviceTypes)>;
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+BASE_DECLARE_FEATURE(kReleaseVideoSourceProviderIfNotInUse);
+#endif
+
 // MediaDevicesManager is responsible for doing media-device enumerations.
 // In addition it implements caching for enumeration results and device
 // monitoring in order to keep caches consistent.
@@ -67,6 +72,8 @@ class CONTENT_EXPORT MediaDevicesManager
    public:
     BoolDeviceTypes() { fill(false); }
   };
+
+  enum class PermissionDeniedState { kDenied, kNotDenied };
 
   using EnumerationCallback =
       base::OnceCallback<void(const MediaDeviceEnumeration&)>;
@@ -128,6 +135,17 @@ class CONTENT_EXPORT MediaDevicesManager
                                bool request_audio_input_capabilities,
                                EnumerateDevicesCallback callback);
 
+  void AddAudioDeviceToOriginMap(GlobalRenderFrameHostId render_frame_host_id,
+                                 const blink::WebMediaDeviceInfo& device_info);
+
+  bool IsAudioOutputDeviceExplicitlyAuthorized(
+      GlobalRenderFrameHostId render_frame_host_id,
+      const std::string& raw_device_id);
+
+  void GetSpeakerSelectionAndMicrophonePermissionState(
+      GlobalRenderFrameHostId render_frame_host_id,
+      base::OnceCallback<void(PermissionDeniedState, bool)> callback);
+
   uint32_t SubscribeDeviceChangeNotifications(
       GlobalRenderFrameHostId render_frame_host_id,
       const BoolDeviceTypes& subscribe_types,
@@ -179,11 +197,15 @@ class CONTENT_EXPORT MediaDevicesManager
     get_salt_and_origin_cb_ = std::move(callback);
   }
 
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  void UpdateVideoCaptureHostsEmptyState(bool empty);
+#endif
+
   // Implementation of video_capture::mojom::DevicesChangedObserver that
   // forwards a devices changed event to the global (process-local) instance of
   // base::DeviceMonitor.
   // Defined in a separate file video_capture_devices_changed_observer.cc
-  class VideoCaptureDevicesChangedObserver
+  class CONTENT_EXPORT VideoCaptureDevicesChangedObserver
       : public video_capture::mojom::DevicesChangedObserver {
     friend class MockVideoCaptureDevicesChangedObserver;
 
@@ -193,7 +215,8 @@ class CONTENT_EXPORT MediaDevicesManager
         base::RepeatingClosure listener_cb);
     ~VideoCaptureDevicesChangedObserver() override;
 
-    void ConnectToService();
+    void EnsureConnectedToService();
+    void DisconnectVideoSourceProvider();
 
    private:
     // video_capture::mojom::DevicesChangedObserver implementation:
@@ -288,6 +311,7 @@ class CONTENT_EXPORT MediaDevicesManager
       const MediaDeviceSaltAndOrigin& salt_and_origin,
       const MediaDevicesManager::BoolDeviceTypes& has_permissions);
   void OnDevicesEnumerated(
+      GlobalRenderFrameHostId render_frame_host_id,
       const MediaDevicesManager::BoolDeviceTypes& requested_types,
       bool request_video_input_capabilities,
       bool request_audio_input_capabilities,
@@ -370,6 +394,11 @@ class CONTENT_EXPORT MediaDevicesManager
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   void RegisterVideoCaptureDevicesChangedObserver();
+  void OnDisconectVideoSourceProviderTimer();
+  void MaybeScheduleDisconectVideoSourceProviderTimer();
+
+  bool is_video_capture_hosts_set_empty_ = true;
+  base::OneShotTimer disconnect_video_source_provider_timer_;
 #endif
 
   bool use_fake_devices_;
@@ -400,6 +429,18 @@ class CONTENT_EXPORT MediaDevicesManager
 
   // Callback used to obtain the current device ID salt and security origin.
   GetMediaDeviceSaltAndOriginCallback get_salt_and_origin_cb_;
+
+  struct WebMediaDeviceInfoComparator {
+    bool operator()(const blink::WebMediaDeviceInfo& a,
+                    const blink::WebMediaDeviceInfo& b) const {
+      return a.device_id < b.device_id;
+    }
+  };
+
+  base::flat_map<
+      GlobalRenderFrameHostId,
+      std::set<blink::WebMediaDeviceInfo, WebMediaDeviceInfoComparator>>
+      audio_device_origin_map_;
 
   class AudioServiceDeviceListener;
   std::unique_ptr<AudioServiceDeviceListener> audio_service_device_listener_;

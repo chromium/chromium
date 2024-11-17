@@ -14,7 +14,7 @@
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/tribool.h"
-#import "components/supervised_user/core/browser/supervised_user_capabilities.h"
+#import "components/supervised_user/core/browser/family_link_user_capabilities.h"
 #import "components/supervised_user/core/browser/supervised_user_preferences.h"
 #import "components/supervised_user/core/common/features.h"
 #import "components/sync/service/sync_service.h"
@@ -99,8 +99,7 @@ bool IsControllingSigninAllowedByPolicy() {
     case BrowserSigninMode::kForced:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool GetStatusForSigninPolicy() {
@@ -114,8 +113,7 @@ bool GetStatusForSigninPolicy() {
     case BrowserSigninMode::kDisabled:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -553,8 +551,7 @@ bool GetStatusForSigninPolicy() {
     case BetterSearchAndBrowsingManagedItemType:
     case ImproveChromeManagedItemType:
     case ImproveSearchSuggestionsManagedItemType:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case ParcelTrackingItemType:
       break;
   }

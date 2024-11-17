@@ -80,6 +80,12 @@
       { start: "2020-07-10", domain: "tencent.com" },
     ]
   },
+  "xiaochengh@chromium.org": {
+    affiliations: [
+      { start: "2023-12-03", domain: "huawei.com" },
+      { start: "2015-10-19", domain: "google.com" },
+    ]
+  },
   "zenye@chromium.org": {
     affiliations: [
       { start: "2019-09-26", domain: "microsoft.com" },

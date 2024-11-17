@@ -58,6 +58,7 @@ suite('TabSearchAppTest', () => {
     TabSearchApiProxyImpl.setInstance(testProxy);
 
     tabSearchPage = document.createElement('tab-search-page');
+    tabSearchPage.availableHeight = 500;
 
     document.body.appendChild(tabSearchPage);
     await eventToPromise('viewport-filled', tabSearchPage.$.tabsList);
@@ -728,33 +729,6 @@ suite('TabSearchAppTest', () => {
     assertEquals(2, testProxy.getCallCount('saveRecentlyClosedExpandedPref'));
     await microtasksFinished();
     assertEquals(3, queryRows().length);
-  });
-
-  [true, false].forEach((windowActive) => {
-    test(
-        `Available height set correctly when the window's active state is ${
-            windowActive}`,
-        async () => {
-          await setupTest(
-              createProfileData({
-                windows: [{
-                  active: windowActive,
-                  height: SAMPLE_WINDOW_HEIGHT,
-                  tabs: generateSampleTabsFromSiteNames(['OpenTab1'], true),
-                }],
-                recentlyClosedTabs:
-                    generateSampleRecentlyClosedTabsFromSiteNames(
-                        ['RecentlyClosedTab1', 'RecentlyClosedTab2']),
-                recentlyClosedSectionExpanded: true,
-              }),
-              {
-                recentlyClosedDefaultItemDisplayCount: 1,
-              });
-
-          assertEquals(
-              SAMPLE_WINDOW_HEIGHT,
-              tabSearchPage.getAvailableHeightForTesting());
-        });
   });
 
   test('Changing active does not render extra tabs', async () => {

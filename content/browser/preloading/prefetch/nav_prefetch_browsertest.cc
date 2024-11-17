@@ -4,7 +4,9 @@
 
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "base/timer/elapsed_timer.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
+#include "content/browser/preloading/preloading.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
@@ -14,6 +16,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/prefetch_test_util.h"
+#include "content/public/test/preloading_test_util.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
@@ -32,6 +35,11 @@ class NavPrefetchBrowserTest : public ContentBrowserTest {
  public:
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
+    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
+    attempt_ukm_entry_builder_ =
+        std::make_unique<test::PreloadingAttemptUkmEntryBuilder>(
+            content_preloading_predictor::kSpeculationRules);
+    test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
   void StartPrefetch(const GURL& url) {
@@ -70,8 +78,24 @@ class NavPrefetchBrowserTest : public ContentBrowserTest {
     return request_count_by_path_[url.PathForRequest()];
   }
 
+  ukm::TestAutoSetUkmRecorder* test_ukm_recorder() {
+    return ukm_recorder_.get();
+  }
+
+  const test::PreloadingAttemptUkmEntryBuilder&
+  attempt_entry_builder() {
+    return *attempt_ukm_entry_builder_;
+  }
+
  private:
   std::map<std::string, int> request_count_by_path_ GUARDED_BY(lock_);
+  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
+  std::unique_ptr<test::PreloadingAttemptUkmEntryBuilder>
+      attempt_ukm_entry_builder_;
+  // Disable sampling for UKM preloading logs.
+  test::PreloadingConfigOverride preloading_config_override_;
+  std::unique_ptr<base::ScopedMockElapsedTimersForTest> test_timer_;
+
   base::Lock lock_;
 };
 
@@ -144,6 +168,22 @@ IN_PROC_BROWSER_TEST_F(NavPrefetchBrowserTest, ServedToRedirectionChain) {
 
   EXPECT_TRUE(test_prefetch_watcher.PrefetchUsedInLastNavigation());
   EXPECT_EQ(GetRequestCount(des_url), 1);
+  ukm::SourceId ukm_source_id =
+      shell()->web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
+
+  // Navigate primary page to flush the metrics.
+  ASSERT_TRUE(NavigateToURL(shell(), initiator_url));
+
+  test::ExpectPreloadingAttemptUkm(
+      *test_ukm_recorder(),
+      {attempt_entry_builder().BuildEntry(
+          ukm_source_id, PreloadingType::kPrefetch,
+          PreloadingEligibility::kEligible, PreloadingHoldbackStatus::kAllowed,
+          PreloadingTriggeringOutcome::kSuccess,
+          PreloadingFailureReason::kUnspecified,
+          /*accurate=*/true,
+          base::ScopedMockElapsedTimersForTest::kMockElapsedTime,
+          blink::mojom::SpeculationEagerness::kEager)});
 }
 
 // TODO(crbug.com/345352974): Make it a web platform test instead.

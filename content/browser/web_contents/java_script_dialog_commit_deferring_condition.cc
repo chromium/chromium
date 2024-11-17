@@ -83,4 +83,8 @@ JavaScriptDialogCommitDeferringCondition::WillCommitNavigation(
   return Result::kDefer;
 }
 
+const char* JavaScriptDialogCommitDeferringCondition::TraceEventName() const {
+  return "JavaScriptDialogCommitDeferringCondition";
+}
+
 }  // namespace content

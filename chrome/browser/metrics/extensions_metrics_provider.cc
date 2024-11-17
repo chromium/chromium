@@ -30,8 +30,10 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
+#include "extensions/common/features/feature_developer_mode_only.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
@@ -80,8 +82,7 @@ metrics::SystemProfileProto::ExtensionsState ExtensionStateAsProto(
     case OFF_STORE:
       return metrics::SystemProfileProto::HAS_OFFSTORE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return metrics::SystemProfileProto::NO_EXTENSIONS;
+  NOTREACHED();
 }
 
 // Determines if the |extension| is an extension (can use extension APIs) and is
@@ -156,8 +157,7 @@ ExtensionInstallProto::Type GetType(Manifest::Type type) {
       // TODO(mgawad): introduce new CHROMEOS_SYSTEM_EXTENSION type.
       return ExtensionInstallProto::EXTENSION;
     case Manifest::NUM_LOAD_TYPES:
-      NOTREACHED_IN_MIGRATION();
-      // Fall through.
+      NOTREACHED();
   }
   return ExtensionInstallProto::UNKNOWN_TYPE;
 }
@@ -219,7 +219,7 @@ ExtensionInstallProto::BackgroundScriptType GetBackgroundScriptType(
   return ExtensionInstallProto::NO_BACKGROUND_SCRIPT;
 }
 
-static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 24),
+static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 25),
               "Adding a new disable reason? Be sure to include the new reason "
               "below, update the test to exercise it, and then adjust this "
               "value for DISABLE_REASON_LAST");
@@ -267,6 +267,8 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
        ExtensionInstallProto::PUBLISHED_IN_STORE_REQUIRED_BY_POLICY},
       {extensions::disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION,
        ExtensionInstallProto::UNSUPPORTED_MANIFEST_VERSION},
+      {extensions::disable_reason::DISABLE_UNSUPPORTED_DEVELOPER_EXTENSION,
+       ExtensionInstallProto::UNSUPPORTED_DEVELOPER_EXTENSION},
   };
 
   int disable_reasons = prefs->GetDisableReasons(id);
@@ -312,8 +314,7 @@ ExtensionInstallProto::BlacklistState GetBlacklistState(
     case extensions::BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED:
       return ExtensionInstallProto::BLACKLISTED_POTENTIALLY_UNWANTED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ExtensionInstallProto::BLACKLISTED_UNKNOWN;
+  NOTREACHED();
 }
 
 // Creates the install proto for a given |extension|. |now| is the current
@@ -323,7 +324,8 @@ metrics::ExtensionInstallProto ConstructInstallProto(
     const extensions::Extension& extension,
     extensions::ExtensionPrefs* prefs,
     base::Time last_sample_time,
-    extensions::ExtensionManagement* extension_management) {
+    extensions::ExtensionManagement* extension_management,
+    bool in_extensions_developer_mode) {
   ExtensionInstallProto install;
   install.set_type(GetType(extension.manifest()->type()));
   install.set_install_location(GetInstallLocation(extension.location()));
@@ -347,6 +349,7 @@ metrics::ExtensionInstallProto ConstructInstallProto(
   install.set_blacklist_state(GetBlacklistState(extension.id(), prefs));
   install.set_installed_in_this_sample_period(
       prefs->GetLastUpdateTime(extension.id()) >= last_sample_time);
+  install.set_in_extensions_developer_mode(in_extensions_developer_mode);
 
   return install;
 }
@@ -355,6 +358,8 @@ metrics::ExtensionInstallProto ConstructInstallProto(
 std::vector<metrics::ExtensionInstallProto> GetInstallsForProfile(
     Profile* profile,
     base::Time last_sample_time) {
+  bool in_extensions_developer_mode = extensions::GetCurrentDeveloperMode(
+      extensions::util::GetBrowserContextId(profile));
   extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile);
   const extensions::ExtensionSet extensions =
       extensions::ExtensionRegistry::Get(profile)
@@ -365,7 +370,8 @@ std::vector<metrics::ExtensionInstallProto> GetInstallsForProfile(
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile);
   for (const auto& extension : extensions) {
     installs.push_back(ConstructInstallProto(
-        *extension, prefs, last_sample_time, extension_management));
+        *extension, prefs, last_sample_time, extension_management,
+        in_extensions_developer_mode));
   }
 
   return installs;
@@ -413,6 +419,19 @@ uint64_t ExtensionsMetricsProvider::GetClientID() const {
   return metrics::MetricsLog::Hash(metrics_state_manager_->client_id());
 }
 
+void ExtensionsMetricsProvider::ProvideCurrentSessionData(
+    metrics::ChromeUserMetricsExtension* uma_proto) {
+  Profile* profile = cached_profile_.GetMetricsProfile();
+  if (!profile) {
+    return;
+  }
+
+  bool in_extensions_developer_mode = extensions::GetCurrentDeveloperMode(
+      extensions::util::GetBrowserContextId(profile));
+  base::UmaHistogramBoolean("Extensions.DeveloperModeStatusEnabled",
+                            in_extensions_developer_mode);
+}
+
 void ExtensionsMetricsProvider::ProvideSystemProfileMetrics(
     metrics::SystemProfileProto* system_profile) {
   ProvideOffStoreMetric(system_profile);
@@ -429,8 +448,11 @@ ExtensionsMetricsProvider::ConstructInstallProtoForTesting(
     Profile* profile) {
   extensions::ExtensionManagement* extension_management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile);
+  bool in_extensions_developer_mode = extensions::GetCurrentDeveloperMode(
+      extensions::util::GetBrowserContextId(profile));
   return ConstructInstallProto(extension, prefs, last_sample_time,
-                               extension_management);
+                               extension_management,
+                               in_extensions_developer_mode);
 }
 
 // static

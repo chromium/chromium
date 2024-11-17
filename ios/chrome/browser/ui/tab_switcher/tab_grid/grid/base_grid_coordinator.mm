@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_group_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_tab_group_coordinator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/recent_activity_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/legacy_grid_transition_layout.h"
@@ -48,6 +49,9 @@
   // The coordinator to handle the confirmation dialog for the action taken for
   // a tab group.
   TabGroupConfirmationCoordinator* _tabGroupConfirmationCoordinator;
+  // The coordinator to handle the half sheet for the recent activity in a
+  // shared tab group.
+  RecentActivityCoordinator* _tabGroupRecentActivityCoordinator;
 }
 
 #pragma mark - Public
@@ -127,10 +131,10 @@
 }
 
 - (void)stopChildCoordinators {
-  if (_tabGroupConfirmationCoordinator) {
-    [_tabGroupConfirmationCoordinator stop];
-    _tabGroupConfirmationCoordinator = nil;
-  }
+  [_tabGroupConfirmationCoordinator stop];
+  _tabGroupConfirmationCoordinator = nil;
+  [_tabGroupRecentActivityCoordinator stop];
+  _tabGroupRecentActivityCoordinator = nil;
   [self hideTabGroupCreationAnimated:NO];
   [self.tabGroupCoordinator stopChildCoordinators];
   [self.gridViewController dismissModals];
@@ -191,7 +195,7 @@
                            forProtocol:@protocol(TabGroupsCommands)];
 
   self.mediator.tabGroupsHandler = self;
-  if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
+  if (!self.browser->GetProfile()->IsOffTheRecord()) {
     self.mediator.tabGridToolbarHandler =
         HandlerForProtocol(dispatcher, TabGridToolbarCommands);
   }
@@ -322,14 +326,14 @@
 - (void)showTabGridTabGroupSnackbarAfterClosingGroups:
     (int)numberOfClosedGroups {
   if (!IsTabGroupSyncEnabled() ||
-      self.browser->GetBrowserState()->IsOffTheRecord()) {
+      self.browser->GetProfile()->IsOffTheRecord()) {
     return;
   }
 
   // Don't show the snackbar if the IPH will be presented.
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(
+          self.browser->GetProfile());
   if (tracker->WouldTriggerHelpUI(
           feature_engagement::kIPHiOSSavedTabGroupClosed)) {
     return;
@@ -356,6 +360,14 @@
   id<SnackbarCommands> snackbarCommandsHandler =
       HandlerForProtocol(dispatcher, SnackbarCommands);
   [snackbarCommandsHandler showSnackbarMessage:message];
+}
+
+- (void)showRecentActivityForGroup:(base::WeakPtr<const TabGroup>)tabGroup {
+  _tabGroupRecentActivityCoordinator = [[RecentActivityCoordinator alloc]
+      initWithBaseViewController:self.baseViewController
+                         browser:self.browser
+                        tabGroup:tabGroup];
+  [_tabGroupRecentActivityCoordinator start];
 }
 
 #pragma mark - CreateOrEditTabGroupCoordinatorDelegate

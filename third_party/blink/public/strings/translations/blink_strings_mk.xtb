@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Нормален</translation>
 <translation id="1591562245178063882">Овој месец</translation>
 <translation id="1637811476055996098">Избери датотеки</translation>
-<translation id="1680090928918677457">Користи камера</translation>
 <translation id="1729654308190250600">Внесете адреса на е-пошта што не е празна.</translation>
 <translation id="1758486001363313524">Друго...</translation>
 <translation id="1921819250265091946">дд</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Скратете го текстот на <ph name="MAX_CHARACTERS" /> знаци или помалку (тековно користите <ph name="CURRENT_LENGTH" /> знаци).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" /> недела, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Песна <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Камерата и микрофонот се дозволени</translation>
 <translation id="2507943997699731163">Пополнете го ова поле.</translation>
 <translation id="2613802280814924224">Внесете важечка вредност. Најблиската важечка вредност е <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Испрати</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Продолжете го текстот на <ph name="MIN_CHARACTERS" /> знаци или повеќе (во моментов користите <ph name="CURRENT_LENGTH" /> знаци).</translation>
 <translation id="383465348367842624">Дел по кој следува „<ph name="ATSIGN" />“ не треба да го содржи симболот „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="3846214748874656680">Излези од цел екран</translation>
-<translation id="4031179711345676612">Микрофон е дозволен</translation>
 <translation id="4360991593054037559">Внесете важечка вредност. Двете најблиски важечки вредности се <ph name="VALID_VALUE_LOW" /> и <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Детали</translation>
-<translation id="4663373278480897665">Камерата е дозволена</translation>
 <translation id="4664250907885839816">Следниот дел „<ph name="ATSIGN" />“ не треба да го содржи симболот „<ph name="INVALIDCHARACTER" />“.</translation>
 <translation id="4718048029184481307">Пуштено е во „Слика во слика“</translation>
-<translation id="4792862212177489858">Споделете локација</translation>
 <translation id="4812940957355064477">Внесете број.</translation>
-<translation id="49269513399674318">Користи микрофон</translation>
 <translation id="4975562563186953947">Избрани: <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Вклучи звук</translation>
 <translation id="49969490063480558">Внесете дел по „<ph name="ATSIGN" />“. Адресата „<ph name="INVALIDADDRESS" />“ е некомплетна.</translation>
@@ -79,13 +73,11 @@
 <translation id="6820355525329141109">Дополнителната компонента не може да се вчита</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Продолжете го текстот на <ph name="MIN_CHARACTERS" /> знаци или повеќе (во моментов користите 1 знак).</translation>
-<translation id="7080893216867146095">Споделувањето локација е дозволено</translation>
 <translation id="709897737746224366">Усогласете го бараниот формат.</translation>
-<translation id="7134810312945846184">Користи микрофон и камера</translation>
 <translation id="7263440858009898357">Изберете ставка од листата.</translation>
 <translation id="7364796246159120393">Избери датотека</translation>
 <translation id="739024184232394898">Друго...</translation>
-<translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7514365320538308">Преземи</translation>
 <translation id="7750228210027921155">Слика во слика</translation>
 <translation id="7782515065589691344">1,25</translation>

@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_HOST_H_
 #define CHROME_BROWSER_PREDICTORS_LCP_CRITICAL_PATH_PREDICTOR_LCP_CRITICAL_PATH_PREDICTOR_HOST_H_
 
+#include "chrome/browser/page_load_metrics/observers/lcp_critical_path_predictor_page_load_metrics_observer.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 
 namespace predictors {
@@ -38,6 +40,9 @@ class LCPCriticalPathPredictorHost
 
   ~LCPCriticalPathPredictorHost() override;
 
+  LcpCriticalPathPredictorPageLoadMetricsObserver*
+  GetLcpCriticalPathPredictorPageLoadMetricsObserver() const;
+
   // Implements blink::mojom::LCPCriticalPathPredictorHost.
   void SetLcpElementLocator(
       const std::string& lcp_element_locator,
@@ -49,7 +54,8 @@ class LCPCriticalPathPredictorHost
   void NotifyFetchedFont(const GURL& font_url, bool hit) override;
   void NotifyFetchedSubresource(
       const GURL& subresource_url,
-      base::TimeDelta subresource_load_start) override;
+      base::TimeDelta subresource_load_start,
+      network::mojom::RequestDestination request_destination) override;
 };
 
 }  // namespace predictors

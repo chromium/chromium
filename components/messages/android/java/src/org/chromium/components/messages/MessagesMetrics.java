@@ -163,10 +163,10 @@ public class MessagesMetrics {
             boolean messageDismissedByGesture,
             long durationMs) {
         String histogramSuffix = messageIdentifierToHistogramSuffix(messageIdentifier);
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 TIME_TO_ACTION_HISTOGRAM_PREFIX + histogramSuffix, durationMs);
         if (messageDismissedByGesture) {
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     TIME_TO_ACTION_DISMISS_HISTOGRAM_PREFIX + histogramSuffix, durationMs);
         }
     }
@@ -222,7 +222,7 @@ public class MessagesMetrics {
 
     static void recordTimeToFullyShow(@MessageIdentifier int messageIdentifier, long durationMs) {
         String histogramSuffix = messageIdentifierToHistogramSuffix(messageIdentifier);
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 STACKING_TIME_TO_FULLY_SHOW_PREFIX + histogramSuffix, durationMs);
     }
 
@@ -403,6 +403,18 @@ public class MessagesMetrics {
                 return "PromptHatsQuickDelete";
             case MessageIdentifier.PROMPT_HATS_SAFETY_HUB:
                 return "PromptHatsSafetyHub";
+            case MessageIdentifier.DEFAULT_BROWSER_PROMO:
+                return "DefaultBrowserPromo";
+            case MessageIdentifier.TAB_REMOVED_THROUGH_COLLABORATION:
+                return "TabRemovedThroughCollaboration";
+            case MessageIdentifier.TAB_NAVIGATED_THROUGH_COLLABORATION:
+                return "TabNavigatedThroughCollaboration";
+            case MessageIdentifier.COLLABORATION_MEMBER_ADDED:
+                return "CollaborationMemberAdded";
+            case MessageIdentifier.COLLABORATION_REMOVED:
+                return "CollaborationRemoved";
+            case MessageIdentifier.CCT_ACCOUNT_MISMATCH_NOTICE:
+                return "CctAccountMismatchNotice";
             default:
                 return "Unknown";
         }

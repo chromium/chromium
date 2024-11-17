@@ -351,6 +351,11 @@ class CC_EXPORT RenderSurfaceImpl {
       nearest_occlusion_immune_ancestor_ = nullptr;
 
   std::unique_ptr<DamageTracker> damage_tracker_;
+
+  // A ViewTransitionContentLayer only knows its final visible drawable rect
+  // once its originating surface's content rect has been computed. So we defer
+  // adding this contribution until that is complete.
+  std::vector<LayerImpl*> deferred_contributing_layers_;
 };
 
 }  // namespace cc

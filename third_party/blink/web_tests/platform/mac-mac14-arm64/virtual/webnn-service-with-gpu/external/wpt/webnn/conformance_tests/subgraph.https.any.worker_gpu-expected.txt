@@ -1,10 +1,6 @@
 This is a testharness.js-based test.
 [FAIL] conv2d default + prelu
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
-[FAIL] conv2d default + gelu
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
-[FAIL] convTranspose2d default + gelu
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Unsupported operator gelu."
 [FAIL] convTranspose2d default + prelu
   promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'prelu' on 'MLGraphBuilder': Unsupported data type float32 for argument input, must be one of []."
 [FAIL] batchNormalization default + relu

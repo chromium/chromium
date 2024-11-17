@@ -40,14 +40,19 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return false;
 
         int value = -1;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-            value =
-                    Settings.Secure.getInt(
-                            context.getContentResolver(), "stylus_handwriting_enabled", 1);
+        if (StylusHandwritingFeatureMap.isEnabledOrDefault(
+                StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {
+            value = StylusWritingSettingsState.getInstance().getStylusHandWritingSetting();
         } else {
-            value =
-                    Settings.Global.getInt(
-                            context.getContentResolver(), "stylus_handwriting_enabled", -1);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                value =
+                        Settings.Secure.getInt(
+                                context.getContentResolver(), "stylus_handwriting_enabled", 1);
+            } else {
+                value =
+                        Settings.Global.getInt(
+                                context.getContentResolver(), "stylus_handwriting_enabled", -1);
+            }
         }
 
         if (value != 1) {
@@ -57,9 +62,15 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
 
         InputMethodManager inputMethodManager = context.getSystemService(InputMethodManager.class);
         List<InputMethodInfo> inputMethods = inputMethodManager.getInputMethodList();
-        String defaultIme =
-                Settings.Secure.getString(
-                        context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
+        String defaultIme;
+        if (StylusHandwritingFeatureMap.isEnabledOrDefault(
+                StylusHandwritingFeatureMap.CACHE_STYLUS_SETTINGS, false)) {
+            defaultIme = StylusWritingSettingsState.getInstance().getDefaultInputMethod();
+        } else {
+            defaultIme =
+                    Settings.Secure.getString(
+                            context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
+        }
 
         if (defaultIme == null) {
             Log.d(

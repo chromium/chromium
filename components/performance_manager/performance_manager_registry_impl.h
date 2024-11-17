@@ -13,6 +13,7 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "components/performance_manager/browser_child_process_watcher.h"
+#include "components/performance_manager/embedder/binders.h"
 #include "components/performance_manager/embedder/performance_manager_registry.h"
 #include "components/performance_manager/owned_objects.h"
 #include "components/performance_manager/performance_manager_tab_helper.h"
@@ -81,6 +82,7 @@ class PerformanceManagerRegistryImpl
   PerformanceManagerRegistered* GetRegisteredObject(uintptr_t type_id);
 
   // PerformanceManagerRegistry:
+  Binders& GetBinders() override;
   void CreatePageNodeForWebContents(
       content::WebContents* web_contents) override;
   void SetPageType(content::WebContents* web_contents, PageType type) override;
@@ -90,11 +92,8 @@ class PerformanceManagerRegistryImpl
       content::BrowserContext* browser_context) override;
   void NotifyBrowserContextRemoved(
       content::BrowserContext* browser_context) override;
-  void CreateProcessNodeAndExposeInterfacesToRendererProcess(
-      service_manager::BinderRegistry* registry,
+  void CreateProcessNode(
       content::RenderProcessHost* render_process_host) override;
-  void ExposeInterfacesToRenderFrame(
-      mojo::BinderMapWithContext<content::RenderFrameHost*>* map) override;
   void TearDown() override;
 
   // PerformanceManagerTabHelper::DestructionObserver:
@@ -151,6 +150,9 @@ class PerformanceManagerRegistryImpl
   void OnRenderProcessHostCreated(content::RenderProcessHost* host) override;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Helper object to bind Mojo interfaces. Can be accessed on any sequence.
+  Binders binders_;
 
   // Tracks WebContents and RenderProcessHost for which we have created user
   // data. Used to destroy all user data when the registry is destroyed.

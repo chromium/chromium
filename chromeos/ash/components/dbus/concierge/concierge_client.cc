@@ -541,7 +541,7 @@ class ConciergeClientImpl : public ConciergeClient {
     } else if (signal_name == concierge::kVmSwappingSignal) {
       // DO NOTHING.
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 

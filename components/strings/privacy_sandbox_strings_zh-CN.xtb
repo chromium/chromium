@@ -3,18 +3,25 @@
 <translationbundle lang="zh-CN">
 <translation id="1444443021901415601">Chrome 会根据您近期的浏览记录来推测您感兴趣的主题</translation>
 <translation id="2252052615723281030">登录 Chrome 后，此设置有助于确保您的 IP 地址不会外泄。如果 Chrome 怀疑某个网站可能跟踪您，或许会通过隐私保护服务器来发送您的某些流量。</translation>
+<translation id="235789365079050412">Google 隐私权政策</translation>
 <translation id="2793385791865768072">Chromium 会根据您近期的浏览记录来推测您感兴趣的主题</translation>
+<translation id="2979365474350987274">第三方 Cookie 受到限制</translation>
 <translation id="33479675708419823">在您登录 Chrome 后，此设置有助于确保您的 IP 地址不会外泄。如果 Chrome 怀疑某个网站可能跟踪您，或许会通过隐私保护服务器来发送您的某些流量。详细了解<ph name="LINK_BEGIN" />“IP 地址保护”的运作方式<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">详细了解如何隐藏您的 IP 地址</translation>
+<translation id="385051799172605136">返回</translation>
 <translation id="4041687306270459969">保留时长超过 4 周的广告主题会自动删除。主题包括体育、服饰等</translation>
 <translation id="4177501066905053472">广告主题</translation>
 <translation id="4301151630239508244">广告主题只是网站用来展示个性化广告的众多方法之一。即使没有广告主题，网站仍可以向您展示广告，但这些广告可能不够个性化。详细了解如何<ph name="BEGIN_LINK_1" />管理广告隐私权<ph name="END_LINK_1" />。</translation>
+<translation id="4501357987281382712">如需详细了解 Google 如何保护您的数据，请参阅我们的<ph name="BEGIN_LINK" />《隐私权政策》<ph name="END_LINK" />。</translation>
 <translation id="453692855554576066">您可以在 Chromium 设置中查看您的广告主题，并屏蔽不想与网站分享的主题</translation>
 <translation id="4598427486995631491">隐藏您的 IP 地址</translation>
 <translation id="4692439979815346597">您可以在 Chrome 设置中查看您的广告主题，并屏蔽不想与网站分享的主题</translation>
 <translation id="5413586988657235240">您访问的网站可以向 Chromium 请求主题信息，以便向您展示相关广告，同时保护您的浏览记录和身份信息</translation>
+<translation id="6053735090575989697">如需详细了解 Google 如何保护您的数据，请参阅我们的《隐私权政策》。</translation>
 <translation id="6186536480878693792">您访问的网站可以向 Chrome 请求主题信息，以便向您展示相关广告，同时保护您的浏览记录和身份信息</translation>
+<translation id="6195163219142236913">已限制第三方 Cookie</translation>
 <translation id="6371812158043974664">在您登录 Chromium 后，此设置有助于确保您的 IP 地址不会外泄。如果 Chromium 怀疑某个网站可能跟踪您，或许会通过隐私保护服务器来发送您的某些流量。详细了解<ph name="LINK_BEGIN" />“IP 地址保护”的运作方式<ph name="LINK_END" /></translation>
+<translation id="6398358690696005758">如需详细了解 Google 如何保护您的数据，请参阅我们的<ph name="BEGIN_LINK1" />《隐私权政策》<ph name="LINK_END1" />。</translation>
 <translation id="7040031291654706261">了解 <ph name="BEGIN_LINK" />IP 地址保护的工作原理<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">查看广告主题设置</translation>
 </translationbundle>

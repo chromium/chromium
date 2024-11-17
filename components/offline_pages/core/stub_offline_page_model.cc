@@ -10,7 +10,7 @@ namespace offline_pages {
 
 StubOfflinePageModel::StubOfflinePageModel()
     : archive_directory_(base::FilePath(FILE_PATH_LITERAL("/archive_dir/"))) {}
-StubOfflinePageModel::~StubOfflinePageModel() {}
+StubOfflinePageModel::~StubOfflinePageModel() = default;
 
 void StubOfflinePageModel::SetArchiveDirectory(const base::FilePath& path) {
   archive_directory_ = path;

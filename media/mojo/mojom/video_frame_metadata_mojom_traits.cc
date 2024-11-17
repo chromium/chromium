@@ -12,12 +12,11 @@
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 
-namespace mojo {
-
+namespace {
 // Deserializes has_field and field into a std::optional.
 #define DESERIALIZE_INTO_OPT(field) \
   if (input.has_##field())          \
-    output->field = input.field()
+  output->field = input.field()
 
 #define READ_AND_ASSIGN_OPT(type, field, FieldInCamelCase) \
   std::optional<type> field;                               \
@@ -25,6 +24,55 @@ namespace mojo {
     return false;                                          \
                                                            \
   output->field = field
+
+std::optional<media::EffectInfo> FromMojom(media::mojom::EffectState input) {
+  switch (input) {
+    case media::mojom::EffectState::kUnknown:
+      return std::nullopt;
+    case media::mojom::EffectState::kDisabled:
+      return media::EffectInfo{.enabled = false};
+    case media::mojom::EffectState::kEnabled:
+      return media::EffectInfo{.enabled = true};
+  }
+
+  NOTREACHED();
+}
+}  // namespace
+
+namespace mojo {
+
+// static
+media::mojom::EffectState
+EnumTraits<media::mojom::EffectState, intermediate::EffectState>::ToMojom(
+    intermediate::EffectState input) {
+  switch (input) {
+    case intermediate::EffectState::kUnknown:
+      return media::mojom::EffectState::kUnknown;
+    case intermediate::EffectState::kDisabled:
+      return media::mojom::EffectState::kDisabled;
+    case intermediate::EffectState::kEnabled:
+      return media::mojom::EffectState::kEnabled;
+  }
+  NOTREACHED();
+}
+
+// static
+bool EnumTraits<media::mojom::EffectState, intermediate::EffectState>::
+    FromMojom(media::mojom::EffectState input,
+              intermediate::EffectState* output) {
+  switch (input) {
+    case media::mojom::EffectState::kUnknown:
+      *output = intermediate::EffectState::kUnknown;
+      return true;
+    case media::mojom::EffectState::kDisabled:
+      *output = intermediate::EffectState::kDisabled;
+      return true;
+    case media::mojom::EffectState::kEnabled:
+      *output = intermediate::EffectState::kEnabled;
+      return true;
+  }
+  NOTREACHED();
+}
 
 // static
 bool StructTraits<media::mojom::VideoFrameMetadataDataView,
@@ -63,7 +111,7 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   READ_AND_ASSIGN_OPT(media::VideoTransformation, transformation,
                       Transformation);
 
-  READ_AND_ASSIGN_OPT(base::UnguessableToken, overlay_plane_id, OverlayPlaneId);
+  READ_AND_ASSIGN_OPT(base::UnguessableToken, tracking_token, TrackingToken);
 
   READ_AND_ASSIGN_OPT(gfx::Size, source_size, SourceSize);
   READ_AND_ASSIGN_OPT(gfx::Rect, capture_update_rect, CaptureUpdateRect);
@@ -80,6 +128,8 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   READ_AND_ASSIGN_OPT(base::TimeDelta, frame_duration, FrameDuration);
   READ_AND_ASSIGN_OPT(base::TimeDelta, wallclock_frame_duration,
                       WallclockFrameDuration);
+
+  output->background_blur = FromMojom(input.background_blur());
 
   output->frame_sequence = input.frame_sequence();
 

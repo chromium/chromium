@@ -8,8 +8,9 @@
 #include <map>
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
+#include "base/memory/weak_ptr.h"
+#include "chromeos/ash/components/boca/proto/bundle.pb.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/web_contents.h"
@@ -19,15 +20,6 @@
 // restrictions for each tab.
 class OnTaskBlocklist {
  public:
-  enum class RestrictionLevel {
-    kNoRestrictions = 1,               // No url restrictions.
-    kLimitedNavigation,                // Only allow exact URL match.
-    kSameDomainNavigation,             // Allow domain/subdomain navigation.
-    kOneLevelDeepNavigation,           // Allow one level deeper navigation.
-    kDomainAndOneLevelDeepNavigation,  // Allows same domain traversal and one
-                                       // level deep.
-  };
-
   // BlocklistSource implementation that blocks all traffic with the
   // exception of URLs specified by the teacher's navigation restriction level.
   // Note that this implementation only supports one observer at a time. Adding
@@ -35,8 +27,9 @@ class OnTaskBlocklist {
   // from the main thread.
   class OnTaskBlocklistSource : public policy::BlocklistSource {
    public:
-    OnTaskBlocklistSource(const GURL& url,
-                          OnTaskBlocklist::RestrictionLevel restriction_type);
+    OnTaskBlocklistSource(
+        const GURL& url,
+        ::boca::LockedNavigationOptions::NavigationType restriction_type);
     OnTaskBlocklistSource(const OnTaskBlocklistSource&) = delete;
     OnTaskBlocklistSource& operator=(const OnTaskBlocklistSource&) = delete;
     ~OnTaskBlocklistSource() override = default;
@@ -67,22 +60,35 @@ class OnTaskBlocklist {
   // otherwise. It should only be true if it's a new tab.
   bool MaybeSetURLRestrictionLevel(
       content::WebContents* tab,
-      OnTaskBlocklist::RestrictionLevel restriction_level);
+      const GURL& url,
+      ::boca::LockedNavigationOptions::NavigationType restriction_level);
 
   // Sets the url restrictions for the given `url` with `restriction_level`.
   // Should only be called for the set of urls sent by the boca producer.
   void SetParentURLRestrictionLevel(
       content::WebContents* tab,
-      OnTaskBlocklist::RestrictionLevel restriction_level);
+      const GURL& url,
+      ::boca::LockedNavigationOptions::NavigationType restriction_level);
 
   // Updates the blocklist that is associated with the given `tab`. This is
   // triggered on an active tab change or when the current tab changes.
   void RefreshForUrlBlocklist(content::WebContents* tab);
 
+  // Remove the `tab` from the `parent_tab_to_nav_filters_`;
+  void RemoveParentFilter(content::WebContents* tab);
+
   // Remove the `tab` from the `child_tab_to_nav_filters_`;
   void RemoveChildFilter(content::WebContents* tab);
 
   void CleanupBlocklist();
+
+  // Returns true if the tab can perform one level deep. If the current
+  // restriction level is not `kOneLevelDeepNavigation`, then this will return
+  // false. This should only be called in a block that checks that the current
+  // restriction level is for one level deep navigation.
+  bool CanPerformOneLevelNavigation(content::WebContents* tab);
+
+  bool IsCurrentRestrictionOneLevelDeep();
 
   // Returns true if the `tab` is a parent tab. A parent tab is any tab that was
   // sent as part of a session bundle. Any other tab created (either via
@@ -94,22 +100,24 @@ class OnTaskBlocklist {
   content::WebContents* previous_tab();
 
   const policy::URLBlocklistManager* url_blocklist_manager();
-  std::map<SessionID, OnTaskBlocklist::RestrictionLevel>
+  std::map<SessionID, ::boca::LockedNavigationOptions::NavigationType>
   parent_tab_to_nav_filters();
-  std::map<SessionID, OnTaskBlocklist::RestrictionLevel>
+  std::map<SessionID, ::boca::LockedNavigationOptions::NavigationType>
   child_tab_to_nav_filters();
   std::map<SessionID, GURL> one_level_deep_original_url();
-  OnTaskBlocklist::RestrictionLevel current_page_restriction_level();
+  ::boca::LockedNavigationOptions::NavigationType
+  current_page_restriction_level();
 
  private:
-  OnTaskBlocklist::RestrictionLevel current_page_restriction_level_ =
-      OnTaskBlocklist::RestrictionLevel::kNoRestrictions;
-  raw_ptr<content::WebContents> previous_tab_;
+  ::boca::LockedNavigationOptions::NavigationType
+      current_page_restriction_level_ =
+          ::boca::LockedNavigationOptions::OPEN_NAVIGATION;
+  base::WeakPtr<content::WebContents> previous_tab_;
   GURL previous_url_;
   bool first_time_popup_ = true;
-  std::map<SessionID, OnTaskBlocklist::RestrictionLevel>
+  std::map<SessionID, ::boca::LockedNavigationOptions::NavigationType>
       parent_tab_to_nav_filters_;
-  std::map<SessionID, OnTaskBlocklist::RestrictionLevel>
+  std::map<SessionID, ::boca::LockedNavigationOptions::NavigationType>
       child_tab_to_nav_filters_;
   std::map<SessionID, GURL> one_level_deep_original_url_;
   const std::unique_ptr<policy::URLBlocklistManager> url_blocklist_manager_;

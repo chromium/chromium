@@ -655,6 +655,35 @@ TEST_F(DocumentMetadataExtractorTest, ignorePropertyWithEmptyArray) {
   EXPECT_EQ(expected, extracted);
 }
 
+TEST_F(DocumentMetadataExtractorTest, ignoreNullProperty) {
+  SetHTMLInnerHTML(
+      "<body>"
+      "<script type=\"application/ld+json\">"
+      "\n"
+      "\n"
+      "{\"@type\": \"Restaurant\","
+      "\"name\": null"
+      "}\n"
+      "\n"
+      "</script>"
+      "</body>");
+  SetURL("http://www.test.com/");
+  SetTitle("My neat website about cool stuff");
+
+  WebPagePtr extracted = Extract();
+  ASSERT_FALSE(extracted.is_null());
+
+  WebPagePtr expected =
+      CreateWebPage("http://www.test.com/", "My neat website about cool stuff");
+
+  EntityPtr restaurant = Entity::New();
+  restaurant->type = "Restaurant";
+
+  expected->entities.push_back(std::move(restaurant));
+
+  EXPECT_EQ(expected, extracted);
+}
+
 TEST_F(DocumentMetadataExtractorTest, ignorePropertyWithMixedTypes) {
   SetHTMLInnerHTML(
       "<body>"

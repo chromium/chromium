@@ -76,6 +76,9 @@ static_library("network_diagnostics") {
     "//services/network/public/mojom",
     "//url",
   ]
+
+  data_deps =
+      [ "//chrome/browser/ash/net/network_health:mojo_service_manager_policy" ]
 }
 
 source_set("unit_tests") {

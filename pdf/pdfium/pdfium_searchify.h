@@ -23,6 +23,11 @@ class Size;
 
 namespace chrome_pdf {
 
+using PerformOcrCallbackAsync = base::RepeatingCallback<void(
+    const SkBitmap& bitmap,
+    base::OnceCallback<void(
+        screen_ai::mojom::VisualAnnotationPtr annotation)>)>;
+
 struct SearchifyBoundingBoxOrigin {
   gfx::PointF point;
   float theta;
@@ -38,12 +43,15 @@ ScopedFPDFFont CreateFont(FPDF_DOCUMENT document);
 
 // Adds the recognized text in `annotation` to the given `page`, to be written
 // over `image`.
-void AddTextOnImage(FPDF_DOCUMENT document,
-                    FPDF_PAGE page,
-                    FPDF_FONT font,
-                    FPDF_PAGEOBJECT image,
-                    screen_ai::mojom::VisualAnnotationPtr annotation,
-                    const gfx::Size& image_pixel_size);
+//
+// Returns all the newly added PDFium text objects.
+std::vector<FPDF_PAGEOBJECT> AddTextOnImage(
+    FPDF_DOCUMENT document,
+    FPDF_PAGE page,
+    FPDF_FONT font,
+    FPDF_PAGEOBJECT image,
+    screen_ai::mojom::VisualAnnotationPtr annotation,
+    const gfx::Size& image_pixel_size);
 
 // Internal functions exposed for testing.
 SearchifyBoundingBoxOrigin ConvertToPdfOriginForTesting(
@@ -54,6 +62,10 @@ FS_MATRIX CalculateWordMoveMatrixForTesting(
     const SearchifyBoundingBoxOrigin& origin,
     int word_bounding_box_width,
     bool word_is_rtl);
+gfx::Rect GetSpaceRectForTesting(const gfx::Rect& rect1,
+                                 const gfx::Rect& rect2);
+std::vector<screen_ai::mojom::WordBox> GetWordsAndSpacesForTesting(
+    const std::vector<screen_ai::mojom::WordBoxPtr>& words);
 
 }  // namespace chrome_pdf
 

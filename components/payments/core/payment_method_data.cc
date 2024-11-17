@@ -19,7 +19,7 @@ static const char kSupportedNetworks[] = "supportedNetworks";
 
 }  // namespace
 
-PaymentMethodData::PaymentMethodData() {}
+PaymentMethodData::PaymentMethodData() = default;
 PaymentMethodData::PaymentMethodData(const PaymentMethodData& other) = default;
 PaymentMethodData::~PaymentMethodData() = default;
 

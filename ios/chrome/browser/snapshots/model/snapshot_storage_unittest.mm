@@ -10,6 +10,7 @@
 #import "base/files/scoped_temp_dir.h"
 #import "base/run_loop.h"
 #import "components/sessions/core/session_id.h"
+#import "ios/chrome/browser/sessions/model/session_constants.h"
 #import "ios/chrome/browser/snapshots/model/features.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage+Testing.h"
 #import "ios/chrome/browser/snapshots/model/legacy_snapshot_storage.h"
@@ -37,7 +38,6 @@ const NSUInteger kSnapshotPixelSize = 8;
 
 // Constants used to construct path to test the storage migration.
 const base::FilePath::CharType kSnapshots[] = FILE_PATH_LITERAL("Snapshots");
-const base::FilePath::CharType kSessions[] = FILE_PATH_LITERAL("Sessions");
 const base::FilePath::CharType kIdentifier[] = FILE_PATH_LITERAL("Identifier");
 const base::FilePath::CharType kFilename[] = FILE_PATH_LITERAL("Filename.txt");
 
@@ -338,8 +338,9 @@ TEST_F(LegacySnapshotStorageTest, MigrateCache) {
   const base::FilePath storage_path =
       root.Append(kSnapshots).Append(kIdentifier);
 
-  const base::FilePath legacy_path =
-      root.Append(kSessions).Append(kIdentifier).Append(kSnapshots);
+  const base::FilePath legacy_path = root.Append(kLegacySessionsDirname)
+                                         .Append(kIdentifier)
+                                         .Append(kSnapshots);
 
   ASSERT_TRUE(base::CreateDirectory(legacy_path));
   ASSERT_TRUE(base::WriteFile(legacy_path.Append(kFilename), ""));
@@ -388,8 +389,9 @@ TEST_F(LegacySnapshotStorageTest, MigrateCache_NoLegacyStorage) {
   const base::FilePath storage_path =
       root.Append(kSnapshots).Append(kIdentifier);
 
-  const base::FilePath legacy_path =
-      root.Append(kSessions).Append(kIdentifier).Append(kSnapshots);
+  const base::FilePath legacy_path = root.Append(kLegacySessionsDirname)
+                                         .Append(kIdentifier)
+                                         .Append(kSnapshots);
 
   ASSERT_FALSE(base::DirectoryExists(legacy_path));
 
@@ -414,8 +416,9 @@ TEST_F(LegacySnapshotStorageTest, MigrateCache_FailCreatingCache) {
   const base::FilePath storage_path =
       root.Append(kSnapshots).Append(kIdentifier);
 
-  const base::FilePath legacy_path =
-      root.Append(kSessions).Append(kIdentifier).Append(kSnapshots);
+  const base::FilePath legacy_path = root.Append(kLegacySessionsDirname)
+                                         .Append(kIdentifier)
+                                         .Append(kSnapshots);
 
   ASSERT_TRUE(base::CreateDirectory(legacy_path));
   ASSERT_TRUE(base::WriteFile(legacy_path.Append(kFilename), ""));
@@ -796,8 +799,9 @@ TEST_F(SnapshotStorageTest, MigrateCache) {
   const base::FilePath storage_path =
       root.Append(kSnapshots).Append(kIdentifier);
 
-  const base::FilePath legacy_path =
-      root.Append(kSessions).Append(kIdentifier).Append(kSnapshots);
+  const base::FilePath legacy_path = root.Append(kLegacySessionsDirname)
+                                         .Append(kIdentifier)
+                                         .Append(kSnapshots);
 
   ASSERT_TRUE(base::CreateDirectory(legacy_path));
   ASSERT_TRUE(base::WriteFile(legacy_path.Append(kFilename), ""));
@@ -846,8 +850,9 @@ TEST_F(SnapshotStorageTest, MigrateCache_NoLegacyStorage) {
   const base::FilePath storage_path =
       root.Append(kSnapshots).Append(kIdentifier);
 
-  const base::FilePath legacy_path =
-      root.Append(kSessions).Append(kIdentifier).Append(kSnapshots);
+  const base::FilePath legacy_path = root.Append(kLegacySessionsDirname)
+                                         .Append(kIdentifier)
+                                         .Append(kSnapshots);
 
   ASSERT_FALSE(base::DirectoryExists(legacy_path));
 
@@ -872,8 +877,9 @@ TEST_F(SnapshotStorageTest, MigrateCache_FailCreatingCache) {
   const base::FilePath storage_path =
       root.Append(kSnapshots).Append(kIdentifier);
 
-  const base::FilePath legacy_path =
-      root.Append(kSessions).Append(kIdentifier).Append(kSnapshots);
+  const base::FilePath legacy_path = root.Append(kLegacySessionsDirname)
+                                         .Append(kIdentifier)
+                                         .Append(kSnapshots);
 
   ASSERT_TRUE(base::CreateDirectory(legacy_path));
   ASSERT_TRUE(base::WriteFile(legacy_path.Append(kFilename), ""));

@@ -132,12 +132,10 @@ public interface SurfaceActionsHandler {
 
     /**
      * Notifies the host app that url with broadTopicMids and entityMids was clicked.
+     *
      * @param url The URL that the user clicked on
      * @param entityMids Sorted list (most relevant to least) of entity MIDs that correspond to the
-     *         clicked URL
-     * @param contentCategoryMediaType MediaType expresses the primary media format of the content
-     * @param cardCategory Expresses the category of the clicked card
-     * TODO(tbansal): Remove the first method once the callers have been updated.
+     *     clicked URL
      */
     default void updateUserProfileOnLinkClick(String url, List<Long> entityMids) {}
 

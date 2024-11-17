@@ -3,6 +3,11 @@ This test documents all interface attributes and methods on the global window ob
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 [INTERFACES]
+interface AICreateMonitor : EventTarget
+    attribute @@toStringTag
+    getter ondownloadprogress
+    method constructor
+    setter ondownloadprogress
 interface AbortController
     attribute @@toStringTag
     getter signal
@@ -437,6 +442,7 @@ interface BrowserCaptureMediaStreamTrack : MediaStreamTrack
     attribute @@toStringTag
     method constructor
     method cropTo
+    method restrictTo
 interface ByteLengthQueuingStrategy
     attribute @@toStringTag
     getter highWaterMark
@@ -543,6 +549,12 @@ interface CSSLayerStatementRule : CSSRule
     attribute @@toStringTag
     getter nameList
     method constructor
+interface CSSMarginRule : CSSRule
+    attribute @@toStringTag
+    getter name
+    getter style
+    method constructor
+    setter style
 interface CSSMathClamp : CSSMathValue
     attribute @@toStringTag
     getter lower
@@ -642,14 +654,12 @@ interface CSSPositionTryDescriptors : CSSStyleDeclaration
     getter inline-size
     getter inlineSize
     getter inset
-    getter inset-area
     getter inset-block
     getter inset-block-end
     getter inset-block-start
     getter inset-inline
     getter inset-inline-end
     getter inset-inline-start
-    getter insetArea
     getter insetBlock
     getter insetBlockEnd
     getter insetBlockStart
@@ -715,14 +725,12 @@ interface CSSPositionTryDescriptors : CSSStyleDeclaration
     setter inline-size
     setter inlineSize
     setter inset
-    setter inset-area
     setter inset-block
     setter inset-block-end
     setter inset-block-start
     setter inset-inline
     setter inset-inline-end
     setter inset-inline-start
-    setter insetArea
     setter insetBlock
     setter insetBlockEnd
     setter insetBlockStart
@@ -818,6 +826,7 @@ interface CSSRule
     attribute IMPORT_RULE
     attribute KEYFRAMES_RULE
     attribute KEYFRAME_RULE
+    attribute MARGIN_RULE
     attribute MEDIA_RULE
     attribute NAMESPACE_RULE
     attribute PAGE_RULE
@@ -1607,6 +1616,12 @@ interface DeviceOrientationEvent : Event
     getter beta
     getter gamma
     method constructor
+interface DevicePosture : EventTarget
+    attribute @@toStringTag
+    getter onchange
+    getter type
+    method constructor
+    setter onchange
 interface Document : Node
     static method parseHTMLUnsafe
     attribute @@toStringTag
@@ -2178,7 +2193,6 @@ interface Element : Node
     method getElementsByTagName
     method getElementsByTagNameNS
     method getHTML
-    method getInnerHTML
     method hasAttribute
     method hasAttributeNS
     method hasAttributes
@@ -2646,7 +2660,6 @@ interface GPUAdapter
     getter isFallbackAdapter
     getter limits
     method constructor
-    method requestAdapterInfo
     method requestDevice
 interface GPUAdapterInfo
     attribute @@toStringTag
@@ -2682,6 +2695,7 @@ interface GPUCanvasContext
     getter canvas
     method configure
     method constructor
+    method getConfiguration
     method getCurrentTexture
     method unconfigure
 interface GPUCommandBuffer
@@ -2741,6 +2755,7 @@ interface GPUComputePipeline
     setter label
 interface GPUDevice : EventTarget
     attribute @@toStringTag
+    getter adapterInfo
     getter features
     getter label
     getter limits
@@ -4945,6 +4960,7 @@ interface IdentityCredentialError : DOMException
 interface IdentityProvider
     static method close
     static method getUserInfo
+    static method resolve
     attribute @@toStringTag
     method constructor
 interface IdleDeadline
@@ -5961,6 +5977,7 @@ interface Navigator
     getter credentials
     getter deprecatedRunAdAuctionEnforcesKAnonymity
     getter deviceMemory
+    getter devicePosture
     getter doNotTrack
     getter geolocation
     getter gpu
@@ -6016,6 +6033,7 @@ interface Navigator
     method getBattery
     method getGamepads
     method getInstalledRelatedApps
+    method getInterestGroupAdAuctionData
     method getUserMedia
     method javaEnabled
     method joinAdInterestGroup
@@ -6824,6 +6842,9 @@ interface PublicKeyCredential : Credential
     static method isUserVerifyingPlatformAuthenticatorAvailable
     static method parseCreationOptionsFromJSON
     static method parseRequestOptionsFromJSON
+    static method signalAllAcceptedCredentials
+    static method signalCurrentUserDetails
+    static method signalUnknownCredential
     attribute @@toStringTag
     getter authenticatorAttachment
     getter rawId
@@ -7263,6 +7284,7 @@ interface Request
     getter url
     method arrayBuffer
     method blob
+    method bytes
     method clone
     method constructor
     method formData
@@ -7302,11 +7324,16 @@ interface Response
     getter url
     method arrayBuffer
     method blob
+    method bytes
     method clone
     method constructor
     method formData
     method json
     method text
+interface RestrictionTarget
+    static method fromElement
+    attribute @@toStringTag
+    method constructor
 interface SVGAElement : SVGGraphicsElement
     attribute @@toStringTag
     getter href
@@ -8680,7 +8707,6 @@ interface ShadowRoot : DocumentFragment
     method elementsFromPoint
     method getAnimations
     method getHTML
-    method getInnerHTML
     method getSelection
     method setHTMLUnsafe
     setter adoptedStyleSheets
@@ -8857,7 +8883,7 @@ interface StorageEvent : Event
     getter url
     method constructor
     method initStorageEvent
-interface StorageManager : EventTarget
+interface StorageManager
     attribute @@toStringTag
     method constructor
     method estimate
@@ -11176,12 +11202,25 @@ interface XRFrame
     getter trackedAnchors
     method constructor
     method createAnchor
+    method fillJointRadii
+    method fillPoses
     method getDepthInformation
     method getHitTestResults
     method getHitTestResultsForTransientInput
+    method getJointPose
     method getLightEstimate
     method getPose
     method getViewerPose
+interface XRHand
+    attribute @@toStringTag
+    getter size
+    method @@iterator
+    method constructor
+    method entries
+    method forEach
+    method get
+    method keys
+    method values
 interface XRHitTestResult
     attribute @@toStringTag
     method constructor
@@ -11195,6 +11234,7 @@ interface XRInputSource
     attribute @@toStringTag
     getter gamepad
     getter gripSpace
+    getter hand
     getter handedness
     getter profiles
     getter targetRayMode
@@ -11219,6 +11259,14 @@ interface XRInputSourcesChangeEvent : Event
     getter added
     getter removed
     getter session
+    method constructor
+interface XRJointPose : XRPose
+    attribute @@toStringTag
+    getter radius
+    method constructor
+interface XRJointSpace : XRSpace
+    attribute @@toStringTag
+    getter jointName
     method constructor
 interface XRLayer : EventTarget
     attribute @@toStringTag

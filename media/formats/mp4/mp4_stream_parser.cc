@@ -59,10 +59,8 @@ EncryptionScheme GetEncryptionScheme(const ProtectionSchemeInfo& sinf) {
     case FOURCC_CBCS:
       return EncryptionScheme::kCbcs;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return EncryptionScheme::kUnencrypted;
 }
 
 class ExternalMemoryAdapter : public DecoderBuffer::ExternalMemory {
@@ -143,7 +141,7 @@ MP4StreamParser::MP4StreamParser(
       highest_end_offset_(0),
       has_audio_(false),
       has_video_(false),
-      strict_audio_object_types_(strict_audio_object_types),
+      strict_audio_object_types_(std::move(strict_audio_object_types)),
       has_sbr_(has_sbr),
       has_flac_(has_flac),
       has_iamf_(has_iamf),

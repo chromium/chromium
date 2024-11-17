@@ -8,14 +8,12 @@ import android.app.Activity;
 
 import androidx.annotation.NonNull;
 
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.ui.SharedActivityCoordinator;
-import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.webapps.WebappSplashController;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
@@ -40,33 +38,28 @@ public class WebappActivityCoordinator
 
     @Inject
     public WebappActivityCoordinator(
-            SharedActivityCoordinator sharedActivityCoordinator,
-            Activity activity,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            ActivityTabProvider activityTabProvider,
-            CurrentPageVerifier currentPageVerifier,
-            WebappSplashController splashController,
-            WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler,
-            WebappActionsNotificationManager actionsNotificationManager,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
-        // We don't need to do anything with |sharedActivityCoordinator|, |splashController| or
-        // |actionsNotificationManager|. We just need to resolve it so that it starts working.
+            SharedActivityCoordinator unused_sharedActivityCoordinator,
+            BaseCustomTabActivity activity,
+            WebappSplashController unused_splashController,
+            WebappDeferredStartupWithStorageHandler deferredStartupWithStorageHandler) {
+        // We don't need to do anything with the _unused params. We just need to resolve it so that
+        // it starts working.
 
-        mIntentDataProvider = intentDataProvider;
+        mIntentDataProvider = activity.getIntentDataProvider();
         mWebappInfo = WebappInfo.create(mIntentDataProvider);
         mActivity = activity;
         mDeferredStartupWithStorageHandler = deferredStartupWithStorageHandler;
 
         mDeferredStartupWithStorageHandler.addTask(
                 (storage, didCreateStorage) -> {
-                    if (lifecycleDispatcher.isActivityFinishingOrDestroyed()) return;
+                    if (activity.getLifecycleDispatcher().isActivityFinishingOrDestroyed()) return;
 
                     if (storage != null) {
                         updateStorage(storage);
                     }
                 });
 
-        lifecycleDispatcher.register(this);
+        activity.getLifecycleDispatcher().register(this);
 
         // Initialize the WebappRegistry and warm up the shared preferences for this web app. No-ops
         // if the registry and this web app are already initialized. Must override Strict Mode to

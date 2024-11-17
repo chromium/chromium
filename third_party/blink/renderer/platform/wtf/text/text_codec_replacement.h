@@ -23,8 +23,7 @@ class TextCodecReplacement final : public TextCodecUTF8 {
   static void RegisterCodecs(TextCodecRegistrar);
 
  private:
-  String Decode(const char*,
-                wtf_size_t length,
+  String Decode(base::span<const uint8_t> data,
                 FlushBehavior,
                 bool stop_on_error,
                 bool& saw_error) override;

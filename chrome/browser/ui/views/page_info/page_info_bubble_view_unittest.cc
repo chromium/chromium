@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_main_view.h"
+#include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
@@ -122,7 +123,8 @@ class PageInfoBubbleViewTestApi {
             anchor_view, gfx::Rect(), parent_, web_contents_, GURL(kUrl),
             base::DoNothing(),
             base::BindOnce(&PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
-                           base::Unretained(this), run_loop_.QuitClosure())));
+                           base::Unretained(this), run_loop_.QuitClosure()),
+            /*allow_about_this_site=*/true));
     presenter_ = bubble->presenter_for_testing();
     navigation_handler_ = bubble;
     bubble_delegate_ = bubble;
@@ -582,6 +584,33 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfo) {
   // permission is not being omitted from the UI.
   api_->SetPermissionInfo(list);
   EXPECT_EQ(num_expected_children, api_->GetPermissionsCount());
+}
+
+TEST_F(PageInfoBubbleViewTest, CheckToggleSettingForCapturedSurfaceControl) {
+  PermissionInfoList list(1);
+  list.back().type = ContentSettingsType::CAPTURED_SURFACE_CONTROL;
+  api_->SetPermissionInfo(list);
+
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_SHARED_TABS),
+            api_->GetPermissionLabelTextAt(0));
+  // Verifies that there is no toggle in the main page info.
+  EXPECT_EQ(api_->GetToggleViewAt(0), nullptr);
+
+  // Opens the submenu for Captured Surface Control permission.
+  api_->navigation_handler()->OpenPermissionPage(
+      ContentSettingsType::CAPTURED_SURFACE_CONTROL);
+  ASSERT_GE(api_->current_view()->children().size(), 2u);
+  auto* page_view = static_cast<PageInfoPermissionContentView*>(
+      api_->current_view()->children()[1]);
+  ASSERT_TRUE(page_view);
+#if !BUILDFLAG(IS_CHROMEOS)
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_SUB_MENU),
+            page_view->GetTitleForTesting()->GetText());
+#endif
+  // Verifies that there is a toggle in the permission page view.
+  EXPECT_NE(page_view->GetToggleButtonForTesting(), nullptr);
 }
 
 class PageInfoBubbleViewOffTheRecordTest : public PageInfoBubbleViewTest {
@@ -1148,8 +1177,10 @@ class PageInfoBubbleViewCookies3pcdButtonTest
       public testing::WithParamInterface<bool> {
  public:
   PageInfoBubbleViewCookies3pcdButtonTest() {
-    feature_list_.InitAndEnableFeature(
-        content_settings::features::kTrackingProtection3pcd);
+    feature_list_.InitWithFeatures(
+        {content_settings::features::kTrackingProtection3pcd,
+         privacy_sandbox::kTrackingProtection3pcdUx},
+        {});
     web_contents_helper_ =
         std::make_unique<ScopedWebContentsTestHelper>(GetParam());
   }
@@ -1240,7 +1271,9 @@ class PageInfoBubbleViewTrackingProtectionSubpageTitleTest
  public:
   PageInfoBubbleViewTrackingProtectionSubpageTitleTest() {
     feature_list_.InitWithFeatures(
-        {content_settings::features::kTrackingProtection3pcd}, {});
+        {content_settings::features::kTrackingProtection3pcd,
+         privacy_sandbox::kTrackingProtection3pcdUx},
+        {});
     web_contents_helper_ = std::make_unique<ScopedWebContentsTestHelper>(
         testing::get<2>(GetParam()));
   }

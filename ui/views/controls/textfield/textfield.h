@@ -19,13 +19,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ime/text_edit_commands.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
-#include "ui/base/models/simple_menu_model.h"
-#include "ui/base/pointer/touch_editing_controller.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/events/gesture_event_details.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -34,6 +32,8 @@
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/selection_model.h"
 #include "ui/gfx/text_constants.h"
+#include "ui/menus/simple_menu_model.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 #include "ui/touch_selection/touch_selection_metrics.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/context_menu_controller.h"
@@ -360,6 +360,10 @@ class VIEWS_EXPORT Textfield : public View,
       const ui::DropTargetEvent& event) override;
   void OnDragDone() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  // We don't want to compute the accessible text offsets unless accessibility
+  // is enabled. We need to override this function to make sure that when
+  // accessibility turns on, we compute the current accessible text offsets.
+  void OnAccessibilityInitializing(ui::AXNodeData* node_data) override;
   bool HandleAccessibleAction(const ui::AXActionData& action_data) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
@@ -375,9 +379,10 @@ class VIEWS_EXPORT Textfield : public View,
   void OnTextChanged() override;
 
   // ContextMenuController overrides:
-  void ShowContextMenuForViewImpl(View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // DragController overrides:
   void WriteDragDataForView(View* sender,
@@ -435,6 +440,13 @@ class VIEWS_EXPORT Textfield : public View,
   bool CanComposeInline() const override;
   gfx::Rect GetCaretBounds() const override;
   gfx::Rect GetSelectionBoundingBox() const override;
+#if BUILDFLAG(IS_WIN)
+  std::optional<gfx::Rect> GetProximateCharacterBounds(
+      const gfx::Range& range) const override;
+  std::optional<size_t> GetProximateCharacterIndexFromPoint(
+      const gfx::Point& point,
+      ui::IndexFromPointFlags flags) const override;
+#endif  // BUILDFLAG(IS_WIN)
   bool GetCompositionCharacterBounds(size_t index,
                                      gfx::Rect* rect) const override;
   bool HasCompositionText() const override;
@@ -547,12 +559,6 @@ class VIEWS_EXPORT Textfield : public View,
   // Get the default command for a given key |event|.
   virtual ui::TextEditCommand GetCommandForKeyEvent(const ui::KeyEvent& event);
 
-#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-  // Called when the accessible text offsets for the textfield need to be
-  // recomputed on the next pass.
-  virtual void SetNeedsAccessibleTextOffsetsUpdate();
-#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-
   // Update the cursor position in the text field.
   void UpdateCursorViewPosition();
 
@@ -565,6 +571,10 @@ class VIEWS_EXPORT Textfield : public View,
   virtual void UpdateAccessibleTextSelection() {}
 
   void AddedToWidget() override;
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  void UpdateAccessibleTextOffsetsIfNeeded();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
  private:
   friend class TextfieldTestApi;

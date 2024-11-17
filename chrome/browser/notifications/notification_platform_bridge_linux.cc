@@ -47,6 +47,7 @@
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/utils/check_for_service_and_start.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -70,10 +71,7 @@ const char kFreedesktopNotificationsPath[] = "/org/freedesktop/Notifications";
 // DBus methods.
 const char kMethodCloseNotification[] = "CloseNotification";
 const char kMethodGetCapabilities[] = "GetCapabilities";
-const char kMethodListActivatableNames[] = "ListActivatableNames";
-const char kMethodNameHasOwner[] = "NameHasOwner";
 const char kMethodNotify[] = "Notify";
-const char kMethodStartServiceByName[] = "StartServiceByName";
 
 // DBus signals.
 const char kSignalActionInvoked[] = "ActionInvoked";
@@ -101,9 +99,6 @@ const char kSettingsButtonId[] = "settings";
 // Max image size; specified in the FDO notification specification.
 const int kMaxImageWidth = 200;
 const int kMaxImageHeight = 100;
-
-// Time to wait for the notification service to start.
-constexpr base::TimeDelta kStartServiceTimeout = base::Seconds(1);
 
 // Notification on-screen time, in milliseconds.
 const int32_t kExpireTimeout = 25000;
@@ -159,11 +154,10 @@ int NotificationPriorityToFdoUrgency(int priority) {
     case message_center::HIGH_PRIORITY:
     case message_center::MAX_PRIORITY:
       return URGENCY_CRITICAL;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
     case message_center::DEFAULT_PRIORITY:
       return URGENCY_NORMAL;
+    default:
+      NOTREACHED();
   }
 }
 
@@ -237,7 +231,7 @@ void ForwardNotificationOperationOnUiThread(
       is_incognito,
       base::BindOnce(&NotificationDisplayServiceImpl::ProfileLoadedCallback,
                      operation, notification_type, origin, notification_id,
-                     action_index, reply, by_user));
+                     action_index, reply, by_user, base::DoNothing()));
 }
 
 // Writes `data` to a new temporary file and returns the temporary file
@@ -256,60 +250,6 @@ base::ScopedTempFile WriteDataToTmpFile(
     return {};
   }
   return file;
-}
-
-bool CheckNotificationsNameHasOwnerOrIsActivatable(dbus::Bus* bus) {
-  dbus::ObjectProxy* dbus_proxy =
-      bus->GetObjectProxy(DBUS_SERVICE_DBUS, dbus::ObjectPath(DBUS_PATH_DBUS));
-  dbus::MethodCall name_has_owner_call(DBUS_INTERFACE_DBUS,
-                                       kMethodNameHasOwner);
-  dbus::MessageWriter writer(&name_has_owner_call);
-  writer.AppendString(kFreedesktopNotificationsName);
-  std::unique_ptr<dbus::Response> name_has_owner_response =
-      dbus_proxy
-          ->CallMethodAndBlock(&name_has_owner_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr);
-  dbus::MessageReader owner_reader(name_has_owner_response.get());
-  bool owned = false;
-  if (name_has_owner_response && owner_reader.PopBool(&owned) && owned)
-    return true;
-
-  // If the service currently isn't running, maybe it is activatable.
-  dbus::MethodCall list_activatable_names_call(DBUS_INTERFACE_DBUS,
-                                               kMethodListActivatableNames);
-  std::unique_ptr<dbus::Response> list_activatable_names_response =
-      dbus_proxy
-          ->CallMethodAndBlock(&list_activatable_names_call,
-                               dbus::ObjectProxy::TIMEOUT_USE_DEFAULT)
-          .value_or(nullptr);
-  if (list_activatable_names_response) {
-    dbus::MessageReader reader(list_activatable_names_response.get());
-    std::vector<std::string> activatable_names;
-    reader.PopArrayOfStrings(&activatable_names);
-    if (base::Contains(activatable_names, kFreedesktopNotificationsName)) {
-      dbus::MethodCall start_service_call(DBUS_INTERFACE_DBUS,
-                                          kMethodStartServiceByName);
-      dbus::MessageWriter start_service_writer(&start_service_call);
-      start_service_writer.AppendString(kFreedesktopNotificationsName);
-      start_service_writer.AppendUint32(/*flags=*/0);
-      auto start_service_response =
-          dbus_proxy
-              ->CallMethodAndBlock(&start_service_call,
-                                   kStartServiceTimeout.InMilliseconds())
-              .value_or(nullptr);
-      if (!start_service_response)
-        return false;
-      dbus::MessageReader start_service_reader(start_service_response.get());
-      uint32_t start_service_reply = 0;
-      if (start_service_reader.PopUint32(&start_service_reply) &&
-          (start_service_reply == DBUS_START_REPLY_SUCCESS ||
-           start_service_reply == DBUS_START_REPLY_ALREADY_RUNNING)) {
-        return true;
-      }
-    }
-  }
-  return false;
 }
 
 }  // namespace
@@ -510,7 +450,16 @@ class NotificationPlatformBridgeLinuxImpl
       bus_ = base::MakeRefCounted<dbus::Bus>(bus_options);
     }
 
-    if (!CheckNotificationsNameHasOwnerOrIsActivatable(bus_.get())) {
+    // Use the asynchronous NameHasOwner function with autostart=true
+    dbus_utils::CheckForServiceAndStart(
+        bus_, kFreedesktopNotificationsName,
+        base::BindOnce(&NotificationPlatformBridgeLinuxImpl::OnServiceStarted,
+                       base::Unretained(this)));
+  }
+
+  void OnServiceStarted(std::optional<bool> service_started) {
+    DCHECK(task_runner_->RunsTasksInCurrentSequence());
+    if (!service_started.value_or(false)) {
       OnConnectionInitializationFinishedOnTaskRunner(
           ConnectionInitializationStatusCode::
               NATIVE_NOTIFICATIONS_NOT_SUPPORTED);

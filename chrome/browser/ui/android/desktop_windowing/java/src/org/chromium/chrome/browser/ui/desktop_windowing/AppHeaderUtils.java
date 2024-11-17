@@ -11,6 +11,7 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 
 /** Utility class for the desktop windowing feature implementation. */
 // TODO (crbug/328055199): Rename this to DesktopWindowUtils.
@@ -76,14 +77,14 @@ public class AppHeaderUtils {
     }
 
     /**
-     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
+     * @param desktopWindowStateManager The {@link DesktopWindowStateManager} instance.
      * @return {@code true} if the current activity is in a desktop window, {@code false} otherwise.
      */
     public static boolean isAppInDesktopWindow(
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         if (sIsAppInDesktopWindowForTesting != null) return sIsAppInDesktopWindowForTesting;
-        if (desktopWindowStateProvider == null) return false;
-        var appHeaderState = desktopWindowStateProvider.getAppHeaderState();
+        if (desktopWindowStateManager == null) return false;
+        var appHeaderState = desktopWindowStateManager.getAppHeaderState();
 
         return appHeaderState != null && appHeaderState.isInDesktopWindow();
     }
@@ -106,19 +107,19 @@ public class AppHeaderUtils {
     /**
      * Records an enumerated histogram using {@link DesktopWindowModeState}.
      *
-     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
+     * @param desktopWindowStateManager The {@link DesktopWindowStateManager} instance.
      * @param histogramName The name of the histogram.
      */
     public static void recordDesktopWindowModeStateEnumHistogram(
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider, String histogramName) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager, String histogramName) {
         @DesktopWindowModeState int state;
-        // |desktopWindowStateProvider| will be null on a device that does not support desktop
+        // |desktopWindowStateManager| will be null on a device that does not support desktop
         // windowing.
-        if (desktopWindowStateProvider == null) {
+        if (desktopWindowStateManager == null) {
             state = DesktopWindowModeState.UNAVAILABLE;
         } else {
             state =
-                    isAppInDesktopWindow(desktopWindowStateProvider)
+                    isAppInDesktopWindow(desktopWindowStateManager)
                             ? DesktopWindowModeState.ACTIVE
                             : DesktopWindowModeState.INACTIVE;
         }

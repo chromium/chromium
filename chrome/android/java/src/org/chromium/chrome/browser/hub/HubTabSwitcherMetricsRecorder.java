@@ -13,8 +13,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -84,8 +84,10 @@ public class HubTabSwitcherMetricsRecorder {
                 RecordUserAction.record("MobileTabReturnedToCurrentTab");
                 RecordHistogram.recordSparseHistogram("Tabs.TabOffsetOfSwitch.GridTabSwitcher", 0);
             } else {
-                TabModelFilter filter =
-                        mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
+                TabGroupModelFilter filter =
+                        mTabModelSelector
+                                .getTabGroupModelFilterProvider()
+                                .getCurrentTabGroupModelFilter();
                 int previousIndex = filter.indexOf(previousTab);
                 int currentIndex = filter.indexOf(tab);
                 if (previousIndex != currentIndex) {
@@ -109,8 +111,10 @@ public class HubTabSwitcherMetricsRecorder {
                 RecordUserAction.record("MobileTabSwitched");
             }
 
-            TabModelFilter filter =
-                    mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter();
+            TabGroupModelFilter filter =
+                    mTabModelSelector
+                            .getTabGroupModelFilterProvider()
+                            .getCurrentTabGroupModelFilter();
             if (!filter.isTabInTabGroup(tab)) {
                 RecordUserAction.record("MobileTabSwitched.GridTabSwitcher");
             }

@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/grit/preinstalled_web_apps_resources.h"
 #include "components/webapps/common/web_app_id.h"
@@ -137,7 +137,7 @@ ExternalInstallOptions GetConfigForGoogleDocs(bool is_standalone_tabbed) {
 
   options.user_type_allowlist = {"unmanaged", "managed", "child"};
   options.uninstall_and_replace.push_back("aohghmighlieiainnegkcijnfilokake");
-  options.expected_app_id = kGoogleDocsAppId;
+  options.expected_app_id = ash::kGoogleDocsAppId;
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (IsDriveFsBulkPinningAvailable()) {

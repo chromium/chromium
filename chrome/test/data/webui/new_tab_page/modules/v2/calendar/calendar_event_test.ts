@@ -198,6 +198,43 @@ suite('NewTabPageModulesCalendarEventTest', () => {
       assertEquals(attachmentListElement.className, 'scrollable-left');
     });
 
+    test('attachment is disabled when resourceUrl does not exist', async () => {
+      const moduleName = 'OutlookCalendar';
+      element.expanded = true;
+      element.event = createEvent(
+          1, {attachments: createAttachments(3, {resourceUrl: {url: ''}})});
+      element.moduleName = moduleName;
+      await microtasksFinished();
+
+      const attachments = element.renderRoot!.querySelectorAll('.attachment');
+      assertEquals(attachments.length, 3);
+
+      // Assert attachments are disabled.
+      for (let i = 0; i < attachments.length; i++) {
+        const attachment = attachments[i] as any;
+        assertTrue(!!attachment);
+        assertTrue(attachment.hasAttribute('disabled'));
+      }
+    });
+
+    test('attachment not disabled when resourceUrl exists', async () => {
+      const moduleName = 'OutlookCalendar';
+      element.expanded = true;
+      element.event = createEvent(1, {attachments: createAttachments(3)});
+      element.moduleName = moduleName;
+      await microtasksFinished();
+
+      // Assert.
+      const attachments = element.renderRoot!.querySelectorAll('.attachment');
+      assertEquals(attachments.length, 3);
+
+      for (let i = 0; i < attachments.length; i++) {
+        const attachment = attachments[i] as any;
+        assertTrue(!!attachment);
+        assertFalse(attachment.hasAttribute('disabled'));
+      }
+    });
+
     test('conference button hidden if empty', async () => {
       element.expanded = true;
       element.event = createEvent(1, {conferenceUrl: {url: ''}});

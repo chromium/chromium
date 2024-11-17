@@ -18,8 +18,10 @@
 #import "ios/chrome/browser/passwords/model/password_check_observer_bridge.h"
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/test/test_profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_consumer.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -56,8 +58,11 @@ void AddIssueToForm(PasswordForm* form,
 // Test fixture for testing PasswordCheckupMediator class.
 class PasswordCheckupMediatorTest : public PlatformTest {
  protected:
-  PasswordCheckupMediatorTest() {
-    TestChromeBrowserState::Builder builder;
+  void SetUp() override {
+    PlatformTest::SetUp();
+
+    TestProfileIOS::Builder builder;
+
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
@@ -70,10 +75,10 @@ class PasswordCheckupMediatorTest : public PlatformTest {
               std::make_unique<affiliations::FakeAffiliationService>());
         })));
 
-    browser_state_ = std::move(builder).Build();
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    password_check_ = IOSChromePasswordCheckManagerFactory::GetForBrowserState(
-        browser_state_.get());
+    password_check_ =
+        IOSChromePasswordCheckManagerFactory::GetForProfile(profile_.get());
 
     consumer_ = OCMProtocolMock(@protocol(PasswordCheckupConsumer));
 
@@ -82,16 +87,25 @@ class PasswordCheckupMediatorTest : public PlatformTest {
     mediator_.consumer = consumer_;
   }
 
+  void TearDown() override {
+    [mediator_ disconnect];
+    mediator_ = nil;
+
+    password_check_ = nullptr;
+
+    PlatformTest::TearDown();
+  }
+
   PasswordCheckupMediator* mediator() { return mediator_; }
 
-  ChromeBrowserState* browserState() { return browser_state_.get(); }
+  ProfileIOS* profile() { return profile_.get(); }
 
   id consumer() { return consumer_; }
 
   TestPasswordStore& GetTestStore() {
     return *static_cast<TestPasswordStore*>(
-        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-            browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+        IOSChromeProfilePasswordStoreFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
             .get());
   }
 
@@ -102,7 +116,9 @@ class PasswordCheckupMediatorTest : public PlatformTest {
 
  private:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  raw_ptr<TestProfileIOS> profile_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
+  TestProfileManagerIOS profile_manager_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_;
   id consumer_;
   PasswordCheckupMediator* mediator_;

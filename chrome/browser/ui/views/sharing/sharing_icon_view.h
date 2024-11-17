@@ -46,7 +46,6 @@ class SharingIconView : public PageActionIconView {
   views::BubbleDialogDelegate* GetBubble() const override;
   void UpdateImpl() override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
@@ -58,6 +57,7 @@ class SharingIconView : public PageActionIconView {
   void UpdateOpacity();
 
  private:
+  void SetAccessibleIsIgnoredIfNeeded();
   raw_ptr<SharingUiController, AcrossTasksDanglingUntriaged> last_controller_ =
       nullptr;
   bool loading_animation_ = false;

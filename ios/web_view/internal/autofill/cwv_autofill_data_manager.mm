@@ -132,8 +132,7 @@ class WebViewPasswordStoreObserver
           [removed addObject:password];
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
     [data_manager_ handlePasswordStoreLoginsAdded:added

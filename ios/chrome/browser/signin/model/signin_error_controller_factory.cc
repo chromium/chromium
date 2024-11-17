@@ -17,12 +17,6 @@
 namespace ios {
 
 // static
-SigninErrorController* SigninErrorControllerFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 SigninErrorController* SigninErrorControllerFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<SigninErrorController*>(
@@ -48,11 +42,10 @@ SigninErrorControllerFactory::~SigninErrorControllerFactory() {
 std::unique_ptr<KeyedService>
 SigninErrorControllerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<SigninErrorController>(
       SigninErrorController::AccountMode::ANY_ACCOUNT,
-      IdentityManagerFactory::GetForProfile(chrome_browser_state));
+      IdentityManagerFactory::GetForProfile(profile));
 }
 
 }  // namespace ios

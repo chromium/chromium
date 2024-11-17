@@ -4,7 +4,7 @@
 
 import 'chrome://resources/ash/common/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cros_components/button/button.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {Button} from 'chrome://resources/cros_components/button/button.js';

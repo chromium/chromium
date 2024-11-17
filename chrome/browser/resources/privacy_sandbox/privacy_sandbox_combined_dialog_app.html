@@ -1,4 +1,4 @@
-<style include="cr-shared-style shared-style">
+<style include="cr-shared-style shared-style cr-spinner-style">
   cr-view-manager {
     display: block;
   }
@@ -14,10 +14,9 @@
     justify-content: center;
   }
 
-  paper-spinner-lite {
-    height: var(--cr-icon-size);
+  .spinner {
     margin-inline-end: 16px;
-    width: var(--cr-icon-size);
+    --cr-spinner-size: var(--cr-icon-size);
   }
 </style>
 
@@ -29,7 +28,7 @@
   </privacy-sandbox-dialog-consent-step>
 
   <div id="[[stepEnum_.SAVING]]" class="saving-step" slot="view">
-    <paper-spinner-lite active></paper-spinner-lite>
+    <div class="spinner"></div>
     $i18n{m1ConsentSavingLabel}
   </div>
 

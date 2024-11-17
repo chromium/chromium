@@ -25,6 +25,9 @@ reference counted character buffer. This design makes it easier to
 share the underlying character buffer between different consumers
 because multiple consumers can reference the same underlying buffer.
 
+Nevertheless, since `String` is an atomically ref-counted pointer, it
+should be passed as function argument by const reference and not by
+value where possible.
 
 ## Storage
 

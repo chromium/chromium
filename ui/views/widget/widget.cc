@@ -21,6 +21,7 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/base/default_style.h"
 #include "ui/base/hit_test.h"
@@ -29,6 +30,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/compositor/compositor.h"
@@ -410,8 +412,9 @@ void Widget::Init(InitParams params) {
       params.name = params.delegate->GetContentsView()->GetClassName();
   }
 
-  if (params.parent && GetWidgetForNativeView(params.parent))
+  if (params.parent && GetWidgetForNativeView(params.parent)) {
     parent_ = GetWidgetForNativeView(params.parent)->GetWeakPtr();
+  }
 
   // Subscripbe to parent's paint-as-active change.
   if (parent_) {
@@ -481,15 +484,18 @@ void Widget::Init(InitParams params) {
   // send accessible event notifications. From that point on, any view that is
   // connected to the RootView will be able to send accessible events.
   root_view_->GetViewAccessibility().SetRootViewIsReadyToNotifyEvents();
+
   // We need to add the RootView's ViewAccessibility as an observer of the
   // widget, so that when the widget is closed, the accessible data is set
   // accordingly.
   AddObserver(&root_view_->GetViewAccessibility());
 
+  ax_mode_observation_.Observe(&ui::AXPlatform::GetInstance());
+
   // Copy the elements of params that will be used after it is moved.
   const InitParams::Type type = params.type;
   const gfx::Rect bounds = params.bounds;
-  const ui::WindowShowState show_state = params.show_state;
+  const ui::mojom::WindowShowState show_state = params.show_state;
   WidgetDelegate* delegate = params.delegate;
   bool should_set_initial_bounds = true;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -527,14 +533,14 @@ void Widget::Init(InitParams params) {
     // views won't have a dirty Layout state, so won't do any work.
     root_view_->LayoutImmediately();
 
-    if (show_state == ui::SHOW_STATE_MAXIMIZED) {
+    if (show_state == ui::mojom::WindowShowState::kMaximized) {
       Maximize();
-    } else if (show_state == ui::SHOW_STATE_MINIMIZED) {
+    } else if (show_state == ui::mojom::WindowShowState::kMinimized) {
       Minimize();
-      saved_show_state_ = ui::SHOW_STATE_MINIMIZED;
+      saved_show_state_ = ui::mojom::WindowShowState::kMinimized;
     }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // In ChromeOS, rounding window can involve rounding its client view and the
     // contents. Therefore, wait till the contents are set.
     // Since on ChromeOS, window can be square or rounded based on the window
@@ -550,9 +556,10 @@ void Widget::Init(InitParams params) {
   }
 
   if (parent_) {
-    parent_->GetSublevelManager()->TrackChildWidget(this);
+    parent_->OnChildAdded(this);
   }
 
+  UpdateAccessibleNameForRootView();
   native_theme_observation_.Observe(GetNativeTheme());
   native_widget_initialized_ = true;
   native_widget_->OnWidgetInitDone();
@@ -836,6 +843,8 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
   SaveWindowPlacement();
   ClearFocusFromWidget();
 
+  ax_mode_observation_.Reset();
+
   observers_.Notify(&WidgetObserver::OnWidgetClosing, this);
 
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetClosing(this);
@@ -855,6 +864,8 @@ void Widget::CloseNow() {
   // Set this so that Widget::Close() early outs. In general this operation is
   // a one-way and can't be undone.
   widget_closed_ = true;
+
+  ax_mode_observation_.Reset();
 
   observers_.Notify(&WidgetObserver::OnWidgetClosing, this);
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetClosing(this);
@@ -876,15 +887,17 @@ void Widget::Show() {
   const ui::Layer* layer = GetLayer();
   TRACE_EVENT1("views", "Widget::Show", "layer",
                layer ? layer->name() : "none");
-  ui::WindowShowState preferred_show_state =
-      CanActivate() ? ui::SHOW_STATE_NORMAL : ui::SHOW_STATE_INACTIVE;
+  ui::mojom::WindowShowState preferred_show_state =
+      CanActivate() ? ui::mojom::WindowShowState::kNormal
+                    : ui::mojom::WindowShowState::kInactive;
   if (non_client_view_) {
     // While initializing, the kiosk mode will go to full screen before the
     // widget gets shown. In that case we stay in full screen mode, regardless
     // of the |saved_show_state_| member.
-    if (saved_show_state_ == ui::SHOW_STATE_MAXIMIZED &&
+    if (saved_show_state_ == ui::mojom::WindowShowState::kMaximized &&
         !initial_restored_bounds_.IsEmpty() && !IsFullscreen()) {
-      native_widget_->Show(ui::SHOW_STATE_MAXIMIZED, initial_restored_bounds_);
+      native_widget_->Show(ui::mojom::WindowShowState::kMaximized,
+                           initial_restored_bounds_);
     } else {
       native_widget_->Show(saved_show_state_, gfx::Rect());
     }
@@ -909,16 +922,16 @@ void Widget::Hide() {
 void Widget::ShowInactive() {
   if (!native_widget_)
     return;
-  // If this gets called with saved_show_state_ == ui::SHOW_STATE_MAXIMIZED,
-  // call SetBounds()with the restored bounds to set the correct size. This
-  // normally should not happen, but if it does we should avoid showing unsized
-  // windows.
-  if (saved_show_state_ == ui::SHOW_STATE_MAXIMIZED &&
+  // If this gets called with saved_show_state_ ==
+  // ui::mojom::WindowShowState::kMaximized, call SetBounds()with the restored
+  // bounds to set the correct size. This normally should not happen, but if it
+  // does we should avoid showing unsized windows.
+  if (saved_show_state_ == ui::mojom::WindowShowState::kMaximized &&
       !initial_restored_bounds_.IsEmpty()) {
     SetBounds(initial_restored_bounds_);
-    saved_show_state_ = ui::SHOW_STATE_NORMAL;
+    saved_show_state_ = ui::mojom::WindowShowState::kNormal;
   }
-  native_widget_->Show(ui::SHOW_STATE_INACTIVE, gfx::Rect());
+  native_widget_->Show(ui::mojom::WindowShowState::kInactive, gfx::Rect());
 
   HandleShowRequested();
 }
@@ -1152,6 +1165,12 @@ void Widget::RunShellDrag(View* view,
   if (!widget_deletion_observer.IsWidgetAlive())
     return;
 
+    // TODO(crbug.com/375959961): On X11, the native widget's mouse button state
+    // is not updated when the mouse button is released to end a drag.
+#if !BUILDFLAG(IS_OZONE_X11)
+  is_mouse_button_pressed_ = native_widget_->IsMouseButtonDown();
+#endif
+
   // If the view is removed during the drag operation, dragged_view_ is set to
   // NULL.
   if (view && dragged_view_ == view) {
@@ -1244,6 +1263,7 @@ void Widget::UpdateWindowTitle() {
   }
 
   non_client_view_->UpdateWindowTitle();
+  UpdateAccessibleNameForRootView();
 }
 
 void Widget::UpdateWindowIcon() {
@@ -1253,31 +1273,9 @@ void Widget::UpdateWindowIcon() {
   if (non_client_view_)
     non_client_view_->UpdateWindowIcon();
 
-  gfx::ImageSkia window_icon =
-      widget_delegate_->GetWindowIcon().Rasterize(GetColorProvider());
-
-  // In general, icon information is read from a |widget_delegate_| and then
-  // passed to |native_widget_|. On ChromeOS, for lacros-chrome to support the
-  // initial window state as minimized state, a valid icon is added to
-  // |native_widget_| earlier stage of widget initialization. See
-  // https://crbug.com/1189981. As only lacros-chrome on ChromeOS supports this
-  // behavior other overrides of |native_widget_| will always have no icon
-  // information. This is also true for |app_icon| referred below.
-  if (window_icon.isNull()) {
-    const gfx::ImageSkia* icon = native_widget_->GetWindowIcon();
-    if (icon && !icon->isNull())
-      window_icon = *icon;
-  }
-
-  gfx::ImageSkia app_icon =
-      widget_delegate_->GetWindowAppIcon().Rasterize(GetColorProvider());
-  if (app_icon.isNull()) {
-    const gfx::ImageSkia* icon = native_widget_->GetWindowAppIcon();
-    if (icon && !icon->isNull())
-      app_icon = *icon;
-  }
-
-  native_widget_->SetWindowIcons(window_icon, app_icon);
+  native_widget_->SetWindowIcons(
+      widget_delegate_->GetWindowIcon().Rasterize(GetColorProvider()),
+      widget_delegate_->GetWindowAppIcon().Rasterize(GetColorProvider()));
 }
 
 FocusTraversable* Widget::GetFocusTraversable() {
@@ -1821,8 +1819,9 @@ void Widget::OnKeyEvent(ui::KeyEvent* event) {
 //                   RootView from anywhere in Widget. Use
 //                   SendEventToSink() instead. See crbug.com/348087.
 void Widget::OnMouseEvent(ui::MouseEvent* event) {
-  if (!native_widget_)
+  if (!native_widget_) {
     return;
+  }
 
   TRACE_EVENT0("ui", "Widget::OnMouseEvent");
 
@@ -1980,13 +1979,14 @@ const Widget* Widget::AsWidget() const {
   return this;
 }
 
-bool Widget::SetInitialFocus(ui::WindowShowState show_state) {
+bool Widget::SetInitialFocus(ui::mojom::WindowShowState show_state) {
   FocusManager* focus_manager = GetFocusManager();
   if (!focus_manager || !widget_delegate_)
     return false;
   View* v = widget_delegate_->GetInitiallyFocusedView();
-  if (!focus_on_creation_ || show_state == ui::SHOW_STATE_INACTIVE ||
-      show_state == ui::SHOW_STATE_MINIMIZED) {
+  if (!focus_on_creation_ ||
+      show_state == ui::mojom::WindowShowState::kInactive ||
+      show_state == ui::mojom::WindowShowState::kMinimized) {
     // If not focusing the window now, tell the focus manager which view to
     // focus when the window is restored.
     if (v)
@@ -2099,6 +2099,19 @@ void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   ThemeChanged();
 }
 
+void Widget::OnAXModeAdded(ui::AXMode mode) {
+  if (mode == ui::AXMode::kNativeAPIs) {
+    auto* root_view = GetRootView();
+    if (root_view) {
+      // The root view's accessibility cache is always fully initialized, so we
+      // only have to recursively complete for its descendants.
+      for (View* child : root_view->children()) {
+        child->GetViewAccessibility().CompleteCacheInitialization();
+      }
+    }
+  }
+}
+
 void Widget::SetColorModeOverride(
     std::optional<ui::ColorProviderKey::ColorMode> color_mode) {
   color_mode_override_ = color_mode;
@@ -2161,6 +2174,12 @@ bool Widget::AreScreenshotsAllowed() {
   return native_widget_ ? native_widget_->AreScreenshotsAllowed() : true;
 }
 
+void Widget::UpdateAccessibleNameForRootView() {
+  if (root_view_) {
+    root_view_->UpdateAccessibleName();
+  }
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Widget, protected:
 
@@ -2209,7 +2228,7 @@ void Widget::SaveWindowPlacement() {
   if (!widget_delegate_ || !widget_delegate_->ShouldSaveWindowPlacement() ||
       !native_widget_)
     return;
-  ui::WindowShowState show_state = ui::SHOW_STATE_NORMAL;
+  ui::mojom::WindowShowState show_state = ui::mojom::WindowShowState::kNormal;
   gfx::Rect bounds;
   native_widget_->GetWindowPlacement(&bounds, &show_state);
   widget_delegate_->SaveWindowPlacement(bounds, show_state);
@@ -2226,7 +2245,7 @@ void Widget::SetInitialBounds(const gfx::Rect& bounds) {
 
   gfx::Rect saved_bounds;
   if (GetSavedWindowPlacement(&saved_bounds, &saved_show_state_)) {
-    if (saved_show_state_ == ui::SHOW_STATE_MAXIMIZED) {
+    if (saved_show_state_ == ui::mojom::WindowShowState::kMaximized) {
       // If we're going to maximize, wait until Show is invoked to set the
       // bounds. That way we avoid a noticeable resize.
       initial_restored_bounds_ = saved_bounds;
@@ -2292,15 +2311,15 @@ void Widget::SetParent(Widget* parent) {
   }
 
   if (old_parent) {
-    old_parent->GetSublevelManager()->UntrackChildWidget(this);
+    old_parent->OnChildRemoved(this);
   }
   if (parent) {
-    parent->GetSublevelManager()->TrackChildWidget(this);
+    parent->OnChildAdded(this);
   }
 }
 
 bool Widget::GetSavedWindowPlacement(gfx::Rect* bounds,
-                                     ui::WindowShowState* show_state) {
+                                     ui::mojom::WindowShowState* show_state) {
   // First we obtain the window's saved show-style and store it. We need to do
   // this here, rather than in Show() because by the time Show() is called,
   // the window's size will have been reset (below) and the saved maximized
@@ -2362,6 +2381,9 @@ void Widget::HandleWidgetDestroying() {
   if (GetFocusManager() && root_view_) {
     GetFocusManager()->ViewRemoved(root_view_.get());
   }
+  if (parent_) {
+    parent_->OnChildRemoved(this);
+  }
   observers_.Notify(&WidgetObserver::OnWidgetDestroying, this);
   if (non_client_view_) {
     non_client_view_->WindowClosing();
@@ -2375,6 +2397,8 @@ void Widget::HandleWidgetDestroyed() {
   if (native_widget_destroyed_) {
     return;
   }
+
+  ax_mode_observation_.Reset();
 
   observers_.Notify(&WidgetObserver::OnWidgetDestroyed, this);
 
@@ -2400,6 +2424,14 @@ void Widget::HandleWidgetDestroyed() {
   // WIDGET_OWNS_NATIVE_WIDGET the NativeWidget will be cleaned up through
   // |owned_native_widget_|
   native_widget_.reset();
+}
+
+void Widget::OnChildAdded(Widget* child_widget) {
+  observers_.Notify(&WidgetObserver::OnWidgetChildAdded, this, child_widget);
+}
+
+void Widget::OnChildRemoved(Widget* child_widget) {
+  observers_.Notify(&WidgetObserver::OnWidgetChildRemoved, this, child_widget);
 }
 
 BEGIN_METADATA_BASE(Widget)

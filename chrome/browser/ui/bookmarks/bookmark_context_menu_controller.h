@@ -13,15 +13,13 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/native_widget_types.h"
+#include "ui/menus/simple_menu_model.h"
 
 class Browser;
 class Profile;
 
-namespace bookmarks {
-class BookmarkModel;
-}  // namespace bookmarks
+class BookmarkMergedSurfaceService;
 
 // An interface implemented by an object that performs actions on the actual
 // menu for the controller.
@@ -104,7 +102,7 @@ class BookmarkContextMenuController
   raw_ptr<const bookmarks::BookmarkNode> parent_;
   std::vector<raw_ptr<const bookmarks::BookmarkNode, VectorExperimental>>
       selection_;
-  raw_ptr<bookmarks::BookmarkModel> model_;
+  const raw_ptr<BookmarkMergedSurfaceService> bookmark_service_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;
   // Used to detect deletion of |this| executing a command.
   base::WeakPtrFactory<BookmarkContextMenuController> weak_factory_{this};

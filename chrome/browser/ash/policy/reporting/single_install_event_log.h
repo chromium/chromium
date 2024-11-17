@@ -12,10 +12,13 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <deque>
 #include <memory>
 #include <string>
+
 #include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 
 namespace policy {
@@ -115,31 +118,27 @@ bool SingleInstallEventLog<T>::Store(base::File* file) const {
   }
 
   ssize_t size = id_.size();
-  if (file->WriteAtCurrentPos(reinterpret_cast<const char*>(&size),
-                              sizeof(size)) != sizeof(size)) {
+  if (!file->WriteAtCurrentPosAndCheck(base::byte_span_from_ref(size))) {
     return false;
   }
 
-  if (file->WriteAtCurrentPos(id_.data(), size) != size) {
+  if (!file->WriteAtCurrentPosAndCheck(base::as_byte_span(id_))) {
     return false;
   }
 
   const int64_t incomplete = incomplete_;
-  if (file->WriteAtCurrentPos(reinterpret_cast<const char*>(&incomplete),
-                              sizeof(incomplete)) != sizeof(incomplete)) {
+  if (!file->WriteAtCurrentPosAndCheck(base::byte_span_from_ref(incomplete))) {
     return false;
   }
 
   const ssize_t entries = events_.size();
-  if (file->WriteAtCurrentPos(reinterpret_cast<const char*>(&entries),
-                              sizeof(entries)) != sizeof(entries)) {
+  if (!file->WriteAtCurrentPosAndCheck(base::byte_span_from_ref(entries))) {
     return false;
   }
 
   for (const T& event : events_) {
-    size = event.ByteSizeLong();
     base::HeapArray<char> buffer;
-
+    size = event.ByteSizeLong();
     if (size > kMaxBufferSize) {
       // Log entry too large. Skip it.
       size = 0;
@@ -150,14 +149,15 @@ bool SingleInstallEventLog<T>::Store(base::File* file) const {
         size = 0;
       }
     }
-
-    if (file->WriteAtCurrentPos(reinterpret_cast<const char*>(&size),
-                                sizeof(size)) != sizeof(size) ||
-        (size && file->WriteAtCurrentPos(buffer.data(), size) != size)) {
+    if (!file->WriteAtCurrentPosAndCheck(base::byte_span_from_ref(size))) {
       return false;
     }
+    if (size) {
+      if (!file->WriteAtCurrentPosAndCheck(base::as_bytes(buffer.as_span()))) {
+        return false;
+      }
+    }
   }
-
   return true;
 }
 

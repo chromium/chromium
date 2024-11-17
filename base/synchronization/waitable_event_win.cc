@@ -18,9 +18,10 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/debug/alias.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
@@ -30,12 +31,20 @@
 namespace base {
 
 namespace {
-NOINLINE void ReportInvalidWaitableEventResult(DWORD result) {
-  const auto last_error = ::GetLastError();
-  base::debug::Alias(&last_error);
-  base::debug::Alias(&result);
+
+[[nodiscard]] debug::ScopedCrashKeyString SetLastErrorCrashKey(
+    DWORD last_error) {
+  static auto* const key = debug::AllocateCrashKeyString(
+      "WaitableEvent-last_error", debug::CrashKeySize::Size32);
+  return debug::ScopedCrashKeyString(key, NumberToString(last_error));
+}
+
+NOINLINE void ReportInvalidWaitableEventResult(DWORD result, DWORD last_error) {
+  SCOPED_CRASH_KEY_NUMBER("WaitableEvent", "result", result);
+  debug::ScopedCrashKeyString last_error_key = SetLastErrorCrashKey(last_error);
   base::debug::DumpWithoutCrashing();  // https://crbug.com/1478972.
 }
+
 }  // namespace
 
 WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
@@ -65,7 +74,7 @@ void WaitableEvent::SignalImpl() {
 bool WaitableEvent::IsSignaled() const {
   DWORD result = WaitForSingleObject(handle_.get(), 0);
   if (result != WAIT_OBJECT_0 && result != WAIT_TIMEOUT) {
-    ReportInvalidWaitableEventResult(result);
+    ReportInvalidWaitableEventResult(result, ::GetLastError());
   }
   return result == WAIT_OBJECT_0;
 }
@@ -101,15 +110,21 @@ bool WaitableEvent::TimedWaitImpl(TimeDelta wait_delta) {
       continue;
     }
 
-    // The only other documented result values are `WAIT_ABANDONED` and
-    // `WAIT_FAILED`. Neither of these nor any other result should ever be
-    // emitted unless there is a double free or another entity is tampering
-    // with this instance's event handle. Only fails if the timeout was
-    // INFINITE.
+    // Failures are likely due to ERROR_INVALID_HANDLE. This unrecoverable
+    // error likely means that the waited-on object has been closed elsewhere,
+    // possibly due to a double-close on an unrelated HANDLE. Crash
+    // immediately since it is not possible to reason about the state of the
+    // process in this case.
+    if (result == WAIT_FAILED) {
+      debug::ScopedCrashKeyString last_error_key =
+          SetLastErrorCrashKey(::GetLastError());
+      NOTREACHED();
+    }
+
     if (wait_delta.is_max()) {
-      ReportInvalidWaitableEventResult(result);
-      // The code may infinite loop and then hang if the returned value
-      // continues being `WAIT_FAILED`.
+      // The only other documented result value is `WAIT_ABANDONED`. This nor
+      // any other result should ever be emitted.
+      ReportInvalidWaitableEventResult(result, ::GetLastError());
     }
   }
   return false;

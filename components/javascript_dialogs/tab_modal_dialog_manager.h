@@ -86,7 +86,10 @@ class TabModalDialogManager
     // user on a non-Mac platform.
     kDialogClosed = 9,
 
-    kMaxValue = kDialogClosed,
+    // Another modal dialog is showing, so this dialog could not be shown.
+    kSuppressedByOtherDialog = 10,
+
+    kMaxValue = kSuppressedByOtherDialog,
   };
 
   TabModalDialogManager(const TabModalDialogManager&) = delete;

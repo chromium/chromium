@@ -56,8 +56,7 @@ TEST_F(OutlookCalendarPageHandlerTest, GetFakeEvents) {
       ntp::calendar::mojom::AttachmentPtr attachment =
           std::move(events[i]->attachments[j]);
       EXPECT_EQ(attachment->title, "Attachment " + base::NumberToString(j));
-      EXPECT_EQ(attachment->resource_url,
-                "https://foo.com/attachment" + base::NumberToString(j));
+      EXPECT_FALSE(attachment->resource_url.has_value());
     }
     EXPECT_EQ(events[i]->conference_url,
               GURL("https://foo.com/conference" + base::NumberToString(i)));

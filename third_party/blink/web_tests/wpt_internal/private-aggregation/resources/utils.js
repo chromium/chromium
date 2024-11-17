@@ -2,7 +2,7 @@
 // ../../aggregation-service/support/aggregation-service.js
 
 const NUM_CONTRIBUTIONS_SHARED_STORAGE = 20;
-const NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE = 20;
+const NUM_CONTRIBUTIONS_PROTECTED_AUDIENCE = 100;
 
 const NULL_CONTRIBUTION_WITH_CUSTOM_FILTERING_ID_MAX_BYTES = Object.freeze({
   bucket: encodeBigInt(0n, 16),
@@ -125,29 +125,82 @@ const resetReports = url => {
 const delay = ms => new Promise(resolve => step_timeout(resolve, ms));
 
 /**
- * Polls the given `url` to retrieve reports sent there. Once the reports are
- * received, returns the list of reports. Returns null if the timeout is reached
- * before a report is available.
+ * Polls the given `url` at least once to retrieve reports sent there. Once the
+ * reports are received, returns the list of reports. Returns null if the
+ * timeout is reached before a report is available.
  */
-const pollReports = async (url, wait_for = 1, timeout = 5000 /*ms*/) => {
-  let startTime = performance.now();
-  let payloads = [];
-  while (performance.now() - startTime < timeout) {
-    const resp = await fetch(new URL(url, location.origin));
-    const payload = await resp.json();
-    if (payload.length > 0) {
-      payloads = payloads.concat(payload);
-    }
-    if (payloads.length >= wait_for) {
-      return payloads;
+async function pollReports(path, wait_for = 1, timeout = 5000 /*ms*/) {
+  const targetUrl = new URL(path, window.location.origin);
+  const endTime = performance.now() + timeout;
+  const outReports = [];
+
+  do {
+    const response = await fetch(targetUrl);
+    assert_true(response.ok, 'pollReports() fetch response should be OK.');
+    const reports = await response.json();
+    outReports.push(...reports);
+    if (outReports.length >= wait_for) {
+      break;
     }
     await delay(/*ms=*/ 100);
-  }
-  if (payloads.length > 0) {
-    return payloads;
-  }
-  return null;
+  } while (performance.now() < endTime);
+
+  return outReports.length ? outReports : null;
 };
+
+class ReportPoller {
+  #reportPath
+  #debugReportPath
+  #fullTimeoutMs
+
+  /**
+   * @param{string} reportPath The reporting endpoint.
+   * @param{string} debugReportPath The reporting endpoint for debug reports.
+   * @param{number} fullTimeoutMs Maximum duration that `pollReportsAndAssert()`
+   *    may wait for reports to become available.
+   */
+  constructor(reportPath, debugReportPath, fullTimeoutMs) {
+    this.#reportPath = reportPath;
+    this.#debugReportPath = debugReportPath;
+    this.#fullTimeoutMs = fullTimeoutMs
+  }
+
+  /**
+   * Polls for regular reports and debug reports. Asserts that the numbers of
+   * reports and debug reports received match `expectedNumReports` and
+   * `expectedNumDebugReports`, respectively. In the worst case, this function
+   * takes approximately `fullTimeoutMs` rather than up to `2 * fullTimeoutMs`.
+   *
+   * @param {number} expectedNumReports
+   * @param {number} expectedNumDebugReports
+   * @returns {Object} The `reports` and `debug_reports` fields contain arrays
+   *    of reports, already parsed as JSON.
+   */
+  async pollReportsAndAssert(expectedNumReports, expectedNumDebugReports) {
+    const pollResults = await Promise.all([
+      pollReports(
+          this.#reportPath, /*wait_for=*/ expectedNumReports || 1,
+          this.#fullTimeoutMs),
+      pollReports(
+          this.#debugReportPath, /*wait_for=*/ expectedNumDebugReports || 1,
+          this.#fullTimeoutMs),
+    ]);
+
+    // Replace any `null` values from `pollReports()` with empty arrays.
+    let [reports, debugReports] = pollResults.map(result => result ?? []);
+
+    assert_equals(
+        reports.length, expectedNumReports, 'Unexpected number of reports.');
+    assert_equals(
+        debugReports.length, expectedNumDebugReports,
+        'Unexpected number of debug reports.');
+
+    return {
+      reports: reports.map(JSON.parse),
+      debug_reports: debugReports.map(JSON.parse)
+    };
+  }
+}
 
 /**
  * Verifies that a report's shared_info string is serialized JSON with the

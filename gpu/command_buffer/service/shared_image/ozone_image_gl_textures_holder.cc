@@ -42,8 +42,7 @@ gfx::BufferFormat GetBufferFormatForPlane(viz::SharedImageFormat format,
       return num_channels == 2 ? gfx::BufferFormat::RG_1616
                                : gfx::BufferFormat::R_16;
   }
-  NOTREACHED_IN_MIGRATION();
-  return gfx::BufferFormat::RGBA_8888;
+  NOTREACHED();
 }
 
 gfx::BufferPlane GetBufferPlane(viz::SharedImageFormat format,
@@ -96,8 +95,7 @@ gfx::BufferPlane GetBufferPlane(viz::SharedImageFormat format,
           return gfx::BufferPlane::A;
       }
   }
-  NOTREACHED_IN_MIGRATION();
-  return gfx::BufferPlane::DEFAULT;
+  NOTREACHED();
 }
 
 // Create a NativePixmapGLBinding for the given `pixmap`. On failure, returns

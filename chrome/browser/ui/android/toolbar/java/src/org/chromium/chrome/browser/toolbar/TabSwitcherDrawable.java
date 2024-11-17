@@ -20,6 +20,7 @@ import android.text.TextPaint;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.base.ObserverList;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
@@ -43,6 +44,11 @@ public class TabSwitcherDrawable extends TintedDrawable {
         int TAB_SWITCHER_TOOLBAR = 2;
     }
 
+    /** Observer interface for consumers who wish to subscribe to updates of TabSwitcherDrawable. */
+    public interface Observer {
+        default void onDrawableStateChanged() {}
+    }
+
     private static final float LEFT_FRACTION = 3f / 4f;
 
     private final float mSingleDigitTextSize;
@@ -62,12 +68,15 @@ public class TabSwitcherDrawable extends TintedDrawable {
     private Bitmap mIconBitmap;
     private boolean mShouldShowNotificationIcon;
     private @TabSwitcherDrawableLocation int mTabSwitcherDrawableLocation;
+    private ObserverList<Observer> mTabSwitcherDrawableObservers = new ObserverList<>();
 
     /**
      * Creates a {@link TabSwitcherDrawable}.
      *
      * @param context A {@link Context} instance.
      * @param brandedColorScheme The {@link BrandedColorScheme} used to tint the drawable.
+     * @param bitmap The icon represented as a bitmap to be shown with this drawable.
+     * @param tabSwitcherDrawableLocation The location in which the drawable is used.
      * @return A {@link TabSwitcherDrawable} instance.
      */
     public static TabSwitcherDrawable createTabSwitcherDrawable(
@@ -181,8 +190,19 @@ public class TabSwitcherDrawable extends TintedDrawable {
         return mTabCount;
     }
 
+    /** Add on observer for when the drawable state changes. */
+    public void addTabSwitcherDrawableObserver(Observer observer) {
+        mTabSwitcherDrawableObservers.addObserver(observer);
+    }
+
+    /** Remove the observer for when the drawable state changes. */
+    public void removeTabSwitcherDrawableObserver(Observer observer) {
+        mTabSwitcherDrawableObservers.removeObserver(observer);
+    }
+
     /**
      * Update the visual state based on the number of tabs present.
+     *
      * @param tabCount The number of tabs.
      */
     public void updateForTabCount(int tabCount, boolean incognito) {
@@ -192,6 +212,10 @@ public class TabSwitcherDrawable extends TintedDrawable {
         float textSizePx = mTabCount > 9 ? mDoubleDigitTextSize : mSingleDigitTextSize;
         mTextPaint.setTextSize(textSizePx);
         invalidateSelf();
+
+        for (Observer observer : mTabSwitcherDrawableObservers) {
+            observer.onDrawableStateChanged();
+        }
     }
 
     private String getTabCountString() {
@@ -223,8 +247,18 @@ public class TabSwitcherDrawable extends TintedDrawable {
      * not. Any non-test callsite should be guarded by the DATA_SHARING flag.
      */
     public void setNotificationIconStatus(boolean shouldShow) {
+        if (mShouldShowNotificationIcon == shouldShow) return;
         mShouldShowNotificationIcon = shouldShow;
         invalidateSelf();
+
+        for (Observer observer : mTabSwitcherDrawableObservers) {
+            observer.onDrawableStateChanged();
+        }
+    }
+
+    /** Returns whether the drawable should show a notification icon. */
+    public boolean getShowIconNotificationStatus() {
+        return mShouldShowNotificationIcon;
     }
 
     public void setNotificationBackground(@BrandedColorScheme int brandedColorScheme) {

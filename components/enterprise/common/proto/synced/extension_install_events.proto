@@ -1,0 +1,96 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Events related to installing policy based extensions.
+
+syntax = "proto3";
+
+package chrome.cros.reporting.proto;
+
+option optimize_for = LITE_RUNTIME;
+
+// Event for an policy based extension installation.
+message ExtensionAppInstallEvent {
+  // Copy of Extension.ExtensionType enum from device_management_backend.proto
+  // in Chromium repository.
+  enum ExtensionType {
+    TYPE_UNKNOWN = 0;
+    TYPE_EXTENSION = 1;
+    TYPE_HOSTED_APP = 2;
+    TYPE_PACKAGED_APP = 3;
+    TYPE_LEGACY_PACKAGED_APP = 4;
+    TYPE_THEME = 5;
+    TYPE_USER_SCRIPT = 6;
+    TYPE_PLATFORM_APP = 7;
+    TYPE_LOGIN_SCREEN_EXTENSION = 8;
+  }
+
+  // Id for the extension.
+  string extension_id = 1;
+
+  // Event type. Set for all log events.
+  int32 event_type = 2;
+
+  // Total and available space on the stateful partition, in bytes. Set for
+  // event types INSTALLATION_FAILED and SUCCESS.
+  int64 stateful_total = 3;
+  int64 stateful_free = 4;
+
+  // Network state. Set for event type SESSION_STATE_CHANGE of type LOGIN and
+  // CONNECTIVITY_CHANGE.
+  bool online = 5;
+
+  // Type of session state change. Set for event type SESSION_STATE_CHANGE.
+  int32 session_state_change_type = 6;
+
+  // Physical device serial number.
+  string serial_number = 7;
+
+  // Detailed reason why extension failed to install.
+  int32 failure_reason = 8;
+
+  // Current stage of the installation process.
+  int32 installation_stage = 9;
+
+  // Current stage of the downloading process.
+  int32 downloading_stage = 10;
+
+  // Type of current user.
+  int32 user_type = 11;
+
+  // Whether the current user is new or existing.
+  bool is_new_user = 12;
+
+  // Type of the extension. Set for event type SUCCESS and sometimes (when
+  // possible) for INSTALLATION_FAILED.
+  ExtensionType extension_type = 13;
+
+  // Whether the extension failed to install due to some misconfiguration
+  // failure.
+  bool is_misconfiguration_failure = 14;
+
+  // Current stage of the install creation process.
+  int32 install_creation_stage = 15;
+
+  // Detailed reason on why extension failed to unpack.
+  int32 unpacker_failure_reason = 16;
+
+  // Cache status when an attempt is made to fetch a force installed extension
+  // from cache during the downloading process.
+  int32 download_cache_status = 17;
+
+  // Detailed reason why extension failed with error MANIFEST_INVALID.
+  int32 manifest_invalid_error = 18;
+
+  // Detailed reason why extension failed with CRX install error.
+  int32 crx_install_error_detail = 19;
+
+  // Fetch error codes when extension failed with MANIFEST_FETCH_FAILED or
+  // CRX_FETCH_FAILED error.
+  int32 fetch_error_code = 20;
+
+  // Fetch tries when extension failed with MANIFEST_FETCH_FAILED or
+  // CRX_FETCH_FAILED error.
+  int32 fetch_tries = 21;
+}

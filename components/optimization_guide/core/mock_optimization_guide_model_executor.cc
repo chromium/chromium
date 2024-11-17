@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace optimization_guide {
@@ -16,44 +17,65 @@ MockOptimizationGuideModelExecutor::~MockOptimizationGuideModelExecutor() =
     default;
 
 MockSession::MockSession() = default;
+MockSession::MockSession(OptimizationGuideModelExecutor::Session* delegate) {
+  Delegate(delegate);
+}
 MockSession::~MockSession() = default;
 
-MockSessionWrapper::MockSessionWrapper(MockSession* session)
-    : session_(session) {}
-MockSessionWrapper::~MockSessionWrapper() = default;
+OptimizationGuideModelStreamingExecutionResult MockSession::SuccessResult(
+    proto::Any response) {
+  return OptimizationGuideModelStreamingExecutionResult(
+      base::ok(StreamingResponse{
+          .response = std::move(response),
+          .is_complete = true,
+      }),
+      /*provided_by_on_device=*/true,
+      /*log_entry*/ nullptr);
+}
 
-const optimization_guide::TokenLimits& MockSessionWrapper::GetTokenLimits()
-    const {
-  return session_->GetTokenLimits();
+OptimizationGuideModelStreamingExecutionResult MockSession::FailResult() {
+  return OptimizationGuideModelStreamingExecutionResult(
+      base::unexpected(
+          OptimizationGuideModelExecutionError::FromModelExecutionError(
+              OptimizationGuideModelExecutionError::ModelExecutionError::
+                  kGenericFailure)),
+      /*provided_by_on_device=*/true,
+      /*log_entry*/ nullptr);
 }
-void MockSessionWrapper::AddContext(
-    const google::protobuf::MessageLite& request_metadata) {
-  session_->AddContext(request_metadata);
-}
-void MockSessionWrapper::Score(const std::string& text,
-                               OptimizationGuideModelScoreCallback callback) {
-  session_->Score(text, std::move(callback));
-}
-void MockSessionWrapper::ExecuteModel(
-    const google::protobuf::MessageLite& request_metadata,
-    OptimizationGuideModelExecutionResultStreamingCallback callback) {
-  session_->ExecuteModel(request_metadata, std::move(callback));
-}
-void MockSessionWrapper::GetSizeInTokens(
-    const std::string& text,
-    OptimizationGuideModelSizeInTokenCallback callback) {
-  session_->GetSizeInTokens(text, std::move(callback));
-}
-void MockSessionWrapper::GetContextSizeInTokens(
-    const google::protobuf::MessageLite& request,
-    OptimizationGuideModelSizeInTokenCallback callback) {
-  session_->GetContextSizeInTokens(request, std::move(callback));
-}
-const SamplingParams MockSessionWrapper::GetSamplingParams() const {
-  return session_->GetSamplingParams();
-}
-const proto::Any& MockSessionWrapper::GetOnDeviceFeatureMetadata() const {
-  return session_->GetOnDeviceFeatureMetadata();
+
+void MockSession::Delegate(OptimizationGuideModelExecutor::Session* impl) {
+  ON_CALL(*this, GetTokenLimits).WillByDefault([impl]() -> const TokenLimits& {
+    return impl->GetTokenLimits();
+  });
+  ON_CALL(*this, AddContext).WillByDefault([impl](const auto& input) {
+    impl->AddContext(input);
+  });
+  ON_CALL(*this, Score).WillByDefault([impl](const auto& input, auto callback) {
+    impl->Score(input, std::move(callback));
+  });
+  ON_CALL(*this, ExecuteModel)
+      .WillByDefault([impl](const auto& input, auto callback) {
+        impl->ExecuteModel(input, std::move(callback));
+      });
+  ON_CALL(*this, GetSizeInTokens)
+      .WillByDefault([impl](const auto& input, auto callback) {
+        impl->GetSizeInTokens(input, std::move(callback));
+      });
+  ON_CALL(*this, GetExecutionInputSizeInTokens)
+      .WillByDefault([impl](const auto& input, auto callback) {
+        impl->GetExecutionInputSizeInTokens(input, std::move(callback));
+      });
+  ON_CALL(*this, GetContextSizeInTokens)
+      .WillByDefault([impl](const auto& input, auto callback) {
+        impl->GetContextSizeInTokens(input, std::move(callback));
+      });
+  ON_CALL(*this, GetSamplingParams).WillByDefault([impl]() {
+    return impl->GetSamplingParams();
+  });
+  ON_CALL(*this, GetOnDeviceFeatureMetadata)
+      .WillByDefault([impl]() -> const proto::Any& {
+        return impl->GetOnDeviceFeatureMetadata();
+      });
 }
 
 }  // namespace optimization_guide

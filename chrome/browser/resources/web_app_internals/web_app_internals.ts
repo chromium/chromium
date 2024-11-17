@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -11,7 +11,7 @@ import type {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file
 import type {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {InstallIsolatedWebAppResult, IwaDevModeAppInfo, IwaDevModeLocation, ParseUpdateManifestFromUrlResult, UpdateManifest, VersionEntry} from './web_app_internals.mojom-webui.js';
+import type {InstallIsolatedWebAppResult, IwaDevModeAppInfo, IwaDevModeLocation, ParseUpdateManifestFromUrlResult, UpdateInfo, UpdateManifest, VersionEntry} from './web_app_internals.mojom-webui.js';
 import {WebAppInternalsHandler} from './web_app_internals.mojom-webui.js';
 
 const webAppInternalsHandler = WebAppInternalsHandler.getRemote();
@@ -30,6 +30,9 @@ const iwaDevUpdateManifestUrl =
 
 const iwaDevUpdateManifestDialog =
     getRequiredElement('iwa-update-manifest-dialog') as HTMLDialogElement;
+
+const iwaSwitchChannelDialog =
+    getRequiredElement('iwa-switch-channel-input-dialog') as HTMLDialogElement;
 
 /**
  * Converts a mojo origin into a user-readable string, omitting default ports.
@@ -245,6 +248,11 @@ async function iwaDevFetchUpdateManifest() {
     const installResult: InstallIsolatedWebAppResult =
         (await webAppInternalsHandler.installIsolatedWebAppFromBundleUrl({
           webBundleUrl: selectedVersionEntry.webBundleUrl,
+          updateInfo: {
+            updateManifestUrl,
+            // TODO(crbug.com/373396075): Allow selecting the channel.
+            updateChannel: 'default',
+          },
         })).result;
     if (installResult.success) {
       iwaInstallMessageDiv.innerText = `Installing version ${
@@ -267,6 +275,49 @@ getRequiredElement('iwa-update-manifest-dialog-close')
     .addEventListener('click', () => {
       getRequiredElement('iwa-dev-install-message').innerText = '';
       iwaDevUpdateManifestDialog.close();
+    });
+
+async function showSwitchChannelDialog(
+    appId: string, name: string, messageDiv: HTMLDivElement) {
+  const switchButton = getRequiredElement('iwa-switch-channel-dialog-switch') as
+      HTMLButtonElement;
+
+  const updateChannel =
+      getRequiredElement('iwa-update-channel') as HTMLInputElement;
+
+  switchButton.addEventListener('click', async () => {
+    iwaSwitchChannelDialog.close();
+
+    const channel = updateChannel.value;
+    messageDiv.innerText =
+        `Switching update channel for ${name} to ${channel}...`;
+    const {success}: {success: boolean} =
+        await webAppInternalsHandler.setUpdateChannelForIsolatedWebApp(
+            appId,
+            channel,
+        );
+
+    updateChannel.value = '';
+    if (success) {
+      messageDiv.innerText = `Successfully switched the update channel of ${
+          name} to ${channel}; refreshing the apps...`;
+      setTimeout(async () => {
+        refreshDevModeAppList(/*showPlaceholder*/ false);
+      }, 2000);
+    } else {
+      messageDiv.innerText =
+          `Something went wrong while switching the update channel of ${
+              name} to ${channel}.`;
+    }
+  }, {once: true});
+
+  iwaSwitchChannelDialog.showModal();
+}
+
+getRequiredElement('iwa-switch-channel-dialog-close')
+    .addEventListener('click', () => {
+      getRequiredElement('iwa-dev-install-message').innerText = '';
+      iwaSwitchChannelDialog.close();
     });
 
 iwaDevUpdateManifestUrl.addEventListener('enter', iwaDevFetchUpdateManifest);
@@ -345,14 +396,26 @@ function formatDevModeLocation(location: IwaDevModeLocation): string {
   assertNotReached();
 }
 
+function describeIsolatedWebApp(
+    name: string, installedVersion: string, location: IwaDevModeLocation,
+    updateInfo: UpdateInfo|null): string {
+  if (updateInfo) {
+    return `${name} (${installedVersion}) → ${
+        updateInfo.updateManifestUrl.url} (${updateInfo.updateChannel})`;
+  }
+  return `${name} (${installedVersion}) → ${formatDevModeLocation(location)}`;
+}
+
 function showIwaSection(containerId: string) {
   getRequiredElement(containerId).style.display = '';
   getRequiredElement('iwa-container').style.display = '';
 }
 
-async function refreshDevModeAppList() {
+async function refreshDevModeAppList(showPlaceholder: boolean = true) {
   const devModeUpdatesMessage = getRequiredElement('iwa-dev-updates-message');
-  devModeUpdatesMessage.innerText = 'Loading...';
+  if (showPlaceholder) {
+    devModeUpdatesMessage.innerText = 'Loading...';
+  }
   const devModeApps: IwaDevModeAppInfo[] =
       (await webAppInternalsHandler.getIsolatedWebAppDevModeAppInfo()).apps;
   const devModeAppList = getRequiredElement('iwa-dev-updates-app-list');
@@ -361,16 +424,17 @@ async function refreshDevModeAppList() {
     devModeUpdatesMessage.innerText = 'None';
   } else {
     devModeUpdatesMessage.innerText = '';
-    for (const {appId, name, location, installedVersion} of devModeApps) {
+    for (const {appId, name, location, installedVersion, updateInfo} of
+             devModeApps) {
       const li = document.createElement('li');
-
       li.innerText =
-          `${name} (${installedVersion}) → ${formatDevModeLocation(location)}`;
+          describeIsolatedWebApp(name, installedVersion, location, updateInfo);
 
       const updateMsg = document.createElement('p');
 
       const updateBtn = document.createElement('button');
       updateBtn.className = 'iwa-dev-update-button';
+
       updateBtn.innerText = 'Perform update now';
       updateBtn.onclick = async () => {
         const oldText = updateBtn.innerText;
@@ -379,7 +443,12 @@ async function refreshDevModeAppList() {
           updateBtn.innerText =
               'Performing update... (close the IWA if it is currently open!)';
 
-          if (location.bundlePath) {
+          if (updateInfo) {
+            const {result}: {result: string} =
+                await webAppInternalsHandler
+                    .updateManifestInstalledIsolatedWebApp(appId);
+            updateMsg.innerText = result;
+          } else if (location.bundlePath) {
             const {result}: {result: string} =
                 await webAppInternalsHandler
                     .selectFileAndUpdateIsolatedWebAppFromDevBundle(appId);
@@ -397,6 +466,16 @@ async function refreshDevModeAppList() {
           updateBtn.disabled = false;
         }
       };
+
+      if (updateInfo) {
+        const switchChannelBtn = document.createElement('button');
+        switchChannelBtn.className = 'iwa-dev-switch-channel-button';
+        switchChannelBtn.innerText = 'Switch channel';
+        switchChannelBtn.onclick = async () => {
+          showSwitchChannelDialog(appId, name, updateMsg);
+        };
+        li.appendChild(switchChannelBtn);
+      }
 
       li.appendChild(updateBtn);
       li.appendChild(updateMsg);

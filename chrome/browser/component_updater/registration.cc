@@ -21,6 +21,7 @@
 #include "chrome/browser/component_updater/app_provisioning_component_installer.h"
 #include "chrome/browser/component_updater/chrome_origin_trials_component_installer.h"
 #include "chrome/browser/component_updater/commerce_heuristics_component_installer.h"
+#include "chrome/browser/component_updater/cookie_readiness_list_component_installer.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/crowd_deny_component_installer.h"
 #include "chrome/browser/component_updater/desktop_sharing_hub_component_remover.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/component_updater/hyphenation_component_installer.h"
 #include "chrome/browser/component_updater/masked_domain_list_component_installer.h"
 #include "chrome/browser/component_updater/mei_preload_component_installer.h"
+#include "chrome/browser/component_updater/open_cookie_database_component_installer.h"
 #include "chrome/browser/component_updater/pki_metadata_component_installer.h"
 #include "chrome/browser/component_updater/pnacl_component_installer.h"
 #include "chrome/browser/component_updater/privacy_sandbox_attestations_component_installer.h"
@@ -46,10 +48,10 @@
 #include "components/component_updater/installer_policies/optimization_hints_component_installer.h"
 #include "components/component_updater/installer_policies/plus_address_blocklist_component_installer.h"
 #include "components/component_updater/installer_policies/safety_tips_component_installer.h"
-#include "components/component_updater/url_param_filter_remover.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/services/on_device_translation/buildflags/buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/widevine/cdm/buildflags.h"
@@ -76,7 +78,6 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
-#include "chrome/browser/component_updater/translate_kit_component_installer.h"
 #include "chrome/browser/component_updater/zxcvbn_data_component_installer.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
 #include "media/base/media_switches.h"
@@ -89,6 +90,11 @@
 #if BUILDFLAG(ENABLE_MEDIA_FOUNDATION_WIDEVINE_CDM)
 #include "chrome/browser/component_updater/media_foundation_widevine_cdm_component_installer.h"
 #endif
+
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+#include "chrome/browser/component_updater/translate_kit_component_installer.h"
+#include "chrome/browser/component_updater/translate_kit_language_pack_component_installer.h"
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
 
 #if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
 #include "chrome/browser/component_updater/widevine_cdm_component_installer.h"
@@ -148,8 +154,6 @@ void RegisterComponentsForUpdate() {
 
   base::FilePath path;
   if (base::PathService::Get(chrome::DIR_USER_DATA, &path)) {
-    component_updater::DeleteUrlParamFilter(path);
-
     // Clean up any remaining desktop sharing hub state.
     component_updater::DeleteDesktopSharingHub(path);
 
@@ -227,10 +231,18 @@ void RegisterComponentsForUpdate() {
 
   RegisterPlusAddressBlocklistComponent(cus);
 
-#if !BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/364795294): Support Android platform.
-  RegisterTranslateKitComponent(cus, g_browser_process->local_state());
-#endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+  // TODO(crbug.com/364795294): Support other platforms.
+  RegisterTranslateKitComponent(cus, g_browser_process->local_state(),
+                                /*force_install=*/false,
+                                /*registered_callback=*/base::OnceClosure());
+  RegisterTranslateKitLanguagePackComponentsForUpdate(
+      cus, g_browser_process->local_state());
+#endif  // BUILDFLAG(ENABLE_ON_DEVICE_TRANSLATION)
+
+  RegisterOpenCookieDatabaseComponent(cus);
+
+  RegisterCookieReadinessListComponent(cus);
 }
 
 }  // namespace component_updater

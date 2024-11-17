@@ -1,0 +1,29 @@
+[
+  {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "EnterpriseRealTimeUrlCheckMode": 0
+        },
+        "prefs": {
+          "safebrowsing.enterprise_real_time_url_check_mode": {
+            "value": 0
+          }
+        }
+      },
+      {
+        "policies": {
+          "EnterpriseRealTimeUrlCheckMode": 1
+        },
+        "prefs": {
+          "safebrowsing.enterprise_real_time_url_check_mode": {
+            "value": 1
+          }
+        }
+      }
+    ]
+  }
+]

@@ -17,7 +17,6 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.signin.MinorModeHelper.ScreenMode;
 import org.chromium.components.browser_ui.widget.DualControlLayout;
 import org.chromium.components.signin.metrics.SyncButtonClicked;
@@ -71,10 +70,6 @@ class SigninView extends LinearLayout {
         mAccountTextSecondary = findViewById(R.id.account_text_secondary);
         mAccountPickerEndImage = findViewById(R.id.account_picker_end_image);
         mSyncTitle = findViewById(R.id.signin_sync_title);
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS)) {
-            mSyncTitle.setText(R.string.signin_sync_title_without_passwords);
-        }
         mSyncDescription = findViewById(R.id.signin_sync_description);
         mDetailsDescription = findViewById(R.id.signin_details_description);
         mMoreButton = findViewById(R.id.more_button);

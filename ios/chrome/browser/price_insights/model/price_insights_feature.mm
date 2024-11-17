@@ -9,6 +9,7 @@
 #import "components/commerce/core/shopping_service.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 const char kLowPriceParam[] = "LowPriceStringParam";
 
@@ -18,21 +19,31 @@ const char kLowPriceParamGoodDealNow[] = "GoodDealNow";
 
 const char kLowPriceParamSeePriceHistory[] = "SeePriceHistory";
 
-bool IsPriceInsightsEnabled(ChromeBrowserState* browser_state) {
+bool IsPriceInsightsEnabled() {
+  return base::FeatureList::IsEnabled(commerce::kPriceInsightsIos);
+}
+
+bool IsPriceInsightsEnabled(ProfileIOS* profile) {
   if (!base::FeatureList::IsEnabled(commerce::kPriceInsightsIos)) {
     return false;
   }
 
-  DCHECK(browser_state);
+  // Allow Lens overlay to disable price insights because the price insights
+  // entrypoint trumps lens overlay in the location bar. This is only used for
+  // experimentation in coordination with the price insight owner.
+  if (base::FeatureList::IsEnabled(kLensOverlayDisablePriceInsights)) {
+    return false;
+  }
+
+  DCHECK(profile);
   commerce::ShoppingService* service =
-      commerce::ShoppingServiceFactory::GetForBrowserState(browser_state);
+      commerce::ShoppingServiceFactory::GetForProfile(profile);
 
   if (!service) {
     return false;
   }
 
-  return service->IsPriceInsightsEligible() ||
-         service->IsCommercePriceTrackingEnabled();
+  return service->IsPriceInsightsEligible();
 }
 
 std::string GetLowPriceParamValue() {

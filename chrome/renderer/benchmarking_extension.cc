@@ -121,7 +121,7 @@ class BenchmarkingWrapper : public v8::Extension {
   }
 
   static v8::Local<v8::String> GetString(v8::Isolate* isolate,
-                                         const std::string string) {
+                                         const std::string& string) {
     return v8::String::NewFromUtf8(isolate, string.data(),
                                    v8::NewStringType::kInternalized,
                                    string.length())

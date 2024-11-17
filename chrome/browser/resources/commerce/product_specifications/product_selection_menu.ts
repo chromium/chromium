@@ -10,11 +10,11 @@ import 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/cr_elements/cr_hidden_style.css.js';
 import './images/icons.html.js';
-import './strings.m.js';
+import '/strings.m.js';
 
-import type {BrowserProxy} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
 import type {UrlInfo} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {ShoppingServiceBrowserProxy} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
@@ -66,14 +66,27 @@ export class ProductSelectionMenuElement extends PolymerElement {
         value: () => [],
       },
 
+      forNewColumn: {
+        type: Boolean,
+        value: false,
+      },
+
+      isTableFull: {
+        type: Boolean,
+        value: false,
+      },
+
       sections: Array,
     };
   }
 
-  private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private shoppingApi_: ShoppingServiceBrowserProxy =
+      ShoppingServiceBrowserProxyImpl.getInstance();
 
   selectedUrl: string;
   excludedUrls: string[];
+  forNewColumn: boolean;
+  isTableFull: boolean;
   sections: MenuSection[];
 
   async showAt(element: HTMLElement) {
@@ -167,6 +180,18 @@ export class ProductSelectionMenuElement extends PolymerElement {
 
   private getUrl_(item: UrlListEntry) {
     return getAbbreviatedUrl(item.url);
+  }
+
+  private showEmptySuggestionsMessage_(
+      sections: MenuSection[], forNewColumn: boolean,
+      isTableFull: boolean): boolean {
+    return (!sections || sections.length === 0) &&
+        !this.showTableFullMessage_(forNewColumn, isTableFull);
+  }
+
+  private showTableFullMessage_(forNewColumn: boolean, isTableFull: boolean):
+      boolean {
+    return forNewColumn && isTableFull;
   }
 }
 

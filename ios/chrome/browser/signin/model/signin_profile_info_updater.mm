@@ -13,13 +13,13 @@
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 
-SigninBrowserStateInfoUpdater::SigninBrowserStateInfoUpdater(
+SigninProfileInfoUpdater::SigninProfileInfoUpdater(
     signin::IdentityManager* identity_manager,
     SigninErrorController* signin_error_controller,
-    const std::string& browser_state_name)
+    const std::string& profile_name)
     : identity_manager_(identity_manager),
       signin_error_controller_(signin_error_controller),
-      browser_state_name_(browser_state_name) {
+      profile_name_(profile_name) {
   DCHECK(GetApplicationContext()->GetProfileManager());
   identity_manager_observation_.Observe(identity_manager_.get());
 
@@ -31,19 +31,19 @@ SigninBrowserStateInfoUpdater::SigninBrowserStateInfoUpdater(
   // metrics depend on this bug and must be fixed first.
 }
 
-SigninBrowserStateInfoUpdater::~SigninBrowserStateInfoUpdater() = default;
+SigninProfileInfoUpdater::~SigninProfileInfoUpdater() = default;
 
-void SigninBrowserStateInfoUpdater::Shutdown() {
+void SigninProfileInfoUpdater::Shutdown() {
   identity_manager_observation_.Reset();
   signin_error_controller_observation_.Reset();
 }
 
-void SigninBrowserStateInfoUpdater::UpdateBrowserStateInfo() {
+void SigninProfileInfoUpdater::UpdateBrowserStateInfo() {
   GetApplicationContext()
       ->GetProfileManager()
       ->GetProfileAttributesStorage()
       ->UpdateAttributesForProfileWithName(
-          browser_state_name_,
+          profile_name_,
           base::BindOnce(
               [](CoreAccountInfo info, ProfileAttributesIOS attr) {
                 attr.SetAuthenticationInfo(info.gaia, info.email);
@@ -53,21 +53,20 @@ void SigninBrowserStateInfoUpdater::UpdateBrowserStateInfo() {
                   signin::ConsentLevel::kSignin)));
 }
 
-void SigninBrowserStateInfoUpdater::OnErrorChanged() {
+void SigninProfileInfoUpdater::OnErrorChanged() {
   GetApplicationContext()
       ->GetProfileManager()
       ->GetProfileAttributesStorage()
       ->UpdateAttributesForProfileWithName(
-          browser_state_name_,
-          base::BindOnce(
-              [](bool has_error, ProfileAttributesIOS attr) {
-                attr.SetHasAuthenticationError(has_error);
-                return attr;
-              },
-              signin_error_controller_->HasError()));
+          profile_name_, base::BindOnce(
+                             [](bool has_error, ProfileAttributesIOS attr) {
+                               attr.SetHasAuthenticationError(has_error);
+                               return attr;
+                             },
+                             signin_error_controller_->HasError()));
 }
 
-void SigninBrowserStateInfoUpdater::OnPrimaryAccountChanged(
+void SigninProfileInfoUpdater::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   UpdateBrowserStateInfo();
 }

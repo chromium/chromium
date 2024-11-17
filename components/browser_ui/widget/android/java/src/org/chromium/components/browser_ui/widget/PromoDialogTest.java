@@ -120,11 +120,7 @@ public class PromoDialogTest {
 
     @BeforeClass
     public static void setupSuite() {
-        activityTestRule.launchActivity(null);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    sActivity = activityTestRule.getActivity();
-                });
+        sActivity = activityTestRule.launchActivity(null);
     }
 
     @Test

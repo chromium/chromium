@@ -105,9 +105,6 @@ const char kTokenHandleRotatedObsolete[] = "TokenHandleRotated";
 // Cache of the auth factors configured for the user.
 const char kAuthFactorPresenceCache[] = "AuthFactorsPresenceCache";
 
-// Records for each user whether Lacros is enabled.
-const char kLacrosEnabled[] = "lacros_enabled";
-
 // List containing all the known user preferences keys.
 const char* kReservedKeys[] = {kCanonicalEmail,
                                kGAIAIdKey,
@@ -131,8 +128,7 @@ const char* kReservedKeys[] = {kCanonicalEmail,
                                kPasswordSyncToken,
                                kOnboardingCompletedVersion,
                                kPendingOnboardingScreen,
-                               kAuthFactorPresenceCache,
-                               kLacrosEnabled};
+                               kAuthFactorPresenceCache};
 
 // List containing all known user preference keys that used to be reserved and
 // are now obsolete.
@@ -146,8 +142,7 @@ const char* kObsoleteKeys[] = {
 
 // Checks for platform-specific known users matching given |user_email|. If
 // data matches a known account, returns it.
-std::optional<AccountId> GetPlatformKnownUserId(
-    const std::string_view user_email) {
+std::optional<AccountId> GetPlatformKnownUserId(std::string_view user_email) {
   if (user_email == kStubUserEmail) {
     return StubAccountId();
   }
@@ -415,8 +410,7 @@ AccountId KnownUser::GetAccountId(const std::string& user_email,
     case AccountType::UNKNOWN:
       return AccountId::FromUserEmail(sanitized_email);
   }
-  NOTREACHED_IN_MIGRATION();
-  return EmptyAccountId();
+  NOTREACHED();
 }
 
 AccountId KnownUser::GetAccountIdByCryptohomeId(
@@ -507,7 +501,7 @@ void KnownUser::SetDeviceId(const AccountId& account_id,
                             const std::string& device_id) {
   const std::string known_device_id = GetDeviceId(account_id);
   if (!known_device_id.empty() && device_id != known_device_id) {
-    NOTREACHED_IN_MIGRATION() << "Trying to change device ID for known user.";
+    NOTREACHED() << "Trying to change device ID for known user.";
   }
   SetStringPref(account_id, kDeviceId, device_id);
 }
@@ -751,17 +745,6 @@ std::string KnownUser::GetPendingOnboardingScreen(const AccountId& account_id) {
   }
   // Return empty string if no screen is pending.
   return std::string();
-}
-
-void KnownUser::SetLacrosEnabled(const AccountId& account_id, bool enabled) {
-  SetBooleanPref(account_id, kLacrosEnabled, enabled);
-}
-
-bool KnownUser::GetLacrosEnabledForAnyUser() {
-  const std::vector<AccountId> account_ids = GetKnownAccountIds();
-  return base::ranges::any_of(account_ids, [this](const AccountId& account_id) {
-    return FindBoolPath(account_id, kLacrosEnabled).value_or(false);
-  });
 }
 
 bool KnownUser::UserExists(const AccountId& account_id) {

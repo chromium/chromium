@@ -5,15 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_FIELD_PROMO_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_AUTOFILL_FIELD_PROMO_CONTROLLER_IMPL_H_
 
-#include <optional>
-
-#include "base/feature_list.h"
-#include "base/memory/raw_ref.h"
-#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_field_promo_controller.h"
-#include "chrome/browser/ui/autofill/autofill_field_promo_view.h"
-#include "chrome/browser/ui/autofill/autofill_popup_hide_helper.h"
-#include "ui/base/interaction/element_identifier.h"
 
 namespace content {
 class WebContents;
@@ -23,17 +15,27 @@ namespace gfx {
 class RectF;
 }  // namespace gfx
 
+namespace ui {
+class ElementIdentifier;
+}  // namespace ui
+
 namespace autofill {
 
 enum class SuggestionHidingReason;
-
 class AutofillFieldPromoControllerImpl : public AutofillFieldPromoController {
  public:
-  AutofillFieldPromoControllerImpl(
+  // Returns nullptr if trying to show `feature_promo` would fail.
+  // Internally calls `CanShowFeaturePromo(). Use this method if you want to
+  // know beforehand whether calling `Show()` would succeed.
+  static std::unique_ptr<AutofillFieldPromoControllerImpl> MaybeCreate(
       content::WebContents* web_contents,
       const base::Feature& feature_promo,
       ui::ElementIdentifier promo_element_identifier);
 
+  AutofillFieldPromoControllerImpl(
+      content::WebContents* web_contents,
+      const base::Feature& feature_promo,
+      ui::ElementIdentifier promo_element_identifier);
   AutofillFieldPromoControllerImpl(const AutofillFieldPromoControllerImpl&) =
       delete;
   AutofillFieldPromoControllerImpl& operator=(
@@ -42,6 +44,14 @@ class AutofillFieldPromoControllerImpl : public AutofillFieldPromoController {
 
   void Show(const gfx::RectF& bounds) override;
   void Hide() override;
+  // TODO(crbug.com/374250832): This method relies on
+  // `BrowserUserEducationInterface`, which, according to `CanShowFeaturePromo`
+  // and `MaybeShowFeaturePromo` implementation may return `true` even if no
+  // bubble end up showing. This is supposed to happen rarely, and depending
+  // on this frequency, should be investigated together with the IPH team sooner
+  // or later.
+  bool IsMaybeShowing() const override;
+  const base::Feature& GetFeaturePromo() const override;
 
 #if defined(UNIT_TEST)
   void SetPromoViewForTesting(
@@ -51,6 +61,8 @@ class AutofillFieldPromoControllerImpl : public AutofillFieldPromoController {
 #endif
 
  private:
+  void OnShowPromoResult(user_education::FeaturePromoResult);
+
   const raw_ptr<content::WebContents> web_contents_;
   const raw_ref<const base::Feature> feature_promo_;
   // The view sets the `element_identifier_` as its property. This is how the
@@ -59,6 +71,9 @@ class AutofillFieldPromoControllerImpl : public AutofillFieldPromoController {
   base::WeakPtr<AutofillFieldPromoView> promo_view_;
   // This is a helper which detects events that should hide the promo.
   std::optional<AutofillPopupHideHelper> promo_hide_helper_;
+  bool is_maybe_showing_ = false;
+  base::WeakPtrFactory<AutofillFieldPromoControllerImpl> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace autofill

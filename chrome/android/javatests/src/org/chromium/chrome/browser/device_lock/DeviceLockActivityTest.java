@@ -30,6 +30,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.WindowAndroid.IntentCallback;
 
 import java.lang.ref.WeakReference;
 
@@ -106,7 +107,7 @@ public class DeviceLockActivityTest {
         ApplicationTestUtils.waitForActivityState(mDeviceLockActivity, Stage.RESUMED);
     }
 
-    private class MockIntentRequestTracker implements IntentRequestTracker {
+    private static class MockIntentRequestTracker implements IntentRequestTracker {
         boolean mOnActivityResultCalled;
 
         MockIntentRequestTracker() {}
@@ -127,5 +128,10 @@ public class DeviceLockActivityTest {
 
         @Override
         public void restoreInstanceState(Bundle bundle) {}
+
+        @Override
+        public int showCancelableIntent(Intent intent, IntentCallback callback, Integer errorId) {
+            return 0;
+        }
     }
 }

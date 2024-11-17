@@ -195,8 +195,7 @@ void QuicConnectionLogger::OnPacketSent(
           kMaxOutgoingPacketSize, 50);
       break;
     case quic::NUM_ENCRYPTION_LEVELS:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   event_logger_.OnPacketSent(packet_number, packet_length, has_crypto_handshake,

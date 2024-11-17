@@ -13,7 +13,6 @@
 #include "ash/accessibility/sticky_keys/sticky_keys_overlay.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/test/mock_input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
@@ -994,8 +993,6 @@ class EventRewriterTestBase : public ChromeAshTestBase {
   TestEventSink sink_;
   ui::test::TestEventSource source_{&sink_};
   message_center::FakeMessageCenter message_center_;
-  base::AutoReset<bool> ignore_modifier_split_secret_key_ =
-      switches::SetIgnoreModifierSplitSecretKeyForTest();
   raw_ptr<DeprecationNotificationController>
       deprecation_controller_;  // Not owned.
   raw_ptr<InputDeviceSettingsNotificationController>

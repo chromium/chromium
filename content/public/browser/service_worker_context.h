@@ -56,11 +56,6 @@ enum class ServiceWorkerCapability {
   SERVICE_WORKER_WITH_FETCH_HANDLER,
 };
 
-enum class OfflineCapability {
-  kUnsupported,
-  kSupported,
-};
-
 // Used for UMA. Append only.
 enum class StartServiceWorkerForNavigationHintResult {
   // The service worker started successfully.
@@ -118,10 +113,6 @@ class CONTENT_EXPORT ServiceWorkerContext {
 
   using CheckHasServiceWorkerCallback =
       base::OnceCallback<void(ServiceWorkerCapability capability)>;
-
-  using CheckOfflineCapabilityCallback =
-      base::OnceCallback<void(OfflineCapability capability,
-                              int64_t registration_id)>;
 
   using StatusCodeCallback =
       base::OnceCallback<void(blink::ServiceWorkerStatusCode status_code)>;
@@ -246,17 +237,6 @@ class CONTENT_EXPORT ServiceWorkerContext {
       const GURL& url,
       const blink::StorageKey& key,
       CheckHasServiceWorkerCallback callback) = 0;
-
-  // Simulates a navigation request in the offline state and dispatches a fetch
-  // event. Returns OfflineCapability::kSupported and the registration id if
-  // the response's status code is 200.
-  //
-  // TODO(hayato): Re-visit to integrate this function with
-  // |ServiceWorkerContext::CheckHasServiceWorker|.
-  virtual void CheckOfflineCapability(
-      const GURL& url,
-      const blink::StorageKey& key,
-      CheckOfflineCapabilityCallback callback) = 0;
 
   // Stops all running service workers and unregisters all service worker
   // registrations. This method is used in web tests to make sure that the

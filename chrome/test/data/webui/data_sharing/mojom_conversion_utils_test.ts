@@ -16,6 +16,7 @@ suite('MojomConversionUtilsTest', () => {
     const gaiaId: string = 'TEST_GAIA_ID';
     const email: string = 'test@gmail.com';
     const accessToken: string = 'testAccessToken';
+    const givenName: string = 'TEST_GIVEN_NAME';
 
     const groupData: GroupData = toMojomGroupData({
       groupId: groupId,
@@ -27,6 +28,7 @@ suite('MojomConversionUtilsTest', () => {
         email,
         role: 'invitee',
         avatarUrl,
+        givenName,
       }],
     });
 
@@ -40,6 +42,7 @@ suite('MojomConversionUtilsTest', () => {
         email,
         role: MemberRole.kInvitee,
         avatarUrl: {url: avatarUrl},
+        givenName,
       }],
     };
 

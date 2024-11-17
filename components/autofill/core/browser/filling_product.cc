@@ -66,6 +66,7 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kScanCreditCard:
     case SuggestionType::kShowAccountCards:
     case SuggestionType::kManageCreditCard:
+    case SuggestionType::kBnplEntry:
       return FillingProduct::kCreditCard;
     case SuggestionType::kMerchantPromoCodeEntry:
       return FillingProduct::kMerchantPromoCode;
@@ -114,8 +115,8 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
     case SuggestionType::kRetrievePredictionImprovements:
     case SuggestionType::kPredictionImprovementsLoadingState:
     case SuggestionType::kFillPredictionImprovements:
-    case SuggestionType::kPredictionImprovementsDetails:
     case SuggestionType::kPredictionImprovementsError:
+    case SuggestionType::kEditPredictionImprovementsInformation:
       return FillingProduct::kPredictionImprovements;
   }
   NOTREACHED();
@@ -123,27 +124,28 @@ FillingProduct GetFillingProductFromSuggestionType(SuggestionType type) {
 
 FillingProduct GetFillingProductFromFieldTypeGroup(
     FieldTypeGroup field_type_group) {
+  using enum FieldTypeGroup;
   switch (field_type_group) {
-    case FieldTypeGroup::kUnfillable:
-    case FieldTypeGroup::kTransaction:
-    case FieldTypeGroup::kNoGroup:
+    case kUnfillable:
+    case kTransaction:
+    case kNoGroup:
       return FillingProduct::kNone;
-    case FieldTypeGroup::kName:
-    case FieldTypeGroup::kEmail:
-    case FieldTypeGroup::kCompany:
-    case FieldTypeGroup::kAddress:
-    case FieldTypeGroup::kPhone:
+    case kName:
+    case kEmail:
+    case kCompany:
+    case kAddress:
+    case kPhone:
       return FillingProduct::kAddress;
-    case FieldTypeGroup::kCreditCard:
+    case kCreditCard:
       return FillingProduct::kCreditCard;
-    case FieldTypeGroup::kStandaloneCvcField:
+    case kStandaloneCvcField:
       return FillingProduct::kStandaloneCvc;
-    case FieldTypeGroup::kPasswordField:
-    case FieldTypeGroup::kUsernameField:
+    case kPasswordField:
+    case kUsernameField:
       return FillingProduct::kPassword;
-    case FieldTypeGroup::kIban:
+    case kIban:
       return FillingProduct::kIban;
-    case autofill::FieldTypeGroup::kPredictionImprovements:
+    case kPredictionImprovements:
       return FillingProduct::kPredictionImprovements;
   }
   NOTREACHED();

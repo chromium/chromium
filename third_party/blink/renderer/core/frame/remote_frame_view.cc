@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
@@ -34,6 +36,10 @@
 #endif
 
 namespace blink {
+
+BASE_FEATURE(kSkipUnnecessaryRemoteFrameGeometryPropagation,
+             "SkipUnnecessaryRemoteFrameGeometryPropagation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 RemoteFrameView::RemoteFrameView(RemoteFrame* remote_frame)
     : FrameView(gfx::Rect()), remote_frame_(remote_frame) {
@@ -106,9 +112,47 @@ bool RemoteFrameView::UpdateViewportIntersectionsForSubtree(
 
 void RemoteFrameView::SetViewportIntersection(
     const mojom::blink::ViewportIntersectionState& intersection_state) {
+  TRACE_EVENT0("blink", __PRETTY_FUNCTION__);
   mojom::blink::ViewportIntersectionState new_state(intersection_state);
   new_state.compositor_visible_rect = compositing_rect_;
-  if (!last_intersection_state_.Equals(new_state)) {
+
+  auto is_equal = [](mojom::blink::ViewportIntersectionState& a,
+                     mojom::blink::ViewportIntersectionState& b,
+                     bool ignore_outermost_main_frame_scroll_position) {
+    if (ignore_outermost_main_frame_scroll_position) {
+      auto b_copy = b;
+      b_copy.outermost_main_frame_scroll_position =
+          a.outermost_main_frame_scroll_position;
+      return a.Equals(b_copy);
+    }
+    return a.Equals(b);
+  };
+
+  bool needs_update;
+  if (base::FeatureList::IsEnabled(
+          kSkipUnnecessaryRemoteFrameGeometryPropagation)) {
+    // When the remote frame is not intersecting with the viewport, we don't
+    // need to propagate up to date outermost frame scroll offsets, since they
+    // are not relevant in this case. This is a non-trivial saving, since
+    // common pages can have 10+ remote frames, and the scroll offset changes at
+    // every frame while scrolling. Since the interface used to talk to the
+    // remote frames is (a) a Channel-assocaited interface, and (b) goes through
+    // CrossProcessFrameConnector in the browser process, this incurs a *lot* of
+    // context switches.
+    bool outside_viewport =
+        frame_visibility() &&
+        (*frame_visibility() == mojom::blink::FrameVisibility::kNotRendered ||
+         *frame_visibility() ==
+             mojom::blink::FrameVisibility::kRenderedOutOfViewport);
+    needs_update =
+        !is_equal(last_intersection_state_, new_state, outside_viewport);
+  } else {
+    needs_update = !last_intersection_state_.Equals(new_state);
+  }
+
+  UMA_HISTOGRAM_BOOLEAN(
+      "Blink.UpdateViewportIntersection.RemoteFrameNeedsUpdate", needs_update);
+  if (needs_update) {
     last_intersection_state_ = new_state;
     remote_frame_->SetViewportIntersection(new_state);
   } else if (needs_frame_rect_propagation_) {
@@ -276,8 +320,6 @@ void RemoteFrameView::SetFrameRect(const gfx::Rect& rect) {
 }
 
 void RemoteFrameView::UpdateFrozenSize() {
-  if (frozen_size_)
-    return;
   auto* layout_embedded_content = GetLayoutEmbeddedContent();
   if (!layout_embedded_content)
     return;

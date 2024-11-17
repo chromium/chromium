@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/system_preferences_section.h"
 
-#include "base/no_destructor.h"
+#include <array>
+
+#include "base/containers/span.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/date_time_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/files/files_section.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/languages/languages_section.h"
@@ -28,8 +30,8 @@ using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
 namespace {
-const std::vector<SearchConcept>& GetSystemPreferencesSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetSystemPreferencesSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_SYSTEM_PREFERENCES,
        mojom::kSystemPreferencesSectionPath,
        mojom::SearchResultIcon::kSystemPreferences,
@@ -37,7 +39,7 @@ const std::vector<SearchConcept>& GetSystemPreferencesSearchConcepts() {
        mojom::SearchResultType::kSection,
        {.section = mojom::Section::kSystemPreferences}},
   });
-  return *tags;
+  return tags;
 }
 }  // namespace
 

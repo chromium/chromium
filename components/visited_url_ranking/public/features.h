@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_VISITED_URL_RANKING_PUBLIC_FEATURES_H_
 #define COMPONENTS_VISITED_URL_RANKING_PUBLIC_FEATURES_H_
 
+#include <string>
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
@@ -88,6 +90,33 @@ extern const base::FeatureParam<int>
 // to display the decoration string "You just visited".
 extern const base::FeatureParam<int>
     kVisitedURLRankingDecorationRecentlyVisitedMinutesThreshold;
+
+// Parameter determining what result types to request when fetching URL
+// visit aggregate data.
+extern const base::FeatureParam<std::string> kVisitedURLRankingResultTypesParam;
+
+// Feature flag for enabling use of score threshold for filtering visits.
+BASE_DECLARE_FEATURE(kVisitedURLRankingScoreThreshold);
+
+// Parameter determining the threshold for active local tabs.
+extern const base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdActiveLocalTab;
+
+// Parameter determining the threshold for active remote tabs.
+extern const base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdActiveRemoteTab;
+
+// Parameter determining the threshold for local visits.
+extern const base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdLocalVisit;
+
+// Parameter determining the threshold for local visits.
+extern const base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdRemoteVisit;
+
+// Parameter determining the threshold for CCT Visits.
+extern const base::FeatureParam<double>
+    kVisitedURLRankingScoreThresholdCCTVisit;
 
 }  // namespace visited_url_ranking::features
 

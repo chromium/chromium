@@ -4,16 +4,20 @@
 
 package org.chromium.components.omnibox;
 
+import android.content.SharedPreferences;
+
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BaseSwitches;
 import org.chromium.base.CommandLine;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
-import org.chromium.base.cached_flags.CachedFieldTrialParameter;
-import org.chromium.base.cached_flags.CachedFlag;
-import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
+import org.chromium.base.TimeUtils;
+import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.components.cached_flags.CachedFieldTrialParameter;
+import org.chromium.components.cached_flags.CachedFlag;
+import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.DeviceInput;
 
@@ -22,6 +26,14 @@ import java.util.List;
 
 /** This is the place where we define these: List of Omnibox features and parameters. */
 public class OmniboxFeatures {
+    private static final SharedPreferences sPrefs = ContextUtils.getAppSharedPreferences();
+
+    /** The state of the Jump Start Omnibox feature. */
+    public static final String KEY_JUMP_START_OMNIBOX = "jump_start_omnibox";
+
+    /** The timestamp representing the last time the user exited Chrome. */
+    public static final String KEY_LAST_EXIT_TIMESTAMP = "last_exit_timestamp";
+
     // Threshold for low RAM devices. We won't be showing suggestion images
     // on devices that have less RAM than this to avoid bloat and reduce user-visible
     // slowdown while spinning up an image decompression process.
@@ -32,28 +44,35 @@ public class OmniboxFeatures {
     // session.
     public static final int DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION = 5;
 
+    // Timeout requests after 30 minutes if we somehow fail to remove our listener.
+    private static final int DEFAULT_GEOLOCATION_REQUEST_TIMEOUT_MIN = 30;
+
+    // Minimum number of characters required to trigger rich inline autocomplete.
+    private static final int DEFAULT_RICH_INLINE_MIN_CHAR = 3;
+
     // Auto-populated list of Omnibox cached feature flags.
     // Each flag created via newFlag() will be automatically added to this list.
     private static final List<CachedFlag> sCachedFlags = new ArrayList<>();
-    private static final List<CachedFieldTrialParameter> sCachedParams = new ArrayList<>();
+    private static final List<CachedFieldTrialParameter<?>> sCachedParams = new ArrayList<>();
 
     /// Holds the information whether logic should focus on preserving memory on this device.
     private static Boolean sIsLowMemoryDevice;
 
     public static final CachedFlag sOmniboxAnswerActions =
-            newFlag(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, false);
+            newFlag(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS, /* defaultValue= */ false);
 
     public static final CachedFlag sAnimateSuggestionsListAppearance =
-            newFlag(OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE, false);
+            newFlag(
+                    OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE,
+                    /* defaultValue= */ false);
 
     public static final CachedFlag sTouchDownTriggerForPrefetch =
-            newFlag(OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
+            newFlag(
+                    OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH,
+                    /* defaultValue= */ false);
 
     public static final CachedFlag sRichInlineAutocomplete =
-            newFlag(OmniboxFeatureList.RICH_AUTOCOMPLETION, false);
-
-    public static final CachedFlag sAblateVisibleNetworks =
-            newFlag(OmniboxFeatureList.OMNIBOX_ABLATE_VISIBLE_NETWORKS, false);
+            newFlag(OmniboxFeatureList.RICH_AUTOCOMPLETION, /* defaultValue= */ false);
 
     /**
      * Whether GeolocationHeader should use {@link
@@ -61,18 +80,24 @@ public class OmniboxFeatures {
      * in omnibox requests.
      */
     public static final CachedFlag sUseFusedLocationProvider =
-            newFlag(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER, false);
+            newFlag(OmniboxFeatureList.USE_FUSED_LOCATION_PROVIDER, /* defaultValue= */ false);
 
     public static final CachedFlag sAsyncViewInflation =
-            newFlag(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION, false);
+            newFlag(OmniboxFeatureList.OMNIBOX_ASYNC_VIEW_INFLATION, /* defaultValue= */ false);
 
     public static final CachedFlag sElegantTextHeight =
-            newFlag(OmniboxFeatureList.OMNIBOX_ELEGANT_TEXT_HEIGHT, false);
+            newFlag(OmniboxFeatureList.OMNIBOX_ELEGANT_TEXT_HEIGHT, /* defaultValue= */ false);
+
+    public static final CachedFlag sJumpStartOmnibox =
+            newFlag(OmniboxFeatureList.JUMP_START_OMNIBOX, /* defaultValue= */ false);
 
     /** See {@link #shouldRetainOmniboxOnFocus()}. */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public static final CachedFlag sRetainOmniboxOnFocus =
-            newFlag(OmniboxFeatureList.RETAIN_OMNIBOX_ON_FOCUS, false);
+            newFlag(OmniboxFeatureList.RETAIN_OMNIBOX_ON_FOCUS, /* defaultValue= */ false);
+
+    public static final CachedFlag sAndroidHubSearch =
+            newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH, /* defaultValue= */ false);
 
     public static final BooleanCachedFieldTrialParameter sAnswerActionsShowAboveKeyboard =
             newBooleanParam(sOmniboxAnswerActions, "AnswerActionsShowAboveKeyboard", false);
@@ -83,6 +108,12 @@ public class OmniboxFeatures {
     public static final BooleanCachedFieldTrialParameter sAnswerActionsShowRichCard =
             newBooleanParam(sOmniboxAnswerActions, "ShowRichCard", false);
 
+    public static final IntCachedFieldTrialParameter sGeolocationRequestTimeoutMinutes =
+            newIntParam(
+                    sUseFusedLocationProvider,
+                    "geolocation_request_timeout_minutes",
+                    DEFAULT_GEOLOCATION_REQUEST_TIMEOUT_MIN);
+
     public static final IntCachedFieldTrialParameter sTouchDownTriggerMaxPrefetchesPerSession =
             newIntParam(
                     sTouchDownTriggerForPrefetch,
@@ -90,16 +121,33 @@ public class OmniboxFeatures {
                     DEFAULT_MAX_PREFETCHES_PER_OMNIBOX_SESSION);
 
     public static final BooleanCachedFieldTrialParameter sRichInlineShowFullUrl =
-            newBooleanParam(sRichInlineAutocomplete, "rich_autocomplete_full_url", false);
+            newBooleanParam(sRichInlineAutocomplete, "rich_autocomplete_full_url", true);
 
     public static final IntCachedFieldTrialParameter sRichInlineMinimumInputChars =
             newIntParam(
                     sRichInlineAutocomplete,
                     "rich_autocomplete_minimum_characters",
-                    Integer.MAX_VALUE);
+                    DEFAULT_RICH_INLINE_MIN_CHAR);
+
+    public static final IntCachedFieldTrialParameter sJumpStartOmniboxMemoryThresholdKb =
+            newIntParam(sJumpStartOmnibox, "jump_start_memory_threshold_kb", 2 * 1024 * 1024);
+
+    public static final IntCachedFieldTrialParameter sJumpStartOmniboxMinAwayTimeMinutes =
+            newIntParam(sJumpStartOmnibox, "jump_start_min_away_time_minutes", 0 * 60);
+
+    public static final IntCachedFieldTrialParameter sJumpStartOmniboxMaxAwayTimeMinutes =
+            newIntParam(sJumpStartOmnibox, "jump_start_max_away_time_minutes", 8 * 60);
+
+    // This parameter permits JSO to include additional page classifications when caching/serving
+    // suggestions on SearchActivity.
+    public static final BooleanCachedFieldTrialParameter sJumpStartOmniboxCoverRecentlyVisitedPage =
+            newBooleanParam(sJumpStartOmnibox, "jump_start_cover_recently_visited_page", false);
 
     /** See {@link #setShouldRetainOmniboxOnFocusForTesting(boolean)}. */
     private static Boolean sShouldRetainOmniboxOnFocusForTesting;
+
+    /** When enabled, Jump Start Omnibox is activated and can engage if the feature is enabled. */
+    private static Boolean sActivateJumpStartOmnibox;
 
     /**
      * Create an instance of a CachedFeatureFlag.
@@ -155,7 +203,7 @@ public class OmniboxFeatures {
     }
 
     /** Retrieve list of FieldTrialParams that should be cached. */
-    public static List<CachedFieldTrialParameter> getFieldTrialParamsToCache() {
+    public static List<CachedFieldTrialParameter<?>> getFieldTrialParamsToCache() {
         return sCachedParams;
     }
 
@@ -265,5 +313,53 @@ public class OmniboxFeatures {
                 && DeviceFormFactor.isTablet()
                 && DeviceInput.supportsAlphabeticKeyboard()
                 && DeviceInput.supportsPrecisionPointer();
+    }
+
+    /**
+     * Returns true if Jump-Start Omnibox should engage, redirecting the user to the SearchActivity.
+     */
+    public static boolean shouldJumpStartOmniboxEngage() {
+        long elapsedTimeSinceLastExit = getTimeSinceLastExit();
+        return isJumpStartOmniboxEnabled()
+                && (elapsedTimeSinceLastExit
+                        >= sJumpStartOmniboxMinAwayTimeMinutes.getValue()
+                                * TimeUtils.MILLISECONDS_PER_MINUTE)
+                && (elapsedTimeSinceLastExit
+                        < sJumpStartOmniboxMaxAwayTimeMinutes.getValue()
+                                * TimeUtils.MILLISECONDS_PER_MINUTE);
+    }
+
+    /** Returns the cached value of the Jump-Start settings toggle. */
+    public static boolean isJumpStartOmniboxEnabled() {
+        if (!OmniboxFeatures.sJumpStartOmnibox.isEnabled()) return false;
+        if (sActivateJumpStartOmnibox == null) {
+            boolean isEligibleDevice =
+                    !DeviceFormFactor.isTablet()
+                            && SysUtils.amountOfPhysicalMemoryKB()
+                                    <= sJumpStartOmniboxMemoryThresholdKb.getValue();
+            sActivateJumpStartOmnibox = sPrefs.getBoolean(KEY_JUMP_START_OMNIBOX, isEligibleDevice);
+        }
+        return sActivateJumpStartOmnibox;
+    }
+
+    /** Updates the cached value of the Jump-Start settings toggle. */
+    public static void setJumpStartOmniboxEnabled(boolean isEnabled) {
+        assert OmniboxFeatures.sJumpStartOmnibox.isEnabled();
+        sActivateJumpStartOmnibox = isEnabled;
+        sPrefs.edit().putBoolean(KEY_JUMP_START_OMNIBOX, isEnabled).apply();
+    }
+
+    /** Returns the time elapsed since the user exited Chrome, expressed in milliseconds. */
+    public static long getTimeSinceLastExit() {
+        return TimeUtils.currentTimeMillis() - sPrefs.getLong(KEY_LAST_EXIT_TIMESTAMP, 0L);
+    }
+
+    /** Record the current time as the time the User exited Chrome. */
+    public static void updateLastExitTimestamp() {
+        sPrefs.edit().putLong(KEY_LAST_EXIT_TIMESTAMP, TimeUtils.currentTimeMillis()).apply();
+    }
+
+    public static boolean shouldJumpStartOmnibox() {
+        return isJumpStartOmniboxEnabled();
     }
 }

@@ -66,7 +66,6 @@ namespace gpu {
 class DisplayCompositorMemoryAndTaskControllerOnGpu;
 class SharedImageRepresentationFactory;
 class SharedImageFactory;
-class SyncPointClientState;
 }  // namespace gpu
 
 namespace skgpu::graphite {
@@ -116,7 +115,6 @@ class SkiaOutputSurfaceImplOnGpu
   static std::unique_ptr<SkiaOutputSurfaceImplOnGpu> Create(
       SkiaOutputSurfaceDependency* deps,
       const RendererSettings& renderer_settings,
-      const gpu::SequenceId sequence_id,
       gpu::DisplayCompositorMemoryAndTaskControllerOnGpu* shared_gpu_deps,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
       BufferPresentedCallback buffer_presented_callback,
@@ -130,7 +128,6 @@ class SkiaOutputSurfaceImplOnGpu
       SkiaOutputSurfaceDependency* deps,
       scoped_refptr<gpu::gles2::FeatureInfo> feature_info,
       const RendererSettings& renderer_settings,
-      const gpu::SequenceId sequence_id,
       gpu::DisplayCompositorMemoryAndTaskControllerOnGpu* shared_gpu_deps,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
       BufferPresentedCallback buffer_presented_callback,
@@ -245,8 +242,6 @@ class SkiaOutputSurfaceImplOnGpu
   // Make context current for GL, and return false if the context is lost.
   // It will do nothing when Vulkan is used.
   bool MakeCurrent(bool need_framebuffer);
-
-  void ReleaseFenceSync(uint64_t sync_fence_release);
 
   void PreserveChildSurfaceControls();
 
@@ -487,7 +482,6 @@ class SkiaOutputSurfaceImplOnGpu
   const raw_ptr<SkiaOutputSurfaceDependency> dependency_;
   raw_ptr<gpu::DisplayCompositorMemoryAndTaskControllerOnGpu> shared_gpu_deps_;
   scoped_refptr<gpu::gles2::FeatureInfo> feature_info_;
-  scoped_refptr<gpu::SyncPointClientState> sync_point_client_state_;
   std::unique_ptr<gpu::SharedImageFactory> shared_image_factory_;
   std::unique_ptr<gpu::SharedImageRepresentationFactory>
       shared_image_representation_factory_;

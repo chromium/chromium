@@ -71,7 +71,7 @@ SourceDestinationMatcherAsh::FsType SourceDestinationMatcherAsh::VolumeToFsType(
         return SourceDestinationMatcherAsh::FsType::kUnknownVm;
       case guest_os::VmType::VmType_INT_MIN_SENTINEL_DO_NOT_USE_:
       case guest_os::VmType::VmType_INT_MAX_SENTINEL_DO_NOT_USE_:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   switch (volume->type()) {
@@ -105,10 +105,9 @@ SourceDestinationMatcherAsh::FsType SourceDestinationMatcherAsh::VolumeToFsType(
     case file_manager::VOLUME_TYPE_MOUNTED_ARCHIVE_FILE:
     case file_manager::VOLUME_TYPE_GUEST_OS:
     case file_manager::NUM_VOLUME_TYPE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return SourceDestinationMatcherAsh::FsType::kUnknown;
+  NOTREACHED();
 }
 
 // static
@@ -253,8 +252,7 @@ std::string SourceDestinationMatcherAsh::FsTypeToString(
     case SourceDestinationMatcherAsh::FsType::kUnknownVm:
       return "UNKNOWN_VM";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 SourceDestinationMatcherAsh::SourceDestinationMatcherAsh() = default;

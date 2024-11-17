@@ -306,7 +306,7 @@ void IdentityGetAuthTokenFunction::StartSigninFlow() {
   // If the signin flow fails, don't display the login prompt again.
   interactivity_status_for_signin_ = InteractivityStatus::kNotRequested;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // In normal mode (i.e. non-kiosk mode), the user has to log out to
   // re-establish credentials. Let the global error popup handle everything.
   // In kiosk mode, interactive sign-in is not supported.
@@ -632,8 +632,7 @@ void IdentityGetAuthTokenFunction::OnGaiaRemoteConsentFlowFailed(
       break;
 
     case GaiaRemoteConsentFlow::NONE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case GaiaRemoteConsentFlow::CANNOT_CREATE_WINDOW:
       error = IdentityGetAuthTokenError(
@@ -975,8 +974,7 @@ IdentityGetAuthTokenFunction::GetErrorFromInteractivityStatus(
       break;
     case InteractivityStatus::kAllowedWithGesture:
     case InteractivityStatus::kAllowedWithActivity:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   DCHECK_NE(state, IdentityGetAuthTokenError::State::kNone);
   return IdentityGetAuthTokenError(state);

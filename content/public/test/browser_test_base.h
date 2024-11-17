@@ -45,6 +45,12 @@ class FilePath;
 class TimeDelta;
 }  // namespace base
 
+#if BUILDFLAG(IS_ANDROID)
+namespace discardable_memory {
+class DiscardableSharedMemoryManager;
+}
+#endif
+
 namespace ui {
 class ScopedAnimationDurationScaleMode;
 }
@@ -310,6 +316,16 @@ class BrowserTestBase : public ::testing::Test {
 
 #if BUILDFLAG(IS_POSIX)
   bool handle_sigterm_;
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+  // Mimic the destruction order of ContentMain:
+  // - ContentMainRunnerImpl::Shutdown() resets ipc support and shuts down the
+  //   BrowserTaskExecutor.
+  // - ContentMainRunnerImpl::~ContentMainRunnerImpl().
+  // - DiscardableSharedMemoryManager, owned by ContentMainRunnerImpl, is reset.
+  std::unique_ptr<discardable_memory::DiscardableSharedMemoryManager>
+      discardable_shared_memory_manager_;
 #endif
 };
 

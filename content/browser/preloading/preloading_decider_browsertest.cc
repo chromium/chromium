@@ -9,6 +9,7 @@
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_data_impl.h"
+#include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -33,8 +34,6 @@ class PreloadingDeciderBrowserTest : public ContentBrowserTest {
   void SetUp() override {
     feature_list_.InitWithFeaturesAndParameters(
         {
-            {blink::features::kSpeculationRulesPointerDownHeuristics, {}},
-            {blink::features::kSpeculationRulesPointerHoverHeuristics, {}},
             {blink::features::kPreloadingHeuristicsMLModel,
              {{"enact_candidates", "true"}}},
             {blink::features::kPrerender2InNewTab, {}},
@@ -254,10 +253,22 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonEagerBrowserTest,
                  ukm::builders::Preloading_Attempt::kPreloadingPredictorName) !=
              content_preloading_predictor::kSpeculationRules.ukm_value();
     });
-    ASSERT_EQ(attempts.size(), 1u);
-    EXPECT_EQ(attempts[0], expected_attempt_entry)
-        << test::ActualVsExpectedUkmEntryToString(attempts[0],
-                                                  expected_attempt_entry);
+    if (base::FeatureList::IsEnabled(
+            features::kPrerender2FallbackPrefetchSpecRules) &&
+        type() == PreloadingType::kPrerender) {
+      // If type is prerender, `PrerendererImpl` triggers prefetch ahead
+      // prerender. Ignore the corresponding UKM as it is checkid in
+      // prerenderer_impl_browsertest.cc.
+      ASSERT_EQ(attempts.size(), 2u);
+      EXPECT_EQ(attempts[1], expected_attempt_entry)
+          << test::ActualVsExpectedUkmEntryToString(attempts[1],
+                                                    expected_attempt_entry);
+    } else {
+      ASSERT_EQ(attempts.size(), 1u);
+      EXPECT_EQ(attempts[0], expected_attempt_entry)
+          << test::ActualVsExpectedUkmEntryToString(attempts[0],
+                                                    expected_attempt_entry);
+    }
 
     std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry> predictions =
         ukm_recorder.GetEntries(
@@ -314,10 +325,22 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonEagerBrowserTest,
                  ukm::builders::Preloading_Attempt::kPreloadingPredictorName) !=
              predictor().ukm_value();
     });
-    ASSERT_EQ(attempts.size(), 1u);
-    EXPECT_EQ(attempts[0], expected_attempt_entry)
-        << test::ActualVsExpectedUkmEntryToString(attempts[0],
-                                                  expected_attempt_entry);
+    if (base::FeatureList::IsEnabled(
+            features::kPrerender2FallbackPrefetchSpecRules) &&
+        type() == PreloadingType::kPrerender) {
+      // If type is prerender, `PrerendererImpl` triggers prefetch ahead
+      // prerender. Ignore the corresponding UKM as it is checkid in
+      // prerenderer_impl_browsertest.cc.
+      ASSERT_EQ(attempts.size(), 2u);
+      EXPECT_EQ(attempts[1], expected_attempt_entry)
+          << test::ActualVsExpectedUkmEntryToString(attempts[1],
+                                                    expected_attempt_entry);
+    } else {
+      ASSERT_EQ(attempts.size(), 1u);
+      EXPECT_EQ(attempts[0], expected_attempt_entry)
+          << test::ActualVsExpectedUkmEntryToString(attempts[0],
+                                                    expected_attempt_entry);
+    }
 
     test::PreloadingPredictionUkmEntryBuilder prediction_entry_builder(
         predictor());

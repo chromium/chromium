@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
 <translation id="1066101356081285416">Chrome በሚጎበኟቸው ጣቢያዎች ላይ ያሉ የመከታተያ ቁጥሮች ለይቶ ያውቃል እና በአዲሱ የትር ገፅ ላይ የጥቅል ዝማኔዎች ያሳይዎታል። ይህንን ባህሪ ለማቅረብ እና ለሁሉም ሰው የGoogle ግዢ ባህሪያትን ለማሻሻል የጥቅል መከታተያ ቁጥሩ እና የድር ጣቢያው ስም ወደ Google ይላካል። ይህንን በማንኛውም ጊዜ <ph name="BEGIN_LINK" />በጥቅል መከታተያ ቅንብሮች<ph name="END_LINK" /> ውስጥ ማዘመን ይችላሉ።</translation>
+<translation id="1086486568852410168">በGoogle ሌንስ ይፈልጉ</translation>
 <translation id="1143896152279775643">የይለፍ ቃልዎ ለ<ph name="EMAIL" /> በGoogle የይለፍ ቃል አስተዳዳሪ ላይ ይቀመጣል።</translation>
 <translation id="1146503048444965320">Chrome ውስጥ አዲስ ትር ክፈት</translation>
 <translation id="1166460004393506534">Chrome ውስጥ የአሰሳ ውሂብን ይሰርዙ።</translation>
@@ -38,7 +39,9 @@
 <translation id="1670609221633730681">Chrome ጠቃሚ ምክር፦ የእርስዎን አድራሻ አሞሌ ቦታ ይምረጡ</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">በChrome ውስጥ የገቡትን ዩአርኤሎች ወደ ዕልባቶችዎ ያክላል።</translation>
+<translation id="1799920918471566157">የChrome ጠቃሚ ምክሮች</translation>
 <translation id="1830634592642484976">ይህ አድራሻ በአሁኑ ጊዜ Chrome ላይ ተቀምጧል። በሁሉም የGoogle ምርቶች ላይ እሱን ለመጠቀም በGoogle መለያዎ <ph name="USER_EMAIL" /> ውስጥ ያስቀምጡት።</translation>
+<translation id="1891812034154776216">Chromeን ለቀው ሲወጡ የተከፈቱ ማንነት የማያሳውቁ ትሮችን ይደብቁ</translation>
 <translation id="1917964099031477364">ይህ መለያ እና ማንኛውም ያልተቀመጠ ውሂብ ከChrome እና በዚህ መሣሪያ ላይ ካሉት ከሌሎች የGoogle መተግበሪያዎች ይወገዳል።</translation>
 <translation id="1919130412786645364">የChrome በመለያ መግባትን ይፍቀዱ</translation>
 <translation id="1965935827552890526">በእርስዎ ሌላኛው ክፍት የChrome መስኮት ላይ እያደረጉ ያሉትን ነገር ያጠናቅቁ።</translation>
@@ -70,6 +73,7 @@
 <translation id="2689064829982324496">በሁሉም ድር ጣቢያዎች ላይ የእርስዎን የGoogle መለያ ዘግተው ለመውጣት <ph name="BEGIN_LINK" />ከChrome ዘግተው ይውጡ<ph name="END_LINK" />።</translation>
 <translation id="2695886661449553974">Chrome ዝማኔዎች ካሉ መፈተሽ አልቻለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="2703746758996815929">አጋዥ የሆኑ የChromium ምክሮችን ለማግኘት፣ በiOS ቅንብሮችዎ ውስጥ ማሳወቂያዎችን ያብሩ።</translation>
+<translation id="2728851697704606655">በGoogle ሌንስ ይተርጉሙ</translation>
 <translation id="2736805085127235148">አሁን ላይ በእርስዎ የመሣሪያ ቅንብሮች ውስጥ የChrome ማሳወቂያዎች ጠፍተዋል።</translation>
 <translation id="2754428955276778271">የተወሰነ የChrome ውሂብዎ በGoogle መለያዎ ውስጥ ገና አልተቀመጠም።
 
@@ -247,6 +251,7 @@
 <translation id="7581063337314642333">በChrome ውስጥ የትር ፍርግርን ይጎብኙ</translation>
 <translation id="7599894504325210080">Chrome ራስ-ሙላ የተዘረጋ ዕይታ</translation>
 <translation id="7642373780953416937">Chrome ለእርስዎ በራስ-ሰር በሚያገኛቸው ማናቸውም የግላዊነት ወይም የደህንነት ችግሮች ላይ ማንቂያዎችን ይቀበሉ።</translation>
+<translation id="7660356333829433649">ከChrome ምርጡን ለማግኘት ለተጨማሪ ጠቃሚ ምክሮች ተመልሰው እዚህ ይምጡ።</translation>
 <translation id="7662994914830945754">Chromeን ከሚጠቀሙበት የትኛዉም ቦታ ሆነዉ ትሮችዎን ለማየት በመለያ ይግቡ እና ስምረትን ያብሩ</translation>
 <translation id="7693590760643069321">አገናኞችን በመልዕክቶች፣ በሰነዶች እና በሌሎች መተግበሪያዎች ውስጥ መታ በሚያደርጉበት ጊዜ ሁሉ Chromeን አሁን መጠቀም ይችላሉ።</translation>
 <translation id="7698568245838009292">Chrome ካሜራውን መድረስ ይፈልጋል</translation>
@@ -261,6 +266,7 @@
 <translation id="7948283758957877064">በChrome ውስጥ ምን አዲስ ነገር አለ</translation>
 <translation id="8000174216052461231">የChrome ጠቃሚ ምክር፦ የChromeን ጠንካራ ደህንነት ያግኙ</translation>
 <translation id="8006014511203279255">በመልዕክቶች ወይም በሌሎች መተግበሪያዎች ውስጥ ያሉ አገናኞች መታ በሚያደርጉበት በማንኛውም ጊዜ Chromeን ይጠቀሙ።</translation>
+<translation id="8014670471808569312">Chrome የይለፍ ቃልዎን ለማስቀመጥ ጥያቄ ያቀርባል።</translation>
 <translation id="8018153653741938705">በGoogle Chrome ደህንነትዎን ይጠብቁ</translation>
 <translation id="8022947259858476807">አገናኞችን ለመክፈት፣ ከመግብሮች ለመፈለግ እና በሌሎች መተግበሪያዎች ውስጥ የይለፍ ቃሎችን የራስ-ለመሙላት በነባሪነት Chrome ን ይጠቀሙ</translation>
 <translation id="804638182476029347">የዋጋ ቅናሽ ማንቂያዎችን ለማግኘት የChrome ማሳወቂያዎችን ይፍቀዱ</translation>
@@ -292,6 +298,7 @@
 <translation id="8558480467877843976">አሁን በሚያስሱበት ወይም በመልዕክቶች ውስጥ አገናኞችን መታ በሚያደርጉበት በማንኛውም ጊዜ Chromeን እና ሌሎች መተግበሪያዎችን መጠቀም ይችላሉ።</translation>
 <translation id="8603022514504485810">Google የይለፍ ቃል አስተዳዳሪ ሁሉንም የይለፍ ቃላት መፈተሽ አልቻለም። ነገ እንደገና ይሞክሩ ወይም <ph name="BEGIN_LINK" />በGoogle መለያዎ ውስጥ የይለፍ ቃላትን ይፈትሹ።<ph name="END_LINK" /></translation>
 <translation id="8630122478628016441">«Chrome በሚዘጉበት ጊዜ ማንነት የማያሳውቁ ትሮችን ይቆልፉ» የሚለውን ያብሩ።</translation>
+<translation id="8673726683583791503">በGoogle ሌንስ ይሸምቱ</translation>
 <translation id="8727043961453758442">ከChrome ምርጡን ያግኙ</translation>
 <translation id="8765470054473112089">የአድራሻ አሞሌ ወይም የፍለጋ ሳጥን ውስጥ ሲተይቡ የተሻሉ ጥቆማዎችን ለማግኘት Chrome የሚተይቡትን ለእርስዎ ነባሪ የፍለጋ ፕሮግራም ይልካል። ይህ ማንነት የማያሳውቅ ውስጥ ጠፍቷል።</translation>
 <translation id="8772179140489533211">ወደ Chrome ለመግባት ጥያቄዎችን ያሳያል።</translation>

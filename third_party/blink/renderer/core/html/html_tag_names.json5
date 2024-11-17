@@ -303,12 +303,6 @@
       constructorNeedsCreateElementFlags: true,
     },
     {
-      name: "listbox",
-      interfaceName: "HTMLListboxElement",
-      runtimeEnabled: "HTMLSelectListElement",
-      interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
-    },
-    {
       name: "listing",
       interfaceName: "HTMLPreElement",
     },
@@ -437,7 +431,7 @@
     },
     {
       name: "search",
-      interfaceName: "HTMLElement",
+      interfaceName: "HTMLSearchElement",
     },
     {
       name: "section",
@@ -448,16 +442,10 @@
       interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
     },
     {
-      name: "selectedoption",
-      interfaceName: "HTMLSelectedOptionElement",
+      name: "selectedcontent",
+      interfaceName: "HTMLSelectedContentElement",
       interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
       runtimeEnabled: "CustomizableSelect",
-    },
-    {
-      name: "selectlist",
-      interfaceName: "HTMLSelectListElement",
-      runtimeEnabled: "HTMLSelectListElement",
-      interfaceHeaderDir: "third_party/blink/renderer/core/html/forms",
     },
     {
       name: "slot",

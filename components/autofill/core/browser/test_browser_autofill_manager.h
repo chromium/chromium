@@ -23,7 +23,6 @@ namespace autofill {
 
 class AutofillDriver;
 class FormStructure;
-class TestAutofillClient;
 class TestPersonalDataManager;
 
 class TestBrowserAutofillManager : public BrowserAutofillManager {
@@ -67,12 +66,9 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
                                           const std::u16string& old_value,
                                           bool formatting_only) override;
   void OnFormSubmitted(const FormData& form,
-                       const bool known_success,
                        const mojom::SubmissionSource source) override;
 
   // BrowserAutofillManager overrides.
-  bool IsAutofillProfileEnabled() const override;
-  bool IsAutofillPaymentMethodsEnabled() const override;
   void StoreUploadVotesAndLogQualityCallback(
       FormSignature form_signature,
       base::OnceClosure callback) override;
@@ -121,21 +117,12 @@ class TestBrowserAutofillManager : public BrowserAutofillManager {
       AutofillSuggestionTriggerSource trigger_source =
           AutofillSuggestionTriggerSource::kTextFieldDidChange);
 
-  // Require a TestAutofillClient because `this` does not know whether its
-  // `client()` is a *Test*AutofillClient.
-  void SetAutofillProfileEnabled(TestAutofillClient& client,
-                                 bool profile_enabled);
-  void SetAutofillPaymentMethodsEnabled(TestAutofillClient& client,
-                                        bool credit_card_enabled);
-
   void SetExpectedSubmittedFieldTypes(
       const std::vector<FieldTypeSet>& expected_types);
 
   void SetExpectedObservedSubmission(bool expected);
 
  private:
-  bool autofill_profile_enabled_ = true;
-  bool autofill_payment_methods_enabled_ = true;
   std::optional<bool> expected_observed_submission_;
   const gfx::Image card_image_ = gfx::test::CreateImage(40, 24);
 

@@ -127,6 +127,12 @@ void DataSharingSDKDelegateAndroid::RemoveMember(
   wrapped_callback.release();
 }
 
+void DataSharingSDKDelegateAndroid::LeaveGroup(
+    const data_sharing_pb::LeaveGroupParams& params,
+    GetStatusCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 void DataSharingSDKDelegateAndroid::DeleteGroup(
     const data_sharing_pb::DeleteGroupParams& params,
     GetStatusCallback callback) {

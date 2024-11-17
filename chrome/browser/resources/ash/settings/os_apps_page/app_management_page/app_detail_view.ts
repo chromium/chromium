@@ -10,7 +10,7 @@ import './plugin_vm_page/plugin_vm_detail_view.js';
 import './borealis_page/borealis_detail_view.js';
 import '../../settings_shared.css.js';
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppManagementUserAction, AppType} from 'chrome://resources/cr_components/app_management/constants.js';
 import {getSelectedApp, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
@@ -18,11 +18,12 @@ import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer
 
 import {castExists} from '../../assert_extras.js';
 import {updateSelectedAppId} from '../../common/app_management/actions.js';
-import {AppMap} from '../../common/app_management/store.js';
+import type {AppMap} from '../../common/app_management/store.js';
 import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
 import {RouteObserverMixin} from '../../common/route_observer_mixin.js';
-import {PrefsState} from '../../common/types.js';
-import {Route, Router, routes} from '../../router.js';
+import type {PrefsState} from '../../common/types.js';
+import type {Route} from '../../router.js';
+import {Router, routes} from '../../router.js';
 
 import {getTemplate} from './app_detail_view.html.js';
 import {openMainPage} from './util.js';

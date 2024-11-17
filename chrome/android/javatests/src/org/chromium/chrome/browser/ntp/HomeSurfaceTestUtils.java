@@ -21,6 +21,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.crypto.CipherFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -42,8 +43,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** Utility methods and classes for testing home Surface. */
 public class HomeSurfaceTestUtils {
-    public static final String IMMEDIATE_RETURN_TEST_PARAMS =
-            "force-fieldtrial-params=Study.Group:"
+    public static final String START_SURFACE_RETURN_TIME_IMMEDIATE =
+            ChromeFeatureList.START_SURFACE_RETURN_TIME
+                    + ":"
                     + ReturnToChromeUtil.HOME_SURFACE_RETURN_TIME_SECONDS_PARAM
                     + "/0";
 
@@ -195,7 +197,7 @@ public class HomeSurfaceTestUtils {
      *
      * @param cta The ChromeTabbedActivity under test.
      */
-    public static Tab getCurrentTabFromUIThread(ChromeTabbedActivity cta) {
+    public static Tab getCurrentTabFromUiThread(ChromeTabbedActivity cta) {
         AtomicReference<Tab> tab = new AtomicReference<>();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> tab.set(TabModelUtils.getCurrentTab(cta.getCurrentTabModel())));

@@ -7,6 +7,7 @@
 #include <optional>
 #include <vector>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/arc_util.h"
 #include "ash/components/arc/metrics/arc_metrics_constants.h"
 #include "ash/constants/ash_features.h"

@@ -10,7 +10,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 
 namespace autofill {
@@ -35,8 +35,7 @@ ParseUrlForVcn3ds(const GURL& url,
 // `redirect_completion_result` is the token that was parsed from the query
 // parameters in the final redirect of the pop-up. Refer to
 // ParseFinalUrlForVcn3ds() for when `redirect_completion_result` is set.
-PaymentsNetworkInterface::UnmaskRequestDetails
-CreateUnmaskRequestDetailsForVcn3ds(
+UnmaskRequestDetails CreateUnmaskRequestDetailsForVcn3ds(
     AutofillClient& client,
     const PaymentsWindowManager::Vcn3dsContext& context,
     PaymentsWindowManager::RedirectCompletionResult redirect_completion_result);
@@ -46,7 +45,7 @@ CreateUnmaskRequestDetailsForVcn3ds(
 PaymentsWindowManager::Vcn3dsAuthenticationResponse
 CreateVcn3dsAuthenticationResponseFromServerResult(
     PaymentsAutofillClient::PaymentsRpcResult result,
-    const PaymentsNetworkInterface::UnmaskResponseDetails& response_details,
+    const UnmaskResponseDetails& response_details,
     CreditCard card);
 
 }  // namespace payments

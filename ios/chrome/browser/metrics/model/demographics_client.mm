@@ -34,8 +34,8 @@ base::Time DemographicsClient::GetNetworkTime() const {
 
 syncer::SyncService* DemographicsClient::GetSyncService() {
   CHECK_EQ(GetNumberOfProfilesOnDisk(), 1);
-  if (ChromeBrowserState* cached_browser_state = GetCachedBrowserState()) {
-    return SyncServiceFactory::GetForBrowserState(cached_browser_state);
+  if (ProfileIOS* cached_profile = GetCachedProfile()) {
+    return SyncServiceFactory::GetForProfile(cached_profile);
   }
 
   return nullptr;
@@ -47,8 +47,8 @@ PrefService* DemographicsClient::GetLocalState() {
 
 PrefService* DemographicsClient::GetProfilePrefs() {
   CHECK_EQ(GetNumberOfProfilesOnDisk(), 1);
-  if (ChromeBrowserState* cached_browser_state = GetCachedBrowserState()) {
-    return cached_browser_state->GetPrefs();
+  if (ProfileIOS* cached_profile = GetCachedProfile()) {
+    return cached_profile->GetPrefs();
   }
 
   return nullptr;
@@ -67,13 +67,13 @@ int DemographicsClient::GetNumberOfProfilesOnDisk() {
 // the application startup, so GetNumberOfProfilesOnDisk() can never decrease
 // without restarting the application, and thus the return value cannot change
 // (since the method must not be called if GetNumberOfProfilesOnDisk() > 1).
-ChromeBrowserState* DemographicsClient::GetCachedBrowserState() {
+ProfileIOS* DemographicsClient::GetCachedProfile() {
   CHECK_EQ(GetNumberOfProfilesOnDisk(), 1);
-  if (ChromeBrowserState* cached_browser_state = chrome_browser_state_.get()) {
-    return cached_browser_state;
+  if (ProfileIOS* cached_profile = profile_.get()) {
+    return cached_profile;
   }
 
-  const std::vector<ChromeBrowserState*> loaded_profiles =
+  const std::vector<ProfileIOS*> loaded_profiles =
       GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
 
   // Even if there is only one Profile on disk, it may have not been loaded yet.
@@ -82,9 +82,9 @@ ChromeBrowserState* DemographicsClient::GetCachedBrowserState() {
   }
 
   CHECK_EQ(loaded_profiles.size(), 1u);
-  ChromeBrowserState* cached_browser_state = loaded_profiles.back();
-  chrome_browser_state_ = cached_browser_state->AsWeakPtr();
-  return cached_browser_state;
+  ProfileIOS* cached_profile = loaded_profiles.back();
+  profile_ = cached_profile->AsWeakPtr();
+  return cached_profile;
 }
 
 }  //  namespace metrics

@@ -98,8 +98,13 @@ struct FetchAndLaunchTimeTestParams {
 
 std::unique_ptr<VariationsSeedStore> CreateSeedStore(PrefService* local_state) {
   return std::make_unique<VariationsSeedStore>(
-      local_state,
-      std::make_unique<VariationsSafeSeedStoreLocalState>(local_state));
+      local_state, /*initial_seed=*/nullptr,
+      /*signature_verification_enabled=*/true,
+      std::make_unique<VariationsSafeSeedStoreLocalState>(
+          local_state,
+          /*seed_file_dir=*/base::FilePath()),
+      version_info::Channel::UNKNOWN,
+      /*seed_file_dir=*/base::FilePath());
 }
 
 // Returns a seed with simple test data. The seed has a single study,
@@ -356,9 +361,14 @@ class MockVariationsServiceClient : public TestVariationsServiceClient {
 class TestVariationsSeedStore : public VariationsSeedStore {
  public:
   explicit TestVariationsSeedStore(PrefService* local_state)
-      : VariationsSeedStore(
-            local_state,
-            std::make_unique<VariationsSafeSeedStoreLocalState>(local_state)) {}
+      : VariationsSeedStore(local_state,
+                            /*initial_seed=*/nullptr,
+                            /*signature_verification_enabled=*/true,
+                            std::make_unique<VariationsSafeSeedStoreLocalState>(
+                                local_state,
+                                /*seed_file_dir=*/base::FilePath()),
+                            version_info::Channel::UNKNOWN,
+                            /*seed_file_dir=*/base::FilePath()) {}
 
   TestVariationsSeedStore(const TestVariationsSeedStore&) = delete;
   TestVariationsSeedStore& operator=(const TestVariationsSeedStore&) = delete;
@@ -437,7 +447,9 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
         std::vector<base::FeatureList::FeatureOverrideInfo>(),
         std::make_unique<base::FeatureList>(), metrics_state_manager_.get(),
         &synthetic_trial_registry, &platform_field_trials, safe_seed_manager_,
-        /*add_entropy_source_to_variations_ids=*/true);
+        /*add_entropy_source_to_variations_ids=*/true,
+        *metrics_state_manager_->CreateEntropyProviders(
+            /*enable_limited_entropy_mode=*/false));
   }
 
   // Passthrough, to expose the underlying method to tests without making it
@@ -503,8 +515,9 @@ class FieldTrialCreatorTest : public ::testing::Test {
   }
 
  private:
-  base::test::ScopedCommandLine scoped_command_line_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::TaskEnvironment task_environment_;
+  base::test::ScopedCommandLine scoped_command_line_;
   TestingPrefServiceSimple local_state_;
   base::ScopedTempDir temp_dir_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
@@ -948,7 +961,9 @@ TEST_F(FieldTrialCreatorTest, LoadSeedFromTestSeedJsonPath) {
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
       &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/true));
+      /*add_entropy_source_to_variations_ids=*/true,
+      *metrics_state_manager->CreateEntropyProviders(
+          /*enable_limited_entropy_mode=*/false)));
 
   EXPECT_TRUE(base::FieldTrialList::TrialExists(kTestSeedData.study_names[0]));
   EXPECT_EQ(
@@ -977,7 +992,10 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
   auto seed_store = std::make_unique<VariationsSeedStore>(
       local_state(), std::move(initial_seed),
       /*signature_verification_enabled=*/false,
-      std::make_unique<VariationsSafeSeedStoreLocalState>(local_state()));
+      std::make_unique<VariationsSafeSeedStoreLocalState>(
+          local_state(),
+          /*seed_file_dir=*/base::FilePath()),
+      version_info::Channel::UNKNOWN, /*seed_file_dir=*/base::FilePath());
   VariationsFieldTrialCreator field_trial_creator(
       &variations_service_client, std::move(seed_store), UIStringOverrider(),
       /*limited_entropy_synthetic_trial=*/nullptr);
@@ -1000,7 +1018,9 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_LoadsCountryOnFirstRun) {
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
       &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/true));
+      /*add_entropy_source_to_variations_ids=*/true,
+      *metrics_state_manager->CreateEntropyProviders(
+          /*enable_limited_entropy_mode=*/false)));
 
   EXPECT_EQ(kTestSeedExperimentName,
             base::FieldTrialList::FindFullName(kTestSeedStudyName));
@@ -1776,7 +1796,12 @@ TEST_P(LimitedEntropyProcessingTest,
           std::vector<base::FeatureList::FeatureOverrideInfo>(),
           std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
           &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
-          /*add_entropy_source_to_variations_ids=*/true));
+          /*add_entropy_source_to_variations_ids=*/true,
+          *metrics_state_manager->CreateEntropyProviders(
+              VariationsFieldTrialCreatorBase::
+                  IsLimitedEntropyRandomizationSourceEnabled(
+                      variations_service_client.GetChannelForVariations(),
+                      test_case.trial))));
 
   // Verifies that the limited entropy test study is randomized.
   EXPECT_EQ(test_case.is_limited_study_active,
@@ -1885,7 +1910,9 @@ TEST_P(FieldTrialCreatorFormFactorTest, FilterByFormFactor) {
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::make_unique<base::FeatureList>(), metrics_state_manager.get(),
       &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/true));
+      /*add_entropy_source_to_variations_ids=*/true,
+      *metrics_state_manager->CreateEntropyProviders(
+          /*enable_limited_entropy_mode=*/false)));
 
   // Each form factor specific feature should be enabled iff the current form
   // factor matches the feature's targetted form factor.

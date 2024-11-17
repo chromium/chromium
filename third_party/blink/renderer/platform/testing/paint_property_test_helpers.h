@@ -318,7 +318,7 @@ inline TransformPaintPropertyNode* CreateScrollTranslation(
   scroll_state.overflow_clip_node = overflow_clip;
   scroll_state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
       NewUniqueObjectId(), CompositorElementIdNamespace::kScroll);
-  scroll_state.main_thread_scrolling_reasons = main_thread_reasons;
+  scroll_state.main_thread_repaint_reasons = main_thread_reasons;
   scroll_state.user_scrollable_horizontal = true;
   scroll_state.user_scrollable_vertical = true;
   TransformPaintPropertyNode::State translation_state{
@@ -372,14 +372,13 @@ inline PropertyTreeState CreateScrollTranslationState(
     CompositingReasons compositing_reasons = CompositingReason::kNone,
     MainThreadScrollingReasons main_thread_reasons =
         cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText) {
-  PropertyTreeState state(PropertyTreeState::Root());
-  state.SetClip(*CreateClip(parent_state.Clip(), parent_state.Transform(),
-                            FloatRoundedRect(container_rect)));
-  state.SetTransform(*CreateScrollTranslation(
-      parent_state.Transform(), parent_scroll, offset_x, offset_y,
-      container_rect, contents_size, &state.Clip(), compositing_reasons,
-      main_thread_reasons));
-  return state;
+  auto* clip = CreateClip(parent_state.Clip(), parent_state.Transform(),
+                          FloatRoundedRect(container_rect));
+  auto* transform =
+      CreateScrollTranslation(parent_state.Transform(), parent_scroll, offset_x,
+                              offset_y, container_rect, contents_size, clip,
+                              compositing_reasons, main_thread_reasons);
+  return PropertyTreeState(*transform, *clip, parent_state.Effect());
 }
 
 inline PropertyTreeState CreateScrollTranslationState(

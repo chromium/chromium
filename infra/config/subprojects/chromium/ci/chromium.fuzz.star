@@ -1442,7 +1442,7 @@ ci.builder(
                 "mb",
             ],
             build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
+            target_bits = 32,
             target_platform = builder_config.target_platform.LINUX,
         ),
     ),
@@ -1492,7 +1492,7 @@ ci.builder(
                 "mb",
             ],
             build_config = builder_config.build_config.DEBUG,
-            target_bits = 64,
+            target_bits = 32,
             target_platform = builder_config.target_platform.LINUX,
         ),
     ),
@@ -1553,6 +1553,7 @@ ci.builder(
             "pdf_xfa",
             "optimize_for_fuzzing",
             "mac",
+            "mojo_fuzzer",
             "x64",
         ],
     ),
@@ -1620,9 +1621,6 @@ ci.builder(
     # crbug.com/1175182: Temporarily increase timeout
     # crbug.com/1372531: Increase timeout again
     execution_timeout = 8 * time.hour,
-    experiments = {
-        "chromium.use_per_builder_build_dir_name": 100,
-    },
     properties = {
         "upload_bucket": "chromium-browser-libfuzzer",
         "upload_directory": "asan",

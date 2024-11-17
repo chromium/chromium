@@ -59,7 +59,7 @@ MATCHER_P(HasRangeError,
           expected_message,
           base::StrCat({"has ", negation ? "no " : "", "RangeError('",
                         expected_message, "')"})) {
-  const ExceptionState& exception_state = arg;
+  const DummyExceptionStateForTesting& exception_state = arg;
   if (!exception_state.HadException()) {
     *result_listener << "no exception";
     return false;
@@ -80,7 +80,7 @@ MATCHER_P(HasAbortError,
           expected_message,
           base::StrCat({"has ", negation ? "no " : "", "AbortError('",
                         expected_message, "')"})) {
-  const ExceptionState& exception_state = arg;
+  const DummyExceptionStateForTesting& exception_state = arg;
   if (!exception_state.HadException()) {
     *result_listener << "no exception";
     return false;

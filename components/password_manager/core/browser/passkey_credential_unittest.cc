@@ -203,7 +203,7 @@ TEST_F(PasskeyCredentialTest, GetAuthenticatorLabel) {
             l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_SCREEN_LOCK));
 #endif  // BUILDFLAG(IS_ANDROID)
   std::u16string authenticator_label = u"Reimu's phone";
-  credential.set_authenticator_label(authenticator_label);
+  credential.SetAuthenticatorLabel(authenticator_label);
   EXPECT_EQ(credential.GetAuthenticatorLabel(), authenticator_label);
 }
 

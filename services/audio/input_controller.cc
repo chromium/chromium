@@ -34,7 +34,6 @@
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_processing.h"
 #include "media/base/media_switches.h"
-#include "media/base/user_input_monitor.h"
 #include "services/audio/audio_manager_power_user.h"
 #include "services/audio/device_output_listener.h"
 #include "services/audio/output_tapper.h"
@@ -86,9 +85,8 @@ const char* SilenceStateToString(InputController::SilenceState state) {
     case InputController::SILENCE_STATE_AUDIO_AND_SILENCE:
       return "SILENCE_STATE_AUDIO_AND_SILENCE";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "INVALID";
 }
 
 // Helper method which calculates the average power of an audio bus. Unit is in
@@ -188,7 +186,6 @@ class AudioCallback : public media::AudioInputStream::AudioInputCallback {
 InputController::InputController(
     EventHandler* event_handler,
     SyncWriter* sync_writer,
-    media::UserInputMonitor* user_input_monitor,
     DeviceOutputListener* device_output_listener,
     media::AecdumpRecordingManager* aecdump_recording_manager,
     media::mojom::AudioProcessingConfigPtr processing_config,
@@ -199,8 +196,7 @@ InputController::InputController(
       event_handler_(event_handler),
       stream_(nullptr),
       sync_writer_(sync_writer),
-      type_(type),
-      user_input_monitor_(user_input_monitor) {
+      type_(type) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(event_handler_);
   DCHECK(sync_writer_);
@@ -211,11 +207,6 @@ InputController::InputController(
                             device_params, device_output_listener,
                             aecdump_recording_manager);
 #endif
-
-  if (!user_input_monitor_) {
-    event_handler_->OnLog(
-        "AIC::InputController() => (WARNING: keypress monitoring is disabled)");
-  }
 }
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
@@ -265,14 +256,11 @@ void InputController::MaybeSetUpAudioProcessing(
     return;
   }
 
-  int fifo_size = media::GetProcessingAudioFifoSize();
-
-  // Only use the FIFO/new thread if its size is explicitly set.
-  if (fifo_size) {
+  if (media::IsChromeWideEchoCancellationEnabled()) {
     // base::Unretained() is safe since both |audio_processor_handler_| and
     // |event_handler_| outlive |processing_fifo_|.
     processing_fifo_ = std::make_unique<ProcessingAudioFifo>(
-        *processing_input_params, fifo_size,
+        *processing_input_params, kProcessingFifoSize,
         base::BindRepeating(&AudioProcessorHandler::ProcessCapturedAudio,
                             base::Unretained(audio_processor_handler_.get())),
         base::BindRepeating(&EventHandler::OnLog,
@@ -299,7 +287,6 @@ std::unique_ptr<InputController> InputController::Create(
     media::AudioManager* audio_manager,
     EventHandler* event_handler,
     SyncWriter* sync_writer,
-    media::UserInputMonitor* user_input_monitor,
     DeviceOutputListener* device_output_listener,
     media::AecdumpRecordingManager* aecdump_recording_manager,
     media::mojom::AudioProcessingConfigPtr processing_config,
@@ -321,11 +308,11 @@ std::unique_ptr<InputController> InputController::Create(
   // Create the InputController object and ensure that it runs on
   // the audio-manager thread.
   // Using `new` to access a non-public constructor.
-  std::unique_ptr<InputController> controller = base::WrapUnique(
-      new InputController(event_handler, sync_writer, user_input_monitor,
-                          device_output_listener, aecdump_recording_manager,
-                          std::move(processing_config), params, device_params,
-                          ParamsToStreamType(params)));
+  std::unique_ptr<InputController> controller =
+      base::WrapUnique(new InputController(
+          event_handler, sync_writer, device_output_listener,
+          aecdump_recording_manager, std::move(processing_config), params,
+          device_params, ParamsToStreamType(params)));
 
   controller->DoCreate(audio_manager, params, device_id, enable_agc);
   return controller;
@@ -339,11 +326,6 @@ void InputController::Record() {
     return;
 
   event_handler_->OnLog("AIC::Record()");
-
-  if (user_input_monitor_) {
-    user_input_monitor_->EnableKeyPressMonitoring();
-    prev_key_down_count_ = user_input_monitor_->GetKeyPressCount();
-  }
 
   stream_create_time_ = base::TimeTicks::Now();
 
@@ -382,7 +364,7 @@ void InputController::Close() {
   if (!stream_)
     return;
 
-  check_muted_state_timer_.AbandonAndStop();
+  check_muted_state_timer_.Stop();
 
   std::string log_string;
   static const char kLogStringPrefix[] = "AIC::Close => ";
@@ -433,9 +415,6 @@ void InputController::Close() {
                                  duration);
       }
     }
-
-    if (user_input_monitor_)
-      user_input_monitor_->DisableKeyPressMonitoring();
 
     audio_callback_.reset();
   } else {
@@ -674,18 +653,6 @@ void InputController::LogMessage(const std::string& message) {
   event_handler_->OnLog(message);
 }
 
-bool InputController::CheckForKeyboardInput() {
-  if (!user_input_monitor_)
-    return false;
-
-  const size_t current_count = user_input_monitor_->GetKeyPressCount();
-  const bool key_pressed = current_count != prev_key_down_count_;
-  prev_key_down_count_ = current_count;
-  DVLOG_IF(6, key_pressed) << "Detected keypress.";
-
-  return key_pressed;
-}
-
 bool InputController::CheckAudioPower(const media::AudioBus* source,
                                       double volume,
                                       float* average_power_dbfs,
@@ -743,19 +710,17 @@ void InputController::OnData(const media::AudioBus* source,
               (capture_time - base::TimeTicks()).InMillisecondsF(),
               "capture_delay (ms)",
               (base::TimeTicks::Now() - capture_time).InMillisecondsF());
-  const bool key_pressed = CheckForKeyboardInput();
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   if (processing_fifo_) {
     DCHECK(audio_processor_handler_);
-    processing_fifo_->PushData(source, capture_time, volume, key_pressed,
-                               glitch_info);
+    processing_fifo_->PushData(source, capture_time, volume, glitch_info);
   } else if (audio_processor_handler_) {
-    audio_processor_handler_->ProcessCapturedAudio(
-        *source, capture_time, volume, key_pressed, glitch_info);
+    audio_processor_handler_->ProcessCapturedAudio(*source, capture_time,
+                                                   volume, glitch_info);
   } else
 #endif
   {
-    sync_writer_->Write(source, volume, key_pressed, capture_time, glitch_info);
+    sync_writer_->Write(source, volume, capture_time, glitch_info);
   }
 
   float average_power_dbfs;
@@ -779,8 +744,8 @@ void InputController::DeliverProcessedAudio(
     const media::AudioGlitchInfo& glitch_info) {
   // When processing is performed in the audio service, the consumer is not
   // expected to use the input volume and keypress information.
-  sync_writer_->Write(&audio_bus, /*volume=*/1.0,
-                      /*key_pressed=*/false, audio_capture_time, glitch_info);
+  sync_writer_->Write(&audio_bus, /*volume=*/1.0, audio_capture_time,
+                      glitch_info);
   if (new_volume) {
     task_runner_->PostTask(
         FROM_HERE,

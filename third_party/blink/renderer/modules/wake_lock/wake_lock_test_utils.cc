@@ -40,17 +40,31 @@ void RunWithStack(base::RunLoop* run_loop) {
   run_loop->Run();
 }
 
-// Helper class for WaitForPromise{Fulfillment,Rejection}(). It provides a
-// function that invokes |callback| when a ScriptPromiseUntyped is resolved.
-class ClosureRunnerCallable final : public ScriptFunction::Callable {
+// Helper classes for WaitForPromise{Fulfillment,Rejection}(). Provides a
+// function that invokes |callback| when a ScriptPromise is resolved/rejected.
+class ClosureOnResolve final
+    : public ThenCallable<WakeLockSentinel, ClosureOnResolve> {
  public:
-  explicit ClosureRunnerCallable(base::OnceClosure callback)
+  explicit ClosureOnResolve(base::OnceClosure callback)
       : callback_(std::move(callback)) {}
 
-  ScriptValue Call(ScriptState*, ScriptValue) override {
-    if (callback_)
-      std::move(callback_).Run();
-    return ScriptValue();
+  void React(ScriptState*, WakeLockSentinel*) {
+    CHECK(callback_);
+    std::move(callback_).Run();
+  }
+
+ private:
+  base::OnceClosure callback_;
+};
+
+class ClosureOnReject final : public ThenCallable<IDLAny, ClosureOnReject> {
+ public:
+  explicit ClosureOnReject(base::OnceClosure callback)
+      : callback_(std::move(callback)) {}
+
+  void React(ScriptState*, ScriptValue) {
+    CHECK(callback_);
+    std::move(callback_).Run();
   }
 
  private:
@@ -223,7 +237,7 @@ void MockPermissionService::RegisterPageEmbeddedPermissionControl(
 void MockPermissionService::RequestPageEmbeddedPermission(
     mojom::blink::EmbeddedPermissionRequestDescriptorPtr permissions,
     RequestPageEmbeddedPermissionCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MockPermissionService::RequestPermission(
@@ -248,33 +262,33 @@ void MockPermissionService::RequestPermissions(
     Vector<PermissionDescriptorPtr> permissions,
     bool user_gesture,
     mojom::blink::PermissionService::RequestPermissionsCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MockPermissionService::RevokePermission(PermissionDescriptorPtr permission,
                                              RevokePermissionCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MockPermissionService::AddPermissionObserver(
     PermissionDescriptorPtr permission,
     mojom::blink::PermissionStatus last_known_status,
     mojo::PendingRemote<mojom::blink::PermissionObserver>) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MockPermissionService::AddPageEmbeddedPermissionObserver(
     PermissionDescriptorPtr permission,
     mojom::blink::PermissionStatus last_known_status,
     mojo::PendingRemote<mojom::blink::PermissionObserver>) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MockPermissionService::NotifyEventListener(
     PermissionDescriptorPtr permission,
     const String& event_type,
     bool is_added) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 // WakeLockTestingContext
 
@@ -317,11 +331,10 @@ MockPermissionService& WakeLockTestingContext::GetPermissionService() {
 }
 
 void WakeLockTestingContext::WaitForPromiseFulfillment(
-    ScriptPromiseUntyped promise) {
+    ScriptPromise<WakeLockSentinel> promise) {
   base::RunLoop run_loop;
-  promise.Then(MakeGarbageCollected<ScriptFunction>(
-      GetScriptState(),
-      MakeGarbageCollected<ClosureRunnerCallable>(run_loop.QuitClosure())));
+  promise.Then(GetScriptState(),
+               MakeGarbageCollected<ClosureOnResolve>(run_loop.QuitClosure()));
   // Execute pending microtasks, otherwise it can take a few seconds for the
   // promise to resolve.
   GetScriptState()->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(
@@ -331,13 +344,10 @@ void WakeLockTestingContext::WaitForPromiseFulfillment(
 
 // Synchronously waits for |promise| to be rejected.
 void WakeLockTestingContext::WaitForPromiseRejection(
-    ScriptPromiseUntyped promise) {
+    ScriptPromise<WakeLockSentinel> promise) {
   base::RunLoop run_loop;
-  promise.Then(
-      nullptr,
-      MakeGarbageCollected<ScriptFunction>(
-          GetScriptState(),
-          MakeGarbageCollected<ClosureRunnerCallable>(run_loop.QuitClosure())));
+  promise.Catch(GetScriptState(),
+                MakeGarbageCollected<ClosureOnReject>(run_loop.QuitClosure()));
   // Execute pending microtasks, otherwise it can take a few seconds for the
   // promise to resolve.
   GetScriptState()->GetContext()->GetMicrotaskQueue()->PerformCheckpoint(

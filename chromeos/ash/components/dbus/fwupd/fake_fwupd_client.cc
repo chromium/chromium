@@ -36,7 +36,8 @@ void FakeFwupdClient::RequestDevices() {
 
   // Add a fake device.
   devices.emplace_back(/*id=*/kFakeDeviceIdForTesting,
-                       /*device_name=*/"fake_device");
+                       /*device_name=*/"fake_device",
+                       /*needs_reboot*/ false);
 
   for (auto& observer : observers_)
     observer.OnDeviceListResponse(&devices);

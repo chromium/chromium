@@ -37,15 +37,15 @@ std::optional<proto::OptimizationTarget> ParseOptimizationTarget(
 }  // namespace
 
 PredictionModelDownloadClient::PredictionModelDownloadClient(
-    ChromeBrowserState* browser_state)
-    : browser_state_(browser_state) {}
+    ProfileIOS* profile)
+    : profile_(profile) {}
 
 PredictionModelDownloadClient::~PredictionModelDownloadClient() = default;
 
 PredictionModelDownloadManager*
 PredictionModelDownloadClient::GetPredictionModelDownloadManager() {
   OptimizationGuideService* optimization_guide_service =
-      OptimizationGuideServiceFactory::GetForProfile(browser_state_);
+      OptimizationGuideServiceFactory::GetForProfile(profile_);
   if (!optimization_guide_service)
     return nullptr;
   PredictionManager* prediction_manager =

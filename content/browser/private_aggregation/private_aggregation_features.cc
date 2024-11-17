@@ -18,6 +18,6 @@ BASE_FEATURE(kPrivateAggregationApiContributionMerging,
 
 BASE_FEATURE(kPrivateAggregationApi100ContributionsForProtectedAudience,
              "PrivateAggregationApi100ContributionsForProtectedAudience",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace content

@@ -10,12 +10,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-SamplePanelModel* SamplePanelModelFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 SamplePanelModel* SamplePanelModelFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<SamplePanelModel*>(
       GetInstance()->GetServiceForBrowserState(profile, true));

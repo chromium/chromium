@@ -94,6 +94,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/timing/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_chrome_client.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
@@ -208,8 +209,7 @@ mojom::FetchCacheMode DetermineFrameCacheMode(Frame* frame) {
     case WebFrameLoadType::kReloadBypassingCache:
       return mojom::FetchCacheMode::kBypassCache;
   }
-  NOTREACHED_IN_MIGRATION();
-  return mojom::FetchCacheMode::kDefault;
+  NOTREACHED();
 }
 
 bool ShouldSendClientHint(const PermissionsPolicy& policy,
@@ -573,8 +573,8 @@ void FrameFetchContext::AddClientHintsIfNecessary(
       http_rtt = GetNetworkStateNotifier().HttpRtt();
     }
 
-    uint32_t rtt =
-        GetNetworkStateNotifier().RoundRtt(request.Url().Host(), http_rtt);
+    uint32_t rtt = GetNetworkStateNotifier().RoundRtt(
+        request.Url().Host().ToString(), http_rtt);
     request.SetHttpHeaderField(http_names::kRtt_DEPRECATED,
                                AtomicString(String::Number(rtt)));
   }
@@ -588,8 +588,8 @@ void FrameFetchContext::AddClientHintsIfNecessary(
       throughput_mbps = GetNetworkStateNotifier().DownlinkThroughputMbps();
     }
 
-    double mbps = GetNetworkStateNotifier().RoundMbps(request.Url().Host(),
-                                                      throughput_mbps);
+    double mbps = GetNetworkStateNotifier().RoundMbps(
+        request.Url().Host().ToString(), throughput_mbps);
     request.SetHttpHeaderField(http_names::kDownlink_DEPRECATED,
                                AtomicString(String::Number(mbps)));
   }
@@ -873,6 +873,26 @@ void FrameFetchContext::UpgradeResourceRequestForLoader(
   }
   AddClientHintsIfNecessary(resource_width, request);
   AddReducedAcceptLanguageIfNecessary(request);
+}
+
+void FrameFetchContext::StartSpeculativeImageDecode(
+    Resource* resource,
+    base::OnceClosure callback) {
+  CHECK(resource->GetType() == ResourceType::kImage);
+  if (!document_ || !document_->GetFrame()) {
+    std::move(callback).Run();
+    return;
+  }
+  ImageResource* image_resource = To<ImageResource>(resource);
+  Image* image = image_resource->GetContent()->GetImage();
+  if (IsA<SVGImage>(image)) {
+    std::move(callback).Run();
+    return;
+  }
+  document_->GetFrame()->GetChromeClient().RequestDecode(
+      document_->GetFrame(), image->PaintImageForCurrentFrame(),
+      WTF::BindOnce([](base::OnceClosure cb, bool) { std::move(cb).Run(); },
+                    std::move(callback)));
 }
 
 bool FrameFetchContext::IsPrerendering() const {

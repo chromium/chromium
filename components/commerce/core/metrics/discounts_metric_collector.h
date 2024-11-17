@@ -25,7 +25,9 @@ class DiscountsMetricCollector {
 
   // Record when all shopping related page action icons finished computing which
   // icon to expand.
-  static void RecordDiscountsPageActionIconExpandState(bool is_expanded);
+  static void RecordDiscountsPageActionIconExpandState(
+      bool is_expanded,
+      const std::vector<DiscountInfo>& discounts);
 
   // Record when the Discounts page action icon is clicked.
   static void RecordDiscountsPageActionIconClicked(
@@ -37,6 +39,10 @@ class DiscountsMetricCollector {
       bool is_auto_shown,
       ukm::SourceId ukm_source_id,
       const std::vector<DiscountInfo>& discounts);
+
+  static void RecordDiscountAutoPopupEligibleButSuppressed(
+      ukm::SourceId ukm_source_id,
+      bool is_suppressed);
 };
 }  // namespace commerce::metrics
 

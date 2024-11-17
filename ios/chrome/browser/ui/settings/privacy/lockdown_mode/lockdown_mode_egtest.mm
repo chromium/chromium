@@ -67,13 +67,13 @@ NSString* const kLockdownModeCellId = @"kLockdownModeCellId";
              forLocalStatePref:prefs::kOSLockdownModeEnabled];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Reset preferences back to default values.
   [ChromeEarlGrey setBoolValue:NO
              forLocalStatePref:prefs::kBrowserLockdownModeEnabled];
   [ChromeEarlGrey setBoolValue:NO
              forLocalStatePref:prefs::kOSLockdownModeEnabled];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests the lockdown mode settings when OS lockdown mode is disabled. The

@@ -93,14 +93,14 @@ class LanguageSettingsMediatorTest : public PlatformTest {
  protected:
   LanguageSettingsMediatorTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {
-    // Create BrowserState.
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.SetPrefService(CreatePrefService());
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    // Create profile.
+    TestProfileIOS::Builder builder;
+    builder.SetPrefService(CreatePrefService());
+    profile_ = std::move(builder).Build();
 
     // Create TranslatePrefs.
-    translate_prefs_ = ChromeIOSTranslateClient::CreateTranslatePrefs(
-        chrome_browser_state_->GetPrefs());
+    translate_prefs_ =
+        ChromeIOSTranslateClient::CreateTranslatePrefs(profile_->GetPrefs());
 
     // Make sure the accept languages list is empty.
     std::vector<std::string> languages;
@@ -111,8 +111,7 @@ class LanguageSettingsMediatorTest : public PlatformTest {
 
     consumer_ = [[FakeLanguageSettingsConsumer alloc] init];
     language::LanguageModelManager* language_model_manager =
-        LanguageModelManagerFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        LanguageModelManagerFactory::GetForProfile(profile_.get());
 
     mediator_ = [[LanguageSettingsMediator alloc]
         initWithLanguageModelManager:language_model_manager
@@ -122,7 +121,7 @@ class LanguageSettingsMediatorTest : public PlatformTest {
 
   ~LanguageSettingsMediatorTest() override { [mediator_ stopObservingModel]; }
 
-  PrefService* GetPrefs() { return chrome_browser_state_->GetPrefs(); }
+  PrefService* GetPrefs() { return profile_->GetPrefs(); }
 
   translate::TranslatePrefs* translate_prefs() {
     return translate_prefs_.get();
@@ -135,14 +134,14 @@ class LanguageSettingsMediatorTest : public PlatformTest {
   std::unique_ptr<PrefServiceSyncable> CreatePrefService() {
     scoped_refptr<PrefRegistrySyncable> registry = new PrefRegistrySyncable();
     // Registers Translate and Language related prefs.
-    RegisterBrowserStatePrefs(registry.get());
+    RegisterProfilePrefs(registry.get());
     PrefServiceMockFactory factory;
     return factory.CreateSyncable(registry.get());
   }
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<translate::TranslatePrefs> translate_prefs_;
   FakeLanguageSettingsConsumer* consumer_;
   LanguageSettingsMediator* mediator_;

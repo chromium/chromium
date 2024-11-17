@@ -818,6 +818,24 @@ Called by update_protocol_commands_enum.py.-->
   <int value="167"
       label="Console insight reminder teaser aborted via settings"/>
   <int value="168" label="Console insight generated skipping disclaimers"/>
+  <int value="169"
+      label="Freestyler opened from Elements panel floating button"/>
+  <int value="170"
+      label="DrJones Network opened from Network panel context menu"/>
+  <int value="171" label="DrJones File opened from Sources panel context menu"/>
+  <int value="172"
+      label="DrJones File opened from Sources panel floating button"/>
+  <int value="173"
+      label="DrJones Performance opened from Performance panel context menu"/>
+  <int value="174"
+      label="DrJones Network opened from Network panel floating button"/>
+  <int value="175" label="AI Assistance - Panel opened"/>
+  <int value="176" label="AI Assistance - Query submitted"/>
+  <int value="177" label="AI Assistance - Answer received"/>
+  <int value="178" label="AI Assistance - Suggestion clicked"/>
+  <int value="179" label="AI Assistance - Side effect confirmed"/>
+  <int value="180" label="AI Assistance - Side effect rejected"/>
+  <int value="181" label="AI Assistance - Error"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
@@ -833,11 +851,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="2" label="Animation start point is moved"/>
   <int value="3" label="Animation finish point is moved"/>
   <int value="4" label="Other"/>
-</enum>
-
-<enum name="DevToolsColorPickerOpenedFrom">
-  <int value="0" label="Sources panel"/>
-  <int value="1" label="Styles pane"/>
 </enum>
 
 <enum name="DevToolsCSSHintShown">
@@ -1431,23 +1444,6 @@ Called by update_protocol_commands_enum.py.-->
   <int value="35" label="text/x.vue"/>
   <int value="36" label="text/javascript+snippet"/>
   <int value="37" label="text/javascript+eval"/>
-</enum>
-
-<enum name="DevToolsNetworkPanelMoreFiltersItemSelected">
-  <int value="0" label="Hide data URLs"/>
-  <int value="1" label="Hide extension URLs"/>
-  <int value="2" label="Blocked response cookies"/>
-  <int value="3" label="Blocked requests"/>
-  <int value="4" label="3rd-party requests"/>
-</enum>
-
-<enum name="DevToolsNetworkPanelMoreFiltersNumberOfSelectedChanged">
-  <int value="0" label="0"/>
-  <int value="1" label="1"/>
-  <int value="2" label="2"/>
-  <int value="3" label="3"/>
-  <int value="4" label="4"/>
-  <int value="5" label="5"/>
 </enum>
 
 <enum name="DevToolsOpenedByAction">

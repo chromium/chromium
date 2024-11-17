@@ -178,7 +178,7 @@ void RecordJavaObjectCreationOutcome(
     return;
   }
   const char* mode =
-      *rp_mode == blink::mojom::RpMode::kWidget ? "Widget" : "Button";
+      *rp_mode == blink::mojom::RpMode::kPassive ? "Passive" : "Active";
   base::UmaHistogramEnumeration(
       base::StringPrintf("Blink.FedCm.JavaObjectCreationOutcome.%s", mode),
       outcome);
@@ -215,6 +215,8 @@ bool AccountSelectionViewAndroid::Show(
 
   // Serialize the `idp_list` and `accounts` into a Java array and
   // instruct the bridge to show it together with |url| to the user.
+  // TODO(crbug.com/40945672): render filtered out accounts differently on
+  // Android.
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> accounts_obj =
       ConvertToJavaAccounts(env, accounts);
@@ -228,12 +230,9 @@ bool AccountSelectionViewAndroid::Show(
   ScopedJavaLocalRef<jobject> idp_obj =
       ConvertToJavaIdentityProviderData(env, idp_list[0].get());
 
-  // TODO(crbug.com/329235198): Support auto re-authn on Android.
   Java_AccountSelectionBridge_showAccounts(
       env, java_object_internal_, rp_for_display, idp_list[0]->idp_for_display,
-      accounts_obj, idp_obj,
-      sign_in_mode == Account::SignInMode::kAuto &&
-          rp_mode == blink::mojom::RpMode::kWidget,
+      accounts_obj, idp_obj, sign_in_mode == Account::SignInMode::kAuto,
       new_accounts_obj);
   return true;
 }
@@ -244,9 +243,9 @@ bool AccountSelectionViewAndroid::ShowFailureDialog(
     blink::mojom::RpContext rp_context,
     blink::mojom::RpMode rp_mode,
     const content::IdentityProviderMetadata& idp_metadata) {
-  // ShowFailureDialog is never called in button mode.
+  // ShowFailureDialog is never called in active mode.
   // TODO(crbug.com/347736746): Remove rp_mode from this method.
-  CHECK(rp_mode == blink::mojom::RpMode::kWidget);
+  CHECK(rp_mode == blink::mojom::RpMode::kPassive);
 
   if (!MaybeCreateJavaObject(rp_mode)) {
     // It's possible that the constructor cannot access the bottom sheet clank
@@ -271,9 +270,7 @@ bool AccountSelectionViewAndroid::ShowErrorDialog(
     blink::mojom::RpMode rp_mode,
     const content::IdentityProviderMetadata& idp_metadata,
     const std::optional<TokenError>& error) {
-  // TODO(crbug.com/347117752): Implement button mode error dialog.
-  if (rp_mode == blink::mojom::RpMode::kButton ||
-      !MaybeCreateJavaObject(rp_mode)) {
+  if (!MaybeCreateJavaObject(rp_mode)) {
     // It's possible that the constructor cannot access the bottom sheet clank
     // component. That case may be temporary but we can't let users in a
     // waiting state so report that AccountSelectionView is dismissed instead.
@@ -416,7 +413,7 @@ bool AccountSelectionViewAndroid::MaybeCreateJavaObject(
       env, reinterpret_cast<intptr_t>(this),
       delegate_->GetWebContents()->GetJavaWebContents(),
       delegate_->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
-      static_cast<jint>(rp_mode.value_or(blink::mojom::RpMode::kWidget)));
+      static_cast<jint>(rp_mode.value_or(blink::mojom::RpMode::kPassive)));
 
   if (!!java_object_internal_) {
     RecordJavaObjectCreationOutcome(

@@ -24,13 +24,6 @@ const char kDisableModalAnimations[] = "disable-modal-animations";
 const char kShowMacOverlayBorders[] = "show-mac-overlay-borders";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-// Enable resources file sharing with ash-chrome.
-// This flag is enabled when feature::kLacrosResourcesFileSharing is set and
-// ash-side operation is successfully done.
-const char kEnableResourcesFileSharing[] = "enable-resources-file-sharing";
-#endif
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Specifies system font family name. Improves determenism when rendering
 // pages in headless mode.
@@ -43,9 +36,6 @@ const char kUiToolkitFlag[] = "ui-toolkit";
 // Disables GTK IME integration.
 const char kDisableGtkIme[] = "disable-gtk-ime";
 #endif
-
-// Disables layer-edge anti-aliasing in the compositor.
-const char kDisableCompositedAntialiasing[] = "disable-composited-antialiasing";
 
 // Disables touch event based drag and drop.
 const char kDisableTouchDragDrop[] = "disable-touch-drag-drop";

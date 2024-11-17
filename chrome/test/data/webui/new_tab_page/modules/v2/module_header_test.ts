@@ -4,7 +4,7 @@
 
 import {ModuleHeaderElementV2} from 'chrome://new-tab-page/lazy_load.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 suite('ModuleHeaderV2', () => {
   let moduleHeaderElementV2: ModuleHeaderElementV2;
@@ -15,8 +15,29 @@ suite('ModuleHeaderV2', () => {
     document.body.appendChild(moduleHeaderElementV2);
   });
 
+  test('title only shows if headerText is not null', async () => {
+    // Assert.
+    assertFalse(isVisible(moduleHeaderElementV2.$.title));
+
+    // Act.
+    moduleHeaderElementV2.headerText = 'foo';
+    await microtasksFinished();
+
+    // Assert
+    assertTrue(isVisible(moduleHeaderElementV2.$.title));
+  });
+
+  test('clicking the menu button shows the action menu', async () => {
+    // Act.
+    moduleHeaderElementV2.$.menuButton.click();
+    await microtasksFinished();
+
+    // Assert.
+    assertTrue(moduleHeaderElementV2.$.actionMenu.open);
+  });
+
   test('menu items are displayed', async () => {
-    // Act
+    // Act.
     moduleHeaderElementV2.menuItemGroups = [
       [
         {
@@ -38,7 +59,9 @@ suite('ModuleHeaderV2', () => {
         },
       ],
     ];
+    moduleHeaderElementV2.$.menuButton.click();
     await microtasksFinished();
+
     // Assert.
     const dropDownItems =
         moduleHeaderElementV2.shadowRoot!.querySelectorAll('button');
@@ -51,7 +74,7 @@ suite('ModuleHeaderV2', () => {
   test(
       'horizontal rule shows if the first list of menu items is not empty',
       async () => {
-        // Act
+        // Act.
         moduleHeaderElementV2.menuItemGroups = [
           [
             {
@@ -62,18 +85,21 @@ suite('ModuleHeaderV2', () => {
           ],
           [],
         ];
+        moduleHeaderElementV2.$.menuButton.click();
         await microtasksFinished();
+
         // Assert.
-        const horizontalRule =
-            moduleHeaderElementV2.shadowRoot!.querySelector('hr');
-        assertTrue(!!horizontalRule);
-        assertFalse(horizontalRule.hidden);
+        const horizontalRules =
+            moduleHeaderElementV2.shadowRoot!.querySelectorAll('hr');
+        assertEquals(2, horizontalRules.length);
+        assertTrue(isVisible(horizontalRules[0]!));
+        assertFalse(isVisible(horizontalRules[1]!));
       });
 
   test(
-      'horizontal rule is hidden if the first list of menu items is empty',
+      'horizontal rules are hidden if the first list of menu items is empty',
       async () => {
-        // Act
+        // Act.
         moduleHeaderElementV2.menuItemGroups = [
           [],
           [
@@ -85,10 +111,12 @@ suite('ModuleHeaderV2', () => {
           ],
         ];
         await microtasksFinished();
+
         // Assert.
-        const horizontalRule =
-            moduleHeaderElementV2.shadowRoot!.querySelector('hr');
-        assertTrue(!!horizontalRule);
-        assertFalse(horizontalRule.hidden);
+        const horizontalRules =
+            moduleHeaderElementV2.shadowRoot!.querySelectorAll('hr');
+        assertEquals(2, horizontalRules.length);
+        assertFalse(isVisible(horizontalRules[0]!));
+        assertFalse(isVisible(horizontalRules[1]!));
       });
 });

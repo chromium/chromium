@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory_impl.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink.h"
 #include "ui/gfx/geometry/rect.h"
 
 using testing::Return;
@@ -787,7 +788,7 @@ TEST_F(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
                           (rect->top() + rect->bottom()) / 2);
   LocalMainFrame()->MoveRangeSelectionExtent(middle_point);
   LocalMainFrame()->LocalRootFrameWidget()->ShowContextMenu(
-      ui::mojom::MenuSourceType::TOUCH_HANDLE, middle_point);
+      ui::mojom::blink::MenuSourceType::kTouchHandle, middle_point);
 
   context_menu_data = GetWebFrameClient().GetContextMenuData();
   EXPECT_NE(context_menu_data.selected_text, "");
@@ -800,7 +801,7 @@ TEST_F(ContextMenuControllerTest, ShowNonLocatedContextMenuEvent) {
   LocalMainFrame()->MoveRangeSelectionExtent(
       gfx::Point(rect->right(), rect->bottom()));
   LocalMainFrame()->LocalRootFrameWidget()->ShowContextMenu(
-      ui::mojom::MenuSourceType::TOUCH_HANDLE,
+      ui::mojom::blink::MenuSourceType::kTouchHandle,
       gfx::Point(rect->right() / 2, rect->bottom() / 2));
 
   context_menu_data = GetWebFrameClient().GetContextMenuData();
@@ -2041,7 +2042,7 @@ class ContextMenuControllerRemoteParentFrameTest : public testing::Test {
 
   void ShowContextMenu(const gfx::Point& point) {
     child_frame_->LocalRootFrameWidget()->ShowContextMenu(
-        ui::mojom::MenuSourceType::MOUSE, point);
+        ui::mojom::blink::MenuSourceType::kMouse, point);
     base::RunLoop().RunUntilIdle();
   }
 
@@ -2065,93 +2066,6 @@ TEST_F(ContextMenuControllerRemoteParentFrameTest, ShowContextMenuInChild) {
       child_web_frame_client().host_context_menu_location();
   ASSERT_TRUE(host_context_menu_location.has_value());
   EXPECT_EQ(kPoint, host_context_menu_location.value());
-}
-
-// Test the field of `context_menu_data` `is_password_type_by_heuristics` which
-// should be set if a field's type is plain text but heuristics (e.g. the name
-// attribute contains 'password' as a substring) recognize it as a password
-// field.
-TEST_F(ContextMenuControllerTest, IsPasswordTypeByHeuristic) {
-  WebURL url = url_test_helpers::ToKURL("http://www.test.com/");
-  frame_test_helpers::LoadHTMLString(LocalMainFrame(),
-                                     R"(<html>
-        <form>
-          <input type="password" id="not_heuristic"></textarea>
-          <input id="not_related"></textarea>
-          <input id="heuristic_password"></textarea>
-          <input id="MyPwd"></textarea>
-          <input id="moja_lOzinKa123"></textarea>
-        </form>
-      </html>
-      )",
-                                     url);
-  Document* document = GetDocument();
-  ASSERT_TRUE(IsA<HTMLDocument>(document));
-
-  // Heuristics-based recognition is not needed, it is a clear password by
-  // form_control_type.
-  Element* not_heuristic_password =
-      document->getElementById(AtomicString("not_heuristic"));
-  EXPECT_TRUE(
-      ShowContextMenuForElement(not_heuristic_password, kMenuSourceMouse));
-  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
-  EXPECT_FALSE(context_menu_data.is_password_type_by_heuristics);
-
-  // Unrelated text field should not be recognized as password field.
-  Element* not_related = document->getElementById(AtomicString("not_related"));
-  EXPECT_TRUE(ShowContextMenuForElement(not_related, kMenuSourceMouse));
-  context_menu_data = GetWebFrameClient().GetContextMenuData();
-  EXPECT_FALSE(context_menu_data.is_password_type_by_heuristics);
-
-  // Field is of type 'text' and has 'password' in its id. Therefore, is
-  // password type by heuristics.
-  Element* heuristic_password =
-      document->getElementById(AtomicString("heuristic_password"));
-  EXPECT_TRUE(ShowContextMenuForElement(heuristic_password, kMenuSourceMouse));
-  context_menu_data = GetWebFrameClient().GetContextMenuData();
-  EXPECT_TRUE(context_menu_data.is_password_type_by_heuristics);
-
-  // Field is of type 'text' and has 'pwd' in its id. Therefore, is
-  // password type by heuristics.
-  Element* short_password = document->getElementById(AtomicString("MyPwd"));
-  EXPECT_TRUE(ShowContextMenuForElement(short_password, kMenuSourceMouse));
-  context_menu_data = GetWebFrameClient().GetContextMenuData();
-  EXPECT_TRUE(context_menu_data.is_password_type_by_heuristics);
-
-  // Field is of type 'text' and has 'lozinka' (a foreign translation of
-  // password) in its id. Therefore, is password type by heuristics.
-  Element* foreign_password =
-      document->getElementById(AtomicString("moja_lOzinKa123"));
-  EXPECT_TRUE(ShowContextMenuForElement(foreign_password, kMenuSourceMouse));
-  context_menu_data = GetWebFrameClient().GetContextMenuData();
-  EXPECT_TRUE(context_menu_data.is_password_type_by_heuristics);
-}
-
-// Test the field of `context_menu_data` `is_password_type_by_heuristics` which
-// should be set if a field's type is plain text and `HasBeenPassword` returns
-// true (due to either server predictions or user's masking of input values).
-TEST_F(ContextMenuControllerTest, HasBeenPasswordHeuristic) {
-  WebURL url = url_test_helpers::ToKURL("http://www.test.com/");
-  frame_test_helpers::LoadHTMLString(LocalMainFrame(),
-                                     R"(<html>
-        <form>
-          <input type="text" id="has_been_password">
-        </form>
-      </html>
-      )",
-                                     url);
-  Document* document = GetDocument();
-  ASSERT_TRUE(IsA<HTMLDocument>(document));
-
-  Element* input_element =
-      document->getElementById(AtomicString("has_been_password"));
-  ASSERT_TRUE(input_element);
-
-  DynamicTo<HTMLInputElement>(input_element)->SetHasBeenPasswordField();
-
-  ASSERT_TRUE(ShowContextMenuForElement(input_element, kMenuSourceMouse));
-  ContextMenuData context_menu_data = GetWebFrameClient().GetContextMenuData();
-  EXPECT_TRUE(context_menu_data.is_password_type_by_heuristics);
 }
 
 }  // namespace blink

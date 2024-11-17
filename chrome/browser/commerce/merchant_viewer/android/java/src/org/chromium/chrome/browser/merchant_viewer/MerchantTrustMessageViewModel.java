@@ -34,20 +34,20 @@ import java.text.NumberFormat;
 class MerchantTrustMessageViewModel {
     private static final int BASELINE_RATING = 5;
 
-    @IntDef({MessageTitleUI.VIEW_STORE_INFO, MessageTitleUI.SEE_STORE_REVIEWS})
+    @IntDef({MessageTitleUi.VIEW_STORE_INFO, MessageTitleUi.SEE_STORE_REVIEWS})
     @Retention(RetentionPolicy.SOURCE)
-    @interface MessageTitleUI {
+    @interface MessageTitleUi {
         int VIEW_STORE_INFO = 0;
         int SEE_STORE_REVIEWS = 1;
     }
 
     @IntDef({
-        MessageDescriptionUI.NONE,
-        MessageDescriptionUI.RATING_AND_REVIEWS,
-        MessageDescriptionUI.REVIEWS_FROM_GOOGLE
+        MessageDescriptionUi.NONE,
+        MessageDescriptionUi.RATING_AND_REVIEWS,
+        MessageDescriptionUi.REVIEWS_FROM_GOOGLE
     })
     @Retention(RetentionPolicy.SOURCE)
-    @interface MessageDescriptionUI {
+    @interface MessageDescriptionUi {
         int NONE = 0;
         int RATING_AND_REVIEWS = 1;
         int REVIEWS_FROM_GOOGLE = 2;
@@ -88,7 +88,7 @@ class MerchantTrustMessageViewModel {
                         getMessageDescription(
                                 context,
                                 merchantInfo,
-                                MerchantViewerConfig.getTrustSignalsMessageDescriptionUI()))
+                                MerchantViewerConfig.getTrustSignalsMessageDescriptionUi()))
                 .with(
                         MessageBannerProperties.PRIMARY_BUTTON_TEXT,
                         resources.getString(R.string.merchant_viewer_message_action))
@@ -106,8 +106,8 @@ class MerchantTrustMessageViewModel {
     }
 
     public static @Nullable Spannable getMessageDescription(
-            Context context, MerchantInfo merchantInfo, int descriptionUI) {
-        if (descriptionUI == MessageDescriptionUI.NONE) {
+            Context context, MerchantInfo merchantInfo, int descriptionUi) {
+        if (descriptionUi == MessageDescriptionUi.NONE) {
             return null;
         }
         var resources = context.getResources();
@@ -115,7 +115,7 @@ class MerchantTrustMessageViewModel {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         NumberFormat numberFormatter = NumberFormat.getIntegerInstance();
         numberFormatter.setMaximumFractionDigits(1);
-        if (descriptionUI == MessageDescriptionUI.REVIEWS_FROM_GOOGLE
+        if (descriptionUi == MessageDescriptionUi.REVIEWS_FROM_GOOGLE
                 && merchantInfo.countRating > 0) {
             String message =
                     resources.getQuantityString(
@@ -203,11 +203,11 @@ class MerchantTrustMessageViewModel {
     }
 
     private static @StringRes int getTitleStringRes() {
-        int titleUI = MerchantViewerConfig.getTrustSignalsMessageTitleUI();
-        if (titleUI == MessageTitleUI.SEE_STORE_REVIEWS) {
+        int titleUi = MerchantViewerConfig.getTrustSignalsMessageTitleUi();
+        if (titleUi == MessageTitleUi.SEE_STORE_REVIEWS) {
             return R.string.merchant_viewer_message_title_see_reviews;
         }
-        assert titleUI == MessageTitleUI.VIEW_STORE_INFO : "Invalid title UI";
+        assert titleUi == MessageTitleUi.VIEW_STORE_INFO : "Invalid title UI";
         return R.string.merchant_viewer_message_title;
     }
 }

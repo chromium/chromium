@@ -21,6 +21,14 @@ constexpr char kApiResponseStudentsKey[] = "students";
 constexpr char kApiResponseFullNameKey[] = "fullName";
 constexpr char kApiResponseEmailAddressKey[] = "emailAddress";
 constexpr char kApiResponseNameKey[] = "name";
+constexpr char kApiResponsePhotoUrlKey[] = "photoUrl";
+
+// Converts |url_string| to |result|.  Always returns true to be used
+// for JSONValueConverter::RegisterCustomField method.
+bool GetGURLFromString(std::string_view url_string, GURL* result) {
+  *result = GURL("https:" + std::string(url_string));
+  return true;
+}
 
 }  // namespace
 
@@ -33,6 +41,9 @@ void Name::RegisterJSONConverter(base::JSONValueConverter<Name>* converter) {
 
 // ----- UserProfile -----
 
+UserProfile::UserProfile() = default;
+UserProfile::~UserProfile() = default;
+
 // static
 void UserProfile::RegisterJSONConverter(
     base::JSONValueConverter<UserProfile>* converter) {
@@ -41,6 +52,8 @@ void UserProfile::RegisterJSONConverter(
                                        &UserProfile::name_);
   converter->RegisterStringField(kApiResponseEmailAddressKey,
                                  &UserProfile::email_address_);
+  converter->RegisterCustomField<GURL>(
+      kApiResponsePhotoUrlKey, &UserProfile::photo_url_, GetGURLFromString);
 }
 
 // ----- Student -----

@@ -7,6 +7,10 @@
 #include "base/types/cxx23_to_underlying.h"
 #include "base/values.h"
 #include "extensions/browser/extension_prefs.h"
+#include "extensions/browser/extension_util.h"
+#include "extensions/browser/process_map.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
+#include "extensions/common/permissions/permissions_data.h"
 
 namespace extensions::storage_utils {
 
@@ -62,6 +66,38 @@ base::Value ValueChangeToValue(
     changes_value.Set(change.key, std::move(change_value));
   }
   return base::Value(std::move(changes_value));
+}
+
+// TODO(crbug.com/41034787): Use this to limit renderer access to storage to
+// cases where there has been an injection.
+bool CanRendererAccessExtensionStorage(
+    content::BrowserContext& browser_context,
+    const Extension& extension,
+    std::optional<StorageAreaNamespace> storage_area,
+    content::RenderFrameHost* render_frame_host,
+    content::RenderProcessHost& render_process_host) {
+  if (!extension.permissions_data()->HasAPIPermission(
+          mojom::APIPermissionID::kStorage)) {
+    return false;
+  }
+
+  if (storage_area == StorageAreaNamespace::kSession) {
+    if (extension.manifest_version() < 3) {
+      return false;
+    }
+
+    api::storage::AccessLevel access_level =
+        GetSessionAccessLevel(extension.id(), browser_context);
+    if (access_level == api::storage::AccessLevel::kTrustedContexts) {
+      ProcessMap* process_map = ProcessMap::Get(&browser_context);
+      return process_map->IsPrivilegedExtensionProcess(
+          extension, render_process_host.GetID());
+    }
+  }
+
+  return util::CanRendererActOnBehalfOfExtension(
+      extension.id(), render_frame_host, render_process_host,
+      /*include_user_scripts=*/false);
 }
 
 }  // namespace extensions::storage_utils

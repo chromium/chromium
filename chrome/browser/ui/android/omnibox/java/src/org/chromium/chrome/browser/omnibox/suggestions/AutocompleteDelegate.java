@@ -59,4 +59,13 @@ public interface AutocompleteDelegate extends UrlBarDelegate {
      * @return Whether the URL currently has focus.
      */
     boolean isUrlBarFocused();
+
+    /* Requests to show default browser promo when user pasting an URL. */
+    void maybeShowDefaultBrowserPromo();
+
+    /** Whether the toolbar hosting the omnibox could potentially be change positions at runtime. */
+    boolean isToolbarPositionCustomizationEnabled();
+
+    /** Whether the toolbar hosting the omnibox is currently bottom-anchored. */
+    boolean isToolbarBottomAnchored();
 }

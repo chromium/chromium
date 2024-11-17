@@ -168,8 +168,8 @@ def get_feature_set(features, total_feature_set):
 
 def write_features(feature_set, feature_name_prefix, var_name,
                    data_helper_file):
-  data_helper_file.write('const int %s[%d] = {\n' %
-                         (var_name, len(feature_set)))
+  data_helper_file.write('static const std::array<int, %d> %s = {\n' %
+                         (len(feature_set), var_name))
   for feature in feature_set.keys():
     data_helper_file.write(feature_name_prefix + feature.upper())
     data_helper_file.write(',\n')
@@ -182,17 +182,16 @@ def write_disabled_extension_list(entry_kind, entry_id, data, data_file,
     var_name = 'k%sForEntry%d' % (entry_kind, entry_id)
     # define the list
     data_helper_file.write(
-        'const char* const %s[%d] = {\n' % (var_name, len(data)))
+        'static const std::array<const char* const, %d> %s = {\n' %
+        (len(data), var_name))
     for item in data:
       write_string(item, data_helper_file)
       data_helper_file.write(',\n')
     data_helper_file.write('};\n\n')
     # use the list
-    data_file.write('std::size(%s),  // %s size\n' % (var_name, entry_kind))
-    data_file.write('%s,  // %s\n' % (var_name, entry_kind))
+    data_file.write('base::span(%s),  // %s\n' % (var_name, entry_kind))
   else:
-    data_file.write('0,  // %s size\n' % entry_kind)
-    data_file.write('nullptr,  // %s\n' % entry_kind)
+    data_file.write('base::span<const char* const>(),  // %s\n' % entry_kind)
 
 
 def write_gl_strings(entry_id, is_exception, exception_id, data,
@@ -202,7 +201,7 @@ def write_gl_strings(entry_id, is_exception, exception_id, data,
     if is_exception:
       var_name += 'Exception' + str(exception_id)
     # define the GL strings
-    data_helper_file.write('const GpuControlList::GLStrings %s = {\n' %
+    data_helper_file.write('static const GpuControlList::GLStrings %s = {\n' %
                            var_name)
     for item in data:
       write_string(item, data_helper_file)
@@ -270,7 +269,7 @@ def write_driver_info(entry_id, is_exception, exception_id, driver_vendor,
   if is_exception:
     var_name += 'Exception' + str(exception_id)
   # define the GL strings
-  data_helper_file.write('const GpuControlList::DriverInfo %s = {\n' %
+  data_helper_file.write('static const GpuControlList::DriverInfo %s = {\n' %
                          var_name)
   write_string_value(driver_vendor, 'driver_vendor', data_helper_file)
   write_version(driver_version, 'driver_version', data_helper_file)
@@ -287,18 +286,16 @@ def write_number_list(entry_id, data_type, name_tag, data, is_exception,
     if is_exception:
       var_name += 'Exception' + str(exception_id)
     # define the list
-    data_helper_file.write('const %s %s[%d] = {\n' %
-                           (data_type, var_name, len(data)))
+    data_helper_file.write('static const std::array<%s, %d> %s = {\n' %
+                           (data_type, len(data), var_name))
     for item in data:
       data_helper_file.write(str(item))
       data_helper_file.write(',\n')
     data_helper_file.write('};\n\n')
     # reference the list
-    data_file.write('std::size(%s),  // %s size\n' % (var_name, name_tag))
-    data_file.write('%s,  // %s\n' % (var_name, name_tag))
+    data_file.write('base::span(%s),  // %s\n' % (var_name, name_tag))
   else:
-    data_file.write('0,  // %s size\n' % name_tag)
-    data_file.write('nullptr,  // %s\n' % name_tag)
+    data_file.write('base::span<const %s>(),  // %s\n' % (data_type, name_tag))
 
 
 def write_string(string, data_file):
@@ -343,19 +340,18 @@ def write_device_list(entry_id, device_id, device_revision, is_exception,
     if is_exception:
       var_name += 'Exception' + str(exception_id)
     # define the list
-    data_helper_file.write('const GpuControlList::Device %s[%d] = {\n' %
-                           (var_name, len(device_id)))
+    data_helper_file.write(
+        'static const std::array<GpuControlList::Device, %d> %s = {{\n' %
+        (len(device_id), var_name))
     for ii in range(device_size):
       data_helper_file.write('{%s, %s},\n' %
                              (device_id[ii], device_revision[ii]))
-    data_helper_file.write('};\n\n')
+    data_helper_file.write('}};\n\n')
     # reference the list
-    data_file.write('std::size(%s),  // Devices size\n' % var_name)
-    data_file.write('%s,  // Devices\n' % var_name)
+    data_file.write('base::span(%s),  // Devices\n' % var_name)
   else:
     assert not device_revision
-    data_file.write('0,  // Devices size\n')
-    data_file.write('nullptr,  // Devices\n')
+    data_file.write('base::span<const GpuControlList::Device>(),  // Devices\n')
 
 
 def write_machine_model_info(entry_id, is_exception, exception_id,
@@ -367,12 +363,13 @@ def write_machine_model_info(entry_id, is_exception, exception_id,
     model_name_var_name = 'kMachineModelNameForEntry' + str(entry_id)
     if is_exception:
       model_name_var_name += 'Exception' + str(exception_id)
-    data_helper_file.write('const char* const %s[%d] = {\n' %
-                           (model_name_var_name, len(machine_model_name)))
+    data_helper_file.write(
+        'static const std::array<const char* const, %d> %s = {{\n' %
+        (len(machine_model_name), model_name_var_name))
     for item in machine_model_name:
       write_string(item, data_helper_file)
       data_helper_file.write(',\n')
-    data_helper_file.write('};\n\n')
+    data_helper_file.write('}};\n\n')
   var_name = None
   if machine_model_name or machine_model_version:
     var_name = 'kMachineModelInfoForEntry' + str(entry_id)
@@ -380,15 +377,13 @@ def write_machine_model_info(entry_id, is_exception, exception_id,
       var_name += 'Exception' + str(exception_id)
     # define machine model info
     data_helper_file.write(
-      'const GpuControlList::MachineModelInfo %s = {\n' % var_name)
+      'static const GpuControlList::MachineModelInfo %s = {\n' % var_name)
     if machine_model_name:
-      data_helper_file.write('std::size(%s),  // machine model name size\n' %
-                             model_name_var_name)
-      data_helper_file.write('%s,  // machine model names\n' %
+      data_helper_file.write('base::span(%s),  // machine model names\n' %
                              model_name_var_name)
     else:
-      data_helper_file.write('0,  // machine model name size\n')
-      data_helper_file.write('nullptr,  // machine model names\n')
+      data_helper_file.write(
+          'base::span<const char* const>(),  // machine model names\n')
     write_version(machine_model_version, 'machine model version',
                   data_helper_file)
     data_helper_file.write('};\n\n')
@@ -480,7 +475,7 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
   pixel_shader_version = None
   in_process_gpu = False
   gl_reset_notification_strategy = None
-  direct_rendering_version = ''
+  direct_rendering_version = None
   gpu_count = None
   hardware_overlay = None
   test_group = 0
@@ -632,14 +627,14 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
   write_machine_model_info(entry_id, is_exception, exception_id,
                            machine_model_name, machine_model_version,
                            data_file, data_helper_file)
-  write_intel_gpu_series_list(entry_id, is_exception, exception_id,
-                              intel_gpu_series_list,
-                              data_file, data_helper_file)
-  write_version(intel_gpu_generation, 'intel_gpu_generation', data_file)
+  write_intel_conditions(entry_id, is_exception, exception_id,
+                         intel_gpu_series_list, intel_gpu_generation,
+                         data_file, data_helper_file)
   # group a bunch of less used conditions
-  if (gl_version != None or pixel_shader_version != None or in_process_gpu or
-      gl_reset_notification_strategy != None or direct_rendering_version != None
-      or gpu_count != None or hardware_overlay != None or test_group != 0 or
+  if (gl_type != '' or gl_version != None or pixel_shader_version != None or
+      in_process_gpu or gl_reset_notification_strategy != None or
+      direct_rendering_version != None or gpu_count != None or
+      hardware_overlay != None or test_group != 0 or
       subpixel_font_rendering != None):
     write_entry_more_data(entry_id, is_exception, exception_id, gl_type,
                           gl_version, pixel_shader_version, in_process_gpu,
@@ -651,15 +646,62 @@ def write_conditions(entry_id, is_exception, exception_id, entry,
     data_file.write('nullptr,  // more conditions\n')
 
 
-def write_intel_gpu_series_list(entry_id, is_exception, exception_id,
-                                intel_gpu_series_list,
-                                data_file, data_helper_file):
+def write_entry_more_data(entry_id, is_exception, exception_id, gl_type,
+                          gl_version, pixel_shader_version, in_process_gpu,
+                          gl_reset_notification_strategy,
+                          direct_rendering_version, gpu_count, hardware_overlay,
+                          test_group, subpixel_font_rendering, data_file,
+                          data_helper_file):
+  # write more data
+
+  # Generate a unique name for jumbo build which concatenates multiple
+  # translation units into one to speed compilation.
+  basename = os.path.basename(data_helper_file.name)
+  # & 0xffffffff converts to unsigned to keep consistent across Python versions
+  # and platforms as per https://docs.python.org/3/library/zlib.html
+  suffix = '_%s' % (zlib.crc32(basename.encode()) & 0xffffffff)
+  var_name = 'kMoreForEntry' + str(entry_id) + suffix
+  if is_exception:
+    var_name += 'Exception' + str(exception_id)
+  data_helper_file.write(
+      'static const GpuControlList::More %s = {\n' % var_name)
+  write_gl_type(gl_type, data_helper_file)
+  write_version(gl_version, 'gl_version', data_helper_file)
+  write_version(pixel_shader_version, 'pixel_shader_version', data_helper_file)
+  write_boolean_value(in_process_gpu, 'in_process_gpu', data_helper_file)
+  if not gl_reset_notification_strategy:
+    gl_reset_notification_strategy = '0'
+  data_helper_file.write('%s,  // gl_reset_notification_strategy\n' %
+                         gl_reset_notification_strategy)
+  write_version(direct_rendering_version, 'direct_rendering_version',
+                data_helper_file)
+  write_version(gpu_count, 'gpu_count', data_helper_file)
+  write_supported_or_not(hardware_overlay, 'hardware_overlay', data_helper_file)
+  write_integer_value(test_group, 'test_group', data_helper_file)
+  write_supported_or_not(subpixel_font_rendering, 'subpixel_font_rendering',
+                         data_helper_file)
+  data_helper_file.write('};\n\n')
+  # reference more data in entry
+  data_file.write('&%s,  // more data\n' % var_name)
+
+
+def write_intel_conditions(entry_id, is_exception, exception_id,
+                           intel_gpu_series_list, intel_gpu_generation,
+                           data_file, data_helper_file):
+  # write intel conditions
+
+  if not intel_gpu_series_list and not intel_gpu_generation:
+    data_file.write('nullptr,  // Intel conditions\n')
+    return
+
+  var_name_series = None
   if intel_gpu_series_list:
-    var_name = 'kIntelGpuSeriesForEntry' + str(entry_id)
+    var_name_series = 'kIntelGpuSeriesForEntry' + str(entry_id)
     if is_exception:
-      var_name += 'Exception' + str(exception_id)
-    data_helper_file.write('const IntelGpuSeriesType %s[%d] = {\n' %
-                           (var_name, len(intel_gpu_series_list)))
+      var_name_series += 'Exception' + str(exception_id)
+    data_helper_file.write(
+        'static const std::array<IntelGpuSeriesType, %d> %s = {{\n' %
+        (len(intel_gpu_series_list), var_name_series))
     intel_gpu_series_map = {
       'broadwater': 'kBroadwater',
       'eaglelake': 'kEaglelake',
@@ -697,22 +739,7 @@ def write_intel_gpu_series_list(entry_id, is_exception, exception_id,
       assert series in intel_gpu_series_map
       data_helper_file.write('IntelGpuSeriesType::%s,\n' %
                              intel_gpu_series_map[series])
-    data_helper_file.write('};\n\n')
-
-    data_file.write('std::size(%s),  // intel_gpu_series size\n' % var_name)
-    data_file.write('%s,  // intel_gpu_series\n' % var_name)
-  else:
-    data_file.write('0,  // intel_gpu_series size\n')
-    data_file.write('nullptr,  // intel_gpu_series\n')
-
-
-def write_entry_more_data(entry_id, is_exception, exception_id, gl_type,
-                          gl_version, pixel_shader_version, in_process_gpu,
-                          gl_reset_notification_strategy,
-                          direct_rendering_version, gpu_count, hardware_overlay,
-                          test_group, subpixel_font_rendering, data_file,
-                          data_helper_file):
-  # write more data
+    data_helper_file.write('}};\n\n')
 
   # Generate a unique name for jumbo build which concatenates multiple
   # translation units into one to speed compilation.
@@ -720,28 +747,21 @@ def write_entry_more_data(entry_id, is_exception, exception_id, gl_type,
   # & 0xffffffff converts to unsigned to keep consistent across Python versions
   # and platforms as per https://docs.python.org/3/library/zlib.html
   suffix = '_%s' % (zlib.crc32(basename.encode()) & 0xffffffff)
-  var_name = 'kMoreForEntry' + str(entry_id) + suffix
+  var_name = 'kIntelConditionsForEntry' + str(entry_id) + suffix
   if is_exception:
     var_name += 'Exception' + str(exception_id)
-  data_helper_file.write('const GpuControlList::More %s = {\n' % var_name)
-  write_gl_type(gl_type, data_helper_file)
-  write_version(gl_version, 'gl_version', data_helper_file)
-  write_version(pixel_shader_version, 'pixel_shader_version', data_helper_file)
-  write_boolean_value(in_process_gpu, 'in_process_gpu', data_helper_file)
-  if not gl_reset_notification_strategy:
-    gl_reset_notification_strategy = '0'
-  data_helper_file.write('%s,  // gl_reset_notification_strategy\n' %
-                         gl_reset_notification_strategy)
-  write_version(direct_rendering_version, 'direct_rendering_version',
-                data_helper_file)
-  write_version(gpu_count, 'gpu_count', data_helper_file)
-  write_supported_or_not(hardware_overlay, 'hardware_overlay', data_helper_file)
-  write_integer_value(test_group, 'test_group', data_helper_file)
-  write_supported_or_not(subpixel_font_rendering, 'subpixel_font_rendering',
-                         data_helper_file)
+  data_helper_file.write(
+      'static const GpuControlList::IntelConditions %s = {\n' % var_name)
+  if var_name_series:
+    data_helper_file.write(
+        'base::span(%s),  // intel_gpu_series_list\n' % var_name_series)
+  else:
+    data_helper_file.write(
+        'base::span<const IntelGpuSeriesType>(),  // intel_gpu_series_list\n')
+  write_version(intel_gpu_generation, 'intel_gpu_generation', data_helper_file)
   data_helper_file.write('};\n\n')
-  # reference more data in entry
-  data_file.write('&%s,  // more data\n' % var_name)
+
+  data_file.write('&%s,  // Intel conditions\n' % var_name)
 
 
 def write_entry(entry, total_feature_set, feature_name_prefix,
@@ -761,12 +781,10 @@ def write_entry(entry, total_feature_set, feature_name_prefix,
     var_name = 'kFeatureListFor%sEntry%d' % (unique_symbol_id, entry_id)
     features = entry['features']
     feature_set = get_feature_set(features, total_feature_set)
-    data_file.write('std::size(%s),  // features size\n' % var_name)
-    data_file.write('%s,  // features\n' % var_name)
+    data_file.write('base::span(%s),  // features\n' % var_name)
     write_features(feature_set, feature_name_prefix, var_name, data_helper_file)
   else:
-    data_file.write('0,  // feature size\n')
-    data_file.write('nullptr,  // features\n')
+    data_file.write('base::span<const int>(),  // features\n')
   # Disabled extensions
   write_disabled_extension_list('DisabledExtensions', entry_id,
                                 entry.get('disabled_extensions', None),
@@ -792,8 +810,9 @@ def write_entry(entry, total_feature_set, feature_name_prefix,
     exceptions = entry['exceptions']
     exception_count = len(exceptions)
     exception_var = 'kExceptionsForEntry' + str(entry_id)
-    data_exception_file.write('const GpuControlList::Conditions %s[%d] = {\n' %
-                              (exception_var, exception_count))
+    data_exception_file.write(
+        'static const std::array<GpuControlList::Conditions, %d> %s = {{\n' %
+        (exception_count, exception_var))
     for index in range(exception_count):
       exception = exceptions[index]
       if 'device_id' in exception and 'vendor_id' not in exception:
@@ -803,12 +822,11 @@ def write_entry(entry, total_feature_set, feature_name_prefix,
       write_conditions(entry_id, True, index, exception, unique_symbol_id,
                        data_exception_file, data_helper_file, None)
       data_exception_file.write('},\n')
-    data_exception_file.write('};\n\n')
-    data_file.write('std::size(%s),  // exceptions count\n' % exception_var)
-    data_file.write('%s,  // exceptions\n' % exception_var)
+    data_exception_file.write('}};\n\n')
+    data_file.write('base::span(%s),  // exceptions\n' % exception_var)
   else:
-    data_file.write('0,  // exceptions count\n')
-    data_file.write('nullptr,  // exceptions\n')
+    data_file.write(
+        'base::span<const GpuControlList::Conditions>(),  // exceptions\n')
   # END
   data_file.write('},\n')
 
@@ -845,22 +863,18 @@ def process_json_file(json_filepath, list_tag,
   data_file.write(_LICENSE)
   data_file.write(_DO_NOT_EDIT_WARNING)
   data_file.write('#include "%s/%s"\n\n' % (path, output_header_filename))
+  data_file.write('#include <array>\n')
   data_file.write('#include <iterator>\n\n')
-  data_file.write('#include "%s/%s"\n' % (path, output_helper_filename))
-  data_file.write('#include "%s/%s"\n\n' % (path, output_exception_filename))
+  data_file.write('#include "gpu/config/%s"\n\n' % feature_header_filename)
   data_helper_file = open(output_helper_filepath, 'w')
   data_helper_file.write(_LICENSE)
   data_helper_file.write(_DO_NOT_EDIT_WARNING)
   write_header_file_guard(data_helper_file, output_helper_filename, path, True)
-  data_helper_file.write('#include "gpu/config/%s"\n\n' %
-                         feature_header_filename)
-  data_helper_file.write('namespace gpu {\n')
   data_exception_file = open(output_exception_filepath, 'w')
   data_exception_file.write(_LICENSE)
   data_exception_file.write(_DO_NOT_EDIT_WARNING)
   write_header_file_guard(data_exception_file, output_exception_filename, path,
                           True)
-  data_exception_file.write('namespace gpu {\n')
   data_file.write('namespace gpu {\n\n')
   entry_count = 0
   ids = []
@@ -879,7 +893,12 @@ def process_json_file(json_filepath, list_tag,
         continue
     entry_count += 1
   data_file.write(
-      'const std::array<GpuControlList::Entry, %d> k%sEntries = {{\n' %
+      'const std::array<GpuControlList::Entry, %d>& Get%sEntries() {\n\n' %
+      (entry_count, list_tag))
+  data_file.write('#include "%s/%s"\n' % (path, output_helper_filename))
+  data_file.write('#include "%s/%s"\n\n' % (path, output_exception_filename))
+  data_file.write(
+      'static const std::array<GpuControlList::Entry, %d> k%sEntries = {{\n' %
       (entry_count, list_tag))
   for index in range(len(json_data['entries'])):
     entry = json_data['entries'][index]
@@ -891,12 +910,12 @@ def process_json_file(json_filepath, list_tag,
     write_entry(entry, total_features, feature_tag, unique_symbol_id,
                 data_file, data_helper_file, data_exception_file)
   data_file.write('}};\n')
+  data_file.write('return k%sEntries;\n' % list_tag)
+  data_file.write('}\n')
   data_file.write('}  // namespace gpu\n')
   data_file.close()
-  data_helper_file.write('}  // namespace gpu\n')
   write_header_file_guard(data_helper_file, output_helper_filename, path, False)
   data_helper_file.close()
-  data_exception_file.write('}  // namespace gpu\n')
   write_header_file_guard(data_exception_file, output_exception_filename, path,
                           False)
   data_exception_file.close()
@@ -905,13 +924,11 @@ def process_json_file(json_filepath, list_tag,
   data_header_file.write(_DO_NOT_EDIT_WARNING)
   write_header_file_guard(data_header_file, output_header_filename, path, True)
   data_header_file.write('#include <array>\n\n')
-  if export_tag == 'CONTENT_EXPORT ':
-    data_header_file.write('#include "content/common/content_export.h"\n')
   data_header_file.write('#include "gpu/config/gpu_control_list.h"\n\n')
   data_header_file.write('namespace gpu {\n')
-  data_header_file.write(
-      '%sextern const std::array<GpuControlList::Entry, %d> k%sEntries;\n' %
-      (export_tag, entry_count, list_tag))
+  func_dec = (
+      '%sextern const std::array<GpuControlList::Entry, %d>& Get%sEntries();\n')
+  data_header_file.write(func_dec % (export_tag, entry_count, list_tag))
   data_header_file.write('}  // namespace gpu\n')
   write_header_file_guard(data_header_file, output_header_filename, path, False)
   data_header_file.close()
@@ -982,27 +999,6 @@ def process_gpu_control_list_testing(script_dir, output_dir):
       'GpuControlTesting')
 
 
-def process_gpu_data_manager_testing(script_dir, output_dir):
-  total_features = load_software_rendering_list_features(
-      os.path.join(script_dir, 'gpu_feature_type.h'))
-  process_json_file(
-      os.path.join(output_dir, 'gpu_data_manager_testing.json'),
-      'GpuDataManagerTesting',
-      'gpu_feature_type.h',
-      total_features,
-      'GPU_FEATURE_TYPE_',
-      os.path.join(output_dir, 'gpu_data_manager_testing_autogen.h'),
-      os.path.join(output_dir, 'gpu_data_manager_testing_autogen.cc'),
-      os.path.join(output_dir,
-                   'gpu_data_manager_testing_arrays_and_structs_autogen.h'),
-      os.path.join(output_dir, 'gpu_data_manager_testing_exceptions_autogen.h'),
-      'content/browser/gpu',
-      '',
-      True,
-      None,
-      'GpuManagerTesting')
-
-
 def write_test_entry_enums(input_json_filepath, output_entry_enums_filepath,
                            path, list_tag):
   json_file = open(input_json_filepath, 'rb')
@@ -1062,15 +1058,6 @@ def main(argv):
                      'gpu_control_list_testing_entry_enums_autogen.h'),
         'gpu/config',
         'GpuControlListTesting')
-    chrome_root_dir = os.path.abspath(os.path.join(script_dir, '../../'))
-    gpu_data_manager_dir = os.path.join(chrome_root_dir, 'content/browser/gpu')
-    process_gpu_data_manager_testing(script_dir, gpu_data_manager_dir)
-    write_test_entry_enums(
-        os.path.join(gpu_data_manager_dir, 'gpu_data_manager_testing.json'),
-        os.path.join(gpu_data_manager_dir,
-                     'gpu_data_manager_testing_entry_enums_autogen.h'),
-        'content/browser/gpu',
-        'GpuDataManagerTesting')
 
 
 if __name__ == '__main__':

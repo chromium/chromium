@@ -13,6 +13,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
@@ -49,10 +50,17 @@ SystemToastView::SystemToastView(const std::u16string& text,
                                  const gfx::VectorIcon* leading_icon) {
   // Paint to layer so the background can be transparent.
   SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-  SetBackground(views::CreateThemedSolidBackground(kColorAshShieldAndBase80));
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
+
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? static_cast<ui::ColorId>(kColorAshShieldAndBase80)
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+  SetBackground(views::CreateThemedSolidBackground(background_color_id));
   SetOrientation(views::LayoutOrientation::kHorizontal);
   SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 

@@ -26,15 +26,18 @@ import androidx.fragment.app.Fragment;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.text.EmptyTextWatcher;
 
 /** Base class for Autofill editors (e.g. credit cards and profiles). */
 public abstract class AutofillEditorBase extends Fragment
-        implements SettingsPage, OnItemSelectedListener, OnTouchListener, EmptyTextWatcher {
+        implements EmbeddableSettingsPage,
+                OnItemSelectedListener,
+                OnTouchListener,
+                EmptyTextWatcher {
     /** We know which profile to edit based on the GUID stuffed in extras. */
     public static final String AUTOFILL_GUID = "guid";
 
@@ -166,10 +169,6 @@ public abstract class AutofillEditorBase extends Fragment
 
     /** Finishes the current page. */
     protected void finishPage() {
-        if (ChromeFeatureList.sSettingsSingleActivity.isEnabled()) {
-            getActivity().onBackPressed();
-        } else {
-            getActivity().finish();
-        }
+        SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
     }
 }

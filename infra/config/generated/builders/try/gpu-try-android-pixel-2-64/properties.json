@@ -45,7 +45,8 @@
           "builder": "Android Release (Pixel 2)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-try-android-pixel-2-64/targets"
     }
   },
   "$build/reclient": {

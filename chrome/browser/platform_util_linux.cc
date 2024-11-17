@@ -6,6 +6,7 @@
 
 #include <fcntl.h>
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -26,13 +27,8 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "chrome/browser/profiles/profile.h"
-// This file gets pulled in in Chromecast builds, which causes "gn check" to
-// complain as Chromecast doesn't use (or depend on) //components/dbus.
-// TODO(crbug.com/1215474): Eliminate //chrome being visible in the GN structure
-// on Chromecast and remove the nogncheck below.
-#include <optional>
-
-#include "components/dbus/thread_linux/dbus_thread_linux.h"  // nogncheck
+#include "components/dbus/thread_linux/dbus_thread_linux.h"
+#include "components/dbus/utils/check_for_service_and_start.h"
 #include "content/public/browser/browser_thread.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -44,9 +40,6 @@ using content::BrowserThread;
 namespace platform_util {
 
 namespace {
-
-const char kMethodListActivatableNames[] = "ListActivatableNames";
-const char kMethodNameHasOwner[] = "NameHasOwner";
 
 const char kFreedesktopFileManagerName[] = "org.freedesktop.FileManager1";
 const char kFreedesktopFileManagerPath[] = "/org/freedesktop/FileManager1";
@@ -85,11 +78,6 @@ class ShowItemHelper {
       bus_ = base::MakeRefCounted<dbus::Bus>(bus_options);
     }
 
-    if (!dbus_proxy_) {
-      dbus_proxy_ = bus_->GetObjectProxy(DBUS_SERVICE_DBUS,
-                                         dbus::ObjectPath(DBUS_PATH_DBUS));
-    }
-
     if (prefer_filemanager_interface_.has_value()) {
       if (prefer_filemanager_interface_.value()) {
         VLOG(1) << "Using FileManager1 to show folder";
@@ -99,7 +87,10 @@ class ShowItemHelper {
         ShowItemUsingFreedesktopPortal(profile, full_path);
       }
     } else {
-      CheckFileManagerRunning(profile, full_path);
+      dbus_utils::CheckForServiceAndStart(
+          bus_.get(), kFreedesktopFileManagerName,
+          base::BindOnce(&ShowItemHelper::CheckFileManagerRunningResponse,
+                         weak_ptr_factory_.GetWeakPtr(), profile, full_path));
     }
   }
 
@@ -108,89 +99,21 @@ class ShowItemHelper {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     // The browser process is about to exit. Clean up while we still can.
     object_proxy_ = nullptr;
-    dbus_proxy_ = nullptr;
     if (bus_)
       bus_->ShutdownOnDBusThreadAndBlock();
     bus_.reset();
   }
 
-  void CheckFileManagerRunning(Profile* profile,
-                               const base::FilePath& full_path) {
-    dbus::MethodCall method_call(DBUS_INTERFACE_DBUS, kMethodNameHasOwner);
-    dbus::MessageWriter writer(&method_call);
-    writer.AppendString(kFreedesktopFileManagerName);
-
-    dbus_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&ShowItemHelper::CheckFileManagerRunningResponse,
-                       weak_ptr_factory_.GetWeakPtr(), profile, full_path));
-  }
-
   void CheckFileManagerRunningResponse(Profile* profile,
                                        const base::FilePath& full_path,
-                                       dbus::Response* response) {
+                                       std::optional<bool> is_running) {
     if (prefer_filemanager_interface_.has_value()) {
       ShowItemInFolder(profile, full_path);
       return;
     }
 
-    bool is_running = false;
+    prefer_filemanager_interface_ = is_running.value_or(false);
 
-    if (!response) {
-      LOG(ERROR) << "Failed to call " << kMethodNameHasOwner;
-    } else {
-      dbus::MessageReader reader(response);
-      bool owned = false;
-
-      if (!reader.PopBool(&owned)) {
-        LOG(ERROR) << "Failed to read " << kMethodNameHasOwner << " resposne";
-      } else if (owned) {
-        is_running = true;
-      }
-    }
-
-    if (is_running) {
-      prefer_filemanager_interface_ = true;
-      ShowItemInFolder(profile, full_path);
-    } else {
-      CheckFileManagerActivatable(profile, full_path);
-    }
-  }
-
-  void CheckFileManagerActivatable(Profile* profile,
-                                   const base::FilePath& full_path) {
-    dbus::MethodCall method_call(DBUS_INTERFACE_DBUS,
-                                 kMethodListActivatableNames);
-    dbus_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&ShowItemHelper::CheckFileManagerActivatableResponse,
-                       weak_ptr_factory_.GetWeakPtr(), profile, full_path));
-  }
-
-  void CheckFileManagerActivatableResponse(Profile* profile,
-                                           const base::FilePath& full_path,
-                                           dbus::Response* response) {
-    if (prefer_filemanager_interface_.has_value()) {
-      ShowItemInFolder(profile, full_path);
-      return;
-    }
-
-    bool is_activatable = false;
-
-    if (!response) {
-      LOG(ERROR) << "Failed to call " << kMethodListActivatableNames;
-    } else {
-      dbus::MessageReader reader(response);
-      std::vector<std::string> names;
-      if (!reader.PopArrayOfStrings(&names)) {
-        LOG(ERROR) << "Failed to read " << kMethodListActivatableNames
-                   << " response";
-      } else if (base::Contains(names, kFreedesktopFileManagerName)) {
-        is_activatable = true;
-      }
-    }
-
-    prefer_filemanager_interface_ = is_activatable;
     ShowItemInFolder(profile, full_path);
   }
 
@@ -282,8 +205,7 @@ class ShowItemHelper {
 
   scoped_refptr<dbus::Bus> bus_;
 
-  // These proxy objects are owned by `bus_`.
-  raw_ptr<dbus::ObjectProxy> dbus_proxy_ = nullptr;
+  // This proxy object is owned by `bus_`.
   raw_ptr<dbus::ObjectProxy> object_proxy_ = nullptr;
 
   std::optional<bool> prefer_filemanager_interface_;

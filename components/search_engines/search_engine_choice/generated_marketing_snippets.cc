@@ -27,20 +27,8 @@ int GetMarketingSnippetResourceId(const std::u16string& engine_keyword) {
   if (engine_keyword == TemplateURLPrepopulateData::google.keyword) {
     return IDS_GOOGLE_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword == TemplateURLPrepopulateData::karma.keyword) {
-    return IDS_KARMA_SEARCH_DESCRIPTION;
-  }
   if (engine_keyword == TemplateURLPrepopulateData::lilo.keyword) {
     return IDS_LILO_SEARCH_DESCRIPTION;
-  }
-  if (engine_keyword == TemplateURLPrepopulateData::metager_de.keyword) {
-    return IDS_METAGER_SEARCH_DESCRIPTION;
-  }
-  if (engine_keyword == TemplateURLPrepopulateData::oceanhero.keyword) {
-    return IDS_OCEANHERO_SEARCH_DESCRIPTION;
-  }
-  if (engine_keyword == TemplateURLPrepopulateData::panda.keyword) {
-    return IDS_PANDA_SEARCH_DESCRIPTION;
   }
   if (engine_keyword == TemplateURLPrepopulateData::privacywall.keyword) {
     return IDS_PRIVACYWALL_SEARCH_DESCRIPTION;
@@ -48,10 +36,7 @@ int GetMarketingSnippetResourceId(const std::u16string& engine_keyword) {
   if (engine_keyword == TemplateURLPrepopulateData::qwant.keyword) {
     return IDS_QWANT_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword == TemplateURLPrepopulateData::seznam_cz.keyword) {
-    return IDS_SEZNAM_SEARCH_DESCRIPTION;
-  }
-  if (engine_keyword == TemplateURLPrepopulateData::seznam_sk.keyword) {
+  if (engine_keyword == TemplateURLPrepopulateData::seznam.keyword) {
     return IDS_SEZNAM_SEARCH_DESCRIPTION;
   }
   if (engine_keyword == TemplateURLPrepopulateData::yahoo.keyword) {
@@ -150,8 +135,8 @@ int GetMarketingSnippetResourceId(const std::u16string& engine_keyword) {
   if (engine_keyword == TemplateURLPrepopulateData::yahoo_uk.keyword) {
     return IDS_YAHOO_SEARCH_DESCRIPTION;
   }
-  if (engine_keyword == TemplateURLPrepopulateData::you.keyword) {
-    return IDS_YOU_SEARCH_DESCRIPTION;
+  if (engine_keyword == TemplateURLPrepopulateData::yep.keyword) {
+    return IDS_YEP_SEARCH_DESCRIPTION;
   }
   return -1;
 }

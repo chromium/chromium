@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import '//resources/ash/common/cr_elements/cr_shared_style.css.js';
-import '//resources/ash/common/network/network_shared.css.js';
+import '../network/network_shared.css.js';
 
 import {I18nMixin} from '//resources/ash/common/cr_elements/i18n_mixin.js';
 import {assertNotReached} from '//resources/js/assert.js';

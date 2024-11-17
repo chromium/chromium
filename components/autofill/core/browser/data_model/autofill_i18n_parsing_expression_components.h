@@ -8,6 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill::i18n_model_definition {
@@ -92,7 +93,9 @@ class DecompositionCascade : public AutofillParsingProcess {
 
  private:
   const std::string_view condition_regex_;
-  const base::span<const AutofillParsingProcess* const> alternatives_;
+  // TODO(367764863) Rewrite to base::raw_span.
+  RAW_PTR_EXCLUSION const base::span<const AutofillParsingProcess* const>
+      alternatives_;
 };
 
 constexpr DecompositionCascade::~DecompositionCascade() = default;
@@ -146,7 +149,8 @@ class ExtractParts : public AutofillParsingProcess {
 
  private:
   const std::string_view condition_regex_;
-  const base::span<const ExtractPart* const> pieces_;
+  // TODO(367764863) Rewrite to base::raw_span
+  RAW_PTR_EXCLUSION const base::span<const ExtractPart* const> pieces_;
 };
 
 constexpr ExtractParts::~ExtractParts() = default;

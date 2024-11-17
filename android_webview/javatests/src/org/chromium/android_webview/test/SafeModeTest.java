@@ -168,7 +168,7 @@ public class SafeModeTest extends AwParameterizedTest {
     private static final int JOB_ID = TaskIds.WEBVIEW_VARIATIONS_SEED_FETCH_JOB_ID;
 
     // A test JobScheduler which only holds one job, and never does anything with it.
-    private class TestJobScheduler extends JobScheduler {
+    private static class TestJobScheduler extends JobScheduler {
         public JobInfo mJob;
         public QueueContainer mQueueContainer = new QueueContainer();
 
@@ -253,7 +253,7 @@ public class SafeModeTest extends AwParameterizedTest {
 
     // A test VariationsSeedFetcher which doesn't actually download seeds, but verifies the request
     // parameters.
-    private class TestVariationsSeedFetcher extends VariationsSeedFetcher {
+    private static class TestVariationsSeedFetcher extends VariationsSeedFetcher {
         private static final String SAVED_VARIATIONS_SEED_SERIAL_NUMBER = "savedSerialNumber";
 
         public int fetchResult;
@@ -660,7 +660,7 @@ public class SafeModeTest extends AwParameterizedTest {
         }
     }
 
-    private class TestNonEmbeddedSafeModeAction implements NonEmbeddedSafeModeAction {
+    private static class TestNonEmbeddedSafeModeAction implements NonEmbeddedSafeModeAction {
         private int mActivatedCount;
         private int mDeactivatedCount;
         private final String mId;

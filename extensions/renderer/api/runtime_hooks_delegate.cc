@@ -46,7 +46,8 @@ void GetExtensionId(v8::Local<v8::Name> property_name,
                     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
+  v8::Local<v8::Context> context =
+      info.Holder()->GetCreationContextChecked(isolate);
 
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
   // This could potentially be invoked after the script context is removed
@@ -63,7 +64,8 @@ void GetDynamicId(v8::Local<v8::Name> property_name,
                   const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->GetCreationContextChecked();
+  v8::Local<v8::Context> context =
+      info.Holder()->GetCreationContextChecked(isolate);
 
   ScriptContext* script_context = GetScriptContextFromV8Context(context);
   // This could potentially be invoked after the script context is removed
@@ -98,7 +100,8 @@ void GetBackgroundPageCallback(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.This()->GetCreationContextChecked();
+  v8::Local<v8::Context> context =
+      info.This()->GetCreationContextChecked(isolate);
 
   // Custom callbacks are called with the arguments of the callback function and
   // the response from the API. Since the custom callback here handles all the
@@ -510,9 +513,7 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
     if (!script_context->module_system()
              ->Require("fileEntryBindingUtil")
              .ToLocal(&file_entry_binding_util)) {
-      NOTREACHED_IN_MIGRATION();
-      // Abort, and consider the request handled.
-      return RequestResult(RequestResult::HANDLED);
+      NOTREACHED();
     }
 
     v8::Local<v8::Value> get_bind_directory_entry_callback_value;
@@ -520,14 +521,11 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
              ->Get(v8_context, gin::StringToSymbol(
                                    isolate, "getBindDirectoryEntryCallback"))
              .ToLocal(&get_bind_directory_entry_callback_value)) {
-      NOTREACHED_IN_MIGRATION();
-      return RequestResult(RequestResult::THROWN);
+      NOTREACHED();
     }
 
     if (!get_bind_directory_entry_callback_value->IsFunction()) {
-      NOTREACHED_IN_MIGRATION();
-      // Abort, and consider the request handled.
-      return RequestResult(RequestResult::HANDLED);
+      NOTREACHED();
     }
 
     v8::Local<v8::Function> get_bind_directory_entry_callback =
@@ -540,14 +538,11 @@ RequestResult RuntimeHooksDelegate::HandleGetPackageDirectoryEntryCallback(
   }  // End modules enabled scope.
   v8::Local<v8::Value> callback;
   if (!maybe_custom_callback.ToLocal(&callback)) {
-    NOTREACHED_IN_MIGRATION();
-    return RequestResult(RequestResult::THROWN);
+    NOTREACHED();
   }
 
   if (!callback->IsFunction()) {
-    NOTREACHED_IN_MIGRATION();
-    // Abort, and consider the request handled.
-    return RequestResult(RequestResult::HANDLED);
+    NOTREACHED();
   }
 
   RequestResult result(RequestResult::NOT_HANDLED);

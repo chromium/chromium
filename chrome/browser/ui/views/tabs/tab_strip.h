@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point.h"
@@ -39,6 +40,7 @@
 #include "ui/views/widget/widget_observer.h"
 
 class Tab;
+class TabGroup;
 class TabHoverCardController;
 class TabStripController;
 class TabStripObserver;
@@ -190,10 +192,13 @@ class TabStrip : public views::View,
     return tab_container_->GetGroupViews(id)->header();
   }
 
+  // Returns the TabGroup with ID |id|.
+  TabGroup* GetTabGroup(const tab_groups::TabGroupId& id) const override;
+
   // Returns the index of the specified view in the model coordinate system, or
   // std::nullopt if view is closing not a tab, or is not in this tabstrip.
   // TODO(tbergquist): This should return an optional<size_t>.
-  std::optional<int> GetModelIndexOf(const TabSlotView* view) const;
+  std::optional<int> GetModelIndexOf(const TabSlotView* view) const override;
 
   // Gets the number of Tabs in the tab strip.
   int GetTabCount() const;
@@ -226,6 +231,9 @@ class TabStrip : public views::View,
 
   // Gets the default focusable child view in the TabStrip.
   views::View* GetDefaultFocusableChild();
+
+  // The browser window interface for the hosting browser.
+  BrowserWindowInterface* GetBrowserWindowInterface();
 
   // TabContainerController:
   bool IsValidModelIndex(int index) const override;
@@ -267,7 +275,7 @@ class TabStrip : public views::View,
   void NotifyTabGroupEditorBubbleClosed() override;
   void ShowContextMenuForTab(Tab* tab,
                              const gfx::Point& p,
-                             ui::MenuSourceType source_type) override;
+                             ui::mojom::MenuSourceType source_type) override;
   bool IsActiveTab(const Tab* tab) const override;
   bool IsTabSelected(const Tab* tab) const override;
   bool IsTabPinned(const Tab* tab) const override;
@@ -312,7 +320,7 @@ class TabStrip : public views::View,
   const Browser* GetBrowser() const override;
   int GetInactiveTabWidth() const override;
   bool IsFrameCondensed() const override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool IsLockedForOnTask() override;
 #endif
 
@@ -351,9 +359,10 @@ class TabStrip : public views::View,
    public:
     explicit TabContextMenuController(TabStrip* parent);
     // views::ContextMenuController:
-    void ShowContextMenuForViewImpl(views::View* source,
-                                    const gfx::Point& point,
-                                    ui::MenuSourceType source_type) override;
+    void ShowContextMenuForViewImpl(
+        views::View* source,
+        const gfx::Point& point,
+        ui::mojom::MenuSourceType source_type) override;
 
    private:
     const raw_ptr<TabStrip> parent_;

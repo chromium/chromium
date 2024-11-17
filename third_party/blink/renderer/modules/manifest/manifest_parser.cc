@@ -48,6 +48,7 @@
 #include "third_party/liburlpattern/parse.h"
 #include "third_party/liburlpattern/pattern.h"
 #include "third_party/liburlpattern/utils.h"
+#include "url/gurl.h"
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
@@ -88,7 +89,7 @@ bool VerifyFiles(const Vector<mojom::blink::ManifestFileFilterPtr>& files) {
 // Determines whether |url| is within scope of |scope|.
 bool URLIsWithinScope(const KURL& url, const KURL& scope) {
   return SecurityOrigin::AreSameOrigin(url, scope) &&
-         url.GetPath().StartsWith(scope.GetPath());
+         url.GetPath().ToString().StartsWith(scope.GetPath());
 }
 
 bool IsHostValidForScopeExtension(String host) {
@@ -130,14 +131,28 @@ FileHandlerLaunchTypeFromString(const std::string& launch_type) {
   return std::nullopt;
 }
 
+bool IsDefaultManifest(const mojom::blink::Manifest& manifest,
+                       const KURL& document_url) {
+  if (manifest.has_custom_id || manifest.has_valid_specified_start_url) {
+    return false;
+  }
+  auto default_manifest = mojom::blink::Manifest::New();
+  default_manifest->start_url = document_url;
+  KURL default_id = document_url;
+  default_id.RemoveFragmentIdentifier();
+  default_manifest->id = default_id;
+  default_manifest->scope = KURL(document_url.BaseAsString().ToString());
+  return manifest == *default_manifest;
+}
+
 static const char kUMAIdParseResult[] = "Manifest.ParseIdResult";
 
-// Record that the Manifest was successfully parsed. If it is an empty
+// Record that the Manifest was successfully parsed. If it is a default
 // Manifest, it will recorded as so and nothing will happen. Otherwise, the
 // presence of each properties will be recorded.
-void ParseSucceeded(const mojom::blink::ManifestPtr& manifest) {
-  auto empty_manifest = mojom::blink::Manifest::New();
-  if (manifest == empty_manifest) {
+void ParseSucceeded(const mojom::blink::ManifestPtr& manifest,
+                    const KURL& document_url) {
+  if (IsDefaultManifest(*manifest, document_url)) {
     return;
   }
 
@@ -201,10 +216,11 @@ std::optional<std::vector<liburlpattern::Part>> ParsePatternInitField(
   return std::nullopt;
 }
 
-String EscapePatternString(String input) {
+String EscapePatternString(const StringView& input) {
   std::string result;
   result.reserve(input.length());
-  liburlpattern::EscapePatternStringAndAppend(input.Utf8(), result);
+  StringUTF8Adaptor utf8(input);
+  liburlpattern::EscapePatternStringAndAppend(utf8.AsStringView(), result);
   return String(result);
 }
 
@@ -366,7 +382,7 @@ bool ManifestParser::Parse() {
 
   manifest_->version = ParseVersion(root_object.get());
 
-  ParseSucceeded(manifest_);
+  ParseSucceeded(manifest_, document_url_);
   base::UmaHistogramEnumeration(kUMAIdParseResult, id_parse_result);
 
   return has_comments;
@@ -546,8 +562,7 @@ KURL ManifestParser::ParseURL(const JSONObject* object,
       return resolved;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return KURL();
+  NOTREACHED();
 }
 
 template <typename Enum>
@@ -687,14 +702,14 @@ KURL ManifestParser::ParseScope(const JSONObject* object,
   DCHECK(default_value.IsValid());
 
   if (scope.IsEmpty()) {
-    return KURL(default_value.BaseAsString());
+    return KURL(default_value.BaseAsString().ToString());
   }
 
   if (!URLIsWithinScope(default_value, scope)) {
     AddErrorInfo(
         "property 'scope' ignored. Start url should be within scope "
         "of scope URL.");
-    return KURL(default_value.BaseAsString());
+    return KURL(default_value.BaseAsString().ToString());
   }
 
   scope.RemoveFragmentIdentifier();
@@ -2356,7 +2371,7 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
     // protocol, hostname, or port.
     String default_username;
     if (!init.IsAbsolute()) {
-      default_username = base_url.User();
+      default_username = base_url.User().ToString();
     }
     std::optional<std::vector<liburlpattern::Part>> part_list =
         ParsePatternInitField(init.username, default_username);
@@ -2375,7 +2390,7 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
     // protocol, hostname, port, or username.
     String default_password;
     if (!init.IsAbsolute() && !init.username.has_value()) {
-      default_password = base_url.Pass();
+      default_password = base_url.Pass().ToString();
     }
     std::optional<std::vector<liburlpattern::Part>> part_list =
         ParsePatternInitField(init.password, default_password);
@@ -2393,7 +2408,7 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
     // Only fall back to baseURL hostname if init does not contain protocol.
     String default_hostname;
     if (!init.protocol.has_value()) {
-      default_hostname = base_url.Host();
+      default_hostname = base_url.Host().ToString();
     }
     std::optional<std::vector<liburlpattern::Part>> part_list =
         ParsePatternInitField(init.hostname, default_hostname);
@@ -2455,7 +2470,7 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
     // protocol, hostname, port, or pathname.
     String default_search;
     if (!init.IsAbsolute() && !init.pathname.has_value()) {
-      default_search = base_url.Query();
+      default_search = base_url.Query().ToString();
     }
     std::optional<std::vector<liburlpattern::Part>> part_list =
         ParsePatternInitField(init.search, default_search);
@@ -2475,7 +2490,7 @@ std::optional<SafeUrlPattern> ManifestParser::ParseScopePattern(
     String default_hash;
     if (!init.IsAbsolute() && !init.pathname.has_value() &&
         !init.search.has_value()) {
-      default_hash = base_url.FragmentIdentifier();
+      default_hash = base_url.FragmentIdentifier().ToString();
     }
     std::optional<std::vector<liburlpattern::Part>> part_list =
         ParsePatternInitField(init.hash, default_hash);

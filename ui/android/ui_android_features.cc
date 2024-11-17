@@ -15,7 +15,7 @@ BASE_FEATURE(kConvertTrackpadEventsToMouse,
 
 BASE_FEATURE(kDeprecatedExternalPickerFunction,
              "DeprecatedExternalPickerFunction",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMirrorBackForwardGesturesInRTL,
              "MirrorBackForwardGesturesInRTL",
@@ -41,4 +41,11 @@ BASE_FEATURE(kSendTouchMovesToEventForwarderObservers,
              "SendTouchMovesToEventForwarderObservers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCheckIntentCallerPermission,
+             "CheckIntentCallerPermission",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDisablePhotoPickerForVideoCapture,
+             "DisablePhotoPickerForVideoCapture",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 }  // namespace ui

@@ -54,7 +54,7 @@ class CONTENT_EXPORT FirstPartySetParser {
   // this ensures that the origin is non-opaque, is HTTPS, and has a registered
   // domain. Returns std::nullopt in case of any error.
   static std::optional<net::SchemefulSite> CanonicalizeRegisteredDomain(
-      const std::string_view origin_string,
+      std::string_view origin_string,
       bool emit_errors);
 
   // Parses two lists of First-Party Sets from `policy` using the "replacements"

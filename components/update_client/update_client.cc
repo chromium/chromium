@@ -187,11 +187,10 @@ void UpdateClientImpl::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-void UpdateClientImpl::NotifyObservers(Observer::Events event,
-                                       const std::string& id) {
+void UpdateClientImpl::NotifyObservers(const CrxUpdateItem& item) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& observer : observer_list_) {
-    observer.OnEvent(event, id);
+    observer.OnEvent(item);
   }
 }
 

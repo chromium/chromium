@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/threading/platform_thread.h"
 #include "gpu/gpu_export.h"
 #include "gpu/ipc/common/surface_handle.h"
@@ -19,10 +21,19 @@ class WaitableEvent;
 
 namespace gpu {
 
+// Used to observe the destruction of GpuMemoryBufferManager.
+class GPU_EXPORT GpuMemoryBufferManagerObserver : public base::CheckedObserver {
+ public:
+  virtual void OnGpuMemoryBufferManagerDestroyed() = 0;
+
+ protected:
+  ~GpuMemoryBufferManagerObserver() override = default;
+};
+
 class GPU_EXPORT GpuMemoryBufferManager {
  public:
-  GpuMemoryBufferManager() = default;
-  virtual ~GpuMemoryBufferManager() = default;
+  GpuMemoryBufferManager();
+  virtual ~GpuMemoryBufferManager();
 
   // Creates a GpuMemoryBuffer that can be shared with another process. It can
   // be called on any thread. If |shutdown_event| is specified, then the browser
@@ -40,9 +51,19 @@ class GPU_EXPORT GpuMemoryBufferManager {
       gfx::GpuMemoryBufferHandle buffer_handle,
       base::UnsafeSharedMemoryRegion memory_region,
       base::OnceCallback<void(bool)> callback) = 0;
-  virtual bool CopyGpuMemoryBufferSync(
-      gfx::GpuMemoryBufferHandle buffer_handle,
-      base::UnsafeSharedMemoryRegion memory_region) = 0;
+
+  // Checks if the GpuMemoryBufferManager is connected to the GPU Service
+  // Currently on GPU process crash the connection isn't restored.
+  virtual bool IsConnected() = 0;
+
+  // Implementations of GpuMemoryBufferManager can override below methods if
+  // they want to add/remove observers to notify its destruction.
+  virtual void AddObserver(GpuMemoryBufferManagerObserver* observer);
+  virtual void RemoveObserver(GpuMemoryBufferManagerObserver* observer);
+
+ protected:
+  void NotifyObservers();
+  base::ObserverList<GpuMemoryBufferManagerObserver> observers_;
 };
 
 }  // namespace gpu

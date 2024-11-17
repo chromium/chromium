@@ -300,8 +300,7 @@ class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (ash::IsSigninBrowserContext(profile) ||
-        ash::IsLockScreenAppBrowserContext(profile)) {
+    if (ash::IsSigninBrowserContext(profile)) {
       return nullptr;
     }
 
@@ -404,10 +403,18 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   // Add an item to holding space.
   base::FilePath src = GetPredefinedTestFile(/*index=*/0);
   auto* item = AddHoldingSpaceItem(browser()->profile(), src);
+  std::string item_id = item->id();
+
+  std::vector<const HoldingSpaceItem*> items_excluding_suggestions;
+  for (const auto& candidate : holding_space_model->items()) {
+    if (!HoldingSpaceItem::IsSuggestionType(candidate->type())) {
+      items_excluding_suggestions.emplace_back(candidate.get());
+    }
+  }
 
   // Verify the item exists in the model.
-  ASSERT_EQ(holding_space_model->items().size(), 1u);
-  EXPECT_EQ(holding_space_model->items()[0].get(), item);
+  ASSERT_EQ(items_excluding_suggestions.size(), 1u);
+  EXPECT_EQ(items_excluding_suggestions.front(), item);
   EXPECT_EQ(item->file().file_path, src);
 
   base::FilePath dst = GetPredefinedTestFile(/*index=*/1);
@@ -428,10 +435,17 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   drivefs_delegate()->OnFilesChanged(std::move(changes));
   drivefs_delegate().FlushForTesting();
 
+  items_excluding_suggestions.clear();
+  for (const auto& candidate : holding_space_model->items()) {
+    if (!HoldingSpaceItem::IsSuggestionType(candidate->type())) {
+      items_excluding_suggestions.emplace_back(candidate.get());
+    }
+  }
+
   // Expect the holding space item to have been updated in place to reflect
   // the new location of its backing file.
-  ASSERT_EQ(holding_space_model->items().size(), 1u);
-  EXPECT_EQ(holding_space_model->items()[0].get(), item);
+  ASSERT_EQ(items_excluding_suggestions.size(), 1u);
+  EXPECT_EQ(items_excluding_suggestions.front(), item);
   EXPECT_EQ(item->file().file_path, dst);
 
   std::swap(src, dst);
@@ -453,14 +467,22 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   drivefs_delegate().FlushForTesting();
 
   // Because `src` was deleted, the holding space item should be removed.
-  WaitForItemRemovalById(item->id());
+  WaitForItemRemovalById(item_id);
 
   // Add another holding space item, again pointing to `src`.
   item = AddHoldingSpaceItem(browser()->profile(), src);
+  item_id = item->id();
+
+  items_excluding_suggestions.clear();
+  for (const auto& candidate : holding_space_model->items()) {
+    if (!HoldingSpaceItem::IsSuggestionType(candidate->type())) {
+      items_excluding_suggestions.emplace_back(candidate.get());
+    }
+  }
 
   // Verify the item exists in the model.
-  ASSERT_EQ(holding_space_model->items().size(), 1u);
-  EXPECT_EQ(holding_space_model->items()[0].get(), item);
+  ASSERT_EQ(items_excluding_suggestions.size(), 1u);
+  EXPECT_EQ(items_excluding_suggestions.front(), item);
   EXPECT_EQ(item->file().file_path, src);
 
   // Prep a batch of `changes` to indicate that `src` has been deleted and that
@@ -481,14 +503,22 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   // Because `src` was deleted and cannot be determined to refer to the same
   // document that was created at `dst`, the holding space item should be
   // removed.
-  WaitForItemRemovalById(item->id());
+  WaitForItemRemovalById(item_id);
 
   // Add another holding space item, again pointing to `src`.
   item = AddHoldingSpaceItem(browser()->profile(), src);
+  item_id = item->id();
+
+  items_excluding_suggestions.clear();
+  for (const auto& candidate : holding_space_model->items()) {
+    if (!HoldingSpaceItem::IsSuggestionType(candidate->type())) {
+      items_excluding_suggestions.emplace_back(candidate.get());
+    }
+  }
 
   // Verify the item exists in the model.
-  ASSERT_EQ(holding_space_model->items().size(), 1u);
-  EXPECT_EQ(holding_space_model->items()[0].get(), item);
+  ASSERT_EQ(items_excluding_suggestions.size(), 1u);
+  EXPECT_EQ(items_excluding_suggestions.front(), item);
   EXPECT_EQ(item->file().file_path, src);
 
   // Prep a batch of `changes` to indicate that `src` has moved to `dst` and has
@@ -513,16 +543,24 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
 
   // Because the document was ultimately deleted, the holding space item should
   // be removed.
-  WaitForItemRemovalById(item->id());
+  WaitForItemRemovalById(item_id);
 
   // Add another holding space item, pointing to `src` in `src_dir`.
   base::FilePath src_dir = GetTestMountPoint().Append("src/");
   src = CreateTextFile(src_dir, /*relative_path=*/std::nullopt);
   item = AddHoldingSpaceItem(browser()->profile(), src);
+  item_id = item->id();
+
+  items_excluding_suggestions.clear();
+  for (const auto& candidate : holding_space_model->items()) {
+    if (!HoldingSpaceItem::IsSuggestionType(candidate->type())) {
+      items_excluding_suggestions.emplace_back(candidate.get());
+    }
+  }
 
   // Verify the item exists in the model.
-  ASSERT_EQ(holding_space_model->items().size(), 1u);
-  EXPECT_EQ(holding_space_model->items()[0].get(), item);
+  ASSERT_EQ(items_excluding_suggestions.size(), 1u);
+  EXPECT_EQ(items_excluding_suggestions.front(), item);
   EXPECT_EQ(item->file().file_path, src);
 
   base::FilePath dst_dir = GetTestMountPoint().Append("dst/");
@@ -546,10 +584,17 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
   drivefs_delegate()->OnFilesChanged(std::move(changes));
   drivefs_delegate().FlushForTesting();
 
+  items_excluding_suggestions.clear();
+  for (const auto& candidate : holding_space_model->items()) {
+    if (!HoldingSpaceItem::IsSuggestionType(candidate->type())) {
+      items_excluding_suggestions.emplace_back(candidate.get());
+    }
+  }
+
   // Expect the holding space item to have been updated in place to reflect
   // the new location of its backing file.
-  ASSERT_EQ(holding_space_model->items().size(), 1u);
-  EXPECT_EQ(holding_space_model->items()[0].get(), item);
+  ASSERT_EQ(items_excluding_suggestions.size(), 1u);
+  EXPECT_EQ(items_excluding_suggestions.front(), item);
   EXPECT_EQ(item->file().file_path, dst);
 
   std::swap(src_dir, dst_dir);
@@ -566,7 +611,7 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceKeyedServiceBrowserTest,
 
   // Because the parent directory in which the holding space item's backing file
   // is contained has been deleted, the holding space item should be removed.
-  WaitForItemRemovalById(item->id());
+  WaitForItemRemovalById(item_id);
 }
 
 // Verifies that drive files pinned to holding space are pinned for offline use.

@@ -42,6 +42,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.SyncService;
 
 /**
@@ -144,7 +145,7 @@ public class FirstRunFlowSequencerTest {
     @Feature({"FirstRun"})
     @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testFlowOneChildAccount() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -169,7 +170,7 @@ public class FirstRunFlowSequencerTest {
     @Feature({"FirstRun"})
     @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testFlowOneChildAccount_historySyncEnabled() {
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -195,7 +196,7 @@ public class FirstRunFlowSequencerTest {
     @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testFlowOneChildAccount_historySyncManagedByCustodian_historySyncEnabled() {
         when(mHistorySyncHelperMock.isHistorySyncDisabledByCustodian()).thenReturn(true);
-        mAccountManagerTestRule.addAccount(AccountManagerTestRule.TEST_CHILD_ACCOUNT);
+        mAccountManagerTestRule.addAccount(TestAccounts.CHILD_ACCOUNT);
         setDelegateFactory(false);
         HistogramWatcher numberOfAccountsHistogram =
                 HistogramWatcher.newSingleRecordWatcher(

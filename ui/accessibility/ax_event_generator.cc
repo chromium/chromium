@@ -1481,9 +1481,7 @@ AXEventGenerator::Event ParseGeneratedEvent(const char* attribute) {
   if (MaybeParseGeneratedEvent(attribute, &event))
     return event;
 
-  LOG(ERROR) << "Could not parse: " << attribute;
-  NOTREACHED_IN_MIGRATION();
-  return AXEventGenerator::Event::NONE;
+  NOTREACHED() << "Could not parse: " << attribute;
 }
 
 }  // namespace ui

@@ -35,10 +35,10 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/saved_tab_groups/features.h"
-#include "components/saved_tab_groups/pref_names.h"
-#include "components/saved_tab_groups/saved_tab_group_tab.h"
-#include "components/saved_tab_groups/utils.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/pref_names.h"
+#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/public/utils.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -63,6 +63,14 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils,
                                       kToggleGroupPinStateMenuItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils, kTabsTitleItem);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(SavedTabGroupUtils, kTab);
+
+bool SavedTabGroupUtils::IsEnabledForProfile(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+
+  return SavedTabGroupUtils::GetServiceForProfile(profile) != nullptr;
+}
 
 // static
 TabGroupSyncService* SavedTabGroupUtils::GetServiceForProfile(
@@ -193,7 +201,6 @@ void SavedTabGroupUtils::DeleteSavedGroup(const Browser* browser,
   }
 }
 
-// See comment for TabStripModelDelegate::ConfirmGroupDeletion
 void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
     Browser* browser,
     DeletionDialogController::DialogType type,
@@ -241,7 +248,8 @@ void SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
   }
 }
 
-void SavedTabGroupUtils::OpenUrlToBrowser(Browser* browser, const GURL& url) {
+void SavedTabGroupUtils::OpenUrlInNewUngroupedTab(Browser* browser,
+                                                  const GURL& url) {
   NavigateParams params(browser, url, ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.started_from_context_menu = true;
@@ -404,7 +412,7 @@ SavedTabGroupUtils::CreateSavedTabGroupContextMenuModel(
 
         base::BindRepeating(
             [](Browser* browser, const GURL& url, int event_flags) {
-              SavedTabGroupUtils::OpenUrlToBrowser(browser, url);
+              SavedTabGroupUtils::OpenUrlInNewUngroupedTab(browser, url);
             },
             browser, tab.url()));
   }
@@ -442,6 +450,7 @@ content::NavigationHandle* SavedTabGroupUtils::OpenTabInBrowser(
   params.browser = browser;
   params.tabstrip_index = tabstrip_index.value_or(params.tabstrip_index);
   params.group = local_group_id;
+  params.navigation_initiated_from_sync = true;
   base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
   return handle.get();
 }
@@ -494,7 +503,7 @@ std::vector<content::WebContents*> SavedTabGroupUtils::GetWebContentsesInGroup(
 }
 
 // static
-std::vector<tabs::TabModel*> SavedTabGroupUtils::GetTabsInGroup(
+std::vector<tabs::TabInterface*> SavedTabGroupUtils::GetTabsInGroup(
     tab_groups::TabGroupId group_id) {
   Browser* browser = GetBrowserWithTabGroupId(group_id);
   if (!browser || !browser->tab_strip_model() ||
@@ -504,7 +513,7 @@ std::vector<tabs::TabModel*> SavedTabGroupUtils::GetTabsInGroup(
 
   const gfx::Range local_tab_group_indices =
       SavedTabGroupUtils::GetTabGroupWithId(group_id)->ListTabs();
-  std::vector<tabs::TabModel*> local_tabs;
+  std::vector<tabs::TabInterface*> local_tabs;
   for (size_t index = local_tab_group_indices.start();
        index < local_tab_group_indices.end(); index++) {
     local_tabs.push_back(browser->tab_strip_model()->GetTabAtIndex(index));
@@ -570,11 +579,13 @@ void SavedTabGroupUtils::MoveGroupToExistingWindow(
   CHECK(tab_group_service);
 
   // Find the grouped tabs in `source_browser`.
-  gfx::Range tabs_to_move = source_browser->tab_strip_model()
-                                ->group_model()
-                                ->GetTabGroup(local_group_id)
-                                ->ListTabs();
+  TabGroup* tab_group =
+      source_browser->tab_strip_model()->group_model()->GetTabGroup(
+          local_group_id);
+  gfx::Range tabs_to_move = tab_group->ListTabs();
   int num_tabs_to_move = tabs_to_move.length();
+
+  tab_groups::TabGroupVisualData visual_data = *tab_group->visual_data();
 
   std::vector<int> tab_indicies_to_move(num_tabs_to_move);
   std::iota(tab_indicies_to_move.begin(), tab_indicies_to_move.end(),
@@ -597,6 +608,13 @@ void SavedTabGroupUtils::MoveGroupToExistingWindow(
   // Add group the tabs using the same local id, and reconnect everything.
   target_browser->tab_strip_model()->AddToGroupForRestore(tabs_to_add_to_group,
                                                           local_group_id);
+
+  // Manually set the visual data because we have moved the group to a new
+  // browser which will give it a default color and title.
+  target_browser->tab_strip_model()
+      ->group_model()
+      ->GetTabGroup(local_group_id)
+      ->SetVisualData(visual_data);
 }
 
 void SavedTabGroupUtils::FocusFirstTabOrWindowInOpenGroup(

@@ -23,8 +23,6 @@ import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.PostTask;
-import org.chromium.base.task.TaskTraits;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -82,16 +80,10 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
     @Override
     public ContentProvider instantiateProvider(@NonNull ClassLoader cl, @NonNull String className)
             throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        // Android always initializes all ContentProviders when it initializes the Application, so
-        // post a task to set the reason asynchronously which will run after Android creates any
-        // other components during the launch.
+        // Android always initializes all ContentProviders when it initializes the Application,
+        // however the process could be started for other reasons. Set to pending for now.
         if (sProcessCreationReason == ProcessCreationReason.UNINITIALIZED) {
             sProcessCreationReason = ProcessCreationReason.PENDING;
-            PostTask.postTask(
-                    TaskTraits.UI_DEFAULT,
-                    () -> {
-                        setProcessCreationReason(ProcessCreationReason.CONTENT_PROVIDER);
-                    });
         }
         return super.instantiateProvider(getComponentClassLoader(cl, className), className);
     }
@@ -129,6 +121,14 @@ public class SplitCompatAppComponentFactory extends AppComponentFactory {
     }
 
     public static @ProcessCreationReason int getProcessCreationReason() {
+        // Determining the ProcessCreationReason is delayed until the first use. Previously it was
+        // set in a task immediately posted from instantiateProvider() because content providers are
+        // always instantiated early. However, since Android 14+ on Pixel 6+ such task happens to
+        // run before other components instantiate. This does not allow the task to discover other
+        // creation reasons.
+        if (sProcessCreationReason <= ProcessCreationReason.PENDING) {
+            setProcessCreationReason(ProcessCreationReason.CONTENT_PROVIDER);
+        }
         return sProcessCreationReason;
     }
 

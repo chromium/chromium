@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.ui;
 
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -25,6 +24,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.TraceEvent;
@@ -43,6 +43,7 @@ import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
+import org.chromium.chrome.browser.automotivetoolbar.AutomotiveBackButtonToolbarCoordinator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.AddToBookmarksToolbarButtonController;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
@@ -106,7 +107,6 @@ import org.chromium.chrome.browser.paint_preview.DemoPaintPreview;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerLauncher;
 import org.chromium.chrome.browser.pdf.PdfPage;
-import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_insights.PriceInsightsButtonController;
 import org.chromium.chrome.browser.price_tracking.CurrentTabPriceTrackingStateSupplier;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingButtonController;
@@ -159,7 +159,6 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinatorFactory;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
@@ -178,8 +177,10 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.ExpandedSheetHelper;
 import org.chromium.components.browser_ui.bottomsheet.ManagedBottomSheetController;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncherSupplier;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibilityDelegate;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -270,7 +271,6 @@ public class RootUiCoordinator
 
     @Nullable private final Callback<Boolean> mOnOmniboxFocusChangedListener;
     protected ToolbarManager mToolbarManager;
-    protected Supplier<Boolean> mCanAnimateBrowserControls;
     private ModalDialogManagerObserver mModalDialogManagerObserver;
 
     private BottomSheetManager mBottomSheetManager;
@@ -295,7 +295,7 @@ public class RootUiCoordinator
     protected final CallbackController mCallbackController;
     protected final BrowserControlsManager mBrowserControlsManager;
     private BrowserControlsStateProvider.Observer mBrowserControlsObserver;
-    protected ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+    protected final ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     protected final OneshotSupplier<TabSwitcher> mTabSwitcherSupplier;
     protected final OneshotSupplier<TabSwitcher> mIncognitoTabSwitcherSupplier;
     @Nullable protected ManagedMessageDispatcher mMessageDispatcher;
@@ -347,7 +347,9 @@ public class RootUiCoordinator
     private @Nullable BoardingPassController mBoardingPassController;
     private final @Nullable ObservableSupplier<Integer> mOverviewColorSupplier;
     private final @Nullable View mBaseChromeLayout;
+    private final @NonNull EdgeToEdgeStateProvider mEdgeToEdgeStateProvider;
     private CommerceBottomSheetContentCoordinator mCommerceBottomSheetContentCoordinator;
+    private AutomotiveBackButtonToolbarCoordinator mAutomotiveBackButtonToolbarCoordinator;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -394,6 +396,8 @@ public class RootUiCoordinator
      * @param baseChromeLayout The base view hosting Chrome that certain views (e.g. the omnibox
      *     suggestion list) will position themselves relative to. If null, the content view will be
      *     used.
+     * @param edgeToEdgeStateProvider Provides the edge-to-edge state and allows for requests to
+     *     draw edge-to-edge.
      */
     public RootUiCoordinator(
             @NonNull AppCompatActivity activity,
@@ -435,7 +439,8 @@ public class RootUiCoordinator
             @Nullable BackPressManager backPressManager,
             @Nullable Bundle savedInstanceState,
             @Nullable ObservableSupplier<Integer> overviewColorSupplier,
-            @Nullable View baseChromeLayout) {
+            @Nullable View baseChromeLayout,
+            @NonNull EdgeToEdgeStateProvider edgeToEdgeStateProvider) {
         mCallbackController = new CallbackController();
         mActivity = activity;
         mWindowAndroid = windowAndroid;
@@ -561,6 +566,7 @@ public class RootUiCoordinator
                 new ExpandedSheetHelperImpl(mModalDialogManagerSupplier, getTabObscuringHandler());
         mOverviewColorSupplier = overviewColorSupplier;
         mBaseChromeLayout = baseChromeLayout;
+        mEdgeToEdgeStateProvider = edgeToEdgeStateProvider;
         mBottomControlsStacker = new BottomControlsStacker(mBrowserControlsManager);
     }
 
@@ -582,9 +588,9 @@ public class RootUiCoordinator
     }
 
     /**
-     * @return The {@link DesktopWindowStateProvider} instance associated with the current activity.
+     * @return The {@link DesktopWindowStateManager} instance associated with the current activity.
      */
-    public @Nullable DesktopWindowStateProvider getDesktopWindowStateProvider() {
+    public @Nullable DesktopWindowStateManager getDesktopWindowStateManager() {
         return null;
     }
 
@@ -697,10 +703,6 @@ public class RootUiCoordinator
         if (mScrimCoordinator != null) mScrimCoordinator.destroy();
         mScrimCoordinator = null;
 
-        if (mTabModelSelectorSupplier != null) {
-            mTabModelSelectorSupplier = null;
-        }
-
         if (mCaptureController != null) {
             mCaptureController.destroy();
             mCaptureController = null;
@@ -767,6 +769,11 @@ public class RootUiCoordinator
         if (mBoardingPassController != null) {
             mBoardingPassController.destroy();
             mBoardingPassController = null;
+        }
+
+        if (mAutomotiveBackButtonToolbarCoordinator != null) {
+            mAutomotiveBackButtonToolbarCoordinator.destroy();
+            mAutomotiveBackButtonToolbarCoordinator = null;
         }
         mBottomControlsStacker.destroy();
         mActivity = null;
@@ -894,12 +901,7 @@ public class RootUiCoordinator
         initScrollCapture();
 
         // TODO(crbug.com/350610430) Potentially create the E2EController earlier during startup
-        initializeEdgeToEdgeController(
-                mActivity,
-                mActivityTabProvider,
-                mEdgeToEdgeControllerSupplier,
-                mBrowserControlsManager,
-                mLayoutManager);
+        initializeEdgeToEdgeController();
         initBoardingPassDetector();
 
         if (EphemeralTabCoordinator.isSupported()) {
@@ -932,7 +934,8 @@ public class RootUiCoordinator
                             mLayoutManagerSupplier,
                             mWindowAndroid,
                             mActivityLifecycleDispatcher,
-                            mLayoutStateProviderOneShotSupplier);
+                            mLayoutStateProviderOneShotSupplier,
+                            mFullscreenManager);
             mReadAloudControllerSupplier.set(controller);
             mReadAloudContextualSearchObserver =
                     new ContextualSearchObserver() {
@@ -951,6 +954,17 @@ public class RootUiCoordinator
             if (contextualSearchManager != null) {
                 contextualSearchManager.addObserver(mReadAloudContextualSearchObserver);
             }
+        }
+        if (BuildInfo.getInstance().isAutomotive
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.AUTOMOTIVE_FULLSCREEN_TOOLBAR_IMPROVEMENTS)) {
+            mAutomotiveBackButtonToolbarCoordinator =
+                    new AutomotiveBackButtonToolbarCoordinator(
+                            mActivity,
+                            mActivity.findViewById(R.id.automotive_base_frame_layout),
+                            mFullscreenManager,
+                            mCompositorViewHolderSupplier.get(),
+                            mBackPressManager);
         }
     }
 
@@ -998,7 +1012,8 @@ public class RootUiCoordinator
                 toolbarHeightDp,
                 mToolbarManager,
                 canContextualSearchPromoteToNewTab(),
-                mIntentRequestTracker);
+                mIntentRequestTracker,
+                getDesktopWindowStateManager());
     }
 
     public ObservableSupplier<ContextualSearchManager> getContextualSearchManagerSupplier() {
@@ -1057,8 +1072,8 @@ public class RootUiCoordinator
         }
 
         if (DeviceFormFactor.isWindowOnTablet(mWindowAndroid)
-                && (RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
-                        getPrimaryDisplaySizeInInches(), originalProfile, mActivity))) {
+                && RequestDesktopUtils.maybeDefaultEnableGlobalSetting(
+                        getPrimaryDisplaySizeInInches(), originalProfile, mActivity)) {
             // TODO(crbug.com/40856393): Remove this explicit load when this bug is addressed.
             if (mActivityTabProvider != null && mActivityTabProvider.get() != null) {
                 mActivityTabProvider
@@ -1218,14 +1233,14 @@ public class RootUiCoordinator
 
         if (shareDirectly) {
             RecordUserAction.record("MobileMenuDirectShare");
-            new UkmRecorder.Bridge()
-                    .recordEventWithBooleanMetric(
-                            tab.getWebContents(), "MobileMenu.DirectShare", "HasOccurred");
+            new UkmRecorder(tab.getWebContents(), "MobileMenu.DirectShare")
+                    .addBooleanMetric("HasOccurred")
+                    .record();
         } else {
             RecordUserAction.record("MobileMenuShare");
-            new UkmRecorder.Bridge()
-                    .recordEventWithBooleanMetric(
-                            tab.getWebContents(), "MobileMenu.Share", "HasOccurred");
+            new UkmRecorder(tab.getWebContents(), "MobileMenu.Share")
+                    .addBooleanMetric("HasOccurred")
+                    .record();
         }
         shareDelegate.share(tab, shareDirectly, ShareOrigin.OVERFLOW_MENU);
     }
@@ -1252,9 +1267,9 @@ public class RootUiCoordinator
 
             if (fromMenu) {
                 RecordUserAction.record("MobileMenuFindInPage");
-                new UkmRecorder.Bridge()
-                        .recordEventWithBooleanMetric(
-                                tab.getWebContents(), "MobileMenu.FindInPage", "HasOccurred");
+                new UkmRecorder(tab.getWebContents(), "MobileMenu.FindInPage")
+                        .addBooleanMetric("HasOccurred")
+                        .record();
             } else {
                 RecordUserAction.record("MobileShortcutFindInPage");
             }
@@ -1368,9 +1383,9 @@ public class RootUiCoordinator
                         }
                         mOmniboxFocusStateSupplier.set(hasFocus);
                     };
-            if (getDesktopWindowStateProvider() != null) {
+            if (getDesktopWindowStateManager() != null) {
                 toolbarContainer.setAppInUnfocusedDesktopWindow(
-                        getDesktopWindowStateProvider().isInUnfocusedDesktopWindow());
+                        getDesktopWindowStateManager().isInUnfocusedDesktopWindow());
             }
 
             Supplier<Tracker> trackerSupplier =
@@ -1496,8 +1511,7 @@ public class RootUiCoordinator
                             mActivityLifecycleDispatcher,
                             mProfileSupplier,
                             new AdaptiveButtonActionMenuCoordinator(),
-                            mWindowAndroid,
-                            ChromeSharedPreferences.getInstance());
+                            mWindowAndroid);
             PageSummaryButtonController pageSummaryButtonController =
                     new PageSummaryButtonController(
                             mActivity,
@@ -1613,7 +1627,6 @@ public class RootUiCoordinator
                             mFindToolbarManager,
                             mProfileSupplier,
                             mBookmarkModelSupplier,
-                            mCanAnimateBrowserControls,
                             mLayoutStateProviderOneShotSupplier,
                             mAppMenuSupplier,
                             canShowMenuUpdateBadge(),
@@ -1638,7 +1651,7 @@ public class RootUiCoordinator
                             mOverviewColorSupplier,
                             mBaseChromeLayout,
                             mReadAloudControllerSupplier,
-                            getDesktopWindowStateProvider());
+                            getDesktopWindowStateManager());
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();
             }
@@ -1768,7 +1781,9 @@ public class RootUiCoordinator
                                     .getWindow()
                                     .getDecorView()
                                     .findViewById(R.id.menu_anchor_stub),
-                            this::getAppRectOnScreen);
+                            this::getAppRectOnScreen,
+                            mWindowAndroid,
+                            mBrowserControlsManager);
             AppMenuCoordinatorFactory.setExceptionReporter(
                     ChromePureJavaExceptionReporter::reportJavaException);
 
@@ -1916,7 +1931,8 @@ public class RootUiCoordinator
                             return mEdgeToEdgeControllerSupplier.get() == null
                                     ? 0
                                     : mEdgeToEdgeControllerSupplier.get().getBottomInset();
-                        });
+                        },
+                        getDesktopWindowStateManager());
         BottomSheetControllerFactory.setExceptionReporter(
                 ChromePureJavaExceptionReporter::reportJavaException);
         BottomSheetControllerFactory.attach(mWindowAndroid, mBottomSheetController);
@@ -1933,33 +1949,27 @@ public class RootUiCoordinator
                         mLayoutStateProviderOneShotSupplier);
 
         // TODO(crbug.com/40208738): Consider moving handler registration to feature code.
-        if (BackPressManager.isEnabled()) {
-            assert mBackPressManager != null
-                    && !mBackPressManager.has(BackPressHandler.Type.BOTTOM_SHEET);
-            BackPressHandler mBottomSheetBackPressHandler =
-                    mBottomSheetController.getBottomSheetBackPressHandler();
-            if (mBottomSheetBackPressHandler != null) {
-                mBackPressManager.addHandler(
-                        mBottomSheetBackPressHandler, BackPressHandler.Type.BOTTOM_SHEET);
-            }
+        assert mBackPressManager != null
+                && !mBackPressManager.has(BackPressHandler.Type.BOTTOM_SHEET);
+        BackPressHandler mBottomSheetBackPressHandler =
+                mBottomSheetController.getBottomSheetBackPressHandler();
+        if (mBottomSheetBackPressHandler != null) {
+            mBackPressManager.addHandler(
+                    mBottomSheetBackPressHandler, BackPressHandler.Type.BOTTOM_SHEET);
         }
     }
 
     /**
-     * @returns whether the Android Edge To Edge Feature is supported for the current activity.
+     * @return whether the Android Edge To Edge Feature is supported for the current activity.
      */
     protected boolean supportsEdgeToEdge() {
         return false;
     }
 
     /** Setup drawing using Android Edge-to-Edge. */
-    protected void initializeEdgeToEdgeController(
-            Activity activity,
-            ActivityTabProvider activityTabProvider,
-            ObservableSupplierImpl<EdgeToEdgeController> supplier,
-            BrowserControlsManager browserControlsManager,
-            LayoutManager layoutManager) {
-        boolean eligible = EdgeToEdgeUtils.recordEligibility(activity);
+    @CallSuper
+    protected void initializeEdgeToEdgeController() {
+        boolean eligible = EdgeToEdgeUtils.recordEligibility(mActivity);
 
         UmaSessionStats.registerSyntheticFieldTrial(
                 "EdgeToEdgeChinEligibility", eligible ? "Eligible" : "Not Eligible");
@@ -1967,13 +1977,14 @@ public class RootUiCoordinator
         if (supportsEdgeToEdge()) {
             mEdgeToEdgeController =
                     EdgeToEdgeControllerFactory.create(
-                            activity,
+                            mActivity,
                             mWindowAndroid,
-                            activityTabProvider,
-                            browserControlsManager,
-                            layoutManager,
+                            mActivityTabProvider,
+                            mEdgeToEdgeStateProvider,
+                            mBrowserControlsManager,
+                            mLayoutManagerSupplier,
                             mFullscreenManager);
-            supplier.set(mEdgeToEdgeController);
+            mEdgeToEdgeControllerSupplier.set(mEdgeToEdgeController);
 
             if (EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled()) {
                 mEdgeToEdgeBottomChin = createEdgeToEdgeBottomChin();

@@ -89,7 +89,7 @@ class BrowserChildProcessNotificationObserver
     BrowserChildProcessObserver::Remove(this);
   }
 
- private:
+ protected:
   // BrowserChildProcessObserver:
   void BrowserChildProcessLaunchedAndConnected(
       const ChildProcessData& data) override {
@@ -125,6 +125,7 @@ class BrowserChildProcessNotificationObserver
       on_notification_callback_.Run(notification);
   }
 
+ private:
   // Every notification coming for a child with a different ID will be ignored.
   int child_id_;
 
@@ -232,12 +233,18 @@ class TestProcessHost : public BrowserChildProcessHostDelegate {
     return command_line;
   }
 
-  // Launches the child process.
+  // Launches the child process using the default test launcher delegate.
   void LaunchProcess() {
+    LaunchProcessWithDelegate(
+        std::make_unique<TestSandboxedProcessLauncherDelegate>(sandbox_type_));
+  }
+
+  // Launches the child process using a supplied sandbox delegate.
+  void LaunchProcessWithDelegate(
+      std::unique_ptr<SandboxedProcessLauncherDelegate>
+          sandboxed_process_launcher_delegate) {
     process_->SetName(u"Test utility process");
 
-    auto sandboxed_process_launcher_delegate =
-        std::make_unique<TestSandboxedProcessLauncherDelegate>(sandbox_type_);
     auto command_line = GetChildCommandLine();
     bool terminate_on_shutdown = true;
 
@@ -514,5 +521,61 @@ IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest, LaunchFailed) {
               testing::ElementsAreArray({Notification::kLaunchFailed}));
 }
 #endif  // !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
+class TestPreSpawnTargetFailureSandboxedProcessLauncherDelegate
+    : public TestSandboxedProcessLauncherDelegate {
+ public:
+  using TestSandboxedProcessLauncherDelegate::
+      TestSandboxedProcessLauncherDelegate;
+
+  // SandboxedProcessLauncherDelegate:
+  bool PreSpawnTarget(sandbox::TargetPolicy* policy) override {
+    // Force a failure in PreSpawnTarget().
+    return false;
+  }
+};
+
+// Override the observer to verify the error occurred in PreSpawnTarget().
+class TestPreSpawnTargetFailureBrowserChildProcessNotificationObserver
+    : public BrowserChildProcessNotificationObserver {
+ public:
+  using BrowserChildProcessNotificationObserver::
+      BrowserChildProcessNotificationObserver;
+
+  // BrowserChildProcessObserver:
+  void BrowserChildProcessLaunchFailed(
+      const ChildProcessData& data,
+      const ChildProcessTerminationInfo& info) override {
+    EXPECT_EQ(info.exit_code, sandbox::SBOX_ERROR_DELEGATE_PRE_SPAWN);
+    BrowserChildProcessNotificationObserver::OnNotification(
+        data, Notification::kLaunchFailed);
+  }
+};
+
+// Tests that a pre spawn failure results in a failed launch.
+IN_PROC_BROWSER_TEST_F(BrowserChildProcessObserverBrowserTest,
+                       LaunchPreSpawnFailed) {
+  base::WeakPtr<TestProcessHost> host = TestProcessHost::Create();
+  int child_id = host->GetId();
+
+  TestBrowserChildProcessObserver observer(child_id);
+
+  {
+    WaitForNotificationObserver waiter(child_id, Notification::kLaunchFailed);
+    host->LaunchProcessWithDelegate(
+        std::make_unique<
+            TestPreSpawnTargetFailureSandboxedProcessLauncherDelegate>(
+            sandbox::mojom::Sandbox::kUtility));
+    waiter.Wait();
+  }
+
+  // The host should be deleted now.
+  EXPECT_FALSE(host);
+  EXPECT_FALSE(IsHostAlive(child_id));
+  EXPECT_THAT(observer.notifications(),
+              testing::ElementsAreArray({Notification::kLaunchFailed}));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace content

@@ -6,15 +6,16 @@
 
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/prefs/pref_service.h"
 
-MemorySaverOptInIPHController::MemorySaverOptInIPHController(Browser* browser)
-    : browser_(browser) {
+MemorySaverOptInIPHController::MemorySaverOptInIPHController(
+    BrowserWindowInterface* interface)
+    : browser_window_interface_(interface) {
   auto* manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
   memory_saver_observer_.Observe(manager);
@@ -35,12 +36,12 @@ void MemorySaverOptInIPHController::OnJankThresholdReached() {
 }
 
 void MemorySaverOptInIPHController::MaybeTriggerPromo() {
-  BrowserWindow* const browser_window = browser_->window();
   auto* const manager = performance_manager::user_tuning::
       UserPerformanceTuningManager::GetInstance();
-  if (browser_window != nullptr && manager->IsMemorySaverModeDefault() &&
+  if (manager->IsMemorySaverModeDefault() &&
       !manager->IsMemorySaverModeActive()) {
-    browser_window->MaybeShowStartupFeaturePromo(
-        feature_engagement::kIPHMemorySaverModeFeature);
+    browser_window_interface_->GetUserEducationInterface()
+        ->MaybeShowStartupFeaturePromo(
+            feature_engagement::kIPHMemorySaverModeFeature);
   }
 }

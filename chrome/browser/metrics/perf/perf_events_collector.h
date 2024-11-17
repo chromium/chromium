@@ -11,7 +11,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "chrome/browser/metrics/perf/metric_collector.h"
 #include "chrome/browser/metrics/perf/perf_output.h"
@@ -31,8 +30,6 @@ namespace metrics {
 
 struct CPUIdentity;
 class WindowedIncognitoObserver;
-
-BASE_DECLARE_FEATURE(kCWPCollectsETM);
 
 // Enables collection of perf events profile data. perf aka "perf events" is a
 // performance profiling infrastructure built into the linux kernel. For more

@@ -7,7 +7,8 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace consent_auditor {
 class ConsentAuditor;
@@ -17,8 +18,7 @@ class ConsentAuditor;
 // ProfileIOS.
 class ConsentAuditorFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static consent_auditor::ConsentAuditor* GetForBrowserState(
-      ProfileIOS* profile);
+  static consent_auditor::ConsentAuditor* GetForProfile(ProfileIOS* profile);
   static consent_auditor::ConsentAuditor* GetForProfileIfExists(
       ProfileIOS* profile);
   static ConsentAuditorFactory* GetInstance();

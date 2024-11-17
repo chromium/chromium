@@ -78,11 +78,10 @@ SyncChange::SyncChangeType ConvertToSyncChangeType(
     case EntityChange::ACTION_UPDATE:
       return SyncChange::ACTION_UPDATE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return SyncChange::ACTION_UPDATE;
+  NOTREACHED();
 }
 
-// Parses the content of |record_list| into |*in_memory_store|. The output
+// Parses the content of `record_list` into `*in_memory_store`. The output
 // parameter is first for binding purposes.
 std::optional<ModelError> ParseInMemoryStoreOnBackendSequence(
     SyncableServiceBasedBridge::InMemoryStore* in_memory_store,
@@ -263,8 +262,9 @@ std::optional<ModelError> SyncableServiceBasedBridge::MergeFullSyncData(
   StoreAndConvertRemoteChanges(std::move(metadata_change_list),
                                std::move(entity_change_list));
 
+  syncable_service_->WillStartInitialSync();
   // We ignore the output of previous call of StoreAndConvertRemoteChanges() at
-  // this point and let StartSyncableService() read from |in_memory_store_|,
+  // this point and let StartSyncableService() read from `in_memory_store_`,
   // which has been updated above as part of StoreAndConvertRemoteChanges().
   return StartSyncableService();
 }
@@ -322,15 +322,13 @@ SyncableServiceBasedBridge::GetAllDataForDebugging() {
 std::string SyncableServiceBasedBridge::GetClientTag(
     const EntityData& entity_data) {
   // Not supported as per SupportsGetClientTag().
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string SyncableServiceBasedBridge::GetStorageKey(
     const EntityData& entity_data) {
   // Not supported as per SupportsGetStorageKey().
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 bool SyncableServiceBasedBridge::SupportsGetClientTag() const {

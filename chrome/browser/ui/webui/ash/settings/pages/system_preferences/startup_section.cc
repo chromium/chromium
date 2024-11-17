@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/system_preferences/startup_section.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
@@ -15,7 +14,6 @@
 namespace ash::settings {
 
 namespace mojom {
-using ::chromeos::settings::mojom::kAppsSectionPath;
 using ::chromeos::settings::mojom::kSystemPreferencesSectionPath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
@@ -55,15 +53,10 @@ StartupSection::StartupSection(Profile* profile,
 StartupSection::~StartupSection() = default;
 
 void StartupSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
       {"onStartupSettingsCardTitle",
        IDS_OS_SETTINGS_ON_STARTUP_SETTINGS_CARD_TITLE},
-      {"onStartupTitle", kIsRevampEnabled
-                             ? IDS_OS_SETTINGS_REVAMP_ON_STARTUP_TITLE
-                             : IDS_OS_SETTINGS_ON_STARTUP_TITLE},
+      {"onStartupTitle", IDS_OS_SETTINGS_REVAMP_ON_STARTUP_TITLE},
       {"onStartupDescription", IDS_OS_SETTINGS_REVAMP_ON_STARTUP_DESCRIPTION},
       {"onStartupAlways", IDS_OS_SETTINGS_ON_STARTUP_ALWAYS},
       {"onStartupAskEveryTime", IDS_OS_SETTINGS_ON_STARTUP_ASK_EVERY_TIME},
@@ -84,14 +77,10 @@ int StartupSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section StartupSection::GetSection() const {
-  // Note: This is a subsection that exists under Apps or System Preferences.
-  // This section will no longer exist under the Apps section once the
-  // OsSettingsRevampWayfinding feature is fully launched.
+  // Note: This is a subsection that exists under System Preferences.
   // This is not a top-level section and does not have a respective declaration
   // in chromeos::settings::mojom::Section.
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::Section::kSystemPreferences
-             : mojom::Section::kApps;
+  return mojom::Section::kSystemPreferences;
 }
 
 mojom::SearchResultIcon StartupSection::GetSectionIcon() const {
@@ -99,9 +88,7 @@ mojom::SearchResultIcon StartupSection::GetSectionIcon() const {
 }
 
 const char* StartupSection::GetSectionPath() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kSystemPreferencesSectionPath
-             : mojom::kAppsSectionPath;
+  return mojom::kSystemPreferencesSectionPath;
 }
 
 bool StartupSection::LogMetric(mojom::Setting setting,

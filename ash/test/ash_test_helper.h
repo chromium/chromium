@@ -58,7 +58,7 @@ class FakeDlcserviceClient;
 class FakeFwupdDownloadClient;
 class SavedDeskTestHelper;
 class TestKeyboardControllerObserver;
-class TestNewWindowDelegateProvider;
+class TestNewWindowDelegate;
 class TestWallpaperControllerClient;
 
 namespace hotspot_config {
@@ -219,7 +219,7 @@ class AshTestHelper : public aura::test::AuraTestHelper {
   std::unique_ptr<FlossDBusManagerInitializer> floss_dbus_manager_initializer_;
   std::unique_ptr<PowerPolicyControllerInitializer>
       power_policy_controller_initializer_;
-  std::unique_ptr<TestNewWindowDelegateProvider> new_window_delegate_provider_;
+  std::unique_ptr<TestNewWindowDelegate> new_window_delegate_;
   std::unique_ptr<views::TestViewsDelegate> test_views_delegate_;
   std::unique_ptr<FakeDlcserviceClient> dlc_service_client_;
   std::unique_ptr<TestSessionControllerClient> session_controller_client_;

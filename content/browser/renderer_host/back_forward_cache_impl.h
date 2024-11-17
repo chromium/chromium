@@ -210,9 +210,6 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // Returns whether MediaSession's service is allowed for the BackForwardCache.
   static bool IsMediaSessionServiceAllowed();
 
-  // Returns whether back/forward cache is enabled for screen reader users.
-  static bool IsScreenReaderAllowed();
-
   // Returns where back/forward cache is allowed for pages with unload handlers.
   static bool IsUnloadAllowed();
 
@@ -423,6 +420,9 @@ class CONTENT_EXPORT BackForwardCacheImpl
       SiteInstanceGroupId site_instance_group_id);
   bool IsRenderViewHostWithMapIdInBackForwardCacheForDebugging(
       const RenderViewHostImpl& rvh);
+
+  bool IsRelatedSiteInstanceInBackForwardCacheForDebugging(
+      SiteInstance& site_instance);
 
   // StoredPage::Delegate overrides:
   void RenderViewHostNoLongerStored(RenderViewHostImpl* rvh) override;

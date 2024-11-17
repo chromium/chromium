@@ -93,7 +93,7 @@ public class ContextualSearchPolicyTest {
         try {
             when(mMockServer.getBasePageUrl()).thenReturn(new GURL("https://someUrl"));
         } catch (Exception e) {
-            Assert.fail("Exception raised building a sample URL");
+            throw new AssertionError("Exception raised building a sample URL", e);
         }
     }
 
@@ -152,7 +152,7 @@ public class ContextualSearchPolicyTest {
                     try {
                         when(mMockServer.getBasePageUrl()).thenReturn(new GURL("ftp://someSource"));
                     } catch (Exception e) {
-                        Assert.fail("Exception building FTP Uri");
+                        throw new AssertionError("Exception building FTP Uri", e);
                     }
                     Assert.assertFalse(mPolicy.doSendBasePageUrl());
                 });

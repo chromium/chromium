@@ -55,19 +55,21 @@ id<GREYMatcher> OptInScreenMatcher() {
   return config;
 }
 
-+ (void)setUpForTestCase {
-  [super setUpForTestCase];
+- (void)setUp {
+  [super setUp];
+  [ChromeEarlGrey closeAllTabs];
   [ChromeEarlGrey writeFirstRunSentinel];
   [NewTabPageAppInterface resetSetUpListPrefs];
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
+  [ChromeEarlGrey openNewTab];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey
       resetDataForLocalStatePref:prefs::kAppLevelPushNotificationPermissions];
   [NewTabPageAppInterface resetSetUpListPrefs];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Triggers the Notifications Opt-In Screen through the Set Up List "See more"

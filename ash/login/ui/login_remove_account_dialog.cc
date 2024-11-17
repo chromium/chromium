@@ -246,6 +246,7 @@ LoginRemoveAccountDialog::LoginRemoveAccountDialog(
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   UpdateAccessibleName();
   UpdateAccessibleDescription();
+  GetViewAccessibility().SetIsModal(true);
 }
 
 LoginRemoveAccountDialog::~LoginRemoveAccountDialog() = default;
@@ -264,11 +265,6 @@ void LoginRemoveAccountDialog::RequestFocus() {
 
 bool LoginRemoveAccountDialog::HasFocus() const {
   return remove_user_button_ && remove_user_button_->HasFocus();
-}
-
-void LoginRemoveAccountDialog::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->AddBoolAttribute(ax::mojom::BoolAttribute::kModal, true);
 }
 
 views::FocusTraversable* LoginRemoveAccountDialog::GetPaneFocusTraversable() {

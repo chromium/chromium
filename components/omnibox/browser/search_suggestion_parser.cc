@@ -281,7 +281,7 @@ SearchSuggestionParser::Result::Result(
 
 SearchSuggestionParser::Result::Result(const Result& other) = default;
 
-SearchSuggestionParser::Result::~Result() {}
+SearchSuggestionParser::Result::~Result() = default;
 
 // SearchSuggestionParser::SuggestResult ---------------------------------------
 
@@ -356,7 +356,7 @@ SearchSuggestionParser::SuggestResult::SuggestResult(
 SearchSuggestionParser::SuggestResult::SuggestResult(
     const SuggestResult& result) = default;
 
-SearchSuggestionParser::SuggestResult::~SuggestResult() {}
+SearchSuggestionParser::SuggestResult::~SuggestResult() = default;
 
 SearchSuggestionParser::SuggestResult&
 SearchSuggestionParser::SuggestResult::operator=(const SuggestResult& rhs) =
@@ -401,11 +401,6 @@ void SearchSuggestionParser::SuggestResult::ClassifyMatchContents(
   // Note we discard our existing match_contents_class_ with this call.
   match_contents_class_ =
       ClassifyAllMatchesInString(input_text, match_contents_, true);
-}
-
-void SearchSuggestionParser::SuggestResult::SetAnswer(
-    const SuggestionAnswer& answer) {
-  answer_ = answer;
 }
 
 void SearchSuggestionParser::SuggestResult::SetRichAnswerTemplate(
@@ -475,7 +470,7 @@ SearchSuggestionParser::NavigationResult::NavigationResult(
 SearchSuggestionParser::NavigationResult::NavigationResult(
     const NavigationResult& other) = default;
 
-SearchSuggestionParser::NavigationResult::~NavigationResult() {}
+SearchSuggestionParser::NavigationResult::~NavigationResult() = default;
 
 void SearchSuggestionParser::NavigationResult::
     CalculateAndClassifyMatchContents(const bool allow_bolding_nothing,
@@ -546,7 +541,7 @@ SearchSuggestionParser::Results::Results()
       field_trial_triggered(false),
       relevances_from_server(false) {}
 
-SearchSuggestionParser::Results::~Results() {}
+SearchSuggestionParser::Results::~Results() = default;
 
 void SearchSuggestionParser::Results::Clear() {
   suggest_results.clear();
@@ -846,16 +841,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
             continue;
         }
         if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_DESKTOP) {
-          if (OmniboxFieldTrial::IsUniformRowHeightEnabled()) {
-            // If calculator results are going to be displayed on 1 line,
-            // keep everything in the match contents
-            match_contents = l10n_util::GetStringFUTF16(
-                IDS_OMNIBOX_ONE_LINE_CALCULATOR_SUGGESTION_TEMPLATE, query,
-                suggestion);
-          } else {
-            annotation = has_equals_prefix ? suggestion : match_contents;
-            match_contents = query;
-          }
+          match_contents = l10n_util::GetStringFUTF16(
+              IDS_OMNIBOX_ONE_LINE_CALCULATOR_SUGGESTION_TEMPLATE, query,
+              suggestion);
         }
       }
 
@@ -865,7 +853,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
       std::optional<int> suggestion_group_id;
       bool answer_parsed_successfully = false;
       omnibox::RichAnswerTemplate answer_template;
-      SuggestionAnswer answer;
       omnibox::AnswerType answer_type = omnibox::ANSWER_TYPE_UNSPECIFIED;
 
       if (suggestion_details && (*suggestion_details)[index].is_dict() &&
@@ -920,15 +907,9 @@ bool SearchSuggestionParser::ParseSuggestResults(
             answer_parsed_successfully = answer_template.answers_size() > 0;
           } else if (const auto* answer_json =
                          suggestion_detail.FindDict("ansa")) {
-            if (omnibox_feature_configs::SuggestionAnswerMigration::Get()
-                    .enabled) {
               answer_parsed_successfully =
                   omnibox::answer_data_parser::ParseJsonToAnswerData(
                       *answer_json, &answer_template);
-            } else {
-              answer_parsed_successfully = SuggestionAnswer::ParseAnswer(
-                  *answer_json, answer_type, &answer);
-            }
           }
           base::UmaHistogramBoolean("Omnibox.AnswerParseSuccess",
                                     answer_parsed_successfully);
@@ -946,13 +927,10 @@ bool SearchSuggestionParser::ParseSuggestResults(
                         should_prefetch, should_prerender, trimmed_input));
 
       if (answer_parsed_successfully) {
+        // Ensure `answer_template` has an answer.
+        DCHECK(answer_template.answers_size() > 0);
         results->suggest_results.back().SetAnswerType(answer_type);
-        if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
-          results->suggest_results.back().SetRichAnswerTemplate(
-              answer_template);
-        } else {
-          results->suggest_results.back().SetAnswer(answer);
-        }
+        results->suggest_results.back().SetRichAnswerTemplate(answer_template);
       }
 
       if (suggestion_group_id) {

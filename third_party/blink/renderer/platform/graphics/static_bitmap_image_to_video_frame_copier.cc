@@ -115,18 +115,10 @@ void StaticBitmapImageToVideoFrameCopier::Convert(
             std::make_unique<WebGraphicsContext3DVideoFramePool>(
                 context_provider_wrapper);
       }
-      // TODO(https://crbug.com/1224279): This assumes that all
-      // StaticBitmapImages are 8-bit sRGB. Expose the color space and pixel
-      // format that is backing `image->GetMailboxHolder()`, or, alternatively,
-      // expose an accelerated SkImage.
       if (accelerated_frame_pool_->CopyRGBATextureToVideoFrame(
-              viz::SkColorTypeToSinglePlaneSharedImageFormat(
-                  kRGBA_8888_SkColorType),
               gfx::Size(image->width(), image->height()),
-              gfx::ColorSpace::CreateSRGB(),
-              image->IsOriginTopLeft() ? kTopLeft_GrSurfaceOrigin
-                                       : kBottomLeft_GrSurfaceOrigin,
-              image->GetMailboxHolder(), gfx::ColorSpace::CreateREC709(),
+              image->GetSharedImage(), image->GetSyncToken(),
+              gfx::ColorSpace::CreateREC709(),
               std::move(split_callback.first))) {
         TRACE_EVENT1("blink", "StaticBitmapImageToVideoFrameCopier::Convert",
                      "accelerated_frame_pool_copy", true);

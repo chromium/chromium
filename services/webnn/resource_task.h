@@ -25,6 +25,11 @@ class ResourceTask : public base::RefCounted<ResourceTask> {
   //
   // The underlying resources are kept alive by this `ResourceTask` until the
   // `task`'s completion closure is run.
+  //
+  // Do _not_ bind the task to an object which may be destroyed before `task`
+  // can be run. This will drop `task`, which will therefore not run its
+  // completion closure, which will block execution of all dependent tasks.
+  // See https://crbug.com/368485438#comment4 for details.
   ResourceTask(
       std::vector<scoped_refptr<QueueableResourceStateBase>> shared_resources,
       std::vector<scoped_refptr<QueueableResourceStateBase>>

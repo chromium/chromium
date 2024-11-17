@@ -20,6 +20,8 @@ void ViewsTestHelper::SetUpTestViewsDelegate(
     delegate->set_native_widget_factory(factory.value());
 }
 
+void ViewsTestHelper::TearDownTestViewsDelegate(TestViewsDelegate* delegate) {}
+
 void ViewsTestHelper::SetUp() {}
 
 gfx::NativeWindow ViewsTestHelper::GetContext() {

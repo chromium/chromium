@@ -23,11 +23,14 @@
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/views/tab_search_bubble_host.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_disclosure_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/commerce/core/mojom/product_specifications.mojom.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -38,7 +41,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 namespace chrome {
 
@@ -48,6 +50,7 @@ class BrowserCommandsTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         {
             features::kTabOrganization,
+            features::kTabstripDeclutter,
             toast_features::kToastFramework,
             toast_features::kReadingListToast,
             toast_features::kLinkCopiedToast,
@@ -375,6 +378,17 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, StartsOrganizationRequest) {
                                       true, 1);
 }
 
+IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ShowsDeclutter) {
+  TabSearchBubbleHost* tab_search_bubble_host =
+      BrowserView::GetBrowserViewForBrowser(browser())
+          ->GetTabSearchBubbleHost();
+  EXPECT_FALSE(tab_search_bubble_host->bubble_created_time_for_testing());
+
+  chrome::ExecuteCommand(browser(), IDC_DECLUTTER_TABS);
+
+  EXPECT_TRUE(tab_search_bubble_host->bubble_created_time_for_testing());
+}
+
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
                        ConvertPopupToTabbedBrowserShutdownRace) {
   // Confirm we do not incorrectly start shutdown when converting a popup into a
@@ -393,8 +407,8 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,
   // Mock that the disclosure dialog has shown.
   browser()->profile()->GetPrefs()->SetInteger(
       commerce::kProductSpecificationsAcceptedDisclosureVersion,
-      static_cast<int>(shopping_service::mojom::
-                           ProductSpecificationsDisclosureVersion::kV1));
+      static_cast<int>(
+          commerce::product_specifications::mojom::DisclosureVersion::kV1));
 
   int tab_count = browser()->tab_strip_model()->count();
   chrome::OpenCommerceProductSpecificationsTab(

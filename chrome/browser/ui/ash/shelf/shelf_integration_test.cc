@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
@@ -12,11 +13,10 @@
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/test/gtest_tags.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/test/base/chromeos/crosier/ash_integration_test.h"
 #include "chrome/test/base/chromeos/crosier/aura_window_title_observer.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "components/app_constants/constants.h"
 #include "content/public/test/browser_test.h"
 #include "ui/aura/env.h"

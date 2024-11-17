@@ -28,7 +28,7 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/dips/cookie_access_filter.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
-#include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -127,24 +127,7 @@ DIPSWebContentsObserver::DIPSWebContentsObserver(
       &DIPSWebContentsObserver::EmitDIPSIssue, weak_factory_.GetWeakPtr());
 }
 
-DIPSWebContentsObserver::~DIPSWebContentsObserver() {
-  // Some UserData may interact with `this` during their destruction. Delete
-  // them now, before it's too late. If we don't delete them manually,
-  // ~SupportsUserData() will, but `this` will be invalid at that time.
-  ClearAllUserData();
-}
-
-DIPSWebContentsObserver::Observer::~Observer() {
-  CHECK(!IsInObserverList());
-}
-
-void DIPSWebContentsObserver::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void DIPSWebContentsObserver::RemoveObserver(const Observer* observer) {
-  observers_.RemoveObserver(observer);
-}
+DIPSWebContentsObserver::~DIPSWebContentsObserver() = default;
 
 RedirectChainDetector::RedirectChainDetector(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
@@ -265,14 +248,17 @@ DIPSRedirectContext::GetRedirectInfoFromChain(const std::string& site) const {
   return std::nullopt;
 }
 
-bool DIPSRedirectContext::SiteHadUserActivation(const std::string& site) const {
-  if (initial_url_had_user_activation_ &&
+bool DIPSRedirectContext::SiteHadUserActivationOrAuthn(
+    const std::string& site) const {
+  if ((initial_url_had_interaction_) &&
       site == GetSiteForDIPS(initial_url_.url)) {
     return true;
   }
 
   for (const auto& redirect : redirects_) {
-    if (redirect->has_sticky_activation && redirect->site == site) {
+    if (redirect->site == site &&
+        (redirect->has_sticky_activation ||
+         redirect->web_authn_assertion_request_succeeded)) {
       return true;
     }
   }
@@ -280,15 +266,17 @@ bool DIPSRedirectContext::SiteHadUserActivation(const std::string& site) const {
   return false;
 }
 
-std::set<std::string> DIPSRedirectContext::AllSitesWithUserActivation() const {
+std::set<std::string> DIPSRedirectContext::AllSitesWithUserActivationOrAuthn()
+    const {
   std::set<std::string> sites;
 
-  if (initial_url_had_user_activation_) {
+  if (initial_url_had_interaction_) {
     sites.insert(GetSiteForDIPS(initial_url_.url));
   }
 
   for (const auto& redirect : redirects_) {
-    if (redirect->has_sticky_activation) {
+    if (redirect->has_sticky_activation ||
+        redirect->web_authn_assertion_request_succeeded) {
       sites.insert(redirect->site);
     }
   }
@@ -304,8 +292,8 @@ DIPSRedirectContext::GetRedirectHeuristicURLs(
   std::map<std::string, std::pair<GURL, bool>>
       sites_to_url_and_current_interaction;
 
-  std::set<std::string> sites_with_user_activation =
-      AllSitesWithUserActivation();
+  std::set<std::string> sites_with_current_interaction =
+      AllSitesWithUserActivationOrAuthn();
 
   const std::string& first_party_site = GetSiteForDIPS(first_party_url);
   for (const auto& redirect : redirects_) {
@@ -324,7 +312,7 @@ DIPSRedirectContext::GetRedirectHeuristicURLs(
 
     // Check for a current interaction, if the flag requires it.
     if (require_current_interaction &&
-        !sites_with_user_activation.contains(site)) {
+        !sites_with_current_interaction.contains(site)) {
       continue;
     }
 
@@ -334,7 +322,7 @@ DIPSRedirectContext::GetRedirectHeuristicURLs(
         sites_to_url_and_current_interaction[site];
     if (prev_url.is_empty() || !had_current_interaction) {
       prev_url = url;
-      had_current_interaction = sites_with_user_activation.contains(site);
+      had_current_interaction = sites_with_current_interaction.contains(site);
     }
   }
 
@@ -363,7 +351,7 @@ void DIPSRedirectContext::HandleUncommitted(
             temp_context.AppendServerRedirects(std::move(server_redirects));
             temp_context.ReportIssue(final_url.url);
             temp_context.EndChain(std::move(final_url),
-                                  /*current_page_has_sticky_activation=*/false);
+                                  /*current_page_has_interaction=*/false);
           },
           [&](UrlAndSourceId previous_nav_last_committed_url) {
             // The uncommitted navigation began *without* a client redirect, so
@@ -378,7 +366,7 @@ void DIPSRedirectContext::HandleUncommitted(
                 /*final_url=*/previous_nav_last_committed_url.url);
             temp_context.EndChain(
                 /*final_url=*/std::move(previous_nav_last_committed_url),
-                /*current_page_has_sticky_activation=*/false);
+                /*current_page_has_interaction=*/false);
           },
       },
       std::move(navigation_start));
@@ -388,7 +376,7 @@ void DIPSRedirectContext::AppendCommitted(
     DIPSNavigationStart navigation_start,
     std::vector<DIPSRedirectInfoPtr> server_redirects,
     const UrlAndSourceId& final_url,
-    bool current_page_has_sticky_activation) {
+    bool current_page_has_interaction) {
   // If there was a client-side redirect before
   // `DIPSBounceDetector::client_bounce_detection_timer_` timedout, grow the
   // chain. Otherwise, end it.
@@ -399,12 +387,12 @@ void DIPSRedirectContext::AppendCommitted(
             // the in-progress redirect chain.
             AppendClientRedirect(std::move(client_redirect));
           },
-          [this, current_page_has_sticky_activation](
+          [this, current_page_has_interaction](
               UrlAndSourceId previous_nav_last_committed_url) {
             // The committed navigation began *without* a client redirect, so
             // end the in-progress redirect chain and start a new one.
             EndChain(previous_nav_last_committed_url,
-                     current_page_has_sticky_activation);
+                     current_page_has_interaction);
           },
       },
       std::move(navigation_start));
@@ -436,7 +424,7 @@ void DIPSRedirectContext::TrimAndHandleRedirects(size_t trim_count) {
 }
 
 void DIPSRedirectContext::EndChain(UrlAndSourceId final_url,
-                                   bool current_page_has_sticky_activation) {
+                                   bool current_page_has_interaction) {
   if (!initial_url_.url.is_empty()) {
     auto chain = std::make_unique<DIPSRedirectChainInfo>(
         initial_url_, final_url, GetRedirectChainLength(),
@@ -444,7 +432,7 @@ void DIPSRedirectContext::EndChain(UrlAndSourceId final_url,
     handler_.Run(std::move(redirects_), std::move(chain));
   }
 
-  initial_url_had_user_activation_ = current_page_has_sticky_activation;
+  initial_url_had_interaction_ = current_page_has_interaction;
   initial_url_ = std::move(final_url);
   redirects_.clear();
 }
@@ -567,15 +555,15 @@ void Populate3PcExceptions(content::BrowserContext* browser_context,
   const blink::StorageKey final_url_key =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(final_url));
   // TODO: crbug.com/40883201 - When we move to //content, we will call
-  // content::GetContentClientForTesting()->browser() instead of instantiating
-  // ChromeContentBrowserClient ourselves.
-  ChromeContentBrowserClient cbc;
+  // IsFullCookieAccessAllowed() via ContentBrowserClient instead of as a
+  // standalone function.
   for (DIPSRedirectInfoPtr& redirect : redirects) {
     redirect->has_3pc_exception =
-        cbc.IsFullCookieAccessAllowed(browser_context, web_contents,
-                                      redirect->url.url, initial_url_key) ||
-        cbc.IsFullCookieAccessAllowed(browser_context, web_contents,
-                                      redirect->url.url, final_url_key);
+        dips_move::IsFullCookieAccessAllowed(browser_context, web_contents,
+                                             redirect->url.url,
+                                             initial_url_key) ||
+        dips_move::IsFullCookieAccessAllowed(browser_context, web_contents,
+                                             redirect->url.url, final_url_key);
   }
 }
 }  // namespace dips
@@ -618,9 +606,7 @@ void DIPSWebContentsObserver::OnStatefulBounce(const GURL& final_url) {
     return;
   }
 
-  for (auto& observer : observers_) {
-    observer.OnStatefulBounce(web_contents());
-  }
+  dips_service_->NotifyStatefulBounce(web_contents());
 }
 
 // A thin wrapper around NavigationHandle to implement DIPSNavigationHandle.
@@ -658,6 +644,16 @@ class DIPSNavigationHandleImpl : public DIPSNavigationHandle {
     return handle_->GetRedirectChain();
   }
 
+  bool WasResponseCached() override { return handle_->WasResponseCached(); }
+
+  int GetHTTPResponseCode() override {
+    const net::HttpResponseHeaders* headers = handle_->GetResponseHeaders();
+    if (headers == nullptr) {
+      return 0;
+    }
+    return headers->response_code();
+  }
+
  private:
   raw_ptr<NavigationHandle> handle_;
 };
@@ -682,6 +678,8 @@ void DIPSBounceDetector::DidStartNavigation(
   auto now = tick_clock_->NowTicks();
 
   auto* server_bounce_detection_state = navigation_handle->GetServerState();
+
+  server_bounce_detection_state->last_server_redirect = now;
 
   // A user gesture indicates no client-redirect. And, we won't consider a
   // client-redirect to be a bounce if we timedout on the
@@ -720,6 +718,40 @@ void DIPSBounceDetector::DidStartNavigation(
           /*web_authn_assertion_request_succeeded=*/
           client_detection_state_->last_successful_web_authn_assertion_time
               .has_value());
+}
+
+void RedirectChainDetector::DidRedirectNavigation(
+    NavigationHandle* navigation_handle) {
+  DUMP_WILL_BE_CHECK(!navigation_handle->IsSameDocument());
+  DUMP_WILL_BE_CHECK(!navigation_handle->HasCommitted());
+
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return;
+  }
+
+  DIPSNavigationHandleImpl dips_handle(navigation_handle);
+  detector_.DidRedirectNavigation(&dips_handle);
+}
+
+void DIPSBounceDetector::DidRedirectNavigation(
+    DIPSNavigationHandle* navigation_handle) {
+  ServerBounceDetectionState* server_state =
+      navigation_handle->GetServerState();
+  if (!server_state) {
+    return;
+  }
+
+  auto now = tick_clock_->NowTicks();
+  base::TimeDelta bounce_delay = now - server_state->last_server_redirect;
+  server_state->last_server_redirect = now;
+
+  server_state->server_redirects.push_back(
+      ServerBounceDetectionState::ServerRedirectData({
+          .http_response_code = navigation_handle->GetHTTPResponseCode(),
+          .bounce_delay = bounce_delay,
+          .was_response_cached = navigation_handle->WasResponseCached(),
+          .destination_url = GURL(navigation_handle->GetURL()),
+      }));
 }
 
 void RedirectChainDetector::NotifyStorageAccessed(
@@ -972,7 +1004,7 @@ void RedirectChainDetector::DidFinishNavigation(
 
   if (navigation_handle->HasCommitted()) {
     for (auto& observer : observers_) {
-      observer.OnNavigationCommitted();
+      observer.OnNavigationCommitted(navigation_handle);
     }
   }
 }
@@ -981,9 +1013,11 @@ void DIPSBounceDetector::DidFinishNavigation(
     DIPSNavigationHandle* navigation_handle) {
   base::TimeTicks now = tick_clock_->NowTicks();
 
-  bool current_page_has_sticky_activation =
+  bool current_page_has_interaction =
       client_detection_state_ &&
-      client_detection_state_->last_activation_time.has_value();
+      (client_detection_state_->last_activation_time.has_value() ||
+       client_detection_state_->last_successful_web_authn_assertion_time
+           .has_value());
 
   // Starts the timer to detect further client redirects.
   client_bounce_detection_timer_.Reset();
@@ -1026,13 +1060,40 @@ void DIPSBounceDetector::DidFinishNavigation(
   server_state->filter.Filter(navigation_handle->GetRedirectChain(),
                               &access_types);
 
-  for (size_t i = 0; i < access_types.size() - 1; i++) {
+  // The length of the redirect chain should be equal to the number of server
+  // redirects observed by the `DidRedirectNavigation` handler (plus one
+  // additional element for the destination URL). The exception to this is in
+  // the case a URL client-redirects to itself. Then the redirect chain will
+  // have a duplicate entry prepended to itself (but there will be no server
+  // redirect).
+  //
+  // See http://crbug.com/371004127 for more context.
+  CHECK_GT(access_types.size(), server_state->server_redirects.size());
+  // Use the length difference between the redirect chain and number of server
+  // redirects to calculate an offset. When creating instances of
+  // `DIPSRedirectInfo`, we avoid earlier entries within the redirect chain.
+  size_t offset =
+      access_types.size() - (server_state->server_redirects.size() + 1);
+  for (size_t i = 0; i < server_state->server_redirects.size(); i++) {
+    // Note that the next item in the redirect chain should be equal to the
+    // destination URL recorded by the corresponding redirect navigation.
+    // However, there are no precondition checks here, as this invariant appears
+    // to be untrue when running on Windows.
+    //
+    // TODO(crbug.com/371802472): Add back the checks removed during
+    // crrev.com/c/5912983 after investigating why the checks fail on Windows.
     redirects.push_back(std::make_unique<DIPSRedirectInfo>(
-        /*url=*/UrlAndSourceId(navigation_handle->GetRedirectChain()[i],
-                               navigation_handle->GetRedirectSourceId(i)),
+        /*url=*/UrlAndSourceId(
+            navigation_handle->GetRedirectChain()[i + offset],
+            navigation_handle->GetRedirectSourceId(i + offset)),
         /*redirect_type=*/DIPSRedirectType::kServer,
-        /*access_type=*/access_types[i],
-        /*time=*/clock_->Now()));
+        /*access_type=*/access_types[i + offset],
+        /*time=*/clock_->Now(),
+        /*was_response_cached=*/
+        server_state->server_redirects[i].was_response_cached,
+        /*response_code=*/server_state->server_redirects[i].http_response_code,
+        /*server_bounce_delay=*/
+        server_state->server_redirects[i].bounce_delay));
   }
 
   if (navigation_handle->HasCommitted()) {
@@ -1040,7 +1101,7 @@ void DIPSBounceDetector::DidFinishNavigation(
         std::move(server_state->navigation_start), std::move(redirects),
         UrlAndSourceId(navigation_handle->GetURL(),
                        navigation_handle->GetNextPageUkmSourceId()),
-        current_page_has_sticky_activation);
+        current_page_has_interaction);
   } else {
     // For uncommitted navigations, treat the last URL visited as a server
     // redirect, so it is considered a potential tracker.
@@ -1050,7 +1111,10 @@ void DIPSBounceDetector::DidFinishNavigation(
                                navigation_handle->GetRedirectSourceId(i)),
         /*redirect_type=*/DIPSRedirectType::kServer,
         /*access_type=*/access_types[i],
-        /*time=*/clock_->Now()));
+        /*time=*/clock_->Now(),
+        /*was_response_cached=*/navigation_handle->WasResponseCached(),
+        /*response_code=*/navigation_handle->GetHTTPResponseCode(),
+        /*server_bounce_delay=*/now - server_state->last_server_redirect));
     committed_redirect_context_.HandleUncommitted(
         std::move(server_state->navigation_start), std::move(redirects));
   }
@@ -1146,17 +1210,18 @@ void RedirectChainDetector::WebContentsDestroyed() {
 }
 
 void DIPSBounceDetector::BeforeDestruction() {
-  committed_redirect_context_.EndChain(
-      delegate_->GetLastCommittedURL(),
-      /*current_page_has_sticky_activation=*/false);
+  committed_redirect_context_.EndChain(delegate_->GetLastCommittedURL(),
+                                       /*current_page_has_interaction=*/false);
 }
 
 void DIPSBounceDetector::OnClientBounceDetectionTimeout() {
-  bool current_page_has_sticky_activation =
+  bool current_page_has_interaction =
       client_detection_state_ &&
-      client_detection_state_->last_activation_time.has_value();
+      (client_detection_state_->last_activation_time.has_value() ||
+       client_detection_state_->last_successful_web_authn_assertion_time
+           .has_value());
   committed_redirect_context_.EndChain(delegate_->GetLastCommittedURL(),
-                                       current_page_has_sticky_activation);
+                                       current_page_has_interaction);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(RedirectChainDetector);

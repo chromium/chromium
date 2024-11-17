@@ -34,7 +34,6 @@ import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -46,15 +45,17 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.InputHintChecker;
+import org.chromium.base.InputHintCheckerJni;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -119,8 +120,6 @@ public class CompositorViewHolderUnitTest {
         TOUCH_EVENT_OBSERVER;
     }
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private Activity mActivity;
     @Mock private Profile mProfile;
     @Mock private Profile mIncognitoProfile;
@@ -141,6 +140,7 @@ public class CompositorViewHolderUnitTest {
     @Mock private PrefService mPrefService;
     @Mock private OnscreenContentProvider.Natives mOnscreenContentProviderJni;
     @Mock private ContentCaptureFeatures.Natives mContentCaptureFeaturesJni;
+    @Mock private InputHintChecker.Natives mInputHintCheckerJni;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
@@ -157,8 +157,9 @@ public class CompositorViewHolderUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(OnscreenContentProviderJni.TEST_HOOKS, mOnscreenContentProviderJni);
-        mJniMocker.mock(ContentCaptureFeaturesJni.TEST_HOOKS, mContentCaptureFeaturesJni);
+        OnscreenContentProviderJni.setInstanceForTesting(mOnscreenContentProviderJni);
+        ContentCaptureFeaturesJni.setInstanceForTesting(mContentCaptureFeaturesJni);
+        InputHintCheckerJni.setInstanceForTesting(mInputHintCheckerJni);
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
 
@@ -194,7 +195,8 @@ public class CompositorViewHolderUnitTest {
         when(mTab.isUserInteractable()).thenReturn(true);
 
         BrowserControlsManager browserControlsManager =
-                new BrowserControlsManager(mActivity, BrowserControlsManager.ControlsPosition.TOP);
+                new BrowserControlsManager(
+                        mActivity, BrowserControlsStateProvider.ControlsPosition.TOP);
         mBrowserControlsManager = spy(browserControlsManager);
         mBrowserControlsManager.initialize(
                 mControlContainer,
@@ -218,7 +220,7 @@ public class CompositorViewHolderUnitTest {
         mCompositorViewHolder.setCompositorViewForTesting(mCompositorView);
         mCompositorViewHolder.setBrowserControlsManager(mBrowserControlsManager);
         mCompositorViewHolder.setApplicationViewportInsetSupplier(mViewportInsets);
-        mCompositorViewHolder.onFinishNativeInitialization(mTabModelSelector, null);
+        mCompositorViewHolder.onFinishNativeInitialization(mTabModelSelector, null, () -> 0);
         when(mCompositorViewHolder.getCurrentTab()).thenReturn(mTab);
         when(mCompositorViewHolder.getRootWindowInsets())
                 .thenReturn(VISIBLE_SYSTEM_BARS_WINDOW_INSETS.toWindowInsets());

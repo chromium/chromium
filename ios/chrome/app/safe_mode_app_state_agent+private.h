@@ -5,15 +5,11 @@
 #ifndef IOS_CHROME_APP_SAFE_MODE_APP_STATE_AGENT_PRIVATE_H_
 #define IOS_CHROME_APP_SAFE_MODE_APP_STATE_AGENT_PRIVATE_H_
 
-#include "ios/chrome/app/application_delegate/app_state_observer.h"
 #include "ios/chrome/app/safe_mode_app_state_agent.h"
 #include "ios/chrome/browser/safe_mode/ui_bundled/safe_mode_coordinator.h"
-#include "ios/chrome/browser/shared/coordinator/scene/scene_state_observer.h"
 
 // Class extension exposing private methods of SafeModeAppAgent for testing.
-@interface SafeModeAppAgent () <AppStateObserver,
-                                SafeModeCoordinatorDelegate,
-                                SceneStateObserver>
+@interface SafeModeAppAgent () <SafeModeCoordinatorDelegate>
 
 // This flag is set when the first scene has activated since the startup, and
 // never reset.

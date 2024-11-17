@@ -50,6 +50,8 @@ class MockGpuVideoAcceleratorFactories : public GpuVideoAcceleratorFactories {
 
   MOCK_METHOD0(GetVideoEncodeAcceleratorSupportedProfiles,
                std::optional<VideoEncodeAccelerator::SupportedProfiles>());
+  MOCK_METHOD0(GetSupportedVideoDecoderConfigs,
+               std::optional<media::SupportedVideoDecoderConfigs>());
   MOCK_METHOD0(IsEncoderSupportKnown, bool());
   MOCK_METHOD1(NotifyEncoderSupportKnown, void(base::OnceClosure));
   // CreateVideoEncodeAccelerator returns scoped_ptr, which the mocking

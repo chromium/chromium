@@ -4,9 +4,8 @@
 
 import type {ExtensionsHostPermissionsToggleListElement, ExtensionsToggleRowElement} from 'chrome://extensions/extensions.js';
 import {UserAction} from 'chrome://extensions/extensions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {eventToPromise} from 'chrome://webui-test/test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 
@@ -42,7 +41,7 @@ suite('HostPermissionsToggleList', function() {
   });
 
   // Tests the display of the list when only specific sites are granted.
-  test('permissions display for specific sites', function() {
+  test('permissions display for specific sites', async () => {
     const permissions = {
       hostAccess: HostAccess.ON_SPECIFIC_SITES,
       hasAllHosts: false,
@@ -54,7 +53,7 @@ suite('HostPermissionsToggleList', function() {
     };
 
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     assertTrue(!!element);
     const allSites = element.$.allHostsToggle;
@@ -82,7 +81,7 @@ suite('HostPermissionsToggleList', function() {
 
   // Tests the display when the user has chosen to allow on all the requested
   // sites.
-  test('permissions display for all requested sites', function() {
+  test('permissions display for all requested sites', async () => {
     const permissions = {
       hostAccess: HostAccess.ON_ALL_SITES,
       hasAllHosts: false,
@@ -94,7 +93,7 @@ suite('HostPermissionsToggleList', function() {
     };
 
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     assertTrue(!!element);
     const allSites = element.$.allHostsToggle;
@@ -123,7 +122,7 @@ suite('HostPermissionsToggleList', function() {
 
   // Tests the permissions display when a user has chosen to only run an
   // extension on-click.
-  test('permissions display for on click', function() {
+  test('permissions display for on click', async () => {
     const permissions = {
       hostAccess: HostAccess.ON_CLICK,
       hasAllHosts: false,
@@ -135,7 +134,7 @@ suite('HostPermissionsToggleList', function() {
     };
 
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     assertTrue(!!element);
     const allSites = element.$.allHostsToggle;
@@ -173,7 +172,7 @@ suite('HostPermissionsToggleList', function() {
     };
 
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     const learnMoreButton = element.$.linkIconButton;
     assertTrue(!!learnMoreButton);
@@ -203,13 +202,13 @@ suite('HostPermissionsToggleList', function() {
       ],
     };
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     assertTrue(!!element);
     const allSites = element.$.allHostsToggle;
     allSites.getLabel().click();
 
-    flush();
+    await microtasksFinished();
     assertFalse(!!element.getRestrictedSitesDialog());
 
     const [id, access] = await delegate.whenCalled('setItemHostAccess');
@@ -232,7 +231,7 @@ suite('HostPermissionsToggleList', function() {
       ],
     };
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     assertTrue(!!element);
     const allSites = element.$.allHostsToggle;
@@ -259,7 +258,7 @@ suite('HostPermissionsToggleList', function() {
     };
 
     element.permissions = permissions;
-    flush();
+    await microtasksFinished();
 
     const hostToggles =
         element.shadowRoot!.querySelectorAll<ExtensionsToggleRowElement>(
@@ -300,7 +299,7 @@ suite('HostPermissionsToggleList', function() {
         };
 
         element.permissions = permissions;
-        flush();
+        await microtasksFinished();
 
         const hostToggles =
             element.shadowRoot!.querySelectorAll<ExtensionsToggleRowElement>(
@@ -310,8 +309,8 @@ suite('HostPermissionsToggleList', function() {
         assertFalse(hostToggles[0]!.checked);
 
         hostToggles[0]!.getLabel().click();
-
-        flush();
+        await eventToPromise('change', hostToggles[0]!);
+        await microtasksFinished();
 
         // Check that the matching restricted sites dialog is visible and the
         // host's toggle is checked, even though the host has not been granted.
@@ -329,14 +328,15 @@ suite('HostPermissionsToggleList', function() {
         cancel.click();
         await whenClosed;
         assertFalse(dialog.wasConfirmed());
-        flush();
+        await microtasksFinished();
 
         // Cancelling the dialog should uncheck the host.
         assertFalse(!!element.getRestrictedSitesDialog());
         assertFalse(hostToggles[0]!.checked);
 
         hostToggles[0]!.getLabel().click();
-        flush();
+        await eventToPromise('change', hostToggles[0]!);
+        await microtasksFinished();
 
         dialog = element.getRestrictedSitesDialog()!;
         assertTrue(!!dialog);

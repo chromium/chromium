@@ -307,10 +307,10 @@ class DiceWebSigninInterceptHandlerChromeSigninInterceptionTest
           WebSigninInterceptor::SigninInterceptionType::kChromeSignin);
     if (IsSupervisedUsersUiFeatureEnabled()) {
       feature_list_.InitWithFeatures(
-          {supervised_user::kCustomWebSignInInterceptForSupervisedUsersUi}, {});
+          {supervised_user::kCustomProfileStringsForSupervisedUsers}, {});
     } else {
       feature_list_.InitWithFeatures(
-          {}, {supervised_user::kCustomWebSignInInterceptForSupervisedUsersUi});
+          {}, {supervised_user::kCustomProfileStringsForSupervisedUsers});
     }
 
     AccountCapabilitiesTestMutator mutator(&intercepted_account.capabilities);

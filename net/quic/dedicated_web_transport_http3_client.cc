@@ -308,8 +308,7 @@ void RecordNegotiatedHttpDatagramSupport(quic::HttpDatagramSupport support) {
       negotiated = NegotiatedHttpDatagramVersion::kRfc;
       break;
     case quic::HttpDatagramSupport::kRfcAndDraft04:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   base::UmaHistogramEnumeration(
       "Net.WebTransport.NegotiatedHttpDatagramVersion", negotiated);
@@ -405,8 +404,7 @@ DedicatedWebTransportHttp3Client::~DedicatedWebTransportHttp3Client() {
 void DedicatedWebTransportHttp3Client::Connect() {
   if (state_ != WebTransportState::NEW ||
       next_connect_state_ != CONNECT_STATE_NONE) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   TransitionToState(WebTransportState::CONNECTING);
@@ -481,9 +479,7 @@ void DedicatedWebTransportHttp3Client::DoLoop(int rv) {
         rv = DoConfirmConnection();
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "Invalid state reached: " << connect_state;
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED() << "Invalid state reached: " << connect_state;
     }
   } while (rv == OK && next_connect_state_ != CONNECT_STATE_NONE);
 
@@ -815,8 +811,7 @@ void DedicatedWebTransportHttp3Client::TransitionToState(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid state reached: " << next_state;
-      break;
+      NOTREACHED() << "Invalid state reached: " << next_state;
   }
 }
 

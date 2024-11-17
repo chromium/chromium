@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/jobs/prepare_install_info_job.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -37,11 +38,6 @@ class Profile;
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace webapps {
-class WebAppUrlLoader;
-enum class WebAppUrlLoaderResult;
-}  // namespace webapps
 
 namespace web_app {
 
@@ -133,32 +129,16 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
 
  private:
+  using TrustCheckResult =
+      base::expected<std::optional<web_package::SignedWebBundleIntegrityBlock>,
+                     std::string>;
+
   void ReportFailure(std::string_view message);
   void ReportSuccess(const base::Version& update_version);
 
-  template <typename T, std::enable_if_t<std::is_void_v<T>, bool> = true>
-  void RunNextStepOnSuccess(base::OnceClosure next_step_callback,
-                            base::expected<T, std::string> status) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!status.has_value()) {
-      ReportFailure(status.error());
-    } else {
-      std::move(next_step_callback).Run();
-    }
-  }
-
-  template <typename T, std::enable_if_t<!std::is_void_v<T>, bool> = true>
-  void RunNextStepOnSuccess(base::OnceCallback<void(T)> next_step_callback,
-                            base::expected<T, std::string> status) {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    if (!status.has_value()) {
-      ReportFailure(status.error());
-    } else {
-      std::move(next_step_callback).Run(std::move(*status));
-    }
-  }
-
   Profile& profile();
+
+  void CheckIfUpdateIsStillApplicable(base::OnceClosure next_step_callback);
 
   void CopyToProfileDirectory(base::OnceClosure next_step_callback);
 
@@ -166,39 +146,22 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
       base::OnceClosure next_step_callback,
       base::expected<IsolatedWebAppStorageLocation, std::string> new_location);
 
-  void CheckIfUpdateIsStillApplicable(base::OnceClosure next_step_callback);
+  void CheckTrustAndSignatures(base::OnceClosure next_step_callback);
 
-  void CheckTrustAndSignatures(
-      base::OnceCallback<
-          void(std::optional<web_package::SignedWebBundleIntegrityBlock>)>
+  void OnTrustAndSignaturesChecked(base::OnceClosure next_step_callback,
+                                   TrustCheckResult trust_check_result);
+
+  void CreateStoragePartition(base::OnceClosure next_step_callback);
+
+  void PrepareInstallInfo(
+      base::OnceCallback<void(PrepareInstallInfoJob::InstallInfoOrFailure)>
           next_step_callback);
 
-  void CreateStoragePartition(
-      base::OnceClosure next_step_callback,
-      std::optional<web_package::SignedWebBundleIntegrityBlock>
-          integrity_block);
-
-  void LoadInstallUrl(base::OnceClosure next_step_callback);
-
-  void CheckInstallabilityAndRetrieveManifest(
-      base::OnceCallback<void(blink::mojom::ManifestPtr)> next_step_callback);
-
-  void ValidateManifestAndCreateInstallInfo(
-      base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-      blink::mojom::ManifestPtr manifest);
-
-  void RetrieveIconsAndPopulateInstallInfo(
-      base::OnceCallback<void(WebAppInstallInfo)> next_step_callback,
-      WebAppInstallInfo install_info);
-
-  void Finalize(WebAppInstallInfo info);
+  void SetPendingUpdateInfo(PrepareInstallInfoJob::InstallInfoOrFailure result);
 
   void OnFinalized(const base::Version& update_version, bool success);
 
-  SEQUENCE_CHECKER(sequence_checker_);
-
   std::unique_ptr<AppLock> lock_;
-  std::unique_ptr<webapps::WebAppUrlLoader> url_loader_;
 
   const std::unique_ptr<IsolatedWebAppInstallCommandHelper> command_helper_;
 
@@ -209,8 +172,6 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data_;
 
   bool same_version_update_allowed_by_key_rotation_ = false;
-  // Key Rotation data for this IWA.
-  std::optional<std::vector<uint8_t>> rotated_key_;
 
   std::optional<IwaSourceWithModeAndFileOp> update_source_;
   std::optional<IwaSourceWithMode> destination_location_;
@@ -221,6 +182,8 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
 
   const std::unique_ptr<ScopedKeepAlive> optional_keep_alive_;
   const std::unique_ptr<ScopedProfileKeepAlive> optional_profile_keep_alive_;
+
+  std::unique_ptr<PrepareInstallInfoJob> prepare_install_info_job_;
 
   base::WeakPtrFactory<IsolatedWebAppUpdatePrepareAndStoreCommand>
       weak_factory_{this};

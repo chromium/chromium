@@ -46,7 +46,8 @@ struct SameSizeAsElementData final
     : public GarbageCollected<SameSizeAsElementData> {
   unsigned bitfield;
   Member<void*> willbe_member;
-  void* pointers[2];
+  SpaceSplitString class_names_;
+  void* pointers[1];
 };
 
 ASSERT_SIZE(ElementData, SameSizeAsElementData);

@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -77,8 +78,7 @@ bool AreRawUsageStatsEnabled(
                it.Valid(); ++it) {
             const std::string app_id = base::WideToUTF8(it.Name());
             if (include_only_these_app_ids.empty() ||
-                base::ranges::find(include_only_these_app_ids, app_id) !=
-                    std::end(include_only_these_app_ids)) {
+                base::Contains(include_only_these_app_ids, app_id)) {
               app_ids.push_back(app_id);
             }
           }

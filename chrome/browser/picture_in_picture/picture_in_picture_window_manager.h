@@ -182,7 +182,6 @@ class PictureInPictureWindowManager {
 
 #if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<AutoPipSettingOverlayView> GetOverlayView(
-      const gfx::Rect& browser_view_overridden_bounds,
       views::View* anchor_view,
       views::BubbleBorder::Arrow arrow);
 

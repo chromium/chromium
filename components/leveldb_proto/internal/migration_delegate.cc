@@ -12,7 +12,7 @@
 
 namespace leveldb_proto {
 
-MigrationDelegate::MigrationDelegate() {}
+MigrationDelegate::MigrationDelegate() = default;
 MigrationDelegate::~MigrationDelegate() = default;
 
 void MigrationDelegate::DoMigration(UniqueProtoDatabase* from,

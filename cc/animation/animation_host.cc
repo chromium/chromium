@@ -338,6 +338,10 @@ void AnimationHost::SetNeedsPushProperties() {
     mutator_host_client()->SetMutatorsNeedCommit();
 }
 
+void AnimationHost::ResetNeedsPushProperties() {
+  needs_push_properties_.Write(*this) = false;
+}
+
 void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
                                      const PropertyTrees& property_trees) {
   auto* host_impl = static_cast<AnimationHost*>(mutator_host_impl);
@@ -363,8 +367,11 @@ void AnimationHost::PushPropertiesTo(MutatorHost* mutator_host_impl,
     PushTimelinesToImplThread(host_impl);
     RemoveTimelinesFromImplThread(host_impl);
     PushPropertiesToImplThread(host_impl);
-    // This is redundant but used in tests.
-    host_impl->needs_push_properties_.Write(*host_impl) = false;
+
+    // When using a display tree this ensures that any new animation updates are
+    // pushed to Viz on next display tree update. When not using display trees,
+    // setting this flag here is meaningless.
+    host_impl->needs_push_properties_.Write(*host_impl) = true;
   }
 }
 
@@ -778,11 +785,13 @@ std::optional<gfx::PointF> AnimationHost::ImplOnlyScrollAnimationUpdateTarget(
     const gfx::Vector2dF& scroll_delta,
     const gfx::PointF& max_scroll_offset,
     base::TimeTicks frame_monotonic_time,
-    base::TimeDelta delayed_by) {
+    base::TimeDelta delayed_by,
+    ElementId element_id) {
   DCHECK(scroll_offset_animations_impl_.Read(*this));
   return scroll_offset_animations_impl_.Write(*this)
       ->ScrollAnimationUpdateTarget(scroll_delta, max_scroll_offset,
-                                    frame_monotonic_time, delayed_by);
+                                    frame_monotonic_time, delayed_by,
+                                    element_id);
 }
 
 ScrollOffsetAnimations& AnimationHost::scroll_offset_animations() {
@@ -790,23 +799,39 @@ ScrollOffsetAnimations& AnimationHost::scroll_offset_animations() {
   return *scroll_offset_animations_.Write(*this).get();
 }
 
-void AnimationHost::ScrollAnimationAbort() {
+void AnimationHost::ScrollAnimationAbort(ElementId element_id) {
   DCHECK(scroll_offset_animations_impl_.Read(*this));
   scroll_offset_animations_impl_.Write(*this)->ScrollAnimationAbort(
-      false /* needs_completion */);
+      false /* needs_completion */, element_id);
 }
 
-ElementId AnimationHost::ImplOnlyScrollAnimatingElement() const {
-  DCHECK(scroll_offset_animations_impl_.Read(*this));
-  if (!scroll_offset_animations_impl_.Read(*this)->IsAnimating())
-    return ElementId();
-
-  return scroll_offset_animations_impl_.Read(*this)->GetElementId();
+bool AnimationHost::ElementHasImplOnlyScrollAnimation(
+    ElementId element_id) const {
+  return scroll_offset_animations_impl_.Read(*this)
+      ->ElementHasImplOnlyScrollAnimation(element_id);
 }
 
-void AnimationHost::ImplOnlyScrollAnimatingElementRemoved() {
+bool AnimationHost::HasImplOnlyScrollAnimatingElement() const {
+  return scroll_offset_animations_impl_.Read(*this)
+      ->HasImplOnlyScrollAnimatingElement();
+}
+
+bool AnimationHost::HasImplOnlyAutoScrollAnimatingElement() const {
+  return scroll_offset_animations_impl_.Read(*this)
+      ->HasImplOnlyAutoScrollAnimatingElement();
+}
+
+bool AnimationHost::IsElementInPropertyTrees(ElementId element_id,
+                                             bool commits_to_active) const {
+  return mutator_host_client()->IsElementInPropertyTrees(
+      element_id,
+      commits_to_active ? ElementListType::ACTIVE : ElementListType::PENDING);
+}
+
+void AnimationHost::HandleRemovedScrollAnimatingElements(
+    bool commits_to_active) {
   scroll_offset_animations_impl_.Write(*this)
-      ->AnimatingElementRemovedByCommit();
+      ->HandleRemovedScrollAnimatingElements(commits_to_active);
 }
 
 void AnimationHost::AddToTicking(scoped_refptr<Animation> animation) {
@@ -931,10 +956,6 @@ bool AnimationHost::HasScrollLinkedAnimation(ElementId for_scroller) const {
     }
   }
   return false;
-}
-
-bool AnimationHost::IsAutoScrolling() const {
-  return scroll_offset_animations_impl_.Read(*this)->IsAutoScrolling();
 }
 
 }  // namespace cc

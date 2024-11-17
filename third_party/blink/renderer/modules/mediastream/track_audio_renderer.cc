@@ -330,7 +330,7 @@ void TrackAudioRenderer::SwitchOutputDevice(
     return;
   }
 
-  output_device_id_ = String(device_id.data(), device_id.size());
+  output_device_id_ = String(device_id);
   bool was_sink_started = sink_started_;
 
   if (sink_)

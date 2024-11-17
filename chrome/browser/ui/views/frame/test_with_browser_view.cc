@@ -9,7 +9,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
@@ -36,7 +35,7 @@
 #include "content/public/test/test_utils.h"
 #include "services/network/test/test_url_loader_factory.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 #endif
@@ -56,10 +55,6 @@ std::unique_ptr<KeyedService> CreateTemplateURLService(
           HistoryServiceFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS)),
       base::RepeatingClosure()
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-          ,
-      profile->IsMainProfile()
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   );
 }
 
@@ -78,7 +73,7 @@ std::unique_ptr<KeyedService> CreateAutocompleteClassifier(
 TestWithBrowserView::~TestWithBrowserView() = default;
 
 void TestWithBrowserView::SetUp() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::input_method::InitializeForTesting(
       new ash::input_method::MockInputMethodManagerImpl);
 #endif
@@ -104,7 +99,7 @@ void TestWithBrowserView::TearDown() {
   content::RunAllTasksUntilIdle();
 
   BrowserWithTestWindowTest::TearDown();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::input_method::Shutdown();
 #endif
 }

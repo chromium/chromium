@@ -10,13 +10,13 @@
 #include <map>
 #include <unordered_map>
 
-#include "ui/gfx/gfx_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
 // This is used to generate a series of sequential ID numbers in a way that a
 // new ID is always the lowest possible ID in the sequence.
-class GFX_EXPORT SequentialIDGenerator {
+class COMPONENT_EXPORT(GFX) SequentialIDGenerator {
  public:
    // Creates a new generator with the specified lower bound for the IDs.
   explicit SequentialIDGenerator(uint32_t min_id);

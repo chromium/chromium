@@ -439,8 +439,8 @@ sk_sp<PaintShader> PaintShader::CreateDecodedImage(
 
 sk_sp<SkShader> PaintShader::GetSkShader(
     PaintFlags::FilterQuality quality) const {
-  SkSamplingOptions sampling(
-      PaintFlags::FilterQualityToSkSamplingOptions(quality));
+  SkSamplingOptions sampling(PaintFlags::FilterQualityToSkSamplingOptions(
+      quality, PaintFlags::ScalingOperation::kUnknown));
 
   switch (shader_type_) {
     case Type::kEmpty:
@@ -506,8 +506,7 @@ sk_sp<SkShader> PaintShader::GetSkShader(
       }
       break;
     case Type::kShaderCount:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // If we didn't create a shader for whatever reason, create a fallback
@@ -600,8 +599,7 @@ bool PaintShader::IsOpaque() const {
     case Type::kPaintRecord:
       return false;
     case Type::kShaderCount:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return fallback_color_.isOpaque();
 }

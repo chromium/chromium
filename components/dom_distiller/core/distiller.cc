@@ -37,7 +37,7 @@ DistillerFactoryImpl::DistillerFactoryImpl(
     : distiller_url_fetcher_factory_(std::move(distiller_url_fetcher_factory)),
       dom_distiller_options_(dom_distiller_options) {}
 
-DistillerFactoryImpl::~DistillerFactoryImpl() {}
+DistillerFactoryImpl::~DistillerFactoryImpl() = default;
 
 std::unique_ptr<Distiller> DistillerFactoryImpl::CreateDistillerForUrl(
     const GURL& unused) {
@@ -47,9 +47,9 @@ std::unique_ptr<Distiller> DistillerFactoryImpl::CreateDistillerForUrl(
   return std::move(distiller);
 }
 
-DistillerImpl::DistilledPageData::DistilledPageData() {}
+DistillerImpl::DistilledPageData::DistilledPageData() = default;
 
-DistillerImpl::DistilledPageData::~DistilledPageData() {}
+DistillerImpl::DistilledPageData::~DistilledPageData() = default;
 
 DistillerImpl::DistillerImpl(
     const DistillerURLFetcherFactory& distiller_url_fetcher_factory,
@@ -124,7 +124,7 @@ void DistillerImpl::DistillNextPage() {
   if (!waiting_pages_.empty()) {
     auto front = waiting_pages_.begin();
     int page_num = front->first;
-    const GURL url = front->second;
+    const GURL url = std::move(front->second);
 
     waiting_pages_.erase(front);
     DCHECK(url.is_valid());
@@ -289,10 +289,9 @@ void DistillerImpl::OnFetchImageDone(int page_num,
   DCHECK(fetcher_it != page_data->image_fetchers_.end());
   // Delete the |url_fetcher| by DeleteSoon since the OnFetchImageDone
   // callback is invoked by the |url_fetcher|.
-  fetcher_it->release();
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(*fetcher_it));
   page_data->image_fetchers_.erase(fetcher_it);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                url_fetcher);
 
   DistilledPageProto_Image* image =
       page_data->distilled_page_proto->data.add_image();

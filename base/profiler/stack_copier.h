@@ -28,7 +28,7 @@ class BASE_EXPORT StackCopier {
   // callback when the stack is copied, while the target thread is suspended.
   class BASE_EXPORT Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Invoked at the time the stack is copied.
     // IMPORTANT NOTE: to avoid deadlock implementations of this interface must

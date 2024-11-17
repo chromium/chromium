@@ -631,8 +631,7 @@ Position CompositeEditCommand::PositionOutsideTabSpan(const Position& pos) {
 
   switch (pos.AnchorType()) {
     case PositionAnchorType::kAfterChildren:
-      NOTREACHED_IN_MIGRATION();
-      return pos;
+      NOTREACHED();
     case PositionAnchorType::kOffsetInAnchor:
       break;
     case PositionAnchorType::kBeforeAnchor:

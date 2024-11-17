@@ -10,6 +10,7 @@
 #include <list>
 #include <map>
 #include <memory>
+#include <optional>
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
@@ -60,11 +61,12 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
   ~InterestGroupUpdateManager();
 
   // Loads all interest groups owned by `owner`, then updates their definitions
-  // by fetching their `dailyUpdateUrl`. Interest group updates that fail to
+  // by fetching their `updateURL`. Interest group updates that fail to
   // load or validate are skipped, but other updates will proceed.
   void UpdateInterestGroupsOfOwner(
       const url::Origin& owner,
       network::mojom::ClientSecurityStatePtr client_security_state,
+      std::optional<std::string> user_agent_override,
       AreReportingOriginsAttestedCallback callback);
 
   // Like UpdateInterestGroupsOfOwner(), but handles multiple interest group
@@ -74,6 +76,7 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
   void UpdateInterestGroupsOfOwners(
       base::span<url::Origin> owners,
       network::mojom::ClientSecurityStatePtr client_security_state,
+      std::optional<std::string> user_agent_override,
       AreReportingOriginsAttestedCallback callback);
 
   // For testing *only*; changes the maximum amount of time that the update
@@ -110,6 +113,23 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
     OwnersToUpdate();
     ~OwnersToUpdate();
 
+    // Data needed for an update for a specific url origin.
+    struct InterestGroupOwnerUpdateData {
+      // TODO(crbug.com/375015069): Consolidate the other maps like
+      // `security_state_map_` and possibly `joining_origin_isolation_info_map_`
+      // into this struct.
+      InterestGroupOwnerUpdateData();
+      explicit InterestGroupOwnerUpdateData(
+          std::optional<std::string> user_agent_override);
+      ~InterestGroupOwnerUpdateData();
+      InterestGroupOwnerUpdateData(const InterestGroupOwnerUpdateData& other);
+      InterestGroupOwnerUpdateData& operator=(
+          const InterestGroupOwnerUpdateData& other);
+
+      // Contains value if the page that made the update request
+      // had a user agent that was overridden.
+      std::optional<std::string> user_agent_override;
+    };
     // Returns true iff there are no more interest group owners to process.
     bool Empty() const;
 
@@ -128,7 +148,8 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
     // Callers *must* call MaybeContinueUpdatingCurrentOwner() after Enqueue()
     // to ensure the that `owner` gets processed.
     bool Enqueue(const url::Origin& owner,
-                 network::mojom::ClientSecurityStatePtr client_security_state);
+                 network::mojom::ClientSecurityStatePtr client_security_state,
+                 std::optional<std::string> user_agent_override);
 
     // Removes the current `owner` and its associated ClientSecurityState from
     // the front of the queue. Requires !Empty().
@@ -139,6 +160,9 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
     // next time call of GetIsolationInfoByJoiningOrigin(), due to the map could
     // be re-allocated to a new address.
     net::IsolationInfo* GetIsolationInfoByJoiningOrigin(const url::Origin&);
+
+    std::optional<std::string> MaybeGetUserAgentOverride(
+        const url::Origin&) const;
 
     // Clear `joining_origin_isolation_info_map_`.
     void ClearJoiningOriginIsolationInfoMap();
@@ -154,6 +178,9 @@ class CONTENT_EXPORT InterestGroupUpdateManager {
     // ClientSecurityState that was used to make the update request.
     base::flat_map<url::Origin, network::mojom::ClientSecurityStatePtr>
         security_state_map_;
+
+    std::map<url::Origin, InterestGroupOwnerUpdateData>
+        interest_group_owner_update_data_;
 
     // IsolationInfo map, keyed by `StorageInterestGroup::joining_origin`.
     // This is used to improve privacy that only the interest groups from same

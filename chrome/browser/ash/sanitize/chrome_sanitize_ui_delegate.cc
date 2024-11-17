@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/sanitize/chrome_sanitize_ui_delegate.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/ash/sanitize/chrome_sanitize_ui_delegate.h"
@@ -17,7 +18,8 @@ namespace ash {
 
 ChromeSanitizeUIDelegate::~ChromeSanitizeUIDelegate() = default;
 
-ChromeSanitizeUIDelegate::ChromeSanitizeUIDelegate(content::WebUI* web_ui) {
+ChromeSanitizeUIDelegate::ChromeSanitizeUIDelegate(content::WebUI* web_ui)
+    : restart_attempt_(base::BindRepeating(&chrome::AttemptRestart)) {
   auto* profile = Profile::FromWebUI(web_ui);
   resetter_ = std::make_unique<ProfileResetter>(profile);
   pref_service_ = profile->GetPrefs();
@@ -31,6 +33,11 @@ void ChromeSanitizeUIDelegate::PerformSanitizeSettings() {
       ProfileResetter::NTP_CUSTOMIZATIONS | ProfileResetter::LANGUAGES |
       ProfileResetter::DNS_CONFIGURATIONS;
 
+  if (base::FeatureList::IsEnabled(ash::features::kSanitizeV1)) {
+    to_sanitize |=
+        ProfileResetter::PROXY_SETTINGS | ProfileResetter::KEYBOARD_SETTINGS;
+  }
+
   GetResetter()->ResetSettings(
       to_sanitize, nullptr,
       base::BindOnce(&ChromeSanitizeUIDelegate::OnSanitizeDone,
@@ -39,18 +46,20 @@ void ChromeSanitizeUIDelegate::PerformSanitizeSettings() {
   base::RecordAction(base::UserMetricsAction("Sanitize"));
 }
 
-ProfileResetter* ChromeSanitizeUIDelegate::GetResetter() {
-  return resetter_.get();
+void ChromeSanitizeUIDelegate::SetAttemptRestartForTesting(
+    const base::RepeatingClosure& restart_attempt) {
+  CHECK(!restart_attempt.is_null());
+  restart_attempt_ = restart_attempt;
 }
 
-void ChromeSanitizeUIDelegate::RestartChrome() {
-  chrome::AttemptRestart();
+ProfileResetter* ChromeSanitizeUIDelegate::GetResetter() {
+  return resetter_.get();
 }
 
 void ChromeSanitizeUIDelegate::OnSanitizeDone() {
   pref_service_->SetBoolean(ash::settings::prefs::kSanitizeCompleted, true);
   pref_service_->CommitPendingWrite();
-  RestartChrome();
+  restart_attempt_.Run();
 }
 
 }  // namespace ash

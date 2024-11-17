@@ -7,7 +7,8 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace feature_engagement {
 class Tracker;
@@ -18,9 +19,6 @@ class Tracker;
 // object with a given profile.
 class TrackerFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static Tracker* GetForBrowserState(ChromeBrowserState* browser_state);
-
   static Tracker* GetForProfile(ProfileIOS* profile);
   static TrackerFactory* GetInstance();
 

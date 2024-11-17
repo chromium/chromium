@@ -16,20 +16,6 @@
 
 namespace password_manager {
 
-namespace {
-
-std::string CreateRandomSalt() {
-  constexpr size_t kSyncPasswordSaltLength = 16;
-
-  uint8_t buffer[kSyncPasswordSaltLength];
-  crypto::RandBytes(buffer);
-  // Explicit std::string constructor with a string length must be used in order
-  // to avoid treating '\0' symbols as a string ends.
-  return std::string(std::begin(buffer), std::end(buffer));
-}
-
-}  // namespace
-
 PasswordHashData::PasswordHashData() = default;
 
 PasswordHashData::PasswordHashData(const PasswordHashData& other) = default;
@@ -115,6 +101,16 @@ bool AreUsernamesSame(const std::string& username1,
   }
   return CanonicalizeUsername(username1, is_username1_gaia_account) ==
          CanonicalizeUsername(username2, is_username2_gaia_account);
+}
+
+std::string CreateRandomSalt() {
+  constexpr size_t kSyncPasswordSaltLength = 16;
+
+  uint8_t buffer[kSyncPasswordSaltLength];
+  crypto::RandBytes(buffer);
+  // Explicit std::string constructor with a string length must be used in order
+  // to avoid treating '\0' symbols as a string ends.
+  return std::string(std::begin(buffer), std::end(buffer));
 }
 
 }  // namespace password_manager

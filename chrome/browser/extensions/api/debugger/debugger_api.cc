@@ -58,12 +58,14 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "pdf/buildflags.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/common/pdf_util.h"
@@ -192,16 +194,32 @@ bool ExtensionMayAttachToURL(const Extension& extension,
   return true;
 }
 
+// Returns whether the extension may attach to a frame. `frame_url` is the URL
+// of the frame, If querying about a frame, `page_url` is non-null, and
+// identifies the URL of the outermost frame.
 bool ExtensionMayAttachToURLOrInnerURL(const Extension& extension,
                                        Profile* extension_profile,
-                                       const GURL& url,
+                                       const GURL& frame_url,
+                                       const GURL* page_url,
                                        std::string* error) {
-  if (!ExtensionMayAttachToURL(extension, extension_profile, url, error))
+  // cid: URLs within file: urls are just parts of the top level page, and don't
+  // represent new origins. We skip over these and instead test against the
+  // top-level page URL.
+  if (page_url && page_url->SchemeIsFile() &&
+      frame_url.SchemeIs(url::kContentIDScheme)) {
+    return ExtensionMayAttachToURLOrInnerURL(extension, extension_profile,
+                                             *page_url, nullptr, error);
+  }
+
+  if (!ExtensionMayAttachToURL(extension, extension_profile, frame_url,
+                               error)) {
     return false;
+  }
   // For nested URLs, make sure ExtensionMayAttachToURL() allows both
   // the outer and the inner URLs.
-  if (url.inner_url() && !ExtensionMayAttachToURL(extension, extension_profile,
-                                                  *url.inner_url(), error)) {
+  if (frame_url.inner_url() &&
+      !ExtensionMayAttachToURL(extension, extension_profile,
+                               *frame_url.inner_url(), error)) {
     return false;
   }
   return true;
@@ -221,8 +239,9 @@ bool ExtensionMayAttachToRenderFrameHost(
     content::RenderFrameHost* render_frame_host,
     std::string* error) {
   bool result = true;
+  const GURL& page_url = render_frame_host->GetLastCommittedURL();
   render_frame_host->ForEachRenderFrameHostWithAction(
-      [&extension, extension_profile, error,
+      [&page_url, &extension, extension_profile, error,
        &result](content::RenderFrameHost* render_frame_host) {
         // If |render_frame_host| is attached to an inner MimeHandlerViewGuest
         // skip it. This is done to fix crbug.com/1293856 because an extension
@@ -259,10 +278,11 @@ bool ExtensionMayAttachToRenderFrameHost(
         // has been updated but navigation hasn't committed yet.
         if (!ExtensionMayAttachToURLOrInnerURL(
                 extension, extension_profile,
-                render_frame_host->GetLastCommittedURL(), error) ||
+                render_frame_host->GetLastCommittedURL(), &page_url, error) ||
             !ExtensionMayAttachToURLOrInnerURL(
                 extension, extension_profile,
-                render_frame_host->GetSiteInstance()->GetSiteURL(), error)) {
+                render_frame_host->GetSiteInstance()->GetSiteURL(), &page_url,
+                error)) {
           result = false;
           return content::RenderFrameHost::FrameIterationAction::kStop;
         }
@@ -453,6 +473,11 @@ bool ExtensionDevToolsClientHost::Attach() {
     return true;
   }
 
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kSilentDebuggerExtensionAPI)) {
+    return true;
+  }
+
   // We allow policy-installed extensions to circumvent the normal
   // infobar warning. See crbug.com/693621.
   if (Manifest::IsPolicyLocation(extension_->location()))
@@ -636,7 +661,8 @@ bool ExtensionDevToolsClientHost::MayAttachToURL(const GURL& url,
   if (is_webui)
     return false;
   std::string error;
-  return ExtensionMayAttachToURLOrInnerURL(*extension_, profile_, url, &error);
+  return ExtensionMayAttachToURLOrInnerURL(*extension_, profile_, url, nullptr,
+                                           &error);
 }
 
 bool ExtensionDevToolsClientHost::IsTrusted() {

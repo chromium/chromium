@@ -10,19 +10,31 @@
 @implementation TabStripHelper
 
 + (UIColor*)backgroundColor {
-  if ([TabStripFeaturesUtils isTabStripDarkerBackgroundEnabled] ||
-      [TabStripFeaturesUtils isTabStripCloserNTBDarkerBackgroundEnabled]) {
-    return [UIColor colorNamed:kTabStripBackgroundColor];
-  } else if ([TabStripFeaturesUtils isTabStripBlackBackgroundEnabled]) {
+  if (TabStripFeaturesUtils.hasDetachedTabs) {
     return UIColor.blackColor;
+  }
+  return [self cellBackgroundColor];
+}
+
++ (UIColor*)cellBackgroundColor {
+  if (TabStripFeaturesUtils.hasBlackBackground) {
+    return UIColor.blackColor;
+  } else if (TabStripFeaturesUtils.hasDarkerBackground) {
+    return [UIColor colorNamed:kTabStripBackgroundColor];
+  } else if (TabStripFeaturesUtils.hasDarkerBackgroundV3) {
+    return [UIColor colorNamed:kTabStripV3BackgroundColor];
   }
   return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
 
 + (UIColor*)newTabButtonSymbolColor {
-  if ([TabStripFeaturesUtils isTabStripBlackBackgroundEnabled]) {
+  if (TabStripFeaturesUtils.hasDetachedTabs) {
+    return UIColor.whiteColor;
+  } else if (TabStripFeaturesUtils.hasHighContrastNTB) {
+    return [UIColor colorNamed:kTextPrimaryColor];
+  } else if (TabStripFeaturesUtils.hasBlackBackground) {
     return [UIColor colorNamed:kStaticGrey600Color];
-  } else if ([TabStripFeaturesUtils isTabStripV2]) {
+  } else if (TabStripFeaturesUtils.hasBiggerNTB) {
     return [UIColor colorNamed:kTabStripNewTabButtonColor];
   }
   return [UIColor colorNamed:kTextSecondaryColor];

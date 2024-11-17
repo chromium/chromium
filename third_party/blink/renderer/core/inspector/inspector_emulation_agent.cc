@@ -283,8 +283,8 @@ protocol::Response InspectorEmulationAgent::setEmulatedMedia(
   auto const old_emulated_media_features_keys = emulated_media_features_.Keys();
   emulated_media_features_.Clear();
 
-  if (features.has_value()) {
-    for (const auto& media_feature : features.value()) {
+  if (features) {
+    for (const auto& media_feature : *features) {
       String name = media_feature->getName();
       String value = media_feature->getValue();
       emulated_media_features_.Set(name, value);
@@ -573,14 +573,14 @@ protocol::Response InspectorEmulationAgent::setDefaultBackgroundColorOverride(
   protocol::Response response = AssertPage();
   if (!response.IsSuccess())
     return response;
-  if (!color.has_value()) {
+  if (!color) {
     // Clear the override and state.
     GetWebViewImpl()->SetBaseBackgroundColorOverrideForInspector(std::nullopt);
     default_background_color_override_rgba_.Clear();
     return protocol::Response::Success();
   }
 
-  blink::protocol::DOM::RGBA* rgba = &color.value();
+  blink::protocol::DOM::RGBA* rgba = &*color;
   default_background_color_override_rgba_.Set(rgba->Serialize());
   // Clamping of values is done by Color() constructor.
   int alpha = static_cast<int>(lroundf(255.0f * rgba->getA(1.0f)));
@@ -647,7 +647,7 @@ protocol::Response InspectorEmulationAgent::setUserAgentOverride(
         navigator_platform_override_.Get());
   }
 
-  if (ua_metadata_override.has_value()) {
+  if (ua_metadata_override) {
     blink::UserAgentMetadata default_ua_metadata =
         Platform::Current()->UserAgentMetadata();
 
@@ -657,8 +657,7 @@ protocol::Response InspectorEmulationAgent::setUserAgentOverride(
       return protocol::Response::InvalidParams(
           "Can't specify UserAgentMetadata but no UA string");
     }
-    protocol::Emulation::UserAgentMetadata& ua_metadata =
-        ua_metadata_override.value();
+    protocol::Emulation::UserAgentMetadata& ua_metadata = *ua_metadata_override;
     ua_metadata_override_.emplace();
     if (ua_metadata.hasBrands()) {
       for (const auto& bv : *ua_metadata.getBrands(nullptr)) {

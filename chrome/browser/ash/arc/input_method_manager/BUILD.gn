@@ -28,6 +28,7 @@ static_library("input_method_manager") {
     "//ash/components/arc",
     "//ash/public/cpp",
     "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/input_method",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/keyboard",

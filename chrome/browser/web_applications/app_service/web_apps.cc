@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/trace_event.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -30,8 +30,6 @@
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"  // nogncheck
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/apps/almanac_api_client/device_info_manager.h"
-#include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
@@ -39,7 +37,6 @@
 #include "chrome/browser/apps/app_service/promise_apps/promise_app_web_apps_utils.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
-#include "chrome/browser/ash/mall/mall_url.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/grit/generated_resources.h"
@@ -115,23 +112,6 @@ void WebApps::Launch(const std::string& app_id,
                      int32_t event_flags,
                      apps::LaunchSource launch_source,
                      apps::WindowInfoPtr window_info) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Redirect launches of the Mall app so that we can add additional context to
-  // the URL. Loading the context will cause a slight delay on first launch, but
-  // it is then cached in the DeviceInfoManager for subsequent launches.
-  // TODO(b/331702863): Remove this custom integration.
-  if (chromeos::features::IsCrosMallWebAppEnabled() && app_id == kMallAppId) {
-    apps::DeviceInfoManager* device_info_manager =
-        apps::DeviceInfoManagerFactory::GetForProfile(profile());
-    CHECK(device_info_manager);
-    device_info_manager->GetDeviceInfo(base::BindOnce(
-        &WebApps::LaunchMallWithContext, weak_ptr_factory_.GetWeakPtr(),
-        event_flags, launch_source, std::move(window_info)));
-
-    return;
-  }
-#endif
-
   publisher_helper().Launch(app_id, event_flags, launch_source,
                             std::move(window_info), base::DoNothing());
 }
@@ -484,17 +464,6 @@ void WebApps::ExecuteContextMenuCommand(const std::string& app_id,
   }
   publisher_helper().ExecuteContextMenuCommand(app_id, shortcut_id, display_id,
                                                base::DoNothing());
-}
-
-void WebApps::LaunchMallWithContext(int32_t event_flags,
-                                    apps::LaunchSource launch_source,
-                                    apps::WindowInfoPtr window_info,
-                                    apps::DeviceInfo device_info) {
-  LaunchAppWithIntent(
-      kMallAppId, event_flags,
-      std::make_unique<apps::Intent>(apps_util::kIntentActionView,
-                                     ash::GetMallLaunchUrl(device_info)),
-      launch_source, std::move(window_info), base::DoNothing());
 }
 
 #endif

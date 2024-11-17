@@ -42,7 +42,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/isolated_world_ids.h"
-#include "third_party/blink/public/mojom/input/input_handler.mojom-blink.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_update.h"
@@ -464,9 +464,9 @@ jint WebContentsAndroid::GetVisibility(JNIEnv* env) {
 }
 
 void WebContentsAndroid::UpdateWebContentsVisibility(JNIEnv* env,
-                                                     jint visibiity) {
+                                                     jint visibility) {
   web_contents_->UpdateWebContentsVisibility(
-      static_cast<Visibility>(visibiity));
+      static_cast<Visibility>(visibility));
 }
 
 RenderWidgetHostViewAndroid*
@@ -492,14 +492,6 @@ jboolean WebContentsAndroid::IsIncognito(JNIEnv* env) {
 
 void WebContentsAndroid::ResumeLoadingCreatedWebContents(JNIEnv* env) {
   web_contents_->ResumeLoadingCreatedWebContents();
-}
-
-void WebContentsAndroid::OnHide(JNIEnv* env) {
-  web_contents_->WasHidden();
-}
-
-void WebContentsAndroid::OnShow(JNIEnv* env) {
-  web_contents_->WasShown();
 }
 
 void WebContentsAndroid::SetImportance(JNIEnv* env,
@@ -752,13 +744,15 @@ void WebContentsAndroid::RequestAccessibilitySnapshot(
   // Set a timeout of 2.0 seconds to compute the snapshot of the
   // accessibility tree because Google Assistant ignores results that
   // don't come back within 3.0 seconds.
+  // TODO(nektar): Investigate removal of html mode for Android.
   static_cast<WebContentsImpl*>(web_contents_)
       ->RequestAXTreeSnapshot(
           base::BindOnce(
               &WebContentsAndroid::AXTreeSnapshotCallback,
               weak_factory_.GetWeakPtr(), std::move(j_view_structure_root),
               std::move(j_view_structure_builder), std::move(j_callback)),
-          ui::AXMode(ui::kAXModeComplete.flags() | ui::AXMode::kHTMLMetadata),
+          ui::AXMode(ui::kAXModeComplete.flags() | ui::AXMode::kHTML |
+                     ui::AXMode::kHTMLMetadata),
           /* max_nodes= */ 5000,
           /* timeout= */ base::Seconds(2),
           WebContents::AXTreeSnapshotPolicy::kAll);
@@ -873,12 +867,6 @@ void WebContentsAndroid::OnFinishDownloadImage(
   }
   Java_WebContentsImpl_onDownloadImageFinished(
       env, obj, callback, id, http_status_code, jurl, jbitmaps, jsizes);
-}
-
-void WebContentsAndroid::SetMediaSession(
-    const ScopedJavaLocalRef<jobject>& j_media_session) {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_WebContentsImpl_setMediaSession(env, obj_, j_media_session);
 }
 
 void WebContentsAndroid::SendOrientationChangeEvent(JNIEnv* env,

@@ -4,8 +4,11 @@
 
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_mediator.h"
 
+#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/autofill/core/common/unique_ids.h"
+#import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/image_fetcher/core/image_fetcher_impl.h"
@@ -25,12 +28,13 @@
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/passwords/model/password_tab_helper.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
+#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_presenter.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
-#import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/ui/settings/password/password_sharing/multi_avatar_image_util.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_constants.h"
@@ -47,8 +51,8 @@
 
 namespace {
 
-const char kImageFetcherUmaClient[] = "PasswordBottomSheet";
-const CGFloat kProfileImageSize = 80.0;
+constexpr char kImageFetcherUmaClient[] = "PasswordBottomSheet";
+constexpr CGFloat kProfileImageSize = 80.0;
 
 using PasswordSuggestionBottomSheetExitReason::kBadProvider;
 using ReauthenticationEvent::kAttempt;
@@ -62,19 +66,183 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
              : IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD;
 }
 
+// Makes a query to retrieve suggestions from a FormSuggestionProvider from the
+// provided `params`.
+FormSuggestionProviderQuery* MakeQueryFromParameters(
+    const autofill::FormActivityParams& params) {
+  return [[FormSuggestionProviderQuery alloc]
+      initWithFormName:base::SysUTF8ToNSString(params.form_name)
+        formRendererID:params.form_renderer_id
+       fieldIdentifier:base::SysUTF8ToNSString(params.field_identifier)
+       fieldRendererID:params.field_renderer_id
+             fieldType:base::SysUTF8ToNSString(params.field_type)
+                  type:base::SysUTF8ToNSString(params.type)
+            typedValue:base::SysUTF8ToNSString(params.value)
+               frameID:base::SysUTF8ToNSString(params.frame_id)];
+}
+
 }  // namespace
+
+// TODO(crbug.com/372426818): Move this is to its own specific file/module.
+// Interface that wraps a concrete provider to provide and fill suggestions for
+// the bottom sheet.
+@protocol BottomSheetFormSuggestionProviderWrapper <NSObject>
+
+// Retrieves suggestions for the form.
+- (void)retrieveSuggestionsForForm:(autofill::FormActivityParams)params
+                          webState:(web::WebState*)webState
+                        completion:
+                            (void (^)(NSArray<FormSuggestion*>* suggestions))
+                                completion;
+
+// Handles suggestions selection.
+- (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
+                   webState:(web::WebState*)webState;
+
+// Returns the type of the provider.
+- (SuggestionProviderType)type;
+
+@end
+
+// TODO(crbug.com/372426818): Move this is to its own specific file/module.
+// Provider for V1.
+@interface BottomSheetFormSuggestionProviderWrapperV1
+    : NSObject <BottomSheetFormSuggestionProviderWrapper>
+
+- (instancetype)initWithFormInputSuggestionProvider:
+    (id<FormInputSuggestionsProvider>)provider;
+
+@end
+
+@implementation BottomSheetFormSuggestionProviderWrapperV1 {
+  id<FormInputSuggestionsProvider> _providerWrapper;
+}
+
+- (instancetype)initWithFormInputSuggestionProvider:
+    (id<FormInputSuggestionsProvider>)provider {
+  if ((self = [super init])) {
+    _providerWrapper = provider;
+  }
+  return self;
+}
+
+- (void)retrieveSuggestionsForForm:(autofill::FormActivityParams)params
+                          webState:(web::WebState*)webState
+                        completion:
+                            (void (^)(NSArray<FormSuggestion*>* suggestions))
+                                completion {
+  [_providerWrapper
+      retrieveSuggestionsForForm:params
+                        webState:webState
+        accessoryViewUpdateBlock:^(NSArray<FormSuggestion*>* suggestions,
+                                   id<FormInputSuggestionsProvider> provider) {
+          completion(suggestions);
+        }];
+}
+
+- (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
+                   webState:(web::WebState*)webState {
+  [_providerWrapper didSelectSuggestion:suggestion atIndex:index];
+}
+
+- (SuggestionProviderType)type {
+  return _providerWrapper.type;
+}
+
+@end
+
+// TODO(crbug.com/372426818): Move this is to its own specific file/module.
+// Provider for V2.
+@interface BottomSheetFormSuggestionProviderWrapperV2
+    : NSObject <BottomSheetFormSuggestionProviderWrapper>
+
+- (instancetype)
+    initWithFormSuggestionProvider:(id<FormSuggestionProvider>)provider
+                            params:(autofill::FormActivityParams)params;
+
+- (void)retrieveSuggestionsForForm:(autofill::FormActivityParams)params
+                          webState:(web::WebState*)webState
+                        completion:
+                            (void (^)(NSArray<FormSuggestion*>* suggestions))
+                                completion;
+
+- (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
+                   webState:(web::WebState*)webState;
+
+@end
+
+@implementation BottomSheetFormSuggestionProviderWrapperV2 {
+  // Suggestions provider for the bottom sheet.
+  id<FormSuggestionProvider> _providerWrapper;
+
+  // Form activity parameters giving the context around the sheet trigger.
+  autofill::FormActivityParams _params;
+}
+
+- (instancetype)
+    initWithFormSuggestionProvider:(id<FormSuggestionProvider>)provider
+                            params:(autofill::FormActivityParams)params {
+  if ((self = [super init])) {
+    _providerWrapper = provider;
+    _params = params;
+  }
+  return self;
+}
+
+- (void)retrieveSuggestionsForForm:(autofill::FormActivityParams)params
+                          webState:(web::WebState*)webState
+                        completion:
+                            (void (^)(NSArray<FormSuggestion*>* suggestions))
+                                completion {
+  FormSuggestionProviderQuery* formQuery = MakeQueryFromParameters(params);
+  [_providerWrapper
+      retrieveSuggestionsForForm:formQuery
+                        webState:webState
+               completionHandler:^(NSArray<FormSuggestion*>* suggestions,
+                                   id<FormSuggestionProvider> delegate) {
+                 completion(suggestions);
+               }];
+}
+
+- (void)didSelectSuggestion:(FormSuggestion*)suggestion
+                    atIndex:(NSInteger)index
+                   webState:(web::WebState*)webState {
+  [_providerWrapper
+      didSelectSuggestion:suggestion
+                  atIndex:index
+                     form:base::SysUTF8ToNSString(_params.form_name)
+           formRendererID:_params.form_renderer_id
+          fieldIdentifier:base::SysUTF8ToNSString(_params.field_identifier)
+          fieldRendererID:_params.field_renderer_id
+                  frameID:base::SysUTF8ToNSString(_params.frame_id)
+        completionHandler:^{
+          // Close the keyboard after filling the suggestion. This is the same
+          // approach as used when filling with the FormInputSuggestionProvider
+          // in V1. Not doing this will result he re-popping the keyboard after
+          // filling is done which is a bad UX.
+          [webState->GetView() endEditing:YES];
+        }];
+}
+
+- (SuggestionProviderType)type {
+  return _providerWrapper.type;
+}
+
+@end
 
 @interface PasswordSuggestionBottomSheetMediator () <WebStateListObserving,
                                                      CRWWebStateObserver>
-
-// The object that provides suggestions while filling forms.
-@property(nonatomic, weak) id<FormInputSuggestionsProvider> suggestionsProvider;
-
 // List of suggestions in the bottom sheet.
 @property(nonatomic, strong) NSArray<FormSuggestion*>* suggestions;
 
 // Default globe favicon when no favicon is available.
 @property(nonatomic, readonly) FaviconAttributes* defaultGlobeIconAttributes;
+
+// Presenter that controls the presentation of the bottom sheet.
+@property(nonatomic, weak) id<PasswordSuggestionBottomSheetPresenter> presenter;
 
 @end
 
@@ -127,6 +295,15 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
   // Feature engagement tracker for notifying promo events.
   raw_ptr<feature_engagement::Tracker> _engagementTracker;
+
+  // Parameters that give the details on the field that triggered the bottom
+  // sheet. The sheet is tied to these fields during its entire lifetime.
+  autofill::FormActivityParams _params;
+
+  // Provider wrapper that gives suggestions and handles suggestion selection.
+  // The underlying concrete provider will be determined during initialization
+  // depending on the version of the sheet.
+  id<BottomSheetFormSuggestionProviderWrapper> _suggestionsProviderWrapper;
 }
 
 @synthesize defaultGlobeIconAttributes = _defaultGlobeIconAttributes;
@@ -146,7 +323,9 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
               accountPasswordStore
     sharedURLLoaderFactory:
         (scoped_refptr<network::SharedURLLoaderFactory>)sharedURLLoaderFactory
-         engagementTracker:(feature_engagement::Tracker*)engagementTracker {
+         engagementTracker:(feature_engagement::Tracker*)engagementTracker
+                 presenter:
+                     (id<PasswordSuggestionBottomSheetPresenter>)presenter {
   if ((self = [super init])) {
     _faviconLoader = faviconLoader;
     _prefService = prefService;
@@ -172,32 +351,51 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
         _webStateListObserver.get());
     _webStateListObservation->Observe(_webStateList);
 
-    if (activeWebState) {
-      FormSuggestionTabHelper* tabHelper =
-          FormSuggestionTabHelper::FromWebState(activeWebState);
-      DCHECK(tabHelper);
+    _presenter = presenter;
+    _params = params;
 
-      self.suggestionsProvider = tabHelper->GetAccessoryViewProvider();
-      DCHECK(self.suggestionsProvider);
+    if (activeWebState) {
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::kIOSPasswordBottomSheetV2)) {
+        // Use the V2 provider.
+        PasswordTabHelper* passwordTabHelper =
+            PasswordTabHelper::FromWebState(activeWebState);
+        CHECK(passwordTabHelper);
+        id<FormSuggestionProvider> provider =
+            passwordTabHelper->GetSuggestionProvider();
+        CHECK(provider);
+        _suggestionsProviderWrapper =
+            [[BottomSheetFormSuggestionProviderWrapperV2 alloc]
+                initWithFormSuggestionProvider:provider
+                                        params:_params];
+      } else {
+        // Use the V1 provider;
+        FormSuggestionTabHelper* tabHelper =
+            FormSuggestionTabHelper::FromWebState(activeWebState);
+        DCHECK(tabHelper);
+
+        id<FormInputSuggestionsProvider> provider =
+            tabHelper->GetAccessoryViewProvider();
+        CHECK(provider);
+
+        _suggestionsProviderWrapper =
+            [[BottomSheetFormSuggestionProviderWrapperV1 alloc]
+                initWithFormInputSuggestionProvider:provider];
+      }
 
       // The 'params' argument may go out of scope before the completion block
       // is called, so we need to store variables used in the completion block
       // locally.
       autofill::FormRendererId formId = params.form_renderer_id;
-      std::string frameId = params.frame_id;
-
       __weak __typeof(self) weakSelf = self;
-      [self.suggestionsProvider
+      [_suggestionsProviderWrapper
           retrieveSuggestionsForForm:params
                             webState:activeWebState
-            accessoryViewUpdateBlock:^(
-                NSArray<FormSuggestion*>* suggestions,
-                id<FormInputSuggestionsProvider> formInputSuggestionsProvider) {
-              weakSelf.suggestions = suggestions;
-              [weakSelf fetchCredentialsForForm:formId
-                                       webState:activeWebState
-                                     webFrameId:frameId];
-            }];
+                          completion:^(NSArray<FormSuggestion*>* suggestions) {
+                            weakSelf.suggestions = suggestions;
+                            [weakSelf fetchCredentialsForForm:formId
+                                                     webState:activeWebState];
+                          }];
     }
 
     _engagementTracker = engagementTracker;
@@ -212,10 +410,10 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
   _prefService = nullptr;
   _faviconLoader = nullptr;
 
-  _webStateListObservation = nullptr;
-  _webStateListObserver = nullptr;
-  _forwarder = nullptr;
-  _webStateObserver = nullptr;
+  _webStateListObservation.reset();
+  _webStateListObserver.reset();
+  _forwarder.reset();
+  _webStateObserver.reset();
   _webStateList = nullptr;
 }
 
@@ -282,10 +480,8 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
     // should be at least one suggestion at this point because the consumer is
     // set when there is at least one suggestion.
     [consumer setPrimaryActionString:l10n_util::GetNSString(
-                                        PrimaryActionStringIdFromSuggestion(
-                                            self.suggestions.firstObject))];
-  } else {
-    [consumer dismiss];
+                                         PrimaryActionStringIdFromSuggestion(
+                                             self.suggestions.firstObject))];
   }
 }
 
@@ -324,7 +520,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
   }
 }
 
-- (void)dismiss {
+- (void)onDismissWithoutAnyPasswordAction {
   [self incrementDismissCount];
   [self markSharedPasswordNotificationsDisplayed];
 }
@@ -342,7 +538,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
       return;
     }
 
-    tabHelper->DetachPasswordListenersForAllFrames();
+    tabHelper->DetachPasswordListenersForAllFrames(/*refocus=*/true);
   }
 }
 
@@ -407,14 +603,24 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 #pragma mark - Private
 
 - (void)onWebStateChange {
-  [self.consumer dismiss];
+  // As there is no more context for showing the bottom sheet, end the
+  // presentation.
+  [self.presenter endPresentation];
 }
 
 // Perform suggestion selection
 - (void)selectSuggestion:(FormSuggestion*)suggestion atIndex:(NSInteger)index {
   default_browser::NotifyPasswordAutofillSuggestionUsed(_engagementTracker);
-  if (self.suggestionsProvider.type == SuggestionProviderTypePassword) {
-    [self.suggestionsProvider didSelectSuggestion:suggestion atIndex:index];
+
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return;
+  }
+
+  if ([_suggestionsProviderWrapper type] == SuggestionProviderTypePassword) {
+    [_suggestionsProviderWrapper didSelectSuggestion:suggestion
+                                             atIndex:index
+                                            webState:activeWebState];
   } else {
     [self logExitReason:kBadProvider];
   }
@@ -466,8 +672,7 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
 
 // Fetches all credentials for the current form.
 - (void)fetchCredentialsForForm:(autofill::FormRendererId)formId
-                       webState:(web::WebState*)webState
-                     webFrameId:(const std::string&)frameId {
+                       webState:(web::WebState*)webState {
   _credentials.clear();
 
   if (![self hasSuggestions]) {
@@ -486,7 +691,11 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
   web::WebFramesManager* webFramesManager =
       AutofillBottomSheetJavaScriptFeature::GetInstance()->GetWebFramesManager(
           webState);
-  web::WebFrame* frame = webFramesManager->GetFrameWithId(frameId);
+  web::WebFrame* frame = webFramesManager->GetFrameWithId(_params.frame_id);
+
+  if (!frame) {
+    return;
+  }
 
   password_manager::PasswordManagerDriver* driver =
       IOSPasswordManagerDriverFactory::FromWebStateAndWebFrame(webState, frame);
@@ -569,6 +778,29 @@ int PrimaryActionStringIdFromSuggestion(FormSuggestion* suggestion) {
   [_senderImages addObject:image];
   [_consumer
       setAvatarImage:CreateMultiAvatarImage(_senderImages, kProfileImageSize)];
+}
+
+// Returns the AutofillBottomSheetTabHelper for the active webstate or nil if
+// it can't be retrieved.
+- (AutofillBottomSheetTabHelper*)tabHelper {
+  if (!_webStateList) {
+    return nil;
+  }
+
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return nil;
+  }
+
+  return AutofillBottomSheetTabHelper::FromWebState(activeWebState);
+}
+
+// Refocuses the login fields that was blurred to show this bottom sheet, if
+// deemded needed.
+- (void)refocus {
+  if (AutofillBottomSheetTabHelper* tabHelper = [self tabHelper]) {
+    tabHelper->RefocusElementIfNeeded(_params.frame_id);
+  }
 }
 
 @end

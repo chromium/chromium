@@ -35,21 +35,22 @@ def _AddArguments(parser):
     parser: ArgumentParser object.
   """
   parser.add_argument(
-      '--input-path',
+      '--root-build-dir',
       required=True,
-      help='Path to input file(s). Either the classes '
-      'directory, or the path to a jar.')
-  parser.add_argument(
-      '--output-path',
-      required=True,
-      help='Path to output final file(s) to. Either the '
-      'final classes directory, or the directory in '
-      'which to place the instrumented/copied jar.')
-  parser.add_argument(
-      '--sources-json-file',
-      required=True,
-      help='File to create with the list of source directories '
-      'and input path.')
+      help='Path to build directory rooted at checkout dir e.g. //out/Release')
+  parser.add_argument('--input-path',
+                      required=True,
+                      help='Path to input file(s). Either the classes '
+                      'directory, or the path to a jar.')
+  parser.add_argument('--output-path',
+                      required=True,
+                      help='Path to output final file(s) to. Either the '
+                      'final classes directory, or the directory in '
+                      'which to place the instrumented/copied jar.')
+  parser.add_argument('--sources-json-file',
+                      required=True,
+                      help='File to create with the list of source directories '
+                      'and input path.')
   parser.add_argument(
       '--target-sources-file',
       required=True,
@@ -73,8 +74,8 @@ def _GetSourceDirsFromSourceFiles(source_files):
   return list(set(os.path.dirname(source_file) for source_file in source_files))
 
 
-def _CreateSourcesJsonFile(source_dirs, input_path, sources_json_file,
-                           src_root):
+def _CreateSourcesJsonFile(source_dirs, input_path, sources_json_file, src_root,
+                           root_build_dir):
   """Adds all normalized source directories and input path to
   |sources_json_file|.
 
@@ -82,8 +83,10 @@ def _CreateSourcesJsonFile(source_dirs, input_path, sources_json_file,
     source_dirs: List of source directories.
     input_path: The input path to non-instrumented class files.
     sources_json_file: File into which to write the list of source directories
-    and input path.
+      and input path.
     src_root: Root which sources added to the file should be relative to.
+    root_build_dir: Build directory path rooted at checkout where
+      sources_json_file is generated e.g. //out/Release
 
   Returns:
     An exit code.
@@ -103,7 +106,8 @@ def _CreateSourcesJsonFile(source_dirs, input_path, sources_json_file,
   data = {}
   data['source_dirs'] = relative_sources
   data['input_path'] = []
-  data['output_dir'] = src_root
+  build_dir = os.path.join(src_root, root_build_dir[2:])
+  data['output_dir'] = build_dir
   if input_path:
     data['input_path'].append(os.path.abspath(input_path))
   with open(sources_json_file, 'w') as f:
@@ -232,7 +236,8 @@ def _RunInstrumentCommand(parser):
           shutil.copyfile(args.input_path, args.output_path)
           # Create a dummy sources_json_file.
           _CreateSourcesJsonFile([], None, args.sources_json_file,
-                                 build_utils.DIR_SOURCE_ROOT)
+                                 build_utils.DIR_SOURCE_ROOT,
+                                 args.root_build_dir)
           return 0
     _InstrumentClassFiles(instrument_cmd, args.input_path, args.output_path,
                           temp_dir, affected_source_files)
@@ -242,7 +247,7 @@ def _RunInstrumentCommand(parser):
   # directories, then walking them to re-establish the list of sources.
   # This can obviously be simplified!
   _CreateSourcesJsonFile(source_dirs, args.input_path, args.sources_json_file,
-                         build_utils.DIR_SOURCE_ROOT)
+                         build_utils.DIR_SOURCE_ROOT, args.root_build_dir)
 
   return 0
 

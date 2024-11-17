@@ -72,7 +72,6 @@ build_webui("build") {
     "crostini_page/crostini_settings_card.ts",
     "crostini_page/crostini_subpage.ts",
     "date_time_page/date_time_settings_card.ts",
-    "date_time_page/date_time_page.ts",
     "date_time_page/timezone_selector.ts",
     "date_time_page/timezone_subpage.ts",
     "device_page/audio.ts",
@@ -293,6 +292,7 @@ build_webui("build") {
     "os_people_page/add_user_dialog.ts",
     "os_people_page/additional_accounts_settings_card.ts",
     "os_people_page/fingerprint_list_subpage.ts",
+    "os_people_page/graduation/graduation_settings_card.ts",
     "os_people_page/local_data_recovery_dialog.ts",
     "os_people_page/lock_screen_subpage.ts",
     "os_people_page/password_settings.ts",
@@ -342,7 +342,6 @@ build_webui("build") {
     "os_privacy_page/smart_privacy_subpage.ts",
     "os_reset_page/os_powerwash_dialog.ts",
     "os_reset_page/os_powerwash_dialog_esim_item.ts",
-    "os_reset_page/os_reset_page.ts",
     "os_reset_page/os_sanitize_dialog.ts",
     "os_reset_page/reset_settings_card.ts",
     "os_search_page/google_assistant_subpage.ts",
@@ -434,6 +433,7 @@ build_webui("build") {
     "os_a11y_page/audio_and_captions_page_browser_proxy.ts",
     "os_a11y_page/cursor_and_touchpad_page_browser_proxy.ts",
     "os_a11y_page/facegaze_constants.ts",
+    "os_a11y_page/disable_touchpad_constants.ts",
     "os_a11y_page/facegaze_subpage_browser_proxy.ts",
     "os_a11y_page/keyboard_and_text_input_page_browser_proxy.ts",
     "os_a11y_page/os_a11y_page_browser_proxy.ts",
@@ -468,6 +468,7 @@ build_webui("build") {
     "os_people_page/account_manager_browser_proxy.ts",
     "os_people_page/fingerprint_browser_proxy.ts",
     "os_people_page/os_sync_browser_proxy.ts",
+    "os_people_page/graduation/mojo_interface_provider.ts",
     "os_printing_page/cups_printer_dialog_util.ts",
     "os_printing_page/cups_printer_types.ts",
     "os_printing_page/cups_printers_browser_proxy.ts",
@@ -529,6 +530,7 @@ build_webui("build") {
     "//chrome/browser/ui/webui/ash/settings/pages/device/display_settings:mojom_ts__generator",
     "//chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings:mojom_ts__generator",
     "//chrome/browser/ui/webui/ash/settings/pages/files/mojom:mojom_ts__generator",
+    "//chrome/browser/ui/webui/ash/settings/pages/people/mojom:mojom_ts__generator",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy/mojom:mojom_ts__generator",
     "//chrome/browser/ui/webui/ash/settings/pages/search/mojom:mojom_ts__generator",
     "//chrome/browser/ui/webui/ash/settings/search/mojom:mojom_ts__generator",
@@ -554,6 +556,7 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/ui/webui/ash/settings/pages/search/mojom/magic_boost_handler.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/settings/pages/files/mojom/one_drive_handler.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/settings/pages/privacy/mojom/app_permission_handler.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/ash/settings/pages/people/mojom/graduation_handler.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/settings/search/mojom/search.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/settings/search/mojom/search_result_icon.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/settings/search/mojom/user_action_recorder.mojom-webui.ts",
@@ -596,6 +599,11 @@ build_webui("build") {
     # Additional path mappings for Nearby share code
     "/shared/*|" + rebase_path("$nearby_share_tsc_dir/*", target_gen_dir),
   ]
+
+  if (is_chrome_branded) {
+    ts_path_mappings += [ "/nearby/nearby-share-internal-icons.m.js|" +
+                          rebase_path("dummy.d.ts", target_gen_dir) ]
+  }
 
   extra_grdp_deps = [
     "//chrome/browser/resources/chromeos/nearby_share/shared:build_json_grdp",

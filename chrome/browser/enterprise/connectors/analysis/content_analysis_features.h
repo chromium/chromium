@@ -9,18 +9,17 @@
 
 namespace enterprise_connectors {
 
-// Controls whether the custom message per rule feature is enabled or not. Does
-// not affect interstitials custom message per rule feature.
-BASE_DECLARE_FEATURE(kDialogCustomRuleMessageEnabled);
-
 // Controls whether the resumable upload protocol is enabled or not.
 BASE_DECLARE_FEATURE(kResumableUploadEnabled);
 
-// Returns true if custom rule message is enabled.
-bool IsDialogCustomRuleMessageEnabled();
+// Controls whether Chrome can stop register fcm token.
+BASE_DECLARE_FEATURE(kStopRegisterFcmEnabled);
 
 // Returns true if resumable upload is enabled.
 bool IsResumableUploadEnabled();
+
+// Returns true if stop register fcm token is enabled.
+bool IsStopRegisterFcmEnabled();
 
 }  // namespace enterprise_connectors
 

@@ -49,7 +49,6 @@ class WebAppRegistrarMutable;
 class WebAppSyncBridge;
 class WebAppTranslationManager;
 class WebAppUiManager;
-class WebAppUiStateManager;
 class WebContentsManager;
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -256,7 +255,6 @@ class WebAppProvider : public KeyedService {
   std::unique_ptr<IsolatedWebAppPolicyManager> isolated_web_app_policy_manager_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<WebAppUiManager> ui_manager_;
-  std::unique_ptr<WebAppUiStateManager> ui_state_manager_;
   std::unique_ptr<OsIntegrationManager> os_integration_manager_;
   std::unique_ptr<WebAppCommandManager> command_manager_;
   std::unique_ptr<WebAppCommandScheduler> command_scheduler_;

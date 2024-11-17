@@ -79,7 +79,8 @@
           "group": "tryserver.chromium.mac"
         }
       ],
-      "retry_failed_shards": true
+      "retry_failed_shards": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Mac13 Tests/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

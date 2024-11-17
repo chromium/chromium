@@ -141,7 +141,7 @@ public class NotificationIntentInterceptorTest {
     @Test
     public void testContentIntentInterception() throws Exception {
         // Send notification.
-        new NotificationManagerProxyImpl(mContext)
+        NotificationManagerProxyImpl.getInstance()
                 .notify(buildSimpleNotification(TEST_NOTIFICATION_TITLE));
 
         // Simulates a notification click.
@@ -170,7 +170,7 @@ public class NotificationIntentInterceptorTest {
     @Test
     public void testDeleteIntentInterception() throws Exception {
         // Send notification.
-        new NotificationManagerProxyImpl(mContext)
+        NotificationManagerProxyImpl.getInstance()
                 .notify(buildSimpleNotification(TEST_NOTIFICATION_TITLE));
 
         // Simulates a notification cancel.
@@ -193,7 +193,7 @@ public class NotificationIntentInterceptorTest {
     @Test
     public void testActionIntentInterception() throws Exception {
         // Send notification.
-        new NotificationManagerProxyImpl(mContext)
+        NotificationManagerProxyImpl.getInstance()
                 .notify(buildSimpleNotification(TEST_NOTIFICATION_TITLE));
 
         // Simulates a button click.

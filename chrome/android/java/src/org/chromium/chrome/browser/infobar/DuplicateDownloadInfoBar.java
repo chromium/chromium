@@ -10,12 +10,13 @@ import android.view.View;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadOpenSource;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.DuplicateDownloadClickableSpan;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.infobars.InfoBarLayout;
@@ -28,7 +29,7 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
     private final String mFilePath;
     private final boolean mIsOfflinePage;
     private final String mPageUrl;
-    private final OTRProfileID mOTRProfileID;
+    private final OtrProfileId mOtrProfileId;
     private final boolean mDuplicateRequestExists;
 
     @CalledByNative
@@ -36,24 +37,25 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
             String filePath,
             boolean isOfflinePage,
             String pageUrl,
-            OTRProfileID otrProfileID,
+            OtrProfileId otrProfileId,
             boolean duplicateRequestExists) {
         return new DuplicateDownloadInfoBar(
                 ContextUtils.getApplicationContext(),
                 filePath,
                 isOfflinePage,
                 pageUrl,
-                otrProfileID,
+                otrProfileId,
                 duplicateRequestExists);
     }
 
     /**
      * Constructs DuplicateDownloadInfoBar.
+     *
      * @param context Application context.
      * @param filePath The file path.
      * @param isOfflinePage Whether the download is for offline page.
      * @param pageUrl Url of the page, ignored if this is a regular download.
-     * @param otrProfileID The {@link OTRProfileID} of the download. Null if in regular mode.
+     * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
      * @param duplicateRequestExists Whether the duplicate is a download in progress.
      */
     private DuplicateDownloadInfoBar(
@@ -61,7 +63,7 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
             String filePath,
             boolean isOfflinePage,
             String pageUrl,
-            OTRProfileID otrProfileID,
+            OtrProfileId otrProfileId,
             boolean duplicateRequestExists) {
         super(
                 R.drawable.infobar_downloading,
@@ -74,7 +76,7 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
         mFilePath = filePath;
         mIsOfflinePage = isOfflinePage;
         mPageUrl = pageUrl;
-        mOTRProfileID = otrProfileID;
+        mOtrProfileId = otrProfileId;
         mDuplicateRequestExists = duplicateRequestExists;
     }
 
@@ -97,10 +99,9 @@ public class DuplicateDownloadInfoBar extends ConfirmInfoBar {
         } else {
             DuplicateDownloadClickableSpan span =
                     new DuplicateDownloadClickableSpan(
-                            context,
                             mFilePath,
-                            () -> {},
-                            mOTRProfileID,
+                            CallbackUtils.emptyRunnable(),
+                            mOtrProfileId,
                             DownloadOpenSource.INFO_BAR);
             layout.setMessage(
                     DownloadUtils.getDownloadMessageText(

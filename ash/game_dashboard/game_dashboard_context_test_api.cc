@@ -13,6 +13,7 @@
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_cursor_handler.h"
 #include "ash/game_dashboard/game_dashboard_main_menu_view.h"
+#include "ash/game_dashboard/game_dashboard_network_view.h"
 #include "ash/game_dashboard/game_dashboard_toolbar_view.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/style/icon_button.h"
@@ -62,6 +63,12 @@ views::Widget* GameDashboardContextTestApi::GetGameDashboardButtonWidget()
 GameDashboardButton* GameDashboardContextTestApi::GetGameDashboardButton()
     const {
   return context_->game_dashboard_button_;
+}
+
+float GameDashboardContextTestApi::GetGameDashboardButtonCornerRadius() const {
+  auto* game_dashboard_button = GetGameDashboardButton();
+  CHECK(game_dashboard_button);
+  return game_dashboard_button->container_corner_radius_;
 }
 
 views::Label* GameDashboardContextTestApi::GetGameDashboardButtonTitle() const {
@@ -152,6 +159,13 @@ GameDashboardContextTestApi::GetMainMenuBatteryView() {
   auto* main_menu_view = GetMainMenuView();
   CHECK(main_menu_view);
   return main_menu_view->battery_view_;
+}
+
+GameDashboardNetworkView*
+GameDashboardContextTestApi::GetMainMenuNetworkView() {
+  auto* main_menu_view = GetMainMenuView();
+  CHECK(main_menu_view);
+  return main_menu_view->network_view_;
 }
 
 Switch* GameDashboardContextTestApi::GetMainMenuGameControlsFeatureSwitch() {

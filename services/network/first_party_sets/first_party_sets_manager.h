@@ -17,6 +17,7 @@
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/types/optional_ref.h"
 #include "net/base/schemeful_site.h"
 #include "net/first_party_sets/first_party_set_entry.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
@@ -51,7 +52,7 @@ class FirstPartySetsManager {
   // not both, and not neither.
   [[nodiscard]] std::optional<net::FirstPartySetMetadata> ComputeMetadata(
       const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site,
+      base::optional_ref<const net::SchemefulSite> top_frame_site,
       const net::FirstPartySetsContextConfig& fps_context_config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
 
@@ -83,7 +84,7 @@ class FirstPartySetsManager {
   // only be called once the instance is fully initialized.
   void ComputeMetadataAndInvoke(
       const net::SchemefulSite& site,
-      const std::optional<net::SchemefulSite> top_frame_site,
+      base::optional_ref<const net::SchemefulSite> top_frame_site,
       const net::FirstPartySetsContextConfig& fps_context_config,
       base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const;
 
@@ -91,7 +92,7 @@ class FirstPartySetsManager {
   // is fully initialized.
   net::FirstPartySetMetadata ComputeMetadataInternal(
       const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site,
+      base::optional_ref<const net::SchemefulSite> top_frame_site,
       const net::FirstPartySetsContextConfig& fps_context_config) const;
 
   // Returns `site`'s entry, or `nullopt` if `site` has no entry.

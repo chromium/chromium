@@ -191,7 +191,7 @@ class TransportListener {
                                const IpczDriverHandle* handles,
                                size_t num_handles,
                                IpczTransportActivityFlags flags,
-                               const void*) {
+                               const struct IpczTransportActivityOptions*) {
     auto* listener = reinterpret_cast<TransportListener*>(transport);
     auto bytes = base::make_span(static_cast<const uint8_t*>(data), num_bytes);
     listener->HandleActivity(bytes, base::make_span(handles, num_handles),

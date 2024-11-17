@@ -106,6 +106,9 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
   // focusing, otherwise forward focusing.
   void MaybeFocusOut(bool reverse);
 
+  // Sets previous focus and next focus of desk button.
+  void InitializeAccessibleProperties();
+
  private:
   // views::Widget:
   bool OnNativeWidgetActivationChanged(bool active) override;

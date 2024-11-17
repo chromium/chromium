@@ -53,7 +53,7 @@ class LanguageDetectionJavascriptTest : public web::JavascriptTest {
         addScriptMessageHandler:handler_
                            name:@"LanguageDetectionTextCaptured"];
   }
-  ~LanguageDetectionJavascriptTest() override {}
+  ~LanguageDetectionJavascriptTest() override = default;
 
   void SetUp() override {
     web::JavascriptTest::SetUp();

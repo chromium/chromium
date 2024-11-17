@@ -67,8 +67,7 @@ bool RulesContainsProxy(const net::ProxyConfig::ProxyRules& proxy_rules,
              CheckProxyList(proxy_rules.proxies_for_https, target_proxy);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsValidCustomProxyConfig(const mojom::CustomProxyConfig& config) {
@@ -84,8 +83,7 @@ bool IsValidCustomProxyConfig(const mojom::CustomProxyConfig& config) {
              !config.rules.proxies_for_https.IsEmpty();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // Merges headers from |in| to |out|. If the header already exists in |out| they

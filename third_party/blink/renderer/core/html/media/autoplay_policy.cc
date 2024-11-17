@@ -57,8 +57,7 @@ bool ComputeLockPendingUserGestureRequired(const Document& document) {
       return false;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 }  // anonymous namespace

@@ -41,8 +41,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "base/win/iat_patch_function.h"
 #include "base/win/scoped_handle.h"
@@ -99,82 +99,6 @@ const wchar_t* const kTroublesomeDlls[] = {
 BASE_FEATURE(kEnableCsrssLockdownFeature,
              "EnableCsrssLockdown",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Helper to recording timing information during process creation.
-class SandboxLaunchTimer {
- public:
-  SandboxLaunchTimer() = default;
-  SandboxLaunchTimer(const SandboxLaunchTimer&) = delete;
-  SandboxLaunchTimer& operator=(const SandboxLaunchTimer&) = delete;
-
-  // Call after the policy base object is created.
-  void OnPolicyCreated() { policy_created_ = timer_.Elapsed(); }
-
-  // Call after the delegate has generated policy settings.
-  void OnPolicyGenerated() { policy_generated_ = timer_.Elapsed(); }
-
-  // Call after CreateProcess() has returned a suspended process.
-  void OnProcessSpawned() { process_spawned_ = timer_.Elapsed(); }
-
-  // Call after unsuspending the process.
-  void OnProcessResumed() { process_resumed_ = timer_.Elapsed(); }
-
-  // Call once to record histograms for a successful process launch.
-  void RecordHistograms() {
-    // If these parameters change the histograms should be renamed.
-    // We're interested in the happy fast case so have a low maximum.
-    const auto kLowBound = base::Microseconds(5);
-    const auto kHighBound = base::Microseconds(100000);
-    const int kBuckets = 50;
-
-    base::UmaHistogramCustomMicrosecondsTimes(
-        "Process.Sandbox.StartSandboxedWin.CreatePolicyDuration",
-        policy_created_, kLowBound, kHighBound, kBuckets);
-    base::UmaHistogramCustomMicrosecondsTimes(
-        "Process.Sandbox.StartSandboxedWin.GeneratePolicyDuration",
-        policy_generated_ - policy_created_, kLowBound, kHighBound, kBuckets);
-    base::UmaHistogramCustomMicrosecondsTimes(
-        "Process.Sandbox.StartSandboxedWin.SpawnTargetDuration",
-        process_spawned_ - policy_generated_, kLowBound, kHighBound, kBuckets);
-    base::UmaHistogramCustomMicrosecondsTimes(
-        "Process.Sandbox.StartSandboxedWin.PostSpawnTargetDuration",
-        process_resumed_ - process_spawned_, kLowBound, kHighBound, kBuckets);
-    base::UmaHistogramCustomMicrosecondsTimes(
-        "Process.Sandbox.StartSandboxedWin.TotalDuration", process_resumed_,
-        kLowBound, kHighBound, kBuckets);
-  }
-
- private:
-  // `timer_` starts when this object is created.
-  const base::ElapsedTimer timer_;
-  base::TimeDelta policy_created_;
-  base::TimeDelta policy_generated_;
-  base::TimeDelta process_spawned_;
-  base::TimeDelta process_resumed_;
-};
-
-// Adds the policy rules to allow read-only access to the windows system fonts
-// directory, and any subdirectories. Used by PDF renderers.
-bool AddWindowsFontsDir(TargetConfig* config) {
-  DCHECK(!config->IsConfigured());
-  base::FilePath directory;
-  if (!base::PathService::Get(base::DIR_WINDOWS_FONTS, &directory)) {
-    return false;
-  }
-
-  ResultCode result = config->AllowFileAccess(FileSemantics::kAllowReadonly,
-                                              directory.value().c_str());
-  if (result != SBOX_ALL_OK)
-    return false;
-
-  std::wstring directory_str = directory.value() + L"\\*";
-  result = config->AllowFileAccess(FileSemantics::kAllowReadonly,
-                                   directory_str.c_str());
-  if (result != SBOX_ALL_OK)
-    return false;
-
-  return true;
-}
 
 // Return a mapping between the long and short names for all loaded modules in
 // the current process. The mapping excludes modules which don't have a typical
@@ -643,14 +567,9 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
     config->AddRestrictingRandomSid();
   }
 
-  if (delegate->AllowWindowsFontsDir()) {
-    AddWindowsFontsDir(config);
-  }
-
   result = AddGenericConfig(config);
   if (result != SBOX_ALL_OK) {
-    NOTREACHED_IN_MIGRATION();
-    return result;
+    NOTREACHED();
   }
 
   std::string appcontainer_id;
@@ -749,6 +668,30 @@ bool IsUnsandboxedProcess(
 }
 
 }  // namespace
+
+void SandboxLaunchTimer::RecordHistograms() {
+  // If these parameters change the histograms should be renamed.
+  // We're interested in the happy fast case so have a low maximum.
+  const auto kLowBound = base::Microseconds(5);
+  const auto kHighBound = base::Microseconds(100000);
+  const int kBuckets = 50;
+
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Process.Sandbox.StartSandboxedWin.CreatePolicyDuration", policy_created_,
+      kLowBound, kHighBound, kBuckets);
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Process.Sandbox.StartSandboxedWin.GeneratePolicyDuration",
+      policy_generated_ - policy_created_, kLowBound, kHighBound, kBuckets);
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Process.Sandbox.StartSandboxedWin.SpawnTargetDuration",
+      process_spawned_ - policy_generated_, kLowBound, kHighBound, kBuckets);
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Process.Sandbox.StartSandboxedWin.PostSpawnTargetDuration",
+      process_resumed_ - process_spawned_, kLowBound, kHighBound, kBuckets);
+  base::UmaHistogramCustomMicrosecondsTimes(
+      "Process.Sandbox.StartSandboxedWin.TotalDuration", process_resumed_,
+      kLowBound, kHighBound, kBuckets);
+}
 
 // static
 ResultCode SandboxWin::SetJobLevel(Sandbox sandbox_type,
@@ -887,13 +830,56 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
   return false;
 }
 
+class BrokerServicesDelegateImpl : public BrokerServicesDelegate {
+ public:
+  bool ParallelLaunchEnabled() override {
+    return features::IsParallelLaunchEnabled();
+  }
+
+  void ParallelLaunchPostTaskAndReplyWithResult(
+      const base::Location& from_here,
+      base::OnceCallback<CreateTargetResult()> task,
+      base::OnceCallback<void(CreateTargetResult)> reply) override {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        from_here,
+        {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+         base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+        std::move(task), std::move(reply));
+  }
+
+  void BeforeTargetProcessCreateOnCreationThread(
+      const void* trace_id) override {
+    int active_threads = ++creation_threads_in_use_;
+    base::UmaHistogramCounts100("MPArch.ChildProcessLaunchActivelyInParallel",
+                                active_threads);
+
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("startup", "TargetProcess::Create",
+                                      trace_id);
+  }
+
+  void AfterTargetProcessCreateOnCreationThread(const void* trace_id,
+                                                DWORD process_id) override {
+    creation_threads_in_use_--;
+    TRACE_EVENT_NESTABLE_ASYNC_END1("startup", "TargetProcess::Create",
+                                    trace_id, "pid", process_id);
+  }
+
+ private:
+  // When parallel launching is enabled, target creation will happen on the
+  // thread pool. This is atomic to keep track of the number of threads that are
+  // currently creating processes.
+  std::atomic<int> creation_threads_in_use_ = 0;
+};
+
 // static
 bool SandboxWin::InitBrokerServices(BrokerServices* broker_services) {
   // TODO(abarth): DCHECK(CalledOnValidThread());
   //               See <http://b/1287166>.
   DCHECK(broker_services);
   DCHECK(!g_broker_services);
-  ResultCode init_result = broker_services->Init();
+
+  ResultCode init_result =
+      broker_services->Init(std::make_unique<BrokerServicesDelegateImpl>());
   g_broker_services = broker_services;
 
 // In non-official builds warn about dangerous uses of DuplicateHandle. This
@@ -976,14 +962,18 @@ ResultCode SandboxWin::StartSandboxedProcess(
     const base::CommandLine& cmd_line,
     const base::HandlesToInheritVector& handles_to_inherit,
     SandboxDelegate* delegate,
-    base::Process* process) {
+    StartSandboxedProcessCallback result_callback) {
   SandboxLaunchTimer timer;
 
   // Avoid making a policy if we won't use it.
   if (IsUnsandboxedProcess(delegate->GetSandboxType(), cmd_line,
                            *base::CommandLine::ForCurrentProcess())) {
-    return LaunchWithoutSandbox(cmd_line, handles_to_inherit, delegate,
-                                process);
+    base::Process process;
+    ResultCode result =
+        LaunchWithoutSandbox(cmd_line, handles_to_inherit, delegate, &process);
+    DWORD last_error = GetLastError();
+    std::move(result_callback).Run(std::move(process), last_error, result);
+    return SBOX_ALL_OK;
   }
 
   auto policy = g_broker_services->CreatePolicy(delegate->GetSandboxTag());
@@ -991,32 +981,47 @@ ResultCode SandboxWin::StartSandboxedProcess(
 
   ResultCode result = GeneratePolicyForSandboxedProcess(
       cmd_line, handles_to_inherit, delegate, policy.get());
-  if (SBOX_ALL_OK != result)
-    return result;
-  timer.OnPolicyGenerated();
-
-  TRACE_EVENT_BEGIN0("startup", "StartProcessWithAccess::LAUNCHPROCESS");
-
-  PROCESS_INFORMATION temp_process_info = {};
-  DWORD last_error = ERROR_SUCCESS;
-  result = g_broker_services->SpawnTarget(
-      cmd_line.GetProgram().value().c_str(),
-      cmd_line.GetCommandLineString().c_str(), std::move(policy), &last_error,
-      &temp_process_info);
-  timer.OnProcessSpawned();
-
-  base::win::ScopedProcessInformation target(temp_process_info);
-
-  TRACE_EVENT_END0("startup", "StartProcessWithAccess::LAUNCHPROCESS");
-
   if (SBOX_ALL_OK != result) {
-    base::UmaHistogramSparse("Process.Sandbox.Launch.Error", last_error);
-    if (result == SBOX_ERROR_GENERIC)
-      DPLOG(ERROR) << "Failed to launch process";
-    else
-      DLOG(ERROR) << "Failed to launch process. Error: " << result;
+    DWORD last_error = GetLastError();
+    std::move(result_callback).Run(base::Process(), last_error, result);
     return result;
   }
+  timer.OnPolicyGenerated();
+
+  int64_t trace_event_id = timer.GetStartTimeInMicroseconds();
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "startup", "StartProcessWithAccess::LAUNCHPROCESS", trace_event_id);
+
+  g_broker_services->SpawnTargetAsync(
+      cmd_line.GetProgram().value().c_str(),
+      cmd_line.GetCommandLineString().c_str(), std::move(policy),
+      base::BindOnce(&SandboxWin::FinishStartSandboxedProcess, delegate,
+                     std::move(timer), std::move(result_callback)));
+  return SBOX_ALL_OK;
+}
+
+// static
+void SandboxWin::FinishStartSandboxedProcess(
+    SandboxDelegate* delegate,
+    SandboxLaunchTimer timer,
+    StartSandboxedProcessCallback result_callback,
+    base::win::ScopedProcessInformation target,
+    DWORD last_error,
+    ResultCode result) {
+  int64_t trace_event_id = timer.GetStartTimeInMicroseconds();
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
+      "startup", "StartProcessWithAccess::LAUNCHPROCESS", trace_event_id);
+  if (SBOX_ALL_OK != result) {
+    base::UmaHistogramSparse("Process.Sandbox.Launch.Error", last_error);
+    if (result == SBOX_ERROR_GENERIC) {
+      DPLOG(ERROR) << "Failed to launch process";
+    } else {
+      DLOG(ERROR) << "Failed to launch process. Error: " << result;
+    }
+    std::move(result_callback).Run(base::Process(), last_error, result);
+    return;
+  }
+  timer.OnProcessSpawned();
 
   delegate->PostSpawnTarget(target.process_handle());
   CHECK(ResumeThread(target.thread_handle()) != static_cast<DWORD>(-1));
@@ -1027,8 +1032,8 @@ ResultCode SandboxWin::StartSandboxedProcess(
     timer.RecordHistograms();
   }
 
-  *process = base::Process(target.TakeProcessHandle());
-  return SBOX_ALL_OK;
+  base::Process process(target.TakeProcessHandle());
+  std::move(result_callback).Run(std::move(process), last_error, result);
 }
 
 // static
@@ -1048,8 +1053,12 @@ void BlocklistAddOneDllForTesting(const wchar_t* module_name,
 }
 
 // static
-std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
-  switch (sandbox_type) {
+std::string SandboxWin::GetSandboxTypeInEnglish(
+    const std::optional<Sandbox>& sandbox_type) {
+  if (!sandbox_type.has_value()) {
+    return "Unknown";
+  }
+  switch (sandbox_type.value()) {
     case Sandbox::kNoSandbox:
       return "Unsandboxed";
     case Sandbox::kNoSandboxAndElevatedPrivileges:
@@ -1062,10 +1071,6 @@ std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
       return "Utility";
     case Sandbox::kGpu:
       return "GPU";
-#if BUILDFLAG(ENABLE_PPAPI)
-    case Sandbox::kPpapi:
-      return "PPAPI";
-#endif
     case Sandbox::kNetwork:
       return "Network";
     case Sandbox::kOnDeviceModelExecution:
@@ -1113,12 +1118,6 @@ std::string SandboxWin::GetSandboxTagForDelegate(
 
 // static
 std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
-  // Trigger feature list initialization here to ensure no population bias in
-  // the experimental and control groups.
-  [[maybe_unused]] const bool high_renderer_limits =
-      base::FeatureList::IsEnabled(
-          sandbox::policy::features::kWinSboxHighRendererJobMemoryLimits);
-
 #if defined(ARCH_CPU_64_BITS)
   size_t memory_limit = static_cast<size_t>(kDataSizeLimit);
 
@@ -1141,7 +1140,7 @@ std::optional<size_t> SandboxWin::GetJobMemoryLimit(Sandbox sandbox_type) {
       memory_limit = 8 * GB;
     }
 
-    if (sandbox_type == Sandbox::kRenderer && high_renderer_limits) {
+    if (sandbox_type == Sandbox::kRenderer) {
       // Set limit to 1Tb.
       memory_limit = 1024 * GB;
     }

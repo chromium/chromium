@@ -242,6 +242,9 @@ class PageInfo : private content_settings::CookieControlsObserver,
   // Handles opening the connection help center page and records the event.
   void OpenConnectionHelpCenterPage(const ui::Event& event);
 
+  // Handles opening the Safe Browsing help center page.
+  void OpenSafeBrowsingHelpCenterPage(const ui::Event& event);
+
   // Handles opening the settings page for a permission.
   void OpenContentSettingsExceptions(ContentSettingsType content_settings_type);
 
@@ -501,6 +504,8 @@ class PageInfo : private content_settings::CookieControlsObserver,
   base::Time cookie_exception_expiration_;
 
   bool is_subscribed_to_permission_change_for_testing = false;
+
+  bool has_recorded_permission_metrics_ = false;
 
   base::WeakPtrFactory<PageInfo> weak_factory_{this};
 };

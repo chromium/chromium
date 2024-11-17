@@ -7,25 +7,17 @@
 
 namespace IOSPromoConstants {
 
-// Size of QR code image view including the Margin.
-const int kQrCodeImageSize = 85;
-
-// URL used for the QR code within the password bubble promo.
-const char kPasswordBubbleQRCodeURL[] =
-    "https://apps.apple.com/app/apple-store/"
-    "id535886823?pt=9008&ct=desktop-chr-passwords&mt=8";
-
-const char kAddressBubbleQRCodeURL[] =
-    "https://apps.apple.com/app/apple-store/"
-    "id535886823?pt=9008&ct=desktop-chr-address&mt=8";
+// Size of the QR code image view including the quiet zone margin added by the
+// QR code generator.
+const int kQrCodeImageSize = 90;
 
 struct IOSPromoTypeConfigs {
-  int kBubbleTitleID;
-  int kBubbleSubtitleID;
-  int kPromoTitleID;
-  int kPromoDescriptionID;
-  int kDeclineButtonTextID;
-  std::string kPromoQRCodeURL;
+  int bubble_title_id = -1;
+  int bubble_subtitle_id = -1;
+  int promo_title_id = -1;
+  int promo_description_id = -1;
+  int decline_button_text_id = -1;
+  std::string promo_qr_code_url;
 };
 
 }  // namespace IOSPromoConstants

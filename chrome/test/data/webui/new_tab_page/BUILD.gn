@@ -18,6 +18,7 @@ build_webui_tests("build") {
             "logo_test.ts",
             "metrics_utils_test.ts",
             "middle_slot_promo_test.ts",
+            "mobile_promo_test.ts",
             "test_support.ts",
             "transparency_test.ts",
             "transparency_test_support.ts",

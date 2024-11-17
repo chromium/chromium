@@ -14,26 +14,26 @@
 #import "net/base/apple/url_conversions.h"
 
 @implementation TabInfo {
-  // Weak reference of the chrome browser state.
-  base::WeakPtr<ChromeBrowserState> _weakBrowserState;
+  // Weak reference of the profile.
+  base::WeakPtr<ProfileIOS> _weakProfile;
 }
 
 - (instancetype)initWithTabID:(web::WebStateID)tabID
-                 browserState:(ChromeBrowserState*)browserState {
+                      profile:(ProfileIOS*)profile {
   self = [super init];
   if (self) {
     CHECK(tabID.valid());
     _tabID = tabID;
-    _weakBrowserState = browserState->AsWeakPtr();
-    _incognito = browserState->IsOffTheRecord();
+    _weakProfile = profile->AsWeakPtr();
+    _incognito = profile->IsOffTheRecord();
   }
   return self;
 }
 
 #pragma mark - Getters
 
-- (ChromeBrowserState*)browserState {
-  return _weakBrowserState.get();
+- (ProfileIOS*)profile {
+  return _weakProfile.get();
 }
 
 @end
@@ -52,17 +52,17 @@
 @implementation TabGroupInfo {
   // Weak reference of the dragged tab group.
   base::WeakPtr<const TabGroup> _weakTabGroup;
-  // Weak reference of the chrome browser state.
-  base::WeakPtr<ChromeBrowserState> _weakBrowserState;
+  // Weak reference of the profile.
+  base::WeakPtr<ProfileIOS> _weakProfile;
 }
 
 - (instancetype)initWithTabGroup:(const TabGroup*)tabGroup
-                    browserState:(ChromeBrowserState*)browserState {
+                         profile:(ProfileIOS*)profile {
   self = [super init];
   if (self) {
     _weakTabGroup = tabGroup->GetWeakPtr();
-    _weakBrowserState = browserState->AsWeakPtr();
-    _incognito = browserState->IsOffTheRecord();
+    _weakProfile = profile->AsWeakPtr();
+    _incognito = profile->IsOffTheRecord();
   }
   return self;
 }
@@ -73,8 +73,8 @@
   return _weakTabGroup.get();
 }
 
-- (ChromeBrowserState*)browserState {
-  return _weakBrowserState.get();
+- (ProfileIOS*)profile {
+  return _weakProfile.get();
 }
 
 @end
@@ -88,15 +88,14 @@ UIDragItem* CreateTabDragItem(web::WebState* web_state) {
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
   web::WebStateID tab_id = web_state->GetUniqueIdentifier();
-  ChromeBrowserState* browserState =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
-  BOOL incognito = browserState->IsOffTheRecord();
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+  BOOL incognito = profile->IsOffTheRecord();
   // Visibility "all" is required to allow the OS to recognize this activity for
   // creating a new window.
   [item_provider registerObject:ActivityToMoveTab(tab_id, incognito)
                      visibility:NSItemProviderRepresentationVisibilityAll];
-  TabInfo* tab_info = [[TabInfo alloc] initWithTabID:tab_id
-                                        browserState:browserState];
+  TabInfo* tab_info = [[TabInfo alloc] initWithTabID:tab_id profile:profile];
   // Local objects allow synchronous drops, whereas NSItemProvider only allows
   // asynchronous drops.
   drag_item.localObject = tab_info;
@@ -120,7 +119,7 @@ UIDragItem* CreateURLDragItem(URLInfo* url_info, WindowActivityOrigin origin) {
 }
 
 UIDragItem* CreateTabGroupDragItem(const TabGroup* tab_group,
-                                   ChromeBrowserState* browser_state) {
+                                   ProfileIOS* profile) {
   if (!tab_group) {
     return nil;
   }
@@ -128,8 +127,7 @@ UIDragItem* CreateTabGroupDragItem(const TabGroup* tab_group,
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:[[NSItemProvider alloc] init]];
   TabGroupInfo* tab_group_info =
-      [[TabGroupInfo alloc] initWithTabGroup:tab_group
-                                browserState:browser_state];
+      [[TabGroupInfo alloc] initWithTabGroup:tab_group profile:profile];
   drag_item.localObject = tab_group_info;
   return drag_item;
 }

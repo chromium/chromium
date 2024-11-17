@@ -171,6 +171,8 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Request the renderer to Move the caret to the new position.
   virtual void MoveCaret(const gfx::Point& extent) {}
 
+  virtual uint32_t GetCompositorFrameSinkGroupingId() const;
+
   virtual input::RenderWidgetHostInputEventRouter* GetInputEventRouter();
 
   virtual void GetRenderWidgetHostAtPointAsynchronously(
@@ -249,6 +251,11 @@ class CONTENT_EXPORT RenderWidgetHostDelegate {
   // Returns the widget that holds the pointer lock or nullptr if the mouse
   // pointer isn't locked.
   virtual RenderWidgetHostImpl* GetPointerLockWidget();
+
+  // Returns true if we are waiting for the user to make a selection on the
+  // pointer lock permission request dialog.
+  virtual bool IsWaitingForPointerLockPrompt(
+      RenderWidgetHostImpl* render_widget_host);
 
   // Requests to lock the keyboard. Once the request is approved or rejected,
   // GotResponseToKeyboardLockRequest() will be called on the requesting render

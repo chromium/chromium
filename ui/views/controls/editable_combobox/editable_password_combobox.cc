@@ -16,6 +16,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/render_text.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/image_button.h"
@@ -45,12 +46,20 @@ std::unique_ptr<ToggleImageButton> CreateEye(
                     .SetCallback(std::move(callback))
                     .SetBorder(CreateEmptyBorder(kEyePaddingWidth))
                     .Build();
+  // Add the outset for the focus ring to match the behavior of the `Arrow`
+  // element in `EditableCombobox`.
+  views::FocusRing::Get(button.get())->SetOutsetFocusRingDisabled(false);
   SetImageFromVectorIconWithColorId(button.get(), kEyeIcon, ui::kColorIcon,
                                     ui::kColorIconDisabled);
   SetToggledImageFromVectorIconWithColorId(
       button.get(), kEyeCrossedIcon, ui::kColorIcon, ui::kColorIconDisabled);
 
   ConfigureComboboxButtonInkDrop(button.get());
+  // We need this so the eye icon is not covered when the combo box view is
+  // hovered
+  button->SetPaintToLayer();
+  button->layer()->SetFillsBoundsOpaquely(false);
+
   return button;
 }
 
@@ -90,26 +99,16 @@ EditablePasswordCombobox::EditablePasswordCombobox(
                        text_context,
                        text_style,
                        display_arrow) {
-  // If there is no arrow for a dropdown element, then the eye is too close to
-  // the border of the textarea - therefore add additional padding.
-  std::unique_ptr<ToggleImageButton> eye = CreateEye(std::move(eye_callback));
-  eye_ = eye.get();
-  if (!display_arrow) {
-    // Add the insets to an additional container instead of directly to the
-    // button's border so that the focus ring around the pressed button is not
-    // affected by this additional padding.
-    auto container =
-        Builder<BoxLayoutView>()
-            .SetInsideBorderInsets(gfx::Insets().set_right(
-                std::max(0, LayoutProvider::Get()->GetDistanceMetric(
-                                DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING) -
-                                kEyePaddingWidth)))
-            .Build();
-    container->AddChildView(std::move(eye));
-    AddControlElement(std::move(container));
-  } else {
-    AddControlElement(std::move(eye));
+  // By default, clicking on the eye reveals/hides passwords.
+  if (!eye_callback) {
+    eye_callback = base::BindRepeating(
+        [](views::EditablePasswordCombobox* combobox_ptr) {
+          combobox_ptr->RevealPasswords(!combobox_ptr->ArePasswordsRevealed());
+        },
+        base::Unretained(this));
   }
+
+  eye_ = AddControlElement(CreateEye(std::move(eye_callback)));
 
   GetTextfield().SetTextInputType(ui::TEXT_INPUT_TYPE_PASSWORD);
   SetMenuDecorationStrategy(

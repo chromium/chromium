@@ -1249,51 +1249,50 @@ TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootUnknownSha256) {
 
 TEST(CertVerifyProcTest, TestHasTooLongValidity) {
   struct {
-    const char* const file;
+    const char* const test_name;
+    base::Time not_before;
+    base::TimeDelta validity;
     bool is_valid_too_long;
   } tests[] = {
-      {"start_after_expiry.pem", true},
-      {"pre_br_validity_ok.pem", true},
-      {"pre_br_validity_bad_121.pem", true},
-      {"pre_br_validity_bad_2020.pem", true},
-      {"10_year_validity.pem", true},
-      {"11_year_validity.pem", true},
-      {"39_months_after_2015_04.pem", true},
-      {"40_months_after_2015_04.pem", true},
-      {"60_months_after_2012_07.pem", true},
-      {"61_months_after_2012_07.pem", true},
-      {"825_days_after_2018_03_01.pem", true},
-      {"826_days_after_2018_03_01.pem", true},
-      {"825_days_1_second_after_2018_03_01.pem", true},
-      {"39_months_based_on_last_day.pem", true},
-      {"398_days_after_2020_09_01.pem", false},
-      {"399_days_after_2020_09_01.pem", true},
-      {"398_days_1_second_after_2020_09_01.pem", true},
+      {"start after expiry", base::Time::Now(), -base::Days(1), true},
+      {"399 days, before BRs",
+       base::Time::FromMillisecondsSinceUnixEpoch(1199145600000),  // 2008-01-01
+       base::Days(399), true},
+      {"399 days, before 2020-09-01",
+       base::Time::FromMillisecondsSinceUnixEpoch(1598832000000),  // 2020-08-31
+       base::Days(399), true},
+      {"398 days, after 2020-09-01",
+       base::Time::FromMillisecondsSinceUnixEpoch(1599004800000),  // 2020-09-02
+       base::Days(398), false},
+      {"399 days, after 2020-09-01",
+       base::Time::FromMillisecondsSinceUnixEpoch(1599004800000),  // 2020-09-02
+       base::Days(399), true},
+      {"398 days 1 second, after 2020-09-01",
+       base::Time::FromMillisecondsSinceUnixEpoch(1599004800000),  // 2020-09-02
+       base::Days(398) + base::Seconds(1), true},
   };
 
-  base::FilePath certs_dir = GetTestCertsDirectory();
-
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
   for (const auto& test : tests) {
-    SCOPED_TRACE(test.file);
+    SCOPED_TRACE(test.test_name);
 
-    scoped_refptr<X509Certificate> certificate =
-        ImportCertFromFile(certs_dir, test.file);
-    ASSERT_TRUE(certificate);
+    leaf->SetValidity(test.not_before, test.not_before + test.validity);
     EXPECT_EQ(test.is_valid_too_long,
-              CertVerifyProc::HasTooLongValidity(*certificate));
+              CertVerifyProc::HasTooLongValidity(*leaf->GetX509Certificate()));
   }
 }
 
 // Integration test for CertVerifyProc::HasTooLongValidity.
-// There isn't a way to add test entries to the known roots list for testing
-// the full CertVerifyProc implementations, but HasTooLongValidity is checked
-// by the outer CertVerifyProc::Verify. Thus the test can mock the
-// VerifyInternal result to pretend there was a successful verification with
-// is_issued_by_known_root and see that Verify overrides that with error.
+// HasTooLongValidity is checked by the outer CertVerifyProc::Verify. Thus the
+// test can mock the VerifyInternal result to pretend there was a successful
+// verification with is_issued_by_known_root and see that Verify overrides that
+// with error.
+// TODO(mattm): consider if there would be any benefit to using
+// ScopedTestKnownRoot and testing with the real CertVerifyProc subclasses?
 TEST(CertVerifyProcTest, VerifyCertValidityTooLong) {
-  scoped_refptr<X509Certificate> cert(ImportCertFromFile(
-      GetTestCertsDirectory(), "900_days_after_2019_07_01.pem"));
-  ASSERT_TRUE(cert);
+  auto [leaf, root] = CertBuilder::CreateSimpleChain2();
+  base::Time not_before = base::Time::Now() - base::Days(1);
+  leaf->SetValidity(not_before, not_before + base::Days(399));
 
   {
     // Locally trusted cert should be ok.
@@ -1302,7 +1301,8 @@ TEST(CertVerifyProcTest, VerifyCertValidityTooLong) {
     auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(dummy_result);
     CertVerifyResult verify_result;
     int error = verify_proc->Verify(
-        cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+        leaf->GetX509Certificate().get(), "www.example.com",
+        /*ocsp_response=*/std::string(),
         /*sct_list=*/std::string(), 0, &verify_result, NetLogWithSource());
     EXPECT_THAT(error, IsOk());
     EXPECT_EQ(0u, verify_result.cert_status & CERT_STATUS_ALL_ERRORS);
@@ -1316,12 +1316,11 @@ TEST(CertVerifyProcTest, VerifyCertValidityTooLong) {
     auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(dummy_result);
     CertVerifyResult verify_result;
     int error = verify_proc->Verify(
-        cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+        leaf->GetX509Certificate().get(), "www.example.com",
+        /*ocsp_response=*/std::string(),
         /*sct_list=*/std::string(), 0, &verify_result, NetLogWithSource());
     EXPECT_THAT(error, IsError(ERR_CERT_VALIDITY_TOO_LONG));
-    // TODO(mattm): generate a dedicated cert or use CertBuilder so that this
-    // test doesn't also hit CERT_STATUS_NON_UNIQUE_NAME.
-    EXPECT_EQ(CERT_STATUS_VALIDITY_TOO_LONG | CERT_STATUS_NON_UNIQUE_NAME,
+    EXPECT_EQ(CERT_STATUS_VALIDITY_TOO_LONG,
               verify_result.cert_status & CERT_STATUS_ALL_ERRORS);
   }
 
@@ -1336,13 +1335,11 @@ TEST(CertVerifyProcTest, VerifyCertValidityTooLong) {
         dummy_result, ERR_CERT_AUTHORITY_INVALID);
     CertVerifyResult verify_result;
     int error = verify_proc->Verify(
-        cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
+        leaf->GetX509Certificate().get(), "www.example.com",
+        /*ocsp_response=*/std::string(),
         /*sct_list=*/std::string(), 0, &verify_result, NetLogWithSource());
     EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
-    // TODO(mattm): generate a dedicated cert or use CertBuilder so that this
-    // test doesn't also hit CERT_STATUS_NON_UNIQUE_NAME.
-    EXPECT_EQ(CERT_STATUS_AUTHORITY_INVALID | CERT_STATUS_VALIDITY_TOO_LONG |
-                  CERT_STATUS_NON_UNIQUE_NAME,
+    EXPECT_EQ(CERT_STATUS_AUTHORITY_INVALID | CERT_STATUS_VALIDITY_TOO_LONG,
               verify_result.cert_status & CERT_STATUS_ALL_ERRORS);
   }
 }
@@ -1356,10 +1353,10 @@ TEST_P(CertVerifyProcInternalTest, TestKnownRoot) {
   int flags = 0;
   CertVerifyResult verify_result;
   int error =
-      Verify(cert_chain.get(), "foo.chickentools.org", flags, &verify_result);
+      Verify(cert_chain.get(), "timberfirepizza.com", flags, &verify_result);
   EXPECT_THAT(error, IsOk())
       << "This test relies on a real certificate that "
-      << "expires on May 11 2025. If failing on/after "
+      << "expires on Nov 09 2025. If failing on/after "
       << "that date, please disable and file a bug "
       << "against mattm. Current time: " << base::Time::Now();
   EXPECT_TRUE(verify_result.is_issued_by_known_root);

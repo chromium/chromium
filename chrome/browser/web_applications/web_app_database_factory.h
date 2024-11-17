@@ -16,6 +16,7 @@ class AbstractWebAppDatabaseFactory {
  public:
   virtual ~AbstractWebAppDatabaseFactory() = default;
   virtual syncer::OnceDataTypeStoreFactory GetStoreFactory() = 0;
+  virtual bool IsSyncingApps() = 0;
 };
 
 class WebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
@@ -27,6 +28,7 @@ class WebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
 
   // AbstractWebAppDatabaseFactory implementation.
   syncer::OnceDataTypeStoreFactory GetStoreFactory() override;
+  bool IsSyncingApps() override;
 
  private:
   const raw_ptr<Profile> profile_;

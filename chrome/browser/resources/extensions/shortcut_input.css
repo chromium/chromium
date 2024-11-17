@@ -1,0 +1,31 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
+ * #include=cr-icons-lit cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+#main {
+  position: relative;
+  width: 200px;
+}
+
+#clear {
+  --cr-icon-button-size: 28px;
+  position: absolute;
+  right: 2px;
+}
+
+#input {
+  --cr-input-readonly-opacity: 1;
+}
+
+:host-context([dir='rtl']) #clear {
+  left: -2px;
+  right: inherit;
+}
+

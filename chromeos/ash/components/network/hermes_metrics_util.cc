@@ -56,9 +56,9 @@ void LogUninstallProfileResult(HermesResponseStatus status) {
                                 status);
 }
 
-void LogRequestPendingProfilesLatency(base::TimeDelta call_latency) {
+void LogRefreshInstalledProfilesLatency(base::TimeDelta call_latency) {
   UMA_HISTOGRAM_LONG_TIMES(
-      "Network.Cellular.ESim.RequestPendingProfiles.Latency", call_latency);
+      "Network.Cellular.ESim.RefreshInstalledProfilesLatency", call_latency);
 }
 
 }  // namespace ash::hermes_metrics

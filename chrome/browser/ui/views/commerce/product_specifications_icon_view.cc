@@ -10,10 +10,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
+#include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
@@ -69,6 +73,23 @@ void ProductSpecificationsIconView::OnExecuting(
   CHECK(tab_helper);
 
   tab_helper->OnProductSpecificationsIconClicked();
+
+  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications) &&
+      base::FeatureList::IsEnabled(commerce::kCompareConfirmationToast)) {
+    ShowConfirmationToast(tab_helper->GetComparisonSetName());
+  }
+}
+
+void ProductSpecificationsIconView::ShowConfirmationToast(
+    std::u16string set_name) {
+  ToastController* const toast_controller =
+      browser_->GetFeatures().toast_controller();
+  if (toast_controller) {
+    ToastParams params = ToastParams(ToastId::kAddedToComparisonTable);
+
+    params.body_string_replacement_params = {set_name};
+    toast_controller->MaybeShowToast(ToastParams(std::move(params)));
+  }
 }
 
 void ProductSpecificationsIconView::ForceVisibleForTesting(bool is_added) {
@@ -83,7 +104,8 @@ const gfx::VectorIcon& ProductSpecificationsIconView::GetVectorIcon() const {
 void ProductSpecificationsIconView::UpdateImpl() {
   bool should_show = ShouldShow();
   if (should_show) {
-    // TODO(b/325660810): Add logics to flip button visual state.
+    // TODO(b/369238920): Delete the SetVisualState after the add to comparison
+    // table toast is launched.
     SetVisualState(IsInProductSpecificationsSet());
     MaybeShowPageActionLabel();
   } else {

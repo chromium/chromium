@@ -35,8 +35,10 @@ class FakeServiceEndpointRequest : public HostResolver::ServiceEndpointRequest {
 
   void set_start_result(int start_result) { start_result_ = start_result; }
 
-  void set_endpoints(std::vector<ServiceEndpoint> endpoints) {
+  FakeServiceEndpointRequest& set_endpoints(
+      std::vector<ServiceEndpoint> endpoints) {
     endpoints_ = std::move(endpoints);
+    return *this;
   }
 
   FakeServiceEndpointRequest& add_endpoint(ServiceEndpoint endpoint) {
@@ -140,6 +142,9 @@ class ServiceEndpointBuilder {
   ServiceEndpointBuilder& add_ip_endpoint(IPEndPoint ip_endpoint);
 
   ServiceEndpointBuilder& set_alpns(std::vector<std::string> alpns);
+
+  ServiceEndpointBuilder& set_ech_config_list(
+      std::vector<uint8_t> ech_config_list);
 
   ServiceEndpoint endpoint() const { return endpoint_; }
 

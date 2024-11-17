@@ -18,6 +18,10 @@
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/renderer/chrome_render_frame_observer.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/fingerprinting_protection_filter/renderer/renderer_agent.h"
+#include "components/fingerprinting_protection_filter/renderer/renderer_url_loader_throttle.h"
+#include "components/fingerprinting_protection_filter/renderer/unverified_ruleset_dealer.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -175,7 +179,6 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
     if (pending_safe_browsing_) {
       safe_browsing_.Bind(std::move(pending_safe_browsing_));
     }
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     if (pending_extension_web_request_reporter_) {
       extension_web_request_reporter_.Bind(
@@ -190,6 +193,29 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
         safe_browsing_.get(), local_frame_token);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
     throttles.emplace_back(std::move(throttle));
+  }
+
+  if (fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionFeatureEnabled()) {
+    // Restrict the requests that we check as much as possible. This corresponds
+    // to a request where:
+    //   * The resource requested is not a frame.
+    //   * The resource request is made in the context of a frame.
+    //   * The request matches our URL filtering criteria.
+    //   * There is a valid frame token we can use to retrieve information
+    //     about the current `Document`.
+    bool should_check_request =
+        !is_frame_resource &&
+        type_ == blink::URLLoaderThrottleProviderType::kFrame &&
+        !fingerprinting_protection_filter::RendererURLLoaderThrottle::
+            WillIgnoreRequest(request.url, request.destination) &&
+        local_frame_token.has_value();
+    if (should_check_request) {
+      throttles.emplace_back(
+          std::make_unique<
+              fingerprinting_protection_filter::RendererURLLoaderThrottle>(
+              main_thread_task_runner_, local_frame_token));
+    }
   }
 
   if (type_ == blink::URLLoaderThrottleProviderType::kFrame &&

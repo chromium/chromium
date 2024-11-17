@@ -73,8 +73,6 @@ namespace {
 
 RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
   switch (request_type) {
-    case RequestType::kAccessibilityEvents:
-      return RequestTypeForUma::PERMISSION_ACCESSIBILITY_EVENTS;
     case RequestType::kArSession:
       return RequestTypeForUma::PERMISSION_AR;
 #if !BUILDFLAG(IS_ANDROID)
@@ -144,9 +142,9 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
 #endif
     case RequestType::kTopLevelStorageAccess:
       return RequestTypeForUma::PERMISSION_TOP_LEVEL_STORAGE_ACCESS;
-#if !BUILDFLAG(IS_ANDROID)
     case RequestType::kFileSystemAccess:
       return RequestTypeForUma::PERMISSION_FILE_SYSTEM_ACCESS;
+#if !BUILDFLAG(IS_ANDROID)
     case RequestType::kCapturedSurfaceControl:
       return RequestTypeForUma::CAPTURED_SURFACE_CONTROL;
     case RequestType::kWebAppInstallation:
@@ -230,8 +228,6 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "LocalFonts";
     case RequestTypeForUma::PERMISSION_IDLE_DETECTION:
       return "IdleDetection";
-    case RequestTypeForUma::PERMISSION_ACCESSIBILITY_EVENTS:
-      return "AccessibilityEvents";
     case RequestTypeForUma::PERMISSION_FILE_SYSTEM_ACCESS:
       return "FileSystemAccess";
     case RequestTypeForUma::CAPTURED_SURFACE_CONTROL:
@@ -255,8 +251,7 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
     case RequestTypeForUma::PERMISSION_FLASH:
     case RequestTypeForUma::PERMISSION_FILE_HANDLING:
     case RequestTypeForUma::NUM:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -382,6 +377,20 @@ void RecordPermissionUsageUkm(ContentSettingsType permission_type,
   builder.SetPermissionType(static_cast<int64_t>(
       content_settings_uma_util::ContentSettingTypeToHistogramValue(
           permission_type)));
+  builder.Record(ukm::UkmRecorder::Get());
+}
+
+void RecordPermissionUsageNotificationShownUkm(
+    bool is_allowlisted,
+    int suspicious_score,
+    std::optional<ukm::SourceId> source_id) {
+  if (!source_id.has_value()) {
+    return;
+  }
+
+  ukm::builders::PermissionUsage_NotificationShown builder(source_id.value());
+  builder.SetIsAllowlisted(is_allowlisted);
+  builder.SetSuspiciousScore(suspicious_score);
   builder.Record(ukm::UkmRecorder::Get());
 }
 
@@ -946,7 +955,7 @@ void PermissionUmaUtil::RecordPermissionPromptAttempt(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   std::string histogram_name =
@@ -1002,8 +1011,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
       RecordPromptDecided(requests, /*accepted=*/true, /*is_one_time*/ true);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   std::string action_string = GetPermissionActionString(permission_action);
   RecordEngagementMetric(requests, web_contents, action_string);
@@ -1108,11 +1116,6 @@ void PermissionUmaUtil::RecordPermissionPromptPriorCount(
       prefix + PermissionUtil::GetPermissionString(permission), 1, 100, 50,
       base::HistogramBase::kUmaTargetedHistogramFlag)
       ->Add(count);
-}
-
-void PermissionUmaUtil::RecordInfobarDetailsExpanded(bool expanded) {
-  base::UmaHistogramBoolean("Permissions.Prompt.Infobar.DetailsExpanded",
-                            expanded);
 }
 
 void PermissionUmaUtil::RecordCrowdDenyDelayedPushNotification(
@@ -1234,6 +1237,18 @@ void PermissionUmaUtil::RecordPermissionUsage(
   PermissionsClient::Get()->GetUkmSourceId(
       permission_type, browser_context, web_contents, requesting_origin,
       base::BindOnce(&RecordPermissionUsageUkm, permission_type));
+}
+
+void PermissionUmaUtil::RecordPermissionUsageNotificationShown(
+    bool is_allowlisted,
+    int suspicious_score,
+    content::BrowserContext* browser_context,
+    const GURL& requesting_origin) {
+  PermissionsClient::Get()->GetUkmSourceId(
+      ContentSettingsType::NOTIFICATIONS, browser_context, nullptr,
+      requesting_origin,
+      base::BindOnce(&RecordPermissionUsageNotificationShownUkm, is_allowlisted,
+                     suspicious_score));
 }
 
 void PermissionUmaUtil::RecordPermissionAction(
@@ -1394,10 +1409,6 @@ void PermissionUmaUtil::RecordPermissionAction(
       base::UmaHistogramEnumeration("Permissions.Action.IdleDetection", action,
                                     PermissionAction::NUM);
       break;
-    case ContentSettingsType::ACCESSIBILITY_EVENTS:
-      base::UmaHistogramEnumeration("Permissions.Action.AccessibilityEvents",
-                                    action, PermissionAction::NUM);
-      break;
     case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
       base::UmaHistogramEnumeration("Permissions.Action.CapturedSurfaceControl",
                                     action, PermissionAction::NUM);
@@ -1425,9 +1436,9 @@ void PermissionUmaUtil::RecordPermissionAction(
     // The user is not prompted for these permissions, thus there is no
     // permission action recorded for them.
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "PERMISSION " << PermissionUtil::GetPermissionString(permission)
-          << " not accounted for";
+      NOTREACHED() << "PERMISSION "
+                   << PermissionUtil::GetPermissionString(permission)
+                   << " not accounted for";
   }
 }
 
@@ -1681,7 +1692,7 @@ void PermissionUmaUtil::RecordPageInfoPermissionChange(
       base::UmaHistogramEnumeration(
           histogram_name, PermissionChangeAction::REMEMBER_CHECKBOX_TOGGLED);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }
@@ -1701,10 +1712,8 @@ std::string PermissionUmaUtil::GetPermissionActionString(
     case PermissionAction::GRANTED_ONCE:
       return "AcceptedOnce";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
 }
 
 // static
@@ -1743,8 +1752,7 @@ std::string PermissionUmaUtil::GetPromptDispositionString(
       return "MacOsPrompt";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // static
@@ -1763,8 +1771,7 @@ std::string PermissionUmaUtil::GetPromptDispositionReasonString(
       return "UserPreferenceInSettings";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // static
@@ -1888,7 +1895,7 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleOsMetrics(
       screen_type = "OS_SYSTEM_SETTINGS";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   base::UmaHistogramEnumeration(
@@ -1915,7 +1922,7 @@ void PermissionUmaUtil::RecordElementAnchoredBubbleOsMetrics(
         screen_action = "OsPromptAllowed";
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     base::UmaHistogramLongTimes("Permissions.Prompt." +
@@ -2004,7 +2011,7 @@ void PermissionUmaUtil::RecordPermissionRegrantForUnusedSites(
       source_ui_string = "Settings";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   base::UmaHistogramExactLinear(
       "Settings.SafetyCheck.UnusedSitePermissionsRegrantDays" +

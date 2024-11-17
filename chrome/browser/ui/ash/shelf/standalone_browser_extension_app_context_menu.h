@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 // This class is responsible for displaying a context menu for a
 // standalone-browser based extension app. Note that this class is used for both

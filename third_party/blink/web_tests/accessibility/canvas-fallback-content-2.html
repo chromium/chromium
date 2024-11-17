@@ -59,6 +59,9 @@ function check(id1, id2) {
     element1.focus();
     assert_equals(document.activeElement == element1, true);
     window.axElement1 = accessibilityController.focusedElement;
+    // Get the name before moving focus, because focused name repair only
+    // occurs on the focused object.
+    const name1 = axElement1.name;
 
     window.element2 = document.getElementById(id2);
     element2.focus();
@@ -67,7 +70,7 @@ function check(id1, id2) {
 
     assert_equals(axElement2.role, axElement1.role);
     assert_equals(axElement2.roleDescription, axElement1.roleDescription);
-    assert_equals(axElement2.name, axElement1.name);
+    assert_equals(axElement2.name, name1);
     assert_equals(axElement2.description, axElement1.description);
     assert_equals(axElement2.stringValue, axElement1.stringValue);
     assert_equals(axElement2.isEnabled, axElement1.isEnabled);

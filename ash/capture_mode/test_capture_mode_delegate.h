@@ -14,6 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -61,6 +62,9 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
     policy_capture_path_ = policy_capture_path;
   }
   int num_capture_image_attempts() const { return num_capture_image_attempts_; }
+  int num_multimodal_search_requests() const {
+    return num_multimodal_search_requests_;
+  }
 
   // Resets |is_allowed_by_policy_| and |is_allowed_by_dlp_| back to true.
   void ResetAllowancesToDefault();
@@ -138,9 +142,21 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   void FinalizeSavedFile(
       base::OnceCallback<void(bool, const base::FilePath&)> callback,
       const base::FilePath& path,
-      const gfx::Image& thumbnail) override;
+      const gfx::Image& thumbnail,
+      bool for_video) override;
   base::FilePath RedirectFilePath(const base::FilePath& path) override;
   std::unique_ptr<AshWebView> CreateSearchResultsView() const override;
+  MOCK_METHOD(void,
+              DetectTextInImage,
+              (const SkBitmap& image, OnTextDetectionComplete callback),
+              (override));
+  void SendRegionSearch(const SkBitmap& image,
+                        const gfx::Rect& region,
+                        OnSearchUrlFetchedCallback callback) override;
+  void SendMultimodalSearch(const SkBitmap& image,
+                            const gfx::Rect& region,
+                            const std::string& text,
+                            ash::OnSearchUrlFetchedCallback callback) override;
 
  private:
   std::unique_ptr<recording::RecordingServiceTestApi> recording_service_;
@@ -156,6 +172,7 @@ class TestCaptureModeDelegate : public CaptureModeDelegate {
   // Counter to track number of times `OnCaptureImageAttempted()` is called, for
   // testing purposes.
   int num_capture_image_attempts_ = 0;
+  int num_multimodal_search_requests_ = 0;
   base::ScopedTempDir fake_drive_fs_mount_path_;
   base::ScopedTempDir fake_android_files_path_;
   base::ScopedTempDir fake_linux_files_path_;

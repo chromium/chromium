@@ -275,6 +275,19 @@ enum PermissionsPolicyFeature {
   // See https://github.com/WICG/direct-sockets.
   kDirectSocketsPrivate = 126,
 
+  // Allow fenced frames to access unpartitioned data after giving up network
+  // access.
+  // See https://github.com/WICG/fenced-frame/blob/master/explainer/fenced_frames_with_local_unpartitioned_data_access.md
+  kFencedUnpartitionedStorageRead = 127,
+
+  // Allow a site to issue fetchLater requests with minimal quota.
+  // This is different from kDeferredFetch, which allows full quota and is
+  // "self" by default. Instead, this feature defaults to "*" to allow any sites
+  // to issue fetchLater requests with a minimal quota.
+  // See https://whatpr.org/fetch/1647#available-deferred-fetching-quota and
+  // https://github.com/WICG/pending-beacon/blob/main/docs/fetch-later-api.md
+  kDeferredFetchMinimal = 128,
+
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.
   // Also, run update_permissions_policy_enum.py in

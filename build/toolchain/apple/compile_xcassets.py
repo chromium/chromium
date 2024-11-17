@@ -167,6 +167,28 @@ def CompileAssetCatalog(output, platform, target_environment, product_type,
           '--ui-framework-family',
           'uikit',
       ])
+    else:
+      sys.stderr.write('Unsupported ios environment: %s' % target_environment)
+      sys.exit(1)
+  elif platform == 'watchos':
+    if target_environment == 'simulator':
+      command.extend([
+          '--platform',
+          'watchsimulator',
+          '--target-device',
+          'watch',
+      ])
+    elif target_environment == 'device':
+      command.extend([
+          '--platform',
+          'watchos',
+          '--target-device',
+          'watch',
+      ])
+    else:
+      sys.stderr.write(
+        'Unsupported watchos environment: %s' % target_environment)
+      sys.exit(1)
 
   # Unzip any input zipfiles to a temporary directory.
   inputs = []
@@ -267,7 +289,7 @@ def Main():
   parser.add_argument('--platform',
                       '-p',
                       required=True,
-                      choices=('mac', 'ios'),
+                      choices=('mac', 'ios', 'watchos'),
                       help='target platform for the compiled assets catalog')
   parser.add_argument('--target-environment',
                       '-e',

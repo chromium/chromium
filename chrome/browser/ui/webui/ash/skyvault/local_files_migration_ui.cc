@@ -12,6 +12,8 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/ash/policy/skyvault/histogram_helper.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_dialog.h"
 #include "chrome/browser/ui/webui/ash/skyvault/local_files_migration_page_handler.h"
@@ -23,6 +25,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/web_dialogs/web_dialog_ui.h"
+#include "ui/webui/color_change_listener/color_change_handler.h"
 
 namespace policy::local_user_files {
 
@@ -74,6 +77,12 @@ void LocalFilesMigrationUI::BindInterface(
   factory_receiver_.Bind(std::move(receiver));
 }
 
+void LocalFilesMigrationUI::BindInterface(
+    mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(receiver));
+}
+
 void LocalFilesMigrationUI::CreatePageHandler(
     mojo::PendingRemote<mojom::Page> page,
     mojo::PendingReceiver<mojom::PageHandler> receiver) {
@@ -95,13 +104,14 @@ void LocalFilesMigrationUI::SetInitialDialogInfo(
   migration_start_time_ = migration_start_time;
 }
 
-void LocalFilesMigrationUI::ProcessResponseAndCloseDialog(UserAction action) {
+void LocalFilesMigrationUI::ProcessResponseAndCloseDialog(DialogAction action) {
   base::Value::List values;
-  if (action == UserAction::kUploadNow) {
+  if (action == DialogAction::kUploadNow) {
     // Signal to the dialog to run the migration callback.
     values.Append(kStartMigration);
   }
   CloseDialog(values);
+  SkyVaultMigrationDialogActionHistogram(cloud_provider_, action);
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(LocalFilesMigrationUI)

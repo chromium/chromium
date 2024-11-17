@@ -55,7 +55,6 @@ include_rules = [
   "+chrome/browser/ash/sync",
   "+chrome/browser/ash/system_web_apps",
   "+chrome/browser/ash/tether",
-  "+chrome/browser/ash/trusted_vault",
   "+chrome/browser/browser_process_platform_part_ash.h",
   "+chrome/browser/scalable_iph",
   "+chrome/browser/sharesheet",

@@ -21,8 +21,6 @@ UserAuthConfig::~UserAuthConfig() = default;
 
 UserAuthConfig UserAuthConfig::Create(
     std::initializer_list<ash::AshAuthFactor> factors_list) {
-  CHECK_NE(factors_list.size(), 0u)
-      << "Existing users should have at least one AuthFactor";
   AuthFactorsSet factors{factors_list};
   UserAuthConfig result;
   if (factors.Has(ash::AshAuthFactor::kGaiaPassword)) {
@@ -43,8 +41,7 @@ UserAuthConfig UserAuthConfig::Create(
       factors.Has(ash::AshAuthFactor::kSmartUnlock) ||
       factors.Has(ash::AshAuthFactor::kLegacyPin) ||
       factors.Has(ash::AshAuthFactor::kLegacyFingerprint)) {
-    NOTREACHED_IN_MIGRATION()
-        << "These factors are not supported by test mixins yet";
+    NOTREACHED() << "These factors are not supported by test mixins yet";
   }
   return result;
 }

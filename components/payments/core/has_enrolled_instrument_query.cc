@@ -15,9 +15,9 @@
 
 namespace payments {
 
-HasEnrolledInstrumentQuery::HasEnrolledInstrumentQuery() {}
+HasEnrolledInstrumentQuery::HasEnrolledInstrumentQuery() = default;
 
-HasEnrolledInstrumentQuery::~HasEnrolledInstrumentQuery() {}
+HasEnrolledInstrumentQuery::~HasEnrolledInstrumentQuery() = default;
 
 bool HasEnrolledInstrumentQuery::CanQuery(
     const GURL& top_level_origin,

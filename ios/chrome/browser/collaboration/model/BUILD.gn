@@ -1,0 +1,70 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("model") {
+  sources = [
+    "collaboration_service_factory.h",
+    "collaboration_service_factory.mm",
+    "ios_collaboration_controller_delegate.h",
+    "ios_collaboration_controller_delegate.mm",
+    "ios_collaboration_flow_configuration.h",
+    "ios_collaboration_flow_configuration.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//components/collaboration/internal",
+    "//components/collaboration/public",
+    "//components/data_sharing/public:features",
+    "//components/keyed_service/ios:ios",
+    "//ios/chrome/browser/data_sharing/model",
+    "//ios/chrome/browser/saved_tab_groups/model/",
+    "//ios/chrome/browser/share_kit/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/ui/authentication/signin:constants",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "collaboration_service_factory_unittest.mm",
+    "ios_collaboration_controller_delegate_unittest.mm",
+  ]
+  deps = [
+    ":model",
+    "//base",
+    "//base/test:test_support",
+    "//components/collaboration/public",
+    "//components/data_sharing/public:features",
+    "//ios/chrome/browser/share_kit/model:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/test/fakes",
+    "//ios/web/public/test",
+    "//third_party/ocmock",
+  ]
+}
+
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  deps = [
+    "//components/collaboration/public",
+    "//ios/chrome/browser/collaboration/model",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/features",
+  ]
+}

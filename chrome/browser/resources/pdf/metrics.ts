@@ -204,7 +204,7 @@ export enum UserAction {
   SELECT_SIDENAV_ATTACHMENT_FIRST = 65,
   SELECT_SIDENAV_ATTACHMENT = 66,
 
-  // Recorded cut/copy/paste commands.
+  // Recorded cut/copy/paste/find commands.
   CUT_FIRST = 67,
   CUT = 68,
   COPY_FIRST = 69,
@@ -214,7 +214,54 @@ export enum UserAction {
   FIND_IN_PAGE_FIRST = 73,
   FIND_IN_PAGE = 74,
 
-  NUMBER_OF_ACTIONS = 75,
+  // Recorded copy/find commands for searchified PDFs.
+  COPY_SEARCHIFIED_FIRST = 75,
+  COPY_SEARCHIFIED = 76,
+  FIND_IN_PAGE_SEARCHIFIED_FIRST = 77,
+  FIND_IN_PAGE_SEARCHIFIED = 78,
+
+  // Recorded when the user enters Ink2 annotation mode.
+  ENTER_INK2_ANNOTATION_MODE_FIRST = 79,
+  ENTER_INK2_ANNOTATION_MODE = 80,
+
+  // Recorded when the user exits Ink2 annotation mode.
+  EXIT_INK2_ANNOTATION_MODE_FIRST = 81,
+  EXIT_INK2_ANNOTATION_MODE = 82,
+
+  // Recorded when the user triggers a save of the document and the document
+  // has been modified by Ink2 annotations.
+  SAVE_WITH_INK2_ANNOTATION_FIRST = 83,
+  SAVE_WITH_INK2_ANNOTATION = 84,
+
+  // Recorded when the user selects an Ink2 eraser.
+  SELECT_INK2_BRUSH_ERASER_FIRST = 85,
+  SELECT_INK2_BRUSH_ERASER = 86,
+
+  // Recorded when the user selects an Ink2 highlighter.
+  SELECT_INK2_BRUSH_HIGHLIGHTER_FIRST = 87,
+  SELECT_INK2_BRUSH_HIGHLIGHTER = 88,
+
+  // Recorded when the user selects an Ink2 pen.
+  SELECT_INK2_BRUSH_PEN_FIRST = 89,
+  SELECT_INK2_BRUSH_PEN = 90,
+
+  // Recorded when the user undos an Ink2 action.
+  UNDO_INK2_FIRST = 91,
+  UNDO_INK2 = 92,
+
+  // Recorded when the user redos an Ink2 action.
+  REDO_INK2_FIRST = 93,
+  REDO_INK2 = 94,
+
+  // Recorded when the user opens the Ink2 side panel.
+  OPEN_INK2_SIDE_PANEL_FIRST = 95,
+  OPEN_INK2_SIDE_PANEL = 96,
+
+  // Recorded when the user opens the Ink2 bottom toolbar.
+  OPEN_INK2_BOTTOM_TOOLBAR_FIRST = 97,
+  OPEN_INK2_BOTTOM_TOOLBAR = 98,
+
+  NUMBER_OF_ACTIONS = 99,
 }
 
 function createFirstMap(): Map<UserAction, UserAction> {

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/selected_grid_items.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -16,7 +17,7 @@
 #import "ios/web/public/web_state.h"
 
 @implementation SelectedGridItems {
-  WebStateList* _webStateList;
+  raw_ptr<WebStateList> _webStateList;
   std::set<web::WebStateID> _sharableItemsIDs;
   NSMutableSet<GridItemIdentifier*>* _itemsIdentifiers;
 }
@@ -67,6 +68,8 @@
     }
     case GridItemType::kSuggestedActions:
       NOTREACHED();
+    case GridItemType::kActivitySummary:
+      NOTREACHED();
   }
 }
 
@@ -93,6 +96,8 @@
       return;
     }
     case GridItemType::kSuggestedActions:
+      NOTREACHED();
+    case GridItemType::kActivitySummary:
       NOTREACHED();
   }
 }
@@ -133,6 +138,8 @@
         break;
       }
       case GridItemType::kSuggestedActions:
+        NOTREACHED();
+      case GridItemType::kActivitySummary:
         NOTREACHED();
     }
   }

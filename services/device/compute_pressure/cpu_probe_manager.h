@@ -102,7 +102,7 @@ class CpuProbeManager {
   void OnCpuSampleAvailable(std::optional<system_cpu::CpuSample>);
 
   // Calculate PressureState based on optional CpuSample.
-  mojom::PressureState CalculateState(std::optional<system_cpu::CpuSample>);
+  mojom::PressureState CalculateState(const system_cpu::CpuSample&);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

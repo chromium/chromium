@@ -3,5 +3,8 @@ include_rules = [
   "+components/account_id",
   "+components/feedback",
   "+components/user_manager",
+  "+components/variations/net",
+  "+services/data_decoder/public/cpp",
+  "+third_party/boringssl",
   "+third_party/cros_system_api"
 ]

@@ -26,13 +26,13 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/rust_buildflags.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/thread_annotations.h"
@@ -48,11 +48,13 @@
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/auction_process_manager.h"
+#include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/interest_group_caching_storage.h"
 #include "content/browser/interest_group/interest_group_features.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
 #include "content/browser/interest_group/storage_interest_group.h"
+#include "content/browser/interest_group/test_same_process_auction_process_manager.h"
 #include "content/browser/private_aggregation/private_aggregation_budgeter.h"
 #include "content/browser/private_aggregation/private_aggregation_caller_api.h"
 #include "content/browser/private_aggregation/private_aggregation_manager_impl.h"
@@ -63,16 +65,14 @@
 #include "content/common/features.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/privacy_sandbox_invoking_api.h"
+#include "content/public/browser/site_instance.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
-#include "content/services/auction_worklet/auction_v8_helper.h"
-#include "content/services/auction_worklet/auction_worklet_service_impl.h"
-#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
-#include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "content/services/auction_worklet/public/cpp/cbor_test_util.h"
 #include "content/test/fenced_frame_test_utils.h"
 #include "content/test/test_content_browser_client.h"
 #include "crypto/sha2.h"
@@ -92,6 +92,7 @@
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 #include "third_party/blink/public/mojom/parakeet/ad_request.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
+#include "third_party/zlib/google/compression_utils.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -212,6 +213,10 @@ function reportResult(auctionConfig, browserSignals) {
                             kOriginStringA);
 }
 
+base::Value AsBlobValue(std::string data) {
+  return base::Value(base::as_bytes(base::span(data)));
+}
+
 class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
  public:
   explicit AllowInterestGroupContentBrowserClient() = default;
@@ -223,7 +228,8 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
       const AllowInterestGroupContentBrowserClient&) = delete;
 
   // ContentBrowserClient overrides:
-  bool IsInterestGroupAPIAllowed(content::RenderFrameHost* render_frame_host,
+  bool IsInterestGroupAPIAllowed(content::BrowserContext* browser_context,
+                                 content::RenderFrameHost* render_frame_host,
                                  InterestGroupApiOperation operation,
                                  const url::Origin& top_frame_origin,
                                  const url::Origin& api_origin) override {
@@ -258,8 +264,7 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
   bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
       const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api,
-      bool post_impression_reporting) override {
+      content::PrivacySandboxInvokingAPI invoking_api) override {
     if (!allow_list_) {
       return true;
     }
@@ -553,6 +558,16 @@ class NetworkResponder {
       return true;
     }
 
+    // Check if it's a Bidding and Auction Server key request. These can be
+    // triggered by the Prefetch feature when JoinAdInterestGroup is called
+    // It's safe to just fail them.
+    if (params->url_request.url.path() ==
+        GURL(kBiddingAndAuctionGCPCoordinatorKeyURL).path()) {
+      params->client->OnComplete(
+          network::URLLoaderCompletionStatus(net::ERR_FAILED));
+      return true;
+    }
+
     if ((params->url_request.url.path() == store_url_loader_client_url_path_)) {
       CHECK(!stored_url_loader_client_);
       stored_url_loader_client_ = std::move(params->client);
@@ -725,45 +740,6 @@ class NetworkResponder {
   base::OnceClosure quit_report_wait_loop_callback_ GUARDED_BY(lock_);
 };
 
-// AuctionProcessManager that allows running auctions in-proc.
-class SameProcessAuctionProcessManager : public AuctionProcessManager {
- public:
-  SameProcessAuctionProcessManager() = default;
-  SameProcessAuctionProcessManager(const SameProcessAuctionProcessManager&) =
-      delete;
-  SameProcessAuctionProcessManager& operator=(
-      const SameProcessAuctionProcessManager&) = delete;
-  ~SameProcessAuctionProcessManager() override = default;
-
- private:
-  RenderProcessHost* LaunchProcess(
-      mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
-          auction_worklet_service_receiver,
-      const ProcessHandle* handle,
-      const std::string& display_name) override {
-    // Create one AuctionWorkletServiceImpl per Mojo pipe, just like in
-    // production code. Don't bother to delete the service on pipe close,
-    // though; just keep it in a vector instead.
-    auction_worklet_services_.push_back(
-        auction_worklet::AuctionWorkletServiceImpl::CreateForService(
-            std::move(auction_worklet_service_receiver)));
-    return nullptr;
-  }
-
-  scoped_refptr<SiteInstance> MaybeComputeSiteInstance(
-      SiteInstance* frame_site_instance,
-      const url::Origin& worklet_origin) override {
-    return nullptr;
-  }
-
-  bool TryUseSharedProcess(ProcessHandle* process_handle) override {
-    return false;
-  }
-
-  std::vector<std::unique_ptr<auction_worklet::AuctionWorkletServiceImpl>>
-      auction_worklet_services_;
-};
-
 class TestKAnonymityServiceDelegate : public KAnonymityServiceDelegate {
  public:
   TestKAnonymityServiceDelegate() = default;
@@ -814,7 +790,7 @@ class MockPrivateAggregationHostForTest : public PrivateAggregationHost {
           ReportRequestGenerator,
           std::vector<blink::mojom::AggregatableReportHistogramContribution>,
           PrivateAggregationBudgetKey,
-          PrivateAggregationBudgeter::BudgetDeniedBehavior)>
+          PrivateAggregationHost::NullReportBehavior)>
           on_report_request_details_received,
       content::BrowserContext* browser_context)
       : PrivateAggregationHost(std::move(on_report_request_details_received),
@@ -899,7 +875,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     // Process creation crashes in the Chrome zygote init in unit tests, so run
     // the auction "processes" in-process instead.
     manager_->set_auction_process_manager_for_testing(
-        std::make_unique<SameProcessAuctionProcessManager>());
+        std::make_unique<TestSameProcessAuctionProcessManager>());
     manager_->set_k_anonymity_manager_for_testing(
         std::make_unique<InterestGroupKAnonymityManager>(
             manager_.get(),
@@ -1098,7 +1074,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   // be recorded.
   void ClearOriginJoinedInterestGroupsAndExpectBadMessage(
       const url::Origin& owner,
-      const std::string_view expected_bad_message,
+      std::string_view expected_bad_message,
       RenderFrameHost* rfh = nullptr) {
     mojo::Remote<blink::mojom::AdAuctionService> interest_service;
     AdAuctionServiceImpl::CreateMojoService(
@@ -1276,7 +1252,7 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
       PrivateAggregationHost::ReportRequestGenerator,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>,
       PrivateAggregationBudgetKey,
-      PrivateAggregationBudgeter::BudgetDeniedBehavior)>
+      PrivateAggregationHost::NullReportBehavior)>
       mock_private_aggregation_cb_;
 
   // Must be destroyed before RenderViewHostTestHarness::TearDown().
@@ -9924,8 +9900,7 @@ function scoreAd(
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             EXPECT_THAT(
@@ -9941,9 +9916,9 @@ function scoreAd(
             EXPECT_EQ(budget_key.api(),
                       PrivateAggregationCallerApi::kProtectedAudience);
             EXPECT_EQ(budget_key.origin(), kOriginA);
-            EXPECT_EQ(budget_denied_behavior,
-                      PrivateAggregationBudgeter::BudgetDeniedBehavior::
-                          kDontSendReport);
+            EXPECT_EQ(
+                null_report_behavior,
+                PrivateAggregationHost::NullReportBehavior::kDontSendReport);
             run_loop.Quit();
           }));
 
@@ -10689,8 +10664,7 @@ function reportResult() {}
              std::vector<blink::mojom::AggregatableReportHistogramContribution>
                  contributions,
              PrivateAggregationBudgetKey budget_key,
-             PrivateAggregationBudgeter::BudgetDeniedBehavior
-                 budget_denied_behavior) {
+             PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
           }),
@@ -10993,7 +10967,8 @@ class AdAuctionServiceImplBAndATest : public AdAuctionServiceImplTest {
         {{blink::features::kFledgeBiddingAndAuctionServer,
           {{"FledgeBiddingAndAuctionKeyURL", kKeyUrl.spec()}}},
          {blink::features::kPrivateAggregationApi,
-          {{"enabled_in_fledge", "true"}}}},
+          {{"enabled_in_fledge", "true"}}},
+         {features::kEnableBandAPrivateAggregation, {}}},
         {});
   }
 
@@ -11294,14 +11269,13 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlob) {
       }));
   run_loop.Run();
   std::string expected =
-      "AgAAASymZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
+      "AgAAAS6mZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
       "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8v"
-      "YS50ZXN0WJMfiwgAAAAAAAAAVYy7DoJAEADPTwLx1WppaUHr3e4GFmWP7IKGGAvuW4zfaSQ2"
-      "NtPMZKY3eLSEWb4soFitUXxLCF6tgdh2UUh6m2Cz3UnQeDfSE1fir/"
-      "aqlIAERlcHxkMcpHd1p3QrWSwld05unnITWWa90MCILNXvcKTREl5ozL7IdTDS/"
-      "V8RHs8P+"
-      "fcPtaAAAABycmVxdWVzdFRpbWVzdGFtcE1zCnRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
-      "UAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+      "YS50ZXN0WJUfiwgAAAAAAAAAVYy7DoJAEADPTwLx1WpprCxsvdvdwKLskV3QEGPBfYvxO43E"
+      "xmaamcz4Bo+WMMvnBRSLJYpvCMGr1RCbNgpJZyOs1hsJGu9GeuRS/"
+      "NVeVWDcxV46V7VKtxOLpeTOyU0vriPLpGesBCQwHMxpYESW8vfY02AJLzRkX+TaG+"
+      "n2rwiP5wdgB1I6ogAAAHJyZXF1ZXN0VGltZXN0YW1wTXMKdGVuYWJsZURlYnVnUmVwb3J0aW"
+      "5n9QAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
   EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
   EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
@@ -11468,17 +11442,16 @@ TEST_F(AdAuctionServiceImplTest, SerializesMultipleOwnersAuctionBlob) {
   run_loop.Run();
 
   std::string expected =
-      "AgAAAa2mZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
+      "AgAAAbKmZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
       "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOibmh0dHBzOi8v"
-      "YS50ZXN0WJMfiwgAAAAAAAAAlc07DgIxDATQwI32w6+"
-      "FI1DQ4tjWblasvYoDiA5ylj0oUigQJc0UM9K8PCOQZd4rpKpkTQIjs1dINqCOkwpLslcZG/"
-      "FR78bxGDqBi81dZGTBh+t9oINeJbl+inw7BbFnGDRIKRcfhqq6abFdrYtBCPGHwM129w+"
-      "QsztnV06/"
-      "1PINPrptCdMAAABuaHR0cHM6Ly9iLnRlc3RYcB+"
-      "LCAAAAAAAAAAlidENgzAMBcNILSMwQpH6HRIDjspzZKdF/"
-      "JXOkkER5etOd3sNPtpv7NUzbhfuEX6hsZxuKciSBYRi+"
-      "7VbDCqrkT54gn9ZnZQCIWxuHjh28kZxc1b6PBn25SSMf2wOsfspw2wAAABycmVxdWVzdFRpb"
-      "WVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/UA";
+      "YS50ZXN0WJYfiwgAAAAAAAAAjc07DsJADATQhRvlw6+"
+      "FmioFLY7XIo6IHa0XEB3sWXJQpKUAOpopZqR5aULwlmirEIucpRcYiFqFaD3qMKqQRHvmsZI"
+      "26M0oNHwSONvUtex3epHoujHQ9cBiD+6VJZczDoQkeN+be0O+KKsa68UyKx4h/CC4Wm/"
+      "+IFJyx+Ty1webf2Ev7Rc9rNcAAABuaHR0cHM6Ly9iLnRlc3RYch+"
+      "LCAAAAAAAAAAliTEOgzAQBMmTIE9ITRWk1MY+4rPCHrozIDrIW3goAqoZzWy7d8H+"
+      "XaOOUd6oAlxPXT7dkpd+EBCybfd+olWZjfTNX7if7bHl8JIRuYiD0vRh2MpJGFd8sJIn+"
+      "KW24gB9RS9abgAAAHJyZXF1ZXN0VGltZXN0YW1wTXMAdGVuYWJsZURlYnVnUmVwb3J0aW5n9"
+      "QAAAAAAAA";
   EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
   EXPECT_THAT(
@@ -11521,14 +11494,13 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithoutDebugReporting) {
       }));
   run_loop.Run();
   std::string expected =
-      "AgAAAPimZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
+      "AgAAAPqmZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
       "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8v"
-      "YS50ZXN0WF8fiwgAAAAAAAAAa1ycnJhS3JhiaGRskpKXmJuakpxYVJyXVJRfXpxaFJyZnpeY"
-      "U7wkvSg1OTUvuZIhIykzxTm/"
+      "YS50ZXN0WGEfiwgAAAAAAAAAa1ycnJhS3JhiaGRskpKXmJuakpxYVJyXVJRfXpxaFJyZnpeY"
+      "U7wkIykzxTm/"
       "NK+"
-      "EIaOgKLUsPDOvuCEzKz8zDyzICAAUFTd6TgAAAHJyZXF1ZXN0VGltZXN0YW1wTXMAdGVuYWJ"
-      "sZURlYnVnUmVwb3J0aW5n9AAAAAAAAA"
-      "AAAAAAAAAAAAAAAAAA";
+      "EIaOgKLUsPDOvuCEzKz8zDyzImFmUmpyal1zpW8wAALB77c5QAAAAcnJlcXVlc3RUaW1lc3R"
+      "hbXBNcwB0ZW5hYmxlRGVidWdSZXBvcnRpbmf0AAAAAAAAAAAAAA";
   EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
   EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
@@ -11574,14 +11546,13 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobDebugReportingInLockout) {
       }));
   run_loop.Run();
   std::string expected =
-      "AgAAAPimZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
+      "AgAAAPqmZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
       "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8v"
-      "YS50ZXN0WF8fiwgAAAAAAAAAa1ycnJhS3JhiaGRskpKXmJuakpxYVJyXVJRfXpxaFJyZnpeY"
-      "U7wkvSg1OTUvuZIhIykzxTm/"
+      "YS50ZXN0WGEfiwgAAAAAAAAAa1ycnJhS3JhiaGRskpKXmJuakpxYVJyXVJRfXpxaFJyZnpeY"
+      "U7wkIykzxTm/"
       "NK+"
-      "EIaOgKLUsPDOvuCEzKz8zDyzICAAUFTd6TgAAAHJyZXF1ZXN0VGltZXN0YW1wTXMAdGVuYWJ"
-      "sZURlYnVnUmVwb3J0aW5n9AAAAAAAAA"
-      "AAAAAAAAAAAAAAAAAA";
+      "EIaOgKLUsPDOvuCEzKz8zDyzImFmUmpyal1zpW8wAALB77c5QAAAAcnJlcXVlc3RUaW1lc3R"
+      "hbXBNcwB0ZW5hYmxlRGVidWdSZXBvcnRpbmf0AAAAAAAAAAAAAAAAAAAAAAAAAA";
   EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
   EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
@@ -11631,13 +11602,13 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithDebugToken) {
   EXPECT_THAT(
       base::Base64Encode(msg),
       testing::StartsWith(
-          "AgAAAS2nZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAw"
+          "AgAAAS6nZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAw"
           "MDAwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0"
-          "dHBzOi8vYS50ZXN0WGMfiwgAAAAAAAAAa1ycnJhS3JRiaGRskmxiapaSl5ibmpKcWFSc"
-          "l1SUX16cWhScmZ6XmFO8JL0oNTk1L7mSISMpM8U5vzSvhCGjoCi1LDwzr7ghMys/"
-          "Mw8syAgAr2OX2VIAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRjb25zZW50ZWREZWJ1Z0Nv"
-          "bmZpZ6JldG9rZW5nbXlUb2tlbmtpc0NvbnNlbnRlZPV0ZW5hYmxlRGVidWdSZXBvcnRp"
-          "bmf1AAAAAAAAAAAAAAAAAAAAAAAAAAAA"));
+          "dHBzOi8vYS50ZXN0WGQfiwgAAAAAAAAAHcg7EkBADABQjoTlAmqVQr2SDDFkTeIzOlyF"
+          "g5rxync94NFuTNLMgcsLFD8RgleTVsNupDV34kd7+"
+          "5axDKssUT8rbQ2LnTwElj9jVgISOCqLPmp7unBUAAAAcnJlcXVlc3RUaW1lc3RhbXBNc"
+          "wB0Y29uc2VudGVkRGVidWdDb25maWeiZXRva2VuZ215VG9rZW5raXNDb25zZW50ZWT1d"
+          "GVuYWJsZURlYnVnUmVwb3J0aW5n9QAAAAAA"));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
   EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
                                test_origin, testing::ElementsAre("cars"))));
@@ -11685,13 +11656,14 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithOmitAds) {
       }));
   run_loop.Run();
   std::string expected =
-      "AgAAAQimZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
+      "AgAAAQumZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
       "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8v"
-      "YS50ZXN0WG8fiwgAAAAAAAAALcy7DYQwDADQMBIHE8AIV9ASYhOMwEY2H1GSVbhBkU7UT3rX"
-      "DexnhODVuFM5DPVLkf1kv6gYkMPpho6glo1XNyyKe0NsKbk2Ocg/"
-      "RUmjEP85081QKwIgju8SepEHf/"
-      "LSNGUAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
-      "UAAAAAAAAAAAAAAAA";
+      "YS50ZXN0WHIfiwgAAAAAAAAALcxBDoJADADA5UmKL5AzJw9c3W3LUgKtaUHD0f0KPpSEeJ5k"
+      "vjtKnAkhmksy/"
+      "TjZg7PEyX9DYmx0lSUML6N3x+KlhGcJeLnWNx6V5eSKjYAEttaDrU52Z0SW/"
+      "H+"
+      "gVz0Ay2hPMmcAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
+      "UAAAAAAAA";
   EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
   EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
@@ -11744,15 +11716,15 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithFullAds) {
       }));
   run_loop.Run();
   std::string expected =
-      "AgAAAUqmZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
+      "AgAAAUumZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
       "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8v"
-      "YS50ZXN0WLEfiwgAAAAAAAAAhc4xDoJAEEDR9SaeACJa2VoYEyuNsR52RnYRZjc7C0Q7uInK"
-      "QU1oTLTwAD/"
-      "v9y8NKP1oaoqAEOHqKwKhuRCjDcRI4XTYtyZGL+"
-      "s01UkkiSlgYmJdWbF32gbXeH1xrgQ8TMEOcZEtV8hQE2oIwnlwnVA42oKhkrEIpIn1TZnc4s"
-      "Y1HJXxgdqzZRkG9fjA3Q+cTfKgnn/vvn9s6SxP2uwNwsI/"
-      "IPcAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
-      "UAAAAAAAAAAAAAAAA";
+      "YS50ZXN0WLIfiwgAAAAAAAAAhc49DoJAEEBhvIkngPhT2VoYE20wxnrYGd1BmCU7C0Q7uInK"
+      "QU1oTLTwAC/f614GULvBlhQAIcC1KgiUpkqC7EmQ/"
+      "DHdNTaESldJYuJAGhLA2IayYOU7bbyrK3N2LgdMx2CLOJsvlihQEhrwKpl3rZI/"
+      "8EWg0MFmjGtXS4hs5ak5sWjfR4+P1/"
+      "548xHso+"
+      "ffqe8Nzh3LqE3YkyExt71Gb2w9Qov5AAAAcnJlcXVlc3RUaW1lc3RhbXBNcwB0ZW5hYmxlRG"
+      "VidWdSZXBvcnRpbmf1AAAAAAAAAAAAAAA";
   EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
   EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
@@ -11803,12 +11775,12 @@ TEST_F(AdAuctionServiceImplTest,
       }));
   run_loop.Run();
   std::string expected =
-      "AgAAAPimZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
+      "AgAAAPqmZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAw"
       "MC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8v"
-      "YS50ZXN0WF8fiwgAAAAAAAAAa1yUkpeYm5qSnFhUnJdUlF9enFoUnJmel5hTvCS9KDU5NS+"
-      "5kiEjKTPFOb80r4Qho6AotSw8M6+"
-      "4qYkhoYkhxdDI2CQzKz8zDyzNCADUWHkHTgAAAHJyZXF1ZXN0VGltZXN0YW1wTXMAdGVuYWJ"
-      "sZURlYnVnUmVwb3J0aW5n9QAAAAAAAAAAAAAAAA";
+      "YS50ZXN0WGEfiwgAAAAAAAAAa1yUkpeYm5qSnFhUnJdUlF9enFoUnJmel5hTvCQjKTPFOb80"
+      "r4Qho6AotSw8M6+"
+      "4qYkhoYkhxdDI2CQzKz8zDyzNmFmUmpyal1zpW8wAALxTJDRQAAAAcnJlcXVlc3RUaW1lc3R"
+      "hbXBNcwB0ZW5hYmxlRGVidWdSZXBvcnRpbmf1AAAAAAAAAAA";
   EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
   EXPECT_EQ(5u * 1024u - kEncryptionOverhead, msg.size());
   EXPECT_THAT(group_names, testing::ElementsAre(testing::Pair(
@@ -11941,18 +11913,16 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     run_loop.Run();
 
     std::string expected =
-        "AgAAAYemZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
+        "AgAAAY6mZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
         "AwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOibmh0dHBz"
-        "Oi8vYS50ZXN0WG0fiwgAAAAAAAAAHclBDkAwEEZhjoQbcAQL62k7YYR/pFPEDmdxUEk3b/"
-        "G95/"
-        "MU7OVWKVW5dQCtzE4p2ex13RSMZE+eDVzU0zj2MoIW+"
-        "8bInuGvYnISOt2RimmLfAwCu2VWQcbyB4RoqwtoAAAAbmh0dHBzOi8vYi50ZXN0WHAfiwg"
-        "AAAAAAAAAJYnRDYMwDAXDSC0jMEKR+h0SA47Kc2SnRfyVzpJBEeXrTnd7DT7ab+"
-        "zVM24X7hF+obGcbinIkgWEYvu1Wwwqq5E+eIJ/"
-        "WZ2UAiFsbh44dvJGcXNW+"
-        "jwZ9uUkjH9sDrH7KcNsAAAAcnJlcXVlc3RUaW1lc3RhbXBNcwB0ZW5hYmxlRGVidWdSZXB"
-        "vcnRpbmf1AAAAAA"
-        "AAAA";
+        "Oi8vYS50ZXN0WHIfiwgAAAAAAAAAHckxDoMwDEbhcKS2N6AzU4fOTmIRI/"
+        "IbxWmrbsBZclCkLG/43tECRTt5VKq33nsEZWavVG0JmjcFo9rR5wO+6M+4vGQGrdaSl/"
+        "jUD6pLW+HvW2C7LCroOEjhwAj/"
+        "ydwFt40YkWoAAABuaHR0cHM6Ly9iLnRlc3RYch+"
+        "LCAAAAAAAAAAliTEOgzAQBMmTIE9ITRWk1MY+4rPCHrozIDrIW3goAqoZzWy7d8H+"
+        "XaOOUd6oAlxPXT7dkpd+EBCybfd+olWZjfTNX7if7bHl8JIRuYiD0vRh2MpJGFd8sJIn+"
+        "KW24gB9RS9abgAAAHJyZXF1ZXN0VGltZXN0YW1wTXMAdGVuYWJsZURlYnVnUmVwb3J0aW5"
+        "n9QAAAA";
     EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
     EXPECT_EQ(*config->request_size - kEncryptionOverhead, msg.size());
     EXPECT_THAT(
@@ -11992,14 +11962,15 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     run_loop.Run();
 
     std::string expected =
-        "AgAAASymZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
-        "AwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBz"
-        "Oi8vYS50ZXN0WJMfiwgAAAAAAAAAlc07DgIxDATQwI32w6+"
-        "FI1DQ4tjWblasvYoDiA5ylj0oUigQJc0UM9K8PCOQZd4rpKpkTQIjs1dINqCOkwpLslcZG"
-        "/FR78bxGDqBi81dZGTBh+t9oINeJbl+inw7BbFnGDRIKRcfhqq6abFdrYtBCPGHwM129w+"
-        "QsztnV06/"
-        "1PINPrptCdMAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
-        "UAAAAAAAAAAAAA";
+        "AgAAAS+"
+        "mZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAwMC0wM"
+        "DAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8vYS5"
+        "0ZXN0WJYfiwgAAAAAAAAAjc07DsJADATQhRvlw6+"
+        "FmioFLY7XIo6IHa0XEB3sWXJQpKUAOpopZqR5aULwlmirEIucpRcYiFqFaD3qMKqQRHvms"
+        "ZI26M0oNHwSONvUtex3epHoujHQ9cBiD+6VJZczDoQkeN+be0O+KKsa68UyKx4h/CC4Wm/"
+        "+IFJyx+"
+        "Ty1webf2Ev7Rc9rNcAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9y"
+        "dGluZ/UAAAAAAA";
     EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
     EXPECT_EQ(*config->request_size - kEncryptionOverhead, msg.size());
     EXPECT_THAT(group_names,
@@ -12015,7 +11986,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     config->request_size = 412 + kEncryptionOverhead;
     config->per_buyer_configs.emplace(
         test_origin_a, blink::mojom::AuctionDataBuyerConfig::New());
-    // Buyer B requires 129 bytes.
+    // Buyer B requires 131 bytes.
     config->per_buyer_configs.emplace(
         test_origin_b, blink::mojom::AuctionDataBuyerConfig::New(/*size=*/128));
 
@@ -12038,14 +12009,15 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     run_loop.Run();
 
     std::string expected =
-        "AgAAASymZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
-        "AwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBz"
-        "Oi8vYS50ZXN0WJMfiwgAAAAAAAAAlc07DgIxDATQwI32w6+"
-        "FI1DQ4tjWblasvYoDiA5ylj0oUigQJc0UM9K8PCOQZd4rpKpkTQIjs1dINqCOkwpLslcZG"
-        "/FR78bxGDqBi81dZGTBh+t9oINeJbl+inw7BbFnGDRIKRcfhqq6abFdrYtBCPGHwM129w+"
-        "QsztnV06/"
-        "1PINPrptCdMAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
-        "UAAAAAAAAAA";
+        "AgAAAS+"
+        "mZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAwMC0wM"
+        "DAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8vYS5"
+        "0ZXN0WJYfiwgAAAAAAAAAjc07DsJADATQhRvlw6+"
+        "FmioFLY7XIo6IHa0XEB3sWXJQpKUAOpopZqR5aULwlmirEIucpRcYiFqFaD3qMKqQRHvms"
+        "ZI26M0oNHwSONvUtex3epHoujHQ9cBiD+6VJZczDoQkeN+be0O+KKsa68UyKx4h/CC4Wm/"
+        "+IFJyx+"
+        "Ty1webf2Ev7Rc9rNcAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9y"
+        "dGluZ/UAAAAAAA";
     EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
     EXPECT_EQ(*config->request_size - kEncryptionOverhead, msg.size());
     EXPECT_THAT(group_names,
@@ -12062,7 +12034,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     config->per_buyer_configs.emplace(
         test_origin_a, blink::mojom::AuctionDataBuyerConfig::New());
     config->per_buyer_configs.emplace(
-        test_origin_b, blink::mojom::AuctionDataBuyerConfig::New(/*size=*/129));
+        test_origin_b, blink::mojom::AuctionDataBuyerConfig::New(/*size=*/131));
 
     std::vector<uint8_t> msg;
     base::flat_map<url::Origin, std::vector<std::string>> group_names;
@@ -12083,17 +12055,16 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     run_loop.Run();
 
     std::string expected =
-        "AgAAAYemZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
+        "AgAAAY6mZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
         "AwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOibmh0dHBz"
-        "Oi8vYS50ZXN0WG0fiwgAAAAAAAAAHclBDkAwEEZhjoQbcAQL62k7YYR/pFPEDmdxUEk3b/"
-        "G95/"
-        "MU7OVWKVW5dQCtzE4p2ex13RSMZE+eDVzU0zj2MoIW+"
-        "8bInuGvYnISOt2RimmLfAwCu2VWQcbyB4RoqwtoAAAAbmh0dHBzOi8vYi50ZXN0WHAfiwg"
-        "AAAAAAAAAJYnRDYMwDAXDSC0jMEKR+h0SA47Kc2SnRfyVzpJBEeXrTnd7DT7ab+"
-        "zVM24X7hF+obGcbinIkgWEYvu1Wwwqq5E+eIJ/"
-        "WZ2UAiFsbh44dvJGcXNW+"
-        "jwZ9uUkjH9sDrH7KcNsAAAAcnJlcXVlc3RUaW1lc3RhbXBNcwB0ZW5hYmxlRGVidWdSZXB"
-        "vcnRpbmf1AAAAAA";
+        "Oi8vYS50ZXN0WHIfiwgAAAAAAAAAHckxDoMwDEbhcKS2N6AzU4fOTmIRI/"
+        "IbxWmrbsBZclCkLG/43tECRTt5VKq33nsEZWavVG0JmjcFo9rR5wO+6M+4vGQGrdaSl/"
+        "jUD6pLW+HvW2C7LCroOEjhwAj/"
+        "ydwFt40YkWoAAABuaHR0cHM6Ly9iLnRlc3RYch+"
+        "LCAAAAAAAAAAliTEOgzAQBMmTIE9ITRWk1MY+4rPCHrozIDrIW3goAqoZzWy7d8H+"
+        "XaOOUd6oAlxPXT7dkpd+EBCybfd+olWZjfTNX7if7bHl8JIRuYiD0vRh2MpJGFd8sJIn+"
+        "KW24gB9RS9abgAAAHJyZXF1ZXN0VGltZXN0YW1wTXMAdGVuYWJsZURlYnVnUmVwb3J0aW5"
+        "n9QAAAAAA";
     EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
     EXPECT_EQ(*config->request_size - kEncryptionOverhead, msg.size());
     EXPECT_THAT(
@@ -12133,14 +12104,15 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     run_loop.Run();
 
     std::string expected =
-        "AgAAASymZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
-        "AwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBz"
-        "Oi8vYS50ZXN0WJMfiwgAAAAAAAAAlc07DgIxDATQwI32w6+"
-        "FI1DQ4tjWblasvYoDiA5ylj0oUigQJc0UM9K8PCOQZd4rpKpkTQIjs1dINqCOkwpLslcZG"
-        "/FR78bxGDqBi81dZGTBh+t9oINeJbl+inw7BbFnGDRIKRcfhqq6abFdrYtBCPGHwM129w+"
-        "QsztnV06/"
-        "1PINPrptCdMAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
-        "UAAAAAAAAAAAAAA";
+        "AgAAAS+"
+        "mZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAwMC0wM"
+        "DAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8vYS5"
+        "0ZXN0WJYfiwgAAAAAAAAAjc07DsJADATQhRvlw6+"
+        "FmioFLY7XIo6IHa0XEB3sWXJQpKUAOpopZqR5aULwlmirEIucpRcYiFqFaD3qMKqQRHvms"
+        "ZI26M0oNHwSONvUtex3epHoujHQ9cBiD+6VJZczDoQkeN+be0O+KKsa68UyKx4h/CC4Wm/"
+        "+IFJyx+"
+        "Ty1webf2Ev7Rc9rNcAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9y"
+        "dGluZ/UAAAAAA";
     EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
     EXPECT_EQ(*config->request_size - kEncryptionOverhead, msg.size());
     EXPECT_THAT(group_names,
@@ -12175,14 +12147,15 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     run_loop.Run();
 
     std::string expected =
-        "AgAAASymZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
-        "AwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBz"
-        "Oi8vYS50ZXN0WJMfiwgAAAAAAAAAlc07DgIxDATQwI32w6+"
-        "FI1DQ4tjWblasvYoDiA5ylj0oUigQJc0UM9K8PCOQZd4rpKpkTQIjs1dINqCOkwpLslcZG"
-        "/FR78bxGDqBi81dZGTBh+t9oINeJbl+inw7BbFnGDRIKRcfhqq6abFdrYtBCPGHwM129w+"
-        "QsztnV06/"
-        "1PINPrptCdMAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9ydGluZ/"
-        "UAAAAAAAAAAA";
+        "AgAAAS+"
+        "mZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMDAwMC0wM"
+        "DAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOhbmh0dHBzOi8vYS5"
+        "0ZXN0WJYfiwgAAAAAAAAAjc07DsJADATQhRvlw6+"
+        "FmioFLY7XIo6IHa0XEB3sWXJQpKUAOpopZqR5aULwlmirEIucpRcYiFqFaD3qMKqQRHvms"
+        "ZI26M0oNHwSONvUtex3epHoujHQ9cBiD+6VJZczDoQkeN+be0O+KKsa68UyKx4h/CC4Wm/"
+        "+IFJyx+"
+        "Ty1webf2Ev7Rc9rNcAAABycmVxdWVzdFRpbWVzdGFtcE1zAHRlbmFibGVEZWJ1Z1JlcG9y"
+        "dGluZ/UAAAAAAAAAAAAAAAA";
     EXPECT_THAT(base::Base64Encode(msg), testing::StartsWith(expected));
     EXPECT_EQ(*config->request_size - kEncryptionOverhead, msg.size());
     EXPECT_THAT(group_names,
@@ -12195,7 +12168,7 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
   {
     blink::mojom::AuctionDataConfigPtr config =
         blink::mojom::AuctionDataConfig::New();
-    config->request_size = 400 + kEncryptionOverhead;
+    config->request_size = 403 + kEncryptionOverhead;
 
     std::vector<uint8_t> msg;
     base::flat_map<url::Origin, std::vector<std::string>> group_names;
@@ -12216,17 +12189,16 @@ TEST_F(AdAuctionServiceImplTest, SerializesAuctionBlobWithPerBuyerConfig) {
     run_loop.Run();
 
     std::string expected =
-        "AgAAAYemZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
+        "AgAAAY6mZ3ZlcnNpb24AaXB1Ymxpc2hlcmZhLnRlc3RsZ2VuZXJhdGlvbklkeCQwMDAwMD"
         "AwMC0wMDAwLTAwMDAtMDAwMC0wMDAwMDAwMDAwMDBuaW50ZXJlc3RHcm91cHOibmh0dHBz"
-        "Oi8vYS50ZXN0WG0fiwgAAAAAAAAAHclBDkAwEEZhjoQbcAQL62k7YYR/pFPEDmdxUEk3b/"
-        "G95/"
-        "MU7OVWKVW5dQCtzE4p2ex13RSMZE+eDVzU0zj2MoIW+"
-        "8bInuGvYnISOt2RimmLfAwCu2VWQcbyB4RoqwtoAAAAbmh0dHBzOi8vYi50ZXN0WHAfiwg"
-        "AAAAAAAAAJYnRDYMwDAXDSC0jMEKR+h0SA47Kc2SnRfyVzpJBEeXrTnd7DT7ab+"
-        "zVM24X7hF+obGcbinIkgWEYvu1Wwwqq5E+eIJ/"
-        "WZ2UAiFsbh44dvJGcXNW+"
-        "jwZ9uUkjH9sDrH7KcNsAAAAcnJlcXVlc3RUaW1lc3RhbXBNcwB0ZW5hYmxlRGVidWdSZXB"
-        "vcnRpbmf1AAAAAA==";
+        "Oi8vYS50ZXN0WHIfiwgAAAAAAAAAHckxDoMwDEbhcKS2N6AzU4fOTmIRI/"
+        "IbxWmrbsBZclCkLG/43tECRTt5VKq33nsEZWavVG0JmjcFo9rR5wO+6M+4vGQGrdaSl/"
+        "jUD6pLW+HvW2C7LCroOEjhwAj/"
+        "ydwFt40YkWoAAABuaHR0cHM6Ly9iLnRlc3RYch+"
+        "LCAAAAAAAAAAliTEOgzAQBMmTIE9ITRWk1MY+4rPCHrozIDrIW3goAqoZzWy7d8H+"
+        "XaOOUd6oAlxPXT7dkpd+EBCybfd+olWZjfTNX7if7bHl8JIRuYiD0vRh2MpJGFd8sJIn+"
+        "KW24gB9RS9abgAAAHJyZXF1ZXN0VGltZXN0YW1wTXMAdGVuYWJsZURlYnVnUmVwb3J0aW5"
+        "n9Q==";
     EXPECT_EQ(expected, base::Base64Encode(msg));
     EXPECT_EQ(*config->request_size - kEncryptionOverhead, msg.size());
     EXPECT_THAT(
@@ -12416,11 +12388,11 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
       testing::HasSubstr(
           R"(", )"
           R"("interestGroups": {"https://a.test": )"
-          R"(h'1F8B080000000000000075CD3B0EC230100450025C281F7E2D3902455AD6EB)"
-          R"(55E288EC465E1344073E4B0E8A641A90A09962469A176704AB918E02214F5958)"
-          R"(8681C80804ED5186519838E8338D251B2F37257F722DC345E7D61312E33DEB8C)"
-          R"(B3B55C392CBAD1D3D438D687EBC5712AB33763F3A2ACB0DA6C936111FC1781BB)"
-          R"(FDE11FB0FE01C4B83CC7553AFDA05EE2EDA5E5D3000000'}, )"
+          R"(h'1F8B08000000000000006B5A929C9852DC94EA949F586208268D52F2127353)"
+          R"(5393F2134B8AB392F3730BF2F352F34A8A1BC192C6794945F9E5C5A945C199E9)"
+          R"(798939C54B329232539CF34BF34A18320A8A52CBC233F38A1B32B3F233F3C082)"
+          R"(8C9945A9C9A979C995BEC592CC2F2056A5181A199B249B989A81ED49494E2C42)"
+          R"(B126D9DCC292084B9A9A98129A98C16661B78E7F01000F4E0FB6DB000000'}, )"
           R"("requestTimestampMs": )"));
   EXPECT_THAT(got_str, testing::EndsWith(R"(, "enableDebugReporting": true})"));
 
@@ -12497,6 +12469,138 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithDebugReportLockout) {
           .value());
   EXPECT_THAT(got_str,
               testing::EndsWith(R"(, "enableDebugReporting": false})"));
+}
+
+TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayloadWithKAnon) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {
+          features::kEnableBandAKAnonEnforcement,
+          blink::features::kFledgeConsiderKAnonymity,
+          blink::features::kFledgeEnforceKAnonymity,
+      },
+      {});
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin, "cars")
+          .SetAds(
+              {{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "1234"},
+                {GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt},
+                {GURL("https://c.test/ad3.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "456"}}})
+          .SetAdComponents(
+              {{{GURL("https://c.test/ad4.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "789"}}})
+          .Build(),
+      GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin, "boats")
+          .SetAds(
+              {{{GURL("https://c.test/ad6.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Boat1"},
+                {GURL("https://c.test/ad7.html"), /*metadata=*/std::nullopt},
+                {GURL("https://c.test/ad8.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Boat2"}}})
+          .SetAdComponents(
+              {{{GURL("https://c.test/ad9.html"), /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "Boat3"}}})
+          .SetPriority(1.0)  // Set a higher priority so this one is first in
+                             // the request.
+          .Build(),
+      test_origin.GetURL().Resolve("/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> result =
+      GetAdAuctionDataAndFlushForFrame(test_origin);
+  ASSERT_TRUE(result.has_value());
+  ASSERT_FALSE(result->request.empty());
+
+  auto key_config = quiche::ObliviousHttpHeaderKeyConfig::Create(
+                        0x12, EVP_HPKE_DHKEM_X25519_HKDF_SHA256,
+                        EVP_HPKE_HKDF_SHA256, EVP_HPKE_AES_256_GCM)
+                        .value();
+  auto ohttp_gateway =
+      quiche::ObliviousHttpGateway::Create(
+          std::string(reinterpret_cast<const char*>(&kTestPrivateKey[0]),
+                      sizeof(kTestPrivateKey)),
+          key_config)
+          .value();
+  EXPECT_EQ(0x00, result->request[0]);
+  auto request = ohttp_gateway.DecryptObliviousHttpRequest(
+      result->request.substr(1), kBiddingAndAuctionEncryptionRequestMediaType);
+  ASSERT_TRUE(request.ok()) << request.status();
+  auto plaintext_data = request->GetPlaintextData();
+
+  EXPECT_EQ(0x02, plaintext_data[0]);
+  size_t request_size = 0;
+  for (size_t idx = 0; idx < sizeof(uint32_t); idx++) {
+    request_size =
+        (request_size << 8) | static_cast<uint8_t>(plaintext_data[idx + 1]);
+  }
+
+  // The generation ID is random, so match against everything before and
+  // everything after.
+  std::string got_str = cbor::DiagnosticWriter::Write(
+      cbor::Reader::Read(base::as_bytes(base::make_span(
+                             plaintext_data.substr(5, request_size))))
+          .value());
+  EXPECT_THAT(got_str,
+              testing::StartsWith(R"({"version": 0, "publisher": "a.test", )"
+                                  R"("enforceKAnon": true, )"
+                                  R"("generationId": ")"));
+  EXPECT_THAT(
+      got_str,
+      testing::HasSubstr(
+          R"(", )"
+          R"("interestGroups": {"https://a.test": )"
+          R"(h'1F8B08000000000000006B5A929C9852DC94EA949F586208268D52F2127353)"
+          R"(5393F2134B8AB392F3730BF2F352F34A8A1BC192C6794945F9E5C5A945C199E9)"
+          R"(798939C54B329232539CF34BF34A18320A8A52CBC233F38A1B32B3F233F3C082)"
+          R"(8C9945A9C9A979C995BEC592CC2F2056A5181A199B249B989A81ED49494E2C42)"
+          R"(B126D9DCC2927C4BD82F000024655BB6D1000000'}, )"
+          R"("requestTimestampMs": )"));
+  EXPECT_THAT(got_str, testing::EndsWith(R"(, "enableDebugReporting": true})"));
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(result.value().request_id);
+  AdAuctionRequestContext* context =
+      page_data->GetContextForAdAuctionRequest(*result.value().request_id);
+  ASSERT_TRUE(context);
+  EXPECT_EQ(test_origin, context->seller);
+  EXPECT_THAT(context->group_names,
+              testing::UnorderedElementsAre(testing::Pair(
+                  test_origin, testing::ElementsAre("boats", "cars"))));
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {
@@ -12998,9 +13102,9 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithoutCustomMediaType) {
           R"(", )"
           R"("interestGroups": {"https://a.test": )"
           R"(h'1F8B08000000000000006B5C9C9C9852DC986268646C929297989B9A929C58)"
-          R"(549C9754945F5E9C5A149C999E979853BC24BD283539352FB99231232933C539)"
-          R"(BF34AF8421A3A028B52C3C33AFB821332B3F330F2CC80800BE10ED8B4E000000)"
-          R"('}, "requestTimestampMs": )"));
+          R"(549C9754945F5E9C5A149C999E979853BC24232933C539BF34AF8421A3A028B5)"
+          R"(2C3C33AFB821332B3F330F2CC89859949A9C9A975CE95B2CC9FC0200687BC0F4)"
+          R"(52000000'}, "requestTimestampMs": )"));
   EXPECT_THAT(got_str, testing::EndsWith(R"(, "enableDebugReporting": true})"));
 
   std::string response = GetSingleSellerResponse();
@@ -13691,8 +13795,7 @@ function reportResult(auctionConfig, browserSignals) {
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             EXPECT_THAT(
@@ -13826,8 +13929,7 @@ TEST_F(AdAuctionServiceImplBAndATest,
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             EXPECT_THAT(
@@ -13895,15 +13997,13 @@ function reportResult(auctionConfig, browserSignals) {
   base::RepeatingCallback<void(
       PrivateAggregationHost::ReportRequestGenerator,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>,
-      PrivateAggregationBudgetKey,
-      PrivateAggregationBudgeter::BudgetDeniedBehavior)>
+      PrivateAggregationBudgetKey, PrivateAggregationHost::NullReportBehavior)>
       mock_callback = base::BindLambdaForTesting(
           [&](PrivateAggregationHost::ReportRequestGenerator generator,
               std::vector<blink::mojom::AggregatableReportHistogramContribution>
                   contributions,
               PrivateAggregationBudgetKey budget_key,
-              PrivateAggregationBudgeter::BudgetDeniedBehavior
-                  budget_denied_behavior) {
+              PrivateAggregationHost::NullReportBehavior null_report_behavior) {
             AggregatableReportRequest request =
                 std::move(generator).Run(contributions);
             EXPECT_THAT(
@@ -14075,7 +14175,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
       {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
        {blink::features::kFledgeSampleDebugReports,
         {{"fledge_debug_report_sampling_random_max", "0"},
-         {"fledge_enable_filtering_debug_report_starting_from", "0"}}}},
+         {"fledge_enable_filtering_debug_report_starting_from", "0"}}},
+       {features::kEnableBandASampleDebugReports, {}}},
       {});
 
   constexpr char kTopLevelDecisionUrlPath[] =
@@ -14272,7 +14373,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
       {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
        {blink::features::kFledgeSampleDebugReports,
         {{"fledge_debug_report_sampling_random_max", "0"},
-         {"fledge_enable_filtering_debug_report_starting_from", "0"}}}},
+         {"fledge_enable_filtering_debug_report_starting_from", "0"}}},
+       {features::kEnableBandASampleDebugReports, {}}},
       {});
 
   constexpr char kTopLevelDecisionUrlPath[] =
@@ -14472,7 +14574,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
       {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
        {blink::features::kFledgeSampleDebugReports,
         {{"fledge_debug_report_sampling_random_max", "10000"},
-         {"fledge_enable_filtering_debug_report_starting_from", "100ms"}}}},
+         {"fledge_enable_filtering_debug_report_starting_from", "100ms"}}},
+       {features::kEnableBandASampleDebugReports, {}}},
       {});
 
   constexpr char kDecisionScript[] = R"(
@@ -14608,7 +14711,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
       {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
        {blink::features::kFledgeSampleDebugReports,
         {{"fledge_debug_report_sampling_random_max", "100000"},
-         {"fledge_enable_filtering_debug_report_starting_from", "100ms"}}}},
+         {"fledge_enable_filtering_debug_report_starting_from", "100ms"}}},
+       {features::kEnableBandASampleDebugReports, {}}},
       {});
 
   ProvideKeys();
@@ -14713,7 +14817,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
        {blink::features::kFledgeSampleDebugReports,
-        {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}}},
+        {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}},
+       {features::kEnableBandASampleDebugReports, {}}},
       {});
 
   ProvideKeys();
@@ -14869,7 +14974,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
        {blink::features::kFledgeSampleDebugReports,
-        {{"fledge_enable_filtering_debug_report_starting_from", "0ms"}}}},
+        {{"fledge_enable_filtering_debug_report_starting_from", "0ms"}}},
+       {features::kEnableBandASampleDebugReports, {}}},
       {});
 
   ProvideKeys();
@@ -14984,7 +15090,8 @@ TEST_F(AdAuctionServiceImplBAndATest,
   scoped_feature_list.InitWithFeaturesAndParameters(
       {{blink::features::kBiddingAndScoringDebugReportingAPI, {}},
        {blink::features::kFledgeSampleDebugReports,
-        {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}}},
+        {{"fledge_enable_filtering_debug_report_starting_from", "100ms"}}},
+       {features::kEnableBandASampleDebugReports, {}}},
       {});
 
   ProvideKeys();
@@ -16694,21 +16801,21 @@ TEST_F(AdAuctionServiceImplBAndATest, RunBAndAAuctionWithBid) {
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", 0);
 }
 
-class AdAuctionServiceImplBAndAKAnonTest
+class AdAuctionServiceImplBAndALocalKAnonTest
     : public AdAuctionServiceImplBAndATest {
  public:
-  AdAuctionServiceImplBAndAKAnonTest() {
+  AdAuctionServiceImplBAndALocalKAnonTest() {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{blink::features::kFledgeConsiderKAnonymity,
                               blink::features::kFledgeEnforceKAnonymity},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{features::kEnableBandAKAnonEnforcement});
   }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(AdAuctionServiceImplBAndAKAnonTest, RunBAndAAuctionWithKAnon) {
+TEST_F(AdAuctionServiceImplBAndALocalKAnonTest, RunBAndAAuctionWithLocalKAnon) {
   base::HistogramTester hist;
   ProvideKeys();
   NavigateAndCommit(kUrlA);
@@ -16798,6 +16905,1909 @@ TEST_F(AdAuctionServiceImplBAndAKAnonTest, RunBAndAAuctionWithKAnon) {
   hist.ExpectUniqueSample(
       "Ads.InterestGroup.ServerAuction.NonKAnonWinnerIsKAnon", true, 1);
   hist.ExpectTotalCount("Ads.InterestGroup.Auction.NonKAnonWinnerIsKAnon", 0);
+}
+
+enum class KAnonState {
+  kNoEnforcement,
+  kSimulateOnDeviceNoneOnServer,
+  kEnforceOnDeviceNoneOnServer,
+  kNoneOnDeviceEnforceOnServer,
+  kSimulateOnDeviceEnforceOnServer,
+  kEnforceOnDeviceEnforceOnServer
+};
+
+std::ostream& operator<<(std::ostream& os, const KAnonState& state) {
+  switch (state) {
+    case KAnonState::kNoEnforcement:
+      os << "NoEnforcement";
+      break;
+    case KAnonState::kSimulateOnDeviceNoneOnServer:
+      os << "SimulateOnDeviceNoneOnServer";
+      break;
+    case KAnonState::kEnforceOnDeviceNoneOnServer:
+      os << "EnforceOnDeviceNoneOnServer";
+      break;
+    case KAnonState::kNoneOnDeviceEnforceOnServer:
+      os << "NoneOnDeviceEnforceOnServer";
+      break;
+    case KAnonState::kSimulateOnDeviceEnforceOnServer:
+      os << "SimulateOnDeviceEnforceOnServer";
+      break;
+    case KAnonState::kEnforceOnDeviceEnforceOnServer:
+      os << "EnforceOnDeviceEnforceOnServer";
+      break;
+  }
+  return os;
+}
+
+class AdAuctionServiceImplBAndAKAnonEnabledTest
+    : public AdAuctionServiceImplBAndATest,
+      public testing::WithParamInterface<KAnonState> {
+ public:
+  AdAuctionServiceImplBAndAKAnonEnabledTest() {
+    switch (GetParam()) {
+      case KAnonState::kNoEnforcement:
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{},
+            /*disabled_features=*/{blink::features::kFledgeConsiderKAnonymity,
+                                   blink::features::kFledgeEnforceKAnonymity,
+                                   features::kEnableBandAKAnonEnforcement});
+        break;
+      case KAnonState::kSimulateOnDeviceNoneOnServer:
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{blink::features::kFledgeConsiderKAnonymity},
+            /*disabled_features=*/{blink::features::kFledgeEnforceKAnonymity,
+                                   features::kEnableBandAKAnonEnforcement});
+        break;
+      case KAnonState::kEnforceOnDeviceNoneOnServer:
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/
+            {blink::features::kFledgeConsiderKAnonymity,
+             blink::features::kFledgeEnforceKAnonymity},
+            /*disabled_features=*/{features::kEnableBandAKAnonEnforcement});
+        break;
+      case KAnonState::kNoneOnDeviceEnforceOnServer:
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{features::kEnableBandAKAnonEnforcement},
+            /*disabled_features=*/{blink::features::kFledgeConsiderKAnonymity,
+                                   blink::features::kFledgeEnforceKAnonymity});
+        break;
+      case KAnonState::kSimulateOnDeviceEnforceOnServer:
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{features::kEnableBandAKAnonEnforcement,
+                                  blink::features::kFledgeConsiderKAnonymity},
+            /*disabled_features=*/{blink::features::kFledgeEnforceKAnonymity});
+
+        break;
+      case KAnonState::kEnforceOnDeviceEnforceOnServer:
+        feature_list_.InitWithFeatures(
+            /*enabled_features=*/{blink::features::kFledgeConsiderKAnonymity,
+                                  blink::features::kFledgeEnforceKAnonymity,
+                                  features::kEnableBandAKAnonEnforcement},
+            /*disabled_features=*/{});
+        break;
+    }
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, NoKAnonInResponse) {
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  blink::InterestGroup interest_group =
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group,
+                              GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  std::string response = GetSingleSellerResponse();
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(
+                    base::as_bytes(base::make_span(encrypted_response))));
+          }),
+      main_rfh());
+
+  switch (GetParam()) {
+    case KAnonState::kNoEnforcement:
+    case KAnonState::kSimulateOnDeviceNoneOnServer:
+    case KAnonState::kEnforceOnDeviceNoneOnServer:
+    case KAnonState::kNoneOnDeviceEnforceOnServer:
+    case KAnonState::kSimulateOnDeviceEnforceOnServer: {
+      EXPECT_TRUE(result);
+      InvokeCallbackForURN(*result);
+
+      // Fast forward enough for all k-anon joins to be sent.
+      task_environment()->FastForwardBy(base::Hours(1));
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group, interest_group.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group, interest_group.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
+
+      break;
+    }
+    case KAnonState::kEnforceOnDeviceEnforceOnServer: {
+      EXPECT_FALSE(result);
+      task_environment()->FastForwardBy(base::Hours(1));
+      EXPECT_THAT(GetKAnonJoinedIds(), ::testing::UnorderedElementsAre());
+      break;
+    }
+  }
+}
+
+TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, AdInResponseNotInGroup) {
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  blink::InterestGroup interest_group =
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group,
+                              GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  base::Value response_value = base::Value(
+      base::Value::Dict()
+          .Set("adRenderURL", "https://c.test/different_ad.html")
+          .Set("interestGroupName", "cars")
+          .Set("interestGroupOwner", kOriginA.Serialize())
+          .Set("biddingGroups",
+               base::Value(base::Value::Dict().Set(
+                   "https://a.test/",
+                   base::Value(base::Value::List().Append(0).Append(1)))))
+          .Set(
+              "kAnonWinnerJoinCandidates",
+              base::Value(
+                  base::Value::Dict()
+                      .Set("adRenderURLHash",
+                           AsBlobValue(blink::HashedKAnonKeyForAdBid(
+                               interest_group.owner,
+                               interest_group.bidding_url.value_or(GURL()),
+                               "https://c.test/different_ad.html")))
+                      .Set(
+                          "reportingIdHash",
+                          AsBlobValue(
+                              blink::
+                                  HashedKAnonKeyForAdNameReportingWithoutInterestGroup(
+                                      interest_group.owner, interest_group.name,
+                                      interest_group.bidding_url.value_or(
+                                          GURL()),
+                                      "https://c.test/different_ad.html",
+                                      /*buyer_reporting_id=*/std::nullopt,
+                                      /*buyer_and_seller_reporting_id=*/
+                                      std::nullopt,
+                                      /*selected_buyer_and_seller_reporting_id=*/
+                                      std::nullopt))))));
+
+  std::string unframed_response;
+  ASSERT_TRUE(compression::GzipCompress(
+      auction_worklet::test::ToCborVector(response_value), &unframed_response));
+
+  uint32_t request_size = unframed_response.size();
+  std::string response = {0x02, static_cast<char>(request_size >> 24),
+                          static_cast<char>(request_size >> 16),
+                          static_cast<char>(request_size >> 8),
+                          static_cast<char>(request_size >> 0)};
+  response += unframed_response;
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(
+                    base::as_bytes(base::make_span(encrypted_response))));
+          }),
+      main_rfh());
+
+  EXPECT_FALSE(result);
+  task_environment()->FastForwardBy(base::Hours(1));
+  EXPECT_THAT(GetKAnonJoinedIds(), ::testing::UnorderedElementsAre());
+}
+
+TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, OnlyGhostWinner) {
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  blink::InterestGroup interest_group1 =
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group1,
+                              GURL("https://a.test/example.html"));
+  blink::InterestGroup interest_group2 =
+      blink::TestInterestGroupBuilder(kOriginA, "bikes")
+          .SetAds({{{GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "5678"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group2,
+                              GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
+  int win_idx =
+      request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
+  base::Value response_value = base::Value(
+      base::Value::Dict()
+          .Set("biddingGroups",
+               base::Value(base::Value::Dict().Set(
+                   "https://a.test/",
+                   base::Value(base::Value::List().Append(0).Append(1)))))
+          .Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(base::Value(
+                  base::Value::Dict()
+                      .Set(
+                          "kAnonJoinCandidates",
+                          base::Value(
+                              base::Value::Dict()
+                                  .Set("adRenderURLHash",
+                                       AsBlobValue(HashedKAnonKeyForAdBid(
+                                           interest_group2,
+                                           interest_group2.ads.value()[0]
+                                               .render_url())))
+                                  .Set(
+                                      "reportingIdHash",
+                                      AsBlobValue(
+                                          HashedKAnonKeyForAdNameReporting(
+                                              interest_group2,
+                                              interest_group2.ads.value()[0],
+                                              /*selected_buyer_and_seller_reporting_id=*/
+                                              std::nullopt)))))
+                      .Set("interestGroupIndex", base::Value(win_idx))
+                      .Set("owner", base::Value("https://a.test/")))))));
+  std::string unframed_response;
+  ASSERT_TRUE(compression::GzipCompress(
+      auction_worklet::test::ToCborVector(response_value), &unframed_response));
+
+  uint32_t request_size = unframed_response.size();
+  std::string response = {0x02, static_cast<char>(request_size >> 24),
+                          static_cast<char>(request_size >> 16),
+                          static_cast<char>(request_size >> 8),
+                          static_cast<char>(request_size >> 0)};
+  response += unframed_response;
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(
+                    base::as_bytes(base::make_span(encrypted_response))));
+          }),
+      main_rfh());
+
+  EXPECT_FALSE(result);
+  task_environment()->FastForwardBy(base::Hours(1));
+  switch (GetParam()) {
+    case KAnonState::kNoEnforcement:
+    case KAnonState::kSimulateOnDeviceNoneOnServer:
+    case KAnonState::kEnforceOnDeviceNoneOnServer:
+    case KAnonState::kNoneOnDeviceEnforceOnServer:
+    case KAnonState::kSimulateOnDeviceEnforceOnServer: {
+      EXPECT_THAT(GetKAnonJoinedIds(), ::testing::UnorderedElementsAre());
+      break;
+    }
+    case KAnonState::kEnforceOnDeviceEnforceOnServer: {
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group2, interest_group2.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group2, interest_group2.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
+      break;
+    }
+  }
+}
+
+TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, WinnerAndGhostWinner) {
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  blink::InterestGroup interest_group1 =
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group1,
+                              GURL("https://a.test/example.html"));
+  blink::InterestGroup interest_group2 =
+      blink::TestInterestGroupBuilder(kOriginA, "bikes")
+          .SetAds({{{GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "5678"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group2,
+                              GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
+  int win_idx =
+      request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
+  base::Value response_value = base::Value(
+      base::Value::Dict()
+          .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
+          .Set("interestGroupName", "cars")
+          .Set("interestGroupOwner", kOriginA.Serialize())
+          .Set("biddingGroups",
+               base::Value(base::Value::Dict().Set(
+                   "https://a.test/",
+                   base::Value(base::Value::List().Append(0).Append(1)))))
+          .Set("kAnonWinnerJoinCandidates",
+               base::Value(
+                   base::Value::Dict()
+                       .Set("adRenderURLHash",
+                            AsBlobValue(HashedKAnonKeyForAdBid(
+                                interest_group1,
+                                interest_group1.ads.value()[0].render_url())))
+                       .Set("reportingIdHash",
+                            AsBlobValue(HashedKAnonKeyForAdNameReporting(
+                                interest_group1, interest_group1.ads.value()[0],
+                                /*selected_buyer_and_seller_reporting_id=*/
+                                std::nullopt)))))
+          .Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(base::Value(
+                  base::Value::Dict()
+                      .Set(
+                          "kAnonJoinCandidates",
+                          base::Value(
+                              base::Value::Dict()
+                                  .Set("adRenderURLHash",
+                                       AsBlobValue(HashedKAnonKeyForAdBid(
+                                           interest_group2,
+                                           interest_group2.ads.value()[0]
+                                               .render_url())))
+                                  .Set(
+                                      "reportingIdHash",
+                                      AsBlobValue(
+                                          HashedKAnonKeyForAdNameReporting(
+                                              interest_group2,
+                                              interest_group2.ads.value()[0],
+                                              /*selected_buyer_and_seller_reporting_id=*/
+                                              std::nullopt)))))
+                      .Set("interestGroupIndex", base::Value(win_idx))
+                      .Set("owner", base::Value("https://a.test/")))))));
+  std::string unframed_response;
+  ASSERT_TRUE(compression::GzipCompress(
+      auction_worklet::test::ToCborVector(response_value), &unframed_response));
+
+  uint32_t request_size = unframed_response.size();
+  std::string response = {0x02, static_cast<char>(request_size >> 24),
+                          static_cast<char>(request_size >> 16),
+                          static_cast<char>(request_size >> 8),
+                          static_cast<char>(request_size >> 0)};
+  response += unframed_response;
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(
+                    base::as_bytes(base::make_span(encrypted_response))));
+          }),
+      main_rfh());
+
+  ASSERT_TRUE(result);
+  InvokeCallbackForURN(*result);
+  task_environment()->FastForwardBy(base::Hours(1));
+  switch (GetParam()) {
+    case KAnonState::kNoEnforcement:
+    case KAnonState::kSimulateOnDeviceNoneOnServer:
+    case KAnonState::kEnforceOnDeviceNoneOnServer:
+    case KAnonState::kNoneOnDeviceEnforceOnServer:
+    case KAnonState::kSimulateOnDeviceEnforceOnServer: {
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group1, interest_group1.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group1, interest_group1.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
+      break;
+    }
+    case KAnonState::kEnforceOnDeviceEnforceOnServer: {
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group1, interest_group1.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group1, interest_group1.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
+              HashedKAnonKeyForAdBid(
+                  interest_group2, interest_group2.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group2, interest_group2.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
+      break;
+    }
+  }
+}
+
+TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
+       WinnerAndGhostWinnerWithAdComponents) {
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  blink::InterestGroup interest_group1 =
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
+          .SetAdComponents(
+              {{{GURL("https://c.test/ad_component.html"),
+                 /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "abcd"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group1,
+                              GURL("https://a.test/example.html"));
+  blink::InterestGroup interest_group2 =
+      blink::TestInterestGroupBuilder(kOriginA, "bikes")
+          .SetAds({{{GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "5678"}}})
+          .SetAdComponents(
+              {{{GURL("https://c.test/ad_component2.html"),
+                 /*metadata=*/std::nullopt,
+                 /*size_group=*/std::nullopt,
+                 /*buyer_reporting_id=*/std::nullopt,
+                 /*buyer_and_seller_reporting_id=*/std::nullopt,
+                 /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                 "efgh"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group2,
+                              GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
+  int win_idx =
+      request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
+  base::Value response_value = base::Value(
+      base::Value::Dict()
+          .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
+          .Set("components", base::Value(base::Value::List().Append(
+                                 "https://c.test/ad_component.html")))
+          .Set("interestGroupName", "cars")
+          .Set("interestGroupOwner", kOriginA.Serialize())
+          .Set("biddingGroups",
+               base::Value(base::Value::Dict().Set(
+                   "https://a.test/",
+                   base::Value(base::Value::List().Append(0).Append(1)))))
+          .Set("kAnonWinnerJoinCandidates",
+               base::Value(
+                   base::Value::Dict()
+                       .Set("adRenderURLHash",
+                            AsBlobValue(HashedKAnonKeyForAdBid(
+                                interest_group1,
+                                interest_group1.ads.value()[0].render_url())))
+                       .Set("adComponentRenderURLsHash",
+                            base::Value(base::Value::List().Append(AsBlobValue(
+                                blink::HashedKAnonKeyForAdComponentBid(
+                                    interest_group1.ad_components.value()[0]
+                                        .render_url())))))
+                       .Set("reportingIdHash",
+                            AsBlobValue(HashedKAnonKeyForAdNameReporting(
+                                interest_group1, interest_group1.ads.value()[0],
+                                /*selected_buyer_and_seller_reporting_id=*/
+                                std::nullopt)))))
+          .Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(base::Value(
+                  base::Value::Dict()
+                      .Set(
+                          "kAnonJoinCandidates",
+                          base::Value(
+                              base::Value::Dict()
+                                  .Set("adRenderURLHash",
+                                       AsBlobValue(HashedKAnonKeyForAdBid(
+                                           interest_group2,
+                                           interest_group2.ads.value()[0]
+                                               .render_url())))
+                                  .Set(
+                                      "adComponentRenderURLsHash",
+                                      base::Value(base::Value::List().Append(
+                                          AsBlobValue(
+                                              blink::
+                                                  HashedKAnonKeyForAdComponentBid(
+                                                      interest_group2
+                                                          .ad_components
+                                                          .value()[0]
+                                                          .render_url())))))
+
+                                  .Set(
+                                      "reportingIdHash",
+                                      AsBlobValue(
+                                          HashedKAnonKeyForAdNameReporting(
+                                              interest_group2,
+                                              interest_group2.ads.value()[0],
+                                              /*selected_buyer_and_seller_reporting_id=*/
+                                              std::nullopt)))))
+                      .Set("interestGroupIndex", base::Value(win_idx))
+                      .Set("owner", base::Value("https://a.test/")))))));
+  std::string unframed_response;
+  ASSERT_TRUE(compression::GzipCompress(
+      auction_worklet::test::ToCborVector(response_value), &unframed_response));
+
+  uint32_t request_size = unframed_response.size();
+  std::string response = {0x02, static_cast<char>(request_size >> 24),
+                          static_cast<char>(request_size >> 16),
+                          static_cast<char>(request_size >> 8),
+                          static_cast<char>(request_size >> 0)};
+  response += unframed_response;
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(
+                    base::as_bytes(base::make_span(encrypted_response))));
+          }),
+      main_rfh());
+
+  ASSERT_TRUE(result);
+  InvokeCallbackForURN(*result);
+  task_environment()->FastForwardBy(base::Hours(1));
+  switch (GetParam()) {
+    case KAnonState::kNoEnforcement:
+    case KAnonState::kSimulateOnDeviceNoneOnServer:
+    case KAnonState::kEnforceOnDeviceNoneOnServer:
+    case KAnonState::kNoneOnDeviceEnforceOnServer:
+    case KAnonState::kSimulateOnDeviceEnforceOnServer: {
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group1, interest_group1.ads.value()[0].render_url()),
+              blink::HashedKAnonKeyForAdComponentBid(
+                  interest_group1.ad_components.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group1, interest_group1.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
+      break;
+    }
+    case KAnonState::kEnforceOnDeviceEnforceOnServer: {
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group1, interest_group1.ads.value()[0].render_url()),
+              blink::HashedKAnonKeyForAdComponentBid(
+                  interest_group1.ad_components.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group1, interest_group1.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
+              HashedKAnonKeyForAdBid(
+                  interest_group2, interest_group2.ads.value()[0].render_url()),
+              blink::HashedKAnonKeyForAdComponentBid(
+                  interest_group2.ad_components.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group2, interest_group2.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
+      break;
+    }
+  }
+}
+
+TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
+       WinnerAndGhostWinnerDifferentOwners) {
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  blink::InterestGroup interest_group1 =
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group1, kUrlA);
+  blink::InterestGroup interest_group2 =
+      blink::TestInterestGroupBuilder(kOriginB, "bikes")
+          .SetAds({{{GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "5678"}}})
+          .SetBiddingUrl(kUrlB.Resolve(kBiddingUrlPath))
+          .Build();
+  manager_->JoinInterestGroup(interest_group2, kUrlB);
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  base::Value response_value = base::Value(
+      base::Value::Dict()
+          .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
+          .Set("interestGroupName", "cars")
+          .Set("interestGroupOwner", kOriginA.Serialize())
+          .Set(
+              "biddingGroups",
+              base::Value(base::Value::Dict()
+                              .Set("https://a.test/",
+                                   base::Value(base::Value::List().Append(0)))
+                              .Set("https://b.test/",
+                                   base::Value(base::Value::List().Append(0)))))
+          .Set("kAnonWinnerJoinCandidates",
+               base::Value(
+                   base::Value::Dict()
+                       .Set("adRenderURLHash",
+                            AsBlobValue(HashedKAnonKeyForAdBid(
+                                interest_group1,
+                                interest_group1.ads.value()[0].render_url())))
+                       .Set("reportingIdHash",
+                            AsBlobValue(HashedKAnonKeyForAdNameReporting(
+                                interest_group1, interest_group1.ads.value()[0],
+                                /*selected_buyer_and_seller_reporting_id=*/
+                                std::nullopt)))))
+          .Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(base::Value(
+                  base::Value::Dict()
+                      .Set(
+                          "kAnonJoinCandidates",
+                          base::Value(
+                              base::Value::Dict()
+                                  .Set("adRenderURLHash",
+                                       AsBlobValue(HashedKAnonKeyForAdBid(
+                                           interest_group2,
+                                           interest_group2.ads.value()[0]
+                                               .render_url())))
+                                  .Set(
+                                      "reportingIdHash",
+                                      AsBlobValue(
+                                          HashedKAnonKeyForAdNameReporting(
+                                              interest_group2,
+                                              interest_group2.ads.value()[0],
+                                              /*selected_buyer_and_seller_reporting_id=*/
+                                              std::nullopt)))))
+                      .Set("interestGroupIndex", 0)
+                      .Set("owner", base::Value("https://b.test/")))))));
+  std::string unframed_response;
+  ASSERT_TRUE(compression::GzipCompress(
+      auction_worklet::test::ToCborVector(response_value), &unframed_response));
+
+  uint32_t request_size = unframed_response.size();
+  std::string response = {0x02, static_cast<char>(request_size >> 24),
+                          static_cast<char>(request_size >> 16),
+                          static_cast<char>(request_size >> 8),
+                          static_cast<char>(request_size >> 0)};
+  response += unframed_response;
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(
+                    base::as_bytes(base::make_span(encrypted_response))));
+          }),
+      main_rfh());
+
+  ASSERT_TRUE(result);
+  InvokeCallbackForURN(*result);
+  task_environment()->FastForwardBy(base::Hours(1));
+  switch (GetParam()) {
+    case KAnonState::kNoEnforcement:
+    case KAnonState::kSimulateOnDeviceNoneOnServer:
+    case KAnonState::kEnforceOnDeviceNoneOnServer:
+    case KAnonState::kNoneOnDeviceEnforceOnServer:
+    case KAnonState::kSimulateOnDeviceEnforceOnServer: {
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group1, interest_group1.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group1, interest_group1.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
+      break;
+    }
+    case KAnonState::kEnforceOnDeviceEnforceOnServer: {
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group1, interest_group1.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group1, interest_group1.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
+              HashedKAnonKeyForAdBid(
+                  interest_group2, interest_group2.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group2, interest_group2.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
+      break;
+    }
+  }
+}
+
+TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
+       WinnerAndGhostWinnerReportingIds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({blink::features::kFledgeAuctionDealSupport,
+                                 features::kEnableBandADealSupport},
+                                {});
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  std::string ad1_sbas_id = "ad1_sbas_id";
+  std::string ad2_sbas_id = "ad2_sbas_id";
+  blink::InterestGroup interest_group1 =
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"),
+                     /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/"ad1_buyer_id",
+                     /*buyer_and_seller_reporting_id=*/"ad1_bas_id",
+                     /*selectable_buyer_and_seller_reporting_ids=*/
+                     std::vector<std::string>{ad1_sbas_id}, "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group1,
+                              GURL("https://a.test/example.html"));
+  blink::InterestGroup interest_group2 =
+      blink::TestInterestGroupBuilder(kOriginA, "bikes")
+          .SetAds({{{GURL("https://c.test/ad2.html"),
+                     /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/"ad2_buyer_id",
+                     /*buyer_and_seller_reporting_id=*/"ad2_bas_id",
+                     /*selectable_buyer_and_seller_reporting_ids=*/
+                     std::vector<std::string>{ad2_sbas_id}, "5678"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group2,
+                              GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
+  int win_idx =
+      request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
+  base::Value response_value = base::Value(
+      base::Value::Dict()
+          .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
+          .Set("interestGroupName", "cars")
+          .Set("interestGroupOwner", kOriginA.Serialize())
+          .Set("biddingGroups",
+               base::Value(base::Value::Dict().Set(
+                   "https://a.test/",
+                   base::Value(base::Value::List().Append(0).Append(1)))))
+          .Set("buyerReportingId", "ad1_buyer_id")
+          .Set("buyerAndSellerReportingId", "ad1_bas_id")
+          .Set("selectedBuyerAndSellerReportingId", ad1_sbas_id)
+          .Set("kAnonWinnerJoinCandidates",
+               base::Value(
+                   base::Value::Dict()
+                       .Set("adRenderURLHash",
+                            AsBlobValue(HashedKAnonKeyForAdBid(
+                                interest_group1,
+                                interest_group1.ads.value()[0].render_url())))
+                       .Set("reportingIdHash",
+                            AsBlobValue(HashedKAnonKeyForAdNameReporting(
+                                interest_group1, interest_group1.ads.value()[0],
+                                ad1_sbas_id)))))
+          .Set("kAnonGhostWinners",
+               base::Value(base::Value::List().Append(base::Value(
+                   base::Value::Dict()
+                       .Set("kAnonJoinCandidates",
+                            base::Value(
+                                base::Value::Dict()
+                                    .Set("adRenderURLHash",
+                                         AsBlobValue(HashedKAnonKeyForAdBid(
+                                             interest_group2,
+                                             interest_group2.ads.value()[0]
+                                                 .render_url())))
+                                    .Set("reportingIdHash",
+                                         AsBlobValue(
+                                             HashedKAnonKeyForAdNameReporting(
+                                                 interest_group2,
+                                                 interest_group2.ads.value()[0],
+                                                 ad2_sbas_id)))))
+                       .Set("interestGroupIndex", base::Value(win_idx))
+                       .Set("owner", base::Value("https://a.test/")))))));
+  std::string unframed_response;
+  ASSERT_TRUE(compression::GzipCompress(
+      auction_worklet::test::ToCborVector(response_value), &unframed_response));
+
+  uint32_t request_size = unframed_response.size();
+  std::string response = {0x02, static_cast<char>(request_size >> 24),
+                          static_cast<char>(request_size >> 16),
+                          static_cast<char>(request_size >> 8),
+                          static_cast<char>(request_size >> 0)};
+  response += unframed_response;
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(
+                    base::as_bytes(base::make_span(encrypted_response))));
+          }),
+      main_rfh());
+
+  ASSERT_TRUE(result);
+  InvokeCallbackForURN(*result);
+  task_environment()->FastForwardBy(base::Hours(1));
+  switch (GetParam()) {
+    case KAnonState::kNoEnforcement:
+    case KAnonState::kSimulateOnDeviceNoneOnServer:
+    case KAnonState::kEnforceOnDeviceNoneOnServer:
+    case KAnonState::kNoneOnDeviceEnforceOnServer:
+    case KAnonState::kSimulateOnDeviceEnforceOnServer: {
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group1, interest_group1.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(interest_group1,
+                                               interest_group1.ads.value()[0],
+                                               ad1_sbas_id)));
+      break;
+    }
+    case KAnonState::kEnforceOnDeviceEnforceOnServer: {
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group1, interest_group1.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group1, interest_group1.ads.value()[0], ad1_sbas_id),
+              HashedKAnonKeyForAdBid(
+                  interest_group2, interest_group2.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(interest_group2,
+                                               interest_group2.ads.value()[0],
+                                               ad2_sbas_id)));
+      break;
+    }
+  }
+}
+
+TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest, RunMultiSellerBAndAAuction) {
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {
+    'ad': 'example',
+    'bid': 1,
+    'render': interestGroup.ads[0].renderURL,
+    'allowComponentAuction': true};
+}
+
+function reportWin() {}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return {desirability: 1 + bid, allowComponentAuction: true};
+}
+
+function reportResult(auctionConfig, browserSignals) {}
+)";
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  blink::InterestGroup interest_group1 =
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group1,
+                              GURL("https://a.test/example.html"));
+  blink::InterestGroup interest_group2 =
+      blink::TestInterestGroupBuilder(kOriginA, "bikes")
+          .SetAds({{{GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "5678"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group2,
+                              GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
+  int win_idx =
+      request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
+  base::Value response_value = base::Value(
+      base::Value::Dict()
+          .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
+          .Set("interestGroupName", "cars")
+          .Set("interestGroupOwner", kOriginA.Serialize())
+          .Set("biddingGroups",
+               base::Value(base::Value::Dict().Set(
+                   "https://a.test/",
+                   base::Value(base::Value::List().Append(0).Append(1)))))
+          .Set("bid", 100)
+          .Set("bidCurrency", "XAU")
+          .Set("topLevelSeller", kOriginA.Serialize())
+          .Set("adMetadata", "\"foo\"")
+          .Set("kAnonWinnerJoinCandidates",
+               base::Value(
+                   base::Value::Dict()
+                       .Set("adRenderURLHash",
+                            AsBlobValue(HashedKAnonKeyForAdBid(
+                                interest_group1,
+                                interest_group1.ads.value()[0].render_url())))
+                       .Set("reportingIdHash",
+                            AsBlobValue(HashedKAnonKeyForAdNameReporting(
+                                interest_group1, interest_group1.ads.value()[0],
+                                /*selected_buyer_and_seller_reporting_id=*/
+                                std::nullopt)))))
+          .Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(base::Value(
+                  base::Value::Dict()
+                      .Set(
+                          "kAnonJoinCandidates",
+                          base::Value(
+                              base::Value::Dict()
+                                  .Set("adRenderURLHash",
+                                       AsBlobValue(HashedKAnonKeyForAdBid(
+                                           interest_group2,
+                                           interest_group2.ads.value()[0]
+                                               .render_url())))
+                                  .Set(
+                                      "reportingIdHash",
+                                      AsBlobValue(
+                                          HashedKAnonKeyForAdNameReporting(
+                                              interest_group2,
+                                              interest_group2.ads.value()[0],
+                                              /*selected_buyer_and_seller_reporting_id=*/
+                                              std::nullopt)))))
+                      .Set("interestGroupIndex", base::Value(win_idx))
+                      .Set("owner", base::Value("https://a.test/"))
+                      .Set("ghostWinnerForTopLevelAuction",
+                           base::Value::Dict()
+                               .Set("adRenderURL",
+                                    interest_group2.ads.value()[0].render_url())
+                               .Set("modifiedBid", 10)
+                               .Set("bidCurrency", "XAU")
+                               .Set("adMetadata", "\"meta\"")))))));
+  std::string unframed_response;
+  ASSERT_TRUE(compression::GzipCompress(
+      auction_worklet::test::ToCborVector(response_value), &unframed_response));
+
+  uint32_t request_size = unframed_response.size();
+  std::string response = {0x02, static_cast<char>(request_size >> 24),
+                          static_cast<char>(request_size >> 16),
+                          static_cast<char>(request_size >> 8),
+                          static_cast<char>(request_size >> 0)};
+  response += unframed_response;
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+
+  blink::AuctionConfig component_auction1;
+  component_auction1.seller = kOriginA;
+  component_auction1.non_shared_params.interest_group_buyers = {kOriginA};
+  component_auction1.server_response.emplace();
+  component_auction1.server_response->request_id = *auction_data->request_id;
+  auction_config.non_shared_params.component_auctions.emplace_back(
+      std::move(component_auction1));
+
+  blink::AuctionConfig component_auction2;
+  component_auction2.seller = kOriginA;
+  component_auction2.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  component_auction2.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.non_shared_params.component_auctions.emplace_back(
+      std::move(component_auction2));
+
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
+                mojo_base::BigBuffer(
+                    base::as_bytes(base::make_span(encrypted_response))));
+          }),
+      main_rfh());
+  ASSERT_TRUE(result);
+  InvokeCallbackForURN(*result);
+
+  // Fast forward enough for all k-anon joins to be sent.
+  task_environment()->FastForwardBy(base::Hours(1));
+
+  switch (GetParam()) {
+    case KAnonState::kNoEnforcement:
+    case KAnonState::kSimulateOnDeviceNoneOnServer:
+    case KAnonState::kEnforceOnDeviceNoneOnServer:
+    case KAnonState::kNoneOnDeviceEnforceOnServer:
+    case KAnonState::kSimulateOnDeviceEnforceOnServer: {
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group1, interest_group1.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group1, interest_group1.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
+      break;
+    }
+    case KAnonState::kEnforceOnDeviceEnforceOnServer: {
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group1, interest_group1.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group1, interest_group1.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt),
+              HashedKAnonKeyForAdBid(
+                  interest_group2, interest_group2.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group2, interest_group2.ads.value()[0],
+                  /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
+      break;
+    }
+  }
+}
+
+TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
+       RunMultiSellerBAndAAuctionInvalidCurrency) {
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {
+    'ad': 'example',
+    'bid': 1,
+    'render': interestGroup.ads[0].renderURL,
+    'allowComponentAuction': true};
+}
+
+function reportWin() {}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return {desirability: 1 + bid, allowComponentAuction: true};
+}
+
+function reportResult(auctionConfig, browserSignals) {}
+)";
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  blink::InterestGroup interest_group1 =
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group1,
+                              GURL("https://a.test/example.html"));
+  blink::InterestGroup interest_group2 =
+      blink::TestInterestGroupBuilder(kOriginA, "bikes")
+          .SetAds({{{GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/std::nullopt,
+                     /*buyer_and_seller_reporting_id=*/std::nullopt,
+                     /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+                     "5678"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group2,
+                              GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
+  int win_idx =
+      request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
+  base::Value response_value = base::Value(
+      base::Value::Dict()
+          .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
+          .Set("interestGroupName", "cars")
+          .Set("interestGroupOwner", kOriginA.Serialize())
+          .Set("biddingGroups",
+               base::Value(base::Value::Dict().Set(
+                   "https://a.test/",
+                   base::Value(base::Value::List().Append(0).Append(1)))))
+          .Set("bid", 100)
+          .Set("bidCurrency", "XAU")
+          .Set("topLevelSeller", kOriginA.Serialize())
+          .Set("adMetadata", "\"foo\"")
+          .Set("kAnonWinnerJoinCandidates",
+               base::Value(
+                   base::Value::Dict()
+                       .Set("adRenderURLHash",
+                            AsBlobValue(HashedKAnonKeyForAdBid(
+                                interest_group1,
+                                interest_group1.ads.value()[0].render_url())))
+                       .Set("reportingIdHash",
+                            AsBlobValue(HashedKAnonKeyForAdNameReporting(
+                                interest_group1, interest_group1.ads.value()[0],
+                                /*selected_buyer_and_seller_reporting_id=*/
+                                std::nullopt)))))
+          .Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(base::Value(
+                  base::Value::Dict()
+                      .Set(
+                          "kAnonJoinCandidates",
+                          base::Value(
+                              base::Value::Dict()
+                                  .Set("adRenderURLHash",
+                                       AsBlobValue(HashedKAnonKeyForAdBid(
+                                           interest_group2,
+                                           interest_group2.ads.value()[0]
+                                               .render_url())))
+                                  .Set(
+                                      "reportingIdHash",
+                                      AsBlobValue(
+                                          HashedKAnonKeyForAdNameReporting(
+                                              interest_group2,
+                                              interest_group2.ads.value()[0],
+                                              /*selected_buyer_and_seller_reporting_id=*/
+                                              std::nullopt)))))
+                      .Set("interestGroupIndex", base::Value(win_idx))
+                      .Set("owner", base::Value("https://a.test/"))
+                      .Set("ghostWinnerForTopLevelAuction",
+                           base::Value::Dict()
+                               .Set("adRenderURL",
+                                    interest_group2.ads.value()[0].render_url())
+                               .Set("modifiedBid", 10)
+                               .Set("bidCurrency", "Invalid currency")
+                               .Set("adMetadata", "\"meta\"")))))));
+  std::string unframed_response;
+  ASSERT_TRUE(compression::GzipCompress(
+      auction_worklet::test::ToCborVector(response_value), &unframed_response));
+
+  uint32_t request_size = unframed_response.size();
+  std::string response = {0x02, static_cast<char>(request_size >> 24),
+                          static_cast<char>(request_size >> 16),
+                          static_cast<char>(request_size >> 8),
+                          static_cast<char>(request_size >> 0)};
+  response += unframed_response;
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+
+  blink::AuctionConfig component_auction1;
+  component_auction1.seller = kOriginA;
+  component_auction1.non_shared_params.interest_group_buyers = {kOriginA};
+  component_auction1.server_response.emplace();
+  component_auction1.server_response->request_id = *auction_data->request_id;
+  auction_config.non_shared_params.component_auctions.emplace_back(
+      std::move(component_auction1));
+
+  blink::AuctionConfig component_auction2;
+  component_auction2.seller = kOriginA;
+  component_auction2.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  component_auction2.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.non_shared_params.component_auctions.emplace_back(
+      std::move(component_auction2));
+
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
+                mojo_base::BigBuffer(
+                    base::as_bytes(base::make_span(encrypted_response))));
+          }),
+      main_rfh());
+  ASSERT_TRUE(result);
+  InvokeCallbackForURN(*result);
+
+  // Fast forward enough for all k-anon joins to be sent.
+  task_environment()->FastForwardBy(base::Hours(1));
+
+  EXPECT_THAT(
+      GetKAnonJoinedIds(),
+      ::testing::UnorderedElementsAre(
+          HashedKAnonKeyForAdBid(interest_group1,
+                                 interest_group1.ads.value()[0].render_url()),
+          HashedKAnonKeyForAdNameReporting(
+              interest_group1, interest_group1.ads.value()[0],
+              /*selected_buyer_and_seller_reporting_id=*/std::nullopt)));
+}
+
+TEST_P(AdAuctionServiceImplBAndAKAnonEnabledTest,
+       RunMultiSellerBAndAAuctionReportingIds) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({blink::features::kFledgeAuctionDealSupport,
+                                 features::kEnableBandADealSupport},
+                                {});
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+    interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+    browserSignals) {
+  return {
+    'ad': 'example',
+    'bid': 1,
+    'render': interestGroup.ads[0].renderURL,
+    'allowComponentAuction': true};
+}
+
+function reportWin() {}
+)";
+
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+    adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return {desirability: 1 + bid, allowComponentAuction: true};
+}
+
+function reportResult(auctionConfig, browserSignals) {}
+)";
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  std::string ad1_sbas_id = "ad1_sbas_id";
+  std::string ad2_sbas_id = "ad2_sbas_id";
+  blink::InterestGroup interest_group1 =
+      blink::TestInterestGroupBuilder(kOriginA, "cars")
+          .SetAds({{{GURL("https://c.test/ad.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/"ad1_buyer_id",
+                     /*buyer_and_seller_reporting_id=*/"ad1_bas_id",
+                     /*selectable_buyer_and_seller_reporting_ids=*/
+                     std::vector<std::string>{ad1_sbas_id}, "1234"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group1,
+                              GURL("https://a.test/example.html"));
+  blink::InterestGroup interest_group2 =
+      blink::TestInterestGroupBuilder(kOriginA, "bikes")
+          .SetAds({{{GURL("https://c.test/ad2.html"), /*metadata=*/std::nullopt,
+                     /*size_group=*/std::nullopt,
+                     /*buyer_reporting_id=*/"ad2_buyer_id",
+                     /*buyer_and_seller_reporting_id=*/"ad2_bas_id",
+                     /*selectable_buyer_and_seller_reporting_ids=*/
+                     std::vector<std::string>{ad2_sbas_id}, "5678"}}})
+          .SetBiddingUrl(kBiddingLogicUrlA)
+          .Build();
+  manager_->JoinInterestGroup(interest_group2,
+                              GURL("https://a.test/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  ASSERT_EQ(request_context->group_names.begin()->second.size(), 2u);
+  int win_idx =
+      request_context->group_names.begin()->second[0] == "bikes" ? 0 : 1;
+  base::Value response_value = base::Value(
+      base::Value::Dict()
+          .Set("adRenderURL", interest_group1.ads.value()[0].render_url())
+          .Set("interestGroupName", "cars")
+          .Set("interestGroupOwner", kOriginA.Serialize())
+          .Set("biddingGroups",
+               base::Value(base::Value::Dict().Set(
+                   "https://a.test/",
+                   base::Value(base::Value::List().Append(0).Append(1)))))
+          .Set("buyerReportingId", "ad1_buyer_id")
+          .Set("buyerAndSellerReportingId", "ad1_bas_id")
+          .Set("selectedBuyerAndSellerReportingId", ad1_sbas_id)
+          .Set("bid", 100)
+          .Set("bidCurrency", "XAU")
+          .Set("topLevelSeller", kOriginA.Serialize())
+          .Set("adMetadata", "\"foo\"")
+          .Set("kAnonWinnerJoinCandidates",
+               base::Value(
+                   base::Value::Dict()
+                       .Set("adRenderURLHash",
+                            AsBlobValue(HashedKAnonKeyForAdBid(
+                                interest_group1,
+                                interest_group1.ads.value()[0].render_url())))
+                       .Set("reportingIdHash",
+                            AsBlobValue(HashedKAnonKeyForAdNameReporting(
+                                interest_group1, interest_group1.ads.value()[0],
+                                ad1_sbas_id)))))
+          .Set(
+              "kAnonGhostWinners",
+              base::Value(base::Value::List().Append(base::Value(
+                  base::Value::Dict()
+                      .Set(
+                          "kAnonJoinCandidates",
+                          base::Value(
+                              base::Value::Dict()
+                                  .Set("adRenderURLHash",
+                                       AsBlobValue(HashedKAnonKeyForAdBid(
+                                           interest_group2,
+                                           interest_group2.ads.value()[0]
+                                               .render_url())))
+                                  .Set(
+                                      "reportingIdHash",
+                                      AsBlobValue(
+                                          HashedKAnonKeyForAdNameReporting(
+                                              interest_group2,
+                                              interest_group2.ads.value()[0],
+                                              /*selected_buyer_and_seller_reporting_id=*/
+                                              std::nullopt)))))
+                      .Set("interestGroupIndex", base::Value(win_idx))
+                      .Set("owner", base::Value("https://a.test/"))
+                      .Set("ghostWinnerForTopLevelAuction",
+                           base::Value::Dict()
+                               .Set("adRenderURL",
+                                    interest_group2.ads.value()[0].render_url())
+                               .Set("modifiedBid", 10)
+                               .Set("bidCurrency", "XAU")
+                               .Set("adMetadata", "\"meta\"")
+                               .Set("buyerReportingId",
+                                    *interest_group2.ads.value()[0]
+                                         .buyer_reporting_id)
+                               .Set("buyerAndSellerReportingId",
+                                    *interest_group2.ads.value()[0]
+                                         .buyer_and_seller_reporting_id)
+                               .Set("selectedBuyerAndSellerReportingId",
+                                    ad2_sbas_id)))))));
+  std::string unframed_response;
+  ASSERT_TRUE(compression::GzipCompress(
+      auction_worklet::test::ToCborVector(response_value), &unframed_response));
+
+  uint32_t request_size = unframed_response.size();
+  std::string response = {0x02, static_cast<char>(request_size >> 24),
+                          static_cast<char>(request_size >> 16),
+                          static_cast<char>(request_size >> 8),
+                          static_cast<char>(request_size >> 0)};
+  response += unframed_response;
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+
+  blink::AuctionConfig component_auction1;
+  component_auction1.seller = kOriginA;
+  component_auction1.non_shared_params.interest_group_buyers = {kOriginA};
+  component_auction1.server_response.emplace();
+  component_auction1.server_response->request_id = *auction_data->request_id;
+  auction_config.non_shared_params.component_auctions.emplace_back(
+      std::move(component_auction1));
+
+  blink::AuctionConfig component_auction2;
+  component_auction2.seller = kOriginA;
+  component_auction2.decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  component_auction2.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.non_shared_params.component_auctions.emplace_back(
+      std::move(component_auction2));
+
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewComponentAuction(0),
+                mojo_base::BigBuffer(
+                    base::as_bytes(base::make_span(encrypted_response))));
+          }),
+      main_rfh());
+  ASSERT_TRUE(result);
+  InvokeCallbackForURN(*result);
+
+  // Fast forward enough for all k-anon joins to be sent.
+  task_environment()->FastForwardBy(base::Hours(1));
+
+  switch (GetParam()) {
+    case KAnonState::kNoEnforcement:
+    case KAnonState::kSimulateOnDeviceNoneOnServer:
+    case KAnonState::kEnforceOnDeviceNoneOnServer:
+    case KAnonState::kNoneOnDeviceEnforceOnServer:
+    case KAnonState::kSimulateOnDeviceEnforceOnServer: {
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group1, interest_group1.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(interest_group1,
+                                               interest_group1.ads.value()[0],
+                                               ad1_sbas_id)));
+      break;
+    }
+    case KAnonState::kEnforceOnDeviceEnforceOnServer: {
+      EXPECT_THAT(
+          GetKAnonJoinedIds(),
+          ::testing::UnorderedElementsAre(
+              HashedKAnonKeyForAdBid(
+                  interest_group1, interest_group1.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(
+                  interest_group1, interest_group1.ads.value()[0], ad1_sbas_id),
+              HashedKAnonKeyForAdBid(
+                  interest_group2, interest_group2.ads.value()[0].render_url()),
+              HashedKAnonKeyForAdNameReporting(interest_group2,
+                                               interest_group2.ads.value()[0],
+                                               ad2_sbas_id)));
+      break;
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no label */,
+    AdAuctionServiceImplBAndAKAnonEnabledTest,
+    ::testing::Values(KAnonState::kNoEnforcement,
+                      KAnonState::kSimulateOnDeviceNoneOnServer,
+                      KAnonState::kEnforceOnDeviceNoneOnServer,
+                      KAnonState::kNoneOnDeviceEnforceOnServer,
+                      KAnonState::kSimulateOnDeviceEnforceOnServer,
+                      KAnonState::kEnforceOnDeviceEnforceOnServer),
+    ::testing::PrintToStringParamName());
+
+class AdAuctionServiceImplBAndAUpdateTest
+    : public AdAuctionServiceImplBAndATest {
+ public:
+  AdAuctionServiceImplBAndAUpdateTest() {
+    feature_list_.InitWithFeatures({features::kInterestGroupUpdateIfOlderThan,
+                                    features::kEnableBandATriggeredUpdates},
+                                   {});
+  }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Join and manually update an interest group so that it's not eligible to
+// update again for the successful update period. Advance a small amount of
+// time. Then, run a B&A auction whose response specifies an updateIfOlderThanMs
+// greater than the time advanced, but less than the successful update period.
+// The group should update successfully. Then, try updating again without
+// advancing time -- the update should fail.
+TEST_F(AdAuctionServiceImplBAndAUpdateTest, OlderThan) {
+  constexpr base::TimeDelta kFastForwardDelta(base::Hours(2));
+  ProvideKeys();
+  NavigateAndCommit(kUrlA);
+  url::Origin test_origin = url::Origin::Create(GURL(kOriginStringA));
+
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+"ads": [{
+  "renderURL": "https://example.com/new_render0",
+  "adRenderId": "adRenderId0"
+}]})");
+
+  blink::InterestGroup interest_group_a = CreateInterestGroup();
+  interest_group_a.expiry = base::Time::Now() + base::Days(10);
+  interest_group_a.update_url = kUpdateUrlA;
+  interest_group_a.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group_a.ads.emplace();
+  blink::InterestGroup::Ad ad(
+      /*render_gurl=*/GURL("https://example.com/render"),
+      /*metadata=*/std::nullopt, /*size_group=*/std::nullopt,
+      /*buyer_reporting_id=*/std::nullopt,
+      /*buyer_and_seller_reporting_id=*/std::nullopt,
+      /*selectable_buyer_and_seller_reporting_ids=*/std::nullopt,
+      /*ad_render_id*/ "adRenderId");
+  interest_group_a.ads->emplace_back(std::move(ad));
+  JoinInterestGroupAndFlush(interest_group_a);
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  // Update the interest group -- it should succeed.
+  UpdateInterestGroupNoFlush();
+  task_environment()->FastForwardBy(kFastForwardDelta);
+
+  auto a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups->size(), 1u);
+  auto a_group = a_groups->GetInterestGroups()[0]->interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url(),
+            "https://example.com/new_render0");
+  ASSERT_TRUE(a_group.ads.value()[0].ad_render_id.has_value());
+  EXPECT_EQ(a_group.ads.value()[0].ad_render_id.value(), "adRenderId0");
+
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+"ads": [{
+  "renderURL": "https://example.com/new_render1",
+  "adRenderId": "adRenderId1"
+}]})");
+
+  ASSERT_GT(InterestGroupStorage::kUpdateSucceededBackoffPeriod,
+            kFastForwardDelta);
+  task_environment()->FastForwardBy(kFastForwardDelta);
+
+  // Run an auction
+  std::optional<AdAuctionDataAndId> auction_data =
+      GetAdAuctionDataAndFlushForFrame(kOriginA);
+  EXPECT_TRUE(auction_data.has_value());
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  ASSERT_TRUE(auction_data->request_id);
+  AdAuctionRequestContext* request_context =
+      page_data->GetContextForAdAuctionRequest(*auction_data->request_id);
+
+  std::string response;
+  // CBOR response computed using https://cbor.me/
+  /*
+  {
+    "adRenderURL": "https://example.com/new_render0",
+    "biddingGroups": {"https://a.test/": [0]},
+    "interestGroupName": "interest-group-name",
+    "interestGroupOwner": "https://a.test/",
+    "updateGroups": {
+      "https://a.test": [{"index":0, "updateIfOlderThanMs":3600000}]
+    }
+  }
+  */
+  // Converted to base64 with `cat | xxd -r -p | gzip |
+  //   xxd -ps -c0 | sed 's/^/02000000A5/' | xxd -r -p | base64 -w0`
+  EXPECT_TRUE(base::Base64Decode(
+      "AgAAAKUfiwgAAAAAAAADW5qdmBKUmpeSWhQa5FMhn1FSUlBspa+"
+      "fWpGYW5CTqpecn6ufl1oeXwRWYpBTWpCSWJLqXpRfWlC8MA+"
+      "mOlGvJLW4pHFRaiZQVQVDMUSVZ5p/"
+      "DlBTSEZinm+xFIPZu4bcpMyUlMy8dKj+fFT9+"
+      "o0MhZl5JalFQDZYhV9ibmoxTEQ3HSSkmwcUK0JR5V+el1qEbhQA39rq3dcAAAA=",
+      &response));
+
+  std::string encrypted_response =
+      quiche::ObliviousHttpResponse::CreateServerObliviousResponse(
+          response, request_context->context,
+          kBiddingAndAuctionEncryptionResponseMediaType)
+          ->EncapsulateAndSerialize();
+
+  page_data->AddAuctionResultWitnessForOrigin(
+      kOriginA, crypto::SHA256HashString(encrypted_response));
+
+  blink::AuctionConfig auction_config;
+  auction_config.seller = kOriginA;
+  auction_config.non_shared_params.interest_group_buyers = {kOriginA};
+  auction_config.server_response.emplace();
+  auction_config.server_response->request_id = *auction_data->request_id;
+  std::optional<GURL> result = RunAdAuctionWithPromiseAndFlushForFrame(
+      auction_config,
+      base::BindLambdaForTesting(
+          [&](mojo::Remote<blink::mojom::AbortableAdAuction>& runner) {
+            runner->ResolvedAuctionAdResponsePromise(
+                blink::mojom::AuctionAdConfigAuctionId::NewMainAuction(0),
+                mojo_base::BigBuffer(base::as_byte_span(encrypted_response)));
+          }),
+      main_rfh());
+  EXPECT_TRUE(result);
+  InvokeCallbackForURN(*result);
+
+  // Now that the auction has completed, check that the interest group
+  // updated again.
+  task_environment()->FastForwardBy(kFastForwardDelta);
+
+  a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups->size(), 1u);
+  a_group = a_groups->GetInterestGroups()[0]->interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url(),
+            "https://example.com/new_render1");
+
+  // Try to update again without advancing time. The update should be
+  // rate-limited, so the interest group shouldn't change.
+  network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
+"ads": [{
+  "renderURL": "https://example.com/new_render2",
+  "adRenderId": "adRenderId2"
+}]})");
+
+  UpdateInterestGroupNoFlush();
+  task_environment()->FastForwardBy(kFastForwardDelta);
+
+  a_groups = GetInterestGroupsForOwner(kOriginA);
+  ASSERT_EQ(a_groups->size(), 1u);
+  a_group = a_groups->GetInterestGroups()[0]->interest_group;
+  ASSERT_TRUE(a_group.ads.has_value());
+  ASSERT_EQ(a_group.ads->size(), 1u);
+  EXPECT_EQ(a_group.ads.value()[0].render_url(),
+            "https://example.com/new_render1");
 }
 
 class AdAuctionServiceImplFacilitatedTestingTest

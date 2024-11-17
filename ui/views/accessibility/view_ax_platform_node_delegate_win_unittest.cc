@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
@@ -20,6 +21,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_constants.mojom.h"
+#include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/gfx/render_text_test_api.h"
 #include "ui/views/accessibility/test_list_grid_view.h"
@@ -336,8 +338,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, DISABLED_RetrieveAllAlerts) {
   {
     // SAFETY: get_relationTargetsOfType() is a COM interface which guarantees
     // that exactly n_targets pointers are available starting at targets.
-    UNSAFE_BUFFERS(base::span<IUnknown*> targets_span(
-                       targets, base::checked_cast<size_t>(n_targets));)
+    auto targets_span = UNSAFE_BUFFERS(base::span(targets, 2u));
     ASSERT_TRUE(IsSameObject(infobar_accessible.Get(), targets_span[0]));
     ASSERT_TRUE(IsSameObject(infobar2_accessible.Get(), targets_span[1]));
   }
@@ -553,6 +554,33 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, IsUIAControlIsTrueEvenWhenReadonly) {
   EXPECT_UIA_BOOL_EQ(textfield_provider, UIA_IsControlElementPropertyId, true);
 }
 
+TEST_F(ViewAXPlatformNodeDelegateWinTest, UIAGetPropertyValue_Histograms) {
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  widget->Init(std::move(init_params));
+
+  View* content = widget->SetContentsView(std::make_unique<View>());
+
+  Textfield* text_field = new Textfield();
+  text_field->SetReadOnly(true);
+  content->AddChildView(text_field);
+
+  ComPtr<IRawElementProviderSimple> textfield_provider =
+      GetIRawElementProviderSimple(text_field);
+  ScopedVariant actual;
+  base::HistogramTester histogram_tester;
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.WinAPIs2.View.UMA_API_GET_PROPERTY_VALUE", 0);
+
+  ASSERT_HRESULT_SUCCEEDED(textfield_provider->GetPropertyValue(
+      UIA_IsControlElementPropertyId, actual.Receive()));
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.WinAPIs2.View.UMA_API_GET_PROPERTY_VALUE", 1);
+}
+
 TEST_F(ViewAXPlatformNodeDelegateWinTest, TextPositionAt) {
   auto widget = std::make_unique<Widget>();
   Widget::InitParams init_params = CreateParams(
@@ -743,6 +771,11 @@ class ViewAXPlatformNodeDelegateWinInnerTextRangeTest
     ViewsTestBase::TearDown();
   }
 
+  void MockAXModeAdded() {
+    ui::AXMode mode = ui::AXPlatformForTest::GetInstance().GetProcessMode();
+    widget_->OnAXModeAdded(mode);
+  }
+
   ViewAXPlatformNodeDelegate* textfield_delegate() {
     return static_cast<ViewAXPlatformNodeDelegate*>(
         &textfield_->GetViewAccessibility());
@@ -791,6 +824,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, EmptyLabel_EmptyRect) {
 }
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Textfield_LTR) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  CHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
@@ -855,6 +891,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Textfield_LTR) {
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
        Textfield_TextOverflow) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  DCHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
@@ -936,6 +975,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
 }
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_LTR) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  DCHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
@@ -958,6 +1000,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_LTR) {
       label_->display_text_.get());
   render_text_test_api.SetGlyphWidth(kGlyphWidth);
   render_text_test_api.SetGlyphHeight(kGlyphHeight);
+  // Since we are force setting the render text's glyph size manually, we need
+  // to make sure to refresh the accessible text offsets manually too.
+  label_->RefreshAccessibleTextOffsetsIfNeeded();
 
   // TODO(crbug.com/40924888): This is not obvious, but we need to call
   // `GetData` to refresh the text offsets and accessible name. This won't be
@@ -995,6 +1040,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_LTR) {
 }
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Textfield_RTL) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  DCHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
@@ -1087,6 +1135,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Textfield_RTL) {
 }
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_RTL) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  DCHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 
@@ -1113,6 +1164,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest, Label_RTL) {
       label_->display_text_.get());
   render_text_test_api.SetGlyphWidth(kGlyphWidth);
   render_text_test_api.SetGlyphHeight(kGlyphHeight);
+  // Since we are force setting the render text's glyph size manually, we need
+  // to make sure to refresh the accessible text offsets manually too.
+  label_->RefreshAccessibleTextOffsetsIfNeeded();
 
   // TODO(crbug.com/40924888): This is not obvious, but we need to call
   // `GetData` to refresh the text offsets and accessible name. This won't be
@@ -1207,6 +1261,9 @@ TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
 
 TEST_F(ViewAXPlatformNodeDelegateWinInnerTextRangeTest,
        Textfield_ScreenPhysicalPixels) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  DCHECK(label_delegate()->is_initialized());
   ui::AXOffscreenResult offscreen_result;
   gfx::Rect bounds;
 

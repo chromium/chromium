@@ -23,16 +23,18 @@ struct NativePixmapPlane {
 struct NativePixmapHandle {
   array<NativePixmapPlane> planes;
 
-  [EnableIf=is_linux_or_chromeos]
+  [EnableIf=is_chromeos|is_linux]
   uint64 modifier;
 
-  [EnableIf=is_linux_or_chromeos]
+  [EnableIf=is_chromeos|is_linux]
   bool supports_zero_copy_webgpu_import;
 
   [EnableIf=is_fuchsia]
   handle<platform> buffer_collection_handle;
+
   [EnableIf=is_fuchsia]
   uint32 buffer_index;
+
   [EnableIf=is_fuchsia]
   bool ram_coherency;
 };

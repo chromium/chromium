@@ -11,6 +11,7 @@
 #include "ash/style/system_shadow.h"
 #include "ash/system/power/power_button_menu_view_util.h"
 #include "base/check_deref.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -86,14 +87,22 @@ PowerButtonMenuCurtainView::PowerButtonMenuCurtainView() {
   SetPaintToLayer();
   SetBorder(std::make_unique<views::HighlightBorder>(
       kPowerButtonMenuCornerRadius, kPowerButtonMenuBorderType));
-  SetBackground(
-      views::CreateThemedSolidBackground(kPowerButtonMenuBackgroundColorId));
 
-  layer()->SetFillsBoundsOpaquely(false);
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? static_cast<ui::ColorId>(kPowerButtonMenuBackgroundColorId)
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+  SetBackground(views::CreateThemedSolidBackground(background_color_id));
+
   layer()->SetRoundedCornerRadius(
       gfx::RoundedCornersF(kPowerButtonMenuCornerRadius));
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  layer()->SetIsFastRoundedCorner(true);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    layer()->SetFillsBoundsOpaquely(false);
+  }
+
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   Initialize();
 

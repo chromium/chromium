@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.privacy_sandbox;
 
 import android.os.Bundle;
+import android.text.style.ClickableSpan;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -25,7 +26,6 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 import java.util.List;
@@ -35,7 +35,7 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         implements Preference.OnPreferenceChangeListener, Preference.OnPreferenceClickListener {
     private static final String TOPICS_TOGGLE_PREFERENCE = "topics_toggle";
     private static final String TOPICS_EXPLANATION_PREFERENCE = "topics_explanation";
-    private static final String TOPICS_HEADING_PREFERENCE = "topics_heading";
+    // private static final String TOPICS_HEADING_PREFERENCE = "topics_heading";
     private static final String CURRENT_TOPICS_PREFERENCE = "current_topics";
     private static final String EMPTY_TOPICS_PREFERENCE = "topics_empty";
     private static final String DISABLED_TOPICS_PREFERENCE = "topics_disabled";
@@ -46,7 +46,6 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
 
     private ChromeSwitchPreference mTopicsTogglePreference;
     private TextMessagePreference mTopicsExplanationPreference;
-    private PreferenceCategoryWithClickableSummary mTopicsHeadingPreference;
     private PreferenceCategory mCurrentTopicsCategory;
     private TextMessagePreference mEmptyTopicsPreference;
     private TextMessagePreference mDisabledTopicsPreference;
@@ -75,11 +74,10 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
     public void onCreatePreferences(@Nullable Bundle bundle, @Nullable String s) {
         super.onCreatePreferences(bundle, s);
         mPageTitle.set(getString(R.string.settings_topics_page_title));
-        SettingsUtils.addPreferencesFromResource(this, R.xml.topics_preference_v2);
+        SettingsUtils.addPreferencesFromResource(this, R.xml.topics_preference);
 
         mTopicsTogglePreference = findPreference(TOPICS_TOGGLE_PREFERENCE);
         mTopicsExplanationPreference = findPreference(TOPICS_EXPLANATION_PREFERENCE);
-        mTopicsHeadingPreference = findPreference(TOPICS_HEADING_PREFERENCE);
         mCurrentTopicsCategory = findPreference(CURRENT_TOPICS_PREFERENCE);
         mEmptyTopicsPreference = findPreference(EMPTY_TOPICS_PREFERENCE);
         mDisabledTopicsPreference = findPreference(DISABLED_TOPICS_PREFERENCE);
@@ -99,26 +97,42 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
                         new SpanApplier.SpanInfo(
                                 "<link1>",
                                 "</link1>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onManagingAdPrivacyClicked))));
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onManagingAdPrivacyClicked();
+                                    }
+                                })));
         mTopicsPageFooterPreference.setSummary(
                 SpanApplier.applySpans(
                         getResources().getString(R.string.settings_topics_page_footer_new),
                         new SpanApplier.SpanInfo(
                                 "<link1>",
                                 "</link1>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onFledgeSettingsLinkClicked)),
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onFledgeSettingsLinkClicked();
+                                    }
+                                }),
                         new SpanApplier.SpanInfo(
                                 "<link2>",
                                 "</link2>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onCookieSettingsLink)),
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onCookieSettingsLink();
+                                    }
+                                }),
                         new SpanApplier.SpanInfo(
                                 "<link3>",
                                 "</link3>",
-                                new NoUnderlineClickableSpan(
-                                        getContext(), this::onManagingAdPrivacyClicked))));
+                                new ClickableSpan() {
+                                    @Override
+                                    public void onClick(View view) {
+                                        onManagingAdPrivacyClicked();
+                                    }
+                                })));
     }
 
     @Override
@@ -126,15 +140,15 @@ public class TopicsFragment extends PrivacySandboxSettingsBaseFragment
         return mPageTitle;
     }
 
-    private void onManagingAdPrivacyClicked(View view) {
+    private void onManagingAdPrivacyClicked() {
         openUrlInCct(PrivacySandboxSettingsFragment.HELP_CENTER_URL);
     }
 
-    private void onFledgeSettingsLinkClicked(View view) {
-        launchSettingsActivity(FledgeFragment.class);
+    private void onFledgeSettingsLinkClicked() {
+        startSettings(FledgeFragment.class);
     }
 
-    private void onCookieSettingsLink(View view) {
+    private void onCookieSettingsLink() {
         launchCookieSettings();
     }
 

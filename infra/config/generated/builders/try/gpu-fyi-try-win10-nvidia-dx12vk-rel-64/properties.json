@@ -73,7 +73,8 @@
           "builder": "Win10 FYI x64 DX12 Vulkan Release (NVIDIA)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-win10-nvidia-dx12vk-rel-64/targets"
     }
   },
   "$build/reclient": {

@@ -49,8 +49,9 @@ file://ui/android/java/res/LAYOUT_OWNERS
 # https://sites.google.com/a/chromium.org/dev/developers/how-tos/enterprise/adding-new-policies
 file://components/policy/ENTERPRISE_POLICY_OWNERS
 
-# This restriction is in place due to the complicated compliance regulations
-# around this code.
+# This restriction is in place due to the policies and compliance regulations around this code.
+file://components/search_engines/COMPLIANCE_OWNERS
+file://components/search_engines/search_engine_choice/COMPLIANCE_OWNERS
 file://chrome/android/java/src/org/chromium/chrome/browser/searchwidget/COMPLIANCE_OWNERS
 
 # Notification channels appear in system UI and are persisted forever by
@@ -85,3 +86,6 @@ file://ui/webui/PLATFORM_OWNERS
 # Core Views framework needs reviews from direct owners. Limits leakage of +1
 # from higher folder owners.
 file://ui/views/VIEWS_OWNERS
+
+# ChromeOS dependencies reviews
+file://chrome/browser/ash/REFACTORING_OWNERS

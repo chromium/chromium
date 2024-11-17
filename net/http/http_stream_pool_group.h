@@ -20,9 +20,11 @@
 #include "net/http/http_stream_pool.h"
 #include "net/http/http_stream_pool_job.h"
 #include "net/http/http_stream_request.h"
+#include "net/quic/quic_session_alias_key.h"
 #include "net/socket/stream_socket_handle.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -45,7 +47,7 @@ class HttpStreamPool::Group {
 
   Group(HttpStreamPool* pool,
         HttpStreamKey stream_key,
-        SpdySessionKey spdy_session_key);
+        std::optional<QuicSessionAliasKey> quic_session_alias_key);
 
   Group(const Group&) = delete;
   Group& operator=(const Group&) = delete;
@@ -56,7 +58,9 @@ class HttpStreamPool::Group {
 
   const SpdySessionKey& spdy_session_key() const { return spdy_session_key_; }
 
-  const QuicSessionKey& quic_session_key() const { return quic_session_key_; }
+  const QuicSessionAliasKey& quic_session_alias_key() const {
+    return quic_session_alias_key_;
+  }
 
   HttpStreamPool* pool() { return pool_; }
   const HttpStreamPool* pool() const { return pool_; }
@@ -77,16 +81,6 @@ class HttpStreamPool::Group {
                                  NextProto expected_protocol,
                                  bool is_http1_allowed,
                                  ProxyInfo proxy_info);
-
-  // Starts a Job. Will call one of Job::Delegate methods to notify results.
-  void StartJob(Job* job,
-                RequestPriority priority,
-                const std::vector<SSLConfig::CertAndStatus>& allowed_bad_certs,
-                RespectLimits respect_limits,
-                bool enable_ip_based_pooling,
-                bool enable_alternative_services,
-                quic::ParsedQuicVersion quic_version,
-                const NetLogWithSource& net_log);
 
   // Creates idle streams or sessions for `num_streams` be opened.
   // Note that this method finishes synchronously, or `callback` is called, once
@@ -132,8 +126,14 @@ class HttpStreamPool::Group {
   // Closes one idle stream socket. Returns true if it closed a stream.
   bool CloseOneIdleStreamSocket();
 
+  // Returns the number of handed out streams.
+  size_t HandedOutStreamSocketCount() const { return handed_out_stream_count_; }
+
   // Returns the number of idle streams.
   size_t IdleStreamSocketCount() const { return idle_stream_sockets_.size(); }
+
+  // Returns the number of connecting streams.
+  size_t ConnectingStreamSocketCount() const;
 
   // Returns the number of active streams.
   size_t ActiveStreamSocketCount() const;
@@ -196,10 +196,6 @@ class HttpStreamPool::Group {
   static base::expected<void, std::string_view> IsIdleStreamSocketUsable(
       const IdleStreamSocket& idle);
 
-  // If the group is forced to use QUIC and the QUIC version is unknown, try
-  // the preferred QUIC version that is supported by default.
-  void MaybeUpdateQuicVersionWhenForced(quic::ParsedQuicVersion& quic_version);
-
   void CleanupIdleStreamSockets(CleanupMode mode,
                                 std::string_view net_log_close_reason_utf8);
 
@@ -210,7 +206,7 @@ class HttpStreamPool::Group {
   const raw_ptr<HttpStreamPool> pool_;
   const HttpStreamKey stream_key_;
   const SpdySessionKey spdy_session_key_;
-  const QuicSessionKey quic_session_key_;
+  const QuicSessionAliasKey quic_session_alias_key_;
   const NetLogWithSource net_log_;
   const bool force_quic_;
 

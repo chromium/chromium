@@ -22,7 +22,6 @@
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
 #include "ash/system/input_device_settings/touchscreen_metrics_recorder.h"
 #include "ash/system/toast/system_nudge_pause_manager_impl.h"
-#include "ash/wm/coral/coral_controller.h"
 #include "ash/wm/system_modal_container_event_filter_delegate.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -31,7 +30,7 @@
 #include "base/scoped_observation_traits.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_nudge_controller.h"
 #include "ui/aura/window.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_target.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -215,7 +214,6 @@ class PciePeripheralNotificationController;
 class PeripheralBatteryListener;
 class PeripheralBatteryNotifier;
 class PersistentWindowController;
-class PickerController;
 class PipController;
 class PolicyRecommendationRestorer;
 class PostLoginGlanceablesMetricsRecorder;
@@ -226,6 +224,7 @@ class PrivacyHubController;
 class PrivacyScreenController;
 class ProjectingObserver;
 class ProjectorControllerImpl;
+class QuickInsertController;
 class RapidKeySequenceRecorder;
 class RasterScaleController;
 class RefreshRateController;
@@ -270,7 +269,6 @@ class ToastManagerImpl;
 class ToplevelWindowEventHandler;
 class ClipboardHistoryControllerImpl;
 class TouchDevicesController;
-class TrayAction;
 class UserEducationController;
 class UserMetricsRecorder;
 class VideoActivityNotifier;
@@ -699,7 +697,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   PeripheralBatteryListener* peripheral_battery_listener() {
     return peripheral_battery_listener_.get();
   }
-  PickerController* picker_controller() { return picker_controller_.get(); }
+  QuickInsertController* quick_insert_controller() {
+    return quick_insert_controller_.get();
+  }
   InformedRestoreController* informed_restore_controller() {
     return informed_restore_controller_.get();
   }
@@ -818,8 +818,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   AshTouchTransformController* touch_transformer_controller() {
     return touch_transformer_controller_.get();
   }
-  TrayAction* tray_action() { return tray_action_.get(); }
-
   UserMetricsRecorder* metrics() { return user_metrics_recorder_.get(); }
 
   VideoDetector* video_detector() { return video_detector_.get(); }
@@ -905,7 +903,7 @@ class ASH_EXPORT Shell : public SessionObserver,
 
   // Shows the context menu for the wallpaper or shelf at |location_in_screen|.
   void ShowContextMenu(const gfx::Point& location_in_screen,
-                       ui::MenuSourceType source_type);
+                       ui::mojom::MenuSourceType source_type);
 
   void AddShellObserver(ShellObserver* observer);
   void RemoveShellObserver(ShellObserver* observer);
@@ -1125,7 +1123,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ActiveSessionAuthController> active_session_auth_controller_;
   std::unique_ptr<PciePeripheralNotificationController>
       pcie_peripheral_notification_controller_;
-  std::unique_ptr<PickerController> picker_controller_;
+  std::unique_ptr<QuickInsertController> quick_insert_controller_;
   std::unique_ptr<PrivacyHubController> privacy_hub_controller_;
   std::unique_ptr<UsbPeripheralNotificationController>
       usb_peripheral_notification_controller_;
@@ -1160,7 +1158,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ToastManagerImpl> toast_manager_;
   std::unique_ptr<ClipboardHistoryControllerImpl> clipboard_history_controller_;
   std::unique_ptr<TouchDevicesController> touch_devices_controller_;
-  std::unique_ptr<TrayAction> tray_action_;
   std::unique_ptr<UserEducationController> user_education_controller_;
   std::unique_ptr<TabStripDelegate> tab_strip_delegate_;
   std::unique_ptr<WallpaperControllerImpl> wallpaper_controller_;

@@ -148,7 +148,7 @@ void VideoToolboxVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // If we don't have support support for a given codec, try to initialize
   // anyways -- otherwise we're certain to fail playback.
-  if (!profile_supported && IsBuiltInVideoCodec(config.codec())) {
+  if (!profile_supported && IsDecoderBuiltInVideoCodec(config.codec())) {
     task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(init_cb),
                                   DecoderStatus::Codes::kUnsupportedProfile));

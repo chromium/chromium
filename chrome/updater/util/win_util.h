@@ -298,14 +298,14 @@ std::optional<base::FilePath> GetGoogleUpdateExePath(UpdaterScope scope);
 // a log file in the same directory as the MSI installer.
 std::wstring BuildMsiCommandLine(
     const std::wstring& arguments,
-    const std::optional<base::FilePath>& installer_data_file,
+    std::optional<base::FilePath> installer_data_file,
     const base::FilePath& msi_installer);
 
 // Builds a command line running the provided `exe_installer`, `arguments`, and
 // `installer_data_file`.
 std::wstring BuildExeCommandLine(
     const std::wstring& arguments,
-    const std::optional<base::FilePath>& installer_data_file,
+    std::optional<base::FilePath> installer_data_file,
     const base::FilePath& exe_installer);
 
 // Returns `true` if the service specified is currently running or starting.
@@ -326,9 +326,7 @@ std::optional<OSVERSIONINFOEX> GetOSVersion();
 bool CompareOSVersions(const OSVERSIONINFOEX& os, BYTE oper);
 
 // This function calls ::SetDefaultDllDirectories to restrict DLL loads to
-// either full paths or %SYSTEM32%. ::SetDefaultDllDirectories is available on
-// Windows 8.1 and above, and on Windows Vista and above when KB2533623 is
-// applied.
+// either full paths or %SYSTEM32%.
 [[nodiscard]] bool EnableSecureDllLoading();
 
 // Enables metadata protection in the heap manager. This allows for the process
@@ -352,7 +350,7 @@ bool IsShutdownEventSignaled(UpdaterScope scope);
 // `wait_period`, and if the processes still have not exited, by terminating the
 // processes.
 void StopProcessesUnderPath(const base::FilePath& path,
-                            const base::TimeDelta& wait_period);
+                            base::TimeDelta wait_period);
 
 // Returns `true` if the argument is a guid.
 bool IsGuid(const std::wstring& s);
@@ -402,11 +400,6 @@ template <typename T, typename I, typename... TArgs>
   return MakeAndInitializeComObject<T>(static_cast<I**>(&obj),
                                        std::forward<TArgs>(args)...);
 }
-
-// Returns the base install directory for the x86 versions of the updater.
-// Does not create the directory if it does not exist.
-[[nodiscard]] std::optional<base::FilePath> GetInstallDirectoryX86(
-    UpdaterScope scope);
 
 // Gets the contents under a given registry key.
 std::optional<std::wstring> GetRegKeyContents(const std::wstring& reg_key);

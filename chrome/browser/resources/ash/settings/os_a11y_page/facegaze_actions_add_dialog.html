@@ -12,6 +12,8 @@
   cr-dialog [slot=header] {
     padding-inline-end: var(--dialog-horizontal-padding);
     padding-inline-start: var(--dialog-horizontal-padding);
+    padding-bottom: 16px;
+    font-size: 14px;
   }
 
   cr-dialog [slot=body] {
@@ -98,6 +100,11 @@
     margin: 20px;
   }
 
+  #changeButtonContainer {
+    display: flex;
+    justify-content: center;
+  }
+
   #sliderContainer {
     margin-top: 20px;
     display: flex;
@@ -116,6 +123,32 @@
 
   #faceGazeGestureCount {
     text-align: center;
+    font-size: 14px;
+    color: var(--cros-sys-on_surface);
+    padding-bottom: 0px;
+    padding-top: 16px;
+  }
+
+  #cameraPreviewContainer {
+    display: flex;
+    justify-content: center;
+    padding: 24px;
+    margin: 20px;
+    border-radius: 16px;
+  }
+
+  .gesture-not-detected {
+    background-color: var(--cros-sys-secondary_container);
+  }
+
+  .gesture-detected {
+    background-color: var(--cros-sys-success_container);
+  }
+
+  #cameraStream {
+    width: 90%;
+    -webkit-transform: scaleX(-1);
+    transform: scaleX(-1);
   }
 
   .gesture-icon {
@@ -124,11 +157,42 @@
     margin-inline-end: 10px;
   }
 
+  iron-icon[icon='cr20:warning'] {
+    --iron-icon-fill-color: var(--cros-sys-on_warning_container);
+  }
+
+  #warningContainer {
+    background-color: var(--icon-holder-bg, var(--cros-sys-warning_container));
+    display: flex;
+    gap: 8px;
+  }
+
+  #warningText {
+    color: var(--cros-sys-on_surface);
+  }
+
+  iron-icon[icon='cr:info-outline'] {
+    --iron-icon-fill-color: var(--cros-sys-on_secondary_container);
+  }
+
+  #complexActionContainer {
+    background-color: var(--cros-sys-secondary_container);
+    display: flex;
+    gap: 8px;
+  }
+
+  #complexActionText {
+    color: var(--cros-sys-on_secondary_container);
+  }
+
 </style>
 
 <cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
-  <template is="dom-if" if="[[showSelectAction_]]" restamp>
-    <div slot="title">$i18n{faceGazeActionsDialogTitle}</div>
+  <template is="dom-if" if="[[showSelectAction_]]"
+      on-dom-change="onActionPageDomChanged_" restamp>
+    <div id="title" tabindex="-1" slot="title">
+      $i18n{faceGazeActionsDialogTitle}
+    </div>
     <div id="dialogBody" slot="body" scrollable>
       <iron-list id="faceGazeAvailableActionsList"
           scroll-target="dialogBody"
@@ -137,7 +201,8 @@
         <template>
           <!-- |selected| is a property of iron-list -->
           <div class$="list-item padded [[getItemClass_(selected)]]"
-              tabindex$="[[tabIndex]]">
+              tabindex$="[[tabIndex]]"
+              aria-label="[[getActionAriaLabel_(item, selected)]]">
             <paper-ripple></paper-ripple>
             <div class="flex padded" aria-hidden="true">
               [[getActionDisplayText_(item)]]
@@ -158,18 +223,40 @@
         $i18n{next}
       </cr-button>
     </div>
+    <template is="dom-if"
+        if="[[getComplexActionDisplayText_(selectedAction_)]]" restamp>
+      <div id="complexActionContainer" tabindex="-1" slot="footer">
+        <iron-icon icon="cr:info-outline"></iron-icon>
+        <div id="complexActionText">
+          [[getComplexActionDisplayText_(selectedAction_)]]
+        </div>
+      </div>
+    </template>
   </template>
 
-  <template is="dom-if" if="[[showCustomKeyboard_]]" on-dom-change="onShortcutInputDomChange" restamp>
-    <div slot="title">$i18n{faceGazeActionsDialogKeyCombinationTitle}</div>
+  <template is="dom-if" if="[[showCustomKeyboard_]]"
+      on-dom-change="onShortcutInputPageDomChanged_" restamp>
+    <div id="title" tabindex="-1" slot="title">
+      $i18n{faceGazeActionsDialogKeyCombinationTitle}
+    </div>
     <div slot="body">
       <div id="customKeyboardContainer">
         <div id="customKeyboardLabel">$i18n{faceGazeActionsDialogKeyCombinationLabel}</div>
-        <div id="shortcutInputContainer">
+        <div id="shortcutInputContainer" aria-live="polite">
           <shortcut-input id="shortcutInput"
               shortcut-input-provider="[[getShortcutInputProvider()]]"
+              aria-label="[[shortcutInputLabel_]]"
               ignore-blur>
           </shortcut-input>
+        </div>
+        <div id="changeButtonContainer">
+          <cr-button id="faceGazeCustomKeyboardChangeButton"
+              class="button"
+              aria-label="[[keyComboChangeButtonLabel_]]"
+              disabled="[[disableCustomKeyboardNextButton_]]"
+              on-click="onChangeButtonClick_">
+            $i18n{faceGazeActionsDialogKeyCombinationChangeButtonLabel}
+          </cr-button>
         </div>
       </div>
     </div>
@@ -194,10 +281,10 @@
     </div>
   </template>
 
-  <template is="dom-if" if="[[showSelectGesture_]]" restamp>
-    <div slot="title">[[localizedSelectGestureTitle_]]</div>
-    <div slot="header">
-      $i18n{faceGazeActionsDialogSelectGestureSubtitle}
+  <template is="dom-if" if="[[showSelectGesture_]]"
+      on-dom-change="onGesturePageDomChanged_" restamp>
+    <div id="title" tabindex="-1" slot="title">
+      [[localizedSelectGestureTitle_]]
     </div>
     <div id="dialogBody" slot="body" scrollable>
       <iron-list id="faceGazeAvailableGesturesList"
@@ -207,7 +294,8 @@
         <template>
           <!-- |selected| is a property of iron-list -->
           <div class$="list-item gesture-list-item padded [[getItemClass_(selected)]]"
-              tabindex$="[[tabIndex]]">
+              tabindex$="[[tabIndex]]"
+              aria-label="[[getGestureAriaLabel_(item, selected)]]">
             <paper-ripple></paper-ripple>
             <div class="flex" aria-hidden="true">
               <iron-icon class="gesture-icon"
@@ -242,11 +330,18 @@
         </cr-button>
       </div>
     </div>
+    <template is="dom-if"
+        if="[[getWarningDisplayText_(selectedGesture_)]]" restamp>
+      <div id="warningContainer" tabindex="-1" slot="footer">
+        <iron-icon icon="cr20:warning"></iron-icon>
+        <div id="warningText">[[getWarningDisplayText_(selectedGesture_)]]</div>
+      </div>
+    </template>
   </template>
 
-  <!-- TODO(b:341770753): Build custom webcam component for setting the gesture threshold. -->
-  <template is="dom-if" if="[[showGestureThreshold_]]" restamp>
-    <div slot="title">
+  <template is="dom-if" if="[[showGestureThreshold_]]"
+      on-dom-change="onThresholdPageDomChanged_" restamp>
+    <div id="title" tabindex="-1" slot="title">
       <iron-icon class="gesture-icon"
           icon="[[getGestureIconName_(selectedGesture_)]]">
       </iron-icon>
@@ -256,16 +351,26 @@
       $i18n{faceGazeActionsDialogGestureThresholdSubtitle}
     </div>
     <div slot="body">
+      <div id="faceGazeGestureCount"
+          class="start settings-box-text"
+          aria-live="polite">
+        [[localizedGestureCountLabel_]]
+      </div>
+      <div id="cameraPreviewContainer" class="gesture-not-detected">
+        <video class="preview" id="cameraStream" autoplay playsinline></video>
+      </div>
       <div id="sliderContainer">
         <cr-icon-button
             id="faceGazeGestureThresholdDecrementButton"
             iron-icon="os-settings:chevron-left"
             class="slider-button"
+            aria-label="$i18n{faceGazeActionsDialogGestureThresholdDecreaseButtonLabel}"
             on-click="onDecreaseThresholdButtonClick_">
         </cr-icon-button>
         <cr-slider
             id="faceGazeGestureThresholdSlider"
             label_="$i18n{faceGazeActionsDialogGestureThresholdKnobLabel}"
+            aria-label="$i18n{faceGazeActionsDialogGestureThresholdSliderLabel}"
             value="[[gestureThresholdValue_]]"
             on-cr-slider-value-changed="onThresholdSliderChanged_"
             key-press-slider-increment="5"
@@ -275,11 +380,9 @@
             id="faceGazeGestureThresholdIncrementButton"
             iron-icon="os-settings:chevron-right"
             class="slider-button"
+            aria-label="$i18n{faceGazeActionsDialogGestureThresholdIncreaseButtonLabel}"
             on-click="onIncreaseThresholdButtonClick_">
         </cr-icon-button>
-      </div>
-      <div id="faceGazeGestureCount" class="start settings-box-text">
-        [[localizedGestureCountLabel_]]
       </div>
     </div>
     <div slot="button-container" class="justify-space-between">

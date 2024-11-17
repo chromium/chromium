@@ -118,4 +118,9 @@ const char kUseRelatedWebsiteSet[] = "use-related-website-set";
 // https://github.com/web-platform-tests/rfcs/blob/master/rfcs/address_space_overrides.md
 const char kIpAddressSpaceOverrides[] = "ip-address-space-overrides";
 
+// The switch to disable the shared dictionary storage clean up task. Only for
+// testing.
+const char kDisableSharedDictionaryStorageCleanupForTesting[] =
+    "disable-shared-dictionary-storage-cleanup-for-testing";
+
 }  // namespace network::switches

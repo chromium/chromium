@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/delegated_ink_trail_data.h"
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -53,6 +54,10 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
   // drawn on screen, and fires a histogram with the time between points' event
   // creation and the points' draw submission to the OS.
   void ReportPointsDrawn();
+
+  // Get the of the render pass that the Delegated Ink trail should be drawn on.
+  // This id is initially set on the metadata during surface aggregation.
+  std::optional<AggregatedRenderPassId> GetLatestMetadataRenderPassId() const;
 
  protected:
   // `pointer_ids_` is not emptied each time after the points are drawn, because

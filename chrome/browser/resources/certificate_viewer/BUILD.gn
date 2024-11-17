@@ -15,11 +15,18 @@ build_webui("build") {
     "certificate_viewer.html",
   ]
 
-  non_web_component_files = [ "certificate_viewer.ts" ]
+  non_web_component_files = [
+    "certificate_viewer.ts",
+    "constraint_list.ts",
+    "constraint_list.html.ts",
+  ]
+
+  css_files = [ "constraint_list.css" ]
 
   ts_composite = true
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

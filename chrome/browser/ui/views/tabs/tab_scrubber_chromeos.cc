@@ -8,6 +8,7 @@
 
 #include <algorithm>
 
+#include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,12 +26,6 @@
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/public/activation_client.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/shell.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#endif
 
 // static
 TabScrubberChromeOS* TabScrubberChromeOS::GetInstance() {
@@ -102,9 +97,7 @@ void TabScrubberChromeOS::SynthesizedScrollEvent(float x_offset,
 }
 
 TabScrubberChromeOS::TabScrubberChromeOS() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::Shell::Get()->AddPreTargetHandler(this);
-#endif
   BrowserList::AddObserver(this);
 }
 
@@ -113,15 +106,6 @@ TabScrubberChromeOS::~TabScrubberChromeOS() {
 }
 
 void TabScrubberChromeOS::OnScrollEvent(ui::ScrollEvent* event) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/40207972): Generalize the interception/handling of
-  // 3-finger swipes in Ash/ChromeOS.
-  bool delegated = MaybeDelegateHandlingToLacros(event);
-  if (delegated) {
-    return;
-  }
-#endif
-
   if (!enabled_) {
     return;
   }
@@ -213,13 +197,11 @@ void TabScrubberChromeOS::OnBrowserRemoved(Browser* browser) {
   if (browser != browser_)
     return;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (browser_) {
     BrowserView::GetBrowserViewForBrowser(browser_)
         ->GetWidget()
         ->ReleaseCapture();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   activate_timer_.Stop();
   swipe_x_ = -1;
@@ -293,12 +275,9 @@ void TabScrubberChromeOS::BeginScrub(BrowserView* browser_view,
 
   tab_strip_->SetTabStripObserver(this);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Capture the event so that the scroll event will not be handled by other
-  // clients. This is required to work well with overview mode gesture, and not
-  // needed for Lacros since the overview mode handling is done on Ash.
+  // clients. This is required to work well with overview mode gesture.
   browser_view->GetWidget()->SetCapture(/*view=*/nullptr);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool TabScrubberChromeOS::FinishScrub(bool activate) {
@@ -308,9 +287,7 @@ bool TabScrubberChromeOS::FinishScrub(bool activate) {
   if (browser_ && browser_->window()) {
     BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
     browser_view->GetWidget()->ReleaseCapture();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     TabStrip* tab_strip = browser_view->tabstrip();
     if (activate && highlighted_tab_ != -1) {
@@ -416,35 +393,3 @@ void TabScrubberChromeOS::UpdateHighlightedTab(Tab* new_tab, int new_index) {
     highlighted_tab_ = -1;
   }
 }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// static
-bool TabScrubberChromeOS::MaybeDelegateHandlingToLacros(
-    ui::ScrollEvent* event) {
-  auto* active_window =
-      ash::Shell::Get()->activation_client()->GetActiveWindow();
-  if (!active_window) {
-    return false;
-  }
-
-  if (!crosapi::browser_util::IsLacrosWindow(active_window)) {
-    return false;
-  }
-
-  if (event->IsFlingScrollEvent()) {
-    // Do NOT stop propagation for fling scroll event since it may be consumed
-    // elsewhere.
-    crosapi::BrowserManager::Get()->HandleTabScrubbing(
-        event->x_offset(), /*is_fling_scroll_event=*/true);
-    return true;
-  } else if (event->finger_count() == kFingerCount) {
-    crosapi::BrowserManager::Get()->HandleTabScrubbing(
-        event->x_offset(),
-        /*is_fling_scroll_event=*/false);
-    event->SetHandled();
-    return true;
-  }
-
-  return false;
-}
-#endif

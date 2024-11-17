@@ -89,18 +89,13 @@ std::unique_ptr<TsModel> TsModel::Create(
 
 bool TsModel::InitLanguageDetection(
     on_device_model::mojom::LanguageModelAssetsPtr assets) {
-#if BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/356380874): UpdateWithFile does not exist for iOS there is
-  // an async version but its not clear how we get this to work with the
-  // sequence bound object.
-  NOTIMPLEMENTED();
-  return {};
-#else
+  auto tflite_model =
+      std::make_unique<language_detection::LanguageDetectionModel>();
+  tflite_model->UpdateWithFile(std::move(assets->model));
+
   language_detector_ = std::make_unique<translate::LanguageDetectionModel>(
-      &language_detection::GetLanguageDetectionModel());
-  language_detector_->UpdateWithFile(std::move(assets->model));
+      std::move(tflite_model));
   return language_detector_->IsAvailable();
-#endif
 }
 
 DISABLE_CFI_DLSYM

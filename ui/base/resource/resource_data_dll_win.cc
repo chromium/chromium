@@ -33,7 +33,7 @@ bool ResourceDataDLL::HasResource(uint16_t resource_id) const {
                                               &data_size);
 }
 
-std::optional<std::string_view> ResourceDataDLL::GetStringPiece(
+std::optional<std::string_view> ResourceDataDLL::GetStringView(
     uint16_t resource_id) const {
   void* data_ptr;
   size_t data_size;

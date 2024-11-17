@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/contextual_panel/entrypoint/coordinator/contextual_panel_entrypoint_mediator.h"
 
 #import "base/check_op.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/stringprintf.h"
@@ -45,7 +46,7 @@
   __weak id<ContextualPanelEntrypointIPHCommands> _entrypointHelpHandler;
 
   // The engagement tracker for the current browser.
-  feature_engagement::Tracker* _engagementTracker;
+  raw_ptr<feature_engagement::Tracker> _engagementTracker;
 
   // WebStateList to use for observing ContextualPanelTabHelper events.
   raw_ptr<WebStateList> _webStateList;

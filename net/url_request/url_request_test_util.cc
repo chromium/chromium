@@ -28,6 +28,7 @@
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "net/quic/quic_context.h"
+#include "net/url_request/redirect_info.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context_builder.h"
@@ -560,7 +561,9 @@ int TestNetworkDelegate::GetRequestId(URLRequest* request) {
 }
 
 std::optional<cookie_util::StorageAccessStatus>
-TestNetworkDelegate::OnGetStorageAccessStatus(const URLRequest& request) const {
+TestNetworkDelegate::OnGetStorageAccessStatus(
+    const URLRequest& request,
+    base::optional_ref<const RedirectInfo> redirect_info) const {
   return storage_access_status_;
 }
 

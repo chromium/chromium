@@ -280,20 +280,6 @@ PhysicalMapping<2> CSSDirectionAwareResolver::PhysicalScrollStartMapping() {
   return PhysicalMapping<2>(kProperties);
 }
 
-LogicalMapping<2> CSSDirectionAwareResolver::LogicalScrollStartTargetMapping() {
-  static const CSSProperty* kProperties[] = {
-      &GetCSSPropertyScrollStartTargetBlock(),
-      &GetCSSPropertyScrollStartTargetInline()};
-  return LogicalMapping<2>(kProperties);
-}
-
-PhysicalMapping<2>
-CSSDirectionAwareResolver::PhysicalScrollStartTargetMapping() {
-  static const CSSProperty* kProperties[] = {
-      &GetCSSPropertyScrollStartTargetX(), &GetCSSPropertyScrollStartTargetY()};
-  return PhysicalMapping<2>(kProperties);
-}
-
 LogicalMapping<2> CSSDirectionAwareResolver::LogicalSizeMapping() {
   static const CSSProperty* kProperties[] = {&GetCSSPropertyBlockSize(),
                                              &GetCSSPropertyInlineSize()};

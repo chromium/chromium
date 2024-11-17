@@ -56,7 +56,11 @@ class ScopedTempWebBundleFile {
 class IsolatedWebAppDownloader {
  public:
   using DownloadCallback = base::OnceCallback<void(int32_t net_error)>;
+  using PartialDownloadCallback =
+      base::OnceCallback<void(std::optional<std::string> data)>;
 
+  static std::unique_ptr<IsolatedWebAppDownloader> Create(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
   // Creates a new instance of this class and starts the download process.
   static std::unique_ptr<IsolatedWebAppDownloader> CreateAndStartDownloading(
       GURL url,
@@ -74,6 +78,11 @@ class IsolatedWebAppDownloader {
       base::FilePath destination,
       net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation,
       DownloadCallback download_callback);
+  // Downloads leading min(bundle_size, 8 KiB) bytes to string
+  void DownloadInitialBytes(
+      GURL url,
+      net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation,
+      PartialDownloadCallback download_callback);
 
  private:
   int32_t OnSignedWebBundleDownloaded(base::FilePath destination,

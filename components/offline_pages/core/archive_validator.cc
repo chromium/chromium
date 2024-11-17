@@ -14,10 +14,6 @@
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/content_uri_utils.h"
-#endif
-
 namespace offline_pages {
 
 ArchiveValidator::ArchiveValidator() {
@@ -45,17 +41,7 @@ std::string ArchiveValidator::ComputeDigest(const base::FilePath& file_path) {
 // static
 std::pair<int64_t, std::string> ArchiveValidator::GetSizeAndComputeDigest(
     const base::FilePath& file_path) {
-  base::File file;
-#if BUILDFLAG(IS_ANDROID)
-  if (file_path.IsContentUri()) {
-    file = base::OpenContentUri(file_path,
-                                base::File::FLAG_OPEN | base::File::FLAG_READ);
-  } else {
-#endif  // BUILDFLAG(IS_ANDROID)
-    file.Initialize(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
-#if BUILDFLAG(IS_ANDROID)
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
+  base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!file.IsValid()) {
     return std::make_pair(0LL, std::string());
   }
@@ -83,11 +69,11 @@ std::pair<int64_t, std::string> ArchiveValidator::GetSizeAndComputeDigest(
 bool ArchiveValidator::ValidateFile(const base::FilePath& file_path,
                                     int64_t expected_file_size,
                                     const std::string& expected_digest) {
-  int64_t actual_file_size;
-  if (!base::GetFileSize(file_path, &actual_file_size)) {
+  std::optional<int64_t> actual_file_size = base::GetFileSize(file_path);
+  if (!actual_file_size.has_value()) {
     return false;
   }
-  if (expected_file_size != actual_file_size) {
+  if (expected_file_size != actual_file_size.value()) {
     return false;
   }
 

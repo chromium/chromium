@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -222,7 +223,7 @@ bool IsSingleFormRequest(const AutofillPageQueryRequest& query) {
 // Validates, retrieves, and decodes node |node_name| from |request_node| and
 // returns it in |decoded_value|. Returns false if unsuccessful.
 bool RetrieveValueFromRequestNode(const base::Value::Dict& request_node,
-                                  const std::string node_name,
+                                  const std::string& node_name,
                                   std::string* decoded_value) {
   // Get and check field node string.
   std::string serialized_value;
@@ -588,10 +589,9 @@ AutofillServerBehaviorType ParseAutofillServerBehaviorType() {
                                               "OnlyLocalHeuristics")) {
     return AutofillServerBehaviorType::kOnlyLocalHeuristics;
   } else {
-    CHECK(false) << "Unrecognized command line value give for `"
+    NOTREACHED() << "Unrecognized command line value give for `"
                  << kAutofillServerBehaviorParam << "` argument: `"
                  << autofill_server_option << "`";
-    return AutofillServerBehaviorType::kSavedCache;
   }
 }
 

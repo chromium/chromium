@@ -5,17 +5,16 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_SESSION_UTIL_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BOCA_SESSION_UTIL_H_
 
-#include "ash/ash_export.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 
 namespace ash::boca {
 
-ASH_EXPORT ::boca::SessionConfig GetSessionConfigSafe(::boca::Session* session);
+::boca::SessionConfig GetSessionConfigSafe(::boca::Session* session);
 
-ASH_EXPORT google::protobuf::RepeatedPtrField<::boca::UserIdentity>
-GetStudentGroupsSafe(::boca::Session* session);
+google::protobuf::RepeatedPtrField<::boca::UserIdentity> GetStudentGroupsSafe(
+    ::boca::Session* session);
 
-ASH_EXPORT ::boca::Roster GetRosterSafe(::boca::Session* session);
+::boca::Roster GetRosterSafe(::boca::Session* session);
 
 }  // namespace ash::boca
 

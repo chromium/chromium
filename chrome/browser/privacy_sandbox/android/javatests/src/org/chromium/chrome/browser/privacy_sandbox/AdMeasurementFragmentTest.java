@@ -109,7 +109,7 @@ public final class AdMeasurementFragmentTest {
 
     private View getRootView(@StringRes int text) {
         View[] view = {null};
-        onView(withText(text)).check(((v, e) -> view[0] = v.getRootView()));
+        onView(withText(text)).check((v, e) -> view[0] = v.getRootView());
         ThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
         return view[0];
     }

@@ -78,7 +78,7 @@ class TrashInfoValidator {
  public:
   // The `base_path` here is used primarily for testing purposes to identify the
   // enabled trash locations.
-  TrashInfoValidator(Profile* profile, const base::FilePath& base_path);
+  explicit TrashInfoValidator(Profile* profile);
   ~TrashInfoValidator();
 
   TrashInfoValidator(const TrashInfoValidator&) = delete;

@@ -26,8 +26,7 @@ class WebServiceWorkerFetchContextImplTest : public testing::Test {
 
   class FakeURLLoaderThrottleProvider : public URLLoaderThrottleProvider {
     std::unique_ptr<URLLoaderThrottleProvider> Clone() override {
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     }
 
     WebVector<std::unique_ptr<URLLoaderThrottle>> CreateThrottles(
@@ -38,7 +37,7 @@ class WebServiceWorkerFetchContextImplTest : public testing::Test {
       return throttles;
     }
 
-    void SetOnline(bool is_online) override { NOTREACHED_IN_MIGRATION(); }
+    void SetOnline(bool is_online) override { NOTREACHED(); }
   };
   test::TaskEnvironment task_environment_;
 };

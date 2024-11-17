@@ -80,6 +80,16 @@ class CONTENT_EXPORT PrivateAggregationHost
     kMaxValue = kFilteringIdProvidedWithCustomMaxBytes,
   };
 
+  // Indicates the desired behavior when a report has no contributions, such as
+  // when budget is denied or `contributeToHistogram()` was not called.
+  enum class NullReportBehavior {
+    // Still send a report, but without any contributions.
+    kSendNullReport,
+
+    // Drop the report.
+    kDontSendReport,
+  };
+
   using ReportRequestGenerator = base::OnceCallback<AggregatableReportRequest(
       std::vector<blink::mojom::AggregatableReportHistogramContribution>)>;
 
@@ -115,8 +125,7 @@ class CONTENT_EXPORT PrivateAggregationHost
           ReportRequestGenerator,
           std::vector<blink::mojom::AggregatableReportHistogramContribution>,
           PrivateAggregationBudgetKey,
-          PrivateAggregationBudgeter::BudgetDeniedBehavior)>
-          on_report_request_details_received,
+          NullReportBehavior)> on_report_request_details_received,
       BrowserContext* browser_context);
   PrivateAggregationHost(const PrivateAggregationHost&) = delete;
   PrivateAggregationHost& operator=(const PrivateAggregationHost&) = delete;
@@ -127,8 +136,10 @@ class CONTENT_EXPORT PrivateAggregationHost
   // is not potentially trustworthy or if `context_id` is too long.  If
   // `timeout` is set, the report will be sent as if the pipe closed after the
   // timeout, regardless of when the disconnection actually happens. `timeout`
-  // must be positive if set. If `timeout` is set, `context_id` must be set too.
-  // If `aggregation_coordinator_origin` is set, the origin must be on the
+  // must be positive if set. If `timeout` is set, then
+  // `PrivateAggregationManager::ShouldSendReportDeterministically(context_id,
+  // filtering_id_max_bytes)` should return true. If
+  // `aggregation_coordinator_origin` is set, the origin must be on the
   // allowlist. `filtering_id_max_bytes` must be positive and no greater than
   // `AggregationServicePayloadContents::kMaximumFilteringIdMaxBytes`. The
   // return value indicates whether the receiver was accepted. Virtual for
@@ -191,7 +202,7 @@ class CONTENT_EXPORT PrivateAggregationHost
       ReportRequestGenerator,
       std::vector<blink::mojom::AggregatableReportHistogramContribution>,
       PrivateAggregationBudgetKey,
-      PrivateAggregationBudgeter::BudgetDeniedBehavior)>
+      NullReportBehavior)>
       on_report_request_details_received_;
 
   mojo::ReceiverSet<blink::mojom::PrivateAggregationHost, ReceiverContext>

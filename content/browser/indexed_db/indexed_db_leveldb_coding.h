@@ -474,7 +474,7 @@ class ObjectStoreDataKey {
   static bool Decode(std::string_view* slice, ObjectStoreDataKey* result);
   CONTENT_EXPORT static std::string Encode(int64_t database_id,
                                            int64_t object_store_id,
-                                           const std::string encoded_user_key);
+                                           const std::string& encoded_user_key);
   CONTENT_EXPORT static std::string Encode(int64_t database_id,
                                            int64_t object_store_id,
                                            const blink::IndexedDBKey& user_key);

@@ -19,15 +19,6 @@ export const isChromeOS = (() => {
   return returnValue;
 })();
 
-/** Whether this is the ChromeOS/Lacros web browser. */
-export const isLacros = (() => {
-  let returnValue = false;
-  // <if expr="chromeos_lacros">
-  returnValue = true;
-  // </if>
-  return returnValue;
-})();
-
 /** Whether this is on vanilla Linux (not chromeOS). */
 export const isLinux = /Linux/.test(navigator.userAgent);
 

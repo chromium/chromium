@@ -1,0 +1,100 @@
+{
+  "$build/chromium_tests_builder_config": {
+    "builder_config": {
+      "builder_db": {
+        "entries": [
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "android-cronet-x64-dbg",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-android-archive",
+              "builder_group": "chromium.android",
+              "execution_mode": "COMPILE_AND_TEST",
+              "legacy_android_config": {
+                "config": "x64_builder"
+              },
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "cronet_builder",
+                  "mb"
+                ],
+                "build_config": "Debug",
+                "config": "android",
+                "target_bits": 64,
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android"
+                ],
+                "config": "chromium"
+              }
+            }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "android-cronet-x64-dbg-15-tests",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "build_gs_bucket": "chromium-android-archive",
+              "builder_group": "chromium.android",
+              "execution_mode": "TEST",
+              "legacy_android_config": {
+                "config": "x64_builder"
+              },
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "cronet_builder",
+                  "mb"
+                ],
+                "build_config": "Debug",
+                "config": "android",
+                "target_bits": 64,
+                "target_platform": "android"
+              },
+              "legacy_gclient_config": {
+                "apply_configs": [
+                  "android"
+                ],
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "android-cronet-x64-dbg",
+                "project": "chromium"
+              }
+            }
+          }
+        ]
+      },
+      "builder_ids": [
+        {
+          "bucket": "ci",
+          "builder": "android-cronet-x64-dbg-15-tests",
+          "project": "chromium"
+        }
+      ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android-cronet-x64-dbg-15-tests",
+          "group": "tryserver.chromium.android"
+        }
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-x64-dbg-15-tests/targets"
+    }
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium.android",
+  "recipe": "chromium"
+}

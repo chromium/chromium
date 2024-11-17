@@ -35,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -119,7 +120,9 @@ public class StaticLayoutUnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mRequestSupplier = new CompositorModelChangeProcessor.FrameRequestSupplier(() -> {});
+        mRequestSupplier =
+                new CompositorModelChangeProcessor.FrameRequestSupplier(
+                        CallbackUtils.emptyRunnable());
 
         mCompositorAnimationHandler = new CompositorAnimationHandler(mUpdateHost::requestUpdate);
         CompositorAnimationHandler.setTestingMode(true);

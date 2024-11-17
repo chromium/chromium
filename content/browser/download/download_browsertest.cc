@@ -5152,6 +5152,97 @@ IN_PROC_BROWSER_TEST_F(MhtmlLoadingTest, DisallowRenderMessageRfc822Iframe) {
       1u, observer->NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
 }
 
+// MhtmlLoadingTest with `kMHTML_Improvements` enabled.
+class MHTMLImprovementsLoadingTest : public MhtmlLoadingTest {
+ protected:
+  void SetUpOnMainThread() override {
+    MhtmlLoadingTest::SetUpOnMainThread();
+
+    browser_client_ = std::make_unique<DownloadTestContentBrowserClient>();
+    browser_client_->set_allowed_rendering_mhtml_over_http(true);
+  }
+
+  void TearDownOnMainThread() override {
+    browser_client_.reset();
+    MhtmlLoadingTest::TearDownOnMainThread();
+  }
+
+ private:
+  base::test::ScopedFeatureList features_ =
+      base::test::ScopedFeatureList({blink::features::kMHTML_Improvements});
+  std::unique_ptr<DownloadTestContentBrowserClient> browser_client_;
+};
+
+// Test disabled on Android due to flakiness. See https://crbug.com/378746190
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
+#define MAYBE_FormsDisabledWhenRenderedFromHttp \
+  DISABLED_FormsDisabledWhenRenderedFromHttp
+#else
+#define MAYBE_FormsDisabledWhenRenderedFromHttp \
+  FormsDisabledWhenRenderedFromHttp
+#endif
+IN_PROC_BROWSER_TEST_F(MHTMLImprovementsLoadingTest,
+                       MAYBE_FormsDisabledWhenRenderedFromHttp) {
+  // Note that normally Chrome will not load MHTML over HTTP(s), and instead
+  // will download the file. On Android, Chrome supports loading 'trusted'
+  // offline pages, which are loaded through `OfflinePageURLLoader`, and are
+  // simulated as loading from the original URL. For these trusted MHTML files,
+  // forms are disabled.
+  // This test forces loading MHTML over HTTP to trigger the form disabling
+  // functionality.
+  net::EmbeddedTestServer server;
+  net::test_server::ControllableHttpResponse response(&server, "/");
+  EXPECT_TRUE(server.Start());
+
+  GURL url = server.GetURL(kOrigin, "/");
+
+  std::string mhtml_content;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::ReadFileToString(
+        GetTestFilePath("download", "forms.mhtml"), &mhtml_content));
+  }
+
+  auto observer = std::make_unique<content::TestNavigationObserver>(url);
+  observer->WatchExistingWebContents();
+  observer->StartWatchingNewWebContents();
+
+  shell()->LoadURL(url);
+
+  response.WaitForRequest();
+  response.Send(net::HTTP_OK, "multipart/related", mhtml_content);
+  response.Done();
+
+  observer->WaitForNavigationFinished();
+
+  // <input> is disabled. It won't have the disabled property set, but it will
+  // have the effects. One effect is changing the cursor.
+  EXPECT_EQ(
+      "default",
+      EvalJs(
+          shell(),
+          "window.getComputedStyle(document.querySelector('input')).cursor"));
+}
+
+IN_PROC_BROWSER_TEST_F(MHTMLImprovementsLoadingTest,
+                       FormsNotDisabledWhenRenderedFromFile) {
+  GURL url = GetFileURL(FILE_PATH_LITERAL("download/forms.mhtml"));
+  auto observer = std::make_unique<content::TestNavigationObserver>(url);
+  observer->WatchExistingWebContents();
+  observer->StartWatchingNewWebContents();
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  observer->WaitForNavigationFinished();
+
+  // <input> is not disabled.
+  EXPECT_EQ(
+      "text",
+      EvalJs(
+          shell(),
+          "window.getComputedStyle(document.querySelector('input')).cursor"));
+}
+
 // Verify that downloads not triggered by navigation are discarded when
 // initiated from a non-active page.
 // Navigation downloads won't reach the DownloadManager. That is tested in

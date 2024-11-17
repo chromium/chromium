@@ -64,6 +64,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/canvas_painter.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/layer_type.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/layer_animation_stopped_waiter.h"
 #include "ui/events/base_event_utils.h"
@@ -2177,7 +2178,7 @@ TEST_F(HoldingSpaceTrayTest, HasExpectedBubbleTreatment) {
   // Background.
   auto* background = bubble->GetBackground();
   ASSERT_TRUE(background);
-  EXPECT_EQ(background->get_color(), SK_ColorTRANSPARENT);
+  EXPECT_EQ(bubble->layer()->type(), ui::LAYER_NOT_DRAWN);
   EXPECT_EQ(bubble->layer()->background_blur(), 0.f);
 
   // Border.
@@ -2211,6 +2212,19 @@ TEST_F(HoldingSpaceTrayTest, CheckTrayTooltipText) {
   StartSession(/*pre_mark_time_of_first_add=*/true);
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_EQ(GetTray()->GetTooltipText(gfx::Point()), u"Tote");
+}
+
+TEST_F(HoldingSpaceTrayTest, BubbleViewAccessibleName) {
+  StartSession();
+
+  test_api()->Show();
+  views::View* bubble = test_api()->GetBubble();
+  ASSERT_TRUE(bubble);
+
+  ui::AXNodeData node_data;
+  bubble->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            test_api()->GetAccessibleNameForBubble());
 }
 
 using HoldingSpacePreviewsTrayTest = HoldingSpaceTrayTestBase;

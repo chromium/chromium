@@ -192,7 +192,6 @@ void HoldingSpaceTrayChildBubble::Init() {
   SetPaintToLayer(ui::LAYER_TEXTURED);
   layer()->GetAnimator()->set_preemption_strategy(
       ui::LayerAnimator::PreemptionStrategy::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  layer()->SetFillsBoundsOpaquely(false);
   layer()->SetOpacity(0.f);
 
   // Child bubbles should mask child layers to bounds so as not to paint over
@@ -200,25 +199,32 @@ void HoldingSpaceTrayChildBubble::Init() {
   layer()->SetMasksToBounds(true);
 
   // Background.
-  layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-  layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
 
-  SetBackground(views::CreateThemedSolidBackground(
+  const ui::ColorId background_color_id =
       chromeos::features::IsJellyEnabled()
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
-          : kColorAshShieldAndBase80));
+          ? static_cast<ui::ColorId>(
+                chromeos::features::IsSystemBlurEnabled()
+                    ? cros_tokens::kCrosSysSystemBaseElevated
+                    : cros_tokens::kCrosSysSystemBaseElevatedOpaque)
+          : kColorAshShieldAndBase80;
+
+  SetBackground(views::CreateThemedSolidBackground(background_color_id));
 
   // Border.
-  const float corner_radius = GetBubbleCornerRadius();
   SetBorder(std::make_unique<views::HighlightBorder>(
-      corner_radius,
+      kBubbleCornerRadius,
       chromeos::features::IsJellyrollEnabled()
           ? views::HighlightBorder::Type::kHighlightBorderOnShadow
           : views::HighlightBorder::Type::kHighlightBorder1));
 
   // Corner radius.
   layer()->SetIsFastRoundedCorner(true);
-  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{corner_radius});
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
 
   // Placeholder.
   if (auto placeholder = CreatePlaceholder()) {

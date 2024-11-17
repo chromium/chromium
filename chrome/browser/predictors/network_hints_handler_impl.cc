@@ -10,6 +10,7 @@
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/preconnect_manager.h"
+#include "chrome/browser/predictors/predictors_traffic_annotations.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -59,7 +60,8 @@ void NetworkHintsHandlerImpl::PrefetchDNS(
     gurls.emplace_back(url.GetURL());
   }
   preconnect_manager_->StartPreresolveHosts(
-      gurls, GetPendingNetworkAnonymizationKey(render_frame_host));
+      gurls, GetPendingNetworkAnonymizationKey(render_frame_host),
+      kNetworkHintsTrafficAnnotation);
 }
 
 void NetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
@@ -81,7 +83,8 @@ void NetworkHintsHandlerImpl::Preconnect(const url::SchemeHostPort& url,
 
   preconnect_manager_->StartPreconnectUrl(
       url.GetURL(), allow_credentials,
-      GetPendingNetworkAnonymizationKey(render_frame_host));
+      GetPendingNetworkAnonymizationKey(render_frame_host),
+      kNetworkHintsTrafficAnnotation);
 }
 
 NetworkHintsHandlerImpl::NetworkHintsHandlerImpl(

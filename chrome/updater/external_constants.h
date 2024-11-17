@@ -73,6 +73,9 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
   // True if the updater should request and apply diff updates.
   virtual bool EnableDiffUpdates() const = 0;
 
+  // The maximum time allowed to establish a connection to CECA.
+  virtual base::TimeDelta CecaConnectionTimeout() const = 0;
+
  protected:
   friend class base::RefCountedThreadSafe<ExternalConstants>;
   scoped_refptr<ExternalConstants> next_provider_;

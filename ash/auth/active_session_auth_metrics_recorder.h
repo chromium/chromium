@@ -27,7 +27,7 @@ class ASH_EXPORT ActiveSessionAuthMetricsRecorder {
 
   ~ActiveSessionAuthMetricsRecorder();
 
-  void RecordShow(AuthRequest::Reason reason);
+  void RecordShow(AuthRequest::Reason reason, AuthFactorSet available_factors);
   void RecordClose();
 
   void RecordAuthStarted(AuthInputType input_type);
@@ -43,6 +43,7 @@ class ASH_EXPORT ActiveSessionAuthMetricsRecorder {
   int password_attempt_counter_ = 0;
   int fingerprint_attempt_counter_ = 0;
   bool auth_succeeded_ = false;
+  AuthFactorSet available_factors_;
 };
 
 }  // namespace ash

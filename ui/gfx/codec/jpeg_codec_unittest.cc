@@ -15,11 +15,13 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace gfx {
+
 namespace {
 
 // A JPEG image used by TopSitesMigrationTest, whose size is 1x1.
 // This image causes an invalid-read error to libjpeg-turbo 1.0.1.
-const uint8_t kTopSitesMigrationTestImage[] =
+constexpr uint8_t kTopSitesMigrationTestImage[] =
     "\xff\xd8\xff\xe0\x00\x10\x4a\x46\x49\x46\x00\x01\x01\x00\x00\x01"
     "\x00\x01\x00\x00\xff\xdb\x00\x43\x00\x03\x02\x02\x03\x02\x02\x03"
     "\x03\x03\x03\x04\x03\x03\x04\x05\x08\x05\x05\x04\x04\x05\x0a\x07"
@@ -65,7 +67,7 @@ const uint8_t kTopSitesMigrationTestImage[] =
 // rewritten to indicate an image size of 25000x25000. An image this large would
 // require more than 2GB of RAM to decode, so the decoder will reject the image
 // as soon as the header is parsed.
-const uint8_t kExtremelyLargeTestImage[] =
+constexpr uint8_t kExtremelyLargeTestImage[] =
     "\xff\xd8\xff\xe0\x00\x10\x4a\x46\x49\x46\x00\x01\x01\x00\x00\x01"
     "\x00\x01\x00\x00\xff\xdb\x00\x43\x00\x03\x02\x02\x03\x02\x02\x03"
     "\x03\x03\x03\x04\x03\x03\x04\x05\x08\x05\x05\x04\x04\x05\x0a\x07"
@@ -108,134 +110,141 @@ const uint8_t kExtremelyLargeTestImage[] =
     "\xfa\xff\xda\x00\x0c\x03\x01\x00\x02\x11\x03\x11\x00\x3f\x00\xf9"
     "\xd2\x8a\x28\xaf\xc3\x0f\xf5\x4c\xff\xd9";
 
-}  // namespace
-
-namespace gfx {
-
 // out of 100, this indicates how compressed it will be, this should be changed
 // with jpeg equality threshold
-// static int jpeg_quality = 75;  // FIXME(brettw)
-static int jpeg_quality = 100;
+// constexpr int kJpegQuality = 75;  // FIXME(brettw)
+constexpr int kJpegQuality = 100;
 
 // The threshold of average color differences where we consider two images
 // equal. This number was picked to be a little above the observed difference
 // using the above quality.
-static double jpeg_equality_threshold = 1.0;
+constexpr double kJpegEqualityThreshold = 1.0;
 
 // Computes the average difference between each value in a and b. A and b
 // should be the same size. Used to see if two images are approximately equal
 // in the presence of compression.
-static double AveragePixelDelta(const std::vector<unsigned char>& a,
-                                const std::vector<unsigned char>& b) {
-  // if the sizes are different, say the average difference is the maximum
-  if (a.size() != b.size())
+double AveragePixelDelta(base::span<const uint8_t> a,
+                         base::span<const uint8_t> b) {
+  // If the sizes are different, say the average difference is the maximum.
+  if (a.size() != b.size()) {
     return 255.0;
-  if (a.empty())
+  }
+  if (a.empty()) {
     return 0;  // prevent divide by 0 below
+  }
 
   double acc = 0.0;
-  for (size_t i = 0; i < a.size(); i++)
+  for (size_t i = 0; i < a.size(); i++) {
     acc += fabs(static_cast<double>(a[i]) - static_cast<double>(b[i]));
+  }
 
   return acc / static_cast<double>(a.size());
 }
 
-static void MakeRGBAImage(int w, int h, std::vector<unsigned char>* dat) {
-  dat->resize(w * h * 4);
+std::vector<uint8_t> MakeRGBAImage(int w, int h) {
+  std::vector<uint8_t> result;
+  result.resize(w * h * 4);
+
   for (int y = 0; y < h; y++) {
     for (int x = 0; x < w; x++) {
       size_t base = (y * w + x) * 4;
-      (*dat)[base] = x * 3;          // r
-      (*dat)[base + 1] = x * 3 + 1;  // g
-      (*dat)[base + 2] = x * 3 + 2;  // b
-      (*dat)[base + 3] = 0xFF;       // a
+      result[base] = x * 3;          // r
+      result[base + 1] = x * 3 + 1;  // g
+      result[base + 2] = x * 3 + 2;  // b
+      result[base + 3] = 0xFF;       // a
     }
   }
+
+  return result;
 }
 
+}  // namespace
+
 TEST(JPEGCodec, EncodeDecodeRGBA) {
-  int w = 20, h = 20;
+  constexpr int kWidth = 20;
+  constexpr int kHeight = 20;
 
-  // create an image with known values, a must be opaque because it will be
-  // lost during compression
-  std::vector<unsigned char> original;
-  MakeRGBAImage(w, h, &original);
+  // Create an image with known values. It must be opaque because alpha will be
+  // lost during compression.
+  std::vector<uint8_t> original = MakeRGBAImage(kWidth, kHeight);
 
-  // encode, making sure it was compressed some
-  std::vector<unsigned char> encoded;
-  SkImageInfo info =
-      SkImageInfo::Make(w, h, kRGBA_8888_SkColorType, kOpaque_SkAlphaType);
-  SkPixmap src(info, &original[0], w * 4);
-  EXPECT_TRUE(JPEGCodec::Encode(src, jpeg_quality, &encoded));
-  EXPECT_GT(original.size(), encoded.size());
+  // Encode, making sure it was compressed some.
+  SkImageInfo info = SkImageInfo::Make(kWidth, kHeight, kRGBA_8888_SkColorType,
+                                       kOpaque_SkAlphaType);
+  SkPixmap src(info, &original[0], kWidth * 4);
+  std::optional<std::vector<uint8_t>> encoded =
+      JPEGCodec::Encode(src, kJpegQuality);
+  ASSERT_TRUE(encoded);
+  EXPECT_GT(original.size(), encoded->size());
 
-  // decode, it should have the same size as the original
-  std::vector<unsigned char> decoded;
+  // Decode; it should have the same size as the original.
+  std::vector<uint8_t> decoded;
   int outw, outh;
-  EXPECT_TRUE(JPEGCodec::Decode(&encoded[0], encoded.size(),
+  EXPECT_TRUE(JPEGCodec::Decode(encoded->data(), encoded->size(),
                                 kRGBA_8888_SkColorType, &decoded, &outw,
                                 &outh));
-  ASSERT_EQ(w, outw);
-  ASSERT_EQ(h, outh);
+  ASSERT_EQ(kWidth, outw);
+  ASSERT_EQ(kHeight, outh);
   ASSERT_EQ(original.size(), decoded.size());
 
   // Images must be approximately equal (compression will have introduced some
   // minor artifacts).
-  ASSERT_GE(jpeg_equality_threshold, AveragePixelDelta(original, decoded));
+  ASSERT_GE(kJpegEqualityThreshold, AveragePixelDelta(original, decoded));
 }
 
 // Test that corrupted data decompression causes failures.
 TEST(JPEGCodec, DecodeCorrupted) {
-  int w = 20, h = 20;
+  constexpr int kWidth = 20;
+  constexpr int kHeight = 20;
 
-  // some random data (an uncompressed image)
-  std::vector<unsigned char> original;
-  MakeRGBAImage(w, h, &original);
+  // Some random data (an uncompressed image).
+  std::vector<uint8_t> original = MakeRGBAImage(kWidth, kHeight);
 
-  // it should fail when given non-JPEG compressed data
+  // Decoding should fail when given non-JPEG compressed data.
   std::vector<unsigned char> output;
   int outw, outh;
   ASSERT_FALSE(JPEGCodec::Decode(&original[0], original.size(),
                                  kRGBA_8888_SkColorType, &output, &outw,
                                  &outh));
 
-  // make some compressed data
-  std::vector<unsigned char> compressed;
-  SkImageInfo info =
-      SkImageInfo::Make(w, h, kRGBA_8888_SkColorType, kOpaque_SkAlphaType);
-  SkPixmap src(info, &original[0], w * 4);
-  ASSERT_TRUE(JPEGCodec::Encode(src, jpeg_quality, &compressed));
+  // Make some compressed data.
+  SkImageInfo info = SkImageInfo::Make(kWidth, kHeight, kRGBA_8888_SkColorType,
+                                       kOpaque_SkAlphaType);
+  SkPixmap src(info, &original[0], kWidth * 4);
+  std::optional<std::vector<uint8_t>> compressed =
+      JPEGCodec::Encode(src, kJpegQuality);
+  ASSERT_TRUE(compressed);
 
-  // try decompressing a truncated version
-  ASSERT_FALSE(JPEGCodec::Decode(&compressed[0], compressed.size() / 2,
+  // Try decompressing a truncated version.
+  ASSERT_FALSE(JPEGCodec::Decode(compressed->data(), compressed->size() / 2,
                                  kRGBA_8888_SkColorType, &output, &outw,
                                  &outh));
 
-  // corrupt it and try decompressing that
-  for (int i = 10; i < 30; i++)
-    compressed[i] = i;
-  ASSERT_FALSE(JPEGCodec::Decode(&compressed[0], compressed.size(),
+  // Corrupt it and try decompressing that.
+  for (int i = 10; i < 30; i++) {
+    compressed.value()[i] = i;
+  }
+  ASSERT_FALSE(JPEGCodec::Decode(compressed->data(), compressed->size(),
                                  kRGBA_8888_SkColorType, &output, &outw,
                                  &outh));
 }
 
-// Test that we can decode JPEG images without invalid-read errors on valgrind.
-// This test decodes a 1x1 JPEG image and writes the decoded RGB (or RGBA) pixel
-// to the output buffer without OOB reads.
+// Test that we can decode JPEG images without invalid-read errors on
+// sanitizers. This test decodes a 1x1 JPEG image and writes the decoded RGB (or
+// RGBA) pixel to the output buffer without OOB reads.
 TEST(JPEGCodec, InvalidRead) {
-  std::vector<unsigned char> output;
+  std::vector<uint8_t> output;
   int outw, outh;
-  JPEGCodec::Decode(kTopSitesMigrationTestImage,
-                    std::size(kTopSitesMigrationTestImage),
-                    kRGBA_8888_SkColorType, &output, &outw, &outh);
+  ASSERT_TRUE(JPEGCodec::Decode(kTopSitesMigrationTestImage,
+                                std::size(kTopSitesMigrationTestImage),
+                                kRGBA_8888_SkColorType, &output, &outw, &outh));
 }
 
 // Coverage for data races in JPEG encoding when run with TSan.
-// Regression test for crbug.com/1056011.
+// Regression test for https://crbug.com/40120159.
 TEST(JPEGCodec, ParallelEncoding) {
   constexpr int kImageSize = 32;
-  std::vector<unsigned char> image_data;
-  MakeRGBAImage(kImageSize, kImageSize, &image_data);
+  std::vector<uint8_t> image_data = MakeRGBAImage(kImageSize, kImageSize);
   SkImageInfo info = SkImageInfo::Make(
       kImageSize, kImageSize, kRGBA_8888_SkColorType, kOpaque_SkAlphaType);
   SkPixmap src(info, &image_data[0], kImageSize * 4);
@@ -247,12 +256,12 @@ TEST(JPEGCodec, ParallelEncoding) {
   base::RepeatingClosure encode_completion_closure =
       base::BarrierClosure(kNumCopies, encode_loop.QuitClosure());
   for (int i = 0; i < kNumCopies; ++i) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, base::BindLambdaForTesting([&] {
-          std::vector<unsigned char> output;
-          EXPECT_TRUE(JPEGCodec::Encode(src, jpeg_quality, &output));
-          encode_completion_closure.Run();
-        }));
+    base::ThreadPool::PostTask(FROM_HERE, base::BindLambdaForTesting([&] {
+                                 std::optional<std::vector<uint8_t>> output =
+                                     JPEGCodec::Encode(src, kJpegQuality);
+                                 ASSERT_TRUE(output);
+                                 encode_completion_closure.Run();
+                               }));
   }
 
   encode_loop.Run();
@@ -265,8 +274,6 @@ TEST(JPEGCodec, ExtremelyLargeImage) {
                               std::size(kExtremelyLargeTestImage),
                               kRGBA_8888_SkColorType, &output, &outw, &outh);
   EXPECT_FALSE(ok);
-  EXPECT_EQ(outw, 25000);
-  EXPECT_EQ(outh, 25000);
 }
 
 }  // namespace gfx

@@ -1,0 +1,1 @@
+This directory is for tests that need the Enforce Noopener On Blob URL Navigation feature enabled.

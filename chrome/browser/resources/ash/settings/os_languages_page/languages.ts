@@ -24,8 +24,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {castExists} from '../assert_extras.js';
 
-import {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
-import {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
+import type {LanguagesBrowserProxy} from './languages_browser_proxy.js';
+import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
+import type {LanguageHelper, LanguagesModel, LanguageState, SpellCheckLanguageState} from './languages_types.js';
 
 const MoveType = chrome.languageSettingsPrivate.MoveType;
 

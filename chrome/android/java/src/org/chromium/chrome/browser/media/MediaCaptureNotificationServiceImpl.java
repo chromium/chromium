@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
@@ -74,8 +75,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
 
     @Override
     public void onCreate() {
-        mNotificationManager =
-                BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext());
+        mNotificationManager = BaseNotificationManagerProxyFactory.create();
         mSharedPreferences = ChromeSharedPreferences.getInstance();
         super.onCreate();
     }
@@ -361,8 +361,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
         }
     }
 
-    private static boolean shouldStartService(
-            Context context, @MediaType int mediaType, int tabId) {
+    private static boolean shouldStartService(@MediaType int mediaType, int tabId) {
         if (mediaType != MediaType.NO_MEDIA) return true;
         SharedPreferencesManager sharedPreferences = ChromeSharedPreferences.getInstance();
         Set<String> notificationIds =
@@ -379,6 +378,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     /**
      * Send an intent to MediaCaptureNotificationService to either create, update or destroy the
      * notification identified by tabId.
+     *
      * @param tabId Unique notification id.
      * @param webContents The webContents of the tab; used to get the current media type.
      * @param url Url of the current webrtc call.
@@ -386,7 +386,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
     public static void updateMediaNotificationForTab(
             Context context, int tabId, @Nullable WebContents webContents, GURL url) {
         @MediaType int mediaType = getMediaType(webContents);
-        if (!shouldStartService(context, mediaType, tabId)) return;
+        if (!shouldStartService(mediaType, tabId)) return;
         Intent intent = new Intent(context, MediaCaptureNotificationService.class);
         intent.setAction(ACTION_MEDIA_CAPTURE_UPDATE);
         intent.putExtra(NOTIFICATION_ID_EXTRA, tabId);
@@ -421,6 +421,7 @@ public class MediaCaptureNotificationServiceImpl extends MediaCaptureNotificatio
                 ContextUtils.getApplicationContext(),
                 notificationId,
                 intent,
-                PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent.FLAG_UPDATE_CURRENT
+                        | IntentUtils.getPendingIntentMutabilityFlag(false));
     }
 }

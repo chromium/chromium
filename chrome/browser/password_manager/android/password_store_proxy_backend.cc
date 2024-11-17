@@ -142,7 +142,7 @@ void PasswordStoreProxyBackend::GetAutofillableLoginsAsync(
 void PasswordStoreProxyBackend::GetAllLoginsForAccountAsync(
     std::string account,
     LoginsOrErrorReply callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PasswordStoreProxyBackend::FillMatchingLoginsAsync(
@@ -209,13 +209,15 @@ void PasswordStoreProxyBackend::RemoveLoginsCreatedBetweenAsync(
     const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
+    base::OnceCallback<void(bool)> sync_completion,
     PasswordChangesOrErrorReply callback) {
   main_backend()->RemoveLoginsCreatedBetweenAsync(
-      location, delete_begin, delete_end, std::move(callback));
+      location, delete_begin, delete_end, base::NullCallback(),
+      std::move(callback));
   if (UsesAndroidBackendAsMainBackend()) {
     shadow_backend()->RemoveLoginsCreatedBetweenAsync(
         location, std::move(delete_begin), std::move(delete_end),
-        base::DoNothing());
+        base::NullCallback(), base::DoNothing());
   }
 }
 
@@ -343,7 +345,7 @@ void PasswordStoreProxyBackend::MaybeClearBuiltInBackend() {
   }
 
   built_in_backend_->RemoveLoginsCreatedBetweenAsync(
-      FROM_HERE, base::Time(), base::Time::Max(),
+      FROM_HERE, base::Time(), base::Time::Max(), base::NullCallback(),
       base::BindOnce(&RecordPasswordDeletionResult));
 }
 

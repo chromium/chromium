@@ -104,7 +104,7 @@ function gn_desc() (
     "use_partition_alloc = false"
     "include_transport_security_state_preload_list = false"
     "use_platform_icu_alternatives = true"
-    "default_min_sdk_version = 21"
+    "default_min_sdk_version = 23"
     "enable_reporting = true"
     "use_hashed_jni_names = true"
     "enable_base_tracing = false"

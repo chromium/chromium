@@ -35,7 +35,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -57,7 +56,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
@@ -80,9 +78,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -101,8 +99,6 @@ import java.util.Set;
         manifest = Config.NONE,
         shadows = {ShadowApplicationStatus.class})
 public class MultiInstanceManagerApi31UnitTest {
-
-    @Rule public JniMocker mMocker = new JniMocker();
 
     @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
 
@@ -162,10 +158,11 @@ public class MultiInstanceManagerApi31UnitTest {
     @Mock TabModelOrchestrator mTabModelOrchestrator;
     @Mock ActivityManager mActivityManager;
     @Mock ObservableSupplier<ModalDialogManager> mModalDialogManagerSupplier;
+    @Mock ModalDialogManager mModalDialogManager;
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock MenuOrKeyboardActionController mMenuOrKeyboardActionController;
-    @Mock Supplier<DesktopWindowStateProvider> mDesktopWindowStateProviderSupplier;
-    @Mock DesktopWindowStateProvider mDesktopWindowStateProvider;
+    @Mock Supplier<DesktopWindowStateManager> mDesktopWindowStateManagerSupplier;
+    @Mock DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock AppHeaderState mAppHeaderState;
 
     @Mock TabGroupSyncService mTabGroupSyncService;
@@ -224,7 +221,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 ActivityLifecycleDispatcher activityLifecycleDispatcher,
                 ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
                 MenuOrKeyboardActionController menuOrKeyboardActionController,
-                Supplier<DesktopWindowStateProvider> desktopWindowStateProviderSupplier) {
+                Supplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier) {
             super(
                     activity,
                     tabModelOrchestratorSupplier,
@@ -232,7 +229,7 @@ public class MultiInstanceManagerApi31UnitTest {
                     activityLifecycleDispatcher,
                     modalDialogManagerSupplier,
                     menuOrKeyboardActionController,
-                    desktopWindowStateProviderSupplier);
+                    desktopWindowStateManagerSupplier);
         }
 
         private void createInstance(int instanceId, Activity activity) {
@@ -322,7 +319,7 @@ public class MultiInstanceManagerApi31UnitTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
+        TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(any())).thenReturn(true);
 
         when(mActivityTask56.getTaskId()).thenReturn(TASK_ID_56);
@@ -375,6 +372,7 @@ public class MultiInstanceManagerApi31UnitTest {
                     @Override
                     public TabModelSelector buildSelector(
                             Context context,
+                            ModalDialogManager modalDialogManager,
                             OneshotSupplier<ProfileProvider> profileProviderSupplier,
                             TabCreatorManager tabCreatorManager,
                             NextTabPolicySupplier nextTabPolicySupplier) {
@@ -390,7 +388,7 @@ public class MultiInstanceManagerApi31UnitTest {
                                 mActivityLifecycleDispatcher,
                                 mModalDialogManagerSupplier,
                                 mMenuOrKeyboardActionController,
-                                mDesktopWindowStateProviderSupplier));
+                                mDesktopWindowStateManagerSupplier));
         ApplicationStatus.setCachingEnabled(true);
         ApplicationStatus.onStateChangeForTesting(mCurrentActivity, ActivityState.CREATED);
         ChromeSharedPreferences.getInstance()
@@ -405,8 +403,8 @@ public class MultiInstanceManagerApi31UnitTest {
                     mTabbedActivityTask66,
                 };
 
-        when(mDesktopWindowStateProviderSupplier.get()).thenReturn(mDesktopWindowStateProvider);
-        when(mDesktopWindowStateProvider.getAppHeaderState()).thenReturn(mAppHeaderState);
+        when(mDesktopWindowStateManagerSupplier.get()).thenReturn(mDesktopWindowStateManager);
+        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(mAppHeaderState);
     }
 
     @After
@@ -493,6 +491,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 TabWindowManagerSingleton.getInstance()
                         .requestSelector(
                                 mActivityTask57,
+                                mModalDialogManager,
                                 mProfileProviderSupplier,
                                 null,
                                 null,
@@ -523,6 +522,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 TabWindowManagerSingleton.getInstance()
                         .requestSelector(
                                 mActivityTask57,
+                                mModalDialogManager,
                                 mProfileProviderSupplier,
                                 null,
                                 null,
@@ -675,7 +675,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier,
                         mMenuOrKeyboardActionController,
-                        mDesktopWindowStateProviderSupplier);
+                        mDesktopWindowStateManagerSupplier);
         multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
@@ -760,7 +760,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier,
                         mMenuOrKeyboardActionController,
-                        mDesktopWindowStateProviderSupplier);
+                        mDesktopWindowStateManagerSupplier);
         multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
@@ -845,7 +845,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier,
                         mMenuOrKeyboardActionController,
-                        mDesktopWindowStateProviderSupplier);
+                        mDesktopWindowStateManagerSupplier);
         multiInstanceManager.initialize(INSTANCE_ID_1, TASK_ID_57);
         TabModelObserver tabModelObserver = multiInstanceManager.getTabModelObserverForTesting();
 
@@ -980,6 +980,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 TabWindowManagerSingleton.getInstance()
                         .requestSelector(
                                 activity,
+                                mModalDialogManager,
                                 mProfileProviderSupplier,
                                 null,
                                 null,
@@ -1298,7 +1299,7 @@ public class MultiInstanceManagerApi31UnitTest {
                                 mActivityLifecycleDispatcher,
                                 mModalDialogManagerSupplier,
                                 mMenuOrKeyboardActionController,
-                                mDesktopWindowStateProviderSupplier));
+                                mDesktopWindowStateManagerSupplier));
 
         assertEquals(0, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask62));
         assertEquals(1, allocInstanceIndex(PASSED_ID_INVALID, mTabbedActivityTask63));

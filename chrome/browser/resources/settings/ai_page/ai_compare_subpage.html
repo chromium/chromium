@@ -1,0 +1,49 @@
+<style include="settings-shared settings-columned-section">
+  cr-icon {
+    flex-shrink: 0;
+  }
+</style>
+
+<cr-link-row label="$i18n{aiCompareLabel}"
+    on-click="onCompareLinkoutClick_" external>
+  <div slot="sub-label">
+    $i18n{aiCompareSublabel}$i18n{sentenceEnd}
+    <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+        aria-label="$i18n{aiCompareLearnMoreA11yLabel}"
+        on-click="onLearnMoreClick_" target="_blank">
+      $i18n{learnMore}
+    </a>
+  </div>
+</cr-link-row>
+<div class="settings-columned-section">
+  <div class="column">
+    <h2 class="description-header">$i18n{columnHeadingWhenUsed}</h2>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:table-chart-organize" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">$i18n{aiCompareWhenOnProductDetails}</div>
+      </li>
+    </ul>
+  </div>
+  <div class="column">
+    <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
+    <ul class="icon-bulleted-list">
+      <li>
+        <cr-icon icon="settings20:psychiatry" aria-hidden="true"></cr-icon>
+        <div class="secondary">$i18n{aiSubpageSublabelAi}</div>
+      </li>
+      <li>
+        <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
+        <div class="secondary">$i18n{aiCompareConsiderData}</div>
+      </li>
+      <settings-ai-logging-info-bullet pref="[[enterprisePref_]]">
+      </settings-ai-logging-info-bullet>
+      <li>
+        <cr-icon icon="settings20:account-circle" aria-hidden="true">
+        </cr-icon>
+        <div class="secondary">$i18n{aiCompareConsiderTablesInAccount}</div>
+      </li>
+    </ul>
+  </div>
+</div>

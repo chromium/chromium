@@ -53,9 +53,11 @@ class OnDeviceModelComponentTest : public testing::Test {
             ModelBasedCapabilityKey::kCompose),
         base::Time::Now());
 
-    feature_list_.InitWithFeatures({features::kOptimizationGuideModelExecution,
-                                    features::kOptimizationGuideOnDeviceModel},
-                                   {});
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kOptimizationGuideModelExecution, {}},
+         {features::kOptimizationGuideOnDeviceModel,
+          {{"compatible_on_device_performance_classes", "3,4,5,6"}}}},
+        /*disabled_features=*/{});
   }
 
   void TearDown() override {
@@ -336,6 +338,29 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotEligible) {
 
   // The model is still available.
   EXPECT_TRUE(manager()->GetState());
+}
+
+TEST_F(OnDeviceModelComponentTest, NeedsPerformanceClassUpdateEveryStartup) {
+  base::test::ScopedFeatureList feature_list(
+      features::kOnDeviceModelFetchPerformanceClassEveryStartup);
+  manager()->OnStartup();
+  WaitForStartup();
+  EXPECT_TRUE(manager()->NeedsPerformanceClassUpdate());
+  manager()->DevicePerformanceClassChanged(
+      OnDeviceModelPerformanceClass::kVeryLow);
+  EXPECT_TRUE(manager()->NeedsPerformanceClassUpdate());
+}
+
+TEST_F(OnDeviceModelComponentTest, NeedsPerformanceClassUpdate) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kOnDeviceModelFetchPerformanceClassEveryStartup);
+  manager()->OnStartup();
+  WaitForStartup();
+  EXPECT_TRUE(manager()->NeedsPerformanceClassUpdate());
+  manager()->DevicePerformanceClassChanged(
+      OnDeviceModelPerformanceClass::kVeryLow);
+  EXPECT_FALSE(manager()->NeedsPerformanceClassUpdate());
 }
 
 TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotAllowed) {

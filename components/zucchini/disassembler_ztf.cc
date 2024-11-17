@@ -403,7 +403,7 @@ bool ReadZtfHeader(ConstBufferView image) {
 
 /******** ZtfTranslator ********/
 
-ZtfTranslator::ZtfTranslator() {}
+ZtfTranslator::ZtfTranslator() = default;
 
 ZtfTranslator::~ZtfTranslator() = default;
 

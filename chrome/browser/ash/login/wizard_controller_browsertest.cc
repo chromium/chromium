@@ -57,6 +57,7 @@
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/login/screens/wrong_hwid_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
@@ -68,6 +69,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/net/network_portal_detector_test_impl.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/enrollment/auto_enrollment_client.h"
@@ -149,15 +151,11 @@ namespace {
 
 using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::Field;
 using ::testing::IsNull;
 using ::testing::Mock;
 using ::testing::NotNull;
-
-const char kUnifiedStateDeterminationKillSwitchConfigURL[] =
-    "https://www.gstatic.com/chromeos-usd-experiment/v1.json";
-const char kUnifiedStateDeterminationKillSwitchConfigResponseBody[] = R"({
-  "disable_up_to_version": 0
-})";
 
 const char kDMServerURLPrefix[] =
     "https://m.google.com/devicemanagement/data/api";
@@ -636,7 +634,7 @@ class WizardControllerFlowTest : public WizardControllerTest {
         std::make_unique<MockDeviceDisabledScreenView>();
     MockScreen(std::make_unique<DeviceDisabledScreen>(
         device_disabled_screen_view_->AsWeakPtr()));
-    EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, _)).Times(0);
+    EXPECT_CALL(*device_disabled_screen_view_, Show(_)).Times(0);
 
     mock_network_screen_view_ = std::make_unique<MockNetworkScreenView>();
     mock_network_screen_ =
@@ -1123,10 +1121,6 @@ class WizardControllerDeviceStateTest : public WizardControllerFlowTest {
                                                   "2000-01");
     fake_statistics_provider_.SetVpdStatus(
         system::StatisticsProvider::VpdStatus::kValid);
-    // Simulate disabled kill-switch for unified state determination.
-    test_url_loader_factory_.AddResponse(
-        GURL(kUnifiedStateDeterminationKillSwitchConfigURL).spec(),
-        kUnifiedStateDeterminationKillSwitchConfigResponseBody);
     // Make all requests to DMServer fail with net::ERR_CONNECTION_REFUSED.
     test_url_loader_factory_.SetInterceptor(base::BindLambdaForTesting(
         [&](const network::ResourceRequest& request) {
@@ -1205,7 +1199,9 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
 
   content::RunAllTasksUntilIdle();
 
-  EXPECT_TRUE(policy::AutoEnrollmentTypeChecker::Initialized());
+  // Verify that the state fetch has started or already completed.
+  EXPECT_TRUE(auto_enrollment_controller()->IsInProgress() ||
+              auto_enrollment_controller()->state().has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateTest,
@@ -1337,7 +1333,9 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceLegacyTest,
                    base::Value(kDisabledMessage));
   g_browser_process->local_state()->SetDict(prefs::kServerBackedDeviceState,
                                             std::move(device_state));
-  EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, kDisabledMessage))
+  EXPECT_CALL(*device_disabled_screen_view_,
+              Show(Field(&DeviceDisabledScreenView::Params::message,
+                         Eq(kDisabledMessage))))
       .Times(1);
   mock_auto_enrollment_check_screen_->ExitScreen();
 
@@ -1714,7 +1712,9 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest, Disabled) {
   fetcher_factory.WaitUntilEnrollmentStateFetcherCreated();
 
   EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl());
-  EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, kDisabledMessage));
+  EXPECT_CALL(*device_disabled_screen_view_,
+              Show(Field(&DeviceDisabledScreenView::Params::message,
+                         Eq(kDisabledMessage))));
   base::Value::Dict device_state;
   device_state.Set(policy::kDeviceStateMode,
                    base::Value(policy::kDeviceStateModeDisabled));
@@ -1795,7 +1795,9 @@ IN_PROC_BROWSER_TEST_F(WizardControllerUnifiedEnrollmentTest,
                                             std::move(device_state));
 
   EXPECT_CALL(*mock_auto_enrollment_check_screen_, HideImpl());
-  EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, kDisabledMessage));
+  EXPECT_CALL(*device_disabled_screen_view_,
+              Show(Field(&DeviceDisabledScreenView::Params::message,
+                         Eq(kDisabledMessage))));
 
   fetcher_factory.ReportEnrollmentState(
       policy::AutoEnrollmentResult::kDisabled);
@@ -2939,7 +2941,9 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDemoSetupDeviceDisabledTest,
   g_browser_process->local_state()->SetDict(prefs::kServerBackedDeviceState,
                                             std::move(device_state));
 
-  EXPECT_CALL(*device_disabled_screen_view_, Show(_, _, kDisabledMessage))
+  EXPECT_CALL(*device_disabled_screen_view_,
+              Show(Field(&DeviceDisabledScreenView::Params::message,
+                         Eq(kDisabledMessage))))
       .Times(1);
   mock_auto_enrollment_check_screen_->ExitScreen();
 
@@ -3025,10 +3029,17 @@ IN_PROC_BROWSER_TEST_F(WizardControllerOobeResumeTest,
 
 class WizardControllerOnboardingResumeTest : public WizardControllerTest {
  protected:
+  void SetUpOnMainThread() override {
+    cryptohome_mixin_.ApplyAuthConfigIfUserExists(
+        user_, test::UserAuthConfig::Create(test::kDefaultAuthSetup));
+    WizardControllerTest::SetUpOnMainThread();
+  }
+
   DeviceStateMixin device_state_{
       &mixin_host_,
       DeviceStateMixin::State::OOBE_COMPLETED_PERMANENTLY_UNOWNED};
   FakeGaiaMixin gaia_mixin_{&mixin_host_};
+  CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   LoginManagerMixin login_mixin_{&mixin_host_, LoginManagerMixin::UserList(),
                                  &gaia_mixin_};
   AccountId user_{

@@ -35,7 +35,6 @@
 #include "third_party/blink/public/common/context_menu_data/menu_item_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_show_context_menu_item.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -224,6 +223,15 @@ static std::vector<MenuItemInfo> PopulateContextMenuItems(
       String label = item->getLabelOr(String());
       label.Ensure16Bit();
       item_info.label = std::u16string(label.Characters16(), label.length());
+      if (item->hasAccelerator()) {
+        AcceleratorContainer accelerator;
+        accelerator.key_code = item->accelerator()->keyCode();
+        accelerator.modifiers = item->accelerator()->modifiers();
+        item_info.accelerator = accelerator;
+        item_info.force_show_accelerator_for_item =
+            item->isDevToolsPerformanceMenuItem();
+      }
+      item_info.is_experimental_feature = item->isExperimentalFeature();
       item_info.enabled = item->enabled();
       item_info.action = item->id();
       item_info.checked = item->checked();

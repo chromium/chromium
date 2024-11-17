@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/dom/names_map.h"
 
 #include <memory>
@@ -29,11 +24,11 @@ void NamesMap::Set(const AtomicString& source) {
     return;
   }
   if (source.Is8Bit()) {
-    Set(source, source.Characters8());
+    Set(source.Span8());
     return;
   }
 
-  Set(source, source.Characters16());
+  Set(source.Span16());
 }
 
 void NamesMap::Add(const AtomicString& key, const AtomicString& value) {
@@ -93,21 +88,20 @@ enum State {
 };
 
 template <typename CharacterType>
-void NamesMap::Set(const AtomicString& source,
-                   const CharacterType* characters) {
+void NamesMap::Set(base::span<const CharacterType> characters) {
   Clear();
-  unsigned length = source.length();
 
   // The character we are examining.
-  unsigned cur = 0;
+  size_t cur = 0;
   // The start of the current token.
-  unsigned start = 0;
+  size_t start = 0;
   State state = kPreKey;
   // The key and value are held here until we succeed in parsing a valid
   // part-mapping.
   AtomicString key;
   AtomicString value;
-  while (cur < length) {
+  while (cur < characters.size()) {
+    const CharacterType current_char = characters[cur];
     // All cases break, ensuring that some input is consumed and we avoid
     // an infinite loop.
     //
@@ -117,10 +111,11 @@ void NamesMap::Set(const AtomicString& source,
       case kPreKey:
         // Skip any number of spaces, commas. When we find something else, it is
         // the start of a key.
-        if (IsHTMLSpaceOrComma<CharacterType>(characters[cur]))
+        if (IsHTMLSpaceOrComma<CharacterType>(current_char)) {
           break;
+        }
         // Colon is invalid here.
-        if (IsColon<CharacterType>(characters[cur])) {
+        if (IsColon<CharacterType>(current_char)) {
           state = kError;
           break;
         }
@@ -130,44 +125,44 @@ void NamesMap::Set(const AtomicString& source,
       case kKey:
         // At a comma this was a key without a value, the implicit value is the
         // same as the key.
-        if (IsComma<CharacterType>(characters[cur])) {
-          key = AtomicString(characters + start, cur - start);
+        if (IsComma<CharacterType>(current_char)) {
+          key = AtomicString(characters.subspan(start, cur - start));
           Add(key, key);
           state = kPreKey;
           // At a colon, we have found the end of the key and we expect a value.
-        } else if (IsColon<CharacterType>(characters[cur])) {
-          key = AtomicString(characters + start, cur - start);
+        } else if (IsColon<CharacterType>(current_char)) {
+          key = AtomicString(characters.subspan(start, cur - start));
           state = kPreValue;
           // At a space, we have found the end of the key.
-        } else if (IsHTMLSpace<CharacterType>(characters[cur])) {
-          key = AtomicString(characters + start, cur - start);
+        } else if (IsHTMLSpace<CharacterType>(current_char)) {
+          key = AtomicString(characters.subspan(start, cur - start));
           state = kPostKey;
         }
         break;
       case kPostKey:
         // At a comma this was a key without a value, the implicit value is the
         // same as the key.
-        if (IsComma<CharacterType>(characters[cur])) {
+        if (IsComma<CharacterType>(current_char)) {
           Add(key, key);
           state = kPreKey;
           // At a colon this was a key with a value, we expect a value.
-        } else if (IsColon<CharacterType>(characters[cur])) {
+        } else if (IsColon<CharacterType>(current_char)) {
           state = kPreValue;
           // Anything else except space is invalid.
-        } else if (!IsHTMLSpace<CharacterType>(characters[cur])) {
+        } else if (!IsHTMLSpace<CharacterType>(current_char)) {
           key = g_null_atom;
           state = kError;
         }
         break;
       case kPreValue:
         // Colon is invalid.
-        if (IsColon<CharacterType>(characters[cur])) {
+        if (IsColon<CharacterType>(current_char)) {
           state = kError;
           // Comma is invalid.
-        } else if (IsComma<CharacterType>(characters[cur])) {
+        } else if (IsComma<CharacterType>(current_char)) {
           state = kPreKey;
           // Space is ignored.
-        } else if (IsHTMLSpace<CharacterType>(characters[cur])) {
+        } else if (IsHTMLSpace<CharacterType>(current_char)) {
           break;
           // If we reach a non-space character, we have found the start of the
           // value.
@@ -179,33 +174,33 @@ void NamesMap::Set(const AtomicString& source,
       case kValue:
         // At a comma, we have found the end of the value and expect
         // the next key.
-        if (IsComma<CharacterType>(characters[cur])) {
-          value = AtomicString(characters + start, cur - start);
+        if (IsComma<CharacterType>(current_char)) {
+          value = AtomicString(characters.subspan(start, cur - start));
           Add(key, value);
           state = kPreKey;
           // At a space, we have found the end of the value, store it.
-        } else if (IsHTMLSpace<CharacterType>(characters[cur]) ||
-                   IsColon<CharacterType>(characters[cur])) {
-          value = AtomicString(characters + start, cur - start);
+        } else if (IsHTMLSpace<CharacterType>(current_char) ||
+                   IsColon<CharacterType>(current_char)) {
+          value = AtomicString(characters.subspan(start, cur - start));
           state = kPostValue;
           // A colon is invalid.
-        } else if (IsColon<CharacterType>(characters[cur])) {
+        } else if (IsColon<CharacterType>(current_char)) {
           state = kError;
         }
         break;
       case kPostValue:
         // At a comma, accept what we have and start looking for the next key.
-        if (IsComma<CharacterType>(characters[cur])) {
+        if (IsComma<CharacterType>(current_char)) {
           Add(key, value);
           state = kPreKey;
           // Anything else except a space is invalid.
-        } else if (!IsHTMLSpace<CharacterType>(characters[cur])) {
+        } else if (!IsHTMLSpace<CharacterType>(current_char)) {
           state = kError;
         }
         break;
       case kError:
         // At a comma, start looking for the next key.
-        if (IsComma<CharacterType>(characters[cur])) {
+        if (IsComma<CharacterType>(current_char)) {
           state = kPreKey;
         }
         // Anything else is consumed.
@@ -221,7 +216,7 @@ void NamesMap::Set(const AtomicString& source,
       break;
     case kKey:
       // The string ends with a key.
-      key = AtomicString(characters + start, cur - start);
+      key = AtomicString(characters.subspan(start, cur - start));
       [[fallthrough]];
     case kPostKey:
       // The string ends with a key.
@@ -231,7 +226,7 @@ void NamesMap::Set(const AtomicString& source,
       break;
     case kValue:
       // The string ends with a value.
-      value = AtomicString(characters + start, cur - start);
+      value = AtomicString(characters.subspan(start, cur - start));
       [[fallthrough]];
     case kPostValue:
       Add(key, value);

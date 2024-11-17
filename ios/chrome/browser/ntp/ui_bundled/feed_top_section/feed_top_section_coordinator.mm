@@ -77,20 +77,19 @@ using base::UserMetricsAction;
       [[FeedTopSectionViewController alloc] init];
   _viewController = self.feedTopSectionViewController;
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browserState);
+      IdentityManagerFactory::GetForProfile(profile);
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(profile);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
 
   self.feedTopSectionMediator = [[FeedTopSectionMediator alloc]
       initWithConsumer:self.feedTopSectionViewController
        identityManager:identityManager
            authService:authenticationService
-           isIncognito:browserState->IsOffTheRecord()
-           prefService:browserState->GetPrefs()];
+           isIncognito:profile->IsOffTheRecord()
+           prefService:profile->GetPrefs()];
   self.isSignInPromoEnabled =
       ShouldShowTopOfFeedSyncPromo() && authenticationService &&
       [self.NTPDelegate isSignInAllowed] &&
@@ -100,12 +99,12 @@ using base::UserMetricsAction;
   // signin promo components.
   if (self.isSignInPromoEnabled) {
     ChromeAccountManagerService* accountManagerService =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+        ChromeAccountManagerServiceFactory::GetForProfile(profile);
     self.signinPromoMediator = [[SigninPromoViewMediator alloc]
         initWithAccountManagerService:accountManagerService
                           authService:AuthenticationServiceFactory::
-                                          GetForBrowserState(browserState)
-                          prefService:browserState->GetPrefs()
+                                          GetForProfile(profile)
+                          prefService:profile->GetPrefs()
                           syncService:syncService
                           accessPoint:signin_metrics::AccessPoint::
                                           ACCESS_POINT_NTP_FEED_TOP_PROMO
@@ -121,7 +120,7 @@ using base::UserMetricsAction;
   }
 
   const TemplateURL* defaultSearchURLTemplate =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browserState)
+      ios::TemplateURLServiceFactory::GetForProfile(profile)
           ->GetDefaultSearchProvider();
 
   bool isDefaultSearchEngine =

@@ -62,6 +62,24 @@ chromium-metrics-reviews@google.com.
   <int value="43509" label="Error: LEAK_CHECK_SERVICE_RESOURCE_EXHAUSTED"/>
 </enum>
 
+<enum name="BatchUploadDialogCloseReason">
+  <int value="0" label="Save in account clicked"/>
+  <int value="1" label="Cancel clicked"/>
+  <int value="2" label="Dialog dismissed"/>
+  <int value="3" label="Window/Browser closing"/>
+  <int value="4" label="Signin Pending"/>
+  <int value="5" label="Signout"/>
+</enum>
+
+<!-- LINT.IfChange(BatchUploadEntryPoint) -->
+
+<enum name="BatchUploadEntryPoint">
+  <int value="0" label="Password manager settings"/>
+  <int value="1" label="Password promo card"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/profiles/batch_upload/batch_upload_service.h:EntryPoint) -->
+
 <!-- LINT.IfChange(BookmarkGUIDSource) -->
 
 <enum name="BookmarkGUIDSource">
@@ -180,6 +198,18 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/passphrase_type_metrics_provider.h:PassphraseTypeForMetrics) -->
+
+<!-- LINT.IfChange(PaymentsAccountStorageUponConfiguration) -->
+
+<enum name="PaymentsAccountStorageUponConfiguration">
+  <int value="0" label="Signed in implicitly with in-memory storage"/>
+  <int value="1" label="Signed in explicitly with on-disk storage"/>
+  <int value="2" label="Signed in explicitly with in-memory storage"/>
+  <int value="3"
+      label="(UNEXPECTED) Signed in implicitly with on-disk storage"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/browser_sync/common_controller_builder.cc:PaymentsAccountStorageUponConfiguration) -->
 
 <!-- LINT.IfChange(PendingInvalidationStatus) -->
 
@@ -308,6 +338,9 @@ chromium-metrics-reviews@google.com.
   <int value="74" label="AutoPinNewTabGroups"/>
   <int value="75" label="ShowGoogleLensShortcut"/>
   <int value="76" label="SharingVapidKey"/>
+  <int value="77" label="FirstPlusAddressCreationTime"/>
+  <int value="78" label="LastPlusAddressFillingTime"/>
+  <int value="79" label="SafeBrowsingEnhanced"/>
 <!-- LINT.ThenChange(/components/sync_preferences/common_syncable_prefs_database.cc:CommonSyncablePref)-->
 
 <!-- LINT.IfChange(ChromeSyncablePref) -->
@@ -330,7 +363,7 @@ chromium-metrics-reviews@google.com.
   <int value="100015" label="HomePageIsNewTabPage"/>
   <int value="100016" label="NtpCustomBackgroundDict"/>
   <int value="100017" label="LiveCaptionBubbleExpanded"/>
-  <int value="100018" label="LiveCaptionBubblePinned"/>
+  <int value="100018" label="(Obsolete) LiveCaptionBubblePinned"/>
   <int value="100019" label="LiveCaptionEnabled"/>
   <int value="100020" label="LiveCaptionLanguageCode"/>
   <int value="100021" label="LiveCaptionMediaFoundationRendererErrorSilenced"/>
@@ -524,16 +557,17 @@ chromium-metrics-reviews@google.com.
   <int value="100196" label="DynamicColorColorScheme"/>
   <int value="100197" label="DynamicColorSeedColor"/>
   <int value="100198" label="LongPressDiacritics"/>
-  <int value="100199" label="SidePanelCompanionEntryPinnedToToolbar"/>
+  <int value="100199"
+      label="(Obsolete) SidePanelCompanionEntryPinnedToToolbar"/>
   <int value="100200" label="AccessibilityColorCorrectionEnabled"/>
   <int value="100201" label="AccessibilityColorVisionCorrectionAmount"/>
   <int value="100202" label="AccessibilityColorVisionCorrectionType"/>
   <int value="100203" label="ShowDeskButtonInShelf"/>
   <int value="100204" label="OsDogfoodGroupsSyncPrefName"/>
   <int value="100205" label="ProjectorSWAUIPrefsMigrated"/>
-  <int value="100206" label="iOSPasswordPromoLastImpressionTimestamp"/>
-  <int value="100207" label="iOSPasswordPromoImpressionsCounter"/>
-  <int value="100208" label="iOSPasswordPromoOptOut"/>
+  <int value="100206" label="DesktopToiOSPasswordPromoLastImpressionTimestamp"/>
+  <int value="100207" label="DesktopToiOSPasswordPromoImpressionsCounter"/>
+  <int value="100208" label="DesktopToiOSPasswordPromoOptOut"/>
   <int value="100209" label="DynamicColorUseKMeans"/>
   <int value="100210" label="RemapToRightClickNotificationsRemaining"/>
   <int value="100211" label="SixPackKeyDeleteNotificationsRemaining"/>
@@ -603,12 +637,12 @@ chromium-metrics-reviews@google.com.
   <int value="100264" label="AccessibilityFaceGazeCursorSpeedDown"/>
   <int value="100265" label="AccessibilityFaceGazeCursorSpeedLeft"/>
   <int value="100266" label="AccessibilityFaceGazeCursorSpeedRight"/>
-  <int value="100267" label="AccessibilityFaceGazeCursorSmoothing"/>
+  <int value="100267" label="(obsolete) AccessibilityFaceGazeCursorSmoothing"/>
   <int value="100268" label="AccessibilityFaceGazeCursorUseAcceleration"/>
   <int value="100269" label="FingerprintingProtectionEnabled"/>
   <int value="100270" label="AccessibilityFaceGazeGesturesToMacros"/>
   <int value="100271" label="AccessibilityFaceGazeGesturesToConfidence"/>
-  <int value="100272" label="ShelfContainerAppPinRolls"/>
+  <int value="100272" label="ShelfGeminiAppPinRolls"/>
   <int value="100273"
       label="ProfileContentSettingsExceptionsTrackingProtection"/>
   <int value="100274"
@@ -630,9 +664,9 @@ chromium-metrics-reviews@google.com.
   <int value="100288" label="KeyboardAmbientLightSensorLastEnabled"/>
   <int value="100289" label="AccessibilityReadAnythingImagesEnabled"/>
   <int value="100290" label="ShelfMallAppPinRolls"/>
-  <int value="100291" label="iOSAddressPromoLastImpressionTimestamp"/>
-  <int value="100292" label="iOSAddressPromoImpressionsCounter"/>
-  <int value="100293" label="iOSAddressPromoOptOut"/>
+  <int value="100291" label="DesktopToiOSAddressPromoLastImpressionTimestamp"/>
+  <int value="100292" label="DesktopToiOSAddressPromoImpressionsCounter"/>
+  <int value="100293" label="DesktopToiOSAddressPromoOptOut"/>
   <int value="100294" label="MahiNudgeShownCount"/>
   <int value="100295" label="AccessibilityMagnifierFollowsChromeVox"/>
   <int value="100296" label="KeyboardHasSplitModifierKeyboard"/>
@@ -644,6 +678,16 @@ chromium-metrics-reviews@google.com.
   <int value="100302" label="FocusModeYTMDisplayOAuthConsent"/>
   <int value="100303" label="FocusModeYTMDisplayFreeTrial"/>
   <int value="100304" label="AccessibilityFaceGazeVelocityThreshold"/>
+  <int value="100305" label="DesktopToiOSPaymentPromoLastImpressionTimestamp"/>
+  <int value="100306" label="DesktopToiOSPaymentPromoImpressionsCounter"/>
+  <int value="100307" label="DesktopToiOSPaymentPromoOptOut"/>
+  <int value="100308" label="DesktopToiOSNtpPromoAppearanceTimestamps"/>
+  <int value="100309" label="DesktopToiOSNtpPromoDismissed"/>
+  <int value="100310" label="PrivacySandboxFakeNoticePromptShownTimeSync"/>
+  <int value="100311" label="AccessibilityBounceKeysDelayMs"/>
+  <int value="100312" label="AccessibilitySlowKeysDelayMs"/>
+  <int value="100313" label="AccessibilityFaceGazePrecisionClick"/>
+  <int value="100314" label="AccessibilityFaceGazePrecisionClickSpeedFactor"/>
 <!-- LINT.ThenChange(/chrome/browser/sync/prefs/chrome_syncable_prefs_database.cc:ChromeSyncablePref)-->
 
 <!-- LINT.IfChange(IosSyncablePref) -->
@@ -651,7 +695,7 @@ chromium-metrics-reviews@google.com.
   <int value="200000" label="ArticlesForYouEnabled"/>
   <int value="200001" label="(obsolete) ContextualSearchEnabled_IOS"/>
   <int value="200002" label="DefaultCharset_IOS"/>
-  <int value="200003" label="EnableDoNotTrack_IOS"/>
+  <int value="200003" label="(obsolete) EnableDoNotTrack_IOS"/>
   <int value="200004" label="IosHandoffToOtherDevices"/>
   <int value="200005" label="NetworkPredictionSetting"/>
   <int value="200006" label="NTPContentSuggestionsEnabled"/>
@@ -777,7 +821,7 @@ chromium-metrics-reviews@google.com.
   <int value="23" label="(Obsolete) Favicon Images. Removed on 01/2021 (M90)."/>
   <int value="24"
       label="(Obsolete) Favicon Tracking. Removed on 01/2021 (M90)."/>
-  <int value="25" label="Proxy Tabs"/>
+  <int value="25" label="(Obsolete) Proxy Tabs. Removed 10/2023 (M120)"/>
   <int value="26" label="Managed User Settings"/>
   <int value="27" label="(Obsolete) Managed Users"/>
   <int value="28" label="(Obsolete) Articles"/>
@@ -1187,37 +1231,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/trusted_vault/proto/local_trusted_vault.proto:TrustedVaultDegradedRecoverabilityValue) -->
 
-<!-- LINT.IfChange(TrustedVaultDeviceRegistrationOutcome) -->
-
-<enum name="TrustedVaultDeviceRegistrationOutcome">
-  <int value="0" label="Success"/>
-  <int value="1" label="Already registered"/>
-  <int value="2" label="Local data obsolete"/>
-  <int value="3" label="Transient access token fetching error"/>
-  <int value="4" label="Persistent access token fetching error"/>
-  <int value="5" label="Primary account changed access token fetching error"/>
-  <int value="6" label="Network error"/>
-  <int value="7" label="Other error"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultDeviceRegistrationOutcome) -->
-
-<!-- LINT.IfChange(TrustedVaultDeviceRegistrationState) -->
-
-<enum name="TrustedVaultDeviceRegistrationState">
-  <int value="0" label="Already registered V0"/>
-  <int value="1" label="Local keys are stale"/>
-  <int value="2" label="Throttled client side"/>
-  <int value="3" label="Attempting registration with newly generated keys"/>
-  <int value="4" label="Attempting registration with preexisting keys"/>
-  <int value="5"
-      label="Attempting registration while having persistent authentication
-             error (deprecated)"/>
-  <int value="6" label="Already registered V1"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultDeviceRegistrationState) -->
-
 <!-- LINT.IfChange(TrustedVaultDownloadKeysStatus) -->
 
 <enum name="TrustedVaultDownloadKeysStatus">
@@ -1249,19 +1262,6 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <!-- LINT.ThenChange(/components/sync/service/sync_service_crypto.cc:TrustedVaultFetchKeysAttempt) -->
-
-<!-- LINT.IfChange(TrustedVaultFileReadStatus) -->
-
-<enum name="TrustedVaultFileReadStatus">
-  <int value="0" label="Success"/>
-  <int value="1" label="File not found"/>
-  <int value="2" label="File read failed"/>
-  <int value="3" label="MD5 digest mismatch"/>
-  <int value="4" label="File proto deserialization failed"/>
-  <int value="5" label="Data proto deserialization failed"/>
-</enum>
-
-<!-- LINT.ThenChange(/components/trusted_vault/trusted_vault_histograms.h:TrustedVaultFileReadStatus) -->
 
 <!-- LINT.IfChange(TrustedVaultHintDegradedRecoverabilityChangedReason) -->
 

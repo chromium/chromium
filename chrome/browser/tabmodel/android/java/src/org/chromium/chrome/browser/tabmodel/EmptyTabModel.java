@@ -17,7 +17,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
 /** Singleton class intended to stub out Tab model before it has been created. */
-public class EmptyTabModel implements IncognitoTabModel {
+@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+public class EmptyTabModel implements IncognitoTabModelInternal {
     private boolean mIsIncognito;
 
     /**
@@ -64,6 +65,11 @@ public class EmptyTabModel implements IncognitoTabModel {
     @Override
     public boolean isIncognitoBranded() {
         return mIsIncognito;
+    }
+
+    @Override
+    public @NonNull TabRemover getTabRemover() {
+        return new EmptyTabRemover();
     }
 
     @Override
@@ -156,6 +162,12 @@ public class EmptyTabModel implements IncognitoTabModel {
     }
 
     @Override
+    public @NonNull TabCreator getTabCreator() {
+        assert false : "This should be unreachable in production, it may be mocked for testing.";
+        return null;
+    }
+
+    @Override
     public void addTab(
             Tab tab, int index, @TabLaunchType int type, @TabCreationState int creationState) {
         assert false;
@@ -166,9 +178,6 @@ public class EmptyTabModel implements IncognitoTabModel {
 
     @Override
     public void removeObserver(TabModelObserver observer) {}
-
-    @Override
-    public void setActive(boolean active) {}
 
     @Override
     public int getTabCountNavigatedInTimeWindow(long beginTimeMs, long endTimeMs) {
@@ -189,4 +198,7 @@ public class EmptyTabModel implements IncognitoTabModel {
 
     @Override
     public void removeIncognitoObserver(IncognitoTabModelObserver observer) {}
+
+    @Override
+    public void setActive(boolean active) {}
 }

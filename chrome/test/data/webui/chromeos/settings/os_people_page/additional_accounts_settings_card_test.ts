@@ -165,31 +165,6 @@ suite('<additonal-accounts-settings-card>', () => {
         assertEquals(item.isAvailableInArc, notAvailableInArc.hidden);
       });
     });
-
-    test('change arc availability', async () => {
-      const testAccount = accountList.items![0];
-      const currentValue = testAccount.isAvailableInArc;
-      // Click on 'More Actions' for the |testAccount| (First one (index 0)
-      // to have the hamburger menu).
-      additionalAccountSettingsCard.shadowRoot!
-          .querySelectorAll('cr-icon-button')[0]!.click();
-      // Click on the button to change ARC availability (the second button in
-      // the menu).
-      const actionMenu =
-          additionalAccountSettingsCard.shadowRoot!.querySelector(
-              'cr-action-menu');
-      assertTrue(!!actionMenu);
-      actionMenu.querySelectorAll('button')[1]!.click();
-
-      const args = await browserProxy.whenCalled('changeArcAvailability');
-      assertEquals(testAccount, args[0]);
-      assertEquals(!currentValue, args[1]);
-      // 'More actions' button should be in focus now.
-      assertEquals(
-          additionalAccountSettingsCard.shadowRoot!.querySelectorAll(
-              'cr-icon-button')[0],
-          getDeepActiveElement());
-    });
   }
 });
 
@@ -249,7 +224,6 @@ suite('SecondaryAccountAllowedInArcPolicyTests', () => {
   suiteSetup(() => {
     loadTimeData.overrideValues({
       isDeviceAccountManaged: true,
-      arcManagedAccountRestrictionEnabled: true,
     });
 
     userActionRecorder = new FakeUserActionRecorder();

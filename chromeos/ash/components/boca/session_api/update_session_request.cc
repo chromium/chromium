@@ -17,14 +17,6 @@
 #include "google_apis/common/base_requests.h"
 #include "third_party/protobuf/src/google/protobuf/map_field_lite.h"
 
-namespace {
-
-bool ParseResponse(std::string json) {
-  // Always notify success if http code is success.
-  return true;
-}
-}  // namespace
-
 namespace ash::boca {
 
 UpdateSessionRequest::UpdateSessionRequest(google_apis::RequestSender* sender,
@@ -79,6 +71,13 @@ bool UpdateSessionRequest::GetContentData(std::string* upload_content_type,
   *upload_content_type = boca::kContentTypeApplicationJson;
 
   base::Value::Dict root;
+
+  // Mandatory data for all update request.
+  root.Set(kSessionId, session_id_);
+  base::Value::Dict teacher;
+  teacher.Set(kGaiaId, teacher_.gaia_id());
+  root.Set(kTeacher, std::move(teacher));
+
   if (duration_) {
     base::Value::Dict duration;
     duration.Set(kSeconds, static_cast<int>(duration_->InSeconds()));
@@ -107,10 +106,12 @@ bool UpdateSessionRequest::GetContentData(std::string* upload_content_type,
       student_config.Set(kCaptionsConfig, std::move(caption_config));
     }
 
-    base::Value::Dict main_group_student_config;
-    main_group_student_config.Set(kMainStudentGroupName,
-                                  std::move(student_config));
-    root.Set(kStudentGroupsConfig, std::move(main_group_student_config));
+    base::Value::Dict group_student_config;
+    group_student_config.Set(kMainStudentGroupName, student_config.Clone());
+    // TODO(crbug.com/375051415): We duplicate the session config for access
+    // code student for now, this should eventually be moved to server.
+    group_student_config.Set(kAccessCodeGroupName, std::move(student_config));
+    root.Set(kStudentGroupsConfig, std::move(group_student_config));
   }
 
   base::JSONWriter::Write(root, upload_content);
@@ -125,7 +126,9 @@ void UpdateSessionRequest::ProcessURLFetchResults(
   switch (error) {
     case google_apis::HTTP_SUCCESS:
       blocking_task_runner()->PostTaskAndReplyWithResult(
-          FROM_HERE, base::BindOnce(&ParseResponse, std::move(response_body)),
+          FROM_HERE,
+          base::BindOnce(&GetSessionProtoFromJson, std::move(response_body),
+                         true),
           base::BindOnce(&UpdateSessionRequest::OnDataParsed,
                          weak_ptr_factory_.GetWeakPtr()));
       break;
@@ -145,9 +148,13 @@ void UpdateSessionRequest::OverrideURLForTesting(std::string url) {
   url_base_ = std::move(url);
 }
 
-void UpdateSessionRequest::OnDataParsed(bool success) {
-  // Notify success immediately for now.
-  std::move(callback_).Run(true);
+void UpdateSessionRequest::OnDataParsed(
+    std::unique_ptr<::boca::Session> session) {
+  if (!session) {
+    std::move(callback_).Run(base::unexpected(google_apis::PARSE_ERROR));
+  } else {
+    std::move(callback_).Run(std::move(session));
+  }
   OnProcessURLFetchResultsComplete();
 }
 }  // namespace ash::boca

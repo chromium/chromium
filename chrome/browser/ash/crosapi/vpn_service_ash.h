@@ -39,7 +39,7 @@ class Value;
 namespace chromeos {
 
 // Fwd for friend declaration in VpnServiceAsh.
-class VpnProviderApiTestAsh;
+class VpnProviderApiTest;
 
 }  // namespace chromeos
 
@@ -152,12 +152,13 @@ class VpnServiceForExtensionAsh : public crosapi::mojom::VpnServiceForExtension,
 
  private:
   friend class VpnConfigurationImpl;
-  friend class chromeos::VpnProviderApiTestAsh;
+  friend class chromeos::VpnProviderApiTest;
   friend class TestShillControllerAsh;
 
   using StringToOwnedConfigurationMap =
       std::map<std::string, std::unique_ptr<VpnConfiguration>>;
-  using StringToConfigurationMap = std::map<std::string, VpnConfiguration*>;
+  using StringToConfigurationMap =
+      std::map<std::string, raw_ptr<VpnConfiguration, CtnExperimental>>;
 
   const extensions::ExtensionId& extension_id() const { return extension_id_; }
 
@@ -245,7 +246,7 @@ class VpnServiceAsh : public crosapi::mojom::VpnService,
       base::flat_set<std::string> vpn_extensions) override;
 
  private:
-  friend class chromeos::VpnProviderApiTestAsh;
+  friend class chromeos::VpnProviderApiTest;
   friend class VpnServiceForExtensionAsh;
 
   // Callback for

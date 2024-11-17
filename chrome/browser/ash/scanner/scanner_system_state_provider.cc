@@ -12,6 +12,5 @@ ScannerSystemStateProvider::ScannerSystemStateProvider() = default;
 ScannerSystemStateProvider::~ScannerSystemStateProvider() = default;
 
 ash::ScannerSystemState ScannerSystemStateProvider::GetSystemState() const {
-  // TODO(b/363100868): Add required system checks for the feature.
-  return ash::ScannerSystemState(ash::ScannerStatus::kBlocked, {});
+  return ash::ScannerSystemState(ash::ScannerStatus::kEnabled, {});
 }

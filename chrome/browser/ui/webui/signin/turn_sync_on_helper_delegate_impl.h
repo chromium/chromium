@@ -45,6 +45,7 @@ class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
 
  private:
   // TurnSyncOnHelper::Delegate:
+  bool IsProfileCreationRequiredByPolicy() const override;
   void ShowLoginError(const SigninUIError& error) override;
   void ShowMergeSyncDataConfirmation(
       const std::string& previous_email,
@@ -93,6 +94,7 @@ class TurnSyncOnHelperDelegateImpl : public TurnSyncOnHelper::Delegate,
   base::ScopedObservation<LoginUIService, LoginUIService::Observer>
       scoped_login_ui_service_observation_{this};
   const bool is_sync_promo_;
+  bool profile_creation_required_by_policy_ = false;
 
   base::WeakPtrFactory<TurnSyncOnHelperDelegateImpl> weak_ptr_factory_{this};
 };

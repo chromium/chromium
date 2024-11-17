@@ -95,7 +95,7 @@ class CleanExitBeacon {
   }
 
   // Returns true if Extended Variations Safe Mode is supported on this
-  // platform. Android WebLayer and WebView do not support this.
+  // platform. Android WebView does not support this.
   bool IsExtendedSafeModeSupported() const;
 
   // Sets the beacon value to |exited_cleanly| and writes the value to disk if
@@ -168,7 +168,7 @@ class CleanExitBeacon {
   bool DidPreviousSessionExitCleanly(base::Value* beacon_file_contents);
 
   // Returns true if the beacon file is supported on this platform. Android
-  // WebLayer and WebView do not support this.
+  // WebView does not support this.
   bool IsBeaconFileSupported() const;
 
   // Writes |exited_cleanly| and the crash streak to the file located at

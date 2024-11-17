@@ -27,6 +27,7 @@
 #include "ui/webui/resources/cr_components/app_management/app_management.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"

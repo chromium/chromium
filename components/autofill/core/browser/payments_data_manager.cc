@@ -6,9 +6,12 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/i18n/timezone.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
@@ -16,6 +19,7 @@
 #include "components/autofill/core/browser/autofill_shared_storage_handler.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
 #include "components/autofill/core/browser/metrics/autofill_settings_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
@@ -36,6 +40,7 @@
 #include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
 #include "components/sync/service/sync_user_settings.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -308,6 +313,9 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
     } else if (h == pending_masked_bank_accounts_query_) {
       CHECK(AreBankAccountsSupported());
       pending_masked_bank_accounts_query_ = 0;
+    } else if (h == pending_payment_instruments_query_) {
+      CHECK(ArePaymentInsrumentsSupported());
+      pending_payment_instruments_query_ = 0;
     }
   } else {
     switch (result->GetType()) {
@@ -382,8 +390,24 @@ void PaymentsDataManager::OnWebDataServiceRequestDone(
                               &masked_bank_accounts_);
         OnMaskedBankAccountsRefreshed();
         break;
+      case PAYMENT_INSTRUMENT_RESULT: {
+        CHECK(ArePaymentInsrumentsSupported());
+        DCHECK_EQ(h, pending_payment_instruments_query_)
+            << "received payment instruments from invalid request.";
+        std::vector<sync_pb::PaymentInstrument> payment_instruments;
+        ReceiveLoadedDbValues(h, result.get(),
+                              &pending_payment_instruments_query_,
+                              &payment_instruments);
+        ewallet_accounts_.clear();
+        for (sync_pb::PaymentInstrument& payment_instrument :
+             payment_instruments) {
+          CacheIfEwalletPaymentInstrument(payment_instrument);
+        }
+        OnPaymentInstrumentsRefreshed(payment_instruments);
+        break;
+      }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -445,12 +469,19 @@ void PaymentsDataManager::Refresh() {
   if (AreBankAccountsSupported()) {
     LoadMaskedBankAccounts();
   }
+  if (ArePaymentInsrumentsSupported()) {
+    LoadPaymentInstruments();
+  }
   LoadPaymentsCustomerData();
   LoadAutofillOffers();
   LoadVirtualCardUsageData();
   if (IsCardBenefitsSyncEnabled() && IsCardBenefitsPrefEnabled()) {
     LoadCreditCardBenefits();
   }
+}
+
+void PaymentsDataManager::AddServerIbanForTest(std::unique_ptr<Iban> iban) {
+  server_ibans_.push_back(std::move(iban));
 }
 
 const Iban* PaymentsDataManager::GetIbanByGUID(const std::string& guid) const {
@@ -474,8 +505,8 @@ CreditCard* PaymentsDataManager::GetCreditCardByGUID(const std::string& guid) {
   return iter != credit_cards.end() ? *iter : nullptr;
 }
 
-CreditCard* PaymentsDataManager::GetCreditCardByNumber(
-    const std::string& number) {
+const CreditCard* PaymentsDataManager::GetCreditCardByNumber(
+    const std::string& number) const {
   CreditCard numbered_card;
   numbered_card.SetNumber(base::ASCIIToUTF16(number));
   for (CreditCard* credit_card : GetCreditCards()) {
@@ -487,8 +518,8 @@ CreditCard* PaymentsDataManager::GetCreditCardByNumber(
   return nullptr;
 }
 
-CreditCard* PaymentsDataManager::GetCreditCardByInstrumentId(
-    int64_t instrument_id) {
+const CreditCard* PaymentsDataManager::GetCreditCardByInstrumentId(
+    int64_t instrument_id) const {
   const std::vector<CreditCard*> credit_cards = GetCreditCards();
   for (CreditCard* credit_card : credit_cards) {
     if (credit_card->instrument_id() == instrument_id) {
@@ -498,8 +529,8 @@ CreditCard* PaymentsDataManager::GetCreditCardByInstrumentId(
   return nullptr;
 }
 
-CreditCard* PaymentsDataManager::GetCreditCardByServerId(
-    const std::string& server_id) {
+const CreditCard* PaymentsDataManager::GetCreditCardByServerId(
+    const std::string& server_id) const {
   const std::vector<CreditCard*> server_credit_cards = GetServerCreditCards();
   for (CreditCard* credit_card : server_credit_cards) {
     if (credit_card->server_id() == server_id) {
@@ -610,24 +641,15 @@ PaymentsDataManager::GetApplicableBenefitDescriptionForCardAndOrigin(
 }
 
 std::vector<CreditCard*> PaymentsDataManager::GetLocalCreditCards() const {
-  std::vector<CreditCard*> result;
-  result.reserve(local_credit_cards_.size());
-  for (const auto& card : local_credit_cards_) {
-    result.push_back(card.get());
-  }
-  return result;
+  return base::ToVector(local_credit_cards_, &std::unique_ptr<CreditCard>::get);
 }
 
 std::vector<CreditCard*> PaymentsDataManager::GetServerCreditCards() const {
   if (!IsAutofillWalletImportEnabled()) {
     return {};
   }
-  std::vector<CreditCard*> result;
-  result.reserve(server_credit_cards_.size());
-  for (const auto& card : server_credit_cards_) {
-    result.push_back(card.get());
-  }
-  return result;
+  return base::ToVector(server_credit_cards_,
+                        &std::unique_ptr<CreditCard>::get);
 }
 
 std::vector<CreditCard*> PaymentsDataManager::GetCreditCards() const {
@@ -714,12 +736,26 @@ bool PaymentsDataManager::HasMaskedBankAccounts() const {
   return !masked_bank_accounts_.empty();
 }
 
+bool PaymentsDataManager::HasEwalletAccounts() const {
+  if (!IsAutofillPaymentMethodsEnabled()) {
+    return false;
+  }
+  return !ewallet_accounts_.empty();
+}
+
 base::span<const BankAccount> PaymentsDataManager::GetMaskedBankAccounts()
     const {
   if (!HasMaskedBankAccounts()) {
     return {};
   }
   return masked_bank_accounts_;
+}
+
+base::span<const Ewallet> PaymentsDataManager::GetEwalletAccounts() const {
+  if (!HasEwalletAccounts()) {
+    return {};
+  }
+  return ewallet_accounts_;
 }
 
 PaymentsCustomerData* PaymentsDataManager::GetPaymentsCustomerData() const {
@@ -797,8 +833,8 @@ gfx::Image* PaymentsDataManager::GetCreditCardArtImageForUrl(
   }
   // The sizes are used on Android, but ignored on desktop.
   FetchImagesForURLs(base::span_from_ref(card_art_url),
-                     base::span({AutofillImageFetcherBase::ImageSize::kSmall,
-                                 AutofillImageFetcherBase::ImageSize::kLarge}));
+                     {AutofillImageFetcherBase::ImageSize::kSmall,
+                      AutofillImageFetcherBase::ImageSize::kLarge});
   return nullptr;
 }
 
@@ -1282,6 +1318,8 @@ void PaymentsDataManager::AddCreditCard(const CreditCard& credit_card) {
     return;
   }
 
+  UMA_HISTOGRAM_BOOLEAN("Autofill.PaymentsDataManager.LocalCardAdded", true);
+
   // Add the new credit card to the web database.
   GetLocalDatabase()->AddCreditCard(credit_card);
 
@@ -1465,6 +1503,7 @@ void PaymentsDataManager::ClearAllServerDataForTesting() {
   autofill_offer_data_.clear();
   credit_card_art_images_.clear();
   masked_bank_accounts_.clear();
+  ewallet_accounts_.clear();
 }
 
 void PaymentsDataManager::SetCreditCards(
@@ -1654,6 +1693,9 @@ void PaymentsDataManager::CancelPendingServerQueries() {
   if (AreBankAccountsSupported()) {
     CancelPendingServerQuery(&pending_masked_bank_accounts_query_);
   }
+  if (ArePaymentInsrumentsSupported()) {
+    CancelPendingServerQuery(&pending_payment_instruments_query_);
+  }
 }
 
 bool PaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
@@ -1690,8 +1732,7 @@ bool PaymentsDataManager::ShouldSuggestServerPaymentMethods() const {
 
 void PaymentsDataManager::LoadCreditCards() {
   if (!database_helper_->GetLocalDatabase()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   CancelPendingLocalQuery(&pending_creditcards_query_);
@@ -1718,8 +1759,7 @@ void PaymentsDataManager::LoadCreditCardCloudTokenData() {
 
 void PaymentsDataManager::LoadIbans() {
   if (!database_helper_->GetLocalDatabase()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   CancelPendingLocalQuery(&pending_local_ibans_query_);
   CancelPendingServerQuery(&pending_server_ibans_query_);
@@ -1741,6 +1781,17 @@ void PaymentsDataManager::LoadMaskedBankAccounts() {
 
   pending_masked_bank_accounts_query_ =
       database_helper_->GetServerDatabase()->GetMaskedBankAccounts(this);
+}
+
+void PaymentsDataManager::LoadPaymentInstruments() {
+  if (!database_helper_->GetServerDatabase()) {
+    return;
+  }
+
+  CancelPendingServerQuery(&pending_payment_instruments_query_);
+
+  pending_payment_instruments_query_ =
+      database_helper_->GetServerDatabase()->GetPaymentInstruments(this);
 }
 
 void PaymentsDataManager::LoadAutofillOffers() {
@@ -1780,8 +1831,7 @@ void PaymentsDataManager::CancelPendingLocalQuery(
     WebDataServiceBase::Handle* handle) {
   if (*handle) {
     if (!database_helper_->GetLocalDatabase()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     database_helper_->GetLocalDatabase()->CancelRequest(*handle);
   }
@@ -1792,8 +1842,7 @@ void PaymentsDataManager::CancelPendingServerQuery(
     WebDataServiceBase::Handle* handle) {
   if (*handle) {
     if (!database_helper_->GetServerDatabase()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     database_helper_->GetServerDatabase()->CancelRequest(*handle);
   }
@@ -1881,6 +1930,10 @@ void PaymentsDataManager::AddMaskedBankAccountForTest(
   masked_bank_accounts_.push_back(bank_account);
 }
 
+void PaymentsDataManager::AddEwalletForTest(const Ewallet& ewallet) {
+  ewallet_accounts_.push_back(ewallet);
+}
+
 void PaymentsDataManager::AddServerCreditCardForTest(
     std::unique_ptr<CreditCard> credit_card) {
   server_credit_cards_.push_back(std::move(credit_card));
@@ -1904,7 +1957,9 @@ bool PaymentsDataManager::HasPendingPaymentQueries() const {
          pending_credit_card_benefit_query_ != 0 ||
          pending_local_ibans_query_ != 0 || pending_server_ibans_query_ != 0 ||
          (AreBankAccountsSupported() &&
-          pending_masked_bank_accounts_query_ != 0);
+          pending_masked_bank_accounts_query_ != 0) ||
+         (ArePaymentInsrumentsSupported() &&
+          pending_payment_instruments_query_ != 0);
 }
 
 bool PaymentsDataManager::AreBankAccountsSupported() const {
@@ -1914,6 +1969,20 @@ bool PaymentsDataManager::AreBankAccountsSupported() const {
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+bool PaymentsDataManager::AreEwalletAccountsSupported() const {
+#if BUILDFLAG(IS_ANDROID)
+  return base::FeatureList::IsEnabled(features::kAutofillSyncEwalletAccounts);
+#else
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
+bool PaymentsDataManager::ArePaymentInsrumentsSupported() const {
+  // Currently only eWallet accounts are using generic payment instrument proto
+  // for read from table.
+  return AreEwalletAccountsSupported();
 }
 
 void PaymentsDataManager::OnAutofillPaymentsCardBenefitsPrefChange() {
@@ -1951,10 +2020,9 @@ void PaymentsDataManager::ProcessCardArtUrlChanges() {
     }
   }
   if (!updated_urls.empty()) {
-    FetchImagesForURLs(
-        updated_urls,
-        base::span({AutofillImageFetcherBase::ImageSize::kSmall,
-                    AutofillImageFetcherBase::ImageSize::kLarge}));
+    FetchImagesForURLs(updated_urls,
+                       {AutofillImageFetcherBase::ImageSize::kSmall,
+                        AutofillImageFetcherBase::ImageSize::kLarge});
   }
 }
 
@@ -2010,8 +2078,52 @@ void PaymentsDataManager::OnMaskedBankAccountsRefreshed() {
   if (!updated_urls.empty()) {
     FetchImagesForURLs(
         updated_urls,
-        base::span({AutofillImageFetcherBase::ImageSize::kSquare}));
+        base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSquare));
   }
+}
+
+void PaymentsDataManager::OnPaymentInstrumentsRefreshed(
+    const std::vector<sync_pb::PaymentInstrument>& payment_instruments) {
+  std::vector<GURL> updated_urls;
+  for (const sync_pb::PaymentInstrument& payment_instrument :
+       payment_instruments) {
+    // This check ensures only the display_icon_url of an eWallet account will
+    // be cached. Expand to other kinds of payment instruments when needed.
+    if (!payment_instrument.has_ewallet_details()) {
+      continue;
+    }
+    const GURL display_icon_url(payment_instrument.display_icon_url());
+    if (!display_icon_url.is_valid()) {
+      continue;
+    }
+    updated_urls.emplace_back(display_icon_url);
+  }
+  if (!updated_urls.empty()) {
+    FetchImagesForURLs(
+        updated_urls,
+        base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSquare));
+  }
+}
+
+void PaymentsDataManager::CacheIfEwalletPaymentInstrument(
+    sync_pb::PaymentInstrument& payment_instrument) {
+  if (!payment_instrument.has_ewallet_details()) {
+    return;
+  }
+  std::vector<std::u16string> supported_payment_link_uris;
+  for (const std::string& uri :
+       payment_instrument.ewallet_details().supported_payment_link_uris()) {
+    supported_payment_link_uris.push_back(base::UTF8ToUTF16(uri));
+  }
+  ewallet_accounts_.emplace_back(
+      payment_instrument.instrument_id(),
+      base::UTF8ToUTF16(payment_instrument.nickname()),
+      GURL(payment_instrument.display_icon_url()),
+      base::UTF8ToUTF16(payment_instrument.ewallet_details().ewallet_name()),
+      base::UTF8ToUTF16(
+          payment_instrument.ewallet_details().account_display_name()),
+      supported_payment_link_uris,
+      payment_instrument.device_details().is_fido_enrolled());
 }
 
 }  // namespace autofill

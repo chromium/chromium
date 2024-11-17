@@ -90,12 +90,10 @@ void WebAuthnRequestDelegateAndroid::OnWebAuthnRequestPending(
     if (!credentials_delegate) {
       return;
     }
-    credentials_delegate->SetAndroidHybridAvailable(
-        ChromeWebAuthnCredentialsDelegate::AndroidHybridAvailable(
-            !hybrid_callback_.is_null()));
     credentials_delegate->OnCredentialsReceived(
         std::move(display_credentials),
-        /*offer_passkey_from_another_device=*/true);
+        ChromeWebAuthnCredentialsDelegate::SecurityKeyOrHybridFlowAvailable(
+            !hybrid_callback_.is_null()));
     return;
   }
 
@@ -129,8 +127,6 @@ void WebAuthnRequestDelegateAndroid::CleanupWebAuthnRequest(
 
     if (credentials_delegate) {
       credentials_delegate->NotifyWebAuthnRequestAborted();
-      credentials_delegate->SetAndroidHybridAvailable(
-          ChromeWebAuthnCredentialsDelegate::AndroidHybridAvailable(false));
     }
   } else {
     touch_to_fill_controller_->Close();

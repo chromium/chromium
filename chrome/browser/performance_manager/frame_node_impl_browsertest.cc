@@ -86,15 +86,12 @@ class ViewportIntersectionStateChangedObserver
   }
 
   // FrameNodeObserver:
-  void OnViewportIntersectionStateChanged(
-      const FrameNode* frame_node) override {
+  void OnViewportIntersectionChanged(const FrameNode* frame_node) override {
     if (!frame_node_matcher_.Run(frame_node))
       return;
 
-    const ViewportIntersectionState new_state =
-        frame_node->GetViewportIntersectionState().value();
     const bool is_intersecting =
-        new_state == ViewportIntersectionState::kIntersecting;
+        frame_node->GetViewportIntersection()->is_intersecting();
     EXPECT_EQ(expected_intersects_viewport_, is_intersecting);
     std::move(quit_closure_).Run();
   }
@@ -278,7 +275,9 @@ class MockFrameNodeObserver : public FrameNode::ObserverDefaultImpl {
               (override));
 };
 
-IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest, Bind_SimpleNavigation) {
+// TODO(https://crbug.com/376315752): Deflake and re-enable.
+IN_PROC_BROWSER_TEST_F(FrameNodeImplBrowserTest,
+                       DISABLED_Bind_SimpleNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 

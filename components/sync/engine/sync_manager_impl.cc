@@ -54,7 +54,7 @@ sync_pb::SyncEnums::GetUpdatesOrigin GetOriginFromReason(
     case CONFIGURE_REASON_PROGRAMMATIC:
       return sync_pb::SyncEnums::PROGRAMMATIC;
     case CONFIGURE_REASON_UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return sync_pb::SyncEnums::UNKNOWN_ORIGIN;
 }
@@ -304,7 +304,7 @@ void SyncManagerImpl::ShutdownOnSyncThread() {
 
   RemoveObserver(&debug_info_event_listener_);
 
-  // |connection_manager_| may end up being null here in tests (in synchronous
+  // `connection_manager_` may end up being null here in tests (in synchronous
   // initialization mode).
   //
   // TODO(akalin): Fix this behavior.

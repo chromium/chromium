@@ -463,14 +463,12 @@ class WebSocketStreamCreateHelper
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
       base::WeakPtr<SpdySession> session,
       std::set<std::string> dns_aliases) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp3Stream(
       std::unique_ptr<QuicChromiumClientSession::Handle> session,
       std::set<std::string> dns_aliases) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 };
 
@@ -651,9 +649,28 @@ class CapturePreconnectHttpStreamPoolDelegate
   int last_num_streams_ = -1;
 };
 
-using HttpStreamFactoryTest = TestWithTaskEnvironment;
+class HttpStreamFactoryTest : public TestWithTaskEnvironment,
+                              public ::testing::WithParamInterface<bool> {
+ public:
+  HttpStreamFactoryTest() {
+    if (HappyEyeballsV3Enabled()) {
+      feature_list_.InitAndEnableFeature(features::kHappyEyeballsV3);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kHappyEyeballsV3);
+    }
+  }
 
-TEST_F(HttpStreamFactoryTest, PreconnectDirect) {
+  bool HappyEyeballsV3Enabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         HttpStreamFactoryTest,
+                         testing::Values(true, false));
+
+TEST_P(HttpStreamFactoryTest, PreconnectDirect) {
   for (const auto& test : kTests) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateDirect());
@@ -691,7 +708,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirect) {
   }
 }
 
-TEST_F(HttpStreamFactoryTest, PreconnectHttpProxy) {
+TEST_P(HttpStreamFactoryTest, PreconnectHttpProxy) {
   for (const auto& test : kTests) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -719,7 +736,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectHttpProxy) {
   }
 }
 
-TEST_F(HttpStreamFactoryTest, PreconnectSocksProxy) {
+TEST_P(HttpStreamFactoryTest, PreconnectSocksProxy) {
   for (const auto& test : kTests) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateFixedForTest(
@@ -746,7 +763,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectSocksProxy) {
   }
 }
 
-TEST_F(HttpStreamFactoryTest, PreconnectDirectWithExistingSpdySession) {
+TEST_P(HttpStreamFactoryTest, PreconnectDirectWithExistingSpdySession) {
   for (const auto& test : kTests) {
     SpdySessionDependencies session_deps(
         ConfiguredProxyResolutionService::CreateDirect());
@@ -803,7 +820,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirectWithExistingSpdySession) {
 
 // Verify that preconnects to unsafe ports are cancelled before they reach
 // the SocketPool.
-TEST_F(HttpStreamFactoryTest, PreconnectUnsafePort) {
+TEST_P(HttpStreamFactoryTest, PreconnectUnsafePort) {
   ASSERT_FALSE(IsPortAllowedForScheme(7, "http"));
 
   SpdySessionDependencies session_deps(
@@ -844,7 +861,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectUnsafePort) {
 }
 
 // Verify that preconnects to invalid GURLs do nothing, and do not CHECK.
-TEST_F(HttpStreamFactoryTest, PreconnectInvalidUrls) {
+TEST_P(HttpStreamFactoryTest, PreconnectInvalidUrls) {
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
   std::unique_ptr<HttpNetworkSession> session(
@@ -882,7 +899,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectInvalidUrls) {
 }
 
 // Verify that preconnects use the specified NetworkAnonymizationKey.
-TEST_F(HttpStreamFactoryTest, PreconnectNetworkIsolationKey) {
+TEST_P(HttpStreamFactoryTest, PreconnectNetworkIsolationKey) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kPartitionConnectionsByNetworkIsolationKey);
@@ -948,7 +965,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectNetworkIsolationKey) {
 }
 
 // Verify that preconnects use the specified Secure DNS Tag.
-TEST_F(HttpStreamFactoryTest, PreconnectDisableSecureDns) {
+TEST_P(HttpStreamFactoryTest, PreconnectDisableSecureDns) {
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
   std::unique_ptr<HttpNetworkSession> session(
@@ -1007,7 +1024,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectDisableSecureDns) {
   }
 }
 
-TEST_F(HttpStreamFactoryTest, JobNotifiesProxy) {
+TEST_P(HttpStreamFactoryTest, JobNotifiesProxy) {
   const char* kProxyString = "PROXY bad:99; PROXY maybe:80; DIRECT";
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
@@ -1057,7 +1074,7 @@ TEST_F(HttpStreamFactoryTest, JobNotifiesProxy) {
 // The expected behavior is that proxy fallback does NOT occur, even though the
 // request might work using the fallback. This is a regression test for
 // https://crbug.com/680837.
-TEST_F(HttpStreamFactoryTest, NoProxyFallbackOnTunnelFail) {
+TEST_P(HttpStreamFactoryTest, NoProxyFallbackOnTunnelFail) {
   const char* kProxyString = "PROXY bad:99; DIRECT";
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
@@ -1123,7 +1140,7 @@ const int quic_proxy_test_mock_errors[] = {
 };
 
 // Tests that a bad QUIC proxy is added to the list of bad proxies.
-TEST_F(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
+TEST_P(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
   for (int quic_proxy_test_mock_error : quic_proxy_test_mock_errors) {
     auto quic_proxy_chain =
         ProxyChain::ForIpProtection({ProxyServer::FromSchemeHostAndPort(
@@ -1160,7 +1177,7 @@ TEST_F(HttpStreamFactoryTest, QuicProxyMarkedAsBad) {
 
     auto session =
         std::make_unique<HttpNetworkSession>(session_params, session_context);
-    session->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+    session->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
         true);
 
     StaticSocketDataProvider socket_data1;
@@ -1216,19 +1233,45 @@ class TestBidirectionalDelegate : public BidirectionalStreamImpl::Delegate {
     response_headers_ = response_headers.Clone();
     loop_.Quit();
   }
-  void OnDataRead(int bytes_read) override { NOTREACHED_IN_MIGRATION(); }
-  void OnDataSent() override { NOTREACHED_IN_MIGRATION(); }
+  void OnDataRead(int bytes_read) override { NOTREACHED(); }
+  void OnDataSent() override { NOTREACHED(); }
   void OnTrailersReceived(const quiche::HttpHeaderBlock& trailers) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
-  void OnFailed(int error) override { NOTREACHED_IN_MIGRATION(); }
+  void OnFailed(int error) override { NOTREACHED(); }
   base::RunLoop loop_;
   quiche::HttpHeaderBlock response_headers_;
 };
 
+struct QuicTestParams {
+  QuicTestParams(quic::ParsedQuicVersion quic_version,
+                 bool happy_eyeballs_v3_enabled)
+      : quic_version(quic_version),
+        happy_eyeballs_v3_enabled(happy_eyeballs_v3_enabled) {}
+
+  quic::ParsedQuicVersion quic_version;
+  bool happy_eyeballs_v3_enabled;
+};
+
+// Used by ::testing::PrintToStringParamName().
+std::string PrintToString(const QuicTestParams& p) {
+  return base::StrCat(
+      {ParsedQuicVersionToString(p.quic_version), "_",
+       p.happy_eyeballs_v3_enabled ? "HEv3Enabled" : "HEv3Disabled"});
+}
+
+std::vector<QuicTestParams> GetTestParams() {
+  std::vector<QuicTestParams> params;
+  for (const auto& quic_version : AllSupportedQuicVersions()) {
+    params.emplace_back(quic_version, /*happy_eyeballs_v3_enabled=*/true);
+    params.emplace_back(quic_version, /*happy_eyeballs_v3_enabled=*/false);
+  }
+  return params;
+}
+
 }  // namespace
 
-TEST_F(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
+TEST_P(HttpStreamFactoryTest, UsePreConnectIfNoZeroRTT) {
   for (int num_streams = 1; num_streams < 3; ++num_streams) {
     GURL url = GURL("https://www.google.com");
 
@@ -1361,7 +1404,7 @@ int GetQuicSessionCount(HttpNetworkSession* session) {
   return session_list->size();
 }
 
-TEST_F(HttpStreamFactoryTest, PrivacyModeUsesDifferentSocketPoolGroup) {
+TEST_P(HttpStreamFactoryTest, PrivacyModeUsesDifferentSocketPoolGroup) {
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
 
@@ -1431,7 +1474,7 @@ TEST_F(HttpStreamFactoryTest, PrivacyModeUsesDifferentSocketPoolGroup) {
   EXPECT_EQ(GetGroupCount(), 2);
 }
 
-TEST_F(HttpStreamFactoryTest, DisableSecureDnsUsesDifferentSocketPoolGroup) {
+TEST_P(HttpStreamFactoryTest, DisableSecureDnsUsesDifferentSocketPoolGroup) {
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
 
@@ -1508,7 +1551,7 @@ TEST_F(HttpStreamFactoryTest, DisableSecureDnsUsesDifferentSocketPoolGroup) {
   EXPECT_EQ(GetGroupCount(), 2);
 }
 
-TEST_F(HttpStreamFactoryTest, GetLoadState) {
+TEST_P(HttpStreamFactoryTest, GetLoadState) {
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
 
@@ -1537,7 +1580,7 @@ TEST_F(HttpStreamFactoryTest, GetLoadState) {
   requester.WaitForStream();
 }
 
-TEST_F(HttpStreamFactoryTest, RequestHttpStream) {
+TEST_P(HttpStreamFactoryTest, RequestHttpStream) {
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
 
@@ -1576,7 +1619,7 @@ TEST_F(HttpStreamFactoryTest, RequestHttpStream) {
 // Test the race of SetPriority versus stream completion where SetPriority may
 // be called on an HttpStreamFactory::Job after the stream has been created by
 // the job.
-TEST_F(HttpStreamFactoryTest, ReprioritizeAfterStreamReceived) {
+TEST_P(HttpStreamFactoryTest, ReprioritizeAfterStreamReceived) {
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
   session_deps.host_resolver->set_synchronous_mode(true);
@@ -1633,7 +1676,7 @@ TEST_F(HttpStreamFactoryTest, ReprioritizeAfterStreamReceived) {
   EXPECT_FALSE(requester.websocket_stream());
 }
 
-TEST_F(HttpStreamFactoryTest, RequestHttpStreamOverSSL) {
+TEST_P(HttpStreamFactoryTest, RequestHttpStreamOverSSL) {
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
 
@@ -1673,7 +1716,7 @@ TEST_F(HttpStreamFactoryTest, RequestHttpStreamOverSSL) {
   EXPECT_TRUE(requester.used_proxy_info().is_direct());
 }
 
-TEST_F(HttpStreamFactoryTest, RequestHttpStreamOverProxy) {
+TEST_P(HttpStreamFactoryTest, RequestHttpStreamOverProxy) {
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "myproxy:8888", TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -1722,7 +1765,7 @@ TEST_F(HttpStreamFactoryTest, RequestHttpStreamOverProxy) {
   EXPECT_FALSE(requester.used_proxy_info().is_direct());
 }
 
-TEST_F(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStream) {
+TEST_P(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStream) {
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
 
@@ -1760,7 +1803,7 @@ TEST_F(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStream) {
   EXPECT_TRUE(requester.used_proxy_info().is_direct());
 }
 
-TEST_F(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStreamOverSSL) {
+TEST_P(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStreamOverSSL) {
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
 
@@ -1803,7 +1846,7 @@ TEST_F(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStreamOverSSL) {
   EXPECT_TRUE(requester.used_proxy_info().is_direct());
 }
 
-TEST_F(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStreamOverProxy) {
+TEST_P(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStreamOverProxy) {
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateFixedForTest(
           "myproxy:8888", TRAFFIC_ANNOTATION_FOR_TESTS));
@@ -1852,7 +1895,7 @@ TEST_F(HttpStreamFactoryTest, RequestWebSocketBasicHandshakeStreamOverProxy) {
   EXPECT_FALSE(requester.used_proxy_info().is_direct());
 }
 
-TEST_F(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpsURL) {
+TEST_P(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpsURL) {
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
 
@@ -1894,7 +1937,7 @@ TEST_F(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpsURL) {
   EXPECT_TRUE(requester.used_proxy_info().is_direct());
 }
 
-TEST_F(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpURL) {
+TEST_P(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpURL) {
   url::SchemeHostPort scheme_host_port("http", "myproxy.org", 443);
   auto session_deps = std::make_unique<SpdySessionDependencies>(
       ConfiguredProxyResolutionService::CreateFixedFromPacResultForTest(
@@ -1951,7 +1994,7 @@ TEST_F(HttpStreamFactoryTest, RequestSpdyHttpStreamHttpURL) {
 // Same as above, but checks HttpServerProperties is updated using the correct
 // NetworkAnonymizationKey. When/if NetworkAnonymizationKey is enabled by
 // default, this should probably be merged into the above test.
-TEST_F(HttpStreamFactoryTest,
+TEST_P(HttpStreamFactoryTest,
        RequestSpdyHttpStreamHttpURLWithNetworkAnonymizationKey) {
   const SchemefulSite kSite1(GURL("https://foo.test/"));
   const auto kNetworkAnonymizationKey1 =
@@ -2028,7 +2071,7 @@ TEST_F(HttpStreamFactoryTest,
 
 // Tests that when a new SpdySession is established, duplicated idle H2 sockets
 // to the same server are closed.
-TEST_F(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
+TEST_P(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
   // Explicitly disable the HappyEyeballsV3 feature because this test relies on
   // ClientSocketPool. When HappyEyeballsV3 is enabled we immediately create
   // a SpdySession after negotiating to use HTTP/2 so there would be no idle
@@ -2122,7 +2165,7 @@ TEST_F(HttpStreamFactoryTest, NewSpdySessionCloseIdleH2Sockets) {
 }
 
 // Regression test for https://crbug.com/706974.
-TEST_F(HttpStreamFactoryTest, TwoSpdyConnects) {
+TEST_P(HttpStreamFactoryTest, TwoSpdyConnects) {
   SpdySessionDependencies session_deps(
       ConfiguredProxyResolutionService::CreateDirect());
 
@@ -2181,7 +2224,7 @@ TEST_F(HttpStreamFactoryTest, TwoSpdyConnects) {
   EXPECT_TRUE(data1.AllReadDataConsumed());
 }
 
-TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImpl) {
+TEST_P(HttpStreamFactoryTest, RequestBidirectionalStreamImpl) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Explicitly disable HappyEyeballsV3 because it doesn't support bidirectional
   // streams yet.
@@ -2233,10 +2276,10 @@ TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImpl) {
 // Tests for creating an HTTP stream via QUIC.
 class HttpStreamFactoryQuicTest
     : public TestWithTaskEnvironment,
-      public ::testing::WithParamInterface<quic::ParsedQuicVersion> {
+      public ::testing::WithParamInterface<QuicTestParams> {
  protected:
   HttpStreamFactoryQuicTest()
-      : version_(GetParam()),
+      : version_(GetParam().quic_version),
         quic_context_(std::make_unique<MockQuicContext>()),
         session_deps_(ConfiguredProxyResolutionService::CreateDirect()),
         clock_(quic_context_->clock()),
@@ -2272,7 +2315,7 @@ class HttpStreamFactoryQuicTest
   HttpNetworkSession* MakeSession() {
     session_ = SpdySessionDependencies::SpdyCreateSessionWithSocketFactory(
         &session_deps_, &socket_factory_);
-    session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+    session_->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
         true);
     return session_.get();
   }
@@ -2412,7 +2455,7 @@ class HttpStreamFactoryQuicTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          HttpStreamFactoryQuicTest,
-                         ::testing::ValuesIn(AllSupportedQuicVersions()),
+                         ::testing::ValuesIn(GetTestParams()),
                          ::testing::PrintToStringParamName());
 
 // Check that requesting an HTTP stream over a QUIC proxy sends the correct
@@ -2715,7 +2758,7 @@ class HttpStreamFactoryBidirectionalQuicTest
     session_context.ssl_config_service = ssl_config_service_.get();
     session_context.client_socket_factory = &socket_factory_;
     session_ = std::make_unique<HttpNetworkSession>(params_, session_context);
-    session_->quic_session_pool()->set_is_quic_known_to_work_on_current_network(
+    session_->quic_session_pool()->set_has_quic_ever_worked_on_current_network(
         true);
   }
 
@@ -2978,7 +3021,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest,
   EXPECT_TRUE(requester.used_proxy_info().is_direct());
 }
 
-TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImplFailure) {
+TEST_P(HttpStreamFactoryTest, RequestBidirectionalStreamImplFailure) {
   base::test::ScopedFeatureList scoped_feature_list;
   // Explicitly disable HappyEyeballsV3 because it doesn't support bidirectional
   // streams yet.
@@ -3033,7 +3076,7 @@ TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImplFailure) {
 // Verify HttpStreamFactory::Job passes socket tag along properly and that
 // SpdySessions have unique socket tags (e.g. one sessions should not be shared
 // amongst streams with different socket tags).
-TEST_F(HttpStreamFactoryTest, Tag) {
+TEST_P(HttpStreamFactoryTest, Tag) {
   // SocketTag is not supported yet for HappyEyeballsV3.
   // TODO(crbug.com/346835898): Support SocketTag.
   base::test::ScopedFeatureList scoped_feature_list;
@@ -3286,7 +3329,7 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, Tag) {
   EXPECT_EQ(2, GetQuicSessionCount(session()));
 }
 
-TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
+TEST_P(HttpStreamFactoryTest, ChangeSocketTag) {
   // SocketTag is not supported yet for HappyEyeballsV3.
   // TODO(crbug.com/346835898): Support SocketTag.
   base::test::ScopedFeatureList scoped_feature_list;
@@ -3465,7 +3508,7 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTag) {
 }
 
 // Regression test for https://crbug.com/954503.
-TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
+TEST_P(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
   // SocketTag is not supported yet for HappyEyeballsV3.
   // TODO(crbug.com/346835898): Support SocketTag.
   base::test::ScopedFeatureList scoped_feature_list;
@@ -3641,7 +3684,7 @@ TEST_F(HttpStreamFactoryTest, ChangeSocketTagAvoidOverwrite) {
 // Test that when creating a stream all sessions that alias an IP are tried,
 // not just one.  This is important because there can be multiple sessions
 // that could satisfy a stream request and they should all be tried.
-TEST_F(HttpStreamFactoryTest, MultiIPAliases) {
+TEST_P(HttpStreamFactoryTest, MultiIPAliases) {
   SpdySessionDependencies session_deps;
 
   // Prepare for two HTTPS connects.
@@ -3782,7 +3825,7 @@ TEST_F(HttpStreamFactoryTest, MultiIPAliases) {
                                  ProxyChain::Direct()));
 }
 
-TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
+TEST_P(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   SpdySessionDependencies session_deps;
 
   const std::set<std::string> kDnsAliasesA({"alias1", "alias2"});

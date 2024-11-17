@@ -54,8 +54,7 @@ std::string_view GetLacrosAvailabilityPolicyName(LacrosAvailability value) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string_view();
+  NOTREACHED();
 }
 
 bool IsGoogleInternal(const user_manager::User* user) {

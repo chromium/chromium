@@ -33,8 +33,7 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
     SharedImageUsageSet usage,
     std::string debug_label,
     bool is_thread_safe) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -49,8 +48,7 @@ SharedMemoryImageBackingFactory::CreateSharedImage(
     std::string debug_label,
     bool is_thread_safe,
     base::span<const uint8_t> pixel_data) {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 std::unique_ptr<SharedImageBacking>

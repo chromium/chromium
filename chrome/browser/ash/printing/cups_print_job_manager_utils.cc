@@ -47,9 +47,7 @@ CupsPrintJob::State ConvertState(::printing::CupsJob::JobState state) {
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-
-  return CupsPrintJob::State::STATE_NONE;
+  NOTREACHED();
 }
 
 // Update the current printed page.  Returns true of the page has been updated.

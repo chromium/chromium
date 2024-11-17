@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/zip.gni")
 import("//chrome/updater/branding.gni")
 import("//components/crx_file/crx3.gni")
@@ -37,6 +38,15 @@ if (is_win) {
     outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
   }
 
+  if (is_asan) {
+    copy("test_installer_asan_runtime") {
+      testonly = true
+      deps = [ "//build/config/sanitizers:copy_sanitizer_runtime" ]
+      sources = [ "$root_build_dir/clang_rt.asan_dynamic-x86_64.dll" ]
+      outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
+    }
+  }
+
   template("test_app_installer") {
     testonly = true
     app_name = "test_" + target_name
@@ -66,7 +76,7 @@ if (is_win) {
     }
   }
 
-  if (host_os == "win" && !is_debug) {
+  if (host_os == "win") {
     test_app_installer("app1") {
       setup_script = "test_app1_setup.py"
     }
@@ -75,9 +85,11 @@ if (is_win) {
       setup_script = "test_app2_setup.cmd"
     }
   } else {
+    # Resource editing script does not work on non-Windows platform. Just copy
+    # the pre-built binary for cross-compile support.
     copy("test_app2_installer") {
-      sources =
-          [ "//chrome/updater/test/data/test_installer/Testapp2Setup.exe" ]
+      sources = [ "//chrome/updater/test/data/test_installer/$target_cpu/" +
+                  "Testapp2Setup.exe" ]
       outputs = [ "$root_build_dir/test_installer/{{source_file_part}}" ]
     }
   }
@@ -87,6 +99,12 @@ if (is_win) {
     app_name = "test_" + target_name
     inputs = [ "$root_build_dir/test_installer/" + invoker.setup_name + ".exe" ]
     deps = [ ":" + app_name + "_installer" ]
+
+    if (is_asan) {
+      deps += [ ":test_installer_asan_runtime" ]
+      inputs +=
+          [ "$root_build_dir/test_installer/clang_rt.asan_dynamic-x86_64.dll" ]
+    }
 
     crx3(app_name + "_installer_crx") {
       base_dir = "$root_build_dir/test_installer"

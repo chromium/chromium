@@ -27,6 +27,7 @@ import android.content.res.Resources;
 import android.graphics.Color;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.filters.SmallTest;
@@ -90,6 +91,7 @@ public class HomeModulesCoordinatorUnitTest {
     @Mock private Resources mResources;
     @Mock private ModuleDelegateHost mModuleDelegateHost;
     @Mock private ViewGroup mView;
+    @Mock private LayoutParams mLayoutParams;
     @Mock private HomeModulesRecyclerView mRecyclerView;
     @Mock private UiConfig mUiConfig;
     @Mock private Configuration mConfiguration;
@@ -102,6 +104,7 @@ public class HomeModulesCoordinatorUnitTest {
     @Mock private ModuleRegistry mModuleRegistry;
     @Mock private HomeModulesMediator mMediator;
     @Mock private ModelList mModel;
+    @Mock private ModuleProvider mModuleProvider;
 
     @Captor private ArgumentCaptor<DisplayStyleObserver> mDisplayStyleObserver;
     @Captor private ArgumentCaptor<Callback<Profile>> mProfileObserver;
@@ -334,6 +337,18 @@ public class HomeModulesCoordinatorUnitTest {
         when(mModel.size()).thenReturn(0);
         onHomeModulesChangedCallback.run();
         verify(onHomeModulesShownCallback).onResult(false);
+    }
+
+    @Test
+    @SmallTest
+    public void testOnViewCreated() {
+        mCoordinator = createCoordinator(/* skipInitProfile= */ true);
+        mCoordinator.setMediatorForTesting(mMediator);
+        when(mMediator.getModuleProvider(ModuleType.EDUCATIONAL_TIP)).thenReturn(mModuleProvider);
+        when(mView.getLayoutParams()).thenReturn(mLayoutParams);
+
+        mCoordinator.onViewCreated(ModuleType.EDUCATIONAL_TIP, mView);
+        verify(mModuleProvider).onViewCreated();
     }
 
     private void setupAndVerifyTablets() {

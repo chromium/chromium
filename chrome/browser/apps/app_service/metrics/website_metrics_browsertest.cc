@@ -8,9 +8,11 @@
 #include <optional>
 #include <set>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -25,7 +27,6 @@
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -240,7 +241,7 @@ class WebsiteMetricsBrowserTest : public MixinBasedInProcessBrowserTest {
     ASSERT_EQ(1, count);
   }
 
-  base::flat_map<aura::Window*, content::WebContents*>&
+  base::flat_map<aura::Window*, raw_ptr<content::WebContents, CtnExperimental>>&
   window_to_web_contents() {
     return website_metrics()->window_to_web_contents_;
   }
@@ -286,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsBrowserTest, InsertAndCloseTabs) {
   InsertForegroundTab(browser, "https://a.example.org");
   EXPECT_EQ(1u, webcontents_to_observer_map().size());
   EXPECT_TRUE(base::Contains(webcontents_to_observer_map(),
-                             window_to_web_contents()[window]));
+                             window_to_web_contents()[window].get()));
   EXPECT_EQ(window_to_web_contents()[window]->GetVisibleURL(),
             GURL("https://a.example.org"));
   EXPECT_TRUE(webcontents_to_ukm_key().empty());
@@ -1249,7 +1250,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest,
 
   // Close the tab and verify observer is notified.
   EXPECT_CALL(observer_,
-              OnUrlClosed(GURL(kUrl), window_to_web_contents()[window]))
+              OnUrlClosed(GURL(kUrl), window_to_web_contents()[window].get()))
       .Times(1);
   browser->tab_strip_model()->CloseAllTabs();
 }
@@ -1268,7 +1269,7 @@ IN_PROC_BROWSER_TEST_F(WebsiteMetricsObserverBrowserTest,
   // Simulate window closure and verify observer is notified accordingly.
   const std::string& kNewUrl = "https://b.example.org";
   EXPECT_CALL(observer_,
-              OnUrlClosed(GURL(kUrl1), window_to_web_contents()[window]))
+              OnUrlClosed(GURL(kUrl1), window_to_web_contents()[window].get()))
       .Times(1);
   EXPECT_CALL(observer_, OnUrlClosed(GURL(kUrl2), _)).Times(1);
   browser->tab_strip_model()->CloseAllTabs();

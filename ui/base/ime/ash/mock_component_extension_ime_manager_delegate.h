@@ -26,7 +26,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) MockComponentExtensionIMEManagerDelegate
       const MockComponentExtensionIMEManagerDelegate&) = delete;
 
   std::vector<ComponentExtensionIME> ListIME() override;
-  void Load(Profile*,
+  void Load(content::BrowserContext*,
             const std::string& extension_id,
             const std::string& manifest,
             const base::FilePath& path) override;

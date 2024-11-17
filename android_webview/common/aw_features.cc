@@ -24,11 +24,6 @@ BASE_FEATURE(kWebViewBackForwardCache,
              "WebViewBackForwardCache",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Kill switch for adding CHECKs to loading pak files.
-BASE_FEATURE(kWebViewCheckPakFileDescriptors,
-             "WebViewCheckPakFileDescriptors",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable loading include statements when checking digital asset links
 BASE_FEATURE(kWebViewDigitalAssetLinksLoadIncludes,
              "WebViewDigitalAssetLinksLoadIncludes",
@@ -39,25 +34,17 @@ BASE_FEATURE(kWebViewDragDropFiles,
              "WebViewDragDropFiles",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Cache origins which have camera/mic permissions approved to allow subsequent
-// calls to enumerate devices to return device labels.
-BASE_FEATURE(kWebViewEnumerateDevicesCache,
-             "WebViewEnumerateDevicesCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWebViewExitReasonMetric,
-             "WebViewExitReasonMetric",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+// Enable JS FileSystemAccess API.
+// TODO(b/364980165): Add targetSdkVersion checks before enabling.
+BASE_FEATURE(kWebViewFileSystemAccess,
+             "WebViewFileSystemAccess",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable WebView to automatically darken the page in FORCE_DARK_AUTO mode if
 // the app's theme is dark.
 BASE_FEATURE(kWebViewForceDarkModeMatchTheme,
              "WebViewForceDarkModeMatchTheme",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kWebViewHitTestInBlinkOnTouchStart,
-             "WebViewHitTestInBlinkOnTouchStart",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Feature parameter for `network::features::kMaskedDomainList` that sets the
 // exclusion criteria for defining which domains are excluded from the
@@ -73,6 +60,11 @@ const base::FeatureParam<int> kWebViewIpProtectionExclusionCriteria{
 BASE_FEATURE(kWebViewDisplayCutout,
              "WebViewDisplayCutout",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Fetch Hand Writing icon lazily.
+BASE_FEATURE(kWebViewLazyFetchHandWritingIcon,
+             "WebViewLazyFetchHandWritingIcon",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable the WebView Media Integrity API as a Blink extension.
 // This feature requires `kWebViewMediaIntegrityApi` to be disabled.
@@ -165,12 +157,6 @@ BASE_FEATURE(kWebViewUnreducedProductVersion,
              "WebViewUnreducedProductVersion",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable raster in wide color gamut for apps that use webview in a wide color
-// gamut activity.
-BASE_FEATURE(kWebViewWideColorGamutSupport,
-             "WebViewWideColorGamutSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Control the default behaviour for the XRequestedWith header.
 // TODO(crbug.com/40286009): enable by default after M120 branch point.
 BASE_FEATURE(kWebViewXRequestedWithHeaderControl,
@@ -183,11 +169,6 @@ BASE_FEATURE(kWebViewXRequestedWithHeaderControl,
 // |AwSettings::RequestedWithHeaderMode|
 const base::FeatureParam<int> kWebViewXRequestedWithHeaderMode{
     &kWebViewXRequestedWithHeaderControl, "WebViewXRequestedWithHeaderMode", 0};
-
-// This enables image drage out for Webview.
-BASE_FEATURE(kWebViewImageDrag,
-             "WebViewImageDrag",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled zoom picker is invoked on every kGestureScrollUpdate consumed ack,
 // otherwise the zoom picker is persistently shown from scroll start to scroll
@@ -207,11 +188,6 @@ BASE_FEATURE(kWebViewUseInitialNetworkStateAtStartup,
              "WebViewUseInitialNetworkStateAtStartup",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// This enables zoom keyboard shortcuts for zoom-in, zoom-out and zoom reset.
-BASE_FEATURE(kWebViewZoomKeyboardShortcuts,
-             "WebViewZoomKeyboardShortcuts",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // This enables reducing webview user-agent android version and device model.
 BASE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel,
              "WebViewReduceUAAndroidVersionDeviceModel",
@@ -222,15 +198,10 @@ BASE_FEATURE(kWebViewEnableCrash,
              "WebViewEnableCrash",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the built-in DNS resolver (Async DNS) on WebView.
-BASE_FEATURE(kWebViewAsyncDns,
-             "WebViewAsyncDns",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Preloads expensive classes during WebView startup.
 BASE_FEATURE(kWebViewPreloadClasses,
              "WebViewPreloadClasses",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled TYPE_SCROLLED accessibility events are sent every 100ms when user
 // is scrolling irrespective of GestureScrollUpdate being consumed or not.
@@ -250,7 +221,7 @@ BASE_FEATURE(kWebViewHyperlinkContextMenu,
 // Creates a spare renderer on browser context creation.
 BASE_FEATURE(kCreateSpareRendererOnBrowserContextCreation,
              "CreateSpareRendererOnBrowserContextCreation",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Kill switch for WebAuthn usage in WebViews.
 BASE_FEATURE(kWebViewWebauthn,
@@ -263,5 +234,13 @@ BASE_FEATURE(kWebViewWebauthn,
 BASE_FEATURE(kWebViewRenderDocument,
              "WebViewRenderDocument",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Auto-grants the `SANITIZED_CLIPBOARD_WRITE` permission.
+// This flag is introduced as a kill-switch in case the change leads
+// to problems.
+// TODO(https://crbug.com/362460435) Remove after launch.
+BASE_FEATURE(kWebViewAutoGrantSanitizedClipboardWrite,
+             "WebViewAutoGrantSanitizedClipboardWrite",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace android_webview::features

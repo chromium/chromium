@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/trace_event/typed_macros.h"
+#include "third_party/blink/public/platform/web_scroll_anchor_data.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -36,11 +37,43 @@ bool IsNGBlockFragmentationRoot(const LayoutBlockFlow* block_flow) {
          block_flow->IsLayoutNGObject();
 }
 
+gfx::Vector2d ToRoundedVector2d(const LogicalOffset& o) {
+  return {o.inline_offset.Round(), o.block_offset.Round()};
+}
+
+LayoutBox* ScrollerLayoutBox(const ScrollableArea* scroller) {
+  LayoutBox* box = scroller->GetLayoutBox();
+  DCHECK(box);
+  return box;
+}
+
+LogicalOffset ToLogicalOffset(const gfx::PointF& point,
+                              const ScrollableArea& scroller) {
+  return ScrollerLayoutBox(&scroller)->IsHorizontalWritingMode()
+             ? LogicalOffset(LayoutUnit(point.x()), LayoutUnit(point.y()))
+             : LogicalOffset(LayoutUnit(point.y()), LayoutUnit(point.x()));
+}
+
 }  // anonymous namespace
 
 // With 100 unique strings, a 2^12 slot table has a false positive rate of ~2%.
 using ClassnameFilter = CountingBloomFilter<12>;
 using Corner = ScrollAnchor::Corner;
+
+SerializedAnchor::SerializedAnchor(const ScrollAnchorData& data,
+                                   const ScrollableArea& scroller)
+    : selector(data.selector_),
+      relative_offset(ToLogicalOffset(data.offset_, scroller)),
+      simhash(data.simhash_) {}
+
+ScrollOffset SerializedAnchor::GetScrollOffset(
+    const ScrollableArea& scroller) const {
+  ScrollOffset offset = ToRoundedVector2d(relative_offset);
+  if (!ScrollerLayoutBox(&scroller)->IsHorizontalWritingMode()) {
+    offset.Transpose();
+  }
+  return offset;
+}
 
 ScrollAnchor::ScrollAnchor()
     : anchor_object_(nullptr),
@@ -68,19 +101,17 @@ void ScrollAnchor::SetScroller(ScrollableArea* scroller) {
   ClearSelf();
 }
 
-static LayoutBox* ScrollerLayoutBox(const ScrollableArea* scroller) {
-  LayoutBox* box = scroller->GetLayoutBox();
-  DCHECK(box);
-  return box;
-}
-
 // TODO(skobes): Storing a "corner" doesn't make much sense anymore since we
 // adjust only on the block flow axis.  This could probably be refactored to
 // simply measure the movement of the block-start edge.
 static Corner CornerToAnchor(const ScrollableArea* scroller) {
-  const ComputedStyle* style = ScrollerLayoutBox(scroller)->Style();
-  if (style->IsFlippedBlocksWritingMode())
+  auto writing_mode = ScrollerLayoutBox(scroller)->Style()->GetWritingMode();
+  if (IsFlippedBlocksWritingMode(writing_mode)) {
     return Corner::kTopRight;
+  }
+  if (writing_mode == WritingMode::kSidewaysLr) {
+    return Corner::kBottomLeft;
+  }
   return Corner::kTopLeft;
 }
 
@@ -89,11 +120,12 @@ static PhysicalOffset CornerPointOfRect(const PhysicalRect& rect,
   switch (which_corner) {
     case Corner::kTopLeft:
       return rect.MinXMinYCorner();
+    case Corner::kBottomLeft:
+      return rect.MinXMaxYCorner();
     case Corner::kTopRight:
       return rect.MaxXMinYCorner();
   }
-  NOTREACHED_IN_MIGRATION();
-  return PhysicalOffset();
+  NOTREACHED();
 }
 
 // Bounds of the LayoutObject relative to the scroller's visible content rect.
@@ -118,7 +150,7 @@ static PhysicalRect RelativeBounds(const LayoutObject* layout_object,
     local_bounds.Unite(text->PhysicalLinesBoundingBox());
   } else {
     // Only LayoutBox and LayoutText are supported.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   gfx::RectF relative_bounds =
@@ -130,13 +162,13 @@ static PhysicalRect RelativeBounds(const LayoutObject* layout_object,
   return PhysicalRect::FastAndLossyFromRectF(relative_bounds);
 }
 
-static LayoutPoint ComputeRelativeOffset(const LayoutObject* layout_object,
-                                         const ScrollableArea* scroller,
-                                         Corner corner) {
+static LogicalOffset ComputeRelativeOffset(const LayoutObject* layout_object,
+                                           const ScrollableArea* scroller,
+                                           Corner corner) {
   PhysicalOffset offset =
       CornerPointOfRect(RelativeBounds(layout_object, scroller), corner);
   const LayoutBox* scroller_box = ScrollerLayoutBox(scroller);
-  return scroller_box->FlipForWritingMode(offset);
+  return scroller_box->CreateWritingModeConverter().ToLogical(offset, {});
 }
 
 static bool CandidateMayMoveWithScroller(const LayoutObject* candidate,
@@ -596,10 +628,10 @@ gfx::Vector2d ScrollAnchor::ComputeAdjustment() const {
 
   // Only adjust on the block layout axis.
   const LayoutBox* scroller_box = ScrollerLayoutBox(scroller_);
-  if (scroller_box->IsHorizontalWritingMode())
-    delta.set_x(0);
-  else
-    delta.set_y(0);
+  delta.set_x(0);
+  if (!scroller_box->IsHorizontalWritingMode()) {
+    delta.Transpose();
+  }
 
   if (anchor_is_cv_auto_without_layout_) {
     // See the effect delta would have on the anchor rect.
@@ -732,16 +764,15 @@ bool ScrollAnchor::RestoreAnchor(const SerializedAnchor& serialized_anchor) {
     // roughly the same.
     ScrollOffset current_offset = scroller_->GetScrollOffset();
     gfx::RectF bounding_box = anchor_object->AbsoluteBoundingBoxRectF();
+    WritingMode writing_mode = anchor_object->Style()->GetWritingMode();
     gfx::PointF location_point =
-        anchor_object->Style()->IsFlippedBlocksWritingMode()
-            ? bounding_box.top_right()
-            : bounding_box.origin();
+        IsFlippedBlocksWritingMode(writing_mode)   ? bounding_box.top_right()
+        : writing_mode == WritingMode::kSidewaysLr ? bounding_box.bottom_left()
+                                                   : bounding_box.origin();
     gfx::PointF desired_point = location_point + current_offset;
 
     ScrollOffset desired_offset = desired_point.OffsetFromOrigin();
-    ScrollOffset delta =
-        ScrollOffset(serialized_anchor.relative_offset.X().ToFloat(),
-                     serialized_anchor.relative_offset.Y().ToFloat());
+    ScrollOffset delta = serialized_anchor.GetScrollOffset(*scroller_);
     desired_offset -= delta;
     TRACE_EVENT_INSTANT(TRACE_DISABLED_BY_DEFAULT("blink.debug"),
                         "RestoreAnchor", "anchor_object",

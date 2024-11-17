@@ -63,9 +63,7 @@ constexpr base::FilePath::CharType kFilePathsFileName[] =
 SkBitmap GetBitmap(const base::FilePath& path) {
   auto data = base::ReadFileToBytes(path);
   CHECK(data);
-  std::unique_ptr<SkBitmap> bitmap =
-      gfx::JPEGCodec::Decode(data->data(), data->size());
-  return std::move(*bitmap);
+  return gfx::JPEGCodec::Decode(data.value());
 }
 
 class OcrTestEnvironment : public ::testing::Environment {

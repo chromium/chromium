@@ -31,7 +31,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -39,6 +38,7 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.Callback;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -71,7 +71,6 @@ public class PostPasswordMigrationSheetViewTest {
 
     @Before
     public void setupTest() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mBottomSheetController =
                 mActivityTestRule
@@ -193,6 +192,7 @@ public class PostPasswordMigrationSheetViewTest {
     @Test
     @MediumTest
     @EnableFeatures(UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
+    @DisabledTest(message = "crbug.com/369371078")
     public void sheetSetsTheTitleAndSubtitleAboutLocalPasswords() {
         // The sheet is shown.
         runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));

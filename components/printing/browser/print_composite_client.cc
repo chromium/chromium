@@ -72,7 +72,7 @@ PrintCompositeClient::PrintCompositeClient(content::WebContents* web_contents)
     : content::WebContentsUserData<PrintCompositeClient>(*web_contents),
       content::WebContentsObserver(web_contents) {}
 
-PrintCompositeClient::~PrintCompositeClient() {}
+PrintCompositeClient::~PrintCompositeClient() = default;
 
 void PrintCompositeClient::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {

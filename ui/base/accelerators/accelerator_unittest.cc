@@ -9,7 +9,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
@@ -52,12 +51,15 @@ TEST(AcceleratorTest, MAYBE_GetShortcutText) {
     const char16_t* expected_long;
     const char16_t* expected_short;
   } keys[] = {
-    {VKEY_Q, EF_CONTROL_DOWN | EF_SHIFT_DOWN, u"Ctrl+Shift+Q", u"⌃⇧Q"},
-    {VKEY_A, EF_ALT_DOWN | EF_SHIFT_DOWN, u"Alt+Shift+A", u"⌥⇧A"},
-    // Regression test for https://crbug.com/867732:
-    {VKEY_OEM_COMMA, EF_CONTROL_DOWN, u"Ctrl+Comma", u"⌃,"},
+      {VKEY_Q, EF_CONTROL_DOWN | EF_SHIFT_DOWN, u"Ctrl+Shift+Q", u"⌃⇧Q"},
+      {VKEY_A, EF_ALT_DOWN | EF_SHIFT_DOWN, u"Alt+Shift+A", u"⌥⇧A"},
+      // Regression test for https://crbug.com/867732:
+      {VKEY_OEM_COMMA, EF_CONTROL_DOWN, u"Ctrl+Comma", u"⌃,"},
 #if BUILDFLAG(IS_MAC)
-    {VKEY_T, EF_COMMAND_DOWN | EF_CONTROL_DOWN, nullptr, u"⌃⌘T"},
+      {VKEY_T, EF_COMMAND_DOWN | EF_CONTROL_DOWN, nullptr, u"⌃⌘T"},
+#endif
+#if BUILDFLAG(IS_LINUX)
+      {VKEY_T, EF_COMMAND_DOWN | EF_CONTROL_DOWN, u"Super+Ctrl+T", nullptr},
 #endif
   };
 
@@ -135,7 +137,7 @@ TEST_F(AcceleratorTestMac, ModifierFlagsShortFormRepresentation) {
 }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST(AcceleratorTest, ConversionFromKeyEvent_Ash) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -155,6 +157,6 @@ TEST(AcceleratorTest, ConversionFromKeyEvent_Ash) {
   accelerator.reset_code();
   EXPECT_EQ(accelerator.code(), DomCode::NONE);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace ui

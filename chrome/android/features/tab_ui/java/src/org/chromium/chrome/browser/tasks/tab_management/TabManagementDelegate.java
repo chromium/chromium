@@ -27,15 +27,17 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
-import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.theme.ThemeColorProvider;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.util.function.DoubleConsumer;
@@ -49,7 +51,6 @@ public interface TabManagementDelegate {
      * @param parentView The parent view of this UI.
      * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} of the top
      *     controls.
-     * @param incognitoStateProvider Observable provider of incognito state.
      * @param scrimCoordinator The {@link ScrimCoordinator} to control scrim view.
      * @param omniboxFocusStateSupplier Supplier to access the focus state of the omnibox.
      * @param bottomSheetController The {@link BottomSheetController} for the current activity.
@@ -66,7 +67,6 @@ public interface TabManagementDelegate {
             @NonNull Activity activity,
             @NonNull ViewGroup parentView,
             @NonNull BrowserControlsStateProvider browserControlsStateProvider,
-            @NonNull IncognitoStateProvider incognitoStateProvider,
             @NonNull ScrimCoordinator scrimCoordinator,
             @NonNull ObservableSupplier<Boolean> omniboxFocusStateSupplier,
             @NonNull BottomSheetController bottomSheetController,
@@ -75,7 +75,8 @@ public interface TabManagementDelegate {
             @NonNull TabContentManager tabContentManager,
             @NonNull TabCreatorManager tabCreatorManager,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
-            @NonNull ModalDialogManager modalDialogManager);
+            @NonNull ModalDialogManager modalDialogManager,
+            @NonNull ThemeColorProvider themeColorProvider);
 
     /**
      * Create a {@link TabSwitcher} and {@link Pane} for the Hub.
@@ -100,6 +101,8 @@ public interface TabManagementDelegate {
      * @param isIncognito Whether this is an incognito pane.
      * @param onToolbarAlphaChange Observer to notify when alpha changes during animations.
      * @param backPressManager Manages different back press handlers throughout the app.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
+     * @param desktopWindowStateManager Manager to get desktop window and app header state.
      */
     Pair<TabSwitcher, Pane> createTabSwitcherPane(
             @NonNull Activity activity,
@@ -119,7 +122,9 @@ public interface TabManagementDelegate {
             @NonNull OnClickListener newTabButtonOnClickListener,
             boolean isIncognito,
             @NonNull DoubleConsumer onToolbarAlphaChange,
-            @NonNull BackPressManager backPressManager);
+            @NonNull BackPressManager backPressManager,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager);
 
     /**
      * Create a {@link TabGroupsPane} for the Hub.
@@ -132,6 +137,7 @@ public interface TabManagementDelegate {
      * @param tabGroupUiActionHandlerSupplier Supplier for the controller used to open hidden
      *     groups.
      * @param modalDialogManagerSupplier Used to show confirmation dialogs.
+     * @param edgeToEdgeSupplier Supplier to the {@link EdgeToEdgeController} instance.
      * @return The pane implementation that displays and allows interactions with tab groups.
      */
     Pane createTabGroupsPane(
@@ -141,5 +147,6 @@ public interface TabManagementDelegate {
             @NonNull OneshotSupplier<ProfileProvider> profileProviderSupplier,
             @NonNull LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @NonNull Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier);
+            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier);
 }

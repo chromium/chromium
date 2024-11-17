@@ -197,7 +197,7 @@ void XdgForeignWrapper::Instantiate(WaylandConnection* connection,
     connection->xdg_foreign_ = CreateWrapper<zxdg_exporter_v2>(
         connection, registry, name, kMinVersion);
   } else {
-    NOTREACHED_IN_MIGRATION() << " unexpected interface name: " << interface;
+    NOTREACHED() << " unexpected interface name: " << interface;
   }
 }
 

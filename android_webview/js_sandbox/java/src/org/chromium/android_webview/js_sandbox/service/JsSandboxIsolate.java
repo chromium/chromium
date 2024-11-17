@@ -34,7 +34,6 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
     // application, otherwise it's entirely possible for the embedder to then call back into service
     // code (on another thread) and then try to take mLock again and therefore deadlock.
     private final Object mLock = new Object();
-    private final JsSandboxService mService;
     private final AtomicReference<IJsSandboxConsoleCallback> mConsoleCallback =
             new AtomicReference<IJsSandboxConsoleCallback>();
 
@@ -43,19 +42,15 @@ public class JsSandboxIsolate extends IJsSandboxIsolate.Stub {
 
     private final IJsSandboxIsolateClient mIsolateClient;
 
-    JsSandboxIsolate(JsSandboxService service) {
-        this(service, 0);
+    JsSandboxIsolate() {
+        this(0);
     }
 
-    JsSandboxIsolate(JsSandboxService service, long maxHeapSizeBytes) {
-        this(service, maxHeapSizeBytes, null);
+    JsSandboxIsolate(long maxHeapSizeBytes) {
+        this(maxHeapSizeBytes, null);
     }
 
-    JsSandboxIsolate(
-            JsSandboxService service,
-            long maxHeapSizeBytes,
-            IJsSandboxIsolateClient isolateClient) {
-        mService = service;
+    JsSandboxIsolate(long maxHeapSizeBytes, IJsSandboxIsolateClient isolateClient) {
         mIsolateClient = isolateClient;
         mJsSandboxIsolate =
                 JsSandboxIsolateJni.get()

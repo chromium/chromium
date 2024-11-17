@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/manta",
+  "+components/user_manager/user_manager.h",
+]

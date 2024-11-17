@@ -19,7 +19,7 @@ class TabStripModel;
 class Profile;
 
 namespace tabs {
-class TabModel;
+class TabInterface;
 }
 
 namespace tab_groups {
@@ -61,11 +61,14 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   // corresponding local group.
   void ConnectToLocalTabGroup(
       const SavedTabGroup& saved_tab_group,
-      std::map<tabs::TabModel*, base::Uuid> tab_guid_mapping);
+      std::map<tabs::TabInterface*, base::Uuid> tab_guid_mapping);
 
   // Stop updating the saved group corresponding to the local group with id
   // `tab_group_id` when the local group changes.
-  void DisconnectLocalTabGroup(tab_groups::TabGroupId tab_group_id);
+  // `closing_source` refers to the callsite that results in invoking this
+  // method.
+  void DisconnectLocalTabGroup(tab_groups::TabGroupId tab_group_id,
+                               ClosingSource closing_source);
 
   // The saved group corresponding to `local_group_id` was removed, so we must
   // remove the local group to match.
@@ -84,7 +87,7 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   void OnTabGroupWillBeRemoved(const tab_groups::TabGroupId& group_id) override;
   void OnTabGroupChanged(const TabGroupChange& change) override;
   void TabGroupedStateChanged(std::optional<tab_groups::TabGroupId> group,
-                              tabs::TabModel* tab,
+                              tabs::TabInterface* tab,
                               int index) override;
   void OnTabStripModelChanged(
       TabStripModel* tab_strip_model,
@@ -107,7 +110,7 @@ class SavedTabGroupModelListener : public BrowserListObserver,
   // to their saved tab guid. This mapping will be used in
   // ConnectToLocalTabGroup in order to observe any changes to the tabs over
   // time.
-  std::pair<SavedTabGroup, std::map<tabs::TabModel*, base::Uuid>>
+  std::pair<SavedTabGroup, std::map<tabs::TabInterface*, base::Uuid>>
   CreateSavedTabGroupAndTabMapping(const tab_groups::TabGroupId& group_id);
 
   // The LocalTabGroupListeners for each saved tab group that's currently open.

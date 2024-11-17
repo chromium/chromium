@@ -12,7 +12,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/paint/paint_canvas.h"
-#include "cc/resources/shared_bitmap_id_registrar.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "content/common/content_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -82,7 +81,6 @@ class CONTENT_EXPORT PepperGraphics2DHost final
              const gfx::Rect& paint_rect);
 
   bool PrepareTransferableResource(
-      cc::SharedBitmapIdRegistrar* bitmap_registrar,
       viz::TransferableResource* transferable_resource,
       viz::ReleaseCallback* release_callback);
   void AttachedToNewLayer();
@@ -183,7 +181,6 @@ class CONTENT_EXPORT PepperGraphics2DHost final
   // Callback when compositor is done with a software resource given to it.
   void ReleaseSoftwareCallback(
       scoped_refptr<cc::CrossThreadSharedBitmap> bitmap,
-      cc::SharedBitmapIdRegistration registration,
       scoped_refptr<gpu::ClientSharedImage> shared_image,
       scoped_refptr<gpu::SharedImageInterface> shared_image_interface,
       const gpu::SyncToken& sync_token,
@@ -261,7 +258,6 @@ class CONTENT_EXPORT PepperGraphics2DHost final
   // of the SharedBitmapId that is kept alive as long as the bitmap is, in order
   // to give the bitmap to the compositor.
   scoped_refptr<cc::CrossThreadSharedBitmap> cached_bitmap_;
-  cc::SharedBitmapIdRegistration cached_bitmap_registration_;
   scoped_refptr<gpu::ClientSharedImage> cached_bitmap_shared_image_;
   // Used for tracking whether the shared_image_interface has changed due to
   // context lost.

@@ -143,8 +143,7 @@ std::string GetDownloadBlockingExtensionMetricName(
           kInsecureDownloadExtensionInitiatorInferredInsecure,
           kInsecureDownloadHistogramTargetInsecure);
     case InsecureDownloadSecurityStatus::kDownloadIgnored:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case InsecureDownloadSecurityStatus::kInitiatorInsecureNonUniqueFileSecure:
       return GetDLBlockingHistogramName(
           kInsecureDownloadExtensionInitiatorInsecureNonUnique,
@@ -155,8 +154,7 @@ std::string GetDownloadBlockingExtensionMetricName(
           kInsecureDownloadExtensionInitiatorInsecureNonUnique,
           kInsecureDownloadHistogramTargetInsecure);
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Get appropriate enum value for the initiator/download security state combo
@@ -413,7 +411,9 @@ bool IsDownloadPermittedByContentSettings(
     const std::optional<url::Origin>& initiator) {
   // TODO(crbug.com/40117459): Checking content settings crashes unit tests on
   // Android. It shouldn't.
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  return false;
+#else
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
   ContentSettingsForOneType settings =
@@ -432,10 +432,8 @@ bool IsDownloadPermittedByContentSettings(
       return setting.GetContentSetting() == CONTENT_SETTING_ALLOW;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
-
-  return false;
 }
 
 bool IsHttpsFirstModeEnabled(Profile* profile) {

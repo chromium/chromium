@@ -155,8 +155,8 @@ TEST_F(CencDecryptorTest, ExtraData) {
   encrypted_buffer->set_timestamp(base::Days(2));
   encrypted_buffer->set_duration(base::Minutes(5));
   encrypted_buffer->set_is_key_frame(true);
-  encrypted_buffer->WritableSideData().alpha_data.assign(
-      encrypted_block.begin(), encrypted_block.end());
+  encrypted_buffer->WritableSideData().alpha_data =
+      base::HeapArray<uint8_t>::CopiedFrom(encrypted_block);
 
   auto decrypted_buffer = DecryptCencBuffer(*encrypted_buffer, *key_);
   EXPECT_EQ(encrypted_buffer->timestamp(), decrypted_buffer->timestamp());
@@ -165,8 +165,8 @@ TEST_F(CencDecryptorTest, ExtraData) {
             decrypted_buffer->end_of_stream());
   EXPECT_EQ(encrypted_buffer->is_key_frame(), decrypted_buffer->is_key_frame());
   EXPECT_TRUE(decrypted_buffer->has_side_data());
-  EXPECT_TRUE(encrypted_buffer->side_data()->Matches(
-      decrypted_buffer->side_data().value()));
+  EXPECT_TRUE(
+      encrypted_buffer->side_data()->Matches(*decrypted_buffer->side_data()));
 }
 
 TEST_F(CencDecryptorTest, NoSubsamples) {

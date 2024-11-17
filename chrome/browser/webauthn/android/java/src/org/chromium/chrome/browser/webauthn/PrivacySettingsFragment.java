@@ -16,7 +16,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.ui.widget.Toast;
 
 /**
@@ -25,7 +25,8 @@ import org.chromium.ui.widget.Toast;
  * <p>This is reached by selecting Settings -> Privacy and security -> Phone as a Security Key. It
  * shows some explanatory text and has a single button to revoke all linked devices.
  */
-public class PrivacySettingsFragment extends Fragment implements SettingsPage, OnClickListener {
+public class PrivacySettingsFragment extends Fragment
+        implements EmbeddableSettingsPage, OnClickListener {
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     @Override

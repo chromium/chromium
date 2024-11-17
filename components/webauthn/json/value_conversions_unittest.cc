@@ -184,7 +184,6 @@ TEST(WebAuthenticationJSONConversionTest,
           /*user_verification_methods=*/false,
 #endif
           /*prf=*/true, std::move(prf_values),
-          /*prf_inputs_hashed=*/false,
           /*large_blob_read=*/true,
           /*large_blob_write=*/std::vector<uint8_t>{8, 9, 10},
           /*get_cred_blob=*/true,

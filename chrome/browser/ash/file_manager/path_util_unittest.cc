@@ -40,6 +40,7 @@
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -1502,7 +1503,7 @@ TEST_F(FileManagerPathUtilTest, ParseFileSystemSources) {
 
   FilePath shared_path = myfiles_dir.Append("shared");
   auto* guest_os_share_path =
-      guest_os::GuestOsSharePath::GetForProfile(profile_.get());
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile_.get());
   guest_os_share_path->RegisterSharedPath(crostini::kCrostiniDefaultVmName,
                                           shared_path);
   // Start with four file_names but the last one is rejected. Its FileSystemURL

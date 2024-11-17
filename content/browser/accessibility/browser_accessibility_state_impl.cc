@@ -33,7 +33,6 @@
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/gfx/color_utils.h"
-#include "ui/native_theme/native_theme.h"
 
 namespace content {
 
@@ -161,11 +160,22 @@ ui::AXMode FilterAccessibilityModeInvariants(ui::AXMode mode) {
   // WebContents if that WebContents also has the kWebContents mode enabled;
   // see `content::RenderFrameHostImpl::UpdateAccessibilityMode()` and
   // `content::RenderAccessibilityManager::SetMode()`.
-  return mode.has_mode(ui::AXMode::kWebContents)
-             ? mode
-             : (mode & ui::AXMode::kNativeAPIs);
-}
+  if (!mode.has_mode(ui::AXMode::kWebContents)) {
+    return mode & ui::AXMode::kNativeAPIs;
+  }
 
+  // Form controls mode is restrictive. There are other modes that should not be
+  // used in combination with it. This could occur if something that needs
+  // screen reader mode is turned on after forms control mode. In that case,
+  // forms mode must be removed.
+  if (mode.has_mode(ui::AXMode::kInlineTextBoxes) ||
+      mode.has_mode(ui::AXMode::kScreenReader)) {
+    return ui::AXMode(mode.flags(), mode.experimental_flags() &
+                                        ~ui::AXMode::kExperimentalFormControls);
+  }
+
+  return mode;
+}
 
 }  // namespace
 
@@ -328,8 +338,9 @@ void BrowserAccessibilityStateImpl::MaybeResetAccessibilityMode() {
   // `OnScreenReaderStopped` sets `disable_accessibility_request_time_`, and
   // `OnScreenReaderDetected` clears it. If we no longer have a request time
   // to disable accessibility, this delayed task is obsolete.
-  if (disable_accessibility_request_time_.is_null())
+  if (disable_accessibility_request_time_.is_null()) {
     return;
+  }
 
   // `OnScreenReaderStopped` could be called multiple times prior to the delay
   // expiring. The value of `disable_accessibility_request_time_` is updated
@@ -380,30 +391,25 @@ bool BrowserAccessibilityStateImpl::IsPerformanceFilteringAllowed() {
 }
 
 void BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread() {
-  for (auto& callback : ui_thread_histogram_callbacks_)
+  for (auto& callback : ui_thread_histogram_callbacks_) {
     std::move(callback).Run();
+  }
   ui_thread_histogram_callbacks_.clear();
 
   UMA_HISTOGRAM_BOOLEAN(
       "Accessibility.ManuallyEnabled",
       !GetAccessibilityMode().is_mode_off() && !allow_ax_mode_changes_);
 
-#if BUILDFLAG(IS_WIN)
-  base::UmaHistogramEnumeration(
-      "Accessibility.WinHighContrastTheme",
-      ui::NativeTheme::GetInstanceForNativeUi()
-          ->GetPlatformHighContrastColorScheme(),
-      ui::NativeTheme::PlatformHighContrastColorScheme::kMaxValue);
-#endif
-
   ui_thread_done_ = true;
-  if (other_thread_done_ && background_thread_done_callback_)
+  if (other_thread_done_ && background_thread_done_callback_) {
     std::move(background_thread_done_callback_).Run();
+  }
 }
 
 void BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread() {
-  for (auto& callback : other_thread_histogram_callbacks_)
+  for (auto& callback : other_thread_histogram_callbacks_) {
     std::move(callback).Run();
+  }
   other_thread_histogram_callbacks_.clear();
 
   GetUIThreadTaskRunner({})->PostTask(
@@ -414,8 +420,9 @@ void BrowserAccessibilityStateImpl::UpdateHistogramsOnOtherThread() {
 
 void BrowserAccessibilityStateImpl::OnOtherThreadDone() {
   other_thread_done_ = true;
-  if (ui_thread_done_ && background_thread_done_callback_)
+  if (ui_thread_done_ && background_thread_done_callback_) {
     std::move(background_thread_done_callback_).Run();
+  }
 }
 
 void BrowserAccessibilityStateImpl::UpdateAccessibilityActivityTask() {
@@ -425,8 +432,9 @@ void BrowserAccessibilityStateImpl::UpdateAccessibilityActivityTask() {
   }
   base::TimeTicks now = ui::EventTimeForNow();
   accessibility_last_usage_time_ = now;
-  if (accessibility_active_start_time_.is_null())
+  if (accessibility_active_start_time_.is_null()) {
     accessibility_active_start_time_ = now;
+  }
   // If accessibility was enabled but inactive until now, log the amount
   // of time between now and the last API usage.
   if (!accessibility_inactive_start_time_.is_null()) {
@@ -465,8 +473,9 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
     return;
   }
 
-  if (user_input_event_count_ < kAutoDisableAccessibilityEventCount)
+  if (user_input_event_count_ < kAutoDisableAccessibilityEventCount) {
     return;
+  }
 
   if (now - first_user_input_event_time_ >
       base::Seconds(kAutoDisableAccessibilityTimeSecs)) {
@@ -477,8 +486,9 @@ void BrowserAccessibilityStateImpl::OnUserInputEvent() {
 
       // This will help track the time accessibility spends enabled, but
       // inactive.
-      if (!features::IsAutoDisableAccessibilityEnabled())
+      if (!features::IsAutoDisableAccessibilityEnabled()) {
         accessibility_inactive_start_time_ = accessibility_last_usage_time_;
+      }
 
       accessibility_active_start_time_ = base::TimeTicks();
     }
@@ -506,6 +516,13 @@ void BrowserAccessibilityStateImpl::SetAXModeChangeAllowed(bool allowed) {
 
 bool BrowserAccessibilityStateImpl::IsAXModeChangeAllowed() const {
   return allow_ax_mode_changes_;
+}
+
+void BrowserAccessibilityStateImpl::NotifyWebContentsPreferencesChanged()
+    const {
+  for (WebContentsImpl* wc : WebContentsImpl::GetAllWebContents()) {
+    wc->OnWebPreferencesChanged();
+  }
 }
 
 void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
@@ -561,13 +578,6 @@ void BrowserAccessibilityStateImpl::SetProcessMode(ui::AXMode new_mode) {
   const ui::AXMode previous_mode = GetAccessibilityMode();
   if (new_mode == previous_mode) {
     return;
-  }
-
-  // Form controls mode is restrictive. There are other modes that should not be
-  // used in combination with it.
-  if (new_mode.HasExperimentalFlags(ui::AXMode::kExperimentalFormControls)) {
-    CHECK(!new_mode.has_mode(ui::AXMode::kInlineTextBoxes));
-    CHECK(!new_mode.has_mode(ui::AXMode::kScreenReader));
   }
 
   process_accessibility_mode_ = CreateScopedModeForProcess(new_mode);

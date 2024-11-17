@@ -4,7 +4,9 @@ include_rules = [
   "+chrome/updater",
   "+components/browser_ui/client_certificate",
   "+components/browser_ui/device_lock/android",
+  "+components/browser_ui/edge_to_edge/android",
   "+components/browser_ui/util/android/url_constants.h",
+  "+components/collaboration/public",
   "+components/country_codes",
   "+components/data_sharing/public",
   "+components/endpoint_fetcher",
@@ -19,7 +21,11 @@ include_rules = [
   "+components/facilitated_payments/core/features",
   "+components/power_bookmarks/core",
   "+components/safety_check",
-  "+components/saved_tab_groups",
+  "+components/saved_tab_groups/public",
+  "+components/saved_tab_groups/internal/saved_tab_group_model.h",
+  "+components/saved_tab_groups/internal/saved_tab_group_model_observer.h",
+  "+components/saved_tab_groups/internal/tab_group_sync_service_impl.h",
+  "+components/saved_tab_groups/test_support",
   "+components/segmentation_platform/content",
   "+components/soda",
   "+components/supervised_user/core/common",
@@ -40,6 +46,9 @@ specific_include_rules = {
   "application_launch_browsertest\.cc": [
     "+ash/shell.h",
   ],
+  "browser_command_controller_browsertest\.cc": [
+    "+ash/wm/window_pin_util.h",
+  ],
   "browser_finder_chromeos_browsertest\.cc": [
     "+ash/wm/desks/desk.h",
     "+ash/wm/desks/desks_controller.h",
@@ -48,11 +57,18 @@ specific_include_rules = {
   "browser_navigator_browsertest\.cc": [
     "+ash/shell.h",
   ],
+  "browser_navigator_browsertest_chromeos\.cc": [
+    "+ash/wm/window_pin_util.h",
+  ],
+  "browser_tabstrip_browsertest_chromeos\.cc": [
+    "+ash/wm/window_pin_util.h",
+  ],
   "dark_mode_manager_linux(_unittest)?\.cc": [
     "+dbus",
   ],
   "fullscreen_controller_interactive_browsertest\.cc": [
     "+ash/shell.h",
+    "+ash/wm/window_pin_util.h",
   ],
   "popup_browsertest\.cc": [
     "+ash/shell.h",

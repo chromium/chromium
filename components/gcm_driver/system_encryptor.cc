@@ -8,7 +8,7 @@
 
 namespace gcm {
 
-SystemEncryptor::~SystemEncryptor() {}
+SystemEncryptor::~SystemEncryptor() = default;
 
 bool SystemEncryptor::EncryptString(const std::string& plaintext,
                                     std::string* ciphertext) {

@@ -25,9 +25,9 @@ class PrivacySafeBrowsingViewControllerTest
  protected:
   void SetUp() override {
     LegacyChromeTableViewControllerTest::SetUp();
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.SetPrefService(CreatePrefService());
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder builder;
+    builder.SetPrefService(CreatePrefService());
+    profile_ = std::move(builder).Build();
   }
 
   // Makes a PrefService to be used by the test.
@@ -35,13 +35,13 @@ class PrivacySafeBrowsingViewControllerTest
     auto prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     user_prefs::PrefRegistrySyncable* registry = prefs->registry();
-    RegisterBrowserStatePrefs(registry);
+    RegisterProfilePrefs(registry);
     return prefs;
   }
 
   LegacyChromeTableViewController* InstantiateController() override {
     mediator_ = [[PrivacySafeBrowsingMediator alloc]
-        initWithUserPrefService:chrome_browser_state_->GetPrefs()];
+        initWithUserPrefService:profile_->GetPrefs()];
     PrivacySafeBrowsingViewController* view_controller =
         [[PrivacySafeBrowsingViewController alloc]
             initWithStyle:ChromeTableViewStyle()];
@@ -50,7 +50,7 @@ class PrivacySafeBrowsingViewControllerTest
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   PrivacySafeBrowsingMediator* mediator_;
 };
 

@@ -90,7 +90,6 @@ namespace enterprise.platformKeys {
     Scope scope;
   };
 
-
   interface Functions {
     // Returns the available Tokens. In a regular user's session the list will
     // always contain the user's token with <code>id</code> <code>"user"</code>.
@@ -135,19 +134,19 @@ namespace enterprise.platformKeys {
     // <code>challengeUserKey</code>, but allows specifying the algorithm of a
     // registered key. Challenges a hardware-backed Enterprise Machine Key and
     // emits the response as part of a remote attestation protocol. Only useful
-    // on Chrome OS and in conjunction with the Verified Access Web API which
+    // on ChromeOS and in conjunction with the Verified Access Web API which
     // both issues challenges and verifies responses.
     //
     // A successful verification by the Verified Access Web API is a strong
-    // signal that the current device is a legitimate Chrome OS device, the
+    // signal that the current device is a legitimate ChromeOS device, the
     // current device is managed by the domain specified during verification,
     // the current signed-in user is managed by the domain specified during
     // verification, and the current device state complies with enterprise
     // device policy. For example, a policy may specify that the device must not
-    // be in developer mode.  Any device identity emitted by the verification is
+    // be in developer mode. Any device identity emitted by the verification is
     // tightly bound to the hardware of the current device. If
-    // <code>"user"</code> Scope is specified, the identity is also tighly bound
-    // to the current signed-in user.
+    // <code>"user"</code> Scope is specified, the identity is also tightly
+    // bound to the current signed-in user.
     //
     // This function is highly restricted and will fail if the current device is
     // not managed, the current user is not managed, or if this operation has
@@ -161,11 +160,11 @@ namespace enterprise.platformKeys {
                              ChallengeCallback callback);
 
     // Challenges a hardware-backed Enterprise Machine Key and emits the
-    // response as part of a remote attestation protocol. Only useful on Chrome
-    // OS and in conjunction with the Verified Access Web API which both issues
-    // challenges and verifies responses. A successful verification by the
-    // Verified Access Web API is a strong signal of all of the following:
-    // * The current device is a legitimate Chrome OS device.
+    // response as part of a remote attestation protocol. Only useful on
+    // ChromeOS and in conjunction with the Verified Access Web API which both
+    // issues challenges and verifies responses. A successful verification by
+    // the Verified Access Web API is a strong signal of all of the following:
+    // * The current device is a legitimate ChromeOS device.
     // * The current device is managed by the domain specified during
     //   verification.
     // * The current signed-in user is managed by the domain specified during
@@ -195,11 +194,11 @@ namespace enterprise.platformKeys {
                                     ChallengeCallback callback);
 
     // Challenges a hardware-backed Enterprise User Key and emits the response
-    // as part of a remote attestation protocol. Only useful on Chrome OS and in
+    // as part of a remote attestation protocol. Only useful on ChromeOS and in
     // conjunction with the Verified Access Web API which both issues challenges
     // and verifies responses. A successful verification by the Verified Access
     // Web API is a strong signal of all of the following:
-    // * The current device is a legitimate Chrome OS device.
+    // * The current device is a legitimate ChromeOS device.
     // * The current device is managed by the domain specified during
     //   verification.
     // * The current signed-in user is managed by the domain specified during

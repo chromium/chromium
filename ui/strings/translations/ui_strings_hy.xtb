@@ -107,7 +107,7 @@
 <translation id="4289540628985791613">Համատեսք</translation>
 <translation id="4491109536499578614">Պատկեր</translation>
 <translation id="4565377596337484307">Թաքցնել գաղտնաբառը</translation>
-<translation id="4588090240171750605">Ոլորել դեպի աջ</translation>
+<translation id="4588090240171750605">Թերթել աջ</translation>
 <translation id="4689010477870442157">{YEARS,plural, =1{1 տարի առաջ}one{# տարի առաջ}other{# տարի առաջ}}</translation>
 <translation id="4724120544754982507">Ծանուցումների կենտրոն, <ph name="UNREAD_NOTIFICATION_COUNT" /> չկարդացված ծանուցում</translation>
 <translation id="4729257764711776855">հեռախոսահամար</translation>
@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">Չհաջողվեց բեռնել էջը, քանի որ ծրագրավորողի միջերեսի մոդուլը (dev_ui) տեղադրված չէ</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> համակարգ</translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">Ներդիր</translation>
 <translation id="5613020302032141669">Ձախ սլաք</translation>
 <translation id="5633029987065897167">Դատարկ</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 րոպե}one{# րոպե}other{# րոպե}}</translation>
@@ -150,7 +151,7 @@
 <translation id="6237461503717005873">Ընտրված է <ph name="ROW_NAME" />։</translation>
 <translation id="6264365405983206840">Ընտրել &amp;բոլորը</translation>
 <translation id="6346952829206698721">Տեղադրել սեղմատախտակից</translation>
-<translation id="6364916375976753737">Ոլորել ձախ</translation>
+<translation id="6364916375976753737">Թերթել ձախ</translation>
 <translation id="6394627529324717982">Ստորակետ</translation>
 <translation id="6397363302884558537">Stop Speaking</translation>
 <translation id="6404817160109697034">{SECONDS,plural, =1{1 վրկ առաջ}one{# վրկ առաջ}other{# վրկ առաջ}}</translation>
@@ -196,14 +197,13 @@
 <translation id="8106081041558092062">{HOURS,plural, =1{1 ժամ առաջ}one{# ժամ առաջ}other{# ժամ առաջ}}</translation>
 <translation id="8131263257437993507">{SECONDS,plural, =1{Մնացել է 1 վրկ}one{Մնացել է # վրկ}other{Մնացել է # վրկ}}</translation>
 <translation id="8134065097954893699">Այս էջը վերաբեռնվում է</translation>
-<translation id="815598010540052116">Ոլորել ներքև</translation>
+<translation id="815598010540052116">Թերթել ներքև</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Էջը վար</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Tab</translation>
 <translation id="8259556432390118667">Գույնի տասնվեցական կոդը</translation>
 <translation id="8328145009876646418">Ձախ եզր</translation>
-<translation id="8331626408530291785">Ոլորել վեր</translation>
+<translation id="8331626408530291785">Թերթել վերև</translation>
 <translation id="8352146631962686268">{YEARS,plural, =1{1 տարի}one{# տարի}other{# տարի}}</translation>
 <translation id="8393700583063109961">Ուղարկել հաղորդագրություն</translation>
 <translation id="8394908167088220973">Մեդիայի նվագարկում/դադար</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 վրկ}one{# վրկ}other{# վրկ}}</translation>
 <translation id="9059834730836941392">Կոծկել</translation>
 <translation id="9170848237812810038">&amp;Հետարկել</translation>
+<translation id="9195990613383871904">Վաղը</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">Գլխավոր էջ</translation>
 <translation id="944069440740578670">Չկարդացված ծանուցումներ</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{1 վայրկյան առաջ}one{# վայրկյան առաջ}other{# վայրկյան առաջ}}</translation>

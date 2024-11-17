@@ -37,7 +37,6 @@ misc_sources = [
   "dictation/earcons/audio_end.wav",
   "dictation/earcons/audio_initiate.wav",
   "dictation/earcons/null_selection.wav",
-  "facegaze/weights.html",
 ]
 
 js_modules = [
@@ -62,15 +61,16 @@ ts_modules = [
   "dictation/parse/parse_strategy.ts",
   "dictation/parse/pumpkin/pumpkin_constants.ts",
   "dictation/parse/speech_parser.ts",
-  "facegaze/constants.ts",
+  "facegaze/bubble_controller.ts",
   "facegaze/facegaze.ts",
   "facegaze/web_cam_face_landmarker.ts",
   "facegaze/gesture_detector.ts",
   "facegaze/gesture_handler.ts",
+  "facegaze/gesture_timer.ts",
   "facegaze/metrics_utils.ts",
   "facegaze/mouse_controller.ts",
   "facegaze/scroll_mode_controller.ts",
-  "facegaze/weights.ts",
+  "facegaze/macros/mouse_long_click_macro.ts",
   "facegaze/macros/mouse_scroll_macro.ts",
   "facegaze/macros/reset_cursor_macro.ts",
   "magnifier/magnifier.ts",

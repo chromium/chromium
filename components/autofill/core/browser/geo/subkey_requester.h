@@ -30,7 +30,7 @@ class SubKeyRequester : public LoadRulesListener {
   class Request {
    public:
     virtual void OnRulesLoaded() = 0;
-    virtual ~Request() {}
+    virtual ~Request() = default;
   };
 
   SubKeyRequester(std::unique_ptr<::i18n::addressinput::Source> source,

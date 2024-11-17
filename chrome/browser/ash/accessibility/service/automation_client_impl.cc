@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/accessibility/service/automation_client_impl.h"
+
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "extensions/browser/api/automation_internal/automation_internal_api.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "ui/accessibility/ax_location_and_scroll_updates.h"
 
 namespace ash {
 
@@ -55,8 +57,8 @@ void AutomationClientImpl::DispatchAccessibilityEvents(
 }
 
 void AutomationClientImpl::DispatchAccessibilityLocationChange(
-    const ui::AXLocationChanges& details) {
-  ui::AXTreeID tree_id = details.ax_tree_id;
+    const ui::AXTreeID& tree_id,
+    const ui::AXLocationChange& details) {
   if (tree_id == ui::AXTreeIDUnknown())
     return;
   for (auto& remote : automation_remotes_) {
@@ -64,6 +66,19 @@ void AutomationClientImpl::DispatchAccessibilityLocationChange(
                                                 details.new_location);
   }
 }
+
+void AutomationClientImpl::DispatchAccessibilityScrollChange(
+    const ui::AXTreeID& tree_id,
+    const ui::AXScrollChange& details) {
+  if (tree_id == ui::AXTreeIDUnknown()) {
+    return;
+  }
+  for (auto& remote : automation_remotes_) {
+    remote->DispatchAccessibilityScrollChange(
+        tree_id, details.id, details.scroll_x, details.scroll_y);
+  }
+}
+
 void AutomationClientImpl::DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) {
   if (tree_id == ui::AXTreeIDUnknown())
     return;

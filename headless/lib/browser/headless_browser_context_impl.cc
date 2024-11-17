@@ -65,7 +65,7 @@ HeadlessBrowserContextImpl::HeadlessBrowserContextImpl(
     : browser_(browser),
       context_options_(std::move(context_options)),
       permission_controller_delegate_(
-          std::make_unique<HeadlessPermissionManager>(this)),
+          std::make_unique<HeadlessPermissionManager>()),
       hints_delegate_(
           std::make_unique<HeadlessClientHintsControllerDelegate>()) {
   BrowserContextDependencyManager::GetInstance()->MarkBrowserContextLive(this);
@@ -290,25 +290,30 @@ HeadlessWebContents* HeadlessBrowserContextImpl::CreateWebContents(
 
 void HeadlessBrowserContextImpl::RegisterWebContents(
     std::unique_ptr<HeadlessWebContentsImpl> web_contents) {
-  DCHECK(web_contents);
-  web_contents_map_[web_contents->GetDevToolsAgentHostId()] =
-      std::move(web_contents);
+  CHECK(web_contents);
+  const uintptr_t key =
+      reinterpret_cast<uintptr_t>(web_contents->web_contents());
+  CHECK(key);
+  const bool inserted =
+      web_contents_map_.insert({key, std::move(web_contents)}).second;
+  CHECK(inserted);
 }
 
 void HeadlessBrowserContextImpl::DestroyWebContents(
     HeadlessWebContentsImpl* web_contents) {
-  auto it = web_contents_map_.find(web_contents->GetDevToolsAgentHostId());
-  CHECK(it != web_contents_map_.end(), base::NotFatalUntil::M130);
-  web_contents_map_.erase(it);
+  CHECK(web_contents);
+  const uintptr_t key =
+      reinterpret_cast<uintptr_t>(web_contents->web_contents());
+  CHECK(key);
+  size_t erased = web_contents_map_.erase(key);
+  CHECK(erased);
 }
 
-HeadlessWebContents*
-HeadlessBrowserContextImpl::GetWebContentsForDevToolsAgentHostId(
-    const std::string& devtools_agent_host_id) {
-  auto find_it = web_contents_map_.find(devtools_agent_host_id);
-  if (find_it == web_contents_map_.end())
-    return nullptr;
-  return find_it->second.get();
+HeadlessWebContentsImpl* HeadlessBrowserContextImpl::GetHeadlessWebContents(
+    const content::WebContents* web_contents) {
+  const uintptr_t key = reinterpret_cast<uintptr_t>(web_contents);
+  auto find_it = web_contents_map_.find(key);
+  return find_it == web_contents_map_.end() ? nullptr : find_it->second.get();
 }
 
 HeadlessBrowserImpl* HeadlessBrowserContextImpl::browser() const {

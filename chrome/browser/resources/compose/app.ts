@@ -3,15 +3,16 @@
 // found in the LICENSE file.
 
 import './icons.html.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './textarea.js';
 import './result_text.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
+import '//resources/cr_elements/cr_chip/cr_chip.js';
 import '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import '//resources/cr_elements/cr_loading_gradient/cr_loading_gradient.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/md_select.css.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
 
@@ -19,6 +20,7 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import type {CrA11yAnnouncerElement} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
+import type {CrChipElement} from '//resources/cr_elements/cr_chip/cr_chip.js';
 import type {CrFeedbackButtonsElement} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {CrScrollObserverMixin} from '//resources/cr_elements/cr_scroll_observer_mixin.js';
@@ -32,7 +34,7 @@ import {Debouncer, microTask, PolymerElement} from '//resources/polymer/v3_0/pol
 import {ComposeAppAnimator} from './animations/app_animator.js';
 import {getTemplate} from './app.html.js';
 import type {ComposeResponse, ComposeState, ComposeUntrustedDialogCallbackRouter, ConfigurableParams, PartialComposeResponse} from './compose.mojom-webui.js';
-import {CloseReason, StyleModifier, UserFeedback} from './compose.mojom-webui.js';
+import {CloseReason, InputMode, StyleModifier, UserFeedback} from './compose.mojom-webui.js';
 import type {ComposeApiProxy} from './compose_api_proxy.js';
 import {ComposeApiProxyImpl} from './compose_api_proxy.js';
 import {ComposeStatus} from './compose_enums.mojom-webui.js';
@@ -44,9 +46,8 @@ import type {ComposeTextareaElement} from './textarea.js';
 export interface ComposeAppState {
   editedInput?: string;
   input: string;
+  inputMode: InputMode;
   isEditingSubmittedInput?: boolean;
-  selectedLength?: StyleModifier;
-  selectedTone?: StyleModifier;
 }
 
 export interface ComposeAppElement {
@@ -69,7 +70,6 @@ export interface ComposeAppElement {
     loading: HTMLElement,
     undoButton: CrButtonElement,
     redoButton: CrButtonElement,
-    refreshButton: HTMLElement,
     resultContainer: HTMLElement,
     resultTextContainer: HTMLElement,
     resultFooter: HTMLElement,
@@ -78,11 +78,12 @@ export interface ComposeAppElement {
     submitFooter: HTMLElement,
     onDeviceUsedFooter: HTMLElement,
     textarea: ComposeTextareaElement,
-    lengthMenu: HTMLSelectElement,
-    toneMenu: HTMLSelectElement,
     modifierMenu: HTMLSelectElement,
     resultText: ComposeResultTextElement,
     feedbackButtons: CrFeedbackButtonsElement,
+    polishChip: CrChipElement,
+    elaborateChip: CrChipElement,
+    formalizeChip: CrChipElement,
   };
 }
 
@@ -99,10 +100,7 @@ const ComposeAppElementBase = I18nMixin(CrScrollObserverMixin(PolymerElement));
 // can be restored to the respective element afterwards.
 enum TriggerElement {
   SUBMIT_INPUT,  // For initial input or editing input.
-  TONE,
-  LENGTH,
   MODIFIER,
-  REFRESH,
   UNDO,
   REDO,
 }
@@ -126,6 +124,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: Boolean,
         value: loadTimeData.getBoolean('enableAnimations'),
         reflectToAttribute: true,
+      },
+      enableUpfrontInputModes: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('enableUpfrontInputModes'),
       },
       feedbackState_: {
         type: String,
@@ -172,13 +174,29 @@ export class ComposeAppElement extends ComposeAppElementBase {
         type: Object,
         value: null,
       },
-      selectedLength_: {
-        type: Number,
-        value: StyleModifier.kUnset,
+      showInputModes_: {
+        type: Boolean,
+        reflectToAttribute: true,
+        computed: 'shouldShowInputModes_(submitted_, enableUpfrontInputModes)',
       },
-      selectedTone_: {
+      selectedInputMode_: {
         type: Number,
-        value: StyleModifier.kUnset,
+        value: InputMode.kUnset,
+      },
+      polishChipIcon_: {
+        type: String,
+        value: 'cr:check',
+        reflectToAttribute: true,
+      },
+      elaborateChipIcon_: {
+        type: String,
+        value: 'compose:elaborate',
+        reflectToAttribute: true,
+      },
+      formalizeChipIcon_: {
+        type: String,
+        value: 'compose:formalize',
+        reflectToAttribute: true,
       },
       showMainAppDialog_: {
         type: Boolean,
@@ -213,46 +231,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
       },
       displayedText_: {
         type: String,
-      },
-      lengthOptions_: {
-        type: Array,
-        value: () => {
-          return [
-            {
-              value: StyleModifier.kUnset,
-              label: loadTimeData.getString('lengthMenuTitle'),
-              isDefault: true,
-            },
-            {
-              value: StyleModifier.kShorter,
-              label: loadTimeData.getString('shorterOption'),
-            },
-            {
-              value: StyleModifier.kLonger,
-              label: loadTimeData.getString('longerOption'),
-            },
-          ];
-        },
-      },
-      toneOptions_: {
-        type: Array,
-        value: () => {
-          return [
-            {
-              value: StyleModifier.kUnset,
-              label: loadTimeData.getString('toneMenuTitle'),
-              isDefault: true,
-            },
-            {
-              value: StyleModifier.kCasual,
-              label: loadTimeData.getString('casualToneOption'),
-            },
-            {
-              value: StyleModifier.kFormal,
-              label: loadTimeData.getString('formalToneOption'),
-            },
-          ];
-        },
       },
       modifierOptions_: {
         type: Array,
@@ -298,6 +276,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
   }
 
   enableAnimations: boolean;
+  enableUpfrontInputModes: boolean;
 
   private animator_: ComposeAppAnimator;
   private apiProxy_: ComposeApiProxy = ComposeApiProxyImpl.getInstance();
@@ -322,8 +301,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
   private saveAppStateDebouncer_: Debouncer;
   private scrollCheckDebouncer_: Debouncer;
   private updateResultCompleteDebouncer_: Debouncer;
-  private selectedLength_: StyleModifier;
-  private selectedTone_: StyleModifier;
+  private selectedInputMode_: InputMode;
+  private polishChipIcon_: string;
+  private elaborateChipIcon_: string;
+  private formalizeChipIcon_: string;
   private textSelected_: boolean;
   private submitted_: boolean;
   private undoEnabled_: boolean;
@@ -343,6 +324,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.animator_ = new ComposeAppAnimator(
         this, loadTimeData.getBoolean('enableAnimations'));
     this.getInitialState_();
+    // If upfront inputs are enabled, the default mode should be set to Polish.
+    if (this.enableUpfrontInputModes) {
+      this.selectedInputMode_ = InputMode.kPolish;
+    }
     this.router_.responseReceived.addListener((response: ComposeResponse) => {
       this.composeResponseReceived_(response);
     });
@@ -440,8 +425,8 @@ export class ComposeAppElement extends ComposeAppElementBase {
       if (composeState.webuiState) {
         const appState: ComposeAppState = JSON.parse(composeState.webuiState);
         this.input_ = appState.input;
-        this.selectedLength_ = appState.selectedLength ?? StyleModifier.kUnset;
-        this.selectedTone_ = appState.selectedTone ?? StyleModifier.kUnset;
+        this.selectedInputMode_ = appState.inputMode;
+        this.updateInputMode_();
         if (appState.isEditingSubmittedInput) {
           this.isEditingSubmittedInput_ = appState.isEditingSubmittedInput;
           this.editedInput_ = appState.editedInput!;
@@ -548,11 +533,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private onRefresh_() {
-    this.rewrite_(StyleModifier.kRetry);
-    this.lastTriggerElement_ = TriggerElement.REFRESH;
-  }
-
   private onSubmit_() {
     this.isSubmitEnabled_ = this.$.textarea.validate();
     if (!this.isSubmitEnabled_) {
@@ -581,8 +561,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     const editTextareaHeight = this.$.editTextarea.offsetHeight;
     this.isEditingSubmittedInput_ = false;
     this.input_ = this.editedInput_;
-    this.selectedLength_ = StyleModifier.kUnset;
-    this.selectedTone_ = StyleModifier.kUnset;
     this.animator_.transitionFromEditingToLoading(bodyHeight);
     this.$.textarea.transitionToReadonly(editTextareaHeight);
     this.$.editTextarea.transitionToReadonly(editTextareaHeight);
@@ -605,18 +583,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     }
   }
 
-  private onLengthChanged_() {
-    this.selectedLength_ = Number(this.$.lengthMenu.value) as StyleModifier;
-    this.rewrite_(this.selectedLength_);
-    this.lastTriggerElement_ = TriggerElement.LENGTH;
-  }
-
-  private onToneChanged_() {
-    this.selectedTone_ = Number(this.$.toneMenu.value) as StyleModifier;
-    this.rewrite_(this.selectedTone_);
-    this.lastTriggerElement_ = TriggerElement.TONE;
-  }
-
   private onModifierChanged_() {
     const selectedModifier =
       Number(this.$.modifierMenu.value) as StyleModifier;
@@ -626,6 +592,41 @@ export class ComposeAppElement extends ComposeAppElementBase {
     // index of 0 corresponds to the default value, which is disabled and cannot
     // be selected in the dialog.
     this.$.modifierMenu.selectedIndex = 0;
+  }
+
+  private shouldShowInputModes_() {
+    return !this.submitted_ && this.enableUpfrontInputModes;
+  }
+
+  private onPolishChipClick_() {
+    this.selectedInputMode_ = InputMode.kPolish;
+    this.updateInputMode_();
+  }
+
+  private onElaborateChipClick_() {
+    this.selectedInputMode_ = InputMode.kElaborate;
+    this.updateInputMode_();
+  }
+
+  private onFormalizeChipClick_() {
+    this.selectedInputMode_ = InputMode.kFormalize;
+    this.updateInputMode_();
+  }
+
+  private updateInputMode_() {
+    this.userHasModifiedState_ = true;
+    this.$.polishChip.selected = this.selectedInputMode_ === InputMode.kPolish;
+    this.polishChipIcon_ =
+        this.$.polishChip.selected ? 'cr:check' : 'compose:polish';
+    this.$.elaborateChip.selected =
+        this.selectedInputMode_ === InputMode.kElaborate;
+    this.elaborateChipIcon_ =
+        this.$.elaborateChip.selected ? 'cr:check' : 'compose:elaborate';
+    this.$.formalizeChip.selected =
+        this.selectedInputMode_ === InputMode.kFormalize;
+    this.formalizeChipIcon_ =
+        this.$.formalizeChip.selected ? 'cr:check' : 'compose:formalize';
+    this.saveComposeAppState_();
   }
 
   private openModifierMenuOnKeyDown_(e: KeyboardEvent) {
@@ -694,7 +695,7 @@ export class ComposeAppElement extends ComposeAppElementBase {
     this.partialResponse_ = undefined;
     this.feedbackEnabled_ = true;
     this.saveComposeAppState_();  // Ensure state is saved before compose call.
-    this.apiProxy_.compose(this.input_, inputEdited);
+    this.apiProxy_.compose(this.input_, this.selectedInputMode_, inputEdited);
   }
 
   private rewrite_(style: StyleModifier) {
@@ -752,15 +753,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     switch (this.lastTriggerElement_) {
       case TriggerElement.SUBMIT_INPUT:
         this.$.textarea.focusEditButton();
-        break;
-      case TriggerElement.REFRESH:
-        this.$.refreshButton.focus({preventScroll: true});
-        break;
-      case TriggerElement.LENGTH:
-        this.$.lengthMenu.focus({preventScroll: true});
-        break;
-      case TriggerElement.TONE:
-        this.$.toneMenu.focus({preventScroll: true});
         break;
       case TriggerElement.MODIFIER:
         this.$.modifierMenu.focus({ preventScroll: true });
@@ -915,13 +907,10 @@ export class ComposeAppElement extends ComposeAppElementBase {
       return;
     }
 
-    const state: ComposeAppState = {input: this.input_};
-    if (this.selectedLength_ !== StyleModifier.kUnset) {
-      state.selectedLength = this.selectedLength_;
-    }
-    if (this.selectedTone_ !== StyleModifier.kUnset) {
-      state.selectedTone = this.selectedTone_;
-    }
+    const state: ComposeAppState = {
+      input: this.input_,
+      inputMode: this.selectedInputMode_,
+    };
     if (this.isEditingSubmittedInput_) {
       state.isEditingSubmittedInput = this.isEditingSubmittedInput_;
       state.editedInput = this.editedInput_;
@@ -1015,10 +1004,6 @@ export class ComposeAppElement extends ComposeAppElementBase {
     if (state.webuiState) {
       const appState: ComposeAppState = JSON.parse(state.webuiState);
       this.input_ = appState.input;
-      // TODO(b/333985071): Remove modifier tracking when ComposeUiRefinement
-      // flag is removed.
-      this.selectedLength_ = appState.selectedLength ?? StyleModifier.kUnset;
-      this.selectedTone_ = appState.selectedTone ?? StyleModifier.kUnset;
     }
   }
 

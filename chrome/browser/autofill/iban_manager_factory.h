@@ -35,7 +35,7 @@ class IbanManagerFactory : public ProfileKeyedServiceFactory {
   ~IbanManagerFactory() override;
 
   // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
+  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
       content::BrowserContext* profile) const override;
 };
 

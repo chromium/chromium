@@ -15,6 +15,7 @@ get_targets_spec_generator to get an object that can be used to generate the
 targets spec files for the builder.
 """
 
+load("@stdlib//internal/error.star", "error")
 load("@stdlib//internal/graph.star", "graph")
 load("//lib/args.star", args_lib = "args")
 load("//lib/chrome_settings.star", "targets_config")
@@ -53,9 +54,11 @@ def register_targets(*, parent_key, builder_group, builder_name, name, targets, 
     graph.add_edge(parent_key, targets_key)
 
 _OS_SPECIFIC_ARGS = {
+    # desktop_args goes first to appear before args from other os-specific args
+    # values; this matches generate_buildbot_json.py behavior
+    "desktop_args": "is_desktop",
     "android_args": "is_android",
     "chromeos_args": "is_cros",
-    "desktop_args": "is_desktop",
     "lacros_args": "is_lacros",
     "linux_args": "is_linux",
     "mac_args": "is_mac",
@@ -98,7 +101,9 @@ def _apply_mixin(spec, settings, mixin_values):
         if os_specific_swarming and getattr(settings, settings_attr):
             spec_value["swarming"] = _targets_common.merge_swarming(spec_value["swarming"], os_specific_swarming)
 
-    spec_value["description"] = "\n".join(args_lib.listify(spec_value["description"], mixin_values.pop("description", None))) or None
+    description_mixin = mixin_values.pop("description", None)
+    if description_mixin:
+        spec_value["description"] = "\n".join(args_lib.listify(spec_value["description"], description_mixin)) or None
 
     spec_value.update(mixin_values)
 
@@ -110,6 +115,46 @@ def _test_expansion(*, spec, source):
         source = source,
         mixins_to_ignore = set(),
     )
+
+def _replace_args(args, replacements):
+    new_args = []
+    skip = False
+    for arg in args:
+        # This is the value for a 2-argument flag, it was handled in the
+        # previous iteration
+        if skip:
+            skip = False
+            continue
+
+        # The flag might be a magic arg, which is a struct not a string
+        flag = arg
+        if type(arg) == type("") and "=" in arg:
+            flag = arg.split("=", 1)[0]
+
+        if flag not in replacements:
+            new_args.append(arg)
+            continue
+
+        # This is the behavior from generate_buildbot_json.py:
+        # * If the replacement value is None, then remove the flag argument,
+        #   there is no support for removing a flag that has a separate value
+        #   argument
+        # * If the replacement value is not None, then if it's a separate flag
+        #   and value, replace it with a separate flag and the replacement
+        #   value, otherwise replace it with --flag=replacement_value
+        value = replacements[flag]
+        if value != None:
+            # Separate flag and value
+            if flag == arg:
+                new_args.append(flag)
+                new_args.append(value)
+                skip = True
+            else:
+                new_args.append("{}={}".format(flag, value))
+
+    # TODO: crbug.com/40258588 - Check that all replacements are used, output an
+    # error message indicating the bundle, test and attribute being worked on
+    return new_args
 
 def _get_bundle_resolver():
     def resolved_bundle(*, additional_compile_targets, test_expansion_by_name):
@@ -144,10 +189,10 @@ def _get_bundle_resolver():
                 # DEFINITION_ORDER preserves the order that the edges were added
                 # from the parent to the child
                 for m in graph.children(test.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
-                    spec, error = _apply_mixin(spec, settings, m.props.mixin_values)
-                    if error:
+                    spec, failure = _apply_mixin(spec, settings, m.props.mixin_values)
+                    if failure:
                         fail("modifying {} {} with {} failed: {}"
-                            .format(spec.handler.type_name, test.key.id, m, error))
+                            .format(spec.handler.type_name, test.key.id, m, failure))
                 test_expansion_by_name[test.key.id] = _test_expansion(
                     spec = spec,
                     source = n.key,
@@ -170,43 +215,69 @@ def _get_bundle_resolver():
                             ))
                     test_expansion_by_name[name] = test_expansion
 
-            # Update the mixins to remove for the test expansions
+            per_test_modifications = []
             for per_test_modification in graph.children(n.key, kind = _targets_nodes.PER_TEST_MODIFICATION.kind):
                 name = per_test_modification.key.id
-                if name not in test_expansion_by_name:
-                    fail(
-                        "attempting to modify test '{}' that is not contained in the bundle"
-                            .format(name),
-                        trace = n.props.stacktrace,
-                    )
+                if name in test_expansion_by_name:
+                    per_test_modifications.append(per_test_modification)
+                    continue
+                error(
+                    "attempting to modify test '{}' that is not contained in the bundle"
+                        .format(name),
+                    trace = n.props.stacktrace,
+                )
+
+            # Update the mixins to remove for the test expansions
+            for per_test_modification in per_test_modifications:
                 mixins_to_ignore = _targets_nodes.REMOVE_MIXIN.children(per_test_modification.key)
                 if mixins_to_ignore:
+                    name = per_test_modification.key.id
                     test_expansion = test_expansion_by_name[name]
                     test_expansion_by_name[name] = structs.evolve(test_expansion, mixins_to_ignore = test_expansion.mixins_to_ignore | set(mixins_to_ignore))
 
-            def update_spec_with_mixin(test_name, test_expansion, mixin, *, ignore_error = False):
+            def update_spec_with_mixin(test_name, test_expansion, mixin, *, ignore_failure = False):
                 if mixin in test_expansion.mixins_to_ignore:
                     return
                 spec = test_expansion.spec
-                new_spec, error = _apply_mixin(spec, settings, mixin.props.mixin_values)
-                if error:
-                    if ignore_error:
+                new_spec, failure = _apply_mixin(spec, settings, mixin.props.mixin_values)
+                if failure:
+                    if ignore_failure:
                         return
                     fail(
                         "modifying {} {} with {} failed: {}"
-                            .format(spec.handler.type_name, test_name, mixin, error),
+                            .format(spec.handler.type_name, test_name, mixin, failure),
                         trace = n.props.stacktrace,
                     )
                 test_expansion_by_name[test_name] = structs.evolve(test_expansion, spec = new_spec, source = n.key)
 
             for name in n.props.tests_to_remove:
-                if name not in test_expansion_by_name:
-                    fail(
+                test_expansion = test_expansion_by_name.pop(name, None)
+                if test_expansion == None:
+                    error(
                         "attempting to remove test '{}' that is not contained in the bundle"
                             .format(name),
                         trace = n.props.stacktrace,
                     )
-                test_expansion_by_name.pop(name)
+
+            variants = graph.children(n.key, _targets_nodes.VARIANT.kind)
+            if variants:
+                non_variant_test_expansion_by_name = test_expansion_by_name
+                test_expansion_by_name = {}
+                for name, test_expansion in non_variant_test_expansion_by_name.items():
+                    for variant in variants:
+                        name_with_variant = "{} {}".format(name, variant.props.identifier)
+                        test_expansion_by_name[name_with_variant] = test_expansion
+
+                        # The order that mixins are declared is significant,
+                        # DEFINITION_ORDER preserves the order that the edges
+                        # were added from the parent to the child
+                        for mixin in graph.children(variant.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
+                            update_spec_with_mixin(name_with_variant, test_expansion_by_name[name_with_variant], mixin)
+
+                        update_spec_with_mixin(name_with_variant, test_expansion_by_name[name_with_variant], variant)
+                        spec_value = test_expansion_by_name[name_with_variant].spec.value
+                        spec_value["name"] = name_with_variant
+                        spec_value["variant_id"] = variant.props.identifier
 
             # The order that mixins are declared is significant,
             # DEFINITION_ORDER preserves the order that the edges were added
@@ -215,19 +286,9 @@ def _get_bundle_resolver():
                 for name, test_expansion in test_expansion_by_name.items():
                     # We don't care if a mixin applied at bundle level doesn't
                     # apply to every test, so ignore errors
-                    update_spec_with_mixin(name, test_expansion, mixin, ignore_error = True)
-            variants = graph.children(n.key, _targets_nodes.VARIANT.kind)
-            if variants:
-                non_variant_test_expansion_by_name = test_expansion_by_name
-                test_expansion_by_name = {}
-                for name, test_expansion in non_variant_test_expansion_by_name.items():
-                    for variant in variants:
-                        name_with_variant = "{} {}".format(name, variant.props.identifier)
-                        update_spec_with_mixin(name_with_variant, test_expansion, variant)
-                        spec_value = test_expansion_by_name[name_with_variant].spec.value
-                        spec_value["name"] = name_with_variant
-                        spec_value["variant_id"] = variant.props.identifier
-            for per_test_modification in graph.children(n.key, kind = _targets_nodes.PER_TEST_MODIFICATION.kind):
+                    update_spec_with_mixin(name, test_expansion, mixin, ignore_failure = True)
+
+            for per_test_modification in per_test_modifications:
                 name = per_test_modification.key.id
 
                 # The order that mixins are declared is significant,
@@ -235,6 +296,20 @@ def _get_bundle_resolver():
                 # from the parent to the child
                 for mixin in graph.children(per_test_modification.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
                     update_spec_with_mixin(name, test_expansion_by_name[name], mixin)
+
+                replacements = per_test_modification.props.replacements
+                update = {}
+                test_expansion = test_expansion_by_name[name]
+                spec = test_expansion.spec
+                for a in dir(replacements):
+                    args_to_replace = getattr(replacements, a)
+                    if not args_to_replace:
+                        continue
+                    update[a] = _replace_args(spec.value[a], args_to_replace)
+                if update:
+                    spec_value = dict(spec.value)
+                    spec_value.update(update)
+                    test_expansion_by_name[name] = structs.evolve(test_expansion, spec = structs.evolve(spec, value = spec_value))
 
             resolved_bundle_by_bundle_node[n] = resolved_bundle(
                 additional_compile_targets = additional_compile_targets,
@@ -248,15 +323,6 @@ def _get_bundle_resolver():
         )
 
     return resolve
-
-def _resolve_magic_args(builder_name, settings, spec_value):
-    new_args = []
-    for arg in spec_value["args"]:
-        if type(arg) == type(struct()):
-            new_args.extend(arg.function(builder_name, settings, spec_value))
-        else:
-            new_args.append(arg)
-    spec_value["args"] = new_args
 
 # flag to merge -> inter-value separator
 _FLAGS_TO_MERGE = {
@@ -328,17 +394,13 @@ def get_targets_spec_generator():
 
         additional_compile_targets, test_spec_by_name = bundle_resolver(bundle_node, settings)
         sort_key_and_specs_by_type_key = {}
-        for name, spec in test_spec_by_name.items():
+        for test_name, spec in test_spec_by_name.items():
             spec_value = dict(spec.value)
-            type_key, sort_key, spec_value = spec.handler.finalize(name, settings, spec_value)
+            type_key, sort_key, spec_value = spec.handler.finalize(builder_name, test_name, settings, spec_value)
             if "args" in spec_value:
-                _resolve_magic_args(builder_name, settings, spec_value)
-
-                # Merge args after resolving magic args since that could produce
-                # additional args that should be merged
                 _merge_args(spec_value)
-            if name in current_autoshard_exceptions:
-                spec_value["swarming"]["shards"] = current_autoshard_exceptions[name]
+            if test_name in current_autoshard_exceptions:
+                spec_value["swarming"]["shards"] = current_autoshard_exceptions[test_name]
             finalized_spec = {k: v for k, v in spec_value.items() if v not in ([], None)}
             sort_key_and_specs_by_type_key.setdefault(type_key, []).append((sort_key, finalized_spec))
 

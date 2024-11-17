@@ -313,7 +313,13 @@ VIEW_TEST(MenuItemViewTestRemove01, MAYBE_RemoveItem01)
 VIEW_TEST(MenuItemViewTestRemove10, RemoveItem10)
 
 // If this flakes, disable and log details in http://crbug.com/523255.
-VIEW_TEST(MenuItemViewTestRemove11, RemoveItem11)
+// Flaky on Wayland.
+#if BUILDFLAG(IS_OZONE)
+#define MAYBE_RemoveItem11 DISABLED_RemoveItem11
+#else
+#define MAYBE_RemoveItem11 RemoveItem11
+#endif
+VIEW_TEST(MenuItemViewTestRemove11, MAYBE_RemoveItem11)
 
 // If this flakes, disable and log details in http://crbug.com/523255.
 VIEW_TEST(MenuItemViewTestRemove20, RemoveItem20)

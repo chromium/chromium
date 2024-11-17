@@ -44,7 +44,8 @@
           "group": "tryserver.chromium.mac"
         }
       ],
-      "retry_failed_shards": true
+      "retry_failed_shards": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac-intel-on-arm64-rel/targets"
     }
   },
   "$build/reclient": {

@@ -17,6 +17,7 @@
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "components/subresource_filter/core/common/constants.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
@@ -82,8 +83,8 @@ const url_pattern_index::flat::UrlRule* FindMatchingUrlRule(
     url_pattern_index::proto::ElementType type) {
   subresource_filter::mojom::ActivationState state;
   state.activation_level = subresource_filter::mojom::ActivationLevel::kEnabled;
-  subresource_filter::DocumentSubresourceFilter filter(document_origin, state,
-                                                       ruleset);
+  subresource_filter::DocumentSubresourceFilter filter(
+      document_origin, state, ruleset, kSafeBrowsingRulesetConfig.uma_tag);
 
   return filter.FindMatchingUrlRule(request_url, type);
 }

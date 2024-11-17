@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "base/types/optional_ref.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
 #include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
@@ -61,7 +62,7 @@ void SendResultToClient(
 
   if (result.has_value()) {
     client->OnSuccess(result.value().compression_scheme,
-                      result.value().compression_group_data);
+                      {result.value().compression_group_data});
   } else {
     client->OnError(result.error());
   }
@@ -592,8 +593,8 @@ TrustedSignalsCacheImpl::TrustedSignalsCacheImpl(
 TrustedSignalsCacheImpl::~TrustedSignalsCacheImpl() = default;
 
 mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache>
-TrustedSignalsCacheImpl::CreateMojoPipe(SignalsType signals_type,
-                                        const url::Origin& script_origin) {
+TrustedSignalsCacheImpl::CreateRemote(SignalsType signals_type,
+                                      const url::Origin& script_origin) {
   mojo::PendingRemote<auction_worklet::mojom::TrustedSignalsCache> out;
   receiver_set_.Add(this, out.InitWithNewPipeAndPassReceiver(),
                     ReceiverRestrictions{signals_type, script_origin});
@@ -972,12 +973,12 @@ void TrustedSignalsCacheImpl::StartBiddingSignalsFetch(
       // will not retain pointers to them.
       bidding_partitions.emplace_back(
           cache_entry->partition_id, &cache_entry->interest_group_names,
-          &cache_entry->keys, &cache_key->fetch_key.main_frame_origin.host(),
-          &cache_key->additional_params);
+          &cache_entry->keys, &cache_key->additional_params);
     }
   }
   fetch->fetcher->FetchBiddingSignals(
-      url_loader_factory_.get(), fetch_it->first.trusted_signals_url,
+      url_loader_factory_.get(), fetch_it->first.main_frame_origin.host(),
+      fetch_it->first.script_origin, fetch_it->first.trusted_signals_url,
       bidding_and_auction_key, bidding_partition_map,
       base::BindOnce(&TrustedSignalsCacheImpl::OnFetchComplete,
                      base::Unretained(this), fetch_it));
@@ -1012,12 +1013,12 @@ void TrustedSignalsCacheImpl::StartScoringSignalsFetch(
       scoring_partitions.emplace_back(
           cache_entry->partition_id, &cache_key->render_url,
           &cache_key->component_render_urls,
-          &cache_key->fetch_key.main_frame_origin.host(),
           &cache_key->additional_params);
     }
   }
   fetch->fetcher->FetchScoringSignals(
-      url_loader_factory_.get(), fetch_it->first.trusted_signals_url,
+      url_loader_factory_.get(), fetch_it->first.main_frame_origin.host(),
+      fetch_it->first.script_origin, fetch_it->first.trusted_signals_url,
       bidding_and_auction_key, scoring_partition_map,
       base::BindOnce(&TrustedSignalsCacheImpl::OnFetchComplete,
                      base::Unretained(this), fetch_it));

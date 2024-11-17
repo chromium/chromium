@@ -4,6 +4,7 @@
 
 module ash.boca.mojom;
 
+import "chromeos/services/network_config/public/mojom/network_types.mojom";
 import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/time.mojom";
 
@@ -30,6 +31,8 @@ struct Identity {
   string name;
   // User email address.
   string email;
+  // User photo url
+  url.mojom.Url? photo_url;
 };
 
 // Represents a course.
@@ -45,27 +48,50 @@ struct Window {
   // User-customized window name.
   string? name;
   // Tabs within browser window. Tabs are ordererd using non-increasing order
-  // for tab's last access
-  // timestamp
+  // for tab's last access timestamp.
   array<TabInfo> tab_list;
+};
+
+// The network technology type.
+enum NetworkType {
+  kCellular,
+  kEthernet,
+  kWiFi,
+  kUnsupported,
+};
+
+// Represents the network information.
+struct NetworkInfo {
+  chromeos.network_config.mojom.ConnectionStateType state;
+  NetworkType type;
+  // The human readable name of the network.
+  string name;
+  // The signal strength of the network in percentage.
+  int32 signal_strength;
 };
 
 struct Config{
   mojo_base.mojom.TimeDelta session_duration;
+  mojo_base.mojom.JSTime? session_start_time;
   Identity? teacher;
-  // Selected students to be joined for session.
+  // Students joined via Classroom roster selection.
   array<Identity> students;
+  // Students joined via access code.
+  array<Identity> students_join_via_code;
   OnTaskConfig on_task_config;
   CaptionConfig caption_config;
+  // Strings allow consumer to type and join a session. Will be alphabetic
+  // characters.
+  string? access_code;
 };
 
 struct CaptionConfig {
-  // If caption is enabled.
-  bool caption_enabled;
-  // If the caption will be persisted to local only.
-  bool local_only;
-  // If transcription is enabled.
-  bool transcription_enabled;
+  // If captions are available for session consumers.
+  bool session_caption_enabled;
+  // If captions are enabled on the local device.
+  bool local_caption_enabled;
+  // If session consumers can translate the captions.
+  bool session_translation_enabled;
 };
 
 enum NavigationType {
@@ -74,6 +100,7 @@ enum NavigationType {
   kBlock,
   kDomain,
   kLimited,
+  kSameDomainOpenOtherDomainLimited,
 };
 
 struct ControlledTab {
@@ -87,6 +114,31 @@ struct OnTaskConfig {
   array<ControlledTab> tabs;
 };
 
+enum JoinMethod {
+  kRoster = 0,
+  kAccessCode = 1,
+};
+
+struct StudentActivity {
+  // If the current student status is active.
+  bool is_active;
+  // Current active tab title.
+  string? active_tab;
+  // If caption is enabled.
+  bool is_caption_enabled;
+  // If hand raised.
+  bool is_hand_raised;
+  // TODO(b/365191878): Remove this after refactoring existing schema to support
+  // multi-group.
+  JoinMethod join_method;
+};
+
+struct IdentifiedActivity{
+  // Same id as identity.
+  string id;
+  StudentActivity activity;
+};
+
 enum GetSessionError{
   kHTTPError,
   kEmpty,
@@ -97,11 +149,26 @@ union SessionResult {
  Config config;
 };
 
+enum UpdateSessionError{
+  kInvalid,
+  kHTTPError,
+};
+
+enum RemoveStudentError{
+  // Invalid access code.
+  kInvalid,
+  // Network failure.
+  kHTTPError,
+};
+
+enum SubmitAccessCodeError {
+  kInvalid,
+};
+
 // Implemented by browser process for page chrome-untrusted://boca-app/
 interface PageHandler {
   // Fetches a list of browser windows and tabs in it. Windows are ordered using
-  // non-increasing order for most recent tab's last
-  // access timestamp
+  // non-increasing order for most recent tab's last access timestamp.
   GetWindowsTabsList() => (array<Window> window_list);
   // Fetch a list of courses for the current teacher.
   ListCourses() => (array<Course> courses);
@@ -113,10 +180,31 @@ interface PageHandler {
   CreateSession(Config config) => (bool success);
   // Retrieves the current session.
   GetSession() => (SessionResult result);
+  // End session.
+  EndSession() => (UpdateSessionError? error);
+  // Remove student from session.
+  RemoveStudent(string id) => (RemoveStudentError? error);
+  // Update OnTask config.
+  UpdateOnTaskConfig(OnTaskConfig on_task_config)
+  => (UpdateSessionError? error);
+  // Update caption config.
+  UpdateCaptionConfig(CaptionConfig caption_config)
+  => (UpdateSessionError? error);
+  // Set app float mode.
+  SetFloatMode(bool isFloatMode)=> (bool success);
+  // Submit access code to join a current class session.
+  SubmitAccessCode(string access_code) => (SubmitAccessCodeError? error);
 };
 
 // Implemented by renderer process
-interface Page {};
+interface Page {
+  // Notifies when student activities updated.
+  OnStudentActivityUpdated(array<IdentifiedActivity> activities);
+  // Notifies when session config updated.
+  OnSessionConfigUpdated(SessionResult config);
+  // Notifies when active networks updated.
+  OnActiveNetworkStateChanged(array<NetworkInfo> active_networks);
+};
 
 // Implemented in browser process to set up the communication between the Page
 // and PageHandler

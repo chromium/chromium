@@ -32,14 +32,13 @@ class TestLocationBarModel : public LocationBarModel {
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
-      bool is_prefetch = false) override;
+      bool is_prefetch = false) const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
   std::u16string GetSecureDisplayText() const override;
   std::u16string GetSecureAccessibilityText() const override;
   bool ShouldDisplayURL() const override;
   bool IsOfflinePage() const override;
   bool ShouldPreventElision() const override;
-  bool ShouldUseUpdatedConnectionSecurityIndicators() const override;
 
   void set_formatted_full_url(const std::u16string& url) {
     formatted_full_url_ = std::make_unique<std::u16string>(url);

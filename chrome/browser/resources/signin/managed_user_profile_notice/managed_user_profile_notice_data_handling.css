@@ -6,9 +6,9 @@
  * #type=style-lit
  * #import=/signin_shared.css.js
  * #import=/signin_vars.css.js
- * #import=/tangible_sync_style_shared_lit.css.js
+ * #import=/tangible_sync_style_shared.css.js
  * #scheme=relative
- * #include=signin-shared tangible-sync-style-shared-lit
+ * #include=signin-shared tangible-sync-style-shared
  * #css_wrapper_metadata_end */
 
 :host {
@@ -27,6 +27,10 @@ main {
 .title {
   text-align: center;
   margin: 0;
+}
+
+.title:focus {
+  outline: none;
 }
 
 cr-radio-group {
@@ -51,12 +55,14 @@ cr-radio-button + cr-radio-button {
 }
 
 cr-radio-button p {
+  color: var(--cr-secondary-text-color);
   line-height: var(--radio-button-height);
   font-weight: normal;
-  margin: 0;
+  margin: 4px 0 0 0;
 }
 
 cr-radio-button #label {
+  color: var(--cr-primary-text-color);
   font-weight: 500;
   line-height: var(--radio-button-height);
   margin: 0;

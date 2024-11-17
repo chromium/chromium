@@ -47,7 +47,7 @@
 <translation id="2283117145434822734">F6</translation>
 <translation id="2289052229480071835">Допрете ги целите за допир на екранот.</translation>
 <translation id="2295140143284145483">Преглед</translation>
-<translation id="2297836609126180313"><ph name="QUANTITY" /> ТБ/с</translation>
+<translation id="2297836609126180313"><ph name="QUANTITY" /> TB/с</translation>
 <translation id="2353636109065292463">Се проверува вашата интернет-врска</translation>
 <translation id="2359808026110333948">Продолжи</translation>
 <translation id="2388990488038464401">Сакате ли да го повикате бројов од вашиот телефон?</translation>
@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">Вчитувањето на страницата не успеа бидејќи модулот на кориснички интерфејс на програмерот (dev_ui) не е инсталиран</translation>
 <translation id="5574202486608032840">Систем <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace-копче</translation>
+<translation id="5606865426897221650">Картичка</translation>
 <translation id="5613020302032141669">Стрелка налево</translation>
 <translation id="5633029987065897167">Празно</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 мин.}one{# мин.}other{# мин.}}</translation>
@@ -180,7 +181,7 @@
 <translation id="7389409599945284130">- <ph name="MESSAGE" /></translation>
 <translation id="7410957453383678442">{MINUTES,plural, =1{Преостана 1 минута}one{Преостана # минута}other{Преостанаа # минути}}</translation>
 <translation id="7437971918971306061">Колоната <ph name="COLUMN_NAME" /> не е подредена.</translation>
-<translation id="7460907917090416791"><ph name="QUANTITY" /> ТБ</translation>
+<translation id="7460907917090416791"><ph name="QUANTITY" /> TB</translation>
 <translation id="7507604095951736240">Емотикони</translation>
 <translation id="7620655452534002301">Отстрането.</translation>
 <translation id="7658239707568436148">Откажи</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Страница подолу</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Копчето Tab</translation>
 <translation id="8259556432390118667">Вредност за хексадецимална боја</translation>
 <translation id="8328145009876646418">Лев раб</translation>
 <translation id="8331626408530291785">Лизгај нагоре</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 сек.}one{# сек.}other{# сек.}}</translation>
 <translation id="9059834730836941392">Собери го известувањето</translation>
 <translation id="9170848237812810038">&amp;Врати</translation>
+<translation id="9195990613383871904">Утре</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">Дома</translation>
 <translation id="944069440740578670">Непрочитани известувања</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{Пред 1 секунда}one{Пред # секунда}other{Пред # секунди}}</translation>

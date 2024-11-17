@@ -10,6 +10,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/metrics/metrics_state_manager.h"
+#import "components/metrics/test/test_enabled_state_provider.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/test_password_store.h"
 #import "components/plus_addresses/features.h"
@@ -73,6 +75,8 @@ using variations::VariationsService;
 using variations::VariationsServiceClient;
 
 // TODO(crbug.com/40742801): Remove when fake VariationsServiceClient created.
+// TODO(crbug.com/377275759): Check if TestVariationsServiceClient and
+// ScopedVariationsService can be consolidated with implementations elsewhere.
 class TestVariationsServiceClient : public VariationsServiceClient {
  public:
   TestVariationsServiceClient() = default;
@@ -112,11 +116,20 @@ class ScopedVariationsService {
     EXPECT_EQ(nullptr,
               TestingApplicationContext::GetGlobal()->GetVariationsService());
     synthetic_trial_registry_ = std::make_unique<SyntheticTrialRegistry>();
+    enabled_state_provider_ =
+        std::make_unique<metrics::TestEnabledStateProvider>(false, false);
+    metrics_state_manager_ = metrics::MetricsStateManager::Create(
+        TestingApplicationContext::GetGlobal()->GetLocalState(),
+        enabled_state_provider_.get(),
+        /*backup_registry_key=*/std::wstring(),
+        /*user_data_dir=*/base::FilePath(),
+        metrics::StartupVisibility::kUnknown);
 
     variations_service_ = VariationsService::Create(
         std::make_unique<TestVariationsServiceClient>(),
         TestingApplicationContext::GetGlobal()->GetLocalState(),
-        /*state_manager=*/nullptr, "dummy-disable-background-switch",
+        metrics_state_manager_.get(),
+        /*disable_network_switch=*/"dummy-disable-background-switch",
         UIStringOverrider(),
         network::TestNetworkConnectionTracker::CreateGetter(),
         synthetic_trial_registry_.get());
@@ -133,6 +146,8 @@ class ScopedVariationsService {
 
   VariationsService* Get() { return variations_service_.get(); }
 
+  std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
+  std::unique_ptr<metrics::TestEnabledStateProvider> enabled_state_provider_;
   std::unique_ptr<VariationsService> variations_service_;
   std::unique_ptr<SyntheticTrialRegistry> synthetic_trial_registry_;
 };
@@ -147,7 +162,7 @@ class SettingsTableViewControllerTest
 
     scoped_variations_service_.Get()->OverrideStoredPermanentCountry("us");
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
     builder.AddTestingFactory(
@@ -155,32 +170,27 @@ class SettingsTableViewControllerTest
         ios::TemplateURLServiceFactory::GetDefaultFactory());
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<
                 web::BrowserState, password_manager::TestPasswordStore>));
-    chrome_browser_state_ =
-        profile_manager_.AddProfileWithBuilder(std::move(builder));
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
     // Prepare mocks for PushNotificationClient dependency
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
-        SyncServiceFactory::GetForBrowserState(chrome_browser_state_.get()));
+        SyncServiceFactory::GetForProfile(profile_.get()));
 
-    auth_service_ = static_cast<AuthenticationService*>(
-        AuthenticationServiceFactory::GetInstance()->GetForBrowserState(
-            chrome_browser_state_.get()));
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
 
     password_store_mock_ =
         base::WrapRefCounted(static_cast<password_manager::TestPasswordStore*>(
-            IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-                chrome_browser_state_.get(), ServiceAccessType::EXPLICIT_ACCESS)
+            IOSChromeProfilePasswordStoreFactory::GetForProfile(
+                profile_.get(), ServiceAccessType::EXPLICIT_ACCESS)
                 .get()));
 
     fake_identity_ = [FakeSystemIdentity fakeIdentity1];
@@ -283,7 +293,7 @@ class SettingsTableViewControllerTest
   }
 
  protected:
-  // Needed for test browser state created by TestChromeBrowserState().
+  // Needed for test profile created by TestProfileIOS().
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   ScopedVariationsService scoped_variations_service_;
@@ -294,7 +304,7 @@ class SettingsTableViewControllerTest
   raw_ptr<syncer::MockSyncService> sync_service_mock_ = nullptr;
   scoped_refptr<password_manager::TestPasswordStore> password_store_mock_;
 
-  raw_ptr<TestChromeBrowserState> chrome_browser_state_;
+  raw_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
 
   SettingsTableViewController* controller_ = nullptr;
@@ -399,7 +409,7 @@ TEST_F(SettingsTableViewControllerTest,
 // Verifies that the sign-in setting row is removed if sign-in is disabled
 // through the "Allow Chrome Sign-in" option.
 TEST_F(SettingsTableViewControllerTest, SigninDisabled) {
-  chrome_browser_state_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  profile_->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   CreateController();
   CheckController();
 
@@ -594,24 +604,6 @@ TEST_F(SettingsTableViewControllerTest, HasDownloadsMenuItem) {
   EXPECT_TRUE([controller().tableViewModel
       hasItemForItemType:SettingsItemTypeDownloadsSettings
        sectionIdentifier:section]);
-}
-
-// Verifies that the plus address option isn't shown when disabled.
-TEST_F(SettingsTableViewControllerTest, NoPlusAddressesByDefault) {
-  base::test::ScopedFeatureList features;
-  features.InitAndDisableFeature(
-      plus_addresses::features::kPlusAddressesEnabled);
-
-  CreateController();
-  CheckController();
-
-  NSArray<TableViewItem*>* advanced_items = [controller().tableViewModel
-      itemsInSectionWithIdentifier:SettingsSectionIdentifier::
-                                       SettingsSectionIdentifierAdvanced];
-
-  for (TableViewItem* advanced_item in advanced_items) {
-    EXPECT_NE(advanced_item.accessibilityIdentifier, kSettingsPlusAddressesId);
-  }
 }
 
 // Verifies that the default browser blue dot is displayed when indicated.

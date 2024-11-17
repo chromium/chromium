@@ -69,6 +69,11 @@ BASE_DECLARE_FEATURE(kFallbackToAudioTabMirroring);
 // enabled feature is not causing a regression.
 BASE_DECLARE_FEATURE(kCastSilentlyRemoveVcOnNavigation);
 
+// When enabled, messages between websites and Chrome, and Chrome and Cast
+// receivers will be logged in chrome://media-router-internals.  These messages
+// can be frequent and contain sensitive information, so disabled by default.
+BASE_DECLARE_FEATURE(kCastMessageLogging);
+
 #if BUILDFLAG(IS_MAC)
 // If enabled, Chrome uses the Network Framework API for local device discovery
 // on Mac.
@@ -103,6 +108,12 @@ bool GlobalMediaControlsCastStartStopEnabled(content::BrowserContext* context);
 // Returns the optional value to use for mirroring playout delay from the
 // relevant command line flag or feature, if any are set.
 std::optional<base::TimeDelta> GetCastMirroringPlayoutDelay();
+
+// When enabled, logs of all the messages exchanged between Cast devices,
+// Chrome, and Web pages using the Presentation API into
+// chrome://media-router-internals.  These logs can verbose and contain
+// sensitive information, so use with caution.
+bool IsCastMessageLoggingEnabled();
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace media_router

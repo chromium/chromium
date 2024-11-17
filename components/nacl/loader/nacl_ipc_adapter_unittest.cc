@@ -31,7 +31,7 @@ namespace {
 
 class NaClIPCAdapterTest : public testing::Test {
  public:
-  NaClIPCAdapterTest() {}
+  NaClIPCAdapterTest() = default;
 
   // testing::Test implementation.
   void SetUp() override {

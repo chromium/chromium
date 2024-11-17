@@ -1,7 +1,4 @@
     <style include="cr-shared-style settings-shared settings-columned-section">
-      img {
-        width: 100%;
-      }
 
       #safeBrowsingSection {
         padding: 0 var(--cr-section-padding);
@@ -56,7 +53,8 @@
         padding: 0;
       }
 
-      #httpsOnlyModeToggle {
+      #httpsOnlyModeToggle,
+      #passwordsLeakToggle {
         padding: 0 var(--cr-section-padding);
       }
 
@@ -77,13 +75,6 @@
         pointer-events: auto;
       }
     </style>
-    <picture>
-      <source
-          srcset="chrome://settings/images/safe_browsing_banner_dark.svg"
-          media="(prefers-color-scheme: dark)">
-      <img id="banner" alt=""
-          src="chrome://settings/images/safe_browsing_banner.svg">
-    </picture>
     <div id="safeBrowsingSection">
       <h2 class="cr-title-text">$i18n{safeBrowsingSectionLabel}</h2>
       <settings-radio-group id="safeBrowsingRadioGroup" no-set-pref
@@ -94,7 +85,8 @@
             name="[[safeBrowsingSettingEnum_.ENHANCED]]"
             pref="[[prefs.generated.safe_browsing]]"
             label="$i18n{safeBrowsingEnhanced}"
-            sub-label="$i18n{safeBrowsingEnhancedDesc}"
+            sub-label="[[getSafeBrowsingEnhancedSubLabel_(
+                        enableEsbAiStringUpdate_)]]"
             indicator-aria-label="$i18n{controlledSettingPolicy}"
             expand-aria-label="$i18n{safeBrowsingEnhancedExpandA11yLabel}"
             on-expand-clicked="onEnhancedProtectionExpandButtonClicked_"
@@ -174,6 +166,9 @@
             </div>
         </settings-collapse-radio-button>
         <settings-collapse-radio-button id="safeBrowsingStandard"
+            no-collapse="[[computeSafeBrowsingStandardNoCollapse_(
+                            hideExtendedReportingRadioButton_,
+                            enablePasswordLeakToggleMove_)]]"
             name="[[safeBrowsingSettingEnum_.STANDARD]]"
             pref="[[prefs.generated.safe_browsing]]"
             label="$i18n{safeBrowsingStandard}"
@@ -195,13 +190,15 @@
                               prefs.generated.safe_browsing.*)]]">
               </settings-toggle-button>
             </template>
-            <settings-toggle-button id="passwordsLeakToggle"
-                label="$i18n{passwordsLeakDetectionLabel}"
-                pref="{{prefs.generated.password_leak_detection}}"
-                sub-label="[[getPasswordsLeakToggleSubLabel_(
-                              prefs.profile.password_manager_leak_detection.*,
-                              prefs.generated.password_leak_detection.*)]]">
-            </settings-toggle-button>
+            <template is="dom-if" if="[[!enablePasswordLeakToggleMove_]]">
+              <settings-toggle-button id="passwordsLeakToggleOld"
+                  label="$i18n{passwordsLeakDetectionLabel}"
+                  pref="{{prefs.generated.password_leak_detection}}"
+                  sub-label="[[getPasswordsLeakToggleSubLabel_(
+                                prefs.profile.password_manager_leak_detection.*,
+                                prefs.generated.password_leak_detection.*)]]">
+              </settings-toggle-button>
+            </template>
           </div>
         </settings-collapse-radio-button>
         <settings-collapse-radio-button id="safeBrowsingDisabled" no-collapse
@@ -255,6 +252,15 @@
     <div class="cr-row first">
       <h2 class="cr-title-text">$i18n{advancedPageTitle}</h2>
     </div>
+    <template is="dom-if" if="[[enablePasswordLeakToggleMove_]]">
+      <settings-toggle-button id="passwordsLeakToggle"
+          label="$i18n{passwordsLeakDetectionLabel}"
+          pref="{{prefs.generated.password_leak_detection}}"
+          sub-label="[[getPasswordsLeakToggleSubLabel_(
+                        prefs.profile.password_manager_leak_detection.*,
+                        prefs.generated.password_leak_detection.*)]]">
+      </settings-toggle-button>
+    </template>
     <template is="dom-if" if="[[!enableHttpsFirstModeNewSettings_]]" restamp>
       <settings-toggle-button id="httpsOnlyModeToggle"
           pref="{{prefs.generated.https_first_mode_enabled}}"

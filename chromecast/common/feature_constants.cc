@@ -35,6 +35,7 @@ const char kCastCoreIsAudioOnly[] = "cast_core_is_audio_only";
 const char kCastCoreIsRemoteControlMode[] = "cast_core_is_remote_control_mode";
 const char kCastCoreLogJsConsoleMessages[] = "cast_core_log_js_console_messages";
 const char kCastCoreTurnOnScreen[] = "cast_core_turn_on_screen";
+const char kCastCoreKeepScreenOn[] = "cast_core_keep_screen_on";
 
 }  // namespace feature
 }  // namespace chromecast

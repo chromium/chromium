@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -42,17 +43,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
     // Called when the migration of files to the cloud has completed
     // successfully.
     virtual void OnMigrationSucceeded() = 0;
-  };
 
-  // Possible states of the migration. Should not be re-ordered as it's
-  // persisted to a pref.
-  enum class State {
-    kUninitialized,
-    kPending,
-    kInProgress,
-    kCleanup,
-    kCompleted,
-    kFailure,
+    // Called when the migration of files to the cloud has been reset.
+    virtual void OnMigrationReset() = 0;
   };
 
   // Creates an instance of LocalFilesMigrationManager with overridden
@@ -89,9 +82,20 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   void SetCoordinatorForTesting(
       std::unique_ptr<MigrationCoordinator> coordinator);
 
+  // TODO(352539894): Remove when unit tests are adapted to use files.
+  void SetSkipEmptyCheckForTesting(bool skip);
+
  private:
   // policy::local_user_files::Observer overrides:
   void OnLocalUserFilesPolicyChanged() override;
+
+  // Called after migration is stopped and can be started again.
+  void OnMigrationStopped(bool log_file_deleted);
+
+  // Called after contents of MyFiles are checked. If empty, removes the volume
+  // and restricts write access, otherwise initiates the migration based on the
+  // current state.
+  void OnMyFilesChecked(bool is_empty);
 
   // Informs the user about the upcoming migration. Schedules another dialog to
   // appear closer to the start. From the dialog, the user can also choose to
@@ -120,11 +124,14 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // Handles the completion of the migration process (success or failure).
   // If the migration was successful, starts the cleanup process, and handles
   // the errors otherwise.
-  void OnMigrationDone(std::map<base::FilePath, MigrationUploadError> errors);
+  void OnMigrationDone(std::map<base::FilePath, MigrationUploadError> errors,
+                       base::FilePath upload_root_path,
+                       base::FilePath error_log_path);
 
   // Completes the migration process, taking into account any errors that
   // occurred during the migration.
-  void ProcessErrors(std::map<base::FilePath, MigrationUploadError> errors);
+  void ProcessErrors(std::map<base::FilePath, MigrationUploadError> errors,
+                     base::FilePath error_log_path);
 
   // Cleans up any remaining files from the device after a successful migration.
   void CleanupLocalFiles();
@@ -142,10 +149,18 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
       std::optional<user_data_auth::SetUserDataStorageWriteEnabledReply> reply);
 
   // Stops the migration if currently ongoing.
-  void MaybeStopMigration();
+  void MaybeStopMigration(CloudProvider previous_provider,
+                          bool close_dialog = true,
+                          MigrationStoppedCallback = base::DoNothing());
 
   // Sets and stores the state on the device.
   void SetState(State new_state);
+
+  // Notifies the observers that migration succeeded.
+  void NotifySuccess();
+
+  // Notifies the observers that migration was reset.
+  void NotifyReset();
 
   // Observers for migration events.
   base::ObserverList<Observer>::Unchecked observers_;
@@ -159,9 +174,15 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // Whether local user files are allowed by policy.
   bool local_user_files_allowed_ = true;
 
+  // TODO(352539894): Remove when unit tests are adapted to use files.
+  bool skip_empty_check_for_testing_ = false;
+
   // Cloud provider to which files are uploaded. If not specified, no migration
   // happens.
   CloudProvider cloud_provider_ = CloudProvider::kNotSpecified;
+
+  // The name of the device-unique upload root folder on Drive
+  std::string upload_root_;
 
   // The time at which the migration will start automatically.
   base::Time migration_start_time_;
@@ -177,6 +198,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
 
   // Timer for delaying the start of migration and showing dialogs.
   std::unique_ptr<base::WallClockTimer> scheduling_timer_;
+
+  // Number of times the entire upload failed and was retried.
+  int current_retry_count_;
 
   base::WeakPtrFactory<LocalFilesMigrationManager> weak_factory_{this};
 };

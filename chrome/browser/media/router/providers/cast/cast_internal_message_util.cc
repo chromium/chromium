@@ -112,12 +112,6 @@ CastInternalMessage::Type CastInternalMessageTypeFromString(
       CastInternalMessage::Type::kOther);
 }
 
-std::string CastInternalMessageTypeToString(CastInternalMessage::Type type) {
-  auto found = cast_util::EnumToString(type);
-  DCHECK(found);
-  return std::string(found.value_or(std::string_view()));
-}
-
 // Possible types in a receiver_action message.
 constexpr char kReceiverActionTypeCast[] = "cast";
 constexpr char kReceiverActionTypeStop[] = "stop";
@@ -232,8 +226,7 @@ base::Value::Dict CreateAppMessageBody(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return message;
 }
@@ -431,6 +424,12 @@ std::unique_ptr<CastSession> CastSession::From(
   session->value_.Set("namespaces", namespaces_value ? namespaces_value->Clone()
                                                      : base::Value::List());
   return session;
+}
+
+std::string CastInternalMessageTypeToString(CastInternalMessage::Type type) {
+  auto found = cast_util::EnumToString(type);
+  DCHECK(found);
+  return std::string(found.value_or(std::string_view()));
 }
 
 CastSession::CastSession() = default;

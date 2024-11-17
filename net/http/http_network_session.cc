@@ -244,6 +244,9 @@ HttpNetworkSession::HttpNetworkSession(const HttpNetworkSessionParams& params,
 
 HttpNetworkSession::~HttpNetworkSession() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  if (http_stream_pool_) {
+    http_stream_pool_->OnShuttingDown();
+  }
   response_drainers_.clear();
   // TODO(bnc): CloseAllSessions() is also called in SpdySessionPool destructor,
   // one of the two calls should be removed.
@@ -431,10 +434,8 @@ ClientSocketPoolManager* HttpNetworkSession::GetSocketPoolManager(
     case WEBSOCKET_SOCKET_POOL:
       return websocket_socket_pool_manager_.get();
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 void HttpNetworkSession::OnMemoryPressure(

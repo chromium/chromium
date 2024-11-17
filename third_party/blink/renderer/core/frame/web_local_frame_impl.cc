@@ -761,20 +761,18 @@ bool WebLocalFrameImpl::IsWebRemoteFrame() const {
 }
 
 WebRemoteFrame* WebLocalFrameImpl::ToWebRemoteFrame() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 const WebRemoteFrame* WebLocalFrameImpl::ToWebRemoteFrame() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
-void WebLocalFrameImpl::Close() {
-  WebLocalFrame::Close();
+void WebLocalFrameImpl::Close(DetachReason detach_reason) {
+  WebLocalFrame::Close(detach_reason);
 
   if (frame_widget_) {
-    frame_widget_->Close();
+    frame_widget_->Close(detach_reason);
     frame_widget_ = nullptr;
   }
 
@@ -884,7 +882,7 @@ gfx::Size WebLocalFrameImpl::DocumentSize() const {
 bool WebLocalFrameImpl::HasVisibleContent() const {
   auto* layout_object = GetFrame()->OwnerLayoutObject();
   if (layout_object &&
-      layout_object->StyleRef().UsedVisibility() != EVisibility::kVisible) {
+      layout_object->StyleRef().Visibility() != EVisibility::kVisible) {
     return false;
   }
 
@@ -2696,6 +2694,8 @@ void WebLocalFrameImpl::SendPings(const WebURL& destination_url) {
   DCHECK(GetFrame());
   if (Node* node = ContextMenuNodeInner()) {
     Element* anchor = node->EnclosingLinkEventParentOrSelf();
+    // TODO(crbug.com/369219144): Should this be
+    // DynamicTo<HTMLAnchorElementBase>?
     if (auto* html_anchor = DynamicTo<HTMLAnchorElement>(anchor))
       html_anchor->SendPings(destination_url);
   }
@@ -2815,6 +2815,12 @@ void WebLocalFrameImpl::DownloadURL(
   GetFrame()->DownloadURL(request.ToResourceRequest(),
                           cross_origin_redirect_behavior,
                           std::move(blob_url_token));
+}
+
+WebFrame* WebLocalFrameImpl::GetProvisionalOwnerFrame() {
+  return GetFrame()->IsProvisional()
+             ? WebFrame::FromCoreFrame(GetFrame()->GetProvisionalOwnerFrame())
+             : nullptr;
 }
 
 void WebLocalFrameImpl::MaybeStartOutermostMainFrameNavigation(

@@ -35,7 +35,7 @@ void ClientProcessImpl::CreateInstance(
         std::move(receiver), std::move(coordinator), is_browser_process,
         /*initialize_memory_instrumentation=*/true);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

@@ -11,7 +11,7 @@ import "ui/gfx/image/mojom/image.mojom";
 // TODO(crbug.com/40204801): It should be migrated to AppService in the future.
 
 // The status in ash-chrome side. Return with the result.
-[Stable, Extensible]
+[Extensible]
 enum RequestActivityIconsStatus {
   // Connection established successfully in ash-chrome.
   kSuccess,
@@ -20,7 +20,7 @@ enum RequestActivityIconsStatus {
   [Default] kArcNotAvailable,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum RequestTextSelectionActionsStatus {
   // Connection established successfully in ash-chrome.
   kSuccess,
@@ -29,7 +29,7 @@ enum RequestTextSelectionActionsStatus {
   [Default] kArcNotAvailable,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum RequestUrlHandlerListStatus {
   // Connection established successfully in ash-chrome.
   kSuccess,
@@ -38,7 +38,7 @@ enum RequestUrlHandlerListStatus {
   [Default]kArcNotAvailable,
 };
 
-[Stable, Extensible]
+[Extensible]
 enum IsInstallableResult {
   // The app is available for installation in ARC.
   kInstallable,
@@ -55,7 +55,6 @@ enum IsInstallableResult {
 
 // This struct reflects components/arc/mojom/intent_common.mojom.
 // Describes an activity.
-[Stable]
 struct ActivityName {
   string package_name@0;
 
@@ -65,7 +64,6 @@ struct ActivityName {
 
 // This struct reflects components/arc/mojom/app.mojom
 // Describes the raw icon png data published by an Android application.
-[Stable]
 struct RawIconPngData {
   // True if the icon is an adaptive icon, or false otherwise.
   bool is_adaptive_icon@0;
@@ -81,7 +79,7 @@ struct RawIconPngData {
 // This struct reflects components/arc/mojom/scale_factor.mojom.
 // Duplicates ui::ResourceScaleFactor enum in order to be accessible on
 // Lacros side.
-[Stable, Extensible]
+[Extensible]
 enum ScaleFactor {
   // Some numbers are missing because we removed deprecated values.
   SCALE_FACTOR_NONE = 0,
@@ -92,7 +90,6 @@ enum ScaleFactor {
 
 // This struct reflects components/arc/mojom/intent_helper.mojom
 // Describes an icon for the activity.
-[Stable]
 struct ActivityIcon {
   ActivityName activity@0;
   uint32 width@1;  // in px
@@ -105,7 +102,6 @@ struct ActivityIcon {
 // Removed unnecessary perameters for Lacros from IntentHandlerInfo declared in
 // components/arc/mojom/intent_helper.mojom.
 // Next version: 2
-[Stable]
 struct IntentHandlerInfo {
   string name@0;
   string package_name@1;
@@ -117,7 +113,6 @@ struct IntentHandlerInfo {
 // Describes an action that can handle an intent.
 // Removed unnecessary parameters: |clip_data_uri| and |uri_components| for
 // Lacros from IntentInfo declared in components/arc/mojom/intent_helper.mojom.
-[Stable]
 struct IntentInfo {
   string action@0;
   array<string>? categories@1;
@@ -133,7 +128,6 @@ struct IntentInfo {
 
 // Describe an action given by the android text selection delegate (e.g. open
 // maps).
-[Stable]
 struct TextSelectionAction {
   // App ID of the package.
   // This parameter is not set in arc::mojom::TextSelectionAction, but required
@@ -160,7 +154,7 @@ struct TextSelectionAction {
 // Observe ARC.
 // Next version: 1
 // Next method id: 1
-[Stable, Uuid="e0993657-e667-408c-9950-e08480fd8013"]
+[Uuid="e0993657-e667-408c-9950-e08480fd8013"]
 interface ArcObserver {
   // Notified when ARC does so via arc::mojom::IntentHelperHost.
   OnIconInvalidated@0(string package_name);
@@ -169,7 +163,7 @@ interface ArcObserver {
 // Interacts with ARC.
 // Next version: 5
 // Next method id: 8
-[Stable, Uuid="a39a22dd-2f5c-4c99-b0ea-d83d5b1c987f"]
+[Uuid="a39a22dd-2f5c-4c99-b0ea-d83d5b1c987f"]
 interface Arc {
   // Registers ArcObserver in Lacros-chrome to Ash-chrome
   AddObserver@0(pending_remote<ArcObserver> observer);

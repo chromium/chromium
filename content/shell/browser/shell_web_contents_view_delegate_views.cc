@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/shell/browser/shell_web_contents_view_delegate.h"
-
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
@@ -11,10 +9,12 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
 #include "content/shell/browser/shell_devtools_frontend.h"
+#include "content/shell/browser/shell_web_contents_view_delegate.h"
 #include "content/shell/common/shell_switches.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/aura/window.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/widget/widget.h"
 
@@ -99,7 +99,7 @@ void ShellWebContentsViewDelegate::ShowContextMenu(
       web_contents_->GetTopLevelNativeWindow());
   context_menu_runner_->RunMenuAt(
       widget, nullptr, gfx::Rect(screen_point, gfx::Size()),
-      views::MenuAnchorPosition::kTopRight, ui::MENU_SOURCE_NONE);
+      views::MenuAnchorPosition::kTopRight, ui::mojom::MenuSourceType::kNone);
 }
 
 }  // namespace content

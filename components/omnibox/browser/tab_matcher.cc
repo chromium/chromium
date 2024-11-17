@@ -12,6 +12,7 @@ void TabMatcher::FindMatchingTabs(GURLToTabInfoMap* map,
   }
 }
 
-std::vector<TabMatcher::TabWrapper> TabMatcher::GetOpenTabs() const {
+std::vector<TabMatcher::TabWrapper> TabMatcher::GetOpenTabs(
+    const AutocompleteInput* input) const {
   return std::vector<TabMatcher::TabWrapper>();
 }

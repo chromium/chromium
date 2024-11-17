@@ -256,7 +256,8 @@
           "builder": "android-webview-13-x64-dbg",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Android x64 Builder (dbg)/targets"
     }
   },
   "$build/reclient": {

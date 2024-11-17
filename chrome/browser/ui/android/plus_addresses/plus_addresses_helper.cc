@@ -5,10 +5,15 @@
 #include "chrome/browser/ui/android/plus_addresses/plus_addresses_helper.h"
 
 #include "base/android/jni_android.h"
-#include "chrome/browser/ui/android/plus_addresses/jni_headers/PlusAddressesHelper_jni.h"
+#include "base/android/jni_string.h"
+#include "chrome/browser/profiles/profile.h"
+#include "components/plus_addresses/features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+
+// Must come after all headers that specialize FromJniType() / ToJniType().
+#include "chrome/android/chrome_jni_headers/PlusAddressesHelper_jni.h"
 
 namespace plus_addresses {
 
@@ -17,8 +22,16 @@ void ShowManagePlusAddressesPage(content::WebContents& web_contents) {
       web_contents.GetNativeView()->GetWindowAndroid() != nullptr) {
     Java_PlusAddressesHelper_openManagePlusAddresses(
         base::android::AttachCurrentThread(),
-        web_contents.GetNativeView()->GetWindowAndroid()->GetJavaObject());
+        web_contents.GetNativeView()->GetWindowAndroid()->GetJavaObject(),
+        Profile::FromBrowserContext(web_contents.GetBrowserContext())
+            ->GetJavaObject());
   }
+}
+
+static jni_zero::ScopedJavaLocalRef<jstring>
+JNI_PlusAddressesHelper_GetPlusAddressManagementUrl(JNIEnv* env) {
+  return base::android::ConvertUTF8ToJavaString(
+      env, plus_addresses::features::kPlusAddressManagementUrl.Get());
 }
 
 }  // namespace plus_addresses

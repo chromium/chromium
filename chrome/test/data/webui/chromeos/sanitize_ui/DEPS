@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/language/core/browser/pref_names.h",
+  "+components/proxy_config",
+  "+third_party/cros_system_api/dbus/service_constants.h",
+]

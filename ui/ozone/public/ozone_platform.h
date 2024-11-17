@@ -199,10 +199,6 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // wayland protocol when no quad is out of window.
     bool supports_clip_rect = false;
 
-    // Wayland only: determine whether toplevel surfaces can be activated and
-    // deactivated.
-    bool supports_activation = false;
-
     // Wayland only: determines whether non axis-aligned 2d transforms can be
     // delegated via the wayland protocol.
     bool supports_affine_transform = false;
@@ -224,6 +220,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Indicates whether the platform supports system-controlled per-window
     // scaling.
     bool supports_per_window_scaling = false;
+
+    // Whether status icon windows (with a wm_role_name of
+    // ui::kStatusIconWmRoleName) are supported.
+    bool supports_system_tray_windowing = false;
 
     // Allows overriding whether per window scaling is enabled in tests.
     static SupportsForTest override_supports_per_window_scaling_for_test;

@@ -968,51 +968,6 @@ set_defaults("ios_appex_bundle") {
   configs = [ "//build/config/ios:ios_extension_executable_flags" ]
 }
 
-# Template to compile .xib and .storyboard files.
-#
-# Arguments
-#
-#     sources:
-#         list of string, sources to compile
-#
-#     ibtool_flags:
-#         (optional) list of string, additional flags to pass to the ibtool
-template("compile_ib_files") {
-  action_foreach(target_name) {
-    forward_variables_from(invoker,
-                           [
-                             "testonly",
-                             "visibility",
-                           ])
-    assert(defined(invoker.sources),
-           "sources must be specified for $target_name")
-    assert(defined(invoker.output_extension),
-           "output_extension must be specified for $target_name")
-
-    ibtool_flags = []
-    if (defined(invoker.ibtool_flags)) {
-      ibtool_flags = invoker.ibtool_flags
-    }
-
-    _output_extension = invoker.output_extension
-
-    script = "//build/config/ios/compile_ib_files.py"
-    sources = invoker.sources
-    outputs = [
-      "$target_gen_dir/$target_name/{{source_name_part}}.$_output_extension",
-    ]
-    args = [
-      "--input",
-      "{{source}}",
-      "--output",
-      rebase_path(
-          "$target_gen_dir/$target_name/{{source_name_part}}.$_output_extension",
-          root_build_dir),
-    ]
-    args += ibtool_flags
-  }
-}
-
 # Compile a xib or storyboard file and add it to a bundle_data so that it is
 # available at runtime in the bundle.
 #
@@ -1021,28 +976,42 @@ template("compile_ib_files") {
 #   source:
 #       string, path of the xib or storyboard to compile.
 #
+#   extension:
+#       string, extension of the generated file or bundle.
+#
+#   bundle_files:
+#       list of string, name of the files in the generated  bundle;
+#       if empty, the output is expected to be a single file.
+#
 # Forwards all variables to the bundle_data target.
 template("bundle_data_ib_file") {
   assert(defined(invoker.source), "source needs to be defined for $target_name")
-
-  _source_extension = get_path_info(invoker.source, "extension")
-  assert(_source_extension == "xib" || _source_extension == "storyboard",
-         "source must be a .xib or .storyboard for $target_name")
+  assert(defined(invoker.extension),
+         "extension needs to be defined for $target_name")
+  assert(defined(invoker.bundle_files),
+         "bundle_files needs to be defined for $target_name")
 
   _target_name = target_name
-  if (_source_extension == "xib") {
-    _compile_ib_file = target_name + "_compile_xib"
-    _output_extension = "nib"
-  } else {
-    _compile_ib_file = target_name + "_compile_storyboard"
-    _output_extension = "storyboardc"
-  }
+  _compile_target =
+      target_name + "_compile_" + get_path_info(invoker.source, "extension")
 
-  compile_ib_files(_compile_ib_file) {
-    sources = [ invoker.source ]
-    output_extension = _output_extension
-    visibility = [ ":$_target_name" ]
-    ibtool_flags = [
+  _output_path = "$target_gen_dir/$_target_name/"
+  _output_name = get_path_info(invoker.source, "name") + ".${invoker.extension}"
+
+  action(_compile_target) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "source",
+                             "bundle_files",
+                           ])
+
+    script = "//build/config/ios/compile_ib_files.py"
+    args = [
+      "--input",
+      rebase_path(invoker.source, root_build_dir),
+      "--output",
+      rebase_path("$_output_path/$_output_name", root_build_dir),
       "--minimum-deployment-target",
       ios_deployment_target,
       "--auto-activate-custom-fonts",
@@ -1051,6 +1020,16 @@ template("bundle_data_ib_file") {
       "--target-device",
       "ipad",
     ]
+
+    sources = [ invoker.source ]
+    if (invoker.bundle_files == []) {
+      outputs = [ "$_output_path/$_output_name" ]
+    } else {
+      outputs = []
+      foreach(_bundle_file, invoker.bundle_files) {
+        outputs += [ "$_output_path/$_output_name/$_bundle_file" ]
+      }
+    }
   }
 
   bundle_data(_target_name) {
@@ -1059,11 +1038,70 @@ template("bundle_data_ib_file") {
     if (!defined(public_deps)) {
       public_deps = []
     }
-    public_deps += [ ":$_compile_ib_file" ]
+    public_deps += [ ":$_compile_target" ]
 
-    sources = get_target_outputs(":$_compile_ib_file")
+    sources = get_target_outputs(":$_compile_target")
+    if (invoker.bundle_files == []) {
+      outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+    } else {
+      outputs =
+          [ "{{bundle_resources_dir}}/$_output_name/{{source_file_part}}" ]
+    }
+  }
+}
 
-    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+# Compile a xib file and add it to a bundle_data so that it is available at
+# runtime in the bundle.
+#
+# Arguments
+#
+#   source:
+#       string, path of the xib or storyboard to compile.
+#
+# Forwards all variables to the bundle_data target.
+template("bundle_data_xib_file") {
+  assert(defined(invoker.source), "source needs to be defined for $target_name")
+
+  _extension = get_path_info(invoker.source, "extension")
+  assert(_extension == "xib",
+         "source must have the .xib extension for $target_name")
+
+  bundle_data_ib_file(target_name) {
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+    extension = "nib"
+    bundle_files = []
+  }
+}
+
+# Compile a storyboard file and add it to a bundle_data so that it is available
+# at runtime in the bundle.
+#
+# Arguments
+#
+#   source:
+#       string, path of the xib or storyboard to compile.
+#
+#   bundle_files
+#       list of strings, name of the individual files in the generated bundle
+#
+# Forwards all variables to the bundle_data target.
+template("bundle_data_storyboard_file") {
+  assert(defined(invoker.source), "source needs to be defined for $target_name")
+
+  assert(defined(invoker.bundle_files) && invoker.bundle_files != [],
+         "bundle_files needs to be defined for $target_name")
+
+  _extension = get_path_info(invoker.source, "extension")
+  assert(_extension == "storyboard",
+         "source must have the .storyboard extension for $target_name")
+
+  bundle_data_ib_file(target_name) {
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+
+    extension = "storyboardc"
   }
 }
 

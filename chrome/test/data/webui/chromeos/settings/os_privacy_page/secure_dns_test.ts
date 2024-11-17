@@ -189,6 +189,8 @@ suite('SettingsSecureDns', () => {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.OFF,
       config: '',
+      osMode: SecureDnsMode.OFF,
+      osConfig: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -207,6 +209,8 @@ suite('SettingsSecureDns', () => {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
       config: '',
+      osMode: SecureDnsMode.AUTOMATIC,
+      osConfig: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -222,6 +226,8 @@ suite('SettingsSecureDns', () => {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
       config: resolverList[0]!.value,
+      osMode: SecureDnsMode.SECURE,
+      osConfig: resolverList[0]!.value,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -236,6 +242,8 @@ suite('SettingsSecureDns', () => {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.OFF,
       config: '',
+      osMode: SecureDnsMode.OFF,
+      osConfig: '',
       managementMode: SecureDnsUiManagementMode.DISABLED_MANAGED,
     });
     flush();
@@ -254,6 +262,8 @@ suite('SettingsSecureDns', () => {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.OFF,
       config: '',
+      osMode: SecureDnsMode.OFF,
+      osConfig: '',
       managementMode: SecureDnsUiManagementMode.DISABLED_PARENTAL_CONTROLS,
     });
     flush();
@@ -277,6 +287,8 @@ suite('SettingsSecureDns', () => {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
       config: '',
+      osMode: SecureDnsMode.AUTOMATIC,
+      osConfig: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
     flush();
@@ -303,6 +315,8 @@ suite('SettingsSecureDns', () => {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
       config: effectiveConfig,
+      osMode: SecureDnsMode.SECURE,
+      osConfig: effectiveConfig,
       dohWithIdentifiersActive: true,
       configForDisplay: displayConfig,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
@@ -310,6 +324,53 @@ suite('SettingsSecureDns', () => {
     flush();
     const expectedDescription = loadTimeData.substituteString(
         loadTimeData.getString('secureDnsWithIdentifiersDescription'),
+        displayConfig);
+    assertEquals(expectedDescription, secureDnsToggle.subLabel);
+  });
+
+  test('SecureDnsManagedWithDohDomainConfig', function() {
+    testElement.prefs.dns_over_https.mode.enforcement =
+        chrome.settingsPrivate.Enforcement.ENFORCED;
+    testElement.prefs.dns_over_https.mode.controlledBy =
+        chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
+
+    webUIListenerCallback('secure-dns-setting-changed', {
+      mode: SecureDnsMode.OFF,
+      config: '',
+      osMode: SecureDnsMode.SECURE,
+      osConfig: 'https://example/dns-query',
+      dohDomainConfigSet: true,
+      managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+    });
+    flush();
+    const expectedDescription =
+        loadTimeData.getString('secureDnsWithDomainConfigDescription');
+    assertEquals(expectedDescription, secureDnsToggle.subLabel);
+  });
+
+  test('SecureDnsManagedWithIdentifiersAndDomainConfig', function() {
+    testElement.prefs.dns_over_https.mode.enforcement =
+        chrome.settingsPrivate.Enforcement.ENFORCED;
+    testElement.prefs.dns_over_https.mode.controlledBy =
+        chrome.settingsPrivate.ControlledBy.DEVICE_POLICY;
+
+    const effectiveConfig = 'https://example/dns-query';
+    const displayConfig = 'https://example-for-display/dns-query';
+
+    webUIListenerCallback('secure-dns-setting-changed', {
+      mode: SecureDnsMode.SECURE,
+      config: effectiveConfig,
+      osMode: SecureDnsMode.SECURE,
+      osConfig: effectiveConfig,
+      dohWithIdentifiersActive: true,
+      configForDisplay: displayConfig,
+      dohDomainConfigSet: true,
+      managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
+    });
+    flush();
+    const expectedDescription = loadTimeData.substituteString(
+        loadTimeData.getString(
+            'secureDnsWithIdentifiersAndDomainConfigDescription'),
         displayConfig);
     assertEquals(expectedDescription, secureDnsToggle.subLabel);
   });
@@ -335,6 +396,8 @@ suite('SettingsSecureDns', () => {
           webUIListenerCallback('secure-dns-setting-changed', {
             mode: SecureDnsMode.SECURE,
             config: resolverList[0]!.value,
+            osMode: SecureDnsMode.SECURE,
+            osConfig: resolverList[0]!.value,
             managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
           });
           await flushTasks();
@@ -350,6 +413,8 @@ suite('SettingsSecureDns', () => {
           webUIListenerCallback('secure-dns-setting-changed', {
             mode: SecureDnsMode.AUTOMATIC,
             config: '',
+            osMode: SecureDnsMode.AUTOMATIC,
+            osConfig: '',
             managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
           });
           await flushTasks();
@@ -365,6 +430,8 @@ suite('SettingsSecureDns', () => {
           webUIListenerCallback('secure-dns-setting-changed', {
             mode: SecureDnsMode.OFF,
             config: '',
+            osMode: SecureDnsMode.OFF,
+            osConfig: '',
             managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
           });
           await flushTasks();
@@ -377,6 +444,8 @@ suite('SettingsSecureDns', () => {
       webUIListenerCallback('secure-dns-setting-changed', {
         mode: SecureDnsMode.SECURE,
         config: '',
+        osMode: SecureDnsMode.SECURE,
+        osConfig: '',
         managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
       });
       await flushTasks();
@@ -391,6 +460,8 @@ suite('SettingsSecureDns', () => {
           webUIListenerCallback('secure-dns-setting-changed', {
             mode: SecureDnsMode.SECURE,
             config: resolverList[0]!.value,
+            osMode: SecureDnsMode.SECURE,
+            osConfig: resolverList[0]!.value,
             managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
           });
           await flushTasks();
@@ -398,6 +469,8 @@ suite('SettingsSecureDns', () => {
           webUIListenerCallback('secure-dns-setting-changed', {
             mode: SecureDnsMode.SECURE,
             config: '',
+            osMode: SecureDnsMode.SECURE,
+            osConfig: '',
             managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
           });
           await flushTasks();
@@ -530,6 +603,8 @@ suite('SecureDnsDialog', () => {
       webUIListenerCallback('secure-dns-setting-changed', {
         mode: SecureDnsMode.OFF,
         config: '',
+        osMode: SecureDnsMode.OFF,
+        osConfig: '',
         managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
       });
       flush();
@@ -548,6 +623,8 @@ suite('SecureDnsDialog', () => {
       webUIListenerCallback('secure-dns-setting-changed', {
         mode: SecureDnsMode.SECURE,
         config: '',
+        osMode: SecureDnsMode.SECURE,
+        osConfig: '',
         managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
       });
       testElement.prefs = {
@@ -561,6 +638,8 @@ suite('SecureDnsDialog', () => {
       webUIListenerCallback('secure-dns-setting-changed', {
         mode: SecureDnsMode.OFF,
         config: '',
+        osMode: SecureDnsMode.OFF,
+        osConfig: '',
         managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
       });
       testElement.prefs = {

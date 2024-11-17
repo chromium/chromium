@@ -16,6 +16,7 @@
 #include "ash/components/arc/test/connection_holder_util.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/components/arc/test/fake_policy_instance.h"
+#include "ash/constants/ash_switches.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -27,6 +28,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
+#include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service_factory.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -323,7 +325,7 @@ class ArcPolicyBridgeTestBase {
   // Override if the test wants to use a real cert store service.
   virtual CertStoreService* GetCertStoreService() {
     return static_cast<CertStoreService*>(
-        CertStoreService::GetFactory()->SetTestingFactoryAndUse(
+        CertStoreServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(),
             base::BindRepeating(
                 [](content::BrowserContext* profile)
@@ -401,7 +403,7 @@ class ArcPolicyBridgeCertStoreTest : public ArcPolicyBridgeTest {
  protected:
   CertStoreService* GetCertStoreService() override {
     return static_cast<CertStoreService*>(
-        CertStoreService::GetFactory()->SetTestingFactoryAndUse(
+        CertStoreServiceFactory::GetInstance()->SetTestingFactoryAndUse(
             profile(),
             base::BindRepeating([](content::BrowserContext* profile)
                                     -> std::unique_ptr<KeyedService> {
@@ -909,6 +911,42 @@ TEST_F(ArcPolicyBridgeCertStoreTest, KeyPermissionsNoCertsTest) {
       base::StrCat({"{\"apkCacheEnabled\":true,\"guid\":\"", instance_guid(),
                     "\",", kMountPhysicalMediaDisabledPolicySetting, ",",
                     kRequiredKeyPairsEmpty, "}"}));
+}
+
+TEST_F(ArcPolicyBridgeTest, ConfigureRevenPoliciesTest) {
+  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitch(ash::switches::kRevenBranding);
+
+  policy_map().Set(
+      policy::key::kArcPolicy, policy::POLICY_LEVEL_MANDATORY,
+      policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+      base::Value("{\"applications\":"
+                  "["
+                  "{\"packageName\":\"com.google.android.apps.youtube.kids\","
+                  "\"installType\":\"REQUIRED\","
+                  "\"lockTaskAllowed\":false,"
+                  "\"permissionGrants\":[]"
+                  "},"
+                  "{\"packageName\":\"com.zimperium.zips\","
+                  "\"installType\":\"REQUIRED\","
+                  "\"lockTaskAllowed\":false,"
+                  "\"permissionGrants\":[]"
+                  "}"
+                  "],"
+                  "\"defaultPermissionPolicy\":\"GRANT\"}"),
+      nullptr);
+
+  GetPoliciesAndVerifyResult(
+      "{\"apkCacheEnabled\":true,\"applications\":"
+      "[{\"installType\":\"REQUIRED\","
+      "\"lockTaskAllowed\":false,"
+      "\"packageName\":\"com.zimperium.zips\","
+      "\"permissionGrants\":[]"
+      "}],"
+      "\"defaultPermissionPolicy\":\"GRANT\","
+      "\"guid\":\"" +
+      instance_guid() + "\"," + kMountPhysicalMediaDisabledPolicySetting + "," +
+      "\"playStoreMode\":\"WHITELIST\"" + "}"); // nocheck
 }
 
 }  // namespace arc

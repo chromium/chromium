@@ -1,5 +1,5 @@
 monorail: {
-  component: "Blink>HTML>Script"
+  component: "Chromium > Blink > HTML > Script"
 }
 buganizer_public: {
   component_id: 1456357

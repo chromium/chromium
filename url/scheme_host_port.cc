@@ -29,7 +29,7 @@ namespace url {
 
 namespace {
 
-bool IsCanonicalHost(std::string_view host) {
+bool IsCanonicalHost(std::string_view host, bool is_file_scheme) {
   std::string canon_host;
 
   // Try to canonicalize the host (copy/pasted from net/base. :( ).
@@ -37,8 +37,13 @@ bool IsCanonicalHost(std::string_view host) {
                                      base::checked_cast<int>(host.length()));
   StdStringCanonOutput canon_host_output(&canon_host);
   CanonHostInfo host_info;
-  CanonicalizeHostVerbose(host.data(), raw_host_component,
-                          &canon_host_output, &host_info);
+  if (is_file_scheme) {
+    CanonicalizeFileHostVerbose(host.data(), raw_host_component,
+                                canon_host_output, host_info);
+  } else {
+    CanonicalizeSpecialHostVerbose(host.data(), raw_host_component,
+                                   canon_host_output, host_info);
+  }
 
   if (host_info.out_host.is_nonempty() &&
       host_info.family != CanonHostInfo::BROKEN) {
@@ -113,9 +118,9 @@ bool IsValidInput(std::string_view scheme,
       // Don't do an expensive canonicalization if the host is already
       // canonicalized.
       DCHECK(policy == SchemeHostPort::CHECK_CANONICALIZATION ||
-             IsCanonicalHost(host));
+             IsCanonicalHost(host, scheme == url::kFileScheme));
       if (policy == SchemeHostPort::CHECK_CANONICALIZATION &&
-          !IsCanonicalHost(host)) {
+          !IsCanonicalHost(host, scheme == url::kFileScheme)) {
         return false;
       }
 
@@ -131,9 +136,9 @@ bool IsValidInput(std::string_view scheme,
       // Don't do an expensive canonicalization if the host is already
       // canonicalized.
       DCHECK(policy == SchemeHostPort::CHECK_CANONICALIZATION ||
-             IsCanonicalHost(host));
+             IsCanonicalHost(host, scheme == url::kFileScheme));
       if (policy == SchemeHostPort::CHECK_CANONICALIZATION &&
-          !IsCanonicalHost(host)) {
+          !IsCanonicalHost(host, scheme == url::kFileScheme)) {
         return false;
       }
 
@@ -303,7 +308,7 @@ std::string SchemeHostPort::SerializeInternal(url::Parsed* parsed) const {
   return result;
 }
 
-bool SchemeHostPort::ShouldDiscardHostAndPort(const std::string_view scheme) {
+bool SchemeHostPort::ShouldDiscardHostAndPort(std::string_view scheme) {
   return IsAndroidWebViewHackEnabledScheme(scheme) &&
          IsUsingStandardCompliantNonSpecialSchemeURLParsing();
 }

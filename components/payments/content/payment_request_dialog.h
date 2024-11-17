@@ -13,7 +13,7 @@ namespace payments {
 // Used to interact with a cross-platform Payment Request dialog.
 class PaymentRequestDialog {
  public:
-  virtual ~PaymentRequestDialog() {}
+  virtual ~PaymentRequestDialog() = default;
 
   virtual void ShowDialog() = 0;
 

@@ -28,7 +28,6 @@
 #include "chrome/common/open_search_description_document_handler.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/renderer/chrome_content_settings_agent_delegate.h"
-#include "chrome/renderer/companion/visual_query/visual_query_classifier_agent.h"
 #include "chrome/renderer/media/media_feeds.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/lens/lens_metadata.mojom.h"
@@ -69,7 +68,7 @@
 #include "url/gurl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/renderer/accessibility/read_anything_app_controller.h"
+#include "chrome/renderer/accessibility/read_anything/read_anything_app_controller.h"
 #include "chrome/renderer/searchbox/searchbox_extension.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -197,9 +196,6 @@ ChromeRenderFrameObserver::ChromeRenderFrameObserver(
   SetClientSidePhishingDetection();
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-  SetVisualQueryClassifierAgent();
-#endif
   translate_agent_ =
       new translate::TranslateAgent(render_frame, ISOLATED_WORLD_ID_TRANSLATE);
 }
@@ -443,7 +439,6 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
     }
   }
 
-  std::vector<unsigned char> data;
   if (image_format == chrome::mojom::ImageFormat::ORIGINAL) {
     // ORIGINAL will only fall back to here if the image needs to downscale.
     // Let's PNG downscale to PNG and JEPG downscale to JPEG.
@@ -460,25 +455,29 @@ void ChromeRenderFrameObserver::RequestImageForContextNode(
         image_format_conversion.at(image_format), base::Time::Now(),
         /*encoded_size_bytes=*/0));
   }
+  std::optional<std::vector<uint8_t>> data;
   switch (image_format) {
     case chrome::mojom::ImageFormat::PNG:
-      if (gfx::PNGCodec::EncodeBGRASkBitmap(
-              bitmap, kDiscardTransparencyForContextMenu, &data)) {
-        image_data.swap(data);
+      data = gfx::PNGCodec::EncodeBGRASkBitmap(
+          bitmap, kDiscardTransparencyForContextMenu);
+      if (data) {
+        image_data.swap(data.value());
         image_extension = kPngExtension;
       }
       break;
     case chrome::mojom::ImageFormat::WEBP:
-      if (gfx::WebpCodec::Encode(bitmap, quality, &data)) {
-        image_data.swap(data);
+      data = gfx::WebpCodec::Encode(bitmap, quality);
+      if (data) {
+        image_data.swap(data.value());
         image_extension = kWebpExtension;
       }
       break;
     case chrome::mojom::ImageFormat::ORIGINAL:
     // Any format other than PNG and JPEG fall back to here.
     case chrome::mojom::ImageFormat::JPEG:
-      if (gfx::JPEGCodec::Encode(bitmap, quality, &data)) {
-        image_data.swap(data);
+      data = gfx::JPEGCodec::Encode(bitmap, quality);
+      if (data) {
+        image_data.swap(data.value());
         image_extension = kJpgExtension;
       }
       break;
@@ -618,14 +617,6 @@ void ChromeRenderFrameObserver::SetClientSidePhishingDetection() {
       render_frame(), nullptr);
   phishing_image_embedder_ =
       safe_browsing::PhishingImageEmbedderDelegate::Create(render_frame());
-#endif
-}
-
-void ChromeRenderFrameObserver::SetVisualQueryClassifierAgent() {
-#if !BUILDFLAG(IS_ANDROID)
-  visual_classifier_ =
-      companion::visual_query::VisualQueryClassifierAgent::Create(
-          render_frame());
 #endif
 }
 
@@ -808,8 +799,7 @@ bool ChromeRenderFrameObserver::NeedsEncodeImage(
   }
 
   // Should never hit this code since all cases were handled above.
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 // static

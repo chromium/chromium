@@ -80,8 +80,9 @@ bool AllowLocalHistoryZeroSuggestSuggestions(AutocompleteProviderClient* client,
   if (base::FeatureList::IsEnabled(
           omnibox::kLocalHistoryZeroSuggestBeyondNTP)) {
     // Allow local history zero-suggest where remote zero-suggest is eligible.
-    return ZeroSuggestProvider::ResultTypeToRun(input) !=
-           ZeroSuggestProvider::ResultType::kNone;
+    const auto [result_type, _] =
+        ZeroSuggestProvider::GetResultTypeAndEligibility(client, input);
+    return result_type != ZeroSuggestProvider::ResultType::kNone;
   }
 
   // Allow local history query suggestions only when the omnibox is empty and is
@@ -173,7 +174,7 @@ LocalHistoryZeroSuggestProvider::LocalHistoryZeroSuggestProvider(
   AddListener(listener);
 }
 
-LocalHistoryZeroSuggestProvider::~LocalHistoryZeroSuggestProvider() {}
+LocalHistoryZeroSuggestProvider::~LocalHistoryZeroSuggestProvider() = default;
 
 void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
     const AutocompleteInput& input) {

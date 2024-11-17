@@ -13,13 +13,26 @@
 
 namespace ash::boca {
 
+const net::BackoffEntry::Policy kBackoffPolicy = {
+    0,  // Number of initial errors to ignore before applying
+        // exponential back-off rules.
+    base::Seconds(2).InMilliseconds(),  // Initial delay in ms.
+    2,    // Factor by which the waiting time will be multiplied.
+    0.2,  // Fuzzing percentage.
+    base::Hours(1)
+        .InMilliseconds(),  // Maximum amount of time to delay th request in ms.
+    -1,                     // Never discard the entry.
+    false                   // Do not always use initial delay.
+};
+
 InvalidationServiceImpl::InvalidationServiceImpl(
     gcm::GCMDriver* gcm_driver,
     instance_id::InstanceIDDriver* instance_id_driver,
     AccountId account_id,
     BocaSessionManager* boca_session_manager,
     SessionClientImpl* session_client_impl)
-    : account_id_(account_id),
+    : upload_retry_backoff_{&kBackoffPolicy},
+      account_id_(account_id),
       boca_session_manager_(boca_session_manager),
       session_client_impl_(session_client_impl) {
   fcm_handler_ = std::make_unique<FCMHandler>(gcm_driver, instance_id_driver,
@@ -55,22 +68,40 @@ void InvalidationServiceImpl::OnFCMRegistrationTokenChanged() {
   if (!fcm_handler_->GetFCMRegistrationToken().has_value()) {
     return;
   } else {
-    auto request = std::make_unique<UploadTokenRequest>(
-        session_client_impl_->sender(), account_id_.GetGaiaId(),
-        fcm_handler_->GetFCMRegistrationToken().value(),
-        base::BindOnce(&InvalidationServiceImpl::OnTokenUploaded,
-                       weak_factory_.GetWeakPtr()));
-    session_client_impl_->UploadToken(std::move(request));
+    upload_retry_backoff_.Reset();
+    UploadToken();
   }
+}
+
+void InvalidationServiceImpl::UploadToken() {
+  auto request = std::make_unique<UploadTokenRequest>(
+      session_client_impl_->sender(), account_id_.GetGaiaId(),
+      fcm_handler_->GetFCMRegistrationToken().value(),
+      base::BindOnce(&InvalidationServiceImpl::OnTokenUploaded,
+                     weak_factory_.GetWeakPtr()));
+  session_client_impl_->UploadToken(std::move(request));
 }
 
 void InvalidationServiceImpl::OnTokenUploaded(
     base::expected<bool, google_apis::ApiErrorCode> result) {
-  if (result.has_value()) {
+  if (!result.has_value()) {
     // TODO(b/366316261):Add metrics for token failure.
-    LOG(WARNING) << "[Boca]Failed to upload token, skipping";
+    LOG(WARNING) << "[Boca]Failed to upload token, retrying";
+    upload_retry_backoff_.InformOfRequest(/*succeeded=*/false);
+    base::TimeDelta backoff_delay = upload_retry_backoff_.GetTimeUntilRelease();
+    token_refresh_timer_.Start(
+        FROM_HERE, backoff_delay,
+        base::BindOnce(&InvalidationServiceImpl::UploadToken,
+                       base::Unretained(this)));
     return;
   }
+  LOG(WARNING) << "[Boca]Uploaded invalidation token.";
+  upload_retry_backoff_.Reset();
 }
 
+void InvalidationServiceImpl::ShutDown() {
+  if (fcm_handler_->IsListening()) {
+    fcm_handler_->StopListeningPermanently();
+  }
+}
 }  // namespace ash::boca

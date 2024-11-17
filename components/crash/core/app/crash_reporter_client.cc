@@ -38,8 +38,11 @@ CrashReporterClient* GetCrashReporterClient() {
   return g_client;
 }
 
-CrashReporterClient::CrashReporterClient() {}
-CrashReporterClient::~CrashReporterClient() {}
+CrashReporterClient::CrashReporterClient() = default;
+CrashReporterClient::~CrashReporterClient() = default;
+
+CrashReporterClient::ProductInfo::ProductInfo() = default;
+CrashReporterClient::ProductInfo::~ProductInfo() = default;
 
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID)
 void CrashReporterClient::SetCrashReporterClientIdFromGUID(
@@ -47,11 +50,6 @@ void CrashReporterClient::SetCrashReporterClientIdFromGUID(
 #endif
 
 #if BUILDFLAG(IS_WIN)
-bool CrashReporterClient::ShouldCreatePipeName(
-    const std::wstring& process_type) {
-  return process_type == L"browser";
-}
-
 bool CrashReporterClient::GetAlternativeCrashDumpLocation(
     std::wstring* crash_dir) {
   return false;
@@ -62,24 +60,6 @@ void CrashReporterClient::GetProductNameAndVersion(const std::wstring& exe_path,
                                                    std::wstring* version,
                                                    std::wstring* special_build,
                                                    std::wstring* channel_name) {
-}
-
-bool CrashReporterClient::ShouldShowRestartDialog(std::wstring* title,
-                                                  std::wstring* message,
-                                                  bool* is_rtl_locale) {
-  return false;
-}
-
-bool CrashReporterClient::AboutToRestart() {
-  return false;
-}
-
-bool CrashReporterClient::GetIsPerUserInstall() {
-  return true;
-}
-
-int CrashReporterClient::GetResultCodeRespawnFailed() {
-  return 0;
 }
 
 std::wstring CrashReporterClient::GetWerRuntimeExceptionModule() {
@@ -94,14 +74,6 @@ bool CrashReporterClient::GetShouldDumpLargerDumps() {
 #endif
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
-void CrashReporterClient::GetProductNameAndVersion(const char** product_name,
-                                                   const char** version) {
-}
-
-void CrashReporterClient::GetProductNameAndVersion(std::string* product_name,
-                                                   std::string* version,
-                                                   std::string* channel) {}
-
 base::FilePath CrashReporterClient::GetReporterLogFilename() {
   return base::FilePath();
 }
@@ -128,6 +100,8 @@ bool CrashReporterClient::GetCrashMetricsLocation(base::FilePath* crash_dir) {
   return false;
 }
 
+void CrashReporterClient::GetProductInfo(ProductInfo* product_info) {}
+
 bool CrashReporterClient::IsRunningUnattended() {
   return true;
 }
@@ -152,28 +126,6 @@ unsigned int CrashReporterClient::GetCrashDumpPercentage() {
 
 bool CrashReporterClient::GetBrowserProcessType(std::string* ptype) {
   return false;
-}
-
-int CrashReporterClient::GetAndroidMinidumpDescriptor() {
-  return 0;
-}
-
-int CrashReporterClient::GetAndroidCrashSignalFD() {
-  return -1;
-}
-
-bool CrashReporterClient::ShouldEnableBreakpadMicrodumps() {
-// Always enable microdumps on Android when stripping unwind tables. Rationale:
-// when unwind tables are stripped out (to save binary size) the stack traces
-// produced locally in the case of a crash / CHECK are meaningless. In order to
-// provide meaningful development diagnostics (and keep the binary size savings)
-// on Android we attach a secondary crash handler which serializes a reduced
-// form of logcat on the console.
-#if defined(NO_UNWIND_TABLES)
-  return true;
-#else
-  return false;
-#endif
 }
 
 bool CrashReporterClient::ShouldWriteMinidumpToLog() {

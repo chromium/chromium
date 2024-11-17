@@ -108,7 +108,6 @@ public class XrImmersiveOverlay
     private boolean mCleanupInProgress;
     private XrSurfaceView mXrSurfaceView;
     private WebContents mWebContents;
-    private boolean mUseOverlay;
 
     // Set containing all currently touching pointers.
     private HashMap<Integer, PointerData> mPointerIdToData;
@@ -135,7 +134,7 @@ public class XrImmersiveOverlay
         mXrSurfaceView = new XrSurfaceView();
     }
 
-    private class PointerData {
+    private static class PointerData {
         public float x;
         public float y;
         public boolean touching;
@@ -150,7 +149,6 @@ public class XrImmersiveOverlay
     private class XrSurfaceView {
         private SurfaceView mSurfaceView;
         private WebContentsObserver mWebContentsObserver;
-        private boolean mDomSurfaceNeedsConfiguring;
         private boolean mSurfaceViewNeedsDestruction;
         private boolean mDestructionFromVisibilityChanged;
 

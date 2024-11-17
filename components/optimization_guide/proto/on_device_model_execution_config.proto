@@ -71,6 +71,23 @@ message OnDeviceModelExecutionInputConfig {
   // resulting string for the input context if `should_ignore_input_context` is
   // not set on any of the used substitutions.
   repeated SubstitutedString execute_substitutions = 2;
+
+  // The number of tokens generated from `input_context_substitutions` that are
+  // guaranteed to be processed before context processing can be cancelled
+  // (truncating any unprocessed tokens) to begin execution. A default value is
+  // used when this is not set. To disable cancellations, set this to be the
+  // same as `max_context_tokens`.
+  optional uint32 min_context_tokens = 4;
+
+  // The maximum number of tokens that can be generated from
+  // `input_context_substitutions`. Tokens in excess of this number will be
+  // truncated. Uses a default value when unset.
+  optional uint32 max_context_tokens = 5;
+
+  // The maximum number of tokens that can be generated from
+  // `execute_substitutions`. Tokens in excess of this number will be truncated.
+  // Uses a default value when unset.
+  optional uint32 max_execute_tokens = 6;
 }
 
 message OnDeviceModelExecutionOutputConfig {
@@ -85,6 +102,12 @@ message OnDeviceModelExecutionOutputConfig {
 
   // Which output parsing implementation to use.
   optional ParserKind parser_kind = 4;
+
+  // Whether to suppress parsing incomplete output.
+  optional bool suppress_parsing_incomplete_output = 5;
+
+  // The maximum number of tokens that can be generated as output.
+  optional uint32 max_output_tokens = 6;
 }
 
 message TextSafetyFallbackConfig {

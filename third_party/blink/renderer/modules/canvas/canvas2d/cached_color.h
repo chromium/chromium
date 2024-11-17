@@ -28,7 +28,7 @@ struct CachedColor final : public GarbageCollected<CachedColor> {
         parse_result(parse_result),
         hash_code(color_string->GetIdentityHash()) {
     // Color-mix is not cached.
-    DCHECK_NE(parse_result, ColorParseResult::kColorMix);
+    DCHECK_NE(parse_result, ColorParseResult::kColorFunction);
   }
 
   void Trace(Visitor* visitor) const { visitor->Trace(color_string); }

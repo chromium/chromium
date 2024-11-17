@@ -142,7 +142,7 @@ class CORE_EXPORT MessageEvent final : public Event {
                         const String& origin,
                         const String& last_event_id,
                         EventTarget* source,
-                        MessagePortArray& ports);
+                        MessagePortArray ports);
   void initMessageEvent(const AtomicString& type,
                         bool bubbles,
                         bool cancelable,

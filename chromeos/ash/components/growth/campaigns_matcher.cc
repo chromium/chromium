@@ -17,10 +17,13 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/logging.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_split.h"
+#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "base/version_info/channel.h"
 #include "base/version_info/version_info.h"
+#include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/demo_mode/utils/dimensions_utils.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
@@ -40,7 +43,11 @@
 namespace growth {
 namespace {
 
-inline constexpr char kEventKey[] = "event_to_be_checked";
+constexpr char kEventKey[] = "event_to_be_checked";
+constexpr char kInternalLogLineSeparator[] = "--------------------------------";
+
+inline constexpr char kBoards[] = "boards";
+inline constexpr char kChannels[] = "channels";
 
 base::Time GetDeviceCurrentTimeForScheduling() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -270,8 +277,8 @@ bool MatchUserPrefCriteria(const PrefService& pref_service,
 // ]
 // conditions_met = (A1 || A2 || B1) && C1;
 bool MatchUserPrefs(const PrefService* pref_service,
-                    const base::Value::List* user_pref_targettings) {
-  if (!user_pref_targettings || user_pref_targettings->empty()) {
+                    const base::Value::List* user_pref_targetings) {
+  if (!user_pref_targetings || user_pref_targetings->empty()) {
     return true;
   }
 
@@ -284,7 +291,7 @@ bool MatchUserPrefs(const PrefService* pref_service,
   }
 
   // If all conditions are matched, the campaign will be selected.
-  for (auto& targeting : *user_pref_targettings) {
+  for (auto& targeting : *user_pref_targetings) {
     if (!targeting.is_list()) {
       growth::RecordCampaignsManagerError(
           growth::CampaignsManagerError::kTargetingUserPrefParsingFail);
@@ -318,6 +325,27 @@ bool MatchVersion(const base::Version& current_version,
   return true;
 }
 
+bool MatchStringList(const StringListTargeting& string_list_targeting,
+                     const std::string& value,
+                     const std::string_view& target_name) {
+  const auto* includes = string_list_targeting.GetIncludes();
+
+  // If the `includes` is empty, then it will not match.
+  if (includes && !Contains(*includes, value)) {
+    CAMPAIGNS_LOG(DEBUG) << "Value is not in the includes list of "
+                         << target_name;
+    return false;
+  }
+
+  const auto* excludes = string_list_targeting.GetExcludes();
+  if (excludes && Contains(*excludes, value)) {
+    CAMPAIGNS_LOG(DEBUG) << "Value is in the excludes list of " << target_name;
+    return false;
+  }
+
+  return true;
+}
+
 bool IsCampaignValid(const Campaign* campaign) {
   if (!GetCampaignId(campaign)) {
     CAMPAIGNS_LOG(ERROR) << "Invalid campaign: missing campaign ID.";
@@ -326,19 +354,6 @@ bool IsCampaignValid(const Campaign* campaign) {
   }
 
   return true;
-}
-
-std::map<std::string, std::string> CreateBasicConditionParams() {
-  std::map<std::string, std::string> conditions_params;
-  // `event_used` and `event_trigger` are required for feature_engagement
-  // config, although they are not used in campaign matching.
-  static constexpr char kTemplate[] =
-      "name:ChromeOSAshGrowthCampaigns_Event%s;comparator:any;window:1;storage:"
-      "1";
-  conditions_params["event_used"] = base::StringPrintf(kTemplate, "Used");
-  conditions_params["event_trigger"] = base::StringPrintf(kTemplate, "Trigger");
-
-  return conditions_params;
 }
 
 }  // namespace
@@ -411,6 +426,14 @@ const Campaign* CampaignsMatcher::GetCampaignBySlot(Slot slot) const {
   return nullptr;
 }
 
+void CampaignsMatcher::SetMantaCapabilityForTesting(signin::Tribool value) {
+  manta_capability_for_testing_ = value;
+}
+
+void CampaignsMatcher::SetBoardForTesting(std::optional<std::string> board) {
+  board_for_testing_ = board;
+}
+
 bool CampaignsMatcher::IsCampaignMatched(const Campaign* campaign,
                                          bool is_prematch) const {
   if (!campaign || !IsCampaignValid(campaign)) {
@@ -423,6 +446,7 @@ bool CampaignsMatcher::IsCampaignMatched(const Campaign* campaign,
 
   const auto campaign_id = GetCampaignId(campaign).value();
 
+  CAMPAIGNS_LOG(DEBUG) << kInternalLogLineSeparator;
   CAMPAIGNS_LOG(DEBUG) << "Evaluating campaign: " << campaign_id
                        << ". In prematch: " << ToString(is_prematch);
 
@@ -431,7 +455,9 @@ bool CampaignsMatcher::IsCampaignMatched(const Campaign* campaign,
 
   CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
                        << " is matched: " << ToString(is_matched)
-                       << " In prematch: " << ToString(is_prematch);
+                       << ". In prematch: " << ToString(is_prematch);
+  CAMPAIGNS_LOG(DEBUG) << kInternalLogLineSeparator;
+
   return is_matched;
 }
 
@@ -488,22 +514,38 @@ bool CampaignsMatcher::MaybeMatchDemoModeTargeting(
   if (!client_->IsDeviceInDemoMode()) {
     // Return early if it is not in demo mode while the campaign is targeting
     // demo mode.
+    CAMPAIGNS_LOG(DEBUG) << "Not in Demo Mode.";
     return false;
   }
 
   if (!MatchDemoModeAppVersion(targeting)) {
+    CAMPAIGNS_LOG(DEBUG) << "Demo Mode app version is NOT matched.";
     return false;
   }
 
   if (!MatchDemoModeTier(targeting)) {
+    CAMPAIGNS_LOG(DEBUG) << "Demo Mode tier is NOT matched.";
     return false;
   }
 
-  return MatchRetailers(targeting.GetRetailers()) &&
-         MatchPref(targeting.GetStoreIds(), ash::prefs::kDemoModeStoreId,
-                   local_state_) &&
-         MatchPref(targeting.GetCountries(), ash::prefs::kDemoModeCountry,
-                   local_state_);
+  if (!MatchRetailers(targeting.GetRetailers())) {
+    CAMPAIGNS_LOG(DEBUG) << "Demo Mode retailers are NOT matched.";
+    return false;
+  }
+
+  if (!MatchPref(targeting.GetStoreIds(), ash::prefs::kDemoModeStoreId,
+                 local_state_)) {
+    CAMPAIGNS_LOG(DEBUG) << "Demo Mode store IDs are NOT matched.";
+    return false;
+  }
+
+  if (!MatchPref(targeting.GetCountries(), ash::prefs::kDemoModeCountry,
+                 local_state_)) {
+    CAMPAIGNS_LOG(DEBUG) << "Demo Mode store countries are NOT matched.";
+    return false;
+  }
+
+  return true;
 }
 
 bool CampaignsMatcher::MatchMilestone(const DeviceTargeting& targeting) const {
@@ -532,6 +574,11 @@ bool CampaignsMatcher::MatchDeviceTargeting(
   if (!targeting.IsValid()) {
     // Campaigns matched if there is no device targeting.
     return true;
+  }
+
+  const auto boards = targeting.GetBoards();
+  if (!MatchBoard(boards.get())) {
+    return false;
   }
 
   auto target_feature_aware_device = targeting.GetFeatureAwareDevice();
@@ -574,7 +621,8 @@ bool CampaignsMatcher::MatchDeviceTargeting(
     return false;
   }
 
-  return MatchMilestone(targeting) && MatchMilestoneVersion(targeting);
+  return MatchChannel(targeting.GetChannels().get()) &&
+         MatchMilestone(targeting) && MatchMilestoneVersion(targeting);
 }
 
 bool CampaignsMatcher::MatchRegisteredTime(
@@ -588,6 +636,46 @@ bool CampaignsMatcher::MatchRegisteredTime(
   // TODO: b/333458177 - The `oobe_complete_time_` is not available when testing
   // in x11 emulator. Add support make it testable in x11 emulator.
   return MatchTimeWindow(*registered_time_targeting, oobe_compelete_time_);
+}
+
+bool CampaignsMatcher::MatchBoard(
+    const StringListTargeting* boards_targeting) const {
+  if (!boards_targeting) {
+    // Match campaign if there is no boards targeting.
+    return true;
+  }
+
+  std::string board;
+  if (board_for_testing_.has_value()) {
+    board = board_for_testing_.value();
+  } else {
+    // Refer to comment describing base::SysInfo::GetLsbReleaseBoard for why
+    // splitting the Lsb Release Board string is needed.
+    std::vector<std::string> board_info =
+        base::SplitString(base::SysInfo::GetLsbReleaseBoard(), "-",
+                          base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+    if (board_info.empty()) {
+      // If no board info is available, return false.
+      RecordCampaignsManagerError(CampaignsManagerError::kNoBoardInfo);
+      CAMPAIGNS_LOG(ERROR) << "Board info is not available.";
+      return false;
+    }
+
+    board = board_info[0];
+  }
+
+  return MatchStringList(*boards_targeting, board, kBoards);
+}
+
+bool CampaignsMatcher::MatchChannel(
+    const StringListTargeting* channels_targeting) const {
+  if (!channels_targeting) {
+    // Match campaign if there is no channel targeting.
+    return true;
+  }
+  auto channel = version_info::GetChannelString(ash::GetChannel());
+  return MatchStringList(*channels_targeting, std::string(channel), kChannels);
 }
 
 bool CampaignsMatcher::MatchDeviceAge(
@@ -701,10 +789,8 @@ bool CampaignsMatcher::ReachCap(base::cstring_view campaign_type,
       CreateBasicConditionParams();
   // Event can be put in any key starting with `event_`.
   // Please see `components/feature_engagement/README.md#featureconfig`.
-  conditions_params[kEventKey] = base::StringPrintf(
-      "name:ChromeOSAshGrowthCampaigns_%s%d_%s;comparator:<%d;window:3650;"
-      "storage:3650",
-      campaign_type.c_str(), id, event_type.c_str(), cap.value());
+  conditions_params[kEventKey] =
+      CreateConditionParamForCap(campaign_type, id, event_type, cap.value());
 
   const bool reach_cap = !client_->WouldTriggerHelpUI(conditions_params);
   if (reach_cap) {
@@ -743,6 +829,25 @@ bool CampaignsMatcher::MatchActiveUrlRegexes(
   return false;
 }
 
+bool CampaignsMatcher::MatchHotseatAppIcon(
+    std::unique_ptr<AppTargeting> app) const {
+  if (!app) {
+    return true;
+  }
+
+  auto* app_id = app->GetAppId();
+  if (!app_id) {
+    // Ignore if app id is missing from the targeting.
+    return true;
+  }
+
+  const bool is_matched = client_->IsAppIconOnShelf(*app_id);
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Hotseat app icon targeting is NOT matched.";
+  }
+  return is_matched;
+}
+
 bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
                                    int campaign_id,
                                    std::optional<int> group_id) const {
@@ -757,6 +862,8 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
                    ReachCap("Group", group_id.value(), "Dismissed",
                             config->GetGroupDismissalCap()))) {
     // Reached group impression cap or dismissal cap.
+    CAMPAIGNS_LOG(DEBUG)
+        << "Events are NOT matched. Reached group impression/dismissal caps.";
     return false;
   }
 
@@ -765,6 +872,8 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
                config->GetImpressionCap()) ||
       ReachCap("Campaign", campaign_id, "Dismissed",
                config->GetDismissalCap())) {
+    CAMPAIGNS_LOG(DEBUG) << "Events are NOT matched. Reached campaign "
+                            "impression/dismissal caps.";
     return false;
   }
 
@@ -782,7 +891,8 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
     if (!condition.is_list()) {
       RecordCampaignsManagerError(
           CampaignsManagerError::kInvalidEventTargetingCondition);
-      CAMPAIGNS_LOG(ERROR) << "Invalid events targeting conditions.";
+      CAMPAIGNS_LOG(ERROR)
+          << "Events are NOT matched. Invalid events targeting conditions.";
       return false;
     }
 
@@ -791,7 +901,8 @@ bool CampaignsMatcher::MatchEvents(std::unique_ptr<EventsTargeting> config,
       if (!param.is_string()) {
         RecordCampaignsManagerError(
             CampaignsManagerError::kInvalidEventTargetingConditionParam);
-        CAMPAIGNS_LOG(ERROR) << "Invalid events targeting condition.";
+        CAMPAIGNS_LOG(ERROR)
+            << "Events are NOT matched. Invalid events targeting condition.";
         return false;
       }
 
@@ -826,21 +937,26 @@ bool CampaignsMatcher::MatchMinorUser(
     return true;
   }
 
-  std::string gaia_id = user_manager::UserManager::Get()
-                            ->GetActiveUser()
-                            ->GetAccountId()
-                            .GetGaiaId();
-  auto* identity_manager = client_->GetIdentityManager();
-  if (!identity_manager) {
-    // Identity manager is not available (e.g:guest mode). In that case,
-    // a campaign with minor user targeting shouldn't be triggered.
-    CAMPAIGNS_LOG(ERROR) << "IdentityManager is null.";
-    return false;
+  signin::Tribool capability;
+  if (manta_capability_for_testing_) {
+    capability = manta_capability_for_testing_.value();
+  } else {
+    auto* identity_manager = client_->GetIdentityManager();
+    if (!identity_manager) {
+      // Identity manager is not available (e.g:guest mode). In that case,
+      // a campaign with minor user targeting shouldn't be triggered.
+      CAMPAIGNS_LOG(ERROR) << "IdentityManager is null.";
+      return false;
+    }
+    std::string gaia_id = user_manager::UserManager::Get()
+                              ->GetActiveUser()
+                              ->GetAccountId()
+                              .GetGaiaId();
+    const AccountInfo account_info =
+        identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
+    // TODO: b/333896450 - find a better signal for minor mode.
+    capability = account_info.capabilities.can_use_manta_service();
   }
-  const AccountInfo account_info =
-      identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
-  // TODO: b/333896450 - find a better signal for minor mode.
-  auto capability = account_info.capabilities.can_use_manta_service();
 
   if (capability == signin::Tribool::kUnknown) {
     // Records metrics when minor user state is unknown. This could be caused
@@ -848,10 +964,15 @@ bool CampaignsMatcher::MatchMinorUser(
     // to understand the impact while matching on the conservative side by
     // considering unknown as minor users.
     RecordCampaignsManagerError(CampaignsManagerError::kUnknownMinorUserState);
+    return false;
   }
 
-  bool isMinor = capability != signin::Tribool::kTrue;
-  return isMinor == minor_user_targeting.value();
+  const bool isMinor = capability == signin::Tribool::kFalse;
+  const bool is_matched = isMinor == minor_user_targeting.value();
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Please check MinorUser targeting.";
+  }
+  return is_matched;
 }
 
 bool CampaignsMatcher::MatchOwner(std::optional<bool> is_owner) const {
@@ -860,7 +981,11 @@ bool CampaignsMatcher::MatchOwner(std::optional<bool> is_owner) const {
     return true;
   }
 
-  return is_owner.value() == is_user_owner_;
+  const bool is_matched = is_owner.value() == is_user_owner_;
+  if (!is_matched) {
+    CAMPAIGNS_LOG(DEBUG) << "Owner targeting is NOT matched.";
+  }
+  return is_matched;
 }
 
 bool CampaignsMatcher::MatchSessionTargeting(
@@ -874,19 +999,16 @@ bool CampaignsMatcher::MatchSessionTargeting(
   is_matched = MatchExperimentTags(targeting.GetExperimentTags(),
                                    targeting.GetFeature());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << " ExperimentTags targeting is NOT matched.";
     return false;
   }
 
   is_matched = MatchMinorUser(targeting.GetMinorUser());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Please check MinorUser targeting.";
     return false;
   }
 
   is_matched = MatchOwner(targeting.GetIsOwner());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Owner targeting is NOT matched.";
     return false;
   }
 
@@ -903,45 +1025,34 @@ bool CampaignsMatcher::MatchRuntimeTargeting(
   }
 
   bool is_matched = false;
-  is_matched = MatchTriggerTargeting(targeting.GetTriggers());
+  is_matched = MatchSchedulings(targeting.GetSchedulings());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
-                         << " Trigger targeting is NOT matched.";
     return false;
   }
 
-  is_matched = MatchSchedulings(targeting.GetSchedulings());
+  is_matched = MatchHotseatAppIcon(targeting.GetHotseatAppIcon());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
-                         << " Schedulings targeting is NOT matched.";
     return false;
   }
 
   is_matched = MatchOpenedApp(targeting.GetAppsOpened());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
-                         << " Trigger targeting is NOT matched.";
     return false;
   }
 
   is_matched = MatchActiveUrlRegexes(targeting.GetActiveUrlRegexes());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
-                         << " ActiveUrlRegexes targeting is NOT matched.";
     return false;
   }
 
-  is_matched = MatchEvents(targeting.GetEventsConfig(), campaign_id, group_id);
+  is_matched =
+      MatchEvents(targeting.GetEventsTargeting(), campaign_id, group_id);
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
-                         << " Events targeting is NOT matched.";
     return false;
   }
 
   is_matched = MatchUserPrefs(prefs_, targeting.GetUserPrefTargetings());
   if (!is_matched) {
-    CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id
-                         << " UserPrefs targeting is NOT matched.";
     return false;
   }
 
@@ -960,11 +1071,25 @@ bool CampaignsMatcher::Matched(const Targeting* targeting,
   }
 
   if (is_prematch) {
-    return MaybeMatchDemoModeTargeting(DemoModeTargeting(targeting)) &&
-           MatchDeviceTargeting(DeviceTargeting(targeting));
+    // TOOD(369188855): Re-enable demo mode prematch.
+    return MatchDeviceTargeting(DeviceTargeting(targeting));
   }
 
-  bool is_matched = false;
+  bool is_matched = MaybeMatchDemoModeTargeting(DemoModeTargeting(targeting));
+  if (!is_matched) {
+    return false;
+  }
+
+  // Skip other matchings if the trigger type doesn't match, which contributes
+  // to the majority of the mismatch as we added event based triggering.
+  RuntimeTargeting runtime_targeting = RuntimeTargeting(targeting);
+  if (runtime_targeting.IsValid()) {
+    is_matched = MatchTriggerTargeting(runtime_targeting.GetTriggers());
+    if (!is_matched) {
+      return false;
+    }
+  }
+
   is_matched = MatchSessionTargeting(SessionTargeting(targeting));
   if (!is_matched) {
     CAMPAIGNS_LOG(DEBUG) << "Campaign: " << campaign_id

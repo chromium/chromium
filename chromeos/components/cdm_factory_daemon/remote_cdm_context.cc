@@ -219,19 +219,17 @@ void RemoteCdmContext::InitializeVideoDecoder(
 void RemoteCdmContext::DecryptAndDecodeAudio(
     scoped_refptr<media::DecoderBuffer> encrypted,
     AudioDecodeCB audio_decode_cb) {
-  NOTREACHED_IN_MIGRATION()
-      << "RemoteCdmContext does not support audio decoding";
+  NOTREACHED() << "RemoteCdmContext does not support audio decoding";
 }
 
 void RemoteCdmContext::DecryptAndDecodeVideo(
     scoped_refptr<media::DecoderBuffer> encrypted,
     VideoDecodeCB video_decode_cb) {
-  NOTREACHED_IN_MIGRATION()
-      << "RemoteCdmContext does not support video decoding";
+  NOTREACHED() << "RemoteCdmContext does not support video decoding";
 }
 
 void RemoteCdmContext::ResetDecoder(StreamType stream_type) {
-  NOTREACHED_IN_MIGRATION() << "RemoteCdmContext does not support decoding";
+  NOTREACHED() << "RemoteCdmContext does not support decoding";
 }
 
 void RemoteCdmContext::DeinitializeDecoder(StreamType stream_type) {

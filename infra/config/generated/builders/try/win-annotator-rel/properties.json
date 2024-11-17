@@ -38,7 +38,8 @@
           "builder": "win-annotator-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/win-annotator-rel/targets"
     }
   },
   "$build/reclient": {

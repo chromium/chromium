@@ -31,8 +31,7 @@
 }
 
 + (const OverlayRequestSupport*)requestSupport {
-  NOTREACHED_IN_MIGRATION() << "Subclasses implement.";
-  return OverlayRequestSupport::None();
+  NOTREACHED() << "Subclasses implement.";
 }
 
 + (BOOL)showsOverlayUsingChildViewController {
@@ -58,11 +57,11 @@
 #pragma mark - Public
 
 - (void)startAnimated:(BOOL)animated {
-  NOTREACHED_IN_MIGRATION() << "Subclasses must implement.";
+  NOTREACHED() << "Subclasses must implement.";
 }
 
 - (void)stopAnimated:(BOOL)animated {
-  NOTREACHED_IN_MIGRATION() << "Subclasses must implement.";
+  NOTREACHED() << "Subclasses must implement.";
 }
 
 #pragma mark - ChromeCoordinator

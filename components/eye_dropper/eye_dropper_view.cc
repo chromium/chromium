@@ -59,7 +59,7 @@ EyeDropperView::ViewPositionHandler::ViewPositionHandler(EyeDropperView* owner)
 }
 
 EyeDropperView::ViewPositionHandler::~ViewPositionHandler() {
-  timer_.AbandonAndStop();
+  timer_.Stop();
 }
 
 void EyeDropperView::ViewPositionHandler::UpdateViewPosition() {

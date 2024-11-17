@@ -64,8 +64,8 @@ class CorpHostStarter : public HostStarterBase {
 CorpHostStarter::CorpHostStarter(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : HostStarterBase(url_loader_factory),
-      corp_service_client_(
-          std::make_unique<CorpServiceClient>(url_loader_factory)) {}
+      corp_service_client_(std::make_unique<CorpServiceClient>(
+          url_loader_factory)) {}
 
 CorpHostStarter::~CorpHostStarter() = default;
 

@@ -57,20 +57,18 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
             GetApplicationContext()->GetSystemIdentityManager());
     system_identity_manager->AddIdentity(identity_);
     system_identity_manager->AddIdentity(managed_identity_);
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateMockSyncService));
-    browser_state_ = std::move(builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     sync_service_mock_ = static_cast<syncer::MockSyncService*>(
-        SyncServiceFactory::GetForBrowserState(browser_state_.get()));
+        SyncServiceFactory::GetForProfile(profile_.get()));
 
     [browser_->GetCommandDispatcher()
         startDispatchingToTarget:snackbar_handler_
@@ -85,8 +83,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
 
   // Identity services.
   AuthenticationService* authentication_service() {
-    return AuthenticationServiceFactory::GetForBrowserState(
-        browser_state_.get());
+    return AuthenticationServiceFactory::GetForProfile(profile_.get());
   }
 
   // Sign-out coordinator.
@@ -96,9 +93,10 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
                            browser:browser_.get()
                               rect:view_controller_.view.frame
                               view:view_controller_.view
+          forceSnackbarOverToolbar:NO
                         withSource:signin_metrics::ProfileSignout::
                                        kUserClickedSignoutSettings];
-    signout_coordinator_.completion = ^(BOOL success) {
+    signout_coordinator_.signoutCompletion = ^(BOOL success) {
       completion_callback_.Run(success);
     };
     return signout_coordinator_;
@@ -108,10 +106,10 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
     return GetApplicationContext()->GetLocalState();
   }
 
-  PrefService* GetPrefs() { return browser_state_->GetPrefs(); }
+  PrefService* GetPrefs() { return profile_->GetPrefs(); }
 
  protected:
-  // Needed for test browser state created by TestChromeBrowserState().
+  // Needed for test profile created by TestProfileIOS().
   base::test::TaskEnvironment task_environment_;
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -122,7 +120,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
   ScopedKeyWindow scoped_key_window_;
   UIViewController* view_controller_ = nullptr;
   std::unique_ptr<Browser> browser_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   id<SystemIdentity> identity_ = nil;
   id<SystemIdentity> managed_identity_ = nil;
   id<SnackbarCommands> snackbar_handler_ =
@@ -228,33 +226,6 @@ TEST_F(SignoutActionSheetCoordinatorTest, ShouldShowActionSheetIfUnsyncedData) {
   histogram_tester.ExpectTotalCount("Sync.SignoutWithUnsyncedData", 0u);
 }
 
-// Same as ShouldShowActionSheetIfUnsyncedData, but for a managed user.
-TEST_F(SignoutActionSheetCoordinatorTest,
-       ShouldShowActionSheetIfUnsyncedDataForManagedUser) {
-  // Sign in with a *managed* account.
-  authentication_service()->SignIn(
-      managed_identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
-  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
-      signin::ConsentLevel::kSignin));
-
-  CreateCoordinator();
-  // Mock returning unsynced datatypes, and ensure that this does get called -
-  // the action sheet should *not* automatically get shown for a managed user.
-  EXPECT_CALL(*sync_service_mock_, GetTypesWithUnsyncedData)
-      .Times(testing::AtLeast(1))
-      .WillRepeatedly(
-          [](syncer::DataTypeSet requested_types,
-             base::OnceCallback<void(syncer::DataTypeSet)> callback) {
-            constexpr syncer::DataTypeSet kUnsyncedTypes = {
-                syncer::BOOKMARKS, syncer::PREFERENCES};
-            std::move(callback).Run(
-                base::Intersection(kUnsyncedTypes, requested_types));
-          });
-  EXPECT_CALL(completion_callback_, Run);
-
-  [signout_coordinator_ start];
-}
-
 TEST_F(SignoutActionSheetCoordinatorTest,
        ShouldShowActionSheetForManagedUserMigratedFromSyncing) {
   // Sign in with a *managed* account.
@@ -288,9 +259,6 @@ TEST_F(SignoutActionSheetCoordinatorTest,
 
 TEST_F(SignoutActionSheetCoordinatorTest,
        ShouldShowActionSheetForManagedUserWithClearDataonSignoutFeature) {
-  scoped_feature_list_.InitWithFeatures(
-      {kClearDeviceDataOnSignOutForManagedUsers}, {});
-
   // Sign in with a *managed* account.
   authentication_service()->SignIn(
       managed_identity_, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);

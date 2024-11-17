@@ -1,0 +1,17 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++paragraph
+++++++++staticText name='This '
+++++++++++inlineTextBox name='This '
+++++++++genericContainer detailsFrom=ariaDetails detailsIds=group,image
+++++++++++staticText name='text'
+++++++++++++inlineTextBox name='text'
+++++++++staticText name=' has details'
+++++++++++inlineTextBox name=' has details'
+++++++genericContainer
+++++++++group
+++++++++++staticText name='Text details'
+++++++++++++inlineTextBox name='Text details'
+++++++genericContainer
+++++++++image name='Image details'

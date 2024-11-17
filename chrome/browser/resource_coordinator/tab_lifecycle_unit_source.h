@@ -77,6 +77,7 @@ class TabLifecycleUnitSource : public BrowserListObserver,
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest, TabManagerWasDiscarded);
   FRIEND_TEST_ALL_PREFIXES(TabManagerTest,
                            TabManagerWasDiscardedCrossSiteSubFrame);
+  FRIEND_TEST_ALL_PREFIXES(TabLifecycleUnitSourceTest, Freeze);
 
   // Returns the TabLifecycleUnit instance associated with |web_contents|, or
   // nullptr if |web_contents| isn't a tab.

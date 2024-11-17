@@ -18,9 +18,4 @@ BASE_FEATURE(kNavigationPredictorPreconnectHoldback,
 #endif
 );
 
-// Enables triggering of same-origin preconnects on same-document navigations.
-BASE_FEATURE(kNavigationPredictorEnablePreconnectOnSameDocumentNavigations,
-             "NavigationPredictorEnablePreconnectOnSameDocumentNavigations",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace features

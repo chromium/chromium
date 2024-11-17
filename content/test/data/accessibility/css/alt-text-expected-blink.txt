@@ -19,7 +19,6 @@ rootWebArea
 ++++++++++staticText name='Some Text'
 ++++++++++++inlineTextBox name='Some Text'
 ++++++genericContainer
-++++++++staticText ignored
 ++++++++staticText name=' '
 ++++++++++inlineTextBox name=' '
 ++++++++genericContainer
@@ -33,7 +32,6 @@ rootWebArea
 ++++++++++staticText name='Some Text'
 ++++++++++++inlineTextBox name='Some Text'
 ++++++genericContainer
-++++++++image
 ++++++++staticText name=' '
 ++++++++++inlineTextBox name=' '
 ++++++++genericContainer
@@ -47,7 +45,6 @@ rootWebArea
 ++++++++++staticText name='Some Text'
 ++++++++++++inlineTextBox name='Some Text'
 ++++++genericContainer
-++++++++image
 ++++++++staticText name=' '
 ++++++++++inlineTextBox name=' '
 ++++++++genericContainer

@@ -14,19 +14,20 @@
 #include "base/containers/contains.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "crypto/random.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
 #include "url/gurl.h"
 
-namespace device {
-namespace cablev2 {
+namespace device::cablev2 {
 
 namespace {
 
@@ -88,29 +89,35 @@ TEST(CableV2Encoding, EIDEncrypt) {
 }
 
 TEST(CableV2Encoding, QRs) {
-  std::array<uint8_t, kQRKeySize> qr_key;
-  crypto::RandBytes(qr_key);
-  std::string url = qr::Encode(qr_key, FidoRequestType::kMakeCredential);
-  const std::optional<qr::Components> decoded = qr::Parse(url);
-  ASSERT_TRUE(decoded.has_value()) << url;
-  static_assert(EXTENT(qr_key) >= EXTENT(decoded->secret), "");
-  EXPECT_EQ(memcmp(decoded->secret.data(),
-                   &qr_key[qr_key.size() - decoded->secret.size()],
-                   decoded->secret.size()),
-            0);
-  // There are two registered domains at the time of writing the test. That
-  // number should only grow over time.
-  EXPECT_GE(decoded->num_known_domains, 2u);
+  for (bool supports_linking : {false, true}) {
+    SCOPED_TRACE(supports_linking);
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureState(device::kWebAuthnHybridLinking,
+                                             supports_linking);
+    std::array<uint8_t, kQRKeySize> qr_key;
+    crypto::RandBytes(qr_key);
+    std::string url = qr::Encode(qr_key, FidoRequestType::kMakeCredential);
+    const std::optional<qr::Components> decoded = qr::Parse(url);
+    ASSERT_TRUE(decoded.has_value()) << url;
+    static_assert(kQRKeySize >= std::tuple_size_v<decltype(decoded->secret)>);
+    EXPECT_EQ(memcmp(decoded->secret.data(),
+                     &qr_key[qr_key.size() - decoded->secret.size()],
+                     decoded->secret.size()),
+              0);
+    // There are two registered domains at the time of writing the test. That
+    // number should only grow over time.
+    EXPECT_GE(decoded->num_known_domains, 2u);
 
-  // Chromium always sets this flag.
-  EXPECT_TRUE(decoded->supports_linking.value_or(false));
+    // Chromium always sets this flag.
+    EXPECT_EQ(decoded->supports_linking.value_or(false), supports_linking);
 
-  EXPECT_EQ(decoded->request_type,
-            RequestType(FidoRequestType::kMakeCredential));
+    EXPECT_EQ(decoded->request_type,
+              RequestType(FidoRequestType::kMakeCredential));
 
-  url[0] ^= 4;
-  EXPECT_FALSE(qr::Parse(url));
-  EXPECT_FALSE(qr::Parse("nonsense"));
+    url[0] ^= 4;
+    EXPECT_FALSE(qr::Parse(url));
+    EXPECT_FALSE(qr::Parse("nonsense"));
+  }
 }
 
 TEST(CableV2Encoding, KnownQRs) {
@@ -308,6 +315,25 @@ TEST(CableV2Encoding, RequestTypeToString) {
             RequestTypeFromString("nonsense"));
   EXPECT_EQ(RequestType(FidoRequestType::kGetAssertion),
             RequestTypeFromString(""));
+}
+
+TEST(CableV2Encoding, ShouldOfferLinking) {
+  for (const auto type :
+       {FidoRequestType::kMakeCredential, FidoRequestType::kGetAssertion}) {
+    EXPECT_TRUE(ShouldOfferLinking(type));
+  }
+  {
+    base::test::ScopedFeatureList disable_linking_for_dc;
+    disable_linking_for_dc.InitAndDisableFeature(
+        device::kDigitalCredentialsHybridLinking);
+    EXPECT_FALSE(ShouldOfferLinking(CredentialRequestType::kPresentation));
+  }
+  {
+    base::test::ScopedFeatureList enable_linking_for_dc;
+    enable_linking_for_dc.InitAndEnableFeature(
+        device::kDigitalCredentialsHybridLinking);
+    EXPECT_TRUE(ShouldOfferLinking(CredentialRequestType::kPresentation));
+  }
 }
 
 TEST(CableV2Encoding, PaddedCBOR) {
@@ -660,5 +686,5 @@ TEST_F(CableV2HandshakeTest, KNHandshake) {
 }
 
 }  // namespace
-}  // namespace cablev2
-}  // namespace device
+
+}  // namespace device::cablev2

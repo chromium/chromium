@@ -1063,21 +1063,38 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, PriorityOverride) {
   EXPECT_EQ(process->GetPriority(), base::Process::Priority::kBestEffort);
   EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
 
-  // Add a pending view, and expect the process to *stay* backgrounded.
-  process->AddPendingView();
+  // Add a media stream, and expect the process to *stay* backgrounded.
+  process->OnMediaStreamAdded();
   EXPECT_TRUE(process->HasPriorityOverride());
   EXPECT_EQ(process->GetPriority(), base::Process::Priority::kBestEffort);
   EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
 
-  // Clear the override. The pending view should cause the process to go back to
+  // TODO(pmonette): Pending views will be taken into account if
+  // kPriorityOverridePendingViews is enabled.
+  base::Process::Priority kExpectedPriorityPendingViews =
+      base::FeatureList::IsEnabled(features::kPriorityOverridePendingViews)
+          ? base::Process::Priority::kUserBlocking
+          : base::Process::Priority::kBestEffort;
+
+  process->AddPendingView();
+  EXPECT_TRUE(process->HasPriorityOverride());
+  EXPECT_EQ(process->GetPriority(), kExpectedPriorityPendingViews);
+  EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
+
+  process->RemovePendingView();
+  EXPECT_TRUE(process->HasPriorityOverride());
+  EXPECT_EQ(process->GetPriority(), base::Process::Priority::kBestEffort);
+  EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
+
+  // Clear the override. The media stream should cause the process to go back to
   // being foregrounded.
   process->ClearPriorityOverride();
   EXPECT_FALSE(process->HasPriorityOverride());
   EXPECT_EQ(process->GetPriority(), base::Process::Priority::kUserBlocking);
   EXPECT_EQ(observer.TakeValue().value(), process->GetPriority());
 
-  // Clear the pending view so the test doesn't explode.
-  process->RemovePendingView();
+  // Clear the media stream so the test doesn't explode.
+  process->OnMediaStreamRemoved();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -1827,23 +1844,9 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ZeroExecutionTimes) {
 
 class RenderProcessHostWriteableFileTest
     : public RenderProcessHostTestBase,
-      public ::testing::WithParamInterface<
-          std::tuple</*enforcement_enabled=*/bool,
-                     /*add_no_execute_flags=*/bool>> {
- public:
-  void SetUp() override {
-    enforcement_feature_.InitWithFeatureState(
-        base::features::kEnforceNoExecutableFileHandles,
-        IsEnforcementEnabled());
-    RenderProcessHostTestBase::SetUp();
-  }
-
+      public ::testing::WithParamInterface</*add_no_execute_flags=*/bool> {
  protected:
-  bool IsEnforcementEnabled() { return std::get<0>(GetParam()); }
-  bool ShouldMarkNoExecute() { return std::get<1>(GetParam()); }
-
- private:
-  base::test::ScopedFeatureList enforcement_feature_;
+  bool ShouldMarkNoExecute() { return GetParam(); }
 };
 
 // This test verifies that the renderer process is wired up correctly with the
@@ -1897,19 +1900,14 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostWriteableFileTest,
                                   run_loop.QuitClosure());
   run_loop.Run();
 
-  // This test should only detect a violation if enforcement is enabled and the
-  // file has not been marked no-execute correctly.
-  bool should_violation_occur =
-      IsEnforcementEnabled() && !ShouldMarkNoExecute();
+  bool should_violation_occur = !ShouldMarkNoExecute();
   EXPECT_EQ(should_violation_occur, error_was_called);
 #endif  // DCHECK_IS_ON()
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    RenderProcessHostWriteableFileTest,
-    testing::Combine(/*enforcement_enabled=*/testing::Bool(),
-                     /*add_no_execute_flags=*/testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         RenderProcessHostWriteableFileTest,
+                         /*add_no_execute_flags=*/testing::Bool());
 
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -2267,12 +2265,12 @@ class RenderProcessHostTestStableVideoDecoderTest
     RenderProcessHostImpl::SetStableVideoDecoderEventCBForTesting(
         stable_video_decoder_event_cb_.Get());
 
-#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
     // When Chrome is compiled with
-    // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT), renderer processes need a
-    // media::mojom::VideoDecoder during startup in order to query for supported
-    // configurations (see content::RenderMediaClient::Initialize()). With
-    // OOP-VD, this should cause the creation of a
+    // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT), renderer processes
+    // need a media::mojom::VideoDecoder during startup in order to query for
+    // supported configurations (see content::RenderMediaClient::Initialize()).
+    // With OOP-VD, this should cause the creation of a
     // media::stable::mojom::StableVideoDecoderFactory in order to create the
     // corresponding media::stable::mojom::StableVideoDecoder. When the
     // supported configurations are obtained, the media::mojom::VideoDecoder and
@@ -2301,17 +2299,17 @@ class RenderProcessHostTestStableVideoDecoderTest
             run_loop.Quit();
           });
     }
-#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
 
     rph_ = RenderProcessHostImpl::CreateRenderProcessHost(
         ShellContentBrowserClient::Get()->browser_context(), nullptr);
     ASSERT_TRUE(rph_->Init());
     rph_initialized_ = true;
 
-#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+#if BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
     run_loop.Run();
     ASSERT_TRUE(VerifyAndClearExpectations());
-#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_SUPPORT)
+#endif  // BUILDFLAG(PLATFORM_HAS_OPTIONAL_HEVC_DECODE_SUPPORT)
   }
 
   void TearDownOnMainThread() override {

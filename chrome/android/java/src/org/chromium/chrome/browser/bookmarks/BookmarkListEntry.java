@@ -32,7 +32,8 @@ public final class BookmarkListEntry {
         ViewType.IMPROVED_BOOKMARK_VISUAL,
         ViewType.IMPROVED_BOOKMARK_COMPACT,
         ViewType.SEARCH_BOX,
-        ViewType.EMPTY_STATE
+        ViewType.EMPTY_STATE,
+        ViewType.BATCH_UPLOAD_CARD
     })
     public @interface ViewType {
         int INVALID = -1;
@@ -45,6 +46,7 @@ public final class BookmarkListEntry {
         int IMPROVED_BOOKMARK_COMPACT = 6;
         int SEARCH_BOX = 7;
         int EMPTY_STATE = 8;
+        int BATCH_UPLOAD_CARD = 9;
     }
 
     /** Contains data used by section header in bookmark UI. */
@@ -105,6 +107,15 @@ public final class BookmarkListEntry {
                 || viewType == ViewType.SYNC_PROMO;
         return new BookmarkListEntry(
                 viewType,
+                /* bookmarkItem= */ null,
+                /* sectionHeaderData= */ null,
+                /* meta= */ null);
+    }
+
+    /** Create an entry presenting a batch upload card. */
+    static BookmarkListEntry createBatchUploadCard() {
+        return new BookmarkListEntry(
+                ViewType.BATCH_UPLOAD_CARD,
                 /* bookmarkItem= */ null,
                 /* sectionHeaderData= */ null,
                 /* meta= */ null);

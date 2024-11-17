@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import './strings.m.js';
+import 'chrome://resources/cr_elements/cr_spinner_style.css.js';
+import '/strings.m.js';
 import './shared_style.css.js';
 import './privacy_sandbox_dialog_consent_step.js';
 import './privacy_sandbox_dialog_notice_step.js';
@@ -72,11 +72,11 @@ export class PrivacySandboxCombinedDialogAppElement extends
     // After the initial step was loaded, resize the native dialog to fit it.
     this.navigateToStep_(firstStep)
         .then(() => this.resizeAndShowNativeDialog())
-        .then(() => this.updateScrollableContentsCurrentStep_())
         .then(
             () => this.promptActionOccurred(
                 startWithNotice ? PrivacySandboxPromptAction.NOTICE_SHOWN :
-                                  PrivacySandboxPromptAction.CONSENT_SHOWN));
+                                  PrivacySandboxPromptAction.CONSENT_SHOWN))
+        .then(() => this.updateScrollableContentsCurrentStep_());
   }
 
   disableAnimationsForTesting() {
@@ -87,12 +87,12 @@ export class PrivacySandboxCombinedDialogAppElement extends
     const savingDurationMs = this.animationsEnabled_ ? 1500 : 0;
     this.navigateToStep_(PrivacySandboxCombinedDialogStep.SAVING)
         .then(() => new Promise(r => setTimeout(r, savingDurationMs)))
-        .then(() => {
-          this.navigateToStep_(PrivacySandboxCombinedDialogStep.NOTICE);
-          this.updateScrollableContentsCurrentStep_().then(
-              () => this.promptActionOccurred(
-                  PrivacySandboxPromptAction.NOTICE_SHOWN));
-        });
+        .then(
+            () => this.navigateToStep_(PrivacySandboxCombinedDialogStep.NOTICE))
+        .then(
+            () => this.promptActionOccurred(
+                PrivacySandboxPromptAction.NOTICE_SHOWN))
+        .then(() => this.updateScrollableContentsCurrentStep_());
   }
 
   private navigateToStep_(step: PrivacySandboxCombinedDialogStep):

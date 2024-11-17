@@ -502,6 +502,11 @@ struct StructTraits<autofill::mojom::FormFieldDataPredictionsDataView,
     return r.parseable_name;
   }
 
+  static const std::string& parseable_label(
+      const autofill::FormFieldDataPredictions& r) {
+    return r.parseable_label;
+  }
+
   static const std::string& section(
       const autofill::FormFieldDataPredictions& r) {
     return r.section;
@@ -574,6 +579,9 @@ struct StructTraits<autofill::mojom::PasswordAndMetadataDataView,
 
   static bool uses_account_store(const autofill::PasswordAndMetadata& r) {
     return r.uses_account_store;
+  }
+  static bool is_grouped_affiliation(const autofill::PasswordAndMetadata& r) {
+    return r.is_grouped_affiliation;
   }
 
   static bool Read(autofill::mojom::PasswordAndMetadataDataView data,

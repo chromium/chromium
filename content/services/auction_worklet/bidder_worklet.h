@@ -33,8 +33,10 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom-forward.h"
 #include "content/services/auction_worklet/set_bid_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
+#include "content/services/auction_worklet/trusted_signals_kvv2_manager.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -106,6 +108,9 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // occurred.
   //
   // Data is cached and will be reused by ReportWin().
+  //
+  // `trusted_signals_kvv2_manager` must remain valid for the lifetime of the
+  // BidderWorklet.
   BidderWorklet(
       std::vector<scoped_refptr<AuctionV8Helper>> v8_helpers,
       std::vector<mojo::PendingRemote<mojom::AuctionSharedStorageHost>>
@@ -115,6 +120,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
           pending_url_loader_factory,
       mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
           auction_network_events_handler,
+      TrustedSignalsKVv2Manager* trusted_signals_kvv2_manager,
       const GURL& script_source_url,
       const std::optional<GURL>& bidding_wasm_helper_url,
       const std::optional<GURL>& trusted_bidding_signals_url,
@@ -165,6 +171,7 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   // mojom::BidderWorklet implementation:
   void BeginGenerateBid(
       mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
+      mojom::TrustedSignalsCacheKeyPtr trusted_signals_cache_key,
       mojom::KAnonymityBidMode kanon_mode,
       const url::Origin& interest_group_join_origin,
       const std::optional<GURL>& direct_from_seller_per_buyer_signals,
@@ -265,13 +272,26 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     base::TimeDelta wait_direct_from_seller_signals;
     base::TimeDelta wait_promises;
 
+    // Time the BidderWorklet finished waiting for trusted bidding signals,
+    // used to compute UMA for the time it takes to resume generating bids
+    // after downloading signals.
+    base::TimeTicks trusted_bidding_signals_download_complete_time;
+
     // Time where the BidderWorklet finished waiting for GenerateBid
     // dependencies, used to compute start and end times for latency phase UKMs.
     base::TimeTicks generate_bid_start_time;
 
-    // Set while loading is in progress.
+    // Set while loading a trusted signals via the legacy
+    // TrustedSignalsRequestManager is in progress.
     std::unique_ptr<TrustedSignalsRequestManager::Request>
         trusted_bidding_signals_request;
+
+    // Used when there's a KVv2 request managed by the
+    // TrustedSignalsKVv2Manager. Not cleared until the generateBid() call is
+    // complete, to keep the signals cached in the manager.
+    std::unique_ptr<TrustedSignalsKVv2Manager::Request>
+        trusted_bidding_signals_kvv2_request;
+
     // Results of loading trusted bidding signals.
     scoped_refptr<TrustedSignals::Result> trusted_bidding_signals_result;
     // True if failed loading valid trusted bidding signals.
@@ -542,6 +562,10 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     void ConnectDevToolsAgent(
         mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> agent);
 
+    // Create a context recycler, run the top level script, and add bindings.
+    // This context recycler will be saved for later use by a GenerateBid call.
+    void PrepareContextRecycler(uint64_t trace_id);
+
    private:
     friend class base::DeleteHelper<V8State>;
     ~V8State();
@@ -577,6 +601,9 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
         uint64_t trace_id,
         std::unique_ptr<ContextRecycler> context_recycler_for_rerun,
         bool restrict_to_kanon_ads);
+
+    bool DeepFreezeContext(v8::Local<v8::Context>& context,
+                           std::vector<std::string>& errors_out);
 
     std::unique_ptr<ContextRecycler>
     CreateContextRecyclerAndRunTopLevelForGenerateBid(
@@ -641,6 +668,15 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
     base::LRUCache<url::Origin, std::unique_ptr<ContextRecycler>>
         context_recyclers_for_origin_group_mode_;
 
+    // ContextRecyclers we prepare in advance. These can be used by any
+    // execution mode, but for "frozen-context" mode, the context will need to
+    // be frozen before it's used.
+    std::vector<std::unique_ptr<ContextRecycler>> unused_context_recyclers_;
+
+    // The number of contexts we created that were not premade. Used for UMA:
+    // Ads.InterestGroup.Auction.NonPremadeContextsCreated.
+    size_t non_premade_contexts_created = 0;
+
     // ContextRecycler for "frozen-context" execution mode.
     std::unique_ptr<ContextRecycler> context_recycler_for_frozen_context_;
 
@@ -660,6 +696,11 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
                         std::optional<std::string> error_msg);
   void MaybeRecordCodeWait();
   void RunReadyTasks();
+
+  // If our scripts are downloaded but we aren't ready to generate the first
+  // bid (and haven't generated any bids yet), prepare some contexts for later
+  // use, including running the top level script and adding bindings.
+  void MaybePrepareContexts();
 
   void OnTrustedBiddingSignalsDownloaded(
       GenerateBidTaskList::iterator task,
@@ -767,6 +808,8 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
   std::string join_origin_hash_salt_;
 
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
+  // Owned by the AuctionWorkletService that owns `this`.
+  const raw_ptr<TrustedSignalsKVv2Manager> trusted_signals_kvv2_manager_;
 
   bool paused_;
 
@@ -823,6 +866,11 @@ class CONTENT_EXPORT BidderWorklet : public mojom::BidderWorklet,
 
   mojo::Remote<auction_worklet::mojom::AuctionNetworkEventsHandler>
       auction_network_events_handler_;
+
+  // We use a separate task tracker for context preparation tasks,
+  // so that once we're ready to generate bids, we can easily
+  // cancel all preparation tasks.
+  base::CancelableTaskTracker context_preparation_task_tracker_;
 
   SEQUENCE_CHECKER(user_sequence_checker_);
 

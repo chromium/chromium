@@ -46,13 +46,16 @@ class MEDIA_EXPORT MediaTrack {
                                      VideoKind kind,
                                      const std::string& label,
                                      const std::string& language,
-                                     bool enabled);
+                                     bool enabled,
+                                     StreamParser::TrackId stream_id = 0);
 
   static MediaTrack CreateAudioTrack(const std::string& id,
                                      AudioKind kind,
                                      const std::string& label,
                                      const std::string& language,
-                                     bool enabled);
+                                     bool enabled,
+                                     StreamParser::TrackId stream_id = 0,
+                                     bool exclusive = false);
 
   static MediaTrack::Kind VideoKindToString(MediaTrack::VideoKind kind);
   static MediaTrack::Kind AudioKindToString(MediaTrack::AudioKind kind);
@@ -68,6 +71,7 @@ class MEDIA_EXPORT MediaTrack {
   const Language& language() const { return language_; }
   StreamParser::TrackId stream_id() const { return stream_id_; }
   bool enabled() const { return enabled_; }
+  bool exclusive() const { return exclusive_; }
 
   void set_id(Id id) {
     DCHECK(track_id_.value().empty() && !id.value().empty());
@@ -83,10 +87,16 @@ class MEDIA_EXPORT MediaTrack {
              const Kind& kind,
              const Label& label,
              const Language& lang,
-             bool enabled);
+             bool enabled,
+             bool exclusive);
 
   Type type_;
   bool enabled_;
+
+  // A video track is always exclusive. An audio track is exclusive only if it
+  // is created that way. Exclusive audio tracks, when enabled, will disable
+  // other audio tracks.
+  bool exclusive_;
 
   // |stream_id_| is read from the bytestream and is guaranteed to be
   // unique only within the scope of single bytestream's initialization segment.

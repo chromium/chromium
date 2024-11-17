@@ -30,10 +30,22 @@ export class HealthdInternalsPowerCardElement extends PolymerElement {
     super.connectedCallback();
 
     this.$.infoCard.appendCardRow('BATTERY');
+    this.$.infoCard.updateDisplayedInfo(0, 'Battery not found.');
   }
 
   updateTelemetryData(data: HealthdApiTelemetryResult) {
-    this.$.infoCard.updateDisplayedInfo(0, data.battery);
+    if (data.battery === undefined) {
+      return;
+    }
+    this.$.infoCard.updateDisplayedInfo(0, {
+      'Voltage (V)': data.battery.voltageNow,
+      'Current (A)': data.battery.currentNow,
+      'Charge (Ah)': data.battery.chargeNow,
+    });
+  }
+
+  updateExpanded(isExpanded: boolean) {
+    this.$.infoCard.updateExpanded(isExpanded);
   }
 }
 

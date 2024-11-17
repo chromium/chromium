@@ -10,10 +10,6 @@
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-#if !BUILDFLAG(IS_IOS)
-#include "content/public/browser/browser_context.h"
-#endif  // !BUILDFLAG(IS_IOS)
-
 namespace extensions {
 namespace api {
 namespace omnibox {
@@ -38,11 +34,6 @@ class OmniboxSuggestionsWatcher : public KeyedService {
     virtual void OnOmniboxDefaultSuggestionChanged() {}
   };
 
-#if !BUILDFLAG(IS_IOS)
-  static OmniboxSuggestionsWatcher* GetForBrowserContext(
-      content::BrowserContext* browser_context);
-#endif  // !BUILDFLAG(IS_IOS)
-
   OmniboxSuggestionsWatcher();
   ~OmniboxSuggestionsWatcher() override;
   OmniboxSuggestionsWatcher(const OmniboxSuggestionsWatcher&) = delete;
@@ -56,8 +47,6 @@ class OmniboxSuggestionsWatcher : public KeyedService {
   // Add/remove observer.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
-
-  static void EnsureFactoryBuilt();
 
  private:
   base::ObserverList<Observer> observers_;

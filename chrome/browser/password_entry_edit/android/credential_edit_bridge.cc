@@ -101,7 +101,7 @@ void CredentialEditBridge::DeleteCredential(JNIEnv* env) {
   std::move(dismissal_callback_).Run();
 }
 
-void CredentialEditBridge::OnUIDismissed(JNIEnv* env) {
+void CredentialEditBridge::OnUiDismissed(JNIEnv* env) {
   std::move(dismissal_callback_).Run();
 }
 

@@ -19,9 +19,9 @@
 
 namespace extensions {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class LogSourceAccessManager;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
  public:
@@ -34,9 +34,9 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
 
   scoped_refptr<FeedbackService> GetService() const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   LogSourceAccessManager* GetLogSourceAccessManager() const;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Create a FeedbackInfo to be passed to UI/JS
   std::unique_ptr<api::feedback_private::FeedbackInfo> CreateFeedbackInfo(
@@ -74,9 +74,9 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
   const raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<FeedbackService> service_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<LogSourceAccessManager> log_source_access_manager_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 class FeedbackPrivateGetUserEmailFunction : public ExtensionFunction {
@@ -115,11 +115,11 @@ class FeedbackPrivateReadLogSourceFunction : public ExtensionFunction {
   ~FeedbackPrivateReadLogSourceFunction() override {}
   ResponseAction Run() override;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
  private:
   void OnCompleted(
       std::unique_ptr<api::feedback_private::ReadLogSourceResult> result);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 class FeedbackPrivateSendFeedbackFunction : public ExtensionFunction {

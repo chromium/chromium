@@ -16,7 +16,6 @@ import android.graphics.Color;
 import android.text.TextUtils;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RuntimeEnvironment;
@@ -29,7 +28,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.task.test.BackgroundShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ShortcutHelper;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.ColorProvider;
@@ -72,8 +70,6 @@ public class WebappRegistryTest {
 
     private SharedPreferences mSharedPreferences;
     private boolean mCallbackCalled;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private static class FetchStorageCallback
             implements WebappRegistry.FetchWebappDataStorageCallback {
@@ -122,7 +118,7 @@ public class WebappRegistryTest {
 
         mCallbackCalled = false;
 
-        mJniMocker.mock(WebApkSyncServiceJni.TEST_HOOKS, new TestWebApkSyncServiceJni());
+        WebApkSyncServiceJni.setInstanceForTesting(new TestWebApkSyncServiceJni());
     }
 
     private void registerWebapp(BrowserServicesIntentDataProvider intentDataProvider)

@@ -36,6 +36,8 @@ class CloseWatcher final : public EventTarget, public ExecutionContextClient {
 
   bool IsClosed() const { return state_ == State::kClosed; }
 
+  void setEnabled(bool enabled) { enabled_ = enabled; }
+
   // Note: return value is not exposed to JS via IDL; it's only for internal
   // use.
   bool requestClose();
@@ -92,6 +94,7 @@ class CloseWatcher final : public EventTarget, public ExecutionContextClient {
   enum class State { kActive, kClosed };
   State state_ = State::kActive;
   bool dispatching_cancel_ = false;
+  bool enabled_ = true;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;
 };
 

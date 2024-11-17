@@ -22,12 +22,12 @@ namespace {
 // The total number of Chrome accelerators (available on Chrome OS).
 constexpr int kChromeAcceleratorsTotalNum = 103;
 // The hash of Chrome accelerators (available on Chrome OS).
-constexpr char kChromeAcceleratorsHash[] = "f397b21373050f42d9328999912a3ff0";
+constexpr char kChromeAcceleratorsHash[] = "0b83abd23bca45738c58668d94337f48";
 #else
 // The total number of Chrome accelerators (available on Chrome OS).
 constexpr int kChromeAcceleratorsTotalNum = 101;
 // The hash of Chrome accelerators (available on Chrome OS).
-constexpr char kChromeAcceleratorsHash[] = "37fa9d482540e23e4eb38e766e2b51c5";
+constexpr char kChromeAcceleratorsHash[] = "b294aad5a7b11a754d8c81940979e47c";
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 const char kCommonMessage[] =

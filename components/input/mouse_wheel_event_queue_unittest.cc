@@ -151,7 +151,7 @@ class MouseWheelEventQueueTest : public testing::Test,
     queue_ = std::make_unique<MouseWheelEventQueue>(this);
   }
 
-  ~MouseWheelEventQueueTest() override {}
+  ~MouseWheelEventQueueTest() override = default;
 
   // MouseWheelEventQueueClient
   void SendMouseWheelEventImmediately(

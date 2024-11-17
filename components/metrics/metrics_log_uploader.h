@@ -31,14 +31,14 @@ class MetricsLogUploader {
   using UploadCallback =
       base::RepeatingCallback<void(int, int, bool, bool, std::string_view)>;
 
-  // Possible service types. This should correspond to a type from
-  // DataUseUserData.
-  // TODO(crbug.com/40912258) Investigate cleaning up this enum if it isn't
-  // needed anymore.
+  // Possible service types. This is used during the upload process for
+  // determining which server to upload to and by metrics providers when adding
+  // data to logs.
   enum MetricServiceType {
     UMA,
     UKM,
     STRUCTURED_METRICS,
+    DWA,
   };
 
   virtual ~MetricsLogUploader() = default;

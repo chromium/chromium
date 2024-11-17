@@ -36,7 +36,7 @@ PSID UnwrapSid(const std::optional<Sid>& sid) {
   return sid->GetPSID();
 }
 
-PACL UnwrapAcl(const std::optional<AccessControlList>& acl) {
+PACL UnwrapAcl(std::optional<AccessControlList>& acl) {
   if (!acl)
     return nullptr;
   return acl->get();
@@ -147,27 +147,31 @@ bool SetSecurityDescriptor(const SecurityDescriptor& sd,
                                                  PSID,
                                                  PACL,
                                                  PACL)) {
+  auto security_descriptor = sd.Clone();
+
   security_info &= ~(PROTECTED_DACL_SECURITY_INFORMATION |
                      UNPROTECTED_DACL_SECURITY_INFORMATION |
                      PROTECTED_SACL_SECURITY_INFORMATION |
                      UNPROTECTED_SACL_SECURITY_INFORMATION);
   if (security_info & DACL_SECURITY_INFORMATION) {
-    if (sd.dacl_protected()) {
+    if (security_descriptor.dacl_protected()) {
       security_info |= PROTECTED_DACL_SECURITY_INFORMATION;
     } else {
       security_info |= UNPROTECTED_DACL_SECURITY_INFORMATION;
     }
   }
   if (security_info & SACL_SECURITY_INFORMATION) {
-    if (sd.sacl_protected()) {
+    if (security_descriptor.sacl_protected()) {
       security_info |= PROTECTED_SACL_SECURITY_INFORMATION;
     } else {
       security_info |= UNPROTECTED_SACL_SECURITY_INFORMATION;
     }
   }
   DWORD error = set_sd(object, ConvertObjectType(object_type), security_info,
-                       UnwrapSid(sd.owner()), UnwrapSid(sd.group()),
-                       UnwrapAcl(sd.dacl()), UnwrapAcl(sd.sacl()));
+                       UnwrapSid(security_descriptor.owner()),
+                       UnwrapSid(security_descriptor.group()),
+                       UnwrapAcl(security_descriptor.dacl()),
+                       UnwrapAcl(security_descriptor.sacl()));
   if (error != ERROR_SUCCESS) {
     ::SetLastError(error);
     DPLOG(ERROR) << "Failed setting DACL for object.";
@@ -290,8 +294,14 @@ bool SecurityDescriptor::WriteToHandle(
 
 std::optional<std::wstring> SecurityDescriptor::ToSddl(
     SECURITY_INFORMATION security_info) const {
+  // `ToAbsolute()` is not const-qualified as it returns non-const pointers by
+  // populating the `SECURITY_DESCRIPTOR` with them. Since we're in a const-
+  // qualified member method, we need to clone ourselves and call `ToAbsolute()`
+  // on the clone.
+  auto self = Clone();
   SECURITY_DESCRIPTOR sd = {};
-  ToAbsolute(sd);
+  self.ToAbsolute(sd);
+
   LPWSTR sddl;
   if (!::ConvertSecurityDescriptorToStringSecurityDescriptor(
           &sd, SDDL_REVISION_1, security_info, &sddl, nullptr)) {
@@ -301,7 +311,7 @@ std::optional<std::wstring> SecurityDescriptor::ToSddl(
   return sddl_ptr.get();
 }
 
-void SecurityDescriptor::ToAbsolute(SECURITY_DESCRIPTOR& sd) const {
+void SecurityDescriptor::ToAbsolute(SECURITY_DESCRIPTOR& sd) {
   memset(&sd, 0, sizeof(sd));
   sd.Revision = SECURITY_DESCRIPTOR_REVISION;
   sd.Owner = owner_ ? owner_->GetPSID() : nullptr;
@@ -325,8 +335,14 @@ void SecurityDescriptor::ToAbsolute(SECURITY_DESCRIPTOR& sd) const {
 
 std::optional<SecurityDescriptor::SelfRelative>
 SecurityDescriptor::ToSelfRelative() const {
+  // `ToAbsolute()` is not const-qualified as it returns non-const pointers by
+  // populating the `SECURITY_DESCRIPTOR` with them. Since we're in a const-
+  // qualified member method, we need to clone ourselves and call `ToAbsolute()`
+  // on the clone.
+  auto self = Clone();
   SECURITY_DESCRIPTOR sd = {};
-  ToAbsolute(sd);
+  self.ToAbsolute(sd);
+
   DWORD size = sizeof(SECURITY_DESCRIPTOR_MIN_LENGTH);
   std::vector<uint8_t> buffer(SECURITY_DESCRIPTOR_MIN_LENGTH);
   if (::MakeSelfRelativeSD(&sd, buffer.data(), &size)) {

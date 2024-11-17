@@ -16,7 +16,15 @@ namespace base {
 class Value;
 }  // namespace base
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace webapps {
+extern const char kWebAppOriginAssociationParserFormatError[];
+extern const char kInvalidManifestId[];
+extern const char kInvalidValueType[];
+extern const char kInvalidScopeUrl[];
 
 // Handles the logic of parsing the web app origin association file from a
 // string as described in the "Scope Extensions for Web Apps" explainer:
@@ -29,19 +37,22 @@ class WebAppOriginAssociationParser {
   WebAppOriginAssociationParser(const WebAppOriginAssociationParser&) = delete;
   ~WebAppOriginAssociationParser();
 
-  mojom::WebAppOriginAssociationPtr Parse(const std::string& data);
+  mojom::WebAppOriginAssociationPtr Parse(const std::string& data,
+                                          const url::Origin& origin);
   bool failed() const;
   // Return errors and clear up |errors_|.
   std::vector<mojom::WebAppOriginAssociationErrorPtr> GetErrors();
 
  private:
   std::vector<mojom::AssociatedWebAppPtr> ParseAssociatedWebApps(
-      const base::Value::Dict& root_dict);
-  std::optional<mojom::AssociatedWebAppPtr> ParseAssociatedWebApp(
-      const base::Value::Dict& app_dict);
+      const base::Value::Dict& root_dict,
+      const url::Origin& origin);
+  std::optional<GURL> ParseExtendedScope(const base::Value::Dict& app_dict,
+                                         const url::Origin& origin);
   void AddErrorInfo(const std::string& error_msg,
                     int error_line = 0,
                     int error_column = 0);
+  bool UrlIsWithinScope(const GURL& url, const url::Origin& scope);
 
   // Set to true if |data| cannot be parsed, or the parsed value is not a valid
   // json object.

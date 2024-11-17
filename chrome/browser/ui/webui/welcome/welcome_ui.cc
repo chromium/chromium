@@ -117,6 +117,17 @@ void AddStrings(content::WebUIDataSource* html_source) {
 
 }  // namespace
 
+bool WelcomeUIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return welcome::IsEnabled(profile);
+}
+
+std::unique_ptr<content::WebUIController>
+WelcomeUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                       const GURL& url) {
+  return std::make_unique<WelcomeUI>(web_ui, url);
+}
+
 WelcomeUI::WelcomeUI(content::WebUI* web_ui, const GURL& url)
     : content::WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);

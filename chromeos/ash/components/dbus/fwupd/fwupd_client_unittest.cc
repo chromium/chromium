@@ -19,6 +19,7 @@
 #include "chromeos/ash/components/dbus/fwupd/dbus_constants.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_properties.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_request.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
 #include "dbus/mock_object_proxy.h"
@@ -31,8 +32,10 @@ using ::testing::Invoke;
 namespace {
 const char kFakeDeviceIdForTesting[] = "0123";
 const char kFakeDeviceNameForTesting[] = "Fake Device";
+const bool kFakeNeedsRebootForTesting = false;
 const char kFakeInternalDeviceIdForTesting[] = "4567";
 const char kFakeInternalDeviceNameForTesting[] = "Fake Internal Device";
+const bool kFakeInternalNeedsRebootForTesting = true;
 const char kFakeUpdateVersionForTesting[] = "1.0.0";
 const char kFakeUpdateDescriptionForTesting[] =
     "This is a fake update for testing.";
@@ -332,7 +335,8 @@ class FwupdClientTest : public testing::Test {
 
     device_array_writer.OpenDictEntry(&dict_writer);
     dict_writer.AppendString(kFlagsKey);
-    dict_writer.AppendVariantOfUint64(kInternalDeviceFlag);
+    dict_writer.AppendVariantOfUint64(kInternalDeviceFlag |
+                                      kNeedsRebootDeviceFlag);
     device_array_writer.CloseContainer(&dict_writer);
 
     response_array_writer.CloseContainer(&device_array_writer);
@@ -345,7 +349,8 @@ class FwupdClientTest : public testing::Test {
     run_loop_.Quit();
 
     FwupdDeviceList expected_devices = {
-        FwupdDevice(kFakeDeviceIdForTesting, kFakeDeviceNameForTesting)};
+        FwupdDevice(kFakeDeviceIdForTesting, kFakeDeviceNameForTesting,
+                    kFakeNeedsRebootForTesting)};
     EXPECT_EQ(*devices, expected_devices);
   }
 
@@ -353,9 +358,11 @@ class FwupdClientTest : public testing::Test {
     run_loop_.Quit();
 
     FwupdDeviceList expected_devices = {
-        FwupdDevice(kFakeDeviceIdForTesting, kFakeDeviceNameForTesting),
+        FwupdDevice(kFakeDeviceIdForTesting, kFakeDeviceNameForTesting,
+                    kFakeNeedsRebootForTesting),
         FwupdDevice(kFakeInternalDeviceIdForTesting,
-                    kFakeInternalDeviceNameForTesting),
+                    kFakeInternalDeviceNameForTesting,
+                    kFakeInternalNeedsRebootForTesting),
     };
     EXPECT_EQ(*devices, expected_devices);
   }
@@ -437,6 +444,7 @@ class FwupdClientTest : public testing::Test {
   scoped_refptr<dbus::MockObjectProxy> proxy_;
   raw_ptr<FwupdClient, DanglingUntriaged> fwupd_client_ = nullptr;
   std::unique_ptr<FwupdProperties> expected_properties_;
+  ash::ScopedStubInstallAttributes test_install_attributes_;
 
  private:
   // Handles calls to |proxy_|'s ConnectToSignal() method.
@@ -524,6 +532,34 @@ TEST_F(FwupdClientTest, RequestDevicesFlexEnabled) {
   base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
   command_line.AppendSwitch(switches::kRevenBranding);
   EnableFeatureFlag(features::kFlexFirmwareUpdate);
+
+  fwupd_client_->RequestDevices();
+
+  run_loop_.Run();
+}
+
+TEST_F(FwupdClientTest, RequestDevicesEnrolledFlexEnabled) {
+  // The observer will check that the device description is parsed and passed
+  // correctly.
+  MockObserver observer;
+  EXPECT_CALL(observer, OnDeviceListResponse(_))
+      .Times(1)
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::CheckDevices));
+  fwupd_client_->AddObserver(&observer);
+
+  EXPECT_CALL(*proxy_, DoCallMethodWithErrorResponse(_, _, _))
+      .WillRepeatedly(Invoke(this, &FwupdClientTest::OnMethodCalled));
+
+  AddDbusMethodCallResultSimulation(CreateCheckDevicesResponse(), nullptr);
+
+  // Enable reven firmware updates.
+  base::CommandLine& command_line = *base::CommandLine::ForCurrentProcess();
+  command_line.AppendSwitch(switches::kRevenBranding);
+  EnableFeatureFlag(features::kFlexFirmwareUpdate);
+
+  // Set enrolled.
+  test_install_attributes_.Get()->SetCloudManaged("test-domain",
+                                                  "FAKE_DEVICE_ID");
 
   fwupd_client_->RequestDevices();
 

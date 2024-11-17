@@ -65,9 +65,9 @@ class SaveToDriveMediatorTest : public PlatformTest {
   void SetUp() final {
     PlatformTest::SetUp();
     scoped_feature_list_.InitAndEnableFeature(kIOSSaveToDrive);
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
     web_state_ = std::make_unique<web::FakeWebState>();
-    web_state_->SetBrowserState(browser_state_.get());
+    web_state_->SetBrowserState(profile_.get());
     DriveTabHelper::GetOrCreateForWebState(web_state_.get());
     FakeDownloadManagerTabHelper::CreateForWebState(web_state_.get());
     download_task_ =
@@ -87,11 +87,11 @@ class SaveToDriveMediatorTest : public PlatformTest {
         manageStorageAlertHandler:manage_storage_alert_commands_handler_
                applicationHandler:application_commands_handler_
              accountPickerHandler:account_picker_commands_handler_
-                      prefService:browser_state_->GetPrefs()
+                      prefService:profile_->GetPrefs()
             accountManagerService:ChromeAccountManagerServiceFactory::
-                                      GetForBrowserState(browser_state_.get())
-                     driveService:drive::DriveServiceFactory::
-                                      GetForBrowserState(browser_state_.get())];
+                                      GetForProfile(profile_.get())
+                     driveService:drive::DriveServiceFactory::GetForProfile(
+                                      profile_.get())];
   }
 
   void TearDown() final {
@@ -106,7 +106,7 @@ class SaveToDriveMediatorTest : public PlatformTest {
 
   drive::TestDriveService* GetTestDriveService() {
     return static_cast<drive::TestDriveService*>(
-        drive::DriveServiceFactory::GetForBrowserState(browser_state_.get()));
+        drive::DriveServiceFactory::GetForProfile(profile_.get()));
   }
 
   FakeDownloadManagerTabHelper* GetDownloadManagerTabHelper() const {
@@ -116,7 +116,7 @@ class SaveToDriveMediatorTest : public PlatformTest {
 
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::FakeWebState> web_state_;
   std::unique_ptr<web::FakeDownloadTask> download_task_;
   id save_to_drive_commands_handler_;

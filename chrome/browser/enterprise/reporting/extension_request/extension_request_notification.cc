@@ -86,12 +86,12 @@ void ExtensionRequestNotification::Show(NotificationCloseCallback callback) {
           weak_factory_.GetWeakPtr()));
   notification_->set_never_timeout(true);
 
-  NotificationDisplayService::GetForProfile(profile_)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, *notification_, nullptr);
 }
 
 void ExtensionRequestNotification::CloseNotification() {
-  NotificationDisplayService::GetForProfile(profile_)->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
       NotificationHandler::Type::TRANSIENT, kNotificationIds[notify_type_]);
   notification_.reset();
 }

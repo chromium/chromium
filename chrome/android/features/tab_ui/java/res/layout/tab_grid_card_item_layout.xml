@@ -34,14 +34,26 @@ found in the LICENSE file.
                 android:id="@+id/tab_favicon"
                 android:layout_height="@dimen/tab_grid_card_header_height"
                 android:layout_width="wrap_content"
-                android:minWidth="@dimen/tab_grid_card_favicon_padding"
+                android:layout_gravity="center_vertical"
+                android:paddingStart="@dimen/tab_grid_card_favicon_padding_start"
+                android:paddingEnd="@dimen/tab_grid_card_favicon_padding_end"
                 android:adjustViewBounds="true"
                 android:importantForAccessibility="no" />
+            <FrameLayout
+                android:id="@+id/tab_group_color_view_container"
+                android:layout_height="@dimen/tab_grid_card_header_height"
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_toEndOf="@id/tab_favicon"
+                android:paddingStart="@dimen/tab_grid_card_favicon_padding_start"
+                android:paddingEnd="@dimen/tab_grid_card_favicon_padding_end"
+                android:importantForAccessibility="no"
+                android:visibility="gone"/>
             <TextView
                 android:id="@+id/tab_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/tab_favicon"
+                android:layout_toEndOf="@id/tab_group_color_view_container"
                 android:layout_marginEnd="@dimen/tab_grid_card_title_end_margin"
                 android:requiresFadingEdge="horizontal"
                 android:fadingEdgeLength="@dimen/tab_grid_card_title_fading_length"
@@ -80,12 +92,13 @@ found in the LICENSE file.
             <!-- New layout for labels including activity updates and price cards. -->
             <ViewStub
                 android:id="@+id/tab_card_label_stub"
-                android:inflatedId="@+id/tab_card_label"
-                android:layout="@layout/tab_card_label_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/tab_card_label_height"
-                android:layout_gravity="bottom|center_horizontal"
-                android:layout_marginBottom="11dp"/>
+                android:layout_marginBottom="11dp"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:inflatedId="@+id/tab_card_label"
+                android:layout="@layout/tab_card_label_layout" />
         </RelativeLayout>
 
         <!--

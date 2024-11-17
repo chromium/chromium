@@ -108,7 +108,7 @@ void BluetoothScanningPromptAndroid::OnDialogFinished(JNIEnv* env,
       event_handler_.Run(content::BluetoothScanningPrompt::Event::kCanceled);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace permissions

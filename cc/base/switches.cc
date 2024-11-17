@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 
-namespace cc {
 namespace switches {
 
 const char kDisableThreadedAnimation[] = "disable-threaded-animation";
@@ -117,4 +116,3 @@ const char kCCScrollAnimationDurationForTesting[] =
     "cc-scroll-animation-duration-in-seconds";
 
 }  // namespace switches
-}  // namespace cc

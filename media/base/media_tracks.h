@@ -39,7 +39,8 @@ class MEDIA_EXPORT MediaTracks {
                             StreamParser::TrackId stream_id,
                             const MediaTrack::Kind& kind,
                             const MediaTrack::Label& label,
-                            const MediaTrack::Language& language);
+                            const MediaTrack::Language& language,
+                            bool exclusive = true);
   // Adds a new video track. The |bytestreamTrackId| must uniquely identify the
   // track within the bytestream.
   MediaTrack* AddVideoTrack(const VideoDecoderConfig& config,

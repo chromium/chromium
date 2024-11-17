@@ -40,6 +40,8 @@ class CrosVariationsServiceClient : public VariationsServiceClient {
 
   bool OverridesRestrictParameter(std::string* parameter) override;
 
+  base::FilePath GetVariationsSeedFileDir() override;
+
   bool IsEnterprise() override;
 
   // Multi-profile early-boot experiments are not supported.

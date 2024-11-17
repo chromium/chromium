@@ -34,8 +34,10 @@ _grit_defines = [
   "use_aura=${use_aura}",
   "use_ozone=${use_ozone}",
 
-  # Mac and iOS want Title Case strings.
-  "use_titlecase=${is_apple}",
+  # Mac wants Title Case strings.
+  "use_titlecase=${is_mac}",
+
+  "is_desktop_android=${is_desktop_android}",
 ]
 
 # Must match `enable_hidpi` in ui/base/ui_features.gni.

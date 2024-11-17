@@ -23,6 +23,8 @@
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
+#include "components/ip_protection/mojom/core.mojom.h"
+#include "components/ip_protection/mojom/data_types.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -47,9 +49,8 @@ namespace android_webview {
 // TODO(b/346997109): Refactor AwIpProtectionCoreHost to reduce code
 // duplication once a common implementation of IpProtectionConfigGetter is
 // added.
-class AwIpProtectionCoreHost
-    : public KeyedService,
-      public network::mojom::IpProtectionConfigGetter {
+class AwIpProtectionCoreHost : public KeyedService,
+                               public ip_protection::mojom::CoreHost {
  public:
   explicit AwIpProtectionCoreHost(AwBrowserContext* aw_browser_context);
 
@@ -62,10 +63,10 @@ class AwIpProtectionCoreHost
   // IpProtectionConfigGetter:
   // Get a batch of blind-signed auth tokens.
   void TryGetAuthTokens(uint32_t batch_size,
-                        network::mojom::IpProtectionProxyLayer proxy_layer,
+                        ip_protection::mojom::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
   // Get the list of IP Protection proxies.
-  void GetProxyList(GetProxyListCallback callback) override;
+  void GetProxyConfig(GetProxyConfigCallback callback) override;
 
   // KeyedService:
 
@@ -87,10 +88,8 @@ class AwIpProtectionCoreHost
 
   // Binds Mojo interfaces to be passed to a new network service.
   void AddNetworkService(
-      mojo::PendingReceiver<network::mojom::IpProtectionConfigGetter>
-          pending_receiver,
-      mojo::PendingRemote<network::mojom::IpProtectionProxyDelegate>
-          pending_remote);
+      mojo::PendingReceiver<ip_protection::mojom::CoreHost> pending_receiver,
+      mojo::PendingRemote<ip_protection::mojom::CoreControl> pending_remote);
 
   // Like `SetUp()`, but providing values for each of the member variables. Note
   // `bsa` is moved onto a separate sequence when initializing
@@ -167,11 +166,11 @@ class AwIpProtectionCoreHost
 
   // The `mojo::Receiver` objects allowing the network service to call methods
   // on `this`.
-  mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter> receivers_;
+  mojo::ReceiverSet<ip_protection::mojom::CoreHost> receivers_;
 
   // Similar to `receivers_`, but containing remotes for all existing
   // IpProtectionProxyDelegates.
-  mojo::RemoteSet<network::mojom::IpProtectionProxyDelegate> remotes_;
+  mojo::RemoteSet<ip_protection::mojom::CoreControl> remotes_;
 
   // True if this class is being tested.
   bool for_testing_ = false;

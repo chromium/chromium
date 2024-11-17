@@ -8,6 +8,7 @@
 
 #import "base/mac/mac_util.h"
 #include "base/memory/raw_ptr.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/test/ui_controls.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #import "ui/events/test/cocoa_test_event_utils.h"
@@ -258,7 +259,7 @@ TEST_F(NativeWidgetMacInteractiveUITest,
   params.native_widget =
       CreatePlatformNativeWidgetImpl(widget, kStubCapture, nullptr);
   // Start the window off in the dock.
-  params.show_state = ui::SHOW_STATE_MINIMIZED;
+  params.show_state = ui::mojom::WindowShowState::kMinimized;
   // "{}" in base64encode, to create some dummy restoration data.
   const std::string kDummyWindowRestorationData = "e30=";
   params.workspace = kDummyWindowRestorationData;

@@ -57,9 +57,7 @@ v8::Local<v8::Promise> PromiseRejectInternal(ScriptState* script_state,
 
 class DefaultSizeAlgorithm final : public StrategySizeAlgorithm {
  public:
-  std::optional<double> Run(ScriptState*,
-                            v8::Local<v8::Value>,
-                            ExceptionState&) override {
+  std::optional<double> Run(ScriptState*, v8::Local<v8::Value>) override {
     return 1;
   }
 };
@@ -70,11 +68,9 @@ class JavaScriptSizeAlgorithm final : public StrategySizeAlgorithm {
       : function_(isolate, size) {}
 
   std::optional<double> Run(ScriptState* script_state,
-                            v8::Local<v8::Value> chunk,
-                            ExceptionState& exception_state) override {
+                            v8::Local<v8::Value> chunk) override {
     auto* isolate = script_state->GetIsolate();
     auto context = script_state->GetContext();
-    v8::TryCatch trycatch(isolate);
     v8::Local<v8::Value> argv[] = {chunk};
 
     // https://streams.spec.whatwg.org/#make-size-algorithm-from-size-function
@@ -83,7 +79,6 @@ class JavaScriptSizeAlgorithm final : public StrategySizeAlgorithm {
         function_.Get(isolate)->Call(context, v8::Undefined(isolate), 1, argv);
     v8::Local<v8::Value> result;
     if (!result_maybe.ToLocal(&result)) {
-      exception_state.RethrowV8Exception(trycatch.Exception());
       return std::nullopt;
     }
 
@@ -93,7 +88,6 @@ class JavaScriptSizeAlgorithm final : public StrategySizeAlgorithm {
     v8::MaybeLocal<v8::Number> number_maybe = result->ToNumber(context);
     v8::Local<v8::Number> number;
     if (!number_maybe.ToLocal(&number)) {
-      exception_state.RethrowV8Exception(trycatch.Exception());
       return std::nullopt;
     }
     return number->Value();
@@ -211,23 +205,18 @@ class JavaScriptByteStreamStartAlgorithm : public StreamStartAlgorithm {
         method_(isolate, method),
         controller_(isolate, controller) {}
 
-  v8::MaybeLocal<v8::Promise> Run(ScriptState* script_state,
-                                  ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state) override {
     auto* isolate = script_state->GetIsolate();
 
-    auto value_maybe =
-        Call1(script_state, method_.Get(isolate), recv_.Get(isolate),
-              controller_.Get(isolate), exception_state);
-    if (exception_state.HadException()) {
-      return v8::MaybeLocal<v8::Promise>();
+    v8::Local<v8::Value> controller = controller_.Get(isolate);
+    auto value_maybe = method_.Get(isolate)->Call(
+        script_state->GetContext(), recv_.Get(isolate), 1, &controller);
+    if (isolate->HasPendingException()) {
+      return EmptyPromise();
     }
 
-    v8::Local<v8::Value> value;
-    if (!value_maybe.ToLocal(&value)) {
-      exception_state.ThrowTypeError("internal error");
-      return v8::MaybeLocal<v8::Promise>();
-    }
-    return PromiseResolve(script_state, value);
+    return ScriptPromise<IDLUndefined>::FromV8Value(
+        script_state, value_maybe.ToLocalChecked());
   }
 
   void Trace(Visitor* visitor) const override {
@@ -253,24 +242,19 @@ class JavaScriptStreamStartAlgorithm : public StreamStartAlgorithm {
         method_name_for_error_(method_name_for_error),
         controller_(isolate, controller) {}
 
-  v8::MaybeLocal<v8::Promise> Run(ScriptState* script_state,
-                                  ExceptionState& exception_state) override {
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state) override {
     auto* isolate = script_state->GetIsolate();
     // https://streams.spec.whatwg.org/#set-up-writable-stream-default-controller-from-underlying-sink
     // 3. Let startAlgorithm be the following steps:
     //    a. Return ? InvokeOrNoop(underlyingSink, "start", « controller »).
-    auto value_maybe = CallOrNoop1(script_state, recv_.Get(isolate), "start",
-                                   method_name_for_error_,
-                                   controller_.Get(isolate), exception_state);
-    if (exception_state.HadException()) {
-      return v8::MaybeLocal<v8::Promise>();
+    auto value_maybe = CallOrNoop1(
+        script_state, recv_.Get(isolate), "start", method_name_for_error_,
+        controller_.Get(isolate), PassThroughException(isolate));
+    if (isolate->HasPendingException()) {
+      return EmptyPromise();
     }
-    v8::Local<v8::Value> value;
-    if (!value_maybe.ToLocal(&value)) {
-      exception_state.ThrowTypeError("internal error");
-      return v8::MaybeLocal<v8::Promise>();
-    }
-    return PromiseResolve(script_state, value);
+    return ScriptPromise<IDLUndefined>::FromV8Value(
+        script_state, value_maybe.ToLocalChecked());
   }
 
   void Trace(Visitor* visitor) const override {
@@ -287,9 +271,8 @@ class JavaScriptStreamStartAlgorithm : public StreamStartAlgorithm {
 
 class TrivialStartAlgorithm : public StreamStartAlgorithm {
  public:
-  v8::MaybeLocal<v8::Promise> Run(ScriptState* script_state,
-                                  ExceptionState&) override {
-    return PromiseResolveWithUndefined(script_state);
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state) override {
+    return ToResolvedUndefinedPromise(script_state);
   }
 };
 
@@ -448,15 +431,6 @@ CORE_EXPORT v8::MaybeLocal<v8::Value> CallOrNoop1(
   TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
   return method.As<v8::Function>()->Call(script_state->GetContext(), object, 1,
                                          &arg0);
-}
-
-CORE_EXPORT v8::MaybeLocal<v8::Value> Call1(ScriptState* script_state,
-                                            v8::Local<v8::Function> method,
-                                            v8::Local<v8::Object> object,
-                                            v8::Local<v8::Value> arg0,
-                                            ExceptionState& exception_state) {
-  TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
-  return method->Call(script_state->GetContext(), object, 1, &arg0);
 }
 
 CORE_EXPORT v8::Local<v8::Promise> PromiseCall(ScriptState* script_state,

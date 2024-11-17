@@ -603,7 +603,7 @@ PageSpecificContentSettings::~PageSpecificContentSettings() {
         break;
       default:
         // Currently, only camera and mic permissions are supported.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }
@@ -988,7 +988,7 @@ void PageSpecificContentSettings::OnTwoSitePermissionChanged(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION() << content_setting;
+      NOTREACHED() << content_setting;
   }
 
   if (access_changed) {

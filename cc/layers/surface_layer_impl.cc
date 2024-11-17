@@ -18,6 +18,7 @@
 #include "cc/trees/occlusion.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/surface_draw_quad.h"
+#include "ui/gfx/geometry/vector2d_conversions.h"
 
 namespace cc {
 
@@ -225,6 +226,24 @@ void SurfaceLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   // Unless the client explicitly specifies otherwise, don't block on
   // |surface_range_| more than once.
   deadline_in_frames_ = 0u;
+
+  if (!base::FeatureList::IsEnabled(
+          features::kAlignSurfaceLayerImplToPixelGrid)) {
+    return;
+  }
+
+  // Don't allow DrawQuads to align on non-pixel boundaries.
+  gfx::Vector2dF quad_rect_offset = quad_rect.OffsetFromOrigin();
+  gfx::PointF rect_offset_in_target =
+      shared_quad_state->quad_to_target_transform.MapPoint(
+          gfx::PointF(quad_rect_offset.x(), quad_rect_offset.x()));
+  gfx::Vector2dF adjustment =
+      gfx::Vector2dF(rect_offset_in_target.x(), rect_offset_in_target.y()) -
+      gfx::Vector2dF(gfx::ToRoundedVector2d(gfx::Vector2dF(
+          rect_offset_in_target.x(), rect_offset_in_target.y())));
+  if (!adjustment.IsZero()) {
+    shared_quad_state->quad_to_target_transform.PostTranslate(-adjustment);
+  }
 }
 
 bool SurfaceLayerImpl::is_surface_layer() const {

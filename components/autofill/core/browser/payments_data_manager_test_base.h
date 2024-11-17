@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_DATA_MANAGER_TEST_BASE_H_
 
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/payments/payments_autofill_table.h"
 #include "components/os_crypt/async/browser/test_utils.h"
@@ -24,6 +25,8 @@ class PaymentsDataManagerTestBase {
 
   void SetUpTest();
   void TearDownTest();
+
+  void AdvanceClock(base::TimeDelta delta);
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};

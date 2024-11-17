@@ -8,8 +8,11 @@
 // Delegate protocol to relay user interactions from a grid UI.
 @protocol GridViewDelegate <NSObject>
 
-// Notify if the header is visible or not.
+// Notifies if the header is visible or not.
 - (void)gridViewHeaderHidden:(BOOL)hidden;
+
+// Shows the recent activity half sheet of a shared tab group.
+- (void)showRecentActivity;
 
 @end
 

@@ -29,7 +29,8 @@ LaunchOutOfProcessProvider() {
       content::ServiceProcessHost::Options()
           .WithDisplayName("Notification Service")
           .WithExtraCommandLineSwitches({switches::kMessageLoopTypeUi})
-          .WithChildFlags(chrome::kChildProcessHelperAlerts)
+          .WithChildFlags(base::to_underlying(
+              ChildProcessHostFlags::kChildProcessHelperAlerts))
           .Pass());
 }
 
@@ -81,5 +82,5 @@ MacNotificationProviderFactory::LaunchProvider() {
       return apps::AppShimManager::Get()->LaunchNotificationProvider(
           web_app_id_);
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }

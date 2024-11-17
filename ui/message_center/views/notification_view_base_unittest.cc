@@ -12,7 +12,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
@@ -44,9 +43,9 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget_utils.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/notifier_catalogs.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace message_center {
 
@@ -502,8 +501,8 @@ TEST_F(NotificationViewBaseTest, TestActionButtonClick) {
   EXPECT_EQ(1, delegate_->clicked_button_index());
 }
 
-// TODO(crbug.com/40780100): Test failing on linux-lacros-tester-rel and ozone.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_OZONE)
+// TODO(crbug.com/40780100): Test failing on ozone.
+#if BUILDFLAG(IS_OZONE)
 #define MAYBE_TestInlineReply DISABLED_TestInlineReply
 #else
 #define MAYBE_TestInlineReply TestInlineReply
@@ -762,7 +761,7 @@ TEST_F(NotificationViewBaseTest, MAYBE_DisableSlideForcibly) {
 }
 
 // Pinning notification is ChromeOS only feature.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(NotificationViewBaseTest, SlideOutPinned) {
   notification_view()->SetIsNested();
@@ -847,7 +846,7 @@ TEST_F(NotificationViewBaseTest, SnoozeButton) {
             notification_view()->GetControlButtonsView()->snooze_button());
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(NotificationViewBaseTest, UseImageAsIcon) {
   // TODO(tetsui): Remove duplicated integer literal in CreateOrUpdateIconView.
@@ -969,7 +968,7 @@ TEST_F(NotificationViewBaseTest, InlineSettings) {
   generator.ClickLeftButton();
   EXPECT_TRUE(notification_view()->settings_row_->GetVisible());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // By clicking settings button again, it will toggle. Skip this on ChromeOS as
   // the control_buttons_view gets hidden when the inline settings are shown.
   generator.ClickLeftButton();
@@ -1095,12 +1094,12 @@ TEST_F(NotificationViewBaseTest, AppNameSystemNotification) {
   auto notification = std::make_unique<Notification>(
       NOTIFICATION_TYPE_SIMPLE, std::string(kDefaultNotificationId), u"title",
       u"message", ui::ImageModel(), std::u16string(), GURL(),
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       NotifierId(NotifierType::SYSTEM_COMPONENT, "system",
                  ash::NotificationCatalogName::kTestCatalogName),
 #else
       NotifierId(NotifierType::SYSTEM_COMPONENT, "system"),
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
       data, nullptr);
 
   UpdateNotificationViews(*notification);

@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNTS_COOKIE_MUTATOR_H_
 #define COMPONENTS_SIGNIN_PUBLIC_IDENTITY_MANAGER_ACCOUNTS_COOKIE_MUTATOR_H_
 
+#include <memory>
 #include <string>
 
+#include "base/functional/callback_forward.h"
 #include "build/build_config.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
@@ -70,6 +72,21 @@ class AccountsCookieMutator {
   // not have refresh tokens, the operation will fail with a
   // GoogleServiceAuthError::USER_NOT_SIGNED_UP error.
   virtual void SetAccountsInCookie(
+      const MultiloginParameters& parameters,
+      gaia::GaiaSource source,
+      base::OnceCallback<void(SetAccountsInCookieResult)>
+          set_accounts_in_cookies_completed_callback) = 0;
+
+  // This is similar to SetAccountsInCookie, but allow specifying the partition
+  // where the cookies are set. This function must not be used with the default
+  // partition (use SetAccountsInCookie instead).
+  //
+  // The returned SetAccountsInCookieTask must not outlive the
+  // AccountsCookieMutator. If the task is deleted, all network requests are
+  // cancelled; the partition delegate and the callback will not be called.
+  virtual std::unique_ptr<SetAccountsInCookieTask>
+  SetAccountsInCookieForPartition(
+      PartitionDelegate* partition_delegate,
       const MultiloginParameters& parameters,
       gaia::GaiaSource source,
       base::OnceCallback<void(SetAccountsInCookieResult)>

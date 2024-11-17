@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/collaboration",
+  "+components/data_sharing/public",
+  "+ios/chrome/browser/data_sharing/model",
+  "+ios/chrome/browser/saved_tab_groups/model",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/sync/model",
+  "+ios/chrome/browser/share_kit/model",
+  "+ios/chrome/browser/ui/authentication",
+]

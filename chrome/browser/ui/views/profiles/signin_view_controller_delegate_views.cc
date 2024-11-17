@@ -11,6 +11,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/profile_management/profile_management_features.h"
+#include "chrome/browser/enterprise/signin/managed_profile_required_navigation_throttle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -36,6 +37,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -56,8 +58,7 @@
 namespace {
 
 const int kModalDialogWidth = 448;
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 const int kManagedUserNoticeConfirmationDialogWidth = 512;
 const int kManagedUserNoticeConfirmationDialogHeight = 576;
 const int kManagedUserNoticeConfirmationUpdatedDialogWidth = 780;
@@ -67,10 +68,10 @@ const int kSyncConfirmationDialogWidth = 512;
 const int kSyncConfirmationDialogHeight = 487;
 const int kSigninErrorDialogHeight = 164;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 const int kReauthDialogWidth = 540;
 const int kReauthDialogHeight = 520;
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 int GetSyncConfirmationDialogPreferredHeight(Profile* profile) {
   // If sync is disabled, then the sync confirmation dialog looks like an error
@@ -80,21 +81,24 @@ int GetSyncConfirmationDialogPreferredHeight(Profile* profile) {
              : kSigninErrorDialogHeight;
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void CloseModalSigninInBrowser(
     base::WeakPtr<Browser> browser,
     bool show_profile_switch_iph,
+    bool show_supervised_user_iph,
     ProfileCustomizationHandler::CustomizationResult result) {
   if (!browser)
     return;
 
   browser->signin_view_controller()->CloseModalSignin();
-
+  if (show_supervised_user_iph) {
+    browser->window()->MaybeShowSupervisedUserProfileSignInIPH();
+  }
   if (show_profile_switch_iph) {
     browser->window()->MaybeShowProfileSwitchIPH();
   }
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 // This layout auto-resizes the host view widget to always adapt to changes in
 // the size of the child views.
@@ -135,7 +139,7 @@ SigninViewControllerDelegateViews::CreateSigninErrorWebView(Browser* browser) {
                              InitializeSigninWebDialogUI(true));
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateReauthConfirmationWebView(
@@ -151,7 +155,8 @@ std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
     Browser* browser,
     bool is_local_profile_creation,
-    bool show_profile_switch_iph) {
+    bool show_profile_switch_iph,
+    bool show_supervised_user_iph) {
   GURL url = GURL(chrome::kChromeUIProfileCustomizationURL);
   if (is_local_profile_creation) {
     url = AppendProfileCustomizationQueryParams(
@@ -167,33 +172,27 @@ SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
                                        ->GetController()
                                        ->GetAs<ProfileCustomizationUI>();
   DCHECK(web_ui);
-  web_ui->Initialize(base::BindOnce(&CloseModalSigninInBrowser,
-                                    browser->AsWeakPtr(),
-                                    show_profile_switch_iph));
+  web_ui->Initialize(
+      base::BindOnce(&CloseModalSigninInBrowser, browser->AsWeakPtr(),
+                     show_profile_switch_iph, show_supervised_user_iph));
   return web_view;
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // static
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
     Browser* browser,
-    const AccountInfo& account_info,
-    bool is_oidc_account,
-    bool profile_creation_required_by_policy,
-    bool show_link_data_option,
-    signin::SigninChoiceCallbackVariant process_user_choice_callback,
-    base::OnceClosure done_callback) {
+    std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+        create_param) {
   bool enable_updated_dialog = base::FeatureList::IsEnabled(
       features::kEnterpriseUpdatedProfileCreationScreen);
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+  bool is_oidc_account = create_param->is_oidc_account;
   enable_updated_dialog |=
       is_oidc_account &&
       base::FeatureList::IsEnabled(
           profile_management::features::kOidcAuthProfileManagement);
-#endif
   auto width = enable_updated_dialog
                    ? kManagedUserNoticeConfirmationUpdatedDialogWidth
                    : kManagedUserNoticeConfirmationDialogWidth;
@@ -215,8 +214,7 @@ SigninViewControllerDelegateViews::CreateManagedUserNoticeConfirmationWebView(
       is_oidc_account
           ? ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC
           : ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation,
-      account_info, profile_creation_required_by_policy, show_link_data_option,
-      std::move(process_user_choice_callback), std::move(done_callback));
+      std::move(create_param));
 
   return web_view;
 }
@@ -227,6 +225,7 @@ bool SigninViewControllerDelegateViews::ShouldShowCloseButton() const {
 }
 
 void SigninViewControllerDelegateViews::CloseModalSignin() {
+  on_closed_callback_.RunAndReset();
   NotifyModalDialogClosed();
   // Either `this` is owned by the view hierarchy through `modal_signin_widget_`
   // or `modal_signin_widget_` is nullptr and then `this` is self-owned.
@@ -304,11 +303,13 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
     ui::mojom::ModalType dialog_modal_type,
     bool wait_for_size,
     bool should_show_close_button,
-    bool delete_profile_on_cancel)
+    bool delete_profile_on_cancel,
+    base::ScopedClosureRunner on_closed_callback)
     : content_view_(content_view.get()),
       web_contents_(content_view->GetWebContents()),
       browser_(browser),
-      should_show_close_button_(should_show_close_button) {
+      should_show_close_button_(should_show_close_button),
+      on_closed_callback_(std::move(on_closed_callback)) {
   DCHECK(web_contents_);
   DCHECK(browser_);
   DCHECK(browser_->tab_strip_model()->GetActiveWebContents())
@@ -337,8 +338,7 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   // On the local profile creation dialog, cancelling the dialog (for instance
   // through the VKEY_ESCAPE accelerator) should delete the profile.
   if (delete_profile_on_cancel) {
@@ -426,8 +426,7 @@ void SigninViewControllerDelegateViews::DisplayModal() {
   content_view_->RequestFocus();
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 void SigninViewControllerDelegateViews::DeleteProfileOnCancel() {
   ProfileAttributesEntry* entry =
       g_browser_process->profile_manager()
@@ -474,7 +473,7 @@ SigninViewControllerDelegate::CreateSigninErrorDelegate(Browser* browser) {
       browser, ui::mojom::ModalType::kWindow, true, false);
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateReauthConfirmationDelegate(
@@ -492,34 +491,110 @@ SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateProfileCustomizationDelegate(
     Browser* browser,
     bool is_local_profile_creation,
-    bool show_profile_switch_iph) {
+    bool show_profile_switch_iph,
+    bool show_supervised_user_iph) {
   return new SigninViewControllerDelegateViews(
       SigninViewControllerDelegateViews::CreateProfileCustomizationWebView(
-          browser, is_local_profile_creation, show_profile_switch_iph),
+          browser, is_local_profile_creation, show_profile_switch_iph,
+          show_supervised_user_iph),
       browser, ui::mojom::ModalType::kWindow, false, false,
       is_local_profile_creation);
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // static
 SigninViewControllerDelegate*
 SigninViewControllerDelegate::CreateManagedUserNoticeDelegate(
     Browser* browser,
-    const AccountInfo& account_info,
-    bool is_oidc_account,
-    bool profile_creation_required_by_policy,
-    bool show_link_data_option,
-    signin::SigninChoiceCallbackVariant process_user_choice_callback,
-    base::OnceClosure done_callback) {
+    std::unique_ptr<signin::EnterpriseProfileCreationDialogParams>
+        create_param) {
+  bool profile_creation_required_by_policy =
+      create_param->profile_creation_required_by_policy;
+
+  if (profile_creation_required_by_policy &&
+      base::FeatureList::IsEnabled(
+          features::kManagedProfileRequiredInterstitial)) {
+    if (std::holds_alternative<signin::SigninChoiceWithConfirmAndRetryCallback>(
+            create_param->process_user_choice_callback)) {
+      create_param->process_user_choice_callback = base::BindOnce(
+          [](base::WeakPtr<content::BrowserContext> browser_context,
+             signin::SigninChoiceWithConfirmAndRetryCallback callback,
+             signin::SigninChoice signin_choice,
+             signin::SigninChoiceOperationDoneCallback done_callback,
+             signin::SigninChoiceOperationRetryCallback retry_callback) {
+            if (!browser_context.WasInvalidated()) {
+              ManagedProfileRequiredNavigationThrottle::SetReloadRequired(
+                  browser_context.get(),
+                  signin_choice ==
+                          signin::SigninChoice::SIGNIN_CHOICE_CONTINUE ||
+                      signin_choice ==
+                          signin::SigninChoice::SIGNIN_CHOICE_NEW_PROFILE);
+            }
+            std::move(callback).Run(signin_choice, std::move(done_callback),
+                                    std::move(retry_callback));
+          },
+          browser->profile()->GetWeakPtr(),
+          std::move(std::get<signin::SigninChoiceWithConfirmAndRetryCallback>(
+              create_param->process_user_choice_callback)));
+    }
+
+    if (std::holds_alternative<signin::SigninChoiceCallback>(
+            create_param->process_user_choice_callback)) {
+      create_param->process_user_choice_callback = base::BindOnce(
+          [](base::WeakPtr<content::BrowserContext> browser_context,
+             signin::SigninChoiceCallback callback,
+             signin::SigninChoice signin_choice) {
+            if (!browser_context.WasInvalidated()) {
+              ManagedProfileRequiredNavigationThrottle::SetReloadRequired(
+                  browser_context.get(),
+                  signin_choice ==
+                          signin::SigninChoice::SIGNIN_CHOICE_CONTINUE ||
+                      signin_choice ==
+                          signin::SigninChoice::SIGNIN_CHOICE_NEW_PROFILE);
+            }
+            std::move(callback).Run(signin_choice);
+          },
+          browser->profile()->GetWeakPtr(),
+          std::move(std::get<signin::SigninChoiceCallback>(
+              create_param->process_user_choice_callback)));
+    }
+  }
+
+  auto web_view = SigninViewControllerDelegateViews::
+      CreateManagedUserNoticeConfirmationWebView(browser,
+                                                 std::move(create_param));
+  auto* dialog_web_contents = web_view->GetWebContents();
+  base::ScopedClosureRunner on_closed_callback;
+
+  // Block all navigations to avoid users bypassing the dialog using another
+  // window.
+  if (profile_creation_required_by_policy &&
+      base::FeatureList::IsEnabled(
+          features::kManagedProfileRequiredInterstitial)) {
+    content::WebContents* active_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+    // Reload the active web contents so that the managed profile required
+    // interstitial is shown there.
+    CHECK(active_contents);
+    on_closed_callback = ManagedProfileRequiredNavigationThrottle::
+        BlockNavigationUntilEnterpriseActionTaken(
+            browser->profile(), active_contents, dialog_web_contents);
+
+    content::OpenURLParams params(active_contents->GetVisibleURL(),
+                                  content::Referrer(),
+                                  WindowOpenDisposition::CURRENT_TAB,
+                                  ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false);
+
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(base::IgnoreResult(&content::WebContents::OpenURL),
+                       active_contents->GetWeakPtr(), std::move(params),
+                       /*navigation_handle_callback=*/base::DoNothing()));
+  }
+
   return new SigninViewControllerDelegateViews(
-      SigninViewControllerDelegateViews::
-          CreateManagedUserNoticeConfirmationWebView(
-              browser, account_info, is_oidc_account,
-              profile_creation_required_by_policy, show_link_data_option,
-              std::move(process_user_choice_callback),
-              std::move(done_callback)),
-      browser, ui::mojom::ModalType::kWindow, true, false);
+      std::move(web_view), browser, ui::mojom::ModalType::kWindow, true, false,
+      false, std::move(on_closed_callback));
 }
 #endif

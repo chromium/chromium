@@ -13,30 +13,30 @@
 #import "base/memory/ref_counted.h"
 #import "ios/chrome/browser/net/model/net_types.h"
 #import "ios/chrome/browser/profile/model/profile_ios_io_data.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class IOSChromeURLRequestContextGetter;
+class ProfileIOS;
 
-// OffTheRecordChromeBrowserState owns a
+// OffTheRecordProfileIOS owns a
 // OffTheRecordProfileIOSIOData::Handle, which holds a reference to the
 // OffTheRecordProfileIOSIOData.
 // OffTheRecordProfileIOSIOData is intended to own all the objects owned
-// by OffTheRecordChromeBrowserState which live on the IO thread, such as, but
+// by OffTheRecordProfileIOS which live on the IO thread, such as, but
 // not limited to, network objects like CookieMonster, HttpTransactionFactory,
 // etc.
 // OffTheRecordProfileIOSIOData is owned by the
-// OffTheRecordChromeBrowserState and OffTheRecordProfileIOSIOData's
+// OffTheRecordProfileIOS and OffTheRecordProfileIOSIOData's
 // IOSChromeURLRequestContexts. When all of them go away, then
 // ProfileIOSIOData will be deleted. Note that the
-// OffTheRecordProfileIOSIOData will typically outlive the browser state
+// OffTheRecordProfileIOSIOData will typically outlive the profile
 // it is "owned" by, so it's important for OffTheRecordProfileIOSIOData
-// not to hold any references to the browser state beyond what's used by
+// not to hold any references to the profile beyond what's used by
 // LazyParams (which should be deleted after lazy initialization).
 class OffTheRecordProfileIOSIOData : public ProfileIOSIOData {
  public:
   class Handle {
    public:
-    explicit Handle(ChromeBrowserState* browser_state);
+    explicit Handle(ProfileIOS* profile);
 
     Handle(const Handle&) = delete;
     Handle& operator=(const Handle&) = delete;
@@ -46,7 +46,7 @@ class OffTheRecordProfileIOSIOData : public ProfileIOSIOData {
     scoped_refptr<IOSChromeURLRequestContextGetter>
     CreateMainRequestContextGetter(ProtocolHandlerMap* protocol_handlers) const;
 
-    // Clears the HTTP cache associated with the incognito browser state.
+    // Clears the HTTP cache associated with the incognito profile.
     void DoomIncognitoCache();
 
     ProfileIOSIOData* io_data() const;
@@ -71,7 +71,7 @@ class OffTheRecordProfileIOSIOData : public ProfileIOSIOData {
         main_request_context_getter_;
     const raw_ptr<OffTheRecordProfileIOSIOData> io_data_;
 
-    const raw_ptr<ChromeBrowserState> browser_state_;
+    const raw_ptr<ProfileIOS> profile_;
 
     mutable bool initialized_;
   };

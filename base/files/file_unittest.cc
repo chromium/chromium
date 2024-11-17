@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/files/file_util.h"
@@ -244,13 +245,13 @@ TEST(FileTest, ReadWrite) {
   EXPECT_EQ(kPartialWriteLength, bytes_written);
 
   // Make sure the file was extended.
-  int64_t file_size = 0;
-  EXPECT_TRUE(GetFileSize(file_path, &file_size));
-  EXPECT_EQ(kOffsetBeyondEndOfFile + kPartialWriteLength, file_size);
+  std::optional<int64_t> file_size = GetFileSize(file_path);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(kOffsetBeyondEndOfFile + kPartialWriteLength, file_size.value());
 
   // Make sure the file was zero-padded.
   char data_read_2[32];
-  bytes_read = file.Read(0, data_read_2, static_cast<int>(file_size));
+  bytes_read = file.Read(0, data_read_2, static_cast<int>(file_size.value()));
   EXPECT_EQ(file_size, bytes_read);
   for (int i = 0; i < kTestDataSize; i++)
     EXPECT_EQ(data_to_write[i], data_read_2[i]);
@@ -318,10 +319,10 @@ TEST(FileTest, ReadWriteSpans) {
   EXPECT_EQ(kPartialWriteLength, bytes_written.value());
 
   // Make sure the file was extended.
-  int64_t file_size = 0;
-  EXPECT_TRUE(GetFileSize(file_path, &file_size));
+  std::optional<int64_t> file_size = GetFileSize(file_path);
+  ASSERT_TRUE(file_size.has_value());
   EXPECT_EQ(static_cast<int64_t>(kOffsetBeyondEndOfFile + kPartialWriteLength),
-            file_size);
+            file_size.value());
 
   // Make sure the file was zero-padded.
   uint8_t data_read_2[32];
@@ -428,15 +429,15 @@ TEST(FileTest, Length) {
 
   // Extend the file.
   const int kExtendedFileLength = 10;
-  int64_t file_size = 0;
   EXPECT_TRUE(file.SetLength(kExtendedFileLength));
   EXPECT_EQ(kExtendedFileLength, file.GetLength());
-  EXPECT_TRUE(GetFileSize(file_path, &file_size));
-  EXPECT_EQ(kExtendedFileLength, file_size);
+  std::optional<int64_t> file_size = GetFileSize(file_path);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(kExtendedFileLength, file_size.value());
 
   // Make sure the file was zero-padded.
   char data_read[32];
-  int bytes_read = file.Read(0, data_read, static_cast<int>(file_size));
+  int bytes_read = file.Read(0, data_read, static_cast<int>(file_size.value()));
   EXPECT_EQ(file_size, bytes_read);
   for (int i = 0; i < kTestDataSize; i++)
     EXPECT_EQ(data_to_write[i], data_read[i]);
@@ -447,22 +448,26 @@ TEST(FileTest, Length) {
   const int kTruncatedFileLength = 2;
   EXPECT_TRUE(file.SetLength(kTruncatedFileLength));
   EXPECT_EQ(kTruncatedFileLength, file.GetLength());
-  EXPECT_TRUE(GetFileSize(file_path, &file_size));
-  EXPECT_EQ(kTruncatedFileLength, file_size);
+
+  file_size = GetFileSize(file_path);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(kTruncatedFileLength, file_size.value());
 
   // Make sure the file was truncated.
   bytes_read = file.Read(0, data_read, kTestDataSize);
-  EXPECT_EQ(file_size, bytes_read);
-  for (int i = 0; i < file_size; i++)
+  EXPECT_EQ(file_size.value(), bytes_read);
+  for (int i = 0; i < file_size.value(); i++) {
     EXPECT_EQ(data_to_write[i], data_read[i]);
+  }
 
 #if !BUILDFLAG(IS_FUCHSIA)  // Fuchsia doesn't seem to support big files.
   // Expand the file past the 4 GB limit.
   const int64_t kBigFileLength = 5'000'000'000;
   EXPECT_TRUE(file.SetLength(kBigFileLength));
   EXPECT_EQ(kBigFileLength, file.GetLength());
-  EXPECT_TRUE(GetFileSize(file_path, &file_size));
-  EXPECT_EQ(kBigFileLength, file_size);
+  file_size = GetFileSize(file_path);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(kBigFileLength, file_size.value());
 #endif
 
   // Close the file and reopen with base::File::FLAG_CREATE_ALWAYS, and make

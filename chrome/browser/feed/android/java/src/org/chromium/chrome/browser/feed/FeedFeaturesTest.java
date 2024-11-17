@@ -64,7 +64,6 @@ public class FeedFeaturesTest {
 
         mParamsTestValues = new FeatureList.TestValues();
         FeatureList.setTestValues(mParamsTestValues);
-        FeedFeatures.resetInternalStateForTesting();
     }
 
     @After

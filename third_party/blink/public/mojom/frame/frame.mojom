@@ -29,6 +29,7 @@ import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/blob/blob_url_store.mojom";
 import "third_party/blink/public/mojom/choosers/popup_menu.mojom";
 import "third_party/blink/public/mojom/close_watcher/close_listener.mojom";
+import "third_party/blink/public/mojom/confidence_level.mojom";
 import "third_party/blink/public/mojom/context_menu/context_menu.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_params.mojom";
 import "third_party/blink/public/mojom/css/preferred_color_scheme.mojom";
@@ -378,10 +379,9 @@ interface LocalFrameHost {
   // allow the commit to proceed.
   StartLoadingForAsyncNavigationApiCommit();
 
-  // Indicates an attempt by the associated frame to navigate from the
-  // |initiator_url| to the |blocked_url|, but the navigation was
-  // blocked because of |reason|.
-  DidBlockNavigation(url.mojom.Url blocked_url, url.mojom.Url initiator_url,
+  // Indicates an attempt by the associated frame to navigate to |blocked_url|,
+  // but the navigation was blocked because of |reason|.
+  DidBlockNavigation(url.mojom.Url blocked_url,
                        blink.mojom.NavigationBlockedReason reason);
 
   // Sent when the renderer changed the progress of a load.
@@ -802,6 +802,10 @@ interface LocalFrameHost {
   // Used to tell the browser to record metrics. This method should not be trusted except for metrics purposes.
   RecordWindowProxyUsageMetrics(blink.mojom.FrameToken target_frame_token,
                                 WindowProxyAccessType access_type);
+
+  // Notify the browser the document readystate has changed to 'interactive'.
+  // Sent for top-level frames.
+  NotifyDocumentInteractive();
 };
 
 // Implemented in Browser, this interface defines frame-specific methods
@@ -1285,6 +1289,12 @@ interface LocalMainFrame {
   // Replaces the active document with an empty document to free resources,
   // e.g. for supporting tab discard.
   Discard();
+
+  // Updates the frame's finalized locally differentially private
+  // navigation confidence.
+  FinalizeNavigationConfidence(
+    double randomized_trigger_rate,
+    ConfidenceLevel confidence);
 };
 
 // Implemented in Browser, this interface defines local-main-frame-specific
@@ -1364,4 +1374,7 @@ interface LocalMainFrameHost {
   // Notify the browser that the draggable regions defined by the app-region
   // CSS property have been updated.
   DraggableRegionsChanged(array<DraggableRegion> regions);
+
+  // Called when the main frame did a first contentful paint.
+  OnFirstContentfulPaint();
 };

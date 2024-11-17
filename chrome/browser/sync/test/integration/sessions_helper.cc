@@ -117,6 +117,16 @@ void SortSyncedSessions(SyncedSessionVector* sessions) {
   base::ranges::sort(*sessions, CompareSyncedSessions);
 }
 
+std::vector<sync_pb::SessionSpecifics> SyncEntitiesToSessionSpecifics(
+    std::vector<sync_pb::SyncEntity> entities) {
+  std::vector<sync_pb::SessionSpecifics> sessions;
+  for (sync_pb::SyncEntity& entity : entities) {
+    DCHECK(entity.specifics().has_session());
+    sessions.push_back(std::move(entity.specifics().session()));
+  }
+  return sessions;
+}
+
 }  // namespace
 
 bool GetLocalSession(int browser_index,
@@ -424,6 +434,23 @@ bool ForeignSessionsMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
 
   *os << "Can't match sessions for profile " << foreign_profile_index_ << ".";
   return false;
+}
+
+SessionEntitiesChecker::SessionEntitiesChecker(const Matcher& matcher)
+    : matcher_(matcher) {}
+
+SessionEntitiesChecker::~SessionEntitiesChecker() = default;
+
+bool SessionEntitiesChecker::IsExitConditionSatisfied(std::ostream* os) {
+  std::vector<sync_pb::SessionSpecifics> entities =
+      SyncEntitiesToSessionSpecifics(
+          fake_server()->GetSyncEntitiesByDataType(syncer::SESSIONS));
+
+  testing::StringMatchResultListener result_listener;
+  const bool matches =
+      testing::ExplainMatchResult(matcher_, entities, &result_listener);
+  *os << result_listener.str();
+  return matches;
 }
 
 }  // namespace sessions_helper

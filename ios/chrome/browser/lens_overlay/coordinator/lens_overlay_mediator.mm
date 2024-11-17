@@ -5,75 +5,63 @@
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator.h"
 
 #import <memory>
-#import <stack>
 
+#import "base/base64url.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/timer/elapsed_timer.h"
+#import "components/lens/lens_overlay_metrics.h"
+#import "components/lens/proto/server/lens_overlay_response.pb.h"
 #import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_omnibox_client.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_mediator_delegate.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_manager.h"
+#import "ios/chrome/browser/lens_overlay/model/lens_overlay_navigation_mutator.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_toolbar_consumer.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/edit_view_animatee.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_util.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_coordinator.h"
 #import "ios/public/provider/chrome/browser/lens/lens_overlay_result.h"
-#import "ios/web/public/navigation/navigation_context.h"
-#import "ios/web/public/navigation/navigation_manager.h"
-#import "ios/web/public/web_state.h"
-#import "ios/web/public/web_state_observer_bridge.h"
+#import "ios/web/public/navigation/referrer.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
-/// History Element in the `historyStack` used for navigating to previous
-/// selection/URLs.
-@interface HistoryElement : NSObject
-/// URL of the navigation.
-@property(nonatomic, assign) GURL URL;
-/// Lens result object of the navigation.
-@property(nonatomic, strong) id<ChromeLensOverlayResult> lensResult;
-@end
+@interface LensOverlayMediator () <LensOverlayNavigationMutator,
+                                   SearchEngineObserving>
 
-@implementation HistoryElement
-@end
-
-@interface LensOverlayMediator () <CRWWebStateObserver, SearchEngineObserving>
+/// Current lens result.
+@property(nonatomic, strong, readwrite) id<ChromeLensOverlayResult>
+    currentLensResult;
+/// Number of tab opened by the lens overlay.
+@property(nonatomic, assign, readwrite) NSInteger generatedTabCount;
 
 @end
 
 @implementation LensOverlayMediator {
-  /// Bridges C++ WebStateObserver methods to this mediator.
-  std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
+  /// Whether the browser is off the record.
+  BOOL _isIncognito;
   /// Search engine observer.
   std::unique_ptr<SearchEngineObserverBridge> _searchEngineObserver;
-
-  /// History stack for back navigation.
-  NSMutableArray<HistoryElement*>* _historyStack;
-  /// Current lens result.
-  id<ChromeLensOverlayResult> _currentLensResult;
-  /// Whether the URL navigation from the next lensResult should be ignored.
-  /// More detail in `goBack`.
-  BOOL _skipLoadingNextLensResultURL;
+  /// Orchestrates the navigation in the bottom sheet of the lens result page.
+  std::unique_ptr<LensOverlayNavigationManager> _navigationManager;
+  /// Time where lens started the search request.
+  base::ElapsedTimer _lensStartSearchRequestTime;
 }
 
-- (instancetype)init {
+- (instancetype)initWithIsIncognito:(BOOL)isIncognito {
   self = [super init];
   if (self) {
-    _webStateObserverBridge =
-        std::make_unique<web::WebStateObserverBridge>(self);
-    _historyStack = [[NSMutableArray alloc] init];
+    _isIncognito = isIncognito;
+    _navigationManager = std::make_unique<LensOverlayNavigationManager>(self);
   }
   return self;
-}
-
-- (void)setWebState:(web::WebState*)webState {
-  if (_webState) {
-    _webState->RemoveObserver(_webStateObserverBridge.get());
-  }
-  _webState = webState;
-  if (_webState) {
-    _webState->AddObserver(_webStateObserverBridge.get());
-  }
 }
 
 - (void)setTemplateURLService:(TemplateURLService*)templateURLService {
@@ -88,15 +76,9 @@
 }
 
 - (void)disconnect {
-  if (_webState) {
-    _webState->RemoveObserver(_webStateObserverBridge.get());
-    _webState = nullptr;
-  }
   _searchEngineObserver.reset();
-  _webStateObserverBridge.reset();
-  [_historyStack removeAllObjects];
+  _navigationManager.reset();
   _currentLensResult = nil;
-  _skipLoadingNextLensResultURL = NO;
 }
 
 #pragma mark - SearchEngineObserving
@@ -105,32 +87,13 @@
   BOOL isLensAvailable =
       search_engines::SupportsSearchImageWithLens(_templateURLService);
   if (!isLensAvailable) {
-    [self.commandsHandler destroyLensUI:YES];
+    [self.commandsHandler destroyLensUI:YES
+                                 reason:lens::LensOverlayDismissalSource::
+                                            kDefaultSearchEngineChange];
   }
 }
 
 #pragma mark - Omnibox
-
-#pragma mark CRWWebStateObserver
-
-- (void)webState:(web::WebState*)webState
-    didStartNavigation:(web::NavigationContext*)navigationContext {
-  if (navigationContext && !navigationContext->IsSameDocument()) {
-    [self addURLToHistory:navigationContext->GetUrl()];
-  }
-}
-
-- (void)webState:(web::WebState*)webState
-    didFinishNavigation:(web::NavigationContext*)navigationContext {
-  [self.omniboxCoordinator updateOmniboxState];
-}
-
-- (void)webStateDestroyed:(web::WebState*)webState {
-  if (_webState) {
-    _webState->RemoveObserver(_webStateObserverBridge.get());
-    _webState = nullptr;
-  }
-}
 
 #pragma mark LensOmniboxClientDelegate
 
@@ -138,17 +101,27 @@
               destinationURL:(const GURL&)destinationURL
             thumbnailRemoved:(BOOL)thumbnailRemoved {
   [self defocusOmnibox];
-  // Setting the query text generates new results.
-  [self.lensHandler setQueryText:base::SysUTF16ToNSString(text)
-                  clearSelection:thumbnailRemoved];
+  // Start new unimodal searches in a new tab.
+  if (thumbnailRemoved || _currentLensResult.isTextSelection) {
+    [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:destinationURL];
+    [self recordNewTabGeneratedBy:lens::LensOverlayNewTabSource::kOmnibox];
+    [self updateForLensResult:_currentLensResult];
+  } else {
+    // Setting the query text generates new results.
+    NSString* nsText = base::SysUTF16ToNSString(text);
+    [self updateOmniboxText:nsText];
+    [self.lensHandler setQueryText:nsText clearSelection:thumbnailRemoved];
+  }
 }
 
 #pragma mark LensToolbarMutator
 
 - (void)focusOmnibox {
+  RecordAction(base::UserMetricsAction("Mobile.LensOverlay.FocusOmnibox"));
   [self.omniboxCoordinator focusOmnibox];
   [self.toolbarConsumer setOmniboxFocused:YES];
   [self.omniboxCoordinator.animatee setClearButtonFaded:NO];
+  [self.presentationDelegate requestMaximizeBottomSheet];
 }
 
 - (void)defocusOmnibox {
@@ -158,27 +131,10 @@
 }
 
 - (void)goBack {
-  if (_historyStack.count < 2) {
-    [self updateBackButton];
-    return;
+  RecordAction(base::UserMetricsAction("Mobile.LensOverlay.Back"));
+  if (_navigationManager) {
+    _navigationManager->GoBack();
   }
-
-  // Remove the current navigation.
-  [_historyStack removeLastObject];
-
-  // If the LensResult is different, reload the result.
-  HistoryElement* lastEntry = _historyStack.lastObject;
-  if (lastEntry.lensResult != _currentLensResult) {
-    // When reloading, ignore the URL navigation. URL from lensResult doesn't
-    // contains sub navigations (navigations with the same lensResult). The
-    // correct URL is loaded below.
-    _skipLoadingNextLensResultURL = YES;
-    [self.lensHandler reloadResult:lastEntry.lensResult];
-  }
-
-  // Reloading the URL will add a new history entry on `didStartNavigation`.
-  [_historyStack removeLastObject];
-  [self.resultConsumer loadResultsURL:lastEntry.URL];
 }
 
 #pragma mark OmniboxFocusDelegate
@@ -196,6 +152,7 @@
 // The lens overlay started searching for a result.
 - (void)lensOverlayDidStartSearchRequest:(id<ChromeLensOverlay>)lensOverlay {
   [self.resultConsumer handleSearchRequestStarted];
+  _lensStartSearchRequestTime = base::ElapsedTimer();
 }
 
 // The lens overlay search request produced an error.
@@ -206,21 +163,25 @@
 // The lens overlay search request produced a valid result.
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
     didGenerateResult:(id<ChromeLensOverlayResult>)result {
-  _currentLensResult = result;
-  if (!_skipLoadingNextLensResultURL) {
-    [self.resultConsumer loadResultsURL:result.searchResultURL];
+  RecordAction(base::UserMetricsAction("Mobile.LensOverlay.NewResult"));
+  lens::RecordLensResponseTime(_lensStartSearchRequestTime.Elapsed());
+  if (_navigationManager) {
+    _navigationManager->LensOverlayDidGenerateResult(result);
   }
-  _skipLoadingNextLensResultURL = NO;
-  [self.omniboxCoordinator setThumbnailImage:result.selectionPreviewImage];
 }
 
 - (void)lensOverlayDidTapOnCloseButton:(id<ChromeLensOverlay>)lensOverlay {
-  [self.commandsHandler destroyLensUI:YES];
+  [self.commandsHandler
+      destroyLensUI:YES
+             reason:lens::LensOverlayDismissalSource::kOverlayCloseButton];
 }
 
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
     suggestSignalsAvailableOnResult:(id<ChromeLensOverlayResult>)result {
-  // TODO(crbug.com/366156296): Implement.
+  if (result != _currentLensResult) {
+    return;
+  }
+  [self setOmniboxSuggestSignals:result];
 }
 
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
@@ -228,20 +189,112 @@
   [self.resultConsumer loadResultsURL:URL];
 }
 
-#pragma mark - Private
-
-/// Adds the URL navigation to the `historyStack`.
-- (void)addURLToHistory:(const GURL&)URL {
-  HistoryElement* element = [[HistoryElement alloc] init];
-  element.URL = URL;
-  element.lensResult = _currentLensResult;
-  [_historyStack addObject:element];
-  [self updateBackButton];
+- (void)lensOverlayDidOpenOverlayMenu:(id<ChromeLensOverlay>)lensOverlay {
+  [self.delegate lensOverlayMediatorDidOpenOverlayMenu:self];
 }
 
-/// Updates the back button availability.
-- (void)updateBackButton {
-  [self.toolbarConsumer setCanGoBack:_historyStack.count > 1];
+- (void)lensOverlayDidDeferGesture:(id<ChromeLensOverlay>)lensOverlay {
+}
+
+#pragma mark - LensOverlayNavigationMutator
+
+- (void)loadLensResult:(id<ChromeLensOverlayResult>)result {
+  _currentLensResult = result;
+  // Load the URL, it will start the result UI.
+  [self.resultConsumer loadResultsURL:result.searchResultURL];
+  [self updateForLensResult:result];
+}
+
+- (void)reloadLensResult:(id<ChromeLensOverlayResult>)result {
+  // Pre update the UI.
+  [self updateForLensResult:result];
+  // Reload the result.
+  [self.lensHandler reloadResult:result];
+}
+
+- (void)reloadURL:(GURL)URL {
+  [self.resultConsumer loadResultsURL:URL];
+}
+
+- (void)onBackNavigationAvailabilityMaybeChanged:(BOOL)canGoBack {
+  [self.toolbarConsumer setCanGoBack:canGoBack];
+}
+
+#pragma mark - LensResultPageMediatorDelegate
+
+- (void)lensResultPageWebStateDestroyed {
+  [self.commandsHandler
+      destroyLensUI:YES
+             reason:lens::LensOverlayDismissalSource::kTabClosed];
+}
+
+- (void)lensResultPageDidChangeActiveWebState:(web::WebState*)webState {
+  if (_navigationManager) {
+    _navigationManager->SetWebState(webState);
+  }
+}
+
+- (void)lensResultPageMediator:(LensResultPageMediator*)mediator
+       didOpenNewTabFromSource:(lens::LensOverlayNewTabSource)newTabSource {
+  [self recordNewTabGeneratedBy:newTabSource];
+}
+
+- (void)lensResultPageOpenURLInNewTabRequsted:(GURL)URL {
+  [self.delegate lensOverlayMediatorOpenURLInNewTabRequsted:URL];
+}
+
+#pragma mark - Private
+
+/// Updates the UI for lens `result`.
+- (void)updateForLensResult:(id<ChromeLensOverlayResult>)result {
+  [self.omniboxCoordinator
+      setThumbnailImage:result.isTextSelection ? nil
+                                               : result.selectionPreviewImage];
+  if (self.omniboxClient) {
+    [self setOmniboxSuggestSignals:result];
+    self.omniboxClient->SetLensResultHasThumbnail(!result.isTextSelection);
+  }
+  [self updateOmniboxText:result.queryText];
+}
+
+/// Updates the steady state omnibox text.
+- (void)updateOmniboxText:(NSString*)text {
+  if (self.omniboxClient) {
+    self.omniboxClient->SetOmniboxSteadyStateText(text);
+  }
+  [self.omniboxCoordinator updateOmniboxState];
+}
+
+/// Sets the omnibox suggest signals with `result`.
+- (void)setOmniboxSuggestSignals:(id<ChromeLensOverlayResult>)result {
+  if (!self.omniboxClient) {
+    return;
+  }
+
+  NSData* data = result.suggestSignals;
+  if (!data.length) {
+    self.omniboxClient->SetLensOverlaySuggestInputs(std::nullopt);
+    return;
+  }
+  std::string encodedString;
+  base::span<const uint8_t> signals = base::span<const uint8_t>(
+      static_cast<const uint8_t*>(result.suggestSignals.bytes),
+      result.suggestSignals.length);
+
+  Base64UrlEncode(signals, base::Base64UrlEncodePolicy::INCLUDE_PADDING,
+                  &encodedString);
+
+  if (!encodedString.empty()) {
+    lens::proto::LensOverlaySuggestInputs response;
+    response.set_encoded_image_signals(encodedString);
+    self.omniboxClient->SetLensOverlaySuggestInputs(response);
+  }
+}
+
+/// Records lens overlay opening a new tab.
+- (void)recordNewTabGeneratedBy:(lens::LensOverlayNewTabSource)newTabSource {
+  self.generatedTabCount += 1;
+  lens::RecordNewTabGenerated(newTabSource);
 }
 
 @end

@@ -60,6 +60,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
 #include "components/services/quarantine/quarantine.h"
@@ -238,7 +239,10 @@ class CONTENT_EXPORT SaveFileManager
 
   // Tracks which SavePackage to send data to, called only on UI thread.
   // SavePackageMap maps save item ids to their SavePackage.
-  std::unordered_map<SaveItemId, SavePackage*, SaveItemId::Hasher> packages_;
+  std::unordered_map<SaveItemId,
+                     raw_ptr<SavePackage, CtnExperimental>,
+                     SaveItemId::Hasher>
+      packages_;
 
   // The helper object doing the actual download. Should be accessed on the UI
   // thread.

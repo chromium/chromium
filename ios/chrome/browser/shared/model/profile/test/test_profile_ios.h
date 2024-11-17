@@ -16,7 +16,7 @@
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
 #include "ios/chrome/browser/net/model/net_types.h"
-#include "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
+#include "ios/chrome/browser/policy/model/profile_policy_connector.h"
 #include "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -33,12 +33,8 @@ class UserCloudPolicyManager;
 class EnterprisePolicyTestHelper;
 class TestProfileManagerIOS;
 
-// TODO(crbug.com/358053899): Remove once the renaming is finished.
-class TestChromeBrowserState;
-using TestProfileIOS = TestChromeBrowserState;
-
-// This class is the implementation of ChromeBrowserState used for testing.
-class TestChromeBrowserState final : public ChromeBrowserState {
+// This class is the implementation of ProfileIOS used for testing.
+class TestProfileIOS final : public ProfileIOS {
  public:
   // Wrapper over absl::variant to help type deduction when calling
   // AddTestingFactories(). See example call in the method's comment.
@@ -94,20 +90,13 @@ class TestChromeBrowserState final : public ChromeBrowserState {
     std::vector<TestingFactory> factories_;
   };
 
-  TestChromeBrowserState(const TestChromeBrowserState&) = delete;
-  TestChromeBrowserState& operator=(const TestChromeBrowserState&) = delete;
+  TestProfileIOS(const TestProfileIOS&) = delete;
+  TestProfileIOS& operator=(const TestProfileIOS&) = delete;
 
-  ~TestChromeBrowserState() override;
+  ~TestProfileIOS() override;
 
   // BrowserState:
   bool IsOffTheRecord() const override;
-
-  // ChromeBrowserState:
-  // TODO(crbug.com/358299863): Remove these functions once fully migrated.
-  ChromeBrowserState* GetOriginalChromeBrowserState() override;
-  bool HasOffTheRecordChromeBrowserState() const override;
-  ChromeBrowserState* GetOffTheRecordChromeBrowserState() override;
-  void DestroyOffTheRecordChromeBrowserState() override;
 
   // ProfileIOS:
   ProfileIOS* GetOriginalProfile() override;
@@ -116,31 +105,33 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   void DestroyOffTheRecordProfile() override;
   scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner() override;
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
-  BrowserStatePolicyConnector* GetPolicyConnector() override;
+  ProfilePolicyConnector* GetPolicyConnector() override;
   sync_preferences::PrefServiceSyncable* GetSyncablePrefs() override;
+  const sync_preferences::PrefServiceSyncable* GetSyncablePrefs()
+      const override;
   ProfileIOSIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,
                                    base::OnceClosure completion) override;
   net::URLRequestContextGetter* CreateRequestContext(
       ProtocolHandlerMap* protocol_handlers) override;
-  base::WeakPtr<ChromeBrowserState> AsWeakPtr() override;
+  base::WeakPtr<ProfileIOS> AsWeakPtr() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
 
-  // Creates an off-the-record TestChromeBrowserState for
+  // Creates an off-the-record TestProfileIOS for
   // the current object, installing `testing_factories`
   // first.
   //
   // This is an error to call this method if the current
-  // TestChromeBrowserState already has a off-the-record
+  // TestProfileIOS already has a off-the-record
   // object, or is itself off-the-record.
   //
   // This method will be called without factories if the
-  // method `GetOffTheRecordBrowserState()` is called on
+  // method `GetOffTheRecordProfile()` is called on
   // this object.
   // TODO(crbug.com/358299863): Remove this function once fully migrated.
-  TestChromeBrowserState* CreateOffTheRecordBrowserStateWithTestingFactories(
+  TestProfileIOS* CreateOffTheRecordBrowserStateWithTestingFactories(
       TestingFactories testing_factories = {});
 
   // Creates an off-the-record TestProfileIOS for
@@ -158,8 +149,8 @@ class TestChromeBrowserState final : public ChromeBrowserState {
       TestingFactories testing_factories = {});
 
   // Returns the preferences as a TestingPrefServiceSyncable if possible or
-  // null. Returns null for off-the-record TestChromeBrowserState and also
-  // for TestChromeBrowserState initialized with a custom pref service.
+  // null. Returns null for off-the-record TestProfileIOS and also
+  // for TestProfileIOS initialized with a custom pref service.
   sync_preferences::TestingPrefServiceSyncable* GetTestingPrefService();
 
   // Sets a SharedURLLoaderFactory for test.
@@ -167,7 +158,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
       scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory);
 
   // Helper class that allows for parameterizing the building
-  // of TestChromeBrowserStates.
+  // of TestProfileIOS.
   class Builder {
    public:
     Builder();
@@ -180,7 +171,7 @@ class TestChromeBrowserState final : public ChromeBrowserState {
 
     ~Builder();
 
-    // Adds a testing factory to the TestChromeBrowserState. These testing
+    // Adds a testing factory to the TestProfileIOS. These testing
     // factories are installed before the BrowserStateKeyedServices are created.
     Builder& AddTestingFactory(
         BrowserStateKeyedServiceFactory* service_factory,
@@ -190,56 +181,55 @@ class TestChromeBrowserState final : public ChromeBrowserState {
         RefcountedBrowserStateKeyedServiceFactory::TestingFactory
             testing_factory);
 
-    // Adds multiple testing factories to TestChromeBrowserState. These testing
+    // Adds multiple testing factories to TestProfileIOS. These testing
     // factories are installed before the BrowserStateKeyedServices are created.
     // Example use:
     //
     // AddTestingFactories(
-    //     {TestChromeBrowserState::TestingFactory{
+    //     {TestProfileIOS::TestingFactory{
     //          RegularServiceFactory::GetInstance(),
     //          RegularServiceFactory::GetDefaultFactory(),
     //      },
-    //      TestChromeBrowserState::TestingFactory{
+    //      TestProfileIOS::TestingFactory{
     //          RefcountedServiceFactory::GetInstance(),
     //          RefcountedServiceFactory::GetDefaultFactory(),
     //      }});
     Builder& AddTestingFactories(TestingFactories testing_factories);
 
-    // Sets the name of the ChromeBrowserState. If not set, then will be
+    // Sets the name of the ProfileIOS. If not set, then will be
     // derived from the path passed to `SetPath()` or use an arbitrary
     // value if `SetPath()` is not called.
     Builder& SetName(const std::string& name);
 
-    // Sets the PrefService to be used by the ChromeBrowserState.
+    // Sets the PrefService to be used by the ProfileIOS.
     Builder& SetPrefService(
         std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs);
 
     Builder& SetPolicyConnector(
-        std::unique_ptr<BrowserStatePolicyConnector> policy_connector);
+        std::unique_ptr<ProfilePolicyConnector> policy_connector);
 
     // Sets a UserCloudPolicyManager for test.
     Builder& SetUserCloudPolicyManager(
         std::unique_ptr<policy::UserCloudPolicyManager>
             user_cloud_policy_manager);
 
-    // Creates the TestChromeBrowserState using previously-set settings.
-    std::unique_ptr<TestChromeBrowserState> Build() &&;
+    // Creates the TestProfileIOS using previously-set settings.
+    std::unique_ptr<TestProfileIOS> Build() &&;
 
    private:
     friend class EnterprisePolicyTestHelper;
     friend class TestProfileManagerIOS;
 
-    // Creates the TestChromeBrowserState using `data_dir` as base directory
+    // Creates the TestProfileIOS using `data_dir` as base directory
     // for the storage, and other previously-set settings.
-    std::unique_ptr<TestChromeBrowserState> Build(
-        const base::FilePath& data_dir) &&;
+    std::unique_ptr<TestProfileIOS> Build(const base::FilePath& data_dir) &&;
 
     // Various staging variables where values are held until Build() is invoked.
-    std::string browser_state_name_;
+    std::string profile_name_;
     std::unique_ptr<sync_preferences::PrefServiceSyncable> pref_service_;
 
     std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
-    std::unique_ptr<BrowserStatePolicyConnector> policy_connector_;
+    std::unique_ptr<ProfilePolicyConnector> policy_connector_;
 
     TestingFactories testing_factories_;
   };
@@ -247,24 +237,23 @@ class TestChromeBrowserState final : public ChromeBrowserState {
  private:
   friend class Builder;
 
-  // Used to create the principal TestChromeBrowserState.
-  TestChromeBrowserState(
-      const base::FilePath& state_path,
-      std::string_view browser_state_name,
-      std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
-      TestingFactories testing_factories,
-      std::unique_ptr<BrowserStatePolicyConnector> policy_connector,
-      std::unique_ptr<policy::UserCloudPolicyManager>
-          user_cloud_policy_manager);
+  // Used to create the principal TestProfileIOS.
+  TestProfileIOS(const base::FilePath& state_path,
+                 std::string_view profile_name,
+                 std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
+                 TestingFactories testing_factories,
+                 std::unique_ptr<ProfilePolicyConnector> policy_connector,
+                 std::unique_ptr<policy::UserCloudPolicyManager>
+                     user_cloud_policy_manager);
 
-  // Used to create the incognito TestChromeBrowserState.
-  TestChromeBrowserState(const base::FilePath& state_path,
-                         TestChromeBrowserState* original_browser_state,
-                         TestingFactories testing_factories);
+  // Used to create the incognito TestProfileIOS.
+  TestProfileIOS(const base::FilePath& state_path,
+                 TestProfileIOS* original_profile,
+                 TestingFactories testing_factories);
 
-  // Initialization of the TestChromeBrowserState. This is a separate method
+  // Initialization of the TestProfileIOS. This is a separate method
   // as it needs to be called after the bi-directional link between original
-  // and off-the-record TestChromeBrowserState has been created.
+  // and off-the-record TestProfileIOS has been created.
   void Init();
 
   // If non-null, `testing_prefs_` points to `prefs_`. It is there to avoid
@@ -273,18 +262,18 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   raw_ptr<sync_preferences::TestingPrefServiceSyncable> testing_prefs_;
 
   std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
-  std::unique_ptr<BrowserStatePolicyConnector> policy_connector_;
+  std::unique_ptr<ProfilePolicyConnector> policy_connector_;
 
   // A SharedURLLoaderFactory for test.
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
 
-  // The incognito ChromeBrowserState instance that is associated with this
-  // non-incognito ChromeBrowserState instance.
-  std::unique_ptr<TestChromeBrowserState> otr_browser_state_;
-  raw_ptr<TestChromeBrowserState> original_browser_state_;
+  // The incognito ProfileIOS instance that is associated with this
+  // non-incognito ProfileIOS instance.
+  std::unique_ptr<TestProfileIOS> otr_profile_;
+  raw_ptr<TestProfileIOS> original_profile_;
 
-  base::WeakPtrFactory<TestChromeBrowserState> weak_ptr_factory_{this};
+  base::WeakPtrFactory<TestProfileIOS> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_PROFILE_TEST_TEST_PROFILE_IOS_H_

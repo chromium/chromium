@@ -77,7 +77,7 @@ message WebAppSpecifics {
   // chrome://apps.
   optional string user_page_ordinal = 7;
   // Used to store the in-page ranking for ordering apps in its given
-  // |user_page_ordinal| page.
+  // `user_page_ordinal` page.
   optional string user_launch_ordinal = 8;
 
   // Used to store id specified in the manifest. This is a path that is relative

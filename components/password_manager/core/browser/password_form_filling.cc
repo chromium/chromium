@@ -290,6 +290,8 @@ PasswordFormFillData CreatePasswordFormFillData(
 
     result.preferred_login.uses_account_store =
         preferred_match->IsUsingAccountStore();
+    result.preferred_login.is_grouped_affiliation =
+        (GetMatchType(preferred_match.value()) == GetLoginMatchType::kGrouped);
 
     if (GetMatchType(preferred_match.value()) != GetLoginMatchType::kExact ||
         !IsSameOrigin(main_frame_origin, form_on_page.url)) {
@@ -310,6 +312,8 @@ PasswordFormFillData CreatePasswordFormFillData(
     value.username_value = match.username_value;
     value.password_value = match.password_value;
     value.uses_account_store = match.IsUsingAccountStore();
+    value.is_grouped_affiliation =
+        (GetMatchType(match) == GetLoginMatchType::kGrouped);
 
     if (GetMatchType(match) != GetLoginMatchType::kExact) {
       value.realm = GetPreferredRealm(match);

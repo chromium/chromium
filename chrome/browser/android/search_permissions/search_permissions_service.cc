@@ -61,13 +61,7 @@ class SearchEngineDelegateImpl
 
   url::Origin GetDSEOrigin() override {
     if (template_url_service_) {
-      const TemplateURL* template_url =
-          template_url_service_->GetDefaultSearchProvider();
-      if (template_url) {
-        GURL search_url = template_url->GenerateSearchURL(
-            template_url_service_->search_terms_data());
-        return url::Origin::Create(search_url);
-      }
+      return template_url_service_->GetDefaultSearchProviderOrigin();
     }
 
     return url::Origin();
@@ -123,9 +117,11 @@ bool SearchPermissionsService::Factory::ServiceIsCreatedWithBrowserContext()
   return true;
 }
 
-KeyedService* SearchPermissionsService::Factory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SearchPermissionsService::Factory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  return new SearchPermissionsService(Profile::FromBrowserContext(context));
+  return std::make_unique<SearchPermissionsService>(
+      Profile::FromBrowserContext(context));
 }
 
 void SearchPermissionsService::Factory::RegisterProfilePrefs(

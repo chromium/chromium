@@ -34,9 +34,9 @@ class WatermarkTest : public testing::Test,
 // #include "base/files/file_util.h"
 // #include "ui/gfx/codec/png_codec.h"
 //
-// std::vector<uint8_t> data(kWidth * kHeight);
-// gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, true, &data);
-// base::WriteFile(path, data);
+// std::optional<std::vector<uint8_t>> data =
+//   gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, true);
+// base::WriteFile(path, data.value());
 
 // The consensus for pixel gold tests is that we create a single test for a
 // single platform. In this case, this is to avoid issues with platform-specific

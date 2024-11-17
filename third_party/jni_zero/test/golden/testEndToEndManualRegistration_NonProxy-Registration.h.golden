@@ -107,63 +107,63 @@ namespace {
 bool RegisterNative_org_jni_1zero_SampleNonProxy(JNIEnv* env) {
   static const JNINativeMethod kMethods[] = {
       {
-          nativeAddBookmark",
+          "nativeAddBookmark",
           "(ILjava/lang/String;Ljava/lang/String;ZJ)J",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeAddBookmark)
       }, {
-          nativeAddBookmarkFromAPI",
+          "nativeAddBookmarkFromAPI",
           "(ILjava/lang/String;Ljava/lang/Long;Ljava/lang/Boolean;Ljava/lang/Long;[BLjava/lang/String;Ljava/lang/Integer;)J",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeAddBookmarkFromAPI)
       }, {
-          nativeCreateHistoricalTabFromState",
+          "nativeCreateHistoricalTabFromState",
           "([BI)V",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeCreateHistoricalTabFromState)
       }, {
-          nativeDestroy",
+          "nativeDestroy",
           "(I)V",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeDestroy)
       }, {
-          nativeFindAll",
+          "nativeFindAll",
           "(Ljava/lang/String;)I",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeFindAll)
       }, {
-          nativeGetAutofillProfileGUIDs",
+          "nativeGetAutofillProfileGUIDs",
           "()[Ljava/lang/String;",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetAutofillProfileGUIDs)
       }, {
-          nativeGetDomainAndRegistry",
+          "nativeGetDomainAndRegistry",
           "(Ljava/lang/String;)Ljava/lang/String;",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetDomainAndRegistry)
       }, {
-          nativeGetInnerClass",
+          "nativeGetInnerClass",
           "()Lorg/jni_zero/SampleNonProxy$OnFrameAvailableListener;",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetInnerClass)
       }, {
-          nativeGetStateAsByteArray",
+          "nativeGetStateAsByteArray",
           "(Landroid/view/View;)[B",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGetStateAsByteArray)
       }, {
-          nativeGotOrientation",
+          "nativeGotOrientation",
           "(IDDD)V",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeGotOrientation)
       }, {
-          nativeInit",
+          "nativeInit",
           "()I",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeInit)
       }, {
-          nativeInit",
+          "nativeInit",
           "()I",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeInit)
       }, {
-          nativeMessWithJavaException",
+          "nativeMessWithJavaException",
           "(Ljava/lang/Throwable;)Ljava/lang/Throwable;",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeMessWithJavaException)
       }, {
-          nativeQueryBitmap",
+          "nativeQueryBitmap",
           "(I[Ljava/lang/String;Ljava/lang/String;[Ljava/lang/String;Ljava/lang/String;)Landroid/graphics/Bitmap;",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeQueryBitmap)
       }, {
-          nativeSetRecognitionResults",
+          "nativeSetRecognitionResults",
           "(I[Ljava/lang/String;)V",
           reinterpret_cast<void*>(Java_org_jni_1zero_SampleNonProxy_nativeSetRecognitionResults)
       }, 

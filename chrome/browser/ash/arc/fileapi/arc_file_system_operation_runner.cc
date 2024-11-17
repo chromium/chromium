@@ -577,9 +577,7 @@ void ArcFileSystemOperationRunner::OnWatcherAdded(
     return;
   }
   if (watcher_callbacks_.count(watcher_id)) {
-    NOTREACHED_IN_MIGRATION();
-    std::move(callback).Run(-1);
-    return;
+    NOTREACHED();
   }
   watcher_callbacks_.insert(std::make_pair(watcher_id, watcher_callback));
   std::move(callback).Run(watcher_id);

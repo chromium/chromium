@@ -149,9 +149,7 @@ EnumTraits<gpu::mojom::VideoCodecProfile, gpu::VideoCodecProfile>::ToMojom(
     case gpu::VideoCodecProfile::VVCPROFILE_MAIN16_444_STILL_PICTURE:
       return gpu::mojom::VideoCodecProfile::VVCPROFILE_MAIN12_444_STILL_PICTURE;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid VideoCodecProfile:" << video_codec_profile;
-  return gpu::mojom::VideoCodecProfile::VIDEO_CODEC_PROFILE_UNKNOWN;
+  NOTREACHED() << "Invalid VideoCodecProfile:" << video_codec_profile;
 }
 
 // static
@@ -318,8 +316,7 @@ bool EnumTraits<gpu::mojom::VideoCodecProfile, gpu::VideoCodecProfile>::
       *out = gpu::VideoCodecProfile::VVCPROFILE_MAIN12_444_STILL_PICTURE;
       return true;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid VideoCodecProfile: " << input;
-  return false;
+  NOTREACHED() << "Invalid VideoCodecProfile: " << input;
 }
 
 // static
@@ -387,8 +384,7 @@ bool EnumTraits<gpu::mojom::ImageDecodeAcceleratorType,
       *out = gpu::ImageDecodeAcceleratorType::kUnknown;
       return true;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid ImageDecodeAcceleratorType: " << input;
-  return false;
+  NOTREACHED() << "Invalid ImageDecodeAcceleratorType: " << input;
 }
 
 // static
@@ -422,9 +418,7 @@ bool EnumTraits<gpu::mojom::ImageDecodeAcceleratorSubsampling,
       *out = gpu::ImageDecodeAcceleratorSubsampling::k444;
       return true;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid ImageDecodeAcceleratorSubsampling: " << input;
-  return false;
+  NOTREACHED() << "Invalid ImageDecodeAcceleratorSubsampling: " << input;
 }
 
 // static
@@ -510,6 +504,9 @@ bool StructTraits<gpu::mojom::GpuInfoDataView, gpu::GPUInfo>::Read(
   out->d3d12_feature_level = data.d3d12_feature_level();
   out->vulkan_version = data.vulkan_version();
   out->shared_image_d3d = data.shared_image_d3d();
+#endif
+#if BUILDFLAG(ENABLE_VULKAN)
+  out->hardware_supports_vulkan = data.hardware_supports_vulkan();
 #endif
 
   return data.ReadInitializationTime(&out->initialization_time) &&

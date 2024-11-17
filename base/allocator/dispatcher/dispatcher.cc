@@ -34,7 +34,7 @@ struct Dispatcher::Impl {
 
   void Reset() {
 #if DCHECK_IS_ON()
-    DCHECK([&]() {
+    DCHECK([&] {
       auto const was_set = is_initialized_check_flag_.test_and_set();
       is_initialized_check_flag_.clear();
       return was_set;

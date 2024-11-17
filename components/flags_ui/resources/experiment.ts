@@ -2,297 +2,306 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.js';
-import {CustomElement} from 'chrome://resources/js/custom_element.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import '/strings.m.js';
 
-import {getTemplate} from './experiment.html.js';
+import {assert} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import {getCss} from './experiment.css.js';
+import {getHtml} from './experiment.html.js';
 import type {Feature} from './flags_browser_proxy.js';
 import {FlagsBrowserProxyImpl} from './flags_browser_proxy.js';
 
 /**
- * Parses the element's text content to find the matching search term.
- * If a match is found, handles highlighting the substring.
- * @param searchTerm The query to search for.
- * @param element The element to search on and highlight.
- * @return Whether or not a match was found.
+ * Parses the element's text content and highlights it with hit markers.
+ * @param searchTerm The query to highlight for.
+ * @param element The element to highlight.
  */
-function highlightMatch(searchTerm: string, element: HTMLElement): boolean {
+function highlightMatch(searchTerm: string, element: HTMLElement) {
   const text = element.textContent!;
   const match = text.toLowerCase().indexOf(searchTerm);
 
-  if (match === -1) {
-    return false;
+  // Assert against cases that are already handled before this function.
+  assert(match !== -1);
+  assert(searchTerm !== '');
+
+  // Clear content.
+  element.textContent = '';
+
+  if (match > 0) {
+    const textNodePrefix = document.createTextNode(text.substring(0, match));
+    element.appendChild(textNodePrefix);
   }
 
-  if (searchTerm !== '') {
-    // Clear all nodes.
-    element.textContent = '';
+  const matchEl = document.createElement('mark');
+  matchEl.textContent = text.substr(match, searchTerm.length);
+  element.appendChild(matchEl);
 
-    if (match > 0) {
-      const textNodePrefix = document.createTextNode(text.substring(0, match));
-      element.appendChild(textNodePrefix);
-    }
-
-    const matchEl = document.createElement('mark');
-    matchEl.textContent = text.substr(match, searchTerm.length);
-    element.appendChild(matchEl);
-
-    const matchSuffix = text.substring(match + searchTerm.length);
-    if (matchSuffix) {
-      const textNodeSuffix = document.createTextNode(matchSuffix);
-      element.appendChild(textNodeSuffix);
-    }
-  }
-  return true;
-}
-
-/**
- * Reset existing highlights on an element.
- * @param element The element to remove all highlighted mark up on.
- */
-function resetHighlights(element: HTMLElement) {
-  if (element.children) {
-    // Clear child <mark> from element, preserving inner text.
-    element.textContent = element.textContent;
+  const matchSuffix = text.substring(match + searchTerm.length);
+  if (matchSuffix) {
+    const textNodeSuffix = document.createTextNode(matchSuffix);
+    element.appendChild(textNodeSuffix);
   }
 }
 
+export class ExperimentElement extends CrLitElement {
+  static override get styles() {
+    return getCss();
+  }
 
-export class FlagsExperimentElement extends CustomElement {
-  private feature_: Feature|null = null;
+  override render() {
+    return getHtml.bind(this)();
+  }
 
-  static override get template() {
-    return getTemplate();
+  static override get properties() {
+    return {
+      feature_: {type: Object},
+      unsupported: {type: Boolean},
+
+      isDefault_: {
+        type: Boolean,
+        reflect: true,
+      },
+
+      expanded_: {
+        type: Boolean,
+        reflect: true,
+      },
+
+      showingSearchHit_: {type: Boolean},
+    };
+  }
+
+  protected feature_: Feature = {
+    internal_name: '',
+    name: '',
+    description: '',
+    enabled: false,
+    is_default: false,
+    supported_platforms: [],
+  };
+
+  // Whether the controls to change the experiment state should be hidden.
+  unsupported: boolean = false;
+
+  // Whether the currently selected value is the default value.
+  protected isDefault_: boolean = false;
+
+  // Whether the description text is expanded. Only has an effect on narrow
+  // widths (max-width: 480px).
+  protected expanded_: boolean = false;
+
+  // Whether search hits are currently displayed. When true, some DOM nodes are
+  // replaced with cloned nodes whose textContent is not rendered by Lit, so
+  // that the highlight algorithm can freely modify them. Lit does not play
+  // nicely with manual DOM modifications and throws internal errors in
+  // subsequent renders.
+  protected showingSearchHit_: boolean = false;
+
+  getRequiredElement<K extends keyof HTMLElementTagNameMap>(query: K):
+      HTMLElementTagNameMap[K];
+  getRequiredElement<E extends HTMLElement = HTMLElement>(query: string): E;
+  getRequiredElement(query: string) {
+    const el = this.shadowRoot!.querySelector(query);
+    assert(el);
+    assert(el instanceof HTMLElement);
+    return el;
+  }
+
+  override updated(changedProperties: PropertyValues<this>) {
+    super.updated(changedProperties);
+
+    const changedPrivateProperties =
+        changedProperties as Map<PropertyKey, unknown>;
+
+    if (changedPrivateProperties.has('feature_') ||
+        changedProperties.has('unsupported')) {
+      this.isDefault_ = this.computeIsDefault_();
+    }
   }
 
   set data(feature: Feature) {
     this.feature_ = feature;
+  }
 
-    const container = this.getRequiredElement('.experiment');
-    container.id = feature.internal_name;
-
-    const experimentDefault = this.getRequiredElement('.experiment-default');
-    experimentDefault.classList.toggle(
-        'experiment-default', feature.is_default);
-    experimentDefault.classList.toggle(
-        'experiment-switched', !feature.is_default);
-
-    const experimentName = this.getRequiredElement('.experiment-name');
-    experimentName.id = `${feature.internal_name}_name`;
-    experimentName.title =
-        feature.is_default ? '' : loadTimeData.getString('experiment-enabled');
-    experimentName.textContent = feature.name;
-
-    const description = this.getRequiredElement('.description');
-    description.textContent = feature.description;
-    const platforms = this.getRequiredElement('.platforms');
-    platforms.textContent = feature.supported_platforms.join(', ');
-
-    if (feature.links) {
-      for (const link of feature.links) {
-        const linkElement = document.createElement('a');
-        linkElement.href = link;
-        linkElement.textContent = link;
-        this.getRequiredElement('.links-container').appendChild(linkElement);
-      }
+  protected getExperimentTitle_(): string {
+    if (this.showEnableDisableSelect_()) {
+      return this.isDefault_ ? '' :
+                               loadTimeData.getString('experiment-enabled');
     }
 
-    if (feature.origin_list_value !== undefined) {
-      const textarea = document.createElement('textarea');
-      textarea.dataset['internalName'] = feature.internal_name;
-      textarea.classList.add('experiment-origin-list-value');
-      textarea.value = feature.origin_list_value;
-      textarea.setAttribute('aria-labelledby', `${feature.internal_name}_name`);
-      textarea.onchange = (e) => {
-        e.stopPropagation();
-        this.handleSetOriginListFlag_(textarea.value);
-        textarea.dispatchEvent(new Event('textarea-change', {
-          bubbles: true,
-          composed: true,
-        }));
-      };
-      this.getRequiredElement('.textarea-container').appendChild(textarea);
-    }
+    return '';
+  }
 
-    if (feature.string_value !== undefined) {
-      const textbox = document.createElement('input');
-      textbox.dataset['internalName'] = feature.internal_name;
-      textbox.value = feature.string_value;
-      textbox.setAttribute('aria-labelledby', `${feature.internal_name}_name`);
-      textbox.onchange = (e) => {
-        e.stopPropagation();
-        this.handleSetStringFlag_(textbox.value);
-        textbox.dispatchEvent(new Event('input-change', {
-          bubbles: true,
-          composed: true,
-        }));
-      };
-      this.getRequiredElement('.input-container').appendChild(textbox);
-    }
+  protected getPlatforms_(): string {
+    return this.feature_.supported_platforms.join(', ');
+  }
 
-    const permalink = this.getRequiredElement<HTMLAnchorElement>('.permalink');
-    permalink.href = `#${feature.internal_name}`;
-    permalink.textContent = `#${feature.internal_name}`;
+  protected getHeaderId_(): string {
+    return `${this.feature_.internal_name}_name`;
+  }
 
-    const smallScreenCheck = window.matchMedia('(max-width: 480px)');
-    // Toggling of experiment description overflow content on smaller screens.
-    const expandContainer = this.getRequiredElement('.flex:first-child');
-    if (smallScreenCheck.matches) {
-      expandContainer.onclick = () =>
-          expandContainer.classList.toggle('expand');
-    }
+  protected showEnableDisableSelect_(): boolean {
+    return !this.unsupported &&
+        (!this.feature_.options || !this.feature_.options.length);
+  }
 
-    if (this.hasAttribute('unsupported')) {
-      this.getRequiredElement('.experiment-actions').textContent =
-          loadTimeData.getString('not-available-platform');
-      return;
-    }
+  protected showMultiValueSelect_(): boolean {
+    return !this.unsupported && !!this.feature_.options &&
+        !!this.feature_.options.length;
+  }
 
-    if (feature.options && feature.options.length > 0) {
-      const experimentSelect = document.createElement('select');
-      experimentSelect.dataset['internalName'] = feature.internal_name;
-      experimentSelect.classList.add('experiment-select');
-      experimentSelect.disabled = feature.enabled === false;
-      experimentSelect.setAttribute(
-          'aria-labelledby', `${feature.internal_name}_name`);
+  protected onTextareaChange_(e: Event) {
+    e.stopPropagation();
+    const textarea = e.target as HTMLTextAreaElement;
+    this.handleSetOriginListFlag_(textarea.value);
+    textarea.dispatchEvent(new Event('textarea-change', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
 
-      for (let i = 0; i < feature.options.length; i++) {
-        const option = feature.options[i]!;
-        const optionEl = document.createElement('option');
-        optionEl.selected = option.selected;
-        optionEl.textContent = option.description;
-        experimentSelect.appendChild(optionEl);
-      }
+  protected onTextInputChange_(e: Event) {
+    e.stopPropagation();
+    const textbox = e.target as HTMLInputElement;
+    this.handleSetStringFlag_(textbox.value);
+    textbox.dispatchEvent(new Event('input-change', {
+      bubbles: true,
+      composed: true,
+    }));
+  }
 
-      experimentSelect.onchange = (e) => {
-        e.stopPropagation();
-        this.handleSelectExperimentalFeatureChoice_(
-            experimentSelect.selectedIndex);
-        experimentSelect.dispatchEvent(new Event('select-change', {
-          bubbles: true,
-          composed: true,
-        }));
-      };
-
-      this.getRequiredElement('.experiment-actions')
-          .appendChild(experimentSelect);
-      return;
-    }
-
-    assert(feature.options === undefined || feature.options.length === 0);
-    const experimentEnableDisable = document.createElement('select');
-    experimentEnableDisable.dataset['internalName'] = feature.internal_name;
-    experimentEnableDisable.classList.add('experiment-enable-disable');
-    experimentEnableDisable.setAttribute(
-        'aria-labelledby', `${feature.internal_name}_name`);
-
-    const disabledOptionEl = document.createElement('option');
-    disabledOptionEl.value = 'disabled';
-    disabledOptionEl.selected = !feature.enabled;
-    disabledOptionEl.textContent = loadTimeData.getString('disabled');
-    experimentEnableDisable.appendChild(disabledOptionEl);
-
-    const enabledOptionEl = document.createElement('option');
-    enabledOptionEl.value = 'enabled';
-    enabledOptionEl.selected = feature.enabled;
-    enabledOptionEl.textContent = loadTimeData.getString('enabled');
-    experimentEnableDisable.appendChild(enabledOptionEl);
-
-    experimentEnableDisable.onchange = (e) => {
-      e.stopPropagation();
-      const selectedIndex = experimentEnableDisable.selectedIndex;
-      const selectedOption = experimentEnableDisable.options[selectedIndex]!;
-      this.handleEnableExperimentalFeature_(selectedOption.value === 'enabled');
-      experimentEnableDisable.dispatchEvent(new Event('select-change', {
-        bubbles: true,
-        composed: true,
-      }));
-    };
-
-    this.getRequiredElement('.experiment-actions')
-        .appendChild(experimentEnableDisable);
+  protected onExperimentNameClick_(_e: Event) {
+    this.expanded_ = !this.expanded_;
   }
 
   getSelect(): HTMLSelectElement|null {
-    return this.$('select');
+    return this.shadowRoot!.querySelector('select');
   }
 
   getTextarea(): HTMLTextAreaElement|null {
-    return this.$('textarea');
+    return this.shadowRoot!.querySelector('textarea');
   }
 
   getTextbox(): HTMLInputElement|null {
-    return this.$('input');
+    return this.shadowRoot!.querySelector('input');
   }
 
   /**
-   * Looks for and highlights the first match on any of the
-   * component's title, body, and permalink text. Resets
-   * preexisting highlights.
+   * Looks for and highlights the first match on any of the component's title,
+   * description, platforms and permalink text. Resets any pre-existing
+   * highlights.
    * @param searchTerm The query to search for.
    * @return Whether or not a match was found.
    */
-  match(searchTerm: string): boolean {
-    const title = this.getRequiredElement('.experiment-name');
-    const body = this.getRequiredElement('.body');
-    const permalink = this.getRequiredElement('.permalink');
+  async match(searchTerm: string): Promise<boolean> {
+    this.showingSearchHit_ = false;
 
-    resetHighlights(title);
-    resetHighlights(body);
-    resetHighlights(permalink);
+    if (searchTerm === '') {
+      return true;
+    }
 
-    return highlightMatch(searchTerm, title) ||
-        highlightMatch(searchTerm, body) ||
-        highlightMatch(searchTerm.replace(/\s/, '-'), permalink);
+    // Items to search in the desired order.
+    const itemsToSearch = [
+      this.feature_.name,
+      this.feature_.description,
+      this.getPlatforms_(),
+      this.feature_.internal_name,
+    ];
+
+    const index = itemsToSearch.findIndex(item => {
+      return item.toLowerCase().includes(searchTerm);
+    });
+
+    if (index === -1) {
+      // No matches found. Nothing to do.
+      return false;
+    }
+
+    // Render the clone elements (the ones to be highlighted with markers).
+    this.showingSearchHit_ = true;
+    await this.updateComplete;
+
+    const queries = [
+      '.clone.experiment-name',
+      '.clone.body .description',
+      '.clone.body .platforms',
+      '.clone.permalink',
+    ];
+
+    // Populate clone elements with the proper text content.
+    queries.forEach((query, i) => {
+      const clone = this.getRequiredElement(query);
+      clone.textContent = (i === 3 ? '#' : '') + itemsToSearch[i]!;
+    });
+
+    // Add highlights to the first clone element with matches.
+    const cloneWithMatch = this.getRequiredElement(queries[index]!);
+    highlightMatch(searchTerm, cloneWithMatch);
+    return true;
   }
 
+  protected computeIsDefault_(): boolean {
+    if (this.showEnableDisableSelect_()) {
+      const select = this.getRequiredElement('select');
+      const enabled = select.value === 'enabled';
+      return enabled ? (this.feature_.is_default === this.feature_.enabled) :
+                       (this.feature_.is_default !== this.feature_.enabled);
+    }
 
-  /**
-   * Sets style depending on the selected option.
-   * @param isDefault Whether or not the default option is selected.
-   */
-  private updateDefaultStyle_(isDefault: boolean) {
-    const experimentContainer =
-        this.getRequiredElement('.experiment-default, .experiment-switched');
-    experimentContainer.classList.toggle('experiment-default', isDefault);
-    experimentContainer.classList.toggle('experiment-switched', !isDefault);
+    if (this.showMultiValueSelect_()) {
+      const select = this.getRequiredElement('select');
+      return select.selectedIndex === 0;
+    }
+
+    return true;
   }
 
   /**
-   * Handles a 'enable' or 'disable' button getting clicked.
-   * @param enable Whether to enable or disable the experiment.
+   * Invoked when the selection of an enable/disable choice is changed.
    */
-  private handleEnableExperimentalFeature_(enable: boolean) {
+  protected onExperimentEnableDisableChange_(e: Event) {
+    e.stopPropagation();
+
     /* This function is an onchange handler, which can be invoked during page
      * restore - see https://crbug.com/1038638. */
     assert(this.feature_);
     assert(!this.feature_.options || this.feature_.options.length === 0);
 
+    this.isDefault_ = this.computeIsDefault_();
+
+    const experimentEnableDisable = e.target as HTMLSelectElement;
     FlagsBrowserProxyImpl.getInstance().enableExperimentalFeature(
-        this.feature_.internal_name, enable);
-
-    const isDefault = enable ?
-        (this.feature_.is_default === this.feature_.enabled) :
-        (this.feature_.is_default !== this.feature_.enabled);
-
-    this.updateDefaultStyle_(isDefault);
+        this.feature_.internal_name,
+        experimentEnableDisable.value === 'enabled');
+    experimentEnableDisable.dispatchEvent(new Event('select-change', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   /**
-   * Invoked when the selection of a multi-value choice is changed to the
-   * specified index.
-   * @param index The index of the option that was selected.
+   * Invoked when the selection of a multi-value choice is changed.
    */
-  private handleSelectExperimentalFeatureChoice_(index: number) {
+  protected onExperimentSelectChange_(e: Event) {
+    e.stopPropagation();
+
     /* This function is an onchange handler, which can be invoked during page
      * restore - see https://crbug.com/1038638. */
     assert(this.feature_);
     assert(this.feature_.options && this.feature_.options.length > 0);
 
+    this.isDefault_ = this.computeIsDefault_();
+
+    const experimentSelect = e.target as HTMLSelectElement;
     FlagsBrowserProxyImpl.getInstance().selectExperimentalFeature(
-        this.feature_.internal_name, index);
-    this.updateDefaultStyle_(index === 0);
+        this.feature_.internal_name, experimentSelect.selectedIndex);
+    experimentSelect.dispatchEvent(new Event('select-change', {
+      bubbles: true,
+      composed: true,
+    }));
   }
 
   /**
@@ -325,8 +334,8 @@ export class FlagsExperimentElement extends CustomElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'flags-experiment': FlagsExperimentElement;
+    'flags-experiment': ExperimentElement;
   }
 }
 
-customElements.define('flags-experiment', FlagsExperimentElement);
+customElements.define('flags-experiment', ExperimentElement);

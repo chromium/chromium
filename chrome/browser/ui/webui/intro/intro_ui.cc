@@ -38,16 +38,11 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
       source, base::make_span(kIntroResources, kIntroResourcesSize),
       IDR_INTRO_INTRO_HTML);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   int title_id = IDS_FRE_SIGN_IN_TITLE_0;
   int backupCardDescription =
       base::FeatureList::IsEnabled(switches::kExplicitBrowserSigninUIOnDesktop)
           ? IDS_UNO_FRE_BACKUP_CARD_DESCRIPTION
           : IDS_FRE_BACKUP_CARD_DESCRIPTION;
-
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  int title_id = IDS_PRIMARY_PROFILE_FIRST_RUN_NO_NAME_TITLE;
-#endif
 
   // Setting the title here instead of relying on the one provided from the
   // page itself makes it available much earlier, and avoids having to fallback
@@ -56,7 +51,6 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   web_ui->OverrideTitle(l10n_util::GetStringUTF16(title_id));
 
   webui::LocalizedString localized_strings[] = {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
       {"pageTitle", title_id},
       {"pageSubtitle", IDS_FRE_SIGN_IN_SUBTITLE_0},
       {"devicesCardTitle", IDS_FRE_DEVICES_CARD_TITLE},
@@ -75,10 +69,6 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
        IDS_FRE_DEFAULT_BROWSER_ILLUSTRATION_ALT_TEXT},
       {"defaultBrowserSetAsDefault", IDS_FRE_DEFAULT_BROWSER_SET_AS_DEFAULT},
       {"defaultBrowserSkip", IDS_FRE_DEFAULT_BROWSER_SKIP},
-#endif
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      {"proceedLabel", IDS_PRIMARY_PROFILE_FIRST_RUN_NEXT_BUTTON_LABEL},
-#endif
   };
   source->AddLocalizedStrings(localized_strings);
 
@@ -95,11 +85,8 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
                           IDR_SIGNIN_IMAGES_SHARED_RIGHT_BANNER_DARK_SVG);
   source->AddResourcePath("tangible_sync_style_shared.css.js",
                           IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_CSS_JS);
-  source->AddResourcePath("tangible_sync_style_shared_lit.css.js",
-                          IDR_SIGNIN_TANGIBLE_SYNC_STYLE_SHARED_LIT_CSS_JS);
   source->AddResourcePath("signin_vars.css.js", IDR_SIGNIN_SIGNIN_VARS_CSS_JS);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   source->AddBoolean("isDeviceManaged", is_device_managed);
 
   // Setup chrome://intro/default-browser UI.
@@ -111,7 +98,6 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
                           IDR_PRODUCT_LOGO_ANIMATION_SVG);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   source->AddResourcePath("images/gshield.svg", IDR_GSHIELD_ICON_SVG);
-#endif
 #endif
 
   // Unretained ok: `this` owns the handler.
@@ -134,9 +120,7 @@ void IntroUI::SetSigninChoiceCallback(IntroSigninChoiceCallback callback) {
   DCHECK(!callback->is_null());
   signin_choice_callback_ = std::move(callback);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   intro_handler_->ResetIntroButtons();
-#endif
 }
 
 void IntroUI::SetDefaultBrowserCallback(DefaultBrowserCallback callback) {

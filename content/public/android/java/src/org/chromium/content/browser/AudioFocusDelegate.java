@@ -8,7 +8,6 @@ import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.AudioFocusRequest;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Handler;
 
 import org.jni_zero.CalledByNative;
@@ -79,13 +78,9 @@ public class AudioFocusDelegate implements AudioManager.OnAudioFocusChangeListen
                 (AudioManager)
                         ContextUtils.getApplicationContext()
                                 .getSystemService(Context.AUDIO_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            if (mFocusRequest != null) {
-                am.abandonAudioFocusRequest(mFocusRequest);
-                mFocusRequest = null;
-            }
-        } else {
-            am.abandonAudioFocus(this);
+        if (mFocusRequest != null) {
+            am.abandonAudioFocusRequest(mFocusRequest);
+            mFocusRequest = null;
         }
     }
 
@@ -101,22 +96,26 @@ public class AudioFocusDelegate implements AudioManager.OnAudioFocusChangeListen
                                 .getSystemService(Context.AUDIO_SERVICE);
 
         int result;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            AudioAttributes playbackAttributes =
-                    new AudioAttributes.Builder()
-                            .setUsage(AudioAttributes.USAGE_MEDIA)
-                            .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
-                            .build();
-            mFocusRequest =
-                    new AudioFocusRequest.Builder(mFocusType)
-                            .setAudioAttributes(playbackAttributes)
-                            .setAcceptsDelayedFocusGain(false)
-                            .setWillPauseWhenDucked(false)
-                            .setOnAudioFocusChangeListener(this, mHandler)
-                            .build();
+        AudioAttributes playbackAttributes =
+                new AudioAttributes.Builder()
+                        .setUsage(AudioAttributes.USAGE_MEDIA)
+                        .setContentType(AudioAttributes.CONTENT_TYPE_UNKNOWN)
+                        .build();
+        mFocusRequest =
+                new AudioFocusRequest.Builder(mFocusType)
+                        .setAudioAttributes(playbackAttributes)
+                        .setAcceptsDelayedFocusGain(false)
+                        .setWillPauseWhenDucked(false)
+                        .setOnAudioFocusChangeListener(this, mHandler)
+                        .build();
+        try {
             result = am.requestAudioFocus(mFocusRequest);
-        } else {
-            result = am.requestAudioFocus(this, AudioManager.STREAM_MUSIC, mFocusType);
+        } catch (SecurityException e) {
+            // If we get a SecurityException, the platform has a bug and requestAudioFocus is broken
+            // (at least under our current running conditions). Pretend that everything worked,
+            // because the alternative is that media such as videos may refuse to ever play.
+            Log.w(TAG, "audio focus coordination is broken", e);
+            return true;
         }
 
         return result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED;

@@ -63,10 +63,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting,
  public:
   MockDriveFs() = default;
 
-  DriveFs* GetForwardingInterface() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  DriveFs* GetForwardingInterface() override { NOTREACHED(); }
 
   void FetchChangeLog(
       std::vector<mojom::FetchChangeLogOptionsPtr> options) override {
@@ -608,11 +605,9 @@ TEST_F(DriveFsHostTest, DisplayConfirmDialogImpl_IgnoreIfNoHandler) {
 
 TEST_F(DriveFsHostTest, DisplayConfirmDialogImpl_IgnoreUnknownReasonTypes) {
   ASSERT_NO_FATAL_FAILURE(DoMount());
-  host_->set_dialog_handler(
-      base::BindRepeating([](const mojom::DialogReason&,
-                             base::OnceCallback<void(mojom::DialogResult)>) {
-        NOTREACHED_IN_MIGRATION();
-      }));
+  host_->set_dialog_handler(base::BindRepeating(
+      [](const mojom::DialogReason&,
+         base::OnceCallback<void(mojom::DialogResult)>) { NOTREACHED(); }));
   bool called = false;
   delegate_->DisplayConfirmDialog(
       mojom::DialogReason::New(

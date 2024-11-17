@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.FrameLayout;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.OnScrollListener;
@@ -55,7 +54,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerFactory;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
-import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.embedder_support.view.ContentView;
@@ -67,7 +65,6 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.util.ColorUtils;
@@ -95,10 +92,6 @@ public class CreatorCoordinator
     private FeedSurfaceScope mSurfaceScope;
     private FeedSurfaceScopeDependencyProviderImpl mDependencyProvider;
     private PropertyModel mCreatorModel;
-    private PropertyModelChangeProcessor<PropertyModel, CreatorProfileView, PropertyKey>
-            mCreatorProfileModelChangeProcessor;
-    private PropertyModelChangeProcessor<PropertyModel, CreatorToolbarView, PropertyKey>
-            mCreatorToolbarModelChangeProcessor;
 
     private final SnackbarManager mSnackbarManager;
     private final CreatorSnackbarController mCreatorSnackbarController;
@@ -106,7 +99,6 @@ public class CreatorCoordinator
     private BottomSheetController mBottomSheetController;
     private ScrimCoordinator mScrim;
     private ViewGroup mBottomSheetContainer;
-    private ViewGroup mLayout;
     private Profile mProfile;
     private Stream mStream;
     private int mHeaderCount;
@@ -123,8 +115,6 @@ public class CreatorCoordinator
     private final UnownedUserDataSupplier<ShareDelegate> mBottomsheetShareDelegateSupplier;
     private GURL mBottomSheetUrl;
     private int mEntryPoint;
-
-    private @Nullable FeedStreamViewResizer mStreamViewResizer;
 
     private static final String CREATOR_PROFILE_ID = "CreatorProfileView";
     private static final String CREATOR_PRIVACY_ID = "CreatorPrivacyId";
@@ -183,8 +173,7 @@ public class CreatorCoordinator
                 (ViewGroup) LayoutInflater.from(mActivity).inflate(R.layout.creator_activity, null);
         mLayoutView = mCreatorViewGroup.findViewById(R.id.creator_layout);
         mUiConfig = new UiConfig(mLayoutView);
-        mStreamViewResizer =
-                FeedStreamViewResizer.createAndAttach(mActivity, mRecyclerView, mUiConfig);
+        FeedStreamViewResizer.createAndAttach(mActivity, mRecyclerView, mUiConfig);
         mLayoutView.addView(mRecyclerView);
 
         // Generate Creator Model
@@ -195,16 +184,10 @@ public class CreatorCoordinator
         }
         initBottomSheet();
 
-        mCreatorProfileModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mCreatorModel,
-                        (CreatorProfileView) mProfileView,
-                        CreatorProfileViewBinder::bind);
-        mCreatorToolbarModelChangeProcessor =
-                PropertyModelChangeProcessor.create(
-                        mCreatorModel,
-                        (CreatorToolbarView) mLayoutView,
-                        CreatorToolbarViewBinder::bind);
+        PropertyModelChangeProcessor.create(
+                mCreatorModel, (CreatorProfileView) mProfileView, CreatorProfileViewBinder::bind);
+        PropertyModelChangeProcessor.create(
+                mCreatorModel, (CreatorToolbarView) mLayoutView, CreatorToolbarViewBinder::bind);
         setUpToolbarListener();
 
         mMediator =
@@ -218,8 +201,7 @@ public class CreatorCoordinator
     /**
      * Query for webfeedId if we don't have it, and then create the FeedStream.
      *
-     * @param FeedActionDelegate Interface for Feed actions implemented by the Browser.
-     * @param Supplier<ShareDelegate> Supplier of the interface to expose sharing.
+     * @param feedActionDelegate Interface for Feed actions implemented by the Browser.
      */
     public void queryFeedStream(
             FeedActionDelegate feedActionDelegate, Supplier<ShareDelegate> shareDelegateSupplier) {
@@ -262,8 +244,7 @@ public class CreatorCoordinator
     /**
      * Create the FeedStream and bind it to the RecyclerView.
      *
-     * @param FeedActionDelegate Interface for Feed actions implemented by the Browser.
-     * @param Supplier<ShareDelegate> Supplier of the interface to expose sharing.
+     * @param feedActionDelegate Interface for Feed actions implemented by the Browser.
      */
     private void initFeedStream(
             FeedActionDelegate feedActionDelegate, Supplier<ShareDelegate> shareDelegateSupplier) {
@@ -438,7 +419,8 @@ public class CreatorCoordinator
                         mActivity.getWindow(),
                         KeyboardVisibilityDelegate.getInstance(),
                         () -> mBottomSheetContainer,
-                        () -> 0);
+                        () -> 0,
+                        /* desktopWindowStateManager= */ null);
     }
 
     private void setUpToolbarListener() {
@@ -667,17 +649,16 @@ public class CreatorCoordinator
     static class FaviconLoader {
         private final Context mContext;
         private final FaviconHelper mFaviconHelper;
-        private final RoundedIconGenerator mIconGenerator;
         private final int mFaviconSize;
 
         /**
          * The FaviconLoader constructor.
+         *
          * @param context The context where the Favicon will be loaded.
          */
         public FaviconLoader(Context context) {
             mContext = context;
             mFaviconHelper = new FaviconHelper();
-            mIconGenerator = FaviconUtils.createCircularIconGenerator(mContext);
             mFaviconSize =
                     mContext.getResources().getDimensionPixelSize(R.dimen.preview_tab_favicon_size);
         }

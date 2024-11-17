@@ -109,7 +109,6 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
-#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/devices/device_data_manager_test_api.h"
 #include "ui/events/devices/keyboard_device.h"
 #include "ui/events/event.h"
@@ -360,12 +359,7 @@ class VoidEventHandler : public ui::EventHandler {
 // it is referenced as a friend by exit_warning_handler.h
 class AcceleratorControllerTest : public AshTestBase {
  public:
-  AcceleratorControllerTest() {
-    auto delegate = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_ = delegate.get();
-    delegate_provider_ =
-        std::make_unique<TestNewWindowDelegateProvider>(std::move(delegate));
-  }
+  AcceleratorControllerTest() = default;
 
   AcceleratorControllerTest(const AcceleratorControllerTest&) = delete;
   AcceleratorControllerTest& operator=(const AcceleratorControllerTest&) =
@@ -513,11 +507,14 @@ class AcceleratorControllerTest : public AshTestBase {
     return true;
   }
 
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
+
   raw_ptr<AcceleratorControllerImpl, DanglingUntriaged> controller_ =
       nullptr;  // Not owned.
   std::unique_ptr<AcceleratorControllerImpl::TestApi> test_api_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_;
-  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
+
+ private:
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 namespace {
@@ -1991,10 +1988,6 @@ TEST_F(AcceleratorControllerTest, PressAndReleasePowerButtonWithFunctionKey) {
       {features::kModifierSplit, features::kPeripheralCustomization,
        features::kInputDeviceSettingsSplit},
       {});
-  auto reset = switches::SetIgnoreModifierSplitSecretKeyForTest();
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
 
   const int kKeyboardDeviceIdWithFunction = 123;
   const int kKeyboardDeviceId = 456;
@@ -2064,10 +2057,6 @@ TEST_F(AcceleratorControllerTest, ToggleCapsLockAcceleratorsWithFunctionKey) {
       {features::kModifierSplit, features::kShortcutStateMachines,
        features::kPeripheralCustomization, features::kInputDeviceSettingsSplit},
       {});
-  auto reset = switches::SetIgnoreModifierSplitSecretKeyForTest();
-  Shell::Get()
-      ->keyboard_capability()
-      ->ResetModifierSplitDogfoodControllerForTesting();
 
   AnchoredNudgeManagerImpl* nudge_manager =
       Shell::Get()->anchored_nudge_manager();
@@ -2622,7 +2611,7 @@ TEST_F(AcceleratorControllerTest, CalculatorKey) {
   EXPECT_TRUE(controller_->IsRegistered(accelerator));
 
   // Verify that the delegate to open the app is called.
-  EXPECT_CALL(*new_window_delegate_, OpenCalculator)
+  EXPECT_CALL(new_window_delegate(), OpenCalculator)
       .WillOnce(testing::Return());
   EXPECT_CALL(*observer, OnActionPerformed)
       .WillOnce([](AcceleratorAction action) {
@@ -3204,9 +3193,6 @@ class MagnifiersAcceleratorsTester : public AcceleratorControllerTest {
 
   void SetUp() override {
     AcceleratorControllerTest::SetUp();
-    feature_list_.InitAndEnableFeature(
-        ::features::kAccessibilityMagnifyAcceleratorDialog);
-
     // Create user session and simulate its login.
     SimulateUserLogin(kUserEmail);
   }
@@ -3340,91 +3326,6 @@ TEST_F(MagnifiersAcceleratorsTester, TestToggleDockedMagnifier) {
   EXPECT_TRUE(docked_magnifier_controller()->GetEnabled());
   EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
   EXPECT_TRUE(ContainsDockedMagnifierNotification());
-
-  RemoveAllNotifications();
-}
-
-class MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest
-    : public MagnifiersAcceleratorsTester {
- public:
-  MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest() = default;
-  MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest(
-      const MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest&) =
-      delete;
-  MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest& operator=(
-      const MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest&) =
-      delete;
-  ~MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest() override =
-      default;
-
-  void SetUp() override {
-    AcceleratorControllerTest::SetUp();
-    feature_list_.InitAndDisableFeature(
-        ::features::kAccessibilityMagnifyAcceleratorDialog);
-
-    // Create user session and simulate its login.
-    SimulateUserLogin(kUserEmail);
-  }
-};
-
-TEST_F(MagnifiersAcceleratorsMagnifyAcceleratorDialogDisabledTest,
-       TestToggleFullscreenMagnifier) {
-  FakeMagnificationManager manager;
-  manager.SetPrefs(user_pref_service());
-  EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
-  EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
-  EXPECT_FALSE(IsConfirmationDialogOpen());
-
-  AccessibilityController* accessibility_controller =
-      Shell::Get()->accessibility_controller();
-  // Toggle the fullscreen magnifier on/off, dialog should be shown on first use
-  // of accelerator.
-  const ui::Accelerator fullscreen_magnifier_accelerator(
-      ui::VKEY_M, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN);
-  EXPECT_FALSE(
-      accessibility_controller->fullscreen_magnifier().WasDialogAccepted());
-  EXPECT_TRUE(ProcessInController(fullscreen_magnifier_accelerator));
-  EXPECT_TRUE(IsConfirmationDialogOpen());
-  // Magnifier is not enabled when feature is not on.
-  EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
-  EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
-
-  CancelConfirmationDialog();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(
-      accessibility_controller->fullscreen_magnifier().WasDialogAccepted());
-  EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
-
-  // Open the dialog again.
-  EXPECT_TRUE(ProcessInController(fullscreen_magnifier_accelerator));
-  EXPECT_TRUE(IsConfirmationDialogOpen());
-  EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
-
-  AcceptConfirmationDialog();
-  base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(IsConfirmationDialogOpen());
-  EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
-  EXPECT_TRUE(fullscreen_magnifier_controller()->IsEnabled());
-  EXPECT_TRUE(ContainsFullscreenMagnifierNotification());
-  EXPECT_FALSE(
-      IsNotificationPinned(kFullscreenMagnifierToggleAccelNotificationId));
-
-  EXPECT_TRUE(ProcessInController(fullscreen_magnifier_accelerator));
-  EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
-  EXPECT_FALSE(fullscreen_magnifier_controller()->IsEnabled());
-  EXPECT_TRUE(
-      accessibility_controller->fullscreen_magnifier().WasDialogAccepted());
-  EXPECT_FALSE(IsConfirmationDialogOpen());
-  EXPECT_FALSE(ContainsFullscreenMagnifierNotification());
-
-  // Dialog will not be shown the second time the accelerator is used.
-  EXPECT_TRUE(ProcessInController(fullscreen_magnifier_accelerator));
-  EXPECT_FALSE(IsConfirmationDialogOpen());
-  EXPECT_TRUE(
-      accessibility_controller->fullscreen_magnifier().WasDialogAccepted());
-  EXPECT_FALSE(docked_magnifier_controller()->GetEnabled());
-  EXPECT_TRUE(fullscreen_magnifier_controller()->IsEnabled());
-  EXPECT_TRUE(ContainsFullscreenMagnifierNotification());
 
   RemoveAllNotifications();
 }
@@ -3931,29 +3832,7 @@ TEST_P(MediaSessionAcceleratorTest,
   }
 }
 
-// TODO(b:332383246): Remove once the feature is enabled permanently.
-class AcceleratorControllerGameDashboardTests
-    : public AcceleratorControllerTest {
- public:
-  AcceleratorControllerGameDashboardTests() = default;
-  AcceleratorControllerGameDashboardTests(
-      const AcceleratorControllerTestWithClamshellSplitView&) = delete;
-  AcceleratorControllerGameDashboardTests& operator=(
-      const AcceleratorControllerGameDashboardTests&) = delete;
-  ~AcceleratorControllerGameDashboardTests() override = default;
-
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kGameDashboard);
-    AcceleratorControllerTest::SetUp();
-    EXPECT_TRUE(features::IsGameDashboardEnabled());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-TEST_F(AcceleratorControllerGameDashboardTests,
-       ToggleGameDashboardAccelerator) {
+TEST_F(AcceleratorControllerTest, ToggleGameDashboardAccelerator) {
   const ui::Accelerator accelerator(ui::VKEY_G, ui::EF_COMMAND_DOWN);
 
   // No active window.

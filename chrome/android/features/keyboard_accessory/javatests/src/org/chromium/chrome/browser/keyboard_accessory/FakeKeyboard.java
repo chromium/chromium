@@ -44,7 +44,8 @@ public class FakeKeyboard extends ChromeKeyboardVisibilityDelegate {
     }
 
     protected int getStaticKeyboardHeight() {
-        return (int) getActivity().getResources().getDisplayMetrics().density * KEYBOARD_HEIGHT_DP;
+        return (int)
+                (getActivity().getResources().getDisplayMetrics().density * KEYBOARD_HEIGHT_DP);
     }
 
     @Override

@@ -50,7 +50,7 @@ FullscreenControlPopup::FullscreenControlPopup(
               std::make_unique<FullscreenControlView>(on_button_pressed)),
           on_visibility_changed) {}
 
-FullscreenControlPopup::~FullscreenControlPopup() {}
+FullscreenControlPopup::~FullscreenControlPopup() = default;
 
 // static
 int FullscreenControlPopup::GetButtonBottomOffset() {

@@ -216,6 +216,9 @@ class AutofillWebDataBackendImpl
   // Returns a vector of masked bank accounts from the web database.
   std::unique_ptr<WDTypedResult> GetMaskedBankAccounts(WebDatabase* db);
 
+  // Returns a vector of payment instruments from the web database.
+  std::unique_ptr<WDTypedResult> GetPaymentInstruments(WebDatabase* db);
+
   WebDatabase::State ClearAllServerData(WebDatabase* db);
 
   // Clears all the credit card benefits from the database.
@@ -240,7 +243,7 @@ class AutofillWebDataBackendImpl
   // reference-counted objects.
   class SupportsUserDataAggregatable : public base::SupportsUserData {
    public:
-    SupportsUserDataAggregatable() {}
+    SupportsUserDataAggregatable() = default;
 
     SupportsUserDataAggregatable(const SupportsUserDataAggregatable&) = delete;
     SupportsUserDataAggregatable& operator=(

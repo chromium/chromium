@@ -105,7 +105,7 @@ bool IgnoreRestriction(Rule::Restriction restriction) {
   if (restriction == Rule::Restriction::kScreenshot) {
     return !base::FeatureList::IsEnabled(kEnableScreenshotProtection);
   }
-  return !base::FeatureList::IsEnabled(kEnableDesktopDataControls);
+  return false;
 }
 
 }  // namespace
@@ -516,8 +516,7 @@ bool Rule::AddUnsupportedAttributeErrors(
     if (!kSupportedAttributes.contains(restriction.first)) {
       // This shouldn't be reached as `AddUnsupportedRestrictionErrors` should
       // catch these unsupported restrictions.
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     for (const auto& attribute : anyof_conditions) {

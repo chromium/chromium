@@ -85,6 +85,7 @@ bool IsCommandAllowedInAppMode(int command_id, bool is_popup) {
       IDC_ZOOM_PLUS,
       IDC_ZOOM_NORMAL,
       IDC_ZOOM_MINUS,
+      IDC_CARET_BROWSING_TOGGLE,
   };
 
   constexpr int kAllowedPopup[] = {IDC_CLOSE_TAB};

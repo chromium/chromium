@@ -21,10 +21,9 @@ TEST_F(ActivityOverlayCoordinatorTest, StartAndStop) {
   __weak UIView* overlay_view;
   @autoreleasepool {
     UIViewController* base_view_controller = [[UIViewController alloc] init];
-    std::unique_ptr<TestChromeBrowserState> browser_state =
-        TestChromeBrowserState::Builder().Build();
+    std::unique_ptr<TestProfileIOS> profile = TestProfileIOS::Builder().Build();
     std::unique_ptr<Browser> browser =
-        std::make_unique<TestBrowser>(browser_state.get());
+        std::make_unique<TestBrowser>(profile.get());
     ActivityOverlayCoordinator* coordinator =
         [[ActivityOverlayCoordinator alloc]
             initWithBaseViewController:base_view_controller

@@ -53,6 +53,11 @@ bool MigrateDIPSSchemaToLatestVersion(sql::Database& db,
           return false;
         }
         break;
+      case 8:
+        if (!migrator.MigrateSchemaVersionFrom7To8()) {
+          return false;
+        }
+        break;
     }
   }
   return true;
@@ -281,5 +286,17 @@ bool DIPSDatabaseMigrator::MigrateSchemaVersionFrom6To7() {
 
   return meta_table_->SetVersionNumber(7) &&
          meta_table_->SetCompatibleVersionNumber(
-             std::min(7, DIPSDatabase::kMinCompatibleSchemaVersion));
+             std::min(6, DIPSDatabase::kMinCompatibleSchemaVersion));
+}
+
+bool DIPSDatabaseMigrator::MigrateSchemaVersionFrom7To8() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_->HasActiveTransactions());
+
+  return db_->Execute(
+             "ALTER TABLE popups ADD COLUMN is_authentication_interaction "
+             "BOOLEAN DEFAULT NULL") &&
+         meta_table_->SetVersionNumber(8) &&
+         meta_table_->SetCompatibleVersionNumber(
+             std::min(8, DIPSDatabase::kMinCompatibleSchemaVersion));
 }

@@ -11,6 +11,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/browser_sync/sync_to_signin_migration.h"
@@ -78,6 +79,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   __weak UIView* _view;
   // Source of the sign-out action. For histogram if the sign-out occurs.
   signin_metrics::ProfileSignout _signout_source_metric;
+  // Show the snackbar above the snackbar.
+  BOOL _forceSnackbarOverToolbar;
 }
 
 // Service for managing identity authentication.
@@ -98,6 +101,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
                                    browser:(Browser*)browser
                                       rect:(CGRect)rect
                                       view:(UIView*)view
+                  forceSnackbarOverToolbar:(BOOL)forceSnackbarOverToolbar
                                 withSource:(signin_metrics::ProfileSignout)
                                                signout_source_metric {
   self = [super initWithBaseViewController:viewController browser:browser];
@@ -105,6 +109,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     _rect = rect;
     _view = view;
     _signout_source_metric = signout_source_metric;
+    _forceSnackbarOverToolbar = forceSnackbarOverToolbar;
   }
   return self;
 }
@@ -112,7 +117,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  DCHECK(self.completion);
+  DCHECK(self.signoutCompletion);
   DCHECK(self.authenticationService->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   switch (self.signedInUserState) {
@@ -159,21 +164,21 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 #pragma mark - Browser-based properties
 
 - (AuthenticationService*)authenticationService {
-  return AuthenticationServiceFactory::GetForBrowserState(
-      self.browser->GetBrowserState());
+  return AuthenticationServiceFactory::GetForProfile(
+      self.browser->GetProfile());
 }
 
 // Returns the user's sign-in and syncing state.
 - (SignedInUserState)signedInUserState {
   DCHECK(self.browser);
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+      SyncServiceFactory::GetForProfile(self.browser->GetProfile());
+  ProfileIOS* profile = self.browser->GetProfile();
   AuthenticationService* authenticationService = self.authenticationService;
   const bool is_managed_account_migrated_from_syncing =
       browser_sync::WasPrimaryAccountMigratedFromSyncingToSignedIn(
-          IdentityManagerFactory::GetForProfile(browserState),
-          browserState->GetPrefs()) &&
+          IdentityManagerFactory::GetForProfile(profile),
+          profile->GetPrefs()) &&
       authenticationService->HasPrimaryIdentityManaged(
           signin::ConsentLevel::kSignin);
 
@@ -279,8 +284,14 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       return nil;
     }
     case SignedInUserStateWithManagedAccountClearsDataOnSignout:
-      return l10n_util::GetNSString(
-          IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT);
+      // If `kIdentityDiscAccountMenu` is enabled, signing out may also cause
+      // tabs to be closed, see `MainControllerAuthenticationServiceDelegate::
+      //    ClearBrowsingDataForSignedinPeriod`.
+      return base::FeatureList::IsEnabled(kIdentityDiscAccountMenu)
+                 ? l10n_util::GetNSString(
+                       IDS_IOS_SIGNOUT_CLOSES_TABS_AND_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT)
+                 : l10n_util::GetNSString(
+                       IDS_IOS_SIGNOUT_CLEARS_DATA_DIALOG_MESSAGE_WITH_MANAGED_ACCOUNT);
     case SignedInUserStateWithManagedAccountAndMigratedFromSyncing:
     case SignedInUserStateWithManagedAccountAndSyncing:
     case SignedInUserStateWithNonManagedAccountAndSyncing: {
@@ -320,7 +331,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   constexpr syncer::DataTypeSet kDataTypesToQuery =
       syncer::TypesRequiringUnsyncedDataCheckOnSignout();
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+      SyncServiceFactory::GetForProfile(self.browser->GetProfile());
   __weak __typeof(self) weakSelf = self;
   auto callback = base::BindOnce(^(syncer::DataTypeSet set) {
     CHECK(kDataTypesToQuery.HasAll(set))
@@ -342,6 +353,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     }
     [self startActionSheetCoordinatorForSignout];
   } else {
+    base::RecordAction(base::UserMetricsAction(
+        "Signin_Signout_ConfirmationRequestNotPresented"));
     [self handleSignOutWithForceClearData:NO];
   }
 }
@@ -375,6 +388,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:signOutButtonTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Regular_UNO"));
                       [weakSelf signoutWithForceClearData:NO
                                           recordHistogram:
                                               SignoutDataLossAlertReason::
@@ -384,6 +399,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Cancel_Regular_UNO"));
                       [weakSelf cancelSignoutAndRecordHistogram:
                                     SignoutDataLossAlertReason::
                                         kSignoutWithUnsyncedData];
@@ -398,6 +415,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:signOutButtonTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_ForcedSignin"));
                       [weakSelf handleSignOutForForcedSigninUsers];
                     }
                      style:UIAlertActionStyleDestructive];
@@ -413,6 +432,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:signOutButtonTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Managed_ClearDataOnSignout"));
                       // `clearData` should not be set
                       // based on the useer choice, but based on the account
                       // state in `AuthenticationService`.
@@ -426,6 +447,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Cancel_Managed_ClearDataOnSignout"));
                       [weakSelf cancelSignoutAndRecordHistogram:
                                     SignoutDataLossAlertReason::
                                         kSignoutWithClearDataForManagedUser];
@@ -444,6 +467,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:clearFromDeviceTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Managed_Syncing"));
                       // Note that it doesn't really make a difference whether
                       // `forceClearData` is set to YES or NO here - based on
                       // the account's state, AuthenticationService will decide
@@ -459,6 +484,8 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:clearFromDeviceTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Managed_NotSyncing"));
                       [weakSelf signoutWithForceClearData:NO];
                     }
                      style:UIAlertActionStyleDestructive];
@@ -472,12 +499,16 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:clearFromDeviceTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Regular_Syncing_KeepData"));
                       [weakSelf signoutWithForceClearData:YES];
                     }
                      style:UIAlertActionStyleDestructive];
       [self.actionSheetCoordinator
           addItemWithTitle:keepOnDeviceTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Regular_Syncing_RemoveData"));
                       [weakSelf signoutWithForceClearData:NO];
                     }
                      style:UIAlertActionStyleDefault];
@@ -489,18 +520,27 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
       [self.actionSheetCoordinator
           addItemWithTitle:signOutButtonTitle
                     action:^{
+                      base::RecordAction(base::UserMetricsAction(
+                          "Signin_Signout_Confirm_Regular_NotSyncing"));
                       [weakSelf signoutWithForceClearData:NO];
                     }
                      style:UIAlertActionStyleDestructive];
       break;
     }
   }
+  // This CANCEL item is ignored in the few cases were a more specific cancel
+  // item was added above.
   [self.actionSheetCoordinator
       addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
                 action:^{
+                  base::RecordAction(
+                      base::UserMetricsAction("Signin_Signout_Cancel"));
                   [weakSelf cancelSignout];
                 }
                  style:UIAlertActionStyleCancel];
+
+  base::RecordAction(
+      base::UserMetricsAction("Signin_Signout_ConfirmationRequestPresented"));
   [self.actionSheetCoordinator start];
 }
 
@@ -550,10 +590,16 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   // The snackbar message might be nil if the snackbar is not needed.
   MDCSnackbarMessage* snackbarMessage = [self signoutSnackbarMessage];
   __weak __typeof(self) weakSelf = self;
+  BOOL forceSnackbarOverToolbar = _forceSnackbarOverToolbar;
   self.authenticationService->SignOut(_signout_source_metric, forceClearData, ^{
     // The snackbar should be displayed even if self has been deallocated.
-    [snackbarCommandsHandler
-        showSnackbarMessageOverBrowserToolbar:snackbarMessage];
+    if (forceSnackbarOverToolbar) {
+      [snackbarCommandsHandler
+          showSnackbarMessageOverBrowserToolbar:snackbarMessage];
+    } else {
+      [snackbarCommandsHandler showSnackbarMessage:snackbarMessage
+                                      bottomOffset:0];
+    }
     [weakSelf signOutDidFinish];
   });
   // Get UMA metrics on the usage of different options for signout available
@@ -599,7 +645,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
     return nil;
   }
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+      SyncServiceFactory::GetForProfile(self.browser->GetProfile());
   int message_id =
       syncService->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) ||
@@ -611,13 +657,14 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   return message;
 }
 
-// Calls `self.completion` if available, and sets it to `null` before the call.
+// Calls `self.signoutCompletion` if available, and sets it to `null` before the
+// call.
 - (void)callCompletionBlock:(BOOL)signedOut {
-  if (!self.completion) {
+  if (!self.signoutCompletion) {
     return;
   }
-  signin_ui::CompletionCallback completion = self.completion;
-  self.completion = nil;
+  signin_ui::SignoutCompletionCallback completion = self.signoutCompletion;
+  self.signoutCompletion = nil;
   completion(signedOut);
 }
 

@@ -19,24 +19,16 @@ namespace policy {
 class UserCloudPolicyManager;
 }
 
-// The implementation of ChromeBrowserState that is used for incognito browsing.
-// Each OffTheRecordChromeBrowserStateImpl instance is associated with and owned
-// by a non-incognito ChromeBrowserState instance.
-class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
+// The implementation of ProfileIOS that is used for incognito browsing.
+// Each OffTheRecordProfileIOSImpl instance is associated with and owned
+// by a non-incognito ProfileIOS instance.
+class OffTheRecordProfileIOSImpl final : public ProfileIOS {
  public:
-  OffTheRecordChromeBrowserStateImpl(
-      const OffTheRecordChromeBrowserStateImpl&) = delete;
-  OffTheRecordChromeBrowserStateImpl& operator=(
-      const OffTheRecordChromeBrowserStateImpl&) = delete;
+  OffTheRecordProfileIOSImpl(const OffTheRecordProfileIOSImpl&) = delete;
+  OffTheRecordProfileIOSImpl& operator=(const OffTheRecordProfileIOSImpl&) =
+      delete;
 
-  ~OffTheRecordChromeBrowserStateImpl() override;
-
-  // ChromeBrowserState:
-  // TODO(crbug.com/358299863): Remove these functions once fully migrated.
-  ChromeBrowserState* GetOriginalChromeBrowserState() override;
-  bool HasOffTheRecordChromeBrowserState() const override;
-  ChromeBrowserState* GetOffTheRecordChromeBrowserState() override;
-  void DestroyOffTheRecordChromeBrowserState() override;
+  ~OffTheRecordProfileIOSImpl() override;
 
   // ProfileIOS:
   ProfileIOS* GetOriginalProfile() override;
@@ -44,32 +36,34 @@ class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
   ProfileIOS* GetOffTheRecordProfile() override;
   void DestroyOffTheRecordProfile() override;
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
-  BrowserStatePolicyConnector* GetPolicyConnector() override;
+  ProfilePolicyConnector* GetPolicyConnector() override;
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
   sync_preferences::PrefServiceSyncable* GetSyncablePrefs() override;
+  const sync_preferences::PrefServiceSyncable* GetSyncablePrefs()
+      const override;
   ProfileIOSIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,
                                    base::OnceClosure completion) override;
   net::URLRequestContextGetter* CreateRequestContext(
       ProtocolHandlerMap* protocol_handlers) override;
-  base::WeakPtr<ChromeBrowserState> AsWeakPtr() override;
+  base::WeakPtr<ProfileIOS> AsWeakPtr() override;
 
   // BrowserState:
   bool IsOffTheRecord() const override;
 
  private:
-  friend class ChromeBrowserStateImpl;
+  friend class ProfileIOSImpl;
 
-  // `original_chrome_browser_state_` is the non-incognito
-  // ChromeBrowserState instance that owns this instance.
-  OffTheRecordChromeBrowserStateImpl(
+  // `original_profile` is the non-incognito ProfileIOS instance that
+  // owns this instance.
+  OffTheRecordProfileIOSImpl(
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
-      ChromeBrowserState* original_chrome_browser_state,
+      ProfileIOS* original_profile,
       const base::FilePath& otr_path);
 
-  raw_ptr<ChromeBrowserState> original_chrome_browser_state_;  // weak
+  raw_ptr<ProfileIOS> original_profile_;  // weak
 
-  // Creation time of the off-the-record BrowserState.
+  // Creation time of the off-the-record ProfileIOS.
   const base::Time start_time_;
 
   std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs_;
@@ -77,10 +71,7 @@ class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
   std::unique_ptr<OffTheRecordProfileIOSIOData::Handle> io_data_;
   std::unique_ptr<PrefProxyConfigTracker> pref_proxy_config_tracker_;
 
-  base::WeakPtrFactory<OffTheRecordChromeBrowserStateImpl> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<OffTheRecordProfileIOSImpl> weak_ptr_factory_{this};
 };
-
-using OffTheRecordProfileIOSImpl = OffTheRecordChromeBrowserStateImpl;
 
 #endif  // IOS_CHROME_BROWSER_PROFILE_MODEL_OFF_THE_RECORD_PROFILE_IOS_IMPL_H_

@@ -53,14 +53,12 @@ void AudioProcessorHandler::ProcessCapturedAudio(
     const media::AudioBus& audio_source,
     base::TimeTicks audio_capture_time,
     double volume,
-    bool key_pressed,
     const media::AudioGlitchInfo& audio_glitch_info) {
   glitch_info_accumulator_.Add(audio_glitch_info);
   const int num_preferred_channels =
       num_preferred_channels_.load(std::memory_order_acquire);
   audio_processor_->ProcessCapturedAudio(audio_source, audio_capture_time,
-                                         num_preferred_channels, volume,
-                                         key_pressed);
+                                         num_preferred_channels, volume);
 }
 
 void AudioProcessorHandler::OnPlayoutData(const media::AudioBus& audio_bus,

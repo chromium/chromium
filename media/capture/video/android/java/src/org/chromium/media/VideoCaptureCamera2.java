@@ -296,7 +296,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
             Log.e(TAG, "failed configuring capture session");
             notifyTakePhotoError(mCallbackId);
-            return;
         }
 
         @Override
@@ -304,7 +303,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
             mImageReader.close();
         }
     }
-    ;
 
     // Internal class implementing an ImageReader listener for encoded Photos.
     // Gets pinged when a new Image is been captured.
@@ -324,9 +322,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
                 final ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                 capturedData = new byte[buffer.remaining()];
                 buffer.get(capturedData);
-            } finally {
-                return capturedData;
             }
+            return capturedData;
         }
 
         @Override
@@ -598,8 +595,8 @@ public class VideoCaptureCamera2 extends VideoCapture {
                         Range<Long> range =
                                 cameraCharacteristics.get(
                                         CameraCharacteristics.SENSOR_INFO_EXPOSURE_TIME_RANGE);
-                        final long minExposureTime = range.getLower();
-                        final long maxExposureTime = range.getUpper();
+                        long minExposureTime = range.getLower();
+                        long maxExposureTime = range.getUpper();
 
                         if (minExposureTime != 0 && maxExposureTime != 0) {
                             builder.setDouble(
@@ -613,7 +610,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
                         // exposed by Android.
                         builder.setDouble(
                                         PhotoCapabilityDouble.STEP_EXPOSURE_TIME,
-                                        10000 / kNanosecondsPer100Microsecond)
+                                        10000.0 / kNanosecondsPer100Microsecond)
                                 .setDouble(
                                         PhotoCapabilityDouble.CURRENT_EXPOSURE_TIME,
                                         mLastExposureTimeNs / kNanosecondsPer100Microsecond);
@@ -748,7 +745,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
         }
     }
 
-    private class PhotoOptions {
+    private static class PhotoOptions {
         public final double zoom;
         public final int focusMode;
         public final double currentFocusDistance;
@@ -886,7 +883,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
                         && mOptions.pointsOfInterest2D[1] >= 0.0;
                 // Calculate a Rect of 1/8 the |visibleRect| dimensions, and center it w.r.t.
                 // |canvas|.
-                final Rect visibleRect = (mCropRect.isEmpty()) ? canvas : mCropRect;
+                final Rect visibleRect = mCropRect.isEmpty() ? canvas : mCropRect;
                 int centerX =
                         (int) Math.round(mOptions.pointsOfInterest2D[0] * visibleRect.width());
                 int centerY =
@@ -1063,7 +1060,7 @@ public class VideoCaptureCamera2 extends VideoCapture {
     }
 
     private static final double kNanosecondsPerSecond = 1000000000;
-    private static final long kNanosecondsPer100Microsecond = 100000;
+    private static final double kNanosecondsPer100Microsecond = 100000;
     private static final String TAG = "VideoCapture";
 
     private static final String[] AE_TARGET_FPS_RANGE_BUGGY_DEVICE_LIST = {
@@ -1086,7 +1083,6 @@ public class VideoCaptureCamera2 extends VideoCapture {
         COLOR_TEMPERATURES_MAP.append(6000, CameraMetadata.CONTROL_AWB_MODE_CLOUDY_DAYLIGHT);
         COLOR_TEMPERATURES_MAP.append(7000, CameraMetadata.CONTROL_AWB_MODE_SHADE);
     }
-    ;
 
     @IntDef({
         CameraState.OPENING,
@@ -1713,7 +1709,11 @@ public class VideoCaptureCamera2 extends VideoCapture {
     }
 
     @Override
+    @SuppressWarnings("Finalize")
     public void finalize() {
+        // TODO(crbug.com/40286193): Use an explicit close (or timer-based timeout?) rather than
+        // finalize, which
+        // discouraged and difficult to ensure actually runs.
         mCameraThreadHandler.getLooper().quit();
     }
 
@@ -1735,26 +1735,9 @@ public class VideoCaptureCamera2 extends VideoCapture {
         mCameraNativeOrientation =
                 cameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
 
-        // Update the capture width and height based on the camera orientation.
-        // With device's native orientation being Portrait for Android devices,
-        // for cameras that are mounted 0 or 180 degrees in respect to device's
-        // native orientation, we will need to swap the width and height in
-        // order to capture upright frames in respect to device's current
-        // orientation.
-        int capture_width = width;
-        int capture_height = height;
-        if (mCameraNativeOrientation == 0 || mCameraNativeOrientation == 180) {
-            Log.d(
-                    TAG,
-                    "Flipping capture width and height to match device's " + "natural orientation");
-            capture_width = height;
-            capture_height = width;
-        }
-
         // Find closest supported size.
         final Size[] supportedSizes = streamMap.getOutputSizes(ImageFormat.YUV_420_888);
-        final Size closestSupportedSize =
-                findClosestSizeInArray(supportedSizes, capture_width, capture_height);
+        final Size closestSupportedSize = findClosestSizeInArray(supportedSizes, width, height);
         if (closestSupportedSize == null) {
             Log.e(TAG, "No supported resolutions.");
             return false;

@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -162,7 +163,12 @@ void WebRtcAudioSink::DeliverRebufferedAudio(const media::AudioBus& audio_bus,
 
 namespace {
 void DereferenceOnMainThread(
-    scoped_refptr<webrtc::AudioProcessorInterface> processor) {}
+    scoped_refptr<webrtc::AudioProcessorInterface> processor) {
+  // The ref count was artificially increased before posting the task. Decrease
+  // it again to ensure that the processor is destroyed when the scoped_refptr
+  // goes out of scope.
+  processor->Release();
+}
 }  // namespace
 
 WebRtcAudioSink::Adapter::Adapter(
@@ -185,9 +191,22 @@ WebRtcAudioSink::Adapter::~Adapter() {
   SendLogMessage(
       base::StringPrintf("Adapter::~Adapter([label=%s])", label_.c_str()));
   if (audio_processor_) {
-    PostCrossThreadTask(*main_task_runner_.get(), FROM_HERE,
-                        CrossThreadBindOnce(&DereferenceOnMainThread,
-                                            std::move(audio_processor_)));
+    // Artificially increase the ref count of audio_processor_ before posting it
+    // to the main thread to be destroyed. If the post succeeds, it will be
+    // destroyed on the main thread as intended. If the post fails, the ref
+    // count will remain at 1, leaking the processor. This is preferred to
+    // destroying it on the wrong thread, which causes a crash.
+    audio_processor_->AddRef();
+    auto* possible_leak = audio_processor_.get();
+    if (!PostCrossThreadTask(
+            *main_task_runner_.get(), FROM_HERE,
+            CrossThreadBindOnce(&DereferenceOnMainThread,
+                                std::move(audio_processor_)))) {
+      DVLOG(1) << __func__
+               << " Intentionally leaking audio_processor_ due to failed "
+                  "PostCrossThreadTask: "
+               << possible_leak;
+    }
   }
 }
 

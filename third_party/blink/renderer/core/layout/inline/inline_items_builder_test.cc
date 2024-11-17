@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -88,14 +87,6 @@ class InlineItemsBuilderTest : public RenderingTest {
         LayoutBlockFlow::CreateAnonymous(&GetDocument(), style_);
     anonymous_objects_->push_back(layout_block_flow);
     builder->AppendBlockInInline(layout_block_flow);
-  }
-
-  void AppendRubyColumn(InlineItemsBuilder* builder) {
-    auto* ruby_column = MakeGarbageCollected<LayoutRubyColumn>();
-    ruby_column->SetDocumentForAnonymous(&GetDocument());
-    ruby_column->SetStyle(style_);
-    anonymous_objects_->push_back(ruby_column);
-    builder->AppendAtomicInline(ruby_column);
   }
 
   struct Input {
@@ -557,31 +548,7 @@ TEST_F(InlineItemsBuilderTest, BlockInInline) {
   EXPECT_EQ(String(u"Hello\uFFFCWorld"), builder.ToString());
 }
 
-TEST_F(InlineItemsBuilderTest, HasRuby) {
-  ScopedRubyLineBreakableForTest enable_ruby_line_breakable(false);
-  HeapVector<InlineItem> items;
-  InlineItemsBuilder builder(GetLayoutBlockFlow(), &items);
-  EXPECT_FALSE(HasRuby(builder)) << "has_ruby_ should be false initially.";
-
-  AppendText("Hello ", &builder);
-  EXPECT_FALSE(HasRuby(builder))
-      << "Adding non-AtomicInline should not affect it.";
-
-  AppendAtomicInline(&builder);
-  EXPECT_FALSE(HasRuby(builder))
-      << "Adding non-ruby AtomicInline should not affect it.";
-
-  AppendRubyColumn(&builder);
-  EXPECT_TRUE(HasRuby(builder))
-      << "Adding a ruby AtomicInline should set it to true.";
-
-  AppendAtomicInline(&builder);
-  EXPECT_TRUE(HasRuby(builder))
-      << "Adding non-ruby AtomicInline should not clear it.";
-}
-
 TEST_F(InlineItemsBuilderTest, OpenCloseRubyColumns) {
-  ScopedRubyLineBreakableForTest enable_ruby_line_breakable(true);
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kInStyleRecalc);
   LayoutInline* ruby =
       CreateLayoutInline(&GetDocument(), [](ComputedStyleBuilder& builder) {

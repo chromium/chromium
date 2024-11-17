@@ -17,11 +17,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-PromosManager* PromosManagerFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 PromosManager* PromosManagerFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<PromosManager*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
@@ -44,12 +39,11 @@ PromosManagerFactory::~PromosManagerFactory() = default;
 
 std::unique_ptr<KeyedService> PromosManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   auto promos_manager = std::make_unique<PromosManagerImpl>(
       GetApplicationContext()->GetLocalState(),
       base::DefaultClock::GetInstance(),
-      feature_engagement::TrackerFactory::GetForBrowserState(browser_state));
+      feature_engagement::TrackerFactory::GetForProfile(profile));
   promos_manager->Init();
   return promos_manager;
 }

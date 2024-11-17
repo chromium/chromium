@@ -1,32 +1,21 @@
 <!DOCTYPE html>
-<html>
-<head>
 <title>Canvas2D WebGPU Transfer: getTextureFormat-rgba16float</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="./webgpu-helpers.js"></script>
-</head>
+<script src="./canvas-test.js"></script>
 
 <h1>Canvas2D WebGPU Transfer: getTextureFormat-rgba16f</h1>
-
 <p>getTextureFormat() returns RGBA16F for a float16 context</p>
-
-<canvas id="c" width="50" height="50"></canvas>
 
 <script>
 
-promise_test(() => {
-    return with_webgpu((adapter, adapterInfo, device) => {
-      test_getTextureFormat_rgba16f(device, document.getElementById('c'));
-    });
-  }, 'getTextureFormat() returns RGBA16F for a float16 context'
-);
+runCanvasTestsInWorker();
 
-promise_test(() => {
-    return with_webgpu((adapter, adapterInfo, device) => {
-      test_getTextureFormat_rgba16f(device, new OffscreenCanvas(50, 50));
-    });
-  }, 'getTextureFormat() returns RGBA16F for a float16 offscreen context'
-);
+/** getTextureFormat() should return RGBA16F for a float16 context. */
+canvasPromiseTest(async (canvas) => {
+  const ctx = canvas.getContext('2d', {colorSpace: 'display-p3',
+                                       pixelFormat: 'float16'});
+  assert_equals(ctx.getTextureFormat(), 'rgba16float');
+}, 'getTextureFormat() returns RGBA16F for a float16 context');
 
 </script>

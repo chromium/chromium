@@ -27,6 +27,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -39,6 +40,17 @@ using session_manager::SessionState;
 
 namespace ash {
 namespace {
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SessionLockEvent)
+enum class SessionLockEvent {
+  kLock = 0,
+  kUnlock = 1,
+  kMaxValue = kUnlock,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ash/enums.xml:SessionLockEvent)
 
 void SetTimeOfLastSessionActivation(PrefService* user_pref_service) {
   if (!user_pref_service) {
@@ -55,6 +67,10 @@ void SetTimeOfLastSessionActivation(PrefService* user_pref_service) {
     user_pref_service->SetTime(prefs::kTimeOfLastSessionActivation,
                                time_of_last_session_activation);
   }
+}
+
+void RecordLockEvent(SessionLockEvent event) {
+  base::UmaHistogramEnumeration("Ash.Login.Lock.SessionStateChange", event);
 }
 
 }  // namespace
@@ -264,6 +280,10 @@ void SessionControllerImpl::NotifyFirstSessionReady() {
   for (auto& observer : observers_) {
     observer.OnFirstSessionReady();
   }
+}
+
+void SessionControllerImpl::NotifyUserToBeRemoved(const AccountId& account_id) {
+  observers_.Notify(&SessionObserver::OnUserToBeRemoved, account_id);
 }
 
 bool SessionControllerImpl::ShouldDisplayManagedUI() const {
@@ -571,6 +591,12 @@ void SessionControllerImpl::SetSessionState(SessionState state) {
 
   const bool was_user_session_blocked = IsUserSessionBlocked();
   const bool was_locked = state_ == SessionState::LOCKED;
+  const bool is_locked = state == SessionState::LOCKED;
+  if (was_locked || is_locked) {
+    RecordLockEvent(is_locked ? SessionLockEvent::kLock
+                              : SessionLockEvent::kUnlock);
+  }
+
   state_ = state;
   for (auto& observer : observers_)
     observer.OnSessionStateChanged(state_);
@@ -656,11 +682,11 @@ LoginStatus SessionControllerImpl::CalculateLoginStatusForActiveSession()
       return LoginStatus::GUEST;
     case user_manager::UserType::kPublicAccount:
       return LoginStatus::PUBLIC;
-    case user_manager::UserType::kKioskApp:
-      return LoginStatus::KIOSK_APP;
     case user_manager::UserType::kChild:
       return LoginStatus::CHILD;
+    case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
       return LoginStatus::KIOSK_APP;
   }
   NOTREACHED();

@@ -49,7 +49,7 @@ class ImageDataFetcherTest : public testing::Test {
   ImageDataFetcherTest(const ImageDataFetcherTest&) = delete;
   ImageDataFetcherTest& operator=(const ImageDataFetcherTest&) = delete;
 
-  ~ImageDataFetcherTest() override {}
+  ~ImageDataFetcherTest() override = default;
 
   base::HistogramTester& histogram_tester() { return histogram_tester_; }
 

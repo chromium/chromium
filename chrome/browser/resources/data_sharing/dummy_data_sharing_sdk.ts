@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Dummy implementation of data_sharing_sdk.js for non-branded build.
-import type {AddAccessTokenParams, AddAccessTokenResult, AddMemberParams, CreateGroupParams, CreateGroupResult, DataSharingSdk, DataSharingSdkGetLink, DataSharingSdkGroupId, DataSharingSdkResponse, DataSharingSdkSitePreview, DeleteGroupParams, LearnMoreUrlType, ReadGroupsParams, ReadGroupsResult, RemoveMemberParams} from './data_sharing_sdk_types.js';
+import type {AddAccessTokenParams, AddAccessTokenResult, AddMemberParams, CreateGroupParams, CreateGroupResult, DataSharingSdk, DataSharingSdkResponse, DeleteGroupParams, LeaveGroupParams, ReadGroupsParams, ReadGroupsResult, RunJoinFlowParams, RunManageFlowParams, RunInviteFlowParams} from './data_sharing_sdk_types.js';
 import {Code} from './data_sharing_sdk_types.js';
 
 // Add something to the dialog to tell which flow it is.
@@ -46,6 +46,7 @@ export class DataSharingSdkImpl implements DataSharingSdk {
                                           email: 'test@gmail.com',
                                           role: 'member',
                                           avatarUrl: 'http://example.com',
+                                          givenName: 'MEMBER_NAME',
                                         },
                                       ],
                                     })),
@@ -56,10 +57,10 @@ export class DataSharingSdkImpl implements DataSharingSdk {
   addMember(_params: AddMemberParams): Promise<{status: Code}> {
     return Promise.resolve({status: Code.UNIMPLEMENTED});
   }
-  removeMember(_params: RemoveMemberParams): Promise<{status: Code}> {
+  deleteGroup(_params: DeleteGroupParams): Promise<{status: Code}> {
     return Promise.resolve({status: Code.UNIMPLEMENTED});
   }
-  deleteGroup(_params: DeleteGroupParams): Promise<{status: Code}> {
+  leaveGroup(_params: LeaveGroupParams): Promise<{status: Code}> {
     return Promise.resolve({status: Code.UNIMPLEMENTED});
   }
   addAccessToken(
@@ -68,35 +69,17 @@ export class DataSharingSdkImpl implements DataSharingSdk {
     return Promise.resolve({status: Code.UNIMPLEMENTED});
   }
 
-  runJoinFlow(
-      _params: DataSharingSdkGroupId&{
-        tokenSecret: string,
-        parent?: HTMLElement,
-        previewSites?: DataSharingSdkSitePreview[],
-        learnMoreUrlMap?: {[type in LearnMoreUrlType]?: () => string},
-      },
-      ): Promise<DataSharingSdkResponse> {
+  runJoinFlow(_params: RunJoinFlowParams): Promise<DataSharingSdkResponse> {
     appendTextForTesting('A fake join dialog');
-    return Promise.resolve({});
+    return new Promise(() => {});
   }
-  runInviteFlow(_params: {
-    parent?: HTMLElement,
-    getShareLink?: DataSharingSdkGetLink,
-    title?: string,
-    learnMoreUrlMap?: {[type in LearnMoreUrlType]?: () => string},
-  }): Promise<DataSharingSdkResponse> {
+  runInviteFlow(_params: RunInviteFlowParams): Promise<DataSharingSdkResponse> {
     appendTextForTesting('A fake invite dialog');
-    return Promise.resolve({});
+    return new Promise(() => {});
   }
-  runManageFlow(
-      _params: DataSharingSdkGroupId&{
-        parent?: HTMLElement,
-        getShareLink?: DataSharingSdkGetLink,
-        learnMoreUrlMap?: {[type in LearnMoreUrlType]?: () => string},
-      },
-      ): Promise<DataSharingSdkResponse> {
+  runManageFlow(_params: RunManageFlowParams): Promise<DataSharingSdkResponse> {
     appendTextForTesting('A fake manage dialog');
-    return Promise.resolve({});
+    return new Promise(() => {});
   }
 
   // Setup Helpers

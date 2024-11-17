@@ -19,6 +19,7 @@
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/media_galleries/chromeos/mtp_device_task_helper.h"
 #include "chrome/browser/media_galleries/fileapi/mtp_device_async_delegate.h"
@@ -67,7 +68,8 @@ class MTPDeviceDelegateImplLinux : public MTPDeviceAsyncDelegate {
   class MTPFileNode;
 
   // Maps file ids to file nodes.
-  typedef std::map<uint32_t, MTPFileNode*> FileIdToMTPFileNodeMap;
+  typedef std::map<uint32_t, raw_ptr<MTPFileNode, CtnExperimental>>
+      FileIdToMTPFileNodeMap;
 
   // Maps file paths to file info.
   typedef std::map<base::FilePath, MTPDeviceTaskHelper::MTPEntry> FileInfoCache;

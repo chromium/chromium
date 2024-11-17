@@ -1,0 +1,7 @@
+{
+  "name": "no warning on ignored unrecognized key",
+  "version": "1",
+  "manifest_version": 3,
+  "browser_specific_settings": {},
+  "$schema": ""
+}

@@ -56,8 +56,7 @@ enum class TestCase {
 std::string GetTestFeatureParamString(TestCase test_case) {
   switch (test_case) {
     case TestCase::kIncentivesDisabled:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
     case TestCase::kIncentivesWithoutOffer:
       return "no_offer";
     case TestCase::kIncentivesWithOffer:
@@ -412,28 +411,14 @@ INSTANTIATE_TEST_SUITE_P(
                       TestCase::kIncentivesWithOffer,
                       TestCase::kIncentivesWithOfferAndAUEWarning));
 
-class SuppressedNotificationTest : public MixinBasedInProcessBrowserTest,
-                                   public ::testing::WithParamInterface<bool> {
- public:
-  SuppressedNotificationTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kSuppressFirstEolWarning, SuppressFirstWarningEnabled());
-  }
-
-  bool SuppressFirstWarningEnabled() { return GetParam(); }
-
+class SuppressedNotificationTest : public MixinBasedInProcessBrowserTest {
  protected:
   EolStatusMixin eol_status_mixin_{&mixin_host_};
   NotificationDisplayServiceMixin notifications_mixin_{&mixin_host_};
   ash::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, /*test_base=*/this, embedded_test_server(),
       LoggedInUserMixin::LogInType::kConsumer};
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
-
-INSTANTIATE_TEST_SUITE_P(All, SuppressedNotificationTest, testing::Bool());
 
 IN_PROC_BROWSER_TEST_P(EolNotificationTest, ShowNotificationForEolApproaching) {
   ASSERT_EQ(TimeSetupResult::kSuccess,
@@ -943,7 +928,7 @@ IN_PROC_BROWSER_TEST_P(ChildUserEolNotificationTest, NoTrayNotice) {
 
 // Test that the eol notification is not shown when just within 180 days, when
 // first eol warning is suppressed.
-IN_PROC_BROWSER_TEST_P(SuppressedNotificationTest,
+IN_PROC_BROWSER_TEST_F(SuppressedNotificationTest,
                        EolNotificationSupressed180DaysBefore) {
   // Set eol date to be 173 days in the future.
   ASSERT_EQ(TimeSetupResult::kSuccess,
@@ -961,11 +946,11 @@ IN_PROC_BROWSER_TEST_P(SuppressedNotificationTest,
 
   std::optional<message_center::Notification> notification =
       notification_display_service->GetNotification(kEolNotificationId);
-  EXPECT_EQ(SuppressFirstWarningEnabled(), !notification);
+  ASSERT_TRUE(!notification);
 }
 
 // Test that the eol notification is shown when just within 90 days.
-IN_PROC_BROWSER_TEST_P(SuppressedNotificationTest,
+IN_PROC_BROWSER_TEST_F(SuppressedNotificationTest,
                        EolNotificationShown90DaysBefore) {
   // Set eol date to be 83 days in the future.
   ASSERT_EQ(TimeSetupResult::kSuccess,

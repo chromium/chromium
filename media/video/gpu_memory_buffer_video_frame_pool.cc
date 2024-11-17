@@ -23,6 +23,7 @@
 #include "base/bits.h"
 #include "base/command_line.h"
 #include "base/containers/circular_deque.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -44,10 +45,13 @@
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_types.h"
+#include "media/base/video_util.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -61,6 +65,10 @@
 #endif
 
 namespace media {
+
+namespace {
+
+}  // namespace
 
 // Implementation of a pool of mappable shared images(MappableSI) used to back
 // VideoFrames.
@@ -90,23 +98,6 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
     // GpuMemoryBufferVideoFramePool in a thread safe manner.
     static std::atomic_uint32_t id = 0;
     pool_id_ = ++id;
-
-    // Moving the common shared image usage here as a member. This can be moved
-    // back to local code where MappableSI is created after the GMB path is
-    // full removed.
-    si_usage_ = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-                gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                gpu::SHARED_IMAGE_USAGE_SCANOUT;
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-    // TODO(crbug.com/40194712): Always add the flag once the
-    // OzoneImageBacking is by default turned on.
-    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kEnableUnsafeWebGPU)) {
-      // This SharedImage may be used for zero-copy import into WebGPU.
-      si_usage_ |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
-    }
-#endif
   }
 
   PoolImpl(const PoolImpl&) = delete;
@@ -292,7 +283,6 @@ class GpuMemoryBufferVideoFramePool::PoolImpl
   // Unique Id generated each time a MappableSI is created. This is
   // used to identify the shared image.
   uint32_t buffer_id_ = 0;
-  gpu::SharedImageUsageSet si_usage_;
 };
 
 namespace {
@@ -315,15 +305,9 @@ viz::SharedImageFormat OutputFormatToSharedImageFormat(
       return viz::SinglePlaneFormat::kBGRA_1010102;
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
       return viz::SinglePlaneFormat::kRGBA_1010102;
-    case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
-      return viz::SinglePlaneFormat::kRGBA_8888;
-    case GpuVideoAcceleratorFactories::OutputFormat::BGRA:
-      return viz::SinglePlaneFormat::kBGRA_8888;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return viz::SinglePlaneFormat::kBGRA_8888;
 }
 
 VideoPixelFormat VideoFormat(
@@ -335,19 +319,13 @@ VideoPixelFormat VideoFormat(
       return PIXEL_FORMAT_NV12;
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
       return PIXEL_FORMAT_P010LE;
-    case GpuVideoAcceleratorFactories::OutputFormat::BGRA:
-      return PIXEL_FORMAT_ARGB;
-    case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
-      return PIXEL_FORMAT_ABGR;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
       return PIXEL_FORMAT_XR30;
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
       return PIXEL_FORMAT_XB30;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return PIXEL_FORMAT_UNKNOWN;
 }
 
 // The number of output rows to be copied in each iteration.
@@ -523,7 +501,7 @@ void CopyRowsToNV12Buffer(int first_row,
   }
 }
 
-void CopyRowsToRGB10Buffer(bool is_argb,
+void CopyRowsToRGB10Buffer(bool is_rgba,
                            int first_row,
                            int rows,
                            int width,
@@ -540,92 +518,41 @@ void CopyRowsToRGB10Buffer(bool is_argb,
   DCHECK_EQ(0, first_row % 2);
   DCHECK_EQ(source_frame->format(), PIXEL_FORMAT_YUV420P10);
 
-  const uint16_t* y_plane = reinterpret_cast<const uint16_t*>(
+  const auto* y_plane = reinterpret_cast<const uint16_t*>(
       source_frame->visible_data(VideoFrame::Plane::kY) +
       first_row * source_frame->stride(VideoFrame::Plane::kY));
-  const size_t y_plane_stride = source_frame->stride(VideoFrame::Plane::kY) / 2;
-  const uint16_t* v_plane = reinterpret_cast<const uint16_t*>(
-      source_frame->visible_data(VideoFrame::Plane::kV) +
-      first_row / 2 * source_frame->stride(VideoFrame::Plane::kV));
-  const size_t v_plane_stride = source_frame->stride(VideoFrame::Plane::kV) / 2;
-  const uint16_t* u_plane = reinterpret_cast<const uint16_t*>(
+  const auto* u_plane = reinterpret_cast<const uint16_t*>(
       source_frame->visible_data(VideoFrame::Plane::kU) +
       first_row / 2 * source_frame->stride(VideoFrame::Plane::kU));
-  const size_t u_plane_stride = source_frame->stride(VideoFrame::Plane::kU) / 2;
+  const auto* v_plane = reinterpret_cast<const uint16_t*>(
+      source_frame->visible_data(VideoFrame::Plane::kV) +
+      first_row / 2 * source_frame->stride(VideoFrame::Plane::kV));
+
+  size_t y_plane_stride = source_frame->stride(VideoFrame::Plane::kY) / 2;
+  size_t u_plane_stride = source_frame->stride(VideoFrame::Plane::kU) / 2;
+  size_t v_plane_stride = source_frame->stride(VideoFrame::Plane::kV) / 2;
+
   uint8_t* dest_rgb10 = output + first_row * dest_stride;
 
-  SkYUVColorSpace skyuv = kRec709_SkYUVColorSpace;
-  source_frame->ColorSpace().ToSkYUVColorSpace(&skyuv);
+  SkYUVColorSpace yuv_cs = kRec601_Limited_SkYUVColorSpace;
+  source_frame->ColorSpace().ToSkYUVColorSpace(source_frame->BitDepth(),
+                                               &yuv_cs);
 
-  if (skyuv == kRec601_SkYUVColorSpace) {
-    if (is_argb) {
-      libyuv::I010ToAR30(y_plane, y_plane_stride, u_plane, u_plane_stride,
-                         v_plane, v_plane_stride, dest_rgb10, dest_stride,
-                         width, rows);
-    } else {
-      libyuv::I010ToAB30(y_plane, y_plane_stride, u_plane, u_plane_stride,
-                         v_plane, v_plane_stride, dest_rgb10, dest_stride,
-                         width, rows);
-    }
-  } else if (skyuv == kBT2020_SkYUVColorSpace) {
-    if (is_argb) {
-      libyuv::U010ToAR30(y_plane, y_plane_stride, u_plane, u_plane_stride,
-                         v_plane, v_plane_stride, dest_rgb10, dest_stride,
-                         width, rows);
-    } else {
-      libyuv::U010ToAB30(y_plane, y_plane_stride, u_plane, u_plane_stride,
-                         v_plane, v_plane_stride, dest_rgb10, dest_stride,
-                         width, rows);
-    }
-  } else {  // BT.709
-    if (is_argb) {
-      libyuv::H010ToAR30(y_plane, y_plane_stride, u_plane, u_plane_stride,
-                         v_plane, v_plane_stride, dest_rgb10, dest_stride,
-                         width, rows);
-    } else {
-      libyuv::H010ToAB30(y_plane, y_plane_stride, u_plane, u_plane_stride,
-                         v_plane, v_plane_stride, dest_rgb10, dest_stride,
-                         width, rows);
-    }
+  // libyuv uses little-endian for RGBx formats, whereas here we use big
+  // endian.
+  const bool is_libyuv_abgr = is_rgba;
+  const auto* matrix = GetYuvContantsForColorSpace(
+      yuv_cs, /*output_argb_matrix=*/!is_libyuv_abgr);
+  if (is_libyuv_abgr) {
+    std::swap(u_plane, v_plane);
+    std::swap(u_plane_stride, v_plane_stride);
   }
-}
 
-void CopyRowsToRGBABuffer(bool is_rgba,
-                          int first_row,
-                          int rows,
-                          int width,
-                          const VideoFrame* source_frame,
-                          uint8_t* output,
-                          int dest_stride) {
-  TRACE_EVENT2("media", "CopyRowsToRGBABuffer", "bytes_per_row", width * 2,
-               "rows", rows);
-
-  if (!output)
-    return;
-
-  DCHECK_NE(dest_stride, 0);
-  DCHECK_LE(width, std::abs(dest_stride / 2));
-  DCHECK_EQ(0, first_row % 2);
-  DCHECK_EQ(source_frame->format(), PIXEL_FORMAT_I420A);
-
-  // libyuv uses little-endian for RGBx formats, whereas here we use big endian.
-  auto* func_ptr = is_rgba ? libyuv::I420AlphaToABGR : libyuv::I420AlphaToARGB;
-
-  func_ptr(source_frame->visible_data(VideoFrame::Plane::kY) +
-               first_row * source_frame->stride(VideoFrame::Plane::kY),
-           source_frame->stride(VideoFrame::Plane::kY),
-           source_frame->visible_data(VideoFrame::Plane::kU) +
-               first_row / 2 * source_frame->stride(VideoFrame::Plane::kU),
-           source_frame->stride(VideoFrame::Plane::kU),
-           source_frame->visible_data(VideoFrame::Plane::kV) +
-               first_row / 2 * source_frame->stride(VideoFrame::Plane::kV),
-           source_frame->stride(VideoFrame::Plane::kV),
-           source_frame->visible_data(VideoFrame::Plane::kA) +
-               first_row * source_frame->stride(VideoFrame::Plane::kA),
-           source_frame->stride(VideoFrame::Plane::kA),
-           output + first_row * dest_stride, dest_stride, width, rows,
-           // Textures are expected to be premultiplied by GL and compositors.
-           1 /* attenuate, meaning premultiply */);
+  // Note: We always use I010ToAR30Matrix() here since `matrix` and
+  // parameter order is changed based on whether we need to output ARGB or ABGR.
+  libyuv::I010ToAR30Matrix(y_plane, y_plane_stride, u_plane, u_plane_stride,
+                           v_plane, v_plane_stride, dest_rgb10, dest_stride,
+                           matrix, width, rows);
 }
 
 gfx::Size CodedSize(const VideoFrame* video_frame,
@@ -650,12 +577,10 @@ gfx::Size CodedSize(const VideoFrame* video_frame,
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::XR30:
     case GpuVideoAcceleratorFactories::OutputFormat::XB30:
-    case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
-    case GpuVideoAcceleratorFactories::OutputFormat::BGRA:
       output = gfx::Size(base::bits::AlignUp(width, size_t{2}), height);
       break;
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   DCHECK(gfx::Rect(video_frame->coded_size()).Contains(gfx::Rect(output)));
   return output;
@@ -668,6 +593,27 @@ void SetPrefersExternalSampler(viz::SharedImageFormat& format) {
 #if BUILDFLAG(IS_OZONE)
     format.SetPrefersExternalSampler();
 #endif
+  }
+}
+
+gfx::ColorSpace GetOutputColorSpace(
+    const gfx::ColorSpace& source_cs,
+    GpuVideoAcceleratorFactories::OutputFormat output_format) {
+  switch (output_format) {
+    case GpuVideoAcceleratorFactories::OutputFormat::YV12:
+    case GpuVideoAcceleratorFactories::OutputFormat::P010:
+    case GpuVideoAcceleratorFactories::OutputFormat::NV12:
+      // YUV formats are just repackaged without any conversion, so the color
+      // space remains the same.
+      return source_cs;
+
+    case GpuVideoAcceleratorFactories::OutputFormat::XR30:
+    case GpuVideoAcceleratorFactories::OutputFormat::XB30:
+      // We've converted the YUV data to RGB, fix the color space.
+      return source_cs.GetAsFullRangeRGB();
+
+    case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
+      NOTREACHED();
   }
 }
 
@@ -694,7 +640,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
     return;
   }
 
-  bool is_software_backed_video_frame = !video_frame->HasTextures();
+  bool is_software_backed_video_frame = !video_frame->HasSharedImage();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   is_software_backed_video_frame &= !video_frame->HasDmaBufs();
 #endif
@@ -718,11 +664,14 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CreateHardwareFrame(
     case PIXEL_FORMAT_YV12:
     case PIXEL_FORMAT_I420:
     case PIXEL_FORMAT_YUV420P10:
-    case PIXEL_FORMAT_I420A:
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_NV12A:
       break;
     // Unsupported cases.
+    case PIXEL_FORMAT_I420A:
+      // We don't have YUVA overlays and RGBA conversion at this stage
+      // compromises on color and breaks some WebGL cases.
+      // See https://crbug.com/355923583 and https://crbug.com/367746309
     case PIXEL_FORMAT_I422:
     case PIXEL_FORMAT_I444:
     case PIXEL_FORMAT_NV21:
@@ -858,14 +807,21 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::StartCopy() {
 
   while (!frame_copy_requests_.empty()) {
     VideoFrameCopyRequest& request = frame_copy_requests_.front();
+
+    // Some formats require conversion which may change the color space.
+    auto output_color_space =
+        request.passthrough
+            ? request.video_frame->ColorSpace()
+            : GetOutputColorSpace(request.video_frame->ColorSpace(),
+                                  output_format_);
+
     // Acquire resource. Incompatible one will be dropped from the pool.
     FrameResource* frame_resource =
         request.passthrough
             ? nullptr
             : GetOrCreateFrameResource(
                   CodedSize(request.video_frame.get(), output_format_),
-                  gfx::BufferUsage::SCANOUT_CPU_READ_WRITE,
-                  request.video_frame->ColorSpace());
+                  gfx::BufferUsage::SCANOUT_CPU_READ_WRITE, output_color_space);
     if (!frame_resource) {
       std::move(request.frame_ready_cb).Run(std::move(request.video_frame));
       frame_copy_requests_.pop_front();
@@ -952,7 +908,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
   auto* scoped_mapping = frame_resource->scoped_mapping.get();
 
   // To handle plane 0 of the underlying buffer.
-  uint8_t* memory_ptr0 = static_cast<uint8_t*>(scoped_mapping->Memory(0));
+  uint8_t* memory_ptr0 = scoped_mapping->GetMemoryForPlane(0).data();
   size_t stride0 = scoped_mapping->Stride(0);
 
   switch (output_format) {
@@ -979,7 +935,7 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
             plane_row_start, plane_rows_to_copy, plane_bytes_per_row,
             video_frame->BitDepth(), video_frame->visible_data(src_plane),
             video_frame->stride(src_plane),
-            static_cast<uint8_t*>(scoped_mapping->Memory(dst_plane)),
+            scoped_mapping->GetMemoryForPlane(dst_plane).data(),
             scoped_mapping->Stride(dst_plane));
       }
       break;
@@ -988,38 +944,27 @@ void GpuMemoryBufferVideoFramePool::PoolImpl::CopyRowsToBuffer(
     case GpuVideoAcceleratorFactories::OutputFormat::P010:
       CopyRowsToP010Buffer(row, rows_to_copy, coded_size.width(), video_frame,
                            memory_ptr0, stride0,
-                           static_cast<uint8_t*>(scoped_mapping->Memory(1)),
+                           scoped_mapping->GetMemoryForPlane(1).data(),
                            scoped_mapping->Stride(1));
       break;
 
     case GpuVideoAcceleratorFactories::OutputFormat::NV12:
       CopyRowsToNV12Buffer(row, rows_to_copy, coded_size.width(),
                            video_frame->BitDepth(), video_frame, memory_ptr0,
-                           stride0,
-                           static_cast<uint8_t*>(scoped_mapping->Memory(1)),
+                           stride0, scoped_mapping->GetMemoryForPlane(1).data(),
                            scoped_mapping->Stride(1));
       break;
-
-    case GpuVideoAcceleratorFactories::OutputFormat::XR30:
-    case GpuVideoAcceleratorFactories::OutputFormat::XB30: {
-      const bool is_argb =
-          output_format == GpuVideoAcceleratorFactories::OutputFormat::XR30;
-      CopyRowsToRGB10Buffer(is_argb, row, rows_to_copy, coded_size.width(),
+    case GpuVideoAcceleratorFactories::OutputFormat::XB30:
+    case GpuVideoAcceleratorFactories::OutputFormat::XR30: {
+      const bool is_rgba =
+          output_format == GpuVideoAcceleratorFactories::OutputFormat::XB30;
+      CopyRowsToRGB10Buffer(is_rgba, row, rows_to_copy, coded_size.width(),
                             video_frame, memory_ptr0, stride0);
       break;
     }
 
-    case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
-    case GpuVideoAcceleratorFactories::OutputFormat::BGRA: {
-      const bool is_rgba =
-          output_format == GpuVideoAcceleratorFactories::OutputFormat::RGBA;
-      CopyRowsToRGBABuffer(is_rgba, row, rows_to_copy, coded_size.width(),
-                           video_frame, memory_ptr0, stride0);
-      break;
-    }
-
     case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -1120,13 +1065,12 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
   // mailboxes refer to will be used only after all the previous commands posted
   // in the SharedImageInterface have been processed.
   gpu::SyncToken sync_token = sii->GenUnverifiedSyncToken();
-  auto texture_target = frame_resource->shared_image->GetTextureTarget();
 
   VideoPixelFormat frame_format = VideoFormat(output_format_);
 
   // Create the VideoFrame backed by native textures.
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
-      frame_format, frame_resource->shared_image, sync_token, texture_target,
+      frame_format, frame_resource->shared_image, sync_token,
       VideoFrame::ReleaseMailboxCB(), coded_size, visible_rect, natural_size,
       timestamp);
 
@@ -1138,54 +1082,42 @@ scoped_refptr<VideoFrame> GpuMemoryBufferVideoFramePool::PoolImpl::
   frame->SetReleaseMailboxCB(
       base::BindOnce(&PoolImpl::MailboxHolderReleased, this, frame_resource));
 
-  frame->set_color_space(color_space);
+  frame->set_color_space(frame_resource->shared_image->color_space());
 
   if (ycbcr_info) {
     frame->set_ycbcr_info(ycbcr_info);
   }
 
-  frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
-  if (frame_resource->shared_image->format().PrefersExternalSampler()) {
-    frame->set_shared_image_format_type(
-        SharedImageFormatType::kSharedImageFormatExternalSampler);
-  }
-
   bool allow_overlay = false;
+  if (frame_resource->shared_image->usage().Has(
+          gpu::SHARED_IMAGE_USAGE_SCANOUT)) {
 #if BUILDFLAG(IS_WIN)
-  // Windows direct composition path only supports NV12 video overlays.
-  allow_overlay =
-      output_format_ == GpuVideoAcceleratorFactories::OutputFormat::NV12;
+    // Windows direct composition path only supports NV12 video overlays.
+    allow_overlay =
+        output_format_ == GpuVideoAcceleratorFactories::OutputFormat::NV12;
 #else
-  switch (output_format_) {
-    case GpuVideoAcceleratorFactories::OutputFormat::YV12:
-      allow_overlay = video_frame_allow_overlay;
-      break;
-    case GpuVideoAcceleratorFactories::OutputFormat::P010:
-    case GpuVideoAcceleratorFactories::OutputFormat::NV12:
-      allow_overlay = true;
-      break;
-    case GpuVideoAcceleratorFactories::OutputFormat::XR30:
-    case GpuVideoAcceleratorFactories::OutputFormat::XB30:
-      // TODO(mcasas): Enable this for ChromeOS https://crbug.com/776093.
-      allow_overlay = false;
+    switch (output_format_) {
+      case GpuVideoAcceleratorFactories::OutputFormat::YV12:
+        allow_overlay = video_frame_allow_overlay;
+        break;
+      case GpuVideoAcceleratorFactories::OutputFormat::P010:
+      case GpuVideoAcceleratorFactories::OutputFormat::NV12:
+        allow_overlay = true;
+        break;
+      case GpuVideoAcceleratorFactories::OutputFormat::XR30:
+      case GpuVideoAcceleratorFactories::OutputFormat::XB30:
 #if BUILDFLAG(IS_MAC)
-      allow_overlay = IOSurfaceCanSetColorSpace(color_space);
+        allow_overlay = IOSurfaceCanSetColorSpace(color_space);
+#else
+        // TODO(crbug.com/41350508): Enable this for ChromeOS.
+        allow_overlay = false;
 #endif
-      // We've converted the YUV to RGB, fix the color space.
-      // TODO(hubbe): The libyuv YUV to RGB conversion may not have
-      // honored the color space conversion 100%. We should either fix
-      // libyuv or find a way for later passes to make up the difference.
-      frame->set_color_space(color_space.GetAsRGB());
-      break;
-    case GpuVideoAcceleratorFactories::OutputFormat::RGBA:
-    case GpuVideoAcceleratorFactories::OutputFormat::BGRA:
-      allow_overlay = true;
-      break;
-    case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
-      break;
-  }
+        break;
+      case GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED:
+        break;
+    }
 #endif  // BUILDFLAG(IS_WIN)
+  }
   frame->metadata().allow_overlay = allow_overlay;
   frame->metadata().read_lock_fences_enabled = true;
   frame->metadata().is_webgpu_compatible = is_webgpu_compatible;
@@ -1265,9 +1197,53 @@ GpuMemoryBufferVideoFramePool::PoolImpl::GetOrCreateFrameResource(
     // shared image. https://issues.chromium.org/339546249.
     SetPrefersExternalSampler(si_format);
 
+    gpu::SharedImageUsageSet si_usage = gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                        gpu::SHARED_IMAGE_USAGE_RASTER_READ |
+                                        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+
+    bool add_scanout_usage = true;
+
+    // SCANOUT usage was historically added unconditionally. However, it
+    // actually should be added only if scanout of SharedImages for this use
+    // case is supported.
+    // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
+    if (base::FeatureList::IsEnabled(
+            features::
+                kSWVideoFrameAddScanoutUsageOnlyIfSupportedBySharedImage)) {
+      auto si_caps = sii->GetCapabilities();
+
+#if BUILDFLAG(IS_WIN)
+      // On Windows, overlays are in general not supported. However, in some
+      // cases they are supported for the software video frame use case in
+      // particular. This cap details whether that support is present.
+      add_scanout_usage =
+          si_caps.supports_scanout_shared_images_for_software_video_frames;
+#else
+      // On all other platforms, whether scanout for SharedImages is supported
+      // for this particular use case is no different than the general case.
+      add_scanout_usage = si_caps.supports_scanout_shared_images;
+#endif
+    }
+
+    if (add_scanout_usage) {
+      si_usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+    }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    // TODO(crbug.com/40194712): Always add the flag once the
+    // OzoneImageBacking is by default turned on.
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kEnableUnsafeWebGPU)) {
+      // This SharedImage may be used for zero-copy import into WebGPU.
+      si_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
+    }
+#elif BUILDFLAG(IS_MAC)
+    // This SharedImage may be used for zero-copy import into WebGPU.
+    si_usage |= gpu::SHARED_IMAGE_USAGE_WEBGPU_READ;
+#endif
     // Create a Mappable shared image.
     frame_resource->shared_image =
-        sii->CreateSharedImage({si_format, size, color_space, si_usage_,
+        sii->CreateSharedImage({si_format, size, color_space, si_usage,
                                 "MediaGmbVideoFramePoolMappableSI"},
                                gpu::kNullSurfaceHandle, usage);
     return frame_resource;

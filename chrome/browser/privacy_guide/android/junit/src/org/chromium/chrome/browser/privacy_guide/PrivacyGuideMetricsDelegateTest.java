@@ -22,7 +22,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -49,8 +48,6 @@ import java.util.Set;
 public class PrivacyGuideMetricsDelegateTest {
     private static final String SETTINGS_STATES_HISTOGRAM = "Settings.PrivacyGuide.SettingsStates";
     private static final String NEXT_NAVIGATION_HISTOGRAM = "Settings.PrivacyGuide.NextNavigation";
-
-    @Rule public JniMocker mocker = new JniMocker();
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
@@ -69,11 +66,11 @@ public class PrivacyGuideMetricsDelegateTest {
     public void setUp() {
         mPrivacyGuideMetricsDelegate = new PrivacyGuideMetricsDelegate(mProfile);
 
-        mocker.mock(UnifiedConsentServiceBridgeJni.TEST_HOOKS, mNativeMock);
+        UnifiedConsentServiceBridgeJni.setInstanceForTesting(mNativeMock);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.getSelectedTypes()).thenReturn(mSyncTypes);
-        mocker.mock(SafeBrowsingBridgeJni.TEST_HOOKS, mSafeBrowsingNativeMock);
-        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativesMock);
+        SafeBrowsingBridgeJni.setInstanceForTesting(mSafeBrowsingNativeMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNativesMock);
         when(mUserPrefsNativesMock.get(mProfile)).thenReturn(mPrefServiceMock);
     }
 
@@ -104,12 +101,6 @@ public class PrivacyGuideMetricsDelegateTest {
             @CookieControlsMode int initialCookiesMode, @CookieControlsMode int finalCookiesMode) {
         when(mPrefServiceMock.getInteger(PrefNames.COOKIE_CONTROLS_MODE))
                 .thenReturn(initialCookiesMode, finalCookiesMode);
-    }
-
-    private void mockSearchSuggestionsState(
-            boolean initialSearchSuggestionsState, boolean finalSearchSuggestionsState) {
-        when(mPrefServiceMock.getBoolean(Pref.SEARCH_SUGGEST_ENABLED))
-                .thenReturn(initialSearchSuggestionsState, finalSearchSuggestionsState);
     }
 
     private void mockAdTopicsState(boolean initialAdTopicsState, boolean finalAdTopicsState) {
@@ -344,6 +335,7 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testCookies_block3PIncognitoTo3PSettingsStatesHistogram() {
         mockCookieControlsMode(
                 CookieControlsMode.INCOGNITO_ONLY, CookieControlsMode.BLOCK_THIRD_PARTY);
@@ -357,6 +349,7 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testCookies_block3PTo3PIncognitoSettingsStatesHistogram() {
         mockCookieControlsMode(
                 CookieControlsMode.BLOCK_THIRD_PARTY, CookieControlsMode.INCOGNITO_ONLY);
@@ -370,12 +363,39 @@ public class PrivacyGuideMetricsDelegateTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
     public void testCookies_block3PTo3PSettingsStatesHistogram() {
         mockCookieControlsMode(
                 CookieControlsMode.BLOCK_THIRD_PARTY, CookieControlsMode.BLOCK_THIRD_PARTY);
         HistogramWatcher watcher =
                 HistogramWatcher.newSingleRecordWatcher(
                         SETTINGS_STATES_HISTOGRAM, PrivacyGuideSettingsStates.BLOCK3P_TO3P);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    public void testCookies_offTo3PSettingsStatesHistogram() {
+        mockCookieControlsMode(CookieControlsMode.OFF, CookieControlsMode.BLOCK_THIRD_PARTY);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P);
+        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
+        watcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO})
+    public void testCookies_offTo3PIncognitoSettingsStatesHistogram() {
+        mockCookieControlsMode(CookieControlsMode.OFF, CookieControlsMode.INCOGNITO_ONLY);
+        HistogramWatcher watcher =
+                HistogramWatcher.newSingleRecordWatcher(
+                        SETTINGS_STATES_HISTOGRAM,
+                        PrivacyGuideSettingsStates.BLOCK3P_INCOGNITO_TO3P_INCOGNITO);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
         watcher.assertExpected();
     }
@@ -398,83 +418,6 @@ public class PrivacyGuideMetricsDelegateTest {
                 HistogramWatcher.newSingleRecordWatcher(
                         NEXT_NAVIGATION_HISTOGRAM, PrivacyGuideInteractions.COOKIES_NEXT_BUTTON);
         triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.COOKIES);
-        watcher.assertExpected();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
-    public void testSearchSuggestions_offToOffSettingsStatesHistogram() {
-        mockSearchSuggestionsState(false, false);
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_OFF_TO_OFF);
-        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
-        watcher.assertExpected();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
-    public void testSearchSuggestions_offToOnSettingsStatesHistogram() {
-        mockSearchSuggestionsState(false, true);
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_OFF_TO_ON);
-        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
-        watcher.assertExpected();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
-    public void testSearchSuggestions_onToOffSettingsStatesHistogram() {
-        mockSearchSuggestionsState(true, false);
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_ON_TO_OFF);
-        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
-        watcher.assertExpected();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
-    public void testSearchSuggestions_onToOnSettingsStatesHistogram() {
-        mockSearchSuggestionsState(true, true);
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        SETTINGS_STATES_HISTOGRAM,
-                        PrivacyGuideSettingsStates.SEARCH_SUGGESTIONS_ON_TO_ON);
-        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
-        watcher.assertExpected();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
-    public void testSearchSuggestions_nextClickUserAction() {
-        mockSearchSuggestionsState(false, false);
-        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
-        assertTrue(
-                mActionTester
-                        .getActions()
-                        .contains("Settings.PrivacyGuide.NextClickSearchSuggestions"));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
-    public void testSearchSuggestions_nextNavigationHistogram() {
-        mockSearchSuggestionsState(false, false);
-        HistogramWatcher watcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        NEXT_NAVIGATION_HISTOGRAM,
-                        PrivacyGuideInteractions.SEARCH_SUGGESTIONS_NEXT_BUTTON);
-        triggerMetricsOnNext(PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
         watcher.assertExpected();
     }
 
@@ -507,28 +450,6 @@ public class PrivacyGuideMetricsDelegateTest {
     public void testMSBB_changeMSBBOffUserAction() {
         PrivacyGuideMetricsDelegate.recordMetricsOnMSBBChange(false);
         assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.ChangeMSBBOff"));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
-    public void testSearchSuggestions_changeSearchSuggestionsOnUserAction() {
-        PrivacyGuideMetricsDelegate.recordMetricsOnSearchSuggestionsChange(true);
-        assertTrue(
-                mActionTester
-                        .getActions()
-                        .contains("Settings.PrivacyGuide.ChangeSearchSuggestionsOn"));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
-    public void testSearchSuggestions_changeSearchSuggestionsOffUserAction() {
-        PrivacyGuideMetricsDelegate.recordMetricsOnSearchSuggestionsChange(false);
-        assertTrue(
-                mActionTester
-                        .getActions()
-                        .contains("Settings.PrivacyGuide.ChangeSearchSuggestionsOff"));
     }
 
     @Test
@@ -641,17 +562,6 @@ public class PrivacyGuideMetricsDelegateTest {
         PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
                 PrivacyGuideFragment.FragmentType.MSBB);
         assertTrue(mActionTester.getActions().contains("Settings.PrivacyGuide.BackClickMSBB"));
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.PRIVACY_GUIDE_ANDROID_3)
-    public void testSearchSuggestions_backClickUserAction() {
-        PrivacyGuideMetricsDelegate.recordMetricsOnBackForCard(
-                PrivacyGuideFragment.FragmentType.SEARCH_SUGGESTIONS);
-        assertTrue(
-                mActionTester
-                        .getActions()
-                        .contains("Settings.PrivacyGuide.BackClickSearchSuggestions"));
     }
 
     @Test(expected = AssertionError.class)

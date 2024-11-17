@@ -26,6 +26,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -178,7 +179,7 @@ public class ChromeMessageQueueMediatorTest {
         ChromeMessageQueueMediator.BrowserControlsObserver observer =
                 observerArgumentCaptor.getValue();
         Assert.assertFalse(mMediator.isReadyForShowing());
-        Runnable runnable = () -> {};
+        Runnable runnable = CallbackUtils.emptyRunnable();
         mMediator.onRequestShowing(runnable);
         Assert.assertNotNull(observer.getRunnableForTesting());
         Assert.assertFalse(mMediator.isReadyForShowing());
@@ -215,7 +216,7 @@ public class ChromeMessageQueueMediatorTest {
         // Mock TabBrowserControlsConstraintsHelper to avoid NPE.
         when(mTab.getUserDataHost()).thenReturn(new UserDataHost());
 
-        mMediator.onRequestShowing(() -> {});
+        mMediator.onRequestShowing(CallbackUtils.emptyRunnable());
         Assert.assertTrue(mMediator.isReadyForShowing());
 
         mMediator.onFinishHiding();
@@ -268,7 +269,7 @@ public class ChromeMessageQueueMediatorTest {
                 BrowserControlsUtils.areBrowserControlsFullyVisible(mBrowserControlsManager));
         Assert.assertFalse(mediator.areBrowserControlsReady());
         Assert.assertFalse(mediator.isReadyForShowing());
-        mediator.onRequestShowing(() -> {});
+        mediator.onRequestShowing(CallbackUtils.emptyRunnable());
         Assert.assertTrue(observer.isRequesting());
     }
 

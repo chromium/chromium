@@ -48,7 +48,7 @@
   _viewController.presentationDelegate = self;
 
   _mediator = [[PrivacyGuideURLUsageMediator alloc]
-      initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()];
+      initWithUserPrefService:self.browser->GetProfile()->GetPrefs()];
   _mediator.consumer = _viewController;
   _viewController.modelDelegate = _mediator;
 

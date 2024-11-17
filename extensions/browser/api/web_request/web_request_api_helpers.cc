@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <cmath>
+#include <optional>
 #include <string_view>
 #include <tuple>
 #include <utility>
@@ -379,8 +380,7 @@ struct DNRHeaderAction {
       case dnr_api::HeaderOperation::kRemove:
         return true;
       case dnr_api::HeaderOperation::kNone:
-        NOTREACHED_IN_MIGRATION();
-        return true;
+        NOTREACHED();
     }
   }
 
@@ -462,7 +462,7 @@ bool ModifyRequestHeadersForAction(
         break;
       }
       case dnr_api::HeaderOperation::kNone:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     request_headers_modified |= header_modified;
@@ -560,7 +560,7 @@ bool ModifyResponseHeadersForAction(
         break;
       }
       case dnr_api::HeaderOperation::kNone:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     response_headers_modified |= header_modified;
@@ -1346,10 +1346,10 @@ static ParsedResponseCookies GetResponseCookies(
   ParsedResponseCookies result;
 
   size_t iter = 0;
-  std::string value;
-  while (
-      override_response_headers->EnumerateHeader(&iter, "Set-Cookie", &value)) {
-    result.push_back(std::make_unique<net::ParsedCookie>(value));
+  std::optional<std::string_view> value;
+  while ((value = override_response_headers->EnumerateHeader(&iter,
+                                                             "Set-Cookie"))) {
+    result.push_back(std::make_unique<net::ParsedCookie>(*value));
   }
   return result;
 }

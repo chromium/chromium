@@ -92,6 +92,10 @@ TEST_F(MagicStackCollectionViewControllerTest, TestEphemeralCardAudienceCall) {
 // the expected audience signal.
 TEST_F(MagicStackCollectionViewControllerTest,
        TestSwipeToEphemeralCardAudienceCall) {
+  scoped_feature_list_.InitWithFeatures(
+      {segmentation_platform::features::
+           kSegmentationPlatformEphemeralCardRanker},
+      {});
   // Test that populating the Magic Stack does not trigger audience call since
   // it is not top card.
   [view_controller_ populateItems:@[

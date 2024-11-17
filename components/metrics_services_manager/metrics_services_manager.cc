@@ -34,7 +34,7 @@ MetricsServicesManager::MetricsServicesManager(
   DCHECK(client_);
 }
 
-MetricsServicesManager::~MetricsServicesManager() {}
+MetricsServicesManager::~MetricsServicesManager() = default;
 
 void MetricsServicesManager::InstantiateFieldTrialList() const {
   client_->GetMetricsStateManager()->InstantiateFieldTrialList();

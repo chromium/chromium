@@ -128,7 +128,7 @@ void DigitalIdentityProviderDesktop::Request(content::WebContents* web_contents,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void DigitalIdentityProviderDesktop::OnEvent(const std::string qr_url,
+void DigitalIdentityProviderDesktop::OnEvent(const std::string& qr_url,
                                              Event event) {
   absl::visit(base::Overloaded{
                   [this, qr_url](SystemEvent event) {
@@ -142,7 +142,7 @@ void DigitalIdentityProviderDesktop::OnEvent(const std::string qr_url,
                         break;
                       case SystemEvent::kReady:
                         bluetooth_manual_dialog_controller_.reset();
-                        ShowQrCodeDialog(std::move(qr_url));
+                        ShowQrCodeDialog(qr_url);
                         break;
                     }
                   },
@@ -205,7 +205,7 @@ DigitalIdentityProviderDesktop::EnsureDialogCreated() {
 }
 
 void DigitalIdentityProviderDesktop::ShowQrCodeDialog(
-    const std::string qr_url) {
+    const std::string& qr_url) {
   std::u16string dialog_title =
       l10n_util::GetStringUTF16(IDS_WEB_DIGITAL_CREDENTIALS_QR_TITLE);
   std::u16string dialog_body = l10n_util::GetStringFUTF16(

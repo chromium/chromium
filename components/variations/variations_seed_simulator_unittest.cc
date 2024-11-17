@@ -104,7 +104,7 @@ void ConstrainToLayer(Study& study, int layer_id, int layer_member_id) {
 
 class VariationsSeedSimulatorTest : public ::testing::Test {
  public:
-  VariationsSeedSimulatorTest() {}
+  VariationsSeedSimulatorTest() = default;
 
   VariationsSeedSimulatorTest(const VariationsSeedSimulatorTest&) = delete;
   VariationsSeedSimulatorTest& operator=(const VariationsSeedSimulatorTest&) =

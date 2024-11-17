@@ -67,8 +67,7 @@ StringView ToString(CSSMathOperator op) {
     case CSSMathOperator::kContainerProgress:
       return "container-progress";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return StringView();
+      NOTREACHED();
   }
 }
 
@@ -81,8 +80,7 @@ StringView ToRoundingStrategyString(CSSMathOperator op) {
     case CSSMathOperator::kRoundToZero:
       return "to-zero";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return StringView();
+      NOTREACHED();
   }
 }
 

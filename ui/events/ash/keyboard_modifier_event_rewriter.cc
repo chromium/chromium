@@ -210,6 +210,11 @@ KeyboardModifierEventRewriter::RemapPressKey(const KeyEvent& event) {
     return std::nullopt;
   }
 
+  // TODO(b/369892786): Do not use VKEY as source of truth in events.
+  if (event.key_code() >= VKEY_BUTTON_0 && event.key_code() <= VKEY_BUTTON_Z) {
+    return std::nullopt;
+  }
+
   // First DomCode is remapped based on user's preferences.
   const PhysicalCode remapped_code =
       GetRemappedPhysicalCode(event.code(), GetKeyboardDeviceIdProperty(event))

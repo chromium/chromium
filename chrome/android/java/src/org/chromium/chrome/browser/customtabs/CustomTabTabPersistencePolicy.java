@@ -367,7 +367,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
 
         @Override
         protected void onCancelled(Void result) {
-            super.onCancelled(result);
+            super.onCancelled(null);
             synchronized (CLEAN_UP_TASK_LOCK) {
                 sCleanupTask = null;
             }

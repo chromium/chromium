@@ -42,7 +42,8 @@
           "builder": "ToTLinuxASan",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTLinuxASan/targets"
     }
   },
   "$build/reclient": {

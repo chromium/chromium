@@ -36,18 +36,7 @@ bool IsRichTextEditable(const AXNode* node) {
 }
 
 bool IsAtomicTextField(const AXNode* node) {
-  const std::string& html_tag =
-      node->GetStringAttribute(ax::mojom::StringAttribute::kHtmlTag);
-  if (html_tag == "input") {
-    std::string input_type;
-    if (!node->GetHtmlAttribute("type", &input_type))
-      return true;
-    return input_type.empty() || input_type == "email" ||
-           input_type == "password" || input_type == "search" ||
-           input_type == "tel" || input_type == "text" || input_type == "url" ||
-           input_type == "number";
-  }
-  return html_tag == "textarea";
+  return node->data().IsAtomicTextField();
 }
 
 bool IsLeaf(const AXNode* node) {
@@ -370,9 +359,8 @@ std::unique_ptr<AssistantTree> CreateAssistantTree(const AXTreeUpdate& update) {
       false,         // should_select_leaf
   };
 
-  int root_scroll_y = 0;
-  tree->root()->GetIntAttribute(ax::mojom::IntAttribute::kScrollY,
-                                &root_scroll_y);
+  int root_scroll_y =
+      tree->root()->GetIntAttribute(ax::mojom::IntAttribute::kScrollY);
 
   WalkAXTreeDepthFirst(tree->root(), gfx::Rect(), gfx::Rect(), root_scroll_y,
                        update, tree.get(), &config, assistant_tree.get(), root);

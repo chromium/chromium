@@ -78,7 +78,6 @@ class HoverButton : public views::LabelButton {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void SetBorder(std::unique_ptr<views::Border> b) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void PreferredSizeChanged() override;
   void OnViewBoundsChanged(View* observed_view) override;
 

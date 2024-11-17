@@ -63,7 +63,7 @@ class BookmarkUndoServiceTest : public testing::Test {
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
-BookmarkUndoServiceTest::BookmarkUndoServiceTest() {}
+BookmarkUndoServiceTest::BookmarkUndoServiceTest() = default;
 
 void BookmarkUndoServiceTest::SetUp() {
   DCHECK(!bookmark_model_);

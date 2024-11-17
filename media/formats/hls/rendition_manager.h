@@ -23,13 +23,13 @@
 #include "media/base/limits.h"
 #include "media/base/media_export.h"
 #include "media/formats/hls/types.h"
+#include "media/formats/hls/variant_stream.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
 
 namespace media::hls {
 
 class MultivariantPlaylist;
-class VariantStream;
 class AudioRendition;
 class AudioRenditionGroup;
 
@@ -99,9 +99,8 @@ class MEDIA_EXPORT RenditionManager {
   // After initialization, is there anything to select?
   bool HasAnyVariants() const;
 
-  std::vector<SelectableOption<VariantID>> GetSelectableVariants() const;
-  std::vector<SelectableOption<RenditionID>> GetSelectableAudioRenditions()
-      const;
+  std::vector<MediaTrack> GetSelectableVariants() const;
+  std::vector<MediaTrack> GetSelectableRenditions() const;
 
   // Uses player state and user preferences to trigger `on_variant_selected`
   // calls with preferred playback uris.
@@ -109,8 +108,8 @@ class MEDIA_EXPORT RenditionManager {
 
   // Set preferred variants. A nullopt means that no preference is set, and
   // automatic selection can take place.
-  void SetPreferredAudioRendition(std::optional<RenditionID> rendition_index);
-  void SetPreferredVariant(std::optional<VariantID> variant_index);
+  void SetPreferredAudioRendition(std::optional<MediaTrack::Id> rendition_id);
+  void SetPreferredVariant(std::optional<MediaTrack::Id> variant_id);
 
  private:
   struct UpdatedSelections {
@@ -121,14 +120,24 @@ class MEDIA_EXPORT RenditionManager {
     std::optional<RenditionID> audio_rendition;
   };
 
-  struct VariantStatistics {
-    ~VariantStatistics();
-    VariantStatistics(const VariantStatistics&);
-    VariantStatistics(const VariantStream*, const AudioRenditionGroup*);
+  struct VariantMetadata {
+    ~VariantMetadata();
+    VariantMetadata(const VariantMetadata&);
+    VariantMetadata(const VariantStream*, const AudioRenditionGroup*);
 
+    MediaTrack::Id track_id;
     raw_ptr<const VariantStream> stream;
     raw_ptr<const AudioRenditionGroup> audio_rendition_group;
     base::flat_set<RenditionID> audio_renditions;
+  };
+
+  struct RenditionMetadata {
+    ~RenditionMetadata();
+    RenditionMetadata(const RenditionMetadata&);
+    explicit RenditionMetadata(const AudioRendition*);
+
+    MediaTrack::Id track_id;
+    raw_ptr<const AudioRendition> rendition;
   };
 
   // Called during construction. This creates the per-variant statistics
@@ -157,6 +166,11 @@ class MEDIA_EXPORT RenditionManager {
   // usually so small that an iteration is not significantly slow.
   std::optional<RenditionID> LookupRendition(const AudioRendition* rendition);
 
+  // Determines the set and order of format components used to generate a human
+  // readable (and differentiable!) name for a variant stream.
+  std::vector<VariantStream::FormatComponent> DetermineVariantStreamFormatting()
+      const;
+
   // Selects the best rendition based with an optionally given language, and a
   // flag stating whether only renditions tagged with "AUTOSELECT=TRUE" may be
   // selected. The premise here is to prefer renditions in order of:
@@ -167,7 +181,7 @@ class MEDIA_EXPORT RenditionManager {
   //  - any rendition with matching selectability
   //  - nothing
   std::optional<RenditionManager::RenditionID> SelectRenditionBasedOnLanguage(
-      const VariantStatistics& variant,
+      const VariantMetadata& variant,
       std::optional<std::string> maybe_language,
       bool only_autoselect);
 
@@ -179,9 +193,16 @@ class MEDIA_EXPORT RenditionManager {
   // Fired whenever a variant or rendition changes.
   SelectedCB on_variant_selected_;
 
-  base::flat_map<VariantID, VariantStatistics> selectable_variants_;
-  base::flat_map<RenditionID, raw_ptr<const AudioRendition>>
-      selectable_renditions_;
+  // Internally, we use VariantID and RenditionID for key based lookups because
+  // they are integer types and cheap to compare. Blink uses strings for stream
+  // ID's however, so those get passed down to us in the form of MediaTrack::Id
+  // instances. When we provide MediaTrack objects, we also need to be able to
+  // look them up by VariantID or RenditionID.
+  // The metadata maps are responsible for both the InternalID => parser struct
+  // lookups, as well as the InternalID => MediaTrack::Id lookups.
+  base::flat_map<VariantID, VariantMetadata> selectable_variants_;
+  base::flat_map<RenditionID, RenditionMetadata> selectable_renditions_;
+  base::flat_map<MediaTrack::Id, MediaTrack> track_map_;
 
   std::optional<VariantID> selected_variant_;
   std::optional<VariantID> preferred_variant_;

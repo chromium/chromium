@@ -156,7 +156,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestVisibleFolderNodes) {
       [sub_data_source_ visibleFolderNodes];
   ASSERT_EQ(2u, visible_folder_nodes.size());
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
-              @"Mobile Bookmarks");
+              @"Mobile bookmarks");
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[1]->GetTitle()),
               test_folder_title_1);
 }
@@ -175,7 +175,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderTitleChange) {
       [sub_data_source_ visibleFolderNodes];
   ASSERT_EQ(2u, visible_folder_nodes.size());
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
-              @"Mobile Bookmarks");
+              @"Mobile bookmarks");
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[1]->GetTitle()),
               test_folder_title_2);
 }
@@ -194,7 +194,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderAdded) {
       [sub_data_source_ visibleFolderNodes];
   ASSERT_EQ(3u, visible_folder_nodes.size());
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
-              @"Mobile Bookmarks");
+              @"Mobile bookmarks");
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[1]->GetTitle()),
               test_folder_title_1);
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[2]->GetTitle()),
@@ -223,7 +223,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderRemoved) {
       [sub_data_source_ visibleFolderNodes];
   ASSERT_EQ(2u, visible_folder_nodes.size());
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
-              @"Mobile Bookmarks");
+              @"Mobile bookmarks");
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[1]->GetTitle()),
               test_folder_title_1);
 }
@@ -245,7 +245,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestAllFoldersRemoved) {
   ASSERT_EQ(1u, visible_folder_nodes.size());
   // "Mobile Bookmarks" is a permanent node and thus always exists.
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
-              @"Mobile Bookmarks");
+              @"Mobile bookmarks");
 }
 
 // Tests that moving a node in the bookmark model updates the UI.
@@ -264,7 +264,7 @@ TEST_P(BookmarksFolderChooserSubDataSourceImplTest, TestFolderMoved) {
       [sub_data_source_ visibleFolderNodes];
   ASSERT_EQ(3u, visible_folder_nodes.size());
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[0]->GetTitle()),
-              @"Mobile Bookmarks");
+              @"Mobile bookmarks");
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[1]->GetTitle()),
               test_folder_title_1);
   EXPECT_NSEQ(base::SysUTF16ToNSString(visible_folder_nodes[2]->GetTitle()),

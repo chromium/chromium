@@ -14,7 +14,7 @@ import "url/mojom/url.mojom";
 //
 // Next MinVersion: 1
 // Next ID: 1
-[Stable, Uuid="5c6b5748-65eb-40c1-9aa1-d20cbd8b226d"]
+[Uuid="5c6b5748-65eb-40c1-9aa1-d20cbd8b226d"]
 interface FileChangeServiceBridge {
 
     // Invoked when a file has been created at `file_path` in fulfillment of a

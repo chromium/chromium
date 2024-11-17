@@ -603,7 +603,6 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
 
   switch (device_descriptor.capture_api) {
     case VideoCaptureApi::WIN_MEDIA_FOUNDATION:
-      [[fallthrough]];
     case VideoCaptureApi::WIN_MEDIA_FOUNDATION_SENSOR: {
       DCHECK(PlatformSupportsMediaFoundation());
       ComPtr<IMFMediaSource> source;
@@ -636,8 +635,7 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
           return VideoCaptureErrorOrDevice(
               VideoCaptureError::kWinMediaFoundationSourceCreationFailed);
       }
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
     case VideoCaptureApi::WIN_DIRECT_SHOW: {
       ComPtr<IBaseFilter> capture_filter;
@@ -657,12 +655,8 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
           VideoCaptureError::kWinDirectShowDeviceInitializationFailed);
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return VideoCaptureErrorOrDevice(
-      VideoCaptureError::kVideoCaptureDeviceFactoryWinUnknownError);
 }
 
 bool VideoCaptureDeviceFactoryWin::CreateDeviceEnumMonikerDirectShow(

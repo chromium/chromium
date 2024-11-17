@@ -11,7 +11,7 @@
  */
 import '../cr_icon_button/cr_icon_button.js';
 import '../cr_icon/cr_icon.js';
-import '../icons_lit.html.js';
+import '../icons.html.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -89,7 +89,7 @@ export class CrLinkRowElement extends CrLitElement {
   }
 
   protected getIcon_(): string {
-    return this.external ? 'cr:open-in-new' : 'cr:arrow-right';
+    return this.external ? 'cr:open-in-new' : 'cr:chevron-right';
   }
 
   protected getButtonAriaDescription_(): string {

@@ -39,10 +39,8 @@ void GLVersionInfo::Initialize(const char* version_str,
   if (renderer_str) {
     std::string renderer_string = std::string(renderer_str);
 
-    is_angle = base::StartsWith(renderer_str, "ANGLE",
-                                base::CompareCase::SENSITIVE);
-    is_mesa = base::StartsWith(renderer_str, "Mesa",
-                               base::CompareCase::SENSITIVE);
+    is_angle = renderer_string.starts_with("ANGLE");
+    is_mesa = renderer_string.starts_with("Mesa");
     if (is_angle) {
       is_angle_swiftshader =
           renderer_string.find("SwiftShader Device") != std::string::npos;
@@ -50,8 +48,7 @@ void GLVersionInfo::Initialize(const char* version_str,
       is_angle_metal = renderer_string.find("ANGLE Metal") != std::string::npos;
     }
 
-    is_swiftshader = base::StartsWith(renderer_str, "Google SwiftShader",
-                                      base::CompareCase::SENSITIVE);
+    is_swiftshader = renderer_string.starts_with("Google SwiftShader");
     // An ANGLE renderer string contains "Direct3D9", "Direct3DEx", or
     // "Direct3D11" on D3D backends.
     is_d3d = renderer_string.find("Direct3D") != std::string::npos;
@@ -72,7 +69,7 @@ void GLVersionInfo::ParseVersionString(const char* version_str) {
     return;
   std::string_view lstr(version_str);
   constexpr std::string_view kESPrefix = "OpenGL ES ";
-  if (!base::StartsWith(lstr, kESPrefix, base::CompareCase::SENSITIVE)) {
+  if (!lstr.starts_with(kESPrefix)) {
     LOG(FATAL) << "Chrome runs only on top of OpenGL ES "
                << "through either ANGLE or native: " << "VERSION = "
                << version_str;
@@ -116,7 +113,7 @@ void GLVersionInfo::ParseDriverInfo(const char* version_str) {
     return;
   std::string_view lstr(version_str);
   constexpr std::string_view kESPrefix = "OpenGL ES ";
-  if (base::StartsWith(lstr, kESPrefix, base::CompareCase::SENSITIVE)) {
+  if (lstr.starts_with(kESPrefix)) {
     lstr.remove_prefix(kESPrefix.size());
   }
   std::vector<std::string_view> pieces = base::SplitStringPiece(
@@ -163,7 +160,7 @@ void GLVersionInfo::ParseDriverInfo(const char* version_str) {
     return;
   }
   constexpr std::string_view kMaliPrefix = "v1.r";
-  if (base::StartsWith(pieces[1], kMaliPrefix, base::CompareCase::SENSITIVE)) {
+  if (pieces[1].starts_with(kMaliPrefix)) {
     // Mali drivers: v1.r12p0-04rel0.44f2946824bb8739781564bffe2110c9
     pieces[1].remove_prefix(kMaliPrefix.size());
     std::vector<std::string_view> numbers = base::SplitStringPiece(
@@ -191,7 +188,7 @@ void GLVersionInfo::ExtractDriverVendorANGLE(const char* renderer_str) {
   DCHECK(is_angle);
   DCHECK_EQ("ANGLE", driver_vendor);
   std::string_view rstr(renderer_str);
-  DCHECK(base::StartsWith(rstr, "ANGLE (", base::CompareCase::SENSITIVE));
+  DCHECK(rstr.starts_with("ANGLE ("));
   rstr = rstr.substr(sizeof("ANGLE (") - 1, rstr.size() - sizeof("ANGLE ("));
 
   // ANGLE's renderer string returns a format matching ANGLE (GL_VENDOR,
@@ -213,28 +210,27 @@ void GLVersionInfo::ExtractDriverVendorANGLE(const char* renderer_str) {
     return;
   }
 
-  if (base::StartsWith(rstr, "Vulkan ", base::CompareCase::SENSITIVE)) {
+  if (rstr.starts_with("Vulkan ")) {
     size_t pos = rstr.find('(');
     if (pos != std::string::npos)
       rstr = rstr.substr(pos + 1, rstr.size() - 2);
   }
   if (is_angle_swiftshader) {
-    DCHECK(base::StartsWith(rstr, "SwiftShader", base::CompareCase::SENSITIVE));
+    DCHECK(rstr.starts_with("SwiftShader"));
     driver_vendor = "ANGLE (Google)";
   }
   if (is_angle_metal) {
-    DCHECK(base::StartsWith(rstr, "ANGLE Metal", base::CompareCase::SENSITIVE));
+    DCHECK(rstr.starts_with("ANGLE Metal"));
   }
-  if (base::StartsWith(rstr, "NVIDIA ", base::CompareCase::SENSITIVE))
+  if (rstr.starts_with("NVIDIA ")) {
     driver_vendor = "ANGLE (NVIDIA)";
-  else if (base::StartsWith(rstr, "Radeon ", base::CompareCase::SENSITIVE))
+  } else if (rstr.starts_with("Radeon ")) {
     driver_vendor = "ANGLE (AMD)";
-  else if (base::StartsWith(rstr, "Intel", base::CompareCase::SENSITIVE)) {
+  } else if (rstr.starts_with("Intel")) {
     std::vector<std::string_view> pieces = base::SplitStringPiece(
         rstr, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    for (size_t ii = 0; ii < pieces.size(); ++ii) {
-      if (base::StartsWith(pieces[ii], "Intel(R) ",
-                           base::CompareCase::SENSITIVE)) {
+    for (const auto& piece : pieces) {
+      if (piece.starts_with("Intel(R) ")) {
         driver_vendor = "ANGLE (Intel)";
         break;
       }
@@ -253,7 +249,7 @@ GLVersionInfo::VersionStrings GLVersionInfo::GetFakeVersionStrings(
     result.gl_version = "OpenGL ES 3.0";
     result.glsl_version = "OpenGL ES GLSL ES 3.00";
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return result;
 }

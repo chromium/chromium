@@ -322,11 +322,6 @@ struct DriveFsConfiguration {
   [MinVersion=5]
   bool enable_verbose_logging = false;
 
-  // Whether the network service bridge is available. This is enabled on CrOS by
-  // the |drive-fs-chrome-networking| flag.
-  [MinVersion=6]
-  bool enable_cros_network = false;
-
   // The level of CSE files support Chrome expects from DriveFS and can handle.
   // CSE stands for Client-Side Encryption and is an enterprise technology to
   // encrypt data with a key not accessible by Google.

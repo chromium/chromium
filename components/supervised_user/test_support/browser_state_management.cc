@@ -21,6 +21,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/proto_fetcher_status.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -301,6 +302,28 @@ void BrowserState::Seed(
       version_info::Channel::UNKNOWN);
   run_loop.Run();
 }
+
+#if BUILDFLAG(IS_IOS)
+void BrowserState::SeedWithCompletion(
+    signin::IdentityManager& caller_identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> caller_url_loader_factory,
+    std::string_view subject_account_id,
+    base::OnceClosure completion) {
+  // Do not override the current fetch.
+  CHECK(fetcher_ == nullptr);
+
+  // Start fetching.
+  fetcher_ = CreateFetcher<std::string>(
+      caller_identity_manager, caller_url_loader_factory,
+      {.request_body = intent_->GetRequest()},
+      base::BindOnce([](const ProtoFetcherStatus& status,
+                        std::unique_ptr<std::string> response) {
+        CHECK(status.IsOk()) << "WaitForRequestToComplete failed";
+      }).Then(std::move(completion)),
+      intent_->GetConfig(), {std::string(subject_account_id)},
+      version_info::Channel::UNKNOWN);
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 bool BrowserState::Check(const Services& services) const {
   return intent_->Check(services);

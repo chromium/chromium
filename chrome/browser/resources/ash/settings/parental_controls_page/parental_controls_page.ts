@@ -13,14 +13,15 @@ import '../os_settings_page/os_settings_subpage.js';
 import '../settings_shared.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {castExists} from '../assert_extras.js';
 import {isChild} from '../common/load_time_booleans.js';
 
-import {ParentalControlsBrowserProxy, ParentalControlsBrowserProxyImpl} from './parental_controls_browser_proxy.js';
+import type {ParentalControlsBrowserProxy} from './parental_controls_browser_proxy.js';
+import {ParentalControlsBrowserProxyImpl} from './parental_controls_browser_proxy.js';
 import {getTemplate} from './parental_controls_page.html.js';
 
 const SettingsParentalControlsPageElementBase = I18nMixin(PolymerElement);

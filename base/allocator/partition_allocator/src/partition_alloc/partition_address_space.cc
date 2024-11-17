@@ -7,6 +7,7 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <ostream>
 #include <string>
 
@@ -101,8 +102,7 @@ uintptr_t PartitionAddressSpace::pool_shadow_address_ =
 #error Dynamic pool size is only supported on iOS.
 #endif
 
-namespace {
-bool IsIOSTestProcess() {
+bool PartitionAddressSpace::IsIOSTestProcess() {
   // On iOS, only applications with the extended virtual addressing entitlement
   // can use a large address space. Since Earl Grey test runner apps cannot get
   // entitlements, they must use a much smaller pool size. Similarly,
@@ -133,24 +133,11 @@ bool IsIOSTestProcess() {
 
   return has_suffix("Runner") || has_suffix("ios_web_view_inttests");
 }
-}  // namespace
-
-PA_ALWAYS_INLINE size_t PartitionAddressSpace::RegularPoolSize() {
-  return IsIOSTestProcess() ? kRegularPoolSizeForIOSTestProcess
-                            : kRegularPoolSize;
-}
-PA_ALWAYS_INLINE size_t PartitionAddressSpace::BRPPoolSize() {
-  return IsIOSTestProcess() ? kBRPPoolSizeForIOSTestProcess : kBRPPoolSize;
-}
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
 #if PA_CONFIG(ENABLE_SHADOW_METADATA)
-size_t PartitionAddressSpace::RegularPoolShadowSize() {
-  return RegularPoolSize();
-}
-
-size_t PartitionAddressSpace::BRPPoolShadowSize() {
-  return BRPPoolSize();
+size_t PartitionAddressSpace::CorePoolShadowSize() {
+  return CorePoolSize();
 }
 
 size_t PartitionAddressSpace::ConfigurablePoolShadowSize() {
@@ -163,19 +150,12 @@ void PartitionAddressSpace::Init() {
     return;
   }
 
-  const size_t regular_pool_size = RegularPoolSize();
-  const size_t brp_pool_size = BRPPoolSize();
-
-#if PA_BUILDFLAG(GLUE_CORE_POOLS)
-  // Gluing core pools (regular & BRP) makes sense only when both pools are of
-  // the same size. This the only way we can check belonging to either of the
-  // two with a single bitmask operation.
-  PA_CHECK(regular_pool_size == brp_pool_size);
+  const size_t core_pool_size = CorePoolSize();
 
   // TODO(crbug.com/40238514): Support PA_ENABLE_SHADOW_METADATA.
   int pools_fd = -1;
 
-  size_t glued_pool_sizes = regular_pool_size * 2;
+  size_t glued_pool_sizes = core_pool_size * 2;
   // Note, BRP pool requires to be preceded by a "forbidden zone", which is
   // conveniently taken care of by the last guard page of the regular pool.
   setup_.regular_pool_base_address_ =
@@ -200,81 +180,45 @@ void PartitionAddressSpace::Init() {
     HandlePoolAllocFailure();
   }
   setup_.brp_pool_base_address_ =
-      setup_.regular_pool_base_address_ + regular_pool_size;
-#else  // PA_BUILDFLAG(GLUE_CORE_POOLS)
-  setup_.regular_pool_base_address_ =
-      AllocPages(regular_pool_size, regular_pool_size,
-                 PageAccessibilityConfiguration(
-                     PageAccessibilityConfiguration::kInaccessible),
-                 PageTag::kPartitionAlloc);
-  if (!setup_.regular_pool_base_address_) {
-    HandlePoolAllocFailure();
-  }
-
-  // Reserve an extra allocation granularity unit before the BRP pool, but keep
-  // the pool aligned at BRPPoolSize(). A pointer immediately past an allocation
-  // is a valid pointer, and having a "forbidden zone" before the BRP pool
-  // prevents such a pointer from "sneaking into" the pool.
-  const size_t kForbiddenZoneSize = PageAllocationGranularity();
-  uintptr_t base_address = AllocPagesWithAlignOffset(
-      0, brp_pool_size + kForbiddenZoneSize, brp_pool_size,
-      brp_pool_size - kForbiddenZoneSize,
-      PageAccessibilityConfiguration(
-          PageAccessibilityConfiguration::kInaccessible),
-      PageTag::kPartitionAlloc, -1);
-  if (!base_address) {
-    HandlePoolAllocFailure();
-  }
-  setup_.brp_pool_base_address_ = base_address + kForbiddenZoneSize;
-#endif  // PA_BUILDFLAG(GLUE_CORE_POOLS)
+      setup_.regular_pool_base_address_ + core_pool_size;
 
 #if PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
-  setup_.regular_pool_base_mask_ = ~(regular_pool_size - 1);
-  setup_.brp_pool_base_mask_ = ~(brp_pool_size - 1);
-#if PA_BUILDFLAG(GLUE_CORE_POOLS)
-  // When PA_GLUE_CORE_POOLS is on, the BRP pool is placed at the end of the
-  // regular pool, effectively forming one virtual pool of a twice bigger
-  // size. Adjust the mask appropriately.
-  setup_.core_pools_base_mask_ = setup_.regular_pool_base_mask_ << 1;
-  PA_DCHECK(setup_.core_pools_base_mask_ == (setup_.brp_pool_base_mask_ << 1));
-#endif
+  setup_.core_pool_base_mask_ = ~(core_pool_size - 1);
+  // The BRP pool is placed at the end of the regular pool, effectively forming
+  // one virtual pool of a twice bigger size. Adjust the mask appropriately.
+  setup_.glued_pools_base_mask_ = setup_.core_pool_base_mask_ << 1;
 #endif  // PA_CONFIG(DYNAMICALLY_SELECT_POOL_SIZE)
 
   AddressPoolManager::GetInstance().Add(
-      kRegularPoolHandle, setup_.regular_pool_base_address_, regular_pool_size);
+      kRegularPoolHandle, setup_.regular_pool_base_address_, core_pool_size);
   AddressPoolManager::GetInstance().Add(
-      kBRPPoolHandle, setup_.brp_pool_base_address_, brp_pool_size);
+      kBRPPoolHandle, setup_.brp_pool_base_address_, core_pool_size);
 
   // Sanity check pool alignment.
-  PA_DCHECK(!(setup_.regular_pool_base_address_ & (regular_pool_size - 1)));
-  PA_DCHECK(!(setup_.brp_pool_base_address_ & (brp_pool_size - 1)));
-#if PA_BUILDFLAG(GLUE_CORE_POOLS)
+  PA_DCHECK(!(setup_.regular_pool_base_address_ & (core_pool_size - 1)));
+  PA_DCHECK(!(setup_.brp_pool_base_address_ & (core_pool_size - 1)));
   PA_DCHECK(!(setup_.regular_pool_base_address_ & (glued_pool_sizes - 1)));
-#endif
 
   // Sanity check pool belonging.
   PA_DCHECK(!IsInRegularPool(setup_.regular_pool_base_address_ - 1));
   PA_DCHECK(IsInRegularPool(setup_.regular_pool_base_address_));
-  PA_DCHECK(IsInRegularPool(setup_.regular_pool_base_address_ +
-                            regular_pool_size - 1));
   PA_DCHECK(
-      !IsInRegularPool(setup_.regular_pool_base_address_ + regular_pool_size));
+      IsInRegularPool(setup_.regular_pool_base_address_ + core_pool_size - 1));
+  PA_DCHECK(
+      !IsInRegularPool(setup_.regular_pool_base_address_ + core_pool_size));
   PA_DCHECK(!IsInBRPPool(setup_.brp_pool_base_address_ - 1));
   PA_DCHECK(IsInBRPPool(setup_.brp_pool_base_address_));
-  PA_DCHECK(IsInBRPPool(setup_.brp_pool_base_address_ + brp_pool_size - 1));
-  PA_DCHECK(!IsInBRPPool(setup_.brp_pool_base_address_ + brp_pool_size));
-#if PA_BUILDFLAG(GLUE_CORE_POOLS)
+  PA_DCHECK(IsInBRPPool(setup_.brp_pool_base_address_ + core_pool_size - 1));
+  PA_DCHECK(!IsInBRPPool(setup_.brp_pool_base_address_ + core_pool_size));
   PA_DCHECK(!IsInCorePools(setup_.regular_pool_base_address_ - 1));
   PA_DCHECK(IsInCorePools(setup_.regular_pool_base_address_));
   PA_DCHECK(
-      IsInCorePools(setup_.regular_pool_base_address_ + regular_pool_size - 1));
-  PA_DCHECK(
-      IsInCorePools(setup_.regular_pool_base_address_ + regular_pool_size));
+      IsInCorePools(setup_.regular_pool_base_address_ + core_pool_size - 1));
+  PA_DCHECK(IsInCorePools(setup_.regular_pool_base_address_ + core_pool_size));
   PA_DCHECK(IsInCorePools(setup_.brp_pool_base_address_ - 1));
   PA_DCHECK(IsInCorePools(setup_.brp_pool_base_address_));
-  PA_DCHECK(IsInCorePools(setup_.brp_pool_base_address_ + brp_pool_size - 1));
-  PA_DCHECK(!IsInCorePools(setup_.brp_pool_base_address_ + brp_pool_size));
-#endif  // PA_BUILDFLAG(GLUE_CORE_POOLS)
+  PA_DCHECK(IsInCorePools(setup_.brp_pool_base_address_ + core_pool_size - 1));
+  PA_DCHECK(!IsInCorePools(setup_.brp_pool_base_address_ + core_pool_size));
 
 #if PA_BUILDFLAG(ENABLE_POINTER_COMPRESSION)
   CompressedPointerBaseGlobal::SetBase(setup_.regular_pool_base_address_);
@@ -356,18 +300,9 @@ void PartitionAddressSpace::UninitForTesting() {
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
   UninitThreadIsolatedPoolForTesting();  // IN-TEST
 #endif
-#if PA_BUILDFLAG(GLUE_CORE_POOLS)
   // The core pools (regular & BRP) were allocated using a single allocation of
   // double size.
-  FreePages(setup_.regular_pool_base_address_, 2 * RegularPoolSize());
-#else   // PA_BUILDFLAG(GLUE_CORE_POOLS)
-  FreePages(setup_.regular_pool_base_address_, RegularPoolSize());
-  // For BRP pool, the allocation region includes a "forbidden zone" before the
-  // pool.
-  const size_t kForbiddenZoneSize = PageAllocationGranularity();
-  FreePages(setup_.brp_pool_base_address_ - kForbiddenZoneSize,
-            BRPPoolSize() + kForbiddenZoneSize);
-#endif  // PA_BUILDFLAG(GLUE_CORE_POOLS)
+  FreePages(setup_.regular_pool_base_address_, 2 * CorePoolSize());
   // Do not free pages for the configurable pool, because its memory is owned
   // by someone else, but deinitialize it nonetheless.
   setup_.regular_pool_base_address_ = kUninitializedPoolBaseAddress;
@@ -444,7 +379,7 @@ void PartitionAddressSpace::InitShadowMetadata(PoolHandleMask mask) {
     // Reserve 1 address space for all pools.
     const size_t shadow_pool_size =
         std::max(ConfigurablePoolShadowSize(),
-                 std::max(RegularPoolShadowSize(), BRPPoolShadowSize()));
+                 std::max(CorePoolShadowSize(), CorePoolShadowSize()));
 
     // Reserve virtual address space for the shadow pool.
     uintptr_t pool_shadow_address =
@@ -475,8 +410,8 @@ void PartitionAddressSpace::InitShadowMetadata(PoolHandleMask mask) {
     if (brp_pool_fd_ == -1) {
       PA_DCHECK(pool_shadow_address_);
       PA_DCHECK(brp_pool_shadow_offset_ == 0);
-      brp_pool_fd_ =
-          CreateAnonymousFileForMapping("brp_pool_shadow", BRPPoolShadowSize());
+      brp_pool_fd_ = CreateAnonymousFileForMapping("brp_pool_shadow",
+                                                   CorePoolShadowSize());
       brp_pool_shadow_offset_ =
           pool_shadow_address_ - BRPPoolBase() +
           SystemPageSize() * kSystemPageOffsetOfBRPPoolShadow;
@@ -487,7 +422,7 @@ void PartitionAddressSpace::InitShadowMetadata(PoolHandleMask mask) {
       PA_DCHECK(pool_shadow_address_);
       PA_DCHECK(regular_pool_shadow_offset_ == 0);
       regular_pool_fd_ = CreateAnonymousFileForMapping("regular_pool_shadow",
-                                                       RegularPoolShadowSize());
+                                                       CorePoolShadowSize());
       regular_pool_shadow_offset_ =
           pool_shadow_address_ - RegularPoolBase() +
           SystemPageSize() * kSystemPageOffsetOfRegularPoolShadow;
@@ -561,13 +496,13 @@ void PartitionAddressSpace::UnmapShadowMetadata(uintptr_t super_page,
   switch (pool) {
     case kRegularPoolHandle:
       PA_DCHECK(RegularPoolBase() <= super_page);
-      PA_DCHECK((super_page - RegularPoolBase()) < RegularPoolSize());
+      PA_DCHECK((super_page - RegularPoolBase()) < CorePoolSize());
       PA_DCHECK(IsShadowMetadataEnabled(kRegularPoolHandle));
       offset = regular_pool_shadow_offset_;
       break;
     case kBRPPoolHandle:
       PA_DCHECK(BRPPoolBase() <= super_page);
-      PA_DCHECK((super_page - BRPPoolBase()) < BRPPoolSize());
+      PA_DCHECK((super_page - BRPPoolBase()) < CorePoolSize());
       PA_DCHECK(IsShadowMetadataEnabled(kBRPPoolHandle));
       offset = brp_pool_shadow_offset_;
       break;

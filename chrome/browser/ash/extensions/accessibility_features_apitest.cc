@@ -100,8 +100,7 @@ class AccessibilityFeaturesApiTest
       return kTestExtensionPathReadPermissionV3;
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return "";
+    NOTREACHED();
   }
 
   // Whether a parameterized test should have been able to modify accessibility

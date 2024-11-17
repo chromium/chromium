@@ -39,6 +39,7 @@ import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.SelectionPopupController;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -319,7 +320,7 @@ public class Shell extends LinearLayout {
         SelectionPopupController.fromWebContents(webContents)
                 .setActionModeCallback(defaultActionCallback());
         mNavigationController = mWebContents.getNavigationController();
-        if (getParent() != null) mWebContents.onShow();
+        if (getParent() != null) mWebContents.updateWebContentsVisibility(Visibility.VISIBLE);
         mUrlTextView.setText(mWebContents.getVisibleUrl().getSpec());
         ((FrameLayout) findViewById(R.id.contentview_holder))
                 .addView(

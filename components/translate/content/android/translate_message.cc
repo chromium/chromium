@@ -287,8 +287,7 @@ void TranslateMessage::ShowTranslateStep(TranslateStep step,
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   bridge_->ShowMessage(env, std::move(title), std::move(description),
@@ -343,8 +342,7 @@ void TranslateMessage::HandlePrimaryAction(JNIEnv* env) {
       base::debug::DumpWithoutCrashing();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -371,8 +369,7 @@ void TranslateMessage::HandleDismiss(JNIEnv* env, jint dismiss_reason) {
       // These dismiss reasons should not be possible for a TranslateMessage,
       // since clicking the primary or secondary buttons doesn't dismiss the
       // message.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     default:
       break;
@@ -567,8 +564,7 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     return nullptr;
   }
@@ -641,8 +637,7 @@ TranslateMessage::HandleSecondaryMenuItemClicked(
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return nullptr;

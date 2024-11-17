@@ -103,7 +103,6 @@ source_set("util") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/web/public/annotations:custom_text_check_result",
   ]
@@ -113,6 +112,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "parcel_tracking_util_unittest.mm" ]
   deps = [
+    ":features",
     ":util",
     "//base/test:test_support",
     "//components/commerce/core:shopping_service_test_support",
@@ -122,7 +122,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:test_support",

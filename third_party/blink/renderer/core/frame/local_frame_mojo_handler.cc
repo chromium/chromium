@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/frame/local_frame_mojo_handler.h"
 
 #include "base/metrics/histogram_functions.h"
@@ -214,24 +209,23 @@ v8::Local<v8::String> ErrorToString(ScriptState* script_state,
 class JavaScriptExecuteRequestForTestsHandler
     : public GarbageCollected<JavaScriptExecuteRequestForTestsHandler> {
  public:
-  class PromiseCallback : public ScriptFunction::Callable {
+  class PromiseCallback : public ThenCallable<IDLAny, PromiseCallback> {
    public:
     PromiseCallback(JavaScriptExecuteRequestForTestsHandler& handler,
                     mojom::blink::JavaScriptExecutionResultType type)
         : handler_(handler), type_(type) {}
 
-    ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+    void React(ScriptState* script_state, ScriptValue value) {
       DCHECK(script_state);
       if (type_ == mojom::blink::JavaScriptExecutionResultType::kSuccess)
         handler_->SendSuccess(script_state, value.V8Value());
       else
         handler_->SendException(script_state, value.V8Value());
-      return {};
     }
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(handler_);
-      ScriptFunction::Callable::Trace(visitor);
+      ThenCallable<IDLAny, PromiseCallback>::Trace(visitor);
     }
 
    private:
@@ -254,20 +248,16 @@ class JavaScriptExecuteRequestForTestsHandler
     }
   }
 
-  ScriptFunction* CreateResolveCallback(ScriptState* script_state,
-                                        LocalFrame* frame) {
-    return MakeGarbageCollected<ScriptFunction>(
-        script_state,
-        MakeGarbageCollected<PromiseCallback>(
-            *this, mojom::blink::JavaScriptExecutionResultType::kSuccess));
+  PromiseCallback* CreateResolveCallback(ScriptState* script_state,
+                                         LocalFrame* frame) {
+    return MakeGarbageCollected<PromiseCallback>(
+        *this, mojom::blink::JavaScriptExecutionResultType::kSuccess);
   }
 
-  ScriptFunction* CreateRejectCallback(ScriptState* script_state,
-                                       LocalFrame* frame) {
-    return MakeGarbageCollected<ScriptFunction>(
-        script_state,
-        MakeGarbageCollected<PromiseCallback>(
-            *this, mojom::blink::JavaScriptExecutionResultType::kException));
+  PromiseCallback* CreateRejectCallback(ScriptState* script_state,
+                                        LocalFrame* frame) {
+    return MakeGarbageCollected<PromiseCallback>(
+        *this, mojom::blink::JavaScriptExecutionResultType::kException);
   }
 
   void SendSuccess(ScriptState* script_state, v8::Local<v8::Value> value) {
@@ -918,7 +908,8 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
       if (resolve_promises && !value.IsEmpty() && value->IsPromise()) {
         auto promise = ScriptPromise<IDLAny>::FromV8Promise(
             script_state->GetIsolate(), value.As<v8::Promise>());
-        promise.Then(handler->CreateResolveCallback(script_state, frame_),
+        promise.Then(script_state,
+                     handler->CreateResolveCallback(script_state, frame_),
                      handler->CreateRejectCallback(script_state, frame_));
       } else {
         handler->SendSuccess(script_state, value);
@@ -963,7 +954,7 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
 
   WebScriptSource web_script_source(javascript);
   frame_->RequestExecuteScript(
-      world_id, {&web_script_source, 1u},
+      world_id, base::span_from_ref(web_script_source),
       mojom::blink::UserActivationOption::kDoNotActivate,
       mojom::blink::EvaluationTiming::kSynchronous,
       mojom::blink::LoadEventBlockingOption::kDoNotBlock,
@@ -1139,8 +1130,9 @@ void LocalFrameMojoHandler::GetCanonicalUrlForSharing(
     // within the page that the user wishes to point the recipient to. Canonical URLs generally
     // don't and can't contain this state, so try to match user expectations a little more closely
     // here by splicing the fragment identifier (if there is one) into the shared URL.
-    if (doc_url.HasFragmentIdentifier() && !canon_url.HasFragmentIdentifier())
-      canon_url.SetFragmentIdentifier(doc_url.FragmentIdentifier());
+    if (doc_url.HasFragmentIdentifier() && !canon_url.HasFragmentIdentifier()) {
+      canon_url.SetFragmentIdentifier(doc_url.FragmentIdentifier().ToString());
+    }
   }
   std::move(callback).Run(canon_url.IsNull() ? std::nullopt
                                              : std::make_optional(canon_url));
@@ -1286,7 +1278,7 @@ void LocalFrameMojoHandler::PluginActionAt(
           WebPlugin::RotationType::k90Counterclockwise);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LocalFrameMojoHandler::SetInitialFocus(bool reverse) {
@@ -1335,6 +1327,12 @@ void LocalFrameMojoHandler::UpdateBrowserControlsState(
 
 void LocalFrameMojoHandler::Discard() {
   frame_->Discard();
+}
+
+void LocalFrameMojoHandler::FinalizeNavigationConfidence(
+    double randomized_trigger_rate,
+    mojom::blink::ConfidenceLevel confidence) {
+  frame_->SetNavigationConfidence(randomized_trigger_rate, confidence);
 }
 
 void LocalFrameMojoHandler::SetV8CompileHints(

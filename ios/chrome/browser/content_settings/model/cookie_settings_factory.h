@@ -8,7 +8,8 @@
 #import "base/memory/ref_counted.h"
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace content_settings {
 class CookieSettings;
@@ -16,11 +17,11 @@ class CookieSettings;
 
 namespace ios {
 // Singleton that owns all CookieSettings and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class CookieSettingsFactory : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  static scoped_refptr<content_settings::CookieSettings> GetForBrowserState(
-      ChromeBrowserState* browser_state);
+  static scoped_refptr<content_settings::CookieSettings> GetForProfile(
+      ProfileIOS* profile);
   static CookieSettingsFactory* GetInstance();
 
   CookieSettingsFactory(const CookieSettingsFactory&) = delete;

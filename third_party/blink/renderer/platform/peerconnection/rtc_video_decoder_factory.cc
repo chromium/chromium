@@ -51,11 +51,6 @@ BASE_FEATURE(kWebRtcHwAv1Decoding,
 // determine the maximum resolution and frame rate.
 constexpr int kDefaultFps = 30;
 constexpr gfx::Size kDefaultSize(1280, 720);
-#if BUILDFLAG(RTC_USE_H265)
-// For H.265 we use larger default resolution to signal support of 1080p and
-// minimum required level 3.1.
-constexpr gfx::Size kDefaultSizeH265(1920, 1080);
-#endif  // BUILDFLAG(RTC_USE_H265)
 
 struct CodecConfig {
   media::VideoCodec codec;
@@ -72,10 +67,6 @@ constexpr CodecConfig kCodecConfigs[] = {
     {media::VideoCodec::kH264, media::H264PROFILE_HIGH},
     {media::VideoCodec::kH264, media::H264PROFILE_HIGH444PREDICTIVEPROFILE},
     {media::VideoCodec::kAV1, media::AV1PROFILE_PROFILE_MAIN},
-#if BUILDFLAG(RTC_USE_H265)
-    {media::VideoCodec::kHEVC, media::HEVCPROFILE_MAIN},
-    {media::VideoCodec::kHEVC, media::HEVCPROFILE_MAIN10},
-#endif  // BUILDFLAG(RTC_USE_H265)
 };
 
 // Translate from media::VideoDecoderConfig to webrtc::SdpVideoFormat, or return
@@ -137,11 +128,16 @@ std::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
           webrtc::H264SupportedLevel(width * height, kDefaultFps);
       const webrtc::H264ProfileLevelId profile_level_id(
           h264_profile, h264_level.value_or(webrtc::H264Level::kLevel1));
+      const std::optional<std::string> h264_profile_level_string =
+          webrtc::H264ProfileLevelIdToString(profile_level_id);
+      if (!h264_profile_level_string) {
+        // Unsupported combination of profile and level.
+        return std::nullopt;
+      }
 
       webrtc::SdpVideoFormat format(cricket::kH264CodecName);
       format.parameters = {
-          {cricket::kH264FmtpProfileLevelId,
-           *webrtc::H264ProfileLevelIdToString(profile_level_id)},
+          {cricket::kH264FmtpProfileLevelId, *h264_profile_level_string},
           {cricket::kH264FmtpLevelAsymmetryAllowed, "1"}};
       return format;
     }
@@ -164,9 +160,9 @@ std::optional<webrtc::SdpVideoFormat> VdcToWebRtcFormat(
           return std::nullopt;
       }
 
-      gfx::Rect visible_rect(kDefaultSizeH265);
-      const webrtc::Resolution resolution = {.width = visible_rect.width(),
-                                             .height = visible_rect.height()};
+      const webrtc::Resolution resolution = {
+          .width = config.visible_rect().width(),
+          .height = config.visible_rect().height()};
       const std::optional<webrtc::H265Level> h265_level =
           webrtc::GetSupportedH265Level(resolution, kDefaultFps);
       const webrtc::H265ProfileTierLevel profile_tier_level(
@@ -303,6 +299,69 @@ RTCVideoDecoderFactory::GetSupportedFormats() const {
   // TODO(emircan): Remove this when the bug referred above is fixed.
   cricket::AddH264ConstrainedBaselineProfileToSupportedFormats(
       &supported_formats);
+
+#if BUILDFLAG(RTC_USE_H265)
+  if (base::FeatureList::IsEnabled(::features::kWebRtcAllowH265Receive)) {
+    // Check HEVC profiles/resolutions by querying |gpu_factories_| directly
+    // for all it supports, but limiting to Main and Main10 profiles, as we
+    // don't yet have plan to support HEVC range extensions for RTC.
+    bool hevc_main_supported = false;
+    bool hevc_main10_supported = false;
+    gfx::Size hevc_main_max_size(0, 0);
+    gfx::Size hevc_main10_max_size(0, 0);
+    auto configs = gpu_factories_->GetSupportedVideoDecoderConfigs();
+    if (configs) {
+      for (auto& config : configs.value()) {
+        if (hevc_main_supported && hevc_main10_supported) {
+          break;
+        }
+        // Some video decoders report supported HEVC profiles within the range
+        // of profile_min and profile_max; Some others report separate supported
+        // configs by setting profile_min and profile_max to the same value.
+        if (config.profile_min <= media::HEVCPROFILE_MAIN &&
+            config.profile_max >= media::HEVCPROFILE_MAIN) {
+          hevc_main_supported = true;
+          hevc_main_max_size.SetSize(
+              static_cast<float>(config.coded_size_max.width()),
+              static_cast<float>(config.coded_size_max.height()));
+        }
+        if (config.profile_min <= media::HEVCPROFILE_MAIN10 &&
+            config.profile_max >= media::HEVCPROFILE_MAIN10) {
+          hevc_main10_supported = true;
+          hevc_main10_max_size.SetSize(
+              static_cast<float>(config.coded_size_max.width()),
+              static_cast<float>(config.coded_size_max.height()));
+        }
+      }
+    }
+    if (hevc_main_supported) {
+      media::VideoDecoderConfig hevc_main_config(
+          media::VideoCodec::kHEVC, media::HEVCPROFILE_MAIN,
+          media::VideoDecoderConfig::AlphaMode::kIsOpaque,
+          media::VideoColorSpace(), media::kNoTransformation,
+          hevc_main_max_size, gfx::Rect(hevc_main_max_size), hevc_main_max_size,
+          media::EmptyExtraData(), media::EncryptionScheme::kUnencrypted);
+      auto format = VdcToWebRtcFormat(hevc_main_config);
+      if (format) {
+        supported_formats.push_back(*format);
+      }
+    }
+    if (hevc_main10_supported) {
+      media::VideoDecoderConfig hevc_main10_config(
+          media::VideoCodec::kHEVC, media::HEVCPROFILE_MAIN10,
+          media::VideoDecoderConfig::AlphaMode::kIsOpaque,
+          media::VideoColorSpace(), media::kNoTransformation,
+          hevc_main10_max_size, gfx::Rect(hevc_main10_max_size),
+          hevc_main10_max_size, media::EmptyExtraData(),
+          media::EncryptionScheme::kUnencrypted);
+      auto format = VdcToWebRtcFormat(hevc_main10_config);
+      if (format) {
+        supported_formats.push_back(*format);
+      }
+    }
+  }
+#endif  // BUILDFLAG(RTC_USE_H265)
+
   return supported_formats;
 }
 

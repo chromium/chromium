@@ -5,9 +5,11 @@
 #import "ios/chrome/browser/autofill/ui_bundled/manual_fill/manual_fill_plus_address_mediator.h"
 
 #import "base/i18n/message_formatter.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/ranges/algorithm.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/plus_addresses/plus_address_service.h"
 #import "components/plus_addresses/plus_address_ui_utils.h"
 #import "components/strings/grit/components_strings.h"
@@ -33,7 +35,7 @@
 
 @implementation ManualFillPlusAddressMediator {
   // The favicon loader used in the cell.
-  FaviconLoader* _faviconLoader;
+  raw_ptr<FaviconLoader> _faviconLoader;
 
   // Used to fetch plus addresses.
   raw_ptr<plus_addresses::PlusAddressService> _plusAddressService;
@@ -124,7 +126,7 @@
 
 - (BOOL)canUserInjectInPasswordField:(BOOL)passwordField
                        requiresHTTPS:(BOOL)requiresHTTPS {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)userDidPickContent:(NSString*)content
@@ -142,16 +144,16 @@
 
 - (void)autofillFormWithCredential:(ManualFillCredential*)credential
                       shouldReauth:(BOOL)shouldReauth {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (void)autofillFormWithSuggestion:(FormSuggestion*)formSuggestion
                            atIndex:(NSInteger)index {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 - (BOOL)isActiveFormAPasswordForm {
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 #pragma mark - Private

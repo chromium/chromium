@@ -38,9 +38,9 @@
   }
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   CleanUp();
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that if the user relaunches the app without interacting with the

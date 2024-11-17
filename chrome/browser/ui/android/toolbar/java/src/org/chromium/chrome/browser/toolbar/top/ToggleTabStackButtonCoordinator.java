@@ -31,7 +31,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
@@ -109,8 +109,8 @@ public class ToggleTabStackButtonCoordinator {
     /**
      * Post native initializations.
      *
-     * @param onClickListener @{@link OnClickListener} for view.
-     * @param onLongClickListener @{@link OnLongClickListener} for view.
+     * @param onClickListener OnClickListener for view.
+     * @param onLongClickListener OnLongClickListener for view.
      * @param tabCountSupplier Supplier for current tab count to show in view.
      * @param archivedTabCountSupplier Supplies the current archived tab count, used for displaying
      *     the associated IPH.
@@ -241,14 +241,14 @@ public class ToggleTabStackButtonCoordinator {
 
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
         params.setBoundsRespectPadding(true);
-        IPHCommandBuilder builder = null;
+        IphCommandBuilder builder = null;
         if (ChromeFeatureList.sTabStripIncognitoMigration.isEnabled()
                 && mTabModelSelectorSupplier.hasValue()) {
             TabModelSelector selector = mTabModelSelectorSupplier.get();
             // When in Incognito, show IPH to switch out.
             if (selector.getCurrentModel().isIncognitoBranded()) {
                 builder =
-                        new IPHCommandBuilder(
+                        new IphCommandBuilder(
                                 mContext.getResources(),
                                 FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
                                 R.string.iph_tab_switcher_switch_out_of_incognito_text,
@@ -257,7 +257,7 @@ public class ToggleTabStackButtonCoordinator {
             } else if (selector.getModel(true).getCount() > 0) {
                 // When in standard model with incognito tabs, show IPH to switch into incognito.
                 builder =
-                        new IPHCommandBuilder(
+                        new IphCommandBuilder(
                                 mContext.getResources(),
                                 FeatureConstants.TAB_SWITCHER_BUTTON_SWITCH_INCOGNITO,
                                 R.string.iph_tab_switcher_switch_into_incognito_text,
@@ -267,7 +267,7 @@ public class ToggleTabStackButtonCoordinator {
                 && mPromoShownOneshotSupplier.hasValue()
                 && !mPromoShownOneshotSupplier.get()) {
             builder =
-                    new IPHCommandBuilder(
+                    new IphCommandBuilder(
                             mContext.getResources(),
                             FeatureConstants.TAB_SWITCHER_BUTTON_FEATURE,
                             R.string.iph_tab_switcher_text,
@@ -275,7 +275,7 @@ public class ToggleTabStackButtonCoordinator {
         }
 
         if (builder != null) {
-            mUserEducationHelper.requestShowIPH(
+            mUserEducationHelper.requestShowIph(
                     builder.setAnchorView(mToggleTabStackButton)
                             .setOnShowCallback(this::handleShowCallback)
                             .setOnDismissCallback(this::handleDismissCallback)
@@ -313,8 +313,8 @@ public class ToggleTabStackButtonCoordinator {
 
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
         params.setBoundsRespectPadding(true);
-        mUserEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+        mUserEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mContext.getResources(),
                                 FeatureConstants.ANDROID_TAB_DECLUTTER_FEATURE,
                                 R.string.iph_android_tab_declutter_text,

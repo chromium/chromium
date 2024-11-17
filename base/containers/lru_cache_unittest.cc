@@ -530,7 +530,7 @@ TYPED_TEST(LRUCacheSetTest, ReplacementIdentity) {
 
   // Helper to create the correct type of base::*LRUCacheSet, since they have
   // different template arguments.
-  constexpr auto kCreateCache = []() {
+  constexpr auto kCreateCache = [] {
     if constexpr (std::is_same_v<TypeParam, LRUCacheSetTemplate>) {
       using Cache = typename TypeParam::template Type<Ptr, DerefCompare<Ptr>>;
       return Cache(Cache::NO_AUTO_EVICT);

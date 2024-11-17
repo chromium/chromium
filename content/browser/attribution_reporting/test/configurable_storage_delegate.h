@@ -39,9 +39,6 @@ class ConfigurableStorageDelegate : public AttributionResolverDelegate {
   std::optional<OfflineReportDelayConfig> GetOfflineReportDelayConfig()
       const override;
   void ShuffleReports(std::vector<AttributionReport>&) override;
-  std::optional<double> GetRandomizedResponseRate(
-      const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::EventLevelEpsilon) const override;
   GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::TriggerSpecs&,

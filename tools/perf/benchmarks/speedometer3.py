@@ -210,7 +210,7 @@ class Speedometer3MinorMS(Speedometer3):
     options.AppendExtraBrowserArgs('--js-flags=--minor-ms')
 
 
-@benchmark.Info(emails=['agarwaltushar@google.com', 'wnwen@google.com'],
+@benchmark.Info(emails=['rasikan@google.com', 'wnwen@google.com'],
                 component='Blink>JavaScript',
                 documentation_url='https://browserbench.org/Speedometer3.0')
 class Speedometer3Predictable(Speedometer3):

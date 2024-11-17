@@ -51,6 +51,7 @@ build_webui("build") {
     "$root_gen_dir/chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/ui/webui/ash/emoji/new_window_proxy.mojom-webui.ts",
     "$root_gen_dir/chromeos/ash/components/emoji/emoji_search.mojom-webui.ts",
+    "$root_gen_dir/chromeos/ash/components/emoji/tenor_types.mojom-webui.ts",
   ]
 
   ts_composite = true

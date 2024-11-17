@@ -1,7 +1,10 @@
 <style include="searchbox-shared-style">
   :host {
-    --cr-searchbox-height: 48px;
     --cr-searchbox-shadow: 0 1px 6px 0 var(--color-searchbox-shadow);
+    --cr-searchbox-min-width: 250px;
+  }
+
+  :host([is-searchbox-focused]) {
     --cr-searchbox-min-width: 306px;
   }
 
@@ -24,12 +27,14 @@
     z-index: 6; /* Keep aligned with cursor and context menu. */
   }
 
-  .button-container.button-container {
+  .button-container,
+  #searchboxContainer  {
     transition: opacity 150ms, visibility 150ms;
   }
 
   :host([should-fade-out-buttons]) .button-container,
-  :host(:not([initial-flash-animation-has-ended])) .button-container {
+  :host(:not([initial-flash-animation-has-ended])) .button-container,
+  :host(:not([initial-flash-animation-has-ended])) #searchboxContainer {
     opacity: 0;
     visibility: hidden;
   }
@@ -44,7 +49,7 @@
     inset-block-start: 36px;
   }
 
-  :host([close-button-hidden]) #optionsButtonContainer {
+  :host([side-panel-opened]) #optionsButtonContainer {
     inset-inline-end: 24px;
   }
 
@@ -53,8 +58,30 @@
     inset-inline-end: 135px;
   }
 
-  :host([close-button-hidden]) #translateButtonContainer {
+  :host([side-panel-opened]) #translateButtonContainer {
     inset-inline-end: 84px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #translateButtonContainer {
+    inset-inline-end: 84px;
+    inset-block-start: 36px;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled][side-panel-opened]) #translateButtonContainer {
+    inset-inline-end: 24px;
+  }
+
+  :host(:not([is-translate-button-enabled])) #translateButtonContainer {
+    display: none;
+  }
+
+  :host([is-searchbox-focused]) #translateButtonContainer {
+    visibility: hidden; /* Allows for opacity transition. */
+  }
+
+  #translateButtonContainer.searchbox-unfocused {
+    transition: opacity 50ms linear, visibility 50ms linear;
+    transition-delay: 80ms;
   }
 
   .action-button {
@@ -71,13 +98,23 @@
     --cr-icon-image: url("icon_clear.svg");
   }
 
-  :host([close-button-hidden]) #closeButton,
-  :host([search-box-hidden]) #searchboxContainer {
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #closeButton {
+    background-color: var(--color-selection-element);
+    height: 48px;
+    width: 48px;
+    --cr-icon-button-fill-color: var(--color-primary);
+  }
+
+  :host([side-panel-opened]) #closeButton {
     display: none;
   }
 
   #toast {
     justify-content: space-between;
+  }
+
+  :host([is-lens-overlay-contextual-searchbox-enabled]) #moreOptions {
+    display: none;
   }
 
   #moreOptions {
@@ -182,13 +219,46 @@
 
   #searchboxContainer {
     --color-searchbox-results-background: #ffffffff;
+    --color-searchbox-google-g-background: var(--color-primary);
+    --cr-searchbox-height: 48px;
+    --cr-searchbox-icon-left-position: 12px;
+    --cr-searchbox-icon-top-position: 0px;
     position: absolute;
     inset-block-start: 36px;
     inset-inline-end: 140px;
   }
 
-  :host([dark-mode]) #searchboxContainer {
-    --color-searchbox-results-background: #3c3c3cff;
+  :host([is-searchbox-focused]) #searchboxContainer {
+    inset-inline-end: 84px;
+  }
+
+  #searchboxContainer {
+    transition: inset-inline-end 200ms ease;
+  }
+
+  #searchbox {
+    transition: width 200ms ease;
+  }
+
+  :host(:not([is-lens-overlay-contextual-searchbox-visible])) #searchboxContainer,
+  :host([search-box-hidden]) #searchboxContainer {
+    display: none;
+  }
+
+  cr-searchbox-ghost-loader {
+    display: none;
+    position: absolute;
+    inset-inline-start: 0;
+    inset-inline-end: 0;
+    top: 0;
+  }
+
+  /**
+   * Show the ghost loader when the searchbox is focused and the searchbox
+   * dropdown isn't showing (no results available).
+   */
+   :host([is-searchbox-focused]) #searchboxContainer:has(cr-searchbox:not([dropdown-is-visible])) cr-searchbox-ghost-loader {
+    display: block;
   }
 </style>
 <div class="app-container"
@@ -224,22 +294,22 @@
       on-pointerleave="handlePointerLeaveBackgroundScrim"></div>
   <lens-selection-overlay id="selectionOverlay" theme="[[theme]]"
       is-searchbox-focused="[[isSearchboxFocused]]"
+      are-language-pickers-open="[[areLanguagePickersOpen]]"
       on-pointerenter="handlePointerEnterSelectionOverlay"
       on-pointerleave="handlePointerLeaveSelectionOverlay">
   </lens-selection-overlay>
   <initial-gradient id="initialGradient"></initial-gradient>
-  <template is="dom-if" if="[[isLensOverlayContextualSearchboxEnabled]]">
-    <div id="searchboxContainer">
-      <cr-searchbox id="searchbox" on-focus="handleSearchboxFocused"
-          on-blur="handleSearchboxBlurred">
-      </cr-searchbox>
-    </div>
-  </template>
-  <template is="dom-if" if="[[isTranslateButtonVisible]]">
-    <div id="translateButtonContainer" class="button-container">
-      <translate-button></translate-button>
-    </div>
-  </template>
+  <div id="searchboxContainer">
+    <cr-searchbox id="searchbox" on-focus="handleSearchboxFocused"
+        on-blur="handleSearchboxBlurred">
+    </cr-searchbox>
+    <cr-searchbox-ghost-loader id="searchboxGhostLoader"></cr-searchbox-ghost-loader>
+  </div>
+  <div id="translateButtonContainer" class="button-container">
+    <translate-button id="translateButton"
+      is-lens-overlay-contextual-searchbox-enabled="[[isLensOverlayContextualSearchboxEnabled]]">
+    </translate-button>
+  </div>
   <div id="optionsButtonContainer" class="button-container">
     <div id="moreOptions">
       <cr-icon-button iron-icon="cr:more-vert" id="moreOptionsButton"

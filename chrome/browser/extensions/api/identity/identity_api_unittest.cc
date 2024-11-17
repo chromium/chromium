@@ -127,7 +127,7 @@ TEST_F(IdentityAPITest, GaiaIdErasedAfterSignOut) {
   EXPECT_EQ(api()->GetGaiaIdForExtension(extension_id), std::nullopt);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 TEST_F(IdentityAPITest, GaiaIdErasedAfterClearPrimaryAccount) {
   std::string extension_id = prefs()->AddExtensionAndReturnId("extension");
   EXPECT_CALL(mock_on_signin_changed_callback(), Run(_)).Times(2);
@@ -139,7 +139,7 @@ TEST_F(IdentityAPITest, GaiaIdErasedAfterClearPrimaryAccount) {
   identity_env()->ClearPrimaryAccount();
   EXPECT_EQ(api()->GetGaiaIdForExtension(extension_id), std::nullopt);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(IdentityAPITest, GaiaIdErasedAfterSignOutTwoAccounts) {
   std::string extension1_id = prefs()->AddExtensionAndReturnId("extension1");
@@ -199,13 +199,13 @@ TEST_F(IdentityAPITest, FireOnAccountSignInChangedOnlyIfSignedIn) {
   identity_env()->RemoveRefreshTokenForAccount(account_3.account_id);
   Mock::VerifyAndClearExpectations(&mock_on_signin_changed_callback());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Clear primary account is expected to remove two accounts and fire two
   // notifications.
   EXPECT_CALL(mock_on_signin_changed_callback(), Run(_)).Times(2);
   identity_env()->ClearPrimaryAccount();
   Mock::VerifyAndClearExpectations(&mock_on_signin_changed_callback());
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

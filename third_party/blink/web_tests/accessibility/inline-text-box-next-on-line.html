@@ -260,9 +260,9 @@ test(() => {
   assert_equals(axObj.role, 'AXRole: AXInlineTextBox');
   lineText.push(axObj.name);
   assert_equals(axObj.parentElement().nextOnLine(), lineBreak.childAtIndex(0),
-                '"text with a".name.parentElement().nextOnLine()');
+    '"test with a".name.parentElement().nextOnLine()');
   assert_equals(axObj.nextOnLine(), lineBreak.childAtIndex(0),
-                '"text with a".name.nextOnLine()');
+    '"test with a".name.nextOnLine()');
 
   assert_equals(axObj.parentElement().previousOnLine(), axObj.previousOnLine());
   axObj = axObj.previousOnLine();

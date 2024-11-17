@@ -9,16 +9,20 @@ This page has instructions for [Security Shepherds](shepherd.md) in how best to 
 
 [https://clusterfuzz.com/upload-testcase](https://clusterfuzz.com/upload-testcase)
 allows you to upload files to reproduce crashes on various platforms and will
-identify revision ranges when the regression was introduced. If a test case
-requires multiple files, they can be uploaded together in a zip or tar
-archive: the main file needs to contain the words `run`, `fuzz-` `index.` or
-`crash.`.
+identify revision ranges when the regression was introduced.
 
-Please *do* specify the crbug number when uploading the test case. This will allow
+Prefer using the "Quick upload" flow for simple cases. If you choose to use
+"Upload" instead, you will have to pick which [job](#useful-jobs) to run.
+
+Note that ClusterFuzz only supports running untrusted inputs on Linux. The UI
+will warn you of that.
+
+If a test case requires multiple files, they can be uploaded together in a zip
+or tar archive: the main file needs to contain the words `run`, `fuzz-` `index.`
+or `crash.`.
+
+Please *do* specify the crbug number when uploading the test case. This allows
 ClusterFuzz to keep the crbug updated with progress.
-
-Please *don't* upload test cases unless they're obviously harmless. Currently
-ClusterFuzz does not support untrusted workloads.
 
 ## Useful jobs
 
@@ -28,8 +32,7 @@ test:
 * repro.html [linux_asan_chrome_mp](https://clusterfuzz.com/upload-testcase?upload=true&job=linux_asan_chrome_mp)
   or [windows_asan_chrome](https://clusterfuzz.com/upload-testcase?upload=true&job=windows_asan_chrome)
 * repro.js [linux_asan_d8](https://clusterfuzz.com/upload-testcase?upload=true&job=linux_asan_d8)
-* repro.pdf [libfuzzer_pdfium_asan / pdfium_fuzzer](https://clusterfuzz.com/upload-testcase?upload=true&job=libfuzzer_pdfium_asan&target=pdfium_fuzzer)
-  or [libfuzzer_pdfium_asan / pdfium_xfa_fuzzer](https://clusterfuzz.com/upload-testcase?upload=true&job=libfuzzer_pdfium_asan&target=pdfium_xfa_fuzzer)
+* repro.pdf [libfuzzer_chrome_asan / pdfium_xfa_fuzzer](https://clusterfuzz.com/upload-testcase?upload=true&job=libfuzzer_chrome_asan&target=pdfium_xfa_fuzzer)
 
 ## MojoJS
 

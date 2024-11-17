@@ -17,16 +17,19 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/renderer_host/back_forward_cache_disable.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/browser/renderer_host/media/media_stream_ui_proxy.h"
 #include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_switches.h"
 #include "media/audio/audio_system.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_facing.h"
@@ -34,6 +37,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "url/origin.h"
@@ -440,6 +444,239 @@ void MediaDevicesDispatcherHost::OnAudioGotSaltAndOrigin(
       render_frame_host_id_, devices_to_enumerate,
       base::BindOnce(&MediaDevicesDispatcherHost::GotAudioInputEnumeration,
                      weak_factory_.GetWeakPtr()));
+}
+
+void MediaDevicesDispatcherHost::SelectAudioOutput(
+    const std::string& hashed_device_id,
+    SelectAudioOutputCallback select_audio_output_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (!base::FeatureList::IsEnabled(blink::features::kSelectAudioOutput)) {
+    ReceivedBadMessage(render_frame_host_id_.child_id,
+                       bad_message::MDDH_SELECT_AUDIO_OUTPUT_WITHOUT_FEATURE);
+    return;
+  }
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+  auto result = blink::mojom::SelectAudioOutputResult::New();
+  result->status = blink::mojom::AudioOutputStatus::kUnknown;
+  std::move(select_audio_output_callback).Run(std::move(result));
+#else
+  if (select_audio_output_callback_) {
+    auto result = blink::mojom::SelectAudioOutputResult::New();
+    result->status =
+        blink::mojom::AudioOutputStatus::kErrorOtherRequestInProgress;
+    std::move(select_audio_output_callback).Run(std::move(result));
+    return;
+  }
+  select_audio_output_callback_ = std::move(select_audio_output_callback);
+
+  // Check for user activation on the UI thread.
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(
+          [](GlobalRenderFrameHostId render_frame_host_id) {
+            RenderFrameHostImpl* render_frame_host =
+                RenderFrameHostImpl::FromID(render_frame_host_id);
+            return render_frame_host &&
+                   render_frame_host->HasTransientUserActivation();
+          },
+          render_frame_host_id_),
+      base::BindOnce(
+          &MediaDevicesDispatcherHost::OnGotTransientUserActivationResult,
+          weak_factory_.GetWeakPtr(), hashed_device_id));
+#endif
+}
+
+void MediaDevicesDispatcherHost::OnGotTransientUserActivationResult(
+    const std::string& hashed_device_id,
+    bool has_user_activation) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!has_user_activation) {
+    auto result = blink::mojom::SelectAudioOutputResult::New();
+    result->status = blink::mojom::AudioOutputStatus::kNoUserActivation;
+    std::move(select_audio_output_callback_).Run(std::move(result));
+    return;
+  }
+
+  media_stream_manager_->media_devices_manager()
+      ->GetSpeakerSelectionAndMicrophonePermissionState(
+          render_frame_host_id_,
+          base::BindOnce(
+              &MediaDevicesDispatcherHost::OnAudioOutputPermissionResult,
+              weak_factory_.GetWeakPtr(), hashed_device_id));
+}
+
+void MediaDevicesDispatcherHost::OnAudioOutputPermissionResult(
+    const std::string& hashed_device_id,
+    MediaDevicesManager::PermissionDeniedState
+        speaker_selection_permission_state,
+    bool has_microphone_permission) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  if (speaker_selection_permission_state ==
+      MediaDevicesManager::PermissionDeniedState::kDenied) {
+    auto result = blink::mojom::SelectAudioOutputResult::New();
+    result->status = blink::mojom::AudioOutputStatus::kNoPermission;
+    std::move(select_audio_output_callback_).Run(std::move(result));
+    return;
+  }
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          media_stream_manager_->media_devices_manager()
+              ->get_salt_and_origin_cb(),
+          render_frame_host_id_,
+          base::BindPostTaskToCurrentDefault(base::BindOnce(
+              &MediaDevicesDispatcherHost::OnGotSaltAndOriginForAudioOutput,
+              weak_factory_.GetWeakPtr(), hashed_device_id,
+              has_microphone_permission))));
+}
+
+void MediaDevicesDispatcherHost::OnGotSaltAndOriginForAudioOutput(
+    const std::string& hashed_device_id,
+    bool has_microphone_permission,
+    const MediaDeviceSaltAndOrigin& salt_and_origin) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  MediaDevicesManager::BoolDeviceTypes requested_types;
+  requested_types[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)] =
+      true;
+  media_stream_manager_->media_devices_manager()->EnumerateDevices(
+      requested_types,
+      base::BindOnce(
+          &MediaDevicesDispatcherHost::OnEnumeratedAudioOutputDevices,
+          weak_factory_.GetWeakPtr(), hashed_device_id,
+          has_microphone_permission, salt_and_origin));
+}
+
+void MediaDevicesDispatcherHost::OnEnumeratedAudioOutputDevices(
+    const std::string& hashed_device_id,
+    bool has_microphone_permission,
+    const MediaDeviceSaltAndOrigin& salt_and_origin,
+    const MediaDeviceEnumeration& enumeration) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (enumeration.empty()) {
+    auto result = blink::mojom::SelectAudioOutputResult::New();
+    result->status = blink::mojom::AudioOutputStatus::kNoDevices;
+    std::move(select_audio_output_callback_).Run(std::move(result));
+    return;
+  }
+
+  if (!hashed_device_id.empty()) {
+    for (const auto& device_info :
+         enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]) {
+      std::string current_hashed_id =
+          GetHMACForRawMediaDeviceID(salt_and_origin, device_info.device_id);
+      if (current_hashed_id == hashed_device_id &&
+          (has_microphone_permission ||
+           media_stream_manager_->media_devices_manager()
+               ->IsAudioOutputDeviceExplicitlyAuthorized(
+                   render_frame_host_id_, device_info.device_id))) {
+        std::move(select_audio_output_callback_)
+            .Run(CreateSelectAudioOutputResult(device_info, salt_and_origin));
+        return;
+      }
+    }
+  }
+
+  std::vector<content::AudioOutputDeviceInfo> audio_output_devices;
+  for (const auto& device_info :
+       enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]) {
+    audio_output_devices.push_back({device_info.device_id, device_info.label});
+  }
+
+  std::unique_ptr<MediaStreamUIProxy> ui_proxy =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseFakeUIForMediaStream)
+          ? std::make_unique<FakeMediaStreamUIProxy>(
+                /*tests_use_fake_render_frame_hosts=*/false)
+          : MediaStreamUIProxy::Create();
+
+  ui_proxy->RequestSelectAudioOutput(
+      std::make_unique<SelectAudioOutputRequest>(
+          render_frame_host_id_, std::move(audio_output_devices)),
+      base::BindOnce(&MediaDevicesDispatcherHost::OnSelectedDeviceInfo,
+                     weak_factory_.GetWeakPtr(), std::move(enumeration)));
+}
+
+void MediaDevicesDispatcherHost::OnSelectedDeviceInfo(
+    MediaDeviceEnumeration enumeration,
+    base::expected<std::string, SelectAudioOutputError>
+        selected_device_id_or_error) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  auto result = blink::mojom::SelectAudioOutputResult::New();
+
+  if (selected_device_id_or_error.has_value()) {
+    // Get salt and origin for hashing selected device.
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            media_stream_manager_->media_devices_manager()
+                ->get_salt_and_origin_cb(),
+            render_frame_host_id_,
+            base::BindPostTaskToCurrentDefault(base::BindOnce(
+                &MediaDevicesDispatcherHost::FinalizeSelectAudioOutput,
+                weak_factory_.GetWeakPtr(), enumeration,
+                std::move(selected_device_id_or_error.value())))));
+    return;
+  }
+  content::SelectAudioOutputError error = selected_device_id_or_error.error();
+  switch (error) {
+    case content::SelectAudioOutputError::kNotSupported:
+      result->status = blink::mojom::AudioOutputStatus::kNotSupported;
+      break;
+    case content::SelectAudioOutputError::kUserCancelled:
+      result->status = blink::mojom::AudioOutputStatus::kNoPermission;
+      break;
+    case content::SelectAudioOutputError::kNoPermission:
+      result->status = blink::mojom::AudioOutputStatus::kNoPermission;
+      break;
+    case content::SelectAudioOutputError::kOtherError:
+      result->status = blink::mojom::AudioOutputStatus::kUnknown;
+      break;
+  }
+  std::move(select_audio_output_callback_).Run(std::move(result));
+  return;
+}
+
+void MediaDevicesDispatcherHost::FinalizeSelectAudioOutput(
+    MediaDeviceEnumeration enumeration,
+    const std::string& selected_device_id,
+    const MediaDeviceSaltAndOrigin& salt_and_origin) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  auto result = blink::mojom::SelectAudioOutputResult::New();
+
+  // Find the selected device and hash its info.
+  for (auto& device_info :
+       enumeration[static_cast<size_t>(MediaDeviceType::kMediaAudioOutput)]) {
+    if (device_info.device_id == selected_device_id) {
+      media_stream_manager_->media_devices_manager()->AddAudioDeviceToOriginMap(
+          render_frame_host_id_, device_info);
+      std::move(select_audio_output_callback_)
+          .Run(CreateSelectAudioOutputResult(device_info, salt_and_origin));
+      return;
+    }
+  }
+
+  result->status = blink::mojom::AudioOutputStatus::kDeviceNotFound;
+  std::move(select_audio_output_callback_).Run(std::move(result));
+}
+
+blink::mojom::SelectAudioOutputResultPtr
+MediaDevicesDispatcherHost::CreateSelectAudioOutputResult(
+    const blink::WebMediaDeviceInfo& device_info,
+    const MediaDeviceSaltAndOrigin& salt_and_origin) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  auto result = blink::mojom::SelectAudioOutputResult::New();
+  result->device_info = device_info;
+  result->device_info.device_id =
+      GetHMACForRawMediaDeviceID(salt_and_origin, device_info.device_id);
+  result->device_info.group_id = GetHMACForRawMediaDeviceID(
+      salt_and_origin, device_info.group_id, /*use_group_salt=*/true);
+  result->status = blink::mojom::AudioOutputStatus::kSuccess;
+  return result;
 }
 
 void MediaDevicesDispatcherHost::GotAudioInputEnumeration(

@@ -55,7 +55,7 @@ public class ChannelsInitializerTest {
     @RequiresApi(Build.VERSION_CODES.O)
     public void setUp() {
         mContext = RuntimeEnvironment.getApplication();
-        mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create(mContext);
+        mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create();
 
         mChannelsInitializer =
                 new ChannelsInitializer(

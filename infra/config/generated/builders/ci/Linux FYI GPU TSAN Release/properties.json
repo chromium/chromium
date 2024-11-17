@@ -44,7 +44,8 @@
           "builder": "gpu-fyi-try-linux-nvidia-tsn",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Linux FYI GPU TSAN Release/targets"
     }
   },
   "$build/reclient": {

@@ -22,13 +22,20 @@
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/send_tab_to_self/send_tab_promo_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/set_up_list/constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_consumer_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_item_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/standalone_module_view.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_view.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_audience.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_consumer_source.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_state.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_module_view.h"
 
 @implementation MagicStackModuleContentsFactory
 
@@ -73,6 +80,10 @@
           static_cast<PriceTrackingPromoItem*>(config);
       return [self priceTrackingPromoViewForConfig:item];
     }
+    case ContentSuggestionsModuleType::kSendTabPromo: {
+      SendTabPromoItem* item = static_cast<SendTabPromoItem*>(config);
+      return [self sendTabPromoViewForConfig:item];
+    }
     case ContentSuggestionsModuleType::kSetUpListSync:
     case ContentSuggestionsModuleType::kSetUpListDefaultBrowser:
     case ContentSuggestionsModuleType::kSetUpListAutofill:
@@ -81,6 +92,12 @@
     case ContentSuggestionsModuleType::kSetUpListNotifications: {
       SetUpListConfig* setUpListConfig = static_cast<SetUpListConfig*>(config);
       return [self setUpListViewForConfig:setUpListConfig];
+    }
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTips: {
+      TipsModuleState* tipsConfig = static_cast<TipsModuleState*>(config);
+      return [self tipsViewForConfig:tipsConfig
+                 contentViewDelegate:contentViewDelegate];
     }
     default:
       NOTREACHED();
@@ -157,6 +174,14 @@
   return safetyCheckView;
 }
 
+- (UIView*)sendTabPromoViewForConfig:(SendTabPromoItem*)sendTabPromoItem {
+  StandaloneModuleView* view =
+      [[StandaloneModuleView alloc] initWithFrame:CGRectZero];
+  view.delegate = sendTabPromoItem.standaloneDelegate;
+  [view configureView:sendTabPromoItem];
+  return view;
+}
+
 - (UIView*)setUpListViewForConfig:(SetUpListConfig*)config {
   NSArray<SetUpListItemViewData*>* items = config.setUpListItems;
 
@@ -176,7 +201,22 @@
     view.commandHandler = config.commandHandler;
     [compactedSetUpListViews addObject:view];
   }
-  return [[MultiRowContainerView alloc] initWithViews:compactedSetUpListViews];
+  UIView* view =
+      [[MultiRowContainerView alloc] initWithViews:compactedSetUpListViews];
+  view.accessibilityIdentifier = set_up_list::kSetUpListContainerID;
+  return view;
+}
+
+- (UIView*)tipsViewForConfig:(TipsModuleState*)state
+         contentViewDelegate:
+             (id<MagicStackModuleContentViewDelegate>)contentViewDelegate {
+  TipsModuleView* view = [[TipsModuleView alloc] initWithState:state];
+
+  view.audience = state.audience;
+  view.contentViewDelegate = contentViewDelegate;
+  [state.consumerSource addConsumer:view];
+
+  return view;
 }
 
 @end

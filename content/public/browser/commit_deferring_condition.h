@@ -54,6 +54,9 @@ class CONTENT_EXPORT CommitDeferringCondition {
   // indicate completion.
   virtual Result WillCommitNavigation(base::OnceClosure resume) = 0;
 
+  // Name used in tracing. Usually the same as the derived class name.
+  virtual const char* TraceEventName() const = 0;
+
   NavigationHandle& GetNavigationHandle() const { return *navigation_handle_; }
 
  private:

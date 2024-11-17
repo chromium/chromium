@@ -10,10 +10,11 @@
 #import "base/memory/raw_ptr.h"
 #import "base/scoped_observation.h"
 #import "components/infobars/core/infobar_manager.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/web/public/lazy_web_state_user_data.h"
 #import "ios/web/public/navigation/referrer.h"
 #import "url/gurl.h"
+
+class ProfileIOS;
 
 namespace infobars {
 class InfoBar;

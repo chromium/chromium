@@ -66,6 +66,7 @@ static_library("system") {
     "//chrome/common:constants",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/install_attributes",
+    "//chromeos/ash/components/policy",
     "//chromeos/ash/components/system",
     "//components/policy/core/common:common_constants",
     "//components/policy/proto",

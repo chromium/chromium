@@ -28,7 +28,8 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
     const gfx::Size& natural_size,
     media::VideoFrame::StorageType storage_type,
     media::VideoPixelFormat pixel_format,
-    base::TimeDelta timestamp) {
+    base::TimeDelta timestamp,
+    std::unique_ptr<gfx::GpuMemoryBuffer> gmb) {
   switch (storage_type) {
     case media::VideoFrame::STORAGE_OWNED_MEMORY:
       return media::VideoFrame::CreateZeroInitializedFrame(
@@ -39,8 +40,10 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
       CHECK(buffer_format) << "Pixel format "
                            << media::VideoPixelFormatToString(pixel_format)
                            << " has no corresponding gfx::BufferFormat";
-      auto gmb = std::make_unique<media::FakeGpuMemoryBuffer>(
-          coded_size, buffer_format.value());
+      if (!gmb) {
+        gmb = std::make_unique<media::FakeGpuMemoryBuffer>(
+            coded_size, buffer_format.value());
+      }
       return media::VideoFrame::WrapExternalGpuMemoryBuffer(
           visible_rect, natural_size, std::move(gmb), timestamp);
     }
@@ -50,20 +53,16 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
       CHECK(buffer_format) << "Pixel format "
                            << media::VideoPixelFormatToString(pixel_format)
                            << " has no corresponding gfx::BufferFormat";
-      auto gmb = std::make_unique<media::FakeGpuMemoryBuffer>(
-          coded_size, buffer_format.value());
       scoped_refptr<gpu::ClientSharedImage> shared_image =
           gpu::ClientSharedImage::CreateForTesting();
 
       return media::VideoFrame::WrapSharedImage(
-          pixel_format, shared_image, gpu::SyncToken(),
-          shared_image->GetTextureTarget(), base::NullCallback(), coded_size,
-          visible_rect, natural_size, timestamp);
+          pixel_format, shared_image, gpu::SyncToken(), base::NullCallback(),
+          coded_size, visible_rect, natural_size, timestamp);
     }
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported storage type or pixel format";
+      NOTREACHED() << "Unsupported storage type or pixel format";
   }
-  return nullptr;
 }
 
 }  // namespace blink

@@ -51,6 +51,8 @@ class CONTENT_EXPORT AttributionReportNetworkSender
   ~AttributionReportNetworkSender() override;
 
   // AttributionReportSender:
+  void SetInFirstBatch(bool in_first_batch) override;
+
   void SendReport(AttributionReport report,
                   bool is_debug_report,
                   ReportSentCallback sent_callback) override;
@@ -71,7 +73,7 @@ class CONTENT_EXPORT AttributionReportNetworkSender
 
   void SendReport(GURL url,
                   url::Origin origin,
-                  const std::string& body,
+                  std::string body,
                   UrlLoaderCallback callback);
 
   // Called when headers are available for a sent report.
@@ -97,6 +99,9 @@ class CONTENT_EXPORT AttributionReportNetworkSender
 
   // Used for network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+
+  // Used for metric logging.
+  bool in_first_batch_ = true;
 };
 
 }  // namespace content

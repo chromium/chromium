@@ -317,4 +317,97 @@ IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
             content::EvalJs(GetActiveWebContents(), "document.body.innerText"));
 }
 
+// Tests Storage API for StorageArea.local.
+IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
+                       StorageApiTestStorageAreaLocal) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "StorageArea.OnChanged",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["storage"],
+           "background": {"service_worker": "background.js"}
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           function storageAreaOnChanged() {
+              var localStorageArea = chrome.storage.local;
+              chrome.test.listenOnce(localStorageArea.onChanged,
+                function(changes) {
+                  chrome.test.assertEq({key:{newValue:'value'}}, changes);
+                });
+
+              chrome.test.listenOnce(chrome.storage.onChanged,
+                function(changes, namespace) {
+                  chrome.test.assertEq({key:{newValue:'value'}}, changes);
+                  chrome.test.assertEq('local', namespace);
+                });
+
+              chrome.storage.session.onChanged.addListener(
+                function(changes, namespace) {
+                  chrome.test.notifyFail(
+                    'session.onChanged should not be called when local storage update');
+              });
+
+              localStorageArea.set({key: 'value'});
+           }
+         ]);)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  ResultCatcher result_catcher;
+  scoped_refptr<const Extension> extension =
+      LoadExtensionFromDirectory(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+// Tests Storage API for StorageArea.session.
+IN_PROC_BROWSER_TEST_F(DesktopAndroidExtensionsBrowserTest,
+                       StorageApiTestStorageAreaSession) {
+  static constexpr char kManifest[] =
+      R"({
+           "name": "StorageArea.OnChanged",
+           "version": "0.1",
+           "manifest_version": 3,
+           "permissions": ["storage"],
+           "background": {"service_worker": "background.js"}
+         })";
+  static constexpr char kBackgroundJs[] =
+      R"(chrome.test.runTests([
+           function storageAreaOnChanged() {
+              var sessionStorageArea = chrome.storage.session;
+
+              chrome.test.listenOnce(sessionStorageArea.onChanged,
+                function(changes) {
+                  chrome.test.assertEq({key:{newValue:'value'}}, changes);
+                });
+
+              chrome.test.listenOnce(chrome.storage.onChanged,
+                function(changes, namespace) {
+                  chrome.test.assertEq({key:{newValue:'value'}}, changes);
+                  chrome.test.assertEq('session', namespace);
+                });
+
+              chrome.storage.local.onChanged.addListener(
+                function(changes, namespace) {
+                  chrome.test.notifyFail(
+                    'local.onChanged should not be called when session storage update');
+              });
+
+              sessionStorageArea.set({key: 'value'});
+           }
+         ]);)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundJs);
+
+  ResultCatcher result_catcher;
+  scoped_refptr<const Extension> extension =
+      LoadExtensionFromDirectory(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
 }  // namespace extensions

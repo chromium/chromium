@@ -109,7 +109,7 @@ class DnsReloader : public NetworkChangeNotifier::DNSObserver {
   DnsReloader() { NetworkChangeNotifier::AddDNSObserver(this); }
 
   ~DnsReloader() override {
-    NOTREACHED_IN_MIGRATION();  // LeakyLazyInstance is not destructed.
+    NOTREACHED();  // LeakyLazyInstance is not destructed.
   }
 
   base::Lock lock_;  // Protects resolver_generation_.

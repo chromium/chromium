@@ -238,9 +238,10 @@ found in the LICENSE file.
         </div>
         <cr-input id="passwordInput" value="{{password}}"
             on-keydown="onKeyDown" disabled="[[disabled]]"
-            type="password" required error-message="[[i18nDynamic(
-                locale, 'offlineLoginInvalidPassword')]]"
-            placeholder="[[i18nDynamic(locale, 'offlineLoginPassword')]]">
+            type="password" required
+            error-message="[[passwordErrorText(locale, authenticateByPin)]]"
+            placeholder=
+                "[[passwordPlaceholderText(locale,authenticateByPin)]]">
         </cr-input>
         <div class="layout horizontal-reverse">
           <gaia-button on-click="onForgotPasswordClicked" link

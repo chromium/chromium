@@ -44,6 +44,9 @@ class NetworkAnnotationMonitorBrowserTest
     if (GetParam() == TestCase::kEnabled) {
       feature_list_.InitAndEnableFeature(
           features::kNetworkAnnotationMonitoring);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          features::kNetworkAnnotationMonitoring);
     }
   }
 
@@ -70,10 +73,6 @@ class NetworkAnnotationMonitorBrowserTest
 IN_PROC_BROWSER_TEST_P(NetworkAnnotationMonitorBrowserTest, FeatureTest) {
   policy::PolicyMap policies;
   SetPolicy(&policies, kTestPolicy, base::Value(false));
-  // Disable secondary profiles policy since we skip reporting on lacros when
-  // this is enabled.
-  SetPolicy(&policies, policy::key::kLacrosSecondaryProfilesAllowed,
-            base::Value(false));
   provider_.UpdateChromePolicy(policies);
 
   // Send network request with arbitrary network annotation that will never

@@ -13,9 +13,7 @@ namespace base {
 class FilePath;
 }
 
-namespace chrome {
-
-enum NotifyChromeResult {
+enum class NotifyChromeResult {
   NOTIFY_SUCCESS,
   NOTIFY_FAILED,
   NOTIFY_WINDOW_HUNG,
@@ -31,7 +29,5 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window);
 
 // Changes the notification timeout to |new_timeout|, returns the old timeout.
 base::TimeDelta SetNotificationTimeoutForTesting(base::TimeDelta new_timeout);
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_WIN_CHROME_PROCESS_FINDER_H_

@@ -26,7 +26,6 @@
 
 namespace blink {
 
-class ComputeIntersectionsContext;
 class Document;
 class Element;
 class ExceptionState;
@@ -127,6 +126,10 @@ class CORE_EXPORT IntersectionObserver final
     // bounding box if appropriate.
     bool use_overflow_clip_edge = false;
     bool needs_initial_observation_with_detached_target = true;
+
+    // Indicates whether we should compute and expose the occluder node Id.
+    // This only works if you've already set true `track_visibility`.
+    bool expose_occluder_id = false;
   };
 
   // Creates an IntersectionObserver that monitors changes to the intersection
@@ -171,6 +174,10 @@ class CORE_EXPORT IntersectionObserver final
     return trackVisibility() && !observations_.empty();
   }
 
+  bool ShouldExposeOccluderNodeId() const {
+    return trackVisibility() && expose_occluder_id_;
+  }
+
   base::TimeDelta GetEffectiveDelay() const;
 
   Vector<Length> RootMargin() const {
@@ -182,9 +189,6 @@ class CORE_EXPORT IntersectionObserver final
   }
 
   Vector<Length> ScrollMargin() const { return scroll_margin_; }
-
-  // Returns the number of IntersectionObservations that recomputed geometry.
-  int64_t ComputeIntersections(unsigned flags, ComputeIntersectionsContext&);
 
   bool IsInternal() const;
   // The metric id for tracking update time via UpdateTime metrics, or null for
@@ -200,7 +204,6 @@ class CORE_EXPORT IntersectionObserver final
   // Returns false if this observer has an explicit root node which has been
   // deleted; true otherwise.
   bool RootIsValid() const;
-  void InvalidateCachedRects();
 
   bool UseOverflowClipEdge() const { return use_overflow_clip_edge_ == 1; }
 
@@ -242,6 +245,7 @@ class CORE_EXPORT IntersectionObserver final
   const unsigned track_fraction_of_root_ : 1;
   const unsigned always_report_root_bounds_ : 1;
   const unsigned use_overflow_clip_edge_ : 1;
+  const unsigned expose_occluder_id_ : 1;
 };
 
 }  // namespace blink

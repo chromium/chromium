@@ -25,9 +25,9 @@ void StyleRuleFontFeature::TraceAfterDispatch(blink::Visitor* visitor) const {
 }
 
 void StyleRuleFontFeature::UpdateAlias(AtomicString alias,
-                                       const Vector<uint32_t>& features) {
+                                       Vector<uint32_t> features) {
   feature_aliases_.Set(
-      alias, FeatureIndicesWithPriority{features,
+      alias, FeatureIndicesWithPriority{std::move(features),
                                         std::numeric_limits<uint16_t>::max()});
 }
 

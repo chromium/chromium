@@ -53,6 +53,8 @@ class WebAppLaunchQueue : public content::WebContentsObserver {
 
   const webapps::AppId* GetPendingLaunchAppId() const;
 
+  void FlushForTesting() const;
+
  private:
   bool IsInScope(const WebAppLaunchParams& launch_params,
                  const GURL& current_url);

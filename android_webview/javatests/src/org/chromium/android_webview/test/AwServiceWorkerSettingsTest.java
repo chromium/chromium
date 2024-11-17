@@ -54,54 +54,60 @@ public class AwServiceWorkerSettingsTest extends AwParameterizedTest {
     public static final String INDEX_URL = "/index.html";
     public static final String SW_URL = "/sw.js";
     public static final String FETCH_URL = "/content.txt";
+
+    @SuppressWarnings("InlineFormatString")
     private static final String INDEX_HTML_TEMPLATE =
-            "<!DOCTYPE html>\n"
-                    + "<script>\n"
-                    + "    state = '';\n"
-                    + "    function setState(newState) {\n"
-                    + "        console.log(newState);\n"
-                    + "        state = newState;\n"
-                    + "    }\n"
-                    + "    function swReady(sw) {\n"
-                    + "        setState('sw_ready');\n"
-                    + "        sw.postMessage({fetches: %d});\n" // <- Format param on this line
-                    + "    }\n"
-                    + "    navigator.serviceWorker.register('sw.js')\n"
-                    + "        .then(sw_reg => {\n"
-                    + "            setState('sw_registered');\n"
-                    + "            let sw = sw_reg.installing || sw_reg.waiting || sw_reg.active;\n"
-                    + "            if (sw.state == 'activated') {\n"
-                    + "                swReady(sw);\n"
-                    + "            } else {\n"
-                    + "                sw.addEventListener('statechange', e => {\n"
-                    + "                    if(e.target.state == 'activated') swReady(e.target); \n"
-                    + "                });            \n"
-                    + "            }\n"
-                    + "        }).catch(err => {\n"
-                    + "            console.log(err);\n"
-                    + "            setState('sw_registration_error');\n"
-                    + "        });\n"
-                    + "    navigator.serviceWorker.addEventListener('message',\n"
-                    + "        event => setState(event.data.msg));\n"
-                    + "    setState('page_loaded');\n"
-                    + "</script>\n";
+            """
+        <!DOCTYPE html>
+        <script>
+            state = '';
+            function setState(newState) {
+                console.log(newState);
+                state = newState;
+            }
+            function swReady(sw) {
+                setState('sw_ready');
+                sw.postMessage({fetches: %d});  // <- Format param on this line
+            }
+            navigator.serviceWorker.register('sw.js')
+                .then(sw_reg => {
+                    setState('sw_registered');
+                    let sw = sw_reg.installing || sw_reg.waiting || sw_reg.active;
+                    if (sw.state == 'activated') {
+                        swReady(sw);
+                    } else {
+                        sw.addEventListener('statechange', e => {
+                            if (e.target.state == 'activated') swReady(e.target);
+                        });
+                    }
+                }).catch(err => {
+                    console.log(err);
+                    setState('sw_registration_error');
+                });
+            navigator.serviceWorker.addEventListener('message',
+                event => setState(event.data.msg));
+            setState('page_loaded');
+        </script>
+        """;
 
     private static final String NETWORK_ACCESS_SW_JS =
-            "self.addEventListener('message', async event => {\n"
-                    + "    try {\n"
-                    + "        let resp;\n"
-                    + "        for (let i = 0; i < event.data.fetches; i++) {\n"
-                    + "            resp = await fetch('content.txt');\n"
-                    + "        }\n"
-                    + "        if (resp && resp.ok) {\n"
-                    + "            event.source.postMessage({ msg: await resp.text() });\n"
-                    + "        } else {\n"
-                    + "            event.source.postMessage({ msg: 'fetch_not_ok' });\n"
-                    + "        }\n"
-                    + "    } catch {\n"
-                    + "        event.source.postMessage({ msg: 'fetch_catch' })\n"
-                    + "    }\n"
-                    + "});\n";
+            """
+        self.addEventListener('message', async event => {
+            try {
+                let resp;
+                for (let i = 0; i < event.data.fetches; i++) {
+                    resp = await fetch('content.txt');
+                }
+                if (resp && resp.ok) {
+                    event.source.postMessage({ msg: await resp.text() });
+                } else {
+                    event.source.postMessage({ msg: 'fetch_not_ok' });
+                }
+            } catch {
+                event.source.postMessage({ msg: 'fetch_catch' });
+            }
+        });
+        """;
 
     private static final String FETCH_CONTENT = "fetch_success";
 
@@ -248,7 +254,7 @@ public class AwServiceWorkerSettingsTest extends AwParameterizedTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences", "ServiceWorker"})
-    public void testGetUpdatedXRWAllowList() throws Throwable {
+    public void testGetUpdatedXrwAllowList() throws Throwable {
         initAwServiceWorkerSettings();
         final Set<String> allowList = Set.of("https://*.example.com", "https://*.google.com");
 

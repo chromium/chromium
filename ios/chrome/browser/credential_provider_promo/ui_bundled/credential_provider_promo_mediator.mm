@@ -30,9 +30,6 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 
 @interface CredentialProviderPromoMediator ()
 
-// The PrefService used by this mediator.
-@property(nonatomic, assign) PrefService* prefService;
-
 // Indicates whether the 'first step' or 'learn more' version of the promo is
 // being presented.
 @property(nonatomic, assign) CredentialProviderPromoContext promoContext;
@@ -44,10 +41,8 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 
 @implementation CredentialProviderPromoMediator
 
-- (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                          prefService:(PrefService*)prefService {
+- (instancetype)initWithPromosManager:(PromosManager*)promosManager {
   if ((self = [super init])) {
-    _prefService = prefService;
     _promosManager = promosManager;
   }
   return self;
@@ -68,9 +63,10 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
        trigger != CredentialProviderPromoTrigger::RemindMeLater);
   BOOL policyEnabled = GetApplicationContext()->GetLocalState()->GetBoolean(
       prefs::kIosCredentialProviderPromoPolicyEnabled);
+  PrefService* localState = GetApplicationContext()->GetLocalState();
   return !impressionLimitMet && policyEnabled &&
          !password_manager_util::IsCredentialProviderEnabledOnStartup(
-             self.prefService);
+             localState);
 }
 
 - (void)configureConsumerWithTrigger:(CredentialProviderPromoTrigger)trigger
@@ -177,14 +173,9 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
   } else {
     titleString = l10n_util::GetNSString(
         IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_TITLE);
-    NSString* settingsMenuItemString = nil;
-    if (@available(iOS 16, *)) {
-      settingsMenuItemString = l10n_util::GetNSString(
-          IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16);
-    } else {
-      settingsMenuItemString = l10n_util::GetNSString(
-          IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_BELOW_IOS16);
-    }
+    NSString* settingsMenuItemString = settingsMenuItemString =
+        l10n_util::GetNSString(
+            IDS_IOS_CREDENTIAL_PROVIDER_PROMO_OS_PASSWORDS_SETTINGS_TITLE_IOS16);
     DCHECK(settingsMenuItemString.length > 0);
     subtitleString = l10n_util::GetNSStringF(
         IDS_IOS_CREDENTIAL_PROVIDER_PROMO_LEARN_MORE_SUBTITLE_WITH_PH,

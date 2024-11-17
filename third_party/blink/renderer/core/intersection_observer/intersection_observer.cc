@@ -197,8 +197,7 @@ Vector<Length> NormalizeMargins(const Vector<Length>& margins) {
       normalized_margins[3] = margins[3];
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return normalized_margins;
@@ -221,7 +220,7 @@ String StringifyMargin(const Vector<Length>& margin) {
     if (length.IsPercent()) {
       string_builder.Append('%');
     } else {
-      string_builder.Append("px", 2);
+      string_builder.Append(base::byte_span_from_cstring("px"));
     }
   };
 
@@ -355,7 +354,8 @@ IntersectionObserver::IntersectionObserver(
       track_visibility_(params.track_visibility),
       track_fraction_of_root_(params.semantics == kFractionOfRoot),
       always_report_root_bounds_(params.always_report_root_bounds),
-      use_overflow_clip_edge_(params.use_overflow_clip_edge) {
+      use_overflow_clip_edge_(params.use_overflow_clip_edge),
+      expose_occluder_id_(params.expose_occluder_id) {
   if (params.root) {
     if (params.root->IsDocumentNode()) {
       To<Document>(params.root)
@@ -381,13 +381,6 @@ void IntersectionObserver::ProcessCustomWeakness(const LivenessBroker& info) {
 
 bool IntersectionObserver::RootIsValid() const {
   return RootIsImplicit() || root();
-}
-
-void IntersectionObserver::InvalidateCachedRects() {
-  DCHECK(!RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
-  for (auto& observation : observations_) {
-    observation->InvalidateCachedRects();
-  }
 }
 
 void IntersectionObserver::observe(Element* target,
@@ -477,37 +470,6 @@ String IntersectionObserver::scrollMargin() const {
 
 base::TimeDelta IntersectionObserver::GetEffectiveDelay() const {
   return throttle_delay_enabled ? delay_ : base::TimeDelta();
-}
-
-int64_t IntersectionObserver::ComputeIntersections(
-    unsigned flags,
-    ComputeIntersectionsContext& context) {
-  DCHECK(!RootIsImplicit());
-  DCHECK(!RuntimeEnabledFeatures::IntersectionOptimizationEnabled());
-  if (!RootIsValid() || !GetExecutionContext() || observations_.empty())
-    return 0;
-
-  int64_t result = 0;
-  // If we're processing post-layout deliveries only and we're not a
-  // post-layout delivery observer, then return early. Likewise, return if we
-  // need to compute non-post-layout-delivery observations but the observer
-  // behavior is post-layout.
-  bool post_layout_delivery_only =
-      flags & IntersectionObservation::kPostLayoutDeliveryOnly;
-  bool is_post_layout_delivery_observer =
-      GetDeliveryBehavior() ==
-      IntersectionObserver::kDeliverDuringPostLayoutSteps;
-  if (post_layout_delivery_only != is_post_layout_delivery_observer) {
-    return 0;
-  }
-  // TODO(szager): Is this copy necessary?
-  HeapVector<Member<IntersectionObservation>> observations_to_process(
-      observations_);
-  for (auto& observation : observations_to_process) {
-    result +=
-        observation->ComputeIntersection(flags, gfx::Vector2dF(), context);
-  }
-  return result;
 }
 
 bool IntersectionObserver::IsInternal() const {

@@ -31,8 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_FILTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_FILTER_H_
 
-#include <memory>
-
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/wtf/bloom_filter.h"
@@ -116,17 +114,13 @@ class CORE_EXPORT SelectorFilter {
   // With 100 unique strings in the filter, 2^12 slot table has false positive
   // rate of ~0.2%.
   using IdentifierFilter = CountingBloomFilter<12>;
-  std::unique_ptr<IdentifierFilter> ancestor_identifier_filter_;
+  IdentifierFilter ancestor_identifier_filter_;
 };
 
 inline bool SelectorFilter::FastRejectSelector(
     const base::span<const unsigned> identifier_hashes) const {
-  if (!ancestor_identifier_filter_) {
-    DCHECK(parent_stack_.empty());
-    return false;
-  }
   for (unsigned hash : identifier_hashes) {
-    if (!ancestor_identifier_filter_->MayContain(hash)) {
+    if (!ancestor_identifier_filter_.MayContain(hash)) {
       return true;
     }
   }

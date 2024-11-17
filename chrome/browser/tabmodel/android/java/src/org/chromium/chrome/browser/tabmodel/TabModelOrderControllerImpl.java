@@ -114,10 +114,10 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
     }
 
     private int getValidPositionConsideringRelatedTabs(Tab newTab, int position) {
-        TabModelFilter filter =
+        TabGroupModelFilter filter =
                 mTabModelSelector
-                        .getTabModelFilterProvider()
-                        .getTabModelFilter(newTab.isIncognito());
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(newTab.isIncognito());
         return filter.getValidPosition(newTab, position);
     }
 
@@ -148,10 +148,11 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
                 || type == TabLaunchType.FROM_RESTORE_TABS_UI) {
             return false;
         }
-        return type != TabLaunchType.FROM_LONGPRESS_BACKGROUND
+        return (type != TabLaunchType.FROM_LONGPRESS_BACKGROUND
                         && type != TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
                         && type != TabLaunchType.FROM_RECENT_TABS
                         && type != TabLaunchType.FROM_SYNC_BACKGROUND
+                        && type != TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP)
                 || (!mTabModelSelector.isIncognitoBrandedModelSelected()
                         && isNewTabIncognitoBranded);
     }

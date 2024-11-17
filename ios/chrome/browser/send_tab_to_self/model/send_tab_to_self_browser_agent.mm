@@ -32,9 +32,9 @@ BROWSER_USER_DATA_KEY_IMPL(SendTabToSelfBrowserAgent)
 
 SendTabToSelfBrowserAgent::SendTabToSelfBrowserAgent(Browser* browser)
     : browser_(browser),
-      model_(SendTabToSelfSyncServiceFactory::GetForBrowserState(
-                 browser_->GetBrowserState())
-                 ->GetSendTabToSelfModel()) {
+      model_(
+          SendTabToSelfSyncServiceFactory::GetForProfile(browser_->GetProfile())
+              ->GetSendTabToSelfModel()) {
   model_observation_.Observe(model_.get());
   browser_observation_.Observe(browser_.get());
 }

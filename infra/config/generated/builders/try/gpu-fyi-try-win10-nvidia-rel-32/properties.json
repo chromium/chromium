@@ -73,7 +73,8 @@
           "builder": "Win10 FYI x86 Release (NVIDIA)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-win10-nvidia-rel-32/targets"
     }
   },
   "$build/reclient": {

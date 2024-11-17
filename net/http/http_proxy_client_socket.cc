@@ -127,8 +127,7 @@ const NetLogWithSource& HttpProxyClientSocket::NetLog() const {
 bool HttpProxyClientSocket::WasEverUsed() const {
   if (socket_)
     return socket_->WasEverUsed();
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 NextProto HttpProxyClientSocket::GetNegotiatedProtocol() const {
@@ -307,9 +306,7 @@ int HttpProxyClientSocket::DoLoop(int last_io_result) {
       case STATE_DONE:
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_UNEXPECTED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_NONE &&
            next_state_ != STATE_DONE);

@@ -249,6 +249,10 @@ class COMPONENT_EXPORT(UI_BASE) InteractionSequence {
     // The identifier of the element used by the failed step.
     ElementIdentifier element_id;
 
+    // The context of the element expected by the failed step, or null if
+    // unknown/unspecified.
+    ui::ElementContext context;
+
     // The reason the step failed/the sequence was aborted.
     AbortedReason aborted_reason = AbortedReason::kSequenceDestroyed;
 

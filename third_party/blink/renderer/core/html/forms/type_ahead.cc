@@ -81,7 +81,7 @@ int TypeAhead::HandleEvent(const KeyboardEvent& event,
   if (match_mode & kCycleFirstChar && charCode == repeating_char_) {
     // The user is likely trying to cycle through all the items starting
     // with this character, so just search on the character.
-    prefix = String(&charCode, 1u);
+    prefix = String(base::span_from_ref(charCode));
     repeating_char_ = charCode;
   } else if (match_mode & kMatchPrefix) {
     prefix = buffer_.ToString();

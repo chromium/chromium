@@ -18,6 +18,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
@@ -48,10 +49,10 @@ public class BrandingController {
     @VisibleForTesting static final int BRANDING_CADENCE_MS = (int) TimeUnit.HOURS.toMillis(1);
 
     private final CallbackController mCallbackController = new CallbackController();
-    private final @BrandingDecision OneshotSupplierImpl<Integer> mBrandingDecision =
-            new OneshotSupplierImpl<>();
+    private final OneshotSupplierImpl<BrandingInfo> mBrandingInfo = new OneshotSupplierImpl<>();
     private final BrandingChecker mBrandingChecker;
     private final Context mContext;
+    private final String mAppId;
     private final String mBrowserName;
     private final int mToastTemplateId;
     @Nullable private final PureJavaExceptionReporter mExceptionReporter;
@@ -60,6 +61,8 @@ public class BrandingController {
     private long mToolbarInitializedTime;
     private boolean mIsDestroyed;
 
+    private Supplier<MismatchNotificationChecker> mMismatchNotificationChecker;
+
     /**
      * Branding controller responsible for showing branding.
      *
@@ -67,6 +70,7 @@ public class BrandingController {
      * @param appId The ID for the embedded app. Can be {@code null}
      * @param browserName The browser name shown on the branding toast.
      * @param toastTemplateId Resource ID of the string to be shown on Toast branding UI.
+     * @param mismatchNotificationChecker A bridge interface for mismatch notification handler.
      * @param exceptionReporter Optional reporter that reports wrong state quietly.
      */
     public BrandingController(
@@ -74,20 +78,23 @@ public class BrandingController {
             String appId,
             String browserName,
             @StringRes int toastTemplateId,
+            @NonNull Supplier<MismatchNotificationChecker> mismatchNotificationChecker,
             @Nullable PureJavaExceptionReporter exceptionReporter) {
         mContext = context;
+        mAppId = appId;
         mBrowserName = browserName;
         mToastTemplateId = toastTemplateId;
+        mMismatchNotificationChecker = mismatchNotificationChecker;
         mExceptionReporter = exceptionReporter;
-        mBrandingDecision.onAvailable(
-                mCallbackController.makeCancelable((decision) -> maybeMakeBrandingDecision()));
+        mBrandingInfo.onAvailable(
+                mCallbackController.makeCancelable((data) -> maybeMakeBrandingDecision()));
 
         // TODO(crbug.com/40234239): Start branding checker during CCT warm up.
         mBrandingChecker =
                 new BrandingChecker(
                         appId,
                         SharedPreferencesBrandingTimeStorage.getInstance(),
-                        mBrandingDecision::set,
+                        mBrandingInfo::set,
                         BRANDING_CADENCE_MS,
                         BrandingDecision.TOAST);
         mBrandingChecker.executeWithTaskTraits(TaskTraits.USER_VISIBLE_MAY_BLOCK);
@@ -95,6 +102,7 @@ public class BrandingController {
 
     /**
      * Register the {@link ToolbarBrandingDelegate} from CCT Toolbar.
+     *
      * @param delegate {@link ToolbarBrandingDelegate} instance from CCT Toolbar.
      */
     public void onToolbarInitialized(@NonNull ToolbarBrandingDelegate delegate) {
@@ -125,13 +133,29 @@ public class BrandingController {
 
     /** Make decision after BrandingChecker and mToolbarBrandingDelegate is ready. */
     private void maybeMakeBrandingDecision() {
-        if (mToolbarBrandingDelegate == null || mBrandingDecision.get() == null) return;
+        BrandingInfo info = mBrandingInfo.get();
+        if (mToolbarBrandingDelegate == null || info == null) return;
+
+        @BrandingDecision int brandingDecision = info.getDecision();
+
+        // Mismatch notification checker is invoked when branding decision data is available
+        // to respect the timing with which the decision is made. The decision making takes
+        // place quite early without native layer involved, while the checker needs the native
+        // layer to be initialized. For this reason, it is instantiated lazily only at this
+        // point, where the native is likely to be ready for pre-warmed CCTs.
+        var checker = mMismatchNotificationChecker.get();
+        if (checker != null) {
+            var storage = SharedPreferencesBrandingTimeStorage.getInstance();
+            if (checker.maybeShow(mAppId, info.lastShowTime, info.mimData, storage::putMimData)) {
+                brandingDecision = BrandingDecision.MIM;
+            }
+        }
 
         long timeToolbarEmpty = SystemClock.elapsedRealtime() - mToolbarInitializedTime;
         long remainingBrandingTime = TOTAL_BRANDING_DELAY_MS - timeToolbarEmpty;
 
-        @BrandingDecision int brandingDecision = mBrandingDecision.get();
         switch (brandingDecision) {
+            case BrandingDecision.MIM:
             case BrandingDecision.NONE:
                 mToolbarBrandingDelegate.showRegularToolbar();
                 break;
@@ -145,7 +169,7 @@ public class BrandingController {
             default:
                 assert false : "Unreachable state!";
         }
-
+        mBrandingInfo.get().setDecision(brandingDecision);
         finish();
     }
 
@@ -168,7 +192,7 @@ public class BrandingController {
             return;
         }
 
-        String toastText = mContext.getResources().getString(mToastTemplateId, mBrowserName);
+        String toastText = mContext.getString(mToastTemplateId, mBrowserName);
         TextView runInChromeTextView =
                 (TextView)
                         LayoutInflater.from(mContext)
@@ -193,6 +217,8 @@ public class BrandingController {
         if (mToast != null) {
             mToast.cancel();
         }
+        var checker = mMismatchNotificationChecker.get();
+        if (checker != null) checker.cancel();
     }
 
     private void reportErrorMessage(String message) {
@@ -203,6 +229,10 @@ public class BrandingController {
     }
 
     private void finish() {
+        if (getBrandingDecision() == BrandingDecision.MIM) {
+            var storage = SharedPreferencesBrandingTimeStorage.getInstance();
+            storage.putLastShowTimeGlobal(SystemClock.elapsedRealtime());
+        }
         // Post the task as it's not important to be complete during branding check.
         PostTask.postTask(
                 TaskTraits.BEST_EFFORT,
@@ -221,8 +251,10 @@ public class BrandingController {
                         }));
     }
 
+    @VisibleForTesting
     @BrandingDecision
-    Integer getBrandingDecisionForTest() {
-        return mBrandingDecision.get();
+    Integer getBrandingDecision() {
+        BrandingInfo info = mBrandingInfo.get();
+        return info != null ? info.getDecision() : null;
     }
 }

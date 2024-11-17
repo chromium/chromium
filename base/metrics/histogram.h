@@ -236,7 +236,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
   void MarkSamplesAsLogged(const HistogramSamples& samples) final;
   std::unique_ptr<HistogramSamples> SnapshotDelta() override;
   std::unique_ptr<HistogramSamples> SnapshotFinalDelta() const override;
-  void AddSamples(const HistogramSamples& samples) override;
+  bool AddSamples(const HistogramSamples& samples) override;
   bool AddSamplesFromPickle(base::PickleIterator* iter) override;
   base::Value::Dict ToGraphDict() const override;
 
@@ -271,7 +271,7 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // Return a string description of what goes in a given bucket.
   // Most commonly this is the numeric value, but in derived classes it may
   // be a name (or string description) given to the bucket.
-  virtual const std::string GetAsciiBucketRange(size_t it) const;
+  virtual std::string GetAsciiBucketRange(size_t it) const;
 
  private:
   // Allow tests to corrupt our innards for testing purposes.
@@ -429,7 +429,7 @@ class BASE_EXPORT LinearHistogram : public Histogram {
 
   // If we have a description for a bucket, then return that.  Otherwise
   // let parent class provide a (numeric) description.
-  const std::string GetAsciiBucketRange(size_t i) const override;
+  std::string GetAsciiBucketRange(size_t i) const override;
 
  private:
   friend BASE_EXPORT HistogramBase* DeserializeHistogramInfo(
@@ -651,6 +651,11 @@ namespace internal {
 // best-effort range will be suffixed with ".BestEffort".
 BASE_EXPORT void SetSharedLastForegroundTimeForMetrics(
     const std::atomic<TimeTicks>* last_foreground_time_ref);
+
+// Returns the pointer passed to SetSharedLastForegroundTimeForMetrics, or
+// nullptr if it was never called.
+BASE_EXPORT const std::atomic<TimeTicks>*
+GetSharedLastForegroundTimeForMetricsForTesting();
 
 // Reports whether the interval [`now - range`, `now`] overlaps with a period
 // where this process was running at Process::Priority::kBestEffort. Defaults to

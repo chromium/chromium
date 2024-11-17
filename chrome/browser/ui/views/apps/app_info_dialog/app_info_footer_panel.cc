@@ -6,7 +6,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -25,9 +24,8 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-// gn check complains on Linux Ozone.
-#include "ash/public/cpp/shelf_model.h"  // nogncheck
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/public/cpp/shelf_model.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -53,7 +51,7 @@ std::unique_ptr<AppInfoFooterPanel> AppInfoFooterPanel::CreateFooterPanel(
     Profile* profile,
     const extensions::Extension* app) {
   if (CanCreateShortcuts(app) ||
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       CanSetPinnedToShelf(profile, app) ||
 #endif
       CanUninstallApp(profile, app))
@@ -71,7 +69,7 @@ void AppInfoFooterPanel::CreateButtons() {
                 IDS_APPLICATION_INFO_CREATE_SHORTCUTS_BUTTON_TEXT)));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (CanSetPinnedToShelf(profile_, app_)) {
     pin_to_shelf_button_ = AddChildView(std::make_unique<views::MdTextButton>(
         base::BindRepeating(&AppInfoFooterPanel::SetPinnedToShelf,
@@ -94,7 +92,7 @@ void AppInfoFooterPanel::CreateButtons() {
   }
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void AppInfoFooterPanel::UpdatePinButtons(bool focus_visible_button) {
   if (pin_to_shelf_button_ && unpin_from_shelf_button_) {
     const bool was_pinned =
@@ -131,16 +129,16 @@ void AppInfoFooterPanel::CreateShortcuts() {
 
 // static
 bool AppInfoFooterPanel::CanCreateShortcuts(const extensions::Extension* app) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Ash platforms can't create shortcuts.
   return false;
 #else
   // Extensions and the Chrome component app can't have shortcuts.
   return app->id() != app_constants::kChromeAppId && !app->is_extension();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 void AppInfoFooterPanel::SetPinnedToShelf(bool value) {
   DCHECK(CanSetPinnedToShelf(profile_, app_));
   ash::ShelfModel* shelf_model =
@@ -165,7 +163,7 @@ bool AppInfoFooterPanel::CanSetPinnedToShelf(Profile* profile,
          (GetPinnableForAppID(app->id(), profile) ==
           AppListControllerDelegate::PIN_EDITABLE);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 void AppInfoFooterPanel::UninstallApp() {
   DCHECK(CanUninstallApp(profile_, app_));

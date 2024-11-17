@@ -225,6 +225,25 @@ inline constexpr char kExtensionTelemetryFileData[] =
 inline constexpr char kHashPrefixRealTimeChecksAllowedByPolicy[] =
     "safebrowsing.hash_prefix_real_time_checks_allowed_by_policy";
 
+// A preference indicating that the user has seen the IPH telling them automatic
+// deep scans are coming. Since IPH may be delayed for a variety of reasons
+// (startup grace periods, other IPH in the session), we want to wait to enable
+// automatic deep scans until they've actually seen the IPH.
+inline constexpr char kSafeBrowsingAutomaticDeepScanningIPHSeen[] =
+    "safebrowsing.automatic_deep_scanning_iph_seen";
+
+// A preference indicating that the user has already done an automatic
+// deep scan. This addresses an edge case where deep scan notices remain
+// in the bubble after the user performs an automatic deep scan.
+inline constexpr char kSafeBrowsingAutomaticDeepScanPerformed[] =
+    "safe_browsing.automatic_deep_scan_performed";
+
+// Records a mapping from app names to most recent redirect to that
+// app. This is used to avoid sending reports of external app redirects
+// for common apps.
+inline constexpr char kExternalAppRedirectTimestamps[] =
+    "safe_browsing.external_app_redirect_timestamps";
+
 }  // namespace prefs
 
 namespace safe_browsing {
@@ -477,7 +496,7 @@ bool MatchesPasswordProtectionChangePasswordURL(const GURL& url,
                                                 const PrefService& prefs);
 
 // Helper function to match a |target_url| against |url_list|.
-bool MatchesURLList(const GURL& target_url, const std::vector<GURL> url_list);
+bool MatchesURLList(const GURL& target_url, const std::vector<GURL>& url_list);
 
 }  // namespace safe_browsing
 

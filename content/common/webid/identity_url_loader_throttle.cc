@@ -126,8 +126,8 @@ bool IdentityUrlLoaderThrottle::HeaderHasToken(
     return false;
   }
 
-  std::string value;
-  headers.GetNormalizedHeader(header_name, &value);
+  std::string value =
+      headers.GetNormalizedHeader(header_name).value_or(std::string());
 
   std::vector<std::string_view> tokens = base::SplitStringPiece(
       value, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);

@@ -8,6 +8,8 @@ import("//chromeos/ash/components/scalable_iph/scalable_iph.gni")
 
 assert(is_chromeos_ash)
 
+# TODO(crbug.com/367479298): Clean up the dependencies and visibilities.
+
 source_set("config") {
   sources = [
     "config.cc",
@@ -33,6 +35,8 @@ source_set("scalable_iph") {
   sources = [
     "scalable_iph.cc",
     "scalable_iph.h",
+    "scalable_iph_factory.cc",
+    "scalable_iph_factory.h",
   ]
 
   deps = [
@@ -43,7 +47,9 @@ source_set("scalable_iph") {
     ":scalable_iph_delegate",
     "//ash/constants:constants",
     "//base",
+    "//chromeos/ash/components/browser_context_helper",
     "//components/feature_engagement/public",
+    "//components/keyed_service/content",
     "//components/keyed_service/core",
   ]
 }
@@ -91,4 +97,21 @@ buildflag_header("buildflags") {
   header = "buildflags.h"
 
   flags = [ "ENABLE_CROS_SCALABLE_IPH=$enable_cros_scalable_iph" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "scalable_iph_unittest.cc" ]
+
+  deps = [
+    ":constants",
+    ":logger",
+    ":scalable_iph",
+    ":scalable_iph_delegate",
+    "//chrome/browser/ash/scalable_iph:test_support",
+    "//components/feature_engagement/public",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
 }

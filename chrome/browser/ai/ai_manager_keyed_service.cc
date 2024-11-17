@@ -5,25 +5,30 @@
 #include "chrome/browser/ai/ai_manager_keyed_service.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
+#include "base/supports_user_data.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/pass_key.h"
-#include "chrome/browser/ai/ai_assistant.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
+#include "chrome/browser/ai/ai_language_model.h"
 #include "chrome/browser/ai/ai_rewriter.h"
 #include "chrome/browser/ai/ai_summarizer.h"
 #include "chrome/browser/ai/ai_writer.h"
+#include "chrome/browser/ai/features.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,9 +38,12 @@
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/blink/public/mojom/ai/ai_assistant.mojom.h"
+#include "content/public/browser/browser_context.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
+#include "third_party/blink/public/mojom/ai/ai_language_model.mojom.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
+#include "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 
@@ -109,121 +117,6 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
   NOTREACHED();
 }
 
-// Currently, the following errors, which are used when a model may have been
-// installed but not yet loaded, are treated as waitable.
-// TODO(crbug.com/361537114): Consider making the kModelToBeInstalled error
-// waitable as well.
-static constexpr auto kWaitableReasons =
-    base::MakeFixedFlatSet<optimization_guide::OnDeviceModelEligibilityReason>({
-        optimization_guide::OnDeviceModelEligibilityReason::
-            kConfigNotAvailableForFeature,
-        optimization_guide::OnDeviceModelEligibilityReason::
-            kSafetyModelNotAvailable,
-        optimization_guide::OnDeviceModelEligibilityReason::
-            kLanguageDetectionModelNotAvailable,
-    });
-
-// A base class for tasks which create an on-device session. See the method
-// comment of `Run()` for the details.
-class CreateOnDeviceSessionTask
-    : public AIContextBoundObject,
-      public optimization_guide::OnDeviceModelAvailabilityObserver {
- public:
-  explicit CreateOnDeviceSessionTask(
-      content::BrowserContext& browser_context,
-      optimization_guide::ModelBasedCapabilityKey feature)
-      : service_(OptimizationGuideKeyedServiceFactory::GetForProfile(
-            Profile::FromBrowserContext(&browser_context))),
-        feature_(feature) {}
-  ~CreateOnDeviceSessionTask() override {
-    if (observing_availability_) {
-      service_->RemoveOnDeviceModelAvailabilityChangeObserver(feature_, this);
-    }
-  }
-  CreateOnDeviceSessionTask(const CreateOnDeviceSessionTask&) = delete;
-  CreateOnDeviceSessionTask& operator=(const CreateOnDeviceSessionTask&) =
-      delete;
-
- protected:
-  bool observing_availability() const { return observing_availability_; }
-
-  // Attempts to create an on-device session.
-  //
-  // * If `service_` is null, immediately calls `OnFinish()` with a nullptr,
-  //   indicating failure.
-  // * If creation succeeds, calls `OnFinish()` with the newly created session.
-  // * If creation fails:
-  //   * If the failure reason is in `kWaitableReasons` (indicating a
-  //     potentially temporary issue):
-  //     * Registers itself to observe model availability changes in `service_`.
-  //     * Waits until the `reason` is no longer in `kWaitableReasons`, then
-  //       retries session creation.
-  //   * Otherwise (for non-recoverable errors), calls `OnFinish()` with a
-  //     nullptr.
-  void Run() {
-    if (!service_) {
-      OnFinish(nullptr);
-      return;
-    }
-    if (auto session = StartSession()) {
-      OnFinish(std::move(session));
-      return;
-    }
-    optimization_guide::OnDeviceModelEligibilityReason reason;
-    bool can_create = service_->CanCreateOnDeviceSession(feature_, &reason);
-    CHECK(!can_create);
-    if (!kWaitableReasons.contains(reason)) {
-      OnFinish(nullptr);
-      return;
-    }
-    observing_availability_ = true;
-    service_->AddOnDeviceModelAvailabilityChangeObserver(feature_, this);
-  }
-
-  // Cancels the creation task, and deletes itself.
-  void Cancel() {
-    CHECK(observing_availability_);
-    CHECK(deletion_callback_);
-    std::move(deletion_callback_).Run();
-  }
-
-  virtual void OnFinish(
-      std::unique_ptr<
-          optimization_guide::OptimizationGuideModelExecutor::Session>
-          session) = 0;
-
- private:
-  // `AIContextBoundObject` implementation.
-  void SetDeletionCallback(base::OnceClosure deletion_callback) override {
-    deletion_callback_ = std::move(deletion_callback);
-  }
-
-  // optimization_guide::OnDeviceModelAvailabilityObserver
-  void OnDeviceModelAvailabilityChanged(
-      optimization_guide::ModelBasedCapabilityKey feature,
-      optimization_guide::OnDeviceModelEligibilityReason reason) override {
-    if (kWaitableReasons.contains(reason)) {
-      return;
-    }
-    OnFinish(StartSession());
-    std::move(deletion_callback_).Run();
-  }
-
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-  StartSession() {
-    optimization_guide::SessionConfigParams config_params =
-        optimization_guide::SessionConfigParams{
-            .execution_mode = optimization_guide::SessionConfigParams::
-                ExecutionMode::kOnDeviceOnly};
-    return service_->StartSession(feature_, config_params);
-  }
-
-  const raw_ptr<OptimizationGuideKeyedService> service_;
-  const optimization_guide::ModelBasedCapabilityKey feature_;
-  bool observing_availability_ = false;
-  base::OnceClosure deletion_callback_;
-};
-
 template <typename ContextBoundObjectType,
           typename ContextBoundObjectReceiverInterface,
           typename ClientRemoteInterface,
@@ -235,32 +128,36 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
           std::unique_ptr<
               optimization_guide::OptimizationGuideModelExecutor::Session>,
           mojo::PendingReceiver<ContextBoundObjectReceiverInterface>)>;
-  static void Start(content::BrowserContext& browser_context,
-                    optimization_guide::ModelBasedCapabilityKey feature,
-                    AIContextBoundObjectSet::ReceiverContext context,
-                    CreateOptionsPtrType options,
-                    mojo::PendingRemote<ClientRemoteInterface> client) {
+  static void CreateAndStart(
+      content::BrowserContext* browser_context,
+      optimization_guide::ModelBasedCapabilityKey feature,
+      base::SupportsUserData& context_user_data,
+      CreateOptionsPtrType options,
+      mojo::PendingRemote<ClientRemoteInterface> client) {
     auto task = std::make_unique<CreateContextBoundObjectTask>(
         base::PassKey<CreateContextBoundObjectTask>(), browser_context, feature,
-        context, std::move(options), std::move(client));
-    task->Run();
-    if (task->observing_availability()) {
+        context_user_data, std::move(options), std::move(client));
+    task->Start();
+    if (task->IsPending()) {
       // Put `task` to AIContextBoundObjectSet to continue observing the model
       // availability.
-      AIContextBoundObjectSet::GetFromContext(context)->AddContextBoundObject(
-          std::move(task));
+      AIContextBoundObjectSet::GetFromContext(context_user_data)
+          ->AddContextBoundObject(std::move(task));
     }
   }
 
   CreateContextBoundObjectTask(
       base::PassKey<CreateContextBoundObjectTask>,
-      content::BrowserContext& browser_context,
+      content::BrowserContext* browser_context,
       optimization_guide::ModelBasedCapabilityKey feature,
-      AIContextBoundObjectSet::ReceiverContext context,
+      base::SupportsUserData& context_user_data,
       CreateOptionsPtrType options,
       mojo::PendingRemote<ClientRemoteInterface> client)
-      : CreateOnDeviceSessionTask(browser_context, feature),
-        context_(AIContextBoundObjectSet::ToReceiverContextRawRef(context)),
+      : CreateOnDeviceSessionTask(
+            *AIContextBoundObjectSet::GetFromContext(context_user_data),
+            browser_context,
+            feature),
+        owning_user_data_(context_user_data),
         options_(std::move(options)),
         client_remote_(std::move(client)) {
     client_remote_.set_disconnect_handler(base::BindOnce(
@@ -280,129 +177,190 @@ class CreateContextBoundObjectTask : public CreateOnDeviceSessionTask {
       return;
     }
     mojo::PendingRemote<ContextBoundObjectReceiverInterface> pending_remote;
-    AIContextBoundObjectSet::GetFromContext(
-        AIContextBoundObjectSet::ToReceiverContext(context_))
-        ->AddContextBoundObject(std::make_unique<ContextBoundObjectType>(
-            std::move(session), std::move(options_),
+    AIContextBoundObjectSet* context_bound_object_set =
+        AIContextBoundObjectSet::GetFromContext(owning_user_data_.get());
+    context_bound_object_set->AddContextBoundObject(
+        std::make_unique<ContextBoundObjectType>(
+            *context_bound_object_set, std::move(session), std::move(options_),
             pending_remote.InitWithNewPipeAndPassReceiver()));
     client_remote_->OnResult(std::move(pending_remote));
   }
 
  private:
-  const AIContextBoundObjectSet::ReceiverContextRawRef context_;
+  // If this came from RenderFrameHostImpl this will be the
+  // document_associate_data. If it's a worker, it will be the worker itself.
+  // When the RFHI's document changes or the worker is destroyed, it will cause
+  // `this` to be destroyed also, so it's safe to rely on this reference.
+  const raw_ref<base::SupportsUserData> owning_user_data_;
   CreateOptionsPtrType options_;
-  CreateObjectCallback create_object_allback_;
   mojo::Remote<ClientRemoteInterface> client_remote_;
+};
+
+// The class is responsible for removing the receivers from the
+// `AIManagerKeyedService` when the corresponding receiver contexts are
+// destroyed.
+// TODO(crbug.com/367755363): To further improve this flow, we should implement
+// the factory interface per context, and they talk to the keyed service for
+// optimization guide integration. In this case, we don't have to maintain the
+// `ReceiverContext` any more.
+class AIManagerReceiverRemover : public AIContextBoundObject {
+ public:
+  explicit AIManagerReceiverRemover(
+      AIContextBoundObjectSet& context_bound_object_set,
+      base::OnceClosure remove_callback)
+      : AIContextBoundObject(context_bound_object_set),
+        remove_callback_(std::move(remove_callback)) {}
+  ~AIManagerReceiverRemover() override { std::move(remove_callback_).Run(); }
+
+ private:
+  base::OnceClosure remove_callback_;
 };
 
 }  // namespace
 
 AIManagerKeyedService::AIManagerKeyedService(
     content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {}
+    : browser_context_(browser_context),
+      component_observer_(
+          std::make_unique<AIOnDeviceModelComponentObserver>(this)) {}
 
-AIManagerKeyedService::~AIManagerKeyedService() {}
+AIManagerKeyedService::~AIManagerKeyedService() = default;
 
 void AIManagerKeyedService::AddReceiver(
     mojo::PendingReceiver<blink::mojom::AIManager> receiver,
-    AIContextBoundObjectSet::ReceiverContext context) {
-  receivers_.Add(this, std::move(receiver), context);
-}
-
-void AIManagerKeyedService::CanCreateAssistant(
-    CanCreateAssistantCallback callback) {
-  auto model_path =
-      optimization_guide::switches::GetOnDeviceModelExecutionOverride();
-  if (model_path) {
-    CheckModelPathOverrideCanCreateSession(
-        model_path.value(),
-        optimization_guide::ModelBasedCapabilityKey::kPromptApi);
-  }
-  // If the model path is not provided, we skip the model path check.
-  CanOptimizationGuideKeyedServiceCreateGenericSession(
-      optimization_guide::ModelBasedCapabilityKey::kPromptApi,
-      std::move(callback));
-}
-
-std::unique_ptr<AIAssistant> AIManagerKeyedService::CreateAssistantInternal(
-    mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
-    const blink::mojom::AIAssistantSamplingParamsPtr& sampling_params,
-    AIContextBoundObjectSet* context_bound_object_set,
-    const std::optional<const AIAssistant::Context>& context) {
-  CHECK(browser_context_);
-  OptimizationGuideKeyedService* service =
-      OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context_.get()));
-  if (!service) {
-    return nullptr;
-  }
-
-  optimization_guide::SessionConfigParams config_params =
-      optimization_guide::SessionConfigParams{
-          .execution_mode = optimization_guide::SessionConfigParams::
-              ExecutionMode::kOnDeviceOnly};
-  if (sampling_params) {
-    config_params.sampling_params = optimization_guide::SamplingParams{
-        .top_k = sampling_params->top_k,
-        .temperature = sampling_params->temperature};
-  }
-
-  std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
-      session = service->StartSession(
-          optimization_guide::ModelBasedCapabilityKey::kPromptApi,
-          config_params);
-  if (!session) {
-    return nullptr;
-  }
-
-  return std::make_unique<AIAssistant>(
-      std::move(session), browser_context_->GetWeakPtr(), std::move(receiver),
-      context_bound_object_set, context);
-}
-
-void AIManagerKeyedService::CreateAssistant(
-    mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
-    blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
-    const std::optional<std::string>& system_prompt,
-    std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
-    CreateAssistantCallback callback) {
-  // Since this is a mojo IPC implementation, the context should be non-null;
+    base::SupportsUserData& context_user_data) {
+  mojo::ReceiverId receiver_id =
+      receivers_.Add(this, std::move(receiver), &context_user_data);
   AIContextBoundObjectSet* context_bound_object_set =
-      AIContextBoundObjectSet::GetFromContext(receivers_.current_context());
-  std::unique_ptr<AIAssistant> session = CreateAssistantInternal(
-      std::move(receiver), sampling_params, context_bound_object_set);
-  if (!session) {
-    // TODO(crbug.com/343325183): probably we should consider returning an error
-    // enum and throw a clear exception from the blink side.
-    std::move(callback).Run(nullptr);
-    return;
-  }
+      AIContextBoundObjectSet::GetFromContext(context_user_data);
+  context_bound_object_set->AddContextBoundObject(
+      std::make_unique<AIManagerReceiverRemover>(
+          *context_bound_object_set,
+          base::BindOnce(&AIManagerKeyedService::RemoveReceiver,
+                         weak_factory_.GetWeakPtr(), receiver_id)));
+}
 
-  if (system_prompt.has_value() || !initial_prompts.empty()) {
-    // If the initial prompt is provided, we need to set it and invoke the
-    // callback after this, because the token counting happens asynchronously.
-    session->SetInitialPrompts(system_prompt, std::move(initial_prompts),
-                               std::move(callback));
-  } else {
-    std::move(callback).Run(session->GetAssistantInfo());
-  }
+void AIManagerKeyedService::CanCreateLanguageModel(
+    CanCreateLanguageModelCallback callback) {
+  CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kPromptApi,
+                   std::move(callback));
+}
 
-  context_bound_object_set->AddContextBoundObject(std::move(session));
+std::unique_ptr<CreateLanguageModelOnDeviceSessionTask>
+AIManagerKeyedService::CreateLanguageModelInternal(
+    const blink::mojom::AILanguageModelSamplingParamsPtr& sampling_params,
+    AIContextBoundObjectSet& context_bound_object_set,
+    base::OnceCallback<void(std::unique_ptr<AILanguageModel>)> callback,
+    const std::optional<const AILanguageModel::Context>& context,
+    base::SupportsUserData* context_user_data) {
+  CHECK(browser_context_);
+  auto task = std::make_unique<CreateLanguageModelOnDeviceSessionTask>(
+      context_bound_object_set, browser_context_.get(), sampling_params,
+      base::BindOnce(
+          [](base::WeakPtr<content::BrowserContext> browser_context,
+             AIContextBoundObjectSet& context_bound_object_set,
+             const std::optional<const AILanguageModel::Context>& context,
+             base::OnceCallback<void(std::unique_ptr<AILanguageModel>)>
+                 callback,
+             std::unique_ptr<
+                 optimization_guide::OptimizationGuideModelExecutor::Session>
+                 session) {
+            if (!session) {
+              std::move(callback).Run(nullptr);
+              return;
+            }
+
+            mojo::PendingRemote<blink::mojom::AILanguageModel> pending_remote;
+            std::move(callback).Run(std::make_unique<AILanguageModel>(
+                std::move(session), browser_context, std::move(pending_remote),
+                context_bound_object_set, context));
+          },
+          browser_context_->GetWeakPtr(), std::ref(context_bound_object_set),
+          context, std::move(callback)));
+  task->Start();
+  return task;
+}
+
+void AIManagerKeyedService::CreateLanguageModel(
+    mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+        client,
+    blink::mojom::AILanguageModelCreateOptionsPtr options) {
+  blink::mojom::AILanguageModelSamplingParamsPtr sampling_params =
+      std::move(options->sampling_params);
+
+  // Since this is a mojo IPC implementation, the context should be
+  // non-null;
+  base::SupportsUserData* context_user_data = receivers_.current_context();
+  CHECK(context_user_data);
+  AIContextBoundObjectSet* context_bound_object_set =
+      AIContextBoundObjectSet::GetFromContext(*context_user_data);
+  CHECK(context_bound_object_set);
+
+  auto create_language_model_callback = base::BindOnce(
+      [](mojo::PendingRemote<blink::mojom::AIManagerCreateLanguageModelClient>
+             client,
+         AIContextBoundObjectSet& context_bound_object_set,
+         blink::mojom::AILanguageModelCreateOptionsPtr options,
+         std::unique_ptr<AILanguageModel> language_model) {
+        mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+            client_remote(std::move(client));
+        if (!language_model) {
+          // TODO(crbug.com/343325183): probably we should consider
+          // returning an error enum and throw a clear exception from
+          // the blink side.
+          client_remote->OnResult(
+              mojo::PendingRemote<blink::mojom::AILanguageModel>(),
+              /*info=*/nullptr);
+          return;
+        }
+
+        const std::optional<std::string>& system_prompt =
+            options->system_prompt;
+        std::vector<blink::mojom::AILanguageModelInitialPromptPtr>&
+            initial_prompts = options->initial_prompts;
+        if (system_prompt.has_value() || !initial_prompts.empty()) {
+          // If the initial prompt is provided, we need to set it and
+          // invoke the callback after this, because the token counting
+          // happens asynchronously.
+          language_model->SetInitialPrompts(
+              system_prompt, std::move(initial_prompts),
+              base::BindOnce(
+                  [](mojo::Remote<
+                         blink::mojom::AIManagerCreateLanguageModelClient>
+                         client_remote,
+                     mojo::PendingRemote<blink::mojom::AILanguageModel> remote,
+                     blink::mojom::AILanguageModelInfoPtr info) {
+                    client_remote->OnResult(std::move(remote), std::move(info));
+                  },
+                  std::move(client_remote)));
+        } else {
+          client_remote->OnResult(language_model->TakePendingRemote(),
+                                  language_model->GetLanguageModelInfo());
+        }
+
+        context_bound_object_set.AddContextBoundObject(
+            std::move(language_model));
+      },
+      std::move(client), std::ref(*context_bound_object_set),
+      std::move(options));
+
+  // When creating a new language model, the `context` will not be set since it
+  // should start fresh.
+  auto task =
+      CreateLanguageModelInternal(sampling_params, *context_bound_object_set,
+                                  std::move(create_language_model_callback));
+  if (task->IsPending()) {
+    // Put `task` to AIContextBoundObjectSet to continue observing the model
+    // availability.
+    AIContextBoundObjectSet::GetFromContext(*context_user_data)
+        ->AddContextBoundObject(std::move(task));
+  }
 }
 
 void AIManagerKeyedService::CanCreateSummarizer(
     CanCreateSummarizerCallback callback) {
-  auto model_path =
-      optimization_guide::switches::GetOnDeviceModelExecutionOverride();
-  if (model_path) {
-    CheckModelPathOverrideCanCreateSession(
-        model_path.value(),
-        optimization_guide::ModelBasedCapabilityKey::kSummarize);
-  }
-  // If the model path is not provided, we skip the model path check.
-  CanOptimizationGuideKeyedServiceCreateGenericSession(
-      optimization_guide::ModelBasedCapabilityKey::kSummarize,
-      std::move(callback));
+  CanCreateSession(optimization_guide::ModelBasedCapabilityKey::kSummarize,
+                   std::move(callback));
 }
 
 void AIManagerKeyedService::CreateSummarizer(
@@ -411,17 +369,17 @@ void AIManagerKeyedService::CreateSummarizer(
   CreateContextBoundObjectTask<AISummarizer, blink::mojom::AISummarizer,
                                blink::mojom::AIManagerCreateSummarizerClient,
                                blink::mojom::AISummarizerCreateOptionsPtr>::
-      Start(*browser_context_,
-            optimization_guide::ModelBasedCapabilityKey::kSummarize,
-            receivers_.current_context(), std::move(options),
-            std::move(client));
+      CreateAndStart(browser_context_,
+                     optimization_guide::ModelBasedCapabilityKey::kSummarize,
+                     *receivers_.current_context(), std::move(options),
+                     std::move(client));
 }
 
 void AIManagerKeyedService::GetModelInfo(GetModelInfoCallback callback) {
+  auto default_sampling_params = GetLanguageModelDefaultSamplingParams();
   std::move(callback).Run(blink::mojom::AIModelInfo::New(
-      optimization_guide::features::GetOnDeviceModelDefaultTopK(),
-      optimization_guide::features::GetOnDeviceModelMaxTopK(),
-      optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
+      default_sampling_params.top_k, GetLanguageModelMaxTopK(),
+      default_sampling_params.temperature));
 }
 
 void AIManagerKeyedService::CreateWriter(
@@ -430,10 +388,10 @@ void AIManagerKeyedService::CreateWriter(
   CreateContextBoundObjectTask<AIWriter, blink::mojom::AIWriter,
                                blink::mojom::AIManagerCreateWriterClient,
                                blink::mojom::AIWriterCreateOptionsPtr>::
-      Start(*browser_context_,
-            optimization_guide::ModelBasedCapabilityKey::kCompose,
-            receivers_.current_context(), std::move(options),
-            std::move(client));
+      CreateAndStart(browser_context_,
+                     optimization_guide::ModelBasedCapabilityKey::kCompose,
+                     *receivers_.current_context(), std::move(options),
+                     std::move(client));
 }
 
 void AIManagerKeyedService::CreateRewriter(
@@ -453,29 +411,29 @@ void AIManagerKeyedService::CreateRewriter(
   CreateContextBoundObjectTask<AIRewriter, blink::mojom::AIRewriter,
                                blink::mojom::AIManagerCreateRewriterClient,
                                blink::mojom::AIRewriterCreateOptionsPtr>::
-      Start(*browser_context_,
-            optimization_guide::ModelBasedCapabilityKey::kCompose,
-            receivers_.current_context(), std::move(options),
-            std::move(client));
+      CreateAndStart(browser_context_,
+                     optimization_guide::ModelBasedCapabilityKey::kCompose,
+                     *receivers_.current_context(), std::move(options),
+                     std::move(client));
 }
 
-void AIManagerKeyedService::CheckModelPathOverrideCanCreateSession(
-    const std::string& model_path,
-    optimization_guide::ModelBasedCapabilityKey capability_) {
-  // If the model path is provided, we do this additional check and post a
-  // warning message to dev tools if it's invalid.
-  // This needs to be done in a task runner with `MayBlock` trait.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(IsModelPathValid, model_path),
-      base::BindOnce(&AIManagerKeyedService::OnModelPathValidationComplete,
-                     weak_factory_.GetWeakPtr(), model_path));
-}
+void AIManagerKeyedService::CanCreateSession(
+    optimization_guide::ModelBasedCapabilityKey capability,
+    CanCreateLanguageModelCallback callback) {
+  auto model_path =
+      optimization_guide::switches::GetOnDeviceModelExecutionOverride();
+  if (model_path.has_value()) {
+    // If the model path is provided, we do this additional check and post a
+    // warning message to dev tools if it's invalid.
+    // This needs to be done in a task runner with `MayBlock` trait.
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(IsModelPathValid, model_path.value()),
+        base::BindOnce(&AIManagerKeyedService::OnModelPathValidationComplete,
+                       weak_factory_.GetWeakPtr(), model_path.value()));
+  }
 
-void AIManagerKeyedService::
-    CanOptimizationGuideKeyedServiceCreateGenericSession(
-        optimization_guide::ModelBasedCapabilityKey capability,
-        CanCreateAssistantCallback callback) {
+  // Check if the optimization guide service can create session.
   CHECK(browser_context_);
   OptimizationGuideKeyedService* service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -506,23 +464,41 @@ void AIManagerKeyedService::
       /*result=*/blink::mojom::ModelAvailabilityCheckResult::kReadily);
 }
 
-void AIManagerKeyedService::CreateAssistantForCloning(
-    base::PassKey<AIAssistant> pass_key,
-    mojo::PendingReceiver<blink::mojom::AIAssistant> receiver,
-    blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
-    AIContextBoundObjectSet* context_bound_object_set,
-    const AIAssistant::Context& context,
-    CreateAssistantCallback callback) {
-  std::unique_ptr<AIAssistant> session = CreateAssistantInternal(
-      std::move(receiver), sampling_params, context_bound_object_set, context);
-  if (!session) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
+void AIManagerKeyedService::CreateLanguageModelForCloning(
+    base::PassKey<AILanguageModel> pass_key,
+    blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
+    AIContextBoundObjectSet& context_bound_object_set,
+    const AILanguageModel::Context& context,
+    mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+        client_remote) {
+  auto create_language_model_callback = base::BindOnce(
+      [](AIContextBoundObjectSet& context_bound_object_set,
+         mojo::Remote<blink::mojom::AIManagerCreateLanguageModelClient>
+             client_remote,
+         std::unique_ptr<AILanguageModel> language_model) {
+        if (!language_model) {
+          client_remote->OnResult(
+              mojo::PendingRemote<blink::mojom::AILanguageModel>(),
+              /*info=*/nullptr);
+          return;
+        }
 
-  blink::mojom::AIAssistantInfoPtr session_info = session->GetAssistantInfo();
-  context_bound_object_set->AddContextBoundObject(std::move(session));
-  std::move(callback).Run(std::move(session_info));
+        client_remote->OnResult(language_model->TakePendingRemote(),
+                                language_model->GetLanguageModelInfo());
+        context_bound_object_set.AddContextBoundObject(
+            std::move(language_model));
+      },
+      std::ref(context_bound_object_set), std::move(client_remote));
+  // When cloning an existing language model, the `context` from the source of
+  // clone should be provided.
+  auto task = CreateLanguageModelInternal(
+      sampling_params, context_bound_object_set,
+      std::move(create_language_model_callback), context,
+      /*context_user_data=*/nullptr);
+  // The on-device model must be available before the existing language model
+  // was created, so the `CreateLanguageModelOnDeviceSessionTask` should
+  // complete without waiting for the on-device model availability changes.
+  CHECK(!task->IsPending());
 }
 
 void AIManagerKeyedService::OnModelPathValidationComplete(
@@ -534,4 +510,78 @@ void AIManagerKeyedService::OnModelPathValidationComplete(
         "Unable to create a session because the model path ('%s') is invalid.",
         model_path.c_str());
   }
+}
+
+void AIManagerKeyedService::RemoveReceiver(mojo::ReceiverId receiver_id) {
+  receivers_.Remove(receiver_id);
+}
+
+optimization_guide::SamplingParams
+AIManagerKeyedService::GetLanguageModelDefaultSamplingParams() {
+  if (default_language_model_sampling_params_.has_value()) {
+    return default_language_model_sampling_params_.value();
+  }
+
+  // Create a `kPromptApi` session without specifying the config params. The
+  // session should be created using the default value from the model execution
+  // config.
+  // TODO(crbug.com/372349624): implement a way to fetch the default params
+  // without creating a dummy session.
+  OptimizationGuideKeyedService* service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context_));
+  using optimization_guide::SessionConfigParams;
+  SessionConfigParams config_params = SessionConfigParams{
+      .execution_mode = SessionConfigParams::ExecutionMode::kOnDeviceOnly,
+      .logging_mode = SessionConfigParams::LoggingMode::kAlwaysDisable,
+  };
+  auto session = service->StartSession(
+      optimization_guide::ModelBasedCapabilityKey::kPromptApi, config_params);
+
+  if (session) {
+    default_language_model_sampling_params_ = session->GetSamplingParams();
+    return default_language_model_sampling_params_.value();
+  }
+  return optimization_guide::SamplingParams{
+      uint32_t(optimization_guide::features::GetOnDeviceModelMaxTopK()),
+      float(
+          optimization_guide::features::GetOnDeviceModelDefaultTemperature())};
+}
+
+uint32_t AIManagerKeyedService::GetLanguageModelMaxTopK() {
+  int max_top_k = optimization_guide::features::GetOnDeviceModelMaxTopK();
+  if (base::FeatureList::IsEnabled(
+          features::kAILanguageModelOverrideConfiguration)) {
+    max_top_k =
+        std::min(max_top_k,
+                 features::kAILanguageModelOverrideConfigurationMaxTopK.Get());
+  }
+  return max_top_k;
+}
+
+void AIManagerKeyedService::AddModelDownloadProgressObserver(
+    mojo::PendingRemote<blink ::mojom::ModelDownloadProgressObserver>
+        observer_remote) {
+  download_progress_observers_.Add(std::move(observer_remote));
+}
+
+void AIManagerKeyedService::SendDownloadProgressUpdate(
+    uint64_t downloaded_bytes,
+    uint64_t total_bytes) {
+  for (auto& observer : download_progress_observers_) {
+    observer->OnDownloadProgressUpdate(downloaded_bytes, total_bytes);
+  }
+}
+
+void AIManagerKeyedService::SendDownloadProgressUpdateForTesting(
+    uint64_t downloaded_bytes,
+    uint64_t total_bytes) {
+  SendDownloadProgressUpdate(downloaded_bytes, total_bytes);
+}
+
+void AIManagerKeyedService::OnTextModelDownloadProgressChange(
+    base::PassKey<AIOnDeviceModelComponentObserver> observer_key,
+    uint64_t downloaded_bytes,
+    uint64_t total_bytes) {
+  SendDownloadProgressUpdate(downloaded_bytes, total_bytes);
 }

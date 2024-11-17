@@ -5,79 +5,82 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<LinearLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:layout_weight="1"
-    android:orientation="vertical"
-    android:layout_gravity="center_vertical" >
+    android:layout_weight="1" >
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="start"
-        android:orientation="horizontal"
-        tools:ignore="UseCompoundDrawables" >
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/after_title_container"
+        app:layout_constraintWidth_default="wrap" />
 
-        <ImageView
-            android:id="@+id/icon"
-            android:layout_marginEnd="6dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="2dp"
-            android:layout_width="16dp"
-            android:layout_height="16dp"
-            android:contentDescription="@null"
-            android:visibility="gone" />
-
-        <TextView
-            android:id="@+id/title"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
-    </LinearLayout>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/chip_description"
-        android:layout_width="match_parent"
+    <FrameLayout
+        android:id="@+id/after_title_container"
+        android:layout_marginStart="6dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_gravity="center_vertical"
+        android:visibility="gone"
+        app:layout_constraintVertical_bias="0.5"
+        app:layout_constraintBottom_toBottomOf="@+id/title"
+        app:layout_constraintTop_toTopOf="@+id/title"
+        app:layout_constraintStart_toEndOf="@+id/title"
+        app:layout_constraintEnd_toStartOf="@+id/space_anchor" />
 
-        <TextView
-            android:id="@+id/description"
-            android:layout_gravity="center_vertical|start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:maxLines="1"
-            android:ellipsize="end"
-            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+    <!-- Anchor to ensure the chain terminates without any elements being pushed offscreen. -->
+    <Space
+        android:id="@+id/space_anchor"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-        <!-- An optional chip view. Used for history.TODO(b/331856225): Consider adding min_width
-             to prevent the description view from occupying the whole space. -->
-        <org.chromium.components.browser_ui.widget.chips.ChipView
-            android:id="@+id/chip"
-            android:layout_gravity="center_vertical|start"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:visibility="gone"
-            app:layout_constrainedWidth="true"
-            app:layout_constraintBottom_toBottomOf="@+id/description"
-            app:layout_constraintStart_toEndOf="@+id/description"
-            app:layout_constraintTop_toTopOf="@+id/description"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0"
-            style="@style/HistoryAppChip" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:id="@+id/description"
+        android:layout_gravity="center_vertical|start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintTop_toBottomOf="@+id/title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/chip" />
+
+    <!-- An optional chip view. Used for history. -->
+    <org.chromium.components.browser_ui.widget.chips.ChipView
+        android:id="@+id/chip"
+        android:layout_gravity="center_vertical|start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:visibility="gone"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintTop_toTopOf="@+id/description"
+        app:layout_constraintBottom_toBottomOf="@+id/description"
+        app:layout_constraintStart_toEndOf="@+id/description"
+        app:layout_constraintEnd_toStartOf="@+id/space_anchor"
+        style="@style/HistoryAppChip" />
 
     <FrameLayout
         android:id="@+id/custom_content_container"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/description" />
+</androidx.constraintlayout.widget.ConstraintLayout>

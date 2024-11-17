@@ -12,9 +12,6 @@ enum class PlusAddressURLType;
 // A delegate that wraps service calls backing the plus_address bottom sheet UI.
 @protocol PlusAddressBottomSheetDelegate
 
-// Asks this delegate to reserve a plus address.
-- (void)reservePlusAddress;
-
 // Asks this delegate to confirm use of a reserved plus address. Intended to be
 // called only after `reservePlusAddress` succeeds.
 - (void)confirmPlusAddress;

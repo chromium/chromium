@@ -12,16 +12,16 @@ namespace blink {
 
 namespace {
 
-void InstallCallableHolderTemplate(v8::Isolate*,
+void InstallFunctionHolderTemplate(v8::Isolate*,
                                    const DOMWrapperWorld&,
                                    v8::Local<v8::Template> interface_template) {
 }
 
-const WrapperTypeInfo callable_holder_info = {
+const WrapperTypeInfo function_holder_info = {
     gin::kEmbedderBlink,
-    InstallCallableHolderTemplate,
+    InstallFunctionHolderTemplate,
     nullptr,
-    "ScriptFunctionCallableHolder",
+    "ScriptFunctionHolder",
     nullptr,
     kDOMWrappersTag,
     kDOMWrappersTag,
@@ -33,18 +33,18 @@ const WrapperTypeInfo callable_holder_info = {
 
 }  // namespace
 
-class CORE_EXPORT CallableHolder final : public ScriptWrappable {
+class CORE_EXPORT FunctionHolder final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   static v8::Local<v8::Function> Create(ScriptState* script_state,
-                                        ScriptFunction::Callable* callable) {
-    CHECK(callable);
-    CallableHolder* holder = MakeGarbageCollected<CallableHolder>(callable);
+                                        ScriptFunction* function) {
+    CHECK(function);
+    FunctionHolder* holder = MakeGarbageCollected<FunctionHolder>(function);
     // The wrapper is held alive by the CallHandlerInfo internally in V8 as long
     // as the function is alive.
     return v8::Function::New(script_state->GetContext(), CallCallback,
-                             holder->Wrap(script_state), callable->Length(),
+                             holder->Wrap(script_state), function->Length(),
                              v8::ConstructorBehavior::kThrow)
         .ToLocalChecked();
   }
@@ -54,48 +54,48 @@ class CORE_EXPORT CallableHolder final : public ScriptWrappable {
                                                  "Blink_CallCallback");
     v8::Local<v8::Object> data = v8::Local<v8::Object>::Cast(args.Data());
     v8::Isolate* isolate = args.GetIsolate();
-    auto* holder = ToScriptWrappable<CallableHolder>(isolate, data);
+    auto* holder = ToScriptWrappable<FunctionHolder>(isolate, data);
     ScriptState* script_state = ScriptState::ForCurrentRealm(isolate);
-    holder->callable_->CallRaw(script_state, args);
+    holder->function_->CallRaw(script_state, args);
   }
 
-  explicit CallableHolder(ScriptFunction::Callable* callable)
-      : callable_(callable) {}
-  const char* NameInHeapSnapshot() const final {
-    return "ScriptFunction::Callable";
-  }
+  explicit FunctionHolder(ScriptFunction* function) : function_(function) {}
+
+  const char* NameInHeapSnapshot() const final { return "ScriptFunction"; }
 
   void Trace(Visitor* visitor) const override {
-    visitor->Trace(callable_);
+    visitor->Trace(function_);
     ScriptWrappable::Trace(visitor);
   }
 
  private:
-  const Member<ScriptFunction::Callable> callable_;
+  const Member<ScriptFunction> function_;
 };
 
 // The generated bindings normally take care of initializing
-// `wrappable_type_info_`, but CallableHolder doesn't have generated bindings,
+// `wrappable_type_info_`, but FunctionHolder doesn't have generated bindings,
 // so this has to be done manually.
-const WrapperTypeInfo& CallableHolder::wrapper_type_info_ =
-    callable_holder_info;
+const WrapperTypeInfo& FunctionHolder::wrapper_type_info_ =
+    function_holder_info;
 
-ScriptValue ScriptFunction::Callable::Call(ScriptState*, ScriptValue) {
-  NOTREACHED_IN_MIGRATION();
-  return ScriptValue();
+ScriptValue ScriptFunction::Call(ScriptState*, ScriptValue) {
+  NOTREACHED();
 }
 
-void ScriptFunction::Callable::CallRaw(
-    ScriptState* script_state,
-    const v8::FunctionCallbackInfo<v8::Value>& args) {
+void ScriptFunction::CallRaw(ScriptState* script_state,
+                             const v8::FunctionCallbackInfo<v8::Value>& args) {
   ScriptValue result =
       Call(script_state, ScriptValue(script_state->GetIsolate(), args[0]));
   bindings::V8SetReturnValue(args, result);
 }
 
-ScriptFunction::ScriptFunction(ScriptState* script_state, Callable* callable)
-    : script_state_(script_state),
-      function_(script_state->GetIsolate(),
-                CallableHolder::Create(script_state, callable)) {}
+v8::Local<v8::Function> ScriptFunction::ToV8Function(
+    ScriptState* script_state) {
+  v8::Isolate* isolate = script_state->GetIsolate();
+  if (function_.IsEmpty()) {
+    function_.Reset(isolate, FunctionHolder::Create(script_state, this));
+  }
+  return function_.Get(isolate);
+}
 
 }  // namespace blink

@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 
 #import "base/test/scoped_feature_list.h"
-#import "components/saved_tab_groups/mock_tab_group_sync_service.h"
+#import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_local_update_observer.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
@@ -50,21 +50,19 @@ web::WebStateID GetTabIDForWebStateAt(int index, Browser* browser) {
 class TabGroupSyncUtilTest : public PlatformTest {
  protected:
   TabGroupSyncUtilTest() {
-    TestChromeBrowserState::Builder test_browser_state_builder;
-    test_browser_state_builder.AddTestingFactory(
+    TestProfileIOS::Builder test_profile_builder;
+    test_profile_builder.AddTestingFactory(
         TabGroupSyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateMockSyncService));
-    chrome_browser_state_ = std::move(test_browser_state_builder).Build();
+    profile_ = std::move(test_profile_builder).Build();
 
     mock_service_ = static_cast<MockTabGroupSyncService*>(
-        TabGroupSyncServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get()));
+        TabGroupSyncServiceFactory::GetForProfile(profile_.get()));
 
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
-    other_browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    other_browser_ = std::make_unique<TestBrowser>(profile_.get());
 
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(chrome_browser_state_.get());
+    browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     local_observer_ = std::make_unique<TabGroupLocalUpdateObserver>(
         browser_list_.get(), mock_service_);
 
@@ -96,7 +94,7 @@ class TabGroupSyncUtilTest : public PlatformTest {
 
   base::test::ScopedFeatureList feature_list_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<Browser> other_browser_;
   raw_ptr<BrowserList> browser_list_;
@@ -379,9 +377,9 @@ TEST_F(TabGroupSyncUtilTest, ShouldUpdateHistory) {
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetNavigationManager(std::move(navigation_manager));
 
-  auto browser_state = std::make_unique<web::FakeBrowserState>();
-  browser_state->SetOffTheRecord(false);
-  web_state->SetBrowserState(browser_state.get());
+  auto profile = std::make_unique<web::FakeBrowserState>();
+  profile->SetOffTheRecord(false);
+  web_state->SetBrowserState(profile.get());
 
   web::FakeNavigationContext navigation;
   navigation.SetWebState(web_state.get());
@@ -390,9 +388,9 @@ TEST_F(TabGroupSyncUtilTest, ShouldUpdateHistory) {
   EXPECT_TRUE(ShouldUpdateHistory(&navigation));
 
   // Off the record navigation.
-  browser_state->SetOffTheRecord(true);
+  profile->SetOffTheRecord(true);
   EXPECT_FALSE(ShouldUpdateHistory(&navigation));
-  browser_state->SetOffTheRecord(false);
+  profile->SetOffTheRecord(false);
 
   // Back / forward navigation.
   EXPECT_TRUE(ShouldUpdateHistory(&navigation));
@@ -420,9 +418,9 @@ TEST_F(TabGroupSyncUtilTest, IsSaveableNavigation) {
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetNavigationManager(std::move(navigation_manager));
 
-  auto browser_state = std::make_unique<web::FakeBrowserState>();
-  browser_state->SetOffTheRecord(false);
-  web_state->SetBrowserState(browser_state.get());
+  auto profile = std::make_unique<web::FakeBrowserState>();
+  profile->SetOffTheRecord(false);
+  web_state->SetBrowserState(profile.get());
 
   web::FakeNavigationContext navigation;
   navigation.SetWebState(web_state.get());
@@ -495,8 +493,80 @@ TEST_F(TabGroupSyncUtilTest, IsSaveableNavigation) {
 
   // Off the record navigation.
   EXPECT_TRUE(IsSaveableNavigation(&navigation));
-  browser_state->SetOffTheRecord(true);
+  profile->SetOffTheRecord(true);
   EXPECT_FALSE(IsSaveableNavigation(&navigation));
+}
+
+// Tests the `IsTabGroupShared` method with a shared group.
+TEST_F(TabGroupSyncUtilTest, IsTabGroupSharedWithShared) {
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  const TabGroup* local_group =
+      web_state_list->CreateGroup({0}, {}, tab_group_id);
+
+  SavedTabGroup saved_group(u"title", tab_groups::TabGroupColorId::kGrey,
+                            /*urls=*/{}, /*position=*/std::nullopt);
+  saved_group.SetCollaborationId("collaboration");
+
+  EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
+      .WillOnce(testing::Return(saved_group));
+
+  EXPECT_TRUE(IsTabGroupShared(local_group, mock_service_));
+  EXPECT_FALSE(IsTabGroupShared(local_group, nullptr));
+}
+
+// Tests the `IsTabGroupShared` method with a non shared group.
+TEST_F(TabGroupSyncUtilTest, IsTabGroupSharedWithNonShared) {
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  const TabGroup* local_group =
+      web_state_list->CreateGroup({0}, {}, tab_group_id);
+
+  SavedTabGroup saved_group(u"title", tab_groups::TabGroupColorId::kGrey,
+                            /*urls=*/{}, /*position=*/std::nullopt);
+
+  EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
+      .WillOnce(testing::Return(saved_group));
+
+  EXPECT_FALSE(IsTabGroupShared(local_group, mock_service_));
+  EXPECT_FALSE(IsTabGroupShared(local_group, nullptr));
+}
+
+// Tests the `GetTabGroupCollabID` method with a shared group.
+TEST_F(TabGroupSyncUtilTest, GetTabGroupCollabIDwithShared) {
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  const TabGroup* local_group =
+      web_state_list->CreateGroup({0}, {}, tab_group_id);
+
+  SavedTabGroup saved_group(u"title", tab_groups::TabGroupColorId::kGrey,
+                            /*urls=*/{}, /*position=*/std::nullopt);
+  saved_group.SetCollaborationId("collaboration");
+
+  EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
+      .WillOnce(testing::Return(saved_group));
+
+  EXPECT_NSEQ(GetTabGroupCollabID(local_group, mock_service_),
+              @"collaboration");
+  EXPECT_NSEQ(GetTabGroupCollabID(local_group, nullptr), nil);
+}
+
+// Tests the `GetTabGroupCollabID` method with a non shared group.
+TEST_F(TabGroupSyncUtilTest, GetTabGroupCollabIDwithNonShared) {
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+  WebStateList* web_state_list = browser_->GetWebStateList();
+  const TabGroup* local_group =
+      web_state_list->CreateGroup({0}, {}, tab_group_id);
+
+  SavedTabGroup saved_group(u"title", tab_groups::TabGroupColorId::kGrey,
+                            /*urls=*/{}, /*position=*/std::nullopt);
+
+  EXPECT_CALL(*mock_service_, GetGroup(tab_group_id))
+      .WillOnce(testing::Return(saved_group));
+
+  EXPECT_NSNE(GetTabGroupCollabID(local_group, mock_service_),
+              @"collaboration");
+  EXPECT_NSEQ(GetTabGroupCollabID(local_group, nullptr), nil);
 }
 
 }  // namespace utils

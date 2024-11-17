@@ -61,7 +61,7 @@ namespace subtle {
 class PostDelayedTaskPassKey {
  private:
   // Avoid =default to disallow creation by uniform initialization.
-  PostDelayedTaskPassKey() {}
+  PostDelayedTaskPassKey() = default;
 
   friend class base::internal::DelayTimerBase;
   friend class base::internal::DelayedTaskManager;
@@ -86,7 +86,7 @@ class PostDelayedTaskPassKey {
 class RunOrPostTaskPassKey {
  private:
   // Avoid =default to disallow creation by uniform initialization.
-  RunOrPostTaskPassKey() {}
+  RunOrPostTaskPassKey() = default;
 
   friend class IPC::ChannelAssociatedGroupController;
   friend class RunOrPostTaskPassKeyForTesting;

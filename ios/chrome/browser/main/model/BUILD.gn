@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/build/chrome_build.gni")
+
 source_set("model") {
   sources = [
     "browser_agent_util.h",
@@ -19,6 +21,7 @@ source_set("model") {
     "//components/breadcrumbs/core:status",
     "//ios/chrome/browser/app_launcher/model",
     "//ios/chrome/browser/crash_report/model/breadcrumbs",
+    "//ios/chrome/browser/credential_provider/model:buildflags",
     "//ios/chrome/browser/device_sharing/model",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/follow/model:browser_agent",
@@ -30,6 +33,7 @@ source_set("model") {
     "//ios/chrome/browser/metrics/model:metrics_browser_agent",
     "//ios/chrome/browser/omnibox/model",
     "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/policy/model:browser_agent",
     "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/send_tab_to_self/model",
     "//ios/chrome/browser/sessions/model",
@@ -54,6 +58,10 @@ source_set("model") {
     "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/web/public",
   ]
+
+  if (ios_enable_credential_provider_extension) {
+    deps += [ "//ios/chrome/browser/credential_provider/model" ]
+  }
 }
 
 source_set("unit_tests") {

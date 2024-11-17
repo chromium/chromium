@@ -104,15 +104,14 @@ struct GuidComparator {
   }
 };
 
-bool ReadFaviconData(const base::FilePath& file,
-                     std::vector<unsigned char>* data) {
-  std::string image_data;
-  if (!base::ReadFileToString(file, &image_data))
-    return false;
+std::optional<std::vector<uint8_t>> ReadFaviconData(
+    const base::FilePath& file) {
+  std::optional<std::vector<uint8_t>> image_data = base::ReadFileToBytes(file);
+  if (!image_data) {
+    return std::nullopt;
+  }
 
-  const unsigned char* ptr =
-      reinterpret_cast<const unsigned char*>(image_data.c_str());
-  return importer::ReencodeFavicon(ptr, image_data.size(), data);
+  return importer::ReencodeFavicon(image_data.value());
 }
 
 void BuildBookmarkEntries(const EdgeFavoriteEntry& current_entry,
@@ -136,15 +135,19 @@ void BuildBookmarkEntries(const EdgeFavoriteEntry& current_entry,
     } else {
       bookmarks->push_back(entry->ToBookmarkEntry(is_toolbar, *path));
       favicon_base::FaviconUsageData favicon;
-      if (entry->url.is_valid() && !entry->favicon_file.empty() &&
-          ReadFaviconData(entry->favicon_file, &favicon.png_data)) {
-        // As the database doesn't provide us a favicon URL we'll fake one.
-        GURL::Replacements path_replace;
-        path_replace.SetPathStr("/favicon.ico");
-        favicon.favicon_url =
-            entry->url.GetWithEmptyPath().ReplaceComponents(path_replace);
-        favicon.urls.insert(entry->url);
-        favicons->push_back(favicon);
+      if (entry->url.is_valid() && !entry->favicon_file.empty()) {
+        std::optional<std::vector<uint8_t>> png_data =
+            ReadFaviconData(entry->favicon_file);
+        if (png_data) {
+          favicon.png_data = std::move(png_data).value();
+          // As the database doesn't provide us a favicon URL we'll fake one.
+          GURL::Replacements path_replace;
+          path_replace.SetPathStr("/favicon.ico");
+          favicon.favicon_url =
+              entry->url.GetWithEmptyPath().ReplaceComponents(path_replace);
+          favicon.urls.insert(entry->url);
+          favicons->push_back(favicon);
+        }
       }
     }
   }

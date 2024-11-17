@@ -258,7 +258,7 @@ TEST_F(AsyncWaitingFirstPartySetsManagerTest,
         net::SchemefulSite(GURL("https://example.test")),
         net::SiteType::kAssociated, 0);
 
-    EXPECT_EQ(future.Get(), net::FirstPartySetMetadata(&entry, &entry));
+    EXPECT_EQ(future.Get(), net::FirstPartySetMetadata(entry, entry));
   }
   histogram_tester().ExpectTotalCount(kDelayedQueriesCountHistogram, 1);
   histogram_tester().ExpectTotalCount(kMostDelayedQueryDeltaHistogram, 1);
@@ -313,7 +313,7 @@ TEST_F(AsyncNonwaitingFirstPartySetsManagerTest,
       net::SchemefulSite(GURL("https://example.test")),
       net::SiteType::kAssociated, 0);
 
-  EXPECT_EQ(net::FirstPartySetMetadata(&entry, &entry),
+  EXPECT_EQ(net::FirstPartySetMetadata(entry, entry),
             manager().ComputeMetadata(associatedSite, &associatedSite,
                                       net::FirstPartySetsContextConfig(),
                                       base::NullCallback()));

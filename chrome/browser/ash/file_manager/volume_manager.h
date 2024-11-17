@@ -17,11 +17,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/documents_provider_root_manager.h"
 #include "chrome/browser/ash/file_manager/fusebox_daemon.h"
 #include "chrome/browser/ash/file_manager/io_task_controller.h"
+#include "chrome/browser/ash/file_manager/trash_auto_cleanup.h"
 #include "chrome/browser/ash/file_manager/volume.h"
 #include "chrome/browser/ash/file_system_provider/observer.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
@@ -130,7 +132,7 @@ class VolumeManager
 
   // Add sftp Guest OS volume mounted at `sftp_mount_path`. Note: volume must be
   // removed on unmount (including Guest OS shutdown).
-  void AddSftpGuestOsVolume(const std::string display_name,
+  void AddSftpGuestOsVolume(std::string display_name,
                             const base::FilePath& sftp_mount_path,
                             const base::FilePath& remote_mount_path,
                             const guest_os::VmType vm_type);
@@ -233,6 +235,7 @@ class VolumeManager
 
   // arc::ArcSessionManagerObserver overrides.
   void OnArcPlayStoreEnabledChanged(bool enabled) override;
+  void OnShutdown() override;
 
   // Called on change to kExternalStorageDisabled pref.
   void OnExternalStorageDisabledChanged();
@@ -295,7 +298,7 @@ class VolumeManager
       return GetKey(a) < GetKey(b);
     }
 
-    static std::string_view GetKey(const std::string_view a) { return a; }
+    static std::string_view GetKey(std::string_view a) { return a; }
 
     static std::string_view GetKey(const std::unique_ptr<Volume>& volume) {
       DCHECK(volume);
@@ -379,6 +382,10 @@ class VolumeManager
   // Removes My Files after SkyVault migration completes successufully.
   void OnMigrationSucceeded() override;
 
+  // Resets the local folders state in case migration previously completed
+  // thus removing all local volumes.
+  void OnMigrationReset() override;
+
   static int counter_;
   const int id_ = ++counter_;  // Only used in log traces
 
@@ -397,6 +404,7 @@ class VolumeManager
   std::unique_ptr<DocumentsProviderRootManager>
       documents_provider_root_manager_;
   io_task::IOTaskController io_task_controller_;
+  std::unique_ptr<trash::TrashAutoCleanup> trash_auto_cleanup_;
   // TODO(b/328006921): Replace with a check if the volumes are mounted.
   bool arc_volumes_mounted_ = false;
   bool ignore_clipboard_changed_ = false;
@@ -404,6 +412,10 @@ class VolumeManager
   bool local_user_files_allowed_ = true;
   // Whether a read only version of local folders (My Files) is needed.
   bool read_only_local_folders_ = true;
+
+  base::ScopedObservation<arc::ArcSessionManager,
+                          arc::ArcSessionManagerObserver>
+      arc_session_manager_observation_{this};
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

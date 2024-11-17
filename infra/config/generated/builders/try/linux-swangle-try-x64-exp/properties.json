@@ -40,7 +40,8 @@
           "project": "chromium"
         }
       ],
-      "retry_failed_shards": false
+      "retry_failed_shards": false,
+      "targets_spec_directory": "src/infra/config/generated/builders/try/linux-swangle-try-x64-exp/targets"
     }
   },
   "$build/reclient": {

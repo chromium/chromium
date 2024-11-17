@@ -85,9 +85,7 @@ void ProxyConfig::ProxyRules::Apply(const GURL& url, ProxyInfo* result) const {
       return;
     }
     default: {
-      result->UseDirect();
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
   }
 }
@@ -128,7 +126,7 @@ void ProxyConfig::ProxyRules::ParseFromString(const std::string& proxy_rules,
           continue;  // Unexpected.
         }
         AddProxyURIListToProxyList(
-            url_scheme, &single_proxies, ProxyServer::SCHEME_HTTP,
+            std::move(url_scheme), &single_proxies, ProxyServer::SCHEME_HTTP,
             allow_bracketed_proxy_chains, is_quic_allowed);
         type = Type::PROXY_LIST;
         return;
@@ -300,7 +298,7 @@ base::Value ProxyConfig::ToValue() const {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     // Output the bypass rules.

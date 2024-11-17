@@ -19,8 +19,18 @@ interface PdfListener {
   // be moved if the selection is modified.
   SetSelectionBounds(gfx.mojom.PointF base, gfx.mojom.PointF extent);
 
-  // Get PDF bytes.
-  GetPdfBytes() => (array<uint8> bytes);
+  // The status of the GetPdfBytes call.
+  enum GetPdfBytesStatus {
+    kSuccess = 0,
+    kSizeLimitExceeded = 1,
+    kFailed = 2,
+  };
+
+  // Get PDF bytes. If the size of the PDF in bytes is larger than `size_limit`,
+  // an empty vector will be returned instead. `bytes` is only guaranteed to be
+  // from the PDF engine if `status` is `kSuccess`.
+  GetPdfBytes(uint32 size_limit)
+      => (GetPdfBytesStatus status, array<uint8> bytes);
 };
 
 // Browser-side interface used by PDF renderers.
@@ -45,4 +55,8 @@ interface PdfHost {
 
   // Notifies the embedder know the plugin can handle save commands internally.
   SetPluginCanSave(bool can_save);
+
+  // Notifies that PDF searchifier has started processing pages.
+  [EnableIf=enable_screen_ai_service]
+  OnSearchifyStarted();
 };

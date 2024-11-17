@@ -39,7 +39,7 @@ public class PaymentRequestShowTwiceTest {
         mPaymentRequestTestRule.addPaymentAppFactory(
                 "https://alicepay.test", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
 
-        mPaymentRequestTestRule.runJavaScriptAndWaitForUIEvent(
+        mPaymentRequestTestRule.runJavaScriptAndWaitForUiEvent(
                 "showFirst()", mPaymentRequestTestRule.getReadyToPay());
         Assert.assertEquals(
                 "\"Second request: AbortError: Another PaymentRequest UI is already showing in a"

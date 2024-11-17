@@ -1,0 +1,128 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_icons_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #include=cr-icons-lit cr-shared-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  display: block;
+  height: 100%;
+}
+
+cr-icon {
+  --iron-icon-fill-color: var(--google-grey-700);
+  flex-shrink: 0;
+  height: var(--cr-icon-size);
+  width: var(--cr-icon-size);
+}
+
+cr-icon[icon='cr:warning'] {
+  /* TODO(dbeam): find dark mode equivalent for this orange. */
+  --iron-icon-fill-color: #ff9800;  /* --paper-orange-500 */
+}
+
+cr-icon[icon='cr:error'] {
+  --iron-icon-fill-color: var(--error-color);
+}
+
+.section {
+  padding: 0 var(--cr-section-padding);
+}
+
+#heading {
+  align-items: center;
+  display: flex;
+  height: 40px;
+  margin-bottom: 30px;
+  padding: 8px 12px 0;
+}
+
+#heading span {
+  flex: 1;
+  margin: 0 10px;
+}
+
+#dev-reload-button {
+  margin-inline-end: 12px;
+}
+
+#errorsList {
+  min-height: 100px;
+}
+
+.error-item {
+  padding-inline-start: 0;
+}
+
+.error-item cr-icon-button {
+  margin: 0;
+}
+
+.error-item.selected {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.error-item .start {
+  align-items: center;
+  align-self: stretch;  /* Makes the tappable area fill its parent. */
+  display: flex;
+  flex: 1;
+  padding: 0 var(--cr-section-padding);
+}
+
+.error-message {
+  flex-grow: 1;
+  margin-inline-start: 10px;
+  word-break: break-word;
+}
+
+.devtools-controls {
+  padding: 0 var(--cr-section-padding);
+}
+
+.details-heading {
+  align-items: center;
+  display: flex;
+  height: var(--cr-section-min-height);
+}
+
+.stack-trace-container {
+  list-style: none;
+  margin-top: 0;
+  padding: 0;
+}
+
+.stack-trace-container li {
+  cursor: pointer;
+  font-family: monospace;
+  padding: 4px;
+}
+
+.stack-trace-container li.selected,
+.stack-trace-container li:hover {
+  background: var(--google-blue-100);
+  color: var(--google-grey-900);  /* Same in light & dark modes. */
+}
+
+extensions-code-section {
+  height: 200px;
+  margin-bottom: 20px;
+}
+
+:host-context(.focus-outline-visible) .start:focus {
+  outline: -webkit-focus-ring-color auto 5px;
+}
+
+.start:focus {
+  outline: none;
+}
+
+.context-url {
+  word-wrap: break-word;
+}

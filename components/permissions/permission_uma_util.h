@@ -76,7 +76,7 @@ enum class RequestTypeForUma {
   PERMISSION_FLASH = 12,
   PERMISSION_MEDIASTREAM_MIC = 13,
   PERMISSION_MEDIASTREAM_CAMERA = 14,
-  PERMISSION_ACCESSIBILITY_EVENTS = 15,
+  // PERMISSION_ACCESSIBILITY_EVENTS = 15,  // Removed in M131.
   // PERMISSION_CLIPBOARD_READ = 16, // Replaced by
   // PERMISSION_CLIPBOARD_READ_WRITE in M81.
   // PERMISSION_SECURITY_KEY_ATTESTATION = 17,
@@ -703,8 +703,6 @@ class PermissionUmaUtil {
       bool did_click_manage,
       bool did_click_learn_more);
 
-  static void RecordInfobarDetailsExpanded(bool expanded);
-
   static void RecordCrowdDenyDelayedPushNotification(base::TimeDelta delay);
 
   static void RecordCrowdDenyVersionAtAbuseCheckTime(
@@ -739,6 +737,12 @@ class PermissionUmaUtil {
                                     content::BrowserContext* browser_context,
                                     content::WebContents* web_contents,
                                     const GURL& requesting_origin);
+
+  static void RecordPermissionUsageNotificationShown(
+      bool is_allowlisted,
+      int suspicious_score,
+      content::BrowserContext* browser_context,
+      const GURL& requesting_origin);
 
   static void RecordTimeElapsedBetweenGrantAndUse(
       ContentSettingsType type,

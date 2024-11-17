@@ -29,11 +29,11 @@ enum class PageActionIconType {
   kSaveCard = 15,
   // DEPRECATED: kSendTabToSelf = 16,
   kSharingHub = 17,
-  kSideSearch = 18,
+  // DEPRECATED: kSideSearch = 18,
   kSmsRemoteFetcher = 19,
   kTranslate = 20,
   kVirtualCardEnroll = 21,
-  kVirtualCardManualFallback = 22,
+  kFilledCardInformation = 22,
   kZoom = 23,
   kSaveIban = 24,
   kMandatoryReauth = 25,
@@ -61,12 +61,11 @@ static_assert(static_cast<int>(PageActionIconType::kPwaInstall) == 11);
 static_assert(static_cast<int>(PageActionIconType::kAutofillAddress) == 14);
 static_assert(static_cast<int>(PageActionIconType::kSaveCard) == 15);
 static_assert(static_cast<int>(PageActionIconType::kSharingHub) == 17);
-static_assert(static_cast<int>(PageActionIconType::kSideSearch) == 18);
 static_assert(static_cast<int>(PageActionIconType::kSmsRemoteFetcher) == 19);
 static_assert(static_cast<int>(PageActionIconType::kTranslate) == 20);
 static_assert(static_cast<int>(PageActionIconType::kVirtualCardEnroll) == 21);
-static_assert(
-    static_cast<int>(PageActionIconType::kVirtualCardManualFallback) == 22);
+static_assert(static_cast<int>(PageActionIconType::kFilledCardInformation) ==
+              22);
 static_assert(static_cast<int>(PageActionIconType::kZoom) == 23);
 static_assert(static_cast<int>(PageActionIconType::kSaveIban) == 24);
 static_assert(static_cast<int>(PageActionIconType::kMandatoryReauth) == 25);

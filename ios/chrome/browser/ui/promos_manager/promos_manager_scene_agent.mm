@@ -4,15 +4,15 @@
 
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_scene_agent.h"
 
-#import "ios/chrome/app/application_delegate/app_state.h"
-#import "ios/chrome/app/application_delegate/app_state_observer.h"
-#import "ios/chrome/app/application_delegate/startup_information.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
+#import "ios/chrome/app/profile/profile_state_observer.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/ui/promos_manager/utils.h"
 
-@interface PromosManagerSceneAgent () <AppStateObserver>
+@interface PromosManagerSceneAgent () <ProfileStateObserver>
 
 // Indicates whether or not the UI is available for a promo to be displayed.
 @property(nonatomic, assign, readonly, getter=isUIAvailableForPromo)
@@ -40,22 +40,23 @@
 - (void)setSceneState:(SceneState*)sceneState {
   [super setSceneState:sceneState];
 
-  [self.sceneState.appState addObserver:self];
+  [self.sceneState.profileState addObserver:self];
 }
 
-#pragma mark - AppStateObserver
+#pragma mark - ProfileStateObserver
 
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  // Monitor the app intialization stages to consider showing a promo at a point
-  // in the initialization of the app that allows it.
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  // Monitor the profile initialization stages to consider showing a promo at a
+  // point in the initialization of the app that allows it.
   [self maybeNotifyObserver];
 }
 
 #pragma mark - SceneStateObserver
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
-  [self.sceneState.appState removeObserver:self];
+  [self.sceneState.profileState removeObserver:self];
   [self.sceneState removeObserver:self];
 }
 

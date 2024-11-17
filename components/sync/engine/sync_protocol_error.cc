@@ -40,8 +40,7 @@ const char* GetClientActionString(ClientAction action) {
     ENUM_CASE(RESET_LOCAL_SYNC_DATA);
     ENUM_CASE(UNKNOWN_ACTION);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 #undef ENUM_CASE

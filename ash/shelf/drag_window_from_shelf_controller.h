@@ -5,6 +5,7 @@
 #ifndef ASH_SHELF_DRAG_WINDOW_FROM_SHELF_CONTROLLER_H_
 #define ASH_SHELF_DRAG_WINDOW_FROM_SHELF_CONTROLLER_H_
 
+#include <cstdint>
 #include <optional>
 #include <vector>
 
@@ -218,6 +219,10 @@ class ASH_EXPORT DragWindowFromShelfController : public aura::WindowObserver {
   SnapPosition end_snap_position_ = SnapPosition::kNone;
 
   std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
+
+  // Pointer to the last `OverviewSession` that was started by a window drag.
+  // Null by default, or if an overview session was started by other means.
+  base::WeakPtr<OverviewSession> last_overview_drag_session_ptr_;
 
   base::WeakPtrFactory<DragWindowFromShelfController> weak_ptr_factory_{this};
 };

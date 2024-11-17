@@ -7,6 +7,7 @@
 #include <set>
 
 #include "base/base64.h"
+#include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
@@ -47,24 +48,8 @@ std::u16string ReplaceEmptyUsername(const std::u16string& username,
   return username;
 }
 
-// Returns the prettified version of |signon_realm| to be displayed on the UI.
-std::u16string GetHumanReadableRealm(const std::string& signon_realm) {
-  // For Android application realms, remove the hash component. Otherwise, make
-  // no changes.
-  FacetURI maybe_facet_uri(FacetURI::FromPotentiallyInvalidSpec(signon_realm));
-  if (maybe_facet_uri.IsValidAndroidFacetURI()) {
-    return base::UTF8ToUTF16("android://" +
-                             maybe_facet_uri.android_package_name() + "/");
-  }
-  GURL realm(signon_realm);
-  if (realm.is_valid()) {
-    return base::UTF8ToUTF16(realm.host());
-  }
-  return base::UTF8ToUTF16(signon_realm);
-}
-
 #if !BUILDFLAG(IS_ANDROID)
-Suggestion CreateWebAuthnEntry(bool listed_passkeys) {
+Suggestion CreatePasskeyFromAnotherDeviceEntry(bool listed_passkeys) {
   return Suggestion(
       l10n_util::GetStringUTF8(listed_passkeys
                                    ? IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY
@@ -84,14 +69,15 @@ Suggestion CreateGenerationEntry() {
 
 // Entry for opting in to password account storage and then filling.
 Suggestion CreateEntryToOptInToAccountStorageThenFill() {
-  bool has_passkey_sync = false;
-#if !BUILDFLAG(IS_ANDROID)
-  has_passkey_sync =
-      base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
-#endif
+#if BUILDFLAG(IS_IOS)
+  const bool webauthn_sync_credentials =
+      syncer::IsWebauthnCredentialSyncEnabled();
+#else
+  constexpr bool webauthn_sync_credentials = true;
+#endif  // BUILDFLAG(IS_IOS)
   return Suggestion(
       l10n_util::GetStringUTF8(
-          has_passkey_sync
+          webauthn_sync_credentials
               ? IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE_WITH_PASSKEYS
               : IDS_PASSWORD_MANAGER_OPT_INTO_ACCOUNT_STORE),
       /*label=*/"", Suggestion::Icon::kGoogle,
@@ -181,7 +167,8 @@ void AppendSuggestionIfMatching(const std::u16string& field_suggestion,
     if (!signon_realm.empty()) {
       // The domainname is only shown for passwords with a common eTLD+1
       // but different subdomain.
-      suggestion.additional_label = GetHumanReadableRealm(signon_realm);
+      suggestion.additional_label =
+          password_manager_util::GetHumanReadableRealm(signon_realm);
       *suggestion.voice_over += u", ";
       *suggestion.voice_over += suggestion.additional_label;
     }
@@ -231,7 +218,8 @@ Suggestion CreateFillPasswordChildSuggestion(
   fill_password.payload = Suggestion::PasswordSuggestionDetails(
       credential.username, credential.password,
       credential.GetFirstSignonRealm(),
-      GetHumanReadableRealm(credential.GetFirstSignonRealm()),
+      password_manager_util::GetHumanReadableRealm(
+          credential.GetFirstSignonRealm()),
       is_cross_origin.value());
   return fill_password;
 }
@@ -272,7 +260,9 @@ void AppendManualFallbackSuggestions(
         /*display_signon_realm=*/base::UTF8ToUTF16(domain_info.name),
         is_cross_origin.value());
     suggestion.payload = payload;
-    suggestion.is_acceptable = on_password_form.value();
+    suggestion.acceptability = on_password_form.value()
+                                   ? Suggestion::Acceptability::kAcceptable
+                                   : Suggestion::Acceptability::kUnacceptable;
     if (FacetURI::FromPotentiallyInvalidSpec(domain_info.signon_realm)
             .IsValidWebFacetURI()) {
       suggestion.custom_icon = Suggestion::FaviconDetails(
@@ -359,13 +349,25 @@ std::vector<Suggestion> PasswordSuggestionGenerator::GetSuggestionsForDomain(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Add "Sign in with another device" button.
-  if (uses_passkeys && delegate->OfferPasskeysFromAnotherDeviceOption()) {
-    bool listed_passkeys = delegate->GetPasskeys().has_value() &&
-                           delegate->GetPasskeys()->size() > 0;
-    suggestions.emplace_back(CreateWebAuthnEntry(listed_passkeys));
+  // Add "Use a passkey" or "Use a different passkey" button.
+  if (uses_passkeys && delegate->IsSecurityKeyOrHybridFlowAvailable()) {
+#if !BUILDFLAG(IS_IOS)
+    const bool passkey_from_another_device_in_autofill =
+        !(base::FeatureList::IsEnabled(
+              features::kPasswordManualFallbackAvailable) &&
+          base::FeatureList::IsEnabled(
+              features::kWebAuthnUsePasskeyFromAnotherDeviceInContextMenu));
+#else
+    const bool passkey_from_another_device_in_autofill = true;
+#endif  //! BUILDFLAG(IS_IOS)
+    if (passkey_from_another_device_in_autofill) {
+      bool listed_passkeys = delegate->GetPasskeys().has_value() &&
+                             delegate->GetPasskeys()->size() > 0;
+      suggestions.emplace_back(
+          CreatePasskeyFromAnotherDeviceEntry(listed_passkeys));
+    }
   }
-#endif
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Add password generation entry, if available.
   if (offers_generation) {

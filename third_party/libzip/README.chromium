@@ -2,7 +2,7 @@ Name: libzip
 Short Name: libzip
 URL: https://github.com/nih-at/libzip
 Version: 66e496489bdae81bfda8b0088172871d8fda0032
-Date: 2021/01/05
+Date: 2021-01-05
 Revision: 66e496489bdae81bfda8b0088172871d8fda0032
 License: BSD-3-Clause
 License File: LICENSE

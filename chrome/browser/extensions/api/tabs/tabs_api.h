@@ -207,6 +207,7 @@ class TabsDetectLanguageFunction
   void WebContentsDestroyed() override;
 
   // translate::TranslateDriver::LanguageDetectionObserver:
+  void OnTranslateDriverDestroyed(translate::TranslateDriver* driver) override;
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
 
@@ -260,7 +261,7 @@ class TabsCaptureVisibleTabFunction
   void EncodeBitmapOnWorkerThread(
       scoped_refptr<base::TaskRunner> reply_task_runner,
       const SkBitmap& bitmap);
-  void OnBitmapEncodedOnUIThread(bool success, std::string base64_result);
+  void OnBitmapEncodedOnUIThread(std::optional<std::string> base64_result);
 
  private:
   DECLARE_EXTENSION_FUNCTION("tabs.captureVisibleTab", TABS_CAPTUREVISIBLETAB)
@@ -285,6 +286,7 @@ class ExecuteCodeInTabFunction : public ExecuteCodeFunction {
   bool CanExecuteScriptOnPage(std::string* error) override;
   ScriptExecutor* GetScriptExecutor(std::string* error) override;
   bool IsWebView() const override;
+  int GetRootFrameId() const override;
   const GURL& GetWebViewSrc() const override;
 
  private:

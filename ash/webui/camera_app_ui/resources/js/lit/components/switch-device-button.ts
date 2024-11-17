@@ -66,7 +66,6 @@ window.customElements.define('switch-device-button', SwitchDeviceButton);
 
 declare global {
   interface HTMLElementTagNameMap {
-    /* eslint-disable-next-line @typescript-eslint/naming-convention */
     'switch-device-button': SwitchDeviceButton;
   }
 }

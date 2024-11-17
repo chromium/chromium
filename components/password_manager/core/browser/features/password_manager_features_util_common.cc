@@ -60,17 +60,9 @@ bool IsUserEligibleForAccountStorage(const PrefService* pref_service,
 
   // TODO(crbug.com/40067058): Delete this when ConsentLevel::kSync is deleted.
   // See ConsentLevel::kSync documentation for details.
-  // Eligibility for account storage is controlled by separate flags for syncing
-  // and non-syncing users. Enabling the flag is a necessary condition but not
-  // sufficient, other checks follow below.
   if (sync_service->IsSyncFeatureEnabled()) {
     if (!base::FeatureList::IsEnabled(
             syncer::kEnablePasswordsAccountStorageForSyncingUsers)) {
-      return false;
-    }
-  } else {
-    if (!base::FeatureList::IsEnabled(
-            syncer::kEnablePasswordsAccountStorageForNonSyncingUsers)) {
       return false;
     }
   }
@@ -157,12 +149,6 @@ bool IsOptedInForAccountStorage(const PrefService* pref_service,
 #endif
 
   return true;
-}
-
-bool ShouldShowAccountStorageBubbleUi(const PrefService* pref_service,
-                                      const syncer::SyncService* sync_service) {
-  // Opted in implies eligible, so that case is covered here too.
-  return internal::IsUserEligibleForAccountStorage(pref_service, sync_service);
 }
 
 PasswordAccountStorageUserState ComputePasswordAccountStorageUserState(

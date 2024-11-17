@@ -10,6 +10,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -26,7 +29,6 @@ import androidx.test.filters.MediumTest;
 import org.json.JSONArray;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,10 +43,11 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
@@ -53,10 +56,13 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManagerImpl.DismissNotificationChromeActivity;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.IdentifierType;
 import org.chromium.components.commerce.core.ManagementType;
@@ -64,12 +70,9 @@ import org.chromium.components.commerce.core.ShoppingService;
 
 /** Tests for {@link PriceDropNotificationManager}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "enable-features=" + ChromeFeatureList.COMMERCE_PRICE_TRACKING + "<Study",
-    "force-fieldtrials=Study/Group",
-    "force-fieldtrial-params=Study.Group:user_managed_notification_max_number/2"
-})
+@Features.EnableFeatures(
+        ChromeFeatureList.COMMERCE_PRICE_TRACKING + ":user_managed_notification_max_number/2")
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class PriceDropNotificationManagerTest {
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =
             "android.settings.APP_NOTIFICATION_SETTINGS";
@@ -82,34 +85,34 @@ public class PriceDropNotificationManagerTest {
     private static final String PRODUCT_CLUSTER_ID = "cluster_id";
     private static final int NOTIFICATION_ID = 123;
 
-    private MockNotificationManagerProxy mMockNotificationManager;
+    @Mock NotificationManagerProxyImpl mUnusedForR8KeepRules;
+    @Mock NotificationManagerProxy mMockNotificationManager;
     private PriceDropNotificationManager mPriceDropNotificationManager;
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule
-    public BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    @Rule public ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
 
     @Mock private ShoppingService mMockShoppingService;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
+    @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
     @Mock private BookmarkModel mMockBookmarkModel;
     @Mock private Profile mMockProfile;
     @Captor private ArgumentCaptor<CommerceSubscription> mSubscriptionCaptor;
 
     @Before
     public void setUp() {
-        mMockNotificationManager = new MockNotificationManagerProxy();
-        PriceDropNotificationManagerImpl.setNotificationManagerForTesting(mMockNotificationManager);
+        CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
+
+        ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
+        doReturn(mMockShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
+
+        mMockNotificationManager = spy(NotificationManagerProxyImpl.getInstance());
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mMockNotificationManager);
         mPriceDropNotificationManager = PriceDropNotificationManagerFactory.create(mMockProfile);
         when(mMockBookmarkModel.isBookmarkModelLoaded()).thenReturn(true);
         BookmarkModel.setInstanceForTesting(mMockBookmarkModel);
-        ShoppingServiceFactory.setShoppingServiceForTesting(mMockShoppingService);
         ProfileManager.setLastUsedProfileForTesting(mMockProfile);
-        ShoppingFeatures.setShoppingListEligibleForTesting(true);
     }
 
     @After
@@ -142,8 +145,8 @@ public class PriceDropNotificationManagerTest {
     @Test
     @MediumTest
     public void testCanPostNotification_FeatureDisabled() {
-        mMockNotificationManager.setNotificationsEnabled(true);
-        ShoppingFeatures.setShoppingListEligibleForTesting(false);
+        doReturn(true).when(mMockNotificationManager).areNotificationsEnabled();
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         assertFalse(mPriceDropNotificationManager.canPostNotification());
         assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
     }
@@ -152,7 +155,7 @@ public class PriceDropNotificationManagerTest {
     @MediumTest
     public void testCanPostNotification_NotificationDisabled() {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
-        mMockNotificationManager.setNotificationsEnabled(false);
+        doReturn(false).when(mMockNotificationManager).areNotificationsEnabled();
         assertFalse(mPriceDropNotificationManager.areAppNotificationsEnabled());
         assertFalse(mPriceDropNotificationManager.canPostNotification());
         assertFalse(mPriceDropNotificationManager.canPostNotificationWithMetricsRecorded());
@@ -162,7 +165,7 @@ public class PriceDropNotificationManagerTest {
     @MediumTest
     public void testCanPostNotificaton() {
         PriceTrackingFeatures.setIsSignedInAndSyncEnabledForTesting(true);
-        mMockNotificationManager.setNotificationsEnabled(true);
+        doReturn(true).when(mMockNotificationManager).areNotificationsEnabled();
         assertTrue(mPriceDropNotificationManager.areAppNotificationsEnabled());
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -187,7 +190,7 @@ public class PriceDropNotificationManagerTest {
     @Test
     @MediumTest
     public void testGetNotificationSettingsIntent_NotificationDisabled() {
-        mMockNotificationManager.setNotificationsEnabled(false);
+        doReturn(false).when(mMockNotificationManager).areNotificationsEnabled();
         Intent intent = mPriceDropNotificationManager.getNotificationSettingsIntent();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             assertEquals(ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
@@ -209,7 +212,7 @@ public class PriceDropNotificationManagerTest {
     @Test
     @MediumTest
     public void testGetNotificationSettingsIntent_NotificationEnabled() {
-        mMockNotificationManager.setNotificationsEnabled(true);
+        doReturn(true).when(mMockNotificationManager).areNotificationsEnabled();
         Intent intent = mPriceDropNotificationManager.getNotificationSettingsIntent();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             assertEquals(ACTION_APP_NOTIFICATION_SETTINGS, intent.getAction());
@@ -318,7 +321,7 @@ public class PriceDropNotificationManagerTest {
         int mockType = SystemNotificationType.PRICE_DROP_ALERTS_USER_MANAGED;
         long mockTimestamp =
                 System.currentTimeMillis()
-                        - 2
+                        - 2L
                                 * PriceTrackingNotificationConfig
                                         .getNotificationTimestampsStoreWindowMs();
         JSONArray jsonArray = new JSONArray();

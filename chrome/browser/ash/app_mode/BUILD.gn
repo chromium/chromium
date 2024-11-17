@@ -56,8 +56,8 @@ static_library("app_mode") {
     "kiosk_profile_load_failed_observer.h",
     "kiosk_system_session.cc",
     "kiosk_system_session.h",
-    "lacros_launcher.cc",
-    "lacros_launcher.h",
+    "kiosk_web_app_launcher_base.cc",
+    "kiosk_web_app_launcher_base.h",
     "load_profile.cc",
     "load_profile.h",
     "pref_names.cc",
@@ -161,6 +161,8 @@ static_library("test_support") {
     "consumer_kiosk_test_helper.h",
     "fake_cws.cc",
     "fake_cws.h",
+    "fake_cws_mixin.cc",
+    "fake_cws_mixin.h",
     "fake_kiosk_app_launcher.cc",
     "fake_kiosk_app_launcher.h",
     "fake_kiosk_controller.cc",
@@ -179,6 +181,8 @@ static_library("test_support") {
     "//testing/gmock",
   ]
   deps = [
+    "//chrome/browser/ash/login/screens",
+    "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/ownership",
     "//chrome/browser/ash/policy/core",
     "//chrome/common",
@@ -238,6 +242,7 @@ source_set("unit_tests") {
 
     # Test from sub-directories
     "//chrome/browser/ash/app_mode/auto_sleep:unit_tests",
+    "//chrome/browser/ash/app_mode/isolated_web_app:unit_tests",
     "//chrome/browser/ash/app_mode/metrics:unit_tests",
     "//chrome/browser/ash/app_mode/web_app:unit_tests",
   ]
@@ -260,6 +265,8 @@ source_set("browser_tests") {
     ":test_support",
     "//chrome/browser",
     "//chrome/browser:browser_process",
+    "//chrome/browser/app_mode/test:test_support",
+    "//chrome/browser/ash/app_mode/test:test_support",
     "//chrome/browser/ash/app_mode/web_app",
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/ash/login/app_mode/test:test_support",
@@ -281,6 +288,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support_ui",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/session_manager",
+    "//chromeos/ash/components/dbus/shill",
     "//chromeos/ash/components/dbus/update_engine:update_engine",
     "//components/crx_file",
     "//components/ownership",

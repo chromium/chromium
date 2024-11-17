@@ -2,12 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//build/compiled_action.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/nacl/config.gni")
 import("//build/config/ui.gni")
+import("//build/rust/rust_static_library.gni")
 import("//build_overrides/build.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -39,6 +39,17 @@ static_library("test_config") {
   ]
 }
 
+rust_static_library("test_rust_logger_consumer") {
+  allow_unsafe = true  # Unsafe needed for FFI
+  testonly = true
+  deps = [ "//third_party/rust/log/v0_4:lib" ]
+  sources = [ "logging/test_rust_logger_consumer.rs" ]
+
+  crate_root = "logging/test_rust_logger_consumer.rs"
+
+  cxx_bindings = [ "logging/test_rust_logger_consumer.rs" ]
+}
+
 static_library("test_support") {
   testonly = true
   sources = [
@@ -58,8 +69,6 @@ static_library("test_support") {
     "bind.h",
     "copy_only_int.cc",
     "copy_only_int.h",
-    "fuzztest_init_helper.cc",
-    "fuzztest_init_helper.h",
     "gmock_callback_support.h",
     "gmock_expected_support.h",
     "gmock_move_support.h",
@@ -180,6 +189,7 @@ static_library("test_support") {
 
   public_deps = [
     ":test_config",
+    ":test_rust_logger_consumer",
     "//base",
     "//base:base_static",
     "//base:i18n",
@@ -191,6 +201,7 @@ static_library("test_support") {
   deps = [
     ":proto_test_support",
     "//build:chromeos_buildflags",
+    "//testing/libfuzzer:fuzztest_init_support",
     "//third_party/google_benchmark",
     "//third_party/icu:icuuc",
     "//third_party/libxml:libxml_utils",
@@ -510,6 +521,7 @@ if (is_android) {
     srcjar_deps = [ ":test_support_java_aidl" ]
     sources = [
       "android/java/src/org/chromium/base/GarbageCollectionTestUtils.java",
+      "android/java/src/org/chromium/base/InMemoryContentProvider.java",
       "android/java/src/org/chromium/base/MainReturnCodeResult.java",
       "android/java/src/org/chromium/base/MultiprocessTestClientLauncher.java",
       "android/java/src/org/chromium/base/MultiprocessTestClientService.java",
@@ -524,6 +536,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/MultiprocessTestClientService8.java",
       "android/java/src/org/chromium/base/MultiprocessTestClientService9.java",
       "android/java/src/org/chromium/base/MultiprocessTestClientServiceDelegate.java",
+      "android/java/src/org/chromium/base/TestDocumentsProvider.java",
     ]
   }
 
@@ -739,23 +752,5 @@ source_set("fuzztest_support") {
   deps = [
     "//base",
     "//third_party/fuzztest:fuzztest_internal",
-  ]
-}
-
-buildflag_header("confirm_fuzztest_init_buildflags") {
-  header = "confirm_fuzztest_init_buildflags.h"
-  flags =
-      [ "REGISTER_FUZZTESTS_IN_TEST_SUITES=$register_fuzztests_in_test_suites" ]
-}
-
-# Contains a static initializer which will arrange for fuzztests to be
-# registered. Usually invoked from testing/test.gni
-source_set("confirm_fuzztest_init") {
-  sources = [ "confirm_fuzztest_init.cc" ]
-  testonly = true
-  deps = [
-    ":confirm_fuzztest_init_buildflags",
-    ":test_support",
-    "//third_party/fuzztest:init_fuzztest",
   ]
 }

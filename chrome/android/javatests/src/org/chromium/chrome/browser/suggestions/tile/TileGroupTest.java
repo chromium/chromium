@@ -46,7 +46,7 @@ import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVis
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.ViewUtils;
 import org.chromium.url.GURL;
 
@@ -108,7 +108,7 @@ public class TileGroupTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testDismissTileWithContextMenu_Phones() throws Exception {
         testDismissTileWithContextMenuImpl();
     }
@@ -116,7 +116,7 @@ public class TileGroupTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
+    @Restriction({DeviceFormFactor.TABLET})
     public void testDismissTileWithContextMenu_Tablets() throws Exception {
         testDismissTileWithContextMenuImpl();
     }
@@ -144,7 +144,7 @@ public class TileGroupTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     public void testDismissTileUndo_Phones() throws Exception {
         testDismissTileUndoImpl();
     }
@@ -152,7 +152,7 @@ public class TileGroupTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_TABLET})
+    @Restriction({DeviceFormFactor.TABLET})
     public void testDismissTileUndo_Tablets() throws Exception {
         testDismissTileUndoImpl();
     }

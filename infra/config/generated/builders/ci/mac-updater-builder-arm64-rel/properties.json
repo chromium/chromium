@@ -84,6 +84,34 @@
                 "project": "chromium"
               }
             }
+          },
+          {
+            "builder_id": {
+              "bucket": "ci",
+              "builder": "mac15-arm64-updater-tester-rel",
+              "project": "chromium"
+            },
+            "builder_spec": {
+              "builder_group": "chromium.updater",
+              "execution_mode": "TEST",
+              "legacy_chromium_config": {
+                "apply_configs": [
+                  "mb"
+                ],
+                "build_config": "Release",
+                "config": "chromium",
+                "target_bits": 64,
+                "target_platform": "mac"
+              },
+              "legacy_gclient_config": {
+                "config": "chromium"
+              },
+              "parent": {
+                "bucket": "ci",
+                "builder": "mac-updater-builder-arm64-rel",
+                "project": "chromium"
+              }
+            }
           }
         ]
       },
@@ -104,8 +132,14 @@
           "bucket": "ci",
           "builder": "mac12-arm64-updater-tester-rel",
           "project": "chromium"
+        },
+        {
+          "bucket": "ci",
+          "builder": "mac15-arm64-updater-tester-rel",
+          "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac-updater-builder-arm64-rel/targets"
     }
   },
   "$build/reclient": {

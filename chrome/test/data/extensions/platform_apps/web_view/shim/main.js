@@ -1431,18 +1431,17 @@ function testExecuteScriptFail() {
 }
 
 function testExecuteScript() {
+  var url = 'data:text/html,trigger navigation';
   var webview = document.createElement('webview');
   webview.setAttribute('partition', arguments.callee.name);
   webview.addEventListener('loadstop', function() {
-    webview.executeScript(
-      {code:'document.body.style.backgroundColor = "red";'},
-      function(results) {
-        embedder.test.assertEq(1, results.length);
-        embedder.test.assertEq('red', results[0]);
-        embedder.test.succeed();
-      });
+    webview.executeScript({code: 'window.location.href;'}, function(results) {
+      embedder.test.assertEq(1, results.length);
+      embedder.test.assertEq(url, results[0]);
+      embedder.test.succeed();
+    });
   });
-  webview.setAttribute('src', 'data:text/html,trigger navigation');
+  webview.setAttribute('src', url);
   document.body.appendChild(webview);
 }
 
@@ -3889,6 +3888,64 @@ function testBluetoothDisabled() {
   document.body.appendChild(webview);
 }
 
+// Before this test runs, the browser-side test code successfully requests File
+// System Access in a tab. We confirm that the webview can also receive File
+// System Access permission.
+//
+// Note that this test covers for existing behavior which may not be the desired
+// behavior.
+// TODO(crbug.com/352520731): Embedder should allow filesystem permission for
+// the content embedded inside <webview> to use FSA.
+function testFileSystemAccessAvailable() {
+  const webview = document.createElement('webview');
+  webview.src = embedder.emptyGuestURL;
+  webview.addEventListener('loadstop', async () => {
+    const getFileSystemAccess = async () => {
+      const [handle] = await showOpenFilePicker({
+        types: [
+          {
+            description: 'All files',
+            accept: {
+              '*/*': ['.txt', '.pdf', '.jpg', '.png'],
+            },
+          },
+        ],
+      });
+      await handle.getFile();
+    };
+
+    try {
+      await evalInWebView(webview, getFileSystemAccess, []);
+    } catch (e) {
+      embedder.test.fail();
+    }
+    embedder.test.succeed();
+  });
+
+  document.body.appendChild(webview);
+}
+
+function testCannotLockKeyboard() {
+  const webview = document.createElement('webview');
+  webview.src = embedder.emptyGuestURL;
+
+  webview.addEventListener('loadstop', async () => {
+    const lockKeyboard = () => {
+      return navigator.keyboard.lock();
+    };
+
+    try {
+      await evalInWebView(webview, lockKeyboard, []);
+      // The attempt to lock the keyboard should fail.
+      embedder.test.fail();
+    } catch {
+      embedder.test.succeed();
+    }
+  });
+
+  document.body.appendChild(webview);
+}
+
 embedder.test.testList = {
   'testAllowTransparencyAttribute': testAllowTransparencyAttribute,
   'testAutosizeHeight': testAutosizeHeight,
@@ -4037,6 +4094,8 @@ embedder.test.testList = {
   'testCannotRequestFonts': testCannotRequestFonts,
   'testSerialDisabled': testSerialDisabled,
   'testBluetoothDisabled': testBluetoothDisabled,
+  'testFileSystemAccessAvailable': testFileSystemAccessAvailable,
+  'testCannotLockKeyboard': testCannotLockKeyboard,
 };
 
 onload = function() {

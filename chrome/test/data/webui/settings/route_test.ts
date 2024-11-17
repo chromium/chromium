@@ -167,6 +167,11 @@ suite('Basic', function() {
             routes.APPEARANCE);
       });
 
+  test('navigate back to nested sibling route', function() {
+    return testNavigateBackUsesHistory(
+        routes.FONTS, routes.SECURITY, routes.FONTS);
+  });
+
   test('navigate back to parent when previous route is deeper', function() {
     Router.getInstance().navigateTo(routes.SYNC);
     Router.getInstance().navigateTo(routes.PEOPLE);

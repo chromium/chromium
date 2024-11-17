@@ -271,7 +271,7 @@ class BlinkLengthProvider:
         if ltype == 6:
             return 'Length(MaxContent)'
         if ltype == 7:
-            return 'Length(FillAvailable)'
+            return 'Length(Stretch)'
         if ltype == 8:
             return 'Length(FitContent)'
         if ltype == 9:

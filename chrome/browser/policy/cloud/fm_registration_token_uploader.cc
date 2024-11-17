@@ -154,7 +154,7 @@ FmRegistrationTokenUploader::FmRegistrationTokenUploader(
          "accounts";
   LOG_POLICY(WARNING, REMOTE_COMMANDS)
       << "Starting FmRegistrationTokenUploader for " << ToString(scope_)
-      << " scope";
+      << " scope, " << invalidation_listener_->project_number() << " project";
   invalidation_listener_->Start(this);
 }
 
@@ -217,6 +217,7 @@ void FmRegistrationTokenUploader::DoUploadRegistrationToken(
   request.set_protocol_version(
       invalidation::InvalidationListener::kInvalidationProtocolVersion);
   request.set_token_type(ScopeToTokenType(scope_));
+  request.set_project_number(invalidation_listener_->project_number());
   request.set_expiration_timestamp_ms(
       token_data.token_end_of_life.InMillisecondsSinceUnixEpoch());
 
@@ -247,8 +248,9 @@ void FmRegistrationTokenUploader::OnRegistrationTokenUploaded(
 
   if (!result.IsSuccess()) {
     LOG_POLICY(ERROR, REMOTE_COMMANDS)
-        << "Upload failed for " << ToString(scope_)
-        << " scope: " << result.GetDMServerError();
+        << "Upload failed for " << ToString(scope_) << " scope, "
+        << invalidation_listener_->project_number()
+        << " project: " << result.GetDMServerError();
 
     invalidation_listener_->SetRegistrationUploadStatus(
         invalidation::InvalidationListener::RegistrationTokenUploadStatus::
@@ -263,7 +265,8 @@ void FmRegistrationTokenUploader::OnRegistrationTokenUploaded(
   }
 
   LOG_POLICY(ERROR, REMOTE_COMMANDS)
-      << "Registration token uploaded for " << ToString(scope_) << " scope";
+      << "Registration token uploaded for " << ToString(scope_) << " scope, "
+      << invalidation_listener_->project_number() << " project";
 
   invalidation_listener_->SetRegistrationUploadStatus(
       invalidation::InvalidationListener::RegistrationTokenUploadStatus::

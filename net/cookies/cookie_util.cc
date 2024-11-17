@@ -26,22 +26,26 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
+#include "base/types/optional_ref.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/isolation_info.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_access_delegate.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/cookies/cookie_switches.h"
 #include "net/cookies/parsed_cookie.h"
 #include "net/first_party_sets/first_party_set_metadata.h"
 #include "net/first_party_sets/first_party_sets_cache_filter.h"
 #include "net/http/http_util.h"
+#include "net/storage_access_api/status.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -295,6 +299,18 @@ CookieOptions::SameSiteCookieContext ComputeSameSiteContextForSet(
 bool CookieWithAccessResultSorter(const CookieWithAccessResult& a,
                                   const CookieWithAccessResult& b) {
   return CookieMonster::CookieSorter(&a.cookie, &b.cookie);
+}
+
+bool IsSameSiteIgnoringWebSocketProtocol(const url::Origin& initiator,
+                                         const GURL& request_url) {
+  if (initiator.IsSameOriginWith(request_url)) {
+    return true;
+  }
+  SchemefulSite request_site(
+      request_url.SchemeIsHTTPOrHTTPS()
+          ? request_url
+          : ChangeWebSocketSchemeToHttpScheme(request_url));
+  return SchemefulSite(initiator) == request_site;
 }
 
 }  // namespace
@@ -1109,6 +1125,18 @@ bool PartitionedCookiesDisabledByCommandLine() {
     return false;
   }
   return command_line->HasSwitch(kDisablePartitionedCookiesSwitch);
+}
+
+void AddOrRemoveStorageAccessApiOverride(
+    const GURL& url,
+    StorageAccessApiStatus api_status,
+    base::optional_ref<const url::Origin> request_initiator,
+    CookieSettingOverrides& overrides) {
+  overrides.PutOrRemove(
+      CookieSettingOverride::kStorageAccessGrantEligible,
+      api_status == StorageAccessApiStatus::kAccessViaAPI &&
+          request_initiator.has_value() &&
+          IsSameSiteIgnoringWebSocketProtocol(request_initiator.value(), url));
 }
 
 }  // namespace net::cookie_util

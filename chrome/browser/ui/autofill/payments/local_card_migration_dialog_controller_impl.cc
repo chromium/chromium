@@ -21,9 +21,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/autofill/payments/local_card_migration_controller_observer.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_factory.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog_state.h"
+#include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -55,6 +57,10 @@ LocalCardMigrationDialogControllerImpl::
     ~LocalCardMigrationDialogControllerImpl() {
   if (local_card_migration_dialog_)
     local_card_migration_dialog_->CloseDialog();
+  observer_list_.Notify(
+      &LocalCardMigrationControllerObserver::OnSourceDestruction,
+      LocalCardMigrationControllerObserver::LocalCardMigrationControllerSource::
+          kDialogContoller);
 }
 
 void LocalCardMigrationDialogControllerImpl::ShowOfferDialog(
@@ -129,6 +135,11 @@ void LocalCardMigrationDialogControllerImpl::ShowErrorDialog() {
 void LocalCardMigrationDialogControllerImpl::AddObserver(
     LocalCardMigrationControllerObserver* observer) {
   observer_list_.AddObserver(observer);
+}
+
+void LocalCardMigrationDialogControllerImpl::RemoveObserver(
+    LocalCardMigrationControllerObserver* observer) {
+  observer_list_.RemoveObserver(observer);
 }
 
 LocalCardMigrationDialogState

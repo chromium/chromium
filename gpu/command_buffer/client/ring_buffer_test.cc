@@ -90,8 +90,7 @@ class BaseRingBufferTest : public testing::Test {
   std::unique_ptr<AsyncAPIMock> api_mock_;
   std::unique_ptr<CommandBufferHelper> helper_;
 
-  std::unique_ptr<int8_t[]> buffer_;
-  raw_ptr<int8_t> buffer_start_ = nullptr;
+  scoped_refptr<gpu::Buffer> buffer_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 
@@ -107,10 +106,10 @@ class RingBufferTest : public BaseRingBufferTest {
   void SetUp() override {
     BaseRingBufferTest::SetUp();
 
-    buffer_.reset(new int8_t[kBufferSize + kBaseOffset]);
-    buffer_start_ = buffer_.get() + kBaseOffset;
-    allocator_.reset(new RingBuffer(kAlignment, kBaseOffset, kBufferSize,
-                                    helper_.get(), buffer_start_));
+    buffer_ = base::MakeRefCounted<gpu::Buffer>(
+        std::make_unique<MemoryBufferBacking>(kBufferSize + kBaseOffset));
+    allocator_.reset(
+        new RingBuffer(buffer_, kAlignment, kBaseOffset, helper_.get()));
   }
 
   void TearDown() override {
@@ -144,15 +143,11 @@ TEST_F(RingBufferTest, TestBasic) {
 // unaligned buffer could cause an alloc using the value returned by
 // GetLargestFreeOrPendingSize to try to allocate more memory than was allowed.
 TEST_F(RingBufferTest, TestCanAllocGetLargestFreeOrPendingSize) {
-  // Nullifying |buffer_start_| here, to prevent dangling this raw_ptr when
-  // buffer_ is subsequently reset.
-  buffer_start_ = nullptr;
-
   // Make sure we aren't actually aligned
-  buffer_.reset(new int8_t[kBufferSize + 2 + kBaseOffset]);
-  buffer_start_ = buffer_.get() + kBaseOffset;
-  allocator_.reset(new RingBuffer(kAlignment, kBaseOffset, kBufferSize + 2,
-                                  helper_.get(), buffer_start_));
+  buffer_ = base::MakeRefCounted<gpu::Buffer>(
+      std::make_unique<MemoryBufferBacking>(kBufferSize + 2 + kBaseOffset));
+  allocator_.reset(
+      new RingBuffer(buffer_, kAlignment, kBaseOffset, helper_.get()));
   void* pointer = allocator_->Alloc(allocator_->GetLargestFreeOrPendingSize());
   allocator_->FreePendingToken(pointer, helper_->InsertToken());
 }

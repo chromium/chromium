@@ -532,7 +532,8 @@ bool DoReplaceComponents(const char* spec,
     return ReplaceMailtoURL(spec, parsed, replacements, output, out_parsed);
   }
 
-  if (IsUsingStandardCompliantNonSpecialSchemeURLParsing()) {
+  if (IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
+      !DoIsOpaqueNonSpecial(spec, parsed.scheme)) {
     return ReplaceNonSpecialURL(spec, parsed, replacements, charset_converter,
                                 *output, *out_parsed);
   }

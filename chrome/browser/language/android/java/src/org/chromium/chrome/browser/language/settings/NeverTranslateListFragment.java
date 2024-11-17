@@ -25,7 +25,7 @@ public class NeverTranslateListFragment extends LanguageItemListFragment {
 
     @Override
     protected String getLanguageListTitle(Context context) {
-        return context.getResources().getString(R.string.languages_settings_never_langs_title);
+        return context.getString(R.string.languages_settings_never_langs_title);
     }
 
     @Override

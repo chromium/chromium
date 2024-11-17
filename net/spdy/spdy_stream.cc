@@ -77,8 +77,7 @@ class SpdyStream::HeadersBufferProducer : public SpdyBufferProducer {
 
   std::unique_ptr<SpdyBuffer> ProduceBuffer() override {
     if (!stream_.get()) {
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     }
     DCHECK_GT(stream_->stream_id(), 0u);
     return std::make_unique<SpdyBuffer>(stream_->ProduceHeadersFrame());
@@ -457,7 +456,7 @@ void SpdyStream::OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) {
       // Deletes |this|.
       session_->CloseActiveStream(stream_id_, OK);
     } else {
-      NOTREACHED_IN_MIGRATION() << io_state_;
+      NOTREACHED() << io_state_;
     }
     return;
   }
@@ -510,7 +509,7 @@ void SpdyStream::OnFrameWriteComplete(spdy::SpdyFrameType frame_type,
     } else if (io_state_ == STATE_HALF_CLOSED_REMOTE) {
       io_state_ = STATE_CLOSED;
     } else {
-      NOTREACHED_IN_MIGRATION() << io_state_;
+      NOTREACHED() << io_state_;
     }
   }
   // Notify delegate of write completion. Must not destroy |this|.

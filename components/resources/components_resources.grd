@@ -22,7 +22,6 @@ dev_ui_components_resources.grd.
       <part file="pdf_resources.grdp" />
       <part file="printing_resources.grdp" />
       <part file="safe_browsing_resources.grdp" />
-      <part file="search_companion_resources.grdp" />
       <part file="security_interstitials_resources.grdp" />
       <part file="translate_resources.grdp" />
       <part file="web_app_error_page.grdp" />

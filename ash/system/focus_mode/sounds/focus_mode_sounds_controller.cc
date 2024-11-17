@@ -274,8 +274,9 @@ void RecordPlaylistPlayedLatency(focus_mode_util::SoundType playlist_type,
 }
 
 focus_mode_histogram_names::FocusModePlaylistChosen GetPlaylistChosenType(
-    int index,
+    size_t index,
     focus_mode_util::SoundType sound_type) {
+  CHECK_LT(index, kFocusModePlaylistViewsNum);
   switch (sound_type) {
     case focus_mode_util::SoundType::kSoundscape:
       return soundscapes_chosen[index];
@@ -287,20 +288,11 @@ focus_mode_histogram_names::FocusModePlaylistChosen GetPlaylistChosenType(
 }
 
 void RecordPlaylistChosenHistogram(
-    const focus_mode_util::SelectedPlaylist& selected_playlist,
-    const std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>&
-        selected_playlist_list) {
-  for (size_t i = 0; i < selected_playlist_list.size(); ++i) {
-    if (selected_playlist_list.at(i)->playlist_id == selected_playlist.id) {
-      base::UmaHistogramEnumeration(
-          /*name=*/focus_mode_histogram_names::kPlaylistChosenHistogram,
-          /*sample=*/GetPlaylistChosenType(i, selected_playlist.type));
-      return;
-    }
-  }
+    const focus_mode_util::SelectedPlaylist& selected_playlist) {
   base::UmaHistogramEnumeration(
       /*name=*/focus_mode_histogram_names::kPlaylistChosenHistogram,
-      /*sample=*/focus_mode_histogram_names::FocusModePlaylistChosen::kNone);
+      /*sample=*/GetPlaylistChosenType(selected_playlist.list_position,
+                                       selected_playlist.type));
 }
 
 }  // namespace
@@ -309,8 +301,6 @@ FocusModeSoundsController::FocusModeSoundsController(const std::string& locale)
     : youtube_music_delegate_(
           std::make_unique<FocusModeYouTubeMusicDelegate>()) {
   soundscape_delegate_ = FocusModeSoundscapeDelegate::Create(locale);
-  soundscape_playlists_.reserve(kFocusModePlaylistViewsNum);
-  youtube_music_playlists_.reserve(kFocusModePlaylistViewsNum);
 
   // Default sound sections to enabled.
   enabled_sound_sections_ = {focus_mode_util::SoundType::kSoundscape,
@@ -408,11 +398,7 @@ void FocusModeSoundsController::OnFocusGained(
   }
 
   RecordPlaylistPlayedLatency(selected_playlist_.type, sounds_started_time_);
-  RecordPlaylistChosenHistogram(
-      selected_playlist_,
-      selected_playlist_.type == focus_mode_util::SoundType::kSoundscape
-          ? soundscape_playlists_
-          : youtube_music_playlists_);
+  RecordPlaylistChosenHistogram(selected_playlist_);
 
   // Otherwise, we will bind the media controller observer with the specific
   // request id to observe our media state.
@@ -492,6 +478,7 @@ void FocusModeSoundsController::MediaSessionInfoChanged(
 
 void FocusModeSoundsController::TogglePlaylist(
     const focus_mode_util::SelectedPlaylist& playlist_data) {
+  CHECK_LT(playlist_data.list_position, kFocusModePlaylistViewsNum);
   if (playlist_data.state != focus_mode_util::SoundState::kNone) {
     // When the user toggles a selected playlist, we will deselect it.
     ResetSelectedPlaylist();
@@ -611,6 +598,19 @@ void FocusModeSoundsController::SetYouTubeMusicNoPremiumCallback(
     base::RepeatingClosure callback) {
   CHECK(callback);
   youtube_music_delegate_->SetNoPremiumCallback(std::move(callback));
+}
+
+void FocusModeSoundsController::SetErrorCallback(bool is_soundscape,
+                                                 ApiErrorCallback callback) {
+  CHECK(callback);
+  CHECK(!is_soundscape) << "Soundscapes errors are unsupported";
+
+  youtube_music_delegate_->SetErrorCallback(std::move(callback));
+}
+
+const std::optional<FocusModeApiError>&
+FocusModeSoundsController::last_youtube_music_error() const {
+  return youtube_music_delegate_->last_api_error();
 }
 
 void FocusModeSoundsController::ReportYouTubeMusicPlayback(
@@ -747,21 +747,17 @@ void FocusModeSoundsController::OnAllThumbnailsDownloaded(
           std::make_unique<Playlist>(selected_playlist_.id,
                                      selected_playlist_.title,
                                      selected_playlist_.thumbnail));
+      selected_playlist_.list_position = 1;
     } else {
       ResetSelectedPlaylist();
     }
   }
 
-  if (is_soundscape_type) {
-    soundscape_playlists_.swap(sorted_playlists);
-  } else {
-    youtube_music_playlists_.swap(sorted_playlists);
-  }
-
   // Only trigger the observer function when all the thumbnails are finished
   // downloading.
   // TODO(b/321071604): We may need to update this once caching is implemented.
-  std::move(update_sounds_view_callback).Run(is_soundscape_type);
+  std::move(update_sounds_view_callback)
+      .Run(is_soundscape_type, std::move(sorted_playlists));
 }
 
 void FocusModeSoundsController::OnPrefChanged() {

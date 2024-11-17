@@ -57,8 +57,7 @@ NotificationOperation GetNotificationOperationFromAction(
           isEqualToString:mac_notifications::kNotificationSettingsButtonTag]) {
     return NotificationOperation::kSettings;
   }
-  NOTREACHED_IN_MIGRATION();
-  return NotificationOperation::kClick;
+  NOTREACHED();
 }
 
 int GetActionButtonIndexFromAction(NSString* actionIdentifier) {

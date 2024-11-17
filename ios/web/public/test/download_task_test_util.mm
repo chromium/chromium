@@ -37,7 +37,7 @@ void WaitDownloadTaskWithCondition::OnDownloadUpdated(DownloadTask* task) {
 }
 
 void WaitDownloadTaskWithCondition::OnDownloadDestroyed(DownloadTask* task) {
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "The DownloadTask must outlive the WaitDownloadTaskWithCondition.";
 }
 

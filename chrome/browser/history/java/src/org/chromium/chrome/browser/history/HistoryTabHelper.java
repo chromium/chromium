@@ -40,7 +40,6 @@ public class HistoryTabHelper extends TabWebContentsUserData {
 
     /**
      * @param appId App ID
-     * @param webContents
      */
     public void setAppId(String appId, @NonNull WebContents webContents) {
         mAppId = appId;

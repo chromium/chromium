@@ -64,19 +64,19 @@ public class CppWrappedTestTracker implements Tracker {
     @CheckResult
     @CalledByNative
     @Override
-    public boolean shouldTriggerHelpUI(String feature) {
+    public boolean shouldTriggerHelpUi(String feature) {
         return ourFeature(feature);
     }
 
     @CheckResult
     @Override
-    public TriggerDetails shouldTriggerHelpUIWithSnooze(String feature) {
+    public TriggerDetails shouldTriggerHelpUiWithSnooze(String feature) {
         return new TriggerDetails(ourFeature(feature), false);
     }
 
     @CalledByNative
     @Override
-    public boolean wouldTriggerHelpUI(String feature) {
+    public boolean wouldTriggerHelpUi(String feature) {
         return ourFeature(feature);
     }
 

@@ -49,7 +49,7 @@ class FeedbackPrivateDelegate {
       content::BrowserContext* context,
       system_logs::SysLogsFetcherCallback callback) const = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Creates a SystemLogsSource for the given type of log file.
   virtual std::unique_ptr<system_logs::SystemLogsSource> CreateSingleLogSource(
       api::feedback_private::LogSource source_type) const = 0;
@@ -66,11 +66,6 @@ class FeedbackPrivateDelegate {
   // report is successfully sent.
   virtual api::feedback_private::LandingPageType GetLandingPageType(
       const feedback::FeedbackData& feedback_data) const = 0;
-
-  using GetHistogramsCallback = base::OnceCallback<void(const std::string&)>;
-  // Gets Lacros histograms in zip compressed format which will be attached
-  // as a file in unified feedback report.
-  virtual void GetLacrosHistograms(GetHistogramsCallback callback) = 0;
 #endif
 
   // Returns the normalized email address of the signed-in user associated with

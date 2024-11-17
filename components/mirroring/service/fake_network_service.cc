@@ -39,7 +39,7 @@ MockUdpSocket::MockUdpSocket(
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener)
     : receiver_(this, std::move(receiver)), listener_(std::move(listener)) {}
 
-MockUdpSocket::~MockUdpSocket() {}
+MockUdpSocket::~MockUdpSocket() = default;
 
 void MockUdpSocket::Bind(const net::IPEndPoint& local_addr,
                          network::mojom::UDPSocketOptionsPtr options,
@@ -96,7 +96,7 @@ void MockUdpSocket::VerifySendingPacket(const media::cast::Packet& packet) {
 MockNetworkContext::MockNetworkContext(
     mojo::PendingReceiver<network::mojom::NetworkContext> receiver)
     : receiver_(this, std::move(receiver)) {}
-MockNetworkContext::~MockNetworkContext() {}
+MockNetworkContext::~MockNetworkContext() = default;
 
 void MockNetworkContext::CreateUDPSocket(
     mojo::PendingReceiver<network::mojom::UDPSocket> receiver,

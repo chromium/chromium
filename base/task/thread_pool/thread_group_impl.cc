@@ -831,9 +831,7 @@ ThreadGroupImpl::CreateAndRegisterWorkerLockRequired(
       thread_type_hint_,
       std::make_unique<WorkerDelegate>(
           tracked_ref_factory_.GetTrackedRef(),
-          /* is_excess=*/after_start().no_worker_reclaim
-              ? workers_.size() >= after_start().initial_max_tasks
-              : true),
+          /* is_excess=*/workers_.size() >= after_start().initial_max_tasks),
       task_tracker_, worker_sequence_num_++, &lock_);
 
   workers_.push_back(worker);

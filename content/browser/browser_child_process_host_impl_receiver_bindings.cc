@@ -4,14 +4,13 @@
 
 // This file exposes services in the browser to child processes.
 
-#include "content/browser/browser_child_process_host_impl.h"
-
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
+#include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/field_trial_recorder.h"
 #include "content/common/field_trial_recorder.mojom.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
@@ -19,6 +18,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/common/content_features.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "services/device/public/mojom/power_monitor.mojom.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
@@ -127,6 +127,10 @@ void BrowserChildProcessHostImpl::BindHostReceiver(
   if (auto r = receiver.As<ukm::mojom::UkmRecorderFactory>()) {
     metrics::UkmRecorderFactoryImpl::Create(ukm::UkmRecorder::Get(),
                                             std::move(r));
+    return;
+  }
+
+  if (binder_map_.TryBind(this, &receiver)) {
     return;
   }
 

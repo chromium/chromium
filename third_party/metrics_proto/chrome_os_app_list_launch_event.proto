@@ -29,12 +29,15 @@ message ChromeOSAppListLaunchEventProto {
     // No launch type specified. This is invalid and will cause the event to be
     // dropped.
     LAUNCH_TYPE_UNSPECIFIED = 0;
+
     // Launches from the zero-state suggested apps chips or app search result
     // tiles.
     APP_TILES = 1;
+
     // Launches from the non-apps search result list.
     RESULTS_LIST = 2;
   }
+
   optional LaunchType launch_type = 2;
 
   // Hour of the day from 0 to 23 inclusive. This is the user's local time
@@ -66,12 +69,16 @@ message ChromeOSAppListLaunchEventProto {
   enum SearchProviderType {
     // No result type specified.
     PROVIDER_UNSPECIFIED = 0;
+
     // Recent queries from the Omnibox provider.
     OMNIBOX = 1;
+
     // Zero-state files provider.
     ZERO_STATE_FILE = 2;
+
     // Drive QuickAccess provider.
     DRIVE_QUICK_ACCESS = 3;
   }
+
   optional SearchProviderType search_provider_type = 9;
 }

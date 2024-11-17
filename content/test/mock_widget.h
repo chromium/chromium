@@ -16,6 +16,7 @@
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 #include "third_party/blink/public/mojom/widget/record_content_to_visible_time_request.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace content {
 
@@ -46,7 +47,7 @@ class MockWidget : public blink::mojom::Widget,
   void GetWidgetInputHandler(
       mojo::PendingReceiver<blink::mojom::WidgetInputHandler> request,
       mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost> host) override;
-  void ShowContextMenu(ui::MenuSourceType source_type,
+  void ShowContextMenu(ui::mojom::MenuSourceType source_type,
                        const gfx::Point& location) override {}
   void BindInputTargetClient(
       mojo::PendingReceiver<viz::mojom::InputTargetClient> receiver) override {}

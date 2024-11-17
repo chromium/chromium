@@ -11,6 +11,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
+#import "components/browsing_data/core/pref_names.h"
 #import "components/sync/base/command_line_switches.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/menu/menu_action_type.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/common/string_util.h"
@@ -34,12 +36,17 @@
 #import "net/test/embedded_test_server/http_request.h"
 #import "net/test/embedded_test_server/http_response.h"
 
+using chrome_test_util::BrowsingDataButtonMatcher;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
+using chrome_test_util::ClearBrowsingDataButton;
 using chrome_test_util::ClearBrowsingDataView;
+using chrome_test_util::ContainsPartialText;
 using chrome_test_util::DeleteButton;
+using chrome_test_util::HistoryClearBrowsingDataButton;
 using chrome_test_util::HistoryEntry;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::OpenLinkInNewWindowButton;
+using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::WindowWithNumber;
 
 namespace {
@@ -117,6 +124,18 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
                 count);
 }
 
+void ExpectContextMenuHistoryEntryActionsHistogram(int count,
+                                                   MenuActionType action) {
+  GREYAssertNil([MetricsAppInterface
+                     expectCount:count
+                       forBucket:static_cast<int>(action)
+                    forHistogram:@"Mobile.ContextMenu.HistoryEntry.Actions"],
+                @"Mobile.ContextMenu.HistoryEntry.Actions histogram for the "
+                @"%d action "
+                @"page entries did not have count %d.",
+                static_cast<int>(action), count);
+}
+
 }  // namespace
 
 // History UI tests.
@@ -153,7 +172,10 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   _URL2 = self.testServer->GetURL(kURL2);
   _URL3 = self.testServer->GetURL(kURL3);
 
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
+
   // Some tests rely on a clean state for the "Clear Browsing Data" settings
   // screen.
   [ChromeEarlGrey resetBrowsingDataPrefs];
@@ -163,7 +185,7 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Cannot reset histogram tester.");
@@ -186,7 +208,19 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   // Shutdown network process after tests run to avoid hanging from
   // clearing browsing history.
   [ChromeEarlGrey killWebKitNetworkProcess];
-  [super tearDown];
+  [super tearDownHelper];
+}
+
+// From history, delets browsing data with the default values which is 15min
+// time range and includes history.
+- (void)deleteBrowsingDataFromHistory {
+  [ChromeEarlGreyUI tapPrivacyMenuButton:HistoryClearBrowsingDataButton()];
+  [ChromeEarlGreyUI tapClearBrowsingDataMenuButton:ClearBrowsingDataButton()];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  // Wait for the browsing data button to disappear.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:BrowsingDataButtonMatcher()];
 }
 
 #pragma mark Tests
@@ -578,8 +612,7 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   [self openHistoryPanel];
 
   // Open Clear Browsing Data
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          HistoryClearBrowsingDataButton()]
+  [[EarlGrey selectElementWithMatcher:HistoryClearBrowsingDataButton()]
       performAction:grey_tap()];
 
   // Check that the TableView is presented.
@@ -598,6 +631,11 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
 // Tests display and selection of 'Open in New Tab' in a context menu on a
 // history entry.
 - (void)testContextMenuOpenInNewTab {
+  // At the beginning of the test, the Context Menu History Entry Actions metric
+  // should be empty.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::OpenInNewTab);
+
   [self loadTestURLs];
   [self openHistoryPanel];
 
@@ -614,6 +652,10 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   // Select "Open in New Tab" and confirm that new tab is opened with selected
   // URL.
   [ChromeEarlGrey verifyOpenInNewTabActionWithURL:_URL1.GetContent()];
+
+  // Assert that the Context Menu History Entry Actions metric is populated.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::OpenInNewTab);
 }
 
 // Tests display and selection of 'Open in New Window' in a context menu on a
@@ -621,6 +663,11 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
 - (void)testContextMenuOpenInNewWindow {
   if (![ChromeEarlGrey areMultipleWindowsSupported])
     EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // At the beginning of the test, the Context Menu History Entry Actions metric
+  // should be empty.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::OpenInNewWindow);
 
   [self loadTestURLs];
   [self openHistoryPanel];
@@ -636,11 +683,20 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
               kTitle1)] performAction:grey_longPress()];
 
   [ChromeEarlGrey verifyOpenInNewWindowActionWithContent:kResponse1];
+
+  // Assert that the Context Menu History Entry Actions metric is populated.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::OpenInNewWindow);
 }
 
 // Tests display and selection of 'Open in New Incognito Tab' in a context menu
 // on a history entry.
 - (void)testContextMenuOpenInNewIncognitoTab {
+  // At the beginning of the test, the Context Menu History Entry Actions metric
+  // should be empty.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::OpenInNewIncognitoTab);
+
   [self loadTestURLs];
   [self openHistoryPanel];
 
@@ -657,11 +713,20 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   // Select "Open in New Incognito Tab" and confirm that new tab is opened in
   // incognito with the selected URL.
   [ChromeEarlGrey verifyOpenInIncognitoActionWithURL:_URL1.GetContent()];
+
+  // Assert that the Context Menu History Entry Actions metric is populated.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::OpenInNewIncognitoTab);
 }
 
 // Tests display and selection of 'Copy URL' in a context menu on a history
 // entry.
 - (void)testContextMenuCopy {
+  // At the beginning of the test, the Context Menu History Entry Actions metric
+  // should be empty.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::CopyURL);
+
   [self loadTestURLs];
   [self openHistoryPanel];
 
@@ -680,11 +745,20 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
       verifyCopyLinkActionWithText:[NSString
                                        stringWithUTF8String:_URL1.spec()
                                                                 .c_str()]];
+
+  // Assert that the Context Menu History Entry Actions metric is populated.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::CopyURL);
 }
 
 // Tests display and selection of "Share" in the context menu for a history
 // entry.
 - (void)testContextMenuShare {
+  // At the beginning of the test, the Context Menu History Entry Actions metric
+  // should be empty.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::Share);
+
   [self loadTestURLs];
   [self openHistoryPanel];
 
@@ -701,6 +775,10 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   [ChromeEarlGrey
       verifyShareActionWithURL:_URL1
                      pageTitle:[NSString stringWithUTF8String:kTitle1]];
+
+  // Assert that the Context Menu History Entry Actions metric is populated.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::Share);
 }
 
 // Tests the Delete context menu action for a History entry.
@@ -708,6 +786,10 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   // Assert that the DeleteBrowsingData histogram is empty at the beginning of
   // the test.
   ExpectDeleteBrowsingDataHistoryHistogram(0);
+  // At the beginning of the test, the Context Menu History Entry Actions metric
+  // should be empty.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/0, /*action=*/MenuActionType::Delete);
 
   [self loadTestURLs];
   [self openHistoryPanel];
@@ -763,6 +845,9 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
   // Assert that the DeleteBrowsingData histogram contains one bucket after one
   // deletion was requested.
   ExpectDeleteBrowsingDataHistoryHistogram(1);
+  // Assert that the Context Menu History Entry Actions metric is populated.
+  ExpectContextMenuHistoryEntryActionsHistogram(
+      /*count=*/1, /*action=*/MenuActionType::Delete);
 }
 
 // Tests that the VC can be dismissed by swiping down.
@@ -835,28 +920,82 @@ void ExpectDeleteBrowsingDataHistoryHistogram(int count) {
     [[EarlGrey selectElementWithMatcher:exitMatcher] performAction:grey_tap()];
 }
 
+// Tests that if only some of the history entries are deleted from Delete
+// Browsing Data, then the history view is updated to reflect those deletions.
+- (void)testPartialDeletion {
+  const char olderURLString[] = "https://example.com";
+  const GURL olderURL = GURL(olderURLString);
+
+  // Reset all prefs, so they're at their default value.
+  [ChromeEarlGrey resetBrowsingDataPrefs];
+
+  // Disable closing tabs as it's on by default in delete browsing data, so the
+  // tab closure animation is not run in iPads. This is needed so the history UI
+  // is not closed due to the animation.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
+
+  // Create an history entry that took place one day ago.
+  const base::Time oneDayAgo = base::Time::Now() - base::Days(1);
+  [ChromeEarlGrey addHistoryServiceTypedURL:olderURL visitTimestamp:oneDayAgo];
+
+  // Create a recent history entry.
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  // Open history and delete browsing data with the default configuration.
+  [self openHistoryPanel];
+  [self deleteBrowsingDataFromHistory];
+
+  // Check that the day old URL is still present.
+  [[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          olderURL)),
+              olderURLString)] assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Check that the more recent visit is gone.
+  [[EarlGrey
+      selectElementWithMatcher:
+          HistoryEntry(
+              base::UTF16ToUTF8(
+                  url_formatter::
+                      FormatUrlForDisplayOmitSchemePathTrivialSubdomainsAndMobilePrefix(
+                          _URL1)),
+              kTitle1)] assertWithMatcher:grey_nil()];
+}
+
+// Tests that if all history entries are deleted from Delete Browsing Data, that
+// then the history view is updated to show the empty state.
 - (void)testEmptyState {
-    [self loadTestURLs];
-    [self openHistoryPanel];
+  // Disable closing tabs as it's on by default in delete browsing data, so the
+  // tab closure animation is not run in iPads. This is needed so the history UI
+  // is not closed due to the animation.
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kCloseTabs];
 
-    // The toolbar should contain the CBD and edit buttons.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            HistoryClearBrowsingDataButton()]
-        assertWithMatcher:grey_notNil()];
-    [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
-        assertWithMatcher:grey_notNil()];
+  [self loadTestURLs];
+  [self openHistoryPanel];
 
-    [ChromeEarlGreyUI openAndClearBrowsingDataFromHistory];
+  // The toolbar should contain the CBD and edit buttons.
+  [[EarlGrey selectElementWithMatcher:HistoryClearBrowsingDataButton()]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
+      assertWithMatcher:grey_notNil()];
 
-    // Toolbar should only contain CBD button and the background should contain
-    // the Illustrated empty view
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                            HistoryClearBrowsingDataButton()]
-        assertWithMatcher:grey_notNil()];
-    [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
-        assertWithMatcher:grey_nil()];
-    [[EarlGrey selectElementWithMatcher:EmptyIllustratedTableViewBackground()]
-        assertWithMatcher:grey_notNil()];
+  [ChromeEarlGreyUI openAndClearBrowsingDataFromHistory];
+
+  // Toolbar should only contain CBD button and the background should contain
+  // the Illustrated empty view
+  [[EarlGrey selectElementWithMatcher:HistoryClearBrowsingDataButton()]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:NavigationEditButton()]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:EmptyIllustratedTableViewBackground()]
+      assertWithMatcher:grey_notNil()];
 }
 
 #pragma mark Multiwindow

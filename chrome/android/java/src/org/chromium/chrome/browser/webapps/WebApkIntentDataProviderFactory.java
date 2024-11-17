@@ -170,8 +170,6 @@ public class WebApkIntentDataProviderFactory {
     }
 
     /**
-     * @param webApkPackageName
-     * @param resources
      * @return A list of shortcut items derived from the parser.
      */
     // looking up resources from other apps requires the use of getIdentifier()

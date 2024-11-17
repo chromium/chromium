@@ -7,6 +7,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/strings/grit/components_strings.h"
@@ -63,7 +64,7 @@ void OnNotificationClicked(const std::string id) {
   Navigate(&navigate_params);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  NotificationDisplayService::GetForProfile(
+  NotificationDisplayServiceFactory::GetForProfile(
       ProfileManager::GetActiveUserProfile())
       ->Close(NotificationHandler::Type::TRANSIENT, id);
 }
@@ -94,7 +95,7 @@ void ShowDlpNotification(const std::string& id,
 #endif
   notification.set_vector_small_image(vector_icons::kBusinessIcon);
   notification.set_renotify(true);
-  NotificationDisplayService::GetForProfile(
+  NotificationDisplayServiceFactory::GetForProfile(
       ProfileManager::GetActiveUserProfile())
       ->Display(NotificationHandler::Type::TRANSIENT, notification,
                 /*metadata=*/nullptr);
@@ -127,7 +128,7 @@ void ShowDlpScreenShareDisabledNotification(const std::u16string& app_title) {
 
 void HideDlpScreenSharePausedNotification(const std::string& share_id) {
   auto* notification_display_service =
-      NotificationDisplayService::GetForProfile(
+      NotificationDisplayServiceFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile());
   if (notification_display_service) {
     notification_display_service->Close(
@@ -147,7 +148,7 @@ void ShowDlpScreenSharePausedNotification(const std::string& share_id,
 
 void HideDlpScreenShareResumedNotification(const std::string& share_id) {
   auto* notification_display_service =
-      NotificationDisplayService::GetForProfile(
+      NotificationDisplayServiceFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile());
   if (notification_display_service) {
     notification_display_service->Close(

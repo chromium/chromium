@@ -135,8 +135,7 @@ WTF::String InteractionTypeToString(UserInteractionType interaction_type) {
     case UserInteractionType::kTapOrClick:
       return "tapOrClick";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -328,9 +327,6 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
       FlushPointerup();
     }
 
-    if (entry->GetEventTimingReportingInfo()->prevent_counting_as_interaction) {
-      entry->SetInteractionId(0);
-    }
     pointer_id_entry_map_.Set(
         pointer_id, PointerEntryAndInfo::Create(entry, event_timestamps));
 
@@ -357,23 +353,16 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
       // Reset if pointer_info got flushed.
       pointer_info = nullptr;
 
-      UseCounter::Count(window_performance_->GetExecutionContext(),
-                        WebFeature::kEventTimingOrphanPointerup);
-
-      if (base::FeatureList::IsEnabled(
-              features::kEventTimingHandleOrphanPointerup)) {
-        // Early exit if it's an orphan pointerup, not treating it as an
-        // interaction. crbug.com/40935137
-        return true;
-      }
+      // Early exit if it's an orphan pointerup, not treating it as an
+      // interaction. crbug.com/40935137
+      return true;
     }
 
     // Generate a new interaction id.
     // Do not generate any interaction id for the events when the scroll is
     // active.
-    if (!RuntimeEnabledFeaturesBase::
-            EventTimingTapStopScrollNoInteractionIdEnabled() ||
-        (pointer_info && !pointer_info->GetEntry()->HasKnownInteractionID())) {
+    if (pointer_info && !pointer_info->GetEntry()->HasKnownInteractionID() &&
+        !entry->HasKnownInteractionID()) {
       UpdateInteractionId();
       entry->SetInteractionIdAndOffset(GetCurrentInteractionId(),
                                        GetInteractionCount());
@@ -406,8 +395,6 @@ bool ResponsivenessMetrics::SetPointerIdAndRecordLatency(
           kPageLoadInternalEventTimingClickInteractionEvents,
           ClickInteractionEvents::kKeyboardClick);
     } else if (is_last_pointerup_orphan_) {
-      UseCounter::Count(window_performance_->GetExecutionContext(),
-                        WebFeature::kEventTimingOrphanPointerupWithClick);
       base::UmaHistogramEnumeration(
           kPageLoadInternalEventTimingClickInteractionEvents,
           ClickInteractionEvents::kPointerClickWithMissingPointerdownOnly);

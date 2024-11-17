@@ -13,6 +13,7 @@ component("fwupd") {
   deps = [
     "//ash/constants",
     "//base",
+    "//chromeos/ash/components/install_attributes",
     "//chromeos/dbus/common",
     "//components/device_event_log",
     "//dbus",
@@ -46,6 +47,7 @@ source_set("test_support") {
     ":fwupd",
     "//ash/constants",
     "//base/test:test_support",
+    "//chromeos/ash/components/install_attributes:test_support",
     "//dbus:test_support",
     "//testing/gmock",
     "//testing/gtest",

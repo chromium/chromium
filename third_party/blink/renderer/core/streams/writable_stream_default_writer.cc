@@ -388,7 +388,7 @@ ScriptPromiseResolver<IDLUndefined>* WritableStreamDefaultWriter::Write(
   //  4. Let chunkSize be !
   //     WritableStreamDefaultControllerGetChunkSize(controller, chunk).
   double chunk_size = WritableStreamDefaultController::GetChunkSize(
-      script_state, controller, chunk, exception_state);
+      script_state, controller, chunk);
 
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);

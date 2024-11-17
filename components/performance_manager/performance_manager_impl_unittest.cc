@@ -26,13 +26,13 @@ namespace performance_manager {
 
 class PerformanceManagerImplTest : public testing::Test {
  public:
-  PerformanceManagerImplTest() {}
+  PerformanceManagerImplTest() = default;
 
   PerformanceManagerImplTest(const PerformanceManagerImplTest&) = delete;
   PerformanceManagerImplTest& operator=(const PerformanceManagerImplTest&) =
       delete;
 
-  ~PerformanceManagerImplTest() override {}
+  ~PerformanceManagerImplTest() override = default;
 
   void SetUp() override {
     EXPECT_FALSE(PerformanceManagerImpl::IsAvailable());

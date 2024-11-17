@@ -81,7 +81,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
 
     private static SyncErrorNotifier buildForProfile(Profile profile) {
         return new SyncErrorNotifier(
-                BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext()),
+                BaseNotificationManagerProxyFactory.create(),
                 SyncServiceFactory.getForProfile(profile),
                 TrustedVaultClient.get());
     }

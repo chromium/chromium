@@ -57,7 +57,8 @@ class WorkerScriptLoaderFactoryTest : public testing::Test {
 
     // Set up a service worker host for the shared worker.
     service_worker_handle_ = std::make_unique<ServiceWorkerMainResourceHandle>(
-        helper_->context_wrapper(), base::DoNothing());
+        helper_->context_wrapper(), base::DoNothing(),
+        /*fetch_event_client_id=*/"");
   }
 
  protected:

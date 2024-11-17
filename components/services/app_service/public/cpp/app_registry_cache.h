@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_REGISTRY_CACHE_H_
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_REGISTRY_CACHE_H_
 
+#include <functional>
 #include <map>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -17,6 +21,7 @@
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "components/account_id/account_id.h"
+#include "components/services/app_service/public/cpp/app.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 
@@ -134,6 +139,13 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
     }
   }
 
+  // Returns an `apps::AppUpdate` corresponding to the app in the cache with the
+  // given `app_id`, or `nullopt` if there is not such an app.
+  //
+  // The `apps::AppUpdate` view may dangle when the state of the cache changes,
+  // and should not be accessed after this happens.
+  std::optional<AppUpdate> GetAppUpdate(std::string_view app_id) const;
+
   // Calls f, a void-returning function whose arguments are (const
   // apps::AppUpdate&), on the app in the cache with the given app_id. It will
   // return true (and call f) if there is such an app, otherwise it will return
@@ -144,18 +156,9 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   // it's not guaranteed to see a consistent state.
   template <typename FunctionType>
   bool ForOneApp(const std::string& app_id, FunctionType f) const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker_);
-
-    auto s_iter = states_.find(app_id);
-    const App* state =
-        (s_iter != states_.end()) ? s_iter->second.get() : nullptr;
-
-    auto d_iter = deltas_in_progress_.find(app_id);
-    const App* delta =
-        (d_iter != deltas_in_progress_.end()) ? d_iter->second : nullptr;
-
-    if (state || delta) {
-      f(AppUpdate(state, delta, account_id_));
+    std::optional<AppUpdate> app_update = GetAppUpdate(app_id);
+    if (app_update.has_value()) {
+      f(*app_update);
       return true;
     }
     return false;
@@ -264,7 +267,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   base::ObserverList<Observer> observers_;
 
   // Maps from app_id to the latest state: the "sum" of all previous deltas.
-  std::map<std::string, AppPtr> states_;
+  std::map<std::string, AppPtr, std::less<>> states_;
 
   // Track the deltas being processed or are about to be processed by OnApps.
   // They are separate to manage the "notification and merging might be delayed
@@ -282,7 +285,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppRegistryCache {
   // Nested OnApps calls are expected to be rare (but still dealt with
   // sensibly). In the typical case, OnApps should call DoOnApps exactly once,
   // and deltas_pending_ will stay empty.
-  std::map<std::string, App*> deltas_in_progress_;
+  std::map<std::string, raw_ptr<App, CtnExperimental>, std::less<>> deltas_in_progress_;
   std::vector<AppPtr> deltas_pending_;
 
   // Saves app types which will finish initialization, and OnAppTypeInitialized

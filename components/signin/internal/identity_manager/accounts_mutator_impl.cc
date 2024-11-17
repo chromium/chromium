@@ -36,7 +36,7 @@ AccountsMutatorImpl::AccountsMutatorImpl(
 #endif
 }
 
-AccountsMutatorImpl::~AccountsMutatorImpl() {}
+AccountsMutatorImpl::~AccountsMutatorImpl() = default;
 
 CoreAccountId AccountsMutatorImpl::AddOrUpdateAccount(
     const std::string& gaia_id,
@@ -51,8 +51,8 @@ CoreAccountId AccountsMutatorImpl::AddOrUpdateAccount(
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 ) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION();
-#endif
+  NOTREACHED();
+#else
   CoreAccountId account_id =
       account_tracker_service_->SeedAccountInfo(gaia_id, email, access_point);
   account_tracker_service_->SetIsAdvancedProtectionAccount(
@@ -71,6 +71,7 @@ CoreAccountId AccountsMutatorImpl::AddOrUpdateAccount(
   );
 
   return account_id;
+#endif
 }
 
 void AccountsMutatorImpl::UpdateAccountInfo(
@@ -93,24 +94,26 @@ void AccountsMutatorImpl::RemoveAccount(
     const CoreAccountId& account_id,
     signin_metrics::SourceForRefreshTokenOperation source) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION();
-#endif
+  NOTREACHED();
+#else
   token_service_->RevokeCredentials(account_id, source);
+#endif
 }
 
 void AccountsMutatorImpl::RemoveAllAccounts(
     signin_metrics::SourceForRefreshTokenOperation source) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION();
-#endif
+  NOTREACHED();
+#else
   token_service_->RevokeAllCredentials(source);
+#endif
 }
 
 void AccountsMutatorImpl::InvalidateRefreshTokenForPrimaryAccount(
     signin_metrics::SourceForRefreshTokenOperation source) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION();
-#endif
+  NOTREACHED();
+#else
   DCHECK(primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin));
   CoreAccountInfo primary_account_info =
       primary_account_manager_->GetPrimaryAccountInfo(ConsentLevel::kSignin);
@@ -118,6 +121,7 @@ void AccountsMutatorImpl::InvalidateRefreshTokenForPrimaryAccount(
                      GaiaConstants::kInvalidRefreshToken,
                      primary_account_info.is_under_advanced_protection,
                      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN, source);
+#endif
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

@@ -2,10 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
-assert(include_polymer)
+assert(!is_android && !is_ios)
 
 build_webui("build") {
   grd_prefix = "cr_components_localized_link"

@@ -144,7 +144,8 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
 
   std::set<std::unique_ptr<SharedWorkerHost>, base::UniquePtrComparator>
       worker_hosts_;
-  base::flat_map<blink::SharedWorkerToken, SharedWorkerHost*>
+  base::flat_map<blink::SharedWorkerToken,
+                 raw_ptr<SharedWorkerHost, CtnExperimental>>
       shared_worker_hosts_;
 
   // |storage_partition_| owns |this|.

@@ -18,6 +18,9 @@
 // Shows Safe Browsing screen.
 - (void)showSafeBrowsing;
 
+// Show Incognito Lock screen.
+- (void)showIncognitoLock;
+
 // Shows Lockdown Mode screen.
 - (void)showLockdownMode;
 

@@ -11,13 +11,13 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/ios/common/features.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_constants.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
+#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_constants.h"
-#import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/bottom_sheet_constants.h"
 #import "ios/chrome/browser/ui/infobars/banners/infobar_banner_constants.h"
 #import "ios/chrome/browser/ui/infobars/infobar_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_address_profile_modal_constants.h"
@@ -119,6 +119,10 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
                     grey_kindOfClass([UITextField class]), nil);
 }
 
+id<GREYMatcher> EditProfileBottomSheet() {
+  return grey_accessibilityID(kEditProfileBottomSheetViewIdentfier);
+}
+
 }  // namespace
 
 @interface SaveProfileEGTest : ChromeTestCase
@@ -127,11 +131,11 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
 @implementation SaveProfileEGTest
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Clear existing profile.
   [AutofillAppInterface clearProfilesStore];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -139,7 +143,8 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
 
   if ([self isRunningTest:@selector(testUserData_LocalEditViaBottomSheet)] ||
       [self
-          isRunningTest:@selector(testUserData_LocalHideBottomSheetOnCancel)]) {
+          isRunningTest:@selector(testUserData_LocalHideBottomSheetOnCancel)] ||
+      [self isRunningTest:@selector(testEditBottomSheetAlertBySwipingDown)]) {
     config.features_enabled.push_back(
         kAutofillDynamicallyLoadsFieldsForAddressInput);
   }
@@ -535,6 +540,51 @@ id<GREYMatcher> TextFieldWithLabel(NSString* textFieldLabel) {
   // prompt.
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
   [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
+}
+
+// Tests that there is an alert shown if the user tries to dismiss an alert
+// after they edited a field in the edit prompt without saving.
+- (void)testEditBottomSheetAlertBySwipingDown {
+  // TODO(crbug.com/377270834): Fix implementation on iPad.
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_SKIPPED(@"Test fails on iPad currently.");
+  }
+
+  // Fill and submit the form.
+  [self fillPresidentProfileAndShowSaveModal];
+
+  // Edit the profile.
+  [[EarlGrey selectElementWithMatcher:ModalEditButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Replace city field value.
+  [[EarlGrey selectElementWithMatcher:TextFieldWithLabel(@"City")]
+      performAction:grey_replaceText(@"New York")];
+
+  // Swipe down the sheet.
+  [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  id<GREYMatcher> keepEditingAlert = grey_text(
+      l10n_util::GetNSString(IDS_IOS_VIEW_CONTROLLER_DISMISS_CANCEL_CHANGES));
+  // Ensure the error alert is shown.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:keepEditingAlert];
+
+  // Keep editing.
+  [[EarlGrey selectElementWithMatcher:keepEditingAlert]
+      performAction:grey_tap()];
+
+  // Swipe down the sheet again.
+  [[EarlGrey selectElementWithMatcher:EditProfileBottomSheet()]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that the save changes button exists.
+  id<GREYMatcher> saveChangesAlert = grey_text(
+      l10n_util::GetNSString(IDS_IOS_VIEW_CONTROLLER_DISMISS_SAVE_CHANGES));
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:saveChangesAlert];
+
+  [[EarlGrey selectElementWithMatcher:saveChangesAlert]
+      performAction:grey_tap()];
 }
 
 @end

@@ -173,8 +173,7 @@ AddSinkResultCode AccessCodeCastDiscoveryInterface::GetErrorFromResponse(
       return AddSinkResultCode::SERVICE_NOT_PRESENT;
 
     case net::HTTP_OK:
-      NOTREACHED_IN_MIGRATION();
-      ABSL_FALLTHROUGH_INTENDED;
+      NOTREACHED();
     default:
       return AddSinkResultCode::HTTP_RESPONSE_CODE_ERROR;
   }

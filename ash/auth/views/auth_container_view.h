@@ -6,6 +6,7 @@
 #define ASH_AUTH_VIEWS_AUTH_CONTAINER_VIEW_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/ash_export.h"
@@ -22,7 +23,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/layout/box_layout.h"
@@ -72,7 +72,7 @@ class ASH_EXPORT AuthContainerView : public views::View {
 
     raw_ptr<FingerprintView> GetFingerprintView();
 
-    AuthInputType GetCurrentInputType();
+    std::optional<AuthInputType> GetCurrentInputType();
 
     raw_ptr<AuthContainerView> GetView();
 
@@ -90,7 +90,6 @@ class ASH_EXPORT AuthContainerView : public views::View {
   // views::View:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   std::string GetObjectName() const override;
   void RequestFocus() override;
 
@@ -127,6 +126,8 @@ class ASH_EXPORT AuthContainerView : public views::View {
 
   // FingerprintView actions:
   void SetFingerprintState(FingerprintState state);
+  void NotifyFingerprintAuthSuccess(
+      base::OnceClosure on_success_animation_finished);
   void NotifyFingerprintAuthFailure();
 
  private:
@@ -154,7 +155,7 @@ class ASH_EXPORT AuthContainerView : public views::View {
   raw_ptr<views::LabelButton> switch_button_ = nullptr;
 
   // State:
-  AuthInputType current_input_type_ = AuthInputType::kPassword;
+  std::optional<AuthInputType> current_input_type_;
 
   base::ObserverList<Observer> observers_;
 

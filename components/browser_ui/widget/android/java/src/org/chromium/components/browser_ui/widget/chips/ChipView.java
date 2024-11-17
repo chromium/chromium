@@ -67,7 +67,6 @@ public class ChipView extends LinearLayout {
     private ViewGroup mEndIconWrapper;
     private AppCompatTextView mSecondaryText;
     private int mMaxWidth = Integer.MAX_VALUE;
-    private boolean mTintWithTextColor;
 
     /** Constructor for applying a theme overlay. */
     public ChipView(Context context, @StyleRes int themeOverlay) {
@@ -236,7 +235,7 @@ public class ChipView extends LinearLayout {
         }
         if (textAlignStart) {
             // Default of 'center' is defined in the ChipTextView style.
-            mPrimaryText.setTextAlignment((View.TEXT_ALIGNMENT_VIEW_START));
+            mPrimaryText.setTextAlignment(View.TEXT_ALIGNMENT_VIEW_START);
         }
         if (reduceTextStartPadding) {
             mPrimaryText.setPaddingRelative(
@@ -316,17 +315,17 @@ public class ChipView extends LinearLayout {
         mLoadingView.addObserver(
                 new LoadingView.Observer() {
                     @Override
-                    public void onShowLoadingUIComplete() {
+                    public void onShowLoadingUiComplete() {
                         mStartIcon.setVisibility(GONE);
                     }
 
                     @Override
-                    public void onHideLoadingUIComplete() {
+                    public void onHideLoadingUiComplete() {
                         mStartIcon.setVisibility(VISIBLE);
                     }
                 });
         mLoadingView.addObserver(loadingViewObserver);
-        mLoadingView.showLoadingUI();
+        mLoadingView.showLoadingUi();
     }
 
     /**
@@ -336,7 +335,7 @@ public class ChipView extends LinearLayout {
      */
     public void hideLoadingView(LoadingView.Observer loadingViewObserver) {
         mLoadingView.addObserver(loadingViewObserver);
-        mLoadingView.hideLoadingUI();
+        mLoadingView.hideLoadingUi();
     }
 
     /** Adds a remove icon (X button) at the trailing end of the chip next to the primary text. */
@@ -456,7 +455,6 @@ public class ChipView extends LinearLayout {
      *     color. If not, the tint will be cleared.
      */
     private void setTint(boolean tintWithTextColor) {
-        mTintWithTextColor = tintWithTextColor;
         if (mPrimaryText.getTextColors() != null && tintWithTextColor) {
             ImageViewCompat.setImageTintList(mStartIcon, mPrimaryText.getTextColors());
         } else {

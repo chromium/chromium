@@ -35,10 +35,13 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/png_codec.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #endif
 
 using extensions::mojom::ManifestLocation;
@@ -81,10 +84,13 @@ class ExtensionWebUITest : public testing::Test {
   raw_ptr<ExtensionService, DanglingUntriaged> extension_service_;
   content::BrowserTaskEnvironment task_environment_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  user_manager::ScopedUserManager test_user_manager_{
-      ash::ChromeUserManagerImpl::CreateChromeUserManager()};
+  user_manager::ScopedUserManager user_manager_{
+      std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<ash::UserManagerDelegateImpl>(),
+          g_browser_process->local_state(),
+          ash::CrosSettings::Get())};
 #endif
 };
 
@@ -259,11 +265,7 @@ TEST_F(ExtensionWebUITest, TestFaviconAlwaysAvailable) {
   for (const auto& favicon : favicon_results) {
     EXPECT_TRUE(favicon.is_valid());
 
-    SkBitmap bitmap;
-    bool result =
-        gfx::PNGCodec::Decode(favicon.bitmap_data.get()->front(),
-                              favicon.bitmap_data.get()->size(), &bitmap);
-    EXPECT_TRUE(result);
+    SkBitmap bitmap = gfx::PNGCodec::Decode(*favicon.bitmap_data);
     EXPECT_FALSE(bitmap.isNull());
     EXPECT_FALSE(bitmap.drawsNothing());
   }

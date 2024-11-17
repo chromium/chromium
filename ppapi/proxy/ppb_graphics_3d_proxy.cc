@@ -81,7 +81,7 @@ PP_Bool Graphics3D::SetGetBuffer(int32_t /* transfer_buffer_id */) {
   return PP_FALSE;
 }
 
-PP_Bool Graphics3D::Flush(int32_t put_offset) {
+PP_Bool Graphics3D::Flush(int32_t put_offset, uint64_t release_count) {
   return PP_FALSE;
 }
 
@@ -361,10 +361,11 @@ void PPB_Graphics3D_Proxy::OnMsgWaitForGetOffsetInRange(
 }
 
 void PPB_Graphics3D_Proxy::OnMsgAsyncFlush(const HostResource& context,
-                                           int32_t put_offset) {
+                                           int32_t put_offset,
+                                           uint64_t release_count) {
   EnterHostFromHostResource<PPB_Graphics3D_API> enter(context);
   if (enter.succeeded())
-    enter.object()->Flush(put_offset);
+    enter.object()->Flush(put_offset, release_count);
 }
 
 void PPB_Graphics3D_Proxy::OnMsgCreateTransferBuffer(

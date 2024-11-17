@@ -8,6 +8,7 @@
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 namespace {
 
@@ -72,6 +73,19 @@ void PrivacySandboxDialogHandler::RegisterMessages() {
       base::BindRepeating(
           &PrivacySandboxDialogHandler::HandleRecordPrivacyPolicyLoadTime,
           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "shouldShowPrivacySandboxPrivacyPolicy",
+      base::BindRepeating(&PrivacySandboxDialogHandler::
+                              HandleShouldShowPrivacySandboxPrivacyPolicy,
+                          base::Unretained(this)));
+}
+
+void PrivacySandboxDialogHandler::HandleShouldShowPrivacySandboxPrivacyPolicy(
+    const base::Value::List& args) {
+  AllowJavascript();
+  ResolveJavascriptCallback(args[0],
+                            base::FeatureList::IsEnabled(
+                                privacy_sandbox::kPrivacySandboxPrivacyPolicy));
 }
 
 void PrivacySandboxDialogHandler::HandleRecordPrivacyPolicyLoadTime(

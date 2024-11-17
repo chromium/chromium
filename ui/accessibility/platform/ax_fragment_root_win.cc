@@ -6,6 +6,7 @@
 
 #include <unordered_map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
@@ -160,9 +161,11 @@ class AXFragmentRootPlatformNodeWin : public AXPlatformNodeWin,
       double screen_physical_pixel_x,
       double screen_physical_pixel_y,
       IRawElementProviderFragment** element_provider) override {
+    UIA_VALIDATE_CALL_1_ARG(element_provider);
     WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_ELEMENT_PROVIDER_FROM_POINT);
     WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_ELEMENT_PROVIDER_FROM_POINT);
-    UIA_VALIDATE_CALL_1_ARG(element_provider);
+    WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(
+        UMA_API_ELEMENT_PROVIDER_FROM_POINT);
 
     *element_provider = nullptr;
 
@@ -252,7 +255,9 @@ class AXFragmentRootMapWin {
   }
 
  private:
-  std::unordered_map<gfx::AcceleratedWidget, AXFragmentRootWin*> map_;
+  std::unordered_map<gfx::AcceleratedWidget,
+                     raw_ptr<AXFragmentRootWin, CtnExperimental>>
+      map_;
 };
 
 AXFragmentRootWin::AXFragmentRootWin(gfx::AcceleratedWidget widget,

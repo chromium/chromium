@@ -1036,8 +1036,8 @@ TEST_F(NightLightTest, TestAmbientLightRemappingTemperature) {
             controller->ambient_temperature());
 
   // Simulate powerd sending multiple times an ambient temperature of 8000.
-  // The remapped ambient temperature should grow and eventually reach ~7400.
-  float ambient_temperature = SimulateAmbientColorFromPowerd(8000, 7400.0f);
+  // The remapped ambient temperature should grow and eventually reach ~7450.
+  float ambient_temperature = SimulateAmbientColorFromPowerd(8000, 7450.0f);
 
   // If powerd sends the same temperature, the remapped temperature should not
   // change.

@@ -5,39 +5,19 @@
 #ifndef ASH_PUBLIC_CPP_SCANNER_SCANNER_ACTION_H_
 #define ASH_PUBLIC_CPP_SCANNER_SCANNER_ACTION_H_
 
-#include <string>
-#include <string_view>
+#include <variant>
 
-#include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/scanner/scanner_enums.h"
-#include "base/types/expected.h"
-#include "url/gurl.h"
+#include "components/manta/proto/scanner.pb.h"
 
 namespace ash {
 
-// Instructs the system to open the given url.
-struct OpenUrlCommand {
-  GURL url;
-};
-
-// A command is an operation that can be completed on the system.
-using ScannerCommand = std::variant<OpenUrlCommand>;
-
-// This holds a particular action the user can complete in a ScannerSession. An
-// action is a single command that can be applied to the system.
-struct ASH_PUBLIC_EXPORT ScannerAction {
-  ScannerAction(std::string_view display_name, const ScannerCommand& command);
-  ScannerAction(const ScannerAction& rhs);
-  ~ScannerAction();
-
-  std::string display_name;
-  ScannerCommand command;
-};
-
-// Holds the response returned from the Scanner service. This may be a list of
-// 0 or more actions, or an error state.
-using ScannerActionsResponse =
-    base::expected<std::vector<ScannerAction>, ScannerError>;
+// Holds a particular action the user can complete in a ScannerSession,
+// equivalently a single command that can be applied to the system.
+using ScannerAction = std::variant<manta::proto::NewEventAction,
+                                   manta::proto::NewContactAction,
+                                   manta::proto::NewGoogleDocAction,
+                                   manta::proto::NewGoogleSheetAction,
+                                   manta::proto::CopyToClipboardAction>;
 
 }  // namespace ash
 

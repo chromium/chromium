@@ -4,4 +4,4 @@
 
 // https://streams.spec.whatwg.org/#callbackdef-underlyingsourcepullcallback
 
-callback UnderlyingSourcePullCallback = Promise<void> (ReadableStreamController controller);
+callback UnderlyingSourcePullCallback = Promise<undefined> (ReadableStreamController controller);

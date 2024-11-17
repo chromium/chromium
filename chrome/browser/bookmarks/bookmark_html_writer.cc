@@ -18,6 +18,7 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
@@ -268,11 +269,10 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
   // Writes raw text out returning true on success. This does not escape
   // the text in anyway.
   bool Write(const std::string& text) {
-    if (!text.length())
+    if (!text.length()) {
       return true;
-    size_t wrote = file_->WriteAtCurrentPos(text.c_str(), text.length());
-    bool result = (wrote == text.length());
-    if (!result) {
+    }
+    if (!file_->WriteAtCurrentPosAndCheck(base::as_byte_span(text))) {
       PLOG(ERROR) << "Could not write text to " << path_;
       return false;
     }
@@ -297,7 +297,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     return Write(utf8_string);
@@ -327,16 +327,14 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
     if (!title_ptr || !date_added_string || !type_string ||
         (*type_string != BookmarkCodec::kTypeURL &&
          *type_string != BookmarkCodec::kTypeFolder)) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
 
     std::string title = *title_ptr;
     if (*type_string == BookmarkCodec::kTypeURL) {
       const std::string* url_string = value.FindString(BookmarkCodec::kURLKey);
       if (!url_string) {
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED();
       }
 
       std::string favicon_string;
@@ -366,8 +364,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
     const base::Value::List* child_values =
         value.FindList(BookmarkCodec::kChildrenKey);
     if (!last_modified_date || !child_values) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
     if (folder_type != BookmarkNode::OTHER_NODE &&
         folder_type != BookmarkNode::MOBILE) {
@@ -400,8 +397,7 @@ class Writer : public base::RefCountedThreadSafe<Writer> {
     // Write the children.
     for (const base::Value& child_value : *child_values) {
       if (!child_value.is_dict()) {
-        NOTREACHED_IN_MIGRATION();
-        return false;
+        NOTREACHED();
       }
       if (!WriteNode(child_value.GetDict(), BookmarkNode::FOLDER)) {
         return false;

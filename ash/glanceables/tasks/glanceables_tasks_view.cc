@@ -743,6 +743,8 @@ void GlanceablesTasksView::ShowErrorMessageWithType(
                                      base::Unretained(this),
                                      ListShownContext::kInitialList);
       break;
+    case ErrorMessageToast::ButtonActionType::kSettings:
+      NOTREACHED();
   }
   ShowErrorMessage(GetErrorString(error_type), std::move(callback),
                    button_type);

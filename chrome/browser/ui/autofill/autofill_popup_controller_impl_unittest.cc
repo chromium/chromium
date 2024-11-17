@@ -8,7 +8,6 @@
 
 #include "base/test/metrics/user_action_tester.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl_test_api.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_test_base.h"
@@ -29,9 +28,9 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/gfx/range/range.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "content/public/test/scoped_accessibility_mode_override.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 namespace autofill {
 namespace {
@@ -385,7 +384,7 @@ TEST_F(AutofillPopupControllerImplTest, PopupForwardsSuggestionPosition) {
 
 TEST_F(AutofillPopupControllerImplTest, DoesNotAcceptUnacceptableSuggestions) {
   Suggestion suggestion(u"Open the pod bay doors, HAL");
-  suggestion.is_acceptable = false;
+  suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
   ShowSuggestions(manager(), {std::move(suggestion)});
 
   EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
@@ -395,7 +394,7 @@ TEST_F(AutofillPopupControllerImplTest, DoesNotAcceptUnacceptableSuggestions) {
 
 TEST_F(AutofillPopupControllerImplTest, DoesNotSelectUnacceptableSuggestions) {
   Suggestion suggestion(u"I'm sorry, Dave. I'm afraid I can't do that.");
-  suggestion.is_acceptable = false;
+  suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
   ShowSuggestions(manager(), {std::move(suggestion)});
 
   EXPECT_CALL(manager().external_delegate(), DidSelectSuggestion).Times(0);
@@ -927,7 +926,7 @@ TEST_F(AutofillPopupControllerImplTest, UnselectingClearsPreview) {
   client().popup_controller(manager()).UnselectSuggestion();
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 class MockAutofillDriver : public ContentAutofillDriver {
  public:
   using ContentAutofillDriver::ContentAutofillDriver;
@@ -959,10 +958,6 @@ class MockAxTreeManager : public ui::AXTreeManager {
   MockAxTreeManager& operator=(MockAxTreeManager&) = delete;
   ~MockAxTreeManager() override = default;
 
-  MOCK_METHOD(ui::AXNode*,
-              GetNodeFromTree,
-              (const ui::AXTreeID& tree_id, const int32_t node_id),
-              (const override));
   MOCK_METHOD(ui::AXPlatformNodeDelegate*,
               GetDelegate,
               (const ui::AXTreeID tree_id, const int32_t node_id),

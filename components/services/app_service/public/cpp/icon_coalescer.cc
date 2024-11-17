@@ -160,8 +160,7 @@ void IconCoalescer::OnLoadIcon(IconLoader::Key key,
   auto range = non_immediate_requests_.equal_range(key);
   auto count = std::distance(range.first, range.second);
   if (count <= 0) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // Optimize / simplify the common case.

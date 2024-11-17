@@ -20,7 +20,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/ui/blocked_content/popunder_preventer.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -30,7 +29,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/safe_browsing/core/browser/db/database_manager.h"
+#include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "content/public/browser/fullscreen_types.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
@@ -113,13 +112,15 @@ void RecordWebsiteStateAtApiRequest(history::HistoryLastVisitResult result,
 void CheckUrlForAllowlistAndRecordMetric(
     const GURL& url,
     history::HistoryLastVisitResult result) {
-  if (!g_browser_process->safe_browsing_service() ||
-      !g_browser_process->safe_browsing_service()->database_manager()) {
+  auto* safe_browsing_service_internal =
+      reinterpret_cast<safe_browsing::SafeBrowsingServiceInterface*>(
+          g_browser_process->safe_browsing_service());
+  if (!safe_browsing_service_internal ||
+      !safe_browsing_service_internal->database_manager()) {
     RecordWebsiteStateAtApiRequest(result, std::nullopt);
     return;
   }
-  g_browser_process->safe_browsing_service()
-      ->database_manager()
+  safe_browsing_service_internal->database_manager()
       ->CheckUrlForHighConfidenceAllowlist(
           url,
           base::BindOnce(
@@ -165,9 +166,10 @@ bool FullscreenController::IsFullscreenForBrowser() const {
          !IsFullscreenCausedByTab();
 }
 
-void FullscreenController::ToggleBrowserFullscreenMode() {
+void FullscreenController::ToggleBrowserFullscreenMode(bool user_initiated) {
   extension_caused_fullscreen_ = GURL();
-  ToggleFullscreenModeInternal(BROWSER, nullptr, display::kInvalidDisplayId);
+  ToggleFullscreenModeInternal(BROWSER, nullptr, display::kInvalidDisplayId,
+                               user_initiated);
 }
 
 void FullscreenController::ToggleBrowserFullscreenModeWithExtension(
@@ -175,7 +177,8 @@ void FullscreenController::ToggleBrowserFullscreenModeWithExtension(
   // |extension_caused_fullscreen_| will be reset if this causes fullscreen to
   // exit.
   extension_caused_fullscreen_ = extension_url;
-  ToggleFullscreenModeInternal(BROWSER, nullptr, display::kInvalidDisplayId);
+  ToggleFullscreenModeInternal(BROWSER, nullptr, display::kInvalidDisplayId,
+                               /*user_initiated=*/false);
 }
 
 bool FullscreenController::IsWindowFullscreenForTabOrPending() const {
@@ -337,7 +340,7 @@ void FullscreenController::ExitFullscreenModeForTab(WebContents* web_contents) {
 
   if (IsFullscreenCausedByTab()) {
     // Tab Fullscreen -> Normal.
-    ToggleFullscreenModeInternal(TAB, nullptr, display::kInvalidDisplayId);
+    ExitFullscreenModeInternal();
     return;
   }
 
@@ -557,15 +560,21 @@ void FullscreenController::NotifyTabExclusiveAccessLost() {
 void FullscreenController::ToggleFullscreenModeInternal(
     FullscreenInternalOption option,
     content::RenderFrameHost* requesting_frame,
-    const int64_t display_id) {
+    const int64_t display_id,
+    bool user_initiated) {
   ExclusiveAccessContext* const exclusive_access_context =
       exclusive_access_manager()->context();
   bool enter_fullscreen = !exclusive_access_context->IsFullscreen();
 
-  if (enter_fullscreen)
+  if (enter_fullscreen &&
+      (exclusive_access_context->CanUserEnterFullscreen() || !user_initiated)) {
     EnterFullscreenModeInternal(option, requesting_frame, display_id);
-  else
+  }
+
+  if (!enter_fullscreen &&
+      (exclusive_access_context->CanUserExitFullscreen() || !user_initiated)) {
     ExitFullscreenModeInternal();
+  }
 }
 
 void FullscreenController::EnterFullscreenModeInternal(

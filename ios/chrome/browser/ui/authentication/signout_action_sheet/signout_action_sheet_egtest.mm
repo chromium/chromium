@@ -12,7 +12,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -71,10 +71,10 @@ void ClickSignOutInAccountSettings() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // Enable the feature that shows the clear data on signout dialog for managed
-  // accounts.
-  config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
-  if ([self isRunningTest:@selector(testSignoutFromAccountsTableView)]) {
+  if ([self isRunningTest:@selector(testSignoutFromAccountsTableView)] ||
+      [self isRunningTest:@selector(testCancelSignoutForManagedIdentity)] ||
+      [self
+          isRunningTest:@selector(testSignoutConfirmationForManagedIdentity)]) {
     // Once kIdentityDiscAccountMenu is launched, the sign out button in
     // AccountsTableView will be removed. It will be safe to remove this test at
     // that point. Also, testPopUpAccountsListViewOnSignOut covers the part of

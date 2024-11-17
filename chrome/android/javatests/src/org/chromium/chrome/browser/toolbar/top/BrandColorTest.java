@@ -35,7 +35,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.components.browser_ui.styles.ChromeColors;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Contains tests for the brand color feature. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -102,7 +102,7 @@ public class BrandColorTest {
     /** Test for having default primary color working correctly. */
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @Feature({"StatusBar", "Omnibox"})
     public void testNoBrandColor() {
         startMainActivityWithURL(getUrlWithBrandColor(""));
@@ -112,7 +112,7 @@ public class BrandColorTest {
     /** Test for adding a brand color for a url. */
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @Feature({"StatusBar", "Omnibox"})
     public void testBrandColorNoAlpha() {
         startMainActivityWithURL(getUrlWithBrandColor(BRAND_COLOR_1));
@@ -122,7 +122,7 @@ public class BrandColorTest {
     /** Test for immediately setting the brand color. */
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @Feature({"StatusBar", "Omnibox"})
     public void testImmediateColorChange() {
         startMainActivityWithURL(getUrlWithBrandColor(BRAND_COLOR_1));
@@ -145,7 +145,7 @@ public class BrandColorTest {
     /** Test to make sure onLoadStarted doesn't reset the brand color. */
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @Feature({"StatusBar", "Omnibox"})
     public void testBrandColorWithLoadStarted() {
         startMainActivityWithURL(getUrlWithBrandColor(BRAND_COLOR_1));
@@ -164,7 +164,7 @@ public class BrandColorTest {
     /** Test for checking navigating to new brand color updates correctly. */
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @Feature({"StatusBar", "Omnibox"})
     public void testNavigatingToNewBrandColor() {
         startMainActivityWithURL(getUrlWithBrandColor(BRAND_COLOR_1));
@@ -179,7 +179,7 @@ public class BrandColorTest {
      */
     @Test
     @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @Feature({"StatusBar", "Omnibox"})
     public void testNavigatingToBrandColorAndBack() {
         startMainActivityWithURL("about:blank");

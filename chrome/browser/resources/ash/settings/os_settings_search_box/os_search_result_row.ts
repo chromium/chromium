@@ -23,13 +23,14 @@ import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-import {SearchResult as PersonalizationSearchResult} from '../mojom-webui/personalization_search.mojom-webui.js';
-import {Section, Subpage} from '../mojom-webui/routes.mojom-webui.js';
-import {SearchResult as SettingsSearchResult, SearchResultIdentifier, SearchResultType} from '../mojom-webui/search.mojom-webui.js';
+import type {SearchResult as PersonalizationSearchResult} from '../mojom-webui/personalization_search.mojom-webui.js';
+import type {Section, Subpage} from '../mojom-webui/routes.mojom-webui.js';
+import type {SearchResult as SettingsSearchResult, SearchResultIdentifier} from '../mojom-webui/search.mojom-webui.js';
+import {SearchResultType} from '../mojom-webui/search.mojom-webui.js';
 import {SearchResultIcon} from '../mojom-webui/search_result_icon.mojom-webui.js';
-import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Router} from '../router.js';
-import {SearchResult} from '../search/combined_search_handler.js';
+import type {SearchResult} from '../search/combined_search_handler.js';
 
 import {getTemplate} from './os_search_result_row.html.js';
 
@@ -727,6 +728,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:docked-magnifier';
       case SearchResultIcon.kEthernet:
         return 'os-settings:settings-ethernet';
+      case SearchResultIcon.kFaceGaze:
+        return 'os-settings:face-gaze';
       case SearchResultIcon.kFingerprint:
         return 'os-settings:fingerprint';
       case SearchResultIcon.kFirmwareUpdates:
@@ -745,6 +748,8 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
       case SearchResultIcon.kGooglePlay:
         return isRevampEnabled ? 'os-settings:google-play-revamp' :
                                  'os-settings:google-play';
+      case SearchResultIcon.kGraduation:
+        return 'os-settings:graduation';
       case SearchResultIcon.kHearing:
         return 'os-settings:a11y-hearing';
       case SearchResultIcon.kHelp:

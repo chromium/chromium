@@ -25,7 +25,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
-import org.chromium.components.browser_ui.util.BrowserUiUtilsCachedFlags;
 import org.chromium.ui.base.TestActivity;
 
 /** Tests logic in the {@link AutomotiveUtils} class. */
@@ -52,6 +51,7 @@ public class AutomotiveUtilsUnitTest {
     @Test
     public void testGetHorizontalAutomotiveToolbarHeightDp() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
+        AutomotiveUtils.forceHorizontalAutomotiveToolbarForTesting(true);
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
@@ -92,7 +92,6 @@ public class AutomotiveUtilsUnitTest {
     @Test
     public void testGetVerticalAutomotiveToolbarWidthDp() {
         mAutomotiveContextWrapperTestRule.setIsAutomotive(true);
-        BrowserUiUtilsCachedFlags.getInstance().setVerticalAutomotiveBackButtonToolbarFlag(true);
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(

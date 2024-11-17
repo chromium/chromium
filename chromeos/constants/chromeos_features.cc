@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "chromeos/constants/chromeos_switches.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
@@ -33,20 +32,13 @@ BASE_FEATURE(kBluetoothWifiQSPodRefresh,
              "BluetoothWifiQSPodRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables show captive portal signin in a specially flagged popup window.
-BASE_FEATURE(kCaptivePortalPopupWindow,
-             "CaptivePortalPopupWindow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables updated UI for the clipboard history menu and new system behavior
 // related to clipboard history.
 BASE_FEATURE(kClipboardHistoryRefresh,
              "ClipboardHistoryRefresh",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables cloud game features. A separate flag "LauncherGameSearch" controls
-// launcher-only cloud gaming features, since they can also be enabled on
-// non-cloud-gaming devices.
+// Enables cloud game features.
 BASE_FEATURE(kCloudGamingDevice,
              "CloudGamingDevice",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -71,16 +63,6 @@ BASE_FEATURE(kBlinkExtensionKiosk,
              "BlinkExtensionKiosk",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature flag used to gate preinstallation of the container app.
-BASE_FEATURE(kContainerAppPreinstall,
-             "ContainerAppPreinstall",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Feature flag used to gate debugging preinstallation of the container app.
-BASE_FEATURE(kContainerAppPreinstallDebug,
-             "ContainerAppPreinstallDebug",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables handling of key press event in background.
 BASE_FEATURE(kCrosAppsBackgroundEventHandling,
              "CrosAppsBackgroundEventHandling",
@@ -96,10 +78,6 @@ BASE_FEATURE(kCrosComponents,
 // with Finch.
 BASE_FEATURE(kCrosMall, "CrosMall", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, the Mall app will be installed as an SWA. Only takes effect
-// when CrosMall is enabled. This flag will be enabled with Finch.
-BASE_FEATURE(kCrosMallSwa, "CrosMallSwa", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables denying file access to dlp protected files in MyFiles.
 BASE_FEATURE(kDataControlsFileAccessDefaultDeny,
              "DataControlsFileAccessDefaultDeny",
@@ -108,6 +86,11 @@ BASE_FEATURE(kDataControlsFileAccessDefaultDeny,
 // Enables data migration.
 BASE_FEATURE(kDataMigration,
              "DataMigration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Disables blur on various system surfaces.
+BASE_FEATURE(kDisableSystemBlur,
+             "DisableSystemBlur",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the desk profiles feature.
@@ -151,6 +134,11 @@ BASE_FEATURE(kExperimentalWebAppStoragePartitionIsolation,
              "ExperimentalWebAppStoragePartitionIsolation",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature flag used to gate preinstallation of the Gemini app.
+BASE_FEATURE(kGeminiAppPreinstall,
+             "GeminiAppPreinstall",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables Jelly features. go/jelly-flags
 BASE_FEATURE(kJelly, "Jelly", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -162,7 +150,7 @@ BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables Kiosk Heartbeats to be sent via Encrypted Reporting Pipeline
 BASE_FEATURE(kKioskHeartbeatsViaERP,
              "KioskHeartbeatsViaERP",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the mahi feature.
 BASE_FEATURE(kMahi, "Mahi", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -171,6 +159,12 @@ BASE_FEATURE(kMahi, "Mahi", base::FEATURE_ENABLED_BY_DEFAULT);
 // module.
 BASE_FEATURE(kFeatureManagementMahi,
              "FeatureManagementMahi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls enabling / disabling the Mahi resize feature
+// Does nothing if "Mahi" and "FeatureManagementMahi" are disabled.
+BASE_FEATURE(kMahiPanelResizable,
+             "MahiPanelResizable",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether mahi sends url when making request to the server.
@@ -190,11 +184,27 @@ BASE_FEATURE(kMahiDebugging,
              "MahiDebugging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Controls enabling / disabling the pompano feature.
+BASE_FEATURE(kPompano, "Pompano", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Kill switch to disable the new guest profile implementation on CrOS that is
+// consistent with desktop chrome.
+// TODO(crbug.com/40233408): Remove if the change is fully launched.
+BASE_FEATURE(kNewGuestProfile,
+             "NewGuestProfile",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Changes the ChromeOS notification width size from 360px to 400px for pop-up
 // notifications and 344px to 400px for notifications in the message center.
 BASE_FEATURE(kNotificationWidthIncrease,
              "NotificationWidthIncrease",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls enabling / disabling the Navigation Capturing Reimpl for the Office
+// PWA.
+BASE_FEATURE(kOfficeNavigationCapturingReimpl,
+             "OfficeNavigationCapturingReimpl",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the orca feature.
 BASE_FEATURE(kOrca, "Orca", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -219,10 +229,10 @@ BASE_FEATURE(kOverviewSessionInitOptimizations,
              "OverviewSessionInitOptimizations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Feature management flag used to gate preinstallation of the container app.
-// This flag is meant to be enabled by the feature management module.
-BASE_FEATURE(kFeatureManagementContainerAppPreinstall,
-             "FeatureManagementContainerAppPreinstall",
+// Feature management flag used to gate preinstallation of the Gemini app. This
+// flag is meant to be enabled by the feature management module.
+BASE_FEATURE(kFeatureManagementGeminiAppPreinstall,
+             "FeatureManagementGeminiAppPreinstall",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls enabling / disabling the history embedding feature from the
@@ -248,9 +258,14 @@ BASE_FEATURE(kFeatureManagementRoundedWindows,
              "FeatureManagementRoundedWindows",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Whether PreinstalledWebApps should only install core apps.
-BASE_FEATURE(kPreinstalledWebAppsCoreOnly,
-             "PreinstalledWebAppsCoreOnly",
+// Enables the first wave of new features for the chrome.enterprise.platformKeys
+// API. That includes:
+//   - a new key type (RSA-OAEP) with a new allowed key usage (unwrapKey).
+//   - a new API method to `setKeyTag()`, used to mark keys for future lookup.
+// Other features might be added in this first wave, or be hold for the second
+// wave. For additional details, see crbug.com/288880151.
+BASE_FEATURE(kPlatformKeysChangesWave1,
+             "PlatformKeysChangesWave1",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls whether to enable quick answers V2 settings sub-toggles.
@@ -266,7 +281,7 @@ BASE_FEATURE(kQuickAnswersRichCard,
 // Controls whether to enable Material Next UI for Quick Answers.
 BASE_FEATURE(kQuickAnswersMaterialNextUI,
              "QuickAnswersMaterialNextUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables Quick Share v2, which defaults Quick Share to 'Your Devices'
 // visibility, removes the 'Selected Contacts' visibility, removes the Quick
@@ -287,6 +302,37 @@ BASE_FEATURE(kUploadOfficeToCloud,
 BASE_FEATURE(kUploadOfficeToCloudForEnterprise,
              "UploadOfficeToCloudForEnterprise",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Controls the use of scope extensions for the Microsoft 365 PWA from finch as
+// a fallback.
+BASE_FEATURE(kMicrosoft365ScopeExtensions,
+             "Microsoft365ScopeExtensions",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Comma separated list of scope extension URLs for the Microsoft 365 PWA.
+const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsURLs{
+    &kMicrosoft365ScopeExtensions, "m365-scope-extensions-urls",
+    /*default*/
+
+    // The Office editors (Word, Excel, PowerPoint) are located on the
+    // OneDrive origin.
+    "https://onedrive.live.com/,"
+
+    // Links to opening Office editors go via this URL shortener origin.
+    "https://1drv.ms/,"
+
+    // The old branding of the Microsoft 365 web app. Many links within
+    // Microsoft 365 still link to the old www.office.com origin.
+    "https://www.office.com/"};
+
+// Comma separated list of scope extension domains for the Microsoft 365 PWA.
+const base::FeatureParam<std::string> kMicrosoft365ScopeExtensionsDomains{
+    &kMicrosoft365ScopeExtensions, "m365-scope-extensions-domains",
+    /*default*/
+
+    // The OneDrive Business domain (for the extension to match
+    // https://<customer>-my.sharepoint.com).
+    "https://sharepoint.com"};
 
 // Enables the Microsoft OneDrive integration workflow for enterprise users to
 // cloud integration support.
@@ -322,15 +368,6 @@ bool IsBluetoothWifiQSPodRefreshEnabled() {
   return base::FeatureList::IsEnabled(kBluetoothWifiQSPodRefresh);
 }
 
-bool IsCaptivePortalPopupWindowEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()
-      ->IsCaptivePortalPopupWindowEnabled();
-#else
-  return base::FeatureList::IsEnabled(kCaptivePortalPopupWindow);
-#endif
-}
-
 bool IsClipboardHistoryRefreshEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->EnableClipboardHistoryRefresh();
@@ -361,44 +398,12 @@ bool IsBlinkExtensionDiagnosticsEnabled() {
          base::FeatureList::IsEnabled(kBlinkExtensionDiagnostics);
 }
 
-bool IsContainerAppPreinstallEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsContainerAppPreinstallEnabled();
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  return (base::FeatureList::IsEnabled(
-              kFeatureManagementContainerAppPreinstall) ||
-          IsContainerAppPreinstallDebugEnabled()) &&
-         base::FeatureList::IsEnabled(kContainerAppPreinstall);
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
-}
-
-bool IsContainerAppPreinstallDebugEnabled() {
-  // NOTE: Feature management takes precedence over debugging.
-  if (base::FeatureList::IsEnabled(kFeatureManagementContainerAppPreinstall)) {
-    return false;
-  }
-  if (!base::FeatureList::IsEnabled(kContainerAppPreinstallDebug)) {
-    return false;
-  }
-  return switches::IsContainerAppPreinstallDebugKeyMatched();
-}
-
 bool IsCrosComponentsEnabled() {
   return base::FeatureList::IsEnabled(kCrosComponents) && IsJellyEnabled();
 }
 
-bool IsCrosMallWebAppEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsCrosMallWebAppEnabled();
-#else
-  return base::FeatureList::IsEnabled(kCrosMall) &&
-         !base::FeatureList::IsEnabled(kCrosMallSwa);
-#endif
-}
-
 bool IsCrosMallSwaEnabled() {
-  return base::FeatureList::IsEnabled(kCrosMall) &&
-         base::FeatureList::IsEnabled(kCrosMallSwa);
+  return base::FeatureList::IsEnabled(kCrosMall);
 }
 
 bool IsDataControlsFileAccessDefaultDenyEnabled() {
@@ -442,6 +447,14 @@ bool IsFileSystemProviderContentCacheEnabled() {
 #else
   return base::FeatureList::IsEnabled(kFileSystemProviderContentCache);
 #endif
+}
+
+bool IsGeminiAppPreinstallFeatureManagementEnabled() {
+  return base::FeatureList::IsEnabled(kFeatureManagementGeminiAppPreinstall);
+}
+
+bool IsGeminiAppPreinstallEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiAppPreinstall);
 }
 
 bool IsJellyEnabled() {
@@ -491,8 +504,20 @@ bool IsMahiDebuggingEnabled() {
   return base::FeatureList::IsEnabled(kMahiDebugging);
 }
 
+bool IsPlatformKeysChangesWave1Enabled() {
+  return base::FeatureList::IsEnabled(kPlatformKeysChangesWave1);
+}
+
+bool IsPompanoEnabled() {
+  return base::FeatureList::IsEnabled(kPompano);
+}
+
 bool IsNotificationWidthIncreaseEnabled() {
   return base::FeatureList::IsEnabled(kNotificationWidthIncrease);
+}
+
+bool IsOfficeNavigationCapturingReimplEnabled() {
+  return base::FeatureList::IsEnabled(kOfficeNavigationCapturingReimpl);
 }
 
 bool IsOrcaEnabled() {
@@ -566,6 +591,10 @@ bool IsUploadOfficeToCloudForEnterpriseEnabled() {
 #endif
 }
 
+bool IsMicrosoft365ScopeExtensionsEnabled() {
+  return base::FeatureList::IsEnabled(kMicrosoft365ScopeExtensions);
+}
+
 bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() {
   return IsUploadOfficeToCloudEnabled() &&
          base::FeatureList::IsEnabled(
@@ -575,6 +604,10 @@ bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() {
 bool IsRoundedWindowsEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementRoundedWindows) &&
          base::FeatureList::IsEnabled(kRoundedWindows);
+}
+
+bool IsSystemBlurEnabled() {
+  return !base::FeatureList::IsEnabled(kDisableSystemBlur);
 }
 
 bool IsPkcs12ToChapsDualWriteEnabled() {

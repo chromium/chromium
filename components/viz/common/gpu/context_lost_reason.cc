@@ -43,11 +43,9 @@ ContextLostReason GetContextLostReason(gpu::error::Error error,
     case gpu::error::kDeferLaterCommands:
     case gpu::error::kNoError:
     case gpu::error::kLostContext:
-      NOTREACHED_IN_MIGRATION();
-      return CONTEXT_LOST_UNKNOWN;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return CONTEXT_LOST_UNKNOWN;
+  NOTREACHED();
 }
 
 }  // namespace viz

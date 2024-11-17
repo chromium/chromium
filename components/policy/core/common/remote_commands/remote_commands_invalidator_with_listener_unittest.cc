@@ -14,6 +14,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
+#include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
 #include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -79,9 +80,9 @@ class RemoteCommandsInvalidatorWithInvalidationListenerTest
     auto* mock_client_ptr = mock_client.get();
 
     // Always report success on fetch commands request.
-    ON_CALL(*mock_client_ptr, FetchRemoteCommands(_, _, _, _, _))
+    ON_CALL(*mock_client_ptr, FetchRemoteCommands(_, _, _, _, _, _))
         .WillByDefault(
-            WithArgs<4>([](CloudPolicyClient::RemoteCommandCallback callback) {
+            WithArgs<5>([](CloudPolicyClient::RemoteCommandCallback callback) {
               std::move(callback).Run(DM_STATUS_SUCCESS, {});
             }));
 
@@ -157,7 +158,9 @@ TEST_F(RemoteCommandsInvalidatorWithInvalidationListenerTest,
   auto* mock_client = PrepareCoreForRemoteCommands();
 
   // Expect initial fetch requests from invalidator on initialization.
-  EXPECT_CALL(*mock_client, FetchRemoteCommands(_, _, _, _, _));
+  EXPECT_CALL(
+      *mock_client,
+      FetchRemoteCommands(_, _, _, _, RemoteCommandsFetchReason::kStartup, _));
 
   invalidator_.Initialize(&fake_invalidation_listener_);
   fake_invalidation_listener_.Start();
@@ -166,7 +169,10 @@ TEST_F(RemoteCommandsInvalidatorWithInvalidationListenerTest,
   testing::Mock::VerifyAndClearExpectations(mock_client);
 
   // Fire two invalidations and check two fetch requests happened.
-  EXPECT_CALL(*mock_client, FetchRemoteCommands(_, _, _, _, _)).Times(2);
+  EXPECT_CALL(*mock_client,
+              FetchRemoteCommands(_, _, _, _,
+                                  RemoteCommandsFetchReason::kInvalidation, _))
+      .Times(2);
 
   fake_invalidation_listener_.FireInvalidation(invalidation::DirectInvalidation(
       kRemoteCommandsInvalidationType, /*version=*/100,

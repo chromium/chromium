@@ -411,10 +411,8 @@ bool MobileScroller::ComputeScrollOffsetInternal(base::TimeTicks time) {
   const float u = time_passed.InSecondsF() * duration_seconds_reciprocal_;
   switch (mode_) {
     case UNDEFINED:
-      NOTREACHED_IN_MIGRATION()
-          << "|StartScroll()| or |Fling()| must be called prior to "
-             "scroll offset computation.";
-      return false;
+      NOTREACHED() << "|StartScroll()| or |Fling()| must be called prior to "
+                      "scroll offset computation.";
 
     case SCROLL_MODE: {
       float x = g_viscosity_constants.Get().ApplyViscosity(u);

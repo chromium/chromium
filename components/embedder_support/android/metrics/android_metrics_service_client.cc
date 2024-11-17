@@ -230,7 +230,7 @@ void AndroidMetricsServiceClient::Initialize(PrefService* pref_service) {
           .default_entropy_provider_type = metrics::EntropyProviderType::kLow,
           .force_benchmarking_mode =
               base::CommandLine::ForCurrentProcess()->HasSwitch(
-                  cc::switches::kEnableGpuBenchmarking),
+                  switches::kEnableGpuBenchmarking),
       });
 
   metrics_state_manager_->InstantiateFieldTrialList();

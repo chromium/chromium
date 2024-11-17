@@ -16,12 +16,6 @@ namespace features {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Enables Floss client if supported by platform
 BASE_FEATURE(kFlossEnabled, "Floss", base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kFlossIsAvailable,
-             "FlossIsAvailable",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kFlossIsAvailabilityCheckNeeded,
-             "FlossIsAvailabilityCheckNeeded",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kLLPrivacyIsAvailable,
              "LLPrivacyIsAvailable",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -29,29 +23,33 @@ BASE_FEATURE(kLLPrivacyIsAvailable,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace {
-const char* kLaunchedBoards[] = {
-    "BRYA",     "ATLAS",  "BROX",   "CHERRY", "CORSOLA", "DEDEDE",
-    "DRALLION", "GERALT", "HATCH",  "NISSA",  "OCTOPUS", "RAURU",
-    "REX",      "SARIEN", "SKYRIM", "STARYU", "VOLTEER"};
+const char* kNotLaunchedBoards[] = {
+    // Chrome unittests have an empty board name.
+    // TODO(b/369038879): Remove this after all unittests could pass with Floss.
+    "",
+    // Wave MVL8897
+    "ELM", "HANA",
+    // ChromeOS Flex
+    "REVEN"};
 }  // namespace
 
 static bool IsDeviceLaunchedFloss() {
   std::string board = base::SysInfo::HardwareModelName();
-  for (auto* b : kLaunchedBoards) {
+  // Ignore the parts after the first dash, i.e., treat variant boards the same.
+  if (auto pos = board.find('-'); pos != std::string::npos) {
+    board.erase(pos);
+  }
+  for (auto* b : kNotLaunchedBoards) {
     if (board.compare(b) == 0) {
-      return true;
+      return false;
     }
   }
 
-  return false;
+  return true;
 }
 #endif
 
 bool IsFlossEnabled() {
-  if (IsFlossAvailabilityCheckNeeded() && !IsFlossAvailable()) {
-    return false;
-  }
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Default to enable Floss if the feature is not overridden and the device is
   // launched.
@@ -63,27 +61,6 @@ bool IsFlossEnabled() {
   return base::FeatureList::IsEnabled(floss::features::kFlossEnabled);
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   return chromeos::BrowserParamsProxy::Get()->UseFlossBluetooth();
-#else
-  return false;
-#endif
-}
-
-bool IsFlossAvailable() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return base::FeatureList::IsEnabled(floss::features::kFlossIsAvailable);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsFlossAvailable();
-#else
-  return false;
-#endif
-}
-
-bool IsFlossAvailabilityCheckNeeded() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  return base::FeatureList::IsEnabled(
-      floss::features::kFlossIsAvailabilityCheckNeeded);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsFlossAvailabilityCheckNeeded();
 #else
   return false;
 #endif

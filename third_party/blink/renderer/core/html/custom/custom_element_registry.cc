@@ -88,6 +88,14 @@ CustomElementRegistry::CustomElementRegistry(const LocalDOMWindow* owner)
       upgrade_candidates_(MakeGarbageCollected<UpgradeCandidateMap>()),
       associated_documents_(MakeGarbageCollected<AssociatedDocumentSet>()) {}
 
+Vector<AtomicString> CustomElementRegistry::DefinedNames() const {
+  Vector<AtomicString> names;
+  for (const auto& name : name_map_.Keys()) {
+    names.push_back(name);
+  }
+  return names;
+}
+
 void CustomElementRegistry::Trace(Visitor* visitor) const {
   visitor->Trace(constructor_map_);
   visitor->Trace(name_map_);

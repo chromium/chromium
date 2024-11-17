@@ -7,11 +7,11 @@
 
 #include <optional>
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_space_export.h"
-#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/hdr_metadata.h"
 
 class SkColorFilter;

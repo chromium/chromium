@@ -41,6 +41,10 @@ public class PasswordCheckupClientMetricsRecorderTest {
                 return "GetBreachedCredentialsCount";
             case PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT:
                 return "GetIntent";
+            case PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT:
+                return "GetWeakCredentialsCount";
+            case PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT:
+                return "GetReusedCredentialsCount";
             default:
                 throw new AssertionError();
         }
@@ -114,6 +118,24 @@ public class PasswordCheckupClientMetricsRecorderTest {
     }
 
     @Test
+    public void testRecordsSuccessHistogramForGetWeakCredentialsCount() {
+        @PasswordCheckOperation int operation = PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT;
+        PasswordCheckupClientMetricsRecorder metricsRecorder =
+                new PasswordCheckupClientMetricsRecorder(operation);
+        metricsRecorder.recordMetrics(Optional.empty());
+        checkHistogramsOnSuccess(operation);
+    }
+
+    @Test
+    public void testRecordsSuccessHistogramForGetReusedCredentialsCount() {
+        @PasswordCheckOperation int operation = PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT;
+        PasswordCheckupClientMetricsRecorder metricsRecorder =
+                new PasswordCheckupClientMetricsRecorder(operation);
+        metricsRecorder.recordMetrics(Optional.empty());
+        checkHistogramsOnSuccess(operation);
+    }
+
+    @Test
     public void testRecordsSuccessHistogramForGetPasswordCheckupIntentIntent() {
         @PasswordCheckOperation int operation = PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT;
         PasswordCheckupClientMetricsRecorder metricsRecorder =
@@ -146,6 +168,28 @@ public class PasswordCheckupClientMetricsRecorderTest {
     }
 
     @Test
+    public void testRecordsBasicErrorHistogramForGetWeakCredentialsCount() {
+        @PasswordCheckOperation int operation = PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT;
+        PasswordCheckupClientMetricsRecorder metricsRecorder =
+                new PasswordCheckupClientMetricsRecorder(operation);
+        metricsRecorder.recordMetrics(
+                Optional.of(
+                        new PasswordCheckBackendException("", CredentialManagerError.NO_CONTEXT)));
+        checkHistogramsOnFailure(operation, CredentialManagerError.NO_CONTEXT, OptionalInt.empty());
+    }
+
+    @Test
+    public void testRecordsBasicErrorHistogramForGetReusedCredentialsCount() {
+        @PasswordCheckOperation int operation = PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT;
+        PasswordCheckupClientMetricsRecorder metricsRecorder =
+                new PasswordCheckupClientMetricsRecorder(operation);
+        metricsRecorder.recordMetrics(
+                Optional.of(
+                        new PasswordCheckBackendException("", CredentialManagerError.NO_CONTEXT)));
+        checkHistogramsOnFailure(operation, CredentialManagerError.NO_CONTEXT, OptionalInt.empty());
+    }
+
+    @Test
     public void testRecordsBasicErrorHistogramForGetPasswordCheckupIntentIntent() {
         @PasswordCheckOperation int operation = PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT;
         PasswordCheckupClientMetricsRecorder metricsRecorder =
@@ -165,7 +209,7 @@ public class PasswordCheckupClientMetricsRecorderTest {
                 Optional.of(new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR))));
         checkHistogramsOnFailure(
                 operation,
-                CredentialManagerError.API_ERROR,
+                CredentialManagerError.API_EXCEPTION,
                 OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
     }
 
@@ -179,7 +223,33 @@ public class PasswordCheckupClientMetricsRecorderTest {
                 Optional.of(new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR))));
         checkHistogramsOnFailure(
                 operation,
-                CredentialManagerError.API_ERROR,
+                CredentialManagerError.API_EXCEPTION,
+                OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
+    }
+
+    @Test
+    public void testRecordsApiErrorHistogramForGetWeakCredentialsCount() {
+        @PasswordCheckOperation int operation = PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT;
+        PasswordCheckupClientMetricsRecorder metricsRecorder =
+                new PasswordCheckupClientMetricsRecorder(operation);
+        metricsRecorder.recordMetrics(
+                Optional.of(new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR))));
+        checkHistogramsOnFailure(
+                operation,
+                CredentialManagerError.API_EXCEPTION,
+                OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
+    }
+
+    @Test
+    public void testRecordsApiErrorHistogramForGetReusedCredentialsCount() {
+        @PasswordCheckOperation int operation = PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT;
+        PasswordCheckupClientMetricsRecorder metricsRecorder =
+                new PasswordCheckupClientMetricsRecorder(operation);
+        metricsRecorder.recordMetrics(
+                Optional.of(new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR))));
+        checkHistogramsOnFailure(
+                operation,
+                CredentialManagerError.API_EXCEPTION,
                 OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
     }
 
@@ -192,7 +262,17 @@ public class PasswordCheckupClientMetricsRecorderTest {
                 Optional.of(new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR))));
         checkHistogramsOnFailure(
                 operation,
-                CredentialManagerError.API_ERROR,
+                CredentialManagerError.API_EXCEPTION,
                 OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
+    }
+
+    @Test
+    public void testRecordsOtherApiError() {
+        @PasswordCheckOperation int operation = PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT;
+        PasswordCheckupClientMetricsRecorder metricsRecorder =
+                new PasswordCheckupClientMetricsRecorder(operation);
+        metricsRecorder.recordMetrics(Optional.of(new NullPointerException()));
+        checkHistogramsOnFailure(
+                operation, CredentialManagerError.OTHER_API_ERROR, OptionalInt.empty());
     }
 }

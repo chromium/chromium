@@ -14,6 +14,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -103,22 +104,22 @@ class WebRtcLogUploaderTest : public testing::Test {
       return false;
 
     for (int i = 0; i < number_of_lines; ++i) {
-      EXPECT_EQ(static_cast<int>(sizeof(kTestTime)) - 1,
-                test_list_file.WriteAtCurrentPos(kTestTime,
-                                                 sizeof(kTestTime) - 1));
-      EXPECT_EQ(1, test_list_file.WriteAtCurrentPos(",", 1));
-      EXPECT_EQ(static_cast<int>(sizeof(kTestReportId)) - 1,
-                test_list_file.WriteAtCurrentPos(kTestReportId,
-                                                 sizeof(kTestReportId) - 1));
-      EXPECT_EQ(1, test_list_file.WriteAtCurrentPos(",", 1));
-      EXPECT_EQ(static_cast<int>(sizeof(kTestLocalId)) - 1,
-                test_list_file.WriteAtCurrentPos(kTestLocalId,
-                                                 sizeof(kTestLocalId) - 1));
-      EXPECT_EQ(1, test_list_file.WriteAtCurrentPos(",", 1));
-      EXPECT_EQ(static_cast<int>(sizeof(kTestTime)) - 1,
-                test_list_file.WriteAtCurrentPos(kTestTime,
-                                                 sizeof(kTestTime) - 1));
-      EXPECT_EQ(1, test_list_file.WriteAtCurrentPos("\n", 1));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_cstring(kTestTime)));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_cstring(",")));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_cstring(kTestReportId)));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_cstring(",")));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_cstring(kTestLocalId)));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_cstring(",")));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPos(
+          base::byte_span_from_cstring(kTestTime)));
+      EXPECT_TRUE(test_list_file.WriteAtCurrentPosAndCheck(
+          base::byte_span_from_cstring("\n")));
     }
     return true;
   }

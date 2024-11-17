@@ -54,12 +54,11 @@ class MockCaptureCallback : public AudioCapturerSource::CaptureCallback {
   ~MockCaptureCallback() override = default;
 
   MOCK_METHOD0(OnCaptureStarted, void());
-  MOCK_METHOD5(Capture,
+  MOCK_METHOD4(Capture,
                void(const AudioBus* audio_source,
                     base::TimeTicks audio_capture_time,
                     const AudioGlitchInfo& glitch_info,
-                    double volume,
-                    bool key_pressed));
+                    double volume));
 
   MOCK_METHOD2(OnCaptureError,
                void(AudioCapturerSource::ErrorCode code,
@@ -81,8 +80,7 @@ class AssertingCaptureCallback : public AudioCapturerSource::CaptureCallback {
   void Capture(const AudioBus* audio_source,
                base::TimeTicks audio_capture_time,
                const AudioGlitchInfo& glitch_info,
-               double volume,
-               bool key_pressed) override {
+               double volume) override {
     VerifyCapture(audio_capture_time, glitch_info);
     capture_called_event_.Signal();
   }
@@ -147,7 +145,6 @@ class AudioInputDeviceTest
         (capture_time_ - base::TimeTicks()).InMicroseconds();
     buffer->params.glitch_duration_us = glitch_info_.duration.InMicroseconds();
     buffer->params.glitch_count = glitch_info_.count;
-    buffer->params.key_pressed = false;
   }
 
   base::MappedReadOnlyRegion shared_memory_;

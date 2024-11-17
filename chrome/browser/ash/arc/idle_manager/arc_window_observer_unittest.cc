@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/arc/idle_manager/arc_window_observer.h"
 
+#include "ash/components/arc/window/arc_window_watcher.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_throttle_test_observer.h"
-#include "chrome/browser/ash/arc/util/arc_window_watcher.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"

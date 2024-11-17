@@ -197,8 +197,7 @@ BluetoothHelperImpl::PerformIdentifyRemoteDevice(
 
   // If the device has not yet been identified, try identifying |service_data|
   // as a background advertisement.
-  if (features::IsInstantTetheringBackgroundAdvertisingSupported() &&
-      identified_device_id.empty() &&
+  if (identified_device_id.empty() &&
       service_data.size() >= kMinNumBytesInServiceData &&
       service_data.size() <= kMaxNumBytesInBackgroundServiceData) {
     multidevice::RemoteDeviceRefList remote_devices;

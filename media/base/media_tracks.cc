@@ -23,12 +23,13 @@ MediaTrack* MediaTracks::AddAudioTrack(const AudioDecoderConfig& config,
                                        StreamParser::TrackId stream_id,
                                        const MediaTrack::Kind& kind,
                                        const MediaTrack::Label& label,
-                                       const MediaTrack::Language& language) {
+                                       const MediaTrack::Language& language,
+                                       bool exclusive) {
   DCHECK(config.IsValidConfig());
   CHECK(audio_configs_.find(stream_id) == audio_configs_.end());
-  auto track = base::WrapUnique(new MediaTrack(MediaTrack::Type::kAudio,
-                                               stream_id, MediaTrack::Id{""},
-                                               kind, label, language, enabled));
+  auto track = base::WrapUnique(
+      new MediaTrack(MediaTrack::Type::kAudio, stream_id, MediaTrack::Id{""},
+                     kind, label, language, enabled, exclusive));
   MediaTrack* track_ptr = track.get();
   tracks_.push_back(std::move(track));
   audio_configs_[stream_id] = config;
@@ -43,9 +44,9 @@ MediaTrack* MediaTracks::AddVideoTrack(const VideoDecoderConfig& config,
                                        const MediaTrack::Language& language) {
   DCHECK(config.IsValidConfig());
   CHECK(video_configs_.find(stream_id) == video_configs_.end());
-  auto track = base::WrapUnique(new MediaTrack(MediaTrack::Type::kVideo,
-                                               stream_id, MediaTrack::Id{""},
-                                               kind, label, language, enabled));
+  auto track = base::WrapUnique(
+      new MediaTrack(MediaTrack::Type::kVideo, stream_id, MediaTrack::Id{""},
+                     kind, label, language, enabled, true));
   MediaTrack* track_ptr = track.get();
   tracks_.push_back(std::move(track));
   video_configs_[stream_id] = config;

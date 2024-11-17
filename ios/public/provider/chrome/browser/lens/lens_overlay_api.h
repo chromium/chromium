@@ -37,6 +37,12 @@ class GURL;
 - (void)lensOverlay:(id<ChromeLensOverlay>)lensOverlay
     didRequestToOpenURL:(GURL)URL;
 
+// The lens overlay requested to open the overlay menu.
+- (void)lensOverlayDidOpenOverlayMenu:(id<ChromeLensOverlay>)lensOverlay;
+
+// The lens overlay has deferred a gesture.
+- (void)lensOverlayDidDeferGesture:(id<ChromeLensOverlay>)lensOverlay;
+
 @end
 
 // Defines the interface for interacting with a Chrome Lens Overlay.
@@ -66,6 +72,15 @@ class GURL;
 - (void)setOcclusionInsets:(UIEdgeInsets)occlusionInsets
                 reposition:(BOOL)reposition
                   animated:(BOOL)animated;
+
+// Resets the selection area to the initial position.
+- (void)resetSelectionAreaToInitialPosition:(void (^)())completion;
+
+// Updates the visibility of the top icons.
+- (void)setTopIconsHidden:(BOOL)hidden;
+
+// Disables flyout menus from displaying.
+- (void)disableFlyoutMenu:(BOOL)disable;
 
 @end
 

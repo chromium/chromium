@@ -14,8 +14,6 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_text.h"
 #include "third_party/blink/renderer/core/layout/layout_text_combine.h"
 #include "third_party/blink/renderer/core/layout/list/list_marker.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
@@ -113,31 +111,10 @@ bool ShouldPaintEmphasisMark(const ComputedStyle& style,
   // emphasis mark at left/right side of |LayoutTextCombine|.
   DCHECK(!IsA<LayoutTextCombine>(layout_object.Parent()));
 
-  if (RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
-    if (style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver) {
-      return !text_item.HasOverAnnotation();
-    }
-    return !text_item.HasUnderAnnotation();
+  if (style.GetTextEmphasisLineLogicalSide() == LineLogicalSide::kOver) {
+    return !text_item.HasOverAnnotation();
   }
-
-  const LayoutObject* containing_block = layout_object.ContainingBlock();
-  if (!containing_block || !containing_block->IsRubyBase())
-    return true;
-  const LayoutObject* parent = containing_block->Parent();
-  if (!parent || !parent->IsRubyColumn()) {
-    return true;
-  }
-  const auto* ruby_text = To<LayoutRubyColumn>(parent)->RubyText();
-  if (!ruby_text)
-    return true;
-  if (!InlineCursor(*ruby_text)) {
-    return true;
-  }
-  const LineLogicalSide ruby_logical_side =
-      parent->StyleRef().GetRubyPosition() == RubyPosition::kOver
-          ? LineLogicalSide::kOver
-          : LineLogicalSide::kUnder;
-  return ruby_logical_side != style.GetTextEmphasisLineLogicalSide();
+  return !text_item.HasUnderAnnotation();
 }
 
 PhysicalDirection GetDisclosureOrientation(const ComputedStyle& style,
@@ -149,7 +126,7 @@ PhysicalDirection GetDisclosureOrientation(const ComputedStyle& style,
 Path CreatePath(base::span<const gfx::PointF, 4> path) {
   Path result;
   result.MoveTo(gfx::PointF(path[0].x(), path[0].y()));
-  for (int i = 1; i < 4; ++i) {
+  for (size_t i = 1; i < 4; ++i) {
     result.AddLineTo(gfx::PointF(path[i].x(), path[i].y()));
   }
   return result;
@@ -228,7 +205,7 @@ void TextFragmentPainter::PaintSymbol(const LayoutObject* layout_object,
     path.Translate(gfx::Vector2dF(marker_rect.X(), marker_rect.Y()));
     context.FillPath(path, auto_dark_mode);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -245,7 +222,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
     return;
 
   const ComputedStyle& style = text_item.Style();
-  if (style.UsedVisibility() != EVisibility::kVisible) {
+  if (style.Visibility() != EVisibility::kVisible) {
     return;
   }
 
@@ -572,7 +549,7 @@ void TextFragmentPainter::Paint(const PaintInfo& paint_info,
         break;
       case HighlightPainter::kFastSpellingGrammar:
       case HighlightPainter::kNoHighlights:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }

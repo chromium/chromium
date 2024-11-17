@@ -26,8 +26,7 @@ std::ostream& operator<<(std::ostream& os, const CookieChangeCause& cause) {
     case CookieChangeCause::EXPIRED_OVERWRITE:
       return os << "EXPIRED_OVERWRITE";
   }
-  NOTREACHED_IN_MIGRATION();
-  return os;
+  NOTREACHED();
 }
 
 }  // namespace net

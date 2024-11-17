@@ -110,8 +110,7 @@ void SyncManager::RegisterCallback(
               mojom::blink::BackgroundSyncType::ONE_SHOT));
       break;
     case mojom::blink::BackgroundSyncError::NOT_FOUND:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case mojom::blink::BackgroundSyncError::STORAGE:
       resolver->Reject(V8ThrowDOMException::CreateOrDie(
           resolver->GetScriptState()->GetIsolate(),
@@ -151,7 +150,7 @@ void SyncManager::GetRegistrationsCallback(
       for (const auto& r : registrations) {
         tags.push_back(r->tag);
       }
-      resolver->Resolve(tags);
+      resolver->Resolve(std::move(tags));
       break;
     }
     case mojom::blink::BackgroundSyncError::NOT_FOUND:
@@ -159,8 +158,7 @@ void SyncManager::GetRegistrationsCallback(
     case mojom::blink::BackgroundSyncError::PERMISSION_DENIED:
       // These errors should never be returned from
       // BackgroundSyncManager::GetRegistrations
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case mojom::blink::BackgroundSyncError::STORAGE:
       resolver->Reject(V8ThrowDOMException::CreateOrDie(
           resolver->GetScriptState()->GetIsolate(),

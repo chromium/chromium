@@ -20,6 +20,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -66,6 +67,10 @@ class SelectToSpeakSpeedBubbleControllerTest : public AshTestBase {
     return GetMenuBubbleController()->menu_view_;
   }
 
+  TrayBubbleView* GetBubbleView() {
+    return GetSpeedBubbleController()->bubble_view_;
+  }
+
   FloatingMenuButton* GetMenuButton(SelectToSpeakMenuView::ButtonId view_id) {
     SelectToSpeakMenuView* menu_view = GetMenuView();
     if (!menu_view)
@@ -93,6 +98,10 @@ class SelectToSpeakSpeedBubbleControllerTest : public AshTestBase {
     if (!speed_view)
       return nullptr;
     return static_cast<HoverHighlightView*>(speed_view->GetViewByID(view_id));
+  }
+
+  std::u16string GetAccessibleNameForBubble() {
+    return GetSpeedBubbleController()->GetAccessibleNameForBubble();
   }
 
  protected:
@@ -168,6 +177,16 @@ TEST_F(SelectToSpeakSpeedBubbleControllerTest, FocusRestoredToSpeedButton) {
   FloatingMenuButton* speed_button =
       GetMenuButton(SelectToSpeakMenuView::ButtonId::kSpeed);
   EXPECT_TRUE(speed_button->HasFocus());
+}
+
+TEST_F(SelectToSpeakSpeedBubbleControllerTest, BubbleViewAccessibleName) {
+  ShowSelectToSpeakSpeedBubble(/*rate=*/1.2);
+
+  TrayBubbleView* bubble_view = GetBubbleView();
+  ui::AXNodeData node_data;
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            GetAccessibleNameForBubble());
 }
 
 }  // namespace ash

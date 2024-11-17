@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/post_restore_signin/post_restore_signin_provider.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/signin/public/base/signin_switches.h"
@@ -44,20 +45,17 @@ const char kFakePreRestoreAccountFullName[] = "Full Name";
 class PostRestoreSignInProviderTest : public PlatformTest {
  public:
   explicit PostRestoreSignInProviderTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
-                                       SyncServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              SyncServiceFactory::GetDefaultFactory());
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(test_cbs_builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    pref_service_ = browser_state_.get()->GetPrefs();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    auth_service_ =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
+    pref_service_ = profile_.get()->GetPrefs();
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(profile_.get());
 
     SetFakePreRestoreAccountInfo();
     provider_ =
@@ -102,8 +100,8 @@ class PostRestoreSignInProviderTest : public PlatformTest {
  protected:
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
-  PrefService* pref_service_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  raw_ptr<PrefService> pref_service_;
+  std::unique_ptr<TestProfileIOS> profile_;
   raw_ptr<AuthenticationService> auth_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   id mock_handler_;

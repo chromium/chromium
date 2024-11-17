@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
+#include "third_party/blink/renderer/core/html/forms/html_legend_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_option_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
@@ -145,6 +146,19 @@ void HTMLOptGroupElement::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 String HTMLOptGroupElement::GroupLabelText() const {
+  String label_attribute_text = LabelAttributeText();
+  if (RuntimeEnabledFeatures::CustomizableSelectEnabled() &&
+      label_attribute_text.ContainsOnlyWhitespaceOrEmpty()) {
+    for (auto& node : NodeTraversal::DescendantsOf(*this)) {
+      if (auto* legend = DynamicTo<HTMLLegendElement>(node)) {
+        return legend->textContent();
+      }
+    }
+  }
+  return label_attribute_text;
+}
+
+String HTMLOptGroupElement::LabelAttributeText() const {
   String item_text = FastGetAttribute(html_names::kLabelAttr);
 
   // In WinIE, leading and trailing whitespace is ignored in options and
@@ -162,6 +176,10 @@ HTMLSelectElement* HTMLOptGroupElement::OwnerSelectElement() const {
     // rather than doing a tree traversal here every time OwnerSelectElement is
     // called, which may be a lot.
     for (Node& ancestor : NodeTraversal::AncestorsOf(*this)) {
+      if (IsA<HTMLOptGroupElement>(ancestor) ||
+          IsA<HTMLOptionElement>(ancestor)) {
+        return nullptr;
+      }
       if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
         return select;
       }
@@ -214,7 +232,7 @@ void HTMLOptGroupElement::ManuallyAssignSlots() {
 }
 
 void HTMLOptGroupElement::UpdateGroupLabel() {
-  const String& label_text = GroupLabelText();
+  const String& label_text = LabelAttributeText();
   HTMLDivElement& label = OptGroupLabelElement();
   label.setTextContent(label_text);
   label.setAttribute(html_names::kAriaLabelAttr, AtomicString(label_text));

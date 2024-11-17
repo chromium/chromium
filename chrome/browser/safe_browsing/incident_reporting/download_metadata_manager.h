@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/download/public/common/all_download_event_notifier.h"
 
@@ -87,7 +88,8 @@ class DownloadMetadataManager
   class ManagerContext;
 
   // A mapping of DownloadManagerCoordinators to their corresponding contexts.
-  typedef std::map<download::SimpleDownloadManagerCoordinator*, ManagerContext*>
+  typedef std::map<download::SimpleDownloadManagerCoordinator*,
+                   raw_ptr<ManagerContext, CtnExperimental>>
       ManagerToContextMap;
 
   // A task runner to which IO tasks are posted.

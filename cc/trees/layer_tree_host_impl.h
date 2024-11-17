@@ -72,6 +72,7 @@
 #include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
+#include "components/viz/common/view_transition_element_resource_id.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
@@ -152,7 +153,9 @@ class LayerTreeHostImplClient {
 
   virtual void NotifyImageDecodeRequestFinished(int request_id,
                                                 bool decode_succeeded) = 0;
-  virtual void NotifyTransitionRequestFinished(uint32_t sequence_id) = 0;
+  virtual void NotifyTransitionRequestFinished(
+      uint32_t sequence_id,
+      const viz::ViewTransitionElementResourceRects&) = 0;
 
   // Called when a presentation time is requested. |frame_token| identifies
   // the frame that was presented. |callbacks| holds both impl side and main
@@ -477,7 +480,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   bool RunsOnCurrentThread() const override;
 
-  void ScrollOffsetAnimationFinished() override;
+  void ScrollOffsetAnimationFinished(ElementId element_id) override;
 
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override;
@@ -536,6 +539,10 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   DrawMode GetDrawMode() const;
 
   void DidNotNeedBeginFrame();
+
+  bool ScrollCheckerboardsIncompleteRecording() const {
+    return scroll_checkerboards_incomplete_recording_;
+  }
 
   // TileManagerClient implementation.
   void NotifyReadyToActivate() override;
@@ -927,6 +934,11 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   }
   const LayerTreeHostImplClient* client_for_testing() const { return client_; }
 
+  void SetViewTransitionContentRect(
+      uint32_t sequence_id,
+      const viz::ViewTransitionElementResourceId& id,
+      const gfx::RectF& rect);
+
  protected:
   LayerTreeHostImpl(
       const LayerTreeSettings& settings,
@@ -963,10 +975,6 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // Holds image decode cache instance. It can either be a shared cache or
   // a cache create by this instance. Which is used depends on the settings.
   class ImageDecodeCacheHolder;
-
-  // TODO(https://crbug.com/365813260): Remove once the bug is analyzed and
-  // solved.
-  void CrashWhenMaxTextureSizeIsUninitialized() const;
 
   void UpdateChildLocalSurfaceId();
 
@@ -1232,6 +1240,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   // it's lost instead of having this bool.
   bool has_valid_layer_tree_frame_sink_ = false;
 
+  bool scroll_checkerboards_incomplete_recording_ = false;
+
   // If it is enabled in the LayerTreeSettings, we can check damage in
   // WillBeginImplFrame and abort early if there is no damage. We only check
   // damage in WillBeginImplFrame if a recent frame had no damage. We keep
@@ -1353,6 +1363,13 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   float top_controls_visible_height_ = 0.f;
 
   base::flat_set<ElementId> pending_invalidation_raster_inducing_scrolls_;
+
+  std::unordered_map<uint32_t, viz::ViewTransitionElementResourceRects>
+      view_transition_content_rects_;
+
+  // Last drawn frame's BeginFrameArgs, used to check whether the active tree
+  // was re-used.
+  viz::BeginFrameArgs last_draw_active_tree_begin_frame_args_;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

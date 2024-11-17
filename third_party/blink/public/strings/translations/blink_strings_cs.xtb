@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normální</translation>
 <translation id="1591562245178063882">Tento měsíc</translation>
 <translation id="1637811476055996098">Zvolit soubory</translation>
-<translation id="1680090928918677457">Použít kameru</translation>
 <translation id="1729654308190250600">Vyplňte e-mailovou adresu.</translation>
 <translation id="1758486001363313524">Jiné…</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Zkraťte prosím tento text na <ph name="MAX_CHARACTERS" /> znaků nebo méně. (Aktuálně má <ph name="CURRENT_LENGTH" /> znaků.)</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. týden, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Stopa <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Kamera a mikrofon jsou povoleny</translation>
 <translation id="2507943997699731163">Vyplňte prosím toto pole.</translation>
 <translation id="2613802280814924224">Zadejte platnou hodnotu. Nejbližší platná hodnota je <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Odeslat</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Prodlužte prosím tento text na <ph name="MIN_CHARACTERS" /> či více znaků. (Aktuálně má <ph name="CURRENT_LENGTH" /> znaků.)</translation>
 <translation id="383465348367842624">Část před znakem <ph name="ATSIGN" /> nesmí obsahovat znak <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="3846214748874656680">Ukončit režim na celou obrazovku</translation>
-<translation id="4031179711345676612">Mikrofon je povolen</translation>
 <translation id="4360991593054037559">Zadejte platnou hodnotu. Dvě nejbližší hodnoty jsou <ph name="VALID_VALUE_LOW" /> a <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
-<translation id="4663373278480897665">Kamera je povolena</translation>
 <translation id="4664250907885839816">Část za znakem <ph name="ATSIGN" /> nesmí obsahovat znak <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="4718048029184481307">Video se přehrává v režimu obrazu v obraze</translation>
-<translation id="4792862212177489858">Sdílet polohu</translation>
 <translation id="4812940957355064477">Zadejte prosím číslo.</translation>
-<translation id="49269513399674318">Použít mikrofon</translation>
 <translation id="4975562563186953947">Vybráno: <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Zapnout zvuk</translation>
 <translation id="49969490063480558">Zadejte část za znakem <ph name="ATSIGN" />. Adresa <ph name="INVALIDADDRESS" /> není úplná.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Plugin se nepodařilo načíst.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Prodlužte prosím tento text na <ph name="MIN_CHARACTERS" /> či více znaků. (Aktuálně má 1 znak.)</translation>
-<translation id="7080893216867146095">Sdílení polohy povoleno</translation>
 <translation id="709897737746224366">Zadejte hodnotu, která odpovídá požadovanému formátu.</translation>
-<translation id="7134810312945846184">Použít mikrofon a kameru</translation>
 <translation id="7263440858009898357">Vyberte prosím v seznamu některou položku.</translation>
 <translation id="7364796246159120393">Vybrat soubor</translation>
 <translation id="739024184232394898">Jiné…</translation>

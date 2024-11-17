@@ -26,16 +26,9 @@ constexpr char kGetTokensResponse[] = R"({
             "expires_in": 3600,
             "token_type": "Bearer"
          })";
-// Note: We include "email" in the Token Info response because we require that
-// the scopes contain "userinfo.email", which causes "email" to be included.
-constexpr char kGetTokenInfoResponse[] = R"({
-            "email": "user@test.com",
-            "expires_in": 3600,
-            "scope": "scope1 scope2"
-         })";
 constexpr char kTestEmail[] = "user@test.com";
 constexpr char kDifferentTestEmail[] = "different_user@test.com";
-constexpr char kTestScopes[] = "scope1 scope2";
+constexpr char kGetUserEmailResponse[] = R"({"email": "user@test.com"})";
 }  // namespace
 
 class HostStarterOAuthHelperTest : public testing::Test {
@@ -55,9 +48,9 @@ class HostStarterOAuthHelperTest : public testing::Test {
  protected:
   void RunUntilQuit();
   void AddGetTokenResponse(const std::string& response);
-  void AddGetTokenInfoResponse(const std::string& response);
+  void AddGetUserEmailResponse(const std::string& response);
   void AddGetTokenErrorResponse(net::HttpStatusCode status);
-  void AddGetTokenInfoErrorResponse(net::HttpStatusCode status);
+  void AddGetUserEmailErrorResponse(net::HttpStatusCode status);
 
   HostStarterOAuthHelper& host_starter_oauth_helper() {
     return *host_starter_oauth_helper_;
@@ -132,10 +125,10 @@ void HostStarterOAuthHelperTest::AddGetTokenResponse(
       GaiaUrls::GetInstance()->oauth2_token_url().spec(), response);
 }
 
-void HostStarterOAuthHelperTest::AddGetTokenInfoResponse(
+void HostStarterOAuthHelperTest::AddGetUserEmailResponse(
     const std::string& response) {
   test_url_loader_factory_.AddResponse(
-      GaiaUrls::GetInstance()->oauth2_token_info_url().spec(), response);
+      GaiaUrls::GetInstance()->oauth_user_info_url().spec(), response);
 }
 
 void HostStarterOAuthHelperTest::AddGetTokenErrorResponse(
@@ -145,10 +138,10 @@ void HostStarterOAuthHelperTest::AddGetTokenErrorResponse(
       /*content=*/std::string(), status);
 }
 
-void HostStarterOAuthHelperTest::AddGetTokenInfoErrorResponse(
+void HostStarterOAuthHelperTest::AddGetUserEmailErrorResponse(
     net::HttpStatusCode status) {
   test_url_loader_factory_.AddResponse(
-      GaiaUrls::GetInstance()->oauth2_token_info_url().spec(),
+      GaiaUrls::GetInstance()->oauth_user_info_url().spec(),
       /*content=*/std::string(), status);
 }
 
@@ -158,7 +151,7 @@ void HostStarterOAuthHelperTest::RunUntilQuit() {
 
 TEST_F(HostStarterOAuthHelperTest, NoUserEmail_TokensRetrievedSuccessfully) {
   AddGetTokenResponse(kGetTokensResponse);
-  AddGetTokenInfoResponse(kGetTokenInfoResponse);
+  AddGetUserEmailResponse(kGetUserEmailResponse);
 
   host_starter_oauth_helper().FetchTokens(
       std::string(), kAuthorizationCodeValue, gaia::OAuthClientInfo(),
@@ -172,13 +165,12 @@ TEST_F(HostStarterOAuthHelperTest, NoUserEmail_TokensRetrievedSuccessfully) {
   ASSERT_EQ(access_token(), kAccessTokenValue);
   ASSERT_EQ(refresh_token(), kRefreshTokenValue);
   ASSERT_EQ(user_email(), kTestEmail);
-  ASSERT_EQ(scopes(), kTestScopes);
   ASSERT_FALSE(error_result().has_value());
 }
 
 TEST_F(HostStarterOAuthHelperTest, UserEmail_TokensRetrievedSuccessfully) {
   AddGetTokenResponse(kGetTokensResponse);
-  AddGetTokenInfoResponse(kGetTokenInfoResponse);
+  AddGetUserEmailResponse(kGetUserEmailResponse);
 
   host_starter_oauth_helper().FetchTokens(
       kTestEmail, kAuthorizationCodeValue, gaia::OAuthClientInfo(),
@@ -192,13 +184,12 @@ TEST_F(HostStarterOAuthHelperTest, UserEmail_TokensRetrievedSuccessfully) {
   ASSERT_EQ(access_token(), kAccessTokenValue);
   ASSERT_EQ(refresh_token(), kRefreshTokenValue);
   ASSERT_EQ(user_email(), kTestEmail);
-  ASSERT_EQ(scopes(), kTestScopes);
   ASSERT_FALSE(error_result().has_value());
 }
 
 TEST_F(HostStarterOAuthHelperTest, DifferentUserEmail_RunsErrorCallback) {
   AddGetTokenResponse(kGetTokensResponse);
-  AddGetTokenInfoResponse(kGetTokenInfoResponse);
+  AddGetUserEmailResponse(kGetUserEmailResponse);
 
   host_starter_oauth_helper().FetchTokens(
       kDifferentTestEmail, kAuthorizationCodeValue, gaia::OAuthClientInfo(),
@@ -212,7 +203,6 @@ TEST_F(HostStarterOAuthHelperTest, DifferentUserEmail_RunsErrorCallback) {
   ASSERT_TRUE(access_token().empty());
   ASSERT_TRUE(refresh_token().empty());
   ASSERT_TRUE(user_email().empty());
-  ASSERT_TRUE(scopes().empty());
   ASSERT_FALSE(error_message().empty());
   ASSERT_TRUE(error_result().has_value());
   ASSERT_EQ(*error_result(), HostStarter::Result::PERMISSION_DENIED);
@@ -233,7 +223,6 @@ TEST_F(HostStarterOAuthHelperTest, GetTokensNetworkError_RunsErrorCallback) {
   ASSERT_TRUE(access_token().empty());
   ASSERT_TRUE(refresh_token().empty());
   ASSERT_TRUE(user_email().empty());
-  ASSERT_TRUE(scopes().empty());
   ASSERT_FALSE(error_message().empty());
   ASSERT_TRUE(error_result().has_value());
   ASSERT_EQ(*error_result(), HostStarter::Result::NETWORK_ERROR);
@@ -256,7 +245,6 @@ TEST_F(HostStarterOAuthHelperTest, GetTokensOAuthError_RunsErrorCallback) {
   ASSERT_TRUE(access_token().empty());
   ASSERT_TRUE(refresh_token().empty());
   ASSERT_TRUE(user_email().empty());
-  ASSERT_TRUE(scopes().empty());
   ASSERT_FALSE(error_message().empty());
   ASSERT_TRUE(error_result().has_value());
   ASSERT_EQ(*error_result(), HostStarter::Result::OAUTH_ERROR);
@@ -264,7 +252,7 @@ TEST_F(HostStarterOAuthHelperTest, GetTokensOAuthError_RunsErrorCallback) {
 
 TEST_F(HostStarterOAuthHelperTest, GetUserEmailNetworkError_RunsErrorCallback) {
   AddGetTokenResponse(kGetTokensResponse);
-  AddGetTokenInfoErrorResponse(net::HttpStatusCode::HTTP_SERVICE_UNAVAILABLE);
+  AddGetUserEmailErrorResponse(net::HttpStatusCode::HTTP_SERVICE_UNAVAILABLE);
 
   host_starter_oauth_helper().FetchTokens(
       kTestEmail, kAuthorizationCodeValue, gaia::OAuthClientInfo(),
@@ -278,7 +266,6 @@ TEST_F(HostStarterOAuthHelperTest, GetUserEmailNetworkError_RunsErrorCallback) {
   ASSERT_TRUE(access_token().empty());
   ASSERT_TRUE(refresh_token().empty());
   ASSERT_TRUE(user_email().empty());
-  ASSERT_TRUE(scopes().empty());
   ASSERT_FALSE(error_message().empty());
   ASSERT_EQ(error_result(), HostStarter::Result::NETWORK_ERROR);
 }

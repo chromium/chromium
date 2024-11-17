@@ -105,8 +105,7 @@ class ShutdownNotifierFactory
 
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override {
-    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(
-        context, /*force_guest_profile=*/true);
+    return ExtensionsBrowserClient::Get()->GetContextOwnInstance(context);
   }
 };
 
@@ -905,7 +904,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
         pending_follow_redirect_params_->modified_headers.SetHeader(
             set_header, *header_value);
       } else {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
 
@@ -1031,8 +1030,7 @@ void WebRequestProxyingURLLoaderFactory::InProgressRequest::
       state_ = State::kRejectedByOnAuthRequired;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   auth_credentials_ = std::nullopt;

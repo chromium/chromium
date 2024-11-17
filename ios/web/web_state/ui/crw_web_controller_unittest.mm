@@ -527,7 +527,7 @@ class CRWWebControllerResponseTest : public CRWWebControllerTest {
     NavigationItemImpl* pending_item =
         web_controller()
             .webStateImpl->GetNavigationManagerImpl()
-            .GetPendingItemInCurrentOrRestoredSession();
+            .GetPendingItemImpl();
     const bool has_post_data =
         pending_item && pending_item->GetPostData() != nil;
 
@@ -719,7 +719,7 @@ TEST_F(CRWWebControllerResponseTest, DownloadForPostRequest) {
   AddPendingItem(url, ui::PAGE_TRANSITION_TYPED);
   web_controller()
       .webStateImpl->GetNavigationManagerImpl()
-      .GetPendingItemInCurrentOrRestoredSession()
+      .GetPendingItemImpl()
       ->SetPostData([NSData data]);
   [web_controller() loadCurrentURLWithRendererInitiatedNavigation:NO];
   NSURLResponse* response = [[NSHTTPURLResponse alloc]
@@ -1222,9 +1222,7 @@ TEST_F(CRWWebControllerTitleTest, TitleChange) {
     int title_change_count() { return title_change_count_; }
     // WebStateObserver overrides:
     void TitleWasSet(WebState* web_state) override { title_change_count_++; }
-    void WebStateDestroyed(WebState* web_state) override {
-      NOTREACHED_IN_MIGRATION();
-    }
+    void WebStateDestroyed(WebState* web_state) override { NOTREACHED(); }
 
    private:
     int title_change_count_ = 0;

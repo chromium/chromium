@@ -10,9 +10,11 @@
 #include "build/build_config.h"
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
+#include "gpu/command_buffer/client/webgpu_interface.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
 #include "third_party/blink/renderer/platform/graphics/image_to_buffer_copier.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
@@ -58,8 +60,7 @@ bool XRFrameTransport::DrawingIntoSharedBuffer() {
         DRAW_INTO_TEXTURE_MAILBOX:
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -84,6 +85,28 @@ void XRFrameTransport::FramePreImage(gpu::gles2::GLES2Interface* gl) {
   }
 }
 
+void XRFrameTransport::FramePreImageWebGPU(
+    scoped_refptr<DawnControlClientHolder> dawn_control_client) {
+  frame_wait_time_ = base::TimeDelta();
+
+  // If we're expecting a fence for the previous frame and it hasn't arrived
+  // yet, wait for it to be received.
+  if (waiting_for_previous_frame_fence_) {
+    frame_wait_time_ += WaitForGpuFenceReceived();
+  }
+  // If we have a GpuFence (it may be missing if WaitForIncomingMethodCall
+  // failed), send it to the GPU service process and ask it to do an
+  // asynchronous server wait.
+  if (previous_frame_fence_) {
+    DVLOG(3) << "CreateClientGpuFenceCHROMIUM";
+
+    // TODO(crbug.com/359418629): Wait on previous_frame_fence_ like the WebGL
+    // path does.
+
+    previous_frame_fence_.reset();
+  }
+}
+
 void XRFrameTransport::FrameSubmitMissing(
     device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
     gpu::gles2::GLES2Interface* gl,
@@ -96,6 +119,30 @@ void XRFrameTransport::FrameSubmitMissing(
   if (gl) {
     gl->GenSyncTokenCHROMIUM(sync_token.GetData());
   }
+  vr_presentation_provider->SubmitFrameMissing(vr_frame_id, sync_token);
+}
+
+void XRFrameTransport::FrameSubmitMissingWebGPU(
+    device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
+    scoped_refptr<DawnControlClientHolder> dawn_control_client,
+    int16_t vr_frame_id) {
+  TRACE_EVENT0("gpu", __FUNCTION__);
+  gpu::SyncToken sync_token;
+
+  if (dawn_control_client) {
+    auto context_provider_weak_ptr =
+        dawn_control_client->GetContextProviderWeakPtr();
+    if (context_provider_weak_ptr) {
+      WebGraphicsContext3DProvider* context_provider =
+          context_provider_weak_ptr->ContextProvider();
+
+      gpu::webgpu::WebGPUInterface* webgpu =
+          context_provider->WebGPUInterface();
+      TRACE_EVENT0("gpu", "GenSyncTokenCHROMIUM");
+      webgpu->GenSyncTokenCHROMIUM(sync_token.GetData());
+    }
+  }
+
   vr_presentation_provider->SubmitFrameMissing(vr_frame_id, sync_token);
 }
 
@@ -191,12 +238,63 @@ bool XRFrameTransport::FrameSubmit(
       TRACE_EVENT0("gpu", "GenSyncTokenCHROMIUM");
       gl->GenSyncTokenCHROMIUM(sync_token.GetData());
     }
-    if (waiting_for_previous_frame_render_)
+    if (waiting_for_previous_frame_render_) {
       frame_wait_time_ += WaitForPreviousRenderToFinish();
+    }
     vr_presentation_provider->SubmitFrameDrawnIntoTexture(
         vr_frame_id, sync_token, frame_wait_time_);
   } else {
-    NOTREACHED_IN_MIGRATION() << "Unimplemented frame transport method";
+    NOTREACHED() << "Unimplemented frame transport method";
+  }
+
+  // Set the expected notifications the next frame should wait for.
+  waiting_for_previous_frame_transfer_ =
+      transport_options_->wait_for_transfer_notification;
+  waiting_for_previous_frame_render_ =
+      transport_options_->wait_for_render_notification;
+  waiting_for_previous_frame_fence_ = transport_options_->wait_for_gpu_fence;
+  return true;
+}
+
+bool XRFrameTransport::FrameSubmitWebGPU(
+    device::mojom::blink::XRPresentationProvider* vr_presentation_provider,
+    scoped_refptr<DawnControlClientHolder> dawn_control_client,
+    wgpu::Device device,
+    int16_t vr_frame_id) {
+  CHECK(transport_options_);
+
+  if (transport_options_->transport_method ==
+      device::mojom::blink::XRPresentationTransportMethod::
+          DRAW_INTO_TEXTURE_MAILBOX) {
+    TRACE_EVENT0("gpu", "XRFrameTransport::SubmitFrameDrawnIntoTexture");
+
+    gpu::SyncToken sync_token;
+    {
+      auto context_provider_weak_ptr =
+          dawn_control_client->GetContextProviderWeakPtr();
+      if (!context_provider_weak_ptr) {
+        return false;
+      }
+
+      WebGraphicsContext3DProvider* context_provider =
+          context_provider_weak_ptr->ContextProvider();
+
+      gpu::webgpu::WebGPUInterface* webgpu =
+          context_provider->WebGPUInterface();
+      TRACE_EVENT0("gpu", "GenSyncTokenCHROMIUM");
+      webgpu->GenSyncTokenCHROMIUM(sync_token.GetData());
+    }
+
+    if (waiting_for_previous_frame_render_) {
+      frame_wait_time_ += WaitForPreviousRenderToFinish();
+    }
+
+    vr_presentation_provider->SubmitFrameDrawnIntoTexture(
+        vr_frame_id, sync_token, frame_wait_time_);
+  } else {
+    // WebGPU sessions don't support SUBMIT_AS_TEXTURE_HANDLE or
+    // SUBMIT_AS_MAILBOX_HOLDER yet.
+    NOTREACHED() << "Unimplemented frame transport method";
   }
 
   // Set the expected notifications the next frame should wait for.

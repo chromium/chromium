@@ -6,6 +6,7 @@ assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
+import("//content/public/common/features.gni")
 import("//third_party/webrtc/webrtc.gni")
 
 source_set("webrtc") {
@@ -51,6 +52,7 @@ source_set("webrtc") {
     "rtp_dump_type.h",
     "same_origin_observer.cc",
     "same_origin_observer.h",
+    "select_audio_output_picker.h",
     "thumbnail_capturer.cc",
     "thumbnail_capturer.h",
     "webrtc_event_log_history.cc",
@@ -115,16 +117,19 @@ source_set("webrtc") {
 
   deps = [
     "//base:i18n",
+    "//build:android_buildflags",
     "//chrome/app:branded_strings",
     "//chrome/app:branded_strings_grit",
     "//chrome/app:command_ids",
     "//chrome/app:generated_resources",
     "//chrome/app:generated_resources_grit",
     "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/content_settings:content_settings_util",
     "//chrome/browser/media/prefs",
     "//chrome/browser/permissions/system",
     "//chrome/browser/picture_in_picture",
-    "//chrome/browser/profiles:profile_attributes",
+    "//chrome/browser/profiles:profile_util",
     "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:ui_features",
     "//chrome/common",
@@ -145,6 +150,7 @@ source_set("webrtc") {
     "//components/webrtc",
     "//components/webrtc_logging/browser",
     "//content/public/common",
+    "//content/public/common:buildflags",
     "//media",
     "//media/webrtc",
     "//net/traffic_annotation",
@@ -163,27 +169,16 @@ source_set("webrtc") {
     "//ui/snapshot",
   ]
 
-  if (is_android) {
-    sources += [
-      "screen_capture_permission_handler_android.cc",
-      "screen_capture_permission_handler_android.h",
-    ]
-  } else {
+  if (!is_android) {
     sources += [
       "current_tab_desktop_media_list.cc",
       "current_tab_desktop_media_list.h",
       "desktop_capture_access_handler.cc",
       "desktop_capture_access_handler.h",
-      "desktop_capture_devices_util.cc",
-      "desktop_capture_devices_util.h",
       "desktop_media_picker_controller.cc",
       "desktop_media_picker_controller.h",
-      "desktop_media_picker_factory_impl.cc",
-      "desktop_media_picker_factory_impl.h",
       "desktop_media_picker_utils.cc",
       "desktop_media_picker_utils.h",
-      "display_media_access_handler.cc",
-      "display_media_access_handler.h",
       "media_stream_focus_delegate.cc",
       "media_stream_focus_delegate.h",
       "tab_capture_access_handler.cc",
@@ -197,10 +192,23 @@ source_set("webrtc") {
     ]
     deps += [
       "//chrome/browser/ui:browser_list",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//extensions/browser",
       "//extensions/browser/kiosk",
       "//extensions/common",
     ]
+  }
+
+  if (enable_screen_capture) {
+    sources += [
+      "desktop_capture_devices_util.cc",
+      "desktop_capture_devices_util.h",
+      "desktop_media_picker_factory_impl.cc",
+      "desktop_media_picker_factory_impl.h",
+      "display_media_access_handler.cc",
+      "display_media_access_handler.h",
+    ]
+    deps += [ "//chrome/browser/ui:url_identity" ]
   }
 
   if (is_mac) {

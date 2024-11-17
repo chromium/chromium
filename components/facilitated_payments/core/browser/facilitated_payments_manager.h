@@ -16,12 +16,14 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_request_details.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_initiate_payment_response_details.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -36,6 +38,8 @@ class FacilitatedPaymentsDriver;
 // A cross-platform interface that manages the flow of payments for non-form
 // based form-of-payments between the browser and the Payments platform. It is
 // owned by `FacilitatedPaymentsDriver`.
+// TODO(crbug.com/369898977): Rename `FacilitatedPaymentsManager` to be PIX
+// specific and update the class level comment.
 class FacilitatedPaymentsManager {
  public:
   FacilitatedPaymentsManager(
@@ -61,6 +65,8 @@ class FacilitatedPaymentsManager {
 
  private:
   friend class FacilitatedPaymentsManagerTest;
+  friend class FacilitatedPaymentsManagerTestForUiScreens;
+  // TODO(crbug.com/367751320): Sort below tests in alphabetical order.
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RegisterPixAllowlist);
   FRIEND_TEST_ALL_PREFIXES(
@@ -94,30 +100,25 @@ class FacilitatedPaymentsManager {
                            ShowsPixPaymentPromptWhenApiClientAvailable);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            ShowsPixPaymentPrompt_HistogramLogged);
-  FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerTest,
-      PixPaymentPromptNotAccepted_LoadRiskDataNotTriggered);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           OnPixPaymentPromptResult_FopSelectorDeclined);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RiskDataNotEmpty_HistogramsLogged);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RiskDataEmpty_HistogramsLogged);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           PixPaymentPromptAccepted_TriggersLoadRiskData);
+                           OnPixPaymentPromptResult_FopSelected);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           PaymentNotOfferedReason_RiskDataEmpty);
+                           PayflowExitedReason_RiskDataEmpty);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
       RiskDataEmpty_GetClientTokenNotCalled_ErrorScreenShown);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            RiskDataNotEmpty_GetClientTokenCalled);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           GetClientTokenHistogram_ClientTokenNotEmpty);
+                           LogGetClientTokenResultAndLatency);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           GetClientTokenHistogram_ClientTokenEmpty);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           PixPaymentPromptAccepted_ProgressSceenShown);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           PixPaymentPromptRejected_ProgressSceenNotShown);
+                           PayflowExitedReason_ClientTokenNotAvailable);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            OnGetClientToken_ClientTokenEmpty_ErrorScreenShown);
   FRIEND_TEST_ALL_PREFIXES(
@@ -150,6 +151,10 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PixPrefTurnedOff_NoApiClientTriggered);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           PayflowExitedReason_UserOptedOut);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           PayflowExitedReason_NoLinkedAccount);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            NoPixAccounts_NoApiClientTriggered);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            NoPaymentsDataManager_NoApiClientTriggered);
@@ -158,23 +163,22 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            ApiClientTriggeredAfterPixCodeValidation);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           PaymentNotOfferedReason_CodeValidatorReturnsFalse);
+                           PayflowExitedReason_InvalidCode);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            PixCodeValidationFailed_NoApiClientTriggered);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           PaymentNotOfferedReason_CodeValidatorFailed);
+                           PayflowExitedReason_CodeValidatorFailed);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           ApiAvailabilityHistogram);
+                           LogApiAvailabilityCheckResultAndLatency);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
       PixCodeValidatorTerminatedUnexpectedly_NoApiClientTriggered);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           PaymentNotOfferedReason_ApiNotAvailable);
+                           PayflowExitedReason_ApiClientNotAvailable);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            SendInitiatePaymentRequest);
-  FRIEND_TEST_ALL_PREFIXES(
-      FacilitatedPaymentsManagerTest,
-      OnInitiatePaymentResponseReceived_FailureResponse_ErrorScreenShown);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           OnInitiatePaymentResponseReceived_FailureResponse);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
       OnInitiatePaymentResponseReceived_NoActionToken_ErrorScreenShown);
@@ -194,8 +198,6 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            InvokePurchaseActionCompleted_HistogramLogged);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
-                           OnInitiatePaymentResponseReceived_HistogramLogged);
-  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
                            TransactionSuccess_HistogramLogged);
   FRIEND_TEST_ALL_PREFIXES(
       FacilitatedPaymentsManagerTest,
@@ -213,7 +215,20 @@ class FacilitatedPaymentsManager {
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestInLandscapeMode,
                            PixPayflowBlockedWhenFlagDisabled);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestInLandscapeMode,
-                           HistogramForPaymentNotOfferedReason);
+                           PayflowExitedReason_LandscapeScreenOrientation);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           ShowPixPaymentPrompt);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest, ShowProgressScreen);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest, ShowErrorScreen);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest, DismissPrompt);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
+                           NewScreenShown);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
+                           NewScreenCouldNotBeShown);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
+                           ScreenClosedWithoutUserInteraction);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestForUiScreens,
+                           ScreenClosedByUser);
 
   // Register optimization guide deciders for PIX. It is an allowlist of URLs
   // where we attempt PIX code detection.
@@ -223,8 +238,8 @@ class FacilitatedPaymentsManager {
   // 1. In the allowlist
   // 2. Not in the allowlist
   // 3. Infra for querying is not ready
-  optimization_guide::OptimizationGuideDecision GetAllowlistCheckResult(
-      const GURL& url) const;
+  // Returns true if the result is [1].
+  bool IsMerchantAllowlisted(const GURL& url) const;
 
   // Called by the utility process after validation of the `pix_code`. If the
   // utility processes has disconnected (e.g., due to a crash in the validation
@@ -276,9 +291,22 @@ class FacilitatedPaymentsManager {
   void OnPurchaseActionResult(
       FacilitatedPaymentsApiClient::PurchaseActionResult result);
 
-  // Calling `Reset` has no effect in tests. Adding this method to specifically
-  // test `Resets` in tests.
-  void ResetForTesting();
+  // Called by the view to communicate UI events.
+  void OnUiEvent(UiEvent ui_event_type);
+
+  // Sets the internal state and triggers dismissal.
+  void DismissPrompt();
+
+  // Sets the internal state and triggers showing the Pix payment prompt.
+  void ShowPixPaymentPrompt(
+      base::span<const autofill::BankAccount> bank_account_suggestions,
+      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback);
+
+  // Sets the internal state and triggers showing the progress screen.
+  void ShowProgressScreen();
+
+  // Sets the internal state and triggers showing the error screen.
+  void ShowErrorScreen();
 
   // Owner.
   const raw_ref<FacilitatedPaymentsDriver> driver_;
@@ -332,9 +360,6 @@ class FacilitatedPaymentsManager {
   // double-click.
   bool has_payflow_started_ = false;
 
-  // Informs whether this instance was created in a test.
-  bool is_test_ = false;
-
   // Utility process validator for PIX code strings.
   data_decoder::DataDecoder utility_process_validator_;
 
@@ -342,6 +367,11 @@ class FacilitatedPaymentsManager {
   // selector to show up. It is used for logging purposes. It is set whenever a
   // trigger occurs and reset if the FOP selector is not shown for some reason.
   TriggerSource trigger_source_ = TriggerSource::kUnknown;
+
+  // Represents the current state of the UI or the UI state that is intended. In
+  // the latter case, the UI state is always updated to reflect the current
+  // state via a callback.
+  UiState ui_state_ = UiState::kHidden;
 
   base::WeakPtrFactory<FacilitatedPaymentsManager> weak_ptr_factory_{this};
 };

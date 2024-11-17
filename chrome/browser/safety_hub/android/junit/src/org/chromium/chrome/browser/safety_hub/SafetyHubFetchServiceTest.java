@@ -63,6 +63,21 @@ public class SafetyHubFetchServiceTest {
         mPasswordCheckupClientHelper = mSafetyHubTestRule.getPasswordCheckupClientHelper();
     }
 
+    // Check next job is scheduled after the specified period.
+    private void checkNextJobIsScheduled() {
+        verify(mTaskScheduler, times(1)).schedule(any(), mTaskInfoCaptor.capture());
+        TaskInfo taskInfo = mTaskInfoCaptor.getValue();
+        assertEquals(TaskIds.SAFETY_HUB_JOB_ID, taskInfo.getTaskId());
+        assertTrue(taskInfo.isPersisted());
+        assertFalse(taskInfo.shouldUpdateCurrent());
+        assertEquals(
+                ONE_DAY_IN_MILLISECONDS,
+                ((TaskInfo.OneOffInfo) taskInfo.getTimingInfo()).getWindowStartTimeMs());
+        assertEquals(
+                ONE_DAY_IN_MILLISECONDS,
+                ((TaskInfo.OneOffInfo) taskInfo.getTimingInfo()).getWindowEndTimeMs());
+    }
+
     @Test
     @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testTaskScheduledImmediately_WhenConditionsMet() {
@@ -84,6 +99,8 @@ public class SafetyHubFetchServiceTest {
 
         // Verify prefs are cleaned up when task is cancelled.
         verify(mPrefService, times(1)).clearPref(Pref.BREACHED_CREDENTIALS_COUNT);
+        verify(mPrefService, times(1)).clearPref(Pref.WEAK_CREDENTIALS_COUNT);
+        verify(mPrefService, times(1)).clearPref(Pref.REUSED_CREDENTIALS_COUNT);
         verify(mTaskScheduler, times(1)).cancel(any(), eq(TaskIds.SAFETY_HUB_JOB_ID));
         verify(mTaskScheduler, never()).schedule(any(), mTaskInfoCaptor.capture());
     }
@@ -97,6 +114,8 @@ public class SafetyHubFetchServiceTest {
 
         // Verify prefs are cleaned up when task is cancelled.
         verify(mPrefService, times(1)).clearPref(Pref.BREACHED_CREDENTIALS_COUNT);
+        verify(mPrefService, times(1)).clearPref(Pref.WEAK_CREDENTIALS_COUNT);
+        verify(mPrefService, times(1)).clearPref(Pref.REUSED_CREDENTIALS_COUNT);
         verify(mTaskScheduler, times(1)).cancel(any(), eq(TaskIds.SAFETY_HUB_JOB_ID));
         verify(mTaskScheduler, never()).schedule(any(), any());
     }
@@ -123,6 +142,8 @@ public class SafetyHubFetchServiceTest {
 
         // Verify prefs are cleaned up when task is cancelled.
         verify(mPrefService, times(1)).clearPref(Pref.BREACHED_CREDENTIALS_COUNT);
+        verify(mPrefService, times(1)).clearPref(Pref.WEAK_CREDENTIALS_COUNT);
+        verify(mPrefService, times(1)).clearPref(Pref.REUSED_CREDENTIALS_COUNT);
         verify(mTaskScheduler, times(1)).cancel(any(), eq(TaskIds.SAFETY_HUB_JOB_ID));
         verify(mTaskScheduler, never()).schedule(any(), mTaskInfoCaptor.capture());
     }
@@ -132,9 +153,30 @@ public class SafetyHubFetchServiceTest {
     public void testTaskRescheduled_whenFetchFails() {
         mPasswordCheckupClientHelper.setError(new Exception());
 
-        new SafetyHubFetchService(mProfile).fetchBreachedCredentialsCount(mTaskFinishedCallback);
+        new SafetyHubFetchService(mProfile).fetchCredentialsCount(mTaskFinishedCallback);
 
         verify(mPrefService, never()).setInteger(eq(Pref.BREACHED_CREDENTIALS_COUNT), anyInt());
+        verify(mPrefService, never()).setInteger(eq(Pref.WEAK_CREDENTIALS_COUNT), anyInt());
+        verify(mPrefService, never()).setInteger(eq(Pref.REUSED_CREDENTIALS_COUNT), anyInt());
+        verify(mTaskFinishedCallback, times(1)).onResult(eq(/* needsReschedule= */ true));
+    }
+
+    @Test
+    @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
+    public void testTaskRescheduled_whenFetchFailsForOneCredentialType() {
+        mPasswordCheckupClientHelper.setWeakCredentialsError(new Exception());
+        int breachedCredentialsCount = 5;
+        int reusedCredentialsCount = 3;
+        mPasswordCheckupClientHelper.setBreachedCredentialsCount(breachedCredentialsCount);
+        mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
+
+        new SafetyHubFetchService(mProfile).fetchCredentialsCount(mTaskFinishedCallback);
+
+        verify(mPrefService, never()).setInteger(eq(Pref.WEAK_CREDENTIALS_COUNT), anyInt());
+        verify(mPrefService, times(1))
+                .setInteger(Pref.BREACHED_CREDENTIALS_COUNT, breachedCredentialsCount);
+        verify(mPrefService, times(1))
+                .setInteger(Pref.REUSED_CREDENTIALS_COUNT, reusedCredentialsCount);
         verify(mTaskFinishedCallback, times(1)).onResult(eq(/* needsReschedule= */ true));
     }
 
@@ -142,28 +184,26 @@ public class SafetyHubFetchServiceTest {
     @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB)
     public void testNextTaskScheduled_WhenFetchSucceeds() {
         int breachedCredentialsCount = 5;
+        int weakCredentialsCount = 4;
+        int reusedCredentialsCount = 3;
         mPasswordCheckupClientHelper.setBreachedCredentialsCount(breachedCredentialsCount);
+        mPasswordCheckupClientHelper.setWeakCredentialsCount(weakCredentialsCount);
+        mPasswordCheckupClientHelper.setReusedCredentialsCount(reusedCredentialsCount);
 
-        new SafetyHubFetchService(mProfile).fetchBreachedCredentialsCount(mTaskFinishedCallback);
+        new SafetyHubFetchService(mProfile).fetchCredentialsCount(mTaskFinishedCallback);
 
         verify(mPrefService, times(1))
                 .setInteger(Pref.BREACHED_CREDENTIALS_COUNT, breachedCredentialsCount);
+        verify(mPrefService, times(1))
+                .setInteger(Pref.WEAK_CREDENTIALS_COUNT, weakCredentialsCount);
+        verify(mPrefService, times(1))
+                .setInteger(Pref.REUSED_CREDENTIALS_COUNT, reusedCredentialsCount);
         verify(mTaskFinishedCallback, times(1)).onResult(eq(/* needsReschedule= */ false));
 
         // Check previous job is cleaned up.
         verify(mTaskScheduler, times(1)).cancel(any(), eq(TaskIds.SAFETY_HUB_JOB_ID));
 
         // Check next job is scheduled after the specified period.
-        verify(mTaskScheduler, times(1)).schedule(any(), mTaskInfoCaptor.capture());
-        TaskInfo taskInfo = mTaskInfoCaptor.getValue();
-        assertEquals(TaskIds.SAFETY_HUB_JOB_ID, taskInfo.getTaskId());
-        assertTrue(taskInfo.isPersisted());
-        assertFalse(taskInfo.shouldUpdateCurrent());
-        assertEquals(
-                ONE_DAY_IN_MILLISECONDS,
-                ((TaskInfo.OneOffInfo) taskInfo.getTimingInfo()).getWindowStartTimeMs());
-        assertEquals(
-                ONE_DAY_IN_MILLISECONDS,
-                ((TaskInfo.OneOffInfo) taskInfo.getTimingInfo()).getWindowEndTimeMs());
+        checkNextJobIsScheduled();
     }
 }

@@ -25,12 +25,12 @@
 #import "components/ukm/observers/history_delete_observer.h"
 #import "components/ukm/observers/ukm_consent_state_observer.h"
 #import "components/variations/synthetic_trial_registry.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_observer_ios.h"
 #import "ios/web/public/deprecated/global_web_state_observer.h"
 
 class IOSChromeStabilityMetricsProvider;
 class PrefRegistrySimple;
+class ProfileIOS;
 class ProfileManagerIOS;
 
 namespace metrics {
@@ -106,9 +106,9 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // ProfileManagerObserverIOS:
   void OnProfileManagerDestroyed(ProfileManagerIOS* manager) override;
   void OnProfileCreated(ProfileManagerIOS* manager,
-                        ChromeBrowserState* profile) override;
+                        ProfileIOS* profile) override;
   void OnProfileLoaded(ProfileManagerIOS* manager,
-                       ChromeBrowserState* profile) override;
+                       ProfileIOS* profile) override;
 
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
 
@@ -144,7 +144,7 @@ class IOSChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 
   // Register to observe events on a Profile's services.
   // Returns true if registration was successful.
-  bool RegisterForProfileEvents(ChromeBrowserState* profile);
+  bool RegisterForProfileEvents(ProfileIOS* profile);
 
   // Called when a tab is parented.
   void OnTabParented(web::WebState* web_state);

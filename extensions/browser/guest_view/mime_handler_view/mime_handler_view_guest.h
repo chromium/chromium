@@ -135,9 +135,9 @@ class MimeHandlerViewGuest
   // GuestViewBase implementation.
   const char* GetAPINamespace() const final;
   int GetTaskPrefix() const final;
-  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
-                         const base::Value::Dict& create_params,
-                         WebContentsCreatedCallback callback) override;
+  void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       const base::Value::Dict& create_params,
+                       GuestPageCreatedCallback callback) override;
   void DidAttachToEmbedder() override;
   void DidInitialize(const base::Value::Dict& create_params) final;
   void MaybeRecreateGuestContents(
@@ -147,6 +147,10 @@ class MimeHandlerViewGuest
 
   // BrowserPluginGuestDelegate implementation.
   content::RenderFrameHost* GetProspectiveOuterDocument() final;
+
+  // GuestpageHolder::Delegate implementation.
+  bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
+                              const content::ContextMenuParams& params) final;
 
   // WebContentsDelegate implementation.
   content::WebContents* OpenURLFromTab(

@@ -1,8 +1,0 @@
-# check bad capitalisation of Dutch letter IJ.
-TRY i
-FORBIDDENWORD *
-PFX i N 1
-PFX i ij IJ ij
-
-REP 1
-REP ij IJ

@@ -107,15 +107,15 @@ HttpNoVarySearchData HttpNoVarySearchData::CreateFromVaryParams(
 base::expected<HttpNoVarySearchData, HttpNoVarySearchData::ParseErrorEnum>
 HttpNoVarySearchData::ParseFromHeaders(
     const HttpResponseHeaders& response_headers) {
-  std::string normalized_header;
-  if (!response_headers.GetNormalizedHeader("No-Vary-Search",
-                                            &normalized_header)) {
+  std::optional<std::string> normalized_header =
+      response_headers.GetNormalizedHeader("No-Vary-Search");
+  if (!normalized_header) {
     // This means there is no No-Vary-Search header. Return nullopt.
     return base::unexpected(ParseErrorEnum::kOk);
   }
 
   // The no-vary-search header is a dictionary type structured field.
-  const auto dict = structured_headers::ParseDictionary(normalized_header);
+  const auto dict = structured_headers::ParseDictionary(*normalized_header);
   if (!dict.has_value()) {
     // We don't recognize anything else. So this is an authoring error.
     return base::unexpected(ParseErrorEnum::kNotDictionary);

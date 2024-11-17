@@ -1,7 +1,10 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import("//components/services/on_device_translation/buildflags/features.gni")
 import("//third_party/protobuf/proto_library.gni")
+
+assert(enable_on_device_translation)
 
 proto_library("translate_kit_api_proto") {
   sources = [ "proto/translate_kit_api.proto" ]
@@ -9,8 +12,6 @@ proto_library("translate_kit_api_proto") {
 
 source_set("on_device_translation_service") {
   sources = [
-    "mock_translator.cc",
-    "mock_translator.h",
     "on_device_translation_service.cc",
     "on_device_translation_service.h",
     "translate_kit_client.cc",
@@ -24,13 +25,26 @@ source_set("on_device_translation_service") {
     "//components/services/on_device_translation/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
+
+  if (is_linux) {
+    sources += [
+      "sandbox_hook.cc",
+      "sandbox_hook.h",
+    ]
+    deps += [ "//sandbox/linux:sandbox_services" ]
+    public_deps += [ "//sandbox/policy" ]
+  }
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "on_device_translation_service_unittest.cc" ]
+  sources = [
+    "on_device_translation_service_unittest.cc",
+    "translate_kit_client_unittest.cc",
+  ]
   deps = [
+    ":test_support",
     "//base/test:test_support",
     "//components/services/on_device_translation:on_device_translation_service",
     "//components/services/on_device_translation/public/cpp",
@@ -38,4 +52,49 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "test/test_util.cc",
+    "test/test_util.h",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/services/on_device_translation/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+  data_deps = [
+    ":mock_failing_translate_kit_lib",
+    ":mock_invalid_function_pointer_lib",
+    ":mock_translate_kit_lib",
+  ]
+}
+
+shared_library("mock_translate_kit_lib") {
+  testonly = true
+  sources = [
+    "test/mock_translate_kit_lib.cc",
+    "translate_kit_structs.h",
+  ]
+  deps = [ ":translate_kit_api_proto" ]
+  public_deps = [ "//base" ]
+}
+
+shared_library("mock_invalid_function_pointer_lib") {
+  testonly = true
+  sources = [ "test/mock_invalid_function_pointer_lib.cc" ]
+  public_deps = [ "//base" ]
+}
+
+shared_library("mock_failing_translate_kit_lib") {
+  testonly = true
+  sources = [
+    "test/mock_failing_translate_kit_lib.cc",
+    "translate_kit_structs.h",
+  ]
+  public_deps = [ "//base" ]
 }

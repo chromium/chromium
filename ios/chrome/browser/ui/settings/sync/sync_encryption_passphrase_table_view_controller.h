@@ -27,6 +27,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }  // namespace sync_encryption_passphrase
 
 // Controller to allow user to specify encryption passphrase for Sync.
+// It should not be instantiated in a scene that is blocked by a UIBlocker.
 @interface SyncEncryptionPassphraseTableViewController
     : SettingsRootTableViewController <SyncObserverModelBridge>
 
@@ -37,7 +38,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, copy) NSString* syncErrorMessage;
 @property(nonatomic, assign) BOOL presentModally;
 
-// `browserState` must not be nil.
+// `profile` must not be nil.
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 

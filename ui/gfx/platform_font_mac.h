@@ -15,7 +15,7 @@
 
 namespace gfx {
 
-class GFX_EXPORT PlatformFontMac : public PlatformFont {
+class COMPONENT_EXPORT(GFX) PlatformFontMac : public PlatformFont {
  public:
   static constexpr int kDefaultFontSize = 0;
 

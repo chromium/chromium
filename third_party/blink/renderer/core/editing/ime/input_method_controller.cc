@@ -24,11 +24,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 
 #include <tuple>
@@ -159,21 +154,21 @@ constexpr bool IsInvalidDeletionLength(const int length) {
   return length == kInvalidDeletionLength;
 }
 
-int CalculateBeforeDeletionLengthsInCodePoints(
-    const String& text,
-    const int before_length_in_code_points,
-    const int selection_start) {
+int CalculateBeforeDeletionLengthsInCodePoints(const String& text,
+                                               int before_length_in_code_points,
+                                               int selection_start) {
   DCHECK_GE(before_length_in_code_points, 0);
   DCHECK_GE(selection_start, 0);
   DCHECK_LE(selection_start, static_cast<int>(text.length()));
 
-  const UChar* u_text = text.Characters16();
+  base::span<const UChar> u_text = text.Span16();
   BackwardCodePointStateMachine backward_machine;
   int counter = before_length_in_code_points;
   int deletion_start = selection_start;
   while (counter > 0 && deletion_start > 0) {
     const TextSegmentationMachineState state =
-        backward_machine.FeedPrecedingCodeUnit(u_text[deletion_start - 1]);
+        backward_machine.FeedPrecedingCodeUnit(
+            u_text[static_cast<size_t>(deletion_start - 1)]);
     // According to Android's InputConnection spec, we should do nothing if
     // |text| has invalid surrogate pair in the deletion range.
     if (state == TextSegmentationMachineState::kInvalid)
@@ -191,19 +186,18 @@ int CalculateBeforeDeletionLengthsInCodePoints(
   return -offset;
 }
 
-int CalculateAfterDeletionLengthsInCodePoints(
-    const String& text,
-    const int after_length_in_code_points,
-    const int selection_end) {
+int CalculateAfterDeletionLengthsInCodePoints(const String& text,
+                                              int after_length_in_code_points,
+                                              int selection_end) {
   DCHECK_GE(after_length_in_code_points, 0);
-  DCHECK_GE(selection_end, 0);
-  const int length = text.length();
-  DCHECK_LE(selection_end, length);
+  const auto end = base::checked_cast<wtf_size_t>(selection_end);
+  const wtf_size_t length = text.length();
+  DCHECK_LE(end, length);
 
-  const UChar* u_text = text.Characters16();
+  base::span<const UChar> u_text = text.Span16();
   ForwardCodePointStateMachine forward_machine;
   int counter = after_length_in_code_points;
-  int deletion_end = selection_end;
+  wtf_size_t deletion_end = end;
   while (counter > 0 && deletion_end < length) {
     const TextSegmentationMachineState state =
         forward_machine.FeedFollowingCodeUnit(u_text[deletion_end]);
@@ -220,12 +214,12 @@ int CalculateAfterDeletionLengthsInCodePoints(
     return kInvalidDeletionLength;
 
   const int offset = forward_machine.GetBoundaryOffset();
-  DCHECK_EQ(offset, deletion_end - selection_end);
+  DCHECK_EQ(static_cast<wtf_size_t>(offset), deletion_end - end);
   return offset;
 }
 
-Element* RootEditableElementOfSelection(const FrameSelection& frameSelection) {
-  const SelectionInDOMTree& selection = frameSelection.GetSelectionInDOMTree();
+Element* RootEditableElementOfSelection(const FrameSelection& frame_selection) {
+  const SelectionInDOMTree& selection = frame_selection.GetSelectionInDOMTree();
   if (selection.IsNone())
     return nullptr;
   // To avoid update layout, we attempt to get root editable element from
@@ -240,10 +234,10 @@ Element* RootEditableElementOfSelection(const FrameSelection& frameSelection) {
 
   // TODO(editing-dev): Use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
-  frameSelection.GetDocument().UpdateStyleAndLayout(
+  frame_selection.GetDocument().UpdateStyleAndLayout(
       DocumentUpdateReason::kEditing);
   const VisibleSelection& visibleSeleciton =
-      frameSelection.ComputeVisibleSelectionInDOMTree();
+      frame_selection.ComputeVisibleSelectionInDOMTree();
   return RootEditableElementOf(visibleSeleciton.Start());
 }
 
@@ -304,7 +298,7 @@ int ComputeAutocapitalizeFlags(const Element* element) {
       flags |= kWebTextInputFlagAutocapitalizeSentences;
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   return flags;
@@ -497,7 +491,7 @@ void InputMethodController::InsertTextDuringCompositionWithEvents(
                                                    kTextEventInputComposition);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -1475,6 +1469,9 @@ void InputMethodController::ExtendSelectionAndDelete(int before, int after) {
     if (before == 0)
       break;
     ++before;
+    // TODO(editing-dev): The use of UpdateStyleAndLayout
+    // needs to be audited.  see http://crbug.com/590369 for more details.
+    GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   } while (
       GetFrame().Selection().ComputeVisibleSelectionInDOMTree().Start() ==
           GetFrame().Selection().ComputeVisibleSelectionInDOMTree().End() &&
@@ -1679,8 +1676,9 @@ WebTextInputInfo InputMethodController::TextInputInfo() const {
       GetDocument().Lifecycle());
 
   if (const Node* start_node = first_range.StartPosition().AnchorNode()) {
-    if (start_node->GetComputedStyle() &&
-        !start_node->GetComputedStyle()->IsHorizontalWritingMode()) {
+    const ComputedStyle* style =
+        start_node->GetComputedStyleForElementOrLayoutObject();
+    if (style && !style->IsHorizontalWritingMode()) {
       info.flags |= kWebTextInputFlagVertical;
     }
   }
@@ -1722,17 +1720,19 @@ int InputMethodController::TextInputFlags() const {
 
   const AtomicString& autocomplete =
       element->FastGetAttribute(html_names::kAutocompleteAttr);
-  if (autocomplete == "on")
+  if (autocomplete == keywords::kOn) {
     flags |= kWebTextInputFlagAutocompleteOn;
-  else if (autocomplete == "off")
+  } else if (autocomplete == keywords::kOff) {
     flags |= kWebTextInputFlagAutocompleteOff;
+  }
 
   const AtomicString& autocorrect =
       element->FastGetAttribute(html_names::kAutocorrectAttr);
-  if (autocorrect == "on")
+  if (autocorrect == keywords::kOn) {
     flags |= kWebTextInputFlagAutocorrectOn;
-  else if (autocorrect == "off")
+  } else if (autocorrect == keywords::kOff) {
     flags |= kWebTextInputFlagAutocorrectOff;
+  }
 
   SpellcheckAttributeState spellcheck = element->GetSpellcheckAttributeState();
   if (spellcheck == kSpellcheckAttributeTrue)

@@ -52,6 +52,7 @@ static_library("safe_browsing") {
     "//components/safe_browsing/content/browser",
     "//components/safe_browsing/content/browser:client_side_detection",
     "//components/safe_browsing/content/browser:client_side_detection_service",
+    "//components/safe_browsing/content/browser/notification_content_detection:notification_content_detection",
     "//components/safe_browsing/content/browser/triggers:suspicious_site_trigger",
     "//components/safe_browsing/content/browser/web_ui",
     "//components/safe_browsing/core/browser",
@@ -91,6 +92,14 @@ static_library("safe_browsing") {
     allow_circular_includes_from += [ "//chrome/browser/ash/file_manager" ]
   }
 
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    deps += [
+      "//chrome/browser/ui/browser_window",
+      "//chrome/browser/ui/toasts:toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
+    ]
+  }
+
   if (safe_browsing_mode != 0) {
     # "Safe Browsing Basic" files used for safe browsing in full mode
     # (safe_browsing=1) and mobile (=2)
@@ -123,10 +132,14 @@ static_library("safe_browsing") {
       "delayed_warning_navigation_throttle.h",
       "download_protection/download_protection_util.cc",
       "download_protection/download_protection_util.h",
+      "external_app_redirect_checking.cc",
+      "external_app_redirect_checking.h",
       "network_context_service.cc",
       "network_context_service.h",
       "network_context_service_factory.cc",
       "network_context_service_factory.h",
+      "notification_content_detection_service_factory.cc",
+      "notification_content_detection_service_factory.h",
       "phishy_interaction_tracker.cc",
       "phishy_interaction_tracker.h",
       "safe_browsing_navigation_observer_manager_factory.cc",
@@ -159,8 +172,10 @@ static_library("safe_browsing") {
       "//build:branding_buildflags",
       "//build:chromeos_buildflags",
       "//chrome/browser:browser_process",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/download",
       "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/safety_hub",
       "//chrome/common/safe_browsing:proto",
       "//components/autofill/core/browser",
       "//components/content_settings/core/browser",
@@ -205,6 +220,8 @@ static_library("safe_browsing") {
       "//content/public/browser",
       "//services/preferences/public/mojom:mojom",
     ]
+
+    allow_circular_includes_from += [ "//chrome/browser/ui/safety_hub" ]
     if (safe_browsing_mode == 1) {
       # "Safe Browsing Full" files in addition to the "basic" ones to use for
       # full safe browsing. This has some in common with "mobile."
@@ -388,6 +405,7 @@ static_library("safe_browsing") {
         "//build:chromeos_buildflags",
         "//chrome/app/vector_icons:vector_icons",
         "//chrome/browser/enterprise/connectors/analysis:features",
+        "//chrome/browser/ui/hats",
         "//chrome/common",
         "//chrome/common/safe_browsing:archive_analyzer_results",
         "//chrome/common/safe_browsing:binary_feature_extractor",
@@ -402,6 +420,7 @@ static_library("safe_browsing") {
         "//components/keyed_service/content",
         "//components/language/core/common",
         "//components/policy/core/browser",
+        "//components/policy/core/common:common_constants",
         "//components/prefs",
         "//components/safe_browsing/content/common:interfaces",
         "//components/safe_browsing/core/browser:verdict_cache_manager",
@@ -491,6 +510,7 @@ source_set("verdict_cache_manager_factory") {
 
   deps = [
     "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sync",
@@ -568,6 +588,7 @@ source_set("test_support") {
     deps = [
       ":safe_browsing",
       "//chrome/browser:browser",
+      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:ui",
       "//chrome/common",

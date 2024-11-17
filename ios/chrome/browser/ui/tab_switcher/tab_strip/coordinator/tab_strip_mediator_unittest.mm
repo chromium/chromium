@@ -13,9 +13,9 @@
 #import "components/favicon/core/favicon_url.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/saved_tab_groups/mock_tab_group_sync_service.h"
-#import "components/saved_tab_groups/saved_tab_group.h"
-#import "components/saved_tab_groups/saved_tab_group_tab.h"
+#import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#import "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
@@ -53,6 +53,7 @@ using tab_groups::SavedTabGroup;
 using tab_groups::SavedTabGroupTab;
 using tab_groups::TabGroupId;
 using testing::_;
+using testing::Eq;
 using testing::Return;
 
 namespace {
@@ -96,24 +97,22 @@ class TabStripMediatorTest : public PlatformTest {
   TabStripMediatorTest() {
     feature_list_.InitWithFeatures(
         {kTabGroupsIPad, kModernTabStrip, kTabGroupSync}, {});
-    TestChromeBrowserState::Builder browser_state_builder;
-    browser_state_builder.AddTestingFactory(
+    TestProfileIOS::Builder profile_builder;
+    profile_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
-    browser_state_builder.AddTestingFactory(
+    profile_builder.AddTestingFactory(
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
 
     tab_group_sync_service_ = std::make_unique<
         ::testing::NiceMock<tab_groups::MockTabGroupSyncService>>();
 
-    browser_state_ = std::move(browser_state_builder).Build();
+    profile_ = std::move(profile_builder).Build();
     browser_ = std::make_unique<TestBrowser>(
-        browser_state_.get(),
-        std::make_unique<TabStripFakeWebStateListDelegate>());
+        profile_.get(), std::make_unique<TabStripFakeWebStateListDelegate>());
     other_browser_ = std::make_unique<TestBrowser>(
-        browser_state_.get(),
-        std::make_unique<TabStripFakeWebStateListDelegate>());
+        profile_.get(), std::make_unique<TabStripFakeWebStateListDelegate>());
     web_state_list_ = browser_->GetWebStateList();
 
     SnapshotBrowserAgent::CreateForBrowser(other_browser_.get());
@@ -128,7 +127,7 @@ class TabStripMediatorTest : public PlatformTest {
 
   void InitializeMediator() {
     BrowserList* browser_list =
-        BrowserListFactory::GetForBrowserState(browser_state_.get());
+        BrowserListFactory::GetForProfile(profile_.get());
     browser_list->AddBrowser(browser_.get());
     browser_list->AddBrowser(other_browser_.get());
 
@@ -136,7 +135,7 @@ class TabStripMediatorTest : public PlatformTest {
         [[TabStripMediator alloc] initWithConsumer:consumer_
                                tabGroupSyncService:tab_group_sync_service_.get()
                                        browserList:browser_list];
-    mediator_.browserState = browser_state_.get();
+    mediator_.profile = profile_.get();
     mediator_.webStateList = web_state_list_;
     mediator_.browser = browser_.get();
     mediator_.tabStripHandler = tab_strip_handler_;
@@ -144,11 +143,11 @@ class TabStripMediatorTest : public PlatformTest {
 
   void AddWebState(bool pinned = false) {
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     favicon::WebFaviconDriver::CreateForWebState(
         web_state.get(),
-        ios::FaviconServiceFactory::GetForBrowserState(
-            browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+        ios::FaviconServiceFactory::GetForProfile(
+            profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
 
     web_state_list_->InsertWebState(
         std::move(web_state),
@@ -172,7 +171,7 @@ class TabStripMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   FakeTabStripHandler* tab_strip_handler_;
   base::test::ScopedFeatureList feature_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   std::unique_ptr<TestBrowser> other_browser_;
   raw_ptr<WebStateList> web_state_list_;
@@ -263,11 +262,10 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
   for (int i = 0; i < web_state_list_->count(); ++i) {
     web::FakeWebState* web_state =
         static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(i));
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     favicon::WebFaviconDriver::CreateForWebState(
-        web_state,
-        ios::FaviconServiceFactory::GetForBrowserState(
-            browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+        web_state, ios::FaviconServiceFactory::GetForProfile(
+                       profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
   }
 
   InitializeMediator();
@@ -445,11 +443,10 @@ TEST_F(TabStripMediatorTest, ItemParentsUpdated) {
   for (int i = 0; i < web_state_list_->count(); ++i) {
     web::FakeWebState* web_state =
         static_cast<web::FakeWebState*>(web_state_list_->GetWebStateAt(i));
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     favicon::WebFaviconDriver::CreateForWebState(
-        web_state,
-        ios::FaviconServiceFactory::GetForBrowserState(
-            browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+        web_state, ios::FaviconServiceFactory::GetForProfile(
+                       profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
   }
 
   InitializeMediator();
@@ -649,11 +646,10 @@ TEST_F(TabStripMediatorTest, AddTab) {
             consumer_.selectedItem.identifier);
 
   auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetBrowserState(browser_state_.get());
+  web_state->SetBrowserState(profile_.get());
   favicon::WebFaviconDriver::CreateForWebState(
-      web_state.get(),
-      ios::FaviconServiceFactory::GetForBrowserState(
-          browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
+      web_state.get(), ios::FaviconServiceFactory::GetForProfile(
+                           profile_.get(), ServiceAccessType::IMPLICIT_ACCESS));
 
   web_state_list_->InsertWebState(std::move(web_state),
                                   WebStateList::InsertionParams::AtIndex(1));
@@ -733,7 +729,7 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptPinned) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "a b | c d e f* [ 1 g h ]", browser_->GetBrowserState()));
+      "a b | c d e f* [ 1 g h ]", browser_->GetProfile()));
   web::WebState* web_state_to_keep = builder.GetWebStateForIdentifier('b');
 
   InitializeMediator();
@@ -743,7 +739,7 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptPinned) {
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(tab_group_id))
       .WillOnce(Return(TestSavedGroup()));
   EXPECT_CALL(*tab_group_sync_service_,
-              RemoveLocalTabGroupMapping(tab_group_id));
+              RemoveLocalTabGroupMapping(tab_group_id, _));
   EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
 
   TabSwitcherItem* item =
@@ -758,7 +754,7 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptNonActive) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "a b | c d e f* [ 1 g h ]", browser_->GetBrowserState()));
+      "a b | c d e f* [ 1 g h ]", browser_->GetProfile()));
   web::WebState* web_state_to_keep = builder.GetWebStateForIdentifier('d');
 
   InitializeMediator();
@@ -768,7 +764,7 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptNonActive) {
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(tab_group_id))
       .WillOnce(Return(TestSavedGroup()));
   EXPECT_CALL(*tab_group_sync_service_,
-              RemoveLocalTabGroupMapping(tab_group_id));
+              RemoveLocalTabGroupMapping(tab_group_id, _));
   EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
 
   TabSwitcherItem* item =
@@ -783,7 +779,7 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptActive) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "a b | c d e f* [ 1 g h ]", browser_->GetBrowserState()));
+      "a b | c d e f* [ 1 g h ]", browser_->GetProfile()));
   web::WebState* web_state_to_keep = builder.GetWebStateForIdentifier('f');
 
   InitializeMediator();
@@ -793,7 +789,7 @@ TEST_F(TabStripMediatorTest, CloseAllNonPinnedTabsExceptActive) {
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(tab_group_id))
       .WillOnce(Return(TestSavedGroup()));
   EXPECT_CALL(*tab_group_sync_service_,
-              RemoveLocalTabGroupMapping(tab_group_id));
+              RemoveLocalTabGroupMapping(tab_group_id, _));
   EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
 
   TabSwitcherItem* item =
@@ -808,7 +804,7 @@ TEST_F(TabStripMediatorTest, CloseTabsExceptGroupedTab) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "a b | c d e f* [ 1 g h ]", browser_->GetBrowserState()));
+      "a b | c d e f* [ 1 g h ]", browser_->GetProfile()));
   web::WebState* web_state_to_keep = builder.GetWebStateForIdentifier('g');
 
   InitializeMediator();
@@ -817,7 +813,7 @@ TEST_F(TabStripMediatorTest, CloseTabsExceptGroupedTab) {
       builder.GetTabGroupForIdentifier('1')->tab_group_id();
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(tab_group_id)).Times(0);
   EXPECT_CALL(*tab_group_sync_service_,
-              RemoveLocalTabGroupMapping(tab_group_id))
+              RemoveLocalTabGroupMapping(tab_group_id, _))
       .Times(0);
   EXPECT_CALL(*tab_group_sync_service_, RemoveGroup(tab_group_id)).Times(0);
 
@@ -1093,8 +1089,8 @@ TEST_F(TabStripMediatorTest, DropInternalURL) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b c ", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
+                                                       browser_->GetProfile()));
 
   InitializeMediator();
 
@@ -1121,8 +1117,8 @@ TEST_F(TabStripMediatorTest, DropExternalURL) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b c ", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
+                                                       browser_->GetProfile()));
 
   InitializeMediator();
 
@@ -1151,8 +1147,8 @@ TEST_F(TabStripMediatorTest, DropTab) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b c ", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
+                                                       browser_->GetProfile()));
 
   InitializeMediator();
 
@@ -1160,7 +1156,7 @@ TEST_F(TabStripMediatorTest, DropTab) {
       web_state_list->GetWebStateAt(2)->GetUniqueIdentifier();
 
   id local_object = [[TabInfo alloc] initWithTabID:web_state_id
-                                      browserState:browser_->GetBrowserState()];
+                                           profile:browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -1178,8 +1174,8 @@ TEST_F(TabStripMediatorTest, DropLastTabOfGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b [ 0 c ]", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b [ 0 c ]",
+                                                       browser_->GetProfile()));
 
   InitializeMediator();
 
@@ -1191,13 +1187,13 @@ TEST_F(TabStripMediatorTest, DropLastTabOfGroup) {
 
   const base::Uuid saved_id = base::Uuid::GenerateRandomV4();
   SavedTabGroup saved_group = TestSavedGroup(saved_id);
-  EXPECT_CALL(*tab_group_sync_service_, RemoveLocalTabGroupMapping(group_id))
+  EXPECT_CALL(*tab_group_sync_service_, RemoveLocalTabGroupMapping(group_id, _))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(group_id))
       .WillRepeatedly(Return(saved_group));
 
   id local_object = [[TabInfo alloc] initWithTabID:web_state_id
-                                      browserState:browser_->GetBrowserState()];
+                                           profile:browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -1225,13 +1221,13 @@ TEST_F(TabStripMediatorTest, DropLastTabOfGroupDifferentBrowser) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b",
+                                                       browser_->GetProfile()));
 
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
   WebStateListBuilderFromDescription other_builder(other_web_state_list);
   ASSERT_TRUE(other_builder.BuildWebStateListFromDescription(
-      "| d* [ 0 e ] f", other_browser_->GetBrowserState()));
+      "| d* [ 0 e ] f", other_browser_->GetProfile()));
 
   InitializeMediator();
 
@@ -1243,13 +1239,13 @@ TEST_F(TabStripMediatorTest, DropLastTabOfGroupDifferentBrowser) {
 
   const base::Uuid saved_id = base::Uuid::GenerateRandomV4();
   SavedTabGroup saved_group = TestSavedGroup(saved_id);
-  EXPECT_CALL(*tab_group_sync_service_, RemoveLocalTabGroupMapping(group_id))
+  EXPECT_CALL(*tab_group_sync_service_, RemoveLocalTabGroupMapping(group_id, _))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_, GetGroup(group_id))
       .WillRepeatedly(Return(saved_group));
 
   id local_object = [[TabInfo alloc] initWithTabID:web_state_id
-                                      browserState:browser_->GetBrowserState()];
+                                           profile:browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -1279,8 +1275,8 @@ TEST_F(TabStripMediatorTest, DropTabOutOfGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* [ 0 b c ]", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* [ 0 b c ]",
+                                                       browser_->GetProfile()));
 
   InitializeMediator();
 
@@ -1295,7 +1291,7 @@ TEST_F(TabStripMediatorTest, DropTabOutOfGroup) {
       .WillRepeatedly(Return(saved_group));
 
   id local_object = [[TabInfo alloc] initWithTabID:web_state_id
-                                      browserState:browser_->GetBrowserState()];
+                                           profile:browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -1326,8 +1322,8 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowser) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b c ", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
+                                                       browser_->GetProfile()));
 
   const GURL new_url = GURL("https://cancelled_url.com");
   const std::u16string new_title = u"cancelled title";
@@ -1353,15 +1349,15 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowser) {
 
   // Make sure the service is updated with the new data.
   EXPECT_CALL(*tab_group_sync_service_,
-              UpdateLocalTabGroupMapping(saved_id, local_id))
+              UpdateLocalTabGroupMapping(saved_id, local_id, _))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_,
               UpdateLocalTabId(local_id, saved_tab.saved_tab_guid(),
                                web_state_id.identifier()))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_,
-              UpdateTab(local_id, web_state_id.identifier(),
-                        TabTitleAndURLEq(new_title, new_url)))
+              NavigateTab(local_id, web_state_id.identifier(), Eq(new_url),
+                          Eq(new_title)))
       .Times(1);
 
   [mediator_ cancelMoveForTab:web_state_id
@@ -1384,8 +1380,8 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserModifiedGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b c ", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
+                                                       browser_->GetProfile()));
 
   web::WebStateID web_state_id =
       web_state_list->GetWebStateAt(1)->GetUniqueIdentifier();
@@ -1408,10 +1404,10 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserModifiedGroup) {
       .WillOnce(Return(saved_group));
 
   // Make sure that no updates are done to the service.
-  EXPECT_CALL(*tab_group_sync_service_, UpdateLocalTabGroupMapping(_, _))
+  EXPECT_CALL(*tab_group_sync_service_, UpdateLocalTabGroupMapping(_, _, _))
       .Times(0);
   EXPECT_CALL(*tab_group_sync_service_, UpdateLocalTabId(_, _, _)).Times(0);
-  EXPECT_CALL(*tab_group_sync_service_, UpdateTab(_, _, _)).Times(0);
+  EXPECT_CALL(*tab_group_sync_service_, NavigateTab(_, _, _, _)).Times(0);
 
   [mediator_ cancelMoveForTab:web_state_id
                 originBrowser:browser_.get()
@@ -1431,8 +1427,8 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserLargeIndex) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b c ", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
+                                                       browser_->GetProfile()));
 
   const GURL new_url = GURL("https://cancelled_url.com");
   const std::u16string new_title = u"cancelled title";
@@ -1458,15 +1454,15 @@ TEST_F(TabStripMediatorTest, CancelTabMoveSameBrowserLargeIndex) {
 
   // Make sure the service is udpated with the new data.
   EXPECT_CALL(*tab_group_sync_service_,
-              UpdateLocalTabGroupMapping(saved_id, local_id))
+              UpdateLocalTabGroupMapping(saved_id, local_id, _))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_,
               UpdateLocalTabId(local_id, saved_tab.saved_tab_guid(),
                                web_state_id.identifier()))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_,
-              UpdateTab(local_id, web_state_id.identifier(),
-                        TabTitleAndURLEq(new_title, new_url)))
+              NavigateTab(local_id, web_state_id.identifier(), Eq(new_url),
+                          Eq(new_title)))
       .Times(1);
 
   // Cancel the move to a position that is larger than the number of web states.
@@ -1489,13 +1485,13 @@ TEST_F(TabStripMediatorTest, CancelTabMoveDifferentBrowser) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "| a* b c ", browser_->GetBrowserState()));
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription("| a* b c ",
+                                                       browser_->GetProfile()));
 
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
   WebStateListBuilderFromDescription other_builder(other_web_state_list);
   ASSERT_TRUE(other_builder.BuildWebStateListFromDescription(
-      "| [ 0 a* b ] c d e", other_browser_->GetBrowserState()));
+      "| [ 0 a* b ] c d e", other_browser_->GetProfile()));
 
   const GURL new_url = GURL("https://cancelled_url.com");
   const std::u16string new_title = u"cancelled title";
@@ -1521,15 +1517,15 @@ TEST_F(TabStripMediatorTest, CancelTabMoveDifferentBrowser) {
 
   // Make sure the service is udpated with the new data.
   EXPECT_CALL(*tab_group_sync_service_,
-              UpdateLocalTabGroupMapping(saved_id, local_id))
+              UpdateLocalTabGroupMapping(saved_id, local_id, _))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_,
               UpdateLocalTabId(local_id, saved_tab.saved_tab_guid(),
                                web_state_id.identifier()))
       .Times(1);
   EXPECT_CALL(*tab_group_sync_service_,
-              UpdateTab(local_id, web_state_id.identifier(),
-                        TabTitleAndURLEq(new_title, new_url)))
+              NavigateTab(local_id, web_state_id.identifier(), Eq(new_url),
+                          Eq(new_title)))
       .Times(1);
 
   // Cancel the move to a position that is larger than the number of web states.

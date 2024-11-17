@@ -7,7 +7,6 @@ module crosapi.mojom;
 // Each pixel is represented by 4 bytes [RGBA].
 // NOTE: For UI images prefer gfx.mojom.ImageSkia, which supports high-DPI.
 // TODO(crbug.com/40160600): This struct is unused and should be deleted.
-[Stable]
 struct Bitmap {
   uint32 width@0;
   uint32 height@1;

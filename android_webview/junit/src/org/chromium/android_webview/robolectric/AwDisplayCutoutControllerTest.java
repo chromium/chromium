@@ -92,7 +92,7 @@ public class AwDisplayCutoutControllerTest {
                             public Void answer(InvocationOnMock invocation) throws Throwable {
                                 mListener =
                                         (View.OnApplyWindowInsetsListener)
-                                                (invocation.getArguments()[0]);
+                                                invocation.getArguments()[0];
                                 return null;
                             }
                         })

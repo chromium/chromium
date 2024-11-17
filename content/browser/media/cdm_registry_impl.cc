@@ -14,12 +14,14 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "base/task/bind_post_task.h"
+#include "base/types/expected.h"
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/common/cdm_info.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "media/base/cdm_capability.h"
 #include "media/base/key_system_capability.h"
 #include "media/base/key_system_names.h"
 #include "media/base/key_systems.h"
@@ -117,6 +119,27 @@ void ReportHardwareSecureCapabilityStatusUMA(
       }
     }
   }
+}
+
+// Reports the status of the hardware secure capability query. Only reported
+// once per browser session per `key_system`.
+void ReportHardwareSecureCapabilityQueryStatusUMA(
+    const std::string& key_system,
+    media::CdmCapabilityQueryStatus capability_query_status) {
+  // Use a set to track whether the UMA has been reported for `key_system` to
+  // make sure we only report once.
+  static base::NoDestructor<std::set<std::string>> reported_key_systems;
+  if (reported_key_systems->count(key_system)) {
+    return;
+  }
+
+  reported_key_systems->insert(key_system);
+
+  auto uma_prefix =
+      "Media.EME." +
+      media::GetKeySystemNameForUMA(key_system, /*use_hw_secure_codecs=*/true);
+  base::UmaHistogramEnumeration(uma_prefix + ".CdmCapabilityQueryStatus",
+                                capability_query_status);
 }
 
 bool IsEnabled(CdmInfo::Status status) {
@@ -518,7 +541,13 @@ void CdmRegistryImpl::AttemptToFinalizeKeySystemCapability(
 
   const auto [capability, status] = GetCapability(key_system, robustness);
   if (status != CdmInfo::Status::kUninitialized) {
-    FinalizeCapability(key_system, robustness, capability, status);
+    media::CdmCapabilityOrStatus cdm_capability_or_status =
+        base::unexpected(media::CdmCapabilityQueryStatus::kUnknown);
+    if (capability.has_value()) {
+      cdm_capability_or_status = std::move(capability.value());
+    }
+    FinalizeCapability(key_system, robustness, cdm_capability_or_status,
+                       status);
     return;
   }
 
@@ -558,26 +587,37 @@ void CdmRegistryImpl::LazyInitializeCapability(
                                            std::move(cdm_capability_cb));
   } else {
     // kSoftwareSecure should have been determined from the manifest.
-    std::move(cdm_capability_cb).Run(std::nullopt);
+    std::move(cdm_capability_cb)
+        .Run(base::unexpected(media::CdmCapabilityQueryStatus::kUnknown));
   }
 #elif BUILDFLAG(IS_ANDROID)
   GetAndroidCdmCapability(key_system, robustness, std::move(cdm_capability_cb));
 #else
-  std::move(cdm_capability_cb).Run(std::nullopt);
-#endif
+  std::move(cdm_capability_cb)
+      .Run(base::unexpected(media::CdmCapabilityQueryStatus::kUnknown));
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void CdmRegistryImpl::OnCapabilityInitialized(
     const std::string& key_system,
     const CdmInfo::Robustness robustness,
-    std::optional<media::CdmCapability> cdm_capability) {
+    media::CdmCapabilityOrStatus cdm_capability_or_status) {
   DVLOG(1) << __func__ << ": key_system=" << key_system
-           << ", robustness=" << robustness
-           << ", cdm_capability=" << (cdm_capability ? "yes" : "no");
+           << ", robustness=" << robustness << ", cdm_capability_or_status="
+           << (cdm_capability_or_status.has_value() ? "yes" : "no");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_lazy_initializations_.count({key_system, robustness}));
 
-  FinalizeCapability(key_system, robustness, std::move(cdm_capability),
+  // Report the status of the hardware secure capability query.
+  if (robustness == CdmInfo::Robustness::kHardwareSecure) {
+    ReportHardwareSecureCapabilityQueryStatusUMA(
+        key_system, cdm_capability_or_status.has_value()
+                        ? media::CdmCapabilityQueryStatus::kSuccess
+                        : cdm_capability_or_status.error());
+  }
+
+  FinalizeCapability(key_system, robustness,
+                     std::move(cdm_capability_or_status),
                      CdmInfo::Status::kEnabled);
 
   pending_lazy_initializations_.erase({key_system, robustness});
@@ -588,7 +628,7 @@ void CdmRegistryImpl::OnCapabilityInitialized(
 void CdmRegistryImpl::FinalizeCapability(
     const std::string& key_system,
     const CdmInfo::Robustness robustness,
-    std::optional<media::CdmCapability> cdm_capability,
+    media::CdmCapabilityOrStatus cdm_capability_or_status,
     CdmInfo::Status status) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -614,7 +654,13 @@ void CdmRegistryImpl::FinalizeCapability(
   }
 
   itr->status = status;
-  itr->capability = cdm_capability;
+  if (cdm_capability_or_status.has_value()) {
+    itr->capability = std::move(cdm_capability_or_status).value();
+    itr->capability_query_status = std::nullopt;
+  } else {
+    itr->capability = std::nullopt;
+    itr->capability_query_status = std::move(cdm_capability_or_status).error();
+  }
 #if BUILDFLAG(IS_ANDROID)
   // Querying for the CDM version requires creating a MediaDrm object, so
   // delaying it until the capability is determined.
@@ -659,23 +705,30 @@ KeySystemCapabilities CdmRegistryImpl::GetKeySystemCapabilities() {
   std::set<std::string> supported_key_systems = GetSupportedKeySystems();
   for (const auto& key_system : supported_key_systems) {
     CdmInfo::Status status;
-    media::KeySystemCapability capability;
 
     // Software secure capability.
-    std::tie(capability.sw_secure_capability, status) =
+    std::optional<media::CdmCapability> sw_cdm_capability;
+    std::tie(sw_cdm_capability, status) =
         GetFinalCapability(key_system, CdmInfo::Robustness::kSoftwareSecure);
-    ReportSoftwareSecureCdmAvailableUMA(
-        key_system, capability.sw_secure_capability != std::nullopt);
+    ReportSoftwareSecureCdmAvailableUMA(key_system,
+                                        sw_cdm_capability != std::nullopt);
 
     // Hardware secure capability.
-    std::tie(capability.hw_secure_capability, status) =
+    std::optional<media::CdmCapability> hw_cdm_capability;
+    std::tie(hw_cdm_capability, status) =
         GetFinalCapability(key_system, CdmInfo::Robustness::kHardwareSecure);
     ReportHardwareSecureCapabilityStatusUMA(
-        key_system, status,
-        base::OptionalToPtr(capability.hw_secure_capability));
+        key_system, status, base::OptionalToPtr(hw_cdm_capability));
 
-    if (capability.sw_secure_capability || capability.hw_secure_capability)
-      key_system_capabilities[key_system] = std::move(capability);
+    if (sw_cdm_capability || hw_cdm_capability) {
+      key_system_capabilities[key_system] = media::KeySystemCapability(
+          sw_cdm_capability.has_value()
+              ? media::CdmCapabilityOrStatus(sw_cdm_capability.value())
+              : base::unexpected(media::CdmCapabilityQueryStatus::kUnknown),
+          hw_cdm_capability.has_value()
+              ? media::CdmCapabilityOrStatus(hw_cdm_capability.value())
+              : base::unexpected(media::CdmCapabilityQueryStatus::kUnknown));
+    }
   }
 
   return key_system_capabilities;

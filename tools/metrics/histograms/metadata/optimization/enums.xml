@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
       label="Base model spec was invalid, so adaptation model cannot be
              fetched"/>
   <int value="3" label="Adaptation model was not available"/>
-  <int value="4" label="The recieved adaptation model was invalid"/>
+  <int value="4" label="The received adaptation model was invalid"/>
   <int value="5"
       label="The received adaptation model was incompatible with the base
              model"/>

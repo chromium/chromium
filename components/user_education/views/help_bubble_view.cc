@@ -18,7 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_event_relay.h"
 #include "components/variations/variations_associated_data.h"
@@ -778,7 +778,8 @@ void HelpBubbleView::OnWidgetActivationChanged(views::Widget* widget,
   if (widget == GetWidget()) {
     if (active) {
       ++activate_count_;
-      auto_close_timer_.AbandonAndStop();
+      auto_close_timer_.Stop();
+      widget->UpdateAccessibleNameForRootView();
     } else {
       MaybeStartAutoCloseTimer();
     }

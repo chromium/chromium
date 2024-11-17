@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "content/browser/web_contents/web_contents_android.h"
@@ -74,9 +73,9 @@ class MediaSessionAndroid final
   friend class WebContentsObserverProxy;
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  // The linked Java object. The strong reference is hold by Java WebContensImpl
-  // to avoid introducing a new GC root.
-  JavaObjectWeakGlobalRef j_media_session_;
+  // The linked Java object.
+  base::android::ScopedJavaGlobalRef<jobject> j_media_session_;
+
   // WebContentsAndroid corresponding to the Java WebContentsImpl that holds a
   // strong reference to |j_media_session_|.
   raw_ptr<WebContentsAndroid, DanglingUntriaged> web_contents_android_;

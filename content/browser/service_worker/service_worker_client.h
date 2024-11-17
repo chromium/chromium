@@ -169,6 +169,14 @@ class CONTENT_EXPORT ServiceWorkerClient final
       const std::optional<url::Origin>& top_frame_origin,
       const blink::StorageKey& storage_key);
 
+  // The storage key to be used for `UpdateUrls()`.
+  // For other purposes, use `key()` instead.
+  // `isolation_info_from_interceptor` is
+  // `isolation_info_from_interceptor::isolation_info_`.
+  blink::StorageKey CalculateStorageKeyForUpdateUrls(
+      const GURL& url,
+      const net::IsolationInfo& isolation_info_from_interceptor) const;
+
   // For service worker clients. Makes this client be controlled by
   // |registration|'s active worker, or makes this client be not
   // controlled if |registration| is null. If |notify_controllerchange| is true,
@@ -209,8 +217,9 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   // The StorageKey for this context. Any service worker registrations/versions
   // that are persisted from this context (e.x., via `register()`) are
-  // associated with this particular StorageKey. Note: This doesn't hold true
-  // when "disable-web-security" is active, see
+  // associated with this particular StorageKey. Corresponds to
+  // https://storage.spec.whatwg.org/#obtain-a-storage-key.
+  // Note: This doesn't hold true when "disable-web-security" is active, see
   // `service_worker_security_utils::GetCorrectStorageKeyForWebSecurityState()`
   // and its usages for more details.
   const blink::StorageKey& key() const { return key_; }

@@ -10,7 +10,7 @@ import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
 // See |webapps::InstallResultCode|.
-[Stable, Extensible]
+[Extensible]
 enum WebAppInstallResultCode {
   kSuccessNewInstall,
   kSuccessAlreadyInstalled,
@@ -44,7 +44,7 @@ enum WebAppInstallResultCode {
 };
 
 // See |webapps::UninstallResultCode|.
-[Stable, Extensible]
+[Extensible]
 enum WebAppUninstallResultCode {
   kAppRemoved,
   kNoAppToUninstall,
@@ -57,7 +57,6 @@ enum WebAppUninstallResultCode {
 
 // A subset of |WebAppInstallInfo| necessary to install a web app originated in
 // ARC. See |web_app::WebAppInstallManager::InstallWebAppFromInfo|.
-[Stable]
 struct ArcWebAppInstallInfo {
   mojo_base.mojom.String16 title@0;
   url.mojom.Url start_url@1;
@@ -68,7 +67,7 @@ struct ArcWebAppInstallInfo {
 };
 
 // Next version: 3
-[Stable, Extensible, RenamedFrom="crosapi.mojom.PreloadWebAppInstallSource"]
+[Extensible, RenamedFrom="crosapi.mojom.PreloadWebAppInstallSource"]
 enum WebAppInstallSource {
   // The app is preloaded by the device OEM.
   [Default] kOemPreload,
@@ -82,7 +81,7 @@ enum WebAppInstallSource {
 
 // The set of information necessary to install a web app in Lacros using
 // verified manifest data.
-[Stable, RenamedFrom="crosapi.mojom.PreloadWebAppInstallInfo"]
+[RenamedFrom="crosapi.mojom.PreloadWebAppInstallInfo"]
 struct WebAppVerifiedManifestInstallInfo {
   // The url from which the web app is installed.
   url.mojom.Url document_url@0;

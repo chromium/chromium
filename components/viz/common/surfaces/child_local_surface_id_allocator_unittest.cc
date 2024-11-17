@@ -36,7 +36,7 @@ class ChildLocalSurfaceIdAllocatorTest : public testing::Test {
   ChildLocalSurfaceIdAllocatorTest& operator=(
       const ChildLocalSurfaceIdAllocatorTest&) = delete;
 
-  ~ChildLocalSurfaceIdAllocatorTest() override {}
+  ~ChildLocalSurfaceIdAllocatorTest() override = default;
 
   ChildLocalSurfaceIdAllocator& allocator() { return *allocator_.get(); }
 

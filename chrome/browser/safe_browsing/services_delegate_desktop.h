@@ -22,7 +22,7 @@ struct V4ProtocolConfig;
 // ServicesDelegate::Create().
 class ServicesDelegateDesktop : public ServicesDelegate {
  public:
-  ServicesDelegateDesktop(SafeBrowsingService* safe_browsing_service,
+  ServicesDelegateDesktop(SafeBrowsingServiceImpl* safe_browsing_service,
                           ServicesDelegate::ServicesCreator* services_creator);
 
   ServicesDelegateDesktop(const ServicesDelegateDesktop&) = delete;
@@ -64,8 +64,6 @@ class ServicesDelegateDesktop : public ServicesDelegate {
   scoped_refptr<SafeBrowsingDatabaseManager> CreateDatabaseManager();
   DownloadProtectionService* CreateDownloadProtectionService();
   IncidentReportingService* CreateIncidentReportingService();
-
-  static void UpdateSyntheticFieldTrial(HashPrefixMap::MigrateResult result);
 
   std::unique_ptr<DownloadProtectionService> download_service_;
   std::unique_ptr<IncidentReportingService> incident_service_;

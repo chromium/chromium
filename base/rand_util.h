@@ -32,12 +32,6 @@ class TimeDelta;
 
 namespace internal {
 
-#if BUILDFLAG(IS_ANDROID)
-// Sets the implementation of RandBytes according to the corresponding
-// base::Feature. Thread safe: allows to switch while RandBytes() is in use.
-void ConfigureRandBytesFieldTrial();
-#endif
-
 #if !BUILDFLAG(IS_NACL)
 void ConfigureBoringSSLBackedRandBytesFieldTrial();
 #endif

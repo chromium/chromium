@@ -10,7 +10,7 @@ TestPaymentApp::TestPaymentApp(const std::string& method)
     : PaymentApp(/*icon_resource_id=*/0, PaymentApp::Type::SERVICE_WORKER_APP),
       method_(method) {}
 
-TestPaymentApp::~TestPaymentApp() {}
+TestPaymentApp::~TestPaymentApp() = default;
 
 void TestPaymentApp::InvokePaymentApp(
     base::WeakPtr<PaymentApp::Delegate> delegate) {

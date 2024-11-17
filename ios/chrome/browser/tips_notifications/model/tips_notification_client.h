@@ -130,6 +130,10 @@ class TipsNotificationClient : public PushNotificationClient {
   // Returns true if Tips notifications are permitted.
   bool IsPermitted();
 
+  // Returns true if the app has provisional notification authorization and the
+  // IOSReactivationNotifications feature is enabled.
+  bool CanSendReactivation();
+
   // Returns true if the Dismiss Limit has been reached.
   bool DismissLimitReached();
 
@@ -137,11 +141,21 @@ class TipsNotificationClient : public PushNotificationClient {
   // changes.
   void OnPermittedPrefChanged(const std::string& name);
 
+  // Called when the pref that stores the app's notification authorization
+  // status changes.
+  void OnAuthPrefChanged(const std::string& name);
+
   // Classifies the user and sets the `user_type`, if possible.
   void ClassifyUser();
 
+  // Returns whether any identities/accounts exist on the device.
+  bool HasIdentitiesOnDevice(ProfileIOS* profile) const;
+
   // Stores whether Tips notifications are permitted.
   bool permitted_ = false;
+
+  // Stores the local state pref service.
+  raw_ptr<PrefService> local_state_;
 
   // Stores the user's classification.
   TipsNotificationUserType user_type_;

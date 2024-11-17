@@ -16,18 +16,22 @@
 #include "android_webview/browser/aw_context_permissions_delegate.h"
 #include "android_webview/browser/aw_permission_manager.h"
 #include "android_webview/browser/aw_ssl_host_state_delegate.h"
+#include "android_webview/browser/file_system_access/aw_file_system_access_permission_context.h"
 #include "android_webview/browser/network_service/aw_proxy_config_monitor.h"
 #include "base/android/jni_weak_ref.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/simple_factory_key.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/visitedlink/browser/visitedlink_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/zoom_level_delegate.h"
+#include "net/http/http_request_headers.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h"
@@ -112,6 +116,13 @@ class AwBrowserContext : public content::BrowserContext,
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& io_thread_client);
 
+  void StartPrefetchRequest(
+      JNIEnv* env,
+      const std::string& url,
+      const base::android::JavaParamRef<jobject>& prefetch_params,
+      const base::android::JavaParamRef<jobject>& callback,
+      const base::android::JavaParamRef<jobject>& callback_executor);
+
   // content::BrowserContext implementation.
   base::FilePath GetPath() override;
   bool IsOffTheRecord() override;
@@ -130,6 +141,8 @@ class AwBrowserContext : public content::BrowserContext,
   content::BackgroundSyncController* GetBackgroundSyncController() override;
   content::BrowsingDataRemoverDelegate* GetBrowsingDataRemoverDelegate()
       override;
+  content::FileSystemAccessPermissionContext*
+  GetFileSystemAccessPermissionContext() override;
   content::ReduceAcceptLanguageControllerDelegate*
   GetReduceAcceptLanguageControllerDelegate() override;
   std::unique_ptr<download::InProgressDownloadManager>
@@ -206,6 +219,7 @@ class AwBrowserContext : public content::BrowserContext,
   std::unique_ptr<content::OriginTrialsControllerDelegate>
       origin_trials_controller_delegate_;
 
+  AwFileSystemAccessPermissionContext fsa_permission_context_;
   SimpleFactoryKey simple_factory_key_;
 
   scoped_refptr<AwContentsOriginMatcher> service_worker_xrw_allowlist_matcher_;
@@ -225,6 +239,8 @@ class AwBrowserContext : public content::BrowserContext,
 
   // The IO thread client that should be used by service workers.
   base::android::ScopedJavaGlobalRef<jobject> sw_io_thread_client_;
+
+  base::WeakPtrFactory<AwBrowserContext> weak_method_factory_{this};
 };
 
 }  // namespace android_webview

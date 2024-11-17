@@ -26,6 +26,7 @@
 
 namespace app_restore {
 struct AppLaunchInfo;
+struct AppRestoreData;
 class RestoreData;
 struct WindowInfo;
 }  // namespace app_restore

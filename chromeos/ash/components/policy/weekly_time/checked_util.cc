@@ -15,6 +15,42 @@
 
 namespace policy::weekly_time {
 
+namespace {
+
+std::optional<base::Time> UTCToLocal(base::Time utc) {
+  base::Time::Exploded utc_exploded_local;
+  utc.LocalExplode(&utc_exploded_local);
+  if (!utc_exploded_local.HasValidValues()) {
+    return std::nullopt;
+  }
+
+  base::Time utc_exploded_local_unexploded_utc;
+  if (!base::Time::FromUTCExploded(utc_exploded_local,
+                                   &utc_exploded_local_unexploded_utc)) {
+    return std::nullopt;
+  }
+
+  return utc_exploded_local_unexploded_utc;
+}
+
+std::optional<base::Time> LocalToUTC(base::Time local) {
+  base::Time::Exploded local_exploded_utc;
+  local.UTCExplode(&local_exploded_utc);
+  if (!local_exploded_utc.HasValidValues()) {
+    return std::nullopt;
+  }
+
+  base::Time local_exploded_utc_unexploded_local;
+  if (!base::Time::FromLocalExploded(local_exploded_utc,
+                                     &local_exploded_utc_unexploded_local)) {
+    return std::nullopt;
+  }
+
+  return local_exploded_utc_unexploded_local;
+}
+
+}  // namespace
+
 std::optional<std::vector<WeeklyTimeIntervalChecked>> ExtractIntervalsFromList(
     const base::Value::List& list) {
   std::vector<WeeklyTimeIntervalChecked> intervals;
@@ -49,21 +85,49 @@ bool IntervalsContainTime(
   return false;
 }
 
+std::optional<WeeklyTimeChecked> GetNextEvent(
+    const std::vector<WeeklyTimeIntervalChecked>& intervals,
+    const WeeklyTimeChecked& time) {
+  std::optional<WeeklyTimeChecked> next_event = std::nullopt;
+  // Sentinel value set to max which is 1 week.
+  base::TimeDelta min_duration = base::Days(7);
+  for (const auto& interval : intervals) {
+    for (const WeeklyTimeChecked& event : {interval.start(), interval.end()}) {
+      const base::TimeDelta duration =
+          WeeklyTimeIntervalChecked(time, event).Duration();
+      if (duration < min_duration) {
+        min_duration = duration;
+        next_event = event;
+      }
+    }
+  }
+  return next_event;
+}
+
 std::optional<base::TimeDelta> GetDurationToNextEvent(
     const std::vector<WeeklyTimeIntervalChecked>& intervals,
     const WeeklyTimeChecked& time) {
-  if (intervals.empty()) {
+  std::optional<WeeklyTimeChecked> next_event = GetNextEvent(intervals, time);
+  if (!next_event.has_value()) {
     return std::nullopt;
   }
-  // Sentinel value set to max which is 1 week.
-  base::TimeDelta result = base::Days(7);
-  for (const auto& interval : intervals) {
-    result = std::min(
-        result, WeeklyTimeIntervalChecked(time, interval.start()).Duration());
-    result = std::min(
-        result, WeeklyTimeIntervalChecked(time, interval.end()).Duration());
+  return WeeklyTimeIntervalChecked(time, next_event.value()).Duration();
+}
+
+base::Time AddOffsetInLocalTime(base::Time utc, base::TimeDelta offset) {
+  std::optional<base::Time> local = UTCToLocal(utc);
+  if (!local.has_value()) {
+    return utc + offset;
   }
-  return result;
+
+  base::Time local_with_offset = local.value() + offset;
+
+  std::optional<base::Time> utc_with_offset = LocalToUTC(local_with_offset);
+  if (!utc_with_offset.has_value()) {
+    return utc + offset;
+  }
+
+  return utc_with_offset.value();
 }
 
 }  // namespace policy::weekly_time

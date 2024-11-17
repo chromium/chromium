@@ -80,14 +80,13 @@
       HandlerForProtocol(dispatcher, ManageStorageAlertCommands);
   id<ApplicationCommands> applicationHandler =
       HandlerForProtocol(dispatcher, ApplicationCommands);
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  PhotosService* photosService =
-      PhotosServiceFactory::GetForBrowserState(browserState);
-  PrefService* prefService = browserState->GetPrefs();
+  ProfileIOS* profile = self.browser->GetProfile();
+  PhotosService* photosService = PhotosServiceFactory::GetForProfile(profile);
+  PrefService* prefService = profile->GetPrefs();
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browserState);
+      IdentityManagerFactory::GetForProfile(profile);
   _mediator = [[SaveToPhotosMediator alloc]
           initWithPhotosService:photosService
                     prefService:prefService
@@ -255,12 +254,12 @@
                             ACCESS_POINT_SAVE_TO_PHOTOS_IOS
             promoAction:signin_metrics::PromoAction::
                             PROMO_ACTION_NO_SIGNIN_PROMO
-               callback:^(SigninCoordinatorResult result,
+             completion:^(SigninCoordinatorResult result,
                           SigninCompletionInfo* completionInfo) {
-                 if (completion) {
-                   completion(completionInfo.identity);
-                 }
-               }];
+               if (completion) {
+                 completion(completionInfo.identity);
+               }
+             }];
   [applicationCommandsHandler
               showSignin:addAccountCommand
       baseViewController:accountPickerCoordinator.viewController];

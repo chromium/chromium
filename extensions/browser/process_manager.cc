@@ -166,8 +166,7 @@ struct ProcessManager::ExtensionRenderFrameData {
       case extensions::mojom::ViewType::kExtensionSidePanel:
         return false;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -181,7 +180,8 @@ ProcessManager* ProcessManager::Get(BrowserContext* context) {
 }
 
 // static
-ProcessManager* ProcessManager::Create(BrowserContext* context) {
+std::unique_ptr<ProcessManager> ProcessManager::Create(
+    BrowserContext* context) {
   ExtensionRegistry* extension_registry = ExtensionRegistry::Get(context);
   ExtensionsBrowserClient* client = ExtensionsBrowserClient::Get();
   if (client->IsGuestSession(context)) {
@@ -189,19 +189,20 @@ ProcessManager* ProcessManager::Create(BrowserContext* context) {
     // a regular incognito mode, background pages of extensions must be
     // created regardless of whether extensions use "spanning" or "split"
     // incognito behavior.
-    BrowserContext* original_context = client->GetContextRedirectedToOriginal(
-        context, /*force_guest_profile=*/true);
-    return new ProcessManager(context, original_context, extension_registry);
+    BrowserContext* original_context =
+        client->GetContextRedirectedToOriginal(context);
+    return std::make_unique<ProcessManager>(context, original_context,
+                                            extension_registry);
   }
 
   if (context->IsOffTheRecord()) {
-    BrowserContext* original_context = client->GetContextRedirectedToOriginal(
-        context, /*force_guest_profile=*/true);
-    return new IncognitoProcessManager(
-        context, original_context, extension_registry);
+    BrowserContext* original_context =
+        client->GetContextRedirectedToOriginal(context);
+    return std::make_unique<IncognitoProcessManager>(context, original_context,
+                                                     extension_registry);
   }
 
-  return new ProcessManager(context, context, extension_registry);
+  return std::make_unique<ProcessManager>(context, context, extension_registry);
 }
 
 // static
@@ -1186,7 +1187,7 @@ IncognitoProcessManager::GetSiteInstanceForURL(const GURL& url) {
   if (extension && !IncognitoInfo::IsSplitMode(extension)) {
     BrowserContext* original_context =
         ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-            browser_context(), /*force_guest_profile=*/true);
+            browser_context());
     return ProcessManager::Get(original_context)->GetSiteInstanceForURL(url);
   }
 

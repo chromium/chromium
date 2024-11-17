@@ -115,7 +115,7 @@ public class AnnouncementNotificationManager {
 
     private static void close() {
         // Dismiss the notification.
-        BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext())
+        BaseNotificationManagerProxyFactory.create()
                 .cancel(ANNOUNCEMENT_NOTIFICATION_TAG, ANNOUNCEMENT_NOTIFICATION_ID);
     }
 
@@ -148,7 +148,7 @@ public class AnnouncementNotificationManager {
                 createIntent(context, IntentType.OPEN, url),
                 NotificationUmaTracker.ActionType.ANNOUNCEMENT_OPEN);
 
-        BaseNotificationManagerProxy nm = BaseNotificationManagerProxyFactory.create(context);
+        BaseNotificationManagerProxy nm = BaseNotificationManagerProxyFactory.create();
         NotificationWrapper notification = builder.buildNotificationWrapper();
         nm.notify(notification);
 

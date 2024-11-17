@@ -5,6 +5,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_MODEL_EXECUTION_FETCHER_H_
 
 #include <memory>
+#include <optional>
 #include <set>
 #include <string>
 
@@ -51,12 +52,14 @@ class ModelExecutionFetcher {
   void ExecuteModel(ModelBasedCapabilityKey feature,
                     signin::IdentityManager* identity_manager,
                     const google::protobuf::MessageLite& request_metadata,
+                    std::optional<base::TimeDelta> timeout,
                     ModelExecuteResponseCallback callback);
 
  private:
   // Invoked when the access token is received, to continue with the model
   // execution request.
   void OnAccessTokenReceived(const std::string& serialized_request,
+                             std::optional<base::TimeDelta> timeout,
                              const std::string& access_token);
 
   // URL loader completion callback.

@@ -44,12 +44,9 @@
           "builder": "chromeos-arm-generic-rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/chromeos-arm-generic-rel/targets"
     }
-  },
-  "$build/flakiness": {
-    "check_for_flakiness": true,
-    "check_for_flakiness_with_resultdb": true
   },
   "$build/reclient": {
     "instance": "rbe-chromium-untrusted",
@@ -58,11 +55,15 @@
   },
   "$build/siso": {
     "configs": [
-      "builder"
+      "builder",
+      "remote-link"
     ],
+    "enable_cloud_monitoring": true,
     "enable_cloud_profiler": true,
     "enable_cloud_trace": true,
     "experiments": [],
+    "metrics_project": "chromium-reclient-metrics",
+    "output_local_strategy": "minimum",
     "project": "rbe-chromium-untrusted",
     "remote_jobs": 150
   },
@@ -74,6 +75,5 @@
     ]
   },
   "builder_group": "tryserver.chromium.chromiumos",
-  "cq": "required",
   "recipe": "chromium_trybot"
 }

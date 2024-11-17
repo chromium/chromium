@@ -71,7 +71,7 @@ class TestSensorClient : public mojom::SensorClient {
           std::move(on_reading_changed_callback_).Run(reading_data_.accel.x);
           break;
         default:
-          NOTREACHED_NORETURN() << "Unsupported sensor type in test " << type_;
+          NOTREACHED() << "Unsupported sensor type in test " << type_;
       }
     }
   }
@@ -215,7 +215,7 @@ class GenericSensorServiceTest : public DeviceServiceTestBase {
         reading.accel.x = single_value;
         break;
       default:
-        NOTREACHED_NORETURN() << "Unsupported sensor type in test " << type;
+        NOTREACHED() << "Unsupported sensor type in test " << type;
     }
 
     base::test::TestFuture<mojom::UpdateVirtualSensorResult> future;

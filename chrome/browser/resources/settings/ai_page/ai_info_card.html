@@ -22,36 +22,32 @@
     letter-spacing: .25px;
   }
 
-  .settings-columned-section .description-header {
+  .settings-columned-section h3.description-header {
     color: var(--cr-primary-text-color);
+    font-weight: 500;
   }
 
-  cr-icon {
-    height: var(--cr-icon-size);
-    width: var(--cr-icon-size);
+  .icon-bulleted-list li {
+    margin: 8px 0;
   }
 </style>
 
-<!-- TODO(crbug.com/362225975) Update colors, icons and strings. -->
 <div class="settings-columned-section">
   <div class="column">
-    <h2 class="title first">$i18n{privacyPageTitle}</h2>
-    <h3 class="description-header">$i18n{privacyPageTitle}</h3>
+    <h2 class="title first">$i18n{aiPageMainTitle}</h2>
+    <h3 class="description-header">$i18n{columnHeadingConsider}</h3>
     <ul class="icon-bulleted-list">
       <li>
-        <cr-icon icon="settings20:ai" aria-hidden="true">
-        </cr-icon>
-        <div class="secondary">$i18n{privacyPageTitle}</div>
+        <cr-icon icon="settings20:psychiatry" aria-hidden="true"></cr-icon>
+        <div class="secondary">$i18n{aiPageMainSublabel1}</div>
       </li>
       <li>
-        <cr-icon icon="settings20:googleg" aria-hidden="true">
-        </cr-icon>
-        <div class="secondary">$i18n{privacyPageTitle}</div>
+        <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
+        <div class="secondary">$i18n{aiPageMainSublabel2}</div>
       </li>
       <li>
-        <cr-icon icon="settings20:ai" aria-hidden="true">
-        </cr-icon>
-        <div class="secondary">$i18n{privacyPageTitle}</div>
+        <cr-icon icon="[[icon3_]]" aria-hidden="true"></cr-icon>
+        <div class="secondary" inner-h-t-m-l="[[sublabel3_]]"></div>
       </li>
     </ul>
   </div>

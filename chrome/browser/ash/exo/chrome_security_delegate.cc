@@ -21,7 +21,9 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fusebox/fusebox_server.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_files.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -84,7 +86,7 @@ bool IsPathShared(Profile* profile,
                   std::string vm_name,
                   bool is_crostini,
                   base::FilePath path) {
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(profile);
+  auto* share_path = guest_os::GuestOsSharePathFactory::GetForProfile(profile);
   if (share_path->IsPathShared(vm_name, path)) {
     return true;
   }
@@ -108,7 +110,7 @@ base::FilePath GetVmMount(const std::string& vm_name) {
 }
 
 // Translate |vm_paths| from |source| VM to host paths.
-std::vector<FileInfo> TranslateVMToHost(const std::string vm_name,
+std::vector<FileInfo> TranslateVMToHost(const std::string& vm_name,
                                         std::vector<ui::FileInfo> vm_paths) {
   std::vector<FileInfo> file_infos;
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
@@ -173,7 +175,8 @@ void ShareAndTranslateHostToVM(
   const std::string vm_prefix =
       base::StrCat({kVmFileScheme, ":", vm_name, ":"});
   std::vector<std::string> file_urls;
-  auto* share_path = guest_os::GuestOsSharePath::GetForProfile(primary_profile);
+  auto* share_path =
+      guest_os::GuestOsSharePathFactory::GetForProfile(primary_profile);
   std::vector<base::FilePath> paths_to_share;
 
   for (auto& info : file_infos) {
@@ -217,7 +220,7 @@ void ShareAndTranslateHostToVM(
   if (!paths_to_share.empty()) {
     if (vm_name != plugin_vm::kPluginVmName) {
       auto vm_info =
-          guest_os::GuestOsSessionTracker::GetForProfile(primary_profile)
+          guest_os::GuestOsSessionTrackerFactory::GetForProfile(primary_profile)
               ->GetVmInfo(vm_name);
       if (!vm_info) {
         // VM must be running for copy-paste or drag-drop to be happening so
@@ -292,16 +295,12 @@ bool ChromeSecurityDelegate::CanSelfActivate(aura::Window* window) const {
 bool ChromeSecurityDelegate::CanLockPointer(aura::Window* window) const {
   // TODO(b/200896773): Move this out from exo's default security delegate
   // define in client's security delegates.
-  return ash::IsArcWindow(window) || ash::IsLacrosWindow(window);
+  return ash::IsArcWindow(window);
 }
 
 ChromeSecurityDelegate::SetBoundsPolicy ChromeSecurityDelegate::CanSetBounds(
     aura::Window* window) const {
-  // TODO(b/200896773): Move into LacrosSecurityDelegate when it exists.
-  if (ash::IsLacrosWindow(window)) {
-    return SetBoundsPolicy::DCHECK_IF_DECORATED;
-  } else if (ash::IsArcWindow(window)) {
-    // TODO(b/285252684): Move into ArcSecurityDelegate when it exists.
+  if (ash::IsArcWindow(window)) {
     return SetBoundsPolicy::ADJUST_IF_DECORATED;
   } else {
     return SetBoundsPolicy::IGNORE;

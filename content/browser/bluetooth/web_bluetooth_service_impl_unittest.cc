@@ -186,8 +186,8 @@ class FakeWebBluetoothCharacteristicClient : WebBluetoothCharacteristicClient {
  protected:
   // WebBluetoothCharacteristicClient implementation:
   void RemoteCharacteristicValueChanged(
-      const std::vector<uint8_t>& value) override {
-    NOTREACHED_IN_MIGRATION();
+      base::span<const uint8_t> value) override {
+    NOTREACHED();
   }
 
  private:
@@ -933,12 +933,12 @@ TEST_F(WebBluetoothServiceImplTest,
       characteristic_instance_id,
       base::BindLambdaForTesting(
           [&callback_called](blink::mojom::WebBluetoothResult result,
-                             const std::optional<std::vector<uint8_t>>& value) {
+                             base::span<const uint8_t> value) {
             callback_called = true;
             EXPECT_EQ(
                 blink::mojom::WebBluetoothResult::GATT_OPERATION_IN_PROGRESS,
                 result);
-            EXPECT_FALSE(value.has_value());
+            EXPECT_TRUE(value.empty());
           }),
       device::BluetoothGattService::GattErrorCode::kInProgress,
       read_error_value);
@@ -968,13 +968,12 @@ TEST_F(WebBluetoothServiceImplTest, ReadCharacteristicValueNotAuthorized) {
   service_ptr_->OnCharacteristicReadValue(
       test_characteristic.GetIdentifier(),
       base::BindLambdaForTesting(
-          [&read_value_callback_called](
-              blink::mojom::WebBluetoothResult result,
-              const std::optional<std::vector<uint8_t>>& value) {
+          [&read_value_callback_called](blink::mojom::WebBluetoothResult result,
+                                        base::span<const uint8_t> value) {
             read_value_callback_called = true;
             EXPECT_EQ(blink::mojom::WebBluetoothResult::GATT_NOT_AUTHORIZED,
                       result);
-            EXPECT_FALSE(value.has_value());
+            EXPECT_TRUE(value.empty());
           }),
       device::BluetoothGattService::GattErrorCode::kNotAuthorized,
       read_error_value);

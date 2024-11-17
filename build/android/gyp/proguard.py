@@ -83,7 +83,7 @@ _IGNORE_WARNINGS = (
 
 _BLOCKLISTED_EXPECTATION_PATHS = [
     # A separate expectation file is created for these files.
-    'clank/third_party/google3/pg_confs/',
+    'clank/third_party/google3/cipd/pg_confs/',
 ]
 
 _DUMP_DIR_NAME = 'r8inputs_dir'
@@ -540,6 +540,10 @@ def _CheckForMissingSymbols(options, dex_files, error_title):
         # Explicitly guarded by try (NoClassDefFoundError) in Firebase's
         # KotlinDetector: com.google.firebase.platforminfo.KotlinDetector.
         'kotlin.KotlinVersion',
+
+        # Not sure why these two are missing, but they do not seem important.
+        'ResultIgnorabilityUnspecified',
+        'kotlin.DeprecationLevel',
     ]
 
     had_unfiltered_items = '  ' in stderr

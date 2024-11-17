@@ -13,6 +13,7 @@ source_set("omnibox_position") {
     ":omnibox_position_ui",
     "//components/feature_engagement/public",
     "//components/prefs",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/first_run/ui_bundled:interruptible_chrome_coordinator",
     "//ios/chrome/browser/first_run/ui_bundled:screen_delegate",
@@ -24,6 +25,8 @@ source_set("omnibox_position") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/tips_manager/model:factory",
+    "//ios/chrome/browser/tips_manager/model:tips_manager",
   ]
 }
 

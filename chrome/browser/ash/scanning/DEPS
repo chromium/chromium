@@ -29,7 +29,6 @@ include_rules = [
   "+chrome/browser/ui/ash/session",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/chrome_select_file_policy.h",
-  "+chrome/browser/web_applications/web_app_id_constants.h",
   "+chrome/common/chrome_paths.h",
   "+chrome/grit",
   "+chrome/test/base",

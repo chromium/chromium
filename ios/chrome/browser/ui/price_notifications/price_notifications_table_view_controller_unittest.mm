@@ -273,25 +273,15 @@ TEST_F(PriceNotificationsTableViewControllerTest,
       [model indexPathForItemType:ItemTypeListItem
                 sectionIdentifier:SectionIdentifierTrackedItems];
 
-  if (@available(iOS 16, *)) {
-    EXPECT_EQ(itemIndexPath,
-              [tableViewController tableView:controller().tableView
-                    willSelectRowAtIndexPath:itemIndexPath]);
-    [tableViewController tableView:tableViewController.tableView
-           didSelectRowAtIndexPath:itemIndexPath];
-    EXPECT_FALSE(mutator.didNavigateToItemPage);
-    EXPECT_TRUE([tableViewController tableView:tableViewController.tableView
-        canPerformPrimaryActionForRowAtIndexPath:itemIndexPath]);
-    [tableViewController tableView:tableViewController.tableView
-        performPrimaryActionForRowAtIndexPath:itemIndexPath];
-    EXPECT_TRUE(mutator.didNavigateToItemPage);
-    return;
-  }
-
   EXPECT_EQ(itemIndexPath, [tableViewController tableView:controller().tableView
                                  willSelectRowAtIndexPath:itemIndexPath]);
   [tableViewController tableView:tableViewController.tableView
          didSelectRowAtIndexPath:itemIndexPath];
+  EXPECT_FALSE(mutator.didNavigateToItemPage);
+  EXPECT_TRUE([tableViewController tableView:tableViewController.tableView
+      canPerformPrimaryActionForRowAtIndexPath:itemIndexPath]);
+  [tableViewController tableView:tableViewController.tableView
+      performPrimaryActionForRowAtIndexPath:itemIndexPath];
   EXPECT_TRUE(mutator.didNavigateToItemPage);
   return;
 }

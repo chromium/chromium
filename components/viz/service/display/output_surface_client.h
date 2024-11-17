@@ -60,7 +60,7 @@ class VIZ_SERVICE_EXPORT OutputSurfaceClient {
   virtual void AddChildWindowToBrowser(gpu::SurfaceHandle child_window) = 0;
 
  protected:
-  virtual ~OutputSurfaceClient() {}
+  virtual ~OutputSurfaceClient() = default;
 };
 
 }  // namespace viz

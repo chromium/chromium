@@ -101,6 +101,20 @@ public class OptimizationGuideBridge {
                         callback);
     }
 
+    public OptimizationGuideDecisionWithMetadata canApplyOptimization(
+            GURL url, OptimizationType optimizationType) {
+        ThreadUtils.assertOnUiThread();
+
+        if (mNativeOptimizationGuideBridge == 0) {
+            return new OptimizationGuideDecisionWithMetadata(
+                    OptimizationGuideDecision.UNKNOWN, null);
+        }
+
+        return OptimizationGuideBridgeJni.get()
+                .canApplyOptimizationSync(
+                        mNativeOptimizationGuideBridge, url, optimizationType.getNumber());
+    }
+
     /**
      * Invokes {@link OnDemandOptimizationGuideCallback} with the decision for all types contained
      * in {@link optimizationTypes} for each URL contained in {@link urls}, when sufficient
@@ -280,6 +294,14 @@ public class OptimizationGuideBridge {
         OptimizationGuidePushNotificationManager.onPushNotificationNotHandledByNative(notification);
     }
 
+    @CalledByNative
+    private static OptimizationGuideDecisionWithMetadata createDecisionWithMetadata(
+            @OptimizationGuideDecision int optimizationGuideDecision,
+            @Nullable byte[] serializedAnyMetadata) {
+        return new OptimizationGuideDecisionWithMetadata(
+                optimizationGuideDecision, deserializeAnyMetadata(serializedAnyMetadata));
+    }
+
     private static @Nullable Any deserializeAnyMetadata(@Nullable byte[] serializedAnyMetadata) {
         if (serializedAnyMetadata == null) {
             return null;
@@ -304,6 +326,11 @@ public class OptimizationGuideBridge {
                 @JniType("GURL") GURL url,
                 int optimizationType,
                 OptimizationGuideCallback callback);
+
+        OptimizationGuideDecisionWithMetadata canApplyOptimizationSync(
+                long nativeOptimizationGuideBridge,
+                @JniType("GURL") GURL url,
+                int optimizationType);
 
         void canApplyOptimizationOnDemand(
                 long nativeOptimizationGuideBridge,

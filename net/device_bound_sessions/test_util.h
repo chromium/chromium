@@ -12,10 +12,34 @@
 #include "net/device_bound_sessions/registration_fetcher_param.h"
 #include "net/device_bound_sessions/session_challenge_param.h"
 #include "net/device_bound_sessions/session_service.h"
+#include "net/device_bound_sessions/session_store.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
 namespace net::device_bound_sessions {
+
+class SessionStoreMock : public SessionStore {
+ public:
+  SessionStoreMock();
+  ~SessionStoreMock() override;
+
+  MOCK_METHOD(void, LoadSessions, (LoadSessionsCallback callback), (override));
+  MOCK_METHOD(void,
+              SaveSession,
+              (const SchemefulSite& site, const Session& session),
+              (override));
+  MOCK_METHOD(void,
+              DeleteSession,
+              (const SchemefulSite& site, const Session::Id& session_id),
+              (override));
+  MOCK_METHOD(SessionStore::SessionsMap, GetAllSessions, (), (const, override));
+  MOCK_METHOD(void,
+              RestoreSessionBindingKey,
+              (const SchemefulSite& site,
+               const Session::Id& session_id,
+               RestoreSessionBindingKeyCallback callback),
+              (override));
+};
 
 class SessionServiceMock : public SessionService {
  public:
@@ -24,7 +48,8 @@ class SessionServiceMock : public SessionService {
 
   MOCK_METHOD(void,
               RegisterBoundSession,
-              (RegistrationFetcherParam registration_params,
+              (OnAccessCallback on_access_callback,
+               RegistrationFetcherParam registration_params,
                const IsolationInfo& isolation_info),
               (override));
   MOCK_METHOD(std::optional<Session::Id>,
@@ -40,8 +65,18 @@ class SessionServiceMock : public SessionService {
               (override));
   MOCK_METHOD(void,
               SetChallengeForBoundSession,
-              (const GURL& request_url,
+              (OnAccessCallback on_access_callback,
+               const GURL& request_url,
                const SessionChallengeParam& challenge_param),
+              (override));
+  MOCK_METHOD(
+      void,
+      GetAllSessionsAsync,
+      (base::OnceCallback<void(const std::vector<SessionKey>&)> callback),
+      (override));
+  MOCK_METHOD(void,
+              DeleteSession,
+              (const SchemefulSite& site, const Session::Id& id),
               (override));
 };
 

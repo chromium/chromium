@@ -4,104 +4,89 @@
 
 #include "third_party/blink/renderer/core/css/css_attr_type.h"
 
-#include "base/notreached.h"
-#include "third_party/blink/renderer/core/css/css_syntax_string_parser.h"
+#include <optional>
+
+#include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_string_value.h"
+#include "third_party/blink/renderer/core/css/css_syntax_definition.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_save_point.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 
 namespace blink {
 
-// static
-CSSAttrType CSSAttrType::Parse(StringView attr_type) {
-  using Category = CSSAttrType::Category;
-  if (attr_type == "string") {
-    return CSSAttrType(Category::kString);
-  }
-  if (attr_type == "ident") {
-    return CSSAttrType(Category::kIdent);
-  }
-  if (attr_type == "color") {
-    return CSSAttrType(Category::kColor);
-  }
-  if (attr_type == "number") {
-    return CSSAttrType(Category::kNumber);
-  }
-  if (attr_type == "percentage") {
-    return CSSAttrType(Category::kPercentage);
-  }
-  if (attr_type == "length") {
-    return CSSAttrType(Category::kLength);
-  }
-  if (attr_type == "angle") {
-    return CSSAttrType(Category::kAngle);
-  }
-  if (attr_type == "time") {
-    return CSSAttrType(Category::kTime);
-  }
-  if (attr_type == "frequency") {
-    return CSSAttrType(Category::kFrequency);
-  }
-  if (attr_type == "flex") {
-    return CSSAttrType(Category::kFlex);
-  }
+namespace {
 
+std::optional<CSSPrimitiveValue::UnitType> ConsumeDimensionUnitType(
+    CSSParserTokenStream& stream) {
+  if (stream.Peek().GetType() != kIdentToken) {
+    return std::nullopt;
+  }
   CSSPrimitiveValue::UnitType unit =
-      CSSPrimitiveValue::StringToUnitType(attr_type);
+      CSSPrimitiveValue::StringToUnitType(stream.Peek().Value());
   // The <dimension-unit> production matches a literal "%"
   // character (that is, a <delim-token> with a value of "%")
   // or an ident whose value is any of the CSS units for
   // <length>, <angle>, <time>, <frequency>, or <flex> values.
-  if (CSSPrimitiveValue::IsLength(unit) || CSSPrimitiveValue::IsAngle(unit) ||
-      CSSPrimitiveValue::IsTime(unit) || CSSPrimitiveValue::IsFrequency(unit) ||
-      CSSPrimitiveValue::IsFlex(unit) ||
-      CSSPrimitiveValue::IsPercentage(unit)) {
-    return CSSAttrType(unit);
+  if (!CSSPrimitiveValue::IsLength(unit) && !CSSPrimitiveValue::IsAngle(unit) &&
+      !CSSPrimitiveValue::IsTime(unit) &&
+      !CSSPrimitiveValue::IsFrequency(unit) &&
+      !CSSPrimitiveValue::IsFlex(unit) &&
+      !CSSPrimitiveValue::IsPercentage(unit)) {
+    return std::nullopt;
   }
-
-  return CSSAttrType();
+  stream.Consume();
+  return unit;
 }
 
-std::optional<CSSSyntaxDefinition> CSSAttrType::ConvertToCSSSyntaxDefinition()
-    const {
-  String syntax;
-  switch (category) {
-    case Category::kUnknown:
-    case Category::kString:
-      // The "string" type has special handling because
-      // it's not equivalent to <string>: the latter involves
-      // quotes, and the former does not.
-      // https://drafts.csswg.org/css-values-5/#attr-types
-      [[fallthrough]];
-    case Category::kFlex:
-    case Category::kFrequency:
-      // <flex> are not part of CSSSyntaxDefinition,
-      // so we need to handle them separately. <frequency> is not
-      // supported yet.
-      return std::nullopt;
-    case Category::kIdent:
-      syntax = "<custom-ident>";
-      break;
-    case Category::kColor:
-      syntax = "<color>";
-      break;
-    case Category::kNumber:
-      syntax = "<number>";
-      break;
-    case Category::kPercentage:
-      syntax = "<percentage>";
-      break;
-    case Category::kLength:
-      syntax = "<length>";
-      break;
-    case Category::kAngle:
-      syntax = "<angle>";
-      break;
-    case Category::kTime:
-      syntax = "<time>";
-      break;
-    case Category::kDimensionUnit:
-      syntax = "<number>";
-      break;
+}  // namespace
+
+std::optional<CSSAttrType> CSSAttrType::Consume(CSSParserTokenStream& stream) {
+  if (stream.Peek().GetType() == kIdentToken &&
+      stream.Peek().Value() == "string") {
+    stream.Consume();
+    return CSSAttrType();
   }
-  return CSSSyntaxStringParser(syntax).Parse();
+  std::optional<CSSPrimitiveValue::UnitType> unit_type =
+      ConsumeDimensionUnitType(stream);
+  if (unit_type.has_value()) {
+    return CSSAttrType(*unit_type);
+  }
+  if (stream.Peek().FunctionId() == CSSValueID::kType) {
+    CSSParserSavePoint save_point(stream);
+    CSSParserTokenStream::BlockGuard guard(stream);
+    std::optional<CSSSyntaxDefinition> syntax =
+        CSSSyntaxDefinition::Consume(stream);
+    if (syntax.has_value() && stream.AtEnd()) {
+      save_point.Release();
+      return CSSAttrType(*syntax);
+    }
+  }
+  return std::nullopt;
+}
+
+const CSSValue* CSSAttrType::Parse(StringView text,
+                                   const CSSParserContext& context) const {
+  if (IsString()) {
+    return MakeGarbageCollected<CSSStringValue>(text.ToString());
+  }
+  if (IsDimensionUnit()) {
+    CSSParserTokenStream stream(text);
+    CSSPrimitiveValue* number_value = css_parsing_utils::ConsumeNumber(
+        stream, context, CSSPrimitiveValue::ValueRange::kAll);
+    if (!number_value) {
+      return nullptr;
+    }
+    return MakeGarbageCollected<CSSNumericLiteralValue>(
+        number_value->GetDoubleValue(), *dimension_unit_);
+  }
+  if (IsSyntax()) {
+    return syntax_->Parse(text, context, false);
+  }
+  return nullptr;
+}
+
+CSSAttrType CSSAttrType::GetDefaultValue() {
+  return CSSAttrType();
 }
 
 }  // namespace blink

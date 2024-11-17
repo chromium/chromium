@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/animation/compositor_animations.h"
 
 #include <algorithm>
@@ -41,7 +36,6 @@
 
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/filter_animation_curve.h"
-#include "cc/base/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_color.h"
@@ -80,15 +74,15 @@ namespace blink {
 
 namespace {
 
-constexpr CSSPropertyID kCompositableProperties[] = {
-    CSSPropertyID::kBackdropFilter, CSSPropertyID::kFilter,
-    CSSPropertyID::kOpacity,        CSSPropertyID::kRotate,
-    CSSPropertyID::kScale,          CSSPropertyID::kTransform,
+constexpr auto kCompositableProperties = std::to_array<CSSPropertyID>({
+    CSSPropertyID::kBackdropFilter,
+    CSSPropertyID::kFilter,
+    CSSPropertyID::kOpacity,
+    CSSPropertyID::kRotate,
+    CSSPropertyID::kScale,
+    CSSPropertyID::kTransform,
     CSSPropertyID::kTranslate,
-};
-
-const size_t kNumCompositableCSSProperties =
-    sizeof(kCompositableProperties) / sizeof(kCompositableProperties[0]);
+});
 
 bool ConsiderAnimationAsIncompatible(const Animation& animation,
                                      const Animation& animation_to_add,
@@ -100,12 +94,12 @@ bool ConsiderAnimationAsIncompatible(const Animation& animation,
     return true;
 
   switch (animation.CalculateAnimationPlayState()) {
-    case Animation::kIdle:
+    case V8AnimationPlayState::Enum::kIdle:
       return false;
-    case Animation::kRunning:
+    case V8AnimationPlayState::Enum::kRunning:
       return true;
-    case Animation::kPaused:
-    case Animation::kFinished:
+    case V8AnimationPlayState::Enum::kPaused:
+    case V8AnimationPlayState::Enum::kFinished:
       if (Animation::HasLowerCompositeOrdering(
               &animation, &animation_to_add,
               Animation::CompareAnimationsOrdering::kPointerOrder)) {
@@ -113,8 +107,7 @@ bool ConsiderAnimationAsIncompatible(const Animation& animation,
       }
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
   }
 }
 
@@ -132,8 +125,8 @@ bool HasIncompatibleAnimations(const Element& target_element,
   if (!target_element.HasAnimations())
     return false;
 
-  bool affects_property[kNumCompositableCSSProperties];
-  for (unsigned i = 0; i < kNumCompositableCSSProperties; i++) {
+  std::array<bool, kCompositableProperties.size()> affects_property;
+  for (size_t i = 0; i < kCompositableProperties.size(); i++) {
     PropertyHandle property(CSSProperty::Get(kCompositableProperties[i]));
     affects_property[i] = effect_to_add.Affects(property);
   }
@@ -153,7 +146,7 @@ bool HasIncompatibleAnimations(const Element& target_element,
       continue;
     }
 
-    for (unsigned i = 0; i < kNumCompositableCSSProperties; i++) {
+    for (size_t i = 0; i < kCompositableProperties.size(); i++) {
       if (!affects_property[i])
         continue;
 
@@ -249,9 +242,8 @@ CompositorAnimations::CompositorElementNamespaceForProperty(
       // target node - the effect namespace.
       return CompositorElementIdNamespace::kPrimaryEffect;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return CompositorElementIdNamespace::kPrimary;
 }
 
 CompositorAnimations::FailureReasons
@@ -630,8 +622,8 @@ void CompositorAnimations::CancelIncompatibleAnimationsOnCompositor(
   if (!target_element.HasAnimations())
     return;
 
-  bool affects_property[kNumCompositableCSSProperties];
-  for (unsigned i = 0; i < kNumCompositableCSSProperties; i++) {
+  std::array<bool, kCompositableProperties.size()> affects_property;
+  for (size_t i = 0; i < kCompositableProperties.size(); i++) {
     PropertyHandle property(CSSProperty::Get(kCompositableProperties[i]));
     affects_property[i] = effect_to_add.Affects(property);
   }
@@ -651,7 +643,7 @@ void CompositorAnimations::CancelIncompatibleAnimationsOnCompositor(
       continue;
     }
 
-    for (unsigned i = 0; i < kNumCompositableCSSProperties; i++) {
+    for (size_t i = 0; i < kCompositableProperties.size(); i++) {
       if (!affects_property[i])
         continue;
 
@@ -809,9 +801,7 @@ bool CompositorAnimations::ConvertTimingForCompositor(
   // after finishing until it is removed by a subsequent main thread commit.
   // This allows developers to apply a post animation style or start a
   // subsequent animation without flicker.
-  if ((base::FeatureList::IsEnabled(features::kNoPreserveLastMutation) &&
-       is_monotonic_timeline) ||
-      is_boundary_aligned) {
+  if (is_monotonic_timeline || is_boundary_aligned) {
     if (animation_playback_rate >= 0) {
       switch (out.fill_mode) {
         case Timing::FillMode::BOTH:
@@ -824,8 +814,7 @@ bool CompositorAnimations::ConvertTimingForCompositor(
           out.fill_mode = Timing::FillMode::FORWARDS;
           break;
         case Timing::FillMode::AUTO:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     } else {
       switch (out.fill_mode) {
@@ -839,8 +828,7 @@ bool CompositorAnimations::ConvertTimingForCompositor(
           out.fill_mode = Timing::FillMode::BACKWARDS;
           break;
         case Timing::FillMode::AUTO:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
   }
@@ -1065,9 +1053,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
                 cc::TargetProperty::TRANSFORM);
             break;
           default:
-            NOTREACHED_IN_MIGRATION()
-                << "only possible cases for nested switch";
-            break;
+            NOTREACHED() << "only possible cases for nested switch";
         }
         break;
       }
@@ -1112,8 +1098,7 @@ void CompositorAnimations::GetAnimationOnCompositor(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        continue;
+        NOTREACHED();
     }
     DCHECK(curve.get());
     DCHECK(target_property_id.has_value());
@@ -1161,9 +1146,7 @@ bool CompositorAnimations::CanStartScrollTimelineOnCompositor(Node* target) {
     return false;
   }
   if (auto* properties = layout_box->FirstFragment().PaintProperties()) {
-    return properties->Scroll() &&
-           (!RuntimeEnabledFeatures::ScrollNodeForOverflowHiddenEnabled() ||
-            properties->Scroll()->UserScrollable());
+    return properties->Scroll() && properties->Scroll()->UserScrollable();
   }
   return false;
 }

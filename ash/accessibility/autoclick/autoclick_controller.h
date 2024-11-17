@@ -29,7 +29,7 @@ class Widget;
 namespace ash {
 
 class AccessibilityFeatureDisableDialog;
-class AutoclickDragEventRewriter;
+class DragEventRewriter;
 class AutoclickMenuBubbleController;
 class AutoclickRingHandler;
 class AutoclickScrollPositionHandler;
@@ -223,7 +223,7 @@ class ASH_EXPORT AutoclickController
   std::unique_ptr<AutoclickRingHandler> autoclick_ring_handler_;
   std::unique_ptr<AutoclickScrollPositionHandler>
       autoclick_scroll_position_handler_;
-  std::unique_ptr<AutoclickDragEventRewriter> drag_event_rewriter_;
+  std::unique_ptr<DragEventRewriter> drag_event_rewriter_;
   std::unique_ptr<AutoclickMenuBubbleController> menu_bubble_controller_;
 
   // Holds a weak pointer to the dialog shown when autoclick is being disabled.

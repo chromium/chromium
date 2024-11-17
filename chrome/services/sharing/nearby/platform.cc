@@ -386,6 +386,11 @@ std::unique_ptr<WifiLanMedium> ImplementationPlatform::CreateWifiLanMedium() {
       mdns_manager);
 }
 
+std::unique_ptr<Timer> ImplementationPlatform::CreateTimer() {
+  // This method is not currently used by Chromium. If it ever is, implement it.
+  NOTREACHED();
+}
+
 std::unique_ptr<WebRtcMedium> ImplementationPlatform::CreateWebRtcMedium() {
   nearby::NearbySharedRemotes* nearby_shared_remotes =
       nearby::NearbySharedRemotes::GetInstance();

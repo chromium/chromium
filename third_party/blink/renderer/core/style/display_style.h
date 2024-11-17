@@ -41,8 +41,10 @@ class DisplayStyle {
 
   bool ContentPreventsBoxGeneration() const {
     switch (style_type_) {
+      case kPseudoIdCheck:
       case kPseudoIdBefore:
       case kPseudoIdAfter:
+      case kPseudoIdSelectArrow:
       case kPseudoIdScrollNextButton:
       case kPseudoIdScrollPrevButton:
         return ContentBehavesAsNormal();

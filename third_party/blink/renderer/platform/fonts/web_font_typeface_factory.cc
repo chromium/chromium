@@ -10,6 +10,7 @@
 #include "skia/ext/font_utils.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_format_check.h"
+#include "third_party/freetype_buildflags.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #include "third_party/skia/include/ports/SkTypeface_fontations.h"
@@ -72,13 +73,13 @@ sk_sp<SkTypeface> MakeTypefaceDefaultFontMgr(sk_sp<SkData> data) {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 sk_sp<SkTypeface> MakeTypefaceFallback(sk_sp<SkData> data) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
-  if (RuntimeEnabledFeatures::FontationsFontBackendEnabled()) {
-    std::unique_ptr<SkStreamAsset> stream(new SkMemoryStream(data));
-    return SkTypeface_Make_Fontations(std::move(stream), SkFontArguments());
+#if BUILDFLAG(ENABLE_FREETYPE)
+  if (!RuntimeEnabledFeatures::FontationsFontBackendEnabled()) {
+    return SkFontMgr_New_Custom_Empty()->makeFromData(data, 0);
   }
 #endif
-  return SkFontMgr_New_Custom_Empty()->makeFromData(data, 0);
+  std::unique_ptr<SkStreamAsset> stream(new SkMemoryStream(data));
+  return SkTypeface_Make_Fontations(std::move(stream), SkFontArguments());
 }
 #endif
 

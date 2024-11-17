@@ -78,7 +78,7 @@ void BreadcrumbManagerTabHelper::PlatformLogEvent(const std::string& event) {
     sequentially_scrolled_ = 0;
   }
 
-  BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
+  BreadcrumbManagerKeyedServiceFactory::GetForProfile(
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState()))
       ->AddEvent(event);
 }

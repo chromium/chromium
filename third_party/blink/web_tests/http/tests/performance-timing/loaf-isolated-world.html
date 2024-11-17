@@ -69,6 +69,32 @@ promise_test(async() => {
   assert_false(!!forbidden, `Forbidden script exposed ${forbidden?.sourceFunctionName}`);
   }, "LoAF should only expose HTTP(s) scripts");
 
+promise_test(async t => {
+  window.xhr = new XMLHttpRequest();
+  t.add_cleanup(() => { delete window.xhr })
+  xhr.open("GET", "/resources/dummy.xml");
+
+  const forbidden_url = "forbidden://event-listener";
+
+  await new Promise(resolve => testRunner.evaluateScriptInOwnTask(`
+      xhr.addEventListener("load", function in_forbidden_script() {
+        const deadline = performance.now() + 360;
+        while (performance.now() < deadline) {}
+      });
+  `, forbidden_url, resolve));
+
+  xhr.send();
+  await new Promise(resolve => xhr.addEventListener("load", () => resolve()));
+  await wait_for_entries();
+
+  const forbidden = performance.getEntriesByType("long-animation-frame")
+    .flatMap(e => e.scripts)
+    .find(script => script.sourceURL === forbidden_url);
+
+  console.log(JSON.stringify(forbidden))
+  assert_false(!!forbidden, `Forbidden script exposed ${forbidden?.sourceURL}`);
+}, "LoAF should only expose HTTP(s) event listeners");
+
 promise_test(async () => {
   await exec_isolated(() => new Promise(resolve => {
     setTimeout(function from_isolated() {

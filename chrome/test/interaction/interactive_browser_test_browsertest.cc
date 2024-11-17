@@ -4,6 +4,9 @@
 
 #include "chrome/test/interaction/interactive_browser_test.h"
 
+#include <sstream>
+#include <tuple>
+
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -19,6 +22,7 @@
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -28,8 +32,10 @@
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContents2Id);
 constexpr char kDocumentWithNamedElement[] = "/select.html";
 constexpr char kDocumentWithLinks[] = "/links.html";
+constexpr char kDocumentWithClickDetection[] = "/click.html";
 constexpr char kScrollableDocument[] =
     "/scroll/scrollable_page_with_content.html";
 }  // namespace
@@ -55,6 +61,16 @@ class InteractiveBrowserTestBrowsertest : public InteractiveBrowserTest {
     InteractiveBrowserTest::TearDownOnMainThread();
   }
 };
+
+// This test checks that all of the UI elements in the browser can be dumped.
+// The output must be manually verified.
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest, DumpElements) {
+  auto* const incog = CreateIncognitoBrowser();
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  InContext(incog->window()->GetElementContext(),
+                            PressButton(kToolbarAppMenuButtonElementId)),
+                  DumpElements());
+}
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
                        EnsurePresentNotPresent) {
@@ -559,6 +575,166 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestBrowsertest,
       InParallel(Steps(NavigateWebContents(kTabId, url1),
                        NavigateWebContents(kTabId, url2)),
                  WaitForStateChange(kTabId, state_change)));
+}
+
+using ClickElementParams =
+    std::tuple<ui_controls::MouseButton, ui_controls::AcceleratorState>;
+
+class InteractiveBrowserTestClickElementTest
+    : public InteractiveBrowserTestBrowsertest,
+      public testing::WithParamInterface<ClickElementParams> {
+ public:
+  InteractiveBrowserTestClickElementTest() = default;
+  ~InteractiveBrowserTestClickElementTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    InteractiveBrowserTestClickElementTest,
+    testing::Combine(
+        testing::Values(ui_controls::LEFT,
+                        ui_controls::MIDDLE,
+                        ui_controls::RIGHT),
+        testing::Values(ui_controls::kNoAccelerator,
+                        ui_controls::kShift,
+                        ui_controls::kControl,
+                        ui_controls::kAlt,
+                        ui_controls::kCommand,
+                        static_cast<ui_controls::AcceleratorState>(
+                            ui_controls::kAlt | ui_controls::kShift),
+                        static_cast<ui_controls::AcceleratorState>(
+                            ui_controls::kControl | ui_controls::kCommand |
+                            ui_controls::kAlt | ui_controls::kShift))),
+    [](const testing::TestParamInfo<ClickElementParams>& params) {
+      std::ostringstream oss;
+      switch (std::get<0>(params.param)) {
+        case ui_controls::LEFT:
+          oss << "Left";
+          break;
+        case ui_controls::MIDDLE:
+          oss << "Middle";
+          break;
+        case ui_controls::RIGHT:
+          oss << "Right";
+          break;
+      }
+      const auto accel = std::get<1>(params.param);
+      if (accel & ui_controls::kControl) {
+        oss << "_Control";
+      }
+      if (accel & ui_controls::kAlt) {
+        oss << "_Alt";
+      }
+      if (accel & ui_controls::kShift) {
+        oss << "_Shift";
+      }
+      if (accel & ui_controls::kCommand) {
+        oss << "_Meta";
+      }
+      return oss.str();
+    });
+
+IN_PROC_BROWSER_TEST_P(InteractiveBrowserTestClickElementTest, ClickElement) {
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithClickDetection);
+  const auto mouse_button = std::get<0>(GetParam());
+  const auto modifier = std::get<1>(GetParam());
+  const DeepQuery kButton = {"#button"};
+  RunTestSequence(
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+      ClickElement(kWebContentsId, kButton, mouse_button, modifier),
+      CheckJsResultAt(kWebContentsId, kButton, "el => el.lastClickEvent.button",
+                      static_cast<int>(mouse_button)),
+      CheckJsResultAt(kWebContentsId, kButton, "el => el.lastClickEvent.altKey",
+                      (modifier & ui_controls::kAlt) != 0),
+      CheckJsResultAt(kWebContentsId, kButton,
+                      "el => el.lastClickEvent.shiftKey",
+                      (modifier & ui_controls::AcceleratorState::kShift) != 0),
+      CheckJsResultAt(
+          kWebContentsId, kButton, "el => el.lastClickEvent.ctrlKey",
+          (modifier & ui_controls::AcceleratorState::kControl) != 0),
+      CheckJsResultAt(
+          kWebContentsId, kButton, "el => el.lastClickEvent.metaKey",
+          (modifier & ui_controls::AcceleratorState::kCommand) != 0),
+      CheckJsResultAt(kWebContentsId, kButton,
+                      R"(
+            function(el) {
+              const x = el.lastClickEvent.x;
+              const y = el.lastClickEvent.y;
+              const rect = el.getBoundingClientRect();
+              return x >= rect.left && x < rect.right &&
+                     y >= rect.top && y < rect.bottom;
+            }
+          )"));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestClickElementTest,
+                       ClickElementOpensLink) {
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithClickDetection);
+  const GURL url2 = embedded_test_server()->GetURL(kDocumentWithLinks);
+  const DeepQuery kLink = {"#link"};
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  NavigateWebContents(kWebContentsId, url),
+                  ClickElement(kWebContentsId, kLink),
+                  WaitForWebContentsNavigation(kWebContentsId, url2));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestClickElementTest,
+                       MiddleClickElementOpensLink) {
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithClickDetection);
+  const GURL url2 = embedded_test_server()->GetURL(kDocumentWithLinks);
+  const DeepQuery kLink = {"#link"};
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  NavigateWebContents(kWebContentsId, url),
+                  InstrumentNextTab(kWebContents2Id),
+                  ClickElement(kWebContentsId, kLink, ui_controls::MIDDLE),
+                  WaitForWebContentsReady(kWebContents2Id, url2));
+}
+
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestClickElementTest,
+                       ControlClickElementOpensLink) {
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithClickDetection);
+  const GURL url2 = embedded_test_server()->GetURL(kDocumentWithLinks);
+  const DeepQuery kLink = {"#link"};
+  RunTestSequence(InstrumentTab(kWebContentsId),
+                  NavigateWebContents(kWebContentsId, url),
+                  InstrumentNextTab(kWebContents2Id),
+                  ClickElement(kWebContentsId, kLink, ui_controls::LEFT,
+#if BUILDFLAG(IS_MAC)
+                               ui_controls::kCommand
+#else
+                               ui_controls::kControl
+#endif
+                               ),
+                  WaitForWebContentsReady(kWebContents2Id, url2));
+}
+
+// TODO(crbug.com/370724585): Re-enable this test.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ShiftClickElementOpensLink DISABLED_ShiftClickElementOpensLink
+#else
+#define MAYBE_ShiftClickElementOpensLink ShiftClickElementOpensLink
+#endif
+IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestClickElementTest,
+                       MAYBE_ShiftClickElementOpensLink) {
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithClickDetection);
+  const GURL url2 = embedded_test_server()->GetURL(kDocumentWithLinks);
+  const DeepQuery kLink = {"#link"};
+  RunTestSequence(
+      InstrumentTab(kWebContentsId), NavigateWebContents(kWebContentsId, url),
+      InstrumentNextTab(kWebContents2Id, AnyBrowser()),
+      ClickElement(kWebContentsId, kLink, ui_controls::LEFT,
+#if BUILDFLAG(IS_MAC)
+                   static_cast<ui_controls::AcceleratorState>(
+                       ui_controls::kCommand | ui_controls::kAlt)
+#else
+                   ui_controls::kShift
+#endif
+                       ),
+      InAnyContext(WaitForWebContentsReady(kWebContents2Id, url2)),
+      InSameContext(CheckView(
+          kBrowserViewElementId,
+          [](BrowserView* browser_view) { return browser_view->browser(); },
+          testing::Ne(browser()))));
 }
 
 // Parameter for WebUI coverage tests.

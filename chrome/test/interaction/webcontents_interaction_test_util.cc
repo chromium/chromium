@@ -272,17 +272,80 @@ void ExecuteJsLocal(const content::ToRenderFrameHost& execution_target,
   ExecuteScript(host, runner_script);
 }
 
+std::string DeepQueryToJSON(
+    const WebContentsInteractionTestUtil::DeepQuery& where) {
+  // Safely convert the selector list in `where` to a JSON/JS list.
+  base::Value::List selector_list;
+  for (const auto& selector : where) {
+    selector_list.Append(selector);
+  }
+  std::string selectors;
+  CHECK(base::JSONWriter::Write(selector_list, &selectors));
+  return selectors;
+}
+
+// Computes the bounds of the element at `where` relative to the top-level
+// render window. This takes into account nested shadow DOMs and iframes.
+// Result is a function that when executed returns a JSON object with
+// {x, y, w, h}.
+std::string GetElementBounds(
+    const WebContentsInteractionTestUtil::DeepQuery& where) {
+  const std::string selectors = DeepQueryToJSON(where);
+  return base::StringPrintf(
+      R"(function() {
+         const selectors = (%s);
+         let cur = document;
+         let offsetX = 0;
+         let offsetY = 0;
+         for (let selector of selectors) {
+           if (cur.shadowRoot) {
+             // Handle shadow DOM case.
+             cur = cur.shadowRoot;
+           } else if (cur.contentDocument) {
+             // Handle iframe case. Iframe bounds are not included in bounds
+             // calculations for elements that reside inside of them, so these
+             // need to be handled explicitly.
+
+             // Grab the bounds - these will contain the border and padding.
+             const bounds = cur.getBoundingClientRect();
+             offsetX += bounds.x;
+             offsetY += bounds.y;
+
+             // Add the internal padding.
+             const style = getComputedStyle(cur);
+             offsetX += parseInt(style.borderLeftWidth) +
+                        parseInt(style.paddingLeft);
+             offsetY += parseInt(style.borderTopWidth) +
+                        parseInt(style.paddingTop);
+
+             // Move inside the iframe.
+             cur = cur.contentDocument;
+           }
+           cur = cur.querySelector(selector);
+           if (!cur) {
+             const err = new Error('Selector not found: ' + selector);
+             err.selector = selector;
+             throw err;
+           }
+         }
+
+         const rect = cur.getBoundingClientRect();
+         return {
+           "x": rect.x + offsetX,
+           "y": rect.y + offsetY,
+           "w": rect.width,
+           "h": rect.height
+         };
+       })",
+      selectors.c_str());
+}
+
 std::string CreateDeepQuery(
     const WebContentsInteractionTestUtil::DeepQuery& where,
     const std::string& function) {
   DCHECK(!function.empty());
 
-  // Safely convert the selector list in `where` to a JSON/JS list.
-  base::Value::List selector_list;
-  for (const auto& selector : where)
-    selector_list.Append(selector);
-  std::string selectors;
-  CHECK(base::JSONWriter::Write(selector_list, &selectors));
+  const std::string selectors = DeepQueryToJSON(where);
 
   return base::StringPrintf(
       R"(function() {
@@ -290,7 +353,11 @@ std::string CreateDeepQuery(
            let cur = document;
            for (let selector of selectors) {
              if (cur.shadowRoot) {
+               // Handle shadow DOM case.
                cur = cur.shadowRoot;
+             } else if (cur.contentDocument) {
+               // Handle iframe case.
+               cur = cur.contentDocument;
              }
              cur = cur.querySelector(selector);
              if (!cur) {
@@ -857,16 +924,8 @@ gfx::Rect WebContentsInteractionTestUtil::GetElementBoundsInScreen(
   // bounds will need to be adjusted by the current display's scale factor.
   const gfx::Point offset = web_view->GetBoundsInScreen().origin();
 
-  const base::Value result = EvaluateAt(where,
-                                        R"(el => {
-      const rect = el.getBoundingClientRect();
-      return {
-        "x": rect.x,
-        "y": rect.y,
-        "w": rect.width,
-        "h": rect.height
-      };
-    })");
+  // Perform our custom bounds calculation, taking into account e.g. iframes.
+  const base::Value result = Evaluate(GetElementBounds(where));
 
   // This will crash if any of the values are not found, however, since this is
   // test code that's fine; it *should* crash the test.

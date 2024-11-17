@@ -62,6 +62,7 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
+  String LabelAttributeText() const;
   void UpdateGroupLabel();
 
   Member<HTMLSlotElement> opt_group_slot_;

@@ -13,6 +13,7 @@ import optparse
 import signal
 import subprocess
 import sys
+import textwrap
 from collections import defaultdict
 from datetime import datetime
 from typing import List, Optional
@@ -199,6 +200,39 @@ class WPTAdapter:
         if self.options.gtest_filter:
             self.paths.extend(self.options.gtest_filter.split(':'))
 
+    def create_config_files(self):
+        """Create config files based on its template and change the paths to absolute paths.
+        """
+        # create //third_party/blink/web_tests/external/wpt/config.json
+        src_config_json = self.finder.path_from_wpt_tests('.config.json')
+        with self.fs.open_text_file_for_reading(src_config_json) as src:
+            data = json.load(src)
+        data['aliases'] = [{
+            **alias,
+            'local-dir':
+            self.finder.path_from_web_tests(alias['local-dir']),
+        } for alias in data['aliases']]
+        dst_config_json = self.finder.path_from_wpt_tests('config.json')
+        with self.fs.open_text_file_for_writing(dst_config_json) as dst:
+            json.dump(data, dst)
+
+        # TODO: Remove once no wpt_internal tests are run with Chrome
+        # create //third_party/blink/web_tests/wptrunner.blink.ini with content
+        # as below:
+        #     [manifest:internal]
+        #     tests = %(pwd)s/wpt_internal
+        #     metadata = %(pwd)s/wpt_internal
+        #     url_base = /wpt_internal/
+        if self.options.run_wpt_internal:
+            ini_file = self.finder.path_from_web_tests('wptrunner.blink.ini')
+            with self.fs.open_text_file_for_writing(ini_file) as fp:
+                fp.write('[manifest:internal]\n')
+                fp.write('tests = %s\n' %
+                         self.finder.path_from_web_tests('wpt_internal'))
+                fp.write('metadata = %s\n' %
+                         self.finder.path_from_web_tests('wpt_internal'))
+                fp.write('url_base = /wpt_internal/\n')
+
     def log_config(self):
         logger.info(f'Running tests for {self.product.name}')
         logger.info(f'Using port "{self.port.name()}"')
@@ -377,10 +411,6 @@ class WPTAdapter:
         # browser at Wptrunner side.
         runner_options.rerun = self.options.repeat_each
 
-        # TODO(crbug.com/367745137): Reenable webtransport-h3 server once
-        # unclean startup has been fixed.
-        runner_options.enable_webtransport_h3 = False
-
     def _set_up_runner_ssl_options(self, runner_options):
         # wptrunner doesn't recognize the `pregenerated.*` values in
         # `external/wpt/config.json`, so pass them here.
@@ -557,17 +587,6 @@ class WPTAdapter:
                 self.process_and_upload_results(runner_options))
             self.port.setup_test_run()  # Start Xvfb, if necessary.
             stack.callback(self.port.clean_up_test_run)
-            # Restore the original CWD as soon as the call into `wpt run` is
-            # over. This ensures relative paths for `--json-test-results` and
-            # other options work correctly.
-            stack.callback(self.fs.chdir, self.fs.getcwd())
-            # Changing the CWD is not ideal, but necessary for `wptserve` to
-            # resolve relative paths in `external/wpt/config.json` correctly.
-            #
-            # TODO(crbug.com/362344569): Replace this workaround. One option is
-            # to add a `wpt run` parameter to point to a wptserve config with
-            # absolutized paths.
-            self.fs.chdir(self.port.web_tests_dir())
             yield runner_options
 
     @functools.cached_property
@@ -631,13 +650,23 @@ class WPTAdapter:
         with self.fs.open_text_file_for_writing(run_info_path) as file_handle:
             json.dump(run_info, file_handle)
 
-        # The `//third_party/fontconfig/` library embedded into Chromium
-        # recursively searches `$XDG_DATA_HOME/fonts` for locally vended fonts.
-        ahem_path = self.fs.join(tmp_dir, 'fonts', 'Ahem.ttf')
-        self.fs.maybe_make_directory(self.fs.dirname(ahem_path))
-        self.fs.copyfile(self.fs.join(tests_root, 'fonts', 'Ahem.ttf'),
-                         ahem_path)
-        self.host.environ['XDG_DATA_HOME'] = tmp_dir
+        # Chromium embeds the `//third_party/fontconfig/` library to load fonts.
+        # Add a config [0] to discover test fonts copied from
+        # `//third_party/test_fonts/`.
+        #
+        # [0]: https://www.freedesktop.org/software/fontconfig/fontconfig-user.html
+        test_fonts_dir = self.port.build_path('test_fonts')
+        font_config = textwrap.dedent(f"""\
+            <?xml version="1.0"?>
+            <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+            <fontconfig>
+              <dir>{test_fonts_dir}</dir>
+            </fontconfig>
+            """)
+        font_config_path = self.fs.join(tmp_dir, 'fontconfig', 'fonts.conf')
+        self.fs.maybe_make_directory(self.fs.dirname(font_config_path))
+        self.fs.write_text_file(font_config_path, font_config)
+        self.host.environ['XDG_CONFIG_HOME'] = tmp_dir
 
     @contextlib.contextmanager
     def process_and_upload_results(self, runner_options: argparse.Namespace):
@@ -803,6 +832,7 @@ def main(argv) -> int:
             exit_code = _run_with_upstream_wpt(host, argv)
         else:
             adapter.set_up_derived_options()
+            adapter.create_config_files()
             exit_code = adapter.run_tests()
     except KeyboardInterrupt:
         # This clause catches interrupts outside `WPTAdapter.run_tests()`.

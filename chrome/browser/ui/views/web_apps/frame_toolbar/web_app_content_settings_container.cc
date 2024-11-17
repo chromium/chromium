@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_content_settings_container.h"
 
+#include "chrome/browser/ui/browser.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -21,6 +22,7 @@ constexpr base::TimeDelta kContentSettingsFadeInDuration =
 }  // namespace
 
 WebAppContentSettingsContainer::WebAppContentSettingsContainer(
+    Browser* browser,
     IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
     ContentSettingImageView::Delegate* content_setting_image_delegate) {
   views::BoxLayout& layout =
@@ -36,7 +38,7 @@ WebAppContentSettingsContainer::WebAppContentSettingsContainer(
   for (auto& model : models) {
     auto image_view = std::make_unique<ContentSettingImageView>(
         std::move(model), icon_label_bubble_delegate,
-        content_setting_image_delegate,
+        content_setting_image_delegate, browser,
         views::CustomFrameView::GetWindowTitleFontList());
     // Padding around content setting icons.
     constexpr auto kContentSettingIconInteriorPadding = gfx::Insets(4);

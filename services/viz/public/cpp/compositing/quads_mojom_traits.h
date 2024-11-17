@@ -56,8 +56,7 @@ struct EnumTraits<viz::mojom::ProtectedVideoState, gfx::ProtectedVideoType> {
       case gfx::ProtectedVideoType::kSoftwareProtected:
         return viz::mojom::ProtectedVideoState::kSoftwareProtected;
     }
-    NOTREACHED_IN_MIGRATION();
-    return viz::mojom::ProtectedVideoState::kClear;
+    NOTREACHED();
   }
 
   static bool FromMojom(viz::mojom::ProtectedVideoState input,
@@ -73,8 +72,7 @@ struct EnumTraits<viz::mojom::ProtectedVideoState, gfx::ProtectedVideoType> {
         *out = gfx::ProtectedVideoType::kSoftwareProtected;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -89,8 +87,7 @@ struct EnumTraits<viz::mojom::OverlayPriority, viz::OverlayPriority> {
       case viz::OverlayPriority::kRequired:
         return viz::mojom::OverlayPriority::kRequired;
     }
-    NOTREACHED_IN_MIGRATION();
-    return viz::mojom::OverlayPriority::kLow;
+    NOTREACHED();
   }
 
   static bool FromMojom(viz::mojom::OverlayPriority input,
@@ -106,8 +103,7 @@ struct EnumTraits<viz::mojom::OverlayPriority, viz::OverlayPriority> {
         *out = viz::OverlayPriority::kRequired;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
@@ -156,8 +152,7 @@ struct UnionTraits<viz::mojom::DrawQuadStateDataView, viz::DrawQuad> {
       case viz::DrawQuad::Material::kSharedElement:
         return viz::mojom::DrawQuadStateDataView::Tag::kSharedElementQuadState;
     }
-    NOTREACHED_IN_MIGRATION();
-    return viz::mojom::DrawQuadStateDataView::Tag::kDebugBorderQuadState;
+    NOTREACHED();
   }
 
   static const viz::DrawQuad& debug_border_quad_state(
@@ -220,18 +215,17 @@ struct UnionTraits<viz::mojom::DrawQuadStateDataView, viz::DrawQuad> {
       case viz::mojom::DrawQuadStateDataView::Tag::kSharedElementQuadState:
         return data.ReadSharedElementQuadState(out);
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 
 template <>
 struct StructTraits<viz::mojom::SharedElementQuadStateDataView, viz::DrawQuad> {
-  static const viz::ViewTransitionElementResourceId& resource_id(
+  static const viz::ViewTransitionElementResourceId& element_resource_id(
       const viz::DrawQuad& input) {
     const viz::SharedElementDrawQuad* quad =
         viz::SharedElementDrawQuad::MaterialCast(&input);
-    return quad->resource_id;
+    return quad->element_resource_id;
   }
 
   static bool Read(viz::mojom::SharedElementQuadStateDataView data,

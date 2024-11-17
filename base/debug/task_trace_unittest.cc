@@ -26,7 +26,7 @@ TEST(TaskTraceTest, NoTask) {
 
 class ThreeTasksTest {
  public:
-  ThreeTasksTest() {}
+  ThreeTasksTest() = default;
 
   void Run() {
     task_runner->PostTask(FROM_HERE, base::BindOnce(&ThreeTasksTest::TaskA,

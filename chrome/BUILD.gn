@@ -60,7 +60,7 @@ if (is_android) {
 
 # b/365489014: CrOS' chrome.sections_embedded target breaks on component builds;
 # there's no clear value of supporting it there, so disable it.
-_cros_generate_embed_section_target = is_chromeos_ash && !is_component_build
+_cros_generate_embed_section_target = is_chromeos && !is_component_build
 
 if (_cros_generate_embed_section_target) {
   import("//build/chromeos/embed_sections.gni")
@@ -174,7 +174,7 @@ if (!is_android && !is_mac) {
       data = [ "$root_out_dir/resources.pak" ]
       data_deps = []
 
-      if (is_chromeos_ash) {
+      if (is_chromeos) {
         data_deps += [
           "//components/variations/cros_evaluate_seed:evaluate_seed",
           "//sandbox/linux:chrome_sandbox",
@@ -186,10 +186,6 @@ if (!is_android && !is_mac) {
           "//components/exo/wayland:test_controller_stub",
           "//components/exo/wayland:ui_controls_protocol_stub",
         ]
-      }
-
-      if (also_build_lacros_chrome_for_architecture != "") {
-        data_deps += [ "//chrome:chrome(//build/toolchain/cros:lacros_clang)" ]
       }
 
       if (is_win) {
@@ -310,9 +306,6 @@ if (!is_android && !is_mac) {
           # Needed to use the master_preferences functions
           "//chrome/installer/util:with_no_strings",
           "//content/public/app",
-
-          # For headless mode.
-          "//headless:headless_shell_lib",
         ]
 
         public_deps = [
@@ -324,9 +317,8 @@ if (!is_android && !is_mac) {
 
         ldflags = []
 
-        # On Chrome OS builds (for both ash-chrome and lacros-chrome), put
-        # priority to the library in the installed directory.
-        # This will avoid conflicting of exposed symbols.
+        # On Chrome OS builds put priority to the library in the installed
+        # directory. This will avoid conflicting of exposed symbols.
         if (is_chromeos_device) {
           ldflags += [ "-L" + rebase_path(root_out_dir) ]
         }
@@ -339,33 +331,22 @@ if (!is_android && !is_mac) {
 
         # Chrome OS debug builds for arm need to pass --long-plt to the linker.
         # See https://bugs.chromium.org/p/chromium/issues/detail?id=583532
-        if (is_chromeos_ash && is_debug && target_cpu == "arm") {
+        if (is_chromeos && is_debug && target_cpu == "arm") {
           ldflags += [ "-Wl,--long-plt" ]
         }
 
-        if ((is_linux || is_chromeos_lacros) && !is_component_build &&
-            !using_sanitizer) {
+        if (is_linux && !is_component_build && !using_sanitizer) {
           version_script = "//build/linux/chrome.map"
           inputs = [ version_script ]
           ldflags += [ "-Wl,--version-script=" +
                        rebase_path(version_script, root_build_dir) ]
         }
 
-        if (is_chromeos_ash) {
+        if (is_chromeos) {
           public_deps += [ "//ui/lottie" ]
           deps += [
             "//chrome/browser/ash/locale",
             "//chrome/browser/ash/schedqos",
-          ]
-        }
-
-        if (is_chromeos_lacros) {
-          deps += [
-            "//chromeos/crosapi/cpp:crosapi_constants",
-            "//chromeos/crosapi/mojom",
-            "//chromeos/lacros:lacros_paths",
-            "//chromeos/startup",
-            "//ui/base",
           ]
         }
 
@@ -385,12 +366,8 @@ if (!is_android && !is_mac) {
 
       # ChromeOS by design is safe to have rpath=$ORIGIN. This simplifies shared
       # library usage.
-      if (is_chromeos_ash && !is_component_build) {
+      if (is_chromeos && !is_component_build) {
         configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
-      }
-
-      if (is_chromeos_lacros && is_chromeos_device) {
-        configs += [ "//build/lacros:optional_shared_libgcc" ]
       }
 
       data_deps += [
@@ -477,7 +454,7 @@ if (is_win) {
       deps += [ "//ui/compositor" ]
     }
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//chrome/browser/ash/schedqos" ]
     }
   }
@@ -1179,7 +1156,7 @@ if (is_win) {
       "//third_party/cld_3/src/src:cld_3",
     ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//chrome/browser/ash/schedqos" ]
     }
 
@@ -1236,6 +1213,8 @@ if (is_win) {
       ":optimization_guide_library",
       ":swiftshader_binaries",
       ":widevine_cdm_library",
+      "//chrome/browser/resources/media/mei_preload:component_bundle",
+      "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component_bundle",
     ]
 
     if (is_chrome_branded) {
@@ -1475,17 +1454,6 @@ group("dependencies") {
   }
 
   if (is_chromeos) {
-    public_deps += [ "//chromeos/dbus/constants" ]
-  }
-
-  if (is_chromeos_lacros) {
-    public_deps += [
-      "//chromeos/lacros",
-      "//chromeos/lacros/dbus",
-    ]
-  }
-
-  if (is_chromeos_ash) {
     public_deps += [
       "//ash/constants",
       "//chrome/browser/ash/boot_times_recorder",
@@ -1493,6 +1461,7 @@ group("dependencies") {
       "//chrome/browser/ash/schedqos",
       "//chromeos",
       "//chromeos/ash/components/memory",
+      "//chromeos/dbus/constants",
     ]
   }
 }
@@ -1716,7 +1685,7 @@ if (is_android) {
       ]
     }
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       public_deps += [ "//ui/lottie" ]
       deps += [ "//chrome/browser/ash/schedqos" ]
     }
@@ -1734,7 +1703,7 @@ if (is_win && enable_resource_allowlist_generation) {
 }
 
 if (is_linux || is_chromeos) {
-  if (is_official_build) {
+  if (!(is_debug && use_debug_fission)) {
     group("linux_symbols") {
       deps = [
         ":angle_egl_symbols",
@@ -1867,67 +1836,5 @@ if (_cros_generate_embed_section_target) {
     binary_input = "$root_out_dir/chrome"
     sections_embedded_binary_output = "$root_out_dir/chrome.sections_embedded"
     deps = [ ":chrome" ]
-  }
-}
-
-if (is_chromeos_lacros && is_official_build) {
-  # This target is responsible for stripping symbols out of lacros files.
-  # Adding/removing targets here, you also need a corresponding change
-  # in src-internal for the release builder.
-  group("strip_lacros_files") {
-    deps = [
-      ":strip_chrome_binary",
-      ":strip_chrome_crashpad_handler",
-      ":strip_libegl_so",
-      ":strip_libglesv2_so",
-      ":strip_nacl_helper",
-    ]
-    if (target_cpu == "arm" || target_cpu == "arm64") {
-      deps += [ ":strip_nacl_helper_bootstrap" ]
-    }
-  }
-
-  # This will strip chrome binary and produce chrome.debug with symbols.
-  strip_binary("strip_chrome_binary") {
-    binary_input = "$root_out_dir/chrome"
-    symbol_output = "$root_out_dir/chrome.debug"
-    stripped_binary_output = "$root_out_dir/chrome.stripped"
-    deps = [ ":chrome" ]
-  }
-  strip_binary("strip_chrome_crashpad_handler") {
-    binary_input = "$root_out_dir/chrome_crashpad_handler"
-    symbol_output = "$root_out_dir/chrome_crashpad_handler.debug"
-    stripped_binary_output = "$root_out_dir/chrome_crashpad_handler.stripped"
-    deps = [ "//components/crash/core/app:chrome_crashpad_handler" ]
-  }
-  strip_binary("strip_libegl_so") {
-    binary_input = "$root_out_dir/libEGL.so"
-    symbol_output = "$root_out_dir/libEGL.so.debug"
-    stripped_binary_output = "$root_out_dir/libEGL.so.stripped"
-    deps = [ "//third_party/angle:libEGL" ]
-  }
-  strip_binary("strip_libglesv2_so") {
-    binary_input = "$root_out_dir/libGLESv2.so"
-    symbol_output = "$root_out_dir/libGLESv2.so.debug"
-    stripped_binary_output = "$root_out_dir/libGLESv2.so.stripped"
-    deps = [ "//third_party/angle:libGLESv2" ]
-  }
-  strip_binary("strip_nacl_helper") {
-    binary_input = "$root_out_dir/nacl_helper"
-    symbol_output = "$root_out_dir/nacl_helper.debug"
-    stripped_binary_output = "$root_out_dir/nacl_helper.stripped"
-    deps = [ "//components/nacl/loader:nacl_helper" ]
-  }
-  if (target_cpu == "arm" || target_cpu == "arm64") {
-    strip_binary("strip_nacl_helper_bootstrap") {
-      binary_input = "$root_out_dir/nacl_helper_bootstrap"
-      symbol_output = "$root_out_dir/nacl_helper_bootstrap.debug"
-      stripped_binary_output = "$root_out_dir/nacl_helper_bootstrap.stripped"
-      if (target_cpu == "arm") {
-        deps = [ "//native_client/src/trusted/service_runtime/linux:bootstrap" ]
-      } else {
-        deps = [ "//components/nacl/loader:nacl_helper_bootstrap" ]
-      }
-    }
   }
 }

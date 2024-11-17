@@ -86,52 +86,25 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // drag controller.
   bool IsDragInProgress() const;
 
-  // Tells if "extended drag" extension is available.
-  bool IsExtendedDragAvailable() const;
-  // Tells if "xdg toplevel drag" extension is available.
-  bool IsXdgToplevelDragAvailable() const;
+  // Tells if any of the window drag protocol (ie: zcr-extended-drag-v1 or
+  // xdg-toplevel-drag-v1) is available. May also return true in tests if
+  // `window_drag_protocol_available_for_testing_` is set.
+  bool IsWindowDragProtocolAvailable() const;
 
   // Returns true if there there is currently an active drag-and-drop session.
   // This is true if the `data_source_` exists (the session ends when this is
   // destroyed).
   bool IsActiveDragAndDropSession() const;
 
-  void DumpState(std::ostream& out) const;
-
-  // Makes IsExtendedDragAvailable() always return true.
-  void set_extended_drag_available_for_testing(bool available) {
-    extended_drag_available_for_testing_ = available;
-  }
-
-  WaylandWindow* drag_target_window_for_testing() {
-    return drag_target_window_;
-  }
-  WaylandWindow* dragged_window_for_testing() { return dragged_window_; }
-  WaylandWindow* origin_window_for_testing() { return origin_window_; }
-  WaylandWindow* pointer_grab_owner_for_testing() {
-    return pointer_grab_owner_;
-  }
-
   std::optional<mojom::DragEventSource> drag_source() { return drag_source_; }
 
-  const gfx::Vector2d& drag_offset_for_testing() const { return drag_offset_; }
-
-  bool has_received_enter_for_testing() const { return has_received_enter_; }
+  void DumpState(std::ostream& out) const;
 
  private:
   class ExtendedDragSource;
   class XdgToplevelDrag;
 
-  friend class WaylandWindowDragControllerTest;
-  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
-                           HandleDraggedWindowDestructionAfterMoveLoop);
-  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
-                           HandleWindowsDestructionDuringMoveLoop);
-  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
-                           HandleTargetWindowDestruction_DetachedState);
-  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
-                           HandleTargetWindowDestruction_AttachedState);
-  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest, GetSerial);
+  friend class WaylandWindowDragControllerTestApi;
 
   // WaylandDataDevice::DragDelegate:
   bool IsDragSource() const override;
@@ -145,9 +118,10 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
                     base::TimeTicks timestamp) override;
   void OnDragLeave(base::TimeTicks timestamp) override;
   void OnDragDrop(base::TimeTicks timestamp) override;
-  const WaylandWindow* GetDragTarget() const override;
 
   // WaylandDataSource::Delegate
+  void OnDataSourceDropPerformed(WaylandDataSource* source,
+                                 base::TimeTicks timestamp) override;
   void OnDataSourceFinish(WaylandDataSource* source,
                           base::TimeTicks timestamp,
                           bool completed) override;
@@ -165,6 +139,10 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // Handles drag/move mouse |event|, while in |kDetached| mode, forwarding it
   // as a bounds change event to the upper layer handlers.
   void HandleMotionEvent(LocatedEvent* event);
+  // Handles drag session end, which might correspond to either a successful
+  // drop, notified through wl_data_source.dnd_drop_performed or a source
+  // finish/cancellation.
+  void HandleDragEnd(bool completed, base::TimeTicks timestamp);
   // Handles the mouse button release (i.e: drop). Dispatches the required
   // events and resets the internal state.
   void HandleDropAndResetState(base::TimeTicks timestamp);
@@ -178,9 +156,6 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // extended-drag extension is available.
   void SetDraggedWindow(WaylandToplevelWindow* window,
                         const gfx::Vector2d& offset);
-  // Tells if "extended drag" extension is available, ignoring
-  // |extended_drag_available_for_testing_|.
-  bool IsExtendedDragAvailableInternal() const;
 
   // Returns the serial for the given |drag_source| if |origin| has the
   // corresponding focus, otherwise return null.
@@ -235,21 +210,16 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   // Tells if the current drag motion events should be processed.
   //
-  // The processing of drag motion events should be suspended when:
-  //
-  // 1/ Buggy compositors send wl_pointer::motion events, for example, while
-  // a DND session is still in progress, which leads to issues in window
-  // dragging sessions.
-  //
-  // 2/ `Screen coordinates` feature is enabled, given that in this mode
-  // the surface location during a window drag operation is updated
-  // via `zaura_shell::origin_change` request.
+  // The processing of drag motion events should be suspended for buggy
+  // compositors send wl_pointer::motion events, for example, while a DND
+  // session is still in progress, which leads to issues in window dragging
+  // sessions.
   //
   // This flag is used to make window drag controller resistant to such
   // scenarios.
   bool should_process_drag_motion_events_ = false;
 
-  bool extended_drag_available_for_testing_ = false;
+  bool window_drag_protocol_available_for_testing_ = false;
 
   base::WeakPtrFactory<WaylandWindowDragController> weak_factory_{this};
 };

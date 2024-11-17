@@ -14,9 +14,6 @@
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
-#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -52,15 +49,11 @@
 
 #pragma mark - Private
 
-// Returns true if the Credentials Provider Extension is enabled.
+// Returns YES if the Credentials Provider Extension is enabled.
 - (BOOL)isCredentialsProviderConditionMet {
-  DCHECK(self.sceneState.browserProviderInterface.mainBrowserProvider.browser);
-  PrefService* pref_service =
-      self.sceneState.browserProviderInterface.mainBrowserProvider.browser
-          ->GetProfile()
-          ->GetPrefs();
+  PrefService* localState = GetApplicationContext()->GetLocalState();
   return password_manager_util::IsCredentialProviderEnabledOnStartup(
-      pref_service);
+      localState);
 }
 
 // Returns true if this is likely the user's default browser and the user is not

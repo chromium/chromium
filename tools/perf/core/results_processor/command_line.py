@@ -182,8 +182,8 @@ def ProcessOptions(options):
     options.intermediate_dir = resolve_dir(options.intermediate_dir)
   else:
     start_time = datetime.datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')
-    options.intermediate_dir = os.path.join(
-        options.output_dir, 'artifacts', 'run_%s' % start_time)
+    options.intermediate_dir = os.path.join(options.output_dir, 'artifacts',
+                                            'run_%s' % start_time)
 
   if options.upload_results:
     options.upload_bucket = cloud_storage.BUCKET_ALIASES.get(

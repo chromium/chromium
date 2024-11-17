@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
@@ -35,12 +36,13 @@ class IdentityManager;
 namespace optimization_guide {
 
 class ModelExecutionFetcher;
-class OnDeviceModelComponentStateManager;
 class OnDeviceModelAdaptationLoader;
 class OnDeviceModelServiceController;
 class OptimizationGuideModelProvider;
 
-class ModelExecutionManager : public OptimizationTargetModelObserver {
+class ModelExecutionManager
+    : public OptimizationTargetModelObserver,
+      public OnDeviceModelComponentStateManager::Observer {
  public:
   ModelExecutionManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -68,6 +70,7 @@ class ModelExecutionManager : public OptimizationTargetModelObserver {
   void ExecuteModel(
       ModelBasedCapabilityKey feature,
       const google::protobuf::MessageLite& request_metadata,
+      std::optional<base::TimeDelta> timeout,
       std::unique_ptr<proto::LogAiDataRequest> log_ai_data_request,
       OptimizationGuideModelExecutionResultCallback callback);
 
@@ -87,6 +90,9 @@ class ModelExecutionManager : public OptimizationTargetModelObserver {
   void OnModelUpdated(proto::OptimizationTarget target,
                       base::optional_ref<const ModelInfo> model_info) override;
 
+  // OnDeviceModelComponentStateManager::Observer:
+  void StateChanged(const OnDeviceModelComponentState* state) override;
+
   void Shutdown();
 
  private:
@@ -97,6 +103,10 @@ class ModelExecutionManager : public OptimizationTargetModelObserver {
       OptimizationGuideModelExecutionResultCallback callback,
       base::expected<const proto::ExecuteResponse,
                      OptimizationGuideModelExecutionError> execute_response);
+
+  // Registers text safety and language detection models. Does nothing if
+  // already registered.
+  void RegisterTextSafetyAndLanguageModels();
 
   // Owned by OptimizationGuideKeyedService and outlives `this`. This is to be
   // passed through the ModelQualityLogEntry to invoke upload during log

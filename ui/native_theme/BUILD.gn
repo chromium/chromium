@@ -16,10 +16,7 @@ component("features") {
     "native_theme_features.h",
   ]
 
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-  ]
+  deps = [ "//base" ]
 }
 
 component("native_theme") {
@@ -91,7 +88,6 @@ component("native_theme") {
 
   deps = [
     "//base",
-    "//build:chromeos_buildflags",
     "//cc/paint",
     "//ui/base",
     "//ui/color",

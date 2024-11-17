@@ -23,6 +23,7 @@
  */
 
 import type {VolumeInfo} from '../../background/js/volume_info.js';
+import {ICON_TYPES} from '../../foreground/js/constants.js';
 import {oneDriveFakeRootKey} from '../../state/ducks/volumes.js';
 
 import {isSameEntry} from './entry_utils.js';
@@ -1012,7 +1013,6 @@ export class OneDrivePlaceholder extends FakeEntryImpl {
   }
 
   override get iconName(): string {
-    // TODO(b/340168761): Use proper icon.
-    return RootType.DRIVE;
+    return ICON_TYPES.ODFS;
   }
 }

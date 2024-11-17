@@ -33,6 +33,59 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="BuyerAndSellerReportingId"/>
 </enum>
 
+<enum name="EmbeddingModelLoadDlcStatus">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kInvalidUuid"/>
+  <int value="2" label="kReadJsonFailed"/>
+  <int value="3" label="kParseJsonFailed"/>
+  <int value="4" label="kNoModelType"/>
+  <int value="5" label="kNoModelVersion"/>
+  <int value="6" label="kNoTfliteInfo"/>
+  <int value="7" label="kUnknownModelType"/>
+  <int value="8" label="kNoTflitePath"/>
+  <int value="9" label="kNoBuiltinSpm"/>
+  <int value="10" label="kNoSpmPath"/>
+  <int value="11" label="kNoDelegate"/>
+  <int value="12" label="kInstallFailed"/>
+</enum>
+
+<enum name="EmbeddingModelLoadEmbeddingStatus">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kRetryBlocked"/>
+  <int value="2" label="kBuildRunnerFailed"/>
+  <int value="3" label="kRunnerLoadFailed"/>
+</enum>
+
+<enum name="EmbeddingModelTfliteRunnerLoadStatus">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kUnsupportedDelegate"/>
+  <int value="2" label="kNoOdmlShim"/>
+  <int value="3" label="kFailedToLoadTokenizer"/>
+  <int value="4" label="kFailedToLoadFlatBufferModel"/>
+  <int value="5" label="kCantResolveModelOps"/>
+  <int value="6" label="kNoGpuOpenClDelegate"/>
+  <int value="7" label="kGpuOpenClDelegateModifyFailed"/>
+  <int value="8" label="kCantAllocateTensors"/>
+  <int value="9" label="kIncorrectInputSize"/>
+  <int value="10" label="kIncorrectOutputSize"/>
+</enum>
+
+<enum name="EmbeddingModelTfliteRunnerRunStatus">
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kNotLoaded"/>
+  <int value="2" label="kNoFormatFunctionInShim"/>
+  <int value="3" label="kFormatFailed"/>
+  <int value="4" label="kTokenizeFailed"/>
+  <int value="5" label="kTooLong"/>
+  <int value="6" label="kInvokeFailed"/>
+</enum>
+
+<enum name="EncryptionPrefixVersion">
+  <int value="0" label="No prefix found"/>
+  <int value="1" label="Version v10"/>
+  <int value="2" label="Version v11"/>
+</enum>
+
 <enum name="HappinessTrackingSurvey">
   <summary>Possible survey states and answers for each question.</summary>
   <int value="1" label="Survey Triggered"/>
@@ -92,6 +145,12 @@ chromium-metrics-reviews@google.com.
   <int value="510" label="Question 5 - Answer 10"/>
 </enum>
 
+<enum name="ImportantFileReplaceResult">
+  <int value="0" label="Succeeded on first attempt"/>
+  <int value="1" label="Succeeded after retries"/>
+  <int value="2" label="Failed after retry limit"/>
+</enum>
+
 <enum name="RedactionToolCaller">
   <summary>The caller of the redaction tool.</summary>
   <int value="1" label="System Logs Uploader"/>
@@ -118,6 +177,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Used shared process"/>
   <int value="2" label="Used existing dedicated process"/>
   <int value="3" label="Created new dedicated process"/>
+  <int value="4" label="Used idle process"/>
 </enum>
 
 <enum name="SalientImageUrlFetchResult">
@@ -149,6 +209,18 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Silent push without notification"/>
   <int value="3" label="Silent push with generic notification"/>
 </enum>
+
+<!-- LINT.IfChange(WebDatabaseAutofillAccountStorageWithReason) -->
+
+<enum name="WebDatabaseAutofillAccountStorageWithReason">
+  <int value="0" label="In memory (flag disabled)"/>
+  <int value="1" label="In memory (signed in implicitly)"/>
+  <int value="2" label="On disk (signed out)"/>
+  <int value="3" label="On disk (signed in explicitly)"/>
+  <int value="4" label="On disk (full sync on)"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/webdata_services/web_data_service_factory.cc:WebDatabaseAutofillAccountStorageWithReason) -->
 
 <!--
   Names are converted to ASCII before hashing - generate new hashes with:

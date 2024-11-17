@@ -53,6 +53,7 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static void SubmitPassword(const AccountId& account_id,
                              const std::string& password,
                              bool check_if_submittable);
+  static void SubmitPin(const AccountId& account_id, const std::string& pin);
   static std::u16string GetChallengeResponseLabel(const AccountId& account_id);
   static bool IsChallengeResponseButtonClickable(const AccountId& account_id);
   static void ClickChallengeResponseButton(const AccountId& account_id);
@@ -111,6 +112,7 @@ class ASH_PUBLIC_EXPORT LoginScreenTestApi {
   static void CancelLocalAuthenticationDialog();
   static void SubmitPasswordLocalAuthenticationDialog(
       const std::string& password);
+  static void SubmitPinLocalAuthenticationDialog(const std::string& pin);
 
   // AuthErrorBubble methods.
   static bool IsAuthErrorBubbleShown();

@@ -30,7 +30,6 @@ async function init() {
   if (fencedframe_register == "source") {
     registerAttributionSrcByImg(createRedirectChain([
       {
-        cookie: 'foo=bar;Secure;HttpOnly;Path=/',
         reportingOrigin,
         source: source_obj
       },
@@ -38,7 +37,6 @@ async function init() {
   } else {
     registerAttributionSrcByImg(createRedirectChain([
       {
-        cookie: 'foo=bar;Secure;HttpOnly;Path=/',
         reportingOrigin,
         trigger: trigger_obj
       },

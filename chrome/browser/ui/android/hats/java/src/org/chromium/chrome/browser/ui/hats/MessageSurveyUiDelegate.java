@@ -25,7 +25,6 @@ import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -326,7 +325,7 @@ public class MessageSurveyUiDelegate implements SurveyUiDelegate {
                     }
 
                     @Override
-                    public void onPageLoadFinished(Tab tab, GURL url) {
+                    public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
                         if (!isTabReadyForSurvey(mLoadingTab)) return;
                         removeLoadingTabReferences();
                         showSurveyIfReady();

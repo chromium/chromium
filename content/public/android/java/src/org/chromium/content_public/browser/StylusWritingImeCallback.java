@@ -21,7 +21,6 @@ public interface StylusWritingImeCallback {
      *
      * @param start Selection start index.
      * @param end Selection end index.
-     * @return Whether the native counterpart of ImeAdapter received the call.
      */
     void setEditableSelectionOffsets(int start, int end);
 

@@ -35,6 +35,7 @@
         "fuchsia.net.name.Lookup",
         "fuchsia.posix.socket.Provider",
         "fuchsia.process.Launcher",
+        "fuchsia.scheduler.RoleManager",
         "fuchsia.ui.composition.Allocator",
         "fuchsia.ui.composition.Flatland",
         "fuchsia.ui.input3.Keyboard",

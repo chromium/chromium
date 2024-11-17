@@ -91,9 +91,14 @@ bool IsProtocolDefaultPort(const String& protocol, const String& port) {
 // Base URL values that include pattern string characters should not blow
 // up pattern parsing.  Automatically escape them.  We must not escape inputs
 // for non-pattern base URLs, though.
-String EscapeBaseURLString(const String& input, ValueType type) {
-  if (type != ValueType::kPattern || !input.length())
-    return input;
+String EscapeBaseURLString(const StringView& input, ValueType type) {
+  if (input.empty()) {
+    return g_empty_string;
+  }
+
+  if (type != ValueType::kPattern) {
+    return input.ToString();
+  }
 
   std::string result;
   result.reserve(input.length());
@@ -150,25 +155,22 @@ void ApplyInit(const URLPatternInit* init,
     //                                 +-> pathname --> search --> hash
     // protocol --> hostname --> port -|
     //                                 +-> username --> password
-    protocol = init->hasProtocol() ? String()
-               : base_url.Protocol()
-                   ? EscapeBaseURLString(base_url.Protocol(), type)
-                   : g_empty_string;
+    protocol = init->hasProtocol()
+                   ? String()
+                   : EscapeBaseURLString(base_url.Protocol(), type);
     username = (type == ValueType::kPattern ||
                 (init->hasProtocol() || init->hasHostname() ||
                  init->hasPort() || init->hasUsername()))
                    ? String()
-               : base_url.User() ? EscapeBaseURLString(base_url.User(), type)
-                                 : g_empty_string;
+                   : EscapeBaseURLString(base_url.User(), type);
     password = (type == ValueType::kPattern ||
                 (init->hasProtocol() || init->hasHostname() ||
                  init->hasPort() || init->hasUsername() || init->hasPassword()))
                    ? String()
-               : base_url.Pass() ? EscapeBaseURLString(base_url.Pass(), type)
-                                 : g_empty_string;
-    hostname = (init->hasProtocol() || init->hasHostname()) ? String()
-               : base_url.Host() ? EscapeBaseURLString(base_url.Host(), type)
-                                 : g_empty_string;
+                   : EscapeBaseURLString(base_url.Pass(), type);
+    hostname = (init->hasProtocol() || init->hasHostname())
+                   ? String()
+                   : EscapeBaseURLString(base_url.Host(), type);
     port = (init->hasProtocol() || init->hasHostname() || init->hasPort())
                ? String()
            : base_url.Port() > 0 ? String::Number(base_url.Port())
@@ -176,14 +178,11 @@ void ApplyInit(const URLPatternInit* init,
     pathname = (init->hasProtocol() || init->hasHostname() || init->hasPort() ||
                 init->hasPathname())
                    ? String()
-               : base_url.GetPath()
-                   ? EscapeBaseURLString(base_url.GetPath(), type)
-                   : g_empty_string;
+                   : EscapeBaseURLString(base_url.GetPath(), type);
     search = (init->hasProtocol() || init->hasHostname() || init->hasPort() ||
               init->hasPathname() || init->hasSearch())
                  ? String()
-             : base_url.Query() ? EscapeBaseURLString(base_url.Query(), type)
-                                : g_empty_string;
+                 : EscapeBaseURLString(base_url.Query(), type);
     hash = (init->hasProtocol() || init->hasHostname() || init->hasPort() ||
             init->hasPathname() || init->hasSearch() || init->hasHash())
                ? String()
@@ -781,7 +780,7 @@ int URLPattern::compareComponent(const V8URLPatternComponent& component,
     case V8URLPatternComponent::Enum::kHash:
       return url_pattern::Component::Compare(*left->hash_, *right->hash_);
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::optional<SafeUrlPattern> URLPattern::ToSafeUrlPattern(
@@ -882,12 +881,13 @@ bool URLPattern::Match(ScriptState* script_state,
 
       inputs.push_back(MakeGarbageCollected<V8URLPatternInput>(init));
 
+      v8::TryCatch try_catch(script_state->GetIsolate());
       // Layer the URLPatternInit values on top of the default empty strings.
       ApplyInit(init, ValueType::kURL, protocol, username, password, hostname,
-                port, pathname, search, hash, exception_state);
-      if (exception_state.HadException()) {
+                port, pathname, search, hash,
+                PassThroughException(script_state->GetIsolate()));
+      if (try_catch.HasCaught()) {
         // Treat exceptions simply as a failure to match.
-        exception_state.ClearException();
         return false;
       }
       break;
@@ -915,20 +915,27 @@ bool URLPattern::Match(ScriptState* script_state,
       // Apply the parsed URL components on top of our defaults.
       if (url.Protocol())
         protocol = url.Protocol();
-      if (url.User())
-        username = url.User();
-      if (url.Pass())
-        password = url.Pass();
-      if (url.Host())
-        hostname = url.Host();
-      if (url.Port() > 0)
+      if (!url.User().empty()) {
+        username = url.User().ToString();
+      }
+      if (!url.Pass().empty()) {
+        password = url.Pass().ToString();
+      }
+      if (!url.Host().empty()) {
+        hostname = url.Host().ToString();
+      }
+      if (url.Port() > 0) {
         port = String::Number(url.Port());
-      if (url.GetPath())
-        pathname = url.GetPath();
-      if (url.Query())
-        search = url.Query();
-      if (url.FragmentIdentifier())
-        hash = url.FragmentIdentifier();
+      }
+      if (!url.GetPath().empty()) {
+        pathname = url.GetPath().ToString();
+      }
+      if (!url.Query().empty()) {
+        search = url.Query().ToString();
+      }
+      if (url.HasFragmentIdentifier()) {
+        hash = url.FragmentIdentifier().ToString();
+      }
       break;
     }
   }

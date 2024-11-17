@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">ਸਧਾਰਨ</translation>
 <translation id="1591562245178063882">ਇਸ ਮਹੀਨੇ</translation>
 <translation id="1637811476055996098">ਫਾਈਲਾਂ ਚੁਣੋ</translation>
-<translation id="1680090928918677457">ਕੈਮਰਾ ਵਰਤੋ</translation>
 <translation id="1729654308190250600">ਕਿਰਪਾ ਕਰਰਕੇ ਇੱਕ ਗ਼ੈਰ-ਖਾਲੀ ਈਮੇਲ ਪਤਾ ਦਰਜ ਕਰੋ।</translation>
 <translation id="1758486001363313524">ਹੋਰ...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਲਿਖਤ ਨੂੰ <ph name="MAX_CHARACTERS" /> ਅੱਖਰਾਂ ਤੱਕ ਜਾਂ ਇਸ ਤੋਂ ਘੱਟ ਵਿੱਚ ਛੋਟਾ ਕਰੋ (ਇਸ ਵੇਲੇ ਤੁਸੀਂ <ph name="CURRENT_LENGTH" /> ਅੱਖਰ ਵਰਤ ਰਹੇ ਹੋ)।</translation>
 <translation id="2247351761944213033">ਹਫ਼ਤਾ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ਟਰੈਕ <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">ਕੈਮਰਾ ਅਤੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਸੰਬੰਧੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="2507943997699731163">ਕਿਰਪਾ ਕਰਕੇ ਇਹ ਖੇਤਰ ਭਰੋ।</translation>
 <translation id="2613802280814924224">ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਪ੍ਰਮਾਣਿਕ ਵੈਲਯੂ ਦਰਜ ਕਰੋ। ਸਭ ਤੋਂ ਵੱਧ ਨੇੜੇ ਦੀ ਪ੍ਰਮਾਣਿਤ ਵੈਲਯੂ <ph name="VALID_VALUE" /> ਹੈ।</translation>
 <translation id="2653659639078652383">ਪ੍ਰਸਤੁਤ ਕਰੋ</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਲਿਖਤ ਨੂੰ <ph name="MIN_CHARACTERS" /> ਅੱਖਰਾਂ ਤੱਕ ਜਾਂ ਇਸ ਤੋਂ ਵੱਧ ਵਿੱਚ ਵਧਾਓ (ਇਸ ਵੇਲੇ ਤੁਸੀਂ <ph name="CURRENT_LENGTH" /> ਅੱਖਰ ਵਰਤ ਰਹੇ ਹੋ)।</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' ਤੋਂ ਬਾਅਦ ਦੇ ਭਾਗ ਵਿੱਚ ਚਿੰਨ੍ਹ '<ph name="INVALIDCHARACTER" />' ਨਹੀਂ ਹੋਣਾ ਚਾਹੀਦਾ।</translation>
 <translation id="3846214748874656680">ਫੁਲਸਕ੍ਰੀਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
-<translation id="4031179711345676612">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="4360991593054037559">ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਪ੍ਰਮਾਣਿਕ ਵੈਲਯੂ ਦਰਜ ਕਰੋ। ਦੋ ਲਗਭਗ ਵੈਲਯੂਜ <ph name="VALID_VALUE_LOW" /> ਅਤੇ <ph name="VALID_VALUE_HIGHER" /> ਹਨ।</translation>
 <translation id="4522570452068850558">ਵੇਰਵੇ</translation>
-<translation id="4663373278480897665">ਕੈਮਰੇ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ਤੋਂ ਬਾਅਦ ਇੱਕ ਭਾਗ ਵਿੱਚ ਚਿੰਨ੍ਹ '<ph name="INVALIDCHARACTER" />' ਨਹੀਂ ਹੋਣਾ ਚਾਹੀਦਾ।</translation>
 <translation id="4718048029184481307">ਤਸਵੀਰ-ਵਿੱਚ-ਤਸਵੀਰ ਮੋਡ ਵਿੱਚ ਚੱਲ ਰਿਹਾ ਹੈ</translation>
-<translation id="4792862212177489858">ਟਿਕਾਣਾ ਸਾਂਝਾ ਕਰੋ</translation>
 <translation id="4812940957355064477">ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਨੰਬਰ ਦਰਜ ਕਰੋ।</translation>
-<translation id="49269513399674318">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਵਰਤੋ</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ਚੁਣਿਆ ਗਿਆ</translation>
 <translation id="4992066212339426712">ਅਨਮਿਊਟ ਕਰੋ</translation>
 <translation id="49969490063480558">ਕਿਰਪਾ ਕਰਕੇ '<ph name="ATSIGN" />' ਤੋਂ ਬਾਅਦ ਇੱਕ ਭਾਗ ਦਰਜ ਕਰੋ। '<ph name="INVALIDADDRESS" />' ਅਧੂਰਾ ਹੈ।</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">ਪਲੱਗਇਨ ਲੋਡ ਨਹੀਂ ਹੋ ਸਕਿਆ</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਲਿਖਤ ਨੂੰ <ph name="MIN_CHARACTERS" /> ਅੱਖਰਾਂ ਤੱਕ ਜਾਂ ਇਸ ਤੋਂ ਵੱਧ ਵਿੱਚ ਵਧਾਓ (ਇਸ ਵੇਲੇ ਤੁਸੀਂ 1 ਅੱਖਰ ਵਰਤ ਰਹੇ ਹੋ)।</translation>
-<translation id="7080893216867146095">ਟਿਕਾਣੇ ਨੂੰ ਸਾਂਝਾ ਕਰਨ ਦੀ ਆਗਿਆ ਹੈ</translation>
 <translation id="709897737746224366">ਕਿਰਪਾ ਕਰਕੇ ਬੇਨਤੀ ਕੀਤਾ ਫੌਰਮੈਟ ਮੈਚ ਕਰੋ।</translation>
-<translation id="7134810312945846184">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਅਤੇ ਕੈਮਰਾ ਵਰਤੋ</translation>
 <translation id="7263440858009898357">ਕਿਰਪਾ ਕਰਕੇ ਸੂਚੀ ਵਿੱਚ ਇੱਕ ਆਈਟਮ ਚੁਣੋ।</translation>
 <translation id="7364796246159120393">ਫਾਈਲ ਚੁਣੋ</translation>
 <translation id="739024184232394898">ਹੋਰ...</translation>

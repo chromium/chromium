@@ -10,23 +10,42 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_uma_util.h"
+#include "mojo/public/cpp/bindings/lib/string_serialization.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace {
 
-constexpr char kWebAppsKey[] = "web_apps";
-constexpr char kWebAppIdentity[] = "web_app_identity";
+constexpr char kExtendedScope[] = "scope";
 
 }  // anonymous namespace
 
 namespace webapps {
+
+const char kWebAppOriginAssociationParserFormatError[] =
+    R"("Invalid association format. Associations must start with a valid
+    manifest id e.g.
+    {
+     "https://example.com/app" : {
+       "scope": "/"
+      }
+    })";
+const char kInvalidManifestId[] =
+    "Associated app ignored. Manifest ID is not a valid URL.";
+// Value refers to the key:value pair. The value must be a dictionary/JSON
+// object.
+const char kInvalidValueType[] =
+    "Associated app ignored, type object expected.";
+const char kInvalidScopeUrl[] =
+    "Associated app ignored. Required property 'scope' is not a valid URL.";
 
 WebAppOriginAssociationParser::WebAppOriginAssociationParser() = default;
 
 WebAppOriginAssociationParser::~WebAppOriginAssociationParser() = default;
 
 mojom::WebAppOriginAssociationPtr WebAppOriginAssociationParser::Parse(
-    const std::string& data) {
+    const std::string& data,
+    const url::Origin& origin) {
   using Result = webapps::WebAppOriginAssociationMetrics::ParseResult;
   auto result =
       [&]() -> base::expected<mojom::WebAppOriginAssociationPtr, Result> {
@@ -42,7 +61,7 @@ mojom::WebAppOriginAssociationPtr WebAppOriginAssociationParser::Parse(
     }
 
     auto association = mojom::WebAppOriginAssociation::New();
-    association->apps = ParseAssociatedWebApps(parsed_data.GetDict());
+    association->apps = ParseAssociatedWebApps(parsed_data.GetDict(), origin);
     return association;
   }();
   webapps::WebAppOriginAssociationMetrics::RecordParseResult(
@@ -64,65 +83,59 @@ WebAppOriginAssociationParser::GetErrors() {
 
 std::vector<mojom::AssociatedWebAppPtr>
 WebAppOriginAssociationParser::ParseAssociatedWebApps(
-    const base::Value::Dict& root_dict) {
+    const base::Value::Dict& root_dict,
+    const url::Origin& origin) {
   std::vector<mojom::AssociatedWebAppPtr> result;
-  const base::Value::List* apps_value = root_dict.FindList(kWebAppsKey);
-  if (!apps_value) {
-    if (root_dict.contains(kWebAppsKey)) {
-      AddErrorInfo("Property '" + std::string(kWebAppsKey) +
-                   "' ignored, type array expected.");
-      return result;
-    }
-
-    AddErrorInfo("Origin association ignored. Required property '" +
-                 std::string(kWebAppsKey) + "' expected.");
+  if (root_dict.empty()) {
+    AddErrorInfo(kWebAppOriginAssociationParserFormatError);
     return result;
   }
-
-  for (const auto& app_item : *apps_value) {
-    if (!app_item.is_dict()) {
-      AddErrorInfo("Associated app ignored, type object expected.");
+  for (const auto iter : root_dict) {
+    GURL web_app_manifest_id(iter.first);
+    if (!web_app_manifest_id.is_valid()) {
+      AddErrorInfo(kInvalidManifestId);
       continue;
     }
 
-    std::optional<mojom::AssociatedWebAppPtr> app =
-        ParseAssociatedWebApp(app_item.GetDict());
-    if (!app)
+    if (!iter.second.is_dict()) {
+      AddErrorInfo(kInvalidValueType);
       continue;
+    }
 
-    result.push_back(std::move(app.value()));
+    std::optional<GURL> extended_scope =
+        ParseExtendedScope(iter.second.GetDict(), origin);
+    if (!extended_scope) {
+      continue;
+    }
+
+    mojom::AssociatedWebAppPtr app = mojom::AssociatedWebApp::New();
+    app->web_app_identity = std::move(web_app_manifest_id);
+    app->scope = std::move(extended_scope.value());
+    result.push_back(std::move(app));
   }
 
   return result;
 }
 
-std::optional<mojom::AssociatedWebAppPtr>
-WebAppOriginAssociationParser::ParseAssociatedWebApp(
-    const base::Value::Dict& app_dict) {
-  const std::string* web_app_identity_url_value =
-      app_dict.FindString(kWebAppIdentity);
-  if (!web_app_identity_url_value) {
-    if (app_dict.contains(kWebAppIdentity)) {
-      AddErrorInfo("Associated app ignored. Required property '" +
-                   std::string(kWebAppIdentity) + "' is not a string.");
-      return std::nullopt;
-    }
-
-    AddErrorInfo("Associated app ignored. Required property '" +
-                 std::string(kWebAppIdentity) + "' does not exist.");
+std::optional<GURL> WebAppOriginAssociationParser::ParseExtendedScope(
+    const base::Value::Dict& extended_scope_info,
+    const url::Origin& origin) {
+  const std::string* extended_scope_ptr =
+      extended_scope_info.FindString(kExtendedScope);
+  if (!extended_scope_ptr || extended_scope_ptr->empty()) {
+    // No explicit `scope` defaults to root ie the scope of associate's origin.
+    return origin.GetURL();
+  }
+  GURL result = origin.GetURL().Resolve(*extended_scope_ptr);
+  if (!result.is_valid()) {
+    AddErrorInfo(kInvalidScopeUrl);
     return std::nullopt;
   }
-
-  GURL web_app_identity(*web_app_identity_url_value);
-  if (!web_app_identity.is_valid()) {
-    AddErrorInfo("Associated app ignored. Required property '" +
-                 std::string(kWebAppIdentity) + "' is not a valid URL.");
+  if (!UrlIsWithinScope(result, origin)) {
+    AddErrorInfo(kInvalidScopeUrl);
     return std::nullopt;
   }
-
-  mojom::AssociatedWebAppPtr app = mojom::AssociatedWebApp::New();
-  app->web_app_identity = web_app_identity;
-  return app;
+  return result;
 }
 
 void WebAppOriginAssociationParser::AddErrorInfo(const std::string& error_msg,
@@ -132,6 +145,15 @@ void WebAppOriginAssociationParser::AddErrorInfo(const std::string& error_msg,
       mojom::WebAppOriginAssociationError::New(error_msg, error_line,
                                                error_column);
   errors_.push_back(std::move(error));
+}
+
+// Determines whether |url| is within scope of |scope|.
+bool WebAppOriginAssociationParser::UrlIsWithinScope(
+    const GURL& url,
+    const url::Origin& extended_origin) {
+  // Uses the same within-scope rules as WebAppRegistrar::IsUrlInAppScope
+  return base::StartsWith(url.spec(), extended_origin.GetURL().spec(),
+                          base::CompareCase::SENSITIVE) > 0;
 }
 
 }  // namespace webapps

@@ -9,6 +9,6 @@ namespace system_logs {
 SystemLogsSource::SystemLogsSource(const std::string& source_name)
     : source_name_(source_name) {}
 
-SystemLogsSource::~SystemLogsSource() {}
+SystemLogsSource::~SystemLogsSource() = default;
 
 }  // namespace system_logs

@@ -30,7 +30,6 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/allow_check_is_test_for_testing.h"
-#include "base/test/fuzztest_init_helper.h"
 #include "base/test/launcher/test_launcher.h"
 #include "base/test/scoped_block_tests_writing_to_special_dirs.h"
 #include "base/test/test_switches.h"
@@ -38,6 +37,7 @@
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/libfuzzer/fuzztest_init_helper.h"
 
 #if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
@@ -283,13 +283,14 @@ UNSAFE_BUFFER_USAGE void InitGoogleTestWChar(int* argc, wchar_t** argv) {
   testing::InitGoogleTest(argc, argv);
   // Fuzztest requires a narrow command-line.
   CHECK(*argc >= 0);
+  const auto argc_s = static_cast<size_t>(*argc);
   base::span<wchar_t*> wide_command_line =
-      UNSAFE_BUFFERS(base::make_span(argv, static_cast<size_t>(*argc)));
+      UNSAFE_BUFFERS(base::make_span(argv, argc_s));
   std::vector<std::string> narrow_command_line;
   std::vector<char*> narrow_command_line_pointers;
-  narrow_command_line.reserve(*argc);
-  narrow_command_line_pointers.reserve(*argc);
-  for (int i = 0; i < *argc; i++) {
+  narrow_command_line.reserve(argc_s);
+  narrow_command_line_pointers.reserve(argc_s);
+  for (size_t i = 0; i < argc_s; ++i) {
     narrow_command_line.push_back(WideToUTF8(wide_command_line[i]));
     narrow_command_line_pointers.push_back(narrow_command_line[i].data());
   }

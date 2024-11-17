@@ -205,9 +205,15 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // - `first` is the priority with the fix of https://crbug.com/1369823.
   // - `second` is the priority without the fix, ignoring the priority from
   //   ImageLoader.
-  virtual std::pair<ResourcePriority, ResourcePriority>
-  PriorityFromObservers() {
-    return std::make_pair(ResourcePriority(), ResourcePriority());
+  std::pair<ResourcePriority, ResourcePriority> PriorityFromObservers() {
+    std::pair<ResourcePriority, ResourcePriority> result =
+        ComputePriorityFromObservers();
+    last_computed_priority_ = result.first;
+    return result;
+  }
+
+  const ResourcePriority& LastComputedPriority() const {
+    return last_computed_priority_;
   }
 
   // If this Resource is already finished when AddClient is called, the
@@ -229,6 +235,7 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
 
   ResourceStatus GetStatus() const { return status_; }
   void SetStatus(ResourceStatus status) { status_ = status; }
+  virtual ResourceStatus GetContentStatus() const { return status_; }
 
   size_t size() const { return EncodedSize() + DecodedSize() + OverheadSize(); }
 
@@ -304,11 +311,12 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   // Returns true if |this| resource is matched with the given parameters.
   virtual void MatchPreload(const FetchParameters&);
 
-  bool CanReuseRedirectChain() const;
-  bool MustRevalidateDueToCacheHeaders(bool allow_stale) const;
-  bool ShouldRevalidateStaleResponse() const;
+  bool CanReuseRedirectChain(UseCounter& use_counter) const;
+  bool MustRevalidateDueToCacheHeaders(bool allow_stale,
+                                       UseCounter& use_counter) const;
+  bool ShouldRevalidateStaleResponse(UseCounter& use_counter) const;
   virtual bool CanUseCacheValidator() const;
-  base::TimeDelta FreshnessLifetime() const;
+  base::TimeDelta FreshnessLifetime(UseCounter& use_counter) const;
   bool IsCacheValidator() const {
     return revalidation_status_ == RevalidationStatus::kRevalidating;
   }
@@ -337,9 +345,22 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   const IntegrityMetadataSet& IntegrityMetadata() const {
     return options_.integrity_metadata;
   }
-  ResourceIntegrityDisposition IntegrityDisposition() const {
-    return integrity_disposition_;
+  bool PassedIntegrityChecks() const {
+    return integrity_disposition_ == ResourceIntegrityDisposition::kPassed;
   }
+
+  // Caching makes it possible for a resource that was requested with integrity
+  // metadata to be reused for a request that didn't itself require integrity
+  // checks. In that case, the integrity check can be skipped, as the integrity
+  // may not have been "meant" for this specific request. If the resource is
+  // being served from the preload cache however, we know any associated
+  // integrity metadata and checks were destined for this request, so we cannot
+  // skip the integrity check.
+  //
+  // TODO(375343417): This will also be the case for server-initiated integrity
+  // checks like `Identity-Digest`.
+  bool ForceIntegrityChecks() const { return IsLinkPreload(); }
+
   const SubresourceIntegrity::ReportInfo& IntegrityReportInfo() const {
     return integrity_report_info_;
   }
@@ -458,6 +479,10 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
            ResourceType,
            const ResourceLoaderOptions&);
 
+  virtual std::pair<ResourcePriority, ResourcePriority>
+  ComputePriorityFromObservers() {
+    return std::make_pair(ResourcePriority(), ResourcePriority());
+  }
   virtual void NotifyDataReceived(base::span<const char> data);
   virtual void NotifyFinished();
 
@@ -582,6 +607,8 @@ class PLATFORM_EXPORT Resource : public GarbageCollected<Resource>,
   HeapHashSet<WeakMember<ResourceFinishObserver>> finish_observers_;
 
   ResourceLoaderOptions options_;
+
+  ResourcePriority last_computed_priority_;
 
   base::Time response_timestamp_;
 

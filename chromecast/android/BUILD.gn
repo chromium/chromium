@@ -11,57 +11,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 # These targets shall only be referenced on Android builds.
 assert(is_android)
 
-# Deps shared by libcast_browser_android and libcast_shell_android.
-group("common_apk_deps") {
-  public_deps = [
-    "//base",
-    "//chromecast:chromecast_buildflags",
-    "//chromecast/app",
-    "//chromecast/app:cast_crash_client",
-    "//chromecast/base",
-    "//chromecast/base:android_create_sys_info",
-    "//chromecast/base:jni_headers",
-    "//chromecast/base/metrics",
-    "//chromecast/browser",
-    "//chromecast/media/cma/backend/android:cast_media_android",
-    "//components/crash/android:crash_android",
-    "//components/minidump_uploader",
-    "//components/module_installer/android:native",
-    "//content/public/app",
-    "//content/public/browser",
-    "//skia",
-  ]
-
-  # Explicit dependencies required for JNI registration to be able to find the
-  # native side functions.
-  if (is_component_build) {
-    public_deps += [
-      "//device/bluetooth",
-      "//device/gamepad",
-      "//media/midi",
-      "//ui/android",
-      "//ui/events/devices",
-      "//ui/shell_dialogs",
-    ]
-  }
-}
-
-shared_library_with_jni("libcast_shell_android") {
-  # TODO: Remove the ldflags after migrating away from protobuf_lite to
-  # protobuf_full.
-  ldflags = [ "-Wl,-z,muldefs" ]
-
-  sources = [ "//chromecast/app/android/cast_jni_loader.cc" ]
-  configs += [ "//chromecast:cast_config" ]
-  configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
-
-  deps = [
-    ":common_apk_deps",
-    "//chromecast/cast_core:core_runtime_lib_simple",
-  ]
-  java_targets = [ "//chromecast:cast_shell_apk" ]
-}
-
 shared_library_with_jni("libcast_browser_android") {
   # TODO: Remove the ldflags after migrating away from protobuf_lite to
   # protobuf_full.
@@ -72,31 +21,26 @@ shared_library_with_jni("libcast_browser_android") {
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
 
   deps = [
-    ":common_apk_deps",
+    "//base",
+    "//chromecast:chromecast_buildflags",
+    "//chromecast/app",
+    "//chromecast/app:cast_crash_client",
+    "//chromecast/base",
+    "//chromecast/base:android_create_sys_info",
+    "//chromecast/base:jni_headers",
+    "//chromecast/base/metrics",
+    "//chromecast/browser",
     "//chromecast/cast_core:core_runtime_lib_simple",
+    "//chromecast/media/cma/backend/android:cast_media_android",
+    "//components/crash/android:crash_android",
+    "//components/minidump_uploader",
     "//components/module_installer/android:native",
-  ]
-  java_targets = [ "//chromecast:cast_shell_apk" ]
-}
-
-group("native") {
-  deps = [ ":cast_browser" ]
-}
-
-component("cast_browser") {
-  # TODO: Remove the ldflags after migrating away from protobuf_lite to
-  # protobuf_full.
-  ldflags = [ "-Wl,-z,muldefs" ]
-
-  sources = [ "//chromecast/app/android/cast_browser_module_entrypoint.cc" ]
-
-  deps = [
-    ":common_apk_deps",
-    "//chromecast:cast_shell_lib_simple",
-    "//third_party/jni_zero",
+    "//content/public/app",
+    "//content/public/browser",
+    "//skia",
   ]
 
-  cflags = [ "-fsymbol-partition=cast_browser_partition" ]
+  java_targets = [ "//chromecast:cast_browser_apk" ]
 }
 
 # These are all known //third_party/android_deps targets that chromecast

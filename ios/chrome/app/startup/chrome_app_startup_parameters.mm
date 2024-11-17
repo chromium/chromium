@@ -797,8 +797,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   if ([secureAppID isEqualToString:kWidgetKitHostLockscreenLauncherWidget]) {
@@ -819,8 +818,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         break;
 
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   if ([secureAppID isEqualToString:kWidgetKitHostShortcutsWidget]) {
@@ -832,8 +830,7 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
         LogWidgetKitAction(WidgetKitExtensionAction::ACTION_SHORTCUTS_OPEN);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   if ([secureAppID isEqualToString:kWidgetKitHostSearchPasswordsWidget]) {

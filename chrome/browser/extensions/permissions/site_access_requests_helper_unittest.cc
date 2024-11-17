@@ -246,6 +246,20 @@ TEST_F(SiteAccessRequestsHelperUnittest,
       tab_id, extension->id()));
 }
 
+// Test request is not added when extension only has activeTab permission.
+TEST_F(SiteAccessRequestsHelperUnittest,
+       InvalidRequest_ExtensionOnlyHasActiveTabPermission) {
+  auto extension = InstallExtensionWithActiveTab("Extension");
+
+  content::WebContents* web_contents = AddTab(GURL("http://www.example.com"));
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  // Add site access request for extension. Verify request is not active.
+  permissions_manager()->AddSiteAccessRequest(web_contents, tab_id, *extension);
+  EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
+      tab_id, extension->id()));
+}
+
 // Tests that site access requests dismissed by the user are not active
 // requests.
 TEST_F(SiteAccessRequestsHelperUnittest, UserDismissedRequest) {
@@ -369,10 +383,20 @@ TEST_F(SiteAccessRequestsHelperUnittest,
 // Test request is removed when extension is granted one-time site access.
 TEST_F(SiteAccessRequestsHelperUnittest,
        RequestRemovedWhenExtensionHasGrantedActiveTab) {
-  auto extension = InstallExtensionWithActiveTab("Extension");
+  // Add extension with host permissions and activeTab, and withhold the host
+  // permissions.
+  const std::string extension_name = "Extension";
+  auto extension = ExtensionBuilder(extension_name)
+                       .SetManifestVersion(3)
+                       .AddHostPermission("http://www.example.com/")
+                       .AddAPIPermission("activeTab")
+                       .SetID(crx_file::id_util::GenerateId(extension_name))
+                       .Build();
+  service()->AddExtension(extension.get());
+  ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
 
-  content::WebContents* web_contents =
-      AddTab(GURL("http://www.same-origin.com/a"));
+  content::WebContents* web_contents = AddTab(GURL("http://www.example.com"));
   int tab_id = ExtensionTabUtil::GetTabId(web_contents);
 
   // Add site access request for extension.
@@ -389,6 +413,10 @@ TEST_F(SiteAccessRequestsHelperUnittest,
   active_tab_permission_granter->GrantIfRequested(extension.get());
 
   // Request should be removed since extension has granted site access.
+  // Even though the extension was only granted activeTab (and not persistent
+  // site access, as would be the case if the user accepted the request), we no
+  // longer show the site access request. This is to avoid a user seeing a
+  // request after having granted one-time access to an extension.
   EXPECT_FALSE(permissions_manager()->HasActiveSiteAccessRequest(
       tab_id, extension->id()));
 }

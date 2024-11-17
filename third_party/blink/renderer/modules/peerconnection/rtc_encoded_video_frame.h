@@ -29,6 +29,7 @@ class DOMArrayBuffer;
 class RTCEncodedVideoFrameDelegate;
 class RTCEncodedVideoFrameMetadata;
 class RTCEncodedVideoFrameOptions;
+class V8RTCEncodedVideoFrameType;
 
 MODULES_EXPORT BASE_DECLARE_FEATURE(
     kAllowRTCEncodedVideoFrameSetMetadataAllFields);
@@ -53,7 +54,7 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
       scoped_refptr<RTCEncodedVideoFrameDelegate> delegate);
 
   // rtc_encoded_video_frame.idl implementation.
-  String type() const;
+  V8RTCEncodedVideoFrameType type() const;
   // Returns the RTP Packet Timestamp for this frame.
   uint32_t timestamp() const;
   DOMArrayBuffer* data(ExecutionContext* context) const;

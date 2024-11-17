@@ -33,7 +33,6 @@
 #include "components/sync/service/data_type_controller.h"
 #include "components/sync/service/data_type_manager.h"
 #include "components/sync/service/data_type_manager_observer.h"
-#include "components/sync/service/data_type_status_table.h"
 #include "components/sync/service/sync_client.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/service/sync_service.h"
@@ -140,7 +139,7 @@ class SyncServiceImpl : public SyncService,
   bool QueryDetailedSyncStatusForDebugging(SyncStatus* result) const override;
   base::Time GetLastSyncedTimeForDebugging() const override;
   SyncCycleSnapshot GetLastCycleSnapshotForDebugging() const override;
-  base::Value::List GetTypeStatusMapForDebugging() const override;
+  TypeStatusMapForDebugging GetTypeStatusMapForDebugging() const override;
   void GetEntityCountsForDebugging(
       base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
       const override;
@@ -160,6 +159,9 @@ class SyncServiceImpl : public SyncService,
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback) override;
   void TriggerLocalDataMigration(DataTypeSet types) override;
+  void TriggerLocalDataMigration(
+      std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items)
+      override;
 
   // SyncEngineHost implementation.
   void OnEngineInitialized(bool success,
@@ -243,7 +245,7 @@ class SyncServiceImpl : public SyncService,
                                   create_http_post_provider_factory_cb);
 
   DataTypeSet GetRegisteredDataTypesForTest() const;
-  bool HasAnyDatatypeErrorForTest(DataTypeSet types) const;
+  bool HasAnyModelErrorForTest(DataTypeSet types) const;
 
   void GetThrottledDataTypesForTest(
       base::OnceCallback<void(DataTypeSet)> cb) const;
@@ -299,7 +301,7 @@ class SyncServiceImpl : public SyncService,
   // Reconfigures the data type manager with the latest enabled types.
   // Note: Does not initialize the engine if it is not already initialized.
   // If a Sync setup is currently in progress (i.e. a settings UI is open), then
-  // the reconfiguration will only happen if |bypass_setup_in_progress_check| is
+  // the reconfiguration will only happen if `bypass_setup_in_progress_check` is
   // set to true.
   void ReconfigureDatatypeManager(bool bypass_setup_in_progress_check);
 
@@ -310,7 +312,7 @@ class SyncServiceImpl : public SyncService,
 
   void UpdateDataTypesForInvalidations();
 
-  // Shuts down and destroys the engine. |reset_reason| specifies the reason for
+  // Shuts down and destroys the engine. `reset_reason` specifies the reason for
   // the shutdown, and dictates if sync metadata should be kept or not.
   // If the engine is still allowed to run (per IsEngineAllowedToRun()), it will
   // soon start up again (possibly in transport-only mode).
@@ -347,9 +349,10 @@ class SyncServiceImpl : public SyncService,
   // Tell the sync server that this client has disabled sync.
   void RemoveClientFromServer() const;
 
-  // Records per type histograms for estimated memory usage and number of
-  // entities.
-  void RecordMemoryUsageAndCountsHistograms();
+  // Records histograms about the history opt-in state.
+  void RecordHistoryOptInStateOnSigninHistograms(
+      signin_metrics::AccessPoint access_point,
+      signin::ConsentLevel consent_level);
 
   // True if setup has been completed at least once and is not in progress.
   bool CanConfigureDataTypes(bool bypass_setup_in_progress_check) const;
@@ -370,9 +373,6 @@ class SyncServiceImpl : public SyncService,
   // Exercises SyncClient to register synthetic field trials for trusted vault
   // passphrase type.
   void RegisterTrustedVaultSyntheticFieldTrialsIfNecessary();
-
-  // Returns the types that have a non-null DataTypeLocalDataBatchUploader.
-  DataTypeSet GetDataTypesWithLocalDataBatchUploader() const;
 
   // The actual implementation of GetLocalDataDescriptions(), where some code
   // paths can be synchronous. GetLocalDataDescriptions() posts a task before
@@ -465,13 +465,9 @@ class SyncServiceImpl : public SyncService,
 
   std::unique_ptr<BackendMigrator> migrator_;
 
-  // This is the last |SyncProtocolError| we received from the server that had
+  // This is the last `SyncProtocolError` we received from the server that had
   // an action set on it.
   SyncProtocolError last_actionable_error_;
-
-  // Tracks the set of failed data types (those that encounter an error
-  // or must delay loading for some reason).
-  DataTypeStatusTable::TypeErrorMap data_type_error_map_;
 
   CreateHttpPostProviderFactory create_http_post_provider_factory_cb_;
 

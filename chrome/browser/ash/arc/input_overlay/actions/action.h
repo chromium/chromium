@@ -43,7 +43,7 @@ void LogTouchEvents(const std::list<ui::TouchEvent>& events);
 // }
 std::optional<std::pair<ui::DomCode, int>> ParseKeyboardKey(
     const base::Value::Dict& value,
-    const std::string_view key_name);
+    std::string_view key_name);
 
 // Return true if the `input_element` is bound.
 bool IsInputBound(const InputElement& input_element);
@@ -188,8 +188,6 @@ class Action {
   // Verify the key release event. If it is verified, it continues to simulate
   // the touch event. Otherwise, consider it as discard.
   bool VerifyOnKeyRelease(ui::DomCode code);
-  // Process after unbinding the input mapping.
-  void PostUnbindInputProcess();
 
   // Original input binding.
   std::unique_ptr<InputElement> original_input_;

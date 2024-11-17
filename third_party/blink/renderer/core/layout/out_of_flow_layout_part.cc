@@ -10,6 +10,7 @@
 
 #include "base/memory/values_equivalent.h"
 #include "base/not_fatal_until.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
@@ -110,7 +111,7 @@ class OOFCandidateStyleIterator {
 
  public:
   explicit OOFCandidateStyleIterator(const LayoutObject& object,
-                                     AnchorEvaluator& anchor_evaluator)
+                                     AnchorEvaluatorImpl& anchor_evaluator)
       : element_(DynamicTo<Element>(object.GetNode())),
         style_(object.Style()),
         anchor_evaluator_(anchor_evaluator) {
@@ -205,8 +206,8 @@ class OOFCandidateStyleIterator {
           CSSPropertyName(CSSPropertyID::kPositionArea),
           *ComputedStyleUtils::ValueForPositionArea(
               fallback.GetPositionArea()));
-      return ImmutableCSSPropertyValueSet::Create(&declaration, /* length */ 1u,
-                                                  kHTMLStandardMode);
+      return ImmutableCSSPropertyValueSet::Create(
+          base::span_from_ref(declaration), kHTMLStandardMode);
     } else if (const ScopedCSSName* name = fallback.GetPositionTryName()) {
       if (const StyleRulePositionTry* rule = GetPositionTryRule(*name)) {
         return &rule->Properties();
@@ -300,6 +301,9 @@ class OOFCandidateStyleIterator {
   // (which must exist), and return that updated style. Returns nullptr if
   // the fallback references a @position-try rule which doesn't exist.
   const ComputedStyle* UpdateStyle(wtf_size_t try_fallback_index) {
+    // Previously evaluated anchor is not relevant if another position fallback
+    // is applied.
+    anchor_evaluator_.ClearAccessibilityAnchor();
     CHECK(position_try_fallbacks_);
     CHECK_LE(try_fallback_index,
              position_try_fallbacks_->GetFallbacks().size());
@@ -334,7 +338,7 @@ class OOFCandidateStyleIterator {
 
   // This evaluator is passed to StyleEngine::UpdateStyleForOutOfFlow to
   // evaluate anchor queries on the computed style.
-  AnchorEvaluator& anchor_evaluator_;
+  AnchorEvaluatorImpl& anchor_evaluator_;
 
   // If the current style is applying a `position-try-fallbacks` fallback, this
   // holds the list of fallbacks. Otherwise nullptr.
@@ -1476,7 +1480,8 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
       // This will ensure that the descendants are laid out in the correct
       // order.
       DCHECK(!descendants_span.empty());
-      for (auto& descendant : descendants_span) {
+      for (size_t i = 0; i < descendants_span.size(); ++i) {
+        auto& descendant = descendants_span[i];
         if (GetFragmentainerType() == kFragmentColumn) {
           auto* containing_block = To<LayoutBox>(
               descendant.containing_block.Fragment()->GetLayoutObject());
@@ -1519,8 +1524,7 @@ void OutOfFlowLayoutPart::LayoutFragmentainerDescendants(
                 (last_css_containing_block->MayHaveAnchorQuery() ||
                  may_have_anchors_on_oof)) {
               has_new_descendants_span = true;
-              descendants_span = descendants_span.subspan(
-                  &descendant - descendants_span.data());
+              descendants_span = descendants_span.subspan(i);
               break;
             }
             last_css_containing_block = css_containing_block;
@@ -1973,8 +1977,7 @@ void SortNonOverflowingCandidates(
           case EPositionTryOrder::kMostWidth:
           case EPositionTryOrder::kMostHeight:
             // We should have already converted to logical.
-            NOTREACHED_IN_MIGRATION();
-            return false;
+            NOTREACHED();
         }
       });
 }
@@ -2079,6 +2082,7 @@ OutOfFlowLayoutPart::OffsetInfo OutOfFlowLayoutPart::CalculateOffset(
     DCHECK(offset_info->non_overflowing_scroll_ranges.empty());
   }
 
+  offset_info->accessibility_anchor = anchor_evaluator.AccessibilityAnchor();
   offset_info->display_locks_affected_by_anchors =
       anchor_evaluator.GetDisplayLocksAffectedByAnchors();
 
@@ -2146,6 +2150,9 @@ OutOfFlowLayoutPart::TryCalculateOffset(
                                    /* is_new_fc */ true);
     builder.SetAvailableSize(container_rect.size);
     builder.SetPercentageResolutionSize(container_rect.size);
+    if (node_info.is_hidden_for_paint) {
+      builder.SetIsHiddenForPaint(true);
+    }
 
     if (container_builder_->IsInitialColumnBalancingPass()) {
       // The |fragmentainer_offset_delta| will not make a difference in the
@@ -2409,12 +2416,20 @@ const LayoutResult* OutOfFlowLayoutPart::Layout(
   layout_result->GetMutableForOutOfFlow().SetNonOverflowingScrollRanges(
       offset_info.non_overflowing_scroll_ranges);
 
+  layout_result->GetMutableForOutOfFlow().SetAccessibilityAnchor(
+      offset_info.accessibility_anchor);
+
   layout_result->GetMutableForOutOfFlow().SetDisplayLocksAffectedByAnchors(
       offset_info.display_locks_affected_by_anchors);
 
-  UpdatePositionVisibilityAfterLayout(offset_info,
-                                      oof_node_to_layout.node_info.node,
+  const BlockNode& node = oof_node_to_layout.node_info.node;
+
+  UpdatePositionVisibilityAfterLayout(offset_info, node,
                                       container_builder_->AnchorQuery());
+
+  if (AXObjectCache* cache = node.GetDocument().ExistingAXObjectCache()) {
+    cache->CSSAnchorChanged(node.GetLayoutBox());
+  }
 
   return layout_result;
 }
@@ -2608,6 +2623,7 @@ void OutOfFlowLayoutPart::LayoutOOFsInFragmentainer(
           node, GetConstraintSpace(), index, previous_fragmentainer,
           &needs_total_page_count);
       needs_total_page_count_ |= needs_total_page_count;
+      additional_pages_were_added_ = true;
     } else {
       new_fragmentainer = &ColumnLayoutAlgorithm::CreateEmptyColumn(
           node, GetConstraintSpace(), previous_fragmentainer);
@@ -2982,6 +2998,7 @@ void OutOfFlowLayoutPart::NodeInfo::Trace(Visitor* visitor) const {
 void OutOfFlowLayoutPart::OffsetInfo::Trace(Visitor* visitor) const {
   visitor->Trace(initial_layout_result);
   visitor->Trace(non_overflowing_scroll_ranges);
+  visitor->Trace(accessibility_anchor);
   visitor->Trace(display_locks_affected_by_anchors);
 }
 

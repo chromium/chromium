@@ -125,25 +125,24 @@ TEST_P(FaceDetectionImplMacTest, ScanOneFace) {
       base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &image_path));
   image_path = image_path.AppendASCII(GetParam().image_path);
   ASSERT_TRUE(base::PathExists(image_path));
-  std::string image_data;
-  ASSERT_TRUE(base::ReadFileToString(image_path, &image_data));
+  std::optional<std::vector<uint8_t>> image_data =
+      base::ReadFileToBytes(image_path);
 
-  std::unique_ptr<SkBitmap> image = gfx::JPEGCodec::Decode(
-      reinterpret_cast<const uint8_t*>(image_data.data()), image_data.size());
-  ASSERT_TRUE(image);
-  ASSERT_EQ(GetParam().image_width, image->width());
-  ASSERT_EQ(GetParam().image_height, image->height());
+  SkBitmap image = gfx::JPEGCodec::Decode(image_data.value());
+  ASSERT_FALSE(image.isNull());
+  ASSERT_EQ(GetParam().image_width, image.width());
+  ASSERT_EQ(GetParam().image_height, image.height());
 
-  const gfx::Size size(image->width(), image->height());
+  const gfx::Size size(image.width(), image.height());
   const size_t num_bytes = size.GetArea() * 4 /* bytes per pixel */;
   // This assert assumes there is no padding in the bitmap's rowbytes
-  ASSERT_EQ(num_bytes, image->computeByteSize());
+  ASSERT_EQ(num_bytes, image.computeByteSize());
 
   base::RunLoop run_loop;
   // Send the image to Detect() and expect the response in callback.
   EXPECT_CALL(*this, Detection())
       .WillOnce(RunOnceClosure(run_loop.QuitClosure()));
-  impl_->Detect(*image,
+  impl_->Detect(image,
                 base::BindOnce(&FaceDetectionImplMacTest::DetectCallback,
                                base::Unretained(this), GetParam().num_faces,
                                GetParam().min_num_landmarks,

@@ -39,10 +39,4 @@ bool WebTestContentSettingsClient::AllowRunningInsecureContent(
          test_runner_->GetFlags().running_insecure_content_allowed();
 }
 
-bool WebTestContentSettingsClient::IncreaseViewTransitionCallbackTimeout()
-    const {
-  // In tests we want larger timeout to account for slower running tests.
-  return true;
-}
-
 }  // namespace content

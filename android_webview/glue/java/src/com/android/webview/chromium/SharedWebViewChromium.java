@@ -190,14 +190,15 @@ public class SharedWebViewChromium {
             mRunQueue.addTask(() -> setProfile(profileName));
             return;
         }
-        mAwContents.setBrowserContext(AwBrowserContextStore.getNamedContext(profileName, true));
+        mAwContents.setBrowserContextForPublicApi(
+                AwBrowserContextStore.getNamedContext(profileName, true));
     }
 
     public Profile getProfile() {
         if (checkNeedsPost()) {
             return mRunQueue.runOnUiThreadBlocking(this::getProfile);
         }
-        String profileName = mAwContents.getBrowserContext().getName();
+        String profileName = mAwContents.getBrowserContextForPublicApi().getName();
         return ProfileStore.getInstance().getProfile(profileName);
     }
 

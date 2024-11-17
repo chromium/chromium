@@ -10,16 +10,14 @@
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #import "components/omnibox/browser/zero_suggest_cache_service.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace ios {
 // Singleton that owns all ZeroSuggestCacheServices and associates them with
 // profiles.
 class ZeroSuggestCacheServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static ZeroSuggestCacheService* GetForBrowserState(ProfileIOS* profile);
-
   static ZeroSuggestCacheService* GetForProfile(ProfileIOS* profile);
   static ZeroSuggestCacheServiceFactory* GetInstance();
   // Returns the default factory used to build ZeroSuggestCacheService. Can be

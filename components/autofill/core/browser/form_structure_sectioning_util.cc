@@ -6,13 +6,11 @@
 
 #include <iterator>
 #include <memory>
-#include <sstream>
 #include <utility>
 
 #include "base/ranges/algorithm.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 
@@ -208,43 +206,6 @@ void AssignSections(base::span<const std::unique_ptr<AutofillField>> fields) {
                                   frame_token_ids);
     begin = end;
   }
-}
-
-void LogSectioningMetrics(
-    FormSignature form_signature,
-    base::span<const std::unique_ptr<AutofillField>> fields,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
-  // UMA:
-  base::flat_map<Section, size_t> fields_per_section;
-  for (auto& field : fields) {
-    if (!IsSectionable(*field) || !field->IsFieldFillable()) {
-      continue;
-    }
-    ++fields_per_section[field->section()];
-  }
-  AutofillMetrics::LogSectioningMetrics(fields_per_section);
-  // UKM:
-  if (form_interactions_ukm_logger) {
-    form_interactions_ukm_logger->LogSectioningHash(
-        form_signature, ComputeSectioningSignature(fields));
-  }
-}
-
-uint32_t ComputeSectioningSignature(
-    base::span<const std::unique_ptr<AutofillField>> fields) {
-  // Compute a signature by converting the fields' sections into integers and
-  // concatenating them. Finally, hash the result.
-  std::stringstream signature;
-  base::flat_map<Section, size_t> section_ids;
-  for (auto& field : fields) {
-    if (!IsSectionable(*field) || !field->IsFieldFillable()) {
-      continue;
-    }
-    size_t section_id =
-        section_ids.emplace(field->section(), section_ids.size()).first->second;
-    signature << section_id;
-  }
-  return StrToHash32Bit(signature.str());
 }
 
 }  // namespace autofill

@@ -29,6 +29,7 @@ static_library("nearby_share") {
     "//ash/webui/settings/public/constants",
     "//base",
     "//chrome/browser:browser_process",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/fileapi",
     "//chrome/browser/ash/arc/nearby_share/ui",
     "//chrome/browser/ash/file_manager",

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
 #include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"

@@ -11,13 +11,13 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_permission_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_camera_device_permission_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_permission_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_fullscreen_permission_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_midi_permission_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_permission_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_permission_name.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_permission_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_push_permission_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_top_level_storage_access_permission_descriptor.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -97,8 +97,6 @@ String PermissionNameToString(PermissionName name) {
       return "background_sync";
     case PermissionName::SENSORS:
       return "sensors";
-    case PermissionName::ACCESSIBILITY_EVENTS:
-      return "accessibility_events";
     case PermissionName::CLIPBOARD_READ:
       return "clipboard_read";
     case PermissionName::CLIPBOARD_WRITE:
@@ -289,14 +287,6 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
 
     return CreatePermissionDescriptor(PermissionName::SENSORS);
   }
-  if (name == V8PermissionName::Enum::kAccessibilityEvents) {
-    if (!RuntimeEnabledFeatures::AccessibilityObjectModelEnabled()) {
-      exception_state.ThrowTypeError(
-          "Accessibility Object Model is not enabled.");
-      return nullptr;
-    }
-    return CreatePermissionDescriptor(PermissionName::ACCESSIBILITY_EVENTS);
-  }
   if (name == V8PermissionName::Enum::kClipboardRead ||
       name == V8PermissionName::Enum::kClipboardWrite) {
     PermissionName permission_name = PermissionName::CLIPBOARD_READ;
@@ -398,11 +388,25 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
     return CreatePermissionDescriptor(PermissionName::SPEAKER_SELECTION);
   }
   if (name == V8PermissionName::Enum::kKeyboardLock) {
+#if !BUILDFLAG(IS_ANDROID)
     return CreatePermissionDescriptor(PermissionName::KEYBOARD_LOCK);
+#else
+    exception_state.ThrowTypeError(
+        "The Keyboard Lock permission isn't available on Android.");
+    return nullptr;
+#endif
   }
+
   if (name == V8PermissionName::Enum::kPointerLock) {
+#if !BUILDFLAG(IS_ANDROID)
     return CreatePermissionDescriptor(PermissionName::POINTER_LOCK);
+#else
+    exception_state.ThrowTypeError(
+        "The Pointer Lock permission isn't available on Android.");
+    return nullptr;
+#endif
   }
+
   if (name == V8PermissionName::Enum::kFullscreen) {
     FullscreenPermissionDescriptor* fullscreen_permission =
         NativeValueTraits<FullscreenPermissionDescriptor>::NativeValue(

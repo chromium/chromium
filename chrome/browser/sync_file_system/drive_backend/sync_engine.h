@@ -123,9 +123,6 @@ class SyncEngine
   void SetRemoteChangeProcessor(RemoteChangeProcessor* processor) override;
   LocalChangeProcessor* GetLocalChangeProcessor() override;
   RemoteServiceState GetCurrentState() const override;
-  void GetOriginStatusMap(StatusMapCallback callback) override;
-  void DumpFiles(const GURL& origin, ListCallback callback) override;
-  void DumpDatabase(ListCallback callback) override;
   void SetSyncEnabled(bool enabled) override;
   void PromoteDemotedChanges(base::OnceClosure callback) override;
 

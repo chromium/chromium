@@ -87,8 +87,6 @@
 #include "chrome/browser/ui/webui/ash/login/hardware_data_collection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/install_attributes_error_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_backward_migration_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/local_password_setup_handler.h"
 #include "chrome/browser/ui/webui/ash/login/local_state_error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/locale_switch_screen_handler.h"
@@ -328,8 +326,6 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeLazyLoadingEnabled",
                      features::IsOobeLazyLoadingEnabled());
   source->AddBoolean("isOobeAiIntroEnabled", features::IsOobeAiIntroEnabled());
-  source->AddBoolean("isOobeGeminiIntroEnabled",
-                     features::IsOobeGeminiIntroEnabled());
   source->AddBoolean("isJellyEnabled", features::IsOobeJellyEnabled());
   source->AddBoolean("isOobeJellyEnabled", features::IsOobeJellyEnabled());
   source->AddBoolean("isOobeJellyModalEnabled",
@@ -383,6 +379,9 @@ void CreateAndAddOobeUIDataSource(Profile* profile,
   source->AddBoolean("isOobeAddUserDuringEnrollmentEnabled",
                      features::IsOobeAddUserDuringEnrollmentEnabled());
 
+  source->AddBoolean("isOobeDevOverlayEnabled",
+                     command_line->HasSwitch(switches::kShowOobeDevOverlay));
+
   // Configure shared resources
   AddProductLogoResources(source);
   if (ash::features::IsBootAnimationEnabled()) {
@@ -421,9 +420,7 @@ std::string GetDisplayType(const GURL& url) {
        OobeUI::kOobeDisplay, OobeUI::kOobeTestLoader});
 
   if (!kKnownDisplayTypes.contains(path)) {
-    NOTREACHED_IN_MIGRATION()
-        << "Unknown display type '" << path << "'. Setting default.";
-    return OobeUI::kOobeDisplay;
+    NOTREACHED() << "Unknown display type '" << path << "'. Setting default.";
   }
   return path;
 }
@@ -488,11 +485,6 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<LocaleSwitchScreenHandler>());
 
-  AddScreenHandler(std::make_unique<LacrosDataMigrationScreenHandler>());
-
-  AddScreenHandler(
-      std::make_unique<LacrosDataBackwardMigrationScreenHandler>());
-
   AddScreenHandler(std::make_unique<TermsOfServiceScreenHandler>());
 
   AddScreenHandler(std::make_unique<SyncConsentScreenHandler>());
@@ -508,10 +500,7 @@ void OobeUI::ConfigureOobeDisplay() {
   if (features::IsOobeAiIntroEnabled()) {
     AddScreenHandler(std::make_unique<AiIntroScreenHandler>());
   }
-
-  if (features::IsOobeGeminiIntroEnabled()) {
-    AddScreenHandler(std::make_unique<GeminiIntroScreenHandler>());
-  }
+  AddScreenHandler(std::make_unique<GeminiIntroScreenHandler>());
 
   AddScreenHandler(std::make_unique<DemoSetupScreenHandler>());
 
@@ -548,8 +537,7 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddWebUIHandler(std::make_unique<SshConfiguredHandler>());
 
-  AddScreenHandler(std::make_unique<AppLaunchSplashScreenHandler>(
-      network_state_informer_, error_screen));
+  AddScreenHandler(std::make_unique<AppLaunchSplashScreenHandler>());
 
   AddScreenHandler(std::make_unique<DeviceDisabledScreenHandler>());
 
@@ -876,10 +864,6 @@ base::Value::Dict OobeUI::GetLocalizedStrings() {
                                   ->ForceKeyboardDrivenUINavigation();
   localized_strings.Set("highlightStrength",
                         keyboard_driven_oobe ? "strong" : "normal");
-
-  localized_strings.Set(
-      "changePictureVideoModeEnabled",
-      base::FeatureList::IsEnabled(::features::kChangePictureVideoMode));
   return localized_strings;
 }
 

@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/tabs/public/tab_interface.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -56,10 +57,10 @@
 #include "ui/actions/actions.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/time_format.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/base/mojom/window_open_disposition.mojom.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 #include "url/gurl.h"
 
@@ -88,7 +89,7 @@ class HistoryClustersSidePanelContextMenu
   HistoryClustersSidePanelContextMenu(
       absl::variant<BrowserWindowInterface*, tabs::TabInterface*> interface,
       GURL url)
-      : ui::SimpleMenuModel(this), interface_(interface), url_(url) {
+      : ui::SimpleMenuModel(this), interface_(interface), url_(std::move(url)) {
     AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
                         IDS_HISTORY_CLUSTERS_OPEN_IN_NEW_TAB);
     AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
@@ -109,6 +110,14 @@ class HistoryClustersSidePanelContextMenu
     AddItemWithStringId(IDC_PASTE, IDS_HISTORY_CLUSTERS_PASTE);
   }
   ~HistoryClustersSidePanelContextMenu() override = default;
+
+  bool IsCommandIdEnabled(int command_id) const override {
+    if (command_id == IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD) {
+      return IsOpenLinkOTREnabled(
+          GetBrowserWindowInterface(interface_)->GetProfile(), url_);
+    }
+    return true;
+  }
 
   void ExecuteCommand(int command_id, int event_flags) override {
     switch (command_id) {
@@ -163,8 +172,7 @@ class HistoryClustersSidePanelContextMenu
                          ->root_action_item());
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -250,13 +258,17 @@ void HistoryClustersHandler::SetSidePanelUIEmbedder(
   history_clusters_side_panel_embedder_ = side_panel_embedder;
 }
 
+void HistoryClustersHandler::SetContextInterface(ContextInterface interface) {
+  interface_ = interface;
+}
+
 void HistoryClustersHandler::SetQuery(const std::string& query) {
   if (page_) {
     page_->OnQueryChangedByUser(query);
   }
 }
 
-void HistoryClustersHandler::OpenHistoryCluster(
+void HistoryClustersHandler::OpenHistoryUrl(
     const GURL& url,
     ui::mojom::ClickModifiersPtr click_modifiers) {
   // In the Side Panel, the default is the current tab. From History WebUI, the
@@ -368,7 +380,8 @@ void HistoryClustersHandler::RemoveVisits(
 
   // If there's a pending request for deletion, we have to fail here, because
   // `BrowsingHistoryService` only supports one deletion request at a time.
-  if (!pending_remove_visits_callback_.is_null()) {
+  if (!pending_remove_visits_callback_.is_null() ||
+      !pending_remove_visits_by_url_and_time_callback_.is_null()) {
     std::move(callback).Run(/*success=*/false);
     return;
   }
@@ -396,6 +409,33 @@ void HistoryClustersHandler::RemoveVisits(
   pending_remove_visits_callback_ = std::move(callback);
 
   browsing_history_service_->RemoveVisits(items_to_remove);
+}
+
+void HistoryClustersHandler::RemoveVisitByUrlAndTime(
+    const GURL& url,
+    double timestamp,
+    RemoveVisitByUrlAndTimeCallback callback) {
+  if (!profile_->GetPrefs()->GetBoolean(
+          ::prefs::kAllowDeletingBrowserHistory)) {
+    return;
+  }
+
+  // If there's a pending request for deletion, we have to fail here, because
+  // `BrowsingHistoryService` only supports one deletion request at a time.
+  if (!pending_remove_visits_callback_.is_null() ||
+      !pending_remove_visits_by_url_and_time_callback_.is_null()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
+
+  pending_remove_visits_by_url_and_time_callback_ = std::move(callback);
+
+  history::BrowsingHistoryService::HistoryEntry entry;
+  entry.url = url;
+  base::Time visit_time = base::Time::FromMillisecondsSinceUnixEpoch(timestamp);
+  entry.all_timestamps.insert(
+      visit_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  browsing_history_service_->RemoveVisits({entry});
 }
 
 void HistoryClustersHandler::OpenVisitUrlsInTabGroup(
@@ -453,15 +493,23 @@ void HistoryClustersHandler::OnDebugMessage(const std::string& message) {
 }
 
 void HistoryClustersHandler::OnRemoveVisitsComplete() {
-  DCHECK(!pending_remove_visits_callback_.is_null());
-  std::move(pending_remove_visits_callback_).Run(/*success=*/true);
-  // Notify the page of the successfully deleted visits to update the UI.
-  page_->OnVisitsRemoved(std::move(pending_remove_visits_));
+  if (!pending_remove_visits_callback_.is_null()) {
+    std::move(pending_remove_visits_callback_).Run(/*success=*/true);
+    // Notify the page of the successfully deleted visits to update the UI.
+    page_->OnVisitsRemoved(std::move(pending_remove_visits_));
+  } else if (!pending_remove_visits_by_url_and_time_callback_.is_null()) {
+    std::move(pending_remove_visits_by_url_and_time_callback_)
+        .Run(/*success=*/true);
+  }
 }
 
 void HistoryClustersHandler::OnRemoveVisitsFailed() {
-  DCHECK(!pending_remove_visits_callback_.is_null());
-  std::move(pending_remove_visits_callback_).Run(/*success=*/false);
+  if (!pending_remove_visits_callback_.is_null()) {
+    std::move(pending_remove_visits_callback_).Run(/*success=*/false);
+  } else if (!pending_remove_visits_by_url_and_time_callback_.is_null()) {
+    std::move(pending_remove_visits_by_url_and_time_callback_)
+        .Run(/*success=*/false);
+  }
 }
 
 void HistoryClustersHandler::HistoryDeleted() {
@@ -473,6 +521,14 @@ void HistoryClustersHandler::HistoryDeleted() {
 Profile* HistoryClustersHandler::GetProfile() {
   DCHECK(profile_);
   return profile_;
+}
+
+std::unique_ptr<ui::SimpleMenuModel>
+HistoryClustersHandler::CreateHistoryClustersSidePanelContextMenuForTesting(
+    ContextInterface interface,
+    GURL url) {
+  return std::make_unique<HistoryClustersSidePanelContextMenu>(interface,
+                                                               std::move(url));
 }
 
 void HistoryClustersHandler::SendClustersToPage(

@@ -36,10 +36,8 @@ GetSodaSpeechRecognitionMode(
     case media::mojom::SpeechRecognitionMode::kCaption:
       return chromeos::machine_learning::mojom::SodaRecognitionMode::kCaption;
     case media::mojom::SpeechRecognitionMode::kUnknown:
-      // Chrome OS SODA doesn't support unknown recognition type. Default to
-      // caption.
-      NOTREACHED_IN_MIGRATION();
-      return chromeos::machine_learning::mojom::SodaRecognitionMode::kCaption;
+      // Chrome OS SODA doesn't support unknown recognition type.
+      NOTREACHED();
   }
 }
 }  // namespace
@@ -97,6 +95,7 @@ CrosSpeechRecognitionRecognizerImpl::AddLiveCaptionLanguagesToConfig(
     multi_lang_config->locale_to_language_pack_map[config_path.first] =
         config_path.second.value();
   }
+  multi_lang_config->rewind_when_switching_language = true;
   return multi_lang_config;
 }
 

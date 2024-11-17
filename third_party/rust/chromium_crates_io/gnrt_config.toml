@@ -105,6 +105,12 @@ group = 'test'
 [crate.base64]
 group = 'test'
 
+[crate.bstr]
+ban_features = [
+    # The unicode feature is not audited for UB-Risk-2.
+    'unicode'
+]
+
 [crate.bytes]
 group = 'test'
 
@@ -116,6 +122,10 @@ extra_src_roots = ['../examples']
 
 [crate.clap_builder]
 extra_input_roots = ['../README.md']
+
+[crate.codespan-reporting]
+# TODO(https://crbug.com/369075726): Remove this exception.
+no_license_file_tracked_in_crbug_369075726 = true
 
 [crate.cxx]
 remove_deps = ['cc', 'link-cplusplus']
@@ -153,10 +163,12 @@ ban_features = [
 ]
 
 [crate.log]
-group = 'test'
 
 [crate.nom]
 remove_deps = ['minimal-lexical']
+
+[crate.png]
+extra_kv = { allow_unstable_features = 'portable_simd' }
 
 [crate.prost]
 extra_input_roots = ['../README.md']
@@ -177,6 +189,10 @@ extra_src_roots = ['../generated']
 [crate.regex]
 group = 'test'
 
+[crate.relative-path]
+# TODO(https://crbug.com/369075726): Remove this exception.
+no_license_file_tracked_in_crbug_369075726 = true
+
 [crate.rstest]
 group = 'test'
 
@@ -190,6 +206,8 @@ build_script_outputs = [ "version.expr" ]
 
 [crate.rustc-demangle-capi]
 shipped = false
+# TODO(https://crbug.com/369075726): Remove this exception.
+no_license_file_tracked_in_crbug_369075726 = true
 
 [crate.serde_json]
 group = 'test'

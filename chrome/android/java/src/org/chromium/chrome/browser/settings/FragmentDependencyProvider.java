@@ -58,7 +58,7 @@ import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
+import org.chromium.components.browser_ui.settings.FragmentSettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
 import org.chromium.components.privacy_sandbox.FingerprintingProtectionSettingsFragment;
@@ -101,10 +101,11 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         if (fragment instanceof ProfileDependentSetting) {
             ((ProfileDependentSetting) fragment).setProfile(mProfile);
         }
-        if (fragment instanceof FragmentSettingsLauncher) {
-            FragmentSettingsLauncher fragmentSettingsLauncher = (FragmentSettingsLauncher) fragment;
-            fragmentSettingsLauncher.setSettingsLauncher(
-                    SettingsLauncherFactory.createSettingsLauncher());
+        if (fragment instanceof FragmentSettingsNavigation) {
+            FragmentSettingsNavigation fragmentSettingsNavigation =
+                    (FragmentSettingsNavigation) fragment;
+            fragmentSettingsNavigation.setSettingsNavigation(
+                    SettingsNavigationFactory.createSettingsNavigation());
         }
 
         // Settings screen specific attachments.
@@ -204,7 +205,6 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
         if (fragment instanceof AccessibilitySettings) {
             ((AccessibilitySettings) fragment)
                     .setDelegate(new ChromeAccessibilitySettingsDelegate(mProfile));
-            ((AccessibilitySettings) fragment).setPrefService(UserPrefs.get(mProfile));
         }
         if (fragment instanceof PasswordSettings) {
             ((PasswordSettings) fragment)
@@ -255,8 +255,7 @@ public class FragmentDependencyProvider extends FragmentManager.FragmentLifecycl
                     new SafetyHubModuleDelegateImpl(
                             mProfile,
                             mModalDialogManagerSupplier,
-                            SigninAndHistorySyncActivityLauncherImpl.get(),
-                            SyncConsentActivityLauncherImpl.get()));
+                            SigninAndHistorySyncActivityLauncherImpl.get()));
             // TODO(crbug.com/40751023): Create a shared interface for fragments that need access to
             // LaunchIntentDispatcher::createCustomTabActivityIntent.
             safetyHubFragment.setCustomTabIntentHelper(

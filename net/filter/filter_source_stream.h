@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/types/expected.h"
@@ -42,7 +43,7 @@ class NET_EXPORT_PRIVATE FilterSourceStream : public SourceStream {
   std::string Description() const override;
   bool MayHaveMoreBytes() const override;
 
-  static SourceType ParseEncodingType(const std::string& encoding);
+  static SourceType ParseEncodingType(std::string_view encoding);
 
  private:
   enum State {

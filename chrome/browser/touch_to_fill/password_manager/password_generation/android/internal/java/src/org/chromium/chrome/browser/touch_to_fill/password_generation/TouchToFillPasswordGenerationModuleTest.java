@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.touch_to_fill.password_generation;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.any;
@@ -15,11 +16,14 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.INTERACTION_RESULT_HISTOGRAM;
+import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.ACCEPTED_VIA_ACCEPT_BUTTON;
+import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.ACCEPTED_VIA_PASSWORD_VIEW;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.DISMISSED_FROM_NATIVE;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.DISMISSED_SHEET;
 import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.REJECTED_GENERATED_PASSWORD;
-import static org.chromium.chrome.browser.touch_to_fill.password_generation.TouchToFillPasswordGenerationCoordinator.InteractionResult.USED_GENERATED_PASSWORD;
 
+import android.view.MotionEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -32,7 +36,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -77,6 +80,7 @@ public class TouchToFillPasswordGenerationModuleTest {
     @Mock private TouchToFillPasswordGenerationCoordinator.Delegate mDelegate;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private PrefService mPrefService;
+    @Mock private MotionEvent mMotionEvent;
 
     private static final String sTestEmailAddress = "test@email.com";
     private static final String sGeneratedPassword = "Strong generated password";
@@ -85,8 +89,6 @@ public class TouchToFillPasswordGenerationModuleTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-
         mActivityScenarioRule
                 .getScenario()
                 .onActivity(
@@ -115,6 +117,17 @@ public class TouchToFillPasswordGenerationModuleTest {
         mContent.addView(mCoordinator.getContentViewForTesting());
     }
 
+    /**
+     * Simulates a MotionEvent on the content view of the coordinator. This is necessary because
+     * robolectric doesn't dispatch the event through the view hierarchy that this content view is a
+     * part of.
+     *
+     * @return True iff that event was handled. If false, the event will be passed on.
+     */
+    private boolean simulateMotionEventOnSheet() {
+        return mCoordinator.getContentViewForTesting().dispatchGenericMotionEvent(mMotionEvent);
+    }
+
     @Test
     public void showsAndHidesBottomSheet() {
         show();
@@ -124,6 +137,12 @@ public class TouchToFillPasswordGenerationModuleTest {
         mBottomSheetObserverCaptor.getValue().onSheetClosed(StateChangeReason.SWIPE);
         verify(mBottomSheetController).hideContent(any(), anyBoolean());
         verify(mBottomSheetController).removeObserver(mBottomSheetObserverCaptor.getValue());
+    }
+
+    @Test
+    public void testConsumesGenericMotionEventsToPreventMouseClicksThroughSheet() {
+        show();
+        assertTrue(simulateMotionEventOnSheet());
     }
 
     @Test
@@ -211,14 +230,27 @@ public class TouchToFillPasswordGenerationModuleTest {
     }
 
     @Test
-    public void recordsMetricWhenPasswordAccepted() {
+    public void recordsMetricWhenAcceptButtonClicked() {
         HistogramWatcher histogramExpectation =
                 HistogramWatcher.newSingleRecordWatcher(
-                        INTERACTION_RESULT_HISTOGRAM, USED_GENERATED_PASSWORD);
+                        INTERACTION_RESULT_HISTOGRAM, ACCEPTED_VIA_ACCEPT_BUTTON);
         show();
 
         Button acceptPasswordButton = mContent.findViewById(R.id.use_password_button);
         acceptPasswordButton.performClick();
+
+        histogramExpectation.assertExpected();
+    }
+
+    @Test
+    public void recordsMetricWhenPasswordViewClicked() {
+        HistogramWatcher histogramExpectation =
+                HistogramWatcher.newSingleRecordWatcher(
+                        INTERACTION_RESULT_HISTOGRAM, ACCEPTED_VIA_PASSWORD_VIEW);
+        show();
+
+        View passwordView = mContent.findViewById(R.id.password);
+        passwordView.performClick();
 
         histogramExpectation.assertExpected();
     }

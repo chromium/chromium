@@ -71,7 +71,6 @@ class PlayerFrameBitmapPainter {
         rowEnd = Math.min(rowEnd, mBitmapMatrix.length);
         colEnd = Math.min(colEnd, rowEnd >= 1 ? mBitmapMatrix[rowEnd - 1].length : 0);
 
-        boolean needsInvalidate = false;
         for (int row = rowStart; row < rowEnd; row++) {
             for (int col = colStart; col < colEnd; col++) {
                 Bitmap tileBitmap = mBitmapMatrix[row][col];

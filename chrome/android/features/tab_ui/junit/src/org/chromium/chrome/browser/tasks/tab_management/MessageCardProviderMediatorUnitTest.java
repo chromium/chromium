@@ -392,8 +392,5 @@ public class MessageCardProviderMediatorUnitTest {
         Assert.assertTrue(
                 mMediator.isMessageShown(
                         MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_WELCOME));
-        Assert.assertFalse(
-                mMediator.isMessageShown(
-                        MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_ALERTS));
     }
 }

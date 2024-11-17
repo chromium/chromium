@@ -395,8 +395,14 @@ class WebContentsVideoCaptureDeviceBrowserTestAura
 };
 
 // Verifies capture still works if the WindowTreeHost is occluded.
+// TODO(crbug.com/372481179): Failing on win-asan.
+#if defined(ADDRESS_SANITIZER) && BUILDFLAG(IS_WIN)
+#define MAYBE_CapturesWhenOccluded DISABLED_CapturesWhenOccluded
+#else
+#define MAYBE_CapturesWhenOccluded CapturesWhenOccluded
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTestAura,
-                       CapturesWhenOccluded) {
+                       MAYBE_CapturesWhenOccluded) {
   aura::WindowTreeHost* window_tree_host = shell()->window()->GetHost();
   aura::test::DisableNativeWindowOcclusionTracking(window_tree_host);
   NavigateToInitialDocument();
@@ -425,7 +431,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTestAura,
 // TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
 // MSAN is feasible or not
 // TODO(crbug.com/328658521): It is also flaky on macOS.
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/372481179): Failing on win-asan.
+#if defined(MEMORY_SANITIZER) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)) || BUILDFLAG(IS_MAC)
 #define MAYBE_RecoversAfterRendererCrash DISABLED_RecoversAfterRendererCrash
 #else
 #define MAYBE_RecoversAfterRendererCrash RecoversAfterRendererCrash

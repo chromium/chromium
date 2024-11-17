@@ -5,12 +5,16 @@
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_dialog_view.h"
 
 #include <optional>
+#include <utility>
 
+#include "base/functional/callback.h"
+#include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -310,7 +314,14 @@ class SecurePaymentConfirmationDialogViewTest
   }
 
   // SecurePaymentConfirmationDialogView::ObserverForTest:
-  void OnDialogClosed() override { dialog_closed_ = true; }
+  void OnDialogClosed() override {
+    dialog_closed_ = true;
+    if (dialog_closed_callback_) {
+      std::move(dialog_closed_callback_).Run();
+    }
+  }
+
+  // SecurePaymentConfirmationDialogView::ObserverForTest:
   void OnConfirmButtonPressed() override { confirm_pressed_ = true; }
   void OnCancelButtonPressed() override { cancel_pressed_ = true; }
   void OnOptOutClicked() override { opt_out_clicked_ = true; }
@@ -328,6 +339,7 @@ class SecurePaymentConfirmationDialogViewTest
   bool opt_out_clicked_ = false;
 
   base::HistogramTester histogram_tester_;
+  base::OnceClosure dialog_closed_callback_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationDialogViewTest>
       weak_ptr_factory_{this};
@@ -622,6 +634,22 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   EXPECT_FALSE(cancel_pressed_);
   EXPECT_FALSE(confirm_pressed_);
   EXPECT_TRUE(opt_out_clicked_);
+}
+
+// Occlusion by picture-in-picture video should dismiss the SPC authentication
+// dialog.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
+                       PictureInPictureOcclusionClosesTheDialog) {
+  CreateModel();
+  InvokeSecurePaymentConfirmationUI();
+  base::RunLoop run_loop;
+  dialog_closed_callback_ = run_loop.QuitClosure();
+
+  static_cast<PictureInPictureOcclusionObserver*>(test_delegate_->dialog_view())
+      ->OnOcclusionStateChanged(/*occluded=*/true);
+
+  run_loop.Run();
+  EXPECT_TRUE(dialog_closed_);
 }
 
 // A variant of SecurePaymentConfirmationDialogViewTest that enables the network

@@ -10,20 +10,54 @@ static_library("home_modules") {
     "card_selection_info.h",
     "card_selection_signals.cc",
     "card_selection_signals.h",
-    "constants.h",
+    "default_browser_promo.cc",
+    "default_browser_promo.h",
     "ephemeral_home_module_backend.cc",
     "ephemeral_home_module_backend.h",
+    "ephemeral_module_utils.cc",
+    "ephemeral_module_utils.h",
     "home_modules_card_registry.cc",
     "home_modules_card_registry.h",
     "price_tracking_notification_promo.cc",
     "price_tracking_notification_promo.h",
+    "send_tab_notification_promo.cc",
+    "send_tab_notification_promo.h",
   ]
+
+  if (is_ios) {
+    sources += [
+      "address_bar_position_ephemeral_module.cc",
+      "address_bar_position_ephemeral_module.h",
+      "autofill_passwords_ephemeral_module.cc",
+      "autofill_passwords_ephemeral_module.h",
+      "enhanced_safe_browsing_ephemeral_module.cc",
+      "enhanced_safe_browsing_ephemeral_module.h",
+      "lens_ephemeral_module.cc",
+      "lens_ephemeral_module.h",
+      "save_passwords_ephemeral_module.cc",
+      "save_passwords_ephemeral_module.h",
+    ]
+  }
+
   deps = [
+    ":constants",
     "//base",
     "//components/commerce/core:feature_list",
     "//components/prefs",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
     "//components/segmentation_platform/internal",
+    "//components/send_tab_to_self",
   ]
+}
+
+source_set("constants") {
+  sources = [
+    "constants.cc",
+    "constants.h",
+  ]
+  public_deps = [ "//base" ]
+  deps = [ "//components/segmentation_platform/embedder/home_modules/tips_manager:constants" ]
 }
 
 source_set("unit_tests") {
@@ -31,18 +65,38 @@ source_set("unit_tests") {
 
   sources = [
     "card_selection_signals_unittest.cc",
+    "default_browser_promo_unittest.cc",
     "ephemeral_home_module_backend_unittest.cc",
     "home_modules_card_registry_unittest.cc",
     "price_tracking_notification_promo_unittest.cc",
+    "send_tab_notification_promo_unittest.cc",
+    "test_utils.cc",
+    "test_utils.h",
   ]
 
+  if (is_ios) {
+    sources += [
+      "address_bar_position_ephemeral_module_unittest.cc",
+      "autofill_passwords_ephemeral_module_unittest.cc",
+      "enhanced_safe_browsing_ephemeral_module_unittest.cc",
+      "lens_ephemeral_module_unittest.cc",
+      "save_passwords_ephemeral_module_unittest.cc",
+    ]
+  }
+
   deps = [
+    ":constants",
     ":home_modules",
     "//base",
     "//base/test:test_support",
     "//components/commerce/core:feature_list",
     "//components/prefs:test_support",
     "//components/segmentation_platform/embedder/default_model:default_model_test_base",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:constants",
+    "//components/segmentation_platform/embedder/home_modules/tips_manager:signal_constants",
+    "//components/segmentation_platform/internal",
+    "//components/segmentation_platform/public",
+    "//components/send_tab_to_self",
     "//testing/gmock",
     "//testing/gtest",
   ]

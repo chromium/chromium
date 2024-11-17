@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_SAFETY_HUB_ABUSIVE_NOTIFICATION_PERMISSIONS_MANAGER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -117,6 +116,8 @@ class AbusiveNotificationPermissionsManager {
       : safe_browsing::SafeBrowsingDatabaseManager::Client {
    public:
     SafeBrowsingCheckClient(
+        base::PassKey<safe_browsing::SafeBrowsingDatabaseManager::Client>
+            pass_key,
         safe_browsing::SafeBrowsingDatabaseManager* database_manager,
         raw_ptr<std::map<SafeBrowsingCheckClient*,
                          std::unique_ptr<SafeBrowsingCheckClient>>>

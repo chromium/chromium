@@ -418,9 +418,6 @@
   <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE" desc="A page under “Languages and inputs” section in the OS settings page that users can add, remove and manage input methods.">
     Inputs
   </message>
-  <message name="IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2" desc="A page under “Languages and inputs” section in the OS settings page that users can add, remove and manage input methods.">
-    Inputs and keyboards
-  </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_DEVICE_LANGUAGE_TITLE" desc="The label for the section where users can see their device language. This language will be used for system surfaces (launcher, shelf, and notifications etc.).">
     Device language
   </message>
@@ -947,9 +944,6 @@
   </message>
 
   <!-- Device Page (OS Settings) -->
-  <message name="IDS_OS_SETTINGS_TOUCHPAD_REVERSE_SCROLL_LABEL">
-    Enable reverse scrolling. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_TOUCHPAD_REVERSE_SCROLL_LABEL">
     Reverse scrolling <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
@@ -1315,12 +1309,11 @@
   <message name="IDS_SETTINGS_LARGE_MOUSE_CURSOR_LABEL" desc="Label for checkbox which enables showing a larger mouse cursor than normal.">
     Show large mouse cursor
   </message>
-  <!-- TODO(b/341770655): Finalize strings for Facegaze and mark translatable -->
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_LABEL" desc="Label for checkbox which enables controlling the mouse cursor and keyboard with face movements.">
     Face control
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_DESCRIPTION" desc="The description for the checkbox that enables controlling the mouse cursor and keyboard with face movements.">
-    Use face and gaze movement to control cursor and keyboard
+    Use head movements and facial expressions to control your Chromebook
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_PREVIOUS" desc="Label for previous button.">
     Previous
@@ -1331,20 +1324,38 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_ADD_ACTION" desc="Label description for button to add an action in the action settings.">
     Add action
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_REMOVE_ACTION_LABEL" desc="Spoken description when focus is received by button to remove a specific action in the action settings." is_accessibility_with_no_ui="true">
+    Remove action <ph name="ACTION_TO_REMOVE">$1<ex>Click a mouse button</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_ASSIGN_GESTURE_LABEL" desc="Label description for button to assign a gesture to an action in the action settings.">
+    Assign a gesture
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_ASSIGNED_GESTURE_ALERT" desc="Spoken feedback for when a user has assigned a gesture to an action in the action settings." is_accessibility_with_no_ui="true">
+    Assigned gesture <ph name="GESTURE">$1<ex>Raise eyebrows</ex></ph> to <ph name="ACTION">$2<ex>Click a mouse button</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_REMOVED_ACTION_ALERT" desc="Spoken description when a user has removed a specific action in the action settings." is_accessibility_with_no_ui="true">
+    Removed action <ph name="REMOVED_ACTION">$1<ex>Click a mouse button</ex></ph>
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_TITLE" desc="Title for dialog page to add an action in the action settings.">
     Add an action
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_SELECTED_ITEM_INSTRUCTION" desc="Instruction read by screen reader when users can unselect a list item." is_accessibility_with_no_ui="true">
+    <ph name="ITEM">$1<ex>Pause or resume face control</ex></ph> selected. <ph name="INDEX">$2<ex>1</ex></ph> of <ph name="COUNT">$3<ex>13</ex></ph>. Press Search plus Space to unselect.
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_NOT_SELECTED_ITEM_INSTRUCTION" desc="Instruction read by screen reader when users can select a list item." is_accessibility_with_no_ui="true">
+    <ph name="ITEM">$1<ex>Pause or resume face control</ex></ph> not selected. <ph name="INDEX">$2<ex>1</ex></ph> of <ph name="COUNT">$3<ex>13</ex></ph>. Press Search plus Space to select.
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_KEY_COMBINATION_TITLE" desc="Title for dialog page to create a custom key combination in the action settings.">
     Create key combination
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_KEY_COMBINATION_LABEL" desc="Label description for component displaying the keys for custom key combination.">
-    Press 1-4 modifier keys (ctrl, alt, shift or search) and 1 more key. You can also select a single key.
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_KEY_COMBINATION_CHANGE_BUTTON_LABEL" desc="Label for button to change a custom key combination in the action settings.">
+    Change
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_KEY_COMBINATION_CHANGE_BUTTON_DESCRIPTION" desc="Spoken feedback when focus is on button to change a custom key combination in the action settings." is_accessibility_with_no_ui="true">
+    Change key combination <ph name="KEY_COMBINATION">$1<ex>ctrl + c</ex></ph>
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_SELECT_GESTURE_TITLE" desc="Title for dialog page to select a gesture for a given action in the action settings.">
     Select a gesture for <ph name="SELECTED_ACTION">$1<ex>Click a mouse button</ex></ph>
-  </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_SELECT_GESTURE_SUBTITLE" desc="Subtitle for dialog page to select a gesture for a given action in the action settings.">
-    Selecting an already assigned gesture will remove it from its original action
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_TITLE" desc="Title for dialog page to set the confidence threshold for a gesture.">
     Gesture setting: <ph name="SELECTED_GESTURE">$1<ex>Eyes blink</ex></ph>
@@ -1364,6 +1375,81 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_KNOB_LABEL" desc="Label for knob on slider indicating the confidence threshold for detecting a gesture.">
     Detection threshold
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_DECREASE_BUTTON_LABEL" desc="Spoken description when focus is on the button to decrease the confidence threshold for detecting a gesture on the slider." is_accessibility_with_no_ui="true">
+    Decrease threshold
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_INCREASE_BUTTON_LABEL" desc="Spoken description when focus is on the button to increase the confidence threshold for detecting a gesture on the slider" is_accessibility_with_no_ui="true">
+    Increase threshold
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_SLIDER_LABEL" desc="Spoken description when focus is on the slider indicating the confidence threshold for detecting a gesture." is_accessibility_with_no_ui="true">
+    Gesture detection threshold
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_TOGGLE_FACEGAZE" desc="This text describes an action that a user can take on their computer to pause or resume face control.">
+    Pause or resume face control
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_CLICK_LEFT" desc="This text describes an action that a user can take on their computer to click the left mouse button.">
+    Left-click the mouse
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_CLICK_LEFT_DOUBLE" desc="This text describes an action that a user can take on their computer to double click the left mouse button.">
+    Double-click the mouse
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_CLICK_LEFT_TRIPLE" desc="This text describes an action that a user can take on their computer to triple click the left mouse button.">
+    Triple-click the mouse
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_CLICK_RIGHT" desc="This text describes an action that a user can take on their computer to click the right mouse button.">
+    Right-click the mouse
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_LONG_CLICK_LEFT" desc="This text describes an action that a user can take on their computer to hold down or release the left mouse button.">
+    Drag and drop
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_RESET_CURSOR" desc="This text describes an action that a user can take on their computer to reset the cursor to the center of the screen.">
+    Reset cursor to center
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_TOGGLE_DICTATION" desc="This text describes an action that a user can take on their computer to turn Dictation on or off.">
+    Start or stop dictation
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_TOGGLE_OVERVIEW" desc="This text describes an action that a user can take on their computer to open the overview of windows.">
+    Open overview of windows
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_MEDIA_PLAY_PAUSE" desc="This text describes an action that a user can take on their computer to play or pause media.">
+    Play or pause media
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_TOGGLE_SCROLL_MODE" desc="This text describes an action that a user can take on their computer to turn scroll mode on or off.">
+    Scroll
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_TOGGLE_VIRTUAL_KEYBOARD" desc="This text describes an action that a user can take on their computer to show or hide the on-screen keyboard.">
+    Show or hide on-screen keyboard
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_CUSTOM_KEY_COMBO" desc="This text describes an action that a user can take on their computer to fire a custom key combination.">
+    Create custom key combination
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_ASSIGNED_CUSTOM_KEY_COMBO" desc="This text describes an action that a user can take on their computer to fire the given custom key combination.">
+    Custom key combination: <ph name="KEY_COMBINATION">$1<ex>ctrl + c</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_SUB_LABEL_TOGGLE_SCROLL_MODE" desc="This text describes how users can scroll on their computer using their face when in scroll mode.">
+    Use the gesture to enter scroll mode, then move your head in the direction you'd like to scroll. Use the gesture again to exit scroll mode.
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_SUB_LABEL_LONG_CLICK_LEFT" desc="This text describes how users can drag and drop on their computer using their face to hold down or release the left mouse button.">
+    Use the gesture, then move your head to show where you'd like to drop the item. Use the gesture again to drop it.
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_MACRO_LABEL_SCREENSHOT" desc="This text describes an action that a user can take on their computer to take a screenshot.">
+    Take a screenshot
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_KEYBOARD_LABEL_ONE_MODIFIER" desc="The label for a custom key combination containing a key and one modifier key. For example, ctrl + c.">
+    <ph name="MODIFIER">$1<ex>ctrl</ex></ph> + <ph name="KEY">$2<ex>c</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_KEYBOARD_LABEL_TWO_MODIFIERS" desc="The label for a custom key combination containing a key and two modifier keys. For example, ctrl + alt + c.">
+    <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph> + <ph name="MODIFIER_TWO">$2<ex>alt</ex></ph> + <ph name="KEY">$3<ex>c</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_KEYBOARD_LABEL_THREE_MODIFIERS" desc="The label for a custom key combination containing a key and three modifier keys. For example, ctrl + alt + shift + c.">
+    <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph> + <ph name="MODIFIER_TWO">$2<ex>alt</ex></ph> + <ph name="MODIFIER_THREE">$3<ex>shift</ex></ph> + <ph name="KEY">$4<ex>c</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_KEYBOARD_LABEL_FOUR_MODIFIERS" desc="The label for a custom key combination containing a key and four modifier keys. For example, ctrl + alt + shift + search + c.">
+    <ph name="MODIFIER_ONE">$1<ex>ctrl</ex></ph> + <ph name="MODIFIER_TWO">$2<ex>alt</ex></ph> + <ph name="MODIFIER_THREE">$3<ex>shift</ex></ph> + <ph name="MODIFIER_FOUR">$4<ex>shift</ex></ph> + <ph name="KEY">$5<ex>c</ex></ph>
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_KEYBOARD_KEY_SHIFT" desc="The label for the shift key in a custom key combination.">
+    shift
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_BROW_INNER_UP" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move their eyebrows up. See go/face-gestures-loc for illustrations of the gestures.">
     Raise eyebrows
   </message>
@@ -1376,8 +1462,8 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_EYE_SQUINT_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should partly close their right eye. See go/face-gestures-loc for illustrations of the gestures.">
     Squint right eye
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_EYES_BLINK" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should shut and open both eyes quickly. See go/face-gestures-loc for illustrations of the gestures.">
-    Blink both eyes
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_EYES_BLINK" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should briefly close then open both eyes. See go/face-gestures-loc for illustrations of the gestures.">
+    Briefly close both eyes
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_EYES_LOOK_DOWN" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move their eyes down. See go/face-gestures-loc for illustrations of the gestures.">
     Look down
@@ -1403,20 +1489,23 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_MOUTH_FUNNEL" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should make their lips into a circular shape. See go/face-gestures-loc for illustrations of the gestures.">
     Make a circle with your lips
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_MOUTH_LEFT" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move the left corner of their mouth further to the left. See go/face-gestures-loc for illustrations of the gestures.">
-    Stretch left corner of your mouth
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_MOUTH_LEFT" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move their mouth to the left. See go/face-gestures-loc for illustrations of the gestures.">
+    Move your mouth left
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_MOUTH_PUCKER" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should pucker their lips together, similar to a kiss gesture. See go/face-gestures-loc for illustrations of the gestures.">
     Pucker by squeezing lips together
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_MOUTH_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move the right corner of their mouth further to the right. See go/face-gestures-loc for illustrations of the gestures.">
-    Stretch right corner of your mouth
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_MOUTH_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move their mouth to the right. See go/face-gestures-loc for illustrations of the gestures.">
+    Move your mouth right
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_MOUTH_SMILE" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should smile. See go/face-gestures-loc for illustrations of the gestures.">
     Smile
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_MOUTH_UPPER_UP" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should scrunch up their nose. See go/face-gestures-loc for illustrations of the gestures.">
-    Wrinkle your nose
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_MOUTH_UPPER_UP" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should show all of their teeth. See go/face-gestures-loc for illustrations of the gestures.">
+    Show all of your teeth
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SECTION_TITLE" desc="Title for cursor settings.">
+    Cursor
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_SECTION_NAME" desc="The name of a section in settings for controlling the cursor speed.">
     Speed
@@ -1457,10 +1546,10 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_CONTROL_ENABLED_LABEL" desc="Label description for a toggle button that enables or disables using head movement to control the mouse cursor." translateable="false">
     Use head movements to control mouse cursor
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ADJUST_SEPARATELY_LABEL" desc="Label for a toggle button that allows the user to adjust the cursor speed separately for up/down/left/right speeds in FaceGaze." translateable="false">
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ADJUST_SEPARATELY_LABEL" desc="Label for a toggle button that allows the user to adjust the cursor speed separately for up/down/left/right speeds in FaceGaze.">
     Adjust speed separately for each direction
   </message>
-  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_LABEL" desc="Label description for a slider that adjusts the cursor speed for Face Gaze. This makes the cursor move faster or slower as the head moves." translateable="false">
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_LABEL" desc="Label description for a slider that adjusts the cursor speed for Face Gaze. This makes the cursor move faster or slower as the head moves.">
     Cursor speed
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SLIDER_LABEL_RESPONSIVE" desc="Label for the 'responsive' side of a smoothness slider that goes from 'responsive' to 'smooth'.">
@@ -1471,6 +1560,48 @@
   </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_RESET" desc="Label for the 'reset' button in FaceGaze cursor settings, that brings cursor settings back to default.">
     Reset
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SETTINGS_RESET_NOTIFICATION" desc="Spoken feedback to notify the user when the reset button has been clicked in the FaceGaze cursor settings and the cursor settings have been set back to default." is_accessibility_with_no_ui="true">
+    Cursor settings reset
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_VELOCITY_THRESHOLD_SLIDER_PRIMARY_LABEL" desc="Label for the slider on the FaceGaze cursor settings page that adjusts the velocity threshold.">
+    Cursor stability
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_VELOCITY_THRESHOLD_SLIDER_SECONDARY_LABEL" desc="Secondary label for the slider on the FaceGaze cursor settings page that adjusts the velocity threshold.">
+    You can keep the cursor stable even if you have slight head movements. This requires more effort to move the cursor.
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_VELOCITY_THRESHOLD_SLIDER_MIN_LABEL" desc="Label for the 'Responsive' side of the FaceGaze velocity threshold slider.">
+    Responsive
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_VELOCITY_THRESHOLD_SLIDER_MAX_LABEL" desc="Label for the 'Stable' side of the FaceGaze velocity threshold slider.'">
+    Stable
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_WARNING_GESTURE_ALREADY_ASSIGNED_LABEL" desc="Label that is shown when the user is attempting to bind a gesture that is already assigned.">
+    Selecting an already assigned gesture will remove it from its original action.
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_WARNING_CONFLICTING_GESTURES_SINGLE_LABEL" desc="Label that is shown when the user is attempting to bind to a gesture that conflicts with another gesture.">
+    "<ph name="MAIN_GESTURE">$1<ex>Smile</ex></ph>" may overlap with "<ph name="CONFLICTING_GESTURE">$2<ex>Squint left eye</ex></ph>". If possible, try picking a different gesture.
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_WARNING_CONFLICTING_GESTURES_DOUBLE_LABEL" desc="Label that is shown when the user is attempting to bind to a gesture that conflicts with two other gestures.">
+    "<ph name="MAIN_GESTURE">$1<ex>Smile</ex></ph>" may overlap with "<ph name="CONFLICTING_GESTURE_ONE">$2<ex>Squint left eye</ex></ph>" and "<ph name="CONFLICTING_GESTURE_TWO">$3<ex>Squint right eye</ex></ph>". If possible, try picking a different gesture.
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_WARNING_CONFLICTING_GESTURES_TRIPLE_LABEL" desc="Label that is shown when the user is attempting to bind to a gesture that conflicts with three other gestures.">
+    "<ph name="MAIN_GESTURE">$1<ex>Smile</ex></ph>" may overlap with "<ph name="CONFLICTING_GESTURE_ONE">$2<ex>Squint left eye</ex></ph>", "<ph name="CONFLICTING_GESTURE_TWO">$3<ex>Squint right eye</ex></ph>", and "<ph name="CONFLICTING_GESTURE_THREE">$4<ex>Blink eyes</ex></ph>". If possible, try picking a different gesture.
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_WARNING_COMBINED_LABEL" desc="Label that is shown when the user is attempting to bind a gesture that is already assigned and conflicts with other gestures.">
+    <ph name="ALREADY_ASSIGNED_MESSAGE">$1<ex>Selecting an already assigned gesture will remove it from its original action.</ex></ph> <ph name="CONFLICTING_GESTURES_MESSAGE">$2<ex>Smile may overlap with squint left eye. If possible, try picking a different gesture.</ex></ph>
+  </message>
+  <!-- TODO(b/376478655): Update string after it's finalized by UX writing. -->
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_PRECISION_CLICK_LABEL" desc="A label for a button on the FaceGaze settings page that enables precision click." translateable="false">
+    Precision click
+  </message>
+  <!-- TODO(b/376478655): Update string after it's finalized by UX writing. -->
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_PRECISION_CLICK_DESCRIPTION" desc="A sub label explaining in further detail what 'precision click' means for FaceGaze." translateable="false">
+    Perform the gesture assigned to left-click. Your mouse speed will decrease to make controlling the mouse easier. Perform the gesture again to click on the desired item.
+  </message>
+  <!-- TODO(b/376478655): Update string after it's finalized by UX writing. -->
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_PRECISION_CLICK_FACTORS_LABEL" desc="A label for a drop down menu that allows users to choose how much to dampen their mouse speed by when using FaceGaze." translateable="false">
+    Reduce mouse speed by
   </message>
   <message name="IDS_SETTINGS_FLASH_NOTIFICATIONS_LABEL" desc="The label of a setting that flashes the screen in a color when a notification is received.">
     Flash notifications
@@ -1597,6 +1728,9 @@
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_REDUCED_ANIMATIONS_DESCRIPTION" desc="Description for a checkbox which enables reduced animations.">
     Limit movement on the screen
+  </message>
+  <message name="IDS_SETTINGS_ACCESSIBILITY_OVERLAY_SCROLLBAR_LABEL" desc="Label for a checkbox which enables overlay scrollbars.">
+    Always show scrollbars
   </message>
   <message name="IDS_SETTINGS_CARET_BLINK_INTERVAL_LABEL" desc="The label for a slider that allows users to pick the blink rate of their text insertion cursor.">
     Text cursor blink rate
@@ -1803,16 +1937,22 @@
   <message name="IDS_SETTINGS_CHROMEVOX_VIRTUAL_BRAILLE_DISPLAY_STYLE_SIDE_BY_SIDE" desc="A dropdown item that lets the user enable the display style of the virtual display that is side by side, where regular text is on the left and braille is on the right.">
     Side-by-side
   </message>
-  <message name="IDS_SETTINGS_DISABLE_TRACKPAD_LABEL" desc="A label for the dropdown that lets the user set the disabled state of the internal trackpad.">
+  <message name="IDS_SETTINGS_DISABLE_TOUCHPAD_LABEL" desc="A label for the dropdown that lets the user set the disabled state of the internal touchpad.">
     Disable built-in touchpad
   </message>
-  <message name="IDS_SETTINGS_DISABLE_TRACKPAD_ALWAYS" desc="A dropdown item that lets the user always disable the internal trackpad.">
+  <message name="IDS_SETTINGS_DISABLE_TOUCHPAD_ALWAYS" desc="A dropdown item that lets the user always disable the internal touchpad.">
     Always
   </message>
-  <message name="IDS_SETTINGS_DISABLE_TRACKPAD_MOUSE_CONNECTED" desc="A dropdown item that lets the user disable the internal trackpad only when a mouse is connected.">
+  <message name="IDS_SETTINGS_BUILT_IN_TOUCHPAD_DISABLED" desc="In Device Settings, link that shows up when the built-in touchpad is disabled.">
+    Built-in touchpad is disabled
+  </message>
+  <message name="IDS_SETTINGS_DISABLE_TOUCHPAD_MOUSE_CONNECTED" desc="A dropdown item that lets the user disable the internal touchpad only when a mouse is connected.">
     When a mouse is connected
   </message>
-  <message name="IDS_SETTINGS_DISABLE_TRACKPAD_NEVER" desc="A dropdown item that lets the user never disable the internal trackpad.">
+  <message name="IDS_SETTINGS_RE_ENABLE_TOUCHPAD" desc="A label to show how to re-enable the internal touchpad.">
+    Press shift 5 times to re-enable it
+  </message>
+  <message name="IDS_SETTINGS_DISABLE_TOUCHPAD_NEVER" desc="A dropdown item that lets the user never disable the internal touchpad.">
     Never
   </message>
   <message name="IDS_SETTINGS_SCREEN_MAGNIFIER_LABEL" desc="Label for checkbox which enables the fullscreen magnifier">
@@ -1944,6 +2084,21 @@ Use Ctrl + Alt + Brightness down to zoom out.
   </message>
   <message name="IDS_SETTINGS_AUTOCLICK_MOVEMENT_THRESHOLD_EXTRA_LARGE" desc="Description of an extra large mouse movement threshold for autoclick mouse movements">
     Extra large
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_LABEL" desc="Label for the bounce keys setting toggle.">
+    Bounce keys
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_DESCRIPTION" desc="Description for the bounce keys setting toggle.">
+    Ignores quickly repeated presses of the same keyboard key
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_DELAY_LABEL" desc="Label for the bounce keys delay slider.">
+    Delay before activating the same key again
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_DELAY_SLIDER_SHORT" desc="Label for the minimum value on the bounce keys delay slider.">
+    Short
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_BOUNCE_KEYS_DELAY_SLIDER_LONG" desc="Label for the maximum value on the bounce keys delay slider.">
+    Long
   </message>
   <message name="IDS_SETTINGS_OVERSCROLL_HISTORY_NAVIGATION_TITLE" desc="Title for the overscroll history navigation setting, which allows you to navigate back and forward by swiping left or right with a touch device.">
     Use a swipe gesture to navigate between pages
@@ -2191,6 +2346,21 @@ Use Ctrl + Alt + Brightness down to zoom out.
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SELECT_TO_SPEAK_OPTIONS_LABEL" desc="In the settings tab, the label for the button that opens the Options page for the Select-to-Speak feature.">
     Open select-to-speak settings
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_LABEL" desc="Label for the slow keys setting toggle.">
+    Slow keys
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DESCRIPTION" desc="Description for the slow keys setting toggle.">
+    Adds a delay between when you press a key and when it activates
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DELAY_LABEL" desc="Label for the slow keys delay slider.">
+    Delay before activating key
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DELAY_SLIDER_SHORT" desc="Label for the minimum value on the slow keys delay slider.">
+    Short
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_SLOW_KEYS_DELAY_SLIDER_LONG" desc="Label for the maximum value on the slow keys delay slider.">
+    Long
   </message>
   <message name="IDS_SETTINGS_ACCESSIBILITY_SWITCH_ACCESS_DESCRIPTION" desc="In the settings tab, the text next to the checkbox to enable Switch Access (for users with limited motor control).">
     Switch Access
@@ -3143,14 +3313,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_STYLUS_NOTE_TAKING_APP_LABEL" desc="Label describing a dropdown that lets the user pick their default note-taking applications. The dropdown contains a list of all available choices. The user can install additional apps, so the contents of the dropdown is dynamic.">
     Note-taking app
   </message>
-  <message name="IDS_SETTINGS_STYLUS_NOTE_TAKING_APP_LOCK_SCREEN_CHECKBOX" desc="Label for a check box that enables note-taking by selected note-taking application when user session is locked (i.e. when lock screen is shown).">
-    Enable note-taking from lock screen
-  </message>
   <message name="IDS_SETTINGS_STYLUS_NOTE_TAKING_APP_KEEP_LATEST_NOTE" desc="Label for a check box that, when checked, indicates that the note-taking app should keep the latest note the user took while on the lock screen available to the user whenever the app is launched on the lock screen (i.e. if the active app window is closed, the note should be visible the next time the app is launched).">
     Keep latest note on lock screen
-  </message>
-  <message name="IDS_SETTINGS_STYLUS_LOCK_SCREEN_NOTES_TITLE" desc="In stylus settings, title of a section that contains settings for controlling note taking on the lock screen.">
-    Lock screen notes
   </message>
   <message name="IDS_SETTINGS_STYLUS_NOTE_TAKING_APP_NONE_AVAILABLE" desc="Secondary label used when there are no note-taking applications available.">
     None available
@@ -3533,6 +3697,17 @@ Press an assigned switch or key to remove assignment.
     Set up button
   </message>
 
+  <!-- Graduation -->
+  <message name="IDS_SETTINGS_GRADUATION_SECTION_TITLE" desc="Header for the settings section that links the user to the Content Transfer app.">
+    Content Transfer
+  </message>
+  <message name="IDS_SETTINGS_GRADUATION_ROW_TITLE" desc="Title for the settings row that takes users to the Content Transfer app.">
+    Content Transfer tool
+  </message>
+  <message name="IDS_SETTINGS_GRADUATION_ROW_SUBTITLE" desc="Description indicating that the Content Transfer app allows you to move data between personal and EDU accounts.">
+    Move your school account data to your personal account
+  </message>
+
   <!-- Device audio page (OS settings) -->
   <message name="IDS_SETTINGS_AUDIO_TITLE" desc="In Device Settings, the title of the audio settings subpage.">
     Audio
@@ -3583,7 +3758,25 @@ Press an assigned switch or key to remove assignment.
     Studio-style mic
   </message>
   <message name="IDS_SETTINGS_AUDIO_INPUT_STYLE_TRANSFER_DESCRIPTION" desc="In Device Settings, the description of the allowance of style transfer toggle under the input section in audio settings subpage.">
-    Apply noise cancellation and audio improvements. <ph name="LINK_BEGIN">&lt;a target="_blank" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    Apply noise cancellation and audio improvements.
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_VOICE_ISOLATION_EFFECT_FALLBACK_MESSAGE" desc="In Device Settings, the message to inform the user about the effect will fallback to noise cancellation.">
+    The connected mic can only support noise cancellation
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_EFFECT_MODE" desc="In Device Settings, the section title of the effect mode options.">
+    Effect mode
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_EFFECT_MODE_STYLE_TRANSFER_TITLE" desc="In Device Settings, the title of the style transfer effect mode option under the input section in audio settings subpage.">
+    Area voice
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_EFFECT_MODE_STYLE_TRANSFER_DESCRIPTION" desc="In Device Settings, the description of the style transfer effect mode option under the input section in audio settings subpage.">
+    Improve audio quality so voices sound natural and clear.
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_BEAMFORMING_TITLE" desc="In Device Settings, the title of the beamforming toggle under the input section in audio settings subpage.">
+    Focused voice
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_INPUT_BEAMFORMING_DESCRIPTION" desc="In Device Settings, the description of the beamforming effect under the input section in audio settings subpage.">
+    Beamforming mic so the person using the Chromebook sounds clear.
   </message>
   <message name="IDS_SETTINGS_AUDIO_DEVICE_FRONT_MIC_LABEL" desc="In Device Settings, the label used for the front microphone.">
     Front microphone
@@ -3642,6 +3835,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_AUDIO_DEVICE_SOUNDS_TITLE" desc="In Device Settings, the title of the device sounds section of the audio settings subpage.">
     Device sounds
   </message>
+  <message name="IDS_SETTINGS_AUDIO_OUTPUT_ENABLE_SPATIAL_AUDIO_TITLE" desc="In Device Settings, the title of the enablement of spatial audio toggle under the output section in audio settings subpage." translateable="false">
+    Spatial Audio
+  </message>
+  <message name="IDS_SETTINGS_AUDIO_OUTPUT_ENABLE_SPATIAL_AUDIO_DESCRIPTION" desc="In Device Settings, the description of the enablement of spatial audio toggle under the output section in audio settings subpage." translateable="false">
+    Enable supported content to sound more immersive
+  </message>
 
   <!-- Device pointer page (OS settings) -->
   <message name="IDS_SETTINGS_MOUSE_TITLE" desc="In Device Settings, the title of the mouse settings subpage.">
@@ -3658,9 +3857,6 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_TOUCHPAD_TITLE" desc="In Device Settings, the title of the touchpad settings subpage.">
     Touchpad
-  </message>
-  <message name="IDS_SETTINGS_TOUCHPAD_TAP_TO_CLICK_ENABLED_LABEL" desc="In Device Settings, the text next to the checkbox that allows tapping the touchpad to work as a click.">
-    Enable tap-to-click
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_TOUCHPAD_TAP_TO_CLICK_LABEL" desc="In Device Settings, the text next to the checkbox that allows tapping the touchpad to work as a click.">
     Tap to click
@@ -3704,17 +3900,11 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PRIMARY_MOUSE_BUTTON_RIGHT_LABEL" desc="In Device Settings, the text labelling the dropdown menu item for the right mouse button.">
     Right button
   </message>
-  <message name="IDS_SETTINGS_MOUSE_REVERSE_SCROLL_LABEL" desc="In Device Settings, the text next to the checkbox to set reverse scrolling.">
-    Enable reverse scrolling. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_MOUSE_REVERSE_SCROLL_LABEL" desc="In Device Settings, the text next to the checkbox to set reverse scrolling.">
     Reverse scrolling <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_MOUSE_REVERSE_SCROLL_DESCRIPTION" desc="In Device Settings, the description for the label to set mouse reverse scrolling.">
     Scroll up to move the page down
-  </message>
-  <message name="IDS_SETTINGS_MOUSE_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to enable mouse acceleration.">
-    Enable mouse acceleration
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_MOUSE_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to enable mouse acceleration.">
     Mouse acceleration
@@ -3736,9 +3926,6 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_POINTING_STICK_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to disable pointing stick (a.k.a. TrackPoint) acceleration. (TrackPoint is a trademark that's not translated.)">
     Enable TrackPoint acceleration
-  </message>
-  <message name="IDS_SETTINGS_TOUCHPAD_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to disable touchpad acceleration.">
-    Enable touchpad acceleration
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_TOUCHPAD_ACCELERATION_LABEL" desc="In Device Settings, the text next to the checkbox to disable touchpad acceleration.">
     Touchpad acceleration
@@ -4764,15 +4951,6 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_NETWORK_ACCESSIBILITY_LABEL" desc="Label for the button that toggles showing the network address configuration settings. Only visible by screen reader software.">
     Show network address settings
   </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_TITLE" desc="Settings > Internet > Network details: Title of the Passpoint network removal dialog.">
-    Forget this subscription?
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_DESCRIPTION" desc="Settings > Internet > Network details: Description of the Passpoint network removal dialog.">
-    By forgetting this network you will also remove the Passpoint subscription and its associated networks.
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_REMOVAL_INFORMATION" desc="Settings > Network > Wi-Fi > Network details: Information on the Passpoint subscription displayed in the network removal dialog.">
-    Your Passpoint provider will be removed from this device only. To make changes to your subscription, contact the subscription provider.
-  </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_SECTION_PASSPOINT_GO_TO_SUBSCRIPTION_TITLE" desc="Settings > Network > Wi-Fi > Network details: Title of the Passpoint removal dialog that leads the user to the subscription page.">
     Remove this network in Passpoint subscription page?
   </message>
@@ -5006,9 +5184,6 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_CANCEL_A11Y" desc="A11y label for the Cancel button of the dialog displayed when a Passpoint network is removed.">
     Cancel forgetting subscription
-  </message>
-  <message name="IDS_SETTINGS_INTERNET_PASSPOINT_REMOVE_CONFIRM_A11Y" desc="A11y label for the Confirm button of the dialog displayed when a Passpoint network is removed.">
-    Confirm subscription removal
   </message>
 
   <!-- Users Page (OS Settings) -->
@@ -5469,7 +5644,7 @@ Press an assigned switch or key to remove assignment.
     Password
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_DESCRIPTION" desc="Description of the password authentication factor on the lock screen page.">
-    Device password or Google Account password
+    Set up a <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SWITCH_LOCAL_PASSWORD_DESCRIPTION" desc="Description of the password authentication factor on the lock screen page.">
     Currently using Google Account password. You can set up a <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> password to make it easier to sign in.
@@ -5508,7 +5683,7 @@ Press an assigned switch or key to remove assignment.
     Local data recovery
   </message>
   <message name="IDS_SETTINGS_PEOPLE_RECOVERY_TOGGLE_SUB_LABEL" desc="Sub-label of toggle to enable or disable cryptohome recovery.">
-    Local data can be restored if you forget your password
+    Local data can be restored if you forget your PIN or password
   </message>
   <message name="IDS_SETTINGS_PEOPLE_RECOVERY_DISABLE_DIALOG_TITLE" desc="Title for the disable local data recovery dialog">
     Disable local data recovery?
@@ -5870,9 +6045,6 @@ Press an assigned switch or key to remove assignment.
   </message>
 
   <!-- Device display (OS settings) -->
-  <message name="IDS_SETTINGS_DISPLAY_TITLE" desc="In Device Settings, the title for display settings.">
-    Displays
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_TITLE" desc="In Device Settings, the title for display settings.">
     Display
   </message>
@@ -5984,14 +6156,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_RESOLUTION_ONLY_MENU_ITEM" desc="In Device Settings > Displays, the text entry for a single item in the external display resolution drop down menu, when Resolution and Refresh Rate are displayed separately.">
     <ph name="WIDTH">$1<ex>1600</ex></ph> x <ph name="HEIGHT">$2<ex>1200</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_DISPLAY_REFRESH_RATE_TITLE" desc="In Device Settings > Displays, the label for the section for changing a display's refresh rate.">
-    Refresh Rate
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_REFRESH_RATE_TITLE" desc="In Device Settings > Displays, the label for the section for changing a display's refresh rate.">
     Refresh rate
-  </message>
-  <message name="IDS_SETTINGS_DISPLAY_REFRESH_RATE_SUBLABEL" desc="In Device Settings > Displays, the text describing the drop down menu to select the desired refresh rate of the selected external display.">
-    Determines the frequency that the screen updates
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_REFRESH_RATE_DESCRIPTION" desc="In Device Settings > Displays, the text describing the drop down menu to select the desired refresh rate of the selected external display.">
     With a higher refresh rate, you'll have a smoother display with more details. Increased refresh rate may impact battery life.
@@ -6002,14 +6168,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_REFRESH_RATE_INTERLACED_MENU_ITEM" desc="In Device Settings > Displays, the text entry for a single item in the external display refresh rate drop down menu, when Resolution and Refresh Rate are displayed separately and the display mode is interlaced (which means the display's odd and even lines are scanned alternately in two interwoven rasterized lines). Hz is the SI unit Hertz">
     <ph name="REFRESH_RATE">$1<ex>60</ex></ph> Hz - interlaced
   </message>
-  <message name="IDS_SETTINGS_DISPLAY_ZOOM_TITLE" desc="In Device Settings > Displays, the title for the section for changing the display's zoom.">
-    Display size
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_ZOOM_LABEL" desc="In Device Settings > Displays, the label for the section for changing the display's zoom.">
     Display and text size
-  </message>
-  <message name="IDS_SETTINGS_DISPLAY_ZOOM_SUBLABEL" desc="In Device Settings > Displays, the text describing the display's zoom.">
-    Make items on your screen smaller or larger
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_ZOOM_DESCRIPTION" desc="In Device Settings > Displays, the description for the display's zoom.">
     Make items on your screen, including text, smaller or larger
@@ -6053,14 +6213,8 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_DISPLAY_OVERSCAN_TEXT" desc="Text explaining that this setting is used to adjust the boundaries of the selected display.">
     Adjust the boundaries of your desktop within the display
   </message>
-  <message name="IDS_SETTINGS_DISPLAY_OVERSCAN_TITLE" desc="Title of the settings subpage which adjusts display overscan.">
-    Overscan
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_BOUNDARIES_TITLE" desc="Title of the settings subpage which adjusts display boundaries.">
     Display boundaries
-  </message>
-  <message name="IDS_SETTINGS_DISPLAY_OVERSCAN_SUBTITLE" desc="Subtitle for the display overscan settings subpage.">
-    Adjust the boundaries of your display
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_DISPLAY_BOUNDARIES_DESCRIPTION" desc="Description for the display boundaries settings subpage.">
     Press the arrow keys to shrink or expand the display area. To move the display area around, press shift and +, then use the arrow keys.
@@ -6194,16 +6348,13 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_DISABLED" desc="Display name for the automatic time zone detection mode which disables automatic detection.">
     Automatic time zone detection is disabled
   </message>
-  <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT" desc="Display name for the automatic time zone detection mode which enables time zone detection sending unprecise location to Google servers. Default means that this is the default time zone detection mode.">
-    Use your IP address to determine location (default)
-  </message>
   <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_GEOLOCATION_WARNING_TEXT" desc="Displays the text notifying users that the system geolocation permission is required for the Automatic Time Zone Detection. Displaying the current status of Automatic Time Zone Detection with inline link to resolve the breakage.">
     Time zone is currently set to <ph name="TIME_ZONE_ENTRY">$1<ex>(UTC+4:00) Georgia Standard Time (Tbilisi)</ex></ph>. To automatically update the time zone, <ph name="BEGIN_LINK">&lt;a href="#"&gt;</ph>turn on system location access<ph name="END_LINK">&lt;/a&gt;</ph>.
   </message>
   <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_GEOLOCATION_MANAGED_WARNING_TEXT" desc="Displays the text notifying users that the system geolocation permission is required for the Automatic Time Zone Detection. Displaying the current status of Automatic Time Zone Detection with inline link to resolve the breakage.">
     Time zone is currently set to <ph name="TIME_ZONE_ENTRY">$1<ex>(UTC+4:00) Georgia Standard Time (Tbilisi)</ex></ph>. This setting is managed by your administrator.
   </message>
-  <message name="IDS_OS_SETTINGS_REVAMP_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT" desc="Display name for the automatic time zone detection mode which enables time zone detection sending unprecise location to Google servers.">
+  <message name="IDS_OS_SETTINGS_TIME_ZONE_DETECTION_MODE_IP_ONLY_DEFAULT" desc="Display name for the automatic time zone detection mode which enables time zone detection sending unprecise location to Google servers.">
     Use your IP address to determine location
   </message>
   <message name="IDS_SETTINGS_TIME_ZONE_DETECTION_MODE_SEND_WIFI_AP" desc="Display name for the automatic time zone detection mode which enables time zone detection sending list of visible WiFi Access Point names to Google servers.">
@@ -6318,9 +6469,11 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_DISABLED" desc="In keyboard remap keys subpage, the dropdown list item for a disabled key.">
     Disabled
   </message>
-   <!-- TODO(b:329880993): Translate following strings before launch. -->
-  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_RIGHT_ALT" translateable="false" desc="In keyboard remap keys subpage, the dropdown list item for a right alt key.">
-    right alt
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_ACTION_ROW_DESCRIPTION" desc="In keyboard remap keys subpage, the dropdown list label for each key.">
+    Select an action for <ph name="KEY_NAME">$1<ex>launch</ex></ph> key
+  </message>
+  <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_SHORTCUT_ROW_DESCRIPTION" desc="In keyboard remap keys subpage, the dropdown list item for each shortcut.">
+    Select a shortcut for <ph name="ACTION_NAME">$1<ex>delete</ex></ph> action
   </message>
   <message name="IDS_SETTINGS_PER_DEVICE_KEYBOARD_KEY_FUNCTION" desc="In keyboard remap keys subpage, the dropdown list item for a function key.">
     fn
@@ -6360,9 +6513,6 @@ Press an assigned switch or key to remove assignment.
   </message>
 
   <!-- Device Keyboard page (OS settings) -->
-  <message name="IDS_SETTINGS_KEYBOARD_TITLE" desc="In Device Settings, the title of the keyboard settings subpage.">
-    Keyboard
-  </message>
   <message name="IDS_OS_SETTINGS_REVAMP_KEYBOARD_AND_INPUTS_TITLE" desc="In Device Settings, the title of the keyboard and input settings subpage.">
     Keyboard and inputs
   </message>
@@ -6446,9 +6596,6 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_KEYBOARD_SHOW_LANGUAGE_AND_INPUT" desc="The link to navigate to the language and input method settings.">
     Change language and input settings
-  </message>
-  <message name="IDS_SETTINGS_KEYBOARD_SHOW_INPUT_SETTINGS" desc="The link to navigate to input method settings.">
-    Change input settings
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_KEYBOARD_SHOW_INPUT_SETTINGS" desc="The link to navigate to input method settings.">
     Input settings
@@ -6910,12 +7057,6 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_TITLE" desc="The title of the toggle to enable/disable camera from the privacy hub.">
     Camera access
   </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_SUBTEXT" desc="Sub-label for the camera access toggle button in the Privacy controls (aka Privacy Hub) os-settings page.">
-    Allow access for apps and websites with the camera permission
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_FALLBACK_CAMERA_TOGGLE_SUBTEXT" desc="Sub-label for the camera access toggle button in the Privacy controls (aka Privacy Hub) os-settings page when the camera led fallback mechanism is enabled.">
-    Allow access for apps and websites with the camera permission. To use the camera, you may need to restart the app or refresh the page.
-  </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_CAMERA_ROW_SUBTEXT" desc="Sub-label for the camera access row in the Privacy controls (aka Privacy Hub) os-settings page when camera access is allowed.">
     Apps and websites with the camera permission, as well as system services, can use your camera
   </message>
@@ -6933,9 +7074,6 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_TITLE" desc="The title of the toggle to enable/disable microphone from the privacy hub.">
     Microphone access
-  </message>
-  <message name="IDS_OS_SETTINGS_PRIVACY_HUB_MICROPHONE_TOGGLE_SUBTEXT" desc="Sub-label for the microphone access toggle button in the Privacy controls (aka Privacy Hub) os-settings page.">
-    Allow access for apps and websites with the microphone permission
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_PAGE_MICROPHONE_ROW_SUBTEXT" desc="Sub-label for the microphone access row in the Privacy controls (aka Privacy Hub) os-settings page when microphone access is allowed.">
     Apps and websites with the microphone permission, as well as system services, can use your microphone
@@ -7078,6 +7216,12 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <message name="IDS_OS_SETTINGS_SECURE_DNS_NETWORK_DEFAULT_MODE_DESCRIPTION" desc="Description when the user selects Network Default resolver from DNS dropdown menu">
     Secure connections might not always be available when using the network default. Consider selecting a different provider to ensure you're always using a secure connection.
   </message>
+  <message name="IDS_OS_SETTINGS_SECURE_DNS_WITH_DOMAIN_CONFIG_DESCRIPTION" desc="Description of secure DNS in Privacy options when included or excluded domains configuration is set">
+    Make it harder for people with access to your internet traffic to see which sites you visit. <ph name="PRODUCT_NAME">$1<ex>ChromeOS</ex></ph> uses a secure connection to look up a site's IP address in the DNS (Domain Name System). Secure connections are not used for some domains configured by your administrator.
+  </message>
+  <message name="IDS_OS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_AND_DOMAIN_CONFIG_DESCRIPTION" desc="Description of secure DNS in Privacy options when DoH identifiers and included or excluded domains configuration is set">
+    Use a secure connection to look up a site’s IP address in the DNS (Domain Name System). This uses a managed service provider at <ph name="DNS_SERVER_TEMPLATE_WITH_IDENTIFIER">$1<ex>https://dns.example.net/dns-query{?dns}</ex></ph>. Secure connections are not used for some domains configured by your administrator.
+  </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SECTION_TITLE" desc="The title of the System services section of the privacy hub sensor subpages.">
     System services
   </message>
@@ -7160,9 +7304,6 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
   <!-- Startup (OS settings) -->
   <message name="IDS_OS_SETTINGS_ON_STARTUP_SETTINGS_CARD_TITLE" desc="The title of the settings card that allows the user to configure the restore apps and pages options on startup.">
     Startup
-  </message>
-  <message name="IDS_OS_SETTINGS_ON_STARTUP_TITLE" desc="The title of the dropdown menu that allows the user to configure the restore apps and pages options on startup.">
-    Restore apps on startup
   </message>
   <message name="IDS_OS_SETTINGS_REVAMP_ON_STARTUP_TITLE" desc="The title of the dropdown menu that allows the user to configure the restore apps and pages options on startup.">
     Welcome Recap

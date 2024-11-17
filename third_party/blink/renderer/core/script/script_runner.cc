@@ -157,8 +157,7 @@ void ScriptRunner::QueueScriptForExecution(PendingScript* pending_script,
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // Note that WatchForLoad() can immediately call PendingScriptFinished().
@@ -300,8 +299,7 @@ void ScriptRunner::PendingScriptFinished(PendingScript* pending_script) {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

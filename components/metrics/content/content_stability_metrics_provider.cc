@@ -75,6 +75,15 @@ RendererHostedContentType DetermineHostedContentType(
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+bool IsCdmUtilityProcess(const content::ChildProcessData& data) {
+  return (data.process_type == content::PROCESS_TYPE_UTILITY &&
+          (data.sandbox_type == sandbox::mojom::Sandbox::kCdm
+#if BUILDFLAG(IS_WIN)
+           || data.sandbox_type == sandbox::mojom::Sandbox::kMediaFoundationCdm
+#endif
+           ));
+}
+
 }  // namespace
 
 ContentStabilityMetricsProvider::ContentStabilityMetricsProvider(
@@ -159,6 +168,10 @@ void ContentStabilityMetricsProvider::BrowserChildProcessCrashed(
   DCHECK(!data.metrics_name.empty());
   if (data.process_type == content::PROCESS_TYPE_UTILITY)
     helper_.BrowserUtilityProcessCrashed(data.metrics_name, info.exit_code);
+
+  if (IsCdmUtilityProcess(data)) {
+    helper_.CdmUtilityProcessCrashed(data.metrics_name, info.exit_code);
+  }
 }
 
 void ContentStabilityMetricsProvider::BrowserChildProcessLaunchedAndConnected(
@@ -166,6 +179,10 @@ void ContentStabilityMetricsProvider::BrowserChildProcessLaunchedAndConnected(
   DCHECK(!data.metrics_name.empty());
   if (data.process_type == content::PROCESS_TYPE_UTILITY)
     helper_.BrowserUtilityProcessLaunched(data.metrics_name);
+
+  if (IsCdmUtilityProcess(data)) {
+    helper_.CdmUtilityProcessLaunched(data.metrics_name);
+  }
 }
 
 void ContentStabilityMetricsProvider::BrowserChildProcessLaunchFailed(
@@ -180,6 +197,15 @@ void ContentStabilityMetricsProvider::BrowserChildProcessLaunchFailed(
                                               info.last_error
 #endif
     );
+
+  if (IsCdmUtilityProcess(data)) {
+    helper_.CdmUtilityProcessLaunchFailed(data.metrics_name, info.exit_code
+#if BUILDFLAG(IS_WIN)
+                                          ,
+                                          info.last_error
+#endif
+    );
+  }
 }
 
 #if BUILDFLAG(IS_ANDROID)

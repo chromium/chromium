@@ -27,7 +27,6 @@ final class CronetFixedModeOutputStream extends CronetOutputStream {
     // Using 16384 bytes is because the internal read buffer is 14520 for QUIC,
     // 16384 for SPDY, and 16384 for normal HTTP/1.1 stream.
     @VisibleForTesting private static int sDefaultBufferLength = 16384;
-    private final CronetHttpURLConnection mConnection;
     private final MessageLoop mMessageLoop;
     private final long mContentLength;
     // Internal buffer for holding bytes from the client until the bytes are
@@ -65,7 +64,6 @@ final class CronetFixedModeOutputStream extends CronetOutputStream {
         mContentLength = contentLength;
         int bufferSize = (int) Math.min(mContentLength, sDefaultBufferLength);
         mBuffer = ByteBuffer.allocate(bufferSize);
-        mConnection = connection;
         mMessageLoop = messageLoop;
         mBytesWritten = 0;
     }

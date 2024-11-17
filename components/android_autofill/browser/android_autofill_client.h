@@ -74,16 +74,20 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   ~AndroidAutofillClient() override;
 
   // AutofillClient:
+  base::WeakPtr<AutofillClient> GetWeakPtr() override;
+  const std::string& GetAppLocale() const override;
   bool IsOffTheRecord() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
   autofill::AutofillCrowdsourcingManager* GetCrowdsourcingManager() override;
   autofill::PersonalDataManager* GetPersonalDataManager() override;
+  autofill::SingleFieldFillRouter& GetSingleFieldFillRouter() override;
   autofill::AutocompleteHistoryManager* GetAutocompleteHistoryManager()
       override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;
   signin::IdentityManager* GetIdentityManager() override;
+  const signin::IdentityManager* GetIdentityManager() const override;
   autofill::FormDataImporter* GetFormDataImporter() override;
   autofill::StrikeDatabase* GetStrikeDatabase() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
@@ -114,8 +118,11 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void PinAutofillSuggestions() override;
   void HideAutofillSuggestions(
       autofill::SuggestionHidingReason reason) override;
+  bool IsAutofillEnabled() const override;
+  bool IsAutofillProfileEnabled() const override;
+  bool IsAutofillPaymentMethodsEnabled() const override;
   bool IsAutocompleteEnabled() const override;
-  bool IsPasswordManagerEnabled() override;
+  bool IsPasswordManagerEnabled() const override;
   void DidFillOrPreviewForm(
       autofill::mojom::ActionPersistence action_persistence,
       autofill::AutofillTriggerSource trigger_source,
@@ -141,6 +148,8 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
 
   std::unique_ptr<autofill::AutofillCrowdsourcingManager>
       crowdsourcing_manager_;
+
+  base::WeakPtrFactory<AndroidAutofillClient> weak_ptr_factory_{this};
 };
 
 }  // namespace android_autofill

@@ -137,13 +137,6 @@ AppTypeName GetAppTypeNameForStandaloneBrowserChromeApp(
 // window. Otherwise, return true.
 bool IsAshBrowserWindow(aura::Window* window);
 
-// Returns true if `window` is a lacros browser window. Otherwise, returns false
-// for non Lacros windows, or Lacros standalone app windows.
-bool IsLacrosBrowserWindow(Profile* profile, aura::Window* window);
-
-// Returns true if `window` is a lacros window. Otherwise, returns false.
-bool IsLacrosWindow(aura::Window* window);
-
 // Returns true if the app with |app_id| is opened as a tab in a browser window.
 // Otherwise, return false.
 bool IsAppOpenedInTab(AppTypeName app_type_name, const std::string& app_id);

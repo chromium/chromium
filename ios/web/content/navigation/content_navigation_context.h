@@ -5,9 +5,10 @@
 #ifndef IOS_WEB_CONTENT_NAVIGATION_CONTENT_NAVIGATION_CONTEXT_H_
 #define IOS_WEB_CONTENT_NAVIGATION_CONTENT_NAVIGATION_CONTEXT_H_
 
-#import "ios/web/public/navigation/navigation_context.h"
-
+#import "base/memory/raw_ptr.h"
+#import "base/memory/raw_ref.h"
 #import "content/public/browser/navigation_handle_user_data.h"
+#import "ios/web/public/navigation/navigation_context.h"
 
 namespace content {
 class NavigationHandle;
@@ -44,7 +45,7 @@ class ContentNavigationContext
   ContentNavigationContext(content::NavigationHandle& handle,
                            WebState* web_state);
 
-  content::NavigationHandle& handle_;
+  raw_ref<content::NavigationHandle> handle_;
   raw_ptr<WebState> web_state_ = nullptr;
 
   // We lazily populate this in GetError. Since the underlying NavigationHandle

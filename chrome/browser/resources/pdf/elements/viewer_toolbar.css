@@ -196,6 +196,7 @@ cr-progress,
 #annotate-controls {
   align-items: center;
   display: flex;
+  margin-inline-start: 6px;
 }
 
 #annotate-controls #annotate {
@@ -207,7 +208,7 @@ cr-progress,
 }
 
 #annotate-controls .vertical-separator {
-  margin-inline: 12px;
+  margin-inline: 6px;
 }
 </if>
 

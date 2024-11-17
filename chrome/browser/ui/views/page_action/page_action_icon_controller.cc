@@ -19,12 +19,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/autofill/address_bubbles_icon_view.h"
+#include "chrome/browser/ui/views/autofill/payments/filled_card_information_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
-#include "chrome/browser/ui/views/autofill/payments/virtual_card_manual_fallback_icon_view.h"
 #include "chrome/browser/ui/views/commerce/discounts_icon_view.h"
 #include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
@@ -45,7 +45,6 @@
 #include "chrome/browser/ui/views/sharing/sharing_dialog_view.h"
 #include "chrome/browser/ui/views/sharing/sharing_icon_view.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
-#include "chrome/browser/ui/views/side_search/side_search_icon_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_icon_container_view.h"
 #include "chrome/browser/ui/views/translate/translate_icon_view.h"
 #include "chrome/common/chrome_features.h"
@@ -241,12 +240,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                 }),
                 base::BindRepeating(SharingDialogView::GetAsBubble)));
         break;
-      case PageActionIconType::kSideSearch:
-        add_page_action_icon(
-            type, std::make_unique<SideSearchIconView>(
-                      params.icon_label_bubble_delegate,
-                      params.page_action_icon_delegate, params.browser));
-        break;
       case PageActionIconType::kTranslate:
         DCHECK(params.command_updater);
         add_page_action_icon(
@@ -260,9 +253,9 @@ void PageActionIconController::Init(const PageActionIconParams& params,
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
-      case PageActionIconType::kVirtualCardManualFallback:
+      case PageActionIconType::kFilledCardInformation:
         add_page_action_icon(
-            type, std::make_unique<autofill::VirtualCardManualFallbackIconView>(
+            type, std::make_unique<autofill::FilledCardInformationIconView>(
                       params.command_updater, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
         break;
@@ -331,7 +324,7 @@ bool PageActionIconController::IsAnyIconVisible() const {
 
 bool PageActionIconController::ActivateFirstInactiveBubbleForAccessibility() {
   for (auto icon_item : page_action_icon_views_) {
-    auto* icon = icon_item.second;
+    auto* icon = icon_item.second.get();
     if (!icon->GetVisible() || !icon->GetBubble())
       continue;
 

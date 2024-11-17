@@ -18,6 +18,11 @@ class PrivacySandboxTabObserver : public content::WebContentsObserver {
  private:
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
+
+  // Manages HaTS logic.
+  void MaybeTriggerSurveys(content::WebContents* web_contents);
+  // Tracks if a NTP has been seen before.
+  bool has_seen_ntp_ = false;
 };
 
 }  // namespace privacy_sandbox

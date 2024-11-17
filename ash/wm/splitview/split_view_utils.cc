@@ -993,7 +993,7 @@ bool IsSnapRatioGapWithinThreshold(aura::Window* to_be_snapped,
 float GetAutoSnapRatio(aura::Window* to_be_snapped_window,
                        aura::Window* target_root,
                        SnapViewType snap_type) {
-  if (IsSnapGroupEnabledInClamshellMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     // `GetTopmostVisibleWindowOfSnapType()` will include windows in snap
     // groups.
     if (aura::Window* opposite_window =
@@ -1052,11 +1052,6 @@ bool CanStartSplitViewOverviewSessionInClamshell(
   return ShouldConsiderWindowForSplitViewSetupView(window, snap_action_source);
 }
 
-bool IsSnapGroupEnabledInClamshellMode() {
-  return features::IsSnapGroupEnabled() &&
-         !display::Screen::GetScreen()->InTabletMode();
-}
-
 int GetWindowComponentForResize(aura::Window* window) {
   chromeos::WindowStateType state_type =
       WindowState::Get(window)->GetStateType();
@@ -1067,12 +1062,13 @@ int GetWindowComponentForResize(aura::Window* window) {
 }
 
 bool ShouldConsiderDivider(aura::Window* window) {
-  if (IsSnapGroupEnabledInClamshellMode()) {
+  if (!display::Screen::GetScreen()->InTabletMode()) {
     if (auto* snap_group =
             SnapGroupController::Get()->GetSnapGroupForGivenWindow(window)) {
       return snap_group->snap_group_divider()->divider_widget();
     }
   }
+
   SplitViewController* split_view_controller =
       SplitViewController::Get(window->GetRootWindow());
   return split_view_controller->InSplitViewMode() &&

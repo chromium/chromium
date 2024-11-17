@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/download/download_item_view.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/page_navigator.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
@@ -42,7 +43,7 @@ DownloadShelfContextMenuView::~DownloadShelfContextMenuView() = default;
 void DownloadShelfContextMenuView::Run(
     views::Widget* parent_widget,
     const gfx::Rect& rect,
-    ui::MenuSourceType source_type,
+    ui::mojom::MenuSourceType source_type,
     base::RepeatingClosure on_menu_closed_callback) {
   using Position = views::MenuAnchorPosition;
   ui::MenuModel* menu_model = GetMenuModel();

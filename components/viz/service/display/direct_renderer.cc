@@ -252,21 +252,17 @@ void DirectRenderer::DrawFrame(
     current_frame()->root_damage_rect.Union(
         overlay_processor_->GetAndResetOverlayDamage());
   }
+
   if (auto* ink_renderer =
           GetDelegatedInkPointRenderer(/*create_if_necessary=*/false)) {
-    // The path must be finalized before GetDamageRect() can return an accurate
-    // rect that will allow the old trail to be removed and the new trail to
-    // be drawn at the same time.
+    // The path must be finalized before GetDamageRect() can return an
+    // accurate rect that will allow the old trail to be removed and the new
+    // trail to be drawn at the same time.
     ink_renderer->FinalizePathForDraw();
-    gfx::Rect delegated_ink_damage_rect = ink_renderer->GetDamageRect();
-
-    // The viewport could have changed size since the presentation area was
-    // created and propagated, such as if is window was resized. Intersect the
-    // viewport here to ensure the damage rect doesn't extend beyond the current
-    // viewport.
-    delegated_ink_damage_rect.Intersect(gfx::Rect(device_viewport_size));
-    current_frame()->root_damage_rect.Union(delegated_ink_damage_rect);
   }
+  AddInkDamageToRenderPass(current_frame()->root_render_pass,
+                           current_frame()->root_damage_rect);
+
   current_frame()->root_damage_rect.Intersect(gfx::Rect(device_viewport_size));
   current_frame()->device_viewport_size = device_viewport_size;
   current_frame()->display_color_spaces = display_color_spaces;
@@ -385,7 +381,7 @@ void DirectRenderer::DrawFrame(
     // TODO(penghuang): verify this logic with SkiaRenderer.
     if (!output_surface_->capabilities().supports_surfaceless)
       needs_full_frame_redraw = true;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_WIN)
     // If compositing is delegated, then there will be no output_surface_plane,
     // and we should not trigger a redraw of the root render pass.
     // Pixel tests will not be displayed as overlay planes, so they need redraw.
@@ -687,6 +683,48 @@ void DirectRenderer::DrawRenderPassAndExecuteCopyRequests(
   }
 }
 
+void DirectRenderer::AddInkDamageToRenderPass(
+    const AggregatedRenderPass* render_pass,
+    gfx::Rect& output_damage_rect) {
+  if (auto* ink_renderer =
+          GetDelegatedInkPointRenderer(/*create_if_necessary=*/false)) {
+    auto pass_id = ink_renderer->GetLatestMetadataRenderPassId();
+    // Apply damage rect to target render pass.
+    // If the targeted render pass changes or there's no target, it is still
+    // important to apply the new damage rect to the old render pass with
+    // delegated ink, so that the region with ink can be invalidated and the ink
+    // be cleared.
+    if (render_pass->id == pass_id ||
+        render_pass->id == last_pass_with_delegated_ink_) {
+      // Ink damage rect is in root target space, and will need to be
+      // transformed to the current render pass space.
+      gfx::Transform root_target_to_render_pass_draw_transform;
+      if (render_pass->transform_to_root_target.GetInverse(
+              &root_target_to_render_pass_draw_transform)) {
+        // Since we're potentially expanding damage, we need
+        // |use_render_pass_drawn_rect_| to ensure that dependant render
+        // passes always have valid pixels.
+        DCHECK((render_pass == current_frame()->root_render_pass) ||
+               use_render_pass_drawn_rect_);
+
+        const gfx::Rect delegated_ink_damage_rect =
+            ink_renderer->GetDamageRect();
+        // Damage rect is initially in root space. Transform to render pass
+        // space, even for a root render pass.
+        gfx::Rect delegated_ink_damage_rect_in_draw_space =
+            root_target_to_render_pass_draw_transform.MapRect(
+                delegated_ink_damage_rect);
+        // Make sure the damage rect is not larger than the render pass output
+        // rect.
+        delegated_ink_damage_rect_in_draw_space.Intersect(
+            gfx::Rect(render_pass->output_rect));
+        output_damage_rect.Union(delegated_ink_damage_rect_in_draw_space);
+      }
+    }
+    last_pass_with_delegated_ink_ = pass_id;
+  }
+}
+
 void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
   TRACE_EVENT1("viz", "DirectRenderer::DrawRenderPass", "NumberOfQuads",
                render_pass->quad_list.size());
@@ -712,6 +750,9 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
     render_pass_scissor_in_draw_space.Intersect(
         ComputeScissorRectForRenderPass(current_frame()->current_render_pass));
   }
+
+  AddInkDamageToRenderPass(current_frame()->current_render_pass,
+                           render_pass_scissor_in_draw_space);
 
   if (is_root_render_pass && output_surface_clip_rect_) {
     render_pass_scissor_in_draw_space.Intersect(*output_surface_clip_rect_);
@@ -870,7 +911,7 @@ DirectRenderer::CalculateRenderPassRequirements(
   requirements.scanout_dcomp_surface =
       requirements.is_scanout && render_pass->needs_synchronous_dcomp_commit;
 #else
-  // On macOS and Lacros, the root render pass is handled by |BufferQueue| and
+  // On macOS the root render pass is handled by |BufferQueue| and
   // RPDQ overlays are handled by |PrepareRenderPassOverlay|.
   requirements.is_scanout = is_root;
 #endif
@@ -1214,31 +1255,15 @@ SharedImageFormat DirectRenderer::GetColorSpaceSharedImageFormat(
     gfx::ColorSpace color_space) const {
   gpu::Capabilities caps;
   caps.texture_format_bgra8888 = SupportsBGRA();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto gfx_hdr_format =
-      current_frame()->display_color_spaces.GetOutputBufferFormat(
-          gfx::ContentColorUsage::kHDR, /*needs_alpha=*/true);
-  auto viz_hdr_format = gfx_hdr_format == gfx::BufferFormat::RGBA_F16
-                            ? SinglePlaneFormat::kRGBA_F16
-                            : SinglePlaneFormat::kRGBA_1010102;
-  auto format = color_space.IsHDR()
-                    ? viz_hdr_format
-                    : PlatformColor::BestSupportedTextureFormat(caps);
-#else
   auto format = color_space.IsHDR()
                     ? SinglePlaneFormat::kRGBA_F16
                     : PlatformColor::BestSupportedTextureFormat(caps);
-#endif
   return format;
 }
 
 DelegatedInkPointRendererBase* DirectRenderer::GetDelegatedInkPointRenderer(
     bool create_if_necessary) {
   return nullptr;
-}
-
-void DirectRenderer::DrawDelegatedInkTrail() {
-  NOTREACHED();
 }
 
 bool DirectRenderer::CompositeTimeTracingEnabled() {
@@ -1257,8 +1282,7 @@ gfx::Rect DirectRenderer::GetDelegatedInkTrailDamageRect() {
 }
 
 gpu::Mailbox DirectRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
-  NOTREACHED_IN_MIGRATION();
-  return gpu::Mailbox();
+  NOTREACHED();
 }
 
 }  // namespace viz

@@ -7,7 +7,7 @@
 
 #include "ash/app_list/app_list_metrics.h"
 #include "ash/ash_export.h"
-#include "ash/focus_cycler.h"
+#include "ash/focus/focus_cycler.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/session/session_types.h"
 
@@ -99,8 +99,6 @@ ASH_EXPORT bool CanToggleMultitaskMenu();
 
 ASH_EXPORT bool CanToggleOverview();
 
-ASH_EXPORT bool CanTogglePicker();
-
 ASH_EXPORT bool CanTogglePrivacyScreen();
 
 ASH_EXPORT bool CanToggleProjectorMarker();
@@ -110,6 +108,8 @@ ASH_EXPORT bool CanToggleResizeLockMenu();
 ASH_EXPORT bool CanUnpinWindow();
 
 ASH_EXPORT bool CanWindowSnap();
+
+ASH_EXPORT bool CanResizePipWindow();
 
 //////////////////////////////////////////////////////////////////////////////
 // Accelerator commands.
@@ -448,6 +448,9 @@ ASH_EXPORT void WindowSnap(AcceleratorAction action);
 
 // Changes the display zooming up or down.
 ASH_EXPORT bool ZoomDisplay(bool up);
+
+// Resize the pip window.
+ASH_EXPORT void ResizePipWindow();
 
 }  // namespace accelerators
 }  // namespace ash

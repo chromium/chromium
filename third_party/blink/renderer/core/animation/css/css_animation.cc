@@ -32,7 +32,7 @@ bool CSSAnimation::IsEventDispatchAllowed() const {
          Animation::IsEventDispatchAllowed();
 }
 
-String CSSAnimation::playState() const {
+V8AnimationPlayState CSSAnimation::playState() const {
   FlushStyles();
   return Animation::playState();
 }

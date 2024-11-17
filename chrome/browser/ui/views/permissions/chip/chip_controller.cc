@@ -240,7 +240,7 @@ void ChipController::OnWidgetDestroyed(views::Widget* widget) {
       active_chip_permission_request_manager_.value()->Deny();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -474,7 +474,8 @@ void ChipController::ShowPageInfoDialog() {
           chip_, gfx::Rect(), chip_->GetWidget()->GetNativeWindow(), contents,
           entry->GetVirtualURL(), std::move(initialized_callback),
           base::BindOnce(&ChipController::OnPageInfoBubbleClosed,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr()),
+          /*allow_about_this_site=*/true);
   bubble->GetWidget()->Show();
   bubble_tracker_.SetView(bubble);
   permissions::PermissionUmaUtil::RecordPageInfoDialogAccessType(
@@ -783,9 +784,9 @@ void ChipController::StartDismissTimer() {
 }
 
 void ChipController::ResetTimers() {
-  collapse_timer_.AbandonAndStop();
-  dismiss_timer_.AbandonAndStop();
-  delay_prompt_timer_.AbandonAndStop();
+  collapse_timer_.Stop();
+  dismiss_timer_.Stop();
+  delay_prompt_timer_.Stop();
 }
 
 views::Widget* ChipController::GetBubbleWidget() {

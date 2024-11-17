@@ -384,27 +384,6 @@ TEST(WebInputEventTest, TestMakeWebMouseWheelEvent) {
   }
 }
 
-#if !BUILDFLAG(IS_MAC)
-TEST(WebInputEventTest, TestPercentMouseWheelScroll) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kWindowsScrollingPersonality);
-
-  base::TimeTicks timestamp = EventTimeForNow();
-  MouseWheelEvent ui_event(gfx::Vector2d(0, -MouseWheelEvent::kWheelDelta),
-                           gfx::Point(123, 321), gfx::Point(123, 321),
-                           timestamp, 0, 0);
-  blink::WebMouseWheelEvent webkit_event = MakeWebMouseWheelEvent(ui_event);
-
-  EXPECT_EQ(ui::ScrollGranularity::kScrollByPercentage,
-            webkit_event.delta_units);
-  EXPECT_FLOAT_EQ(0.f, webkit_event.delta_x);
-  EXPECT_FLOAT_EQ(-0.05, webkit_event.delta_y);
-  EXPECT_FLOAT_EQ(0.f, webkit_event.wheel_ticks_x);
-  EXPECT_FLOAT_EQ(-1.f, webkit_event.wheel_ticks_y);
-}
-#endif
-
 TEST(WebInputEventTest, KeyEvent) {
   ui::ScopedKeyboardLayout keyboard_layout(ui::KEYBOARD_LAYOUT_ENGLISH_US);
 

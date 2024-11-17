@@ -26,8 +26,6 @@
 #include "chrome/browser/ui/views/extensions/browser_action_drag_data.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
-#include "chrome/browser/ui/views/side_panel/search_companion/search_companion_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_toolbar_button.h"
@@ -40,11 +38,11 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/dialog_model_menu_model_adapter.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/cascading_property.h"
@@ -142,19 +140,6 @@ PinnedToolbarActionsContainer::PinnedToolbarActionsContainer(
 
   // Initialize the pinned action buttons.
   action_view_controller_ = std::make_unique<views::ActionViewController>();
-
-  // Before creating the pinned buttons, verify that the pref value is correct
-  // and update it if not. If the user has been moved into a different default
-  // pin state group (i.e. from the default being false to the default being
-  // true) we want to make sure their pin state changes if they have not
-  // explicitly changed it themselves.
-  if (SearchCompanionSidePanelCoordinator::IsSupported(
-          browser_view_->GetProfile(),
-          /*include_runtime_checks=*/false) &&
-      browser_view_->GetProfile()->GetPrefs()) {
-    companion::UpdateCompanionDefaultPinnedToToolbarState(
-        browser_view_->GetProfile());
-  }
 
   model_->MaybeMigrateChromeLabsPinnedState();
 
@@ -760,6 +745,11 @@ size_t PinnedToolbarActionsContainer::WidthToIconCount(int x_offset) {
                                       element_padding),
       0);
   return std::min(unclamped_count, pinned_buttons_.size());
+}
+
+const std::vector<actions::ActionId>&
+PinnedToolbarActionsContainer::PinnedActionIds() const {
+  return model_->PinnedActionIds();
 }
 
 BEGIN_METADATA(PinnedToolbarActionsContainer)

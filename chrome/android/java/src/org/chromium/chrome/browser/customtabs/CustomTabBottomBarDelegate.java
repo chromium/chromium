@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager.OverlayPanelManagerObserver;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.night_mode.RemoteViewsWithNightModeInflater;
 import org.chromium.chrome.browser.night_mode.SystemNightModeMonitor;
@@ -80,7 +79,6 @@ public class CustomTabBottomBarDelegate
     private final BrowserServicesIntentDataProvider mDataProvider;
     private final Supplier<Tab> mTabProvider;
     private final CustomTabNightModeStateController mNightModeStateController;
-    private final SystemNightModeMonitor mSystemNightModeMonitor;
 
     private CustomTabBottomBarView mBottomBarView;
     @Nullable private View mBottomBarContentView;
@@ -110,30 +108,42 @@ public class CustomTabBottomBarDelegate
                 }
             };
 
-    @Inject
     public CustomTabBottomBarDelegate(
             Activity activity,
             WindowAndroid windowAndroid,
             BrowserServicesIntentDataProvider dataProvider,
             BrowserControlsSizer browserControlsSizer,
             CustomTabNightModeStateController nightModeStateController,
-            SystemNightModeMonitor systemNightModeMonitor,
-            CustomTabActivityTabProvider tabProvider,
+            Supplier<Tab> tabProvider,
             CustomTabCompositorContentInitializer compositorContentInitializer) {
         mActivity = activity;
         mWindowAndroid = windowAndroid;
         mDataProvider = dataProvider;
         mBrowserControlsSizer = browserControlsSizer;
         mNightModeStateController = nightModeStateController;
-        mSystemNightModeMonitor = systemNightModeMonitor;
-        mTabProvider = () -> tabProvider.getTab();
-        browserControlsSizer.addObserver(this);
+        mTabProvider = tabProvider;
+        mBrowserControlsSizer.addObserver(this);
         mKeepContentView = false;
         compositorContentInitializer.addCallback(this::addOverlayPanelManagerObserver);
 
         Callback<ViewportInsets> insetObserver = this::onViewportInsetChange;
         // TODO(REVIEW): Is it ok this doesn't remove itself?
         mWindowAndroid.getApplicationBottomInsetSupplier().addObserver(insetObserver);
+    }
+
+    @Inject
+    public CustomTabBottomBarDelegate(
+            BaseCustomTabActivity activity,
+            WindowAndroid windowAndroid,
+            CustomTabCompositorContentInitializer compositorContentInitializer) {
+        this(
+                activity,
+                windowAndroid,
+                activity.getIntentDataProvider(),
+                activity.getBrowserControlsManager(),
+                activity.getCustomTabNightModeStateController(),
+                activity.getCustomTabActivityTabProvider(),
+                compositorContentInitializer);
     }
 
     /** Makes the bottom bar area to show, if any. */
@@ -412,7 +422,7 @@ public class CustomTabBottomBarDelegate
                         remoteViews,
                         getBottomBarView(),
                         mNightModeStateController.isInNightMode(),
-                        mSystemNightModeMonitor.isSystemNightModeOn());
+                        SystemNightModeMonitor.getInstance().isSystemNightModeOn());
 
         if (inflatedView == null) return false;
 

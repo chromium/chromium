@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/views/extensions/extension_installed_bubble_view.h"
+
 #include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/extensions/extension_sync_util.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
@@ -41,7 +43,7 @@
 #include "ui/views/controls/link.h"
 #include "ui/views/layout/box_layout.h"
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/promos/bubble_signin_promo_view.h"
 #endif
 
@@ -81,62 +83,23 @@ views::View* AnchorViewForBrowser(const ExtensionInstalledBubbleModel* model,
   return reference_view;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 std::unique_ptr<views::View> CreateSigninPromoView(
     Profile* profile,
     BubbleSignInPromoDelegate* delegate) {
+  int promo_message_id =
+      extensions::sync_util::IsExtensionsExplicitSigninEnabled()
+          ? IDS_EXTENSION_INSTALLED_PROMO_EXPLICIT_SIGNIN_MESSAGE
+          : IDS_EXTENSION_INSTALLED_DICE_PROMO_SYNC_MESSAGE;
+
   return std::make_unique<BubbleSignInPromoView>(
       profile, delegate,
       signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE,
-      IDS_EXTENSION_INSTALLED_DICE_PROMO_SYNC_MESSAGE,
-      ui::ButtonStyle::kProminent);
+      promo_message_id, ui::ButtonStyle::kProminent);
 }
 #endif
 
 }  // namespace
-
-// Provides feedback to the user upon successful installation of an
-// extension. Depending on the type of extension, the Bubble will
-// point to:
-//    OMNIBOX_KEYWORD-> The omnibox.
-//    BROWSER_ACTION -> The browserAction icon in the toolbar.
-//    PAGE_ACTION    -> A preview of the pageAction icon in the location
-//                      bar which is shown while the Bubble is shown.
-//    GENERIC        -> The app menu. This case includes pageActions that don't
-//                      specify a default icon.
-class ExtensionInstalledBubbleView : public BubbleSignInPromoDelegate,
-                                     public views::BubbleDialogDelegateView {
-  METADATA_HEADER(ExtensionInstalledBubbleView, views::BubbleDialogDelegateView)
-
- public:
-  ExtensionInstalledBubbleView(
-      Browser* browser,
-      std::unique_ptr<ExtensionInstalledBubbleModel> model);
-  ExtensionInstalledBubbleView(const ExtensionInstalledBubbleView&) = delete;
-  ExtensionInstalledBubbleView& operator=(const ExtensionInstalledBubbleView&) =
-      delete;
-  ~ExtensionInstalledBubbleView() override;
-
-  static void Show(Browser* browser,
-                   std::unique_ptr<ExtensionInstalledBubbleModel> model);
-
-  // Recalculate the anchor position for this bubble.
-  void UpdateAnchorView();
-
-  const ExtensionInstalledBubbleModel* model() const { return model_.get(); }
-
- private:
-  // views::BubbleDialogDelegateView:
-  void Init() override;
-
-  // BubbleSignInPromoDelegate:
-  void OnSignIn(const AccountInfo& account_info) override;
-
-  void LinkClicked();
-
-  const raw_ptr<Browser> browser_;
-  const std::unique_ptr<ExtensionInstalledBubbleModel> model_;
-};
 
 // static
 void ExtensionInstalledBubbleView::Show(
@@ -172,7 +135,7 @@ ExtensionInstalledBubbleView::ExtensionInstalledBubbleView(
       model_(std::move(model)) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   if (model_->show_sign_in_promo()) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
     SetFootnoteView(CreateSigninPromoView(browser->profile(), this));
 #endif
   }
@@ -194,6 +157,11 @@ void ExtensionInstalledBubbleView::UpdateAnchorView() {
   views::View* reference_view = AnchorViewForBrowser(model_.get(), browser_);
   DCHECK(reference_view);
   SetAnchorView(reference_view);
+}
+
+void ExtensionInstalledBubbleView::SignInForTesting(
+    const AccountInfo& account_info) {
+  OnSignIn(account_info);
 }
 
 void ExtensionInstalledBubbleView::Init() {
@@ -249,9 +217,17 @@ void ExtensionInstalledBubbleView::Init() {
 }
 
 void ExtensionInstalledBubbleView::OnSignIn(const AccountInfo& account) {
-  signin_ui_util::EnableSyncFromSingleAccountPromo(
-      browser_->profile(), account,
-      signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE);
+  // Sign the user into transport mode (sync not enabled) if extensions sync in
+  // transport mode is supported. Otherwise, sign in with sync enabled.
+  if (extensions::sync_util::IsExtensionsExplicitSigninEnabled()) {
+    signin_ui_util::SignInFromSingleAccountPromo(
+        browser_->profile(), account,
+        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE);
+  } else {
+    signin_ui_util::EnableSyncFromSingleAccountPromo(
+        browser_->profile(), account,
+        signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE);
+  }
   GetWidget()->Close();
 }
 

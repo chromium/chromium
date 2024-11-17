@@ -23,7 +23,6 @@ namespace location_bar_model {
 
 const gfx::VectorIcon& GetSecurityVectorIcon(
     security_state::SecurityLevel security_level,
-    bool use_updated_connection_security_indicators,
     security_state::MaliciousContentStatus malicious_content_status) {
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
   switch (security_level) {
@@ -49,16 +48,10 @@ const gfx::VectorIcon& GetSecurityVectorIcon(
       return vector_icons::kNotSecureWarningChromeRefreshIcon;
 
     case security_state::SECURITY_LEVEL_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      return omnibox::kHttpChromeRefreshIcon;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return omnibox::kHttpChromeRefreshIcon;
-#else
-  NOTREACHED_IN_MIGRATION();
-  static const gfx::VectorIcon dummy = {};
-  return dummy;
 #endif
+  NOTREACHED();
 }
 
 }  // namespace location_bar_model

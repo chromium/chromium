@@ -190,3 +190,7 @@ export function hasValidModifiers(e: KeyboardEvent): boolean {
       assertNotReached();
   }
 }
+
+export function formatShortcutText(text: string): string {
+  return text.split('+').join(' + ');
+}

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.webapps;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
@@ -39,7 +38,6 @@ import org.chromium.components.sync.protocol.WebApkSpecifics;
 import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeoutException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -93,24 +91,19 @@ public class WebApkSyncServiceTest {
 
     public WebappDataStorage registerWebappAndGetStorage(String packageName) throws Exception {
         String webappId = WebappIntentUtils.getIdForWebApkPackage(packageName);
-        try {
-            CallbackHelper helper = new CallbackHelper();
-            WebappRegistry.getInstance()
-                    .register(
-                            webappId,
-                            new WebappRegistry.FetchWebappDataStorageCallback() {
-                                @Override
-                                public void onWebappDataStorageRetrieved(
-                                        WebappDataStorage storage) {
-                                    helper.notifyCalled();
-                                }
-                            });
-            BackgroundShadowAsyncTask.runBackgroundTasks();
-            ShadowLooper.runUiThreadTasks();
-            helper.waitForOnly();
-        } catch (TimeoutException e) {
-            fail();
-        }
+        CallbackHelper helper = new CallbackHelper();
+        WebappRegistry.getInstance()
+                .register(
+                        webappId,
+                        new WebappRegistry.FetchWebappDataStorageCallback() {
+                            @Override
+                            public void onWebappDataStorageRetrieved(WebappDataStorage storage) {
+                                helper.notifyCalled();
+                            }
+                        });
+        BackgroundShadowAsyncTask.runBackgroundTasks();
+        ShadowLooper.runUiThreadTasks();
+        helper.waitForOnly();
 
         return WebappRegistry.getInstance().getWebappDataStorage(webappId);
     }

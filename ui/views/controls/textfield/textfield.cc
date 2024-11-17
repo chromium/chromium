@@ -19,7 +19,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform.h"
@@ -33,6 +32,7 @@
 #include "ui/base/ime/constants.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
@@ -92,11 +92,6 @@
 #include "ui/linux/linux_ui.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ui/aura/window.h"
-#include "ui/wm/core/ime_util_chromeos.h"
-#endif
-
 #if BUILDFLAG(IS_MAC)
 #include "ui/base/cocoa/secure_password_input.h"
 #endif
@@ -106,9 +101,11 @@
 #include "ui/ozone/public/platform_gl_egl_utility.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/aura/window.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/input_method_manager.h"
+#include "ui/wm/core/ime_util_chromeos.h"
 #endif
 
 #if defined(USE_AURA)
@@ -269,6 +266,9 @@ Textfield::Textfield()
   // accessibility trees of all the platforms we support.
   GetViewAccessibility().SetIsLeaf(true);
   UpdateAccessibleDefaultActionVerb();
+  // Editable state indicates support of editable interface, and is always set
+  // for a textfield, even if disabled or readonly.
+  GetViewAccessibility().SetIsEditable(true);
 }
 
 Textfield::~Textfield() {
@@ -1043,48 +1043,47 @@ void Textfield::OnDragDone() {
 void Textfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   View::GetAccessibleNodeData(node_data);
 
-  // Editable state indicates support of editable interface, and is always set
-  // for a textfield, even if disabled or readonly.
-  node_data->AddState(ax::mojom::State::kEditable);
-
   const gfx::Range range = GetSelectedRange();
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart,
                              base::checked_cast<int32_t>(range.start()));
   node_data->AddIntAttribute(ax::mojom::IntAttribute::kTextSelEnd,
                              base::checked_cast<int32_t>(range.end()));
+}
 
+void Textfield::OnAccessibilityInitializing(ui::AXNodeData* data) {
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-  // TODO(https://crbug.com/325137417): Recompute the text offsets whenever
-  // the value changes, not when GetAccessibleNodeData is different.
-  std::u16string ax_value = GetViewAccessibility().GetValue();
-  // If the accessible value changed since the last time we computed the text
-  // offsets, we need to recompute them.
+  // TODO(crbug.com/40933356): Add support for multiline textfields.
   if (::ui::AXPlatform::GetInstance().IsUiaProviderEnabled() &&
-      (ax_value_used_to_compute_offsets_ != ax_value ||
-       needs_ax_text_offsets_update_)) {
-    GetViewAccessibility().ClearTextOffsets();
+      !GetRenderText()->multiline()) {
+    ax_value_used_to_compute_offsets_ = GetRenderText()->GetDisplayText();
 
-    // TODO(crbug.com/325137417): When this function is only used to initialize
-    // the cache with these values, refactor this part to not rely on the cache
-    // as it will cause a chicken and egg situation. For now, this is necessary
-    // to keep the text offsets up to date.
-    RefreshAccessibleTextOffsets();
-    ax_value_used_to_compute_offsets_ = ax_value;
-    needs_ax_text_offsets_update_ = false;
-
-    node_data->AddIntListAttribute(
-        ax::mojom::IntListAttribute::kCharacterOffsets,
-        GetViewAccessibility().GetCharacterOffsets());
-    node_data->AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
-                                   GetViewAccessibility().GetWordStarts());
-    node_data->AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
-                                   GetViewAccessibility().GetWordEnds());
+    data->AddIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets,
+                              ComputeTextOffsets(GetRenderText()));
+    WordBoundaries boundaries = ComputeWordBoundaries(GetText());
+    data->AddIntListAttribute(ax::mojom::IntListAttribute::kWordStarts,
+                              boundaries.starts);
+    data->AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
+                              boundaries.ends);
   }
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+void Textfield::UpdateAccessibleTextOffsetsIfNeeded() {
+  bool should_update =
+      ax_value_used_to_compute_offsets_ != GetRenderText()->GetDisplayText();
+  if (::ui::AXPlatform::GetInstance().IsUiaProviderEnabled() &&
+      GetViewAccessibility().is_initialized() && should_update) {
+    GetViewAccessibility().ClearTextOffsets();
+
+    RefreshAccessibleTextOffsets();
+    ax_value_used_to_compute_offsets_ = GetRenderText()->GetDisplayText();
+  }
+}
+
 void Textfield::RefreshAccessibleTextOffsets() {
+  DCHECK(::ui::AXPlatform::GetInstance().IsUiaProviderEnabled());
+  DCHECK(GetViewAccessibility().is_initialized());
   // TODO(crbug.com/40933356): Add support for multiline textfields.
   if (GetRenderText()->multiline()) {
     return;
@@ -1173,10 +1172,10 @@ void Textfield::OnBlur() {
 
   if (GetInputMethod()) {
     GetInputMethod()->DetachTextInputClient(this);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     wm::RestoreWindowBoundsOnClientFocusLost(
         GetNativeView()->GetToplevelWindow());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
   StopBlinkingCursor();
   cursor_view_->SetVisible(false);
@@ -1224,9 +1223,10 @@ void Textfield::OnTextChanged() {
 ////////////////////////////////////////////////////////////////////////////////
 // Textfield, ContextMenuController overrides:
 
-void Textfield::ShowContextMenuForViewImpl(View* source,
-                                           const gfx::Point& point,
-                                           ui::MenuSourceType source_type) {
+void Textfield::ShowContextMenuForViewImpl(
+    View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
   UpdateContextMenu();
   context_menu_runner_->RunMenuAt(GetWidget(), nullptr,
                                   gfx::Rect(point, gfx::Size()),
@@ -1521,7 +1521,7 @@ void Textfield::ConvertPointFromScreen(gfx::Point* point) {
 
 void Textfield::OpenContextMenu(const gfx::Point& anchor) {
   DestroyTouchSelection();
-  ShowContextMenu(anchor, ui::MENU_SOURCE_TOUCH_EDIT_MENU);
+  ShowContextMenu(anchor, ui::mojom::MenuSourceType::kTouchEditMenu);
 }
 
 void Textfield::DestroyTouchSelection() {
@@ -1731,6 +1731,21 @@ gfx::Rect Textfield::GetSelectionBoundingBox() const {
   return gfx::Rect();
 }
 
+#if BUILDFLAG(IS_WIN)
+std::optional<gfx::Rect> Textfield::GetProximateCharacterBounds(
+    const gfx::Range& range) const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return std::nullopt;
+}
+
+std::optional<size_t> Textfield::GetProximateCharacterIndexFromPoint(
+    const gfx::Point& point,
+    ui::IndexFromPointFlags flags) const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return std::nullopt;
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 bool Textfield::GetCompositionCharacterBounds(size_t index,
                                               gfx::Rect* rect) const {
   DCHECK(rect);
@@ -1869,10 +1884,10 @@ void Textfield::ExtendSelectionAndDelete(size_t before, size_t after) {
 }
 
 void Textfield::EnsureCaretNotInRect(const gfx::Rect& rect_in_screen) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   aura::Window* top_level_window = GetNativeView()->GetToplevelWindow();
   wm::EnsureWindowNotInRect(top_level_window, rect_in_screen);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 bool Textfield::IsTextEditCommandEnabled(ui::TextEditCommand command) const {
@@ -2533,12 +2548,6 @@ ui::TextEditCommand Textfield::GetCommandForKeyEvent(
   }
 }
 
-#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-void Textfield::SetNeedsAccessibleTextOffsetsUpdate() {
-  needs_ax_text_offsets_update_ = true;
-}
-#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
-
 ////////////////////////////////////////////////////////////////////////////////
 // Textfield, private:
 
@@ -2723,6 +2732,10 @@ void Textfield::UpdateAccessibleValue() {
   } else {
     GetViewAccessibility().SetValue(GetText());
   }
+
+#if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
+  UpdateAccessibleTextOffsetsIfNeeded();
+#endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 }
 
 void Textfield::UpdateCursorVisibility() {

@@ -69,7 +69,7 @@ TEST_F(SystemToastViewPixelTest, TextOnly) {
   GetContentsView()->AddChildView(std::make_unique<SystemToastView>(kTestText));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/5, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, WithLeadingIcon) {
@@ -78,7 +78,7 @@ TEST_F(SystemToastViewPixelTest, WithLeadingIcon) {
       /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/5, GetContentsView()));
+      "screenshot", /*revision_number=*/6, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, WithButton) {
@@ -86,7 +86,7 @@ TEST_F(SystemToastViewPixelTest, WithButton) {
       /*text=*/kTestText, /*dismiss_text=*/kTestButtonText));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/6, GetContentsView()));
+      "screenshot", /*revision_number=*/7, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, WithLeadingIconAndButton) {
@@ -95,7 +95,7 @@ TEST_F(SystemToastViewPixelTest, WithLeadingIconAndButton) {
       /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/5, GetContentsView()));
+      "screenshot", /*revision_number=*/6, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, Multiline_TextOnly) {
@@ -103,7 +103,7 @@ TEST_F(SystemToastViewPixelTest, Multiline_TextOnly) {
       std::make_unique<SystemToastView>(kTestLongText));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/5, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, Multiline_WithLeadingIcon) {
@@ -112,7 +112,7 @@ TEST_F(SystemToastViewPixelTest, Multiline_WithLeadingIcon) {
       /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/5, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, Multiline_WithButton) {
@@ -120,7 +120,7 @@ TEST_F(SystemToastViewPixelTest, Multiline_WithButton) {
       /*text=*/kTestLongText, /*dismiss_text=*/kTestButtonText));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/5, GetContentsView()));
 }
 
 TEST_F(SystemToastViewPixelTest, Multiline_WithLeadingIconAndButton) {
@@ -129,7 +129,7 @@ TEST_F(SystemToastViewPixelTest, Multiline_WithLeadingIconAndButton) {
       /*dismiss_callback=*/base::DoNothing(), /*leading_icon=*/kTestIcon));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "screenshot", /*revision_number=*/4, GetContentsView()));
+      "screenshot", /*revision_number=*/5, GetContentsView()));
 }
 
 }  // namespace ash

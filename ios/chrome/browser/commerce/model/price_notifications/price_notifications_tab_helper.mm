@@ -7,11 +7,15 @@
 #import "components/commerce/core/shopping_service.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 
 namespace {
 
@@ -29,15 +33,15 @@ void OnProductInfoUrl(
 // Returns whether the price notification should be presented
 // for `web_state`.
 bool ShouldPresentPriceNotifications(web::WebState* web_state) {
-  ChromeBrowserState* const browser_state =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  ProfileIOS* const profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
 
-  if (!IsPriceTrackingEnabled(browser_state)) {
+  if (!IsPriceTrackingEnabled(profile)) {
     return false;
   }
 
   feature_engagement::Tracker* const tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browser_state);
+      feature_engagement::TrackerFactory::GetForProfile(profile);
   if (!tracker->WouldTriggerHelpUI(
           feature_engagement ::kIPHPriceNotificationsWhileBrowsingFeature)) {
     return false;
@@ -46,12 +50,27 @@ bool ShouldPresentPriceNotifications(web::WebState* web_state) {
   return true;
 }
 
+// Records a visit to a website that is eligible for price tracking.
+// This allows the Tips Manager to provide relevant tips or guidance
+// to the user about the price tracking feature.
+void RecordPriceTrackableSiteVisit(web::WebState* web_state) {
+  CHECK(IsSegmentationTipsManagerEnabled());
+
+  ProfileIOS* const profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
+
+  TipsManagerIOS* tipsManager = TipsManagerIOSFactory::GetForProfile(profile);
+
+  tipsManager->NotifySignal(
+      segmentation_platform::tips_manager::signals::kOpenedShoppingWebsite);
+}
+
 }  // namespace
 
 PriceNotificationsTabHelper::PriceNotificationsTabHelper(
     web::WebState* web_state) {
   web_state_observation_.Observe(web_state);
-  shopping_service_ = commerce::ShoppingServiceFactory::GetForBrowserState(
+  shopping_service_ = commerce::ShoppingServiceFactory::GetForProfile(
       ProfileIOS::FromBrowserState(web_state->GetBrowserState()));
 }
 
@@ -65,6 +84,11 @@ void PriceNotificationsTabHelper::DidFinishNavigation(
   if (!ShouldPresentPriceNotifications(web_state)) {
     return;
   }
+
+  if (IsSegmentationTipsManagerEnabled()) {
+    RecordPriceTrackableSiteVisit(web_state);
+  }
+
   // Local strong reference for binding to the callback below.
   id<HelpCommands> help_handler = help_handler_;
   shopping_service_->GetProductInfoForUrl(

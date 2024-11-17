@@ -19,7 +19,6 @@
 #import "components/prefs/pref_member.h"
 #import "ios/chrome/browser/net/model/net_types.h"
 #import "ios/chrome/browser/profile/model/ios_chrome_io_thread.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "net/cookies/cookie_monster.h"
 #import "net/http/http_cache.h"
 #import "net/http/http_network_session.h"
@@ -28,10 +27,11 @@
 #import "net/url_request/url_request_job_factory.h"
 
 class AcceptLanguagePrefWatcher;
-enum class ChromeBrowserStateType;
+enum class ProfileIOSType;
 class HostContentSettingsMap;
 class IOSChromeHttpUserAgentSettings;
 class IOSChromeURLRequestContextGetter;
+class ProfileIOS;
 
 namespace content_settings {
 class CookieSettings;
@@ -45,10 +45,10 @@ class URLRequestContextBuilder;
 }  // namespace net
 
 // Conceptually speaking, the ProfileIOSIOData represents data that
-// lives on the IO thread that is owned by a ChromeBrowserState, such as, but
+// lives on the IO thread that is owned by a ProfileIOS, such as, but
 // not limited to, network objects like CookieMonster, HttpTransactionFactory,
 // etc.
-// ChromeBrowserState owns ProfileIOSIOData, but will make sure to
+// ProfileIOS owns ProfileIOSIOData, but will make sure to
 // delete it on the IO thread.
 class ProfileIOSIOData {
  public:
@@ -69,13 +69,11 @@ class ProfileIOSIOData {
 
   // These are useful when the Chrome layer is called from the content layer
   // with a content::ResourceContext, and they want access to Chrome data for
-  // that browser state.
+  // that profile.
   content_settings::CookieSettings* GetCookieSettings() const;
   HostContentSettingsMap* GetHostContentSettingsMap() const;
 
-  ChromeBrowserStateType browser_state_type() const {
-    return browser_state_type_;
-  }
+  ProfileIOSType profile_type() const { return profile_type_; }
 
   bool IsOffTheRecord() const;
 
@@ -84,7 +82,7 @@ class ProfileIOSIOData {
   void InitializeMetricsEnabledStateOnUIThread();
 
   // Returns whether or not metrics reporting is enabled in the browser instance
-  // on which this browser state resides. This is safe for use from the IO
+  // on which this profile resides. This is safe for use from the IO
   // thread, and should only be called from there.
   bool GetMetricsEnabledStateOnIOThread() const;
 
@@ -106,19 +104,19 @@ class ProfileIOSIOData {
     std::unique_ptr<net::ProxyConfigService> proxy_config_service;
 
     // SystemCookieStore should be initialized from the UI thread as it depends
-    // on the `browser_state`.
+    // on the `profile`.
     std::unique_ptr<net::SystemCookieStore> system_cookie_store;
 
-    // The browser state this struct was populated from. It's passed as a void*
+    // The profile this struct was populated from. It's passed as a void*
     // to ensure it's not accidentally used on the IO thread.
-    raw_ptr<void> browser_state;
+    raw_ptr<void> profile;
   };
 
-  explicit ProfileIOSIOData(ChromeBrowserStateType browser_state_type);
+  explicit ProfileIOSIOData(ProfileIOSType profile_type);
 
-  void InitializeOnUIThread(ChromeBrowserState* browser_state);
+  void InitializeOnUIThread(ProfileIOS* profile);
 
-  // Called when the ChromeBrowserState is destroyed. `context_getters` must
+  // Called when the ProfileIOS is destroyed. `context_getters` must
   // include all URLRequestContextGetters that refer to the
   // ProfileIOSIOData's URLRequestContexts. Triggers destruction of the
   // ProfileIOSIOData and shuts down `context_getters` safely on the IO
@@ -159,13 +157,12 @@ class ProfileIOSIOData {
   // Tracks whether or not we've been lazily initialized.
   mutable bool initialized_;
 
-  // Data from the UI thread from the ChromeBrowserState, used to initialize
+  // Data from the UI thread from the ProfileIOS, used to initialize
   // ProfileIOSIOData. Deleted after lazy initialization.
   mutable std::unique_ptr<ProfileParams> profile_params_;
 
   // Member variables which are pointed to by the various context objects.
   mutable BooleanPrefMember enable_referrers_;
-  mutable BooleanPrefMember enable_do_not_track_;
 
   BooleanPrefMember enable_metrics_;
   std::unique_ptr<AcceptLanguagePrefWatcher> accept_language_pref_watcher_;
@@ -181,7 +178,7 @@ class ProfileIOSIOData {
   mutable std::unique_ptr<IOSChromeHttpUserAgentSettings>
       chrome_http_user_agent_settings_;
 
-  const ChromeBrowserStateType browser_state_type_;
+  const ProfileIOSType profile_type_;
 };
 
 #endif  // IOS_CHROME_BROWSER_PROFILE_MODEL_PROFILE_IOS_IO_DATA_H_

@@ -152,7 +152,7 @@ class BluetoothDeviceListControllerTest : public AshTestBase {
   const std::vector<PairedBluetoothDevicePropertiesPtr> empty_list_;
 
  private:
-  const TriView* FindSubHeaderWithText(const std::u16string text) {
+  const TriView* FindSubHeaderWithText(const std::u16string& text) {
     for (const views::View* view : device_list()->children()) {
       if (std::strcmp("TriView", view->GetClassName()))
         continue;

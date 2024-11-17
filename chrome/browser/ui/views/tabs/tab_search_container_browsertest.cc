@@ -296,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       LogsSuccessWhenButtonClicked) {
+                       LogsSuccessWhenAutoTabGroupsButtonClicked) {
   base::HistogramTester histogram_tester;
 
   tab_search_container()->ShowTabOrganization(
@@ -321,7 +321,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       LogsFailureWhenButtonDismissed) {
+                       LogsFailureWhenAutoTabGroupsButtonDismissed) {
   base::HistogramTester histogram_tester;
 
   tab_search_container()->ShowTabOrganization(
@@ -344,7 +344,7 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       LogsFailureWhenButtonTimeout) {
+                       LogsFailureWhenAutoTabGroupsButtonTimeout) {
   base::HistogramTester histogram_tester;
 
   tab_search_container()->ShowTabOrganization(
@@ -366,6 +366,52 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                                       false, 1);
 
   histogram_tester.ExpectUniqueSample("Tab.Organization.Trigger.Outcome", 2, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       LogsWhenDeclutterButtonClicked) {
+  base::HistogramTester histogram_tester;
+
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->tab_declutter_button());
+
+  tab_search_container()->OnTabDeclutterButtonClicked();
+
+  histogram_tester.ExpectUniqueSample(
+      "Tab.Organization.Declutter.Trigger.Outcome", 0, 1);
+  // Bucketed CTR metric should reflect one show and one click, with fewer than
+  // 15 total tabs.
+  histogram_tester.ExpectBucketCount(
+      "Tab.Organization.Declutter.Trigger.BucketedCTR", 0, 1);
+  histogram_tester.ExpectBucketCount(
+      "Tab.Organization.Declutter.Trigger.BucketedCTR", 10, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       LogsWhenDeclutterButtonDismissed) {
+  base::HistogramTester histogram_tester;
+
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->tab_declutter_button());
+
+  tab_search_container()->OnTabDeclutterButtonDismissed();
+
+  histogram_tester.ExpectUniqueSample(
+      "Tab.Organization.Declutter.Trigger.Outcome", 1, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
+                       LogsWhenDeclutterButtonTimeout) {
+  base::HistogramTester histogram_tester;
+
+  tab_search_container()->ShowTabOrganization(
+      tab_search_container()->tab_declutter_button());
+
+  tab_search_container()->OnOrganizeButtonTimeout(
+      tab_search_container()->tab_declutter_button());
+
+  histogram_tester.ExpectUniqueSample(
+      "Tab.Organization.Declutter.Trigger.Outcome", 2, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,

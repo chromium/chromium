@@ -5,6 +5,7 @@
 #include "components/data_sharing/internal/empty_data_sharing_service.h"
 
 #include "base/functional/callback.h"
+#include "components/data_sharing/public/data_sharing_sdk_delegate.h"
 
 namespace data_sharing {
 
@@ -29,6 +30,26 @@ EmptyDataSharingService::GetCollaborationGroupControllerDelegate() {
 void EmptyDataSharingService::AddObserver(Observer* observer) {}
 
 void EmptyDataSharingService::RemoveObserver(Observer* observer) {}
+
+bool EmptyDataSharingService::IsGroupDataModelLoaded() {
+  return false;
+}
+
+std::optional<GroupData> EmptyDataSharingService::ReadGroup(
+    const GroupId& group_id) {
+  return std::nullopt;
+}
+
+std::set<GroupData> EmptyDataSharingService::ReadAllGroups() {
+  return std::set<GroupData>();
+}
+
+std::optional<GroupMemberPartialData>
+EmptyDataSharingService::GetPossiblyRemovedGroupMember(
+    const GroupId& group_id,
+    const std::string& member_gaia_id) {
+  return std::nullopt;
+}
 
 void EmptyDataSharingService::ReadAllGroups(
     base::OnceCallback<void(const GroupsDataSetOrFailureOutcome&)> callback) {}
@@ -60,20 +81,29 @@ void EmptyDataSharingService::RemoveMember(
     const std::string& member_email,
     base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
 
+void EmptyDataSharingService::LeaveGroup(
+    const GroupId& group_id,
+    base::OnceCallback<void(PeopleGroupActionOutcome)> callback) {}
+
+std::vector<GroupEvent> EmptyDataSharingService::GetGroupEventsSinceStartup() {
+  return {};
+}
+
 bool EmptyDataSharingService::ShouldInterceptNavigationForShareURL(
     const GURL& url) {
   return false;
 }
 
 void EmptyDataSharingService::HandleShareURLNavigationIntercepted(
-    const GURL& url) {}
+    const GURL& url,
+    std::unique_ptr<ShareURLInterceptionContext> context) {}
 
-std::unique_ptr<GURL> EmptyDataSharingService::GetDataSharingURL(
+std::unique_ptr<GURL> EmptyDataSharingService::GetDataSharingUrl(
     const GroupData& group_data) {
   return nullptr;
 }
 
-DataSharingService::ParseURLResult EmptyDataSharingService::ParseDataSharingURL(
+DataSharingService::ParseUrlResult EmptyDataSharingService::ParseDataSharingUrl(
     const GURL& url) {
   return GroupToken();
 }
@@ -87,12 +117,14 @@ void EmptyDataSharingService::GetSharedEntitiesPreview(
     base::OnceCallback<void(const SharedDataPreviewOrFailureOutcome&)>
         callback) {}
 
-DataSharingUIDelegate* EmptyDataSharingService::GetUIDelegate() {
-  return nullptr;
-}
+void EmptyDataSharingService::SetSDKDelegate(
+    std::unique_ptr<DataSharingSDKDelegate> sdk_delegate) {}
 
-ServiceStatus EmptyDataSharingService::GetServiceStatus() {
-  return ServiceStatus();
+void EmptyDataSharingService::SetUIDelegate(
+    std::unique_ptr<DataSharingUIDelegate> ui_delegate) {}
+
+DataSharingUIDelegate* EmptyDataSharingService::GetUiDelegate() {
+  return nullptr;
 }
 
 }  // namespace data_sharing

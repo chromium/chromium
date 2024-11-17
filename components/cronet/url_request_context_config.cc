@@ -236,7 +236,7 @@ URLRequestContextConfig::QuicHint::QuicHint(const std::string& host,
                                             int alternate_port)
     : host(host), port(port), alternate_port(alternate_port) {}
 
-URLRequestContextConfig::QuicHint::~QuicHint() {}
+URLRequestContextConfig::QuicHint::~QuicHint() = default;
 
 URLRequestContextConfig::Pkp::Pkp(const std::string& host,
                                   bool include_subdomains,
@@ -245,7 +245,7 @@ URLRequestContextConfig::Pkp::Pkp(const std::string& host,
       include_subdomains(include_subdomains),
       expiration_date(expiration_date) {}
 
-URLRequestContextConfig::Pkp::~Pkp() {}
+URLRequestContextConfig::Pkp::~Pkp() = default;
 
 URLRequestContextConfig::PreloadedNelAndReportingHeader::
     PreloadedNelAndReportingHeader(const url::Origin& origin, std::string value)
@@ -290,7 +290,7 @@ URLRequestContextConfig::URLRequestContextConfig(
   SetContextConfigExperimentalOptions();
 }
 
-URLRequestContextConfig::~URLRequestContextConfig() {}
+URLRequestContextConfig::~URLRequestContextConfig() = default;
 
 // static
 std::unique_ptr<URLRequestContextConfig>
@@ -821,8 +821,8 @@ void URLRequestContextConfig::ConfigureURLRequestContextBuilder(
   // TODO(mef): Use |config| to set cookies.
 }
 
-URLRequestContextConfigBuilder::URLRequestContextConfigBuilder() {}
-URLRequestContextConfigBuilder::~URLRequestContextConfigBuilder() {}
+URLRequestContextConfigBuilder::URLRequestContextConfigBuilder() = default;
+URLRequestContextConfigBuilder::~URLRequestContextConfigBuilder() = default;
 
 std::unique_ptr<URLRequestContextConfig>
 URLRequestContextConfigBuilder::Build() {

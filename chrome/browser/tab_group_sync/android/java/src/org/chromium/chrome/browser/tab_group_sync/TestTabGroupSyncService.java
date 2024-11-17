@@ -8,8 +8,10 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.EventDetails;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
+import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
@@ -90,10 +92,12 @@ class TestTabGroupSyncService implements TabGroupSyncService {
     }
 
     @Override
-    public void updateLocalTabGroupMapping(String syncId, LocalTabGroupId localId) {}
+    public void updateLocalTabGroupMapping(
+            String syncId, LocalTabGroupId localId, @OpeningSource int openingSource) {}
 
     @Override
-    public void removeLocalTabGroupMapping(LocalTabGroupId localId) {}
+    public void removeLocalTabGroupMapping(
+            LocalTabGroupId localId, @ClosingSource int closingSource) {}
 
     @Override
     public List<LocalTabGroupId> getDeletedGroupIds() {

@@ -22,7 +22,7 @@ enum AudioDeviceType {
   kPostMixLoopback,
   kLineout,
   kAlsaLoopback,
-  kOther
+  kOther,
 };
 
 // Represents if a given audio effect (ex. Noise Canellation) is supported by
@@ -45,7 +45,30 @@ enum MuteState {
   kMutedByPolicy,
 
   // The device is muted by physical switch.
-  kMutedExternally
+  kMutedExternally,
+};
+
+// Represents types of audio effects.
+// Must be aligned with third_party/cros_system_api/dbus/audio/dbus-constants.h.
+enum AudioEffectType {
+  kNone = 0,
+  kNoiseCancellation = 1,
+  kHfpMicSr = 2,
+  kStyleTransfer = 4,
+  kBeamforming = 8,
+};
+
+// Represents the appearance of the voice isolation setting.
+struct VoiceIsolationUIAppearance {
+  // The effect type of the input voice isolation toggle.
+  AudioEffectType toggle_type;
+
+  // Bitset of AudioEffectType, the effect mode options for the user
+  // to choose from.
+  uint32 effect_mode_options;
+
+  // Whether to show the effect fallback message or not.
+  bool show_effect_fallback_message;
 };
 
 // Represents a user's audio device.
@@ -80,6 +103,9 @@ struct AudioDevice {
   // The state of the Bluetooth hands-free profile(hfp) input super resolution
   // audio effect.
   AudioEffectState hfp_mic_sr_state;
+
+  // The state of the spatial audio effect.
+  AudioEffectState spatial_audio_state;
 };
 
 // Represents the audio state of the Audio system.
@@ -103,6 +129,9 @@ struct AudioSystemProperties {
 
   // The mute state of the active input device.
   MuteState input_mute_state;
+
+  // The appearance of the voice isolation setting.
+  VoiceIsolationUIAppearance voice_isolation_ui_appearance;
 };
 
 // Observer for changes to audio system properties.
@@ -122,7 +151,7 @@ interface CrosAudioConfig {
   // observer is first added, then again whenever properties are updated.
   // To stop observing, disconnect |observer|.
   ObserveAudioSystemProperties(
-    pending_remote<AudioSystemPropertiesObserver> observer);
+      pending_remote<AudioSystemPropertiesObserver> observer);
 
   // Sets the mute state of the active output device to |muted|. Ignored if
   // device is muted by policy.
@@ -142,6 +171,12 @@ interface CrosAudioConfig {
   // Sets mute state for primary input device if device is not muted by physical
   // switch.
   SetInputMuted(bool muted);
+
+  // Refreshes voice isolation enabled state, source of truth is Prefs.
+  RefreshVoiceIsolationState();
+
+  // Refreshes the preferred effect mode of voice isolation.
+  RefreshVoiceIsolationPreferredEffect();
 
   // Sets whether noise cancellation is enabled or not. This is shared between
   // different input devices, so changing the active input device will keep the
@@ -163,4 +198,9 @@ interface CrosAudioConfig {
   // so changing the active input device will keep the enabled state from the
   // previous active bluetooth input device.
   SetHfpMicSrEnabled(bool enabled);
+
+  // Sets whether spatial audio is enabled or not. This is shared
+  // between different output devices, so changing the active output device will
+  // keep the enabled state from the previous active output device.
+  SetSpatialAudioEnabled(bool enabled);
 };

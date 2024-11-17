@@ -930,7 +930,7 @@ ClientBase::InitParams::InitParams() {
 #endif
 }
 
-ClientBase::InitParams::~InitParams() {}
+ClientBase::InitParams::~InitParams() = default;
 
 ClientBase::InitParams::InitParams(const InitParams& params) = default;
 
@@ -997,9 +997,9 @@ bool ClientBase::InitParams::FromCommandLine(
 ////////////////////////////////////////////////////////////////////////////////
 // ClientBase::Buffer, public:
 
-ClientBase::Buffer::Buffer() {}
+ClientBase::Buffer::Buffer() = default;
 
-ClientBase::Buffer::~Buffer() {}
+ClientBase::Buffer::~Buffer() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 // ClientBase, public:
@@ -1018,8 +1018,7 @@ bool ClientBase::Init(const InitParams& params) {
       surface_size_.SetSize(params.height, params.width);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   surface_size_ = gfx::ToCeiledSize(
       gfx::ScaleSize(gfx::SizeF(surface_size_), 1.0f / params.scale));
@@ -1388,7 +1387,7 @@ bool ClientBase::Init(const InitParams& params) {
 ////////////////////////////////////////////////////////////////////////////////
 // ClientBase, protected:
 
-ClientBase::ClientBase() {}
+ClientBase::ClientBase() = default;
 
 ClientBase::~ClientBase() {
   make_current_ = nullptr;

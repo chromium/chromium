@@ -114,6 +114,7 @@
 <translation id="132346741904777634">کیمرا اوپری بائیں کونے میں اسنیپ کیا گیا ہے۔ سسٹم کی سطح سے متصادم ہے۔</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> اور ونڈوز بند کریں</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> منسلک ہے</translation>
+<translation id="1337081488893096731">اپنے اسکول کے اکاؤنٹ ڈیٹا کو اپنے ذاتی اکاؤنٹ میں منتقل کرنے کیلئے، مواد کی منتقلی ایپ کا استعمال کریں</translation>
 <translation id="1340378040547539434">صفحہ پر زوم آؤٹ کریں</translation>
 <translation id="1341651618736211726">اوورفلو</translation>
 <translation id="1341926407152459446">آڈیو ان پٹ اور آؤٹ پٹ کے لیے "<ph name="DEVICE_NAME" />" استعمال کریں</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">حساب کتاب</translation>
 <translation id="1774796056689732716">کیلنڈر، <ph name="CURRENT_MONTH_YEAR" />، فی الحال <ph name="DATE" /> کو منتخب کیا گیا ہے۔</translation>
 <translation id="178347895271755507">اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھنے کو سیٹ اپ کریں</translation>
+<translation id="1786487376942610288">تصویر میں تصویر ونڈو کو اس کے زیادہ سے زیادہ یا موجودہ سائز کے درمیان سوئچ کریں</translation>
 <translation id="1787955149152357925">آف</translation>
 <translation id="1796561540704213354">ویب سائٹس بشمول وہ صفحات جن کا آپ نے ملاحظہ کیا ہے اور وہ صفحات جنہیں آپ نے کھولا ہے</translation>
 <translation id="179842970735685253">‏‫Google کی سروس کی شرائط</translation>
@@ -306,7 +308,6 @@
 <translation id="2041220428661959602">بیٹری لیول: <ph name="BATTERY_PERCENTAGE" /> فیصد</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> کا شارٹ کٹ فی الحال آف ہے</translation>
 <translation id="2049240716062114887">ڈیسک کا نام تبدیل کر کے <ph name="DESK_NAME" /> کر دیا گیا۔</translation>
-<translation id="2050339315714019657">پورٹریٹ</translation>
 <translation id="2064048859448024834">کیمرا کا پیش منظر آن ہے</translation>
 <translation id="2065098273523946419">'مزید جانیں' کا لنک۔ فعال ہونے پر براؤزر پر ری ڈائریکٹ کریں</translation>
 <translation id="2067220651560163985">درجۂ حرارت سیلسیئس میں دکھائیں</translation>
@@ -397,6 +398,7 @@
 <translation id="2412593942846481727">اپ ڈیٹ دستیاب ہے</translation>
 <translation id="2416438829169535743">منظر سے باہر نکلیں؟</translation>
 <translation id="2417486498593892439">نیٹ ورک میں سائن ان کریں</translation>
+<translation id="2423619675829330672">‏‫PIN کی بہت زیادہ کوششیں۔ <ph name="TIME_LEFT" /> انتظار کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="2426051945783024481">کیمرے کا فریم خودکار طور پر بیچ میں کر دیا گیا ہے</translation>
 <translation id="2427507373259914951">بائیں طرف کلک کریں</translation>
 <translation id="2429753432712299108">بلوٹوتھ آلہ "<ph name="DEVICE_NAME" />" کو جوڑا بنانے کی اجازت درکار ہوگی۔ قبول کرنے سے پہلے، براہ کرم توثیق کریں کہ یہ پاس کلید اس آلہ پر دکھائی دے رہی ہے: <ph name="PASSKEY" /></translation>
@@ -439,6 +441,7 @@
 <translation id="2530896289327917474">کیرٹ براؤزنگ کو آن یا آف کریں</translation>
 <translation id="2531025035050312891">آلہ سست</translation>
 <translation id="2531107890083353124">ٹیب کو گھسیٹنے کے دوران <ph name="KEY_ONE" /> دبائیں</translation>
+<translation id="2545334090614121435">‏‫Home استعمال کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
 <translation id="254900897760075745">منتخب کردہ مواد کو کلپ بورڈ میں کاپی کریں</translation>
 <translation id="2549711466868162843">لائٹنگ کو بہترین بنائیں</translation>
 <translation id="2549985041256363841">ریکارڈنگ شروع کریں</translation>
@@ -497,6 +500,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" /> سے <ph name="KEY_TWO" /> تک</translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> کے زیر انتظام ہے</translation>
+<translation id="2781658180588759579">پہلے سے شامل ٹچ پیڈ غیر فعال ہو گیا ہے۔ تبدیلی کی تصدیق کرنے کیلئے اپنے کی بورڈ یا دوسرے پوائنٹر آلے کا استعمال کریں۔
+
+بصورت دیگر پہلے سے شامل ٹچ پیڈ کو <ph name="TIMEOUT_SECONDS" /> میں دوبارہ فعال کر دیا جائے گا۔</translation>
 <translation id="2782591952652094792">کیپچر وضع سے باہر نکلیں</translation>
 <translation id="2785499565474703580">1 آلہ منسلک ہے</translation>
 <translation id="2791421900609674576">آپ کو تجاویز نظر آئیں گی تاکہ آپ نے جہاں چھوڑا تھا وہاں سے جاری رکھ سکیں۔ آپ تجاویز کو ہٹانے کے لیے  ٹچ کر کے دبائے رکھ سکتے ہیں۔</translation>
@@ -557,6 +563,7 @@
 <translation id="2985148236010982088">سبھی ایپس دیکھیں</translation>
 <translation id="2992272421330787632">میڈیا کی تمام تجاویز چھپائیں</translation>
 <translation id="2992327365391326550">آلے کا مائیکروفون بٹن آف ہے۔</translation>
+<translation id="2993956882370897557">‏‫End استعمال کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
 <translation id="3000461861112256445">مونو آڈیو</translation>
 <translation id="3001391739687111021">اسکرین کے سائز میں ترمیم کریں</translation>
 <translation id="3009178788565917040">آؤٹ پٹ</translation>
@@ -593,6 +600,9 @@
 <translation id="3113492864356515707">گزشتہ آئٹم کو شیلف پر نمایاں کریں</translation>
 <translation id="311799651966070385">یاد دہانی بند کریں</translation>
 <translation id="3120421559657122717">آلہ بند کریں؟</translation>
+<translation id="3121411970001795539">پہلے سے شامل ٹچ پیڈ غیر فعال ہو گیا ہے کیونکہ ایک ماؤس منسلک ہے۔ تبدیلی کی تصدیق کرنے کیلئے ماؤس یا کی بورڈ کا استعمال کریں۔
+
+بصورت دیگر پہلے سے شامل ٹچ پیڈ کو <ph name="TIMEOUT_SECONDS" /> میں دوبارہ فعال کر دیا جائے گا۔</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">کلاس ورک کی قسم</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -609,6 +619,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> آپ کے <ph name="DEVICE_TYPE" /> کو واپس کر رہا ہے۔ آپ کا آلہ ری سیٹ ہو جائے گا اور تمام ڈیٹا حذف ہو جائے گا۔</translation>
 <translation id="316798519864381606">Google Slide</translation>
 <translation id="3171170659304083361">اندراج کے طریقوں کی ترتیبات</translation>
+<translation id="3174897399179348329">‏‫Page Up استعمال کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
 <translation id="3176221688814061633">‏آپ کا Chromebook یا بلوٹوتھ آلہ بلوٹوتھ کا پرانا ورژن استعمال کر رہا ہے۔ بہتر آڈیو کوالٹی کے لیے بلوٹوتھ سپر ریزولوشن کو آن کریں یا اندرونی مائیکروفون استعمال کریں۔</translation>
 <translation id="3181441307743005334">ری سٹارٹ کرنے میں کچھ وقت لگ سکتا ہے</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ایک آلہ سے منسلک ہے}other{# آلات سے منسلک ہے}}</translation>
@@ -633,7 +644,6 @@
 <translation id="3265032511221679826">قطعی مقام تک رسائی کو آن کریں؟</translation>
 <translation id="3269597722229482060">دائیں طرف کلک کریں</translation>
 <translation id="3271554781793662131">داخل کرنے کیلئے تلاش کریں</translation>
-<translation id="3273040715184276344">‏‫Caps Lock آف ہے</translation>
 <translation id="3274634049061007184">اپنے فون کی ایپس دیکھیں</translation>
 <translation id="3289364673986435196">پاور مینیو</translation>
 <translation id="3289544412142055976">‏Linux ایپس فی الحال تعاون یافتہ نہیں ہیں</translation>
@@ -641,7 +651,6 @@
 <translation id="3290356915286466215">غیر محفوظ</translation>
 <translation id="3291862315280588024">پچھلے لفظ کے شروع میں جائیں</translation>
 <translation id="3294437725009624529">مہمان</translation>
-<translation id="3298690094479023523">‏آپ کے PIN یا پاس ورڈ کی توثیق ابھی بھی نہیں کی جا سکی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="3300193645498960160">اگر آپ خاموش ہوتے ہوئے بات کرتے ہیں تو آپ کو مطلع کر دیا جائے گا۔ آڈیو آپ کے آلے سے باہر نہیں جاتی ہے۔</translation>
 <translation id="3306386552969601301"><ph name="DEVICE_NAME" /> ہاٹ اسپاٹ سے <ph name="DEVICECOUNT" /> آلات منسلک ہیں</translation>
 <translation id="3307642347673023554">لیپ ٹاپ وضح میں سوئچ کیا</translation>
@@ -964,13 +973,13 @@
 <translation id="4322742403972824594">‏Ctrl + Alt + 'اوپر تیر کا نشان' کی بورڈ شارٹ کٹ تبدیل ہو گیا۔ Home کلید کا استعمال کرنے کیلئے، <ph name="LAUNCHER_KEY_NAME" /> کلید + 'بائیں تیر کا نشان' کو دبائیں۔</translation>
 <translation id="4324840740119394760">اس سے کیمرے کی اجازت کے ساتھ <ph name="APP_NAME" /> اور تمام ایپس اور ویب سائٹس کو کیمرے تک رسائی کی اجازت ملتی ہے</translation>
 <translation id="4327147325944669226">گیم ریکارڈ کریں</translation>
-<translation id="4333628967105022692">‏متعدد صارفین کے سائن ان کرنے پر Lacros تعاون یافتہ نہیں ہے۔</translation>
 <translation id="4338109981321384717">میگنفائنگ گلاس</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />، خاموش کردہ</translation>
 <translation id="4351244548802238354">ڈائیلاگ بند کریں</translation>
 <translation id="4356872429719185452">ہاٹ اسپاٹ کی تفصیلات دکھائیں۔ ہاٹ اسپاٹ آن ہو رہا ہے۔</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  ریکارڈ کیا جا رہا ہے</translation>
 <translation id="4371348193907997655">کاسٹ کی ترتیبات</translation>
+<translation id="4371834685492830207">‏‫PIN ميں صرف درست حروف ہونے ضروری ہیں</translation>
 <translation id="4375482231364171368">ایڈریس بار میں تلاش کریں</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />، سگنل کی مضبوطی <ph name="SIGNAL_STRENGTH" /> فیصد</translation>
 <translation id="4378551569595875038">منسلک ہو رہا ہے…</translation>
@@ -1136,6 +1145,7 @@
 <translation id="4902797682482387055">فوکس کرنے کے لیے تجویز کردہ ٹاسک</translation>
 <translation id="490375751687810070">عمودی</translation>
 <translation id="490788395437447240"><ph name="BATTERY_PERCENTAGE" /> فیصد بیٹری ہے</translation>
+<translation id="4911191962826748981">‏یہ تجرباتی AI خصوصیت ہے اور یہ ہمیشہ درست نہیں ہوگی۔</translation>
 <translation id="491504982845934899">آلہ سیٹ اپ کرنے کے بعد <ph name="NETWORK_NAME" /> کو فعال کریں</translation>
 <translation id="4917385247580444890">مضبوط</translation>
 <translation id="4918086044614829423">قبول کریں</translation>
@@ -1257,6 +1267,7 @@
 <translation id="5297704307811127955">آف</translation>
 <translation id="5300589172476337783">دکھائیں</translation>
 <translation id="5302048478445481009">زبان</translation>
+<translation id="5302531370473608800">‏‫YouTube Music استعمال کرنے کے لیے اپنے <ph name="DEVICE_TYPE" /> کو اپ ڈیٹ کریں</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" /> فیصد بیٹری باقی ہے۔
 کچھ خصوصیات بیٹری لائف میں اضافہ کے لیے محدود ہیں۔</translation>
 <translation id="5308380583665731573">منسلک کریں</translation>
@@ -1293,6 +1304,7 @@
 <translation id="5393156353051693207">اپنی ایپس کو دوبارہ ترتیب دینے کے لیے کہیں بھی ٹچ کریں اور دبائے رکھیں</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> کے اوپر <ph name="DRAGGED_APP_NAME" />، فولڈر بنانے کیلئے ریلیز کریں۔</translation>
 <translation id="5397578532367286026">‏اس صارف کے استعمال اور سرگزشت کا chrome.com پر مینیجر (<ph name="MANAGER_EMAIL" />) کے ذریعے جائزہ لیا جا سکتا ہے۔</translation>
+<translation id="540338817371815859">لینڈ اسکیپ</translation>
 <translation id="540713187982329711">ہاٹ اسپاٹ ٹوگل کریں۔ ہاٹ اسپاٹ آن ہے، کوئی آلہ منسلک نہیں ہے۔</translation>
 <translation id="5409208741270395213">ٹاسک کو مکمل کے بطور نشان زد کریں</translation>
 <translation id="5413656666631274079">ترتیبات کا صفحہ</translation>
@@ -1396,7 +1408,7 @@
 <translation id="573413375004481890">یہ آلہ آپ کے تمام ڈسپلیز کو سپورٹ نہیں کر سکتا، لہذا ایک کو غیر منسلک کر دیا گیا ہے</translation>
 <translation id="5740328398383587084">قریبی آلات کے ساتھ اشتراک</translation>
 <translation id="574392208103952083">متوسط</translation>
-<translation id="5744083938413354016">گھسیٹنے پر تھپتھپائیں</translation>
+<translation id="5744083938413354016">ٹیپ کر کے گھسیٹنا</translation>
 <translation id="5745612484876805746">غروب آفتاب کے وقت نائٹ لائٹ خودکار طور پر آن ہو جاتی ہے</translation>
 <translation id="5750765938512549687">بلوٹوتھ آف ہے</translation>
 <translation id="5758114525425072423">فوکس شروع کریں۔ ٹائمر <ph name="FOCUS_DURATION" /> پر سیٹ ہے۔</translation>
@@ -1414,6 +1426,7 @@
 <translation id="5777841717266010279">اسکرین کا اشتراک روکیں؟</translation>
 <translation id="5779721926447984944">فائلز کو پن کیا گیا</translation>
 <translation id="5785221443435874078">یہ تجویز ہٹائیں</translation>
+<translation id="5787431783058088906">فائدہ حاصل کریں</translation>
 <translation id="5788127256798019331">‏Play فائلز</translation>
 <translation id="5788535737706478207">آخری بند کردہ ٹیب یا ونڈو پھر سے کھولیں</translation>
 <translation id="5790085346892983794">کامیاب</translation>
@@ -1463,11 +1476,11 @@
 <translation id="5975235751479998104">ونڈوز کے ذریعے سب سے آگے ایپ پر جائیں</translation>
 <translation id="5978382165065462689">ریموٹ اسسٹنس کے ذریعے آپ کی اسکرین کے کنٹرول کا اشتراک کیا جا رہا ہے۔</translation>
 <translation id="5980301590375426705">مہمان سیشن ختم کریں</translation>
-<translation id="5982119059638483922">‏منسوخ کرنے کے لیے Fn+Search یا Shift دبائیں۔</translation>
 <translation id="5983567367406220847">غیرفعالیت کی وجہ سے ہاٹ اسپاٹ کو آف کر دیا گیا ہے۔</translation>
 <translation id="598407983968395253">تمثیل استعمال کریں</translation>
 <translation id="5986723678596105470">‏‫Google Meet کے ساتھ شامل ہوں</translation>
 <translation id="598882571027504733">‏اپ ڈیٹ حاصل کرنے کیلئے، منسلک شدہ کی بورڈ سے اپنا Chromebook دوبارہ شروع کریں۔</translation>
+<translation id="5990992855591814753">‏ذاتی نوعیت کی فوکس والی پلے لسٹس کے ساتھ اپنے کام مکمل کریں۔ بغیر کسی قیمت کے 3 ماہ کے YouTube Premium کے ساتھ، اشتہارات سے پاک، YouTube Music اور YouTube حاصل کریں۔ شرائط لاگو ہیں۔</translation>
 <translation id="5998374579424866922">گیم کنٹرولز آف کریں</translation>
 <translation id="6000279412553873020">کلیدیں، بٹنز، اور مزید بہت کچھ</translation>
 <translation id="6012623610530968780">صفحہ <ph name="TOTAL_PAGE_NUM" /> کا <ph name="SELECTED_PAGE" /></translation>
@@ -1532,7 +1545,6 @@
 <translation id="6166852626429024716">اپنا آلہ، ایپس، ترتیبات ویب تلاش کریں...</translation>
 <translation id="6168318496333165060">‏Diagnostics ایپ کھولیں</translation>
 <translation id="6168622430237609329">آپ کی انسٹال کردہ ایپس</translation>
-<translation id="6173151025443907148">‏اگر Lacros فعال ہے تو دوسرے صارف میں سائن ان کرنا تعاون یافتہ نہیں ہے۔ براہ کرم اس کی بجائے Lacros میں دوسری براؤزر پروفائل استعمال کریں یا Lacros کو غیر فعال کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="6179832488876878285">آپ اپنی اہم فائلز کو یہاں پن کر سکتے ہیں۔ شروع کرنے کیلئے فائلز ایپ کھولیں۔</translation>
 <translation id="6180193585172850042">'پیچھے جائیں' بٹن</translation>
 <translation id="6180651297859206670">'فارورڈ کریں' بٹن</translation>
@@ -1554,6 +1566,7 @@
 <translation id="6232416233079464213"><ph name="SESSION_NAME" /> سے</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> فی الحال آپ کا کیمرا اور مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">پاس ورڈ ميں صرف درست حروف ہونے ضروری ہیں</translation>
 <translation id="6240603910551255087">اوپری بٹن</translation>
 <translation id="6240821072888636753">ہر بار پوچھیں</translation>
 <translation id="6247728804802644171">اطلاعات کھولیں</translation>
@@ -1576,12 +1589,14 @@
 <translation id="6330012934079202188">تمام ڈیسکس سے ونڈوز دکھائی جا رہی ہیں موجودہ ڈیسک سے ونڈوز کو دکھانے کے لیے اوپر تیر کے نشان والی کلید دبائیں</translation>
 <translation id="6337159624125741244">فُل اسکرین میگنیفائر آن کریں</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> <ph name="MANAGER" /> کے زیر انتظام ایک نظم کردہ سیشن ہے</translation>
+<translation id="6340148837564298498">‏اگر آپ اپنا PIN بھول گئے ہیں تو اس صارف کو بازیاب کرنے کی کوشش کریں۔</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> منسلک ہے</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> پر <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> یا <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ایپ کی تجاویز</translation>
 <translation id="6352082849089527770">نامعلوم نیٹ ورکس</translation>
 <translation id="6359587239691116345">تازہ ترین خصوصیات اور سیکیورٹی میں بہتریاں حاصل کریں۔ اگر آپ اس اپ ڈیٹ کو مسترد کرتے ہیں تو ہو سکتا ہے کہ آپ کا آلہ اب مزید ٹھیک سے کام نہ کرے اور آپ کو سیکیورٹی اور کارکردگی کے مسائل کا سامنا کرنا پڑے۔</translation>
 <translation id="6362833380917912748">اپنی پہلے سے شامل ایپس کو جانیں</translation>
+<translation id="6364386432014869981">پہلے سے شامل ٹچ پیڈ آن ہے</translation>
 <translation id="6376931439017688372">بلوٹوتھ آن ہے</translation>
 <translation id="6378515133128829137">ونڈو کو دائیں جانب پن کریں</translation>
 <translation id="6381109794406942707">‏آلہ غیر مقفل کرنے کے لیے، اپنا PIN درج کریں۔</translation>
@@ -1632,6 +1647,7 @@
 <translation id="6539852571005954999">اسکین ہونے والی <ph name="FILENAME" /> کو ڈاؤن لوڈ کریں</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> پر کاسٹ کیا جا رہا ہے</translation>
 <translation id="6542891623636520977">‏ایموجیز، ‏GIFs اور بہت کچھ</translation>
+<translation id="6545382064335350438">‏آپ کے PIN کی اب بھی توثیق نہیں ہو سکی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="6555373427270923730">ایڈریس بار میں ایک ویب پتہ ٹائپ کریں، پھر <ph name="MODIFIER" /><ph name="KEY" /> دبائیں</translation>
 <translation id="655633303491376835">نئی انسٹال کردہ <ph name="APP_NAME" /></translation>
 <translation id="6559158502366839560">مزید ایپس اور گیمز دریافت کریں</translation>
@@ -1644,6 +1660,7 @@
 <translation id="6574587113394758819"><ph name="APP_TITLE" /> اطلاع پوشیدہ ہے کیونکہ دیکھنے کا تحفظ آن ہے</translation>
 <translation id="6574622320167699133">آپ کے فون سے غیر مقفل کیا گیا۔ درج کرنے کیلئے تھپتھپائیں یا کلک کریں۔</translation>
 <translation id="6578407462441924264">بغیر نام والا</translation>
+<translation id="6582012689384648647">‏ذاتی نوعیت کی فوکس والی پلے لسٹس کے لیے، YouTube Music تک رسائی حاصل کرنے کی اجازت دیں</translation>
 <translation id="6582034443359256692">بیٹری چارج لیول کا حساب لگایا جا رہا ہے۔</translation>
 <translation id="6585808820553845416">سیشن <ph name="SESSION_TIME_REMAINING" /> میں ختم ہو جائے گا۔</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
@@ -1679,11 +1696,11 @@
 <translation id="6682029141988159141">کلپ بورڈ کے مواد کو پیسٹ کریں</translation>
 <translation id="6683022854667115063">ہیڈ فونز</translation>
 <translation id="6686023075541098243">اپنے فون کی اطلاعات دیکھنے کو سیٹ اپ کریں</translation>
+<translation id="6694462491298752106">پہلے سے شامل ٹچ پیڈ غیر فعال ہے</translation>
 <translation id="6694973220096431421">‏‫Google Drive میں تلاش کریں</translation>
 <translation id="6696025732084565524">آپ کے الگ ہونے کے قابل کی بورڈ کو ایک اہم اپ ڈیٹ درکار ہے</translation>
 <translation id="6697913454192220372">نیا ڈیسک شامل کریں</translation>
 <translation id="6700713906295497288">‏IME مینیو بٹن</translation>
-<translation id="6704375469818246414">‏تخلیق کر سکنے والا AI استعمال کرتے وقت کوالٹی مختلف ہو سکتی ہے۔</translation>
 <translation id="6706742084323792866">کی بورڈ کو پن کریں</translation>
 <translation id="6710213216561001401">گزشتہ</translation>
 <translation id="6723839937902243910">پاور</translation>
@@ -1698,6 +1715,7 @@
 <translation id="6751826523481687655">کارکردگی کا پتا لگانا آن ہے</translation>
 <translation id="6752912906630585008"><ph name="REMOVED_DESK" /> ڈیسک ہٹا دیے گئے اور <ph name="RECEIVE_DESK" /> ڈیسک کے ساتھ ضم ہو گئے</translation>
 <translation id="6753390234084146956">ٹیبز</translation>
+<translation id="6754918760968695779">فوری اندراج</translation>
 <translation id="6757237461819837179">کوئی میڈیا نہیں چل رہا ہے</translation>
 <translation id="6760438044935091345">گیم ڈیش بورڈ</translation>
 <translation id="6768043681523654438">اسٹوریج</translation>
@@ -1747,6 +1765,7 @@
 <translation id="6921427376813842559">آلہ اپ ڈیٹ کریں</translation>
 <translation id="6929081673585394903">کنٹرولز دکھائیں</translation>
 <translation id="6931576957638141829">اس میں محفوظ کریں</translation>
+<translation id="6935857786205183008">پورٹریٹ</translation>
 <translation id="6942518653766415536">ریکارڈنگ فارمیٹ مینیو</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
 <translation id="6945922087561257829">‏آپ کا فون موبائل نیٹ ورک استعمال کر رہا ہے۔ یقینی بنائیں کہ آپ کا فون اور Chromebook ایک ہی Wi-Fi نیٹ ورک پر ہیں اور پھر دوبارہ کوشش کریں۔ <ph name="LEARN_MORE" /></translation>
@@ -1807,6 +1826,7 @@
 <translation id="7144942256906679589">بیٹری کا اسٹیٹس</translation>
 <translation id="7145639536026937076">‏بیٹری ‎<ph name="PERCENTAGE" />%‎ ہے اور چارج ہو رہی ہے۔ بیٹری سیور آن ہے۔</translation>
 <translation id="7147587499155271409">براؤزنگ کی کوئی سرگزشت نہیں ہے</translation>
+<translation id="7147657298465433425">‏‫F کلیدوں تک رسائی حاصل کرنے کے لیے، fn کلید + اوپر قطار والی کلیدوں کو دبائیں</translation>
 <translation id="7149149900052329230">‏اپنی مقامی فائلز اور اپنی Google Drive کی فائلز، ان سبھی کا نظم Files ایپ میں کریں۔</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />،
@@ -1882,6 +1902,7 @@
 <translation id="7477793887173910789">اپنی موسیقی، ویڈیوز اور بھی بہت کچھ کنٹرول کریں</translation>
 <translation id="7488762544858401571">ترمیم کردہ</translation>
 <translation id="7489261257412536105">فُل اسکرین میں داخل ہوں یا اس سے باہر نکلیں</translation>
+<translation id="7490157877815329797">‏اشتہارات سے پاک موسیقی سننے اور ذاتی نوعیت کی فوکس والی موسیقی سے لطف اندوز ہونے کے لیے، YouTube Music Premium آزمائیں</translation>
 <translation id="7490360161041035804">‏آپ اہم فائز کو پن کر سکتے ہیں، بشمول Google Drive فائلز۔ پن کرنے کے لیے، کسی آئٹم پر گھمائیں یا فائلز کھولیں اور کسی آئٹم پر دائیں کلک کریں۔</translation>
 <translation id="7497767806359279797">زبان اور کی بورڈ منتخب کریں</translation>
 <translation id="7507162824403726948">اپنی شناخت کی تصدیق مکمل کریں</translation>
@@ -1912,6 +1933,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> فی الحال آپ کا مائیکروفون استعمال کر رہی ہے</translation>
 <translation id="7561982940498449837">مینیو بند کریں</translation>
 <translation id="7564874036684306347">ونڈوز کو کسی دوسرے ڈیسک ٹاپ پر منتقل کرنا غیر متوقع برتاؤ کا سبب بن سکتا ہے۔ بعد کی اطلاعات، ونڈوز اور ڈائیلاگز ڈیسک ٹاپ کے بیچ منقسم ہو سکتے ہیں۔</translation>
+<translation id="7568154670718626683">‏‫Delete کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
 <translation id="7568790562536448087">اپ ڈیٹنگ</translation>
 <translation id="7569509451529460200">‏بریل اور ChromeVox فعال ہیں</translation>
 <translation id="7569886975397378678">اپنے فون کی اطلاعات اور ایپس دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
@@ -1946,7 +1968,6 @@
 <translation id="7670953955701272011">‏Google کیلنڈر میں اس تاریخ کو کھولیں</translation>
 <translation id="7671610481353807627">ایپس رنگ کے لحاظ سے ترتیب دی گئی ہیں</translation>
 <translation id="7672095158465655885"><ph name="NAME" />، <ph name="SUBTEXT" /> سے منسلک ہیں</translation>
-<translation id="7680417644536099065">‏‫Caps Lock آن ہے</translation>
 <translation id="7682351277038250258">کلپ بورڈ کے مواد کو سادہ ٹیکسٹ کے طور پر پیسٹ کریں</translation>
 <translation id="7684531502177797067">کیمرا ان پٹ <ph name="CAMERA_NAME" /> پر سیٹ ہے۔</translation>
 <translation id="7687172143976244806">آپ نے کھولا</translation>
@@ -1987,6 +2008,7 @@
 <translation id="780301667611848630">نہیں شکریہ</translation>
 <translation id="7807067443225230855">تلاش اور اسسٹنٹ</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> اور <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">اظہار پسندیدگی یہ تاثر جمع کرائے گا کہ آپ کو یہ تجویز پسند ہے</translation>
 <translation id="7825412704590278437">آئندہ کے کیلنڈر ایونٹ سے</translation>
 <translation id="7829386189513694949">مضبوط سگنل</translation>
 <translation id="7830453190047749513">آپ بٹن کی کارروائیوں، کرسر کی رفتار اور بہت کچھ کو اپنے <ph name="PERIPHERAL_NAME" /> لیے ذاتی نوعیت کا بنا سکتے ہیں</translation>
@@ -2025,6 +2047,7 @@
 <translation id="7904094684485781019">اس اکاؤنٹ کے منتظم نے متعدد سائن ان کی اجازت ختم کر دی ہے۔</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> آلات منسلک ہیں</translation>
+<translation id="7921565901396407357">‏آپ کے PIN کی توثیق نہیں ہو سکی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="7923534281713082605">موسم</translation>
 <translation id="7926080067315048321">‏ویب پر Google Tasks کے تمام ٹاسکس دیکھیں</translation>
 <translation id="7930731167419639574">اسپیچ اب مقامی طور پر پروسیس کی جاتی ہے اور ڈکٹیشن آف لائن کام کرتا ہے</translation>
@@ -2114,6 +2137,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> آپ نے ابھی <ph name="FOCUSED_TIME" /> کے لیے فوکس کیا ہے۔ دوبارہ فوکس کرنے کے لیے فوری ترتیبات کھولیں۔</translation>
 <translation id="8203224998425013577">‏مزید ایموجیز اور GIFs دکھائیں</translation>
 <translation id="8203795194971602413">دائیں طرف کلک کریں</translation>
+<translation id="8205469348819768313">‏‫Page Down استعمال کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
 <translation id="8214996719228530800">‏Canary چینل</translation>
 <translation id="8219451629189078428">‏اس دوران آپ کے Chromebook کو آن اور پاور سے منسلک رہنے کی ضرورت ہے۔ یقینی بنائیں کہ چارجر یا ایڈاپٹر کیبلز آپ کے Chromebook اور پاور آؤٹ لیٹ دونوں میں مکمل طور پر پلگ کی ہوئی ہیں۔ اپنے Chromebook کو آف نہ کریں۔</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> شامل کریں</translation>
@@ -2139,6 +2163,7 @@
 <translation id="830868413617744215">بی ٹا</translation>
 <translation id="8314772463905284467">‏Caps Lock آن ہے</translation>
 <translation id="8315514906653279104">آن ہو رہا ہے…</translation>
+<translation id="8319634750346253957">اظہار ناپسندیدگی یہ تاثر جمع کرائے گا کہ آپ کو یہ تجویز پسند نہیں ہے</translation>
 <translation id="8331351032546853669">ڈاؤن لوڈ زير التوا ہے</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2157,6 +2182,7 @@
 <translation id="8380784334203145311">شب بخیر،</translation>
 <translation id="8382715499079447151">دیکھنے کا تحفظ</translation>
 <translation id="8383614331548401927">استقبالی خلاصہ</translation>
+<translation id="838540623579162843">‏‫Music Premium حاصل کریں</translation>
 <translation id="8388750414311082622">آخری ڈیسک ہٹایا نہیں جا سکا۔</translation>
 <translation id="8394567579869570560">آپ کے والد/والدہ نے اس آلے کو مقفل کر دیا</translation>
 <translation id="8401850874595457088">زبان مینیو درج کریں</translation>
@@ -2283,11 +2309,11 @@
 <translation id="8845001906332463065">مدد حاصل کریں</translation>
 <translation id="8847100217801213944">درجۂ حرارت فارن ہائیٹ میں دکھائیں</translation>
 <translation id="8849001918648564819">پوشیدہ</translation>
-<translation id="8853703225951107899">‏آپ کے PIN یا پاس ورڈ کی توثیق ابھی بھی نہیں کی جا سکی۔ نوٹ: اگر آپ نے حال ہی میں اپنا پاس ورڈ تبدیل کیا ہے تو اپنا پرانا پاس ورڈ استعمال کریں۔ آپ کے سائن آؤٹ ہونے کے بعد آپ کا نیا پاس ورڈ لاگو ہوگا۔</translation>
 <translation id="8855885154700222542">پوری اسکرین کی کلید</translation>
 <translation id="8858369206579825206">رازداری سے متعلق کنٹرولز</translation>
 <translation id="8860366331836346216">‏eSIM شامل کریں</translation>
 <translation id="8870509716567206129">ایپ اسپلٹ اسکرین کو سپورٹ نہیں کرتی ہے۔</translation>
+<translation id="8873203135446552888">اس بات کی تصدیق کریں کہ آپ پہلے سے شامل ٹچ پیڈ کو غیر فعال کرنا چاہتے ہیں</translation>
 <translation id="8874184842967597500">منسلک نہیں</translation>
 <translation id="8875021410787719674">نیچے دائیں کونے، لانچر، ایڈریس بار، بُک مارکس بار، کھلی ہوئی ویب سائٹ اور ڈاؤن لوڈز کے درمیان منتقل ہوں</translation>
 <translation id="8876148469852588625"><ph name="EVENT_POSITION" /> از <ph name="EVENT_TOTAL_COUNT" /> ایونٹ</translation>
@@ -2305,6 +2331,7 @@
 <translation id="8921554779039049422">H+‎</translation>
 <translation id="8921624153894383499">‏Google اسسٹنٹ یہ زبان نہیں بولتا ہے۔</translation>
 <translation id="8926951137623668982">شیلف ہمیشہ پوشیدہ</translation>
+<translation id="8929566928381252430">‏‫Caps Lock استعمال کرنے کی کوشش کر رہے ہیں؟ استعمال کریں</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 فائل}other{# فائلز}}</translation>
 <translation id="8936501819958976551">غیر فعال</translation>
 <translation id="8938800817013097409">‏USB-C آلہ (پیچھے موجود دایاں پورٹ)</translation>
@@ -2322,6 +2349,7 @@
 <translation id="8982906748181120328">قریب کی مرئیت</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> کے ذریعے</translation>
+<translation id="8991648557324317894">‏منسوخ کرنے کے لیے fn + فوری اندراج یا شفٹ دبائیں۔</translation>
 <translation id="899350903320462459">اطلاع کی کارروائی کرنے کیلئے، آلے کو بطور <ph name="LOGIN_ID" /> غیر مقفل کریں</translation>
 <translation id="8993733019280019776">کیا آپ بات کر رہے ہیں؟ آپ کا مائیک آف ہے۔ مائیک کو آن کرنے کے لیے اسے منتخب کریں۔</translation>
 <translation id="9000771174482730261">اسٹوریج کا نظم کریں</translation>
@@ -2404,9 +2432,9 @@
 <translation id="974545358917229949"><ph name="QUERY" /> کے <ph name="RESULT_COUNT" /> نتائج دکھائے جا رہے ہیں</translation>
 <translation id="981011780479609956">کوئی آخری تاریخ متعین نہیں ہے</translation>
 <translation id="98120814841227350">دستاویز کے آخر میں جائیں</translation>
-<translation id="98515147261107953">لینڈ اسکیپ</translation>
 <translation id="987589956647469042">موبائل ڈیٹا آن ہے</translation>
 <translation id="989374776391122812">کیمرا اور آڈیو کنٹرولز</translation>
+<translation id="990263227494928142">‏ٹچ پیڈ کو فعال کرنے کے لیے Shift کو 5 بار دبائیں</translation>
 <translation id="990277280839877440"><ph name="WINDOW_TITILE" /> ونڈو بند ہے۔</translation>
 <translation id="993398562350683614">‏<ph name="TOTAL_STEPS" /> میں سے <ph name="STEP" /> ٹؤر قدم۔ اپنے <ph name="PRODUCT_NAME" /> پر اپنی ضرورت کی ہر چیز کرنے کے لیے ایپس کا استعمال کریں۔ آپ لانچر میں اپنی ایپس تلاش کر سکتے ہیں۔ لانچر بٹن پر فوکس مرکوز کرنے کے لیے Alt + Shift + L دبائیں۔</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />، <ph name="SUBTEXT" /></translation>

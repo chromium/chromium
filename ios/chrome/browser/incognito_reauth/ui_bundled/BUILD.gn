@@ -4,6 +4,14 @@
 
 import("//ios/build/chrome_build.gni")
 
+source_set("features") {
+  sources = [
+    "features.h",
+    "features.mm",
+  ]
+  public_deps = [ "//base" ]
+}
+
 source_set("incognito_reauth_commands") {
   sources = [ "incognito_reauth_commands.h" ]
   frameworks = [ "UIKit.framework" ]
@@ -11,6 +19,7 @@ source_set("incognito_reauth_commands") {
 
 source_set("incognito_reauth_util") {
   sources = [
+    "incognito_reauth_constants.h",
     "incognito_reauth_util.h",
     "incognito_reauth_util.mm",
   ]
@@ -33,6 +42,7 @@ source_set("ui") {
     "incognito_reauth_view_label.mm",
   ]
   deps = [
+    ":features",
     ":incognito_reauth_util",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
@@ -51,6 +61,7 @@ source_set("incognito_reauth_scene_agent") {
     "incognito_reauth_scene_agent.mm",
   ]
   deps = [
+    ":features",
     ":incognito_reauth_commands",
     ":incognito_reauth_util",
     ":ui",
@@ -73,13 +84,21 @@ source_set("incognito_reauth_scene_agent") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "incognito_reauth_scene_agent_unittest.mm" ]
+  sources = [
+    "incognito_reauth_mediator_unittest.mm",
+    "incognito_reauth_scene_agent_unittest.mm",
+  ]
   deps = [
+    ":features",
     ":incognito_reauth_scene_agent",
+    ":incognito_reauth_util",
+    ":ui",
     "//base",
     "//base/test:test_support",
     "//components/prefs:test_support",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_view/ui_bundled",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_activation_level",
     "//ios/chrome/browser/shared/coordinator/scene/test",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
@@ -104,6 +123,8 @@ source_set("eg2_tests") {
     ":incognito_reauth_util",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/test:eg_test_support+eg2",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",

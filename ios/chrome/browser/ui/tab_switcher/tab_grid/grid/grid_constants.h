@@ -10,6 +10,8 @@
 
 // Identifier for the section containing the inactive tab button.
 extern NSString* const kInactiveTabButtonSectionIdentifier;
+// Identifier for the tab group header section.
+extern NSString* const kTabGroupHeaderSectionIdentifier;
 // Identifier for the tabs section.
 extern NSString* const kGridOpenTabsSectionIdentifier;
 // Identifier for the section containing the suggested actions.
@@ -29,6 +31,9 @@ extern NSString* const kGridCellIdentifierPrefix;
 // cell. For example, [NSString stringWithFormat:@"%@%d",
 // kGroupGridCellIdentifierPrefix, index].
 extern NSString* const kGroupGridCellIdentifierPrefix;
+
+// Accessibility identifier for the group colored dot.
+extern NSString* const kGroupGridCellColoredDotIdentifier;
 
 // Accessibility identifier for the close button in a grid cell.
 extern NSString* const kGridCellCloseButtonIdentifier;

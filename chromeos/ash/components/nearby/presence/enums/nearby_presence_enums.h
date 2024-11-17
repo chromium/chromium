@@ -13,8 +13,10 @@ namespace ash::nearby::presence::enums {
 // //mojo/public/mojom/base/absl_status.mojom with the only difference being
 // the addition of kFailedToStartProcess. Any updates to absl_status should be
 // reflected here. This enum should also be kept in sync with the
-// NearbyPresenceScanRequestResult enum found in
+// NearbyPresenceScanRequestResult UMA enum found in
 // //tools/metrics/histograms/metadata/nearby/enums.xml.
+//
+// LINT.IfChange(NearbyPresenceScanRequestResult)
 enum class StatusCode {
   kAbslOk = 0,
   kAbslCancelled = 1,
@@ -36,6 +38,7 @@ enum class StatusCode {
   kFailedToStartProcess = 17,
   kMaxValue = kFailedToStartProcess,
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/nearby/enums.xml:NearbyPresenceScanRequestResult)
 
 StatusCode ConvertToPresenceStatus(
     mojo_base::mojom::AbslStatusCode status_code);

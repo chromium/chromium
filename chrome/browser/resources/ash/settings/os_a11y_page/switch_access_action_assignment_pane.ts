@@ -21,8 +21,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './switch_access_action_assignment_pane.html.js';
 import {actionToPref, AssignmentContext, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
-import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
-import {KeyAssignment, SwitchAccessAssignmentsChangedValue} from './switch_access_types.js';
+import type {SwitchAccessSubpageBrowserProxy} from './switch_access_subpage_browser_proxy.js';
+import {SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
+import type {KeyAssignment, SwitchAccessAssignmentsChangedValue} from './switch_access_types.js';
 
 /**
  * Different states of the assignment flow dictating which overall view should

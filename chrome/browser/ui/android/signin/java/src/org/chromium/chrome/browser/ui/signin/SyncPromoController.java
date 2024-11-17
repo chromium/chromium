@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.text.format.DateUtils;
 import android.view.View;
@@ -36,6 +37,7 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher.AccessPoint;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.browser_ui.widget.impression.ImpressionTracker;
 import org.chromium.components.browser_ui.widget.impression.OneShotImpressionListener;
@@ -111,19 +113,15 @@ public class SyncPromoController {
     private static final int MAX_TOTAL_PROMO_SHOW_COUNT = 100;
     private static final int MAX_IMPRESSIONS_BOOKMARKS = 20;
     private static final int MAX_IMPRESSIONS_SETTINGS = 20;
-    private static final int NTP_SYNC_PROMO_RESET_AFTER_DAY = 30;
     private static final int NTP_SYNC_PROMO_INCREASE_SHOW_COUNT_AFTER_MINUTE = 30;
-    private static final String SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS =
-            "SyncAndroidNTPPromoMaxImpressions";
 
-    @VisibleForTesting static final int NTP_SYNC_PROMO_NTP_COUNT_LIMIT = 5;
+    @VisibleForTesting static final int NTP_SYNC_PROMO_RESET_AFTER_DAYS = 30;
+
+    @VisibleForTesting static final int SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS = 5;
 
     @VisibleForTesting
     static final int NTP_SYNC_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS =
             336; // 14 days in hours.
-
-    @VisibleForTesting
-    static final int NTP_SYNC_PROMO_NTP_RESET_AFTER_HOURS = 672; // 28 days in hours.
 
     @VisibleForTesting static final String GMAIL_DOMAIN = "gmail.com";
 
@@ -148,23 +146,19 @@ public class SyncPromoController {
     private final boolean mShouldSuppressSecondaryButton;
     private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
     private final SigninAndHistorySyncActivityLauncher mSigninAndHistorySyncActivityLauncher;
-    private final @SigninAndHistorySyncCoordinator.HistoryOptInMode int mHistoryOptInMode;
+    private final @HistorySyncConfig.OptInMode int mHistoryOptInMode;
     private final Delegate mDelegate;
 
     private @Nullable DisplayableProfileData mProfileData;
     private @Nullable ImpressionTracker mImpressionTracker;
 
     private static long getNTPSyncPromoResetAfterMillis() {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)) {
-            return NTP_SYNC_PROMO_RESET_AFTER_DAY * DateUtils.DAY_IN_MILLIS;
-        }
-        return NTP_SYNC_PROMO_NTP_RESET_AFTER_HOURS * DateUtils.HOUR_IN_MILLIS;
+        return NTP_SYNC_PROMO_RESET_AFTER_DAYS * DateUtils.DAY_IN_MILLIS;
     }
 
     /**
      * If the signin promo card has been hidden for longer than the {@link
-     * NTP_SYNC_PROMO_NTP_RESET_AFTER_HOURS}, resets the impression counts, {@link
+     * NTP_SYNC_PROMO_RESET_AFTER_DAYS}, resets the impression counts, {@link
      * ChromePreferenceKeys#SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME} and {@link
      * ChromePreferenceKeys#SIGNIN_PROMO_NTP_LAST_SHOWN_TIME} to allow the promo card to show again.
      */
@@ -198,17 +192,6 @@ public class SyncPromoController {
                 ChromeSharedPreferences.getInstance()
                         .readLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME, 0L);
         return firstShownTime > 0 && currentTime - firstShownTime >= timeSinceFirstShownLimitMs;
-    }
-
-    private static int getNTPMaxImpressions() {
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)) {
-            return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                    ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS,
-                    SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS,
-                    5);
-        }
-        return NTP_SYNC_PROMO_NTP_COUNT_LIMIT;
     }
 
     private static boolean canShowSettingsPromo() {
@@ -280,7 +263,7 @@ public class SyncPromoController {
                     mDescriptionStringId = R.string.sync_promo_description_bookmarks;
                 }
                 mShouldSuppressSecondaryButton = false;
-                mHistoryOptInMode = SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE;
+                mHistoryOptInMode = HistorySyncConfig.OptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate = this::getPromoPrimaryButtonText;
                 break;
@@ -297,7 +280,7 @@ public class SyncPromoController {
                     mDescriptionStringId = R.string.sync_promo_description_ntp_content_suggestions;
                 }
                 mShouldSuppressSecondaryButton = false;
-                mHistoryOptInMode = SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE;
+                mHistoryOptInMode = HistorySyncConfig.OptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate = this::getPromoPrimaryButtonText;
                 break;
@@ -314,17 +297,15 @@ public class SyncPromoController {
                     mDescriptionStringId = R.string.sync_promo_description_recent_tabs;
                     mShouldSuppressSecondaryButton = false;
                 }
-                mHistoryOptInMode = SigninAndHistorySyncCoordinator.HistoryOptInMode.REQUIRED;
+                mHistoryOptInMode = HistorySyncConfig.OptInMode.REQUIRED;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate =
                         (context, profileData) -> {
                             if (ChromeFeatureList.isEnabled(
                                     ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
-                                return context.getResources()
-                                        .getString(R.string.signin_promo_turn_on);
+                                return context.getString(R.string.signin_promo_turn_on);
                             }
-                            return context.getResources()
-                                    .getString(R.string.sync_promo_turn_on_sync);
+                            return context.getString(R.string.sync_promo_turn_on_sync);
                         };
                 break;
             case SigninAccessPoint.SETTINGS:
@@ -332,16 +313,9 @@ public class SyncPromoController {
                 mSyncPromoDismissedPreferenceTracker =
                         ChromePreferenceKeys.SIGNIN_PROMO_SETTINGS_PERSONALIZED_DISMISSED;
                 mTitleStringId = R.string.sync_promo_title_settings;
-                boolean isAccountStorageEnabled =
-                        ChromeFeatureList.isEnabled(
-                                ChromeFeatureList
-                                        .ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS);
-                mDescriptionStringId =
-                        isAccountStorageEnabled
-                                ? R.string.sync_promo_description_settings_without_passwords
-                                : R.string.sync_promo_description_settings;
+                mDescriptionStringId = R.string.sync_promo_description_settings_without_passwords;
                 mShouldSuppressSecondaryButton = false;
-                mHistoryOptInMode = SigninAndHistorySyncCoordinator.HistoryOptInMode.NONE;
+                mHistoryOptInMode = HistorySyncConfig.OptInMode.NONE;
                 // TODO(b/332704829): Move delegate creation outside of this constructor.
                 mDelegate =
                         (context, profileData) -> {
@@ -352,8 +326,7 @@ public class SyncPromoController {
                                     IdentityServicesProvider.get().getIdentityManager(mProfile);
                             if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)
                                     || profileData == null) {
-                                return context.getResources()
-                                        .getString(R.string.sync_promo_turn_on_sync);
+                                return context.getString(R.string.sync_promo_turn_on_sync);
                             }
                             return SigninUtils.getContinueAsButtonText(context, profileData);
                         };
@@ -396,7 +369,7 @@ public class SyncPromoController {
                         .readInt(
                                 getPromoShowCountPreferenceName(
                                         SigninAccessPoint.NTP_FEED_TOP_PROMO));
-        if (promoShowCount >= getNTPMaxImpressions()) {
+        if (promoShowCount >= SYNC_ANDROID_NTP_PROMO_MAX_IMPRESSIONS) {
             return false;
         }
 
@@ -593,10 +566,8 @@ public class SyncPromoController {
                     ChromeSharedPreferences.getInstance()
                             .readLong(ChromePreferenceKeys.SIGNIN_PROMO_NTP_LAST_SHOWN_TIME, 0L);
             if (currentTime - lastShownTime
-                            < NTP_SYNC_PROMO_INCREASE_SHOW_COUNT_AFTER_MINUTE
-                                    * DateUtils.MINUTE_IN_MILLIS
-                    && ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS)) {
+                    < NTP_SYNC_PROMO_INCREASE_SHOW_COUNT_AFTER_MINUTE
+                            * DateUtils.MINUTE_IN_MILLIS) {
                 return;
             }
             if (ChromeSharedPreferences.getInstance()
@@ -692,25 +663,21 @@ public class SyncPromoController {
     private void signinWithNewAccount(Context context, boolean launchSigninFlow) {
         recordShowCountHistogram(UserAction.CONTINUED);
         if (launchSigninFlow) {
-            if (mAccessPoint == SigninAccessPoint.RECENT_TABS) {
-                mSigninAndHistorySyncActivityLauncher.launchActivityForHistorySyncDedicatedFlow(
-                        context,
-                        mProfile,
-                        mBottomSheetStrings,
-                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                        mAccessPoint);
-            } else {
-                mSigninAndHistorySyncActivityLauncher.launchActivityIfAllowed(
-                        context,
-                        mProfile,
-                        mBottomSheetStrings,
-                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                        mHistoryOptInMode,
-                        mAccessPoint);
+            @Nullable
+            Intent intent =
+                    mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
+                            context,
+                            mProfile,
+                            mBottomSheetStrings,
+                            BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    .BOTTOM_SHEET,
+                            BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                            mHistoryOptInMode,
+                            mAccessPoint,
+                            /* selectedCoreAccountId= */ null);
+            if (intent != null) {
+                context.startActivity(intent);
             }
         } else {
             mSyncConsentActivityLauncher.launchActivityForPromoAddAccountFlow(
@@ -721,25 +688,21 @@ public class SyncPromoController {
     private void signinWithDefaultAccount(Context context, boolean launchSigninFlow) {
         recordShowCountHistogram(UserAction.CONTINUED);
         if (launchSigninFlow) {
-            if (mAccessPoint == SigninAccessPoint.RECENT_TABS) {
-                mSigninAndHistorySyncActivityLauncher.launchActivityForHistorySyncDedicatedFlow(
-                        context,
-                        mProfile,
-                        mBottomSheetStrings,
-                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                        mAccessPoint);
-            } else {
-                mSigninAndHistorySyncActivityLauncher.launchActivityIfAllowed(
-                        context,
-                        mProfile,
-                        mBottomSheetStrings,
-                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                .DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                        mHistoryOptInMode,
-                        mAccessPoint);
+            @Nullable
+            Intent intent =
+                    mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
+                            context,
+                            mProfile,
+                            mBottomSheetStrings,
+                            BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    .BOTTOM_SHEET,
+                            BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    .DEFAULT_ACCOUNT_BOTTOM_SHEET,
+                            mHistoryOptInMode,
+                            mAccessPoint,
+                            /* selectedCoreAccountId= */ null);
+            if (intent != null) {
+                context.startActivity(intent);
             }
         } else {
             mSyncConsentActivityLauncher.launchActivityForPromoDefaultFlow(
@@ -750,25 +713,21 @@ public class SyncPromoController {
     private void signinWithNotDefaultAccount(Context context, boolean launchSigninFlow) {
         recordShowCountHistogram(UserAction.CONTINUED);
         if (launchSigninFlow) {
-            if (mAccessPoint == SigninAccessPoint.RECENT_TABS) {
-                mSigninAndHistorySyncActivityLauncher.launchActivityForHistorySyncDedicatedFlow(
-                        context,
-                        mProfile,
-                        mBottomSheetStrings,
-                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                .CHOOSE_ACCOUNT_BOTTOM_SHEET,
-                        mAccessPoint);
-            } else {
-                mSigninAndHistorySyncActivityLauncher.launchActivityIfAllowed(
-                        context,
-                        mProfile,
-                        mBottomSheetStrings,
-                        SigninAndHistorySyncCoordinator.NoAccountSigninMode.BOTTOM_SHEET,
-                        SigninAndHistorySyncCoordinator.WithAccountSigninMode
-                                .CHOOSE_ACCOUNT_BOTTOM_SHEET,
-                        mHistoryOptInMode,
-                        mAccessPoint);
+            @Nullable
+            Intent intent =
+                    mSigninAndHistorySyncActivityLauncher.createBottomSheetSigninIntentOrShowError(
+                            context,
+                            mProfile,
+                            mBottomSheetStrings,
+                            BottomSheetSigninAndHistorySyncCoordinator.NoAccountSigninMode
+                                    .BOTTOM_SHEET,
+                            BottomSheetSigninAndHistorySyncCoordinator.WithAccountSigninMode
+                                    .CHOOSE_ACCOUNT_BOTTOM_SHEET,
+                            mHistoryOptInMode,
+                            mAccessPoint,
+                            /* selectedCoreAccountId= */ null);
+            if (intent != null) {
+                context.startActivity(intent);
             }
         } else {
             mSyncConsentActivityLauncher.launchActivityForPromoChooseAccountFlow(
@@ -821,16 +780,16 @@ public class SyncPromoController {
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
             return profileData == null
-                    ? context.getResources().getString(R.string.signin_promo_signin)
+                    ? context.getString(R.string.signin_promo_signin)
                     : SigninUtils.getContinueAsButtonText(context, profileData);
         }
 
         if (identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN) || profileData == null) {
-            return context.getResources().getString(R.string.sync_promo_turn_on_sync);
+            return context.getString(R.string.sync_promo_turn_on_sync);
         }
 
         return profileData == null
-                ? context.getResources().getString(R.string.signin_promo_turn_on)
+                ? context.getString(R.string.signin_promo_turn_on)
                 : SigninUtils.getContinueAsButtonText(context, profileData);
     }
 
@@ -882,11 +841,11 @@ public class SyncPromoController {
     static boolean existsNonGmailAccount(
             SigninManager signinManager, List<CoreAccountInfo> accounts) {
         assert accounts != null && !accounts.isEmpty();
-        return !accounts.stream()
-                .allMatch(
-                        coreAccountInfo ->
-                                signinManager
-                                        .extractDomainName(coreAccountInfo.getEmail())
-                                        .equals(GMAIL_DOMAIN));
+        for (CoreAccountInfo coreAccountInfo : accounts) {
+            if (!signinManager.extractDomainName(coreAccountInfo.getEmail()).equals(GMAIL_DOMAIN)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

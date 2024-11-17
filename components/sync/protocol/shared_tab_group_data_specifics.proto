@@ -22,16 +22,14 @@ message SharedTabGroupDataSpecifics {
   // Unique identifier for this entity.
   optional string guid = 1;
 
-  // TODO(b/319521964): consider to rename and add a comment to clarify the
-  // content.
-  optional string last_modification_author = 2;
-
   oneof entity {
     SharedTabGroup tab_group = 3;
     SharedTab tab = 4;
   }
 
   optional int64 update_time_windows_epoch_micros = 5;
+
+  reserved 2;
 }
 
 message SharedTabGroup {
@@ -54,6 +52,9 @@ message SharedTabGroup {
   }
   // The color of the tab group, mapped to tab_groups::TabGroupColorId.
   optional Color color = 2;
+
+  // Saved tab group GUID from which this shared tab group was created.
+  optional string originating_tab_group_guid = 3;
 }
 
 message SharedTab {

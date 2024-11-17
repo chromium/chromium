@@ -47,6 +47,10 @@ ACCOUNT_CAPABILITY(kCanUseChromeIpProtectionName,
                    CAN_USE_CHROME_IP_PROTECTION_NAME,
                    "accountcapabilities/geydgnznmnqxa")
 
+ACCOUNT_CAPABILITY(kCanUseCopyEditorFeatureName,
+                   CAN_USE_COPYEDITOR_FEATURE_NAME,
+                   "accountcapabilities/ge2tkmznmnqxa")
+
 ACCOUNT_CAPABILITY(kCanUseDevToolsGenerativeAiFeaturesCapabilityName,
                    CAN_USE_DEVTOOLS_GENERATIVE_AI_FEATURES_CAPABILITY_NAME,
                    "accountcapabilities/geztenjnmnqxa")
@@ -79,3 +83,11 @@ ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsCapabilityName,
 ACCOUNT_CAPABILITY(kCanUseEduFeaturesCapabilityName,
                    CAN_USE_EDU_FEATURES_CAPABILITY_NAME,
                    "accountcapabilities/gezdsmbnmnqxa")
+
+ACCOUNT_CAPABILITY(kCanUseSpeakerLabelInRecorderApp,
+                   CAN_USE_SPEAKER_LABEL_IN_RECORDER_APP,
+                   "accountcapabilities/ge2tknznmnqxa")
+
+ACCOUNT_CAPABILITY(kCanUseGenerativeAiInRecorderApp,
+                   CAN_USE_GENERATIVE_AI_IN_RECORDER_APP,
+                   "accountcapabilities/ge2tkobnmnqxa")

@@ -6,6 +6,9 @@ import("../../build_webui_tests.gni")
 
 build_webui_tests("build_webui_tests") {
   ts_path_mappings = [
+    "chrome://os-feedback/strings.m.js|" +
+        rebase_path("//tools/typescript/definitions/strings.d.ts",
+                    target_gen_dir),
     "chrome://os-feedback/*|" +
         rebase_path("$root_gen_dir/ash/webui/os_feedback_ui/resources/tsc/*",
                     target_gen_dir),

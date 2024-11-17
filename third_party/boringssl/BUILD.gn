@@ -12,7 +12,7 @@ import("src/gen/sources.gni")
 
 if (enable_rust) {
   import("//build/rust/cargo_crate.gni")
-  import("//build/rust/rust_bindgen.gni")
+  import("//build/rust/rust_bindgen_generator.gni")
 }
 
 # Config for us and everybody else depending on BoringSSL.
@@ -49,7 +49,8 @@ all_sources = bcm_internal_headers + bcm_sources + crypto_internal_headers +
 all_headers = crypto_headers + ssl_headers + pki_headers + pki_internal_headers
 
 if (enable_rust) {
-  rust_bindgen("raw_bssl_sys_bindings") {
+  rust_bindgen_generator("raw_bssl_sys_bindings") {
+    output_name = "bindgen"
     header = "src/rust/bssl-sys/wrapper.h"
     deps = [ ":boringssl" ]
     bindgen_flags = [
@@ -78,18 +79,14 @@ if (enable_rust) {
     edition = "2021"
     deps = [
       ":boringssl",
-      ":raw_bssl_sys_bindings",
       ":raw_bssl_sys_bindings_static_fns",
     ]
 
     visibility = [
       ":*",  # private, should only be exposed through bssl_crypto
     ]
-    bindgen_output = get_target_outputs(":raw_bssl_sys_bindings")
-    inputs = bindgen_output
-    rustenv =
-        [ "BINDGEN_RS_FILE=" +
-          rebase_path(bindgen_output[0], get_path_info(crate_root, "dir")) ]
+
+    bindgen_deps = [ ":raw_bssl_sys_bindings" ]
   }
 
   # Rust bindings to boringssl

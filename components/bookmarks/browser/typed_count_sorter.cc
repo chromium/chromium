@@ -4,6 +4,7 @@
 
 #include "components/bookmarks/browser/typed_count_sorter.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/ranges/algorithm.h"
 #include "components/bookmarks/browser/bookmark_client.h"
@@ -15,7 +16,8 @@ using UrlTypedCountMap = BookmarkClient::UrlTypedCountMap;
 
 namespace {
 
-using UrlNodeMap = std::map<const GURL*, const TitledUrlNode*>;
+using UrlNodeMap =
+    std::map<const GURL*, raw_ptr<const TitledUrlNode, CtnExperimental>>;
 using UrlTypedCountPair = std::pair<const GURL*, int>;
 using UrlTypedCountPairs = std::vector<UrlTypedCountPair>;
 

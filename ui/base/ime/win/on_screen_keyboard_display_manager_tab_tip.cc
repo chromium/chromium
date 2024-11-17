@@ -366,13 +366,12 @@ bool OnScreenKeyboardDisplayManagerTabTip::IsKeyboardVisible() {
 
 void OnScreenKeyboardDisplayManagerTabTip::NotifyKeyboardVisible(
     const gfx::Rect& occluded_rect) {
-  for (VirtualKeyboardControllerObserver& observer : observers_)
-    observer.OnKeyboardVisible(occluded_rect);
+  observers_.Notify(&VirtualKeyboardControllerObserver::OnKeyboardVisible,
+                    occluded_rect);
 }
 
 void OnScreenKeyboardDisplayManagerTabTip::NotifyKeyboardHidden() {
-  for (VirtualKeyboardControllerObserver& observer : observers_)
-    observer.OnKeyboardHidden();
+  observers_.Notify(&VirtualKeyboardControllerObserver::OnKeyboardHidden);
 }
 
 }  // namespace ui

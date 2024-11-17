@@ -5,6 +5,7 @@
 #include "content/browser/worker_host/shared_worker_service_impl.h"
 
 #include <stddef.h>
+
 #include <algorithm>
 #include <iterator>
 #include <string>
@@ -19,6 +20,7 @@
 #include "content/browser/devtools/shared_worker_devtools_agent_host.h"
 #include "content/browser/loader/file_url_loader_factory.h"
 #include "content/browser/renderer_host/private_network_access_util.h"
+#include "content/browser/service_worker/service_worker_client.h"
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -359,9 +361,16 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   SharedWorkerHost* host = insertion_result.first->get();
   shared_worker_hosts_[host->token()] = host;
 
+  std::string fetch_event_client_id;
+  if (creator.GetLastCommittedServiceWorkerClient()) {
+    fetch_event_client_id =
+        creator.GetLastCommittedServiceWorkerClient()->client_uuid();
+  }
+
   auto service_worker_handle =
       std::make_unique<ServiceWorkerMainResourceHandle>(
           storage_partition_->GetServiceWorkerContext(), base::DoNothing(),
+          std::move(fetch_event_client_id),
           creator.GetLastCommittedServiceWorkerClient());
   auto* service_worker_handle_raw = service_worker_handle.get();
   host->SetServiceWorkerHandle(std::move(service_worker_handle));

@@ -8,12 +8,22 @@
 #import <Accessibility/Accessibility.h>
 #import <Cocoa/Cocoa.h>
 
+#include <utility>
+#include <vector>
+
 #include "base/component_export.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 
 namespace ui {
 class AXPlatformNodeBase;
 class AXPlatformNodeDelegate;
+
+using CocoaActionList = std::vector<std::pair<ax::mojom::Action, NSString*>>;
+
+// Returns  the pairings of accessibility actions to their Cocoa equivalents
+// for testing.
+COMPONENT_EXPORT(AX_PLATFORM)
+const CocoaActionList& GetCocoaActionListForTesting();
 }  // namespace ui
 
 COMPONENT_EXPORT(AX_PLATFORM)
@@ -62,6 +72,17 @@ COMPONENT_EXPORT(AX_PLATFORM)
 // Returns this node's internal role, i.e. the one that is stored in
 // the internal accessibility tree as opposed to the platform tree.
 - (ax::mojom::Role)internalRole;
+
+// Returns all accessibility attribute names. This is analogous to the
+// deprecated NSAccessibility accessibilityAttributeNames method, which
+// functions identically when the migration flag is off (see
+// kMacAccessibilityAPIMigration). This is used for ax dump testing that
+// essentially tests the deprecated API.
+- (NSMutableArray*)internalAccessibilityAttributeNames;
+
+// Returns YES if `attribute`'s value is available through the new Cocoa
+// accessibility API.
++ (BOOL)isAttributeAvailableThroughNewAccessibilityAPI:(NSString*)attribute;
 
 @property(nonatomic, readonly) NSRect boundsInScreen;
 @property(nonatomic, readonly) ui::AXPlatformNodeBase* node;

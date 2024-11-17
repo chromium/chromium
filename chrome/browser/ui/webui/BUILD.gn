@@ -25,9 +25,15 @@ source_set("configs") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  if (!is_android) {
+    public_deps = [ "//chrome/browser/ui/webui/commerce" ]
+  }
+
   deps = [
     ":webui",
+    "//chrome/browser/optimization_guide:optimization_guide",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/safe_browsing",
     "//components/compose:buildflags",
     "//components/lens:buildflags",
     "//components/security_interstitials/content:security_interstitial_page",
@@ -43,15 +49,17 @@ source_set("configs") {
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/views/side_panel",
     ]
+
+    if (!is_chromeos) {
+      deps += [ "//chrome/browser/ui/webui/whats_new" ]
+    }
   }
 
-  # Includes Ash Chrome and Lacros Chrome
   if (is_chromeos) {
-    deps += [ "//chromeos/constants" ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [ "//chrome/browser/ui/webui/ash/config" ]
+    deps += [
+      "//chrome/browser/ui/webui/ash/config",
+      "//chromeos/constants",
+    ]
   }
 }
 
@@ -74,8 +82,16 @@ source_set("webui_util") {
     "//ui/resources",
   ]
 
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
+  if (!is_android) {
+    sources += [
+      "webui_embedding_context.cc",
+      "webui_embedding_context.h",
+    ]
+
+    deps += [
+      "//chrome/browser/ui/browser_window:browser_window",
+      "//chrome/browser/ui/tabs:tabs_public",
+    ]
   }
 }
 

@@ -22,10 +22,6 @@
       "before"
     ],
     "no-console": "off",
-    "require-jsdoc": "off",
-    "valid-jsdoc": "off",
-    "jsdoc/require-param-description": "off",
-    "jsdoc/require-returns-description": "off",
     "vue/require-default-prop": "off",
     "vue/html-indent": [
       "error",

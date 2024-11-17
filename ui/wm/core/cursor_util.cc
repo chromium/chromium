@@ -577,8 +577,7 @@ void ScaleAndRotateCursorBitmapAndHotpoint(float scale,
                                            SkBitmap* bitmap,
                                            gfx::Point* hotpoint) {
   if (scale < FLT_EPSILON) {
-    NOTREACHED_IN_MIGRATION() << "Scale must be larger than 0.";
-    scale = 1.0f;
+    NOTREACHED() << "Scale must be larger than 0.";
   }
 
   // SkBitmapOperations::Rotate() and skia::ImageOperations::Resize()

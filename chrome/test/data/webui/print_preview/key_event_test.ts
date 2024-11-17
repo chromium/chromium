@@ -4,7 +4,7 @@
 
 import type {PrintPreviewAppElement} from 'chrome://print/print_preview.js';
 import {NativeLayerImpl, PluginProxyImpl} from 'chrome://print/print_preview.js';
-import {isChromeOS, isLacros, isMac, isWindows} from 'chrome://resources/js/platform.js';
+import {isChromeOS, isMac, isWindows} from 'chrome://resources/js/platform.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {keyEventOn} from 'chrome://webui-test/keyboard_mock_interactions.js';
@@ -161,7 +161,7 @@ suite('KeyEventTest', function() {
   test(
       'CtrlShiftPOpensSystemDialog', function() {
         let promise: Promise<void>;
-        if (isChromeOS || isLacros) {
+        if (isChromeOS) {
           // Chrome OS doesn't have a system dialog. Just make sure the key
           // event does not trigger a crash.
           promise = Promise.resolve();

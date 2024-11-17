@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/io_buffer.h"
@@ -187,7 +188,7 @@ class SmallMessageSocket {
   bool HandleCompletedMessageBuffers();
   void ActivateBufferPool(base::span<const uint8_t> current_data);
 
-  Delegate* const delegate_;
+  const raw_ptr<Delegate> delegate_;
   const std::unique_ptr<net::Socket> socket_;
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 

@@ -57,6 +57,12 @@
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
 }
 
+- (void)pause {
+#if !BUILDFLAG(IS_IOS_MACCATALYST)
+  [_lottieAnimation pause];
+#endif  // BUILDFLAG(IS_IOS_MACCATALYST)
+}
+
 - (void)setColorValue:(UIColor*)color forKeypath:(NSString*)keypath {
 #if !BUILDFLAG(IS_IOS_MACCATALYST)
   LOTKeypath* lot_keypath = [LOTKeypath keypathWithKeys:keypath, nil];

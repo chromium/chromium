@@ -159,8 +159,11 @@ class PWAProtocolTest : public PWAProtocolTestWithoutApp {
   bool AppExists(const ManifestId& manifest_id) {
     auto* provider = WebAppProvider::GetForTest(browser()->profile());
     CHECK(provider);
-    return provider->registrar_unsafe().IsInstalled(
-        web_app::GenerateAppIdFromManifestId(manifest_id));
+    return provider->registrar_unsafe().IsInstallState(
+        web_app::GenerateAppIdFromManifestId(manifest_id),
+        {web_app::proto::InstallState::SUGGESTED_FROM_ANOTHER_DEVICE,
+         web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
+         web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
   }
 
   void InstallFromManifest() {
@@ -1015,8 +1018,7 @@ IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
 }
 
 // This test should fail since web apps with browser display mode shouldn't be
-// reparentable to match the behavior of post-installation reparenting. But now
-// the check only applies in WebAppInstallFinalizer::CanReparentTab.
+// reparentable to match the behavior of post-installation reparenting.
 // TODO(crbug.com/339453521): Find a proper way to check the display mode.
 IN_PROC_BROWSER_TEST_F(PWAProtocolTest,
                        DISABLED_OpenCurrentPageInApp_NotReparentable) {

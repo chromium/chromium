@@ -218,15 +218,6 @@ bool ServiceWorkerSubresourceLoader::MaybeStartAutoPreload() {
   return ServiceWorkerSubresourceLoader::StartRaceNetworkRequest();
 }
 
-bool ServiceWorkerSubresourceLoader::MaybeStartRaceNetworkRequest() {
-  if (controller_connector_->fetch_handler_bypass_option() !=
-      blink::mojom::ServiceWorkerFetchHandlerBypassOption::
-          kRaceNetworkRequest) {
-    return false;
-  }
-  return ServiceWorkerSubresourceLoader::StartRaceNetworkRequest();
-}
-
 bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
   // If the fetch event is restarted for some reason, stop dispatching
   // RaceNetworkRequest to avoid making the race condition complex.
@@ -401,6 +392,7 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
     kForced,
     kSkipped
   } race_network_request_mode = kDefault;
+  std::optional<blink::ServiceWorkerRouterRaceSource> race_source;
 
   if (controller_connector_->router_evaluator()) {
     response_head_->service_worker_router_info =
@@ -432,6 +424,7 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
           return;
         case network::mojom::ServiceWorkerRouterSourceType::kRace:
           race_network_request_mode = kForced;
+          race_source = sources[0].race_source;
           break;
         case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:
           race_network_request_mode = kSkipped;
@@ -497,14 +490,14 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
 
   switch (race_network_request_mode) {
     case kForced:
+      CHECK_EQ(race_source->target, blink::ServiceWorkerRouterRaceSource::
+                                        TargetEnum::kNetworkAndFetchHandler);
       if (StartRaceNetworkRequest()) {
         SetDispatchedPreloadType(DispatchedPreloadType::kRaceNetworkRequest);
       }
       break;
     case kDefault:
-      if (MaybeStartRaceNetworkRequest()) {
-        SetDispatchedPreloadType(DispatchedPreloadType::kRaceNetworkRequest);
-      } else if (MaybeStartAutoPreload()) {
+      if (MaybeStartAutoPreload()) {
         SetDispatchedPreloadType(DispatchedPreloadType::kAutoPreload);
         SetCommitResponsibility(FetchResponseFrom::kServiceWorker);
       }
@@ -1042,8 +1035,7 @@ void ServiceWorkerSubresourceLoader::CommitCompleted(int error_code,
       case FetchResponseFrom::kNoResponseYet:
       case FetchResponseFrom::kSubresourceLoaderIsHandlingRedirect:
       case FetchResponseFrom::kAutoPreloadHandlingFallback:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case FetchResponseFrom::kServiceWorker:
         RecordTimingMetricsForFetchHandlerHandledCase();
         break;
@@ -1202,7 +1194,7 @@ void ServiceWorkerSubresourceLoader::
 
 void ServiceWorkerSubresourceLoader::RecordResponseReceivedToCompletedTiming(
     const net::LoadTimingInfo& load_timing) {
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "ServiceWorker.LoadTiming.Subresource."
       "ResponseReceivedToCompleted2",
       completion_time_ - load_timing.receive_headers_end);
@@ -1521,9 +1513,16 @@ void ServiceWorkerSubresourceLoader::TransitionToStatus(Status new_status) {
 void ServiceWorkerSubresourceLoader::DidCacheStorageMatch(
     base::TimeTicks event_dispatch_time,
     blink::mojom::MatchResultPtr result) {
+  CHECK(response_head_->service_worker_router_info);
   auto timing = blink::mojom::ServiceWorkerFetchEventTiming::New();
+  auto cache_lookup_time = base::TimeTicks::Now() - event_dispatch_time;
   response_head_->load_timing.service_worker_cache_lookup_start =
       event_dispatch_time;
+  response_head_->service_worker_router_info->cache_lookup_time =
+      cache_lookup_time;
+  base::UmaHistogramTimes(
+      "ServiceWorker.StaticRouter.Subresource.CacheLookupDuration",
+      cache_lookup_time);
   switch (result->which()) {
     case blink::mojom::MatchResult::Tag::kStatus:  // error fallback.
       base::UmaHistogramEnumeration(
@@ -1544,7 +1543,6 @@ void ServiceWorkerSubresourceLoader::DidCacheStorageMatch(
         // third_party/blink/renderer/modules/cache_storage/cache_storage.cc)
         result->get_response()->parsed_headers.reset();
       }
-      CHECK(response_head_->service_worker_router_info);
       response_head_->service_worker_router_info->actual_source_type =
           network::mojom::ServiceWorkerRouterSourceType::kCache;
       OnResponse(std::move(result->get_response()), std::move(timing));

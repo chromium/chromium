@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(crbug.com/356058864): Add explainer link
+// https://github.com/WICG/writing-assistance-apis
 
 [
   Exposed=(Window,Worker),
-  RuntimeEnabled=AISummarizationAPI
+  RuntimeEnabled=AISummarizationAPI,
+  SecureContext
 ]
 interface AISummarizerCapabilities {
   readonly attribute AICapabilityAvailability available;
@@ -15,7 +16,7 @@ interface AISummarizerCapabilities {
   AICapabilityAvailability supportsFormat(AISummarizerFormat format);
   AICapabilityAvailability supportsLength(AISummarizerLength length);
 
-  AICapabilityAvailability supportsInputLanguage(DOMString languageTag);
+  AICapabilityAvailability languageAvailable(DOMString languageTag);
 };
 
 enum AISummarizerType { "tl;dr", "key-points", "teaser", "headline" };
@@ -32,7 +33,8 @@ dictionary AISummarizerCreateOptions {
 
 [
   Exposed=(Window,Worker),
-  RuntimeEnabled=AISummarizationAPI
+  RuntimeEnabled=AISummarizationAPI,
+  SecureContext
 ]
 interface AISummarizerFactory {
   [

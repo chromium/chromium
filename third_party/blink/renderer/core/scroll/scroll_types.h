@@ -114,8 +114,7 @@ inline ScrollDirectionPhysical ToPhysicalDirection(
     case mojom::blink::ScrollDirection::kScrollRightIgnoringWritingMode:
       return kScrollRight;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return kScrollUp;
 }
@@ -132,8 +131,7 @@ inline mojom::blink::ScrollDirection ToScrollDirection(
     case kScrollRight:
       return mojom::blink::ScrollDirection::kScrollRightIgnoringWritingMode;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode;
 }

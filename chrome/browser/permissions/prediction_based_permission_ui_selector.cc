@@ -201,7 +201,7 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
     return;
   }
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PredictionBasedPermissionUiSelector::Cancel() {
@@ -339,7 +339,7 @@ bool PredictionBasedPermissionUiSelector::ShouldHoldBack(
       should_holdback =
           holdback_chance < on_device_geolocation_holdback_threshold;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   } else {
     should_holdback = holdback_chance < server_side_holdback_threshold;

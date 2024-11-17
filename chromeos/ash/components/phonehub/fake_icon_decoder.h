@@ -8,8 +8,7 @@
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/phonehub/icon_decoder.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class FakeIconDecoder : public IconDecoder {
  public:
@@ -34,7 +33,6 @@ class FakeIconDecoder : public IconDecoder {
       last_finished_callback_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_ICON_DECODER_H_

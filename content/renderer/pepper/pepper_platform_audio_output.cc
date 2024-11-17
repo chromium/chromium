@@ -83,7 +83,7 @@ void PepperPlatformAudioOutput::OnDeviceAuthorized(
     media::OutputDeviceStatus device_status,
     const media::AudioParameters& output_params,
     const std::string& matched_device_id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PepperPlatformAudioOutput::OnStreamCreated(

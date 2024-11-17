@@ -25,8 +25,7 @@ const char* JobTypeToRequestType(
     DeviceManagementService::JobConfiguration::JobType type) {
   switch (type) {
     case DeviceManagementService::JobConfiguration::TYPE_INVALID:
-      NOTREACHED_IN_MIGRATION() << "Not a DMServer request type" << type;
-      return "Invalid";
+      NOTREACHED() << "Not a DMServer request type" << type;
     case DeviceManagementService::JobConfiguration::TYPE_AUTO_ENROLLMENT:
       return dm_protocol::kValueRequestAutoEnrollment;
     case DeviceManagementService::JobConfiguration::TYPE_REGISTRATION:
@@ -83,8 +82,7 @@ const char* JobTypeToRequestType(
       return dm_protocol::kValueRequestPublicSamlUser;
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_REAL_TIME_REPORT:
-      NOTREACHED_IN_MIGRATION() << "Not a DMServer request type " << type;
-      break;
+      NOTREACHED() << "Not a DMServer request type " << type;
     case DeviceManagementService::JobConfiguration::TYPE_CHROME_OS_USER_REPORT:
       return dm_protocol::kValueRequestChromeOsUserReport;
     case DeviceManagementService::JobConfiguration::
@@ -100,8 +98,7 @@ const char* JobTypeToRequestType(
       return dm_protocol::kValueBrowserUploadPublicKey;
     case DeviceManagementService::JobConfiguration::
         TYPE_UPLOAD_ENCRYPTED_REPORT:
-      NOTREACHED_IN_MIGRATION() << "Not a DMServer request type " << type;
-      break;
+      NOTREACHED() << "Not a DMServer request type " << type;
     case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_EUICC_INFO:
       return dm_protocol::kValueRequestUploadEuiccInfo;
     case DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT:
@@ -113,8 +110,7 @@ const char* JobTypeToRequestType(
         TYPE_POLICY_AGENT_REGISTRATION:
       return dm_protocol::kValueRequestRegisterPolicyAgent;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid job type " << type;
-  return "";
+  NOTREACHED() << "Invalid job type " << type;
 }
 
 }  // namespace
@@ -238,7 +234,7 @@ DMServerJobConfiguration::DMServerJobConfiguration(
                                    client->GetURLLoaderFactory(),
                                    std::move(callback))) {}
 
-DMServerJobConfiguration::~DMServerJobConfiguration() {}
+DMServerJobConfiguration::~DMServerJobConfiguration() = default;
 
 DeviceManagementStatus
 DMServerJobConfiguration::MapNetErrorAndResponseToDMStatus(

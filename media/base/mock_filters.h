@@ -876,8 +876,9 @@ class MockMediaClient : public media::MediaClient {
   ~MockMediaClient() override;
 
   // MediaClient implementation.
-  MOCK_METHOD1(IsSupportedAudioType, bool(const media::AudioType& type));
-  MOCK_METHOD1(IsSupportedVideoType, bool(const media::VideoType& type));
+  MOCK_METHOD1(IsDecoderSupportedAudioType, bool(const media::AudioType& type));
+  MOCK_METHOD1(IsDecoderSupportedVideoType, bool(const media::VideoType& type));
+  MOCK_METHOD1(IsEncoderSupportedVideoType, bool(const media::VideoType& type));
   MOCK_METHOD1(IsSupportedBitstreamAudioCodec, bool(media::AudioCodec codec));
   MOCK_METHOD1(GetAudioRendererAlgorithmParameters,
                std::optional<::media::AudioRendererAlgorithmParameters>(

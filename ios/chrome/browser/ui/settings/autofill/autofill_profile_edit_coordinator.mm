@@ -11,11 +11,11 @@
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_country_selection_table_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator_delegate.h"
-#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_table_view_controller.h"
-#import "ios/chrome/browser/autofill/ui_bundled/cells/country_item.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_country_selection_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_mediator_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/address_editor/cells/country_item.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -79,8 +79,8 @@
   // There is no personal data manager in OTR (incognito). Get the original
   // one so the user can edit the profile.
   autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(
-          self.browser->GetBrowserState()->GetOriginalChromeBrowserState());
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          self.browser->GetProfile()->GetOriginalProfile());
 
   self.mediator = [[AutofillProfileEditMediator alloc]
          initWithDelegate:self
@@ -136,10 +136,11 @@
   AutofillCountrySelectionTableViewController*
       autofillCountrySelectionTableViewController =
           [[AutofillCountrySelectionTableViewController alloc]
-              initWithDelegate:self
-               selectedCountry:country
-                  allCountries:allCountries
-                  settingsView:YES];
+                         initWithDelegate:self
+                          selectedCountry:country
+                             allCountries:allCountries
+                             settingsView:YES
+              previousViewControllerTitle:nil];
   [self.baseNavigationController
       pushViewController:autofillCountrySelectionTableViewController
                 animated:YES];
@@ -147,7 +148,7 @@
 }
 
 - (void)didSaveProfile {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 #pragma mark - AutofillCountrySelectionTableViewControllerDelegate
@@ -158,12 +159,15 @@
   [self.mediator didSelectCountry:selectedCountry];
 }
 
+- (void)dismissCountryViewController {
+  NOTREACHED();
+}
+
 #pragma mark - Private
 
 - (NSString*)userEmail {
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
   CHECK(authenticationService);
   id<SystemIdentity> identity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);

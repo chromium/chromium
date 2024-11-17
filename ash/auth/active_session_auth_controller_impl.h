@@ -115,6 +115,7 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   void OnFingerprintTerminated(
       std::unique_ptr<UserContext> user_context,
       std::optional<AuthenticationError> authentication_error);
+  void OnFingerprintAnimationFinished();
 
   // Tracks the authentication flow for the active session.
   enum class ActiveSessionAuthState {
@@ -136,6 +137,9 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
   };
 
  private:
+  class FingerprintAuthTracker;
+  friend class FingerprintAuthTracker;
+
   using AuthFactorsReadyCallback =
       base::OnceCallback<void(std::unique_ptr<UserContext>)>;
 
@@ -197,7 +201,11 @@ class ASH_EXPORT ActiveSessionAuthControllerImpl
 
   std::unique_ptr<AuthRequest> auth_request_;
 
+  bool fingerprint_animation_finished_ = false;
+  bool fingerprint_authentication_finished_ = false;
+
   raw_ptr<ActiveSessionFingerprintClient> fp_client_;
+  std::unique_ptr<FingerprintAuthTracker> fp_auth_tracker_;
 
   ActiveSessionAuthMetricsRecorder uma_recorder_;
 

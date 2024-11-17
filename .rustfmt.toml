@@ -5,7 +5,7 @@
 edition = "2021"
 
 # Version of the formatting rules to use.
-version = "Two"
+style_edition = "2021"
 
 # Line endings will be converted to \n.
 newline_style = "Unix"

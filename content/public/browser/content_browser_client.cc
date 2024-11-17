@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/values.h"
@@ -21,6 +22,7 @@
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/ai/echo_ai_manager_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/anchor_element_preconnect_delegate.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
@@ -238,7 +240,11 @@ ContentBrowserClient::DetermineAddressSpaceFromURL(const GURL& url) {
   return network::mojom::IPAddressSpace::kUnknown;
 }
 
-bool ContentBrowserClient::LogWebUIUrl(const GURL& web_ui_url) {
+bool ContentBrowserClient::LogWebUICreated(const GURL& web_ui_url) {
+  return false;
+}
+
+bool ContentBrowserClient::LogWebUIShown(const GURL& web_ui_url) {
   return false;
 }
 
@@ -254,6 +260,11 @@ bool ContentBrowserClient::IsHandledURL(const GURL& url) {
 bool ContentBrowserClient::HasCustomSchemeHandler(
     content::BrowserContext* browser_context,
     const std::string& scheme) {
+  return false;
+}
+
+bool ContentBrowserClient::HasWebRequestAPIProxy(
+    BrowserContext* browser_context) {
   return false;
 }
 
@@ -470,6 +481,11 @@ bool ContentBrowserClient::AllowCompressionDictionaryTransport(
   return true;
 }
 
+bool ContentBrowserClient::AllowSharedWorkerBlobURLFix(
+    BrowserContext* context) {
+  return true;
+}
+
 bool ContentBrowserClient::OverrideWebPreferencesAfterNavigation(
     WebContents* web_contents,
     blink::web_pref::WebPreferences* prefs) {
@@ -539,6 +555,7 @@ std::string ContentBrowserClient::GetWebBluetoothBlocklist() {
 }
 
 bool ContentBrowserClient::IsInterestGroupAPIAllowed(
+    content::BrowserContext* browser_context,
     content::RenderFrameHost* render_frame_host,
     InterestGroupApiOperation operation,
     const url::Origin& top_frame_origin,
@@ -549,8 +566,7 @@ bool ContentBrowserClient::IsInterestGroupAPIAllowed(
 bool ContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
     content::BrowserContext* browser_context,
     const url::Origin& destination_origin,
-    content::PrivacySandboxInvokingAPI invoking_api,
-    bool post_impression_reporting) {
+    content::PrivacySandboxInvokingAPI invoking_api) {
   return false;
 }
 
@@ -618,6 +634,14 @@ bool ContentBrowserClient::IsSharedStorageSelectURLAllowed(
   return false;
 }
 
+bool ContentBrowserClient::IsFencedStorageReadAllowed(
+    content::BrowserContext* browser_context,
+    content::RenderFrameHost* rfh,
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin) {
+  return false;
+}
+
 bool ContentBrowserClient::IsPrivateAggregationAllowed(
     content::BrowserContext* browser_context,
     const url::Origin& top_frame_origin,
@@ -652,6 +676,13 @@ bool ContentBrowserClient::IsFullCookieAccessAllowed(
     const blink::StorageKey& storage_key) {
   return true;
 }
+
+void ContentBrowserClient::GrantCookieAccessDueToHeuristic(
+    content::BrowserContext* browser_context,
+    const net::SchemefulSite& top_frame_site,
+    const net::SchemefulSite& accessing_site,
+    base::TimeDelta ttl,
+    bool ignore_schemes) {}
 
 bool ContentBrowserClient::CanSendSCTAuditingReport(
     BrowserContext* browser_context) {
@@ -915,14 +946,6 @@ void ContentBrowserClient::RemovePresentationObserver(
     PresentationObserver* observer,
     WebContents* web_contents) {}
 
-bool ContentBrowserClient::AddPrivacySandboxAttestationsObserver(
-    PrivacySandboxAttestationsObserver* observer) {
-  return true;
-}
-
-void ContentBrowserClient::RemovePrivacySandboxAttestationsObserver(
-    PrivacySandboxAttestationsObserver* observer) {}
-
 void ContentBrowserClient::OpenURL(
     content::SiteInstance* site_instance,
     const content::OpenURLParams& params,
@@ -1081,7 +1104,7 @@ void ContentBrowserClient::CreateWebSocket(
     mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
         handshake_client) {
   // NOTREACHED because WillInterceptWebSocket returns false.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ContentBrowserClient::WillCreateWebTransport(
@@ -1264,7 +1287,8 @@ std::unique_ptr<LoginDelegate> ContentBrowserClient::CreateLoginDelegate(
     content::WebContents* web_contents,
     BrowserContext* browser_context,
     const GlobalRequestID& request_id,
-    bool is_request_for_primary_main_frame,
+    bool is_request_for_primary_main_frame_navigation,
+    bool is_request_for_navigation,
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,
@@ -1284,6 +1308,7 @@ bool ContentBrowserClient::HandleExternalProtocol(
     bool has_user_gesture,
     const std::optional<url::Origin>& initiating_origin,
     RenderFrameHost* initiator_document,
+    const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
   return true;
 }
@@ -1450,7 +1475,7 @@ base::OnceClosure ContentBrowserClient::FetchRemoteSms(
 
 void ContentBrowserClient::ReportLegacyTechEvent(
     content::RenderFrameHost* render_frame_host,
-    const std::string type,
+    const std::string& type,
     const GURL& url,
     const GURL& frame_url,
     const std::string& filename,
@@ -1757,9 +1782,9 @@ bool ContentBrowserClient::ShouldSuppressAXLoadComplete(RenderFrameHost* rfh) {
 
 void ContentBrowserClient::BindAIManager(
     BrowserContext* browser_context,
-    std::variant<RenderFrameHost*, base::SupportsUserData*> context,
+    base::SupportsUserData* context_user_data,
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
-  EchoAIManagerImpl::Create(browser_context, context, std::move(receiver));
+  EchoAIManagerImpl::Create(*context_user_data, std::move(receiver));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -1781,5 +1806,15 @@ bool ContentBrowserClient::IsSaveableNavigation(
 #if BUILDFLAG(IS_WIN)
 void ContentBrowserClient::OnUiaProviderRequested(bool uia_provider_enabled) {}
 #endif
+
+bool ContentBrowserClient::AllowNonActivatedCrossOriginPaintHolding() {
+  return false;
+}
+
+bool ContentBrowserClient::ShouldDispatchPagehideDuringCommit(
+    BrowserContext* browser_context,
+    const GURL& destination_url) {
+  return true;
+}
 
 }  // namespace content

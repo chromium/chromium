@@ -117,28 +117,6 @@ class HeartbeatSender final : public SignalStrategy::Listener {
       base::OnceCallback<void(bool success)> ack_callback);
 
  private:
-  class OldHeartbeatClient {
-   public:
-    using LegacyHeartbeatResponseCallback =
-        base::OnceCallback<void(const ProtobufHttpStatus&,
-                                std::unique_ptr<apis::v1::HeartbeatResponse>)>;
-    using SendHeartbeatResponseCallback = base::OnceCallback<void(
-        const ProtobufHttpStatus&,
-        std::unique_ptr<apis::v1::SendHeartbeatResponse>)>;
-
-    virtual ~OldHeartbeatClient() = default;
-
-    virtual void LegacyHeartbeat(
-        std::unique_ptr<apis::v1::HeartbeatRequest> request,
-        LegacyHeartbeatResponseCallback callback) = 0;
-    virtual void SendHeartbeat(
-        std::unique_ptr<apis::v1::SendHeartbeatRequest> request,
-        SendHeartbeatResponseCallback callback) = 0;
-
-    virtual void CancelPendingRequests() = 0;
-  };
-
-  class OldHeartbeatClientImpl;
 
   friend class HeartbeatSenderTest;
 
@@ -161,19 +139,20 @@ class HeartbeatSender final : public SignalStrategy::Listener {
 
   void OnLegacyHeartbeatResponse(
       const ProtobufHttpStatus& status,
-      std::unique_ptr<apis::v1::HeartbeatResponse> response);
+      std::optional<base::TimeDelta> wait_interval,
+      const std::string& primary_user_email,
+      std::optional<bool> require_session_authorization,
+      std::optional<bool> use_lite_heartbeat);
   void OnSendHeartbeatResponse(
       const ProtobufHttpStatus& status,
-      std::unique_ptr<apis::v1::SendHeartbeatResponse> response);
-
-  // Helper methods used to generate heartbeat stanzas.
-  std::unique_ptr<apis::v1::HeartbeatRequest> CreateLegacyHeartbeatRequest();
-  std::unique_ptr<apis::v1::SendHeartbeatRequest> CreateSendHeartbeatRequest();
+      std::optional<base::TimeDelta> wait_interval,
+      const std::string& primary_user_email,
+      std::optional<bool> require_session_authorization,
+      std::optional<bool> use_lite_heartbeat);
 
   raw_ptr<Delegate> delegate_;
   std::string host_id_;
   const raw_ptr<SignalStrategy> signal_strategy_;
-  std::unique_ptr<OldHeartbeatClient> old_client_;
   const raw_ptr<OAuthTokenGetter> oauth_token_getter_;
   std::unique_ptr<HeartbeatServiceClient> service_client_;
   raw_ptr<Observer> observer_;

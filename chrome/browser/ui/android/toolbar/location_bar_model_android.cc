@@ -59,7 +59,7 @@ LocationBarModelAndroid::GetUrlOfVisibleNavigationEntry(
 }
 
 jint LocationBarModelAndroid::GetPageClassification(JNIEnv* env,
-                                                    bool is_prefetch) {
+                                                    bool is_prefetch) const {
   return location_bar_model_->GetPageClassification(is_prefetch);
 }
 

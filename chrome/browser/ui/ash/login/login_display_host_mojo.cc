@@ -62,7 +62,6 @@
 #include "chrome/browser/ui/webui/ash/login/enable_debugging_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/guest_tos_screen_handler.h"
-#include "chrome/browser/ui/webui/ash/login/lacros_data_migration_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/remote_activity_notification_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
@@ -176,13 +175,6 @@ void UpdatePinAuthAvailability(const AccountId& account_id) {
           account_id));
 }
 
-void UpdateChallengeResponseAuthAvailability(const AccountId& account_id) {
-  const bool enable_challenge_response =
-      ChallengeResponseAuthKeysLoader::CanAuthenticateUser(account_id);
-  LoginScreen::Get()->GetModel()->SetChallengeResponseAuthEnabledForUser(
-      account_id, enable_challenge_response);
-}
-
 LoginDisplayHostMojo* g_login_display_host_mojo = nullptr;
 
 }  // namespace
@@ -278,14 +270,9 @@ void LoginDisplayHostMojo::SetUsers(const user_manager::UserList& users) {
     // availability for any users who can use them.
     for (const user_manager::User* user : users) {
       if (!user->IsDeviceLocalAccount()) {
-        if (features::IsAllowPasswordlessSetupEnabled()) {
-          // Pref-based PIN is irrelvent on the Login screen, so it is ok to
-          // check only Cryptohome PIN here.
-          UpdateAuthFactorsAvailability(user);
-        } else {
-          UpdatePinAuthAvailability(user->GetAccountId());
-          UpdateChallengeResponseAuthAvailability(user->GetAccountId());
-        }
+        // Pref-based PIN is irrelvent on the Login screen, so it is ok to
+        // check only Cryptohome PIN here.
+        UpdateAuthFactorsAvailability(user);
       }
     }
   }
@@ -373,11 +360,6 @@ void LoginDisplayHostMojo::OnLocalAuthenticationCompleted(
   }
   existing_user_controller_->ResumeAfterLocalAuthentication(
       std::move(user_context));
-}
-
-void LoginDisplayHostMojo::StartBrowserDataMigration() {
-  DCHECK(GetOobeUI());
-  wizard_controller_->AdvanceToScreen(LacrosDataMigrationScreenView::kScreenId);
 }
 
 void LoginDisplayHostMojo::HandleDisplayCaptivePortal() {
@@ -470,7 +452,7 @@ void LoginDisplayHostMojo::OnStartUserAdding() {
 
   SystemTrayClientImpl::Get()->SetPrimaryTrayVisible(/*visible=*/true);
   existing_user_controller_->Init(
-      user_manager::UserManager::Get()->GetUsersAllowedForMultiProfile());
+      user_manager::UserManager::Get()->GetUsersAllowedForMultiUserSignIn());
 }
 
 void LoginDisplayHostMojo::CancelUserAdding() {
@@ -805,11 +787,6 @@ void LoginDisplayHostMojo::HandleOnFocusPod(const AccountId& account_id) {
   focused_pod_account_id_ = account_id;
 }
 
-bool LoginDisplayHostMojo::HandleFocusLockScreenApps(bool reverse) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
-}
-
 void LoginDisplayHostMojo::HandleFocusOobeDialog() {
   if (!dialog_->IsVisible()) {
     return;
@@ -1059,33 +1036,27 @@ void LoginDisplayHostMojo::UpdateAuthFactorsAvailability(
           user->GetAccountId());
   auth_performer_.StartAuthSession(
       std::move(user_context), ephemeral, ash::AuthSessionIntent::kDecrypt,
-      base::BindOnce([](bool user_exists,
-                        std::unique_ptr<UserContext> user_context,
-                        std::optional<AuthenticationError> error) {
-        if (error.has_value()) {
-          LOG(ERROR) << "Failed to start auth session, code "
-                     << error->get_cryptohome_error();
-          return;
-        }
-        const auto& factors_data = user_context->GetAuthFactorsData();
-        cryptohome::AuthFactorsSet available_factors;
-        if (factors_data.FindAnyPasswordFactor()) {
-          available_factors.Put(cryptohome::AuthFactorType::kPassword);
-        }
-        auto* pin_factor = factors_data.FindPinFactor();
-        if (pin_factor && !pin_factor->GetPinStatus().IsLockedFactor()) {
-          available_factors.Put(cryptohome::AuthFactorType::kPin);
-        }
-        if (factors_data.FindSmartCardFactor()) {
-          available_factors.Put(cryptohome::AuthFactorType::kSmartCard);
-        }
-        cryptohome::PinLockAvailability pin_available_at = std::nullopt;
-        if (pin_factor && pin_factor->GetPinStatus().IsLockedFactor()) {
-          pin_available_at = pin_factor->GetPinStatus().AvailableAt();
-        }
-        LoginScreen::Get()->GetModel()->SetAuthFactorsForUser(
-            user_context->GetAccountId(), available_factors, pin_available_at);
-      }));
+      base::BindOnce(&LoginDisplayHostMojo::OnAuthSessionStarted,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void LoginDisplayHostMojo::OnAuthSessionStarted(
+    bool user_exists,
+    std::unique_ptr<UserContext> user_context,
+    std::optional<AuthenticationError> error) {
+  if (error.has_value()) {
+    LOG(ERROR) << "Failed to start auth session, code "
+               << error->get_cryptohome_error();
+    return;
+  }
+  // We always pass false to `is_pin_disabled_by_policy` here because the
+  // policy only controls whether the pin can be used to unlock the lock
+  // screen and not the login screen.
+  login::SetAuthFactorsForUser(
+      user_context->GetAccountId(), user_context->GetAuthFactorsData(),
+      /*is_pin_disabled_by_policy=*/false, LoginScreen::Get()->GetModel());
+  auth_performer_.InvalidateAuthSession(std::move(user_context),
+                                        base::DoNothing());
 }
 
 }  // namespace ash

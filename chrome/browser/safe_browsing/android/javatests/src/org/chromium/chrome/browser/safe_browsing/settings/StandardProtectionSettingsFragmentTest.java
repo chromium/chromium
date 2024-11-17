@@ -54,7 +54,7 @@ public class StandardProtectionSettingsFragmentTest {
 
     // TODO(crbug.com/336547987): Add a new test for checking that mExtendedReportingPreference is
     // not shown when the flag is enabled.
-    private void launchSettingsActivity() {
+    private void startSettings() {
         mTestRule.startSettingsActivity();
         StandardProtectionSettingsFragment fragment = mTestRule.getFragment();
         mExtendedReportingPreference =
@@ -93,7 +93,7 @@ public class StandardProtectionSettingsFragmentTest {
     @DisableFeatures({ChromeFeatureList.SAFE_BROWSING_EXTENDED_REPORTING_REMOVE_PREF_DEPENDENCY})
     public void testSwitchExtendedReportingPreference() {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
-        launchSettingsActivity();
+        startSettings();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -129,7 +129,7 @@ public class StandardProtectionSettingsFragmentTest {
     public void testSwitchPasswordLeakDetectionPreference() {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
-        launchSettingsActivity();
+        startSettings();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -172,7 +172,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Feature({"SafeBrowsing"})
     public void testPasswordLeakDetectionPreferenceEnabledForSignedOutUsers() {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
-        launchSettingsActivity();
+        startSettings();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -216,7 +216,7 @@ public class StandardProtectionSettingsFragmentTest {
     public void testPreferencesDisabledInEnhancedProtectionMode() {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
         setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
-        launchSettingsActivity();
+        startSettings();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -241,7 +241,7 @@ public class StandardProtectionSettingsFragmentTest {
     public void testPreferencesDisabledInNoProtectionMode() {
         mBrowserTestRule.addTestAccountThenSigninAndEnableSync();
         setSafeBrowsingState(SafeBrowsingState.NO_SAFE_BROWSING);
-        launchSettingsActivity();
+        startSettings();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -271,7 +271,7 @@ public class StandardProtectionSettingsFragmentTest {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                     setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
                 });
-        launchSettingsActivity();
+        startSettings();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -300,7 +300,7 @@ public class StandardProtectionSettingsFragmentTest {
                     ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
                     setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
                 });
-        launchSettingsActivity();
+        startSettings();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -325,7 +325,7 @@ public class StandardProtectionSettingsFragmentTest {
     @Feature({"SafeBrowsing"})
     public void testSafeBrowsingSettingsStandardProtection() {
         setSafeBrowsingState(SafeBrowsingState.STANDARD_PROTECTION);
-        launchSettingsActivity();
+        startSettings();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

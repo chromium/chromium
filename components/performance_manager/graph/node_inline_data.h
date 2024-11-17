@@ -94,6 +94,11 @@ class NodeInlineData {
   template <class NodeImplClass>
   static T& Get(NodeImplClass* node);
 
+  // Retrieves the instance associated with `node`. Asserts that it exists.
+  // `Create()` must have been called before calling this.
+  template <class NodeImplClass>
+  static const T& Get(const NodeImplClass* node);
+
   // Creates the instance.
   template <class NodeImplClass, class... Args>
   static T& Create(NodeImplClass* node, Args&&... args);
@@ -120,6 +125,9 @@ class SupportsNodeInlineData {
   template <class T>
   T& GetNodeData(base::PassKey<NodeInlineData<T>>);
 
+  template <class T>
+  const T& GetNodeData(base::PassKey<NodeInlineData<T>>) const;
+
   template <class T, class... Args>
   T& CreateNodeData(base::PassKey<NodeInlineData<T>>, Args&&... args);
 
@@ -134,6 +142,9 @@ class SupportsNodeInlineData {
  private:
   template <class T>
   internal::Storage<T>& GetStorage();
+
+  template <class T>
+  const internal::Storage<T>& GetStorage() const;
 
   using UnderlyingStorage = std::tuple<internal::Storage<Ts>...>;
   UnderlyingStorage storage_;
@@ -156,6 +167,13 @@ bool NodeInlineData<T>::Exists(NodeImplClass* node) {
 template <class T>
 template <class NodeImplClass>
 T& NodeInlineData<T>::Get(NodeImplClass* node) {
+  return node->GetNodeData(PassKey());
+}
+
+// static
+template <class T>
+template <class NodeImplClass>
+const T& NodeInlineData<T>::Get(const NodeImplClass* node) {
   return node->GetNodeData(PassKey());
 }
 
@@ -190,6 +208,13 @@ T& SupportsNodeInlineData<Ts...>::GetNodeData(
 }
 
 template <class... Ts>
+template <class T>
+const T& SupportsNodeInlineData<Ts...>::GetNodeData(
+    base::PassKey<NodeInlineData<T>>) const {
+  return GetStorage<T>().Get();
+}
+
+template <class... Ts>
 template <class T, class... Args>
 T& SupportsNodeInlineData<Ts...>::CreateNodeData(
     base::PassKey<NodeInlineData<T>>,
@@ -212,6 +237,12 @@ void SupportsNodeInlineData<Ts...>::DestroyNodeInlineDataStorage() {
 template <class... Ts>
 template <class T>
 internal::Storage<T>& SupportsNodeInlineData<Ts...>::GetStorage() {
+  return std::get<internal::Storage<T>>(storage_);
+}
+
+template <class... Ts>
+template <class T>
+const internal::Storage<T>& SupportsNodeInlineData<Ts...>::GetStorage() const {
   return std::get<internal::Storage<T>>(storage_);
 }
 

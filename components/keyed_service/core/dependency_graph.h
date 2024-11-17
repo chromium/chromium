@@ -50,7 +50,9 @@ class KEYED_SERVICE_EXPORT DependencyGraph {
           node_name_callback) const;
 
  private:
-  typedef std::multimap<DependencyNode*, DependencyNode*> EdgeMap;
+  typedef std::multimap<DependencyNode*,
+                        raw_ptr<DependencyNode, CtnExperimental>>
+      EdgeMap;
 
   // Populates |construction_order_| with computed construction order.
   // Returns true on success.

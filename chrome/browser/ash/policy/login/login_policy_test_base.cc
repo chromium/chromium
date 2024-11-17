@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/session_manager_state_waiter.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/user_policy_test_helper.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -81,6 +82,10 @@ void LoginPolicyTestBase::SetUpOnMainThread() {
   FakeGaia::Configuration params;
   params.id_token = GetIdToken();
   fake_gaia_.fake_gaia()->UpdateConfiguration(params);
+
+  cryptohome_mixin_.ApplyAuthConfigIfUserExists(
+      account_id(),
+      ash::test::UserAuthConfig::Create(ash::test::kDefaultAuthSetup));
 }
 
 std::string LoginPolicyTestBase::GetIdToken() const {

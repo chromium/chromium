@@ -830,10 +830,9 @@ IN_PROC_BROWSER_TEST_F(SavePageBrowserTest, MAYBE_SavePageAsMHTML) {
   persisted.WaitForPersisted();
 
   base::ScopedAllowBlockingForTesting allow_blocking;
-  ASSERT_TRUE(base::PathExists(full_file_name));
-  int64_t actual_file_size = -1;
-  EXPECT_TRUE(base::GetFileSize(full_file_name, &actual_file_size));
-  EXPECT_LE(kFileSizeMin, actual_file_size);
+  std::optional<int64_t> actual_file_size = base::GetFileSize(full_file_name);
+  ASSERT_TRUE(actual_file_size.has_value());
+  EXPECT_LE(kFileSizeMin, actual_file_size.value());
 
   std::string contents;
   EXPECT_TRUE(base::ReadFileToString(full_file_name, &contents));
@@ -1064,10 +1063,10 @@ IN_PROC_BROWSER_TEST_F(SavePageSitePerProcessBrowserTest, SaveAsCompleteHtml) {
   for (auto file_path : expected_files) {
     EXPECT_TRUE(base::PathExists(file_path)) << "Does " << file_path.value()
                                              << " exist?";
-    int64_t actual_file_size = 0;
-    EXPECT_TRUE(base::GetFileSize(file_path, &actual_file_size));
-    EXPECT_NE(0, actual_file_size) << "Is " << file_path.value()
-                                   << " non-empty?";
+    std::optional<int64_t> actual_file_size = base::GetFileSize(file_path);
+    ASSERT_TRUE(actual_file_size.has_value());
+    EXPECT_NE(0, actual_file_size.value())
+        << "Is " << file_path.value() << " non-empty?";
   }
 
   // Verify that local links got correctly replaced with local paths
@@ -1629,9 +1628,9 @@ class BlockingDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
     std::move(callback).Run(false);
   }
 
-  void ValidateSavePackageFiles(base::flat_set<base::FilePath> expected_paths) {
+  void ValidateSavePackageFiles(
+      const base::flat_set<base::FilePath>& expected_paths) {
     EXPECT_EQ(expected_paths.size(), save_package_final_paths_.size());
-
     for (const base::FilePath& expected_path : expected_paths) {
       EXPECT_TRUE(save_package_final_paths_.contains(expected_path));
     }

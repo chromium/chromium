@@ -11,6 +11,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #include "components/translate/core/browser/translate_driver.h"
@@ -116,12 +117,8 @@ class IOSTranslateDriver
                            const std::string& source_language,
                            double translation_time) override;
 
-  // Stops observing |web_state_| and sets it to null.
-  void StopObservingWebState();
-
-  // Stops observing the IOSLanguageDetectionTabHelper instance associated with
-  // |web_state_|.
-  void StopObservingIOSLanguageDetectionTabHelper();
+  // Stops all observations.
+  void StopAllObservations();
 
   // The translation action timed out.
   void OnTranslationTimeout(int pending_page_seq_no);
@@ -151,6 +148,14 @@ class IOSTranslateDriver
 
   // A timer to limit the length of translate actions.
   base::OneShotTimer timeout_timer_;
+
+  // Web state observation.
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
+  // LanguageDetectionTabHelper observation.
+  base::ScopedObservation<language::IOSLanguageDetectionTabHelper,
+                          language::IOSLanguageDetectionTabHelper::Observer>
+      language_detection_observation_{this};
 
   base::WeakPtrFactory<IOSTranslateDriver> weak_ptr_factory_{this};
 };

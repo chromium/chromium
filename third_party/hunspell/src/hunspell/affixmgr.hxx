@@ -154,8 +154,6 @@ class AffixMgr {
   FLAG nongramsuggest;
   FLAG needaffix;
   int cpdmin;
-  bool parsedrep;
-  std::vector<replentry> reptable;
   RepList* iconvtable;
   RepList* oconvtable;
   bool parsedmaptable;
@@ -293,6 +291,7 @@ class AffixMgr {
 
   short get_syllable(const std::string& word);
   int cpdrep_check(const char* word, int len);
+  int cpdwordpair_check(const char * word, int len);
   int cpdpat_check(const char* word,
                    int len,
                    hentry* r1,
@@ -353,6 +352,7 @@ class AffixMgr {
   FLAG get_forbiddenword() const;
   FLAG get_nosuggest() const;
   FLAG get_nongramsuggest() const;
+  FLAG get_substandard() const;
   FLAG get_needaffix() const;
   FLAG get_onlyincompound() const;
   const char* get_derived() const;
@@ -384,7 +384,6 @@ class AffixMgr {
   bool parse_flag(const std::string& line, unsigned short* out, FileMgr* af);
   bool parse_num(const std::string& line, int* out, FileMgr* af);
   bool parse_cpdsyllable(const std::string& line, FileMgr* af);
-  bool parse_reptable(const std::string& line, FileMgr* af);
   bool parse_convtable(const std::string& line,
                       FileMgr* af,
                       RepList** rl,

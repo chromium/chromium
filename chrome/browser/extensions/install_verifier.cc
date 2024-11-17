@@ -255,9 +255,9 @@ std::string InstallVerifier::GetDebugPolicyProviderName() const {
   return std::string("InstallVerifier");
 }
 
-bool InstallVerifier::MustRemainDisabled(const Extension* extension,
-                                         disable_reason::DisableReason* reason,
-                                         std::u16string* error) const {
+bool InstallVerifier::MustRemainDisabled(
+    const Extension* extension,
+    disable_reason::DisableReason* reason) const {
   CHECK(extension);
   if (!CanUseExtensionApis(*extension))
     return false;
@@ -265,8 +265,11 @@ bool InstallVerifier::MustRemainDisabled(const Extension* extension,
     return false;
   if (extension->location() == mojom::ManifestLocation::kComponent)
     return false;
-  if (AllowedByEnterprisePolicy(extension->id()))
+  if (AllowedByEnterprisePolicy(extension->id()) &&
+      !ExtensionManagementFactory::GetForBrowserContext(context_)
+           ->IsForceInstalledInLowTrustEnvironment(*extension)) {
     return false;
+  }
 
   bool verified = true;
   if (base::Contains(InstallSigner::GetForcedNotFromWebstore(),
@@ -303,12 +306,9 @@ bool InstallVerifier::MustRemainDisabled(const Extension* extension,
                   << "might want to use a ScopedInstallVerifierBypassForTest "
                   << "instance to prevent this.";
 
-    if (reason)
+    if (reason) {
       *reason = disable_reason::DISABLE_NOT_VERIFIED;
-    if (error)
-      *error = l10n_util::GetStringFUTF16(
-          IDS_EXTENSIONS_ADDED_WITHOUT_KNOWLEDGE,
-          l10n_util::GetStringUTF16(IDS_EXTENSION_WEB_STORE_TITLE));
+    }
   }
   return !verified;
 }
@@ -356,7 +356,7 @@ void InstallVerifier::OnVerificationComplete(bool success, OperationType type) {
              iter != disabled_extensions.end(); ++iter) {
           int disable_reasons = prefs_->GetDisableReasons((*iter)->id());
           if (disable_reasons & disable_reason::DISABLE_NOT_VERIFIED &&
-              !MustRemainDisabled(iter->get(), nullptr, nullptr)) {
+              !MustRemainDisabled(iter->get(), nullptr)) {
             prefs_->RemoveDisableReason((*iter)->id(),
                                         disable_reason::DISABLE_NOT_VERIFIED);
           }

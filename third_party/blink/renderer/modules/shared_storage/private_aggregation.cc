@@ -76,7 +76,7 @@ void PrivateAggregation::contributeToHistogram(
 
   EnsureGeneralUseCountersAreRecorded();
 
-  if (!global_scope_->private_aggregation_permissions_policy_allowed()) {
+  if (!global_scope_->permissions_policy_state()->private_aggregation_allowed) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       kPermissionsPolicyErrorMessage);
     return;
@@ -162,7 +162,7 @@ void PrivateAggregation::enableDebugMode(
   EnsureGeneralUseCountersAreRecorded();
   EnsureEnableDebugModeUseCounterIsRecorded();
 
-  if (!global_scope_->private_aggregation_permissions_policy_allowed()) {
+  if (!global_scope_->permissions_policy_state()->private_aggregation_allowed) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       kPermissionsPolicyErrorMessage);
     return;

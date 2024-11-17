@@ -49,9 +49,6 @@ public class DialogOverlayImpl
     // Has close() been run yet?
     private boolean mClosed;
 
-    // Temporary, so we don't need to keep allocating arrays.
-    private final int[] mCompositorOffset = new int[2];
-
     // The last rect passed to scheduleLayout().
     private Rect mLastRect;
 
@@ -398,10 +395,10 @@ public class DialogOverlayImpl
         Surface lookupSurfaceForTesting(int surfaceId);
 
         /**
-         * Send a synchronous OnDestroyed message to the client.
+         * Send a synchronous OnDestroyed message to the client. Closes the message pipe.
+         *
          * @param messagePipe Mojo message pipe ID.
          * @param version Mojo interface version.
-         * @return none, but the message pipe is closed.
          */
         void notifyDestroyedSynchronously(long messagePipeHandle);
     }

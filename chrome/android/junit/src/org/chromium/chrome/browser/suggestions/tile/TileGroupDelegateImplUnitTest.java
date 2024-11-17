@@ -35,12 +35,14 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsNavigationDelegate;
 import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSites;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
@@ -49,6 +51,9 @@ import org.chromium.url.JUnitTestGURLs;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TileGroupDelegateImplUnitTest {
+    private static final GURL NON_SEARCH_URL = JUnitTestGURLs.URL_1;
+    private static final GURL SEARCH_URL = JUnitTestGURLs.URL_2;
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
 
@@ -57,6 +62,7 @@ public class TileGroupDelegateImplUnitTest {
     @Mock private MostVisitedSites mMostVisitedSites;
     @Mock private SuggestionsNavigationDelegate mNavigationDelegate;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private TemplateUrlService mTemplateUrlService;
 
     private Context mContext;
     private TileGroupDelegateImpl mTileGroupDelegateImpl;
@@ -74,10 +80,20 @@ public class TileGroupDelegateImplUnitTest {
         mTileGroupDelegateImpl =
                 new TileGroupDelegateImpl(
                         mContext, mProfile, mNavigationDelegate, mSnackbarManager);
+
+        doReturn(false)
+                .when(mTemplateUrlService)
+                .isSearchResultsPageFromDefaultSearchProvider(any());
+        doReturn(true)
+                .when(mTemplateUrlService)
+                .isSearchResultsPageFromDefaultSearchProvider(SEARCH_URL);
+
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
     }
 
     @After
     public void tearDown() {
+        TemplateUrlServiceFactory.setInstanceForTesting(null);
         mTileGroupDelegateImpl.destroy();
     }
 
@@ -85,7 +101,21 @@ public class TileGroupDelegateImplUnitTest {
     @SmallTest
     @DisableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
     public void testOpenMostVisitedItem_DisableReselect() {
-        GURL url = JUnitTestGURLs.URL_1;
+        GURL url = NON_SEARCH_URL;
+        mTileGroupDelegateImpl.openMostVisitedItem(
+                WindowOpenDisposition.CURRENT_TAB, makeTile("Foo", url, 0));
+        verify(mNavigationDelegate, never()).maybeSelectTabWithUrl(any(GURL.class));
+        verify(mNavigationDelegate)
+                .navigateToSuggestionUrl(
+                        eq(WindowOpenDisposition.CURRENT_TAB), eq(url.getSpec()), eq(false));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
+    public void testOpenMostVisitedItem_EnableReselectSearchUrl() {
+        GURL url = SEARCH_URL;
+        // Search `url` used, doesn't attempt to reselect tab.
         mTileGroupDelegateImpl.openMostVisitedItem(
                 WindowOpenDisposition.CURRENT_TAB, makeTile("Foo", url, 0));
         verify(mNavigationDelegate, never()).maybeSelectTabWithUrl(any(GURL.class));
@@ -98,8 +128,8 @@ public class TileGroupDelegateImplUnitTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
     public void testOpenMostVisitedItem_EnableReselectTriggered() {
-        GURL url = JUnitTestGURLs.URL_1;
-        // Attempt to select tab with `url` but fail.
+        GURL url = NON_SEARCH_URL;
+        // Attempt to reselect tab with `url` but fail.
         doReturn(false).when(mNavigationDelegate).maybeSelectTabWithUrl(any(GURL.class));
         mTileGroupDelegateImpl.openMostVisitedItem(
                 WindowOpenDisposition.CURRENT_TAB, makeTile("Foo", url, 0));
@@ -113,8 +143,8 @@ public class TileGroupDelegateImplUnitTest {
     @SmallTest
     @EnableFeatures({ChromeFeatureList.MOST_VISITED_TILES_RESELECT})
     public void testOpenMostVisitedItem_EnableReselectFallback() {
-        GURL url = JUnitTestGURLs.URL_1;
-        // Attempt to select tab with `url` and succeed.
+        GURL url = NON_SEARCH_URL;
+        // Attempt to reselect tab with `url` and succeed.
         doReturn(true).when(mNavigationDelegate).maybeSelectTabWithUrl(any(GURL.class));
         mTileGroupDelegateImpl.openMostVisitedItem(
                 WindowOpenDisposition.CURRENT_TAB, makeTile("Foo", url, 0));

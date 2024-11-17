@@ -64,6 +64,9 @@ const char kPeopleApiReadOnlyOAuth2Scope[] =
 const char kPeopleApiReadWriteOAuth2Scope[] =
     "https://www.googleapis.com/auth/peopleapi.readwrite";
 
+// OAuth2 scope for read-write access to contacts.
+const char kContactsOAuth2Scope[] = "https://www.googleapis.com/auth/contacts";
+
 // OAuth2 scope for access to the people API person's locale preferences
 // (read-only).
 const char kProfileLanguageReadOnlyOAuth2Scope[] =
@@ -211,6 +214,10 @@ const char kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope[] =
     "https://www.googleapis.com/auth/classroom.student-submissions.me.readonly";
 const char kClassroomReadOnlyRostersOAuth2Scope[] =
     "https://www.googleapis.com/auth/classroom.rosters.readonly";
+const char kClassroomProfileEmailOauth2Scope[] =
+    "https://www.googleapis.com/auth/classroom.profile.emails";
+const char kClassroomProfilePhotoUrlScope[] =
+    "https://www.googleapis.com/auth/classroom.profile.photos";
 
 // OAuth2 scopes for Optimization Guide.
 const char kOptimizationGuideServiceGetHintsOAuth2Scope[] =
@@ -220,6 +227,9 @@ const char kOptimizationGuideServiceModelExecutionOAuth2Scope[] =
 
 // OAuth2 scopes for Lens.
 const char kLensOAuth2Scope[] = "https://www.googleapis.com/auth/lens";
+
+// OAuth2 scope for DevTools GenAI features.
+const char kAidaOAuth2Scope[] = "https://www.googleapis.com/auth/aida";
 
 // Used to build ClientOAuth requests.  These are the names of keys used when
 // building base::DictionaryValue that represent the json data that makes up

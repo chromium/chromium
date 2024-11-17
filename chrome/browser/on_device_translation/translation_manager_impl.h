@@ -5,14 +5,22 @@
 #ifndef CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATION_MANAGER_IMPL_H_
 #define CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATION_MANAGER_IMPL_H_
 
+#include "base/gtest_prod_util.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom.h"
+#include "url/origin.h"
+
+namespace on_device_translation {
+
+class OnDeviceTranslationServiceController;
 
 // The browser-side implementation of `blink::mojom::TranslationManager`, it
 // should be destroyed together with the associated RFH or when the RFH is used
@@ -31,6 +39,7 @@ class TranslationManagerImpl
       mojo::PendingReceiver<blink::mojom::TranslationManager> receiver);
 
  private:
+  friend class TranslationManagerImplTest;
   friend class DocumentUserData<TranslationManagerImpl>;
   DOCUMENT_USER_DATA_KEY_DECL();
 
@@ -40,15 +49,25 @@ class TranslationManagerImpl
   void CanCreateTranslator(const std::string& source_lang,
                            const std::string& target_lang,
                            CanCreateTranslatorCallback callback) override;
-
   void CreateTranslator(
-      const std::string& source_lang,
-      const std::string& target_lang,
-      mojo::PendingReceiver<blink::mojom::Translator> receiver,
-      CreateTranslatorCallback callback) override;
+      mojo::PendingRemote<
+          blink::mojom::TranslationManagerCreateTranslatorClient> client,
+      blink::mojom::TranslatorCreateOptionsPtr options) override;
 
-  base::WeakPtr<content::BrowserContext> browser_context_;
+  static bool PassAcceptLanguagesCheck(const std::string& accept_languages_str,
+                                       const std::string& source_lang,
+                                       const std::string& target_lang);
+
+  OnDeviceTranslationServiceController& GetServiceController();
+
+  const base::WeakPtr<content::BrowserContext> browser_context_;
+  const url::Origin origin_;
+  scoped_refptr<OnDeviceTranslationServiceController> service_controller_;
+  mojo::UniqueReceiverSet<blink::mojom::Translator> translators_;
   mojo::Receiver<blink::mojom::TranslationManager> receiver_{this};
+  base::WeakPtrFactory<TranslationManagerImpl> weak_ptr_factory_{this};
 };
+
+}  // namespace on_device_translation
 
 #endif  // CHROME_BROWSER_ON_DEVICE_TRANSLATION_TRANSLATION_MANAGER_IMPL_H_

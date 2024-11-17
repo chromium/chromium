@@ -5,14 +5,21 @@
 #ifndef MEDIA_GPU_VAAPI_TEST_FAKE_LIBVA_DRIVER_SCOPED_BO_MAPPING_FACTORY_H_
 #define MEDIA_GPU_VAAPI_TEST_FAKE_LIBVA_DRIVER_SCOPED_BO_MAPPING_FACTORY_H_
 
+#include "build/build_config.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "media/gpu/vaapi/test/fake_libva_driver/fake_gbm.h"
+#else
 #include <gbm.h>
+
+#include "ui/gfx/linux/scoped_gbm_device.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #include <memory>
 
 #include "base/files/scoped_file.h"
 #include "base/memory/raw_ref.h"
 #include "base/synchronization/lock.h"
-#include "ui/gfx/linux/scoped_gbm_device.h"
 
 namespace media::internal {
 

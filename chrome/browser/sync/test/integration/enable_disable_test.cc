@@ -25,6 +25,12 @@
 #include "components/sync/test/entity_builder_factory.h"
 #include "content/public/test/browser_test.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+// To control Floating SSO (= sync of cookies) on ChromeOS.
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace {
 
 using syncer::DataType;
@@ -96,6 +102,17 @@ class EnableDisableSingleClientTest : public SyncTest {
  protected:
   void SetupTest(bool all_types_enabled) {
     ASSERT_TRUE(SetupClients());
+
+#if BUILDFLAG(IS_CHROMEOS)
+    // This unblocks sync of cookies on ChromeOS, see dedicated controller
+    // CookieSyncDataTypeController. The tests in this file are not prepared
+    // to handle selectable datatypes which are disabled by default via their
+    // DataTypeController, so we have to enable the pref for them to pass.
+    // TODO(crbug.com/378091718): think if we can also make the tests pass with
+    // this preference disabled.
+    GetProfile(0)->GetPrefs()->SetBoolean(::prefs::kFloatingSsoEnabled, true);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
     ASSERT_TRUE(GetClient(0)->SetupSync(base::BindLambdaForTesting(
         [all_types_enabled](syncer::SyncUserSettings* user_settings) {
           user_settings->SetSelectedTypes(all_types_enabled, {});

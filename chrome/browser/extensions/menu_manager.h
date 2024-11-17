@@ -443,7 +443,7 @@ class MenuManager : public ProfileObserver,
   // This lets us make lookup by id fast. It maps id to MenuItem* for
   // all items the menu manager knows about, including all children of top-level
   // items.
-  std::map<MenuItem::Id, MenuItem*> items_by_id_;
+  std::map<MenuItem::Id, raw_ptr<MenuItem, CtnExperimental>> items_by_id_;
 
   // The scheduled tasks to write the menu items to storage.
   std::map<MenuItem::ExtensionKey, base::OneShotTimer> write_tasks_;

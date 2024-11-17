@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
+import("//components/services/on_device_translation/buildflags/features.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
@@ -43,6 +44,7 @@ source_set("utility") {
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//components/optimization_guide/core:features",
+    "//components/services/on_device_translation/buildflags",
     "//components/services/storage",
     "//components/services/storage/public/mojom",
     "//content:export",
@@ -78,6 +80,10 @@ source_set("utility") {
     "//third_party/blink/public:blink_headers",
     "//url",
   ]
+
+  if (is_linux) {
+    deps += [ "//services/video_effects:sandbox_hook" ]
+  }
 
   if (enable_video_effects) {
     deps += [ "//services/video_effects:service" ]
@@ -148,6 +154,10 @@ source_set("utility") {
 
   if (enable_accessibility_service) {
     deps += [ "//services/accessibility:lib" ]
+  }
+
+  if (enable_on_device_translation) {
+    deps += [ "//components/services/on_device_translation:on_device_translation_service" ]
   }
 
   if (enable_vr && !is_android) {

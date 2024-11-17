@@ -30,7 +30,7 @@ class StubSSLKeyConverter : public SSLKeyConverter {
     if (!supports_unexportable_) {
       // If unexportable keys are not supported, then there shouldn't be an
       // unexportable key instance to convert.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     // In this case, the underlying unexportable key is effectively a stub

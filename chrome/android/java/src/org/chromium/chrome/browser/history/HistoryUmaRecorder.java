@@ -88,7 +88,7 @@ public class HistoryUmaRecorder {
      * Record the action that the selected links are being opened to new tabs.
      *
      * @param isSearching Whether the UI is in search mode.
-     * @param incognito Whether the action is triggered for incognito tab.
+     * @param isIncognito Whether the action is triggered for incognito tab.
      */
     public void recordOpenInTabs(boolean isSearching, boolean isIncognito) {
         recordActionWithCorrectSearchPrefix(
@@ -112,7 +112,7 @@ public class HistoryUmaRecorder {
     /**
      * Record the action/histogram for clear browsing data.
      *
-     * @param incognito Whether the action is triggered for incognito tab.
+     * @param isIncognito Whether the action is triggered for incognito tab.
      */
     public void recordClearBrowsingData(boolean isIncognito) {
         recordUserAction("ClearBrowsingData");

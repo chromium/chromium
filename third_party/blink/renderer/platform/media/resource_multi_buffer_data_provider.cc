@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/media/cache_util.h"
 #include "third_party/blink/renderer/platform/media/resource_fetch_context.h"
 #include "third_party/blink/renderer/platform/media/url_index.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
 
@@ -63,7 +64,7 @@ ResourceMultiBufferDataProvider::ResourceMultiBufferDataProvider(
       url_data_(url_data),
       retries_(0),
       cors_mode_(url_data->cors_mode()),
-      origin_(url_data->url().DeprecatedGetOriginAsURL()),
+      original_url_(url_data->url()),
       is_client_audio_element_(is_client_audio_element),
       task_runner_(std::move(task_runner)) {
   DCHECK(url_data_) << " pos = " << pos;
@@ -177,7 +178,7 @@ bool ResourceMultiBufferDataProvider::WillFollowRedirect(
   // This test is vital for security!
   if (cors_mode_ == UrlData::CORS_UNSPECIFIED) {
     // We allow the redirect if the origin is the same.
-    if (origin_ != redirects_to_.DeprecatedGetOriginAsURL()) {
+    if (!SecurityOrigin::AreSameOrigin(original_url_, redirects_to_)) {
       // We also allow the redirect if we don't have any data in the
       // cache, as that means that no dangerous data mixing can occur.
       if (url_data_->multibuffer()->map().empty() && fifo_.empty())
@@ -225,10 +226,10 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
 
   scoped_refptr<UrlData> destination_url_data(url_data_.get());
 
-  if (!redirects_to_.is_empty()) {
+  if (!redirects_to_.IsEmpty()) {
     destination_url_data = url_data_->url_index()->GetByUrl(
         redirects_to_, cors_mode_, url_data_->cache_lookup_mode());
-    redirects_to_ = GURL();
+    redirects_to_ = KURL();
   }
 
   base::Time last_modified;
@@ -260,7 +261,7 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   // received a response from HTTP/HTTPS protocol or the request was
   // successful (in particular range request). So we only verify the partial
   // response for HTTP and HTTPS protocol.
-  if (destination_url_data->url().SchemeIsHTTPOrHTTPS()) {
+  if (destination_url_data->url().ProtocolIsInHTTPFamily()) {
     bool partial_response = (response.HttpStatusCode() == kHttpPartialContent);
     bool ok_response = (response.HttpStatusCode() == kHttpOK);
 
@@ -360,14 +361,14 @@ void ResourceMultiBufferDataProvider::DidReceiveResponse(
   // ResponseUrl(), but ResourceMultiBufferDataProvider disallows mixing
   // constructed responses (new Response()) and native server responses, even if
   // they have the same response URL.
-  GURL response_url;
+  KURL response_url;
   if (!response.WasFetchedViaServiceWorker() ||
       response.HasUrlListViaServiceWorker()) {
     response_url = response.ResponseUrl();
   }
 
   // This test is vital for security!
-  if (!url_data_->ValidateDataOrigin(response_url.DeprecatedGetOriginAsURL())) {
+  if (!url_data_->ValidateDataOrigin(response_url)) {
     active_loader_.reset();
     url_data_->Fail();
     return;  // "this" may be deleted now.
@@ -492,8 +493,7 @@ bool ResourceMultiBufferDataProvider::ParseContentRange(
     int64_t* last_byte_position,
     int64_t* instance_size) {
   const char kUpThroughBytesUnit[] = "bytes ";
-  if (!base::StartsWith(content_range_str, kUpThroughBytesUnit,
-                        base::CompareCase::SENSITIVE)) {
+  if (!content_range_str.starts_with(kUpThroughBytesUnit)) {
     return false;
   }
   std::string range_spec =

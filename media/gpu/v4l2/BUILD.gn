@@ -242,11 +242,14 @@ if (current_cpu == "arm" || current_cpu == "arm64") {
     deps = [
       "//base:base",
       "//base/test:test_support",
-      "//base/test:test_trace_processor",
       "//testing/gtest",
       "//testing/perf",
       "//third_party/libyuv",
       "//ui/gfx/geometry",
     ]
+
+    if (enable_base_tracing) {
+      deps += [ "//base/test:test_trace_processor" ]
+    }
   }
 }

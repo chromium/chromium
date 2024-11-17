@@ -40,7 +40,6 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                             screenProvider:(ScreenProvider*)screenProvider {
-  DCHECK(!browser->GetBrowserState()->IsOffTheRecord());
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _screenProvider = screenProvider;
@@ -146,8 +145,7 @@
                                    browser:self.browser
                                   delegate:self];
     case kStepsCompleted:
-      NOTREACHED_IN_MIGRATION() << "Reaches kStepsCompleted unexpectedly.";
-      break;
+      NOTREACHED() << "Reaches kStepsCompleted unexpectedly.";
   }
   return nil;
 }

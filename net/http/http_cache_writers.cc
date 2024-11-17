@@ -364,9 +364,7 @@ int HttpCache::Writers::DoLoop(int result) {
         rv = DoCacheWriteDataComplete(rv);
         break;
       case State::UNSET:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_FAILED;
-        break;
+        NOTREACHED() << "bad state";
       case State::NONE:
         // Do Nothing.
         break;

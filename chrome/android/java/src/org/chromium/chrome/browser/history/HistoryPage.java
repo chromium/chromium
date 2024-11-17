@@ -62,7 +62,7 @@ public class HistoryPage extends BasicNativePage {
                         /* shouldShowClearData= */ true,
                         /* launchedForApp= */ false,
                         /* showAppFilter= */ true);
-        mTitle = host.getContext().getResources().getString(R.string.menu_history);
+        mTitle = host.getContext().getString(R.string.menu_history);
 
         initWithView(mHistoryManager.getView());
     }

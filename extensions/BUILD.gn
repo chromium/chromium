@@ -2,6 +2,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//tools/grit/grit_rule.gni")
@@ -9,6 +10,9 @@ import("//tools/grit/repack.gni")
 import("//ui/base/ui_features.gni")
 
 assert(enable_extensions_core)
+
+# If enable_extensions is true then enable_guest_view must also be true.
+assert(!enable_extensions || enable_guest_view)
 
 if (is_component_build) {
   component("extensions") {
@@ -78,6 +82,8 @@ static_library("test_support") {
   sources = [
     "browser/api/declarative/test_rules_registry.cc",
     "browser/api/declarative/test_rules_registry.h",
+    "browser/api/storage/settings_test_util.cc",
+    "browser/api/storage/settings_test_util.h",
     "browser/api_test_utils.cc",
     "browser/api_test_utils.h",
     "browser/api_unittest.cc",
@@ -198,8 +204,6 @@ static_library("test_support") {
   # not be included and place them under a more appropriate if-block.
   if (enable_extensions) {
     sources += [
-      "browser/api/storage/settings_test_util.cc",
-      "browser/api/storage/settings_test_util.h",
       "browser/test_runtime_api_delegate.cc",
       "browser/test_runtime_api_delegate.h",
     ]
@@ -208,12 +212,8 @@ static_library("test_support") {
   # Generally, //extensions should not depend on //chromeos. However, a number
   # of the APIs and the extensions shell already do. We should try to avoid
   # expanding these dependencies.
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/login/login_state" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros:test_support" ]
   }
 
   public_deps = [ "//content/public/browser" ]
@@ -419,7 +419,7 @@ if (enable_extensions) {
       "//v8",
     ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       deps += [ "//components/user_manager:test_support" ]
     }
   }

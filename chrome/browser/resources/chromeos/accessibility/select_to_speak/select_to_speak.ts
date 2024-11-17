@@ -178,7 +178,8 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
           EventType.MOUSE_RELEASED, evt => this.onAutomationHitTest_(evt),
           true);
       // Chrome PDF Viewer with PDF OCR sends a layout complete event when
-      // finishing extracting text from inaccessible PDF pages.
+      // finishing extracting text from inaccessible PDF pages. The same for
+      // Backlight (AKA Gallery on ChromeOS).
       desktop.addEventListener(
           EventType.LAYOUT_COMPLETE, evt => this.onLayoutComplete_(evt), true);
 
@@ -271,7 +272,8 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
       return;
     }
 
-    // Check if it's Chrome PDF Viewer with PDF OCR in the full-page view.
+    // Check if it's a PDF being viewed in Backlight (AKA the Gallery App on
+    // ChromeOS), or the Chrome PDF Viewer with PDF OCR in the full-page view.
     const pdfRoot: AutomationNode|null = root.find({role: RoleType.PDF_ROOT});
     if (!pdfRoot) {
       return;
@@ -297,18 +299,22 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
    * @param evt The automation event from the hit test.
    */
   private onAutomationHitTest_(evt: AutomationEvent): void {
-    // Walk up to the nearest window, web area, toolbar, or dialog that the
-    // hit node is contained inside. Only speak objects within that
-    // container. In the future we might include other container-like
-    // roles here.
+    // Walk up to the nearest window, web area, graphics document, toolbar, or
+    // dialog that the hit node is contained inside. Only speak objects within
+    // that container. In the future we might include other root-like roles
+    // here. (Consider harmonizing with the `ui::IsRootLike` method.)
     var root = evt.target;
 
-    // In Chrome PDF Viewer, PDF content for a large PDF might be still being
-    // loaded into a PDF accessibility tree when the user selects text on a PDF
-    // page. In this case, the PDF root has only one child node, which is the
-    // status node that contains a loading status message. Read this status
-    // message if the user tries selecting text during this loading phase.
-    if (root.role === RoleType.EMBEDDED_OBJECT && root.children.length === 1 &&
+    // In Chrome PDF Viewer, PDF content for a large PDF might still be loading
+    // into a PDF accessibility tree when the user selects text on a PDF page.
+    // In this case, the PDF root has only one child node, which is the status
+    // node that contains a loading status message. Read this status message if
+    // the user tries selecting text during this loading phase. The same should
+    // happen in the Gallery App (AKA Backlight). Backlight uses a different
+    // role for its PDF container: `ax::mojom::Role::kGraphicsDocument`.
+    if ((root.role === RoleType.EMBEDDED_OBJECT ||
+         root.role === RoleType.GRAPHICS_DOCUMENT) &&
+        root.children.length === 1 &&
         root.firstChild!.role === RoleType.PDF_ROOT &&
         root.firstChild!.children.length === 1 &&
         this.readPdfStatusNodeIfStillLoading_(root.firstChild!)) {
@@ -320,7 +326,8 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
            root.role !== RoleType.ROOT_WEB_AREA &&
            root.role !== RoleType.DESKTOP && root.role !== RoleType.DIALOG &&
            root.role !== RoleType.ALERT_DIALOG &&
-           root.role !== RoleType.TOOLBAR) {
+           root.role !== RoleType.TOOLBAR &&
+           root.role !== RoleType.GRAPHICS_DOCUMENT) {
       root = root.parent;
     }
 
@@ -433,7 +440,8 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
         NodeUtils.getDeepEquivalentForSelection(endObject!, endOffset, false);
 
     // TODO(katie): We go into these blocks but they feel redundant. Can
-    // there be another way to do this?
+    // there be another way to do this? (E.g. by using the `SelIsBackward` field
+    // in `AXTreeData`?)
     let firstPosition;
     let lastPosition;
     if (startPosition.node === endPosition.node) {
@@ -468,7 +476,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
    * @param firstPosition The first position at which to start reading.
    * @param lastPosition The last position at which to stop reading.
    * @param method the method used to
-   *     activate the speech, null if not actived by user.
+   *     activate the speech, null if not activated by user.
    * @param focusedNode The node with user focus.
    */
   private readNodesBetweenPositions_(
@@ -1434,7 +1442,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
   }
 
   /**
-   * Uses the 'word' speech event to determine which node is currently beings
+   * Uses the 'word' speech event to determine which node is currently being
    * spoken, and prepares for highlight if enabled.
    * @param event The event to use for updates.
    * @param nodeGroup The node group for this
@@ -1445,7 +1453,7 @@ export class SelectToSpeak implements SelectToSpeakUiListener {
     if (event.charIndex === undefined) {
       return;
     }
-    // Not all speech engines include length in the ttsEvent object. .
+    // Not all speech engines include length in the ttsEvent object.
     const hasLength = event.length !== undefined && event.length >= 0;
     const length = event.length || 0;
     // Only update the |this.currentCharIndex_| if event has a higher charIndex.

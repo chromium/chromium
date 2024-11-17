@@ -26,8 +26,11 @@
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 #include <iterator>
+#include <map>
 #include <memory>
+#include <unordered_map>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -652,6 +655,52 @@ TEST(HashMapTest, IsValidKey) {
   // Test IsValidKey() on a type that is NOT comparable to empty or deleted.
   EXPECT_TRUE((HashMap<AtomicString, int>::IsValidKey(AtomicString("foo"))));
   EXPECT_FALSE((HashMap<AtomicString, int>::IsValidKey(AtomicString())));
+}
+
+TEST(HashMapTest, EraseIf) {
+  HashMap<int, int> map{{1, 1}, {2, 3}, {5, 8}, {13, 21}, {34, 56}};
+  map.erase(2);
+  int num_buckets_seen = 0;
+  map.erase_if([&num_buckets_seen](const WTF::KeyValuePair<int, int>& bucket) {
+    auto [key, value] = bucket;
+    ++num_buckets_seen;
+    EXPECT_TRUE(key == 1 || key == 5 || key == 13 || key == 34)
+        << "Saw unexpected bucket " << key;
+    return key == 5 || value == 56;
+  });
+  EXPECT_EQ(num_buckets_seen, 4) << "Should see all buckets";
+  EXPECT_EQ(map.size(), 2u);
+
+  EXPECT_TRUE(map.Contains(1));
+  EXPECT_FALSE(map.Contains(2));
+  EXPECT_FALSE(map.Contains(5));
+  EXPECT_TRUE(map.Contains(13));
+  EXPECT_FALSE(map.Contains(34));
+}
+
+TEST(HashMapTest, ConstructFromOtherContainerIterators) {
+  auto convert_and_verify = [](const auto& container, const char* label) {
+    SCOPED_TRACE(label);
+    HashMap<int, bool> hash_map(std::begin(container), std::end(container));
+    EXPECT_EQ(hash_map.size(), 3u);
+    EXPECT_EQ(hash_map.at(3), true);
+    EXPECT_EQ(hash_map.at(7), false);
+    EXPECT_EQ(hash_map.at(11), false);
+  };
+
+  std::map<int, bool> std_map = {{3, true}, {7, false}, {11, false}};
+  convert_and_verify(std_map, "std::map");
+
+  std::unordered_map<int, bool> unordered_map = {
+      {3, true}, {7, false}, {11, false}};
+  convert_and_verify(unordered_map, "std::unordered_map");
+
+  base::flat_map<int, bool> flat_map = {{3, true}, {7, false}, {11, false}};
+  convert_and_verify(flat_map, "base::flat_map");
+
+  constexpr std::pair<int, bool> kArray[] = {
+      {3, true}, {7, false}, {11, false}};
+  convert_and_verify(base::span(kArray), "span");
 }
 
 static_assert(!IsTraceable<HashMap<int, int>>::value,

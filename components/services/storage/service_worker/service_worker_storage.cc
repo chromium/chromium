@@ -138,7 +138,7 @@ ServiceWorkerStorage::DidDeleteRegistrationParams::DidDeleteRegistrationParams(
       callback(std::move(callback)) {}
 
 ServiceWorkerStorage::DidDeleteRegistrationParams::
-    ~DidDeleteRegistrationParams() {}
+    ~DidDeleteRegistrationParams() = default;
 
 ServiceWorkerStorage::~ServiceWorkerStorage() {
   ClearSessionOnlyOrigins();

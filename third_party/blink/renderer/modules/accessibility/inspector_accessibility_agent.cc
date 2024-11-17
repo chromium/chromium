@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
-#include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
@@ -295,9 +294,9 @@ void FillWidgetProperties(AXObject& ax_object,
     properties.emplace_back(CreateProperty(
         AXPropertyNameEnum::Valuetext,
         CreateValue(
-            ax_object
-                .GetAOMPropertyOrARIAAttribute(AOMStringProperty::kValueText)
-                .GetString())));
+            node_data
+                .GetStringAttribute(ax::mojom::blink::StringAttribute::kValue)
+                .c_str())));
   }
 }
 
@@ -410,7 +409,7 @@ std::unique_ptr<AXProperty> CreateRelatedNodeListProperty(
     const QualifiedName& attr,
     AXObject& ax_object) {
   std::unique_ptr<AXValue> node_list_value = CreateRelatedNodeListValue(nodes);
-  const AtomicString& attr_value = ax_object.GetAttribute(attr);
+  const AtomicString& attr_value = ax_object.AriaAttribute(attr);
   node_list_value->setValue(protocol::StringValue::create(attr_value));
   return CreateProperty(key, std::move(node_list_value));
 }
@@ -483,6 +482,17 @@ void FillSparseAttributes(AXObject& ax_object,
         CreateProperty(AXPropertyNameEnum::Roledescription,
                        CreateValue(WTF::String(role_description.c_str()),
                                    AXValueTypeEnum::String)));
+  }
+
+  if (node_data.HasIntListAttribute(
+          ax::mojom::blink::IntListAttribute::kActionsIds)) {
+    const auto ax_ids = node_data.GetIntListAttribute(
+        ax::mojom::blink::IntListAttribute::kActionsIds);
+    AXObject::AXObjectVector ax_objects;
+    GetObjectsFromAXIDs(ax_object.AXObjectCache(), ax_ids, &ax_objects);
+    properties.emplace_back(
+        CreateRelatedNodeListProperty(AXPropertyNameEnum::Actions, ax_objects,
+                                      html_names::kAriaActionsAttr, ax_object));
   }
 
   if (node_data.HasIntAttribute(

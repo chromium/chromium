@@ -8,6 +8,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "content/browser/preloading/preload_pipeline_info.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/preloading_config.h"
@@ -195,32 +196,27 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
         return PrerenderAttributes(
             url, trigger_type, embedder_histogram_suffix,
             blink::mojom::SpeculationTargetHint::kNoHint, Referrer(), eagerness,
-            /*no_vary_search_expected=*/std::nullopt,
-            rfh->GetLastCommittedOrigin(), rfh->GetProcess()->GetID(),
-            contents()->GetWeakPtr(), rfh->GetFrameToken(),
-            rfh->GetFrameTreeNodeId(), rfh->GetPageUkmSourceId(),
-            ui::PAGE_TRANSITION_LINK,
+            /*no_vary_search_expected=*/std::nullopt, rfh,
+            contents()->GetWeakPtr(), ui::PAGE_TRANSITION_LINK,
             /*should_warm_up_compositor=*/false,
+            /*should_prepare_paint_tree=*/false,
             /*url_match_predicate=*/{},
-            /*prerender_navigation_handle_callback=*/{});
+            /*prerender_navigation_handle_callback=*/{},
+            base::MakeRefCounted<PreloadPipelineInfo>());
       case PreloadingTriggerType::kEmbedder:
         return PrerenderAttributes(
             url, trigger_type, embedder_histogram_suffix,
             /*target_hint=*/std::nullopt, Referrer(),
             /*eagerness=*/std::nullopt,
             /*no_vary_search_expected=*/std::nullopt,
-            /*initiator_origin=*/std::nullopt,
-            /*initiator_process_id=*/ChildProcessHost::kInvalidUniqueID,
-            contents()->GetWeakPtr(),
-            /*initiator_frame_token=*/std::nullopt,
-            /*initiator_frame_tree_node_id=*/
-            FrameTreeNodeId(),
-            /*initiator_ukm_id=*/ukm::kInvalidSourceId,
+            /*initiator_render_frame_host=*/nullptr, contents()->GetWeakPtr(),
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
             /*should_warm_up_compositor=*/false,
+            /*should_prepare_paint_tree=*/false,
             /*url_match_predicate=*/{},
-            /*prerender_navigation_handle_callback=*/{});
+            /*prerender_navigation_handle_callback=*/{},
+            base::MakeRefCounted<PreloadPipelineInfo>());
     }
   }
 

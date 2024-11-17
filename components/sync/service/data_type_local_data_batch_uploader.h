@@ -6,10 +6,9 @@
 #define COMPONENTS_SYNC_SERVICE_DATA_TYPE_LOCAL_DATA_BATCH_UPLOADER_H_
 
 #include "base/functional/callback_forward.h"
+#include "components/sync/service/local_data_description.h"
 
 namespace syncer {
-
-struct LocalDataDescription;
 
 // Data types possessing the distinction between "local" and "account" storages
 // can implement this interface to allow moving data from the former to the
@@ -25,6 +24,12 @@ class DataTypeLocalDataBatchUploader {
   // Triggers the process of moving the data. The process is in fact async,
   // but no notion of completion is currently exposed here.
   virtual void TriggerLocalDataMigration() = 0;
+
+  // Triggers the process of moving the data restricted to the data that matches
+  // the `syncer::LocalDataItemModel::DataId` in `items`. The process is in fact
+  // async, but no notion of completion is currently exposed here.
+  virtual void TriggerLocalDataMigration(
+      std::vector<syncer::LocalDataItemModel::DataId> items);
 };
 
 }  // namespace syncer

@@ -31,24 +31,15 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-
 def run(command, error_message=None, exit_on_error=True):
     """
     Helper function to run a shell command.
     """
     try:
-        output = subprocess.run(command,
-                                shell=True,
-                                capture_output=True,
-                                check=True,
-                                text=True)
-        print(output.stdout)
-        print(output.stderr)
+        output = subprocess.run(command, shell=True, check=True, text=True)
 
     except subprocess.CalledProcessError as e:
         print(error_message if error_message else "Failed to run command.")
-        print(e.stdout)
-        print(e.stderr)
         if exit_on_error:
             raise e
         return False
@@ -114,8 +105,16 @@ run("git reset --hard origin/main")
 # patches to avoid recompiling the entire project for each patch.
 run("gclient sync -fD", exit_on_error=False)
 run("gn gen out/linux", "Failed to generate out/linux.")
-with open("out/linux/args.gn", "w") as f:
-    f.write("use_remoteexec = true\n")
+
+try:
+    run("gcertstatus --check_remaining=3h --check_loas2=false")
+    print("Remote exec available. Enabling.")
+    with open("out/linux/args.gn", "w") as f:
+        f.write("use_remoteexec = true\n")
+except:
+    print("Remote exec not available. Disabling.")
+    with open("out/linux/args.gn", "w") as f:
+        f.write("use_remoteexec = false\n")
 
 # Produce a full rewrite, and store individual patches below ~/scratch/patch_*
 run("./tools/clang/spanify/rewrite-multiple-platforms.sh", exit_on_error=False)
@@ -156,11 +155,6 @@ for patch in patches:
     if patch_limit == 0:
         break
     patch_limit -= 1
-
-    # At some point, we won't have enough time to evaluate all patches. Check
-    # that we have enough time to evaluate this patch, or quit.
-    run("gcertstatus --check_remaining=1h --check_loas2=false",
-        "You need to run gcert to extend your remoteexec access.")
 
     # Extract the patch index from the patch name string: patch_{index}.txt
     index = int(patch.split("_")[1].split(".")[0])

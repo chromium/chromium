@@ -117,8 +117,7 @@ const char* RenderingContextDescriptionCodec::GetRenderingAPIName() const {
     case CanvasRenderingContext::CanvasRenderingAPI::kBitmaprenderer:
       return kRenderingAPIName_ImageBitmap;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -172,7 +171,7 @@ void CanvasPerformanceMonitor::WillProcessTask(TimeTicks start_time) {
   // CanvasRenderingContext::DidDraw outside the scope of a task runner.
   // To resolve the problem, try calling this in the test's tear-down:
   // CanvasRenderingContext::GetCanvasPerformanceMonitor().ResetForTesting()
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CanvasPerformanceMonitor::RecordMetrics(TimeTicks start_time,

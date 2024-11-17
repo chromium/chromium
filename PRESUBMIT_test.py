@@ -365,6 +365,15 @@ class CheckEachPerfettoTestDataFileHasDepsEntry(unittest.TestCase):
 
 class CheckAddedDepsHaveTestApprovalsTest(unittest.TestCase):
 
+    def setUp(self):
+        self.input_api = input_api = MockInputApi()
+        input_api.environ = {}
+        input_api.owners_client = self.FakeOwnersClient()
+        input_api.gerrit = self.fakeGerrit()
+        input_api.change.issue = 123
+        self.mockOwnersAndReviewers("owner", set(["reviewer"]))
+        self.mockListSubmodules([])
+
     def calculate(self, old_include_rules, old_specific_include_rules,
                   new_include_rules, new_specific_include_rules):
         return PRESUBMIT._CalculateAddedDeps(
@@ -461,15 +470,6 @@ class CheckAddedDepsHaveTestApprovalsTest(unittest.TestCase):
         def IsOwnersOverrideApproved(self, issue):
             return False
 
-    def setUp(self):
-        self.input_api = input_api = MockInputApi()
-        input_api.environ = {}
-        input_api.owners_client = self.FakeOwnersClient()
-        input_api.gerrit = self.fakeGerrit()
-        input_api.change.issue = 123
-        self.mockOwnersAndReviewers("owner", set(["reviewer"]))
-        self.mockListSubmodules([])
-
     def mockOwnersAndReviewers(self, owner, reviewers):
 
         def mock(*args, **kwargs):
@@ -485,11 +485,9 @@ class CheckAddedDepsHaveTestApprovalsTest(unittest.TestCase):
         self.input_api.ListSubmodules = mock
 
     def testApprovedAdditionalDep(self):
-        old_deps = """include_rules = []""".splitlines()
-        new_deps = """include_rules = ["+v8/123"]""".splitlines()
-        self.input_api.files = [
-            MockAffectedFile("pdf/DEPS", new_deps, old_deps)
-        ]
+        self.input_api.InitFiles([
+            MockAffectedFile('pdf/DEPS', ['include_rules=["+v8/123"]']),
+        ])
 
         # mark the additional dep as approved.
         os_path = self.input_api.os_path
@@ -501,11 +499,9 @@ class CheckAddedDepsHaveTestApprovalsTest(unittest.TestCase):
         self.assertEqual([], results)
 
     def testUnapprovedAdditionalDep(self):
-        old_deps = """include_rules = []""".splitlines()
-        new_deps = """include_rules = ["+v8/123"]""".splitlines()
-        self.input_api.files = [
-            MockAffectedFile('pdf/DEPS', new_deps, old_deps),
-        ]
+        self.input_api.InitFiles([
+            MockAffectedFile('pdf/DEPS', ['include_rules=["+v8/123"]']),
+        ])
 
         # pending.
         os_path = self.input_api.os_path
@@ -792,23 +788,19 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
         if not self.mock_input_api.platform.startswith('linux'):
             return []
 
-        self.mock_input_api.files = [
+        self.mock_input_api.InitFiles([
             MockAffectedFile('new.pydeps', [], action='A'),
-        ]
-
-        self.mock_input_api.CreateMockFileInPath([
-            x.LocalPath()
-            for x in self.mock_input_api.AffectedFiles(include_deletes=True)
         ])
+
         results = self._RunCheck()
         self.assertEqual(1, len(results))
         self.assertIn('PYDEPS_FILES', str(results[0]))
 
     def testPydepNotInSrc(self):
-        self.mock_input_api.files = [
+        self.mock_input_api.InitFiles([
             MockAffectedFile('new.pydeps', [], action='A'),
-        ]
-        self.mock_input_api.CreateMockFileInPath([])
+        ])
+        self.mock_input_api.os_path.exists = lambda x: False
         results = self._RunCheck()
         self.assertEqual(0, len(results))
 
@@ -817,12 +809,8 @@ class PydepsNeedsUpdatingTest(unittest.TestCase):
         if not self.mock_input_api.platform.startswith('linux'):
             return []
 
-        self.mock_input_api.files = [
+        self.mock_input_api.InitFiles([
             MockAffectedFile(PRESUBMIT._ALL_PYDEPS_FILES[0], [], action='D'),
-        ]
-        self.mock_input_api.CreateMockFileInPath([
-            x.LocalPath()
-            for x in self.mock_input_api.AffectedFiles(include_deletes=True)
         ])
         results = self._RunCheck()
         self.assertEqual(1, len(results))
@@ -1582,12 +1570,6 @@ class AndroidBannedImportTest(unittest.TestCase):
             MockAffectedFile('BannedTargetApi.java', [
                 'import android.annotation.TargetApi;',
             ]),
-            MockAffectedFile('BannedUiThreadTestRule.java', [
-                'import androidx.test.rule.UiThreadTestRule;',
-            ]),
-            MockAffectedFile('BannedUiThreadTest.java', [
-                'import androidx.test.annotation.UiThreadTest;',
-            ]),
             MockAffectedFile('BannedActivityTestRule.java', [
                 'import androidx.test.rule.ActivityTestRule;',
             ]),
@@ -1614,16 +1596,8 @@ class AndroidBannedImportTest(unittest.TestCase):
         self.assertTrue(msgs[4][0].message.startswith(
             textwrap.dedent("""\
       Banned imports were used.
-          BannedUiThreadTestRule.java:1:""")))
-        self.assertTrue(msgs[5][0].message.startswith(
-            textwrap.dedent("""\
-      Banned imports were used.
-          BannedUiThreadTest.java:1:""")))
-        self.assertTrue(msgs[6][0].message.startswith(
-            textwrap.dedent("""\
-      Banned imports were used.
           BannedActivityTestRule.java:1:""")))
-        self.assertTrue(msgs[7][0].message.startswith(
+        self.assertTrue(msgs[5][0].message.startswith(
             textwrap.dedent("""\
       Banned imports were used.
           BannedVectorDrawableCompat.java:1:""")))
@@ -3747,13 +3721,7 @@ class StringTest(unittest.TestCase):
 
     def makeInputApi(self, files):
         input_api = MockInputApi()
-        input_api.files = files
-        # Override os_path.exists because the presubmit uses the actual
-        # os.path.exists.
-        input_api.CreateMockFileInPath([
-            x.LocalPath()
-            for x in input_api.AffectedFiles(include_deletes=True)
-        ])
+        input_api.InitFiles(files)
         return input_api
 
     """ CL modified and added messages, but didn't add any screenshots."""
@@ -4931,7 +4899,7 @@ class AssertAshOnlyCodeTest(unittest.TestCase):
         ]
         other_files = [
             MockFile('chrome/browser/BUILD.gn', []),
-            MockFile('chrome/browser/BUILD.gn', ['assert(is_chromeos_ash)']),
+            MockFile('chrome/browser/foo/BUILD.gn', ['assert(is_chromeos_ash)']),
         ]
         input_api = MockInputApi()
         input_api.files = files_in_ash
@@ -4967,7 +4935,13 @@ class AssertAshOnlyCodeTest(unittest.TestCase):
             MockFile('ash/BUILD.gn', ['assert(is_chromeos_ash)']),
             MockFile('chrome/browser/ash/BUILD.gn',
                      ['assert(is_chromeos_ash)']),
-            MockFile('chrome/browser/ash/BUILD.gn',
+            MockFile('chrome/browser/ash/1/BUILD.gn',
+                     ['assert(is_chromeos)']),
+            MockFile('chrome/browser/ash/2/BUILD.gn',
+                     ['assert(is_chromeos_ash)']),
+            MockFile('chrome/browser/ash/3/BUILD.gn',
+                     ['assert(is_chromeos, "test")']),
+            MockFile('chrome/browser/ash/4/BUILD.gn',
                      ['assert(is_chromeos_ash, "test")']),
         ]
         errors = PRESUBMIT.CheckAssertAshOnlyCode(input_api, MockOutputApi())

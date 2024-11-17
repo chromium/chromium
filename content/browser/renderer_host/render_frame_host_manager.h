@@ -15,6 +15,7 @@
 #include <unordered_set>
 
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/functional/function_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
@@ -62,10 +63,10 @@ class RenderWidgetHostViewChildFrame;
 class TestWebContents;
 
 using PageBroadcastMethodCallback =
-    base::RepeatingCallback<void(RenderViewHostImpl*)>;
+    base::FunctionRef<void(RenderViewHostImpl*)>;
 
 using RemoteFramesBroadcastMethodCallback =
-    base::RepeatingCallback<void(RenderFrameProxyHost*)>;
+    base::FunctionRef<void(RenderFrameProxyHost*)>;
 
 // Reasons that `GetFrameHostForNavigation()` might fail.
 enum class GetFrameHostForNavigationFailed {
@@ -98,6 +99,41 @@ enum class DeferSpeculativeRFHAction {
   kMaxValue = kDeferredWithoutRenderProcessWarmUp,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:DeferSpeculativeRFHAction)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Describes cases where calling `GetFrameHostForNavigation()` results in a
+// wasted speculative RenderFrameHost for the navigation (values starting with
+// kWasted) or not (values starting with kNotWasted).
+enum class WastedSpeculativeRFHCase {
+  // No associated RFH yet for the navigation before this, so there's no
+  // wasted speculative RFH. We can get here when it's the first call to
+  // `GetFrameHostForNavigation()` for that navigation, or if the navigation
+  // couldn't create a new RFH before due to navigation queueing, or if the
+  // speculative RFH associated with it became the current RFH due to another
+  // navigation.
+  kNotWasted_WasUnassociated = 0,
+  // The navigation decided to reuse the current RFH on the previous call, and
+  // continues to keep using the current RFH now.
+  kNotWasted_WasUsingCurrentRFH_NowKeepCurrentRFH = 1,
+  // The navigation decided to reuse the current RFH on the previous call, but
+  // decides to use a speculative RFH now. There's no wasted speculative RFH,
+  // but if we were able to predict that we needed a speculative RFH, maybe we
+  // could've prepared it earlier.
+  kNotWasted_WasUsingCurrentRFH_NowUseSpeculativeRFH = 2,
+  // The navigation decided to create a speculative RFH before, and will keep
+  // using the created speculative RFH.
+  kNotWasted_NowKeepSameSpeculativeRFH = 3,
+  // The navigation decided to create a speculative RFH before, but now decides
+  // to reuse the current / active RFH.
+  kWasted_NowUseCurrentRFH = 4,
+  // The navigation decided to create a speculative RFH before, but will create
+  // a new speculative RFH as the previous speculative RFH is no longer
+  // compatible.
+  kWasted_NowUseNewSpeculativeRFH = 5,
+  kMaxValue = kWasted_NowUseNewSpeculativeRFH,
+};
 
 // Manages RenderFrameHosts for a FrameTreeNode. It maintains a
 // current_frame_host() which is the content currently visible to the user. When
@@ -343,8 +379,7 @@ class CONTENT_EXPORT RenderFrameHostManager {
                         bool is_same_document_navigation,
                         bool clear_proxies_on_commit,
                         const blink::FramePolicy& frame_policy,
-                        bool allow_subframe_paint_holding,
-                        bool is_initiated_by_animated_transition);
+                        bool allow_paint_holding);
 
   // Called when this frame's opener is changed to the frame specified by
   // |opener_frame_token| in |source_site_instance_group|'s process.  This
@@ -678,6 +713,10 @@ class CONTENT_EXPORT RenderFrameHostManager {
   enum class SiteInstanceRelation {
     // A SiteInstance in a different browsing instance from the current.
     UNRELATED,
+    // A SiteInstance in the same SiteInstanceGroup, and thus process.
+    // Note: Using this value requires passing in a valid `source_site_instance`
+    // to ConvertToSiteInstance.
+    RELATED_IN_GROUP,
     // A SiteInstance in a different BrowsingInstance, but in the same
     // CoopRelatedGroup. Only used for COOP: restrict-properties
     // navigations.
@@ -863,11 +902,15 @@ class CONTENT_EXPORT RenderFrameHostManager {
       std::string* reason = nullptr);
 
   // Converts a SiteInstanceDescriptor to the actual SiteInstance it describes.
-  // If a |candidate_instance| is provided (is not nullptr) and it matches the
+  // If a `candidate_instance` is provided (is not nullptr) and it matches the
   // description, it is returned as is.
+  // `source_site_instance` is needed for navigations that use
+  // SiteInstanceGroup, where the new SiteInstance belongs to the group of the
+  // source SiteInstance.
   scoped_refptr<SiteInstanceImpl> ConvertToSiteInstance(
       const SiteInstanceDescriptor& descriptor,
-      SiteInstanceImpl* candidate_instance);
+      SiteInstanceImpl* candidate_instance,
+      SiteInstanceImpl* source_site_instance = nullptr);
 
   // Returns true if `candidate` is currently same site with `dest_url_info`.
   // This method is a special case for handling hosted apps in this object. Most
@@ -1004,23 +1047,18 @@ class CONTENT_EXPORT RenderFrameHostManager {
   // |clear_proxies_on_commit| Indicates if the proxies and opener must be
   // removed during the commit. This can happen following some BrowsingInstance
   // swaps, such as those for COOP.
-  // |allow_subframe_paint_holding| Indicates that paint holding is allowed if
-  // this is a subframe navigation.
-  // `is_initiated_by_animated_transition`: Indicates if the committing the
-  // navigation is initiated by the animated transition.
+  // |allow_paint_holding| Indicates whether paint holding is allowed.
   void CommitPending(std::unique_ptr<RenderFrameHostImpl> pending_rfh,
                      std::unique_ptr<StoredPage> pending_stored_page,
                      bool clear_proxies_on_commit,
-                     bool allow_subframe_paint_holding,
-                     bool is_initiated_by_animated_transition);
+                     bool allow_paint_holding);
 
   // Helper to call CommitPending() in all necessary cases.
   void CommitPendingIfNecessary(RenderFrameHostImpl* render_frame_host,
                                 bool was_caused_by_user_gesture,
                                 bool is_same_document_navigation,
                                 bool clear_proxies_on_commit,
-                                bool allow_subframe_paint_holding,
-                                bool is_initiated_by_animated_transition);
+                                bool allow_paint_holding);
 
   // Runs the unload handler in the old RenderFrameHost, after the new
   // RenderFrameHost has committed.  |old_render_frame_host| will either be

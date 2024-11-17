@@ -20,6 +20,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -290,11 +291,12 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kCardGeneric:
       return get_icon(IDR_AUTOFILL_METADATA_CC_GENERIC,
                       IDR_AUTOFILL_CC_GENERIC);
-    case Suggestion::Icon::kNoIcon:
+    case Suggestion::Icon::kAutofillPredictionImprovements:
+
     case Suggestion::Icon::kAccount:
     case Suggestion::Icon::kClear:
-    case Suggestion::Icon::kCreate:
     case Suggestion::Icon::kCode:
+    case Suggestion::Icon::kCreate:
     case Suggestion::Icon::kDelete:
     case Suggestion::Icon::kDevice:
     case Suggestion::Icon::kEdit:
@@ -307,19 +309,21 @@ int CreditCard::IconResourceId(Suggestion::Icon icon) {
     case Suggestion::Icon::kGooglePasswordManager:
     case Suggestion::Icon::kGooglePay:
     case Suggestion::Icon::kGooglePayDark:
-    case Suggestion::Icon::kHttpWarning:
     case Suggestion::Icon::kHttpsInvalid:
+    case Suggestion::Icon::kHttpWarning:
+    case Suggestion::Icon::kIban:
     case Suggestion::Icon::kKey:
     case Suggestion::Icon::kLocation:
     case Suggestion::Icon::kMagic:
+    case Suggestion::Icon::kNoIcon:
     case Suggestion::Icon::kOfferTag:
     case Suggestion::Icon::kPenSpark:
+    case Suggestion::Icon::kPlusAddress:
     case Suggestion::Icon::kScanCreditCard:
     case Suggestion::Icon::kSettings:
     case Suggestion::Icon::kSettingsAndroid:
     case Suggestion::Icon::kUndo:
-    case Suggestion::Icon::kPlusAddress:
-    case Suggestion::Icon::kIban:
+
       NOTREACHED();
   }
   NOTREACHED();
@@ -561,9 +565,7 @@ void CreditCard::SetRawInfoWithVerificationStatus(FieldType type,
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Attempting to set unknown info-type " << type;
-      break;
+      NOTREACHED() << "Attempting to set unknown info-type " << type;
   }
 }
 
@@ -760,6 +762,15 @@ int CreditCard::Compare(const CreditCard& credit_card) const {
       credit_card.record_type_ == RecordType::kLocalCard) {
     return 1;
   }
+
+  if (static_cast<int>(card_info_retrieval_enrollment_state_) <
+      static_cast<int>(credit_card.card_info_retrieval_enrollment_state_)) {
+    return -1;
+  }
+  if (static_cast<int>(card_info_retrieval_enrollment_state_) >
+      static_cast<int>(credit_card.card_info_retrieval_enrollment_state_)) {
+    return 1;
+  }
   return 0;
 }
 
@@ -769,9 +780,9 @@ bool CreditCard::IsLocalOrServerDuplicateOf(const CreditCard& other) const {
   }
   // If `this` or `other` is only a partial card, i.e. some fields are
   // missing, assume those fields match.
-  bool name_on_card_differs = !name_on_card_.empty() &&
-                              !other.name_on_card_.empty() &&
-                              name_on_card_ != other.name_on_card_;
+  bool name_on_card_differs =
+      !name_on_card_.empty() && !other.name_on_card_.empty() &&
+      !base::EqualsCaseInsensitiveASCII(name_on_card_, other.name_on_card_);
   bool expiration_month_differs = expiration_month_ != 0 &&
                                   other.expiration_month_ != 0 &&
                                   expiration_month_ != other.expiration_month_;
@@ -1229,7 +1240,9 @@ std::ostream& operator<<(std::ostream& os, const CreditCard& credit_card) {
             << " " << credit_card.card_art_url().spec() << " "
             << base::UTF16ToUTF8(credit_card.product_description()) << " "
             << credit_card.product_terms_url().spec() << " "
-            << credit_card.cvc();
+            << credit_card.cvc() << " "
+            << base::to_underlying(
+                   credit_card.card_info_retrieval_enrollment_state());
 }
 
 void CreditCard::SetNameOnCardFromSeparateParts() {

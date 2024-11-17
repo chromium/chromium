@@ -106,20 +106,13 @@ class ContentAnalysisDialogBehaviorBrowserTest
     : public test::DeepScanningBrowserTestBase,
       public ContentAnalysisDialog::TestObserver,
       public testing::WithParamInterface<
-          std::tuple<bool, bool, base::TimeDelta, bool>> {
+          std::tuple<bool, bool, base::TimeDelta>> {
  public:
   ContentAnalysisDialogBehaviorBrowserTest()
       : ax_event_counter_(views::AXEventManager::Get()) {
     ContentAnalysisDialog::SetObserverForTesting(this);
 
     expected_scan_result_ = dlp_success() && malware_success();
-    if (custom_rule_message_flag_enabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          kDialogCustomRuleMessageEnabled);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kDialogCustomRuleMessageEnabled);
-    }
   }
 
   void ConstructorCalled(ContentAnalysisDialog* dialog,
@@ -282,8 +275,6 @@ class ContentAnalysisDialogBehaviorBrowserTest
 
   base::TimeDelta response_delay() const { return std::get<2>(GetParam()); }
 
-  bool custom_rule_message_flag_enabled() { return std::get<3>(GetParam()); }
-
  private:
   raw_ptr<ContentAnalysisDialog, DanglingUntriaged> dialog_;
 
@@ -404,18 +395,10 @@ class ContentAnalysisDialogAppearanceBrowserTest
           std::tuple<bool,
                      bool,
                      safe_browsing::DeepScanAccessPoint,
-                     bool,
                      bool>> {
  public:
   ContentAnalysisDialogAppearanceBrowserTest() {
     ContentAnalysisDialog::SetObserverForTesting(this);
-    if (custom_rule_message_flag_enabled()) {
-      scoped_feature_list_.InitAndEnableFeature(
-          kDialogCustomRuleMessageEnabled);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          kDialogCustomRuleMessageEnabled);
-    }
   }
 
   void ViewsFirstShown(ContentAnalysisDialog* dialog,
@@ -505,9 +488,7 @@ class ContentAnalysisDialogAppearanceBrowserTest
     return std::get<2>(GetParam());
   }
 
-  bool custom_rule_message_flag_enabled() { return std::get<3>(GetParam()); }
-
-  bool has_custom_rule_message() { return std::get<4>(GetParam()); }
+  bool has_custom_rule_message() { return std::get<3>(GetParam()); }
 };
 
 // Tests the behavior of the dialog in the same way as
@@ -523,8 +504,7 @@ class ContentAnalysisDialogCustomMessageBrowserTest
     views::StyledLabel* final_message = dialog->GetMessageForTesting();
     ASSERT_TRUE(final_message);
 
-    if (custom_rule_message_flag_enabled() &&
-        (dialog->is_failure() || dialog->is_warning()) &&
+    if ((dialog->is_failure() || dialog->is_warning()) &&
         has_custom_rule_message()) {
       // Run layout to get children.
       views::test::RunScheduledLayout(final_message);
@@ -632,8 +612,7 @@ INSTANTIATE_TEST_SUITE_P(
         /*dlp_success*/ testing::Bool(),
         /*malware_success*/ testing::Bool(),
         /*response_delay*/
-        testing::Values(kNoDelay, kSmallDelay, kNormalDelay),
-        /*custom_message_enabled*/ testing::Bool()));
+        testing::Values(kNoDelay, kSmallDelay, kNormalDelay)));
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogCancelPendingScanBrowserTest,
                        Test) {
@@ -796,7 +775,6 @@ INSTANTIATE_TEST_SUITE_P(
                         safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP,
                         safe_browsing::DeepScanAccessPoint::PASTE,
                         safe_browsing::DeepScanAccessPoint::PRINT),
-        /*custom_rule_message_enabled=*/testing::Bool(),
         /*has_custom_rule_message=*/testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(ContentAnalysisDialogCustomMessageBrowserTest, Test) {
@@ -859,14 +837,12 @@ INSTANTIATE_TEST_SUITE_P(
                         safe_browsing::DeepScanAccessPoint::DRAG_AND_DROP,
                         safe_browsing::DeepScanAccessPoint::PASTE,
                         safe_browsing::DeepScanAccessPoint::PRINT),
-        /*custom_rule_message_enabled=*/testing::Bool(),
         /*has_custom_rule_message=*/testing::Bool()));
 
 class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
  public:
   ContentAnalysisDialogPlainTests() {
     ContentAnalysisDialog::SetShowDialogDelayForTesting(kNoDelay);
-    scoped_features.InitAndEnableFeature(kDialogCustomRuleMessageEnabled);
   }
 
   void OpenCallback() { ++times_open_called_; }
@@ -978,7 +954,6 @@ class ContentAnalysisDialogPlainTests : public InProcessBrowserTest {
 
  private:
   raw_ptr<ContentAnalysisDialog, DanglingUntriaged> dialog_;
-  base::test::ScopedFeatureList scoped_features;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentAnalysisDialogPlainTests, TestCustomMessage) {
@@ -1283,7 +1258,6 @@ class ContentAnalysisDialogCustomRuleMessageUiTest
  public:
   ContentAnalysisDialogCustomRuleMessageUiTest() {
     ContentAnalysisDialog::SetShowDialogDelayForTesting(kNoDelay);
-    scoped_features.InitAndEnableFeature(kDialogCustomRuleMessageEnabled);
   }
 
   // DialogBrowserTest:

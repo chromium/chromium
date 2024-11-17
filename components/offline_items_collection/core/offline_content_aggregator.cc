@@ -17,7 +17,8 @@ namespace offline_items_collection {
 namespace {
 
 template <typename T, typename U>
-bool MapContainsValue(const std::map<T, U>& map, U value) {
+bool MapContainsValue(const std::map<T, raw_ptr<U, CtnExperimental>>& map,
+                      U* value) {
   for (const auto& it : map) {
     if (it.second == value)
       return true;
@@ -27,7 +28,7 @@ bool MapContainsValue(const std::map<T, U>& map, U value) {
 
 }  // namespace
 
-OfflineContentAggregator::OfflineContentAggregator() {}
+OfflineContentAggregator::OfflineContentAggregator() = default;
 
 OfflineContentAggregator::~OfflineContentAggregator() = default;
 
@@ -158,7 +159,7 @@ void OfflineContentAggregator::GetAllItems(MultipleItemCallback callback) {
 
   DCHECK(aggregated_items_.empty());
   for (auto provider_it : providers_) {
-    auto* provider = provider_it.second;
+    auto* provider = provider_it.second.get();
 
     provider->GetAllItems(
         base::BindOnce(&OfflineContentAggregator::OnGetAllItemsDone,

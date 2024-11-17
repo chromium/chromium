@@ -36,8 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 public final class CastCrashUploader {
     private static final String TAG = "CastCrashUploader";
-    private static final String CRASH_REPORT_HOST = "clients2.google.com";
-    private static final String CAST_SHELL_USER_AGENT = android.os.Build.MODEL + "/CastShell";
+
     // Multipart dump filename has format "[random string].dmp[pid]", e.g.
     // 20597a65-b822-008e-31f8fc8e-02bb45c0.dmp18169
     private static final String DUMP_FILE_REGEX = ".*\\.dmp\\d*";
@@ -170,7 +169,8 @@ public final class CastCrashUploader {
                 feedbackHeader.append(dumpFirstLine);
                 feedbackHeader.append("\n");
                 feedbackHeader.append(
-                        "Content-Disposition: form-data; name=\"application_feedback.txt\"; filename=\"application.txt\"\n");
+                        "Content-Disposition: form-data; name=\"application_feedback.txt\";"
+                            + " filename=\"application.txt\"\n");
                 feedbackHeader.append("Content-Type: text/plain\n\n");
                 feedbackHeader.append(mApplicationFeedback);
                 feedbackHeader.append("\n");
@@ -235,7 +235,6 @@ public final class CastCrashUploader {
      *
      * @param inStream the stream to read
      * @param outStream the stream to write to
-     * @throws IOException
      */
     private static void streamCopy(InputStream inStream, OutputStream outStream)
             throws IOException {
@@ -253,7 +252,6 @@ public final class CastCrashUploader {
      * Gets the first line from an input stream
      *
      * @return First line of the input stream.
-     * @throws IOException
      */
     private String getFirstLine(InputStream inputStream) throws IOException {
         try (InputStreamReader streamReader = new InputStreamReader(inputStream, "UTF-8");

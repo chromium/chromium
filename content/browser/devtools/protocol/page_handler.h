@@ -43,10 +43,6 @@ namespace gfx {
 class Image;
 }  // namespace gfx
 
-namespace blink {
-struct DeviceEmulationParams;
-}
-
 namespace content {
 
 class BackForwardCacheCanStoreDocumentResult;
@@ -187,9 +183,11 @@ class PageHandler : public DevToolsDomainHandler,
   Response AssureTopLevelActiveFrame();
 
  private:
+  struct PendingScreenshotRequest;
+
   using BitmapEncoder =
-      base::RepeatingCallback<bool(const SkBitmap& bitmap,
-                                   std::vector<uint8_t>& output)>;
+      base::RepeatingCallback<std::optional<std::vector<uint8_t>>(
+          const SkBitmap& bitmap)>;
 
   void CaptureFullPageScreenshot(
       Maybe<std::string> format,
@@ -205,16 +203,10 @@ class PageHandler : public DevToolsDomainHandler,
       const SkBitmap& bitmap);
   void ScreencastFrameEncoded(
       std::unique_ptr<Page::ScreencastFrameMetadata> metadata,
-      std::vector<uint8_t> data);
+      std::optional<std::vector<uint8_t>> data);
 
-  void ScreenshotCaptured(
-      std::unique_ptr<CaptureScreenshotCallback> callback,
-      BitmapEncoder encoder,
-      const gfx::Size& original_view_size,
-      const gfx::Size& requested_image_size,
-      const blink::DeviceEmulationParams& original_params,
-      const std::optional<blink::web_pref::WebPreferences>& original_web_prefs,
-      const gfx::Image& image);
+  void ScreenshotCaptured(std::unique_ptr<PendingScreenshotRequest> request,
+                          const gfx::Image& image);
 
   // RenderWidgetHostObserver overrides.
   void RenderWidgetHostVisibilityChanged(RenderWidgetHost* widget_host,

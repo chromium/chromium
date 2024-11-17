@@ -1,0 +1,7 @@
+{
+  "ToTWinArm64PGO": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  }
+}

@@ -20,14 +20,6 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
-# Several targets want to include this header file, and some of them are
-# child dependencies of "gfx". Therefore, we separate it out here so multiple
-# targets can all have a dependency for header checking purposes without
-# creating circular dependencies.
-source_set("gfx_export") {
-  sources = [ "gfx_export.h" ]
-}
-
 # Used for color generation at build time without importing all the gfx.
 component("color_utils") {
   sources = [
@@ -35,9 +27,8 @@ component("color_utils") {
     "color_utils.cc",
     "color_utils.h",
   ]
-  defines = [ "GFX_IMPLEMENTATION" ]
+  defines = [ "IS_GFX_COLOR_UTILS_IMPL" ]
   public_deps = [
-    ":gfx_export",
     "//base",
     "//skia",
     "//ui/gfx/geometry",
@@ -47,6 +38,8 @@ component("color_utils") {
 component("gfx_skia") {
   sources = [
     "gfx_skia_export.h",
+    "skia_span_util.cc",
+    "skia_span_util.h",
     "skia_util.cc",
     "skia_util.h",
   ]
@@ -67,6 +60,13 @@ if (is_win) {
       "/DELAYLOAD:api-ms-win-core-handle-l1-1-0.dll",
     ]
   }
+}
+
+# Binds together the `gfx` component.
+#
+# See also: `docs/component_build.md`
+config("gfx_impl_define") {
+  defines = [ "IS_GFX_IMPL" ]
 }
 
 component("gfx") {
@@ -292,12 +292,10 @@ component("gfx") {
   }
 
   configs += [
+    ":gfx_impl_define",
     "//build/config:precompiled_headers",
     "//build/config/compiler:wexit_time_destructors",
   ]
-
-  # This is part of the gfx component in the component build.
-  defines = [ "GFX_IMPLEMENTATION" ]
 
   public_deps = [
     ":color_space",
@@ -319,12 +317,10 @@ component("gfx") {
     "//ui/gfx/range",
   ]
   deps = [
-    ":gfx_export",
     "//base",
     "//base:base_static",
     "//base:i18n",
     "//build:blink_buildflags",
-    "//build:chromeos_buildflags",
     "//device/vr/buildflags",
     "//mojo/public/cpp/bindings:struct_traits",
     "//skia",
@@ -474,7 +470,6 @@ component("color_space") {
     ]
   }
   deps = [
-    "//build:chromeos_buildflags",
     "//skia:skcms",
     "//ui/gfx:buffer_types",
     "//ui/gfx/geometry:geometry_skia",
@@ -529,14 +524,9 @@ source_set("native_widget_types_sources") {
 
   public = [ "native_widget_types.h" ]
 
-  public_deps = [
-    ":gfx_export",
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 
-  deps = [ "//build:chromeos_buildflags" ]
-
-  defines = [ "GFX_IMPLEMENTATION" ]
+  configs += [ ":gfx_impl_define" ]
 
   if (is_mac) {
     sources = [ "native_widget_types_mac.mm" ]
@@ -558,14 +548,14 @@ source_set("selection_bound_sources") {
   visibility = [ ":*" ]  # Depend on through ":selection_bound".
 
   sources = [
-    "gfx_export.h",
     "selection_bound.cc",
     "selection_bound.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  defines = [ "GFX_IMPLEMENTATION" ]
+  configs += [
+    ":gfx_impl_define",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 
   public_deps = [
     "//base",
@@ -607,7 +597,6 @@ source_set("memory_buffer_sources") {
     "client_native_pixmap_factory.h",
     "generic_shared_memory_id.cc",
     "generic_shared_memory_id.h",
-    "gfx_export.h",
     "gpu_fence.cc",
     "gpu_fence.h",
     "gpu_fence_handle.cc",
@@ -631,9 +620,10 @@ source_set("memory_buffer_sources") {
     ]
   }
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  defines = [ "GFX_IMPLEMENTATION" ]
+  configs += [
+    ":gfx_impl_define",
+    "//build/config/compiler:wexit_time_destructors",
+  ]
 
   public_deps = [ ":buffer_types" ]
 
@@ -641,7 +631,6 @@ source_set("memory_buffer_sources") {
     ":gfx_switches",
     "//base",
     "//build:chromecast_buildflags",
-    "//build:chromeos_buildflags",
     "//gpu/vulkan:buildflags",
     "//ui/gfx/geometry",
   ]
@@ -740,7 +729,6 @@ static_library("test_support") {
   public_deps = [ ":gfx" ]
 
   deps = [
-    ":gfx_export",
     "//base",
     "//base/test:test_support",
     "//skia",
@@ -869,6 +857,7 @@ test("gfx_unittests") {
       "image/image_util_unittest.cc",
       "mojom/mojom_traits_unittest.cc",
       "overlay_transform_utils_unittest.cc",
+      "paint_throbber_unittest.cc",
       "paint_vector_icon_unittest.cc",
       "range/range_unittest.cc",
       "render_text_unittest.cc",
@@ -896,7 +885,6 @@ test("gfx_unittests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
     "//skia",
     "//skia:rusty_png_feature_detection",
     "//skia:skcms",
@@ -1041,7 +1029,6 @@ fuzzer_test("render_text_api_fuzzer") {
     ":gfx",
     "//base",
     "//base/test:test_support",
-    "//build:chromeos_buildflags",
   ]
 
   dict = "test/data/render_text/unicode_text_fuzzer.dict"

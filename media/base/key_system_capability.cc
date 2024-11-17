@@ -9,11 +9,12 @@
 namespace media {
 
 KeySystemCapability::KeySystemCapability() = default;
+
 KeySystemCapability::KeySystemCapability(
-    std::optional<CdmCapability> sw_secure_capabilty,
-    std::optional<CdmCapability> hw_secure_capabilty)
-    : sw_secure_capability(std::move(sw_secure_capabilty)),
-      hw_secure_capability(std::move(hw_secure_capabilty)) {}
+    CdmCapabilityOrStatus sw_cdm_capability_or_status,
+    CdmCapabilityOrStatus hw_cdm_capability_or_status)
+    : sw_cdm_capability_or_status(std::move(sw_cdm_capability_or_status)),
+      hw_cdm_capability_or_status(std::move(hw_cdm_capability_or_status)) {}
 
 KeySystemCapability::KeySystemCapability(const KeySystemCapability& other) =
     default;
@@ -22,8 +23,8 @@ KeySystemCapability::~KeySystemCapability() = default;
 
 bool operator==(const KeySystemCapability& lhs,
                 const KeySystemCapability& rhs) {
-  return lhs.sw_secure_capability == rhs.sw_secure_capability &&
-         lhs.hw_secure_capability == rhs.hw_secure_capability;
+  return lhs.sw_cdm_capability_or_status == rhs.sw_cdm_capability_or_status &&
+         lhs.hw_cdm_capability_or_status == rhs.hw_cdm_capability_or_status;
 }
 
 }  // namespace media

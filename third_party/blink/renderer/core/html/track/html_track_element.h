@@ -44,7 +44,7 @@ class HTMLTrackElement final : public HTMLElement,
   explicit HTMLTrackElement(Document&);
   ~HTMLTrackElement() override;
 
-  const AtomicString& kind();
+  AtomicString kind();
   void setKind(const AtomicString&);
 
   enum class ReadyState { kNone = 0, kLoading = 1, kLoaded = 2, kError = 3 };

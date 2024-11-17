@@ -148,7 +148,7 @@ public abstract class DateDividedAdapter extends Adapter<RecyclerView.ViewHolder
     }
 
     /** An item representing a date header. */
-    class DateHeaderTimedItem extends TimedItem {
+    static class DateHeaderTimedItem extends TimedItem {
         private long mTimestamp;
 
         public DateHeaderTimedItem(long timestamp) {

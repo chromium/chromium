@@ -18,7 +18,8 @@ import java.lang.annotation.RetentionPolicy;
     TabLoadIfNeededCaller.REQUEST_TO_SHOW_TAB_THEN_SHOW,
     TabLoadIfNeededCaller.ON_FINISH_NATIVE_INITIALIZATION,
     TabLoadIfNeededCaller.MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE,
-    TabLoadIfNeededCaller.OTHER
+    TabLoadIfNeededCaller.OTHER,
+    TabLoadIfNeededCaller.MEDIA_CAPTURE_PICKER
 })
 @Retention(RetentionPolicy.SOURCE)
 public @interface TabLoadIfNeededCaller {
@@ -30,4 +31,5 @@ public @interface TabLoadIfNeededCaller {
     int ON_FINISH_NATIVE_INITIALIZATION = 5;
     int MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE = 6;
     int OTHER = 7;
+    int MEDIA_CAPTURE_PICKER = 8;
 }

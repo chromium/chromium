@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">秘密鍵の入力値は有効なパスでなければなりません。</translation>
 <translation id="388442998277590542">オプション ページ「<ph name="OPTIONS_PAGE" />」を読み込むことができませんでした。</translation>
 <translation id="3984413272403535372">拡張機能の署名中にエラーが発生しました。</translation>
-<translation id="4115165561519362854">このパソコンの管理者により、<ph name="EXTENSION_NAME" /> バージョン <ph name="EXTENSION_VERSION" /> 以上が要件に指定されています。有効にするにはこのバージョン以上に更新する必要があります。</translation>
 <translation id="4233778200880751280">情報ページ「<ph name="ABOUT_PAGE" />」を読み込めませんでした。</translation>
 <translation id="471800408830181311">秘密鍵を出力できませんでした。</translation>
 <translation id="4811956658694082538">ユーティリティ プロセスで問題が発生したため、パッケージをインストールできませんでした。Chrome を再起動してもう一度お試しください。</translation>

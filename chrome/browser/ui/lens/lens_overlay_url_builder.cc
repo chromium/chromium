@@ -13,6 +13,7 @@
 #include "net/base/url_util.h"
 #include "third_party/lens_server_proto/lens_overlay_knowledge_intent_query.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_knowledge_query.pb.h"
+#include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_stickiness_signals.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_translate_stickiness_signals.pb.h"
 #include "third_party/lens_server_proto/lens_overlay_video_context_input_params.pb.h"
@@ -36,6 +37,10 @@ inline constexpr char kRequestIdParameterKey[] = "vsrid";
 
 // Query parameter for the mode.
 inline constexpr char kModeParameterKey[] = "udm";
+
+// Query parameter for the toolbelt mode.
+inline constexpr char kToolbeltModeParameterKey[] = "tbm";
+
 // Query parameter values for the mode.
 inline constexpr char kUnimodalModeParameterValue[] = "26";
 inline constexpr char kMultimodalModeParameterValue[] = "24";
@@ -77,7 +82,8 @@ inline constexpr char kSecActQueryParamKey[] = "sec_act";
 // The list of query parameters to ignore when comparing search URLs.
 inline constexpr std::string kIgnoredSearchUrlQueryParameters[] = {
     kViewportWidthQueryParamKey, kViewportHeightQueryParamKey,
-    kXSRFTokenQueryParamKey, kSecActQueryParamKey};
+    kXSRFTokenQueryParamKey,     kSecActQueryParamKey,
+    kModeParameterKey,           kToolbeltModeParameterKey};
 
 // Query parameter for dark mode.
 inline constexpr char kDarkModeParameterKey[] = "cs";
@@ -93,6 +99,16 @@ inline constexpr char kUrlRedirectPath[] = "/url";
 
 // Query parameter for the URL to redirect to.
 inline constexpr char kUrlQueryParameterKey[] = "url";
+
+// Query parameters to send to translate API for getting supported translate
+// languages.
+inline constexpr char kCountryQueryParameter[] = "country";
+inline constexpr char kDisplayLanguageQueryParameter[] = "display_language";
+inline constexpr char kClientIdQueryParameter[] = "client";
+
+// Query parameter value for client ID sent to translate API for getting
+// supported translate languages.
+inline constexpr char kClientIdQueryParameterValue[] = "lens-overlay";
 
 // Appends the url params from the map to the url.
 GURL AppendUrlParamsFromMap(
@@ -213,7 +229,7 @@ GURL BuildTextOnlySearchURL(
     std::optional<std::string> page_title,
     std::map<std::string, std::string> additional_search_query_params,
     lens::LensOverlayInvocationSource invocation_source,
-    TextOnlyQueryType text_only_query_type,
+    lens::LensOverlaySelectionType lens_selection_type,
     bool use_dark_mode) {
   GURL url_with_query_params =
       GURL(lens::features::GetLensOverlayResultsSearchURL());
@@ -223,7 +239,7 @@ GURL BuildTextOnlySearchURL(
       url_with_query_params, additional_search_query_params);
   url_with_query_params = net::AppendOrReplaceQueryParameter(
       url_with_query_params, kTextQueryParameterKey, text_query);
-  if (text_only_query_type == TextOnlyQueryType::kLensTextSelection) {
+  if (IsLensTextSelectionType(lens_selection_type)) {
     url_with_query_params = net::AppendOrReplaceQueryParameter(
         url_with_query_params, kLensFootprintParameterKey,
         kLensFootprintParameterValue);
@@ -368,6 +384,24 @@ GURL RemoveIgnoredSearchURLParameters(const GURL& url) {
         processed_url, query_param, std::nullopt);
   }
   return processed_url;
+}
+
+GURL BuildTranslateLanguagesURL(std::string country, std::string language) {
+  GURL url = GURL(lens::features::GetLensOverlayTranslateEndpointURL());
+  url =
+      net::AppendOrReplaceQueryParameter(url, kCountryQueryParameter, country);
+  url = net::AppendOrReplaceQueryParameter(url, kDisplayLanguageQueryParameter,
+                                           language);
+  url = net::AppendOrReplaceQueryParameter(url, kClientIdQueryParameter,
+                                           kClientIdQueryParameterValue);
+  return url;
+}
+
+bool IsLensTextSelectionType(
+    lens::LensOverlaySelectionType lens_selection_type) {
+  return lens_selection_type == lens::SELECT_TEXT_HIGHLIGHT ||
+         lens_selection_type == lens::SELECT_TRANSLATED_TEXT ||
+         lens_selection_type == lens::TRANSLATE_CHIP;
 }
 
 }  // namespace lens

@@ -54,14 +54,8 @@ shared_library("chrome_elf") {
   sources = [
     "chrome_elf_main.cc",
     "chrome_elf_main.h",
+    "chrome_elf.def"
   ]
-  if (target_cpu == "x86") {
-    sources += [ "chrome_elf_x86.def" ]
-  } else if (target_cpu == "arm64") {
-    sources += [ "chrome_elf_arm64.def" ]
-  } else {
-    sources += [ "chrome_elf_x64.def" ]
-  }
 
   deps = [
     ":chrome_elf_manifest",

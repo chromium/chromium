@@ -65,10 +65,10 @@ id<GREYMatcher> UsernameChipButton() {
   [ChromeEarlGrey waitForWebStateContainingText:"Hello"];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearProfilesStore];
   [AutofillAppInterface clearProfilePasswordStore];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

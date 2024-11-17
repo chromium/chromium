@@ -14,8 +14,8 @@ namespace {
 
 std::string_view GetAISessionTypeName(AIMetrics::AISessionType session_type) {
   switch (session_type) {
-    case AIMetrics::AISessionType::kAssistant:
-      return "Assistant";
+    case AIMetrics::AISessionType::kLanguageModel:
+      return "LanguageModel";
     case AIMetrics::AISessionType::kWriter:
       return "Writer";
     case AIMetrics::AISessionType::kRewriter:
@@ -23,7 +23,7 @@ std::string_view GetAISessionTypeName(AIMetrics::AISessionType session_type) {
     case AIMetrics::AISessionType::kSummarizer:
       return "Summarizer";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace

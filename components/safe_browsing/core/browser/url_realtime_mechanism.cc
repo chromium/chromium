@@ -44,6 +44,18 @@ void RecordLocalMatchResult(
   }
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class URTAndBackgroundHPRTResult {
+  UrtSafeAndHprtUnfinished = 0,
+  UrtUnsafeAndHprtUnfinished = 1,
+  UrtSafeAndHprtSafe = 2,
+  UrtSafeAndHprtUnsafe = 3,
+  UrtUnsafeAndHprtSafe = 4,
+  UrtUnsafeAndHprtUnsafe = 5,
+  kMaxValue = UrtUnsafeAndHprtUnsafe
+};
+
 }  // namespace
 
 UrlRealTimeMechanism::UrlRealTimeMechanism(
@@ -255,29 +267,8 @@ void UrlRealTimeMechanism::OnLookupResponse(
 
 void UrlRealTimeMechanism::CompleteCheckInternal(
     std::unique_ptr<CompleteCheckResult> complete_check_result) {
-  // Compare the results from both the URL real-time lookup and the hash
-  // real-time lookup. Return the URL real-time lookup result and send a CSBRR
-  // if the URT and HPRT results differ.
-
-  // We need to send a CSBRR if the URL real-time lookup verdict is different
-  // from the HPRT lookup verdict.
-  if (hash_realtime_lookup_result_threat_type_.has_value() &&
-      complete_check_result->threat_type !=
-          hash_realtime_lookup_result_threat_type_.value()) {
-    // Send new CSBRR report.
-    auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
-    report->set_type(ClientSafeBrowsingReportRequest::
-                         URL_REALTIME_AND_HASH_REALTIME_DISCREPANCY);
-    report->set_url(url_.spec());
-    report->mutable_url_real_time_and_hash_real_time_discrepancy_info()
-        ->set_url_realtime_threat_type(
-            getDiscrepancyThreatType(complete_check_result->threat_type));
-    report->mutable_url_real_time_and_hash_real_time_discrepancy_info()
-        ->set_hash_realtime_threat_type(getDiscrepancyThreatType(
-            hash_realtime_lookup_result_threat_type_.value()));
-
-    url_checker_delegate_->SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
-        std::move(report), web_contents_getter_);
+  if (!!hash_realtime_lookup_mechanism_) {
+    LogBackgroundHprtLookupResults(complete_check_result->threat_type);
   }
 
   // Call the CompleteCheck function to pass the final result to the callback.
@@ -286,9 +277,70 @@ void UrlRealTimeMechanism::CompleteCheckInternal(
   // this object, so there is nothing safe to do here but return.
 }
 
+void UrlRealTimeMechanism::LogBackgroundHprtLookupResults(
+    SBThreatType urt_threat_type) {
+  // Compare the results from both the URL real-time lookup and the hash
+  // real-time lookup. Return the URL real-time lookup result and send a CSBRR
+  // if the URT and HPRT results differ.
+
+  // Record metrics for background HPRT result.
+  bool is_urt_safe = urt_threat_type == SBThreatType::SB_THREAT_TYPE_SAFE;
+  if (!hash_realtime_lookup_result_threat_type_.has_value()) {
+    if (is_urt_safe) {
+      base::UmaHistogramEnumeration(
+          "SafeBrowsing.URTAndBackgroundHPRT.Result",
+          URTAndBackgroundHPRTResult::UrtSafeAndHprtUnfinished);
+    } else {
+      base::UmaHistogramEnumeration(
+          "SafeBrowsing.URTAndBackgroundHPRT.Result",
+          URTAndBackgroundHPRTResult::UrtUnsafeAndHprtUnfinished);
+    }
+  } else {
+    bool is_hprt_safe = hash_realtime_lookup_result_threat_type_.value() ==
+                        SBThreatType::SB_THREAT_TYPE_SAFE;
+    if (is_urt_safe && is_hprt_safe) {
+      base::UmaHistogramEnumeration(
+          "SafeBrowsing.URTAndBackgroundHPRT.Result",
+          URTAndBackgroundHPRTResult::UrtSafeAndHprtSafe);
+    } else if (is_urt_safe && !is_hprt_safe) {
+      base::UmaHistogramEnumeration(
+          "SafeBrowsing.URTAndBackgroundHPRT.Result",
+          URTAndBackgroundHPRTResult::UrtSafeAndHprtUnsafe);
+    } else if (!is_urt_safe && is_hprt_safe) {
+      base::UmaHistogramEnumeration(
+          "SafeBrowsing.URTAndBackgroundHPRT.Result",
+          URTAndBackgroundHPRTResult::UrtUnsafeAndHprtSafe);
+    } else if (!is_urt_safe && !is_hprt_safe) {
+      base::UmaHistogramEnumeration(
+          "SafeBrowsing.URTAndBackgroundHPRT.Result",
+          URTAndBackgroundHPRTResult::UrtUnsafeAndHprtUnsafe);
+    }
+  }
+
+  // We need to send a CSBRR if the URL real-time lookup verdict is different
+  // from the HPRT lookup verdict.
+  if (hash_realtime_lookup_result_threat_type_.has_value() &&
+      urt_threat_type != hash_realtime_lookup_result_threat_type_.value()) {
+    // Send new CSBRR report.
+    auto report = std::make_unique<ClientSafeBrowsingReportRequest>();
+    report->set_type(ClientSafeBrowsingReportRequest::
+                         URL_REALTIME_AND_HASH_REALTIME_DISCREPANCY);
+    report->set_url(url_.spec());
+    report->mutable_url_real_time_and_hash_real_time_discrepancy_info()
+        ->set_url_realtime_threat_type(
+            GetDiscrepancyThreatType(urt_threat_type));
+    report->mutable_url_real_time_and_hash_real_time_discrepancy_info()
+        ->set_hash_realtime_threat_type(GetDiscrepancyThreatType(
+            hash_realtime_lookup_result_threat_type_.value()));
+
+    url_checker_delegate_->SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
+        std::move(report), web_contents_getter_);
+  }
+}
+
 ClientSafeBrowsingReportRequest::UrlRealTimeAndHashRealTimeDiscrepancyInfo::
     LookupThreatType
-    UrlRealTimeMechanism::getDiscrepancyThreatType(SBThreatType threat_type) {
+    UrlRealTimeMechanism::GetDiscrepancyThreatType(SBThreatType threat_type) {
   switch (threat_type) {
     case SBThreatType::SB_THREAT_TYPE_URL_PHISHING:
       return ClientSafeBrowsingReportRequest::

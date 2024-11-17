@@ -1,0 +1,32 @@
+include_rules = [
+  # //chrome/browser/ui/ash/quick_answers will contain implementation supporting
+  # the ash browser.
+  "+ash",
+  "+content/browser/speech",
+  "+chrome/browser/profiles",
+  "+chrome/browser/ui/ash/read_write_cards",
+  "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  "+chrome/browser/ui/ash/editor_menu/editor_menu_controller_impl.h",
+  "+chrome/browser/ui/ash/editor_menu/utils/editor_types.h",
+  "+chrome/browser/ui/ash/editor_menu/utils/focus_search.h",
+  "+chrome/browser/ui/ash/editor_menu/utils/pre_target_handler.h",
+  "+chrome/browser/ui/views/mahi/mahi_menu_controller.h",
+]
+
+specific_include_rules = {
+  ".*test.*": [
+    "+chrome/browser/ash/accessibility",
+    "+chrome/browser/notifications",
+    "+chrome/browser/ash/login/users",
+  ],
+  ".*pixeltest\.cc": [
+    "+chrome/browser/ui/browser.h",
+  ],
+  "quick_answers_ui_controller\.cc": [
+    "+chrome/browser/ui/browser.h",
+  ],
+  "quick_answers_view\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/ui/color/chrome_color_id.h",
+  ],
+}

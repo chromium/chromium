@@ -1,0 +1,74 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+</head>
+<body id="body">
+
+<script>
+class XTab extends HTMLElement {
+    constructor() {
+        super();
+        this.i = this.attachInternals();
+        this.i.role = "tab";
+    }
+}
+
+customElements.define("x-tab", XTab);
+</script>
+
+
+<ul id="x_tablist_1" role="tablist">
+<x-tab id="x_tab_1" tabindex="-1" class="">Crust</x-tab><x-tab id="x_tab_2" tabindex="-1" class="">Veges</x-tab>
+</ul>
+
+<h3 tabindex=0 id="elementOutsideTabs">Test</h3>
+
+<div id="x_panel_1" role="tabpanel" >
+<h3 tabindex=0>Select Crust</h3>
+</div>
+
+<div id="x_panel_2" role="tabpanel" >
+<h2 id="itemInXPanel2" tabindex=0>Select Crust</h2>
+</div>
+
+
+<script>
+
+test((t) => {
+    const xTab2Element = document.getElementById("x_tab_2");
+    const xPanel2Element = document.getElementById("x_panel_2");
+    xTab2Element.i.ariaControlsElements = [xPanel2Element];
+
+    const xTabList = accessibilityController.accessibleElementById('x_tablist_1');
+    const xTab1 = xTabList.childAtIndex(0);
+    const xTab2 = xTabList.childAtIndex(1);
+
+    // we set KB focus to something in x_panel_2, which means that xTab2 should
+    // become selected because it aria-controls x_panel_2
+    xPanel2Element.firstElementChild.focus();
+    assert_equals(xTab2.isSelected, true, "xTab2.isSelected after focusing panel2Item");
+
+    // Now check that ariaControlsElements on the element overrides
+    // ariaControlsElements on ElementInternals
+    const xPanel1Element = document.getElementById("x_panel_1");
+    xTab2Element.ariaControlsElements = [xPanel1Element];
+    assert_equals(xTab2.isSelected, false, "xTab2.isSelected after setting ariaControlsElements to panel1");
+    xPanel1Element.firstElementChild.focus();
+    assert_equals(xTab2.isSelected, true, "xTab2.isSelected after focusing within panel1");
+
+    // reset KB focus and verify that neither tab is selected
+    document.getElementById("elementOutsideTabs").focus();
+    assert_equals(xTab1.isSelected, false, "xTab1.isSelected after focusing elementOutsideTabs");
+    assert_equals(xTab2.isSelected, false, "xTab2.isSelected after focusing elementOutsideTabs");
+
+    // Now we set aria-selected to be true on x-tab 1 so that it should become selected
+    document.getElementById("x_tab_1").setAttribute("aria-selected", "true");
+    assert_equals(xTab1.isSelected, true, "xTab1.isSelected after setting aria-selected");
+}, "This tests that the aria tab item becomes selected if either aria-selected is used, or if ariaControlsElements on ElementInternals points to an item that contains KB focus.");
+
+</script>
+
+</body>
+</html>

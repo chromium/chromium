@@ -5,11 +5,13 @@
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 
 #import "base/test/metrics/histogram_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "base/test/scoped_mock_clock_override.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
 #import "components/autofill/core/browser/test_personal_data_manager.h"
 #import "components/autofill/core/common/autofill_prefs.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
@@ -33,6 +35,8 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
  protected:
   PaymentsSuggestionBottomSheetMediatorTest()
       : test_web_state_(std::make_unique<web::FakeWebState>()) {
+    scoped_feature_list_.InitAndDisableFeature(kAutofillPaymentsSheetV2Ios);
+
     web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
 
     test_web_state_->SetCurrentURL(GURL("http://foo.com"));
@@ -105,6 +109,7 @@ class PaymentsSuggestionBottomSheetMediatorTest : public PlatformTest {
   id consumer_;
   autofill::TestPersonalDataManager personal_data_manager_;
   PaymentsSuggestionBottomSheetMediator* mediator_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests PaymentsSuggestionBottomSheetMediator can be initialized.

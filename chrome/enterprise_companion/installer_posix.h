@@ -9,9 +9,7 @@
 
 namespace enterprise_companion {
 
-// Install the application to `dir`, configuring its permissions and contents.
-// Returns false on error.
-bool InstallToDir(const base::FilePath& install_directory);
+extern const int kInstallDirPermissionsMask;
 
 }  // namespace enterprise_companion
 

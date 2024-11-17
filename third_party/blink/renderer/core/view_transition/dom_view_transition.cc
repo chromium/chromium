@@ -120,35 +120,38 @@ void DOMViewTransition::DidSkipTransition(
   }
 }
 
-void DOMViewTransition::NotifyDOMCallbackFinished(bool success,
-                                                  ScriptValue value) {
+void DOMViewTransition::NotifyDOMCallbackFinished() {
   CHECK_EQ(dom_callback_result_, DOMCallbackResult::kRunning);
   // Handle all promises which depend on this callback.
-  if (success) {
-    dom_updated_promise_property_->ResolveWithUndefined();
+  dom_updated_promise_property_->ResolveWithUndefined();
 
-    // If we're already at the terminal state, the transition was skipped before
-    // the callback finished. Also handle the finish promise.
-    if (view_transition_->IsDone()) {
-      finished_promise_property_->ResolveWithUndefined();
-    }
-  } else {
-    dom_updated_promise_property_->Reject(value);
-
-    // The ready promise rejects with the value of updateCallbackDone callback
-    // if it's skipped because of an error in the callback.
-    if (!view_transition_->IsDone()) {
-      ready_promise_property_->Reject(value);
-    }
-
-    // If the domUpdate callback fails the transition is skipped. The finish
-    // promise should mirror the result of updateCallbackDone.
-    finished_promise_property_->Reject(value);
+  // If we're already at the terminal state, the transition was skipped before
+  // the callback finished. Also handle the finish promise.
+  if (view_transition_->IsDone()) {
+    finished_promise_property_->ResolveWithUndefined();
   }
 
-  dom_callback_result_ =
-      success ? DOMCallbackResult::kSucceeded : DOMCallbackResult::kFailed;
-  view_transition_->NotifyDOMCallbackFinished(success);
+  dom_callback_result_ = DOMCallbackResult::kSucceeded;
+  view_transition_->NotifyDOMCallbackFinished(true);
+}
+
+void DOMViewTransition::NotifyDOMCallbackRejected(ScriptValue value) {
+  CHECK_EQ(dom_callback_result_, DOMCallbackResult::kRunning);
+  // Handle all promises which depend on this callback.
+  dom_updated_promise_property_->Reject(value);
+
+  // The ready promise rejects with the value of updateCallbackDone callback
+  // if it's skipped because of an error in the callback.
+  if (!view_transition_->IsDone()) {
+    ready_promise_property_->Reject(value);
+  }
+
+  // If the domUpdate callback fails the transition is skipped. The finish
+  // promise should mirror the result of updateCallbackDone.
+  finished_promise_property_->Reject(value);
+
+  dom_callback_result_ = DOMCallbackResult::kFailed;
+  view_transition_->NotifyDOMCallbackFinished(false);
 }
 
 void DOMViewTransition::DidStartAnimating() {
@@ -161,6 +164,45 @@ void DOMViewTransition::DidFinishAnimating() {
               finished_promise_property_);
 }
 
+// Invoked when ViewTransitionCallback finishes running.
+class DOMChangeFinishedCallback
+    : public ThenCallable<IDLUndefined, DOMChangeFinishedCallback> {
+ public:
+  explicit DOMChangeFinishedCallback(DOMViewTransition& dom_view_transition)
+      : dom_view_transition_(&dom_view_transition) {}
+  ~DOMChangeFinishedCallback() override = default;
+
+  void React(ScriptState*) {
+    dom_view_transition_->NotifyDOMCallbackFinished();
+  }
+  void Trace(Visitor* visitor) const override {
+    ThenCallable<IDLUndefined, DOMChangeFinishedCallback>::Trace(visitor);
+    visitor->Trace(dom_view_transition_);
+  }
+
+ private:
+  Member<DOMViewTransition> dom_view_transition_;
+};
+
+class DOMChangeRejectedCallback
+    : public ThenCallable<IDLAny, DOMChangeRejectedCallback> {
+ public:
+  explicit DOMChangeRejectedCallback(DOMViewTransition& dom_view_transition)
+      : dom_view_transition_(&dom_view_transition) {}
+  ~DOMChangeRejectedCallback() override = default;
+
+  void React(ScriptState*, ScriptValue value) {
+    dom_view_transition_->NotifyDOMCallbackRejected(std::move(value));
+  }
+  void Trace(Visitor* visitor) const override {
+    ThenCallable<IDLAny, DOMChangeRejectedCallback>::Trace(visitor);
+    visitor->Trace(dom_view_transition_);
+  }
+
+ private:
+  Member<DOMViewTransition> dom_view_transition_;
+};
+
 void DOMViewTransition::InvokeDOMChangeCallback() {
   CHECK_EQ(dom_callback_result_, DOMCallbackResult::kNotInvoked)
       << "UpdateDOM callback invoked multiple times.";
@@ -171,7 +213,7 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
 
   dom_callback_result_ = DOMCallbackResult::kRunning;
 
-  ScriptPromiseUntyped result;
+  ScriptPromise<IDLUndefined> result;
 
   // It's ok to use the main world when there is no callback, since we're only
   // using it to call DOMChangeFinishedCallback which doesn't use the script
@@ -182,7 +224,7 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
   ScriptState::Scope scope(script_state);
 
   if (update_dom_callback_) {
-    v8::Maybe<ScriptPromiseUntyped> maybe_result =
+    v8::Maybe<ScriptPromise<IDLUndefined>> maybe_result =
         update_dom_callback_->Invoke(nullptr);
 
     // If the callback couldn't be run for some reason, treat it as an empty
@@ -201,12 +243,9 @@ void DOMViewTransition::InvokeDOMChangeCallback() {
   }
 
   // Note, the DOMChangeFinishedCallback will be invoked asynchronously.
-  result.Then(MakeGarbageCollected<ScriptFunction>(
-                  script_state,
-                  MakeGarbageCollected<DOMChangeFinishedCallback>(*this, true)),
-              MakeGarbageCollected<ScriptFunction>(
-                  script_state, MakeGarbageCollected<DOMChangeFinishedCallback>(
-                                    *this, false)));
+  result.Then(script_state,
+              MakeGarbageCollected<DOMChangeFinishedCallback>(*this),
+              MakeGarbageCollected<DOMChangeRejectedCallback>(*this));
 }
 
 void DOMViewTransition::Trace(Visitor* visitor) const {
@@ -291,28 +330,6 @@ void DOMViewTransition::HandlePromise(ViewTransition::PromiseResponse response,
 
 ViewTransitionTypeSet* DOMViewTransition::types() const {
   return view_transition_->Types();
-}
-
-// DOMChangeFinishedCallback implementation.
-DOMViewTransition::DOMChangeFinishedCallback::DOMChangeFinishedCallback(
-    DOMViewTransition& dom_view_transition,
-    bool success)
-    : dom_view_transition_(&dom_view_transition), success_(success) {}
-
-DOMViewTransition::DOMChangeFinishedCallback::~DOMChangeFinishedCallback() =
-    default;
-
-ScriptValue DOMViewTransition::DOMChangeFinishedCallback::Call(
-    ScriptState*,
-    ScriptValue value) {
-  dom_view_transition_->NotifyDOMCallbackFinished(success_, std::move(value));
-  return ScriptValue();
-}
-
-void DOMViewTransition::DOMChangeFinishedCallback::Trace(
-    Visitor* visitor) const {
-  ScriptFunction::Callable::Trace(visitor);
-  visitor->Trace(dom_view_transition_);
 }
 
 }  // namespace blink

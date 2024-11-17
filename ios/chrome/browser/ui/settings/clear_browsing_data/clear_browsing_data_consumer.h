@@ -8,8 +8,8 @@
 #import <Foundation/Foundation.h>
 
 #import "base/ios/block_types.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
+class ProfileIOS;
 @class TableViewItem;
 
 namespace browsing_data {

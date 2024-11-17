@@ -138,17 +138,16 @@ DOMMatrixReadOnly* DOMMatrixReadOnly::Create(
             "for a 3D matrix.");
         return nullptr;
       }
-      return MakeGarbageCollected<DOMMatrixReadOnly>(sequence, sequence.size());
+      return MakeGarbageCollected<DOMMatrixReadOnly>(base::span(sequence));
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
-DOMMatrixReadOnly* DOMMatrixReadOnly::CreateForSerialization(double sequence[],
-                                                             int size) {
-  return MakeGarbageCollected<DOMMatrixReadOnly>(sequence, size);
+DOMMatrixReadOnly* DOMMatrixReadOnly::CreateForSerialization(
+    base::span<const double> sequence) {
+  return MakeGarbageCollected<DOMMatrixReadOnly>(sequence);
 }
 
 DOMMatrixReadOnly* DOMMatrixReadOnly::fromFloat32Array(
@@ -160,8 +159,8 @@ DOMMatrixReadOnly* DOMMatrixReadOnly::fromFloat32Array(
         "for 3D matrix.");
     return nullptr;
   }
-  return MakeGarbageCollected<DOMMatrixReadOnly>(
-      float32_array->Data(), static_cast<int>(float32_array->length()));
+  base::span<const float> sequence = float32_array->AsSpan();
+  return MakeGarbageCollected<DOMMatrixReadOnly>(sequence);
 }
 
 DOMMatrixReadOnly* DOMMatrixReadOnly::fromFloat64Array(
@@ -173,8 +172,8 @@ DOMMatrixReadOnly* DOMMatrixReadOnly::fromFloat64Array(
         "for a 3D matrix.");
     return nullptr;
   }
-  return MakeGarbageCollected<DOMMatrixReadOnly>(
-      float64_array->Data(), static_cast<int>(float64_array->length()));
+  base::span<const double> sequence = float64_array->AsSpan();
+  return MakeGarbageCollected<DOMMatrixReadOnly>(sequence);
 }
 
 DOMMatrixReadOnly* DOMMatrixReadOnly::fromMatrix2D(
@@ -185,9 +184,9 @@ DOMMatrixReadOnly* DOMMatrixReadOnly::fromMatrix2D(
         "Property mismatch on matrix initialization.");
     return nullptr;
   }
-  double args[] = {other->m11(), other->m12(), other->m21(),
-                   other->m22(), other->m41(), other->m42()};
-  return MakeGarbageCollected<DOMMatrixReadOnly>(args, 6);
+  const std::array<double, 6> args = {other->m11(), other->m12(), other->m21(),
+                                      other->m22(), other->m41(), other->m42()};
+  return MakeGarbageCollected<DOMMatrixReadOnly>(base::span(args));
 }
 
 DOMMatrixReadOnly* DOMMatrixReadOnly::fromMatrix(
@@ -198,16 +197,18 @@ DOMMatrixReadOnly* DOMMatrixReadOnly::fromMatrix(
     return nullptr;
   }
   if (other->is2D()) {
-    double args[] = {other->m11(), other->m12(), other->m21(),
-                     other->m22(), other->m41(), other->m42()};
-    return MakeGarbageCollected<DOMMatrixReadOnly>(args, 6);
+    const std::array<double, 6> args = {other->m11(), other->m12(),
+                                        other->m21(), other->m22(),
+                                        other->m41(), other->m42()};
+    return MakeGarbageCollected<DOMMatrixReadOnly>(base::span(args));
   }
 
-  double args[] = {other->m11(), other->m12(), other->m13(), other->m14(),
-                   other->m21(), other->m22(), other->m23(), other->m24(),
-                   other->m31(), other->m32(), other->m33(), other->m34(),
-                   other->m41(), other->m42(), other->m43(), other->m44()};
-  return MakeGarbageCollected<DOMMatrixReadOnly>(args, 16);
+  const std::array<double, 16> args = {
+      other->m11(), other->m12(), other->m13(), other->m14(),
+      other->m21(), other->m22(), other->m23(), other->m24(),
+      other->m31(), other->m32(), other->m33(), other->m34(),
+      other->m41(), other->m42(), other->m43(), other->m44()};
+  return MakeGarbageCollected<DOMMatrixReadOnly>(base::span(args));
 }
 
 DOMMatrixReadOnly::~DOMMatrixReadOnly() = default;

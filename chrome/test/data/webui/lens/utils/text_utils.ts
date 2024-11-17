@@ -35,6 +35,10 @@ export function createTranslatedParagraph(
     writingDirection = WritingDirection.kLeftToRight): TranslatedParagraph {
   return {
     lines,
+    resizedBitmapSize: {
+      width: 1000,
+      height: 1000,
+    },
     alignment,
     contentLanguage,
     writingDirection,

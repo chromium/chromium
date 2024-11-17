@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="PDF.Actions" enum="ChromePDFViewerActions"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -33,6 +33,28 @@ chromium-metrics-reviews@google.com.
     are named &quot;First&quot; are logged only once per document, so that we
     can measure in what percentage of documents a given action was performed at
     least once.
+  </summary>
+</histogram>
+
+<histogram name="PDF.EngineLifetime" units="ms" expires_after="2025-11-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the time between creating the PDF engine to load the PDF, until when
+    it is destructed. This metric does not consider PDF being actively focused
+    and interacted or not, and is not recorded for print preview.
+  </summary>
+</histogram>
+
+<histogram name="PDF.FirstPaintTime" units="ms" expires_after="2025-11-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the time that it takes from creating the PDF engine to load the PDF
+    until starting the render of the first set of visible pages. This metric is
+    affected by PDF load time and network speed, therefore it's best to be used
+    in comparisons to cancel out unrelated events and not as a standalone
+    performance metrics. This metric is not stored for print preview.
   </summary>
 </histogram>
 
@@ -56,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.LoadStatus2" enum="ChromePDFViewerLoadStatus"
-    expires_after="2025-01-19">
+    expires_after="2025-03-30">
   <owner>kmoon@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -66,7 +88,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.PageCount" units="pages" expires_after="2025-02-09">
+<histogram name="PDF.PageCount" units="pages" expires_after="2025-04-13">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -74,8 +96,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PDF.PageHasText" enum="Boolean" expires_after="2025-11-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks if a PDF page had text or not. This metric is recorded for each page
+    only the first time the page is loaded.
+  </summary>
+</histogram>
+
 <histogram name="PDF.PostMessageDataType" enum="PDFPostMessageDataType"
-    expires_after="2025-02-02">
+    expires_after="2025-04-06">
   <owner>andyphan@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -84,7 +115,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PDF.RenderAndPaintVisiblePagesTime" units="ms"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>nigi@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -93,7 +124,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PDF.Version" enum="PDFVersion" expires_after="2025-03-09">
+<histogram name="PDF.SearchifyAddedText" enum="Boolean"
+    expires_after="2025-11-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks if a PDF Searchifier added text to a page. This metric is recorded
+    only once for each page, when the searchify process for the page is
+    completed.
+  </summary>
+</histogram>
+
+<histogram name="PDF.SearchifySuccessful" enum="Boolean"
+    expires_after="2025-11-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>thestig@chromium.org</owner>
+  <summary>
+    Tracks the number of PDF documents that Searchify is run on, and whether
+    Searchify could add any text to them or not.
+  </summary>
+</histogram>
+
+<histogram name="PDF.Version" enum="PDFVersion" expires_after="2025-05-11">
   <owner>dhoss@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>Tracks versions of documents opened in the PDF viewer.</summary>

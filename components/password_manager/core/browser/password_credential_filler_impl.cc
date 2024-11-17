@@ -5,8 +5,11 @@
 #include "components/password_manager/core/browser/password_credential_filler_impl.h"
 
 #include <string>
+#include <utility>
 
 #include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -132,7 +135,8 @@ PasswordCredentialFillerImpl::~PasswordCredentialFillerImpl() = default;
 
 void PasswordCredentialFillerImpl::FillUsernameAndPassword(
     const std::u16string& username,
-    const std::u16string& password) {
+    const std::u16string& password,
+    base::OnceCallback<void(bool)> callback) {
   if (!driver_) {
     // If `driver_` (per frame) was destroyed, it means a navigation happened
     // and the filling data doesn't apply to the new page. The correct behavior
@@ -150,10 +154,25 @@ void PasswordCredentialFillerImpl::FillUsernameAndPassword(
           features::kPasswordSuggestionBottomSheetV2)) {
     driver_->KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false));
   }
+  if (base::FeatureList::IsEnabled(
+          features::kPasswordSuggestionBottomSheetV2)) {
+    driver_->FillSuggestion(
+        username, password,
+        base::BindOnce(&PasswordCredentialFillerImpl::TryTriggerSubmission,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       username));
+  } else {
+    driver_->FillSuggestion(username, password, base::DoNothing());
+    TryTriggerSubmission(std::move(callback), username,
+                         /*was_filling_successful=*/true);
+  }
+}
 
-  driver_->FillSuggestion(username, password);
-
-  trigger_submission_ &= !username.empty();
+void PasswordCredentialFillerImpl::TryTriggerSubmission(
+    base::OnceCallback<void(bool)> callback,
+    const std::u16string& username,
+    bool was_filling_successful) {
+  trigger_submission_ &= !username.empty() && was_filling_successful;
 
   if (trigger_submission_) {
     // TODO(crbug.com/40209736): As auto-submission has been launched, measuring
@@ -162,6 +181,7 @@ void PasswordCredentialFillerImpl::FillUsernameAndPassword(
     // all that for new launches, e.g. crbug.com/1393043.
     driver_->TriggerFormSubmission();
   }
+  std::move(callback).Run(trigger_submission_);
 }
 
 void PasswordCredentialFillerImpl::UpdateTriggerSubmission(bool new_value) {

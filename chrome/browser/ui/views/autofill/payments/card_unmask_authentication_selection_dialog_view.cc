@@ -23,6 +23,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/style/typography.h"
 
 namespace autofill {
@@ -45,7 +46,7 @@ ui::ImageModel GetAuthenticationModeIcon(
     case CardUnmaskChallengeOptionType::kUnknownType:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -111,8 +112,9 @@ std::u16string CardUnmaskAuthenticationSelectionDialogView::GetWindowTitle()
 }
 
 void CardUnmaskAuthenticationSelectionDialogView::AddedToWidget() {
-  GetBubbleFrameView()->SetTitleView(CreateTitleView(
-      GetWindowTitle(), TitleWithIconAndSeparatorView::Icon::GOOGLE_PAY));
+  GetBubbleFrameView()->SetTitleView(
+      std::make_unique<TitleWithIconAfterLabelView>(
+          GetWindowTitle(), TitleWithIconAfterLabelView::Icon::GOOGLE_PAY));
 }
 
 void CardUnmaskAuthenticationSelectionDialogView::InitViews() {
@@ -242,8 +244,7 @@ void CardUnmaskAuthenticationSelectionDialogView::AddFooterText() {
 void CardUnmaskAuthenticationSelectionDialogView::
     ReplaceContentWithProgressThrobber() {
   RemoveAllChildViews();
-  AddChildView(std::make_unique<ProgressBarWithTextView>(
-      controller_->GetProgressLabel()));
+  AddChildView(CreateProgressBarWithTextView(controller_->GetProgressLabel()));
 }
 
 void CardUnmaskAuthenticationSelectionDialogView::OnChallengeOptionSelected(

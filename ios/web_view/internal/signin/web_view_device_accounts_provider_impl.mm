@@ -101,7 +101,14 @@ void WebViewDeviceAccountsProviderImpl::GetAccessToken(
 }
 
 std::vector<DeviceAccountsProvider::AccountInfo>
-WebViewDeviceAccountsProviderImpl::GetAllAccounts() const {
+WebViewDeviceAccountsProviderImpl::GetAccountsForProfile() const {
+  // WebView doesn't have profiles, so the accounts for this profile are the
+  // same as the accounts on the device.
+  return GetAccountsOnDevice();
+}
+
+std::vector<DeviceAccountsProvider::AccountInfo>
+WebViewDeviceAccountsProviderImpl::GetAccountsOnDevice() const {
   DCHECK(CWVSyncController.dataSource);
 
   NSArray<CWVIdentity*>* identities =

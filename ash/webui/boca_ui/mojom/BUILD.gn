@@ -15,6 +15,7 @@ mojom("mojom") {
   webui_module_path = "/"
 
   public_deps = [
+    "//chromeos/services/network_config/public/mojom",
     "//mojo/public/mojom/base",
     "//ui/events/ash/mojom",
     "//url/mojom:url_mojom_gurl",

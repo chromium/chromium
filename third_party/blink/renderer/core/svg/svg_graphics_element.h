@@ -78,10 +78,6 @@ class CORE_EXPORT SVGGraphicsElement : public SVGTransformableElement,
 };
 
 template <>
-inline bool IsElementOfType<const SVGGraphicsElement>(const Node& node) {
-  return IsA<SVGGraphicsElement>(node);
-}
-template <>
 struct DowncastTraits<SVGGraphicsElement> {
   static bool AllowFrom(const Node& node) {
     auto* svg_element = DynamicTo<SVGElement>(node);

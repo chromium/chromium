@@ -97,7 +97,6 @@ class TabContentManager : public thumbnail::ThumbnailCacheObserver {
   void GetEtc1TabThumbnail(
       JNIEnv* env,
       jint tab_id,
-      jboolean save_jpeg,
       const base::android::JavaParamRef<jobject>& j_callback);
   void SetCaptureMinRequestTimeForTesting(JNIEnv* env, jint timeMs);
   jboolean IsTabCaptureInFlightForTesting(JNIEnv* env, jint tab_id);

@@ -1,4 +1,4 @@
-::marker {
+::marker, ::before::marker, ::after::marker {
   unicode-bidi: isolate;
   font-variant-numeric: tabular-nums;
   text-transform: none;

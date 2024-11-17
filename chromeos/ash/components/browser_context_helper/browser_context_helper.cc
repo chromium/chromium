@@ -207,12 +207,6 @@ BrowserContextHelper::DeprecatedGetOrCreateSigninBrowserContext() {
   return delegate_->GetOrCreatePrimaryOTRBrowserContext(browser_context);
 }
 
-base::FilePath BrowserContextHelper::GetLockScreenAppBrowserContextPath()
-    const {
-  return delegate_->GetUserDataDir()->Append(
-      kLockScreenAppBrowserContextBaseName);
-}
-
 base::FilePath BrowserContextHelper::GetLockScreenBrowserContextPath() const {
   return delegate_->GetUserDataDir()->Append(kLockScreenBrowserContextBaseName);
 }

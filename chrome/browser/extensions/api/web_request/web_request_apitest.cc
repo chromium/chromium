@@ -36,39 +36,16 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/devtools/url_constants.h"
-#include "chrome/browser/extensions/api/extension_action/test_extension_action_api_observer.h"
-#include "chrome/browser/extensions/error_console/error_console.h"
-#include "chrome/browser/extensions/error_console/error_console_test_observer.h"
-#include "chrome/browser/extensions/extension_action_runner.h"
-#include "chrome/browser/extensions/extension_apitest.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
-#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
-#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
-#include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
-#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader.h"
-#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service.h"
-#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/search/search.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_navigator_params.h"
-#include "chrome/browser/ui/login/login_handler.h"
-#include "chrome/browser/ui/search/ntp_test_utils.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/search_test_utils.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -141,13 +118,47 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
-#include "ui/base/ui_base_features.h"
-#include "ui/webui/untrusted_web_ui_browsertest_util.h"
 #include "url/origin.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
+#include "chrome/browser/extensions/extension_platform_apitest.h"
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/test/base/android/android_ui_test_utils.h"
+#endif
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/extensions/error_console/error_console.h"
+#include "chrome/browser/extensions/error_console/error_console_test_observer.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
+#include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
+#include "chrome/browser/extensions/extension_util.h"
+#include "chrome/browser/extensions/extension_with_management_policy_apitest.h"
+#include "chrome/browser/extensions/permissions/active_tab_permission_granter.h"
+#include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
+#include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/extensions/test_extension_action_dispatcher_observer.h"
+#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader.h"
+#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service.h"
+#include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_service_factory.h"
+#include "chrome/browser/search/search.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator_params.h"  // nogncheck
+#include "chrome/browser/ui/login/login_handler.h"       // nogncheck
+#include "chrome/browser/ui/search/ntp_test_utils.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/test/base/ui_test_utils.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/webui/untrusted_web_ui_browsertest_util.h"  // nogncheck
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using content::WebContents;
 
@@ -178,6 +189,11 @@ class NavigateTabMessageHandler {
     std::optional<base::Value> command = base::JSONReader::Read(message);
     if (command && command->is_dict()) {  // Check the message decoded from JSON
       base::Value::Dict* data = command->GetDict().FindDict("navigate");
+      // TODO(crbug.com/371324825): Enable processing tabId and the tests
+      // replying on this on desktop android.
+#if BUILDFLAG(IS_ANDROID)
+      ASSERT_FALSE(data);
+#else
       if (data) {
         int tab_id = data->FindInt("tabId").value();
         GURL url = GURL(*data->FindString("url"));
@@ -191,6 +207,7 @@ class NavigateTabMessageHandler {
         content::NavigationController::LoadURLParams params(url);
         contents->GetController().LoadURLWithParams(params);
       }
+#endif
     }
     navigate_listener_.Reset();
   }
@@ -199,6 +216,7 @@ class NavigateTabMessageHandler {
   ExtensionTestMessageListener navigate_listener_;
 };
 
+#if !BUILDFLAG(IS_ANDROID)
 // Sends an XHR request to the provided host, port, and path, and responds when
 // the request was sent.
 const char kPerformXhrJs[] =
@@ -316,14 +334,20 @@ void WaitForExtraHeadersListener(base::WaitableEvent* event,
       FROM_HERE,
       base::BindOnce(&WaitForExtraHeadersListener, event, browser_context));
 }
-
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace
 
-class ExtensionWebRequestApiTest : public ExtensionApiTest {
+#if BUILDFLAG(IS_ANDROID)
+using ExtensionApiTestBase = ExtensionPlatformApiTest;
+#else
+using ExtensionApiTestBase = ExtensionApiTest;
+#endif
+
+class ExtensionWebRequestApiTest : public ExtensionApiTestBase {
  public:
   explicit ExtensionWebRequestApiTest(
       ContextType context_type = ContextType::kFromManifest)
-      : ExtensionApiTest(context_type) {
+      : ExtensionApiTestBase(context_type) {
     feature_list_.InitWithFeatures(
         /*enabled_features=*/{},
         // TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having to
@@ -337,13 +361,14 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
   ~ExtensionWebRequestApiTest() override = default;
 
   void SetUpOnMainThread() override {
-    ExtensionApiTest::SetUpOnMainThread();
+    ExtensionApiTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
-    navigationHandler_ = std::make_unique<NavigateTabMessageHandler>(profile());
+    navigation_handler_ =
+        std::make_unique<NavigateTabMessageHandler>(profile());
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    ExtensionApiTest::SetUpCommandLine(command_line);
+    ExtensionApiTestBase::SetUpCommandLine(command_line);
     command_line->AppendSwitchASCII(switches::kGaiaUrl, "http://gaia.com");
     command_line->AppendSwitchASCII(embedder_support::kOriginTrialPublicKey,
                                     kOriginTrialPublicKeyForTesting);
@@ -387,12 +412,138 @@ class ExtensionWebRequestApiTest : public ExtensionApiTest {
     test_dirs_.push_back(std::move(dir));
   }
 
+  void NavigateToURL(const GURL& url) {
+#if BUILDFLAG(IS_ANDROID)
+    ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), url));
+#else
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+#endif
+  }
+
+  void OpenUrlInNewTab(const GURL& url) {
+#if BUILDFLAG(IS_ANDROID)
+    android_ui_test_utils::OpenUrlInNewTab(profile(), web_contents(), url);
+#else
+    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+        browser(), url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+#endif
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
   std::vector<TestExtensionDir> test_dirs_;
-  std::unique_ptr<NavigateTabMessageHandler> navigationHandler_;
+  std::unique_ptr<NavigateTabMessageHandler> navigation_handler_;
 };
 
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       WebRequestApiClearsBindingOnFirstListener) {
+  // Skip if the proxy is forced since the bindings will never be cleared in
+  // that case.
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kForceWebRequestProxyForTest)) {
+    return;
+  }
+
+  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory(
+      CreateURLLoaderFactory());
+  bool has_connection_error = false;
+  loader_factory.set_disconnect_handler(
+      base::BindLambdaForTesting([&]() { has_connection_error = true; }));
+  InstallWebRequestExtension("extension1");
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
+  EXPECT_TRUE(has_connection_error);
+  loader_factory.reset();
+
+  // The second time there should be no connection error.
+  loader_factory.Bind(CreateURLLoaderFactory());
+  has_connection_error = false;
+  loader_factory.set_disconnect_handler(
+      base::BindLambdaForTesting([&]() { has_connection_error = true; }));
+  InstallWebRequestExtension("extension2");
+  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
+  EXPECT_FALSE(has_connection_error);
+}
+
+// Tests registering webRequest events in multiple contexts in the same
+// extension (which will thus be in the same process). Regression test for
+// https://crbug.com/1297276.
+IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
+                       ListenersInMultipleContexts) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Load an extension that has a page with two iframes. Each iframe registers
+  // a listener for the same event.
+  static constexpr char kManifest[] =
+      R"({
+           "name": "ext",
+           "manifest_version": 3,
+           "version": "1",
+           "permissions": ["webRequest"],
+           "host_permissions": ["http://example.com/*"]
+         })";
+  static constexpr char kParentHtml[] =
+      R"(<!doctype html>
+         <html>
+           Hello world
+           <iframe src="iframe.html" name="iframe1"></iframe>
+           <iframe src="iframe.html" name="iframe2"></iframe>
+         </html>)";
+  static constexpr char kIframeHtml[] =
+      R"(<!doctype html>
+         <html>
+           Iframe
+           <script src="iframe.js"></script>
+         </html>)";
+  static constexpr char kIframeJs[] =
+      R"(const frameName = window.name;
+         chrome.webRequest.onBeforeRequest.addListener(
+             (details) => {
+               chrome.test.sendMessage(frameName + ' event');
+             },
+             {urls: ['http://example.com/*'], types: ['main_frame']});
+         chrome.test.sendMessage(frameName + ' ready');)";
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("parent.html"), kParentHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("iframe.html"), kIframeHtml);
+  test_dir.WriteFile(FILE_PATH_LITERAL("iframe.js"), kIframeJs);
+
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+
+  auto* router = WebRequestEventRouter::Get(profile());
+  ASSERT_TRUE(router);
+
+  static constexpr char kEventName[] = "webRequest.onBeforeRequest";
+  EXPECT_EQ(0u, router->GetListenerCountForTesting(profile(), kEventName));
+
+  // Load the extension page and wait for it to register its listeners.
+  {
+    ExtensionTestMessageListener listener1("iframe1 ready");
+    ExtensionTestMessageListener listener2("iframe2 ready");
+    NavigateToURL(extension->GetResourceURL("parent.html"));
+    ASSERT_TRUE(listener1.WaitUntilSatisfied());
+    ASSERT_TRUE(listener2.WaitUntilSatisfied());
+  }
+
+  // Two different listeners should be registered.
+  EXPECT_EQ(2u, router->GetListenerCountForTesting(profile(), kEventName));
+
+  // Trigger an event. Both listeners should fire.
+  {
+    ExtensionTestMessageListener listener1("iframe1 event");
+    ExtensionTestMessageListener listener2("iframe2 event");
+    OpenUrlInNewTab(
+        embedded_test_server()->GetURL("example.com", "/title1.html"));
+    EXPECT_TRUE(listener1.WaitUntilSatisfied());
+    EXPECT_TRUE(listener2.WaitUntilSatisfied());
+  }
+}
+
+// TODO(crbug.com/371324825): Enable more tests for Android build.
+#if !BUILDFLAG(IS_ANDROID)
 using ContextType = ExtensionBrowserTest::ContextType;
 
 enum class BackgroundResourceFetchTestCase {
@@ -492,7 +643,8 @@ class DevToolsFrontendInWebRequestApiTest : public ExtensionApiTest {
         base::BindRepeating(&DevToolsFrontendInWebRequestApiTest::OnIntercept,
                             base::Unretained(this), port));
 
-    navigationHandler_ = std::make_unique<NavigateTabMessageHandler>(profile());
+    navigation_handler_ =
+        std::make_unique<NavigateTabMessageHandler>(profile());
   }
 
   void TearDownOnMainThread() override {
@@ -559,7 +711,7 @@ class DevToolsFrontendInWebRequestApiTest : public ExtensionApiTest {
   base::test::ScopedFeatureList feature_list_;
   base::FilePath test_root_dir_;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
-  std::unique_ptr<NavigateTabMessageHandler> navigationHandler_;
+  std::unique_ptr<NavigateTabMessageHandler> navigation_handler_;
 };
 
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
@@ -986,6 +1138,151 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(ARTestParams(ProfileMode::kIncognito,
                                    ContextType::kServiceWorkerMV2)));
 
+struct AuthRequiredServiceWorkerTestParams {
+  bool under_service_worker_control;
+  ContextType context_type;
+};
+
+// OnAuthRequired tests for subresource and sub frame, under service worker
+// control and not under service worker control.
+class ExtensionWebRequestApiAuthRequiredTestVariousContext
+    : public testing::WithParamInterface<AuthRequiredServiceWorkerTestParams>,
+      public ExtensionApiTest {
+ public:
+  ExtensionWebRequestApiAuthRequiredTestVariousContext()
+      : ExtensionApiTest(GetParam().context_type) {}
+  ~ExtensionWebRequestApiAuthRequiredTestVariousContext() override = default;
+  ExtensionWebRequestApiAuthRequiredTestVariousContext(
+      const ExtensionWebRequestApiAuthRequiredTestVariousContext&) = delete;
+  ExtensionWebRequestApiAuthRequiredTestVariousContext& operator=(
+      const ExtensionWebRequestApiAuthRequiredTestVariousContext&) = delete;
+
+  void InstallRequestOnAuthRequiredTypeReportingExtension() {
+    TestExtensionDir test_dir;
+    test_dir.WriteManifest(R"({
+        "name": "Web Request onAuthRequired Type Reporting Extension",
+        "manifest_version": 2,
+        "version": "0.1",
+        "background": { "scripts": ["background.js"], "persistent": true },
+        "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
+      })");
+
+    // Extension script that will send message about the request type of
+    // onAuthRequired event, and cancel the request.
+    static constexpr char kBackgroundScript[] = R"(
+        console.log('extension running');
+        chrome.webRequest.onAuthRequired.addListener(
+            function(details, callback) {
+              console.log('onAuthRequired fired for ' + details.type);
+              chrome.test.sendMessage(details.type);
+              return {cancel: true};
+            },
+            {urls: ['<all_urls>']},
+            ['blocking']);
+        chrome.test.sendMessage('ready');
+      )";
+    test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackgroundScript);
+
+    ExtensionTestMessageListener listener("ready");
+    ASSERT_TRUE(LoadExtension(test_dir.UnpackedPath()));
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  void RegisterServiceWorker() {
+    GURL url =
+        embedded_test_server()->GetURL("/workers/service_worker_setup.html");
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    EXPECT_EQ("ok", EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           "setup();"));
+  }
+
+  void RunCommonTestSetup() {
+    embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    InstallRequestOnAuthRequiredTypeReportingExtension();
+
+    // Register a service worker for a variation of the test and not register it
+    // for another variation, so that we can verify that onAuthRequired event is
+    // fired regardless of whether the page is under service worker control.
+    if (GetParam().under_service_worker_control) {
+      RegisterServiceWorker();
+    }
+
+    // Navigate to the test page.
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(
+        browser(), embedded_test_server()->GetURL("/workers/simple.html")));
+  }
+
+  // Ensures auth required event is received for subresource fetch.
+  void RunAuthRequiredTestForSubResource() {
+    RunCommonTestSetup();
+
+    // Make a fetch from the test page for a resource that requires auth.
+    ExtensionTestMessageListener listener("xmlhttprequest");
+    static constexpr char kSubResourceUrl[] =
+        "/auth-basic/auth_required_subresource?realm=auth_required_subresource";
+    std::string fetch_url =
+        embedded_test_server()->GetURL(kSubResourceUrl).spec();
+    EXPECT_EQ(401, EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                          "try_fetch_status('" + fetch_url + "');"));
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  // Ensures auth required event is received for sub frame navigation.
+  void RunAuthRequiredTestForSubFrame() {
+    RunCommonTestSetup();
+
+    // Add an iframe for a source that requires auth.
+    ExtensionTestMessageListener listener("sub_frame");
+    static constexpr char kSubFrameUrl[] =
+        "/auth-basic/auth_required_subframe?realm=auth_required_subframe";
+    std::string frame_url = embedded_test_server()->GetURL(kSubFrameUrl).spec();
+    static constexpr char kAddIframeScript[] = R"(
+        const el = document.createElement('iframe');
+        el.src = $1;
+        document.body.appendChild(el);
+      )";
+    content::EvalJsResult result =
+        EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+               content::JsReplace(kAddIframeScript, frame_url));
+    ASSERT_THAT(result, content::EvalJsResult::IsOk());
+    EXPECT_TRUE(listener.WaitUntilSatisfied());
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackgroundWithServiceWorker,
+                         ExtensionWebRequestApiAuthRequiredTestVariousContext,
+                         ::testing::Values(AuthRequiredServiceWorkerTestParams(
+                             true,
+                             ContextType::kPersistentBackground)));
+INSTANTIATE_TEST_SUITE_P(PersistentBackgroundWithoutServiceWorker,
+                         ExtensionWebRequestApiAuthRequiredTestVariousContext,
+                         ::testing::Values(AuthRequiredServiceWorkerTestParams(
+                             false,
+                             ContextType::kPersistentBackground)));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorkerExtensionWithServiceWorker,
+                         ExtensionWebRequestApiAuthRequiredTestVariousContext,
+                         ::testing::Values(AuthRequiredServiceWorkerTestParams(
+                             true,
+                             ContextType::kServiceWorkerMV2)));
+INSTANTIATE_TEST_SUITE_P(ServiceWorkerExtensionWithoutServiceWorker,
+                         ExtensionWebRequestApiAuthRequiredTestVariousContext,
+                         ::testing::Values(AuthRequiredServiceWorkerTestParams(
+                             false,
+                             ContextType::kServiceWorkerMV2)));
+
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTestVariousContext,
+                       SubFrame) {
+  RunAuthRequiredTestForSubFrame();
+}
+
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiAuthRequiredTestVariousContext,
+                       SubResource) {
+  RunAuthRequiredTestForSubResource();
+}
+
 IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        WebRequestBlocking) {
   ASSERT_TRUE(StartEmbeddedTestServer());
@@ -1317,9 +1614,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
 // Check that reloading an extension that runs in incognito split mode and
 // has two active background pages with registered events does not crash the
-// browser. Regression test for http://crbug.com/224094
-// Flaky on linux-lacros and Linux. See http://crbug.com/1423252
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+// browser. Regression test for http://crbug.com/40309927
+// TODO(crbug.com/40897394): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_IncognitoSplitModeReload DISABLED_IncognitoSplitModeReload
 #else
 #define MAYBE_IncognitoSplitModeReload IncognitoSplitModeReload
@@ -1564,8 +1861,8 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   // The extension should no longer receive webRequest events since they are
   // withheld. The extension icon should get updated to show the wants-to-run
   // badge UI.
-  TestExtensionActionAPIObserver action_updated_waiter(profile(),
-                                                       extension->id());
+  TestExtensionActionDispatcherObserver action_updated_waiter(profile(),
+                                                              extension->id());
   PerformXhrInFrame(main_frame.get(), kHost, port, kXhrPath);
   action_updated_waiter.Wait();
   EXPECT_EQ(web_contents, action_updated_waiter.last_web_contents());
@@ -1858,12 +2155,19 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
       // Check that the extension cannot add a Dice header.
       const net::HttpResponseHeaders* headers =
           navigation_handle->GetResponseHeaders();
-      EXPECT_TRUE(headers->GetNormalizedHeader(
-          "X-Chrome-ID-Consistency-Response", &dice_header_value_));
-      EXPECT_TRUE(
-          headers->GetNormalizedHeader("X-New-Header", &new_header_value_));
-      EXPECT_TRUE(
-          headers->GetNormalizedHeader("X-Control", &control_header_value_));
+      std::optional<std::string> dice_header_value =
+          headers->GetNormalizedHeader("X-Chrome-ID-Consistency-Response");
+      EXPECT_TRUE(dice_header_value);
+      dice_header_value_ = dice_header_value.value_or(std::string());
+      std::optional<std::string> new_header_value =
+          headers->GetNormalizedHeader("X-New-Header");
+      EXPECT_TRUE(new_header_value);
+      new_header_value_ = new_header_value.value_or(std::string());
+      std::optional<std::string> control_header_value =
+          headers->GetNormalizedHeader("X-Control");
+      EXPECT_TRUE(control_header_value);
+      control_header_value_ = control_header_value.value_or(std::string());
+
       did_finish_navigation_called_ = true;
     }
 
@@ -2262,36 +2566,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
-                       WebRequestApiClearsBindingOnFirstListener) {
-  // Skip if the proxy is forced since the bindings will never be cleared in
-  // that case.
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kForceWebRequestProxyForTest)) {
-    return;
-  }
-
-  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory(
-      CreateURLLoaderFactory());
-  bool has_connection_error = false;
-  loader_factory.set_disconnect_handler(
-      base::BindLambdaForTesting([&]() { has_connection_error = true; }));
-
-  InstallWebRequestExtension("extension1");
-  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
-  EXPECT_TRUE(has_connection_error);
-  loader_factory.reset();
-
-  // The second time there should be no connection error.
-  loader_factory.Bind(CreateURLLoaderFactory());
-  has_connection_error = false;
-  loader_factory.set_disconnect_handler(
-      base::BindLambdaForTesting([&]() { has_connection_error = true; }));
-  InstallWebRequestExtension("extension2");
-  profile()->GetDefaultStoragePartition()->FlushNetworkInterfaceForTesting();
-  EXPECT_FALSE(has_connection_error);
-}
-
 // Regression test for http://crbug.com/878366.
 IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
                        WebRequestApiDoesNotCrashOnErrorAfterProfileDestroyed) {
@@ -2299,9 +2573,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
 
   // Create a profile that will be destroyed later.
   base::ScopedAllowBlockingForTesting allow_blocking;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   std::unique_ptr<Profile> temp_profile = Profile::CreateProfile(
       profile_manager->user_data_dir().AppendASCII("profile"), nullptr,
@@ -4154,87 +4428,6 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                            ->tab_strip_model()
                            ->GetActiveWebContents()
                            ->GetLastCommittedURL());
-}
-
-// Tests registering webRequest events in multiple contexts in the same
-// extension (which will thus be in the same process). Regression test for
-// https://crbug.com/1297276.
-IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest,
-                       ListenersInMultipleContexts) {
-  ASSERT_TRUE(StartEmbeddedTestServer());
-
-  // Load an extension that has a page with two iframes. Each iframe registers
-  // a listener for the same event.
-  static constexpr char kManifest[] =
-      R"({
-           "name": "ext",
-           "manifest_version": 3,
-           "version": "1",
-           "permissions": ["webRequest"],
-           "host_permissions": ["http://example.com/*"]
-         })";
-  static constexpr char kParentHtml[] =
-      R"(<!doctype html>
-         <html>
-           Hello world
-           <iframe src="iframe.html" name="iframe1"></iframe>
-           <iframe src="iframe.html" name="iframe2"></iframe>
-         </html>)";
-  static constexpr char kIframeHtml[] =
-      R"(<!doctype html>
-         <html>
-           Iframe
-           <script src="iframe.js"></script>
-         </html>)";
-  static constexpr char kIframeJs[] =
-      R"(const frameName = window.name;
-         chrome.webRequest.onBeforeRequest.addListener(
-             (details) => {
-               chrome.test.sendMessage(frameName + ' event');
-             },
-             {urls: ['http://example.com/*'], types: ['main_frame']});
-         chrome.test.sendMessage(frameName + ' ready');)";
-
-  TestExtensionDir test_dir;
-  test_dir.WriteManifest(kManifest);
-  test_dir.WriteFile(FILE_PATH_LITERAL("parent.html"), kParentHtml);
-  test_dir.WriteFile(FILE_PATH_LITERAL("iframe.html"), kIframeHtml);
-  test_dir.WriteFile(FILE_PATH_LITERAL("iframe.js"), kIframeJs);
-
-  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-
-  auto* router = WebRequestEventRouter::Get(profile());
-  ASSERT_TRUE(router);
-
-  static constexpr char kEventName[] = "webRequest.onBeforeRequest";
-  EXPECT_EQ(0u, router->GetListenerCountForTesting(profile(), kEventName));
-
-  // Load the extension page and wait for it to register its listeners.
-  {
-    ExtensionTestMessageListener listener1("iframe1 ready");
-    ExtensionTestMessageListener listener2("iframe2 ready");
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(
-        browser(), extension->GetResourceURL("parent.html")));
-    ASSERT_TRUE(listener1.WaitUntilSatisfied());
-    ASSERT_TRUE(listener2.WaitUntilSatisfied());
-  }
-
-  // Two different listeners should be registered.
-  EXPECT_EQ(2u, router->GetListenerCountForTesting(profile(), kEventName));
-
-  // Trigger an event. Both listeners should fire.
-  {
-    ExtensionTestMessageListener listener1("iframe1 event");
-    ExtensionTestMessageListener listener2("iframe2 event");
-    ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
-        browser(),
-        embedded_test_server()->GetURL("example.com", "/title1.html"),
-        WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    EXPECT_TRUE(listener1.WaitUntilSatisfied());
-    EXPECT_TRUE(listener2.WaitUntilSatisfied());
-  }
 }
 
 struct SWBTestParams {
@@ -6978,9 +7171,9 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, RecordUkmOnNavigation) {
           ukm_entry, "DeclarativeWebRequestPermissionCount",
           ukm::GetExponentialBucketMin(1u, kBucketSpacing));
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }
-
+#endif  // !BUILDFLAG(IS_ANDROID)
 }  // namespace extensions

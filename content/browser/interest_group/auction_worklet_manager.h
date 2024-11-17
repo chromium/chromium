@@ -16,7 +16,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_types.h"
+#include "base/types/expected.h"
 #include "content/browser/interest_group/auction_process_manager.h"
+#include "content/browser/interest_group/bidding_and_auction_server_key_fetcher.h"
 #include "content/browser/interest_group/subresource_url_builder.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/frame_tree_node_id.h"
@@ -113,6 +115,11 @@ class CONTENT_EXPORT AuctionWorkletManager {
 
     // Returns the cookie deprecation label for facilitated testing.
     virtual std::optional<std::string> GetCookieDeprecationLabel() = 0;
+
+    virtual void GetBiddingAndAuctionServerKey(
+        const std::optional<url::Origin>& coordinator,
+        base::OnceCallback<void(base::expected<BiddingAndAuctionServerKey,
+                                               std::string>)> callback) = 0;
   };
 
   // Internal class that owns and creates worklets. It also tracks pending
@@ -194,6 +201,11 @@ class CONTENT_EXPORT AuctionWorkletManager {
     auction_worklet::mojom::BidderWorklet* GetBidderWorklet();
     auction_worklet::mojom::SellerWorklet* GetSellerWorklet();
 
+    // Whether the trusted scoring signals URL is allowed. May only be called
+    // when this is a seller worklet with a KVv2 trusted scoring signals URL,
+    // and KVv2 signals and the KVv2 cache are enabled.
+    bool TrustedScoringSignalsUrlAllowed() const;
+
     const SubresourceUrlAuthorizations&
     GetSubresourceUrlAuthorizationsForTesting();
 
@@ -216,9 +228,6 @@ class CONTENT_EXPORT AuctionWorkletManager {
     void OnWorkletAvailable();
     void OnFatalError(FatalErrorType type,
                       const std::vector<std::string>& errors);
-
-    // Returns true if `worklet_owner_` has created a worklet yet.
-    bool worklet_created() const;
 
     scoped_refptr<WorkletOwner> worklet_owner_;
     std::string devtools_auction_id_;
@@ -299,6 +308,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
       const GURL& decision_logic_url,
       const std::optional<GURL>& trusted_scoring_signals_url,
       std::optional<uint16_t> experiment_group_id,
+      const std::optional<url::Origin>& trusted_scoring_signals_coordinator,
       base::OnceClosure worklet_available_callback,
       FatalErrorCallback fatal_error_callback,
       std::unique_ptr<WorkletHandle>& out_worklet_handle,
@@ -317,6 +327,14 @@ class CONTENT_EXPORT AuctionWorkletManager {
                            std::unique_ptr<WorkletHandle>& out_worklet_handle,
                            size_t number_of_bidder_threads,
                            AuctionMetricsRecorder* auction_metrics_recorder);
+
+  // Start an anticipatory process for an origin if we have not yet
+  // done so and are able.
+  //
+  // Refer to AuctionProcessManager::MaybeStartAnticipatoryProcess
+  // for more details.
+  void MaybeStartAnticipatoryProcess(const url::Origin& origin,
+                                     WorkletType worklet_type);
 
  private:
   void OnWorkletNoLongerUsable(WorkletOwner* worklet);
@@ -342,7 +360,7 @@ class CONTENT_EXPORT AuctionWorkletManager {
   std::unique_ptr<AuctionNetworkEventsProxy> auction_network_events_proxy_;
   std::unique_ptr<AuctionSharedStorageHost> auction_shared_storage_host_;
 
-  std::map<WorkletKey, WorkletOwner*> worklets_;
+  std::map<WorkletKey, raw_ptr<WorkletOwner, CtnExperimental>> worklets_;
 };
 
 }  // namespace content

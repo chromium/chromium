@@ -519,7 +519,7 @@ public class TileGroup implements MostVisitedSites.Observer {
          * making CallbackController.CancelableRunnable reusable is that this class is expected to
          * be used on UI thread only, so locking mechanism is not required.
          */
-        private class CancelableRunnable implements Runnable {
+        private static class CancelableRunnable implements Runnable {
             private Runnable mRunnable;
 
             private CancelableRunnable(@NonNull Runnable runnable) {

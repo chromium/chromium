@@ -249,9 +249,9 @@ LocalizedError::PageState NetErrorHelper::GenerateLocalizedErrorPage(
         error.reason(), error.domain(), error.url(), is_failed_post,
         error.resolve_error_info().is_secure_network_error,
         error.stale_copy_in_cache(), can_show_network_diagnostics_dialog,
-        chrome::IsIncognitoProcess(),
-        IsOfflineContentOnNetErrorFeatureEnabled(), IsAutoFetchFeatureEnabled(),
-        IsRunningInForcedAppMode(), RenderThread::Get()->GetLocale(),
+        IsIncognitoProcess(), IsOfflineContentOnNetErrorFeatureEnabled(),
+        IsAutoFetchFeatureEnabled(), IsRunningInForcedAppMode(),
+        RenderThread::Get()->GetLocale(),
         IsExtensionExtendedErrorCode(error.extended_reason()),
         &error_page_params_);
   }
@@ -278,7 +278,7 @@ LocalizedError::PageState NetErrorHelper::UpdateErrorPage(
       error.reason(), error.domain(), error.url(), is_failed_post,
       error.resolve_error_info().is_secure_network_error,
       error.stale_copy_in_cache(), can_show_network_diagnostics_dialog,
-      chrome::IsIncognitoProcess(), IsOfflineContentOnNetErrorFeatureEnabled(),
+      IsIncognitoProcess(), IsOfflineContentOnNetErrorFeatureEnabled(),
       IsAutoFetchFeatureEnabled(), IsRunningInForcedAppMode(),
       RenderThread::Get()->GetLocale(),
       IsExtensionExtendedErrorCode(error.extended_reason()),
@@ -293,7 +293,7 @@ LocalizedError::PageState NetErrorHelper::UpdateErrorPage(
   if (base::UTF8ToUTF16(js.c_str(), js.length(), &js16)) {
     render_frame()->ExecuteJavaScript(js16);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return page_state;
 }
@@ -305,8 +305,7 @@ void NetErrorHelper::InitializeErrorPageEasterEggHighScore(int high_score) {
       high_score);
   std::u16string js16;
   if (!base::UTF8ToUTF16(js.c_str(), js.length(), &js16)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   render_frame()->ExecuteJavaScript(js16);

@@ -50,13 +50,13 @@
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
 #include "components/policy/core/common/cloud/affiliation.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/core/common/remote_commands/remote_commands_constants.h"
 #include "components/policy/core/common/remote_commands/remote_commands_invalidator_impl.h"
 #include "components/policy/policy_constants.h"
 #include "components/session_manager/core/session_manager.h"
@@ -302,8 +302,7 @@ void UserCloudPolicyManagerAsh::OnAccessTokenAvailable(
 }
 
 bool UserCloudPolicyManagerAsh::RequiresOAuthTokenForChildUser() const {
-  return IsChildUser(account_id_) &&
-         base::FeatureList::IsEnabled(features::kDMServerOAuthForChildUser);
+  return IsChildUser(account_id_);
 }
 
 void UserCloudPolicyManagerAsh::OnWildcardCheckCompleted(
@@ -815,8 +814,8 @@ void UserCloudPolicyManagerAsh::OnProfileInitializationComplete(
 
   invalidator_->Initialize(
       invalidation_provider->GetInvalidationServiceOrListener(
-          kPolicyFCMInvalidationSenderID,
-          invalidation::InvalidationListener::kProjectNumberEnterprise));
+          GetRemoteCommandsInvalidationProjectNumber(
+              PolicyInvalidationScope::kUser)));
 
   shutdown_subscription_ =
       UserCloudPolicyManagerAshNotifierFactory::GetInstance()

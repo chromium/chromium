@@ -14,12 +14,10 @@ include_rules = [
   # Files residing in certain directories (e.g., //chrome/browser) are listed
   # individually. Other dependencies within //chrome are listed on a per-
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/login/lock",
   "+chrome/browser/ash/login/saml",
   "+chrome/browser/ash/login/users",
   "+chrome/browser/ash/profiles",
-  "+chrome/browser/browser_process.h",
   "+chrome/browser/net",
   "+chrome/browser/profiles",
   "+chrome/common/pref_names.h",

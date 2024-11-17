@@ -69,8 +69,7 @@ void MetricsMemoryDetails::UpdateHistograms() {
         case ProcessMemoryInformation::RENDERER_CHROME:
           continue;
         case ProcessMemoryInformation::RENDERER_UNKNOWN:
-          NOTREACHED_IN_MIGRATION() << "Unknown renderer process type.";
-          continue;
+          NOTREACHED() << "Unknown renderer process type.";
         case ProcessMemoryInformation::RENDERER_NORMAL:
         default:
           renderer_count++;

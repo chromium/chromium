@@ -465,11 +465,13 @@ void NetworkState::SetConnectionState(const std::string& connection_state) {
     // important (i.e. not a normal auto connect).
     connect_requested_ = true;
   }
-  if (shill_portal_state_ == PortalState::kUnknown &&
+
+  // TODO(b/336931625): Polish the relationship between |portal_state_|
+  // and |connection_state_|.
+  if (portal_state_ == PortalState::kUnknown &&
       connection_state_ == shill::kStateOnline) {
-    shill_portal_state_ = PortalState::kOnline;
+    portal_state_ = PortalState::kOnline;
   }
-  chrome_portal_state_ = PortalState::kUnknown;
 }
 
 bool NetworkState::IsManagedByPolicy() const {
@@ -525,17 +527,6 @@ bool NetworkState::IsPrivate() const {
 bool NetworkState::IsNonShillCellularNetwork() const {
   return type() == shill::kTypeCellular &&
          cellular_utils::IsStubCellularServicePath(path());
-}
-
-NetworkState::PortalState NetworkState::GetPortalState() const {
-  return chrome_portal_state_ != PortalState::kUnknown ? chrome_portal_state_
-                                                       : shill_portal_state_;
-}
-
-void NetworkState::SetChromePortalState(PortalState portal_state) {
-  CHECK(!features::IsRemoveDetectPortalFromChromeEnabled());
-
-  chrome_portal_state_ = portal_state;
 }
 
 bool NetworkState::IsSecure() const {
@@ -656,8 +647,7 @@ NetworkState::NetworkTechnologyType NetworkState::GetNetworkTechnologyType()
   if (network_type == shill::kTypeWifi) {
     return NetworkTechnologyType::kWiFi;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown network type: " << network_type;
-  return NetworkTechnologyType::kUnknown;
+  NOTREACHED() << "Unknown network type: " << network_type;
 }
 
 // static
@@ -725,27 +715,28 @@ void NetworkState::UpdateCaptivePortalState(
   if (!IsConnectedState()) {
     // Unconnected networks are in an unknown portal state and should not
     // update histograms.
-    shill_portal_state_ = PortalState::kUnknown;
+    portal_state_ = PortalState::kUnknown;
     return;
   }
 
   if (connection_state_ == shill::kStateNoConnectivity) {
-    shill_portal_state_ = PortalState::kNoInternet;
+    portal_state_ = PortalState::kNoInternet;
   } else if (connection_state_ == shill::kStateRedirectFound) {
-    shill_portal_state_ = PortalState::kPortal;
+    portal_state_ = PortalState::kPortal;
   } else if (connection_state_ == shill::kStatePortalSuspected) {
-    shill_portal_state_ = PortalState::kPortalSuspected;
+    portal_state_ = PortalState::kPortalSuspected;
   } else if (connection_state_ == shill::kStateOnline) {
-    shill_portal_state_ = PortalState::kOnline;
+    portal_state_ = PortalState::kOnline;
   } else {
-    shill_portal_state_ = PortalState::kUnknown;
+    NET_LOG(ERROR) << "Unexpected captive portal state for: " << NetworkId(this)
+                   << " = " << portal_state_;
+    portal_state_ = PortalState::kUnknown;
   }
 
-  base::UmaHistogramEnumeration("Network.CaptivePortalResult",
-                                shill_portal_state_);
-  if (shill_portal_state_ != PortalState::kOnline) {
+  base::UmaHistogramEnumeration("Network.CaptivePortalResult", portal_state_);
+  if (portal_state_ != PortalState::kOnline) {
     NET_LOG(EVENT) << "Shill captive portal state for: " << NetworkId(this)
-                   << " = " << shill_portal_state_;
+                   << " = " << portal_state_;
   }
 }
 

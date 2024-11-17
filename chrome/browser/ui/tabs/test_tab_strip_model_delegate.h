@@ -7,8 +7,11 @@
 
 #include <optional>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "components/tab_groups/tab_group_id.h"
+
+class BrowserWindowInterface;
 
 namespace content {
 class WebContents;
@@ -22,6 +25,11 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   TestTabStripModelDelegate& operator=(const TestTabStripModelDelegate&) =
       delete;
   ~TestTabStripModelDelegate() override;
+
+  void SetBrowserWindowInterface(
+      BrowserWindowInterface* browser_window_interface) {
+    browser_window_interface_ = browser_window_interface;
+  }
 
   // Overridden from TabStripModelDelegate:
   void AddTabAt(const GURL& url,
@@ -61,10 +69,14 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   bool IsNormalWindow() override;
   BrowserWindowInterface* GetBrowserWindowInterface() override;
   void OnGroupsDestruction(const std::vector<tab_groups::TabGroupId>& group_ids,
-                           base::OnceCallback<void()> callback) override;
+                           base::OnceCallback<void()> callback,
+                           bool delete_groups) override;
   void OnRemovingAllTabsFromGroups(
       const std::vector<tab_groups::TabGroupId>& group_ids,
       base::OnceCallback<void()> callback) override;
+
+ private:
+  raw_ptr<BrowserWindowInterface> browser_window_interface_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TEST_TAB_STRIP_MODEL_DELEGATE_H_

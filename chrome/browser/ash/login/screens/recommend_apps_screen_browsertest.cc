@@ -122,7 +122,7 @@ class StubRecommendAppsFetcher : public apps::RecommendAppsFetcher {
     EXPECT_FALSE(started_);
     started_ = true;
   }
-  void Retry() override { NOTREACHED_IN_MIGRATION(); }
+  void Retry() override { NOTREACHED(); }
 
  protected:
   const raw_ptr<apps::RecommendAppsFetcherDelegate> delegate_;

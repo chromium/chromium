@@ -26,6 +26,7 @@ class PrerenderNoVarySearchCommitDeferringCondition
       NavigationType navigation_type,
       std::optional<FrameTreeNodeId> candidate_prerender_frame_tree_node_id);
   Result WillCommitNavigation(base::OnceClosure resume) override;
+  const char* TraceEventName() const override;
 
  private:
   PrerenderNoVarySearchCommitDeferringCondition(

@@ -5,22 +5,24 @@
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_view_controller.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/feature_list.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/ios/shared_password_controller.h"
 #import "components/url_formatter/elide_url.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/passwords/ui_bundled/bottom_sheet/password_suggestion_bottom_sheet_handler.h"
 #import "ios/chrome/browser/shared/ui/bottom_sheet/table_view_bottom_sheet_view_controller+subclassing.h"
-#import "ios/chrome/browser/shared/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+#import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -132,7 +134,9 @@ CGFloat const kSpacingAfterTitle = 4;
 
 - (void)viewDidDisappear:(BOOL)animated {
   [super viewDidDisappear:animated];
-  if (self.disableBottomSheetOnExit) {
+  if (self.disableBottomSheetOnExit &&
+      !base::FeatureList::IsEnabled(
+          password_manager::features::kIOSPasswordBottomSheetV2)) {
     [self.delegate disableBottomSheet];
   }
   [self.handler viewDidDisappear];
@@ -157,10 +161,6 @@ CGFloat const kSpacingAfterTitle = 4;
 
 - (void)setAvatarImage:(UIImage*)avatarImage {
   self.image = avatarImage;
-}
-
-- (void)dismiss {
-  [self dismissViewControllerAnimated:NO completion:NULL];
 }
 
 #pragma mark - UITableViewDelegate
@@ -284,6 +284,16 @@ CGFloat const kSpacingAfterTitle = 4;
         forTableViewWidth:tableWidth
               atIndexPath:[NSIndexPath indexPathForRow:index inSection:0]];
   return [cell systemLayoutSizeFittingSize:CGSizeMake(tableWidth, 1)].height;
+}
+
+#pragma mark - UIResponder
+
+- (BOOL)canBecomeFirstResponder {
+  // In V2, allow the sheet to become a first responder to not allow the
+  // keyboard popping over the sheet when there is a focus event on the WebView
+  // underneath the sheet.
+  return base::FeatureList::IsEnabled(
+      password_manager::features::kIOSPasswordBottomSheetV2);
 }
 
 #pragma mark - Private

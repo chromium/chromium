@@ -41,7 +41,7 @@ class ScreenshotShareSheetView extends FrameLayout {
      *
      * @param operation The type of operation as defined by BottomBarProperties.NoArgOperation
      * @param viewId The id to listen for a tap on
-     * @param setNoArgOperationCallback The callback to perform on tap
+     * @param noArgOperationCallback The callback to perform on tap
      */
     private void setNoArgOperationListener(
             Integer operation, int viewId, Callback<Integer> noArgOperationCallback) {

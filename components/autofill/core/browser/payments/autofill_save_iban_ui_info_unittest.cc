@@ -15,16 +15,13 @@
 
 namespace autofill {
 
-constexpr char16_t kEllipsisOneDot[] = u"\u2022";
 constexpr char16_t kEllipsisOneSpace[] = u"\u2006";
 
 // A helper function to format the IBAN value returned by
 // GetIdentifierStringForAutofillDisplay(), replacing the ellipsis ('\u2006')
-// with a whitespace and oneDot ('\u2022') with '*'.
+// with a whitespace.
 std::u16string FormatIbanForDisplay(std::u16string identifierIbanValue) {
   base::ReplaceChars(identifierIbanValue, kEllipsisOneSpace, u" ",
-                     &identifierIbanValue);
-  base::ReplaceChars(identifierIbanValue, kEllipsisOneDot, u"*",
                      &identifierIbanValue);
   return identifierIbanValue;
 }
@@ -35,10 +32,13 @@ TEST(AutofillSaveIbanUiInfo, CreateForLocalSaveSetsProperties) {
   localIban.set_value(u"CH5604835012345678009");
 
   auto ui_info = AutofillSaveIbanUiInfo::CreateForLocalSave(
-      localIban.GetIdentifierStringForAutofillDisplay());
+      localIban.GetIdentifierStringForAutofillDisplay(
+          /*is_value_masked=*/false));
 
+  EXPECT_FALSE(ui_info.is_server_save);
   EXPECT_EQ(ui_info.logo_icon_id, 0);
-  EXPECT_EQ(FormatIbanForDisplay(ui_info.iban_label), u"CH **8009");
+  EXPECT_EQ(FormatIbanForDisplay(ui_info.iban_value),
+            u"CH56 0483 5012 3456 7800 9");
   EXPECT_EQ(ui_info.title_text, l10n_util::GetStringUTF16(
                                     IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_LOCAL));
   EXPECT_EQ(ui_info.description_text, std::u16string());
@@ -50,15 +50,19 @@ TEST(AutofillSaveIbanUiInfo, CreateForLocalSaveSetsProperties) {
 }
 
 TEST(AutofillSaveIbanUiInfo, CreateForUploadSaveSetsProperties) {
-  Iban serverIban(Iban::InstrumentId(1234567));
-  serverIban.set_prefix(u"FR");
-  serverIban.set_suffix(u"0189");
+  Iban localIban(
+      Iban::Guid(base::Uuid::GenerateRandomV4().AsLowercaseString()));
+  localIban.set_value(u"FR7630006000011234567890189");
 
   auto ui_info = AutofillSaveIbanUiInfo::CreateForUploadSave(
-      serverIban.GetIdentifierStringForAutofillDisplay(), LegalMessageLines());
+      localIban.GetIdentifierStringForAutofillDisplay(
+          /*is_value_masked=*/false),
+      LegalMessageLines());
 
+  EXPECT_TRUE(ui_info.is_server_save);
   EXPECT_EQ(ui_info.logo_icon_id, IDR_AUTOFILL_GOOGLE_PAY);
-  EXPECT_EQ(FormatIbanForDisplay(ui_info.iban_label), u"FR **0189");
+  EXPECT_EQ(FormatIbanForDisplay(ui_info.iban_value),
+            u"FR76 3000 6000 0112 3456 7890 189");
   EXPECT_EQ(
       ui_info.title_text,
       l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_IBAN_PROMPT_TITLE_SERVER));

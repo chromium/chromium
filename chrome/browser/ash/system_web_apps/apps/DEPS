@@ -22,6 +22,8 @@ include_rules = [
   "+chrome/browser/ash/app_list/arc",
   "+chrome/browser/ash/arc",
   "+chrome/browser/ash/assistant",
+  "+chrome/browser/ash/boca/boca_manager.h",
+  "+chrome/browser/ash/boca/boca_manager_factory.h",
   "+chrome/browser/ash/borealis",
   # TODO(b/342514059): Allow help app to depend on child_accounts without
   # depending on chrome.
@@ -98,7 +100,6 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_command_scheduler.h",
   "+chrome/browser/web_applications/web_app_constants.h",
   "+chrome/browser/web_applications/web_app_helpers.h",
-  "+chrome/browser/web_applications/web_app_id_constants.h",
   "+chrome/browser/web_applications/web_app_install_info.h",
   "+chrome/browser/web_applications/web_app_launch_queue.h",
   "+chrome/browser/web_applications/web_app_provider.h",

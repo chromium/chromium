@@ -54,7 +54,31 @@ class AuthenticatorRequestDialogController
 
   AuthenticatorRequestDialogModel* model() const;
 
+  // AuthenticatorRequestDialogModel::Observer:
   void OnModelDestroyed(AuthenticatorRequestDialogModel* model) override;
+  void StartOver() override;
+  void OnCreatePasskeyAccepted() override;
+  void OnRecoverSecurityDomainClosed() override;
+  void ContinueWithFlowAfterBleAdapterPowered() override;
+  void PowerOnBleAdapter() override;
+  void OpenBlePreferences() override;
+  void OnOffTheRecordInterstitialAccepted() override;
+  void CancelAuthenticatorRequest() override;
+  void OnRequestComplete() override;
+  void OnResidentCredentialConfirmed() override;
+  void OnHavePIN(std::u16string pin) override;
+  void EnclaveEnabledStatusChanged(EnclaveEnabledStatus status) override;
+  void OnAccountSelected(size_t index) override;
+  void OnAccountPreselectedIndex(size_t index) override;
+  void ContactPriorityPhone() override;
+  void OnBioEnrollmentDone() override;
+  void OnUserConfirmedPriorityMechanism() override;
+
+  // webauthn::PasskeyModel::Observer:
+  void OnPasskeysChanged(
+      const std::vector<webauthn::PasskeyModelChange>& changes) override;
+  void OnPasskeyModelShuttingDown() override;
+  void OnPasskeyModelIsReady(bool is_ready) override;
 
   // Hides the dialog. A subsequent call to SetCurrentStep() will unhide it.
   void HideDialog();
@@ -72,15 +96,12 @@ class AuthenticatorRequestDialogController
   //
   // Valid action when at step: kNotStarted.
   void StartFlow(device::FidoRequestHandlerBase::TransportAvailabilityInfo
-                     transport_availability,
-                 bool is_conditional_mediation);
-
-  void StartOver() override;
+                     transport_availability);
 
   // Starts a modal WebAuthn flow (i.e. what you normally get if you call
   // WebAuthn with no mediation parameter) from a conditional request.
   //
-  // Valid action when at step: kConditionalMediation.
+  // Valid action when at step: kPasskeyAutofill.
   void TransitionToModalWebAuthnRequest();
 
   // Starts the UX flow. Tries to figure out the most likely transport to be
@@ -99,12 +120,6 @@ class AuthenticatorRequestDialogController
   void HideDialogAndDispatchToPlatformAuthenticator(
       std::optional<device::AuthenticatorType> type = std::nullopt);
 
-  void EnclaveEnabled() override;
-
-  void EnclaveNeedsReauth() override;
-
-  void OnCreatePasskeyAccepted() override;
-
   // Called when the transport availability info changes.
   void OnTransportAvailabilityChanged(
       device::FidoRequestHandlerBase::TransportAvailabilityInfo
@@ -119,8 +134,6 @@ class AuthenticatorRequestDialogController
 
   // Called when `cable_connecting_sheet_timer_` completes.
   void OnCableConnectingTimerComplete();
-
-  void OnRecoverSecurityDomainClosed() override;
 
   // StartPhonePairing triggers the display of a QR code for pairing a new
   // phone.
@@ -140,10 +153,6 @@ class AuthenticatorRequestDialogController
   void EnsureBleAdapterIsPoweredAndContinue(base::OnceClosure action);
   void OnBleStatusKnown(device::FidoRequestHandlerBase::BleStatus ble_status);
 
-  void ContinueWithFlowAfterBleAdapterPowered() override;
-  void PowerOnBleAdapter() override;
-  void OpenBlePreferences() override;
-
   // Tries if a USB device is present -- the user claims they plugged it in.
   //
   // Valid action when at step: kUsbInsert.
@@ -156,15 +165,6 @@ class AuthenticatorRequestDialogController
   //
   // Valid action when at all steps.
   void StartPlatformAuthenticatorFlow();
-
-  void OnOffTheRecordInterstitialAccepted() override;
-  void ShowCableUsbFallback() override;
-
-  // Show caBLE activation sheet.
-  void ShowCable();
-
-  void CancelAuthenticatorRequest() override;
-  void OnRequestComplete() override;
 
   // To be called when Web Authentication request times-out.
   void OnRequestTimeout();
@@ -242,13 +242,10 @@ class AuthenticatorRequestDialogController
   void SetBluetoothAdapterPowerOnCallback(
       base::RepeatingClosure bluetooth_adapter_power_on_callback);
   void SetRequestBlePermissionCallback(BlePermissionCallback callback);
-  void OnHavePIN(std::u16string pin) override;
 
   // Called when the user needs to retry user verification with the number of
   // |attempts| remaining.
   void OnRetryUserVerification(int attempts);
-
-  void OnResidentCredentialConfirmed() override;
 
   // Adds or removes an authenticator to the list of known authenticators. The
   // first authenticator added with transport `kInternal` (or without a
@@ -262,8 +259,6 @@ class AuthenticatorRequestDialogController
       base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
           callback);
 
-  void OnAccountSelected(size_t index) override;
-
   // OnAccountPreselected is called when the user selects a discoverable
   // credential from a platform authenticator prior to providing user
   // authentication. `crededential_id` must match one of the credentials in
@@ -276,9 +271,7 @@ class AuthenticatorRequestDialogController
   device::AuthenticatorType OnAccountPreselected(
       const std::vector<uint8_t> credential_id);
 
-  void OnAccountPreselectedIndex(size_t index) override;
   void SetSelectedAuthenticatorForTesting(AuthenticatorReference authenticator);
-  void ContactPriorityPhone() override;
 
   // ContactPhoneForTesting triggers a contact for a phone with the given name.
   // Only for unittests. UI should use |mechanisms()| to enumerate the
@@ -322,7 +315,6 @@ class AuthenticatorRequestDialogController
 
   void StartInlineBioEnrollment(base::OnceClosure next_callback);
   void OnSampleCollected(int bio_samples_remaining);
-  void OnBioEnrollmentDone() override;
 
   void set_is_non_webauthn_request(bool is_non_webauthn_request) {
     is_non_webauthn_request_ = is_non_webauthn_request;
@@ -358,6 +350,11 @@ class AuthenticatorRequestDialogController
 #endif
 
   void set_ambient_credential_types(int types);
+
+  content::AuthenticatorRequestClientDelegate::UIPresentation ui_presentation()
+      const;
+  void set_ui_presentation(
+      content::AuthenticatorRequestClientDelegate::UIPresentation modality);
 
   base::WeakPtr<AuthenticatorRequestDialogController> GetWeakPtr();
 
@@ -425,7 +422,7 @@ class AuthenticatorRequestDialogController
   void ContactPhoneAfterOffTheRecordInterstitial(std::string name);
   void ContactPhoneAfterBleIsPowered(std::string name);
 
-  void StartConditionalMediationRequest();
+  void StartAutofillRequest();
 
   void DispatchRequestAsync(AuthenticatorReference* authenticator);
 
@@ -456,18 +453,9 @@ class AuthenticatorRequestDialogController
   // Sets correct step for entering GPM pin based on `gpm_pin_is_arbitrary_`.
   void PromptForGPMPin();
 
-  // webauthn::PasskeyModel::Observer:
-  void OnPasskeysChanged(
-      const std::vector<webauthn::PasskeyModelChange>& changes) override;
-  void OnPasskeyModelShuttingDown() override;
-
   // Update fields in `model_` based on the value of `transport_availability_`
   // and `priority_mechanism_index_`.
   void UpdateModelForTransportAvailability();
-
-  void OnUserConfirmedPriorityMechanism() override;
-
-  void OnChromeOSGPMRequestReady() override;
 
   // Returns true if this request could pick the enclave authenticator by
   // default. This only makes sense for a create() call.
@@ -524,9 +512,8 @@ class AuthenticatorRequestDialogController
   base::OnceCallback<void(device::AuthenticatorGetAssertionResponse)>
       selection_callback_;
 
-  // True if this request should display credentials on the password autofill
-  // prompt instead of the page-modal, regular UI.
-  bool use_conditional_mediation_ = false;
+  content::AuthenticatorRequestClientDelegate::UIPresentation ui_presentation_ =
+      content::AuthenticatorRequestClientDelegate::UIPresentation::kModal;
 
   // cable_extension_provided_ indicates whether the request included a caBLE
   // extension.
@@ -573,13 +560,12 @@ class AuthenticatorRequestDialogController
   // profile authenticator.
   bool should_create_in_icloud_keychain_ = false;
 
-  // enclave_enabled_ is true if a "Google Password Manager" entry should be
-  // offered as a mechanism for creating a credential.
-  bool enclave_enabled_ = false;
-
-  // enclave_needs_reauth_ is true if a "Reauth to use Google Password Manager"
-  // entry should be offered as a mechanism for creating or using a credential.
-  bool enclave_needs_reauth_ = false;
+  // enclave_enabled_status_ determines whether Google Password Manager entries
+  // should be offered both for `makeCredential` or `getAssertion`. If reauth
+  // needed, instead of offering the actual passkeys or creating a passkey,
+  // re-authentication to Google is offered.
+  EnclaveEnabledStatus enclave_enabled_status_ =
+      EnclaveEnabledStatus::kDisabled;
 
   // The RP's hints. See
   // https://w3c.github.io/webauthn/#enumdef-publickeycredentialhints

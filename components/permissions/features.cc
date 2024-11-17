@@ -51,17 +51,17 @@ BASE_FEATURE(kFailFastQuietChip,
              "FailFastQuietChip",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kKeyboardAndPointerLockPrompt,
+             "KeyboardAndPointerLockPrompt",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Enables different positioning of the permission dialog, so that it's placed
 // near the permission element, if possible.
 // This feature should be enabled with blink::features::kPermissionElement.
 BASE_FEATURE(kPermissionElementPromptPositioning,
              "PermissionElementPromptPositioning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When enabled, use the value of the `service_url` FeatureParam as the url
-// for the Web Permission Predictions Service.
-BASE_FEATURE(kPermissionPredictionServiceUseUrlOverride,
-             "kPermissionPredictionServiceUseUrlOverride",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPermissionOnDeviceNotificationPredictions,
@@ -70,10 +70,6 @@ BASE_FEATURE(kPermissionOnDeviceNotificationPredictions,
 
 BASE_FEATURE(kPermissionOnDeviceGeolocationPredictions,
              "PermissionOnDeviceGeolocationPredictions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPermissionDedicatedCpssSetting,
-             "PermissionDedicatedCpssSettings",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPermissionPredictionsV2,
@@ -154,6 +150,9 @@ BASE_FEATURE(kCpssQuietChipTextUpdate,
              "CpssQuietChipTextUpdate",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kCpssUseTfliteSignatureRunner,
+             "CpssUseTfliteSignatureRunner",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace features
 namespace feature_params {
 
@@ -186,10 +185,6 @@ const base::FeatureParam<PermissionElementPromptPosition>
         "PermissionElementPromptPositioningParam",
         PermissionElementPromptPosition::kWindowMiddle,
         &kPromptPositioningOptions};
-
-const base::FeatureParam<std::string> kPermissionPredictionServiceUrlOverride{
-    &permissions::features::kPermissionPredictionServiceUseUrlOverride,
-    "service_url", ""};
 
 const base::FeatureParam<double>
     kPermissionOnDeviceGeolocationPredictionsHoldbackChance(

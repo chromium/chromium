@@ -102,6 +102,11 @@ class SiteEngagementDetailsProviderImpl
 
 }  // namespace
 
+bool SiteEngagementUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  return site_engagement::SiteEngagementService::IsEnabled();
+}
+
 SiteEngagementUI::SiteEngagementUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui) {
   // Set up the chrome://site-engagement/ source.

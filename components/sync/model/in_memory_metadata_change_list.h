@@ -24,8 +24,8 @@ class InMemoryMetadataChangeList : public MetadataChangeList {
   InMemoryMetadataChangeList();
   ~InMemoryMetadataChangeList() override;
 
-  // Moves all currently accumulated changes into |*other|, resetting the state
-  // of |*this| to the default, empty state.
+  // Moves all currently accumulated changes into `*other`, resetting the state
+  // of `*this` to the default, empty state.
   void TransferChangesTo(MetadataChangeList* other);
 
   // Allows ignoring metadata changes reported by the processor, for advanced

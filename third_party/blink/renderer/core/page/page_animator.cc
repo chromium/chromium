@@ -397,12 +397,13 @@ void PageAnimator::UpdateAllLifecyclePhases(LocalFrame& root_frame,
   view->UpdateAllLifecyclePhases(reason);
 }
 
-void PageAnimator::UpdateLifecycleToPrePaintClean(LocalFrame& root_frame,
-                                                  DocumentUpdateReason reason) {
+void PageAnimator::UpdateAllLifecyclePhasesExceptPaint(
+    LocalFrame& root_frame,
+    DocumentUpdateReason reason) {
   LocalFrameView* view = root_frame.View();
   base::AutoReset<bool> servicing(&updating_layout_and_style_for_painting_,
                                   true);
-  view->UpdateLifecycleToPrePaintClean(reason);
+  view->UpdateAllLifecyclePhasesExceptPaint(reason);
 }
 
 void PageAnimator::UpdateLifecycleToLayoutClean(LocalFrame& root_frame,

@@ -22,8 +22,6 @@
 #include "chrome/common/chrome_switches.h"
 #include "content/public/app/content_main.h"
 #include "content/public/common/content_switches.h"
-#include "headless/public/headless_shell.h"
-#include "headless/public/switches.h"
 #include "partition_alloc/buildflags.h"
 
 #if BUILDFLAG(IS_MAC)
@@ -54,28 +52,25 @@
 #define DLLEXPORT __declspec(dllexport)
 #endif  // BUILDFLAG(IS_WIN)
 
+// This is only here so that we can display an informational message when
+// Chrome is started with --headless=old switch. This should be deleted
+// sometime after old headless code is removed from Chrome.
+// See https://crbug.com/373672160.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
-#define ENABLE_OLD_HEADLESS
+#define ENABLE_OLD_HEADLESS_INFO
 #endif
 
-#ifdef ENABLE_OLD_HEADLESS
+#ifdef ENABLE_OLD_HEADLESS_INFO
 namespace {
-void ShowOldHeadlessWarningMaybe(const base::CommandLine* command_line) {
+void ShowOldHeadlessInfoMaybe(const base::CommandLine* command_line) {
   // Show warning only if in browser process.
   if (!command_line->GetSwitchValueASCII(::switches::kProcessType).empty()) {
     return;
   }
 
-  constexpr char kChromeDisableOldHeadlessWarning[] =
-      "CHROME_DISABLE_OLD_HEADLESS_WARNING";
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  if (env->HasVar(kChromeDisableOldHeadlessWarning)) {
-    return;
-  }
-
   std::cerr
-      << "Old Headless mode will be removed from the Chrome binary soon. "
+      << "Old Headless mode has been removed from the Chrome binary. "
          "Please use the new Headless mode "
          "(https://developer.chrome.com/docs/chromium/new-headless) or the "
          "chrome-headless-shell which is a standalone implementation of "
@@ -85,7 +80,7 @@ void ShowOldHeadlessWarningMaybe(const base::CommandLine* command_line) {
       << std::endl;
 }
 }  // namespace
-#endif  // ENABLE_OLD_HEADLESS
+#endif  // ENABLE_OLD_HEADLESS_INFO
 
 #if BUILDFLAG(IS_WIN)
 // We use extern C for the prototype DLLEXPORT to avoid C++ name mangling.
@@ -209,21 +204,17 @@ int ChromeMain(int argc, const char** argv) {
     }
     headless_mode_handle = headless::InitHeadlessMode();
   } else {
-#ifdef ENABLE_OLD_HEADLESS
+#ifdef ENABLE_OLD_HEADLESS_INFO
     if (headless::IsOldHeadlessMode()) {
-      ShowOldHeadlessWarningMaybe(command_line);
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      command_line->AppendSwitch(::headless::switches::kEnableCrashReporter);
-#endif
-      return headless::HeadlessShellMain(std::move(params));
+      ShowOldHeadlessInfoMaybe(command_line);
+      return EXIT_FAILURE;
     }
-#endif  // ENABLE_OLD_HEADLESS
+#endif  // ENABLE_OLD_HEADLESS_INFO
   }
 
 #if BUILDFLAG(IS_MAC)
-  // Gracefully exit if the system tried to launch the macOS notification helper
-  // app when a user clicked on a notification.
-  if (IsAlertsHelperLaunchedViaNotificationAction()) {
+  // Gracefully exit if a helper app was launched in an unexpected situation.
+  if (IsHelperAppLaunchedBySystemOrThirdPartyApplication()) {
     return 0;
   }
 #endif

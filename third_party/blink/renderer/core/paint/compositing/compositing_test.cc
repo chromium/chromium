@@ -92,13 +92,21 @@ class CompositingTest : public PaintTestConfigurations, public testing::Test {
         ->LayerTreeHostForTesting();
   }
 
+  Document& GetDocument() {
+    return *GetLocalFrameView()->GetFrame().GetDocument();
+  }
+
   Element* GetElementById(const char* id) {
-    WebLocalFrameImpl* frame = web_view_helper_->LocalMainFrame();
-    return frame->GetFrame()->GetDocument()->getElementById(AtomicString(id));
+    return GetDocument().getElementById(AtomicString(id));
   }
 
   LayoutObject* GetLayoutObjectById(const char* id) {
     return GetElementById(id)->GetLayoutObject();
+  }
+
+  void UpdateAllLifecyclePhasesExceptPaint() {
+    GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
+        DocumentUpdateReason::kTest);
   }
 
   void UpdateAllLifecyclePhases() {
@@ -616,8 +624,7 @@ TEST_P(CompositingTest,
 
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
   GetElementById("scroll")->scrollTo(0, 2);
-  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(paint_artifact_compositor()->NeedsUpdate());
   UpdateAllLifecyclePhases();
 }
@@ -637,8 +644,7 @@ TEST_P(CompositingTest,
 
   EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
   GetElementById("scroll")->scrollTo(0, 2);
-  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_TRUE(paint_artifact_compositor()->NeedsUpdate());
   UpdateAllLifecyclePhases();
 }
@@ -751,6 +757,46 @@ TEST_P(CompositingTest, HitTestOpaquenessOfSolidColorLayer) {
   }
 }
 
+TEST_P(CompositingTest, HitTestOpaquenessOfEmptyInline) {
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <style>
+      html, body { margin: 0; }
+      #inline {
+        pointer-events: none;
+      }
+      #scrollable {
+        width: 150px;
+        height: 150px;
+        overflow-y: scroll;
+      }
+      #scrollable::-webkit-scrollbar {
+        display: none;
+      }
+      #content {
+        height: 1000px;
+        width: 150px;
+        background: linear-gradient(blue, yellow);
+        pointer-events: auto;
+      }
+    </style>
+    <span id="inline"><div id="scrollable"><div id="content"></div></div></span>
+  )HTML");
+
+  // We should have a layer for the scrolling contents.
+  auto* scrolling_contents =
+      CcLayersByDOMElementId(RootCcLayer(), "scrollable").back();
+  EXPECT_EQ(gfx::Size(150, 1000), scrolling_contents->bounds());
+
+  // If there is a following layer for inline contents, it should be non-opaque.
+  auto html_layers = CcLayersByName(RootCcLayer(), "LayoutBlockFlow HTML");
+  auto* html = html_layers.empty() ? nullptr : html_layers.back();
+  if (html) {
+    EXPECT_GT(html->id(), scrolling_contents->id());
+    EXPECT_EQ(gfx::Size(200, 150), html->bounds());
+    EXPECT_NE(cc::HitTestOpaqueness::kOpaque, html->hit_test_opaqueness());
+  }
+}
+
 TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <div id="parent">
@@ -781,8 +827,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   EXPECT_EQ(hit_test_opaque, target_layer->hit_test_opaqueness());
 
   target->SetInlineStyleProperty(CSSPropertyID::kPointerEvents, "none");
-  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhasesExceptPaint();
   // Change of PointerEvents should not invalidate the painting layer, but not
   // the display item client.
   EXPECT_EQ(EPointerEvents::kNone, target_box->StyleRef().UsedPointerEvents());
@@ -794,8 +839,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   EXPECT_EQ(hit_test_transparent, target_layer->hit_test_opaqueness());
 
   target->RemoveInlineStyleProperty(CSSPropertyID::kPointerEvents);
-  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(EPointerEvents::kAuto, target_box->StyleRef().UsedPointerEvents());
   if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
     EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
@@ -805,8 +849,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   EXPECT_EQ(hit_test_opaque, target_layer->hit_test_opaqueness());
 
   parent->setAttribute(html_names::kInertAttr, AtomicString(""));
-  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(EPointerEvents::kNone, target_box->StyleRef().UsedPointerEvents());
   // Change of parent inert attribute (affecting target's used pointer events)
   // should invalidate the painting layer but not the display item client.
@@ -818,8 +861,7 @@ TEST_P(CompositingTest, HitTestOpaquenessOnChangeOfUsedPointerEvents) {
   EXPECT_EQ(hit_test_transparent, target_layer->hit_test_opaqueness());
 
   parent->removeAttribute(html_names::kInertAttr);
-  GetLocalFrameView()->UpdateAllLifecyclePhasesExceptPaint(
-      DocumentUpdateReason::kTest);
+  UpdateAllLifecyclePhasesExceptPaint();
   EXPECT_EQ(EPointerEvents::kAuto, target_box->StyleRef().UsedPointerEvents());
   if (RuntimeEnabledFeatures::HitTestOpaquenessEnabled()) {
     EXPECT_TRUE(target_box->Layer()->SelfNeedsRepaint());
@@ -909,16 +951,46 @@ TEST_P(CompositingTest, AnchorPositionAdjustmentTransformIdReference) {
                 ->transform_tree_index());
 }
 
-TEST_P(CompositingTest, ScrollingContentsCullRect) {
-  GetLocalFrameView()
-      ->GetFrame()
-      .GetSettings()
-      ->SetPreferCompositingToLCDTextForTesting(false);
+class ScrollingContentsCullRectTest : public CompositingTest {
+ protected:
+  void SetUp() override {
+    CompositingTest::SetUp();
+    GetLocalFrameView()
+        ->GetFrame()
+        .GetSettings()
+        ->SetPreferCompositingToLCDTextForTesting(false);
+  }
 
+  void CheckCullRect(const char* id, const std::optional<gfx::Rect>& expected) {
+    const gfx::Rect* actual =
+        GetPropertyTrees()->scroll_tree().ScrollingContentsCullRect(
+            GetLayoutObjectById(id)
+                ->FirstFragment()
+                .PaintProperties()
+                ->Scroll()
+                ->GetCompositorElementId());
+    if (expected) {
+      ASSERT_TRUE(actual);
+      EXPECT_EQ(*expected, *actual);
+    } else {
+      EXPECT_FALSE(actual);
+    }
+  }
+};
+
+INSTANTIATE_PAINT_TEST_SUITE_P(ScrollingContentsCullRectTest);
+
+TEST_P(ScrollingContentsCullRectTest, Basics) {
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <!doctype html>
     <style>
-      .scroller { width: 200px; height: 200px; overflow: scroll; }
+      .scroller {
+         width: 200px;
+         height: 200px;
+         overflow: scroll;
+         font-size: 20px;
+         border: 20px solid black;
+       }
     </style>
     <div id="short-composited-scroller" class="scroller">
       <div style="height: 2000px; background: yellow">Content</div>
@@ -933,51 +1005,87 @@ TEST_P(CompositingTest, ScrollingContentsCullRect) {
       <div style="width: 10000px; height: 200px">Content</div>
     </div>
   )HTML");
+
   UpdateAllLifecyclePhases();
+  auto sequence_number = GetPropertyTrees()->sequence_number();
 
   EXPECT_TRUE(CcLayerByDOMElementId("short-composited-scroller"));
   EXPECT_TRUE(CcLayerByDOMElementId("long-composited-scroller"));
   EXPECT_FALSE(CcLayerByDOMElementId("narrow-non-composited-scroller"));
   EXPECT_FALSE(CcLayerByDOMElementId("wide-non-composited-scroller"));
 
-  auto check_cull_rect = [&](const char* id,
-                             const std::optional<gfx::Rect>& expected) {
-    const gfx::Rect* actual =
-        GetPropertyTrees()->scroll_tree().ScrollingContentsCullRect(
-            GetLayoutObjectById(id)
-                ->FirstFragment()
-                .PaintProperties()
-                ->Scroll()
-                ->GetCompositorElementId());
-    if (expected) {
-      ASSERT_TRUE(actual);
-      EXPECT_EQ(*expected, *actual);
-    } else {
-      EXPECT_FALSE(actual);
-    }
-  };
-
-  check_cull_rect("short-composited-scroller", std::nullopt);
-  check_cull_rect("long-composited-scroller", gfx::Rect(0, 0, 200, 4200));
-  check_cull_rect("narrow-non-composited-scroller", std::nullopt);
-  check_cull_rect("wide-non-composited-scroller", gfx::Rect(0, 0, 4200, 200));
+  CheckCullRect("short-composited-scroller", std::nullopt);
+  CheckCullRect("long-composited-scroller", gfx::Rect(20, 20, 200, 4200));
+  CheckCullRect("narrow-non-composited-scroller", std::nullopt);
+  CheckCullRect("wide-non-composited-scroller", gfx::Rect(20, 20, 4200, 200));
 
   GetElementById("short-composited-scroller")->scrollTo(5000, 5000);
   GetElementById("long-composited-scroller")->scrollTo(5000, 5000);
   GetElementById("narrow-non-composited-scroller")->scrollTo(5000, 5000);
   GetElementById("wide-non-composited-scroller")->scrollTo(5000, 5000);
+
+  UpdateAllLifecyclePhasesExceptPaint();
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    // All scroll offset changes were directly updated.
+    EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  } else {
+    // Non-composited scrolls need PaintArtifactCompositor update.
+    EXPECT_TRUE(paint_artifact_compositor()->NeedsUpdate());
+  }
   UpdateAllLifecyclePhases();
+  // Some scrollers no longer have the foreground paint chunk, which caused a
+  // full PaintArtifactCompositor update.
+  EXPECT_EQ(sequence_number + 1, GetPropertyTrees()->sequence_number());
 
   EXPECT_TRUE(CcLayerByDOMElementId("short-composited-scroller"));
   EXPECT_TRUE(CcLayerByDOMElementId("long-composited-scroller"));
   EXPECT_FALSE(CcLayerByDOMElementId("narrow-non-composited-scroller"));
   EXPECT_FALSE(CcLayerByDOMElementId("wide-non-composited-scroller"));
 
-  check_cull_rect("short-composited-scroller", std::nullopt);
-  check_cull_rect("long-composited-scroller", gfx::Rect(0, 1000, 200, 8200));
-  check_cull_rect("narrow-non-composited-scroller", std::nullopt);
-  check_cull_rect("wide-non-composited-scroller",
-                  gfx::Rect(1000, 0, 8200, 200));
+  CheckCullRect("short-composited-scroller", std::nullopt);
+  CheckCullRect("long-composited-scroller", gfx::Rect(20, 1020, 200, 8200));
+  CheckCullRect("narrow-non-composited-scroller", std::nullopt);
+  CheckCullRect("wide-non-composited-scroller", gfx::Rect(1020, 20, 8200, 200));
+}
+
+TEST_P(ScrollingContentsCullRectTest, RepaintOnlyScroll) {
+  InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
+    <!doctype html>
+    <div id="scroller" style="width: 200px; height: 200px; overflow: scroll">
+      <div id="content" style="background: yellow">
+        <div style="height: 100px; background: blue"></div>
+      </div>
+    </div>
+  )HTML");
+
+  Element* scroller = GetElementById("scroller");
+  Element* content = GetElementById("content");
+  for (int i = 0; i < 60; i++) {
+    content->appendChild(content->firstElementChild()->cloneNode(true));
+  }
+  UpdateAllLifecyclePhases();
+  auto sequence_number = GetPropertyTrees()->sequence_number();
+
+  EXPECT_TRUE(CcLayerByDOMElementId("scroller"));
+  CheckCullRect("scroller", gfx::Rect(0, 0, 200, 4200));
+
+  GetElementById("scroller")->scrollTo(0, 3000);
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  UpdateAllLifecyclePhases();
+  // The scroll caused only repaint.
+  EXPECT_EQ(sequence_number, GetPropertyTrees()->sequence_number());
+  // Now the cull rect covers all scrolling contents.
+  CheckCullRect("scroller", std::nullopt);
+
+  scroller->scrollTo(0, 5000);
+  scroller->GetLayoutBox()->Layer()->SetNeedsRepaint();
+  // Force a repaint to proactively update cull rect.
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
+  UpdateAllLifecyclePhases();
+  EXPECT_EQ(sequence_number, GetPropertyTrees()->sequence_number());
+  CheckCullRect("scroller", gfx::Rect(0, 1000, 200, 5100));
 }
 
 class CompositingSimTest : public PaintTestConfigurations, public SimTest {

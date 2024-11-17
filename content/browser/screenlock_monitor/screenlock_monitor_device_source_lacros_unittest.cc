@@ -87,7 +87,7 @@ class ScreenlockMonitorDeviceSourceLacrosTest
     mojo::FusePipes(std::move(observer_pending_receiver_), std::move(observer));
   }
   void GetSessionState(GetSessionStateCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void SetSessionStateAndNotify(crosapi::mojom::SessionState state) {

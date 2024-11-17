@@ -21,7 +21,8 @@ scoped_refptr<media::VideoFrame> CreateTestFrame(
     const gfx::Size& natural_size,
     media::VideoFrame::StorageType storage_type,
     media::VideoPixelFormat pixel_format,
-    base::TimeDelta timestamp);
+    base::TimeDelta timestamp,
+    std::unique_ptr<gfx::GpuMemoryBuffer> gmb = nullptr);
 
 }  // namespace blink
 

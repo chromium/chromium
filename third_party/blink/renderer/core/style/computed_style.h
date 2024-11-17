@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/style/display_style.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/core/style/font_size_style.h"
+#include "third_party/blink/renderer/core/style/gap_data_list.h"
 #include "third_party/blink/renderer/core/style/style_cached_data.h"
 #include "third_party/blink/renderer/core/style/style_highlight_data.h"
 #include "third_party/blink/renderer/core/style/style_scrollbar_color.h"
@@ -998,6 +999,7 @@ class ComputedStyle final : public ComputedStyleBase {
   }
   bool ColumnRuleIsTransparent() const {
     return ColumnRuleColor()
+        .GetLegacyValue()
         .Resolve(GetCurrentColor(), UsedColorScheme())
         .IsFullyTransparent();
   }
@@ -1017,20 +1019,6 @@ class ComputedStyle final : public ComputedStyleBase {
     }
     return FlexDirection() == EFlexDirection::kColumn ||
            FlexDirection() == EFlexDirection::kColumnReverse;
-  }
-  bool ResolvedIsColumnReverseFlexDirection() const {
-    if (IsDeprecatedWebkitBox()) {
-      return BoxOrient() == EBoxOrient::kVertical &&
-             BoxDirection() == EBoxDirection::kReverse;
-    }
-    return FlexDirection() == EFlexDirection::kColumnReverse;
-  }
-  bool ResolvedIsRowFlexDirection() const {
-    if (IsDeprecatedWebkitBox()) {
-      return BoxOrient() == EBoxOrient::kHorizontal;
-    }
-    return FlexDirection() == EFlexDirection::kRow ||
-           FlexDirection() == EFlexDirection::kRowReverse;
   }
   bool ResolvedIsRowReverseFlexDirection() const {
     if (IsDeprecatedWebkitBox()) {
@@ -1305,8 +1293,8 @@ class ComputedStyle final : public ComputedStyleBase {
   bool BorderVisuallyEqual(const ComputedStyle& o) const {
     auto BorderSideVisuallyEqual =
         [&](const StyleColor& color, const StyleColor& other_color,
-           EBorderStyle style, EBorderStyle other_style, int width,
-           int other_width) -> bool {
+            EBorderStyle style, EBorderStyle other_style, int width,
+            int other_width) -> bool {
       if (style == EBorderStyle::kNone && other_style == EBorderStyle::kNone) {
         return true;
       }
@@ -1573,7 +1561,8 @@ class ComputedStyle final : public ComputedStyleBase {
 
   bool DependsOnContainerQueries() const {
     return DependsOnSizeContainerQueries() ||
-           DependsOnStyleContainerQueries() || DependsOnStateContainerQueries();
+           DependsOnStyleContainerQueries() ||
+           DependsOnScrollStateContainerQueries();
   }
 
   static bool IsContentVisibilityVisible(
@@ -1716,7 +1705,7 @@ class ComputedStyle final : public ComputedStyleBase {
     // TODO: `visibility: hidden` shouldn't prevent focusability, see
     // https://html.spec.whatwg.org/multipage/interaction.html#focusable-area
     return !IsEnsuredInDisplayNone() && !IsInert() &&
-           UsedVisibility() == EVisibility::kVisible &&
+           Visibility() == EVisibility::kVisible &&
            (Display() != EDisplay::kContents ||
             RuntimeEnabledFeatures::DisplayContentsFocusableEnabled());
   }
@@ -1865,25 +1854,15 @@ class ComputedStyle final : public ComputedStyleBase {
     return ScrollsOverflowX() || ScrollsOverflowY();
   }
 
-  // Returns true if the element is HTML inert, or if the visibility computes to
-  // 'inert'.
+  // Returns true if the element is HTML inert, or if 'interactivity' computes
+  // to 'inert'.
   bool IsInert() const {
-    return IsHTMLInert() || Visibility() == EVisibility::kInert;
-  }
-
-  // Return the visibility property value with 'inert' translated into
-  // 'visible'. Use IsInert() to query inertness.
-  EVisibility UsedVisibility() const {
-    EVisibility visibility = Visibility();
-    if (visibility == EVisibility::kInert) {
-      visibility = EVisibility::kVisible;
-    }
-    return visibility;
+    return IsHTMLInert() || Interactivity() == EInteractivity::kInert;
   }
 
   // Visibility utility functions.
   bool VisibleToHitTesting() const {
-    return UsedVisibility() == EVisibility::kVisible &&
+    return Visibility() == EVisibility::kVisible &&
            UsedPointerEvents() != EPointerEvents::kNone;
   }
 
@@ -2308,11 +2287,13 @@ class ComputedStyle final : public ComputedStyleBase {
     }
     if (pseudo == kPseudoIdScrollMarkerGroupBefore) {
       return ScrollMarkerGroup() == EScrollMarkerGroup::kBefore &&
-             IsScrollContainer();
+             IsScrollContainer() &&
+             HasPseudoElementStyle(kPseudoIdScrollMarkerGroup);
     }
     if (pseudo == kPseudoIdScrollMarkerGroupAfter) {
       return ScrollMarkerGroup() == EScrollMarkerGroup::kAfter &&
-             IsScrollContainer();
+             IsScrollContainer() &&
+             HasPseudoElementStyle(kPseudoIdScrollMarkerGroup);
     }
     if (!HasPseudoElementStyle(pseudo)) {
       return false;
@@ -2323,7 +2304,8 @@ class ComputedStyle final : public ComputedStyleBase {
     // For display: contents elements, we still need to generate ::before and
     // ::after, but the rest of the pseudo-elements should only be used for
     // elements with an actual layout object.
-    return pseudo == kPseudoIdBefore || pseudo == kPseudoIdAfter;
+    return pseudo == kPseudoIdCheck || pseudo == kPseudoIdBefore ||
+           pseudo == kPseudoIdAfter || pseudo == kPseudoIdSelectArrow;
   }
 
   bool HasScrollMarkerGroupBefore() const {
@@ -2831,11 +2813,12 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
     SetClipInternal(ComputedStyleInitialValues::InitialClip());
   }
 
-  // clip-patch
+  // clip-path
   void SetClipPath(ClipPathOperation* clip_path) {
     SetHasClipPath(clip_path);
     SetClipPathInternal(clip_path);
   }
+  ClipPathOperation* MutableClipPath() { return ClipPathInternal().Get(); }
 
   // color
   blink::Color GetCurrentColor() const {
@@ -3317,6 +3300,16 @@ class ComputedStyleBuilder final : public ComputedStyleBuilderBase {
                                    CSSVariableData* value,
                                    bool is_inherited_property) {
     if (is_inherited_property) {
+      // Try to avoid cloning inherited_variables if we haven't already;
+      // taking the extra cost of a lookup and compare here can be worth it
+      // to reduce memory usage if the page sets the same variables
+      // over and over again (e.g. in a universal selector).
+      if (!has_own_inherited_variables_ && InheritedVariables()) {
+        if (auto existing_value = InheritedVariables()->GetData(name);
+            existing_value && base::ValuesEquivalent(*existing_value, value)) {
+          return;
+        }
+      }
       MutableInheritedVariables().SetData(name, value);
     } else {
       MutableNonInheritedVariables().SetData(name, value);

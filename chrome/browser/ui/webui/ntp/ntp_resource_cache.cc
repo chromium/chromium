@@ -43,6 +43,7 @@
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/reading_list/features/reading_list_switches.h"
 #include "components/strings/grit/components_strings.h"
@@ -193,8 +194,7 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabHTML(
       return new_tab_non_primary_otr_html_.get();
 
     case NORMAL:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -252,6 +252,7 @@ void NTPResourceCache::Invalidate() {
 void NTPResourceCache::CreateNewTabIncognitoHTML(
     const content::WebContents::Getter& wc_getter) {
   ui::TemplateReplacements replacements;
+  base::Value::Dict localized_strings;
 
   // Ensure passing off-the-record profile; |profile_| is not an OTR profile.
   DCHECK(!profile_->IsOffTheRecord());
@@ -281,29 +282,35 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_LEARN_MORE_LINK);
   replacements["cookieControlsTitle"] =
       l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE);
-  replacements["cookieControlsDescription"] =
-      l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
 
   replacements["learnMoreLink"] = kLearnMoreIncognitoUrl;
   replacements["learnMoreA11yLabel"] = l10n_util::GetStringUTF8(
       IDS_INCOGNITO_TAB_LEARN_MORE_ACCESSIBILITY_LABEL);
   replacements["title"] = l10n_util::GetStringUTF8(IDS_NEW_INCOGNITO_TAB_TITLE);
 
-  if (is_tracking_protection_3pcd_enabled) {
+  if (is_tracking_protection_3pcd_enabled ||
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kAlwaysBlock3pcsIncognito)) {
     replacements["hideBlockCookiesToggle"] = "hidden";
     replacements["hideTooltipIcon"] = "hidden";
 
     // Overwrite the cookies control title and description if 3pcd enabled.
     replacements["cookieControlsTitle"] =
         l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE);
-    replacements["cookieControlsDescription"] = l10n_util::GetStringFUTF8(
-        IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL,
-        chrome::kUserBypassHelpCenterURL);
+    localized_strings.Set(
+        "cookieControlsDescription",
+        l10n_util::GetStringFUTF16(
+            IDS_NEW_TAB_OTR_THIRD_PARTY_BLOCKED_COOKIE_SUBLABEL,
+            chrome::kUserBypassHelpCenterURL,
+            l10n_util::GetStringUTF16(
+                IDS_NEW_TAB_OPENS_HC_ARTICLE_IN_NEW_TAB)));
 
   } else {
     replacements["hideBlockCookiesToggle"] = "";
     replacements["hideTooltipIcon"] =
         cookie_controls_service->ShouldEnforceCookieControls() ? "" : "hidden";
+    replacements["cookieControlsDescription"] =
+        l10n_util::GetStringUTF8(IDS_NEW_TAB_OTR_THIRD_PARTY_COOKIE_SUBLABEL);
   }
 
   replacements["cookieControlsToggleChecked"] =
@@ -328,6 +335,7 @@ void NTPResourceCache::CreateNewTabIncognitoHTML(
           ui::ResourceBundle::GetSharedInstance().LoadDataResourceBytes(
               IDR_INCOGNITO_TAB_HTML));
   CHECK(*incognito_tab_html);
+  ui::TemplateReplacementsFromDictionaryValue(localized_strings, &replacements);
   new_tab_incognito_html_ = base::MakeRefCounted<base::RefCountedString>(
       ReplaceTemplateExpressions(*incognito_tab_html, replacements));
 }
@@ -365,7 +373,7 @@ void NTPResourceCache::CreateNewTabGuestHTML() {
           IDS_ASH_ENTERPRISE_DEVICE_MANAGED_BY, ui::GetChromeOSDeviceName(),
           base::UTF8ToUTF16(enterprise_domain_manager));
     } else {
-      NOTREACHED_IN_MIGRATION() << "Unknown management type";
+      NOTREACHED() << "Unknown management type";
     }
     localized_strings.Set("enterpriseInfoMessage", enterprise_info);
   } else {

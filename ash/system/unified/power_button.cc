@@ -32,7 +32,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -42,6 +42,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/focus_ring.h"
@@ -137,6 +138,7 @@ bool ShouldShowEmailMenuItem() {
     case user_manager::UserType::kPublicAccount:
     case user_manager::UserType::kKioskApp:
     case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
       return false;
   }
 }
@@ -224,9 +226,10 @@ class PowerButton::MenuController : public ui::SimpleMenuModel::Delegate,
   }
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override {
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override {
     // Build the menu model and save it to `context_menu_model_`.
     BuildMenuModel();
     menu_model_adapter_ = std::make_unique<views::MenuModelAdapter>(
@@ -463,16 +466,16 @@ void PowerButton::UpdateRoundedCorners() {
 void PowerButton::OnButtonActivated(const ui::Event& event) {
   quick_settings_metrics_util::RecordQsButtonActivated(
       QsButtonCatalogName::kPowerButton);
-  ui::MenuSourceType type;
+  ui::mojom::MenuSourceType type;
 
   if (event.IsMouseEvent()) {
-    type = ui::MENU_SOURCE_MOUSE;
+    type = ui::mojom::MenuSourceType::kMouse;
   } else if (event.IsTouchEvent()) {
-    type = ui::MENU_SOURCE_TOUCH;
+    type = ui::mojom::MenuSourceType::kTouch;
   } else if (event.IsKeyEvent()) {
-    type = ui::MENU_SOURCE_KEYBOARD;
+    type = ui::mojom::MenuSourceType::kKeyboard;
   } else {
-    type = ui::MENU_SOURCE_STYLUS;
+    type = ui::mojom::MenuSourceType::kStylus;
   }
 
   context_menu_->ShowContextMenuForView(

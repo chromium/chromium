@@ -63,18 +63,16 @@ BoundSessionRegistrationFetcherParam::CreateFromHeaders(
   // First, try the new header format (gated behind a feature flag).
   if (base::FeatureList::IsEnabled(
           kBoundSessionRegistrationListHeaderSupport)) {
-    std::string list_header_value;
-    if (headers->GetNormalizedHeader(kRegistrationListHeaderName,
-                                     &list_header_value)) {
-      return MaybeCreateFromListHeader(request_url, list_header_value);
+    if (std::optional<std::string> list_header_value =
+            headers->GetNormalizedHeader(kRegistrationListHeaderName)) {
+      return MaybeCreateFromListHeader(request_url, *list_header_value);
     }
   }
 
   // Only if the new format header is missing, try the legacy format.
-  std::string legacy_header_value;
-  if (headers->GetNormalizedHeader(kRegistrationHeaderName,
-                                   &legacy_header_value)) {
-    return MaybeCreateFromLegacyHeader(request_url, legacy_header_value);
+  if (std::optional<std::string> legacy_header_value =
+          headers->GetNormalizedHeader(kRegistrationHeaderName)) {
+    return MaybeCreateFromLegacyHeader(request_url, *legacy_header_value);
   }
 
   // Return an empty result if none of the headers are present.

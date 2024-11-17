@@ -1,0 +1,27 @@
+[package]
+name = "relative-path"
+version = "1.9.3"
+authors = ["John-John Tedro <udoprog@tedro.se>"]
+edition = "2021"
+rust-version = "1.66"
+description = "Portable, relative paths for Rust."
+documentation = "https://docs.rs/relative-path"
+readme = "README.md"
+homepage = "https://github.com/udoprog/relative-path"
+repository = "https://github.com/udoprog/relative-path"
+license = "MIT OR Apache-2.0"
+keywords = ["path"]
+categories = ["filesystem"]
+
+[features]
+default = []
+
+[dependencies]
+serde = { version = "1.0.160", optional = true }
+
+[dev-dependencies]
+anyhow = "1.0.76"
+serde = { version = "1.0.160", features = ["derive"] }
+
+[package.metadata.docs.rs]
+all-features = true

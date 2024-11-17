@@ -23,6 +23,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/run_until.h"
@@ -107,8 +108,9 @@
 #include "ui/base/test/ui_controls.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
 
-using base::ASCIIToUTF16;
-using content::URLLoaderInterceptor;
+using ::base::ASCIIToUTF16;
+using ::base::test::RunClosure;
+using ::content::URLLoaderInterceptor;
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::AssertionFailure;
@@ -152,7 +154,7 @@ constexpr char kTestShippingFormString[] = R"(
     <label for="zip">ZIP code:</label>
      <input type="text" id="zip"><br>
     <label for="country">Country:</label>
-     <select id="country">
+     <select style="appearance:base-select" id="country">
      <option value="" selected="yes">--</option>
      <option value="CA">Canada</option>
      <option value="US">United States</option>
@@ -161,18 +163,6 @@ constexpr char kTestShippingFormString[] = R"(
      <input type="text" id="phone"><br>
     </form>
     )";
-
-ACTION_P(InvokeClosure, closure) {
-  closure.Run();
-}
-
-// Version of `kTestShippingFormString` which uses <selectlist> instead of
-// <select>.
-std::string GenerateTestShippingFormWithSelectList() {
-  std::string out = kTestShippingFormString;
-  RE2::GlobalReplace(&out, "<(/?)select", "<\\1selectlist");
-  return out;
-}
 
 // Searches all frames of the primary page in |web_contents| and returns one
 // called |name|. If there are none, returns null, if there are more, returns
@@ -298,8 +288,7 @@ const std::vector<FieldValue> kDefaultAddress{
       return fields;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return fields;
+  NOTREACHED();
 }
 
 // A generic "map" function, intended to lift values `args...` to a matcher
@@ -881,8 +870,6 @@ class AutofillInteractiveTest : public AutofillInteractiveTestBase {
     command_line->AppendSwitchASCII(
         translate::switches::kTranslateScriptURL,
         embedded_test_server()->GetURL("/mock_translate_script.js").spec());
-    command_line->AppendSwitchASCII("enable-blink-features",
-                                    "HTMLSelectListElement");
   }
 };
 
@@ -1078,12 +1065,9 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
   autofill_manager->RemoveObserver(&observer);
 }
 
-void DoModifySelectFieldAndFill(AutofillInteractiveTest* test,
-                                bool should_test_selectlist) {
+void DoModifySelectFieldAndFill(AutofillInteractiveTest* test) {
   test->CreateTestProfile();
-  test->SetTestUrlResponse(should_test_selectlist
-                               ? GenerateTestShippingFormWithSelectList()
-                               : kTestShippingFormString);
+  test->SetTestUrlResponse(kTestShippingFormString);
   ASSERT_TRUE(
       ui_test_utils::NavigateToURL(test->browser(), test->GetTestUrl()));
 
@@ -1100,13 +1084,7 @@ void DoModifySelectFieldAndFill(AutofillInteractiveTest* test,
 // Test that autofill doesn't refill a <select> field initially modified by the
 // user.
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifySelectFieldAndFill) {
-  DoModifySelectFieldAndFill(this, /*should_test_selectlist=*/false);
-}
-
-// Test that autofill doesn't refill a <selectlist> field initially modified by
-// the user.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, ModifySelectListFieldAndFill) {
-  DoModifySelectFieldAndFill(this, /*should_test_selectlist=*/true);
+  DoModifySelectFieldAndFill(this);
 }
 
 // Test that autofill works when the website prefills the form.
@@ -1510,7 +1488,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillFormWithRepeatedField) {
           <label for="zip">ZIP code:</label>
            <input type="text" id="zip"><br>
           <label for="country">Country:</label>
-           <select id="country">
+           <select style="appearance:base-select" id="country">
            <option value="" selected="yes">--</option>
            <option value="CA">Canada</option>
            <option value="US">United States</option>
@@ -1562,7 +1540,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
           <label for="zip">ZIP code:</label>
            <input type="text" id="zip"><br>
           <label for="country">Country:</label>
-           <select id="country">
+           <select style="appearance:base-select" id="country">
            <option value="" selected="yes">--</option>
            <option value="CA">Canada</option>
            <option value="US">United States</option>
@@ -1715,10 +1693,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
           var selectinput = false;
           var selectchange = false;
           var selectblur = false;
-          var selectlistfocus = false;
-          var selectlistinput = false;
-          var selectlistchange = false;
-          var selectlistblur = false;
           </script>
           A form for testing events.
           <form action="https://www.example.com/" method="POST" id="shipping">
@@ -1751,13 +1725,11 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
           <label for="zip">ZIP code:</label>
            <input type="text" id="zip"><br>
           <label for="country">Country:</label>
-           <selectlist id="country"
-           onfocus="selectlistfocus = true" oninput="selectlistinput = true"
-           onchange="selectlistchange = true" onblur="selectlistblur = true" >
+           <select style="appearance:base-select" id="country">
            <option value="" selected="yes">--</option>
            <option value="CA">Canada</option>
            <option value="US">United States</option>
-           </selectlist><br>
+           </select><br>
           <label for="phone">Phone number:</label>
            <input type="text" id="phone"><br>
           </form> )";
@@ -1792,12 +1764,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillEvents) {
   EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectinput;"));
   EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectchange;"));
   EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectblur;"));
-
-  // Checks that all the events were fired for the selectlist field.
-  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectlistfocus;"));
-  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectlistinput;"));
-  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectlistchange;"));
-  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "selectlistblur;"));
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterTranslate) {
@@ -1826,7 +1792,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest, AutofillAfterTranslate) {
           <label for="z">ZIP code:</label>
            <input type="text" id="z"><br>
           <label for="co">Country:</label>
-           <select id="co">
+           <select style="appearance:base-select" id="co">
            <option value="" selected="yes">--</option>
            <option value="CA">Canada</option>
            <option value="US">United States</option>
@@ -1963,7 +1929,7 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
       <label for="zip">ZIP code:</label>
        <input type="text" id="zip"><br>
       <label for="country">Country:</label>
-       <select id="country">
+       <select style="appearance:base-select" id="country">
        <option value="" selected="yes">--</option>
        <option value="CA">Canada</option>
        <option value="US">United States</option>
@@ -2349,45 +2315,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestBase, AllAutocomplete) {
       GetFieldValueById("phone"));
 }
 
-// Test that an 'onchange' event is not fired when a <selectlist> preview
-// suggestion is shown or hidden.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTest,
-                       NoEventFiredWhenExitingSelectListPreview) {
-  // It is hard to test that an event will not happen in the future, but we
-  // assume that applying similar operations on two elements in sequence results
-  // in a consistent order of events triggered by the operations. So the test
-  // strategy here is to first trigger a preview on `state` select, and then
-  // select an element on `other`.
-
-  CreateTestProfile();
-  GURL url = embedded_test_server()->GetURL(
-      "/autofill/form_selectlist_preview_no_onchange.html");
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-
-  // Show autofill preview.
-  ASSERT_TRUE(
-      AutofillFlow(GetElementById("firstname"), this, {.do_accept = false}));
-
-  // Hide autofill preview.
-  content::RenderWidgetHost* render_widget_host =
-      GetWebContents()->GetRenderWidgetHostView()->GetRenderWidgetHost();
-  ASSERT_TRUE(SendKeyToPopupAndWait(ui::DomKey::ESCAPE,
-                                    {ObservedUiEvents::kSuggestionsHidden},
-                                    render_widget_host));
-  ASSERT_FALSE(IsPopupShown());
-
-  // Select element on `other` and wait for `onchange` event.
-  ValueWaiter onchange_waiter =
-      ListenForValueChange("other", std::nullopt, GetWebContents());
-  ASSERT_TRUE(FocusField(GetElementById("other"), GetWebContents()));
-  EXPECT_EQ("First", GetFieldValueById("other"));
-  FillElementWithValue("other", "Second");
-  ASSERT_TRUE(std::move(onchange_waiter).Wait());
-
-  EXPECT_EQ(true, content::EvalJs(GetWebContents(), "other_changed;"));
-  EXPECT_EQ(false, content::EvalJs(GetWebContents(), "state_changed;"));
-}
-
 // An extension of the test fixture for tests with site isolation.
 class AutofillInteractiveIsolationTest : public AutofillInteractiveTestBase {
  protected:
@@ -2453,7 +2380,7 @@ class AutofillInteractiveFencedFrameTest
         return cross_frame;
       }
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:
@@ -2970,20 +2897,17 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 void DoDynamicChangingFormFill_SelectUpdated(
     AutofillInteractiveTestDynamicForm* test,
     net::EmbeddedTestServer* test_server,
-    bool should_test_selectlist,
     bool should_test_async_update) {
   test->CreateTestProfile();
   GURL url = test_server->GetURL(
       "a.com",
-      base::StringPrintf(
-          ("/autofill/dynamic_form_select_or_selectlist_options_change.html"
-           "?is_selectlist=%s&is_async=%s"),
-          should_test_selectlist ? "true" : "false",
-          should_test_async_update ? "true" : "false"));
+      base::StringPrintf(("/autofill/dynamic_form_select_options_change.html"
+                          "?is_async=%s"),
+                         should_test_async_update ? "true" : "false"));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(test->browser(), url));
 
-  // Check that the test page correctly parsed the 'is_selectlist' GET parameter
-  // by checking type of the inserted field.
+  // Check that the test page correctly parsed the GET parameters by checking
+  // type of the inserted field.
   auto has_n_controls_of_type = [](FormControlType control_type,
                                    size_t expected_number,
                                    const FormStructure& form) {
@@ -2995,13 +2919,10 @@ void DoDynamicChangingFormFill_SelectUpdated(
     }
     return num_found == expected_number;
   };
-  ASSERT_TRUE(WaitForMatchingForm(
-      test->GetBrowserAutofillManager(),
-      should_test_selectlist
-          ? base::BindRepeating(has_n_controls_of_type,
-                                FormControlType::kSelectList, 1)
-          : base::BindRepeating(has_n_controls_of_type,
-                                FormControlType::kSelectOne, 2)));
+  ASSERT_TRUE(
+      WaitForMatchingForm(test->GetBrowserAutofillManager(),
+                          base::BindRepeating(has_n_controls_of_type,
+                                              FormControlType::kSelectOne, 2)));
 
   ValueWaiter refill = test->ListenForRefill("state");
   // Trigger first fill.
@@ -3028,16 +2949,6 @@ void DoDynamicChangingFormFill_SelectUpdated(
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectUpdated) {
   DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
-                                          /*should_test_selectlist=*/false,
-                                          /*should_test_async_update=*/false);
-}
-
-// Test that we can Autofill dynamically changing selectlists that have options
-// added and removed.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_SelectListUpdated) {
-  DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
-                                          /*should_test_selectlist=*/true,
                                           /*should_test_async_update=*/false);
 }
 
@@ -3046,16 +2957,6 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
 IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
                        DynamicChangingFormFill_SelectUpdatedAsync) {
   DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
-                                          /*should_test_selectlist=*/false,
-                                          /*should_test_async_update=*/true);
-}
-
-// Test that we can Autofill dynamically changing selectlists that have options
-// added and removed, when the updating occurs asynchronously.
-IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
-                       DynamicChangingFormFill_SelectListUpdatedAsync) {
-  DoDynamicChangingFormFill_SelectUpdated(this, embedded_test_server(),
-                                          /*should_test_selectlist=*/true,
                                           /*should_test_async_update=*/true);
 }
 
@@ -3403,27 +3304,16 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestChromeVox,
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(ENABLE_EXTENSIONS)
 
-// These tests are disabled on LaCros because <select> elements don't listen
-// to typed characters the same way as other platforms. Sending the characters
-// 'W', 'A' while the state selector is focused does not trigger a selection
-// of the entry "WA".
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_AutofillInteractiveFormSubmissionTest \
-  DISABLED_AutofillInteractiveFormSubmissionTest
-#else
-#define MAYBE_AutofillInteractiveFormSubmissionTest \
-  AutofillInteractiveFormSubmissionTest
-#endif
-class MAYBE_AutofillInteractiveFormSubmissionTest
+class AutofillInteractiveFormSubmissionTest
     : public AutofillInteractiveTestBase {
  public:
   class MockAutofillManager : public BrowserAutofillManager {
    public:
     explicit MockAutofillManager(ContentAutofillDriver* driver)
-        : BrowserAutofillManager(driver, "en-US") {}
+        : BrowserAutofillManager(driver) {}
     MOCK_METHOD(void,
                 OnFormSubmittedImpl,
-                (const FormData&, bool, mojom::SubmissionSource),
+                (const FormData&, mojom::SubmissionSource),
                 (override));
 
     TestAutofillManagerWaiter& text_field_change_waiter() {
@@ -3553,8 +3443,7 @@ class MAYBE_AutofillInteractiveFormSubmissionTest
 
 // Tests that user-triggered submission triggers a submission event in
 // BrowserAutofillManager.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
-                       Submission) {
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest, Submission) {
   EnterValues();
 
   base::RunLoop run_loop;
@@ -3562,17 +3451,16 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
   EXPECT_CALL(*autofill_manager(),
               OnFormSubmittedImpl(HasExpectedValues(),
-                                  /*known_success=*/false,
                                   mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
   ExecuteScript("document.getElementById('shipping').submit();");
   run_loop.Run();
 }
 
 // Tests that non-link-click, renderer-initiated navigation triggers a
 // submission event in BrowserAutofillManager.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                        ProbableSubmission) {
   EnterValues();
 
@@ -3582,10 +3470,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
   EXPECT_CALL(
       *autofill_manager(),
       OnFormSubmittedImpl(HasExpectedValues(),
-                          /*known_success=*/false,
                           mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
   // Add a delay before navigating away to avoid race conditions. This is
   // appropriate since we're faking user interaction here.
   ExecuteScript(
@@ -3594,7 +3481,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 }
 
 // Tests that a same document navigation can trigger a form submission.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                        SameDocumentNavigation) {
   EnterValues();
 
@@ -3604,10 +3491,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
   EXPECT_CALL(
       *autofill_manager(),
       OnFormSubmittedImpl(HasExpectedValues(),
-                          /*known_success=*/true,
                           mojom::SubmissionSource::SAME_DOCUMENT_NAVIGATION))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
 
   // Simulate form submission.
   ExecuteScript(
@@ -3627,7 +3513,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 }
 
 // Tests that an XHR request can indicate a form submission.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                        XhrSucceededAndHideForm) {
   EnterValues();
 
@@ -3637,10 +3523,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
   EXPECT_CALL(*autofill_manager(),
               OnFormSubmittedImpl(HasExpectedValues(),
-                                  /*known_success=*/true,
                                   mojom::SubmissionSource::XHR_SUCCEEDED))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
 
   // Simulate form submission.
   ExecuteScript(
@@ -3660,7 +3545,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 
 // Tests that an XHR request can indicate a form submission - even if the form
 // is deleted from the DOM.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                        XhrSucceededAndDeleteForm) {
   EnterValues();
 
@@ -3670,10 +3555,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
   EXPECT_CALL(*autofill_manager(),
               OnFormSubmittedImpl(HasExpectedValues(),
-                                  /*known_success=*/true,
                                   mojom::SubmissionSource::XHR_SUCCEEDED))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
 
   // Simulate form submission.
   ExecuteScript(
@@ -3693,7 +3577,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 }
 
 // Tests that a DOM mutation after an XHR can indicate a form submission.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                        DomMutationAfterXhr) {
   EnterValues();
 
@@ -3703,10 +3587,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
   EXPECT_CALL(*autofill_manager(),
               OnFormSubmittedImpl(HasExpectedValues(),
-                                  /*known_success=*/true,
                                   mojom::SubmissionSource::XHR_SUCCEEDED))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
 
   // Simulate form submission.
   ExecuteScript(
@@ -3728,7 +3611,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 // Tests that FormFieldData::user_input has the text that the user typed into
 // the field. This is needed in order to show the save-card dialog when the
 // page replaces the <input> value with '***'.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                        RememberUserInput) {
   const std::vector<NameValueUserInput> kExpectedSubmittedValues{
       {u"name", u"JS Modified Name", u"Sarah"},
@@ -3745,13 +3628,12 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
   base::RunLoop run_loop;
   // Ensure that only expected form submissions are recorded.
   EXPECT_CALL(*autofill_manager(), OnFormSubmittedImpl).Times(0);
-  EXPECT_CALL(
-      *autofill_manager(),
-      OnFormSubmittedImpl(
-          FieldsAre(Map(kExpectedSubmittedValues, HasNameValueUserInput)),
-          /*known_success=*/false, mojom::SubmissionSource::FORM_SUBMISSION))
+  EXPECT_CALL(*autofill_manager(),
+              OnFormSubmittedImpl(FieldsAre(Map(kExpectedSubmittedValues,
+                                                HasNameValueUserInput)),
+                                  mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
   ExecuteScript("document.getElementById('shipping').submit();");
   run_loop.Run();
 }
@@ -3763,7 +3645,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
 // 4) The user submits the form
 // That FormFieldData::user_input is empty and does not contain stale data that
 // the user typed into the form.
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormSubmissionTest,
                        TreatAutofillAsUserInput) {
   CreateTestProfile();
 
@@ -3792,22 +3674,15 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormSubmissionTest,
                               {base::UTF8ToUTF16(fv.id),
                                base::UTF8ToUTF16(fv.value), u""});
                         })),
-          /*known_success=*/false, mojom::SubmissionSource::FORM_SUBMISSION))
+          mojom::SubmissionSource::FORM_SUBMISSION))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
   ExecuteScript("document.getElementById('shipping').submit();");
   run_loop.Run();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_AutofillInteractiveFormlessFormSubmissionTest \
-  DISABLED_AutofillInteractiveFormlessFormSubmissionTest
-#else
-#define MAYBE_AutofillInteractiveFormlessFormSubmissionTest \
-  AutofillInteractiveFormlessFormSubmissionTest
-#endif
-class MAYBE_AutofillInteractiveFormlessFormSubmissionTest
-    : public MAYBE_AutofillInteractiveFormSubmissionTest {
+class AutofillInteractiveFormlessFormSubmissionTest
+    : public AutofillInteractiveFormSubmissionTest {
  public:
   void SetUpOnMainThread() override {
     AutofillInteractiveTestBase::SetUpOnMainThread();
@@ -3840,7 +3715,7 @@ class MAYBE_AutofillInteractiveFormlessFormSubmissionTest
 // 1) User fills <input>s on page without <form>.
 // 2) The page does an XHR
 // 3) The page navigates
-IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormlessFormSubmissionTest,
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveFormlessFormSubmissionTest,
                        NavigationAfterXhr) {
   const std::vector<FieldValue> kEnteredValues = {
       {"name", "Sarah"}, {"address", "123 Main Road"}, {"city", "Moonbeam"}};
@@ -3858,10 +3733,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AutofillInteractiveFormlessFormSubmissionTest,
                                               {base::UTF8ToUTF16(fv.id),
                                                base::UTF8ToUTF16(fv.value)});
                                         })),
-                          /*known_success=*/false,
                           mojom::SubmissionSource::PROBABLY_FORM_SUBMITTED))
       .Times(1)
-      .WillRepeatedly(InvokeClosure(run_loop.QuitClosure()));
+      .WillRepeatedly(RunClosure(run_loop.QuitClosure()));
 
   // Simulate XHR, then page navigation.
   ExecuteScript(

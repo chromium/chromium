@@ -14,7 +14,6 @@ import {ModuleDescriptor} from '../../module_descriptor.js';
 import type {MenuItem, ModuleHeaderElement} from '../module_header.js';
 
 import type {CalendarElement} from './calendar.js';
-import {getCss} from './google_calendar_module.css.js';
 import {getHtml} from './google_calendar_module.html.js';
 import {GoogleCalendarProxyImpl} from './google_calendar_proxy.js';
 
@@ -35,10 +34,6 @@ export class GoogleCalendarModuleElement extends
     GoogleCalendarModuleElementBase {
   static get is() {
     return 'ntp-google-calendar-module';
-  }
-
-  static override get styles() {
-    return getCss();
   }
 
   override render() {
@@ -111,7 +106,7 @@ export class GoogleCalendarModuleElement extends
       composed: true,
       detail: {
         message: this.i18n('modulesGoogleCalendarDismissToastMessage'),
-        restoreCallback: this.handler_.restoreModule,
+        restoreCallback: () => this.handler_.restoreModule(),
       },
     }));
   }
@@ -122,10 +117,6 @@ export class GoogleCalendarModuleElement extends
 
   protected onInfoDialogClose_() {
     this.showInfoDialog_ = false;
-  }
-
-  protected onMenuButtonClick_(e: Event) {
-    this.$.moduleHeaderElementV2.showAt(e);
   }
 }
 

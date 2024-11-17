@@ -14,19 +14,28 @@
 namespace history_embeddings {
 
 using optimization_guide::OptimizationGuideModelExecutor;
+using Session = optimization_guide::OptimizationGuideModelExecutor::Session;
 
-// TODO: b/343237382 - Integrate History Question Answerer ML model
-class MlAnswerer : public MockAnswerer {
+class MlAnswerer : public Answerer {
  public:
   explicit MlAnswerer(OptimizationGuideModelExecutor* model_executor);
   ~MlAnswerer() override;
 
+  int64_t GetModelVersion() override;
   void ComputeAnswer(std::string query,
                      Context context,
                      ComputeAnswerCallback callback) override;
 
  private:
   class SessionManager;
+  struct ModelInput;
+
+  // Start and add a session for the url and passages.
+  void StartAndAddSession(const std::string& query,
+                          const std::string& url,
+                          const std::vector<std::string>& passages,
+                          std::unique_ptr<Session> session,
+                          base::OnceCallback<void(int)> session_started);
 
   // Guaranteed to outlive `this`, since
   // `model_executor_` is owned by OptimizationGuideKeyedServiceFactory,

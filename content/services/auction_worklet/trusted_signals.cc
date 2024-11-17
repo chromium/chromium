@@ -618,18 +618,20 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
   DCHECK(!error_msg.has_value());
 
   uint32_t data_version;
-  std::string data_version_string;
-  if (headers &&
-      headers->GetNormalizedHeader("Data-Version", &data_version_string) &&
-      !net::ParseUint32(data_version_string,
-                        net::ParseIntFormat::STRICT_NON_NEGATIVE,
-                        &data_version)) {
-    std::string error = base::StringPrintf(
-        "Rejecting load of %s due to invalid Data-Version header: %s",
-        signals_url.spec().c_str(), data_version_string.c_str());
-    PostCallbackToUserThread(std::move(user_thread_task_runner), weak_instance,
-                             nullptr, std::move(error));
-    return;
+  std::optional<std::string> data_version_string;
+  if (headers) {
+    data_version_string = headers->GetNormalizedHeader("Data-Version");
+    if (data_version_string &&
+        !net::ParseUint32(*data_version_string,
+                          net::ParseIntFormat::STRICT_NON_NEGATIVE,
+                          &data_version)) {
+      std::string error = base::StringPrintf(
+          "Rejecting load of %s due to invalid Data-Version header: %s",
+          signals_url.spec().c_str(), data_version_string->c_str());
+      PostCallbackToUserThread(std::move(user_thread_task_runner),
+                               weak_instance, nullptr, std::move(error));
+      return;
+    }
   }
 
   AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper.get());
@@ -655,7 +657,7 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
   scoped_refptr<Result> result;
 
   std::optional<uint32_t> maybe_data_version;
-  if (!data_version_string.empty()) {
+  if (data_version_string && !data_version_string->empty()) {
     maybe_data_version = data_version;
   }
 
@@ -666,19 +668,21 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
     base::UmaHistogramTimes("Ads.InterestGroup.Net.DownloadTime.TrustedBidding",
                             download_time);
     int format_version = 1;
-    std::string format_version_string;
-    if (headers &&
-        (headers->GetNormalizedHeader(
-             "Ad-Auction-Bidding-Signals-Format-Version",
-             &format_version_string) ||
-         headers->GetNormalizedHeader("X-fledge-bidding-signals-format-version",
-                                      &format_version_string))) {
-      if (!base::StringToInt(format_version_string, &format_version) ||
-          (format_version != 1 && format_version != 2)) {
+    if (headers) {
+      std::optional<std::string> format_version_string =
+          headers->GetNormalizedHeader(
+              "Ad-Auction-Bidding-Signals-Format-Version");
+      if (!format_version_string) {
+        format_version_string = headers->GetNormalizedHeader(
+            "X-fledge-bidding-signals-format-version");
+      }
+      if (format_version_string &&
+          (!base::StringToInt(*format_version_string, &format_version) ||
+           (format_version != 1 && format_version != 2))) {
         std::string error = base::StringPrintf(
             "Rejecting load of %s due to unrecognized Format-Version header: "
             "%s",
-            signals_url.spec().c_str(), format_version_string.c_str());
+            signals_url.spec().c_str(), format_version_string->c_str());
         PostCallbackToUserThread(std::move(user_thread_task_runner),
                                  weak_instance, nullptr, std::move(error));
         return;
@@ -695,7 +699,8 @@ void TrustedSignals::HandleDownloadResultOnV8Thread(
           maybe_data_version);
       error_msg = base::StringPrintf(
           "Bidding signals URL %s is using outdated bidding signals format. "
-          "Consumers should be updated to use bidding signals format version 2",
+          "Consumers should be updated to use bidding signals format version "
+          "2",
           signals_url.spec().c_str());
     } else {
       DCHECK_EQ(format_version, 2);

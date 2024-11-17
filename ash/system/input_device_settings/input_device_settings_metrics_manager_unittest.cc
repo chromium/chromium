@@ -8,7 +8,6 @@
 
 #include "ash/accelerators/accelerator_encoding.h"
 #include "ash/constants/ash_features.h"
-#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom-shared.h"
@@ -283,8 +282,6 @@ TEST_F(InputDeviceSettingsMetricsManagerTest,
   // Enable the modifier split feature flag.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kModifierSplit);
-  auto ignore_modifier_split_secret_key =
-      ash::switches::SetIgnoreModifierSplitSecretKeyForTest();
   mojom::Keyboard split_modifier_keyboard;
 
   split_modifier_keyboard.device_key = kInternalKeyboardDeviceKey;

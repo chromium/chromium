@@ -9,15 +9,15 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class BrowsingDataRemover;
+class ProfileIOS;
 
 // Singleton that owns all BrowsingDataRemovers and associates them with
 // ProfileIOS.
 class BrowsingDataRemoverFactory : public BrowserStateKeyedServiceFactory {
  public:
-  static BrowsingDataRemover* GetForBrowserState(ProfileIOS* profile);
+  static BrowsingDataRemover* GetForProfile(ProfileIOS* profile);
   static BrowsingDataRemover* GetForProfileIfExists(ProfileIOS* profile);
   static BrowsingDataRemoverFactory* GetInstance();
 

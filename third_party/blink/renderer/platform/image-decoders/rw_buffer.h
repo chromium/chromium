@@ -29,7 +29,7 @@ class PLATFORM_EXPORT RWBuffer {
    public:
     explicit ROIter(RWBuffer*, size_t);
     size_t size() const;
-    const void* data() const;
+    const uint8_t* data() const;
     // Checks whether there is another block available and advances the iterator
     // if there is.
     bool Next();
@@ -47,7 +47,7 @@ class PLATFORM_EXPORT RWBuffer {
   // |writer| is a function used to initialize the RWBuffer.
   // |writer| is responsible for not writing off the edge of the buffer.
   // |writer| should return the amount of memory written to the buffer.
-  RWBuffer(base::OnceCallback<size_t(void*, size_t)> writer,
+  RWBuffer(base::OnceCallback<size_t(base::span<uint8_t>)> writer,
            size_t initial_capacity);
 
   ~RWBuffer();
@@ -107,7 +107,7 @@ class PLATFORM_EXPORT ROBuffer : public WTF::ThreadSafeRefCounted<ROBuffer> {
      * Return the current continuous block of memory, or nullptr if the
      * iterator is exhausted
      */
-    const void* data() const;
+    const uint8_t* data() const;
 
     /**
      * Returns the number of bytes in the current contiguous block of memory,

@@ -43,7 +43,8 @@ GrowthInternalsUI::GrowthInternalsUI(content::WebUI* web_ui)
 
   data_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::StyleSrc,
-      "style-src 'self' chrome://resources 'unsafe-inline';");
+      "style-src 'self' chrome://resources chrome://resources "
+      "'unsafe-inline';");
 
   data_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,

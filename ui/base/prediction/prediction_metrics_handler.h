@@ -110,9 +110,8 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) PredictionMetricsHandler {
   gfx::PointF next_real_point_after_frame_;
 
   // Beginning of the full histogram name. It will have the various metrics'
-  // names (.OverPrediction, .UnderPrediction, .WrongDirection,
-  // .PredictionJitter, .VisualJitter) appended to it when counting the metric
-  // in a histogram.
+  // names (.OverPrediction, .UnderPrediction, .PredictionJitter, .VisualJitter)
+  // appended to it when counting the metric in a histogram.
   const std::string histogram_name_;
 
   // Histograms are never deleted we leak them at shutdown so it is fine to keep

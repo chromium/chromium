@@ -188,7 +188,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   [self updateViews:self.view previousTraitCollection:nil];
 
   if (@available(iOS 17, *)) {
-    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.self ]
+    [self registerForTraitChanges:@[ UITraitVerticalSizeClass.class ]
                        withAction:@selector(updateViews:
                                       previousTraitCollection:)];
   }
@@ -201,6 +201,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   return UIStatusBarStyleLightContent;
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   if (@available(iOS 17, *)) {
@@ -212,6 +213,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
         previousTraitCollection:previousTraitCollection];
   }
 }
+#endif
 
 #pragma mark - Private helpers
 
@@ -255,6 +257,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   // Assign the overlay button to the text field
   tabGroupTextField.rightView = clearButton;
   tabGroupTextField.rightViewMode = UITextFieldViewModeWhileEditing;
+  tabGroupTextField.rightView.hidden = _title.length == 0;
 
   tabGroupTextField.accessibilityIdentifier =
       kCreateTabGroupTextFieldIdentifier;
@@ -829,8 +832,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 
 // Hides the clear button in the text field if the length of the text is 0.
 - (void)textFieldDidChange {
-  BOOL hasText = _tabGroupTextField.text.length > 0;
-  _tabGroupTextField.rightView.hidden = hasText ? NO : YES;
+  _tabGroupTextField.rightView.hidden = _tabGroupTextField.text.length == 0;
 }
 
 // Activates or deactivates the appropriate constraints.

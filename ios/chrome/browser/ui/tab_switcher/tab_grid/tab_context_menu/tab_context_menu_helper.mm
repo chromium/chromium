@@ -10,7 +10,12 @@
 #import "components/bookmarks/common/bookmark_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
@@ -43,14 +48,14 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 
 #pragma mark - TabContextMenuProvider
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-              tabContextMenuDelegate:
-                  (id<TabContextMenuDelegate>)tabContextMenuDelegate {
+- (instancetype)initWithProfile:(ProfileIOS*)profile
+         tabContextMenuDelegate:
+             (id<TabContextMenuDelegate>)tabContextMenuDelegate {
   self = [super init];
   if (self) {
-    _browserState = browserState;
+    _profile = profile;
     _contextMenuDelegate = tabContextMenuDelegate;
-    _incognito = _browserState->IsOffTheRecord();
+    _incognito = _profile->IsOffTheRecord();
   }
   return self;
 }
@@ -165,7 +170,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
           }];
     }
 
-    if (_browserState) {
+    if (_profile) {
       const BOOL currentlyBookmarked = [self isTabItemBookmarked:item];
       if (currentlyBookmarked) {
         bookmarkAction = [actionFactory actionToEditBookmarkWithBlock:^{
@@ -178,7 +183,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
       }
       // Bookmarking can be disabled from prefs (from an enterprise policy),
       // if that's the case grey out the option in the menu.
-      BOOL isEditBookmarksEnabled = _browserState->GetPrefs()->GetBoolean(
+      BOOL isEditBookmarksEnabled = _profile->GetPrefs()->GetBoolean(
           bookmarks::prefs::kEditBookmarksEnabled);
       if (!isEditBookmarksEnabled && bookmarkAction) {
         bookmarkAction.attributes = UIMenuElementAttributesDisabled;
@@ -214,8 +219,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
   if (IsTabGroupInGridEnabled()) {
-    std::set<const TabGroup*> groups =
-        GetAllGroupsForBrowserState(_browserState);
+    std::set<const TabGroup*> groups = GetAllGroupsForProfile(_profile);
 
     auto actionResult = ^(const TabGroup* group) {
       [weakSelf handleAddWebState:tabID toGroup:group];
@@ -315,44 +319,97 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
       [[ActionFactory alloc] initWithScenario:scenario];
 
   const TabGroup* group = cell.itemIdentifier.tabGroupItem.tabGroup;
+  CHECK(group);
   base::WeakPtr<const TabGroup> weakGroup = group->GetWeakPtr();
   BOOL incognito = self.incognito;
-  CHECK(group);
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(_profile);
+  BOOL isSharedTabGroupSupported =
+      shareKitService && shareKitService->IsSupported();
+  BOOL isTabGroupShared =
+      isSharedTabGroupSupported &&
+      tab_groups::utils::IsTabGroupShared(
+          group,
+          tab_groups::TabGroupSyncServiceFactory::GetForProfile(_profile));
   __weak __typeof(self) weakSelf = self;
 
   NSMutableArray<UIMenuElement*>* menuElements = [[NSMutableArray alloc] init];
 
-  [menuElements addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
-                  [weakSelf.contextMenuDelegate editTabGroup:weakGroup
-                                                   incognito:incognito];
-                }]];
-  [menuElements addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
-                  [weakSelf.contextMenuDelegate ungroupTabGroup:weakGroup
-                                                      incognito:incognito
-                                                     sourceView:cell];
-                }]];
-
-  if (IsTabGroupSyncEnabled()) {
-    [menuElements addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
-                    [weakSelf.contextMenuDelegate closeTabGroup:weakGroup
-                                                      incognito:incognito];
-                  }]];
-    if (!incognito) {
-      [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                      [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
-                                                         incognito:incognito
-                                                        sourceView:cell];
-                    }]];
-    }
-  } else {
-    [menuElements addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
-                    [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
-                                                       incognito:incognito
-                                                      sourceView:cell];
-                  }]];
+  // Shared actions.
+  NSMutableArray<UIAction*>* sharedActions = [[NSMutableArray alloc] init];
+  if (isTabGroupShared) {
+    [sharedActions addObject:[actionFactory actionToManageTabGroupWithBlock:^{
+                     [weakSelf.contextMenuDelegate manageTabGroup:weakGroup];
+                   }]];
+    [sharedActions addObject:[actionFactory actionToShowRecentActivity:^{
+                     [weakSelf.contextMenuDelegate
+                         showRecentActivityForTabGroup:weakGroup];
+                   }]];
+  } else if (isSharedTabGroupSupported &&
+             IsSharedTabGroupsCreateEnabled(_profile)) {
+    [sharedActions addObject:[actionFactory actionToShareTabGroupWithBlock:^{
+                     [weakSelf.contextMenuDelegate shareTabGroup:weakGroup];
+                   }]];
+  }
+  if ([sharedActions count] > 0) {
+    [menuElements addObject:[UIMenu menuWithTitle:@""
+                                            image:nil
+                                       identifier:nil
+                                          options:UIMenuOptionsDisplayInline
+                                         children:[sharedActions copy]]];
   }
 
-  return menuElements;
+  // Edit actions.
+  NSMutableArray<UIAction*>* editActions = [[NSMutableArray alloc] init];
+  [editActions addObject:[actionFactory actionToRenameTabGroupWithBlock:^{
+                 [weakSelf.contextMenuDelegate editTabGroup:weakGroup
+                                                  incognito:incognito];
+               }]];
+
+  if (!isTabGroupShared) {
+    [editActions addObject:[actionFactory actionToUngroupTabGroupWithBlock:^{
+                   [weakSelf.contextMenuDelegate ungroupTabGroup:weakGroup
+                                                       incognito:incognito
+                                                      sourceView:cell];
+                 }]];
+  }
+  [menuElements addObject:[UIMenu menuWithTitle:@""
+                                          image:nil
+                                     identifier:nil
+                                        options:UIMenuOptionsDisplayInline
+                                       children:[editActions copy]]];
+
+  // Destructive actions.
+  NSMutableArray<UIAction*>* destructiveActions = [[NSMutableArray alloc] init];
+  if (IsTabGroupSyncEnabled()) {
+    [destructiveActions
+        addObject:[actionFactory actionToCloseTabGroupWithBlock:^{
+          [weakSelf.contextMenuDelegate closeTabGroup:weakGroup
+                                            incognito:incognito];
+        }]];
+    if (!incognito) {
+      [destructiveActions
+          addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+            [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
+                                               incognito:incognito
+                                              sourceView:cell];
+          }]];
+    }
+  } else {
+    [destructiveActions
+        addObject:[actionFactory actionToDeleteTabGroupWithBlock:^{
+          [weakSelf.contextMenuDelegate deleteTabGroup:weakGroup
+                                             incognito:incognito
+                                            sourceView:cell];
+        }]];
+  }
+  [menuElements addObject:[UIMenu menuWithTitle:@""
+                                          image:nil
+                                     identifier:nil
+                                        options:UIMenuOptionsDisplayInline
+                                       children:[destructiveActions copy]]];
+
+  return [menuElements copy];
 }
 
 #pragma mark - Private
@@ -360,7 +417,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 // Returns `YES` if the tab `item` is already bookmarked.
 - (BOOL)isTabItemBookmarked:(TabItem*)item {
   bookmarks::BookmarkModel* bookmarkModel =
-      ios::BookmarkModelFactory::GetForBrowserState(_browserState);
+      ios::BookmarkModelFactory::GetForProfile(_profile);
   return item && bookmarkModel->IsBookmarked(item.URL);
 }
 
@@ -370,11 +427,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     return NO;
   }
 
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(_browserState);
-
-  for (Browser* browser :
-       browserList->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
+  for (Browser* browser : [self currentBrowsers]) {
     WebStateList* webStateList = browser->GetWebStateList();
     web::WebState* webState = GetWebState(
         webStateList, WebStateSearchCriteria{
@@ -388,15 +441,9 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   return NO;
 }
 
-// Returns the TabItem object representing the tab with `identifier.
+// Returns the TabItem object representing the tab with `identifier`.
 - (TabItem*)tabItemForIdentifier:(web::WebStateID)identifier {
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(_browserState);
-  const BrowserList::BrowserType browser_types =
-      _incognito ? BrowserList::BrowserType::kIncognito
-                 : BrowserList::BrowserType::kRegularAndInactive;
-  std::set<Browser*> browsers = browserList->BrowsersOfType(browser_types);
-  for (Browser* browser : browsers) {
+  for (Browser* browser : [self currentBrowsersIncludingInactive]) {
     WebStateList* webStateList = browser->GetWebStateList();
     TabItem* item = GetTabItem(
         webStateList, WebStateSearchCriteria{.identifier = identifier});
@@ -414,17 +461,13 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     [self.contextMenuDelegate createNewTabGroupWithIdentifier:webStateID
                                                     incognito:self.incognito];
   } else {
-    MoveTabToGroup(webStateID, group, _browserState);
+    MoveTabToGroup(webStateID, group, _profile);
   }
 }
 
 // Handles the result of the remove from group block.
 - (void)handleRemoveWebStateFromGroup:(web::WebStateID)webStateID {
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(_browserState);
-
-  for (Browser* browser :
-       browserList->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
+  for (Browser* browser : [self currentBrowsers]) {
     WebStateList* webStateList = browser->GetWebStateList();
     int index = GetWebStateIndex(
         webStateList,
@@ -439,11 +482,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
 
 // Returns the group of the given `webStateID`.
 - (const TabGroup*)groupForWebState:(web::WebStateID)webStateID {
-  BrowserList* browserList =
-      BrowserListFactory::GetForBrowserState(_browserState);
-
-  for (Browser* browser :
-       browserList->BrowsersOfType(BrowserList::BrowserType::kRegular)) {
+  for (Browser* browser : [self currentBrowsers]) {
     WebStateList* webStateList = browser->GetWebStateList();
     int index = GetWebStateIndex(
         webStateList,
@@ -454,6 +493,26 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     }
   }
   return nil;
+}
+
+// Returns the list of browsers for the current `incognito` state. It only
+// returns Incognito OR Regular browsers. Inactive browsers are ignored.
+- (std::set<Browser*>)currentBrowsers {
+  BrowserList* browserList = BrowserListFactory::GetForProfile(_profile);
+  const BrowserList::BrowserType browserType =
+      _incognito ? BrowserList::BrowserType::kIncognito
+                 : BrowserList::BrowserType::kRegular;
+  return browserList->BrowsersOfType(browserType);
+}
+
+// Returns the list of browsers for the current `incognito` state. It returns
+// Incognito OR Regular+Inactive browsers.
+- (std::set<Browser*>)currentBrowsersIncludingInactive {
+  BrowserList* browserList = BrowserListFactory::GetForProfile(_profile);
+  const BrowserList::BrowserType browserType =
+      _incognito ? BrowserList::BrowserType::kIncognito
+                 : BrowserList::BrowserType::kRegularAndInactive;
+  return browserList->BrowsersOfType(browserType);
 }
 
 @end

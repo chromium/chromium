@@ -236,7 +236,6 @@ below:
       change nontranslateable parts of the messages into placeholders (using the
       <ph> element).  You can also use the 'grit add' tool to help you identify
       nontranslateable parts and create placeholders for them. -->
-
       <message name="IDS_DETAILS_WITHOUT_SUMMARY_LABEL" desc="Clickable label to show detailed information or to hide the detailed information.">
         Details
       </message>
@@ -377,31 +376,6 @@ below:
       </message>
       <message name="IDS_PRETTY_PRINT_JSON" desc="Label for the checkbox that enables 'pretty-printing' of JSON documents.To pretty-print JSON, carriage returns and spaces are inserted to cleanly format the JSON and make it readable.">
         Pretty-print
-      </message>
-
-      <message name="IDS_PERMISSION_REQUEST_CAMERA" desc="Label for a permission element that will trigger a camera request">
-        Use camera
-      </message>
-      <message name="IDS_PERMISSION_REQUEST_MICROPHONE" desc="Label for a permission element that will trigger a microphone request">
-        Use microphone
-      </message>
-      <message name="IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE" desc="Label for a permission element that will trigger a camera and microphone request">
-        Use microphone and camera
-      </message>
-      <message name="IDS_PERMISSION_REQUEST_GEOLOCATION" desc="Label for a permission element that will trigger a geolocation request">
-        Share location
-      </message>
-      <message name="IDS_PERMISSION_REQUEST_CAMERA_ALLOWED" desc="Label for a permission element when camera access is allowed">
-        Camera allowed
-      </message>
-      <message name="IDS_PERMISSION_REQUEST_MICROPHONE_ALLOWED" desc="Label for a permission element when microphone access is allowed">
-        Microphone allowed
-      </message>
-      <message name="IDS_PERMISSION_REQUEST_CAMERA_MICROPHONE_ALLOWED" desc="Label for a permission element when camera access and microphone access are allowed">
-        Camera and microphone allowed
-      </message>
-      <message name="IDS_PERMISSION_REQUEST_GEOLOCATION_ALLOWED" desc="Label for a permission element when geolocation access is allowed">
-        Sharing location allowed
       </message>
 
 <!-- The following IDS_FORM_VALIDATION_* messages were taken from Mozilla's dom.properties file.

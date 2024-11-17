@@ -184,7 +184,7 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
     MeasureOverflowMetrics();
   }
 
-  if (layout_replaced_.StyleRef().UsedVisibility() == EVisibility::kVisible &&
+  if (layout_replaced_.StyleRef().Visibility() == EVisibility::kVisible &&
       layout_replaced_.CanResize()) {
     auto* scrollable_area = layout_replaced_.GetScrollableArea();
     DCHECK(scrollable_area);
@@ -234,7 +234,8 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
                              selection_painting_int_rect);
     Color selection_bg = HighlightStyleUtils::HighlightBackgroundColor(
         layout_replaced_.GetDocument(), layout_replaced_.StyleRef(),
-        layout_replaced_.GetNode(), std::nullopt, kPseudoIdSelection);
+        layout_replaced_.GetNode(), std::nullopt, kPseudoIdSelection,
+        SearchTextIsActiveMatch::kNo);
     local_paint_info.context.FillRect(
         selection_painting_int_rect, selection_bg,
         PaintAutoDarkMode(layout_replaced_.StyleRef(),
@@ -259,7 +260,7 @@ bool ReplacedPainter::ShouldPaint(const ScopedPaintState& paint_state) const {
   // But if it's an SVG root, there can be children, so we'll check visibility
   // later.
   if (!layout_replaced_.IsSVGRoot() &&
-      layout_replaced_.StyleRef().UsedVisibility() != EVisibility::kVisible) {
+      layout_replaced_.StyleRef().Visibility() != EVisibility::kVisible) {
     return false;
   }
 
@@ -309,7 +310,7 @@ void ReplacedPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) {
   const ComputedStyle& style = layout_replaced_.StyleRef();
-  if (style.UsedVisibility() != EVisibility::kVisible) {
+  if (style.Visibility() != EVisibility::kVisible) {
     return;
   }
 
@@ -493,7 +494,7 @@ void ReplacedPainter::PaintMask(const PaintInfo& paint_info,
   DCHECK_EQ(PaintPhase::kMask, paint_info.phase);
 
   if (!layout_replaced_.HasMask() ||
-      layout_replaced_.StyleRef().UsedVisibility() != EVisibility::kVisible) {
+      layout_replaced_.StyleRef().Visibility() != EVisibility::kVisible) {
     return;
   }
 

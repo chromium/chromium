@@ -33,7 +33,7 @@ class AutofillWebDataServiceObserverOnDBSequence {
   virtual void ServerCvcChanged(const ServerCvcChange& change) {}
 
  protected:
-  virtual ~AutofillWebDataServiceObserverOnDBSequence() {}
+  virtual ~AutofillWebDataServiceObserverOnDBSequence() = default;
 };
 
 class AutofillWebDataServiceObserverOnUISequence {
@@ -43,7 +43,7 @@ class AutofillWebDataServiceObserverOnUISequence {
   virtual void OnAutofillChangedBySync(syncer::DataType data_type) {}
 
  protected:
-  virtual ~AutofillWebDataServiceObserverOnUISequence() {}
+  virtual ~AutofillWebDataServiceObserverOnUISequence() = default;
 };
 
 }  // namespace autofill

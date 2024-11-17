@@ -77,8 +77,8 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   // At most one of |state| or |delta| may be nullptr.
   AppUpdate(const App* state, const App* delta, const AccountId& account_id);
 
-  AppUpdate(const AppUpdate&) = delete;
-  AppUpdate& operator=(const AppUpdate&) = delete;
+  AppUpdate(const AppUpdate&);
+  AppUpdate& operator=(const AppUpdate&);
 
   // Returns whether this is the first update for the given AppId.
   // Equivalently, there are no previous deltas for the AppId.
@@ -238,7 +238,7 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   raw_ptr<const apps::App, DanglingUntriaged> state_ = nullptr;
   raw_ptr<const apps::App, DanglingUntriaged> delta_ = nullptr;
 
-  const raw_ref<const ::AccountId> account_id_;
+  raw_ref<const ::AccountId> account_id_;
 };
 
 // For logging and debug purposes.

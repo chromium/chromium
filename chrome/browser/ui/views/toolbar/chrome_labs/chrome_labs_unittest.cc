@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/about_flags.h"
@@ -38,7 +37,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
@@ -48,11 +47,11 @@
 #include "components/user_manager/user_manager.h"
 #endif
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/test/base/scoped_channel_override.h"
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace {
 
@@ -123,13 +122,10 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
               FEATURE_VALUE_TYPE(kExpiredFlagTestFeature)}}) {
     // Set expiration milestone such that the flag is expired.
     flags::testing::SetFlagExpiration(kExpiredFlagTestFeatureId, 0);
+    ForceChromeLabsActivationForTesting();
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kChromeLabs,
-        {{features::kChromeLabsActivationPercentage.name, "100"}});
-
     // Set up test data on the model.
     scoped_chrome_labs_model_data_.SetModelDataForTesting(TestLabInfo());
 
@@ -169,7 +165,6 @@ class ChromeLabsCoordinatorTest : public TestWithBrowserView {
   chrome::ScopedChannelOverride channel_override_;
 #endif
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(ChromeLabsCoordinatorTest, ShowBubbleTest) {
@@ -205,7 +200,7 @@ TEST_F(ChromeLabsCoordinatorTest, NewBadgeTest) {
   EXPECT_FALSE(first_lab_item()->GetNewBadgeForTesting()->GetDisplayNewBadge());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // OwnerFlagsStorage on build bots works the same way as the non-owner version
 // since we don't have the session manager daemon to write and sign the proto
@@ -222,7 +217,7 @@ TEST_F(ChromeLabsCoordinatorTest, ShowBubbleWhenUserIsOwner) {
       ChromeLabsCoordinator::ShowUserType::kChromeOsOwnerUserType);
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class ChromeLabsViewControllerTest : public TestWithBrowserView {
  public:
@@ -251,24 +246,21 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
               FEATURE_VALUE_TYPE(kExpiredFlagTestFeature)}}) {
     // Set expiration milestone such that the flag is expired.
     flags::testing::SetFlagExpiration(kExpiredFlagTestFeatureId, 0);
+    ForceChromeLabsActivationForTesting();
   }
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kChromeLabs,
-        {{features::kChromeLabsActivationPercentage.name, "100"}});
-
     // Set up test data on the model.
     scoped_chrome_labs_model_data_.SetModelDataForTesting(TestLabInfo());
     TestWithBrowserView::SetUp();
     profile()->GetPrefs()->SetBoolean(
         chrome_labs_prefs::kBrowserLabsEnabledEnterprisePolicy, true);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // On ash-chrome we expect the PrefService from the profile to be used.
     flags_storage_ = std::make_unique<flags_ui::PrefServiceFlagsStorage>(
         profile()->GetPrefs());
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#else  // !BUILDFLAG(IS_CHROMEOS)
     flags_storage_ = std::make_unique<flags_ui::PrefServiceFlagsStorage>(
         TestingBrowserProcess::GetGlobal()->local_state());
 #endif
@@ -371,7 +363,6 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
   chrome::ScopedChannelOverride channel_override_;
 #endif
   about_flags::testing::ScopedFeatureEntries scoped_feature_entries_;
-  base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<flags_ui::PrefServiceFlagsStorage> flags_storage_;
 };
 
@@ -381,7 +372,7 @@ class ChromeLabsFeatureTest : public ChromeLabsViewControllerTest,
   ChromeLabsFeatureTest() = default;
 };
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // This test checks that selecting an option through the combobox on a lab will
 // enable the corresponding option on the feature.
 TEST_P(ChromeLabsFeatureTest, ChangeSelectedOption) {
@@ -435,10 +426,10 @@ TEST_F(ChromeLabsViewControllerTest, ResetToDefault) {
   EXPECT_TRUE(IsDefault(feature_entry, GetFlagsStorage()));
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Ash versions of the above tests.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 namespace ash {
 
@@ -510,7 +501,7 @@ TEST_F(ChromeLabsViewControllerTest, ResetToDefault) {
 
 }  // namespace ash
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // This test checks that only the two features that are supported on the current
 // platform and do not have expired flags are added to the bubble.
@@ -553,8 +544,6 @@ TEST_F(ChromeLabsViewControllerTest, SelectDefaultTwiceNoRestart) {
   EXPECT_FALSE(bubble_view->IsRestartPromptVisibleForTesting());
 }
 
-// TODO(crbug.com/40719879)
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // TODO(b/185480535): Fix the test for WebUIFeedback
 TEST_F(ChromeLabsViewControllerTest, DISABLED_ShowFeedbackPage) {
   std::unique_ptr<ChromeLabsViewController> view_controller =
@@ -571,13 +560,12 @@ TEST_F(ChromeLabsViewControllerTest, DISABLED_ShowFeedbackPage) {
 
   histogram_tester.ExpectTotalCount("Feedback.RequestSource", 1);
 }
-#endif
 
 // This test checks that experiments that are removed from the model will be
 // removed from the PrefService when updating new badge prefs.
 TEST_F(ChromeLabsViewControllerTest, CleanUpNewBadgePrefsTest) {
   const base::Value::Dict& new_badge_prefs =
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       browser_view()->browser()->profile()->GetPrefs()->GetDict(
           chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
 #else
@@ -605,4 +593,4 @@ TEST_F(ChromeLabsViewControllerTest, CleanUpNewBadgePrefsTest) {
   EXPECT_FALSE(new_badge_prefs.contains(kTestFeatureWithVariationId));
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(IS_CHROMEOS) || !BUILDFLAG(GOOGLE_CHROME_BRANDING)

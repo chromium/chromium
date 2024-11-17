@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
@@ -339,85 +340,6 @@ class WebApp {
 
   // If present, signals that this app is an Isolated Web App, and contains
   // IWA-specific information like from where the contents should be served.
-  struct IsolationData {
-    struct PendingUpdateInfo {
-      PendingUpdateInfo(
-          IsolatedWebAppStorageLocation location,
-          base::Version version,
-          std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data);
-      ~PendingUpdateInfo();
-      PendingUpdateInfo(const PendingUpdateInfo&);
-      PendingUpdateInfo& operator=(const PendingUpdateInfo&);
-
-      bool operator==(const PendingUpdateInfo&) const;
-      bool operator!=(const PendingUpdateInfo&) const;
-
-      base::Value AsDebugValue() const;
-      friend std::ostream& operator<<(std::ostream& os,
-                                      const PendingUpdateInfo& update_info) {
-        return os << update_info.AsDebugValue();
-      }
-
-      IsolatedWebAppStorageLocation location;
-      base::Version version;
-
-      std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data;
-
-      // TODO(cmfcmf): Add further information about the update here, such as
-      // whether it should be applied immediately, or only once the IWA is
-      // closed.
-    };
-
-    IsolationData(IsolatedWebAppStorageLocation location,
-                  base::Version version);
-    IsolationData(
-        IsolatedWebAppStorageLocation location,
-        base::Version version,
-        const std::set<std::string>& controlled_frame_partitions,
-        const std::optional<PendingUpdateInfo>& pending_update_info,
-        std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data);
-    ~IsolationData();
-    IsolationData(const IsolationData&);
-    IsolationData& operator=(const IsolationData&);
-    IsolationData(IsolationData&&);
-    IsolationData& operator=(IsolationData&&);
-
-    bool operator==(const IsolationData&) const;
-    bool operator!=(const IsolationData&) const;
-
-    base::Value AsDebugValue() const;
-    friend std::ostream& operator<<(std::ostream& os,
-                                    const IsolationData& isolation_data) {
-      return os << isolation_data.AsDebugValue();
-    }
-
-    // Sets the pending update info. Will `CHECK` if dev mode is different
-    // between `pending_update_info.location` and `location`. In other words, a
-    // dev mode owned bundle can never be updated to a prod mode owned bundle,
-    // etc.
-    void SetPendingUpdateInfo(
-        const std::optional<PendingUpdateInfo>& pending_update_info);
-
-    const std::optional<PendingUpdateInfo>& pending_update_info() const {
-      return pending_update_info_;
-    }
-
-    IsolatedWebAppStorageLocation location;
-    base::Version version;
-    std::set<std::string> controlled_frame_partitions;
-
-    // Might be nullopt if this IWA is not backed by a signed web bundle (for
-    // instance, in case of a proxy mode installation).
-    // This field is used to prevent redundant update attempts in case of key
-    // rotation by comparing the stored public keys against the rotated key.
-    // key. Please don't rely on it for anything security-critical!
-    std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data;
-
-   private:
-    // If present, signals that an update for this app is available locally and
-    // waiting to be applied.
-    std::optional<PendingUpdateInfo> pending_update_info_;
-  };
   const std::optional<IsolationData>& isolation_data() const {
     return isolation_data_;
   }

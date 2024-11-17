@@ -114,8 +114,10 @@ void BiometricAuthenticationForFillingBubbleController::OnAccepted() {
 #elif BUILDFLAG(IS_WIN)
   message = l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_TURN_ON_FILLING_REAUTH_WIN);
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  message = l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_TURN_ON_FILLING_REAUTH_CHROMEOS);
 #endif
-  // TODO(crbug.com/367336383): Add ChromeOS specific string.
   delegate_->AuthenticateUserWithMessage(message,
                                          std::move(on_reauth_completed));
 }

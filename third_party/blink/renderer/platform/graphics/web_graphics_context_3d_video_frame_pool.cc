@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/trace_event/trace_event_impl.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/context_support.h"
@@ -49,16 +50,6 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
                        context_provider,
                    gpu::GpuMemoryBufferManager* gmb_manager)
       : weak_context_provider_(context_provider), gmb_manager_(gmb_manager) {}
-
-  std::unique_ptr<gfx::GpuMemoryBuffer> CreateGpuMemoryBuffer(
-      const gfx::Size& size,
-      gfx::BufferFormat format,
-      gfx::BufferUsage usage) override {
-    return gmb_manager_
-               ? gmb_manager_->CreateGpuMemoryBuffer(
-                     size, format, usage, gpu::kNullSurfaceHandle, nullptr)
-               : nullptr;
-  }
 
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
@@ -108,18 +99,11 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
     return client_shared_image;
   }
 
-  void DestroySharedImage(const gpu::SyncToken& sync_token,
-                          scoped_refptr<gpu::ClientSharedImage> shared_image,
-                          const bool is_mappable_si_enabled) override {
-    auto* sii = SharedImageInterface();
-    if (!sii)
-      return;
+  void DestroySharedImage(
+      const gpu::SyncToken& sync_token,
+      scoped_refptr<gpu::ClientSharedImage> shared_image) override {
     CHECK(shared_image);
-    if (is_mappable_si_enabled) {
-      shared_image->UpdateDestructionSyncToken(sync_token);
-    } else {
-      sii->DestroySharedImage(sync_token, std::move(shared_image));
-    }
+    shared_image->UpdateDestructionSyncToken(sync_token);
   }
 
  private:
@@ -215,9 +199,7 @@ void CopyToGpuMemoryBuffer(
     base::OnceClosure callback) {
   CHECK(dst_frame->HasMappableGpuBuffer());
   CHECK(!dst_frame->HasNativeGpuMemoryBuffer());
-  CHECK_EQ(dst_frame->shared_image_format_type(),
-           media::SharedImageFormatType::kSharedImageFormat);
-  CHECK(dst_frame->HasTextures());
+  CHECK(dst_frame->HasSharedImage());
 
   DCHECK(ctx_wrapper);
   auto* context_provider = ctx_wrapper->ContextProvider();
@@ -235,6 +217,7 @@ void CopyToGpuMemoryBuffer(
 
   const bool use_async_copy =
       base::FeatureList::IsEnabled(kUseCopyToGpuMemoryBufferAsync);
+  const auto mailbox = dst_frame->shared_image()->mailbox();
   if (use_async_copy) {
     auto copy_to_gmb_done_lambda = [](base::OnceClosure callback,
                                       bool success) {
@@ -245,13 +228,11 @@ void CopyToGpuMemoryBuffer(
       std::move(callback).Run();
     };
 
-    const auto& mailbox = dst_frame->mailbox_holder(0).mailbox;
     sii->CopyToGpuMemoryBufferAsync(
         blit_done_sync_token, mailbox,
         base::BindOnce(std::move(copy_to_gmb_done_lambda),
                        std::move(callback)));
   } else {
-    const auto& mailbox = dst_frame->mailbox_holder(/*plane=*/0).mailbox;
     sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
   }
 
@@ -268,7 +249,7 @@ void CopyToGpuMemoryBuffer(
   gpu::SyncToken completion_sync_token;
   ri->GenUnverifiedSyncTokenCHROMIUM(completion_sync_token.GetData());
   media::SimpleSyncTokenClient simple_client(completion_sync_token);
-  dst_frame->UpdateMailboxHolderSyncToken(&simple_client);
+  dst_frame->UpdateAcquireSyncToken(&simple_client);
   dst_frame->UpdateReleaseSyncToken(&simple_client);
 
   // Do not use a query to track copy completion on Windows when using the new
@@ -284,11 +265,9 @@ void CopyToGpuMemoryBuffer(
 }  // namespace
 
 bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
-    viz::SharedImageFormat src_format,
     const gfx::Size& src_size,
-    const gfx::ColorSpace& src_color_space,
-    GrSurfaceOrigin src_surface_origin,
-    const gpu::MailboxHolder& src_mailbox_holder,
+    scoped_refptr<gpu::ClientSharedImage> src_shared_image,
+    const gpu::SyncToken& acquire_sync_token,
     const gfx::ColorSpace& dst_color_space,
     FrameReadyCallback callback) {
   TRACE_EVENT("media", "CopyRGBATextureToVideoFrame");
@@ -318,15 +297,15 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
   if (!dst_frame) {
     return false;
   }
-  CHECK(dst_frame->HasTextures());
+  CHECK(dst_frame->HasSharedImage());
 
-  if (!media::CopyRGBATextureToVideoFrame(
-          raster_context_provider, src_format, src_size, src_color_space,
-          src_surface_origin, src_mailbox_holder, dst_frame.get())) {
+  if (!media::CopyRGBATextureToVideoFrame(raster_context_provider, src_size,
+                                          src_shared_image, acquire_sync_token,
+                                          dst_frame.get())) {
     return false;
   }
 
-  // VideoFrame::UpdateMailboxHolderSyncToken requires that the video frame have
+  // VideoFrame::UpdateAcquireSyncToken requires that the video frame have
   // a single owner. So cache the pointer for later use after the std::move().
   [[maybe_unused]] auto* dst_frame_ptr = dst_frame.get();
 
@@ -345,7 +324,7 @@ bool WebGraphicsContext3DVideoFramePool::CopyRGBATextureToVideoFrame(
             // we've synchronized with the GPU.
             gpu::SyncToken empty_sync_token;
             media::SimpleSyncTokenClient simple_client(empty_sync_token);
-            frame->UpdateMailboxHolderSyncToken(&simple_client);
+            frame->UpdateAcquireSyncToken(&simple_client);
             frame->UpdateReleaseSyncToken(&simple_client);
             std::move(callback).Run(std::move(frame));
           },
@@ -418,33 +397,11 @@ bool WebGraphicsContext3DVideoFramePool::ConvertVideoFrame(
          format == media::PIXEL_FORMAT_XRGB ||
          format == media::PIXEL_FORMAT_ARGB)
       << "Invalid format " << format;
-  DCHECK_EQ(src_video_frame->NumTextures(), std::size_t{1});
-  viz::SharedImageFormat texture_format;
-  switch (format) {
-    case media::PIXEL_FORMAT_XBGR:
-      texture_format = viz::SinglePlaneFormat::kRGBX_8888;
-      break;
-    case media::PIXEL_FORMAT_ABGR:
-      texture_format = viz::SinglePlaneFormat::kRGBA_8888;
-      break;
-    case media::PIXEL_FORMAT_XRGB:
-      texture_format = viz::SinglePlaneFormat::kBGRX_8888;
-      break;
-    case media::PIXEL_FORMAT_ARGB:
-      texture_format = viz::SinglePlaneFormat::kBGRA_8888;
-      break;
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
-  }
-
+  DCHECK(src_video_frame->HasSharedImage());
   return CopyRGBATextureToVideoFrame(
-      texture_format, src_video_frame->coded_size(),
-      src_video_frame->ColorSpace(),
-      src_video_frame->metadata().texture_origin_is_top_left
-          ? kTopLeft_GrSurfaceOrigin
-          : kBottomLeft_GrSurfaceOrigin,
-      src_video_frame->mailbox_holder(0), dst_color_space,
+      src_video_frame->coded_size(),
+      src_video_frame->shared_image(), src_video_frame->acquire_sync_token(),
+      dst_color_space,
       WTF::BindOnce(ApplyMetadataAndRunCallback, src_video_frame,
                     std::move(callback)));
 }

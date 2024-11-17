@@ -11,7 +11,7 @@ import {CrSettingsPrefs} from 'chrome://os-settings/os_settings.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNull, assertStringContains, assertStringExcludes, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
@@ -119,6 +119,10 @@ suite('LiveCaptionSection', () => {
     flush();
     languagePacks = languageListDiv.querySelectorAll<HTMLElement>('.list-item');
     assertEquals(2, languagePacks.length);
+
+    // Verify that English is marked as the default language.
+    assertStringContains(languagePacks[0]!.innerText, '(default)');
+    assertStringExcludes(languagePacks[1]!.innerText, '(default)');
     let hasProgress = false;
     languagePacks.forEach((lp) => {
       if (lp.innerText.includes('17')) {
@@ -126,6 +130,34 @@ suite('LiveCaptionSection', () => {
       }
     });
     assertTrue(hasProgress);
+
+    // Open the action menu for the French language pack.
+    const menuButtons = languageListDiv.querySelectorAll<HTMLElement>(
+        'cr-icon-button.icon-more-vert');
+    assertEquals(2, menuButtons.length);
+    menuButtons[1]!.click();
+    const actionMenu =
+        liveCaptionSection.shadowRoot!.querySelector('cr-action-menu')!;
+    assertTrue(actionMenu.open);
+
+    // Change the default language to French.
+    liveCaptionSection.shadowRoot!
+        .querySelector<HTMLElement>('#make-default-button')!.click();
+    assertFalse(actionMenu.open);
+    assertStringExcludes(languagePacks[0]!.innerText, '(default)');
+    assertStringContains(languagePacks[1]!.innerText, '(default)');
+
+    // Remove the French language pack and verify that English is the new
+    // default language.
+    menuButtons[1]!.click();
+    liveCaptionSection.shadowRoot!.querySelector<HTMLElement>(
+                                      '#remove-button')!.click();
+    assertFalse(actionMenu.open);
+    assertStringContains(languagePacks[0]!.innerText, '(default)');
+    flush();
+    languagePacks = languageListDiv.querySelectorAll<HTMLElement>('.list-item');
+    assertEquals(1, languagePacks.length);
+
     await Promise.all([
       whenDialogClosed,
       browserProxy.whenCalled('installLanguagePacks'),

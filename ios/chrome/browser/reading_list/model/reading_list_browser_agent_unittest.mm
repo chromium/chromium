@@ -34,14 +34,14 @@ class ReadingListBrowserAgentUnitTest : public PlatformTest {
     TestingApplicationContext::GetGlobal()->SetLocalState(local_state_.get());
 
     std::vector<scoped_refptr<ReadingListEntry>> initial_entries;
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::move(initial_entries)));
 
-    chrome_browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     mock_snackbar_commands_handler_ =
         [OCMockObject niceMockForProtocol:@protocol(SnackbarCommands)];
@@ -56,18 +56,17 @@ class ReadingListBrowserAgentUnitTest : public PlatformTest {
   }
 
   void TearDown() override {
-    chrome_browser_state_.reset();
+    profile_.reset();
     TestingApplicationContext::GetGlobal()->SetLocalState(nullptr);
     local_state_.reset();
   }
 
   ReadingListModel* reading_list_model() {
-    return ReadingListModelFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    return ReadingListModelFactory::GetForProfile(profile_.get());
   }
 
  protected:
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   base::HistogramTester histogram_tester_;
   web::WebTaskEnvironment task_environment_;

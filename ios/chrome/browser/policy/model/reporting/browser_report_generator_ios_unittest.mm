@@ -23,8 +23,8 @@ namespace enterprise_reporting {
 class BrowserReportGeneratorIOSTest : public PlatformTest {
  public:
   BrowserReportGeneratorIOSTest() : generator_(&delegate_factory_) {
-    browser_state_ = profile_manager_.AddProfileWithBuilder(
-        TestChromeBrowserState::Builder());
+    profile_ =
+        profile_manager_.AddProfileWithBuilder(TestProfileIOS::Builder());
   }
   BrowserReportGeneratorIOSTest(const BrowserReportGeneratorIOSTest&) = delete;
   BrowserReportGeneratorIOSTest& operator=(
@@ -33,7 +33,7 @@ class BrowserReportGeneratorIOSTest : public PlatformTest {
 
   void GenerateAndVerify() {
     base::RunLoop run_loop;
-    const base::FilePath path = GetBrowserStatePath();
+    const base::FilePath path = profile_->GetStatePath();
     generator_.Generate(
         ReportType::kFull,
         base::BindLambdaForTesting(
@@ -58,15 +58,11 @@ class BrowserReportGeneratorIOSTest : public PlatformTest {
     run_loop.Run();
   }
 
-  base::FilePath GetBrowserStatePath() const {
-    return browser_state_->GetStatePath();
-  }
-
  private:
   base::test::TaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 
   ReportingDelegateFactoryIOS delegate_factory_;
   BrowserReportGenerator generator_;

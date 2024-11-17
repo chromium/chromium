@@ -12,6 +12,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "cc/base/switches.h"
 #include "components/viz/common/display/overlay_strategy.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/features.h"
@@ -69,10 +70,8 @@ RendererSettings CreateRendererSettings() {
                         &renderer_settings.slow_down_compositing_scale_factor);
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   renderer_settings.occlusion_culler_settings.quad_split_limit =
       features::DrawQuadSplitLimit();
-#endif
 
 #if BUILDFLAG(IS_OZONE)
   if (command_line->HasSwitch(switches::kEnableHardwareOverlays)) {

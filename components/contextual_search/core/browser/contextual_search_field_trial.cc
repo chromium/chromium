@@ -47,7 +47,7 @@ ContextualSearchFieldTrial::ContextualSearchFieldTrial()
       is_contextual_cards_version_cached_(false),
       contextual_cards_version_(0) {}
 
-ContextualSearchFieldTrial::~ContextualSearchFieldTrial() {}
+ContextualSearchFieldTrial::~ContextualSearchFieldTrial() = default;
 
 std::string ContextualSearchFieldTrial::GetResolverURLPrefix() {
   if (!is_resolver_url_prefix_cached_) {

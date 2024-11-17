@@ -22,6 +22,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.url.GURL;
@@ -68,7 +69,7 @@ public class ScopeChangeControllerTest {
                 ChangeType.INACTIVE,
                 captor.getValue().changeType);
 
-        observer.wasShown();
+        observer.onVisibilityChanged(Visibility.VISIBLE);
         expectedOnScopeChangeCalls++;
 
         verify(
@@ -81,7 +82,7 @@ public class ScopeChangeControllerTest {
                 ChangeType.ACTIVE,
                 captor.getValue().changeType);
 
-        observer.wasHidden();
+        observer.onVisibilityChanged(Visibility.HIDDEN);
         expectedOnScopeChangeCalls++;
         verify(
                         delegate,
@@ -223,7 +224,7 @@ public class ScopeChangeControllerTest {
                 ChangeType.INACTIVE,
                 captor.getValue().changeType);
 
-        observer.wasShown();
+        observer.onVisibilityChanged(Visibility.VISIBLE);
         expectedOnScopeChangeCalls++;
 
         verify(
@@ -236,7 +237,7 @@ public class ScopeChangeControllerTest {
                 ChangeType.ACTIVE,
                 captor.getValue().changeType);
 
-        observer.wasHidden();
+        observer.onVisibilityChanged(Visibility.HIDDEN);
         expectedOnScopeChangeCalls++;
         verify(
                         delegate,

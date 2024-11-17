@@ -35,6 +35,7 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/color/color_id.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
@@ -111,6 +112,7 @@ void PaymentRequestDialogView::ShowDialog() {
   views::Widget* widget = constrained_window::ShowWebModalDialogViews(
       this, request_->web_contents());
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
+  occlusion_observation_.Observe(widget);
 }
 
 void PaymentRequestDialogView::CloseDialog() {
@@ -460,6 +462,13 @@ PaymentRequestDialogView::PaymentRequestDialogView(
   SetLayoutManager(std::make_unique<views::FillLayout>());
 
   view_stack_ = AddChildView(std::make_unique<ViewStack>());
+  // ViewStack paints to a layer, and currently layers don't clip to the bounds
+  // of the window opaque layer. Until this is fixed, we have to set rounded
+  // corners directly here.
+  //
+  // TODO(crbug.com/358379367): Remove once layers obey the clip by default.
+  view_stack_->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(GetCornerRadius()));
 
   SetupSpinnerOverlay();
 
@@ -517,6 +526,12 @@ void PaymentRequestDialogView::SetupSpinnerOverlay() {
   throbber_overlay_ = AddChildView(std::make_unique<views::View>());
 
   throbber_overlay_->SetPaintToLayer();
+  // Currently layers don't clip to the bounds of the parent window opaque
+  // layer. Until this is fixed, we have to set rounded corners directly here.
+  //
+  // TODO(crbug.com/358379367): Remove once layers obey the clip by default.
+  throbber_overlay_->layer()->SetRoundedCornerRadius(
+      gfx::RoundedCornersF(GetCornerRadius()));
   throbber_overlay_->SetVisible(false);
   // The throbber overlay has to have a solid white background to hide whatever
   // would be under it.
@@ -575,6 +590,15 @@ void PaymentRequestDialogView::ViewHierarchyChanged(
       controller_map_.find(details.child) != controller_map_.end()) {
     DCHECK(!details.move_view);
     controller_map_.erase(details.child);
+  }
+}
+
+void PaymentRequestDialogView::OnOcclusionStateChanged(bool occluded) {
+  if (occluded) {
+    SetEnabled(false);
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&PaymentRequestDialogView::CloseDialog,
+                                  weak_ptr_factory_.GetWeakPtr()));
   }
 }
 

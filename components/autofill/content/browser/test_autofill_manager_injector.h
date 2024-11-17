@@ -58,7 +58,7 @@ class TestAutofillManagerInjectorBase {
 //     class MockAutofillManager : BrowserAutofillManager {
 //      public:
 //       explicit MockAutofillManager(ContentAutofillDriver* driver)
-//           : BrowserAutofillManager(driver, "en-US") {}
+//           : BrowserAutofillManager(driver) {}
 //       MOCK_METHOD(...);
 //       ...
 //     };

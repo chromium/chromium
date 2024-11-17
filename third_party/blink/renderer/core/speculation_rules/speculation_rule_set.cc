@@ -101,7 +101,6 @@ bool IsValidBrowsingContextNameOrKeyword(const String& name_or_keyword) {
   // "A valid browsing context name or keyword is any string that is either a
   // valid browsing context name or that is an ASCII case-insensitive match for
   // one of: _blank, _self, _parent, or _top."
-  String canonicalized_name_or_keyword = name_or_keyword.LowerASCII();
   if (IsValidContextName(name_or_keyword) ||
       EqualIgnoringASCIICase(name_or_keyword, "_blank") ||
       EqualIgnoringASCIICase(name_or_keyword, "_self") ||

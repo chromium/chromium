@@ -45,7 +45,8 @@
           "builder": "android-cronet-code-coverage-java",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-cronet-code-coverage-java/targets"
     }
   },
   "$build/code_coverage": {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/notreached.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -391,6 +392,20 @@ void VirtualFidoDevice::State::NotifyCredentialCreated(
   }
 }
 
+void VirtualFidoDevice::State::NotifyCredentialDeleted(
+    base::span<const uint8_t> credential_id) {
+  for (Observer& observer : observers_) {
+    observer.OnCredentialDeleted(credential_id);
+  }
+}
+
+void VirtualFidoDevice::State::NotifyCredentialUpdated(
+    const std::pair<base::span<const uint8_t>, RegistrationData*>& credential) {
+  for (Observer& observer : observers_) {
+    observer.OnCredentialUpdated(credential);
+  }
+}
+
 void VirtualFidoDevice::State::NotifyAssertion(const Credential& credential) {
   for (Observer& observer : observers_) {
     observer.OnAssertion(credential);
@@ -587,9 +602,8 @@ VirtualFidoDevice::GenerateAttestationCertificate(
     case FidoTransportProtocol::kInternal:
       transport_bit = 4;
       break;
-    case FidoTransportProtocol::kAndroidAccessory:
-      transport_bit = 1;
-      break;
+    case FidoTransportProtocol::kDeprecatedAoa:
+      NOTREACHED();
   }
   const uint8_t kTransportTypesContents[] = {
       3,                                            // BIT STRING

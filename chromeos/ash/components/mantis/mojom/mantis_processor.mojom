@@ -1,0 +1,66 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file is copied from
+// https://source.chromium.org/chromiumos/chromiumos/codesearch/+/main:src/platform2/odml/mojom/mantis_processor.mojom
+// Doc: go/mantis-bl-dd
+module mantis.mojom;
+
+// A specific error Mantis encountered when processing the request.
+[Stable, Extensible]
+enum MantisError {
+  [Default] kUnknownError,
+  [MinVersion=1] kProcessorNotInitialized,
+  [MinVersion=1] kInputError,
+  [MinVersion=1] kProcessFailed,
+  [MinVersion=2] kMissingSegmenter,
+};
+
+// The result of image after processed by Mantis, or an error if any.
+[Stable]
+union MantisResult {
+  MantisError error;
+  array<uint8> result_image;
+};
+
+// This enum type identifies the result of Trust & Safety checking.
+[Stable, Extensible]
+enum SafetyClassifierVerdict {
+  kPass,
+  [Default] kFail,
+};
+
+// Interface for processing images. The processor should already be initialized
+// by `MantisService`.
+//
+// This interface is served by `odmld` process in CrOS to be used by image
+// editing UI (e.g. Media App WebUI).
+[Stable]
+interface MantisProcessor {
+  // Inpaints the image based on the mask and seed. Pass the same `seed` across
+  // method calls to get identical result. The `image`, `mask`, and `result` are
+  // byte arrays containing the encoded format of an image (e.g., PNG, JPEG).
+  Inpainting@0(array<uint8> image, array<uint8> mask, uint32 seed)
+      => (MantisResult result);
+
+  // Fills the image generatively based on the text and seed. Pass the same
+  // `seed` across method calls to get identical result. The `image`, `mask`,
+  // and `result` are byte arrays containing the encoded format of an image
+  // (e.g., PNG, JPEG).
+  GenerativeFill@1(
+      array<uint8> image, array<uint8> mask, uint32 seed, string prompt)
+      => (MantisResult result);
+
+  // Performs image segmentation on the image based on the prior selection.
+  // The `image`, `prior`, and `result` are byte arrays containing the
+  // encoded format of an image (e.g., PNG, JPEG).
+  [MinVersion=1]
+  Segmentation@2(array<uint8> image, array<uint8> prior)
+      => (MantisResult result);
+
+  // Classifies image for Trust & Safety checking.
+  [MinVersion=2]
+  ClassifyImageSafety@3(array<uint8> image)
+      => (SafetyClassifierVerdict verdict);
+};

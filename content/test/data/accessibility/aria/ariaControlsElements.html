@@ -1,0 +1,35 @@
+<!--
+@MAC-ALLOW:AXDescription='File'
+@MAC-DENY:AXValue
+@MAC-ALLOW:AXLinkedUIElements
+@MAC-DENY:AXLinkedUIElements=[]
+@WIN-ALLOW:n_relations*
+@WIN-ALLOW:controllerFor*
+@WAIT_FOR:Done
+-->
+<!DOCTYPE html>
+<html>
+  <body>
+    <ul role="menubar" style="list-style-type: none">
+      <li id="menuitem1" role="menuitem" data-controls="filemenu">File</span>
+      <li role="menuitem">Edit</span>
+    </ul>
+    <ul id="filemenu" role="menu" aria-label="File"
+        style="list-style-type: none">
+      <li role="menuitem">New</span>
+      <li role="menuitem">Open</span>
+    </ul>
+    <div id="script-status"></div>
+  </body>
+<script>
+const elements = document.querySelectorAll("[data-controls]");
+for (const element of elements) {
+    const controlsIds = element.dataset.controls.split(/\s+/);
+    const controlsElements = controlsIds.map(id => document.getElementById(id));
+    element.ariaControlsElements = controlsElements;
+    element.removeAttribute("data-controls");
+}
+document.getElementById("script-status").innerText = "Done";
+</script>
+</html>
+

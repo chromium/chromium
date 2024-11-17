@@ -107,9 +107,8 @@ void MediaStringView::MediaSessionInfoChanged(
     return;
   }
 
-  // Don't show the media string if session info is unavailable, or the active
-  // session is marked as sensitive.
-  if (!session_info || session_info->is_sensitive) {
+  // Don't show the media string if session info is unavailable.
+  if (!session_info) {
     SetVisible(false);
     return;
   }

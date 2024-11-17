@@ -6,10 +6,10 @@
 
 #include "base/functional/callback.h"
 #include "ui/accessibility/ax_enums.mojom.h"
-#include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 ThemeTrackingNonAccessibleImageView::ThemeTrackingNonAccessibleImageView(
     const ui::ImageModel& light_image_model,
@@ -17,7 +17,9 @@ ThemeTrackingNonAccessibleImageView::ThemeTrackingNonAccessibleImageView(
     const base::RepeatingCallback<SkColor()>& get_background_color_callback)
     : views::ThemeTrackingImageView(light_image_model,
                                     dark_image_model,
-                                    get_background_color_callback) {}
+                                    get_background_color_callback) {
+  GetViewAccessibility().SetIsInvisible(true);
+}
 
 ThemeTrackingNonAccessibleImageView::ThemeTrackingNonAccessibleImageView(
     const gfx::ImageSkia& light_image,
@@ -25,15 +27,12 @@ ThemeTrackingNonAccessibleImageView::ThemeTrackingNonAccessibleImageView(
     const base::RepeatingCallback<SkColor()>& get_background_color_callback)
     : views::ThemeTrackingImageView(light_image,
                                     dark_image,
-                                    get_background_color_callback) {}
+                                    get_background_color_callback) {
+  GetViewAccessibility().SetIsInvisible(true);
+}
 
 ThemeTrackingNonAccessibleImageView::~ThemeTrackingNonAccessibleImageView() =
     default;
-
-void ThemeTrackingNonAccessibleImageView::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  node_data->AddState(ax::mojom::State::kInvisible);
-}
 
 BEGIN_METADATA(ThemeTrackingNonAccessibleImageView)
 END_METADATA

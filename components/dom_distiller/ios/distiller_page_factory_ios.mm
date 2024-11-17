@@ -15,7 +15,7 @@ DistillerPageFactoryIOS::DistillerPageFactoryIOS(
     web::BrowserState* browser_state)
     : browser_state_(browser_state) {}
 
-DistillerPageFactoryIOS::~DistillerPageFactoryIOS() {}
+DistillerPageFactoryIOS::~DistillerPageFactoryIOS() = default;
 
 std::unique_ptr<DistillerPage> DistillerPageFactoryIOS::CreateDistillerPage(
     const gfx::Size& view_size) const {

@@ -18,8 +18,7 @@ AnyWidgetObserverSingleton* AnyWidgetObserverSingleton::GetInstance() {
 
 #define PROPAGATE_NOTIFICATION(method)                      \
   void AnyWidgetObserverSingleton::method(Widget* widget) { \
-    for (AnyWidgetObserver & obs : observers_)              \
-      obs.method(widget);                                   \
+    observers_.Notify(&AnyWidgetObserver::method, widget);  \
   }
 
 PROPAGATE_NOTIFICATION(OnAnyWidgetInitialized)

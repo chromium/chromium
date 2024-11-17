@@ -10,14 +10,6 @@
 
 namespace content {
 
-namespace {
-
-constexpr char kComparisonErrorMessage[] =
-    "You are comparing optional WebExposedIsolationInfo objects using "
-    "operator==, use WebExposedIsolationInfo::AreCompatible() instead.";
-
-}  // namespace
-
 // static
 WebExposedIsolationInfo WebExposedIsolationInfo::CreateNonIsolated() {
   return WebExposedIsolationInfo(std::nullopt /* origin */,
@@ -127,42 +119,6 @@ std::ostream& operator<<(std::ostream& out,
   }
   out << "}";
   return out;
-}
-
-bool operator==(const std::optional<WebExposedIsolationInfo>& a,
-                const std::optional<WebExposedIsolationInfo>& b) {
-  NOTREACHED_IN_MIGRATION() << kComparisonErrorMessage;
-  return false;
-}
-
-bool operator==(const WebExposedIsolationInfo& a,
-                const std::optional<WebExposedIsolationInfo>& b) {
-  NOTREACHED_IN_MIGRATION() << kComparisonErrorMessage;
-  return false;
-}
-
-bool operator==(const std::optional<WebExposedIsolationInfo>& a,
-                const WebExposedIsolationInfo& b) {
-  NOTREACHED_IN_MIGRATION() << kComparisonErrorMessage;
-  return false;
-}
-
-bool operator!=(const std::optional<WebExposedIsolationInfo>& a,
-                const std::optional<WebExposedIsolationInfo>& b) {
-  NOTREACHED_IN_MIGRATION() << kComparisonErrorMessage;
-  return false;
-}
-
-bool operator!=(const WebExposedIsolationInfo& a,
-                const std::optional<WebExposedIsolationInfo>& b) {
-  NOTREACHED_IN_MIGRATION() << kComparisonErrorMessage;
-  return false;
-}
-
-bool operator!=(const std::optional<WebExposedIsolationInfo>& a,
-                const WebExposedIsolationInfo& b) {
-  NOTREACHED_IN_MIGRATION() << kComparisonErrorMessage;
-  return false;
 }
 
 }  // namespace content

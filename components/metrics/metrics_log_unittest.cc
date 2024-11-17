@@ -71,7 +71,7 @@ class TestMetricsLog : public MetricsLog {
   TestMetricsLog(const TestMetricsLog&) = delete;
   TestMetricsLog& operator=(const TestMetricsLog&) = delete;
 
-  ~TestMetricsLog() override {}
+  ~TestMetricsLog() override = default;
 
   const ChromeUserMetricsExtension& uma_proto() const {
     return *MetricsLog::uma_proto();
@@ -127,7 +127,7 @@ class MetricsLogTest : public testing::Test {
   MetricsLogTest(const MetricsLogTest&) = delete;
   MetricsLogTest& operator=(const MetricsLogTest&) = delete;
 
-  ~MetricsLogTest() override {}
+  ~MetricsLogTest() override = default;
 
  protected:
   // Check that the values in |system_values| are filled in and expected ones

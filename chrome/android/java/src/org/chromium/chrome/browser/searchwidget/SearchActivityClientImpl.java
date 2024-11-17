@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.searchwidget;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.content.ComponentName;
@@ -23,18 +22,24 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.SearchType;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.url.GURL;
 
+import java.util.Locale;
+
 /** Class with logic enabling clients to interact with SearchActivity. */
 public class SearchActivityClientImpl implements SearchActivityClient {
     private static final String TAG = "SAClient";
 
+    // Base identifier used by the SAClient to identify requests for result.
     @VisibleForTesting
-    /* package */ static final int OMNIBOX_REQUEST_CODE = 'O' << 24 | 'M' << 16 | 'N' << 8 | 'I';
+    /* package */ static final int OMNIBOX_REQUEST_CODE = 'O' << 24 | 'M' << 16 | 'N' << 8;
 
+    // Intent Action format string, used to uniquely identify specific type of action requested
+    // by the widget.
     // Note: while we don't rely on Actions, PendingIntents do require them to be Unique.
     // Responsibility to define values for PendingIntents could be offset to Caller; meantime we
     // offer complimentary default values.
@@ -42,105 +47,130 @@ public class SearchActivityClientImpl implements SearchActivityClient {
     /* package */ static final String ACTION_SEARCH_FORMAT =
             "org.chromium.chrome.browser.ui.searchactivityutils.ACTION_SEARCH:%d:%d";
 
-    @Override
-    public Intent createIntent(
-            @NonNull Context context,
-            @IntentOrigin int origin,
-            @Nullable GURL url,
-            @SearchType int searchType) {
-        // Ensure `action` is unique especially across different Widget implementations.
-        // Otherwise, a QuickActionSearchWidget action may override the SearchActivity widget,
-        // triggering functionality we might not want to activate.
-        @SuppressLint("DefaultLocale")
-        String action = String.format(ACTION_SEARCH_FORMAT, origin, searchType);
+    private final @Nullable Context mContext;
+    private final @IntentOrigin int mOrigin;
 
-        var intent = buildTrustedIntent(context, action);
-        intent.putExtra(SearchActivityExtras.EXTRA_ORIGIN, origin)
-                .putExtra(SearchActivityExtras.EXTRA_SEARCH_TYPE, searchType)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                .addFlags(Intent.FLAG_ACTIVITY_NEW_DOCUMENT)
-                .putExtra(
-                        SearchActivityExtras.EXTRA_CURRENT_URL,
-                        GURL.isEmptyOrInvalid(url) ? null : url.getSpec());
+    private static class IntentBuilderImpl implements IntentBuilder {
+        private Intent mIntent;
+        private @IntentOrigin int mOrigin;
+        private @SearchType int mSearchType;
 
-        return intent;
-    }
+        IntentBuilderImpl(Context context, int origin) {
+            mOrigin = origin;
+            mIntent = new Intent();
+            mIntent.setComponent(new ComponentName(context, SearchActivity.class));
+            mIntent.putExtra(SearchActivityExtras.EXTRA_ORIGIN, origin);
+            mIntent.addFlags(
+                    Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
 
-    /**
-     * Call up SearchActivity/Omnibox on behalf of the current Activity.
-     *
-     * <p>Allows the caller to instantiate the Omnibox and retrieve Suggestions for the supplied
-     * webpage. Response will be delivered via {@link Activity#onActivityResult}.
-     *
-     * @param activity the current activity; may be {@code null}, in which case intent will not be
-     *     issued
-     * @param url the URL of the page to retrieve suggestions for
-     * @param referrer the referrer package name
-     */
-    public static void requestOmniboxForResult(
-            @Nullable Activity activity, @NonNull GURL currentUrl, @Nullable String referrer) {
-        if (activity == null) return;
-
-        if (referrer != null && !referrer.matches(SearchActivityExtras.REFERRER_VALIDATION_REGEX)) {
-            Log.e(
-                    TAG,
-                    String.format(
-                            "Referrer: '%s' failed to match Re pattern '%s' and will be ignored.",
-                            referrer, SearchActivityExtras.REFERRER_VALIDATION_REGEX));
-            referrer = null;
+            // Initialize defaults.
+            setSearchType(SearchType.TEXT);
+            setResolutionType(ResolutionType.OPEN_IN_CHROME);
         }
 
-        @SuppressLint("DefaultLocale")
-        var intent =
-                buildTrustedIntent(
-                                activity,
-                                String.format(
-                                        ACTION_SEARCH_FORMAT,
-                                        IntentOrigin.CUSTOM_TAB,
-                                        SearchType.TEXT))
-                        .putExtra(
-                                SearchActivityExtras.EXTRA_CURRENT_URL,
-                                GURL.isEmptyOrInvalid(currentUrl) ? null : currentUrl.getSpec())
-                        .putExtra(SearchActivityExtras.EXTRA_ORIGIN, IntentOrigin.CUSTOM_TAB)
-                        .putExtra(
-                                SearchActivityExtras.EXTRA_REFERRER,
-                                TextUtils.isEmpty(referrer) ? null : referrer)
-                        .putExtra(SearchActivityExtras.EXTRA_SEARCH_TYPE, SearchType.TEXT)
-                        .addFlags(
-                                Intent.FLAG_ACTIVITY_NO_HISTORY
-                                        | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP);
+        @Override
+        public IntentBuilder setSearchType(@SearchType int searchType) {
+            mIntent.putExtra(SearchActivityExtras.EXTRA_SEARCH_TYPE, searchType);
+            mSearchType = searchType;
+            return this;
+        }
 
-        activity.startActivityForResult(
-                intent,
-                OMNIBOX_REQUEST_CODE,
-                ActivityOptions.makeCustomAnimation(
-                                activity, android.R.anim.fade_in, R.anim.no_anim)
-                        .toBundle());
+        @Override
+        public IntentBuilder setPageUrl(GURL url) {
+            mIntent.putExtra(
+                    SearchActivityExtras.EXTRA_CURRENT_URL,
+                    GURL.isEmptyOrInvalid(url) ? null : url.getSpec());
+            return this;
+        }
+
+        @Override
+        public IntentBuilder setReferrer(String referrer) {
+            if (referrer != null
+                    && !referrer.matches(SearchActivityExtras.REFERRER_VALIDATION_REGEX)) {
+                Log.e(
+                        TAG,
+                        String.format(
+                                "Referrer: '%s' failed to match Re pattern '%s' and will be"
+                                        + " ignored.",
+                                referrer, SearchActivityExtras.REFERRER_VALIDATION_REGEX));
+                referrer = null;
+            }
+
+            mIntent.putExtra(
+                    SearchActivityExtras.EXTRA_REFERRER,
+                    TextUtils.isEmpty(referrer) ? null : referrer);
+            return this;
+        }
+
+        @Override
+        public IntentBuilder setIncognito(boolean isIncognito) {
+            mIntent.putExtra(SearchActivityExtras.EXTRA_IS_INCOGNITO, isIncognito);
+            return this;
+        }
+
+        @Override
+        public IntentBuilder setResolutionType(@ResolutionType int resolutionType) {
+            mIntent.putExtra(SearchActivityExtras.EXTRA_RESOLUTION_TYPE, resolutionType);
+            return this;
+        }
+
+        @Override
+        public Intent build() {
+            // Ensure `action` is unique especially across different Widget implementations.
+            // Otherwise, a QuickActionSearchWidget action may override the SearchActivity widget,
+            // triggering functionality we might not want to activate.
+            mIntent.setAction(
+                    String.format(Locale.getDefault(), ACTION_SEARCH_FORMAT, mOrigin, mSearchType));
+            // Ensure a copy is made so that the builder can be reused, producing variations of an
+            // intent.
+            var intent = new Intent(mIntent);
+            IntentUtils.addTrustedIntentExtras(intent);
+            return intent;
+        }
     }
 
     /**
-     * Utility method to determine whether the {@link Activity#onActivityResult} payload carries the
-     * response to {@link requestOmniboxForResult}.
+     * Creates new instance of the SearchActivityClient.
      *
-     * @param requestCode the request code received in {@link Activity#onActivityResult}
-     * @param intent the intent data received in {@link Activity#onActivityResult}
-     * @return true if the response captures legitimate Omnibox result.
+     * @param context Current context. This must be the Activity facilitating exchange, if the
+     *     caller intends to use the requestOmniboxForResult call.
+     * @param origin The {@link IntentOrigin} value representing the client.
      */
-    public static boolean isOmniboxResult(int requestCode, @NonNull Intent intent) {
-        return requestCode == OMNIBOX_REQUEST_CODE
+    public SearchActivityClientImpl(Context context, @IntentOrigin int origin) {
+        mContext = context;
+        mOrigin = origin;
+    }
+
+    @Override
+    public IntentBuilder newIntentBuilder() {
+        return new IntentBuilderImpl(mContext, mOrigin);
+    }
+
+    @Override
+    public void requestOmniboxForResult(Intent intent) {
+        if (!(mContext instanceof Activity)) {
+            Log.w(TAG, "Intent not dispatched; SearchActivityClient not associated with Activity");
+            return;
+        }
+
+        ((Activity) mContext)
+                .startActivityForResult(
+                        intent,
+                        getClientUniqueRequestCode(),
+                        ActivityOptions.makeCustomAnimation(
+                                        mContext, android.R.anim.fade_in, R.anim.no_anim)
+                                .toBundle());
+    }
+
+    @Override
+    public boolean isOmniboxResult(int requestCode, @NonNull Intent intent) {
+        return requestCode == getClientUniqueRequestCode()
                 && IntentUtils.isTrustedIntentFromSelf(intent)
                 && !TextUtils.isEmpty(intent.getDataString());
     }
 
-    /**
-     * Process the {@link Activity#onActivityResult} payload for Omnibox navigation result.
-     *
-     * @param requestCode the request code received in {@link Activity#onActivityResult}
-     * @param resultCode the result code received in {@link Activity#onActivityResult}
-     * @param intent the intent data received in {@link Activity#onActivityResult}
-     * @return null, if result is not a valid Omnibox result, otherwise valid LoadUrlParams object
-     */
-    public static @Nullable LoadUrlParams getOmniboxResult(
+    @Override
+    public @Nullable LoadUrlParams getOmniboxResult(
             int requestCode, int resultCode, @NonNull Intent intent) {
         if (!isOmniboxResult(requestCode, intent)) return null;
         if (resultCode != Activity.RESULT_OK) return null;
@@ -158,18 +188,9 @@ public class SearchActivityClientImpl implements SearchActivityClient {
         return params;
     }
 
-    /**
-     * Create a trusted intent that can be used to start the Search Activity.
-     *
-     * @param context current context
-     * @param action action to be associated with the intent
-     */
+    /** Returns the Request Code to be used with startActivityForResult/onActivityResult. */
     @VisibleForTesting
-    /* package */ static Intent buildTrustedIntent(
-            @NonNull Context context, @NonNull String action) {
-        var intent =
-                new Intent(action).setComponent(new ComponentName(context, SearchActivity.class));
-        IntentUtils.addTrustedIntentExtras(intent);
-        return intent;
+    /* package */ int getClientUniqueRequestCode() {
+        return OMNIBOX_REQUEST_CODE | mOrigin;
     }
 }

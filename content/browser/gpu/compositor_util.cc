@@ -154,7 +154,7 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
       SafeGetFeatureStatus(
           gpu_feature_info, gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE,
 #if BUILDFLAG(IS_LINUX)
-          !base::FeatureList::IsEnabled(media::kVaapiVideoDecodeLinux) ||
+          !base::FeatureList::IsEnabled(media::kAcceleratedVideoDecodeLinux) ||
 #endif  // BUILDFLAG(IS_LINUX)
               command_line.HasSwitch(switches::kDisableAcceleratedVideoDecode)),
       DisableInfo::Problem(
@@ -166,7 +166,7 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
       SafeGetFeatureStatus(
           gpu_feature_info, gpu::GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE,
 #if BUILDFLAG(IS_LINUX)
-          !base::FeatureList::IsEnabled(media::kVaapiVideoEncodeLinux)),
+          !base::FeatureList::IsEnabled(media::kAcceleratedVideoEncodeLinux)),
 #else
           command_line.HasSwitch(switches::kDisableAcceleratedVideoEncode)),
 #endif  // BUILDFLAG(IS_LINUX)
@@ -209,9 +209,9 @@ std::vector<GpuFeatureData> GetGpuFeatureData(
           "WebGL2 has been disabled via blocklist or the command line."),
       false);
   features.emplace_back("raw_draw",
-                        GetFakeFeatureStatus(features::IsUsingRawDraw()));
+                        GetFakeFeatureStatus(::features::IsUsingRawDraw()));
   features.emplace_back("direct_rendering_display_compositor",
-                        GetFakeFeatureStatus(features::IsDrDcEnabled()));
+                        GetFakeFeatureStatus(::features::IsDrDcEnabled()));
   features.emplace_back(
       "webgpu",
       SafeGetFeatureStatus(
@@ -290,7 +290,7 @@ base::Value GetFeatureStatusImpl(GpuFeatureInfoType type) {
       if (gpu_feature_data.name == "multiple_raster_threads") {
         const base::CommandLine& command_line =
             *base::CommandLine::ForCurrentProcess();
-        if (command_line.HasSwitch(cc::switches::kNumRasterThreads)) {
+        if (command_line.HasSwitch(switches::kNumRasterThreads)) {
           status += "_force";
         }
         status += "_on";
@@ -429,12 +429,12 @@ int NumberOfRendererRasterThreads() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
 
-  if (command_line.HasSwitch(cc::switches::kNumRasterThreads)) {
+  if (command_line.HasSwitch(switches::kNumRasterThreads)) {
     std::string string_value =
-        command_line.GetSwitchValueASCII(cc::switches::kNumRasterThreads);
+        command_line.GetSwitchValueASCII(switches::kNumRasterThreads);
     if (!base::StringToInt(string_value, &num_raster_threads)) {
-      DLOG(WARNING) << "Failed to parse switch "
-                    << cc::switches::kNumRasterThreads << ": " << string_value;
+      DLOG(WARNING) << "Failed to parse switch " << switches::kNumRasterThreads
+                    << ": " << string_value;
     }
   }
 
@@ -453,7 +453,7 @@ bool IsZeroCopyUploadEnabled() {
 
 bool IsPartialRasterEnabled() {
   // Partial raster is not supported with RawDraw.
-  if (features::IsUsingRawDraw()) {
+  if (::features::IsUsingRawDraw()) {
     return false;
   }
   const auto& command_line = *base::CommandLine::ForCurrentProcess();
@@ -463,7 +463,7 @@ bool IsPartialRasterEnabled() {
 bool IsGpuMemoryBufferCompositorResourcesEnabled() {
   // To use Raw Draw, the Raw Draw shared image backing should be used, so
   // not use GPU memory buffer shared image backings for compositor resources.
-  if (features::IsUsingRawDraw()) {
+  if (::features::IsUsingRawDraw()) {
     return false;
   }
   const base::CommandLine& command_line =
@@ -521,8 +521,9 @@ bool IsMainFrameBeforeActivationEnabled() {
     return false;
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          cc::switches::kDisableMainFrameBeforeActivation))
+          switches::kDisableMainFrameBeforeActivation)) {
     return false;
+  }
 
   return true;
 }

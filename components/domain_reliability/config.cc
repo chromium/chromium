@@ -44,7 +44,7 @@ DomainReliabilityConfig::DomainReliabilityConfig()
       success_sample_rate(-1.0),
       failure_sample_rate(-1.0) {
 }
-DomainReliabilityConfig::~DomainReliabilityConfig() {}
+DomainReliabilityConfig::~DomainReliabilityConfig() = default;
 
 // static
 std::unique_ptr<const DomainReliabilityConfig>

@@ -3,12 +3,6 @@ rootWebArea
 ++++genericContainer ignored
 ++++++genericContainer ignored
 ++++++++genericContainer ignored
-++++++++++button name='2'
-++++++++++++staticText name='2'
-++++++++++++++inlineTextBox name='2'
-++++++++++button name='4'
-++++++++++++staticText name='4'
-++++++++++++++inlineTextBox name='4'
 ++++++++++button name='1'
 ++++++++++++staticText name='1'
 ++++++++++++++inlineTextBox name='1'
@@ -18,3 +12,9 @@ rootWebArea
 ++++++++++button name='5'
 ++++++++++++staticText name='5'
 ++++++++++++++inlineTextBox name='5'
+++++++++++button name='2'
+++++++++++++staticText name='2'
+++++++++++++++inlineTextBox name='2'
+++++++++++button name='4'
+++++++++++++staticText name='4'
+++++++++++++++inlineTextBox name='4'

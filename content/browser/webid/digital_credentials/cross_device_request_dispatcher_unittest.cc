@@ -9,17 +9,23 @@
 #include "base/test/test_future.h"
 #include "content/browser/webid/digital_credentials/cross_device_request_dispatcher.h"
 #include "content/public/browser/digital_credentials_cross_device.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/test/mock_bluetooth_adapter.h"
+#include "device/fido/cable/fido_cable_discovery.h"
 #include "device/fido/cable/v2_authenticator.h"
 #include "device/fido/cable/v2_constants.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/cable/v2_test_util.h"
 #include "device/fido/fido_constants.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ec.h"
 #include "third_party/boringssl/src/include/openssl/nid.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+using testing::NiceMock;
 
 namespace content::digital_credentials::cross_device {
 namespace {
@@ -41,6 +47,10 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
                  p256.get(), EC_KEY_get0_public_key(peer_identity.get()),
                  POINT_CONVERSION_UNCOMPRESSED, peer_identity_x962_,
                  sizeof(peer_identity_x962_), /*ctx=*/nullptr));
+
+    mock_adapter_ =
+        base::MakeRefCounted<NiceMock<device::MockBluetoothAdapter>>();
+    device::BluetoothAdapterFactory::SetAdapterForTesting(mock_adapter_);
   }
 
  protected:
@@ -67,6 +77,8 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
       base::test::TestFuture<base::expected<Response, RequestDispatcher::Error>>
           callback;
       auto request_handler = std::make_unique<RequestDispatcher>(
+          std::make_unique<device::FidoCableDiscovery>(
+              std::vector<device::CableDiscoveryData>()),
           std::move(discovery), std::move(origin),
           base::Value(std::move(request_value)), callback.GetCallback());
       std::unique_ptr<device::cablev2::authenticator::Transaction> transaction =
@@ -110,6 +122,8 @@ class DigitalCredentialsCrossDeviceRequestDispatcherTest
   const std::array<uint8_t, device::cablev2::kRootSecretSize> root_secret_ = {
       0};
   const std::array<uint8_t, device::cablev2::kQRSeedSize> zero_seed_ = {0};
+
+  scoped_refptr<NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
 
   base::test::TaskEnvironment task_environment;
 };

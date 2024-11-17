@@ -190,7 +190,7 @@ public class AutoFetchNotifier {
                                         deleteIntent,
                                         /* flags= */ 0));
 
-        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create(context);
+        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
         NotificationWrapper notification = builder.buildNotificationWrapper();
         manager.notify(notification);
         NotificationUmaTracker.getInstance()
@@ -367,7 +367,7 @@ public class AutoFetchNotifier {
                                         /* flags= */ 0));
 
         NotificationWrapper notification = builder.buildNotificationWrapper();
-        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create(context);
+        BaseNotificationManagerProxy manager = BaseNotificationManagerProxyFactory.create();
         manager.notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(

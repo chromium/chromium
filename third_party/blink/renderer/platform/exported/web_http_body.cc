@@ -89,10 +89,8 @@ bool WebHTTPBody::ElementAt(size_t index, Element& result) const {
       break;
     case FormDataElement::kEncodedBlob:
       result.type = HTTPBodyElementType::kTypeBlob;
-      result.blob_length = std::numeric_limits<uint64_t>::max();
-      result.optional_blob =
-          element.optional_blob_data_handle_->CloneBlobRemote();
-      result.blob_length = element.optional_blob_data_handle_->size();
+      result.optional_blob = element.blob_data_handle_->CloneBlobRemote();
+      result.blob_length = element.blob_data_handle_->size();
       break;
     case FormDataElement::kDataPipe:
       result.type = HTTPBodyElementType::kTypeDataPipe;
@@ -109,13 +107,15 @@ bool WebHTTPBody::ElementAt(size_t index, Element& result) const {
 
 void WebHTTPBody::AppendData(const WebData& data) {
   EnsureMutable();
-  // FIXME: FormDataElement::m_data should be a SharedBuffer<char>.  Then we
+  if (data.IsEmpty()) {
+    return;
+  }
+  // FIXME: FormDataElement::m_data should be a SharedBuffer<char>. Then we
   // could avoid this buffer copy.
-  data.ForEachSegment([this](const char* segment, size_t segment_size,
-                             size_t segment_offset) {
-    private_->AppendData(segment, base::checked_cast<wtf_size_t>(segment_size));
-    return true;
-  });
+  const SharedBuffer& buffer = data;
+  for (const auto segment : buffer) {
+    private_->AppendData(segment);
+  }
 }
 
 void WebHTTPBody::AppendFileRange(
@@ -126,11 +126,6 @@ void WebHTTPBody::AppendFileRange(
   EnsureMutable();
   private_->AppendFileRange(file_path, file_start, file_length,
                             modification_time);
-}
-
-void WebHTTPBody::AppendBlob(const WebString& uuid) {
-  EnsureMutable();
-  private_->AppendBlob(uuid, nullptr);
 }
 
 void WebHTTPBody::AppendDataPipe(

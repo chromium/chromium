@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
+import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
-import {SearchResult as PersonalizationSearchResult} from '../mojom-webui/personalization_search.mojom-webui.js';
-import {ParentResultBehavior, SearchResult as SettingsSearchResult} from '../mojom-webui/search.mojom-webui.js';
+import type {SearchResult as PersonalizationSearchResult} from '../mojom-webui/personalization_search.mojom-webui.js';
+import type {ParentResultBehavior, SearchResult as SettingsSearchResult} from '../mojom-webui/search.mojom-webui.js';
 
 import {getPersonalizationSearchHandler} from './personalization_search_handler.js';
 import {getSettingsSearchHandler} from './settings_search_handler.js';

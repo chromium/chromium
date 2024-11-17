@@ -47,10 +47,7 @@ class MediaElementAudioSourceHandler final : public AudioHandler {
   void unlock() UNLOCK_FUNCTION(GetProcessLock());
 
   // For thread safety analysis only.  Does not actually return mu.
-  base::Lock* GetProcessLock() LOCK_RETURNED(process_lock_) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  base::Lock* GetProcessLock() LOCK_RETURNED(process_lock_) { NOTREACHED(); }
 
   bool RequiresTailProcessing() const final { return false; }
 

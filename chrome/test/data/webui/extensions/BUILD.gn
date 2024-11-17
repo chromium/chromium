@@ -33,9 +33,11 @@ build_webui_tests("build") {
     "manager_unit_test_with_activity_log_flag.ts",
     "mv2_deprecation_panel_warning_test.ts",
     "mv2_deprecation_panel_disabled_test.ts",
+    "mv2_deprecation_panel_unsupported_test.ts",
     "navigation_helper_test.ts",
     "options_dialog_test.ts",
     "pack_dialog_test.ts",
+    "async_map_directive_test.ts",
     "review_panel_test.ts",
     "runtime_host_permissions_test.ts",
     "runtime_hosts_dialog_test.ts",
@@ -60,7 +62,6 @@ build_webui_tests("build") {
   ts_deps = [
     "//chrome/browser/resources/extensions:build_ts",
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]

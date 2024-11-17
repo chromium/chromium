@@ -19,7 +19,7 @@
 #include "third_party/blink/public/platform/web_text_input_type.h"
 #include "third_party/blink/public/web/web_lifecycle_update.h"
 #include "third_party/blink/renderer/platform/widget/input/input_handler_proxy.h"
-#include "ui/base/mojom/ui_base_types.mojom-blink.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink-forward.h"
 #include "ui/display/mojom/screen_orientation.mojom-blink.h"
 
 namespace cc {

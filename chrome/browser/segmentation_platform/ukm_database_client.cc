@@ -37,11 +37,21 @@ segmentation_platform::UkmDataManager* UkmDatabaseClient::GetUkmDataManager() {
 }
 
 void UkmDatabaseClient::PreProfileInit(bool in_memory_database) {
+  // Skip if already initialized. This method is called multiple times to ensure
+  // the client is initialized in tests.
+  if (initialized_) {
+    return;
+  }
+  initialized_ = true;
+
   if (ukm_recorder_for_testing_) {
     ukm_observer_ = std::make_unique<UkmObserver>(ukm_recorder_for_testing_);
-  } else {
+  } else if (g_browser_process->GetMetricsServicesManager()) {
+    // GetMetricsServicesManager() can be null only in unit tests.
     ukm_observer_ = std::make_unique<UkmObserver>(
         g_browser_process->GetMetricsServicesManager()->GetUkmService());
+  } else {
+    CHECK_IS_TEST();
   }
 
   // Path service is setup at early startup.
@@ -51,7 +61,11 @@ void UkmDatabaseClient::PreProfileInit(bool in_memory_database) {
   ukm_data_manager_->Initialize(
       local_data_dir.Append(FILE_PATH_LITERAL("segmentation_platform/ukm_db")),
       in_memory_database);
-  ukm_data_manager_->StartObservation(ukm_observer_.get());
+  if (ukm_observer_) {
+    ukm_data_manager_->StartObservation(ukm_observer_.get());
+  } else {
+    CHECK_IS_TEST();
+  }
 }
 
 void UkmDatabaseClient::TearDownForTesting() {

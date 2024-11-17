@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
-#include "components/signin/public/base/signin_metrics.h"
 
 #import "base/ios/block_types.h"
 #import "base/test/task_environment.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "components/signin/public/identity_manager/primary_account_change_event.h"
+#import "google_apis/gaia/gaia_auth_util.h"
 #import "services/network/test/test_url_loader_factory.h"
 #import "testing/gtest/include/gtest/gtest.h"
 
@@ -93,13 +94,8 @@ class IdentityManagerObserverBridgeTest : public testing::Test {
     account_info_.account_id = CoreAccountId::FromGaiaId("joegaia");
     account_info_.gaia = "joegaia";
     account_info_.email = "joe@example.com";
-
-    const std::string gaia_id = signin::GetTestGaiaIdForEmail("1@mail.com");
-    gaia::ListedAccount one;
-    one.id = CoreAccountId::FromGaiaId(gaia_id);
-    just_one_.push_back(one);
   }
-  ~IdentityManagerObserverBridgeTest() override {}
+  ~IdentityManagerObserverBridgeTest() override = default;
 
   void TearDown() override {
     // Check no unexpected calls. None zero counter needs to be reset at the end
@@ -129,8 +125,6 @@ class IdentityManagerObserverBridgeTest : public testing::Test {
   std::unique_ptr<signin::IdentityManagerObserverBridge> observer_bridge_;
   ObserverBridgeDelegateFake* observer_bridge_delegate_;
   CoreAccountInfo account_info_;
-  const std::vector<gaia::ListedAccount> no_account_;
-  std::vector<gaia::ListedAccount> just_one_;
 };
 
 // Tests IdentityManagerObserverBridge::OnPrimaryAccountChanged(), with set
@@ -201,8 +195,11 @@ TEST_F(IdentityManagerObserverBridgeTest, OnRefreshTokensLoaded) {
 // error.
 TEST_F(IdentityManagerObserverBridgeTest,
        OnAccountsInCookieUpdatedWithNoError) {
-  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
-      true, just_one_, no_account_};
+  gaia::ListedAccount signed_in_account;
+  signed_in_account.id =
+      CoreAccountId::FromGaiaId(signin::GetTestGaiaIdForEmail("1@mail.com"));
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info(
+      /*accounts_are_fresh=*/true, /*accounts=*/{signed_in_account});
   GoogleServiceAuthError noError(GoogleServiceAuthError::State::NONE);
   observer_bridge_.get()->OnAccountsInCookieUpdated(accounts_in_cookie_jar_info,
                                                     noError);
@@ -214,8 +211,12 @@ TEST_F(IdentityManagerObserverBridgeTest,
 
 // Tests IdentityManagerObserverBridge::OnAccountsInCookieUpdated() with error.
 TEST_F(IdentityManagerObserverBridgeTest, OnAccountsInCookieUpdatedWithError) {
-  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
-      false, no_account_, just_one_};
+  gaia::ListedAccount signed_out_account;
+  signed_out_account.id =
+      CoreAccountId::FromGaiaId(signin::GetTestGaiaIdForEmail("2@mail.com"));
+  signed_out_account.signed_out = true;
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info(
+      /*accounts_are_fresh=*/false, /*accounts=*/{signed_out_account});
   GoogleServiceAuthError error(
       GoogleServiceAuthError::State::CONNECTION_FAILED);
   observer_bridge_.get()->OnAccountsInCookieUpdated(accounts_in_cookie_jar_info,

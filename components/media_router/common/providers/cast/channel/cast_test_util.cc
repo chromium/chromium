@@ -12,8 +12,8 @@
 
 namespace cast_channel {
 
-MockCastTransport::MockCastTransport() {}
-MockCastTransport::~MockCastTransport() {}
+MockCastTransport::MockCastTransport() = default;
+MockCastTransport::~MockCastTransport() = default;
 
 CastTransport::Delegate* MockCastTransport::current_delegate() const {
   CHECK(delegate_);
@@ -25,17 +25,17 @@ void MockCastTransport::SetReadDelegate(
   delegate_ = std::move(delegate);
 }
 
-MockCastTransportDelegate::MockCastTransportDelegate() {}
-MockCastTransportDelegate::~MockCastTransportDelegate() {}
+MockCastTransportDelegate::MockCastTransportDelegate() = default;
+MockCastTransportDelegate::~MockCastTransportDelegate() = default;
 
-MockCastSocketObserver::MockCastSocketObserver() {}
-MockCastSocketObserver::~MockCastSocketObserver() {}
+MockCastSocketObserver::MockCastSocketObserver() = default;
+MockCastSocketObserver::~MockCastSocketObserver() = default;
 
 MockCastSocketService::MockCastSocketService(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner) {
   SetTaskRunnerForTest(task_runner);
 }
-MockCastSocketService::~MockCastSocketService() {}
+MockCastSocketService::~MockCastSocketService() = default;
 
 MockCastSocket::MockCastSocket()
     : channel_id_(0),
@@ -43,7 +43,7 @@ MockCastSocket::MockCastSocket()
       keep_alive_(false),
       audio_only_(false),
       mock_transport_(new MockCastTransport()) {}
-MockCastSocket::~MockCastSocket() {}
+MockCastSocket::~MockCastSocket() = default;
 
 net::IPEndPoint CreateIPEndPointForTest() {
   return net::IPEndPoint(net::IPAddress(192, 168, 1, 1), 8009);

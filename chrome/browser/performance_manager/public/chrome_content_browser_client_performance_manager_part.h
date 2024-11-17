@@ -26,6 +26,9 @@ class ChromeContentBrowserClientPerformanceManagerPart
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
       content::RenderProcessHost* render_process_host) override;
+  void ExposeInterfacesToChild(
+      mojo::BinderMapWithContext<content::BrowserChildProcessHost*>* map)
+      override;
 };
 
 #endif  // CHROME_BROWSER_PERFORMANCE_MANAGER_PUBLIC_CHROME_CONTENT_BROWSER_CLIENT_PERFORMANCE_MANAGER_PART_H_

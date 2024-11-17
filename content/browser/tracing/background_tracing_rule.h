@@ -10,8 +10,6 @@
 
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
-#include "content/browser/tracing/background_tracing_config_impl.h"
 #include "content/common/content_export.h"
 #include "third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h"
 #include "third_party/perfetto/protos/perfetto/trace/chrome/chrome_metadata.pbzero.h"
@@ -36,7 +34,6 @@ class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
 
   virtual void Install(RuleTriggeredCallback);
   virtual void Uninstall();
-  virtual base::Value::Dict ToDict() const;
   virtual perfetto::protos::gen::TriggerRule ToProtoForTesting() const;
   virtual void GenerateMetadataProto(MetadataProto* out) const;
 
@@ -46,9 +43,6 @@ class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
   // Probability that we should allow a tigger to  happen.
   double trigger_chance() const { return trigger_chance_; }
   std::optional<base::TimeDelta> delay() const { return delay_; }
-
-  static std::unique_ptr<BackgroundTracingRule> CreateRuleFromDict(
-      const base::Value::Dict& dict);
 
   static std::unique_ptr<BackgroundTracingRule> Create(
       const perfetto::protos::gen::TriggerRule& config);
@@ -72,7 +66,6 @@ class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
   bool installed() const { return installed_; }
 
  private:
-  void Setup(const base::Value::Dict& dict);
   void Setup(const perfetto::protos::gen::TriggerRule& config);
 
   RuleTriggeredCallback trigger_callback_;

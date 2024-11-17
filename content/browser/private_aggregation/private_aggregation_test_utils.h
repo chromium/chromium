@@ -158,11 +158,17 @@ class MockPrivateAggregationContentBrowserClientBase : public SuperClass {
                bool* out_block_is_site_setting_specific),
               (override));
   MOCK_METHOD(bool,
+              IsFencedStorageReadAllowed,
+              (content::BrowserContext * browser_context,
+               content::RenderFrameHost* rfh,
+               const url::Origin& top_frame_origin,
+               const url::Origin& accessing_origin),
+              (override));
+  MOCK_METHOD(bool,
               IsPrivacySandboxReportingDestinationAttested,
               (content::BrowserContext * browser_context,
                const url::Origin& destination_origin,
-               content::PrivacySandboxInvokingAPI invoking_api,
-               bool post_impression_reporting),
+               content::PrivacySandboxInvokingAPI invoking_api),
               (override));
 };
 

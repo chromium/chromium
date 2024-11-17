@@ -82,7 +82,7 @@ PaymentRequestSpec::PaymentRequestSpec(
 
   app_store_billing_methods_.insert(methods::kGooglePlayBilling);
 }
-PaymentRequestSpec::~PaymentRequestSpec() {}
+PaymentRequestSpec::~PaymentRequestSpec() = default;
 
 void PaymentRequestSpec::UpdateWith(mojom::PaymentDetailsPtr details) {
   DCHECK(details_);
@@ -252,10 +252,8 @@ PaymentShippingType PaymentRequestSpec::shipping_type() const {
     case payments::mojom::PaymentShippingType::SHIPPING:
       return PaymentShippingType::SHIPPING;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  // Needed for compilation on some platforms.
-  return PaymentShippingType::SHIPPING;
 }
 
 std::u16string PaymentRequestSpec::GetFormattedCurrencyAmount(

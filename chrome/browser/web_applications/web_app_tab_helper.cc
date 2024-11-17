@@ -5,12 +5,14 @@
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/check_is_test.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -28,6 +30,28 @@
 
 namespace web_app {
 
+// static
+void WebAppTabHelper::Create(tabs::TabInterface* tab,
+                             content::WebContents* contents) {
+  // In the event when a tab is moved from a normal browser window to an app
+  // window, or vise versa, we want to keep the state on WebAppTabHelper.
+  auto* tab_helper = WebAppTabHelper::FromWebContents(contents);
+  if (tab->GetContents() == contents && tab_helper) {
+    return;
+  }
+
+  // If on the other hand this is a tab-discard, we let the old tab's
+  // WebAppTabHelper be destroyed at its normal timing. This is because the
+  // current implementation of WebAppMetrics relies on the assumption that
+  // discarded WebContents are still usable.
+  // This will become a moot point once https://crbug.com/347770670 is fixed, as
+  // discarding will no longer change the WebContents.
+
+  auto helper = std::make_unique<WebAppTabHelper>(tab, contents);
+  contents->SetUserData(UserDataKey(), std::move(helper));
+}
+
+// static
 const webapps::AppId* WebAppTabHelper::GetAppId(
     const content::WebContents* web_contents) {
   auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents);
@@ -82,7 +106,7 @@ WebAppLaunchQueue& WebAppTabHelper::EnsureLaunchQueue() {
 }
 
 void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
-                               bool is_in_app_window) {
+                               std::optional<webapps::AppId> window_app_id) {
   // Empty string should not be used to indicate "no app ID".
   DCHECK(!app_id || !app_id->empty());
 
@@ -90,17 +114,13 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
   DCHECK(app_id_ == app_id || !app_id ||
          provider_->registrar_unsafe().IsInstalled(*app_id) ||
          provider_->registrar_unsafe().IsUninstalling(*app_id));
-  if (app_id_ == app_id && is_in_app_window == is_in_app_window_) {
+  if (app_id_ == app_id && window_app_id_ == window_app_id) {
     return;
   }
 
   std::optional<webapps::AppId> previous_app_id = std::move(app_id_);
   app_id_ = std::move(app_id);
-
-  is_in_app_window_ = is_in_app_window;
-  if (is_in_app_window) {
-    set_acting_as_app(true);
-  }
+  window_app_id_ = std::move(window_app_id);
 
   if (previous_app_id != app_id_) {
     OnAssociatedAppChanged(previous_app_id, app_id_);
@@ -109,11 +129,12 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
 }
 
 void WebAppTabHelper::SetAppId(std::optional<webapps::AppId> app_id) {
-  SetState(app_id, is_in_app_window());
+  SetState(std::move(app_id), window_app_id_);
 }
 
-void WebAppTabHelper::SetIsInAppWindow(bool is_in_app_window) {
-  SetState(app_id(), is_in_app_window);
+void WebAppTabHelper::SetIsInAppWindow(
+    std::optional<webapps::AppId> window_app_id) {
+  SetState(app_id(), std::move(window_app_id));
 }
 
 void WebAppTabHelper::ReadyToCommitNavigation(
@@ -160,29 +181,22 @@ void WebAppTabHelper::PrimaryPageChanged(content::Page& page) {
       page.GetMainDocument().GetLastCommittedURL());
 }
 
-void WebAppTabHelper::DidCloneToNewWebContents(
-    content::WebContents* old_web_contents,
-    content::WebContents* new_web_contents) {
-  // When the WebContents that this is attached to is cloned, give the new clone
-  // a WebAppTabHelper.
-  CreateForWebContents(new_web_contents);
-  auto* new_tab_helper = FromWebContents(new_web_contents);
-
-  // Clone common state:
-  new_tab_helper->SetState(app_id_, /*is_in_app_window=*/false);
-  new_tab_helper->set_acting_as_app(acting_as_app());
-  // Note: We don't clone is_in_app_window, as that need to only be set when
-  // the new web contents is added to an app window.
+void WebAppTabHelper::FlushLaunchQueueForTesting() const {
+  if (!launch_queue_) {
+    return;
+  }
+  launch_queue_->FlushForTesting();  // IN-TEST
 }
 
-WebAppTabHelper::WebAppTabHelper(content::WebContents* web_contents)
-    : content::WebContentsUserData<WebAppTabHelper>(*web_contents),
-      content::WebContentsObserver(web_contents),
+WebAppTabHelper::WebAppTabHelper(tabs::TabInterface* tab,
+                                 content::WebContents* contents)
+    : content::WebContentsUserData<WebAppTabHelper>(*contents),
+      content::WebContentsObserver(contents),
       provider_(WebAppProvider::GetForLocalAppsUnchecked(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
+          tab->GetBrowserWindowInterface()->GetProfile())) {
   observation_.Observe(&provider_->install_manager());
-  SetState(FindAppWithUrlInScope(web_contents->GetLastCommittedURL()),
-           /*is_in_app_window=*/false);
+  SetState(FindAppWithUrlInScope(contents->GetLastCommittedURL()),
+           /*window_app_id=*/std::nullopt);
 }
 
 void WebAppTabHelper::OnWebAppInstalled(
@@ -207,38 +221,9 @@ void WebAppTabHelper::OnWebAppInstallManagerDestroyed() {
   SetAppId(std::nullopt);
 }
 
-void WebAppTabHelper::InitForTabFeatures(tabs::TabInterface* tab) {
-  tab_subscriptions_.push_back(tab->RegisterDidEnterForeground(
-      base::BindRepeating(&WebAppTabHelper::TabDidEnterForeground,
-                          weak_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab->RegisterWillEnterBackground(
-      base::BindRepeating(&WebAppTabHelper::TabWillEnterBackground,
-                          weak_factory_.GetWeakPtr())));
-  tab_subscriptions_.push_back(tab->RegisterWillDetach(base::BindRepeating(
-      &WebAppTabHelper::WillDetach, weak_factory_.GetWeakPtr())));
-}
-
-void WebAppTabHelper::TabDidEnterForeground(tabs::TabInterface* tab) {}
-
-void WebAppTabHelper::TabWillEnterBackground(tabs::TabInterface* tab) {}
-
-void WebAppTabHelper::WillDetach(tabs::TabInterface* tab,
-                                 tabs::TabInterface::DetachReason reason) {
-  switch (reason) {
-    case tabs::TabInterface::DetachReason::kDelete:
-      tab_subscriptions_.clear();
-      break;
-    case tabs::TabInterface::DetachReason::kInsertIntoOtherWindow:
-      break;
-  }
-}
-
 void WebAppTabHelper::OnAssociatedAppChanged(
     const std::optional<webapps::AppId>& previous_app_id,
     const std::optional<webapps::AppId>& new_app_id) {
-  provider_->ui_manager().NotifyOnAssociatedAppChanged(
-      web_contents(), previous_app_id, new_app_id);
-
   // Tag WebContents for Task Manager.
   // cases to consider:
   // 1. non-app -> app (association added)
@@ -266,7 +251,9 @@ void WebAppTabHelper::OnAssociatedAppChanged(
 }
 
 void WebAppTabHelper::UpdateAudioFocusGroupId() {
-  if (app_id_.has_value() && is_in_app_window_) {
+  // TODO(https://crbug.com/378970240): Perhaps check that these values are
+  // equal.
+  if (app_id_.has_value() && window_app_id_.has_value()) {
     audio_focus_group_id_ =
         provider_->audio_focus_id_map().CreateOrGetIdForApp(app_id_.value());
   } else {

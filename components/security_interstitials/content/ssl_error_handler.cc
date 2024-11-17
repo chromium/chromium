@@ -92,7 +92,7 @@ class CommonNameMismatchRedirectObserver
   CommonNameMismatchRedirectObserver& operator=(
       const CommonNameMismatchRedirectObserver&) = delete;
 
-  ~CommonNameMismatchRedirectObserver() override {}
+  ~CommonNameMismatchRedirectObserver() override = default;
 
   static void AddToConsoleAfterNavigation(
       content::WebContents* web_contents,
@@ -419,7 +419,7 @@ void SSLErrorHandlerDelegateImpl::CheckForCaptivePortal() {
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
   captive_portal_service_->DetectCaptivePortal();
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 
@@ -836,8 +836,7 @@ void SSLErrorHandler::ShowDynamicInterstitial(
     const DynamicInterstitialInfo dynamic_interstitial) {
   switch (dynamic_interstitial.interstitial_type) {
     case chrome_browser_ssl::DynamicInterstitial::INTERSTITIAL_PAGE_NONE:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case chrome_browser_ssl::DynamicInterstitial::INTERSTITIAL_PAGE_SSL:
       delegate_->ShowSSLInterstitial(dynamic_interstitial.support_url);
       return;
@@ -888,7 +887,7 @@ void SSLErrorHandler::Observe(
   else
     ShowSSLInterstitial();
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 

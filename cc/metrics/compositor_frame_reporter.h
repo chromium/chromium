@@ -410,6 +410,8 @@ class CC_EXPORT CompositorFrameReporter {
 
   void set_is_forked(bool is_forked) { is_forked_ = is_forked; }
   void set_is_backfill(bool is_backfill) { is_backfill_ = is_backfill; }
+  void set_created_new_tree(bool new_tree) { created_new_tree_ = new_tree; }
+  void set_want_new_tree(bool want_new_tree) { want_new_tree_ = want_new_tree; }
 
   const viz::BeginFrameId& frame_id() const { return args_.frame_id; }
 
@@ -613,6 +615,11 @@ class CC_EXPORT CompositorFrameReporter {
   // these reporters (using |AdoptReporter()|).
   std::queue<std::unique_ptr<CompositorFrameReporter>>
       owned_partial_update_dependents_;
+
+  // Indicates whether or not an impl-side invalidation was necessary for a
+  // raster-dependent effect, and whether or not it occurred.
+  bool want_new_tree_ = false;
+  bool created_new_tree_ = false;
 
   const GlobalMetricsTrackers global_trackers_;
 

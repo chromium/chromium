@@ -410,6 +410,7 @@ bool WebApp::CanUserUninstallWebApp() const {
 
 bool WebApp::WasInstalledByUser() const {
   return sources_.Has(WebAppManagement::kSync) ||
+         sources_.Has(WebAppManagement::kUserInstalled) ||
          sources_.Has(WebAppManagement::kWebAppStore) ||
          sources_.Has(WebAppManagement::kOneDriveIntegration) ||
          sources_.Has(WebAppManagement::kIwaUserInstalled);
@@ -765,6 +766,7 @@ void WebApp::AddPlaceholderInfoToManagementExternalConfigMap(
     WebAppManagement::Type type,
     bool is_placeholder) {
   DCHECK_NE(type, WebAppManagement::Type::kSync);
+  DCHECK_NE(type, WebAppManagement::Type::kUserInstalled);
   CHECK(!WebAppManagement::IsIwaType(type)) << type;
   management_to_external_config_map_[type].is_placeholder = is_placeholder;
 }
@@ -773,6 +775,7 @@ void WebApp::AddInstallURLToManagementExternalConfigMap(
     WebAppManagement::Type type,
     GURL install_url) {
   DCHECK_NE(type, WebAppManagement::Type::kSync);
+  DCHECK_NE(type, WebAppManagement::Type::kUserInstalled);
   CHECK(!WebAppManagement::IsIwaType(type)) << type;
   DCHECK(install_url.is_valid());
   management_to_external_config_map_[type].install_urls.emplace(
@@ -783,6 +786,7 @@ void WebApp::AddPolicyIdToManagementExternalConfigMap(
     WebAppManagement::Type type,
     std::string policy_id) {
   DCHECK_NE(type, WebAppManagement::Type::kSync);
+  DCHECK_NE(type, WebAppManagement::Type::kUserInstalled);
   CHECK(!WebAppManagement::IsIwaType(type)) << type;
   DCHECK(!policy_id.empty());
   management_to_external_config_map_[type].additional_policy_ids.emplace(
@@ -872,90 +876,11 @@ base::Value::Dict WebApp::ExternalManagementConfig::AsDebugValue() const {
   return root;
 }
 
-WebApp::IsolationData::IsolationData(IsolatedWebAppStorageLocation location,
-                                     base::Version version)
-    : location(location), version(std::move(version)) {}
-WebApp::IsolationData::IsolationData(
-    IsolatedWebAppStorageLocation location,
-    base::Version version,
-    const std::set<std::string>& controlled_frame_partitions,
-    const std::optional<PendingUpdateInfo>& pending_update_info,
-    std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data)
-    : location(std::move(location)),
-      version(std::move(version)),
-      controlled_frame_partitions(controlled_frame_partitions),
-      integrity_block_data(std::move(integrity_block_data)) {
-  SetPendingUpdateInfo(pending_update_info);
-}
-WebApp::IsolationData::~IsolationData() = default;
-WebApp::IsolationData::IsolationData(const WebApp::IsolationData&) = default;
-WebApp::IsolationData& WebApp::IsolationData::operator=(
-    const WebApp::IsolationData&) = default;
-WebApp::IsolationData::IsolationData(WebApp::IsolationData&&) = default;
-WebApp::IsolationData& WebApp::IsolationData::operator=(
-    WebApp::IsolationData&&) = default;
-
-bool WebApp::IsolationData::operator==(
-    const WebApp::IsolationData& other) const = default;
-bool WebApp::IsolationData::operator!=(
-    const WebApp::IsolationData& other) const = default;
-
-base::Value WebApp::IsolationData::AsDebugValue() const {
-  return base::Value(
-      base::Value::Dict()
-          .Set("isolated_web_app_location", location.ToDebugValue())
-          .Set("version", version.GetString())
-          .Set("controlled_frame_partitions (on-disk)",
-               base::ToValueList(controlled_frame_partitions))
-          .Set("pending_update_info",
-               OptionalAsDebugValue(pending_update_info_))
-          .Set("integrity_block_data",
-               OptionalAsDebugValue(integrity_block_data)));
-}
-
-WebApp::IsolationData::PendingUpdateInfo::PendingUpdateInfo(
-    IsolatedWebAppStorageLocation location,
-    base::Version version,
-    std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data)
-    : location(std::move(location)),
-      version(std::move(version)),
-      integrity_block_data(std::move(integrity_block_data)) {}
-
-WebApp::IsolationData::PendingUpdateInfo::~PendingUpdateInfo() = default;
-
-WebApp::IsolationData::PendingUpdateInfo::PendingUpdateInfo(
-    const PendingUpdateInfo&) = default;
-WebApp::IsolationData::PendingUpdateInfo&
-WebApp::IsolationData::PendingUpdateInfo::operator=(const PendingUpdateInfo&) =
-    default;
-
-base::Value WebApp::IsolationData::PendingUpdateInfo::AsDebugValue() const {
-  return base::Value(
-      base::Value::Dict()
-          .Set("isolated_web_app_location", location.ToDebugValue())
-          .Set("version", version.GetString())
-          .Set("integrity_block_data",
-               OptionalAsDebugValue(integrity_block_data)));
-}
-
-void WebApp::IsolationData::SetPendingUpdateInfo(
-    const std::optional<PendingUpdateInfo>& pending_update_info) {
-  if (pending_update_info.has_value()) {
-    CHECK_EQ(pending_update_info->location.dev_mode(), location.dev_mode());
-  }
-  pending_update_info_ = pending_update_info;
-}
-
 const std::optional<GeneratedIconFix>& WebApp::generated_icon_fix() const {
   CHECK(!generated_icon_fix_.has_value() ||
         generated_icon_fix_util::IsValid(generated_icon_fix_.value()));
   return generated_icon_fix_;
 }
-
-bool WebApp::IsolationData::PendingUpdateInfo::operator==(
-    const WebApp::IsolationData::PendingUpdateInfo& other) const = default;
-bool WebApp::IsolationData::PendingUpdateInfo::operator!=(
-    const WebApp::IsolationData::PendingUpdateInfo& other) const = default;
 
 bool WebApp::operator==(const WebApp& other) const {
   auto AsTuple = [](const WebApp& app) {

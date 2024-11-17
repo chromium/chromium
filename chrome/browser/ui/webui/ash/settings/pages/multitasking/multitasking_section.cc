@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/multitasking/multitasking_section.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
+#include "base/containers/span.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "chrome/browser/ui/webui/ash/settings/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
 #include "chrome/grit/generated_resources.h"
@@ -16,7 +18,6 @@
 namespace ash::settings {
 
 namespace mojom {
-using chromeos::settings::mojom::kPersonalizationSectionPath;
 using chromeos::settings::mojom::kSystemPreferencesSectionPath;
 using chromeos::settings::mojom::Section;
 using chromeos::settings::mojom::Setting;
@@ -25,11 +26,10 @@ using chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetSnapWindowSuggestionsSearchConcepts(
-    const char* section_path) {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetSnapWindowSuggestionsSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW,
-       section_path,
+       mojom::kSystemPreferencesSectionPath,
        mojom::SearchResultIcon::kSnapWindowSuggestions,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
@@ -40,7 +40,7 @@ const std::vector<SearchConcept>& GetSnapWindowSuggestionsSearchConcepts(
         IDS_OS_SETTINGS_TAG_MULTITASKING_SNAP_WINDOW_ALT4,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
 }  // namespace
@@ -52,8 +52,7 @@ MultitaskingSection::MultitaskingSection(Profile* profile,
   CHECK(search_tag_registry);
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  updater.AddSearchTags(
-      GetSnapWindowSuggestionsSearchConcepts(GetSectionPath()));
+  updater.AddSearchTags(GetSnapWindowSuggestionsSearchConcepts());
 }
 
 MultitaskingSection::~MultitaskingSection() = default;
@@ -86,9 +85,7 @@ mojom::Section MultitaskingSection::GetSection() const {
   // Note: This is a subsection that exists under System Preferences. This is
   // not a top-level section and does not have a respective declaration in
   // chromeos::settings::mojom::Section.
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::Section::kSystemPreferences
-             : mojom::Section::kPersonalization;
+  return mojom::Section::kSystemPreferences;
 }
 
 mojom::SearchResultIcon MultitaskingSection::GetSectionIcon() const {
@@ -96,9 +93,7 @@ mojom::SearchResultIcon MultitaskingSection::GetSectionIcon() const {
 }
 
 const char* MultitaskingSection::GetSectionPath() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kSystemPreferencesSectionPath
-             : mojom::kPersonalizationSectionPath;
+  return mojom::kSystemPreferencesSectionPath;
 }
 
 bool MultitaskingSection::LogMetric(mojom::Setting setting,

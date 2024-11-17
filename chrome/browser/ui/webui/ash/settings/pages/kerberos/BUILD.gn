@@ -17,6 +17,7 @@ static_library("kerberos") {
   public_deps = [
     "//base",
     "//chrome/browser/ash/kerberos",
+    "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/dbus/kerberos:kerberos_proto",
     "//components/signin/public/identity_manager",
   ]

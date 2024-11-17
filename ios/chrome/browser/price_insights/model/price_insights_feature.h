@@ -7,7 +7,7 @@
 
 #import <string>
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+class ProfileIOS;
 
 // Feature flag parameter in Price Insights to determine the text displayed for
 // a low price.
@@ -23,7 +23,10 @@ extern const char kLowPriceParamGoodDealNow[];
 extern const char kLowPriceParamSeePriceHistory[];
 
 // Determine if the price insights and price tracking are enabled.
-bool IsPriceInsightsEnabled(ChromeBrowserState* browser_state);
+bool IsPriceInsightsEnabled(ProfileIOS* profile);
+
+// Determine if Price Insights flag on iOS is enabled.
+bool IsPriceInsightsEnabled();
 
 // Determine if the price insights high price feature is enabled.
 bool IsPriceInsightsHighPriceEnabled();

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="../isolated-permissions-policy/feature-policy-features-listing.js"></script>
+<script>
+
+// This test verifies that in an isolated context, additional permissions
+// policies appear as expected. There is a non-isolated version of this test
+// at:
+// //third_party/blink/web_tests/webexposed/feature-policy-features.html
+
+'use strict';
+
+const non_isolated_policies = [
+  'accelerometer',
+  'attribution-reporting',
+  'autoplay',
+  'browsing-topics',
+  'camera',
+  'ch-device-memory',
+  'ch-downlink',
+  'ch-dpr',
+  'ch-ect',
+  'ch-prefers-color-scheme',
+  'ch-prefers-reduced-motion',
+  'ch-prefers-reduced-transparency',
+  'ch-rtt',
+  'ch-save-data',
+  'ch-ua',
+  'ch-ua-arch',
+  'ch-ua-bitness',
+  'ch-ua-form-factors',
+  'ch-ua-full-version',
+  'ch-ua-full-version-list',
+  'ch-ua-mobile',
+  'ch-ua-model',
+  'ch-ua-platform',
+  'ch-ua-platform-version',
+  'ch-ua-wow64',
+  'ch-viewport-height',
+  'ch-viewport-width',
+  'ch-width',
+  'clipboard-read',
+  'clipboard-write',
+  'compute-pressure',
+  'cross-origin-isolated',
+  'display-capture',
+  'encrypted-media',
+  'fullscreen',
+  'gamepad',
+  'geolocation',
+  'gyroscope',
+  'hid',
+  'identity-credentials-get',
+  'idle-detection',
+  'interest-cohort',
+  'join-ad-interest-group',
+  'keyboard-map',
+  'local-fonts',
+  'magnetometer',
+  'microphone',
+  'midi',
+  'otp-credentials',
+  'payment',
+  'picture-in-picture',
+  'private-aggregation',
+  'private-state-token-issuance',
+  'private-state-token-redemption',
+  'publickey-credentials-create',
+  'publickey-credentials-get',
+  'run-ad-auction',
+  'screen-wake-lock',
+  'serial',
+  'shared-storage',
+  'shared-storage-select-url',
+  'storage-access',
+  'sync-xhr',
+  'unload',
+  'usb',
+  'window-management',
+  'xr-spatial-tracking',
+]
+
+const isolated_policies = [
+  'direct-sockets',
+  'direct-sockets-private',
+  'usb-unrestricted',
+]
+
+promise_test(async t => {
+  const collect_output = [];
+  const collect = function(str) {
+    const entries = str.split(",");
+    collect_output.push.apply(collect_output, entries);
+  };
+  featurePolicyFeaturesListing(/*platformSpecific=*/false, collect);
+
+  assert_equals(collect_output.length,
+                non_isolated_policies.length + isolated_policies.length);
+
+  const filtered_non_isolated = collect_output.filter(
+                                    item =>
+                                        non_isolated_policies.includes(item));
+  assert_equals(filtered_non_isolated.length, non_isolated_policies.length);
+
+  const filtered_isolated = collect_output.filter(
+                                item => isolated_policies.includes(item));
+  assert_equals(filtered_isolated.length, isolated_policies.length);
+}, 'isolated permissions policy test');
+
+</script>

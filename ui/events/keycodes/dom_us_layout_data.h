@@ -8,7 +8,6 @@
 #include <array>
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 
 namespace ui {
 
@@ -365,7 +364,7 @@ const struct DomKeyToKeyboardCodeEntry {
     {DomKey::F22, VKEY_F22},
     {DomKey::F23, VKEY_F23},
     {DomKey::F24, VKEY_F24},
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     {DomKey::FN, VKEY_FUNCTION},
 #endif
     // Multimedia Keys
@@ -422,7 +421,7 @@ const struct DomCodeToKeyboardCodeEntry {
     // DomCode::TURBO                              0x000016 Turbo
     {DomCode::SLEEP, VKEY_SLEEP},  // 0x010082 Sleep
     // DomCode::WAKE_UP                            0x010083 WakeUp
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     {DomCode::FN, VKEY_FUNCTION},  // 0x010097 Fn
 #endif
 #if BUILDFLAG(IS_POSIX)

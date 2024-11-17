@@ -22,7 +22,7 @@
 #include "extensions/browser/test_runtime_api_delegate.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #endif
 
@@ -104,20 +104,17 @@ BrowserContext* TestExtensionsBrowserClient::GetOriginalContext(
 
 content::BrowserContext*
 TestExtensionsBrowserClient::GetContextRedirectedToOriginal(
-    content::BrowserContext* context,
-    bool force_guest_profile) {
+    content::BrowserContext* context) {
   return GetOriginalContext(context);
 }
 
 content::BrowserContext* TestExtensionsBrowserClient::GetContextOwnInstance(
-    content::BrowserContext* context,
-    bool force_guest_profile) {
+    content::BrowserContext* context) {
   return context;
 }
 
 content::BrowserContext* TestExtensionsBrowserClient::GetContextForOriginalOnly(
-    content::BrowserContext* context,
-    bool force_guest_profile) {
+    content::BrowserContext* context) {
   // Default implementation of
   // `BrowserContextKeyedServiceFactory::GetBrowserContextToUse()`.
   return context->IsOffTheRecord() ? nullptr : context;
@@ -128,20 +125,13 @@ bool TestExtensionsBrowserClient::AreExtensionsDisabledForContext(
   return false;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 std::string TestExtensionsBrowserClient::GetUserIdHashFromContext(
     content::BrowserContext* context) {
   if (context != main_context_ || !ash::LoginState::IsInitialized()) {
     return "";
   }
   return ash::LoginState::Get()->primary_user_hash();
-}
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool TestExtensionsBrowserClient::IsFromMainProfile(
-    content::BrowserContext* context) {
-  return context == main_context_;
 }
 #endif
 
@@ -178,7 +168,7 @@ void TestExtensionsBrowserClient::LoadResourceFromResourceBundle(
     scoped_refptr<net::HttpResponseHeaders> headers,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
   // Should not be called because GetBundleResourcePath() returned empty path.
-  NOTREACHED_IN_MIGRATION() << "Resource is not from a bundle.";
+  NOTREACHED() << "Resource is not from a bundle.";
 }
 
 bool TestExtensionsBrowserClient::AllowCrossRendererResourceLoad(
@@ -313,11 +303,6 @@ TestExtensionsBrowserClient::CreateUpdateClient(
   return update_client_factory_.is_null()
              ? nullptr
              : base::WrapRefCounted(update_client_factory_.Run());
-}
-
-bool TestExtensionsBrowserClient::IsLockScreenContext(
-    content::BrowserContext* context) {
-  return lock_screen_context_ && context == lock_screen_context_;
 }
 
 std::string TestExtensionsBrowserClient::GetApplicationLocale() {

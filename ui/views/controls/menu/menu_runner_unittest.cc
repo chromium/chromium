@@ -16,7 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/compositor.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/test/event_generator.h"
@@ -135,7 +135,7 @@ TEST_F(MenuRunnerTest, AsynchronousRun) {
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::MENU_SOURCE_NONE, nullptr);
+                    ui::mojom::MenuSourceType::kNone, nullptr);
   EXPECT_TRUE(runner->IsRunning());
 
   runner->Cancel();
@@ -151,7 +151,7 @@ TEST_F(MenuRunnerTest, AsynchronousKeyEventHandling) {
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::MENU_SOURCE_NONE, nullptr);
+                    ui::mojom::MenuSourceType::kNone, nullptr);
   EXPECT_TRUE(runner->IsRunning());
 
   ui::test::EventGenerator generator(GetContext(), owner()->GetNativeWindow());
@@ -178,7 +178,7 @@ TEST_F(MenuRunnerTest, MAYBE_LatinMnemonic) {
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::MENU_SOURCE_NONE, nullptr);
+                    ui::mojom::MenuSourceType::kNone, nullptr);
   EXPECT_TRUE(runner->IsRunning());
 
   ui::test::EventGenerator generator(GetContext(), owner()->GetNativeWindow());
@@ -202,7 +202,7 @@ TEST_F(MenuRunnerTest, NonLatinMnemonic) {
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::MENU_SOURCE_NONE, nullptr);
+                    ui::mojom::MenuSourceType::kNone, nullptr);
   EXPECT_TRUE(runner->IsRunning());
 
   ui::test::EventGenerator generator(GetContext(), owner()->GetNativeWindow());
@@ -225,8 +225,8 @@ TEST_F(MenuRunnerTest, MenuItemViewShowsMnemonics) {
   InitMenuRunner(MenuRunner::HAS_MNEMONICS | MenuRunner::SHOULD_SHOW_MNEMONICS);
 
   menu_runner()->RunMenuAt(owner(), nullptr, gfx::Rect(),
-                           MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_NONE,
-                           nullptr);
+                           MenuAnchorPosition::kTopLeft,
+                           ui::mojom::MenuSourceType::kNone, nullptr);
 
   EXPECT_TRUE(menu_item_view()->show_mnemonics());
 }
@@ -238,8 +238,8 @@ TEST_F(MenuRunnerTest, MenuItemViewDoesNotShowMnemonics) {
   InitMenuRunner(MenuRunner::HAS_MNEMONICS);
 
   menu_runner()->RunMenuAt(owner(), nullptr, gfx::Rect(),
-                           MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_NONE,
-                           nullptr);
+                           MenuAnchorPosition::kTopLeft,
+                           ui::mojom::MenuSourceType::kNone, nullptr);
 
   EXPECT_FALSE(menu_item_view()->show_mnemonics());
 }
@@ -263,7 +263,7 @@ TEST_F(MenuRunnerTest, PrefixSelect) {
 
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::MENU_SOURCE_NONE, nullptr);
+                    ui::mojom::MenuSourceType::kNone, nullptr);
   EXPECT_TRUE(runner->IsRunning());
 
   menu_item_view()
@@ -306,7 +306,7 @@ TEST_F(MenuRunnerTest, SpaceActivatesItem) {
 
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::MENU_SOURCE_NONE, nullptr);
+                    ui::mojom::MenuSourceType::kNone, nullptr);
   EXPECT_TRUE(runner->IsRunning());
 
   ui::test::EventGenerator generator(GetContext(), owner()->GetNativeWindow());
@@ -330,7 +330,7 @@ TEST_F(MenuRunnerTest, NestingDuringDrag) {
   InitMenuRunner(MenuRunner::FOR_DROP);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::MENU_SOURCE_NONE, nullptr);
+                    ui::mojom::MenuSourceType::kNone, nullptr);
   EXPECT_TRUE(runner->IsRunning());
 
   auto nested_delegate = std::make_unique<TestMenuDelegate>();
@@ -338,8 +338,8 @@ TEST_F(MenuRunnerTest, NestingDuringDrag) {
       MenuRunner(std::make_unique<MenuItemView>(nested_delegate.get()),
                  MenuRunner::IS_NESTED));
   nested_runner.RunMenuAt(owner(), nullptr, gfx::Rect(),
-                          MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_NONE,
-                          nullptr);
+                          MenuAnchorPosition::kTopLeft,
+                          ui::mojom::MenuSourceType::kNone, nullptr);
   EXPECT_TRUE(nested_runner.IsRunning());
   EXPECT_FALSE(runner->IsRunning());
   EXPECT_EQ(1, menu_delegate()->on_menu_closed_called());
@@ -364,8 +364,8 @@ class MenuLauncherEventHandler : public ui::EventHandler {
   void OnMouseEvent(ui::MouseEvent* event) override {
     if (event->type() == ui::EventType::kMousePressed) {
       runner_->RunMenuAt(owner_, nullptr, gfx::Rect(),
-                         MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_NONE,
-                         nullptr);
+                         MenuAnchorPosition::kTopLeft,
+                         ui::mojom::MenuSourceType::kNone, nullptr);
       event->SetHandled();
     }
   }
@@ -766,7 +766,7 @@ TEST_F(MenuRunnerTest, ShowMenuHostDurationMetricsDoesLog) {
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::MENU_SOURCE_NONE, nullptr, std::nullopt,
+                    ui::mojom::MenuSourceType::kNone, nullptr, std::nullopt,
                     histogram_name);
 
   base::RunLoop run_loop;
@@ -797,7 +797,7 @@ TEST_F(MenuRunnerTest, ShowMenuHostDurationMetricsDoesNotLog) {
   InitMenuRunner(0);
   MenuRunner* runner = menu_runner();
   runner->RunMenuAt(owner(), nullptr, gfx::Rect(), MenuAnchorPosition::kTopLeft,
-                    ui::MENU_SOURCE_NONE, nullptr, std::nullopt);
+                    ui::mojom::MenuSourceType::kNone, nullptr, std::nullopt);
 
   base::RunLoop run_loop;
   views::MenuController::GetActiveInstance()

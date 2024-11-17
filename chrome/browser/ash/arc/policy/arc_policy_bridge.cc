@@ -13,6 +13,7 @@
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -23,6 +24,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
+#include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service_factory.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/policy/managed_configuration_variables.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -57,6 +59,7 @@ constexpr char kPolicyRequiredKeyAlias[] = "alias";
 constexpr char kPolicyPrivateKeyAlias[] = "privateKeyAlias";
 constexpr char kPolicyPrivateKeyPackageNames[] = "packageNames";
 constexpr char kPolicyPlayStoreModeSupervised[] = "SUPERVISED";
+constexpr char kPolicyPlayStoreModeAllowList[] = "WHITELIST"; // nocheck
 
 // invert_bool_value: If the Chrome policy and the ARC policy with boolean value
 // have opposite semantics, set this to true so the bool is inverted before
@@ -73,9 +76,7 @@ void MapBoolToBool(const std::string& arc_policy_name,
   const base::Value* const policy_value =
       policy_map.GetValue(policy_name, base::Value::Type::BOOLEAN);
   if (!policy_value) {
-    NOTREACHED_IN_MIGRATION()
-        << "Policy " << policy_name << " is not a boolean.";
-    return;
+    NOTREACHED() << "Policy " << policy_name << " is not a boolean.";
   }
   filtered_policies->Set(arc_policy_name,
                          policy_value->GetBool() != invert_bool_value);
@@ -95,9 +96,7 @@ void MapIntToBool(const std::string& arc_policy_name,
   const base::Value* const policy_value =
       policy_map.GetValue(policy_name, base::Value::Type::INTEGER);
   if (!policy_value) {
-    NOTREACHED_IN_MIGRATION()
-        << "Policy " << policy_name << " is not an integer.";
-    return;
+    NOTREACHED() << "Policy " << policy_name << " is not an integer.";
   }
   filtered_policies->Set(arc_policy_name, policy_value->GetInt() == int_true);
 }
@@ -132,9 +131,7 @@ void MapObjectToPresenceBool(const std::string& arc_policy_name,
   const base::Value* const policy_value =
       policy_map.GetValue(policy_name, base::Value::Type::DICT);
   if (!policy_value) {
-    NOTREACHED_IN_MIGRATION()
-        << "Policy " << policy_name << " is not an object.";
-    return;
+    NOTREACHED() << "Policy " << policy_name << " is not an object.";
   }
   for (const auto& field : fields) {
     if (!policy_value->GetDict().contains(field)) {
@@ -176,8 +173,8 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
     base::Value::Dict unused_global_network_config;
     if (!chromeos::onc::ParseAndValidateOncForImport(
             onc_blob, onc::ONCSource::ONC_SOURCE_USER_POLICY,
-            "" /* no passphrase */, &unused_network_configs,
-            &unused_global_network_config, &certificates)) {
+            &unused_network_configs, &unused_global_network_config,
+            &certificates)) {
       LOG(ERROR) << "Value of onc policy has invalid format =" << onc_blob;
     }
   }
@@ -206,7 +203,7 @@ void AddOncCaCertsToPolicies(const policy::PolicyMap& policy_map,
     bool web_trust_flag = false;
     for (const auto& list_val : *trust_list) {
       if (!list_val.is_string()) {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
 
       if (list_val.GetString() == ::onc::certificate::kWeb) {
@@ -308,6 +305,43 @@ void ReplaceManagedConfigurationVariables(const Profile* profile,
       }
     }
   }
+}
+
+void FilterApps(base::Value::Dict* arc_policy,
+                const std::unordered_set<std::string>& allowed_packages) {
+  base::Value::List* applications =
+      arc_policy->FindList(policy_util::kArcPolicyKeyApplications);
+
+  if (!applications) {
+    return;
+  }
+
+  applications->EraseIf([&allowed_packages](const base::Value& val) {
+    const base::Value::Dict& application = val.GetDict();
+    const std::string* package_name =
+        application.FindString(ArcPolicyBridge::kPackageName);
+    return package_name && !base::Contains(allowed_packages, *package_name);
+  });
+}
+
+void ConfigureRevenPolicies(base::Value::Dict* arc_policy) {
+  // The policy value is used to restrict the user from being able to
+  // toggle between different accounts in ARC++.
+  arc_policy->Set(policy_util::kArcPolicyKeyPlayStoreMode,
+                  kPolicyPlayStoreModeAllowList);
+
+  // Define a set of certified package names for Android VPN apps on Reven.
+  const std::unordered_set<std::string> allowed_packages = {
+      "com.paloaltonetworks.globalprotect",
+      "com.cisco.anyconnect.vpn.android.avf",
+      "zscaler.com.zschromeosapp",
+      "com.f5.edge.client_ics",
+      "com.netskope.netskopeclient",
+      "com.zimperium.zips",
+      "com.fortinet.forticlient_vpn",
+      "com.forcepoint.sslvpn"};
+
+  FilterApps(arc_policy, allowed_packages);
 }
 
 base::Value::Dict ParseArcPoliciesToDict(const policy::PolicyMap& policy_map) {
@@ -416,6 +450,10 @@ void OverrideArcPolicies(base::Value::Dict& filtered_policies,
     // user from being able to toggle between different accounts in ARC++.
     filtered_policies.Set(policy_util::kArcPolicyKeyPlayStoreMode,
                           kPolicyPlayStoreModeSupervised);
+  }
+
+  if (ash::switches::IsRevenBranding()) {
+    ConfigureRevenPolicies(&filtered_policies);
   }
 }
 
@@ -705,7 +743,7 @@ std::string ArcPolicyBridge::GetCurrentJSONPolicies() const {
   const user_manager::User* const user =
       ash::ProfileHelper::Get()->GetUserByProfile(profile);
   const CertStoreService* cert_store_service =
-      CertStoreService::GetForBrowserContext(context_);
+      CertStoreServiceFactory::GetForBrowserContext(context_);
 
   return GetFilteredJSONPolicies(policy_service_, instance_guid_,
                                  user->IsAffiliated(), cert_store_service,
@@ -736,6 +774,7 @@ void ArcPolicyBridge::OnReportComplianceParse(
 // static
 void ArcPolicyBridge::ActivateArcIfRequiredByPolicy(
     const policy::PolicyMap& policy_map) {
+  VLOG(1) << "ArcPolicyBridge::ActivateArcIfRequiredByPolicy";
   base::Value::Dict filtered_policies = ParseArcPoliciesToDict(policy_map);
   base::Value::List* apps =
       filtered_policies.FindList(policy_util::kArcPolicyKeyApplications);
@@ -748,6 +787,7 @@ void ArcPolicyBridge::ActivateArcIfRequiredByPolicy(
                kPolicyAppInstallTypeForceInstalled;
       });
   if (hasForceInstallApps) {
+    VLOG(1) << "Force install apps found, allowing ARC activation.";
     arc::ArcSessionManager::Get()->AllowActivation(
         arc::ArcSessionManager::AllowActivationReason::kForcedByPolicy);
   }

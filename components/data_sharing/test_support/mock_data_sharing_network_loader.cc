@@ -6,8 +6,8 @@
 
 namespace data_sharing {
 
-MockDataSharingNetworkLoader::MockDataSharingNetworkLoader() {}
+MockDataSharingNetworkLoader::MockDataSharingNetworkLoader() = default;
 
-MockDataSharingNetworkLoader::~MockDataSharingNetworkLoader() {}
+MockDataSharingNetworkLoader::~MockDataSharingNetworkLoader() = default;
 
 }  // namespace data_sharing

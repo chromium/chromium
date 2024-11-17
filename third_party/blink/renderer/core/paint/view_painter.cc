@@ -75,7 +75,7 @@ void ViewPainter::PaintRootGroup(const PaintInfo& paint_info,
 }
 
 void ViewPainter::PaintBoxDecorationBackground(const PaintInfo& paint_info) {
-  if (box_fragment_.Style().UsedVisibility() != EVisibility::kVisible) {
+  if (box_fragment_.Style().Visibility() != EVisibility::kVisible) {
     return;
   }
 

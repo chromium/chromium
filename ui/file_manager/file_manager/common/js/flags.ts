@@ -62,14 +62,16 @@ export function isDriveFsBulkPinningEnabled() {
   return isFlagEnabled('DRIVE_FS_BULK_PINNING');
 }
 
-export function isArcUsbStorageUIEnabled() {
-  return isFlagEnabled('ARC_USB_STORAGE_UI_ENABLED');
-}
-
+/**
+ * Returns true if ARCVM is enabled.
+ */
 export function isArcVmEnabled() {
   return isFlagEnabled('ARC_VM_ENABLED');
 }
 
+/**
+ * Returns true if PluginVM is enabled.
+ */
 export function isPluginVmEnabled() {
   return isFlagEnabled('PLUGIN_VM_ENABLED');
 }

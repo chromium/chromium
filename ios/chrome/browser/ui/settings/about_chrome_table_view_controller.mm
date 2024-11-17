@@ -154,8 +154,7 @@ const CGFloat kDefaultHeight = 70;
       break;
     case ItemTypeVersion:
       // Version is a footer, it is not interactable.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -175,7 +174,7 @@ const CGFloat kDefaultHeight = 70;
 
 - (void)openURL:(GURL)URL {
   OpenNewTabCommand* command = [OpenNewTabCommand commandWithURLFromChrome:URL];
-  [self.applicationHandler closeSettingsUIAndOpenURL:command];
+  [self.applicationHandler closePresentedViewsAndOpenURL:command];
 }
 
 - (std::string)versionString {

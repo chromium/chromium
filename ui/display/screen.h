@@ -140,7 +140,7 @@ class DISPLAY_EXPORT Screen {
   // (both of which may or may not be `nearest_id`).
   display::ScreenInfos GetScreenInfosNearestDisplay(int64_t nearest_id) const;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // Object which suspends the platform-specific screensaver for the duration of
   // its existence.
   class ScreenSaverSuspender {
@@ -161,7 +161,7 @@ class DISPLAY_EXPORT Screen {
   // the platform-specific screensaver will not be un-suspended until all
   // returned |ScreenSaverSuspender| instances have been destructed.
   virtual std::unique_ptr<ScreenSaverSuspender> SuspendScreenSaver();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
   // Returns whether the screensaver is currently running.
   virtual bool IsScreenSaverActive() const;
@@ -219,11 +219,6 @@ class DISPLAY_EXPORT Screen {
 
   // Returns true if the system is in tablet mode.
   bool InTabletMode() const;
-
-  // Overrides tablet state stored in screen and notifies observers only on
-  // Lacros side.
-  // Not that this method may make tablet state out-of-sync with Ash side.
-  virtual void OverrideTabletStateForTesting(TabletState tablet_state) {}
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
  protected:
@@ -248,9 +243,9 @@ class DISPLAY_EXPORT Screen {
   int64_t display_id_for_new_windows_;
   int64_t scoped_display_id_for_new_windows_ = display::kInvalidDisplayId;
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   uint32_t screen_saver_suspension_count_ = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 };
 
 #if BUILDFLAG(IS_APPLE)

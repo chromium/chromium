@@ -1,8 +1,7 @@
 {
   "description": "Aggregatable debug reports creation when filtering ids is enabled",
   "api_config": {
-    "needs_aggregatable_debug": true,
-    "needs_aggregatable_filtering_ids": true
+    "needs_aggregatable_debug": true
   },
   "input": {
     "registrations": [

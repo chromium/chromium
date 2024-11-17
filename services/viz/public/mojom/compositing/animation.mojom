@@ -1,0 +1,203 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "cc/mojom/element_id.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "skia/public/mojom/skcolor.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/transform.mojom";
+
+// A cubic bezier function with control points (x1, y1) and (x2, y2).
+struct CubicBezierTimingFunction {
+  double x1;
+  double y1;
+  double x2;
+  double y2;
+};
+
+// Corresponds to gfx::StepsTimingFunction::StepPosition.
+enum TimingStepPosition {
+  kStart,
+  kEnd,
+  kJumpBoth,
+  kJumpEnd,
+  kJumpNone,
+  kJumpStart,
+};
+
+// A stepped, discontinuous timing function.
+struct StepsTimingFunction {
+  uint32 num_steps;
+  TimingStepPosition step_position;
+};
+
+// An easing point used in series to describe a linear TimingFunction below. A
+// linear timing function consists of a list of these points, effectively
+// defining a piecewise linear function to map input time (in the range [0, 1]
+// as a proportion of keyframe duration) to output time (also generally, but
+// not strictly, in the range [0, 1]).
+struct LinearEasingPoint {
+  // An input time value.
+  double in;
+
+  // An output time value to be output when input time is `in`.
+  double out;
+};
+
+// Function which parameterizes an animation curve.
+union TimingFunction {
+  CubicBezierTimingFunction cubic_bezier;
+  StepsTimingFunction steps;
+  array<LinearEasingPoint> linear;
+};
+
+// 3D axis and rotation angle about that axis.
+struct AxisAngle {
+  gfx.mojom.Vector3dF axis;
+  float angle;
+};
+
+// Corresponds to gfx::TransformOperation, which is essentially a gfx::Transform
+// with a more compact representation for common transform types.
+union TransformOperation {
+  // Identity transform. Actual bool value is meaningless.
+  bool identity;
+
+  // Perspective transform depth; or 0 if no perspective.
+  // TODO(crbug.com/366068163): Use a nullable float when nullable numerics are
+  // supported as union fields.
+  float perspective_depth;
+
+  // 1D or 2D skew.
+  gfx.mojom.Vector2dF skew;
+
+  gfx.mojom.Vector3dF scale;
+  gfx.mojom.Vector3dF translate;
+  AxisAngle rotate;
+
+  // A full transformation matrix. Fallback for something that isn't one of the
+  // above transform types.
+  gfx.mojom.Transform matrix;
+};
+
+// Type-specific value for a single keyframe.
+union AnimationKeyframeValue {
+  float scalar;
+  skia.mojom.SkColor color;
+  gfx.mojom.SizeF size;
+  gfx.mojom.Rect rect;
+  array<TransformOperation> transform;
+};
+
+// Data for a single keyframe.
+struct AnimationKeyframe {
+  // The data for this keyframe.
+  AnimationKeyframeValue value;
+
+  // Start time for the keyframe relative to animation start.
+  mojo_base.mojom.TimeDelta start_time;
+
+  // Optional easing function to use at this keyframe.
+  TimingFunction? timing_function;
+};
+
+// Corresponds to gfx::KeyframeModel::Direction.
+enum AnimationDirection {
+  kNormal,
+  kReverse,
+  kAlternateNormal,
+  kAlternateReverse,
+};
+
+// Corresponds to gfx::KeyframeModel::FillMode.
+enum AnimationFillMode {
+  kNone,
+  kForwards,
+  kBackwards,
+  kBoth,
+  kAuto,
+};
+
+// Corresponds to a cc::KeyframeModel with AnimationCurve details inlined. Note
+// that this can only describe a KeyframeModel targeting a fixed property
+// (e.g. transform, scale, etc.) Models for paint worklets and custom CSS
+// properties are not pushed to Viz.
+struct AnimationKeyframeModel {
+  // Arbitrary ID for this keyframe model. May be used to issue targeted updates
+  // to the model once it's registered.
+  int32 id;
+
+  // Arbitrary client-chosen group ID. The compositor will group together
+  // keyframe models which share the same group ID, ensuring that they're
+  // synchronized while making a few other guarantees about behavior relative to
+  // other animations.
+  int32 group_id;
+
+  // Opaque cc::TargetProperty::Type enumerator. Must be between
+  // cc::TargetProperty::Type::FIRST_TARGET_PROPERTY and
+  // cc::TargetProperty::Type::LAST_TARGET_PROPERTY, inclusive.
+  int32 target_property_type;
+
+  // Optional ElementId override to select the target element for this model.
+  // By default its enclosing AnimationKeyframeEffect determines the target
+  // ElementId.
+  cc.mojom.ElementId? element_id;
+
+  // Easing function to use by default between all keyframes.
+  TimingFunction timing_function;
+
+  // The keyframes for this animation. Every AnimationKeyframeValue within these
+  // keyframes must be of matching type.
+  array<AnimationKeyframe> keyframes;
+
+  // The actual wall-time duration of the animation in seconds.
+  double scaled_duration;
+
+  // The direction of playback.
+  AnimationDirection direction;
+
+  // Determines how the model affects its target outside of playback.
+  AnimationFillMode fill_mode;
+
+  // A scale to apply to ticking animation time.
+  double playback_rate;
+
+  // The number of iterations to play and the iteration to start with.
+  double iterations;
+  double iteration_start;
+
+  // Offsets the start time, effectively skipping ahead to some desired point
+  // within the animation.
+  mojo_base.mojom.TimeDelta time_offset;
+};
+
+// A collection of keyframe models associated with a specific ElementId. This
+// corresponds to a cc::Animation with its cc::KeyframEffect flattened into it.
+struct Animation {
+  // Arbitrary ID assigned by the client. Used to update or remove the animation
+  // in future syncs.
+  int32 id;
+
+  // Optionally identifies a target element for the animation, mapping it to a
+  // layer or property tree node which shares the same ElementId.
+  cc.mojom.ElementId? element_id;
+
+  // Keyframe models comprising the animation.
+  array<AnimationKeyframeModel> keyframe_models;
+};
+
+// A collection of animations.
+struct AnimationTimeline {
+  // Arbitrary ID assigned by the client. Used to update or remove the animation
+  // timeline in future syncs.
+  int32 id;
+
+  // New Animations added since last update.
+  array<Animation> new_animations;
+
+  // Animations removed since last update.
+  array<int32> removed_animations;
+};

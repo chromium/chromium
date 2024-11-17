@@ -67,4 +67,8 @@ BackForwardCacheCommitDeferringCondition::WillCommitNavigation(
   return Result::kDefer;
 }
 
+const char* BackForwardCacheCommitDeferringCondition::TraceEventName() const {
+  return "BackForwardCacheCommitDeferringCondition";
+}
+
 }  // namespace content

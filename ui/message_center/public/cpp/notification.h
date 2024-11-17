@@ -14,7 +14,6 @@
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/image_model.h"
@@ -172,11 +171,11 @@ class MESSAGE_CENTER_PUBLIC_EXPORT RichNotificationData {
   // is in the views hierarchy or about to be passed to the OS.
   bool small_image_needs_additional_masking = false;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // If true, we simply use the raw |small_image| icon, ignoring accent color
   // styling. For example, this is used with raw icons received from Android.
   bool ignore_accent_color_for_small_image = false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Vector version of |small_image|.
   // Used by Notification::GenerateMaskedSmallIcon.
@@ -367,7 +366,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
 
   // A display string for the source of the notification.
   const std::u16string& display_source() const { return display_source_; }
-  void set_display_source(const std::u16string display_source) {
+  void set_display_source(const std::u16string& display_source) {
     display_source_ = display_source;
   }
 
@@ -603,7 +602,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // default state.
   void ClearGroupParent();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void set_system_notification_warning_level(
       SystemNotificationWarningLevel warning_level) {
     system_notification_warning_level_ = warning_level;
@@ -612,7 +611,7 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   SystemNotificationWarningLevel system_notification_warning_level() const {
     return system_notification_warning_level_;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const std::string& custom_view_type() const { return custom_view_type_; }
   void set_custom_view_type(const std::string& custom_view_type) {
@@ -683,11 +682,11 @@ class MESSAGE_CENTER_PUBLIC_EXPORT Notification {
   // this notification.
   ui::ElementIdentifier host_view_element_id_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // The warning level of a system notification.
   SystemNotificationWarningLevel system_notification_warning_level_ =
       SystemNotificationWarningLevel::NORMAL;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace message_center

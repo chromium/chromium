@@ -68,7 +68,7 @@ class FakeDeviceAttributes : public DeviceAttributes {
   void SetFakeDeviceAnnotatedLocation(
       const std::string& device_annotated_location);
 
-  void SetFakeDeviceHostname(const std::optional<std::string> device_hostname);
+  void SetFakeDeviceHostname(std::optional<std::string> device_hostname);
 
   void SetFakeDirectoryApiId(const std::string& directory_api_id);
 

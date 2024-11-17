@@ -4,12 +4,12 @@
 
 import 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 import './searched_label.js';
 import './shared_style.css.js';
 import './shared_vars.css.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import type {CrCollapseElement} from 'chrome://resources/cr_elements/cr_collapse/cr_collapse.js';
 import {FocusRow} from 'chrome://resources/js/focus_row.js';

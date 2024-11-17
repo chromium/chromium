@@ -295,8 +295,7 @@ SQLTransactionState SQLTransaction::DeliverSuccessCallback() {
 // in the state dispatch table. They are unimplemented because they should
 // never be reached in the course of correct execution.
 SQLTransactionState SQLTransaction::UnreachableState() {
-  NOTREACHED_IN_MIGRATION();
-  return SQLTransactionState::kEnd;
+  NOTREACHED();
 }
 
 SQLTransactionState SQLTransaction::SendToBackendState() {

@@ -88,6 +88,10 @@ protocol::String BuildCookieExclusionReason(
     case blink::mojom::blink::CookieExclusionReason::kExcludeThirdPartyPhaseout:
       return protocol::Audits::CookieExclusionReasonEnum::
           ExcludeThirdPartyPhaseout;
+    case blink::mojom::blink::CookieExclusionReason::kExcludePortMismatch:
+      return protocol::Audits::CookieExclusionReasonEnum::ExcludePortMismatch;
+    case blink::mojom::blink::CookieExclusionReason::kExcludeSchemeMismatch:
+      return protocol::Audits::CookieExclusionReasonEnum::ExcludeSchemeMismatch;
   }
 }
 

@@ -17,6 +17,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
@@ -170,8 +171,11 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
         return sInstance;
     }
 
-    public static void overrideInstanceForTest(BrowserStartupController controller) {
-        sInstance = (BrowserStartupControllerImpl) controller;
+    @VisibleForTesting
+    public static void overrideInstanceForTest(BrowserStartupControllerImpl controller) {
+        var oldValue = sInstance;
+        sInstance = controller;
+        ResettersForTesting.register(() -> sInstance = oldValue);
     }
 
     @Override
@@ -323,7 +327,9 @@ public class BrowserStartupControllerImpl implements BrowserStartupController {
 
     @VisibleForTesting
     void flushStartupTasks() {
-        BrowserStartupControllerImplJni.get().flushStartupTasks();
+        try (ScopedSysTraceEvent e = ScopedSysTraceEvent.scoped("flushStartupTasks")) {
+            BrowserStartupControllerImplJni.get().flushStartupTasks();
+        }
     }
 
     @Override

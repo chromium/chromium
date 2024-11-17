@@ -20,8 +20,8 @@ interface CertificateManagerPageHandlerFactory {
   // Create both the CertificateManagerPage and CertificateManagerPageHandler
   // at the same time.
   CreateCertificateManagerPageHandler(
-    pending_remote<CertificateManagerPage> page,
-    pending_receiver<CertificateManagerPageHandler> handler);
+      pending_remote<CertificateManagerPage> page,
+      pending_receiver<CertificateManagerPageHandler> handler);
 };
 
 enum CertificateSource {
@@ -31,7 +31,7 @@ enum CertificateSource {
   // the first source.
 
   // Trusted certs from the Chrome Root Store.
-  kChromeRootStore=1,
+  kChromeRootStore = 1,
 
   // Client certificates from the platform store.
   kPlatformClientCert,
@@ -56,12 +56,19 @@ enum CertificateSource {
 
   // Enterprise provisioned client certificates. Only enabled on platforms
   // where that feature is available.
-  [EnableIf=enable_provisioned_client_certs]
-  kProvisionedClientCert,
+  [EnableIf=is_linux|is_mac|is_win] kProvisionedClientCert,
 
   // Extension provided client certificates.
-  [EnableIf=is_chromeos]
-  kExtensionsClientCert,
+  [EnableIf=is_chromeos] kExtensionsClientCert,
+
+  // User-added trusted certs.
+  kUserTrustedCerts,
+
+  // User-added intermediate certs.
+  kUserIntermediateCerts,
+
+  // User-added distrusted certs.
+  kUserDistrustedCerts,
 };
 
 struct CertManagementMetadata {
@@ -78,6 +85,13 @@ struct CertManagementMetadata {
 
   // Number of certificates added via enterprise policy.
   uint8 num_policy_certs;
+
+  // Number of certificates added by the user directly through the cert
+  // manager UI.
+  uint32 num_user_certs;
+
+  // Whether the UI for viewing/editing user certificates should be shown.
+  bool show_user_certs_ui;
 };
 
 enum SuccessResult {
@@ -118,20 +132,25 @@ interface CertificateManagerPageHandler {
   ImportCertificate(CertificateSource source) => (ActionResult? result);
 
   // Begin a client certificate import and bind the private key to the TPM.
-  ImportAndBindCertificate(CertificateSource source) => (ActionResult? result);
+  ImportAndBindCertificate(CertificateSource source)
+      => (ActionResult? result);
 
   // Begin process to delete the certificate from `source` that has the hex
   // SHA256 hash `sha256_hash_hex`. The result may be `success` indicating the
   // deletion succeeded and the certificate list should be refreshed, `error`
   // on failure with an error message to display, or null if the delete was
   // cancelled.
-  DeleteCertificate(CertificateSource source, string sha256_hash_hex)
+  DeleteCertificate(
+      CertificateSource source, string display_name, string sha256_hash_hex)
       => (ActionResult? result);
 
   // Show the platform's native certificate management UI.
-  [EnableIf=native_cert_management]
+  [EnableIf=is_mac|is_win]
   ShowNativeManageCertificates();
 
+  // Set whether to use the OS imported certs or not.
+  [EnableIfNot=is_chromeos]
+  SetIncludeSystemTrustStore(bool include);
 };
 
 // Calls from C++ -> TS (Browser -> Renderer).

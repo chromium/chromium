@@ -12,8 +12,10 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/post_message_helper.h"
@@ -292,12 +294,12 @@ DOMWindow* DOMWindow::top() const {
 void DOMWindow::postMessage(v8::Isolate* isolate,
                             const ScriptValue& message,
                             const String& target_origin,
-                            HeapVector<ScriptValue>& transfer,
+                            HeapVector<ScriptValue> transfer,
                             ExceptionState& exception_state) {
   WindowPostMessageOptions* options = WindowPostMessageOptions::Create();
   options->setTargetOrigin(target_origin);
   if (!transfer.empty())
-    options->setTransfer(transfer);
+    options->setTransfer(std::move(transfer));
   postMessage(isolate, message, options, exception_state);
 }
 
@@ -756,7 +758,7 @@ void DOMWindow::ReportCoopAccess(const char* property_name) {
   // TODO(https://crbug.com/1183571): Check if crashes are still happening and
   // remove this block.
   if (!accessing_frame->Tree().Top().IsLocalFrame()) {
-    NOTREACHED_IN_MIGRATION();
+    DUMP_WILL_BE_NOTREACHED();
     return;
   }
 
@@ -1003,11 +1005,20 @@ void DOMWindow::RecordWindowProxyAccessMetrics(
   if (!accessing_frame)
     return;
 
+  // We don't log instances of a frame accessing itself. This would cause
+  // unacceptable lag (via mojom) and rate-limiting on the UKM.
   if (GetFrame() != accessing_frame) {
-    // We don't log instances of a frame accessing itself. This would cause
-    // unacceptable lag (via mojom) and rate-limiting on the UKM.
-    accessing_frame->GetLocalFrameHostRemote().RecordWindowProxyUsageMetrics(
-        GetFrame()->GetFrameToken(), access_type);
+    // This sends a message to the browser process to record metrics. As of
+    // 2024, these metrics are heavily downsampled in the browser process,
+    // through the UKM downsampling mechanism. Perform the downsampling here, to
+    // save on the IPC cost. The sampling ratio is based on observed
+    // browser-side downsampling rates.
+    if (!base::FeatureList::IsEnabled(
+            features::kSubSampleWindowProxyUsageMetrics) ||
+        metrics_sub_sampler_.ShouldSample(0.0001)) {
+      accessing_frame->GetLocalFrameHostRemote().RecordWindowProxyUsageMetrics(
+          GetFrame()->GetFrameToken(), access_type);
+    }
   }
 
   // Note that SecurityOrigin can be null in unit tests.

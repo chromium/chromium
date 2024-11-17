@@ -6,8 +6,12 @@
 
 #include <gtest/gtest.h>
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_features.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "components/download/public/common/mock_download_item.h"
@@ -27,13 +31,19 @@ constexpr char16_t kTestFile[] = u"foo.txt";
 
 class ContentAnalysisDownloadsDelegateTest : public testing::Test {
  public:
-  void OpenCallback() { ++times_open_called_; }
+  void OpenCallback() {
+    ++times_open_called_;
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
+    }
+  }
 
   void DiscardCallback() { ++times_discard_called_; }
 
   int times_open_called_ = 0;
   int times_discard_called_ = 0;
   download::MockDownloadItem mock_download_item;
+  base::OnceClosure quit_closure_;
 };
 
 TEST_F(ContentAnalysisDownloadsDelegateTest, TestOpenFile) {
@@ -154,7 +164,6 @@ TEST_F(ContentAnalysisDownloadsDelegateTest, TestGetMessageAndUrl) {
 
 TEST_F(ContentAnalysisDownloadsDelegateTest,
        TestCustomRuleMessageAndCustomMessage) {
-  base::test::ScopedFeatureList enable_feature(kDialogCustomRuleMessageEnabled);
   ContentAnalysisDownloadsDelegate delegate(
       kTestFile, kTestMessage, GURL(kTestUrl), true,
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,
@@ -176,7 +185,6 @@ TEST_F(ContentAnalysisDownloadsDelegateTest,
 
 TEST_F(ContentAnalysisDownloadsDelegateTest,
        TestCustomRuleMessageAndCustomMessageInvalidUrl) {
-  base::test::ScopedFeatureList enable_feature(kDialogCustomRuleMessageEnabled);
   ContentAnalysisDownloadsDelegate delegate(
       u"foo.txt", kTestMessage, GURL(kTestUrl), true,
       base::BindOnce(&ContentAnalysisDownloadsDelegateTest::OpenCallback,

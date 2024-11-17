@@ -69,9 +69,15 @@ specific_include_rules = {
     '+ash/shell_observer.h',
     '+ash/rgb_keyboard/rgb_keyboard_manager.h'
   ],
+  'os_settings_features_util\.cc' : [
+    "+ash/edusumer/graduation_utils.h",
+  ],
   'power_section\.(cc|h)' : [
     '+ash/shell.h',
     '+ash/system/power',
+  ],
+  'search_section\.(cc|h)': [
+    "+ash/lobster",
   ],
   'select_to_speak_handler\.cc': [
     '+content/public/browser/tts_controller.h',

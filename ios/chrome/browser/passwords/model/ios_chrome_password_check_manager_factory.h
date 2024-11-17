@@ -8,18 +8,14 @@
 #import "base/memory/weak_ptr.h"
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class IOSChromePasswordCheckManager;
+class ProfileIOS;
 
 // Singleton that owns weak pointer to IOSChromePasswordCheckManager.
 class IOSChromePasswordCheckManagerFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static scoped_refptr<IOSChromePasswordCheckManager> GetForBrowserState(
-      ProfileIOS* profile);
-
   static scoped_refptr<IOSChromePasswordCheckManager> GetForProfile(
       ProfileIOS* profile);
   static IOSChromePasswordCheckManagerFactory* GetInstance();

@@ -26,8 +26,8 @@ class UpdateScheduler {
   // |delay|. The first time |user_task| will be run after at least
   // |initial_delay|. If the execution of |user_task| must be stopped before it
   // called its |on_finished| callback, |on_stop| will be called.
-  virtual void Schedule(const base::TimeDelta& initial_delay,
-                        const base::TimeDelta& delay,
+  virtual void Schedule(base::TimeDelta initial_delay,
+                        base::TimeDelta delay,
                         const UserTask& user_task,
                         const OnStopTaskCallback& on_stop) = 0;
   // Stops to periodically run |user_task| previously scheduled with |Schedule|.

@@ -266,8 +266,12 @@ TEST(StyleColorTest, UnresolvedRelativeColor_Resolve) {
                                       CSSPrimitiveValue::UnitType::kPercentage),
       *CSSIdentifierValue::Create(CSSValueID::kL),
       CSSIdentifierValue::Create(CSSValueID::kAlpha));
+  EXPECT_EQ(hsl->Resolve(rebeccapurple).SerializeAsCSSColor(),
+            Color::FromRGB(102, 82, 122).SerializeAsCSSColor());
   EXPECT_EQ(
-      hsl->Resolve(rebeccapurple).SerializeAsCSSColor(),
+      StyleColor(hsl)
+          .Resolve(rebeccapurple, mojom::blink::ColorScheme::kLight, nullptr)
+          .SerializeAsCSSColor(),
       Color::FromColorSpace(Color::ColorSpace::kSRGB, 0.4, 0.32, 0.48, 1.0)
           .SerializeAsCSSColor());
 

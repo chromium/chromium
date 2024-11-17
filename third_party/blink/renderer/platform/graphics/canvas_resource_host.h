@@ -45,6 +45,11 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
       RasterModeHint hint) = 0;
   virtual CanvasResourceProvider* GetOrCreateCanvasResourceProviderImpl(
       RasterModeHint hint) = 0;
+  CanvasResourceProvider*
+  GetOrCreateResourceProviderWithCurrentRasterModeHint() {
+    return GetOrCreateCanvasResourceProvider(preferred_2d_raster_mode());
+  }
+
   bool IsComposited() const;
   bool IsResourceValid();
   gfx::Size Size() const { return size_; }
@@ -71,9 +76,9 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   virtual void DiscardResourceProvider();
 
   void SetIsDisplayed(bool);
-  bool IsDisplayed() { return is_displayed_; }
+  bool IsDisplayed() const { return is_displayed_; }
 
-  virtual bool IsPageVisible() = 0;
+  virtual bool IsPageVisible() const = 0;
 
   virtual bool IsPrinting() const { return false; }
   virtual bool PrintedInCurrentTask() const = 0;
@@ -116,6 +121,9 @@ class PLATFORM_EXPORT CanvasResourceHost : public cc::TextureLayerClient {
   void set_shared_bitmap_gpu_channel_lost(bool value) {
     shared_bitmap_gpu_channel_lost_ = value;
   }
+
+  virtual void SetTransferToGPUTextureWasInvoked() {}
+  virtual bool TransferToGPUTextureWasInvoked() { return false; }
 
  private:
   bool is_displayed_ = false;

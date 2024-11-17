@@ -108,11 +108,13 @@ std::u16string AXPlatformNodeDelegate::GetValueForControl() const {
 
   std::u16string value =
       GetString16Attribute(ax::mojom::StringAttribute::kValue);
-  float numeric_value;
-  if (GetData().IsRangeValueSupported() && value.empty() &&
-      GetData().GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange,
-                                  &numeric_value)) {
-    value = base::NumberToString16(numeric_value);
+  if (GetData().IsRangeValueSupported() && value.empty()) {
+    float numeric_value =
+        GetData().GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange);
+    if (numeric_value || GetData().HasFloatAttribute(
+                             ax::mojom::FloatAttribute::kValueForRange)) {
+      value = base::NumberToString16(numeric_value);
+    }
   }
   return value;
 }
@@ -139,8 +141,7 @@ AXNodePosition::AXPositionInstance AXPlatformNodeDelegate::CreateTextPositionAt(
 }
 
 gfx::NativeViewAccessible AXPlatformNodeDelegate::GetNSWindow() {
-  NOTREACHED_IN_MIGRATION() << "Only available on macOS.";
-  return nullptr;
+  NOTREACHED() << "Only available on macOS.";
 }
 
 gfx::NativeViewAccessible AXPlatformNodeDelegate::GetNativeViewAccessible() {
@@ -149,8 +150,7 @@ gfx::NativeViewAccessible AXPlatformNodeDelegate::GetNativeViewAccessible() {
   // overridden this method. On all other platforms, this method should not be
   // called yet. In the future, when all subclasses have moved over to be
   // implemented by AXPlatformNode, we may make this method completely virtual.
-  NOTREACHED_IN_MIGRATION() << "https://crbug.com/703369";
-  return nullptr;
+  NOTREACHED() << "https://crbug.com/703369";
 }
 
 gfx::NativeViewAccessible AXPlatformNodeDelegate::GetParent() const {
@@ -499,11 +499,11 @@ AXPlatformNode* AXPlatformNodeDelegate::GetTargetNodeForRelation(
     ax::mojom::IntAttribute attr) {
   DCHECK(IsNodeIdIntAttribute(attr));
 
-  int target_id;
-  if (!GetIntAttribute(attr, &target_id))
+  if (!HasIntAttribute(attr)) {
     return nullptr;
+  }
 
-  AXPlatformNode* node = GetFromNodeID(target_id);
+  AXPlatformNode* node = GetFromNodeID(GetIntAttribute(attr));
   if (!IsValidRelationTarget(node)) {
     return nullptr;
   }
@@ -639,9 +639,11 @@ bool AXPlatformNodeDelegate::GetBoolAttribute(
 bool AXPlatformNodeDelegate::GetBoolAttribute(
     ax::mojom::BoolAttribute attribute,
     bool* value) const {
-  if (node_)
-    return node_->GetBoolAttribute(attribute, value);
-  return GetData().GetBoolAttribute(attribute, value);
+  if (HasBoolAttribute(attribute)) {
+    *value = GetBoolAttribute(attribute);
+    return true;
+  }
+  return false;
 }
 
 bool AXPlatformNodeDelegate::HasFloatAttribute(
@@ -661,9 +663,11 @@ float AXPlatformNodeDelegate::GetFloatAttribute(
 bool AXPlatformNodeDelegate::GetFloatAttribute(
     ax::mojom::FloatAttribute attribute,
     float* value) const {
-  if (node_)
-    return node_->GetFloatAttribute(attribute, value);
-  return GetData().GetFloatAttribute(attribute, value);
+  if (HasFloatAttribute(attribute)) {
+    *value = GetFloatAttribute(attribute);
+    return true;
+  }
+  return false;
 }
 
 const std::vector<std::pair<ax::mojom::IntAttribute, int32_t>>&
@@ -689,9 +693,11 @@ int AXPlatformNodeDelegate::GetIntAttribute(
 
 bool AXPlatformNodeDelegate::GetIntAttribute(ax::mojom::IntAttribute attribute,
                                              int* value) const {
-  if (node_)
-    return node_->GetIntAttribute(attribute, value);
-  return GetData().GetIntAttribute(attribute, value);
+  if (HasIntAttribute(attribute)) {
+    *value = GetIntAttribute(attribute);
+    return true;
+  }
+  return false;
 }
 
 const std::vector<std::pair<ax::mojom::StringAttribute, std::string>>&
@@ -815,30 +821,10 @@ bool AXPlatformNodeDelegate::GetStringListAttribute(
   return found;
 }
 
-bool AXPlatformNodeDelegate::HasHtmlAttribute(const char* attribute) const {
-  if (node_)
-    return node_->HasHtmlAttribute(attribute);
-  return GetData().HasHtmlAttribute(attribute);
-}
-
 const base::StringPairs& AXPlatformNodeDelegate::GetHtmlAttributes() const {
   if (node_)
     return node_->GetHtmlAttributes();
   return GetData().html_attributes;
-}
-
-bool AXPlatformNodeDelegate::GetHtmlAttribute(const char* attribute,
-                                              std::string* value) const {
-  if (node_)
-    return node_->GetHtmlAttribute(attribute, value);
-  return GetData().GetHtmlAttribute(attribute, value);
-}
-
-bool AXPlatformNodeDelegate::GetHtmlAttribute(const char* attribute,
-                                              std::u16string* value) const {
-  if (node_)
-    return node_->GetHtmlAttribute(attribute, value);
-  return GetData().GetHtmlAttribute(attribute, value);
 }
 
 AXTextAttributes AXPlatformNodeDelegate::GetTextAttributes() const {
@@ -1000,25 +986,23 @@ std::optional<int> AXPlatformNodeDelegate::GetTableCellCount() const {
 }
 
 std::optional<int> AXPlatformNodeDelegate::GetTableAriaColCount() const {
-  int aria_column_count;
-  if (node_)
+  if (node_) {
     return node_->GetTableAriaColCount();
-  if (!GetIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount,
-                       &aria_column_count)) {
+  }
+  if (!HasIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount)) {
     return std::nullopt;
   }
-  return aria_column_count;
+  return GetIntAttribute(ax::mojom::IntAttribute::kAriaColumnCount);
 }
 
 std::optional<int> AXPlatformNodeDelegate::GetTableAriaRowCount() const {
-  if (node_)
+  if (node_) {
     return node_->GetTableAriaRowCount();
-  int aria_row_count;
-  if (!GetIntAttribute(ax::mojom::IntAttribute::kAriaRowCount,
-                       &aria_row_count)) {
+  }
+  if (!HasIntAttribute(ax::mojom::IntAttribute::kAriaRowCount)) {
     return std::nullopt;
   }
-  return aria_row_count;
+  return GetIntAttribute(ax::mojom::IntAttribute::kAriaRowCount);
 }
 
 std::vector<int32_t> AXPlatformNodeDelegate::GetColHeaderNodeIds() const {

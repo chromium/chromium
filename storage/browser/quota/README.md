@@ -65,7 +65,6 @@ Implementation detail of QuotaManagerImpl.
 A device is said to be under storage pressure when it is close to capacity.
 Storage pressure is used to signal a couple of behaviors in the quota system:
  - Eviction
- - The QuotaChange event
  - Triggering storage pressure UI (implementation specific)
 
 ## Eviction

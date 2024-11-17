@@ -52,7 +52,7 @@ std::string IncognitoCookiePath() {
 }
 
 // Clear cookies to make sure that tests do not interfere each other.
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/echo")];
   NSString* const clearCookieScript =
       @"var cookies = document.cookie.split(';');"
@@ -63,7 +63,7 @@ std::string IncognitoCookiePath() {
        "  document.cookie = name + '=;expires=Thu, 01 Jan 1970 00:00:00 GMT';"
        "}";
   [ChromeEarlGrey evaluateJavaScriptForSideEffect:clearCookieScript];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests

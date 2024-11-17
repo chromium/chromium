@@ -173,7 +173,7 @@ bool AppsCollectionsController::ShouldShowAppsCollection() {
     return false;
   }
 
-  if (app_list_features::IsForceShowAppsCollectionsEnabled()) {
+  if (force_apps_collections_) {
     return true;
   }
 
@@ -215,5 +215,9 @@ void AppsCollectionsController::SetReorderCallback(ReorderCallback callback) {
   CHECK(callback);
 
   reorder_callback_ = std::move(callback);
+}
+
+void AppsCollectionsController::ForceAppsCollectionsForTesting(bool force) {
+  force_apps_collections_ = force;
 }
 }  // namespace ash

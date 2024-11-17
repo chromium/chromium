@@ -29,8 +29,7 @@ AutomationPosition::AutomationPosition(const AXNode& node,
       position_->SnapToMaxTextOffsetIfBeyond();
       break;
     case AXPositionKind::NULL_POSITION:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

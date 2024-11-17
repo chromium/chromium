@@ -10,6 +10,7 @@
 #include "ash/components/kcer/helpers/pkcs12_validator.h"
 
 #include "ash/components/kcer/kcer_nss/test_utils.h"
+#include "base/containers/span.h"
 #include "net/cert/x509_certificate.h"
 #include "net/test/cert_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -154,7 +155,7 @@ TEST_F(KcerPkcs12ValidatorTest, CertExists) {
   ASSERT_TRUE(cert);
 
   scoped_refptr<const Cert> kcer_cert = MakeKcerCertFromBsslCert("name", cert);
-  cert_cache_ = CertCache(std::vector{kcer_cert});
+  cert_cache_ = CertCache(base::span_from_ref(kcer_cert));
 
   std::vector<CertData> certs_data;
   Pkcs12ReaderStatusCode prepare_certs_status = ValidateAndPrepareCertData(
@@ -186,7 +187,7 @@ TEST_F(KcerPkcs12ValidatorTest, NicknameFromExistingCert) {
   const char kNickname[] = "nickname123";
   scoped_refptr<const Cert> kcer_cert =
       MakeKcerCert(kNickname, cert_builders[0]->GetX509Certificate());
-  cert_cache_ = CertCache(std::vector{kcer_cert});
+  cert_cache_ = CertCache(base::span_from_ref(kcer_cert));
 
   std::vector<CertData> certs_data;
   Pkcs12ReaderStatusCode prepare_certs_status = ValidateAndPrepareCertData(
@@ -212,7 +213,7 @@ TEST_F(KcerPkcs12ValidatorTest, UniqueNickname) {
   const char kNickname[] = "testusercert";
   scoped_refptr<const Cert> kcer_cert =
       MakeKcerCert(kNickname, cert_builders[0]->GetX509Certificate());
-  cert_cache_ = CertCache(std::vector{kcer_cert});
+  cert_cache_ = CertCache(base::span_from_ref(kcer_cert));
 
   std::vector<CertData> certs_data;
   Pkcs12ReaderStatusCode prepare_certs_status = ValidateAndPrepareCertData(

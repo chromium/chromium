@@ -160,7 +160,6 @@ public class RenameDialogManager {
                 break;
         }
         mCurState = nextState;
-        return;
     }
 
     private void runRenameCallback() {

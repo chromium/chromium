@@ -23,8 +23,9 @@ class AccessibilityFullscreenBrowserTest : public ContentBrowserTest {
 
  protected:
   ui::BrowserAccessibility* FindButton(ui::BrowserAccessibility* node) {
-    if (node->GetRole() == ax::mojom::Role::kButton)
+    if (node->GetRole() == ax::mojom::Role::kButton) {
       return node;
+    }
     for (unsigned i = 0; i < node->PlatformChildCount(); i++) {
       if (ui::BrowserAccessibility* button =
               FindButton(node->PlatformGetChild(i))) {
@@ -35,8 +36,9 @@ class AccessibilityFullscreenBrowserTest : public ContentBrowserTest {
   }
 
   int CountLinks(ui::BrowserAccessibility* node) {
-    if (node->GetRole() == ax::mojom::Role::kLink)
+    if (node->GetRole() == ax::mojom::Role::kLink) {
       return 1;
+    }
     int links_in_children = 0;
     for (unsigned i = 0; i < node->PlatformChildCount(); i++) {
       links_in_children += CountLinks(node->PlatformGetChild(i));

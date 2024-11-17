@@ -144,6 +144,17 @@ FlexLayoutAlgorithm::FlexLayoutAlgorithm(
     layout_info_for_devtools_ = std::make_unique<DevtoolsFlexInfo>();
 }
 
+void FlexLayoutAlgorithm::SetupRelayoutData(const FlexLayoutAlgorithm& previous,
+                                            RelayoutType relayout_type) {
+  LayoutAlgorithm::SetupRelayoutData(previous, relayout_type);
+
+  if (relayout_type == kRelayoutIgnoringChildScrollbarChanges) {
+    ignore_child_scrollbar_changes_ = true;
+  } else {
+    ignore_child_scrollbar_changes_ = previous.ignore_child_scrollbar_changes_;
+  }
+}
+
 LayoutUnit FlexLayoutAlgorithm::MainAxisContentExtent(
     LayoutUnit sum_hypothetical_main_size) const {
   if (is_column_) {
@@ -619,21 +630,15 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     const LayoutResult* layout_result = nullptr;
     auto BlockSizeFunc = [&](SizeType type) -> LayoutUnit {
       // This function mirrors the logic within `BlockNode::ComputeMinMaxSizes`.
-      if (!layout_result) {
-        ConstraintSpace child_space =
-            BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
-        std::optional<DisableLayoutSideEffectsScope> disable_side_effects;
-        if (phase != Phase::kLayout && !Node().GetLayoutBox()->NeedsLayout()) {
-          disable_side_effects.emplace();
-        }
-        layout_result = child.Layout(child_space, /* break_token */ nullptr);
-        DCHECK(layout_result);
-      }
+      const ConstraintSpace child_space =
+          BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
 
       // Don't apply any special aspect-ratio treatment for replaced elements.
-      const LayoutUnit intrinsic_size = layout_result->IntrinsicBlockSize();
       if (child.IsReplaced()) {
-        return intrinsic_size;
+        return ComputeReplacedSize(child, child_space,
+                                   border_padding_in_child_writing_mode,
+                                   ReplacedSizeMode::kIgnoreBlockLengths)
+            .block_size;
       }
 
       const bool has_aspect_ratio = !child_style.AspectRatio().IsAuto();
@@ -646,11 +651,33 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         }
       }
 
+      LayoutUnit intrinsic_size;
+      if (child.ShouldApplyBlockSizeContainment()) {
+        // If we have block-size containment we can avoid layout for
+        // determining the intrinsic size.
+        intrinsic_size = ClampIntrinsicBlockSize(
+            child_space, child, /* break_token */ nullptr,
+            border_padding_in_child_writing_mode,
+            /* current_intrinsic_block_size */ LayoutUnit());
+      } else {
+        if (!layout_result) {
+          std::optional<DisableLayoutSideEffectsScope> disable_side_effects;
+          if (phase != Phase::kLayout &&
+              !Node().GetLayoutBox()->NeedsLayout()) {
+            disable_side_effects.emplace();
+          }
+          layout_result = child.Layout(child_space, /* break_token */ nullptr);
+          DCHECK(layout_result);
+        }
+        intrinsic_size = layout_result->IntrinsicBlockSize();
+      }
+
       // Constrain the intrinsic-size by the transferred min/max constraints.
       if (has_aspect_ratio) {
         const MinMaxSizes inline_min_max = ComputeMinMaxInlineSizes(
             flex_basis_space, child, border_padding_in_child_writing_mode,
-            /* auto_min_length */ nullptr, MinMaxSizesFunc);
+            /* auto_min_length */ nullptr, MinMaxSizesFunc,
+            TransferredSizesMode::kIgnore);
         const MinMaxSizes min_max = ComputeTransferredMinMaxBlockSizes(
             child_style.LogicalAspectRatio(), inline_min_max,
             border_padding_in_child_writing_mode,
@@ -813,7 +840,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
         is_main_axis_inline_axis
             ? ComputeMinMaxInlineSizes(
                   flex_basis_space, child, border_padding_in_child_writing_mode,
-                  base::OptionalToPtr(auto_min_length), MinMaxSizesFunc)
+                  base::OptionalToPtr(auto_min_length), MinMaxSizesFunc,
+                  TransferredSizesMode::kIgnore)
             : ComputeMinMaxBlockSizes(
                   flex_basis_space, child, border_padding_in_child_writing_mode,
                   base::OptionalToPtr(auto_min_length), BlockSizeFunc);
@@ -881,9 +909,13 @@ const LayoutResult* FlexLayoutAlgorithm::Layout() {
     case LayoutResult::kNeedsEarlierBreak:
       // If we found a good break somewhere inside this block, re-layout and
       // break at that location.
-      return RelayoutAndBreakEarlierForFlex(result);
+      DCHECK(result->GetEarlyBreak());
+      return RelayoutAndBreakEarlier<FlexLayoutAlgorithm>(
+          *result->GetEarlyBreak(), &column_early_breaks_);
     case LayoutResult::kNeedsRelayoutWithNoChildScrollbarChanges:
-      return RelayoutIgnoringChildScrollbarChanges();
+      DCHECK(!ignore_child_scrollbar_changes_);
+      return Relayout<FlexLayoutAlgorithm>(
+          kRelayoutIgnoringChildScrollbarChanges);
     case LayoutResult::kDisableFragmentation:
       DCHECK(GetConstraintSpace().HasBlockFragmentation());
       return RelayoutWithoutFragmentation<FlexLayoutAlgorithm>();
@@ -892,30 +924,6 @@ const LayoutResult* FlexLayoutAlgorithm::Layout() {
     default:
       return result;
   }
-}
-
-const LayoutResult*
-FlexLayoutAlgorithm::RelayoutIgnoringChildScrollbarChanges() {
-  DCHECK(!ignore_child_scrollbar_changes_);
-  LayoutAlgorithmParams params(
-      Node(), container_builder_.InitialFragmentGeometry(),
-      GetConstraintSpace(), GetBreakToken(), /* early_break */ nullptr);
-  FlexLayoutAlgorithm algorithm(params);
-  algorithm.ignore_child_scrollbar_changes_ = true;
-  return algorithm.Layout();
-}
-
-const LayoutResult* FlexLayoutAlgorithm::RelayoutAndBreakEarlierForFlex(
-    const LayoutResult* previous_result) {
-  DCHECK(previous_result->GetEarlyBreak());
-  LayoutAlgorithmParams params(
-      Node(), container_builder_.InitialFragmentGeometry(),
-      GetConstraintSpace(), GetBreakToken(), previous_result->GetEarlyBreak(),
-      &column_early_breaks_);
-  FlexLayoutAlgorithm algorithm_with_break(params);
-  algorithm_with_break.ignore_child_scrollbar_changes_ =
-      ignore_child_scrollbar_changes_;
-  return RelayoutAndBreakEarlier(&algorithm_with_break);
 }
 
 const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
@@ -1237,7 +1245,7 @@ LayoutUnit InitialContentPositionOffset(const StyleContentAlignmentData& data,
       return is_reverse ? free_space : LayoutUnit();
     case ContentPosition::kLeft:
     case ContentPosition::kRight:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 

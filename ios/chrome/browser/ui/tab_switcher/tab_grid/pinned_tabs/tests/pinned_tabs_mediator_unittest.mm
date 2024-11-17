@@ -19,10 +19,16 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_drag_session.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_drop_session.h"
 #import "ios/chrome/browser/ui/tab_switcher/test/fake_pinned_tab_collection_consumer.h"
+#import "ios/chrome/browser/url_loading/model/fake_url_loading_delegate.h"
+#import "ios/chrome/browser/url_loading/model/scene_url_loading_service.h"
+#import "ios/chrome/browser/url_loading/model/test_scene_url_loading_service.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -50,17 +56,28 @@ FakeDropSession* FakeDropSessionWithWebState(web::WebState* web_state) {
 class PinnedTabsMediatorTest : public PlatformTest {
  public:
   PinnedTabsMediatorTest() {
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = std::move(builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
 
-    regular_browser_ = std::make_unique<TestBrowser>(browser_state_.get());
-    incognito_browser_ = std::make_unique<TestBrowser>(
-        browser_state_->GetOffTheRecordChromeBrowserState());
+    regular_browser_ = std::make_unique<TestBrowser>(profile_.get());
+    incognito_browser_ =
+        std::make_unique<TestBrowser>(profile_->GetOffTheRecordProfile());
 
-    browser_list_ =
-        BrowserListFactory::GetForBrowserState(browser_state_.get());
+    browser_list_ = BrowserListFactory::GetForProfile(profile_.get());
     browser_list_->AddBrowser(regular_browser_.get());
     browser_list_->AddBrowser(incognito_browser_.get());
+
+    scene_loader_ = std::make_unique<TestSceneUrlLoadingService>();
+    scene_loader_->current_browser_ = regular_browser_.get();
+    url_loading_delegate_ = [[FakeURLLoadingDelegate alloc] init];
+
+    // Create loaders, insertion and notifier agents.
+    UrlLoadingNotifierBrowserAgent::CreateForBrowser(regular_browser_.get());
+    UrlLoadingBrowserAgent::CreateForBrowser(regular_browser_.get());
+    TabInsertionBrowserAgent::CreateForBrowser(regular_browser_.get());
+    loader_ = UrlLoadingBrowserAgent::FromBrowser(regular_browser_.get());
+    loader_->SetSceneService(scene_loader_.get());
+    loader_->SetDelegate(url_loading_delegate_);
 
     // The Pinned Tabs feature is not available on iPad.
     if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
@@ -68,6 +85,17 @@ class PinnedTabsMediatorTest : public PlatformTest {
       mediator_ = [[PinnedTabsMediator alloc] initWithConsumer:consumer_];
       mediator_.browser = regular_browser_.get();
     }
+  }
+
+  ~PinnedTabsMediatorTest() override {
+    // Cleanup to avoid debugger crash in non empty observer lists.
+    WebStateList* web_state_list = regular_browser_->GetWebStateList();
+    CloseAllWebStates(*web_state_list,
+                      WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
+    WebStateList* incognito_web_state_list =
+        incognito_browser_->GetWebStateList();
+    CloseAllWebStates(*incognito_web_state_list,
+                      WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
   }
 
   // Creates a FakeWebState with a navigation history containing exactly only
@@ -81,7 +109,7 @@ class PinnedTabsMediatorTest : public PlatformTest {
     navigation_manager->SetLastCommittedItem(
         navigation_manager->GetItemAtIndex(0));
     web_state->SetNavigationManager(std::move(navigation_manager));
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     web_state->SetNavigationItemCount(1);
     web_state->SetCurrentURL(url);
     return web_state;
@@ -105,7 +133,10 @@ class PinnedTabsMediatorTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   raw_ptr<BrowserList> browser_list_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
+  std::unique_ptr<TestSceneUrlLoadingService> scene_loader_;
+  raw_ptr<UrlLoadingBrowserAgent> loader_;
+  FakeURLLoadingDelegate* url_loading_delegate_;
 };
 
 // Tests that the consumer is notified when a web state is pinned.
@@ -220,14 +251,14 @@ TEST_F(PinnedTabsMediatorTest, DropPinnedTabs) {
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "a* b c | d e f", regular_browser_->GetBrowserState()));
+      "a* b c | d e f", regular_browser_->GetProfile()));
 
   // Drop "A" after "C".
   web::WebStateID web_state_id =
       web_state_list->GetWebStateAt(0)->GetUniqueIdentifier();
   id local_object =
       [[TabInfo alloc] initWithTabID:web_state_id
-                        browserState:regular_browser_->GetBrowserState()];
+                             profile:regular_browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -238,9 +269,8 @@ TEST_F(PinnedTabsMediatorTest, DropPinnedTabs) {
 
   // Drop "C" before "B".
   web_state_id = web_state_list->GetWebStateAt(1)->GetUniqueIdentifier();
-  local_object =
-      [[TabInfo alloc] initWithTabID:web_state_id
-                        browserState:regular_browser_->GetBrowserState()];
+  local_object = [[TabInfo alloc] initWithTabID:web_state_id
+                                        profile:regular_browser_->GetProfile()];
   item_provider = [[NSItemProvider alloc] init];
   drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
   drag_item.localObject = local_object;
@@ -260,14 +290,14 @@ TEST_F(PinnedTabsMediatorTest, DropRegularTabs) {
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "a* b c | d e f", regular_browser_->GetBrowserState()));
+      "a* b c | d e f", regular_browser_->GetProfile()));
 
   // Drop "E" after "C".
   web::WebStateID web_state_id =
       web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
   id local_object =
       [[TabInfo alloc] initWithTabID:web_state_id
-                        browserState:regular_browser_->GetBrowserState()];
+                             profile:regular_browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -278,9 +308,8 @@ TEST_F(PinnedTabsMediatorTest, DropRegularTabs) {
 
   // Drop "D" after "E".
   web_state_id = web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
-  local_object =
-      [[TabInfo alloc] initWithTabID:web_state_id
-                        browserState:regular_browser_->GetBrowserState()];
+  local_object = [[TabInfo alloc] initWithTabID:web_state_id
+                                        profile:regular_browser_->GetProfile()];
   item_provider = [[NSItemProvider alloc] init];
   drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
   drag_item.localObject = local_object;
@@ -300,14 +329,14 @@ TEST_F(PinnedTabsMediatorTest, DropTabGroupTabs) {
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "a* b c | d [ 0 e f ]", regular_browser_->GetBrowserState()));
+      "a* b c | d [ 0 e f ]", regular_browser_->GetProfile()));
 
   // Drop "E" after "C".
   web::WebStateID web_state_id =
       web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
   id local_object =
       [[TabInfo alloc] initWithTabID:web_state_id
-                        browserState:regular_browser_->GetBrowserState()];
+                             profile:regular_browser_->GetProfile()];
   NSItemProvider* item_provider = [[NSItemProvider alloc] init];
   UIDragItem* drag_item =
       [[UIDragItem alloc] initWithItemProvider:item_provider];
@@ -318,9 +347,8 @@ TEST_F(PinnedTabsMediatorTest, DropTabGroupTabs) {
 
   // Drop "D" after "E".
   web_state_id = web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
-  local_object =
-      [[TabInfo alloc] initWithTabID:web_state_id
-                        browserState:regular_browser_->GetBrowserState()];
+  local_object = [[TabInfo alloc] initWithTabID:web_state_id
+                                        profile:regular_browser_->GetProfile()];
   item_provider = [[NSItemProvider alloc] init];
   drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
   drag_item.localObject = local_object;
@@ -330,9 +358,8 @@ TEST_F(PinnedTabsMediatorTest, DropTabGroupTabs) {
 
   // Drop "F" after "D".
   web_state_id = web_state_list->GetWebStateAt(5)->GetUniqueIdentifier();
-  local_object =
-      [[TabInfo alloc] initWithTabID:web_state_id
-                        browserState:regular_browser_->GetBrowserState()];
+  local_object = [[TabInfo alloc] initWithTabID:web_state_id
+                                        profile:regular_browser_->GetProfile()];
   item_provider = [[NSItemProvider alloc] init];
   drag_item = [[UIDragItem alloc] initWithItemProvider:item_provider];
   drag_item.localObject = local_object;
@@ -352,7 +379,7 @@ TEST_F(PinnedTabsMediatorTest, DropExternalURL) {
   CloseAllWebStates(*web_state_list, WebStateList::CLOSE_NO_FLAGS);
   WebStateListBuilderFromDescription builder(web_state_list);
   ASSERT_TRUE(builder.BuildWebStateListFromDescription(
-      "a* b c | d", regular_browser_->GetBrowserState()));
+      "a* b c | d", regular_browser_->GetProfile()));
   ASSERT_EQ(4, web_state_list->count());
 
   NSItemProvider* item_provider = [[NSItemProvider alloc]

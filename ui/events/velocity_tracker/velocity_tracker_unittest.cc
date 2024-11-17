@@ -38,8 +38,7 @@ const char* GetStrategyName(VelocityTracker::Strategy strategy) {
     case VelocityTracker::INT1: return "INT1";
     case VelocityTracker::INT2: return "INT2";
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid strategy";
-  return "";
+  NOTREACHED() << "Invalid strategy";
 }
 
 }  // namespace

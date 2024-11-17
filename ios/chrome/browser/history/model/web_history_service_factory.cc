@@ -20,20 +20,14 @@ namespace {
 
 // Returns true if the user is signed-in and full history sync is enabled,
 // false otherwise.
-bool IsHistorySyncEnabled(ChromeBrowserState* browser_state) {
+bool IsHistorySyncEnabled(ProfileIOS* profile) {
   syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForBrowserState(browser_state);
+      SyncServiceFactory::GetForProfile(profile);
   return sync_service && sync_service->GetActiveDataTypes().Has(
                              syncer::HISTORY_DELETE_DIRECTIVES);
 }
 
 }  // namespace
-
-// static
-history::WebHistoryService* WebHistoryServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
 
 // static
 history::WebHistoryService* WebHistoryServiceFactory::GetForProfile(
@@ -67,12 +61,11 @@ WebHistoryServiceFactory::~WebHistoryServiceFactory() {
 
 std::unique_ptr<KeyedService> WebHistoryServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<history::WebHistoryService>(
-      IdentityManagerFactory::GetForProfile(browser_state),
+      IdentityManagerFactory::GetForProfile(profile),
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-          browser_state->GetURLLoaderFactory()));
+          profile->GetURLLoaderFactory()));
 }
 
 }  // namespace ios

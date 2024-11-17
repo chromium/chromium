@@ -182,7 +182,6 @@ public class ManagementView extends ScrollView {
         if (isManaged()) {
             mDescription.setText(
                     getContext()
-                            .getResources()
                             .getString(
                                     mIsBrowserManaged
                                             ? R.string.management_browser_notice

@@ -59,8 +59,7 @@ const SimpleFontData* LocalFontFaceSource::CreateLoadingFallbackFontData(
   const SimpleFontData* temporary_font =
       FontCache::Get().GetLastResortFallbackFont(font_description);
   if (!temporary_font) {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   CSSCustomFontData* css_font_data = MakeGarbageCollected<CSSCustomFontData>(
       this, CSSCustomFontData::kVisibleFallback);
@@ -111,9 +110,13 @@ const SimpleFontData* LocalFontFaceSource::CreateFontData(
 #endif
   // We're using the FontCache here to perform local unique lookup, including
   // potentially doing GMSCore lookups for fonts available through that, mainly
-  // to retrieve and get access to the SkTypeface.
+  // to retrieve and get access to the SkTypeface. This may return nullptr (e.g.
+  // OOM), in which case we want to exit before creating the SkTypeface.
   const SimpleFontData* unique_lookup_result = FontCache::Get().GetFontData(
       unstyled_description, font_name_, AlternateFontName::kLocalUniqueFace);
+  if (!unique_lookup_result) {
+    return nullptr;
+  }
 
   sk_sp<SkTypeface> typeface(unique_lookup_result->PlatformData().TypefaceSp());
 

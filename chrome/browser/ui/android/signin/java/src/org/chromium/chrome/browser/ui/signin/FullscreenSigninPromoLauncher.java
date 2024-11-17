@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.signin;
 
 import android.content.Context;
+import android.content.Intent;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -18,8 +19,6 @@ import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.Tribool;
-import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -30,19 +29,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Helper class responsible of launching the full screen sync promo, i.e. {@link
- * SyncConsentActivity}. After UNO, this will launch the re-FRE with {@link
- * SigninAndHistorySyncActivity}.
- */
+/** Helper class responsible of launching the re-FRE with {@link SigninAndHistorySyncActivity}. */
 public final class FullscreenSigninPromoLauncher {
     /**
-     * Launches the {@link SyncConsentActivity} or the {@link igninAndHistoryOptInActivity} if it
-     * needs to be displayed.
+     * Launches the {@link SigninAndHistoryOptInActivity} if it needs to be displayed.
      *
      * @param context The {@link Context} to launch the {@link SyncConsentActivity}.
      * @param profile The active user profile.
-     * @param syncConsentActivityLauncher launcher used to launch the {@link SyncConsentActivity}.
      * @param signinAndHistorySyncActivityLauncher launcher used to launch the {@link
      *     SigninAndHistorySyncActivity}.
      * @param currentMajorVersion The current major version of Chrome.
@@ -51,24 +44,22 @@ public final class FullscreenSigninPromoLauncher {
     public static boolean launchPromoIfNeeded(
             Context context,
             Profile profile,
-            SyncConsentActivityLauncher syncConsentActivityLauncher,
             SigninAndHistorySyncActivityLauncher signinAndHistorySyncActivityLauncher,
             final int currentMajorVersion) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                && BuildInfo.getInstance().isAutomotive) {
+        if (BuildInfo.getInstance().isAutomotive) {
             return false;
         }
 
         final SigninPreferencesManager prefManager = SigninPreferencesManager.getInstance();
         if (shouldLaunchPromo(profile, prefManager, currentMajorVersion)) {
-            if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                    && !BuildInfo.getInstance().isAutomotive) {
-                signinAndHistorySyncActivityLauncher.launchUpgradePromoActivityIfAllowed(
-                        context, profile);
-            } else {
-                syncConsentActivityLauncher.launchActivityIfAllowed(
-                        context, SigninAccessPoint.SIGNIN_PROMO);
+            FullscreenSigninAndHistorySyncConfig config =
+                    new FullscreenSigninAndHistorySyncConfig.Builder().build();
+            @Nullable
+            Intent intent =
+                    signinAndHistorySyncActivityLauncher.createFullscreenSigninIntent(
+                            context, profile, config, SigninAccessPoint.SIGNIN_PROMO);
+            if (intent != null) {
+                context.startActivity(intent);
             }
             prefManager.setSigninPromoLastShownVersion(currentMajorVersion);
             final List<CoreAccountInfo> coreAccountInfos =
@@ -120,25 +111,6 @@ public final class FullscreenSigninPromoLauncher {
             return false;
         }
 
-        // TODO(crbug.com/40928908): Use IdentityManager.findExtendedAccountInfoByAccountId()
-        // instead.
-        final @Nullable AccountInfo firstAccount =
-                identityManager.findExtendedAccountInfoByEmailAddress(
-                        coreAccountInfos.get(0).getEmail());
-        final boolean canShowSyncPromos =
-                firstAccount != null
-                        && firstAccount
-                                        .getAccountCapabilities()
-                                        .canShowHistorySyncOptInsWithoutMinorModeRestrictions()
-                                == Tribool.TRUE;
-        final boolean isSyncPromo =
-                !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
-        if (isSyncPromo && !canShowSyncPromos) {
-            // Show sync promo only when CanShowHistorySyncOptInsWithoutMinorModeRestrictions
-            // capability for the first account is fetched and true.
-            return false;
-        }
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS)) {
             return false;
         }

@@ -188,6 +188,10 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ui/native_theme/native_theme.h"
+#endif
+
 #if !BUILDFLAG(IS_MAC)
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/blink/public/platform/web_font_render_style.h"
@@ -404,8 +408,7 @@ ui::mojom::blink::WindowOpenDisposition NavigationPolicyToDisposition(
     case kNavigationPolicyLinkPreview:
       NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION() << "Unexpected NavigationPolicy";
-  return ui::mojom::blink::WindowOpenDisposition::IGNORE_ACTION;
+  NOTREACHED() << "Unexpected NavigationPolicy";
 }
 
 // Records the queuing duration for activation IPC.
@@ -426,9 +429,7 @@ void RecordPrerenderActivationSignalDelay(const String& metric_suffix) {
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 SkFontHinting RendererPreferencesToSkiaHinting(
     const blink::RendererPreferences& prefs) {
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   if (!prefs.should_antialias_text) {
     // When anti-aliasing is off, GTK maps all non-zero hinting settings to
     // 'Normal' hinting so we do the same. Otherwise, folks who have 'Slight'
@@ -441,8 +442,7 @@ SkFontHinting RendererPreferencesToSkiaHinting(
       case gfx::FontRenderParams::HINTING_FULL:
         return SkFontHinting::kNormal;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return SkFontHinting::kNormal;
+        NOTREACHED();
     }
   }
 #endif
@@ -457,8 +457,7 @@ SkFontHinting RendererPreferencesToSkiaHinting(
     case gfx::FontRenderParams::HINTING_FULL:
       return SkFontHinting::kFull;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return SkFontHinting::kNormal;
+      NOTREACHED();
   }
 }
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
@@ -651,6 +650,8 @@ WebViewImpl::WebViewImpl(
         String(prerender_param->page_metric_suffix));
     page_->SetShouldWarmUpCompositorOnPrerender(
         prerender_param->should_warm_up_compositor);
+    page_->SetShouldPreparePaintTreeOnPrerender(
+        prerender_param->should_prepare_paint_tree);
   }
 
   if (fenced_frame_mode && features::IsFencedFramesEnabled()) {
@@ -1213,6 +1214,10 @@ void WebViewImpl::DidFirstVisuallyNonEmptyPaint() {
   local_main_frame_host_remote_->DidFirstVisuallyNonEmptyPaint();
 }
 
+void WebViewImpl::OnFirstContentfulPaint() {
+  local_main_frame_host_remote_->OnFirstContentfulPaint();
+}
+
 void WebViewImpl::UpdateICBAndResizeViewport(
     const gfx::Size& visible_viewport_size) {
   // We'll keep the initial containing block size from changing when the top
@@ -1306,7 +1311,7 @@ void WebViewImpl::DidUpdateBrowserControls() {
         GetBrowserControls().UnreportedSizeAdjustment());
   }
 
-  if (RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled() &&
+  if (GetPage()->GetSettings().GetDynamicSafeAreaInsetsEnabled() &&
       RuntimeEnabledFeatures::DynamicSafeAreaInsetsOnScrollEnabled()) {
     GetPage()->UpdateSafeAreaInsetWithBrowserControls(GetBrowserControls());
   }
@@ -1328,7 +1333,7 @@ void WebViewImpl::ResizeViewWhileAnchored(
   if (old_viewport_shrink != GetBrowserControls().ShrinkViewport())
     MainFrameImpl()->GetFrameView()->DynamicViewportUnitsChanged();
 
-  if (RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled()) {
+  if (GetPage()->GetSettings().GetDynamicSafeAreaInsetsEnabled()) {
     GetPage()->UpdateSafeAreaInsetWithBrowserControls(GetBrowserControls(),
                                                       /* force_update= */ true);
   }
@@ -1841,6 +1846,10 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetModalContextMenu(prefs.modal_context_menu);
   settings->SetRequireTransientActivationAndAuthorizationForSubAppsAPIs(
       prefs.subapps_apis_require_user_gesture_and_authorization);
+  if (RuntimeEnabledFeatures::DynamicSafeAreaInsetsEnabled()) {
+    settings->SetDynamicSafeAreaInsetsEnabled(
+        prefs.dynamic_safe_area_insets_enabled);
+  }
 
 #if BUILDFLAG(IS_MAC)
   web_view_impl->SetMaximumLegibleScale(
@@ -3409,19 +3418,25 @@ void WebViewImpl::UpdateFontRenderingFromRendererPrefs() {
       gfx::FontRenderParams::SUBPIXEL_RENDERING_NONE);
   WebFontRenderStyle::SetSubpixelPositioning(
       renderer_preferences_.use_subpixel_positioning);
-// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
-// complete.
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
-    !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_LINUX)
   if (!renderer_preferences_.system_font_family_name.empty()) {
     WebFontRenderStyle::SetSystemFontFamily(blink::WebString::FromUTF8(
         renderer_preferences_.system_font_family_name));
   }
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) &&
-        // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_LINUX)
 #endif  // BUILDFLAG(IS_WIN)
 #endif  // !BUILDFLAG(IS_MAC)
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+void WebViewImpl::UpdateUseOverlayScrollbar(bool use_overlay_scrollbar) {
+  ui::NativeTheme::GetInstanceForWeb()->set_use_overlay_scrollbar(
+      use_overlay_scrollbar);
+  if (MainFrameImpl() && MainFrameImpl()->GetFrameView()) {
+    MainFrameImpl()->GetFrameView()->UsesOverlayScrollbarsChanged();
+  }
+}
+#endif
 
 void WebViewImpl::ActivatePrerenderedPage(
     mojom::blink::PrerenderPageActivationParamsPtr
@@ -3541,13 +3556,13 @@ void WebViewImpl::UpdateRendererPreferences(
   SetExplicitlyAllowedPorts(
       renderer_preferences_.explicitly_allowed_network_ports);
 
-  if (renderer_preferences_.prefixed_fullscreen_video_api_availability
-          .has_value()) {
-    WebRuntimeFeatures::EnableFeatureFromString(
-        "PrefixedVideoFullscreen",
-        renderer_preferences_.prefixed_fullscreen_video_api_availability
-            .value());
+#if BUILDFLAG(IS_CHROMEOS)
+  if (!ScrollbarTheme::MockScrollbarsEnabled()) {
+    WebRuntimeFeatures::EnableOverlayScrollbars(
+        renderer_preferences_.use_overlay_scrollbar);
+    UpdateUseOverlayScrollbar(renderer_preferences_.use_overlay_scrollbar);
   }
+#endif
 
   MaybePreloadSystemFonts(GetPage());
 }

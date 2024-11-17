@@ -128,7 +128,8 @@ void AutomaticUsbPrinterConfigurer::OnResolvePpdReferenceDone(
   PrinterDetector::DetectedPrinter& detected = it->second;
 
   if (code != chromeos::PpdProvider::SUCCESS) {
-    PRINTER_LOG(EVENT) << "Failed to resolve PPD reference for " << printer_id;
+    PRINTER_LOG(EVENT) << printer_id << ": Failed to resolve PPD reference: "
+                       << chromeos::PpdProvider::CallbackResultCodeName(code);
     if (!detected.printer.supports_ippusb()) {
       // Detected printer does not supports ipp-over-usb, so we cannot set it
       // up automatically. We have to leave it as unconfigured.
@@ -231,14 +232,14 @@ void AutomaticUsbPrinterConfigurer::FinalizeConfiguration(
     // The printer is ready to use
     PrinterConfigurer::RecordUsbPrinterSetupSource(
         UsbPrinterSetupSource::kAutoconfigured);
-    PRINTER_LOG(EVENT) << "Auto USB Printer setup successful for "
-                       << printer.id();
+    PRINTER_LOG(EVENT) << printer.id()
+                       << ": Automatic USB printer setup succeeded";
     notification_controller_->ShowEphemeralNotification(printer);
     configured_printers_.insert(printer.id());
   } else {
     // The printer cannot be configured automatically
-    PRINTER_LOG(EVENT) << "Unable to autoconfigure usb printer "
-                       << printer.id();
+    PRINTER_LOG(EVENT) << printer.id()
+                       << ": Unable to autoconfigure USB printer";
     notification_controller_->ShowConfigurationNotification(printer);
     unconfigured_printers_.insert(printer.id());
   }

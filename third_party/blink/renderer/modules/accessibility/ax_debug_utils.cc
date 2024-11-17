@@ -9,6 +9,10 @@
 #include <string>
 #include <utility>
 
+#include "third_party/blink/renderer/core/layout/inline/fragment_items.h"
+#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
+
 namespace blink {
 
 namespace {
@@ -178,5 +182,95 @@ void CheckTreeConsistency(
       << TreeToStringHelper(cache.Root(), /* verbose */ true);
 #endif  // EXPENSIVE_DCHECKS_ARE_ON()
 }
+
+#if DCHECK_IS_ON()
+
+void DumpBlockFragmentationData(const LayoutBlockFlow* block_flow) {
+  if (!VLOG_IS_ON(2)) {
+    return;
+  }
+
+  int container_fragment_count = block_flow->PhysicalFragmentCount();
+  if (container_fragment_count) {
+    for (int fragment_index = 0; fragment_index < container_fragment_count;
+         fragment_index++) {
+      const PhysicalBoxFragment* fragment =
+          block_flow->GetPhysicalFragment(fragment_index);
+      VLOG(2) << "Physical Box Fragment";
+      DumpBlockFragmentationData(fragment->Items(), 2);
+    }
+  }
+}
+
+void DumpBlockFragmentationData(const FragmentItems* fragment_items,
+                                int indent) {
+  if (!VLOG_IS_ON(2)) {
+    return;
+  }
+
+  if (!fragment_items) {
+    return;
+  }
+
+  WTF::String indent_str = WTF::String(std::string(indent, '+'));
+  for (wtf_size_t index = 0; index < fragment_items->Size(); index++) {
+    const FragmentItem& item = fragment_items->Items()[index];
+    StringBuilder sb;
+    sb.Append(indent_str);
+    sb.AppendNumber(index + 1);
+    sb.Append(". ");
+    switch (item.Type()) {
+      case FragmentItem::kInvalid:
+        sb.Append("Invalid");
+        break;
+
+      case FragmentItem::kLine:
+        sb.Append("Line");
+        {
+          wtf_size_t descendants_count = item.DescendantsCount();
+          if (descendants_count) {
+            sb.Append(" (");
+            sb.AppendNumber(descendants_count);
+            sb.Append(")");
+          }
+        }
+        break;
+
+      case FragmentItem::kText:
+        sb.Append("Text \"");
+        {
+          wtf_size_t start_offset = item.TextOffset().start;
+          wtf_size_t end_offset = item.TextOffset().end;
+          wtf_size_t length = end_offset - start_offset;
+          String full_text = fragment_items->Text(/*first_line=*/false);
+          sb.Append(StringView(full_text, start_offset, length).ToString());
+          sb.Append("\"");
+        }
+        break;
+
+      case FragmentItem::kGeneratedText:
+        sb.Append("Generated Text \"");
+        sb.Append(item.GeneratedText().ToString());
+        sb.Append("\"");
+        break;
+
+      case FragmentItem::kBox:
+        sb.Append("Box");
+        wtf_size_t descendants_count = item.DescendantsCount();
+        if (descendants_count) {
+          sb.Append(" (");
+          sb.AppendNumber(descendants_count);
+          sb.Append(")");
+        }
+    }
+    VLOG(2) << sb.ToString().Utf8();
+    const PhysicalBoxFragment* box_fragment = item.BoxFragment();
+    if (box_fragment) {
+      DumpBlockFragmentationData(box_fragment->Items(), indent + 2);
+    }
+  }
+}
+
+#endif  // DCHECK_IS_ON()
 
 }  // namespace blink

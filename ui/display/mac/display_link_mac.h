@@ -40,7 +40,7 @@ class DISPLAY_EXPORT VSyncCallbackMac {
 
  private:
   friend class CADisplayLinkMac;
-  friend class CASharedState;
+  friend struct ObjCState;
   friend class CVDisplayLinkMac;
   friend class DisplayLinkMacSharedState;
   using UnregisterCallback = base::OnceCallback<void(VSyncCallbackMac*)>;

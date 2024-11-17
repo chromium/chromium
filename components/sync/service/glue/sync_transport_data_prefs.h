@@ -29,7 +29,7 @@ class SyncTransportDataPrefs {
  public:
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // |pref_service| must not be null and must outlive this object.
+  // `pref_service` must not be null and must outlive this object.
   SyncTransportDataPrefs(PrefService* pref_service,
                          const signin::GaiaIdHash& gaia_id_hash);
   SyncTransportDataPrefs(const SyncTransportDataPrefs&) = delete;

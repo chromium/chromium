@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
@@ -42,11 +43,12 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowSortOrder;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.power_bookmarks.PowerBookmarkMeta;
@@ -69,6 +71,7 @@ public class ImprovedBookmarkQueryHandlerTest {
     @Mock private Profile mProfile;
     @Mock private BookmarkUiPrefs mBookmarkUiPrefs;
     @Mock private ShoppingService mShoppingService;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
 
     private ImprovedBookmarkQueryHandler mHandler;
 
@@ -77,6 +80,8 @@ public class ImprovedBookmarkQueryHandlerTest {
         doReturn(false).when(mBookmarkModel).areAccountBookmarkFoldersActive();
         TrackerFactory.setTrackerForTests(mTracker);
         SharedBookmarkModelMocks.initMocks(mBookmarkModel);
+
+        CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
 
         mHandler =
                 new ImprovedBookmarkQueryHandler(
@@ -220,8 +225,7 @@ public class ImprovedBookmarkQueryHandlerTest {
 
     @Test
     public void testBuildBookmarkListForParent_withShoppingFilter() {
-        ShoppingFeatures.setShoppingListEligibleForTesting(true);
-        doReturn(true).when(mShoppingService).isShoppingListEligible();
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
         ShoppingSpecifics trackedShoppingSpecifics =
                 ShoppingSpecifics.newBuilder().setProductClusterId(1).build();
@@ -284,8 +288,7 @@ public class ImprovedBookmarkQueryHandlerTest {
 
     @Test
     public void testSearchWithShoppingFilter() {
-        ShoppingFeatures.setShoppingListEligibleForTesting(true);
-        doReturn(true).when(mShoppingService).isShoppingListEligible();
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
         List<BookmarkId> queryIds =
                 Arrays.asList(
@@ -325,7 +328,7 @@ public class ImprovedBookmarkQueryHandlerTest {
 
     @Test
     public void testSearchWithShoppingFilter_shoppingListNotEligible() {
-        ShoppingFeatures.setShoppingListEligibleForTesting(false);
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
         List<BookmarkId> queryIds =
                 Arrays.asList(

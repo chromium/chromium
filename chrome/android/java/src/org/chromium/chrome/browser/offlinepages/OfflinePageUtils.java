@@ -293,7 +293,7 @@ public class OfflinePageUtils {
                         // page.
                         Uri uri;
                         try {
-                            uri = (new FileProviderHelper()).getContentUriFromFile(file);
+                            uri = new FileProviderHelper().getContentUriFromFile(file);
                         } catch (Exception e) {
                             uri = Uri.parse(tabUrl);
                         }
@@ -401,10 +401,10 @@ public class OfflinePageUtils {
     }
 
     /**
-     * Check to see if the offline page is sharable.
+     * Check to see if the offline page is shareable.
+     *
      * @param offlinePageBridge Bridge to native code for offline pages use.
-     * @param offlinePage Page to check for sharability.
-     * @param pageUri Uri of the page to check.
+     * @param offlinePage Page to check for shareability.
      * @return true if this page can be shared.
      */
     public static boolean isOfflinePageShareable(
@@ -507,7 +507,7 @@ public class OfflinePageUtils {
                         // return the URI.
                         if (offlinePath.isEmpty()) {
                             Uri uri = Uri.parse(pageUrl);
-                            assert (isSchemeContentOrFile(uri));
+                            assert isSchemeContentOrFile(uri);
                             return uri;
                         }
 

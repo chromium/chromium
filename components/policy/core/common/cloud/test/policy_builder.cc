@@ -409,7 +409,7 @@ PolicyBuilder::PolicyBuilder() {
   policy_data_->add_user_affiliation_ids(user_affiliation_id2);
 }
 
-PolicyBuilder::~PolicyBuilder() {}
+PolicyBuilder::~PolicyBuilder() = default;
 
 std::unique_ptr<crypto::RSAPrivateKey> PolicyBuilder::GetSigningKey() const {
   if (raw_signing_key_.empty())

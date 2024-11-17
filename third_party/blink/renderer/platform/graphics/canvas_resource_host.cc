@@ -168,7 +168,7 @@ cc::TextureLayer* CanvasResourceHost::GetOrCreateCcLayerIfNeeded() {
     cc_layer_->SetBlendBackgroundColor(opacity_mode_ != kOpaque);
     cc_layer_->SetNearestNeighbor(FilterQuality() ==
                                   cc::PaintFlags::FilterQuality::kNone);
-    cc_layer_->SetFlipped(!resource_provider_->IsOriginTopLeft());
+    cc_layer_->SetFlipped(false);
   }
   return cc_layer_.get();
 }
@@ -282,9 +282,8 @@ bool CanvasResourceHost::IsResourceValid() {
     return true;
   }
 
-  if (!features::IsCanvasSharedBitmapConversionEnabled() ||
-      (resource_provider_ &&
-       resource_provider_->GetType() == CanvasResourceProvider::kBitmap)) {
+  if (resource_provider_ &&
+      resource_provider_->GetType() == CanvasResourceProvider::kBitmap) {
     if (preferred_2d_raster_mode_ == RasterModeHint::kPreferCPU) {
       return true;
     }

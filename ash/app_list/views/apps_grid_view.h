@@ -332,11 +332,6 @@ class ASH_EXPORT AppsGridView : public views::View,
     hidden_view_for_test_ = view;
   }
 
-  // For test: Return if the drag and drop handler was set.
-  bool has_drag_and_drop_host_for_test() {
-    return nullptr != drag_and_drop_host_;
-  }
-
   base::OneShotTimer* reorder_timer_for_test() { return &reorder_timer_; }
 
   AppsGridContextMenu* context_menu_for_test() { return context_menu_.get(); }
@@ -995,10 +990,6 @@ class ASH_EXPORT AppsGridView : public views::View,
 
   // Timer for dragging a folder item out of folder container ink bubble.
   base::OneShotTimer folder_item_reparent_timer_;
-
-  // An application target drag and drop host which accepts dnd operations.
-  // Usually the shelf (e.g. ShelfView or ScrollableShelfView).
-  raw_ptr<ApplicationDragAndDropHost> drag_and_drop_host_ = nullptr;
 
   // Last mouse drag location in this view's coordinates.
   gfx::Point last_drag_point_;

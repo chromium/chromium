@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../strings.m.js';
+import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {DomRepeatEvent} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -77,6 +78,8 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
   private activeFolderPath_: chrome.bookmarks.BookmarkTreeNode[];
   private newFolders_: chrome.bookmarks.BookmarkTreeNode[];
   private moveOnly_: boolean;
+  private newFolderName_: string;
+  private showNewFolderInput_: boolean;
 
   showDialog(
       activeFolderPath: chrome.bookmarks.BookmarkTreeNode[],
@@ -89,6 +92,8 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     this.newFolders_ = [];
     this.moveOnly_ = moveOnly;
     this.$.dialog.showModal();
+    this.newFolderName_ = loadTimeData.getString('newFolderTitle');
+    this.showNewFolderInput_ = false;
   }
 
   private isAvailableFolder_(node: chrome.bookmarks.BookmarkTreeNode): boolean {
@@ -226,14 +231,64 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
     }
   }
 
-  private onNewFolder_() {
+  private onNewFolderClick_() {
+    this.showNewFolderInput_ = true;
+  }
+
+  private onNewFolderInputDomChange_() {
+    const input =
+        this.shadowRoot!.querySelector<CrInputElement>('#newFolderInput');
+    if (!input) {
+      return;
+    }
+    input.select();
+  }
+
+  private onInput_(event: CustomEvent<{value: string}>): void {
+    this.newFolderName_ = event.detail.value;
+  }
+
+  private onKeyDown_(event: KeyboardEvent): void {
+    /**
+     * This key down listener overrides the existing behaviour where the
+     * parent dialog would close on 'Enter'.
+     */
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      event.stopPropagation();
+      this.saveNewFolder_();
+
+      const saveButton =
+          this.shadowRoot!.querySelector<CrButtonElement>('#saveFolderButton');
+
+      assert(!!saveButton);
+      saveButton.focus();
+    }
+  }
+
+  private onBlur_(event: KeyboardEvent): void {
+    /**
+     * This prevents the blur event from being called when the save button is
+     * focused when the enter key is pressed.
+     */
+    if (!this.showNewFolderInput_) {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    this.saveNewFolder_();
+  }
+
+  private saveNewFolder_() {
+    this.showNewFolderInput_ = false;
+
     const parent =
         this.selectedFolder_ ? this.selectedFolder_ : this.getActiveFolder_();
     const parentId =
         parent ? parent.id : loadTimeData.getString('otherBookmarksId');
     const newFolder: chrome.bookmarks.BookmarkTreeNode = {
       id: TEMP_FOLDER_ID_PREFIX + this.newFolders_.length,
-      title: loadTimeData.getString('newFolderTitle'),
+      title: this.newFolderName_,
       children: [],
       parentId: parentId,
     };
@@ -247,6 +302,8 @@ export class PowerBookmarksEditDialogElement extends PolymerElement {
       this.push('activeFolderPath_', parent);
     }
     this.selectedFolder_ = newFolder;
+
+    this.newFolderName_ = loadTimeData.getString('newFolderTitle');
   }
 
   private onCancel_() {

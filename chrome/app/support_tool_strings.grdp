@@ -126,12 +126,6 @@
         <message name="IDS_SUPPORT_TOOL_TOUCH_EVENTS" desc="The events that are related to touchscreen and touchpad.">
             Touch Events
         </message>
-        <message name="IDS_SUPPORT_TOOL_LACROS_SYSTEM_INFO" desc="Lacros system information. Lacros is an architecture project to decouple the Chrome browser from the Chrome OS window manager and system UI. The name comes from Linux And ChRome OS.">
-            Lacros System Information
-        </message>
-        <message name="IDS_SUPPORT_TOOL_LACROS" desc="Lacros logs. Lacros is an architecture project to decouple the Chrome browser from the Chrome OS window manager and system UI. The name comes from Linux And ChRome OS.">
-            Lacros
-        </message>
         <message name="IDS_SUPPORT_TOOL_CHROMEOS_FLEX_LOGS" desc="ChromeOS Flex logs. ChromeOS Flex is ChromeOS version that can run on different hardwares.">
             ChromeOS Flex Logs
         </message>

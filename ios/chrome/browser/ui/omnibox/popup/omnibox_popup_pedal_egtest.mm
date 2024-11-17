@@ -41,15 +41,17 @@ NSString* kDinoSearchString = @"dino game";
 
 - (void)setUp {
   [super setUp];
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 
   [OmniboxAppInterface
       setUpFakeSuggestionsService:@"fake_suggestions_pedal.json"];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [OmniboxAppInterface tearDownFakeSuggestionsService];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that the dino pedal is present and that it opens the dino game.

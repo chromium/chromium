@@ -160,6 +160,7 @@ ResultCode TargetProcess::Create(
   if (startup_info_helper->IsEnvironmentFiltered()) {
     wchar_t* old_environment = ::GetEnvironmentStringsW();
     if (!old_environment) {
+      *win_error = ::GetLastError();
       return SBOX_ERROR_CANNOT_OBTAIN_ENVIRONMENT;
     }
 

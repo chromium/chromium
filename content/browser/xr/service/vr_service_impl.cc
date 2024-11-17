@@ -46,12 +46,6 @@
 
 namespace {
 
-#if BUILDFLAG(IS_ANDROID)
-constexpr base::TimeDelta kPermissionsDelay = base::Milliseconds(0);
-#else
-constexpr base::TimeDelta kPermissionsDelay = base::Milliseconds(300);
-#endif
-
 device::mojom::XRRuntimeSessionOptionsPtr GetRuntimeOptions(
     device::mojom::XRSessionOptions* options) {
   device::mojom::XRRuntimeSessionOptionsPtr runtime_options =
@@ -655,14 +649,7 @@ void VRServiceImpl::OnPermissionResultsForMode(
     return;
   }
 
-  // TODO(https://crbug.com/364669911): Remove posted task once permissions code
-  // is fixed.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&VRServiceImpl::DoRequestPermissions,
-                     weak_ptr_factory_.GetWeakPtr(), permissions_for_features,
-                     std::move(result_callback)),
-      kPermissionsDelay);
+  DoRequestPermissions(permissions_for_features, std::move(result_callback));
 }
 
 void VRServiceImpl::OnPermissionResultsForFeatures(

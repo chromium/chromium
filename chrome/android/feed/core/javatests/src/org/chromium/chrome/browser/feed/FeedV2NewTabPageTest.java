@@ -95,12 +95,12 @@ import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVis
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.base.CoreAccountInfo;
-import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -333,7 +333,7 @@ public class FeedV2NewTabPageTest {
                 .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
 
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
 
         onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
@@ -344,12 +344,7 @@ public class FeedV2NewTabPageTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     public void testSignInPromoWhenDefaultAccountCannotShowHistorySyncWithoutMinorRestrictions() {
-        final AccountCapabilitiesBuilder capabilitiesBuilder = new AccountCapabilitiesBuilder();
-        mSigninTestRule.addAccount(
-                "test@gmail.com",
-                capabilitiesBuilder
-                        .setCanShowHistorySyncOptInsWithoutMinorModeRestrictions(false)
-                        .build());
+        mSigninTestRule.addAccount(AccountManagerTestRule.AADC_MINOR_ACCOUNT);
         mIsCachePopulatedInAccountManagerFacade = true;
 
         openNewTabPage();
@@ -399,7 +394,7 @@ public class FeedV2NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     @DisableFeatures({ChromeFeatureList.LOGO_POLISH})
     public void testLoadFeedContent_Landscape() throws IOException {
         ChromeTabbedActivity chromeActivity = mActivityTestRule.getActivity();
@@ -432,7 +427,7 @@ public class FeedV2NewTabPageTest {
     @Test
     @MediumTest
     @Feature({"NewTabPage"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @Restriction({DeviceFormFactor.PHONE})
     @DisabledTest(message = "crbug.com/1467377")
     public void testFakeOmniboxOnNtp() throws IOException {
         openNewTabPage();

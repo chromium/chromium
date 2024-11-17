@@ -24,7 +24,6 @@ requires a manual sync step (see //infra/config/scripts/sync-pyl-files.py).
 
 load("@stdlib//internal/graph.star", "graph")
 load("@stdlib//internal/luci/common.star", "keys")
-load("//lib/args.star", "args")
 load("./common.star", _targets_common = "common")
 load("./nodes.star", _targets_nodes = "nodes")
 
@@ -260,8 +259,6 @@ def _generate_mixin_values(formatter, mixin, generate_skylab_container = False):
             formatter.add_line("'public_builder_bucket': '{}',".format(skylab.public_builder_bucket))
         if skylab.shards:
             formatter.add_line("'shards': {},".format(skylab.shards))
-        if skylab.run_cft:
-            formatter.add_line("'run_cft': {},".format(skylab.run_cft))
         if skylab.args:
             formatter.add_line("'args': {},".format(skylab.args))
         if generate_skylab_container:
@@ -297,6 +294,8 @@ def _generate_mixins_pyl(ctx):
     for n in graph.children(keys.project(), _targets_nodes.MIXIN.kind, graph.KEY_ORDER):
         mixin = n.props.mixin_values
         formatter.open_scope("'{}': {{".format(n.key.id))
+        if not n.props.pyl_fail_if_unused:
+            formatter.add_line("'fail_if_unused': False,")
 
         _generate_mixin_values(formatter, mixin)
 
@@ -328,9 +327,16 @@ def _generate_variants_pyl(ctx):
 
         _generate_mixin_values(formatter, mixin, generate_skylab_container = True)
 
-        if n.props.mixins:
+        mixins = []
+
+        # The order that mixins are declared is significant,
+        # DEFINITION_ORDER preserves the order that the edges were added
+        # from the parent to the child
+        for mixin in graph.children(n.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
+            mixins.append(mixin.key.id)
+        if mixins:
             formatter.open_scope("'mixins': [")
-            for m in n.props.mixins:
+            for m in mixins:
                 formatter.add_line("'{}',".format(m))
             formatter.close_scope("],")
 
@@ -383,8 +389,46 @@ def _generate_test_suites_pyl(ctx):
                 binary_test_config = binary_nodes[0].props.test_config
             binary_test_config = binary_test_config or _targets_common.binary_test_config()
 
+            # Generate the test common dict, which contains fields that can be
+            # specified at both the test/binary level and at the suite level.
+            # This allows for applying test-specific args and mixins before
+            # applying suite-specific args and mixins.
+            test_common_formatter = _formatter(indent_level = 0)
+
+            # The order that mixins are declared is significant,
+            # DEFINITION_ORDER preserves the order that the edges were added
+            # from the parent to the child
+            test_common_mixins = graph.children(test_node.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER)
+            if test_common_mixins:
+                test_common_formatter.open_scope("'mixins': [")
+                for m in test_common_mixins:
+                    test_common_formatter.add_line("'{}',".format(m.key.id))
+                test_common_formatter.close_scope("],")
+
+            test_common_mixin_values = {}
+
+            for a in ("args", "precommit_args", "non_precommit_args"):
+                test_common_args = getattr(target_test_config, a)
+                if test_common_args:
+                    test_common_mixin_values[a] = test_common_args
+
+            for a in ("merge", "resultdb"):
+                value = getattr(binary_test_config, a)
+                if value:
+                    test_common_mixin_values[a] = value
+
+            _generate_mixin_values(test_common_formatter, test_common_mixin_values)
+
             test_formatter = _formatter(indent_level = 0)
 
+            test_common_lines = test_common_formatter.lines()
+            if test_common_lines:
+                test_formatter.open_scope("'test_common': {")
+                for l in test_common_lines:
+                    test_formatter.add_line(l)
+                test_formatter.close_scope("},")
+
+            # Generate the other top-level fields in the test dict
             if target_test_config.script:
                 test_formatter.add_line("'script': '{}',".format(target_test_config.script))
 
@@ -403,18 +447,16 @@ def _generate_test_suites_pyl(ctx):
             if suite_test_config.test_level_retries:
                 test_formatter.add_line("'test_level_retries': {},".format(suite_test_config.test_level_retries))
 
-            mixins = []
-            for n in (test_node, test_config_node):
-                # The order that mixins are declared is significant,
-                # DEFINITION_ORDER preserves the order that the edges were added
-                # from the parent to the child
-                for mixin in graph.children(n.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER):
-                    mixins.append(mixin.key.id)
-            if mixins:
+            # The order that mixins are declared is significant,
+            # DEFINITION_ORDER preserves the order that the edges were added
+            # from the parent to the child
+            test_config_mixins = graph.children(test_config_node.key, _targets_nodes.MIXIN.kind, graph.DEFINITION_ORDER)
+            if test_config_mixins:
                 test_formatter.open_scope("'mixins': [")
-                for m in mixins:
-                    test_formatter.add_line("'{}',".format(m))
+                for m in test_config_mixins:
+                    test_formatter.add_line("'{}',".format(m.key.id))
                 test_formatter.close_scope("],")
+
             remove_mixins = [
                 n.key.id
                 for n in _targets_nodes.LEGACY_BASIC_SUITE_REMOVE_MIXIN.children(test_config_node.key)
@@ -426,23 +468,9 @@ def _generate_test_suites_pyl(ctx):
                     test_formatter.add_line("'{}',".format(m))
                 test_formatter.close_scope("],")
 
-            mixin_values = dict(suite_test_config.mixin_values or {})
+            _generate_mixin_values(test_formatter, suite_test_config.mixin_values or {})
 
-            # Merge any args from the target with those specified for the test
-            # in the suite
-            for a in ("args", "precommit_args", "non_precommit_args"):
-                merged_args = args.listify(getattr(target_test_config, a), mixin_values.get(a))
-                if merged_args:
-                    mixin_values[a] = merged_args
-
-            # merge and resultdb can be set on the binary, but don't override
-            # values set on the test in the suite
-            for a in ("merge", "resultdb"):
-                value = getattr(binary_test_config, a)
-                if value:
-                    mixin_values.setdefault(a, value)
-            _generate_mixin_values(test_formatter, mixin_values)
-
+            # Generate the test definition using the generated fields, if any
             test_lines = test_formatter.lines()
             if test_lines:
                 formatter.open_scope("'{}': {{".format(test_name))

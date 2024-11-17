@@ -618,8 +618,7 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
       [self.delegate overscrollActionRefresh:self];
       break;
     case OverscrollAction::NONE:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

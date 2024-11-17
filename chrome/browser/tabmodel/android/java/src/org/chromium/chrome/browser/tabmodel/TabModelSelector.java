@@ -36,14 +36,13 @@ public interface TabModelSelector {
     TabModel getModel(boolean incognito);
 
     /**
-     * Get the {@link TabModelFilterProvider} that provides {@link TabModelFilter}.
-     * @return  Never returns null. Returns a stub when real model is uninitialized.
+     * Get the {@link TabGroupModelFilterProvider} that provides {@link TabGroupModelFilter}.
+     *
+     * @return Never returns null. Returns a stub when real model is uninitialized.
      */
-    TabModelFilterProvider getTabModelFilterProvider();
+    TabGroupModelFilterProvider getTabGroupModelFilterProvider();
 
-    /**
-     * @return a list for the underlying models
-     */
+    /** Returns a list for the underlying models */
     List<TabModel> getModels();
 
     /** Returns the current tab model or a stub when real model is uninitialized. */
@@ -115,6 +114,9 @@ public interface TabModelSelector {
      * @see {@link Profile#isOffTheRecord()}
      */
     boolean isOffTheRecordModelSelected();
+
+    /** Returns the {@link TabCreatorManager} to create tabs in this tab model selector. */
+    TabCreatorManager getTabCreatorManager();
 
     /**
      * Opens a new tab.

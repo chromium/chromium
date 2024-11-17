@@ -40,6 +40,7 @@
 #include "third_party/blink/public/web/web_element_collection.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
+#include "third_party/blink/renderer/core/dom/container_node.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -58,6 +59,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/script_regexp.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
@@ -225,9 +227,11 @@ WebVector<WebElement> WebNode::QuerySelectorAll(
       blink::To<ContainerNode>(private_.Get())
           ->QuerySelectorAll(selector, IGNORE_EXCEPTION_FOR_TESTING);
   if (elements) {
-    WebVector<WebElement> vector((size_t)elements->length());
-    for (unsigned i = 0; i < elements->length(); ++i)
-      vector[i] = elements->item(i);
+    WebVector<WebElement> vector;
+    vector.reserve(elements->length());
+    for (unsigned i = 0; i < elements->length(); ++i) {
+      vector.push_back(elements->item(i));
+    }
     return vector;
   }
   return WebVector<WebElement>();
@@ -243,6 +247,28 @@ WebString WebNode::FindTextInElementWith(
   }
   return WebString(container_node->FindTextInElementWith(
       substring, [&](const String& text) { return validity_checker(text); }));
+}
+
+WebVector<WebNode> WebNode::FindAllTextNodesMatchingRegex(
+    const WebString& regex) const {
+  ContainerNode* container_node =
+      blink::DynamicTo<ContainerNode>(private_.Get());
+  if (!container_node) {
+    return WebVector<WebNode>();
+  }
+
+  StaticNodeList* nodes = container_node->FindAllTextNodesMatchingRegex(regex);
+  if (!nodes) {
+    return WebVector<WebNode>();
+  }
+
+  WebVector<WebNode> nodes_vector;
+  nodes_vector.reserve(nodes->length());
+  for (unsigned i = 0; i < nodes->length(); i++) {
+    nodes_vector.push_back(nodes->item(i));
+  }
+
+  return nodes_vector;
 }
 
 bool WebNode::Focused() const {

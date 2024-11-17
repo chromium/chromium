@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/safe_browsing/buildflags.gni")
 
 if (is_android) {
@@ -66,6 +67,7 @@ source_set("internal") {
   ]
 
   public_deps = [
+    "//components/enterprise/buildflags",
     "//components/services/quarantine/public/mojom",
     "//mojo/public/cpp/bindings",
     "//services/network/public/mojom",
@@ -93,6 +95,11 @@ source_set("internal") {
   # TODO(crbug.com/40120259): Enable this on Fuchsia
   if (safe_browsing_mode > 0 && !is_fuchsia) {
     deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
+  }
+
+  if (enterprise_cloud_content_analysis) {
+    deps +=
+        [ "//components/enterprise/obfuscation/core:enterprise_obfuscation" ]
   }
 
   if (is_android) {

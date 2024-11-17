@@ -37,7 +37,8 @@
 #define IPCZ_MSG_END_INTERFACE()                                      \
  private:                                                             \
   bool OnTransportMessage(const DriverTransport::RawMessage& message, \
-                          const DriverTransport& transport) final;    \
+                          const DriverTransport& transport,           \
+                          IpczDriverHandle envelope) final;           \
   void OnTransportError() override {}                                 \
   }                                                                   \
   ;

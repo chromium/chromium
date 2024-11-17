@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Simple substitution test
+  assert_equals: Expected Value should match actual value expected "20px" but got "20px 20px"
+[FAIL] You can't build up a single token where part of it is provided by a variable
+  assert_equals: Expected Value should match actual value expected "0px" but got "0px 0px"
+[FAIL] Fallback value
+  assert_equals: Expected Value should match actual value expected "11px" but got "11px 11px"
+[FAIL] Fallback value which is also a variable reference
+  assert_equals: Expected Value should match actual value expected "27px" but got "27px 27px"
+Harness: the test ran to completion.
+

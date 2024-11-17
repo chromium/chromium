@@ -21,10 +21,12 @@ ContactInfoDataTypeController::ContactInfoDataTypeController(
     std::unique_ptr<syncer::DataTypeControllerDelegate>
         delegate_for_transport_mode,
     syncer::SyncService* sync_service,
-    signin::IdentityManager* identity_manager)
+    signin::IdentityManager* identity_manager,
+    std::unique_ptr<syncer::DataTypeLocalDataBatchUploader> batch_uploader)
     : DataTypeController(syncer::CONTACT_INFO,
-                          std::move(delegate_for_full_sync_mode),
-                          std::move(delegate_for_transport_mode)),
+                         std::move(delegate_for_full_sync_mode),
+                         std::move(delegate_for_transport_mode),
+                         std::move(batch_uploader)),
       precondition_checker_(
           sync_service,
           identity_manager,

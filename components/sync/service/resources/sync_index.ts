@@ -13,7 +13,7 @@ import './sync_node_browser.js';
 import './user_events.js';
 import './traffic_log.js';
 import './search.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './invalidations.js';
 
 import {assert} from 'chrome://resources/js/assert.js';

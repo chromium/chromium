@@ -92,8 +92,17 @@ update
     * [CancelPermissionRequest()](https://source.chromium.org/chromium/chromium/src/+/main:android_webview/browser/aw_permission_manager.cc;l=514;drc=334d00e7293fa3a7127a6270f0c5720d5e46a7eb)
 8. In [shell_permission_manager.cc](https://source.chromium.org/chromium/chromium/src/+/main:content/shell/browser/shell_permission_manager.cc)
 update [IsAllowlistedPermissionType()](https://source.chromium.org/chromium/chromium/src/+/main:content/shell/browser/shell_permission_manager.cc;l=24;drc=334d00e7293fa3a7127a6270f0c5720d5e46a7eb)
+9. For Controlled Frame:
+    * By default, [GetPermissionStatus() / IsPermissionRequestable()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_context_base.cc;l=343;drc=2046c842c9a8e7abe63a74f26e05896c15daa258) disable
+      permissions for WebView/Controlled Frame. If your PermissionType needs to
+      be used by Controlled Frame embedded content, you can rely on examples
+      from [WEB_VIEW_PERMISSION_TYPE_GEOLOCATION](https://source.chromium.org/search?q=WEB_VIEW_PERMISSION_TYPE_GEOLOCATION&sq=&ss=chromium%2Fchromium%2Fsrc) and
+      [WEB_VIEW_PERMISSION_TYPE_MEDIA](https://source.chromium.org/search?q=WEB_VIEW_PERMISSION_TYPE_MEDIA&ss=chromium%2Fchromium%2Fsrc) to guide how to do this in
+      Controlled Frame.
+    * Add permission type to
+      [controlled_frame_permissions_unittest.cc](//chrome/browser/controlled_frame/controlled_frame_permissions_unittest.cc).
 
-### Add ContentSettingType
+### Add ContentSettingsType
 1. In [content_settings_types.h](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/content_settings_types.h)
 update
 [ContentSettingsType](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/content_settings_types.h;l=17;drc=0c2e6d2e27af976e1b28eebd7dacc7a0296bb1cc)
@@ -115,8 +124,18 @@ update
     * [GetPermissionType()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_util.cc;l=78;drc=caa1747121ee9f14ba7d4e346ea2dc5e7a2e05c0)
     * [PermissionTypeToContentSettingTypeSafe()](https://source.chromium.org/chromium/chromium/src/+/main:components/permissions/permission_util.cc;l=229;drc=caa1747121ee9f14ba7d4e346ea2dc5e7a2e05c0)
 5. In [WebsitePermissionsFetcherTest.java](https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/javatests/src/org/chromium/chrome/browser/site_settings/WebsitePermissionsFetcherTest.java) update [assertion](https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/javatests/src/org/chromium/chrome/browser/site_settings/WebsitePermissionsFetcherTest.java;l=516;drc=c08fa134ac65f3bec52794d30281c98d18c7aa0f).
+6. For Controlled Frame:
+    * By default, we disable capabilities that use ContentSettingsType as keys
+      for permission storage from being used in Controlled Frame.
+    * Examples of enabling:
+      * [WebView: add hid permission request crrev.com/c/5136796](https://chromium-review.googlesource.com/c/chromium/src/+/5136796)
+      * [Delegate HID permission to Chrome App in webview crrev.com/c/4946553](https://chromium-review.googlesource.com/c/chromium/src/+/4946553)
+    * Example of disabling:
+      * [controlledframe: Disable Web Serial for <webview> & <controlledframe> crrev.com/c/5838413](https://chromium-review.googlesource.com/c/chromium/src/+/5838413)
+    * Add your new ContentSettingsType to
+      [controlled_frame_permissions_unittest.cc](//chrome/browser/controlled_frame/controlled_frame_permissions_unittest.cc).
 
-### UI-less ContentSettingType
+### UI-less ContentSettingsType
 If you add a new [ContentSettingsType](https://source.chromium.org/chromium/chromium/src/+/main:components/content_settings/core/common/content_settings_types.h;l=17;drc=0c2e6d2e27af976e1b28eebd7dacc7a0296bb1cc)
 which require no UI and no associated permission, then:
 

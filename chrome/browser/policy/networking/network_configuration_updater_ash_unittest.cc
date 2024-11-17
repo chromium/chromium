@@ -137,7 +137,7 @@ class FakeCertificateImporter : public ash::onc::CertificateImporter {
     // imported, only ImportClientCertificaates should be called.
     // ImportAllCertificatesUserInitiated should never be called from
     // UserNetworkConfigurationUpdater.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void ImportClientCertificates(

@@ -7,26 +7,25 @@
 namespace mojo {
 
 // static
-bool StructTraits<blink::mojom::SharedStorageKeyArgumentDataView, WTF::String>::
-    Read(blink::mojom::SharedStorageKeyArgumentDataView data,
-         WTF::String* out_key) {
+bool StructTraits<
+    network::mojom::SharedStorageKeyArgumentDataView,
+    WTF::String>::Read(network::mojom::SharedStorageKeyArgumentDataView data,
+                       WTF::String* out_key) {
   // There is no need to convert `SharedStorageKeyArgument` back to
   // `WTF::String`. If we do need to implement deserialization later, we need to
   // validate its length.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static
 bool StructTraits<
-    blink::mojom::SharedStorageValueArgumentDataView,
-    WTF::String>::Read(blink::mojom::SharedStorageValueArgumentDataView data,
+    network::mojom::SharedStorageValueArgumentDataView,
+    WTF::String>::Read(network::mojom::SharedStorageValueArgumentDataView data,
                        WTF::String* out_value) {
   // There is no need to convert `SharedStorageValueArgument` back to
   // `WTF::String`. If we do need to implement deserialization later, we need to
   // validate its length.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

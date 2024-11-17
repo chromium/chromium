@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_cell_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_pad_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_slice_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_split_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
@@ -62,6 +63,12 @@ String MLOperator::OperatorKindToString(
           return "lesser";
         case webnn::mojom::blink::ElementWiseBinary::Kind::kLesserOrEqual:
           return "lesserOrEqual";
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalAnd:
+          return "logicalAnd";
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalOr:
+          return "logicalOr";
+        case webnn::mojom::blink::ElementWiseBinary::Kind::kLogicalXor:
+          return "logicalXor";
       }
     }
     case webnn::mojom::blink::Operation::Tag::kClamp:
@@ -227,6 +234,9 @@ String MLOperator::OperatorKindToString(
     case webnn::mojom::blink::Operation::Tag::kResample2d:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "resample2d";
+    case webnn::mojom::blink::Operation::Tag::kScatterElements:
+      CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
+      return "scatterElements";
     case webnn::mojom::blink::Operation::Tag::kScatterNd:
       CHECK(absl::holds_alternative<absl::monostate>(sub_kind));
       return "scatterND";
@@ -301,11 +311,15 @@ const HeapVector<Member<const MLOperand>>& MLOperator::Outputs() const {
   return outputs_;
 }
 
-void MLOperator::Connect(HeapVector<Member<const MLOperand>> inputs,
+void MLOperator::Connect(HeapVector<Member<MLOperand>> inputs,
                          HeapVector<Member<const MLOperand>> outputs) {
   DCHECK(!inputs.empty());
   DCHECK(!outputs.empty());
-  inputs_ = std::move(inputs);
+  for (auto& input : inputs) {
+    input->AddDependentOperator(this);
+  }
+
+  inputs_.assign(inputs);
   outputs_ = std::move(outputs);
 }
 
@@ -419,10 +433,12 @@ const Vector<uint32_t>& MLPadOperator::EndingPadding() const {
 MLSliceOperator::MLSliceOperator(MLGraphBuilder* builder,
                                  const Vector<uint32_t>& starts,
                                  const Vector<uint32_t>& sizes,
-                                 const MLOperatorOptions* options)
+                                 const Vector<uint32_t>& strides,
+                                 const MLSliceOptions* options)
     : MLOperator(builder, webnn::mojom::blink::Operation::Tag::kSlice, options),
       starts_(starts),
-      sizes_(sizes) {}
+      sizes_(sizes),
+      strides_(strides) {}
 
 MLSliceOperator::~MLSliceOperator() = default;
 
@@ -432,6 +448,10 @@ const Vector<uint32_t>& MLSliceOperator::Starts() const {
 
 const Vector<uint32_t>& MLSliceOperator::Sizes() const {
   return sizes_;
+}
+
+const Vector<uint32_t>& MLSliceOperator::Strides() const {
+  return strides_;
 }
 
 MLSoftmaxOperator::MLSoftmaxOperator(MLGraphBuilder* builder,

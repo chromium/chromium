@@ -128,8 +128,8 @@ class Page;
 
 // The interface provides a communication conduit with a frame in the renderer.
 // The preferred way to keep a reference to a RenderFrameHost is storing a
-// GlobalRenderFrameHostId and using RenderFrameHost::FromID() when you need to
-// access it.
+// GlobalRenderFrameHostToken and using RenderFrameHost::FromFrameToken() when
+// you need to access it.
 //
 // Any code that uses RenderFrameHost must be aware of back-forward cache, see
 // LifecycleState. The main side-effect is that any IPCs that are processed on a
@@ -1109,12 +1109,14 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // frame. Can only be called on a frame with a committed navigation.
   virtual net::CookieSettingOverrides GetCookieSettingOverrides() = 0;
 
-  // Whether a same-site navigation that happens when this RenderFrameHost is
-  // the current RenderFrameHost should initiate a RenderFrameHost change, due
-  // to RenderDocument. the result may differ depending on whether the
-  // RenderFrameHost is a main/local root/non-local-root frame, whether it has
-  // committed any navigations or not, and whether it's a crashed frame that
-  // must be replaced or not.
+  // Whether a same-SiteInstance navigation that happens when this
+  // RenderFrameHost is the current RenderFrameHost should initiate a
+  // RenderFrameHost change, due to RenderDocument. The result may differ
+  // depending on whether the RenderFrameHost is a main/local
+  // root/non-local-root frame, whether it has committed any navigations or not,
+  // and whether it's a crashed frame that must be replaced or not.
+  // TODO(crbug.com/40615943): Remove this from the content public API when
+  // RenderDocument is fully enabled.
   virtual bool ShouldChangeRenderFrameHostOnSameSiteNavigation() const = 0;
 
   // The embedder calls this method when a prediction model believes that the

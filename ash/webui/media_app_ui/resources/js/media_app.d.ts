@@ -30,6 +30,12 @@ type GetPdfContentResponse =
     import('./media_app_ui_untrusted.mojom-webui.js')
         .MahiUntrustedPage_GetPdfContent_ResponseParams;
 
+type InitializeResult =
+    import('./mantis_service.mojom-webui.js').InitializeResult;
+type MantisResult = import('./mantis_processor.mojom-webui.js').MantisResult;
+type MantisSafetyClassifierVerdict =
+    import('./mantis_processor.mojom-webui.js').SafetyClassifierVerdict;
+
 /**
  * Wraps an HTML File object (or a mock, or media loaded through another means).
  */
@@ -256,8 +262,9 @@ declare interface ClientApiDelegate {
    * Mahi to show its widget card accordingly.
    * @param anchor The coordinate and size of the context menu to help Mahi
    *     align the widget.
+   * @param selectedText Any currently selected/highlighted text in the PDF.
    */
-  onPdfContextMenuShow(anchor: RectF): void;
+  onPdfContextMenuShow(anchor: RectF, selectedText: string): void;
   /**
    * Called when the media app hides its context menu from PDF surface, to
    * notify Mahi to hide its widget card accordingly.
@@ -288,7 +295,50 @@ declare interface ClientApiDelegate {
    *     is more zoomed in.
    */
   viewportUpdated(viewportBox: RectF, scaleFactor: number): void;
-
+  /**
+   * Loads Mantis' assets from DLC and initializes the processor for subsequent
+   * queries.
+   */
+  initializeMantis(): Promise<InitializeResult>;
+  /**
+   * Performs image segmentation on the image based on the prior selection.
+   * The `image` and `selection` are byte arrays containing the encoded
+   * format of an image (e.g., PNG, JPEG).
+   * @param image The image to segment.
+   * @param selection The prior selection to incorporate into the segmentation
+   *     algorithm. The area to segment should be indicated by the red channel.
+   */
+  segmentImage(image: number[], selection: number[]): Promise<MantisResult>;
+  /**
+   * Fills the image generatively based on the text and seed. Pass the same
+   * `seed` across method calls to get identical result. The `image` and `mask`
+   * are byte arrays containing the encoded format of an image (e.g., PNG,
+   * JPEG).
+   * @param image The image to modify.
+   * @param mask The image indicating which area that generative fill should be
+   *     applied. The area to fill should be indicated by the red channel.
+   * @param text The description that guides the generative process.
+   * @param seed The number to allow reproducibility.
+   */
+  generativeFillImage(
+      image: number[], mask: number[], text: string,
+      seed: number): Promise<MantisResult>;
+  /**
+   * Inpaints the image based on the mask and seed. Pass the same `seed` across
+   * method calls to get identical result. The `image` and `mask` are byte
+   * arrays containing the encoded format of an image (e.g., PNG, JPEG).
+   * @param image The image to modify.
+   * @param mask The image indicating which area that inpainting should be
+   *     applied. The area to inpaint should be indicated by the red channel.
+   * @param seed The number to allow reproducibility.
+   */
+  inpaintImage(image: number[], mask: number[], seed: number):
+      Promise<MantisResult>;
+  /**
+   * Classifies image for Trust & Safety checking.
+   * @param image The image to classify.
+   */
+  classifyImageSafety(image: number[]): Promise<MantisSafetyClassifierVerdict>;
 }
 
 /**

@@ -145,13 +145,13 @@ class PersistedData {
   // These functions get and set the time after which update checks are allowed.
   // To clear the throttle, pass base::Time().
   virtual base::Time GetThrottleUpdatesUntil() const = 0;
-  virtual void SetThrottleUpdatesUntil(const base::Time& time) = 0;
+  virtual void SetThrottleUpdatesUntil(base::Time time) = 0;
 };
 
 // Creates a PersistedData instance. Passing null for either or both parameters
 // is safe and will disable functionality that relies on them.
 std::unique_ptr<PersistedData> CreatePersistedData(
-    PrefService* pref_service,
+    base::RepeatingCallback<PrefService*()> pref_service_provider,
     std::unique_ptr<ActivityDataService> activity_data_service);
 
 // Register prefs for a PersistedData returned by CreatePersistedData.

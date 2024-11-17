@@ -40,9 +40,3 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerTest, ProfileCardMenu) {
 IN_PROC_BROWSER_TEST_F(ProfilePickerTest, ProfileSwitch) {
   RunTest("signin/profile_switch_test.js", "mocha.run()");
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-IN_PROC_BROWSER_TEST_F(ProfilePickerTest, AccountSelectionLacros) {
-  RunTest("signin/account_selection_lacros_test.js", "mocha.run()");
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -4,50 +4,63 @@
 
 #import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_mediator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
-#import "components/saved_tab_groups/tab_group_sync_service.h"
-#import "ios/chrome/browser/policy/model/policy_util.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_action_type.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_mediator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_consumer.h"
-#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/web/public/web_state.h"
 
 @interface TabGroupIndicatorMediator () <WebStateListObserving>
 @end
 
 @implementation TabGroupIndicatorMediator {
-  ProfileIOS* _profile;
+  raw_ptr<ShareKitService> _shareKitService;
   raw_ptr<tab_groups::TabGroupSyncService> _tabGroupSyncService;
+  // URL loader to open tabs when needed.
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoader;
   __weak id<TabGroupIndicatorConsumer> _consumer;
   base::WeakPtr<WebStateList> _webStateList;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
+  BOOL _incognito;
 }
 
-- (instancetype)initWithProfile:(ProfileIOS*)profile
-            tabGroupSyncService:
-                (tab_groups::TabGroupSyncService*)tabGroupSyncService
-                       consumer:(id<TabGroupIndicatorConsumer>)consumer
-                   webStateList:(WebStateList*)webStateList {
+- (instancetype)initWithTabGroupSyncService:
+                    (tab_groups::TabGroupSyncService*)tabGroupSyncService
+                            shareKitService:(ShareKitService*)shareKitService
+                                   consumer:
+                                       (id<TabGroupIndicatorConsumer>)consumer
+                               webStateList:(WebStateList*)webStateList
+                                  URLLoader:(UrlLoadingBrowserAgent*)URLLoader
+                                  incognito:(BOOL)incognito {
   self = [super init];
   if (self) {
-    CHECK(profile);
     CHECK(consumer);
     CHECK(webStateList);
     CHECK(IsTabGroupIndicatorEnabled());
-    _profile = profile;
+    _URLLoader = URLLoader;
+    _shareKitService = shareKitService;
     _tabGroupSyncService = tabGroupSyncService;
     _consumer = consumer;
+    _incognito = incognito;
     _webStateList = webStateList->AsWeakPtr();
     _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserver.get());
+    BOOL shareAvailable = shareKitService && shareKitService->IsSupported();
+    [_consumer setShareAvailable:shareAvailable];
   }
   return self;
 }
@@ -81,13 +94,55 @@
     if (tabGroup) {
       [_consumer setTabGroupTitle:tabGroup->GetTitle()
                        groupColor:tabGroup->GetColor()];
+      BOOL shared =
+          tab_groups::utils::IsTabGroupShared(tabGroup, _tabGroupSyncService);
+      [_consumer setShared:shared];
     } else {
       [_consumer setTabGroupTitle:nil groupColor:nil];
+      [_consumer setShared:NO];
     }
   }
 }
 
 #pragma mark - TabGroupIndicatorMutator
+
+- (void)shareGroup {
+  const TabGroup* tabGroup = [self currentTabGroup];
+  if (!tabGroup || !_shareKitService) {
+    return;
+  }
+
+  ShareKitShareGroupConfiguration* config =
+      [[ShareKitShareGroupConfiguration alloc] init];
+  config.tabGroup = tabGroup;
+  config.baseViewController = self.baseViewController;
+  config.applicationHandler = self.applicationHandler;
+  _shareKitService->ShareGroup(config);
+}
+
+- (void)showRecentActivity {
+  const TabGroup* tabGroup = [self currentTabGroup];
+  if (!tabGroup) {
+    return;
+  }
+  [_delegate showRecentActivityForGroup:tabGroup->GetWeakPtr()];
+}
+
+- (void)manageGroup {
+  const TabGroup* tabGroup = [self currentTabGroup];
+  NSString* collabID =
+      tab_groups::utils::GetTabGroupCollabID(tabGroup, _tabGroupSyncService);
+  if (!_shareKitService || !collabID) {
+    return;
+  }
+
+  ShareKitManageConfiguration* config =
+      [[ShareKitManageConfiguration alloc] init];
+  config.baseViewController = self.baseViewController;
+  config.collabID = collabID;
+  config.applicationHandler = self.applicationHandler;
+  _shareKitService->ManageGroup(config);
+}
 
 - (void)showTabGroupEdition {
   const TabGroup* tabGroup = [self currentTabGroup];
@@ -103,9 +158,12 @@
     return;
   }
 
-  const auto insertionParams =
-      WebStateList::InsertionParams::Automatic().InGroup(tabGroup);
-  [self insertAndActivateNewWebStateWithInsertionParams:insertionParams];
+  GURL URL(kChromeUINewTabURL);
+  UrlLoadParams params = UrlLoadParams::InNewTab(URL);
+  params.in_incognito = _incognito;
+  params.load_in_group = true;
+  params.tab_group = tabGroup->GetWeakPtr();
+  _URLLoader->Load(params);
 }
 
 - (void)closeGroup {
@@ -166,30 +224,6 @@
     return nil;
   }
   return _webStateList->GetGroupOfWebStateAt(_webStateList->active_index());
-}
-
-// Inserts and activate a new WebState opened at `kChromeUINewTabURL` using
-// `insertionParams`.
-- (void)insertAndActivateNewWebStateWithInsertionParams:
-    (WebStateList::InsertionParams)insertionParams {
-  CHECK(_webStateList);
-  CHECK(_profile);
-
-  if (!IsAddNewTabAllowedByPolicy(_profile->GetPrefs(),
-                                  _profile->IsOffTheRecord())) {
-    return;
-  }
-
-  web::WebState::CreateParams params(_profile);
-  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
-
-  GURL url(kChromeUINewTabURL);
-  web::NavigationManager::WebLoadParams loadParams(url);
-  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
-  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
-
-  _webStateList->InsertWebState(std::move(webState),
-                                insertionParams.Activate());
 }
 
 @end

@@ -12,7 +12,7 @@ class UndoManagerObserver {
   virtual void OnUndoManagerStateChange() = 0;
 
  protected:
-  virtual ~UndoManagerObserver() {}
+  virtual ~UndoManagerObserver() = default;
 };
 
 #endif  // COMPONENTS_UNDO_UNDO_MANAGER_OBSERVER_H_

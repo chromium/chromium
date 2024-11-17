@@ -228,6 +228,11 @@ class SecureDnsManagerTest : public testing::Test {
         path, shill::kUIDataProperty, base::Value(ui_data->GetAsJson()));
   }
 
+  void ResetSecureDnsManager() {
+    secure_dns_manager_observer_.reset();
+    secure_dns_manager_.reset();
+  }
+
   TestingPrefServiceSimple* local_state() { return &local_state_; }
   PrefService* profile_prefs() { return &profile_prefs_; }
   SecureDnsManager* secure_dns_manager() { return secure_dns_manager_.get(); }
@@ -728,6 +733,188 @@ TEST_F(SecureDnsManagerTest, ObserverForUnmanagedUsers) {
 
   EXPECT_EQ(consumer_observer->doh_template_uri(), kCloudflareDns);
   EXPECT_EQ(consumer_observer->doh_mode(), SecureDnsConfig::kModeSecure);
+}
+
+TEST_F(SecureDnsManagerTest, DohIncludedDomains_ChromeDohConfig) {
+  local_state()->SetManagedPref(::prefs::kDnsOverHttpsMode,
+                                base::Value(SecureDnsConfig::kModeSecure));
+  local_state()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
+
+  // Set DoHIncludedDomains, expect Chrome DoH to be disabled.
+  base::Value pref_value(base::Value::Type::LIST);
+  pref_value.GetList().Append("test.com");
+  local_state()->Set(prefs::kDnsOverHttpsIncludedDomains, pref_value);
+
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), "");
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            SecureDnsConfig::kModeOff);
+
+  // Unset DoHIncludedDomains, expect Chrome DoH to be re-enabled.
+  pref_value.GetList().clear();
+  local_state()->Set(prefs::kDnsOverHttpsIncludedDomains, pref_value);
+
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), kGoogleDns);
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            SecureDnsConfig::kModeSecure);
+}
+
+TEST_F(SecureDnsManagerTest, DohExcludedDomains_ChromeDohConfig) {
+  local_state()->SetManagedPref(::prefs::kDnsOverHttpsMode,
+                                base::Value(SecureDnsConfig::kModeSecure));
+  local_state()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
+
+  // Set DoHExcludedDomains, expect Chrome DoH to be disabled.
+  base::Value pref_value(base::Value::Type::LIST);
+  pref_value.GetList().Append("test.com");
+  local_state()->Set(prefs::kDnsOverHttpsExcludedDomains, pref_value);
+
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), "");
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            SecureDnsConfig::kModeOff);
+
+  // Unset DoHExcludedDomains, expect Chrome DoH to be re-enabled.
+  pref_value.GetList().clear();
+  local_state()->Set(prefs::kDnsOverHttpsExcludedDomains, pref_value);
+
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), kGoogleDns);
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            SecureDnsConfig::kModeSecure);
+}
+
+TEST_F(SecureDnsManagerTest, DohDomainConfig_ChromeDohConfig) {
+  local_state()->SetManagedPref(::prefs::kDnsOverHttpsMode,
+                                base::Value(SecureDnsConfig::kModeSecure));
+  local_state()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
+
+  // Set DoHIncludedDomains, expect Chrome DoH to be disabled.
+  base::Value pref_value(base::Value::Type::LIST);
+  pref_value.GetList().Append("include.com");
+  local_state()->Set(prefs::kDnsOverHttpsExcludedDomains, pref_value);
+
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), "");
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            SecureDnsConfig::kModeOff);
+
+  // Set DoHExcludedDomains, expect Chrome DoH to still be disabled.
+  pref_value.GetList().clear();
+  pref_value.GetList().Append("exclude.com");
+  local_state()->Set(prefs::kDnsOverHttpsExcludedDomains, pref_value);
+
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), "");
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            SecureDnsConfig::kModeOff);
+
+  // Unset DoHIncludedDomains, expect Chrome DoH to still be disabled.
+  pref_value.GetList().clear();
+  local_state()->Set(prefs::kDnsOverHttpsIncludedDomains, pref_value);
+
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), "");
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            SecureDnsConfig::kModeOff);
+
+  // Unset DoHExcludedDomains, expect Chrome DoH to be re-enabled.
+  pref_value.GetList().clear();
+  local_state()->Set(prefs::kDnsOverHttpsExcludedDomains, pref_value);
+
+  EXPECT_EQ(secure_dns_manager_observer()->doh_template_uri(), kGoogleDns);
+  EXPECT_EQ(secure_dns_manager_observer()->doh_mode(),
+            SecureDnsConfig::kModeSecure);
+}
+
+TEST_F(SecureDnsManagerTest, DohIncludedDomains_ShillDohConfig) {
+  local_state()->SetManagedPref(::prefs::kDnsOverHttpsMode,
+                                base::Value(SecureDnsConfig::kModeSecure));
+  local_state()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
+
+  // Set DoHIncludedDomains, expect no change to shill DoH config.
+  base::Value pref_value(base::Value::Type::LIST);
+  pref_value.GetList().Append("test.com");
+  local_state()->Set(prefs::kDnsOverHttpsIncludedDomains, pref_value);
+
+  auto providers = GetDOHProviders();
+
+  auto it = providers.find(kGoogleDns);
+  EXPECT_TRUE(it != providers.end());
+  EXPECT_EQ(it->first, kGoogleDns);
+  EXPECT_TRUE(it->second.empty());
+  EXPECT_EQ(providers.size(), 1u);
+
+  // Unset DoHIncludedDomains, expect no change to shill DoH config.
+  pref_value.GetList().clear();
+  local_state()->Set(prefs::kDnsOverHttpsIncludedDomains, pref_value);
+
+  providers = GetDOHProviders();
+
+  it = providers.find(kGoogleDns);
+  EXPECT_TRUE(it != providers.end());
+  EXPECT_EQ(it->first, kGoogleDns);
+  EXPECT_TRUE(it->second.empty());
+  EXPECT_EQ(providers.size(), 1u);
+}
+
+TEST_F(SecureDnsManagerTest, DohExcludedDomains_ShillDohConfig) {
+  local_state()->SetManagedPref(::prefs::kDnsOverHttpsMode,
+                                base::Value(SecureDnsConfig::kModeSecure));
+  local_state()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
+
+  // Set DoHExcludedDomains, expect no change to shill DoH config.
+  base::Value pref_value(base::Value::Type::LIST);
+  pref_value.GetList().Append("test.com");
+  local_state()->Set(prefs::kDnsOverHttpsExcludedDomains, pref_value);
+
+  auto providers = GetDOHProviders();
+
+  auto it = providers.find(kGoogleDns);
+  EXPECT_TRUE(it != providers.end());
+  EXPECT_EQ(it->first, kGoogleDns);
+  EXPECT_TRUE(it->second.empty());
+  EXPECT_EQ(providers.size(), 1u);
+
+  // Unset DoHExcludedDomains, expect no change to shill DoH config.
+  pref_value.GetList().clear();
+  local_state()->Set(prefs::kDnsOverHttpsExcludedDomains, pref_value);
+
+  providers = GetDOHProviders();
+
+  it = providers.find(kGoogleDns);
+  EXPECT_TRUE(it != providers.end());
+  EXPECT_EQ(it->first, kGoogleDns);
+  EXPECT_TRUE(it->second.empty());
+  EXPECT_EQ(providers.size(), 1u);
+}
+
+TEST_F(SecureDnsManagerTest, ResetShillState) {
+  // Set DnsOverHttpsMode and DnsOverHttpsTemplates.
+  local_state()->SetManagedPref(::prefs::kDnsOverHttpsMode,
+                                base::Value(SecureDnsConfig::kModeSecure));
+  local_state()->Set(::prefs::kDnsOverHttpsTemplates, base::Value(kGoogleDns));
+
+  auto providers = GetDOHProviders();
+
+  auto it = providers.find(kGoogleDns);
+  EXPECT_TRUE(it != providers.end());
+  EXPECT_EQ(it->first, kGoogleDns);
+  EXPECT_TRUE(it->second.empty());
+  EXPECT_EQ(providers.size(), 1u);
+
+  // Set DnsOverHttpsIncludedDomains and DnsOverHttpsExcludedDomains.
+  std::vector<std::string> domains = {"test.com", "*.test.com"};
+  base::Value pref_value(base::Value::Type::LIST);
+  for (const auto& domain : domains) {
+    pref_value.GetList().Append(domain);
+  }
+  local_state()->Set(prefs::kDnsOverHttpsIncludedDomains, pref_value);
+  local_state()->Set(prefs::kDnsOverHttpsExcludedDomains, pref_value);
+
+  EXPECT_EQ(domains, GetDOHIncludedDomains());
+  EXPECT_EQ(domains, GetDOHExcludedDomains());
+
+  // Expect Shill's state to be cleared when the class is destroyed.
+  ResetSecureDnsManager();
+
+  EXPECT_TRUE(GetDOHProviders().empty());
+  EXPECT_TRUE(GetDOHIncludedDomains().empty());
+  EXPECT_TRUE(GetDOHExcludedDomains().empty());
 }
 
 }  // namespace

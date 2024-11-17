@@ -35,8 +35,9 @@ const std::u16string kString16Bullet = std::u16string(kBullet, 2);
 
 AtkObject* FindAtkObjectParentFrame(AtkObject* atk_object) {
   while (atk_object) {
-    if (atk_object_get_role(atk_object) == ATK_ROLE_FRAME)
+    if (atk_object_get_role(atk_object) == ATK_ROLE_FRAME) {
       return atk_object;
+    }
     atk_object = atk_object_get_parent(atk_object);
   }
   return nullptr;
@@ -72,8 +73,9 @@ class AccessibilityAuraLinuxBrowserTest : public AccessibilityBrowserTest {
  protected:
   static bool HasObjectWithAtkRoleFrameInAncestry(AtkObject* object) {
     while (object) {
-      if (atk_object_get_role(object) == ATK_ROLE_FRAME)
+      if (atk_object_get_role(object) == ATK_ROLE_FRAME) {
         return true;
+      }
       object = atk_object_get_parent(object);
     }
     return false;
@@ -2258,8 +2260,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityAuraLinuxBrowserTest,
   // Find a node to hit test. Note that this is a really simple page,
   // so synchronous hit testing will work fine.
   ui::BrowserAccessibility* node = manager->GetBrowserAccessibilityRoot();
-  while (node && node->GetRole() != ax::mojom::Role::kButton)
+  while (node && node->GetRole() != ax::mojom::Role::kButton) {
     node = manager->NextInTreeOrder(node);
+  }
   DCHECK(node);
 
   // Get the screen bounds of the hit target and find the point in the middle.

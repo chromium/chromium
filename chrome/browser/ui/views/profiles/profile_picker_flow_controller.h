@@ -37,13 +37,6 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SwitchToPostSignIn(Profile* signed_in_profile,
-                          const CoreAccountInfo& account_info,
-                          std::optional<SkColor> profile_color,
-                          std::unique_ptr<content::WebContents> contents);
-#endif
-
   void CancelPostSignInFlow() override;
 
   std::u16string GetFallbackAccessibleWindowTitle() const override;

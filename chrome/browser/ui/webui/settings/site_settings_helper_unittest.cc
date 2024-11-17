@@ -44,6 +44,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/site_engagement/content/site_engagement_score.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
+#include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_registry.h"
@@ -1395,11 +1396,11 @@ TEST_F(PersistentPermissionsSiteSettingsHelperTest,
   context->SetOriginHasExtendedPermissionForTesting(kTestOrigin);
 
   auto file_write_grant = context->GetWritePermissionGrant(
-      kTestOrigin, kTestPath,
+      kTestOrigin, content::PathInfo(kTestPath),
       ChromeFileSystemAccessPermissionContext::HandleType::kFile,
       ChromeFileSystemAccessPermissionContext::UserAction::kSave);
   auto file_read_grant = context->GetWritePermissionGrant(
-      kTestOrigin, kTestPath2,
+      kTestOrigin, content::PathInfo(kTestPath2),
       ChromeFileSystemAccessPermissionContext::HandleType::kFile,
       ChromeFileSystemAccessPermissionContext::UserAction::kSave);
 
@@ -1571,10 +1572,6 @@ class SiteSettingsHelperIsolatedWebAppTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile testing_profile_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  web_app::test::ScopedSkipMainProfileCheck skip_main_profile_check_;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(SiteSettingsHelperIsolatedWebAppTest,

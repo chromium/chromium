@@ -47,6 +47,7 @@
 #include "ui/views/accessibility/ax_event_observer.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
 #if defined(USE_AURA)
@@ -115,8 +116,6 @@ class TestAXEventObserver : public views::AXEventObserver {
     } else if (event_type == ax::mojom::Event::kSelection &&
                role == ax::mojom::Role::kListBoxOption) {
       selection_changed_count_++;
-      selected_option_name_ =
-          node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
     } else if (event_type == ax::mojom::Event::kValueChanged &&
                role == ax::mojom::Role::kTextField) {
       value_changed_count_++;
@@ -141,7 +140,6 @@ class TestAXEventObserver : public views::AXEventObserver {
   }
 
   std::string omnibox_value() { return omnibox_value_; }
-  std::string selected_option_name() { return selected_option_name_; }
 
  private:
   int text_changed_on_listboxoption_count_ = 0;
@@ -150,7 +148,6 @@ class TestAXEventObserver : public views::AXEventObserver {
   int value_changed_count_ = 0;
   int active_descendant_changed_count_ = 0;
   std::string omnibox_value_;
-  std::string selected_option_name_;
 };
 
 }  // namespace
@@ -369,57 +366,63 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   popup_view()->UpdatePopupAppearance();
   EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 0);
 
-  // Changing the user text while in the input rather than the list should not
-  // result in a text/name change accessibility event.
   edit_model()->SetUserText(u"bar");
   edit_model()->StartAutocomplete(false, false);
   popup_view()->UpdatePopupAppearance();
-  EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 0);
+  EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 1);
   EXPECT_EQ(observer.selected_children_changed_count(), 1);
   EXPECT_EQ(observer.selection_changed_count(), 1);
   EXPECT_EQ(observer.active_descendant_changed_count(), 1);
   EXPECT_EQ(observer.value_changed_count(), 2);
 
-  // Each time the selection changes, we should have a text/name change event.
-  // This makes it possible for screen readers to have the updated match content
-  // when they are notified the selection changed.
   edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
-  EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 1);
   EXPECT_EQ(observer.selected_children_changed_count(), 2);
   EXPECT_EQ(observer.selection_changed_count(), 2);
   EXPECT_EQ(observer.active_descendant_changed_count(), 2);
   EXPECT_EQ(observer.value_changed_count(), 3);
   EXPECT_TRUE(contains(observer.omnibox_value(), "2 of 3"));
-  EXPECT_FALSE(contains(observer.selected_option_name(), "2 of 3"));
-  EXPECT_TRUE(contains(observer.selected_option_name(), "foobar.com"));
   EXPECT_TRUE(contains(observer.omnibox_value(), "FooBarCom"));
-  EXPECT_TRUE(contains(observer.selected_option_name(), "FooBarCom"));
   EXPECT_TRUE(contains(observer.omnibox_value(), "location from history"));
-  EXPECT_TRUE(
-      contains(observer.selected_option_name(), "location from history"));
+
+  OmniboxResultView* selected_result_view = GetResultViewAt(1);
+  ui::AXNodeData result_node_data;
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
+  std::string ax_name =
+      result_node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_FALSE(contains(ax_name, "2 of 3"));
+  EXPECT_TRUE(contains(ax_name, "foobar.com"));
+  EXPECT_TRUE(contains(ax_name, "FooBarCom"));
+  EXPECT_TRUE(contains(ax_name, "location from history"));
 
   edit_model()->SetPopupSelection(OmniboxPopupSelection(2));
-  EXPECT_EQ(observer.text_changed_on_listboxoption_count(), 2);
   EXPECT_EQ(observer.selected_children_changed_count(), 3);
   EXPECT_EQ(observer.selection_changed_count(), 3);
   EXPECT_EQ(observer.active_descendant_changed_count(), 3);
   EXPECT_EQ(observer.value_changed_count(), 4);
   EXPECT_TRUE(contains(observer.omnibox_value(), "3 of 3"));
-  EXPECT_FALSE(contains(observer.selected_option_name(), "3 of 3"));
-  EXPECT_TRUE(contains(observer.selected_option_name(), "foobarbaz.com"));
   EXPECT_TRUE(contains(observer.omnibox_value(), "FooBarBazCom"));
-  EXPECT_TRUE(contains(observer.selected_option_name(), "FooBarBazCom"));
+
+  selected_result_view = GetResultViewAt(2);
+  result_node_data = ui::AXNodeData();
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
+  ax_name =
+      result_node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_FALSE(contains(ax_name, "3 of 3"));
+  EXPECT_TRUE(contains(ax_name, "foobarbaz.com"));
+  EXPECT_TRUE(contains(ax_name, "FooBarBazCom"));
 
   // Check that active descendant on textbox matches the selected result view.
   ui::AXNodeData ax_node_data_omnibox;
   omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
       &ax_node_data_omnibox);
-  OmniboxResultView* selected_result_view = GetResultViewAt(2);
+  selected_result_view = GetResultViewAt(2);
   EXPECT_EQ(ax_node_data_omnibox.GetIntAttribute(
                 ax::mojom::IntAttribute::kActivedescendantId),
             selected_result_view->GetViewAccessibility().GetUniqueId());
 
-  ui::AXNodeData result_node_data;
+  result_node_data = ui::AXNodeData();
   selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
       &result_node_data);
   int result_size = static_cast<int>(
@@ -461,6 +464,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
       &node_data_omnibox_result_view);
   EXPECT_TRUE(node_data_omnibox_result_view.GetBoolAttribute(
       ax::mojom::BoolAttribute::kSelected));
+  EXPECT_EQ(node_data_omnibox_result_view.GetString16Attribute(
+                ax::mojom::StringAttribute::kName),
+            u"FooBarCom https://foobar.com location from history");
 
   edit_model()->SetPopupSelection(OmniboxPopupSelection(2));
   OmniboxResultView* unselected_result_view = GetResultViewAt(1);
@@ -469,6 +475,16 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
       &node_data_omnibox_result_view);
   EXPECT_FALSE(node_data_omnibox_result_view.GetBoolAttribute(
       ax::mojom::BoolAttribute::kSelected));
+
+  selected_result_view = GetResultViewAt(2);
+  node_data_omnibox_result_view = ui::AXNodeData();
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &node_data_omnibox_result_view);
+  EXPECT_TRUE(node_data_omnibox_result_view.GetBoolAttribute(
+      ax::mojom::BoolAttribute::kSelected));
+  EXPECT_EQ(node_data_omnibox_result_view.GetString16Attribute(
+                ax::mojom::StringAttribute::kName),
+            u"FooBarBazCom https://foobarbaz.com location from history");
 }
 
 // Flaky on Mac: https://crbug.com/1146627.
@@ -503,12 +519,18 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   EXPECT_EQ(observer.active_descendant_changed_count(), 2);
   EXPECT_EQ(observer.value_changed_count(), 2);
   EXPECT_TRUE(contains(observer.omnibox_value(), "The Foo Of All Bars"));
-  EXPECT_TRUE(contains(observer.selected_option_name(), "foobar.com"));
   EXPECT_TRUE(contains(observer.omnibox_value(), "press Tab then Enter"));
   EXPECT_TRUE(contains(observer.omnibox_value(), "2 of 2"));
-  EXPECT_TRUE(
-      contains(observer.selected_option_name(), "press Tab then Enter"));
-  EXPECT_FALSE(contains(observer.selected_option_name(), "2 of 2"));
+
+  OmniboxResultView* selected_result_view = GetResultViewAt(1);
+  ui::AXNodeData result_node_data;
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
+  std::string ax_name =
+      result_node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_TRUE(contains(ax_name, "foobar.com"));
+  EXPECT_TRUE(contains(ax_name, "press Tab then Enter"));
+  EXPECT_FALSE(contains(ax_name, "2 of 2"));
 
   edit_model()->SetPopupSelection(
       OmniboxPopupSelection(1, OmniboxPopupSelection::FOCUSED_BUTTON_ACTION));
@@ -518,22 +540,33 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   EXPECT_EQ(observer.value_changed_count(), 3);
   EXPECT_TRUE(contains(observer.omnibox_value(), "press Enter to switch"));
   EXPECT_FALSE(contains(observer.omnibox_value(), "2 of 2"));
-  EXPECT_TRUE(
-      contains(observer.selected_option_name(), "press Enter to switch"));
-  EXPECT_FALSE(contains(observer.selected_option_name(), "2 of 2"));
+
+  result_node_data = ui::AXNodeData();
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
+  ax_name =
+      result_node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_TRUE(contains(ax_name, "press Enter to switch"));
+  EXPECT_FALSE(contains(ax_name, "2 of 2"));
 
   edit_model()->SetPopupSelection(
       OmniboxPopupSelection(1, OmniboxPopupSelection::NORMAL));
   EXPECT_TRUE(contains(observer.omnibox_value(), "The Foo Of All Bars"));
-  EXPECT_TRUE(contains(observer.selected_option_name(), "foobar.com"));
   EXPECT_EQ(observer.selected_children_changed_count(), 4);
   EXPECT_EQ(observer.selection_changed_count(), 4);
   EXPECT_EQ(observer.value_changed_count(), 4);
   EXPECT_TRUE(contains(observer.omnibox_value(), "press Tab then Enter"));
   EXPECT_TRUE(contains(observer.omnibox_value(), "2 of 2"));
-  EXPECT_TRUE(
-      contains(observer.selected_option_name(), "press Tab then Enter"));
-  EXPECT_FALSE(contains(observer.selected_option_name(), "2 of 2"));
+
+  result_node_data = ui::AXNodeData();
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
+  ax_name =
+      result_node_data.GetStringAttribute(ax::mojom::StringAttribute::kName);
+  EXPECT_TRUE(contains(ax_name, "foobar.com"));
+  EXPECT_TRUE(contains(ax_name, "press Tab then Enter"));
+  EXPECT_FALSE(contains(ax_name, "2 of 2"));
+
   histogram_tester.ExpectUniqueSample("Omnibox.Views.PopupFirstPaint", 1, 0);
 }
 
@@ -615,6 +648,63 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
       popup_node_data_while_open.HasState(ax::mojom::State::kExpanded));
   EXPECT_TRUE(
       popup_node_data_while_open.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_TRUE(
+      popup_node_data_while_open.HasState(ax::mojom::State::kInvisible));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
+                       AccessibilityStatesOnWidgetDestroyed) {
+  // Create a popup for the matches.
+  views::Widget* widget = CreatePopupForTestQuery();
+  views::test::WidgetDestroyedWaiter waiter(widget);
+
+  // Check accessibility of list box while it's open.
+  ui::AXNodeData popup_node_data;
+  popup_view()->GetViewAccessibility().GetAccessibleNodeData(&popup_node_data);
+  EXPECT_EQ(popup_node_data.role, ax::mojom::Role::kListBox);
+  EXPECT_TRUE(popup_node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_FALSE(popup_node_data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_FALSE(popup_node_data.HasState(ax::mojom::State::kInvisible));
+  EXPECT_TRUE(
+      popup_node_data.HasIntAttribute(ax::mojom::IntAttribute::kPopupForId));
+
+  // Check accessibility of list box while it's closed.
+  widget->Close();
+  waiter.Wait();
+  EXPECT_FALSE(popup_view()->IsOpen());
+  popup_node_data = ui::AXNodeData();
+  popup_view()->GetViewAccessibility().GetAccessibleNodeData(&popup_node_data);
+  EXPECT_FALSE(popup_node_data.HasState(ax::mojom::State::kExpanded));
+  EXPECT_TRUE(popup_node_data.HasState(ax::mojom::State::kCollapsed));
+  EXPECT_TRUE(popup_node_data.HasState(ax::mojom::State::kInvisible));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleResultName) {
+  CreatePopupForTestQuery();
+  ACMatches matches;
+  AutocompleteMatch match(nullptr, 500, false,
+                          AutocompleteMatchType::HISTORY_TITLE);
+  match.destination_url = GURL("https://foobar.com");
+  match.contents = u"https://foobar.com";
+  match.description = u"FooBarCom";
+  match.contents_class = {{0, 0}};
+  match.description_class = {{0, 0}};
+  matches.push_back(match);
+  controller()->autocomplete_controller()->internal_result_.AppendMatches(
+      matches);
+  popup_view()->UpdatePopupAppearance();
+  edit_model()->SetUserText(u"bar");
+  edit_model()->StartAutocomplete(false, false);
+  popup_view()->UpdatePopupAppearance();
+
+  edit_model()->SetPopupSelection(OmniboxPopupSelection(1));
+  OmniboxResultView* selected_result_view = GetResultViewAt(1);
+  ui::AXNodeData result_node_data;
+  selected_result_view->GetViewAccessibility().GetAccessibleNodeData(
+      &result_node_data);
+  EXPECT_EQ(
+      result_node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      u"FooBarCom https://foobar.com location from history");
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, DeleteSuggestion) {
@@ -801,4 +891,36 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   EXPECT_FALSE(popup_view()->IsOpen());
   EXPECT_FALSE(ax_node_data_omnibox.HasIntAttribute(
       ax::mojom::IntAttribute::kActivedescendantId));
+}
+
+IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, AccessibleControlIds) {
+  ui::AXNodeData ax_node_data_omnibox, data;
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &ax_node_data_omnibox);
+  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(ax_node_data_omnibox.HasIntListAttribute(
+      ax::mojom::IntListAttribute::kControlsIds));
+
+  CreatePopupForTestQuery();
+
+  // Check accessibility when popup is open.
+  ax_node_data_omnibox = ui::AXNodeData();
+  edit_model()->StartAutocomplete(false, false);
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &ax_node_data_omnibox);
+  EXPECT_TRUE(popup_view()->IsOpen());
+  EXPECT_TRUE(ax_node_data_omnibox.HasIntListAttribute(
+      ax::mojom::IntListAttribute::kControlsIds));
+  EXPECT_THAT(ax_node_data_omnibox.GetIntListAttribute(
+                  ax::mojom::IntListAttribute::kControlsIds)[0],
+              popup_view()->GetViewAccessibility().GetUniqueId());
+
+  // Check accessibility when popup is closed.
+  ax_node_data_omnibox = ui::AXNodeData();
+  controller()->autocomplete_controller()->Stop(true);
+  omnibox_view()->GetViewAccessibility().GetAccessibleNodeData(
+      &ax_node_data_omnibox);
+  EXPECT_FALSE(popup_view()->IsOpen());
+  EXPECT_FALSE(ax_node_data_omnibox.HasIntListAttribute(
+      ax::mojom::IntListAttribute::kControlsIds));
 }

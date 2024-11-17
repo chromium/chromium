@@ -86,8 +86,9 @@ CastToolbarButton::CastToolbarButton(
 
 CastToolbarButton::~CastToolbarButton() {
   StopObservingMirroringMediaControllerHosts();
-  if (GetActionController())
+  if (GetActionController()) {
     GetActionController()->RemoveObserver(this);
+  }
 }
 
 void CastToolbarButton::ShowIcon() {
@@ -143,15 +144,17 @@ void CastToolbarButton::OnFreezeInfoChanged() {
 }
 
 bool CastToolbarButton::OnMousePressed(const ui::MouseEvent& event) {
-  if (event.IsRightMouseButton() && GetActionController())
+  if (event.IsRightMouseButton() && GetActionController()) {
     GetActionController()->KeepIconShownOnPressed();
+  }
   return ToolbarButton::OnMousePressed(event);
 }
 
 void CastToolbarButton::OnMouseReleased(const ui::MouseEvent& event) {
   ToolbarButton::OnMouseReleased(event);
-  if (event.IsRightMouseButton() && GetActionController())
+  if (event.IsRightMouseButton() && GetActionController()) {
     GetActionController()->MaybeHideIconOnReleased();
+  }
 }
 
 void CastToolbarButton::OnGestureEvent(ui::GestureEvent* event) {
@@ -175,8 +178,9 @@ void CastToolbarButton::OnThemeChanged() {
 }
 
 void CastToolbarButton::UpdateIcon() {
-  if (!GetWidget())
+  if (!GetWidget()) {
     return;
+  }
   bool is_frozen = false;
   for (const auto& route_id : tracked_mirroring_routes_) {
     MirroringMediaControllerHost* mirroring_controller_host =
@@ -213,27 +217,21 @@ void CastToolbarButton::UpdateIcon() {
                                *new_icon, GetForegroundColor(state)));
     }
   }
-  if (icon_ == new_icon)
+  if (icon_ == new_icon) {
     return;
+  }
 
   icon_ = new_icon;
   LogIconChange(icon_);
   if (icon_color != gfx::kPlaceholderColor) {
-    for (auto state : kButtonStates)
+    for (auto state : kButtonStates) {
       SetImageModel(state, ui::ImageModel::FromVectorIcon(*icon_, icon_color));
+    }
   }
-  UpdateLayoutInsetDelta();
 }
 
 CastToolbarButtonController* CastToolbarButton::GetActionController() const {
   return MediaRouterUIService::Get(profile_)->action_controller();
-}
-
-void CastToolbarButton::UpdateLayoutInsetDelta() {
-  // This icon is smaller than the touchable-UI expected 24dp, so we need to pad
-  // the insets to match.
-  SetLayoutInsetDelta(
-      gfx::Insets(ui::TouchUiController::Get()->touch_ui() ? 4 : 0));
 }
 
 void CastToolbarButton::ButtonPressed() {

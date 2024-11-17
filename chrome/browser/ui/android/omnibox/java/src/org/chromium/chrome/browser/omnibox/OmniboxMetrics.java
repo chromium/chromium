@@ -53,6 +53,9 @@ public class OmniboxMetrics {
     public static final String HISTOGRAM_OMNIBOX_ACTION_VALID =
             "Android.Omnibox.OmniboxAction.Valid";
 
+    public static final String HISTOGRAM_FOCUS_TO_IME_ANIMATION_START =
+            "Android.Omnibox.SuggestionList.FocusToImeAnimationStart";
+
     /**
      * The amount of time it takes to process a touch down event. A touch down event can send a
      * signal to native to start a prefetch for the suggestion.
@@ -213,7 +216,7 @@ public class OmniboxMetrics {
      * Record the length of time between when omnibox gets focused and when a omnibox match is open.
      */
     public static void recordFocusToOpenTime(long focusToOpenTimeInMillis) {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Omnibox.FocusToOpenTimeAnyPopupState3", focusToOpenTimeInMillis);
     }
 
@@ -389,9 +392,17 @@ public class OmniboxMetrics {
     }
 
     /**
+     * Records the wall time elapsed between focusing the omnibox and the onPrepare event of the IME
+     * WindowInsets animation.
+     */
+    public static TimingMetric recordTimeFromFocusToImeAnimation() {
+        return TimingMetric.shortUptime(HISTOGRAM_FOCUS_TO_IME_ANIMATION_START);
+    }
+
+    /**
      * Translate the pageClass to a histogram suffix.
      *
-     * @param histogram Histogram prefix.
+     * @param prefix Histogram prefix.
      * @param pageClass Page classification to translate.
      * @return Metric name.
      */
@@ -421,6 +432,10 @@ public class OmniboxMetrics {
             case PageClassification.ANDROID_SEARCH_WIDGET_VALUE:
             case PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE:
                 suffix = "Widget";
+                break;
+
+            case PageClassification.ANDROID_HUB_VALUE:
+                suffix = "HUB";
                 break;
 
             case PageClassification.BLANK_VALUE:

@@ -103,6 +103,8 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
   // Phase 2: Validate Funnel expectations.
   histogram_tester.ExpectBucketCount("Autofill.Funnel.ParsedAsType.Address", 1,
                                      1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Funnel.ParsedAsType.PostalAddress", 1, 1);
   histogram_tester.ExpectBucketCount("Autofill.Funnel.ParsedAsType.CreditCard",
                                      0, 1);
   histogram_tester.ExpectBucketCount(
@@ -257,7 +259,7 @@ TEST_F(FormEventLoggerBaseTest, FillingOperationCount) {
                    .autocomplete_attribute = "cc-number"}}});
   autofill_manager().OnFormsSeen({form}, {});
   autofill_manager().FillOrPreviewProfileForm(
-      mojom::ActionPersistence::kFill, form, form.fields()[0],
+      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
       test::GetFullProfile(),
       {.trigger_source = AutofillTriggerSource::kPopup});
   autofill_manager().FillOrPreviewField(
@@ -265,9 +267,8 @@ TEST_F(FormEventLoggerBaseTest, FillingOperationCount) {
       form, form.fields()[2], u"CC_NAME_VALUE",
       SuggestionType::kCreditCardFieldByFieldFilling, CREDIT_CARD_NAME_FULL);
   autofill_manager().FillOrPreviewCreditCardForm(
-      mojom::ActionPersistence::kFill, form, form.fields()[3],
-      test::GetCreditCard(), std::u16string(),
-      {.trigger_source = AutofillTriggerSource::kPopup});
+      mojom::ActionPersistence::kFill, form, form.fields()[3].global_id(),
+      test::GetCreditCard(), {.trigger_source = AutofillTriggerSource::kPopup});
   base::HistogramTester histogram_tester;
   ResetDriverToCommitMetrics();
 
@@ -290,9 +291,10 @@ TEST_F(FormEventLoggerBaseTest, FilledFieldTypeStat) {
   // The manual fallback code assumes that suggestions have been shown before
   // they can be filled. Not showing them will result in a crash.
   autofill_manager().DidShowSuggestions(
-      {SuggestionType::kCreditCardFieldByFieldFilling}, form, form.fields()[0]);
+      {SuggestionType::kCreditCardFieldByFieldFilling}, form,
+      form.fields()[0].global_id());
   autofill_manager().FillOrPreviewProfileForm(
-      mojom::ActionPersistence::kFill, form, form.fields()[0],
+      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
       test::GetFullProfile(),
       {.trigger_source = AutofillTriggerSource::kManualFallback});
   autofill_manager().FillOrPreviewField(
@@ -554,10 +556,10 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest,
               {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
 }
 
-TEST_F(FormEventLoggerBaseKeyMetricsTest, NoEmailOnlyLeakage) {
+TEST_F(FormEventLoggerBaseKeyMetricsTest, EmailHeuristicOnlyAcceptance) {
   base::HistogramTester histogram_tester;
   // Reset `form_` to be of the type that the email heuristic only metric is
-  // interested in. With the feature off, that metric should not be logged.
+  // interested in.
   form_ = test::GetFormData({.fields = {{.role = EMAIL_ADDRESS}}});
 
   // Simulate that suggestion is shown and user accepts it.
@@ -569,7 +571,7 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, NoEmailOnlyLeakage) {
   SubmitForm(form_);
 
   ResetDriverToCommitMetrics();
-  histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 0);
+  histogram_tester.ExpectTotalCount("Autofill.EmailHeuristicOnlyAcceptance", 1);
 }
 
 // Tests for Autofill.EmailHeuristicOnlyAcceptance. That metric is only written

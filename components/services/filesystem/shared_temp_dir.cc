@@ -11,6 +11,6 @@ namespace filesystem {
 SharedTempDir::SharedTempDir(std::unique_ptr<base::ScopedTempDir> temp_dir)
     : temp_dir_(std::move(temp_dir)) {}
 
-SharedTempDir::~SharedTempDir() {}
+SharedTempDir::~SharedTempDir() = default;
 
 }  // namespace filesystem

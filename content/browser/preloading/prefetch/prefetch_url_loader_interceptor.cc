@@ -17,6 +17,8 @@
 #include "content/browser/preloading/prefetch/prefetch_service.h"
 #include "content/browser/preloading/prefetch/prefetch_serving_page_metrics_container.h"
 #include "content/browser/preloading/prefetch/prefetch_url_loader_helper.h"
+#include "content/browser/preloading/prerender/prerender_host.h"
+#include "content/browser/preloading/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/web_contents.h"
@@ -98,7 +100,7 @@ void PrefetchURLLoaderInterceptor::MaybeCreateLoader(
         // |prefetch_container| again as we don't use it to serve any subsequent
         // redirect hops for this navigation (we unset |redirect_reader_|
         // below), and
-        // |PrefetchService::CollectPotentiallyMatchingPrefetchContainers|
+        // |PrefetchService::CollectMatchCandidates|
         // ignores any prefetches with the status kPrefetchNotUsedCookiesChanged
         // (which is set in |PrefetchContainer::OnDetectedCookiesChange|).
         prefetch_container->OnDetectedCookiesChange();
@@ -182,9 +184,19 @@ void PrefetchURLLoaderInterceptor::GetPrefetch(
   auto key = PrefetchContainer::Key(initiator_document_token_,
                                     tentative_resource_request.url);
   if (UseNewWaitLoop()) {
-    PrefetchMatchResolver2::FindPrefetch(std::move(key), *prefetch_service,
-                                         serving_page_metrics_container_,
-                                         std::move(callback));
+    const bool is_nav_prerender = [&]() -> bool {
+      auto* frame_tree_node =
+          FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+      if (!frame_tree_node) {
+        return false;
+      }
+
+      return frame_tree_node->frame_tree().is_prerendering();
+    }();
+
+    PrefetchMatchResolver2::FindPrefetch(
+        std::move(key), is_nav_prerender, *prefetch_service,
+        serving_page_metrics_container_, std::move(callback));
   } else {
     prefetch_match_resolver.SetOnPrefetchToServeReadyCallback(
         std::move(callback));

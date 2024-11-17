@@ -154,12 +154,14 @@ PrefetchManagerTest::PrefetchManagerTest()
         /*enabled_features=*/
         {features::kLoadingPredictorPrefetch,
          features::kLoadingPredictorPrefetchUseReadAndDiscardBody},
-        /*disabled_features=*/{});
+        /*disabled_features=*/{
+            features::kPrefetchManagerUseNetworkContextPrefetch});
   } else {
     features_.InitWithFeatures(
         /*enabled_features=*/{features::kLoadingPredictorPrefetch},
         /*disabled_features=*/{
-            features::kLoadingPredictorPrefetchUseReadAndDiscardBody});
+            features::kLoadingPredictorPrefetchUseReadAndDiscardBody,
+            features::kPrefetchManagerUseNetworkContextPrefetch});
   }
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kLoadingPredictorAllowLocalRequestForTesting);
@@ -216,7 +218,7 @@ TEST_P(PrefetchManagerTest, OneMainFrameUrlMultiplePrefetch) {
 
   // The ControllableHttpResponses must be made before the test server
   // is started.
-  for (size_t i = 0; i < features::GetMaxInflightPrefetches() + 1; i++) {
+  for (size_t i = 0; i < kMaxInflightPrefetches + 1; i++) {
     std::string path = base::StringPrintf("/script%" PRIuS ".js", i);
     paths.push_back(path);
     responses.push_back(
@@ -278,7 +280,7 @@ TEST_P(PrefetchManagerTest, QueueingMetricsRecorded) {
   base::HistogramTester histogram_tester;
   net::test_server::EmbeddedTestServer test_server;
   std::vector<PrefetchRequest> requests;
-  size_t num_prefetches = features::GetMaxInflightPrefetches();
+  size_t num_prefetches = kMaxInflightPrefetches;
 
   GURL main_frame_url("https://abc.invalid");
 
@@ -318,7 +320,7 @@ TEST_P(PrefetchManagerTest, MultipleMainFrameUrlMultiplePrefetch) {
   GURL main_frame_url2("https://def.invalid");
 
   // Set up prefetches one more than the inflight limit.
-  size_t count = features::GetMaxInflightPrefetches();
+  size_t count = kMaxInflightPrefetches;
 
   // The ControllableHttpResponses must be made before the test server
   // is started.
@@ -402,7 +404,7 @@ TEST_P(PrefetchManagerTest, Stop) {
   net::test_server::EmbeddedTestServer test_server;
 
   // Set up prefetches (limit + 1 for URL1, and 1 for URL2)
-  size_t limit = features::GetMaxInflightPrefetches();
+  size_t limit = kMaxInflightPrefetches;
 
   GURL main_frame_url("https://abc.invalid");
   std::vector<std::string> paths;
@@ -497,7 +499,7 @@ TEST_P(PrefetchManagerTest, MAYBE_StopAndStart) {
   net::test_server::EmbeddedTestServer test_server;
 
   // Set up prefetches (limit + 1).
-  size_t limit = features::GetMaxInflightPrefetches();
+  size_t limit = kMaxInflightPrefetches;
 
   GURL main_frame_url("https://abc.invalid");
   std::vector<std::string> paths;

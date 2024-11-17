@@ -85,8 +85,7 @@ rmad::RmadState* CreateState(rmad::RmadState::StateCase state_case) {
       state->set_allocated_repair_complete(new rmad::RepairCompleteState());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return state;
 }

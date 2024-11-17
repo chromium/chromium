@@ -107,7 +107,7 @@ public class SaveBitmapDelegateTest {
     }
 
     /** Test implementation of {@link WindowAndroid}. */
-    private class TestWindowAndroid extends WindowAndroid {
+    private static class TestWindowAndroid extends WindowAndroid {
         private boolean mHasPermission;
         private boolean mCanRequestPermission;
 
@@ -116,7 +116,7 @@ public class SaveBitmapDelegateTest {
         private int mPermissionResult = PackageManager.PERMISSION_GRANTED;
 
         public TestWindowAndroid(Context context) {
-            super(context);
+            super(context, /* trackOcclusion= */ false);
         }
 
         public void setPermissionResults(int result) {

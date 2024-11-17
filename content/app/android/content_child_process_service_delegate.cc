@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
 #include "base/unguessable_token.h"
+#include "components/input/android/input_token_forwarder.h"
 #include "content/child/child_thread_impl.h"
 #include "content/common/android/surface_wrapper.h"
 #include "content/common/shared_file_util.h"
@@ -37,7 +38,8 @@ namespace {
 // TODO(sievers): Use two different implementations of this depending on if
 // we're in a renderer or gpu process.
 class ChildProcessSurfaceManager : public gpu::ScopedSurfaceRequestConduit,
-                                   public gpu::GpuSurfaceLookup {
+                                   public gpu::GpuSurfaceLookup,
+                                   public input::InputTokenForwarder {
  public:
   ChildProcessSurfaceManager() {}
 
@@ -85,14 +87,25 @@ class ChildProcessSurfaceManager : public gpu::ScopedSurfaceRequestConduit,
           content::JNI_SurfaceWrapper_takeSurface(env, surface_wrapper),
           /*auto_release=*/true);
       DCHECK(!surface.j_surface().is_null());
-      return gpu::SurfaceRecord(std::move(surface),
-                                can_be_used_with_surface_control);
+      return gpu::SurfaceRecord(
+          std::move(surface), can_be_used_with_surface_control,
+          content::JNI_SurfaceWrapper_getBrowserInputToken(env,
+                                                           surface_wrapper));
     } else {
       gl::ScopedJavaSurfaceControl surface_control(
           JNI_SurfaceWrapper_takeSurfaceControl(env, surface_wrapper),
           /*release_on_destroy=*/true);
       return gpu::SurfaceRecord(std::move(surface_control));
     }
+  }
+
+  // input::InputTokenForwarder overrides.
+  void ForwardVizInputTransferToken(
+      int surface_id,
+      base::android::ScopedJavaGlobalRef<jobject> viz_input_token) override {
+    JNIEnv* env = base::android::AttachCurrentThread();
+    content::Java_ContentChildProcessServiceDelegate_forwardInputTransferToken(
+        env, service_impl_, surface_id, viz_input_token);
   }
 
  private:
@@ -119,6 +132,8 @@ void JNI_ContentChildProcessServiceDelegate_InternalInitChildProcess(
   gpu::GpuSurfaceLookup::InitInstance(
       g_child_process_surface_manager.Pointer());
   gpu::ScopedSurfaceRequestConduit::SetInstance(
+      g_child_process_surface_manager.Pointer());
+  input::InputTokenForwarder::SetInstance(
       g_child_process_surface_manager.Pointer());
 }
 

@@ -13,7 +13,7 @@ import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 
 import java.util.Objects;
 
@@ -45,7 +45,7 @@ public interface ButtonData {
         @Nullable private final View.OnLongClickListener mOnLongClickListener;
         private final String mContentDescription;
         private final boolean mSupportsTinting;
-        @Nullable private final IPHCommandBuilder mIPHCommandBuilder;
+        @Nullable private final IphCommandBuilder mIphCommandBuilder;
         @AdaptiveToolbarButtonVariant private final int mButtonVariant;
         private final boolean mIsDynamicAction;
         @StringRes private final int mActionChipLabelResId;
@@ -58,7 +58,7 @@ public interface ButtonData {
                 @Nullable View.OnLongClickListener onLongClickListener,
                 String contentDescription,
                 boolean supportsTinting,
-                @Nullable IPHCommandBuilder iphCommandBuilder,
+                @Nullable IphCommandBuilder iphCommandBuilder,
                 @AdaptiveToolbarButtonVariant int buttonVariant,
                 int actionChipLabelResId,
                 int tooltipTextResId,
@@ -68,7 +68,7 @@ public interface ButtonData {
             mOnLongClickListener = onLongClickListener;
             mContentDescription = contentDescription;
             mSupportsTinting = supportsTinting;
-            mIPHCommandBuilder = iphCommandBuilder;
+            mIphCommandBuilder = iphCommandBuilder;
             mButtonVariant = buttonVariant;
             mIsDynamicAction = AdaptiveToolbarFeatures.isDynamicAction(mButtonVariant);
             mActionChipLabelResId = actionChipLabelResId;
@@ -113,8 +113,8 @@ public interface ButtonData {
          * a minimum the feature name, content string, and accessibility text, but not the anchor
          * view.
          */
-        public @Nullable IPHCommandBuilder getIPHCommandBuilder() {
-            return mIPHCommandBuilder;
+        public @Nullable IphCommandBuilder getIphCommandBuilder() {
+            return mIphCommandBuilder;
         }
 
         /** Returns the adaptive button variant used for recording metrics. */
@@ -160,7 +160,7 @@ public interface ButtonData {
                     && Objects.equals(mOnClickListener, that.mOnClickListener)
                     && Objects.equals(mOnLongClickListener, that.mOnLongClickListener)
                     && Objects.equals(mContentDescription, that.mContentDescription)
-                    && Objects.equals(mIPHCommandBuilder, that.mIPHCommandBuilder);
+                    && Objects.equals(mIphCommandBuilder, that.mIphCommandBuilder);
         }
 
         @Override
@@ -171,7 +171,7 @@ public interface ButtonData {
                     mOnLongClickListener,
                     mContentDescription,
                     mSupportsTinting,
-                    mIPHCommandBuilder,
+                    mIphCommandBuilder,
                     mButtonVariant,
                     mIsDynamicAction,
                     mActionChipLabelResId);

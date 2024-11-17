@@ -55,7 +55,8 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::SOUND, 36},
     {ContentSettingsType::CLIENT_HINTS, 37},
     {ContentSettingsType::SENSORS, 38},
-    {ContentSettingsType::ACCESSIBILITY_EVENTS, 39},
+    // ACCESSIBILITY_EVENTS deprecated in M131.
+    {ContentSettingsType::DEPRECATED_ACCESSIBILITY_EVENTS, 39},
     {ContentSettingsType::PAYMENT_HANDLER, 43},
     {ContentSettingsType::USB_GUARD, 44},
     {ContentSettingsType::BACKGROUND_FETCH, 45},
@@ -145,6 +146,7 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL, 127},
     {ContentSettingsType::HAND_TRACKING, 128},
     {ContentSettingsType::WEB_APP_INSTALLATION, 129},
+    {ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS, 130},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!
@@ -188,8 +190,7 @@ std::string GetProviderNameForHistograms(
     case ProviderType::kOtherProviderForTests:
       return "OtherProviderForTests";
     case ProviderType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -217,8 +218,7 @@ int ContentSettingTypeToHistogramValue(ContentSettingsType content_setting) {
         << "Used for deprecated settings: " << static_cast<int>(found->first);
     return found->second;
   }
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 void RecordActiveExpiryEvent(content_settings::ProviderType provider_type,

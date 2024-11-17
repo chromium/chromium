@@ -23,11 +23,9 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "cc/base/devtools_instrumentation.h"
-#include "cc/base/features.h"
 #include "cc/base/histograms.h"
 #include "cc/raster/tile_task.h"
 #include "cc/tiles/mipmap_util.h"
-#include "components/miracle_parameter/common/public/miracle_parameter.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 using base::trace_event::MemoryAllocatorDump;
@@ -36,18 +34,11 @@ using base::trace_event::MemoryDumpLevelOfDetail;
 namespace cc {
 namespace {
 
-BASE_FEATURE(kNormalMaxItemsInCacheForSoftwareFeature,
-             "NormalMaxItemsInCacheForSoftwareFeature",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // The number of entries to keep around in the cache. This limit can be breached
 // if more items are locked. That is, locked items ignore this limit.
 // Depending on the memory state of the system, we limit the amount of items
 // differently.
-MIRACLE_PARAMETER_FOR_INT(GetNormalMaxItemsInCacheForSoftware,
-                          kNormalMaxItemsInCacheForSoftwareFeature,
-                          "NormalMaxItemsInCacheForSoftware",
-                          1000)
+constexpr size_t kNormalMaxItemsInCacheForSoftware = 1000;
 
 class AutoRemoveKeyFromTaskMap {
  public:
@@ -110,6 +101,9 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
   }
 
   // Overridden from TileTask:
+  bool IsRasterTask() const override {
+    return task_type_ == ImageDecodeCache::TaskType::kInRaster;
+  }
   void OnTaskCompleted() override {
     cache_->OnImageDecodeTaskCompleted(image_key_, task_type_);
   }
@@ -165,7 +159,7 @@ SoftwareImageDecodeCache::SoftwareImageDecodeCache(
       locked_images_budget_(locked_memory_limit_bytes),
       color_type_(color_type),
       generator_client_id_(PaintImage::GetNextGeneratorClientId()),
-      max_items_in_cache_(GetNormalMaxItemsInCacheForSoftware()) {
+      max_items_in_cache_(kNormalMaxItemsInCacheForSoftware) {
   DCHECK_NE(generator_client_id_, PaintImage::kDefaultGeneratorClientId);
   // In certain cases, SingleThreadTaskRunner::CurrentDefaultHandle isn't set
   // (Android Webview).  Don't register a dump provider in these cases.
@@ -275,6 +269,19 @@ SoftwareImageDecodeCache::GetTaskForImageAndRefInternal(
     ++cache_entry->ref_count;
     task = base::MakeRefCounted<SoftwareImageDecodeTaskImpl>(
         this, key, image.paint_image(), task_type, tracing_info);
+    if (task_type == TaskType::kInRaster && cache_entry->out_of_raster_task) {
+      // If the existing stand-alone task hasn't started yet, make the new
+      // raster task primary.
+      if (cache_entry->out_of_raster_task->state().IsNew()) {
+        task->SetExternalDependent(cache_entry->out_of_raster_task);
+      } else {
+        cache_entry->out_of_raster_task->SetExternalDependent(task);
+      }
+    } else if (task_type == TaskType::kOutOfRaster &&
+               cache_entry->in_raster_task &&
+               !cache_entry->in_raster_task->HasCompleted()) {
+      cache_entry->in_raster_task->SetExternalDependent(task);
+    }
   }
   return TaskResult(task, /*can_do_hardware_accelerated_decode=*/false);
 }
@@ -731,7 +738,7 @@ size_t SoftwareImageDecodeCache::GetNumCacheEntriesForTesting() {
   return decoded_images_.size();
 }
 size_t SoftwareImageDecodeCache::GetMaxNumCacheEntriesForTesting() {
-  return GetNormalMaxItemsInCacheForSoftware();
+  return kNormalMaxItemsInCacheForSoftware;
 }
 
 SkColorType SoftwareImageDecodeCache::GetColorTypeForPaintImage(

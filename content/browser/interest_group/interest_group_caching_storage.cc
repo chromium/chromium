@@ -280,11 +280,11 @@ void InterestGroupCachingStorage::UpdateInterestGroup(
 }
 
 void InterestGroupCachingStorage::AllowUpdateIfOlderThan(
-    const blink::InterestGroupKey& group_key,
+    blink::InterestGroupKey group_key,
     base::TimeDelta update_if_older_than) {
   interest_group_storage_
       .AsyncCall(&InterestGroupStorage::AllowUpdateIfOlderThan)
-      .WithArgs(group_key, update_if_older_than);
+      .WithArgs(std::move(group_key), update_if_older_than);
 }
 
 void InterestGroupCachingStorage::ReportUpdateFailed(
@@ -649,7 +649,9 @@ void InterestGroupCachingStorage::StartTimerForInterestGroupHold(
 void InterestGroupCachingStorage::UpdateCachedOriginsIfEnabled(
     const url::Origin& owner,
     const std::vector<StorageInterestGroup>& interest_groups) {
-  if (!base::FeatureList::IsEnabled(features::kFledgeUsePreconnectCache)) {
+  if (!base::FeatureList::IsEnabled(features::kFledgeUsePreconnectCache) &&
+      !base::FeatureList::IsEnabled(
+          features::kFledgeStartAnticipatoryProcesses)) {
     return;
   }
   if (interest_groups.empty()) {

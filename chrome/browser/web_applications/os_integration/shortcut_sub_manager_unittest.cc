@@ -201,8 +201,7 @@ class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
     EXPECT_TRUE(icon_color.has_value());
     return icon_color.value();
 #else
-    NOTREACHED_IN_MIGRATION() << "Shortcuts not supported for other OS";
-    return SK_ColorTRANSPARENT;
+    NOTREACHED() << "Shortcuts not supported for other OS";
 #endif
   }
 

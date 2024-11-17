@@ -85,6 +85,7 @@ source_set("pdf_extension_test_utils") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//components/pdf/common:util",
     "//content/public/browser",
     "//content/test:test_support",

@@ -259,7 +259,7 @@ HelloWorldUI::HelloWorldUI(content::WebUI* web_ui)
   // Add required resources.
   webui::SetupWebUIDataSource(
       source,
-      base::make_span(kHelloWorldResources, kHelloWorldResourcesSize),
+      base::span(kHelloWorldResources),
       IDR_HELLO_WORLD_HELLO_WORLD_HTML);
 
   // As a demonstration of passing a variable for JS to use we pass in some
@@ -458,7 +458,7 @@ HelloWorldUI::HelloWorldUI(content::WebUI* web_ui)
   // ...
   webui::SetupWebUIDataSource(
       source,
-      base::make_span(kHelloWorldResources, kHelloWorldResourcesSize),
+      base::span(kHelloWorldResources),
       IDR_HELLO_WORLD_HELLO_WORLD_CONTAINER_HTML);
 }
 ```
@@ -494,6 +494,6 @@ HelloWorldUI::HelloWorldUI(content::WebUI* web_ui) {
 
   // Add all shared resources from bar_shared
   source->AddResourcePaths(
-      base::make_span(kBarSharedResources, kBarSharedResourcesSize));
+      base::span(kBarSharedResources));
 }
 ```

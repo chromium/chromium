@@ -95,7 +95,9 @@ static_assert(sizeof(void*) == 8);
 #endif
 
 // Specifies whether allocation extras need to be added.
-#if PA_BUILDFLAG(DCHECKS_ARE_ON) || PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) ||                \
+    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
+    PA_BUILDFLAG(USE_PARTITION_COOKIE)
 #define PA_CONFIG_EXTRAS_REQUIRED() 1
 #else
 #define PA_CONFIG_EXTRAS_REQUIRED() 0

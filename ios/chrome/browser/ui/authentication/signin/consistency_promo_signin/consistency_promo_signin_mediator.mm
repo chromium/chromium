@@ -171,18 +171,19 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
     self.userPrefService->SetInteger(prefs::kSigninWebSignDismissalCount, 0);
   }
   __weak __typeof(self) weakSelf = self;
-  [_authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    [weakSelf authenticationFlowCompletedWithSuccess:success];
-  }];
+  [_authenticationFlow
+      startSignInWithCompletion:^(SigninCoordinatorResult result) {
+        [weakSelf authenticationFlowCompletedWithResult:result];
+      }];
   [self.delegate consistencyPromoSigninMediatorSigninStarted:self];
 }
 
 #pragma mark - Private
 
-- (void)authenticationFlowCompletedWithSuccess:(BOOL)success {
+- (void)authenticationFlowCompletedWithResult:(SigninCoordinatorResult)result {
   DCHECK(_authenticationFlow);
   _authenticationFlow = nil;
-  if (!success) {
+  if (result != SigninCoordinatorResultSuccess) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::
             IOS_AUTH_FLOW_CANCELLED_OR_FAILED,
@@ -285,7 +286,8 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   if (error.state() == GoogleServiceAuthError::State::NONE &&
       self.authenticationService->GetPrimaryIdentity(
           signin::ConsentLevel::kSignin) &&
-      accountsInCookieJarInfo.signed_in_accounts.size() > 0) {
+      accountsInCookieJarInfo.GetPotentiallyInvalidSignedInAccounts().size() >
+          0) {
     // Reset dismissal count.
     if (self.accessPoint ==
         signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {

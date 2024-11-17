@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
@@ -79,12 +80,16 @@ public class SurveyClientFactory {
             @NonNull SurveyConfig config, @NonNull SurveyUiDelegate uiDelegate, Profile profile) {
         if (config.mProbability == 0f || TextUtils.isEmpty(config.mTriggerId)) return null;
 
+        SurveyController surveyController;
+        SurveyControllerFactory surveyControllerFactory =
+                ServiceLoaderUtil.maybeCreate(SurveyControllerFactory.class);
+        if (surveyControllerFactory != null) {
+            surveyController = surveyControllerFactory.create(profile);
+        } else {
+            surveyController = new SurveyController() {};
+        }
         return new SurveyClientImpl(
-                config,
-                uiDelegate,
-                SurveyControllerProvider.create(profile),
-                mCrashUploadPermissionSupplier,
-                profile);
+                config, uiDelegate, surveyController, mCrashUploadPermissionSupplier, profile);
     }
 
     /** Get the crash upload supplier initialized in this factory. */

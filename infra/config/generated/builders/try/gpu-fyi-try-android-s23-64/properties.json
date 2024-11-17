@@ -78,7 +78,8 @@
           "builder": "Android FYI Release (Samsung S23)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-fyi-try-android-s23-64/targets"
     }
   },
   "$build/reclient": {

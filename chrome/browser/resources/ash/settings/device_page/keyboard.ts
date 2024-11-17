@@ -21,12 +21,14 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isInputDeviceSettingsSplitEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {PrefsState} from '../common/types.js';
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import type {PrefsState} from '../common/types.js';
+import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
-import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
+import type {DevicePageBrowserProxy} from './device_page_browser_proxy.js';
+import {DevicePageBrowserProxyImpl} from './device_page_browser_proxy.js';
 import {getTemplate} from './keyboard.html.js';
 
 /**
@@ -117,7 +119,6 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
       /**
        * Whether the setting for long press diacritics should be shown
        */
-      shouldShowDiacriticSetting_: Boolean,
 
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
@@ -153,8 +154,6 @@ export class SettingsKeyboardElement extends SettingsKeyboardElementBase {
   private showAppleCommandKey_: boolean;
   private showCapsLock_: boolean;
   private showExternalMetaKey_: boolean;
-  private shouldShowDiacriticSetting_ =
-      loadTimeData.getBoolean('allowDiacriticsOnPhysicalKeyboardLongpress');
   private isDeviceSettingsSplitEnabled_: boolean;
 
   constructor() {

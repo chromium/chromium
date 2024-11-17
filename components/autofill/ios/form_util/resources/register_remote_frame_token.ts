@@ -8,14 +8,11 @@
  * the browser layer.
  */
 
-import {registerSelfWithRemoteToken} from '//components/autofill/ios/form_util/resources/child_frame_registration_lib.js';
-import {generateRandomId} from '//ios/web/public/js_messaging/resources/frame_id.js';
+// Requires functions from child_frame_registration_lib.ts.
 
-/*
- Name of the html attribute used for storing the remote frame token assigned to
- the current html document.
- */
-const REMOTE_FRAME_TOKEN_ATTRIBUTE = '__gChrome_remoteFrameToken';
+import {setRemoteFrameToken} from '//components/autofill/ios/form_util/resources/fill_util.js';
+import {generateRandomId} from '//ios/web/public/js_messaging/resources/frame_id.js';
+import {gCrWeb} from '//ios/web/public/js_messaging/resources/gcrweb.js';
 
 function registerRemoteToken(): void {
   const remoteFrameToken = generateRandomId();
@@ -23,11 +20,15 @@ function registerRemoteToken(): void {
   // to read it and send it in the payload of their messages to the browser. The
   // browser layer uses remote tokens to map page content world frames to their
   // isolated world counter parts, which is where the rest of Autofill lives.
-  document.documentElement.setAttribute(
-      REMOTE_FRAME_TOKEN_ATTRIBUTE, remoteFrameToken);
-  registerSelfWithRemoteToken(remoteFrameToken);
+  setRemoteFrameToken(remoteFrameToken);
+  gCrWeb.remoteFrameRegistration.registerSelfWithRemoteToken(remoteFrameToken);
 }
 
-// Remote token registration must be delayed until the DOM is loaded. This
-// script is injected at Document End injection time.
-registerRemoteToken();
+
+// Register a new token after the page is displayed due to navigation. The
+// browser layer destroys existing WebFrame's on navigation which removes any
+// registered frame tokens. That is why the frame must be registered again if
+// the user navigates back to it.
+addEventListener('pageshow', () => {
+  registerRemoteToken();
+});

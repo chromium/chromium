@@ -12,7 +12,7 @@ import androidx.preference.Preference;
 
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.settings.ManagedPreferenceDelegate;
 
 /** Fragment containing Preload Pages settings. */
@@ -66,13 +66,11 @@ public class PreloadPagesSettingsFragment extends PreloadPagesSettingsFragmentBa
     @Override
     public void onPreloadPagesStateDetailsRequested(@PreloadPagesState int preloadPagesState) {
         if (preloadPagesState == PreloadPagesState.EXTENDED_PRELOADING) {
-            SettingsLauncherFactory.createSettingsLauncher()
-                    .launchSettingsActivity(
-                            getActivity(), ExtendedPreloadingSettingsFragment.class);
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .startSettings(getActivity(), ExtendedPreloadingSettingsFragment.class);
         } else if (preloadPagesState == PreloadPagesState.STANDARD_PRELOADING) {
-            SettingsLauncherFactory.createSettingsLauncher()
-                    .launchSettingsActivity(
-                            getActivity(), StandardPreloadingSettingsFragment.class);
+            SettingsNavigationFactory.createSettingsNavigation()
+                    .startSettings(getActivity(), StandardPreloadingSettingsFragment.class);
         } else {
             assert false : "Should not be reached";
         }

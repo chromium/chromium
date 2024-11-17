@@ -35,8 +35,15 @@ bool IsMediaStatusMessage(const cast_channel::InternalMessage& message) {
 AppActivity::AppActivity(const MediaRoute& route,
                          const std::string& app_id,
                          cast_channel::CastMessageHandler* message_handler,
-                         CastSessionTracker* session_tracker)
-    : CastActivity(route, app_id, message_handler, session_tracker) {}
+                         CastSessionTracker* session_tracker,
+                         mojo::Remote<mojom::Logger>& logger,
+                         mojo::Remote<mojom::Debugger>& debugger)
+    : CastActivity(route,
+                   app_id,
+                   message_handler,
+                   session_tracker,
+                   logger,
+                   debugger) {}
 
 AppActivity::~AppActivity() = default;
 

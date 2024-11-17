@@ -163,7 +163,8 @@ bool FidoCableV1HandshakeHandler::ValidateAuthenticatorHandshakeMessage(
   }
 
   cable_device_->SetV1EncryptionData(
-      *base::span(GetEncryptionKeyAfterSuccessfulHandshake(*sized_nonce_span))
+      *base::as_byte_span(
+           GetEncryptionKeyAfterSuccessfulHandshake(*sized_nonce_span))
            .to_fixed_extent<32>(),
       nonce_);
 

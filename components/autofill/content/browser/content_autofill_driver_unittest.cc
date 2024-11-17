@@ -88,8 +88,6 @@ using ::testing::SaveArg;
 using ::testing::SizeIs;
 using ::testing::WithArg;
 
-const char kAppLocale[] = "en-US";
-
 MATCHER(EqualsFillData, "") {
   FormFieldData lhs_field = std::get<0>(arg);
   FormFieldData::FillData rhs_field = std::get<1>(arg);
@@ -311,7 +309,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 class MockBrowserAutofillManager : public BrowserAutofillManager {
  public:
   explicit MockBrowserAutofillManager(AutofillDriver* driver)
-      : BrowserAutofillManager(driver, kAppLocale) {}
+      : BrowserAutofillManager(driver) {}
   ~MockBrowserAutofillManager() override = default;
 
   MOCK_METHOD(void, Reset, (), (override));
@@ -717,6 +715,8 @@ TEST_F(ContentAutofillDriverTestWithAddressForm,
 }
 
 TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::test::kAutofillShowTypePredictions);
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kShowAutofillTypePredictions);
 

@@ -14,6 +14,9 @@
 @implementation LegacySnapshotManager {
   // The unique ID for WebState's snapshot.
   SnapshotID _snapshotID;
+
+  // The timestamp associated to the latest snapshot stored.
+  NSDate* _latestCommitedTimestamp;
 }
 
 - (instancetype)initWithGenerator:(LegacySnapshotGenerator*)generator
@@ -22,6 +25,7 @@
     DCHECK(snapshotID.valid());
     _snapshotGenerator = generator;
     _snapshotID = snapshotID;
+    _latestCommitedTimestamp = [NSDate distantPast];
   }
   return self;
 }
@@ -63,10 +67,15 @@
   DCHECK(_snapshotGenerator);
 
   __weak LegacySnapshotManager* weakSelf = self;
+
+  // Since the snapshotting strategy may change, the order of snapshot updates
+  // cannot be guaranteed. To prevent older snapshots from overwriting newer
+  // ones, the timestamp of each snapshot request is recorded.
+  NSDate* timestamp = [NSDate now];
   void (^wrappedCompletion)(UIImage*) = ^(UIImage* image) {
     // Update the snapshot storage with the latest snapshot. The old image is
     // deleted if `image` is nil.
-    [weakSelf updateSnapshotStorageWithImage:image];
+    [weakSelf updateSnapshotStorageWithImage:image timestamp:timestamp];
 
     if (completion) {
       completion(image);
@@ -88,15 +97,23 @@
   _snapshotGenerator.delegate = delegate;
 }
 
-#pragma mark - Private methods
-
 // Updates the snapshot storage with `snapshot`.
 - (void)updateSnapshotStorageWithImage:(UIImage*)snapshot {
+  [self updateSnapshotStorageWithImage:snapshot timestamp:[NSDate now]];
+}
+
+#pragma mark - Private methods
+
+- (void)updateSnapshotStorageWithImage:(UIImage*)snapshot
+                             timestamp:(NSDate*)timestamp {
   if (snapshot) {
+    if ([timestamp compare:_latestCommitedTimestamp] == NSOrderedAscending) {
+      return;
+    }
+    _latestCommitedTimestamp = timestamp;
     [_snapshotStorage setImage:snapshot withSnapshotID:_snapshotID];
   } else {
-    // Remove any stale snapshot since the snapshot failed.
-    [_snapshotStorage removeImageWithSnapshotID:_snapshotID];
+    _latestCommitedTimestamp = [NSDate distantPast];
   }
 }
 

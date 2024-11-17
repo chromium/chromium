@@ -22,11 +22,11 @@ namespace {
 scoped_refptr<SegmentReader> CopyToROBufferSegmentReader(
     scoped_refptr<SegmentReader> input) {
   RWBuffer rw_buffer;
-  const char* segment = nullptr;
   size_t position = 0;
-  while (size_t length = input->GetSomeData(segment, position)) {
-    rw_buffer.Append(segment, length);
-    position += length;
+  for (base::span<const uint8_t> segment = input->GetSomeData(position);
+       !segment.empty(); segment = input->GetSomeData(position)) {
+    rw_buffer.Append(segment.data(), segment.size());
+    position += segment.size();
   }
   return SegmentReader::CreateFromROBuffer(rw_buffer.MakeROBufferSnapshot());
 }
@@ -51,7 +51,7 @@ struct SegmentReaders {
 
 TEST(FastSharedBufferReaderTest, nonSequentialReads) {
   char reference_data[kDefaultTestSize];
-  PrepareReferenceData(reference_data, sizeof(reference_data));
+  PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   data->Append(reference_data, sizeof(reference_data));
 
@@ -74,7 +74,7 @@ TEST(FastSharedBufferReaderTest, nonSequentialReads) {
 
 TEST(FastSharedBufferReaderTest, readBackwards) {
   char reference_data[kDefaultTestSize];
-  PrepareReferenceData(reference_data, sizeof(reference_data));
+  PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   data->Append(reference_data, sizeof(reference_data));
 
@@ -99,7 +99,7 @@ TEST(FastSharedBufferReaderTest, readBackwards) {
 
 TEST(FastSharedBufferReaderTest, byteByByte) {
   char reference_data[kDefaultTestSize];
-  PrepareReferenceData(reference_data, sizeof(reference_data));
+  PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   data->Append(reference_data, sizeof(reference_data));
 
@@ -117,7 +117,7 @@ TEST(FastSharedBufferReaderTest, byteByByte) {
 TEST(FastSharedBufferReaderTest, readAllOverlappingLastSegmentBoundary) {
   const unsigned kDataSize = 2 * kDefaultSegmentTestSize;
   char reference_data[kDataSize];
-  PrepareReferenceData(reference_data, kDataSize);
+  PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   data->Append(reference_data, kDataSize);
 
@@ -134,7 +134,7 @@ TEST(FastSharedBufferReaderTest, readAllOverlappingLastSegmentBoundary) {
 TEST(SegmentReaderTest, readPastEndThenRead) {
   const unsigned kDataSize = 2 * kDefaultSegmentTestSize;
   char reference_data[kDataSize];
-  PrepareReferenceData(reference_data, kDataSize);
+  PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   data->Append(base::span(reference_data).subspan(0, kDefaultSegmentTestSize));
   data->Append(base::span(reference_data)
@@ -142,19 +142,18 @@ TEST(SegmentReaderTest, readPastEndThenRead) {
 
   SegmentReaders reader_struct(data);
   for (auto segment_reader : reader_struct.segment_readers) {
-    const char* contents;
-    size_t length = segment_reader->GetSomeData(contents, kDataSize);
-    EXPECT_EQ(0u, length);
+    base::span<const uint8_t> contents = segment_reader->GetSomeData(kDataSize);
+    EXPECT_TRUE(contents.empty());
 
-    length = segment_reader->GetSomeData(contents, 0);
-    EXPECT_LE(kDefaultSegmentTestSize, length);
+    contents = segment_reader->GetSomeData(0);
+    EXPECT_LE(kDefaultSegmentTestSize, contents.size());
   }
 }
 
 TEST(SegmentReaderTest, getAsSkData) {
   const unsigned kDataSize = 4 * kDefaultSegmentTestSize;
   char reference_data[kDataSize];
-  PrepareReferenceData(reference_data, kDataSize);
+  PrepareReferenceData(reference_data);
   scoped_refptr<SharedBuffer> data = SharedBuffer::Create();
   for (size_t i = 0; i < 4; ++i) {
     data->Append(
@@ -165,13 +164,16 @@ TEST(SegmentReaderTest, getAsSkData) {
   for (auto segment_reader : reader_struct.segment_readers) {
     sk_sp<SkData> skdata = segment_reader->GetAsSkData();
     EXPECT_EQ(data->size(), skdata->size());
+    auto skdata_span = base::span(skdata->bytes(), skdata->size());
 
-    const char* segment;
     size_t position = 0;
-    for (size_t length = segment_reader->GetSomeData(segment, position); length;
-         length = segment_reader->GetSomeData(segment, position)) {
-      ASSERT_FALSE(memcmp(segment, skdata->bytes() + position, length));
-      position += length;
+    for (base::span<const uint8_t> segment =
+             segment_reader->GetSomeData(position);
+         !segment.empty(); segment = segment_reader->GetSomeData(position)) {
+      ASSERT_LE(position, skdata_span.size());
+      ASSERT_LE(segment.size(), skdata_span.size() - position);
+      EXPECT_EQ(segment, skdata_span.subspan(position, segment.size()));
+      position += segment.size();
     }
     EXPECT_EQ(position, kDataSize);
   }
@@ -180,7 +182,7 @@ TEST(SegmentReaderTest, getAsSkData) {
 TEST(SegmentReaderTest, variableSegments) {
   const size_t kDataSize = 3.5 * kDefaultSegmentTestSize;
   char reference_data[kDataSize];
-  PrepareReferenceData(reference_data, kDataSize);
+  PrepareReferenceData(reference_data);
 
   scoped_refptr<SegmentReader> segment_reader;
   {
@@ -202,19 +204,22 @@ TEST(SegmentReaderTest, variableSegments) {
         SegmentReader::CreateFromROBuffer(rw_buffer.MakeROBufferSnapshot());
   }
 
-  const char* segment;
   size_t position = 0;
   size_t last_length = 0;
-  for (size_t length = segment_reader->GetSomeData(segment, position); length;
-       length = segment_reader->GetSomeData(segment, position)) {
+  auto reference_data_span = base::as_byte_span(reference_data);
+  for (base::span<const uint8_t> segment =
+           segment_reader->GetSomeData(position);
+       !segment.empty(); segment = segment_reader->GetSomeData(position)) {
     // It is not a bug to have consecutive segments of the same length, but
     // it does mean that the following test does not actually test what it
     // is intended to test.
-    ASSERT_NE(length, last_length);
-    last_length = length;
+    ASSERT_NE(segment.size(), last_length);
+    last_length = segment.size();
 
-    ASSERT_FALSE(memcmp(segment, reference_data + position, length));
-    position += length;
+    ASSERT_LE(position, reference_data_span.size());
+    ASSERT_LE(segment.size(), reference_data_span.size() - position);
+    EXPECT_EQ(segment, reference_data_span.subspan(position, segment.size()));
+    position += segment.size();
   }
   EXPECT_EQ(position, kDataSize);
 }

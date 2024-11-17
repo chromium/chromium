@@ -4,17 +4,17 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './code_section.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {ExtensionsCodeSectionElement} from './code_section.js';
-import {getTemplate} from './load_error.html.js';
+import {getCss} from './load_error.css.js';
+import {getHtml} from './load_error.html.js';
 
 export interface LoadErrorDelegate {
   /**
@@ -23,35 +23,35 @@ export interface LoadErrorDelegate {
   retryLoadUnpacked(retryGuid?: string): Promise<boolean>;
 }
 
-export interface ExtensionsLoadErrorElement {
+export interface LoadErrorElement {
   $: {
     code: ExtensionsCodeSectionElement,
     dialog: CrDialogElement,
   };
 }
 
-export class ExtensionsLoadErrorElement extends PolymerElement {
+export class LoadErrorElement extends CrLitElement {
   static get is() {
     return 'extensions-load-error';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      delegate: Object,
-      loadError: Object,
-      file_: {
-        type: String,
-        value: null,
-      },
-      error_: {
-        type: String,
-        value: null,
-      },
-      retrying_: Boolean,
+      delegate: {type: Object},
+      loadError: {type: Object},
+      file_: {type: String},
+      error_: {type: String},
+      retrying_: {type: Boolean},
+      isCodeSectionActive_: {type: Boolean},
+      codeSectionProperties_: {type: Object},
     };
   }
 
@@ -61,12 +61,46 @@ export class ExtensionsLoadErrorElement extends PolymerElement {
     ];
   }
 
-  delegate: LoadErrorDelegate;
-  loadError: Error|chrome.developerPrivate.LoadError;
+  delegate?: LoadErrorDelegate;
+  loadError?: Error|chrome.developerPrivate.LoadError;
 
-  private file_?: string;
-  private error_?: string;
-  private retrying_: boolean;
+  protected codeSectionProperties_:
+      chrome.developerPrivate.RequestFileSourceResponse|null = null;
+  protected file_?: string;
+  protected error_: string|null = null;
+  protected isCodeSectionActive_?: boolean;
+  protected retrying_: boolean = false;
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+
+    if (changedProperties.has('loadError')) {
+      assert(this.loadError);
+
+      if (this.loadError instanceof Error) {
+        this.file_ = undefined;
+        this.error_ = this.loadError.message;
+        this.isCodeSectionActive_ = false;
+        return;
+      }
+
+      this.file_ = this.loadError.path;
+      this.error_ = this.loadError.error;
+
+      const source = this.loadError.source;
+      // CodeSection expects a RequestFileSourceResponse, rather than an
+      // ErrorFileSource. Massage into place.
+      // TODO(devlin): Make RequestFileSourceResponse use ErrorFileSource.
+      this.codeSectionProperties_ = {
+        beforeHighlight: source ? source.beforeHighlight : '',
+        highlight: source ? source.highlight : '',
+        afterHighlight: source ? source.afterHighlight : '',
+        title: '',
+        message: this.loadError.error,
+      };
+      this.isCodeSectionActive_ = true;
+    }
+  }
 
   show() {
     this.$.dialog.showModal();
@@ -76,8 +110,10 @@ export class ExtensionsLoadErrorElement extends PolymerElement {
     this.$.dialog.close();
   }
 
-  private onRetryClick_() {
+  protected onRetryClick_() {
     this.retrying_ = true;
+    assert(this.delegate);
+    assert(this.loadError);
     this.delegate
         .retryLoadUnpacked(
             this.loadError instanceof Error ? undefined :
@@ -91,42 +127,12 @@ export class ExtensionsLoadErrorElement extends PolymerElement {
               this.retrying_ = false;
             });
   }
-
-  private observeLoadErrorChanges_() {
-    assert(this.loadError);
-
-    if (this.loadError instanceof Error) {
-      this.file_ = undefined;
-      this.error_ = this.loadError.message;
-      this.$.code.isActive = false;
-      return;
-    }
-
-    this.file_ = this.loadError.path;
-    this.error_ = this.loadError.error;
-
-    const source = this.loadError.source;
-    // CodeSection expects a RequestFileSourceResponse, rather than an
-    // ErrorFileSource. Massage into place.
-    // TODO(devlin): Make RequestFileSourceResponse use ErrorFileSource.
-    const codeSectionProperties = {
-      beforeHighlight: source ? source.beforeHighlight : '',
-      highlight: source ? source.highlight : '',
-      afterHighlight: source ? source.afterHighlight : '',
-      title: '',
-      message: this.loadError.error,
-    };
-
-    this.$.code.code = codeSectionProperties;
-    this.$.code.isActive = true;
-  }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'extensions-load-error': ExtensionsLoadErrorElement;
+    'extensions-load-error': LoadErrorElement;
   }
 }
 
-customElements.define(
-    ExtensionsLoadErrorElement.is, ExtensionsLoadErrorElement);
+customElements.define(LoadErrorElement.is, LoadErrorElement);

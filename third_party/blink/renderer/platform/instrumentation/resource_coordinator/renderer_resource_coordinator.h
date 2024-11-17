@@ -7,10 +7,6 @@
 
 #include "third_party/blink/renderer/platform/platform_export.h"
 
-namespace WTF {
-class String;
-}  // namespace WTF
-
 namespace blink {
 
 // TODO(chrisha): Remove knowledge of ExecutionContext class from this code!
@@ -64,12 +60,6 @@ class PLATFORM_EXPORT RendererResourceCoordinator {
   virtual void OnBeforeContentFrameDetached(
       const Frame& frame,
       const HTMLFrameOwnerElement& owner) = 0;
-
-  // Used to fire a named tracing trigger from a renderer. This is a nop unless
-  // the tracing machinery has been appropriately configured in the browser
-  // process.
-  virtual void FireBackgroundTracingTrigger(
-      const WTF::String& trigger_name) = 0;
 };
 
 }  // namespace blink

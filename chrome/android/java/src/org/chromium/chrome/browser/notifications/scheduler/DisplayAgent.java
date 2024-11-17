@@ -219,8 +219,7 @@ public class DisplayAgent {
     }
 
     private static void closeNotification(String guid) {
-        BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext())
-                .cancel(DISPLAY_AGENT_TAG, guid.hashCode());
+        BaseNotificationManagerProxyFactory.create().cancel(DISPLAY_AGENT_TAG, guid.hashCode());
     }
 
     /** Contains Android platform specific data to construct a notification. */
@@ -234,7 +233,7 @@ public class DisplayAgent {
         }
     }
 
-    private static AndroidNotificationData toAndroidNotificationData(SystemData systemData) {
+    private static AndroidNotificationData toAndroidNotificationData() {
         @ChannelId String channel = ChannelId.BROWSER;
         @SystemNotificationType int systemNotificationType = SystemNotificationType.UNKNOWN;
         return new AndroidNotificationData(channel, systemNotificationType);
@@ -253,7 +252,7 @@ public class DisplayAgent {
 
     @CalledByNative
     private static void showNotification(NotificationData notificationData, SystemData systemData) {
-        AndroidNotificationData platformData = toAndroidNotificationData(systemData);
+        AndroidNotificationData platformData = toAndroidNotificationData();
         // TODO(xingliu): Plumb platform specific data from native.
         // mode and provide correct notification id. Support buttons.
         Context context = ContextUtils.getApplicationContext();
@@ -345,8 +344,7 @@ public class DisplayAgent {
         }
 
         NotificationWrapper notification = builder.buildNotificationWrapper();
-        BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext())
-                .notify(notification);
+        BaseNotificationManagerProxyFactory.create().notify(notification);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(
                         platformData.systemNotificationType, notification.getNotification());

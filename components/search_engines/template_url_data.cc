@@ -133,13 +133,14 @@ TemplateURLData::TemplateURLData(
     }
   }
 
-  regulatory_extensions =
-      base::MakeFlatMap<RegulatoryExtensionType,
-                        const TemplateURLData::RegulatoryExtension*>(
-          reg_extensions, {},
-          [](const TemplateURLData::RegulatoryExtension& a) {
-            return std::make_pair(a.variant, &a);
-          });
+  regulatory_extensions = base::MakeFlatMap<
+      RegulatoryExtensionType,
+      raw_ptr<const TemplateURLData::RegulatoryExtension, CtnExperimental>>(
+      reg_extensions, {}, [](const TemplateURLData::RegulatoryExtension& a) {
+        return std::pair<RegulatoryExtensionType,
+                         raw_ptr<const TemplateURLData::RegulatoryExtension,
+                                 CtnExperimental>>(a.variant, &a);
+      });
   DCHECK_EQ(regulatory_extensions.size(), reg_extensions.size());
 }
 

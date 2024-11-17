@@ -90,8 +90,7 @@
       break;
     case WhatsNewPrimaryAction::kNoAction:
     case WhatsNewPrimaryAction::kError:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   };
 }
 

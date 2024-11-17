@@ -25,6 +25,7 @@
 #include "components/signin/public/identity_manager/device_accounts_synchronizer.h"
 #include "components/signin/public/identity_manager/diagnostics_provider.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_ANDROID)
@@ -365,13 +366,7 @@ AccountInfo IdentityManager::FindExtendedAccountInfoByGaiaId(
 }
 
 AccountsInCookieJarInfo IdentityManager::GetAccountsInCookieJar() const {
-  std::vector<gaia::ListedAccount> signed_in_accounts;
-  std::vector<gaia::ListedAccount> signed_out_accounts;
-  bool accounts_are_fresh = gaia_cookie_manager_service_->ListAccounts(
-      &signed_in_accounts, &signed_out_accounts);
-
-  return AccountsInCookieJarInfo(accounts_are_fresh, signed_in_accounts,
-                                 signed_out_accounts);
+  return gaia_cookie_manager_service_->ListAccounts();
 }
 
 PrimaryAccountMutator* IdentityManager::GetPrimaryAccountMutator() {
@@ -389,6 +384,12 @@ AccountsCookieMutator* IdentityManager::GetAccountsCookieMutator() {
 DeviceAccountsSynchronizer* IdentityManager::GetDeviceAccountsSynchronizer() {
   return identity_mutator_->GetDeviceAccountsSynchronizer();
 }
+
+#if BUILDFLAG(IS_IOS)
+std::vector<AccountInfo> IdentityManager::GetAccountsOnDevice() {
+  return token_service_->GetAccountsOnDevice();
+}
+#endif
 
 void IdentityManager::AddDiagnosticsObserver(DiagnosticsObserver* observer) {
   diagnostics_observation_list_.AddObserver(observer);
@@ -630,12 +631,10 @@ void IdentityManager::OnAuthErrorChanged(
 }
 
 void IdentityManager::OnGaiaAccountsInCookieUpdated(
-    const std::vector<gaia::ListedAccount>& signed_in_accounts,
-    const std::vector<gaia::ListedAccount>& signed_out_accounts,
+    const AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
-  AccountsInCookieJarInfo accounts_in_cookie_jar_info(
-      error == GoogleServiceAuthError::AuthErrorNone(), signed_in_accounts,
-      signed_out_accounts);
+  bool succeeded = error == GoogleServiceAuthError::AuthErrorNone();
+  CHECK(accounts_in_cookie_jar_info.AreAccountsFresh() == succeeded);
 
   for (auto& observer : observer_list_) {
     observer.OnAccountsInCookieUpdated(accounts_in_cookie_jar_info, error);

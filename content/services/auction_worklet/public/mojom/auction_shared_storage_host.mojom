@@ -4,7 +4,7 @@
 
 module auction_worklet.mojom;
 
-import "third_party/blink/public/mojom/shared_storage/shared_storage.mojom";
+import "services/network/public/mojom/shared_storage.mojom";
 
 enum AuctionWorkletFunction {
   kBidderGenerateBid,
@@ -18,24 +18,7 @@ enum AuctionWorkletFunction {
 // storage API (i.e. the setter methods). We intentionally do not return the
 // result of these calls to avoid leaking state to the worklet.
 interface AuctionSharedStorageHost {
-  // Handle sharedStorage.set(): set `key`’s entry to `value`. If
-  // `ignore_if_present` is true, the entry is not updated if `key` already
-  // exists.
-  Set(blink.mojom.SharedStorageKeyArgument key,
-      blink.mojom.SharedStorageValueArgument value,
-      bool ignore_if_present,
-      AuctionWorkletFunction source_auction_worklet_function);
-
-  // Handle sharedStorage.append(): append `value` to the entry for `key`.
-  // Equivalent to "set" if the `key` is not present.
-  Append(blink.mojom.SharedStorageKeyArgument key,
-         blink.mojom.SharedStorageValueArgument value,
-         AuctionWorkletFunction source_auction_worklet_function);
-
-  // Handle sharedStorage.delete(): delete the entry at the given `key`.
-  Delete(blink.mojom.SharedStorageKeyArgument key,
-         AuctionWorkletFunction source_auction_worklet_function);
-
-  // Handle sharedStorage.clear(): delete all entries.
-  Clear(AuctionWorkletFunction source_auction_worklet_function);
+  // Handle the modifier method `method`.
+  SharedStorageUpdate(network.mojom.SharedStorageModifierMethod method,
+                      AuctionWorkletFunction source_auction_worklet_function);
 };

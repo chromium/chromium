@@ -33,6 +33,7 @@ class PLATFORM_EXPORT MainThreadImpl : public MainThread {
   void AddTaskTimeObserver(base::sequence_manager::TaskTimeObserver*) override;
   void RemoveTaskTimeObserver(
       base::sequence_manager::TaskTimeObserver*) override;
+  base::TimeTicks CurrentTaskStartTime() const override;
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;

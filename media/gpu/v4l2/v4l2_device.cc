@@ -686,7 +686,11 @@ V4L2RequestsQueue* V4L2Device::GetRequestsQueue() {
   // this should be fine, since |GetRequestsQueue()| is only called after
   // the codec format is configured, and the VD/VDA instance is always tied
   // to a specific format, so it will never need to switch media devices.
+#if BUILDFLAG(IS_CHROMEOS)
   static const std::string kRequestDevicePrefix = "/dev/media-dec";
+#else
+  static const std::string kRequestDevicePrefix = "/dev/media";
+#endif
 
   // We are sandboxed, so we can't query directory contents to check which
   // devices are actually available. Try to open the first 10; if not present,
@@ -852,11 +856,19 @@ void V4L2Device::CloseDevice() {
 }
 
 void V4L2Device::EnumerateDevicesForType(Type type) {
+#if BUILDFLAG(IS_CHROMEOS)
   static const std::string kDecoderDevicePattern = "/dev/video-dec";
   static const std::string kEncoderDevicePattern = "/dev/video-enc";
   static const std::string kImageProcessorDevicePattern = "/dev/image-proc";
   static const std::string kJpegDecoderDevicePattern = "/dev/jpeg-dec";
   static const std::string kJpegEncoderDevicePattern = "/dev/jpeg-enc";
+#else
+  static const std::string kDecoderDevicePattern = "/dev/video";
+  static const std::string kEncoderDevicePattern = "/dev/video";
+  static const std::string kImageProcessorDevicePattern = "/dev/video";
+  static const std::string kJpegDecoderDevicePattern = "/dev/video";
+  static const std::string kJpegEncoderDevicePattern = "/dev/video";
+#endif
 
   std::string device_pattern;
   v4l2_buf_type buf_type;
@@ -885,14 +897,23 @@ void V4L2Device::EnumerateDevicesForType(Type type) {
 
   std::vector<std::string> candidate_paths;
 
-  // TODO(posciak): Remove this legacy unnumbered device once
-  // all platforms are updated to use numbered devices.
-  candidate_paths.push_back(device_pattern);
-
   // We are sandboxed, so we can't query directory contents to check which
   // devices are actually available. Try to open the first 10; if not present,
   // we will just fail to open immediately.
-  for (int i = 0; i < 10; ++i) {
+#if BUILDFLAG(IS_CHROMEOS)
+  constexpr int kMaxDevices = 10;
+  candidate_paths.reserve(kMaxDevices + 1);
+
+  // TODO(posciak): Remove this legacy unnumbered device once
+  // all platforms are updated to use numbered devices.
+  candidate_paths.push_back(device_pattern);
+#else
+  // On mainline Linux we need to check a much larger number of devices, mainly
+  // because the device pattern is shared with ISP devices.
+  constexpr int kMaxDevices = 256;
+  candidate_paths.reserve(kMaxDevices);
+#endif
+  for (int i = 0; i < kMaxDevices; ++i) {
     candidate_paths.push_back(
         base::StringPrintf("%s%d", device_pattern.c_str(), i));
   }

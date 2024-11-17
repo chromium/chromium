@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "client/crashpad_client.h"
 #include "util/misc/paths.h"
 
@@ -43,7 +44,7 @@ void HeapCorruptionCrash() {
     HeapDestroy(heap);
   } __except (EXCEPTION_EXECUTE_HANDLER) {
     // Heap corruption exception should never be caught.
-    CHECK(false);
+    NOTREACHED();
   }
   // Should never reach here.
   abort();

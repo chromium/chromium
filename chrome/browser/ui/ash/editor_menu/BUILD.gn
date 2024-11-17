@@ -1,0 +1,111 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//extensions/buildflags/buildflags.gni")
+
+assert(is_chromeos_ash)
+
+source_set("utils") {
+  sources = [
+    "utils/editor_types.cc",
+    "utils/editor_types.h",
+    "utils/focus_search.cc",
+    "utils/focus_search.h",
+    "utils/mojo.cc",
+    "utils/mojo.h",
+    "utils/pre_target_handler.cc",
+    "utils/pre_target_handler.h",
+    "utils/pre_target_handler_view.cc",
+    "utils/pre_target_handler_view.h",
+    "utils/utils.cc",
+    "utils/utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chromeos/components/editor_menu/public/cpp",
+    "//chromeos/crosapi/mojom",
+    "//ui/aura",
+    "//ui/display",
+    "//ui/events",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("editor_menu") {
+  sources = [
+    "editor_manager.h",
+    "editor_manager_ash.cc",
+    "editor_manager_ash.h",
+    "editor_manager_factory.cc",
+    "editor_manager_factory.h",
+    "editor_menu_controller_impl.cc",
+    "editor_menu_controller_impl.h",
+    "lobster_manager.cc",
+    "lobster_manager.h",
+  ]
+
+  deps = [
+    ":utils",
+    ":views",
+    "//ash/webui/settings/public/constants:mojom",
+    "//base",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/lobster",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/read_write_cards",
+    "//chromeos/components/editor_menu/public/cpp",
+    "//chromeos/components/magic_boost/public/cpp",
+    "//chromeos/constants:constants",
+    "//chromeos/crosapi/mojom",
+    "//content/public/browser:browser",
+    "//ui/gfx",
+    "//ui/views",
+  ]
+}
+
+source_set("views") {
+  sources = [
+    "editor_menu_badge_view.cc",
+    "editor_menu_badge_view.h",
+    "editor_menu_chip_view.cc",
+    "editor_menu_chip_view.h",
+    "editor_menu_promo_card_view.cc",
+    "editor_menu_promo_card_view.h",
+    "editor_menu_strings.cc",
+    "editor_menu_strings.h",
+    "editor_menu_textfield_view.cc",
+    "editor_menu_textfield_view.h",
+    "editor_menu_view.cc",
+    "editor_menu_view.h",
+    "editor_menu_view_delegate.h",
+  ]
+
+  deps = [
+    ":utils",
+    "//base",
+    "//build:branding_buildflags",
+    "//chrome/browser:browser_process",
+    "//chromeos/components/editor_menu/public/cpp",
+    "//chromeos/constants:constants",
+    "//chromeos/strings:strings_grit",
+    "//chromeos/ui/vector_icons",
+    "//components/vector_icons",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/gfx",
+    "//ui/views",
+    "//ui/wm",
+  ]
+
+  if (is_chrome_branded) {
+    deps += [
+      "//chromeos/ash/resources/internal/strings:strings",
+      "//chromeos/ash/resources/internal/strings:strings_grit",
+    ]
+  }
+}

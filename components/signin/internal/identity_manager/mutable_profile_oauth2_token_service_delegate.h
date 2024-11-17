@@ -23,6 +23,7 @@
 #include "components/signin/public/webdata/token_service_table.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
+#include "crypto/process_bound_string.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
@@ -88,8 +89,13 @@ class MutableProfileOAuth2TokenServiceDelegate
       const CoreAccountId& account_id) const override;
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  bool IsRefreshTokenBound(const CoreAccountId& account_id) const override;
   std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const override;
+  void GenerateRefreshTokenBindingKeyAssertionForMultilogin(
+      const CoreAccountId& account_id,
+      std::string_view challenge,
+      TokenBindingHelper::GenerateAssertionCallback callback) override;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   std::vector<CoreAccountId> GetAccounts() const override;
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory()
@@ -274,7 +280,7 @@ class MutableProfileOAuth2TokenServiceDelegate
                                         const std::string& refresh_token);
 
   // In memory refresh token store mapping account_id to refresh_token.
-  std::map<CoreAccountId, std::string> refresh_tokens_;
+  std::map<CoreAccountId, crypto::ProcessBoundString> refresh_tokens_;
 
   // Handle to the request reading tokens from database.
   WebDataServiceBase::Handle web_data_service_request_;

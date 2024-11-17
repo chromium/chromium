@@ -1511,17 +1511,12 @@ class FeaturePolicyVisibilityTest
     : public testing::Test,
       public testing::WithParamInterface</*is_isolated=*/bool> {
  public:
-  FeaturePolicyVisibilityTest() : is_isolated_(GetParam()) {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kDirectSockets},
-        /*disabled_features=*/{});
-  }
+  FeaturePolicyVisibilityTest() : is_isolated_(GetParam()) {}
 
   bool GetIsIsolated() { return is_isolated_; }
 
  private:
   test::TaskEnvironment task_environment_;
-  base::test::ScopedFeatureList feature_list_;
   bool is_isolated_{false};
 };
 
@@ -1552,4 +1547,3 @@ TEST_P(FeaturePolicyVisibilityTest, VerifyIsolated) {
 }
 
 }  // namespace blink
-

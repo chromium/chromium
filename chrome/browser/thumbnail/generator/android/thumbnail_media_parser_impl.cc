@@ -47,13 +47,6 @@ void OnRequestOverlayInfo(bool decoder_requires_restart_for_overlay,
     std::move(overlay_info_cb).Run(media::OverlayInfo());
 }
 
-int64_t GetFileSize(const base::FilePath& file_path) {
-  int64_t size = 0;
-  if (!base::GetFileSize(file_path, &size))
-    return -1;
-  return size;
-}
-
 }  // namespace
 
 ThumbnailMediaParserImpl::ThumbnailMediaParserImpl(
@@ -83,18 +76,19 @@ void ThumbnailMediaParserImpl::Start(ParseCompleteCB parse_complete_cb) {
 
   // Get the size of the file if needed.
   file_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&GetFileSize, file_path_),
+      FROM_HERE, base::GetFileSizeCallback(file_path_),
       base::BindOnce(&ThumbnailMediaParserImpl::OnReadFileSize,
                      weak_factory_.GetWeakPtr()));
 }
 
-void ThumbnailMediaParserImpl::OnReadFileSize(int64_t file_size) {
-  if (file_size < 0) {
+void ThumbnailMediaParserImpl::OnReadFileSize(
+    std::optional<int64_t> file_size) {
+  if (!file_size.has_value()) {
     OnError(MediaParserEvent::kReadFileError);
     return;
   }
 
-  size_ = file_size;
+  size_ = file_size.value();
   RetrieveMediaParser();
 }
 
@@ -239,7 +233,7 @@ void ThumbnailMediaParserImpl::OnVideoFrameDecoded(
     return;
   }
 
-  DCHECK(frame->HasTextures());
+  DCHECK(frame->HasSharedImage());
   decode_done_ = true;
 
   RenderVideoFrame(std::move(frame));

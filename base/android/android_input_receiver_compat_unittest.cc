@@ -22,11 +22,14 @@ TEST(AndroidInputReceiverCompatTest, CanFindMethodsOnAndroidVPlus) {
 
   EXPECT_NE(instance.AInputTransferToken_fromJavaFn, nullptr);
   EXPECT_NE(instance.AInputTransferToken_toJavaFn, nullptr);
+  EXPECT_NE(instance.AInputTransferToken_releaseFn, nullptr);
   EXPECT_NE(instance.AInputEvent_toJavaFn, nullptr);
   EXPECT_NE(instance.AInputReceiverCallbacks_createFn, nullptr);
+  EXPECT_NE(instance.AInputReceiverCallbacks_releaseFn, nullptr);
   EXPECT_NE(instance.AInputReceiverCallbacks_setMotionEventCallbackFn, nullptr);
   EXPECT_NE(instance.AInputReceiver_createUnbatchedInputReceiverFn, nullptr);
   EXPECT_NE(instance.AInputReceiver_getInputTransferTokenFn, nullptr);
+  EXPECT_NE(instance.AInputReceiver_releaseFn, nullptr);
 }
 
 }  // namespace base

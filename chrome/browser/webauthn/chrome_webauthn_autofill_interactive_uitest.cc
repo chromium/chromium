@@ -6,11 +6,11 @@
 #include <string>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
-#include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_logging_settings.h"
@@ -50,6 +50,7 @@
 #include "content/public/browser/scoped_authenticator_environment_for_testing.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -159,12 +160,14 @@ std::u16string ExpectedPasskeyLabel() {
   if (device::kWebAuthnGpmPin.Get()) {
     // In this case GPM should be enabled by default.
     return l10n_util::GetStringUTF16(
-        IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER);
-  } else {
-    // Otherwise the label will mention the priority phone.
-    return l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
-                                      kPhoneName);
+        IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER_NEW);
   }
+  // Otherwise the label will mention the priority phone.
+  return l10n_util::GetStringFUTF16(
+      base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)
+          ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE_NEW
+          : IDS_PASSWORD_MANAGER_PASSKEY_FROM_PHONE,
+      kPhoneName);
 }
 
 // Autofill integration tests. This file contains end-to-end tests for
@@ -196,13 +199,14 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
           connection = std::make_unique<
               testing::NiceMock<trusted_vault::MockTrustedVaultConnection>>();
       ON_CALL(*connection, DownloadAuthenticationFactorsRegistrationState(
-                               testing::_, testing::_))
+                               testing::_, testing::_, testing::_))
           .WillByDefault(
               [](const CoreAccountInfo&,
                  base::OnceCallback<void(
                      trusted_vault::
                          DownloadAuthenticationFactorsRegistrationStateResult)>
-                     callback) mutable {
+                     callback,
+                 base::RepeatingClosure _) mutable {
                 trusted_vault::
                     DownloadAuthenticationFactorsRegistrationStateResult result;
                 result.state = trusted_vault::
@@ -249,7 +253,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {syncer::kSyncWebauthnCredentials},
+        {device::kWebAuthnHybridLinking},
         /*disabled_features=*/{
             // Disable this feature explicitly, as it can cause unexpected email
             // fields to be parsed in these tests.
@@ -577,6 +581,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
   RunSelectAccountTest(kConditionalUIRequestFiltered);
 }
 
+// TODO(crbug.com/372493822): remove when hybrid linking flag is removed.
 IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
                        GPMPasskeys) {
   // Have the virtual device masquerade as a phone.
@@ -655,6 +660,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
 
 // Tests that downloading passkeys from sync during a conditional UI also
 // updates the autofill popup with the newly downloaded credentials.
+// TODO(crbug.com/372493822): remove when hybrid linking flag is removed.
 IN_PROC_BROWSER_TEST_F(WebAuthnDevtoolsAutofillIntegrationTest,
                        GPMPasskeys_UpdatePasskeys) {
   // Have the virtual device masquerade as a phone.
@@ -773,7 +779,9 @@ class WebAuthnWindowsAutofillIntegrationTest
 
   std::u16string GetDeviceString() override {
     return l10n_util::GetStringUTF16(
-        IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO);
+        base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)
+            ? IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO_NEW
+            : IDS_PASSWORD_MANAGER_PASSKEY_FROM_WINDOWS_HELLO);
   }
 
  protected:

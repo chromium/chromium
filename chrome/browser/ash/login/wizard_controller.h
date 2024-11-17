@@ -324,15 +324,15 @@ class WizardController : public OobeUI::Observer {
   void ShowAssistantOptInFlowScreen();
   void ShowMultiDeviceSetupScreen();
   void ShowGestureNavigationScreen();
-  void ShowPinSetupScreen();
+  void ShowPinSetupScreenAsSecondaryFactor();
+  void ShowPinSetupScreenAsMainFactor();
+  void ShowPinSetupScreenForRecovery();
   void ShowMarketingOptInScreen();
   void ShowPackagedLicenseScreen();
   void ShowEduCoexistenceLoginScreen();
   void ShowParentalHandoffScreen();
   void ShowOsInstallScreen();
   void ShowOsTrialScreen();
-  void ShowLacrosDataMigrationScreen();
-  void ShowLacrosDataBackwardMigrationScreen();
   void ShowConsolidatedConsentScreen();
   void ShowCryptohomeRecoverySetupScreen();
   void ShowAuthenticationSetupScreen();
@@ -358,6 +358,7 @@ class WizardController : public OobeUI::Observer {
   void ShowPerksDiscoveryScreen();
   void ShowSplitModifierKeyboardInfoScreen();
   void ShowAccountSelectionScreen();
+  void ShowAppLaunchSplashScreen();
 
   // Shows images login screen.
   void ShowLoginScreen();
@@ -474,6 +475,8 @@ class WizardController : public OobeUI::Observer {
   void OnPersonalizedRecomendAppsScreenExit(
       PersonalizedRecommendAppsScreen::Result result);
   void OnPerksDiscoveryScreenExit(PerksDiscoveryScreen::Result result);
+  void OnAppLaunchSplashScreenExit();
+
   // Callback invoked once it has been determined whether the device is disabled
   // or not.
   void OnDeviceDisabledChecked(bool device_disabled);
@@ -581,7 +584,8 @@ class WizardController : public OobeUI::Observer {
 
   // The `BaseScreen*` here point to the objects owned by the `screen_manager_`.
   // So it should be safe to store the pointers.
-  base::flat_map<BaseScreen*, BaseScreen*> previous_screens_;
+  base::flat_map<BaseScreen*, raw_ptr<BaseScreen, CtnExperimental>>
+      previous_screens_;
 
   raw_ptr<WizardContext> wizard_context_;
 

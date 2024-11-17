@@ -25,7 +25,9 @@ import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.components.ukm.UkmRecorder;
@@ -62,6 +64,10 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         // cases. If the first suggestion isn't the one we want, ignore all subsequent suggestions.
         if (position != 0) return false;
 
+        // Fall back to the base suggestion processor when retaining omnibox on focus so as not to
+        // show mobile-optimized actions in a desktop-like context.
+        if (OmniboxFeatures.shouldRetainOmniboxOnFocus()) return false;
+
         Tab activeTab = mTabSupplier.get();
         if (activeTab == null
                 || !activeTab.isInitialized()
@@ -90,8 +96,11 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
 
     @Override
     public void populateModel(
-            @NonNull AutocompleteMatch suggestion, @NonNull PropertyModel model, int position) {
-        super.populateModel(suggestion, model, position);
+            AutocompleteInput input,
+            @NonNull AutocompleteMatch suggestion,
+            @NonNull PropertyModel model,
+            int position) {
+        super.populateModel(input, suggestion, model, position);
 
         var tab = mTabSupplier.get();
         var title = suggestion.getDescription();
@@ -144,9 +153,9 @@ public class EditUrlSuggestionProcessor extends BaseSuggestionViewProcessor {
         var webContents = mTabSupplier.get().getWebContents();
         if (webContents != null) {
             // TODO(ender): find out if this is still captured anywhere.
-            new UkmRecorder.Bridge()
-                    .recordEventWithBooleanMetric(
-                            webContents, "Omnibox.EditUrlSuggestion.Share", "HasOccurred");
+            new UkmRecorder(webContents, "Omnibox.EditUrlSuggestion.Share")
+                    .addBooleanMetric("HasOccurred")
+                    .record();
         }
         mSuggestionHost.finishInteraction();
         // TODO(mdjones): This should only share the displayed URL instead of the background tab.

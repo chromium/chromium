@@ -94,9 +94,9 @@ std::vector<FileSearchProvider::FileInfo> SearchFilesByPattern(
     const base::FilePath& root_path,
     const std::u16string& query,
     const base::TimeTicks& query_start_time,
-    const std::vector<base::FilePath> trash_paths,
-    const int file_type,
-    const base::span<const std::string> allowed_extensions) {
+    std::vector<base::FilePath> trash_paths,
+    int file_type,
+    base::span<const std::string> allowed_extensions) {
   base::FileEnumerator enumerator(
       root_path,
       /*recursive=*/true, file_type, CreateFnmatchQuery(query),
@@ -176,8 +176,7 @@ void FileSearchProvider::Start(const std::u16string& query) {
   // precomputed.
   if (trash_paths_.empty()) {
     auto enabled_trash_locations =
-        file_manager::trash::GenerateEnabledTrashLocationsForProfile(
-            profile_, /*base_path=*/base::FilePath());
+        file_manager::trash::GenerateEnabledTrashLocationsForProfile(profile_);
     for (const auto& it : enabled_trash_locations) {
       trash_paths_.emplace_back(
           it.first.Append(it.second.relative_folder_path));

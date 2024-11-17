@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">কেটালান</translation>
 <translation id="1168100932582989117">Googleৰ নাম সম্পর্কীয় ছার্ভাৰ</translation>
+<translation id="1170788066030116158">লোৱাৰ তাৰিখ</translation>
 <translation id="1172970565351728681">প্ৰায় <ph name="REMAINING_TIME" /> বাকী আছে</translation>
 <translation id="1173894706177603556">নতুন নাম দিয়ক</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />টা নেটৱৰ্কৰ <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />%, ফ’নৰ বেটাৰী <ph name="BATTERY_STATUS" />%, সবিশেষ</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">বিশ্বাসযোগ্যতাৰ প্ৰমাণপত্ৰ দূৰৰ পৰা অগ্ৰাহ্য কৰা হৈছে</translation>
 <translation id="4394214039309501350">বাহ্যিক লিংক</translation>
 <translation id="4394980935660306080">এই সপ্তাহটোৰ আৰম্ভণিতে</translation>
+<translation id="4397435965699247285">অফলাইন হৈ থকা সময়ত OneDrive উপলব্ধ নহয়</translation>
 <translation id="4398096759193130964">বস্তুবোৰ পুনঃস্থাপন কৰক অথবা এইবোৰ ট্ৰেশ্বৰ বাহিৰত এটা নতুন ফ’ল্ডাৰলৈ টানি আনি এৰক</translation>
 <translation id="4401287888955153199">আটাইবোৰ আহৰণ কৰক</translation>
 <translation id="4410695710508688828">আহৰণ কৰাটো বিফল হৈছে। <ph name="ERROR_MESSAGE" /></translation>

@@ -57,8 +57,7 @@ class HostResolverFactory final : public net::HostResolver::Factory {
       const net::HostResolver::ManagerOptions& options,
       std::string_view host_mapping_rules,
       bool enable_caching) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
  private:

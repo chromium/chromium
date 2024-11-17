@@ -4,6 +4,8 @@
 
 #include "chrome/browser/supervised_user/supervised_user_navigation_throttle.h"
 
+#include <utility>
+
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -15,9 +17,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
 #include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_verification_page.h"
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -199,55 +203,6 @@ void SupervisedUserNavigationThrottle::OnCheckDone(
   }
 }
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-// Whether to show a re-auth interstitial instead of the parent approval
-// interstitial.
-bool SupervisedUserNavigationThrottle::ShouldShowReauthInterstitial(
-    const Profile* profile,
-    bool is_main_frame) {
-  if (!base::FeatureList::IsEnabled(
-          supervised_user::
-              kForceSupervisedUserReauthenticationForBlockedSites)) {
-    return false;
-  }
-
-  if (!is_main_frame &&
-      !base::FeatureList::IsEnabled(
-          supervised_user::kAllowSupervisedUserReauthenticationForSubframes)) {
-    return false;
-  }
-
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfileIfExists(profile);
-  CHECK(identity_manager);
-
-  // Show the re-auth interstitial if the account is in a persistent error
-  // state. If the error state is transient, show the approval interstitial
-  // instead (an approval request will either succeed, or display a "try again
-  // later" message).
-  return identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin));
-}
-
-SupervisedUserVerificationPage::VerificationPurpose
-GetVerificationPurposeFromFilteringReason(
-    supervised_user::FilteringBehaviorReason reason) {
-  switch (reason) {
-    case supervised_user::FilteringBehaviorReason::DEFAULT:
-      return SupervisedUserVerificationPage::VerificationPurpose::
-          DEFAULT_BLOCKED_SITE;
-    case supervised_user::FilteringBehaviorReason::ASYNC_CHECKER:
-      return SupervisedUserVerificationPage::VerificationPurpose::
-          SAFE_SITES_BLOCKED_SITE;
-    case supervised_user::FilteringBehaviorReason::MANUAL:
-      return SupervisedUserVerificationPage::VerificationPurpose::
-          MANUAL_BLOCKED_SITE;
-    default:
-      NOTREACHED_NORETURN();
-  }
-}
-#endif
-
 void SupervisedUserNavigationThrottle::OnInterstitialResult(
     CallbackActions action,
     bool already_sent_request,
@@ -259,32 +214,55 @@ void SupervisedUserNavigationThrottle::OnInterstitialResult(
     }
     case kCancelWithInterstitial: {
       CHECK(navigation_handle());
-      Profile* profile = Profile::FromBrowserContext(
-          navigation_handle()->GetWebContents()->GetBrowserContext());
-
+// LINT.IfChange(cancel_with_interstitial)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-      if (ShouldShowReauthInterstitial(profile, is_main_frame)) {
-        // Show the re-authentication interstitial if the user signed out of the
-        // content area, as parent's approval requires authentication. This
-        // interstitial is only available on Linux/Mac/Windows as ChromeOS and
-        // Android have different re-auth mechanisms.
+      if (supervised_user::ShouldShowReAuthInterstitial(*navigation_handle(),
+                                                        is_main_frame)) {
+        // Show the re-authentication interstitial if the user signed out of
+        // the content area, as parent's approval requires authentication.
+        // This interstitial is only available on Linux/Mac/Windows as
+        // ChromeOS and Android have different re-auth mechanisms.
         CancelDeferredNavigation(
             content::NavigationThrottle::ThrottleCheckResult(
                 CANCEL, net::ERR_BLOCKED_BY_CLIENT,
-                supervised_user::CreateReauthenticationInterstitial(
-                    *navigation_handle(),
-                    GetVerificationPurposeFromFilteringReason(reason_))));
+                supervised_user::
+                    CreateReauthenticationInterstitialForBlockedSites(
+                        *navigation_handle(), reason_)));
         return;
       }
 #endif
-
+      // LINT.ThenChange(//chrome/browser/supervised_user/classify_url_navigation_throttle.cc:cancel_with_interstitial)
+      Profile* profile = Profile::FromBrowserContext(
+          navigation_handle()->GetWebContents()->GetBrowserContext());
       std::string interstitial_html =
           supervised_user::SupervisedUserInterstitial::GetHTMLContents(
               SupervisedUserServiceFactory::GetForProfile(profile),
               profile->GetPrefs(), reason_, already_sent_request, is_main_frame,
               g_browser_process->GetApplicationLocale());
       CancelDeferredNavigation(content::NavigationThrottle::ThrottleCheckResult(
-          CANCEL, net::ERR_BLOCKED_BY_CLIENT, interstitial_html));
+          CANCEL, net::ERR_BLOCKED_BY_CLIENT, std::move(interstitial_html)));
     }
   }
 }
+
+namespace supervised_user {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+
+bool ShouldShowReAuthInterstitial(content::NavigationHandle& navigation_handle,
+                                  bool is_main_frame) {
+  Profile* profile = Profile::FromBrowserContext(
+      navigation_handle.GetWebContents()->GetBrowserContext());
+  supervised_user::ChildAccountService* child_account_service =
+      ChildAccountServiceFactory::GetForProfile(profile);
+  return base::FeatureList::IsEnabled(
+             kForceSupervisedUserReauthenticationForBlockedSites) &&
+         SupervisedUserVerificationPage::ShouldShowPage(
+             *child_account_service) &&
+         (is_main_frame ||
+          base::FeatureList::IsEnabled(
+              supervised_user::
+                  kAllowSupervisedUserReauthenticationForSubframes));
+}
+
+#endif
+}  // namespace supervised_user

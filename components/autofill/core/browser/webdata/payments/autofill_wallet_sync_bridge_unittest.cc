@@ -30,7 +30,6 @@
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
 #include "components/autofill/core/browser/data_model/payments_metadata.h"
 #include "components/autofill/core/browser/payments/payments_customer_data.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/autofill_sync_metadata_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_backend.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
@@ -61,39 +60,40 @@
 namespace autofill {
 namespace {
 
-using autofill::AutofillProfileChange;
-using autofill::CreditCardChange;
-using base::ScopedTempDir;
+using ::autofill::AutofillProfileChange;
+using ::autofill::CreditCardChange;
+using ::base::ScopedTempDir;
 using IbanChangeKey = absl::variant<std::string, int64_t>;
-using sync_pb::AutofillWalletSpecifics;
-using sync_pb::DataTypeState;
-using sync_pb::EntityMetadata;
-using syncer::DataBatch;
-using syncer::DataType;
-using syncer::EntityChange;
-using syncer::EntityData;
-using syncer::HasInitialSyncDone;
-using syncer::KeyAndData;
-using syncer::MockDataTypeLocalChangeProcessor;
-using testing::NiceMock;
-using testing::Pointee;
-using testing::Return;
-using testing::SizeIs;
-using testing::UnorderedElementsAre;
+using ::sync_pb::AutofillWalletSpecifics;
+using ::sync_pb::DataTypeState;
+using ::sync_pb::EntityMetadata;
+using ::syncer::DataBatch;
+using ::syncer::DataType;
+using ::syncer::EntityChange;
+using ::syncer::EntityData;
+using ::syncer::HasInitialSyncDone;
+using ::syncer::KeyAndData;
+using ::syncer::MockDataTypeLocalChangeProcessor;
+using ::testing::NiceMock;
+using ::testing::Pointee;
+using ::testing::Return;
+using ::testing::SizeIs;
+using ::testing::UnorderedElementsAre;
 
 // Represents a Payments customer id.
-const char kCustomerDataId[] = "deadbeef";
-const char kCustomerDataId2[] = "deadcafe";
+constexpr char kCustomerDataId[] = "deadbeef";
+constexpr char kCustomerDataId2[] = "deadcafe";
 
 // Unique client tags for the server data.
-const char kCard1ClientTag[] = "Y2FyZDHvv74=";
-const char kCustomerDataClientTag[] = "deadbeef";
-const char kCloudTokenDataClientTag[] = "token";
-const char kBankAccountClientTag[] = "payment_instrument:1234";
+constexpr char kCard1ClientTag[] = "Y2FyZDHvv74=";
+constexpr char kCustomerDataClientTag[] = "deadbeef";
+constexpr char kCloudTokenDataClientTag[] = "token";
+constexpr char kBankAccountClientTag[] = "payment_instrument:1234";
+constexpr char kEwalletAccountClientTag[] = "payment_instrument:2345";
 
-const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
+constexpr auto kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
-const char kDefaultCacheGuid[] = "CacheGuid";
+constexpr char kDefaultCacheGuid[] = "CacheGuid";
 
 void ExtractAutofillWalletSpecificsFromDataBatch(
     std::unique_ptr<DataBatch> batch,
@@ -234,6 +234,10 @@ std::string AutofillWalletSpecificsAsDebugString(
     case sync_pb::AutofillWalletSpecifics_WalletInfoType::
         AutofillWalletSpecifics_WalletInfoType_MASKED_IBAN:
       return WalletMaskedIbanSpecificsAsDebugString(specifics);
+    // TODO(crbug.com/374767814): Implement AutofillWalletSpecificsAsDebugString
+    // for Payment Instrument Creation Option.
+    case sync_pb::AutofillWalletSpecifics_WalletInfoType::
+        AutofillWalletSpecifics_WalletInfoType_PAYMENT_INSTRUMENT_CREATION_OPTION:
     case sync_pb::AutofillWalletSpecifics_WalletInfoType::
         AutofillWalletSpecifics_WalletInfoType_UNKNOWN:
       return "Unknown";
@@ -280,8 +284,7 @@ class AutofillWalletSyncBridgeTestBase {
  public:
   AutofillWalletSyncBridgeTestBase()
       : encryptor_(os_crypt_async::GetTestEncryptorForTesting()) {
-    // Fix a time for implicitly constructed use_dates in AutofillProfile.
-    test_clock_.SetNow(kJune2017);
+    task_environment_.AdvanceClock(kJune2017 - base::Time::Now());
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&sync_metadata_table_);
     db_.AddTable(&table_);
@@ -427,9 +430,9 @@ class AutofillWalletSyncBridgeTestBase {
   MockAutofillWebDataBackend* backend() { return &backend_; }
 
  private:
-  autofill::TestAutofillClock test_clock_;
   ScopedTempDir temp_dir_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   const os_crypt_async::Encryptor encryptor_;
   NiceMock<MockAutofillWebDataBackend> backend_;
   AutofillSyncMetadataTable sync_metadata_table_;
@@ -443,15 +446,12 @@ class AutofillWalletSyncBridgeTestBase {
 class AutofillWalletSyncBridgeTest : public testing::Test,
                                      public AutofillWalletSyncBridgeTestBase {
  public:
-  AutofillWalletSyncBridgeTest() {
-    feature_list_.InitAndEnableFeature(
-        autofill::features::kAutofillEnableCardBenefitsSync);
-  }
-
+  AutofillWalletSyncBridgeTest() = default;
   ~AutofillWalletSyncBridgeTest() override = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillEnableCardBenefitsSync};
 };
 
 // The following 3 tests make sure client tags stay stable.
@@ -492,6 +492,20 @@ TEST_F(AutofillWalletSyncBridgeTest, GetClientTagForBankAccount) {
             kBankAccountClientTag);
 }
 
+TEST_F(AutofillWalletSyncBridgeTest, GetClientTagForEwalletAccount) {
+  AutofillWalletSpecifics specifics =
+      CreateAutofillWalletSpecificsForEwalletAccount(
+          /*client_tag=*/kEwalletAccountClientTag,
+          /*nickname=*/"eWallet account",
+          /*display_icon_url=*/GURL("http://www.google.com"),
+          /*ewallet_name=*/"ABC Pay",
+          /*account_display_name=*/"2345",
+          /*is_fido_enrolled=*/false);
+
+  EXPECT_EQ(bridge()->GetClientTag(SpecificsToEntity(specifics)),
+            kEwalletAccountClientTag);
+}
+
 // The following 3 tests make sure storage keys stay stable.
 TEST_F(AutofillWalletSyncBridgeTest, GetStorageKeyForCard) {
   AutofillWalletSpecifics specifics2 =
@@ -530,8 +544,25 @@ TEST_F(AutofillWalletSyncBridgeTest, GetStorageKeyForBankAccount) {
             kBankAccountClientTag);
 }
 
+TEST_F(AutofillWalletSyncBridgeTest, GetStorageKeyForEwalletAccount) {
+  AutofillWalletSpecifics specifics =
+      CreateAutofillWalletSpecificsForEwalletAccount(
+          /*client_tag=*/kEwalletAccountClientTag,
+          /*nickname=*/"eWallet account",
+          /*display_icon_url=*/GURL("http://www.google.com"),
+          /*ewallet_name=*/"ABC Pay",
+          /*account_display_name=*/"5678",
+          /*is_fido_enrolled=*/false);
+
+  EXPECT_EQ(bridge()->GetStorageKey(SpecificsToEntity(specifics)),
+            kEwalletAccountClientTag);
+}
+
 TEST_F(AutofillWalletSyncBridgeTest,
        GetAllDataForDebugging_ShouldReturnAllData) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(
+      features::kAutofillEnableCardInfoRuntimeRetrieval);
   // Create Wallet Data and store them in the table.
   CreditCard card1 = test::GetMaskedServerCard();
   // Set the card issuer to Google.
@@ -539,12 +570,17 @@ TEST_F(AutofillWalletSyncBridgeTest,
   card1.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kUnenrolled);
   card1.set_card_art_url(GURL("https://www.example.com/card.png"));
+  card1.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndNotEligible);
   CreditCard card2 = test::GetMaskedServerCardAmex();
   CreditCard card_with_nickname = test::GetMaskedServerCardWithNickname();
   card2.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kEnrolled);
   card2.set_virtual_card_enrollment_type(
       CreditCard::VirtualCardEnrollmentType::kNetwork);
+  card2.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
   table()->SetServerCreditCards({card1, card2, card_with_nickname});
   PaymentsCustomerData customer_data{/*customer_id=*/kCustomerDataId};
   table()->SetPaymentsCustomerData(&customer_data);
@@ -586,6 +622,12 @@ TEST_F(AutofillWalletSyncBridgeTest,
   EXPECT_EQ("https://www.example.com/card.png",
             card_specifics1.masked_card().card_art_url());
   EXPECT_TRUE(card_specifics2.masked_card().card_art_url().empty());
+  EXPECT_EQ(
+      sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE,
+      card_specifics1.masked_card().card_info_retrieval_enrollment_state());
+  EXPECT_EQ(
+      sync_pb::WalletMaskedCreditCard::RETRIEVAL_ENROLLED,
+      card_specifics2.masked_card().card_info_retrieval_enrollment_state());
 
   // Read local Wallet Data from Autofill table, and compare with expected
   // wallet specifics.
@@ -670,6 +712,44 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewWalletCard) {
       UnorderedElementsAre(EqualsSpecifics(card_specifics2),
                            EqualsSpecifics(customer_data_specifics),
                            EqualsSpecifics(cloud_token_data_specifics)));
+}
+
+// Tests that when a new wallet card is sent by the server with
+// CardInfoRetrievalEnrollment, the client only keeps the new data.
+TEST_F(AutofillWalletSyncBridgeTest,
+       MergeFullSyncData_NewWalletCard_CardInfoRetrievalEnrollment) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(
+      features::kAutofillEnableCardInfoRuntimeRetrieval);
+  // Create one card on the client.
+  CreditCard card1 = test::GetMaskedServerCard();
+  card1.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndNotEligible);
+  table()->SetServerCreditCards({card1});
+
+  // Create a different card on the server.
+  CreditCard card2 = test::GetMaskedServerCardAmex();
+  card2.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  AutofillWalletSpecifics card_specifics2;
+  SetAutofillWalletSpecificsFromServerCard(card2, &card_specifics2);
+
+  EXPECT_CALL(*backend(),
+              NotifyOnAutofillChangedBySync(syncer::AUTOFILL_WALLET_DATA));
+  EXPECT_CALL(*backend(), CommitChanges());
+  EXPECT_CALL(*backend(),
+              NotifyOfCreditCardChanged(AddChange(card2.server_id(), card2)));
+  EXPECT_CALL(*backend(),
+              NotifyOfCreditCardChanged(RemoveChange(card1.server_id())));
+  StartSyncing({card_specifics2});
+
+  // Billing address IDs are deprecated and no longer stored.
+  card_specifics2.mutable_masked_card()->set_billing_address_id(std::string());
+
+  // Only the server card should be present on the client.
+  EXPECT_THAT(GetAllLocalData(),
+              UnorderedElementsAre(EqualsSpecifics(card_specifics2)));
 }
 
 // Tests that in initial sync, no metrics are recorded for new cards.
@@ -877,11 +957,17 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NoCloudTokenData) {
 // changes on the client.
 TEST_F(AutofillWalletSyncBridgeTest,
        MergeFullSyncData_SameWalletCardAndCustomerDataAndCloudTokenData) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(
+      features::kAutofillEnableCardInfoRuntimeRetrieval);
   // Create one card on the client.
   CreditCard card = test::GetMaskedServerCard();
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kUnenrolled);
   card.set_card_art_url(GURL("https://www.example.com/card.png"));
+  card.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndNotEligible);
   table()->SetServerCreditCards({card});
   PaymentsCustomerData customer_data{/*customer_id=*/kCustomerDataId};
   table()->SetPaymentsCustomerData(&customer_data);
@@ -955,6 +1041,9 @@ TEST_F(AutofillWalletSyncBridgeTest,
 // Test that all field values for a card sent from the server are copied on the
 // card on the client.
 TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SetsAllWalletCardData) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(
+      features::kAutofillEnableCardInfoRuntimeRetrieval);
   // Create a card to be synced from the server.
   CreditCard card = test::GetMaskedServerCard();
   card.SetNickname(u"Grocery card");
@@ -963,6 +1052,9 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SetsAllWalletCardData) {
   card.set_virtual_card_enrollment_state(
       CreditCard::VirtualCardEnrollmentState::kUnenrolled);
   card.set_card_art_url(GURL("https://www.example.com/card.png"));
+  card.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndNotEligible);
   AutofillWalletSpecifics card_specifics;
   SetAutofillWalletSpecificsFromServerCard(card, &card_specifics);
 
@@ -988,9 +1080,11 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_SetsAllWalletCardData) {
   EXPECT_EQ(card.nickname(), cards[0]->nickname());
   EXPECT_EQ(card.card_issuer(), cards[0]->card_issuer());
   EXPECT_EQ(card.instrument_id(), cards[0]->instrument_id());
-  EXPECT_EQ(card.virtual_card_enrollment_state(),
-            cards[0]->virtual_card_enrollment_state());
+  EXPECT_EQ(card.card_info_retrieval_enrollment_state(),
+            cards[0]->card_info_retrieval_enrollment_state());
   EXPECT_EQ(card.card_art_url(), cards[0]->card_art_url());
+  EXPECT_EQ(card.card_info_retrieval_enrollment_state(),
+            cards[0]->card_info_retrieval_enrollment_state());
 
   // Also make sure that those types are not empty, to exercice all the code
   // paths.
@@ -1413,7 +1507,7 @@ class AutofillWalletSyncBridgeTestWithBenefitSyncDisabled
  public:
   AutofillWalletSyncBridgeTestWithBenefitSyncDisabled() {
     feature_list_.InitAndDisableFeature(
-        autofill::features::kAutofillEnableCardBenefitsSync);
+        features::kAutofillEnableCardBenefitsSync);
   }
 
   ~AutofillWalletSyncBridgeTestWithBenefitSyncDisabled() override = default;
@@ -1718,6 +1812,137 @@ TEST_F(AutofillWalletSyncBridgeTest, MergeFullSyncData_NewBankAccount_ExpOff) {
 
   table()->GetMaskedBankAccounts(bank_accounts);
   EXPECT_EQ(0U, bank_accounts.size());
+}
+
+// Tests that when the server sends the same data as the client has, nothing
+// changes on the client.
+TEST_F(AutofillWalletSyncBridgeTest,
+       MergeFullSyncData_SameEwalletPaymentInstrumentData) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSyncEwalletAccounts);
+  // Create one ewallet payment instrument on the client.
+  sync_pb::PaymentInstrument existing_ewallet_payment_instrument =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  EXPECT_TRUE(
+      table()->SetPaymentInstruments({existing_ewallet_payment_instrument}));
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  table()->GetPaymentInstruments(payment_instruments);
+  ASSERT_EQ(1U, payment_instruments.size());
+
+  // Create the eWallet payment instrument on the server.
+  AutofillWalletSpecifics ewallet_account_specifics;
+  SetAutofillWalletSpecificsFromPaymentInstrument(
+      existing_ewallet_payment_instrument, ewallet_account_specifics);
+
+  StartSyncing({ewallet_account_specifics});
+
+  table()->GetPaymentInstruments(payment_instruments);
+  EXPECT_EQ(1U, payment_instruments.size());
+  EXPECT_THAT(GetAllLocalData(),
+              UnorderedElementsAre(EqualsSpecifics(ewallet_account_specifics)));
+}
+
+// Tests that when the server sends a new ewallet account, it gets added to the
+// database.
+TEST_F(AutofillWalletSyncBridgeTest,
+       MergeFullSyncData_NewEwalletPaymentInstrument) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSyncEwalletAccounts);
+  // Create one ewallet payment instrument on the client.
+  sync_pb::PaymentInstrument existing_ewallet_payment_instrument =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  EXPECT_TRUE(
+      table()->SetPaymentInstruments({existing_ewallet_payment_instrument}));
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  table()->GetPaymentInstruments(payment_instruments);
+  ASSERT_EQ(1U, payment_instruments.size());
+  AutofillWalletSpecifics existing_ewallet_account_specifics;
+  SetAutofillWalletSpecificsFromPaymentInstrument(
+      existing_ewallet_payment_instrument, existing_ewallet_account_specifics);
+
+  // Create the ewallet payment instrument on the server.
+  sync_pb::PaymentInstrument new_ewallet_payment_instrument =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/9999);
+  AutofillWalletSpecifics new_ewallet_account_specifics;
+  SetAutofillWalletSpecificsFromPaymentInstrument(
+      new_ewallet_payment_instrument, new_ewallet_account_specifics);
+
+  StartSyncing(
+      {new_ewallet_account_specifics, existing_ewallet_account_specifics});
+
+  table()->GetPaymentInstruments(payment_instruments);
+  EXPECT_EQ(2U, payment_instruments.size());
+  EXPECT_THAT(
+      GetAllLocalData(),
+      UnorderedElementsAre(EqualsSpecifics(existing_ewallet_account_specifics),
+                           EqualsSpecifics(new_ewallet_account_specifics)));
+}
+
+// Tests that when the server sends an updated ewallet account, it gets updated
+// in the database.
+TEST_F(AutofillWalletSyncBridgeTest,
+       MergeFullSyncData_UpdatedEwalletPaymentInstrument) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSyncEwalletAccounts);
+  // Create one ewallet payment instrument on the client.
+  sync_pb::PaymentInstrument existing_ewallet_payment_instrument =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  EXPECT_TRUE(
+      table()->SetPaymentInstruments({existing_ewallet_payment_instrument}));
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  table()->GetPaymentInstruments(payment_instruments);
+  ASSERT_EQ(1U, payment_instruments.size());
+
+  // Update the ewallet payment instrument on the server. Only the instrument id
+  // is the same as the existing ewallet payment instrument.
+  sync_pb::PaymentInstrument udpated_ewallet_payment_instrument;
+  udpated_ewallet_payment_instrument.set_instrument_id(1234);
+  sync_pb::EwalletDetails* ewallet =
+      udpated_ewallet_payment_instrument.mutable_ewallet_details();
+  ewallet->set_ewallet_name("updated_ewallet_name");
+  ewallet->set_account_display_name("updated_account_display_name");
+
+  AutofillWalletSpecifics updated_ewallet_account_specifics;
+  SetAutofillWalletSpecificsFromPaymentInstrument(
+      udpated_ewallet_payment_instrument, updated_ewallet_account_specifics);
+
+  StartSyncing({updated_ewallet_account_specifics});
+
+  table()->GetPaymentInstruments(payment_instruments);
+  EXPECT_EQ(1U, payment_instruments.size());
+  EXPECT_THAT(
+      GetAllLocalData(),
+      UnorderedElementsAre(EqualsSpecifics(updated_ewallet_account_specifics)));
+}
+
+// Tests that when the server deletes a eWallet payment instrument, it gets
+// removed from the database.
+TEST_F(AutofillWalletSyncBridgeTest,
+       MergeFullSyncData_RemoveEwalletPaymentInstrument) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillSyncEwalletAccounts);
+  // Create two ewallet payment instruments on the client.
+  sync_pb::PaymentInstrument ewallet_payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  sync_pb::PaymentInstrument ewallet_payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/9999);
+  EXPECT_TRUE(table()->SetPaymentInstruments(
+      {ewallet_payment_instrument_1, ewallet_payment_instrument_2}));
+  std::vector<sync_pb::PaymentInstrument> payment_instruments;
+  table()->GetPaymentInstruments(payment_instruments);
+  ASSERT_EQ(2U, payment_instruments.size());
+
+  AutofillWalletSpecifics ewallet_payment_instrument_1_specifics;
+  SetAutofillWalletSpecificsFromPaymentInstrument(
+      ewallet_payment_instrument_1, ewallet_payment_instrument_1_specifics);
+
+  // Remove ewallet payment instrument 2 on the server.
+  StartSyncing({ewallet_payment_instrument_1_specifics});
+
+  table()->GetPaymentInstruments(payment_instruments);
+  EXPECT_EQ(1U, payment_instruments.size());
+  EXPECT_THAT(GetAllLocalData(), UnorderedElementsAre(EqualsSpecifics(
+                                     ewallet_payment_instrument_1_specifics)));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

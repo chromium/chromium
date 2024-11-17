@@ -71,8 +71,7 @@ int32_t PepperFileRefRendererHost::OnResourceMessageReceived(
     const IPC::Message& msg,
     ppapi::host::HostMessageContext* context) {
   // We don't handle any messages from the plugin in this host.
-  NOTREACHED_IN_MIGRATION();
-  return PP_ERROR_FAILED;
+  NOTREACHED();
 }
 
 bool PepperFileRefRendererHost::IsFileRefHost() { return true; }

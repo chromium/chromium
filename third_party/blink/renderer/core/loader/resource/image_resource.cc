@@ -422,6 +422,10 @@ void ImageResource::DestroyDecodedDataIfPossible() {
   GetContent()->DestroyDecodedData();
 }
 
+ResourceStatus ImageResource::GetContentStatus() const {
+  return GetContent()->GetContentStatus();
+}
+
 void ImageResource::AllClientsAndObserversRemoved() {
   // After ErrorOccurred() is set true in Resource::FinishAsError() before
   // the subsequent UpdateImage() in ImageResource::FinishAsError(),
@@ -451,8 +455,7 @@ void ImageResource::AppendData(
   base::span<const char> span = absl::get<base::span<const char>>(data);
   external_memory_accounter_.Increase(v8::Isolate::GetCurrent(), span.size());
   if (multipart_parser_) {
-    multipart_parser_->AppendData(span.data(),
-                                  base::checked_cast<wtf_size_t>(span.size()));
+    multipart_parser_->AppendData(span);
   } else {
     Resource::AppendData(span);
 
@@ -655,7 +658,7 @@ const ImageResourceContent* ImageResource::GetContent() const {
 }
 
 std::pair<ResourcePriority, ResourcePriority>
-ImageResource::PriorityFromObservers() {
+ImageResource::ComputePriorityFromObservers() {
   return GetContent()->PriorityFromObservers();
 }
 

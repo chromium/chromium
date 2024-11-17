@@ -129,6 +129,13 @@ void Event::SetProperties(const Properties& properties) {
   properties_ = std::make_unique<Properties>(properties);
 }
 
+void Event::SetProperty(const PropertyKey& key, const PropertyValue& value) {
+  if (!properties_) {
+    properties_ = std::make_unique<Properties>();
+  }
+  properties_->emplace(key, value);
+}
+
 CancelModeEvent* Event::AsCancelModeEvent() {
   CHECK(IsCancelModeEvent());
   return static_cast<CancelModeEvent*>(this);
@@ -535,7 +542,7 @@ std::string MouseEvent::ToString() const {
   return base::StrCat({
       LocatedEvent::ToString(),
       " flags=",
-      base::JoinString(base::make_span(MouseEventFlagsNames(flags())), "|"),
+      base::JoinString(MouseEventFlagsNames(flags()), "|"),
       base::StringPrintf("(0x%04x)", flags()),
   });
 }
@@ -1122,7 +1129,7 @@ std::string KeyEvent::ToString() const {
       base::StringPrintf("(0x%04x)", scan_code_),
 #endif  // BUILDFLAG(IS_OZONE)
       " flags=",
-      base::JoinString(base::make_span(KeyEventFlagsNames(flags())), "|"),
+      base::JoinString(KeyEventFlagsNames(flags()), "|"),
       base::StringPrintf("(0x%04x)", flags()),
   });
 }
@@ -1167,9 +1174,8 @@ ScrollEvent::ScrollEvent(const PlatformEvent& native_event)
     GetFlingData(native_event, &x_offset_, &y_offset_, &x_offset_ordinal_,
                  &y_offset_ordinal_, nullptr);
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Unexpected event type " << base::to_underlying(type())
-        << " when constructing a ScrollEvent.";
+    NOTREACHED() << "Unexpected event type " << base::to_underlying(type())
+                 << " when constructing a ScrollEvent.";
   }
 }
 

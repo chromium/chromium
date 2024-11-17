@@ -55,11 +55,15 @@ class DeviceAccountsProvider {
   using AccessTokenCallback =
       base::OnceCallback<void(AccessTokenResult result)>;
 
-  DeviceAccountsProvider() {}
-  virtual ~DeviceAccountsProvider() {}
+  DeviceAccountsProvider() = default;
+  virtual ~DeviceAccountsProvider() = default;
 
-  // Returns the ids of all accounts.
-  virtual std::vector<AccountInfo> GetAllAccounts() const;
+  // Returns the IDs of all accounts that are assigned to the current profile.
+  virtual std::vector<AccountInfo> GetAccountsForProfile() const;
+
+  // Returns the IDs of all accounts that exist on the device, including the
+  // ones that are assigned to different profiles.
+  virtual std::vector<AccountInfo> GetAccountsOnDevice() const;
 
   // Starts fetching an access token for the account with id |gaia_id| with
   // the given |scopes|. Once the token is obtained, |callback| is called.

@@ -51,9 +51,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalAppWindowApiTest, SetIcon) {
 }
 
 // TODO(crbug.com/40554643): These fail on Linux with HEADLESS env var set.
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_OnMinimizedEvent DISABLED_OnMinimizedEvent
 #define MAYBE_OnMaximizedEvent DISABLED_OnMaximizedEvent
 #define MAYBE_OnRestoredEvent DISABLED_OnRestoredEvent
@@ -61,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalAppWindowApiTest, SetIcon) {
 #define MAYBE_OnMinimizedEvent OnMinimizedEvent
 #define MAYBE_OnMaximizedEvent OnMaximizedEvent
 #define MAYBE_OnRestoredEvent OnRestoredEvent
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_OnMinimizedEvent) {
   EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_properties",
@@ -139,11 +137,9 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_AlphaEnabledHasPermissions) {
       "platform_apps/windows_api_alpha_enabled/has_permissions_has_alpha";
   const char* test_dir = kNoAlphaDir;
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if defined(USE_AURA) && !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if defined(USE_AURA) && !BUILDFLAG(IS_LINUX)
   test_dir = kHasAlphaDir;
-#endif  // USE_AURA && !(OS_LINUX || IS_CHROMEOS_LACROS)
+#endif  // USE_AURA && !BUILDFLAG(IS_LINUX)
 
   EXPECT_TRUE(RunExtensionTest(test_dir, {.launch_as_platform_app = true}))
       << message_;
@@ -211,7 +207,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, OpeningAbsoluteURLs) {
   EXPECT_FALSE(app_window_contents->GetPrimaryMainFrame()->IsErrorDocument());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowHasPermissions) {
   EXPECT_TRUE(
       RunExtensionTest("platform_apps/windows_api_ime/has_permissions_allowed",
@@ -247,6 +243,6 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, ImeWindowNotFullscreen) {
       {.load_as_component = true}))
       << message_;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

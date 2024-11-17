@@ -416,7 +416,8 @@ struct AccessPointParam {
 };
 
 const AccessPointParam params[] = {
-    {signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN,
+    {signin_metrics::AccessPoint::
+         ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO,
      "Signin.WebSignin.TimeToChromeSignin.ProfileMenu"},
     {signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE,
      "Signin.WebSignin.TimeToChromeSignin.PasswordSigninPromo"},
@@ -472,8 +473,8 @@ TEST_F(SigninMetricsServiceTest, WebSigninToChromeSigninAfterRestart) {
   DestroySigninMetricsService();
   CreateSigninMetricsService();
 
-  Signin(account.email,
-         signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN);
+  Signin(account.email, signin_metrics::AccessPoint::
+                            ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO);
 
   histogram_tester.ExpectTotalCount(
       "Signin.WebSignin.TimeToChromeSignin.ProfileMenu", 1);

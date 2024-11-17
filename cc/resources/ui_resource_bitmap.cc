@@ -35,9 +35,7 @@ UIResourceBitmap::UIResourceFormat SkColorTypeToUIResourceFormat(
       format = UIResourceBitmap::ALPHA_8;
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Invalid SkColorType for UIResourceBitmap: " << sk_type;
-      break;
+      NOTREACHED() << "Invalid SkColorType for UIResourceBitmap: " << sk_type;
   }
   return format;
 }
@@ -67,6 +65,20 @@ void UIResourceBitmap::DrawToCanvas(SkCanvas* canvas, SkPaint* paint) {
           GrAsDirectContext(canvas->recordingContext())) {
     direct_context->flushAndSubmit();
   }
+}
+
+base::span<const uint8_t> UIResourceBitmap::GetPixels() const {
+  if (!pixel_ref_) {
+    return {};
+  }
+  // TODO(crbug.com/40285824): Check if this is guaranteed safe. The pixel
+  // memory must be at least row_bytes * height but it's not well defined if
+  // memory past the end of the last row is allocated when row_bytes > width *
+  // bytes_per_pixel. UIResourceBitmap has an implicit assumption that row_bytes
+  // == width * bytes_per_pixel but if that assumption is violated this span
+  // could be too large.
+  return UNSAFE_TODO(base::span(
+      static_cast<const uint8_t*>(pixel_ref_->pixels()), SizeInBytes()));
 }
 
 size_t UIResourceBitmap::SizeInBytes() const {

@@ -89,9 +89,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
 
   ~RealTimeUrlLookupServiceBase() override;
 
-  // Returns true if |url|'s scheme can be checked.
-  static bool CanCheckUrl(const GURL& url);
-
   // Returns the SBThreatType for a combination of
   // RTLookupResponse::ThreatInfo::ThreatType and
   // RTLookupResponse::ThreatInfo::VerdictType
@@ -159,6 +156,10 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   virtual std::unique_ptr<enterprise_connectors::ClientMetadata>
   GetClientMetadata() const = 0;
 
+  // Returns true if `url`'s scheme can be checked, or if it should be checked
+  // anyway because of "EnterpriseRealTimeUrlCheckMode".
+  virtual bool CanCheckUrl(const GURL& url) = 0;
+
   // KeyedService:
   // Called before the actual deletion of the object.
   void Shutdown() override;
@@ -183,6 +184,8 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       bool is_sampled_report,
       SessionID tab_id);
+
+  bool shutting_down() const { return shutting_down_; }
 
  private:
   class PendingRTLookupRequestData {
@@ -363,6 +366,10 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // and in unit tests. If non-null, guaranteed to outlive this object by
   // contract.
   raw_ptr<WebUIDelegate> webui_delegate_ = nullptr;
+
+  // True if Shutdown() has already been called, or started running. This allows
+  // us to skip unnecessary calls to SendRequest().
+  bool shutting_down_ = false;
 
   friend class RealTimeUrlLookupServiceTest;
   friend class ChromeEnterpriseRealTimeUrlLookupServiceTest;

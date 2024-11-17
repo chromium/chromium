@@ -84,43 +84,37 @@ int QuicProxyDatagramClientSocket::ConnectViaStream(
 }
 
 int QuicProxyDatagramClientSocket::Connect(const IPEndPoint& address) {
-  NOTREACHED_IN_MIGRATION();
-  return ERR_NOT_IMPLEMENTED;
+  NOTREACHED();
 }
 
 int QuicProxyDatagramClientSocket::ConnectAsync(
     const IPEndPoint& address,
     CompletionOnceCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return ERR_NOT_IMPLEMENTED;
+  NOTREACHED();
 }
 
 int QuicProxyDatagramClientSocket::ConnectUsingDefaultNetworkAsync(
     const IPEndPoint& address,
     CompletionOnceCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return ERR_NOT_IMPLEMENTED;
+  NOTREACHED();
 }
 
 int QuicProxyDatagramClientSocket::ConnectUsingNetwork(
     handles::NetworkHandle network,
     const IPEndPoint& address) {
-  NOTREACHED_IN_MIGRATION();
-  return ERR_NOT_IMPLEMENTED;
+  NOTREACHED();
 }
 
 int QuicProxyDatagramClientSocket::ConnectUsingDefaultNetwork(
     const IPEndPoint& address) {
-  NOTREACHED_IN_MIGRATION();
-  return ERR_NOT_IMPLEMENTED;
+  NOTREACHED();
 }
 
 int QuicProxyDatagramClientSocket::ConnectUsingNetworkAsync(
     handles::NetworkHandle network,
     const IPEndPoint& address,
     CompletionOnceCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-  return ERR_NOT_IMPLEMENTED;
+  NOTREACHED();
 }
 
 void QuicProxyDatagramClientSocket::Close() {
@@ -212,8 +206,7 @@ void QuicProxyDatagramClientSocket::ApplySocketTag(const SocketTag& tag) {}
 
 int QuicProxyDatagramClientSocket::SetMulticastInterface(
     uint32_t interface_index) {
-  NOTREACHED_IN_MIGRATION();
-  return ERR_NOT_IMPLEMENTED;
+  NOTREACHED();
 }
 
 void QuicProxyDatagramClientSocket::SetIOSNetworkServiceType(
@@ -230,17 +223,15 @@ int QuicProxyDatagramClientSocket::GetLocalAddress(IPEndPoint* address) const {
 }
 
 void QuicProxyDatagramClientSocket::UseNonBlockingIO() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 int QuicProxyDatagramClientSocket::SetDoNotFragment() {
-  NOTREACHED_IN_MIGRATION();
-  return ERR_NOT_IMPLEMENTED;
+  NOTREACHED();
 }
 
 int QuicProxyDatagramClientSocket::SetRecvTos() {
-  NOTREACHED_IN_MIGRATION();
-  return ERR_NOT_IMPLEMENTED;
+  NOTREACHED();
 }
 
 int QuicProxyDatagramClientSocket::SetTos(net::DiffServCodePoint dscp,
@@ -249,7 +240,7 @@ int QuicProxyDatagramClientSocket::SetTos(net::DiffServCodePoint dscp,
 }
 
 void QuicProxyDatagramClientSocket::SetMsgConfirm(bool confirm) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const NetLogWithSource& QuicProxyDatagramClientSocket::NetLog() const {
@@ -362,9 +353,7 @@ int QuicProxyDatagramClientSocket::DoLoop(int last_io_result) {
             NetLogEventType::HTTP_TRANSACTION_TUNNEL_READ_HEADERS, rv);
         break;
       default:
-        NOTREACHED_IN_MIGRATION() << "bad state";
-        rv = ERR_UNEXPECTED;
-        break;
+        NOTREACHED() << "bad state";
     }
   } while (rv != ERR_IO_PENDING && next_state_ != STATE_DISCONNECTED &&
            next_state_ != STATE_CONNECT_COMPLETE);
@@ -381,7 +370,7 @@ int QuicProxyDatagramClientSocket::DoSendRequest() {
   int port = url_.IntPort();
   std::string host_and_port =
       url_.has_port() ? base::StrCat({host, ":", base::NumberToString(port)})
-                      : host;
+                      : std::move(host);
   request_.extra_headers.SetHeader(HttpRequestHeaders::kHost, host_and_port);
 
   HttpRequestHeaders authorization_headers;

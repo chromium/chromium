@@ -29,8 +29,7 @@ export function getHtml(this: SigninReauthAppElement) {
   </div>
 </div>
 <div class="action-container">
-  <paper-spinner-lite active ?hidden="${!this.confirmButtonHidden_}">
-  </paper-spinner-lite>
+  ${this.confirmButtonHidden_ ? html`<div class="spinner"></div>` : ''}
   <cr-button id="confirmButton" class="action-button"
       @click="${this.onConfirm_}" ?hidden="${this.confirmButtonHidden_}"
       consent-confirmation>

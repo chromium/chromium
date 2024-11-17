@@ -21,8 +21,11 @@
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
 
 class AccountSelectionModalViewTest : public DialogBrowserTest,
@@ -55,8 +58,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     dialog_ = new AccountSelectionModalView(
         kRpETLDPlusOne, kIdpETLDPlusOne, blink::mojom::RpContext::kSignIn,
         browser()->tab_strip_model()->GetActiveWebContents(),
-        shared_url_loader_factory(), /*observer=*/nullptr,
-        /*widget_observer=*/nullptr);
+        shared_url_loader_factory(), /*observer=*/nullptr);
 
     // Loading dialog is always shown first. All other dialogs reuse the header
     // of this loading dialog.
@@ -83,9 +85,6 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         CreateTestIdentityRequestAccounts(account_suffixes, idp_data_);
 
     CreateAccountSelectionModal();
-    for (auto& account : account_list_) {
-      account->identity_provider = idp_data_;
-    }
     dialog_->ShowMultiAccountPicker(account_list_, {idp_data_},
                                     /*show_back_button=*/false,
                                     /*is_choose_an_account=*/false);
@@ -112,6 +111,16 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     dialog_->ShowLoadingDialog();
   }
 
+  IdentityRequestAccountPtr CreateSingleAccount(
+      const std::string& account_suffix,
+      bool is_filtered_out = false) {
+    IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
+        account_suffix, idp_data_,
+        content::IdentityRequestAccount::LoginState::kSignUp);
+    account->is_filtered_out = is_filtered_out;
+    return account;
+  }
+
   void PerformHeaderChecks(views::View* header,
                            bool expect_visible_idp_icon = true,
                            bool expect_visible_combined_icons = false) {
@@ -123,8 +132,13 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     EXPECT_FALSE(dialog()->GetOkButton());
     EXPECT_FALSE(dialog()->GetCancelButton());
 
-    // Order: Brand icon, title, body
-    std::vector<std::string> expected_class_names = {"View", "Label", "Label"};
+    // Order: Brand icon, title and body for non loading UI.
+    std::vector<std::string> expected_class_names = {"View", "Label"};
+    bool is_loading_dialog =
+        !expect_visible_idp_icon && !expect_visible_combined_icons;
+    if (!is_loading_dialog) {
+      expected_class_names.push_back("Label");
+    }
     EXPECT_THAT(GetChildClassNames(header),
                 testing::ElementsAreArray(expected_class_names));
 
@@ -137,12 +151,12 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
         static_cast<views::View*>(header_children[0]);
     ASSERT_TRUE(background_container);
 
-    // Check background container contains the background image, IDP icon and
-    // combined icon container.
+    // Check background container contains the background image, spinner, IDP
+    // icon and combined icon container.
     std::vector<raw_ptr<views::View, VectorExperimental>>
         background_container_children = background_container->children();
     ASSERT_EQ(background_container_children.size(),
-              expect_visible_combined_icons ? 3u : 2u);
+              expect_visible_combined_icons ? 4u : 3u);
 
     views::View* background_image =
         static_cast<views::View*>(background_container_children[0]);
@@ -151,8 +165,28 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     // Check IDP icon container contains the IDP icon image. The IDP icon
     // container is always present. Its visibility is updated when we want to
     // show the combined icons container instead.
-    views::View* idp_icon_container =
+    views::View* spinner_container =
         static_cast<views::View*>(background_container_children[1]);
+    ASSERT_TRUE(spinner_container);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>>
+        spinner_container_children = spinner_container->children();
+    ASSERT_EQ(spinner_container_children.size(), 1u);
+
+    views::Throbber* spinner =
+        static_cast<views::Throbber*>(spinner_container_children[0]);
+    ASSERT_TRUE(spinner);
+    EXPECT_TRUE(spinner->GetVisible());
+
+    // Check spinner is of the correct size.
+    EXPECT_EQ(spinner->size(),
+              gfx::Size(kModalIconSpinnerSize, kModalIconSpinnerSize));
+
+    // Check IDP icon container contains the IDP icon image. The IDP icon
+    // container is always present. Its visibility is updated when we want to
+    // show the combined icons container instead.
+    views::View* idp_icon_container =
+        static_cast<views::View*>(background_container_children[2]);
     ASSERT_TRUE(idp_icon_container);
 
     std::vector<raw_ptr<views::View, VectorExperimental>>
@@ -178,7 +212,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       // Check combined icons container contains the IDP, arrow and RP icon
       // images.
       views::View* combined_icons_container =
-          static_cast<views::View*>(background_container_children[2]);
+          static_cast<views::View*>(background_container_children[3]);
       ASSERT_TRUE(combined_icons_container);
 
       std::vector<raw_ptr<views::View, VectorExperimental>>
@@ -204,11 +238,13 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       EXPECT_EQ(dialog()->GetInitiallyFocusedView(), title_view);
     }
 
-    // Check body text.
-    views::Label* body_view = static_cast<views::Label*>(header_children[2]);
-    ASSERT_TRUE(body_view);
-    EXPECT_EQ(body_view->GetText(), kBodySignIn);
-    EXPECT_EQ(body_view->GetVisible(), expect_visible_body_label_);
+    if (!is_loading_dialog) {
+      // Check body text.
+      views::Label* body_view = static_cast<views::Label*>(header_children[2]);
+      ASSERT_TRUE(body_view);
+      EXPECT_EQ(body_view->GetText(), kBodySignIn);
+      EXPECT_EQ(body_view->GetVisible(), expect_visible_body_label_);
+    }
 
     // After the first header check, the consecutive header checks do not
     // necessarily have to focus on the title.
@@ -241,6 +277,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       EXPECT_EQ(leftmost_button->GetText(), expect_add_account_button
                                                 ? u"Use a different account"
                                                 : u"Back");
+      CheckReplaceButtonWithSpinner(leftmost_button);
     }
 
     views::MdTextButton* cancel_button =
@@ -257,7 +294,23 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
       ASSERT_TRUE(continue_button);
       EXPECT_EQ(continue_button->GetText(), u"Continue");
       EXPECT_EQ(dialog()->GetInitiallyFocusedView(), continue_button);
+      CheckReplaceButtonWithSpinner(continue_button);
     }
+  }
+
+  void CheckReplaceButtonWithSpinner(views::MdTextButton* button) {
+    dialog()->ReplaceButtonWithSpinner(button);
+    bool has_spinner = false;
+    for (const auto& child : button->children()) {
+      // Spinner is placed in a BoxLayoutView.
+      if (std::string(child->GetClassName()) == "BoxLayoutView") {
+        views::Throbber* spinner =
+            static_cast<views::Throbber*>(child->children()[0]);
+        EXPECT_TRUE(spinner);
+        has_spinner = true;
+      }
+    }
+    ASSERT_TRUE(has_spinner);
   }
 
   void CheckDisabledButtonRow(views::View* button_row,
@@ -318,10 +371,21 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     expect_visible_body_label_ = true;
     PerformHeaderChecks(children[0]);
 
-    views::ScrollView* scroller = static_cast<views::ScrollView*>(children[1]);
-    ASSERT_FALSE(scroller->children().empty());
+    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+        TestStructureAndGetAccounts(children[1]);
+    size_t accounts_index = 0;
+    CheckHoverableAccountRows(accounts, kAccountSuffixes, accounts_index,
+                              /*expect_idp=*/false, /*is_modal_dialog=*/true);
+    CheckButtonRow(children[2], /*expect_continue_button=*/false,
+                   supports_add_account, /*expect_back_button=*/false);
+  }
+
+  std::vector<raw_ptr<views::View, VectorExperimental>>
+  TestStructureAndGetAccounts(views::View* container) {
+    views::ScrollView* scroller = static_cast<views::ScrollView*>(container);
+    EXPECT_FALSE(scroller->children().empty());
     views::View* wrapper = scroller->children()[0];
-    ASSERT_FALSE(wrapper->children().empty());
+    EXPECT_FALSE(wrapper->children().empty());
     views::View* contents = wrapper->children()[0];
 
     views::BoxLayout* layout_manager =
@@ -329,14 +393,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     EXPECT_TRUE(layout_manager);
     EXPECT_EQ(layout_manager->GetOrientation(),
               views::BoxLayout::Orientation::kVertical);
-    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
-        contents->children();
-
-    size_t accounts_index = 0;
-    CheckHoverableAccountRows(accounts, kAccountSuffixes, accounts_index,
-                              /*expect_idp=*/false, /*is_modal_dialog=*/true);
-    CheckButtonRow(children[2], /*expect_continue_button=*/false,
-                   supports_add_account, /*expect_back_button=*/false);
+    return contents->children();
   }
 
   void TestRequestPermission(
@@ -404,8 +461,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     CreateAndShowVerifyingSheet();
     // Order: Progress bar, header, account chooser, button row
     std::vector<std::string> expected_class_names = {
-        "ProgressBar", "View", has_multiple_accounts ? "ScrollView" : "View",
-        "View"};
+        "View", has_multiple_accounts ? "ScrollView" : "View", "View"};
     EXPECT_THAT(GetChildClassNames(dialog()),
                 testing::ElementsAreArray(expected_class_names));
 
@@ -417,35 +473,38 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
               l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE));
 #endif
 
-    PerformHeaderChecks(dialog()->children()[1], expect_visible_idp_icon,
+    PerformHeaderChecks(dialog()->children()[0], expect_visible_idp_icon,
                         expect_visible_combined_icons);
 
     std::vector<raw_ptr<views::View, VectorExperimental>> account_chooser =
-        dialog()->children()[2]->children();
+        dialog()->children()[1]->children();
     // Based on the modal type, there could be different items from the
     // account_chooser section. e.g. accounts, disclosure text, scroll view etc.
     // and all of them should be disabled.
     for (const auto& item : account_chooser) {
       ASSERT_FALSE(item->GetEnabled());
+      if (std::string(item->GetClassName()) == "HoverButton") {
+        AccountHoverButton* button = static_cast<AccountHoverButton*>(item);
+        ASSERT_TRUE(button->HasDisabledOpacity());
+      }
     }
 
-    CheckDisabledButtonRow(dialog()->children()[3],
+    CheckDisabledButtonRow(dialog()->children()[2],
                            /*should_focus_cancel=*/true);
   }
 
   void TestLoadingDialog() {
     CreateAndShowLoadingDialog();
-    // Order: Progress bar, header, placeholder account chooser, button row
-    std::vector<std::string> expected_class_names = {"ProgressBar", "View",
-                                                     "View", "View"};
+    // Order: Header, placeholder account chooser, button row
+    std::vector<std::string> expected_class_names = {"View", "View", "View"};
     EXPECT_THAT(GetChildClassNames(dialog()),
                 testing::ElementsAreArray(expected_class_names));
 
-    PerformHeaderChecks(dialog()->children()[1],
+    PerformHeaderChecks(dialog()->children()[0],
                         /*expect_visible_idp_icon=*/false);
 
     std::vector<raw_ptr<views::View, VectorExperimental>>
-        placeholder_account_chooser = dialog()->children()[2]->children();
+        placeholder_account_chooser = dialog()->children()[1]->children();
     // Order: Placeholder account image, placeholder text column
     ASSERT_EQ(placeholder_account_chooser.size(), 2u);
 
@@ -454,7 +513,126 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     // Order: Placeholder account name, placeholder account email
     ASSERT_EQ(placeholder_text_column.size(), 2u);
 
-    CheckDisabledButtonRow(dialog()->children()[3]);
+    CheckDisabledButtonRow(dialog()->children()[2]);
+  }
+
+  void TestErrorDialog(const std::u16string expected_summary,
+                       const std::u16string expected_description,
+                       const std::string& error_code,
+                       const GURL& error_url) {
+    CreateAccountSelectionModal();
+    dialog_->ShowErrorDialog(
+        kIdpETLDPlusOne, idp_data_->idp_metadata,
+        content::IdentityCredentialTokenError(error_code, error_url));
+    auto header_view = dialog()->children()[0];
+    // header icon view, title_label and body_label
+    ASSERT_EQ(header_view->children().size(), 3u);
+
+    auto* title_label = static_cast<views::Label*>(header_view->children()[1]);
+    EXPECT_EQ(title_label->GetText(), expected_summary);
+
+    auto* body_label = static_cast<views::Label*>(header_view->children()[2]);
+    EXPECT_EQ(body_label->GetText(), expected_description);
+
+    auto button_container = dialog()->children()[1];
+    const std::vector<raw_ptr<views::View, VectorExperimental>> button_row =
+        button_container->children();
+
+    if (error_url.is_empty()) {
+      ASSERT_EQ(button_row.size(), 1u);
+
+      views::MdTextButton* got_it_button =
+          static_cast<views::MdTextButton*>(button_row[0]);
+      ASSERT_TRUE(got_it_button);
+      EXPECT_EQ(
+          got_it_button->GetText(),
+          l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON));
+      return;
+    }
+
+    ASSERT_EQ(button_row.size(), 2u);
+    for (size_t i = 0; i < button_row.size(); ++i) {
+      views::MdTextButton* button =
+          static_cast<views::MdTextButton*>(button_row[i]);
+      ASSERT_TRUE(button);
+      EXPECT_EQ(button->GetText(),
+                l10n_util::GetStringUTF16(
+                    i == 0 ? IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON
+                           : IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON));
+    }
+  }
+
+  void TestDisabledAccounts(const std::vector<std::string>& account_suffixes) {
+    idp_data_->idp_metadata.has_filtered_out_account = true;
+    account_list_ =
+        CreateTestIdentityRequestAccounts(account_suffixes, idp_data_);
+    for (const auto& account : account_list_) {
+      account->is_filtered_out = true;
+    }
+    CreateAccountSelectionModal();
+    dialog()->ShowMultiAccountPicker(account_list_, {idp_data()},
+                                     /*show_back_button=*/false,
+                                     /*is_choose_an_account=*/false);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+        dialog()->children();
+    ASSERT_EQ(children.size(), 3u);
+
+    expect_visible_body_label_ = true;
+    PerformHeaderChecks(children[0]);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+        TestStructureAndGetAccounts(children[1]);
+    ASSERT_GE(accounts.size(), account_suffixes.size());
+
+    size_t accounts_index = 0;
+    for (const auto& account_suffix : account_suffixes) {
+      if (std::string(accounts[accounts_index]->GetClassName()) ==
+          "Separator") {
+        ++accounts_index;
+      }
+      CheckHoverableAccountRow(accounts[accounts_index++], account_suffix,
+                               /*expect_idp=*/false, /*is_modal_dialog=*/true,
+                               /*is_disabled=*/true);
+    }
+    CheckButtonRow(children[2], /*expect_continue_button=*/false,
+                   /*expect_add_account_button=*/true,
+                   /*expect_back_button=*/false);
+  }
+
+  void TestEnabledAndDisabled() {
+    idp_data_->idp_metadata.has_filtered_out_account = true;
+    std::vector<std::string> account_suffixes = {"enabled", "disabled"};
+    account_list_ =
+        CreateTestIdentityRequestAccounts(account_suffixes, idp_data_);
+    account_list_[1]->is_filtered_out = true;
+    CreateAccountSelectionModal();
+    dialog()->ShowMultiAccountPicker(account_list_, {idp_data()},
+                                     /*show_back_button=*/false,
+                                     /*is_choose_an_account=*/false);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> children =
+        dialog()->children();
+    ASSERT_EQ(children.size(), 3u);
+
+    expect_visible_body_label_ = true;
+    PerformHeaderChecks(children[0]);
+
+    std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+        TestStructureAndGetAccounts(children[1]);
+
+    ASSERT_EQ(std::string(accounts[0]->GetClassName()), "Separator");
+    CheckHoverableAccountRow(accounts[1], "enabled",
+                             /*expect_idp=*/false, /*is_modal_dialog=*/true,
+                             /*is_disabled=*/false);
+    ASSERT_EQ(std::string(accounts[2]->GetClassName()), "Separator");
+    CheckHoverableAccountRow(accounts[3], "disabled",
+                             /*expect_idp=*/false, /*is_modal_dialog=*/true,
+                             /*is_disabled=*/true);
+
+    CheckButtonRow(children[2], /*expect_continue_button=*/false,
+                   /*expect_add_account_button=*/true,
+                   /*expect_back_button=*/false);
   }
 
   AccountSelectionModalView* dialog() { return dialog_; }
@@ -675,4 +853,118 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, MultipleAccountFlowBack) {
   TestVerifyingSheet(/*has_multiple_accounts=*/false,
                      /*expect_visible_idp_icon=*/false,
                      /*expect_visible_combined_icons=*/true);
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, ErrorDialogTest) {
+  // Generic error without error URL
+  TestErrorDialog(u"Can't continue with idp-example.com",
+                  u"Something went wrong",
+                  /*error_code=*/"",
+                  /*error_url=*/GURL());
+
+  // Generic error with error URL
+  TestErrorDialog(
+      u"Can't continue with idp-example.com", u"Something went wrong",
+      /*error_code=*/"", GURL(u"https://idp-example.com/more-details"));
+
+  // Invalid request without error URL
+  TestErrorDialog(u"rp-example.com can't continue using idp-example.com",
+                  u"This option is unavailable right now. You can try other "
+                  u"ways to continue on rp-example.com.",
+                  /*error_code=*/"invalid_request",
+                  /*error_url=*/GURL());
+
+  // Invalid request with error URL
+  TestErrorDialog(
+      u"rp-example.com can't continue using idp-example.com",
+      u"This option is unavailable right now. Choose \"More "
+      u"details\" below to get more information from idp-example.com.",
+      /*error_code=*/"invalid_request",
+      GURL(u"https://idp-example.com/more-details"));
+
+  // Unauthorized client without error URL
+  TestErrorDialog(u"rp-example.com can't continue using idp-example.com",
+                  u"This option is unavailable right now. You can try other "
+                  u"ways to continue on rp-example.com.",
+                  /*error_code=*/"unauthorized_client",
+                  /*error_url=*/GURL());
+
+  // Unauthorized client with error URL
+  TestErrorDialog(
+      u"rp-example.com can't continue using idp-example.com",
+      u"This option is unavailable right now. Choose \"More "
+      u"details\" below to get more information from idp-example.com.",
+      /*error_code=*/"unauthorized_client",
+      GURL(u"https://idp-example.com/more-details"));
+
+  // Access denied without error URL
+  TestErrorDialog(u"Check that you chose the right account",
+                  u"Check if the selected account is supported. You can try "
+                  u"other ways to continue on rp-example.com.",
+                  /*error_code=*/"access_denied",
+                  /*error_url=*/GURL());
+
+  // Access denied with error URL
+  TestErrorDialog(
+      u"Check that you chose the right account",
+      u"Check if the selected account is supported. Choose \"More "
+      u"details\" below to get more information from idp-example.com.",
+      /*error_code=*/"access_denied",
+      GURL(u"https://idp-example.com/more-details"));
+
+  // Temporarily unavailable without error URL
+  TestErrorDialog(u"Try again later",
+                  u"idp-example.com isn't available right now. If this issue "
+                  u"keeps happening, you can try other ways to continue on "
+                  u"rp-example.com.",
+                  /*error_code=*/"temporarily_unavailable",
+                  /*error_url=*/GURL());
+
+  // Temporarily unavailable with error URL
+  TestErrorDialog(u"Try again later",
+                  u"idp-example.com isn't available right now. If this issue "
+                  u"keeps happening, choose \"More details\" below to get more "
+                  u"information from idp-example.com.",
+                  /*error_code=*/"temporarily_unavailable",
+                  GURL(u"https://idp-example.com/more-details"));
+
+  // Server error without error URL
+  TestErrorDialog(u"Check your internet connection",
+                  u"If you're online but this issue keeps happening, you can "
+                  u"try other ways to continue on rp-example.com.",
+                  /*error_code=*/"server_error",
+                  /*error_url=*/GURL());
+
+  // Server error with error URL
+  TestErrorDialog(u"Check your internet connection",
+                  u"If you're online but this issue keeps happening, you can "
+                  u"try other ways to continue on rp-example.com.",
+                  /*error_code=*/"server_error",
+                  GURL(u"https://idp-example.com/more-details"));
+
+  // Error not in our predefined list without error URL
+  TestErrorDialog(u"Can't continue with idp-example.com",
+                  u"Something went wrong",
+                  /*error_code=*/"error_we_dont_support",
+                  /*error_url=*/GURL());
+
+  // Error not in our predefined list with error URL
+  TestErrorDialog(u"Can't continue with idp-example.com",
+                  u"Something went wrong",
+                  /*error_code=*/"error_we_dont_support",
+                  GURL(u"https://idp-example.com/more-details"));
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest, OneDisabledAccount) {
+  TestDisabledAccounts(/*account_suffixes=*/{"0"});
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       MultipleDisabledAccounts) {
+  TestDisabledAccounts(/*account_suffixes=*/{"0", "1", "2"});
+}
+
+IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
+                       OneDisabledAccountAndOneEnabledAccount) {
+  TestEnabledAndDisabled();
 }

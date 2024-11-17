@@ -10,8 +10,6 @@ source_set("model") {
   sources = [
     "blocked_popup_tab_helper.h",
     "blocked_popup_tab_helper.mm",
-    "certificate_policy_app_agent.h",
-    "certificate_policy_app_agent.mm",
     "error_page_util.h",
     "error_page_util.mm",
     "invalid_url_tab_helper.h",
@@ -155,7 +153,6 @@ source_set("tab_helper_delegates") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "certificate_policy_app_agent_unittest.mm",
     "error_page_util_unittest.mm",
     "invalid_url_tab_helper_unittest.mm",
     "load_timing_tab_helper_unittest.mm",
@@ -238,7 +235,9 @@ source_set("web_internal") {
     "//build:blink_buildflags",
     "//components/autofill/core/common:features",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/common",
     "//components/autofill/ios/form_util:form_handler_feature",
+    "//components/autofill/ios/form_util:programmatic_form_submission_handler_feature",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/crash/core/common:crash_key",
@@ -261,6 +260,7 @@ source_set("web_internal") {
     "//components/prefs",
     "//components/previous_session_info",
     "//components/resources",
+    "//components/sampling_profiler:profile_params",
     "//components/signin/public/identity_manager",
     "//components/strings",
     "//components/supervised_user/core/browser",
@@ -466,7 +466,6 @@ source_set("eg2_tests") {
   sources = [
     "browsing_egtest.mm",
     "browsing_prevent_default_egtest.mm",
-    "cache_egtest.mm",
     "child_window_open_by_dom_egtest.mm",
     "content_mode_egtest.mm",
     "error_page_egtest.mm",

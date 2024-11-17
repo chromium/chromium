@@ -81,8 +81,7 @@ void GcmInternalsUIMessageHandler::ReturnResults(
 void GcmInternalsUIMessageHandler::RequestAllInfo(
     const base::Value::List& args) {
   if (args.size() != 1 || !args[0].is_bool()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   bool clear_logs = args[0].GetBool();
 
@@ -106,8 +105,7 @@ void GcmInternalsUIMessageHandler::RequestAllInfo(
 
 void GcmInternalsUIMessageHandler::SetRecording(const base::Value::List& args) {
   if (args.size() != 1 || !args[0].is_bool()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   bool recording = args[0].GetBool();
 

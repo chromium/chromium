@@ -15,6 +15,8 @@ struct AutocompleteMatch;
 /// This is a temporary solution for coloring strings.
 @property(nonatomic, assign, getter=isIncognito) BOOL incognito;
 @property(nonatomic, assign, getter=isStarred) BOOL starred;
+/// Whether it's a multimodal suggestion.
+@property(nonatomic, assign) BOOL isMultimodal;
 
 /// Whether the default search engine is Google impacts which icon is used in
 /// some cases

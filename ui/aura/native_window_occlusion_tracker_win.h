@@ -19,6 +19,7 @@
 #include "base/containers/flat_set.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
@@ -328,7 +329,7 @@ class AURA_EXPORT NativeWindowOcclusionTrackerWin
   // Map of HWND to root app windows. Maintained on the UI thread, and used
   // to send occlusion state notifications to Windows from
   // |root_window_hwnds_occlusion_state_|.
-  base::flat_map<HWND, Window*> hwnd_root_window_map_;
+  base::flat_map<HWND, raw_ptr<Window, CtnExperimental>> hwnd_root_window_map_;
 
   // This is set by UpdateOcclusionState. It is currently only used by tests.
   int num_visible_root_windows_ = 0;

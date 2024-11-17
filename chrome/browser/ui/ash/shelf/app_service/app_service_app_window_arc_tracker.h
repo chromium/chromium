@@ -116,8 +116,9 @@ class AppServiceAppWindowArcTracker : public ArcAppListPrefs::Observer,
 
   // Maps shelf group id to controller. Shelf group id is optional parameter for
   // the Android task. If it is not set, app id is used instead.
-  using ShelfGroupToAppControllerMap =
-      std::map<arc::ArcAppShelfId, AppServiceAppWindowShelfItemController*>;
+  using ShelfGroupToAppControllerMap = std::map<
+      arc::ArcAppShelfId,
+      raw_ptr<AppServiceAppWindowShelfItemController, CtnExperimental>>;
 
   // Checks |arc_window_candidates_| and attaches controller when they
   // are ARC app windows and have task id or session id.

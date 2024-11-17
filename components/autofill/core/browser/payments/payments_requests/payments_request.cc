@@ -98,8 +98,7 @@ base::Value::Dict PaymentsRequest::BuildAddressDictionary(
 
   if (include_non_location_data) {
     SetStringIfNotEmpty(profile, NAME_FULL, app_locale,
-                        PaymentsNetworkInterface::kRecipientName,
-                        postal_address);
+                        PaymentsRequest::kRecipientName, postal_address);
   }
 
   base::Value::List address_lines;
@@ -129,7 +128,7 @@ base::Value::Dict PaymentsRequest::BuildAddressDictionary(
 
   if (include_non_location_data) {
     SetStringIfNotEmpty(profile, PHONE_HOME_WHOLE_NUMBER, app_locale,
-                        PaymentsNetworkInterface::kPhoneNumber, address);
+                        PaymentsRequest::kPhoneNumber, address);
   }
 
   return address;

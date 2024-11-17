@@ -8,14 +8,15 @@
 #include <optional>
 #include <string>
 
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_types.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 class Browser;
 class Tab;
+class TabGroup;
 class TabSlotView;
 
 enum class BrowserFrameActiveState;
@@ -105,7 +106,7 @@ class TabSlotController {
   // Shows a context menu for the tab at the specified point in screen coords.
   virtual void ShowContextMenuForTab(Tab* tab,
                                      const gfx::Point& p,
-                                     ui::MenuSourceType source_type) = 0;
+                                     ui::mojom::MenuSourceType source_type) = 0;
 
   // Returns whether |tab| is the active tab. The active tab is the one whose
   // content is shown in the browser.
@@ -117,6 +118,8 @@ class TabSlotController {
   // Returns whether |tab| is pinned.
   virtual bool IsTabPinned(const Tab* tab) const = 0;
 
+  virtual TabGroup* GetTabGroup(const tab_groups::TabGroupId& id) const = 0;
+
   // Returns whether |tab| is the first in the model.
   virtual bool IsTabFirst(const Tab* tab) const = 0;
 
@@ -125,6 +128,9 @@ class TabSlotController {
 
   // Returns true if The tab should have a compacted leading edge.
   virtual bool ShouldCompactLeadingEdge() const = 0;
+
+  // Returns the index of tab in the model
+  virtual std::optional<int> GetModelIndexOf(const TabSlotView* view) const = 0;
 
   // Potentially starts a drag for the specified Tab.
   virtual void MaybeStartDrag(
@@ -242,7 +248,7 @@ class TabSlotController {
   // See BrowserNonClientFrameView::IsFrameCondensed().
   virtual bool IsFrameCondensed() const = 0;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns whether the current app instance is locked for OnTask. Only
   // relevant for non-web browser scenarios.
   virtual bool IsLockedForOnTask() = 0;

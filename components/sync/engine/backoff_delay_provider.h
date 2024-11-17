@@ -33,7 +33,7 @@ class BackoffDelayProvider {
   virtual ~BackoffDelayProvider();
 
   // DDOS avoidance function.  Calculates how long we should wait before trying
-  // again after a failed sync attempt, where the last delay was |base_delay|.
+  // again after a failed sync attempt, where the last delay was `base_delay`.
   // TODO(tim): Look at URLRequestThrottlerEntryInterface.
   virtual base::TimeDelta GetDelay(const base::TimeDelta& last_delay);
 
@@ -41,7 +41,7 @@ class BackoffDelayProvider {
   // See possible values and comments in polling_constants.h.
   virtual base::TimeDelta GetInitialDelay(const ModelNeutralState& state) const;
 
-  // Test-only variant that avoids randomness in tests. |jitter_sign| must be -1
+  // Test-only variant that avoids randomness in tests. `jitter_sign` must be -1
   // or 1 and determines whether the jitter in the delay will be positive or
   // negative.
   base::TimeDelta GetDelayForTesting(base::TimeDelta last_delay,

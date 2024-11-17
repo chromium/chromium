@@ -151,6 +151,7 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
         ->ClearPersistedTokens();
 
     url_loader_interceptor_.reset();
+    intercepted_load_urls_.clear();
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
@@ -238,11 +239,12 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
       const std::vector<std::string>& expect_languages) {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    base::Value languages_list =
+    base::Value::List languages_list =
         content::EvalJs(web_contents, "navigator.languages").ExtractList();
     std::vector<std::string> actual_languages;
-    for (const auto& result : languages_list.GetList())
+    for (const auto& result : languages_list) {
       actual_languages.push_back(result.GetString());
+    }
 
     EXPECT_EQ(expect_languages, actual_languages);
   }
@@ -341,6 +343,7 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
   std::string origin_trial_third_party_token_;
   std::string valid_first_party_token_;
   std::string valid_third_party_token_;
+  std::set<GURL> intercepted_load_urls_;
 
  private:
   // Returns the value of the Accept-Language request header from the last sent
@@ -357,6 +360,8 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
     if (expected_request_urls_.find(params->url_request.url) ==
         expected_request_urls_.end())
       return false;
+
+    intercepted_load_urls_.insert(params->url_request.url);
 
     if (params->url_request.url == CrossOriginSubresourceUrl()) {
       return RespondForCrossOriginSubResourceOriginTrialUrl(params);
@@ -1351,7 +1356,11 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
   // One store for cross_region_iframe_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subframe_iframe_basic.html");
+  // All subresources should have been loaded,
+  EXPECT_THAT(intercepted_load_urls_,
+              testing::IsSupersetOf({IframeThirdPartyRequestUrl(),
+                                     OtherSiteCssRequestUrl(),
+                                     OtherSiteBasicRequestUrl()}));
 }
 
 IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
@@ -1389,7 +1398,10 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageBrowserTest,
   // One store for top_level_with_iframe_redirect_url main frame.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 1);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subresource_redirect_style.css");
+  // All subresources should have been loaded,
+  EXPECT_THAT(intercepted_load_urls_,
+              testing::IsSupersetOf(
+                  {SubframeThirdPartyRequestUrl(), OtherSiteCssRequestUrl()}));
 }
 
 class FencedFrameReduceAcceptLanguageBrowserTest
@@ -2951,7 +2963,10 @@ IN_PROC_BROWSER_TEST_F(ThirdPartyReduceAcceptLanguageDeprecationOTBrowserTest,
   // No persist reduce accept language happens.
   histograms.ExpectTotalCount("ReduceAcceptLanguage.StoreLatency", 0);
 
-  EXPECT_EQ(LastRequestUrl().path(), "/subresource_redirect_style.css");
+  // All subresources should have been loaded,
+  EXPECT_THAT(intercepted_load_urls_,
+              testing::IsSupersetOf({CrossOriginMetaTagInjectingJavascriptUrl(),
+                                     CrossOriginCssRequestUrl()}));
 
   // Ensure third-party JavaScript access JS getters get the full list of
   // accept-language.

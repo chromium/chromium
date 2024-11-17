@@ -176,7 +176,6 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
                     base::TimeTicks timestamp) override;
   void OnDragLeave(base::TimeTicks timestamp) override;
   void OnDragDrop(base::TimeTicks timestamp) override;
-  const WaylandWindow* GetDragTarget() const override;
 
   // WaylandDataSource::Delegate:
   void OnDataSourceFinish(WaylandDataSource* source,
@@ -216,7 +215,6 @@ class WaylandDataDragController : public WaylandDataDevice::DragDelegate,
   std::optional<wl::Serial> GetAndValidateSerialForDrag(
       mojom::DragEventSource source);
 
-  void SetOfferedExchangeDataProvider(const OSExchangeData& data);
   const WaylandExchangeDataProvider* GetOfferedExchangeDataProvider() const;
 
   // Checks whether |data| holds information about a window dragging session.

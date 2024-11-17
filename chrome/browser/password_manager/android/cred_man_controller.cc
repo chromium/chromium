@@ -88,10 +88,13 @@ void CredManController::TriggerFilling(const std::u16string& username,
 void CredManController::FillUsernameAndPassword(
     const std::u16string& username,
     const std::u16string& password) {
-  filler_->FillUsernameAndPassword(username, password);
-  base::UmaHistogramBoolean(
-      "PasswordManager.CredMan.PasswordFormSubmissionTriggered",
-      filler_->ShouldTriggerSubmission());
+  filler_->FillUsernameAndPassword(
+      username, password,
+      base::BindOnce(base::BindOnce([](bool triggered_submission) {
+        base::UmaHistogramBoolean(
+            "PasswordManager.CredMan.PasswordFormSubmissionTriggered",
+            triggered_submission);
+      })));
 }
 
 void CredManController::OnReauthCompleted(const std::u16string& username,

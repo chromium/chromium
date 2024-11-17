@@ -401,7 +401,7 @@ void LocalNetworkCollectorImpl::OnFixAutoconnectComplete(
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 network_config::mojom::NetworkStatePropertiesPtr

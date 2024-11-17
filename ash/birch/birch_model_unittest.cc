@@ -6,9 +6,11 @@
 
 #include <optional>
 
+#include "ash/birch/birch_coral_provider.h"
 #include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_item_remover.h"
+#include "ash/birch/coral_item_remover.h"
 #include "ash/birch/stub_birch_client.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -19,6 +21,8 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/coral/coral_controller.h"
+#include "ash/wm/coral/coral_test_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
@@ -140,7 +144,7 @@ class BirchModelTest : public AshTestBase {
       : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     feature_list_.InitWithFeatures(
         {features::kForestFeature, features::kBirchWeather,
-         features::kBirchVideoConferenceSuggestions},
+         features::kBirchVideoConferenceSuggestions, features::kCoralFeature},
         {});
   }
 
@@ -245,6 +249,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   model->SetLostMediaItems(std::vector<BirchLostMediaItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
   model->SetReleaseNotesItems(std::vector<BirchReleaseNotesItem>());
+  model->SetCoralItems(std::vector<BirchCoralItem>());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
   // Make a data fetch request and set fresh tab data.
@@ -268,6 +273,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   model->SetReleaseNotesItems({});
   model->SetSelfShareItems({});
   model->SetLostMediaItems({});
+  model->SetCoralItems({});
 
   // Adding file items sets all data as fresh, notifying consumers.
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
@@ -293,6 +299,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
   model->SetReleaseNotesItems({});
+  model->SetCoralItems({});
 
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
 }
@@ -320,6 +327,7 @@ TEST_F(BirchModelTest, RequestBirchDataFetchRecordsHistograms) {
   model->SetFileSuggestItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
+  model->SetCoralItems({});
 
   // Callback is called.
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
@@ -363,6 +371,7 @@ TEST_F(BirchModelTest, RequestBirchDataFetchRecordsTotalLatencyHistogram) {
   model->SetFileSuggestItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
+  model->SetCoralItems({});
 
   // Total latency post login was recorded.
   histograms.ExpectTotalCount("Ash.Birch.TotalLatencyPostLogin", 1);
@@ -381,6 +390,7 @@ TEST_F(BirchModelTest, RequestBirchDataFetchRecordsTotalLatencyHistogram) {
   model->SetFileSuggestItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
+  model->SetCoralItems({});
 
   // Regular latency histogram was recorded.
   histograms.ExpectTotalCount("Ash.Birch.TotalLatency", 1);
@@ -424,6 +434,7 @@ TEST_F(BirchModelTest, DisablingAllPrefsCausesNoFetch) {
   model->SetLostMediaItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
+  model->SetCoralItems({});
   ASSERT_TRUE(model->IsDataFresh());
 
   // Disable all the prefs.
@@ -431,6 +442,8 @@ TEST_F(BirchModelTest, DisablingAllPrefsCausesNoFetch) {
 
   // Install a stub weather provider.
   auto* weather_provider = stub_birch_client_.InstallStubWeatherDataProvider();
+  // Install a stub coral provider.
+  auto* coral_provider = stub_birch_client_.InstallStubCoralDataProvider();
 
   // Request a data fetch.
   model->RequestBirchDataFetch(/*is_post_login=*/false,
@@ -452,6 +465,7 @@ TEST_F(BirchModelTest, DisablingAllPrefsCausesNoFetch) {
   EXPECT_FALSE(client.DidRequestLostMediaDataFetch());
   EXPECT_FALSE(client.DidRequestReleaseNotesDataFetch());
   EXPECT_FALSE(weather_provider->did_request_birch_data_fetch());
+  EXPECT_FALSE(coral_provider->did_request_birch_data_fetch());
   EXPECT_TRUE(model->IsDataFresh());
 }
 
@@ -464,6 +478,8 @@ TEST_F(BirchModelTest, EnablingOnePrefsCausesFetch) {
 
   // Install a stub weather provider.
   auto* weather_provider = stub_birch_client_.InstallStubWeatherDataProvider();
+  // Install a stub coral provider.
+  auto* coral_provider = stub_birch_client_.InstallStubCoralDataProvider();
 
   // Request a fetch.
   model->RequestBirchDataFetch(/*is_post_login=*/false, base::DoNothing());
@@ -479,6 +495,7 @@ TEST_F(BirchModelTest, EnablingOnePrefsCausesFetch) {
   EXPECT_FALSE(client.DidRequestLostMediaDataFetch());
   EXPECT_FALSE(client.DidRequestReleaseNotesDataFetch());
   EXPECT_FALSE(weather_provider->did_request_birch_data_fetch());
+  EXPECT_FALSE(coral_provider->did_request_birch_data_fetch());
 }
 
 TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
@@ -514,6 +531,10 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
       GURL("https://www.source.com/"), u"media title", std::nullopt,
       SecondaryIconType::kLostMediaVideo, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
+  std::vector<BirchCoralItem> coral_item_list;
+  coral_item_list.emplace_back(u"title", u"subtext", CoralSource::kInSession,
+                               /*group_id=*/base::Token());
+  model->SetCoralItems(coral_item_list);
 
   ASSERT_TRUE(model->IsDataFresh());
 
@@ -532,6 +553,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   EXPECT_TRUE(model->GetLostMediaItemsForTest().empty());
   EXPECT_TRUE(model->GetWeatherForTest().empty());
   EXPECT_TRUE(model->GetReleaseNotesItemsForTest().empty());
+  EXPECT_TRUE(model->GetCoralItemsForTest().empty());
 }
 
 TEST_F(BirchModelTest, GetAllItemsDoesNotReturnItemsWithDisabledPrefs) {
@@ -636,6 +658,7 @@ TEST_F(BirchModelTest, FetchWithOnePrefDisabledMarksDataFresh) {
   model->SetSelfShareItems({});
   model->SetLostMediaItems({});
   model->SetReleaseNotesItems({});
+  model->SetCoralItems({});
 
   // Consumer was notified that fetch was complete.
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
@@ -719,6 +742,7 @@ TEST_F(BirchModelTest, IsDataFresh_Attachments) {
   model->SetLostMediaItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
+  model->SetCoralItems({});
   EXPECT_FALSE(model->IsDataFresh());
 
   // Providing attachments finishes the set and the data is fresh.
@@ -758,6 +782,7 @@ TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
   model->SetReleaseNotesItems({});
+  model->SetCoralItems({});
 
   EXPECT_TRUE(model->IsDataFresh());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
@@ -812,6 +837,7 @@ TEST_F(BirchModelWithoutWeatherTest, MAYBE_DataFetchTimeout) {
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
   model->SetReleaseNotesItems({});
+  model->SetCoralItems({});
 
   EXPECT_TRUE(model->IsDataFresh());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
@@ -866,6 +892,7 @@ TEST_F(BirchModelTest, PostLoginDataFetchTimeout) {
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
   model->SetReleaseNotesItems({});
+  model->SetCoralItems({});
 
   EXPECT_TRUE(model->IsDataFresh());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
@@ -1055,11 +1082,15 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
       GURL("https://www.source.com/"), u"media title", std::nullopt,
       SecondaryIconType::kLostMediaVideo, base::DoNothing());
   model->SetLostMediaItems(lost_media_item_list);
+  std::vector<BirchCoralItem> coral_item_list;
+  coral_item_list.emplace_back(u"title", u"subtext", CoralSource::kInSession,
+                               /*group_id=*/base::Token());
+  model->SetCoralItems(coral_item_list);
 
   EXPECT_TRUE(model->IsDataFresh());
 
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
-  EXPECT_EQ(model->GetAllItems().size(), 10u);
+  EXPECT_EQ(model->GetAllItems().size(), 11u);
 
   model->RequestBirchDataFetch(/*is_post_login=*/false,
                                base::BindOnce(&TestModelConsumer::OnItemsReady,
@@ -1080,6 +1111,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
   model->SetReleaseNotesItems({});
+  model->SetCoralItems({});
 
   EXPECT_THAT(consumer.items_ready_responses(),
               testing::ElementsAre("0", "1", "2"));
@@ -1357,6 +1389,7 @@ TEST_F(BirchModelTest, ModelClearedOnMultiProfileUserSwitch) {
   model->SetLostMediaItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
+  model->SetCoralItems({});
   ASSERT_TRUE(model->IsDataFresh());
 
   // Sign in to a secondary user.
@@ -1390,6 +1423,73 @@ TEST_F(BirchModelTest, WeatherItemsClearedWhenGeolocationDisabled) {
 
   // The weather item is removed.
   EXPECT_TRUE(model->GetWeatherForTest().empty());
+}
+
+TEST_F(BirchModelTest, RemoveAndFilterCoralItem) {
+  // Setup content items for a fake coral cluster.
+  coral::mojom::EntityPtr item0 = coral::mojom::Entity::NewTab(
+      coral::mojom::Tab::New("tab 0 title", GURL("http://tab0.com")));
+  coral::mojom::EntityPtr item1 = coral::mojom::Entity::NewTab(
+      coral::mojom::Tab::New("tab 1 title", GURL("http://tab1.com")));
+  coral::mojom::EntityPtr item2 = coral::mojom::Entity::NewApp(
+      coral::mojom::App::New("app 0 name", "app 0 id"));
+  coral::mojom::EntityPtr item3 = coral::mojom::Entity::NewApp(
+      coral::mojom::App::New("app 1 name", "app 1 id"));
+
+  std::vector<coral::mojom::EntityPtr> content_items;
+  content_items.push_back(item0.Clone());
+  content_items.push_back(item1.Clone());
+  content_items.push_back(item2.Clone());
+  content_items.push_back(item3.Clone());
+
+  // Setup clusters with title and content.
+  std::vector<coral::mojom::EntityPtr> entities0;
+  entities0.emplace_back(item0.Clone());
+  entities0.emplace_back(item1.Clone());
+  entities0.emplace_back(item2.Clone());
+  entities0.emplace_back(item3.Clone());
+
+  coral::mojom::GroupPtr group0 = coral::mojom::Group::New();
+  group0->id = base::Token(1, 2);
+  group0->title = "Group Title 0";
+  group0->entities = std::move(entities0);
+
+  coral::mojom::GroupPtr group1 =
+      CreateTestGroup({}, "Group Title 1 (empty)", base::Token(2, 3));
+
+  // Setup fake coral backend response and pass to the coral provider.
+  std::vector<coral::mojom::GroupPtr> groups;
+  groups.push_back(std::move(group0));
+  groups.push_back(std::move(group1));
+  auto response = std::make_unique<CoralResponse>();
+  response->set_groups(std::move(groups));
+
+  BirchCoralProvider::Get()->OverrideCoralResponseForTest(std::move(response));
+  BirchCoralProvider::Get()->RequestBirchDataFetch();
+
+  BirchModel* model = Shell::Get()->birch_model();
+  auto* item_remover = model->GetCoralItemRemoverForTest();
+
+  // Verify that the model's CoralItemRemover doesn't remove any items yet.
+  item_remover->FilterRemovedItems(&content_items);
+  ASSERT_EQ(4u, content_items.size());
+
+  BirchCoralItem coral_item0(u"Coral Title", u"Coral Text",
+                             CoralSource::kInSession,
+                             /*group_id=*/base::Token(1, 2));
+  BirchCoralItem coral_item1(u"Coral Title", u"Coral Text",
+                             CoralSource::kInSession,
+                             /*group_id=*/base::Token(2, 3));
+  model->SetCoralItems({coral_item0, coral_item1});
+
+  model->RemoveItem(&coral_item1);
+  item_remover->FilterRemovedItems(&content_items);
+  ASSERT_EQ(4u, content_items.size());
+  ASSERT_EQ(0u, item_remover->RemovedContentItemsForTest().size());
+  model->RemoveItem(&coral_item0);
+  item_remover->FilterRemovedItems(&content_items);
+  ASSERT_EQ(0u, content_items.size());
+  ASSERT_EQ(4u, item_remover->RemovedContentItemsForTest().size());
 }
 
 TEST_F(BirchModelTest, RemoveAndFilterTabItem) {

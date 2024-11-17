@@ -35,7 +35,6 @@ class TestAutofillProvider : public AutofillProvider {
                                 const FormFieldData& field) override {}
   void OnFormSubmitted(AndroidAutofillManager* manager,
                        const FormData& form,
-                       bool known_success,
                        mojom::SubmissionSource source) override {}
   void OnFocusOnNonFormField(AndroidAutofillManager* manager) override {}
   void OnFocusOnFormField(AndroidAutofillManager* manager,

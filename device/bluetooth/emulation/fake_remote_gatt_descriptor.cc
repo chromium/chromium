@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/public/mojom/emulation/fake_bluetooth.mojom.h"
@@ -48,13 +49,11 @@ device::BluetoothUUID FakeRemoteGattDescriptor::GetUUID() const {
 
 device::BluetoothRemoteGattCharacteristic::Permissions
 FakeRemoteGattDescriptor::GetPermissions() const {
-  NOTREACHED_IN_MIGRATION();
-  return device::BluetoothRemoteGattCharacteristic::PERMISSION_NONE;
+  NOTREACHED();
 }
 
 const std::vector<uint8_t>& FakeRemoteGattDescriptor::GetValue() const {
-  NOTREACHED_IN_MIGRATION();
-  return value_;
+  NOTREACHED();
 }
 
 device::BluetoothRemoteGattCharacteristic*
@@ -70,14 +69,14 @@ void FakeRemoteGattDescriptor::ReadRemoteDescriptor(ValueCallback callback) {
 }
 
 void FakeRemoteGattDescriptor::WriteRemoteDescriptor(
-    const std::vector<uint8_t>& value,
+    base::span<const uint8_t> value,
     base::OnceClosure callback,
     ErrorCallback error_callback) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&FakeRemoteGattDescriptor::DispatchWriteResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(error_callback), value));
+                     std::move(error_callback), base::ToVector(value)));
 }
 
 void FakeRemoteGattDescriptor::DispatchReadResponse(ValueCallback callback) {
@@ -99,21 +98,21 @@ void FakeRemoteGattDescriptor::DispatchReadResponse(ValueCallback callback) {
           /*value=*/std::vector<uint8_t>());
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
 void FakeRemoteGattDescriptor::DispatchWriteResponse(
     base::OnceClosure callback,
     ErrorCallback error_callback,
-    const std::vector<uint8_t>& value) {
+    std::vector<uint8_t> value) {
   DCHECK(next_write_response_);
   uint16_t gatt_code = next_write_response_.value();
   next_write_response_.reset();
 
   switch (gatt_code) {
     case mojom::kGATTSuccess:
-      last_written_value_ = value;
+      last_written_value_ = std::move(value);
       std::move(callback).Run();
       break;
     case mojom::kGATTInvalidHandle:
@@ -121,7 +120,7 @@ void FakeRemoteGattDescriptor::DispatchWriteResponse(
           .Run(device::BluetoothGattService::GattErrorCode::kFailed);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

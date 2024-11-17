@@ -37,9 +37,12 @@ export class TestPrivacyPageBrowserProxy extends TestBrowserProxy implements
     this.secureDnsSetting = {
       mode: SecureDnsMode.AUTOMATIC,
       config: '',
+      osMode: SecureDnsMode.AUTOMATIC,
+      osConfig: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
       dohWithIdentifiersActive: false,
       configForDisplay: '',
+      dohDomainConfigSet: false,
     };
 
     this.resolverList_ = [{name: 'Custom', value: 'custom', policy: ''}];

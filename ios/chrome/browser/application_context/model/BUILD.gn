@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
+
 source_set("model") {
   sources = [
     "application_context_impl.h",
@@ -19,6 +21,7 @@ source_set("model") {
     "//components/metrics_services_manager",
     "//components/net_log",
     "//components/network_time",
+    "//components/optimization_guide:optimization_guide_buildflags",
     "//components/os_crypt/async/browser",
     "//components/prefs",
     "//components/sessions",
@@ -47,6 +50,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/update_client/model",
     "//ios/chrome/common",
     "//ios/components/security_interstitials/safe_browsing",
@@ -60,4 +64,11 @@ source_set("model") {
     "//services/network:network_service",
     "//ui/base",
   ]
+
+  if (build_with_internal_optimization_guide) {
+    deps += [
+      "//components/optimization_guide/core",
+      "//ios/chrome/browser/optimization_guide/model",
+    ]
+  }
 }

@@ -103,7 +103,7 @@ scoped_refptr<DevToolsAgentHostImpl> GetDevToolsAgentHostForClient(
     return nullptr;
   }
 
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -115,10 +115,10 @@ IndexedDBInternalsUI::IndexedDBInternalsUI(WebUI* web_ui)
       kChromeUIIndexedDBInternalsHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources 'self' 'unsafe-eval';");
+      "script-src chrome://resources 'self';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
-      "trusted-types jstemplate static-types;");
+      "trusted-types static-types lit-html-desktop;");
   source->UseStringsJs();
   source->AddResourcePaths(
       base::make_span(kIndexedDbResources, kIndexedDbResourcesSize));
@@ -402,7 +402,7 @@ void FileDeleter::OnDownloadUpdated(download::DownloadItem* item) {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

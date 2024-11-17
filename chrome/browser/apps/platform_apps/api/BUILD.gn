@@ -108,6 +108,7 @@ source_set("api") {
   if (use_lld) {
     visibility += [
       "//chrome/browser",
+      "//chrome/browser/profiles:profiles_extra_parts_impl",
       "//chrome/browser/ui",
     ]
   } else {
@@ -115,6 +116,7 @@ source_set("api") {
     # multiple libraries when not linking with lld.
     visibility += [
       "//chrome/browser:*",
+      "//chrome/browser/profiles:profiles_extra_parts_impl",
       "//chrome/browser/ui:*",
     ]
   }

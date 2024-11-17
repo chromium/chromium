@@ -56,8 +56,8 @@ class CharacterData;
 class DOMEditor;
 class Document;
 class DocumentLoader;
+class DummyExceptionStateForTesting;
 class Element;
-class ExceptionState;
 class HTMLFrameOwnerElement;
 class HTMLSlotElement;
 class InspectedFrames;
@@ -93,7 +93,7 @@ class CORE_EXPORT InspectorDOMAgent final
     std::unique_ptr<SourceLocation> source_location_;
   };
 
-  static protocol::Response ToResponse(ExceptionState&);
+  static protocol::Response ToResponse(DummyExceptionStateForTesting&);
   static protocol::DOM::PseudoType ProtocolPseudoElementType(PseudoId);
   static protocol::DOM::ShadowRootType GetShadowRootType(ShadowRoot*);
   static protocol::DOM::CompatibilityMode GetDocumentCompatibilityMode(
@@ -267,6 +267,7 @@ class CORE_EXPORT InspectorDOMAgent final
       protocol::Maybe<String> container_name,
       protocol::Maybe<protocol::DOM::PhysicalAxes> physical_axes,
       protocol::Maybe<protocol::DOM::LogicalAxes> logical_axes,
+      protocol::Maybe<bool> queries_scroll_state,
       protocol::Maybe<int>* container_node_id) override;
   protocol::Response getQueryingDescendantsForContainer(
       int node_id,
@@ -311,7 +312,7 @@ class CORE_EXPORT InspectorDOMAgent final
   void TopLayerElementsChanged();
   void PseudoElementDestroyed(PseudoElement*);
   void NodeCreated(Node* node);
-  void UpdateScrollableFlag(Node* node);
+  void UpdateScrollableFlag(Node* node, std::optional<bool>);
 
   Node* NodeForId(int node_id) const;
   int BoundNodeId(Node*) const;

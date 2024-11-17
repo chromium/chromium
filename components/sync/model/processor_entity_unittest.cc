@@ -15,7 +15,6 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/hash_util.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
@@ -141,7 +140,7 @@ CommitResponseData GenerateAckData(const CommitRequestData& request,
 }
 
 sync_pb::UniquePosition GenerateUniquePosition(const ClientTagHash& hash) {
-  return UniquePosition::InitialPosition(GenerateUniquePositionSuffix(hash))
+  return UniquePosition::InitialPosition(UniquePosition::GenerateSuffix(hash))
       .ToProto();
 }
 

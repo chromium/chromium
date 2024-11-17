@@ -153,6 +153,14 @@ class MODULES_EXPORT AudioContext final
   // https://wicg.github.io/web_audio_playout
   void TransferAudioFrameStatsTo(AudioFrameStatsAccumulator& receiver);
 
+  // Get the number of pending device list updates, to allow waiting until the
+  // device list is refrehsed before using it.  A value of 0 means no updates
+  // are pending.
+  int PendingDeviceListUpdates();
+
+  void StartContextInterruption();
+  void EndContextInterruption();
+
   // Methods for unit tests
   void set_was_audible_for_testing(bool value) { was_audible_ = value; }
   void invoke_onrendererror_from_platform_for_testing();
@@ -214,11 +222,11 @@ class MODULES_EXPORT AudioContext final
   // Called when the context is being closed to stop rendering audio and clean
   // up handlers. This clears the self-referencing pointer, making this object
   // available for the potential GC.
-  void StopRendering();
+  void StopRendering() VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   // Called when suspending the context to stop reundering audio, but don't
   // clean up handlers because we expect to be resuming where we left off.
-  void SuspendRendering();
+  void SuspendRendering() VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   void DidClose();
 
@@ -226,12 +234,15 @@ class MODULES_EXPORT AudioContext final
   // posting a main thread task to perform the actual resolving, if needed.
   void ResolvePromisesForUnpause();
 
-  AudioIOPosition OutputPosition() const;
+  AudioIOPosition OutputPosition() const
+      VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   // Send notification to browser that an AudioContext has started or stopped
   // playing audible audio.
-  void NotifyAudibleAudioStarted();
-  void NotifyAudibleAudioStopped();
+  void NotifyAudibleAudioStarted()
+      VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
+  void NotifyAudibleAudioStopped()
+      VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   void EnsureAudioContextManagerService();
   void OnAudioContextManagerServiceConnectionError();
@@ -248,7 +259,8 @@ class MODULES_EXPORT AudioContext final
                          Vector<mojom::blink::VideoInputDeviceCapabilitiesPtr>
                              video_input_capabilities,
                          Vector<mojom::blink::AudioInputDeviceCapabilitiesPtr>
-                             audio_input_capabilities);
+                             audio_input_capabilities)
+      VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   // A helper function used to update `v8_sink_id_` whenever `sink_id_` is
   // updated.
@@ -258,7 +270,8 @@ class MODULES_EXPORT AudioContext final
   // prerendering.
   void ResumeOnPrerenderActivation();
 
-  void HandleRenderError();
+  void HandleRenderError()
+      VALID_CONTEXT_REQUIRED(main_thread_sequence_checker_);
 
   // https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/media/capture/README.md#logs
   void SendLogMessage(const char* const function_name, const String& message);
@@ -360,6 +373,27 @@ class MODULES_EXPORT AudioContext final
   // If a sink ID is given via the constructor or `setSinkId()` method,
   // this is set to `true`.
   bool is_sink_id_given_ = false;
+
+  // The suspended->interrupted transition should not happen immediately when
+  // an interruption occurs.  If an interruption happens in
+  // the suspended state, we store this state in the
+  // `is_interrupted_while_suspended_` flag.  Then, if resume() is called while
+  // the context is suspended and the flag is set, we transition to the
+  // interrupted state.  This variable should only be modified by
+  // StartContextInterruption() and EndContextInterruption().
+  bool is_interrupted_while_suspended_ = false;
+
+  // True if the context should transition to running after an interruption
+  // ends.
+  bool should_transition_to_running_after_interruption_ = false;
+
+  // The number of pending device list updates, to allow waiting until the
+  // device list is refrehsed before using it.  A value of 0 means no updates
+  // are pending.
+  int pending_device_list_updates_
+      GUARDED_BY_CONTEXT(main_thread_sequence_checker_) = 0;
+
+  SEQUENCE_CHECKER(main_thread_sequence_checker_);
 };
 
 }  // namespace blink

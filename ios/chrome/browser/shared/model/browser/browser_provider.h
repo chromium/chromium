@@ -13,11 +13,11 @@ class Browser;
 // user interface (and related model objects) to the application layer. Each
 // BrowserProvider is roughly equivalent to a window on a desktop browser --
 // a collection of tabs (a tab model) associated with a user profile (the
-// browser state) with the UI of the currently visible tab (the view controller)
+// profile) with the UI of the currently visible tab (the view controller)
 // and some other attributes as well.
 @protocol BrowserProvider
 // The active browser. This can never be nullptr once the UI initialization has
-// completed, i.e. after the app init stage has passed InitStageNormalUI.
+// completed, i.e. after the ProfileState has passed ProfileInitStage::kUIReady.
 @property(nonatomic, readonly) Browser* browser;
 // The inactive browser. This can be nullptr if in an incognito interface or if
 // Inactive Tabs is disabled.

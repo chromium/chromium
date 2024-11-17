@@ -72,7 +72,7 @@ int ActionHighlight::GetCircleRadius() const {
     case ActionType::MOVE:
       return kActionMoveCircleRadius;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -44,7 +44,8 @@ class DynamicImportTreeClient final : public ModuleTreeClient {
 };
 
 // Abstract callback for modules resolution.
-class ModuleResolutionCallback : public ScriptFunction::Callable {
+class ModuleResolutionCallback
+    : public ThenCallable<IDLAny, ModuleResolutionCallback> {
  public:
   explicit ModuleResolutionCallback(
       ScriptPromiseResolver<IDLAny>* promise_resolver)
@@ -52,8 +53,10 @@ class ModuleResolutionCallback : public ScriptFunction::Callable {
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(promise_resolver_);
-    ScriptFunction::Callable::Trace(visitor);
+    ThenCallable<IDLAny, ModuleResolutionCallback>::Trace(visitor);
   }
+
+  virtual void React(ScriptState* script_state, ScriptValue value) = 0;
 
  protected:
   Member<ScriptPromiseResolver<IDLAny>> promise_resolver_;
@@ -75,12 +78,11 @@ class ModuleResolutionSuccessCallback final : public ModuleResolutionCallback {
   }
 
  private:
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+  void React(ScriptState* script_state, ScriptValue value) final {
     ScriptState::Scope scope(script_state);
     v8::Local<v8::Module> record = module_script_->V8Module();
     v8::Local<v8::Value> module_namespace = ModuleRecord::V8Namespace(record);
     promise_resolver_->Resolve(module_namespace);
-    return ScriptValue();
   }
 
   Member<ModuleScript> module_script_;
@@ -95,10 +97,9 @@ class ModuleResolutionFailureCallback final : public ModuleResolutionCallback {
       : ModuleResolutionCallback(promise_resolver) {}
 
  private:
-  ScriptValue Call(ScriptState* script_state, ScriptValue exception) override {
+  void React(ScriptState* script_state, ScriptValue exception) final {
     ScriptState::Scope scope(script_state);
     promise_resolver_->Reject(exception);
-    return ScriptValue();
   }
 };
 
@@ -159,13 +160,12 @@ void DynamicImportTreeClient::NotifyModuleTreeLoadFinished(
       // <spec step="10">Perform
       // FinishDynamicImport(referencingScriptOrModule, specifier,
       // promiseCapability, promise).</spec>
-      auto* callback_success = MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<ModuleResolutionSuccessCallback>(
-                            promise_resolver_, module_script));
-      auto* callback_failure = MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<ModuleResolutionFailureCallback>(
-                            promise_resolver_));
-      result.GetPromise(script_state).Then(callback_success, callback_failure);
+      result.GetPromise(script_state)
+          .Then(script_state,
+                MakeGarbageCollected<ModuleResolutionSuccessCallback>(
+                    promise_resolver_, module_script),
+                MakeGarbageCollected<ModuleResolutionFailureCallback>(
+                    promise_resolver_));
       break;
     }
   }

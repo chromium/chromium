@@ -15,11 +15,11 @@ rootWebArea
 ++++++++listItem
 ++++++++++listMarker name='3. ' nextOnLineId=inlineTextBox:"Hello"
 ++++++++++++staticText ignored
-++++++++++staticText name='Hello' previousOnLineId=staticText
-++++++++++++inlineTextBox name='Hello' previousOnLineId=staticText
+++++++++++staticText name='Hello' nextOnLineId=staticText:" " previousOnLineId=staticText
+++++++++++++inlineTextBox name='Hello' nextOnLineId=staticText:" " previousOnLineId=staticText
 ++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"Hello"
-++++++++++staticText name='world this'
-++++++++++++inlineTextBox name='world this'
+++++++++++staticText name='world this' nextOnLineId=staticText:" "
+++++++++++++inlineTextBox name='world this' nextOnLineId=staticText:" "
 ++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"world this"
 ++++++++++staticText name='is just like docs, and your kitchen sink'
 ++++++++++++inlineTextBox name='is just like docs, and your kitchen sink'
@@ -36,11 +36,11 @@ rootWebArea name='done'
 ++++++++listItem
 ++++++++++listMarker name='2. ' nextOnLineId=inlineTextBox:"Hello"
 ++++++++++++staticText ignored
-++++++++++staticText name='Hello' previousOnLineId=staticText
-++++++++++++inlineTextBox name='Hello' previousOnLineId=staticText
+++++++++++staticText name='Hello' nextOnLineId=staticText:" " previousOnLineId=staticText
+++++++++++++inlineTextBox name='Hello' nextOnLineId=staticText:" " previousOnLineId=staticText
 ++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"Hello"
-++++++++++staticText name='world this'
-++++++++++++inlineTextBox name='world this'
+++++++++++staticText name='world this' nextOnLineId=staticText:" "
+++++++++++++inlineTextBox name='world this' nextOnLineId=staticText:" "
 ++++++++++staticText name=' ' previousOnLineId=inlineTextBox:"world this"
 ++++++++++staticText name='is just like docs, and your kitchen sink'
 ++++++++++++inlineTextBox name='is just like docs, and your kitchen sink'

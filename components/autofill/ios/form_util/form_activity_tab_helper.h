@@ -13,11 +13,15 @@
 namespace web {
 class ScriptMessage;
 class WebState;
+enum class ContentWorld;
 }  // namespace web
 
 namespace autofill {
 
 class FormActivityObserver;
+
+inline constexpr char kProgrammaticFormSubmissionHistogram[] =
+    "Autofill.iOS.FormSubmission.IsProgrammatic";
 
 // Processes user activity messages for web page forms and forwards the form
 // activity event to FormActivityObserver.

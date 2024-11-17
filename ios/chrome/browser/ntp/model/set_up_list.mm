@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -40,8 +41,15 @@ bool GetIsItemComplete(SetUpListItemType type,
     case SetUpListItemType::kDefaultBrowser:
       return IsChromeLikelyDefaultBrowser();
     case SetUpListItemType::kAutofill:
-      return password_manager_util::IsCredentialProviderEnabledOnStartup(prefs);
+      return password_manager_util::IsCredentialProviderEnabledOnStartup(
+          local_state);
     case SetUpListItemType::kNotifications: {
+      UNAuthorizationStatus auth_status =
+          [PushNotificationUtil getSavedPermissionSettings];
+      if (auth_status == UNAuthorizationStatusNotDetermined ||
+          auth_status == UNAuthorizationStatusProvisional) {
+        return false;
+      }
       id<SystemIdentity> identity =
           auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
       if (IsIOSTipsNotificationsEnabled()) {

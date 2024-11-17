@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -65,8 +66,12 @@ std::vector<net::ProxyChain> MakeQuicProxyList(
 }  // namespace
 
 IpProtectionCoreImpl::IpProtectionCoreImpl(
-    std::unique_ptr<IpProtectionConfigGetter> config_getter)
-    : ipp_over_quic_(net::features::kIpPrivacyUseQuicProxies.Get()),
+    std::unique_ptr<IpProtectionConfigGetter> config_getter,
+    MaskedDomainListManager* masked_domain_list_manager,
+    bool is_ip_protection_enabled)
+    : masked_domain_list_manager_(masked_domain_list_manager),
+      is_ip_protection_enabled_(is_ip_protection_enabled),
+      ipp_over_quic_(net::features::kIpPrivacyUseQuicProxies.Get()),
       enable_token_caching_by_geo_(
           net::features::kIpPrivacyCacheTokensByGeo.Get()) {
   ipp_proxy_config_manager_ = nullptr;
@@ -97,6 +102,21 @@ IpProtectionCoreImpl::~IpProtectionCoreImpl() {
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
 }
 
+bool IpProtectionCoreImpl::IsMdlPopulated() {
+  return masked_domain_list_manager_->IsPopulated();
+}
+
+bool IpProtectionCoreImpl::RequestShouldBeProxied(
+    const GURL& request_url,
+    const net::NetworkAnonymizationKey& network_anonymization_key) {
+  return masked_domain_list_manager_->Matches(request_url,
+                                              network_anonymization_key);
+}
+
+bool IpProtectionCoreImpl::IsIpProtectionEnabled() {
+  return is_ip_protection_enabled_;
+}
+
 bool IpProtectionCoreImpl::AreAuthTokensAvailable() {
   // If proxy list is not available, tokens cannot be available. Also if there
   // are no token cache managers, there are no tokens.
@@ -114,6 +134,22 @@ bool IpProtectionCoreImpl::AreAuthTokensAvailable() {
   }
 
   return all_caches_have_tokens;
+}
+
+bool IpProtectionCoreImpl::WereTokenCachesEverFilled() {
+  // If proxy list is not available, tokens cannot be available. Also if there
+  // are no token cache managers, there are no tokens.
+  if (!IsProxyListAvailable() || ipp_token_managers_.empty()) {
+    return false;
+  }
+
+  bool all_caches_have_been_filled = true;
+  for (const auto& manager : ipp_token_managers_) {
+    if (!manager.second->WasTokenCacheEverFilled()) {
+      all_caches_have_been_filled = false;
+    }
+  }
+  return all_caches_have_been_filled;
 }
 
 std::optional<BlindSignedAuthToken> IpProtectionCoreImpl::GetAuthToken(
@@ -134,9 +170,15 @@ std::optional<BlindSignedAuthToken> IpProtectionCoreImpl::GetAuthToken(
   return result;
 }
 
-void IpProtectionCoreImpl::InvalidateTryAgainAfterTime() {
+void IpProtectionCoreImpl::AuthTokensMayBeAvailable() {
   for (const auto& manager : ipp_token_managers_) {
     manager.second->InvalidateTryAgainAfterTime();
+  }
+  // If OAuth tokens are applied to GetProxyConfig requests (i.e. when
+  // `kIpPrivacyIncludeOAuthTokenInGetProxyConfig` is enabled), refresh the
+  // proxy list to try to obtain a new OAuth token.
+  if (net::features::kIpPrivacyIncludeOAuthTokenInGetProxyConfig.Get()) {
+    RequestRefreshProxyList();
   }
 }
 
@@ -202,7 +244,7 @@ void IpProtectionCoreImpl::GeoObserved(const std::string& geo_id) {
 
   if (ipp_proxy_config_manager_ != nullptr &&
       ipp_proxy_config_manager_->CurrentGeo() != geo_id) {
-    ipp_proxy_config_manager_->RefreshProxyListForGeoChange();
+    ipp_proxy_config_manager_->RequestRefreshProxyList();
   }
 
   for (auto& [_, token_manager] : ipp_token_managers_) {
@@ -220,6 +262,102 @@ void IpProtectionCoreImpl::OnNetworkChanged(
     ipp_over_quic_ = net::features::kIpPrivacyUseQuicProxies.Get();
     RequestRefreshProxyList();
   }
+}
+
+void IpProtectionCoreImpl::VerifyIpProtectionCoreHostForTesting(
+    VerifyIpProtectionCoreHostForTestingCallback callback) {
+  auto* ipp_token_manager_impl = static_cast<IpProtectionTokenManagerImpl*>(
+      GetIpProtectionTokenManagerForTesting(  // IN-TEST
+          ProxyLayer::kProxyA));
+  CHECK(ipp_token_manager_impl);
+
+  // If active cache management is enabled (the default), disable it and do a
+  // one-time reset of the state. Since the browser process will be driving this
+  // test, this makes it easier to reason about our state (for instance, if the
+  // browser process sends less than the requested number of tokens, the network
+  // service won't immediately request more).
+  if (ipp_token_manager_impl->IsCacheManagementEnabledForTesting()) {
+    ipp_token_manager_impl->DisableCacheManagementForTesting(  // IN-TEST
+        base::BindOnce(
+            [](base::WeakPtr<IpProtectionCoreImpl> ipp_core,
+               VerifyIpProtectionCoreHostForTestingCallback callback) {
+              // Call `PostTask()` instead of invoking the Verify method again
+              // directly so that if `DisableCacheManagementForTesting()` needed
+              // to wait for a `TryGetAuthTokens()` call to finish, then we
+              // ensure that the stored callback has been cleared before the
+              // Verify method tries to call `TryGetAuthTokens()` again.
+              base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(&IpProtectionCoreImpl::
+                                     VerifyIpProtectionCoreHostForTesting,
+                                 ipp_core, std::move(callback)));
+            },
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
+  // If there is a cooldown in effect, then don't send any tokens and instead
+  // send back the try again after time.
+  base::Time try_auth_tokens_after =
+      ipp_token_manager_impl
+          ->try_get_auth_tokens_after_for_testing();  // IN-TEST
+  if (!try_auth_tokens_after.is_null()) {
+    std::move(callback).Run(std::nullopt, try_auth_tokens_after);
+    return;
+  }
+
+  ipp_token_manager_impl->SetOnTryGetAuthTokensCompletedForTesting(  // IN-TEST
+      base::BindOnce(
+          &IpProtectionCoreImpl::OnIpProtectionConfigAvailableForTesting,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  ipp_token_manager_impl->CallTryGetAuthTokensForTesting();  // IN-TEST
+}
+
+void IpProtectionCoreImpl::SetIpProtectionEnabled(bool enabled) {
+  is_ip_protection_enabled_ = enabled;
+  // TODO(crbug.com/41494110): Tear down all existing proxied
+  // HTTP/SPDY/QUIC sessions if the settings goes from being enabled to being
+  // disabled. For HTTP and SPDY we could just simulate an IP address change and
+  // tear down all connections rather easily, but for QUIC it's more complicated
+  // because with network change session migration the connections might still
+  // persist. More investigation is needed here.
+  // TODO(crbug.com/41494110): Propagate this change to the config cache,
+  // proxy list manager, and token cache manager to cancel further requests or
+  // reschedule them. Note that as currently implemented, the token cache
+  // manager will already stop requesting tokens soon after IP Protection is
+  // disabled via the try again after time returned by the next TryGetAuthToken
+  // call, but the GetProxyConfig calls will continue and receive failures until
+  // the feature is re-enabled.
+}
+
+bool IpProtectionCoreImpl::IsIpProtectionEnabledForTesting() {
+  return is_ip_protection_enabled_;
+}
+
+void IpProtectionCoreImpl::OnIpProtectionConfigAvailableForTesting(
+    VerifyIpProtectionCoreHostForTestingCallback callback) {
+  auto* ipp_token_manager_impl = static_cast<IpProtectionTokenManagerImpl*>(
+      GetIpProtectionTokenManagerForTesting(  // IN-TEST
+          ProxyLayer::kProxyA));
+  auto* ipp_proxy_config_manager_impl =
+      static_cast<IpProtectionProxyConfigManagerImpl*>(
+          GetIpProtectionProxyConfigManagerForTesting());  // IN-TEST
+  CHECK(ipp_proxy_config_manager_impl);
+  ipp_proxy_config_manager_impl->SetProxyListForTesting(  // IN-TEST
+      std::vector{net::ProxyChain::ForIpProtection(
+          std::vector{net::ProxyServer::FromSchemeHostAndPort(
+              net::ProxyServer::SCHEME_HTTPS, "proxy-a", std::nullopt)})},
+      GetGeoHintFromGeoIdForTesting(  // IN-TEST
+          ipp_token_manager_impl->CurrentGeo()));
+  std::optional<BlindSignedAuthToken> result = GetAuthToken(0);  // kProxyA.
+  if (result.has_value()) {
+    std::move(callback).Run(std::move(result.value()), std::nullopt);
+    return;
+  }
+  base::Time try_auth_tokens_after =
+      ipp_token_manager_impl
+          ->try_get_auth_tokens_after_for_testing();  // IN-TEST
+  std::move(callback).Run(std::nullopt, try_auth_tokens_after);
 }
 
 }  // namespace ip_protection

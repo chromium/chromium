@@ -25,7 +25,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/field_candidates.h"
 #include "components/autofill/core/browser/form_types.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/dense_set.h"
@@ -72,13 +71,12 @@ class FormStructure {
   // types.
   void DetermineHeuristicTypes(
       const GeoIpCountryCode& client_country,
-      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
       LogManager* log_manager);
 
   // Returns predictions using the details from the given |form_structures| and
   // their fields' predicted types.
   static std::vector<FormDataPredictions> GetFieldTypePredictions(
-      const std::vector<raw_ptr<FormStructure, VectorExperimental>>&
+      base::span<const raw_ptr<FormStructure, VectorExperimental>>
           form_structures);
 
   // Creates FormStructure that has bare minimum information for uploading
@@ -118,7 +116,7 @@ class FormStructure {
   // Returns true if autofill's heuristic field type detection should be
   // attempted for this form given that |kMinRequiredFieldsForHeuristics| is not
   // met.
-  bool ShouldRunHeuristicsForSingleFieldForms() const;
+  bool ShouldRunHeuristicsForSingleFields() const;
 
   // Returns true if we should query the crowd-sourcing server to determine this
   // form's field types. If the form includes author-specified types, this will
@@ -136,14 +134,19 @@ class FormStructure {
   // This enum defines the behavior of RetrieveFromCache, which needs to adapt
   // to the reason for retrieving data from the cache.
   enum class RetrieveFromCacheReason {
-    // kFormParsing refers to the process of assigning field types to fields
-    // when the renderer notifies the browser about a new, modified or
-    // interacted with form.
+    // kFormCacheUpdateWithoutParsing and kFormCacheUpdateAfterParsing refer to
+    // the process of parsing the form and/or storing the result in
+    // AutofillManager's form cache when the renderer sends a new or potentially
+    // updated FormData object. Form parsing is the process of assigning field
+    // types to fields when the renderer notifies the browser about a new,
+    // modified or interacted with form.
     //
-    // During form parsing, the browser receives a FormData object from the
-    // renderer that is converted to a FormStructure object. RetrieveFromCache
-    // is responsible for retaining information from the history of the fields
-    // in the form (e.g. information about previous fill operations):
+    // When the browser receives a FormData object from the renderer, it is
+    // converted to a FormStructure object. After that, the FormStructure is
+    // parsed if it changed significantly since the last parse.
+    // RetrieveFromCache is responsible for retaining information from the
+    // history of the fields in the form (e.g. information about previous fill
+    // operations):
     //
     // - The `is_autofilled` and similar members of a field are copied from the
     //   cached form so that a field that was once labeled as autofilled remains
@@ -152,30 +155,44 @@ class FormStructure {
     // - The `value` of a field is copied from the cache as it represents the
     //   initial value of a field during page load time and must not be updated
     //   if a form is parsed a second time.
+    //   TODO: crbug.com/40227496 - Update documentation about `value` when
+    //   kAutofillFixValueSemantics is launched.
     //
-    // - Also server predictions are preserved (while heuristic predictions
-    //   are discarded because they will be generated during the parsing).
-    kFormParsing,
+    // - Server predictions are also preserved.
+    //
+    // - Heuristic predictions are preserved only for
+    //   kFormCacheUpdateWithoutParsing. They are discarded for
+    //   kFormCacheUpdateAfterParsing because they are generated during parsing.
+    kFormCacheUpdateWithoutParsing,
+    kFormCacheUpdateAfterParsing,
 
     // kFormImport refers to the process of importing address profiles / credit
     // cards from user-filled forms after a form submission.
     //
     // During form import, the browser receives a FormData object from the
-    // renderer that is converted to a FormStructure object. RetrieveFromCache
-    // is responsible for processing the FormData so that the FormStructure
-    // contains the right information that facilitate importing. Therefore,
-    // similar work happen as for kFormParsing, except:
+    // renderer that is first converted to a FormStructure object.
+    // RetrieveFromCache is responsible for processing the FormData so that the
+    // FormStructure contains the right information that facilitate importing.
+    // Therefore, similar work happens as for kFormCacheUpdateAfterParse,
+    // except:
     //
     // - During form import, we want to copy field type information from
     //   previous parse operations as these tell which information to save.
     //
     // - The `value` of a FormStructure's field typically represents the
     //   initially observed value of a field during page load. So during
-    //   kFormParsing the value is persisted. During import, however, we want to
-    //   store the last observed value. Furthermore, if the submitted value of a
-    //   field has never been changed, we ignore the previous value from import
-    //   (unless it's a state or country as websites can find meaningful default
-    //   values via GeoIP).
+    //   kFormCacheUpdateAfterParse the value is persisted. During import,
+    //   however, we want to store the last observed value. Furthermore, if the
+    //   submitted value of a field has never been changed, we ignore the
+    //   previous value from import (unless it's a state or country as websites
+    //   can find meaningful default values via GeoIP).
+    //   TODO: crbug.com/40227496 - Update documentation about `value` when
+    //   kAutofillFixValueSemantics is launched.
+    //
+    // TODO: crbug.com/40227496 - When kAutofillFixValueSemantics is launched,
+    // kFormImport behaves identical to kFormCacheUpdateWithoutParsing. Consider
+    // renaming the
+    // enum constants or, better yet, removing the entire enum then.
     kFormImport,
   };
 
@@ -209,15 +226,15 @@ class FormStructure {
   // All returned values are standardized to upper case.
   std::set<std::u16string> PossibleValues(FieldType type);
 
-  // Rationalize phone number fields in a given section, that is only fill
-  // the fields that are considered composing a first complete phone number.
-  void RationalizePhoneNumbersInSection(const Section& section);
+  // Rationalize phone number fields so that, in every section, only the first
+  // complete phone number is filled automatically. This is useful for when a
+  // form contains a first phone number and second phone number, which usually
+  // should be distinct.
+  void RationalizePhoneNumberFieldsForFilling();
 
   // Rationalize the form's autocomplete attributes, repeated fields and field
   // type predictions.
-  void RationalizeFormStructure(
-      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-      LogManager* log_manager);
+  void RationalizeFormStructure(LogManager* log_manager);
 
   // Returns the FieldGlobalIds of the |fields_| that are eligible for manual
   // filling on form interaction.
@@ -375,6 +392,9 @@ class FormStructure {
 
   FormAssociations form_associations() const { return form_associations_; }
 
+  base::flat_map<FieldGlobalId, AutofillType::ServerPrediction>
+  GetServerPredictions() const;
+
  private:
   friend class FormStructureTestApi;
 
@@ -417,9 +437,6 @@ class FormStructure {
 
   [[nodiscard]] bool ShouldBeParsed(ShouldBeParsedParams params,
                                     LogManager* log_manager = nullptr) const;
-
-  // Further processes the extracted |fields_|.
-  void ProcessExtractedFields();
 
   // Extracts the parseable field name by removing a common affix.
   void ExtractParseableFieldNames();
@@ -507,9 +524,6 @@ class FormStructure {
   // The timestamp when this form or one of its fields was last filled.
   std::optional<base::TimeTicks> last_filling_timestamp_;
 
-  // If phone number rationalization has been performed for a given section.
-  std::set<Section> phone_rationalized_;
-
   // Used to record whether developer has used autocomplete markup or
   // UPI-VPA hints, This is a bitmask of DeveloperEngagementMetric and set in
   // DetermineHeuristicTypes().
@@ -551,23 +565,6 @@ class FormStructure {
 
 LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form);
 std::ostream& operator<<(std::ostream& buffer, const FormStructure& form);
-
-// Helper struct for `GetFormDataAndServerPredictions`.
-struct FormDataAndServerPredictions {
-  FormDataAndServerPredictions();
-  FormDataAndServerPredictions(const FormDataAndServerPredictions&);
-  FormDataAndServerPredictions& operator=(const FormDataAndServerPredictions&);
-  FormDataAndServerPredictions(FormDataAndServerPredictions&&);
-  FormDataAndServerPredictions& operator=(FormDataAndServerPredictions&&);
-  ~FormDataAndServerPredictions();
-
-  FormData form_data;
-  base::flat_map<FieldGlobalId, AutofillType::ServerPrediction> predictions;
-};
-
-// Returns the `FormData` and `ServerPrediction` objects underlying `form`.
-FormDataAndServerPredictions GetFormDataAndServerPredictions(
-    const FormStructure& form);
 
 }  // namespace autofill
 

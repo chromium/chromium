@@ -340,7 +340,7 @@ TranslateLanguageList::TranslateLanguageList()
   language_list_fetcher_->set_max_retry_on_5xx(kMaxRetryOn5xx);
 }
 
-TranslateLanguageList::~TranslateLanguageList() {}
+TranslateLanguageList::~TranslateLanguageList() = default;
 
 void TranslateLanguageList::GetSupportedLanguages(
     bool translate_allowed,

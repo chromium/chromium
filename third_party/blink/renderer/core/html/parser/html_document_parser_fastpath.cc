@@ -340,8 +340,7 @@ String ScanTextResult<LChar>::TextToString() const {
 
 template <>
 String ScanTextResult<UChar>::TextToString() const {
-  return String(StringImpl::Create8BitIfPossible(
-      text.data(), static_cast<wtf_size_t>(text.size())));
+  return String(StringImpl::Create8BitIfPossible(text));
 }
 
 // This HTML parser is used as a fast-path for setting innerHTML.
@@ -973,8 +972,7 @@ class HTMLFastPathParser {
         return {Span{}, ScanEscapedAttrValue()};
     };
 
-    NOTREACHED_IN_MIGRATION();
-    return {};
+    NOTREACHED();
   }
 #endif  // VECTORIZE_SCANNING
 
@@ -1161,7 +1159,7 @@ class HTMLFastPathParser {
       // This handles uncommon named references.
       // This does not use `reference` as `reference` does not contain the `;`,
       // which impacts behavior of ConsumeHTMLEntity().
-      String input_string{start, static_cast<unsigned>(pos_ - start)};
+      String input_string{base::span(start, pos_)};
       SegmentedString input_segmented{input_string};
       DecodedHTMLEntity entity;
       bool not_enough_characters = false;
@@ -1263,8 +1261,7 @@ class HTMLFastPathParser {
     QualifiedName name = LookupHTMLAttributeName(
         name_span.data(), static_cast<unsigned>(name_span.size()));
     if (name == g_null_name) {
-      name = QualifiedName(AtomicString(
-          name_span.data(), static_cast<unsigned>(name_span.size())));
+      name = QualifiedName(AtomicString(name_span));
     }
 
     // The string pointer in |value| is null for attributes with no values, but
@@ -1272,11 +1269,9 @@ class HTMLFastPathParser {
     // no values have the value set to an empty atom instead.
     AtomicString value;
     if (value_span.second.empty()) {
-      value = AtomicString(value_span.first.data(),
-                           static_cast<unsigned>(value_span.first.size()));
+      value = AtomicString(value_span.first);
     } else {
-      value = AtomicString(value_span.second.data(),
-                           static_cast<unsigned>(value_span.second.size()));
+      value = AtomicString(value_span.second);
     }
     if (value.IsNull()) {
       value = g_empty_atom;

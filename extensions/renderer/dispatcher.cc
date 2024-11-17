@@ -526,10 +526,6 @@ void Dispatcher::DidCreateScriptContext(
       // Extension APIs in untrusted WebUIs are temporary so don't bother
       // recording metrics for them.
       break;
-    case mojom::ContextType::kLockscreenExtension:
-      UMA_HISTOGRAM_TIMES(
-          "Extensions.DidCreateScriptContext_LockScreenExtension", elapsed);
-      break;
     case mojom::ContextType::kOffscreenExtension:
     case mojom::ContextType::kUserScript:
       // We don't really care about offscreen extension context or user script
@@ -924,6 +920,7 @@ void Dispatcher::OnEventDispatcherRequest(
     mojo::PendingAssociatedReceiver<mojom::EventDispatcher> dispatcher) {
   CHECK(!dispatcher_.is_bound());
   dispatcher_.Bind(std::move(dispatcher));
+  dispatcher_.reset_on_disconnect();
 }
 
 void Dispatcher::ActivateExtension(const ExtensionId& extension_id) {
@@ -976,11 +973,9 @@ void Dispatcher::LoadExtensions(
     scoped_refptr<const Extension> extension =
         ConvertToExtension(std::move(param), kRendererProfileId, &error);
     if (!extension.get()) {
-      NOTREACHED_IN_MIGRATION() << error;
       // Note: in tests |param.id| has been observed to be empty (see comment
       // just below) so this isn't all that reliable.
-      extension_load_errors_[id] = error;
-      continue;
+      NOTREACHED() << error;
     }
 
     RendererExtensionRegistry* extension_registry =
@@ -1256,11 +1251,9 @@ void Dispatcher::SetDeveloperMode(bool current_developer_mode) {
 }
 
 void Dispatcher::SetSessionInfo(version_info::Channel channel,
-                                mojom::FeatureSessionType session_type,
-                                bool is_lock_screen_context) {
+                                mojom::FeatureSessionType session_type) {
   SetCurrentChannel(channel);
   SetCurrentFeatureSessionType(session_type);
-  script_context_set_->set_is_lock_screen_context(is_lock_screen_context);
 }
 
 void Dispatcher::ShouldSuspend(ShouldSuspendCallback callback) {

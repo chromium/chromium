@@ -11,7 +11,7 @@
 #include <vector>
 
 DependencyTree::DependencyTree(const TokenizedSentence& sentence,
-                               const std::vector<int> dependency_heads)
+                               const std::vector<int>& dependency_heads)
     : dep_head_array_(dependency_heads.size()) {
   for (int i = 0; i < static_cast<int>(dependency_heads.size()); i++) {
     dep_head_array_[i] = Dependency(sentence.tokens()[i], i,

@@ -789,7 +789,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void NotifyThroughputTrackerResults(CustomTrackerResults results);
   void NotifyImageDecodeFinished(int request_id, bool decode_succeeded);
   void NotifyTransitionRequestsFinished(
-      const std::vector<uint32_t>& sequence_ids);
+      const uint32_t sequence_id,
+      const viz::ViewTransitionElementResourceRects& rects);
 
   LayerTreeHostClient* client() {
     DCHECK(IsMainThread());
@@ -863,7 +864,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   bool RunsOnCurrentThread() const override;
 
-  void ScrollOffsetAnimationFinished() override {}
+  void ScrollOffsetAnimationFinished(ElementId element_id) override {}
 
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override {}
@@ -907,7 +908,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
 
   void AddViewTransitionRequest(std::unique_ptr<ViewTransitionRequest> request);
 
-  std::vector<base::OnceClosure> TakeViewTransitionCallbacksForTesting();
+  std::vector<ViewTransitionRequest::ViewTransitionCaptureCallback>
+  TakeViewTransitionCallbacksForTesting();
 
   // Returns a percentage of dropped frames of the last second.
   double GetPercentDroppedFrames() const;
@@ -1076,10 +1078,11 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   scoped_refptr<HeadsUpDisplayLayer> hud_layer_;
 
   // Layer id to Layer map.
-  std::unordered_map<int, Layer*> layer_id_map_;
+  std::unordered_map<int, raw_ptr<Layer, CtnExperimental>> layer_id_map_;
 
   // This is for layer tree mode only.
-  std::unordered_map<ElementId, Layer*, ElementIdHash> element_layers_map_;
+  std::unordered_map<ElementId, raw_ptr<Layer, CtnExperimental>, ElementIdHash>
+      element_layers_map_;
 
   bool in_paint_layer_contents_ = false;
 
@@ -1113,7 +1116,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   EventsMetricsManager events_metrics_manager_;
 
   // A list of callbacks that need to be invoked when they are processed.
-  base::flat_map<uint32_t, base::OnceClosure> view_transition_callbacks_;
+  base::flat_map<uint32_t, ViewTransitionRequest::ViewTransitionCaptureCallback>
+      view_transition_callbacks_;
 
   // Set if WaitForCommitCompletion() was called before commit completes. Used
   // for histograms.

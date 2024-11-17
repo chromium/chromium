@@ -24,6 +24,7 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/version.h"
 #include "base/win/registry.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/enum_traits.h"
@@ -288,9 +289,17 @@ std::optional<InstallerOutcome> GetInstallerOutcome(UpdaterScope updater_scope,
     }
     if (key->ReadValueDW(kRegValueInstallerError, &val) == ERROR_SUCCESS) {
       installer_outcome.installer_error = val;
+      VLOG_IF(1, !installer_outcome.installer_result)
+          << "No `InstallerResult` found in the registry. `InstallerError` "
+             "will be ignored: "
+          << val;
     }
     if (key->ReadValueDW(kRegValueInstallerExtraCode1, &val) == ERROR_SUCCESS) {
       installer_outcome.installer_extracode1 = val;
+      VLOG_IF(1, !installer_outcome.installer_result)
+          << "No `InstallerResult` found in the registry. "
+             "`InstallerExtraCode1` will be ignored: "
+          << val;
     }
   }
   {
@@ -300,6 +309,10 @@ std::optional<InstallerOutcome> GetInstallerOutcome(UpdaterScope updater_scope,
       std::string installer_text;
       if (base::WideToUTF8(val.c_str(), val.size(), &installer_text)) {
         installer_outcome.installer_text = installer_text;
+        VLOG_IF(1, !installer_outcome.installer_result)
+            << "No `InstallerResult` found in the registry. "
+               "`InstallerResultUIString` will be ignored: "
+            << installer_text;
       }
     }
     if (key->ReadValue(kRegValueInstallerSuccessLaunchCmdLine, &val) ==
@@ -307,6 +320,10 @@ std::optional<InstallerOutcome> GetInstallerOutcome(UpdaterScope updater_scope,
       std::string installer_cmd_line;
       if (base::WideToUTF8(val.c_str(), val.size(), &installer_cmd_line)) {
         installer_outcome.installer_cmd_line = installer_cmd_line;
+        VLOG_IF(1, !installer_outcome.installer_result)
+            << "No `InstallerResult` found in the registry. "
+               "`InstallerSuccessLaunchCmdLine` will be ignored: "
+            << installer_cmd_line;
       }
     }
   }
@@ -466,9 +483,9 @@ InstallerResult RunApplicationInstaller(
     const AppInfo& app_info,
     const base::FilePath& app_installer,
     const std::string& arguments,
-    const std::optional<base::FilePath>& installer_data_file,
+    std::optional<base::FilePath> installer_data_file,
     bool usage_stats_enabled,
-    const base::TimeDelta& timeout,
+    base::TimeDelta timeout,
     InstallProgressCallback progress_callback) {
   if (!app_installer.MatchesExtension(L".exe") &&
       !app_installer.MatchesExtension(L".msi")) {
@@ -544,9 +561,18 @@ std::string LookupString(const base::FilePath& path,
   return default_value;
 }
 
-base::Version LookupVersion(const base::FilePath& path,
-                            const std::string& keyname,
+base::Version LookupVersion(UpdaterScope scope,
+                            const std::string& app_id,
+                            const base::FilePath& version_path,
+                            const std::string& version_key,
                             const base::Version& default_value) {
+  std::wstring pv;
+  if (base::win::RegKey(UpdaterScopeToHKeyRoot(scope),
+                        GetAppClientsKey(app_id).c_str(), Wow6432(KEY_READ))
+          .ReadValue(kRegValuePV, &pv) == ERROR_SUCCESS) {
+    base::Version value_version = base::Version(base::WideToUTF8(pv));
+    return value_version.IsValid() ? value_version : default_value;
+  }
   return default_value;
 }
 

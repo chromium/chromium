@@ -65,7 +65,7 @@ def main(argv):
     window.child_window(
         title="Continue", control_type="Button").click()  # Confirm the dialogue
     time.sleep(10)  # Wait for the completion of work profile enrollment
-    window.child_window(title="Confirm", control_type="Button").click()
+    window.child_window(title="Continue", control_type="Button").click()
     time.sleep(5)
 
     # Obtain the workprofile's UI window

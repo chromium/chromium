@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_TEST_SUPPORT_WEBUI_INTERACTIVE_TEST_MIXIN_H_
 #define CHROME_BROWSER_UI_WEBUI_TEST_SUPPORT_WEBUI_INTERACTIVE_TEST_MIXIN_H_
 
+#include <concepts>
 #include <type_traits>
+
 #include "base/test/bind.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -14,18 +16,22 @@
 #include "chrome/test/interaction/interaction_test_util_browser.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/interaction/webcontents_interaction_test_util.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test.h"
 
-namespace {
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementRenders);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kButtonWasClicked);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kIronCollapseContentShows);
-}  // namespace
+class WebUiInteractiveTestMixinBase {
+ public:
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementRenders);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kButtonWasClicked);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIronCollapseContentShows);
+};
 
 // Template to be used as a mixin class for performance settings webui
 // interactive tests
 template <typename T>
-class WebUiInteractiveTestMixin : public T {
+  requires std::derived_from<T, InteractiveBrowserTestApi>
+class WebUiInteractiveTestMixin : public T,
+                                  public WebUiInteractiveTestMixinBase {
  public:
   template <class... Args>
   explicit WebUiInteractiveTestMixin(Args&&... args)

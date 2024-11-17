@@ -39,6 +39,7 @@ import org.robolectric.shadows.ShadowPackageManager;
 
 import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.shell_apk.CustomAndroidOsShadowAsyncTask;
+import org.chromium.webapk.shell_apk.HostBrowserUtils.PackageNameAndComponentName;
 import org.chromium.webapk.shell_apk.LaunchHostBrowserSelector;
 import org.chromium.webapk.test.WebApkTestHelper;
 
@@ -69,7 +70,9 @@ public final class SplashActivityTest {
         @Implementation
         public void selectHostBrowser(LaunchHostBrowserSelector.Callback callback) {
             if (!sDialogNeeded) {
-                callback.onBrowserSelected(BROWSER_PACKAGE_NAME, /* dialogShown= */ false);
+                callback.onBrowserSelected(
+                        new PackageNameAndComponentName(BROWSER_PACKAGE_NAME),
+                        /* dialogShown= */ false);
                 return;
             }
             sCallback = callback;
@@ -81,7 +84,8 @@ public final class SplashActivityTest {
 
         public static void dialogDismissed() {
             assertNotNull(sCallback);
-            sCallback.onBrowserSelected(BROWSER_PACKAGE_NAME, /* dialogShown= */ true);
+            sCallback.onBrowserSelected(
+                    new PackageNameAndComponentName(BROWSER_PACKAGE_NAME), /* dialogShown= */ true);
             sCallback = null;
         }
     }

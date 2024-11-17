@@ -122,6 +122,7 @@ break-before: auto
 break-inside: auto
 buffered-rendering: auto
 caption-side: top
+caret-animation: auto
 caret-color: rgb(0, 0, 0)
 clear: none
 clip: auto
@@ -205,11 +206,11 @@ image-orientation: from-image
 image-rendering: auto
 initial-letter: normal
 inline-size: auto
-inset-area: none
 inset-block-end: auto
 inset-block-start: auto
 inset-inline-end: auto
 inset-inline-start: auto
+interactivity: auto
 interpolate-size: numeric-only
 isolation: auto
 justify-content: normal
@@ -329,10 +330,7 @@ scroll-padding-inline-end: auto
 scroll-padding-inline-start: auto
 scroll-start-block: auto
 scroll-start-inline: auto
-scroll-start-target-block: none
-scroll-start-target-inline: none
-scroll-start-target-x: none
-scroll-start-target-y: none
+scroll-start-target: none
 scroll-start-x: auto
 scroll-start-y: auto
 scroll-timeline-axis: block

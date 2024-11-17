@@ -57,10 +57,6 @@ void AXValidationMessage::GetRelativeBounds(
   }
 }
 
-bool AXValidationMessage::IsOffScreen() const {
-  return false;
-}
-
 bool AXValidationMessage::IsVisible() const {
   bool is_visible = RelatedFormControlIfVisible();
   DCHECK(!is_visible || ParentObject() == AXObjectCache().Root())

@@ -29,7 +29,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.supervised_user.android.AndroidLocalWebApprovalFlowOutcome;
@@ -72,8 +71,6 @@ public class WebsiteParentApprovalTest {
     public final RuleChain mRuleChain =
             RuleChain.outerRule(mSigninTestRule).around(mTabbedActivityTestRule);
 
-    @Rule public final JniMocker mocker = new JniMocker();
-
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -110,7 +107,7 @@ public class WebsiteParentApprovalTest {
                 });
         mWebContents = mTabbedActivityTestRule.getWebContents();
 
-        mocker.mock(WebsiteParentApprovalJni.TEST_HOOKS, mWebsiteParentApprovalNativesMock);
+        WebsiteParentApprovalJni.setInstanceForTesting(mWebsiteParentApprovalNativesMock);
 
         // @TODO b:243916194 : Once we start consuming mParentAuthDelegateMock
         // .isLocalAuthSupported we should add a mocked behaviour in this test.

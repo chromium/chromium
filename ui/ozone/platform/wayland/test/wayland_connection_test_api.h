@@ -28,6 +28,8 @@ class WaylandConnectionTestApi {
 
   void SetZcrCursorShapes(std::unique_ptr<WaylandZcrCursorShapes> obj);
 
+  void EnableLinuxDrmSyncobj();
+
   // Sets up a sync callback via wl_display.sync and waits until it's received.
   // Requests are handled in-order and events are delivered in-order, thus sync
   // is used as a barrier to ensure all previous requests and the resulting

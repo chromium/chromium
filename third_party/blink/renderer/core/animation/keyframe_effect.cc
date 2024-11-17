@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_effect_options.h"
@@ -150,9 +145,8 @@ KeyframeEffect* KeyframeEffect::Create(
   String pseudo = String();
   if (options->IsKeyframeEffectOptions()) {
     auto* effect_options = options->GetAsKeyframeEffectOptions();
-    composite =
-        EffectModel::StringToCompositeOperation(effect_options->composite())
-            .value();
+    composite = EffectModel::EnumToCompositeOperation(
+        effect_options->composite().AsEnum());
     if (!effect_options->pseudoElement().empty()) {
       pseudo = effect_options->pseudoElement();
       if (!ValidateAndCanonicalizePseudo(pseudo)) {
@@ -231,7 +225,8 @@ KeyframeEffect::KeyframeEffect(Element* target,
     // The |target_element_| is used to target events in script when
     // animating pseudo elements. This requires using the DOM element that the
     // pseudo element originates from.
-    target_element_ = DynamicTo<PseudoElement>(target)->OriginatingElement();
+    target_element_ =
+        DynamicTo<PseudoElement>(target)->UltimateOriginatingElement();
     DCHECK(!target_element_->IsPseudoElement());
     target_pseudo_ = PseudoElement::PseudoElementNameForEvents(target);
   }
@@ -288,13 +283,14 @@ void KeyframeEffect::RefreshTarget() {
   }
 }
 
-String KeyframeEffect::composite() const {
-  return EffectModel::CompositeOperationToString(CompositeInternal());
+V8CompositeOperation KeyframeEffect::composite() const {
+  return V8CompositeOperation(
+      EffectModel::CompositeOperationToEnum(CompositeInternal()));
 }
 
-void KeyframeEffect::setComposite(String composite_string) {
+void KeyframeEffect::setComposite(const V8CompositeOperation& composite) {
   Model()->SetComposite(
-      EffectModel::StringToCompositeOperation(composite_string).value());
+      EffectModel::EnumToCompositeOperation(composite.AsEnum()));
 
   ClearEffects();
   InvalidateAndNotifyOwner();
@@ -530,10 +526,10 @@ void KeyframeEffect::Trace(Visitor* visitor) const {
 
 namespace {
 
-static const size_t num_transform_properties = 4;
+using TransformPropertiesArray = std::array<const CSSProperty*, 4>;
 
-const CSSProperty** TransformProperties() {
-  static const CSSProperty* kTransformProperties[num_transform_properties] = {
+const TransformPropertiesArray& TransformProperties() {
+  static const TransformPropertiesArray kTransformProperties{
       &GetCSSPropertyTransform(), &GetCSSPropertyScale(),
       &GetCSSPropertyRotate(), &GetCSSPropertyTranslate()};
   return kTransformProperties;
@@ -543,14 +539,13 @@ const CSSProperty** TransformProperties() {
 
 bool KeyframeEffect::UpdateBoxSizeAndCheckTransformAxisAlignment(
     const gfx::SizeF& box_size) {
-  static const auto** properties = TransformProperties();
   bool preserves_axis_alignment = true;
   bool has_transform = false;
   TransformOperation::BoxSizeDependency size_dependencies =
       TransformOperation::kDependsNone;
-  for (size_t i = 0; i < num_transform_properties; i++) {
+  for (const auto* property : TransformProperties()) {
     const auto* keyframes =
-        Model()->GetPropertySpecificKeyframes(PropertyHandle(*properties[i]));
+        Model()->GetPropertySpecificKeyframes(PropertyHandle(*property));
     if (!keyframes)
       continue;
 
@@ -601,10 +596,9 @@ void KeyframeEffect::RestartRunningAnimationOnCompositor() {
 }
 
 bool KeyframeEffect::IsIdentityOrTranslation() const {
-  static const auto** properties = TransformProperties();
-  for (size_t i = 0; i < num_transform_properties; i++) {
+  for (const auto* property : TransformProperties()) {
     const auto* keyframes =
-        Model()->GetPropertySpecificKeyframes(PropertyHandle(*properties[i]));
+        Model()->GetPropertySpecificKeyframes(PropertyHandle(*property));
     if (!keyframes)
       continue;
 
@@ -794,8 +788,7 @@ AnimationTimeDelta KeyframeEffect::CalculateTimeToEffectChange(
       }
       return local_time.value() - after_time;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return AnimationTimeDelta::Max();
+      NOTREACHED();
   }
 }
 
@@ -815,10 +808,10 @@ bool KeyframeEffect::HasIncompatibleStyle() const {
 
   if (HasActiveAnimationsOnCompositor()) {
     if (effect_target_->GetComputedStyle()->HasOffset()) {
-      static const auto** properties = TransformProperties();
-      for (size_t i = 0; i < num_transform_properties; i++) {
-        if (Affects(PropertyHandle(*properties[i])))
+      for (const auto* property : TransformProperties()) {
+        if (Affects(PropertyHandle(*property))) {
           return true;
+        }
       }
     }
   }

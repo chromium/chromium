@@ -19,7 +19,6 @@ import java.util.Arrays;
 /** Coordinator for displaying the screenshot share sheet. */
 public class ScreenshotShareSheetCoordinator {
     private final ScreenshotShareSheetSaveDelegate mSaveDelegate;
-    private final ScreenshotShareSheetMediator mMediator;
     private final PropertyModel mModel;
 
     /**
@@ -49,15 +48,14 @@ public class ScreenshotShareSheetCoordinator {
         mSaveDelegate =
                 new ScreenshotShareSheetSaveDelegate(
                         context, mModel, closeDialogRunnable, windowAndroid);
-        mMediator =
-                new ScreenshotShareSheetMediator(
-                        context,
-                        mModel,
-                        closeDialogRunnable,
-                        mSaveDelegate::save,
-                        windowAndroid,
-                        shareUrl,
-                        shareSheetCallback);
+        new ScreenshotShareSheetMediator(
+                context,
+                mModel,
+                closeDialogRunnable,
+                mSaveDelegate::save,
+                windowAndroid,
+                shareUrl,
+                shareSheetCallback);
 
         PropertyModelChangeProcessor.create(
                 mModel, screenshotShareSheetView, ScreenshotShareSheetViewBinder::bind);

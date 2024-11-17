@@ -33,6 +33,7 @@ class ScopedSessionRefresher;
 class SyncConsentScreen : public BaseScreen,
                           public syncer::SyncServiceObserver {
  public:
+  using TView = SyncConsentScreenView;
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused. Public for testing. See
   // GetSyncScreenBehavior() for documentation on each case.
@@ -79,15 +80,6 @@ class SyncConsentScreen : public BaseScreen,
         const std::string& consent_confirmation) = 0;
   };
 
-  class SyncConsentScreenExitTestDelegate {
-   public:
-    virtual ~SyncConsentScreenExitTestDelegate() = default;
-
-    virtual void OnSyncConsentScreenExit(
-        Result result,
-        ScreenExitCallback& original_callback) = 0;
-  };
-
   // Launches the sync consent settings dialog if the user requested to review
   // them after completing OOBE.
   static void MaybeLaunchSyncConsentSettings(Profile* profile);
@@ -99,6 +91,14 @@ class SyncConsentScreen : public BaseScreen,
   SyncConsentScreen& operator=(const SyncConsentScreen&) = delete;
 
   ~SyncConsentScreen() override;
+
+  void set_exit_callback_for_testing(const ScreenExitCallback& exit_callback) {
+    exit_callback_ = exit_callback;
+  }
+
+  const ScreenExitCallback& get_exit_callback_for_testing() {
+    return exit_callback_;
+  }
 
   // Inits `user_`, its `profile_` and `behavior_` before using the screen.
   void Init(const WizardContext& context);
@@ -140,10 +140,6 @@ class SyncConsentScreen : public BaseScreen,
   void SetDelegateForTesting(
       SyncConsentScreen::SyncConsentScreenTestDelegate* delegate);
   SyncConsentScreenTestDelegate* GetDelegateForTesting() const;
-
-  // When set, test callback will be called instead of the |exit_callback_|.
-  static void SetSyncConsentScreenExitTestDelegate(
-      SyncConsentScreenExitTestDelegate* test_delegate);
 
   // Test API
   // Returns true if profile sync is disabled by policy for test.

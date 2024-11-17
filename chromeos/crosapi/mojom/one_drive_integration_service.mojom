@@ -11,7 +11,6 @@ import "mojo/public/mojom/base/file_path.mojom";
 //
 // Next MinVersion: 1
 // Next ID: 1
-[Stable]
 interface OneDriveMountObserver {
   // Called when OneDrive mount point path changes.
   [MinVersion=0]
@@ -23,7 +22,7 @@ interface OneDriveMountObserver {
 //
 // Next MinVersion: 1
 // Next ID: 1
-[Stable, Uuid="45755de7-92bd-4503-bd41-a8b4807e2264"]
+[Uuid="45755de7-92bd-4503-bd41-a8b4807e2264"]
 interface OneDriveIntegrationService {
   // Adds an observer for changes in OneDrive mount updates. The observer is
   // fired immediately with the current mount point path value or empty value

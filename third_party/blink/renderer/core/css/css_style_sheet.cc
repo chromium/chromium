@@ -407,7 +407,8 @@ unsigned CSSStyleSheet::insertRule(const String& rule_string,
 
   StyleRuleBase* rule =
       CSSParser::ParseRule(context, contents_.Get(), CSSNestingType::kNone,
-                           /*parent_rule_for_nesting=*/nullptr, rule_string);
+                           /*parent_rule_for_nesting=*/nullptr,
+                           /*is_within_scope=*/false, rule_string);
 
   if (!rule) {
     exception_state.ThrowDOMException(

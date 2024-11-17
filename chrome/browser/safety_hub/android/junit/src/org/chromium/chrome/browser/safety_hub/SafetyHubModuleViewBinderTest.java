@@ -23,6 +23,8 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.safe_browsing.SafeBrowsingState;
 import org.chromium.components.browser_ui.settings.CardPreference;
@@ -130,10 +132,10 @@ public class SafetyHubModuleViewBinderTest {
     @Test
     public void testPasswordCheckModule_NoCompromisedPasswords() {
         int totalPasswordsCount = 5;
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.ACCOUNT_EMAIL, TEST_ACCOUNT_EMAIL);
 
@@ -166,14 +168,181 @@ public class SafetyHubModuleViewBinderTest {
     }
 
     @Test
-    public void testPasswordCheckModule_CompromisedPasswordsExist() {
-        int totalPasswordsCount = 10;
-        int compromisedPasswordsCount = 5;
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
+    })
+    public void
+            testPasswordCheckModule_NoCompromisedPasswords_WeakAndReusedPasswordsExists_Enabled() {
+        int totalPasswordsCount = 5;
+        int weakPasswordsCount = 1;
+        int reusedPasswordsCount = 2;
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
         mPasswordCheckPropertyModel.set(
-                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+                SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
         mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.ACCOUNT_EMAIL, TEST_ACCOUNT_EMAIL);
+
+        String expectedTitle = mActivity.getString(R.string.safety_hub_reused_weak_passwords_title);
+        // Reused passwords take priority over weak passwords in the UI.
+        String expectedSummary =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_reused_passwords_summary,
+                                reusedPasswordsCount,
+                                reusedPasswordsCount);
+        String expectedPrimaryButtonText =
+                mActivity.getString(R.string.safety_hub_passwords_navigation_button);
+
+        assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedSummary, mPasswordCheckPreference.getSummary().toString());
+        assertEquals(INFO_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(expectedPrimaryButtonText, mPasswordCheckPreference.getPrimaryButtonText());
+        assertNull(mPasswordCheckPreference.getSecondaryButtonText());
+
+        // Verify the managed state.
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_passwords_navigation_button);
+
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        String expectedManagedSummary =
+                mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
+
+        assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedManagedSummary, mPasswordCheckPreference.getSummary().toString());
+        assertEquals(
+                MANAGED_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPasswordCheckPreference.getPrimaryButtonText());
+        assertEquals(
+                expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
+    })
+    public void testPasswordCheckModule_NoCompromisedPasswords_WeakPasswordsExists_Enabled() {
+        int totalPasswordsCount = 5;
+        int weakPasswordsCount = 1;
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, 0);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.ACCOUNT_EMAIL, TEST_ACCOUNT_EMAIL);
+
+        String expectedTitle = mActivity.getString(R.string.safety_hub_reused_weak_passwords_title);
+        String expectedSummary =
+                mActivity
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_weak_passwords_summary,
+                                weakPasswordsCount,
+                                weakPasswordsCount);
+        String expectedPrimaryButtonText =
+                mActivity.getString(R.string.safety_hub_passwords_navigation_button);
+
+        assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedSummary, mPasswordCheckPreference.getSummary().toString());
+        assertEquals(INFO_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(expectedPrimaryButtonText, mPasswordCheckPreference.getPrimaryButtonText());
+        assertNull(mPasswordCheckPreference.getSecondaryButtonText());
+
+        // Verify the managed state.
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_passwords_navigation_button);
+
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        String expectedManagedSummary =
+                mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
+
+        assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedManagedSummary, mPasswordCheckPreference.getSummary().toString());
+        assertEquals(
+                MANAGED_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPasswordCheckPreference.getPrimaryButtonText());
+        assertEquals(
+                expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
+    }
+
+    @Test
+    @Features.DisableFeatures(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)
+    public void
+            testPasswordCheckModule_NoCompromisedPasswords_WeakAndReusedPasswordsExists_Disabled() {
+        int totalPasswordsCount = 5;
+        int weakPasswordsCount = 1;
+        int reusedPasswordsCount = 2;
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, 0);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.ACCOUNT_EMAIL, TEST_ACCOUNT_EMAIL);
+
+        String expectedTitle =
+                mActivity.getString(R.string.safety_hub_no_compromised_passwords_title);
+        String expectedSummary =
+                mActivity.getString(
+                        R.string.safety_hub_password_check_time_recently, TEST_ACCOUNT_EMAIL);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_passwords_navigation_button);
+
+        assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedSummary, mPasswordCheckPreference.getSummary().toString());
+        assertEquals(SAFE_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPasswordCheckPreference.getPrimaryButtonText());
+        assertEquals(
+                expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
+
+        // Verify the managed state.
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        String expectedManagedSummary =
+                mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
+
+        assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedManagedSummary, mPasswordCheckPreference.getSummary().toString());
+        assertEquals(SAFE_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPasswordCheckPreference.getPrimaryButtonText());
+        assertEquals(
+                expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
+    })
+    public void testPasswordCheckModule_CompromisedPasswordsExist() {
+        int totalPasswordsCount = 10;
+        int compromisedPasswordsCount = 5;
+        int weakPasswordsCount = 6;
+        int reusedPasswordsCount = 6;
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        // Compromised passwords take priority over any other type, hence, the weak or reused
+        // passwords counts should be ignored.
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
 
         String expectedTitle =
                 mActivity
@@ -218,8 +387,8 @@ public class SafetyHubModuleViewBinderTest {
 
     @Test
     public void testPasswordCheckModule_NoPasswordsSaved() {
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, 0);
         mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, 0);
 
         String expectedTitle = mActivity.getString(R.string.safety_hub_no_passwords_title);
         String expectedSummary = mActivity.getString(R.string.safety_hub_no_passwords_summary);
@@ -248,14 +417,25 @@ public class SafetyHubModuleViewBinderTest {
     }
 
     @Test
-    public void testPasswordCheckModule_CompromisedCountUnavailable() {
+    @Features.DisableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
+    })
+    public void
+            testPasswordCheckModule_CompromisedCountUnavailable_NoWeakAndReusedPasswords_Disabled() {
         int totalPasswordsCount = 10;
         int compromisedPasswordsCount = -1;
+        int weakPasswordsCount = 0;
+        int reusedPasswordsCount = 0;
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
         mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
+        mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
-        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
 
         String expectedTitle =
                 mActivity.getString(R.string.safety_hub_password_check_unavailable_title);
@@ -282,6 +462,57 @@ public class SafetyHubModuleViewBinderTest {
         assertNull(mPasswordCheckPreference.getPrimaryButtonText());
         assertEquals(
                 expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
+
+        // Verify the managed state.
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
+        String expectedManagedSummary =
+                mActivity.getString(R.string.safety_hub_no_passwords_summary_managed);
+
+        assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedManagedSummary, mPasswordCheckPreference.getSummary().toString());
+        assertEquals(
+                MANAGED_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertNull(mPasswordCheckPreference.getPrimaryButtonText());
+        assertEquals(
+                expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
+    }
+
+    @Test
+    @Features.EnableFeatures({
+        ChromeFeatureList.SAFETY_HUB,
+        ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS
+    })
+    public void
+            testPasswordCheckModule_CompromisedCountUnavailable_NoWeakAndReusedPasswords_Enabled() {
+        int totalPasswordsCount = 10;
+        int compromisedPasswordsCount = -1;
+        int weakPasswordsCount = 0;
+        int reusedPasswordsCount = 0;
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.WEAK_PASSWORDS_COUNT, weakPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.REUSED_PASSWORDS_COUNT, reusedPasswordsCount);
+        mPasswordCheckPropertyModel.set(
+                SafetyHubModuleProperties.TOTAL_PASSWORDS_COUNT, totalPasswordsCount);
+
+        String expectedTitle =
+                mActivity.getString(R.string.safety_hub_no_reused_weak_passwords_title);
+        String expectedSummary =
+                mActivity.getString(
+                        R.string
+                                .safety_hub_unavailable_compromised_no_reused_weak_passwords_summary);
+        String expectedSecondaryButtonText =
+                mActivity.getString(R.string.safety_hub_passwords_navigation_button);
+
+        assertEquals(expectedTitle, mPasswordCheckPreference.getTitle().toString());
+        assertEquals(expectedSummary, mPasswordCheckPreference.getSummary().toString());
+        assertEquals(INFO_ICON, shadowOf(mPasswordCheckPreference.getIcon()).getCreatedFromResId());
+        assertEquals(
+                expectedSecondaryButtonText, mPasswordCheckPreference.getSecondaryButtonText());
+        assertNull(mPasswordCheckPreference.getPrimaryButtonText());
 
         // Verify the managed state.
         mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_CONTROLLED_BY_POLICY, true);
@@ -563,6 +794,7 @@ public class SafetyHubModuleViewBinderTest {
         int sitesWithUnusedPermissionsCount = 3;
         int notificationPermissionsForReviewCount = 5;
 
+        mBrowserStatePropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
         mBrowserStatePropertyModel.set(
                 SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         mBrowserStatePropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
@@ -636,6 +868,7 @@ public class SafetyHubModuleViewBinderTest {
         int sitesWithUnusedPermissionsCount = 3;
         int notificationPermissionsForReviewCount = 0;
 
+        mBrowserStatePropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
         mBrowserStatePropertyModel.set(
                 SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         mBrowserStatePropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
@@ -664,6 +897,7 @@ public class SafetyHubModuleViewBinderTest {
         int sitesWithUnusedPermissionsCount = 0;
         int notificationPermissionsForReviewCount = 0;
 
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
         mSafeBrowsingPropertyModel.set(
                 SafetyHubModuleProperties.SAFE_BROWSING_STATE, safeBrowsingState);
         mUpdateCheckPropertyModel.set(SafetyHubModuleProperties.UPDATE_STATUS, updateStatus);
@@ -709,6 +943,7 @@ public class SafetyHubModuleViewBinderTest {
         int notificationPermissionsForReviewCount = 5;
 
         // Unmanaged warning state should rank first.
+        mPasswordCheckPropertyModel.set(SafetyHubModuleProperties.IS_SIGNED_IN, true);
         mPasswordCheckPropertyModel.set(
                 SafetyHubModuleProperties.COMPROMISED_PASSWORDS_COUNT, compromisedPasswordsCount);
         mPasswordCheckPropertyModel.set(

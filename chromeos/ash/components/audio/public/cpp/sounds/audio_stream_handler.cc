@@ -199,9 +199,8 @@ AudioStreamHandler::AudioStreamHandler(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported audio codec encountered: "
-                                << media::GetCodecName(codec);
-      break;
+      NOTREACHED() << "Unsupported audio codec encountered: "
+                   << media::GetCodecName(codec);
   }
 
   // Check params.

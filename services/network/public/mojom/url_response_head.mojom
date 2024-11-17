@@ -41,6 +41,11 @@ struct URLResponseHead {
   // responses, this time could be "far" in the past.
   mojo_base.mojom.Time response_time;
 
+  // The response_time for when the response was first received. For cached
+  // and revalidated responses, this is the time when the resource was first
+  // received, and is not updated after revalidation.
+  mojo_base.mojom.Time original_response_time;
+
   // The response headers or NULL if the URL type does not support headers.
   HttpResponseHeaders headers;
 
@@ -147,6 +152,12 @@ struct URLResponseHead {
   // generated as in respondWith(new Response()). It is also empty if a service
   // worker did not respond to the request or did not call respondWith().
   array<url.mojom.Url> url_list_via_service_worker;
+
+  // The initial status of service worker on navigation request. This is the
+  // status when `ServiceWorkerMainResourceLoader` is constructed. This is
+  // similar to `evaluation_worker_status` in `service_worker_router_info`, but
+  // it's set even if the ServiceWorker Static Routing API is not involved.
+  ServiceWorkerStatus? initial_service_worker_status;
 
   // Information about ServiceWorker Static Routing API. If this field is set
   // with `matchedSourceType` field, a matching rule is found. If this field is

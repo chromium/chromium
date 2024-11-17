@@ -41,9 +41,6 @@ class CC_DEBUG_EXPORT RenderingStatsInstrumentation {
   void IncrementFrameCount(int64_t count);
   void AddVisibleContentArea(int64_t area);
   void AddApproximatedVisibleContentArea(int64_t area);
-  void AddCheckerboardedVisibleContentArea(int64_t area);
-  void AddCheckerboardedNeedsRecordContentArea(int64_t area);
-  void AddCheckerboardedNeedsRasterContentArea(int64_t area);
   void AddDrawDuration(base::TimeDelta draw_duration,
                        base::TimeDelta draw_duration_estimate);
   void AddBeginMainFrameToCommitDuration(

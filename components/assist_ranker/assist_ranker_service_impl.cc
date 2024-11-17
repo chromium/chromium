@@ -17,7 +17,7 @@ AssistRankerServiceImpl::AssistRankerServiceImpl(
     : url_loader_factory_(std::move(url_loader_factory)),
       base_path_(std::move(base_path)) {}
 
-AssistRankerServiceImpl::~AssistRankerServiceImpl() {}
+AssistRankerServiceImpl::~AssistRankerServiceImpl() = default;
 
 base::WeakPtr<BinaryClassifierPredictor>
 AssistRankerServiceImpl::FetchBinaryClassifierPredictor(

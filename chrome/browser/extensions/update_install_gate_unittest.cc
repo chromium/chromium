@@ -30,7 +30,7 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #endif
@@ -111,7 +111,7 @@ class UpdateInstallGateTest : public testing::Test {
     ASSERT_TRUE(profile_manager_->SetUp());
 
     const char kUserProfile[] = "profile1@example.com";
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     const AccountId account_id(AccountId::FromUserEmail(kUserProfile));
     // Needed to allow ChromeProcessManagerDelegate to allow background pages.
     fake_user_manager_ = new ash::FakeChromeUserManager();
@@ -224,7 +224,7 @@ class UpdateInstallGateTest : public testing::Test {
   raw_ptr<ExtensionRegistry, DanglingUntriaged> registry_ = nullptr;
   raw_ptr<EventRouter, DanglingUntriaged> event_router_ = nullptr;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Needed for creating ExtensionService.
   raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_ =
       nullptr;

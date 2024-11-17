@@ -26,8 +26,6 @@
 
 using web::NavigationManagerImpl;
 
-using web::wk_navigation_util::IsRestoreSessionUrl;
-
 @interface CRWWebViewNavigationObserver ()
 
 // Dictionary where keys are the names of WKWebView properties and values are
@@ -136,21 +134,6 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
 
   if (![self.navigationHandler isCurrentNavigationBackForward]) {
     [self.delegate webViewHandlerUpdateSSLStatusForCurrentNavigationItem:self];
-    return;
-  }
-
-  // When traversing history restored from a previous session, WKWebView does
-  // not fire 'pageshow', 'onload', 'popstate' or any of the
-  // WKNavigationDelegate callbacks for back/forward navigation from an about:
-  // scheme placeholder URL to another entry. Loading state KVO is the only
-  // observable event in this scenario, so force a reload to trigger redirect
-  // from restore_session.html to the restored URL.
-  bool previousURLHasAboutScheme =
-      self.documentURL.SchemeIs(url::kAboutScheme) ||
-      web::GetWebClient()->IsAppSpecificURL(self.documentURL);
-  if (IsRestoreSessionUrl(webViewURL) && previousURLHasAboutScheme) {
-    [self.webView reload];
-    self.navigationHandler.navigationState = web::WKNavigationState::REQUESTED;
     return;
   }
 
@@ -276,23 +259,16 @@ using web::wk_navigation_util::IsRestoreSessionUrl;
           holderForBackForwardListItem:self.webView.backForwardList.currentItem]
           navigationItem];
     } else {
-      // WKBackForwardList.currentItem may be nil in a corner case when
-      // location.replace is called with about:blank#hash in an empty window
-      // open tab. See crbug.com/866142.
-      DCHECK(self.webStateImpl->HasOpener());
-      DCHECK(!self.navigationManagerImpl->GetPendingItem());
+      // `WKBackForwardList.currentItem` may be nil in a corner case when
+      // `location.replace` is called with `about:blank#hash` in an empty window
+      // open tab. See crbug.com/866142. It may also be nil when the initial
+      // load is a failed navigation, such as when the user navigates to a
+      // an unresolvable hostname.
       currentItem = self.navigationManagerImpl->GetLastCommittedItem();
     }
 
     if (currentItem && webViewURL != currentItem->GetURL()) {
-      BOOL isRestoredURL = NO;
-      if (web::wk_navigation_util::IsRestoreSessionUrl(webViewURL)) {
-        GURL restoredURL;
-        web::wk_navigation_util::ExtractTargetURL(webViewURL, &restoredURL);
-        isRestoredURL = restoredURL == currentItem->GetURL();
-      }
-      if (!isRestoredURL)
-        currentItem->SetURL(webViewURL);
+      currentItem->SetURL(webViewURL);
     }
 
     [self.delegate navigationObserver:self

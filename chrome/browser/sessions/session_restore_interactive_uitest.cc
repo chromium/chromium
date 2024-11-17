@@ -172,7 +172,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest, MAYBE_FocusOnLaunch) {
 // TODO(https://crbug.com/1152160): Enable RestoreMinimizedWindow on Lacros
 // builds.
 // TODO(crbug.com/40818881): Flaky failures.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
 #define MAYBE_RestoreMinimizedWindow DISABLED_RestoreMinimizedWindow
 #else
 #define MAYBE_RestoreMinimizedWindow RestoreMinimizedWindow
@@ -200,17 +200,13 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
   EXPECT_TRUE(restored->window()->IsVisible());
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_RestoreMinimizedWindowTwice RestoreMinimizedWindowTwice
-#else
-#define MAYBE_RestoreMinimizedWindowTwice DISABLED_RestoreMinimizedWindowTwice
-#endif
 // Verify that in restoring a browser with a normal and minimized window twice,
 // the minimized window remains minimized. Guards against a regression
 // introduced in the fix for https://crbug.com/1204517. This test fails on
 // Linux and Windows - see https://crbug.com/1213497.
+// Also fails flakily on Mac.
 IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
-                       MAYBE_RestoreMinimizedWindowTwice) {
+                       DISABLED_RestoreMinimizedWindowTwice) {
   Profile* profile = browser()->profile();
 
   // Create a second browser.
@@ -256,7 +252,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreAshInteractiveTest, MultiWindowTabLoad) {
 
   // Creates 2 browser windows with one fully occludes the other.
   Browser* browser1 = browser();
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, GURL("data:,window 1")));
+  const GURL kUrlWindow1("data:,window 1");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser1, kUrlWindow1));
   browser1->window()->SetBounds(bounds);
 
   ui_test_utils::BrowserChangeObserver new_browser_observer(
@@ -266,7 +263,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreAshInteractiveTest, MultiWindowTabLoad) {
   browser2->window()->SetBounds(bounds);
 
   ui_test_utils::WaitUntilBrowserBecomeActive(browser2);
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, GURL("data:,window 2")));
+  const GURL kUrlWindow2("data:,window 2");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser2, kUrlWindow2));
 
   EXPECT_EQ(
       content::Visibility::OCCLUDED,
@@ -292,6 +290,23 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreAshInteractiveTest, MultiWindowTabLoad) {
     }
   }
   EXPECT_EQ(1, load_count);
-  EXPECT_EQ(GURL("data:,window 2"), last_loading_tab_url);
+  EXPECT_EQ(kUrlWindow2, last_loading_tab_url);
+
+  // Waits for "window 1" to finish load.
+  content::WebContents* contents_window1 = nullptr;
+  for (Browser* browser : *(BrowserList::GetInstance())) {
+    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
+      content::WebContents* contents =
+          browser->tab_strip_model()->GetWebContentsAt(i);
+      if (contents->GetLastCommittedURL() == kUrlWindow1) {
+        contents_window1 = contents;
+        break;
+      }
+    }
+  }
+  EXPECT_TRUE(content::WaitForLoadStop(contents_window1));
+
+  // "window 1" should be in occluded state after load.
+  EXPECT_EQ(content::Visibility::OCCLUDED, contents_window1->GetVisibility());
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -12,7 +12,7 @@ import './folder_node.js';
 import './list.js';
 import './router.js';
 import './shared_vars.css.js';
-import './strings.m.js';
+import '/strings.m.js';
 import './command_manager.js';
 import './toolbar.js';
 

@@ -187,6 +187,7 @@ export class TestService extends TestBrowserProxy implements ServiceInterface {
   shouldIgnoreUpdate(
       extensionId: string, eventType: chrome.developerPrivate.EventType) {
     this.methodCalled('shouldIgnoreUpdate', [extensionId, eventType]);
+    return false;
   }
 
   updateExtensionCommandKeybinding(

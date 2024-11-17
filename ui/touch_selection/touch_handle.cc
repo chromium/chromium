@@ -339,8 +339,7 @@ gfx::PointF TouchHandle::ComputeHandleOrigin() const {
       focal_offset_x = drawable_width * 0.5f;
       break;
     case TouchHandleOrientation::UNDEFINED:
-      NOTREACHED_IN_MIGRATION() << "Invalid touch handle orientation.";
-      break;
+      NOTREACHED() << "Invalid touch handle orientation.";
   };
 
   return focus - gfx::Vector2dF(focal_offset_x, focal_offset_y);

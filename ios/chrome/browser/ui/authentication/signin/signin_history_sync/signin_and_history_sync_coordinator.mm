@@ -7,9 +7,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
@@ -128,8 +130,7 @@ enum class SignInHistorySyncStep {
   // If there are no steps remaining, call delegate to stop presenting
   // coordinators.
   AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForProfile(self.browser->GetProfile());
   id<SystemIdentity> identity =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   SigninCoordinatorResult result;
@@ -145,8 +146,7 @@ enum class SignInHistorySyncStep {
   }
   SigninCompletionInfo* completionInfo =
       [SigninCompletionInfo signinCompletionInfoWithIdentity:identity];
-  [self runCompletionCallbackWithSigninResult:result
-                               completionInfo:completionInfo];
+  [self runCompletionWithSigninResult:result completionInfo:completionInfo];
 }
 
 // Creates the current step coordinator according to `_currentStep`.
@@ -212,10 +212,18 @@ enum class SignInHistorySyncStep {
 - (SignInHistorySyncStep)nextStep {
   switch (_currentStep) {
     case SignInHistorySyncStep::kStart: {
-      ChromeAccountManagerService* accountManagerService =
-          ChromeAccountManagerServiceFactory::GetForBrowserState(
-              self.browser->GetBrowserState());
-      if (accountManagerService->HasIdentities()) {
+      bool hasIdentitiesOnDevice = false;
+      if (AreSeparateProfilesForManagedAccountsEnabled()) {
+        signin::IdentityManager* identityManager =
+            IdentityManagerFactory::GetForProfile(self.browser->GetProfile());
+        hasIdentitiesOnDevice = !identityManager->GetAccountsOnDevice().empty();
+      } else {
+        ChromeAccountManagerService* accountManagerService =
+            ChromeAccountManagerServiceFactory::GetForProfile(
+                self.browser->GetProfile());
+        hasIdentitiesOnDevice = accountManagerService->HasIdentities();
+      }
+      if (hasIdentitiesOnDevice) {
         return SignInHistorySyncStep::kBottomSheetSignin;
       }
       return SignInHistorySyncStep::kInstantSignin;

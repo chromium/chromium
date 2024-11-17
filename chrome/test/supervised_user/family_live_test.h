@@ -11,9 +11,9 @@
 
 #include "chrome/browser/signin/e2e_tests/live_test.h"
 #include "chrome/browser/signin/e2e_tests/signin_util.h"
-#include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "chrome/test/supervised_user/family_member.h"
+#include "components/signin/public/identity_manager/test_accounts.h"
 #include "components/supervised_user/test_support/browser_state_management.h"
 #include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interactive_test_internal.h"
@@ -87,16 +87,16 @@ class FamilyLiveTest : public signin::test::LiveTest {
 
  private:
   // Creates a FamilyMember entity using credentials from TestAccount.
-  void SetHeadOfHousehold(const signin::test::TestAccount& account);
-  void SetChild(const signin::test::TestAccount& account);
+  void SetHeadOfHousehold(const signin::TestAccountSigninCredentials& account);
+  void SetChild(const signin::TestAccountSigninCredentials& account);
 
   // Extracts requested account from test_accounts.json file, which must exist.
-  signin::test::TestAccount GetAccountFromFile(
+  signin::TestAccountSigninCredentials GetAccountFromFile(
       std::string_view account_name_suffix) const;
 
   // Creates a new browser signed in to the specified account
   std::unique_ptr<FamilyMember> MakeSignedInBrowser(
-      const signin::test::TestAccount& account);
+      const signin::TestAccountSigninCredentials& account);
 
   // Empty, if rpc_mode_ is kImpersonation.
   std::unique_ptr<FamilyMember> head_of_household_;

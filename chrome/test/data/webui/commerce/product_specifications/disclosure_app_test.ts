@@ -6,9 +6,10 @@ import 'chrome://compare/header.js';
 import 'chrome://compare/disclosure/app.js';
 
 import type {DisclosureAppElement} from 'chrome://compare/disclosure/app.js';
-import {ProductSpecificationsDisclosureVersion} from 'chrome://compare/shopping_service.mojom-webui.js';
-import type {ProductSpecificationsSet} from 'chrome://compare/shopping_service.mojom-webui.js';
-import {BrowserProxyImpl} from 'chrome://resources/cr_components/commerce/browser_proxy.js';
+import {DisclosureVersion} from 'chrome://compare/product_specifications.mojom-webui.js';
+import type {ProductSpecificationsSet} from 'chrome://compare/shared.mojom-webui.js';
+import {ProductSpecificationsBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/product_specifications_browser_proxy.js';
+import {ShoppingServiceBrowserProxyImpl} from 'chrome://resources/cr_components/commerce/shopping_service_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
@@ -26,13 +27,20 @@ declare const chrome: {
 suite('DisclosureAppTest', () => {
   let app: DisclosureAppElement;
   let metrics: MetricsTracker;
-  const shoppingServiceApi = TestMock.fromClass(BrowserProxyImpl);
+  const shoppingServiceApi =
+      TestMock.fromClass(ShoppingServiceBrowserProxyImpl);
+  const productSpecificationsProxy =
+      TestMock.fromClass(ProductSpecificationsBrowserProxyImpl);
   const fakeUserEmail = 'test@gmail.com';
 
   setup(async () => {
     metrics = fakeMetricsPrivate();
     shoppingServiceApi.reset();
-    BrowserProxyImpl.setInstance(shoppingServiceApi);
+    ShoppingServiceBrowserProxyImpl.setInstance(shoppingServiceApi);
+
+    productSpecificationsProxy.reset();
+    ProductSpecificationsBrowserProxyImpl.setInstance(
+        productSpecificationsProxy);
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     app = document.createElement('product-specifications-disclosure-app');
@@ -138,6 +146,7 @@ suite('DisclosureAppTest', () => {
       in_new_tab: false,
       name: 'test_name',
       urls: ['https://foo.com', 'https://bar.com'],
+      set_id: '',
     };
     const testJson = JSON.stringify(testObject);
     chrome.getVariableValue = (message) => {
@@ -168,13 +177,12 @@ suite('DisclosureAppTest', () => {
     // Ensure browser is called to update prefs.
     assertEquals(
         1,
-        shoppingServiceApi.getCallCount(
-            'setProductSpecificationDisclosureAcceptVersion'));
+        productSpecificationsProxy.getCallCount(
+            'setAcceptedDisclosureVersion'));
     assertEquals(
-        ProductSpecificationsDisclosureVersion.kV1,
-        shoppingServiceApi.getArgs(
-            'setProductSpecificationDisclosureAcceptVersion')[0] as
-            ProductSpecificationsDisclosureVersion);
+        DisclosureVersion.kV1,
+        productSpecificationsProxy.getArgs('setAcceptedDisclosureVersion')[0] as
+            DisclosureVersion);
 
     // Create product spec set.
     assertEquals(
@@ -186,12 +194,14 @@ suite('DisclosureAppTest', () => {
     assertEquals('https://bar.com', addSetArgs[0][1][1].url);
 
     // Show product spec set.
-    await shoppingServiceApi.whenCalled('showProductSpecificationsSetForUuid');
+    await productSpecificationsProxy.whenCalled(
+        'showProductSpecificationsSetForUuid');
     assertEquals(
         1,
-        shoppingServiceApi.getCallCount('showProductSpecificationsSetForUuid'));
-    const showArgs =
-        shoppingServiceApi.getArgs('showProductSpecificationsSetForUuid');
+        productSpecificationsProxy.getCallCount(
+            'showProductSpecificationsSetForUuid'));
+    const showArgs = productSpecificationsProxy.getArgs(
+        'showProductSpecificationsSetForUuid');
     assertEquals('123', showArgs[0][0].value);
     assertEquals(false, showArgs[0][1]);
 
@@ -218,6 +228,7 @@ suite('DisclosureAppTest', () => {
       in_new_tab: false,
       name: '',
       urls: ['https://foo.com', 'https://bar.com'],
+      set_id: '',
     };
     const testJson = JSON.stringify(testObject);
     chrome.getVariableValue = (message) => {
@@ -240,6 +251,57 @@ suite('DisclosureAppTest', () => {
 
     // Restore chrome.getVariableValue.
     chrome.getVariableValue = chromeGetVariableValue;
+  });
+
+  test('click accept button to open existing set', async () => {
+    // Overwrite `chrome.getVariableValue` for testing.
+    const set_id = '123';
+    const chromeGetVariableValue = chrome.getVariableValue;
+    const testObject = {
+      in_new_tab: false,
+      name: '',
+      urls: [],
+      set_id: set_id,
+    };
+    const testJson = JSON.stringify(testObject);
+    chrome.getVariableValue = (message) => {
+      if (message === 'dialogArguments') {
+        return testJson;
+      }
+      return '';
+    };
+
+    // Overwrite `chrome.send` for testing.
+    const chromeSend = chrome.send;
+    let receivedMessage = 'none';
+    // chrome.send is used for test implementation, so we retain its function.
+    const mockChromeSend = (message: string, args: any) => {
+      receivedMessage = message;
+      chromeSend(message, args);
+    };
+    chrome.send = mockChromeSend;
+
+    const acceptButton = $$<HTMLElement>(app, 'cr-button.action-button');
+    assertTrue(!!acceptButton);
+    acceptButton.click();
+
+    // Open product spec set with the default name.
+    assertEquals(
+        0, shoppingServiceApi.getCallCount('addProductSpecificationsSet'));
+    assertEquals(
+        1,
+        productSpecificationsProxy.getCallCount(
+            'showProductSpecificationsSetForUuid'));
+    const showSetArgs = productSpecificationsProxy.getArgs(
+        'showProductSpecificationsSetForUuid');
+    assertEquals(set_id, showSetArgs[0][0].value);
+
+    // Received signal to close dialog.
+    assertEquals(receivedMessage, 'dialogClose');
+
+    // Restore chrome.getVariableValue and chrome.send.
+    chrome.getVariableValue = chromeGetVariableValue;
+    chrome.send = chromeSend;
   });
 
   test('decline button shows the correct text', async () => {
@@ -269,9 +331,7 @@ suite('DisclosureAppTest', () => {
         1, metrics.count('Commerce.Compare.FirstRunExperience.Reject'));
     // Ensure browser is called about declining the disclosure.
     assertEquals(
-        1,
-        shoppingServiceApi.getCallCount(
-            'declineProductSpecificationDisclosure'));
+        1, productSpecificationsProxy.getCallCount('declineDisclosure'));
 
     // Received signal to close dialog.
     assertEquals(receivedMessage, 'dialogClose');

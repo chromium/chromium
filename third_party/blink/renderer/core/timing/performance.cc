@@ -29,12 +29,13 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "base/check_op.h"
+#include "base/time/time.h"
+#include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "third_party/blink/renderer/core/timing/performance.h"
 
 #include <algorithm>
 #include <optional>
@@ -47,6 +48,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
@@ -73,6 +75,7 @@
 #include "third_party/blink/renderer/core/timing/largest_contentful_paint.h"
 #include "third_party/blink/renderer/core/timing/layout_shift.h"
 #include "third_party/blink/renderer/core/timing/measure_memory/measure_memory_controller.h"
+#include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_element_timing.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
@@ -88,6 +91,7 @@
 #include "third_party/blink/renderer/core/timing/soft_navigation_entry.h"
 #include "third_party/blink/renderer/core/timing/time_clamper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -105,6 +109,8 @@ namespace {
 // LongTask API can be a source of many events. Filter on Performance object
 // level before reporting to UKM to smooth out recorded events over all pages.
 constexpr size_t kLongTaskUkmSampleInterval = 100;
+
+constexpr base::TimeDelta kExtraCoarseResolution = base::Milliseconds(4);
 
 const char kSwapsPerInsertionHistogram[] =
     "Renderer.Core.Timing.Performance.SwapsPerPerformanceEntryInsertion";
@@ -838,6 +844,64 @@ void Performance::AddSoftNavigationToPerformanceTimeline(
   }
 }
 
+void Performance::AddRenderCoarsenedEntry(
+    base::OnceCallback<void(Performance&)> callback,
+    DOMHighResTimeStamp earliest_timestamp_for_timeline) {
+  if (!RuntimeEnabledFeatures::ExposeCoarsenedRenderTimeEnabled() ||
+      time_origin_.is_null() || cross_origin_isolated_capability_) {
+    std::move(callback).Run(*this);
+    return;
+  }
+
+  base::TimeTicks target_time =
+      time_origin_ + base::Milliseconds(earliest_timestamp_for_timeline);
+  if (pending_entry_operations_with_render_coarsening_.empty()) {
+    SchedulePendingRenderCoarsenedEntries(target_time);
+  }
+
+  pending_entry_operations_with_render_coarsening_.push_back(
+      std::make_pair(std::move(callback), target_time));
+}
+
+void Performance::SchedulePendingRenderCoarsenedEntries(
+    base::TimeTicks target_time) {
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      WTF::BindOnce(
+          [](WeakPersistent<Performance> self) {
+            if (self) {
+              self->FlushPendingRenderCoarsenedEntries();
+            }
+          },
+          WrapWeakPersistent(this)),
+      target_time - base::TimeTicks::Now());
+}
+
+void Performance::FlushPendingRenderCoarsenedEntries() {
+  base::TimeTicks now = base::TimeTicks::Now();
+
+  Vector<std::pair<base::OnceCallback<void(Performance&)>, base::TimeTicks>>
+      pending_entries;
+  std::swap(pending_entry_operations_with_render_coarsening_, pending_entries);
+  base::TimeTicks next_tick;
+  for (auto& [callback, target_time] : pending_entries) {
+    // We could have had a few entries batched and this one is coarsened to the
+    // future. Fire it in the next batch.
+    if (target_time > now) {
+      pending_entry_operations_with_render_coarsening_.push_back(
+          std::make_pair(std::move(callback), target_time));
+      next_tick =
+          next_tick.is_null() ? target_time : std::min(next_tick, target_time);
+    } else {
+      std::move(callback).Run(*this);
+    }
+  }
+
+  if (!next_tick.is_null()) {
+    SchedulePendingRenderCoarsenedEntries(next_tick);
+  }
+}
+
 void Performance::AddFirstPaintTiming(base::TimeTicks start_time,
                                       bool is_triggered_by_soft_navigation) {
   AddPaintTiming(PerformancePaintTiming::PaintType::kFirstPaint, start_time,
@@ -855,19 +919,29 @@ void Performance::AddPaintTiming(PerformancePaintTiming::PaintType type,
                                  base::TimeTicks start_time,
                                  bool is_triggered_by_soft_navigation) {
   PerformanceEntry* entry = MakeGarbageCollected<PerformancePaintTiming>(
-      type, MonotonicTimeToDOMHighResTimeStamp(start_time),
+      type, RenderTimeToDOMHighResTimeStamp(start_time),
       DynamicTo<LocalDOMWindow>(GetExecutionContext()),
       is_triggered_by_soft_navigation);
   DCHECK((type == PerformancePaintTiming::PaintType::kFirstPaint) ||
          (type == PerformancePaintTiming::PaintType::kFirstContentfulPaint));
-  if (paint_entries_timing_.size() < kDefaultPaintEntriesBufferSize) {
-    InsertEntryIntoSortedBuffer(paint_entries_timing_, *entry, kRecordSwaps);
-  } else {
-    ++(dropped_entries_count_map_.find(PerformanceEntry::kPaint)->value);
-  }
-  NotifyObserversOfEntry(*entry);
-}
 
+  AddRenderCoarsenedEntry(
+      WTF::BindOnce(
+          [](Persistent<PerformanceEntry> entry, Performance& performance) {
+            if (performance.paint_entries_timing_.size() <
+                kDefaultPaintEntriesBufferSize) {
+              performance.InsertEntryIntoSortedBuffer(
+                  performance.paint_entries_timing_, *entry, kRecordSwaps);
+            } else {
+              ++(performance.dropped_entries_count_map_
+                     .find(PerformanceEntry::kPaint)
+                     ->value);
+            }
+            performance.NotifyObserversOfEntry(*entry);
+          },
+          WrapPersistent(entry)),
+      entry->startTime());
+}
 bool Performance::CanAddResourceTimingEntry() {
   // https://w3c.github.io/resource-timing/#dfn-can-add-resource-timing-entry
   return resource_timing_buffer_.size() < resource_timing_buffer_size_limit_;
@@ -1295,6 +1369,22 @@ DOMHighResTimeStamp Performance::MonotonicTimeToDOMHighResTimeStamp(
                                             cross_origin_isolated_capability_);
 }
 
+DOMHighResTimeStamp Performance::RenderTimeToDOMHighResTimeStamp(
+    base::TimeTicks monotonic_time) const {
+  if (monotonic_time.is_null() || time_origin_.is_null()) {
+    return 0;
+  }
+
+  if (RuntimeEnabledFeatures::ExposeCoarsenedRenderTimeEnabled() &&
+      !cross_origin_isolated_capability_) {
+    return (monotonic_time - time_origin_)
+        .CeilToMultiple(kExtraCoarseResolution)
+        .InMillisecondsF();
+  } else {
+    return MonotonicTimeToDOMHighResTimeStamp(monotonic_time);
+  }
+}
+
 DOMHighResTimeStamp Performance::now() const {
   return MonotonicTimeToDOMHighResTimeStamp(tick_clock_->NowTicks());
 }
@@ -1376,6 +1466,61 @@ void Performance::Trace(Visitor* visitor) const {
   visitor->Trace(resource_timing_buffer_full_timer_);
   visitor->Trace(background_tracing_helper_);
   EventTarget::Trace(visitor);
+}
+
+namespace {
+class UserEntryPoint : public ScriptFunction {
+ public:
+  UserEntryPoint(V8Function* callback,
+                 ScriptValue this_arg,
+                 const HeapVector<ScriptValue>& args)
+      : callback_(callback), this_arg_(this_arg), bound_args_(args) {}
+  void CallRaw(
+      ScriptState* script_state,
+      const v8::FunctionCallbackInfo<v8::Value>& callback_info) override {
+    static size_t call_index = 0;
+    v8::Isolate* isolate = script_state->GetIsolate();
+    probe::UserEntryPoint probe_scope(ExecutionContext::From(script_state),
+                                      callback_->CallbackObject(),
+                                      ++call_index);
+
+    int length = callback_info.Length();
+    HeapVector<ScriptValue> args(bound_args_);
+    args.reserve(length + bound_args_.size());
+    for (int i = 0; i < length; ++i) {
+      args.push_back(ScriptValue(isolate, callback_info[i]));
+    }
+
+    callback_info.GetReturnValue().Set(
+        callback_
+            ->Invoke(
+                bindings::V8ValueOrScriptWrappableAdapter(this_arg_.V8Value()),
+                args)
+            .FromMaybe(ScriptValue())
+            .V8Value());
+  }
+
+  void Trace(Visitor* visitor) const override {
+    ScriptFunction::Trace(visitor);
+    visitor->Trace(callback_);
+    visitor->Trace(this_arg_);
+    visitor->Trace(bound_args_);
+  }
+
+ private:
+  Member<V8Function> callback_;
+  ScriptValue this_arg_;
+  HeapVector<ScriptValue> bound_args_;
+};
+
+}  // namespace
+
+V8Function* Performance::bind(V8Function* inner_function,
+                              const ScriptValue this_arg,
+                              const HeapVector<ScriptValue>& bound_args) {
+  return V8Function::Create(
+      MakeGarbageCollected<UserEntryPoint>(inner_function, this_arg, bound_args)
+          ->ToV8Function(inner_function->CallbackRelevantScriptState()));
 }
 
 void Performance::SetClocksForTesting(const base::Clock* clock,

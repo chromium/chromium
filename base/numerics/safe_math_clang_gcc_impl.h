@@ -94,10 +94,10 @@ struct CheckedMulFastOp {
   // https://crbug.com/613003
   // We can support intptr_t, uintptr_t, or a smaller common type.
   static const bool is_supported =
-      (IsTypeInRangeForNumericType<intptr_t, T>::value &&
-       IsTypeInRangeForNumericType<intptr_t, U>::value) ||
-      (IsTypeInRangeForNumericType<uintptr_t, T>::value &&
-       IsTypeInRangeForNumericType<uintptr_t, U>::value);
+      (kIsTypeInRangeForNumericType<intptr_t, T> &&
+       kIsTypeInRangeForNumericType<intptr_t, U>) ||
+      (kIsTypeInRangeForNumericType<uintptr_t, T> &&
+       kIsTypeInRangeForNumericType<uintptr_t, U>);
 #else
   static const bool is_supported = true;
 #endif

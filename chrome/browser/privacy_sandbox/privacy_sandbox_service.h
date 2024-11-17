@@ -10,6 +10,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -55,6 +56,18 @@ class PrivacySandboxService : public KeyedService {
     kAGACCT = 2,
     kMaxValue = kAGACCT,
   };
+
+  // Account sign in user groups
+  // LINT.IfChange(PrimaryAccountUserGroups)
+  enum class PrimaryAccountUserGroups {
+    kNotSet = 0,
+    kSignedOut = 1,
+    kSignedInCapabilityFalse = 2,
+    kSignedInCapabilityTrue = 3,
+    kSignedInCapabilityUnknown = 4,
+    kMaxValue = kSignedInCapabilityUnknown,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivacySandboxPrimaryAccountUserGroups)
 
   // An exhaustive list of actions related to showing & interacting with the
   // prompt. Includes actions which do not impact consent / notice state.
@@ -180,6 +193,9 @@ class PrivacySandboxService : public KeyedService {
   // Chrome build.
   virtual void ForceChromeBuildForTests(bool force_chrome_build) = 0;
 
+  // Emits startup histograms relating to the user's sign in status.
+  virtual void EmitPrivacySandboxAccountPromptStartupMetrics() = 0;
+
   // Returns whether the Privacy Sandbox is currently restricted for the
   // profile. UI code should consult this to ensure that when restricted,
   // Privacy Sandbox related UI is updated appropriately.
@@ -190,40 +206,40 @@ class PrivacySandboxService : public KeyedService {
   virtual bool IsRestrictedNoticeEnabled() = 0;
 
   // Toggles the RelatedWebsiteSets preference.
-  virtual void SetFirstPartySetsDataAccessEnabled(bool enabled) = 0;
+  virtual void SetRelatedWebsiteSetsDataAccessEnabled(bool enabled) = 0;
 
   // Returns whether the RelatedWebsiteSets preference is enabled.
-  virtual bool IsFirstPartySetsDataAccessEnabled() const = 0;
+  virtual bool IsRelatedWebsiteSetsDataAccessEnabled() const = 0;
 
   // Returns whether the RelatedWebsiteSets preference is managed.
-  virtual bool IsFirstPartySetsDataAccessManaged() const = 0;
+  virtual bool IsRelatedWebsiteSetsDataAccessManaged() const = 0;
 
   // DEPRECATED - Do not use in new code. It will be replaced with queries to
-  // the First-Party Sets that are in the browser-process.
+  // the Related Website Sets that are in the browser-process.
   // Virtual for mocking in tests.
   virtual base::flat_map<net::SchemefulSite, net::SchemefulSite>
-  GetSampleFirstPartySets() const = 0;
+  GetSampleRelatedWebsiteSets() const = 0;
 
-  // Returns the owner domain of the first party set that `site_url` is a member
-  // of, or std::nullopt if `site_url` is not recognised as a member of an FPS.
-  // Encapsulates logic about whether FPS information should be shown, if it
-  // should not, std::nullopt is always returned.
-  // Virtual for mocking in tests.
-  virtual std::optional<net::SchemefulSite> GetFirstPartySetOwner(
+  // Returns the owner domain of the related website set that `site_url` is a
+  // member of, or std::nullopt if `site_url` is not recognised as a member of
+  // an RWS. Encapsulates logic about whether RWS information should be shown,
+  // if it should not, std::nullopt is always returned. Virtual for mocking in
+  // tests.
+  virtual std::optional<net::SchemefulSite> GetRelatedWebsiteSetOwner(
       const GURL& site_url) const = 0;
 
-  // Same as GetFirstPartySetOwner but returns a formatted string.
-  virtual std::optional<std::u16string> GetFirstPartySetOwnerForDisplay(
+  // Same as GetRelatedWebsiteSetOwner but returns a formatted string.
+  virtual std::optional<std::u16string> GetRelatedWebsiteSetOwnerForDisplay(
       const GURL& site_url) const = 0;
 
-  // Returns true if `site`'s membership in an FPS is being managed by policy or
-  // if FirstPartySets preference is managed. Virtual for mocking in tests.
+  // Returns true if `site`'s membership in an RWS is being managed by policy or
+  // if RelatedWebsiteSets preference is managed. Virtual for mocking in tests.
   //
-  // Note: Enterprises can use the First-Party Set Overrides policy to either
-  // add or remove a site from a First-Party Set. This method returns true only
-  // if `site` is being added into a First-Party Set since there's no UI use for
-  // whether `site` is being removed by an enterprise yet.
-  virtual bool IsPartOfManagedFirstPartySet(
+  // Note: Enterprises can use the Related Website Set Overrides policy to
+  // either add or remove a site from a Related Website Set. This method returns
+  // true only if `site` is being added into a Related Website Set since there's
+  // no UI use for whether `site` is being removed by an enterprise yet.
+  virtual bool IsPartOfManagedRelatedWebsiteSet(
       const net::SchemefulSite& site) const = 0;
 
   // Returns the set of eTLD + 1's on which the user was joined to a FLEDGE
@@ -274,6 +290,10 @@ class PrivacySandboxService : public KeyedService {
   virtual void SetTopicAllowed(privacy_sandbox::CanonicalTopic topic,
                                bool allowed) = 0;
 
+  // Determines whether the Topics API step should be shown in the Privacy
+  // Guide.
+  virtual bool PrivacySandboxPrivacyGuideShouldShowAdTopicsCard() = 0;
+
   // Inform the service that the user changed the Topics toggle in settings,
   // so that the current topics consent information can be updated.
   // This is not fired for changes to the preference for policy or extensions,
@@ -295,56 +315,6 @@ class PrivacySandboxService : public KeyedService {
   TopicsConsentLastUpdateSource() const = 0;
   virtual base::Time TopicsConsentLastUpdateTime() const = 0;
   virtual std::string TopicsConsentLastUpdateText() const = 0;
-
-#if BUILDFLAG(IS_ANDROID)
-  // On Clank startup, the RecordActivityType function will be called once,
-  // passing in the corresponding PrivacySandboxStorageActivityType. Each time
-  // the function is called, the kPrivacySandboxActivityTypeRecord2 preference
-  // will be updated with a new list of activity type launches. This list is
-  // limited in size and by the timestamps of recordable launches
-  // (kPrivacySandboxActivityTypeStorageLastNLaunches and
-  // kPrivacySandboxActivityTypeStorageWithinXDays). By having this storage
-  // component, we can create an accurate heuristic to identify distinct user
-  // groups based on their Chrome usage patterns. This will enable us to tailor
-  // the user experience for specific launches in the near future.
-  //
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.privacy_sandbox
-  // LINT.IfChange(PrivacySandboxStorageActivityType)
-  enum class PrivacySandboxStorageActivityType {
-    kOther = 0,               // Partial CCT and all other unknowns
-    kTabbed = 1,              // BrApp
-    kAGSACustomTab = 2,       // AGSA-CCT
-    kNonAGSACustomTab = 3,    // Non-AGSA-CCT
-    kTrustedWebActivity = 4,  // TWA
-    //   https://chromium.googlesource.com/chromium/src/+/HEAD/docs/webapps/README.md
-    kWebapp = 5,  // Shortcut
-    //   - https://web.dev/webapks/
-    kWebApk = 6,  // PWA
-    kPreFirstTab =
-        7,  // Chrome has started running, but no tab has yet become visible.
-    kMaxValue = kPreFirstTab,
-  };
-  // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
-
-  virtual void RecordActivityType(
-      PrivacySandboxStorageActivityType type) const = 0;
-
-  // Enum used for recording metrics about Clank Activity Type Storage
-  //
-  // LINT.IfChange(PrivacySandboxStorageUserSegmentByRecentActivity)
-  enum class PrivacySandboxStorageUserSegmentByRecentActivity {
-    kHasOther = 0,
-    kHasBrowserApp = 1,
-    kHasAGSACCT = 2,
-    kHasNonAGSACCT = 3,
-    kHasPWA = 4,
-    kHasTWA = 5,
-    kHasWebapp = 6,
-    kHasPreFirstTab = 7,
-    kMaxValue = kHasPreFirstTab,
-  };
-  // LINT.ThenChange(/tools/metrics/histograms/enums.xml)
-#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 #endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SERVICE_H_

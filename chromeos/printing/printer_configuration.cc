@@ -57,8 +57,7 @@ std::string ToString(PrinterClass pclass) {
     case PrinterClass::kSaved:
       return "Saved";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 bool IsValidPrinterUri(const Uri& uri, std::string* error_message) {
@@ -118,6 +117,13 @@ bool Printer::PpdReference::IsFilled() const {
   return autoconf || !user_supplied_ppd_url.empty() ||
          !effective_make_and_model.empty();
 }
+
+Printer::ManagedPrintOptions::ManagedPrintOptions() = default;
+Printer::ManagedPrintOptions::ManagedPrintOptions(
+    const Printer::ManagedPrintOptions& other) = default;
+Printer::ManagedPrintOptions& Printer::ManagedPrintOptions::operator=(
+    const Printer::ManagedPrintOptions& other) = default;
+Printer::ManagedPrintOptions::~ManagedPrintOptions() = default;
 
 Printer::Printer()
     : id_(base::Uuid::GenerateRandomV4().AsLowercaseString()),

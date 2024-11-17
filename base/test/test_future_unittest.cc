@@ -230,12 +230,12 @@ TEST_F(TestFutureTest, ShouldNotAllowOverwritingStoredValue) {
 TEST_F(TestFutureTest, ShouldAllowReuseIfPreviousValueIsFirstConsumed) {
   TestFuture<std::string> future;
 
-  RunLater([&]() { future.SetValue("first value"); });
+  RunLater([&] { future.SetValue("first value"); });
   EXPECT_EQ(future.Take(), "first value");
 
   ASSERT_FALSE(future.IsReady());
 
-  RunLater([&]() { future.SetValue("second value"); });
+  RunLater([&] { future.SetValue("second value"); });
   EXPECT_EQ(future.Take(), "second value");
 }
 
@@ -268,7 +268,7 @@ TEST_F(TestFutureTest, WaitShouldWorkAfterTake) {
   future.SetValue("first value");
   std::ignore = future.Take();
 
-  RunLater([&]() { future.SetValue("second value"); });
+  RunLater([&] { future.SetValue("second value"); });
 
   EXPECT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(), "second value");
@@ -278,7 +278,7 @@ TEST_F(TestFutureTest, ShouldSignalWhenSetValueIsInvoked) {
   const int expected_value = 111;
   TestFuture<int> future;
 
-  RunLater([&future]() { future.SetValue(expected_value); });
+  RunLater([&future] { future.SetValue(expected_value); });
 
   int actual_value = future.Get();
 
@@ -629,7 +629,7 @@ TEST_F(TestFutureWithoutValuesTest, IsReadyShouldBeTrueWhenSetValueIsInvoked) {
 TEST_F(TestFutureWithoutValuesTest, WaitShouldUnblockWhenSetValueIsInvoked) {
   TestFuture<void> future;
 
-  RunLater([&future]() { future.SetValue(); });
+  RunLater([&future] { future.SetValue(); });
 
   ASSERT_FALSE(future.IsReady());
   std::ignore = future.Wait();

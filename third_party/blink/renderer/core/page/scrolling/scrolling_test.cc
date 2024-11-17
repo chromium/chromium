@@ -258,16 +258,16 @@ INSTANTIATE_PAINT_TEST_SUITE_P(ScrollingTest);
     ASSERT_TRUE(scroll_node);                                     \
     ASSERT_TRUE(scroll_node->is_composited);                      \
     EXPECT_EQ(cc::MainThreadScrollingReason::kNotScrollingOnMain, \
-              scroll_node->main_thread_scrolling_reasons);        \
+              scroll_node->main_thread_repaint_reasons);          \
   } while (false)
 
-#define ASSERT_NOT_COMPOSITED(scroll_node,                            \
-                              expected_main_thread_scrolling_reasons) \
-  do {                                                                \
-    ASSERT_TRUE(scroll_node);                                         \
-    ASSERT_FALSE(scroll_node->is_composited);                         \
-    EXPECT_EQ(expected_main_thread_scrolling_reasons,                 \
-              scroll_node->main_thread_scrolling_reasons);            \
+#define ASSERT_NOT_COMPOSITED(scroll_node,                          \
+                              expected_main_thread_repaint_reasons) \
+  do {                                                              \
+    ASSERT_TRUE(scroll_node);                                       \
+    ASSERT_FALSE(scroll_node->is_composited);                       \
+    EXPECT_EQ(expected_main_thread_repaint_reasons,                 \
+              scroll_node->main_thread_repaint_reasons);            \
   } while (false)
 
 TEST_P(ScrollingTest, fastScrollingByDefault) {
@@ -329,7 +329,7 @@ TEST_P(ScrollingTest, fastScrollingForFixedPosition) {
   const auto* scroll_node =
       ScrollNodeForScrollableArea(GetFrame()->View()->LayoutViewport());
   ASSERT_TRUE(scroll_node);
-  EXPECT_FALSE(scroll_node->main_thread_scrolling_reasons);
+  EXPECT_FALSE(scroll_node->main_thread_repaint_reasons);
 }
 
 // Sticky constraints are stored on transform property tree nodes.
@@ -3252,7 +3252,7 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInputBox) {
   const auto* scroll_node = ScrollNodeForScrollableArea(scrollable_area);
   ASSERT_TRUE(scroll_node);
   EXPECT_EQ(cc::MainThreadScrollingReason::kPreferNonCompositedScrolling,
-            scroll_node->main_thread_scrolling_reasons);
+            scroll_node->main_thread_repaint_reasons);
   EXPECT_FALSE(scroll_node->is_composited);
 }
 

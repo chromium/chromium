@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -15,8 +16,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/pdf/browser/pdf_frame_util.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/focused_node_details.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -35,7 +38,6 @@
 #include "url/gurl.h"
 
 #if defined(TOOLKIT_VIEWS) && defined(USE_AURA)
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/touch_selection_controller_client_manager.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -54,7 +56,6 @@
 namespace {
 
 using ::pdf_extension_test_util::ConvertPageCoordToScreenCoord;
-using ::pdf_extension_test_util::GetOnlyMimeHandlerView;
 using ::pdf_extension_test_util::SetInputFocusOnPlugin;
 
 class PDFExtensionInteractiveUITest : public base::test::WithFeatureOverride,
@@ -183,6 +184,61 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, FocusReverseTraversal) {
   // Tab out.
   details = TabAndWait(target_web_contents, /*forward=*/false);
   EXPECT_EQ(blink::mojom::FocusType::kNone, details.focus_type);
+}
+
+// Regression test for https://crbug.com/326275041
+IN_PROC_BROWSER_TEST_P(PDFExtensionInteractiveUITest, SpaceKeyInForm) {
+  content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
+      embedded_test_server()->GetURL("/pdf/text_form.pdf"));
+  ASSERT_TRUE(extension_host);
+  content::RenderFrameHost* plugin_host =
+      pdf_frame_util::FindPdfChildFrame(extension_host);
+  ASSERT_TRUE(plugin_host);
+
+  static constexpr char kFocusChangeScript[] = R"(
+    var form_focus_changed = false;
+    const plugin = document.querySelector('embed');
+    plugin.addEventListener('message', e => {
+      if (e.data.type === 'formFocusChange') {
+        form_focus_changed = true;
+      }
+    });
+  )";
+  ASSERT_TRUE(content::ExecJs(plugin_host, kFocusChangeScript));
+
+  // Since the PDF contains a text form that takes up the entire PDF page, this
+  // clicks into that form.
+  auto* embedder_web_contents = GetEmbedderWebContents();
+  ASSERT_TRUE(embedder_web_contents);
+  SetInputFocusOnPlugin(extension_host, embedder_web_contents);
+
+  // Wait for the input event to propagate into `plugin_host`.
+  while (true) {
+    // content::EvalJs() uses a base::RunLoop internally, so do not use
+    // base::test::RunUntil() here to avoid a double run loop.
+    if (content::EvalJs(plugin_host, "form_focus_changed").ExtractBool()) {
+      break;
+    }
+  }
+
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_SPACE, /*control=*/false, /*shift=*/false,
+      /*alt=*/false, /*command=*/false));
+
+  content::RenderWidgetHostView* view = plugin_host->GetView();
+  ASSERT_TRUE(view);
+  EXPECT_TRUE(view->GetSelectedText().empty());
+
+  // Wait for the key press to propagate from the browser to the PDF renderer.
+  // Keep calling SelectAll(), as it may arrive ahead of the key press event.
+  // Then wait for the text selection update to propagate from the PDF renderer
+  // back to the browser.
+  //
+  // If the space key press did not register at all, this hangs.
+  EXPECT_TRUE(base::test::RunUntil([embedder_web_contents, view]() {
+    embedder_web_contents->SelectAll();
+    return view->GetSelectedText() == u" ";
+  }));
 }
 
 #if defined(TOOLKIT_VIEWS) && defined(USE_AURA)

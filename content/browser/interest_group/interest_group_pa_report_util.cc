@@ -17,6 +17,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/numerics/clamped_math.h"
 #include "components/aggregation_service/aggregation_coordinator_utils.h"
@@ -49,6 +50,8 @@ std::optional<double> GetBaseValue(
     const std::optional<auction_worklet::mojom::RejectReason> reject_reason,
     const PrivateAggregationParticipantData& participant_data,
     const PrivateAggregationTimings& timings) {
+  base::UmaHistogramEnumeration("Ads.InterestGroup.Auction.PABaseValueUsed",
+                                base_value);
   // The mojom API declaration should ensure base_value is one of these cases.
   switch (base_value) {
     case auction_worklet::mojom::BaseValue::kWinningBid:
@@ -77,6 +80,23 @@ std::optional<double> GetBaseValue(
     case auction_worklet::mojom::BaseValue::
         kPercentInterestGroupsCumulativeTimeout:
       return participant_data.percent_igs_cumulative_timeout;
+    case auction_worklet::mojom::BaseValue::kCumulativeBuyerTime:
+      return participant_data.cumulative_buyer_time.InMillisecondsF();
+    case auction_worklet::mojom::BaseValue::kRegularInterestGroupsUsed:
+      return participant_data.regular_igs;
+    case auction_worklet::mojom::BaseValue::
+        kPercentRegularInterestGroupQuotaUsed:
+      return participant_data.percent_regular_igs_quota_used;
+    case auction_worklet::mojom::BaseValue::kNegativeInterestGroupsUsed:
+      return participant_data.negative_igs;
+    case auction_worklet::mojom::BaseValue::
+        kPercentNegativeInterestGroupQuotaUsed:
+      return participant_data.percent_negative_igs_quota_used;
+    case auction_worklet::mojom::BaseValue::kInterestGroupStorageUsed:
+      return participant_data.igs_storage_used;
+    case auction_worklet::mojom::BaseValue::
+        kPercentInterestGroupStorageQuotaUsed:
+      return participant_data.percent_igs_storage_quota_used;
   }
   NOTREACHED();
 }
@@ -244,6 +264,19 @@ CalculateContributionBucketAndValue(
 }
 
 }  // namespace
+
+PrivateAggregationParticipantData::PrivateAggregationParticipantData() =
+    default;
+
+PrivateAggregationParticipantData::PrivateAggregationParticipantData(
+    const PrivateAggregationParticipantData& other) = default;
+PrivateAggregationParticipantData& PrivateAggregationParticipantData::operator=(
+    const PrivateAggregationParticipantData& other) = default;
+
+PrivateAggregationParticipantData::PrivateAggregationParticipantData(
+    PrivateAggregationParticipantData&& other) = default;
+PrivateAggregationParticipantData& PrivateAggregationParticipantData::operator=(
+    PrivateAggregationParticipantData&& other) = default;
 
 PrivateAggregationKey::PrivateAggregationKey(
     url::Origin reporting_origin,

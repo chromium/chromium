@@ -64,7 +64,7 @@ class URLVisitAggregatesSegmentationMetricsTransformer::SegmentationInitObserver
       : callback_(std::move(callback)), service_(service) {
     obs_.Observe(service->GetServiceProxy());
   }
-  ~SegmentationInitObserver() override {}
+  ~SegmentationInitObserver() override = default;
 
   // segmentation_platform::ServiceProxy::Observer impl:
   void OnServiceStatusChanged(bool is_initialized, int status_flag) override {

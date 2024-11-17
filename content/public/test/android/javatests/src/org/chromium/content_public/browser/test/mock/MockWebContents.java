@@ -168,12 +168,6 @@ public class MockWebContents implements WebContents {
     public void stop() {}
 
     @Override
-    public void onHide() {}
-
-    @Override
-    public void onShow() {}
-
-    @Override
     public void setImportance(int importance) {}
 
     @Override

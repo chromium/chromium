@@ -9,6 +9,9 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.content.Context;
 import android.graphics.RectF;
+import android.os.Build;
+import android.view.View;
+import android.view.ViewGroup;
 
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
@@ -17,16 +20,19 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.compositor.layouts.components.LayoutTab;
 import org.chromium.chrome.browser.compositor.layouts.eventfilter.BlackHoleEventFilter;
 import org.chromium.chrome.browser.compositor.scene_layer.TabListSceneLayer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.EventFilter;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneLayer;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.components.sensitive_content.SensitiveContentFeatures;
 import org.chromium.ui.interpolators.Interpolators;
 import org.chromium.ui.resources.ResourceManager;
 
@@ -67,17 +73,25 @@ public class SimpleAnimationLayout extends Layout {
     // The tab to select on finishing the animation.
     private int mNextTabId;
 
+    private final ViewGroup mContentContainer;
+
     /**
      * Creates an instance of the {@link SimpleAnimationLayout}.
-     * @param context     The current Android's context.
-     * @param updateHost  The {@link LayoutUpdateHost} view for this layout.
-     * @param renderHost  The {@link LayoutRenderHost} view for this layout.
+     *
+     * @param context The current Android's context.
+     * @param updateHost The {@link LayoutUpdateHost} view for this layout.
+     * @param renderHost The {@link LayoutRenderHost} view for this layout.
+     * @param contentContainer The content container view.
      */
     public SimpleAnimationLayout(
-            Context context, LayoutUpdateHost updateHost, LayoutRenderHost renderHost) {
+            Context context,
+            LayoutUpdateHost updateHost,
+            LayoutRenderHost renderHost,
+            ViewGroup contentContainer) {
         super(context, updateHost, renderHost);
         mBlackHoleEventFilter = new BlackHoleEventFilter(context);
         mSceneLayer = new TabListSceneLayer();
+        mContentContainer = contentContainer;
     }
 
     @Override
@@ -89,6 +103,7 @@ public class SimpleAnimationLayout extends Layout {
     public void doneHiding() {
         TabModelUtils.selectTabById(mTabModelSelector, mNextTabId, TabSelectionType.FROM_USER);
         super.doneHiding();
+        updateContentContainerSensitivity(TabModel.INVALID_TAB_INDEX);
     }
 
     @Override
@@ -135,6 +150,7 @@ public class SimpleAnimationLayout extends Layout {
         forceAnimationToFinish();
 
         ensureSourceTabCreated(sourceTabId);
+        updateContentContainerSensitivity(sourceTabId);
     }
 
     private void ensureSourceTabCreated(int sourceTabId) {
@@ -164,7 +180,16 @@ public class SimpleAnimationLayout extends Layout {
             float originX,
             float originY) {
         super.onTabCreated(time, id, index, sourceId, newIsIncognito, background, originX, originY);
+        if (mTabModelSelector != null) {
+            Tab tab = mTabModelSelector.getModel(newIsIncognito).getTabById(id);
+            if (tab != null
+                    && tab.getLaunchType()
+                            == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP) {
+                return;
+            }
+        }
         ensureSourceTabCreated(sourceId);
+        updateContentContainerSensitivity(sourceId);
         if (background && mLayoutTabs != null && mLayoutTabs.length > 0) {
             tabCreatedInBackground(id, sourceId, newIsIncognito, originX, originY);
         } else {
@@ -463,6 +488,35 @@ public class SimpleAnimationLayout extends Layout {
         mTabCreatedBackgroundAnimation.start();
 
         mTabModelSelector.selectModel(newIsIncognito);
+    }
+
+    /**
+     * If the source tab is sensitive, it is used to mark the content container as sensitive before
+     * the new tab animation starts, and mark it as not sensitive after the new tab animation ends.
+     *
+     * @param sourceTabId The source tab id, if the intention is to attempt to mark the content
+     *     container as sensitive, or {@link TabModel.INVALID_TAB_INDEX}, if the intention is to
+     *     mark the content container as not sensitive.
+     */
+    private void updateContentContainerSensitivity(int sourceTabId) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
+                && ChromeFeatureList.isEnabled(SensitiveContentFeatures.SENSITIVE_CONTENT)
+                && ChromeFeatureList.isEnabled(
+                        SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS)) {
+            if (sourceTabId != TabModel.INVALID_TAB_INDEX) {
+                TabModel sourceModel = mTabModelSelector.getModelForTabId(sourceTabId);
+                if (sourceModel == null) {
+                    return;
+                }
+                Tab tab = sourceModel.getTabById(sourceTabId);
+                if (tab == null || !tab.getTabHasSensitiveContent()) {
+                    return;
+                }
+                mContentContainer.setContentSensitivity(View.CONTENT_SENSITIVITY_SENSITIVE);
+            } else {
+                mContentContainer.setContentSensitivity(View.CONTENT_SENSITIVITY_NOT_SENSITIVE);
+            }
+        }
     }
 
     @Override

@@ -51,10 +51,8 @@ ImageFetcher* ImageFetcherService::GetImageFetcher(ImageFetcherConfig config) {
       return reduced_mode_image_fetcher_.get();
     default:
       // Provided ImageFetcherConfig not in the enum.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return nullptr;
 }
 
 scoped_refptr<ImageCache> ImageFetcherService::ImageCacheForTesting() const {

@@ -29,8 +29,7 @@ favicon_base::IconType IconTypeFromWebIconType(
     case web::FaviconURL::IconType::kInvalid:
       return favicon_base::IconType::kInvalid;
   }
-  NOTREACHED_IN_MIGRATION();
-  return favicon_base::IconType::kInvalid;
+  NOTREACHED();
 }
 
 }  // namespace

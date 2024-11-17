@@ -487,8 +487,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 // Returns the item type corresponding to the `type` for the update modal view.
@@ -508,8 +507,7 @@ const CGFloat kInfobarSaveAddressProfileSeparatorInset = 54;
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ItemTypeNotFound;
+  NOTREACHED();
 }
 
 // Returns YES if the old section is shown in the update modal.

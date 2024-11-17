@@ -18,6 +18,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/bad_message.h"
 #include "extensions/browser/extension_function_dispatcher.h"
@@ -57,23 +58,23 @@ std::unique_ptr<GuestViewBase> ExtensionOptionsGuest::Create(
   return base::WrapUnique(new ExtensionOptionsGuest(owner_rfh));
 }
 
-void ExtensionOptionsGuest::CreateWebContents(
+void ExtensionOptionsGuest::CreateInnerPage(
     std::unique_ptr<GuestViewBase> owned_this,
     const base::Value::Dict& create_params,
-    WebContentsCreatedCallback callback) {
+    GuestPageCreatedCallback callback) {
   // Get the extension's base URL.
   const std::string* extension_id =
       create_params.FindString(extensionoptions::kExtensionId);
 
   if (!extension_id || !crx_file::id_util::IdIsValid(*extension_id)) {
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
 
   GURL extension_url =
       extensions::Extension::GetBaseURLFromExtensionId(*extension_id);
   if (!extension_url.is_valid()) {
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
 
@@ -85,29 +86,40 @@ void ExtensionOptionsGuest::CreateWebContents(
   if (!extension) {
     // The ID was valid but the extension didn't exist. Typically this will
     // happen when an extension is disabled.
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
 
   options_page_ = extensions::OptionsPageInfo::GetOptionsPage(extension);
   if (!options_page_.is_valid()) {
-    std::move(callback).Run(std::move(owned_this), nullptr);
+    RejectGuestCreation(std::move(owned_this), std::move(callback));
     return;
   }
 
-  // Create a WebContents using the extension URL. The options page's
-  // WebContents should live in the same process as its parent extension's
-  // WebContents, so we can use |extension_url| for creating the SiteInstance.
-  WebContents::CreateParams params(
-      browser_context(),
-      content::SiteInstance::CreateForURL(browser_context(), extension_url));
-  params.guest_delegate = this;
-  std::move(callback).Run(std::move(owned_this), WebContents::Create(params));
+  if (base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    std::move(callback).Run(
+        std::move(owned_this),
+        content::GuestPageHolder::Create(owner_web_contents(),
+                                         content::SiteInstance::CreateForURL(
+                                             browser_context(), extension_url),
+                                         GetGuestPageHolderDelegateWeakPtr()));
+  } else {
+    // Create a WebContents using the extension URL. The options page's
+    // WebContents should live in the same process as its parent extension's
+    // WebContents, so we can use |extension_url| for creating the SiteInstance.
+    WebContents::CreateParams params(
+        browser_context(),
+        content::SiteInstance::CreateForURL(browser_context(), extension_url));
+    params.guest_delegate = this;
+    std::move(callback).Run(std::move(owned_this), WebContents::Create(params));
+  }
 }
 
 void ExtensionOptionsGuest::DidInitialize(
     const base::Value::Dict& create_params) {
-  ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
+  if (!base::FeatureList::IsEnabled(features::kGuestViewMPArch)) {
+    ExtensionsAPIClient::Get()->AttachWebContentsHelpers(web_contents());
+  }
   GetController().LoadURL(options_page_, content::Referrer(),
                           ui::PAGE_TRANSITION_LINK, std::string());
 }
@@ -115,7 +127,7 @@ void ExtensionOptionsGuest::DidInitialize(
 void ExtensionOptionsGuest::MaybeRecreateGuestContents(
     content::RenderFrameHost* outer_contents_frame) {
   // This situation is not possible for ExtensionOptions.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ExtensionOptionsGuest::GuestViewDidStopLoading() {
@@ -154,6 +166,8 @@ WebContents* ExtensionOptionsGuest::AddNewContents(
     const blink::mojom::WindowFeatures& window_features,
     bool user_gesture,
     bool* was_blocked) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   // |new_contents| is potentially used as a non-embedded WebContents, so we
   // check that it isn't a guest. The only place that this method should be
   // called is WebContentsImpl::ViewSource - which generates a non-guest
@@ -174,6 +188,8 @@ WebContents* ExtensionOptionsGuest::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   if (!extension_options_guest_delegate_) {
     return nullptr;
   }
@@ -195,14 +211,27 @@ WebContents* ExtensionOptionsGuest::OpenURLFromTab(
 }
 
 void ExtensionOptionsGuest::CloseContents(WebContents* source) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   DispatchEventToView(std::make_unique<GuestViewEvent>(
       api::extension_options_internal::OnClose::kEventName,
       base::Value::Dict()));
 }
 
+bool ExtensionOptionsGuest::GuestHandleContextMenu(
+    content::RenderFrameHost& render_frame_host,
+    const content::ContextMenuParams& params) {
+  CHECK(base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+  return extension_options_guest_delegate_ &&
+         extension_options_guest_delegate_->HandleContextMenu(render_frame_host,
+                                                              params);
+}
+
 bool ExtensionOptionsGuest::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   if (!extension_options_guest_delegate_) {
     return false;
   }
@@ -213,8 +242,7 @@ bool ExtensionOptionsGuest::HandleContextMenu(
 
 bool ExtensionOptionsGuest::ShouldResumeRequestsForCreatedWindow() {
   // Not reached due to the use of `CreateCustomWebContents`.
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 bool ExtensionOptionsGuest::IsWebContentsCreationOverridden(
@@ -223,6 +251,8 @@ bool ExtensionOptionsGuest::IsWebContentsCreationOverridden(
     const GURL& opener_url,
     const std::string& frame_name,
     const GURL& target_url) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   // This method handles opening links from within the guest. Since this guest
   // view is used for displaying embedded extension options, we want any
   // external links to be opened in a new tab, not in a new guest view so we
@@ -239,6 +269,8 @@ WebContents* ExtensionOptionsGuest::CreateCustomWebContents(
     const GURL& target_url,
     const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace) {
+  CHECK(!base::FeatureList::IsEnabled(features::kGuestViewMPArch));
+
   // To get links out of the guest view, we just open the URL in a new tab.
   // TODO(ericzeng): Open the tab in the background if the click was a
   //   ctrl-click or middle mouse button click
@@ -258,10 +290,7 @@ WebContents* ExtensionOptionsGuest::CreateCustomWebContents(
 
 void ExtensionOptionsGuest::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  // TODO(crbug.com/40202416): Due to the use of inner WebContents, an
-  // ExtensionOptionsGuest's main frame is considered primary. This will no
-  // longer be the case once we migrate guest views to MPArch.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
+  if (!IsObservedNavigationWithinGuestMainFrame(navigation_handle) ||
       !navigation_handle->HasCommitted() || !attached()) {
     return;
   }
@@ -272,9 +301,8 @@ void ExtensionOptionsGuest::DidFinishNavigation(
   SetGuestZoomLevelToMatchEmbedder();
 
   if (!url::IsSameOriginWith(navigation_handle->GetURL(), options_page_)) {
-    bad_message::ReceivedBadMessage(
-        web_contents()->GetPrimaryMainFrame()->GetProcess(),
-        bad_message::EOG_BAD_ORIGIN);
+    bad_message::ReceivedBadMessage(GetGuestMainFrame()->GetProcess(),
+                                    bad_message::EOG_BAD_ORIGIN);
   }
 }
 

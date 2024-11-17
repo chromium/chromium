@@ -24,6 +24,7 @@ import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.content_public.browser.MediaSession;
 import org.chromium.content_public.browser.MediaSessionObserver;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.media_session.mojom.MediaSessionAction;
@@ -341,8 +342,15 @@ public class MediaSessionHelper implements MediaImageCallback {
                     }
 
                     @Override
-                    public void wasShown() {
-                        mDelegate.activateAndroidMediaSession();
+                    public void onVisibilityChanged(@Visibility int visibility) {
+                        // We should activate back the MediaSession eagerly when the WC is visible
+                        // again because some old versions of Android will only notify the latest
+                        // activated MediaSession. However, we shouldn't attempt to activate a
+                        // session that isn't actually active as it needlessly triggers the entire
+                        // internal MediaSession machinery.
+                        if (visibility == Visibility.VISIBLE && !isNotificationHidingOrHidden()) {
+                            mDelegate.activateAndroidMediaSession();
+                        }
                     }
 
                     @Override

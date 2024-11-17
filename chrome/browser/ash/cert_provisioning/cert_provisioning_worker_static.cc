@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -152,7 +153,7 @@ int GetStateOrderedIndex(CertProvisioningWorkerState state) {
     case CertProvisioningWorkerState::kProofOfPossessionInstructionReceived:
     case CertProvisioningWorkerState::kImportCertificateInstructionReceived:
       // These states are not used in the "static" flow.
-      CHECK(false);
+      NOTREACHED();
   }
   return res;
 }
@@ -326,10 +327,9 @@ void CertProvisioningWorkerStatic::DoStep() {
     case CertProvisioningWorkerState::kProofOfPossessionInstructionReceived:
     case CertProvisioningWorkerState::kImportCertificateInstructionReceived:
       // These states are not used in the "static" flow.
-      CHECK(false);
-      return;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION() << " " << static_cast<uint>(state_);
+  NOTREACHED() << " " << static_cast<uint>(state_);
 }
 
 void CertProvisioningWorkerStatic::MarkWorkerForReset() {
@@ -1055,8 +1055,7 @@ void CertProvisioningWorkerStatic::HandleSerialization() {
     case CertProvisioningWorkerState::kProofOfPossessionInstructionReceived:
     case CertProvisioningWorkerState::kImportCertificateInstructionReceived:
       // These states are not used in the "static" flow.
-      CHECK(false);
-      break;
+      NOTREACHED();
   }
 }
 

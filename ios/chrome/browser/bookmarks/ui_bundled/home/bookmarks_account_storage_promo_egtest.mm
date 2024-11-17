@@ -48,8 +48,8 @@ using chrome_test_util::SecondarySignInButton;
 }
 
 // Tear down called once per test.
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   [BookmarkEarlGrey clearBookmarks];
   [BookmarkEarlGrey clearBookmarksPositionCache];
 }
@@ -172,7 +172,7 @@ using chrome_test_util::SecondarySignInButton;
 
   // Verify account section shows for a signed-in account.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(@"Mobile Bookmarks")]
+      selectElementWithMatcher:grey_accessibilityLabel(@"Mobile bookmarks")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Sign-out.
@@ -180,7 +180,7 @@ using chrome_test_util::SecondarySignInButton;
 
   // Verify that the acocunt model is not shown.
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(@"Mobile Bookmarks")]
+      selectElementWithMatcher:grey_accessibilityLabel(@"Mobile bookmarks")]
       assertWithMatcher:grey_notVisible()];
 
   // Verify the sign in promo is shown.
@@ -222,7 +222,7 @@ using chrome_test_util::SecondarySignInButton;
                                    IDS_IOS_BOOKMARKS_PROFILE_SECTION_TITLE))]
       assertWithMatcher:grey_notVisible()];
   [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(@"Mobile Bookmarks")]
+      selectElementWithMatcher:grey_accessibilityLabel(@"Mobile bookmarks")]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Verify that account bookmarks are not shown.

@@ -190,12 +190,18 @@ class PasswordStoreTest : public testing::Test {
     // Mock OSCrypt. There is a call to OSCrypt on initializling
     // PasswordReuseDetector, so it should be mocked.
     OSCryptMocker::SetUp();
-
     feature_list_.InitWithFeatures({features::kPasswordReuseDetectionEnabled},
                                    {});
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kWereOldGoogleLoginsRemoved, false);
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+    // All tests currently rely on built-in backend, so the pref should stay
+    // off. Tests relying on the android backend should set this accordingly.
+    pref_service_.registry()->RegisterIntegerPref(
+        password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
+        static_cast<int>(
+            password_manager::prefs::UseUpmLocalAndSeparateStoresState::kOff));
+#else
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kClearingUndecryptablePasswords, false);
 #endif
@@ -437,14 +443,61 @@ TEST_F(PasswordStoreTest, RemoveLoginsCreatedBetweenCallbackIsCalled) {
   EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(1u)));
   base::test::TestFuture<bool> completion_future;
 
-  store->RemoveLoginsCreatedBetween(FROM_HERE,
-                                    base::Time::FromSecondsSinceUnixEpoch(0),
-                                    base::Time::FromSecondsSinceUnixEpoch(2),
-                                    completion_future.GetCallback());
+  store->RemoveLoginsCreatedBetween(
+      FROM_HERE, base::Time::FromSecondsSinceUnixEpoch(0),
+      base::Time::FromSecondsSinceUnixEpoch(2), completion_future.GetCallback(),
+      base::NullCallback());
+  WaitForPasswordStore();
+
+  EXPECT_TRUE(completion_future.IsReady());
   EXPECT_TRUE(completion_future.Take());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   store->RemoveObserver(&mock_observer);
+  store->ShutdownOnUIThread();
+}
+
+// Verify that RemoveLoginsCreatedBetween() fires the sync_completion callback
+// after deletions have been performed and synced to cloud have been sent out.
+// Whether the correct logins are removed or not is verified in detail in other
+// tests.
+TEST_F(PasswordStoreTest,
+       RemoveLoginsCreatedBetweenSyncCompletionCallbackIsCalled) {
+  /* clang-format off */
+  static const PasswordFormData kTestCredential =
+      {PasswordForm::Scheme::kHtml,
+       kTestWebRealm1,
+       kTestWebOrigin1,
+       "", u"", u"username_element_1",  u"password_element_1",
+       u"username_value_1",
+       u"", kTestLastUsageTime, 1};
+  /* clang-format on */
+
+  scoped_refptr<PasswordStore> store = CreatePasswordStore();
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+
+  std::unique_ptr<PasswordForm> test_form(
+      FillPasswordFormWithData(kTestCredential, /*is_account_store=*/false));
+  store->AddLogin(*test_form);
+  WaitForPasswordStore();
+
+  base::test::TestFuture<bool> sync_completion_future;
+
+  store->RemoveLoginsCreatedBetween(
+      FROM_HERE, base::Time::FromSecondsSinceUnixEpoch(0),
+      base::Time::FromSecondsSinceUnixEpoch(2), base::NullCallback(),
+      sync_completion_future.GetCallback());
+
+  EXPECT_FALSE(sync_completion_future.IsReady());
+
+  auto* built_in_backend =
+      static_cast<PasswordStoreBuiltInBackend*>(store->GetBackendForTesting());
+  built_in_backend->NotifyDeletionsHaveSyncedForTesting(true);
+  WaitForPasswordStore();
+
+  EXPECT_TRUE(sync_completion_future.IsReady());
+  EXPECT_TRUE(sync_completion_future.Take());
+
   store->ShutdownOnUIThread();
 }
 
@@ -460,7 +513,7 @@ TEST_F(PasswordStoreTest,
 
   base::test::TestFuture<bool> completion_future;
   EXPECT_CALL(*mock_backend, RemoveLoginsCreatedBetweenAsync)
-      .WillOnce(WithArg<3>(Invoke([](PasswordChangesOrErrorReply reply) {
+      .WillOnce(WithArg<4>(Invoke([](PasswordChangesOrErrorReply reply) {
         std::move(reply).Run(PasswordStoreChangeList());
       })));
   store->RemoveLoginsCreatedBetween(FROM_HERE,
@@ -485,7 +538,7 @@ TEST_F(PasswordStoreTest,
   base::test::TestFuture<bool> completion_future;
   EXPECT_CALL(*mock_backend, RemoveLoginsCreatedBetweenAsync)
       .WillOnce(
-          WithArg<3>(Invoke([](PasswordChangesOrErrorReply reply) -> void {
+          WithArg<4>(Invoke([](PasswordChangesOrErrorReply reply) -> void {
             std::move(reply).Run(kBackendError);
           })));
   store->RemoveLoginsCreatedBetween(FROM_HERE,

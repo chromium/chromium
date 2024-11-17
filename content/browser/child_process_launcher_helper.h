@@ -59,7 +59,7 @@ namespace base {
 class CommandLine;
 
 #if BUILDFLAG(IS_IOS)
-class MachPortRendezvousServer;
+class MachPortRendezvousServerIOS;
 #endif
 }
 
@@ -186,6 +186,14 @@ class ChildProcessLauncherHelper
       bool* is_synchronous_launch,
       int* launch_result);
 
+#if BUILDFLAG(IS_WIN)
+  // This is the callback target that handles the result from
+  // StartSandboxedProcess().
+  void FinishStartSandboxedProcessOnLauncherThread(base::Process process,
+                                                   DWORD last_error,
+                                                   int launch_result);
+#endif
+
   // Called right after the process has been launched, whether it was created
   // successfully or not. If the process launch is asynchronous, the process may
   // not yet be created. Platform specific.
@@ -195,6 +203,9 @@ class ChildProcessLauncherHelper
 
   // Called once the process has been created, successfully or not.
   void PostLaunchOnLauncherThread(ChildProcessLauncherHelper::Process process,
+#if BUILDFLAG(IS_WIN)
+                                  DWORD last_error,
+#endif
                                   int launch_result);
 
   // Posted by PostLaunchOnLauncherThread onto the client thread.
@@ -323,7 +334,7 @@ class ChildProcessLauncherHelper
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_IOS)
-  std::unique_ptr<base::MachPortRendezvousServer> rendezvous_server_;
+  std::unique_ptr<base::MachPortRendezvousServerIOS> rendezvous_server_;
   std::unique_ptr<ProcessStorageBase> process_storage_;
 #endif
 

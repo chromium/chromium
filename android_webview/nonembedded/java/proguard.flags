@@ -2,10 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
--keepclassmembers class org.chromium.android_webview.AwPdfExporter {
-    android.view.ViewGroup mContainerView;
-}
-
 # Keep the factory and its public members; it's the main entry point used by the
 # framework. Also keep the factory's constructors as some things are using them
 # via reflection; crbug.com/1462346

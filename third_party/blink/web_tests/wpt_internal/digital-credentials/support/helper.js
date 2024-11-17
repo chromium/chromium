@@ -58,16 +58,20 @@ export function requestIdentityWithActivation(test_driver, request) {
  */
 export async function check_digital_credential_api_availability() {
   try {
-    const abort_controller = new AbortController();
-    abort_controller.abort();
     const request = buildValidNavigatorIdentityRequest();
-    request.signal = abort_controller.signal;
+    request.digital.providers = [];
     await navigator.identity.get(request);
     return false;
   } catch (error) {
-    // If digital credentials API is disabled, an error should be thrown prior
-    // to checking whether the request has been aborted.
-    return (error instanceof DOMException && error.name == "AbortError")
+    // If digital credentials API is disabled, an error due to the API being
+    // disabled should be thrown prior to checking whether the request has
+    // transient user activation and non-empty providers.
+    if (error instanceof DOMException && error.name == "NotAllowedError" &&
+        error.message != null &&
+        error.message.includes("transient activation")) {
+      return true;
+    }
+    return (error instanceof TypeError)
   }
 }
 

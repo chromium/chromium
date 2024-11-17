@@ -11,7 +11,7 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 //
 // Next version: 2
 // Next method ID: 2
-[Stable, Uuid="110007a4-b1f2-4157-af23-58f98b7af71e"]
+[Uuid="110007a4-b1f2-4157-af23-58f98b7af71e"]
 interface MediaUI {
   // Registers a DeviceService that can provide media device info and actions
   // to the UI. `id` corresponds to the source ID exposed by

@@ -20,6 +20,7 @@
 - (void)openPrimaryAccountReauthDialog;
 
 // Opens the passphrase dialog.
+// Does nothing if the current scene is blocked.
 - (void)openPassphraseDialogWithModalPresentation:(BOOL)presentModally;
 
 // Opens the trusted vault reauthentication dialog for fetch keys, for Chrome

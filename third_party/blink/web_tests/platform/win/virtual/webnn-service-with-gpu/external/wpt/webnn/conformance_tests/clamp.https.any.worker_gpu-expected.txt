@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] clamp int32 1D tensor
+  assert_true: assert_array_approx_equals_ulp: test clamp int32 actual 2147483647 should be close enough to expected 2147483645 by the acceptable 0 ULP distance, but they have 2 ULP distance expected true got false
+[FAIL] clamp uint32 1D tensor
+  assert_true: assert_array_approx_equals_ulp: test clamp uint32 actual 4294967295 should be close enough to expected 4294967290 by the acceptable 0 ULP distance, but they have 5 ULP distance expected true got false
+[FAIL] clamp int64 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'clamp' on 'MLGraphBuilder': Unsupported data type int64 for argument input, must be one of [float32, float16, int32, uint32, int8, uint8]."
+[FAIL] clamp uint64 1D tensor
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'clamp' on 'MLGraphBuilder': Unsupported data type uint64 for argument input, must be one of [float32, float16, int32, uint32, int8, uint8]."
+Harness: the test ran to completion.
+

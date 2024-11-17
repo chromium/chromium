@@ -4,9 +4,12 @@
 
 #include "third_party/blink/renderer/core/timing/performance_navigation_timing.h"
 
+#include "third_party/blink/public/mojom/confidence_level.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink-forward.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_entropy.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_performance_timing_confidence_value.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_timing.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
@@ -30,22 +33,28 @@ using network::mojom::blink::NavigationDeliveryType;
 
 namespace {
 
-String GetSystemEntropy(DocumentLoader* loader) {
+V8NavigationEntropy::Enum GetSystemEntropy(DocumentLoader* loader) {
   if (loader) {
     switch (loader->GetTiming().SystemEntropyAtNavigationStart()) {
       case mojom::blink::SystemEntropy::kHigh:
         CHECK(loader->GetFrame()->IsOutermostMainFrame());
-        return "high";
+        return V8NavigationEntropy::Enum::kHigh;
       case mojom::blink::SystemEntropy::kNormal:
         CHECK(loader->GetFrame()->IsOutermostMainFrame());
-        return "normal";
+        return V8NavigationEntropy::Enum::kNormal;
       case mojom::blink::SystemEntropy::kEmpty:
         CHECK(!loader->GetFrame()->IsOutermostMainFrame());
-        return g_empty_string;
+        return V8NavigationEntropy::Enum::k;
     }
   }
+  NOTREACHED();
+}
 
-  return g_empty_string;
+V8PerformanceTimingConfidenceValue::Enum GetNavigationConfidenceString(
+    mojom::blink::ConfidenceLevel confidence) {
+  return confidence == mojom::blink::ConfidenceLevel::kHigh
+             ? V8PerformanceTimingConfidenceValue::Enum::kHigh
+             : V8PerformanceTimingConfidenceValue::Enum::kLow;
 }
 
 }  // namespace
@@ -104,23 +113,22 @@ const DocumentTiming* PerformanceNavigationTiming::GetDocumentTiming() const {
   return DomWindow() ? &DomWindow()->document()->GetTiming() : nullptr;
 }
 
-AtomicString PerformanceNavigationTiming::GetNavigationTimingType(
-    WebNavigationType type) {
+V8NavigationTimingType::Enum
+PerformanceNavigationTiming::GetNavigationTimingType(WebNavigationType type) {
   switch (type) {
     case kWebNavigationTypeReload:
     case kWebNavigationTypeFormResubmittedReload:
-      return AtomicString("reload");
+      return V8NavigationTimingType::Enum::kReload;
     case kWebNavigationTypeBackForward:
     case kWebNavigationTypeFormResubmittedBackForward:
     case kWebNavigationTypeRestore:
-      return AtomicString("back_forward");
+      return V8NavigationTimingType::Enum::kBackForward;
     case kWebNavigationTypeLinkClicked:
     case kWebNavigationTypeFormSubmitted:
     case kWebNavigationTypeOther:
-      return AtomicString("navigate");
+      return V8NavigationTimingType::Enum::kNavigate;
   }
-  NOTREACHED_IN_MIGRATION();
-  return AtomicString("navigate");
+  NOTREACHED();
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::unloadEventStart() const {
@@ -208,11 +216,12 @@ DOMHighResTimeStamp PerformanceNavigationTiming::loadEventEnd() const {
       CrossOriginIsolatedCapability());
 }
 
-AtomicString PerformanceNavigationTiming::type() const {
+V8NavigationTimingType PerformanceNavigationTiming::type() const {
   if (DomWindow()) {
-    return GetNavigationTimingType(GetDocumentLoader()->GetNavigationType());
+    return V8NavigationTimingType(
+        GetNavigationTimingType(GetDocumentLoader()->GetNavigationType()));
   }
-  return AtomicString("navigate");
+  return V8NavigationTimingType(V8NavigationTimingType::Enum::kNavigate);
 }
 
 AtomicString PerformanceNavigationTiming::deliveryType() const {
@@ -227,8 +236,7 @@ AtomicString PerformanceNavigationTiming::deliveryType() const {
     case NavigationDeliveryType::kNavigationalPrefetch:
       return delivery_type_names::kNavigationalPrefetch;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return g_empty_atom;
+      NOTREACHED();
   }
 }
 
@@ -294,13 +302,37 @@ NotRestoredReasons* PerformanceNavigationTiming::notRestoredReasons() const {
   return BuildNotRestoredReasons(loader->GetFrame()->GetNotRestoredReasons());
 }
 
-AtomicString PerformanceNavigationTiming::systemEntropy() const {
+PerformanceTimingConfidence* PerformanceNavigationTiming::confidence() const {
+  if (DomWindow()) {
+    blink::UseCounter::Count(
+        DomWindow()->document(),
+        WebFeature::kPerformanceNavigationTimingConfidence);
+  }
+
+  DocumentLoadTiming* timing = GetDocumentLoadTiming();
+  if (!timing) {
+    return nullptr;
+  }
+
+  std::optional<RandomizedConfidenceValue> confidence =
+      timing->RandomizedConfidence();
+  if (!confidence) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<PerformanceTimingConfidence>(
+      confidence->first,
+      V8PerformanceTimingConfidenceValue(
+          GetNavigationConfidenceString(confidence->second)));
+}
+
+V8NavigationEntropy PerformanceNavigationTiming::systemEntropy() const {
   if (DomWindow()) {
     blink::UseCounter::Count(DomWindow()->document(),
                              WebFeature::kPerformanceNavigateSystemEntropy);
   }
 
-  return AtomicString(GetSystemEntropy(GetDocumentLoader()));
+  return V8NavigationEntropy(GetSystemEntropy(GetDocumentLoader()));
 }
 
 DOMHighResTimeStamp PerformanceNavigationTiming::criticalCHRestart(
@@ -377,7 +409,7 @@ void PerformanceNavigationTiming::BuildJSONValue(
   builder.AddNumber("domComplete", domComplete());
   builder.AddNumber("loadEventStart", loadEventStart());
   builder.AddNumber("loadEventEnd", loadEventEnd());
-  builder.AddString("type", type());
+  builder.AddString("type", type().AsString());
   builder.AddNumber("redirectCount", redirectCount());
   builder.AddNumber(
       "activationStart",
@@ -398,7 +430,18 @@ void PerformanceNavigationTiming::BuildJSONValue(
 
   if (RuntimeEnabledFeatures::PerformanceNavigateSystemEntropyEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
-    builder.AddString("systemEntropy", GetSystemEntropy(GetDocumentLoader()));
+    builder.AddString(
+        "systemEntropy",
+        V8NavigationEntropy(GetSystemEntropy(GetDocumentLoader())).AsString());
+  }
+
+  if (RuntimeEnabledFeatures::PerformanceNavigationTimingConfidenceEnabled(
+          ExecutionContext::From(builder.GetScriptState()))) {
+    if (auto* confidence_value = confidence()) {
+      builder.Add("confidence", confidence_value);
+    } else {
+      builder.AddNull("confidence");
+    }
   }
 }
 

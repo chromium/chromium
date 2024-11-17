@@ -14,7 +14,7 @@ BROWSER_USER_DATA_KEY_IMPL(DeviceSharingBrowserAgent)
 
 DeviceSharingBrowserAgent::DeviceSharingBrowserAgent(Browser* browser)
     : browser_(browser),
-      is_incognito_(browser->GetBrowserState()->IsOffTheRecord()),
+      is_incognito_(browser->GetProfile()->IsOffTheRecord()),
       active_web_state_observer_(
           std::make_unique<ActiveWebStateObservationForwarder>(
               browser_->GetWebStateList(),
@@ -27,7 +27,7 @@ DeviceSharingBrowserAgent::~DeviceSharingBrowserAgent() {}
 
 void DeviceSharingBrowserAgent::UpdateForActiveBrowser() {
   // Tell the manager that this is now the active browser, and update.
-  DeviceSharingManagerFactory::GetForBrowserState(browser_->GetBrowserState())
+  DeviceSharingManagerFactory::GetForProfile(browser_->GetProfile())
       ->SetActiveBrowser(browser_);
   UpdateForActiveWebState(browser_->GetWebStateList()->GetActiveWebState());
 }
@@ -35,8 +35,7 @@ void DeviceSharingBrowserAgent::UpdateForActiveBrowser() {
 void DeviceSharingBrowserAgent::UpdateForActiveWebState(
     web::WebState* active_web_state) {
   DeviceSharingManager* manager =
-      DeviceSharingManagerFactory::GetForBrowserState(
-          browser_->GetBrowserState());
+      DeviceSharingManagerFactory::GetForProfile(browser_->GetProfile());
   if (is_incognito_) {
     // For all events on an incognito browser, clear the active URL, ensuring
     // that no URL is shared.
@@ -73,7 +72,7 @@ void DeviceSharingBrowserAgent::BrowserDestroyed(Browser* browser) {
   // Signal no active URL. If this is the active browser in the manager, then
   // no further updates will be sent, so until another browser becomes active,
   // there will be no active URL.
-  DeviceSharingManagerFactory::GetForBrowserState(browser_->GetBrowserState())
+  DeviceSharingManagerFactory::GetForProfile(browser_->GetProfile())
       ->ClearActiveUrl(browser);
   // Unhook all observers.
   active_web_state_observer_.reset();

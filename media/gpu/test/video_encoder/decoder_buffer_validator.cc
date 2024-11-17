@@ -994,7 +994,7 @@ bool AV1Validator::Validate(const DecoderBuffer* buffer,
       LOG(ERROR) << "Don't drop key frame";
       return false;
     }
-    if (metadata.av1.has_value()) {
+    if (metadata.svc_generic.has_value()) {
       LOG(ERROR) << "BitstreamBufferMetadata has Av1Metadata on dropped frame";
       return false;
     }

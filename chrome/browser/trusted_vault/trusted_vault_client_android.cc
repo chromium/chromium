@@ -173,7 +173,7 @@ void TrustedVaultClientAndroid::StoreKeys(
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version) {
   // Not supported on Android, where keys are fetched outside the browser.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TrustedVaultClientAndroid::MarkLocalKeysAsStale(

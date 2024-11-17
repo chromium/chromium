@@ -1,0 +1,86 @@
+# Copyright 2021 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetProviderDelegate.java" ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/android/browserservices/intents:java",
+    "//chrome/browser/ui/android/searchactivityutils:java",
+    "//components/embedder_support/android:util_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//url:url_java",
+  ]
+  resources_package = "org.chromium.chrome.browser.ui.quickactionsearchwidget"
+}
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.ui.quickactionsearchwidget"
+  sources = [
+    "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetProviderDelegateTest.java",
+    "java/src/org/chromium/chrome/browser/ui/quickactionsearchwidget/QuickActionSearchWidgetTestUtils.java",
+  ]
+  deps = [
+    ":java",
+    ":java_resources",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_java_test_support_uncommon",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/android/browserservices/intents:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/tabmodel:java",
+    "//chrome/browser/ui/android/searchactivityutils:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/embedder_support/android:util_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//url:gurl_java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/drawable-nodpi/quick_action_search_widget_dino_preview.png",
+    "java/res/drawable-nodpi/quick_action_search_widget_small_preview.png",
+    "java/res/drawable/quick_action_search_widget_background.xml",
+    "java/res/drawable/quick_action_search_widget_dino_background.xml",
+    "java/res/drawable/quick_action_search_widget_dino_content.xml",
+    "java/res/drawable/quick_action_search_widget_medium_button_background.xml",
+    "java/res/drawable/quick_action_search_widget_medium_search_bar_background.xml",
+    "java/res/drawable/quick_action_search_widget_small_button_background.xml",
+    "java/res/drawable/quick_action_search_widget_small_search_bar_background.xml",
+    "java/res/drawable/quick_action_search_widget_xsmall_background.xml",
+    "java/res/drawable/quick_action_search_widget_xsmall_button_background.xml",
+    "java/res/drawable/quick_action_search_widget_xsmall_search_bar_background.xml",
+    "java/res/layout/quick_action_search_widget_dino_layout.xml",
+    "java/res/layout/quick_action_search_widget_dino_preview_layout.xml",
+    "java/res/layout/quick_action_search_widget_medium_layout.xml",
+    "java/res/layout/quick_action_search_widget_small_layout.xml",
+    "java/res/layout/quick_action_search_widget_small_preview_layout.xml",
+    "java/res/layout/quick_action_search_widget_xsmall_layout.xml",
+    "java/res/values-sw240dp/dimens.xml",
+    "java/res/values-sw240dp/styles.xml",
+    "java/res/values-sw280dp/dimens.xml",
+    "java/res/values-sw280dp/styles.xml",
+    "java/res/values/dimens.xml",
+    "java/res/values/styles.xml",
+    "java/res/xml/quick_action_search_widget_dino_info.xml",
+    "java/res/xml/quick_action_search_widget_small_info.xml",
+  ]
+}

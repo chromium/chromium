@@ -43,16 +43,17 @@ public class TranslateBridge {
     }
 
     /** Returns true iff we're in a state where the manual translate IPH could be shown. */
-    public static boolean shouldShowManualTranslateIPH(Tab tab) {
-        return TranslateBridgeJni.get().shouldShowManualTranslateIPH(tab.getWebContents());
+    public static boolean shouldShowManualTranslateIph(Tab tab) {
+        return TranslateBridgeJni.get().shouldShowManualTranslateIph(tab.getWebContents());
     }
 
     /**
-     * Sets the language that the contents of the tab needs to be translated to.
-     * No-op in case target language is invalid or not supported.
+     * Sets the language that the contents of the tab needs to be translated to. No-op in case
+     * target language is invalid or not supported.
+     *
      * @param targetLanguage language code in ISO 639 format.
      * @param shouldAutoTranslate If true, the page should be automatically translated immediately
-     *                            to targetLanguage.
+     *     to targetLanguage.
      */
     public static void setPredefinedTargetLanguage(
             Tab tab, String targetLanguage, boolean shouldAutoTranslate) {
@@ -292,7 +293,7 @@ public class TranslateBridge {
 
         boolean canManuallyTranslate(WebContents webContents, boolean menuLogging);
 
-        boolean shouldShowManualTranslateIPH(WebContents webContents);
+        boolean shouldShowManualTranslateIph(WebContents webContents);
 
         boolean isPageTranslated(WebContents webContents);
 

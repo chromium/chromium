@@ -12,13 +12,13 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
-import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.components.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.components.optimization_guide.proto.HintsProto.OptimizationType;
 import org.chromium.components.optimization_guide.proto.PushNotificationProto.HintNotificationPayload;
 
@@ -200,7 +200,7 @@ public class OptimizationGuidePushNotificationManager {
     @VisibleForTesting
     public static String cacheKey(OptimizationType optimizationType) {
         return ChromePreferenceKeys.OPTIMIZATION_GUIDE_PUSH_NOTIFICATION_CACHE.createKey(
-                optimizationType.toString());
+                optimizationType.name());
     }
 
     public static void setNativeIsInitializedForTesting(Boolean nativeIsInitialized) {

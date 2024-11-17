@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/synchronization/lock.h"
@@ -121,7 +122,7 @@ class WEB_ENGINE_EXPORT WebEngineAudioOutputDevice
   // to the |task_runner_|). This is necessary because AudioRendererSink must
   // guarantee that the callback is not called after Stop(). |callback_lock_| is
   // used to synchronize access to the |callback_|.
-  RenderCallback* callback_ GUARDED_BY(callback_lock_) = nullptr;
+  raw_ptr<RenderCallback> callback_ GUARDED_BY(callback_lock_) = nullptr;
 
   // Mapped memory for buffers shared with |stream_sink_|.
   std::vector<base::WritableSharedMemoryMapping> stream_sink_buffers_;

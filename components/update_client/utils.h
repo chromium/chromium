@@ -98,10 +98,9 @@ bool RetryDeletePathRecursively(const base::FilePath& path);
 
 // Similar to `RetryDeletePathRecursively`above, but allows specifying the
 // number of `tries` and the `seconds_between_tries`.
-bool RetryDeletePathRecursivelyCustom(
-    const base::FilePath& path,
-    size_t tries,
-    const base::TimeDelta& seconds_between_tries);
+bool RetryDeletePathRecursivelyCustom(const base::FilePath& path,
+                                      size_t tries,
+                                      base::TimeDelta seconds_between_tries);
 
 }  // namespace update_client
 

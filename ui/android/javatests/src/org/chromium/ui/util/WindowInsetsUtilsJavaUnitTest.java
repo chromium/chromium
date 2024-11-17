@@ -40,7 +40,7 @@ public class WindowInsetsUtilsJavaUnitTest {
         List<Rect> blocks = List.of(new Rect(0, 0, 100, 800), new Rect(400, 0, 600, 800));
         assertEquals(
                 new Rect(100, 0, 400, 800),
-                WindowInsetsUtils.getWidestUnoccludedRect((region), blocks));
+                WindowInsetsUtils.getWidestUnoccludedRect(region, blocks));
     }
 
     @Test
@@ -50,7 +50,7 @@ public class WindowInsetsUtilsJavaUnitTest {
         List<Rect> blocks = List.of(new Rect(0, 0, 100, 300), new Rect(400, 400, 600, 800));
         assertEquals(
                 new Rect(0, 300, 600, 400),
-                WindowInsetsUtils.getWidestUnoccludedRect((region), blocks));
+                WindowInsetsUtils.getWidestUnoccludedRect(region, blocks));
     }
 
     @Test

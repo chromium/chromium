@@ -57,7 +57,7 @@ const int kBidirectionalAnimationRepeatCount = 4;
     }
     if (@available(iOS 17, *)) {
       [self registerForTraitChanges:TraitCollectionSetForTraits(
-                                        @[ UITraitVerticalSizeClass.self ])
+                                        @[ UITraitVerticalSizeClass.class ])
                          withAction:@selector(updateUIOnTraitChange)];
     }
   }
@@ -93,8 +93,7 @@ const int kBidirectionalAnimationRepeatCount = 4;
   switch (self.animatingDirection) {
     case UISwipeGestureRecognizerDirectionUp:
     case UISwipeGestureRecognizerDirectionDown:
-      NOTREACHED_IN_MIGRATION();
-      return nil;
+      NOTREACHED();
     case UISwipeGestureRecognizerDirectionLeft:
     case UISwipeGestureRecognizerDirectionRight:
     default:

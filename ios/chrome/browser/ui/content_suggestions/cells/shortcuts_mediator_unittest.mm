@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_mediator.h"
 
+#import "base/time/default_clock.h"
 #import "components/feature_engagement/test/mock_tracker.h"
+#import "components/reading_list/core/fake_reading_list_model_storage.h"
 #import "components/reading_list/core/reading_list_model_impl.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
@@ -25,13 +27,6 @@
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
 
-namespace {
-std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
-    web::BrowserState* browser_state) {
-  return std::make_unique<feature_engagement::test::MockTracker>();
-}
-}  // namespace
-
 @protocol
     ShortcutsMediatorDispatcher <BrowserCoordinatorCommands, WhatsNewCommands>
 @end
@@ -40,61 +35,59 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
 class ShortcutsMediatorTest : public PlatformTest {
  public:
   ShortcutsMediatorTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
-        ReadingListModelFactory::GetInstance(),
-        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::vector<scoped_refptr<ReadingListEntry>>()));
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
-        feature_engagement::TrackerFactory::GetInstance(),
-        base::BindRepeating(&BuildFeatureEngagementMockTracker));
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        chrome_browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = std::move(builder).Build();
+
+    auto storage = std::make_unique<FakeReadingListModelStorage>();
+    base::WeakPtr<FakeReadingListModelStorage> storage_ptr =
+        storage->AsWeakPtr();
+    reading_list_model_ = std::make_unique<ReadingListModelImpl>(
+        std::move(storage), syncer::StorageType::kUnspecified,
+        syncer::WipeModelUponSyncDisabledBehavior::kNever,
+        base::DefaultClock::GetInstance());
+    storage_ptr->TriggerLoadCompletion();
 
     dispatcher_ = OCMProtocolMock(@protocol(ShortcutsMediatorDispatcher));
+    mock_delegate_ = OCMProtocolMock(@protocol(ShortcutsMediatorDelegate));
+    mock_ntp_actions_delegate_ =
+        OCMProtocolMock(@protocol(NewTabPageActionsDelegate));
 
-    ReadingListModel* readingListModel =
-        ReadingListModelFactory::GetForBrowserState(
-            chrome_browser_state_.get());
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            chrome_browser_state_.get());
     AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForBrowserState(
-            chrome_browser_state_.get());
+        AuthenticationServiceFactory::GetForProfile(profile_.get());
     mediator_ = [[ShortcutsMediator alloc]
-        initWithReadingListModel:readingListModel
-        featureEngagementTracker:(feature_engagement::Tracker*)tracker
+        initWithReadingListModel:reading_list_model_.get()
+        featureEngagementTracker:&tracker_
                      authService:authentication_service];
 
     mediator_.contentSuggestionsMetricsRecorder = metrics_recorder_;
     mediator_.dispatcher = dispatcher_;
-    mediator_.delegate = OCMProtocolMock(@protocol(ShortcutsMediatorDelegate));
-    mediator_.NTPActionsDelegate =
-        OCMProtocolMock(@protocol(NewTabPageActionsDelegate));
+    mediator_.delegate = mock_delegate_;
+    mediator_.NTPActionsDelegate = mock_ntp_actions_delegate_;
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   ShortcutsMediator* mediator_;
   ContentSuggestionsMetricsRecorder* metrics_recorder_;
+  feature_engagement::test::MockTracker tracker_;
+  std::unique_ptr<ReadingListModel> reading_list_model_;
   id dispatcher_;
+  id mock_delegate_;
+  id mock_ntp_actions_delegate_;
 };
 
 // Tests that the command is sent to the dispatcher when opening the Reading
 // List.
 TEST_F(ShortcutsMediatorTest, TestOpenReadingList) {
   OCMExpect([dispatcher_ showReadingList]);
-
-  OCMExpect([mediator_.NTPActionsDelegate shortcutTileOpened]);
-  OCMExpect([mediator_.delegate
+  OCMExpect([mock_ntp_actions_delegate_ shortcutTileOpened]);
+  OCMExpect([mock_delegate_
       logMagicStackEngagementForType:ContentSuggestionsModuleType::kShortcuts]);
 
   // Action.
@@ -110,14 +103,15 @@ TEST_F(ShortcutsMediatorTest, TestOpenReadingList) {
 
   // Test.
   EXPECT_OCMOCK_VERIFY(dispatcher_);
+  EXPECT_OCMOCK_VERIFY(mock_ntp_actions_delegate_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }
 
 // Tests that the command is sent to the dispatcher when opening the What's new.
 TEST_F(ShortcutsMediatorTest, TestOpenWhatsNew) {
   OCMExpect([dispatcher_ showWhatsNew]);
-
-  OCMExpect([mediator_.NTPActionsDelegate shortcutTileOpened]);
-  OCMExpect([mediator_.delegate
+  OCMExpect([mock_ntp_actions_delegate_ shortcutTileOpened]);
+  OCMExpect([mock_delegate_
       logMagicStackEngagementForType:ContentSuggestionsModuleType::kShortcuts]);
 
   // Action.
@@ -132,4 +126,6 @@ TEST_F(ShortcutsMediatorTest, TestOpenWhatsNew) {
   [mediator_ shortcutsTapped:recognizer];
   // Test.
   EXPECT_OCMOCK_VERIFY(dispatcher_);
+  EXPECT_OCMOCK_VERIFY(mock_ntp_actions_delegate_);
+  EXPECT_OCMOCK_VERIFY(mock_delegate_);
 }

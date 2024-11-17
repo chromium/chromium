@@ -28,11 +28,6 @@
 
 namespace media {
 
-const uint16_t WebMClusterParser::kOpusFrameDurationsMu[] = {
-    10000, 20000, 40000, 60000, 10000, 20000, 40000, 60000, 10000, 20000, 40000,
-    60000, 10000, 20000, 10000, 20000, 2500,  5000,  10000, 20000, 2500,  5000,
-    10000, 20000, 2500,  5000,  10000, 20000, 2500,  5000,  10000, 20000};
-
 enum {
   // Limits the number of MEDIA_LOG() calls in the path of reading encoded
   // duration to avoid spamming for corrupted data.
@@ -311,14 +306,16 @@ bool WebMClusterParser::OnUInt(int id, int64_t val) {
 
 bool WebMClusterParser::ParseBlock(bool is_simple_block,
                                    const uint8_t* buf,
-                                   int size,
+                                   size_t size,
                                    const uint8_t* additional,
                                    int additional_size,
                                    int duration,
                                    int64_t discard_padding,
                                    bool reference_block_set) {
-  if (size < 4)
+  const size_t kBlockHeaderSize = 4;
+  if (size < kBlockHeaderSize) {
     return false;
+  }
 
   // Return an error if the trackNum > 127. We just aren't
   // going to support large track numbers right now.
@@ -349,8 +346,8 @@ bool WebMClusterParser::ParseBlock(bool is_simple_block,
   bool is_keyframe =
       is_simple_block ? (flags & 0x80) != 0 : !reference_block_set;
 
-  const uint8_t* frame_data = buf + 4;
-  int frame_size = size - (frame_data - buf);
+  const uint8_t* frame_data = buf + kBlockHeaderSize;
+  size_t frame_size = size - kBlockHeaderSize;
   return OnBlock(is_simple_block, track_num, timecode, duration, frame_data,
                  frame_size, additional, additional_size, discard_padding,
                  is_keyframe);
@@ -429,12 +426,11 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
                                 int timecode,
                                 int block_duration,
                                 const uint8_t* data,
-                                int size,
+                                size_t size,
                                 const uint8_t* additional,
-                                int additional_size,
+                                size_t additional_size,
                                 int64_t discard_padding,
                                 bool is_keyframe) {
-  DCHECK_GE(size, 0);
   if (cluster_timecode_ == -1) {
     MEDIA_LOG(ERROR, media_log_) << "Got a block before cluster timecode.";
     return false;
@@ -505,8 +501,9 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
       StreamParserBuffer::CopyFrom(data + data_offset, size - data_offset,
                                    is_keyframe, buffer_type, track_num);
   if (additional_size) {
-    buffer->WritableSideData().alpha_data.assign(additional,
-                                                 additional + additional_size);
+    buffer->WritableSideData().alpha_data =
+        base::HeapArray<uint8_t>::CopiedFrom(
+            base::span<const uint8_t>(additional, additional_size));
   }
 
   if (decrypt_config) {
@@ -556,7 +553,8 @@ bool WebMClusterParser::OnBlock(bool is_simple_block,
             << encoded_duration.InMilliseconds() << "ms).";
       }
     }
-  } else if (block_duration_time_delta != kNoTimestamp) {
+  } else if (block_duration_time_delta != kNoTimestamp &&
+             block_duration_time_delta != kInfiniteDuration) {
     buffer->set_duration(block_duration_time_delta);
   } else {
     buffer->set_duration(track->default_duration());
@@ -638,6 +636,11 @@ bool WebMClusterParser::Track::AddBuffer(
   if (last_added_buffer_missing_duration_) {
     base::TimeDelta derived_duration =
         buffer->timestamp() - last_added_buffer_missing_duration_->timestamp();
+    if (derived_duration == kInfiniteDuration) {
+      DVLOG(2) << "Duration of last buffer is too large.";
+      return false;
+    }
+
     last_added_buffer_missing_duration_->set_duration(derived_duration);
 
     DVLOG(2) << "AddBuffer() : applied derived duration to held-back buffer : "

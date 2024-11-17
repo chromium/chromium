@@ -16,6 +16,10 @@
       <div slot="tab" id="details-tab" role="tab" aria-controls="details">
         $i18n{details}
       </div>
+      <div slot="tab" id="modifications-tab" role="tab"
+          aria-controls="modifications" hidden>
+        $i18n{modifications}
+      </div>
       <!-- General -->
       <div slot="panel" id="general" role="tabpanel"
            aria-labelledby="general-tab">
@@ -111,6 +115,27 @@
           <div>
             <button id="export"
               aria-label="$i18n{exportA11yLabel}">$i18n{export}</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modifications -->
+      <!-- TODO(crbug.com/40928765): hook up to allow for modifications. -->
+      <div slot="panel" id="modifications" role="tabpanel">
+        <div class="vertical-box">
+          <h3 role="heading">$i18n{trust}</h3>
+          <div class="horizontal-row">
+            <label class="modifications-row-label">$i18n{trustState}</label>
+            <select id="trust-state-select" class="md-select" disabled>
+              <option value="0">$i18n{trustStateDistrusted}</option>
+              <option value="1">$i18n{trustStateHint}</option>
+              <option value="2">$i18n{trustStateTrusted}</option>
+            </select>
+
+          </div>
+          <div class="horizontal-row">
+            <div class="modifications-row-label">$i18n{constraints}</div>
+            <constraint-list id="constraints"></constraint-list>
           </div>
         </div>
       </div>

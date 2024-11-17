@@ -198,7 +198,7 @@ class FullRestoreTestHelper {
         }));
 
     if (mock_delegate) {
-      FullRestoreService::GetForProfile(profile())->delegate_ =
+      FullRestoreServiceFactory::GetForProfile(profile())->delegate_ =
           std::move(mock_delegate);
     }
   }
@@ -480,7 +480,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CrashAndCloseNotification) {
   VerifyNotification(true /* has_crash_notification */,
                      false /* has_restore_notification */);
 
-  FullRestoreService::GetForProfile(profile())->MaybeCloseNotification();
+  FullRestoreServiceFactory::GetForProfile(profile())->MaybeCloseNotification();
   VerifyNotification(false /* has_crash_notification */,
                      false /* has_restore_notification */);
 
@@ -667,7 +667,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndRestore) {
 
   VerifyNotification(false, false);
 
-  FullRestoreService::MaybeCloseNotification(profile());
+  FullRestoreServiceFactory::GetForProfile(profile())->MaybeCloseNotification();
 }
 
 // If the OS restore setting is 'Ask every time', after reboot, show the restore
@@ -695,7 +695,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, AskEveryTimeAndSettings) {
   VerifyNotification(false /* has_crash_notification */,
                      true /* has_restore_notification */);
 
-  FullRestoreService::MaybeCloseNotification(profile());
+  FullRestoreServiceFactory::GetForProfile(profile())->MaybeCloseNotification();
 
   VerifyNotification(false /* has_crash_notification */,
                      false /* has_restore_notification */);
@@ -714,7 +714,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile,
   VerifyNotification(false /* has_crash_notification */,
                      true /* has_restore_notification */);
 
-  FullRestoreService::MaybeCloseNotification(profile());
+  FullRestoreServiceFactory::GetForProfile(profile())->MaybeCloseNotification();
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOption());
   EXPECT_TRUE(CanPerformRestore(account_id()));
@@ -752,7 +752,7 @@ TEST_F(FullRestoreServiceTestHavingFullRestoreFile, CloseNotificationEarly) {
             Profile::FromBrowserContext(context));
       }));
 
-  FullRestoreService::MaybeCloseNotification(profile());
+  FullRestoreServiceFactory::GetForProfile(profile())->MaybeCloseNotification();
 
   content::RunAllTasksUntilIdle();
 
@@ -894,7 +894,8 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginAtTheSameTime) {
                      false /* has_restore_notification */);
 
   // Simulate switch to the second user.
-  auto* full_restore_service2 = FullRestoreService::GetForProfile(profile2());
+  auto* full_restore_service2 =
+      FullRestoreServiceFactory::GetForProfile(profile2());
   full_restore_service2->OnTransitionedToNewActiveUser(profile2());
 
   EXPECT_EQ(RestoreOption::kAskEveryTime, GetRestoreOptionForProfile2());
@@ -939,7 +940,8 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginOneByOne) {
   SetRestoreOptionForProfile2(RestoreOption::kAskEveryTime);
   CreateFullRestoreService2ForTesting();
 
-  auto* full_restore_service2 = FullRestoreService::GetForProfile(profile2());
+  auto* full_restore_service2 =
+      FullRestoreServiceFactory::GetForProfile(profile2());
   full_restore_service2->OnTransitionedToNewActiveUser(profile2());
   VerifyRestoreInitSettingHistogram(RestoreOption::kAskEveryTime, 1);
   content::RunAllTasksUntilIdle();
@@ -982,7 +984,8 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginWithActiveUserLogin) {
                      false /* has_restore_notification */);
 
   // Simulate switch to the second user.
-  auto* full_restore_service2 = FullRestoreService::GetForProfile(profile2());
+  auto* full_restore_service2 =
+      FullRestoreServiceFactory::GetForProfile(profile2());
   full_restore_service2->OnTransitionedToNewActiveUser(profile2());
 
   // The notification for the second user should be displayed.
@@ -995,7 +998,8 @@ TEST_F(FullRestoreServiceMultipleUsersTest, TwoUsersLoginWithActiveUserLogin) {
   EXPECT_TRUE(CanPerformRestore(account_id2()));
 
   // Simulate switch to the first user.
-  auto* full_restore_service = FullRestoreService::GetForProfile(profile());
+  auto* full_restore_service =
+      FullRestoreServiceFactory::GetForProfile(profile());
   full_restore_service->OnTransitionedToNewActiveUser(profile());
 
   // The notification for the first user should be displayed.
@@ -1337,7 +1341,8 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest, TwoUsersLoginAtTheSameTime) {
 
   // Simulate switch to the second user. The informed restore dialog should be
   // shown for them.
-  auto* full_restore_service2 = FullRestoreService::GetForProfile(profile2());
+  auto* full_restore_service2 =
+      FullRestoreServiceFactory::GetForProfile(profile2());
   EXPECT_CALL(*mock_delegate_2_ptr,
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);
@@ -1373,7 +1378,8 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest, TwoUsersLoginOneByOne) {
 
   // Simulate switch to the second user. The informed restore dialog should be
   // shown for them.
-  auto* full_restore_service2 = FullRestoreService::GetForProfile(profile2());
+  auto* full_restore_service2 =
+      FullRestoreServiceFactory::GetForProfile(profile2());
   EXPECT_CALL(*mock_delegate_2_ptr,
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);
@@ -1417,7 +1423,8 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest,
 
   // Simulate switch to the second user. The informed restore dialog should be
   // shown for them.
-  auto* full_restore_service2 = FullRestoreService::GetForProfile(profile2());
+  auto* full_restore_service2 =
+      FullRestoreServiceFactory::GetForProfile(profile2());
   EXPECT_CALL(*mock_delegate_2_ptr,
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);
@@ -1427,7 +1434,8 @@ TEST_F(ForestFullRestoreServiceMultipleUsersTest,
 
   // Simulate switch to the first user. The informed restore dialog should be
   // shown for them.
-  auto* full_restore_service = FullRestoreService::GetForProfile(profile());
+  auto* full_restore_service =
+      FullRestoreServiceFactory::GetForProfile(profile());
   EXPECT_CALL(*mock_delegate_ptr,
               MaybeStartInformedRestoreOverviewSession(testing::_))
       .Times(1);

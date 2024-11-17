@@ -7,13 +7,18 @@
 
 #include "components/variations/service/variations_service.h"
 
+namespace metrics {
+class MetricsStateManager;
+}
+
 class PrefService;
 
 namespace variations {
 
 class TestVariationsService : public VariationsService {
  public:
-  explicit TestVariationsService(PrefService* prefs);
+  explicit TestVariationsService(PrefService* prefs,
+                                 metrics::MetricsStateManager* state_manager);
   ~TestVariationsService() override;
 
   TestVariationsService(const TestVariationsService&) = delete;

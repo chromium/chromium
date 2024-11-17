@@ -24,10 +24,13 @@ namespace manta {
 enum class MantaMetricType {
   kAnchovy,
   kOrca,
+  kScanner,
   kSnapper,
   kMahiSummary,
+  kMahiElucidation,
   kMahiQA,
   kSparky,
+  kWalrus,
 };
 
 // Manta service uses this callback to return a Response proto parsed

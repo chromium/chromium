@@ -109,6 +109,12 @@ class PreloadingDecider::BehaviorConfig {
         "pointer_hover_eagerness", "moderate"};
     pointer_hover_eagerness_ =
         EagernessSetFromFeatureParam(kPointerHoverEagerness.Get());
+
+    static const base::FeatureParam<std::string> kViewportHeuristicEagerness{
+        &blink::features::kPreloadingViewportHeuristics,
+        "viewport_heuristic_eagerness", "moderate"};
+    viewport_heuristic_eagerness_ =
+        EagernessSetFromFeatureParam(kViewportHeuristicEagerness.Get());
   }
 
   EagernessSet EagernessSetForPredictor(
@@ -117,6 +123,8 @@ class PreloadingDecider::BehaviorConfig {
       return pointer_down_eagerness_;
     } else if (predictor == preloading_predictor::kUrlPointerHoverOnAnchor) {
       return pointer_hover_eagerness_;
+    } else if (predictor == preloading_predictor::kViewportHeuristic) {
+      return viewport_heuristic_eagerness_;
     } else if (predictor ==
                preloading_predictor::kPreloadingHeuristicsMLModel) {
       return ml_model_eagerness_;
@@ -132,6 +140,8 @@ class PreloadingDecider::BehaviorConfig {
     if (predictor == preloading_predictor::kUrlPointerDownOnAnchor) {
       return kNoThreshold;
     } else if (predictor == preloading_predictor::kUrlPointerHoverOnAnchor) {
+      return kNoThreshold;
+    } else if (predictor == preloading_predictor::kViewportHeuristic) {
       return kNoThreshold;
     } else if (predictor ==
                preloading_predictor::kPreloadingHeuristicsMLModel) {
@@ -159,6 +169,7 @@ class PreloadingDecider::BehaviorConfig {
 
   EagernessSet pointer_down_eagerness_;
   EagernessSet pointer_hover_eagerness_;
+  EagernessSet viewport_heuristic_eagerness_;
   const EagernessSet ml_model_eagerness_;
   const bool ml_model_enacts_candidates_ = false;
   const PreloadingConfidence ml_model_prefetch_moderate_threshold_{
@@ -205,14 +216,9 @@ void PreloadingDecider::OnPointerDown(const GURL& url) {
   if (observer_for_testing_) {
     observer_for_testing_->OnPointerDown(url);
   }
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSpeculationRulesPointerDownHeuristics)) {
-    MaybeEnactCandidate(url, preloading_predictor::kUrlPointerDownOnAnchor,
-                        PreloadingConfidence{100},
-                        /*fallback_to_preconnect=*/true);
-  } else {
-    preconnector_.MaybePreconnect(url);
-  }
+  MaybeEnactCandidate(url, preloading_predictor::kUrlPointerDownOnAnchor,
+                      PreloadingConfidence{100},
+                      /*fallback_to_preconnect=*/true);
 }
 
 void PreloadingDecider::OnPreloadingHeuristicsModelDone(const GURL& url,
@@ -263,14 +269,29 @@ void PreloadingDecider::OnPointerHover(
       /*max_score=*/500,
       /*buckets=*/100);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSpeculationRulesPointerHoverHeuristics)) {
-    // Preconnecting on hover events should not be done if the link is not safe
-    // to prefetch or prerender.
-    constexpr bool fallback_to_preconnect = false;
-    MaybeEnactCandidate(url, preloading_predictor::kUrlPointerHoverOnAnchor,
-                        PreloadingConfidence{100}, fallback_to_preconnect);
+  // Preconnecting on hover events should not be done if the link is not safe
+  // to prefetch or prerender.
+  constexpr bool fallback_to_preconnect = false;
+  MaybeEnactCandidate(url, preloading_predictor::kUrlPointerHoverOnAnchor,
+                      PreloadingConfidence{100}, fallback_to_preconnect);
+}
+
+void PreloadingDecider::OnViewportHeuristicTriggered(const GURL& url) {
+  CHECK(base::FeatureList::IsEnabled(
+      blink::features::kPreloadingViewportHeuristics));
+  static const base::FeatureParam<bool> kShouldEnactCandidates{
+      &blink::features::kPreloadingViewportHeuristics, "enact_candidates",
+      false};
+  const bool should_enact_candidates = kShouldEnactCandidates.Get();
+  if (!should_enact_candidates) {
+    AddPreloadingPrediction(url, preloading_predictor::kViewportHeuristic,
+                            PreloadingConfidence(100));
+    return;
   }
+
+  MaybeEnactCandidate(url, preloading_predictor::kViewportHeuristic,
+                      PreloadingConfidence{100},
+                      /*fallback_to_preconnect=*/false);
 }
 
 void PreloadingDecider::MaybeEnactCandidate(
@@ -365,28 +386,21 @@ void PreloadingDecider::UpdateSpeculationCandidates(
             navigation_handle->GetPageTransition());
       }));
   PredictorDomainCallback is_new_link_nav =
-      base::BindRepeating([](NavigationHandle* navigation_handle) -> bool {
-        auto page_transition = navigation_handle->GetPageTransition();
-        return ui::PageTransitionCoreTypeIs(
-                   page_transition, ui::PageTransition::PAGE_TRANSITION_LINK) &&
-               (page_transition & ui::PAGE_TRANSITION_CLIENT_REDIRECT) == 0 &&
-               ui::PageTransitionIsNewNavigation(page_transition);
-      });
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSpeculationRulesPointerDownHeuristics)) {
-    preloading_data->SetIsNavigationInDomainCallback(
-        preloading_predictor::kUrlPointerDownOnAnchor, is_new_link_nav);
-  }
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSpeculationRulesPointerHoverHeuristics)) {
-    preloading_data->SetIsNavigationInDomainCallback(
-        preloading_predictor::kUrlPointerHoverOnAnchor, is_new_link_nav);
-  }
+      base::BindRepeating(&PreloadingDataImpl::IsLinkClickNavigation);
+  preloading_data->SetIsNavigationInDomainCallback(
+      preloading_predictor::kUrlPointerDownOnAnchor, is_new_link_nav);
+  preloading_data->SetIsNavigationInDomainCallback(
+      preloading_predictor::kUrlPointerHoverOnAnchor, is_new_link_nav);
   if (base::FeatureList::IsEnabled(
           blink::features::kPreloadingHeuristicsMLModel) &&
       behavior_config_->ml_model_enacts_candidates()) {
     preloading_data->SetIsNavigationInDomainCallback(
         preloading_predictor::kPreloadingHeuristicsMLModel, is_new_link_nav);
+  }
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPreloadingViewportHeuristics)) {
+    preloading_data->SetIsNavigationInDomainCallback(
+        preloading_predictor::kViewportHeuristic, is_new_link_nav);
   }
 
   // Here we look for all preloading candidates that are safe to perform, but

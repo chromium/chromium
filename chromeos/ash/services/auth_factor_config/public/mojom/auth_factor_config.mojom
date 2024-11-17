@@ -102,6 +102,10 @@ interface RecoveryFactorEditor {
 interface PinFactorEditor {
   // Set the user pin to the desired value.
   SetPin(string auth_token, string pin) => (ConfigureResult result);
+  // Update an already set user pin to the desired value. This method will
+  // only update a cryptohome pin if already present, for prefs-based pins and
+  // empty pins, it's a no-op.
+  UpdatePin(string auth_token, string pin) => (ConfigureResult result);
   // Remove the pin factor for the user.
   RemovePin(string auth_token) => (ConfigureResult result);
 };
@@ -153,4 +157,9 @@ interface PasswordFactorEditor {
   // Returns a value describing the complexity of the provided password value.
   CheckLocalPasswordComplexity(string password) =>
       (PasswordComplexity complexity);
+
+  // Remove the password factor for the user if the user has modern pin
+  // configured. While it is client's responsibility to not call,
+  // this IPC will also have additional check.
+  RemovePassword(string auth_token) => (ConfigureResult result);
 };

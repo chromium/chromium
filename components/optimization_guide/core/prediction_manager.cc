@@ -158,7 +158,11 @@ bool IsModelMetadataTypeOnServerAllowlist(const proto::Any& model_metadata) {
          model_metadata.type_url() ==
              "type.googleapis.com/"
              "google.internal.chrome.optimizationguide.v1."
-             "AutocompleteScoringModelMetadata";
+             "AutocompleteScoringModelMetadata" ||
+         model_metadata.type_url() ==
+             "type.googleapis.com/"
+             "google.privacy.webpermissionpredictions.v1."
+             "WebPermissionPredictionsClientInfo";
 }
 
 void RecordModelAvailableAtRegistration(
@@ -412,9 +416,11 @@ void PredictionManager::FetchModels() {
   models_info.reserve(model_registration_info_map_.size());
 
   // For now, we will fetch for all registered optimization targets.
+  auto overrides = PredictionModelOverrides::ParseFromCommandLine(
+      base::CommandLine::ForCurrentProcess());
   for (const auto& registration_info : model_registration_info_map_) {
-    if (GetModelOverrideForOptimizationTarget(registration_info.first)) {
-      // Do not download models that were overriden.
+    if (overrides.Get(registration_info.first)) {
+      // Do not download models that were overridden.
       continue;
     }
 
@@ -648,8 +654,9 @@ void PredictionManager::OnModelReady(const base::FilePath& base_model_dir,
   DCHECK(model.model_info().has_version() &&
          model.model_info().has_optimization_target());
 
-  if (GetModelOverrideForOptimizationTarget(
-          model.model_info().optimization_target())) {
+  auto overrides = PredictionModelOverrides::ParseFromCommandLine(
+      base::CommandLine::ForCurrentProcess());
+  if (overrides.Get(model.model_info().optimization_target())) {
     // Skip updating the model if override is present.
     return;
   }
@@ -787,6 +794,9 @@ void PredictionManager::OnPredictionModelOverrideLoaded(
     proto::OptimizationTarget optimization_target,
     std::unique_ptr<proto::PredictionModel> prediction_model) {
   const bool is_available = prediction_model != nullptr;
+  VLOG(0) << "Loading override for "
+          << proto::OptimizationTarget_Name(optimization_target)
+          << (is_available ? "succeeded" : "failed");
   OnLoadPredictionModel(optimization_target,
                         /*record_availability_metrics=*/false,
                         std::move(prediction_model));
@@ -797,19 +807,19 @@ void PredictionManager::LoadPredictionModels(
     const base::flat_set<proto::OptimizationTarget>& optimization_targets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  const bool has_overrides = switches::IsModelOverridePresent();
+  auto overrides = PredictionModelOverrides::ParseFromCommandLine(
+      base::CommandLine::ForCurrentProcess());
   for (proto::OptimizationTarget optimization_target : optimization_targets) {
     // Give preference to any overrides given on the command line.
-    if (has_overrides) {
+    if (auto* entry = overrides.Get(optimization_target); entry) {
       base::FilePath base_model_dir =
           GetBaseModelDirForDownload(optimization_target);
-      if (BuildPredictionModelFromCommandLineForOptimizationTarget(
-              optimization_target, base_model_dir,
-              base::BindOnce(
-                  &PredictionManager::OnPredictionModelOverrideLoaded,
-                  ui_weak_ptr_factory_.GetWeakPtr(), optimization_target))) {
-        continue;
-      }
+      entry->BuildModel(
+          base_model_dir,
+          base::BindOnce(&PredictionManager::OnPredictionModelOverrideLoaded,
+                         ui_weak_ptr_factory_.GetWeakPtr(),
+                         optimization_target));
+      continue;
     }
 
     if (!prediction_model_store_->HasModel(optimization_target,

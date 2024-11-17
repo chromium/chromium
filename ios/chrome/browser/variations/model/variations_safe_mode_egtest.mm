@@ -94,9 +94,9 @@
   [self resetAppState:[self appConfigurationForTestCase]];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [self resetAppState:[self appConfigurationForCleanRestart]];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests

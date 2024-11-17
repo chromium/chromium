@@ -157,6 +157,10 @@ void BlinkPlatformImpl::RecordAction(const blink::UserMetricsAction& name) {
     child_thread->RecordComputedAction(name.Action());
 }
 
+bool BlinkPlatformImpl::HasDataResource(int resource_id) const {
+  return GetContentClient()->HasDataResource(resource_id);
+}
+
 WebData BlinkPlatformImpl::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) {

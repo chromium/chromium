@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.bookmarks;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -30,10 +29,10 @@ import static org.mockito.Mockito.when;
 import static org.chromium.ui.test.util.MockitoHelper.doCallback;
 import static org.chromium.ui.test.util.MockitoHelper.doRunnable;
 
+import static java.util.Map.entry;
+
 import android.app.Activity;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.util.Pair;
 
@@ -66,7 +65,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkMetrics.BookmarkManagerFilter;
@@ -77,7 +75,9 @@ import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRow.Location;
 import org.chromium.chrome.browser.bookmarks.ImprovedBookmarkRowProperties.ImageVisibility;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtils;
 import org.chromium.chrome.browser.commerce.PriceTrackingUtilsJni;
-import org.chromium.chrome.browser.commerce.ShoppingFeatures;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
+import org.chromium.chrome.browser.commerce.ShoppingServiceFactoryJni;
+import org.chromium.chrome.browser.device_reauth.ReauthenticatorBridge;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -86,6 +86,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.signin.SyncPromoController.SyncPromoState;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
@@ -99,12 +100,11 @@ import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.CommerceSubscription;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.commerce.core.SubscriptionsObserver;
-import org.chromium.components.favicon.IconType;
-import org.chromium.components.favicon.LargeIconBridge;
-import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.payments.CurrencyFormatter;
 import org.chromium.components.payments.CurrencyFormatterJni;
@@ -157,14 +157,12 @@ public class BookmarkManagerMediatorTest {
             new ActivityScenarioRule<>(TestActivity.class);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private BookmarkModel mBookmarkModel;
     @Mock private BookmarkOpener mBookmarkOpener;
     @Mock private SelectableListLayout<BookmarkId> mSelectableListLayout;
     @Mock private SelectionDelegate<BookmarkId> mSelectionDelegate;
     @Mock private RecyclerView mRecyclerView;
-    @Mock private LargeIconBridge mLargeIconBridge;
     @Mock private BookmarkUiObserver mBookmarkUiObserver;
     @Mock private Profile mProfile;
     @Mock private SyncService mSyncService;
@@ -178,12 +176,16 @@ public class BookmarkManagerMediatorTest {
     @Mock private Tracker mTracker;
     @Mock private BookmarkImageFetcher mBookmarkImageFetcher;
     @Mock private Drawable mDrawable;
+    @Mock private ShoppingServiceFactory.Natives mShoppingServiceFactoryJniMock;
     @Mock private ShoppingService mShoppingService;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private PriceTrackingUtils.Natives mPriceTrackingUtilsJniMock;
     @Mock private ListObservable.ListObserver<Void> mListObserver;
     @Mock private Consumer<OnScrollListener> mOnScrollListenerConsumer;
     @Mock private BookmarkMoveSnackbarManager mBookmarkMoveSnackbarManager;
+    @Mock private BasicNativePage mNativePage;
+    @Mock private ReauthenticatorBridge mReauthenticatorMock;
 
     @Captor private ArgumentCaptor<BookmarkModelObserver> mBookmarkModelObserverArgumentCaptor;
     @Captor private ArgumentCaptor<SelectionObserver> mSelectionObserver;
@@ -348,7 +350,12 @@ public class BookmarkManagerMediatorTest {
         mActivity = spy(activity);
 
         // Setup CurrencyFormatter.
-        mJniMocker.mock(CurrencyFormatterJni.TEST_HOOKS, mCurrencyFormatterJniMock);
+        CurrencyFormatterJni.setInstanceForTesting(mCurrencyFormatterJniMock);
+        ShoppingServiceFactoryJni.setInstanceForTesting(mShoppingServiceFactoryJniMock);
+        CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
+
+        // Setup ShoppingServiceFactory
+        doReturn(mShoppingService).when(mShoppingServiceFactoryJniMock).getForProfile(any());
 
         // Setup TrackerFactory.
         TrackerFactory.setTrackerForTests(mTracker);
@@ -406,16 +413,6 @@ public class BookmarkManagerMediatorTest {
                 .when(mBookmarkUiObserver)
                 .onDestroy();
 
-        // Setup LargeIconBridge.
-        doAnswer(
-                        invocation -> {
-                            LargeIconCallback cb = invocation.getArgument(3);
-                            cb.onLargeIconAvailable(mBitmap, Color.GREEN, false, IconType.FAVICON);
-                            return null;
-                        })
-                .when(mLargeIconBridge)
-                .getLargeIconForUrl(any(), anyInt(), anyInt(), any());
-
         // Setup BookmarkUiPrefs.
         mBookmarkUiPrefs.setBookmarkRowDisplayPref(BookmarkRowDisplayPref.COMPACT);
 
@@ -435,7 +432,7 @@ public class BookmarkManagerMediatorTest {
                             return null;
                         })
                 .when(mBookmarkImageFetcher)
-                .fetchFirstTwoImagesForFolder(any(), any());
+                .fetchFirstTwoImagesForFolder(any(), anyInt(), any());
         doAnswer(
                         (invocation) -> {
                             Callback<Drawable> callback = invocation.getArgument(1);
@@ -443,7 +440,7 @@ public class BookmarkManagerMediatorTest {
                             return null;
                         })
                 .when(mBookmarkImageFetcher)
-                .fetchImageForBookmarkWithFaviconFallback(any(), any());
+                .fetchImageForBookmarkWithFaviconFallback(any(), anyInt(), any());
         doAnswer(
                         (invocation) -> {
                             Callback<Drawable> callback = invocation.getArgument(1);
@@ -454,8 +451,8 @@ public class BookmarkManagerMediatorTest {
                 .fetchFaviconForBookmark(any(), any());
 
         // Setup price tracking utils.
-        doReturn(true).when(mShoppingService).isShoppingListEligible();
-        mJniMocker.mock(PriceTrackingUtilsJni.TEST_HOOKS, mPriceTrackingUtilsJniMock);
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
+        PriceTrackingUtilsJni.setInstanceForTesting(mPriceTrackingUtilsJniMock);
         doCallback(3, (Callback<Boolean> callback) -> callback.onResult(true))
                 .when(mPriceTrackingUtilsJniMock)
                 .setPriceTrackingStateForBookmark(
@@ -481,7 +478,9 @@ public class BookmarkManagerMediatorTest {
         doReturn(shoppingMetaTracked)
                 .when(mBookmarkModel)
                 .getPowerBookmarkMeta(mPriceTrackedBookmarkId);
-        ShoppingFeatures.setShoppingListEligibleForTesting(true);
+        doReturn(true).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
+
+        ReauthenticatorBridge.setInstanceForTesting(mReauthenticatorMock);
 
         mDragReorderableRecyclerViewAdapter =
                 spy(new DragReorderableRecyclerViewAdapter(mActivity, mModelList));
@@ -494,7 +493,6 @@ public class BookmarkManagerMediatorTest {
                         mSelectionDelegate,
                         mRecyclerView,
                         mDragReorderableRecyclerViewAdapter,
-                        mLargeIconBridge,
                         /* isDialogUi= */ true,
                         mBackPressStateSupplier,
                         mProfile,
@@ -653,7 +651,6 @@ public class BookmarkManagerMediatorTest {
         verify(mBookmarkUiObserver).onDestroy();
         verify(mBookmarkUndoController).destroy();
         verify(mBookmarkImageFetcher).destroy();
-        verify(mLargeIconBridge).destroy();
         verify(mBookmarkMoveSnackbarManager).destroy();
     }
 
@@ -850,11 +847,9 @@ public class BookmarkManagerMediatorTest {
         assertEquals(mBookmarkItem21.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
         assertEquals(EXAMPLE_URL_FORMATTED, model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
         assertNull(model.get(ImprovedBookmarkRowProperties.START_ICON_TINT));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
-        assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER));
@@ -925,12 +920,10 @@ public class BookmarkManagerMediatorTest {
         assertEquals(mBookmarkItem21.getTitle(), model.get(ImprovedBookmarkRowProperties.TITLE));
         assertEquals(EXAMPLE_URL_FORMATTED, model.get(ImprovedBookmarkRowProperties.DESCRIPTION));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
         assertNull(model.get(ImprovedBookmarkRowProperties.START_ICON_TINT));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
-        assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER));
@@ -1011,11 +1004,9 @@ public class BookmarkManagerMediatorTest {
                 ImageVisibility.DRAWABLE,
                 model.get(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_TINT));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
-        assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER));
@@ -1048,7 +1039,6 @@ public class BookmarkManagerMediatorTest {
                 model.get(ImprovedBookmarkRowProperties.START_IMAGE_VISIBILITY));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
-        assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER));
@@ -1073,11 +1063,9 @@ public class BookmarkManagerMediatorTest {
         assertEquals(
                 mFolderItem2.getTitle() + " (1)", model.get(ImprovedBookmarkRowProperties.TITLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
-        assertNotNull(model.get(ImprovedBookmarkRowProperties.START_AREA_BACKGROUND_COLOR));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_TINT));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
-        assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER));
@@ -1104,7 +1092,6 @@ public class BookmarkManagerMediatorTest {
         assertNotNull(model.get(ImprovedBookmarkRowProperties.START_ICON_DRAWABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.POPUP_LISTENER));
         assertEquals(false, model.get(ImprovedBookmarkRowProperties.SELECTION_ACTIVE));
-        assertEquals(false, model.get(ImprovedBookmarkRowProperties.DRAG_ENABLED));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.LIST_MENU_BUTTON_DELEGATE));
         assertEquals(true, model.get(ImprovedBookmarkRowProperties.EDITABLE));
         assertNotNull(model.get(ImprovedBookmarkRowProperties.ROW_CLICK_LISTENER));
@@ -1184,13 +1171,13 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     public void testcreateListMenuModelList_shopping_notEligible() {
-        ShoppingFeatures.setShoppingListEligibleForTesting(false);
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
 
         finishLoading();
         mMediator.openFolder(mFolderId2);
 
         doReturn(true).when(mShoppingService).isSubscribedFromCache(any());
-        doReturn(false).when(mShoppingService).isShoppingListEligible();
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         PowerBookmarkMeta meta =
                 PowerBookmarkMeta.newBuilder()
                         .setShoppingSpecifics(
@@ -1424,9 +1411,6 @@ public class BookmarkManagerMediatorTest {
                 ViewType.PERSONALIZED_SYNC_PROMO,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT);
-        assertNotEquals(
-                Resources.ID_NULL,
-                mModelList.get(1).model.get(BookmarkManagerProperties.PROMO_TOP_MARGIN_RES));
 
         BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.NO_PROMO);
         mMediator.getPromoHeaderManager().syncStateChanged();
@@ -1435,23 +1419,6 @@ public class BookmarkManagerMediatorTest {
                 ViewType.SEARCH_BOX,
                 ViewType.IMPROVED_BOOKMARK_COMPACT,
                 ViewType.IMPROVED_BOOKMARK_COMPACT);
-    }
-
-    @Test
-    public void testPromoHeaderDefaultMargin() {
-        BookmarkPromoHeader.forcePromoStateForTesting(SyncPromoState.PROMO_FOR_SIGNED_IN_STATE);
-        mMediator.getPromoHeaderManager().syncStateChanged();
-        finishLoading();
-        mMediator.openFolder(mFolderId1);
-
-        verifyCurrentViewTypes(
-                ViewType.SEARCH_BOX,
-                ViewType.PERSONALIZED_SYNC_PROMO,
-                ViewType.IMPROVED_BOOKMARK_COMPACT,
-                ViewType.IMPROVED_BOOKMARK_COMPACT);
-        assertEquals(
-                Resources.ID_NULL,
-                mModelList.get(2).model.get(BookmarkManagerProperties.PROMO_TOP_MARGIN_RES));
     }
 
     @Test
@@ -2056,7 +2023,7 @@ public class BookmarkManagerMediatorTest {
 
     @Test
     public void testSearchBox_priceTrackingFilterGoneWithEligibility() {
-        ShoppingFeatures.setShoppingListEligibleForTesting(false);
+        doReturn(false).when(mCommerceFeatureUtilsJniMock).isShoppingListEligible(anyLong());
         finishLoading();
 
         mMediator.openFolder(mFolderId3);
@@ -2249,6 +2216,19 @@ public class BookmarkManagerMediatorTest {
         // This should no-op as the folder is gone.
         onClick3.run();
         verify(mBookmarkModel, never()).getChildIds(mFolderId3);
+    }
+
+    @Test
+    public void testNativePageState() {
+        finishLoading();
+        mMediator.setBasicNativePage(mNativePage);
+
+        mMediator.openFolder(mFolderId1);
+        verify(mNativePage).onStateChange("chrome-native://bookmarks/folder/5", false);
+
+        doReturn("chrome://bookmarks/").when(mNativePage).getUrl();
+        mMediator.openFolder(mFolderId2);
+        verify(mNativePage).onStateChange("chrome-native://bookmarks/folder/6", true);
     }
 
     private void verifyMenuListItemTitles(ModelList modelList, int... expectedTitleIds) {

@@ -288,6 +288,8 @@ java_cpp_enum("context_menu_image_format_enum_javagen") {
 }
 
 android_library("context_menu_java") {
+  public_deps = [ "//ui/base/mojom:ui_base_types_java" ]
+
   deps = [
     "//base:base_java",
     "//content/public/android:content_java",

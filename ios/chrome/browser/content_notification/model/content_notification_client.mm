@@ -42,7 +42,7 @@ bool ContentNotificationClient::HandleNotificationInteraction(
   // object.
   NSDictionary<NSString*, id>* payload = [unprocessedPayload copy];
   ContentNotificationService* contentNotificationService =
-      ContentNotificationServiceFactory::GetForBrowserState(GetAnyProfile());
+      ContentNotificationServiceFactory::GetForProfile(GetAnyProfile());
   ContentNotificationNAUConfiguration* config =
       [[ContentNotificationNAUConfiguration alloc] init];
   config.notification = response.notification;

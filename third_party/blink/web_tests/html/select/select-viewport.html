@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<script src='../../resources/testharness.js'></script>
+<script src='../../resources/testharnessreport.js'></script>
+<script src="../../resources/testdriver.js"></script>
+<script src="../../resources/testdriver-actions.js"></script>
+<script src="../../resources/testdriver-vendor.js"></script>
+
+<select id="select">
+  <option>one</option>
+  <option>two</option>
+  <option>three</option>
+</select>
+
+<style>
+  select, ::picker(select) {
+    appearance: base-select;
+  }
+</style>
+
+<script>
+function clickOn(element) {
+  const actions = new test_driver.Actions();
+  return actions.pointerMove(0, 0, {origin: element})
+    .pointerDown({button: actions.ButtonType.LEFT})
+    .pointerUp({button: actions.ButtonType.LEFT})
+    .send();
+}
+
+promise_test(async () => {
+  if (window.internals) {
+      // Regression test for crbug.com/1252600
+      // On mobile, <meta name="viewport"> can trigger a layout pass when
+      // querying FrameView size. This test ensures that that this doesn't
+      // cause a re-entrant layout when opening the <select> popup.
+      // Since desktop browsers ignore <meta name="viewport">, set viewport
+      // using internals.settings.
+      internals.settings.setViewportEnabled(true);
+      internals.settings.setViewportMetaEnabled(true);
+  }
+  const select = document.getElementById("select");
+  assert_false(select.matches(':open'));
+  await clickOn(select);
+  assert_true(select.matches(':open'));
+}, "select should open successfully if viewport is enabled");
+</script>

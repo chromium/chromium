@@ -175,6 +175,10 @@ class RenderPassBuilder {
   // Sets SharedQuadState::offset_tag for the last quad.
   RenderPassBuilder& SetQuadOffsetTag(const OffsetTag& tag);
 
+  // Sets SharedQuadState::mask_filter_info for the last quad.
+  RenderPassBuilder& SetQuadMaskFilterInfo(
+      const gfx::MaskFilterInfo& mask_filter_info);
+
  private:
   // Appends and returns a new SharedQuadState for quad.
   SharedQuadState* AppendDefaultSharedQuadState(const gfx::Rect rect,

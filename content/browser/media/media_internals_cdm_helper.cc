@@ -119,7 +119,12 @@ base::Value::Dict CdmInfoToDict(const CdmInfo& cdm_info) {
   } else {
     // This could happen if hardware secure capabilities are overridden or
     // hardware video decode is disabled from command line.
-    dict.Set("capability", "No Capability");
+    std::string message = "No Capability";
+    if (cdm_info.capability_query_status.has_value()) {
+      message += ": " + media::CdmCapabilityQueryStatusToString(
+                            cdm_info.capability_query_status.value());
+    }
+    dict.Set("capability", message);
   }
 
   return dict;

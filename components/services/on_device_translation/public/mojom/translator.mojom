@@ -8,6 +8,6 @@ module on_device_translation.mojom;
 interface Translator {
   // Translates the input from the source language to the target language.
   // The source/target languages are specified when the `Translator` is
-  // initialized.
-  Translate(string input) => (string output);
+  // initialized. `output` is nullopt if the translation fails.
+  Translate(string input) => (string? output);
 };

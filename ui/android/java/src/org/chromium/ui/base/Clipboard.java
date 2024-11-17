@@ -299,22 +299,21 @@ public class Clipboard {
     }
 
     /**
-     * Setting the clipboard's current primary clip to an image.
-     * This method requires background work and might not be immediately committed upon returning
-     * from this method.
-     * @param Uri The {@link Uri} will become the content of the clipboard's primary clip.
+     * Setting the clipboard's current primary clip to an image. This method requires background
+     * work and might not be immediately committed upon returning from this method.
+     *
+     * @param uri The {@link Uri} will become the content of the clipboard's primary clip.
      */
     public void setImageUri(final Uri uri) {
         Log.w(TAG, "setImageUri is a no-op because Clipboard service isn't available");
     }
 
     /**
-     * Setting the clipboard's current primary clip to an image.
-     * This method requires background work and might not be immediately committed upon returning
-     * from this method.
+     * Setting the clipboard's current primary clip to an image. This method requires background
+     * work and might not be immediately committed upon returning from this method.
      *
      * @see #setImageUri(Uri)
-     * @param Uri The {@link Uri} will become the content of the clipboard's primary clip.
+     * @param uri The {@link Uri} will become the content of the clipboard's primary clip.
      * @param notifyOnSuccess Whether show a notification when success.
      */
     public void setImageUri(final Uri uri, boolean notifyOnSuccess) {

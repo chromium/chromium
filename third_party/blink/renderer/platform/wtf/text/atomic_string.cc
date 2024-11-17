@@ -40,18 +40,17 @@ namespace WTF {
 
 ASSERT_SIZE(AtomicString, String);
 
-#if defined(ARCH_CPU_64_BITS)
-AtomicString::AtomicString(const LChar* chars, size_t length)
-    : AtomicString(chars, base::checked_cast<unsigned>(length)) {}
-#endif  // defined(ARCH_CPU_64_BITS)
+AtomicString::AtomicString(base::span<const LChar> chars)
+    : string_(AtomicStringTable::Instance().Add(
+          chars.data(),
+          base::checked_cast<wtf_size_t>(chars.size()))) {}
 
-AtomicString::AtomicString(const LChar* chars, unsigned length)
-    : string_(AtomicStringTable::Instance().Add(chars, length)) {}
-
-AtomicString::AtomicString(const UChar* chars,
-                           unsigned length,
+AtomicString::AtomicString(base::span<const UChar> chars,
                            AtomicStringUCharEncoding encoding)
-    : string_(AtomicStringTable::Instance().Add(chars, length, encoding)) {}
+    : string_(AtomicStringTable::Instance().Add(
+          chars.data(),
+          base::checked_cast<wtf_size_t>(chars.size()),
+          encoding)) {}
 
 AtomicString::AtomicString(const UChar* chars)
     : string_(AtomicStringTable::Instance().Add(

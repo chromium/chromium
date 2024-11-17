@@ -195,8 +195,9 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
           syncer::LoopbackServerEntity::CreateId(syncer::PLUS_ADDRESS_SETTING,
                                                  client_tag_hash),
           client_tag_hash));
-  // Non-existing settings behave as if they have their default value.
-  EXPECT_TRUE(WaitForPlusAddressEnabledState(false));
+  // Non-existing settings behave as if they have their (setting-specific)
+  // default value - which is true for the enabled setting.
+  EXPECT_TRUE(WaitForPlusAddressEnabledState(true));
 }
 
 IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
@@ -215,11 +216,12 @@ IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
 IN_PROC_BROWSER_TEST_P(SingleClientPlusAddressSettingSyncTest,
                        Signout_DataCleared) {
   InjectSpecificsToServer(
-      plus_addresses::CreateSettingSpecifics(kIsEnabledSettingName, true));
+      plus_addresses::CreateSettingSpecifics(kIsEnabledSettingName, false));
   ASSERT_TRUE(SetupSync());
-  ASSERT_TRUE(WaitForPlusAddressEnabledState(true));
+  ASSERT_TRUE(WaitForPlusAddressEnabledState(false));
   GetClient(0)->SignOutPrimaryAccount();
-  EXPECT_TRUE(WaitForPlusAddressEnabledState(false));
+  // The enabled setting defaults to true if the state is unknown.
+  EXPECT_TRUE(WaitForPlusAddressEnabledState(true));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

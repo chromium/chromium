@@ -44,8 +44,6 @@
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/companion/core/features.h"
-#include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_prefs.h"
@@ -97,19 +95,16 @@
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
-#include "chrome/browser/ui/lens/lens_overlay_invocation_source.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
+#include "chrome/browser/ui/profiles/profile_view_utils.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble.h"
-#include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/translate/partial_translate_bubble_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_tab_helper.h"
-#include "chrome/browser/ui/views/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
@@ -145,6 +140,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_metadata.mojom.h"
 #include "components/lens/lens_metrics.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/live_caption/caption_util.h"
 #include "components/live_caption/pref_names.h"
 #include "components/media_router/browser/media_router_dialog_controller.h"
@@ -193,6 +189,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/spare_render_process_host_manager.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/referrer.h"
@@ -215,6 +212,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/network_utils.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
+#include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
@@ -227,6 +225,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/window_open_disposition_utils.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/geometry/point.h"
@@ -328,6 +327,7 @@
 #include "chrome/browser/ui/toasts/api/toast_id.h"
 #include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #endif
 
 using base::UserMetricsAction;
@@ -529,13 +529,15 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS,
         150},
        {IDC_CONTENT_CONTEXT_AUTOFILL_PREDICTION_IMPROVEMENTS, 151},
+       {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_USE_PASSKEY_FROM_ANOTHER_DEVICE,
+        152},
        // To add new items:
        //   - Add one more line above this comment block, using the UMA value
        //     from the line below this comment block.
        //   - Increment the UMA value in that latter line.
        //   - Add the new item to the RenderViewContextMenuItem enum in
        //     tools/metrics/histograms/enums.xml.
-       {0, 152}});
+       {0, 153}});
 
   // These UMA values are for the ContextMenuOptionDesktop enum, used for
   // the ContextMenu.SelectedOptionDesktop histograms.
@@ -773,8 +775,7 @@ int GetClipboardHistoryCommandId() {
 }
 
 bool IsCaptivePortalProfile(Profile* profile) {
-  return chromeos::features::IsCaptivePortalPopupWindowEnabled() &&
-         profile->IsOffTheRecord() &&
+  return profile->IsOffTheRecord() &&
          profile->GetOTRProfileID().IsCaptivePortal();
 }
 
@@ -832,7 +833,8 @@ bool IsLensOptionEnteredThroughKeyboard(int event_flags) {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // This check must be done inside the BUILDFLAG block because
   // GetMenuSourceType is only available in this case.
-  return ui::GetMenuSourceType(event_flags) == ui::MENU_SOURCE_KEYBOARD;
+  return ui::GetMenuSourceType(event_flags) ==
+         ui::mojom::MenuSourceType::kKeyboard;
 #else
   return false;
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1447,8 +1449,7 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
   int enum_id =
       FindUMAEnumValueForCommand(id, UmaEnumIdLookupType::GeneralEnumId);
   if (enum_id == -1) {
-    NOTREACHED_IN_MIGRATION() << "Update GetIdcToUmaMap. Unhandled IDC: " << id;
-    return;
+    NOTREACHED() << "Update GetIdcToUmaMap. Unhandled IDC: " << id;
   }
 
   UMA_HISTOGRAM_EXACT_LINEAR(
@@ -1578,7 +1579,7 @@ void RenderViewContextMenu::RecordShownItem(int id, bool is_submenu) {
     base::UmaHistogramEnumeration(kOpenLinkAsProfileHistogram,
                                   OpenLinkAs::kOpenLinkAsProfileDisplayed);
   } else if (id == IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD &&
-             IsOpenLinkOTREnabled()) {
+             IsOpenLinkOTREnabled(GetProfile(), params_.link_url)) {
     base::UmaHistogramEnumeration(kOpenLinkAsProfileHistogram,
                                   OpenLinkAs::kOpenLinkAsIncognitoDisplayed);
   }
@@ -1652,12 +1653,6 @@ void RenderViewContextMenu::AppendDeveloperItems() {
   bool hide_developer_items =
       IsDevToolsURL(params_.page_url) &&
       params_.page_url.query().find("debugFrontend=true") == std::string::npos;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  hide_developer_items =
-      hide_developer_items || !crosapi::browser_util::IsAshDevToolEnabled();
-#endif
-
   if (hide_developer_items) {
     return;
   }
@@ -1914,7 +1909,7 @@ void RenderViewContextMenu::AppendLinkItems() {
                                       ? IDS_CONTENT_CONTEXT_COPYEMAILADDRESS
                                       : IDS_CONTENT_CONTEXT_COPYLINKLOCATION);
 
-  if (params_.source_type == ui::MENU_SOURCE_TOUCH &&
+  if (params_.source_type == ui::mojom::MenuSourceType::kTouch &&
       params_.media_type != ContextMenuDataMediaType::kImage &&
       !params_.link_text.empty()) {
     menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_COPYLINKTEXT,
@@ -2153,7 +2148,7 @@ void RenderViewContextMenu::AppendVideoItems() {
   if (base::FeatureList::IsEnabled(media::kContextMenuSearchForVideoFrame)) {
     const int search_for_video_frame_idc = GetSearchForVideoFrameIdc();
 
-    if (GetBrowser()
+    if (GetBrowser() && GetBrowser()
             ->GetFeatures()
             .lens_overlay_entry_point_controller()
             ->IsEnabled() &&
@@ -2326,8 +2321,7 @@ void RenderViewContextMenu::AppendLinkToTextItems() {
   link_to_text_menu_observer_ = LinkToTextMenuObserver::Create(
       this,
       content::GlobalRenderFrameHostId(render_process_id_, render_frame_id_),
-      // Browser can sometimes be undefined in tests.
-      GetBrowser() ? GetBrowser()->GetFeatures().toast_controller() : nullptr);
+      GetToastController());
   if (link_to_text_menu_observer_) {
     observers_.AddObserver(link_to_text_menu_observer_.get());
     link_to_text_menu_observer_->InitMenu(params_);
@@ -2425,35 +2419,11 @@ void RenderViewContextMenu::AppendSearchProvider() {
       return;
     }
 
-    // If we couldn't obtain a valid helper from current WebContents, this item
-    // should not be appended in this context.
-    SideSearchTabContentsHelper* helper =
-        SideSearchTabContentsHelper::FromWebContents(embedder_web_contents_);
-
-    Browser* browser = chrome::FindBrowserWithTab(embedder_web_contents_);
-    if (!side_search::IsSearchWebInSidePanelSupported(browser) ||
-        (helper && helper->CanShowSidePanelFromContextMenuSearch())) {
-      menu_model_.AddItem(
-          IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
-          l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFOR,
-                                     default_provider->short_name(),
-                                     printable_selection_text));
-      if (companion::IsSearchWebInCompanionSidePanelSupported(GetBrowser())) {
-        // Add an "in new tab" item performing the non-side panel behavior.
-        if (base::FeatureList::IsEnabled(
-                companion::features::
-                    kCompanionEnableSearchWebInNewTabContextMenuItem) &&
-            selection_navigation_url_ != params_.link_url &&
-            ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
-                selection_navigation_url_.scheme())) {
-          menu_model_.AddItem(
-              IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB,
-              l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB,
-                                         default_provider->short_name(),
-                                         printable_selection_text));
-        }
-      }
-    }
+    menu_model_.AddItem(
+        IDC_CONTENT_CONTEXT_SEARCHWEBFOR,
+        l10n_util::GetStringFUTF16(IDS_CONTENT_CONTEXT_SEARCHWEBFOR,
+                                   default_provider->short_name(),
+                                   printable_selection_text));
   } else {
     if ((selection_navigation_url_ != params_.link_url) &&
         ChildProcessSecurityPolicy::GetInstance()->IsWebSafeScheme(
@@ -2673,9 +2643,14 @@ void RenderViewContextMenu::AppendPasswordItems() {
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
           GetRenderFrameHost());
 
-  if (!driver ||
-      !driver->IsPasswordFieldForPasswordManager(
-          autofill::FieldRendererId(params_.field_renderer_id), params_)) {
+  if (!driver || !driver->IsPasswordFieldForPasswordManager(
+                     autofill::FieldRendererId(params_.field_renderer_id),
+                     params_.form_control_type)) {
+    return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordManualFallbackAvailable)) {
     return;
   }
 
@@ -2874,7 +2849,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 
   if (id >= IDC_OPEN_LINK_IN_PROFILE_FIRST &&
       id <= IDC_OPEN_LINK_IN_PROFILE_LAST) {
-    return params_.link_url.is_valid();
+    return params_.link_url.is_valid() && IsAllowedByUntrustedNetworkStatus();
   }
 
   // On ChromeOS a dedicated OTR profile is used for captive portal signin to
@@ -2917,12 +2892,10 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE:
       return navigation_allowed;
 
+    case IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP:
+    case IDC_CONTENT_CONTEXT_OPENLINKINPROFILE:
     case IDC_CONTENT_CONTEXT_OPENLINKNEWTAB:
     case IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW:
-    case IDC_CONTENT_CONTEXT_OPENLINKINPROFILE:
-    case IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP:
-      return navigation_allowed && params_.link_url.is_valid() &&
-             IsOpenLinkAllowedByDlp(params_.link_url);
     case IDC_CONTENT_CONTEXT_OPENLINKPREVIEW:
       return navigation_allowed && params_.link_url.is_valid() &&
              IsOpenLinkAllowedByDlp(params_.link_url) &&
@@ -3030,16 +3003,22 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return !!(params_.edit_flags & ContextMenuDataEditFlags::kCanSelectAll);
 
     case IDC_CONTENT_CONTEXT_OPENLINKOFFTHERECORD:
-      return navigation_allowed && IsOpenLinkOTREnabled();
+      return navigation_allowed &&
+             IsOpenLinkOTREnabled(GetProfile(), params_.link_url) &&
+             IsAllowedByUntrustedNetworkStatus();
 
     case IDC_PRINT:
       return IsPrintPreviewEnabled();
 
     case IDC_CONTENT_CONTEXT_SEARCHWEBFOR:
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB:
-    case IDC_CONTENT_CONTEXT_GOTOURL:
       return navigation_allowed &&
              IsOpenLinkAllowedByDlp(selection_navigation_url_);
+
+    case IDC_CONTENT_CONTEXT_GOTOURL:
+      return navigation_allowed &&
+             IsOpenLinkAllowedByDlp(selection_navigation_url_) &&
+             IsAllowedByUntrustedNetworkStatus();
 
     case IDC_SPELLPANEL_TOGGLE:
     case IDC_CONTENT_CONTEXT_LANGUAGE_SETTINGS:
@@ -3068,11 +3047,13 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
 #endif
 
     case IDC_SPELLCHECK_MENU:
-    case IDC_CONTENT_CONTEXT_OPENLINKWITH:
     case IDC_CONTENT_CONTEXT_PROTOCOL_HANDLER_SETTINGS:
     case IDC_CONTENT_CONTEXT_GENERATEPASSWORD:
     case IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS:
       return true;
+
+    case IDC_CONTENT_CONTEXT_OPENLINKWITH:
+      return IsAllowedByUntrustedNetworkStatus();
 
     case IDC_ROUTE_MEDIA:
       return IsRouteMediaEnabled();
@@ -3120,8 +3101,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
              !chromeos::clipboard_history::QueryItemDescriptors().empty();
     }
 #else
-      NOTREACHED_IN_MIGRATION() << "Unhandled id: " << id;
-      return false;
+      NOTREACHED() << "Unhandled id: " << id;
 #endif
 
     default:
@@ -3283,8 +3263,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       WriteURLToClipboard(params_.unfiltered_link_url);
 #if !BUILDFLAG(IS_ANDROID)
       if (toast_features::IsEnabled(toast_features::kLinkCopiedToast)) {
-        ToastController* const toast_controller =
-            GetBrowser()->GetFeatures().toast_controller();
+        auto* const toast_controller = GetToastController();
         if (toast_controller) {
           toast_controller->MaybeShowToast(ToastParams(ToastId::kLinkCopied));
         }
@@ -3305,8 +3284,7 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       ExecCopyImageAt();
 #if !BUILDFLAG(IS_ANDROID)
       if (toast_features::IsEnabled(toast_features::kImageCopiedToast)) {
-        ToastController* const toast_controller =
-            GetBrowser()->GetFeatures().toast_controller();
+        auto* const toast_controller = GetToastController();
         if (toast_controller) {
           toast_controller->MaybeShowToast(ToastParams(ToastId::kImageCopied));
         }
@@ -3529,20 +3507,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_SEARCHWEBFOR: {
       RecordAmbientSearchQuery(
           lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_WEB_FOR);
-      if (companion::IsSearchWebInCompanionSidePanelSupported(
-              chrome::FindBrowserWithTab(embedder_web_contents_))) {
-        ExecSearchWebInCompanionSidePanel(selection_navigation_url_);
-        break;
-      }
-      // Searching in this side panel is dependent on the companion feature
-      // being disabled.
-      if (side_search::IsSearchWebInSidePanelSupported(
-              chrome::FindBrowserWithTab(embedder_web_contents_)) &&
-          !companion::IsSearchInCompanionSidePanelSupported(
-              chrome::FindBrowserWithTab(embedder_web_contents_))) {
-        ExecSearchWebInSidePanel(selection_navigation_url_);
-        break;
-      }
       ABSL_FALLTHROUGH_INTENDED;
     }
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB:
@@ -3614,10 +3578,10 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       CHECK(!chromeos::features::IsClipboardHistoryRefreshEnabled());
 
       ShowClipboardHistoryMenu(event_flags);
-#else
-      NOTREACHED_IN_MIGRATION() << "Unhandled id: " << id;
-#endif  // BUILDFLAG(IS_CHROMEOS)
       break;
+#else
+      NOTREACHED() << "Unhandled id: " << id;
+#endif  // BUILDFLAG(IS_CHROMEOS)
     }
 
     default:
@@ -3708,7 +3672,7 @@ bool RenderViewContextMenu::IsSaveAsItemAllowedByPolicy(
 
   // Check if all downloads are forbidden by policy.
   if (DownloadPrefs::FromBrowserContext(GetProfile())->download_restriction() ==
-      DownloadPrefs::DownloadRestriction::ALL_FILES) {
+      policy::DownloadRestriction::ALL_FILES) {
     return false;
   }
 
@@ -4053,12 +4017,13 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
 std::unique_ptr<ui::DataTransferEndpoint>
 RenderViewContextMenu::CreateDataEndpoint(bool notify_if_restricted) const {
   RenderFrameHost* render_frame_host = GetRenderFrameHost();
-  if (render_frame_host &&
-      !render_frame_host->GetBrowserContext()->IsOffTheRecord()) {
+  if (render_frame_host) {
     return std::make_unique<ui::DataTransferEndpoint>(
         render_frame_host->GetMainFrame()->GetLastCommittedURL(),
-        ui::DataTransferEndpointOptions{.notify_if_restricted =
-                                            notify_if_restricted});
+        ui::DataTransferEndpointOptions{
+            .notify_if_restricted = notify_if_restricted,
+            .off_the_record =
+                render_frame_host->GetBrowserContext()->IsOffTheRecord()});
   }
   return nullptr;
 }
@@ -4086,20 +4051,6 @@ bool RenderViewContextMenu::IsRouteMediaEnabled() const {
   const web_modal::WebContentsModalDialogManager* manager =
       web_modal::WebContentsModalDialogManager::FromWebContents(web_contents);
   return !manager || !manager->IsDialogActive();
-}
-
-bool RenderViewContextMenu::IsOpenLinkOTREnabled() const {
-  if (browser_context_->IsOffTheRecord() || !params_.link_url.is_valid()) {
-    return false;
-  }
-
-  if (!IsURLAllowedInIncognito(params_.link_url, browser_context_)) {
-    return false;
-  }
-
-  policy::IncognitoModeAvailability incognito_avail =
-      IncognitoModePrefs::GetAvailability(GetPrefs(browser_context_));
-  return incognito_avail != policy::IncognitoModeAvailability::kDisabled;
 }
 
 void RenderViewContextMenu::ExecOpenWebApp() {
@@ -4187,7 +4138,7 @@ void RenderViewContextMenu::ExecOpenCompose() {
         autofill::FieldGlobalId(
             frame_token, autofill::FieldRendererId(params_.field_renderer_id)),
         compose::ComposeManagerImpl::UiEntryPoint::kContextMenu);
-    GetBrowser()->window()->NotifyPromoFeatureUsed(
+    GetBrowser()->window()->NotifyNewBadgeFeatureUsed(
         compose::features::kEnableCompose);
   } else {
     compose::LogOpenComposeDialogResult(
@@ -4366,8 +4317,7 @@ void RenderViewContextMenu::ExecSaveAs() {
 void RenderViewContextMenu::ExecExitFullscreen() {
   Browser* browser = GetBrowser();
   if (!browser) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   browser->exclusive_access_manager()->ExitExclusiveAccess();
@@ -4491,7 +4441,7 @@ void RenderViewContextMenu::ExecRegionSearch(
   bool entered_through_keyboard =
       IsLensOptionEnteredThroughKeyboard(event_flags);
   if (lens_overlay_for_region_search_enabled) {
-    UserEducationService::MaybeNotifyPromoFeatureUsed(
+    UserEducationService::MaybeNotifyNewBadgeFeatureUsed(
         GetBrowserContext(), lens::features::kLensOverlay);
     if (!entered_through_keyboard) {
       lens::RecordAmbientSearchQuery(
@@ -4520,15 +4470,6 @@ void RenderViewContextMenu::ExecRegionSearch(
                                 lens::features::IsLensFullscreenSearchEnabled();
   bool force_open_in_new_tab =
       lens_overlay_for_region_search_enabled && entered_through_keyboard;
-
-  auto* companion_helper =
-      companion::CompanionTabHelper::FromWebContents(embedder_web_contents_);
-  if (companion_helper &&
-      companion::IsSearchImageInCompanionSidePanelSupported(browser)) {
-    companion_helper->StartRegionSearch(
-        embedder_web_contents_, use_fullscreen_capture, force_open_in_new_tab);
-    return;
-  }
 
   if (!lens_region_search_controller_) {
     lens_region_search_controller_ =
@@ -4562,22 +4503,6 @@ void RenderViewContextMenu::ExecSearchWebForImage(bool is_image_translate) {
       lens::AmbientSearchEntryPoint::CONTEXT_MENU_SEARCH_IMAGE_WITH_WEB);
   core_tab_helper->SearchByImage(render_frame_host, params().src_url,
                                  is_image_translate);
-}
-
-void RenderViewContextMenu::ExecSearchWebInCompanionSidePanel(const GURL& url) {
-  auto* companion_helper =
-      companion::CompanionTabHelper::FromWebContents(embedder_web_contents_);
-  if (!companion_helper) {
-    return;
-  }
-  companion_helper->ShowCompanionSidePanelForSearchURL(url);
-}
-
-void RenderViewContextMenu::ExecSearchWebInSidePanel(const GURL& url) {
-  SideSearchTabContentsHelper* helper =
-      SideSearchTabContentsHelper::FromWebContents(embedder_web_contents_);
-  DCHECK(helper);
-  helper->OpenSidePanelFromContextMenuSearch(url);
 }
 
 void RenderViewContextMenu::ExecLoadImage() {
@@ -4906,6 +4831,21 @@ Browser* RenderViewContextMenu::GetBrowser() const {
   return chrome::FindBrowserWithTab(embedder_web_contents_);
 }
 
+ToastController* RenderViewContextMenu::GetToastController() const {
+  // If the context menu is opened in a normal tab, get the browser directly.
+  BrowserWindowInterface* browser = GetBrowser();
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Otherwise, if the menu is opened in embedded WebUI, attempt to find the
+  // related browser from its embedding context.
+  if (!browser) {
+    browser = webui::GetBrowserWindowInterface(embedder_web_contents_);
+  }
+#endif
+
+  return browser ? browser->GetFeatures().toast_controller() : nullptr;
+}
+
 bool RenderViewContextMenu::CanTranslate(bool menu_logging) {
   ChromeTranslateClient* chrome_translate_client =
       ChromeTranslateClient::FromWebContents(embedder_web_contents_);
@@ -4927,20 +4867,6 @@ void RenderViewContextMenu::MaybePrepareForLensQuery() {
     return;
   }
 
-  // Chrome Search Companion preparation
-  if (companion::IsSearchImageInCompanionSidePanelSupported(GetBrowser())) {
-    if (companion::GetShouldIssuePreconnectForCompanion()) {
-      IssuePreconnectionToUrl(companion::GetPreconnectKeyForCompanion(),
-                              companion::GetImageUploadURLForCompanion());
-    }
-    if (companion::GetShouldIssueProcessPrewarmingForCompanion() &&
-        !base::SysInfo::IsLowEndDevice()) {
-      content::RenderProcessHost::WarmupSpareRenderProcessHost(
-          browser_context_);
-    }
-    return;
-  }
-
   // Lens Side Panel preparation
   if (lens::features::IsLensSidePanelEnabled()) {
     if (lens::features::GetShouldIssuePreconnectForLens()) {
@@ -4949,7 +4875,7 @@ void RenderViewContextMenu::MaybePrepareForLensQuery() {
     }
     if (lens::features::GetShouldIssueProcessPrewarmingForLens() &&
         !base::SysInfo::IsLowEndDevice()) {
-      content::RenderProcessHost::WarmupSpareRenderProcessHost(
+      content::SpareRenderProcessHostManager::Get().WarmupSpare(
           browser_context_);
     }
     return;
@@ -4970,7 +4896,8 @@ void RenderViewContextMenu::ShowClipboardHistoryMenu(int event_flags) {
   anchor_point_in_screen.Offset(params_.x, params_.y);
 
   // Calculate the menu source type from `event_flags`.
-  const ui::MenuSourceType source_type = ui::GetMenuSourceType(event_flags);
+  const ui::mojom::MenuSourceType source_type =
+      ui::GetMenuSourceType(event_flags);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ClipboardHistoryController::Get()->ShowMenu(

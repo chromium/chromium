@@ -39,15 +39,21 @@ import org.chromium.chrome.browser.customtabs.AuthTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.customtabs.IncognitoCustomTabIntentDataProvider;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.notifications.NotificationPlatformBridge;
 import org.chromium.chrome.browser.partnercustomizations.PartnerBrowserCustomizations;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.ResolutionType;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -107,9 +113,25 @@ public class LaunchIntentDispatcher {
     }
 
     /**
-     * Dispatches the intent to proper tabbed activity.
-     * This method is similar to {@link #dispatch()}, but only handles intents that result in
-     * starting a custom tab activity.
+     * Dispatches the intent to Search Activity.
+     *
+     * @param client SearchActivityClient instance
+     * @param currentActivity activity that received the intent
+     * @param intent intent to dispatch
+     * @return action to take
+     */
+    public static @Action int dispatchToSearchActivity(
+            SearchActivityClient client, Activity currentActivity, Intent intent) {
+        client.requestOmniboxForResult(
+                client.newIntentBuilder()
+                        .setResolutionType(ResolutionType.OPEN_OR_LAUNCH_CHROME)
+                        .build());
+        return Action.FINISH_ACTIVITY;
+    }
+
+    /**
+     * Dispatches the intent to proper tabbed activity. This method is similar to {@link
+     * #dispatch()}, but only handles intents that result in starting a custom tab activity.
      */
     public static @Action int dispatchToCustomTabActivity(Activity currentActivity, Intent intent) {
         LaunchIntentDispatcher dispatcher = new LaunchIntentDispatcher(currentActivity, intent);
@@ -286,7 +308,8 @@ public class LaunchIntentDispatcher {
             // - Multiple clients hosting CCTs,
             // - Multiwindow mode.
             Class<? extends Activity> handlerClass =
-                    getSessionDataHolder().getActiveHandlerClassInCurrentTask(intent, context);
+                    SessionDataHolder.getInstance()
+                            .getActiveHandlerClassInCurrentTask(intent, context);
             if (handlerClass != null) {
                 newIntent.setClassName(context, handlerClass.getName());
                 newIntent.addFlags(
@@ -337,10 +360,6 @@ public class LaunchIntentDispatcher {
         return newIntent;
     }
 
-    private static SessionDataHolder getSessionDataHolder() {
-        return ChromeApplicationImpl.getComponent().resolveSessionDataHolder();
-    }
-
     /**
      * Handles launching a {@link CustomTabActivity}, which will sit on top of a client's activity
      * in the same task. Returns whether an Activity was launched (or brought to the foreground).
@@ -359,10 +378,14 @@ public class LaunchIntentDispatcher {
             // The old way of delivering intents relies on calling the activity directly via a
             // static reference. It doesn't allow using CLEAR_TOP, and also doesn't work when an
             // intent brings the task to foreground. The condition above is a temporary safety net.
-            boolean handled = getSessionDataHolder().handleIntent(mIntent);
+            boolean handled = SessionDataHolder.getInstance().handleIntent(mIntent);
             if (handled) return true;
         }
-        maybePrefetchDnsInBackground();
+
+        boolean startedNavigationEarly = maybeStartNavigation();
+        RecordHistogram.recordBooleanHistogram(
+                "CustomTabs.Startup.StartedNavigationEarly", startedNavigationEarly);
+        if (!startedNavigationEarly) maybePrefetchDnsInBackground();
 
         // Strip EXTRA_CALLING_ACTIVITY_PACKAGE/EXTRA_LAUNCHED_FROM_PACKAGE if present on
         // the original intent so that it cannot be spoofed by CCT client apps.
@@ -376,6 +399,8 @@ public class LaunchIntentDispatcher {
         if (packageName != null) {
             intent.putExtra(IntentHandler.EXTRA_CALLING_ACTIVITY_PACKAGE, packageName);
         }
+
+        if (startedNavigationEarly) intent.putExtra(IntentHandler.EXTRA_SKIP_PRECONNECT, true);
 
         // Pass the package name obtained via identity sharing API separately from the one
         // obtained via startActivityForResult.
@@ -399,6 +424,26 @@ public class LaunchIntentDispatcher {
         mActivity.startActivity(launchIntent, null);
         RecordHistogram.recordBooleanHistogram("CustomTabs.IdentityShared", identityShared);
         return true;
+    }
+
+    private boolean maybeStartNavigation() {
+        if (!WarmupManager.getInstance().isCctPrewarmTabFeatureEnabled(false)) return false;
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_EARLY_NAV)) return false;
+        if (IncognitoCustomTabIntentDataProvider.isValidIncognitoIntent(
+                mIntent, /* recordMetrics= */ false)) {
+            return false;
+        }
+        if (!ProfileManager.isInitialized()) return false;
+        if (clearTopIntentsForCustomTabsEnabled(mIntent)
+                && SessionDataHolder.getInstance()
+                                .getActiveHandlerClassInCurrentTask(mIntent, mActivity)
+                        != null) {
+            return false;
+        }
+        // Not opening into an existing Activity, can start navigation early if a spare tab
+        // exists.
+        Profile profile = ProfileManager.getLastUsedRegularProfile();
+        return CustomTabsConnection.getInstance().startEarlyNavigationInHiddenTab(profile, mIntent);
     }
 
     private boolean launchWebApk() {

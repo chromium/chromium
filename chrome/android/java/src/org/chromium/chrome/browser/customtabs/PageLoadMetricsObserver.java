@@ -17,14 +17,11 @@ import org.chromium.content_public.browser.WebContents;
  * contentful paint.
  */
 public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
-    private final CustomTabsConnection mConnection;
     private final CustomTabsSessionToken mSession;
     private final Tab mTab;
     private Long mNavigationId;
 
-    public PageLoadMetricsObserver(
-            CustomTabsConnection connection, CustomTabsSessionToken session, Tab tab) {
-        mConnection = connection;
+    public PageLoadMetricsObserver(CustomTabsSessionToken session, Tab tab) {
         mSession = session;
         mTab = tab;
     }
@@ -51,7 +48,7 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
         args.putLong(PageLoadMetrics.EFFECTIVE_CONNECTION_TYPE, effectiveConnectionType);
         args.putLong(PageLoadMetrics.HTTP_RTT, httpRttMs);
         args.putLong(PageLoadMetrics.TRANSPORT_RTT, transportRttMs);
-        mConnection.notifyPageLoadMetrics(mSession, args);
+        CustomTabsConnection.getInstance().notifyPageLoadMetrics(mSession, args);
     }
 
     @Override
@@ -62,11 +59,12 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
             long firstContentfulPaintMs) {
         if (!shouldNotifyPageLoadMetrics(webContents, navigationId)) return;
 
-        mConnection.notifySinglePageLoadMetric(
-                mSession,
-                PageLoadMetrics.FIRST_CONTENTFUL_PAINT,
-                navigationStartMicros,
-                firstContentfulPaintMs);
+        CustomTabsConnection.getInstance()
+                .notifySinglePageLoadMetric(
+                        mSession,
+                        PageLoadMetrics.FIRST_CONTENTFUL_PAINT,
+                        navigationStartMicros,
+                        firstContentfulPaintMs);
     }
 
     @Override
@@ -79,12 +77,13 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
         if (!shouldNotifyPageLoadMetrics(webContents, navigationId)) return;
 
         Bundle args =
-                mConnection.createBundleWithNavigationStartAndPageLoadMetric(
-                        PageLoadMetrics.LARGEST_CONTENTFUL_PAINT,
-                        navigationStartMicros,
-                        largestContentfulPaintMs);
+                CustomTabsConnection.getInstance()
+                        .createBundleWithNavigationStartAndPageLoadMetric(
+                                PageLoadMetrics.LARGEST_CONTENTFUL_PAINT,
+                                navigationStartMicros,
+                                largestContentfulPaintMs);
         args.putLong(PageLoadMetrics.LARGEST_CONTENTFUL_PAINT_SIZE, largestContentfulPaintSize);
-        mConnection.notifyPageLoadMetrics(mSession, args);
+        CustomTabsConnection.getInstance().notifyPageLoadMetrics(mSession, args);
     }
 
     @Override
@@ -95,11 +94,12 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
             long loadEventStartMs) {
         if (!shouldNotifyPageLoadMetrics(webContents, navigationId)) return;
 
-        mConnection.notifySinglePageLoadMetric(
-                mSession,
-                PageLoadMetrics.LOAD_EVENT_START,
-                navigationStartMicros,
-                loadEventStartMs);
+        CustomTabsConnection.getInstance()
+                .notifySinglePageLoadMetric(
+                        mSession,
+                        PageLoadMetrics.LOAD_EVENT_START,
+                        navigationStartMicros,
+                        loadEventStartMs);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
         args.putLong(PageLoadMetrics.REQUEST_START, requestStartMs);
         args.putLong(PageLoadMetrics.SEND_START, sendStartMs);
         args.putLong(PageLoadMetrics.SEND_END, sendEndMs);
-        mConnection.notifyPageLoadMetrics(mSession, args);
+        CustomTabsConnection.getInstance().notifyPageLoadMetrics(mSession, args);
     }
 
     @Override
@@ -133,7 +133,7 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
 
         Bundle args = new Bundle();
         args.putLong(PageLoadMetrics.FIRST_INPUT_DELAY, firstInputDelayMs);
-        mConnection.notifyPageLoadMetrics(mSession, args);
+        CustomTabsConnection.getInstance().notifyPageLoadMetrics(mSession, args);
     }
 
     @Override
@@ -149,7 +149,7 @@ public class PageLoadMetricsObserver implements PageLoadMetrics.Observer {
         args.putFloat(
                 PageLoadMetrics.LAYOUT_SHIFT_SCORE_BEFORE_INPUT_OR_SCROLL,
                 layoutShiftScoreBeforeInputOrScroll);
-        mConnection.notifyPageLoadMetrics(mSession, args);
+        CustomTabsConnection.getInstance().notifyPageLoadMetrics(mSession, args);
     }
 
     private boolean shouldNotifyPageLoadMetrics(WebContents webContents, long navigationId) {

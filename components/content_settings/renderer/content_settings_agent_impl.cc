@@ -146,8 +146,7 @@ ContentSetting GetContentSettingFromRules(
       return rule.GetContentSetting();
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return CONTENT_SETTING_DEFAULT;
+  NOTREACHED();
 }
 }  // namespace
 

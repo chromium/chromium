@@ -199,9 +199,10 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
   // Assume the default audio device. (i.e. the empty string)
   WebAudioSinkDescriptor sink_descriptor(WebString::FromUTF8(""), kFrameToken);
 
-  scoped_refptr<AudioDestination> destination =
-      AudioDestination::Create(callback_, sink_descriptor, channel_count,
-                               latency_hint, sample_rate, 128);
+  int render_quantum_frames = 128;
+  scoped_refptr<AudioDestination> destination = AudioDestination::Create(
+      callback_, sink_descriptor, channel_count, latency_hint, sample_rate,
+      render_quantum_frames);
 
   const int kRenderCount = 3;
 
@@ -212,6 +213,16 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
 
   base::TimeDelta delays[]{base::Milliseconds(100), base::Milliseconds(90),
                            base::Milliseconds(80)};
+
+  // When creating the AudioDestination, some silence is added to the fifo to
+  // prevent an underrun on the first callback. This contributes a constant
+  // delay.
+  int priming_frames =
+      ceil(request_frames / static_cast<float>(render_quantum_frames)) *
+      render_quantum_frames;
+  base::TimeDelta priming_delay = audio_utilities::FramesToTime(
+      priming_frames, Platform::Current()->AudioHardwareSampleRate());
+
   auto audio_bus = media::AudioBus::Create(channel_count, request_frames);
 
   destination->Start();
@@ -225,10 +236,11 @@ TEST_P(AudioDestinationTest, GlitchAndDelay) {
     if (destination->SampleRate() !=
         Platform::Current()->AudioHardwareSampleRate()) {
       // Resampler kernel adds a bit of a delay.
-      EXPECT_GE(callback_.last_latency_, delays[i]);
-      EXPECT_LE(callback_.last_latency_, delays[i] + base::Milliseconds(1));
+      EXPECT_GE(callback_.last_latency_, delays[i] + priming_delay);
+      EXPECT_LE(callback_.last_latency_,
+                delays[i] + base::Milliseconds(1) + priming_delay);
     } else {
-      EXPECT_EQ(callback_.last_latency_, delays[i]);
+      EXPECT_EQ(callback_.last_latency_, delays[i] + priming_delay);
     }
   }
 

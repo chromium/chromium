@@ -16,11 +16,6 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content::indexed_db {
-namespace {
-
-using leveldb::Status;
-
-}  // namespace
 
 FakeTransaction::FakeTransaction(Status result)
     : FakeTransaction(result,

@@ -55,18 +55,13 @@ class GroupDataStoreTest : public testing::Test {
   void InitStoreAndWaitForDBLoading() {
     base::RunLoop run_loop;
     store_ = std::make_unique<GroupDataStore>(
-        GetDBPath(), base::BindLambdaForTesting(
+        temp_dir_.GetPath(), base::BindLambdaForTesting(
                          [&run_loop](GroupDataStore::DBInitStatus status) {
                            EXPECT_EQ(status,
                                      GroupDataStore::DBInitStatus::kSuccess);
                            run_loop.Quit();
                          }));
     run_loop.Run();
-  }
-
-  base::FilePath GetDBPath() const {
-    return temp_dir_.GetPath().Append(
-        base::FilePath(FILE_PATH_LITERAL("db_file")));
   }
 
   base::test::TaskEnvironment task_environment_;

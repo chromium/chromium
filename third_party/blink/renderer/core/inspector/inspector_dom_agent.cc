@@ -117,7 +117,8 @@ const UChar kEllipsisUChar[] = {0x2026, 0};
 template <typename Functor>
 void ForEachSupportedPseudo(const Element* element, Functor& func) {
   for (PseudoId pseudo_id :
-       {kPseudoIdBefore, kPseudoIdAfter, kPseudoIdMarker, kPseudoIdBackdrop}) {
+       {kPseudoIdCheck, kPseudoIdBefore, kPseudoIdAfter, kPseudoIdSelectArrow,
+        kPseudoIdMarker, kPseudoIdBackdrop}) {
     if (!PseudoElement::IsWebExposed(pseudo_id, element))
       continue;
     if (PseudoElement* pseudo_element = element->GetPseudoElement(pseudo_id))
@@ -175,7 +176,7 @@ void InspectorRevalidateDOMTask::Trace(Visitor* visitor) const {
 }
 
 protocol::Response InspectorDOMAgent::ToResponse(
-    ExceptionState& exception_state) {
+    DummyExceptionStateForTesting& exception_state) {
   if (exception_state.HadException()) {
     String name_prefix = IsDOMExceptionCode(exception_state.Code())
                              ? DOMException::GetErrorName(
@@ -195,10 +196,14 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::FirstLine;
     case kPseudoIdFirstLetter:
       return protocol::DOM::PseudoTypeEnum::FirstLetter;
+    case kPseudoIdCheck:
+      return protocol::DOM::PseudoTypeEnum::Check;
     case kPseudoIdBefore:
       return protocol::DOM::PseudoTypeEnum::Before;
     case kPseudoIdAfter:
       return protocol::DOM::PseudoTypeEnum::After;
+    case kPseudoIdSelectArrow:
+      return protocol::DOM::PseudoTypeEnum::SelectArrow;
     case kPseudoIdMarker:
       return protocol::DOM::PseudoTypeEnum::Marker;
     case kPseudoIdBackdrop:
@@ -251,10 +256,6 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
       return protocol::DOM::PseudoTypeEnum::FileSelectorButton;
     case kPseudoIdDetailsContent:
       return protocol::DOM::PseudoTypeEnum::DetailsContent;
-    case kPseudoIdSelectFallbackButton:
-      return protocol::DOM::PseudoTypeEnum::SelectFallbackButton;
-    case kPseudoIdSelectFallbackButtonText:
-      return protocol::DOM::PseudoTypeEnum::SelectFallbackButtonText;
     case kPseudoIdPickerSelect:
       return protocol::DOM::PseudoTypeEnum::Picker;
     case kPseudoIdViewTransition:
@@ -270,7 +271,7 @@ protocol::DOM::PseudoType InspectorDOMAgent::ProtocolPseudoElementType(
     case kPseudoIdColumnScrollMarker:
       // Not reachable, since it's an internal representation of
       // ::column::scroll-marker and won't be exposed to devtools
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case kAfterLastInternalPseudoId:
     case kPseudoIdNone:
     case kPseudoIdInvalid:
@@ -968,7 +969,7 @@ protocol::Response InspectorDOMAgent::setAttributesAsText(int element_id,
     if (is_html_document && contextElement)
       fragment->ParseHTML(markup, contextElement, kAllowScriptingContent);
     else
-      fragment->ParseXML(markup, contextElement, kAllowScriptingContent);
+      fragment->ParseXML(markup, contextElement, IGNORE_EXCEPTION);
     return DynamicTo<Element>(fragment->firstChild());
   };
 
@@ -1668,6 +1669,7 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
     protocol::Maybe<String> container_name,
     protocol::Maybe<protocol::DOM::PhysicalAxes> physical_axes,
     protocol::Maybe<protocol::DOM::LogicalAxes> logical_axes,
+    protocol::Maybe<bool> queries_scroll_state,
     Maybe<int>* container_node_id) {
   Element* element = nullptr;
   protocol::Response response = AssertElement(node_id, element);
@@ -1675,10 +1677,7 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
     return response;
 
   PhysicalAxes physical = kPhysicalAxesNone;
-  // TODO(crbug.com/1378237): Need to keep the broken behavior of querying the
-  // inline-axis by default to avoid even worse behavior before devtools-
-  // frontend catches up. Change value here to kLogicalAxesNone.
-  LogicalAxes logical = kLogicalAxesInline;
+  LogicalAxes logical = kLogicalAxesNone;
 
   if (physical_axes.has_value()) {
     if (physical_axes.value() == protocol::DOM::PhysicalAxesEnum::Horizontal) {
@@ -1708,7 +1707,8 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
   Element* container = style_resolver.FindContainerForElement(
       element,
       ContainerSelector(AtomicString(container_name.value_or(g_null_atom)),
-                        physical, logical),
+                        physical, logical,
+                        queries_scroll_state.value_or(false)),
       nullptr /* selector_tree_scope */);
   if (container)
     *container_node_id = PushNodePathToFrontend(container);
@@ -1876,8 +1876,7 @@ protocol::DOM::ShadowRootType InspectorDOMAgent::GetShadowRootType(
     case ShadowRootMode::kClosed:
       return protocol::DOM::ShadowRootTypeEnum::Closed;
   }
-  NOTREACHED_IN_MIGRATION();
-  return protocol::DOM::ShadowRootTypeEnum::UserAgent;
+  NOTREACHED();
 }
 
 // static
@@ -1891,8 +1890,7 @@ InspectorDOMAgent::GetDocumentCompatibilityMode(Document* document) {
     case Document::CompatibilityMode::kNoQuirksMode:
       return protocol::DOM::CompatibilityModeEnum::NoQuirksMode;
   }
-  NOTREACHED_IN_MIGRATION();
-  return protocol::DOM::CompatibilityModeEnum::NoQuirksMode;
+  NOTREACHED();
 }
 
 std::unique_ptr<protocol::DOM::Node> InspectorDOMAgent::BuildObjectForNode(
@@ -2442,6 +2440,9 @@ void InspectorDOMAgent::DidInvalidateStyleAttr(Node* node) {
 
 bool InspectorDOMAgent::isNodeScrollable(Node* node) {
   if (auto* box = DynamicTo<LayoutBox>(node->GetLayoutObject())) {
+    if (!box->Style()) {
+      return false;
+    }
     return box->IsUserScrollable();
   }
   return false;
@@ -2560,7 +2561,9 @@ void InspectorDOMAgent::NodeCreated(Node* node) {
   }
 }
 
-void InspectorDOMAgent::UpdateScrollableFlag(Node* node) {
+void InspectorDOMAgent::UpdateScrollableFlag(
+    Node* node,
+    std::optional<bool> override_flag) {
   if (!node) {
     return;
   }
@@ -2569,7 +2572,9 @@ void InspectorDOMAgent::UpdateScrollableFlag(Node* node) {
   if (!nodeId) {
     return;
   }
-  GetFrontend()->scrollableFlagUpdated(nodeId, isNodeScrollable(node));
+  GetFrontend()->scrollableFlagUpdated(nodeId, override_flag.has_value()
+                                                   ? override_flag.value()
+                                                   : isNodeScrollable(node));
 }
 
 namespace {
@@ -2759,11 +2764,11 @@ protocol::Response InspectorDOMAgent::scrollIntoViewIfNeeded(
   }
   PhysicalRect rect_to_scroll =
       PhysicalRect::EnclosingRect(layout_object->AbsoluteBoundingBoxRectF());
-  if (rect.has_value()) {
-    rect_to_scroll.SetX(rect_to_scroll.X() + LayoutUnit(rect.value().getX()));
-    rect_to_scroll.SetY(rect_to_scroll.Y() + LayoutUnit(rect.value().getY()));
-    rect_to_scroll.SetWidth(LayoutUnit(rect.value().getWidth()));
-    rect_to_scroll.SetHeight(LayoutUnit(rect.value().getHeight()));
+  if (rect) {
+    rect_to_scroll.SetX(rect_to_scroll.X() + LayoutUnit(rect->getX()));
+    rect_to_scroll.SetY(rect_to_scroll.Y() + LayoutUnit(rect->getY()));
+    rect_to_scroll.SetWidth(LayoutUnit(rect->getWidth()));
+    rect_to_scroll.SetHeight(LayoutUnit(rect->getHeight()));
   }
   scroll_into_view_util::ScrollRectToVisible(
       *layout_object, rect_to_scroll,

@@ -27,10 +27,9 @@ public class PlayServicesVersionInfo {
         final long installedGmsVersion = getApkVersionNumber();
 
         final String accessType;
-        ExternalAuthUtils externalAuthUtils = ExternalAuthUtils.getInstance();
-        if (externalAuthUtils.canUseFirstPartyGooglePlayServices()) {
+        if (ExternalAuthUtils.getInstance().canUseFirstPartyGooglePlayServices()) {
             accessType = "1p";
-        } else if (externalAuthUtils.canUseGooglePlayServices()) {
+        } else if (ExternalAuthUtils.getInstance().canUseGooglePlayServices()) {
             accessType = "3p";
         } else {
             accessType = "none";
@@ -45,10 +44,8 @@ public class PlayServicesVersionInfo {
     }
 
     /**
-     *
-     * @param context A Context with which to retrieve the PackageManager.
      * @return The version code for the Google Play Services installed on the device or -1 if the
-     *         package is not found.
+     *     package is not found.
      */
     public static int getApkVersionNumber() {
         int ret =

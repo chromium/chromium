@@ -4,10 +4,16 @@
 
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_view_controller.h"
 
+#import "base/metrics/histogram_functions.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_commands.h"
+#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_view.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/base_grid_view_controller+subclassing.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_commands.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -19,24 +25,10 @@
 
 #pragma mark - Parent's functions
 
-// Returns a configured header for the given index path.
-- (UICollectionReusableView*)headerForSectionAtIndexPath:
-    (NSIndexPath*)indexPath {
-  if (IsInactiveTabButtonRefactoringEnabled()) {
-    // With the refactoring, the base class does the right thing.
-    return [super headerForSectionAtIndexPath:indexPath];
-  }
-  if (self.mode == TabGridMode::kNormal) {
-    return nil;
-  }
-  return [super headerForSectionAtIndexPath:indexPath];
-}
-
 - (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
-    contextMenuConfigurationForItemAtIndexPaths:
+    contextMenuConfigurationForItemsAtIndexPaths:
         (NSArray<NSIndexPath*>*)indexPaths
-                                          point:(CGPoint)point
-    API_AVAILABLE(ios(16)) {
+                                           point:(CGPoint)point {
   // Don't allow long-press previews when the incognito reauth view is blocking
   // the content.
   if (self.contentNeedsAuthentication) {
@@ -47,24 +39,6 @@
       contextMenuConfigurationForItemsAtIndexPaths:indexPaths
                                              point:point];
 }
-
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-
-- (UIContextMenuConfiguration*)collectionView:(UICollectionView*)collectionView
-    contextMenuConfigurationForItemAtIndexPath:(NSIndexPath*)indexPath
-                                         point:(CGPoint)point {
-  // Don't allow long-press previews when the incognito reauth view is blocking
-  // the content.
-  if (self.contentNeedsAuthentication) {
-    return nil;
-  }
-
-  return [super collectionView:collectionView
-      contextMenuConfigurationForItemAtIndexPath:indexPath
-                                           point:point];
-}
-
-#endif
 
 - (NSArray<UIDragItem*>*)collectionView:(UICollectionView*)collectionView
            itemsForBeginningDragSession:(id<UIDragSession>)session
@@ -97,6 +71,23 @@
                  addTarget:self.reauthHandler
                     action:@selector(authenticateIncognitoContent)
           forControlEvents:UIControlEventTouchUpInside];
+
+      if (IsIOSSoftLockEnabled()) {
+        id<GridCommands> gridHandler = self.gridHandler;
+        id<IncognitoReauthCommands> reauthHandler = self.reauthHandler;
+        [_blockingView.exitIncognitoButton
+                   addAction:[UIAction actionWithHandler:^(UIAction* action) {
+                     base::UmaHistogramEnumeration(
+                         kIncognitoLockOverlayInteractionHistogram,
+                         IncognitoLockOverlayInteraction::
+                             kCloseIncognitoTabsButtonClicked);
+                     base::RecordAction(base::UserMetricsAction(
+                         "IOS.IncognitoLock.Overlay.CloseIncognitoTabs"));
+                     [gridHandler closeAllItems];
+                     [reauthHandler manualAuthenticationOverride];
+                   }]
+            forControlEvents:UIControlEventTouchUpInside];
+      }
     }
 
     [self.view addSubview:_blockingView];
@@ -111,6 +102,21 @@
         completion:^(BOOL finished) {
           [weakSelf blockingViewDidHide:finished];
         }];
+  }
+}
+
+- (void)setItemsRequireAuthentication:(BOOL)require
+                withPrimaryButtonText:(NSString*)text
+                   accessibilityLabel:(NSString*)accessibilityLabel {
+  [self setItemsRequireAuthentication:require];
+  if (require) {
+    [_blockingView setAuthenticateButtonText:text
+                          accessibilityLabel:accessibilityLabel];
+  } else {
+    // No primary button text or accessibility label should be set when
+    // authentication is not required.
+    CHECK(!text);
+    CHECK(!accessibilityLabel);
   }
 }
 

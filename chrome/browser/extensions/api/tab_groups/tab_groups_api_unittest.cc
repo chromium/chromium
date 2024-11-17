@@ -18,7 +18,6 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router_factory.h"
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
@@ -31,7 +30,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -767,7 +766,7 @@ TEST_F(TabGroupsApiUnitTest, IsTabStripEditable) {
     function->set_extension(extension);
     std::string error = api_test_utils::RunFunctionAndReturnError(
         function.get(), args, profile());
-    EXPECT_EQ(tabs_constants::kTabStripNotEditableError, error);
+    EXPECT_EQ(ExtensionTabUtil::kTabStripNotEditableError, error);
   }
 }
 

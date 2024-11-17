@@ -15,14 +15,12 @@
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
-#include "chrome/browser/ash/crostini/crostini_manager_factory.h"
 #include "chrome/browser/ash/crostini/crostini_simple_types.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
@@ -31,7 +29,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/user_manager/user.h"
@@ -41,55 +38,6 @@
 #include "ui/shell_dialogs/selected_file_info.h"
 
 namespace crostini {
-
-class CrostiniExportImportFactory : public ProfileKeyedServiceFactory {
- public:
-  static CrostiniExportImport* GetForProfile(Profile* profile) {
-    return static_cast<CrostiniExportImport*>(
-        GetInstance()->GetServiceForBrowserContext(profile, true));
-  }
-
-  static CrostiniExportImportFactory* GetInstance() {
-    static base::NoDestructor<CrostiniExportImportFactory> factory;
-    return factory.get();
-  }
-
- private:
-  friend class base::NoDestructor<CrostiniExportImportFactory>;
-
-  CrostiniExportImportFactory()
-      : ProfileKeyedServiceFactory(
-            "CrostiniExportImportService",
-            ProfileSelections::Builder()
-                .WithRegular(ProfileSelection::kOriginalOnly)
-                // TODO(crbug.com/40257657): Check if this service is needed in
-                // Guest mode.
-                .WithGuest(ProfileSelection::kOriginalOnly)
-                // TODO(crbug.com/41488885): Check if this service is needed for
-                // Ash Internals.
-                .WithAshInternals(ProfileSelection::kOriginalOnly)
-                .Build()) {
-    DependsOn(guest_os::GuestOsSharePathFactory::GetInstance());
-    DependsOn(CrostiniManagerFactory::GetInstance());
-  }
-
-  ~CrostiniExportImportFactory() override = default;
-
-  // BrowserContextKeyedServiceFactory:
-  KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* context) const override {
-    Profile* profile = Profile::FromBrowserContext(context);
-    return new CrostiniExportImport(profile);
-  }
-};
-
-void CrostiniExportImport::EnsureFactoryBuilt() {
-  CrostiniExportImportFactory::GetInstance();
-}
-
-CrostiniExportImport* CrostiniExportImport::GetForProfile(Profile* profile) {
-  return CrostiniExportImportFactory::GetForProfile(profile);
-}
 
 CrostiniExportImport::CrostiniExportImport(Profile* profile)
     : profile_(profile) {
@@ -367,7 +315,12 @@ void CrostiniExportImport::Start(
                          std::move(callback)));
       break;
     case ExportImportType::IMPORT_DISK_IMAGE:
-      LOG(ERROR) << "Importing disk images is currently unimplemented";
+      crostini::CrostiniManager::GetForProfile(profile_)->StopVm(
+          operation_data->container_id.vm_name,
+          base::BindOnce(&CrostiniExportImport::ImportDiskImage,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         operation_data->container_id, path,
+                         std::move(callback)));
       break;
   }
 }
@@ -399,20 +352,50 @@ void CrostiniExportImport::ExportDiskImage(
 
   CrostiniManager::GetForProfile(profile_)->ExportDiskImage(
       container_id, user->username_hash(), path, /*force=*/false,
-      base::BindOnce(&CrostiniExportImport::AfterExportDiskImage,
+      base::BindOnce(&CrostiniExportImport::AfterDiskImageOperation,
                      weak_ptr_factory_.GetWeakPtr(), container_id,
                      std::move(callback)));
 }
 
-void CrostiniExportImport::AfterExportDiskImage(
+void CrostiniExportImport::ImportDiskImage(
+    const guest_os::GuestId& container_id,
+    const base::FilePath& path,
+    CrostiniManager::CrostiniResultCallback callback,
+    CrostiniResult result) {
+  if (result == CrostiniResult::VM_STOP_FAILED) {
+    LOG(ERROR) << "Unable to stop VM, cannot import disk image";
+    std::move(callback).Run(CrostiniResult::DISK_IMAGE_FAILED);
+    return;
+  }
+
+  ash::ProfileHelper* profile_helper = ash::ProfileHelper::Get();
+  if (!profile_helper) {
+    LOG(ERROR) << "Unable to get profile helper";
+    std::move(callback).Run(CrostiniResult::DISK_IMAGE_FAILED);
+    return;
+  }
+  user_manager::User* user = profile_helper->GetUserByProfile(profile_);
+
+  if (!user) {
+    LOG(ERROR) << "Unable to get user";
+    std::move(callback).Run(CrostiniResult::DISK_IMAGE_FAILED);
+    return;
+  }
+
+  CrostiniManager::GetForProfile(profile_)->ImportDiskImage(
+      container_id, user->username_hash(), path,
+      base::BindOnce(&CrostiniExportImport::AfterDiskImageOperation,
+                     weak_ptr_factory_.GetWeakPtr(), container_id,
+                     std::move(callback)));
+}
+
+void CrostiniExportImport::AfterDiskImageOperation(
     const guest_os::GuestId& container_id,
     CrostiniManager::CrostiniResultCallback callback,
     CrostiniResult result) {
   auto it = status_trackers_.find(container_id);
   if (it == status_trackers_.end()) {
-    NOTREACHED_IN_MIGRATION()
-        << container_id << " has no status_tracker to update";
-    return;
+    NOTREACHED() << container_id << " has no status_tracker to update";
   }
 
   if (result == CrostiniResult::SUCCESS) {
@@ -431,7 +414,7 @@ void CrostiniExportImport::AfterExportDiskImage(
         RemoveTracker(it)->SetStatusDone();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else if (result == CrostiniResult::DISK_IMAGE_CANCELLED) {
     switch (it->second->status()) {
@@ -446,7 +429,7 @@ void CrostiniExportImport::AfterExportDiskImage(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else {
     LOG(ERROR) << "Error exporting " << int(result);
@@ -495,7 +478,7 @@ void CrostiniExportImport::SharePath(
                                                static_cast<int>(result)));
     return;
   }
-  guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(
+  guest_os::GuestOsSharePathFactory::GetForProfile(profile_)->SharePath(
       vm_name, vm_info->info.seneschal_server_handle(), path,
       std::move(callback));
 }
@@ -515,8 +498,7 @@ void CrostiniExportImport::ExportAfterSharing(
     if (it != status_trackers_.end()) {
       RemoveTracker(it)->SetStatusFailed();
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << container_id << " has no status_tracker to update";
+      NOTREACHED() << container_id << " has no status_tracker to update";
     }
     return;
   }
@@ -536,9 +518,7 @@ void CrostiniExportImport::OnExportComplete(
     uint64_t compressed_size) {
   auto it = status_trackers_.find(container_id);
   if (it == status_trackers_.end()) {
-    NOTREACHED_IN_MIGRATION()
-        << container_id << " has no status_tracker to update";
-    return;
+    NOTREACHED() << container_id << " has no status_tracker to update";
   }
 
   ExportContainerResult enum_hist_result = ExportContainerResult::kSuccess;
@@ -572,7 +552,7 @@ void CrostiniExportImport::OnExportComplete(
         RemoveTracker(it)->SetStatusDone();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else if (result == CrostiniResult::CONTAINER_EXPORT_IMPORT_CANCELLED) {
     switch (it->second->status()) {
@@ -587,7 +567,7 @@ void CrostiniExportImport::OnExportComplete(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else {
     LOG(ERROR) << "Error exporting " << int(result);
@@ -653,8 +633,7 @@ void CrostiniExportImport::ImportAfterSharing(
     if (it != status_trackers_.end()) {
       RemoveTracker(it)->SetStatusFailed();
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << container_id << " has no status_tracker to update";
+      NOTREACHED() << container_id << " has no status_tracker to update";
     }
     return;
   }
@@ -689,11 +668,10 @@ void CrostiniExportImport::OnImportComplete(
           RemoveTracker(it)->SetStatusDone();
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << container_id << " has no status_tracker to update";
+      NOTREACHED() << container_id << " has no status_tracker to update";
     }
   } else if (result ==
              crostini::CrostiniResult::CONTAINER_EXPORT_IMPORT_CANCELLED) {
@@ -703,11 +681,10 @@ void CrostiniExportImport::OnImportComplete(
           RemoveTracker(it)->SetStatusCancelled();
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << container_id << " has no status_tracker to update";
+      NOTREACHED() << container_id << " has no status_tracker to update";
     }
   } else {
     LOG(ERROR) << "Error importing " << int(result);
@@ -739,8 +716,7 @@ void CrostiniExportImport::OnImportComplete(
                CrostiniExportImportStatusTracker::Status::RUNNING);
         RemoveTracker(it)->SetStatusFailed();
       } else {
-        NOTREACHED_IN_MIGRATION()
-            << container_id << " has no status_tracker to update";
+        NOTREACHED() << container_id << " has no status_tracker to update";
       }
     } else {
       DCHECK(it == status_trackers_.end())
@@ -841,9 +817,7 @@ void CrostiniExportImport::CancelOperation(ExportImportType type,
                                            guest_os::GuestId container_id) {
   auto it = status_trackers_.find(container_id);
   if (it == status_trackers_.end()) {
-    NOTREACHED_IN_MIGRATION()
-        << container_id << " has no status_tracker to cancel";
-    return;
+    NOTREACHED() << container_id << " has no status_tracker to cancel";
   }
 
   it->second->SetStatusCancelling();
@@ -858,10 +832,11 @@ void CrostiniExportImport::CancelOperation(ExportImportType type,
       manager.CancelImportLxdContainer(std::move(container_id));
       return;
     case ExportImportType::EXPORT_DISK_IMAGE:
+    case ExportImportType::IMPORT_DISK_IMAGE:
       manager.CancelDiskImageOp(std::move(container_id));
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

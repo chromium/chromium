@@ -510,8 +510,7 @@ double DateComponents::MillisecondsSinceEpoch() const {
     case kInvalid:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return InvalidMilliseconds();
+  NOTREACHED();
 }
 
 double DateComponents::MonthsSinceEpoch() const {
@@ -528,9 +527,6 @@ String DateComponents::ToStringForTime(SecondFormat format) const {
     effective_format = SecondFormat::kSecond;
 
   switch (effective_format) {
-    default:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
     case SecondFormat::kNone:
       return String::Format("%02d:%02d", hour_, minute_);
     case SecondFormat::kSecond:
@@ -538,6 +534,8 @@ String DateComponents::ToStringForTime(SecondFormat format) const {
     case SecondFormat::kMillisecond:
       return String::Format("%02d:%02d:%02d.%03d", hour_, minute_, second_,
                             millisecond_);
+    default:
+      NOTREACHED();
   }
 }
 
@@ -557,8 +555,7 @@ String DateComponents::ToString(SecondFormat format) const {
     case kInvalid:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return String("(Invalid DateComponents)");
+  NOTREACHED();
 }
 
 }  // namespace blink

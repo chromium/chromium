@@ -27,6 +27,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
+#include "extensions/common/constants.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/test/result_catcher.h"
 #include "extensions/test/test_extension_dir.h"
@@ -68,7 +69,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
   // The id should always match the last focused window and does not depend
   // on what was passed to RunFunctionAndReturnSingleResult.
   EXPECT_EQ(focused_window_id, api_test_utils::GetInteger(result, "id"));
-  EXPECT_FALSE(result.contains(keys::kTabsKey));
+  EXPECT_FALSE(result.contains(ExtensionTabUtil::kTabsKey));
 
   function = new extensions::WindowsGetLastFocusedFunction();
   function->set_extension(extension.get());
@@ -79,16 +80,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetLastFocusedWindow) {
   // on what was passed to RunFunctionAndReturnSingleResult.
   EXPECT_EQ(focused_window_id, api_test_utils::GetInteger(result, "id"));
   // "populate" was enabled so tabs should be populated.
-  api_test_utils::GetList(result, keys::kTabsKey);
+  api_test_utils::GetList(result, ExtensionTabUtil::kTabsKey);
 }
 
-// Flaky on LaCrOS: crbug.com/1179817
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_QueryLastFocusedWindowTabs DISABLED_QueryLastFocusedWindowTabs
-#else
-#define MAYBE_QueryLastFocusedWindowTabs QueryLastFocusedWindowTabs
-#endif
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, MAYBE_QueryLastFocusedWindowTabs) {
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, QueryLastFocusedWindowTabs) {
   const size_t kExtraWindows = 2;
   for (size_t i = 0; i < kExtraWindows; ++i)
     CreateBrowser(browser()->profile());
@@ -148,11 +143,7 @@ class NonPersistentExtensionTabsTest
       const NonPersistentExtensionTabsTest&) = delete;
 };
 
-// Crashes on Lacros only. http://crbug.com/1150133
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_TabCurrentWindow DISABLED_TabCurrentWindow
-// Flakes on Linux Tests. http://crbug.com/1162432
-#elif BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_TabCurrentWindow DISABLED_TabCurrentWindow
 #else
 #define MAYBE_TabCurrentWindow TabCurrentWindow
@@ -165,8 +156,8 @@ IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, MAYBE_TabCurrentWindow) {
   ASSERT_TRUE(RunExtensionTest("tabs/current_window")) << message_;
 }
 
-// Crashes on Lacros and Linux-ozone-rel. http://crbug.com/1196709
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_OZONE)
+// TODO(crbug.com/40759767): Crashes on Linux-ozone-rel.
+#if BUILDFLAG(IS_OZONE)
 #define MAYBE_TabGetLastFocusedWindow DISABLED_TabGetLastFocusedWindow
 #else
 #define MAYBE_TabGetLastFocusedWindow TabGetLastFocusedWindow
@@ -178,10 +169,10 @@ IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest,
   ASSERT_TRUE(RunExtensionTest("tabs/last_focused_window")) << message_;
 }
 
-// TODO(http://crbug.com/58229): The Linux and Lacros window managers
-// behave differently, which complicates the test. A separate  test should
-// be written for them to avoid complicating this one.
-#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(http://crbug.com/41237209): The Linux window manager behaves
+// differently, which complicates the test. A separate  test should
+// be written for it to avoid complicating this one.
+#if !BUILDFLAG(IS_LINUX)
 IN_PROC_BROWSER_TEST_P(NonPersistentExtensionTabsTest, WindowSetFocus) {
   ASSERT_TRUE(RunExtensionTest("window_update/set_focus")) << message_;
 }
@@ -283,7 +274,7 @@ Browser* ExtensionWindowLastFocusedTest::CreateBrowserWithEmptyTab(
 
 int ExtensionWindowLastFocusedTest::GetTabId(
     const base::Value::Dict& dict) const {
-  const base::Value::List* tabs = dict.FindList(keys::kTabsKey);
+  const base::Value::List* tabs = dict.FindList(ExtensionTabUtil::kTabsKey);
   if (!tabs || tabs->empty()) {
     return -2;
   }
@@ -291,7 +282,7 @@ int ExtensionWindowLastFocusedTest::GetTabId(
   if (!tab_dict) {
     return -2;
   }
-  return tab_dict->FindInt(keys::kIdKey).value_or(-2);
+  return tab_dict->FindInt(extension_misc::kId).value_or(-2);
 }
 
 std::optional<base::Value> ExtensionWindowLastFocusedTest::RunFunction(

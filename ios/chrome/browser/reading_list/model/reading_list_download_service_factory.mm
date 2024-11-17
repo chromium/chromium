@@ -19,12 +19,6 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 
 // static
-ReadingListDownloadService*
-ReadingListDownloadServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 ReadingListDownloadService* ReadingListDownloadServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<ReadingListDownloadService*>(
@@ -52,8 +46,7 @@ ReadingListDownloadServiceFactory::~ReadingListDownloadServiceFactory() {}
 std::unique_ptr<KeyedService>
 ReadingListDownloadServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   std::unique_ptr<reading_list::ReadingListDistillerPageFactory>
       distiller_page_factory =
@@ -70,9 +63,8 @@ ReadingListDownloadServiceFactory::BuildServiceInstanceFor(
           std::move(distiller_url_fetcher_factory), options);
 
   return std::make_unique<ReadingListDownloadService>(
-      ReadingListModelFactory::GetForBrowserState(chrome_browser_state),
-      chrome_browser_state->GetPrefs(), chrome_browser_state->GetStatePath(),
-      chrome_browser_state->GetSharedURLLoaderFactory(),
+      ReadingListModelFactory::GetForProfile(profile), profile->GetPrefs(),
+      profile->GetStatePath(), profile->GetSharedURLLoaderFactory(),
       std::move(distiller_factory), std::move(distiller_page_factory));
 }
 

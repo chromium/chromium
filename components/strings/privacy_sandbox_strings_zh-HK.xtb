@@ -3,18 +3,25 @@
 <translationbundle lang="zh-HK">
 <translation id="1444443021901415601">Chrome 會根據你最近的瀏覽記錄，記下你感興趣的主題</translation>
 <translation id="2252052615723281030">登入 Chrome 後，就能使用此設定確保 IP 位址不外洩。如果 Chrome 認為某個網站可能會追蹤使用者，就會透過私隱權伺服器送出部分流量。</translation>
+<translation id="235789365079050412">Google 私隱權政策</translation>
 <translation id="2793385791865768072">Chromium 會根據你最近的瀏覽記錄，記下你感興趣的主題</translation>
+<translation id="2979365474350987274">限制使用第三方 Cookie</translation>
 <translation id="33479675708419823">登入 Chrome 後，就能使用此設定確保 IP 位址不外洩。如果 Chrome 認為某個網站可能會追蹤使用者，就會透過私隱權伺服器送出部分流量。進一步瞭解<ph name="LINK_BEGIN" />IP 保護措施的運作方式<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">進一步了解點樣隱藏 IP 位址</translation>
+<translation id="385051799172605136">返回</translation>
 <translation id="4041687306270459969">系統會自動刪除超過 4 星期的廣告主題，包括運動、服飾等等。</translation>
 <translation id="4177501066905053472">廣告主題</translation>
 <translation id="4301151630239508244">廣告主題只是網站在放送個人化廣告時的其中一項依據。即使你未開啟此設定，網站仍可放送廣告，但可能會放送較不相關的廣告。進一步瞭解如何<ph name="BEGIN_LINK_1" />管理廣告私隱權<ph name="END_LINK_1" />。</translation>
+<translation id="4501357987281382712">請查看《<ph name="BEGIN_LINK" />私隱權政策<ph name="END_LINK" />》，進一步瞭解 Google 如何保護你的資料。</translation>
 <translation id="453692855554576066">你可在 Chromium 設定中查看廣告主題，並封鎖不希望與網站分享的主題</translation>
 <translation id="4598427486995631491">隱藏 IP 位址</translation>
 <translation id="4692439979815346597">你可在 Chrome 設定中查看廣告主題，並封鎖不希望與網站分享的主題</translation>
 <translation id="5413586988657235240">你瀏覽的網站可要求 Chromium 提供主題以向你顯示相關廣告，而同時保護你的瀏覽記錄和身分</translation>
+<translation id="6053735090575989697">請查看《私隱權政策》，進一步瞭解 Google 如何保護你的資料。</translation>
 <translation id="6186536480878693792">你瀏覽的網站可要求 Chrome 提供主題以向你顯示相關廣告，而同時保護你的瀏覽記錄和身分</translation>
+<translation id="6195163219142236913">限制使用第三方 Cookie</translation>
 <translation id="6371812158043974664">登入 Chromium 後，就能使用此設定確保 IP 位址不外洩。如果 Chromium 認為某個網站可能會追蹤使用者，就會透過私隱權伺服器送出部分流量。進一步瞭解<ph name="LINK_BEGIN" />IP 保護措施的運作方式<ph name="LINK_END" /></translation>
+<translation id="6398358690696005758">請查看《<ph name="BEGIN_LINK1" />私隱權政策<ph name="LINK_END1" />》，進一步瞭解 Google 如何保護你的資料。</translation>
 <translation id="7040031291654706261">瞭解<ph name="BEGIN_LINK" />IP 保護的運作方式<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">查看廣告主題設定</translation>
 </translationbundle>

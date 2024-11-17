@@ -8,6 +8,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/multi_display/multi_display_metrics_controller.h"
+#include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
@@ -221,9 +222,6 @@ void ToplevelWindowEventHandler::ScopedWindowResizer::OnWindowDestroying(
 ToplevelWindowEventHandler::ToplevelWindowEventHandler()
     : first_finger_hittest_(HTNOWHERE) {
   Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
-  if (features::IsPipDoubleTapToResizeEnabled()) {
-    pip_double_tap_ = std::make_unique<PipDoubleTapHandler>();
-  }
 }
 
 ToplevelWindowEventHandler::~ToplevelWindowEventHandler() {
@@ -488,7 +486,8 @@ void ToplevelWindowEventHandler::OnGestureEvent(ui::GestureEvent* event) {
       return;
     }
     case ui::EventType::kGestureTap:
-      if (pip_double_tap_ && pip_double_tap_->ProcessDoubleTapEvent(*event)) {
+      if (features::IsPipDoubleTapToResizeEnabled() &&
+          Shell::Get()->pip_controller()->HandleDoubleTap(*event)) {
         event->StopPropagation();
         return;
       }
@@ -853,9 +852,8 @@ aura::Window* ToplevelWindowEventHandler::GetTargetForClientAreaGesture(
     return nullptr;
   }
 
-  auto app_type = toplevel->GetProperty(chromeos::kAppTypeKey);
-  if (app_type == chromeos::AppType::BROWSER ||
-      app_type == chromeos::AppType::LACROS) {
+  if (toplevel->GetProperty(chromeos::kAppTypeKey) ==
+      chromeos::AppType::BROWSER) {
     return nullptr;
   }
 
@@ -977,11 +975,12 @@ void ToplevelWindowEventHandler::HandleMousePressed(aura::Window* target,
   if (event->phase() != ui::EP_PRETARGET || !target->delegate())
     return;
 
-  // If window is a pip window, let PiPDoubleTapHandler handle the event.
-  if (pip_double_tap_ && pip_double_tap_->ProcessDoubleTapEvent(*event)) {
+  if (features::IsPipDoubleTapToResizeEnabled() &&
+      Shell::Get()->pip_controller()->HandleDoubleTap(*event)) {
     event->SetHandled();
     return;
   }
+
   // We also update the current window component here because for the
   // mouse-drag-release-press case, where the mouse is released and
   // pressed without mouse move event.

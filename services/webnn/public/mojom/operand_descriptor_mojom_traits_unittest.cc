@@ -36,6 +36,21 @@ TEST(OperandDescriptorMojomTraitsTest, Basic) {
   EXPECT_EQ(input, output);
 }
 
+TEST(OperandDescriptorMojomTraitsTest, Int4) {
+  auto input = webnn::OperandDescriptor::Create(webnn::OperandDataType::kInt4,
+                                                std::array<uint32_t, 2>{3, 3});
+  ASSERT_TRUE(input.has_value());
+
+  webnn::OperandDescriptor output = CreateInvalidOperandDescriptor();
+  EXPECT_TRUE(
+      mojo::test::SerializeAndDeserialize<webnn::mojom::OperandDescriptor>(
+          *input, output));
+  EXPECT_EQ(*input, output);
+  // 9 int4 elements are packed in 5 bytes.
+  EXPECT_EQ(output.NumberOfElements(), 9u);
+  EXPECT_EQ(output.PackedByteLength(), 5u);
+}
+
 TEST(OperandDescriptorMojomTraitsTest, EmptyShape) {
   // Descriptors with an empty shape are treated as scalars.
   auto input =
@@ -67,17 +82,37 @@ TEST(OperandDescriptorMojomTraitsTest, ZeroDimension) {
           input, output));
 }
 
-TEST(OperandDescriptorMojomTraitsTest, ShapeTooLarge) {
-  // Overflows the max size_t on all platforms.
+TEST(OperandDescriptorMojomTraitsTest, NumberOfElementsTooLarge) {
+  // The number of elements overflows the max size_t on all platforms.
   const std::array<uint32_t, 3> shape{2, std::numeric_limits<uint32_t>::max(),
                                       std::numeric_limits<uint32_t>::max()};
 
+  // Using int4 so that the byte length won't overflow the max size_t on 64-bit
+  // platforms.
   ASSERT_FALSE(
-      webnn::OperandDescriptor::Create(webnn::OperandDataType::kInt32, shape)
+      webnn::OperandDescriptor::Create(webnn::OperandDataType::kInt4, shape)
           .has_value());
 
   auto input = webnn::OperandDescriptor::UnsafeCreateForTesting(
-      webnn::OperandDataType::kInt32, shape);
+      webnn::OperandDataType::kInt4, shape);
+  webnn::OperandDescriptor output = CreateInvalidOperandDescriptor();
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<webnn::mojom::OperandDescriptor>(
+          input, output));
+}
+
+TEST(OperandDescriptorMojomTraitsTest, ByteLengthTooLarge) {
+  // The number of elements won't overflow the max size_t on 64-bit platforms.
+  const std::array<uint32_t, 2> shape{std::numeric_limits<uint32_t>::max() / 2,
+                                      std::numeric_limits<uint32_t>::max()};
+
+  // The byte length overflows the max size_t on all platforms.
+  ASSERT_FALSE(
+      webnn::OperandDescriptor::Create(webnn::OperandDataType::kInt64, shape)
+          .has_value());
+
+  auto input = webnn::OperandDescriptor::UnsafeCreateForTesting(
+      webnn::OperandDataType::kInt64, shape);
   webnn::OperandDescriptor output = CreateInvalidOperandDescriptor();
   EXPECT_FALSE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::OperandDescriptor>(

@@ -22,11 +22,15 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsClient.FileChooserParamsImpl;
 import org.chromium.android_webview.AwSettings;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.JSUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.PathUtils;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.blink_public.common.BlinkFeatures;
 import org.chromium.net.test.util.TestWebServer;
 
 import java.io.File;
@@ -52,7 +56,6 @@ public class AwFileChooserTest extends AwParameterizedTest {
     private File mTestFile2;
     private File mTestDirectory;
     private static final String TEST_DIRECTORY_PATH = PathUtils.getDataDirectory() + "/test";
-    private static final String EMPTY_STRING = "";
 
     private static final String TAG = "AwFileChooserTest";
 
@@ -78,12 +81,10 @@ public class AwFileChooserTest extends AwParameterizedTest {
         Assert.assertTrue(mTestFile2.createNewFile());
 
         Assert.assertTrue(
-                "Test file 1 is an empty string!",
-                !EMPTY_STRING.equalsIgnoreCase(mTestFile1.getPath()));
+                "Test file 1 is an empty string!", !"".equalsIgnoreCase(mTestFile1.getPath()));
         Assert.assertNotNull("Test File 1 is null!", mTestFile1.getPath());
         Assert.assertTrue(
-                "Test file 2 is an empty string!",
-                !EMPTY_STRING.equalsIgnoreCase(mTestFile2.getPath()));
+                "Test file 2 is an empty string!", !"".equalsIgnoreCase(mTestFile2.getPath()));
         Assert.assertNotNull("Test File 2 is null!", mTestFile2.getPath());
 
         mWebServer = TestWebServer.start();
@@ -265,6 +266,93 @@ public class AwFileChooserTest extends AwParameterizedTest {
                     "/BadUri/ThatIsnt/Valid"
                 });
         clickSelectFileButtonAndWaitForCallback("2");
+    }
+
+    public void fileSystemAccessCancelled(String function) throws Throwable {
+        final String saveFilePickerPageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        /* headers= */ "",
+                        /* body= */ "<div id='"
+                                + FILE_CHOICE_BUTTON_ID
+                                + "' onclick='"
+                                + function
+                                + ".catch(e => window.result = e.name)'/>");
+        final String url = mWebServer.setResponse(INDEX_HTML_ROUTE, saveFilePickerPageHtml, null);
+
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+
+        clickSelectFileButton();
+        pollJavascriptResult("window.result", "\"AbortError\"");
+        Assert.assertEquals(0, mShowFileChooserHelper.getCallCount());
+    }
+
+    private void fileSystemAccessOk(String function, int expectedMode) throws Throwable {
+        final String pageHtml =
+                CommonResources.makeHtmlPageFrom(
+                        /* headers= */ "",
+                        /* body= */ "<div id='"
+                                + FILE_CHOICE_BUTTON_ID
+                                + "' onclick='"
+                                + function
+                                + ".then(() => window.done = true)"
+                                + ".catch(() => window.done = true)'/>");
+        final String url = mWebServer.setResponse(INDEX_HTML_ROUTE, pageHtml, null);
+
+        mShowFileChooserHelper.setChosenFilesToUpload(
+                new String[] {Uri.fromFile(mTestFile1).toString()});
+        mActivityTestRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), url);
+
+        clickSelectFileButton();
+        pollJavascriptResult("window.done", "true");
+        Assert.assertEquals(1, mShowFileChooserHelper.getCallCount());
+        final FileChooserParamsImpl params = mShowFileChooserHelper.getFileParams();
+        Assert.assertEquals(expectedMode, params.getMode());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(BlinkFeatures.FILE_SYSTEM_ACCESS_LOCAL)
+    @DisableFeatures(AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS)
+    public void testFileSystemAccessBeforeTargetSdkOpenFile() throws Throwable {
+        fileSystemAccessOk("showOpenFilePicker()", WebChromeClient.FileChooserParams.MODE_OPEN);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(BlinkFeatures.FILE_SYSTEM_ACCESS_LOCAL)
+    @DisableFeatures(AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS)
+    public void testFileSystemAccessBeforeTargetSdkSaveFileCancelled() throws Throwable {
+        fileSystemAccessCancelled("showSaveFilePicker()");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(BlinkFeatures.FILE_SYSTEM_ACCESS_LOCAL)
+    @DisableFeatures(AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS)
+    public void testFileSystemAccessBeforeTargetSdkDirectoryCancelled() throws Throwable {
+        fileSystemAccessCancelled("showDirectoryPicker()");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({BlinkFeatures.FILE_SYSTEM_ACCESS_LOCAL, AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS})
+    public void testFileSystemAccessOpenFile() throws Throwable {
+        fileSystemAccessOk("showOpenFilePicker()", WebChromeClient.FileChooserParams.MODE_OPEN);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({BlinkFeatures.FILE_SYSTEM_ACCESS_LOCAL, AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS})
+    public void testFileSystemAccessSaveFile() throws Throwable {
+        fileSystemAccessOk("showSaveFilePicker()", WebChromeClient.FileChooserParams.MODE_SAVE);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({BlinkFeatures.FILE_SYSTEM_ACCESS_LOCAL, AwFeatures.WEBVIEW_FILE_SYSTEM_ACCESS})
+    public void testFileSystemAccessDirectory() throws Throwable {
+        fileSystemAccessOk(
+                "showDirectoryPicker()", WebChromeClient.FileChooserParams.MODE_OPEN_MULTIPLE);
     }
 
     /** Simulates user clicking Choose File button. */

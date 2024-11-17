@@ -87,14 +87,28 @@ PinMetadata ParsePinMetadata(const user_data_auth::AuthFactor& proto) {
   return PinMetadata::CreateWithoutSalt();
 }
 
+LockoutPolicy ConvertLockoutPolicyProtoToLockoutPolicy(
+    user_data_auth::LockoutPolicy lockout_policy) {
+  switch (lockout_policy) {
+    case user_data_auth::LOCKOUT_POLICY_NONE:
+      return LockoutPolicy::kNone;
+    case user_data_auth::LOCKOUT_POLICY_ATTEMPT_LIMITED:
+      return LockoutPolicy::kAttemptLimited;
+    case user_data_auth::LOCKOUT_POLICY_TIME_LIMITED:
+      return LockoutPolicy::kTimeLimited;
+    case user_data_auth::LOCKOUT_POLICY_UNKNOWN:
+      // Fallthrough for all unknown or new values.
+    default:
+      return LockoutPolicy::kUnknown;
+  }
+}
+
 }  // namespace
 
 user_data_auth::AuthFactorType ConvertFactorTypeToProto(AuthFactorType type) {
   switch (type) {
     case AuthFactorType::kUnknownLegacy:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown factor type should never be sent to cryptohome";
-      return user_data_auth::AUTH_FACTOR_TYPE_UNSPECIFIED;
+      NOTREACHED() << "Unknown factor type should never be sent to cryptohome";
     case AuthFactorType::kPassword:
       return user_data_auth::AUTH_FACTOR_TYPE_PASSWORD;
     case AuthFactorType::kPin:
@@ -180,7 +194,7 @@ ChallengeSignatureAlgorithmToProtoEnum(
     case Algorithm::kRsassaPkcs1V15Sha512:
       return user_data_auth::CHALLENGE_RSASSA_PKCS1_V1_5_SHA512;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SerializeAuthFactor(const AuthFactor& factor,
@@ -343,6 +357,7 @@ AuthFactor DeserializeAuthFactor(
   AuthFactorRef ref(type, KeyLabel{factor_proto.label()});
   ComponentVersion chrome_ver{kFallbackFactorVersion};
   ComponentVersion chromeos_ver{kFallbackFactorVersion};
+  LockoutPolicy lockout_policy = LockoutPolicy::kUnknown;
   if (factor_proto.has_common_metadata()) {
     auto common_metadata_proto = factor_proto.common_metadata();
     if (!common_metadata_proto.chrome_version_last_updated().empty()) {
@@ -353,9 +368,12 @@ AuthFactor DeserializeAuthFactor(
       chromeos_ver = ComponentVersion(
           common_metadata_proto.chromeos_version_last_updated());
     }
+    lockout_policy = ConvertLockoutPolicyProtoToLockoutPolicy(
+        common_metadata_proto.lockout_policy());
   }
   AuthFactorCommonMetadata common_metadata{std::move(chrome_ver),
-                                           std::move(chromeos_ver)};
+                                           std::move(chromeos_ver),
+                                           std::move(lockout_policy)};
 
   // Ignore is_active_for_login for now
   switch (type) {

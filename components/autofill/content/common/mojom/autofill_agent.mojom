@@ -102,14 +102,19 @@ interface PasswordAutofillAgent {
 
   // Fills the username and password with with given values.
   FillPasswordSuggestion(
-      mojo_base.mojom.String16 username, mojo_base.mojom.String16 password);
+      mojo_base.mojom.String16 username, mojo_base.mojom.String16 password)
+         => (bool success);
 
   // Similar to FillPasswordSuggestion, but is also provided the
   // FieldRendererIds of the elements to be filled.
+  // `suggestion_source` specified how the user has interacted with
+  // PWM suggestions, such as manual fallback. Used to update the
+  // `FieldPropertiesMask` of the filled fields.
   FillPasswordSuggestionById(FieldRendererId username_element_id,
                              FieldRendererId password_element_id,
                              mojo_base.mojom.String16 username,
-                             mojo_base.mojom.String16 password);
+                             mojo_base.mojom.String16 password,
+                             AutofillSuggestionTriggerSource suggestion_source);
 
   // Previews the username and password, determined from the given
   // FieldRendererIds, with the given values.
@@ -130,7 +135,11 @@ interface PasswordAutofillAgent {
   PreviewField(FieldRendererId field_id, mojo_base.mojom.String16 value);
 
   // Fills the given `value` into the field identified by `field_id`.
-  FillField(FieldRendererId field_id, mojo_base.mojom.String16 value);
+  // `suggestion_source` specified how the user has interacted with
+  // PWM suggestions, such as manual fallback. Used to update the
+  // `FieldPropertiesMask` of the filled fields.
+  FillField(FieldRendererId field_id, mojo_base.mojom.String16 value,
+    AutofillSuggestionTriggerSource suggestion_source);
 
   // Notification to start (`active` == true) or stop (`active` == false)
   // logging the decisions made about saving the password.

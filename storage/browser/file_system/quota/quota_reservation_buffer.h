@@ -12,6 +12,7 @@
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -69,7 +70,8 @@ class QuotaReservationBuffer : public base::RefCounted<QuotaReservationBuffer> {
 
   // Not owned.  The destructor of OpenFileHandler should erase itself from
   // |open_files_|.
-  std::map<base::FilePath, OpenFileHandleContext*> open_files_;
+  std::map<base::FilePath, raw_ptr<OpenFileHandleContext, CtnExperimental>>
+      open_files_;
 
   base::WeakPtr<QuotaReservationManager> reservation_manager_;
 

@@ -9,7 +9,7 @@ module crosapi.mojom;
 //
 // Next MinVersion: 2
 // Next ID: 2
-[Stable, Uuid="6dc6b5a0-b5db-4507-b0f9-688e1773226d"]
+[Uuid="6dc6b5a0-b5db-4507-b0f9-688e1773226d"]
 interface KioskSessionService {
   // Starts a user initiated exit process. This method tells session manager
   // that chrome is signing out, which lets session manager send SIGTERM

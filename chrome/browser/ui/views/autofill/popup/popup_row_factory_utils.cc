@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_content_view.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_row_prediction_improvements_details_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_prediction_improvements_feedback_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_with_button_view.h"
@@ -47,8 +46,9 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
+#include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/user_education/common/new_badge_controller.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/views/new_badge_label.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
@@ -133,7 +133,7 @@ base::RepeatingClosure CreateExecuteSoonWrapper(base::RepeatingClosure task) {
 }
 
 bool IsDeactivatedPasswordOrPasskey(const Suggestion& suggestion) {
-  return suggestion.apply_deactivated_style &&
+  return suggestion.HasDeactivatedStyle() &&
          GetFillingProductFromSuggestionType(suggestion.type) ==
              FillingProduct::kPassword;
 }
@@ -207,8 +207,7 @@ bool ShouldApplyNewPopupMaxWidth(SuggestionType suggestion_type,
   const bool is_credit_card_unclassified_field_manual_fallback =
       !is_suggestion_acceptable &&
       filling_product == FillingProduct::kCreditCard;
-  return filling_product == FillingProduct::kPlusAddresses ||
-         is_address_unclassified_field_manual_fallback ||
+  return is_address_unclassified_field_manual_fallback ||
          is_credit_card_unclassified_field_manual_fallback ||
          base::FeatureList::IsEnabled(
              features::kAutofillGranularFillingAvailable);
@@ -220,7 +219,7 @@ std::unique_ptr<views::Label> CreateMainTextLabel(
     std::optional<user_education::DisplayNewBadge> show_new_badge,
     views::style::TextStyle primary_text_style = kMainTextStyle) {
   views::style::TextStyle main_text_label_style;
-  if (suggestion.apply_deactivated_style) {
+  if (suggestion.HasDeactivatedStyle()) {
     main_text_label_style = kDisabledTextStyle;
   } else {
     main_text_label_style = suggestion.main_text.is_primary
@@ -249,8 +248,7 @@ std::unique_ptr<views::Label> CreateMinorTextLabel(
   }
   auto label = std::make_unique<views::Label>(
       suggestion.minor_text.value, views::style::CONTEXT_DIALOG_BODY_TEXT,
-      suggestion.apply_deactivated_style ? kDisabledTextStyle
-                                         : kMinorTextStyle);
+      suggestion.HasDeactivatedStyle() ? kDisabledTextStyle : kMinorTextStyle);
   label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
   return label;
 }
@@ -298,7 +296,7 @@ std::vector<std::unique_ptr<views::View>> CreateSubtextViews(
       // TODO(crbug.com/40274514): Keep new behaviour where the max
       // popup size cannot be exceeded once clean up happens.
       const bool should_apply_new_popup_max_width = ShouldApplyNewPopupMaxWidth(
-          suggestion.type, suggestion.is_acceptable);
+          suggestion.type, suggestion.IsAcceptable());
       int shrink_formatted_label_by =
           should_apply_new_popup_max_width ? label_row.size() : 1;
       FormatLabel(
@@ -341,7 +339,7 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
       suggestion, /*show_new_badge=*/std::nullopt, kMainTextStyleLight);
   // TODO(crbug.com/345709988): Move this to CreateMainTextLabel. See
   // https://crrev.com/c/5605735/comment/970405c2_cbb55e85
-  if (!suggestion.apply_deactivated_style) {
+  if (!suggestion.HasDeactivatedStyle()) {
     main_text_label->SetEnabledColorId(ui::kColorLabelForegroundSecondary);
   }
   main_text_label->SetEnabled(!suggestion.is_loading);
@@ -507,7 +505,7 @@ std::unique_ptr<PopupRowContentView> CreatePopupRowContentView(
 
   FormatLabel(*main_text_label, suggestion.main_text, main_filling_product,
               GetMaxPopupAddressProfileWidth(ShouldApplyNewPopupMaxWidth(
-                  suggestion.type, suggestion.is_acceptable)));
+                  suggestion.type, suggestion.IsAcceptable())));
   popup_cell_utils::AddSuggestionContentToView(
       suggestion, std::move(main_text_label), CreateMinorTextLabel(suggestion),
       /*description_label=*/nullptr,
@@ -524,19 +522,18 @@ std::unique_ptr<PopupRowWithButtonView> CreateAutocompleteRowWithDeleteButton(
     int line_number) {
   auto view = std::make_unique<PopupRowContentView>();
 
-  const Suggestion& kSuggestion = controller->GetSuggestionAt(line_number);
+  const Suggestion& suggestion = controller->GetSuggestionAt(line_number);
   std::unique_ptr<views::Label> main_text_label =
-      CreateMainTextLabel(kSuggestion, /*show_new_badge=*/std::nullopt);
-  FormatLabel(*main_text_label, kSuggestion.main_text,
+      CreateMainTextLabel(suggestion, /*show_new_badge=*/std::nullopt);
+  FormatLabel(*main_text_label, suggestion.main_text,
               FillingProduct::kAutocomplete,
               GetMaxPopupAddressProfileWidth(ShouldApplyNewPopupMaxWidth(
-                  kSuggestion.type, kSuggestion.is_acceptable)));
+                  suggestion.type, suggestion.IsAcceptable())));
   popup_cell_utils::AddSuggestionContentToView(
-      kSuggestion, std::move(main_text_label),
-      CreateMinorTextLabel(kSuggestion),
+      suggestion, std::move(main_text_label), CreateMinorTextLabel(suggestion),
       /*description_label=*/nullptr,
-      CreateSubtextViews(*view, kSuggestion, FillingProduct::kAutocomplete),
-      popup_cell_utils::GetIconImageView(kSuggestion), *view);
+      CreateSubtextViews(*view, suggestion, FillingProduct::kAutocomplete),
+      popup_cell_utils::GetIconImageView(suggestion), *view);
 
   // The closure that actually attempts to delete an entry and record metrics
   // for it.
@@ -585,22 +582,21 @@ std::unique_ptr<PopupRowView> CreateNewPlusAddressInlineSuggestion(
     std::optional<user_education::DisplayNewBadge> show_new_badge) {
   auto view = std::make_unique<PopupRowContentView>();
 
-  const Suggestion& kSuggestion = controller->GetSuggestionAt(line_number);
+  const Suggestion& suggestion = controller->GetSuggestionAt(line_number);
   std::unique_ptr<views::Label> main_text_label =
-      CreateMainTextLabel(kSuggestion, show_new_badge);
-  FormatLabel(*main_text_label, kSuggestion.main_text,
+      CreateMainTextLabel(suggestion, show_new_badge);
+  FormatLabel(*main_text_label, suggestion.main_text,
               FillingProduct::kPlusAddresses,
               GetMaxPopupAddressProfileWidth(ShouldApplyNewPopupMaxWidth(
-                  kSuggestion.type, kSuggestion.is_acceptable)));
+                  suggestion.type, suggestion.IsAcceptable())));
   popup_cell_utils::AddSuggestionContentToView(
-      kSuggestion, std::move(main_text_label),
-      CreateMinorTextLabel(kSuggestion),
+      suggestion, std::move(main_text_label), CreateMinorTextLabel(suggestion),
       /*description_label=*/nullptr,
-      CreateSubtextViews(*view, kSuggestion, FillingProduct::kPlusAddresses),
-      popup_cell_utils::GetIconImageView(kSuggestion), *view);
+      CreateSubtextViews(*view, suggestion, FillingProduct::kPlusAddresses),
+      popup_cell_utils::GetIconImageView(suggestion), *view);
 
   // If no refresh is offered, we can just use a "normal" `PopupRowView`.
-  if (!kSuggestion.GetPayload<Suggestion::PlusAddressPayload>().offer_refresh) {
+  if (!suggestion.GetPayload<Suggestion::PlusAddressPayload>().offer_refresh) {
     return std::make_unique<PopupRowView>(a11y_selection_delegate,
                                           selection_delegate, controller,
                                           line_number, std::move(view));
@@ -642,19 +638,6 @@ CreatePredictionImprovementsFeedbackRow(
       a11y_selection_delegate, selection_delegate, controller, line_number);
 }
 
-// Creates the row for the `SuggestionType::kRetrievePredictionImprovements`
-// suggestion.
-std::unique_ptr<PopupRowPredictionImprovementsDetailsView>
-CreatePredictionImprovementsDetailsRow(
-    base::WeakPtr<AutofillPopupController> controller,
-    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
-    PopupRowView::SelectionDelegate& selection_delegate,
-    int line_number,
-    std::optional<user_education::DisplayNewBadge> show_new_badge) {
-  return std::make_unique<PopupRowPredictionImprovementsDetailsView>(
-      a11y_selection_delegate, selection_delegate, controller, line_number);
-}
-
 }  // namespace
 
 std::unique_ptr<PopupRowView> CreatePopupRowView(
@@ -678,12 +661,6 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
   if (type == SuggestionType::kPredictionImprovementsFeedback) {
     return CreatePredictionImprovementsFeedbackRow(
         controller, a11y_selection_delegate, selection_delegate, line_number);
-  }
-
-  if (type == SuggestionType::kPredictionImprovementsDetails) {
-    return CreatePredictionImprovementsDetailsRow(
-        controller, a11y_selection_delegate, selection_delegate, line_number,
-        std::nullopt);
   }
 
   if (IsFooterSuggestionType(type)) {

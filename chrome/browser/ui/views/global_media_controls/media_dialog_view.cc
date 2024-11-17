@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
@@ -196,9 +197,7 @@ global_media_controls::MediaItemUI* MediaDialogView::ShowMediaItem(
 
   view_ptr->AddObserver(this);
   UpdateBubbleSize();
-  for (auto& observer : observers_) {
-    observer.OnMediaSessionShown();
-  }
+  observers_.Notify(&MediaDialogViewObserver::OnMediaSessionShown);
   return view_ptr;
 }
 
@@ -215,9 +214,7 @@ void MediaDialogView::HideMediaItem(const std::string& id) {
     UpdateBubbleSize();
   }
 
-  for (auto& observer : observers_) {
-    observer.OnMediaSessionHidden();
-  }
+  observers_.Notify(&MediaDialogViewObserver::OnMediaSessionHidden);
 }
 
 void MediaDialogView::RefreshMediaItem(
@@ -351,30 +348,18 @@ void MediaDialogView::OnMediaItemUISizeChanged() {
 }
 
 void MediaDialogView::OnMediaItemUIMetadataChanged() {
-  for (auto& observer : observers_) {
-    observer.OnMediaSessionMetadataUpdated();
-  }
+  observers_.Notify(&MediaDialogViewObserver::OnMediaSessionMetadataUpdated);
 }
 
 void MediaDialogView::OnMediaItemUIActionsChanged() {
-  for (auto& observer : observers_) {
-    observer.OnMediaSessionActionsChanged();
-  }
+  observers_.Notify(&MediaDialogViewObserver::OnMediaSessionActionsChanged);
 }
 
 void MediaDialogView::OnMediaItemUIDestroyed(const std::string& id) {
   if (media_color_theme_.has_value()) {
-    auto iter = updated_items_.find(id);
-    CHECK(iter != updated_items_.end());
-
-    iter->second->RemoveObserver(this);
-    updated_items_.erase(iter);
+    updated_items_.erase(id);
   } else {
-    auto iter = observed_items_.find(id);
-    CHECK(iter != observed_items_.end());
-
-    iter->second->RemoveObserver(this);
-    observed_items_.erase(iter);
+    observed_items_.erase(id);
   }
 }
 
@@ -393,13 +378,16 @@ void MediaDialogView::TargetLanguageChanged() {
           target_language_combobox_->GetSelectedIndex().value());
 }
 
-const std::map<const std::string, global_media_controls::MediaItemUIView*>&
+const std::map<
+    const std::string,
+    raw_ptr<global_media_controls::MediaItemUIView, CtnExperimental>>&
 MediaDialogView::GetItemsForTesting() const {
   return active_sessions_view_->items_for_testing();  // IN-TEST
 }
 
-const std::map<const std::string,
-               global_media_controls::MediaItemUIUpdatedView*>&
+const std::map<
+    const std::string,
+    raw_ptr<global_media_controls::MediaItemUIUpdatedView, CtnExperimental>>&
 MediaDialogView::GetUpdatedItemsForTesting() const {
   return active_sessions_view_->updated_items_for_testing();  // IN-TEST
 }

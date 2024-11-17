@@ -17,6 +17,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
@@ -149,7 +150,8 @@ class MockRulesetPublisher : public RulesetPublisher {
 
  private:
   size_t sent_count_ = 0;
-  std::map<content::RenderProcessHost*, base::File*> last_file_;
+  std::map<content::RenderProcessHost*, raw_ptr<base::File, CtnExperimental>>
+      last_file_;
 };
 
 TEST_F(SubresourceFilterRulesetPublisherTest, NoRuleset_NoIPCMessages) {

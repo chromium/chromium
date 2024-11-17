@@ -38,7 +38,6 @@ class ForceInstallObserver
       bool is_from_store) override;
 
   void StartObservingAsh(Profile* profile);
-  void StartObservingLacros();
 
   void StartTimerToWaitForExtensions();
   void OnExtensionWaitTimeOut();
@@ -60,9 +59,6 @@ class ForceInstallObserver
   base::ScopedObservation<extensions::ForceInstalledTracker,
                           extensions::ForceInstalledTracker::Observer>
       observation_for_ash_{this};
-  base::ScopedObservation<crosapi::ForceInstalledTrackerAsh,
-                          extensions::ForceInstalledTracker::Observer>
-      observation_for_lacros_{this};
 };
 
 }  // namespace app_mode

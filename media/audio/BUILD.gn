@@ -141,6 +141,7 @@ source_set("audio") {
   ]
   deps = [
     "//base",
+    "//build:android_buildflags",
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
     "//media/base",

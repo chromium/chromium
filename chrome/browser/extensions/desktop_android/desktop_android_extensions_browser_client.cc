@@ -8,8 +8,11 @@
 #include <utility>
 
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/chrome_extensions_browser_api_provider.h"
+#include "chrome/browser/extensions/desktop_android/desktop_android_extension_host_delegate.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_system.h"
 #include "chrome/browser/extensions/desktop_android/desktop_android_extension_web_contents_observer.h"
+#include "chrome/browser/extensions/desktop_android/desktop_android_runtime_api_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/version_info/version_info.h"
@@ -55,6 +58,7 @@ DesktopAndroidExtensionsBrowserClient::DesktopAndroidExtensionsBrowserClient()
       kiosk_delegate_(std::make_unique<DesktopAndroidKioskDelegate>()),
       api_client_(std::make_unique<ExtensionsAPIClient>()) {
   AddAPIProvider(std::make_unique<CoreExtensionsBrowserAPIProvider>());
+  AddAPIProvider(std::make_unique<ChromeExtensionsBrowserAPIProvider>());
 }
 
 DesktopAndroidExtensionsBrowserClient::
@@ -105,22 +109,19 @@ BrowserContext* DesktopAndroidExtensionsBrowserClient::GetOriginalContext(
 
 content::BrowserContext*
 DesktopAndroidExtensionsBrowserClient::GetContextRedirectedToOriginal(
-    content::BrowserContext* context,
-    bool force_guest_profile) {
+    content::BrowserContext* context) {
   return context;
 }
 
 content::BrowserContext*
 DesktopAndroidExtensionsBrowserClient::GetContextOwnInstance(
-    content::BrowserContext* context,
-    bool force_guest_profile) {
+    content::BrowserContext* context) {
   return context;
 }
 
 content::BrowserContext*
 DesktopAndroidExtensionsBrowserClient::GetContextForOriginalOnly(
-    content::BrowserContext* context,
-    bool force_guest_profile) {
+    content::BrowserContext* context) {
   return context;
 }
 
@@ -209,7 +210,7 @@ DesktopAndroidExtensionsBrowserClient::GetControlledFrameEmbedderURLLoader(
 
 std::unique_ptr<ExtensionHostDelegate>
 DesktopAndroidExtensionsBrowserClient::CreateExtensionHostDelegate() {
-  return nullptr;
+  return std::make_unique<DesktopAndroidExtensionHostDelegate>();
 }
 
 bool DesktopAndroidExtensionsBrowserClient::DidVersionUpdate(
@@ -257,7 +258,7 @@ void DesktopAndroidExtensionsBrowserClient::
 std::unique_ptr<RuntimeAPIDelegate>
 DesktopAndroidExtensionsBrowserClient::CreateRuntimeAPIDelegate(
     content::BrowserContext* context) const {
-  return nullptr;
+  return std::make_unique<DesktopAndroidRuntimeApiDelegate>();
 }
 
 const ComponentExtensionResourceManager*
@@ -299,11 +300,6 @@ DesktopAndroidExtensionsBrowserClient::GetExtensionWebContentsObserver(
 
 KioskDelegate* DesktopAndroidExtensionsBrowserClient::GetKioskDelegate() {
   return kiosk_delegate_.get();
-}
-
-bool DesktopAndroidExtensionsBrowserClient::IsLockScreenContext(
-    content::BrowserContext* context) {
-  return false;
 }
 
 std::string DesktopAndroidExtensionsBrowserClient::GetApplicationLocale() {

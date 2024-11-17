@@ -77,6 +77,11 @@ const MLOperator* MLOperand::Operator() const {
   return operator_.Get();
 }
 
+const HeapHashSet<Member<const MLOperator>>& MLOperand::DependentOperators()
+    const {
+  return dependent_operators_;
+}
+
 const webnn::OperandDescriptor& MLOperand::Descriptor() const {
   return descriptor_;
 }
@@ -115,9 +120,14 @@ MLConstantOperand const* MLOperand::AsConstantOperand() const {
   return static_cast<MLConstantOperand const*>(this);
 }
 
+void MLOperand::AddDependentOperator(const MLOperator* ml_operator) {
+  dependent_operators_.insert(ml_operator);
+}
+
 void MLOperand::Trace(Visitor* visitor) const {
   visitor->Trace(builder_);
   visitor->Trace(operator_);
+  visitor->Trace(dependent_operators_);
   ScriptWrappable::Trace(visitor);
 }
 

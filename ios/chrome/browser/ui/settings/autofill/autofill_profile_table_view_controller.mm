@@ -19,6 +19,8 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "components/password_manager/core/common/password_manager_features.h"
+#import "components/plus_addresses/features.h"
+#import "components/plus_addresses/grit/plus_addresses_strings.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -28,6 +30,8 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
@@ -56,9 +60,13 @@
 
 namespace {
 
+// Plus Address Section header height.
+const CGFloat kPlusAddressSectionHeaderHeight = 24;
+
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSwitches = kSectionIdentifierEnumZero,
   SectionIdentifierProfiles,
+  SectionIdentifierPlusAddress
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
@@ -67,6 +75,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeAddress,
   ItemTypeHeader,
   ItemTypeFooter,
+  ItemTypePlusAddress,
+  ItemTypePlusAddressFooter
 };
 
 }  // namespace
@@ -122,9 +132,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     self.title = l10n_util::GetNSString(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE);
     self.shouldDisableDoneButtonOnEdit = YES;
     _browser = browser;
-    _personalDataManager =
-        autofill::PersonalDataManagerFactory::GetForBrowserState(
-            _browser->GetBrowserState());
+    _personalDataManager = autofill::PersonalDataManagerFactory::GetForProfile(
+        _browser->GetProfile());
     _observer.reset(new autofill::PersonalDataManagerObserverBridge(self));
     _personalDataManager->AddObserver(_observer.get());
   }
@@ -135,8 +144,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [super viewDidLoad];
   self.tableView.allowsMultipleSelectionDuringEditing = YES;
   self.tableView.accessibilityIdentifier = kAutofillProfileTableViewID;
-  self.tableView.estimatedSectionFooterHeight =
-      kTableViewHeaderFooterViewHeight;
   [self determineUserEmail];
   [self updateUIForEditState];
   [self loadModel];
@@ -151,7 +158,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [model addSectionWithIdentifier:SectionIdentifierSwitches];
 
-  if (_browser->GetBrowserState()->GetPrefs()->IsManagedPreference(
+  if (_browser->GetProfile()->GetPrefs()->IsManagedPreference(
           autofill::prefs::kAutofillProfileEnabled)) {
     [model addItem:[self managedAddressItem]
         toSectionWithIdentifier:SectionIdentifierSwitches];
@@ -162,6 +169,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   [model setFooter:[self addressSwitchFooter]
       forSectionWithIdentifier:SectionIdentifierSwitches];
+
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressesEnabled) &&
+      self.userEmail) {
+    [model addSectionWithIdentifier:SectionIdentifierPlusAddress];
+    [model addItem:[self plusAddressItem]
+        toSectionWithIdentifier:SectionIdentifierPlusAddress];
+
+    [model setFooter:[self plusAddressFooter]
+        forSectionWithIdentifier:SectionIdentifierPlusAddress];
+  }
 
   [self populateProfileSection];
 }
@@ -201,6 +219,24 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switchItem.on = [self isAutofillProfileEnabled];
   switchItem.accessibilityIdentifier = kAutofillAddressSwitchViewId;
   return switchItem;
+}
+
+- (TableViewItem*)plusAddressItem {
+  TableViewDetailTextItem* plusAddressItem =
+      [[TableViewDetailTextItem alloc] initWithType:ItemTypePlusAddress];
+
+  plusAddressItem.text =
+      l10n_util::GetNSString(IDS_PLUS_ADDRESS_SETTINGS_LABEL);
+  plusAddressItem.accessorySymbol =
+      TableViewDetailTextCellAccessorySymbolExternalLink;
+  return plusAddressItem;
+}
+
+- (TableViewHeaderFooterItem*)plusAddressFooter {
+  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
+      initWithType:ItemTypePlusAddressFooter];
+  footer.text = l10n_util::GetNSString(IDS_PLUS_ADDRESS_SETTINGS_SUBLABEL);
+  return footer;
 }
 
 - (TableViewInfoButtonItem*)managedAddressItem {
@@ -336,6 +372,34 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 #pragma mark - UITableViewDelegate
 
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForHeaderInSection:(NSInteger)section {
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSectionIndex:section];
+
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressesEnabled) &&
+      sectionIdentifier == SectionIdentifierPlusAddress) {
+    return kPlusAddressSectionHeaderHeight;
+  }
+
+  return [super tableView:tableView heightForHeaderInSection:section];
+}
+
+- (CGFloat)tableView:(UITableView*)tableView
+    heightForFooterInSection:(NSInteger)section {
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSectionIndex:section];
+
+  if (base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressesEnabled) &&
+      sectionIdentifier == SectionIdentifierPlusAddress) {
+    return kTableViewHeaderFooterViewHeight;
+  }
+
+  return [super tableView:tableView heightForFooterInSection:section];
+}
+
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
   [super setEditing:editing animated:animated];
   if (_settingsAreDismissed)
@@ -355,6 +419,16 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // selection presents the editing controller for the selected entry.
   if ([self.tableView isEditing]) {
     self.deleteButton.enabled = YES;
+    return;
+  }
+
+  if ([self.tableViewModel itemTypeForIndexPath:indexPath] ==
+      ItemTypePlusAddress) {
+    base::RecordAction(base::UserMetricsAction("Settings.PlusAddresses"));
+    OpenNewTabCommand* command = [OpenNewTabCommand
+        commandWithURLFromChrome:
+            GURL(plus_addresses::features::kPlusAddressManagementUrl.Get())];
+    [self.applicationHandler closePresentedViewsAndOpenURL:command];
     return;
   }
 
@@ -439,6 +513,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeAddress:
     case ItemTypeHeader:
     case ItemTypeFooter:
+    case ItemTypePlusAddress:
+    case ItemTypePlusAddressFooter:
       break;
     case ItemTypeAutofillAddressSwitch: {
       TableViewSwitchCell* switchCell =
@@ -524,20 +600,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (BOOL)isAutofillProfileEnabled {
   return autofill::prefs::IsAutofillProfileEnabled(
-      _browser->GetBrowserState()->GetPrefs());
+      _browser->GetProfile()->GetPrefs());
 }
 
 - (void)setAutofillProfileEnabled:(BOOL)isEnabled {
   return autofill::prefs::SetAutofillProfileEnabled(
-      _browser->GetBrowserState()->GetPrefs(), isEnabled);
+      _browser->GetProfile()->GetPrefs(), isEnabled);
 }
 
 - (void)determineUserEmail {
   self.syncEnabled = NO;
   self.userEmail = nil;
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(
-          _browser->GetBrowserState());
+      AuthenticationServiceFactory::GetForProfile(_browser->GetProfile());
   CHECK(authenticationService);
   id<SystemIdentity> identity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);

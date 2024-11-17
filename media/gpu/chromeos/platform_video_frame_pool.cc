@@ -146,6 +146,9 @@ scoped_refptr<FrameResource> PlatformVideoFramePool::GetFrame() {
     // correctly // set by the caller.
     CHECK_EQ((*new_frame)->storage_type(), frame_storage_type_);
 
+    // Sets and/or registers the frame's |tracking_token|.
+    frame_tracking_token_helper_.SetUniqueTrackingToken(new_frame->metadata());
+
     InsertFreeFrame_Locked(std::move(new_frame).value());
   }
 
@@ -228,6 +231,12 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   // |visible_rect| into account for IsSameFormat_Locked() any more.
   if (!IsSameFormat_Locked(format, coded_size, visible_rect, use_protected)) {
     DVLOGF(4) << "The video frame format is changed. Clearing the pool.";
+    // This loop clears the free frames' tokens from
+    // |frame_tracking_token_helper_|. The in-use frames' tokens will be cleared
+    // as the frames are released.
+    for (const auto& frame : free_frames_) {
+      frame_tracking_token_helper_.ClearToken(frame->tracking_token());
+    }
     free_frames_.clear();
     auto maybe_frame = create_frame_cb_.Run(
         format, coded_size, visible_rect, natural_size, use_protected,
@@ -308,6 +317,7 @@ void PlatformVideoFramePool::ReleaseAllFrames() {
   base::AutoLock auto_lock(lock_);
   free_frames_.clear();
   frames_in_use_.clear();
+  frame_tracking_token_helper_.ClearTokens();
   weak_this_factory_.InvalidateWeakPtrs();
   weak_this_ = weak_this_factory_.GetWeakPtr();
 }
@@ -352,6 +362,8 @@ void PlatformVideoFramePool::OnFrameReleased(
                           origin_frame->visible_rect(),
                           origin_frame->metadata().hw_protected)) {
     InsertFreeFrame_Locked(std::move(origin_frame));
+  } else {
+    frame_tracking_token_helper_.ClearToken(origin_frame->tracking_token());
   }
 
   if (frame_available_cb_ && !IsExhausted_Locked())

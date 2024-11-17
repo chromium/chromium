@@ -12,18 +12,17 @@
 #include <wrl/client.h>
 
 #include <array>
-#include <map>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/gtest_prod_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/win/atl.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
-#include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_text_boundary.h"
 #include "ui/accessibility/platform/ichromeaccessible.h"
@@ -316,6 +315,21 @@ enum {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(                     \
       "Accessibility.Performance.WinAPIs." #enum_value)
 
+// Macro to record performance metrics for Windows Accessibility APIs.
+#define WIN_ACCESSIBILITY_SOURCE_API_PERF_HISTOGRAM(enum_value)          \
+  DCHECK(GetDelegate());                                                 \
+  absl::Cleanup record_metric =                                          \
+      [node = (GetDelegate() ? GetDelegate()->node() : nullptr),         \
+       timer = base::ElapsedTimer()] {                                   \
+        base::UmaHistogramMicrosecondsTimes(                             \
+            node && !node->IsView()                                      \
+                ? std::string_view("Accessibility.Performance.WinAPIs2." \
+                                   "WebContents." #enum_value)           \
+                : std::string_view("Accessibility.Performance.WinAPIs2." \
+                                   "View." #enum_value),                 \
+            timer.Elapsed());                                            \
+      }
+
 //
 // Macros to use at the top of any AXPlatformNodeWin (or derived class) method
 // that implements a UIA COM interface. The error code UIA_E_ELEMENTNOTAVAILABLE
@@ -362,7 +376,6 @@ class COMPONENT_EXPORT(AX_PLATFORM) WinAccessibilityAPIUsageObserver {
   virtual void OnAccNameCalled() = 0;
   virtual void OnBasicUIAutomationUsed() = 0;
   virtual void OnAdvancedUIAutomationUsed() = 0;
-  virtual void OnUIAutomationIdRequested() = 0;
   virtual void OnProbableUIAutomationScreenReaderDetected() = 0;
   virtual void OnTextPatternRequested() = 0;
   virtual void StartFiringUIAEvents() = 0;

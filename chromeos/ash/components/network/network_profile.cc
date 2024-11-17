@@ -18,8 +18,7 @@ std::string NetworkProfile::ToDebugString() const {
                               path.c_str(),
                               userhash.c_str());
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 }  // namespace ash

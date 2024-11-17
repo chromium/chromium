@@ -69,11 +69,6 @@ std::u16string DeskTextfield::GetTooltipText(const gfx::Point& p) const {
   return GetPreferredSize().width() > width() ? GetText() : std::u16string();
 }
 
-void DeskTextfield::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Textfield::GetAccessibleNodeData(node_data);
-  node_data->SetNameChecked(GetViewAccessibility().GetCachedName());
-}
-
 ui::Cursor DeskTextfield::GetCursor(const ui::MouseEvent& event) {
   return ui::mojom::CursorType::kIBeam;
 }

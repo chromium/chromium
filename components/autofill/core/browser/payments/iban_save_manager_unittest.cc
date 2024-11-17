@@ -88,7 +88,7 @@ class IbanSaveManagerTest : public testing::Test {
         .WillByDefault(
             [is_successful, regex, includes_invalid_legal_message](
                 const std::string& app_locale, int64_t billing_customer_number,
-                int billable_service_number, const std::string& country_code,
+                const std::string& country_code,
                 base::OnceCallback<void(
                     payments::PaymentsAutofillClient::PaymentsRpcResult,
                     const std::u16string& validation_regex,
@@ -115,8 +115,7 @@ class IbanSaveManagerTest : public testing::Test {
     ON_CALL(*payments_network_interface(), UploadIban)
         .WillByDefault(
             [is_successful](
-                const payments::PaymentsNetworkInterface::
-                    UploadIbanRequestDetails& request_details,
+                const payments::UploadIbanRequestDetails& request_details,
                 base::OnceCallback<void(
                     payments::PaymentsAutofillClient::PaymentsRpcResult)>
                     callback) {
@@ -542,6 +541,7 @@ TEST_F(IbanSaveManagerTest, OfferUploadSave_NewIban_Success) {
   SetUpGetIbanUploadDetailsResponse(/*is_successful=*/true);
 
   EXPECT_TRUE(GetIbanSaveManager().AttemptToOfferUploadSaveForTesting(iban));
+  EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()->risk_data_loaded());
   EXPECT_TRUE(GetIbanSaveManager().HasContextTokenForTesting());
   EXPECT_TRUE(autofill_client_.GetPaymentsAutofillClient()
                   ->ConfirmUploadIbanToCloudWasCalled());

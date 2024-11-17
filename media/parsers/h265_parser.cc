@@ -1164,6 +1164,11 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
   sps = GetSPS(pps->pps_seq_parameter_set_id);
   DCHECK(sps);  // We already validated this when we parsed the PPS.
 
+  // Workaround for crbug.com/369963046; Apple encoder produces L1T2 streams
+  // with sps_max_sub_layers_minus1 = 0.
+  int clamped_temporal_id =
+      std::min(shdr->temporal_id, sps->sps_max_sub_layers_minus1);
+
   if (!shdr->first_slice_segment_in_pic_flag) {
     if (pps->dependent_slice_segments_enabled_flag)
       READ_BOOL_OR_RETURN(&shdr->dependent_slice_segment_flag);
@@ -1187,7 +1192,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
     // We also need to validate the fields that have conditions that depend on
     // anything unique in this slice (i.e. anything already parsed).
     if ((shdr->irap_pic ||
-         sps->sps_max_dec_pic_buffering_minus1[shdr->temporal_id] == 0) &&
+         sps->sps_max_dec_pic_buffering_minus1[clamped_temporal_id] == 0) &&
         nalu.nuh_layer_id == 0) {
       TRUE_OR_RETURN(shdr->slice_type == 2);
     }
@@ -1211,7 +1216,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
     SKIP_BITS_OR_RETURN(pps->num_extra_slice_header_bits);
     READ_UE_OR_RETURN(&shdr->slice_type);
     if ((shdr->irap_pic ||
-         sps->sps_max_dec_pic_buffering_minus1[shdr->temporal_id] == 0) &&
+         sps->sps_max_dec_pic_buffering_minus1[clamped_temporal_id] == 0) &&
         nalu.nuh_layer_id == 0) {
       TRUE_OR_RETURN(shdr->slice_type == 2);
     }
@@ -1261,7 +1266,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
         if (nalu.nuh_layer_id == 0) {
           TRUE_OR_RETURN(
               shdr->num_long_term_pics <=
-              (sps->sps_max_dec_pic_buffering_minus1[shdr->temporal_id] -
+              (sps->sps_max_dec_pic_buffering_minus1[clamped_temporal_id] -
                shdr->GetStRefPicSet(sps).num_negative_pics -
                shdr->GetStRefPicSet(sps).num_positive_pics -
                shdr->num_long_term_sps));

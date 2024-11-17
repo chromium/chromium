@@ -59,15 +59,15 @@ class MockDataTypeWorker : public CommitQueue {
   const CommitRequestData* GetLatestPendingCommitForHash(
       const ClientTagHash& tag_hash) const;
 
-  // Verify that the |n|th commit request list has the corresponding commit
-  // requests for |tag_hashes| with |value| set.
+  // Verify that the `n`th commit request list has the corresponding commit
+  // requests for `tag_hashes` with `value` set.
   void VerifyNthPendingCommit(
       size_t n,
       const std::vector<ClientTagHash>& tag_hashes,
       const std::vector<sync_pb::EntitySpecifics>& specificsList);
 
   // Verify the pending commits each contain a list of CommitRequestData and
-  // they have the same hashes in the same order as |tag_hashes|.
+  // they have the same hashes in the same order as `tag_hashes`.
   void VerifyPendingCommits(
       const std::vector<std::vector<ClientTagHash>>& tag_hashes);
 
@@ -79,7 +79,7 @@ class MockDataTypeWorker : public CommitQueue {
   }
 
   // Trigger an update from the server. See GenerateUpdateData for parameter
-  // descriptions. |version_offset| defaults to 1 and |ekn| defaults to the
+  // descriptions. `version_offset` defaults to 1 and `ekn` defaults to the
   // current encryption key name the worker has.
   void UpdateFromServer();
   void UpdateFromServer(const ClientTagHash& tag_hash,
@@ -98,19 +98,19 @@ class MockDataTypeWorker : public CommitQueue {
   // Returns an UpdateResponseData representing an update received from
   // the server. Updates server state accordingly.
   //
-  // The |version_offset| field can be used to emulate stale data (ie. versions
+  // The `version_offset` field can be used to emulate stale data (ie. versions
   // going backwards), reflections and redeliveries (ie. several instances of
   // the same version) or new updates.
   //
-  // |ekn| is the encryption key name this item will fake having.
+  // `ekn` is the encryption key name this item will fake having.
   syncer::UpdateResponseData GenerateUpdateData(
       const ClientTagHash& tag_hash,
       const sync_pb::EntitySpecifics& specifics,
       int64_t version_offset,
       const std::string& ekn);
 
-  // Mostly same as GenerateUpdateData above, but set 1 as |version_offset|, and
-  // use data_type_state_.encryption_key_name() as |ekn|.
+  // Mostly same as GenerateUpdateData above, but set 1 as `version_offset`, and
+  // use data_type_state_.encryption_key_name() as `ekn`.
   syncer::UpdateResponseData GenerateUpdateData(
       const ClientTagHash& tag_hash,
       const sync_pb::EntitySpecifics& specifics);
@@ -132,7 +132,7 @@ class MockDataTypeWorker : public CommitQueue {
   syncer::UpdateResponseData GenerateTombstoneUpdateData(
       const ClientTagHash& tag_hash);
 
-  // Triggers a server-side deletion of the entity with |tag_hash|; updates
+  // Triggers a server-side deletion of the entity with `tag_hash`; updates
   // server state accordingly.
   void TombstoneFromServer(const ClientTagHash& tag_hash);
 
@@ -148,8 +148,8 @@ class MockDataTypeWorker : public CommitQueue {
   // Simulates commit failure like HTTP error.
   void FailFullCommitRequest();
 
-  // Set the encryption key to |ekn| and inform the processor with an update
-  // containing the data in |update|, which defaults to an empty list.
+  // Set the encryption key to `ekn` and inform the processor with an update
+  // containing the data in `update`, which defaults to an empty list.
   void UpdateWithEncryptionKey(const std::string& ekn);
   void UpdateWithEncryptionKey(const std::string& ekn,
                                UpdateResponseDataList update);
@@ -166,12 +166,12 @@ class MockDataTypeWorker : public CommitQueue {
   static std::string GenerateId(const ClientTagHash& tag_hash);
 
   // Returns a commit response that indicates a successful commit of the
-  // given |request_data|. Updates server state accordingly.
+  // given `request_data`. Updates server state accordingly.
   CommitResponseData SuccessfulCommitResponse(
       const CommitRequestData& request_data,
       int64_t version_offset);
   // Returns a commit response that indicates a failed commit of the
-  // given |request_data|.
+  // given `request_data`.
   FailedCommitResponseData FailedCommitResponse(
       const CommitRequestData& request_data);
 

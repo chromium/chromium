@@ -5,14 +5,16 @@
 // clang-format off
 import 'chrome://settings/settings.js';
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {assertFalse, assertTrue, assertEquals} from 'chrome://webui-test/chai_assert.js';
-import type {UserAnnotationsManagerProxy, SettingsSimpleConfirmationDialogElement, SettingsAutofillPredictionImprovementsSectionElement} from 'chrome://settings/lazy_load.js';
+import {assertTrue, assertEquals} from 'chrome://webui-test/chai_assert.js';
+import type {SettingsSimpleConfirmationDialogElement, SettingsAutofillPredictionImprovementsSectionElement} from 'chrome://settings/lazy_load.js';
 import {UserAnnotationsManagerProxyImpl} from 'chrome://settings/lazy_load.js';
-import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
+import {TestUserAnnotationsManagerProxyImpl} from './test_user_annotations_manager_proxy.js';
+
 import {isVisible} from 'chrome://webui-test/test_util.js';
 // clang-format on
-
 
 suite('AutofillPredictionImprovementsSectionUiDisabledToggleTest', function() {
   setup(async function() {
@@ -38,48 +40,15 @@ suite('AutofillPredictionImprovementsSectionUiDisabledToggleTest', function() {
     await flushTasks();
 
     assertTrue(
-        !section.shadowRoot!.querySelector('#entriesHeader'),
-        'Entries are visible when ' +
-            '"prefs.autofill_prediction_improvements.enabled is true"');
+        isVisible(section.shadowRoot!.querySelector('#entriesHeader')),
+        'With the toggle disabled, the entries should be visible');
     assertTrue(
-        !section.shadowRoot!.querySelector('#entries'),
-        'Entries are visible when ' +
-            '"prefs.autofill_prediction_improvements.enabled is true"');
+        isVisible(section.shadowRoot!.querySelector('#entries')),
+        'With the toggle disabled, the entries should be visible');
   });
 });
 
 suite('AutofillPredictionImprovementsSectionUiTest', function() {
-  class TestUserAnnotationsManagerProxyImpl extends TestBrowserProxy implements
-      UserAnnotationsManagerProxy {
-    constructor() {
-      super(['getEntries', 'deleteEntry', 'deleteAllEntries']);
-    }
-
-    getEntries(): Promise<chrome.autofillPrivate.UserAnnotationsEntry[]> {
-      this.methodCalled('getEntries');
-      return Promise.resolve([
-        {
-          entryId: 1,
-          key: 'Date of birth',
-          value: '15/02/1989',
-        },
-        {
-          entryId: 2,
-          key: 'Frequent flyer program',
-          value: 'Aadvantage',
-        },
-      ]);
-    }
-
-    deleteEntry(entryId: number): void {
-      this.methodCalled('deleteEntry', entryId);
-    }
-
-    deleteAllEntries(): void {
-      this.methodCalled('deleteAllEntries');
-    }
-  }
-
   let section: SettingsAutofillPredictionImprovementsSectionElement;
   let entries: HTMLElement;
   let userAnnotationManager: TestUserAnnotationsManagerProxyImpl;
@@ -90,13 +59,27 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
     userAnnotationManager = new TestUserAnnotationsManagerProxyImpl();
     UserAnnotationsManagerProxyImpl.setInstance(userAnnotationManager);
 
+    const testEntries: chrome.autofillPrivate.UserAnnotationsEntry[] = [
+      {
+        entryId: 1,
+        key: 'Date of birth',
+        value: '15/02/1989',
+      },
+      {
+        entryId: 2,
+        key: 'Frequent flyer program',
+        value: 'Aadvantage',
+      },
+    ];
+    userAnnotationManager.setEntries(testEntries);
+
     section = document.createElement(
         'settings-autofill-prediction-improvements-section');
     section.prefs = {
       autofill: {
         prediction_improvements: {
           enabled: {
-            key: 'autofill_prediction_improvements.enabled',
+            key: 'autofill.prediction_improvements.enabled',
             type: chrome.settingsPrivate.PrefType.BOOLEAN,
             value: true,
           },
@@ -114,7 +97,6 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
     assertTrue(!!section.shadowRoot!.querySelector('#entriesHeader'));
   });
 
-
   test('testEntriesListDataFromUserAnnotationsManager', async function() {
     await userAnnotationManager.whenCalled('getEntries');
     assertEquals(
@@ -122,18 +104,18 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
         '2 entries come from TestUserAnnotationsManagerImpl.getEntries().');
   });
 
-  test('testEntriesDisappearAfterToggleDisabling', async function() {
+  test('testEntriesDoNotDisappearAfterToggleDisabling', async function() {
     // The toggle is initially enabled (see the setup() method), clicking it
-    // disables the 'autofill_prediction_improvements.enabled' pref.
+    // disables the 'autofill.prediction_improvements.enabled' pref.
     section.$.prefToggle.click();
     await flushTasks();
 
-    assertFalse(
+    assertTrue(
         isVisible(section.shadowRoot!.querySelector('#entriesHeader')),
-        'With the toggle disabled, the entries should be hidden');
-    assertFalse(
+        'With the toggle disabled, the entries should be visible');
+    assertTrue(
         isVisible(section.shadowRoot!.querySelector('#entries')),
-        'With the toggle disabled, the entries should be hidden');
+        'With the toggle disabled, the entries should be visible');
   });
 
   test('testCancelingEntryDeleteDialog', async function() {
@@ -159,7 +141,6 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
         'The 2 entries should remain intact.');
   });
 
-
   test('testConfirmingEntryDeleteDialog', async function() {
     const deleteButton = entries.querySelector<HTMLElement>(
         '.list-item:nth-of-type(1) cr-icon-button');
@@ -176,11 +157,11 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
         '#deleteEntryDialog should be in DOM after clicking delete button');
     deleteEntryDialog.$.confirm.click();
 
-    await userAnnotationManager.whenCalled('deleteEntry');
+    const entryId = await userAnnotationManager.whenCalled('deleteEntry');
     await flushTasks();
 
     assertEquals(1, userAnnotationManager.getCallCount('deleteEntry'));
-    assertEquals(1, userAnnotationManager.getArgs('deleteEntry')[0]);
+    assertEquals(1, entryId);
     assertEquals(
         1, entries.querySelectorAll('.list-item').length,
         'One of the 2 entries should be removed');
@@ -219,7 +200,8 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
         section.shadowRoot!
             .querySelector<SettingsSimpleConfirmationDialogElement>(
                 '#deleteAllEntriesDialog');
-    assertTrue(!!deleteAllEntriesDialog, '#deleteEntryDialog should be in DOM');
+    assertTrue(
+        !!deleteAllEntriesDialog, '#deleteAllEntriesDialog should be in DOM');
     deleteAllEntriesDialog.$.confirm.click();
 
     await userAnnotationManager.whenCalled('deleteAllEntries');
@@ -227,7 +209,154 @@ suite('AutofillPredictionImprovementsSectionUiTest', function() {
 
     assertEquals(1, userAnnotationManager.getCallCount('deleteAllEntries'));
     assertEquals(
-        entries.querySelectorAll('.list-item').length, 0,
-        'All entries should be removed');
+        entries.querySelectorAll('.list-item').length, 1,
+        'All entries should be removed (-2), the "no entries" message shows ' +
+            'up instead (+1).');
+    assertTrue(
+        isVisible(entries.querySelector('#entriesNone')),
+        'The "no entries" message shows up when the list is empty');
+  });
+});
+
+suite('AutofillPredictionImprovementsSectionToggleTest', function() {
+  let section: SettingsAutofillPredictionImprovementsSectionElement;
+  let userAnnotationManager: TestUserAnnotationsManagerProxyImpl;
+
+  setup(async function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+
+    userAnnotationManager = new TestUserAnnotationsManagerProxyImpl();
+    UserAnnotationsManagerProxyImpl.setInstance(userAnnotationManager);
+
+    section = document.createElement(
+        'settings-autofill-prediction-improvements-section');
+    section.prefs = {
+      autofill: {
+        prediction_improvements: {
+          enabled: {
+            key: 'autofill.prediction_improvements.enabled',
+            type: chrome.settingsPrivate.PrefType.BOOLEAN,
+            value: false,
+          },
+        },
+      },
+    };
+    document.body.appendChild(section);
+    await flushTasks();
+  });
+
+  test('testTriggerBootstrappingCalledWhenConditionsMet', async function() {
+    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+    userAnnotationManager.setEntries([]);
+
+    userAnnotationManager.reset();
+
+    section.$.prefToggle.click();
+    await flushTasks();
+
+    await userAnnotationManager.whenCalled('hasEntries');
+    await userAnnotationManager.whenCalled('triggerBootstrapping');
+
+    assertEquals(
+        1, userAnnotationManager.getCallCount('triggerBootstrapping'),
+        'triggerBootstrapping should be called when all conditions are met');
+  });
+
+  test(
+      'testTriggerBootstrappingNotCalledWhenBootstrappingDisabled',
+      async function() {
+        loadTimeData.overrideValues(
+            {autofillPredictionBootstrappingEnabled: false});
+        userAnnotationManager.setEntries([]);
+
+        userAnnotationManager.reset();
+
+        section.$.prefToggle.click();
+        await flushTasks();
+
+        await userAnnotationManager.whenCalled('hasEntries');
+
+        assertEquals(
+            0, userAnnotationManager.getCallCount('triggerBootstrapping'),
+            'triggerBootstrapping shouldn\'t be called if feature is disabled');
+      });
+
+  test('testTriggerBootstrappingNotCalledWhenToggleDisabled', async function() {
+    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+    userAnnotationManager.setEntries([]);
+
+    userAnnotationManager.reset();
+
+    section.setPrefValue('autofill.prediction_improvements.enabled', true);
+    await flushTasks();
+
+    section.$.prefToggle.click();
+    await flushTasks();
+
+    await userAnnotationManager.whenCalled('hasEntries');
+
+    assertEquals(
+        0, userAnnotationManager.getCallCount('triggerBootstrapping'),
+        'triggerBootstrapping should not be called when toggle is disabled');
+  });
+
+  test('testTriggerBootstrappingNotCalledWhenHasEntries', async function() {
+    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+    userAnnotationManager.setEntries([
+      {
+        entryId: 1,
+        key: 'Test Key',
+        value: 'Test Value',
+      },
+    ]);
+
+    userAnnotationManager.reset();
+
+    section.$.prefToggle.click();
+    await flushTasks();
+
+    await userAnnotationManager.whenCalled('hasEntries');
+
+    assertEquals(
+        0, userAnnotationManager.getCallCount('triggerBootstrapping'),
+        'triggerBootstrapping should not be called when entries exist');
+  });
+
+  test('testTriggerBootstrappingNotCalledWhenComponentDisabled', async function() {
+    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+    userAnnotationManager.setEntries([]);
+
+    userAnnotationManager.reset();
+
+    section.disabled = true;
+
+    section.$.prefToggle.click();
+    await flushTasks();
+
+    assertEquals(
+        0, userAnnotationManager.getCallCount('triggerBootstrapping'),
+        'triggerBootstrapping should not be called when component is disabled');
+  });
+
+  test('testGetEntriesCalledWhenBootstrappingAddsEntries', async function() {
+    loadTimeData.overrideValues({autofillPredictionBootstrappingEnabled: true});
+
+    userAnnotationManager.setEntries([]);
+    userAnnotationManager.setEntriesBootstrapped(true);
+
+    userAnnotationManager.reset();
+
+    section.$.prefToggle.click();
+    await flushTasks();
+
+    await userAnnotationManager.whenCalled('hasEntries');
+    await userAnnotationManager.whenCalled('triggerBootstrapping');
+    await userAnnotationManager.whenCalled('getEntries');
+
+    assertEquals(
+        1, userAnnotationManager.getCallCount('getEntries'),
+        'getEntries should be called if bootstrapping added entries');
   });
 });

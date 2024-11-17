@@ -47,6 +47,7 @@
 #include "components/download/public/common/mock_download_item.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
@@ -857,6 +858,71 @@ TEST_F(DownloadTargetDeterminerTest, MaybeDangerousContent) {
           download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT)));
   RunTestCasesWithActiveItem(kSafeBrowsingTestCases,
                              std::size(kSafeBrowsingTestCases));
+}
+
+TEST_F(DownloadTargetDeterminerTest,
+       MaybeDangerousContent_DownloadRestrictions) {
+  // Setting the "DownloadRestrictions" policy to 1 or 2 should result in the
+  // dangerous level persisting instead of being bypassed.
+  for (int download_restrictions : {1, 2}) {
+    profile()->GetTestingPrefService()->SetInteger(
+        policy::policy_prefs::kDownloadRestrictions, download_restrictions);
+
+    const DownloadTestCase kSafeBrowsingTestCases[] = {
+        {// 0: Automatic Maybe dangerous content
+         AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
+         DownloadFileType::ALLOW_ON_USER_GESTURE,
+         "http://phishing.example.com/foo.kindabad", "", FILE_PATH_LITERAL(""),
+
+         FILE_PATH_LITERAL("foo.kindabad"),
+         DownloadItem::TARGET_DISPOSITION_OVERWRITE, EXPECT_UNCONFIRMED},
+
+        {// 1: Automatic Maybe dangerous content with DANGEROUS type.
+         AUTOMATIC, download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
+         DownloadFileType::DANGEROUS, "http://phishing.example.com/foo.bad", "",
+         FILE_PATH_LITERAL(""),
+
+         FILE_PATH_LITERAL("foo.bad"),
+         DownloadItem::TARGET_DISPOSITION_OVERWRITE, EXPECT_UNCONFIRMED},
+
+        {// 2: Save As Maybe dangerous content
+         SAVE_AS, download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
+         DownloadFileType::DANGEROUS,
+         "http://phishing.example.com/foo.kindabad", "", FILE_PATH_LITERAL(""),
+
+         FILE_PATH_LITERAL("foo.kindabad"),
+         DownloadItem::TARGET_DISPOSITION_PROMPT,
+
+         EXPECT_UNCONFIRMED},
+
+        {// 3: Forced Maybe dangerous content
+         FORCED, download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT,
+         DownloadFileType::DANGEROUS,
+         "http://phishing.example.com/foo.kindabad", "",
+         FILE_PATH_LITERAL("forced-foo.kindabad"),
+
+         FILE_PATH_LITERAL("forced-foo.kindabad"),
+         DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+
+         EXPECT_UNCONFIRMED}};
+
+    // Test assumptions:
+    ASSERT_EQ(
+        DownloadFileType::ALLOW_ON_USER_GESTURE,
+        safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+            base::FilePath(FILE_PATH_LITERAL("foo.kindabad")), GURL{},
+            nullptr));
+    ASSERT_EQ(
+        DownloadFileType::DANGEROUS,
+        safe_browsing::FileTypePolicies::GetInstance()->GetFileDangerLevel(
+            base::FilePath(FILE_PATH_LITERAL("foo.bad")), GURL{}, nullptr));
+
+    ON_CALL(*delegate(), CheckDownloadUrl_(_, _, _))
+        .WillByDefault(WithArg<2>(ScheduleCallback(
+            download::DOWNLOAD_DANGER_TYPE_MAYBE_DANGEROUS_CONTENT)));
+    RunTestCasesWithActiveItem(kSafeBrowsingTestCases,
+                               std::size(kSafeBrowsingTestCases));
+  }
 }
 
 // Test whether the last saved directory is used for 'Save As' downloads.

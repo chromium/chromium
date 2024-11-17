@@ -1,6 +1,6 @@
 {
-  "short_name": "Password Manager",
-  "name": "Password Manager",
+  "short_name": "$i18n{passwordManagerTitle}",
+  "name": "$i18n{passwordManagerTitle}",
   "icons": [
     {
       "src": "chrome://password-manager/images/password_manager_logo.svg",

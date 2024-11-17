@@ -32,7 +32,7 @@ using testing::AtLeast;
 using testing::Gt;
 using testing::Lt;
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 
 void SetUpUtilityClientProgressOnVerifyWrite(
     const std::vector<int>& progress_list,
@@ -41,7 +41,7 @@ void SetUpUtilityClientProgressOnVerifyWrite(
   client->SimulateProgressOnVerifyWrite(progress_list, will_succeed);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -171,7 +171,7 @@ TEST_F(ImageWriterOperationTest, ExtractZipFile) {
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(ImageWriterOperationTest, WriteImageToDevice) {
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   auto set_up_utility_client_progress =
       [](const std::vector<int>& progress_list, bool will_succeed,
          FakeImageWriterClient* client) {
@@ -200,7 +200,7 @@ TEST_F(ImageWriterOperationTest, WriteImageToDevice) {
 }
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 // Chrome OS doesn't support verification in the ImageBurner, so these two tests
 // are skipped.
 
@@ -256,7 +256,7 @@ TEST_F(ImageWriterOperationTest, VerifyFileFailure) {
   operation_->VerifyWrite(base::DoNothing());
   content::RunAllTasksUntilIdle();
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 // Tests that on creation the operation_ has the expected state.
 TEST_F(ImageWriterOperationTest, Creation) {

@@ -147,8 +147,7 @@ void QueryShaderPrecisionFormat(GLenum shader_type,
       *precision = 23;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   // This function is sometimes defined even though it's really just
@@ -418,7 +417,13 @@ void LogGLDebugMessage(GLenum source,
                        const GLchar* message,
                        Logger* error_logger) {
   std::string id_string = GLES2Util::GetStringEnum(id);
-  if (type == GL_DEBUG_TYPE_ERROR && source == GL_DEBUG_SOURCE_API) {
+  // Suppresses GL_DEBUG_TYPE_PERFORMANCE log messages for web tests that can
+  // get sent to the JS console and cause unnecessary test failures due test
+  // output log expectation comparisons.
+  if (type == GL_DEBUG_TYPE_PERFORMANCE &&
+      error_logger->SuppressPerformanceLogs()) {
+    return;
+  } else if (type == GL_DEBUG_TYPE_ERROR && source == GL_DEBUG_SOURCE_API) {
     error_logger->LogMessage(__FILE__, __LINE__,
                              " " + id_string + ": " + message);
   } else {
@@ -481,8 +486,7 @@ error::ContextLostReason GetContextLostReasonFromResetStatus(
       return error::kUnknown;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return error::kUnknown;
+  NOTREACHED();
 }
 
 bool GetCompressedTexSizeInBytes(const char* function_name,
@@ -1274,8 +1278,7 @@ GLenum GetTextureBindingQuery(GLenum texture_type) {
     case GL_TEXTURE_CUBE_MAP:
       return GL_TEXTURE_BINDING_CUBE_MAP;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

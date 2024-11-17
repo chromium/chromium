@@ -76,8 +76,8 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
       return {
           kExtensionsTypeName, EXTENSIONS, {EXTENSIONS, EXTENSION_SETTINGS}};
     case UserSelectableType::kApps:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      // In Ash, "Apps" part of Chrome OS settings.
+#if BUILDFLAG(IS_CHROMEOS)
+      // In Chrome OS, "Apps" is a sub-item of OS settings.
       return {kAppsTypeName, UNSPECIFIED};
 #else
       return {kAppsTypeName, APPS, {APPS, APP_SETTINGS, WEB_APPS, WEB_APKS}};
@@ -122,11 +122,10 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kCookies:
       return {kCookiesTypeName, COOKIES, {COOKIES}};
   }
-  NOTREACHED_IN_MIGRATION();
-  return {nullptr, UNSPECIFIED, {}};
+  NOTREACHED();
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kOsAppsTypeName[] = "osApps";
 constexpr char kOsPreferencesTypeName[] = "osPreferences";
 constexpr char kOsWifiConfigurationsTypeName[] = "osWifiConfigurations";
@@ -151,7 +150,7 @@ UserSelectableTypeInfo GetUserSelectableOsTypeInfo(UserSelectableOsType type) {
               {WIFI_CONFIGURATIONS}};
   }
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -225,7 +224,7 @@ DataType UserSelectableTypeToCanonicalDataType(UserSelectableType type) {
   return GetUserSelectableTypeInfo(type).canonical_data_type;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 const char* GetUserSelectableOsTypeName(UserSelectableOsType type) {
   return GetUserSelectableOsTypeInfo(type).type_name;
 }
@@ -278,7 +277,7 @@ DataTypeSet UserSelectableOsTypeToAllDataTypes(UserSelectableOsType type) {
 DataType UserSelectableOsTypeToCanonicalDataType(UserSelectableOsType type) {
   return GetUserSelectableOsTypeInfo(type).canonical_data_type;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::ostream& operator<<(std::ostream& stream, const UserSelectableType& type) {
   return stream << GetUserSelectableTypeName(type);

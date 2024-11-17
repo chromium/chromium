@@ -27,6 +27,7 @@ public class DownloadInterstitialCoordinatorImpl implements DownloadInterstitial
 
     /**
      * Creates a new instance of the {@link DownloadInterstitialCoordinator} implementation.
+     *
      * @param contextSupplier Supplier which provides the context of the parent tab.
      * @param downloadUrl Url spec used for matching and binding the correct offline item.
      * @param provider An {@link OfflineContentProvider} to observe changes to downloads.
@@ -37,16 +38,13 @@ public class DownloadInterstitialCoordinatorImpl implements DownloadInterstitial
             Supplier<Context> contextSupplier,
             String downloadUrl,
             OfflineContentProvider provider,
+            ModalDialogManager modalDialogManager,
             SnackbarManager snackbarManager,
             Runnable reloadCallback) {
         mView = DownloadInterstitialView.create(contextSupplier.get());
         PropertyModel model =
                 new PropertyModel.Builder(DownloadInterstitialProperties.ALL_KEYS).build();
         model.set(DownloadInterstitialProperties.RELOAD_TAB, reloadCallback);
-        ModalDialogManager modalDialogManager =
-                new ModalDialogManager(
-                        new AppModalPresenter(contextSupplier.get()),
-                        ModalDialogManager.ModalDialogType.APP);
         mMediator =
                 new DownloadInterstitialMediator(
                         contextSupplier,

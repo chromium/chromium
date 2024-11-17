@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/omnibox_proto/groups.pb.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -1044,6 +1045,26 @@ TEST_F(HistoryQuickProviderTest, MaxMatches) {
   provider().Start(input, false);
   matches = provider().matches();
   EXPECT_EQ(matches.size(), 8u);
+}
+
+TEST_F(HistoryQuickProviderTest, GroupForAndroidHub) {
+  // Keyword mode is off. We should only get provider_max_matches_ matches.
+  AutocompleteInput input(u"somedomain.com",
+                          metrics::OmniboxEventProto::ANDROID_HUB,
+                          TestSchemeClassifier());
+  provider().Start(input, false);
+  EXPECT_EQ(omnibox::GROUP_MOBILE_HISTORY,
+            provider().matches()[0].suggestion_group_id);
+}
+
+TEST_F(HistoryQuickProviderTest, BiggerMaxMatchesForAndroidHub) {
+  AutocompleteInput input(u"daysagoest",
+                          metrics::OmniboxEventProto::ANDROID_HUB,
+                          TestSchemeClassifier());
+  provider().Start(input, false);
+  EXPECT_EQ(3u, provider().provider_max_matches());
+  EXPECT_FALSE(provider().matches().empty());
+  EXPECT_EQ(provider().matches().size(), 5u);
 }
 
 class HQPDomainSuggestionsTest : public HistoryQuickProviderTest {

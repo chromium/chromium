@@ -36,7 +36,7 @@ class PrintTabHelperTest : public PlatformTest {
   PrintTabHelperTest() {
     scoped_refptr<user_prefs::PrefRegistrySyncable> registry =
         base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
-    RegisterBrowserStatePrefs(registry.get());
+    RegisterProfilePrefs(registry.get());
     sync_preferences::PrefServiceMockFactory factory;
 
     TestProfileIOS::Builder test_cbs_builder;

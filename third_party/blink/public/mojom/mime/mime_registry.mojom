@@ -4,7 +4,12 @@
 
 module blink.mojom;
 
+// This service is exposed by the browser process, for the benefit of sandboxed
+// render processes which need to look up MIME information.
 interface MimeRegistry {
+  // Given an extension, returns the corresponding MIME type if there is one,
+  // and an empty string if not. The given extension must not include a leading
+  // dot; it is a fatal error to include it.
   [Sync]
   GetMimeTypeFromExtension(string extension) => (string mime_type);
 };

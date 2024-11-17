@@ -29,6 +29,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.RecyclerViewMatch
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.IdRes;
 import androidx.recyclerview.widget.RecyclerView;
@@ -380,6 +381,18 @@ public class TabListEditorTestingRobot {
                                     atPositionWithViewHolder(
                                             position, withItemType(targetItemViewType))))
                     .check(matches(isDisplayed()));
+            return this;
+        }
+
+        public Result verifyTabListEditorHasTopMargin(int topMargin) {
+            onView(withId(R.id.selectable_list))
+                    .check(
+                            (v, noMatchException) -> {
+                                if (noMatchException != null) throw noMatchException;
+                                Assert.assertEquals(
+                                        topMargin,
+                                        ((MarginLayoutParams) v.getLayoutParams()).topMargin);
+                            });
             return this;
         }
     }

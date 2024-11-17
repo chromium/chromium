@@ -5,7 +5,7 @@
 import './action_toolbar.js';
 import './scanning_fonts.css.js';
 import './scanning_shared.css.js';
-import './strings.m.js';
+import '/strings.m.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 

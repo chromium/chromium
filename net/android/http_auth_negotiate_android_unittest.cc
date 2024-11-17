@@ -50,9 +50,7 @@ TEST(HttpAuthNegotiateAndroidTest, ParseChallenge_FirstRound) {
   prefs.set_auth_android_negotiate_account_type(
       "org.chromium.test.DummySpnegoAuthenticator");
   HttpAuthNegotiateAndroid auth(&prefs);
-  std::string challenge_text = "Negotiate";
-  HttpAuthChallengeTokenizer challenge(challenge_text.begin(),
-                                       challenge_text.end());
+  HttpAuthChallengeTokenizer challenge("Negotiate");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
             auth.ParseChallenge(&challenge));
 }
@@ -64,9 +62,7 @@ TEST(HttpAuthNegotiateAndroidTest, ParseChallenge_UnexpectedTokenFirstRound) {
   prefs.set_auth_android_negotiate_account_type(
       "org.chromium.test.DummySpnegoAuthenticator");
   HttpAuthNegotiateAndroid auth(&prefs);
-  std::string challenge_text = "Negotiate Zm9vYmFy";
-  HttpAuthChallengeTokenizer challenge(challenge_text.begin(),
-                                       challenge_text.end());
+  HttpAuthChallengeTokenizer challenge("Negotiate Zm9vYmFy");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_INVALID,
             auth.ParseChallenge(&challenge));
 }
@@ -78,15 +74,11 @@ TEST(HttpAuthNegotiateAndroidTest, ParseChallenge_TwoRounds) {
   prefs.set_auth_android_negotiate_account_type(
       "org.chromium.test.DummySpnegoAuthenticator");
   HttpAuthNegotiateAndroid auth(&prefs);
-  std::string first_challenge_text = "Negotiate";
-  HttpAuthChallengeTokenizer first_challenge(first_challenge_text.begin(),
-                                             first_challenge_text.end());
+  HttpAuthChallengeTokenizer first_challenge("Negotiate");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
             auth.ParseChallenge(&first_challenge));
 
-  std::string second_challenge_text = "Negotiate Zm9vYmFy";
-  HttpAuthChallengeTokenizer second_challenge(second_challenge_text.begin(),
-                                              second_challenge_text.end());
+  HttpAuthChallengeTokenizer second_challenge("Negotiate Zm9vYmFy");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
             auth.ParseChallenge(&second_challenge));
 }
@@ -98,15 +90,11 @@ TEST(HttpAuthNegotiateAndroidTest, ParseChallenge_MissingTokenSecondRound) {
   prefs.set_auth_android_negotiate_account_type(
       "org.chromium.test.DummySpnegoAuthenticator");
   HttpAuthNegotiateAndroid auth(&prefs);
-  std::string first_challenge_text = "Negotiate";
-  HttpAuthChallengeTokenizer first_challenge(first_challenge_text.begin(),
-                                             first_challenge_text.end());
+  HttpAuthChallengeTokenizer first_challenge("Negotiate");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_ACCEPT,
             auth.ParseChallenge(&first_challenge));
 
-  std::string second_challenge_text = "Negotiate";
-  HttpAuthChallengeTokenizer second_challenge(second_challenge_text.begin(),
-                                              second_challenge_text.end());
+  HttpAuthChallengeTokenizer second_challenge("Negotiate");
   EXPECT_EQ(HttpAuth::AUTHORIZATION_RESULT_REJECT,
             auth.ParseChallenge(&second_challenge));
 }

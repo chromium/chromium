@@ -24,8 +24,8 @@ enum class FidoTransportProtocol : uint8_t {
   kBluetoothLowEnergy = 2,
   kHybrid = 3,
   kInternal = 4,
-  kAndroidAccessory = 5,
-  kMaxValue = kAndroidAccessory,
+  kDeprecatedAoa = 5,
+  kMaxValue = kDeprecatedAoa,
 };
 
 // String representation of above FidoTransportProtocol enum.

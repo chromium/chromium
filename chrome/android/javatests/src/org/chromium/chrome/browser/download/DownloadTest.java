@@ -35,7 +35,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.download.DownloadTestRule.CustomMainActivityStart;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -164,7 +164,7 @@ public class DownloadTest {
                 final String filePath,
                 final String fileName,
                 final long systemDownloadId,
-                final OTRProfileID otrProfileID,
+                final OtrProfileId otrProfileId,
                 final boolean isSupportedMimeType,
                 final boolean isOpenable,
                 final Bitmap icon,
@@ -183,7 +183,7 @@ public class DownloadTest {
                 final long bytesReceived,
                 final long timeRemainingInMillis,
                 final long startTime,
-                final OTRProfileID otrProfileID,
+                final OtrProfileId otrProfileId,
                 final boolean canDownloadWhileMetered,
                 final boolean isTransient,
                 final Bitmap icon,
@@ -196,7 +196,7 @@ public class DownloadTest {
                 String fileName,
                 boolean isResumable,
                 boolean isAutoResumable,
-                OTRProfileID otrProfileID,
+                OtrProfileId otrProfileId,
                 boolean isTransient,
                 Bitmap icon,
                 final GURL originalUrl,
@@ -212,7 +212,7 @@ public class DownloadTest {
                 final Bitmap icon,
                 final GURL originalUrl,
                 final boolean shouldPromoteOrigin,
-                OTRProfileID otrProfileID,
+                OtrProfileId otrProfileId,
                 @FailState int failState) {}
 
         @Override

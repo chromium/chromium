@@ -10,12 +10,12 @@ import android.view.View;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuItemDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuUi;
-import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -26,38 +26,32 @@ import java.util.List;
 public class AwContextMenuHelper {
     private static final String TAG = "AwContextMenuHelper";
     private final WebContents mWebContents;
-    private long mNativeAwContextMenuHelper;
 
     private ContextMenuPopulator mCurrentPopulator;
     private ContextMenuUi mCurrentContextMenu;
 
-    private AwContextMenuHelper(long nativeAwContextMenuHelper, WebContents webContents) {
-        mNativeAwContextMenuHelper = nativeAwContextMenuHelper;
+    private AwContextMenuHelper(WebContents webContents) {
         mWebContents = webContents;
     }
 
     @CalledByNative
-    private static AwContextMenuHelper create(
-            long nativeAwContextMenuHelper, WebContents webContents) {
-        return new AwContextMenuHelper(nativeAwContextMenuHelper, webContents);
+    private static AwContextMenuHelper create(WebContents webContents) {
+        return new AwContextMenuHelper(webContents);
     }
 
     @CalledByNative
     private void destroy() {
         dismissContextMenu();
-        mNativeAwContextMenuHelper = 0;
     }
 
     /**
      * Starts showing a context menu for {@code view} based on {@code params}.
      *
      * @param params The {@link ContextMenuParams} that indicate what menu items to show.
-     * @param renderFrameHost {@link RenderFrameHost} to get the encoded images from.
      * @param view container view for the menu.
      */
     @CalledByNative
-    private void showContextMenu(
-            ContextMenuParams params, RenderFrameHost renderFrameHost, View view) {
+    private void showContextMenu(ContextMenuParams params, View view) {
         if (params.isFile()) return;
 
         WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
@@ -84,7 +78,7 @@ public class AwContextMenuHelper {
 
                     mCurrentPopulator.onItemSelected(result);
                 };
-        Runnable onMenuShown = () -> {};
+        Runnable onMenuShown = CallbackUtils.emptyRunnable();
         Runnable onMenuClosed =
                 () -> {
                     mCurrentContextMenu = null;

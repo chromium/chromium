@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "device/bluetooth/jni_headers/Wrappers_jni.h"
+#include "device/bluetooth/jni_headers/BluetoothAdapterWrapper_jni.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ScopedJavaLocalRef;

@@ -23,9 +23,9 @@ static_library("apps") {
   public_deps = [
     "//ash/public/cpp",
     "//base",
-    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ui/webui/ash/settings/pages/apps/mojom",
+    "//chrome/browser/ui/webui/settings",
     "//components/prefs",
     "//components/services/app_service",
     "//mojo/public/cpp/bindings",
@@ -33,11 +33,14 @@ static_library("apps") {
 
   deps = [
     "//ash/components/arc",
+    "//ash/components/arc:arc_app_constants",
     "//ash/constants",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/apps/app_service",
+    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/child_accounts/on_device_controls",
     "//chrome/browser/ash/plugin_vm",
     "//chrome/browser/profiles:profile",
@@ -76,6 +79,7 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ui",

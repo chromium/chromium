@@ -388,8 +388,7 @@ void MediaStreamRemoteVideoSource::OnChanged(
       SetReadyState(WebMediaStreamSource::kReadyStateEnded);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

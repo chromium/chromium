@@ -107,7 +107,7 @@ struct DescriptorToken {
       return 0;
     }
     Decimal result = ParseToDecimalForNumberType(
-        String(attribute + start, length_excluding_descriptor));
+        String(base::span(attribute + start, length_excluding_descriptor)));
     is_valid = result.IsFinite();
     if (!is_valid)
       return 0;
@@ -343,10 +343,8 @@ static void ParseImageCandidatesFromSrcsetAttribute(
                     mojom::ConsoleMessageSource::kOther,
                     mojom::ConsoleMessageLevel::kWarning,
                     String("Dropped srcset candidate ") +
-                        JSONValue::QuoteString(
-                            String(image_url_start,
-                                   static_cast<wtf_size_t>(image_url_end -
-                                                           image_url_start)))));
+                        JSONValue::QuoteString(String(
+                            base::span(image_url_start, image_url_end)))));
           }
         }
         continue;
@@ -418,7 +416,9 @@ static unsigned AvoidDownloadIfHigherDensityResourceIsInCache(
     KURL url = document->CompleteURL(
         StripLeadingAndTrailingHTMLSpaces(image_candidates[i]->Url()));
     auto* resource = MemoryCache::Get()->ResourceForURL(
-        url, document->Fetcher()->GetCacheIdentifier(url));
+        url,
+        document->Fetcher()->GetCacheIdentifier(url,
+                                                /*skip_service_worker=*/false));
     if ((resource && resource->IsLoaded()) || url.ProtocolIsData()) {
       return i;
     }

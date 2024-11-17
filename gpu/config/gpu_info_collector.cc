@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/config/gpu_info_collector.h"
 
 #include <stddef.h>
@@ -76,13 +71,10 @@ namespace {
 #define EGL_ANGLE_feature_control 1
 #define EGL_FEATURE_NAME_ANGLE 0x3460
 #define EGL_FEATURE_CATEGORY_ANGLE 0x3461
-#define EGL_FEATURE_DESCRIPTION_ANGLE 0x3462
-#define EGL_FEATURE_BUG_ANGLE 0x3463
 #define EGL_FEATURE_STATUS_ANGLE 0x3464
 #define EGL_FEATURE_COUNT_ANGLE 0x3465
 #define EGL_FEATURE_OVERRIDES_ENABLED_ANGLE 0x3466
 #define EGL_FEATURE_OVERRIDES_DISABLED_ANGLE 0x3467
-#define EGL_FEATURE_CONDITION_ANGLE 0x3468
 #endif /* EGL_ANGLE_feature_control */
 
 scoped_refptr<gl::GLSurface> InitializeGLSurface(gl::GLDisplay* display) {
@@ -151,12 +143,11 @@ std::string GetVersionFromString(const std::string& version_string) {
 
 // Return the array index of the found name, or return -1.
 int StringContainsName(const std::string& str,
-                       const std::string* names,
-                       size_t num_names) {
+                       base::span<const std::string> names) {
   std::vector<std::string> tokens = base::SplitString(
       str, " .,()-_", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   for (size_t ii = 0; ii < tokens.size(); ++ii) {
-    for (size_t name_index = 0; name_index < num_names; ++name_index) {
+    for (size_t name_index = 0; name_index < names.size(); ++name_index) {
       if (tokens[ii] == names[name_index]) {
         return base::checked_cast<int>(name_index);
       }
@@ -206,8 +197,7 @@ std::string GetDisplayTypeString(gl::DisplayType type) {
     case gl::ANGLE_METAL_NULL:
       return "ANGLE_METAL_NULL";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -240,8 +230,7 @@ std::string GetDawnBackendTypeString(wgpu::BackendType type) {
     case wgpu::BackendType::OpenGLES:
       return "OpenGLES backend";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -319,9 +308,10 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
 #endif
 
   bool supports_shader_f16 = false;
-  for (dawn::native::Adapter& adapter :
+  for (dawn::native::Adapter& nativeAdapter :
        instance->EnumerateAdapters(&adapter_options)) {
-    adapter.SetUseTieredLimits(false);
+    nativeAdapter.SetUseTieredLimits(false);
+    wgpu::Adapter adapter = wgpu::Adapter(nativeAdapter.Get());
     wgpu::AdapterInfo info;
     adapter.GetInfo(&info);
     if (info.adapterType != wgpu::AdapterType::DiscreteGPU &&
@@ -330,7 +320,7 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
       continue;
     }
 
-    WGPUSupportedLimits limits;
+    wgpu::SupportedLimits limits;
     limits.nextInChain = nullptr;
     if (adapter.GetLimits(&limits) != wgpu::Status::Success) {
       continue;
@@ -697,15 +687,15 @@ void IdentifyActiveGPU(GPUInfo* gpu_info) {
   const std::string kIntelName = "intel";
   const std::string kAMDName = "amd";
   const std::string kATIName = "ati";
-  const std::string kVendorNames[] = {kNVidiaName, kNouveauName, kIntelName,
-                                      kAMDName, kATIName};
+  const std::array<std::string, 5> kVendorNames = {
+      {kNVidiaName, kNouveauName, kIntelName, kAMDName, kATIName}};
 
   const uint32_t kNVidiaID = 0x10de;
   const uint32_t kIntelID = 0x8086;
   const uint32_t kAMDID = 0x1002;
   const uint32_t kATIID = 0x1002;
-  const uint32_t kVendorIDs[] = {kNVidiaID, kNVidiaID, kIntelID, kAMDID,
-                                 kATIID};
+  const std::array<uint32_t, 5> kVendorIDs = {
+      {kNVidiaID, kNVidiaID, kIntelID, kAMDID, kATIID}};
 
   DCHECK(gpu_info);
   if (gpu_info->secondary_gpus.size() == 0) {
@@ -719,16 +709,14 @@ void IdentifyActiveGPU(GPUInfo* gpu_info) {
   uint32_t active_vendor_id = 0;
   if (!gpu_info->gl_vendor.empty()) {
     std::string gl_vendor_lower = base::ToLowerASCII(gpu_info->gl_vendor);
-    int index = StringContainsName(gl_vendor_lower, kVendorNames,
-                                   std::size(kVendorNames));
+    int index = StringContainsName(gl_vendor_lower, kVendorNames);
     if (index >= 0) {
       active_vendor_id = kVendorIDs[index];
     }
   }
   if (active_vendor_id == 0 && !gpu_info->gl_renderer.empty()) {
     std::string gl_renderer_lower = base::ToLowerASCII(gpu_info->gl_renderer);
-    int index = StringContainsName(gl_renderer_lower, kVendorNames,
-                                   std::size(kVendorNames));
+    int index = StringContainsName(gl_renderer_lower, kVendorNames);
     if (index >= 0) {
       active_vendor_id = kVendorIDs[index];
     }
@@ -829,14 +817,8 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
           QueryEGLStringi(display, EGL_FEATURE_NAME_ANGLE, i);
       gpu_extra_info->angle_features[i].category =
           QueryEGLStringi(display, EGL_FEATURE_CATEGORY_ANGLE, i);
-      gpu_extra_info->angle_features[i].description =
-          QueryEGLStringi(display, EGL_FEATURE_DESCRIPTION_ANGLE, i);
-      gpu_extra_info->angle_features[i].bug =
-          QueryEGLStringi(display, EGL_FEATURE_BUG_ANGLE, i);
       gpu_extra_info->angle_features[i].status =
           QueryEGLStringi(display, EGL_FEATURE_STATUS_ANGLE, i);
-      gpu_extra_info->angle_features[i].condition =
-          QueryEGLStringi(display, EGL_FEATURE_CONDITION_ANGLE, i);
     }
   }
 
@@ -850,6 +832,7 @@ bool CollectGpuExtraInfo(gfx::GpuExtraInfo* gpu_extra_info,
   return true;
 }
 
+// TODO(crbug.com/351564777): should be UNSAFE_BUFFER_USAGE
 void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
                      bool collect_metrics,
                      std::vector<std::string>* dawn_info_list) {
@@ -974,10 +957,13 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
         // Get supported features under required adapter toggles if Dawn
         // available, or default toggles otherwise.
         dawn_info_list->push_back("[Adapter Supported Features]");
-        std::vector<wgpu::FeatureName> features(
-            adapter.EnumerateFeatures(nullptr));
-        adapter.EnumerateFeatures(features.data());
-        for (wgpu::FeatureName f : features) {
+        wgpu::SupportedFeatures supportedFeatures;
+        adapter.GetFeatures(&supportedFeatures);
+        // SAFETY: Required from caller
+        const auto features =
+            UNSAFE_BUFFERS(base::span<const wgpu::FeatureName>(
+                supportedFeatures.features, supportedFeatures.featureCount));
+        for (const auto& f : features) {
           dawn_info_list->push_back(dawn::native::GetFeatureInfo(f)->name);
         }
 

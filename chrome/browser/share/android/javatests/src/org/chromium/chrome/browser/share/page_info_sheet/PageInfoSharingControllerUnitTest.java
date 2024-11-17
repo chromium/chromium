@@ -59,7 +59,6 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.content_extraction.InnerTextBridge;
 import org.chromium.chrome.browser.content_extraction.InnerTextBridgeJni;
@@ -95,8 +94,6 @@ import java.util.Optional;
 public class PageInfoSharingControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -124,9 +121,9 @@ public class PageInfoSharingControllerUnitTest {
     public void setUp() {
         PageInfoSharingControllerImpl.resetForTesting();
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mMockFeedbackLauncher);
-        mJniMocker.mock(InnerTextBridgeJni.TEST_HOOKS, mInnerTextJniMock);
-        mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
-        mJniMocker.mock(PageInfoSharingBridgeJni.TEST_HOOKS, mPageInfoSharingBridgeJni);
+        InnerTextBridgeJni.setInstanceForTesting(mInnerTextJniMock);
+        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
+        PageInfoSharingBridgeJni.setInstanceForTesting(mPageInfoSharingBridgeJni);
         when(mDomDistillerUrlUtilsJni.getOriginalUrlFromDistillerUrl(anyString()))
                 .thenAnswer(
                         (invocation) -> {
@@ -883,7 +880,9 @@ public class PageInfoSharingControllerUnitTest {
                                     .findViewById(R.id.learn_more_text);
                     var learnMoreTextLinks = learnMoreText.getClickableSpans();
                     assertNotEquals(
-                            "TextView should contain clickable spans", 0, learnMoreTextLinks);
+                            "TextView should contain clickable spans",
+                            0,
+                            learnMoreTextLinks.length);
                     // Click first span, which should contain a "learn more" text and link to a web
                     // page.
                     learnMoreTextLinks[0].onClick(learnMoreText);

@@ -52,10 +52,7 @@ class FakeWebPageMetadataAgent
   FakeWebPageMetadataAgent() = default;
   ~FakeWebPageMetadataAgent() override = default;
 
-  WebPageMetadataAgent* GetForwardingInterface() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  WebPageMetadataAgent* GetForwardingInterface() override { NOTREACHED(); }
 
   void Bind(mojo::ScopedInterfaceEndpointHandle handle) {
     receiver_.Bind(mojo::PendingAssociatedReceiver<WebPageMetadataAgent>(

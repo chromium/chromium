@@ -35,6 +35,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/channel_layout.h"
 #include "media/base/media_switches.h"
 #include "media/mojo/mojom/speech_recognition.mojom-blink.h"
 #include "media/mojo/mojom/speech_recognition_audio_forwarder.mojom-blink.h"
@@ -47,6 +48,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -294,6 +296,26 @@ void SpeechRecognition::StartInternal(ExceptionState* exception_state) {
   }
   final_results_.clear();
 
+  if (base::FeatureList::IsEnabled(
+          blink::features::kMediaStreamTrackWebSpeech) &&
+      stream_track_) {
+    sink_ = MakeGarbageCollected<SpeechRecognitionMediaStreamAudioSink>(
+        GetExecutionContext(),
+        WTF::BindOnce(&SpeechRecognition::StartController,
+                      WrapPersistent(this)));
+    WebMediaStreamAudioSink::AddToAudioTrack(
+        sink_, WebMediaStreamTrack(stream_track_->Component()));
+  } else {
+    StartController();
+  }
+
+  started_ = true;
+}
+
+void SpeechRecognition::StartController(
+    std::optional<media::AudioParameters> audio_parameters,
+    mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionAudioForwarder>
+        audio_forwarder_receiver) {
   mojo::PendingRemote<media::mojom::blink::SpeechRecognitionSessionClient>
       session_client;
   // See https://bit.ly/2S0zRAS for task types.
@@ -302,44 +324,13 @@ void SpeechRecognition::StartInternal(ExceptionState* exception_state) {
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
   receiver_.set_disconnect_handler(WTF::BindOnce(
       &SpeechRecognition::OnConnectionError, WrapWeakPersistent(this)));
-
-  if (base::FeatureList::IsEnabled(
-          blink::features::kMediaStreamTrackWebSpeech) &&
-      stream_track_) {
-    mojo::PendingRemote<media::mojom::blink::SpeechRecognitionAudioForwarder>
-        audio_forwarder_remote;
-    mojo::PendingReceiver<media::mojom::blink::SpeechRecognitionAudioForwarder>
-        audio_forwarder_receiver =
-            audio_forwarder_remote.InitWithNewPipeAndPassReceiver();
-
-    media::AudioParameters audio_parameters;
-    std::unique_ptr<WebMediaStreamTrack> web_media_stream_track =
-        std::make_unique<WebMediaStreamTrack>(stream_track_->Component());
-
-    audio_parameters = WebMediaStreamAudioSink::GetFormatFromAudioTrack(
-        *web_media_stream_track.get());
-
-    sink_ = MakeGarbageCollected<SpeechRecognitionMediaStreamAudioSink>(
-        GetExecutionContext(), std::move(audio_forwarder_remote),
-        audio_parameters);
-    WebMediaStreamAudioSink::AddToAudioTrack(
-        sink_, WebMediaStreamTrack(stream_track_->Component()));
-    controller_->Start(
-        session_.BindNewPipeAndPassReceiver(
-            GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)),
-        std::move(session_client), *grammars_, lang_, continuous_,
-        interim_results_, max_alternatives_, local_service_,
-        allow_cloud_fallback_, std::move(audio_forwarder_receiver),
-        audio_parameters);
-  } else {
-    controller_->Start(
-        session_.BindNewPipeAndPassReceiver(
-            GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)),
-        std::move(session_client), *grammars_, lang_, continuous_,
-        interim_results_, max_alternatives_, local_service_,
-        allow_cloud_fallback_);
-  }
-  started_ = true;
+  controller_->Start(
+      session_.BindNewPipeAndPassReceiver(
+          GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI)),
+      std::move(session_client), *grammars_, lang_, continuous_,
+      interim_results_, max_alternatives_, local_service_,
+      allow_cloud_fallback_, std::move(audio_forwarder_receiver),
+      std::move(audio_parameters));
 }
 
 SpeechRecognition::SpeechRecognition(LocalDOMWindow* window)

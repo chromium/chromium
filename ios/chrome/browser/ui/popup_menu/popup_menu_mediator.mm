@@ -945,9 +945,8 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
       IDS_IOS_PRICE_NOTIFICATIONS_PRICE_TRACK_TITLE,
       PopupMenuActionPriceNotifications, @"popup_menu_price_notifications",
       kToolsMenuPriceNotifications);
-  if (self.webState &&
-      IsPriceTrackingEnabled(ChromeBrowserState::FromBrowserState(
-          self.webState->GetBrowserState()))) {
+  if (self.webState && IsPriceTrackingEnabled(ProfileIOS::FromBrowserState(
+                           self.webState->GetBrowserState()))) {
     [actionsArray addObject:self.priceNotificationsItem];
   }
 

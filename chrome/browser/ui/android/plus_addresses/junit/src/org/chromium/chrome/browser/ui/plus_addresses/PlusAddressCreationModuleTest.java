@@ -63,9 +63,7 @@ public class PlusAddressCreationModuleTest {
                     /* proposedPlusAddressPlaceholder= */ "placeholder",
                     /* confirmText= */ "ok",
                     /* cancelText= */ "cancel",
-                    /* errorReportInstruction= */ "error! <link>test link</link>",
-                    /* learnMoreUrl= */ new GURL("learn.more.com"),
-                    /* errorReportUrl= */ new GURL("bug.com"));
+                    /* learnMoreUrl= */ new GURL("learn.more.com"));
     private static final PlusAddressCreationNormalStateInfo SECOND_TIME_USAGE_INFO =
             new PlusAddressCreationNormalStateInfo(
                     /* title= */ "lorem ipsum title",
@@ -74,9 +72,14 @@ public class PlusAddressCreationModuleTest {
                     /* proposedPlusAddressPlaceholder= */ "placeholder",
                     /* confirmText= */ "ok",
                     /* cancelText= */ "",
-                    /* errorReportInstruction= */ "error! <link>test link</link>",
-                    /* learnMoreUrl= */ new GURL("learn.more.com"),
-                    /* errorReportUrl= */ new GURL("bug.com"));
+                    /* learnMoreUrl= */ new GURL("learn.more.com"));
+    private static final PlusAddressCreationErrorStateInfo ERROR_STATE =
+            new PlusAddressCreationErrorStateInfo(
+                    PlusAddressCreationBottomSheetErrorType.RESERVE_TIMEOUT,
+                    "Title",
+                    "Description",
+                    "Ok",
+                    "Cancel");
     private static final String PROPOSED_PLUS_ADDRESS = "example@gmail.com";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -128,9 +131,15 @@ public class PlusAddressCreationModuleTest {
         PlusAddressCreationBottomSheetContent view = openBottomSheet();
 
         // Confirmation button is disabled before the first plus address is displayed.
+        ImageView plusAddressLogo =
+                view.getContentView().findViewById(R.id.proposed_plus_address_logo);
+        LoadingView plusAddressLoadingView =
+                view.getContentView().findViewById(R.id.proposed_plus_address_loading_view);
         Button confirmButton = view.getContentView().findViewById(R.id.plus_address_confirm_button);
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
 
+        assertEquals(plusAddressLogo.getVisibility(), View.GONE);
+        assertEquals(plusAddressLoadingView.getVisibility(), View.VISIBLE);
         assertFalse(refreshIcon.isEnabled());
         assertFalse(confirmButton.isEnabled());
         refreshIcon.performClick();
@@ -138,17 +147,23 @@ public class PlusAddressCreationModuleTest {
 
         // Confirmation button should become enabled after the first plus address is set.
         mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertEquals(plusAddressLogo.getVisibility(), View.VISIBLE);
+        assertEquals(plusAddressLoadingView.getVisibility(), View.GONE);
         assertTrue(confirmButton.isEnabled());
         assertTrue(refreshIcon.isEnabled());
 
         // Refresh the plus address first time.
         refreshIcon.performClick();
+        assertEquals(plusAddressLogo.getVisibility(), View.GONE);
+        assertEquals(plusAddressLoadingView.getVisibility(), View.VISIBLE);
         assertFalse(confirmButton.isEnabled());
         assertFalse(refreshIcon.isEnabled());
         verify(mBridge).onRefreshClicked();
 
         // Simulate that the plus address was reserved and refresh the plus address again.
         mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         refreshIcon.performClick();
         assertFalse(confirmButton.isEnabled());
         assertFalse(refreshIcon.isEnabled());
@@ -163,6 +178,7 @@ public class PlusAddressCreationModuleTest {
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
 
         mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertTrue(refreshIcon.isEnabled());
 
         refreshIcon.performClick();
@@ -184,22 +200,6 @@ public class PlusAddressCreationModuleTest {
 
     @Test
     @SmallTest
-    public void testLegacyErrorHandling_confirmDisabledIfConfirmRequestFails() {
-        PlusAddressCreationBottomSheetContent view = openBottomSheet();
-        Button modalConfirmButton =
-                view.getContentView().findViewById(R.id.plus_address_confirm_button);
-
-        // Set the plus address to enable the Confirm button.
-        mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
-        assertTrue(modalConfirmButton.isEnabled());
-
-        // Assume a Confirm request was made and failed.
-        mCoordinator.showError(/* errorStateInfo= */ null);
-        assertFalse(modalConfirmButton.isEnabled());
-    }
-
-    @Test
-    @SmallTest
     public void testConfirmButton_disablesRefreshIcon() throws TimeoutException {
         PlusAddressCreationBottomSheetContent view = openBottomSheet();
 
@@ -207,6 +207,7 @@ public class PlusAddressCreationModuleTest {
         Button confirmButton = view.getContentView().findViewById(R.id.plus_address_confirm_button);
 
         mCoordinator.updateProposedPlusAddress(PROPOSED_PLUS_ADDRESS);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertTrue(refreshIcon.isEnabled());
         assertTrue(confirmButton.isEnabled());
 
@@ -218,7 +219,7 @@ public class PlusAddressCreationModuleTest {
 
     @Test
     @SmallTest
-    public void testFirstTimeUsage_confirm_showError_close() throws TimeoutException {
+    public void testFirstTimeUsage_confirm_showError() throws TimeoutException {
         PlusAddressCreationBottomSheetContent view = openBottomSheet();
 
         // Before clicking confirm, there is no loading indicator, but both
@@ -241,18 +242,47 @@ public class PlusAddressCreationModuleTest {
         verify(mBridge).onConfirmRequested();
         assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
         assertEquals(modalConfirmButton.getVisibility(), View.GONE);
-        assertEquals(modalCancelButton.getVisibility(), View.GONE);
+        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
         assertEquals(loadingView.getVisibility(), View.VISIBLE);
 
         // Hide the loading indicator and resurface the buttons if we show an error.
-        mCoordinator.showError(/* errorStateInfo= */ null);
+        mCoordinator.showError(ERROR_STATE);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        ViewGroup normalStateContainer =
+                view.getContentView().findViewById(R.id.plus_address_content);
+        ViewGroup errorStateContainer =
+                view.getContentView().findViewById(R.id.plus_address_error_container);
+        assertEquals(normalStateContainer.getVisibility(), View.GONE);
+        assertEquals(errorStateContainer.getVisibility(), View.VISIBLE);
+    }
+
+    @Test
+    @SmallTest
+    public void testFirstTimeUsage_cancelDuringLoading() throws TimeoutException {
+        PlusAddressCreationBottomSheetContent view = openBottomSheet();
+
+        // Before clicking confirm, there is no loading indicator, but both
+        // a confirmation and a cancel button.
+        TextView firstTimeNotice =
+                view.getContentView().findViewById(R.id.plus_address_first_time_use_notice);
+        LoadingView loadingView =
+                view.getContentView().findViewById(R.id.plus_address_creation_loading_view);
+        Button modalConfirmButton =
+                view.getContentView().findViewById(R.id.plus_address_confirm_button);
+        Button modalCancelButton =
+                view.getContentView().findViewById(R.id.plus_address_cancel_button);
         assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
         assertEquals(loadingView.getVisibility(), View.GONE);
         assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
-        assertFalse(modalConfirmButton.isEnabled());
         assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
-        assertTrue(modalCancelButton.isEnabled());
+
+        // Show the loading indicator and hide the buttons once we click the confirm button.
+        modalConfirmButton.performClick();
+        verify(mBridge).onConfirmRequested();
+        assertEquals(firstTimeNotice.getVisibility(), View.VISIBLE);
+        assertEquals(modalConfirmButton.getVisibility(), View.GONE);
+        assertEquals(modalCancelButton.getVisibility(), View.VISIBLE);
+        assertEquals(loadingView.getVisibility(), View.VISIBLE);
 
         modalCancelButton.performClick();
         verify(mBottomSheetController).hideContent(view, true);
@@ -261,7 +291,7 @@ public class PlusAddressCreationModuleTest {
 
     @Test
     @SmallTest
-    public void testSecondTimeUsage_confirm_showError_close() {
+    public void testSecondTimeUsage_confirm_showError() {
         PlusAddressCreationCoordinator coordinator =
                 new PlusAddressCreationCoordinator(
                         RuntimeEnvironment.application,
@@ -300,15 +330,17 @@ public class PlusAddressCreationModuleTest {
         assertEquals(loadingView.getVisibility(), View.VISIBLE);
         assertEquals(modalConfirmButton.getVisibility(), View.GONE);
         assertEquals(modalCancelButton.getVisibility(), View.GONE);
+        assertTrue(modalCancelButton.isEnabled());
 
         // Hide the loading indicator and resurface the buttons if we show an error.
-        coordinator.showError(/* errorStateInfo= */ null);
+        coordinator.showError(ERROR_STATE);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-        assertEquals(firstTimeNotice.getVisibility(), View.GONE);
-        assertEquals(loadingView.getVisibility(), View.GONE);
-        assertEquals(modalConfirmButton.getVisibility(), View.VISIBLE);
-        assertFalse(modalConfirmButton.isEnabled());
-        assertEquals(modalCancelButton.getVisibility(), View.GONE);
+        ViewGroup normalStateContainer =
+                view.getContentView().findViewById(R.id.plus_address_content);
+        ViewGroup errorStateContainer =
+                view.getContentView().findViewById(R.id.plus_address_error_container);
+        assertEquals(normalStateContainer.getVisibility(), View.GONE);
+        assertEquals(errorStateContainer.getVisibility(), View.VISIBLE);
     }
 
     private void verifyErrorScreenIsShown(
@@ -350,6 +382,10 @@ public class PlusAddressCreationModuleTest {
         assertEquals(normalStateContainer.getVisibility(), View.VISIBLE);
         assertEquals(errorStateContainer.getVisibility(), View.GONE);
 
+        ImageView plusAddressLogo =
+                view.getContentView().findViewById(R.id.proposed_plus_address_logo);
+        LoadingView plusAddressLoadingView =
+                view.getContentView().findViewById(R.id.proposed_plus_address_loading_view);
         Button confirmButton = view.getContentView().findViewById(R.id.plus_address_confirm_button);
         Button cancelButton = view.getContentView().findViewById(R.id.plus_address_cancel_button);
         TextView proposedPlusAddress =
@@ -357,6 +393,8 @@ public class PlusAddressCreationModuleTest {
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
         LoadingView loadingView =
                 view.getContentView().findViewById(R.id.plus_address_creation_loading_view);
+        assertEquals(plusAddressLogo.getVisibility(), View.GONE);
+        assertEquals(plusAddressLoadingView.getVisibility(), View.VISIBLE);
         assertFalse(confirmButton.isEnabled());
         assertTrue(cancelButton.isEnabled());
         assertEquals(
@@ -376,6 +414,10 @@ public class PlusAddressCreationModuleTest {
         assertEquals(normalStateContainer.getVisibility(), View.VISIBLE);
         assertEquals(errorStateContainer.getVisibility(), View.GONE);
 
+        ImageView plusAddressLogo =
+                view.getContentView().findViewById(R.id.proposed_plus_address_logo);
+        LoadingView plusAddressLoadingView =
+                view.getContentView().findViewById(R.id.proposed_plus_address_loading_view);
         Button confirmButton = view.getContentView().findViewById(R.id.plus_address_confirm_button);
         Button cancelButton = view.getContentView().findViewById(R.id.plus_address_cancel_button);
         TextView proposedPlusAddressView =
@@ -383,8 +425,10 @@ public class PlusAddressCreationModuleTest {
         ImageView refreshIcon = view.getContentView().findViewById(R.id.refresh_plus_address_icon);
         LoadingView loadingView =
                 view.getContentView().findViewById(R.id.plus_address_creation_loading_view);
+        assertEquals(plusAddressLogo.getVisibility(), View.VISIBLE);
+        assertEquals(plusAddressLoadingView.getVisibility(), View.GONE);
         assertEquals(confirmButton.getVisibility(), View.GONE);
-        assertEquals(cancelButton.getVisibility(), View.GONE);
+        assertEquals(cancelButton.getVisibility(), View.VISIBLE);
         assertEquals(proposedPlusAddressView.getText(), proposedPlusAddress);
         assertEquals(refreshIcon.getVisibility(), View.VISIBLE);
         assertFalse(refreshIcon.isEnabled());
@@ -397,10 +441,12 @@ public class PlusAddressCreationModuleTest {
 
         if (info.wasPlusAddressReserved()) {
             mCoordinator.updateProposedPlusAddress(proposedPlusAddress);
+            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         }
 
         // Simulate that the error occurred.
         mCoordinator.showError(info);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verifyErrorScreenIsShown(view, info);
 
         // Click ok button and check that the initial screen in shown.
@@ -417,6 +463,7 @@ public class PlusAddressCreationModuleTest {
 
         // Simulate that the error occurred again.
         mCoordinator.showError(info);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verifyErrorScreenIsShown(view, info);
 
         // Click cancel button to hide the bottom sheet.
@@ -509,6 +556,7 @@ public class PlusAddressCreationModuleTest {
 
         // Simulate that the reserve request timed out.
         mCoordinator.showError(createQuotaError);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verifyErrorScreenIsShown(view, createQuotaError);
 
         // Click ok button and check that the bottom sheet gets hidden.
@@ -535,6 +583,7 @@ public class PlusAddressCreationModuleTest {
 
         // Simulate that the reserve request timed out.
         mCoordinator.showError(createAffiliationError);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verifyErrorScreenIsShown(view, createAffiliationError);
 
         // Click ok button and check that the bottom sheet gets hidden.
@@ -567,6 +616,7 @@ public class PlusAddressCreationModuleTest {
 
         // Simulate that the reserve request timed out.
         mCoordinator.showError(createAffiliationError);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         verifyErrorScreenIsShown(view, createAffiliationError);
 
         // Click ok button and check that the bottom sheet gets hidden.

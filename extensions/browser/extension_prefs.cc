@@ -467,9 +467,7 @@ void ExtensionPrefs::MakePathsRelative() {
   for (const std::string& key : absolute_keys) {
     std::unique_ptr<prefs::DictionaryValueUpdate> extension_dict;
     if (!update_dict->GetDictionaryWithoutPathExpansion(key, &extension_dict)) {
-      NOTREACHED_IN_MIGRATION()
-          << "Control should never reach here for extension " << key;
-      continue;
+      NOTREACHED() << "Control should never reach here for extension " << key;
     }
     std::string path_string;
     extension_dict->GetString(kPrefPath, &path_string);
@@ -554,8 +552,7 @@ void ExtensionPrefs::UpdateExtensionPref(
     std::string_view key,
     std::optional<base::Value> data_value) {
   if (!crx_file::id_util::IdIsValid(extension_id)) {
-    NOTREACHED_IN_MIGRATION() << "Invalid extension_id " << extension_id;
-    return;
+    NOTREACHED() << "Invalid extension_id " << extension_id;
   }
   ScopedExtensionPrefUpdate update(prefs_, extension_id);
   if (data_value) {
@@ -1469,8 +1466,7 @@ std::optional<ExtensionInfo> ExtensionPrefs::GetInstalledInfoHelper(
       location != ManifestLocation::kComponent &&
       !Manifest::IsUnpackedLocation(location) &&
       !Manifest::IsExternalLocation(location)) {
-    NOTREACHED_IN_MIGRATION();
-    return std::nullopt;
+    NOTREACHED();
   }
 
   const base::Value* manifest = extension.Find(kPrefManifest);
@@ -2134,6 +2130,8 @@ void ExtensionPrefs::RegisterProfilePrefs(
       kMV2DeprecationWarningAcknowledgedGloballyPref.name, false);
   registry->RegisterBooleanPref(
       kMV2DeprecationDisabledAcknowledgedGloballyPref.name, false);
+  registry->RegisterBooleanPref(
+      kMV2DeprecationUnsupportedAcknowledgedGloballyPref.name, false);
 }
 
 template <class ExtensionIdContainer>
@@ -2150,8 +2148,7 @@ bool ExtensionPrefs::GetUserExtensionPrefIntoContainer(
       *id_container_out, id_container_out->end());
   for (const auto& entry : user_pref_value->GetList()) {
     if (!entry.is_string()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
     insert_iterator = entry.GetString();
   }

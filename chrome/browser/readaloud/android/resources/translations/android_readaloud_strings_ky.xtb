@@ -4,8 +4,10 @@
 <translation id="1173075331199604451">Үн менюсу</translation>
 <translation id="1178581264944972037">Бир азга токтотуу</translation>
 <translation id="1246424317317450637">Жоон</translation>
+<translation id="1483137792530497944">Дарыя</translation>
 <translation id="1586836055630070874">Тынчтандыруучу</translation>
 <translation id="1741047078107369903">Жылуу</translation>
+<translation id="1807863182207623884">Рубин</translation>
 <translation id="1921351128855867012"><ph name="NUMBER_OF_SECONDS" /> секунд алдыга түрдүрүү</translation>
 <translation id="1984328900355667246">Окуп берүү жеткиликсиз</translation>
 <translation id="2224347680315897176">Туруктуу</translation>
@@ -15,28 +17,36 @@
 <translation id="385051799172605136">Артка</translation>
 <translation id="3936324432406465283">Ойнотуу ылдамдыгы</translation>
 <translation id="4020327272915390518">Параметрлер менюсу</translation>
+<translation id="4324337030608534091">Көл</translation>
 <translation id="4431240646217225907">Текстти бөлүп көрсөтүү жана автоматтык сыдыруу</translation>
 <translation id="4494605076346185630">Ортонку тон</translation>
+<translation id="4525525184005340968">Өрөөн</translation>
 <translation id="4710974520964166851">Жай</translation>
 <translation id="4773921449011281499">Бейпил</translation>
 <translation id="4872475766448853257"><ph name="NUMBER_OF_SECONDS" /> секунд артка түрдүрүү</translation>
+<translation id="4967513477347430212">Жээк</translation>
 <translation id="5026371835667036198">Жарык</translation>
 <translation id="5234971936051226002">"Бул баракты угуу" ойноткучу кичирейтилди.</translation>
+<translation id="5251803541071282808">Булут</translation>
 <translation id="5596627076506792578">Дагы параметрлер</translation>
 <translation id="5694491020339060116">Ойнотуу ылдамдыгынын менюсу</translation>
 <translation id="6315170314923504164">Үн</translation>
+<translation id="6343633247422081848">Мүк</translation>
 <translation id="6550675742724504774">Параметрлер</translation>
 <translation id="6727569846535331147"><ph name="PITCH" />, <ph name="TONE" /></translation>
 <translation id="6790428901817661496">Ойнотуу</translation>
 <translation id="6831043979455480757">Которуу</translation>
 <translation id="6846298663435243399">Жүктөлүүдө…</translation>
 <translation id="6889157801232138307">"Бул баракты угуу" ойноткучу</translation>
+<translation id="7051308646573997571">Маржан</translation>
 <translation id="7112750136794557642">Башка параметрлерди көрүү үчүн, таптоо менен ойноткучту жайып көрсөтүңүз.</translation>
 <translation id="7221920857098237570">Жумшак</translation>
 <translation id="7237590978482584900">Бейгам</translation>
 <translation id="7282547042039404307">Жылма</translation>
 <translation id="7587250070160020374">Chrome'до окулуп жатат</translation>
+<translation id="8004767876552422827">Талаа</translation>
 <translation id="8136852699834914183">Бул бетте ойнотууга болбойт.</translation>
+<translation id="8198036737896977997">Аба</translation>
 <translation id="8264989794233974275">Ылдамдыкты <ph name="PLAYBACK_SPEED" /> эсе көбөйтүү/азайтуу.</translation>
 <translation id="8407011429883244666">Ойноткучту жабуу.</translation>
 <translation id="8481839122437406573">Жай</translation>

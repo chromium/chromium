@@ -20,6 +20,7 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/common/trace_event_common.h"
@@ -171,11 +172,13 @@ void Display::PresentationGroupTiming::AddPresentationHelper(
 void Display::PresentationGroupTiming::OnDraw(
     base::TimeTicks frame_time,
     base::TimeTicks draw_start_timestamp,
-    base::flat_set<base::PlatformThreadId> thread_ids,
+    base::flat_set<base::PlatformThreadId> animation_thread_ids,
+    base::flat_set<base::PlatformThreadId> renderer_main_thread_ids,
     HintSession::BoostType boost_type) {
   frame_time_ = frame_time;
   draw_start_timestamp_ = draw_start_timestamp;
-  thread_ids_ = std::move(thread_ids);
+  animation_thread_ids_ = std::move(animation_thread_ids);
+  renderer_main_thread_ids_ = std::move(renderer_main_thread_ids);
   boost_type_ = boost_type;
 }
 
@@ -194,7 +197,8 @@ void Display::PresentationGroupTiming::OnSwap(gfx::SwapTimings timings,
   }
   // Can be nullptr in unittests.
   if (scheduler) {
-    scheduler->ReportFrameTime(frame_latency, std::move(thread_ids_),
+    scheduler->ReportFrameTime(frame_latency, std::move(animation_thread_ids_),
+                               std::move(renderer_main_thread_ids_),
                                draw_start_timestamp_, boost_type_);
   }
 }
@@ -210,7 +214,6 @@ void Display::PresentationGroupTiming::OnPresent(
 Display::Display(
     SharedBitmapManager* bitmap_manager,
     gpu::SharedImageManager* shared_image_manager,
-    gpu::SyncPointManager* sync_point_manager,
     gpu::Scheduler* gpu_scheduler,
     const RendererSettings& settings,
     const DebugRendererSettings* debug_settings,
@@ -222,7 +225,6 @@ Display::Display(
     scoped_refptr<base::SingleThreadTaskRunner> current_task_runner)
     : bitmap_manager_(bitmap_manager),
       shared_image_manager_(shared_image_manager),
-      sync_point_manager_(sync_point_manager),
       gpu_scheduler_(gpu_scheduler),
       settings_(settings),
       debug_settings_(debug_settings),
@@ -471,8 +473,7 @@ void Display::InitializeRenderer() {
     resource_provider_ = std::move(resource_provider);
   } else {
     auto resource_provider = std::make_unique<DisplayResourceProviderSoftware>(
-        bitmap_manager_, shared_image_manager_, sync_point_manager_,
-        gpu_scheduler_);
+        bitmap_manager_, shared_image_manager_, gpu_scheduler_);
     DCHECK(!overlay_processor_->IsOverlaySupported());
     auto renderer = std::make_unique<SoftwareRenderer>(
         &settings_, debug_settings_, output_surface_.get(),
@@ -698,7 +699,8 @@ void Display::MaybeLogQuadsProperties(
 
   SkM44 color_matrix;
   // auto resource_provider = std::make_unique<DisplayResourceProviderSkia>();
-  base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>
+  base::flat_map<AggregatedRenderPassId,
+                 raw_ptr<cc::FilterOperations, CtnExperimental>>
       render_pass_filters;
   render_pass_filters[last_render_pass.id] = &(last_render_pass.filters);
   OverlayCandidateFactory candidate_factory = OverlayCandidateFactory(
@@ -832,6 +834,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::Flow::Global(swapped_trace_id_),
       [this](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
@@ -1039,13 +1042,68 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     PresentationGroupTiming& presentation_group_timing =
         pending_presentation_group_timings_.emplace_back();
 
-    base::flat_set<base::PlatformThreadId> thread_ids;
+    const auto& main_surfaces =
+        surface_manager_->GetSurfacesReferencedByParent(current_surface_id_);
+    const bool main_frame_only_adpf_renderer_main =
+        base::FeatureList::IsEnabled(
+            features::kEnableMainFrameOnlyADPFRendererMain);
+
+    const bool interactive_only_adpf_renderer = base::FeatureList::IsEnabled(
+        features::kEnableInteractiveOnlyADPFRenderer);
+    bool has_interactive_surface = false;
+    if (interactive_only_adpf_renderer) {
+      for (const auto& surface_id :
+           aggregator_->previous_contained_surfaces()) {
+        surface = surface_manager_->GetSurfaceForId(surface_id);
+        if (surface && surface->HasActiveFrame() &&
+            surface->GetActiveFrameMetadata().is_handling_interaction) {
+          has_interactive_surface = true;
+          break;
+        }
+      }
+    }
+
+    base::flat_set<base::PlatformThreadId> animation_thread_ids;
+    base::flat_set<base::PlatformThreadId> renderer_main_thread_ids;
     for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
       surface = surface_manager_->GetSurfaceForId(surface_id);
       if (surface) {
-        base::flat_set<base::PlatformThreadId> surface_thread_ids =
-            surface->GetThreadIds();
-        thread_ids.insert(surface_thread_ids.begin(), surface_thread_ids.end());
+        // current_surface_id_ is the root surface, and its threads are Browser
+        // threads. Browser threads should always be in the ADPF session.
+        // Direct children of the root surface correspond to Renderers for main
+        // frames.
+        const bool is_for_main_frame =
+            surface_id == current_surface_id_ ||
+            main_surfaces.find(surface_id) != main_surfaces.end();
+        if (interactive_only_adpf_renderer &&
+            surface_id != current_surface_id_) {
+          const bool is_handling_interaction =
+              surface->HasActiveFrame() &&
+              surface->GetActiveFrameMetadata().is_handling_interaction;
+          // If there's at least one frame handling an interaction, include
+          // only interactive Renderers. Otherwise include the main frame
+          // Renderer.
+          const bool should_be_included =
+              is_handling_interaction ||
+              (!has_interactive_surface && is_for_main_frame);
+          if (!should_be_included) {
+            continue;
+          }
+        }
+        std::vector<Thread> surface_threads = surface->GetThreads();
+        for (const auto& thread : surface_threads) {
+          if (thread.type == Thread::Type::kMain &&
+              main_frame_only_adpf_renderer_main && !is_for_main_frame) {
+            continue;
+          }
+
+          if (thread.type == Thread::Type::kMain &&
+              surface_id != current_surface_id_) {
+            renderer_main_thread_ids.insert(thread.id);
+          } else {
+            animation_thread_ids.insert(thread.id);
+          }
+        }
       }
     }
 
@@ -1053,9 +1111,10 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
     if (IsScroll(frame.latency_info)) {
       boost_type = HintSession::BoostType::kScrollBoost;
     }
-    presentation_group_timing.OnDraw(params.frame_time,
-                                     draw_timer->start_time(),
-                                     std::move(thread_ids), boost_type);
+    presentation_group_timing.OnDraw(
+        params.frame_time, draw_timer->start_time(),
+        std::move(animation_thread_ids), std::move(renderer_main_thread_ids),
+        boost_type);
 
     for (const auto& surface_id : aggregator_->previous_contained_surfaces()) {
       surface = surface_manager_->GetSurfaceForId(surface_id);
@@ -1088,6 +1147,7 @@ bool Display::DrawAndSwap(const DrawAndSwapParams& params) {
         perfetto::Flow::Global(swap_frame_data.swap_trace_id),
         [swap_trace_id =
              swap_frame_data.swap_trace_id](perfetto::EventContext ctx) {
+          base::TaskAnnotator::EmitTaskTimingDetails(ctx);
           auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
           auto* data = event->set_chrome_graphics_pipeline();
           data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
@@ -1165,6 +1225,7 @@ void Display::DidReceiveSwapBuffersAck(
       "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
       perfetto::TerminatingFlow::Global(params.swap_trace_id),
       [&](perfetto::EventContext ctx) {
+        base::TaskAnnotator::EmitTaskTimingDetails(ctx);
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_chrome_graphics_pipeline();
         data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
@@ -1382,7 +1443,7 @@ base::TimeDelta Display::GetPreferredFrameIntervalForFrameSinkId(
 void Display::SetSupportedFrameIntervals(
     base::flat_set<base::TimeDelta> intervals) {
   if (frame_rate_decider_) {
-    frame_rate_decider_->SetSupportedFrameIntervals(intervals);
+    frame_rate_decider_->SetSupportedFrameIntervals(std::move(intervals));
   }
 }
 

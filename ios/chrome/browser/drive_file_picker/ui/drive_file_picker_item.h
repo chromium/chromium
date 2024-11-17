@@ -7,12 +7,16 @@
 
 #import <UIKit/UIKit.h>
 
+// This enumerates types of DriveFilePickerItem.
 enum class DriveItemType : NSUInteger {
-  kFolder,
+  // "Real" items which can be mapped to a corresponding `DriveItem`.
   kFile,
+  kFolder,
+  kShortcut,
+  kSharedDrive,
+  // "Virtual" items which cannot be mapped to a corresponding `DriveItem`.
   kMyDrive,
   kSharedDrives,
-  kComputers,
   kStarred,
   kRecent,
   kSharedWithMe,
@@ -27,31 +31,38 @@ enum class DriveItemType : NSUInteger {
 // Drive item type (folder/file).
 @property(nonatomic, readonly) DriveItemType type;
 
-// Drive item icon.
+// Drive item image.
 @property(nonatomic, strong) UIImage* icon;
 
 // Drive item title.
 @property(nonatomic, readonly) NSString* title;
 
-// Drive item creation date (in case of files it represents the last time the
-// file was modified).
-@property(nonatomic, readonly) NSString* creationDate;
+// Drive item subtitle.
+@property(nonatomic, readonly) NSString* subtitle;
+
+// Range of the title which should be emphasized.
+@property(nonatomic, assign) NSRange titleRangeToEmphasize;
 
 // Whether this item is enabled. YES by default.
 @property(nonatomic, assign) BOOL enabled;
 
+// Whether the icon should be fetched. No by default.
+@property(nonatomic, assign) BOOL shouldFetchIcon;
+
+// Whether the icon is a thumbnail. NO by default.
+@property(nonatomic, assign) BOOL iconIsThumbnail;
+
 // Convenience factory methods to create root drive items.
 + (instancetype)myDriveItem;
 + (instancetype)sharedDrivesItem;
-+ (instancetype)computersItem;
 + (instancetype)starredItem;
 + (instancetype)recentItem;
 + (instancetype)sharedWithMeItem;
 
 - (instancetype)initWithIdentifier:(NSString*)identifier
                              title:(NSString*)title
+                          subtitle:(NSString*)subtitle
                               icon:(UIImage*)icon
-                      creationDate:(NSString*)creationDate
                               type:(DriveItemType)type
     NS_DESIGNATED_INITIALIZER;
 

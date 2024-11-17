@@ -52,8 +52,7 @@ SyncerError ServerConnectionErrorAsSyncerError(
           static_cast<net::HttpStatusCode>(http_status_code));
     case HttpResponse::SERVER_CONNECTION_OK:
     case HttpResponse::NONE:
-      NOTREACHED_IN_MIGRATION();
-      return SyncerError::Success();
+      NOTREACHED();
   }
 }
 
@@ -82,8 +81,7 @@ SyncProtocolErrorType PBErrorTypeToSyncProtocolErrorType(
       return ENCRYPTION_OBSOLETE;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return UNKNOWN_ERROR;
+  NOTREACHED();
 }
 
 ClientAction PBActionToClientAction(const sync_pb::SyncEnums::Action& action) {
@@ -94,11 +92,10 @@ ClientAction PBActionToClientAction(const sync_pb::SyncEnums::Action& action) {
       return UNKNOWN_ACTION;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return UNKNOWN_ACTION;
+  NOTREACHED();
 }
 
-// Returns true iff |message| is an initial GetUpdates request.
+// Returns true iff `message` is an initial GetUpdates request.
 bool IsVeryFirstGetUpdates(const ClientToServerMessage& message) {
   if (!message.has_get_updates()) {
     return false;
@@ -112,7 +109,7 @@ bool IsVeryFirstGetUpdates(const ClientToServerMessage& message) {
   return true;
 }
 
-// Returns true iff |message| should contain a store birthday.
+// Returns true iff `message` should contain a store birthday.
 bool IsBirthdayRequired(const ClientToServerMessage& message) {
   if (message.has_clear_server_data()) {
     return false;
@@ -341,7 +338,7 @@ SyncerError SyncerProtoUtil::HandleClientToServerMessageResponse(
     case CONFLICT:
     case INVALID_MESSAGE:
       // These error types should not be used at this stage.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (should_report_success) {
@@ -381,7 +378,7 @@ SyncProtocolError SyncerProtoUtil::GetProtocolErrorFromResponse(
       sync_protocol_error.action = DISABLE_SYNC_ON_CLIENT;
     }
   } else {
-    // Legacy server implementation. Compute the error based on |error_code|.
+    // Legacy server implementation. Compute the error based on `error_code`.
     sync_protocol_error = ErrorCodeToSyncProtocolError(response.error_code());
   }
 
@@ -445,8 +442,9 @@ bool SyncerProtoUtil::PostAndProcessHeaders(ServerConnectionManager* scm,
     return false;
   }
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("Sync.PostedClientToServerMessageLatency",
-                             base::Time::Now() - start_time);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+      "Sync.PostedClientToServerMessageLatency",
+      base::Time::Now() - start_time);
 
   // The error can be specified in 2 different fields, so consider both of them.
   sync_pb::SyncEnums::ErrorType error_type =

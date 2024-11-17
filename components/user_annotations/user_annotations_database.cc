@@ -114,13 +114,6 @@ UserAnnotationsExecutionResult UserAnnotationsDatabase::UpdateEntries(
   if (!transaction.Begin()) {
     return UserAnnotationsExecutionResult::kSqlError;
   }
-  if (ShouldReplaceAnnotationsAfterEachSubmission()) {
-    sql::Statement statement(
-        db_.GetCachedStatement(SQL_FROM_HERE, "DELETE FROM entries"));
-    if (!statement.Run()) {
-      return UserAnnotationsExecutionResult::kSqlError;
-    }
-  }
   auto now_time = base::Time::Now();
   for (const auto& entry : upserted_entries) {
     auto encrypted_value = encryptor_.EncryptString(entry.value());
@@ -223,6 +216,24 @@ void UserAnnotationsDatabase::RemoveAnnotationsInRange(
   delete_statement.BindTime(0, delete_begin);
   delete_statement.BindTime(1, delete_end);
   delete_statement.Run();
+}
+
+int UserAnnotationsDatabase::GetCountOfValuesContainedBetween(base::Time begin,
+                                                              base::Time end) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  sql::Statement s(
+      db_.GetCachedStatement(SQL_FROM_HERE,
+                             "SELECT COUNT(DISTINCT(entry_id)) FROM entries "
+                             "WHERE last_modified_time > ? "
+                             "AND last_modified_time < ?"));
+  s.BindTime(0, begin);
+  s.BindTime(1, end);
+
+  if (!s.Step()) {
+    // This might happen in case of I/O errors. See crbug.com/332263206.
+    return 0;
+  }
+  return s.ColumnInt(0);
 }
 
 }  // namespace user_annotations

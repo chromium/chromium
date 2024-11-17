@@ -7,11 +7,8 @@ package org.chromium.chrome.browser.browserservices.metrics;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
-import dagger.Reusable;
-
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.ukm.UkmRecorder;
@@ -20,10 +17,7 @@ import org.chromium.content_public.browser.WebContents;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-import javax.inject.Inject;
-
 /** Encapsulates Uma recording actions related to Trusted Web Activities. */
-@Reusable
 public class TrustedWebActivityUmaRecorder {
     @IntDef({
         DelegatedNotificationSmallIconFallback.NO_FALLBACK,
@@ -63,71 +57,61 @@ public class TrustedWebActivityUmaRecorder {
         int NUM_ENTRIES = 4;
     }
 
-    /** A callback for adding task to run when full browser initialization is done. */
-    public interface DeferredTaskHandler {
-        /* Call to add task to run after full browser started.*/
-        void doWhenNativeLoaded(Runnable runnable);
-    }
-
-    private final DeferredTaskHandler mDeferredTaskHandler;
-
-    @Inject
-    public TrustedWebActivityUmaRecorder(DeferredTaskHandler taskHandler) {
-        mDeferredTaskHandler = taskHandler;
-    }
+    private TrustedWebActivityUmaRecorder() {}
 
     /** Records that a Trusted Web Activity has been opened. */
-    public void recordTwaOpened(@Nullable WebContents webContents) {
+    public static void recordTwaOpened(@Nullable WebContents webContents) {
         RecordUserAction.record("BrowserServices.TwaOpened");
         if (webContents != null) {
-            new UkmRecorder.Bridge()
-                    .recordEventWithBooleanMetric(
-                            webContents, "TrustedWebActivity.Open", "HasOccurred");
+            new UkmRecorder(webContents, "TrustedWebActivity.Open")
+                    .addBooleanMetric("HasOccurred")
+                    .record();
         }
     }
 
     /** Records the time that a Trusted Web Activity has been in resumed state. */
-    public void recordTwaOpenTime(long durationMs) {
+    public static void recordTwaOpenTime(long durationMs) {
         recordDuration(durationMs, "BrowserServices.TwaOpenTime.V2");
     }
 
     /**
-     * Records the time spent in verified origin until navigating to unverified one or pausing
-     * the Trusted Web Activity.
+     * Records the time spent in verified origin until navigating to unverified one or pausing the
+     * Trusted Web Activity.
      */
-    public void recordTimeInVerifiedOrigin(long durationMs) {
+    public static void recordTimeInVerifiedOrigin(long durationMs) {
         recordDuration(durationMs, "TrustedWebActivity.TimeInVerifiedOrigin.V2");
     }
 
     /**
-     * Records the time spent in verified origin until navigating to unverified one or pausing
-     * the Trusted Web Activity.
+     * Records the time spent in verified origin until navigating to unverified one or pausing the
+     * Trusted Web Activity.
      */
-    public void recordTimeOutOfVerifiedOrigin(long durationMs) {
+    public static void recordTimeOutOfVerifiedOrigin(long durationMs) {
         recordDuration(durationMs, "TrustedWebActivity.TimeOutOfVerifiedOrigin.V2");
     }
 
-    private void recordDuration(long durationMs, String histogramName) {
+    private static void recordDuration(long durationMs, String histogramName) {
         RecordHistogram.recordLongTimesHistogram(histogramName, durationMs);
     }
 
     /** Records the fact that disclosure was shown. */
-    public void recordDisclosureShown() {
+    public static void recordDisclosureShown() {
         RecordUserAction.record("TrustedWebActivity.DisclosureShown");
     }
 
     /** Records the fact that disclosure was accepted by user. */
-    public void recordDisclosureAccepted() {
+    public static void recordDisclosureAccepted() {
         RecordUserAction.record("TrustedWebActivity.DisclosureAccepted");
     }
 
     /**
      * Records which action the user took upon seeing a clear data dialog.
+     *
      * @param accepted Whether user proceeded to the settings from the dialog.
      * @param triggeredByUninstall Whether the dialog was triggered by app uninstall as opposed to
-     * app data getting cleared.
+     *     app data getting cleared.
      */
-    public void recordClearDataDialogAction(boolean accepted, boolean triggeredByUninstall) {
+    public static void recordClearDataDialogAction(boolean accepted, boolean triggeredByUninstall) {
         String histogramName =
                 triggeredByUninstall
                         ? "TrustedWebActivity.ClearDataDialogOnUninstallAccepted"
@@ -139,13 +123,12 @@ public class TrustedWebActivityUmaRecorder {
      * Records the fact that site settings were opened via "Manage Space" button in TWA client app's
      * settings.
      */
-    public void recordOpenedSettingsViaManageSpace() {
-        mDeferredTaskHandler.doWhenNativeLoaded(
-                () -> RecordUserAction.record("TrustedWebActivity.OpenedSettingsViaManageSpace"));
+    public static void recordOpenedSettingsViaManageSpace() {
+        RecordUserAction.record("TrustedWebActivity.OpenedSettingsViaManageSpace");
     }
 
     /** Records which fallback (if any) was used for the small icon of a delegated notification. */
-    public void recordDelegatedNotificationSmallIconFallback(
+    public static void recordDelegatedNotificationSmallIconFallback(
             @DelegatedNotificationSmallIconFallback int fallback) {
         RecordHistogram.recordEnumeratedHistogram(
                 "TrustedWebActivity.DelegatedNotificationSmallIconFallback",
@@ -163,26 +146,20 @@ public class TrustedWebActivityUmaRecorder {
     }
 
     /**
-     * Records whether or not a splash screen has been shown when launching a TWA.
-     * Uses {@link TaskTraits#BEST_EFFORT} in order to not get in the way of loading the page.
+     * Records whether or not a splash screen has been shown when launching a TWA. Uses {@link
+     * TaskTraits#BEST_EFFORT} in order to not get in the way of loading the page.
      */
-    public void recordSplashScreenUsage(boolean wasShown) {
-        mDeferredTaskHandler.doWhenNativeLoaded(
-                () ->
-                        PostTask.postTask(
-                                TaskTraits.BEST_EFFORT,
-                                () ->
-                                        RecordHistogram.recordBooleanHistogram(
-                                                "TrustedWebActivity.SplashScreenShown", wasShown)));
+    public static void recordSplashScreenUsage(boolean wasShown) {
+        RecordHistogram.recordBooleanHistogram("TrustedWebActivity.SplashScreenShown", wasShown);
     }
 
     /** Records the fact that data was shared via a TWA. */
-    public void recordShareTargetRequest(@ShareRequestMethod int method) {
+    public static void recordShareTargetRequest(@ShareRequestMethod int method) {
         RecordHistogram.recordEnumeratedHistogram(
                 "TrustedWebActivity.ShareTargetRequest", method, ShareRequestMethod.NUM_ENTRIES);
     }
 
-    public void recordExtraCommandSuccess(String command, boolean success) {
+    public static void recordExtraCommandSuccess(String command, boolean success) {
         RecordHistogram.recordBooleanHistogram(
                 "TrustedWebActivity.ExtraCommandSuccess." + command, success);
     }

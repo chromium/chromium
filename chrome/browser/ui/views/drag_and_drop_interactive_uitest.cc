@@ -26,7 +26,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -1127,7 +1126,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DropValidUrlFromOutside) {
 // Scenario: drag a URL into the Omnibox.  This is a regression test for
 // https://crbug.com/670123.
 // TODO(crbug.com/344168586): Very flaky on linux-chromeos-rel bots.
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) && defined(NDEBUG)
 #define MAYBE_DropUrlIntoOmnibox DISABLED_DropUrlIntoOmnibox
 #else
 #define MAYBE_DropUrlIntoOmnibox DropUrlIntoOmnibox
@@ -1153,7 +1152,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DropUrlIntoOmnibox) {
 
   // Click into Omnibox, so the text will be unselected.
   base::RunLoop loop1;
-  ui_test_utils::MoveMouseToCenterAndPress(omnibox_view, ui_controls::LEFT,
+  ui_test_utils::MoveMouseToCenterAndClick(omnibox_view, ui_controls::LEFT,
                                            ui_controls::DOWN | ui_controls::UP,
                                            loop1.QuitClosure());
   loop1.Run();
@@ -1176,7 +1175,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, MAYBE_DropUrlIntoOmnibox) {
   // The omnibox popup is open, and the browser's center point falls inside,
   // near the bottom of the popup. Offset the click down 5px, so that it
   // actually clicks the browser window and not the popup.
-  ui_test_utils::MoveMouseToCenterWithOffsetAndPress(
+  ui_test_utils::MoveMouseToCenterWithOffsetAndClick(
       browser_view, {0, 5}, ui_controls::LEFT,
       ui_controls::DOWN | ui_controls::UP, loop2.QuitClosure());
   loop2.Run();
@@ -1662,11 +1661,8 @@ void DragAndDropBrowserTest::DragImageBetweenFrames_Step3(
 // There is no known way to execute test-controlled tasks during
 // a drag-and-drop loop run by Windows OS.
 // Also disable the test on Linux due to flaky: crbug.com/1164442
-// TODO(crbug.com/40118868): Revisit once build flag switch of lacros-chrome is
-// complete.
 // TODO(crbug.com/40876472): Enable on ChromeOS ASAN once flakiness is fixed.
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS) ||            \
     (BUILDFLAG(IS_CHROMEOS) && defined(ADDRESS_SANITIZER))
 #define MAYBE_DragImageFromDisappearingFrame \
   DISABLED_DragImageFromDisappearingFrame
@@ -2009,7 +2005,7 @@ void DragAndDropBrowserTest::CrossNavCrossSiteDrag_Step3(
 
 // There is no known way to execute test-controlled tasks during
 // a drag-and-drop loop run by Windows OS.
-#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_CHROMEOS_ASH) && \
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_CHROMEOS) && \
                           (defined(ADDRESS_SANITIZER) || !defined(NDEBUG)))
 // https://crbug.com/1393605: Flaky at ChromeOS ASAN and Debug builds
 #define MAYBE_CrossTabDrag DISABLED_CrossTabDrag
@@ -2286,8 +2282,7 @@ IN_PROC_BROWSER_TEST_P(DragAndDropBrowserTest, DragUpdateScreenCoordinates) {
 // navigation.
 
 // Injecting input with scaling works as expected on Chromeos.
-// TODO(crbug.com/40231833): Enable tests with a scale factor on lacros.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr std::initializer_list<double> ui_scaling_factors = {1.0, 1.25, 2.0};
 #else
 // Injecting input with non-1x scaling doesn't work correctly with x11 ozone or
@@ -2307,7 +2302,7 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(::testing::Values(true),
                        ::testing::ValuesIn(ui_scaling_factors)));
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class DragAndDropBrowserTestNoParam : public InProcessBrowserTest {
  protected:
   void SimulateDragFromOmniboxToWebContents(base::OnceClosure quit) {
@@ -2379,6 +2374,6 @@ IN_PROC_BROWSER_TEST_F(DragAndDropBrowserTestNoParam, CloseTabDuringDrag) {
 
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace chrome

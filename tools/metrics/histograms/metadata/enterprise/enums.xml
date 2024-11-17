@@ -489,6 +489,7 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="FAILURE_UNKNOWN_ERROR"/>
   <int value="30" label="FAILURE_REAUTHZ_POLICY_CHECK_FAILED"/>
   <int value="31" label="FAILURE_NO_COMMON_AUTH_METHOD"/>
+  <int value="32" label="FAILURE_SESSION_POLICIES_CHANGED"/>
 </enum>
 
 <enum name="EnterpriseDeviceManagementStatus">
@@ -1882,7 +1883,7 @@ chromium-metrics-reviews@google.com.
   <int value="1009" label="BatterySaverModeAvailability"/>
   <int value="1010" label="TabDiscardingExceptions"/>
   <int value="1011" label="AssistantWebEnabled"/>
-  <int value="1012" label="LacrosDataBackwardMigrationMode"/>
+  <int value="1012" label="(Obsolete) LacrosDataBackwardMigrationMode"/>
   <int value="1013" label="StrictMimetypeCheckForWorkerScriptsEnabled"/>
   <int value="1014" label="RecoveryFactorBehavior"/>
   <int value="1015" label="CalendarIntegrationEnabled"/>
@@ -2157,11 +2158,30 @@ chromium-metrics-reviews@google.com.
   <int value="1291" label="TabCompareSettings"/>
   <int value="1292" label="AdHocCodeSigningForPWAsEnabled"/>
   <int value="1293" label="KioskWebAppOfflineEnabled"/>
-  <int value="1294" label="GraduationEnablementStatus"/>
+  <int value="1294" label="ContentTransferEnablementStatus"/>
   <int value="1295" label="HelpMeReadSettings"/>
   <int value="1296" label="GenAiDefaultSettings"/>
   <int value="1297" label="KioskActiveWiFiCredentialsScopeChangeEnabled"/>
   <int value="1298" label="DataURLWhitespacePreservationEnabled"/>
+  <int value="1299" label="AllowExcludeDisplayInMirrorMode"/>
+  <int value="1300" label="AutofillPredictionSettings"/>
+  <int value="1301" label="ArcOpenLinksInBrowserByDefault"/>
+  <int value="1302" label="EnterpriseProfileBadgeToolbarSettings"/>
+  <int value="1303" label="DefaultDirectSocketsPrivateNetworkAccessSetting"/>
+  <int value="1304" label="DirectSocketsPrivateNetworkAccessAllowedForUrls"/>
+  <int value="1305" label="DirectSocketsPrivateNetworkAccessBlockedForUrls"/>
+  <int value="1306" label="SelectParserRelaxationEnabled"/>
+  <int value="1307" label="ClassManagementEnabled"/>
+  <int value="1308" label="EnterpriseSearchAggregatorSettings"/>
+  <int value="1309" label="TranslatorAPIAllowed"/>
+  <int value="1310" label="WebAudioOutputBufferingEnabled"/>
+  <int value="1311" label="NTPOutlookCardVisible"/>
+  <int value="1312" label="NTPSharepointCardVisible"/>
+  <int value="1313" label="SharedWorkerBlobURLFixEnabled"/>
+  <int value="1314" label="DeviceNativeClientForceAllowed"/>
+  <int value="1315" label="GenAiLensOverlaySettings"/>
+  <int value="1316" label="PasswordManagerPasskeysEnabled"/>
+  <int value="1317" label="FilePickerChooseFromDriveSettings"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
@@ -2302,6 +2322,64 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Extension telemetry event"/>
 </enum>
 
+<!-- LINT.IfChange(EnterpriseSkyVaultMigrationDialogAction) -->
+
+<enum name="EnterpriseSkyVaultMigrationDialogAction">
+  <int value="0" label="'Upload now' button clicked"/>
+  <int value="1"
+      label="No action (timeout expired) 'Upload in ...' button clicked"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/policy/skyvault/policy_utils.h:DialogAction) -->
+
+<!-- LINT.IfChange(EnterpriseSkyVaultMigrationState) -->
+
+<enum name="EnterpriseSkyVaultMigrationState">
+  <int value="0" label="Uninitialized"/>
+  <int value="1" label="Pending"/>
+  <int value="2" label="InProgress"/>
+  <int value="3" label="Cleanup"/>
+  <int value="4" label="Completed"/>
+  <int value="5" label="Failure"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/policy/skyvault/policy_utils.h:State) -->
+
+<!-- LINT.IfChange(EnterpriseSkyVaultMigrationStateErrorContext) -->
+
+<enum name="EnterpriseSkyVaultMigrationStateErrorContext">
+  <int value="0" label="Show dialog"/>
+  <int value="1" label="On dialog click"/>
+  <int value="2" label="On timeout skip"/>
+  <int value="3" label="On timeout"/>
+  <int value="4" label="List files"/>
+  <int value="5" label="Migration start"/>
+  <int value="6" label="Migration done"/>
+  <int value="7" label="Cleanup start"/>
+  <int value="8" label="Cleanup done"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/policy/skyvault/policy_utils.h:StateErrorContext) -->
+
+<!-- LINT.IfChange(EnterpriseSkyVaultMigrationUploadError) -->
+
+<enum name="EnterpriseSkyVaultMigrationUploadError">
+  <int value="0" label="Unexpected error"/>
+  <int value="1" label="Service unavailable"/>
+  <int value="2" label="Google Drive create folder failed"/>
+  <int value="3" label="Google Drive sync failed"/>
+  <int value="4" label="Cloud quota full"/>
+  <int value="5" label="File not found"/>
+  <int value="6" label="OneDrive invalid URL"/>
+  <int value="7" label="Generic copy failed error"/>
+  <int value="8" label="Delete failed"/>
+  <int value="9" label="OneDrive authentication required"/>
+  <int value="10" label="Generic move failed error"/>
+  <int value="11" label="Cancelled"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ash/policy/skyvault/policy_utils.h:MigrationUploadError) -->
+
 <enum name="EnterpriseUserInfoFetchStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Failed with a network error"/>
@@ -2401,6 +2479,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Unified consent dialog rejected"/>
   <int value="4" label="OIDC profile registration failure"/>
   <int value="5" label="Can't start enrollment from Guest or OTR profile"/>
+  <int value="6" label="OIDC profile registration timeout"/>
 </enum>
 
 <enum name="OidcProfileCreationFunnelStep">
@@ -2444,6 +2523,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="System print: Before print job"/>
   <int value="5" label="Normal print: Before print job"/>
   <int value="6" label="Normal print: Open PDF in Preview"/>
+</enum>
+
+<enum name="PromotionBannerAction">
+  <int value="0" label="Promotion banner dismissed">
+    The promotion banner was dismissed by the user.
+  </int>
+  <int value="1" label="Promotion banner redirected">
+    The promotion banner was redirected to a different page.
+  </int>
 </enum>
 
 <enum name="PsmResult">

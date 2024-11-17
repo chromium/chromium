@@ -102,7 +102,7 @@ class TaskSchedulerTests : public ::testing::Test {
 
   // Converts a base::Time that is in UTC and returns the corresponding local
   // time on the current system.
-  base::Time UTCTimeToLocalTime(const base::Time& time_utc) {
+  base::Time UTCTimeToLocalTime(base::Time time_utc) {
     const FILETIME file_time_utc = time_utc.ToFileTime();
     FILETIME file_time_local = {};
     SYSTEMTIME system_time_utc = {};

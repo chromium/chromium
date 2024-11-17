@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/lazy_instance.h"
@@ -26,6 +27,7 @@
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/renderer_host/spare_render_process_host_manager_impl.h"
 #include "content/common/renderer.mojom.h"
 #include "content/public/browser/android/child_process_importance.h"
 #include "content/public/browser/browser_context.h"
@@ -496,8 +498,9 @@ void MockRenderProcessHost::DisableRefCounts() {
   // MockRenderProcessHost is the spare RenderProcessHost, we know that it is
   // owned by the SpareRenderProcessHostManager and we need to delete the spare
   // to avoid reports/DCHECKs about memory leaks.
-  if (this == RenderProcessHostImpl::GetSpareRenderProcessHostForTesting())
+  if (IsSpare()) {
     Cleanup();
+  }
 }
 
 bool MockRenderProcessHost::AreRefCountsDisabled() {
@@ -531,7 +534,8 @@ bool MockRenderProcessHost::HostHasNotBeenUsed() {
 }
 
 bool MockRenderProcessHost::IsSpare() const {
-  return this == RenderProcessHostImpl::GetSpareRenderProcessHostForTesting();
+  return base::Contains(SpareRenderProcessHostManagerImpl::Get().GetSpares(),
+                        this);
 }
 
 void MockRenderProcessHost::SetProcessLock(

@@ -12,10 +12,14 @@ import 'chrome://resources/ash/common/cr_elements/cros_color_overrides.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import 'chrome://resources/ash/common/cr_elements/cr_page_host_style.css.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import './skyvault_icons.html.js';
 import 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import './strings.m.js';
+import '/strings.m.js';
 
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {LocalFilesBrowserProxy} from './local_files_browser_proxy.js';
@@ -25,6 +29,8 @@ import {getTemplate} from './local_files_migration_dialog.html.js';
 class LocalFilesMigrationDialogElement extends HTMLElement {
   private proxy: LocalFilesBrowserProxy = LocalFilesBrowserProxy.getInstance();
   private cloudProvider: CloudProvider|null = null;
+  private dialog: CrDialogElement;
+  private dismissButton: CrButtonElement;
 
   constructor() {
     super();
@@ -32,11 +38,12 @@ class LocalFilesMigrationDialogElement extends HTMLElement {
     const shadowRoot = this.attachShadow({mode: 'open'});
     shadowRoot.innerHTML = getTemplate();
 
-    const uploadNowButton = this.$('#upload-now-button');
-    uploadNowButton.addEventListener(
-        'click', () => this.onUploadNowButtonClicked_());
-    const dismissButton = this.$('#dismiss-button');
-    dismissButton.addEventListener(
+    this.dialog = this.$('cr-dialog');
+
+    this.$('#upload-now-button')
+        .addEventListener('click', () => this.onUploadNowButtonClicked_());
+    this.dismissButton = this.$('#dismiss-button');
+    this.dismissButton.addEventListener(
         'click', () => this.onDismissButtonClicked_());
 
     this.proxy.callbackRouter.updateRemainingTime.addListener(
@@ -73,6 +80,9 @@ class LocalFilesMigrationDialogElement extends HTMLElement {
         loadTimeData.getStringF('uploadDoneMessage', providerName);
 
     this.updateRemainingTime_(remainingTime);
+    // Show after all the text is ready, so that screen readers can properly
+    // access it.
+    this.dialog.showModal();
   }
 
   private async onUploadNowButtonClicked_() {
@@ -95,29 +105,31 @@ class LocalFilesMigrationDialogElement extends HTMLElement {
       return;
     }
 
-    const title = this.$('#title');
-    const dismissButton = this.$('#dismiss-button');
     const providerName = this.getCloudProviderName_(this.cloudProvider);
     const remainingTimeValue = remainingTime.value;
     const plural = remainingTimeValue > 1;
+    let titleText: string;
     switch (remainingTime.unit) {
       case TimeUnit.kHours:
-        title.innerText = plural ?
+        titleText = plural ?
             loadTimeData.getStringF(
                 'titleHours', providerName, remainingTimeValue) :
             loadTimeData.getStringF('titleHour', providerName);
-        dismissButton.innerText =
+        this.dismissButton.innerText =
             loadTimeData.getStringF('uploadInHours', remainingTimeValue);
         break;
       case TimeUnit.kMinutes:
-        title.innerText = plural ?
+        titleText = plural ?
             loadTimeData.getStringF(
                 'titleMinutes', providerName, remainingTimeValue) :
             loadTimeData.getStringF('titleMinute', providerName);
-        dismissButton.innerText =
+        this.dismissButton.innerText =
             loadTimeData.getStringF('uploadInMinutes', remainingTimeValue);
         break;
     }
+    const title = this.$('#header');
+    title.innerText = `${titleText}`;
+    this.dialog.setTitleAriaLabel(titleText);
   }
 
   private getCloudProviderName_(cloudProvider: CloudProvider) {

@@ -408,7 +408,7 @@ class V4ProtocolManagerUtil {
       std::vector<std::string>* list_client_states);
 
  private:
-  V4ProtocolManagerUtil() {}
+  V4ProtocolManagerUtil() = default;
 
   FRIEND_TEST_ALL_PREFIXES(V4ProtocolManagerUtilTest, TestBackOffLogic);
   FRIEND_TEST_ALL_PREFIXES(V4ProtocolManagerUtilTest,

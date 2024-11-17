@@ -37,8 +37,7 @@ std::string ToString(SwitchAccessCommand command) {
           extensions::api::accessibility_private::SwitchAccessCommand::
               kPrevious);
     case SwitchAccessCommand::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -103,8 +102,7 @@ void AccessibilityEventRewriterDelegateImpl::DispatchMouseEvent(
       event_type = ax::mojom::Event::kMouseDragged;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   AutomationManagerAura::GetInstance()->HandleEvent(

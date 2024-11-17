@@ -37,10 +37,11 @@ LocalBinaryUploadServiceFactory::LocalBinaryUploadServiceFactory()
   DependsOn(enterprise_signals::SystemSignalsServiceHostFactory::GetInstance());
 }
 
-KeyedService* LocalBinaryUploadServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+LocalBinaryUploadServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new LocalBinaryUploadService(profile);
+  return std::make_unique<LocalBinaryUploadService>(profile);
 }
 
 }  // namespace enterprise_connectors

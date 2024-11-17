@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_constrain_point_2d_parameters.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_fill_light_mode.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_settings_range.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_capabilities.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_constraints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_track_settings.h"
@@ -515,7 +516,8 @@ bool TrackIsInactive(const MediaStreamTrack& track) {
   // Spec instructs to return an exception if the Track's readyState() is not
   // "live". Also reject if the track is disabled or muted.
   // TODO(https://crbug.com/1462012): Do not consider muted tracks inactive.
-  return track.readyState() != "live" || !track.enabled();
+  return track.readyState() != V8MediaStreamTrackState::Enum::kLive ||
+         !track.enabled();
 }
 
 BackgroundBlurMode ParseBackgroundBlur(bool blink_mode) {
@@ -542,13 +544,15 @@ MeteringMode ParseMeteringMode(const String& blink_mode) {
   NOTREACHED();
 }
 
-FillLightMode ParseFillLightMode(const String& blink_mode) {
-  if (blink_mode == "off")
-    return FillLightMode::OFF;
-  if (blink_mode == "auto")
-    return FillLightMode::AUTO;
-  if (blink_mode == "flash")
-    return FillLightMode::FLASH;
+FillLightMode V8EnumToFillLightMode(V8FillLightMode::Enum blink_mode) {
+  switch (blink_mode) {
+    case V8FillLightMode::Enum::kOff:
+      return FillLightMode::OFF;
+    case V8FillLightMode::Enum::kAuto:
+      return FillLightMode::AUTO;
+    case V8FillLightMode::Enum::kFlash:
+      return FillLightMode::FLASH;
+  }
   NOTREACHED();
 }
 
@@ -1639,7 +1643,7 @@ ScriptPromise<Blob> ImageCapture::takePhoto(
 
   settings->has_fill_light_mode = photo_settings->hasFillLightMode();
   if (settings->has_fill_light_mode) {
-    const String fill_light_mode = photo_settings->fillLightMode();
+    auto fill_light_mode = photo_settings->fillLightMode();
     if (photo_capabilities_ && photo_capabilities_->hasFillLightMode() &&
         photo_capabilities_->fillLightMode().Find(fill_light_mode) ==
             kNotFound) {
@@ -1647,7 +1651,7 @@ ScriptPromise<Blob> ImageCapture::takePhoto(
           DOMExceptionCode::kNotSupportedError, "Unsupported fillLightMode"));
       return promise;
     }
-    settings->fill_light_mode = ParseFillLightMode(fill_light_mode);
+    settings->fill_light_mode = V8EnumToFillLightMode(fill_light_mode.AsEnum());
   }
 
   service_->SetPhotoOptions(

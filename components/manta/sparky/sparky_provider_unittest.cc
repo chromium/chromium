@@ -98,6 +98,7 @@ class FakeSparkyDelegate : public SparkyDelegate {
                   bool obtain_bytes,
                   std::set<std::string> allowed_file_paths) override {}
   void LaunchFile(const std::string& file_path) override {}
+  void WriteFile(const std::string& name, const std::string& bytes) override {}
 
   void ObtainStorageInfo(StorageDataCallback storage_callback) override {
     std::move(storage_callback)

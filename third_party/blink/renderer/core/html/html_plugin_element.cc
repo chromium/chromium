@@ -72,7 +72,7 @@ namespace blink {
 namespace {
 
 String GetMIMETypeFromURL(const KURL& url) {
-  String filename = url.LastPathComponent();
+  String filename = url.LastPathComponent().ToString();
   int extension_pos = filename.ReverseFind('.');
   if (extension_pos >= 0) {
     String extension = filename.Substring(extension_pos + 1);
@@ -824,6 +824,12 @@ bool HTMLPlugInElement::AllowedToLoadObject(const KURL& url,
                                             const String& mime_type) {
   if (url.IsEmpty() && mime_type.empty())
     return false;
+
+  // If present, `url` must contain a valid non-empty URL potentially surrounded
+  // by spaces.
+  if (!url.IsEmpty() && !url.IsValid()) {
+    return false;
+  }
 
   LocalFrame* frame = GetDocument().GetFrame();
   Settings* settings = frame->GetSettings();

@@ -181,6 +181,16 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Account is uknown with an invalid token"/>
 </enum>
 
+<enum name="BatchUploadTypes">
+  <int value="0" label="Passwords"/>
+  <int value="1" label="Addresses"/>
+</enum>
+
+<enum name="BooleanBoundToTheSameKey">
+  <int value="0" label="Bound to different keys"/>
+  <int value="1" label="Bound to the same key"/>
+</enum>
+
 <enum name="BooleanGetAccountsSucceeded">
   <int value="0" label="Account fetching failed"/>
   <int value="1" label="Account fetching succeeded"/>
@@ -233,6 +243,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Challenge unexpected format"/>
   <int value="6" label="Challenge requests limit exceeded"/>
   <int value="7" label="Sign challenge failed"/>
+  <int value="8" label="Challenge session ID mismatch"/>
 </enum>
 
 <enum name="BoundSessionCredentialsSessionRegistrationResult">
@@ -329,6 +340,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Gaia cookie is missing from Add Session"/>
   <int value="3" label="Gaia cookie is restored, Infobar shown"/>
 </enum>
+
+<!-- LINT.IfChange(GaiaPage) -->
+
+<enum name="GaiaPage">
+  <int value="0" label="Other"/>
+  <int value="1" label="AccountChooser"/>
+  <int value="2" label="SignOutOptions"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/ios/browser/account_consistency_service.mm:GaiaPage) -->
 
 <enum name="GaiaRemoteConsentFlowResult">
   <int value="0" label="Success"/>
@@ -550,7 +571,7 @@ chromium-metrics-reviews@google.com.
   <int value="47" label="Reading list"/>
   <int value="48" label="Reauth info bar"/>
   <int value="49" label="Account consistency service"/>
-  <int value="50" label="Search companion"/>
+  <int value="50" label="(Obsolete) Search companion"/>
   <int value="51" label="Set Up List on iOS only"/>
   <int value="52" label="Password migration warning on Android only"/>
   <int value="53" label="Save to photos iOS"/>
@@ -571,6 +592,9 @@ chromium-metrics-reviews@google.com.
   <int value="68" label="Product Specifications"/>
   <int value="69" label="Account menu failed switch"/>
   <int value="70" label="Address bubble"/>
+  <int value="71" label="CCT account mismatch notification"/>
+  <int value="72" label="Drive file picker iOS"/>
+  <int value="73" label="Share group collaboration authentification"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">
@@ -603,6 +627,8 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Failed"/>
   <int value="4" label="Cancelled"/>
   <int value="5" label="Returned null account name"/>
+  <int value="6" label="Returned after sign-in activity destroyed"/>
+  <int value="7" label="Returned and sign-in activity was not destroyed"/>
 </enum>
 
 <enum name="SigninDiceResponseHeader">
@@ -709,16 +735,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Reauth page failed to load"/>
   <int value="4" label="Reauth was cancelled"/>
   <int value="5" label="Unexpected server response"/>
-</enum>
-
-<enum name="SigninReauthUserAction">
-  <int value="0" label="Click confirm button"/>
-  <int value="1" label="Click next button"/>
-  <int value="2" label="Click cancel button"/>
-  <int value="3" label="Close confirmation dialog"/>
-  <int value="4" label="Close Gaia dialog"/>
-  <int value="5" label="Close Gaia tab"/>
-  <int value="6" label="Pass Gaia reauth"/>
 </enum>
 
 <enum name="SigninReconcilerOperation">
@@ -976,6 +992,12 @@ chromium-metrics-reviews@google.com.
   <int value="22"
       label="DiceResponseHandler::Signin from sign in promo after password
              save (obsolete)"/>
+  <int value="23"
+      label="DiceWebSigninInterceptor::OnEnterpriseProfileCreationResult from
+             enterprise forced profile creation dialog"/>
+  <int value="24"
+      label="AccountsPolicyManager::RemoveUnallowedAccounts from
+             ProfileSeparationDomainExceptionList policy."/>
 </enum>
 
 <enum name="SyncButtonClicked">
@@ -1031,6 +1053,17 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Engine Initialized With Auto Start"/>
   <int value="5" label="Restored backup of a syncing device on Android"/>
 </enum>
+
+<!-- LINT.IfChange(TokenBindingBoundTokenPrevalence) -->
+
+<enum name="TokenBindingBoundTokenPrevalence">
+  <int value="0" label="Token list is empty"/>
+  <int value="1" label="None of the tokens are bound"/>
+  <int value="2" label="Some tokens are bound, some unbound"/>
+  <int value="3" label="All tokens are bound"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/signin/internal/identity_manager/mutable_profile_oauth2_token_service_delegate.cc:BoundTokenPrevalence) -->
 
 <!-- LINT.IfChange(TokenBindingGenerateAssertionResult) -->
 

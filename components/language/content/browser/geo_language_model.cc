@@ -15,7 +15,7 @@ GeoLanguageModel::GeoLanguageModel(
     const GeoLanguageProvider* const geo_language_provider)
     : geo_language_provider_(geo_language_provider) {}
 
-GeoLanguageModel::~GeoLanguageModel() {}
+GeoLanguageModel::~GeoLanguageModel() = default;
 
 std::vector<LanguageModel::LanguageDetails> GeoLanguageModel::GetLanguages() {
   const std::vector<std::string>& geo_inferred_languages =

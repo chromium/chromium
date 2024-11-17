@@ -63,7 +63,7 @@ class VIZ_VULKAN_CONTEXT_PROVIDER_EXPORT VulkanContextProvider
 
  protected:
   friend class base::RefCountedThreadSafe<VulkanContextProvider>;
-  virtual ~VulkanContextProvider() {}
+  virtual ~VulkanContextProvider() = default;
 };
 
 }  // namespace viz

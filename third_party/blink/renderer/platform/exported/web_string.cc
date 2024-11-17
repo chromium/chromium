@@ -62,9 +62,7 @@ WebString& WebString::operator=(const WebString&) = default;
 WebString& WebString::operator=(WebString&&) = default;
 
 WebString::WebString(std::u16string_view s)
-    : impl_(StringImpl::Create8BitIfPossible(
-          s.data(),
-          base::checked_cast<wtf_size_t>(s.length()))) {}
+    : impl_(StringImpl::Create8BitIfPossible(s)) {}
 
 void WebString::Reset() {
   impl_ = nullptr;
@@ -111,8 +109,7 @@ std::string WebString::Latin1() const {
 }
 
 WebString WebString::FromLatin1(std::string_view s) {
-  return String(reinterpret_cast<const WebLChar*>(s.data()),
-                base::checked_cast<wtf_size_t>(s.length()));
+  return String(s);
 }
 
 std::string WebString::Ascii() const {
@@ -144,8 +141,7 @@ bool WebString::Equals(const WebString& s) const {
 }
 
 bool WebString::Equals(std::string_view characters) const {
-  return Equal(impl_.get(), characters.data(),
-               base::checked_cast<wtf_size_t>(characters.length()));
+  return Equal(impl_.get(), characters);
 }
 
 size_t WebString::Find(const WebString& s) const {

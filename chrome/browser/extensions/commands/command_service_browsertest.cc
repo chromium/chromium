@@ -50,9 +50,9 @@ std::string GetAnotherCommandPlatform() {
   return extensions::manifest_values::kKeybindingPlatformMac;
 #elif BUILDFLAG(IS_MAC)
   return extensions::manifest_values::kKeybindingPlatformChromeOs;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
+#elif BUILDFLAG(IS_CHROMEOS)
   return extensions::manifest_values::kKeybindingPlatformLinux;
-#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX)
   return extensions::manifest_values::kKeybindingPlatformWin;
 #else
   return "";

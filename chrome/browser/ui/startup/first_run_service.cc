@@ -330,8 +330,7 @@ void FirstRunService::FinishFirstRun(FinishedReason reason) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (reason == FinishedReason::kForceSignin) {
-    NOTREACHED_IN_MIGRATION()
-        << "Force Signin policy value is not active on Lacros.";
+    NOTREACHED() << "Force Signin policy value is not active on Lacros.";
   }
 #endif
 

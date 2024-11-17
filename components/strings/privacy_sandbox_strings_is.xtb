@@ -3,18 +3,25 @@
 <translationbundle lang="is">
 <translation id="1444443021901415601">Chrome skráir áhugasvið í samræmi við nýlegan vafraferil</translation>
 <translation id="2252052615723281030">Þegar þú ert skráð(ur) inn í Chrome hjálpar þessi stilling þér að halda IP-tölunni lokaðri. Ef Chrome hefur grun um að vefsvæði gæti verið að rekja þig gæti hluti af umferðinni þinni verið send í gegnum persónuverndarþjóna.</translation>
+<translation id="235789365079050412">Persónuverndarstefna Google</translation>
 <translation id="2793385791865768072">Chromium skráir áhugasvið í samræmi við nýlegan vafraferil</translation>
+<translation id="2979365474350987274">Fótspor þriðju aðila eru takmörkuð</translation>
 <translation id="33479675708419823">Þegar þú ert skráð(ur) inn í Chrome hjálpar þessi stilling þér að halda IP-tölunni lokaðri. Ef Chrome hefur grun um að vefsvæði gæti verið að rekja þig gæti hluti af umferðinni þinni verið send í gegnum persónuverndarþjóna. Nánar um <ph name="LINK_BEGIN" />hvernig IP-vörn virkar<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Nánar um það að fela IP-töluna þína</translation>
+<translation id="385051799172605136">Til baka</translation>
 <translation id="4041687306270459969">Umfjöllunarefni auglýsinga sem er meira en fjögurra vikna gamalt verður sjálfkrafa eytt. Umfjöllunarefni taka til hluta eins og íþrótta, fatnaðar og fleira</translation>
 <translation id="4177501066905053472">Umfjöllunarefni auglýsinga</translation>
 <translation id="4301151630239508244">Umfjöllunarefni auglýsinga er aðeins einn þáttur af mörgum sem vefsvæði geta notað til að sérsníða auglýsingar. Vefsvæði geta birt þér auglýsingar jafnvel þótt lokað sé fyrir umfjöllunarefni auglýsinga en þær munu hugsanlega eiga síður við þig. Nánar um <ph name="BEGIN_LINK_1" />umsjón með persónuvernd auglýsinga<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Farðu yfir <ph name="BEGIN_LINK" />persónuverndarstefnuna<ph name="END_LINK" /> okkar til að kynna þér hvernig Google verndar gögnin þín.</translation>
 <translation id="453692855554576066">Þú getur séð umfjöllunarefni auglýsinga í stillingum Chromium og lokað á þau sem þú vilt ekki deila með vefsvæðum</translation>
 <translation id="4598427486995631491">Feldu IP-töluna þína</translation>
 <translation id="4692439979815346597">Þú getur séð umfjöllunarefni auglýsinga í stillingum Chrome og lokað á þau sem þú vilt ekki deila með vefsvæðum</translation>
 <translation id="5413586988657235240">Vefsvæði sem þú opnar geta óskað eftir umfjöllunarefnum frá Chromium til að sýna þér viðeigandi auglýsingar á sama tíma og vafraferill þinn og auðkenni er verndað</translation>
+<translation id="6053735090575989697">Farðu yfir persónuverndarstefnuna okkar til að kynna þér hvernig Google verndar gögnin þín.</translation>
 <translation id="6186536480878693792">Vefsvæði sem þú opnar geta óskað eftir umfjöllunarefnum frá Chrome til að sýna þér viðeigandi auglýsingar á sama tíma og vafraferill þinn og auðkenni er verndað</translation>
+<translation id="6195163219142236913">Fótspor þriðja aðila takmörkuð</translation>
 <translation id="6371812158043974664">Þegar þú ert skráð(ur) inn í Chromium hjálpar þessi stilling þér að halda IP-tölunni lokaðri. Ef Chromium hefur grun um að vefsvæði gæti verið að rekja þig gæti hluti af umferðinni þinni verið send í gegnum persónuverndarþjóna. Nánar um <ph name="LINK_BEGIN" />hvernig IP-vörn virkar<ph name="LINK_END" /></translation>
+<translation id="6398358690696005758">Farðu yfir <ph name="BEGIN_LINK1" />persónuverndarstefnuna<ph name="LINK_END1" /> okkar til að kynna þér hvernig Google verndar gögnin þín.</translation>
 <translation id="7040031291654706261">Lærðu <ph name="BEGIN_LINK" />hvernig IP-vörn virkar<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Farðu yfir umfjöllunarefni auglýsinga</translation>
 </translationbundle>

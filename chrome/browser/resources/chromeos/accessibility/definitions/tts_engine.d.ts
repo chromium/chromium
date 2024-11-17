@@ -17,9 +17,36 @@ declare global {
 
     export namespace ttsEngine {
 
+      export enum TtsClientSource {
+        CHROMEFEATURE = 'chromefeature',
+        EXTENSION = 'extension',
+      }
+
+      export interface TtsClient {
+        id: string;
+        source: TtsClientSource;
+      }
+
       export enum VoiceGender {
         MALE = 'male',
         FEMALE = 'female',
+      }
+
+      export interface LanguageUninstallOptions {
+        uninstallImmediately: boolean;
+      }
+
+      export enum LanguageInstallStatus {
+        NOT_INSTALLED = 'notInstalled',
+        INSTALLING = 'installing',
+        INSTALLED = 'installed',
+        FAILED = 'failed',
+      }
+
+      export interface LanguageStatus {
+        lang: string;
+        installStatus: LanguageInstallStatus;
+        error?: string;
       }
 
       export interface SpeakOptions {
@@ -49,6 +76,8 @@ declare global {
 
       export function sendTtsAudio(requestId: number, audio: AudioBuffer): void;
 
+      export function updateLanguage(status: LanguageStatus): void;
+
       export const onSpeak: ChromeEvent<
           (utterance: string, options: SpeakOptions,
            sendTtsEvent: (event: tts.TtsEvent) => void) => void>;
@@ -57,7 +86,7 @@ declare global {
           (utterance: string, options: SpeakOptions,
            audioStreamOptions: AudioStreamOptions,
            sendTtsAudio: (audioBufferParams: AudioBuffer) => void,
-           sendError: (errorMessage: string) => void) => void>;
+           sendError: (errorMessage?: string) => void) => void>;
 
       export const onStop: ChromeEvent<() => void>;
 
@@ -65,6 +94,15 @@ declare global {
 
       export const onResume: ChromeEvent<() => void>;
 
+      export const onInstallLanguageRequest:
+          ChromeEvent<(requestor: TtsClient, lang: string) => void>;
+
+      export const onUninstallLanguageRequest: ChromeEvent<
+          (requestor: TtsClient, lang: string,
+           uninstallOptions: LanguageUninstallOptions) => void>;
+
+      export const onLanguageStatusRequest:
+          ChromeEvent<(requestor: TtsClient, lang: string) => void>;
     }
   }
 }

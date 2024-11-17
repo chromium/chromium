@@ -5,6 +5,7 @@
 #include "components/user_education/webui/whats_new_registry.h"
 
 #include "base/containers/contains.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/values.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 
@@ -44,6 +45,15 @@ const char* WhatsNewModule::GetFeatureName() const {
   return feature_->name;
 }
 
+const std::string WhatsNewModule::GetCustomization() const {
+  if (!feature_) {
+    return "";
+  }
+  std::string customization = base::GetFieldTrialParamValueByFeature(
+      *feature_, whats_new::kCustomizationParam);
+  return customization;
+}
+
 WhatsNewEdition::WhatsNewEdition(const base::Feature& feature,
                                  std::string owner,
                                  std::vector<BrowserCommand> browser_commands)
@@ -57,6 +67,21 @@ bool WhatsNewEdition::IsFeatureEnabled() const {
 
 const char* WhatsNewEdition::GetFeatureName() const {
   return feature_->name;
+}
+
+const std::string WhatsNewEdition::GetCustomization() const {
+  std::string customization = base::GetFieldTrialParamValueByFeature(
+      *feature_, whats_new::kCustomizationParam);
+  return customization;
+}
+
+const std::optional<std::string> WhatsNewEdition::GetSurvey() const {
+  std::string survey = base::GetFieldTrialParamValueByFeature(
+      *feature_, whats_new::kSurveyParam);
+  if (survey.empty()) {
+    return std::nullopt;
+  }
+  return survey;
 }
 
 void WhatsNewRegistry::RegisterModule(WhatsNewModule module) {
@@ -165,7 +190,65 @@ const std::vector<std::string_view> WhatsNewRegistry::GetRolledFeatureNames()
   return feature_names;
 }
 
-void WhatsNewRegistry::SetEditionUsed(const std::string_view edition_name) {
+const std::vector<std::string> WhatsNewRegistry::GetCustomizations() const {
+  std::vector<std::string> customizations;
+  for (const WhatsNewModule& module : modules_) {
+    // Modules without a feature are default-enabled.
+    const bool module_is_default_enabled = !module.HasFeature();
+    // If the module is tied to a feature, ensure the feature is available.
+    const bool module_is_available =
+        module.HasActiveFeature() || module.HasRolledFeature();
+    if (module_is_default_enabled || module_is_available) {
+      std::string customization = module.GetCustomization();
+      if (!customization.empty()) {
+        customizations.emplace_back(customization);
+      }
+    }
+  }
+  for (const WhatsNewEdition& edition : editions_) {
+    // The only requirement for an edition to show is that it is enabled.
+    if (edition.IsFeatureEnabled()) {
+      const auto customization = edition.GetCustomization();
+      if (!customization.empty()) {
+        customizations.emplace_back(customization);
+      }
+    }
+  }
+  return customizations;
+}
+
+const std::optional<std::string> WhatsNewRegistry::GetActiveEditionSurvey()
+    const {
+  // Check if the current version is used for an edition.
+  const auto current_edition_name =
+      storage_service_->FindEditionForCurrentVersion();
+  if (current_edition_name.has_value()) {
+    auto edition =
+        std::find_if(editions_.begin(), editions_.end(),
+                     [&current_edition_name](WhatsNewEdition const& edition) {
+                       return edition.GetFeatureName() == current_edition_name;
+                     });
+    if (edition != editions_.end()) {
+      return edition->GetSurvey();
+    }
+  } else {
+    // Only request other unused editions if there was not one shown during
+    // this version.
+    for (const WhatsNewEdition& edition : editions_) {
+      if (edition.IsFeatureEnabled() &&
+          !storage_service_->IsUsedEdition(edition.GetFeatureName())) {
+        const auto survey = edition.GetSurvey();
+        if (survey.has_value()) {
+          return survey;
+        }
+      }
+    }
+  }
+
+  return std::nullopt;
+}
+
+void WhatsNewRegistry::SetEditionUsed(std::string_view edition_name) const {
   // Verify edition exists.
   auto edition = std::find_if(editions_.begin(), editions_.end(),
                               [&edition_name](WhatsNewEdition const& edition) {
@@ -176,7 +259,7 @@ void WhatsNewRegistry::SetEditionUsed(const std::string_view edition_name) {
   }
 }
 
-void WhatsNewRegistry::ClearUnregisteredModules() {
+void WhatsNewRegistry::ClearUnregisteredModules() const {
   for (auto& module_value : storage_service_->ReadModuleData()) {
     auto found_module = std::find_if(
         modules_.begin(), modules_.end(),
@@ -193,7 +276,7 @@ void WhatsNewRegistry::ClearUnregisteredModules() {
   }
 }
 
-void WhatsNewRegistry::ClearUnregisteredEditions() {
+void WhatsNewRegistry::ClearUnregisteredEditions() const {
   for (auto edition_value : storage_service_->ReadEditionData()) {
     auto found_edition =
         std::find_if(editions_.begin(), editions_.end(),
@@ -208,7 +291,7 @@ void WhatsNewRegistry::ClearUnregisteredEditions() {
   }
 }
 
-void WhatsNewRegistry::ResetData() {
+void WhatsNewRegistry::ResetData() const {
   storage_service_->Reset();
 }
 

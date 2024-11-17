@@ -75,7 +75,7 @@ struct SameSizeAsRunInfo {
     void* pointers[2];
     unsigned integer;
   } glyph_data;
-  void* pointer;
+  Member<void*> pointer;
   Vector<int> vector;
   int integers[6];
 };
@@ -1008,7 +1008,6 @@ ShapeResult* ShapeResult::ApplySpacingToCopy(
 }
 
 void ShapeResult::ApplyLeadingExpansion(LayoutUnit expansion) {
-  DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
   if (expansion <= LayoutUnit()) {
     return;
   }
@@ -1042,11 +1041,10 @@ void ShapeResult::ApplyLeadingExpansion(LayoutUnit expansion) {
     }
   }
   // No glyphs.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ShapeResult::ApplyTrailingExpansion(LayoutUnit expansion) {
-  DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
   if (expansion <= LayoutUnit()) {
     return;
   }
@@ -1066,7 +1064,7 @@ void ShapeResult::ApplyTrailingExpansion(LayoutUnit expansion) {
     return;
   }
   // No glyphs.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool ShapeResult::HasAutoSpacingAfter(unsigned offset) const {
@@ -2056,8 +2054,7 @@ void ShapeResult::ComputePositionData() const {
       // Do not overwrite.
       if (character_index >= num_characters_) {
         // We are not sure why we reach here. See http://crbug.com/1286882
-        NOTREACHED_IN_MIGRATION();
-        continue;
+        NOTREACHED();
       }
       if (next_character_index <= character_index) {
         if (next_character_index < character_index) {
@@ -2258,8 +2255,7 @@ void AddRunInfoRanges(const ShapeResult::RunInfo& run_info,
     // TODO(crbug.com/1147011): This should not happen, but crash logs indicate
     // that this is happening.
     if (glyph.character_index >= character_widths.size()) [[unlikely]] {
-      NOTREACHED_IN_MIGRATION();
-      character_widths.Grow(glyph.character_index + 1);
+      NOTREACHED();
     }
     character_widths[glyph.character_index] += glyph.advance.ToFloat();
   }
@@ -2343,7 +2339,7 @@ void ShapeResult::ComputeRunInkBounds(const ShapeResult::RunInfo& run,
 
   if (!is_horizontal_run)
     bounds.ConvertVerticalRunToLogical(current_font_data.GetFontMetrics());
-  ink_bounds->Union(bounds.bounds);
+  ink_bounds->Union(bounds.Bounds());
 }
 
 gfx::RectF ShapeResult::ComputeInkBounds() const {

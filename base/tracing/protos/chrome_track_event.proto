@@ -1393,6 +1393,7 @@ message ChromeGraphicsPipeline {
   enum StepName {
     STEP_UNKNOWN = 0;
     STEP_DID_NOT_PRODUCE_FRAME = 1;
+    STEP_DID_NOT_PRODUCE_COMPOSITOR_FRAME = 22;
     STEP_GENERATE_COMPOSITOR_FRAME = 2;
     STEP_GENERATE_RENDER_PASS = 3;
     STEP_ISSUE_BEGIN_FRAME = 4;
@@ -1452,9 +1453,35 @@ message ChromeGraphicsPipeline {
   optional StepName step = 1;
   optional FrameSinkId frame_sink_id = 2;
 
+  // Id used to link `ChromeGraphicsPipeline`s corresponding to work done by a
+  // Viz client to produce a frame. This corresponds to
+  // `viz::BeginFrameAck.trace_id`. Covers steps:
+  // * STEP_ISSUE_BEGIN_FRAME
+  // * STEP_RECEIVE_BEGIN_FRAME
+  // * STEP_GENERATE_RENDER_PASS
+  // * STEP_GENERATE_COMPOSITOR_FRAME
+  // * STEP_SUBMIT_COMPOSITOR_FRAME
+  // * STEP_RECEIVE_COMPOSITOR_FRAME
+  // * STEP_RECEIVE_BEGIN_FRAME_DISCARD
+  // * STEP_DID_NOT_PRODUCE_FRAME
+  // * STEP_DID_NOT_PRODUCE_COMPOSITOR_FRAME
+  optional int64 surface_frame_trace_id = 10;
+
   // Id used to link `ChromeGraphicsPipeline`s corresponding to work done
-  // on creating and presenting one frame.
+  // on creating and presenting one frame *after* surface aggregation. Covers
+  // steps:
+  // * STEP_DRAW_AND_SWAP
+  // * STEP_SURFACE_AGGREGATION
+  // * STEP_SEND_BUFFER_SWAP
+  // * STEP_BUFFER_SWAP_POST_SUBMIT
+  // * STEP_FINISH_BUFFER_SWAP
+  // * STEP_SWAP_BUFFERS_ACK
   optional int64 display_trace_id = 3;
+
+  // `viz::BeginFrameAck.trace_id`s for frames aggregated at this step.
+  // Used with `STEP_SURFACE_AGGREGATION` only. This can be "joined" with
+  // `surface_frame_trace_id`.
+  repeated int64 aggregated_surface_frame_trace_ids = 8;
 
   optional LocalSurfaceId local_surface_id = 4;
   optional int64 frame_sequence = 5;
@@ -1463,9 +1490,9 @@ message ChromeGraphicsPipeline {
   // Optional variable that can be set together with STEP_BACKEND*.
   optional int64 backend_frame_id = 7;
 
-  // `viz::BeginFrameAck.trace_id`s for frames aggregated at this step.
-  // Used with `STEP_SURFACE_AGGREGATION` only.
-  repeated int64 aggregated_frames_ids = 8;
+  // List of LatencyInfo.trace_ids associated with this frame, which
+  // should allow us to match input to frame production.
+  repeated int64 latency_ids = 9;
 };
 
 message LibunwindstackUnwinder {
@@ -1532,6 +1559,7 @@ message PageLoad {
 message StartUp {
   // This enum must be kept up to date with LaunchCauseMetrics.LaunchCause.
   enum LaunchCauseType {
+    UNINITIALIZED = -1;
     OTHER = 0;
     CUSTOM_TAB = 1;
     TWA = 2;
@@ -1985,10 +2013,28 @@ message MainFramePipeline {
   optional BeginFrameId last_begin_frame_id_during_first_draw = 5;
 }
 
+message CurrentTask {
+  // t1 - t0, where t1 is the start timestamp of this slice and t0 is the start
+  // timestamp of the task containing this slice.
+  optional uint64 event_offset_from_task_start_time_us = 1;
+
+  // Timestamp in microseconds of the start of the task containing this slice.
+  optional uint64 task_start_time_us = 2;
+
+  // t1 - t0, where t1 is the start timestamp of this slice and t0 is the
+  // timestamp of the time when the task containing this slice
+  // was queued.
+  optional uint64 task_queueing_time_us = 3;
+
+  // Timestamp in microseconds of the time when the task containing
+  // this slice was queued.
+  optional uint64 task_queued_time_us = 4;
+}
+
 message ChromeLatencyInfo2 {
   optional int64 trace_id = 1;
 
-  // NEXT ID: 14
+  // NEXT ID: 15
   // All step are optional but the enum is ordered (not by number) below in the
   // order we expect them to appear if they are emitted in trace in a blocking
   // fashion.
@@ -1998,6 +2044,7 @@ message ChromeLatencyInfo2 {
     STEP_SEND_INPUT_EVENT_UI = 3;
     // Happens on the renderer's compositor.
     STEP_HANDLE_INPUT_EVENT_IMPL = 5;
+    STEP_RESAMPLE_SCROLL_EVENTS = 14;
     STEP_DID_HANDLE_INPUT_AND_OVERSCROLL = 8;
     // Occurs on the Renderer's main thread.
     STEP_HANDLE_INPUT_EVENT_MAIN = 4;
@@ -2013,7 +2060,7 @@ message ChromeLatencyInfo2 {
     // Occurs on Browser Main.
     STEP_GESTURE_EVENT_HANDLED = 13;
     // Renderer's compositor.
-    STEP_SWAP_BUFFERS = 6;
+    STEP_SWAP_BUFFERS = 6 [deprecated = true];
     // Happens on the VizCompositor in the GPU process.
     STEP_DRAW_AND_SWAP = 7 [deprecated = true];
     // Happens on the GPU main thread after the swap has completed.
@@ -2130,6 +2177,10 @@ message ChromeLatencyInfo2 {
   // If applicable, the result of handling the input corresponding to this
   // `ChromeLatencyInfo`.
   optional InputResultState input_result_state = 9;
+
+  // `trace_id` values corresponding to inputs that were coalesced/combined into
+  // the input for this `ChromeLatencyInfo`.
+  repeated int64 coalesced_trace_ids = 10;
 }
 
 message EventTiming {
@@ -2183,9 +2234,52 @@ message EventTiming {
   optional EventType type = 9;
 }
 
+// Frame information provided by Android's Choreographer.
+// See
+// https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata.
+// Next ID: 4
+message AndroidChoreographerFrameCallbackData {
+  // The time in microseconds at which the frame started being rendered.
+  // See
+  // https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata_getframetimenanos.
+  optional int64 frame_time_us = 1;
+
+  message FrameTimeline {
+    // The token used by the platform to identify the frame timeline.
+    // See
+    // https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata_getframetimelinevsyncid.
+    optional int64 vsync_id = 1;
+
+    // The difference in microseconds between:
+    // (A) the time at which the frame needs to be ready by in order to be
+    //     presented on time and
+    // (B) the time at which the frame started being rendered (frame_time_us).
+    // See
+    // https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata_getframetimelinedeadlinenanos.
+    optional int64 latch_delta_us = 2;
+
+    // The difference in microseconds between:
+    // (A) the time at which the frame is expected to be presented and
+    // (B) the time at which the frame started being rendered (frame_time_us).
+    // See
+    // https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata_getframetimelineexpectedpresentationtimenanos.
+    optional int64 present_delta_us = 3;
+  }
+
+  // Possible frame timelines.
+  // See
+  // https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata_getframetimelineslength.
+  repeated FrameTimeline frame_timeline = 2;
+
+  // The index (into frame_timeline) of the platform-preferred frame timeline.
+  // See
+  // https://developer.android.com/ndk/reference/group/choreographer#achoreographerframecallbackdata_getpreferredframetimelineindex.
+  optional int64 preferred_frame_timeline_index = 3;
+}
+
 message ChromeTrackEvent {
   // Extension range for Chrome: 1000-1999
-  // Next ID: 1070
+  // Next ID: 1072
   extend TrackEvent {
     optional ChromeAppState chrome_app_state = 1000;
 
@@ -2333,5 +2427,10 @@ message ChromeTrackEvent {
     optional ChromeLatencyInfo2 chrome_latency_info = 1068;
 
     optional EventTiming event_timing = 1069;
+
+    optional AndroidChoreographerFrameCallbackData
+        android_choreographer_frame_callback_data = 1070;
+
+    optional CurrentTask current_task = 1071;
   }
 }

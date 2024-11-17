@@ -187,8 +187,15 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       views::BoxLayout::CrossAxisAlignment::kCenter);
   SetLayoutManager(std::move(layout));
   SetPaintToLayer();
-  layer()->SetBackgroundBlur(ShelfConfig::Get()->shelf_blur_radius());
-  ui::ColorId background_color_id = cros_tokens::kCrosSysSystemBaseElevated;
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer()->SetBackgroundBlur(ShelfConfig::Get()->shelf_blur_radius());
+    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+  }
+
+  const ui::ColorId background_color_id =
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
   SetBackground(views::CreateThemedRoundedRectBackground(
       background_color_id, kPinRequestViewRoundedCornerRadiusDp));
 
@@ -227,7 +234,6 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   views::ImageView* icon = new views::ImageView();
 
   const ui::ColorId icon_color_id = cros_tokens::kCrosSysOnSurface;
-
   icon->SetImage(ui::ImageModel::FromVectorIcon(
       kPinRequestLockIcon, icon_color_id, kLockIconSizeDp));
   icon_view->AddChildView(icon);
@@ -275,8 +281,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
     label->SetSubpixelRenderingEnabled(false);
     label->SetAutoColorReadabilityEnabled(false);
 
-    const ui::ColorId text_color_id = cros_tokens::kCrosSysOnSurface;
-    label->SetEnabledColorId(text_color_id);
+    label->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
     label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   };
 
@@ -369,8 +374,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   help_button_->SetPaintToLayer();
   help_button_->layer()->SetFillsBoundsOpaquely(false);
   help_button_->SetTextSubpixelRenderingEnabled(false);
-  const ui::ColorId help_button_color_id = cros_tokens::kCrosSysSecondary;
-  help_button_->SetEnabledTextColorIds(help_button_color_id);
+  help_button_->SetEnabledTextColorIds(cros_tokens::kCrosSysSecondary);
   help_button_->SetVisible(request.help_button_enabled);
   footer->AddChildView(help_button_.get());
 
@@ -384,7 +388,6 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME,
       /*togglable=*/true, /*has_border=*/false);
   static_cast<IconButton*>(submit_button_)->SetToggled(true);
-
   submit_button_->SetEnabled(false);
   submit_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
   footer->AddChildView(submit_button_.get());

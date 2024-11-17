@@ -41,7 +41,8 @@
 - (void)appState:(AppState*)appState
     sceneConnected:(SceneState*)sceneState NS_REQUIRES_SUPER;
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage NS_REQUIRES_SUPER;
+    didTransitionFromInitStage:(AppInitStage)previousInitStage
+    NS_REQUIRES_SUPER;
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level NS_REQUIRES_SUPER;
 

@@ -12,6 +12,7 @@
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/core/script/parsed_specifier.h"
@@ -48,9 +49,9 @@ void AddIgnoredValueMessage(ConsoleLogger& logger,
 
 // <specdef
 // href="https://html.spec.whatwg.org/C#normalizing-a-specifier-key">
-String NormalizeSpecifierKey(const String& key_string,
-                             const KURL& base_url,
-                             ConsoleLogger& logger) {
+AtomicString NormalizeSpecifierKey(const String& key_string,
+                                   const KURL& base_url,
+                                   ConsoleLogger& logger) {
   // <spec step="1">If specifierKey is the empty string, then:</spec>
   if (key_string.empty()) {
     // <spec step="1.1">Report a warning to the console that specifier keys
@@ -59,7 +60,7 @@ String NormalizeSpecifierKey(const String& key_string,
                          "specifier keys cannot be the empty string.");
 
     // <spec step="1.2">Return null.</spec>
-    return String();
+    return g_empty_atom;
   }
 
   // <spec step="2">Let url be the result of parsing a URL-like import
@@ -70,7 +71,7 @@ String NormalizeSpecifierKey(const String& key_string,
     case ParsedSpecifier::Type::kInvalid:
     case ParsedSpecifier::Type::kBare:
       // <spec step="4">Return specifierKey.</spec>
-      return key_string;
+      return AtomicString(key_string);
 
     case ParsedSpecifier::Type::kURL:
       // <spec step="3">If url is not null, then return the serialization of
@@ -130,6 +131,33 @@ KURL NormalizeValue(const String& key,
   }
 }
 
+// https://html.spec.whatwg.org/C#merge-module-specifier-maps
+void MergeModuleSpecifierMaps(ImportMap::SpecifierMap& old_map,
+                              const ImportMap::SpecifierMap& new_map,
+                              ConsoleLogger& logger) {
+  // Instead of copying the maps and returning the copy, we're modifying the
+  // maps in place.
+  // 2. For each specifier → url of newMap:
+  for (auto specifier : new_map.Keys()) {
+    // 2.1. If specifier exists in oldMap, then:
+    if (old_map.Contains(specifier)) {
+      // 2.1.1. The user agent may report the removed rule as a warning to the
+      // developer console.
+      auto* message = MakeGarbageCollected<ConsoleMessage>(
+          ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kWarning,
+          "An import map rule for specifier '" + specifier +
+              "' was removed, as it conflicted with an existing rule.");
+      logger.AddConsoleMessage(message,
+                               /*discard_duplicates=*/true);
+      // 2.1.2. Continue.
+      continue;
+    }
+    auto url = new_map.at(specifier);
+    // 2.2. Set mergedMap[specifier] to url.
+    old_map.insert(specifier, url);
+  }
+}
+
 void SpecifierMapToStringForTesting(
     StringBuilder& builder,
     const ImportMap::SpecifierMap& specifier_map) {
@@ -140,7 +168,7 @@ void SpecifierMapToStringForTesting(
       builder.Append(",");
     }
     is_first_key = false;
-    builder.Append(it.key.EncodeForDebugging());
+    builder.Append(it.key.GetString().EncodeForDebugging());
     builder.Append(":");
     if (it.value.IsValid()) {
       builder.Append(it.value.GetString().GetString().EncodeForDebugging());
@@ -211,7 +239,7 @@ ImportMap* ImportMap::Parse(const String& input,
   }
 
   // <spec step="5">Let sortedAndNormalizedScopes be an empty map.</spec>
-  ScopeType sorted_and_normalized_scopes;
+  ScopesMap normalized_scopes_map;
 
   // <spec step="6">If parsed["scopes"] exists, then:</spec>
   if (parsed_map->Get("scopes")) {
@@ -234,7 +262,6 @@ ImportMap* ImportMap::Parse(const String& input,
 
     // <spec label="sort-and-normalize-scopes" step="1">Let normalized be an
     // empty map.</spec>
-    ScopeType normalized;
 
     // <spec label="sort-and-normalize-scopes" step="2">For each scopePrefix →
     // potentialSpecifierMap of originalMap,</spec>
@@ -281,18 +308,18 @@ ImportMap* ImportMap::Parse(const String& input,
       // normalized[normalizedScopePrefix] to the result of sorting and
       // normalizing a specifier map given potentialSpecifierMap and
       // baseURL.</spec>
-      sorted_and_normalized_scopes.push_back(std::make_pair(
-          prefix_url.GetString(),
-          SortAndNormalizeSpecifierMap(specifier_map, base_url, context)));
+      auto prefix_url_string = prefix_url.GetString();
+      if (normalized_scopes_map.find(prefix_url_string) !=
+          normalized_scopes_map.end()) {
+        // Later instances of a prefix override earlier ones. An explicit
+        // `erase` is needed because WTF HashMaps behave differently than spec
+        // infra ones, and do nothing if a key already exists.
+        normalized_scopes_map.erase(prefix_url_string);
+      }
+      normalized_scopes_map.insert(
+          prefix_url_string,
+          SortAndNormalizeSpecifierMap(specifier_map, base_url, context));
     }
-    // <spec label="sort-and-normalize-scopes" step="3">Return the result of
-    // sorting normalized, with an entry a being less than an entry b if b’s key
-    // is code unit less than a’s key.</spec>
-    std::sort(sorted_and_normalized_scopes.begin(),
-              sorted_and_normalized_scopes.end(),
-              [](const ScopeEntryType& a, const ScopeEntryType& b) {
-                return CodeUnitCompareLessThan(b.first, a.first);
-              });
   }
   // <spec step="7">Let normalizedIntegrity be an empty map.</spec>
   IntegrityMap normalized_integrity_map;
@@ -377,8 +404,7 @@ ImportMap* ImportMap::Parse(const String& input,
   // sortedAndNormalizedScopes.</spec>
   return MakeGarbageCollected<ImportMap>(
       std::move(sorted_and_normalized_imports),
-      std::move(sorted_and_normalized_scopes),
-      std::move(normalized_integrity_map));
+      std::move(normalized_scopes_map), std::move(normalized_integrity_map));
 }
 
 // <specdef
@@ -396,7 +422,7 @@ ImportMap::SpecifierMap ImportMap::SortAndNormalizeSpecifierMap(
 
     // <spec step="2.1">Let normalizedSpecifierKey be the result of normalizing
     // a specifier key given specifierKey and baseURL.</spec>
-    const String normalized_specifier_key =
+    const AtomicString normalized_specifier_key =
         NormalizeSpecifierKey(entry.first, base_url, logger);
 
     // <spec step="2.2">If normalizedSpecifierKey is null, then continue.</spec>
@@ -487,11 +513,13 @@ std::optional<ImportMap::MatchResult> ImportMap::MatchPrefix(
 ImportMap::ImportMap() = default;
 
 ImportMap::ImportMap(SpecifierMap&& imports,
-                     ScopeType&& scopes,
+                     ScopesMap&& scopes_map,
                      IntegrityMap&& integrity)
     : imports_(std::move(imports)),
-      scopes_(std::move(scopes)),
-      integrity_(std::move(integrity)) {}
+      scopes_map_(std::move(scopes_map)),
+      integrity_(std::move(integrity)) {
+  InitializeScopesVector();
+}
 
 // <specdef
 // href="https://https://html.spec.whatwg.org/C#resolve-a-module-specifier">
@@ -502,16 +530,16 @@ std::optional<KURL> ImportMap::Resolve(const ParsedSpecifier& parsed_specifier,
 
   // <spec step="8">For each scopePrefix → scopeImports of importMap’s
   // scopes,</spec>
-  for (const auto& entry : scopes_) {
+  for (const auto& scope : scopes_vector_) {
+    const auto& specifier_map = scopes_map_.at(scope);
     // <spec step="8.1">If scopePrefix is baseURLString, or if scopePrefix ends
     // with U+002F (/) and baseURLString starts with scopePrefix, then:</spec>
-    if (entry.first == base_url.GetString() ||
-        (entry.first.EndsWith("/") &&
-         base_url.GetString().StartsWith(entry.first))) {
+    if (scope == base_url.GetString() ||
+        (scope.EndsWith("/") && base_url.GetString().StartsWith(scope))) {
       // <spec step="8.1.1">Let scopeImportsMatch be the result of resolving an
       // imports match given normalizedSpecifier and scopeImports.</spec>
       std::optional<KURL> scope_match =
-          ResolveImportsMatch(parsed_specifier, entry.second, debug_message);
+          ResolveImportsMatch(parsed_specifier, specifier_map, debug_message);
 
       // <spec step="8.1.2">If scopeImportsMatch is not null, then return
       // scopeImportsMatch.</spec>
@@ -534,7 +562,7 @@ std::optional<KURL> ImportMap::ResolveImportsMatch(
     const SpecifierMap& specifier_map,
     String* debug_message) const {
   DCHECK(debug_message);
-  const String key = parsed_specifier.GetImportMapKeyString();
+  const AtomicString key = parsed_specifier.GetImportMapKeyString();
 
   // <spec step="1.1">If specifierKey is normalizedSpecifier, then:</spec>
   MatchResult exact = specifier_map.find(key);
@@ -627,14 +655,15 @@ String ImportMap::ToStringForTesting() const {
   builder.Append(",\"scopes\":{");
 
   bool is_first = true;
-  for (const auto& entry : scopes_) {
+  for (const auto& scope : scopes_vector_) {
+    const auto& specifier_map = scopes_map_.at(scope);
     if (!is_first) {
       builder.Append(",");
     }
     is_first = false;
-    builder.Append(entry.first.EncodeForDebugging());
+    builder.Append(scope.GetString().EncodeForDebugging());
     builder.Append(":");
-    SpecifierMapToStringForTesting(builder, entry.second);
+    SpecifierMapToStringForTesting(builder, specifier_map);
   }
 
   builder.Append("},\"integrity\": {");
@@ -659,9 +688,150 @@ String ImportMap::ToStringForTesting() const {
   return builder.ToString();
 }
 
-String ImportMap::GetIntegrity(const KURL& module_url) const {
+String ImportMap::ResolveIntegrity(const KURL& module_url) const {
   IntegrityMap::const_iterator it = integrity_.find(module_url);
   return it != integrity_.end() ? it->value : String();
+}
+
+// https://html.spec.whatwg.org/C/#merge-existing-and-new-import-maps
+void ImportMap::MergeExistingAndNewImportMaps(
+    ImportMap* new_import_map,
+    const HashMap<AtomicString, HashSet<AtomicString>>&
+        scoped_resolved_module_map,
+    const HashSet<AtomicString>& toplevel_resolved_module_set,
+    ConsoleLogger& logger) {
+  // 1. Let newImportMapScopes be a deep copy of newImportMap's scopes.
+  // 2. Let newImportMapImports be a deep copy of newImportMap's imports.
+  //
+  // Instead of copying we have moved the new_import_map here and are performing
+  // the algorithm's mutations directly on them. That's fine because the move
+  // guarantees that no one will use this map for anything else.
+  ImportMap::ScopesMap& new_import_map_scopes = new_import_map->scopes_map_;
+  ImportMap::SpecifierMap& new_import_map_imports = new_import_map->imports_;
+  ImportMap::IntegrityMap& new_import_map_integrity =
+      new_import_map->integrity_;
+
+  // 3. For each scopePrefix → scopeImports of newImportMapScopes:
+  for (auto scope : new_import_map_scopes) {
+    ImportMap::SpecifierMap& scope_imports = scope.value;
+    // 3.1. For each pair of global's resolved module set:
+    //
+    // 3.1.1. If pair's referring script does not start with scopePrefix,
+    // continue.
+    //
+    // 3.1.2. For each specifier → url of scopeImports:
+    //
+    // 3.1.2.1. If pair's specifier starts with specifier, then:
+    //
+    //
+    // We are using a different algorithm here, where instead of a resolved
+    // module set, we have a scoped resolved module map. The map's keys are
+    // scope prefixes, and its values are a set of specifier prefixes that
+    // already exist in that scope. We grab the set of specifier prefixes using
+    // the current scope and then iterate over the scope's imports, removing any
+    // specifiers whose prefix is in the set.
+    const auto& current_set_it = scoped_resolved_module_map.find(scope.key);
+    if (current_set_it != scoped_resolved_module_map.end()) {
+      const auto current_resolved_set = current_set_it->value;
+      Vector<AtomicString> specifiers_to_remove;
+      for (auto specifier : scope_imports.Keys()) {
+        if (current_resolved_set.find(specifier) !=
+            current_resolved_set.end()) {
+          specifiers_to_remove.push_back(specifier);
+        }
+      }
+      for (auto specifier : specifiers_to_remove) {
+        // 3.1.2.1.1. The user agent may report the removed rule as a warning to
+        // the developer console.
+        auto* message = MakeGarbageCollected<ConsoleMessage>(
+            ConsoleMessage::Source::kJavaScript,
+            ConsoleMessage::Level::kWarning,
+            "An import map scope rule for specifier '" + specifier +
+                "' was removed, as it conflicted with already resolved module "
+                "specifiers.");
+        logger.AddConsoleMessage(message, /*discard_duplicates=*/true);
+        // 3.1.2.1.2. Remove scopeImports[specifier].
+        scope_imports.erase(specifier);
+      }
+    }
+
+    // 3.2 If scopePrefix exists in oldImportMap's scopes, then set
+    // oldImportMap's scopes[scopePrefix] to the result of merging module
+    // specifier maps, given scopeImports and oldImportMap's
+    // scopes[scopePrefix].
+    const auto old_scope_specifier_map_it = scopes_map_.find(scope.key);
+    if (old_scope_specifier_map_it != scopes_map_.end()) {
+      ImportMap::SpecifierMap& old_scope_specifier_map =
+          old_scope_specifier_map_it->value;
+      MergeModuleSpecifierMaps(old_scope_specifier_map, scope_imports, logger);
+    } else {
+      // 3.3 Otherwise, set oldImportMap's scopes[scopePrefix] to
+      // scopeImports.
+      scopes_map_.insert(scope.key, scope_imports);
+      scopes_vector_.push_back(scope.key);
+    }
+  }
+
+  // 4. For each url → integrity of newImportMap's integrity:
+  for (auto url : new_import_map_integrity.Keys()) {
+    auto new_integrity_value = new_import_map_integrity.at(url);
+    // 4.1 If url exists in oldImportMap's integrity, then:
+    if (integrity_.Contains(url)) {
+      // 4.1.1. The user agent may report the removed rule as a warning to the
+      // developer console.
+      auto* message = MakeGarbageCollected<ConsoleMessage>(
+          ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kWarning,
+          "An import map integrity rule for url '" + url.GetString() +
+              "' was removed, as it conflicted with already defined integrity "
+              "rules.");
+      logger.AddConsoleMessage(message, /*discard_duplicates=*/true);
+      // 4.1.2 Continue.
+      continue;
+    }
+    // 4.2 Set oldImportMap's integrity[url] to integrity.
+    integrity_.insert(url, new_integrity_value);
+  }
+  // 5. For each pair of global's resolved module set:
+
+  // 5.1. For each specifier → url of newImportMapImports:
+
+  // 5.1.1. If specifier starts with pair's specifier, then:
+
+  // We're using a different algorithm here where the resolved module set is
+  // replaced with a set of all the prefixes of specifier resolved. For each
+  // such prefix that exists in the new import map's imports section, we remove
+  // it from that section.
+  for (auto specifier : toplevel_resolved_module_set) {
+    if (!new_import_map_imports.Contains(specifier)) {
+      continue;
+    }
+    // 5.1. The user agent may report the removed rule as a warning to the
+    // developer console.
+    auto* message = MakeGarbageCollected<ConsoleMessage>(
+        ConsoleMessage::Source::kJavaScript, ConsoleMessage::Level::kWarning,
+        "An import map rule for specifier '" + specifier +
+            "' was removed, as it conflicted with already resolved module "
+            "specifiers.");
+    logger.AddConsoleMessage(message, /*discard_duplicates=*/true);
+    // 5.2. Remove newImportMapImports[specifier].
+    new_import_map_imports.erase(specifier);
+  }
+  // 6. Set oldImportMap's imports to the result of merge module specifier
+  // maps, given newImportMapImports and oldImportMap's imports.
+  MergeModuleSpecifierMaps(imports_, new_import_map_imports, logger);
+}
+
+// To be called when scopes_map_ is set/updated to make scopes_vector_ and
+// scopes_map_ consistent.
+void ImportMap::InitializeScopesVector() {
+  // <spec label="sort-and-normalize-scopes" step="3">Return the result of
+  // sorting normalized, with an entry a being less than an entry b if b’s key
+  // is code unit less than a’s key.</spec>
+  WTF::CopyKeysToVector(scopes_map_, scopes_vector_);
+  std::sort(scopes_vector_.begin(), scopes_vector_.end(),
+            [](const String& a, const String& b) {
+              return CodeUnitCompareLessThan(b, a);
+            });
 }
 
 }  // namespace blink

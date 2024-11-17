@@ -764,8 +764,7 @@ bool UDIFBlockChunkReadStream::Read(base::span<uint8_t> buf,
     case UDIFBlockChunk::Type::COMPRESSS_BZ2:
       return HandleBZ2(buf, bytes_read);
     case UDIFBlockChunk::Type::COMMENT:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case UDIFBlockChunk::Type::LAST_BLOCK:
       *bytes_read = 0;
       return true;

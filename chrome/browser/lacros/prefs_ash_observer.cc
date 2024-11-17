@@ -10,9 +10,9 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/components/mahi/public/cpp/mahi_web_contents_manager.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "components/content_settings/core/common/pref_names.h"
 
@@ -121,7 +121,8 @@ void PrefsAshObserver::OnMahiEnabledChanged(base::Value value) {
                  << base::Value::GetTypeName(value.type());
     return;
   }
-  mahi::MahiWebContentsManager::Get()->set_mahi_pref_lacros(value.GetBool());
+  chromeos::MahiWebContentsManager::Get()->set_mahi_pref_lacros(
+      value.GetBool());
 }
 
 void PrefsAshObserver::OnDeprecatedDnsOverHttpsTemplatesChanged(

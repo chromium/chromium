@@ -85,21 +85,7 @@ class AlwaysMaximizeTestState : public WindowState::State {
   WindowStateType state_type_;
 };
 
-class WindowStateTest : public AshTestBase {
- public:
-  WindowStateTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding},
-        /*disabled_features=*/{});
-  }
-  WindowStateTest(const WindowStateTest&) = delete;
-  WindowStateTest& operator=(const WindowStateTest&) = delete;
-  ~WindowStateTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using WindowStateTest = AshTestBase;
 
 using Sample = base::HistogramBase::Sample;
 

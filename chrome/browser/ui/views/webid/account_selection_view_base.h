@@ -11,9 +11,8 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/case_conversion.h"
-#include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_observer.h"
-#include "chrome/browser/picture_in_picture/scoped_picture_in_picture_occlusion_observation.h"
 #include "chrome/browser/ui/monogram_utils.h"
+#include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webid/account_selection_view.h"
 #include "components/image_fetcher/core/image_fetcher.h"
@@ -26,12 +25,13 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
-#include "ui/views/widget/widget_observer.h"
 
 using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
 using IdentityRequestAccountPtr =
     scoped_refptr<content::IdentityRequestAccount>;
 using TokenError = content::IdentityCredentialTokenError;
+
+class FedCmAccountSelectionView;
 
 namespace content {
 class IdentityRequestAccount;
@@ -87,6 +87,12 @@ inline constexpr int kModalHorizontalSpacing = 8;
 inline constexpr int kIdpBadgeOffset = 8;
 // The size of the arrow icon.
 inline constexpr int kArrowIconSize = 8;
+// The size of the spinner used in place of the IDP icon while it is being
+// fetched.
+inline constexpr int kModalIconSpinnerSize = 28;
+// The size of the spinner used in a button when the user clicks on an account
+// row, continue button or use other account button.
+inline constexpr int kModalButtonSpinnerSize = 20;
 
 inline constexpr char kImageFetcherUmaClient[] = "FedCMAccountChooser";
 
@@ -135,65 +141,73 @@ class BrandIconImageView : public views::ImageView {
   base::WeakPtrFactory<BrandIconImageView> weak_ptr_factory_{this};
 };
 
-// Base class for interacting with FedCM account selection dialog.
-class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
+class AccountHoverButton : public HoverButton {
  public:
-  // Used to observe changes to the account selection dialog.
-  class Observer {
-   public:
-    // Called when a user either selects the account from the multi-account
-    // chooser or clicks the "continue" button.
-    // Takes `account` as well as `idp_data` since passing `account_id`
-    // is insufficient in the multiple IDP case. The caller should pass a cref,
-    // as these objects are owned by the observer.
-    virtual void OnAccountSelected(
-        const content::IdentityRequestAccount& account,
-        const content::IdentityProviderData& idp_data,
-        const ui::Event& event) = 0;
+  AccountHoverButton(PressedCallback callback,
+                     std::unique_ptr<views::View> icon_view,
+                     const std::u16string& title,
+                     const std::u16string& subtitle,
+                     std::unique_ptr<views::View> secondary_view,
+                     bool add_vertical_label_spacing,
+                     const std::u16string& footer,
+                     BrandIconImageView* brand_icon_image_view,
+                     int button_position);
+  AccountHoverButton(const AccountHoverButton&) = delete;
+  AccountHoverButton& operator=(const AccountHoverButton&) = delete;
+  ~AccountHoverButton() override = default;
 
-    // Called when the user clicks "privacy policy" or "terms of service" link.
-    virtual void OnLinkClicked(
-        content::IdentityRequestDialogController::LinkType link_type,
-        const GURL& url,
-        const ui::Event& event) = 0;
+  void StateChanged(ButtonState old_state) override;
+  void OnThemeChanged() override;
+  void OnPressed(const ui::Event& event);
+  bool HasBeenClicked();
 
-    // Called when the user clicks "back" button.
-    virtual void OnBackButtonClicked() = 0;
+  // Changes the opacity of elements in the button to appear disabled. Used when
+  // the button is disabled in the verifying sheet.
+  void SetDisabledOpacity();
+  bool HasDisabledOpacity();
 
-    // Called when the user clicks "close" button.
-    virtual void OnCloseButtonClicked(const ui::Event& event) = 0;
+  // Should only be invoked when the button has a secondary view.
+  void ReplaceSecondaryViewWithSpinner();
 
-    // Called when the user clicks the "continue" button on the sign-in
-    // failure dialog or wants to sign in to another account.
-    virtual void OnLoginToIdP(const GURL& idp_config_url,
-                              const GURL& idp_login_url,
-                              const ui::Event& event) = 0;
+ private:
+  PressedCallback callback_;
+  // Owned by its views::BoxLayoutView container.
+  raw_ptr<BrandIconImageView> brand_icon_image_view_;
+  // The order of this account button relative to other account buttons in
+  // the dialog (e.g. 0 is the topmost account, 1 the one below it, etc.). Used
+  // to record a metric when the button is clicked.
+  int button_position_;
+  bool has_spinner_{false};
+  bool is_appear_disabled_{false};
+  bool has_been_clicked_{false};
+};
 
-    // Called when the user clicks "got it" button.
-    virtual void OnGotIt(const ui::Event& event) = 0;
+class AccountHoverButtonSecondaryView : public views::View {
+ public:
+  AccountHoverButtonSecondaryView();
+  AccountHoverButtonSecondaryView(const AccountHoverButtonSecondaryView&) =
+      delete;
+  AccountHoverButtonSecondaryView& operator=(
+      const AccountHoverButtonSecondaryView&) = delete;
+  ~AccountHoverButtonSecondaryView() override = default;
 
-    // Called when the user clicks the "more details" button on the error
-    // dialog.
-    virtual void OnMoreDetails(const ui::Event& event) = 0;
+  void ReplaceWithSpinner();
+  void SetDisabledOpacity();
 
-    // Called when the accounts UI is displayed.
-    virtual void OnAccountsDisplayed() = 0;
+ private:
+  raw_ptr<views::ImageView> arrow_image_view_{nullptr};
+};
 
-    // Called when the user clicks on the 'Choose an account' button
-    virtual void OnChooseAnAccountClicked() = 0;
-  };
-
+// Base class for interacting with FedCM account selection dialog.
+class AccountSelectionViewBase {
+ public:
   AccountSelectionViewBase(
       content::WebContents* web_contents,
-      AccountSelectionViewBase::Observer* observer,
-      views::WidgetObserver* widget_observer,
+      FedCmAccountSelectionView* owner,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::u16string rp_for_display);
   AccountSelectionViewBase();
-  ~AccountSelectionViewBase() override;
-
-  // PictureInPictureOcclusionObserver:
-  void OnOcclusionStateChanged(bool occluded) override;
+  virtual ~AccountSelectionViewBase();
 
   // Creates and sets the appropriate dialog widget, depending on whether the
   // dialog is bubble or modal.
@@ -272,7 +286,11 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
   // Virtual for testing purposes.
   virtual bool CanFitInWebContents();
 
-  bool IsOccluded() const { return is_occluded_; }
+  // Temporary logic to disable interactions with the tab's WebContents for the
+  // modal dialog.
+  // TODO(https://crbug.com/377803489): Remove this.
+  virtual void DidShowWidget();
+  virtual void DidHideWidget();
 
  protected:
   void SetLabelProperties(views::Label* label);
@@ -300,6 +318,12 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
   void ConfigureBrandImageView(BrandIconImageView* image_view,
                                const GURL& brand_icon_url);
 
+  // Gets the summary and description string of the error.
+  std::pair<std::u16string, std::u16string> GetErrorDialogText(
+      const std::optional<TokenError>& error,
+      const std::u16string& rp_for_display,
+      const std::u16string& idp_for_display);
+
   // The ImageFetcher used to fetch the account pictures for FedCM.
   std::unique_ptr<image_fetcher::ImageFetcher> image_fetcher_;
 
@@ -313,21 +337,12 @@ class AccountSelectionViewBase : public PictureInPictureOcclusionObserver {
   // Widget to control the dialog i.e. hide, show, add observer etc.
   base::WeakPtr<views::Widget> dialog_widget_;
 
-  // Observes events on `dialog_widget_`.
-  // Dangling when running Chromedriver's run_py_tests.py test suite.
-  raw_ptr<views::WidgetObserver, DanglingUntriaged> widget_observer_{nullptr};
-
   // Observes events on AccountSelectionBubbleView.
   // Dangling when running Chromedriver's run_py_tests.py test suite.
-  raw_ptr<Observer, DanglingUntriaged> observer_{nullptr};
+  raw_ptr<FedCmAccountSelectionView, DanglingUntriaged> owner_{nullptr};
 
   // The description of the RP to be used in the dialog.
   std::u16string rp_for_display_;
-
-  // Whether the widget is occluded (and therefore we should ignore inputs.
-  bool is_occluded_{false};
-
-  ScopedPictureInPictureOcclusionObservation occlusion_observation_{this};
 
   // Used to ensure that callbacks are not run if the AccountSelectionViewBase
   // is destroyed.

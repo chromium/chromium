@@ -122,7 +122,7 @@ const char* const kFilteredEventGroupNames[] = {
     "loading",                               // 0x40000
     "base",                                  // 0x80000
     "devtools.timeline",                     // 0x100000
-    "unused_bit_21",                         // 0x200000
+    "mediastream",                           // 0x200000
     "unused_bit_22",                         // 0x400000
     "unused_bit_23",                         // 0x800000
     "unused_bit_24",                         // 0x1000000
@@ -464,7 +464,7 @@ TraceEventETWExport* TraceEventETWExport::GetInstanceIfExists() {
 
 uint64_t CategoryGroupToETWKeyword(std::string_view category_group_name) {
   static NoDestructor<base::flat_map<std::string_view, uint64_t>>
-      categories_to_keyword([]() {
+      categories_to_keyword([] {
         std::vector<std::pair<std::string_view, uint64_t>> items;
         for (size_t i = 0; i < kOtherEventsGroupNameIndex; i++) {
           uint64_t keyword = 1ULL << i;

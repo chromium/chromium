@@ -19,6 +19,7 @@ bool FakeTabMatcher::IsTabOpenWithURL(const GURL& url,
          url.spec().find(substring_to_match_) != std::string::npos;
 }
 
-std::vector<TabMatcher::TabWrapper> FakeTabMatcher::GetOpenTabs() const {
+std::vector<TabMatcher::TabWrapper> FakeTabMatcher::GetOpenTabs(
+    const AutocompleteInput* input) const {
   return open_tabs_;
 }

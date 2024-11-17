@@ -42,60 +42,30 @@
 namespace blink {
 
 // A `ScriptFunction` represents a function that can be called from scripts.
-// You can define a subclass of `Callable` and put arbitrary logic by
-// overriding `Call` or `CallRaw` methods.
-class CORE_EXPORT ScriptFunction final
-    : public GarbageCollected<ScriptFunction> {
+// You can define a subclass and add arbitrary logic by  overriding `Call` or
+// `CallRaw` methods.
+class CORE_EXPORT ScriptFunction : public GarbageCollected<ScriptFunction> {
  public:
-  class CORE_EXPORT Callable : public GarbageCollected<Callable> {
-   public:
-    virtual ~Callable() = default;
+  virtual ~ScriptFunction() = default;
 
-    // Subclasses should implement one of Call() or CallRaw(). Most will
-    // implement Call().
-    virtual ScriptValue Call(ScriptState*, ScriptValue);
+  // Subclasses should implement one of Call() or CallRaw(). Most will
+  // implement Call().
+  virtual ScriptValue Call(ScriptState*, ScriptValue);
 
-    // To support more than one argument, or for low-level access to the V8 API,
-    // implement CallRaw(). The default implementation delegates to Call().
-    virtual void CallRaw(ScriptState*,
-                         const v8::FunctionCallbackInfo<v8::Value>&);
+  // To support more than one argument, or for low-level access to the V8 API,
+  // implement CallRaw(). The default implementation delegates to Call().
+  virtual void CallRaw(ScriptState*,
+                       const v8::FunctionCallbackInfo<v8::Value>&);
 
-    // The length of the associated JavaScript function. Implement this only
-    // when the function is exposed to scripts.
-    virtual int Length() const { return 0; }
+  // The length of the associated JavaScript function. Implement this only
+  // when the function is exposed to scripts.
+  virtual int Length() const { return 0; }
 
-    virtual void Trace(Visitor* visitor) const {}
-  };
+  virtual void Trace(Visitor* visitor) const { visitor->Trace(function_); }
 
-  // Represents a function that returns a value given to the constructor.
-  class Constant final : public Callable {
-   public:
-    explicit Constant(ScriptValue value) : value_(value) {}
-    void Trace(Visitor* visitor) const override {
-      visitor->Trace(value_);
-      Callable::Trace(visitor);
-    }
-    ScriptValue Call(ScriptState*, ScriptValue) override { return value_; }
-
-   private:
-    const ScriptValue value_;
-  };
-
-  ScriptFunction(ScriptState*, Callable*);
-
-  void Trace(Visitor* visitor) const {
-    visitor->Trace(script_state_);
-    visitor->Trace(function_);
-  }
-
-  v8::Local<v8::Function> V8Function() {
-    return function_.Get(script_state_->GetIsolate());
-  }
-
-  ScriptState* GetScriptState() const { return script_state_; }
+  v8::Local<v8::Function> ToV8Function(ScriptState*);
 
  private:
-  Member<ScriptState> script_state_;
   TraceWrapperV8Reference<v8::Function> function_;
 };
 

@@ -79,7 +79,7 @@ GURL DevToolsProtocolTestBindings::MapTestURLIfNeeded(const GURL& test_url,
   return GURL(spec);
 }
 
-void DevToolsProtocolTestBindings::ParseLog(const std::string_view log) {
+void DevToolsProtocolTestBindings::ParseLog(std::string_view log) {
   if (log.empty()) {
     return;
   }
@@ -114,7 +114,7 @@ void DevToolsProtocolTestBindings::WebContentsDestroyed() {
 }
 
 void DevToolsProtocolTestBindings::HandleMessagesFromLog(
-    const std::string_view protocol_message_string) {
+    std::string_view protocol_message_string) {
   std::optional<base::Value::Dict> parsed =
       base::JSONReader::ReadDict(protocol_message_string);
   if (!parsed) {

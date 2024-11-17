@@ -28,10 +28,10 @@ struct COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemRequestInfo {
   // The original request blink::StorageKey (always set).
   blink::StorageKey storage_key;
 
-  FileSystemRequestInfo(const GURL url,
-                        const std::string storage_domain,
+  FileSystemRequestInfo(const GURL& url,
+                        const std::string& storage_domain,
                         int content_id,
-                        const blink::StorageKey storage_key);
+                        const blink::StorageKey& storage_key);
 };
 
 }  // namespace storage

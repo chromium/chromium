@@ -189,6 +189,8 @@ class PermissionManager : public KeyedService,
   PermissionContextMap permission_contexts_;
 
   bool is_shutting_down_ = false;
+
+  base::WeakPtrFactory<PermissionManager> weak_factory_{this};
 };
 
 }  // namespace permissions

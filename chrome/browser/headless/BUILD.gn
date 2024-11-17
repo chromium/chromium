@@ -28,6 +28,10 @@ source_set("headless") {
       "//ui/ozone",
     ]
   }
+
+  if (is_win) {
+    deps += [ "//chrome/chrome_elf:chrome_elf_main_include" ]
+  }
 }
 
 source_set("metrics") {

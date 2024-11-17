@@ -11,9 +11,11 @@ include_rules = [
   # refactor //chrome/browser/ui/ash to break these dependencies; see b/332804822.
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/input_method",
+  "+chrome/browser/ash/lobster",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/browser/ui/views/bubble",
+  "+chrome/browser/ui/webui/ash/lobster",
   "+chrome/browser/ui/webui/top_chrome",
   "+chrome/browser/ui/webui/webui_util.h",
   "+chrome/common",

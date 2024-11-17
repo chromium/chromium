@@ -6,7 +6,8 @@
       {
         "args": [
           "-v",
-          "--browser=release",
+          "-v",
+          "--browser=builder",
           "--upload-results",
           "--test-shard-map-filename=linux-perf-calibration_map.json",
           "--ignore-benchmark-exit-code",

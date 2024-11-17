@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
@@ -82,6 +83,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
                             mojo::PendingRemote<mojom::URLLoaderClient> client,
                             const net::MutableNetworkTrafficAnnotationTag&
                                 traffic_annotation) override;
+  void CreateLoaderAndStart(mojo::PendingReceiver<mojom::URLLoader> receiver,
+                            int32_t request_id,
+                            uint32_t options,
+                            ResourceRequest& resource_request,
+                            mojo::PendingRemote<mojom::URLLoaderClient> client,
+                            const net::MutableNetworkTrafficAnnotationTag&
+                                traffic_annotation) override;
   void Clone(mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) override;
 
   // Methods for use by network::URLLoaderFactory.
@@ -94,6 +102,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   // network context.
   void ClearBindings();
 
+  // Exposed for use by PrefetchMatchingURLLoaderFactory.
+  int32_t process_id() const { return process_id_; }
+  const std::optional<url::Origin>& request_initiator_origin_lock() const {
+    return request_initiator_origin_lock_;
+  }
+
   mojom::CrossOriginEmbedderPolicyReporter* coep_reporter() {
     return coep_reporter_ ? coep_reporter_.get() : nullptr;
   }
@@ -102,6 +116,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   url_loaders() {
     return url_loaders_;
   }
+
+  const net::IsolationInfo& isolation_info() const { return isolation_info_; }
 
   mojom::SharedDictionaryAccessObserver* GetSharedDictionaryAccessObserver()
       const;
@@ -127,6 +143,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
       const base::UnguessableToken& nonce,
       const std::set<GURL>& exemptions);
 
+  // Returns whether CORS preflight request flowing through this
+  // URLLoaderFactory should represent an error or not.
+  bool IsCorsPreflighLoadOptionAllowed() const;
+
  private:
   class FactoryOverride;
 
@@ -139,7 +159,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   bool GetAllowAnyCorsExemptHeaderForBrowser() const;
 
   mojo::PendingRemote<mojom::DevToolsObserver> GetDevToolsObserver(
-      const ResourceRequest& resource_request) const;
+      ResourceRequest& resource_request) const;
 
   template <class T>
   void OnLoaderCreated(
@@ -188,6 +208,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   mojo::Remote<mojom::SharedDictionaryAccessObserver>
       shared_dictionary_observer_;
   const bool require_cross_site_request_for_cookies_;
+  const net::CookieSettingOverrides factory_cookie_setting_overrides_;
 
   // Relative order of `network_loader_factory_` and `loaders_` matters -
   // URLLoaderFactory needs to live longer than URLLoaders created using the

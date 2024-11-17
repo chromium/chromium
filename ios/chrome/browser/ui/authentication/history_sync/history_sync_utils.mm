@@ -23,7 +23,7 @@ constexpr base::TimeDelta kDelayBeforeReshowPrompt = base::Days(14);
 
 namespace history_sync {
 
-void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
+void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterTimePref(
       history_sync_prefs::kHistorySyncLastDeclinedTimestamp, base::Time());
   registry->RegisterIntegerPref(

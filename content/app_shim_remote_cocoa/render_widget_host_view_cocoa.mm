@@ -1199,8 +1199,7 @@ void ExtractUnderlines(NSAttributedString* string,
 
   _unmatchedKeyDownCodes.insert(keyCode);
 
-  RenderWidgetHostViewCocoa* __attribute__((objc_precise_lifetime))
-  keepSelfAlive = self;
+  NS_VALID_UNTIL_END_OF_SCOPE RenderWidgetHostViewCocoa* keepSelfAlive = self;
 
   // Records the current marked text state, so that we can know if the marked
   // text was deleted or not after handling the key down event.
@@ -1658,12 +1657,10 @@ void ExtractUnderlines(NSAttributedString* string,
 }
 
 - (void)updateScreenProperties {
-  NSWindow* enclosingWindow = [self window];
-  if (!enclosingWindow)
-    return;
-
-  // TODO(ccameron): This will call [enclosingWindow screen], which may return
-  // nil. Do that call here to avoid sending bogus display info to the host.
+  // This does not require enclosing window to exist, and allowing screen
+  // properties change to propagate when it does not ensures that screen infos
+  // are properly updated when running headless.
+  // See // https://crbug.com/375425824.
   auto* screen = display::Screen::GetScreen();
   const display::ScreenInfos newScreenInfos =
       screen->GetScreenInfosNearestDisplay(
@@ -2445,7 +2442,11 @@ extern NSString* NSTextInputReplacementRangeAttributeName;
   // as they have not been updated while unattached to a window.
   [self sendWindowFrameInScreenToHost];
   [self sendViewBoundsInWindowToHost];
-  [self updateScreenProperties];
+
+  if ([self window]) {
+    [self updateScreenProperties];
+  }
+
   _host->OnWindowIsKeyChanged([[self window] isKeyWindow]);
   _host->OnFirstResponderChanged([[self window] firstResponder] == self);
 

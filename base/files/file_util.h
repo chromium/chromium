@@ -17,6 +17,7 @@
 #include <set>
 #include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/base_export.h"
 #include "base/containers/span.h"
@@ -476,8 +477,12 @@ BASE_EXPORT bool CreateDirectoryAndGetError(const FilePath& full_path,
 // Backward-compatible convenience method for the above.
 BASE_EXPORT bool CreateDirectory(const FilePath& full_path);
 
-// Returns the file size. Returns true on success.
-BASE_EXPORT bool GetFileSize(const FilePath& file_path, int64_t* file_size);
+// Returns the file size, or std::nullopt on failure.
+BASE_EXPORT std::optional<int64_t> GetFileSize(const FilePath& file_path);
+
+// Same as above, but as an OnceCallback.
+BASE_EXPORT OnceCallback<std::optional<int64_t>()> GetFileSizeCallback(
+    const FilePath& path);
 
 // Sets |real_path| to |path| with symbolic links and junctions expanded.
 // On Windows, the function ensures that the resulting |real_path| starts with a

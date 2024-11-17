@@ -10,7 +10,7 @@
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/metrics/payments/iban_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
-#include "components/autofill/core/browser/single_field_form_filler.h"
+#include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -24,7 +24,7 @@ class PersonalDataManager;
 // such as retrieving IBAN data from PersonalDataManager, managing IBAN
 // suggestions, filling IBAN fields, and handling form submission data when
 // there is an IBAN field present.
-class IbanManager : public SingleFieldFormFiller, public KeyedService {
+class IbanManager : public KeyedService {
  public:
   // Initializes the instance with the given parameters. `personal_data_manager`
   // is a profile-scope data manager used to retrieve IBAN data from the
@@ -36,20 +36,14 @@ class IbanManager : public SingleFieldFormFiller, public KeyedService {
 
   ~IbanManager() override;
 
-  // SingleFieldFormFiller overrides:
-  [[nodiscard]] bool OnGetSingleFieldSuggestions(
-      const FormStructure* form_structure,
+  // Returns true iff it consumes `on_suggestions_returned`.
+  [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
       const FormFieldData& field,
-      const AutofillField* autofill_field,
+      const AutofillField& autofill_field,
       const AutofillClient& client,
-      OnSuggestionsReturnedCallback on_suggestions_returned) override;
-  void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
-                                  bool is_autocomplete_enabled) override {}
-  void CancelPendingQueries() override {}
-  void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
-                                            const std::u16string& value,
-                                            SuggestionType type) override {}
-  void OnSingleFieldSuggestionSelected(const Suggestion& suggestion) override;
+      SingleFieldFillRouter::OnSuggestionsReturnedCallback&
+          on_suggestions_returned);
+  virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion);
 
  private:
   // Records metrics related to the IBAN suggestions popup.

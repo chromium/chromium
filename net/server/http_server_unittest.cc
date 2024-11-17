@@ -162,7 +162,7 @@ class TestHttpClient {
   bool IsCompleteResponse(const std::string& response) {
     // Check end of headers first.
     size_t end_of_headers =
-        HttpUtil::LocateEndOfHeaders(response.data(), response.size());
+        HttpUtil::LocateEndOfHeaders(base::as_byte_span(response));
     if (end_of_headers == std::string::npos) {
       return false;
     }
@@ -222,11 +222,11 @@ class HttpServerTest : public TestWithTaskEnvironment,
 
   void OnWebSocketRequest(int connection_id,
                           const HttpServerRequestInfo& info) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void OnWebSocketMessage(int connection_id, std::string data) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void OnClose(int connection_id) override {
@@ -298,7 +298,7 @@ namespace {
 class WebSocketTest : public HttpServerTest {
   void OnHttpRequest(int connection_id,
                      const HttpServerRequestInfo& info) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void OnWebSocketRequest(int connection_id,

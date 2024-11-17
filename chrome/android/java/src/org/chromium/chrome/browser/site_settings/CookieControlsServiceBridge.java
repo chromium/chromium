@@ -25,12 +25,13 @@ public class CookieControlsServiceBridge {
     public interface CookieControlsServiceObserver {
         /**
          * Called when there is an update in the cookie controls that should be reflected in the UI.
+         *
          * @param checked A boolean indicating whether the toggle indicating third-party cookies are
-         *         currently being blocked should be checked or not.
+         *     currently being blocked should be checked or not.
          * @param enforcement A CookieControlsEnforcement enum type indicating the enforcement rule
-         *         for these cookie controls.
+         *     for these cookie controls.
          */
-        public void sendCookieControlsUIChanges(
+        public void sendCookieControlsUiChanges(
                 boolean checked, @CookieControlsEnforcement int enforcement);
     }
 
@@ -76,9 +77,9 @@ public class CookieControlsServiceBridge {
     }
 
     @CalledByNative
-    private void sendCookieControlsUIChanges(
+    private void sendCookieControlsUiChanges(
             boolean checked, @CookieControlsEnforcement int enforcement) {
-        mObserver.sendCookieControlsUIChanges(checked, enforcement);
+        mObserver.sendCookieControlsUiChanges(checked, enforcement);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

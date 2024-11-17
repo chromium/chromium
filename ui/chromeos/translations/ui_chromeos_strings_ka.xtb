@@ -19,6 +19,7 @@
 <translation id="115443833402798225">ჰანგული ანმატე</translation>
 <translation id="1155759005174418845">კატალანური</translation>
 <translation id="1168100932582989117">Google სახელთა სერვერები</translation>
+<translation id="1170788066030116158">გადაღების თარიღი</translation>
 <translation id="1172970565351728681">დარჩა დაახლოებით <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">სახელის შეცვლა</translation>
 <translation id="1173916544412572294">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, ტელეფონის ბატარეა: <ph name="BATTERY_STATUS" />%, დეტალები</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">ავთენტიფიკაციის სერტიფიკატი დისტანციურად უარყოფილი იქნა</translation>
 <translation id="4394214039309501350">გარე ბმული</translation>
 <translation id="4394980935660306080">ამ კვირის დასაწყისში</translation>
+<translation id="4397435965699247285">OneDrive მიუწვდომელია ხაზგარეშე რეჟიმში</translation>
 <translation id="4398096759193130964">აღადგინეთ ერთეულები, ან ჩავლებით გადაიტანეთ ის ახალ საქაღალდეში წაშლილებს მიღმა</translation>
 <translation id="4401287888955153199">ყველას ამოღება</translation>
 <translation id="4410695710508688828">ამოღების ოპერაცია ვერ შესრულდა. <ph name="ERROR_MESSAGE" /></translation>

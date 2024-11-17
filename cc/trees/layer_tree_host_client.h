@@ -112,9 +112,8 @@ class CC_EXPORT LayerTreeHostClient {
   virtual void BeginMainFrameNotExpectedSoon() = 0;
   virtual void BeginMainFrameNotExpectedUntil(base::TimeTicks time) = 0;
   // This is called immediately after notifying the impl thread that it should
-  // do a commit, possibly before the commit has finished (depending on whether
-  // features::kNonBlockingCommit is enabled). It is meant for work that must
-  // happen prior to returning control to the main thread event loop.
+  // do a commit, possibly before the commit has finished. It is meant for work
+  // that must happen prior to returning control to the main thread event loop.
   virtual void DidBeginMainFrame() = 0;
   virtual void WillUpdateLayers() = 0;
   virtual void DidUpdateLayers() = 0;
@@ -184,10 +183,9 @@ class CC_EXPORT LayerTreeHostClient {
   // the time from the start of BeginMainFrame to the Commit, or early out.
   virtual void RecordStartOfFrameMetrics() = 0;
   // This is called immediately after notifying the impl thread that it should
-  // do a commit, possibly before the commit has finished (depending on whether
-  // features::kNonBlockingCommit is enabled). It is meant to record the time
-  // when the main thread is finished with its part of a main frame, and will
-  // return control to the main thread event loop.
+  // do a commit, possibly before the commit has finished. It is meant to record
+  // the time when the main thread is finished with its part of a main frame,
+  // and will return control to the main thread event loop.
   virtual void RecordEndOfFrameMetrics(
       base::TimeTicks frame_begin_time,
       ActiveFrameSequenceTrackers trackers) = 0;

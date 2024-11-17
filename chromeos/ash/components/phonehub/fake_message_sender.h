@@ -14,8 +14,7 @@
 
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 class FakeMessageSender : public MessageSender {
  public:
@@ -108,7 +107,6 @@ class FakeMessageSender : public MessageSender {
   std::vector<std::pair<bool, bool>> feature_setup_requests_;
 };
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub
 
 #endif  // CHROMEOS_ASH_COMPONENTS_PHONEHUB_FAKE_MESSAGE_SENDER_H_

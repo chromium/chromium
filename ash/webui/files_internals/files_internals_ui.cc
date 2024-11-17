@@ -82,7 +82,7 @@ void FilesInternalsUI::HandleRequest(
   base::OnceCallback<void(const std::string_view)> string_callback =
       base::BindOnce(
           [](content::WebUIDataSource::GotDataCallback callback,
-             const std::string_view value) {
+             std::string_view value) {
             std::move(callback).Run(
                 base::MakeRefCounted<base::RefCountedString>(
                     std::string(value)));

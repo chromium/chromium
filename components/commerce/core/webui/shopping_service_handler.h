@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/commerce/core/mojom/shopping_service.mojom.h"
 #include "components/commerce/core/product_specifications/product_specifications_set.h"
 #include "components/commerce/core/subscriptions/subscriptions_manager.h"
 #include "components/commerce/core/subscriptions/subscriptions_observer.h"
@@ -22,7 +23,6 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "ui/webui/resources/cr_components/commerce/shopping_service.mojom.h"
 
 class PrefService;
 
@@ -80,15 +80,6 @@ class ShoppingServiceHandler
         const std::string& log_id) = 0;
 
     virtual ukm::SourceId GetCurrentTabUkmSourceId() = 0;
-
-    virtual void ShowProductSpecificationsDisclosureDialog(
-        const std::vector<GURL>& urls,
-        const std::string& name) = 0;
-
-    virtual void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid,
-                                                     bool in_new_tab) = 0;
-
-    virtual void ShowSyncSetupFlow() = 0;
   };
 
   ShoppingServiceHandler(
@@ -141,8 +132,6 @@ class ShoppingServiceHandler
   void GetParentBookmarkFolderNameForCurrentUrl(
       GetParentBookmarkFolderNameForCurrentUrlCallback callback) override;
   void ShowBookmarkEditorForCurrentUrl() override;
-  void ShowProductSpecificationsSetForUuid(const base::Uuid& uuid,
-                                           bool in_new_tab) override;
   void ShowFeedbackForPriceInsights() override;
   void GetAllProductSpecificationsSets(
       GetAllProductSpecificationsSetsCallback callback) override;
@@ -164,18 +153,8 @@ class ShoppingServiceHandler
       SetUrlsForProductSpecificationsSetCallback callback) override;
   void SetProductSpecificationsUserFeedback(
       shopping_service::mojom::UserFeedback feedback) override;
-  void SetProductSpecificationAcceptedDisclosureVersion(
-      shopping_service::mojom::ProductSpecificationsDisclosureVersion) override;
-  void MaybeShowProductSpecificationDisclosure(
-      const std::vector<GURL>& urls,
-      const std::string& name,
-      MaybeShowProductSpecificationDisclosureCallback callback) override;
-  void DeclineProductSpecificationDisclosure() override;
   void GetProductSpecificationsFeatureState(
       GetProductSpecificationsFeatureStateCallback callback) override;
-  void GetPageTitleFromHistory(
-      const GURL& url,
-      GetPageTitleFromHistoryCallback callback) override;
 
   // SubscriptionsObserver
   void OnSubscribe(const CommerceSubscription& subscription,
@@ -189,19 +168,6 @@ class ShoppingServiceHandler
                          size_t old_index,
                          const bookmarks::BookmarkNode* new_parent,
                          size_t new_index) override;
-
-  // ProductSpecificationsSet::Observer
-  void OnProductSpecificationsSetAdded(
-      const ProductSpecificationsSet& set) override;
-
-  void OnProductSpecificationsSetUpdate(
-      const ProductSpecificationsSet& before,
-      const ProductSpecificationsSet& set) override;
-
-  void OnProductSpecificationsSetRemoved(
-      const ProductSpecificationsSet& set) override;
-
-  void ShowSyncSetupFlow() override;
 
   static std::vector<shopping_service::mojom::BookmarkProductInfoPtr>
   BookmarkListToMojoList(
@@ -262,9 +228,6 @@ class ShoppingServiceHandler
   base::ScopedObservation<bookmarks::BookmarkModel,
                           bookmarks::BookmarkModelObserver>
       scoped_bookmark_model_observation_{this};
-  base::ScopedObservation<ProductSpecificationsService,
-                          ProductSpecificationsSet::Observer>
-      scoped_product_spec_observer_{this};
 
   base::WeakPtrFactory<ShoppingServiceHandler> weak_ptr_factory_{this};
 };

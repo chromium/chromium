@@ -53,7 +53,7 @@ NOINLINE void CheckForLoopFailuresBufferQueue() {
   auto now = base::TimeTicks::Now();
   if (!g_last_reshape_failure.is_null() &&
       now - g_last_reshape_failure < threshold) {
-    CHECK(false);
+    NOTREACHED();
   }
   g_last_reshape_failure = now;
 }
@@ -195,6 +195,11 @@ SkiaOutputDeviceBufferQueue::SkiaOutputDeviceBufferQueue(
   if (::features::IncreaseBufferCountForHighFrameRate() &&
       capabilities_.number_of_buffers == 5) {
     capabilities_.pending_swap_params.max_pending_swaps = 2;
+    if (::features::Use90HzSwapChainCountFor72fps()) {
+      capabilities_.pending_swap_params.max_pending_swaps_72hz = 3;
+    } else {
+       capabilities_.pending_swap_params.max_pending_swaps_72hz = 2;
+    }
     capabilities_.pending_swap_params.max_pending_swaps_90hz = 3;
     capabilities_.pending_swap_params.max_pending_swaps_120hz = 4;
   }

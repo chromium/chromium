@@ -57,7 +57,9 @@ class ManifestV2ExperimentManager : public KeyedService,
     // Any other state. This includes e.g. extensions that are disabled, but for
     // other reasons.
     kOther = 3,
-    kMaxValue = kOther,
+    // The extension is disabled, and may not be re-enabled by the user.
+    kHardDisabled = 4,
+    kMaxValue = kHardDisabled,
   };
 
   // Possible actions taken by the user on an MV2 extension.
@@ -94,6 +96,9 @@ class ManifestV2ExperimentManager : public KeyedService,
       Manifest::Type manifest_type,
       mojom::ManifestLocation manifest_location,
       const HashedExtensionId& hashed_id);
+
+  // Returns true if Chrome should disallow enabling the given `extension`.
+  bool ShouldBlockExtensionEnable(const Extension& extension);
 
   // Returns true if the notice for `extension_id` has been acknowledged by the
   // user during the current MV2 deprecation `experiment_stage_`.

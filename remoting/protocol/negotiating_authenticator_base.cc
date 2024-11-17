@@ -111,7 +111,7 @@ void NegotiatingAuthenticatorBase::UpdateState(
 std::unique_ptr<jingle_xmpp::XmlElement>
 NegotiatingAuthenticatorBase::GetNextMessageInternal() {
   DCHECK_EQ(state(), MESSAGE_READY);
-  DCHECK(current_method_ != Method::INVALID);
+  DCHECK(current_method_ != AuthenticationMethod::INVALID);
 
   std::unique_ptr<jingle_xmpp::XmlElement> result;
   if (current_authenticator_->state() == MESSAGE_READY) {
@@ -122,7 +122,7 @@ NegotiatingAuthenticatorBase::GetNextMessageInternal() {
   state_ = current_authenticator_->state();
   DCHECK(state_ == ACCEPTED || state_ == WAITING_MESSAGE);
   result->AddAttr(kMethodAttributeQName,
-                  HostAuthenticationConfig::MethodToString(current_method_));
+                  AuthenticationMethodToString(current_method_));
   return result;
 }
 
@@ -134,8 +134,8 @@ void NegotiatingAuthenticatorBase::NotifyStateChangeAfterAccepted() {
   Authenticator::NotifyStateChangeAfterAccepted();
 }
 
-void NegotiatingAuthenticatorBase::AddMethod(Method method) {
-  DCHECK(method != Method::INVALID);
+void NegotiatingAuthenticatorBase::AddMethod(AuthenticationMethod method) {
+  DCHECK(method != AuthenticationMethod::INVALID);
   methods_.push_back(method);
 }
 

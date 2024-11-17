@@ -23,9 +23,9 @@
 
 namespace gl {
 
-GLFenceAndroidNativeFenceSync::GLFenceAndroidNativeFenceSync() {}
+GLFenceAndroidNativeFenceSync::GLFenceAndroidNativeFenceSync() = default;
 
-GLFenceAndroidNativeFenceSync::~GLFenceAndroidNativeFenceSync() {}
+GLFenceAndroidNativeFenceSync::~GLFenceAndroidNativeFenceSync() = default;
 
 // static
 std::unique_ptr<GLFenceAndroidNativeFenceSync>

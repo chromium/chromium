@@ -11,7 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
 namespace autofill::payments {
@@ -19,7 +19,7 @@ namespace autofill::payments {
 class UploadIbanRequest : public PaymentsRequest {
  public:
   UploadIbanRequest(
-      const PaymentsNetworkInterface::UploadIbanRequestDetails& details,
+      const UploadIbanRequestDetails& details,
       bool full_sync_enabled,
       base::OnceCallback<
           void(payments::PaymentsAutofillClient::PaymentsRpcResult)> callback);
@@ -37,7 +37,7 @@ class UploadIbanRequest : public PaymentsRequest {
       payments::PaymentsAutofillClient::PaymentsRpcResult result) override;
 
  private:
-  const PaymentsNetworkInterface::UploadIbanRequestDetails request_details_;
+  const UploadIbanRequestDetails request_details_;
   // True when the user is both signed-in and has enabled sync.
   const bool full_sync_enabled_;
   base::OnceCallback<void(payments::PaymentsAutofillClient::PaymentsRpcResult)>

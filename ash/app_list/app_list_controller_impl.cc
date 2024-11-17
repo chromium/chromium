@@ -4,6 +4,7 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 
+#include <memory>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -38,6 +39,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/feature_discovery_duration_reporter.h"
 #include "ash/public/cpp/feature_discovery_metric_util.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -71,7 +73,9 @@
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/services/assistant/public/cpp/assistant_enums.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -439,6 +443,12 @@ bool AppListControllerImpl::IsVisible() {
 
 void AppListControllerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
+  sunfish_enabled_ = std::make_unique<BooleanPrefMember>();
+  sunfish_enabled_->Init(
+      prefs::kSunfishEnabled, pref_service,
+      base::BindRepeating(&AppListControllerImpl::UpdateSearchBoxUiVisibilities,
+                          weak_ptr_factory_.GetWeakPtr()));
+
   if (IsKioskSession())
     return;
 
@@ -1376,7 +1386,7 @@ void AppListControllerImpl::GetContextMenuModel(
 
 void AppListControllerImpl::ShowWallpaperContextMenu(
     const gfx::Point& onscreen_location,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   Shell::Get()->ShowContextMenu(onscreen_location, source_type);
 }
 
@@ -1763,8 +1773,9 @@ SearchModel* AppListControllerImpl::GetSearchModel() {
 }
 
 void AppListControllerImpl::UpdateSearchBoxUiVisibilities() {
-  GetSearchModel()->search_box()->SetShowAssistantButton(
-      IsAssistantAllowedAndEnabled());
+  SearchBoxModel* search_box_model = GetSearchModel()->search_box();
+  search_box_model->SetShowAssistantButton(IsAssistantAllowedAndEnabled());
+  search_box_model->SetShowSunfishButton(IsSunfishAllowedAndEnabled());
 
   if (!client_) {
     return;

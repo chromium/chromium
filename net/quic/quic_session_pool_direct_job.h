@@ -17,6 +17,7 @@
 #include "net/quic/quic_session_attempt.h"
 #include "net/quic/quic_session_pool.h"
 #include "net/quic/quic_session_pool_job.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
 
 namespace net {
@@ -38,6 +39,7 @@ class QuicSessionPool::DirectJob : public QuicSessionPool::Job {
             bool use_dns_aliases,
             bool require_dns_https_alpn,
             int cert_verify_flags,
+            MultiplexedSessionCreationInitiator session_creation_initiator,
             const NetLogWithSource& net_log);
 
   ~DirectJob() override;
@@ -87,6 +89,7 @@ class QuicSessionPool::DirectJob : public QuicSessionPool::Job {
   base::TimeTicks dns_resolution_start_time_;
   base::TimeTicks dns_resolution_end_time_;
   std::unique_ptr<QuicSessionAttempt> session_attempt_;
+  const MultiplexedSessionCreationInitiator session_creation_initiator_;
   base::WeakPtrFactory<DirectJob> weak_factory_{this};
 };
 

@@ -18,6 +18,7 @@
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/service/viz_service_export.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace viz {
 
@@ -116,6 +117,9 @@ class VIZ_SERVICE_EXPORT FrameIntervalMatcher {
 
     Inputs(const Inputs& other);
     Inputs& operator=(const Inputs& other);
+
+    // Serializes this struct into a trace.
+    void WriteIntoTrace(perfetto::TracedValue trace_context) const;
 
     base::raw_ref<const Settings> settings;
     base::TimeTicks aggregated_frame_time;

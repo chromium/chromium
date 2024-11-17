@@ -39,9 +39,9 @@ const char kHistorySearchEnterprisePolicyAllowed[] =
 const char kProductSpecificationsEnterprisePolicyAllowed[] =
     "optimization_guide.model_execution.tab_compare_settings_enterprise_policy";
 
-const char kFormsPredictionsEnterprisePolicyAllowed[] =
-    "optimization_guide.model_execution.forms_predictions_enterprise_policy_"
-    "allowed";
+const char kAutofillPredictionImprovementsEnterprisePolicyAllowed[] =
+    "optimization_guide.model_execution.autofill_prediction_improvements_"
+    "enterprise_policy_allowed";
 
 }  // namespace prefs
 
@@ -70,6 +70,10 @@ BASE_FEATURE(kFormsPredictionsMqlsLogging,
              "FormsPredictionsMqlsLogging",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kFormsAnnotationsMqlsLogging,
+             "FormsAnnotationsMqlsLogging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace features
 
 namespace {
@@ -86,8 +90,7 @@ void RegisterCompose() {
       });
   auto mqls_metadata = std::make_unique<MqlsFeatureMetadata>(
       kComposeName, proto::LogAiDataRequest::FeatureCase::kCompose,
-      enterprise_policy, &features::kComposeMqlsLogging, logging_callback,
-      UserVisibleFeatureKey::kCompose);
+      enterprise_policy, &features::kComposeMqlsLogging, logging_callback);
   MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata));
 
   auto ui_metadata = std::make_unique<SettingsUiMetadata>(
@@ -120,8 +123,7 @@ void RegisterTabOrganization() {
   auto mqls_metadata = std::make_unique<MqlsFeatureMetadata>(
       kTabOrganizationName,
       proto::LogAiDataRequest::FeatureCase::kTabOrganization, enterprise_policy,
-      &features::kTabOrganizationMqlsLogging, logging_callback,
-      UserVisibleFeatureKey::kTabOrganization);
+      &features::kTabOrganizationMqlsLogging, logging_callback);
   MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata));
 
   auto ui_metadata = std::make_unique<SettingsUiMetadata>(
@@ -143,8 +145,7 @@ void RegisterWallpaperSearch() {
   auto mqls_metadata = std::make_unique<MqlsFeatureMetadata>(
       kWallpaperSearchName,
       proto::LogAiDataRequest::FeatureCase::kWallpaperSearch, enterprise_policy,
-      &features::kWallpaperSearchMqlsLogging, logging_callback,
-      UserVisibleFeatureKey::kWallpaperSearch);
+      &features::kWallpaperSearchMqlsLogging, logging_callback);
   MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata));
 
   auto ui_metadata = std::make_unique<SettingsUiMetadata>(
@@ -165,7 +166,7 @@ void RegisterHistorySearch() {
   auto mqls_metadata_query = std::make_unique<MqlsFeatureMetadata>(
       "HistoryQuery", proto::LogAiDataRequest::FeatureCase::kHistoryQuery,
       enterprise_policy, &features::kHistorySearchMqlsLogging,
-      logging_callback_query, UserVisibleFeatureKey::kHistorySearch);
+      logging_callback_query);
   MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata_query));
 
   UserFeedbackCallback logging_callback_answer =
@@ -177,7 +178,7 @@ void RegisterHistorySearch() {
   auto mqls_metadata_answer = std::make_unique<MqlsFeatureMetadata>(
       "HistoryAnswer", proto::LogAiDataRequest::FeatureCase::kHistoryAnswer,
       enterprise_policy, &features::kHistorySearchMqlsLogging,
-      logging_callback_answer, UserVisibleFeatureKey::kHistorySearch);
+      logging_callback_answer);
   MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata_answer));
 
   auto ui_metadata = std::make_unique<SettingsUiMetadata>(
@@ -198,24 +199,38 @@ void RegisterProductSpecifications() {
       "ProductSpecifications",
       proto::LogAiDataRequest::FeatureCase::kProductSpecifications,
       enterprise_policy, &features::kProductSpecificationsMqlsLogging,
-      logging_callback, std::nullopt);
+      logging_callback);
   MqlsFeatureRegistry::GetInstance().Register(std::move(metadata));
 }
 
-void RegisterFormsPredictions() {
+void RegisterAutofillPredictions() {
   EnterprisePolicyPref enterprise_policy =
       EnterprisePolicyRegistry::GetInstance().Register(
-          prefs::kFormsPredictionsEnterprisePolicyAllowed);
-  UserFeedbackCallback logging_callback =
+          prefs::kAutofillPredictionImprovementsEnterprisePolicyAllowed);
+
+  UserFeedbackCallback fp_logging_callback =
       base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
         return request_proto.forms_predictions().quality().user_feedback();
       });
-  auto mqls_metadata = std::make_unique<MqlsFeatureMetadata>(
+  auto fp_mqls_metadata = std::make_unique<MqlsFeatureMetadata>(
       "FormsPredictions",
       proto::LogAiDataRequest::FeatureCase::kFormsPredictions,
       enterprise_policy, &features::kFormsPredictionsMqlsLogging,
-      logging_callback, std::nullopt);
-  MqlsFeatureRegistry::GetInstance().Register(std::move(mqls_metadata));
+      fp_logging_callback);
+  MqlsFeatureRegistry::GetInstance().Register(std::move(fp_mqls_metadata));
+
+  // Forms annotations. In the same block as forms predictions since it
+  // leverages the same enterprise policy.
+  UserFeedbackCallback fa_logging_callback =
+      base::BindRepeating([](proto::LogAiDataRequest& request_proto) {
+        return request_proto.forms_annotations().quality().user_feedback();
+      });
+  auto fa_mqls_metadata = std::make_unique<MqlsFeatureMetadata>(
+      "FormsAnnotations",
+      proto::LogAiDataRequest::FeatureCase::kFormsAnnotations,
+      enterprise_policy, &features::kFormsAnnotationsMqlsLogging,
+      fa_logging_callback);
+  MqlsFeatureRegistry::GetInstance().Register(std::move(fa_mqls_metadata));
 }
 
 }  // anonymous namespace
@@ -230,7 +245,7 @@ void RegisterGenAiFeatures(PrefRegistrySimple* pref_registry) {
     RegisterWallpaperSearch();
     RegisterHistorySearch();
     RegisterProductSpecifications();
-    RegisterFormsPredictions();
+    RegisterAutofillPredictions();
     features_registered = true;
   }
   EnterprisePolicyRegistry::GetInstance().RegisterProfilePrefs(pref_registry);

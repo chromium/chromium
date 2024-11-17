@@ -6,8 +6,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
-#include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/events/event.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 
 namespace ui {
 

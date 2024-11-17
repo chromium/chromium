@@ -28,7 +28,7 @@ namespace {
 
 class SubresourceFilterContentSettingsManagerTest : public testing::Test {
  public:
-  SubresourceFilterContentSettingsManagerTest() {}
+  SubresourceFilterContentSettingsManagerTest() = default;
 
   SubresourceFilterContentSettingsManagerTest(
       const SubresourceFilterContentSettingsManagerTest&) = delete;

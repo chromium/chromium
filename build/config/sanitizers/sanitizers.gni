@@ -136,7 +136,7 @@ declare_args() {
   use_cfi_cast = is_cfi && is_chromeos
 
   # Compile for Undefined Behaviour Sanitizer's vptr checks.
-  is_ubsan_vptr = is_ubsan_security
+  is_ubsan_vptr = is_ubsan_security || is_ubsan
 }
 
 # Whether we are doing a fuzzer build. Normally this should be checked instead

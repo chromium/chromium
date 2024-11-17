@@ -20,7 +20,7 @@ namespace assist_ranker {
 BinaryClassifierPredictor::BinaryClassifierPredictor(
     const PredictorConfig& config)
     : BasePredictor(config) {}
-BinaryClassifierPredictor::~BinaryClassifierPredictor() {}
+BinaryClassifierPredictor::~BinaryClassifierPredictor() = default;
 
 // static
 std::unique_ptr<BinaryClassifierPredictor> BinaryClassifierPredictor::Create(
@@ -81,7 +81,7 @@ RankerModelStatus BinaryClassifierPredictor::ValidateModel(
     const RankerModel& model) {
   if (model.proto().model_case() != RankerModelProto::kLogisticRegression) {
     DVLOG(0) << "Model is incompatible.";
-    return RankerModelStatus::INCOMPATIBLE;
+    return RankerModelStatus::kIncompatible;
   }
   const GenericLogisticRegressionModel& glr =
       model.proto().logistic_regression();
@@ -89,20 +89,20 @@ RankerModelStatus BinaryClassifierPredictor::ValidateModel(
     if (glr.fullname_weights().empty() || !glr.weights().empty()) {
       DVLOG(0) << "Model is incompatible. Preprocessed model should use "
                   "fullname_weights.";
-      return RankerModelStatus::INCOMPATIBLE;
+      return RankerModelStatus::kIncompatible;
     }
     if (!glr.preprocessor_config().feature_indices().empty()) {
       DVLOG(0) << "Preprocessed model doesn't need feature indices.";
-      return RankerModelStatus::INCOMPATIBLE;
+      return RankerModelStatus::kIncompatible;
     }
   } else {
     if (!glr.fullname_weights().empty() || glr.weights().empty()) {
       DVLOG(0) << "Model is incompatible. Non-preprocessed model should use "
                   "weights.";
-      return RankerModelStatus::INCOMPATIBLE;
+      return RankerModelStatus::kIncompatible;
     }
   }
-  return RankerModelStatus::OK;
+  return RankerModelStatus::kOk;
 }
 
 bool BinaryClassifierPredictor::Initialize() {

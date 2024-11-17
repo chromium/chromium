@@ -12,13 +12,14 @@
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_constants.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
-#include "chrome/browser/ash/policy/skyvault/skyvault_test_base.h"
+#include "chrome/browser/ash/policy/skyvault/test/skyvault_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -47,7 +48,7 @@ class DriveSkyvaultUploaderTest : public SkyvaultGoogleDriveTest {
   // `Wait` will not complete until this is called.
   void OnUploadDone(std::optional<MigrationUploadError> error) {
     if (fail_sync_) {
-      ASSERT_EQ(error, MigrationUploadError::kCopyFailed);
+      ASSERT_EQ(error, MigrationUploadError::kSyncFailed);
     } else {
       ASSERT_FALSE(error.has_value());
     }
@@ -58,27 +59,45 @@ class DriveSkyvaultUploaderTest : public SkyvaultGoogleDriveTest {
     base::FilePath observed_relative_drive_path;
     drive_integration_service()->GetRelativeDrivePath(
         drive_root_dir()
-            .Append(kDestinationDirName)
+            .Append(kUploadRootPrefix)
             .Append(info.local_relative_path_),
         &observed_relative_drive_path);
     return observed_relative_drive_path;
   }
 
  protected:
+  base::HistogramTester histogram_tester_;
   bool add_metadata_ = true;
   bool fail_sync_ = false;
   // Overrides `fail_sync_`
   base::RepeatingClosure on_transfer_complete_callback_;
+  // Called when the copy task is starting/ongoing
+  base::RepeatingClosure on_copy_in_progress_callback_;
 
  private:
   // IOTaskController::Observer:
   void OnIOTaskStatus(
       const file_manager::io_task::ProgressStatus& status) override {
-    // Wait for the copy task to complete before starting the Drive sync.
     auto it = source_files_.find(status.sources[0].url.path());
-    if (status.type == file_manager::io_task::OperationType::kCopy &&
-        status.sources.size() == 1 && it != source_files_.end() &&
-        status.state == file_manager::io_task::State::kSuccess) {
+    if (status.type != file_manager::io_task::OperationType::kCopy ||
+        status.sources.size() != 1 || it == source_files_.end()) {
+      return;
+    }
+
+    // Invoke in progress callback if needed.
+    if (status.state == file_manager::io_task::State::kQueued ||
+        status.state == file_manager::io_task::State::kInProgress) {
+      if (on_copy_in_progress_callback_) {
+        on_copy_in_progress_callback_.Run();
+        // The callback might stop the IOTask, which would invalidate the status
+        // reference.
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, std::move(on_copy_in_progress_callback_));
+        return;
+      }
+    }
+    // Wait for the copy task to complete before starting the Drive sync.
+    if (status.state == file_manager::io_task::State::kSuccess) {
       if (on_transfer_complete_callback_) {
         on_transfer_complete_callback_.Run();
       } else if (fail_sync_) {
@@ -144,8 +163,6 @@ class DriveSkyvaultUploaderTest : public SkyvaultGoogleDriveTest {
     drivefs_delegate()->OnSyncingStatusUpdate(fail_status->Clone());
     drivefs_delegate().FlushForTesting();
   }
-
-  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, SuccessfulUpload) {
@@ -161,13 +178,16 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, SuccessfulUpload) {
   EXPECT_CALL(fake_drivefs(), ImmediatelyUpload)
       .WillOnce(RunOnceCallback<1>(drive::FileError::FILE_ERROR_OK));
 
-  base::test::TestFuture<std::optional<MigrationUploadError>> future;
+  base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
+      future;
   auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
-      profile(), source_file, base::FilePath(kDestinationDirName),
+      profile(), source_file, base::FilePath(), kUploadRootPrefix,
       future.GetCallback());
   drive_upload_handler->Run();
 
-  EXPECT_EQ(future.Get(), std::nullopt);
+  auto [error, upload_root_path] = future.Get();
+  ASSERT_FALSE(error.has_value());
+  EXPECT_EQ(drive_root_dir().Append(kUploadRootPrefix), upload_root_path);
 
   // Check that the source file has been moved to Drive.
   {
@@ -176,6 +196,11 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, SuccessfulUpload) {
     CheckPathExistsOnDrive(
         observed_relative_drive_path(source_files_.find(source_file)->second));
   }
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DeleteError", false, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DeleteError", true, 0);
 }
 
 // Test that when the sync to Drive fails, the file is not moved to Drive.
@@ -191,13 +216,16 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, FailedUpload) {
   EXPECT_CALL(fake_drivefs(), ImmediatelyUpload)
       .WillOnce(RunOnceCallback<1>(drive::FileError::FILE_ERROR_FAILED));
 
-  base::test::TestFuture<std::optional<MigrationUploadError>> future;
+  base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
+      future;
   auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
-      profile(), source_file, base::FilePath(kDestinationDirName),
+      profile(), source_file, base::FilePath(), kUploadRootPrefix,
       future.GetCallback());
   drive_upload_handler->Run();
 
-  EXPECT_EQ(future.Get(), MigrationUploadError::kCopyFailed);
+  auto [error, upload_root_path] = future.Get();
+  ASSERT_EQ(MigrationUploadError::kSyncFailed, error);
+  EXPECT_EQ(drive_root_dir().Append(kUploadRootPrefix), upload_root_path);
 
   // Check that the source file has not been moved to Drive.
   {
@@ -206,6 +234,11 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, FailedUpload) {
     CheckPathNotFoundOnDrive(
         observed_relative_drive_path(source_files_.find(source_file)->second));
   }
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DeleteError", false, 1);
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DeleteError", true, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, FailedDelete) {
@@ -219,14 +252,17 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, FailedDelete) {
   EXPECT_CALL(fake_drivefs(), ImmediatelyUpload)
       .WillOnce(RunOnceCallback<1>(drive::FileError::FILE_ERROR_OK));
 
-  base::test::TestFuture<std::optional<MigrationUploadError>> future;
+  base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
+      future;
   auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
-      profile(), source_file, base::FilePath(kDestinationDirName),
+      profile(), source_file, base::FilePath(), kUploadRootPrefix,
       future.GetCallback());
   drive_upload_handler->SetFailDeleteForTesting(/*fail=*/true);
   drive_upload_handler->Run();
 
-  EXPECT_EQ(future.Get(), MigrationUploadError::kDeleteFailed);
+  auto [error, upload_root_path] = future.Get();
+  ASSERT_EQ(MigrationUploadError::kDeleteFailed, error);
+  EXPECT_EQ(drive_root_dir().Append(kUploadRootPrefix), upload_root_path);
 
   // Check that the source file has been moved to Drive.
   {
@@ -235,6 +271,11 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, FailedDelete) {
     CheckPathExistsOnDrive(
         observed_relative_drive_path(source_files_.find(source_file)->second));
   }
+
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DeleteError", false, 0);
+  histogram_tester_.ExpectBucketCount(
+      "Enterprise.SkyVault.Migration.GoogleDrive.DeleteError", true, 1);
 }
 
 // Test that when connection to Drive isn't available, the upload fails
@@ -250,13 +291,16 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, NoConnection) {
 
   EXPECT_CALL(fake_drivefs(), ImmediatelyUpload).Times(0);
 
-  base::test::TestFuture<std::optional<MigrationUploadError>> future;
+  base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
+      future;
   auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
-      profile(), source_file, base::FilePath(kDestinationDirName),
+      profile(), source_file, base::FilePath(), kUploadRootPrefix,
       future.GetCallback());
   drive_upload_handler->Run();
 
-  EXPECT_EQ(future.Get(), MigrationUploadError::kServiceUnavailable);
+  auto [error, upload_root_path] = future.Get();
+  ASSERT_EQ(MigrationUploadError::kServiceUnavailable, error);
+  EXPECT_EQ(base::FilePath(), upload_root_path);
 
   // Check that the source file has not been moved to Drive.
   {
@@ -267,8 +311,8 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, NoConnection) {
   }
 }
 
-// Test that when connection to Drive fails during upload, the file is not moved
-// to Drive.
+// Test that when connection to Drive fails during upload, the file is not
+// moved to Drive.
 IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, ConnectionLostDuringUpload) {
   SetUpObservers();
   SetUpMyFiles();
@@ -282,15 +326,81 @@ IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, ConnectionLostDuringUpload) {
     drive_integration_service()->OnNetworkChanged();
   });
 
-  base::test::TestFuture<std::optional<MigrationUploadError>> future;
+  base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
+      future;
   auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
-      profile(), source_file, base::FilePath(kDestinationDirName),
+      profile(), source_file, base::FilePath(), kUploadRootPrefix,
       future.GetCallback());
   drive_upload_handler->Run();
 
-  EXPECT_EQ(future.Get(), MigrationUploadError::kServiceUnavailable);
+  auto [error, upload_root_path] = future.Get();
+  ASSERT_EQ(MigrationUploadError::kServiceUnavailable, error);
+  EXPECT_EQ(drive_root_dir().Append(kUploadRootPrefix), upload_root_path);
 
   // Check that the source file has not been moved to Drive.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::PathExists(my_files_dir().AppendASCII(test_file_name)));
+    CheckPathNotFoundOnDrive(
+        observed_relative_drive_path(source_files_.find(source_file)->second));
+  }
+}
+
+// Test that the upload can be cancelled after Run.
+IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, Cancel) {
+  SetUpObservers();
+  SetUpMyFiles();
+
+  const std::string test_file_name = "text.docx";
+  const base::FilePath source_file =
+      SetUpSourceFile(test_file_name, my_files_dir());
+
+  base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
+      future;
+  auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
+      profile(), source_file, base::FilePath(), kUploadRootPrefix,
+      future.GetCallback());
+  drive_upload_handler->Run();
+  drive_upload_handler->Cancel();
+
+  auto [error, upload_root_path] = future.Get();
+  ASSERT_EQ(MigrationUploadError::kCancelled, error);
+  EXPECT_EQ(drive_root_dir().Append(kUploadRootPrefix), upload_root_path);
+
+  // Check that the source file has not been moved to Drive.
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    EXPECT_TRUE(base::PathExists(my_files_dir().AppendASCII(test_file_name)));
+    CheckPathNotFoundOnDrive(
+        observed_relative_drive_path(source_files_.find(source_file)->second));
+  }
+}
+
+// Test that the upload can be cancelled after the copy task already started.
+IN_PROC_BROWSER_TEST_F(DriveSkyvaultUploaderTest, CancelAfterCopyStarts) {
+  SetUpObservers();
+  SetUpMyFiles();
+
+  const std::string test_file_name = "text.docx";
+  const base::FilePath source_file =
+      SetUpSourceFile(test_file_name, my_files_dir());
+
+  base::test::TestFuture<std::optional<MigrationUploadError>, base::FilePath>
+      future;
+  auto drive_upload_handler = std::make_unique<DriveSkyvaultUploader>(
+      profile(), source_file, base::FilePath(), kUploadRootPrefix,
+      future.GetCallback());
+
+  on_copy_in_progress_callback_ = base::BindLambdaForTesting(
+      [&drive_upload_handler] { drive_upload_handler->Cancel(); });
+
+  drive_upload_handler->Run();
+
+  auto [error, upload_root_path] = future.Get();
+  ASSERT_EQ(MigrationUploadError::kCancelled, error);
+  EXPECT_EQ(drive_root_dir().Append(kUploadRootPrefix), upload_root_path);
+
+  // Check that the source file has not been deleted.
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(base::PathExists(my_files_dir().AppendASCII(test_file_name)));

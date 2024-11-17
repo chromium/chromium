@@ -23,7 +23,7 @@ public class SafetyHubFetchTask extends NativeBackgroundTask {
             Context context, TaskParameters taskParameters, TaskFinishedCallback callback) {
         // TODO(crbug.com/40254448): Remove use of getLastUsedRegularProfile here.
         SafetyHubFetchServiceFactory.getForProfile(ProfileManager.getLastUsedRegularProfile())
-                .fetchBreachedCredentialsCount(callback::taskFinished);
+                .fetchCredentialsCount(callback::taskFinished);
     }
 
     @Override

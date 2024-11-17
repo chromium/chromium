@@ -24,13 +24,18 @@ namespace ash::boca {
 // Proto to Json
 void ParseTeacherProtoFromJson(base::Value::Dict* session_dict,
                                ::boca::Session* session);
+void ParseJoinCodeProtoFromJson(base::Value::Dict* session_dict,
+                                ::boca::Session* session);
 void ParseRosterProtoFromJson(base::Value::Dict* session_dict,
                               ::boca::Session* session);
 void ParseSessionConfigProtoFromJson(base::Value::Dict* session_dict,
-                                     ::boca::Session* session);
+                                     ::boca::Session* session,
+                                     bool is_producer);
 void ParseStudentStatusProtoFromJson(base::Value::Dict* session_dict,
                                      ::boca::Session* session);
-
+// This helper returns unique_ptr for easier lifecycle management.
+std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json,
+                                                         bool is_producer);
 // Json to Proto
 void ParseRosterJsonFromProto(::boca::Roster* roster,
                               base::Value::Dict* roster_dict);

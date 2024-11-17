@@ -11,6 +11,8 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_request.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/googletest/src/googlemock/include/gmock/gmock-matchers.h"
 
 namespace blink {
@@ -492,6 +494,95 @@ TEST_F(HTMLFormElementTest, ElementsAssociateWithNestedForms) {
 
   EXPECT_THAT(f1->ListedElements(/*include_shadow_trees=*/true),
               ElementsAre(t1, t2));
+}
+
+class HTMLFormElementSimTest : public SimTest {
+ public:
+  void LoadHTML(const String& html) {
+    SimRequest main_resource("https://example.com", "text/html");
+    LoadURL("https://example.com");
+    main_resource.Complete(html);
+  }
+};
+
+// Tests that `include_shadow_trees=true` also includes form control elements
+// that are associated by the HTML parser.
+// Regression test for crbug.com/347059988#comment40.
+TEST_F(HTMLFormElementSimTest, NestedFormsAssociatedByParserMalformedHtml) {
+  // From the following invalid HTML, Blink produces a DOM where
+  // - f2 is nested in f1
+  // - t2 is associated with f2.
+  //
+  // By closing f1 before opening f2, the parser's form element pointer is set
+  // to f2 and therefore all following elements are associated with f2.
+  // https://html.spec.whatwg.org/multipage/parsing.html#form-element-pointer
+  LoadHTML(R"HTML(
+    <!DOCTYPE html>
+    <div>
+      <form id=f1>
+        <div>
+          </form>  <!-- This is roughly ignored by the parser. -->
+          <form id=f2>
+        </div>
+    </div>
+    <input id=t>  <!-- This is associated with the unclosed form f2. -->
+  )HTML");
+
+  Document& doc = GetDocument();
+  auto* f1 = To<HTMLFormElement>(doc.getElementById(AtomicString("f1")));
+  auto* f2 = To<HTMLFormElement>(doc.getElementById(AtomicString("f2")));
+  auto* t = To<HTMLInputElement>(doc.getElementById(AtomicString("t")));
+
+  ASSERT_EQ(NodeTraversal::CommonAncestor(*f1, *f2), f1);
+  ASSERT_EQ(NodeTraversal::CommonAncestor(*f2, *t), doc.body());
+  ASSERT_EQ(t->Form(), f2);
+
+  EXPECT_THAT(f1->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(t));
+}
+
+// This is a beefed-up version of the above test case
+// `NestedFormsAssociatedByParserMalformedHtml` with additional form controls to
+// test that ListedElements() does not include too many form controls.
+TEST_F(HTMLFormElementSimTest,
+       NestedFormsAssociatedByParserMalformedHtml_Large) {
+  LoadHTML(R"HTML(
+    <!DOCTYPE html>
+    <div>
+      <input id=t1>
+      <form id=f1>
+        <div>
+          <input id=t2>
+          </form>  <!-- This is roughly ignored by the parser. -->
+          <form id=f2>
+            <input id=t3>
+        </div>
+    </div>
+    <input id=t4>  <!-- This is associated with the unclosed form f2. -->
+    </form>
+    <input id=t5>
+  )HTML");
+
+  Document& doc = GetDocument();
+  auto* f1 = To<HTMLFormElement>(doc.getElementById(AtomicString("f1")));
+  auto* f2 = To<HTMLFormElement>(doc.getElementById(AtomicString("f2")));
+  auto* t1 = To<HTMLInputElement>(doc.getElementById(AtomicString("t1")));
+  auto* t2 = To<HTMLInputElement>(doc.getElementById(AtomicString("t2")));
+  auto* t3 = To<HTMLInputElement>(doc.getElementById(AtomicString("t3")));
+  auto* t4 = To<HTMLInputElement>(doc.getElementById(AtomicString("t4")));
+  auto* t5 = To<HTMLInputElement>(doc.getElementById(AtomicString("t5")));
+
+  ASSERT_EQ(NodeTraversal::CommonAncestor(*f1, *f2), f1);
+  ASSERT_EQ(NodeTraversal::CommonAncestor(*f2, *t4), doc.body());
+  ASSERT_EQ(NodeTraversal::CommonAncestor(*f2, *t5), doc.body());
+  ASSERT_EQ(t1->Form(), nullptr);
+  ASSERT_EQ(t2->Form(), f1);
+  ASSERT_EQ(t3->Form(), f2);
+  ASSERT_EQ(t4->Form(), f2);
+  ASSERT_EQ(t5->Form(), nullptr);
+
+  EXPECT_THAT(f1->ListedElements(/*include_shadow_trees=*/true),
+              ElementsAre(t2, t3, t4));
 }
 
 }  // namespace blink

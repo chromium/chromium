@@ -53,7 +53,7 @@ class PermissionPrompt {
   // be persisted in the per-tab UI state.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // These pointers should not be stored as the actual request objects may be
     // deleted upon navigation and so on.
@@ -144,7 +144,7 @@ class PermissionPrompt {
   static std::unique_ptr<PermissionPrompt> Create(
       content::WebContents* web_contents,
       Delegate* delegate);
-  virtual ~PermissionPrompt() {}
+  virtual ~PermissionPrompt() = default;
 
   // Updates where the prompt should be anchored. ex: fullscreen toggle.
   // Returns true, if the update was successful, and false if the caller should

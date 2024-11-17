@@ -643,7 +643,7 @@ EvalJsResult PerformFetch(Shell* shell,
       fetch_mode_string = "no-cors";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   const char kFetchRequestScript[] =
       "fetch($1, {mode: $2}).then("

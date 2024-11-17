@@ -65,10 +65,6 @@
 #include "components/metrics/structured/recorder.h"               // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/startup/browser_params_proxy.h"
-#endif
-
 namespace metrics {
 namespace internal {
 
@@ -97,22 +93,6 @@ const char kRateParamName[] = "sampling_rate_per_mille";
 }  // namespace metrics
 
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class UmaInitParamsResult {
-  // Both the client ID and entropy sources were found.
-  kClientIdAndEntropySources = 0,
-  // Only the client ID was found.
-  kClientIdOnly = 1,
-  // Only the entropy sources were found.
-  kEntropySourcesOnly = 2,
-  // Neither the client ID nor the entropy sources were found.
-  kNone = 3,
-  kMaxValue = kNone,
-};
-#endif
 
 // Posts |GoogleUpdateSettings::StoreMetricsClientInfo| on blocking pool thread
 // because it needs access to IO and cannot work from UI thread.
@@ -345,49 +325,6 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
     std::string client_id;
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Read metrics service client id from ash chrome if it's present.
-    auto* init_params = chromeos::BrowserParamsProxy::Get();
-    const auto& ash_client_id = init_params->MetricsServiceClientId();
-    if (ash_client_id) {
-      client_id = ash_client_id.value();
-    }
-
-    // Sync the randomization seed from Ash Chrome so that the group assignment
-    // is the same on Lacros.
-    variations::LimitedEntropySyntheticTrial::SetSeedFromAsh(
-        local_state_, init_params->LimitedEntropySyntheticTrialSeed());
-
-    // Beginning M120 this should always be there. Note:
-    // The LES numbers are kept stable over the lifetime of the session.
-    // They get read when the system is statrting up in Ash. So they do not
-    // need to be updated at a later time in the session.
-    const crosapi::mojom::EntropySourcePtr& entropy_source =
-        init_params->EntropySource();
-    if (entropy_source) {
-      // This needs to be called before `metrics::MetricsStateManager::Create`.
-      metrics::EntropyState::SetExternalPrefs(
-          local_state_, entropy_source->low_entropy,
-          entropy_source->old_low_entropy, entropy_source->pseudo_low_entropy,
-          entropy_source->limited_entropy_randomization_source.has_value()
-              ? entropy_source->limited_entropy_randomization_source.value()
-              : std::string_view());
-    }
-
-    UmaInitParamsResult init_params_result;
-    if (ash_client_id && entropy_source) {
-      init_params_result = UmaInitParamsResult::kClientIdAndEntropySources;
-    } else if (ash_client_id) {
-      init_params_result = UmaInitParamsResult::kClientIdOnly;
-    } else if (entropy_source) {
-      init_params_result = UmaInitParamsResult::kEntropySourcesOnly;
-    } else {
-      init_params_result = UmaInitParamsResult::kNone;
-    }
-    base::UmaHistogramEnumeration("ChromeOS.Lacros.UmaInitParamsResult",
-                                  init_params_result);
-#endif
-
     metrics_state_manager_ = metrics::MetricsStateManager::Create(
         local_state_, enabled_state_provider_.get(), GetRegistryBackupKey(),
         user_data_dir, startup_visibility,
@@ -396,7 +333,7 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
                 metrics::EntropyProviderType::kDefault,
             .force_benchmarking_mode =
                 base::CommandLine::ForCurrentProcess()->HasSwitch(
-                    cc::switches::kEnableGpuBenchmarking),
+                    switches::kEnableGpuBenchmarking),
         },
         base::BindRepeating(&PostStoreMetricsClientInfo),
         base::BindRepeating(&GoogleUpdateSettings::LoadMetricsClientInfo),

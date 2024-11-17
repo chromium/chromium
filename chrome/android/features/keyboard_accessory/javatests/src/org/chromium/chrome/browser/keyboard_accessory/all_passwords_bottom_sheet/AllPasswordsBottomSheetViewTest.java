@@ -23,6 +23,7 @@ import static org.mockito.Mockito.verify;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollInstrumentationThread;
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.singleMouseClickView;
 import static org.chromium.chrome.browser.keyboard_accessory.all_passwords_bottom_sheet.AllPasswordsBottomSheetProperties.VISIBLE;
 
 import android.text.method.PasswordTransformationMethod;
@@ -38,7 +39,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -97,6 +99,11 @@ public class AllPasswordsBottomSheetViewTest {
     private static final boolean IS_PASSWORD_FIELD = true;
     private static final String EXAMPLE_ORIGIN = "https://m.example.com/";
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+
     @Mock private Callback<Integer> mDismissHandler;
     @Mock private Callback<CredentialFillRequest> mCredentialFillRequestCallback;
     @Mock private Callback<String> mSearchQueryCallback;
@@ -106,12 +113,8 @@ public class AllPasswordsBottomSheetViewTest {
     private AllPasswordsBottomSheetView mAllPasswordsBottomSheetView;
     private BottomSheetController mBottomSheetController;
 
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -273,6 +276,17 @@ public class AllPasswordsBottomSheetViewTest {
                             .inRoot(isDialog())
                             .check(matches(isDisplayed()));
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testConsumesGenericMotionEventsToPreventMouseClicksThroughSheet() {
+        // After setting the visibility to true, the view should exist and be visible.
+        ThreadUtils.runOnUiThreadBlocking(() -> mModel.set(VISIBLE, true));
+        pollUiThread(() -> getBottomSheetState() == SheetState.FULL);
+        assertThat(mAllPasswordsBottomSheetView.getContentView().isShown(), is(true));
+
+        assertThat(singleMouseClickView(mAllPasswordsBottomSheetView.getContentView()), is(true));
     }
 
     @Test

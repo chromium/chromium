@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught ReferenceError: VideoTrackGenerator is not defined
+[FAIL] Tests that frames are actually rendered correctly in a stream used for a video element.
+  promise_test: Unhandled rejection with value: "Uncaught ReferenceError: VideoTrackGenerator is not defined"
+[FAIL] Tests that frames are actually rendered correctly in a stream sent over a peer connection.
+  promise_test: Unhandled rejection with value: "Uncaught ReferenceError: VideoTrackGenerator is not defined"
+[FAIL] Tests that frames are sent correctly with RTCRtpEncodingParameters.scaleResolutionDownBy.
+  promise_test: Unhandled rejection with value: "Uncaught ReferenceError: VideoTrackGenerator is not defined"
+Harness: the test ran to completion.
+

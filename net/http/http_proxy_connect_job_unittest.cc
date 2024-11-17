@@ -478,12 +478,17 @@ TEST_P(HttpProxyConnectJobTest, NoTunnel) {
     // Proxies should not set any DNS aliases.
     EXPECT_TRUE(test_delegate.socket()->GetDnsAliases().empty());
 
-    bool is_secure_proxy = GetParam() == HTTPS || GetParam() == SPDY;
+    bool is_secure = GetParam() == HTTPS || GetParam() == SPDY;
+    bool is_http2 = GetParam() == SPDY;
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Insecure.Success",
-        is_secure_proxy ? 0 : 1);
+        "Net.HttpProxy.ConnectLatency.Http1.Http.Success",
+        (!is_secure && !is_http2) ? 1 : 0);
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Secure.Success", is_secure_proxy ? 1 : 0);
+        "Net.HttpProxy.ConnectLatency.Http1.Https.Success",
+        (is_secure && !is_http2) ? 1 : 0);
+    histogram_tester.ExpectTotalCount(
+        "Net.HttpProxy.ConnectLatency.Http2.Https.Success",
+        (is_secure && is_http2) ? 1 : 0);
   }
 }
 
@@ -1543,9 +1548,11 @@ TEST_P(HttpProxyConnectJobTest, TCPError) {
 
     bool is_secure_proxy = GetParam() == HTTPS;
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Insecure.Error", is_secure_proxy ? 0 : 1);
+        "Net.HttpProxy.ConnectLatency.Http1.Http.Error",
+        is_secure_proxy ? 0 : 1);
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Secure.Error", is_secure_proxy ? 1 : 0);
+        "Net.HttpProxy.ConnectLatency.Http1.Https.Error",
+        is_secure_proxy ? 1 : 0);
   }
 }
 
@@ -1577,9 +1584,13 @@ TEST_P(HttpProxyConnectJobTest, SSLError) {
                                           io_mode == SYNCHRONOUS);
 
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Secure.Error", 1);
+        "Net.HttpProxy.ConnectLatency.Http1.Https.Error", 1);
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Insecure.Error", 0);
+        "Net.HttpProxy.ConnectLatency.Http1.Http.Error", 0);
+    histogram_tester.ExpectTotalCount(
+        "Net.HttpProxy.ConnectLatency.Http2.Https.Error", 0);
+    histogram_tester.ExpectTotalCount(
+        "Net.HttpProxy.ConnectLatency.Http2.Http.Error", 0);
   }
 }
 
@@ -1741,9 +1752,9 @@ TEST_P(HttpProxyConnectJobTest, SslClientAuth) {
                                           io_mode == SYNCHRONOUS);
 
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Secure.Error", 1);
+        "Net.HttpProxy.ConnectLatency.Http1.Https.Error", 1);
     histogram_tester.ExpectTotalCount(
-        "Net.HttpProxy.ConnectLatency.Insecure.Error", 0);
+        "Net.HttpProxy.ConnectLatency.Http1.Http.Error", 0);
   }
 }
 
@@ -2365,6 +2376,7 @@ class MockQuicSessionPool : public QuicSessionPool {
        url::SchemeHostPort destination,
        quic::ParsedQuicVersion quic_version,
        const std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
+       MultiplexedSessionCreationInitiator session_creation_initiator,
        const HttpUserAgentSettings* http_user_agent_settings,
        RequestPriority priority,
        bool use_dns_aliases,
@@ -2412,7 +2424,7 @@ TEST_F(HttpProxyConnectQuicJobTest, RequestQuicProxy) {
 
   // Expect a session to be requested, and then leave it pending.
   EXPECT_CALL(mock_quic_session_pool_,
-              RequestSession(_, _, _, _, _, _, _, _, _, _,
+              RequestSession(_, _, _, _, _, _, _, _, _, _, _,
                              QSRHasProxyChain(proxy_chain.Prefix(0))))
       .Times(1)
       .WillRepeatedly(testing::Return(ERR_IO_PENDING));
@@ -2455,10 +2467,10 @@ TEST_F(HttpProxyConnectQuicJobTest, QuicProxyRequestUsesRfcV1) {
       /*net_log=*/nullptr);
 
   // Expect a session to be requested, and then leave it pending.
-  EXPECT_CALL(
-      mock_quic_session_pool_,
-      RequestSession(_, _, IsQuicVersion(quic::ParsedQuicVersion::RFCv1()), _,
-                     _, _, _, _, _, _, QSRHasProxyChain(proxy_chain.Prefix(0))))
+  EXPECT_CALL(mock_quic_session_pool_,
+              RequestSession(
+                  _, _, IsQuicVersion(quic::ParsedQuicVersion::RFCv1()), _, _,
+                  _, _, _, _, _, _, QSRHasProxyChain(proxy_chain.Prefix(0))))
 
       .Times(1)
       .WillRepeatedly(testing::Return(ERR_IO_PENDING));
@@ -2503,7 +2515,7 @@ TEST_F(HttpProxyConnectQuicJobTest, RequestMultipleQuicProxies) {
   // Expect a session to be requested, and then leave it pending. The requested
   // QUIC session is to `qproxy2`, via proxy chain [`qproxy1`].
   EXPECT_CALL(mock_quic_session_pool_,
-              RequestSession(_, _, _, _, _, _, _, _, _, _,
+              RequestSession(_, _, _, _, _, _, _, _, _, _, _,
                              QSRHasProxyChain(proxy_chain.Prefix(1))))
       .Times(1)
       .WillRepeatedly(testing::Return(ERR_IO_PENDING));

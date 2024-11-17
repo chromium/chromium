@@ -237,6 +237,8 @@ void PageLoadMetricsForwardObserver::OnParseStop(
 
 void PageLoadMetricsForwardObserver::OnConnectStart(
     const mojom::PageLoadTiming& timing) {}
+void PageLoadMetricsForwardObserver::OnConnectEnd(
+    const mojom::PageLoadTiming& timing) {}
 void PageLoadMetricsForwardObserver::OnDomainLookupStart(
     const mojom::PageLoadTiming& timing) {}
 void PageLoadMetricsForwardObserver::OnDomainLookupEnd(
@@ -500,6 +502,10 @@ void PageLoadMetricsForwardObserver::OnAdAuctionComplete(
   }
   parent_observer_->OnAdAuctionComplete(is_server_auction, is_on_device_auction,
                                         result);
+}
+
+void PageLoadMetricsForwardObserver::OnPrimaryPageRenderProcessGone() {
+  DUMP_WILL_BE_NOTREACHED() << "Not supported.";
 }
 
 }  // namespace page_load_metrics

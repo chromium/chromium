@@ -10,7 +10,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -81,10 +80,6 @@ class BrowserRootViewBrowserTest : public InProcessBrowserTest {
   }
 };
 
-// TODO(crbug.com/40186503): These tests produces wayland protocol error
-// wl_display.error(xdg_surface, 1, "popup parent not constructed") on LaCrOS
-// with Exo.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Clear drop info after performing drop. http://crbug.com/838791
 IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, ClearDropInfo) {
   ui::OSExchangeData data;
@@ -436,5 +431,3 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, DropOrderingCorrect) {
                      std::nullopt);
   }
 }
-
-#endif  // #if !BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -76,7 +76,12 @@ void AutocompleteControllerMetrics::OnNotifyChanged(
   }
   // It's common to have multiple async updates per input. Only log the final
   // update.
-  if (controller_->done())
+  // TODO(crbug.com/364303536): `logged_finalization_metrics_` should be
+  //   guaranteed false here (hence the DCHECK in
+  //   `LogSuggestionFinalizationMetrics()`. But because of a temporary bandaid
+  //   to allow history embedding answers to ignore the stop timer, we need to
+  //   check it anyways.
+  if (controller_->done() && !logged_finalization_metrics_)
     LogSuggestionFinalizationMetrics();
 }
 

@@ -208,7 +208,9 @@ chrome.accessibilityPrivate.SyntheticMouseEventButton = {
  *   y: number,
  *   touchAccessibility: (boolean|undefined),
  *   mouseButton: (!chrome.accessibilityPrivate.SyntheticMouseEventButton|undefined),
- *   isDoubleClick: (boolean|undefined)
+ *   isDoubleClick: (boolean|undefined),
+ *   isTripleClick: (boolean|undefined),
+ *   useRewriters: (boolean|undefined)
  * }}
  */
 chrome.accessibilityPrivate.SyntheticMouseEvent;
@@ -279,7 +281,6 @@ chrome.accessibilityPrivate.AccessibilityFeature = {
   DICTATION_CONTEXT_CHECKING: 'dictationContextChecking',
   FACE_GAZE: 'faceGaze',
   GOOGLE_TTS_HIGH_QUALITY_VOICES: 'googleTtsHighQualityVoices',
-  FACE_GAZE_GRAVITY_WELLS: 'faceGazeGravityWells',
 };
 
 /**
@@ -611,8 +612,11 @@ chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp = function
  * @param {boolean=} useRewriters If true, uses rewriters for the key event;
  *     only allowed if used from Dictation or FaceGaze. Otherwise indicates that
  *     rewriters should be skipped.
+ * @param {boolean=} isRepeat If true, sets the key event to repeat, which
+ *     should occur if the key event should be held. Otherwise, the key event
+ *     should not repeat.
  */
-chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent, useRewriters) {};
+chrome.accessibilityPrivate.sendSyntheticKeyEvent = function(keyEvent, useRewriters, isRepeat) {};
 
 /**
  * Enables or disables mouse events in accessibility extensions
@@ -810,6 +814,22 @@ chrome.accessibilityPrivate.scrollAtPoint = function(target, direction) {};
  *     recognized facial gestures and their associated confidence values.
  */
 chrome.accessibilityPrivate.sendGestureInfoToSettings = function(gestureInfo) {};
+
+/**
+ * Updates FaceGaze's bubble UI.
+ * @param {string} text The text to be displayed in the bubble UI.
+ * @param {boolean=} isWarning True if the bubble UI contains a warning about
+ *     state.
+ */
+chrome.accessibilityPrivate.updateFaceGazeBubble = function(text, isWarning) {};
+
+/**
+ * Turns on/off the DragEventRewriter, which rewrites kMouseMoved events into
+ * kMouseDragged events.
+ * @param {boolean} enabled Whether or not the DragEventRewriter should be
+ *     enabled.
+ */
+chrome.accessibilityPrivate.enableDragEventRewriter = function(enabled) {};
 
 /**
  * Fired whenever ChromeVox should output introduction.

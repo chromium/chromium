@@ -765,4 +765,31 @@ TEST_F(StyleEnvironmentVariablesTest, TitlebarArea_AfterNavigation) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+TEST_F(StyleEnvironmentVariablesTest, TargetedInvalidation) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+  <style>
+    #target1 { left: env(unknown, 1px); }
+    #target2 { left: 1px; }
+  </style>
+  <div id=target1></div>
+  <div id=target2></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target1 = GetDocument().getElementById(AtomicString("target1"));
+  Element* target2 = GetDocument().getElementById(AtomicString("target2"));
+  ASSERT_TRUE(target1);
+  ASSERT_TRUE(target2);
+
+  EXPECT_FALSE(target1->NeedsStyleRecalc());
+  EXPECT_FALSE(target2->NeedsStyleRecalc());
+
+  GetStyleEngine().EnvironmentVariableChanged();
+  GetStyleEngine().InvalidateEnvDependentStylesIfNeeded();
+
+  EXPECT_TRUE(target1->NeedsStyleRecalc());
+  EXPECT_FALSE(target2->NeedsStyleRecalc());
+  EXPECT_FALSE(GetDocument().body()->NeedsStyleRecalc());
+}
+
 }  // namespace blink

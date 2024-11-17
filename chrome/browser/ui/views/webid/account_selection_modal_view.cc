@@ -18,6 +18,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/ui/monogram_utils.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
+#include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
 #include "chrome/browser/ui/views/webid/account_selection_view_base.h"
 #include "chrome/browser/ui/views/webid/fedcm_account_selection_view_desktop.h"
 #include "chrome/browser/ui/views/webid/webid_utils.h"
@@ -37,9 +38,13 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/base/ui_base_types.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -109,17 +114,39 @@ class BackgroundImageView : public views::ImageView {
 BEGIN_METADATA(BackgroundImageView)
 END_METADATA
 
+namespace {
+std::unique_ptr<views::View> CreateButtonContainer() {
+  const views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
+  std::unique_ptr<views::View> button_container =
+      std::make_unique<views::View>();
+  constexpr int kButtonRowTopPadding = 24;
+  button_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+      .SetIgnoreDefaultMainAxisMargins(true)
+      .SetDefault(views::kMarginsKey,
+                  gfx::Insets::TLBR(
+                      /*top=*/0, /*left=*/
+                      layout_provider->GetDistanceMetric(
+                          views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
+                      /*bottom=*/0, /*right=*/0))
+      .SetInteriorMargin(gfx::Insets::TLBR(/*top=*/kButtonRowTopPadding,
+                                           /*left=*/kDialogMargin,
+                                           /*bottom=*/kDialogMargin,
+                                           /*right=*/kDialogMargin));
+  return button_container;
+}
+}  // namespace
+
 AccountSelectionModalView::AccountSelectionModalView(
     const std::u16string& rp_for_display,
     const std::optional<std::u16string>& idp_title,
     blink::mojom::RpContext rp_context,
     content::WebContents* web_contents,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    AccountSelectionViewBase::Observer* observer,
-    views::WidgetObserver* widget_observer)
+    FedCmAccountSelectionView* owner)
     : AccountSelectionViewBase(web_contents,
-                               observer,
-                               widget_observer,
+                               owner,
                                std::move(url_loader_factory),
                                rp_for_display) {
   SetModalType(ui::mojom::ModalType::kChild);
@@ -136,33 +163,6 @@ AccountSelectionModalView::AccountSelectionModalView(
 }
 
 AccountSelectionModalView::~AccountSelectionModalView() = default;
-
-void AccountSelectionModalView::AddProgressBar() {
-  // Change top margin of header to accommodate progress bar.
-  CHECK(header_view_);
-  constexpr int kVerifyingTopMargin = 13;
-  static_cast<views::BoxLayout*>(header_view_->GetLayoutManager())
-      ->set_inside_border_insets(gfx::Insets::TLBR(
-          /*top=*/kVerifyingTopMargin, /*left=*/kDialogMargin,
-          /*bottom=*/kVerticalPadding,
-          /*right=*/kDialogMargin));
-
-  // Add progress bar.
-  constexpr int kModalProgressBarHeight = 3;
-  views::ProgressBar* progress_bar =
-      AddChildViewAt(std::make_unique<views::ProgressBar>(), 0);
-  progress_bar->SetPreferredHeight(kModalProgressBarHeight);
-  progress_bar->SetPreferredCornerRadii(std::nullopt);
-
-  // Use an infinite animation: SetValue(-1).
-  progress_bar->SetValue(-1);
-  progress_bar->SetBackgroundColor(SK_ColorLTGRAY);
-  progress_bar->SetPreferredSize(
-      gfx::Size(kDialogWidth, kModalProgressBarHeight));
-  progress_bar->SizeToPreferredSize();
-
-  has_progress_bar_ = true;
-}
 
 void AccountSelectionModalView::UpdateDialogPosition() {
   constrained_window::UpdateWebContentsModalDialogPosition(
@@ -195,16 +195,19 @@ void AccountSelectionModalView::InitDialogWidget() {
       views::Widget::GetWidgetForNativeWindow(top_level_native_window);
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       this, /*context=*/nullptr, /*parent=*/top_level_widget->GetNativeView());
+  extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
+
   widget->Show();
+  DidShowWidget();
   UpdateDialogPosition();
 
-  // Add the widget observer, if available. It is null in tests.
-  if (widget_observer_) {
-    widget->AddObserver(widget_observer_);
-  }
-
   dialog_widget_ = widget->GetWeakPtr();
-  occlusion_observation_.Observe(widget);
+
+  // TODO(https://crbug.com/377803489): Get rid of this and move all of
+  // InitDialogWidget() into FedCmAccountSelectionView.
+  if (owner_) {
+    owner_->PostWidgetCreate(widget);
+  }
 }
 
 std::unique_ptr<views::View>
@@ -273,30 +276,12 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
         std::nullopt,
     std::optional<views::Button::PressedCallback> back_callback =
         std::nullopt) {
-  const views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
-  std::unique_ptr<views::View> button_container =
-      std::make_unique<views::View>();
-  constexpr int kButtonRowTopPadding = 24;
-  button_container->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kHorizontal)
-      .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-      .SetIgnoreDefaultMainAxisMargins(true)
-      .SetDefault(views::kMarginsKey,
-                  gfx::Insets::TLBR(
-                      /*top=*/0, /*left=*/
-                                 layout_provider->GetDistanceMetric(
-                                     views::DISTANCE_RELATED_BUTTON_HORIZONTAL),
-                      /*bottom=*/0, /*right=*/0))
-      .SetInteriorMargin(gfx::Insets::TLBR(/*top=*/kButtonRowTopPadding,
-                                           /*left=*/kDialogMargin,
-                                           /*bottom=*/kDialogMargin,
-                                           /*right=*/kDialogMargin));
+  std::unique_ptr<views::View> button_container = CreateButtonContainer();
 
   std::unique_ptr<views::MdTextButton> cancel_button =
       std::make_unique<views::MdTextButton>(
-          base::BindRepeating(
-              &AccountSelectionViewBase::Observer::OnCloseButtonClicked,
-              base::Unretained(observer_)),
+          base::BindRepeating(&FedCmAccountSelectionView::OnCloseButtonClicked,
+                              base::Unretained(owner_)),
           l10n_util::GetStringUTF16(IDS_CANCEL));
   cancel_button_ = cancel_button.get();
   // When a continue button is present, the cancel button should be more
@@ -375,14 +360,8 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateHeader() {
       std::make_unique<views::Label>(title_, views::style::CONTEXT_DIALOG_TITLE,
                                      views::style::STYLE_HEADLINE_4));
   SetLabelProperties(title_label_);
-  title_label_->SetFocusBehavior(FocusBehavior::ALWAYS);
+  title_label_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
-  // Add the body.
-  body_label_ = header->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT),
-      views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
-  SetLabelProperties(body_label_);
-  body_label_->SetFocusBehavior(FocusBehavior::ALWAYS);
   return header;
 }
 
@@ -426,7 +405,7 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
     bool show_back_button,
     bool is_choose_an_account) {
   DCHECK(!show_back_button);
-  RemoveNonHeaderChildViews();
+  RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded();
 
   GURL idp_brand_icon_url = idp_list[0]->idp_metadata.brand_icon_url;
   // If `idp_brand_icon_url` is invalid, a globe icon is shown instead.
@@ -453,10 +432,11 @@ void AccountSelectionModalView::ShowMultiAccountPicker(
       std::nullopt;
 
   // TODO(crbug.com/324052630): Support add account with multi IDP API.
-  if (idp_list[0]->idp_metadata.supports_add_account) {
+  if (idp_list[0]->idp_metadata.supports_add_account ||
+      idp_list[0]->idp_metadata.has_filtered_out_account) {
     use_other_account_callback = base::BindRepeating(
-        &AccountSelectionViewBase::Observer::OnLoginToIdP,
-        base::Unretained(observer_), idp_list[0]->idp_metadata.config_url,
+        &FedCmAccountSelectionView::OnLoginToIdP, base::Unretained(owner_),
+        idp_list[0]->idp_metadata.config_url,
         idp_list[0]->idp_metadata.idp_login_url);
   }
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
@@ -476,24 +456,54 @@ void AccountSelectionModalView::ShowVerifyingSheet(
 
   queued_announcement_ = l10n_util::GetStringUTF16(IDS_VERIFY_SHEET_TITLE);
 
-  // When a user signs in to the IdP with a returning account while the loading
-  // modal is shown, we can exit without updating the UI.
-  if (account.browser_trusted_login_state != Account::LoginState::kSignUp &&
-      has_progress_bar_) {
-    InitDialogWidget();
-    return;
-  }
-
-  AddProgressBar();
-
   // Disable account chooser.
   CHECK(account_chooser_);
-  for (const auto& account_row : account_chooser_->children()) {
-    account_row->SetEnabled(false);
+  bool is_single_account_chooser = false;
+  for (const auto& child : account_chooser_->children()) {
+    // If one of the immediate children is HoverButton, this is a single account
+    // chooser.
+    if (std::string(child->GetClassName()) == "HoverButton") {
+      is_single_account_chooser = true;
+      AccountHoverButton* button = static_cast<AccountHoverButton*>(child);
+      if (button->HasBeenClicked()) {
+        has_spinner_ = true;
+        button->ReplaceSecondaryViewWithSpinner();
+      }
+      button->SetDisabledOpacity();
+    }
+    child->SetEnabled(false);
   }
 
-  // Disable text buttons.
+  // If no immediate HoverButton child was found, it means that this is a
+  // multiple account chooser and the HoverButtons are embedded within a
+  // ScrollView.
+  if (!is_single_account_chooser) {
+    views::View* wrapper = account_chooser_->children()[0];
+    views::View* contents = wrapper->children()[0];
+    for (const auto& child : contents->children()) {
+      if (std::string(child->GetClassName()) == "HoverButton") {
+        AccountHoverButton* button = static_cast<AccountHoverButton*>(child);
+        if (button->HasBeenClicked()) {
+          has_spinner_ = true;
+          button->ReplaceSecondaryViewWithSpinner();
+        }
+        button->SetDisabledOpacity();
+      }
+      child->SetEnabled(false);
+    }
+  }
+
+  if (continue_button_) {
+    continue_button_->SetEnabled(false);
+  }
+
   if (use_other_account_button_) {
+    // If there is no spinner, either on any of the account rows or the continue
+    // button, this verifying sheet must have been triggered as a result of use
+    // other account so we show the spinner on this button.
+    if (!has_spinner_) {
+      ReplaceButtonWithSpinner(use_other_account_button_);
+    }
     use_other_account_button_->SetEnabled(false);
   }
 
@@ -501,10 +511,7 @@ void AccountSelectionModalView::ShowVerifyingSheet(
     back_button_->SetEnabled(false);
   }
 
-  if (continue_button_) {
-    continue_button_->SetEnabled(false);
-  }
-
+  has_spinner_ = true;
   InitDialogWidget();
 }
 
@@ -525,6 +532,7 @@ AccountSelectionModalView::CreateSingleAccountChooser(
     row->AddChildView(std::make_unique<views::Separator>());
   }
 
+  CHECK(!account.is_filtered_out);
   // Add account row.
   row->AddChildView(CreateAccountRow(
       account, should_hover ? std::make_optional<int>(0) : std::nullopt,
@@ -541,8 +549,6 @@ AccountSelectionModalView::CreateSingleAccountChooser(
     std::unique_ptr<views::StyledLabel> disclosure_label =
         CreateDisclosureLabel(*account.identity_provider);
     disclosure_label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
-    disclosure_label->SizeToFit(views::LayoutProvider::Get()->GetDistanceMetric(
-        views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
     disclosure_label->SetBorder(views::CreateEmptyBorder(gfx::Insets::TLBR(
         /*top=*/kVerticalSpacing, /*left=*/0, /*bottom=*/0, /*right=*/0)));
     queued_announcement_ = disclosure_label->GetText();
@@ -554,7 +560,7 @@ AccountSelectionModalView::CreateSingleAccountChooser(
 void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
     const content::IdentityRequestAccount& account,
     bool show_back_button) {
-  RemoveNonHeaderChildViews();
+  RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded();
 
   const content::IdentityProviderData& idp_data = *account.identity_provider;
   GURL idp_brand_icon_url = idp_data.idp_metadata.brand_icon_url;
@@ -585,11 +591,11 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
 
   std::optional<views::Button::PressedCallback> use_other_account_callback =
       std::nullopt;
-  if (idp_data.idp_metadata.supports_add_account) {
+  if (idp_data.idp_metadata.supports_add_account ||
+      idp_data.idp_metadata.has_filtered_out_account) {
     use_other_account_callback = base::BindRepeating(
-        &AccountSelectionViewBase::Observer::OnLoginToIdP,
-        base::Unretained(observer_), idp_data.idp_metadata.config_url,
-        idp_data.idp_metadata.idp_login_url);
+        &FedCmAccountSelectionView::OnLoginToIdP, base::Unretained(owner_),
+        idp_data.idp_metadata.config_url, idp_data.idp_metadata.idp_login_url);
   }
   AddChildView(CreateButtonRow(/*continue_callback=*/std::nullopt,
                                std::move(use_other_account_callback)));
@@ -602,7 +608,7 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
 void AccountSelectionModalView::ShowFailureDialog(
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata) {
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "ShowFailureDialog is only implemented for AccountSelectionBubbleView";
 }
 
@@ -610,23 +616,68 @@ void AccountSelectionModalView::ShowErrorDialog(
     const std::u16string& idp_for_display,
     const content::IdentityProviderMetadata& idp_metadata,
     const std::optional<TokenError>& error) {
-  NOTREACHED_IN_MIGRATION()
-      << "ShowErrorDialog is only implemented for AccountSelectionBubbleView";
+  RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded();
+
+  std::u16string summary_text;
+  std::u16string description_text;
+  std::tie(summary_text, description_text) =
+      GetErrorDialogText(error, rp_for_display_, idp_for_display);
+
+  title_ = summary_text;
+  title_label_->SetText(title_);
+  // body_label_ may be invisible if the preceding UI is the disclosure UI. When
+  // error is triggered directly from the loading UI in case of auto re-authn,
+  // body_label_ is still present at this moment.
+  body_label_->SetVisible(/*visible=*/true);
+  body_label_->SetText(description_text);
+
+  std::unique_ptr<views::View> button_container = CreateButtonContainer();
+  // Add more details button.
+  if (error && !error->url.is_empty()) {
+    auto more_details_button = std::make_unique<views::MdTextButton>(
+        base::BindRepeating(&FedCmAccountSelectionView::OnMoreDetails,
+                            base::Unretained(owner_)),
+        l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DIALOG_MORE_DETAILS_BUTTON));
+    button_container->AddChildView(std::move(more_details_button));
+  }
+
+  // Add got it button.
+  auto got_it_button = std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&FedCmAccountSelectionView::OnGotIt,
+                          base::Unretained(owner_)),
+      l10n_util::GetStringUTF16(IDS_SIGNIN_ERROR_DIALOG_GOT_IT_BUTTON));
+  got_it_button->SetStyle(ui::ButtonStyle::kProminent);
+
+  button_container->AddChildView(std::move(got_it_button));
+
+  AddChildView(std::move(button_container));
+
+  InitDialogWidget();
 }
 
 void AccountSelectionModalView::ShowLoadingDialog() {
   header_view_ = AddChildView(CreateHeader());
-  AddProgressBar();
   AddChildView(CreatePlaceholderAccountRow());
   AddChildView(CreateButtonRow());
 
   InitDialogWidget();
 }
 
+void AccountSelectionModalView::OnIdpBrandIconFetched() {
+  if (!idp_brand_icon_) {
+    return;
+  }
+  header_icon_spinner_->Stop();
+  header_icon_spinner_->SetVisible(/*visible=*/false);
+  idp_brand_icon_->SetVisible(/*visible=*/true);
+}
+
 void AccountSelectionModalView::OnCombinedIconsFetched() {
   if (!combined_icons_) {
     return;
   }
+  header_icon_spinner_->Stop();
+  header_icon_spinner_->SetVisible(/*visible=*/false);
   idp_brand_icon_->SetVisible(/*visible=*/false);
   combined_icons_->SetVisible(/*visible=*/true);
 }
@@ -634,7 +685,7 @@ void AccountSelectionModalView::OnCombinedIconsFetched() {
 void AccountSelectionModalView::ShowRequestPermissionDialog(
     const content::IdentityRequestAccount& account,
     const content::IdentityProviderData& idp_data) {
-  RemoveNonHeaderChildViews();
+  RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded();
 
   GURL idp_brand_icon_url = idp_data.idp_metadata.brand_icon_url;
   GURL rp_brand_icon_url = idp_data.client_metadata.brand_icon_url;
@@ -664,23 +715,33 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
       /*show_separator=*/false,
       /*additional_row_vertical_padding=*/0));
   AddChildView(CreateButtonRow(
-      base::BindRepeating(
-          &AccountSelectionViewBase::Observer::OnAccountSelected,
-          base::Unretained(observer_), std::cref(account), std::cref(idp_data)),
+      base::BindRepeating(&AccountSelectionModalView::OnContinueButtonClicked,
+                          base::Unretained(this), std::cref(account),
+                          std::cref(idp_data)),
       /*use_other_account_callback=*/std::nullopt,
-      base::BindRepeating(
-          &AccountSelectionViewBase::Observer::OnBackButtonClicked,
-          base::Unretained(observer_))));
+      base::BindRepeating(&FedCmAccountSelectionView::OnBackButtonClicked,
+                          base::Unretained(owner_))));
 
   InitDialogWidget();
+}
+
+void AccountSelectionModalView::OnContinueButtonClicked(
+    const content::IdentityRequestAccount& account,
+    const content::IdentityProviderData& idp_data,
+    const ui::Event& event) {
+  owner_->OnAccountSelected(account, idp_data, event);
+  has_spinner_ = true;
+
+  ReplaceButtonWithSpinner(continue_button_,
+                           ui::kColorButtonForegroundProminent,
+                           ui::kColorButtonBackgroundProminent);
 }
 
 void AccountSelectionModalView::ShowSingleReturningAccountDialog(
     const std::vector<IdentityRequestAccountPtr>& accounts,
     const std::vector<IdentityProviderDataPtr>& idp_list) {
-  NOTREACHED_IN_MIGRATION()
-      << "ShowSingleReturningAccountDialog is only implemented for "
-         "AccountSelectionBubbleView";
+  NOTREACHED() << "ShowSingleReturningAccountDialog is only implemented for "
+                  "AccountSelectionBubbleView";
 }
 
 std::unique_ptr<views::View> AccountSelectionModalView::CreateIconHeaderView() {
@@ -695,21 +756,49 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateIconHeaderView() {
   background_container->AddChildView(std::move(background_image_view));
 
   // Put BoxLayout containers into FillLayout container to stack the views. This
-  // stacks the icon container on top of the background image.
+  // stacks the spinner and icon container on top of the background image.
+  background_container->AddChildView(CreateSpinnerIconView());
   background_container->AddChildView(CreateIdpIconView());
 
   return background_container;
 }
 
 std::unique_ptr<views::BoxLayoutView>
+AccountSelectionModalView::CreateSpinnerIconView() {
+  // Put spinner icon into a BoxLayout container so that it can be stacked on
+  // top of the background.
+  std::unique_ptr<views::BoxLayoutView> icon_container =
+      std::make_unique<views::BoxLayoutView>();
+  icon_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  icon_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+
+  std::unique_ptr<views::Throbber> header_icon_spinner =
+      std::make_unique<views::Throbber>();
+  header_icon_spinner->SetPreferredSize(
+      gfx::Size(kModalIconSpinnerSize, kModalIconSpinnerSize));
+  header_icon_spinner->SizeToPreferredSize();
+  header_icon_spinner->Start();
+  header_icon_spinner_ =
+      icon_container->AddChildView(std::move(header_icon_spinner));
+
+  return icon_container;
+}
+
+std::unique_ptr<views::BoxLayoutView>
 AccountSelectionModalView::CreateIdpIconView() {
+  constexpr int kNumIconsInIdpIconView = 1;
+  base::RepeatingClosure on_image_set = BarrierClosure(
+      kNumIconsInIdpIconView,
+      base::BindOnce(&AccountSelectionModalView::OnIdpBrandIconFetched,
+                     weak_ptr_factory_.GetWeakPtr()));
+
   // Create IDP brand icon image view.
   std::unique_ptr<BrandIconImageView> idp_brand_icon_image_view =
       std::make_unique<BrandIconImageView>(
           base::BindOnce(&AccountSelectionViewBase::AddIdpImage,
                          weak_ptr_factory_.GetWeakPtr()),
-          kModalIdpIconSize, /*should_circle_crop=*/true);
-  idp_brand_icon_ = idp_brand_icon_image_view.get();
+          kModalIdpIconSize, /*should_circle_crop=*/true,
+          /*background_color=*/std::nullopt, on_image_set);
   idp_brand_icon_image_view->SetImageSize(
       gfx::Size(kModalIdpIconSize, kModalIdpIconSize));
   idp_brand_icon_image_view->SetVisible(/*visible=*/false);
@@ -720,7 +809,8 @@ AccountSelectionModalView::CreateIdpIconView() {
       std::make_unique<views::BoxLayoutView>();
   icon_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   icon_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  icon_container->AddChildView(std::move(idp_brand_icon_image_view));
+  idp_brand_icon_ =
+      icon_container->AddChildView(std::move(idp_brand_icon_image_view));
 
   return icon_container;
 }
@@ -778,21 +868,59 @@ AccountSelectionModalView::CreateCombinedIconsView() {
   return icon_container;
 }
 
+void AccountSelectionModalView::ReplaceButtonWithSpinner(
+    views::MdTextButton* button,
+    ui::ColorId spinner_color,
+    ui::ColorId button_color) {
+  std::unique_ptr<views::Throbber> button_spinner =
+      std::make_unique<views::Throbber>();
+  button_spinner->SetPreferredSize(
+      gfx::Size(kModalButtonSpinnerSize, kModalButtonSpinnerSize));
+  button_spinner->SizeToPreferredSize();
+  button_spinner->SetColorId(spinner_color);
+  button_spinner->Start();
+
+  // Spinner is put into a BoxLayoutView so that it can be shown on top of the
+  // button.
+  std::unique_ptr<views::BoxLayoutView> spinner_container =
+      std::make_unique<views::BoxLayoutView>();
+  spinner_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  spinner_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+  spinner_container->AddChildView(std::move(button_spinner));
+
+  // Set button text color to be the same as its background color so that the
+  // text is not visible and the size of the button doesn't change. Explicitly
+  // set the vertical border to 0 because otherwise, the spinner cannot fit in
+  // the button in some OSes.
+  button->SetUseDefaultFillLayout(true);
+  button->SetBorder(views::CreateEmptyBorder(
+      gfx::Insets::VH(0, button->GetBorder()->GetInsets().left())));
+  button->AddChildView(std::move(spinner_container));
+  button->SetTextColor(HoverButton::ButtonState::STATE_DISABLED, button_color);
+  button->SetEnabledTextColors(button_color);
+  button->SetBgColorIdOverride(button_color);
+}
+
 void AccountSelectionModalView::CloseDialog() {
   if (!dialog_widget_) {
     return;
   }
 
   CancelDialog();
-  // Remove the widget observer, if available. It is null in tests.
-  if (widget_observer_) {
-    dialog_widget_->RemoveObserver(widget_observer_);
-  }
   dialog_widget_.reset();
+  scoped_ignore_input_events_.reset();
 }
 
 std::string AccountSelectionModalView::GetDialogTitle() const {
   return base::UTF16ToUTF8(title_label_->GetText());
+}
+
+void AccountSelectionModalView::DidShowWidget() {
+  scoped_ignore_input_events_ = web_contents_->IgnoreInputEvents(std::nullopt);
+}
+
+void AccountSelectionModalView::DidHideWidget() {
+  scoped_ignore_input_events_.reset();
 }
 
 std::u16string AccountSelectionModalView::GetQueuedAnnouncementForTesting() {
@@ -813,9 +941,9 @@ views::View* AccountSelectionModalView::GetInitiallyFocusedView() {
     queued_announcement_ = u"";
   }
 
-  // If there is a progress bar and an account chooser, we are on the verifying
-  // sheet so focus on the cancel button.
-  if (has_progress_bar_ && account_chooser_) {
+  // If there is a spinner and an account chooser, we are on the verifying sheet
+  // so focus on the cancel button.
+  if (has_spinner_ && account_chooser_) {
     return cancel_button_;
   }
 
@@ -828,16 +956,16 @@ views::View* AccountSelectionModalView::GetInitiallyFocusedView() {
   return title_label_;
 }
 
-void AccountSelectionModalView::RemoveNonHeaderChildViews() {
-  // If removing progress bar, adjust the header margins so the rest of the
-  // dialog doesn't get shifted when the progress bar is removed.
-  if (has_progress_bar_) {
-    CHECK(header_view_);
-    static_cast<views::BoxLayout*>(header_view_->GetLayoutManager())
-        ->set_inside_border_insets(gfx::Insets::TLBR(
-            /*top=*/kDialogMargin, /*left=*/kDialogMargin,
-            /*bottom=*/kVerticalPadding, /*right=*/kDialogMargin));
-    has_progress_bar_ = false;
+void AccountSelectionModalView::
+    RemoveNonHeaderChildViewsAndUpdateHeaderIfNeeded() {
+  // body_label_ does not apply to the loading modal so it's added to header
+  // here.
+  if (!body_label_) {
+    body_label_ = header_view_->AddChildView(std::make_unique<views::Label>(
+        l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_CHOOSE_AN_ACCOUNT),
+        views::style::CONTEXT_DIALOG_BODY_TEXT, views::style::STYLE_BODY_4));
+    SetLabelProperties(body_label_);
+    body_label_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   }
 
   // Make sure not to keep dangling pointers around first. We do not reset

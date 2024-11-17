@@ -401,6 +401,7 @@ class PageLoadMetricsObserverInterface {
   virtual void OnParseStart(const mojom::PageLoadTiming& timing) = 0;
   virtual void OnParseStop(const mojom::PageLoadTiming& timing) = 0;
   virtual void OnConnectStart(const mojom::PageLoadTiming& timing) = 0;
+  virtual void OnConnectEnd(const mojom::PageLoadTiming& timing) = 0;
   virtual void OnDomainLookupStart(const mojom::PageLoadTiming& timing) = 0;
   virtual void OnDomainLookupEnd(const mojom::PageLoadTiming& timing) = 0;
 
@@ -631,6 +632,9 @@ class PageLoadMetricsObserverInterface {
   virtual void OnAdAuctionComplete(bool is_server_auction,
                                    bool is_on_device_auction,
                                    content::AuctionResult result) = 0;
+
+  // Called when the renderer process for the primary main frame is gone.
+  virtual void OnPrimaryPageRenderProcessGone() = 0;
 
  private:
   base::WeakPtrFactory<PageLoadMetricsObserverInterface> weak_factory_{this};

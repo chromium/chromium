@@ -32,7 +32,8 @@ promise_setup(async () => {
     mlTensor = await mlContext.createTensor({
       dataType: 'int32',
       shape: [2, 4],
-      usage: MLTensorUsage.WRITE | MLTensorUsage.READ,
+      readable: true,
+      writable: true,
     });
   } catch (e) {
     throw new AssertionError(
@@ -94,6 +95,23 @@ promise_test(async () => {
 }, `readTensor() with an ArrayBuffer`);
 
 promise_test(async () => {
+  const sharedArrayBuffer = new SharedArrayBuffer(testContents.byteLength);
+
+  await mlContext.readTensor(mlTensor, sharedArrayBuffer);
+
+  assert_array_equals(new Uint32Array(sharedArrayBuffer), testContents);
+}, `readTensor() with a SharedArrayBuffer`);
+
+promise_test(async () => {
+  const sharedArrayBuffer = new SharedArrayBuffer(testContents.byteLength);
+  const typedArray = new Uint32Array(sharedArrayBuffer);
+
+  await mlContext.readTensor(mlTensor, typedArray);
+
+  assert_array_equals(typedArray, testContents);
+}, `readTensor() with a typeArray from a SharedArrayBuffer`);
+
+promise_test(async () => {
   // Create a slightly larger ArrayBuffer and set up the TypedArray at an
   // offset to make sure the MLTensor contents are written to the correct
   // offset.
@@ -141,7 +159,7 @@ promise_test(async (t) => {
   const tensor = await mlContext.createTensor({
     dataType: 'int32',
     shape: [2, 2],
-    usage: MLTensorUsage.READ,
+    readable: true,
   });
   const arrayBufferView = new Int32Array(2 * 2);
   const arrayBuffer = arrayBufferView.buffer;
@@ -159,7 +177,7 @@ promise_test(async (t) => {
   const tensor = await mlContext.createTensor({
     dataType: 'int32',
     shape: [2, 2],
-    usage: MLTensorUsage.READ,
+    readable: true,
   });
   const arrayBufferView = new Int32Array(2 * 2);
   const arrayBuffer = arrayBufferView.buffer;

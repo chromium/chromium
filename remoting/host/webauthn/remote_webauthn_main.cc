@@ -18,7 +18,7 @@
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
 #include "remoting/base/auto_thread_task_runner.h"
-#include "remoting/base/breakpad.h"
+#include "remoting/base/crash/breakpad.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/chromoting_host_services_client.h"
@@ -66,8 +66,7 @@ int RemoteWebAuthnMain(int argc, char** argv) {
   base::File write_file;
 
 #if BUILDFLAG(IS_POSIX)
-  read_file = base::File(STDIN_FILENO);
-  write_file = base::File(STDOUT_FILENO);
+  PipeMessagingChannel::OpenAndBlockStdio(read_file, write_file);
 #elif BUILDFLAG(IS_WIN)
   // GetStdHandle() returns pseudo-handles for stdin and stdout even if
   // the hosting executable specifies "Windows" subsystem. However the
@@ -93,10 +92,6 @@ int RemoteWebAuthnMain(int argc, char** argv) {
   NativeMessagingPipe native_messaging_pipe;
   auto channel = std::make_unique<PipeMessagingChannel>(std::move(read_file),
                                                         std::move(write_file));
-
-#if BUILDFLAG(IS_POSIX)
-  PipeMessagingChannel::ReopenStdinStdout();
-#endif  // BUILDFLAG(IS_POSIX)
 
   auto native_messaging_host =
       std::make_unique<RemoteWebAuthnNativeMessagingHost>(

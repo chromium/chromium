@@ -195,8 +195,7 @@ class TestImageBackingFactory : public gpu::SharedImageBackingFactory {
       gpu::SharedImageUsageSet usage,
       std::string debug_label,
       gfx::GpuMemoryBufferHandle handle) override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
   bool IsSupported(gpu::SharedImageUsageSet usage,
                    SharedImageFormat format,

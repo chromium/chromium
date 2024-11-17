@@ -43,13 +43,7 @@ void AddGamepadPlatformDataFetchers(GamepadDataFetcherManager* manager) {
 
 #elif BUILDFLAG(IS_WIN)
 
-  // Windows.Gaming.Input is available in Windows 10.0.10240.0 and later.
-  if (base::FeatureList::IsEnabled(
-          features::kEnableWindowsGamingInputDataFetcher)) {
-    manager->AddFactory(new WgiDataFetcherWin::Factory());
-  } else {
-    manager->AddFactory(new XInputDataFetcherWin::Factory());
-  }
+  manager->AddFactory(new WgiDataFetcherWin::Factory());
   manager->AddFactory(new NintendoDataFetcher::Factory());
   manager->AddFactory(new RawInputDataFetcher::Factory());
 

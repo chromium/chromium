@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/unload_controller.h"
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/test/prevent_close_test_base.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -66,13 +66,13 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
     SetPolicies(/*web_app_settings=*/"[]", /*web_app_install_force_list=*/"[]");
   };
 
-  InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
-  SetPoliciesAndWaitUntilInstalled(web_app::kCalculatorAppId,
+  InstallPWA(GURL(kCalculatorAppUrl), ash::kCalculatorAppId);
+  SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
                                    kPreventCloseEnabledForCalculator,
                                    kCalculatorForceInstalled);
 
   Browser* const browser =
-      LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/true);
+      LaunchPWA(ash::kCalculatorAppId, /*launch_in_window=*/true);
   ASSERT_TRUE(browser);
 
   UnloadController unload_controller(browser);
@@ -81,19 +81,25 @@ IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
             unload_controller.GetBrowserClosingStatus());
 }
 
+// Flaky on IS_CHROMEOS. crbug.com/369817361
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable DISABLED_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
+#else
+#define MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable PreventCloseEnforcedByPolicyTabbedAppShallBeClosable
+#endif
 IN_PROC_BROWSER_TEST_F(UnloadControllerPreventCloseTest,
-                       PreventCloseEnforcedByPolicyTabbedAppShallBeClosable) {
+                       MAYBE_PreventCloseEnforcedByPolicyTabbedAppShallBeClosable) {
   const absl::Cleanup policy_cleanup = [this] {
     SetPolicies(/*web_app_settings=*/"[]", /*web_app_install_force_list=*/"[]");
   };
 
-  InstallPWA(GURL(kCalculatorAppUrl), web_app::kCalculatorAppId);
-  SetPoliciesAndWaitUntilInstalled(web_app::kCalculatorAppId,
+  InstallPWA(GURL(kCalculatorAppUrl), ash::kCalculatorAppId);
+  SetPoliciesAndWaitUntilInstalled(ash::kCalculatorAppId,
                                    kPreventCloseEnabledForCalculator,
                                    kCalculatorForceInstalled);
 
   Browser* const browser =
-      LaunchPWA(web_app::kCalculatorAppId, /*launch_in_window=*/false);
+      LaunchPWA(ash::kCalculatorAppId, /*launch_in_window=*/false);
   ASSERT_TRUE(browser);
 
   UnloadController unload_controller(browser);

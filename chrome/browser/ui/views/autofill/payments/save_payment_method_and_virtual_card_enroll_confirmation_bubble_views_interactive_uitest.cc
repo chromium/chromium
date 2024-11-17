@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
-#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -86,8 +85,6 @@ class SaveCardConfirmationBubbleViewsInteractiveUiTest
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillEnableSaveCardLoadingAndConfirmation};
 };
 
 IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
@@ -238,8 +235,6 @@ class VirtualCardEnrollConfirmationBubbleViewsInteractiveUiTest
 
  private:
   test::AutofillBrowserTestEnvironment autofill_test_environment_;
-  base::test::ScopedFeatureList feature_list_{
-      features::kAutofillEnableVcnEnrollLoadingAndConfirmation};
 };
 
 IN_PROC_BROWSER_TEST_F(

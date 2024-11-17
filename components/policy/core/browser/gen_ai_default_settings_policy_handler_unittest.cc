@@ -60,10 +60,10 @@ class GenAiDefaultSettingsPolicyHandlerTest : public testing::Test {
                   base::Value(1), nullptr);
   }
 
-  void SetGenAiDefaultPolicy(base::Value value) {
+  void SetGenAiDefaultPolicy(base::Value value,
+                             PolicySource source = POLICY_SOURCE_CLOUD) {
     policies_.Set(key::kGenAiDefaultSettings, POLICY_LEVEL_MANDATORY,
-                  POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, std::move(value),
-                  nullptr);
+                  POLICY_SCOPE_USER, source, std::move(value), nullptr);
   }
 
   void ApplyPolicies() { handler_->ApplyPolicySettings(policies_, &prefs_); }
@@ -109,5 +109,14 @@ TEST_F(GenAiDefaultSettingsPolicyHandlerTest, FeatureDisabled) {
   ApplyPolicies();
   EXPECT_TRUE(prefs_.empty());
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(GenAiDefaultSettingsPolicyHandlerTest, NotCloud) {
+  SetGenAiDefaultPolicy(base::Value(kDefaultValue), POLICY_SOURCE_PLATFORM);
+  EXPECT_FALSE(handler_->CheckPolicySettings(policies_, nullptr));
+  SetGenAiDefaultPolicy(base::Value(kDefaultValue));
+  EXPECT_TRUE(handler_->CheckPolicySettings(policies_, nullptr));
+}
+#endif // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace policy

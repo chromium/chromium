@@ -44,13 +44,6 @@ constexpr char kHistogramSamplesCategory[] =
 constexpr char kUserActionSamplesCategory[] =
     TRACE_DISABLED_BY_DEFAULT("user_action_samples");
 
-base::SequencedTaskRunner* GetTaskRunner() {
-  return PerfettoTracedProcess::Get()
-      ->GetTaskRunner()
-      ->GetOrCreateTaskRunner()
-      .get();
-}
-
 struct InternedHistogramName
     : public perfetto::TrackEventInternedDataIndex<
           InternedHistogramName,
@@ -111,63 +104,26 @@ void CustomEventRecorder::EmitRecurringUpdates() {
 
 void CustomEventRecorder::OnSetup(
     const perfetto::DataSourceBase::SetupArgs& args) {
-  GetTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&CustomEventRecorder::OnTracingStarted,
-                                base::Unretained(this), *args.config));
-}
-
-void CustomEventRecorder::OnStop(
-    const perfetto::DataSourceBase::StopArgs& args) {
-  std::function<void()> finish_async_stop = args.HandleStopAsynchronously();
-  base::OnceClosure stop_callback = base::BindOnce(
-      [](std::function<void()> callback) { callback(); }, finish_async_stop);
-  GetTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CustomEventRecorder::OnTracingStopped,
-                     base::Unretained(this), std::move(stop_callback)));
-}
-
-void CustomEventRecorder::WillClearIncrementalState(
-    const perfetto::DataSourceBase::ClearIncrementalStateArgs&) {
-  EmitRecurringUpdates();
-}
-
-void CustomEventRecorder::OnStartupTracingStarted(
-    const TraceConfig& trace_config,
-    bool /*privacy_filtering_enabled*/) {
-  DCHECK(monitored_histograms_.empty());
-  if (trace_config.IsCategoryGroupEnabled(kHistogramSamplesCategory) &&
-      trace_config.histogram_names().empty()) {
-    // The global callback can be added early at startup before main message
-    // loop is created. But histogram specific observers need task runner and
-    // are added when tracing service is setup in OnTracingStarted() instead.
-    base::StatisticsRecorder::SetGlobalSampleCallback(
-        &CustomEventRecorder::OnMetricsSampleCallback);
-  }
-}
-
-// TODO(khokhlov): In SDK build, this method can be called at startup, before
-// the task runner is created. Factor out the parts that can be called early
-// into OnStartupTracingStarted, and make sure each part is called at the
-// appropriate time.
-void CustomEventRecorder::OnTracingStarted(
-    const perfetto::DataSourceConfig& data_source_config) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
+  // The legacy chrome_config is only used to specify histogram names.
+  auto legacy_config = TraceConfig(args.config->chrome_config().trace_config());
+  ResetHistograms(legacy_config.histogram_names());
+}
 
-  auto trace_config =
-      TraceConfig(data_source_config.chrome_config().trace_config());
-
+void CustomEventRecorder::OnStart(const perfetto::DataSourceBase::StartArgs&) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
   EmitRecurringUpdates();
-  ResetHistograms(trace_config);
 
-  if (trace_config.IsCategoryGroupEnabled(kHistogramSamplesCategory)) {
-    if (trace_config.histogram_names().empty() &&
+  bool enabled;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED(kHistogramSamplesCategory, &enabled);
+  if (enabled) {
+    if (histograms_.empty() &&
         !base::StatisticsRecorder::global_sample_callback()) {
       // Add the global callback if it wasn't already.
       base::StatisticsRecorder::SetGlobalSampleCallback(
           &CustomEventRecorder::OnMetricsSampleCallback);
     }
-    for (const std::string& histogram_name : trace_config.histogram_names()) {
+    for (const std::string& histogram_name : histograms_) {
       if (monitored_histograms_.count(histogram_name)) {
         continue;
       }
@@ -178,7 +134,8 @@ void CustomEventRecorder::OnTracingStarted(
     }
   }
 
-  if (trace_config.IsCategoryGroupEnabled(kUserActionSamplesCategory)) {
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED(kUserActionSamplesCategory, &enabled);
+  if (enabled) {
     auto task_runner = base::GetRecordActionTaskRunner();
     if (task_runner) {
       task_runner->PostTask(
@@ -195,17 +152,11 @@ void CustomEventRecorder::OnTracingStarted(
   }
 }
 
-void CustomEventRecorder::OnTracingStopped(
-    base::OnceClosure stop_complete_callback) {
+void CustomEventRecorder::OnStop(const perfetto::DataSourceBase::StopArgs&) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
 
   // Write metadata events etc.
   LogHistograms();
-
-  // We have to flush explicitly because we're using the asynchronous stop
-  // mechanism.
-  base::TrackEvent::Flush();
-  std::move(stop_complete_callback).Run();
 
   // Clean up callbacks if no tracing sessions are recording samples.
   bool enabled;
@@ -226,6 +177,11 @@ void CustomEventRecorder::OnTracingStopped(
           }));
     }
   }
+}
+
+void CustomEventRecorder::WillClearIncrementalState(
+    const perfetto::DataSourceBase::ClearIncrementalStateArgs&) {
+  EmitRecurringUpdates();
 }
 
 void CustomEventRecorder::OnUserActionSampleCallback(
@@ -269,10 +225,11 @@ void CustomEventRecorder::LogHistogram(base::HistogramBase* histogram) {
                        histogram->histogram_name(), "buckets", buckets);
 }
 
-void CustomEventRecorder::ResetHistograms(const TraceConfig& trace_config) {
+void CustomEventRecorder::ResetHistograms(
+    const std::unordered_set<std::string>& histogram_names) {
   histograms_.clear();
   startup_histogram_samples_.clear();
-  for (const std::string& histogram_name : trace_config.histogram_names()) {
+  for (const std::string& histogram_name : histogram_names) {
     histograms_.push_back(histogram_name);
     auto* histogram = base::StatisticsRecorder::FindHistogram(histogram_name);
     if (!histogram) {

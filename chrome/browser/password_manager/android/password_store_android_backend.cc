@@ -218,8 +218,7 @@ SuccessStatus GetSuccessStatusFromError(
     case AndroidBackendErrorType::kFailedToCreateFacetId:
       return SuccessStatus::kError;
   }
-  NOTREACHED_IN_MIGRATION();
-  return SuccessStatus::kError;
+  NOTREACHED();
 }
 
 std::string GetOperationName(PasswordStoreOperation operation) {
@@ -247,8 +246,7 @@ std::string GetOperationName(PasswordStoreOperation operation) {
     case PasswordStoreOperation::kGetAllLoginsWithBrandingInfoAsync:
       return "GetAllLoginsWithBrandingInfoAsync";
   }
-  NOTREACHED_IN_MIGRATION() << "Operation code not handled";
-  return "";
+  NOTREACHED() << "Operation code not handled";
 }
 
 int GetRetryAttemptFromDelay(base::TimeDelta delay) {
@@ -385,13 +383,11 @@ void PasswordStoreAndroidBackend::Init(
   lifecycle_helper_->RegisterObserver(base::BindRepeating(
       &PasswordStoreAndroidBackend::OnForegroundSessionStart,
       base::Unretained(this)));
-  // TODO(crbug.com/40778507): Create subscription before completion.
 }
 
 void PasswordStoreAndroidBackend::Shutdown(
     base::OnceClosure shutdown_completed) {
   lifecycle_helper_->UnregisterObserver();
-  // TODO(crbug.com/40190023): Implement (e.g. unsubscribe from GMS).
   std::move(shutdown_completed).Run();
 }
 

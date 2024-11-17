@@ -44,7 +44,6 @@ using DynamicRangeLimit = ::cc::PaintFlags::DynamicRangeLimitMixture;
 
 enum AlphaDisposition {
   kPremultiplyAlpha,
-  kUnpremultiplyAlpha,
   kDontChangeAlpha,
 };
 
@@ -88,11 +87,6 @@ enum InterpolationQuality {
   kInterpolationLow = static_cast<int>(cc::PaintFlags::FilterQuality::kLow),
   kInterpolationMedium =
       static_cast<int>(cc::PaintFlags::FilterQuality::kMedium),
-#if defined(WTF_USE_LOW_QUALITY_IMAGE_INTERPOLATION)
-  kInterpolationDefault = kInterpolationLow,
-#else
-  kInterpolationDefault = kInterpolationMedium,
-#endif
 };
 
 enum CompositeOperator {
@@ -358,6 +352,7 @@ PLATFORM_EXPORT WTF::String CanvasCompositeOperatorName(CompositeOperator,
 PLATFORM_EXPORT bool ParseCanvasCompositeAndBlendMode(const WTF::String&,
                                                       CompositeOperator&,
                                                       BlendMode&);
+PLATFORM_EXPORT InterpolationQuality GetDefaultInterpolationQuality();
 
 PLATFORM_EXPORT WTF::String BlendModeToString(BlendMode);
 

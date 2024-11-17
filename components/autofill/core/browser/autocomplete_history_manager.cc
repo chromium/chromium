@@ -48,32 +48,17 @@ bool IsMeaningfulFieldName(const std::u16string& name) {
 
 }  // namespace
 
-AutocompleteHistoryManager::AutocompleteHistoryManager()
-    // It is safe to base::Unretained a raw pointer to the current instance,
-    // as it is already being owned elsewhere and will be cleaned-up properly.
-    // Also, the map of callbacks will be deleted when this instance is
-    // destroyed, which means we won't attempt to run one of these callbacks
-    // beyond the life of this instance.
-    : request_callbacks_(
-          {{AUTOFILL_VALUE_RESULT,
-            base::BindRepeating(
-                &AutocompleteHistoryManager::OnAutofillValuesReturned,
-                base::Unretained(this))},
-           {AUTOFILL_CLEANUP_RESULT,
-            base::BindRepeating(
-                &AutocompleteHistoryManager::OnAutofillCleanupReturned,
-                base::Unretained(this))}}) {}
+AutocompleteHistoryManager::AutocompleteHistoryManager() = default;
 
 AutocompleteHistoryManager::~AutocompleteHistoryManager() {
   CancelAllPendingQueries();
 }
 
 bool AutocompleteHistoryManager::OnGetSingleFieldSuggestions(
-    const FormStructure* form_structure,
     const FormFieldData& field,
-    const AutofillField* autofill_field,
     const AutofillClient& client,
-    OnSuggestionsReturnedCallback on_suggestions_returned) {
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback&
+        on_suggestions_returned) {
   if (!field.should_autocomplete()) {
     return false;
   }
@@ -194,20 +179,23 @@ void AutocompleteHistoryManager::OnWebDataServiceRequestDone(
   }
 
   WDResultType result_type = result->GetType();
-
-  auto request_callbacks_iter = request_callbacks_.find(result_type);
-  if (request_callbacks_iter == request_callbacks_.end()) {
-    // There are no callbacks for this response, hence nothing to do.
-    return;
+  switch (result_type) {
+    case AUTOFILL_VALUE_RESULT:
+      OnAutofillValuesReturned(current_handle, std::move(result));
+      break;
+    case AUTOFILL_CLEANUP_RESULT:
+      OnAutofillCleanupReturned(current_handle, std::move(result));
+      break;
+    default:
+      break;
   }
-
-  request_callbacks_iter->second.Run(current_handle, std::move(result));
 }
 
 AutocompleteHistoryManager::QueryHandler::QueryHandler(
     FieldGlobalId field_id,
     std::u16string prefix,
-    OnSuggestionsReturnedCallback on_suggestions_returned)
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback
+        on_suggestions_returned)
     : field_id_(field_id),
       prefix_(std::move(prefix)),
       on_suggestions_returned_(std::move(on_suggestions_returned)) {}

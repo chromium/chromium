@@ -40,7 +40,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -558,7 +557,7 @@ TYPED_TEST(ClipboardTest, URLTest) {
 // TODO(tonikitoo, msisov): enable back for ClipboardOzone implements
 // selection support. https://crbug.com/911992
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID) && \
-    !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_OZONE)
+    !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_OZONE)
   ascii_text.clear();
   this->clipboard().ReadAsciiText(ClipboardBuffer::kSelection,
                                   /* data_dst = */ nullptr, &ascii_text);
@@ -649,8 +648,8 @@ static void TestBitmapWriteAndPngRead(Clipboard* clipboard,
                                            ClipboardBuffer::kCopyPaste,
                                            /* data_dst = */ nullptr));
   std::vector<uint8_t> result = clipboard_test_util::ReadPng(clipboard);
-  SkBitmap image;
-  gfx::PNGCodec::Decode(result.data(), result.size(), &image);
+  SkBitmap image = gfx::PNGCodec::Decode(result);
+  ASSERT_FALSE(image.isNull());
   AssertBitmapMatchesExpected(image, info, expect_data);
 }
 
@@ -1196,6 +1195,34 @@ TYPED_TEST(ClipboardTest, WriteImageEmptyParams) {
   scw.WriteImage(SkBitmap());
 }
 
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
+TYPED_TEST(ClipboardTest, BookmarkTestWithoutTitle) {
+  // We're testing platform-specific behavior, so use PlatformClipboardTest.
+  std::string test_suite_name = ::testing::UnitTest::GetInstance()
+                                    ->current_test_info()
+                                    ->test_suite_name();
+  if (test_suite_name != std::string("ClipboardTest/PlatformClipboardTest")) {
+    return;
+  }
+
+  std::u16string title_result;
+  std::string url("http://www.example.com/"), url_result;
+
+  {
+    ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
+    clipboard_writer.WriteBookmark(std::u16string(), url);
+  }
+
+  EXPECT_TRUE(this->clipboard().IsFormatAvailable(
+      ClipboardFormatType::UrlType(), ClipboardBuffer::kCopyPaste,
+      /* data_dst = */ nullptr));
+
+  this->clipboard().ReadBookmark(/* data_dst = */ nullptr, &title_result,
+                                 &url_result);
+  EXPECT_EQ(url, url_result);
+}
+#endif  //(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID))
+
 // Policy controller is only intended to be used in Chrome OS, so the following
 // policy related tests are only run on Chrome OS.
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1216,21 +1243,6 @@ TYPED_TEST(ClipboardTest, PolicyAllowDataRead) {
   this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
                              /* data_dst = */ nullptr, &read_result);
   EXPECT_EQ(kTestText, read_result);
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Checks that the clipboard source metadata is encoded in the
-  // DataTransferEndpoint mime type.
-  std::string actual_json;
-  this->clipboard().ReadData(
-      ui::ClipboardFormatType::DataTransferEndpointDataType(),
-      /* data_dst = */ nullptr, &actual_json);
-
-  EXPECT_EQ(
-      "{\"endpoint_type\":\"url\","
-      "\"off_the_record\":false,"
-      "\"url\":\"https://www.google.com/\"}",
-      actual_json);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
 }
@@ -1273,42 +1285,6 @@ TYPED_TEST(ClipboardTest, PolicyDisallow_ReadPng) {
   ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
   EXPECT_EQ(true, image.empty());
 }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-// Checks that source DTEs provided through the custom MIME type can be parsed.
-TYPED_TEST(ClipboardTest, ClipboardSourceDteCanBeRetrievedByLacros) {
-  auto policy_controller = std::make_unique<MockPolicyController>();
-  const std::u16string kTestText(u"World");
-  const std::string kDteJson(
-      R"({"endpoint_type":"url","url":"https://www.google.com"})");
-  {
-    // No source DTE provided directly to the Lacros clipboard.
-    ScopedClipboardWriter writer(ClipboardBuffer::kCopyPaste);
-    writer.WriteText(kTestText);
-    // Encoded source DTE provided in custom MIME type.
-    writer.WriteEncodedDataTransferEndpointForTesting(kDteJson);
-  }
-
-  EXPECT_CALL(
-      *policy_controller,
-      IsClipboardReadAllowed(
-          Property(
-              &base::optional_ref<const DataTransferEndpoint>::value,
-              AllOf(Property(&DataTransferEndpoint::IsUrlType, true),
-                    Property(&DataTransferEndpoint::GetURL,
-                             Pointee(Property(&GURL::spec,
-                                              "https://www.google.com/"))))),
-          _, _))
-      .WillRepeatedly(testing::Return(true));
-
-  std::u16string read_result;
-  this->clipboard().ReadText(ClipboardBuffer::kCopyPaste,
-                             /* data_dst= */ nullptr, &read_result);
-  EXPECT_EQ(kTestText, read_result);
-
-  ::testing::Mock::VerifyAndClearExpectations(policy_controller.get());
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

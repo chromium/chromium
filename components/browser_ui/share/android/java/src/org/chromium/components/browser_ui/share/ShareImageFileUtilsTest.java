@@ -7,6 +7,7 @@ package org.chromium.components.browser_ui.share;
 import static org.mockito.ArgumentMatchers.notNull;
 import static org.mockito.Mockito.doAnswer;
 
+import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.ClipData;
 import android.content.ClipDescription;
@@ -28,7 +29,11 @@ import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -38,7 +43,9 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileProviderUtils;
 import org.chromium.base.task.AsyncTask;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -46,7 +53,7 @@ import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.ClipboardImpl;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,7 +62,8 @@ import java.util.concurrent.TimeoutException;
 
 /** Tests of {@link ShareImageFileUtils}. */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
+@Batch(Batch.PER_CLASS)
+public class ShareImageFileUtilsTest {
     private static final long WAIT_TIMEOUT_SECONDS = 30L;
     private static final byte[] TEST_IMAGE_DATA = new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
     private static final String TEST_IMAGE_FILE_NAME = "chrome-test-bitmap";
@@ -63,7 +71,7 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
     private static final String TEST_JPG_IMAGE_FILE_EXTENSION = ".jpg";
     private static final String TEST_PNG_IMAGE_FILE_EXTENSION = ".png";
 
-    private class GenerateUriCallback extends CallbackHelper implements Callback<Uri> {
+    private static class GenerateUriCallback extends CallbackHelper implements Callback<Uri> {
         private Uri mImageUri;
 
         public Uri getImageUri() {
@@ -77,7 +85,7 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
         }
     }
 
-    private class AsyncTaskRunnableHelper extends CallbackHelper implements Runnable {
+    private static class AsyncTaskRunnableHelper extends CallbackHelper implements Runnable {
         @Override
         public void run() {
             notifyCalled();
@@ -104,16 +112,27 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
         }
     }
 
+    @ClassRule
+    public static final BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     @Mock ClipboardManager mMockClipboardManager;
 
     @Nullable ClipData mPrimaryClip;
     @Nullable ClipDescription mPrimaryClipDescription;
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
-        MockitoAnnotations.openMocks(this);
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+
         Looper.prepare();
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        MockitoAnnotations.openMocks(this);
         FileProviderUtils.setFileProviderUtil(new FileProviderHelper());
         ClipboardImpl clipboard = (ClipboardImpl) Clipboard.getInstance();
         clipboard.setImageFileProvider(new ClipboardImageFileProvider());
@@ -129,26 +148,25 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
                 .when(mMockClipboardManager)
                 .setPrimaryClip(notNull());
         doAnswer(
-                        (invocationOnMock -> {
+                        invocationOnMock -> {
                             return mPrimaryClip;
-                        }))
+                        })
                 .when(mMockClipboardManager)
                 .getPrimaryClip();
         doAnswer(
-                        (invocationOnMock -> {
+                        invocationOnMock -> {
                             return mPrimaryClipDescription;
-                        }))
+                        })
                 .when(mMockClipboardManager)
                 .getPrimaryClipDescription();
         clipboard.overrideClipboardManagerForTesting(mMockClipboardManager);
     }
 
-    @Override
-    public void tearDownTest() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         Clipboard.resetForTesting();
         clearSharedImages();
         deleteAllTestImages();
-        super.tearDownTest();
     }
 
     private int fileCount(File file) {
@@ -237,9 +255,7 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
     }
 
     public void deleteExternalStorageFiles() {
-        File externalStorageDir =
-                ContextUtils.getApplicationContext()
-                        .getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        File externalStorageDir = sActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
         String[] children = externalStorageDir.list();
         for (int i = 0; i < children.length; i++) {
             new File(externalStorageDir, children[i]).delete();
@@ -287,8 +303,7 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
     @SmallTest
     public void testGetNextAvailableFile() throws IOException {
         String fileName = TEST_IMAGE_FILE_NAME + "_next_availble";
-        File externalStorageDir =
-                getActivity().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        File externalStorageDir = sActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
         File imageFile =
                 ShareImageFileUtils.getNextAvailableFile(
                         externalStorageDir.getPath(), fileName, TEST_JPG_IMAGE_FILE_EXTENSION);
@@ -307,8 +322,7 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
     public void testAddCompletedDownload() throws IOException {
         String filename =
                 TEST_IMAGE_FILE_NAME + "_add_completed_download" + TEST_JPG_IMAGE_FILE_EXTENSION;
-        File externalStorageDir =
-                getActivity().getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
+        File externalStorageDir = sActivity.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
         File qrcodeFile = new File(externalStorageDir, filename);
         Assert.assertTrue(qrcodeFile.createNewFile());
 
@@ -316,7 +330,9 @@ public class ShareImageFileUtilsTest extends BlankUiTestActivityTestCase {
         Assert.assertNotEquals(0L, downloadId);
 
         DownloadManager downloadManager =
-                (DownloadManager) getActivity().getSystemService(Context.DOWNLOAD_SERVICE);
+                (DownloadManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.DOWNLOAD_SERVICE);
         DownloadManager.Query query = new DownloadManager.Query().setFilterById(downloadId);
         Cursor c = downloadManager.query(query);
 

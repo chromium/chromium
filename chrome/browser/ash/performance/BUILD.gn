@@ -1,0 +1,31 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("performance") {
+  sources = [
+    "doze_mode_power_status_scheduler.cc",
+    "doze_mode_power_status_scheduler.h",
+    "pausable_timer.cc",
+    "pausable_timer.h",
+    "pref_names.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//ash/components/arc",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/arc/session",
+    "//chromeos/dbus/power",
+    "//chromeos/dbus/power:power_manager_proto",
+    "//components/arc",
+    "//components/metrics",
+    "//components/prefs",
+    "//ui/base",
+  ]
+}

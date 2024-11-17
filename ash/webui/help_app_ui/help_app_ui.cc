@@ -14,6 +14,7 @@
 #include "ash/webui/help_app_ui/help_app_untrusted_ui.h"
 #include "ash/webui/help_app_ui/search/search_handler.h"
 #include "ash/webui/web_applications/webui_test_prod_util.h"
+#include "base/check_deref.h"
 #include "base/strings/strcat.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy.h"
 #include "chromeos/ash/components/local_search_service/public/cpp/local_search_service_proxy_factory.h"
@@ -47,8 +48,11 @@ content::WebUIDataSource* CreateAndAddHostDataSource(
 }  // namespace
 
 HelpAppUI::HelpAppUI(content::WebUI* web_ui,
-                     std::unique_ptr<HelpAppUIDelegate> delegate)
-    : MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
+                     std::unique_ptr<HelpAppUIDelegate> delegate,
+                     PrefService* pref_service)
+    : MojoWebUIController(web_ui),
+      delegate_(std::move(delegate)),
+      pref_service_(CHECK_DEREF(pref_service)) {
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource* host_source =
@@ -113,14 +117,12 @@ void HelpAppUI::BindInterface(
 
 void HelpAppUI::BindInterface(
     mojo::PendingReceiver<local_search_service::mojom::Index> index_receiver) {
-  if (base::FeatureList::IsEnabled(features::kEnableLocalSearchService)) {
-    auto* const factory = local_search_service::LocalSearchServiceProxyFactory::
-        GetForBrowserContext(web_ui()->GetWebContents()->GetBrowserContext());
-    factory->SetLocalState(delegate_->GetLocalState());
-    factory->GetIndex(local_search_service::IndexId::kHelpApp,
-                      local_search_service::Backend::kInvertedIndex,
-                      std::move(index_receiver));
-  }
+  auto* const factory = local_search_service::LocalSearchServiceProxyFactory::
+      GetForBrowserContext(web_ui()->GetWebContents()->GetBrowserContext());
+  factory->SetLocalState(delegate_->GetLocalState());
+  factory->GetIndex(local_search_service::IndexId::kHelpApp,
+                    local_search_service::Backend::kInvertedIndex,
+                    std::move(index_receiver));
 }
 
 void HelpAppUI::BindInterface(
@@ -135,8 +137,8 @@ void HelpAppUI::BindInterface(
 
 void HelpAppUI::CreatePageHandler(
     mojo::PendingReceiver<help_app::mojom::PageHandler> receiver) {
-  page_handler_ =
-      std::make_unique<HelpAppPageHandler>(this, std::move(receiver));
+  page_handler_ = std::make_unique<HelpAppPageHandler>(
+      this, std::move(receiver), pref_service_);
 }
 
 bool HelpAppUI::IsJavascriptErrorReportingEnabled() {

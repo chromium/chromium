@@ -99,6 +99,7 @@ class KURL;
 class LocalDOMWindow;
 class LocalFrame;
 class RemoteFrame;
+class RemotePlaybackClient;
 class ResourceError;
 class ResourceRequest;
 class ResourceResponse;
@@ -110,7 +111,6 @@ class WebMediaPlayer;
 class WebMediaPlayerClient;
 class WebMediaPlayerSource;
 class WebPluginContainerImpl;
-class WebRemotePlaybackClient;
 class WebServiceWorkerProvider;
 class WebSpellCheckPanelHostClient;
 class WebTextCheckClient;
@@ -287,7 +287,7 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
       HTMLMediaElement&,
       const WebMediaPlayerSource&,
       WebMediaPlayerClient*) = 0;
-  virtual WebRemotePlaybackClient* CreateWebRemotePlaybackClient(
+  virtual RemotePlaybackClient* CreateRemotePlaybackClient(
       HTMLMediaElement&) = 0;
 
   virtual void DidCommitDocumentReplacementNavigation(DocumentLoader*) = 0;

@@ -10,6 +10,10 @@
 #include <locale.h>
 #endif
 
+#if BUILDFLAG(IS_APPLE)
+#include <CoreFoundation/CoreFoundation.h>
+#endif
+
 #include "base/strings/string_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -110,8 +114,6 @@ int GeoIDToCountryID(GEOID geo_id) {
 #endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
-
-const char kCountryIDAtInstall[] = "countryid_at_install";
 
 int CountryStringToCountryID(const std::string& country) {
   return (country.length() == 2)

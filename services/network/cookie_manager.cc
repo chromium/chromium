@@ -321,7 +321,7 @@ void CookieManager::RemoveChangeListener(ListenerRegistration* registration) {
     }
   }
   // A broken connection error should never be raised for an unknown pipe.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CookieManager::CloneInterface(

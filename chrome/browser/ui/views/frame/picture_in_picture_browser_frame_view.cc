@@ -24,6 +24,7 @@
 #include "chromeos/ui/frame/frame_utils.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "components/vector_icons/vector_icons.h"
+#include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/document_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
@@ -69,17 +70,6 @@
 #include "ui/linux/linux_ui.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/ui/base/window_properties.h"
-#include "chromeos/ui/base/window_state_type.h"
-#include "chromeos/ui/frame/interior_resize_handler_targeter.h"
-#endif
-
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
-#include "ui/aura/client/transient_window_client.h"
-#include "ui/aura/window.h"
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -98,7 +88,7 @@ constexpr int kTopControlsHeight = 34;
 constexpr int kFrameBorderThickness = 4;
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 constexpr int kResizeBorder = 10;
 #endif
 constexpr int kResizeAreaCornerSize = 16;
@@ -234,14 +224,16 @@ void DefinitelyExitPictureInPicture(
 
 }  // namespace
 
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
-    ChildDialogObserverHelper(views::Widget* pip_widget)
-    : pip_widget_(pip_widget) {
+    ChildDialogObserverHelper(PictureInPictureBrowserFrameView* pip_frame)
+    : pip_frame_(pip_frame), pip_widget_(pip_frame->GetWidget()) {
   pip_widget_observation_.Observe(pip_widget_);
-  aura_window_observation_.Observe(pip_widget_->GetNativeWindow());
-  transient_window_observation_.Observe(
-      aura::client::GetTransientWindowClient());
+  // The bounds might not be set yet, depending on the platform, but that's
+  // okay.  We'll get a callback later if not.  CrOS likes to set these
+  // initially and not call us back unless the user resizes, so it's important
+  // to grab the bounds now else we'll believe that the user's most recently
+  // desired size is (0,0)-0x0.
+  latest_user_desired_bounds_ = pip_widget_->GetWindowBoundsInScreen();
 }
 
 PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
@@ -302,29 +294,11 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
   }
 }
 
-void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::OnWindowAdded(
-    aura::Window* new_window) {
-  auto* child_dialog = views::Widget::GetWidgetForNativeWindow(new_window);
-  if (child_dialog) {
-    OnChildDialogOpened(child_dialog);
-  }
-}
-
 void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
-    OnTransientChildWindowAdded(aura::Window* parent,
-                                aura::Window* transient_child) {
-  if (parent != pip_widget_->GetNativeWindow()) {
+    OnWidgetChildAdded(views::Widget* widget, views::Widget* child_dialog) {
+  if (widget != pip_widget_) {
     return;
   }
-
-  auto* child_dialog = views::Widget::GetWidgetForNativeWindow(transient_child);
-  if (child_dialog) {
-    OnChildDialogOpened(child_dialog);
-  }
-}
-
-void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
-    OnChildDialogOpened(views::Widget* child_dialog) {
   child_dialog_observations_.AddObservation(child_dialog);
   if (child_dialog->IsVisible()) {
     MaybeResizeForChildDialog(child_dialog);
@@ -337,6 +311,25 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
     MaybeResizeForChildDialog(views::Widget* child_dialog) {
   gfx::Rect original_bounds = pip_widget_->GetWindowBoundsInScreen();
   gfx::Rect dialog_bounds = child_dialog->GetWindowBoundsInScreen();
+
+  // Figure out how big the dialog should be.  If it's larger than its minimum
+  // size, then keep it.  Note that the root view's minimum size is usually the
+  // preferred size, while the contents view's min size tends to be too small.
+  gfx::Size dialog_target_size = dialog_bounds.size();
+  dialog_target_size.SetToMax(child_dialog->GetRootView()->GetMinimumSize());
+
+  // Compute the minimum size the pip window needs to be so that it reports its
+  // maximum dialog size as the dialog's minimum size.  We do this because the
+  // dialog probably isn't designed to be as small as a pip window typically is;
+  // we just resize the pip window temporarily.  Otherwise, the dialog will try
+  // to shrink to fit, and it doesn't typically succeed.
+  const gfx::Size required_size =
+      dialog_target_size + pip_frame_->ComputeDialogPadding();
+
+  // Pretend that the dialog is this big, so we can compute our size to be no
+  // smaller than it.  We do not change the origin of the dialog, however,
+  // because we need to account for the dialog's origin.
+  dialog_bounds.set_size(required_size);
 
   gfx::Rect adjusted_bounds = original_bounds;
   adjusted_bounds.Union(dialog_bounds);
@@ -367,7 +360,6 @@ void PictureInPictureBrowserFrameView::ChildDialogObserverHelper::
   resizing_state_ = ResizingState::kNormal;
   pip_widget_->SetBoundsConstrained(latest_user_desired_bounds_);
 }
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
 PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
     BrowserFrame* frame,
@@ -492,7 +484,8 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
           .SetElideBehavior(elide_behavior)
           .SetProperty(
               views::kFlexBehaviorKey,
-              views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+              views::FlexSpecification(views::LayoutOrientation::kHorizontal,
+                                       views::MinimumFlexSizeRule::kScaleToZero,
                                        views::MaximumFlexSizeRule::kUnbounded))
           .Build());
 
@@ -513,7 +506,7 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   for (auto& model : models) {
     model->SetIconSize(kContentSettingIconSize);
     auto image_view = std::make_unique<ContentSettingImageView>(
-        std::move(model), this, this, font_list);
+        std::move(model), this, this, browser_view->browser(), font_list);
 
     // The ContentSettingImageView loses 4px of margin that we don't want to
     // lose in the document picture-in-picture toolbar.
@@ -585,7 +578,6 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   // this is the auto-pip Allow / Block content setting UI.
   if (auto auto_pip_setting_overlay =
           PictureInPictureWindowManager::GetInstance()->GetOverlayView(
-              browser_view->browser()->override_bounds(),
               top_bar_container_view_, views::BubbleBorder::TOP_CENTER)) {
     auto_pip_setting_overlay_ =
         AddChildView(std::move(auto_pip_setting_overlay));
@@ -609,15 +601,6 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   if (!window_frame_provider_) {
     frame_background_ = std::make_unique<views::FrameBackground>();
   }
-#endif
-
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  frame->GetNativeWindow()->SetEventTargeter(
-      std::make_unique<chromeos::InteriorResizeHandleTargeter>(
-          base::BindRepeating([](const aura::Window* window) {
-            return window->GetProperty(chromeos::kWindowStateTypeKey);
-          })));
 #endif
 }
 
@@ -841,10 +824,8 @@ void PictureInPictureBrowserFrameView::Layout(PassKey) {
 void PictureInPictureBrowserFrameView::AddedToWidget() {
   widget_observation_.Observe(GetWidget());
   window_event_observer_ = std::make_unique<WindowEventObserver>(this);
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
   child_dialog_observer_helper_ =
-      std::make_unique<ChildDialogObserverHelper>(GetWidget());
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
+      std::make_unique<ChildDialogObserverHelper>(this);
 
   // Creates an animation container to ensure all the animations update at the
   // same time.
@@ -885,9 +866,7 @@ void PictureInPictureBrowserFrameView::AddedToWidget() {
 void PictureInPictureBrowserFrameView::RemovedFromWidget() {
   widget_observation_.Reset();
   window_event_observer_.reset();
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
   child_dialog_observer_helper_.reset();
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 
   // Clear the AutoPiP setting overlay view.
   if (auto_pip_setting_overlay_) {
@@ -1002,7 +981,8 @@ bool PictureInPictureBrowserFrameView::ShowPageInfoDialog() {
           location_icon_view_, gfx::Rect(), GetWidget()->GetNativeWindow(),
           contents, contents->GetLastCommittedURL(),
           /*initialized_callback=*/base::DoNothing(),
-          /*closing_callback=*/base::DoNothing());
+          /*closing_callback=*/base::DoNothing(),
+          /*allow_about_this_site=*/false);
   bubble->SetHighlightedButton(location_icon_view_);
   bubble->GetWidget()->Show();
 
@@ -1095,9 +1075,7 @@ void PictureInPictureBrowserFrameView::OnWidgetDestroying(
     views::Widget* widget) {
   window_event_observer_.reset();
   widget_observation_.Reset();
-#if RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
   child_dialog_observer_helper_.reset();
-#endif  // RESIZE_DOCUMENT_PICTURE_IN_PICTURE_TO_DIALOG
 }
 
 void PictureInPictureBrowserFrameView::OnWidgetBoundsChanged(
@@ -1363,7 +1341,7 @@ gfx::Insets PictureInPictureBrowserFrameView::FrameBorderInsets() const {
 gfx::Insets PictureInPictureBrowserFrameView::ResizeBorderInsets() const {
 #if BUILDFLAG(IS_LINUX)
   return FrameBorderInsets();
-#elif !BUILDFLAG(IS_CHROMEOS_ASH)
+#elif !BUILDFLAG(IS_CHROMEOS)
   return gfx::Insets(kResizeBorder);
 #else
   return gfx::Insets();
@@ -1473,6 +1451,18 @@ void PictureInPictureBrowserFrameView::OnMouseEnteredOrExitedWindow(
 
 bool PictureInPictureBrowserFrameView::IsOverlayViewVisible() const {
   return auto_pip_setting_overlay_ && auto_pip_setting_overlay_->GetVisible();
+}
+
+gfx::Size PictureInPictureBrowserFrameView::ComputeDialogPadding() const {
+  auto* host = browser_view()->GetWebContentsModalDialogHost();
+  if (!host) {
+    return gfx::Size();
+  }
+
+  // This is not guaranteed, but should be fairly robust if the maximum dialog
+  // size computation changes.  It also prevents us from memorizing how all of
+  // it works.
+  return GetWidget()->GetSize() - host->GetMaximumDialogSize();
 }
 
 BEGIN_METADATA(PictureInPictureBrowserFrameView)

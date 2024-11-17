@@ -145,6 +145,8 @@ void ApplyParamsToFinalizeOptions(
 // Returns whether the home tab icons exist.
 bool HomeTabIconsExistInTabStrip(const WebAppInstallInfo& web_app_info);
 
+bool IsSyncEnabledForApps(Profile* profile);
+
 }  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_INSTALL_UTILS_H_

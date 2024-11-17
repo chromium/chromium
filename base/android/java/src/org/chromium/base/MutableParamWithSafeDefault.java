@@ -26,7 +26,7 @@ import androidx.annotation.NonNull;
  */
 public abstract class MutableParamWithSafeDefault<T> extends FeatureParam<T> {
     public MutableParamWithSafeDefault(
-            FeatureMap featureMap, String featureName, String paramName, T defaultValue) {
+            FeatureMap featureMap, String featureName, String paramName, @NonNull T defaultValue) {
         super(featureMap, featureName, paramName, defaultValue);
     }
 

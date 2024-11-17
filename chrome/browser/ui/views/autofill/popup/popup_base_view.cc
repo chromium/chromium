@@ -356,13 +356,15 @@ void PopupBaseView::NotifyAXSelection(views::View& selected_view) {
   }
   selected_view.GetViewAccessibility().SetPopupFocusOverride();
 #if DCHECK_IS_ON()
+  // TODO(crbug.com/362445293): Update the automation handler once the
+  // Typescript migration is complete.
   constexpr auto kDerivedClasses = base::MakeFixedFlatSet<std::string_view>(
       {"PopupSuggestionView", "PopupPasswordSuggestionView", "PopupFooterView",
        "PopupSeparatorView", "PopupWarningView", "PopupBaseView",
        "PasswordGenerationPopupViewViews::GeneratedPasswordBox", "PopupRowView",
-       "PopupRowContentView", "MdTextButton",
+       "PopupRowWithButtonView", "PopupRowContentView", "MdTextButton",
        "PopupRowPredictionImprovementsFeedbackView",
-       "PopupRowPredictionImprovementsDetailsView"});
+       "PredictionImprovementsLoadingStateView"});
   DCHECK(kDerivedClasses.contains(selected_view.GetClassName()))
       << "If you add a new derived class from AutofillPopupRowView, add it "
          "here and to onSelection(evt) in "
@@ -558,7 +560,16 @@ bool PopupBaseView::DoUpdateBoundsAndRedrawPopup() {
 }
 
 void PopupBaseView::OnNativeFocusChanged(gfx::NativeView focused_now) {
-  if (GetWidget() && GetWidget()->GetNativeView() != focused_now) {
+  // TODO(crbug.com/330303918): The focus change is triggered sometimes
+  // (reproduced on a Linux release build, on a debug one - no) with
+  // `focused_now` == `nullptr` during activatable popup opening, no other
+  // widget gets focus then and this widget remains active.
+  // The `!GetWidget()->IsActive()` piece handles this case and prevents
+  // immediate popup closing.
+  // Investigate the reason and either fix it on the appropriate side or make
+  // this TODO a regular comment if it works as intended.
+  if (GetWidget() && GetWidget()->GetNativeView() != focused_now &&
+      !GetWidget()->IsActive()) {
     HideController(SuggestionHidingReason::kFocusChanged);
   }
 }

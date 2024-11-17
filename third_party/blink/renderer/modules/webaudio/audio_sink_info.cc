@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webaudio/audio_sink_info.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_sink_type.h"
+
 namespace blink {
 
 AudioSinkInfo* AudioSinkInfo::Create(const String& type) {
@@ -14,9 +16,9 @@ AudioSinkInfo::AudioSinkInfo(const String& type) {}
 
 AudioSinkInfo::~AudioSinkInfo() = default;
 
-String AudioSinkInfo::type() const {
+V8AudioSinkType AudioSinkInfo::type() const {
   // Currently "none" is the only `type` available.
-  return "none";
+  return V8AudioSinkType(V8AudioSinkType::Enum::kNone);
 }
 
 }  // namespace blink

@@ -2,39 +2,68 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/task_manager/providers/spare_render_process_host_task_provider.h"
+#include <set>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/task_manager/providers/spare_render_process_host_task_provider.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::Contains;
+using testing::Matcher;
+using testing::Not;
+using testing::Property;
+using testing::Test;
 
 namespace task_manager {
 
-class SpareRenderProcessHostTaskTest : public testing::Test,
+namespace {
+
+// Matcher that checks if the set contains an element where
+// GetChildProcessUniqueID() == rph_id;
+Matcher<std::set<Task*>> ContainsRphId(int rph_id) {
+  return Contains(Property(&Task::GetChildProcessUniqueID, rph_id));
+}
+
+}  // namespace
+
+class SpareRenderProcessHostTaskTest : public Test,
                                        public TaskProviderObserver {
  public:
   SpareRenderProcessHostTaskTest() = default;
   ~SpareRenderProcessHostTaskTest() override = default;
 
   // task_manager::TaskProviderObserver:
-  void TaskAdded(Task* task) override { provided_task_ = task; }
+  void TaskAdded(Task* task) override {
+    bool inserted = provided_tasks_.insert(task).second;
+    CHECK(inserted);
+  }
 
   void TaskRemoved(Task* task) override {
-    ASSERT_EQ(provided_task_, task);
-    provided_task_ = nullptr;
+    size_t removed = provided_tasks_.erase(task);
+    CHECK_EQ(removed, 1u);
   }
 
-  void SpareRenderProcessHostTaskChanged(
+  void OnSpareRenderProcessHostReady(
       SpareRenderProcessHostTaskProvider* provider,
       content::RenderProcessHost* render_process) {
-    provider->SpareRenderProcessHostTaskChanged(render_process);
+    provider->OnSpareRenderProcessHostReady(render_process);
   }
 
- protected:
-  raw_ptr<Task> provided_task_ = nullptr;
+  void OnSpareRenderProcessHostRemoved(
+      SpareRenderProcessHostTaskProvider* provider,
+      content::RenderProcessHost* render_process) {
+    provider->OnSpareRenderProcessHostRemoved(render_process);
+  }
+
+  const std::set<Task*>& provided_tasks() const { return provided_tasks_; }
+
+ private:
+  std::set<Task*> provided_tasks_;
 
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -42,17 +71,29 @@ class SpareRenderProcessHostTaskTest : public testing::Test,
 TEST_F(SpareRenderProcessHostTaskTest, Basic) {
   SpareRenderProcessHostTaskProvider provider;
   provider.SetObserver(this);
-  EXPECT_EQ(nullptr, provided_task_.get());
 
   auto browser_context = std::make_unique<TestingProfile>();
-  auto render_process =
+  auto render_process1 =
+      std::make_unique<content::MockRenderProcessHost>(browser_context.get());
+  auto render_process2 =
       std::make_unique<content::MockRenderProcessHost>(browser_context.get());
 
-  SpareRenderProcessHostTaskChanged(&provider, render_process.get());
-  EXPECT_NE(nullptr, provided_task_);
+  EXPECT_TRUE(provided_tasks().empty());
 
-  SpareRenderProcessHostTaskChanged(&provider, nullptr);
-  EXPECT_EQ(nullptr, provided_task_.get());
+  OnSpareRenderProcessHostReady(&provider, render_process1.get());
+  EXPECT_THAT(provided_tasks(), ContainsRphId(render_process1->GetID()));
+  EXPECT_THAT(provided_tasks(), Not(ContainsRphId(render_process2->GetID())));
+
+  OnSpareRenderProcessHostReady(&provider, render_process2.get());
+  EXPECT_THAT(provided_tasks(), ContainsRphId(render_process1->GetID()));
+  EXPECT_THAT(provided_tasks(), ContainsRphId(render_process2->GetID()));
+
+  OnSpareRenderProcessHostRemoved(&provider, render_process1.get());
+  EXPECT_THAT(provided_tasks(), Not(ContainsRphId(render_process1->GetID())));
+  EXPECT_THAT(provided_tasks(), ContainsRphId(render_process2->GetID()));
+
+  OnSpareRenderProcessHostRemoved(&provider, render_process2.get());
+  EXPECT_TRUE(provided_tasks().empty());
 
   provider.ClearObserver();
 }

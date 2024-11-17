@@ -44,13 +44,13 @@ class MockBluetoothGattDescriptor : public BluetoothRemoteGattDescriptor {
     ReadRemoteDescriptor_(c);
   }
   MOCK_METHOD1(ReadRemoteDescriptor_, void(ValueCallback&));
-  void WriteRemoteDescriptor(const std::vector<uint8_t>& v,
+  void WriteRemoteDescriptor(base::span<const uint8_t> v,
                              base::OnceClosure c,
                              ErrorCallback ec) override {
     WriteRemoteDescriptor_(v, c, ec);
   }
   MOCK_METHOD3(WriteRemoteDescriptor_,
-               void(const std::vector<uint8_t>&,
+               void(base::span<const uint8_t>,
                     base::OnceClosure&,
                     ErrorCallback&));
 };

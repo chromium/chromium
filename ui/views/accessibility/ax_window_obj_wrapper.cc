@@ -11,7 +11,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/aura/aura_window_properties.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -24,10 +23,6 @@
 #include "ui/compositor/layer.h"
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/widget/widget.h"
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
-#endif
 
 namespace views {
 namespace {
@@ -85,33 +80,6 @@ std::string GetWindowName(aura::Window* window) {
   return class_name;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-std::string GetPlatformWindowId(aura::Window* window) {
-  // Ignore non-top level windows.
-  if (!window->IsRootWindow() || window->parent())
-    return std::string();
-
-  // On desktop aura there is one WindowTreeHost per top-level window.
-  aura::WindowTreeHost* window_tree_host = window->GetHost();
-  if (!window_tree_host)
-    return std::string();
-
-  // Prefer the DesktopWindowTreeHostPlatform if it exists.
-  DesktopWindowTreeHostPlatform* desktop_window_tree_host_platform =
-      DesktopWindowTreeHostPlatform::GetHostForWidget(
-          window_tree_host->GetAcceleratedWidget());
-  if (!desktop_window_tree_host_platform)
-    return window_tree_host->GetUniqueId();
-
-  while (desktop_window_tree_host_platform->window_parent()) {
-    desktop_window_tree_host_platform =
-        desktop_window_tree_host_platform->window_parent();
-  }
-
-  return desktop_window_tree_host_platform->GetUniqueId();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 }  // namespace
 
 AXWindowObjWrapper::AXWindowObjWrapper(AXAuraObjCache* aura_obj_cache,
@@ -145,15 +113,6 @@ bool AXWindowObjWrapper::HandleAccessibleAction(
 }
 
 AXAuraObjWrapper* AXWindowObjWrapper::GetParent() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const std::string& window_id = GetPlatformWindowId(window_);
-
-  // In Lacros, the presence of a platform window id means it is parented to the
-  // Ash tree via the app id.
-  if (!window_id.empty())
-    return nullptr;
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   aura::Window* parent = window_->parent();
   if (!parent)
     return nullptr;
@@ -191,15 +150,6 @@ void AXWindowObjWrapper::GetChildren(
 }
 
 void AXWindowObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // This app id connects this node with a node in the Ash tree (an
-  // components/exo shell surface).
-  const std::string& window_id = GetPlatformWindowId(window_);
-  if (!window_id.empty())
-    out_node_data->AddStringAttribute(ax::mojom::StringAttribute::kAppId,
-                                      window_id);
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
   if (window_->IsRootWindow() && !window_->parent() && window_->GetHost()) {
     ui::TextInputClient* client =
         window_->GetHost()->GetInputMethod()->GetTextInputClient();

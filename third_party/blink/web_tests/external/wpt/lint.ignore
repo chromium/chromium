@@ -113,6 +113,7 @@ CONSOLE: common/gc.js
 CONSOLE: resources/check-layout-th.js
 CONSOLE: resources/chromium/*
 CONSOLE: resources/testharness.js
+CONSOLE: content-security-policy/inheritance/blob-inherits-from-meta-http-equiv-with-invalid-characters.html
 CONSOLE: service-workers/service-worker/resources/navigation-redirect-other-origin.html
 CONSOLE: service-workers/service-worker/navigation-redirect.https.html
 CONSOLE: service-workers/service-worker/resources/clients-get-other-origin.html
@@ -624,7 +625,6 @@ MISSING DEPENDENCY: resources/chromium/mock-facedetection.js
 MISSING DEPENDENCY: resources/chromium/mock-idle-detection.js
 MISSING DEPENDENCY: resources/chromium/mock-imagecapture.js
 MISSING DEPENDENCY: resources/chromium/mock-managed-config.js
-MISSING DEPENDENCY: resources/chromium/mock-pressure-service.js
 MISSING DEPENDENCY: resources/chromium/mock-subapps.js
 MISSING DEPENDENCY: resources/chromium/mock-textdetection.js
 MISSING DEPENDENCY: resources/chromium/nfc-mock.js
@@ -802,12 +802,6 @@ TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/local_FileSystemWritableFileS
 TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/showDirectoryPicker-manual.https.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/showOpenFilePicker-manual.https.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: file-system-access/showSaveFilePicker-manual.https.html
-TESTDRIVER-IN-UNSUPPORTED-TYPE: fullscreen/crashtests/chrome-1312699.html
-TESTDRIVER-IN-UNSUPPORTED-TYPE: fullscreen/crashtests/content-visibility-crash.html
-TESTDRIVER-IN-UNSUPPORTED-TYPE: fullscreen/rendering/backdrop-iframe.html
-TESTDRIVER-IN-UNSUPPORTED-TYPE: fullscreen/rendering/backdrop-inherit.html
-TESTDRIVER-IN-UNSUPPORTED-TYPE: fullscreen/rendering/backdrop-object.html
-TESTDRIVER-IN-UNSUPPORTED-TYPE: fullscreen/rendering/fullscreen-root-fills-page.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: html/rendering/non-replaced-elements/the-fieldset-and-legend-elements/crashtests/fieldset-middleclick.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: infrastructure/testdriver/click_child_crossorigin.html
 TESTDRIVER-IN-UNSUPPORTED-TYPE: infrastructure/testdriver/click_child_testdriver.html

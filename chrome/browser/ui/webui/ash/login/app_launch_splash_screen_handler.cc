@@ -17,49 +17,18 @@
 #include "chrome/browser/ui/webui/ash/login/network_state_informer.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/grit/branded_strings.h"
-#include "chrome/grit/chrome_unscaled_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/webui/web_ui_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
 namespace ash {
 
-namespace {
-
-std::string NameOrDefault(std::string_view name) {
-  return name.empty() ? l10n_util::GetStringUTF8(IDS_SHORT_PRODUCT_NAME)
-                      : std::string(name);
-}
-
-gfx::ImageSkia IconOrDefault(gfx::ImageSkia icon) {
-  return icon.isNull()
-             ? *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-                   IDR_PRODUCT_LOGO_128)
-             : icon;
-}
-
-}  // namespace
-
-AppLaunchSplashScreenView::Data::Data(std::string_view name,
-                                      gfx::ImageSkia icon,
-                                      const GURL& url)
-    : name(NameOrDefault(name)),
-      icon(IconOrDefault(icon)),
-      url(url.DeprecatedGetOriginAsURL()) {}
-AppLaunchSplashScreenView::Data::Data(Data&&) = default;
-AppLaunchSplashScreenView::Data& AppLaunchSplashScreenView::Data::operator=(
-    Data&&) = default;
-AppLaunchSplashScreenView::Data::~Data() = default;
-
-AppLaunchSplashScreenHandler::AppLaunchSplashScreenHandler(
-    const scoped_refptr<NetworkStateInformer>& network_state_informer,
-    ErrorScreen* error_screen)
-    : BaseScreenHandler(kScreenId), error_screen_(error_screen) {}
+AppLaunchSplashScreenHandler::AppLaunchSplashScreenHandler()
+    : BaseScreenHandler(kScreenId) {}
 
 AppLaunchSplashScreenHandler::~AppLaunchSplashScreenHandler() = default;
 
@@ -75,105 +44,21 @@ void AppLaunchSplashScreenHandler::DeclareLocalizedValues(
                                           product_os_name));
 }
 
-void AppLaunchSplashScreenHandler::Show(Data data) {
-  is_shown_ = true;
-
-  base::Value::Dict dict =
-      base::Value::Dict()
-          .Set("shortcutEnabled",
-               !KioskChromeAppManager::Get()->GetDisableBailoutShortcut())
-          .Set("appInfo",
-               base::Value::Dict()
-                   .Set("name", data.name)
-                   .Set("iconURL", webui::GetBitmapDataUrl(*data.icon.bitmap()))
-                   .Set("url", data.url.spec()));
-
-  SetLaunchText(l10n_util::GetStringUTF8(GetProgressMessageFromState(state_)));
-  ShowInWebUI(std::move(dict));
-  if (toggle_network_config_on_show_.has_value()) {
-    DoToggleNetworkConfig(toggle_network_config_on_show_.value());
-    toggle_network_config_on_show_.reset();
-  }
+void AppLaunchSplashScreenHandler::Show(base::Value::Dict data) {
+  ShowInWebUI(std::move(data));
 }
 
-void AppLaunchSplashScreenHandler::DeclareJSCallbacks() {
-  AddCallback("configureNetwork",
-              &AppLaunchSplashScreenHandler::HandleConfigureNetwork);
-}
-
-void AppLaunchSplashScreenHandler::Hide() {
-  is_shown_ = false;
+void AppLaunchSplashScreenHandler::SetAppData(base::Value::Dict data) {
+  CallExternalAPI("setAppData", std::move(data));
 }
 
 void AppLaunchSplashScreenHandler::ToggleNetworkConfig(bool visible) {
-  if (!is_shown_) {
-    toggle_network_config_on_show_ = visible;
-    return;
-  }
-  DoToggleNetworkConfig(visible);
+  CallExternalAPI("toggleNetworkConfig", visible);
 }
 
-void AppLaunchSplashScreenHandler::UpdateAppLaunchState(AppLaunchState state) {
-  if (state == state_) {
-    return;
-  }
-
-  state_ = state;
-  SetLaunchText(l10n_util::GetStringUTF8(GetProgressMessageFromState(state_)));
-}
-
-void AppLaunchSplashScreenHandler::SetDelegate(Delegate* delegate) {
-  delegate_ = delegate;
-}
-
-void AppLaunchSplashScreenHandler::ShowNetworkConfigureUI(
-    NetworkStateInformer::State network_state,
-    const std::string& network_name) {
-  network_config_shown_ = true;
-  error_screen_->SetUIState(NetworkError::UI_STATE_KIOSK_MODE);
-  error_screen_->SetIsPersistentError(true);
-  error_screen_->AllowGuestSignin(false);
-  error_screen_->DisallowOfflineLogin();
-  switch (network_state) {
-    case NetworkStateInformer::CAPTIVE_PORTAL: {
-      error_screen_->SetErrorState(NetworkError::ERROR_STATE_PORTAL,
-                                   network_name);
-      error_screen_->FixCaptivePortal();
-
-      break;
-    }
-    case NetworkStateInformer::PROXY_AUTH_REQUIRED: {
-      error_screen_->SetErrorState(NetworkError::ERROR_STATE_PROXY,
-                                   network_name);
-      break;
-    }
-    case NetworkStateInformer::ONLINE: {
-      error_screen_->SetErrorState(NetworkError::ERROR_STATE_KIOSK_ONLINE,
-                                   network_name);
-      break;
-    }
-    case NetworkStateInformer::OFFLINE:
-    case NetworkStateInformer::CONNECTING:
-    case NetworkStateInformer::UNKNOWN:
-      error_screen_->SetErrorState(NetworkError::ERROR_STATE_OFFLINE,
-                                   network_name);
-      break;
-  }
-
-  if (GetCurrentScreen() != ErrorScreenView::kScreenId) {
-    error_screen_->SetParentScreen(kScreenId);
-    error_screen_->Show(/*context=*/nullptr);
-  }
-}
-
-void AppLaunchSplashScreenHandler::ShowErrorMessage(
-    KioskAppLaunchError::Error error) {
-  LoginScreen::Get()->ShowKioskAppError(
-      KioskAppLaunchError::GetErrorMessage(error));
-}
-
-void AppLaunchSplashScreenHandler::SetLaunchText(const std::string& text) {
-  CallExternalAPI("updateMessage", text);
+void AppLaunchSplashScreenHandler::UpdateAppLaunchText(AppLaunchState state) {
+  CallExternalAPI("updateMessage",
+                  l10n_util::GetStringUTF8(GetProgressMessageFromState(state)));
 }
 
 int AppLaunchSplashScreenHandler::GetProgressMessageFromState(
@@ -196,31 +81,9 @@ int AppLaunchSplashScreenHandler::GetProgressMessageFromState(
   }
 }
 
-void AppLaunchSplashScreenHandler::HandleConfigureNetwork() {
-  if (delegate_) {
-    delegate_->OnConfigureNetwork();
-  } else {
-    LOG(WARNING) << "No delegate set to handle network configuration.";
-  }
-}
-
-void AppLaunchSplashScreenHandler::ContinueAppLaunch() {
-  if (!delegate_) {
-    return;
-  }
-
-  network_config_shown_ = false;
-  delegate_->OnNetworkConfigFinished();
-
-  // Reset ErrorScreen state to default. We don't update other parameters such
-  // as SetUIState/SetErrorState as those should be updated by the next caller
-  // of the ErrorScreen.
-  error_screen_->SetParentScreen(OOBE_SCREEN_UNKNOWN);
-  error_screen_->SetIsPersistentError(false);
-}
-
-void AppLaunchSplashScreenHandler::DoToggleNetworkConfig(bool visible) {
-  CallExternalAPI("toggleNetworkConfig", visible);
+base::WeakPtr<AppLaunchSplashScreenView>
+AppLaunchSplashScreenHandler::AsWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace ash

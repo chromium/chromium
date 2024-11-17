@@ -217,49 +217,24 @@ void RangeInputType::HandleKeydownEvent(KeyboardEvent& event) {
 
   bool is_up = false;
   bool is_down = false;
-  if (RuntimeEnabledFeatures::VerticalInputRangeKeyOperationFixEnabled()) {
-    WritingDirectionMode writing_direction = {WritingMode::kHorizontalTb,
-                                              TextDirection::kLtr};
-    if (const auto* style = GetElement().GetComputedStyle()) {
-      writing_direction = style->GetWritingDirection();
-      // `appearance: slider-vertical` is equivalent to `writing-mode:
-      // vertical-rl; direction: rtl`.
-      if (RuntimeEnabledFeatures::
-              NonStandardAppearanceValueSliderVerticalEnabled() &&
-          writing_direction.IsHorizontal() &&
-          style->EffectiveAppearance() == kSliderVerticalPart) {
-        writing_direction = {WritingMode::kVerticalRl, TextDirection::kRtl};
-      }
-    }
-    const PhysicalToLogical<const AtomicString*> key_mapper(
-        writing_direction, &keywords::kArrowUp, &keywords::kArrowRight,
-        &keywords::kArrowDown, &keywords::kArrowLeft);
-    is_up = key == *key_mapper.InlineEnd() || key == *key_mapper.LineOver();
-    is_down =
-        key == *key_mapper.InlineStart() || key == *key_mapper.LineUnder();
-  } else {
-    TextDirection dir = TextDirection::kLtr;
-    if (GetElement().GetLayoutObject()) {
-      dir = ComputedTextDirection();
-    }
-    if (key == keywords::kArrowUp) {
-      is_up = true;
-    } else if (key == keywords::kArrowDown) {
-      is_down = true;
-    } else if (key == keywords::kArrowLeft) {
-      if (dir == TextDirection::kRtl) {
-        is_up = true;
-      } else {
-        is_down = true;
-      }
-    } else if (key == keywords::kArrowRight) {
-      if (dir == TextDirection::kRtl) {
-        is_down = true;
-      } else {
-        is_up = true;
-      }
+  WritingDirectionMode writing_direction = {WritingMode::kHorizontalTb,
+                                            TextDirection::kLtr};
+  if (const auto* style = GetElement().GetComputedStyle()) {
+    writing_direction = style->GetWritingDirection();
+    // `appearance: slider-vertical` is equivalent to `writing-mode:
+    // vertical-rl; direction: rtl`.
+    if (RuntimeEnabledFeatures::
+            NonStandardAppearanceValueSliderVerticalEnabled() &&
+        writing_direction.IsHorizontal() &&
+        style->EffectiveAppearance() == kSliderVerticalPart) {
+      writing_direction = {WritingMode::kVerticalRl, TextDirection::kRtl};
     }
   }
+  const PhysicalToLogical<const AtomicString*> key_mapper(
+      writing_direction, &keywords::kArrowUp, &keywords::kArrowRight,
+      &keywords::kArrowDown, &keywords::kArrowLeft);
+  is_up = key == *key_mapper.InlineEnd() || key == *key_mapper.LineOver();
+  is_down = key == *key_mapper.InlineStart() || key == *key_mapper.LineUnder();
 
   Decimal new_value;
   if (is_up) {

@@ -64,7 +64,7 @@ void SVGStringListBase::ParseInternal(const CharType* ptr,
       ptr++;
     if (ptr == start)
       break;
-    values_.push_back(String(start, static_cast<wtf_size_t>(ptr - start)));
+    values_.push_back(String(base::span(start, ptr)));
     SkipOptionalSVGSpacesOrDelimiter(ptr, end, list_delimiter);
   }
 }
@@ -109,7 +109,7 @@ String SVGStringListBase::ValueAsStringWithDelimiter(
 void SVGStringListBase::Add(const SVGPropertyBase* other,
                             const SVGElement* context_element) {
   // SVGStringList is never animated.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SVGStringListBase::CalculateAnimatedValue(
@@ -121,14 +121,13 @@ void SVGStringListBase::CalculateAnimatedValue(
     const SVGPropertyBase*,
     const SVGElement*) {
   // SVGStringList is never animated.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 float SVGStringListBase::CalculateDistance(const SVGPropertyBase*,
                                            const SVGElement*) const {
   // SVGStringList is never animated.
-  NOTREACHED_IN_MIGRATION();
-  return -1.0f;
+  NOTREACHED();
 }
 
 }  // namespace blink

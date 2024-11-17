@@ -24,7 +24,6 @@
 #include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
-#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/browser/webdata/addresses/address_autofill_table.h"
 #include "components/autofill/core/browser/webdata/addresses/autofill_profile_sync_util.h"
 #include "components/autofill/core/browser/webdata/autofill_change.h"
@@ -71,14 +70,15 @@ using testing::Return;
 using testing::UnorderedElementsAre;
 
 // Some guids for testing.
-const char kGuidA[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
-const char kGuidB[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
-const char kGuidC[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44C";
-const char kGuidD[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44D";
-const char kGuidInvalid[] = "EDC609ED-7EEE-4F27-B00C";
-const int kValidityStateBitfield = 1984;
-const char kLocaleString[] = "en-US";
-const base::Time kJune2017 = base::Time::FromSecondsSinceUnixEpoch(1497552271);
+constexpr char kGuidA[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44A";
+constexpr char kGuidB[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44B";
+constexpr char kGuidC[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44C";
+constexpr char kGuidD[] = "EDC609ED-7EEE-4F27-B00C-423242A9C44D";
+constexpr char kGuidInvalid[] = "EDC609ED-7EEE-4F27-B00C";
+constexpr int kValidityStateBitfield = 1984;
+constexpr char kLocaleString[] = "en-US";
+constexpr base::Time kJune2017 =
+    base::Time::FromSecondsSinceUnixEpoch(1497552271);
 
 AutofillProfile CreateAutofillProfile(
     const AutofillProfileSpecifics& specifics) {
@@ -255,7 +255,7 @@ class AutofillProfileSyncBridgeTest : public testing::Test {
 
   void SetUp() override {
     // Fix a time for implicitly constructed use_dates in AutofillProfile.
-    test_clock_.SetNow(kJune2017);
+    task_environment_.AdvanceClock(kJune2017 - base::Time::Now());
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     db_.AddTable(&table_);
     db_.AddTable(&sync_metadata_table_);
@@ -355,9 +355,9 @@ class AutofillProfileSyncBridgeTest : public testing::Test {
   MockAutofillWebDataBackend* backend() { return &backend_; }
 
  private:
-  autofill::TestAutofillClock test_clock_;
   ScopedTempDir temp_dir_;
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   testing::NiceMock<MockAutofillWebDataBackend> backend_;
   AddressAutofillTable table_;
   AutofillSyncMetadataTable sync_metadata_table_;

@@ -24,16 +24,17 @@ class MediaNotificationVolumeSliderViewTest : public views::ViewsTestBase {
     views::ViewsTestBase::SetUp();
     widget_ =
         CreateTestWidget(views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
-    volume_slider_ = widget_->SetContentsView(
-        std::make_unique<MediaNotificationVolumeSliderView>(base::BindRepeating(
-            &MediaNotificationVolumeSliderViewTest::SetVolume,
-            base::Unretained(this))));
+    volume_slider_ = std::make_unique<MediaNotificationVolumeSliderView>(
+        base::BindRepeating(&MediaNotificationVolumeSliderViewTest::SetVolume,
+                            base::Unretained(this)));
+    widget_->SetContentsView(volume_slider_.get());
 
     widget_->SetBounds(gfx::Rect(kVolumeSliderSize));
     widget_->Show();
   }
 
   void TearDown() override {
+    volume_slider_.reset();
     widget_.reset();
     views::ViewsTestBase::TearDown();
   }
@@ -54,13 +55,15 @@ class MediaNotificationVolumeSliderViewTest : public views::ViewsTestBase {
         ui::KeyEvent(ui::EventType::kKeyPressed, key_code, 0));
   }
 
-  MediaNotificationVolumeSliderView* volume_slider() { return volume_slider_; }
+  MediaNotificationVolumeSliderView* volume_slider() {
+    return volume_slider_.get();
+  }
 
   MOCK_METHOD1(SetVolume, void(float));
 
  private:
   std::unique_ptr<views::Widget> widget_;
-  raw_ptr<MediaNotificationVolumeSliderView, DanglingUntriaged> volume_slider_;
+  std::unique_ptr<MediaNotificationVolumeSliderView> volume_slider_;
 };
 
 TEST_F(MediaNotificationVolumeSliderViewTest, SetVolume) {

@@ -68,7 +68,8 @@ ScrollNode& CreateScrollNodeForNonCompositedScroller(
     int parent_id,
     ElementId element_id,
     const gfx::Size& bounds,
-    const gfx::Size& scroll_container_bounds);
+    const gfx::Size& scroll_container_bounds,
+    const gfx::Point& scroll_container_origin = gfx::Point());
 
 void SetupMaskProperties(LayerImpl* masked_layer, PictureLayerImpl* mask_layer);
 void SetupMaskProperties(Layer* masked_layer, PictureLayer* mask_layer);

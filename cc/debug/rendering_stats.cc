@@ -10,8 +10,10 @@ namespace cc {
 
 RenderingStats::TimeDeltaList::TimeDeltaList() = default;
 
-RenderingStats::TimeDeltaList::TimeDeltaList(const TimeDeltaList& other) =
-    default;
+RenderingStats::TimeDeltaList::TimeDeltaList(TimeDeltaList&& other) = default;
+
+RenderingStats::TimeDeltaList& RenderingStats::TimeDeltaList::operator=(
+    TimeDeltaList&& other) = default;
 
 RenderingStats::TimeDeltaList::~TimeDeltaList() = default;
 
@@ -39,7 +41,9 @@ base::TimeDelta RenderingStats::TimeDeltaList::GetLastTimeDelta() const {
 
 RenderingStats::RenderingStats() = default;
 
-RenderingStats::RenderingStats(const RenderingStats& other) = default;
+RenderingStats::RenderingStats(RenderingStats&& other) = default;
+
+RenderingStats& RenderingStats::operator=(RenderingStats&& other) = default;
 
 RenderingStats::~RenderingStats() = default;
 
@@ -51,12 +55,6 @@ RenderingStats::AsTraceableData() const {
   record_data->SetInteger("visible_content_area", visible_content_area);
   record_data->SetInteger("approximated_visible_content_area",
                           approximated_visible_content_area);
-  record_data->SetInteger("checkerboarded_visible_content_area",
-                          checkerboarded_visible_content_area);
-  record_data->SetInteger("checkerboarded_needs_record_content_area",
-                          checkerboarded_needs_record_content_area);
-  record_data->SetInteger("checkerboarded_needs_raster_content_area",
-                          checkerboarded_needs_raster_content_area);
   draw_duration.AddToTracedValue("draw_duration_ms", record_data.get());
 
   draw_duration_estimate.AddToTracedValue("draw_duration_estimate_ms",

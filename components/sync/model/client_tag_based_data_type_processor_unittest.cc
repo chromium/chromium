@@ -375,7 +375,7 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
 
     error_reported_ = false;
 
-    // |run_loop_| may exist here if OnSyncStarting is called without resetting
+    // `run_loop_` may exist here if OnSyncStarting is called without resetting
     // state. But it is safe to remove it.
     ASSERT_TRUE(!run_loop_ || !run_loop_->running());
     run_loop_ = std::make_unique<base::RunLoop>();
@@ -391,7 +391,7 @@ class ClientTagBasedDataTypeProcessorTest : public ::testing::Test {
     worker_ = nullptr;
   }
 
-  // Writes data for |key| and simulates a commit response for it.
+  // Writes data for `key` and simulates a commit response for it.
   EntitySpecifics WriteItemAndAck(const std::string& key,
                                   const std::string& value) {
     EntitySpecifics specifics = WritePrefItem(bridge(), key, value);
@@ -813,7 +813,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldReportErrorDuringMerge) {
   worker()->UpdateFromServer();
 }
 
-// Test that errors before it's called are passed to |start_callback| correctly.
+// Test that errors before it's called are passed to `start_callback` correctly.
 TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldDeferErrorsBeforeStart) {
   type_processor()->ReportError({FROM_HERE, "boom"});
   ExpectError(ClientTagBasedDataTypeProcessor::ErrorSite::kReportedByBridge);
@@ -1035,7 +1035,7 @@ TEST_F(ClientTagBasedDataTypeProcessorTest, ShouldReportErrorApplyingAck) {
   worker()->AckOnePendingCommit();
 }
 
-// The purpose of this test case is to test setting |client_tag_hash| and |id|
+// The purpose of this test case is to test setting `client_tag_hash` and `id`
 // on the EntityData object as we pass it into the Put method of the processor.
 TEST_F(ClientTagBasedDataTypeProcessorTest,
        ShouldOverrideFieldsForLocalUpdate) {
@@ -2872,11 +2872,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   // Initial update.
   worker()->UpdateFromServer();
   EXPECT_TRUE(type_processor()->IsTrackingMetadata());
-
-  histogram_tester.ExpectBucketCount(
-      "Sync.DataTypeEntityMetadataWithoutInitialSync",
-      /*sample=*/DataTypeHistogramValue(GetDataType()),
-      /*expected_count=*/1);
 }
 
 // Regression test for crbug.com/1427000.
@@ -2905,10 +2900,6 @@ TEST_F(ClientTagBasedDataTypeProcessorTest,
   EXPECT_EQ(2U, db()->metadata_count());
   EXPECT_EQ(2U, ProcessorEntityCount());
   EXPECT_TRUE(type_processor()->IsTrackingMetadata());
-
-  histogram_tester.ExpectTotalCount(
-      "Sync.DataTypeEntityMetadataWithoutInitialSync",
-      /*expected_count=*/0);
 }
 
 TEST_F(ClientTagBasedDataTypeProcessorTest,

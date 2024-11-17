@@ -51,9 +51,7 @@ AVCodecID CdmAudioCodecToCodecID(cdm::AudioCodec audio_codec) {
       return AV_CODEC_ID_AAC;
     case cdm::kUnknownAudioCodec:
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported cdm::AudioCodec: " << audio_codec;
-      return AV_CODEC_ID_NONE;
+      NOTREACHED() << "Unsupported cdm::AudioCodec: " << audio_codec;
   }
 }
 
@@ -139,8 +137,7 @@ void CopySamples(cdm::AudioFormat cdm_format,
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported CDM Audio Format!";
-      memset(output_buffer, 0, decoded_audio_size);
+      NOTREACHED() << "Unsupported CDM Audio Format!";
   }
 }
 
@@ -254,8 +251,7 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
     case FFmpegDecodingLoop::DecodeStatus::kSendPacketFailed:
       return cdm::kDecodeError;
     case FFmpegDecodingLoop::DecodeStatus::kFrameProcessingFailed:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case FFmpegDecodingLoop::DecodeStatus::kDecodeFrameFailed:
       DLOG(WARNING) << " failed to decode an audio buffer: "
                     << timestamp.InMicroseconds();

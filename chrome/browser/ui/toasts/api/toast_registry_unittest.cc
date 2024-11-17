@@ -12,7 +12,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/vector_icon_types.h"
 
 class ToastRegistryTest : public testing::Test {};
@@ -27,8 +26,7 @@ TEST_F(ToastRegistryTest, DefaultToast) {
   EXPECT_FALSE(spec->has_close_button());
   EXPECT_FALSE(spec->action_button_string_id().has_value());
   EXPECT_TRUE(spec->action_button_callback().is_null());
-  EXPECT_EQ(spec->menu_model(), nullptr);
-  EXPECT_FALSE(spec->is_persistent_toast());
+  EXPECT_FALSE(spec->has_menu());
 }
 
 TEST_F(ToastRegistryTest, ToastWithCloseButton) {
@@ -42,8 +40,7 @@ TEST_F(ToastRegistryTest, ToastWithCloseButton) {
   EXPECT_TRUE(spec->has_close_button());
   EXPECT_FALSE(spec->action_button_string_id().has_value());
   EXPECT_TRUE(spec->action_button_callback().is_null());
-  EXPECT_EQ(spec->menu_model(), nullptr);
-  EXPECT_FALSE(spec->is_persistent_toast());
+  EXPECT_FALSE(spec->has_menu());
 }
 
 TEST_F(ToastRegistryTest, ToastWithActionButton) {
@@ -59,8 +56,7 @@ TEST_F(ToastRegistryTest, ToastWithActionButton) {
   EXPECT_TRUE(spec->action_button_string_id().has_value());
   EXPECT_EQ(action_button_string_id, spec->action_button_string_id().value());
   EXPECT_FALSE(spec->action_button_callback().is_null());
-  EXPECT_EQ(spec->menu_model(), nullptr);
-  EXPECT_FALSE(spec->is_persistent_toast());
+  EXPECT_FALSE(spec->has_menu());
 
   // Toasts with an action button must have a close button.
   EXPECT_DEATH(
@@ -74,7 +70,7 @@ TEST_F(ToastRegistryTest, ToastWithActionButton) {
       ToastSpecification::Builder(vector_icons::kEmailIcon, body_string_id)
           .AddActionButton(action_button_string_id, base::DoNothing())
           .AddCloseButton()
-          .AddMenu(std::make_unique<ui::SimpleMenuModel>(nullptr))
+          .AddMenu()
           .Build(),
       "");
 }
@@ -83,35 +79,19 @@ TEST_F(ToastRegistryTest, ToastWithMenu) {
   const int body_string_id = 0;
   std::unique_ptr<ToastSpecification> spec =
       ToastSpecification::Builder(vector_icons::kEmailIcon, body_string_id)
-          .AddMenu(std::make_unique<ui::SimpleMenuModel>(nullptr))
+          .AddMenu()
           .Build();
   EXPECT_EQ(body_string_id, spec->body_string_id());
   EXPECT_FALSE(spec->has_close_button());
   EXPECT_FALSE(spec->action_button_string_id().has_value());
   EXPECT_TRUE(spec->action_button_callback().is_null());
-  EXPECT_NE(spec->menu_model(), nullptr);
-  EXPECT_FALSE(spec->is_persistent_toast());
-}
-
-TEST_F(ToastRegistryTest, PersistentToast) {
-  const int body_string_id = 0;
-  std::unique_ptr<ToastSpecification> spec =
-      ToastSpecification::Builder(vector_icons::kEmailIcon, body_string_id)
-          .AddPersistance()
-          .Build();
-  EXPECT_EQ(body_string_id, spec->body_string_id());
-  EXPECT_FALSE(spec->has_close_button());
-  EXPECT_FALSE(spec->action_button_string_id().has_value());
-  EXPECT_TRUE(spec->action_button_callback().is_null());
-  EXPECT_EQ(spec->menu_model(), nullptr);
-  EXPECT_TRUE(spec->is_persistent_toast());
+  EXPECT_TRUE(spec->has_menu());
 }
 
 TEST_F(ToastRegistryTest, RegisterSpecification) {
   std::unique_ptr<ToastSpecification> unique_spec =
       ToastSpecification::Builder(vector_icons::kEmailIcon,
                                   /*body_string_id=*/0)
-          .AddPersistance()
           .Build();
 
   ToastSpecification* toast_specification = unique_spec.get();

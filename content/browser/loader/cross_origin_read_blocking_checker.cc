@@ -129,7 +129,7 @@ CrossOriginReadBlockingChecker::CrossOriginReadBlockingChecker(
                                     base::Unretained(blob_io_state_.get())));
       return;
   }
-  NOTREACHED_IN_MIGRATION();  // Unrecognized `decision` value?
+  NOTREACHED();  // Unrecognized `decision` value?
 }
 
 CrossOriginReadBlockingChecker::~CrossOriginReadBlockingChecker() {
@@ -189,13 +189,9 @@ void CrossOriginReadBlockingChecker::OnReadComplete(
     case network::orb::ResponseAnalyzer::Decision::kSniffMore:
       // This should be impossible after going through
       // HandleEndOfSniffableResponseBody above.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  // Fall back to blocking after encountering an unexpected or unrecognized
-  // `orb_decision` in the `switch` statement above.
-  NOTREACHED_IN_MIGRATION();
-  OnBlocked();
+  NOTREACHED();
 }
 
 }  // namespace content

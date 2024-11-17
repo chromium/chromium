@@ -25,7 +25,8 @@ class ScriptTimingInfo : public GarbageCollected<ScriptTimingInfo> {
     kUserCallback,
     kEventHandler,
     kPromiseResolve,
-    kPromiseReject
+    kPromiseReject,
+    kUserEntryPoint,
   };
 
   // Not using blink::SourceLocation directly as using it relies on stack traces

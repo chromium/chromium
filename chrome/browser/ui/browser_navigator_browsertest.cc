@@ -2626,6 +2626,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
   // Setup server.
   embedded_https_test_server().SetSSLConfig(
       net::EmbeddedTestServer::CERT_TEST_NAMES);
+  embedded_https_test_server().ServeFilesFromSourceDirectory(
+      "content/test/data");
   ASSERT_TRUE(embedded_https_test_server().Start());
 
   // Navigate to a.test.

@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normál</translation>
 <translation id="1591562245178063882">Ebben a hónapban</translation>
 <translation id="1637811476055996098">Fájlok kiválasztása</translation>
-<translation id="1680090928918677457">Kamera használata</translation>
 <translation id="1729654308190250600">Kérjük, ne hagyja üresen az e-mail-cím mezőjét.</translation>
 <translation id="1758486001363313524">Más...</translation>
 <translation id="1921819250265091946">nn</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Kérjük, rövidítse le a szöveget legfeljebb <ph name="MAX_CHARACTERS" /> karakterre (jelenleg <ph name="CURRENT_LENGTH" /> karaktert használ).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. hét, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904"><ph name="NUMBER" />. szám</translation>
-<translation id="2353297238722298836">Kamera és mikrofon engedélyezve</translation>
 <translation id="2507943997699731163">Kérjük, töltse ki ezt a mezőt.</translation>
 <translation id="2613802280814924224">Kérjük, érvényes értéket adjon meg. A legközelebbi érvényes érték <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Küldés</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Kérjük, <ph name="MIN_CHARACTERS" /> karakter hosszú vagy annál hosszabb szöveget adjon meg (jelenleg <ph name="CURRENT_LENGTH" /> karaktert használ).</translation>
 <translation id="383465348367842624">A „<ph name="ATSIGN" />” előtti rész nem tartalmazhat „<ph name="INVALIDCHARACTER" />” karaktert.</translation>
 <translation id="3846214748874656680">Teljes képernyő – ki</translation>
-<translation id="4031179711345676612">Mikrofon engedélyezve</translation>
 <translation id="4360991593054037559">Kérjük, érvényes értéket adjon meg. A két legközelebbi érvényes érték <ph name="VALID_VALUE_LOW" /> és <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Részletek</translation>
-<translation id="4663373278480897665">Kamera engedélyezve</translation>
 <translation id="4664250907885839816">A „<ph name="ATSIGN" />” utáni rész nem tartalmazhat „<ph name="INVALIDCHARACTER" />” karaktert.</translation>
 <translation id="4718048029184481307">Lejátszás kép a képben módban</translation>
-<translation id="4792862212177489858">Hely megosztása</translation>
 <translation id="4812940957355064477">Kérjük, adjon meg egy számot.</translation>
-<translation id="49269513399674318">Mikrofon használata</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> kiválasztva</translation>
 <translation id="4992066212339426712">Némítás feloldása</translation>
 <translation id="49969490063480558">Kérjük, adja meg a „<ph name="ATSIGN" />” utáni részt is. A(z) „<ph name="INVALIDADDRESS" />” cím nem teljes.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Nem sikerült betölteni a beépülő modult.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Legalább <ph name="MIN_CHARACTERS" /> karakter hosszú szöveget adjon meg (jelenleg 1 karaktert használ).</translation>
-<translation id="7080893216867146095">Helymegosztás engedélyezve</translation>
 <translation id="709897737746224366">Kérjük, tartsa magát a kívánt formátumhoz.</translation>
-<translation id="7134810312945846184">Mikrofon és kamera használata</translation>
 <translation id="7263440858009898357">Kérjük, válasszon egyet a lista elemei közül.</translation>
 <translation id="7364796246159120393">Fájl kiválasztása</translation>
 <translation id="739024184232394898">Más...</translation>

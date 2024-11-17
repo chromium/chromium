@@ -46,11 +46,7 @@ constexpr int kSampleRate = 48000;
 constexpr media::ChannelLayout kChannelLayout = media::CHANNEL_LAYOUT_STEREO;
 constexpr int kDeviceBufferSize = 512;
 
-enum class ProcessingLocation {
-  kProcessedLocalAudioSource,
-  kAudioService,
-  kAudioServiceAvoidResampling
-};
+enum class ProcessingLocation { kProcessedLocalAudioSource, kAudioService };
 
 std::tuple<int, int> ComputeExpectedSourceAndOutputBufferSizes(
     ProcessingLocation processing_location) {
@@ -72,15 +68,11 @@ std::tuple<int, int> ComputeExpectedSourceAndOutputBufferSizes(
       // processor.
       return {kExpectedUnprocessedBufferSize, kExpectedOutputBufferSize};
     case ProcessingLocation::kAudioService:
-      // With processing in the audio service, the stream is locked to a
-      // device- and processing-friendly format.
-      return {kExpectedUnprocessedBufferSize, kExpectedUnprocessedBufferSize};
-    case ProcessingLocation::kAudioServiceAvoidResampling:
       // To minimize resampling after processing in the audio service,
       // ProcessedLocalAudioSource requests audio in the post-processing format.
       return {kExpectedOutputBufferSize, kExpectedOutputBufferSize};
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -202,11 +194,8 @@ TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   base::test::ScopedFeatureList scoped_feature_list;
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
   if (GetParam() == ProcessingLocation::kAudioService) {
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        media::kChromeWideEchoCancellation, {{"minimize_resampling", "false"}});
-  } else if (GetParam() == ProcessingLocation::kAudioServiceAvoidResampling) {
-    scoped_feature_list.InitAndEnableFeatureWithParameters(
-        media::kChromeWideEchoCancellation, {{"minimize_resampling", "true"}});
+    scoped_feature_list.InitAndEnableFeature(
+        media::kChromeWideEchoCancellation);
   } else {
     scoped_feature_list.InitAndDisableFeature(
         media::kChromeWideEchoCancellation);
@@ -244,7 +233,6 @@ TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   // Feed audio data into the ProcessedLocalAudioSource and expect it to reach
   // the sink.
   int delay_ms = 65;
-  bool key_pressed = true;
   double volume = 0.9;
   const base::TimeTicks capture_time =
       base::TimeTicks::Now() + base::Milliseconds(delay_ms);
@@ -255,7 +243,7 @@ TEST_P(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   audio_bus->Zero();
   EXPECT_CALL(*sink, OnDataCallback()).Times(AtLeast(1));
   capture_source_callback()->Capture(audio_bus.get(), capture_time, glitch_info,
-                                     volume, key_pressed);
+                                     volume);
 
   // Expect glitches to have been propagated.
   MediaStreamTrackPlatform::AudioFrameStats audio_stats;
@@ -278,8 +266,7 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ProcessedLocalAudioSourceTest,
     testing::Values(ProcessingLocation::kProcessedLocalAudioSource,
-                    ProcessingLocation::kAudioService,
-                    ProcessingLocation::kAudioServiceAvoidResampling));
+                    ProcessingLocation::kAudioService));
 #else
 INSTANTIATE_TEST_SUITE_P(
     All,
@@ -313,14 +300,14 @@ class ProcessedLocalAudioSourceIgnoreUiGainsTest
   void SetUpAudioProcessingProperties(AudioProcessingProperties* properties) {
     switch (std::get<1>(GetParam())) {
       case AGC_DISABLED:
-        properties->goog_auto_gain_control = false;
+        properties->auto_gain_control = false;
         break;
       case BROWSER_AGC:
-        properties->goog_auto_gain_control = true;
+        properties->auto_gain_control = true;
         properties->system_gain_control_activated = false;
         break;
       case SYSTEM_AGC:
-        properties->goog_auto_gain_control = true;
+        properties->auto_gain_control = true;
         properties->system_gain_control_activated = true;
         break;
     }

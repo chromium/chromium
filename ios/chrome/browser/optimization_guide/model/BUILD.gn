@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
+
 source_set("model") {
   sources = [
     "ios_chrome_hints_manager.h",
@@ -25,6 +27,7 @@ source_set("model") {
     "//components/component_updater",
     "//components/download/public/background_service:public",
     "//components/leveldb_proto",
+    "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:prediction",
     "//components/optimization_guide/proto:optimization_guide_proto",
@@ -45,6 +48,13 @@ source_set("model") {
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
   ]
+  if (build_with_internal_optimization_guide) {
+    sources += [
+      "on_device_model_service_controller_ios.h",
+      "on_device_model_service_controller_ios.mm",
+    ]
+    deps += [ "//services/on_device_model:on_device_model_service" ]
+  }
   frameworks = [ "UIKit.framework" ]
   public_deps = [
     ":download_client_header",

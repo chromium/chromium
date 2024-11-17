@@ -156,8 +156,7 @@ void ConsistencyCookieManager::SetCookieValue(
       cookie_value_string = kCookieValueStringUpdating;
       break;
     case CookieValue::kInvalid:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   DCHECK(!cookie_value_string.empty());
 
@@ -211,8 +210,7 @@ ConsistencyCookieManager::CalculateCookieValue() const {
       return CookieValue::kInconsistent;
     case signin_metrics::AccountReconcilorState::kInactive:
       // This case is already handled at the top of the function.
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
 }
 

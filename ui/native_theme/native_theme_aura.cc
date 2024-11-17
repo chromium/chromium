@@ -30,6 +30,7 @@
 #include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme_features.h"
 #include "ui/native_theme/native_theme_fluent.h"
+#include "ui/native_theme/native_theme_utils.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
 namespace ui {
@@ -96,14 +97,13 @@ NativeThemeAura::NativeThemeAura(bool use_overlay_scrollbars,
                                  bool should_only_use_dark_colors,
                                  ui::SystemTheme system_theme,
                                  bool configure_web_instance)
-    : NativeThemeBase(should_only_use_dark_colors, system_theme),
-      use_overlay_scrollbars_(use_overlay_scrollbars) {
-// We don't draw scrollbar buttons.
+    : NativeThemeBase(should_only_use_dark_colors, system_theme) {
+  set_use_overlay_scrollbar(use_overlay_scrollbars);
+  // We don't draw scrollbar buttons.
 #if BUILDFLAG(IS_CHROMEOS)
   set_scrollbar_button_length(0);
 #endif
-
-  if (use_overlay_scrollbars_) {
+  if (use_overlay_scrollbars) {
     scrollbar_width_ =
         kOverlayScrollbarThumbWidthPressed + kOverlayScrollbarStrokeWidth;
   }
@@ -124,7 +124,7 @@ NativeThemeAura::~NativeThemeAura() {}
 // static
 NativeThemeAura* NativeThemeAura::web_instance() {
   static base::NoDestructor<NativeThemeAura> s_native_theme_for_web(
-      /*use_overlay_scrollbars=*/IsOverlayScrollbarEnabled(),
+      /*use_overlay_scrollbars=*/CalculateUseOverlayScrollbar(),
       /*should_only_use_dark_colors=*/false);
   return s_native_theme_for_web.get();
 }
@@ -288,7 +288,7 @@ void NativeThemeAura::PaintScrollbarTrack(
     ColorScheme color_scheme,
     bool in_forced_colors) const {
   // Overlay Scrollbar should never paint a scrollbar track.
-  DCHECK(!use_overlay_scrollbars_);
+  DCHECK(!use_overlay_scrollbar());
   cc::PaintFlags flags;
   const SkColor track_color =
       extra_params.track_color.has_value()
@@ -315,7 +315,7 @@ void NativeThemeAura::PaintScrollbarThumb(
   gfx::Rect fill_rect(rect);
   cc::PaintFlags fill_flags;
 
-  if (use_overlay_scrollbars_) {
+  if (use_overlay_scrollbar()) {
     if (state == NativeTheme::kDisabled)
       return;
 
@@ -363,7 +363,7 @@ void NativeThemeAura::PaintScrollbarThumb(
 
 gfx::Insets NativeThemeAura::GetScrollbarSolidColorThumbInsets(
     Part part) const {
-  if (use_overlay_scrollbars_) {
+  if (use_overlay_scrollbar()) {
     return gfx::Insets();
   }
   // If there are no scroll buttons then provide some inset so that the thumb
@@ -382,7 +382,7 @@ SkColor4f NativeThemeAura::GetScrollbarThumbColor(
     State state,
     const ScrollbarThumbExtraParams& extra_params) const {
   // Only non-overlay aura scrollbars use solid color thumb.
-  CHECK(!use_overlay_scrollbars_);
+  CHECK(!use_overlay_scrollbar());
   // TODO(crbug.com/40596569): Adjust extra param `thumb_color` based on
   // `state`.
   if (extra_params.thumb_color.has_value()) {
@@ -405,7 +405,7 @@ void NativeThemeAura::PaintScrollbarCorner(
     const ScrollbarTrackExtraParams& extra_params,
     ColorScheme color_scheme) const {
   // Overlay Scrollbar should never paint a scrollbar corner.
-  DCHECK(!use_overlay_scrollbars_);
+  DCHECK(!use_overlay_scrollbar());
   const SkColor default_corner_color = GetControlColor(
       kScrollbarCornerControlColorId, color_scheme, color_provider);
 
@@ -417,7 +417,7 @@ void NativeThemeAura::PaintScrollbarCorner(
 gfx::Size NativeThemeAura::GetPartSize(Part part,
                                        State state,
                                        const ExtraParams& extra) const {
-  if (use_overlay_scrollbars_) {
+  if (use_overlay_scrollbar()) {
     constexpr int minimum_length =
         kOverlayScrollbarMinimumLength + 2 * kOverlayScrollbarStrokeWidth;
 
@@ -455,7 +455,7 @@ void NativeThemeAura::DrawPartiallyRoundRect(cc::PaintCanvas* canvas,
 }
 
 bool NativeThemeAura::SupportsNinePatch(Part part) const {
-  if (!use_overlay_scrollbars_) {
+  if (!use_overlay_scrollbar()) {
     return false;
   }
 

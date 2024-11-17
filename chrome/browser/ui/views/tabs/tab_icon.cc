@@ -38,6 +38,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/favicon_size.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/paint_throbber.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/resources/grit/ui_resources.h"
@@ -140,7 +141,6 @@ void TabIcon::SetData(const TabRendererData& data) {
   if (was_showing_load && !showing_load) {
     // Loading animation transitioning from on to off.
     loading_animation_start_time_ = base::TimeTicks();
-    waiting_state_ = gfx::ThrobberWaitingState();
     SchedulePaint();
   } else if (!was_showing_load && showing_load) {
     // Loading animation transitioning from off to on. The animation painting
@@ -194,11 +194,6 @@ void TabIcon::SetCanPaintToLayer(bool can_paint_to_layer) {
 }
 
 void TabIcon::StepLoadingAnimation(const base::TimeDelta& elapsed_time) {
-  // Only update elapsed time in the kWaiting state. This is later used as a
-  // starting point for PaintThrobberSpinningAfterWaiting().
-  if (network_state_ == TabNetworkState::kWaiting) {
-    waiting_state_.elapsed_time = elapsed_time;
-  }
   if (GetShowingLoadingAnimation()) {
     SchedulePaint();
   }
@@ -337,25 +332,15 @@ void TabIcon::PaintLoadingAnimation(gfx::Canvas* canvas, gfx::Rect bounds) {
   TRACE_EVENT0("views", "TabIcon::PaintLoadingAnimation");
 
   const SkColor spinning_color = views::GetCascadingAccentColor(this);
-  const SkColor waiting_color = color_utils::AlphaBlend(
-      spinning_color, views::GetCascadingBackgroundColor(this),
-      gfx::kGoogleGreyAlpha400);
-  if (network_state_ == TabNetworkState::kWaiting) {
-    gfx::PaintThrobberWaiting(canvas, bounds, waiting_color,
-                              waiting_state_.elapsed_time,
-                              kLoadingAnimationStrokeWidthDp);
-  } else {
-    const base::TimeTicks current_time = clock_->NowTicks();
-    if (loading_animation_start_time_.is_null()) {
-      loading_animation_start_time_ = current_time;
-    }
-
-    waiting_state_.color = waiting_color;
-    gfx::PaintThrobberSpinningAfterWaiting(
-        canvas, bounds, spinning_color,
-        current_time - loading_animation_start_time_, &waiting_state_,
-        kLoadingAnimationStrokeWidthDp);
+  const base::TimeTicks current_time = clock_->NowTicks();
+  if (loading_animation_start_time_.is_null()) {
+    loading_animation_start_time_ = current_time;
   }
+
+  gfx::PaintThrobberSpinningWithSweepEasedIn(
+      canvas, bounds, spinning_color,
+      current_time - loading_animation_start_time_,
+      kLoadingAnimationStrokeWidthDp);
 }
 
 gfx::ImageSkia TabIcon::GetIconToPaint() {

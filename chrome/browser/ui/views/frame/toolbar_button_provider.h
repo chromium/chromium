@@ -14,7 +14,6 @@ class AvatarToolbarButton;
 class DownloadToolbarButtonView;
 class ExtensionsToolbarContainer;
 class IntentChipButton;
-class ManagementToolbarButton;
 class PageActionIconView;
 class ReloadButton;
 class ToolbarButton;
@@ -69,9 +68,6 @@ class ToolbarButtonProvider {
 
   // Returns the avatar button.
   virtual AvatarToolbarButton* GetAvatarToolbarButton() = 0;
-
-  // Returns the management toolbar button.
-  virtual ManagementToolbarButton* GetManagementToolbarButton() = 0;
 
   // Returns the back button.
   virtual ToolbarButton* GetBackButton() = 0;

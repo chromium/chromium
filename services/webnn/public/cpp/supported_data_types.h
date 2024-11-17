@@ -21,6 +21,10 @@ static constexpr SupportedDataTypes kUint8 = {OperandDataType::kUint8};
 static constexpr SupportedDataTypes kInts8 = {OperandDataType::kUint8,
                                               OperandDataType::kInt8};
 
+static constexpr SupportedDataTypes kInts4ToInts8 = {
+    OperandDataType::kUint4, OperandDataType::kInt4, OperandDataType::kUint8,
+    OperandDataType::kInt8};
+
 static constexpr SupportedDataTypes kInt32To64 = {OperandDataType::kInt32,
                                                   OperandDataType::kInt64};
 
@@ -44,6 +48,12 @@ static constexpr SupportedDataTypes kFloat16To32Ints32To64 = {
 
 static constexpr SupportedDataTypes kGatherScatterIndicesSupportedDataTypes = {
     OperandDataType::kInt32, OperandDataType::kUint32, OperandDataType::kInt64};
+
+static constexpr SupportedDataTypes kAllDataTypesAtLeast8bits = {
+    OperandDataType::kFloat32, OperandDataType::kFloat16,
+    OperandDataType::kInt32,   OperandDataType::kUint32,
+    OperandDataType::kInt64,   OperandDataType::kUint64,
+    OperandDataType::kInt8,    OperandDataType::kUint8};
 
 }  // namespace DataTypeConstraint
 

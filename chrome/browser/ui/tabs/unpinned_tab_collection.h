@@ -86,14 +86,14 @@ class UnpinnedTabCollection : public TabCollection {
   }
 
   // TabCollection:
-  bool ContainsTab(TabModel* tab_model) const override;
+  bool ContainsTab(const TabInterface* tab) const override;
 
-  bool ContainsTabRecursive(TabModel* tab_model) const override;
+  bool ContainsTabRecursive(const TabInterface* tab) const override;
 
   bool ContainsCollection(TabCollection* collection) const override;
 
   std::optional<size_t> GetIndexOfTabRecursive(
-      const TabModel* tab_model) const override;
+      const TabInterface* tab) const override;
 
   std::optional<size_t> GetIndexOfCollection(
       TabCollection* collection) const override;
@@ -105,8 +105,6 @@ class UnpinnedTabCollection : public TabCollection {
       TabCollection* collection) override;
 
   size_t ChildCount() const override;
-
-  size_t TabCountRecursive() const override;
 
   void MoveGroupToRecursive(int index, TabGroupTabCollection* collection);
 

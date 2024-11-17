@@ -11,10 +11,10 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/wm/desks/desk_mini_view.h"
-#include "ash/wm/desks/desks_histogram_enums.h"
 #include "base/check_op.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/size.h"
@@ -75,7 +75,6 @@ void DeskProfilesButton::OnDeskProfileChanged(uint64_t new_lacros_profile_id) {
 }
 
 bool DeskProfilesButton::OnMousePressed(const ui::MouseEvent& event) {
-  base::UmaHistogramBoolean(kDeskProfilesPressesHistogramName, true);
   return ImageButton::OnMousePressed(event);
 }
 
@@ -87,14 +86,16 @@ void DeskProfilesButton::AboutToRequestFocusFromTabTraversal(bool reverse) {
 
 void DeskProfilesButton::OnButtonPressed(const ui::Event& event) {
   if (event.IsSynthesized() || !event.IsLocatedEvent()) {
-    CreateMenu(GetBoundsInScreen().CenterPoint(), ui::MENU_SOURCE_KEYBOARD);
+    CreateMenu(GetBoundsInScreen().CenterPoint(),
+               ui::mojom::MenuSourceType::kKeyboard);
     return;
   }
 
   gfx::Point location_in_screen(event.AsLocatedEvent()->location());
   views::View::ConvertPointToScreen(this, &location_in_screen);
-  CreateMenu(location_in_screen, event.IsMouseEvent() ? ui::MENU_SOURCE_MOUSE
-                                                      : ui::MENU_SOURCE_TOUCH);
+  CreateMenu(location_in_screen, event.IsMouseEvent()
+                                     ? ui::mojom::MenuSourceType::kMouse
+                                     : ui::mojom::MenuSourceType::kTouch);
 }
 
 void DeskProfilesButton::LoadIconForProfile() {
@@ -118,7 +119,7 @@ void DeskProfilesButton::LoadIconForProfile() {
 }
 
 void DeskProfilesButton::CreateMenu(gfx::Point location_in_screen,
-                                    ui::MenuSourceType menu_source) {
+                                    ui::mojom::MenuSourceType menu_source) {
   if (!desk_ || context_menu_) {
     return;
   }
@@ -153,8 +154,7 @@ void DeskProfilesButton::OnMenuClosed() {
 
 void DeskProfilesButton::OnSetLacrosProfileId(uint64_t lacros_profile_id) {
   if (desk_) {
-    desk_->SetLacrosProfileId(
-        lacros_profile_id, DeskProfilesSelectProfileSource::kDeskProfileButton);
+    desk_->SetLacrosProfileId(lacros_profile_id);
   }
 }
 

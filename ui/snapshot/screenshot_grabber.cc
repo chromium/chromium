@@ -65,10 +65,9 @@ class ScreenshotGrabber::ScopedCursorHider {
 };
 #endif
 
-ScreenshotGrabber::ScreenshotGrabber() {}
+ScreenshotGrabber::ScreenshotGrabber() = default;
 
-ScreenshotGrabber::~ScreenshotGrabber() {
-}
+ScreenshotGrabber::~ScreenshotGrabber() = default;
 
 void ScreenshotGrabber::TakeScreenshot(gfx::NativeWindow window,
                                        const gfx::Rect& rect,

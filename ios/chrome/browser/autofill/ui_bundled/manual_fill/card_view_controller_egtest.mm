@@ -325,7 +325,7 @@ void DismissPaymentBottomSheet() {
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface clearAllServerDataForTesting];
   [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
@@ -334,24 +334,16 @@ void DismissPaymentBottomSheet() {
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Failed to release histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(
-      autofill::features::kAutofillEnableVirtualCards);
 
   if ([self shouldEnableKeyboardAccessoryUpgradeFeature]) {
     config.features_enabled.push_back(kIOSKeyboardAccessoryUpgrade);
   } else {
     config.features_disabled.push_back(kIOSKeyboardAccessoryUpgrade);
-  }
-
-  if ([self isRunningTest:@selector
-            (testCardChipButtonsAreAllVisibleWithVirtualCardsDisabled)]) {
-    config.features_disabled.push_back(
-        autofill::features::kAutofillEnableVirtualCards);
   }
 
   return config;
@@ -404,23 +396,6 @@ void DismissPaymentBottomSheet() {
 // Tests that the saved card chip buttons are all visible in the card
 // table view controller, and that they have the right accessibility label.
 - (void)testCardChipButtonsAreAllVisible {
-  [AutofillAppInterface saveLocalCreditCard];
-
-  // Bring up the keyboard
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:TapWebElementWithId(kFormElementName)];
-
-  // Open the payment method manual fill view.
-  OpenPaymentMethodManualFillView();
-
-  CheckChipButtonsOfLocalCard();
-}
-
-// Tests that the saved card chip buttons are all visible in the card
-// table view controller, and that they have the right accessibility label when
-// the Virtual Cards feature is disabled. TODO(crbug.com/335736927): Delete this
-// test once the Virtual Cards feature is launched.
-- (void)testCardChipButtonsAreAllVisibleWithVirtualCardsDisabled {
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard
@@ -619,7 +594,8 @@ void DismissPaymentBottomSheet() {
 
 // Tests that the manual fallback view and icon is not highlighted after
 // presenting the manage payment methods view.
-- (void)testCreditCardsStateAfterPresentingPaymentMethodSettings {
+// TODO(crbug.com/371215675): Re-enable the test.
+- (void)DISABLED_testCreditCardsStateAfterPresentingPaymentMethodSettings {
   if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the Keyboard "
                            @"Accessory Upgrade feature is enabled.");
@@ -736,7 +712,8 @@ void DismissPaymentBottomSheet() {
 
 // Tests that the manual fallback view icon is not highlighted after presenting
 // the add credit card view.
-- (void)testCreditCardsButtonStateAfterPresentingAddCreditCard {
+// TODO(crbug.com/371199561): Re-enable the test.
+- (void)DISABLED_testCreditCardsButtonStateAfterPresentingAddCreditCard {
   if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
     EARL_GREY_TEST_SKIPPED(@"This test is not relevant when the Keyboard "
                            @"Accessory Upgrade feature is enabled.");
@@ -875,26 +852,8 @@ void DismissPaymentBottomSheet() {
 
   // As of Xcode 14 beta 2, tapping the keyboard does not dismiss the
   // accessory view popup.
-  bool systemDismissesView = true;
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
-  if (@available(iOS 16, *)) {
-    systemDismissesView = false;
-  }
-#endif  // defined(__IPHONE_16_0)
-
-  if (systemDismissesView) {
-    // Verify the credit card controller table view and the credit card icon is
-    // not visible.
-    [[EarlGrey
-        selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
-        assertWithMatcher:grey_notVisible()];
-    [[EarlGrey selectElementWithMatcher:manual_fill::KeyboardIconMatcher()]
-        assertWithMatcher:grey_notVisible()];
-  } else {
-    [[EarlGrey
-        selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
-        assertWithMatcher:grey_sufficientlyVisible()];
-  }
+  [[EarlGrey selectElementWithMatcher:manual_fill::CreditCardTableViewMatcher()]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that, after switching fields, the content size of the table view didn't

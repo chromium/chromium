@@ -32,7 +32,7 @@ class CORE_EXPORT V8LocalCompileHintsConsumer {
   bool IsRejected() const { return rejected_; }
 
  private:
-  WTF::Vector<int> compile_hints_;
+  Vector<int32_t> compile_hints_;
   wtf_size_t current_index_ = 0;
   bool rejected_ = false;
 };

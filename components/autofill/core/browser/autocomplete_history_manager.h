@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/single_field_form_filler.h"
+#include "components/autofill/core/browser/single_field_fill_router.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_entry.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -27,8 +27,7 @@ namespace autofill {
 // Per-profile Autocomplete history manager. Handles receiving form data
 // from the renderers and the storing and retrieving of form data
 // through WebDataServiceBase.
-class AutocompleteHistoryManager : public SingleFieldFormFiller,
-                                   public KeyedService,
+class AutocompleteHistoryManager : public KeyedService,
                                    public WebDataServiceConsumer {
  public:
   AutocompleteHistoryManager();
@@ -39,20 +38,29 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
 
   ~AutocompleteHistoryManager() override;
 
-  // SingleFieldFormFiller overrides:
-  [[nodiscard]] bool OnGetSingleFieldSuggestions(
-      const FormStructure* form_structure,
+  // Returns true iff it consumes `on_suggestions_returned`.
+  [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
       const FormFieldData& field,
-      const AutofillField* autofill_field,
       const AutofillClient& client,
-      OnSuggestionsReturnedCallback on_suggestions_returned) override;
-  void OnWillSubmitFormWithFields(const std::vector<FormFieldData>& fields,
-                                  bool is_autocomplete_enabled) override;
-  void CancelPendingQueries() override;
-  void OnRemoveCurrentSingleFieldSuggestion(const std::u16string& field_name,
-                                            const std::u16string& value,
-                                            SuggestionType type) override;
-  void OnSingleFieldSuggestionSelected(const Suggestion& suggestion) override;
+      SingleFieldFillRouter::OnSuggestionsReturnedCallback&
+          on_suggestions_returned);
+
+  // Saves the `fields` that are eligible to be saved as new or updated
+  // Autocomplete entries, which can then be served in the future as
+  // suggestions. This update is dependent on whether we are running in
+  // incognito and if Autocomplete is enabled or not. `fields` may be empty.
+  virtual void OnWillSubmitFormWithFields(
+      const std::vector<FormFieldData>& fields,
+      bool is_autocomplete_enabled);
+
+  virtual void CancelPendingQueries();
+
+  virtual void OnRemoveCurrentSingleFieldSuggestion(
+      const std::u16string& field_name,
+      const std::u16string& value,
+      SuggestionType type);
+
+  virtual void OnSingleFieldSuggestionSelected(const Suggestion& suggestion);
 
   // Initializes the instance with the given parameters.
   // |profile_database_| is a profile-scope DB used to access autocomplete data.
@@ -75,7 +83,8 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
   struct QueryHandler {
     QueryHandler(FieldGlobalId field_id,
                  std::u16string prefix,
-                 OnSuggestionsReturnedCallback on_suggestions_returned);
+                 SingleFieldFillRouter::OnSuggestionsReturnedCallback
+                     on_suggestions_returned);
     QueryHandler(const QueryHandler&) = delete;
     QueryHandler(QueryHandler&&);
     ~QueryHandler();
@@ -87,7 +96,8 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
     std::u16string prefix_;
 
     // Callback to-be-executed once a response from the DB is available.
-    OnSuggestionsReturnedCallback on_suggestions_returned_;
+    SingleFieldFillRouter::OnSuggestionsReturnedCallback
+        on_suggestions_returned_;
   };
 
   // Sends the autocomplete `entries` to the `query_handler` for display in the
@@ -120,13 +130,6 @@ class AutocompleteHistoryManager : public SingleFieldFormFiller,
 
   // Must outlive this object.
   scoped_refptr<AutofillWebDataService> profile_database_;
-
-  // Map used to store WebDataService response callbacks, associating a
-  // response's WDResultType to the appropriate callback.
-  std::map<WDResultType,
-           base::RepeatingCallback<void(WebDataServiceBase::Handle,
-                                        std::unique_ptr<WDTypedResult>)>>
-      request_callbacks_;
 
   // The PrefService that this instance uses. Must outlive this instance.
   raw_ptr<PrefService> pref_service_;

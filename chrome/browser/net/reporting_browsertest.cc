@@ -604,7 +604,9 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 #define MAYBE_IframeUnresponsiveWithJSCallStackNotOptedIn \
   DISABLED_IframeUnresponsiveWithJSCallStackNotOptedIn
 #else
-#define MAYBE_CrashReport CrashReport
+
+// Flaky, see https://crbug.com/355141780
+#define MAYBE_CrashReport DISABLED_CrashReport
 
 // Flaky on Mac (multiple versions), see https://crbug.com/1261749
 // Flaky on other platforms as well, see https://crbug.com/1377031

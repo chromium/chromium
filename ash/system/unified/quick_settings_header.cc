@@ -8,6 +8,7 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/quick_settings_catalogs.h"
+#include "ash/login/ui/lock_screen.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/system_tray_client.h"
@@ -74,14 +75,6 @@ constexpr float kManagedStateStrokeWidth = 1.0f;
 constexpr auto kManagedStateBorderInsets = gfx::Insets::TLBR(0, 12, 0, 12);
 constexpr gfx::Size kManagedStateImageSize(20, 20);
 
-// Shows enterprise managed device information.
-void ShowEnterpriseInfo(UnifiedSystemTrayController* controller,
-                        const ui::Event& event) {
-  quick_settings_metrics_util::RecordQsButtonActivated(
-      QsButtonCatalogName::kManagedButton);
-  controller->HandleEnterpriseInfoAction();
-}
-
 // Shows account settings in OS settings, which includes a link to install or
 // open the Family Link app to see supervision settings.
 void ShowAccountSettings() {
@@ -96,7 +89,7 @@ class QuickSettingsHeader::ManagedStateView : public views::Button {
   METADATA_HEADER(ManagedStateView, views::Button)
 
  public:
-  ManagedStateView(PressedCallback callback,
+  ManagedStateView(base::OnceClosure callback,
                    int label_id,
                    const gfx::VectorIcon& icon)
       : views::Button(std::move(callback)), icon_(icon) {
@@ -188,10 +181,20 @@ class QuickSettingsHeader::EnterpriseManagedView
 
  public:
   explicit EnterpriseManagedView(UnifiedSystemTrayController* controller)
-      : ManagedStateView(base::BindRepeating(&ShowEnterpriseInfo,
-                                             base::Unretained(controller)),
-                         IDS_ASH_ENTERPRISE_DEVICE_MANAGED_SHORT,
-                         kQuickSettingsManagedIcon) {
+      : ManagedStateView(
+            base::BindRepeating(
+                &QuickSettingsHeader::ShowEnterpriseInfo,
+                base::Unretained(controller),
+                base::FeatureList::IsEnabled(
+                    ash::features::kImprovedManagementDisclosure),
+                Shell::Get()->session_controller()->IsUserSessionBlocked(),
+                !Shell::Get()
+                     ->system_tray_model()
+                     ->enterprise_domain()
+                     ->enterprise_domain_manager()
+                     .empty()),
+            IDS_ASH_ENTERPRISE_DEVICE_MANAGED_SHORT,
+            kQuickSettingsManagedIcon) {
     DCHECK(Shell::Get());
     SetID(VIEW_ID_QS_MANAGED_BUTTON);
     SetProperty(views::kElementIdentifierKey, kEnterpriseManagedView);
@@ -399,6 +402,24 @@ void QuickSettingsHeader::UpdateVisibilityAndLayout() {
   }
   if (extended_updates_notice_) {
     extended_updates_notice_->SetNarrowLayout(two_columns);
+  }
+}
+
+// static
+void QuickSettingsHeader::ShowEnterpriseInfo(
+    UnifiedSystemTrayController* controller,
+    bool show_management_disclosure_dialog,
+    bool is_user_session_blocked,
+    bool has_enterprise_domain_manager) {
+  quick_settings_metrics_util::RecordQsButtonActivated(
+      QsButtonCatalogName::kManagedButton);
+  // Show the new disclosure when on the login/lock screen and feature is
+  // enabled.
+  if (show_management_disclosure_dialog && is_user_session_blocked &&
+      has_enterprise_domain_manager) {
+    LockScreen::Get()->ShowManagementDisclosureDialog();
+  } else {
+    controller->HandleEnterpriseInfoAction();
   }
 }
 

@@ -19,7 +19,7 @@ public interface SafetyHubModuleDelegate {
      *
      * @param context used to show the dialog.
      */
-    void showPasswordCheckUI(Context context);
+    void showPasswordCheckUi(Context context);
 
     /**
      * @return The last fetched update status from Omaha if available.
@@ -41,10 +41,9 @@ public interface SafetyHubModuleDelegate {
     int getAccountPasswordsCount(@Nullable PasswordStoreBridge passwordStoreBridge);
 
     /**
-     * Open the sign-in bottomsheet or sync promo page based on {@link
-     * ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS} state.
+     * Opens the sign-in bottomsheet.
      *
      * @param context used to launch the promo in.
      */
-    void launchSyncOrSigninPromo(Context context);
+    void launchSigninPromo(Context context);
 }

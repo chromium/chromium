@@ -89,20 +89,21 @@ bool OwnerSettingsServiceAshFactory::ServiceIsCreatedWithBrowserContext()
   return true;
 }
 
-KeyedService* OwnerSettingsServiceAshFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+OwnerSettingsServiceAshFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   // If g_stub_cros_settings_provider_for_testing_ is set, we treat the current
   // user as the owner, and write settings directly to the stubbed provider.
   // This is done using the FakeOwnerSettingsService.
   if (g_stub_cros_settings_provider_for_testing_ != nullptr) {
-    return new FakeOwnerSettingsService(
+    return std::make_unique<FakeOwnerSettingsService>(
         g_stub_cros_settings_provider_for_testing_, profile,
         GetInstance()->GetOwnerKeyUtil());
   }
 
-  return new OwnerSettingsServiceAsh(GetDeviceSettingsService(), profile,
-                                     GetInstance()->GetOwnerKeyUtil());
+  return std::make_unique<OwnerSettingsServiceAsh>(
+      GetDeviceSettingsService(), profile, GetInstance()->GetOwnerKeyUtil());
 }
 
 }  // namespace ash

@@ -28,11 +28,6 @@ class SingleThreadTaskRunner;
 namespace gpu {
 
 class GPU_EXPORT Scheduler {
-  // A callback to be used for reporting when the task is ready to run (when the
-  // dependencies have been solved).
-  using ReportingCallback =
-      base::OnceCallback<void(base::TimeTicks task_ready)>;
-
  public:
   struct GPU_EXPORT Task {
     // Use the signature with TaskCallback if the task needs to determine when
@@ -246,7 +241,7 @@ class GPU_EXPORT Scheduler {
     uint32_t AddTask(base::OnceClosure task_closure,
                      std::vector<SyncToken> wait_fences,
                      const SyncToken& release,
-                     TaskGraph::ReportingCallback report_callback) override
+                     ReportingCallback report_callback) override
         EXCLUSIVE_LOCKS_REQUIRED(lock());
 
     // Returns the next order number and closure. Sets running state to RUNNING.

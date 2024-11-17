@@ -29,10 +29,12 @@ import android.graphics.drawable.Drawable;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -61,6 +63,8 @@ import java.util.concurrent.atomic.AtomicReference;
         manifest = Config.NONE,
         shadows = {CustomShadowAsyncTask.class})
 public class PasswordAccessorySheetControllerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private AccessorySheetTabView mMockView;
     @Mock private ListObservable.ListObserver<Void> mMockItemListObserver;
     @Mock private Profile mProfile;
@@ -70,7 +74,6 @@ public class PasswordAccessorySheetControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mMockView.getContext()).thenReturn(ContextUtils.getApplicationContext());
         AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));
         mCoordinator =

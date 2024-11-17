@@ -72,7 +72,6 @@
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
 #include "chrome/browser/ash/login/test/webview_content_extractor.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_test_util.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account_policy_broker.h"
@@ -845,10 +844,6 @@ class ExtensionInstallObserver : public ProfileManagerObserver,
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override {
-    // Ignore lock screen apps profile.
-    if (ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
-      return;
-    }
     registry_ = extensions::ExtensionRegistry::Get(profile);
     profile_manager_observer_.Reset();
 

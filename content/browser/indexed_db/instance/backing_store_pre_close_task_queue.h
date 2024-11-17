@@ -15,8 +15,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
-#include "third_party/leveldatabase/src/include/leveldb/status.h"
 
 namespace blink {
 struct IndexedDBDatabaseMetadata;
@@ -39,7 +39,7 @@ class CONTENT_EXPORT BackingStorePreCloseTaskQueue {
  public:
   // This function should fetch all database metadata for the origin. The
   // returned status signifies if the metadata was read successfully.
-  using MetadataFetcher = base::OnceCallback<leveldb::Status(
+  using MetadataFetcher = base::OnceCallback<Status(
       std::vector<blink::IndexedDBDatabaseMetadata>*)>;
 
   // Defines a task that will be run after closing an IndexedDB backing store
@@ -103,7 +103,7 @@ class CONTENT_EXPORT BackingStorePreCloseTaskQueue {
   void OnComplete();
 
   void StopForTimout();
-  void StopForMetadataError(const leveldb::Status& status);
+  void StopForMetadataError(const Status& status);
 
   void RunLoop();
 

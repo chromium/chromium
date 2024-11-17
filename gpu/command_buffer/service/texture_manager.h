@@ -943,8 +943,7 @@ class GPU_GLES2_EXPORT TextureManager
       case GL_TEXTURE_RECTANGLE_ARB:
         return default_textures_[kRectangleARB].get();
       default:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
     }
   }
 
@@ -1004,7 +1003,7 @@ class GPU_GLES2_EXPORT TextureManager
         return;
       }
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   struct DoTexImageArguments {

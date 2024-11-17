@@ -150,7 +150,7 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
 template <typename... Args>
 base::RepeatingCallback<bool(Args...)> WithSwitch(
     const std::string& flag,
-    base::RepeatingCallback<bool(const base::Time&, Args...)> callback) {
+    base::RepeatingCallback<bool(base::Time, Args...)> callback) {
   return WithSwitch(
       flag,
       base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
@@ -168,7 +168,7 @@ base::RepeatingCallback<bool(Args...)> WithSwitch(
 template <typename... Args>
 base::RepeatingCallback<bool(Args...)> WithSwitch(
     const std::string& flag,
-    base::RepeatingCallback<bool(const base::TimeDelta&, Args...)> callback) {
+    base::RepeatingCallback<bool(base::TimeDelta, Args...)> callback) {
   return WithSwitch(
       flag,
       base::BindLambdaForTesting([=](const std::string& flag, Args... args) {
@@ -287,13 +287,19 @@ void AppTestHelper::FirstTaskRun() {
           {"clean", WithSystemScope(Wrap(&Clean))},
           {"enter_test_mode",
            WithSwitch(
-               "idle_timeout",
+               "ceca_connection_timeout",
                WithSwitch(
-                   "app_logo_url",
-                   WithSwitch("device_management_url",
-                              WithSwitch("crash_upload_url",
-                                         WithSwitch("update_url",
-                                                    Wrap(&EnterTestMode))))))},
+                   "server_keep_alive_time",
+                   WithSwitch(
+                       "idle_timeout",
+                       WithSwitch(
+                           "app_logo_url",
+                           WithSwitch(
+                               "device_management_url",
+                               WithSwitch(
+                                   "crash_upload_url",
+                                   WithSwitch("update_url",
+                                              Wrap(&EnterTestMode))))))))},
           {"exit_test_mode", WithSystemScope(Wrap(&ExitTestMode))},
           {"set_group_policies", WithSwitch("values", Wrap(&SetGroupPolicies))},
           {"set_platform_policies",
@@ -366,26 +372,29 @@ void AppTestHelper::FirstTaskRun() {
           {"install", WithSwitch("switches", WithSystemScope(Wrap(&Install)))},
           {"install_updater_and_app",
            WithSwitch(
-               "wait_for_the_installer",
+               "additional_switches",
                WithSwitch(
-                   "expect_success",
+                   "wait_for_the_installer",
                    WithSwitch(
-                       "verify_app_logo_loaded",
+                       "expect_success",
                        WithSwitch(
-                           "always_launch_cmd",
+                           "verify_app_logo_loaded",
                            WithSwitch(
-                               "child_window_text_to_find",
+                               "always_launch_cmd",
                                WithSwitch(
-                                   "tag",
+                                   "child_window_text_to_find",
                                    WithSwitch(
-                                       "is_silent_install",
+                                       "tag",
                                        WithSwitch(
-                                           "app_id",
-                                           WithSystemScope(Wrap(
-                                               &InstallUpdaterAndApp))))))))))},
+                                           "is_silent_install",
+                                           WithSwitch(
+                                               "app_id",
+                                               WithSystemScope(Wrap(
+                                                   &InstallUpdaterAndApp)))))))))))},
           {"print_log", WithSystemScope(Wrap(&PrintLog))},
           {"run_wake",
-           WithSwitch("exit_code", WithSystemScope(Wrap(&RunWake)))},
+           WithSwitch("version", WithSwitch("exit_code",
+                                            WithSystemScope(Wrap(&RunWake))))},
           {"run_wake_all", WithSystemScope(Wrap(&RunWakeAll))},
           {"run_wake_active",
            WithSwitch("exit_code", WithSystemScope(Wrap(&RunWakeActive)))},
@@ -427,8 +436,9 @@ void AppTestHelper::FirstTaskRun() {
            WithSystemScope(Wrap(&SetupFakeUpdaterHigherVersion))},
           {"setup_fake_updater_lower_version",
            WithSystemScope(Wrap(&SetupFakeUpdaterLowerVersion))},
-          {"setup_real_updater_lower_version",
-           WithSystemScope(Wrap(&SetupRealUpdaterLowerVersion))},
+          {"setup_real_updater",
+           WithSwitch("updater_path",
+                      WithSystemScope(Wrap(&SetupRealUpdater)))},
           {"set_first_registration_counter",
            WithSwitch("value", WithSystemScope(Wrap(&SetServerStarts)))},
           {"stress_update_service",
@@ -478,8 +488,16 @@ void AppTestHelper::FirstTaskRun() {
           {"dm_deregister_device", WithSystemScope(Wrap(&DMDeregisterDevice))},
           {"dm_cleanup", WithSystemScope(Wrap(&DMCleanup))},
           {"install_enterprise_companion_app",
+           Wrap(&InstallEnterpriseCompanionApp)},
+          {"install_broken_enterprise_companion_app",
+           Wrap(&InstallBrokenEnterpriseCompanionApp)},
+          {"uninstall_broken_enterprise_companion_app",
+           Wrap(&UninstallBrokenEnterpriseCompanionApp)},
+          {"install_enterprise_companion_app_overrides",
            WithSwitch("external_overrides",
-                      Wrap(&InstallEnterpriseCompanionApp))},
+                      Wrap(&InstallEnterpriseCompanionAppOverrides))},
+          {"expect_enterprise_companion_app_not_installed",
+           Wrap(&ExpectEnterpriseCompanionAppNotInstalled)},
           {"uninstall_enterprise_companion_app",
            Wrap(&UninstallEnterpriseCompanionApp)},
       };

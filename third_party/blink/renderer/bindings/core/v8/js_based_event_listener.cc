@@ -91,7 +91,7 @@ void JSBasedEventListener::Invoke(
   if (!script_state_of_listener->ContextIsValid())
     return;  // Silently fail.
 
-  probe::InvokeEventHandler probe_scope(script_state_of_listener, event, this);
+  probe::InvokeEventHandler probe_scope(*script_state_of_listener, event, this);
   ScriptState::Scope listener_script_state_scope(script_state_of_listener);
 
   // https://dom.spec.whatwg.org/#firing-events

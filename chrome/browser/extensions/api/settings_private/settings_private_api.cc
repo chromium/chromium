@@ -49,8 +49,7 @@ ExtensionFunction::ResponseAction SettingsPrivateSetPrefFunction::Run() {
       return RespondNow(Error("Unsupported type used for value of pref *",
                               parameters->name));
   }
-  NOTREACHED_IN_MIGRATION();
-  return RespondNow(WithArguments(false));
+  NOTREACHED();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

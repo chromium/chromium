@@ -25,7 +25,10 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.Resetter;
 import org.robolectric.shadow.api.Shadow;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+
+import java.util.function.Consumer;
 
 /** Tests for {@link DeviceInput}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -35,6 +38,101 @@ public class DeviceInputTest {
     @After
     public void tearDown() {
         ShadowInputDevice.reset();
+    }
+
+    @Test
+    @SmallTest
+    public void testNotifyNullInputDeviceAdded() {
+        int nextDeviceId = 1;
+
+        // Attach a physical alphabetic keyboard.
+        ShadowInputDevice.attach(nextDeviceId++)
+                .setKeyboardType(KEYBOARD_TYPE_ALPHABETIC)
+                .setSources(SOURCE_KEYBOARD);
+
+        // Attach a physical precision pointer.
+        ShadowInputDevice.attach(nextDeviceId++).setSources(SOURCE_MOUSE);
+
+        // Verify initial state.
+        Assert.assertTrue(DeviceInput.supportsAlphabeticKeyboard());
+        Assert.assertTrue(DeviceInput.supportsPrecisionPointer());
+
+        // Case: Notify addition of a non-existent device.
+        int nonExistentDeviceId = -1;
+        Assert.assertNull(InputDevice.getDevice(nonExistentDeviceId));
+        ShadowInputDevice.notifyInputDeviceAdded(nonExistentDeviceId);
+        Assert.assertTrue(DeviceInput.supportsAlphabeticKeyboard());
+        Assert.assertTrue(DeviceInput.supportsPrecisionPointer());
+    }
+
+    @Test
+    @SmallTest
+    public void testNotifyNullInputDeviceChanged() {
+        int nextDeviceId = 1;
+
+        // Attach a physical alphabetic keyboard.
+        ShadowInputDevice alphabeticKeyboard =
+                ShadowInputDevice.attach(nextDeviceId++)
+                        .setKeyboardType(KEYBOARD_TYPE_ALPHABETIC)
+                        .setSources(SOURCE_KEYBOARD);
+
+        // Attach a physical precision pointer.
+        ShadowInputDevice precisionPointer =
+                ShadowInputDevice.attach(nextDeviceId++).setSources(SOURCE_MOUSE);
+
+        // Verify initial state.
+        Assert.assertTrue(DeviceInput.supportsAlphabeticKeyboard());
+        Assert.assertTrue(DeviceInput.supportsPrecisionPointer());
+
+        // Case: Notify change of a non-existent device.
+        int nonExistentDeviceId = -1;
+        Assert.assertNull(InputDevice.getDevice(nonExistentDeviceId));
+        ShadowInputDevice.notifyInputDeviceChanged(nonExistentDeviceId);
+        Assert.assertTrue(DeviceInput.supportsAlphabeticKeyboard());
+        Assert.assertTrue(DeviceInput.supportsPrecisionPointer());
+
+        // Case: Notify change of a detached physical alphabetic keyboard.
+        ShadowInputDevice.detach(alphabeticKeyboard.getId(), /* notifyAsync= */ true);
+        Assert.assertNull(InputDevice.getDevice(alphabeticKeyboard.getId()));
+        Assert.assertTrue(DeviceInput.supportsAlphabeticKeyboard());
+        Assert.assertTrue(DeviceInput.supportsPrecisionPointer());
+        ShadowInputDevice.notifyInputDeviceChanged(alphabeticKeyboard.getId());
+        Assert.assertFalse(DeviceInput.supportsAlphabeticKeyboard());
+        Assert.assertTrue(DeviceInput.supportsPrecisionPointer());
+
+        // Case: Notify change of a detached physical precision pointer.
+        ShadowInputDevice.detach(precisionPointer.getId(), /* notifyAsync= */ true);
+        Assert.assertNull(InputDevice.getDevice(precisionPointer.getId()));
+        Assert.assertFalse(DeviceInput.supportsAlphabeticKeyboard());
+        Assert.assertTrue(DeviceInput.supportsPrecisionPointer());
+        ShadowInputDevice.notifyInputDeviceChanged(precisionPointer.getId());
+        Assert.assertFalse(DeviceInput.supportsAlphabeticKeyboard());
+        Assert.assertFalse(DeviceInput.supportsPrecisionPointer());
+    }
+
+    @Test
+    @SmallTest
+    public void testNotifyNullInputDeviceRemoved() {
+        int nextDeviceId = 1;
+
+        // Attach a physical alphabetic keyboard.
+        ShadowInputDevice.attach(nextDeviceId++)
+                .setKeyboardType(KEYBOARD_TYPE_ALPHABETIC)
+                .setSources(SOURCE_KEYBOARD);
+
+        // Attach a physical precision pointer.
+        ShadowInputDevice.attach(nextDeviceId++).setSources(SOURCE_MOUSE);
+
+        // Verify initial state.
+        Assert.assertTrue(DeviceInput.supportsAlphabeticKeyboard());
+        Assert.assertTrue(DeviceInput.supportsPrecisionPointer());
+
+        // Case: Notify removal of a non-existent device.
+        int nonExistentDeviceId = -1;
+        Assert.assertNull(InputDevice.getDevice(nonExistentDeviceId));
+        ShadowInputDevice.notifyInputDeviceRemoved(nonExistentDeviceId);
+        Assert.assertTrue(DeviceInput.supportsAlphabeticKeyboard());
+        Assert.assertTrue(DeviceInput.supportsPrecisionPointer());
     }
 
     @Test
@@ -128,14 +226,33 @@ public class DeviceInputTest {
             ShadowInputDevice shadow = Shadow.extract(device);
             shadow.mId = deviceId;
 
-            DeviceInput.getInstance().onInputDeviceAdded(deviceId);
+            notifyInputDeviceAdded(deviceId);
 
             return shadow;
         }
 
         public static void detach(int deviceId) {
+            detach(deviceId, /* notifyAsync= */ false);
+        }
+
+        public static void detach(int deviceId, boolean notifyAsync) {
             sDevicesById.remove(deviceId);
+            (notifyAsync
+                            ? (Consumer<Runnable>) ThreadUtils::postOnUiThread
+                            : (Consumer<Runnable>) ThreadUtils::runOnUiThreadBlocking)
+                    .accept(() -> notifyInputDeviceRemoved(deviceId));
+        }
+
+        public static void notifyInputDeviceAdded(int deviceId) {
+            DeviceInput.getInstance().onInputDeviceAdded(deviceId);
+        }
+
+        public static void notifyInputDeviceRemoved(int deviceId) {
             DeviceInput.getInstance().onInputDeviceRemoved(deviceId);
+        }
+
+        public static void notifyInputDeviceChanged(int deviceId) {
+            DeviceInput.getInstance().onInputDeviceChanged(deviceId);
         }
 
         @Resetter
@@ -172,7 +289,7 @@ public class DeviceInputTest {
         public ShadowInputDevice setKeyboardType(int keyboardType) {
             if (mKeyboardType != keyboardType) {
                 mKeyboardType = keyboardType;
-                DeviceInput.getInstance().onInputDeviceChanged(mId);
+                notifyInputDeviceChanged(mId);
             }
             return this;
         }
@@ -185,7 +302,7 @@ public class DeviceInputTest {
         public ShadowInputDevice setSources(int sources) {
             if (mSources != sources) {
                 mSources = sources;
-                DeviceInput.getInstance().onInputDeviceChanged(mId);
+                notifyInputDeviceChanged(mId);
             }
             return this;
         }
@@ -198,7 +315,7 @@ public class DeviceInputTest {
         public ShadowInputDevice setIsVirtual(boolean isVirtual) {
             if (mIsVirtual != isVirtual) {
                 mIsVirtual = isVirtual;
-                DeviceInput.getInstance().onInputDeviceChanged(mId);
+                notifyInputDeviceChanged(mId);
             }
             return this;
         }

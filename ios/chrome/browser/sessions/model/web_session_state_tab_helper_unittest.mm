@@ -40,9 +40,9 @@ class WebSessionStateTabHelperTest : public PlatformTest {
 
   void SetUp() override {
     PlatformTest::SetUp();
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    web::WebState::CreateParams params(browser_state_.get());
+    web::WebState::CreateParams params(profile_.get());
     web_state_ = web::WebState::Create(params);
     web_state_->GetView();
     web_state_->SetKeepRenderProcessAlive(true);
@@ -50,7 +50,7 @@ class WebSessionStateTabHelperTest : public PlatformTest {
     WebSessionStateTabHelper::CreateForWebState(web_state());
 
     session_cache_directory_ =
-        browser_state_.get()->GetStatePath().Append(kLegacyWebSessionsDirname);
+        profile_.get()->GetStatePath().Append(kLegacyWebSessionsDirname);
   }
 
   base::FilePath SessionCachePathForWebState(const web::WebState* web_state) {
@@ -71,7 +71,7 @@ class WebSessionStateTabHelperTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::ScopedTestingWebClient web_client_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<web::WebState> web_state_;
   base::FilePath session_cache_directory_;
 };
@@ -105,7 +105,7 @@ TEST_F(WebSessionStateTabHelperTest, SessionStateRestore) {
   ASSERT_TRUE(base::PathExists(file_path));
 
   // Create a new webState with a live WKWebView.
-  const web::WebState::CreateParams create_params(browser_state_.get());
+  const web::WebState::CreateParams create_params(profile_.get());
   std::unique_ptr<web::WebState> new_web_state =
       web::WebState::Create(create_params);
   WebSessionStateTabHelper::CreateForWebState(new_web_state.get());

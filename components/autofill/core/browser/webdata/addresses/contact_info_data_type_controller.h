@@ -18,6 +18,7 @@ class IdentityManager;
 
 namespace syncer {
 class DataTypeControllerDelegate;
+class DataTypeLocalDataBatchUploader;
 class SyncService;
 }  // namespace syncer
 
@@ -31,7 +32,8 @@ class ContactInfoDataTypeController : public syncer::DataTypeController {
       std::unique_ptr<syncer::DataTypeControllerDelegate>
           delegate_for_transport_mode,
       syncer::SyncService* sync_service,
-      signin::IdentityManager* identity_manager);
+      signin::IdentityManager* identity_manager,
+      std::unique_ptr<syncer::DataTypeLocalDataBatchUploader> batch_uploader);
   ~ContactInfoDataTypeController() override;
 
   ContactInfoDataTypeController(const ContactInfoDataTypeController&) =

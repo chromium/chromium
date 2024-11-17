@@ -57,7 +57,7 @@ namespace safe_browsing {
 
 class SafeBrowsingCallbackWaiter {
  public:
-  SafeBrowsingCallbackWaiter() {}
+  SafeBrowsingCallbackWaiter() = default;
 
   bool callback_called() const { return callback_called_; }
   bool proceed() const { return proceed_; }
@@ -167,8 +167,7 @@ class TestSafeBrowsingBlockingPageFactory
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources)
       override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   security_interstitials::SecurityInterstitialPage* CreateEnterpriseBlockPage(
@@ -177,8 +176,7 @@ class TestSafeBrowsingBlockingPageFactory
       const GURL& main_frame_url,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources)
       override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 #endif
 };
@@ -254,7 +252,7 @@ class SafeBrowsingUIManagerTest : public content::RenderViewHostTestHarness {
         GURL("chrome://new-tab-page/"));
   }
 
-  ~SafeBrowsingUIManagerTest() override {}
+  ~SafeBrowsingUIManagerTest() override = default;
 
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
@@ -514,14 +512,14 @@ namespace {
 // VisibleSecurityStateChanged() was called.
 class SecurityStateWebContentsDelegate : public content::WebContentsDelegate {
  public:
-  SecurityStateWebContentsDelegate() {}
+  SecurityStateWebContentsDelegate() = default;
 
   SecurityStateWebContentsDelegate(const SecurityStateWebContentsDelegate&) =
       delete;
   SecurityStateWebContentsDelegate& operator=(
       const SecurityStateWebContentsDelegate&) = delete;
 
-  ~SecurityStateWebContentsDelegate() override {}
+  ~SecurityStateWebContentsDelegate() override = default;
 
   bool visible_security_state_changed() const {
     return visible_security_state_changed_;

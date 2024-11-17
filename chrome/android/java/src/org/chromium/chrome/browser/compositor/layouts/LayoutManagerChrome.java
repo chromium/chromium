@@ -33,8 +33,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.ScrollDirection;
 import org.chromium.components.browser_ui.widget.gesture.SwipeGestureListener.SwipeHandler;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
@@ -75,7 +75,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
     private final ThumbnailChangeListener mThumbnailChangeListener = (id) -> requestUpdate();
     private final Callback<TabContentManager> mOnTabContentManager = this::onTabContentManager;
 
-    protected @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    protected @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     /**
      * Creates the {@link LayoutManagerChrome} instance.
@@ -122,7 +122,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                         /* layoutStateProvider= */ this,
                         hubLayoutDependencyHolder,
                         mTabModelSelectorSupplier,
-                        mDesktopWindowStateProvider);
+                        mDesktopWindowStateManager);
         if (mTabContentManagerSupplier.hasValue()) {
             mHubLayout.setTabContentManager(mTabContentManagerSupplier.get());
         }
@@ -161,7 +161,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
             TabCreatorManager creator,
             ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
-            TopUiThemeColorProvider topUiColorProvider) {
+            TopUiThemeColorProvider topUiColorProvider,
+            Supplier<Integer> bottomControlsOffsetSupplier) {
         Context context = mHost.getContext();
         LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
         BrowserControlsStateProvider browserControlsStateProvider =
@@ -175,9 +176,17 @@ public class LayoutManagerChrome extends LayoutManagerImpl
                         renderHost,
                         browserControlsStateProvider,
                         this,
-                        topUiColorProvider);
+                        topUiColorProvider,
+                        bottomControlsOffsetSupplier,
+                        getContentContainer());
 
-        super.init(selector, creator, controlContainer, dynamicResourceLoader, topUiColorProvider);
+        super.init(
+                selector,
+                creator,
+                controlContainer,
+                dynamicResourceLoader,
+                topUiColorProvider,
+                bottomControlsOffsetSupplier);
 
         // Initialize Layouts
         TabContentManager content = mTabContentManagerSupplier.get();
@@ -283,9 +292,22 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     @Override
     public void onTabsAllClosing(boolean incognito) {
-        if (getActiveLayout() == mStaticLayout) return;
-
+        if (getActiveLayout() == mStaticLayout && !incognito) {
+            showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
+        }
         super.onTabsAllClosing(incognito);
+    }
+
+    @Override
+    protected void tabModelSwitched(boolean incognito) {
+        super.tabModelSwitched(incognito);
+        getTabModelSelector().commitAllTabClosures();
+        if (getActiveLayout() == mStaticLayout
+                && !incognito
+                && getTabModelSelector().getModel(false).getCount() == 0
+                && getNextLayoutType() != LayoutType.TAB_SWITCHER) {
+            showLayout(LayoutType.TAB_SWITCHER, /* animate= */ false);
+        }
     }
 
     /** Initializes HubLayout without needing to open the Tab Switcher. */

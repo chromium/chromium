@@ -9,14 +9,12 @@
 #import "base/apple/foundation_util.h"
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
+#import "base/ios/scoped_critical_action.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/download/public/background_service/background_download_service.h"
 #import "components/search_engines/prepopulated_engines.h"
-#import "components/search_engines/template_url.h"
-#import "components/search_engines/template_url_prepopulate_data.h"
-#import "components/search_engines/template_url_service.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -36,7 +34,6 @@
 #import "ios/chrome/browser/keyboard/ui_bundled/menu_builder.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_delegate.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
-#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_delegate.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -56,7 +53,7 @@ namespace {
 constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 }  // namespace
 
-@interface MainApplicationDelegate () <AppStateObserver> {
+@interface MainApplicationDelegate () {
   MainController* _mainController;
   // Memory helper used to log the number of memory warnings received.
   MemoryWarningHelper* _memoryHelper;
@@ -65,9 +62,6 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   MetricsMediator* _metricsMediator;
   // Container for startup information.
   id<StartupInformation> _startupInformation;
-  // The set of "scene sessions" that needs to be discarded. See
-  // -application:didDiscardSceneSessions: for details.
-  NSSet<UISceneSession*>* _sceneSessionsToDiscard;
 }
 
 // YES if application:didFinishLaunchingWithOptions: was called. Used to
@@ -156,6 +150,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
 - (void)applicationWillTerminate:(UIApplication*)application {
   // Any report captured from this point on should be noted as after terminate.
   crash_keys::SetCrashedAfterAppWillTerminate();
+  base::ios::ScopedCriticalAction::ApplicationWillTerminate();
 
   // If `self.didFinishLaunching` is NO, that indicates that the app was
   // terminated before startup could be run. In this situation, skip running
@@ -163,41 +158,27 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   if (!self.didFinishLaunching)
     return;
 
-  if (_appState.initStage <= InitStageSafeMode)
+  if (_appState.initStage <= AppInitStage::kSafeMode) {
     return;
+  }
 
   // Instead of adding code here, consider if it could be handled by listening
   // for  UIApplicationWillterminate.
-  [_appState applicationWillTerminate:application];
+  [_mainController applicationWillTerminate:application];
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication*)application {
-  if (_appState.initStage <= InitStageSafeMode)
+  if (_appState.initStage <= AppInitStage::kSafeMode) {
     return;
+  }
 
   [_memoryHelper handleMemoryPressure];
 }
 
 - (void)application:(UIApplication*)application
     didDiscardSceneSessions:(NSSet<UISceneSession*>*)sceneSessions {
-  // This method is invoked by iOS to inform the application that the sessions
-  // for "closed windows" are garbage collected and that any data associated
-  // with them by the application needs to be deleted.
-  //
-  // The documentation says that if the application is not running when the OS
-  // decides to discard the sessions, then it will call this method the next
-  // time the application starts up. As seen by crbug.com/1292641, this call
-  // happens before -[UIApplicationDelegate sceneWillConnect:] which means
-  // that it can happen before Chrome has properly initialized. In that case,
-  // record the list of sessions to discard and clean them once Chrome is
-  // initialized.
-  if (_appState.initStage <= InitStageBrowserObjectsForBackgroundHandlers) {
-    _sceneSessionsToDiscard = [sceneSessions copy];
-    [_appState addObserver:self];
-    return;
-  }
-
-  [_appState application:application didDiscardSceneSessions:sceneSessions];
+  [_mainController application:application
+       didDiscardSceneSessions:sceneSessions];
 }
 
 - (UIInterfaceOrientationMask)application:(UIApplication*)application
@@ -256,7 +237,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
                   .mainBrowserProvider.browser;
           [self.pushNotificationDelegate
               applicationDidRegisterWithAPNS:deviceToken
-                                browserState:browser->GetBrowserState()];
+                                     profile:browser->GetProfile()];
           // Logs when a Registration succeeded with a loaded BrowserState.
           base::UmaHistogramBoolean(
               "ContentNotifications.Registration.BrowserStateUnavailable",
@@ -264,7 +245,7 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
         } else {
           [self.pushNotificationDelegate
               applicationDidRegisterWithAPNS:deviceToken
-                                browserState:nil];
+                                     profile:nil];
         }
       }));
 }
@@ -297,10 +278,9 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
     return;
   }
   // TODO(crbug.com/325613461): Associate downloads with a specific file path to
-  // determine which browser state / download service to use here.
+  // determine which profile / download service to use here.
   download::BackgroundDownloadService* download_service =
-      BackgroundDownloadServiceFactory::GetForBrowserState(
-          browser->GetBrowserState());
+      BackgroundDownloadServiceFactory::GetForProfile(browser->GetProfile());
   if (download_service) {
     download_service->HandleEventsForBackgroundURLSession(
         base::BindOnce(completionHandler));
@@ -337,29 +317,19 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
   // TODO(crbug.com/40679152): This should be called later, or this flow should
   // be changed completely.
   if (self.foregroundSceneCount == 0) {
-    [_appState applicationWillEnterForeground:UIApplication.sharedApplication
-                              metricsMediator:_metricsMediator
-                                 memoryHelper:_memoryHelper];
+    [_mainController
+        applicationWillEnterForeground:UIApplication.sharedApplication
+                          memoryHelper:_memoryHelper];
   }
 }
 
 - (void)lastSceneWillEnterBackground:(NSNotification*)notification {
-  if (_appState.initStage <= InitStageSafeMode)
-    return;
-
-  [_appState willResignActive];
+  [_mainController applicationWillResignActive:UIApplication.sharedApplication];
 }
 
 - (void)lastSceneDidEnterBackground:(NSNotification*)notification {
-  // Reset `startupHadExternalIntent` for all scenes in case external intents
-  // were triggered while the application was in the foreground.
-  for (SceneState* scene in self.appState.connectedScenes) {
-    if (scene.startupHadExternalIntent) {
-      scene.startupHadExternalIntent = NO;
-    }
-  }
-  [_appState applicationDidEnterBackground:UIApplication.sharedApplication
-                              memoryHelper:_memoryHelper];
+  [_mainController applicationDidEnterBackground:UIApplication.sharedApplication
+                                    memoryHelper:_memoryHelper];
 }
 
 - (void)firstSceneWillEnterForeground:(NSNotification*)notification {
@@ -382,26 +352,9 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
             [self provisionalNotificationTypesEnabled]];
   }
 
-  [_appState applicationWillEnterForeground:UIApplication.sharedApplication
-                            metricsMediator:_metricsMediator
-                               memoryHelper:_memoryHelper];
-}
-
-#pragma mark - AppStateObserver methods
-
-- (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  DCHECK_EQ(_appState, appState);
-
-  // The app transitioned to InitStageBrowserObjectsForBackgroundHandlers
-  // or past that stage.
-  if (_appState.initStage >= InitStageBrowserObjectsForBackgroundHandlers) {
-    DCHECK(_sceneSessionsToDiscard);
-    [_appState removeObserver:self];
-    [_appState application:[UIApplication sharedApplication]
-        didDiscardSceneSessions:_sceneSessionsToDiscard];
-    _sceneSessionsToDiscard = nil;
-  }
+  [_mainController
+      applicationWillEnterForeground:UIApplication.sharedApplication
+                        memoryHelper:_memoryHelper];
 }
 
 #pragma mark - UIResponder methods
@@ -470,10 +423,10 @@ constexpr base::TimeDelta kMainIntentCheckDelay = base::Seconds(1);
     return NO;
   }
 
-  ChromeBrowserState* browserState = browser->GetBrowserState();
+  ProfileIOS* profile = browser->GetProfile();
 
-  return IsContentNotificationEnabled(browserState) ||
-         IsContentNotificationRegistered(browserState) ||
+  return IsContentNotificationEnabled(profile) ||
+         IsContentNotificationRegistered(profile) ||
          base::FeatureList::IsEnabled(
              send_tab_to_self::kSendTabToSelfIOSPushNotifications);
 }

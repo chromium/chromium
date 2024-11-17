@@ -19,6 +19,7 @@
 #include "base/trace_event/typed_macros.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
+#include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_display.h"
 #include "ui/ozone/common/egl_util.h"
@@ -152,8 +153,7 @@ bool GbmSurfacelessWayland::ScheduleOverlayPlane(
   if (!image) {
     // Only solid color overlays can be non-backed.
     if (!overlay_plane_data.is_solid_color) {
-      LOG(WARNING) << "Only solid color overlay planes are allowed to be "
-                      "scheduled without backing.";
+      LOG(ERROR) << "Missing buffer for overlay that is not solid color.";
       frame->schedule_planes_succeeded = false;
       return false;
     }
@@ -343,7 +343,8 @@ void GbmSurfacelessWayland::OnSubmission(uint32_t frame_id,
 
   pending_presentation_frames_.push_back(std::move(submitted_frame));
 
-  if (swap_result != gfx::SwapResult::SWAP_ACK) {
+  if (swap_result != gfx::SwapResult::SWAP_ACK &&
+      swap_result != gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS) {
     last_swap_buffers_result_ = false;
     return;
   }

@@ -88,37 +88,34 @@
 }
 
 + (NSString*)primaryAccountGaiaID {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   CoreAccountInfo info =
-      IdentityManagerFactory::GetForProfile(browserState)
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+      IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountInfo(
+          signin::ConsentLevel::kSignin);
 
   return base::SysUTF8ToNSString(info.gaia);
 }
 
 + (NSString*)primaryAccountEmailWithConsent:(signin::ConsentLevel)consentLevel {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
-  CoreAccountInfo info = IdentityManagerFactory::GetForProfile(browserState)
-                             ->GetPrimaryAccountInfo(consentLevel);
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  CoreAccountInfo info =
+      IdentityManagerFactory::GetForProfile(profile)->GetPrimaryAccountInfo(
+          consentLevel);
 
   return base::SysUTF8ToNSString(info.email);
 }
 
 + (BOOL)isSignedOut {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
 
-  return !IdentityManagerFactory::GetForProfile(browserState)
-              ->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  return !IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin);
 }
 
 + (void)signOut {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(profile);
   authentication_service->SignOut(signin_metrics::ProfileSignout::kTest,
                                   /*force_clear_browsing_data=*/false, nil);
 }
@@ -128,10 +125,9 @@
     // For convenience, add the identity, if it was not added yet.
     [self addFakeIdentity:identity withUnknownCapabilities:NO];
   }
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(profile);
   authenticationService->SignIn(
       identity, signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 }
@@ -140,10 +136,9 @@
   [self signinWithFakeIdentity:identity];
 
   // "Upgrade" the account to ConsentLevel::kSync.
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browserState);
+      IdentityManagerFactory::GetForProfile(profile);
   CoreAccountId coreAccountId =
       identityManager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   CHECK(!coreAccountId.empty());
@@ -154,8 +149,7 @@
   CHECK_EQ(error, signin::PrimaryAccountMutator::PrimaryAccountError::kNoError);
 
   // Mark Sync-the-feature setup as complete, so it can start up.
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   syncService->SetSyncFeatureRequested();
   syncService->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
       syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
@@ -169,8 +163,7 @@
   [FakeSystemIdentityInteractionManager setIdentity:identity
                             withUnknownCapabilities:NO];
   std::string emailAddress = base::SysNSStringToUTF8(identity.userEmail);
-  PrefService* prefService =
-      chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  PrefService* prefService = chrome_test_util::GetOriginalProfile()->GetPrefs();
   prefService->SetString(prefs::kGoogleServicesLastSyncingUsername,
                          emailAddress);
   ShowSigninCommand* command = [[ShowSigninCommand alloc]
@@ -200,8 +193,7 @@
 
 + (void)setSelectedType:(syncer::UserSelectableType)type enabled:(BOOL)enabled {
   syncer::SyncUserSettings* settings =
-      SyncServiceFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState())
+      SyncServiceFactory::GetForProfile(chrome_test_util::GetOriginalProfile())
           ->GetUserSettings();
   settings->SetSelectedTypes(/*sync_everything=*/false,
                              settings->GetSelectedTypes());
@@ -210,8 +202,7 @@
 
 + (BOOL)isSelectedTypeEnabled:(syncer::UserSelectableType)type {
   syncer::SyncUserSettings* settings =
-      SyncServiceFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState())
+      SyncServiceFactory::GetForProfile(chrome_test_util::GetOriginalProfile())
           ->GetUserSettings();
   return settings->GetSelectedTypes().Has(type) ? YES : NO;
 }

@@ -31,8 +31,7 @@ std::string BackgroundDownloadClientToString(DownloadClient client) {
     case DownloadClient::BOUNDARY:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 }  // namespace download

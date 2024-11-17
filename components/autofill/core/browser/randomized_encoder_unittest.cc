@@ -58,7 +58,7 @@ std::string ReferenceEncodeImpl(std::string_view coins,
 }
 
 // A test version of the RandomizedEncoder class. Exposes "ForTest" methods.
-class TestRandomizedEncoder : public autofill::RandomizedEncoder {
+class TestRandomizedEncoder : public RandomizedEncoder {
  public:
   using RandomizedEncoder::GetChunkCount;
   using RandomizedEncoder::GetCoins;
@@ -69,7 +69,7 @@ class TestRandomizedEncoder : public autofill::RandomizedEncoder {
 // Data structure used to drive the encoding test cases.
 struct EncodeParams {
   // The type of encoding to perform with the RandomizedEncoder.
-  autofill::AutofillRandomizedValue_EncodingType encoding_type;
+  AutofillRandomizedValue_EncodingType encoding_type;
 
   // The bit offset to start from with the reference encoder.
   size_t bit_offset;
@@ -82,23 +82,23 @@ struct EncodeParams {
 const EncodeParams kEncodeParams[] = {
     // One bit per byte. These all require 8 bytes to encode and have 8-bit
     // strides, starting from a different initial bit offset.
-    {autofill::AutofillRandomizedValue_EncodingType_BIT_0, 0, 8},
-    {autofill::AutofillRandomizedValue_EncodingType_BIT_1, 1, 8},
-    {autofill::AutofillRandomizedValue_EncodingType_BIT_2, 2, 8},
-    {autofill::AutofillRandomizedValue_EncodingType_BIT_3, 3, 8},
-    {autofill::AutofillRandomizedValue_EncodingType_BIT_4, 4, 8},
-    {autofill::AutofillRandomizedValue_EncodingType_BIT_5, 5, 8},
-    {autofill::AutofillRandomizedValue_EncodingType_BIT_6, 6, 8},
-    {autofill::AutofillRandomizedValue_EncodingType_BIT_7, 7, 8},
+    {AutofillRandomizedValue_EncodingType_BIT_0, 0, 8},
+    {AutofillRandomizedValue_EncodingType_BIT_1, 1, 8},
+    {AutofillRandomizedValue_EncodingType_BIT_2, 2, 8},
+    {AutofillRandomizedValue_EncodingType_BIT_3, 3, 8},
+    {AutofillRandomizedValue_EncodingType_BIT_4, 4, 8},
+    {AutofillRandomizedValue_EncodingType_BIT_5, 5, 8},
+    {AutofillRandomizedValue_EncodingType_BIT_6, 6, 8},
+    {AutofillRandomizedValue_EncodingType_BIT_7, 7, 8},
 
     // Four bits per byte. These require 32 bytes to encode and have 2-bit
     // strides/
-    {autofill::AutofillRandomizedValue_EncodingType_EVEN_BITS, 0, 2},
-    {autofill::AutofillRandomizedValue_EncodingType_ODD_BITS, 1, 2},
+    {AutofillRandomizedValue_EncodingType_EVEN_BITS, 0, 2},
+    {AutofillRandomizedValue_EncodingType_ODD_BITS, 1, 2},
 
     // All bits per byte. This require 64 bytes to encode and has a 1-bit
     // stride.
-    {autofill::AutofillRandomizedValue_EncodingType_ALL_BITS, 0u, 1},
+    {AutofillRandomizedValue_EncodingType_ALL_BITS, 0u, 1},
 };
 
 using RandomizedEncoderTest = ::testing::TestWithParam<EncodeParams>;
@@ -113,8 +113,8 @@ TEST(RandomizedEncoderTest, CorrectUrlConsentFlag) {
 }
 
 TEST_P(RandomizedEncoderTest, Encode) {
-  const autofill::FormSignature form_signature(0x1234567812345678);
-  const autofill::FieldSignature field_signature(0xCAFEBABE);
+  const FormSignature form_signature(0x1234567812345678);
+  const FieldSignature field_signature(0xCAFEBABE);
   const std::string data_type = TestRandomizedEncoder::FORM_CSS_CLASS;
   const EncodeParams& params = GetParam();
   const std::string value("This is some text for testing purposes.");
@@ -148,8 +148,8 @@ TEST_P(RandomizedEncoderTest, EncodeLarge) {
   const std::string data_types[] = {TestRandomizedEncoder::FORM_NAME,
                                     TestRandomizedEncoder::FORM_URL};
   for (std::string data_type : data_types) {
-    const autofill::FormSignature form_signature(0x8765432187654321);
-    const autofill::FieldSignature field_signature(0xDEADBEEF);
+    const FormSignature form_signature(0x8765432187654321);
+    const FieldSignature field_signature(0xDEADBEEF);
     const EncodeParams& params = GetParam();
     const std::string value(
         "This is some text for testing purposes. It exceeds the maximum "
@@ -280,7 +280,7 @@ std::string Make128BitSeed(size_t i) {
 
 TEST(RandomizedEncoderTest, GetChunkCount) {
   TestRandomizedEncoder encoder(
-      "secret", autofill::AutofillRandomizedValue_EncodingType_ALL_BITS, true);
+      "secret", AutofillRandomizedValue_EncodingType_ALL_BITS, true);
 
   std::string_view url_type = TestRandomizedEncoder::FORM_URL;
   EXPECT_EQ(encoder.GetChunkCount("", url_type), 0);
@@ -308,8 +308,8 @@ TEST_P(RandomizedDecoderTest, Decode) {
       "|data_type==FORM_URL| values can be up to 8 * 64 bytes.",
   };
   for (std::string_view common_prefix : prefixes) {
-    static const autofill::FormSignature form_signature(0x8765432187654321);
-    static const autofill::FieldSignature field_signature(0xDEADBEEF);
+    static const FormSignature form_signature(0x8765432187654321);
+    static const FieldSignature field_signature(0xDEADBEEF);
     static const std::string data_type = TestRandomizedEncoder::FORM_URL;
 
     const size_t num_votes = GetParam().num_votes;
@@ -318,8 +318,7 @@ TEST_P(RandomizedDecoderTest, Decode) {
 
     size_t chunk_count =
         TestRandomizedEncoder(
-            "secret", autofill::AutofillRandomizedValue_EncodingType_ALL_BITS,
-            true)
+            "secret", AutofillRandomizedValue_EncodingType_ALL_BITS, true)
             .GetChunkCount(base::StringPrintf("%.*s%zu",
                                               base::saturated_cast<int>(
                                                   common_prefix.length()),
@@ -338,8 +337,8 @@ TEST_P(RandomizedDecoderTest, Decode) {
     for (size_t i = 0; i < num_votes; ++i) {
       // Create a new encoder with a different secret each time.
       TestRandomizedEncoder encoder(
-          Make128BitSeed(i),
-          autofill::AutofillRandomizedValue_EncodingType_ALL_BITS, true);
+          Make128BitSeed(i), AutofillRandomizedValue_EncodingType_ALL_BITS,
+          true);
 
       // Encode the common prefix plus some non-constant data.
       std::string encoded = encoder.Encode(

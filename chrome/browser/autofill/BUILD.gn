@@ -58,7 +58,7 @@ static_library("autofill") {
     "//chrome/browser:browser_process",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles",
-    "//chrome/browser/sync",
+    "//chrome/browser/sync:factories",
     "//chrome/common:constants",
     "//components/autofill/content/browser",
     "//components/image_fetcher/core",
@@ -116,8 +116,8 @@ static_library("autofill") {
 
   if (build_with_tflite_lib) {
     sources += [
-      "autofill_ml_prediction_model_service_factory.cc",
-      "autofill_ml_prediction_model_service_factory.h",
+      "autofill_field_classification_model_service_factory.cc",
+      "autofill_field_classification_model_service_factory.h",
     ]
   }
 }
@@ -185,6 +185,7 @@ if (!is_android) {
     deps = [
       "//chrome/browser/autofill",
       "//chrome/browser/ui:browser_navigator_params_headers",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/core/common:test_support",
@@ -212,6 +213,7 @@ if (!is_android) {
       "//chrome/browser/autofill",
       "//chrome/browser/ui/autofill",
       "//chrome/browser/ui/autofill:test_support",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/test:test_support",
       "//chrome/test:test_support",
       "//chrome/test:test_support_ui",
@@ -236,6 +238,7 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/browser/ui/autofill",
+      "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common:chrome_features",
       "//chrome/common:non_code_constants",
       "//chrome/test:test_support",

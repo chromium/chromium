@@ -8,7 +8,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "components/signin/public/base/signin_switches.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -144,13 +143,11 @@
 
 - (void)start {
   [super start];
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  CHECK_EQ(browserState, browserState->GetOriginalChromeBrowserState());
+  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
-  _prefService = browserState->GetPrefs();
+      AuthenticationServiceFactory::GetForProfile(profile);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
+  _prefService = profile->GetPrefs();
   // Check if History Sync Opt-In should be skipped.
   HistorySyncSkipReason skipReason = [HistorySyncCoordinator
       getHistorySyncOptInSkipReason:syncService
@@ -168,9 +165,9 @@
   _viewController.delegate = self;
 
   ChromeAccountManagerService* chromeAccountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browserState);
+      IdentityManagerFactory::GetForProfile(profile);
   _mediator = [[HistorySyncMediator alloc]
       initWithAuthenticationService:authenticationService
         chromeAccountManagerService:chromeAccountManagerService
@@ -271,12 +268,6 @@
 #pragma mark - Private
 
 - (void)recordActionButtonTappedWithHistorySyncCompleted:(BOOL)completed {
-  if (!(base::FeatureList::GetInstance() &&
-        base::FeatureList::GetInstance()->IsFeatureOverridden(
-            switches::kMinorModeRestrictionsForHistorySyncOptIn.name))) {
-    return;
-  }
-
   std::optional<signin_metrics::SyncButtonClicked> buttonClicked;
   switch (_viewController.actionButtonsVisibility) {
     case ActionButtonsVisibility::kDefault:
@@ -293,8 +284,7 @@
                                       kHistorySyncCancelEqualWeighted;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   base::UmaHistogramEnumeration("Signin.SyncButtons.Clicked", *buttonClicked);

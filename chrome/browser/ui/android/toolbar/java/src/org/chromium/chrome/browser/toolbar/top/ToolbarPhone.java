@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.toolbar.KeyboardNavigationListener;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
+import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.optional_button.OptionalButtonCoordinator;
@@ -119,7 +120,10 @@ public class ToolbarPhone extends ToolbarLayout
     // Finch params and default values for code cleanup.
     private static final String PARAM_REMOVE_REDUNDANT_ANIM_CALL =
             "remove_redundant_ntpupdate_in_lbvisualupdate";
-    public static final boolean PARAM_REMOVE_REDUNDANT_ANIM_CALL_DEFAULT_VAL = false;
+    private static final boolean PARAM_REMOVE_REDUNDANT_ANIM_CALL_DEFAULT_VAL = true;
+    private static final String PARAM_REMOVE_GTS_LAYOUT_LOCATION_BAR =
+            "remove_gts_layout_location_bar";
+    private static final boolean PARAM_REMOVE_GTS_LAYOUT_LOCATION_BAR_DEFAULT_VAL = true;
 
     @ViewDebug.ExportedProperty(
             category = "chrome",
@@ -264,7 +268,6 @@ public class ToolbarPhone extends ToolbarLayout
 
     private float mPreTextureCaptureAlpha = 1f;
     private int mPreTextureCaptureVisibility;
-    private @BrandedColorScheme int mOverlayTabStackDrawableScheme;
 
     private boolean mOptionalButtonAnimationRunning;
     private int mUrlFocusTranslationX;
@@ -362,7 +365,8 @@ public class ToolbarPhone extends ToolbarLayout
             BooleanSupplier partnerHomepageEnabledSupplier,
             ToolbarTablet.OfflineDownloader offlineDownloader,
             UserEducationHelper userEducationHelper,
-            ObservableSupplier<Tracker> trackerSupplier) {
+            ObservableSupplier<Tracker> trackerSupplier,
+            ToolbarProgressBar progressBar) {
         super.initialize(
                 toolbarDataProvider,
                 tabController,
@@ -372,7 +376,8 @@ public class ToolbarPhone extends ToolbarLayout
                 partnerHomepageEnabledSupplier,
                 offlineDownloader,
                 userEducationHelper,
-                trackerSupplier);
+                trackerSupplier,
+                progressBar);
         mUserEducationHelper = userEducationHelper;
         mTrackerSupplier = trackerSupplier;
 
@@ -1333,7 +1338,7 @@ public class ToolbarPhone extends ToolbarLayout
             int baseInset =
                     resources.getDimensionPixelSize(R.dimen.modern_toolbar_background_size)
                             - resources.getDimensionPixelSize(R.dimen.ntp_search_box_height);
-            int verticalInset = (int) (((float) (baseInset) / 2) * urlExpansionFractionComplement);
+            int verticalInset = (int) (((float) baseInset / 2) * urlExpansionFractionComplement);
 
             int locationBarUrlActionOffsetChange =
                     resources.getDimensionPixelSize(R.dimen.location_bar_url_action_offset_ntp)
@@ -1885,10 +1890,15 @@ public class ToolbarPhone extends ToolbarLayout
             if (mUrlFocusLayoutAnimator != null && mUrlFocusLayoutAnimator.isRunning()) {
                 mUrlFocusLayoutAnimator.end();
                 mUrlFocusLayoutAnimator = null;
-                // After finishing the animation, force a re-layout of the location bar,
-                // so that the final translation position is correct (since onMeasure updates
-                // won't happen in tab switcher mode). crbug.com/518795.
-                layoutLocationBar(getMeasuredWidth());
+                if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.TOOLBAR_PHONE_CLEANUP,
+                        PARAM_REMOVE_GTS_LAYOUT_LOCATION_BAR,
+                        PARAM_REMOVE_GTS_LAYOUT_LOCATION_BAR_DEFAULT_VAL)) {
+                    // After finishing the animation, force a re-layout of the location bar,
+                    // so that the final translation position is correct (since onMeasure updates
+                    // won't happen in tab switcher mode). crbug.com/518795.
+                    layoutLocationBar(getMeasuredWidth());
+                }
             }
 
             updateViewsForTabSwitcherMode();
@@ -2153,7 +2163,7 @@ public class ToolbarPhone extends ToolbarLayout
                     }
                 });
         mUrlFocusLayoutAnimator.start();
-        if (!hasFocus) {
+        if (mLocationBar.shouldShortCircuitFocusAnimation(hasFocus)) {
             TraceEvent.instant("ToolbarPhone.ShortCircuitUnfocusAnimation");
             mUrlFocusLayoutAnimator.end();
         }
@@ -2394,7 +2404,7 @@ public class ToolbarPhone extends ToolbarLayout
     private boolean hideShadowForInterstitial() {
         return getToolbarDataProvider() != null
                 && getToolbarDataProvider().getTab() != null
-                && (getToolbarDataProvider().getTab().isShowingErrorPage());
+                && getToolbarDataProvider().getTab().isShowingErrorPage();
     }
 
     private @VisualState int computeVisualState() {

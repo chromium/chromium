@@ -183,6 +183,7 @@ TEST_F(OpenscreenFrameSenderTest, CanEnqueueFirstFrame) {
   audio_frame->frame_id = openscreen::cast::FrameId(1);
   audio_frame->referenced_frame_id = audio_frame->frame_id;
   audio_frame->reference_time = base::TimeTicks::Now();
+  audio_frame->data = base::HeapArray<uint8_t>::WithSize(10);
   EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
             audio_sender().EnqueueFrame(std::move(audio_frame)));
 
@@ -190,6 +191,7 @@ TEST_F(OpenscreenFrameSenderTest, CanEnqueueFirstFrame) {
   video_frame->frame_id = openscreen::cast::FrameId(1);
   video_frame->referenced_frame_id = video_frame->frame_id;
   video_frame->reference_time = base::TimeTicks::Now();
+  video_frame->data = base::HeapArray<uint8_t>::WithSize(10);
   EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
             video_sender().EnqueueFrame(std::move(video_frame)));
 }
@@ -201,6 +203,8 @@ TEST_F(OpenscreenFrameSenderTest, RecordsRtpTimestamps) {
   audio_frame->referenced_frame_id = audio_frame->frame_id;
   audio_frame->reference_time = base::TimeTicks::Now();
   audio_frame->rtp_timestamp = kAudioRtpTimestamp;
+  audio_frame->data = base::HeapArray<uint8_t>::WithSize(10);
+
   EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
             audio_sender().EnqueueFrame(std::move(audio_frame)));
   EXPECT_EQ(kAudioRtpTimestamp, audio_sender().GetRecordedRtpTimestamp(
@@ -212,6 +216,7 @@ TEST_F(OpenscreenFrameSenderTest, RecordsRtpTimestamps) {
   video_frame->referenced_frame_id = video_frame->frame_id;
   video_frame->reference_time = base::TimeTicks::Now();
   video_frame->rtp_timestamp = kVideoRtpTimestamp;
+  video_frame->data = base::HeapArray<uint8_t>::WithSize(10);
   EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
             video_sender().EnqueueFrame(std::move(video_frame)));
   EXPECT_EQ(kVideoRtpTimestamp, video_sender().GetRecordedRtpTimestamp(
@@ -232,6 +237,7 @@ TEST_F(OpenscreenFrameSenderTest, HandlesReferencingUnknownFrameIds) {
   audio_frame->referenced_frame_id = openscreen::cast::FrameId(1);
   audio_frame->reference_time = base::TimeTicks::Now();
   audio_frame->rtp_timestamp = kAudioRtpTimestamp;
+  audio_frame->data = base::HeapArray<uint8_t>::WithSize(10);
   EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
             audio_sender().EnqueueFrame(std::move(audio_frame)));
   EXPECT_EQ(kAudioRtpTimestamp, audio_sender().GetRecordedRtpTimestamp(
@@ -243,6 +249,7 @@ TEST_F(OpenscreenFrameSenderTest, HandlesReferencingUnknownFrameIds) {
   video_frame->referenced_frame_id = openscreen::cast::FrameId(1);
   video_frame->reference_time = base::TimeTicks::Now();
   video_frame->rtp_timestamp = kVideoRtpTimestamp;
+  video_frame->data = base::HeapArray<uint8_t>::WithSize(10);
   EXPECT_EQ(CastStreamingFrameDropReason::kNotDropped,
             video_sender().EnqueueFrame(std::move(video_frame)));
   EXPECT_EQ(kVideoRtpTimestamp, video_sender().GetRecordedRtpTimestamp(
@@ -255,6 +262,7 @@ TEST_F(OpenscreenFrameSenderTest, HandlesReferencingUnknownFrameIds) {
   audio_frame_two->referenced_frame_id = openscreen::cast::FrameId(9);
   audio_frame_two->reference_time = base::TimeTicks::Now();
   audio_frame_two->rtp_timestamp = kAudioRtpTimestampTwo;
+  audio_frame_two->data = base::HeapArray<uint8_t>::WithSize(10);
   EXPECT_EQ(CastStreamingFrameDropReason::kInvalidReferencedFrameId,
             audio_sender().EnqueueFrame(std::move(audio_frame_two)));
 
@@ -264,6 +272,7 @@ TEST_F(OpenscreenFrameSenderTest, HandlesReferencingUnknownFrameIds) {
   video_frame_two->referenced_frame_id = openscreen::cast::FrameId(2);
   video_frame_two->reference_time = base::TimeTicks::Now();
   video_frame_two->rtp_timestamp = kVideoRtpTimestampTwo;
+  video_frame_two->data = base::HeapArray<uint8_t>::WithSize(10);
   EXPECT_EQ(CastStreamingFrameDropReason::kInvalidReferencedFrameId,
             video_sender().EnqueueFrame(std::move(video_frame_two)));
 }

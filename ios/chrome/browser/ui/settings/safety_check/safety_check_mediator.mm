@@ -1102,9 +1102,11 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 - (void)performUpdateCheck {
   __weak __typeof__(self) weakSelf = self;
 
-  OmahaService::CheckNow(base::BindOnce(^(UpgradeRecommendedDetails details) {
-    [weakSelf handleOmahaResponse:details];
-  }));
+  if (OmahaService::HasStarted()) {
+    OmahaService::CheckNow(base::BindOnce(^(UpgradeRecommendedDetails details) {
+      [weakSelf handleOmahaResponse:details];
+    }));
+  }
 
   // If after 30 seconds the Omaha server has not responded, assume Omaha error.
   dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)),
@@ -1361,8 +1363,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
       return GetNSString(
           IDS_IOS_SETTINGS_SAFETY_CHECK_SAFE_BROWSING_ENHANCED_PROTECTION_ENABLED_DESC);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nil;
+      NOTREACHED();
   }
 }
 

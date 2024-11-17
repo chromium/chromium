@@ -77,8 +77,8 @@ AutocapitalizationMode ConvertAutocapitalizationMode(int flags) {
 
 // Returns whether `url` refers to Terminal/crosh.
 bool IsTerminalOrCrosh(const GURL& url) {
-  return base::StartsWith(url.spec(), "chrome-untrusted://terminal") ||
-         base::StartsWith(url.spec(), "chrome-untrusted://crosh");
+  return url.spec().starts_with("chrome-untrusted://terminal") ||
+         url.spec().starts_with("chrome-untrusted://crosh");
 }
 
 }  // namespace

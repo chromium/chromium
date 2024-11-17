@@ -115,12 +115,15 @@ bool NodeRespondsToTapGesture(Node* node) {
     }
     // Accept nodes that has a CSS effect when touched.
     if (element->ChildrenOrSiblingsAffectedByActive() ||
-        element->ChildrenOrSiblingsAffectedByHover())
+        element->ChildrenOrSiblingsAffectedByHover()) {
       return true;
-  }
-  if (const ComputedStyle* computed_style = node->GetComputedStyle()) {
-    if (computed_style->AffectedByActive() || computed_style->AffectedByHover())
-      return true;
+    }
+    if (const ComputedStyle* computed_style = element->GetComputedStyle()) {
+      if (computed_style->AffectedByActive() ||
+          computed_style->AffectedByHover()) {
+        return true;
+      }
+    }
   }
   return false;
 }

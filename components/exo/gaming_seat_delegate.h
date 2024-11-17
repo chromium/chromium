@@ -27,7 +27,7 @@ class GamingSeatDelegate {
   virtual void GamepadAdded(Gamepad& gamepad) = 0;
 
  protected:
-  virtual ~GamingSeatDelegate() {}
+  virtual ~GamingSeatDelegate() = default;
 };
 
 }  // namespace exo

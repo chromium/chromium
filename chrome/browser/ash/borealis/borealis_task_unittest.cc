@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/borealis/testing/callback_factory.h"
 #include "chrome/browser/ash/guest_os/dbus_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
@@ -197,7 +198,7 @@ TEST_F(BorealisTasksTest,
   FakeCiceroneClient()->set_get_garcon_session_info_response(garcon_response);
 
   guest_os::GuestOsSessionTracker* t =
-      guest_os::GuestOsSessionTracker::GetForProfile(profile_.get());
+      guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile_.get());
   // The session tracker gets its list of container on construction, so wait.
   task_environment_.RunUntilIdle();
   ASSERT_TRUE(

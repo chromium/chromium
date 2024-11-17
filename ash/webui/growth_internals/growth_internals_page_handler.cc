@@ -6,6 +6,7 @@
 
 #include "ash/webui/growth_internals/growth_internals.mojom.h"
 #include "chromeos/ash/components/growth/campaigns_logger.h"
+#include "chromeos/ash/components/growth/campaigns_manager.h"
 
 namespace ash {
 
@@ -17,14 +18,15 @@ GrowthInternalsPageHandler::~GrowthInternalsPageHandler() = default;
 
 void GrowthInternalsPageHandler::GetCampaignsLogs(
     GetCampaignsLogsCallback callback) {
-  std::vector<std::string> logs;
-
   // `Logger` may not be initialized.
   auto* logger = ::growth::CampaignsLogger::Get();
-  if (logger) {
-    logs = logger->GetLogs();
-  }
+  std::vector<std::string> logs = logger->GetLogs();
   std::move(callback).Run(logs);
+}
+
+void GrowthInternalsPageHandler::ClearAllEvents() {
+  auto* campaigns_manager = ::growth::CampaignsManager::Get();
+  campaigns_manager->ClearAllEvents();
 }
 
 }  // namespace ash

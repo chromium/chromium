@@ -11,7 +11,6 @@
 
 #include "base/check.h"
 #include "base/containers/flat_tree.h"
-#include "base/feature_list.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected.h"
@@ -19,7 +18,6 @@
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_utils.h"
 #include "components/attribution_reporting/constants.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
@@ -29,11 +27,6 @@ namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::TriggerRegistrationError;
-
-bool FilteringIdEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kAttributionReportingAggregatableFilteringIds);
-}
 
 bool IsValid(const AggregatableValues::Values& values) {
   return base::ranges::all_of(values, [](const auto& value) {
@@ -75,29 +68,22 @@ AggregatableValuesValue::FromJSON(const base::Value& json,
   int value;
   std::optional<uint64_t> filtering_id;
 
-  if (const base::Value::Dict* dict = json.GetIfDict();
-      dict && FilteringIdEnabled()) {
+  if (const base::Value::Dict* dict = json.GetIfDict()) {
     const base::Value* value_v = dict->Find(kValue);
     if (!value_v) {
       return base::unexpected(value_error);
     }
-    ASSIGN_OR_RETURN(value, ParseInt(*value_v),
+    ASSIGN_OR_RETURN(value, ParseAggregatableValue(*value_v),
                      [value_error](ParseError) { return value_error; });
 
     ASSIGN_OR_RETURN(filtering_id, ParseUint64(*dict, kFilteringId),
                      [value_error](ParseError) { return value_error; });
   } else {
-    ASSIGN_OR_RETURN(value, ParseInt(json),
+    ASSIGN_OR_RETURN(value, ParseAggregatableValue(json),
                      [value_error](ParseError) { return value_error; });
   }
-
-  auto result = AggregatableValuesValue::Create(
-      value, filtering_id.value_or(kDefaultFilteringId));
-  if (!result) {
-    return base::unexpected(value_error);
-  }
-
-  return *std::move(result);
+  return AggregatableValuesValue(value,
+                                 filtering_id.value_or(kDefaultFilteringId));
 }
 
 AggregatableValuesValue::AggregatableValuesValue(uint32_t value,
@@ -198,12 +184,7 @@ AggregatableValues& AggregatableValues::operator=(AggregatableValues&&) =
 base::Value::Dict AggregatableValues::ToJson() const {
   base::Value::Dict values_dict;
   for (const auto& [key, value] : values_) {
-    if (FilteringIdEnabled()) {
-      values_dict.Set(key, value.ToJson());
-    } else {
-      CHECK(base::IsValueInRangeForNumericType<int>(value.value()));
-      values_dict.Set(key, static_cast<int>(value.value()));
-    }
+    values_dict.Set(key, value.ToJson());
   }
 
   base::Value::Dict dict;

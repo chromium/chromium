@@ -88,13 +88,13 @@ class TextStreamSeparator {
       : separator_(s), need_to_separate_(false) {}
 
  private:
-  friend WTF::TextStream& operator<<(WTF::TextStream&, TextStreamSeparator&);
+  friend StringBuilder& operator<<(StringBuilder&, TextStreamSeparator&);
 
   String separator_;
   bool need_to_separate_;
 };
 
-WTF::TextStream& operator<<(WTF::TextStream& ts, TextStreamSeparator& sep) {
+StringBuilder& operator<<(StringBuilder& ts, TextStreamSeparator& sep) {
   if (sep.need_to_separate_)
     ts << sep.separator_;
   else
@@ -103,13 +103,13 @@ WTF::TextStream& operator<<(WTF::TextStream& ts, TextStreamSeparator& sep) {
 }
 
 template <typename ValueType>
-static void WriteNameValuePair(WTF::TextStream& ts,
+static void WriteNameValuePair(StringBuilder& ts,
                                const char* name,
-                               ValueType value) {
+                               const ValueType& value) {
   ts << " [" << name << "=" << value << "]";
 }
 
-static void WriteSVGResourceIfNotNull(WTF::TextStream& ts,
+static void WriteSVGResourceIfNotNull(StringBuilder& ts,
                                       const char* name,
                                       const StyleSVGResource* value,
                                       TreeScope& tree_scope) {
@@ -121,14 +121,14 @@ static void WriteSVGResourceIfNotNull(WTF::TextStream& ts,
 }
 
 template <typename ValueType>
-static void WriteNameAndQuotedValue(WTF::TextStream& ts,
+static void WriteNameAndQuotedValue(StringBuilder& ts,
                                     const char* name,
                                     ValueType value) {
   ts << " [" << name << "=\"" << value << "\"]";
 }
 
 template <typename ValueType>
-static void WriteIfNotDefault(WTF::TextStream& ts,
+static void WriteIfNotDefault(StringBuilder& ts,
                               const char* name,
                               ValueType value,
                               ValueType default_value) {
@@ -136,8 +136,7 @@ static void WriteIfNotDefault(WTF::TextStream& ts,
     WriteNameValuePair(ts, name, value);
 }
 
-WTF::TextStream& operator<<(WTF::TextStream& ts,
-                            const AffineTransform& transform) {
+StringBuilder& operator<<(StringBuilder& ts, const AffineTransform& transform) {
   if (transform.IsIdentity()) {
     ts << "identity";
   } else {
@@ -149,7 +148,7 @@ WTF::TextStream& operator<<(WTF::TextStream& ts,
   return ts;
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts, const WindRule rule) {
+static StringBuilder& operator<<(StringBuilder& ts, const WindRule rule) {
   switch (rule) {
     case RULE_NONZERO:
       ts << "NON-ZERO";
@@ -162,26 +161,26 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts, const WindRule rule) {
   return ts;
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const SVGUnitTypes::SVGUnitType& unit_type) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const SVGUnitTypes::SVGUnitType& unit_type) {
   ts << GetEnumerationMap<SVGUnitTypes::SVGUnitType>().NameFromValue(unit_type);
   return ts;
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const SVGMarkerUnitsType& marker_unit) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const SVGMarkerUnitsType& marker_unit) {
   ts << GetEnumerationMap<SVGMarkerUnitsType>().NameFromValue(marker_unit);
   return ts;
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const SVGMarkerOrientType& orient_type) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const SVGMarkerOrientType& orient_type) {
   ts << GetEnumerationMap<SVGMarkerOrientType>().NameFromValue(orient_type);
   return ts;
 }
 
 // FIXME: Maybe this should be in platform/graphics/graphics_types.cc
-static WTF::TextStream& operator<<(WTF::TextStream& ts, LineCap style) {
+static StringBuilder& operator<<(StringBuilder& ts, LineCap style) {
   switch (style) {
     case kButtCap:
       ts << "BUTT";
@@ -197,7 +196,7 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts, LineCap style) {
 }
 
 // FIXME: Maybe this should be in platform/graphics/graphics_types.cc
-static WTF::TextStream& operator<<(WTF::TextStream& ts, LineJoin style) {
+static StringBuilder& operator<<(StringBuilder& ts, LineJoin style) {
   switch (style) {
     case kMiterJoin:
       ts << "MITER";
@@ -212,14 +211,14 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts, LineJoin style) {
   return ts;
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const SVGSpreadMethodType& type) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const SVGSpreadMethodType& type) {
   auto* name = GetEnumerationMap<SVGSpreadMethodType>().NameFromValue(type);
   ts << String(name).UpperASCII();
   return ts;
 }
 
-static void WriteSVGPaintingResource(WTF::TextStream& ts,
+static void WriteSVGPaintingResource(StringBuilder& ts,
                                      const SVGResource& resource) {
   const LayoutSVGResourceContainer* container =
       resource.ResourceContainerNoCycleCheck();
@@ -235,13 +234,12 @@ static void WriteSVGPaintingResource(WTF::TextStream& ts,
       ts << "[type=RADIAL-GRADIENT]";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   ts << " [id=\"" << resource.Target()->GetIdAttribute() << "\"]";
 }
 
-static bool WriteSVGPaint(WTF::TextStream& ts,
+static bool WriteSVGPaint(StringBuilder& ts,
                           const LayoutObject& object,
                           const SVGPaint& paint,
                           const Longhand& property,
@@ -277,7 +275,7 @@ static bool WriteSVGPaint(WTF::TextStream& ts,
   return false;
 }
 
-static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
+static void WriteStyle(StringBuilder& ts, const LayoutObject& object) {
   const ComputedStyle& style = object.StyleRef();
 
   if (!object.LocalSVGTransform().IsIdentity())
@@ -328,15 +326,15 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
                             tree_scope);
 }
 
-static WTF::TextStream& WritePositionAndStyle(WTF::TextStream& ts,
-                                              const LayoutObject& object) {
+static StringBuilder& WritePositionAndStyle(StringBuilder& ts,
+                                            const LayoutObject& object) {
   ts << " " << object.ObjectBoundingBox();
   WriteStyle(ts, object);
   return ts;
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const LayoutSVGShape& shape) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const LayoutSVGShape& shape) {
   WritePositionAndStyle(ts, shape);
 
   SVGElement* svg_element = shape.GetElement();
@@ -400,21 +398,20 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
         ts, "data",
         BuildStringFromByteStream(path.ByteStream(), kNoTransformation));
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return ts;
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const LayoutSVGRoot& root) {
+static StringBuilder& operator<<(StringBuilder& ts, const LayoutSVGRoot& root) {
   ts << " " << PhysicalRect(root.PhysicalLocation(), root.Size());
   WriteStyle(ts, root);
   return ts;
 }
 
-static void WriteStandardPrefix(WTF::TextStream& ts,
+static void WriteStandardPrefix(StringBuilder& ts,
                                 const LayoutObject& object,
-                                int indent) {
+                                wtf_size_t indent) {
   WriteIndent(ts, indent);
   ts << object.DecoratedName();
 
@@ -422,16 +419,16 @@ static void WriteStandardPrefix(WTF::TextStream& ts,
     ts << " {" << object.GetNode()->nodeName() << "}";
 }
 
-static void WriteChildren(WTF::TextStream& ts,
+static void WriteChildren(StringBuilder& ts,
                           const LayoutObject& object,
-                          int indent) {
+                          wtf_size_t indent) {
   for (LayoutObject* child = object.SlowFirstChild(); child;
        child = child->NextSibling())
     Write(ts, *child, indent + 1);
 }
 
 static inline void WriteCommonGradientProperties(
-    WTF::TextStream& ts,
+    StringBuilder& ts,
     const GradientAttributes& attrs) {
   WriteNameValuePair(ts, "gradientUnits", attrs.GradientUnits());
 
@@ -449,9 +446,9 @@ static inline void WriteCommonGradientProperties(
   }
 }
 
-void WriteSVGResourceContainer(WTF::TextStream& ts,
+void WriteSVGResourceContainer(StringBuilder& ts,
                                const LayoutObject& object,
-                               int indent) {
+                               wtf_size_t indent) {
   WriteStandardPrefix(ts, object, indent);
 
   auto* element = To<Element>(object.GetNode());
@@ -553,9 +550,9 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
   WriteChildren(ts, object, indent);
 }
 
-void WriteSVGContainer(WTF::TextStream& ts,
+void WriteSVGContainer(StringBuilder& ts,
                        const LayoutObject& container,
-                       int indent) {
+                       wtf_size_t indent) {
   WriteStandardPrefix(ts, container, indent);
   WritePositionAndStyle(ts, container);
   ts << "\n";
@@ -563,15 +560,15 @@ void WriteSVGContainer(WTF::TextStream& ts,
   WriteChildren(ts, container, indent);
 }
 
-void Write(WTF::TextStream& ts, const LayoutSVGRoot& root, int indent) {
+void Write(StringBuilder& ts, const LayoutSVGRoot& root, wtf_size_t indent) {
   WriteStandardPrefix(ts, root, indent);
   ts << root << "\n";
   WriteChildren(ts, root, indent);
 }
 
-void WriteSVGInline(WTF::TextStream& ts,
+void WriteSVGInline(StringBuilder& ts,
                     const LayoutSVGInline& text,
-                    int indent) {
+                    wtf_size_t indent) {
   WriteStandardPrefix(ts, text, indent);
   WritePositionAndStyle(ts, text);
   ts << "\n";
@@ -579,24 +576,24 @@ void WriteSVGInline(WTF::TextStream& ts,
   WriteChildren(ts, text, indent);
 }
 
-void WriteSVGInlineText(WTF::TextStream& ts,
+void WriteSVGInlineText(StringBuilder& ts,
                         const LayoutSVGInlineText& text,
-                        int indent) {
+                        wtf_size_t indent) {
   WriteStandardPrefix(ts, text, indent);
   WritePositionAndStyle(ts, text);
   ts << "\n";
 }
 
-void WriteSVGImage(WTF::TextStream& ts,
+void WriteSVGImage(StringBuilder& ts,
                    const LayoutSVGImage& image,
-                   int indent) {
+                   wtf_size_t indent) {
   WriteStandardPrefix(ts, image, indent);
   WritePositionAndStyle(ts, image);
   ts << "\n";
   WriteResources(ts, image, indent);
 }
 
-void Write(WTF::TextStream& ts, const LayoutSVGShape& shape, int indent) {
+void Write(StringBuilder& ts, const LayoutSVGShape& shape, wtf_size_t indent) {
   WriteStandardPrefix(ts, shape, indent);
   ts << shape << "\n";
   WriteResources(ts, shape, indent);
@@ -621,12 +618,12 @@ static LayoutSVGResourceFilter* GetFilterResourceForSVG(
 }
 
 static void WriteSVGResourceReferencePrefix(
-    WTF::TextStream& ts,
+    StringBuilder& ts,
     const char* resource_name,
     const LayoutSVGResourceContainer* resource_object,
     const AtomicString& url,
     const TreeScope& tree_scope,
-    int indent) {
+    wtf_size_t indent) {
   AtomicString id =
       SVGURIReference::FragmentIdentifierFromIRIString(url, tree_scope);
   WriteIndent(ts, indent);
@@ -636,9 +633,9 @@ static void WriteSVGResourceReferencePrefix(
   WriteStandardPrefix(ts, *resource_object, 0);
 }
 
-void WriteResources(WTF::TextStream& ts,
+void WriteResources(StringBuilder& ts,
                     const LayoutObject& object,
-                    int indent) {
+                    wtf_size_t indent) {
   const gfx::RectF reference_box = object.ObjectBoundingBox();
   const ComputedStyle& style = object.StyleRef();
   TreeScope& tree_scope = object.GetDocument();

@@ -308,7 +308,7 @@ base::Time CanonicalCookie::ValidateAndAdjustExpiryDate(
 // static
 std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
     const GURL& url,
-    const std::string& cookie_line,
+    std::string_view cookie_line,
     const base::Time& creation_time,
     std::optional<base::Time> server_time,
     std::optional<CookiePartitionKey> cookie_partition_key,
@@ -455,8 +455,8 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
 
   auto cc = std::make_unique<CanonicalCookie>(
       base::PassKey<CanonicalCookie>(), parsed_cookie.Name(),
-      parsed_cookie.Value(), cookie_domain, cookie_path, creation_time,
-      cookie_expires, creation_time,
+      parsed_cookie.Value(), std::move(cookie_domain), std::move(cookie_path),
+      creation_time, cookie_expires, creation_time,
       /*last_update=*/base::Time::Now(), parsed_cookie.IsSecure(),
       parsed_cookie.IsHttpOnly(), samesite, parsed_cookie.Priority(),
       cookie_partition_key, source_scheme, source_port, source_type);
@@ -668,8 +668,9 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateSanitizedCookie(
     return nullptr;
 
   auto cc = std::make_unique<CanonicalCookie>(
-      base::PassKey<CanonicalCookie>(), name, value, cookie_domain,
-      encoded_cookie_path, creation_time, expiration_time, last_access_time,
+      base::PassKey<CanonicalCookie>(), name, value, std::move(cookie_domain),
+      std::move(encoded_cookie_path), creation_time, expiration_time,
+      last_access_time,
       /*last_update=*/base::Time::Now(), secure, http_only, same_site, priority,
       partition_key, source_scheme, source_port, CookieSourceType::kOther);
   DCHECK(cc->IsCanonical());
@@ -757,6 +758,13 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::CreateForTesting(
     CookieInclusionStatus* status) {
   return CanonicalCookie::Create(url, cookie_line, creation_time, server_time,
                                  cookie_partition_key, source_type, status);
+}
+
+std::string CanonicalCookie::Value() const {
+  if (!value_.has_value()) {
+    return std::string();
+  }
+  return value_->value();
 }
 
 bool CanonicalCookie::IsEquivalentForSecureCookieMatching(
@@ -896,7 +904,7 @@ base::TimeDelta CanonicalCookie::GetLaxAllowUnsafeThresholdAge() const {
 std::string CanonicalCookie::DebugString() const {
   return base::StringPrintf(
       "name: %s value: %s domain: %s path: %s creation: %" PRId64,
-      Name().c_str(), value_.c_str(), Domain().c_str(), Path().c_str(),
+      Name().c_str(), Value().c_str(), Domain().c_str(), Path().c_str(),
       static_cast<int64_t>(CreationDate().ToTimeT()));
 }
 
@@ -927,12 +935,12 @@ bool CanonicalCookie::IsCanonicalForFromStorage() const {
   // here because we don't want to enforce the size checks on names or values
   // that may have been reconstituted from the cookie store.
   if (ParsedCookie::ParseTokenString(Name()) != Name() ||
-      !ParsedCookie::ValueMatchesParsedValue(value_)) {
+      !ParsedCookie::ValueMatchesParsedValue(Value())) {
     return false;
   }
 
   if (!ParsedCookie::IsValidCookieName(Name()) ||
-      !ParsedCookie::IsValidCookieValue(value_)) {
+      !ParsedCookie::IsValidCookieValue(Value())) {
     return false;
   }
 
@@ -976,7 +984,7 @@ bool CanonicalCookie::IsCanonicalForFromStorage() const {
       break;
   }
 
-  if (Name() == "" && HasHiddenPrefixName(value_)) {
+  if (Name() == "" && HasHiddenPrefixName(Value())) {
     return false;
   }
 
@@ -1099,7 +1107,7 @@ int CanonicalCookie::GetAndAdjustPortForTrustworthyUrls(
 }
 
 // static
-bool CanonicalCookie::HasHiddenPrefixName(const std::string_view cookie_value) {
+bool CanonicalCookie::HasHiddenPrefixName(std::string_view cookie_value) {
   // Skip BWS as defined by HTTPSEM as SP or HTAB (0x20 or 0x9).
   std::string_view value_without_BWS =
       base::TrimString(cookie_value, " \t", base::TRIM_LEADING);

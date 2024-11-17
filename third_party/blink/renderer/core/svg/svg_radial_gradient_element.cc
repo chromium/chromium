@@ -83,7 +83,6 @@ void SVGRadialGradientElement::SvgAttributeChanged(
   if (attr_name == svg_names::kCxAttr || attr_name == svg_names::kCyAttr ||
       attr_name == svg_names::kFxAttr || attr_name == svg_names::kFyAttr ||
       attr_name == svg_names::kRAttr || attr_name == svg_names::kFrAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     UpdateRelativeLengthsInformation();
     InvalidateGradient();
     return;

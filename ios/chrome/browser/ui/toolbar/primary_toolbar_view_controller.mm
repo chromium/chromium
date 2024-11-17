@@ -32,6 +32,11 @@
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 
+// TODO(crbug.com/374808149): Clean up the killswitch.
+BASE_FEATURE(kPrimaryToolbarViewDidLoadUpdateViews,
+             "PrimaryToolbarViewDidLoadUpdateViews",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 @interface PrimaryToolbarViewController ()
 
 // Redefined to be a PrimaryToolbarView.
@@ -148,8 +153,12 @@
   // set to topLayoutGuide after the view creation on iOS 10.
   [self.view setUp];
 
+  // Reference the location bar container as the top omnibox layout guide.
+  // Force the synchronous layout update, as this fixes the screen rotation
+  // animation in this case.
   [self.layoutGuideCenter referenceView:self.view.locationBarContainer
-                              underName:kTopOmniboxGuide];
+                              underName:kTopOmniboxGuide
+         forcesSynchronousLayoutUpdates:YES];
   self.view.locationBarBottomConstraint.constant =
       [self verticalMarginForLocationBarForFullscreenProgress:1];
 }
@@ -173,10 +182,14 @@
   // change.
   if (@available(iOS 17, *)) {
     [self registerForTraitChanges:@[
-      UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self
+      UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class
     ]
                        withAction:@selector(updateViews:
                                       previousTraitCollection:)];
+    // TODO(crbug.com/374808149): Clean up the killswitch.
+    if (base::FeatureList::IsEnabled(kPrimaryToolbarViewDidLoadUpdateViews)) {
+      [self updateViews:self.view previousTraitCollection:nil];
+    }
   }
 }
 

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 /**
- * @file
+ * @fileoverview
  * This scripts should only be loaded as a SharedWorker and the worker is only
  * used for communication between Tast tests and CCA instance. Generally, the
  * SharedWorker will first be created by Tast tests when constructing the test
@@ -14,7 +14,7 @@
 
 import {AppWindow} from './app_window.js';
 import {assert} from './assert.js';
-import * as Comlink from './lib/comlink.js';
+import * as comlink from './lib/comlink.js';
 
 /**
  * Pending unbound AppWindow requested by tast waiting to be bound by next
@@ -38,11 +38,11 @@ let useInTestSession = false;
  * later once the window is created. This method is expected to be called in
  * Tast tests.
  */
-export function registerUnboundWindow(): AppWindow&Comlink.ProxyMarked {
+export function registerUnboundWindow(): AppWindow&comlink.ProxyMarked {
   assert(pendingAppWindow === null);
   const appWindow = new AppWindow(fromColdStart);
   pendingAppWindow = appWindow;
-  return Comlink.proxy(appWindow);
+  return comlink.proxy(appWindow);
 }
 
 /**
@@ -50,13 +50,13 @@ export function registerUnboundWindow(): AppWindow&Comlink.ProxyMarked {
  *
  * @param url The URL to bind.
  */
-function bindWindow(url: string): (AppWindow&Comlink.ProxyMarked)|null {
+function bindWindow(url: string): (AppWindow&comlink.ProxyMarked)|null {
   fromColdStart = false;
   if (pendingAppWindow !== null) {
     const appWindow = pendingAppWindow;
     pendingAppWindow = null;
     appWindow.bindUrl(url);
-    return Comlink.proxy(appWindow);
+    return comlink.proxy(appWindow);
   }
   return null;
 }
@@ -94,7 +94,7 @@ export interface TestBridge {
  */
 sharedWorkerScope.onconnect = (event: MessageEvent) => {
   const port = event.ports[0];
-  Comlink.expose(
+  comlink.expose(
       {
         bindWindow,
         isInTestSession,

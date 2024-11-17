@@ -38,6 +38,7 @@ static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 #include "build/build_config.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/content_uri_utils.h"
 #include "base/os_compat_android.h"
 #endif
 
@@ -159,6 +160,17 @@ File::Error CallFcntlFlock(PlatformFile file,
   return File::FILE_ERROR_INVALID_OPERATION;
 }
 #endif  // BUILDFLAG(IS_NACL)
+
+#if BUILDFLAG(IS_ANDROID)
+bool GetContentUriInfo(const base::FilePath& path, File::Info* info) {
+  FileEnumerator::FileInfo file_info;
+  bool result = internal::ContentUriGetFileInfo(path, &file_info);
+  if (result) {
+    info->FromStat(file_info.stat());
+  }
+  return result;
+}
+#endif
 
 }  // namespace
 
@@ -405,11 +417,12 @@ int64_t File::GetLength() const {
 
   SCOPED_FILE_TRACE("GetLength");
 
-  stat_wrapper_t file_info;
-  if (Fstat(file_.get(), &file_info))
+  Info info;
+  if (!GetInfo(&info)) {
     return -1;
+  }
 
-  return file_info.st_size;
+  return info.size;
 }
 
 bool File::SetLength(int64_t length) {
@@ -433,17 +446,36 @@ bool File::SetTimes(Time last_access_time, Time last_modified_time) {
   return !CallFutimes(file_.get(), times);
 }
 
-bool File::GetInfo(Info* info) {
+bool File::GetInfo(Info* info) const {
   DCHECK(IsValid());
 
   SCOPED_FILE_TRACE("GetInfo");
 
   stat_wrapper_t file_info;
-  if (Fstat(file_.get(), &file_info))
-    return false;
-
-  info->FromStat(file_info);
-  return true;
+  bool success = (Fstat(file_.get(), &file_info) == 0);
+  if (success) {
+    info->FromStat(file_info);
+  }
+#if BUILDFLAG(IS_ANDROID)
+  if (path_.IsContentUri()) {
+    // Content-URIs may represent files on the local disk, or may be virtual
+    // files backed by a ContentProvider which may or may not use FUSE to back
+    // the FDs.
+    //
+    // For Document URIs, always use ContentUriGetFileInfo() since it will
+    // succeed by using the Java API DocumentFile, which can provide
+    // last-modified where FUSE cannot. FUSE always returns the current-time
+    // which is problematic because Blobs are registered with an
+    // expected-last-modified, and will fail if it changes by the time a client
+    // accesses it.
+    //
+    // For other Content-URIS, if fstat() succeeded with a non-zero size, then
+    // use the result, otherwise try via the Java APIs.
+    return (success && info->size > 0 && !internal::IsDocumentUri(path_)) ||
+           GetContentUriInfo(path_, info);
+  }
+#endif
+  return success;
 }
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -578,6 +610,24 @@ void File::DoInitialize(const FilePath& path, uint32_t flags) {
   mode |= S_IRGRP | S_IROTH;
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri()) {
+    int fd = internal::OpenContentUri(path, flags);
+    if (fd < 0) {
+      error_details_ = FILE_ERROR_FAILED;
+      return;
+    }
+
+    // Save path for any call to GetInfo().
+    path_ = path;
+    created_ = (flags & (FLAG_CREATE_ALWAYS | FLAG_CREATE));
+    async_ = (flags & FLAG_ASYNC);
+    error_details_ = FILE_OK;
+    file_.reset(fd);
+    return;
+  }
+#endif
+
   int descriptor = HANDLE_EINTR(open(path.value().c_str(), open_flags, mode));
 
   if (flags & FLAG_OPEN_ALWAYS) {
@@ -674,6 +724,32 @@ File::Error File::GetLastFileError() {
 
 int File::Stat(const FilePath& path, stat_wrapper_t* sb) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
+#if BUILDFLAG(IS_ANDROID)
+  if (path.IsContentUri()) {
+    // Attempt to open the file and call GetInfo(), otherwise call Java code
+    // with the path which is required for dirs.
+    File file(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    Info info;
+    if ((file.IsValid() && file.GetInfo(&info)) ||
+        GetContentUriInfo(path, &info)) {
+      memset(sb, 0, sizeof(*sb));
+      sb->st_mode = info.is_directory ? S_IFDIR : S_IFREG;
+      sb->st_size = info.size;
+      sb->st_mtime = info.last_modified.ToTimeT();
+      // Time internally is stored as microseconds since windows epoch, so first
+      // get subsecond time, and then convert to nanos. Do not subtract
+      // Time::UnixEpoch() (which is a little bigger than 2^53), or convert to
+      // nanos (multiply by 10^3 which is just under 2^10) prior to doing
+      // modulo as these can cause overflow / clamping at [-2^63, 2^63) which
+      // will corrupt the result.
+      sb->st_mtime_nsec =
+          (info.last_modified.ToDeltaSinceWindowsEpoch().InMicroseconds() %
+           Time::kMicrosecondsPerSecond) *
+          Time::kNanosecondsPerMicrosecond;
+      return 0;
+    }
+  }
+#endif
   return stat(path.value().c_str(), sb);
 }
 int File::Fstat(int fd, stat_wrapper_t* sb) {

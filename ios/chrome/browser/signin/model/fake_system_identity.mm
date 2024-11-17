@@ -126,6 +126,10 @@ NSString* const kCoderUserGivenNameKey = @"UserGivenName";
   return [NSString stringWithFormat:@"%@_hash", _gaiaID];
 }
 
+- (BOOL)hasValidAuth {
+  return NO;
+}
+
 #pragma mark - NSSecureCoding
 
 - (void)encodeWithCoder:(NSCoder*)coder {

@@ -59,6 +59,8 @@ struct BackgroundCollection {
   string label;
   // URL to a preview image for the collection. Can point to untrusted content.
   url.mojom.Url preview_image_url;
+  // True if the collection's preview image is valid (loads correctly).
+  bool image_verified;
 };
 
 // A background image in a collection.
@@ -74,6 +76,8 @@ struct CollectionImage {
   url.mojom.Url preview_image_url;
   // Collection id of the image;
   string collection_id;
+  // True if the theme's preview image is valid (loads correctly).
+  bool image_verified;
 };
 
 // Settings associated with a given module.
@@ -120,6 +124,10 @@ interface CustomizeChromePageHandler {
 
   // Returns the collections of background images.
   GetBackgroundCollections() => (array<BackgroundCollection> collections);
+
+  // Returns a valid collection preview image for |collection_id|.
+  GetReplacementCollectionPreviewImage(string collection_id)
+      => (url.mojom.Url? preview_image_url);
 
   // Returns the images of a collection identified by |collection_id|.
   GetBackgroundImages(string collection_id) => (array<CollectionImage> images);

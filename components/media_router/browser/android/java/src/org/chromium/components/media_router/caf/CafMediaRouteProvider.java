@@ -32,8 +32,6 @@ public class CafMediaRouteProvider extends CafBaseMediaRouteProvider {
     private static final String AUTO_JOIN_PRESENTATION_ID = "auto-join";
     private static final String PRESENTATION_ID_SESSION_ID_PREFIX = "cast-session_";
 
-    private CreateRouteRequestInfo mPendingCreateRouteRequestInfo;
-
     @VisibleForTesting ClientRecord mLastRemovedRouteRecord;
     // The records for clients, which must match mRoutes. This is used for the saving last record
     // for autojoin.

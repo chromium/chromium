@@ -52,10 +52,12 @@
 #include "net/base/filename_util.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "base/feature_list.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/user_manager/user_manager.h"
+#include "extensions/common/extension_features.h"
 #endif
 
 namespace app_runtime = extensions::api::app_runtime;
@@ -129,7 +131,12 @@ class PlatformAppPathLauncher
   PlatformAppPathLauncher& operator=(const PlatformAppPathLauncher&) = delete;
 
   void set_action_data(std::optional<app_runtime::ActionData> action_data) {
-    action_data_ = std::move(action_data);
+#if BUILDFLAG(IS_CHROMEOS)
+    if (base::FeatureList::IsEnabled(
+            extensions_features::kApiRuntimeActionData)) {
+      action_data_ = std::move(action_data);
+    }
+#endif
   }
 
   void set_launch_source(extensions::AppLaunchSource launch_source) {
@@ -448,12 +455,6 @@ void LaunchPlatformAppWithFilePaths(
 void LaunchPlatformAppWithAction(content::BrowserContext* context,
                                  const extensions::Extension* app,
                                  app_runtime::ActionData action_data) {
-  CHECK(!action_data.is_lock_screen_action ||
-        !*action_data.is_lock_screen_action ||
-        app->permissions_data()->HasAPIPermission(
-            extensions::mojom::APIPermissionID::kLockScreen))
-      << "Launching lock screen action handler requires lockScreen permission.";
-
   scoped_refptr<PlatformAppPathLauncher> launcher =
       new PlatformAppPathLauncher(context, app, base::FilePath());
   launcher->set_action_data(std::move(action_data));

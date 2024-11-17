@@ -21,6 +21,10 @@ class SaveAutofillPredictionImprovementsBubbleView
   METADATA_HEADER(SaveAutofillPredictionImprovementsBubbleView, views::View)
 
  public:
+  static constexpr int kLearnMoreStyledLabelViewID = 436;
+  static constexpr int kThumbsUpButtonViewID = 437;
+  static constexpr int kThumbsDownButtonViewID = 438;
+
   SaveAutofillPredictionImprovementsBubbleView(
       views::View* anchor_view,
       content::WebContents* web_contents,
@@ -41,6 +45,7 @@ class SaveAutofillPredictionImprovementsBubbleView
 
  private:
   void OnDialogAccepted();
+
   base::WeakPtr<SaveAutofillPredictionImprovementsController> controller_;
 };
 

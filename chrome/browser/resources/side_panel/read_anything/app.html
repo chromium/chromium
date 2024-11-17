@@ -7,11 +7,9 @@
         .selectedVoice="${this.selectedVoice_}"
         .settingsPrefs="${this.settingsPrefs_}"
         .enabledLangs="${this.enabledLangs}"
-        .voicePackInstallStatus="${this.voiceStatusLocalState_}"
         .availableVoices="${this.availableVoices_}"
         .previewVoicePlaying="${this.previewVoicePlaying_}"
         .localeToDisplayName="${this.localeToDisplayName_}"
-        .lastDownloadedLang="${this.lastDownloadedLang_}"
         @select-voice="${this.onSelectVoice_}"
         @voice-language-toggle="${this.onVoiceLanguageToggle_}"
         @preview-voice="${this.onPreviewVoice_}"
@@ -30,6 +28,8 @@
         @highlight-change="${this.onHighlightChange_}"
         @reset-toolbar="${this.onResetToolbar_}"
         @toolbar-overflow="${this.onToolbarOverflow_}"
+        @language-menu-open="${this.onLanguageMenuOpen_}"
+        @language-menu-close="${this.onLanguageMenuClose_}"
         id="toolbar">
     </read-anything-toolbar>
   </div>
@@ -52,12 +52,7 @@
     </sp-empty-state>
   </div>
 </div>
-
-<cr-toast id="toast" duration="${this.toastDuration_}">
-  <div id="toastDiv">
-    <span id="toastTitle">
-      ${this.getLanguageDownloadedTitle_()}
-    </span>
-    <span id="toastMessage">$i18n{readingModeVoiceDownloadedMessage}</span>
-  </div>
-</cr-toast>
+<language-toast id="languageToast"
+    .showErrors="${true}"
+    .availableVoices="${this.availableVoices_}">
+</language-toast>

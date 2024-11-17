@@ -35,8 +35,14 @@ class TabResourceUsageCollectorBrowserTest : public InProcessBrowserTest {
   TabStripModel* GetTabStripModel() { return browser()->tab_strip_model(); }
 };
 
+// TODO(crbug.com/368862390): This test fails on ChromeOS and Mac builds.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+#define MAYBE_RefreshAllTabMemory DISABLED_RefreshAllTabMemory
+#else
+#define MAYBE_RefreshAllTabMemory RefreshAllTabMemory
+#endif
 IN_PROC_BROWSER_TEST_F(TabResourceUsageCollectorBrowserTest,
-                       RefreshAllTabMemory) {
+                       MAYBE_RefreshAllTabMemory) {
   AddAndWaitForTabReady();
   AddAndWaitForTabReady();
   TabStripModel* const model = GetTabStripModel();
@@ -58,8 +64,15 @@ IN_PROC_BROWSER_TEST_F(TabResourceUsageCollectorBrowserTest,
   EXPECT_NE(bytes_used, second_tab_helper->GetMemoryUsageInBytes());
 }
 
+// TODO - crbug.com/368862390: flaky on Mac builds
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_RefreshMemoryForOneWebContents \
+  DISABLED_RefreshMemoryForOneWebContents
+#else
+#define MAYBE_RefreshMemoryForOneWebContents RefreshMemoryForOneWebContents
+#endif
 IN_PROC_BROWSER_TEST_F(TabResourceUsageCollectorBrowserTest,
-                       RefreshMemoryForOneWebContents) {
+                       MAYBE_RefreshMemoryForOneWebContents) {
   AddAndWaitForTabReady();
   AddAndWaitForTabReady();
   TabStripModel* const model = GetTabStripModel();

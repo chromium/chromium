@@ -89,9 +89,6 @@ constexpr base::TimeDelta kWaitTimeoutForTest = base::Milliseconds(1);
 std::optional<bool> sync_disabled_by_policy_for_test;
 std::optional<bool> sync_engine_initialized_for_test;
 
-SyncConsentScreen::SyncConsentScreenExitTestDelegate* test_exit_delegate_ =
-    nullptr;
-
 syncer::SyncService* GetSyncService(Profile* profile) {
   if (SyncServiceFactory::HasSyncService(profile))
     return SyncServiceFactory::GetForProfile(profile);
@@ -205,12 +202,7 @@ void SyncConsentScreen::Finish(Result result) {
   bool sync_enabled = service && service->IsSyncFeatureEnabled() &&
                       service->GetUserSettings()->IsSyncEverythingEnabled();
   base::UmaHistogramBoolean("OOBE.SyncConsentScreen.SyncEnabled", sync_enabled);
-  if (test_exit_delegate_) {
-    CHECK_IS_TEST();
-    test_exit_delegate_->OnSyncConsentScreenExit(result, exit_callback_);
-  } else {
-    exit_callback_.Run(result);
-  }
+  exit_callback_.Run(result);
 }
 
 bool SyncConsentScreen::MaybeSkip(WizardContext& context) {
@@ -269,7 +261,7 @@ void SyncConsentScreen::ShowImpl() {
 void SyncConsentScreen::HideImpl() {
   session_refresher_.reset();
   sync_service_observation_.Reset();
-  timeout_waiter_.AbandonAndStop();
+  timeout_waiter_.Stop();
 }
 
 void SyncConsentScreen::OnStateChanged(syncer::SyncService* sync) {
@@ -283,8 +275,7 @@ void SyncConsentScreen::MaybeEnableSyncForSkip() {
   switch (behavior_) {
     case SyncScreenBehavior::kUnknown:
     case SyncScreenBehavior::kShow:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case SyncScreenBehavior::kSkipNonGaiaAccount:
     case SyncScreenBehavior::kSkipPublicAccount:
     case SyncScreenBehavior::kSkipPermissionsPolicy:
@@ -309,12 +300,6 @@ void SyncConsentScreen::OnTimeout() {
 void SyncConsentScreen::SetDelegateForTesting(
     SyncConsentScreen::SyncConsentScreenTestDelegate* delegate) {
   test_delegate_ = delegate;
-}
-
-// static
-void SyncConsentScreen::SetSyncConsentScreenExitTestDelegate(
-    SyncConsentScreen::SyncConsentScreenExitTestDelegate* test_delegate) {
-  test_exit_delegate_ = test_delegate;
 }
 
 SyncConsentScreen::SyncConsentScreenTestDelegate*
@@ -380,7 +365,7 @@ void SyncConsentScreen::UpdateScreen(const WizardContext& context) {
       view_->ShowLoadedStep(IsOsSyncLacros());
     }
     GetSyncService(profile_)->RemoveObserver(this);
-    timeout_waiter_.AbandonAndStop();
+    timeout_waiter_.Stop();
     base::UmaHistogramCustomTimes("OOBE.SyncConsentScreen.LoadingTime",
                                   base::TimeTicks::Now() - start_time_,
                                   base::Milliseconds(1), base::Seconds(10), 50);
@@ -564,13 +549,7 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
     syncer::UserSelectableOsTypeSet os_empty_set;
     sync_settings->SetSelectedOsTypes(/*sync_all_os_types=*/true, os_empty_set);
 
-    if (test_exit_delegate_) {
-      CHECK_IS_TEST();
-      test_exit_delegate_->OnSyncConsentScreenExit(Result::NEXT,
-                                                   exit_callback_);
-    } else {
-      exit_callback_.Run(Result::NEXT);
-    }
+    exit_callback_.Run(Result::NEXT);
 
     return;
   }
@@ -586,13 +565,7 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
     sync_settings->SetSelectedOsTypes(/*sync_all_os_types=*/false,
                                       os_empty_set);
 
-    if (test_exit_delegate_) {
-      CHECK_IS_TEST();
-      test_exit_delegate_->OnSyncConsentScreenExit(Result::DECLINE,
-                                                   exit_callback_);
-    } else {
-      exit_callback_.Run(Result::DECLINE);
-    }
+    exit_callback_.Run(Result::DECLINE);
     return;
   }
   if (action_id == kUserActionLacrosCustom) {
@@ -636,14 +609,7 @@ void SyncConsentScreen::OnUserAction(const base::Value::List& args) {
     profile_->GetPrefs()->SetBoolean(settings::prefs::kSyncOsWallpaper,
                                      wallpaper_synced);
 
-    if (test_exit_delegate_) {
-      CHECK_IS_TEST();
-      test_exit_delegate_->OnSyncConsentScreenExit(Result::NEXT,
-                                                   exit_callback_);
-    } else {
-      exit_callback_.Run(Result::NEXT);
-    }
-
+    exit_callback_.Run(Result::NEXT);
     return;
   }
   BaseScreen::OnUserAction(args);

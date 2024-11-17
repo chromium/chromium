@@ -129,10 +129,6 @@ bool ShouldOverrideCheckingUserPermissionsToFetchHintsForTesting();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldSkipModelDownloadVerificationForTesting();
 
-// Returns whether at least one model was provided via command-line.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-bool IsModelOverridePresent();
-
 // Returns whether the model validation should happen.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldValidateModel();
@@ -141,17 +137,9 @@ bool ShouldValidateModel();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 bool ShouldValidateModelExecution();
 
-// Returns the model override command line switch.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-std::optional<std::string> GetModelOverride();
-
-// Returns the on-device model execution override command line switch.
+// Returns the path to the on-device base model provided on the command line.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 std::optional<std::string> GetOnDeviceModelExecutionOverride();
-
-// Returns the on-device model adaptations override command line switch.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-std::optional<std::string> GetOnDeviceModelAdaptationsOverride();
 
 // Returns the file path to the text file to use for the on-device request
 // override.

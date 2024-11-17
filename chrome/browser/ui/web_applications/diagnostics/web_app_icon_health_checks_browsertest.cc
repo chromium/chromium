@@ -26,14 +26,6 @@
 
 namespace web_app {
 
-// TODO(crbug.com/40858602): Enable tests on Lacros.
-// This feature depends on
-// https://chromium-review.googlesource.com/c/chromium/src/+/3867152 landing
-// to be able to work in Lacros. Currently Lacros doesn't know when the web app
-// publisher has been initialised.
-
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-
 class WebAppIconHealthChecksBrowserTest : public WebAppBrowserTestBase {
  public:
   WebAppIconHealthChecksBrowserTest() {
@@ -217,7 +209,5 @@ IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, PRE_CorruptIconFile) {
 IN_PROC_BROWSER_TEST_F(WebAppIconHealthChecksBrowserTest, CorruptIconFile) {
   RunIconChecksWithMetricExpectations({.has_empty_icon_bitmap = true});
 }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 }  // namespace web_app

@@ -48,7 +48,7 @@ class PPAPI_THUNK_EXPORT PPB_Graphics3D_API {
   virtual scoped_refptr<gpu::Buffer> CreateTransferBuffer(uint32_t size,
                                                           int32_t* id) = 0;
   virtual PP_Bool DestroyTransferBuffer(int32_t id) = 0;
-  virtual PP_Bool Flush(int32_t put_offset) = 0;
+  virtual PP_Bool Flush(int32_t put_offset, uint64_t release_count) = 0;
   virtual gpu::CommandBuffer::State WaitForTokenInRange(int32_t start,
                                                         int32_t end) = 0;
   virtual gpu::CommandBuffer::State WaitForGetOffsetInRange(

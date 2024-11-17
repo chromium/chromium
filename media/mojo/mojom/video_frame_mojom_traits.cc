@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "media/mojo/mojom/video_frame_mojom_traits.h"
 
 #include <utility>
@@ -72,15 +67,11 @@ base::ReadOnlySharedMemoryRegion CreateRegion(const media::VideoFrame& frame,
   // the conditional in a calling function.
   DCHECK(frame.storage_type() == media::VideoFrame::STORAGE_UNOWNED_MEMORY ||
          frame.storage_type() == media::VideoFrame::STORAGE_OWNED_MEMORY);
-  std::vector<size_t> sizes(num_planes);
   size_t aggregate_size = 0;
   for (size_t i = 0; i < num_planes; ++i) {
     strides[i] = frame.stride(i);
     offsets[i] = aggregate_size;
-    sizes[i] = media::VideoFrame::Rows(i, frame.format(),
-                                       frame.coded_size().height()) *
-               strides[i];
-    aggregate_size += sizes[i];
+    aggregate_size += frame.data_span(i).size();
   }
 
   auto mapped_region = base::ReadOnlySharedMemoryRegion::Create(aggregate_size);
@@ -90,13 +81,12 @@ base::ReadOnlySharedMemoryRegion CreateRegion(const media::VideoFrame& frame,
   }
 
   base::WritableSharedMemoryMapping& dst_mapping = mapped_region.mapping;
-  uint8_t* dst_data = dst_mapping.GetMemoryAs<uint8_t>();
+  auto dst_data = dst_mapping.GetMemoryAsSpan<uint8_t>();
   // The data from |frame| may not be consecutive between planes. Copy data into
   // a shared memory buffer which is tightly packed. Padding inside each planes
   // are preserved.
   for (size_t i = 0; i < num_planes; ++i) {
-    memcpy(dst_data + offsets[i], static_cast<const void*>(frame.data(i)),
-           sizes[i]);
+    dst_data.subspan(offsets[i]).copy_prefix_from(frame.data_span(i));
   }
 
   return std::move(mapped_region.region);
@@ -125,85 +115,40 @@ media::mojom::VideoFrameDataPtr MakeVideoFrameData(
             std::move(region), std::move(strides), std::move(offsets)));
   }
 
-  DCHECK_LE(input->NumTextures(), 1u);
-  // STORAGE_GPU_MEMORY_BUFFER may carry meaningful or dummy mailbox,
-  // we should only access it when there are textures.
-  gpu::MailboxHolder mailbox_holder;
-  if (input->HasTextures()) {
-    mailbox_holder = input->mailbox_holder(/*texture_index=*/0);
-  }
-
   if (input->HasMappableGpuBuffer()) {
     auto gpu_memory_buffer_handle = input->GetGpuMemoryBufferHandle();
 
+    // STORAGE_GPU_MEMORY_BUFFER may carry meaningful or dummy shared_image.
     std::optional<gpu::ExportedSharedImage> shared_image;
+    gpu::SyncToken sync_token;
     if (input->HasSharedImage()) {
-      // `input` is either empty or of size 1 with
-      // GpuMemoryBufferSharedImageVideoFrameData.
-      CHECK_EQ(input->NumTextures(), 1u);
       shared_image = input->shared_image()->Export();
+      sync_token = input->acquire_sync_token();
     }
 
-    CHECK(input->HasSharedImage() || mailbox_holder.mailbox.IsZero());
     return media::mojom::VideoFrameData::NewGpuMemoryBufferSharedImageData(
         media::mojom::GpuMemoryBufferSharedImageVideoFrameData::New(
             std::move(gpu_memory_buffer_handle), std::move(shared_image),
-            std::move(mailbox_holder.sync_token),
-            mailbox_holder.texture_target));
-  } else if (input->HasTextures()) {
-    if (input->HasSharedImage()) {
-      gpu::ExportedSharedImage shared_image = input->shared_image()->Export();
-      return media::mojom::VideoFrameData::NewSharedImageData(
-          media::mojom::SharedImageVideoFrameData::New(
-              std::move(shared_image), std::move(mailbox_holder.sync_token),
-              std::move(mailbox_holder.texture_target),
-              std::move(input->ycbcr_info())));
-    } else {
-      return media::mojom::VideoFrameData::NewMailboxData(
-          media::mojom::MailboxVideoFrameData::New(
-              std::move(mailbox_holder), std::move(input->ycbcr_info())));
-    }
+            std::move(sync_token)));
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unsupported VideoFrame conversion";
-  return nullptr;
+  if (input->HasSharedImage()) {
+    gpu::ExportedSharedImage shared_image = input->shared_image()->Export();
+    return media::mojom::VideoFrameData::NewSharedImageData(
+        media::mojom::SharedImageVideoFrameData::New(
+            std::move(shared_image), input->acquire_sync_token(),
+            std::move(input->ycbcr_info())));
+  }
+
+  if (input->storage_type() == media::VideoFrame::STORAGE_OPAQUE) {
+    return media::mojom::VideoFrameData::NewOpaqueData(
+        media::mojom::OpaqueVideoFrameData::New());
+  }
+
+  NOTREACHED() << "Unsupported VideoFrame conversion";
 }
 
 }  // namespace
-
-// static
-media::mojom::SharedImageFormatType EnumTraits<
-    media::mojom::SharedImageFormatType,
-    media::SharedImageFormatType>::ToMojom(media::SharedImageFormatType type) {
-  switch (type) {
-    case media::SharedImageFormatType::kLegacy:
-      return media::mojom::SharedImageFormatType::kLegacy;
-    case media::SharedImageFormatType::kSharedImageFormat:
-      return media::mojom::SharedImageFormatType::kSharedImageFormat;
-    case media::SharedImageFormatType::kSharedImageFormatExternalSampler:
-      return media::mojom::SharedImageFormatType::
-          kSharedImageFormatExternalSampler;
-  }
-}
-
-// static
-bool EnumTraits<media::mojom::SharedImageFormatType,
-                media::SharedImageFormatType>::
-    FromMojom(media::mojom::SharedImageFormatType input,
-              media::SharedImageFormatType* out) {
-  switch (input) {
-    case media::mojom::SharedImageFormatType::kLegacy:
-      *out = media::SharedImageFormatType::kLegacy;
-      return true;
-    case media::mojom::SharedImageFormatType::kSharedImageFormat:
-      *out = media::SharedImageFormatType::kSharedImageFormat;
-      return true;
-    case media::mojom::SharedImageFormatType::kSharedImageFormatExternalSampler:
-      *out = media::SharedImageFormatType::kSharedImageFormatExternalSampler;
-      return true;
-  }
-  return false;
-}
 
 // static
 media::mojom::VideoFrameDataPtr StructTraits<media::mojom::VideoFrameDataView,
@@ -281,16 +226,29 @@ bool StructTraits<media::mojom::VideoFrameDataView,
       return false;
     }
 
-    uint8_t* addr[3] = {};
+    auto mapped_region = mapping.GetMemoryAsSpan<uint8_t>();
+    std::array<base::span<const uint8_t>, 3> plane_data;
     std::vector<media::ColorPlaneLayout> planes(num_planes);
     for (size_t i = 0; i < num_planes; i++) {
-      addr[i] =
-          const_cast<uint8_t*>(mapping.GetMemoryAs<uint8_t>()) + offsets[i];
+      if (offsets[i] > mapped_region.size()) {
+        DLOG(ERROR) << "Plane's offset is out of bounds. "
+                    << " offset: " << offsets[i]
+                    << " size: " << mapped_region.size();
+        return false;
+      }
+
       planes[i].stride = strides[i];
       planes[i].offset = base::strict_cast<size_t>(offsets[i]);
-      planes[i].size = i + 1 < num_planes
-                           ? offsets[i + 1] - offsets[i]
-                           : mapping.size() - offsets[num_planes - 1];
+      const size_t space_till_mapping_end = mapping.size() - offsets[i];
+      const size_t calculated_plane_size =
+          media::VideoFrame::Rows(i, format, coded_size.height()) * strides[i];
+
+      // TODO(crbug.com/378046071) For H.264 content Widevine outputs planes
+      // in IMC4 pixel format. Since Y and V planes in IMC4 overlap,
+      // the distance to the next plane can't be used to determent the size of
+      // the current plane.
+      planes[i].size = std::min(calculated_plane_size, space_till_mapping_end);
+      plane_data[i] = mapped_region.subspan(offsets[i], planes[i].size);
     }
 
     auto layout = media::VideoFrameLayout::CreateWithPlanes(format, coded_size,
@@ -301,8 +259,8 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     }
 
     frame = media::VideoFrame::WrapExternalYuvDataWithLayout(
-        *layout, visible_rect, natural_size, addr[0], addr[1], addr[2],
-        timestamp);
+        *layout, visible_rect, natural_size, plane_data[0], plane_data[1],
+        plane_data[2], timestamp);
     if (frame) {
       frame->BackWithOwnedSharedMemory(std::move(region), std::move(mapping));
     }
@@ -361,26 +319,9 @@ bool StructTraits<media::mojom::VideoFrameDataView,
           gpu::ClientSharedImage::ImportUnowned(*exported_shared_image);
     }
 
-    uint32_t texture_target = gpu_memory_buffer_data.texture_target();
     frame = media::VideoFrame::WrapExternalGpuMemoryBuffer(
         visible_rect, natural_size, std::move(gpu_memory_buffer), shared_image,
-        sync_token, texture_target, base::NullCallback(), timestamp);
-  } else if (data.is_mailbox_data()) {
-    media::mojom::MailboxVideoFrameDataDataView mailbox_data;
-    data.GetMailboxDataDataView(&mailbox_data);
-
-    gpu::MailboxHolder mailbox_holder;
-    if (!mailbox_data.ReadMailboxHolder(&mailbox_holder))
-      return false;
-
-    std::optional<gpu::VulkanYCbCrInfo> ycbcr_info;
-    if (!mailbox_data.ReadYcbcrData(&ycbcr_info))
-      return false;
-
-    frame = media::VideoFrame::WrapNativeTexture(
-        format, mailbox_holder, media::VideoFrame::ReleaseMailboxCB(),
-        coded_size, visible_rect, natural_size, timestamp);
-    frame->set_ycbcr_info(ycbcr_info);
+        sync_token, base::NullCallback(), timestamp);
   } else if (data.is_shared_image_data()) {
     media::mojom::SharedImageVideoFrameDataDataView shared_image_data;
     data.GetSharedImageDataDataView(&shared_image_data);
@@ -402,11 +343,15 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     }
 
     frame = media::VideoFrame::WrapSharedImage(
-        format, shared_image, sync_token, shared_image_data.texture_target(),
-        media::VideoFrame::ReleaseMailboxCB(), coded_size, visible_rect,
-        natural_size, timestamp);
+        format, shared_image, sync_token, media::VideoFrame::ReleaseMailboxCB(),
+        coded_size, visible_rect, natural_size, timestamp);
 
     frame->set_ycbcr_info(ycbcr_info);
+  } else if (data.is_opaque_data()) {
+    DCHECK(metadata.tracking_token.has_value());
+    frame = media::VideoFrame::WrapTrackingToken(
+        format, *metadata.tracking_token, coded_size, visible_rect,
+        natural_size, timestamp);
   } else {
     // TODO(sandersd): Switch on the union tag to avoid this ugliness?
     NOTREACHED();
@@ -427,12 +372,6 @@ bool StructTraits<media::mojom::VideoFrameDataView,
   if (!input.ReadHdrMetadata(&hdr_metadata))
     return false;
   frame->set_hdr_metadata(std::move(hdr_metadata));
-
-  media::SharedImageFormatType shared_image_format_type;
-  if (!input.ReadSharedImageFormatType(&shared_image_format_type)) {
-    return false;
-  }
-  frame->set_shared_image_format_type(shared_image_format_type);
 
   *output = std::move(frame);
   return true;

@@ -55,8 +55,7 @@ static std::string PermissionTypeToString(WebViewPermissionType type) {
     case WEB_VIEW_PERMISSION_TYPE_POINTER_LOCK:
       return webview::kPermissionTypePointerLock;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -273,10 +272,9 @@ void WebViewPermissionHelper::CanDownload(
 
 void WebViewPermissionHelper::RequestPointerLockPermission(
     bool user_gesture,
-    bool last_unlocked_by_target,
-    base::OnceCallback<void(bool)> callback) {
+    bool last_unlocked_by_target) {
   web_view_permission_helper_delegate_->RequestPointerLockPermission(
-      user_gesture, last_unlocked_by_target, std::move(callback));
+      user_gesture, last_unlocked_by_target);
 }
 
 void WebViewPermissionHelper::RequestGeolocationPermission(

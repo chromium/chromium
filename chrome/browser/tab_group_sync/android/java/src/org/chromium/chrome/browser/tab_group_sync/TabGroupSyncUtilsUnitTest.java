@@ -4,13 +4,18 @@
 
 package org.chromium.chrome.browser.tab_group_sync;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.anyInt;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+
+import static org.chromium.components.tab_group_sync.SyncedGroupTestHelper.SYNC_GROUP_ID1;
+import static org.chromium.components.tab_group_sync.SyncedGroupTestHelper.SYNC_GROUP_ID2;
 
 import android.util.Pair;
 
@@ -19,42 +24,43 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
 import org.chromium.components.tab_group_sync.ClosingSource;
-import org.chromium.components.tab_group_sync.EventDetails;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
-import org.chromium.components.tab_group_sync.TabGroupEvent;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for the {@link TabGroupSyncUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupSyncUtilsUnitTest {
+    private static final long DAY_IN_MILLIS = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS);
+
     private static final int TAB_ID_1 = 1;
     private static final int TAB_ID_2 = 2;
     private static final int TAB_ID_3 = 2;
     private static final int ROOT_ID_1 = 1;
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final Token TOKEN_2 = new Token(5, 8);
-    private static final String SYNC_GROUP_ID1 = "remote one";
-    private static final String SYNC_GROUP_ID2 = "remote two";
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_1 = new LocalTabGroupId(TOKEN_1);
     private static final LocalTabGroupId LOCAL_TAB_GROUP_ID_2 = new LocalTabGroupId(TOKEN_2);
 
@@ -76,6 +82,42 @@ public class TabGroupSyncUtilsUnitTest {
         mTab1 = mTabModel.addTab(TAB_ID_1);
         mTab2 = mTabModel.addTab(TAB_ID_2);
         createTabGroup(List.of(mTab1, mTab2), ROOT_ID_1, TOKEN_1);
+    }
+
+    @Test
+    public void testStaleGroupsNotAddedToSync() {
+        // Override the finch param to 90 days.
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID, true);
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+                TabGroupSyncUtils
+                        .PARAM_MAX_DAYS_OF_STALENESS_ACCEPTED_FOR_ADDING_TAB_GROUP_TO_SYNC_ON_STARTUP,
+                String.valueOf(90));
+        FeatureList.setTestValues(testValues);
+
+        long now = System.currentTimeMillis();
+
+        // Both tabs are recent.
+        ((MockTab) mTab1).setTimestampMillis(now);
+        ((MockTab) mTab2).setTimestampMillis(now);
+        assertTrue(
+                TabGroupSyncUtils.isTabGroupEligibleForSyncing(
+                        LOCAL_TAB_GROUP_ID_1, mTabGroupModelFilter));
+
+        // Both tabs are very old.
+        ((MockTab) mTab1).setTimestampMillis(now - DAY_IN_MILLIS * 1000);
+        ((MockTab) mTab2).setTimestampMillis(now - DAY_IN_MILLIS * 2000);
+        assertFalse(
+                TabGroupSyncUtils.isTabGroupEligibleForSyncing(
+                        LOCAL_TAB_GROUP_ID_1, mTabGroupModelFilter));
+
+        // One tab is recent and one very old.
+        ((MockTab) mTab1).setTimestampMillis(now - DAY_IN_MILLIS * 1);
+        ((MockTab) mTab2).setTimestampMillis(now - DAY_IN_MILLIS * 2000);
+        assertTrue(
+                TabGroupSyncUtils.isTabGroupEligibleForSyncing(
+                        LOCAL_TAB_GROUP_ID_1, mTabGroupModelFilter));
     }
 
     @Test
@@ -105,17 +147,14 @@ public class TabGroupSyncUtilsUnitTest {
         TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilter(
                 mTabGroupSyncService, mTabGroupModelFilter);
 
-        verify(mTabGroupSyncService, never()).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
-        verify(mTabGroupSyncService).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_2);
-
-        // Verify metrics.
-        ArgumentCaptor<EventDetails> eventDetailsCaptor =
-                ArgumentCaptor.forClass(EventDetails.class);
-        verify(mTabGroupSyncService).recordTabGroupEvent(eventDetailsCaptor.capture());
-        EventDetails eventDetails = eventDetailsCaptor.getValue();
-        assertEquals(TabGroupEvent.TAB_GROUP_CLOSED, eventDetails.eventType);
-        assertEquals(LOCAL_TAB_GROUP_ID_2, eventDetails.localGroupId);
-        assertEquals(ClosingSource.CLEANED_UP_ON_LAST_INSTANCE_CLOSURE, eventDetails.closingSource);
+        verify(mTabGroupSyncService, never())
+                .removeLocalTabGroupMapping(
+                        eq(LOCAL_TAB_GROUP_ID_1),
+                        eq(ClosingSource.CLEANED_UP_ON_LAST_INSTANCE_CLOSURE));
+        verify(mTabGroupSyncService)
+                .removeLocalTabGroupMapping(
+                        eq(LOCAL_TAB_GROUP_ID_2),
+                        eq(ClosingSource.CLEANED_UP_ON_LAST_INSTANCE_CLOSURE));
     }
 
     @Test
@@ -135,7 +174,8 @@ public class TabGroupSyncUtilsUnitTest {
 
         // Shouldn't crash and never called.
         verify(mTabGroupModelFilter, never()).getRootIdFromStableId(any());
-        verify(mTabGroupSyncService, never()).removeLocalTabGroupMapping(LOCAL_TAB_GROUP_ID_1);
+        verify(mTabGroupSyncService, never())
+                .removeLocalTabGroupMapping(eq(LOCAL_TAB_GROUP_ID_1), anyInt());
     }
 
     @Test

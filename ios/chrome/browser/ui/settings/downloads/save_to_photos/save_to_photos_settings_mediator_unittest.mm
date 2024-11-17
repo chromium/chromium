@@ -83,12 +83,12 @@
 class SaveToPhotosSettingsMediatorTest : public PlatformTest {
  protected:
   void SetUp() final {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     FakeSystemIdentityManager* system_identity_manager =
         FakeSystemIdentityManager::FromSystemIdentityManager(
@@ -99,7 +99,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
     system_identity_manager->AddIdentity(fake_identity_b_);
 
     signin::MakeAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser_state_.get()),
+        IdentityManagerFactory::GetForProfile(profile_.get()),
         signin::AccountAvailabilityOptionsBuilder()
             .AsPrimary(signin::ConsentLevel::kSignin)
             .WithGaiaId(base::SysNSStringToUTF8(fake_identity_a_.gaiaID))
@@ -111,12 +111,11 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
   // Creates a SaveToPhotosSettingsMediator with services from the test browser
   // state.
   SaveToPhotosSettingsMediator* CreateSaveToPhotosSettingsMediator() {
-    PrefService* pref_service = browser_state_->GetPrefs();
+    PrefService* pref_service = profile_->GetPrefs();
     ChromeAccountManagerService* account_manager_service =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
     signin::IdentityManager* identity_manager =
-        IdentityManagerFactory::GetForProfile(browser_state_.get());
+        IdentityManagerFactory::GetForProfile(profile_.get());
     mediator_ = [[SaveToPhotosSettingsMediator alloc]
         initWithAccountManagerService:account_manager_service
                           prefService:pref_service
@@ -125,8 +124,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
   }
 
   ChromeAccountManagerService* GetAccountManagerService() {
-    return ChromeAccountManagerServiceFactory::GetForBrowserState(
-        browser_state_.get());
+    return ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   }
 
   // Checks that the identities given to the consumer, either through the
@@ -188,7 +186,7 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   id<SystemIdentity> fake_identity_a_;
   id<SystemIdentity> fake_identity_b_;
   SaveToPhotosSettingsMediator* mediator_;
@@ -199,11 +197,11 @@ class SaveToPhotosSettingsMediatorTest : public PlatformTest {
 TEST_F(SaveToPhotosSettingsMediatorTest, CanMutateSelectedIdentity) {
   SaveToPhotosSettingsMediator* mediator = CreateSaveToPhotosSettingsMediator();
 
-  browser_state_->GetPrefs()->SetString(
+  profile_->GetPrefs()->SetString(
       prefs::kIosSaveToPhotosDefaultGaiaId,
       base::SysNSStringToUTF8(fake_identity_a_.gaiaID));
-  browser_state_->GetPrefs()->SetBoolean(
-      prefs::kIosSaveToPhotosSkipAccountPicker, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker,
+                                   true);
 
   FakeSaveToPhotosSettingsConsumer* fake_consumer =
       [[FakeSaveToPhotosSettingsConsumer alloc] init];
@@ -211,17 +209,17 @@ TEST_F(SaveToPhotosSettingsMediatorTest, CanMutateSelectedIdentity) {
   mediator.accountSelectionConsumer = fake_consumer;
 
   [mediator setSelectedIdentityGaiaID:fake_identity_b_.gaiaID];
-  EXPECT_EQ(base::SysNSStringToUTF8(fake_identity_b_.gaiaID),
-            browser_state_->GetPrefs()->GetString(
-                prefs::kIosSaveToPhotosDefaultGaiaId));
-  EXPECT_TRUE(browser_state_->GetPrefs()->GetBoolean(
+  EXPECT_EQ(
+      base::SysNSStringToUTF8(fake_identity_b_.gaiaID),
+      profile_->GetPrefs()->GetString(prefs::kIosSaveToPhotosDefaultGaiaId));
+  EXPECT_TRUE(profile_->GetPrefs()->GetBoolean(
       prefs::kIosSaveToPhotosSkipAccountPicker));
 
   [mediator setAskWhichAccountToUseEveryTime:YES];
-  EXPECT_EQ(base::SysNSStringToUTF8(fake_identity_b_.gaiaID),
-            browser_state_->GetPrefs()->GetString(
-                prefs::kIosSaveToPhotosDefaultGaiaId));
-  EXPECT_FALSE(browser_state_->GetPrefs()->GetBoolean(
+  EXPECT_EQ(
+      base::SysNSStringToUTF8(fake_identity_b_.gaiaID),
+      profile_->GetPrefs()->GetString(prefs::kIosSaveToPhotosDefaultGaiaId));
+  EXPECT_FALSE(profile_->GetPrefs()->GetBoolean(
       prefs::kIosSaveToPhotosSkipAccountPicker));
 
   [mediator disconnect];
@@ -232,11 +230,11 @@ TEST_F(SaveToPhotosSettingsMediatorTest, CanMutateSelectedIdentity) {
 TEST_F(SaveToPhotosSettingsMediatorTest, ExternalPrefChangeUpdatesConsumers) {
   SaveToPhotosSettingsMediator* mediator = CreateSaveToPhotosSettingsMediator();
 
-  browser_state_->GetPrefs()->SetString(
+  profile_->GetPrefs()->SetString(
       prefs::kIosSaveToPhotosDefaultGaiaId,
       base::SysNSStringToUTF8(fake_identity_a_.gaiaID));
-  browser_state_->GetPrefs()->SetBoolean(
-      prefs::kIosSaveToPhotosSkipAccountPicker, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker,
+                                   true);
 
   FakeSaveToPhotosSettingsConsumer* fake_consumer =
       [[FakeSaveToPhotosSettingsConsumer alloc] init];
@@ -246,14 +244,13 @@ TEST_F(SaveToPhotosSettingsMediatorTest, ExternalPrefChangeUpdatesConsumers) {
   CheckFakeConsumerIdentities(fake_consumer, fake_identity_a_);
   EXPECT_FALSE(fake_consumer.askEveryTimeSwitchOn);
 
-  browser_state_->GetPrefs()->SetString(
+  profile_->GetPrefs()->SetString(
       prefs::kIosSaveToPhotosDefaultGaiaId,
       base::SysNSStringToUTF8(fake_identity_b_.gaiaID));
   CheckFakeConsumerIdentities(fake_consumer, fake_identity_b_);
   EXPECT_FALSE(fake_consumer.askEveryTimeSwitchOn);
 
-  browser_state_->GetPrefs()->ClearPref(
-      prefs::kIosSaveToPhotosSkipAccountPicker);
+  profile_->GetPrefs()->ClearPref(prefs::kIosSaveToPhotosSkipAccountPicker);
   CheckFakeConsumerIdentities(fake_consumer, fake_identity_b_);
   EXPECT_TRUE(fake_consumer.askEveryTimeSwitchOn);
 
@@ -266,11 +263,11 @@ TEST_F(SaveToPhotosSettingsMediatorTest,
        ExternalAccountsChangeUpdatesConsumers) {
   SaveToPhotosSettingsMediator* mediator = CreateSaveToPhotosSettingsMediator();
 
-  browser_state_->GetPrefs()->SetString(
+  profile_->GetPrefs()->SetString(
       prefs::kIosSaveToPhotosDefaultGaiaId,
       base::SysNSStringToUTF8(fake_identity_a_.gaiaID));
-  browser_state_->GetPrefs()->SetBoolean(
-      prefs::kIosSaveToPhotosSkipAccountPicker, true);
+  profile_->GetPrefs()->SetBoolean(prefs::kIosSaveToPhotosSkipAccountPicker,
+                                   true);
 
   FakeSaveToPhotosSettingsConsumer* fake_consumer =
       [[FakeSaveToPhotosSettingsConsumer alloc] init];
@@ -307,7 +304,7 @@ TEST_F(SaveToPhotosSettingsMediatorTest, HidesSettingsIfUserSignsOut) {
   mediator.delegate = fake_delegate;
 
   signin::ClearPrimaryAccount(
-      IdentityManagerFactory::GetForProfile(browser_state_.get()));
+      IdentityManagerFactory::GetForProfile(profile_.get()));
 
   EXPECT_TRUE(fake_delegate.hideSaveToPhotosSettingsCalled);
 

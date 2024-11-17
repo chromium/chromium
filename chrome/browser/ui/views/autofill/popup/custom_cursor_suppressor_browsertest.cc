@@ -56,7 +56,9 @@ IN_PROC_BROWSER_TEST_F(CustomCursorSuppressorBrowsertest,
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionInSidePanel();
   auto* extension_coordinator =
-      extensions::ExtensionSidePanelManager::GetForBrowserForTesting(browser())
+      browser()
+          ->GetFeatures()
+          .extension_side_panel_manager()
           ->GetExtensionCoordinatorForTesting(extension->id());
   content::WebContents* host_contents =
       extension_coordinator->GetHostWebContentsForTesting();
@@ -79,7 +81,9 @@ IN_PROC_BROWSER_TEST_F(
   scoped_refptr<const extensions::Extension> extension =
       LoadExtensionInSidePanel();
   auto* extension_coordinator =
-      extensions::ExtensionSidePanelManager::GetForBrowserForTesting(browser())
+      browser()
+          ->GetFeatures()
+          .extension_side_panel_manager()
           ->GetExtensionCoordinatorForTesting(extension->id());
   content::WebContents* host_contents =
       extension_coordinator->GetHostWebContentsForTesting();

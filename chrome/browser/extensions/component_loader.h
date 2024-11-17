@@ -88,7 +88,7 @@ class ComponentLoader {
   // background pages for testing, which could otherwise interfere with tests.
   static void EnableBackgroundExtensionsForTesting();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Call this during test setup to disabling loading the HelpApp.
   static void DisableHelpAppForTesting();
 #endif
@@ -119,7 +119,7 @@ class ComponentLoader {
       base::OnceClosure done_cb);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Add a component extension from a specific directory. Assumes that the
   // extension uses a different manifest file when this is a guest session
   // and that the manifest file lives in |root_directory|. Calls |done_cb|
@@ -217,14 +217,14 @@ class ComponentLoader {
       std::optional<base::Value::Dict> manifest);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void AddChromeApp();
   void AddFileManagerExtension();
   void AddGalleryExtension();
   void AddImageLoaderExtension();
   void AddGuestModeTestExtension(const base::FilePath& path);
   void AddKeyboardApp();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   scoped_refptr<const Extension> CreateExtension(
       const ComponentExtensionInfo& info, std::string* utf8_error);

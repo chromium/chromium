@@ -122,32 +122,14 @@ void GrandfatheredEasyUnlockHostDisabler::DisableEasyUnlockHostIfNecessary() {
 
   PA_LOG(VERBOSE) << "Attempting to disable kSmartLockHost on device "
                   << host_to_disable->GetInstanceIdDeviceIdForLogs();
-  if (features::ShouldUseV1DeviceSync()) {
-    // Even if the host has a non-trivial Instance ID, we still invoke the v1
-    // DeviceSync RPC to set the feature state. This ensures that GmsCore will
-    // be notified of the change regardless of what version of DeviceSync it is
-    // running. The v1 and v2 RPCs to change feature states ultimately update
-    // the same backend database entry. Note: The RemoteDeviceProvider
-    // guarantees that every device will have a public key while v1 DeviceSync
-    // is enabled.
-    DCHECK(!host_to_disable->public_key().empty());
-    device_sync_client_->SetSoftwareFeatureState(
-        host_to_disable->public_key(),
-        multidevice::SoftwareFeature::kSmartLockHost, false /* enabled */,
-        false /* is_exclusive */,
-        base::BindOnce(
-            &GrandfatheredEasyUnlockHostDisabler::OnDisableEasyUnlockHostResult,
-            weak_ptr_factory_.GetWeakPtr(), *host_to_disable));
-  } else {
-    DCHECK(!host_to_disable->instance_id().empty());
-    device_sync_client_->SetFeatureStatus(
-        host_to_disable->instance_id(),
-        multidevice::SoftwareFeature::kSmartLockHost,
-        device_sync::FeatureStatusChange::kDisable,
-        base::BindOnce(
-            &GrandfatheredEasyUnlockHostDisabler::OnDisableEasyUnlockHostResult,
-            weak_ptr_factory_.GetWeakPtr(), *host_to_disable));
-  }
+  DCHECK(!host_to_disable->instance_id().empty());
+  device_sync_client_->SetFeatureStatus(
+      host_to_disable->instance_id(),
+      multidevice::SoftwareFeature::kSmartLockHost,
+      device_sync::FeatureStatusChange::kDisable,
+      base::BindOnce(
+          &GrandfatheredEasyUnlockHostDisabler::OnDisableEasyUnlockHostResult,
+          weak_ptr_factory_.GetWeakPtr(), *host_to_disable));
 }
 
 void GrandfatheredEasyUnlockHostDisabler::OnDisableEasyUnlockHostResult(

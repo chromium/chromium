@@ -33,6 +33,7 @@ enum class SkipUploadReason {
   kNotAnonymized = 2,
   kScenarioQuotaExceeded = 3,
   kUploadTimedOut = 4,
+  kLocalScenario = 5,
 };
 
 // BaseTraceReport contains common data used to create and display a trace

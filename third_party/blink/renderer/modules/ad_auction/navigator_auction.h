@@ -89,8 +89,8 @@ class MODULES_EXPORT NavigatorAuction final
 
   ScriptPromise<IDLUndefined> clearOriginJoinedAdInterestGroups(
       ScriptState*,
-      const String,
-      const Vector<String>,
+      const String&,
+      Vector<String>,
       ExceptionState&);
   static ScriptPromise<IDLUndefined> clearOriginJoinedAdInterestGroups(
       ScriptState*,

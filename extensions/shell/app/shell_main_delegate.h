@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/public/app/content_main_delegate.h"
+#include "content/public/common/zygote/zygote_buildflags.h"
 
 namespace content {
 class ContentBrowserClient;
@@ -38,7 +39,7 @@ class ShellMainDelegate : public content::ContentMainDelegate {
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
   void ProcessExiting(const std::string& process_type) override;
-#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(USE_ZYGOTE)
   void ZygoteStarting(std::vector<std::unique_ptr<content::ZygoteForkDelegate>>*
                           delegates) override;
 #endif

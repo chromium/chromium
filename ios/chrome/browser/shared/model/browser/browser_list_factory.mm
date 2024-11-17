@@ -13,11 +13,6 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 // static
-BrowserList* BrowserListFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 BrowserList* BrowserListFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<BrowserList*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
@@ -41,6 +36,6 @@ std::unique_ptr<KeyedService> BrowserListFactory::BuildServiceInstanceFor(
 
 web::BrowserState* BrowserListFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
-  // Incognito browser states use same service as regular browser states.
+  // Incognito profiles use same service as regular profiles.
   return GetBrowserStateRedirectedInIncognito(context);
 }

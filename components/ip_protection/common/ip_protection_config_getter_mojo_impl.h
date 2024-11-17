@@ -9,36 +9,35 @@
 #include "base/memory/raw_ptr.h"
 #include "components/ip_protection/common/ip_protection_config_getter.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
+#include "components/ip_protection/mojom/core.mojom.h"
+#include "components/ip_protection/mojom/data_types.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace ip_protection {
 class IpProtectionConfigGetterMojoImpl final : public IpProtectionConfigGetter {
  public:
   explicit IpProtectionConfigGetterMojoImpl(
-      mojo::PendingRemote<network::mojom::IpProtectionConfigGetter>
-          config_getter);
+      mojo::PendingRemote<ip_protection::mojom::CoreHost> config_getter);
   ~IpProtectionConfigGetterMojoImpl() override;
 
   void TryGetAuthTokens(uint32_t batch_size,
-                        ip_protection::ProxyLayer proxy_layer,
+                        ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
-  void GetProxyList(GetProxyListCallback callback) override;
+  void GetProxyConfig(GetProxyConfigCallback callback) override;
   bool IsAvailable() override;
 
  private:
   void OnGotProxyList(
-      GetProxyListCallback callback,
+      GetProxyConfigCallback callback,
       const std::optional<std::vector<net::ProxyChain>>& proxy_list,
-      const std::optional<ip_protection::GeoHint>& geo_hint);
+      const std::optional<GeoHint>& geo_hint);
   void OnGotAuthTokens(
       TryGetAuthTokensCallback callback,
-      const std::optional<std::vector<ip_protection::BlindSignedAuthToken>>&
-          tokens,
+      const std::optional<std::vector<BlindSignedAuthToken>>& tokens,
       std::optional<::base::Time> expiration_time);
 
   bool is_available_ = false;
-  mojo::Remote<network::mojom::IpProtectionConfigGetter> config_getter_;
+  mojo::Remote<ip_protection::mojom::CoreHost> config_getter_;
   base::WeakPtrFactory<IpProtectionConfigGetterMojoImpl> weak_ptr_factory_{
       this};
 };

@@ -210,7 +210,6 @@ public class MinidumpUploader {
      *
      * @param connection the connection to read the response from.
      * @return the content of the response.
-     * @throws IOException
      */
     private String getResponseContentAsString(HttpURLConnection connection) throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -222,12 +221,10 @@ public class MinidumpUploader {
     }
 
     /**
-     * Copies all available data from |inStream| to |outStream|. Closes both
-     * streams when done.
+     * Copies all available data from |inStream| to |outStream|. Closes both streams when done.
      *
      * @param inStream the stream to read
      * @param outStream the stream to write to
-     * @throws IOException
      */
     private void streamCopy(InputStream inStream, OutputStream outStream) throws IOException {
         byte[] temp = new byte[4096];

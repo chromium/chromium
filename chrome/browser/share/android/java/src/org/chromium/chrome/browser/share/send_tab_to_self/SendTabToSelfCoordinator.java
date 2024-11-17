@@ -229,7 +229,8 @@ public class SendTabToSelfCoordinator {
                             mDeviceLockActivityLauncher,
                             AccountPickerLaunchMode.DEFAULT,
                             /* isWebSignin= */ false,
-                            SigninAccessPoint.SEND_TAB_TO_SELF_PROMO);
+                            SigninAccessPoint.SEND_TAB_TO_SELF_PROMO,
+                            /* selectedCoreAccountId= */ null);
                     return;
                 }
         }

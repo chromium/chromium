@@ -95,9 +95,7 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
 
   ~ArcDocumentsProviderRoot() override;
 
-  // Queries information of a file just like AsyncFileUtil.GetFileInfo(). If the
-  // file metadata reports unknown size, it will attempt to open the file and
-  // read the size from the file descriptor.
+  // Queries information of a file just like AsyncFileUtil.GetFileInfo().
   void GetFileInfo(const base::FilePath& path,
                    storage::FileSystemOperation::GetMetadataFieldSet fields,
                    GetFileInfoCallback callback);
@@ -250,7 +248,6 @@ class ArcDocumentsProviderRoot : public ArcFileSystemOperationRunner::Observer {
 
   void GetFileInfoFromDocument(
       GetFileInfoCallback callback,
-      const base::FilePath& path,
       storage::FileSystemOperation::GetMetadataFieldSet fields,
       base::File::Error error,
       const mojom::DocumentPtr& document);

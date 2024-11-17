@@ -216,7 +216,7 @@ public abstract class FeedbackCollector<T> implements Runnable {
             }
         }
 
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Feedback.Duration.FetchSystemInformation",
                 SystemClock.elapsedRealtime() - mStartTime);
         final Callback<FeedbackCollector> callback = mCallback;

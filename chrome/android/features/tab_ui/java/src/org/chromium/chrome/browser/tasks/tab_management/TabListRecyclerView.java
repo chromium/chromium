@@ -13,7 +13,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeInfo.AccessibilityAction;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -38,7 +37,6 @@ import java.util.List;
 class TabListRecyclerView extends RecyclerView
         implements TabListMediator.TabGridAccessibilityHelper, RunOnNextLayout {
     private boolean mBlockTouchInput;
-    private ImageView mShadowImageView;
     // Null unless item animations are disabled.
     @Nullable private RecyclerView.ItemAnimator mDisabledAnimatorHolder;
 

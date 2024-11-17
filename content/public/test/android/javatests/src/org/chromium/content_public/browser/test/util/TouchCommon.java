@@ -289,7 +289,7 @@ public class TouchCommon {
     /**
      * Starts (synchronously) a drag motion. Normally followed by dragTo() and dragEnd().
      *
-     * @activity activity The activity where the touch action is being performed.
+     * @param activity activity The activity where the touch action is being performed.
      * @param x X coordinate, in screen coordinates.
      * @param y Y coordinate, in screen coordinates.
      * @param downTime When the drag was started, in millis since the epoch.
@@ -310,7 +310,7 @@ public class TouchCommon {
      * Drags / moves (synchronously) to the specified coordinates. Normally preceded by dragStart()
      * and followed by dragEnd()
      *
-     * @activity activity The activity where the touch action is being performed.
+     * @param activity activity The activity where the touch action is being performed.
      * @param fromX X coordinate of the initial touch, in screen coordinates.
      * @param toX X coordinate of the drag destination, in screen coordinates.
      * @param fromY X coordinate of the initial touch, in screen coordinates.
@@ -347,10 +347,10 @@ public class TouchCommon {
     }
 
     /**
-     * Finishes (synchronously) a drag / move at the specified coordinate.
-     * Normally preceded by dragStart() and dragTo().
+     * Finishes (synchronously) a drag / move at the specified coordinate. Normally preceded by
+     * dragStart() and dragTo().
      *
-     * @activity activity The activity where the touch action is being performed.
+     * @param activity activity The activity where the touch action is being performed.
      * @param x X coordinate, in screen coordinates.
      * @param y Y coordinate, in screen coordinates.
      * @param downTime When the drag was started, in millis since the epoch.
@@ -476,7 +476,7 @@ public class TouchCommon {
         int longPressTimeout = ViewConfiguration.getLongPressTimeout();
 
         // Long press is flaky with just longPressTimeout. Doubling the time to be safe.
-        SystemClock.sleep(longPressTimeout * 2);
+        SystemClock.sleep(longPressTimeout * 2L);
     }
 
     private static void longPressInternal(View view, float windowX, float windowY) {

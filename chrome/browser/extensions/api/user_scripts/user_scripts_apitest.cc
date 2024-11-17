@@ -62,14 +62,8 @@ class UserScriptsAPITest : public ExtensionApiTest {
 };
 
 UserScriptsAPITest::UserScriptsAPITest() {
-  scoped_feature_list_.InitWithFeatures(
-      {extensions_features::kApiUserScriptsMultipleWorlds,
-       // Also enable the dev mode restriction feature to gate the API on
-       // developer mode.
-       // TODO(crbug.com/40286550): Remove this when the feature is
-       // enabled by default.
-       extensions_features::kRestrictDeveloperModeAPIs},
-      /*disabled_features=*/{});
+  scoped_feature_list_.InitAndEnableFeature(
+      extensions_features::kApiUserScriptsMultipleWorlds);
 }
 
 // TODO(crbug.com/40935741, crbug.com/335421977): Flaky on Linux debug and on
@@ -290,6 +284,7 @@ IN_PROC_BROWSER_TEST_F(UserScriptsAPITestWithoutDeveloperMode,
              } catch (e) {
                caught = true;
                const expectedError =
+                   `Failed to read the 'userScripts' property from 'Object': ` +
                    `The 'userScripts' API is only available for ` +
                    `users in developer mode.`;
                chrome.test.assertEq(expectedError, e.message);

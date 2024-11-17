@@ -17,9 +17,11 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/tag.h"
 #include "chrome/updater/updater_scope.h"
+#include "chrome/updater/updater_version.h"
 
 class GURL;
 
@@ -27,12 +29,11 @@ namespace base {
 
 class CommandLine;
 class FilePath;
-class Version;
 
 // Enables insertion of optional `base` types. Must be in the `base` namespace
 // for insertion into gTest expectations to work.
 template <class T>
-inline std::ostream& operator<<(std::ostream& os, const std::optional<T>& opt) {
+inline std::ostream& operator<<(std::ostream& os, std::optional<T> opt) {
   if (!opt.has_value()) {
     return os << "std::nullopt";
   }
@@ -152,7 +153,8 @@ std::optional<base::FilePath> GetLogFilePath(UpdaterScope scope);
 void InitLogging(UpdaterScope updater_scope);
 
 // Returns HTTP user-agent value.
-std::string GetUpdaterUserAgent();
+std::string GetUpdaterUserAgent(
+    const base::Version& updater_version = base::Version(kUpdaterVersion));
 
 // Returns a new GURL by appending the given query parameter name and the
 // value. Unsafe characters in the name and the value are escaped like
@@ -234,7 +236,7 @@ bool MigrateLegacyUpdaters(
         register_callback);
 
 // Delete everything other than `except` under `except.DirName()`.
-[[nodiscard]] bool DeleteExcept(const std::optional<base::FilePath>& except);
+[[nodiscard]] bool DeleteExcept(std::optional<base::FilePath> except);
 
 // Returns the quotient of dividing two integer numbers (m/n) rounded up.
 template <typename T>
@@ -247,6 +249,11 @@ template <typename T>
 // be computed.
 [[nodiscard]] int GetDownloadProgress(int64_t downloaded_bytes,
                                       int64_t total_bytes);
+
+// Returns the absolute path to the enterprise companion app executable bundled
+// with the updater.
+[[nodiscard]] std::optional<base::FilePath>
+GetBundledEnterpriseCompanionExecutablePath(UpdaterScope scope);
 
 }  // namespace updater
 

@@ -95,7 +95,7 @@ class CrxDownloader : public base::RefCountedThreadSafe<CrxDownloader> {
   const std::vector<DownloadMetrics> download_metrics() const;
 
  protected:
-  explicit CrxDownloader(scoped_refptr<CrxDownloader> successor);
+  explicit CrxDownloader(scoped_refptr<CrxDownloader> successor = nullptr);
   virtual ~CrxDownloader();
 
   // Handles the fallback in the case of multiple urls and routing of the

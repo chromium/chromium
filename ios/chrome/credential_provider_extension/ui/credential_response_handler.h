@@ -7,9 +7,12 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
+#import <vector>
+
 @protocol Credential;
 
-typedef void (^FetchKeyCompletionBlock)(NSData* security_domain_secret);
+typedef void (^FetchSecurityDomainSecretCompletionBlock)(
+    NSArray<NSData*>* security_domain_secrets);
 
 // A handler to allow children to communicate selected credentials back to the
 // parent. This is essentially a wrapper for
@@ -22,13 +25,16 @@ typedef void (^FetchKeyCompletionBlock)(NSData* security_domain_secret);
     API_AVAILABLE(ios(17.0));
 
 - (void)userSelectedPasskey:(id<Credential>)passkey
-             clientDataHash:(NSData*)clientDataHash
-         allowedCredentials:(NSArray<NSData*>*)allowedCredentials
-                 allowRetry:(BOOL)allowRetry;
+              clientDataHash:(NSData*)clientDataHash
+          allowedCredentials:(NSArray<NSData*>*)allowedCredentials
+    userVerificationRequired:(BOOL)userVerificationRequired;
 
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode;
 
 - (void)completeExtensionConfigurationRequest;
+
+// Returns the gaia for the account used for credential creation.
+- (NSString*)gaia;
 
 @end
 

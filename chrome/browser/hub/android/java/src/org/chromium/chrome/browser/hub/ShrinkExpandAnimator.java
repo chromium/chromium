@@ -28,6 +28,7 @@ public class ShrinkExpandAnimator {
     private final Rect mInitialRect;
     private final Rect mFinalRect;
     private final Matrix mImageMatrix;
+    private final int mSearchBoxHeight;
     private Size mThumbnailSize;
 
     /**
@@ -41,7 +42,8 @@ public class ShrinkExpandAnimator {
     public ShrinkExpandAnimator(
             @NonNull ShrinkExpandImageView view,
             @NonNull Rect initialRect,
-            @NonNull Rect finalRect) {
+            @NonNull Rect finalRect,
+            int searchBoxHeight) {
         mView = view;
         assert mView.getScaleX() == 1.0f;
         assert mView.getScaleY() == 1.0f;
@@ -52,10 +54,12 @@ public class ShrinkExpandAnimator {
         mInitialRect = new Rect(initialRect);
         mFinalRect = new Rect(finalRect);
         mImageMatrix = new Matrix();
+        mSearchBoxHeight = searchBoxHeight;
     }
 
     /**
      * Set the size of the thumbnail for top offset computation. Only necessary when expanding.
+     *
      * @param thumbnailSize The size of the thumbnail in the tab grid.
      */
     public void setThumbnailSizeForOffset(Size thumbnailSize) {
@@ -78,11 +82,11 @@ public class ShrinkExpandAnimator {
         mView.setScaleX(scaleX);
         mView.setScaleY(scaleY);
         mView.setTranslationX(
-                rect.left
+                (float) rect.left
                         - Math.round(
                                 mInitialRect.left + (1.0 - scaleX) * mInitialRect.width() / 2.0));
         mView.setTranslationY(
-                rect.top
+                (float) rect.top
                         - Math.round(
                                 mInitialRect.top + (1.0 - scaleY) * mInitialRect.height() / 2.0));
 
@@ -102,8 +106,12 @@ public class ShrinkExpandAnimator {
         // This section handles y-offset of the image so that a view that is initially partially
         // offscreen at the top correctly "crops" the top of the image throughout the animation.
         // This is only necessary when expanding the rect.
+        // If hub search is enabled, take into account the hub search box height when animating to
+        // accurately transition between rects.
+        // TODO(crbug.com/378540547): A small jump occurs during the animation which may be related
+        // to incorrect computation for the rects below.
         if (mThumbnailSize != null
-                && mInitialRect.top == mFinalRect.top
+                && mInitialRect.top == mFinalRect.top + mSearchBoxHeight
                 && mInitialRect.height() < mThumbnailSize.getHeight()) {
             // Y translation offset shifts in line with the scaling of the rectangle. It should
             // progress from initialYOffset -> 0 as the scaling progresses.

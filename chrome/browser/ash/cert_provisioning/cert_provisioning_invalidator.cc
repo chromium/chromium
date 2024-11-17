@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_invalidator.h"
 
+#include <string>
 #include <utility>
 
 #include "base/functional/overloaded.h"
@@ -18,7 +19,6 @@
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
 
 namespace ash::cert_provisioning {
 
@@ -40,9 +40,7 @@ const char* CertScopeToString(CertScope scope) {
       return "device";
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Unknown cert scope: " << static_cast<int>(scope);
-  return "";
+  NOTREACHED() << "Unknown cert scope: " << static_cast<int>(scope);
 }
 
 }  // namespace
@@ -289,8 +287,7 @@ void CertProvisioningUserInvalidator::Register(
       internal::CertProvisioningInvalidationHandler::BuildAndRegister(
           CertScope::kUser,
           invalidation_provider->GetInvalidationServiceOrListener(
-              policy::kPolicyFCMInvalidationSenderID,
-              invalidation::InvalidationListener::kProjectNumberEnterprise),
+              GetCertProvisioningInvalidationProjectNumber(CertScope::kUser)),
           topic, listener_type, std::move(on_invalidation_event_callback));
 
   if (!invalidation_handler_) {

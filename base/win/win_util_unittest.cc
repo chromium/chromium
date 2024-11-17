@@ -14,7 +14,9 @@
 #include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_co_mem.h"
+#include "base/win/scoped_com_initializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -36,6 +38,10 @@ class ThreadLocaleSaver {
  private:
   LCID original_locale_id_;
 };
+
+auto* csm_false = static_cast<bool (*)()>([]() -> bool { return false; });
+
+auto* csm_true = static_cast<bool (*)()>([]() -> bool { return true; });
 
 }  // namespace
 
@@ -156,6 +162,117 @@ TEST(BaseWinUtilTest, ExpandEnvironmentVariablesUndefinedValue) {
 
   EXPECT_EQ(ExpandEnvironmentVariables(path_with_env_var).value(),
             path_expanded);
+}
+
+TEST(DeviceConvertibilityTest, None) {
+  ScopedCOMInitializer com_initializer;
+  ASSERT_TRUE(com_initializer.Succeeded());
+  ScopedDeviceConvertibilityStateForTesting scoper(false, false, csm_false,
+                                                   std::nullopt, std::nullopt);
+  EXPECT_FALSE(QueryDeviceConvertibility());
+}
+
+TEST(DeviceConvertibilityTest, ConvertibilityDisabled) {
+  ScopedCOMInitializer com_initializer;
+  ASSERT_TRUE(com_initializer.Succeeded());
+  // If convertibility is not enabled but the key exists, other values shouldn't
+  // be checked. Device is not convertible.
+  ScopedDeviceConvertibilityStateForTesting scoper(
+      /*form_convertible=*/true, /*chassis_convertible=*/true,
+      /*csm_changed=*/csm_false, /*convertible_chassis_key=*/std::nullopt,
+      /*convertibility_enabled=*/std::optional<bool>{false});
+  EXPECT_FALSE(QueryDeviceConvertibility());
+}
+
+TEST(DeviceConvertibilityTest, ConvertibilityEnabled) {
+  ScopedCOMInitializer com_initializer;
+  ASSERT_TRUE(com_initializer.Succeeded());
+  ScopedDeviceConvertibilityStateForTesting scoper(
+      /*form_convertible=*/false, /*chassis_convertible=*/false,
+      /*csm_changed=*/csm_false, /*convertible_chassis_key=*/std::nullopt,
+      /*convertibility_enabled=*/std::optional<bool>{true});
+  EXPECT_TRUE(QueryDeviceConvertibility());
+}
+
+TEST(DeviceConvertibilityTest, ChassisConvertibleKeyTrue) {
+  ScopedCOMInitializer com_initializer;
+  ASSERT_TRUE(com_initializer.Succeeded());
+  ScopedDeviceConvertibilityStateForTesting scoper(
+      /*form_convertible=*/false, /*chassis_convertible=*/false,
+      /*csm_changed=*/csm_false,
+      /*convertible_chassis_key=*/std::optional<bool>{true},
+      /*convertibility_enabled=*/std::nullopt);
+  EXPECT_TRUE(QueryDeviceConvertibility());
+}
+
+TEST(DeviceConvertibilityTest, ChassisConvertibleKeyFalse) {
+  ScopedCOMInitializer com_initializer;
+  ASSERT_TRUE(com_initializer.Succeeded());
+  ScopedDeviceConvertibilityStateForTesting scoper(
+      /*form_convertible=*/false, /*chassis_convertible=*/true,
+      /*csm_changed=*/csm_true,
+      /*convertible_chassis_key=*/std::optional<bool>{false},
+      /*convertibility_enabled=*/std::nullopt);
+  EXPECT_FALSE(QueryDeviceConvertibility());
+}
+
+TEST(DeviceConvertibilityTest, FormConvertibleTrue) {
+  ScopedCOMInitializer com_initializer;
+  ASSERT_TRUE(com_initializer.Succeeded());
+  ScopedDeviceConvertibilityStateForTesting scoper(
+      /*form_convertible=*/true, /*chassis_convertible=*/false,
+      /*csm_changed=*/csm_false,
+      /*convertible_chassis_key=*/std::nullopt,
+      /*convertibility_enabled=*/std::nullopt);
+  EXPECT_TRUE(QueryDeviceConvertibility());
+}
+
+TEST(DeviceConvertibilityTest, ChassisConvertibleTrue) {
+  ScopedCOMInitializer com_initializer;
+  ASSERT_TRUE(com_initializer.Succeeded());
+  ScopedDeviceConvertibilityStateForTesting scoper(
+      /*form_convertible=*/false, /*chassis_convertible=*/true,
+      /*csm_changed=*/csm_false,
+      /*convertible_chassis_key=*/std::nullopt,
+      /*convertibility_enabled=*/std::nullopt);
+  EXPECT_TRUE(QueryDeviceConvertibility());
+}
+
+TEST(DeviceConvertibilityTest, ConvertibleSlateModeChangeTrue) {
+  ScopedCOMInitializer com_initializer;
+  ASSERT_TRUE(com_initializer.Succeeded());
+  ScopedDeviceConvertibilityStateForTesting scoper(
+      /*form_convertible=*/false, /*chassis_convertible=*/false,
+      /*csm_changed=*/csm_true,
+      /*convertible_chassis_key=*/std::nullopt,
+      /*convertibility_enabled=*/std::nullopt);
+  EXPECT_TRUE(QueryDeviceConvertibility());
+}
+
+TEST(DeviceConvertibilityTest, ConvertibilityEnabledSanityCheck) {
+  RegKey key(HKEY_LOCAL_MACHINE,
+             L"System\\CurrentControlSet\\Control\\PriorityControl", KEY_READ);
+  if (key.HasValue(L"ConvertibilityEnabled")) {
+    ASSERT_TRUE(GetConvertibilityEnabledOverride().has_value());
+  } else {
+    ASSERT_FALSE(GetConvertibilityEnabledOverride().has_value());
+  }
+}
+
+TEST(DeviceConvertibilityTest, ConvertibilityKeySanityCheck) {
+  RegKey key(HKEY_CURRENT_USER,
+             L"SOFTWARE\\Microsoft\\TabletTip\\ConvertibleChassis", KEY_READ);
+  if (key.HasValue(L"ConvertibleChassis")) {
+    ASSERT_TRUE(GetConvertibleChassisKeyValue().has_value());
+  } else {
+    ASSERT_FALSE(GetConvertibleChassisKeyValue().has_value());
+  }
+}
+
+TEST(DeviceConvertibilityTest, DeviceFormAndChassisConvertible) {
+  ScopedCOMInitializer com_initializer;
+  ASSERT_TRUE(com_initializer.Succeeded());
+  EXPECT_FALSE(IsDeviceFormConvertible() || IsChassisConvertible());
 }
 
 }  // namespace win

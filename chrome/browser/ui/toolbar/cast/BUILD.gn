@@ -1,0 +1,81 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("cast") {
+  sources = [
+    "cast_contextual_menu.h",
+    "cast_toolbar_button_controller.h",
+  ]
+  public_deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//chrome/browser/profiles:profile",
+    "//components/media_router/browser",
+    "//components/prefs",
+    "//ui/base",
+    "//ui/menus",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "cast_contextual_menu.cc",
+    "cast_toolbar_button_controller.cc",
+  ]
+  deps = [
+    ":cast",
+    "//base",
+    "//chrome/app:branded_strings",
+    "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:primitives",
+    "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/browser_window:browser_window",
+    "//chrome/browser/ui/views/toolbar",
+    "//chrome/common",
+    "//chrome/common:constants",
+    "//components/media_router/common",
+    "//components/signin/public/identity_manager",
+    "//components/strings:components_strings",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//extensions/common:common_constants",
+    "//ui/actions:actions_headers",
+    "//ui/gfx",
+    "//ui/gfx:color_utils",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "cast_contextual_menu_unittest.cc",
+    "cast_toolbar_button_controller_unittest.cc",
+    "mock_cast_toolbar_button_controller.cc",
+    "mock_cast_toolbar_button_controller.h",
+  ]
+  deps = [
+    ":cast",
+    "//base/test:test_support",
+    "//chrome/app:branded_strings",
+    "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/browser/media/router",
+    "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/ui/media_router",
+    "//chrome/common:constants",
+    "//chrome/test:test_support",
+    "//components/media_router/browser:test_support",
+    "//components/media_router/common",
+    "//components/signin/public/identity_manager",
+  ]
+}

@@ -183,10 +183,6 @@
     // https://drafts.csswg.org/css-view-transitions-2/#reveal-event
     [RuntimeEnabled=PageRevealEvent] attribute EventHandler onpagereveal;
 
-    // Accessibility Object Model
-    // https://github.com/WICG/aom/blob/HEAD/explainer.md
-    [RuntimeEnabled=AccessibilityObjectModel, CallWith=ScriptState] Promise<ComputedAccessibleNode> getComputedAccessibleNode(Element element);
-
     // https://dom.spec.whatwg.org/#interface-window-extensions
     [Replaceable, GetterCallWith=ScriptState, MeasureAs=WindowEvent] readonly attribute any event;
 

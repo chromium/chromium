@@ -26,7 +26,6 @@ public class HistoryUtils {
      * @param instrumentation an Instrumentation instance.
      * @param webContents a WebContents instance.
      * @return result of {@link NavigationController#canGoBack()}
-     * @throws Throwable
      */
     public static boolean canGoBackOnUiThread(
             Instrumentation instrumentation, final WebContents webContents) throws Throwable {
@@ -45,10 +44,9 @@ public class HistoryUtils {
      *
      * @param instrumentation an Instrumentation instance.
      * @param webContents a WebContents instance.
-     * @param offset The number of steps to go on the UI thread, with negative
-     *      representing going back.
+     * @param offset The number of steps to go on the UI thread, with negative representing going
+     *     back.
      * @return result of {@link NavigationController#canGoToOffset(int)}
-     * @throws Throwable
      */
     public static boolean canGoToOffsetOnUiThread(
             Instrumentation instrumentation, final WebContents webContents, final int offset)
@@ -69,7 +67,6 @@ public class HistoryUtils {
      * @param instrumentation an Instrumentation instance.
      * @param webContents a WebContents instance.
      * @return result of {@link NavigationController#canGoForward()}
-     * @throws Throwable
      */
     public static boolean canGoForwardOnUiThread(
             Instrumentation instrumentation, final WebContents webContents) throws Throwable {
@@ -106,7 +103,6 @@ public class HistoryUtils {
      * @param instrumentation an Instrumentation instance.
      * @param webContents a WebContents instance.
      * @return the last committed URL of the provided WebContents.
-     * @throws Throwable
      */
     public static String getUrlOnUiThread(
             Instrumentation instrumentation, final WebContents webContents) throws Throwable {
@@ -121,14 +117,12 @@ public class HistoryUtils {
     }
 
     /**
-     * Goes back on UI thread and waits until onPageFinished is called or until
-     * it times out.
+     * Goes back on UI thread and waits until onPageFinished is called or until it times out.
      *
      * @param instrumentation an Instrumentation instance.
      * @param webContents a WebContents instance.
      * @param onPageFinishedHelper the CallbackHelper instance associated with the onPageFinished
-     *                             callback of webContents.
-     * @throws Throwable
+     *     callback of webContents.
      */
     public static void goBackSync(
             Instrumentation instrumentation,
@@ -149,12 +143,10 @@ public class HistoryUtils {
     }
 
     /**
-     * Goes forward on UI thread and waits until onPageFinished is called or until
-     * it times out.
+     * Goes forward on UI thread and waits until onPageFinished is called or until it times out.
      *
      * @param instrumentation an Instrumentation instance.
      * @param webContents a WebContents instance.
-     * @throws Throwable
      */
     public static void goForwardSync(
             Instrumentation instrumentation,

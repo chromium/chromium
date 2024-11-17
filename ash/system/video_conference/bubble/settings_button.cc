@@ -15,7 +15,8 @@
 #include "ash/system/video_conference/video_conference_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/toggle_button.h"
@@ -266,9 +267,10 @@ class SettingsButton::MenuController : public ui::SimpleMenuModel::Delegate,
   }
 
   // views::ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override {
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override {
     BuildMenuModel();
     menu_model_adapter_ = std::make_unique<SettingsMenuModelAdapter>(
         menu_model_.get(), base::BindRepeating(&MenuController::OnMenuClosed,
@@ -364,16 +366,16 @@ SettingsButton::SettingsButton(base::OnceClosure close_bubble_callback)
 SettingsButton::~SettingsButton() = default;
 
 void SettingsButton::OnButtonActivated(const ui::Event& event) {
-  ui::MenuSourceType source_type;
+  ui::mojom::MenuSourceType source_type;
 
   if (event.IsMouseEvent()) {
-    source_type = ui::MENU_SOURCE_MOUSE;
+    source_type = ui::mojom::MenuSourceType::kMouse;
   } else if (event.IsTouchEvent()) {
-    source_type = ui::MENU_SOURCE_TOUCH;
+    source_type = ui::mojom::MenuSourceType::kTouch;
   } else if (event.IsKeyEvent()) {
-    source_type = ui::MENU_SOURCE_KEYBOARD;
+    source_type = ui::mojom::MenuSourceType::kKeyboard;
   } else {
-    source_type = ui::MENU_SOURCE_STYLUS;
+    source_type = ui::mojom::MenuSourceType::kStylus;
   }
 
   context_menu_->ShowContextMenuForView(

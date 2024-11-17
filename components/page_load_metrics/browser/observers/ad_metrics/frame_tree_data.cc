@@ -142,8 +142,7 @@ FrameTreeData::GetCreativeOriginStatusWithThrottling() const {
       return OriginStatusWithThrottling::kCrossAndUnthrottled;
     // We expect the above values to cover all cases.
     default:
-      NOTREACHED_IN_MIGRATION();
-      return OriginStatusWithThrottling::kUnknownAndUnthrottled;
+      NOTREACHED();
   }
 }
 

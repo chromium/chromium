@@ -347,8 +347,11 @@ void AddressFieldParserNG::AddClassifications(
     if (!field_ptr) {
       continue;
     }
-    AddClassification(field_ptr, field_type, kBaseAddressParserScore,
-                      field_candidates);
+    // TODO(crbug.com/320965828): Support MatchInfo.
+    AddClassification(
+        FieldAndMatchInfo{field_ptr,
+                          {.matched_attribute = MatchAttribute::kLabel}},
+        field_type, kBaseAddressParserScore, field_candidates);
   }
 }
 
@@ -615,6 +618,9 @@ std::optional<double> AddressFieldParserNG::FindScoreOfBestMatchingRule(
     case NAME_MIDDLE_INITIAL:
     case NAME_FULL:
     case NAME_SUFFIX:
+    case ALTERNATIVE_FULL_NAME:
+    case ALTERNATIVE_GIVEN_NAME:
+    case ALTERNATIVE_FAMILY_NAME:
     case EMAIL_ADDRESS:
     case USERNAME_AND_EMAIL_ADDRESS:
     case PHONE_HOME_NUMBER:

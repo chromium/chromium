@@ -1,3 +1,7 @@
+include_rules = [
+  "+components/saved_tab_groups",
+]
+
 specific_include_rules = {
   "local_sync_test.cc": [
     "+components/power_bookmarks",

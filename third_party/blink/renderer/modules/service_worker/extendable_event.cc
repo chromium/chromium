@@ -50,8 +50,26 @@ ExtendableEvent* ExtendableEvent::Create(const AtomicString& type,
 
 ExtendableEvent::~ExtendableEvent() = default;
 
+// This injects an extra microtask step for WaitUntilObserver::WaitUntil() on
+// fulfill/reject, as required by
+// https://w3c.github.io/ServiceWorker/#extendableevent-add-lifetime-promise
+class WaitUntilFulfill final : public ThenCallable<IDLAny, WaitUntilFulfill> {
+ public:
+  void React(ScriptState*, ScriptValue) {}
+};
+
+class WaitUntilReject final
+    : public ThenCallable<IDLAny, WaitUntilReject, IDLAny> {
+ public:
+  ScriptValue React(ScriptState* script_state, ScriptValue value) {
+    return ScriptValue(
+        script_state->GetIsolate(),
+        ScriptPromise<IDLUndefined>::Reject(script_state, value).V8Promise());
+  }
+};
+
 void ExtendableEvent::waitUntil(ScriptState* script_state,
-                                ScriptPromiseUntyped script_promise,
+                                ScriptPromise<IDLAny> script_promise,
                                 ExceptionState& exception_state) {
   if (!observer_) {
     exception_state.ThrowDOMException(
@@ -60,7 +78,12 @@ void ExtendableEvent::waitUntil(ScriptState* script_state,
     return;
   }
 
-  observer_->WaitUntil(script_state, script_promise, exception_state);
+  observer_->WaitUntil(
+      script_state,
+      script_promise.Then(script_state,
+                          MakeGarbageCollected<WaitUntilFulfill>(),
+                          MakeGarbageCollected<WaitUntilReject>()),
+      exception_state);
 }
 
 ExtendableEvent::ExtendableEvent(const AtomicString& type,

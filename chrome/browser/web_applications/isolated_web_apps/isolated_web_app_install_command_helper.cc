@@ -208,9 +208,6 @@ void UpdateBundlePathAndCreateStorageLocation(
                 copy_or_move(bundle.path(), /*dev_mode=*/false,
                              Operation::kMove);
                 break;
-              case IwaSourceBundleModeAndFileOp::kDevModeReference:
-                std::move(callback).Run(IwaStorageUnownedBundle{bundle.path()});
-                break;
             }
           },
           [&](const IwaSourceProxy& proxy) {
@@ -282,7 +279,7 @@ KeyRotationLookupResult LookupRotatedKey(
 
 KeyRotationData GetKeyRotationData(
     const web_package::SignedWebBundleId& web_bundle_id,
-    const WebApp::IsolationData& isolation_data) {
+    const IsolationData& isolation_data) {
   const auto* kr_info =
       IwaKeyDistributionInfoProvider::GetInstance()->GetKeyRotationInfo(
           web_bundle_id.id());
@@ -295,7 +292,7 @@ KeyRotationData GetKeyRotationData(
   // Checks whether `rotated_key` is contained in
   // `isolation_data.integrity_block_data`.
   const bool current_installation_has_rk = IntegrityBlockDataHasRotatedKey(
-      isolation_data.integrity_block_data, rotated_key);
+      isolation_data.integrity_block_data(), rotated_key);
   const auto& pending_update = isolation_data.pending_update_info();
 
   // Checks whether `rotated_key` is contained in
@@ -304,7 +301,7 @@ KeyRotationData GetKeyRotationData(
       pending_update && IntegrityBlockDataHasRotatedKey(
                             pending_update->integrity_block_data, rotated_key);
 
-  return {.rotated_key = raw_ref(rotated_key),
+  return {.rotated_key = rotated_key,
           .current_installation_has_rk = current_installation_has_rk,
           .pending_update_has_rk = pending_update_has_rk};
 }
@@ -565,18 +562,15 @@ IsolatedWebAppInstallCommandHelper::ValidateManifestAndCreateInstallInfo(
         "Failed to convert manifest `version` from UTF16 to UTF8.");
   }
 
-  base::expected<std::vector<uint32_t>, IwaVersionParseError>
-      version_components = ParseIwaVersionIntoComponents(version_string);
-  if (!version_components.has_value()) {
-    return base::unexpected(base::StrCat(
-        {"Failed to parse `version` from the manifest: It must be in the form "
-         "`x.y.z`, where `x`, `y`, and `z` are numbers without leading zeros. "
-         "Detailed error: ",
-         IwaVersionParseErrorToString(version_components.error()),
-         " Got: ", version_string}));
-  }
-  base::Version version(
-      std::vector(version_components->begin(), version_components->end()));
+  ASSIGN_OR_RETURN(
+      auto version, ParseIwaVersion(version_string),
+      [&](auto error) -> base::expected<WebAppInstallInfo, std::string> {
+        return base::unexpected(base::StrCat(
+            {"Failed to parse `version` from the manifest: It must be in the "
+             "form `x.y.z`, where `x`, `y`, and `z` are numbers without "
+             "leading zeros. Detailed error: ",
+             IwaVersionParseErrorToString(error), " Got: ", version_string}));
+      });
 
   if (expected_version.has_value() && *expected_version != version) {
     return base::unexpected(
@@ -584,7 +578,7 @@ IsolatedWebAppInstallCommandHelper::ValidateManifestAndCreateInstallInfo(
         ") does not match the version provided in the manifest (" +
         version.GetString() + ")");
   }
-  info.isolated_web_app_version = version;
+  info.isolated_web_app_version = std::move(version);
 
   std::string encoded_id = manifest.id.path();
 

@@ -18,6 +18,7 @@
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
 #include "chrome/browser/ash/login/test/oobe_window_visibility_waiter.h"
+#include "chrome/browser/ash/policy/enrollment/auto_enrollment_type_checker.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
@@ -120,6 +121,14 @@ class ResetTest : public OobeBaseTest, public LocalStateMixin::Delegate {
 
   ~ResetTest() override = default;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // TODO(b/353731379): Remove when removing legacy state determination code.
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
+    OobeBaseTest::SetUpCommandLine(command_line);
+  }
+
   // Simulates reset screen request from views based login.
   void InvokeResetScreen() {
     LoginDisplayHost::default_host()->HandleAccelerator(
@@ -157,6 +166,10 @@ class ResetOobeTest : public OobeBaseTest {
 
   // OobeBaseTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    // TODO(b/353731379): Remove when removing legacy state determination code.
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableUnifiedStateDetermination,
+        policy::AutoEnrollmentTypeChecker::kUnifiedStateDeterminationNever);
     command_line->AppendSwitch(switches::kFirstExecAfterBoot);
     OobeBaseTest::SetUpCommandLine(command_line);
   }
@@ -472,7 +485,9 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback,
 
   InvokeResetAccelerator();
   ClickToConfirmButton();
+  WaitForConfirmationDialogToOpen();
   ClickResetButton();
+  WaitForConfirmationDialogToClose();
 
   EXPECT_EQ(
       0, chromeos::FakePowerManagerClient::Get()->num_request_restart_calls());

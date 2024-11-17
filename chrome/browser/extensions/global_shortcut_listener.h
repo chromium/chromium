@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace ui {
@@ -87,7 +88,8 @@ class GlobalShortcutListener {
 
   // The map of accelerators that have been successfully registered as global
   // shortcuts and their observer.
-  typedef std::map<ui::Accelerator, Observer*> AcceleratorMap;
+  typedef std::map<ui::Accelerator, raw_ptr<Observer, CtnExperimental>>
+      AcceleratorMap;
   AcceleratorMap accelerator_map_;
 
   // Keeps track of whether shortcut handling is currently suspended.

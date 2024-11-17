@@ -39,7 +39,6 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
     @Nullable private MessageState mCurrentDisplayedMessage;
 
     @NonNull private List<MessageState> mCurrentDisplayedMessages = Arrays.asList(null, null);
-    private MessageState mLastShownMessage;
     private MessageQueueDelegate mMessageQueueDelegate;
     private AnimatorSet mAnimatorSet = new AnimatorSet();
     private Animator mFrontAnimator;
@@ -337,7 +336,7 @@ public class MessageAnimationCoordinator implements SwipeAnimationHandler {
                 action, messageState.handler.getMessageIdentifier());
     }
 
-    class MessageAnimationListener extends CancelAwareAnimatorListener {
+    static class MessageAnimationListener extends CancelAwareAnimatorListener {
         private final Runnable mOnFinished;
 
         public MessageAnimationListener(Runnable onFinished) {

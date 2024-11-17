@@ -50,7 +50,7 @@ ChildUserService::TimeLimitPolicyType GetTimeLimitPolicyType(
       time_limit_policy = ChildUserService::TimeLimitPolicyType::kNoTimeLimit;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return time_limit_policy;
 }

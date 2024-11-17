@@ -43,7 +43,7 @@ bool CanUseZeroCopyImages(const media::VideoFrame& frame) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
   return false;
 #else
-  return frame.NumTextures() == 1 &&
+  return frame.HasSharedImage() &&
          (frame.format() == media::PIXEL_FORMAT_ARGB ||
           frame.format() == media::PIXEL_FORMAT_XRGB ||
           frame.format() == media::PIXEL_FORMAT_ABGR ||
@@ -134,7 +134,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     CanvasResourceProvider* resource_provider,
     media::PaintCanvasVideoRenderer* video_renderer,
     const gfx::Rect& dest_rect,
-    bool prefer_tagged_orientation) {
+    bool prefer_tagged_orientation,
+    bool reinterpret_video_as_srgb) {
   auto frame_sk_color_space = frame->CompatRGBColorSpace().ToSkColorSpace();
   if (!frame_sk_color_space) {
     frame_sk_color_space = SkColorSpace::MakeSRGB();
@@ -143,8 +144,9 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   DCHECK(frame);
   const auto transform =
       frame->metadata().transformation.value_or(media::kNoTransformation);
-  if (allow_zero_copy_images && dest_rect.IsEmpty() &&
-      transform == media::kNoTransformation && CanUseZeroCopyImages(*frame)) {
+  if (allow_zero_copy_images && !reinterpret_video_as_srgb &&
+      dest_rect.IsEmpty() && transform == media::kNoTransformation &&
+      CanUseZeroCopyImages(*frame)) {
     // TODO(sandersd): Do we need to be able to handle limited-range RGB? It
     // may never happen, and SkColorSpace doesn't know about it.
     const SkImageInfo sk_image_info = SkImageInfo::Make(
@@ -164,49 +166,26 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
         },
         frame, SharedGpuContext::ContextProviderWrapper());
 
-    if (frame->HasSharedImage()) {
-      return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
-          frame->shared_image(), frame->mailbox_holder(0).sync_token, 0u,
-          sk_image_info, frame->mailbox_holder(0).texture_target,
-          frame->metadata().texture_origin_is_top_left,
-          // Pass nullptr for |context_provider_wrapper|, because we don't
-          // know which context the mailbox came from. It is used only to
-          // detect when the mailbox is invalid due to context loss, and is
-          // ignored when |is_cross_thread|.
-          base::WeakPtr<WebGraphicsContext3DProviderWrapper>(),
-          // Pass null |context_thread_ref|, again because we don't know
-          // which context the mailbox came from. This should always trigger
-          // |is_cross_thread|.
-          base::PlatformThreadRef(),
-          // The task runner is only used for |release_callback|.
-          ThreadScheduler::Current()->CleanupTaskRunner(),
-          std::move(release_callback),
-          /*supports_display_compositing=*/true,
-          // TODO(junov): Figure out how to determine whether frame is an
-          // overlay candidate. StorageType info seems insufficient.
-          /*is_overlay_candidate=*/false);
-    } else {
-      return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
-          frame->mailbox_holder(0).mailbox, frame->mailbox_holder(0).sync_token,
-          0u, sk_image_info, frame->mailbox_holder(0).texture_target,
-          frame->metadata().texture_origin_is_top_left,
-          // Pass nullptr for |context_provider_wrapper|, because we don't
-          // know which context the mailbox came from. It is used only to
-          // detect when the mailbox is invalid due to context loss, and is
-          // ignored when |is_cross_thread|.
-          base::WeakPtr<WebGraphicsContext3DProviderWrapper>(),
-          // Pass null |context_thread_ref|, again because we don't know
-          // which context the mailbox came from. This should always trigger
-          // |is_cross_thread|.
-          base::PlatformThreadRef(),
-          // The task runner is only used for |release_callback|.
-          ThreadScheduler::Current()->CleanupTaskRunner(),
-          std::move(release_callback),
-          /*supports_display_compositing=*/true,
-          // TODO(junov): Figure out how to determine whether frame is an
-          // overlay candidate. StorageType info seems insufficient.
-          /*is_overlay_candidate=*/false);
-    }
+    return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
+        frame->shared_image(), frame->acquire_sync_token(), 0u, sk_image_info,
+        frame->shared_image()->GetTextureTarget(),
+        frame->metadata().texture_origin_is_top_left,
+        // Pass nullptr for |context_provider_wrapper|, because we don't
+        // know which context the mailbox came from. It is used only to
+        // detect when the mailbox is invalid due to context loss, and is
+        // ignored when |is_cross_thread|.
+        base::WeakPtr<WebGraphicsContext3DProviderWrapper>(),
+        // Pass null |context_thread_ref|, again because we don't know
+        // which context the mailbox came from. This should always trigger
+        // |is_cross_thread|.
+        base::PlatformThreadRef(),
+        // The task runner is only used for |release_callback|.
+        ThreadScheduler::Current()->CleanupTaskRunner(),
+        std::move(release_callback),
+        /*supports_display_compositing=*/true,
+        // TODO(junov): Figure out how to determine whether frame is an
+        // overlay candidate. StorageType info seems insufficient.
+        /*is_overlay_candidate=*/false);
   }
 
   gfx::Rect final_dest_rect = dest_rect;
@@ -255,7 +234,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
   if (!DrawVideoFrameIntoResourceProvider(
           std::move(frame), resource_provider, raster_context_provider.get(),
           final_dest_rect, video_renderer,
-          /*ignore_video_transformation=*/prefer_tagged_orientation)) {
+          /*ignore_video_transformation=*/prefer_tagged_orientation,
+          /*reinterpret_video_as_srgb=*/reinterpret_video_as_srgb)) {
     return nullptr;
   }
 
@@ -272,12 +252,13 @@ bool DrawVideoFrameIntoResourceProvider(
     viz::RasterContextProvider* raster_context_provider,
     const gfx::Rect& dest_rect,
     media::PaintCanvasVideoRenderer* video_renderer,
-    bool ignore_video_transformation) {
+    bool ignore_video_transformation,
+    bool reinterpret_video_as_srgb) {
   DCHECK(frame);
   DCHECK(resource_provider);
   DCHECK(gfx::Rect(resource_provider->Size()).Contains(dest_rect));
 
-  if (frame->HasTextures()) {
+  if (frame->HasSharedImage()) {
     if (!raster_context_provider) {
       DLOG(ERROR) << "Unable to process a texture backed VideoFrame w/o a "
                      "RasterContextProvider.";
@@ -313,13 +294,16 @@ bool DrawVideoFrameIntoResourceProvider(
     }
   }
 
-  video_renderer->Paint(
-      frame.get(), &resource_provider->Canvas(/*needs_will_draw*/ true),
-      gfx::RectF(dest_rect), media_flags,
+  media::PaintCanvasVideoRenderer::PaintParams params;
+  params.dest_rect = gfx::RectF(dest_rect);
+  params.transformation =
       ignore_video_transformation
           ? media::kNoTransformation
-          : frame->metadata().transformation.value_or(media::kNoTransformation),
-      raster_context_provider);
+          : frame->metadata().transformation.value_or(media::kNoTransformation);
+  params.reinterpret_as_srgb = reinterpret_video_as_srgb;
+  video_renderer->Paint(frame.get(),
+                        &resource_provider->Canvas(/*needs_will_draw*/ true),
+                        media_flags, params, raster_context_provider);
   return true;
 }
 
@@ -333,16 +317,15 @@ void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,
       raster_context_provider = context_provider->RasterContextProvider();
   }
 
-  const gfx::RectF dest_rect(frame->natural_size().width(),
-                             frame->natural_size().height());
-
   media::PaintCanvasVideoRenderer video_renderer;
-  auto transformation =
+  media::PaintCanvasVideoRenderer::PaintParams params;
+  params.dest_rect =
+      gfx::RectF(frame->natural_size().width(), frame->natural_size().height());
+  params.transformation =
       ignore_video_transformation
           ? media::kNoTransformation
           : frame->metadata().transformation.value_or(media::kNoTransformation);
-  video_renderer.Paint(frame, canvas, dest_rect, flags, transformation,
-                       raster_context_provider);
+  video_renderer.Paint(frame, canvas, flags, params, raster_context_provider);
 }
 
 scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {

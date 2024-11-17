@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.NonNull;
@@ -49,8 +50,8 @@ import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoord
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.resources.ResourceManager;
@@ -116,7 +117,7 @@ public class TopToolbarCoordinator implements Toolbar {
     private IncognitoStateObserver mIncognitoStateObserver;
 
     private TabObscuringHandler mTabObscuringHandler;
-    private @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
 
     /** Token used to block the tab strip transition when find in page toolbar is showing. */
@@ -151,9 +152,10 @@ public class TopToolbarCoordinator implements Toolbar {
      *     captures are stale and not able to be taken.
      * @param fullscreenManager Used to check whether in fullscreen.
      * @param tabObscuringHandler Delegate object handling obscuring views.
-     * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
+     * @param desktopWindowStateManager The {@link DesktopWindowStateManager} instance.
      * @param tabStripTransitionDelegateSupplier Supplier for the {@link
      *     TabStripTransitionDelegate}.
+     * @param onLongClickListener OnLongClickListener for the toolbar.
      */
     public TopToolbarCoordinator(
             ToolbarControlContainer controlContainer,
@@ -180,8 +182,10 @@ public class TopToolbarCoordinator implements Toolbar {
                     browserStateBrowserControlsVisibilityDelegate,
             FullscreenManager fullscreenManager,
             TabObscuringHandler tabObscuringHandler,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
-            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager,
+            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier,
+            @Nullable OnLongClickListener onLongClickListener,
+            ToolbarProgressBar progressBar) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
@@ -196,9 +200,10 @@ public class TopToolbarCoordinator implements Toolbar {
         mToolbarColorObserverManager = new ToolbarColorObserverManager();
         mToolbarLayout.setToolbarColorObserver(mToolbarColorObserverManager);
         mTabObscuringHandler = tabObscuringHandler;
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
+        mDesktopWindowStateManager = desktopWindowStateManager;
         mTrackerSupplier = new ObservableSupplierImpl<>();
         mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
+        mToolbarLayout.setOnLongClickListener(onLongClickListener);
 
         controlContainer.setPostInitializationDependencies(
                 this,
@@ -218,7 +223,8 @@ public class TopToolbarCoordinator implements Toolbar {
                 partnerHomepageEnabledSupplier,
                 offlineDownloader,
                 userEducationHelper,
-                mTrackerSupplier);
+                mTrackerSupplier,
+                progressBar);
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);
@@ -237,17 +243,19 @@ public class TopToolbarCoordinator implements Toolbar {
      *
      * <p>Calling this must occur after the native library have completely loaded.
      *
+     * @param tabSwitcherClickHandler The click handler for the tab switcher button.
+     * @param appMenuDelegate Allows interacting with the app menu.
      * @param profile The primary Profile associated with this Toolbar.
      * @param layoutUpdater A {@link Runnable} used to request layout update upon scene change.
-     * @param tabSwitcherClickHandler The click handler for the tab switcher button.
      * @param bookmarkClickHandler The click handler for the bookmarks button.
      * @param customTabsBackClickHandler The click handler for the custom tabs back button.
-     * @param appMenuDelegate Allows interacting with the app menu.
      * @param layoutManager A {@link LayoutManager} used to watch for scene changes.
      * @param tabSupplier Supplier of the activity tab.
      * @param browserControlsVisibilityManager {@link BrowserControlsVisibilityManager} to access
      *     browser controls offsets and visibility.
      * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
+     * @param bottomToolbarControlsOffsetSupplier Supplier of the offset, relative to the bottom of
+     *     the viewport, of the bottom-anchored toolbar.
      */
     public void initializeWithNative(
             Profile profile,
@@ -257,7 +265,8 @@ public class TopToolbarCoordinator implements Toolbar {
             LayoutManager layoutManager,
             ObservableSupplier<Tab> tabSupplier,
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
-            TopUiThemeColorProvider topUiThemeColorProvider) {
+            TopUiThemeColorProvider topUiThemeColorProvider,
+            Supplier<Integer> bottomToolbarControlsOffsetSupplier) {
         assert mTabModelSelectorSupplier.get() != null;
         mTrackerSupplier.set(TrackerFactory.getTrackerForProfile(profile));
         mToolbarLayout.setTabCountSupplier(
@@ -281,6 +290,7 @@ public class TopToolbarCoordinator implements Toolbar {
                             browserControlsVisibilityManager,
                             mResourceManagerSupplier,
                             topUiThemeColorProvider,
+                            bottomToolbarControlsOffsetSupplier,
                             LayoutType.BROWSING
                                     | LayoutType.SIMPLE_ANIMATION
                                     | LayoutType.TAB_SWITCHER,
@@ -298,7 +308,7 @@ public class TopToolbarCoordinator implements Toolbar {
                         mToolbarLayout,
                         tabStripHeightResource,
                         mTabObscuringHandler,
-                        mDesktopWindowStateProvider,
+                        mDesktopWindowStateManager,
                         mTabStripTransitionDelegateSupplier);
         mToolbarLayout.getContext().registerComponentCallbacks(mTabStripTransitionCoordinator);
         mToolbarLayout.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);

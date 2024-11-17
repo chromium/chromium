@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "content/public/browser/android/compositor_client.h"
 #include "ui/gfx/native_widget_types.h"
@@ -14,6 +15,20 @@
 namespace content {
 class Compositor;
 }  // namespace content
+   //
+namespace jni_zero {
+template <>
+inline ScopedJavaLocalRef<jobject> ToJniType<int>(JNIEnv* env,
+                                                  const int& input) {
+  ScopedJavaLocalRef<jclass> integer_class =
+      base::android::GetClass(env, "java/lang/Integer");
+  jmethodID constructor =
+      base::android::MethodID::Get<base::android::MethodID::TYPE_INSTANCE>(
+          env, integer_class.obj(), "<init>", "(I)V");
+  return ScopedJavaLocalRef<jobject>(
+      env, env->NewObject(integer_class.obj(), constructor, input));
+}
+}  // namespace jni_zero
 
 namespace embedder_support {
 
@@ -42,12 +57,14 @@ class ContentViewRenderView : public content::CompositorClient {
                       const base::android::JavaParamRef<jobject>& obj);
   void SurfaceDestroyed(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj);
-  void SurfaceChanged(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& obj,
-                      jint format,
-                      jint width,
-                      jint height,
-                      const base::android::JavaParamRef<jobject>& surface);
+  std::optional<int> SurfaceChanged(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jint format,
+      jint width,
+      jint height,
+      const base::android::JavaParamRef<jobject>& surface,
+      const base::android::JavaParamRef<jobject>& browser_input_token);
   void SetOverlayVideoMode(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj,
                            bool enabled);

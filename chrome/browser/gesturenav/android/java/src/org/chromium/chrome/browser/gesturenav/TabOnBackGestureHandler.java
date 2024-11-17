@@ -36,20 +36,29 @@ public class TabOnBackGestureHandler implements UserData {
     }
 
     public void onBackStarted(
-            float progress, @BackGestureEventSwipeEdge int edge, boolean forward) {
-        TabOnBackGestureHandlerJni.get().onBackStarted(mNativePtr, progress, edge, forward);
+            float progress,
+            @BackGestureEventSwipeEdge int edge,
+            boolean forward,
+            boolean isGestureMode) {
+        TabOnBackGestureHandlerJni.get()
+                .onBackStarted(mNativePtr, progress, edge, forward, isGestureMode);
     }
 
-    public void onBackProgressed(float progress, @BackGestureEventSwipeEdge int edge) {
-        TabOnBackGestureHandlerJni.get().onBackProgressed(mNativePtr, progress, edge);
+    public void onBackProgressed(
+            float progress,
+            @BackGestureEventSwipeEdge int edge,
+            boolean forward,
+            boolean isGestureMode) {
+        TabOnBackGestureHandlerJni.get()
+                .onBackProgressed(mNativePtr, progress, edge, forward, isGestureMode);
     }
 
-    public void onBackCancelled() {
-        TabOnBackGestureHandlerJni.get().onBackCancelled(mNativePtr);
+    public void onBackCancelled(boolean isGestureMode) {
+        TabOnBackGestureHandlerJni.get().onBackCancelled(mNativePtr, isGestureMode);
     }
 
-    public void onBackInvoked() {
-        TabOnBackGestureHandlerJni.get().onBackInvoked(mNativePtr);
+    public void onBackInvoked(boolean isGestureMode) {
+        TabOnBackGestureHandlerJni.get().onBackInvoked(mNativePtr, isGestureMode);
     }
 
     public static boolean shouldAnimateNavigationTransition(
@@ -67,13 +76,22 @@ public class TabOnBackGestureHandler implements UserData {
         long init(Tab tab);
 
         void onBackStarted(
-                long nativeTabOnBackGestureHandler, float progress, int edge, boolean forward);
+                long nativeTabOnBackGestureHandler,
+                float progress,
+                int edge,
+                boolean forward,
+                boolean isGestureMode);
 
-        void onBackProgressed(long nativeTabOnBackGestureHandler, float progress, int edge);
+        void onBackProgressed(
+                long nativeTabOnBackGestureHandler,
+                float progress,
+                int edge,
+                boolean forward,
+                boolean isGestureMode);
 
-        void onBackCancelled(long nativeTabOnBackGestureHandler);
+        void onBackCancelled(long nativeTabOnBackGestureHandler, boolean isGestureMode);
 
-        void onBackInvoked(long nativeTabOnBackGestureHandler);
+        void onBackInvoked(long nativeTabOnBackGestureHandler, boolean isGestureMode);
 
         boolean shouldAnimateNavigationTransition(boolean forward, int edge);
 

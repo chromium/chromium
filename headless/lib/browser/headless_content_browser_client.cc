@@ -91,8 +91,10 @@ class HeadlessVideoOverlayWindow : public content::VideoOverlayWindow {
   void ShowInactive() override {}
   void Hide() override {}
   bool IsVisible() const override { return false; }
-  gfx::Rect GetBounds() override { return gfx::Rect(); }
-  void UpdateNaturalSize(const gfx::Size& natural_size) override {}
+  gfx::Rect GetBounds() override { return gfx::Rect(size_); }
+  void UpdateNaturalSize(const gfx::Size& natural_size) override {
+    size_ = natural_size;
+  }
   void SetPlaybackState(PlaybackState playback_state) override {}
   void SetPlayPauseButtonVisibility(bool is_visible) override {}
   void SetSkipAdButtonVisibility(bool is_visible) override {}
@@ -105,8 +107,15 @@ class HeadlessVideoOverlayWindow : public content::VideoOverlayWindow {
   void SetHangUpButtonVisibility(bool is_visible) override {}
   void SetNextSlideButtonVisibility(bool is_visible) override {}
   void SetPreviousSlideButtonVisibility(bool is_visible) override {}
+  void SetMediaPosition(const media_session::MediaPosition&) override {}
+  void SetSourceTitle(const std::u16string& source_title) override {}
+  void SetFaviconImages(
+      const std::vector<media_session::MediaImage>& images) override {}
 
   void SetSurfaceId(const viz::SurfaceId& surface_id) override {}
+
+ private:
+  gfx::Size size_;
 };
 
 }  // namespace
@@ -153,6 +162,12 @@ void HeadlessContentBrowserClient::OverrideWebkitPrefs(
     content::WebContents* web_contents,
     blink::web_pref::WebPreferences* prefs) {
   prefs->lazy_load_enabled = browser_->options()->lazy_load_enabled;
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kForceHighContrast)) {
+    prefs->in_forced_colors = true;
+    prefs->preferred_contrast = blink::mojom::PreferredContrast::kMore;
+  }
 }
 
 void HeadlessContentBrowserClient::RegisterBrowserInterfaceBindersForFrame(
@@ -323,6 +338,7 @@ bool HeadlessContentBrowserClient::
 }
 
 bool HeadlessContentBrowserClient::IsInterestGroupAPIAllowed(
+    content::BrowserContext* browser_context,
     content::RenderFrameHost* render_frame_host,
     content::InterestGroupApiOperation operation,
     const url::Origin& top_frame_origin,
@@ -333,8 +349,7 @@ bool HeadlessContentBrowserClient::IsInterestGroupAPIAllowed(
 bool HeadlessContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
     content::BrowserContext* browser_context,
     const url::Origin& destination_origin,
-    content::PrivacySandboxInvokingAPI invoking_api,
-    bool post_impression_reporting) {
+    content::PrivacySandboxInvokingAPI invoking_api) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   return command_line->HasSwitch(switches::kForceReportingDestinationAttested);
 }
@@ -355,6 +370,26 @@ bool HeadlessContentBrowserClient::IsSharedStorageSelectURLAllowed(
     const url::Origin& accessing_origin,
     std::string* out_debug_message,
     bool* out_block_is_site_setting_specific) {
+  return true;
+}
+
+bool HeadlessContentBrowserClient::IsFencedStorageReadAllowed(
+    content::BrowserContext* browser_context,
+    content::RenderFrameHost* rfh,
+    const url::Origin& top_frame_origin,
+    const url::Origin& accessing_origin) {
+  return true;
+}
+
+bool HeadlessContentBrowserClient::IsCookieDeprecationLabelAllowed(
+    content::BrowserContext* browser_context) {
+  return true;
+}
+
+bool HeadlessContentBrowserClient::IsCookieDeprecationLabelAllowedForContext(
+    content::BrowserContext* browser_context,
+    const url::Origin& top_frame_origin,
+    const url::Origin& context_origin) {
   return true;
 }
 

@@ -8,6 +8,7 @@
 #include <functional>
 #include <unordered_map>
 
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "url/gurl.h"
@@ -42,10 +43,12 @@ class TabMatcher {
   struct TabWrapper {
     std::u16string title;
     GURL url;
+    base::Time last_shown_time;
 
-    TabWrapper(std::u16string title, GURL url) {
+    TabWrapper(std::u16string title, GURL url, base::Time last_shown_time) {
       this->title = title;
       this->url = url;
+      this->last_shown_time = last_shown_time;
     }
   };
 
@@ -76,7 +79,8 @@ class TabMatcher {
                                 const AutocompleteInput* input) const;
 
   // Returns tab wrappers for all open tabs for the current profile.
-  virtual std::vector<TabWrapper> GetOpenTabs() const;
+  virtual std::vector<TabWrapper> GetOpenTabs(
+      const AutocompleteInput* input) const;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_TAB_MATCHER_H_

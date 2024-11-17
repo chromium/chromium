@@ -102,15 +102,16 @@ std::optional<CpuSample> CpuProbeWin::BlockingTaskRunnerHelper::Update() {
     if (is_running_in_vm && pdh_status == ERROR_SUCCESS) {
       pdh_status = PdhCollectQueryData(cpu_query_.get());
       if (pdh_status != ERROR_SUCCESS) {
-        pdh_status = PdhAddEnglishCounter(cpu_query_.get(), kProcessorCounter,
-                                          NULL, &cpu_percent_utilization_);
+        query_info = kProcessorCounter;
+        pdh_status = PdhAddEnglishCounter(cpu_query_.get(), query_info, NULL,
+                                          &cpu_percent_utilization_);
       }
     }
 
     if (pdh_status != ERROR_SUCCESS) {
       cpu_query_.reset();
-      LOG(ERROR) << "PdhAddEnglishCounter failed: "
-                 << logging::SystemErrorCodeToString(pdh_status);
+      LOG(ERROR) << "PdhAddEnglishCounter failed for '" << query_info
+                 << "': " << logging::SystemErrorCodeToString(pdh_status);
       return std::nullopt;
     }
   }

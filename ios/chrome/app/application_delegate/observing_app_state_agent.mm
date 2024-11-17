@@ -76,8 +76,8 @@
 }
 
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage {
-  if (appState.initStage == InitStageFinal) {
+    didTransitionFromInitStage:(AppInitStage)previousInitStage {
+  if (appState.initStage == AppInitStage::kFinal) {
     [self notifyOfConvenienceEventsIfNecessary];
   }
 }
@@ -86,7 +86,7 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  if (self.appState.initStage < InitStageFinal) {
+  if (self.appState.initStage < AppInitStage::kFinal) {
     return;
   }
 

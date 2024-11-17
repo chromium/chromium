@@ -49,27 +49,15 @@ wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
 
   AccessMode access_mode;
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  if (base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-    internalDesc.internalUsage = internal_usage;
-    access_mode = usage & kWriteUsage || internal_usage & kWriteUsage
-                      ? AccessMode::kWrite
-                      : AccessMode::kRead;
-    if (access_mode == AccessMode::kRead && !IsCleared()) {
-      // Read-only access of an uncleared texture is not allowed: clients
-      // relying on Dawn's lazy clearing of uninitialized textures must make
-      // this reliance explicit by passing a write usage.
-      return nullptr;
-    }
-  } else {
-    // We need to have internal usages of CopySrc for copies,
-    // RenderAttachment for clears, and TextureBinding for
-    // copyTextureForBrowser.
-    internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
-                                 wgpu::TextureUsage::RenderAttachment |
-                                 wgpu::TextureUsage::TextureBinding;
-
-    access_mode = AccessMode::kWrite;
+  internalDesc.internalUsage = internal_usage;
+  access_mode = usage & kWriteUsage || internal_usage & kWriteUsage
+                    ? AccessMode::kWrite
+                    : AccessMode::kRead;
+  if (access_mode == AccessMode::kRead && !IsCleared()) {
+    // Read-only access of an uncleared texture is not allowed: clients
+    // relying on Dawn's lazy clearing of uninitialized textures must make
+    // this reliance explicit by passing a write usage.
+    return nullptr;
   }
 
   texture_descriptor.nextInChain = &internalDesc;
@@ -103,7 +91,7 @@ wgpu::Texture DawnAHardwareBufferImageRepresentation::BeginAccess(
   // If the semaphore from BeginWrite is valid then pass it to
   // SharedTextureMemory::BeginAccess() below.
   if (sync_fd.is_valid()) {
-    wgpu::SharedFenceVkSemaphoreSyncFDDescriptor sync_fd_desc;
+    wgpu::SharedFenceSyncFDDescriptor sync_fd_desc;
     // NOTE: There is no ownership transfer here, as Dawn internally dup()s the
     // passed-in handle.
     sync_fd_desc.handle = sync_fd.get();
@@ -183,7 +171,7 @@ void DawnAHardwareBufferImageRepresentation::EndAccess() {
   }
 
   wgpu::SharedFenceExportInfo export_info;
-  wgpu::SharedFenceVkSemaphoreSyncFDExportInfo sync_fd_export_info;
+  wgpu::SharedFenceSyncFDExportInfo sync_fd_export_info;
   export_info.nextInChain = &sync_fd_export_info;
 
   // Note: Dawn may export zero fences if there were no begin fences,

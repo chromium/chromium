@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/reduce_accept_language/reduce_accept_language_utils.h"
+#include "content/public/browser/reduce_accept_language_utils.h"
 
 #include <array>
 
@@ -102,8 +102,8 @@ class MockOriginTrialsDelegate
 
   void ClearPersistedTokens() override { persisted_trials_.clear(); }
 
-  void AddPersistedTrialForTest(const std::string_view url,
-                                const std::string_view trial_name) {
+  void AddPersistedTrialForTest(std::string_view url,
+                                std::string_view trial_name) {
     url::Origin key = url::Origin::Create(GURL(url));
     persisted_trials_[key].emplace(trial_name);
   }

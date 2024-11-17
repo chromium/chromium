@@ -18,7 +18,7 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/button_menu_item_model.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 class AppMenuIconController;
 class BookmarkSubMenuModel;
@@ -103,7 +103,6 @@ enum AppMenuAction {
   MENU_ACTION_SHOW_PAYMENT_METHODS = 78,
   MENU_ACTION_SHOW_ADDRESSES = 79,
   MENU_ACTION_SWITCH_TO_ANOTHER_PROFILE = 80,
-  MENU_ACTION_SHOW_SEARCH_COMPANION = 81,
   MENU_ACTION_SHOW_BOOKMARK_SIDE_PANEL = 82,
   MENU_ACTION_SHOW_PERFORMANCE_SETTINGS = 83,
   MENU_ACTION_SHOW_HISTORY_CLUSTER_SIDE_PANEL = 84,
@@ -115,6 +114,7 @@ enum AppMenuAction {
   MENU_ACTION_SHOW_LENS_OVERLAY = 90,
   MENU_ACTION_SAFETY_HUB_MANAGE_EXTENSIONS = 91,
   MENU_ACTION_SHOW_CUSTOMIZE_CHROME_SIDE_PANEL = 92,
+  MENU_ACTION_DECLUTTER_TABS = 93,
   LIMIT_MENU_ACTION
 };
 // LINT.ThenChange(/tools/metrics/histograms/enums.xml:WrenchMenuAction)
@@ -183,7 +183,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordAndAutofillMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordManagerMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kShowLensOverlay);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kShowSearchCompanion);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kSaveAndShareMenuItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCastTitleItem);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kInstallAppItem);

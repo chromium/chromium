@@ -52,4 +52,50 @@ bool operator==(const CdmCapability& lhs, const CdmCapability& rhs) {
          lhs.session_types == rhs.session_types;
 }
 
+std::string CdmCapabilityQueryStatusToString(
+    const std::optional<CdmCapabilityQueryStatus>& status) {
+  if (!status.has_value()) {
+    return "(empty)";
+  }
+
+  switch (status.value()) {
+    case CdmCapabilityQueryStatus::kSuccess:
+      return "kSuccess";
+    case CdmCapabilityQueryStatus::kUnknown:
+      return "kUnknown";
+    case CdmCapabilityQueryStatus::kHardwareSecureCodecNotSupported:
+      return "kHardwareSecureCodecNotSupported";
+    case CdmCapabilityQueryStatus::kNoSupportedVideoCodec:
+      return "kNoSupportedVideoCodec";
+    case CdmCapabilityQueryStatus::kNoSupportedEncryptionScheme:
+      return "kNoSupportedEncryptionScheme";
+    case CdmCapabilityQueryStatus::kUnsupportedKeySystem:
+      return "kUnsupportedKeySystem";
+    case CdmCapabilityQueryStatus::kMediaFoundationCdmNotSupported:
+      return "kMediaFoundationCdmNotSupported";
+    case CdmCapabilityQueryStatus::kDisconnectionError:
+      return "kDisconnectionError";
+    case CdmCapabilityQueryStatus::kMediaFoundationGetCdmFactoryFailed:
+      return "kMediaFoundationGetCdmFactoryFailed. For the actual error code, "
+             "please check out "
+             "about://histograms/"
+             "#Media.EME.{KeySystem}.CdmCapabilityQueryStatus." +
+             std::string(kMediaFoundationGetCdmFactoryHresultUmaPostfix) +
+             " where KeySystem is a key "
+             "system.";
+    case CdmCapabilityQueryStatus::kCreateDummyMediaFoundationCdmFailed:
+      return "kCreateDummyMediaFoundationCdmFailed. For the actual error code, "
+             "please check out "
+             "about://histograms/"
+             "#Media.EME.{KeySystem}.CdmCapabilityQueryStatus." +
+             std::string(kCreateDummyMediaFoundationCdmHresultUmaPostfix) +
+             " where KeySystem is a key "
+             "system.";
+    case CdmCapabilityQueryStatus::kUnexpectedEmptyCapability:
+      return "kUnexpectedEmptyCapability";
+  }
+
+  NOTREACHED();
+}
+
 }  // namespace media

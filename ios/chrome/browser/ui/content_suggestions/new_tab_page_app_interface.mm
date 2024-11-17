@@ -60,7 +60,7 @@ using set_up_list_prefs::SetUpListItemState;
 + (void)disableSetUpList {
   PrefService* prefService =
       IsHomeCustomizationEnabled()
-          ? chrome_test_util::GetOriginalBrowserState()->GetPrefs()
+          ? chrome_test_util::GetOriginalProfile()->GetPrefs()
           : GetApplicationContext()->GetLocalState();
   set_up_list_prefs::DisableSetUpList(prefService);
 }
@@ -69,7 +69,7 @@ using set_up_list_prefs::SetUpListItemState;
   PrefService* localState = GetApplicationContext()->GetLocalState();
   if (IsHomeCustomizationEnabled()) {
     PrefService* prefService =
-        chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+        chrome_test_util::GetOriginalProfile()->GetPrefs();
     prefService->SetBoolean(prefs::kHomeCustomizationMagicStackSetUpListEnabled,
                             true);
   } else {

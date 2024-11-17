@@ -99,8 +99,7 @@ AndroidLiveTabContext::GetVisualDataForGroup(
 
   // Since we never return a group from GetTabGroupForTab(), this should never
   // be called.
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 const std::optional<base::Uuid>
@@ -123,7 +122,7 @@ void AndroidLiveTabContext::SetVisualDataForGroup(
   // TODO(crbug.com/40647050): ensure this never gets called (or remove
   // NOTREACHED) if we implement restoring groups for foreign session
   // windows.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const gfx::Rect AndroidLiveTabContext::GetRestoredBounds() const {

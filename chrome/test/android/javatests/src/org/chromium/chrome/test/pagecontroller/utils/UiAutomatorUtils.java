@@ -193,13 +193,14 @@ public class UiAutomatorUtils {
     /**
      * Copied over from UiAutomator UiDevice v18.0.1, it was removed for some reason, but is useful.
      * Executes a shell command using shell user identity, and return the standard output in string.
-     * <p>
-     * Calling function with large amount of output will have memory impacts, and the function call
-     * will block if the command executed is blocking.
+     *
+     * <p>Calling function with large amount of output will have memory impacts, and the function
+     * call will block if the command executed is blocking.
+     *
      * <p>Note: calling this function requires API level 21 or above
+     *
      * @param cmd Command to run
-     * @return    The standard output of the command
-     * @throws IOException
+     * @return The standard output of the command
      * @since API Level 21
      */
     public String executeShellCommand(@NonNull String cmd) throws IOException {
@@ -253,9 +254,9 @@ public class UiAutomatorUtils {
 
     /**
      * Performs the swipe up gesture repeatedly until a locator is found.
-     * @param locator  locator that will stop the swipe if found on screen.
-     * @param stopLocator  locator that will cause an UiLocationException if found before locator.
-     * @throws UiLocationException
+     *
+     * @param locator locator that will stop the swipe if found on screen.
+     * @param stopLocator locator that will cause an UiLocationException if found before locator.
      */
     public void swipeUpVerticallyUntilFound(IUi2Locator locator, IUi2Locator stopLocator) {
         swipeVerticallyUntilFound(locator, stopLocator, DEFAULT_SWIPE_SCREEN_FRACTION);
@@ -263,9 +264,9 @@ public class UiAutomatorUtils {
 
     /**
      * Performs the swipe down gesture repeatedly until a locator is found.
-     * @param locator     locator that will stop the swipe if found on screen.
+     *
+     * @param locator locator that will stop the swipe if found on screen.
      * @param stopLocator locator that will cause an UiLocationException if found before locator.
-     * @throws UiLocationException
      */
     public void swipeDownVerticallyUntilFound(IUi2Locator locator, IUi2Locator stopLocator) {
         swipeVerticallyUntilFound(locator, stopLocator, -DEFAULT_SWIPE_SCREEN_FRACTION);
@@ -380,9 +381,6 @@ public class UiAutomatorUtils {
     }
 
     // positive fraction indicates swipe up
-    /**
-     * @throws UiLocationException
-     */
     private void swipeVerticallyUntilFound(
             IUi2Locator locator, IUi2Locator stopLocator, float fractionOfScreen) {
         if (mLocatorHelper.isOnScreen(locator)) return;

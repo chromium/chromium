@@ -35,7 +35,7 @@ ASSERT_SIZE(ConstraintSpace, SameSizeAsConstraintSpace);
 
 const ConstraintSpace& ConstraintSpace::CloneForBlockInInlineIfNeeded(
     std::optional<ConstraintSpace>& space) const {
-  if (ShouldTextBoxTrimEnd()) {
+  if (ShouldTextBoxTrimNodeEnd()) {
     // A block-in-inline always has following lines, though it could be empty.
     // `ShouldTextBoxTrimEnd()` shouldn't trim the end if it's not the last
     // inflow child. See `CreateConstraintSpaceForChild()`.
@@ -47,7 +47,8 @@ const ConstraintSpace& ConstraintSpace::CloneForBlockInInlineIfNeeded(
     if (ShouldForceTextBoxTrimEnd()) {
       space->SetShouldForceTextBoxTrimEnd(false);
     } else {
-      space->SetShouldTextBoxTrimEnd(false);
+      space->EnsureRareData()->should_text_box_trim_node_end = false;
+      space->EnsureRareData()->should_text_box_trim_fragmentainer_end = false;
     }
     return *space;
   } else {

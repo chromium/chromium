@@ -52,11 +52,16 @@ FaceGazeTestUtils::Config::~Config() = default;
 FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::Default() {
   forehead_location_ = gfx::PointF(0.1, 0.2);
   cursor_location_ = gfx::Point(600, 400);
+  cursor_speeds_ = {/*up=*/20, /*down=*/20, /*left=*/20, /*right=*/20};
   buffer_size_ = 1;
   use_cursor_acceleration_ = false;
   use_landmark_weights_ = false;
   use_velocity_threshold_ = false;
   dialog_accepted_ = true;
+
+  // For simplicity, allow tests to recognize gestures instantly rather than
+  // requiring a valid duration.
+  use_gesture_duration_ = false;
 
   return *this;
 }
@@ -90,14 +95,10 @@ FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithDialogAccepted(
   return *this;
 }
 
-FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithGesturesToMacros(
-    const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros) {
-  gestures_to_macros_ = std::move(gestures_to_macros);
-  return *this;
-}
-
-FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithGestureConfidences(
+FaceGazeTestUtils::Config& FaceGazeTestUtils::Config::WithBindings(
+    const base::flat_map<FaceGazeGesture, MacroName>& gestures_to_macros,
     const base::flat_map<FaceGazeGesture, int>& gesture_confidences) {
+  gestures_to_macros_ = std::move(gestures_to_macros);
   gesture_confidences_ = std::move(gesture_confidences);
   return *this;
 }
@@ -420,6 +421,7 @@ void FaceGazeTestUtils::ConfigureFaceGaze(const Config& config) {
   SetCursorAcceleration(config.use_cursor_acceleration());
   SetLandmarkWeights(config.use_landmark_weights());
   SetVelocityThreshold(config.use_velocity_threshold());
+  SetGestureDuration(config.use_gesture_duration());
 
   // By default the cursor is placed at the center of the screen. To
   // initialize FaceGaze, move the cursor somewhere, then move it to the
@@ -454,8 +456,9 @@ void FaceGazeTestUtils::SetCursorSpeeds(const CursorSpeeds& speeds) {
 }
 
 void FaceGazeTestUtils::SetBufferSize(int size) {
-  GetPrefs()->SetInteger(prefs::kAccessibilityFaceGazeCursorSmoothing, size);
-  GetPrefs()->CommitPendingWrite();
+  std::string script =
+      base::StringPrintf("faceGazeTestSupport.setBufferSize(%d);", size);
+  ExecuteAccessibilityCommonScript(script);
 }
 
 void FaceGazeTestUtils::SetCursorAcceleration(bool use_acceleration) {
@@ -508,6 +511,12 @@ void FaceGazeTestUtils::SetGestureRepeatDelayMs(int delay) {
   std::string script = base::StringPrintf(
       "faceGazeTestSupport.setGestureRepeatDelayMs(%d);", delay);
   ExecuteAccessibilityCommonScript(script);
+}
+
+void FaceGazeTestUtils::SetGestureDuration(bool use_duration) {
+  std::string true_script = "faceGazeTestSupport.setGestureDuration(true);";
+  std::string false_script = "faceGazeTestSupport.setGestureDuration(false);";
+  ExecuteAccessibilityCommonScript(use_duration ? true_script : false_script);
 }
 
 }  // namespace ash

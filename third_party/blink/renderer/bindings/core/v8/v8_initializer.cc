@@ -146,7 +146,7 @@ mojom::ConsoleMessageLevel MessageLevelFromNonFatalErrorLevel(int error_level) {
       level = mojom::ConsoleMessageLevel::kInfo;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return level;
 }
@@ -319,6 +319,48 @@ void V8Initializer::PromiseRejectHandlerInMainThread(
   PromiseRejectHandler(data, *rejected_promises, script_state);
 }
 
+void V8Initializer::ExceptionPropagationCallback(
+    v8::ExceptionPropagationMessage v8_message) {
+  v8::Isolate* isolate = v8_message.GetIsolate();
+  v8::Local<v8::Object> exception = v8_message.GetException();
+
+  v8::ExceptionContext context_type = v8_message.GetExceptionContext();
+  String class_name = ToCoreString(isolate, v8_message.GetInterfaceName());
+  if (class_name == "global") {
+    class_name = "Window";
+  }
+  String property_name = ToCoreString(isolate, v8_message.GetPropertyName());
+  if ((context_type == v8::ExceptionContext::kAttributeGet &&
+       property_name.StartsWith("get ")) ||
+      (context_type == v8::ExceptionContext::kAttributeSet &&
+       property_name.StartsWith("set "))) {
+    property_name = property_name.Substring(4);
+  }
+  if (property_name == "[Symbol.toPrimitive]") {
+    property_name = String();
+  }
+  if (context_type == v8::ExceptionContext::kConstructor) {
+    // Constructors are reported by v8 as the property name, but
+    // our plumbing expects it as the class name.
+    class_name = property_name;
+  }
+  DCHECK(class_name.Is8Bit());
+
+  for (auto* dictionary_context =
+           V8PerIsolateData::From(isolate)->TopOfDictionaryStack();
+       dictionary_context;
+       dictionary_context = dictionary_context->Previous()) {
+    ApplyContextToException(isolate, isolate->GetCurrentContext(), exception,
+                            v8::ExceptionContext::kAttributeGet,
+                            dictionary_context->DictionaryName(),
+                            dictionary_context->PropertyName());
+  }
+
+  ApplyContextToException(isolate, isolate->GetCurrentContext(), exception,
+                          context_type, class_name.Utf8().data(),
+                          property_name);
+}
+
 static void PromiseRejectHandlerInWorker(v8::PromiseRejectMessage data) {
   v8::Local<v8::Promise> promise = data.GetPromise();
 
@@ -394,20 +436,17 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
                                 v8::Local<v8::Value> source,
                                 bool is_code_like) {
   v8::Isolate* isolate = context->GetIsolate();
-  ExceptionState exception_state(isolate, v8::ExceptionContext::kOperation,
-                                 "eval", "");
-
   // If the input is not a string or TrustedScript, pass it through.
   if (!source->IsString() && !is_code_like &&
       !V8TrustedScript::HasInstance(isolate, source)) {
     return {true, v8::MaybeLocal<v8::String>()};
   }
 
+  v8::TryCatch try_catch(isolate);
   V8UnionStringOrTrustedScript* string_or_trusted_script =
       NativeValueTraits<V8UnionStringOrTrustedScript>::NativeValue(
-          context->GetIsolate(), source, exception_state);
-  if (exception_state.HadException()) {
-    exception_state.ClearException();
+          isolate, source, PassThroughException(isolate));
+  if (try_catch.HasCaught()) {
     // The input was a string or TrustedScript but the conversion failed.
     // Block, just in case.
     return {false, v8::MaybeLocal<v8::String>()};
@@ -420,9 +459,8 @@ TrustedTypesCodeGenerationCheck(v8::Local<v8::Context> context,
 
   String stringified_source = TrustedTypesCheckForScript(
       string_or_trusted_script, ToExecutionContext(context), "eval", "",
-      exception_state);
-  if (exception_state.HadException()) {
-    exception_state.ClearException();
+      PassThroughException(isolate));
+  if (try_catch.HasCaught()) {
     return {false, v8::MaybeLocal<v8::String>()};
   }
 
@@ -870,7 +908,7 @@ V8PerIsolateData::V8ContextSnapshotMode GetV8ContextSnapshotMode() {
 
 void V8Initializer::InitializeIsolateHolder(
     const intptr_t* reference_table,
-    const std::string js_command_line_flags) {
+    const std::string& js_command_line_flags) {
   DEFINE_STATIC_LOCAL(ArrayBufferAllocator, array_buffer_allocator, ());
   gin::IsolateHolder::Initialize(gin::IsolateHolder::kNonStrictMode,
                                  &array_buffer_allocator, reference_table,
@@ -922,6 +960,7 @@ v8::Isolate* V8Initializer::InitializeMainThread() {
   }
 
   isolate->SetPromiseRejectCallback(PromiseRejectHandlerInMainThread);
+  isolate->SetExceptionPropagationCallback(ExceptionPropagationCallback);
 
   V8PerIsolateData::From(isolate)->SetThreadDebugger(
       std::make_unique<MainThreadDebugger>(isolate));
@@ -963,6 +1002,7 @@ void V8Initializer::InitializeWorker(v8::Isolate* isolate) {
 
   isolate->SetStackLimit(WTF::GetCurrentStackPosition() - kWorkerMaxStackSize);
   isolate->SetPromiseRejectCallback(PromiseRejectHandlerInWorker);
+  isolate->SetExceptionPropagationCallback(ExceptionPropagationCallback);
   isolate->SetModifyCodeGenerationFromStringsCallback(
       CodeGenerationCheckCallbackInMainThread);
   isolate->SetAllowWasmCodeGenerationCallback(

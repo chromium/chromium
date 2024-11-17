@@ -26,6 +26,7 @@ import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
+import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -73,7 +74,8 @@ public class AccountPickerBottomSheetMediator
             DeviceLockActivityLauncher deviceLockActivityLauncher,
             @AccountPickerLaunchMode int launchMode,
             boolean isWebSignin,
-            @SigninAccessPoint int signinAccessPoint) {
+            @SigninAccessPoint int signinAccessPoint,
+            @Nullable CoreAccountId accountId) {
         mWindowAndroid = windowAndroid;
         mActivity = windowAndroid.getActivity().get();
         mAccountPickerDelegate = accountPickerDelegate;
@@ -112,7 +114,8 @@ public class AccountPickerBottomSheetMediator
         mAddedAccountEmail = null;
         initializeViewState(
                 AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
-                        mAccountManagerFacade.getCoreAccountInfos()));
+                        mAccountManagerFacade.getCoreAccountInfos()),
+                accountId);
         mAccountManagerFacade.addObserver(this);
     }
 
@@ -257,7 +260,8 @@ public class AccountPickerBottomSheetMediator
         return hasExpandedAccountList || isOnConfirmManagement || isOnErrorScreen;
     }
 
-    private void initializeViewState(List<CoreAccountInfo> coreAccountInfos) {
+    private void initializeViewState(
+            List<CoreAccountInfo> coreAccountInfos, @Nullable CoreAccountId accountId) {
         if (coreAccountInfos.isEmpty()) {
             // If all accounts disappeared, no matter if the account list initial state, we will go
             // to the zero account screen.
@@ -265,6 +269,14 @@ public class AccountPickerBottomSheetMediator
             return;
         }
 
+        if (accountId != null) {
+            mDefaultAccountEmail =
+                    AccountUtils.findCoreAccountInfoByGaiaId(coreAccountInfos, accountId.getId())
+                            .getEmail();
+            setSelectedAccountName(mDefaultAccountEmail);
+            mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);
+            return;
+        }
         mDefaultAccountEmail = coreAccountInfos.get(0).getEmail();
         setSelectedAccountName(mDefaultAccountEmail);
         mModel.set(AccountPickerBottomSheetProperties.VIEW_STATE, mInitialViewState);

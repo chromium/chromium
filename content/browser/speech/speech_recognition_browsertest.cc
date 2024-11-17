@@ -304,8 +304,7 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
     audio_bus->FromInterleaved<media::SignedInt16SampleTypeTraits>(
         reinterpret_cast<int16_t*>(&audio_buffer.data()[0]),
         audio_bus->frames());
-    capture_callback->Capture(audio_bus.get(), base::TimeTicks::Now(), {}, 0.0,
-                              false);
+    capture_callback->Capture(audio_bus.get(), base::TimeTicks::Now(), {}, 0.0);
   }
 
   void FeedAudioCapturerSource(const media::AudioParameters& audio_params,

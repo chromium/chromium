@@ -90,14 +90,6 @@ BASE_FEATURE(kJourneysZeroStateFiltering,
 
 }  // namespace internal
 
-BASE_FEATURE(kSidePanelJourneys,
-             "SidePanelJourneys",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-// If enabled, and the main flag is also enabled, the Journeys omnibox
-// entrypoints open Journeys in Side Panel rather than the History WebUI.
-const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox{
-    &kSidePanelJourneys, "SidePanelJourneysOpensFromOmnibox", true};
-
 // Intended to be Enabled by default on Desktop and the flag left here as a
 // killswitch.
 BASE_FEATURE(kSearchesFindUngroupedVisits,

@@ -72,7 +72,8 @@
           "builder": "mac12-x64-updater-tester-asan-dbg",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac-updater-builder-asan-dbg/targets"
     }
   },
   "$build/reclient": {

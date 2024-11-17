@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/actions/action_id.h"
+#include "ui/actions/action_utils.h"
 #include "ui/actions/actions.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -198,11 +199,6 @@ void PinnedActionToolbarButton::OnMouseReleased(const ui::MouseEvent& event) {
     OnClickCanceled(event);
   }
   skip_execution_ = false;
-}
-
-void PinnedActionToolbarButton::GetAccessibleNodeData(
-    ui::AXNodeData* node_data) {
-  Button::GetAccessibleNodeData(node_data);
 }
 
 void PinnedActionToolbarButton::UpdateIcon() {
@@ -395,6 +391,18 @@ void PinnedActionToolbarButtonActionViewInterface::ActionItemChangedImpl(
     actions::ActionItem* action_item) {
   ButtonActionViewInterface::ActionItemChangedImpl(action_item);
 
+  if (action_view_->IsIconVisible() &&
+      actions::IsActionItemClass<actions::StatefulImageActionItem>(
+          action_item)) {
+    auto* stateful_action_item =
+        static_cast<actions::StatefulImageActionItem*>(action_item);
+    if (stateful_action_item->GetStatefulImage().IsVectorIcon()) {
+      action_view_->SetVectorIcon(*stateful_action_item->GetStatefulImage()
+                                       .GetVectorIcon()
+                                       .vector_icon());
+    }
+  }
+
   // Update whether the action is engaged before updating the view.
   action_view_->SetActionEngaged(
       action_item->GetProperty(kActionItemUnderlineIndicatorKey));
@@ -430,17 +438,25 @@ void PinnedActionToolbarButtonActionViewInterface::InvokeActionImpl(
 
 void PinnedActionToolbarButtonActionViewInterface::OnViewChangedImpl(
     actions::ActionItem* action_item) {
-  // Update the button's icon.
-  if (action_item->GetImage().IsVectorIcon()) {
-    action_view_->SetVectorIcon(
-        action_view_->IsIconVisible()
-            ? *action_item->GetImage().GetVectorIcon().vector_icon()
-            : kEmptyIcon);
+  // Update the button's icon. If the action item is a stateful image action
+  // item, use the stateful image. Otherwise, use the action item's image.
+  ui::ImageModel image_model;
+
+  if (IsActionItemClass<actions::StatefulImageActionItem>(action_item)) {
+    image_model = static_cast<actions::StatefulImageActionItem*>(action_item)
+                      ->GetStatefulImage();
   } else {
-    action_view_->SetImageModel(views::Button::STATE_NORMAL,
-                                action_view_->IsIconVisible()
-                                    ? action_item->GetImage()
-                                    : ui::ImageModel());
+    image_model = action_item->GetImage();
+  }
+
+  if (image_model.IsVectorIcon()) {
+    action_view_->SetVectorIcon(action_view_->IsIconVisible()
+                                    ? *image_model.GetVectorIcon().vector_icon()
+                                    : kEmptyIcon);
+  } else {
+    action_view_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        action_view_->IsIconVisible() ? image_model : ui::ImageModel());
   }
   // Set the accessible name. Fall back to the tooltip if one is not provided.
   // If pinned, the pinned state is added to the accessible name.

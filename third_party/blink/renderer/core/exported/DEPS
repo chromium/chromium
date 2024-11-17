@@ -3,16 +3,22 @@ include_rules = [
   # exported.
   "+third_party/blink/renderer/core/exported",
   "+third_party/blink/public/web",
-  "+ui/base/mojom/ui_base_types.mojom-shared.h",
 ]
 
 specific_include_rules = {
+  "web_frame_serializer_test_helper.cc": [
+    "+base/run_loop.h",
+  ],
   "web_view_impl\.cc": [
     "+base/command_line.h",
     "+components/viz/common/features.h",
     "+media/base/media_switches.h",
     "+third_party/icu/source/common/unicode/uscript.h",
     "+ui/gfx/font_render_params.h",
+    "+ui/native_theme/native_theme.h",
+  ],
+  "web_view_test.cc": [
+    "+ui/base/mojom/menu_source_type.mojom-blink.h",
   ],
   "web_media_player_impl_unittest.cc": [
     "+base/command_line.h",

@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/system/sys_info.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 
 namespace ash {
@@ -57,6 +58,16 @@ void ConfigureResourcedPressureThreshold(bool arc_enabled) {
   uint32_t moderate_bps = 0;
   uint32_t critical_bps = 0;
   uint32_t critical_protected_bps = 0;
+  // Limit the critical protected threshold to 600 MiB to avoid setting large
+  // critical protected threshold on large RAM device. Setting Large threshold
+  // could easily discard protected pages.
+  const int kProtectedThresholdLimitMb = 600;
+  const int kRatioToBps = 10000;
+  // limit_bps = (limit_mb / total_mb) * ratio_to_bps, rearrange the
+  // multiplication to avoid floating point arithmetic.
+  int protected_threshold_limit_bps =
+      static_cast<uint32_t>(kProtectedThresholdLimitMb * kRatioToBps /
+                            base::SysInfo::AmountOfPhysicalMemoryMB());
   if (arc_enabled) {
     experiment_enabled =
         base::FeatureList::IsEnabled(kCrOSMemoryPressureSignalStudyArc);
@@ -64,7 +75,8 @@ void ConfigureResourcedPressureThreshold(bool arc_enabled) {
       moderate_bps = kCrOSMemoryPressureSignalStudyArcModerateBps.Get();
       critical_bps = kCrOSMemoryPressureSignalStudyArcCriticalBps.Get();
       critical_protected_bps =
-          kCrOSMemoryPressureSignalStudyArcCriticalProtectedBps.Get();
+          std::min(protected_threshold_limit_bps,
+                   kCrOSMemoryPressureSignalStudyArcCriticalProtectedBps.Get());
     }
   } else {
     experiment_enabled =
@@ -72,8 +84,9 @@ void ConfigureResourcedPressureThreshold(bool arc_enabled) {
     if (experiment_enabled) {
       moderate_bps = kCrOSMemoryPressureSignalStudyNonArcModerateBps.Get();
       critical_bps = kCrOSMemoryPressureSignalStudyNonArcCriticalBps.Get();
-      critical_protected_bps =
-          kCrOSMemoryPressureSignalStudyNonArcCriticalProtectedBps.Get();
+      critical_protected_bps = std::min(
+          protected_threshold_limit_bps,
+          kCrOSMemoryPressureSignalStudyNonArcCriticalProtectedBps.Get());
     }
   }
 

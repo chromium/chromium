@@ -96,6 +96,9 @@ wgpu::TextureViewDescriptor AsDawnType(
   if (!label->empty()) {
     dawn_desc.label = label->c_str();
   }
+  if (webgpu_desc->hasUsage()) {
+    dawn_desc.usage = static_cast<wgpu::TextureUsage>(webgpu_desc->usage());
+  }
 
   return dawn_desc;
 }
@@ -179,7 +182,8 @@ GPUTexture* GPUTexture::Create(GPUDevice* device,
   DCHECK(desc);
 
   return MakeGarbageCollected<GPUTexture>(
-      device, device->GetHandle().CreateTexture(desc), String(desc->label));
+      device, device->GetHandle().CreateTexture(desc),
+      String::FromUTF8(desc->label));
 }
 
 // static
@@ -189,7 +193,7 @@ GPUTexture* GPUTexture::CreateError(GPUDevice* device,
   DCHECK(desc);
   return MakeGarbageCollected<GPUTexture>(
       device, device->GetHandle().CreateErrorTexture(desc),
-      String(desc->label));
+      String::FromUTF8(desc->label));
 }
 
 GPUTexture::GPUTexture(GPUDevice* device,
@@ -282,11 +286,11 @@ uint32_t GPUTexture::sampleCount() const {
   return GetHandle().GetSampleCount();
 }
 
-String GPUTexture::dimension() const {
+V8GPUTextureDimension GPUTexture::dimension() const {
   return FromDawnEnum(GetHandle().GetDimension());
 }
 
-String GPUTexture::format() const {
+V8GPUTextureFormat GPUTexture::format() const {
   return FromDawnEnum(GetHandle().GetFormat());
 }
 

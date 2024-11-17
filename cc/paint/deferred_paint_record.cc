@@ -17,17 +17,8 @@ bool DeferredPaintRecord::IsPaintWorkletInput() const {
   return false;
 }
 
-bool DeferredPaintRecord::IsCanvasDeferredPaintRecord() const {
-  return false;
-}
-
 bool DeferredPaintRecord::NeedsLayer() const {
   return false;
-}
-
-PaintRecord DeferredPaintRecord::GetPaintRecord() {
-  NOTIMPLEMENTED();
-  return PaintRecord();
 }
 
 }  // namespace cc

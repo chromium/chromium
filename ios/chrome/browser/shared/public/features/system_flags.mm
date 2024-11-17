@@ -61,7 +61,11 @@ BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
              base::FEATURE_ENABLED_BY_DEFAULT);
 NSString* const kTabResumptionDecorationOverride =
     @"TabResumptionDecorationOverride";
-
+NSString* const kTipsMagicStackLensShopWithImage =
+    @"TipsMagicStackLensShopWithImage";
+NSString* const kTipsMagicStackStateOverride = @"TipsMagicStackStateOverride";
+NSString* const kInactiveTabsDemoMode = @"InactiveTabsDemoMode";
+NSString* const kInactiveTabsTestMode = @"InactiveTabsTestMode";
 }  // namespace
 
 namespace experimental_flags {
@@ -285,15 +289,11 @@ bool ShouldIgnoreHistorySyncDeclineLimits() {
       boolForKey:kShouldIgnoreHistorySyncDeclineLimits];
 }
 
-std::optional<int> DisplaySwitchProfile() {
+bool DisplaySwitchProfile() {
   int switchProfileCount = [[NSUserDefaults standardUserDefaults]
       integerForKey:kDisplaySwitchProfile];
 
-  if (switchProfileCount == 0) {
-    return std::nullopt;
-  }
-
-  return switchProfileCount;
+  return switchProfileCount > 0;
 }
 
 std::optional<int> GetForcedInactivityThresholdForSafetyCheckNotifications() {
@@ -305,6 +305,32 @@ std::optional<int> GetForcedInactivityThresholdForSafetyCheckNotifications() {
   }
 
   return threshold;
+}
+
+std::optional<int> GetForcedTipsMagicStackState() {
+  int tipsIdentifier = [[NSUserDefaults standardUserDefaults]
+      integerForKey:kTipsMagicStackStateOverride];
+
+  if (tipsIdentifier == 0) {
+    return std::nullopt;
+  }
+
+  return tipsIdentifier;
+}
+
+bool ShouldDisplayLensShopTipWithImage() {
+  return [[NSUserDefaults standardUserDefaults]
+      boolForKey:kTipsMagicStackLensShopWithImage];
+}
+
+bool ShouldUseInactiveTabsDemoThreshold() {
+  return
+      [[NSUserDefaults standardUserDefaults] boolForKey:kInactiveTabsDemoMode];
+}
+
+bool ShouldUseInactiveTabsTestThreshold() {
+  return
+      [[NSUserDefaults standardUserDefaults] boolForKey:kInactiveTabsTestMode];
 }
 
 NSString* GetTabResumptionDecorationOverride() {

@@ -14,6 +14,7 @@
 #include "base/check.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -46,6 +47,7 @@
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
+#include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_manual_fallback_flow.h"
 #include "components/password_manager/core/browser/password_manual_fallback_metrics_recorder.h"
 #include "components/password_manager/core/browser/password_suggestion_flow.h"
@@ -100,9 +102,9 @@ bool HasLoadingSuggestion(base::span<const Suggestion> suggestions,
   });
 }
 
-std::string GetBackendId(const Suggestion& suggestion) {
-  return absl::holds_alternative<Suggestion::BackendId>(suggestion.payload)
-             ? suggestion.GetBackendId<Suggestion::Guid>().value()
+std::string GetGuidFromSuggestion(const Suggestion& suggestion) {
+  return absl::holds_alternative<Suggestion::Guid>(suggestion.payload)
+             ? suggestion.GetPayload<Suggestion::Guid>().value()
              : std::string();
 }
 
@@ -119,16 +121,17 @@ std::vector<Suggestion> SetUnlockLoadingState(
   return suggestions;
 }
 
-std::vector<autofill::Suggestion> PrepareLoadingStateSuggestions(
-    std::vector<autofill::Suggestion> current_suggestions,
-    const autofill::Suggestion& selected_suggestion) {
+std::vector<Suggestion> PrepareLoadingStateSuggestions(
+    std::vector<Suggestion> current_suggestions,
+    const Suggestion& selected_suggestion) {
   auto modifier_fun = [&selected_suggestion](auto& suggestion) {
+    using enum Suggestion::Acceptability;
     if (suggestion == selected_suggestion) {
+      suggestion.acceptability = kUnacceptable;
       suggestion.is_loading = IsLoading(true);
     } else {
-      suggestion.apply_deactivated_style = true;
+      suggestion.acceptability = kUnacceptableWithDeactivatedStyle;
     }
-    suggestion.is_acceptable = false;
   };
   base::ranges::for_each(current_suggestions, modifier_fun);
   return current_suggestions;
@@ -287,7 +290,7 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           password_client_->IsOffTheRecord());
       password_client_
           ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
-          ->SelectPasskey(GetBackendId(suggestion),
+          ->SelectPasskey(GetGuidFromSuggestion(suggestion),
                           base::BindOnce(&PasswordAutofillManager::HidePopup,
                                          weak_ptr_factory_.GetWeakPtr()));
       // Disable all entries and set the `selected_suggestion` in loading state.
@@ -303,47 +306,44 @@ void PasswordAutofillManager::DidAcceptSuggestion(
           password_client_->IsOffTheRecord());
       password_client_
           ->GetWebAuthnCredentialsDelegateForDriver(password_manager_driver_)
-          ->LaunchWebAuthnFlow();
+          ->LaunchSecurityKeyOrHybridFlow();
       break;
     default:
       metrics_util::LogPasswordDropdownItemSelected(
           PasswordDropdownSelectedOption::kPassword,
           password_client_->IsOffTheRecord());
 
-      CancelBiometricReauthIfOngoing();
-      std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
-          password_client_->GetDeviceAuthenticator();
-      // Note: this is currently only implemented on Android, Mac and Windows.
-      // For other platforms, the `authenticator` will be null.
-      if (!password_client_->IsReauthBeforeFillingRequired(
-              authenticator.get())) {
-        bool success = FillSuggestion(
-            GetUsernameFromSuggestion(suggestion.main_text.value),
-            suggestion.type);
-        DCHECK(success);
-      } else {
-        authenticator_ = std::move(authenticator);
-
-        std::u16string message;
-        auto on_reath_complete =
-            base::BindOnce(&PasswordAutofillManager::OnBiometricReauthCompleted,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           suggestion.main_text.value, suggestion.type);
-
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-        const std::u16string origin =
-            base::UTF8ToUTF16(GetShownOrigin(url::Origin::Create(
-                password_manager_driver_->GetLastCommittedURL())));
-        message = l10n_util::GetStringFUTF16(
-            IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin);
-#endif
-        authenticator_->AuthenticateWithMessage(
-            message,
-            metrics_util::TimeCallbackMediumTimes(
-                std::move(on_reath_complete),
-                "PasswordManager.PasswordFilling.AuthenticationTime2"));
+      const autofill::PasswordAndMetadata* password_credential =
+          GetPasswordAndMetadataForUsername(
+              GetUsernameFromSuggestion(suggestion.main_text.value),
+              suggestion.type);
+      if (!password_credential) {
+        // Navigation happened before suggestion acceptance.
+        return;
       }
-      break;
+      if (password_credential->is_grouped_affiliation) {
+#if BUILDFLAG(IS_ANDROID)
+        // TODO: crbug.com/372635361 - Add Android warning bottomsheet.
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX)
+        // Show desktop warning.
+        cross_domain_confirmation_controller_ =
+            password_client_->ShowCrossDomainConfirmationPopup(
+                last_popup_open_args_.element_bounds,
+                last_popup_open_args_.text_direction,
+                /*domain=*/password_manager_driver_->GetLastCommittedURL(),
+                /*password_origin=*/
+                password_manager_util::GetHumanReadableRealm(
+                    password_credential->realm),
+                /*confirmation_callback=*/
+                base::BindOnce(&PasswordAutofillManager::
+                                   OnPasswordCredentialSuggestionAccepted,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               *password_credential));
+#endif
+      } else {
+        OnPasswordCredentialSuggestionAccepted(*password_credential);
+      }
   }
 
   if (!password_client_
@@ -358,7 +358,7 @@ void PasswordAutofillManager::DidPerformButtonActionForSuggestion(
     const Suggestion&,
     const autofill::SuggestionButtonAction&) {
   // Button actions do currently not exist for password entries.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool PasswordAutofillManager::RemoveSuggestion(const Suggestion& suggestion) {
@@ -501,11 +501,12 @@ void PasswordAutofillManager::DidNavigateMainFrame() {
   manual_fallback_flow_.reset();
   manual_fallback_metrics_recorder_ =
       std::make_unique<PasswordManualFallbackMetricsRecorder>();
-}
-
-bool PasswordAutofillManager::FillSuggestionForTest(
-    const std::u16string& username) {
-  return FillSuggestion(username, autofill::SuggestionType::kPasswordEntry);
+#if BUILDFLAG(IS_ANDROID)
+  // TODO: crbug.com/372635361 - Reset Android warning bottomsheet.
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_LINUX)
+  cross_domain_confirmation_controller_.reset();
+#endif
 }
 
 bool PasswordAutofillManager::PreviewSuggestionForTest(
@@ -572,21 +573,16 @@ void PasswordAutofillManager::UpdatePopup(std::vector<Suggestion> suggestions) {
   last_popup_open_args_.suggestions = std::move(suggestions);
 }
 
-bool PasswordAutofillManager::FillSuggestion(const std::u16string& username,
-                                             autofill::SuggestionType type) {
-  autofill::PasswordAndMetadata password_and_meta_data;
-  if (fill_data_ && GetPasswordAndMetadataForUsername(
-                        username, type, *fill_data_, &password_and_meta_data)) {
-    bool is_android_credential =
-        affiliations::FacetURI::FromPotentiallyInvalidSpec(
-            password_and_meta_data.realm)
-            .IsValidAndroidFacetURI();
-    metrics_util::LogFilledPasswordFromAndroidApp(is_android_credential);
-    password_manager_driver_->FillSuggestion(
-        username, password_and_meta_data.password_value);
-    return true;
-  }
-  return false;
+void PasswordAutofillManager::FillSuggestion(
+    const autofill::PasswordAndMetadata& password_and_metadata) {
+  bool is_android_credential =
+      affiliations::FacetURI::FromPotentiallyInvalidSpec(
+          password_and_metadata.realm)
+          .IsValidAndroidFacetURI();
+  metrics_util::LogFilledPasswordFromAndroidApp(is_android_credential);
+  password_manager_driver_->FillSuggestion(password_and_metadata.username_value,
+                                           password_and_metadata.password_value,
+                                           base::DoNothing());
 }
 
 bool PasswordAutofillManager::PreviewSuggestion(const std::u16string& username,
@@ -599,21 +595,23 @@ bool PasswordAutofillManager::PreviewSuggestion(const std::u16string& username,
           ->IsBiometricAuthenticationBeforeFillingEnabled()) {
     return false;
   }
-  autofill::PasswordAndMetadata password_and_meta_data;
-  if (fill_data_ && GetPasswordAndMetadataForUsername(
-                        username, type, *fill_data_, &password_and_meta_data)) {
+  if (const autofill::PasswordAndMetadata* password_and_metadata =
+          GetPasswordAndMetadataForUsername(username, type)) {
     password_manager_driver_->PreviewSuggestion(
-        username, password_and_meta_data.password_value);
+        username, password_and_metadata->password_value);
     return true;
   }
   return false;
 }
 
-bool PasswordAutofillManager::GetPasswordAndMetadataForUsername(
+const autofill::PasswordAndMetadata*
+PasswordAutofillManager::GetPasswordAndMetadataForUsername(
     const std::u16string& current_username,
-    autofill::SuggestionType type,
-    const autofill::PasswordFormFillData& fill_data,
-    autofill::PasswordAndMetadata* password_and_meta_data) {
+    autofill::SuggestionType type) {
+  if (!fill_data_) {
+    return nullptr;
+  }
+
   // TODO(dubroy): When password access requires some kind of authentication
   // (e.g. Keychain access on Mac OS), use `password_manager_client_` here to
   // fetch the actual password. See crbug.com/178358 for more context.
@@ -622,30 +620,24 @@ bool PasswordAutofillManager::GetPasswordAndMetadataForUsername(
       type == autofill::SuggestionType::kAccountStoragePasswordEntry;
 
   // Look for any suitable matches to current field text.
-  if (fill_data.preferred_login.username_value == current_username &&
-      fill_data.preferred_login.uses_account_store == item_uses_account_store) {
-    password_and_meta_data->username_value = current_username;
-    password_and_meta_data->password_value =
-        fill_data.preferred_login.password_value;
-    password_and_meta_data->realm = fill_data.preferred_login.realm;
-    password_and_meta_data->uses_account_store =
-        fill_data.preferred_login.uses_account_store;
-    return true;
+  if (fill_data_->preferred_login.username_value == current_username &&
+      fill_data_->preferred_login.uses_account_store ==
+          item_uses_account_store) {
+    return &fill_data_->preferred_login;
   }
 
   // Scan additional logins for a match.
   auto iter = base::ranges::find_if(
-      fill_data.additional_logins,
+      fill_data_->additional_logins,
       [&](const autofill::PasswordAndMetadata& login) {
         return current_username == login.username_value &&
                item_uses_account_store == login.uses_account_store;
       });
-  if (iter != fill_data.additional_logins.end()) {
-    *password_and_meta_data = *iter;
-    return true;
+  if (iter != fill_data_->additional_logins.end()) {
+    return &*iter;
   }
 
-  return false;
+  return nullptr;
 }
 
 void PasswordAutofillManager::RequestFavicon(const GURL& url) {
@@ -689,8 +681,7 @@ void PasswordAutofillManager::OnUnlockReauthCompleted(
 }
 
 void PasswordAutofillManager::OnBiometricReauthCompleted(
-    const std::u16string& value,
-    autofill::SuggestionType type,
+    const autofill::PasswordAndMetadata& password_and_metadata,
     bool auth_succeeded) {
   authenticator_.reset();
   base::UmaHistogramBoolean(
@@ -698,8 +689,42 @@ void PasswordAutofillManager::OnBiometricReauthCompleted(
   if (!auth_succeeded) {
     return;
   }
-  bool success = FillSuggestion(GetUsernameFromSuggestion(value), type);
-  DCHECK(success);
+  FillSuggestion(password_and_metadata);
+}
+
+void PasswordAutofillManager::OnPasswordCredentialSuggestionAccepted(
+    const autofill::PasswordAndMetadata& password_and_metadata) {
+  CancelBiometricReauthIfOngoing();
+  std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator =
+      password_client_->GetDeviceAuthenticator();
+  // Note: this is currently only implemented on Android, Mac and Windows.
+  // For other platforms, the `authenticator` will be null.
+  if (!password_client_->IsReauthBeforeFillingRequired(authenticator.get())) {
+    FillSuggestion(password_and_metadata);
+    return;
+  }
+  authenticator_ = std::move(authenticator);
+
+  std::u16string message;
+  auto on_reath_complete =
+      base::BindOnce(&PasswordAutofillManager::OnBiometricReauthCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), password_and_metadata);
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
+  const std::u16string origin = base::UTF8ToUTF16(GetShownOrigin(
+      url::Origin::Create(password_manager_driver_->GetLastCommittedURL())));
+#endif
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  message =
+      l10n_util::GetStringFUTF16(IDS_PASSWORD_MANAGER_FILLING_REAUTH, origin);
+#elif BUILDFLAG(IS_CHROMEOS)
+  message = l10n_util::GetStringFUTF16(
+      IDS_PASSWORD_MANAGER_FILLING_REAUTH_CHROMEOS, origin);
+#endif
+  authenticator_->AuthenticateWithMessage(
+      message, metrics_util::TimeCallbackMediumTimes(
+                   std::move(on_reath_complete),
+                   "PasswordManager.PasswordFilling.AuthenticationTime2"));
 }
 
 void PasswordAutofillManager::CancelBiometricReauthIfOngoing() {

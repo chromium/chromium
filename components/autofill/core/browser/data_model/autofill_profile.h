@@ -312,6 +312,11 @@ class AutofillProfile : public AutofillDataModel {
   // set.
   AutofillProfile ConvertToAccountProfile() const;
 
+  // Converts a kAccount(Home|Work) address back to a regular kAccount address.
+  // This is necessary to resolve inconsistencies between server and client, to
+  // ensure that only a single H/W address can exist each.
+  AutofillProfile DowngradeToAccountProfile() const;
+
   // Checks for non-empty setting-inaccessible fields and returns all that were
   // found.
   FieldTypeSet FindInaccessibleProfileValues() const;

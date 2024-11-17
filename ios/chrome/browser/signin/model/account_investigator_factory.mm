@@ -22,12 +22,6 @@ AccountInvestigatorFactory* AccountInvestigatorFactory::GetInstance() {
 }
 
 // static
-AccountInvestigator* AccountInvestigatorFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 AccountInvestigator* AccountInvestigatorFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<AccountInvestigator*>(
@@ -46,12 +40,10 @@ AccountInvestigatorFactory::~AccountInvestigatorFactory() = default;
 std::unique_ptr<KeyedService>
 AccountInvestigatorFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(browser_state);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(browser_state);
   std::unique_ptr<AccountInvestigator> investigator =
       std::make_unique<AccountInvestigator>(
-          chrome_browser_state->GetPrefs(),
-          IdentityManagerFactory::GetForProfile(chrome_browser_state));
+          profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile));
   investigator->Initialize();
   return std::move(investigator);
 }

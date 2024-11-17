@@ -270,7 +270,8 @@ void HTMLMarqueeElement::ContinueAnimation() {
   if (!ShouldContinue())
     return;
 
-  if (player_ && player_->PlayStateString() == "paused") {
+  if (player_ && player_->CalculateAnimationPlayState() ==
+                     V8AnimationPlayState::Enum::kPaused) {
     player_->play();
     return;
   }

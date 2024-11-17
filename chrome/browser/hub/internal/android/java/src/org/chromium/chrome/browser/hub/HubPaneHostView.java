@@ -13,7 +13,6 @@ import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.util.AttributeSet;
 import android.view.View;
-import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
@@ -58,7 +57,12 @@ public class HubPaneHostView extends FrameLayout {
                     // If the height is unchanged there is no need to do anything.
                     if (height == oldHeight) return;
 
-                    int delta = height - oldHeight;
+                    // Calculate the delta based on the difference of the bottom margin besides
+                    // the mOriginalMargin. See #updateFloatingButtonBottomMargin.
+                    int delta =
+                            Math.max(mEdgeToEdgeBottomInset, height)
+                                    - Math.max(mEdgeToEdgeBottomInset, oldHeight);
+
                     ObjectAnimator animator =
                             ObjectAnimator.ofFloat(mActionButton, View.TRANSLATION_Y, -delta);
 
@@ -71,11 +75,8 @@ public class HubPaneHostView extends FrameLayout {
                                 @Override
                                 public void onAnimationEnd(Animator animation) {
                                     mActionButton.setTranslationY(0);
-                                    FrameLayout.LayoutParams params =
-                                            (FrameLayout.LayoutParams)
-                                                    mActionButton.getLayoutParams();
-                                    params.bottomMargin = mOriginalMargin + height;
-                                    mActionButton.setLayoutParams(params);
+                                    mSnackbarHeightForAnimation = height;
+                                    updateFloatingButtonBottomMargin();
                                     mFloatingActionButtonAnimator = null;
                                 }
                             });
@@ -95,6 +96,8 @@ public class HubPaneHostView extends FrameLayout {
 
     private int mFloatingActionButtonAnimatorDuration;
     private int mOriginalMargin;
+    private int mEdgeToEdgeBottomInset;
+    private int mSnackbarHeightForAnimation;
 
     /** Default {@link FrameLayout} constructor called by inflation. */
     public HubPaneHostView(Context context, AttributeSet attributeSet) {
@@ -204,6 +207,20 @@ public class HubPaneHostView extends FrameLayout {
 
     void setSnackbarContainerConsumer(Callback<ViewGroup> consumer) {
         consumer.onResult(mSnackbarContainer);
+    }
+
+    void setEdgeToEdgeBottomInsets(int bottomInsets) {
+        mEdgeToEdgeBottomInset = bottomInsets;
+        endFloatingActionButtonAnimation();
+        updateFloatingButtonBottomMargin();
+    }
+
+    private void updateFloatingButtonBottomMargin() {
+        var lp = (MarginLayoutParams) mActionButton.getLayoutParams();
+        // TODO(crbug.com/368407436): Use mSnackBarContainer.getHeight().
+        lp.bottomMargin =
+                mOriginalMargin + Math.max(mEdgeToEdgeBottomInset, mSnackbarHeightForAnimation);
+        mActionButton.setLayoutParams(lp);
     }
 
     private @Nullable View getFloatingActionButton() {

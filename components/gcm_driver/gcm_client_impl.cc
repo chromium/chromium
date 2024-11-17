@@ -97,8 +97,7 @@ GCMClient::Result ToGCMClientResult(MCSClient::MessageSendStatus status) {
       return GCMClient::NETWORK_ERROR;
     case MCSClient::SENT:
     case MCSClient::SEND_STATUS_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return GCMClientImpl::UNKNOWN_ERROR;
 }
@@ -172,8 +171,7 @@ int ConstructGCMVersion(const std::string& chrome_version) {
   // Major Chrome version is passed as GCM version.
   auto parts = base::SplitStringOnce(chrome_version, '.');
   if (!parts) {
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
 
   int gcm_version = 0;
@@ -213,8 +211,8 @@ void RecordRegistrationRequestToUMA(gcm::RegistrationCacheStatus status) {
       "GCM.RegistrationCacheStatus", status,
       RegistrationCacheStatus::REGISTRATION_CACHE_STATUS_COUNT);
 }
-GCMInternalsBuilder::GCMInternalsBuilder() {}
-GCMInternalsBuilder::~GCMInternalsBuilder() {}
+GCMInternalsBuilder::GCMInternalsBuilder() = default;
+GCMInternalsBuilder::~GCMInternalsBuilder() = default;
 
 base::Clock* GCMInternalsBuilder::GetClock() {
   return base::DefaultClock::GetInstance();
@@ -1062,8 +1060,7 @@ void GCMClientImpl::Unregister(
     if (instance_id_iter == instance_id_data_.end()) {
       // This should not be reached since we should not delete tokens when
       // an InstanceID has not been created yet.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
 
     request_handler = std::make_unique<InstanceIDDeleteTokenRequestHandler>(
@@ -1212,8 +1209,7 @@ std::string GCMClientImpl::GetStateString() const {
     case GCMClientImpl::READY:
       return "READY";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 void GCMClientImpl::RecordDecryptionFailure(const std::string& app_id,
@@ -1286,9 +1282,7 @@ void GCMClientImpl::OnMessageReceivedFromMCS(const gcm::MCSMessage& message) {
       HandleIncomingMessage(message);
       return;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Message with unexpected tag received by GCMClient";
-      return;
+      NOTREACHED() << "Message with unexpected tag received by GCMClient";
   }
 }
 

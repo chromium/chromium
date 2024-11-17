@@ -106,6 +106,11 @@ void TestAppBannerManagerDesktop::OnDidGetManifest(
 }
 void TestAppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(
     const InstallableData& result) {
+  // If the renderer is existing, ensure installable isn't accidentally set
+  // twice.
+  if (base::Contains(result.errors, InstallableStatusCode::RENDERER_EXITING)) {
+    installable_.reset();
+  }
   debug_log_.Append("OnDidPerformInstallableWebAppCheck");
   AppBannerManagerDesktop::OnDidPerformInstallableWebAppCheck(result);
   SetInstallable(result.errors.empty());

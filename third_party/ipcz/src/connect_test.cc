@@ -223,7 +223,8 @@ MULTINODE_TEST_NODE(ConnectTestNode, BadNonBrokerReferralClient) {
 
   auto ignore_activity =
       [](IpczHandle, const void*, size_t, const IpczDriverHandle*, size_t,
-         IpczTransportActivityFlags, const void*) { return IPCZ_RESULT_OK; };
+         IpczTransportActivityFlags,
+         const struct IpczTransportActivityOptions*) { return IPCZ_RESULT_OK; };
   EXPECT_EQ(IPCZ_RESULT_OK, GetDriver().ActivateTransport(
                                 transports.theirs, IPCZ_INVALID_HANDLE,
                                 ignore_activity, IPCZ_NO_FLAGS, nullptr));

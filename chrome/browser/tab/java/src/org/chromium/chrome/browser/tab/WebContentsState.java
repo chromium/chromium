@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tab;
 
+import androidx.annotation.Nullable;
+
 import java.nio.ByteBuffer;
 
 /** Contains the state for a WebContents. */
@@ -25,6 +27,7 @@ public class WebContentsState {
     private final ByteBuffer mBuffer;
 
     private int mVersion;
+    private String mFallbackUrlForRestorationFailure;
     private static WebContentsState sEmptyWebContentsState;
 
     public WebContentsState(ByteBuffer buffer) {
@@ -53,6 +56,17 @@ public class WebContentsState {
     /** @return URL currently being displayed in the saved state's current entry. */
     public String getVirtualUrlFromState() {
         return WebContentsStateBridge.getVirtualUrlFromState(this);
+    }
+
+    /** Get the URL to be loaded if restoring the serialized web content state fails. */
+    @Nullable
+    public String getFallbackUrlForRestorationFailure() {
+        return mFallbackUrlForRestorationFailure;
+    }
+
+    /** Set the URL to be loaded if restoring the serialized web content state fails. */
+    public void setFallbackUrlForRestorationFailure(String fallbackUrlForRestorationFailure) {
+        mFallbackUrlForRestorationFailure = fallbackUrlForRestorationFailure;
     }
 
     public static WebContentsState getTempWebContentsState() {

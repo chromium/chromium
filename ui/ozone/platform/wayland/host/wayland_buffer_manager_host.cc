@@ -8,7 +8,6 @@
 #include <sys/utsname.h>
 #include <unistd.h>
 
-#include <presentation-time-client-protocol.h>
 #include <memory>
 #include <utility>
 
@@ -20,12 +19,12 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
-#include "base/version.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/linux/dmabuf_uapi.h"
 #include "ui/gfx/linux/drm_util_linux.h"
 #include "ui/ozone/platform/wayland/common/wayland_overlay_config.h"
+#include "ui/ozone/platform/wayland/host/drm_syncobj_ioctl_wrapper.h"
 #include "ui/ozone/platform/wayland/host/surface_augmenter.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_backing_dmabuf.h"
@@ -36,7 +35,6 @@
 #include "ui/ozone/platform/wayland/host/wayland_buffer_handle.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
-#include "ui/ozone/platform/wayland/host/wayland_zaura_shell.h"
 
 namespace ui {
 
@@ -56,11 +54,7 @@ KernelVersion KernelVersionNumbers() {
   KernelVersion ver;
   struct utsname info;
   if (uname(&info) < 0) {
-    NOTREACHED_IN_MIGRATION();
-    ver.major = 0;
-    ver.minor = 0;
-    ver.bugfix = 0;
-    return ver;
+    NOTREACHED();
   }
   int num_read =
       sscanf(info.release, "%d.%d.%d", &ver.major, &ver.minor, &ver.bugfix);
@@ -126,10 +120,6 @@ void WaylandBufferManagerHost::OnCommitOverlayError(
   TerminateGpuProcess();
 }
 
-base::Version WaylandBufferManagerHost::GetServerVersion() const {
-  return connection_->GetServerVersion();
-}
-
 wl::BufferFormatsWithModifiersMap
 WaylandBufferManagerHost::GetSupportedBufferFormats() const {
   return connection_->buffer_factory()->GetSupportedBufferFormats();
@@ -140,7 +130,7 @@ bool WaylandBufferManagerHost::SupportsDmabuf() const {
 }
 
 bool WaylandBufferManagerHost::SupportsAcquireFence() const {
-  return !!connection_->linux_explicit_synchronization_v1() ||
+  return connection_->SupportsExplicitSync() ||
          connection_->UseImplicitSyncInterop();
 }
 
@@ -578,6 +568,11 @@ bool WaylandBufferManagerHost::SupportsImplicitSyncInterop() {
   static const bool can_import_export_sync_file = CheckImportExportFence();
 
   return can_import_export_sync_file;
+}
+
+void WaylandBufferManagerHost::SetDrmSyncobjWrapper(
+    std::unique_ptr<DrmSyncobjIoctlWrapper> wrapper) {
+  drm_syncobj_wrapper_ = std::move(wrapper);
 }
 
 void WaylandBufferManagerHost::TerminateGpuProcess() {

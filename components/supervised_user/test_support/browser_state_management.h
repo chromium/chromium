@@ -21,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
@@ -134,6 +135,10 @@ class BrowserState {
     std::list<FamilyLinkToggleConfiguration> toggle_list_;
   };
 
+  // TODO(370932512): Make this constructor private. Use static constructors
+  // instead.
+  explicit BrowserState(const Intent* intent);
+
   // Use those static constructors to request state as indicated by name.
   // Clears url filter lists and filter settings to server-side defaults. After
   // issuing, url filter lists are empty. FilteringLevel is unset.
@@ -165,18 +170,34 @@ class BrowserState {
   // with the browser making the rpc call. They might origin from the parent's
   // browser directly, or a child browser impersonating the parent for testing
   // purposes. `subject_account_id` is the account id of the user that will have
-  // their settings changed, typicall the child.
+  // their settings changed, typically the child.
+  // This method will return once the fetch is completed.
   void Seed(
       signin::IdentityManager& caller_identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> caller_url_loader_factory,
       std::string_view subject_account_id) const;
 
+#if BUILDFLAG(IS_IOS)
+  // Seeds the `target_state_` by issuing a RPC, similar to `Seed()`.
+  // This method returns immediately, but fetching continues as long as the
+  // BrowserState is alive. Once the fetch completes, `completion` is executed.
+  void SeedWithCompletion(
+      signin::IdentityManager& caller_identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> caller_url_loader_factory,
+      std::string_view subject_account_id,
+      base::OnceClosure completion);
+#endif  // BUILDFLAG(IS_IOS)
+
   // Textual representation of this instance (for logging).
   std::string ToString() const;
 
  private:
-  explicit BrowserState(const Intent* intent);
   std::unique_ptr<const Intent> intent_;
+
+#if BUILDFLAG(IS_IOS)
+  // ProtoFetcher used for SeedWithCompletion().
+  std::unique_ptr<ProtoFetcher<std::string>> fetcher_;
+#endif  // BUILDFLAG(IS_IOS)
 };
 
 }  // namespace supervised_user

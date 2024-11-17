@@ -47,8 +47,7 @@ TooltipIcon::TooltipIcon(const std::u16string& tooltip, int tooltip_icon_size)
 }
 
 TooltipIcon::~TooltipIcon() {
-  for (auto& observer : observers_)
-    observer.OnTooltipIconDestroying(this);
+  observers_.Notify(&Observer::OnTooltipIconDestroying, this);
   HideBubble();
 }
 
@@ -157,8 +156,7 @@ void TooltipIcon::ShowBubble() {
     mouse_watcher_->Start(GetWidget()->GetNativeWindow());
   }
 
-  for (auto& observer : observers_)
-    observer.OnTooltipBubbleShown(this);
+  observers_.Notify(&Observer::OnTooltipBubbleShown, this);
 }
 
 void TooltipIcon::HideBubble() {

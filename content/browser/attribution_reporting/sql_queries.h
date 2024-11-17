@@ -85,11 +85,23 @@ inline constexpr const char kGetNullReportsDataKeysSql[] =
 inline constexpr const char kGetRateLimitDataKeysSql[] =
     "SELECT reporting_origin FROM rate_limits";
 
-inline constexpr const char kCountReportsForDestinationSql[] =
+static_assert(static_cast<int>(
+                  attribution_reporting::mojom::ReportType::kEventLevel) == 0,
+              "update `report_type=0` clause below");
+inline constexpr const char kCountEventLevelReportsForDestinationSql[] =
     "SELECT COUNT(*)FROM source_destinations D "
     "JOIN reports R "
     "ON R.source_id=D.source_id "
-    "WHERE D.destination_site=? AND R.report_type=?";
+    "WHERE D.destination_site=? AND R.report_type=0";
+
+static_assert(
+    static_cast<int>(
+        attribution_reporting::mojom::ReportType::kAggregatableAttribution) ==
+        1,
+    "update `report_type=1` clause below");
+inline constexpr const char kCountAggregatableReportsForDestinationSql[] =
+    "SELECT COUNT(*)FROM reports "
+    "WHERE context_site=? AND report_type=1";
 
 inline constexpr char kNextReportTimeSql[] =
     "SELECT MIN(report_time)FROM reports WHERE report_time>?";
@@ -128,6 +140,7 @@ inline constexpr const char kSetReportTimeSql[] =
   prefix "aggregatable_source,"                \
   prefix "filter_data,"                        \
   prefix "attribution_scopes_data,"            \
+  prefix "aggregatable_named_budgets,"         \
   prefix "event_level_active,"                 \
   prefix "aggregatable_active,"                \
   prefix "read_only_source_data"
@@ -148,7 +161,7 @@ inline constexpr const char kGetActiveSourcesSql[] =
   ATTRIBUTION_SOURCE_COLUMNS_SQL("I.")                                        \
   ",R.report_id,R.trigger_time,R.report_time,R.initial_report_time,"          \
   "R.failed_send_attempts,R.external_report_id,R.debug_key,R.context_origin," \
-  "R.reporting_origin,R.report_type,R.metadata "                              \
+  "R.reporting_origin,R.report_type,R.metadata,R.context_site "               \
   "FROM reports R "                                                           \
   "LEFT JOIN sources I ON R.source_id=I.source_id "
 
@@ -254,6 +267,14 @@ inline constexpr const char kRateLimitSelectSourceReportingOriginsBySiteSql[] =
     " AND source_site=?"
     " AND reporting_site=?"
     " AND time>?";
+
+inline constexpr const char
+    kRateLimitCountUniqueReportingOriginsPerSiteForAttributionSql[] =
+        "SELECT COUNT(DISTINCT reporting_origin)FROM rate_limits "
+        "WHERE " RATE_LIMIT_ATTRIBUTION_CONDITION
+        " AND destination_site=?"
+        " AND reporting_site=?"
+        " AND source_expiry_or_attribution_time>?";
 
 static_assert(RateLimitTable::kUnsetRecordId == -1,
               "update `report_id!=-1` query below");

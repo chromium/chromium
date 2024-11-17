@@ -36,6 +36,8 @@ MLMultiArrayDataType ToMLMultiArrayDataType(OperandDataType data_type) {
     case OperandDataType::kUint64:
     case OperandDataType::kInt8:
     case OperandDataType::kUint8:
+    case OperandDataType::kInt4:
+    case OperandDataType::kUint4:
       // Unsupported data types for MLMultiArrays in CoreML.
       NOTREACHED();
   }
@@ -75,8 +77,13 @@ TensorImplCoreml::Create(
   }
 
   NSMutableArray<NSNumber*>* ns_shape = [[NSMutableArray alloc] init];
-  for (uint32_t dimension : tensor_info->descriptor.shape()) {
-    [ns_shape addObject:[[NSNumber alloc] initWithUnsignedLong:dimension]];
+  if (tensor_info->descriptor.shape().empty()) {
+    // Allocate a one-element array to hold the value of a scalar tensor.
+    [ns_shape addObject:[[NSNumber alloc] initWithUnsignedLong:1ul]];
+  } else {
+    for (uint32_t dimension : tensor_info->descriptor.shape()) {
+      [ns_shape addObject:[[NSNumber alloc] initWithUnsignedLong:dimension]];
+    }
   }
 
   NSError* error = nil;

@@ -10,7 +10,7 @@
 @class SessionWindowIOS;
 
 // Encapsulates everything required to save a session. A session is a set of
-// one or more session windows that share the same browser state.
+// one or more session windows that share the same profile.
 @interface SessionIOS : NSObject<NSCoding>
 
 - (instancetype)initWithWindows:(NSArray<SessionWindowIOS*>*)sessionWindows

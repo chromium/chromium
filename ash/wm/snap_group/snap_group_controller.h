@@ -13,6 +13,7 @@
 #include "ash/wm/snap_group/snap_group_metrics.h"
 #include "ash/wm/wm_metrics.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/aura/window.h"
@@ -34,7 +35,8 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
                                        public display::DisplayObserver {
  public:
   using SnapGroups = std::vector<std::unique_ptr<SnapGroup>>;
-  using WindowToSnapGroupMap = base::flat_map<aura::Window*, SnapGroup*>;
+  using WindowToSnapGroupMap =
+      base::flat_map<aura::Window*, raw_ptr<SnapGroup, CtnExperimental>>;
 
   SnapGroupController();
   SnapGroupController(const SnapGroupController&) = delete;

@@ -161,8 +161,7 @@ UpdateDynamicRulesStatus GetUpdateDynamicRuleStatus(LoadRulesetResult result) {
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return UpdateDynamicRulesStatus::kSuccess;
+  NOTREACHED();
 }
 
 // Helper to create the new list of dynamic rules. Returns false on failure and
@@ -381,9 +380,11 @@ void RulesetInfo::CreateVerifiedMatcher() {
 }
 
 LoadRequestData::LoadRequestData(ExtensionId extension_id,
-                                 base::Version extension_version)
+                                 base::Version extension_version,
+                                 LoadRulesetRequestSource request_source)
     : extension_id(std::move(extension_id)),
-      extension_version(std::move(extension_version)) {}
+      extension_version(std::move(extension_version)),
+      request_source(request_source) {}
 LoadRequestData::~LoadRequestData() = default;
 LoadRequestData::LoadRequestData(LoadRequestData&&) = default;
 LoadRequestData& LoadRequestData::operator=(LoadRequestData&&) = default;

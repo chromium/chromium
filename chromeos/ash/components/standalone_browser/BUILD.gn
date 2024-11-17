@@ -19,10 +19,6 @@ component("standalone_browser") {
     "lacros_availability.h",
     "lacros_selection.cc",
     "lacros_selection.h",
-    "migration_progress_tracker.cc",
-    "migration_progress_tracker.h",
-    "migrator_util.cc",
-    "migrator_util.h",
     "standalone_browser_features.cc",
     "standalone_browser_features.h",
   ]
@@ -49,7 +45,6 @@ source_set("unit_tests") {
     "channel_util_unittest.cc",
     "lacros_availability_unittest.cc",
     "lacros_selection_unittest.cc",
-    "migrator_util_unittest.cc",
     "test_util_unittest.cc",
   ]
 
@@ -72,7 +67,6 @@ source_set("test_support") {
   testonly = true
 
   sources = [
-    "fake_migration_progress_tracker.h",
     "feature_refs.cc",
     "test_util.cc",
     "test_util.h",

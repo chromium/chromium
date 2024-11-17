@@ -92,7 +92,7 @@ class WebState : public base::SupportsUserData {
 
 #if BUILDFLAG(USE_BLINK)
     // If `created_with_opener`, a pointer to the opener WebState.
-    WebState* opener_web_state;
+    raw_ptr<WebState> opener_web_state = nullptr;
 #endif
 
     // Value used to set the last time the WebState was made active; this

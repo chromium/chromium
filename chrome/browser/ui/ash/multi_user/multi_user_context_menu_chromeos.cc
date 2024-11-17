@@ -25,7 +25,7 @@
 #include "components/user_manager/user_manager_pref_names.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace {
 
@@ -144,6 +144,6 @@ void ExecuteVisitDesktopCommand(int command_id, aura::Window* window) {
       return;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }

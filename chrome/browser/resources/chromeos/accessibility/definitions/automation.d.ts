@@ -357,6 +357,8 @@ declare namespace chrome {
       EXPANDED = 'expanded',
       FOCUSABLE = 'focusable',
       FOCUSED = 'focused',
+      HAS_ACTIONS = 'hasActions',
+      HAS_INTEREST_TARGET = 'hasInterestTarget',
       HORIZONTAL = 'horizontal',
       HOVERED = 'hovered',
       IGNORED = 'ignored',
@@ -831,9 +833,11 @@ declare namespace chrome {
       ariaColumnCount?: number;
       tableCellColumnIndex?: number;
       tableCellAriaColumnIndex?: number;
+      ariaCellColumnIndexText?: string;
       tableCellColumnSpan?: number;
       tableCellRowIndex?: number;
       tableCellAriaRowIndex?: number;
+      ariaCellRowIndexText?: string;
       tableCellRowSpan?: number;
       tableColumnHeader?: AutomationNode;
       tableRowHeader?: AutomationNode;
@@ -855,9 +859,6 @@ declare namespace chrome {
       autoComplete?: string;
       className?: string;
       modal?: boolean;
-      htmlAttributes?: {
-        [key: string]: any,
-      };
       inputType?: string;
       accessKey?: string;
       ariaInvalidValue?: string;
@@ -868,7 +869,7 @@ declare namespace chrome {
       hasPopup?: HasPopup;
       restriction?: string;
       checked?: string;
-      innerHtml?: string;
+      mathContent?: string;
       color?: number;
       backgroundColor?: number;
       colorValue?: number;

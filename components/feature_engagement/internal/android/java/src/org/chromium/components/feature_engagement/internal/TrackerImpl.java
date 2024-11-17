@@ -72,31 +72,31 @@ public class TrackerImpl implements Tracker {
     }
 
     @Override
-    public boolean shouldTriggerHelpUI(String feature) {
+    public boolean shouldTriggerHelpUi(String feature) {
         // Disable all IPH if the UI is in screenshot mode. For context, see crbug.com/964012.
         if (CommandLine.getInstance().hasSwitch(UiSwitches.ENABLE_SCREENSHOT_UI_MODE)) {
             return false;
         }
 
         assert mNativePtr != 0;
-        return TrackerImplJni.get().shouldTriggerHelpUI(mNativePtr, TrackerImpl.this, feature);
+        return TrackerImplJni.get().shouldTriggerHelpUi(mNativePtr, TrackerImpl.this, feature);
     }
 
     @Override
-    public TriggerDetails shouldTriggerHelpUIWithSnooze(String feature) {
+    public TriggerDetails shouldTriggerHelpUiWithSnooze(String feature) {
         // Disable all IPH if the UI is in screenshot mode. For context, see crbug.com/964012.
         if (CommandLine.getInstance().hasSwitch(UiSwitches.ENABLE_SCREENSHOT_UI_MODE)) {
             return new TriggerDetails(false, false);
         }
         assert mNativePtr != 0;
         return TrackerImplJni.get()
-                .shouldTriggerHelpUIWithSnooze(mNativePtr, TrackerImpl.this, feature);
+                .shouldTriggerHelpUiWithSnooze(mNativePtr, TrackerImpl.this, feature);
     }
 
     @Override
-    public boolean wouldTriggerHelpUI(String feature) {
+    public boolean wouldTriggerHelpUi(String feature) {
         assert mNativePtr != 0;
-        return TrackerImplJni.get().wouldTriggerHelpUI(mNativePtr, TrackerImpl.this, feature);
+        return TrackerImplJni.get().wouldTriggerHelpUi(mNativePtr, TrackerImpl.this, feature);
     }
 
     @Override
@@ -192,13 +192,13 @@ public class TrackerImpl implements Tracker {
     interface Natives {
         void notifyEvent(long nativeTrackerImplAndroid, TrackerImpl caller, String event);
 
-        boolean shouldTriggerHelpUI(
+        boolean shouldTriggerHelpUi(
                 long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
 
-        TriggerDetails shouldTriggerHelpUIWithSnooze(
+        TriggerDetails shouldTriggerHelpUiWithSnooze(
                 long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
 
-        boolean wouldTriggerHelpUI(
+        boolean wouldTriggerHelpUi(
                 long nativeTrackerImplAndroid, TrackerImpl caller, String feature);
 
         boolean hasEverTriggered(

@@ -22,6 +22,7 @@ class CORE_EXPORT CanvasContextCreationAttributesCore {
   virtual ~CanvasContextCreationAttributesCore();
 
   enum class WillReadFrequently { kTrue, kFalse, kUndefined };
+  enum class PowerPreference { kDefault, kLowPower, kHighPerformance };
 
   bool alpha = true;
   bool antialias = true;
@@ -32,7 +33,7 @@ class CORE_EXPORT CanvasContextCreationAttributesCore {
   CanvasPixelFormat pixel_format = CanvasPixelFormat::kUint8;
   bool premultiplied_alpha = true;
   bool preserve_drawing_buffer = false;
-  String power_preference = "default";
+  PowerPreference power_preference = PowerPreference::kDefault;
   bool stencil = false;
   // Help to determine whether to use GPU or CPU for the canvas.
   WillReadFrequently will_read_frequently = WillReadFrequently::kUndefined;

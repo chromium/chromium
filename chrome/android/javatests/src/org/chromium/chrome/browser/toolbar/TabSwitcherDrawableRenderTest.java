@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.toolbar;
 
+import static org.junit.Assert.assertEquals;
+
 import android.graphics.Color;
 import android.view.View;
 
@@ -20,7 +22,9 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -53,6 +57,7 @@ public class TabSwitcherDrawableRenderTest {
     public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, true);
 
+    private ToggleTabStackButton mToggleTabStackButton;
     private TabSwitcherDrawable mTabSwitcherDrawable;
 
     @Before
@@ -60,23 +65,44 @@ public class TabSwitcherDrawableRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ChromeTabbedActivity activity = sActivityTestRule.getActivity();
-                    ToggleTabStackButton toggleTabStackButton =
-                            activity.findViewById(R.id.tab_switcher_button);
-                    mTabSwitcherDrawable = toggleTabStackButton.getTabSwitcherDrawableForTesting();
+                    mToggleTabStackButton = activity.findViewById(R.id.tab_switcher_button);
+                    mTabSwitcherDrawable = mToggleTabStackButton.getTabSwitcherDrawableForTesting();
                 });
     }
 
     @Test
     @MediumTest
     @Feature("RenderTest")
+    @EnableFeatures(ChromeFeatureList.DATA_SHARING)
     public void testTabSwitcherDrawable_toggleNotificationRegular() throws Exception {
         ChromeTabbedActivity activity = sActivityTestRule.getActivity();
         sActivityTestRule.loadUrlInNewTab("about:blank", /* incognito= */ false);
 
+        int tabCount = 2;
         View toolbarView = activity.findViewById(R.id.toolbar);
         mRenderTestRule.render(toolbarView, "tab_page_toolbar_view_regular_off");
 
-        mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+        String contentDesc =
+                activity.getResources()
+                        .getQuantityString(
+                                R.plurals.accessibility_toolbar_btn_tabswitcher_toggle_default,
+                                tabCount,
+                                tabCount);
+        assertEquals(contentDesc, mToggleTabStackButton.getContentDescription());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+                });
+
+        String notificationContentDesc =
+                activity.getResources()
+                        .getQuantityString(
+                                R.plurals
+                                        .accessibility_toolbar_btn_tabswitcher_toggle_default_with_notification,
+                                tabCount,
+                                tabCount);
+        assertEquals(notificationContentDesc, mToggleTabStackButton.getContentDescription());
         mRenderTestRule.render(toolbarView, "tab_page_toolbar_view_regular_on");
     }
 
@@ -89,7 +115,10 @@ public class TabSwitcherDrawableRenderTest {
         sActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ false);
         NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
 
-        mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+                });
         View toolbarView = activity.findViewById(R.id.toolbar);
         mRenderTestRule.render(toolbarView, "tab_page_toolbar_view_new_tab_page");
     }
@@ -103,7 +132,10 @@ public class TabSwitcherDrawableRenderTest {
         sActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ true);
         NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
 
-        mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+                });
         View toolbarView = activity.findViewById(R.id.toolbar);
         mRenderTestRule.render(toolbarView, "tab_page_toolbar_view_incognito_no_show");
     }
@@ -122,7 +154,10 @@ public class TabSwitcherDrawableRenderTest {
         sActivityTestRule.loadUrl(pageWithBrandColorUrl);
         ThemeTestUtils.waitForThemeColor(activity, Color.RED);
 
-        mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mTabSwitcherDrawable.setNotificationIconStatus(/* shouldShow= */ true);
+                });
         View toolbarView = activity.findViewById(R.id.toolbar);
         mRenderTestRule.render(toolbarView, "tab_page_toolbar_view_themed_toolbar");
     }

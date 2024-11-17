@@ -121,8 +121,8 @@
                   type:config->infobar_type()];
   mediator.consumer = self.bannerViewController;
   mediator.engagementTracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(
+          self.browser->GetProfile());
 
   self.mediator = mediator;
   // Present the banner.

@@ -83,11 +83,7 @@ public class ExecutionResult {
         return mErrorCode;
     }
 
-    /**
-     * Returns whether this is a complete response or part of a stream.
-     *
-     * @return
-     */
+    /** Returns whether this is a complete response or part of a stream. */
     public boolean isCompleteResult() {
         return mIsCompleteResult;
     }

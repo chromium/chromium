@@ -32,11 +32,11 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoProcessorAccelerator {
   struct MEDIA_GPU_EXPORT Config {
     VideoPixelFormat input_format;
     gfx::Size input_visible_size;
-    VideoColorSpace input_color_space;
+    gfx::ColorSpace input_color_space;
 
     VideoPixelFormat output_format;
     gfx::Size output_visible_size;
-    VideoColorSpace output_color_space;
+    gfx::ColorSpace output_color_space;
   };
 
   explicit MediaFoundationVideoProcessorAccelerator(

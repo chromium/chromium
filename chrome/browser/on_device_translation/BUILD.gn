@@ -2,6 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/services/on_device_translation/buildflags/features.gni")
+
+assert(enable_on_device_translation)
+
 source_set("prefs") {
   sources = [
     "pref_names.cc",
@@ -28,6 +32,18 @@ source_set("constants") {
   ]
 }
 
+source_set("translation_metrics") {
+  sources = [
+    "translation_metrics.cc",
+    "translation_metrics.h",
+  ]
+
+  deps = [
+    ":language_pack_util",
+    "//base",
+  ]
+}
+
 source_set("language_pack_util") {
   sources = [
     "language_pack_util.cc",
@@ -35,4 +51,50 @@ source_set("language_pack_util") {
   ]
 
   deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "../component_updater/translate_kit_component_installer_unittest.cc",
+    "../component_updater/translate_kit_language_pack_component_installer_unittest.cc",
+    "file_operation_proxy_impl_unittest.cc",
+    "language_pack_util_unittest.cc",
+    "translation_manager_impl_unittest.cc",
+    "translation_metrics_unittest.cc",
+  ]
+  deps = [
+    ":language_pack_util",
+    ":prefs",
+    ":translation_metrics",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//components/component_updater:test_support",
+    "//components/crx_file",
+    "//components/prefs",
+    "//components/services/on_device_translation/:test_support",
+    "//components/services/on_device_translation/public/cpp",
+    "//components/services/on_device_translation/public/mojom",
+    "//components/sync_preferences:test_support",
+    "//content/test:test_support",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test/test_util.cc",
+    "test/test_util.h",
+  ]
+  deps = [
+    ":language_pack_util",
+    ":prefs",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser:browser_process",
+    "//components/services/on_device_translation/:test_support",
+    "//content/test:test_support",
+  ]
 }

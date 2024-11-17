@@ -16,6 +16,7 @@ static_library("personalization") {
 
   public_deps = [
     "//base",
+    "//chrome/browser/ui/webui/settings",
     "//components/prefs",
   ]
 

@@ -102,14 +102,7 @@ interface EyeDropper
 interface HTMLInputElement : HTMLElement
     getter webkitEntries
 
-# File System Access API not supported on Android, crbug.com/1011535
-interface DataTransferItem
-    method getAsFileSystemHandle
-
 interface MediaDevices : EventTarget
-    # MediaDevices devicechange disabled on Android, crbug.com/671461
-    getter ondevicechange
-    setter ondevicechange
     method getDisplayMedia
     method setCaptureHandleConfig
 
@@ -121,7 +114,9 @@ interface MediaStreamTrack : EventTarget
   method getCaptureHandle
 interface BrowserCaptureMediaStreamTrack : MediaStreamTrack
   method cropTo
+  method restrictTo
 interface CropTarget
+interface RestrictionTarget
 interface CaptureController : EventTarget
 
 # WebAuthN API should not be exposed in WebView, crbug.com/828168
@@ -254,9 +249,6 @@ interface DocumentPictureInPictureEvent : Event
     method getDigitalGoodsService            # Digital Goods API, crbug.com/1312827
     method webkitRequestFileSystem           # File System API, crbug.com/589843
     method webkitResolveLocalFileSystemURL   # File System API, crbug.com/589843
-    method showOpenFilePicker                # File System Access API, crbug.com/1011535
-    method showSaveFilePicker                # File System Access API, crbug.com/1011535
-    method showDirectoryPicker               # File System Access API, crbug.com/1011535
     method queryLocalFonts                   # Local Font Access API, crbug.com/1326898
     getter sharedStorage                     # Shared storage API
     getter fence                             # Fenced frames API

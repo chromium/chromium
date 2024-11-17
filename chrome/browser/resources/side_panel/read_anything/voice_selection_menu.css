@@ -4,6 +4,7 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
  * #css_wrapper_metadata_end */
 
@@ -25,6 +26,12 @@ cr-icon-button.active {
   background-color: var(--cr-active-background-color);
 }
 
+.spinner {
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+  }
+
 #voiceSelectionMenu::part(dialog) {
   min-width: 304px;
   width: fit-content;
@@ -34,6 +41,11 @@ cr-action-menu::part(dialog) {
   max-height: calc(90% - 36px);
   /* Prevent jank due to overscrolling from the dialog */
   overscroll-behavior: contain;
+}
+
+.clickable-false {
+  pointer-events: none;
+  opacity: var(--cr-disabled-opacity);
 }
 
 .dropdown-voice-selection-button {
@@ -57,12 +69,17 @@ cr-action-menu::part(dialog) {
   margin: 0;
 }
 
-.lang-group-title, .download-message {
+.lang-group-title,
+.notification {
   color: var(--color-sys-on-surface-subtle);
   display: grid;
   font-size: 12px;
   font-weight: 400;
   padding-left: 20px;
+}
+
+.error-message {
+  white-space: normal;
 }
 
 .voice-name {

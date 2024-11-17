@@ -56,10 +56,12 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/shared_storage_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_select_url_fenced_frame_config_observer.h"
 #include "content/public/test/test_shared_storage_header_observer.h"
+#include "extensions/buildflags/buildflags.h"
 #include "net/base/schemeful_site.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -99,6 +101,7 @@ const auto& ClearOperation =
 
 constexpr char kMainHost[] = "a.test";
 constexpr char kSimplePagePath[] = "/simple.html";
+constexpr char kFencedFramePagePath[] = "/fenced_frames/title1.html";
 constexpr char kTitle1Path[] = "/title1.html";
 constexpr char kCrossOriginHost[] = "b.test";
 constexpr char kThirdOriginHost[] = "c.test";
@@ -122,6 +125,8 @@ constexpr char kTimingDocumentAppendHistogram[] =
     "Storage.SharedStorage.Document.Timing.Append";
 constexpr char kTimingDocumentSetHistogram[] =
     "Storage.SharedStorage.Document.Timing.Set";
+constexpr char kTimingDocumentGetHistogram[] =
+    "Storage.SharedStorage.Document.Timing.Get";
 constexpr char kTimingDocumentDeleteHistogram[] =
     "Storage.SharedStorage.Document.Timing.Delete";
 constexpr char kTimingDocumentClearHistogram[] =
@@ -154,6 +159,12 @@ constexpr char
     kPrivateAggregationHostTimeToGenerateReportRequestWithContextIdHistogram[] =
         "PrivacySandbox.PrivateAggregation.Host."
         "TimeToGenerateReportRequestWithContextId";
+
+constexpr char kFencedStorageReadAttestationErrorPrefix[] =
+    "Attestation check for fenced storage read on";
+constexpr char kFencedStorageReadDisabledBy3pcSettingError[] =
+    "Fenced storage read is disabled because all third-party cookies are "
+    "blocked.";
 
 const double kBudgetAllowed = 5.0;
 
@@ -193,6 +204,17 @@ MakeFilter(std::vector<std::string> possible_last_messages) {
         return false;
       },
       std::move(possible_last_messages));
+}
+
+std::string GetFencedStorageReadDisabledMessage() {
+  return base::StrCat({"a JavaScript error: \"OperationError: ",
+                       content::GetFencedStorageReadDisabledMessage()});
+}
+
+std::string GetFencedStorageReadWithoutRevokeNetworkMessage() {
+  return base::StrCat(
+      {"a JavaScript error: \"OperationError: ",
+       content::GetFencedStorageReadWithoutRevokeNetworkMessage()});
 }
 
 std::string GetSharedStorageDisabledErrorMessage() {
@@ -735,7 +757,7 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
   }
   virtual bool EnableDebugMessages() const { return false; }
 
-  bool SuccessExpected() {
+  bool SuccessExpected() const {
     return GetEnforcementAndEnrollmentStatus() !=
                EnforcementAndEnrollmentStatus::
                    kAttestationsEnforcedMainHostUnenrolled &&
@@ -847,7 +869,7 @@ class SharedStoragePrefBrowserTest
 #endif
   }
 
-  void VerifyDebugErrorMessage(const std::string& error_message) {
+  virtual void VerifyDebugErrorMessage(const std::string& error_message) {
     ASSERT_FALSE(SuccessExpected());
     size_t found_pos = error_message.find("Debug");
     if (!EnableDebugMessages()) {
@@ -4389,9 +4411,10 @@ IN_PROC_BROWSER_TEST_F(SharedStorageFencedFrameChromeBrowserTest,
   EXPECT_EQ(2, histogram_tester_.GetTotalSum(kWorkletNumPerPageHistogram));
 }
 
+// See crbug.com/377398196. The test is flaky on multiple builders.
 IN_PROC_BROWSER_TEST_F(
     SharedStorageFencedFrameChromeBrowserTest,
-    TwoFencedFrames_DifferentURNs_EachNavigateOnce_BudgetWithdrawalTwice) {
+    DISABLED_TwoFencedFrames_DifferentURNs_EachNavigateOnce_BudgetWithdrawalTwice) {
   // The test assumes pages get deleted after navigation. To ensure this,
   // disable back/forward cache.
   content::DisableBackForwardCacheForTesting(
@@ -4644,6 +4667,289 @@ IN_PROC_BROWSER_TEST_P(SharedStoragePrivateAggregationChromeBrowserTest,
                                      GURL(url::kAboutBlankURL)));
   histogram_tester_.ExpectUniqueSample(kWorkletNumPerPageHistogram, 1, 1);
 }
+
+class FencedStorageReadBrowserTest : public SharedStoragePrefBrowserTest {
+ public:
+  FencedStorageReadBrowserTest() = default;
+  ~FencedStorageReadBrowserTest() override = default;
+
+  void SetUpOnMainThread() override {
+    // Fenced frame test helper should enable the feature
+    // "FencedFramesLocalUnpartitionedDataAccess" in its constructor, which is
+    // required for the tests.
+    ASSERT_TRUE(base::FeatureList::IsEnabled(
+        blink::features::kFencedFramesLocalUnpartitionedDataAccess));
+
+    SharedStoragePrefBrowserTest::SetUpOnMainThread();
+  }
+
+  // This always enrolls the host for Shared Storage, but only enrolls the host
+  // for fenced storage read exactly when enforcement and enrollment status is
+  // `kAttestationsEnforcedMainHostEnrolled`.
+  void MaybeEnrollMainHost(const GURL& main_url) override {
+    auto attestations_set =
+        privacy_sandbox::PrivacySandboxAttestationsGatedAPISet(
+            {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                 kSharedStorage});
+    if (GetEnforcementAndEnrollmentStatus() ==
+        EnforcementAndEnrollmentStatus::kAttestationsEnforcedMainHostEnrolled) {
+      attestations_set.Put(privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                               kFencedStorageRead);
+    }
+
+    privacy_sandbox::PrivacySandboxAttestationsMap attestations_map{
+        {net::SchemefulSite(main_url), attestations_set}};
+    SetAttestationsMap(attestations_map);
+  }
+
+  void VerifyDebugErrorMessage(const std::string& error_message) override {
+    ASSERT_FALSE(SuccessExpected());
+    size_t found_pos = error_message.find("Debug");
+    if (!EnableDebugMessages()) {
+      EXPECT_EQ(found_pos, std::string::npos);
+      return;
+    }
+    EXPECT_NE(found_pos, std::string::npos);
+
+    // The accessing site is always enrolled for Shared Storage. So the status
+    // only depends on Privacy Sandbox status.
+    int status = EnablePrivacySandbox() ? 4 : 1;
+    if (status == 4) {
+      ASSERT_FALSE(AllowThirdPartyCookies());
+    }
+
+    found_pos = error_message.find("status " + base::NumberToString(status));
+    EXPECT_NE(found_pos, std::string::npos);
+  }
+
+  content::RenderFrameHost*
+  CreateFencedFrameAndSet3rdPartyCookieAndFencedFrameHostAttestationSettings() {
+    EXPECT_TRUE(
+        NavigateToURL(GetActiveWebContents(),
+                      https_server()->GetURL(kMainHost, kSimplePagePath)));
+    fenced_frame_url_ = https_server()->GetURL("a.test", kFencedFramePagePath);
+
+    content::RenderFrameHost* fenced_frame_rfh = content::CreateFencedFrame(
+        GetActiveWebContents()->GetPrimaryMainFrame(), fenced_frame_url_);
+
+    SetThirdPartyCookieSetting(fenced_frame_url_);
+    MaybeEnrollMainHost(fenced_frame_url_);
+
+    return fenced_frame_rfh;
+  }
+
+  bool SharedStorageSuccessExpected() const {
+    // This test suite always has the fenced frame URL enrolled for Shared
+    // Storage.
+    return EnablePrivacySandbox() && AllowThirdPartyCookies();
+  }
+
+  bool SuccessExpectedForFencedStorageReadWhenUntrustedNetworkAccessRevoked()
+      const {
+    return SuccessExpected();
+  }
+
+  GURL fenced_frame_url() const { return fenced_frame_url_; }
+
+ private:
+  // Enables the required features for fenced frame.
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+
+  GURL fenced_frame_url_;
+};
+
+IN_PROC_BROWSER_TEST_P(
+    FencedStorageReadBrowserTest,
+    FencedStorageReadAttestationWithoutUntrustedNetworkDisabled) {
+  // This always enrolls the fenced frame host for Shared Storage, but only
+  // enrolls the host for fenced frame fenced storage read exactly
+  // when `ShouldEnrollMainHost()` is true.
+  content::RenderFrameHost* fenced_frame_rfh =
+      CreateFencedFrameAndSet3rdPartyCookieAndFencedFrameHostAttestationSettings();
+
+  content::EvalJsResult set_result = content::EvalJs(fenced_frame_rfh, R"(
+      sharedStorage.set('customKey', 'customValue');
+    )");
+
+  if (!AllowThirdPartyCookies()) {
+    // Enable block of all third party cookies in the tracking protection
+    // setting.
+    GetProfile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
+                                         true);
+  }
+
+  if (SharedStorageSuccessExpected()) {
+    EXPECT_TRUE(set_result.error.empty());
+    WaitForHistograms({kTimingDocumentSetHistogram});
+    histogram_tester_.ExpectTotalCount(kTimingDocumentSetHistogram, 1);
+  } else {
+    // Shared Storage will be disabled.
+    EXPECT_TRUE(base::StartsWith(set_result.error,
+                                 GetSharedStorageDisabledErrorMessage()));
+    VerifyDebugErrorMessage(set_result.error);
+  }
+
+  // Set up console observer.
+  content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
+  console_observer.SetFilter(
+      MakeFilter({kFencedStorageReadAttestationErrorPrefix,
+                  kFencedStorageReadDisabledBy3pcSettingError}));
+
+  // Attempt to access local unpartitioned data without revoking fenced frame
+  // untrusted network access.
+  content::EvalJsResult get_result = content::EvalJs(fenced_frame_rfh, R"(
+      sharedStorage.get('customKey');
+    )");
+
+  if (SuccessExpectedForFencedStorageReadWhenUntrustedNetworkAccessRevoked()) {
+    // Fenced storage read is disabled when untrusted network access is not
+    // revoked.
+    ASSERT_FALSE(get_result.error.empty());
+    EXPECT_TRUE(base::StartsWith(
+        get_result.error, GetFencedStorageReadWithoutRevokeNetworkMessage()));
+    EXPECT_TRUE(console_observer.messages().empty());
+  } else if (!AllowThirdPartyCookies()) {
+    // Fenced storage read is disabled. A JavaScript error is shown.
+    EXPECT_TRUE(base::StartsWith(get_result.error,
+                                 GetFencedStorageReadDisabledMessage()));
+
+    // Fenced storage read is disabled when all third party cookies are blocked.
+    // Site cookie setting does not have effect.
+    ASSERT_TRUE(console_observer.Wait());
+    EXPECT_EQ(1u, console_observer.messages().size());
+    EXPECT_EQ(kFencedStorageReadDisabledBy3pcSettingError,
+              base::UTF16ToUTF8(console_observer.messages()[0].message));
+  } else if (GetEnforcementAndEnrollmentStatus() ==
+             EnforcementAndEnrollmentStatus::
+                 kAttestationsEnforcedMainHostUnenrolled) {
+    // Fenced storage read is disabled. A JavaScript error is shown.
+    EXPECT_TRUE(base::StartsWith(get_result.error,
+                                 GetFencedStorageReadDisabledMessage()));
+
+    // Fenced storage read is disabled when the accessing site is not enrolled.
+    // A console message is shown.
+    ASSERT_TRUE(console_observer.Wait());
+    EXPECT_EQ(1u, console_observer.messages().size());
+    EXPECT_EQ(base::StrCat({kFencedStorageReadAttestationErrorPrefix, " ",
+                            url::Origin::Create(fenced_frame_url()).Serialize(),
+                            " failed."}),
+              base::UTF16ToUTF8(console_observer.messages()[0].message));
+  } else {
+    // Fenced storage read is disabled. A JavaScript error is shown.
+    ASSERT_FALSE(EnablePrivacySandbox());
+    EXPECT_TRUE(base::StartsWith(get_result.error,
+                                 GetFencedStorageReadDisabledMessage()));
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(
+    FencedStorageReadBrowserTest,
+    FencedStorageReadAttestationWithUntrustedNetworkDisabled) {
+  // This always enrolls the fenced frame host for Shared Storage, but only
+  // enrolls the host for fenced storage read exactly when
+  // `ShouldEnrollMainHost()` is true.
+  content::RenderFrameHost* fenced_frame_rfh =
+      CreateFencedFrameAndSet3rdPartyCookieAndFencedFrameHostAttestationSettings();
+
+  content::EvalJsResult set_result = content::EvalJs(fenced_frame_rfh, R"(
+      sharedStorage.set('customKey', 'customValue');
+    )");
+
+  if (!AllowThirdPartyCookies()) {
+    // Enable block of all third party cookies in the tracking protection
+    // setting.
+    GetProfile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled,
+                                         true);
+  }
+
+  if (SharedStorageSuccessExpected()) {
+    EXPECT_TRUE(set_result.error.empty());
+    WaitForHistograms({kTimingDocumentSetHistogram});
+    histogram_tester_.ExpectTotalCount(kTimingDocumentSetHistogram, 1);
+  } else {
+    // Shared Storage will be disabled.
+    EXPECT_TRUE(base::StartsWith(set_result.error,
+                                 GetSharedStorageDisabledErrorMessage()));
+    VerifyDebugErrorMessage(set_result.error);
+  }
+
+  // Set up console observer.
+  content::WebContentsConsoleObserver console_observer(GetActiveWebContents());
+  console_observer.SetFilter(
+      MakeFilter({kFencedStorageReadAttestationErrorPrefix,
+                  kFencedStorageReadDisabledBy3pcSettingError}));
+
+  // Disable untrusted network access.
+  EXPECT_TRUE(ExecJs(fenced_frame_rfh, R"(
+                window.fence.disableUntrustedNetwork();
+              )"));
+
+  // Access local unpartitioned data with fenced frame untrusted network access
+  // revoked.
+  content::EvalJsResult get_result = content::EvalJs(fenced_frame_rfh, R"(
+      sharedStorage.get('customKey');
+    )");
+
+  if (SuccessExpectedForFencedStorageReadWhenUntrustedNetworkAccessRevoked()) {
+    // Fenced storage read is allowed when untrusted network access is revoked.
+    ASSERT_TRUE(get_result.error.empty());
+    EXPECT_EQ(get_result.ExtractString(), "customValue");
+    EXPECT_TRUE(console_observer.messages().empty());
+    WaitForHistograms({kTimingDocumentGetHistogram});
+    histogram_tester_.ExpectTotalCount(kTimingDocumentGetHistogram, 1);
+  } else if (!AllowThirdPartyCookies()) {
+    // Fenced storage read is disabled. A JavaScript error is shown.
+    EXPECT_TRUE(base::StartsWith(get_result.error,
+                                 GetFencedStorageReadDisabledMessage()));
+
+    // Fenced storage read is disabled when all third party cookies are blocked.
+    // Site cookie setting does not have effect.
+    ASSERT_TRUE(console_observer.Wait());
+    EXPECT_EQ(1u, console_observer.messages().size());
+    EXPECT_EQ(kFencedStorageReadDisabledBy3pcSettingError,
+              base::UTF16ToUTF8(console_observer.messages()[0].message));
+  } else if (GetEnforcementAndEnrollmentStatus() ==
+             EnforcementAndEnrollmentStatus::
+                 kAttestationsEnforcedMainHostUnenrolled) {
+    // Fenced storage read is disabled. A JavaScript error is shown.
+    EXPECT_TRUE(base::StartsWith(get_result.error,
+                                 GetFencedStorageReadDisabledMessage()));
+
+    // Fenced storage read is disabled when the accessing site is not enrolled.
+    // A console message is shown.
+    ASSERT_TRUE(console_observer.Wait());
+    EXPECT_EQ(1u, console_observer.messages().size());
+    EXPECT_EQ(base::StrCat({kFencedStorageReadAttestationErrorPrefix, " ",
+                            url::Origin::Create(fenced_frame_url()).Serialize(),
+                            " failed."}),
+              base::UTF16ToUTF8(console_observer.messages()[0].message));
+  } else {
+    // Fenced storage read is disabled. A JavaScript
+    // error is shown.
+    ASSERT_FALSE(EnablePrivacySandbox());
+    EXPECT_TRUE(base::StartsWith(get_result.error,
+                                 GetFencedStorageReadDisabledMessage()));
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    FencedStorageReadBrowserTest,
+    testing::Combine(
+        testing::Bool(),
+        testing::Bool(),
+        testing::Values(EnforcementAndEnrollmentStatus::kAttestationsUnenforced,
+                        EnforcementAndEnrollmentStatus::
+                            kAttestationsEnforcedMainHostUnenrolled,
+#if BUILDFLAG(IS_ANDROID)
+                        EnforcementAndEnrollmentStatus::
+                            kAttestationsEnforcedMainHostEnrolled)),
+#else
+                        EnforcementAndEnrollmentStatus::
+                            kAttestationsEnforcedMainHostEnrolled),
+        testing::Bool()),
+#endif
+    DescribePrefBrowserTestParams);
 
 class SharedStorageHeaderPrefBrowserTest : public SharedStoragePrefBrowserTest {
  public:

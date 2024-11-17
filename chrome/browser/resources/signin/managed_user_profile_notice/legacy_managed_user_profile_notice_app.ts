@@ -5,9 +5,9 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
-import './icons.html.js';
-import './strings.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import '/icons.html.js';
+import '/strings.m.js';
 
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
@@ -97,18 +97,18 @@ export class LegacyManagedUserProfileNoticeAppElement extends
   }
 
   protected showEnterpriseBadge_: boolean = false;
-  protected pictureUrl_: string;
-  protected title_: string;
-  protected subtitle_: string;
-  protected enterpriseInfo_: string;
+  protected pictureUrl_: string = '';
+  protected title_: string = '';
+  protected subtitle_: string = '';
+  protected enterpriseInfo_: string = '';
   protected isModalDialog_: boolean = loadTimeData.getBoolean('isModalDialog');
   protected showLinkDataCheckbox_: boolean =
       loadTimeData.getBoolean('showLinkDataCheckbox');
   protected useLegacyUi_: boolean = !loadTimeData.getBoolean('useUpdatedUi');
-  protected proceedLabel_: string;
+  protected proceedLabel_: string = '';
   protected disableProceedButton_: boolean = false;
   protected linkData_: boolean = false;
-  private defaultProceedLabel_: string;
+  private defaultProceedLabel_: string = '';
   private managedUserProfileNoticeBrowserProxy_:
       ManagedUserProfileNoticeBrowserProxy =
           ManagedUserProfileNoticeBrowserProxyImpl.getInstance();

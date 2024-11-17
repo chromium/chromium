@@ -5,16 +5,24 @@
 module video_effects.mojom;
 
 import "media/capture/mojom/video_effects_manager.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 import "services/video_effects/public/mojom/video_effects_processor.mojom";
 import "services/viz/public/mojom/gpu.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
+
+[EnableIfNot=is_linux]
+const sandbox.mojom.Sandbox kVideoEffectsSandbox =
+    sandbox.mojom.Sandbox.kService;
+
+[EnableIf=is_linux]
+const sandbox.mojom.Sandbox kVideoEffectsSandbox =
+    sandbox.mojom.Sandbox.kVideoEffects;
 
 // Entry point to the Video Effects Service API.
 // This interface is intended to be hosted in the Video Effects utility
 // process. The Browser process uses this to create video effect processors
 // and broker the created processors to the Video Capture Service.
-[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+[ServiceSandbox=kVideoEffectsSandbox]
 interface VideoEffectsService {
   // Creates a Video Effects Processor whose effects configuration will be
   // managed by the passed in `manager`. Note that the created processor will
@@ -29,10 +37,10 @@ interface VideoEffectsService {
   // In case of failure, the remote end of the `processor` will be
   // disconnected.
   CreateEffectsProcessor(
-    string device_id,
-    pending_remote<viz.mojom.Gpu> gpu,
-    pending_remote<media.mojom.VideoEffectsManager> manager,
-    pending_receiver<VideoEffectsProcessor> processor);
+      string device_id,
+      pending_remote<viz.mojom.Gpu> gpu,
+      pending_remote<media.mojom.VideoEffectsManager> manager,
+      pending_receiver<VideoEffectsProcessor> processor);
 
   // Passes a file containing the background segmentation model to be used by
   // all Video Effects Processors created by this service.

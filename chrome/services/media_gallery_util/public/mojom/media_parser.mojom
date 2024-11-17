@@ -5,7 +5,7 @@
 module chrome.mojom;
 
 import "media/mojo/mojom/media_types.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
@@ -53,8 +53,7 @@ interface MediaParser {
   // Note: it is still not safe to decode the file in the calling process after
   // this check.
   CheckMediaFile(mojo_base.mojom.TimeDelta decode_time,
-                 mojo_base.mojom.ReadOnlyFile file)
-      => (bool success);
+                 mojo_base.mojom.ReadOnlyFile file) => (bool success);
 
   // Used by tests to validate the right CPU information is set on third-party
   // libraries.
@@ -87,8 +86,10 @@ struct MediaStreamInfo {
   mojo_base.mojom.DictionaryValue additional_properties;
 };
 
-// All data are parsed from user-defined media data. The consumer of this API should filter special
-// characters if needed. The encoding of strings may be UTF-8 that ffmpeg library assumes strings to
+// All data are parsed from user-defined media data. The consumer of this API
+// should filter special
+// characters if needed. The encoding of strings may be UTF-8 that ffmpeg
+// library assumes strings to
 // be UTF-8 but does not validate the encoding.
 struct MediaMetadata {
   string mime_type;

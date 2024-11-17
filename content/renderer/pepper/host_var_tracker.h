@@ -9,6 +9,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/shared_impl/host_resource.h"
@@ -83,7 +84,9 @@ class HostVarTracker : public ppapi::VarTracker {
     PP_Instance instance;
     int hash;
   };
-  typedef std::multimap<V8ObjectVarKey, ppapi::V8ObjectVar*> ObjectMap;
+  typedef std::multimap<V8ObjectVarKey,
+                        raw_ptr<ppapi::V8ObjectVar, CtnExperimental>>
+      ObjectMap;
 
   // Returns an iterator into |object_map| which points to V8Object which
   // is associated with the given instance and object.

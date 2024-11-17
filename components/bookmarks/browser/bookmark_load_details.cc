@@ -8,6 +8,7 @@
 #include "components/bookmarks/browser/bookmark_uuids.h"
 #include "components/bookmarks/browser/titled_url_index.h"
 #include "components/bookmarks/browser/url_index.h"
+#include "components/bookmarks/common/user_folder_load_stats.h"
 
 namespace bookmarks {
 
@@ -17,13 +18,32 @@ namespace {
 // bookmarks.
 constexpr size_t kNumDefaultTopLevelPermanentFolders = 3u;
 
+void UpdateUserFolderStatsRecursively(const BookmarkNode& node,
+                                      bool top_level,
+                                      UserFolderLoadStats& stats) {
+  DCHECK(!node.is_permanent_node());
+
+  if (!node.is_folder()) {
+    return;
+  }
+
+  stats.total_folders++;
+  if (top_level) {
+    stats.total_top_level_folders++;
+  }
+
+  for (auto& child : node.children()) {
+    UpdateUserFolderStatsRecursively(*child, /*top_level=*/false, stats);
+  }
+}
+
 }  // namespace
 
 BookmarkLoadDetails::BookmarkLoadDetails()
     : titled_url_index_(std::make_unique<TitledUrlIndex>()),
       load_start_(base::TimeTicks::Now()) {
-  // WARNING: do NOT add |client| as a member. Much of this code runs on another
-  // thread, and |client_| is not thread safe, and/or may be destroyed before
+  // WARNING: do NOT add `client` as a member. Much of this code runs on another
+  // thread, and `client_` is not thread safe, and/or may be destroyed before
   // this.
   root_node_ = std::make_unique<BookmarkNode>(
       /*id=*/0, base::Uuid::ParseLowercase(kRootNodeUuid), GURL());
@@ -131,7 +151,25 @@ void BookmarkLoadDetails::ResetPermanentNodePointers() {
 }
 
 const BookmarkNode* BookmarkLoadDetails::RootNodeForTest() const {
-  return url_index_ ? url_index_->root() : root_node_.get();
+  return GetRootNode();
+}
+
+UserFolderLoadStats BookmarkLoadDetails::ComputeUserFolderStats() const {
+  UserFolderLoadStats stats;
+  const BookmarkNode* root = GetRootNode();
+
+  for (const auto& root_child : root->children()) {
+    // Look for user-generated folders under permanent nodes.
+    if (!root_child->is_permanent_node()) {
+      continue;
+    }
+
+    for (const auto& child : root_child->children()) {
+      UpdateUserFolderStatsRecursively(*child, /*top_level=*/true, stats);
+    }
+  }
+
+  return stats;
 }
 
 void BookmarkLoadDetails::AddNodeToIndexRecursive(BookmarkNode* node,
@@ -147,6 +185,10 @@ void BookmarkLoadDetails::AddNodeToIndexRecursive(BookmarkNode* node,
       AddNodeToIndexRecursive(child.get(), uuid_index);
     }
   }
+}
+
+const BookmarkNode* BookmarkLoadDetails::GetRootNode() const {
+  return url_index_ ? url_index_->root() : root_node_.get();
 }
 
 }  // namespace bookmarks

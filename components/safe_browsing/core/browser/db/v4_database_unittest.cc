@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/safe_browsing/core/browser/db/v4_database.h"
+
 #include <unordered_map>
 #include <utility>
 
@@ -9,12 +11,12 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/test_simple_task_runner.h"
-#include "components/safe_browsing/core/browser/db/v4_database.h"
 #include "components/safe_browsing/core/browser/db/v4_store.h"
 #include "testing/platform_test.h"
 
@@ -220,7 +222,8 @@ class V4DatabaseTest : public PlatformTest {
   DatabaseUpdatedCallback callback_db_updated_;
   NewDatabaseReadyCallback callback_db_ready_;
   StoreStateMap expected_store_state_map_;
-  std::unordered_map<ListIdentifier, V4Store*> old_stores_map_;
+  std::unordered_map<ListIdentifier, raw_ptr<V4Store, CtnExperimental>>
+      old_stores_map_;
   const ListIdentifier linux_malware_id_, win_malware_id_;
 };
 

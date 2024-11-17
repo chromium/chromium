@@ -40,7 +40,8 @@ class FakeMultiplexedChannelFactory : public MultiplexedChannelImpl::Factory {
 
   ~FakeMultiplexedChannelFactory() override = default;
 
-  base::flat_map<ConnectionDetails, FakeMultiplexedChannel*>&
+  base::flat_map<ConnectionDetails,
+                 raw_ptr<FakeMultiplexedChannel, CtnExperimental>>&
   connection_details_to_active_channel_map() {
     return connection_details_to_active_channel_map_;
   }
@@ -88,7 +89,8 @@ class FakeMultiplexedChannelFactory : public MultiplexedChannelImpl::Factory {
 
   raw_ptr<AuthenticatedChannel> next_expected_authenticated_channel_ = nullptr;
 
-  base::flat_map<ConnectionDetails, FakeMultiplexedChannel*>
+  base::flat_map<ConnectionDetails,
+                 raw_ptr<FakeMultiplexedChannel, CtnExperimental>>
       connection_details_to_active_channel_map_;
 };
 
@@ -246,7 +248,7 @@ TEST_F(SecureChannelActiveConnectionManagerImplTest, EdgeCases) {
   // fail, since one already exists.
   client_list.push_back(
       std::make_unique<FakeClientConnectionParameters>("feature"));
-  EXPECT_DCHECK_DEATH(active_connection_manager()->AddActiveConnection(
+  EXPECT_NOTREACHED_DEATH(active_connection_manager()->AddActiveConnection(
       std::make_unique<FakeAuthenticatedChannel>(), std::move(client_list),
       ConnectionDetails("deviceId", ConnectionMedium::kBluetoothLowEnergy)));
 
@@ -259,12 +261,12 @@ TEST_F(SecureChannelActiveConnectionManagerImplTest, EdgeCases) {
   // Try to add another channel; this should still fail while disconnecting.
   client_list.push_back(
       std::make_unique<FakeClientConnectionParameters>("feature"));
-  EXPECT_DCHECK_DEATH(active_connection_manager()->AddActiveConnection(
+  EXPECT_NOTREACHED_DEATH(active_connection_manager()->AddActiveConnection(
       std::make_unique<FakeAuthenticatedChannel>(), std::move(client_list),
       ConnectionDetails("deviceId", ConnectionMedium::kBluetoothLowEnergy)));
 
   // Try to add an additional client; this should also fail while disconnecting.
-  EXPECT_DCHECK_DEATH(active_connection_manager()->AddClientToChannel(
+  EXPECT_NOTREACHED_DEATH(active_connection_manager()->AddClientToChannel(
       std::make_unique<FakeClientConnectionParameters>("feature"),
       ConnectionDetails("deviceId", ConnectionMedium::kBluetoothLowEnergy)));
 
@@ -273,7 +275,7 @@ TEST_F(SecureChannelActiveConnectionManagerImplTest, EdgeCases) {
             GetConnectionState("deviceId"));
 
   // Try to add an additional client; this should also fail while disconnected.
-  EXPECT_DCHECK_DEATH(active_connection_manager()->AddClientToChannel(
+  EXPECT_NOTREACHED_DEATH(active_connection_manager()->AddClientToChannel(
       std::make_unique<FakeClientConnectionParameters>("feature"),
       ConnectionDetails("deviceId", ConnectionMedium::kBluetoothLowEnergy)));
 }

@@ -77,8 +77,7 @@ uint32_t NativeViewToUint(gfx::NativeView view) {
 #if BUILDFLAG(IS_WIN)
   return base::win::HandleToUint32(views::HWNDForNativeView(view));
 #else
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 #endif
 }
 #endif
@@ -176,7 +175,14 @@ std::optional<PrintBackendServiceManager::ClientId>
 PrintBackendServiceManager::RegisterPrintDocumentClientReusingClientRemote(
     ClientId id) {
   const auto iter = query_with_ui_clients_.find(id);
-  CHECK(iter != query_with_ui_clients_.end());
+  if (iter == query_with_ui_clients_.end()) {
+    // If the client is gone then that suggests that the renderer process
+    // terminated while the system print dialog was displayed.  Proceeding
+    // with printing will not be possible in such a case.
+    VLOG(1) << "Registering a print document client reusing client " << id
+            << " failed because that client is no longer registered";
+    return std::nullopt;
+  }
   return RegisterClient(ClientType::kPrintDocument, iter->second);
 }
 

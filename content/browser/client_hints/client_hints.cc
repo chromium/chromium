@@ -154,13 +154,6 @@ double GetDeviceScaleFactor() {
 
 // Returns the zoom factor for a given |url|.
 double GetZoomFactor(BrowserContext* context, const GURL& url) {
-#if BUILDFLAG(IS_ANDROID)
-  // On Android, use the default value when the AccessibilityPageZoom
-  // feature is not enabled.
-  if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom))
-    return 1.0;
-#endif
-
   double zoom_level = HostZoomMap::GetDefaultForBrowserContext(context)
                           ->GetZoomLevelForHostAndScheme(
                               url.scheme(), net::GetHostOrSpecFromURL(url));
@@ -339,16 +332,7 @@ gfx::Size GetScaledViewportSize(BrowserContext* context,
     viewport_size =
         ScaleToRoundedSize(viewport_size, 980.0 / viewport_size.width());
   }
-
-  // On Android, use the default value when the AccessibilityPageZoom
-  // feature is not enabled.
-  if (!base::FeatureList::IsEnabled(features::kAccessibilityPageZoom)) {
-    return viewport_size;
-  }
 #endif
-
-  base::UmaHistogramBoolean("ClientHints.Viewport.IsDeviceScaleFactorOne",
-                            GetDeviceScaleFactor() == 1.0);
 
   double zoom_factor = GetZoomFactor(context, url);
   if (zoom_factor > 0) {

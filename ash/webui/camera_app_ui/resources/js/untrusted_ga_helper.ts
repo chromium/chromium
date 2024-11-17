@@ -77,7 +77,7 @@ export type Ga4EventParams =
 type Ga4MeasurementProtocolEventParams = Ga4EventParams&{
   ['engagement_time_msec']: string,
   ['session_id']: string,
-}
+};
 
 interface InitGa4Params {
   apiSecret: string;

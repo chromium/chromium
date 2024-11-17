@@ -125,15 +125,16 @@ void FrameConsole::DidFailLoading(DocumentLoader* loader,
   if (error.IsCancellation() || error.IsUnactionableTrustTokensStatus())
     return;
 
-  if (error.CorsErrorStatus() &&
-      base::FeatureList::IsEnabled(blink::features::kCORSErrorsIssueOnly)) {
-    // CORS issues are reported via network service instrumentation.
-    return;
-  }
-
   if (error.WasBlockedByORB()) {
     // ORB loading errors are reported from the network service directly to
     // DevTools (CorsURLLoader::ReportOrbErrorToDevTools).
+    return;
+  }
+
+  // Reduce noise in the DevTools console due to CORS policy errors.
+  // See http://crbug.com/375357425.
+  if (error.CorsErrorStatus() &&
+      base::FeatureList::IsEnabled(features::kDevToolsImprovedNetworkError)) {
     return;
   }
 

@@ -51,7 +51,7 @@ public class DisableIfSkipCheck extends SkipCheck {
         for (DisableIf.Device d :
                 AnnotationProcessingUtils.getAnnotations(
                         method.getMethod(), DisableIf.Device.class)) {
-            for (String deviceType : d.type()) {
+            for (String deviceType : d.value()) {
                 if (deviceTypeApplies(deviceType)) {
                     Log.i(
                             TAG,

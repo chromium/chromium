@@ -209,8 +209,7 @@ inline const char* TouchActionToString(TouchAction touch_action) {
     case 63:
       return "AUTO";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace cc

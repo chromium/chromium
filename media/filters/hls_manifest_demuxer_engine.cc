@@ -58,7 +58,7 @@ bool AreAllAudioCodecsSupported(const std::vector<AudioType>& audio_types) {
     return false;
   }
   for (const auto& type : audio_types) {
-    if (!IsSupportedAudioType(type)) {
+    if (!IsDecoderSupportedAudioType(type)) {
       return false;
     }
   }
@@ -70,7 +70,7 @@ bool AreAllVideoCodecsSupported(const std::vector<VideoType>& video_types) {
     return false;
   }
   for (const auto& type : video_types) {
-    if (!IsSupportedVideoType(type)) {
+    if (!IsDecoderSupportedVideoType(type)) {
       return false;
     }
   }
@@ -162,10 +162,14 @@ HlsManifestDemuxerEngine::~HlsManifestDemuxerEngine() = default;
 HlsManifestDemuxerEngine::HlsManifestDemuxerEngine(
     base::SequenceBound<HlsDataSourceProvider> dsp,
     scoped_refptr<base::SequencedTaskRunner> media_task_runner,
+    base::RepeatingCallback<void(const MediaTrack&)> add_track,
+    base::RepeatingCallback<void(const MediaTrack&)> remove_track,
     bool was_already_tainted,
     GURL root_playlist_uri,
     MediaLog* media_log)
     : media_task_runner_(std::move(media_task_runner)),
+      add_track_(std::move(add_track)),
+      remove_track_(std::move(remove_track)),
       root_playlist_uri_(std::move(root_playlist_uri)),
       media_log_(media_log->Clone()),
       network_access_(std::make_unique<HlsNetworkAccessImpl>(std::move(dsp))),
@@ -804,7 +808,8 @@ void HlsManifestDemuxerEngine::OnStreamContainerDetermined(
   host_->SetSequenceMode(parse_info.role, true);
 
   auto rendition = HlsRendition::CreateRendition(
-      host_, this, parse_info.role, std::move(playlist), parse_info.uri);
+      host_, this, parse_info.role, std::move(playlist), parse_info.uri,
+      media_log_.get());
 
   if (parse_info.role == kPrimary) {
     auto duration_or_live = rendition->GetDuration();

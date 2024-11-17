@@ -112,7 +112,7 @@ class SSLErrorHandler : public content::WebContentsUserData<SSLErrorHandler>,
   // actions.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
     virtual void CheckForCaptivePortal() = 0;
     virtual bool DoesOSReportCaptivePortal() = 0;
     virtual bool GetSuggestedUrl(const std::vector<std::string>& dns_names,

@@ -20,7 +20,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
 import org.chromium.components.browser_ui.site_settings.ForwardingManagedPreferenceDelegate;
-import org.chromium.components.browser_ui.site_settings.RWSCookieInfo;
+import org.chromium.components.browser_ui.site_settings.RwsCookieInfo;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.content_settings.CookieControlsBridge.TrackingProtectionFeature;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
@@ -38,27 +38,24 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
     private static final String TP_STATUS_PREFERENCE = "tp_status";
     private static final String STORAGE_IN_USE_PREFERENCE = "storage_in_use";
     private static final String RWS_IN_USE_PREFERENCE = "rws_in_use";
-    private static final String TPC_SUMMARY = "tpc_summary";
     private static final String MANAGED_TITLE = "managed_title";
     private static final String MANAGED_STATUS = "managed_status";
     private static final int EXPIRATION_FOR_TESTING = 33;
 
     private ChromeSwitchPreference mTpSwitch;
     private ChromeImageViewPreference mStorageInUse;
-    private ChromeImageViewPreference mRWSInUse;
+    private ChromeImageViewPreference mRwsInUse;
     private TextMessagePreference mTpTitle;
     private TextMessagePreference mManagedTitle;
     private TrackingProtectionStatusPreference mTpStatus;
     private TrackingProtectionStatusPreference mManagedStatus;
     private Runnable mOnClearCallback;
     private Runnable mOnCookieSettingsLinkClicked;
-    private Callback<Activity> mOnFeedbackClicked;
     private Dialog mConfirmationDialog;
     private boolean mDeleteDisabled;
     private boolean mDataUsed;
     private CharSequence mHostName;
-    private RWSCookieInfo mRWSInfo;
-    private boolean mBlockAll3PC;
+    private boolean mBlockAll3pc;
     private boolean mIsIncognito;
     // Used to have a constant # of days until expiration to prevent test flakiness.
     private boolean mFixedExpiration;
@@ -74,7 +71,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         public boolean disableCookieDeletion;
         public CharSequence hostName;
         // Block all third-party cookies when Tracking Protection is on.
-        public boolean blockAll3PC;
+        public boolean blockAll3pc;
         public boolean isIncognito;
         public boolean fixedExpirationForTesting;
     }
@@ -95,8 +92,8 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         mTpStatus = findPreference(TP_STATUS_PREFERENCE);
         mManagedStatus = findPreference(MANAGED_STATUS);
         mStorageInUse = findPreference(STORAGE_IN_USE_PREFERENCE);
-        mRWSInUse = findPreference(RWS_IN_USE_PREFERENCE);
-        mRWSInUse.setVisible(false);
+        mRwsInUse = findPreference(RWS_IN_USE_PREFERENCE);
+        mRwsInUse.setVisible(false);
         mTpTitle = findPreference(TP_TITLE);
         mManagedTitle = findPreference(MANAGED_TITLE);
     }
@@ -114,7 +111,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
     }
 
     public void setParams(PageInfoTrackingProtectionLaunchViewParams params) {
-        mBlockAll3PC = params.blockAll3PC;
+        mBlockAll3pc = params.blockAll3pc;
         mIsIncognito = params.isIncognito;
         mFixedExpiration = params.fixedExpirationForTesting;
         mOnCookieSettingsLinkClicked = params.onCookieSettingsLinkClicked;
@@ -129,7 +126,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         if (mIsIncognito) {
             summaryString =
                     R.string.page_info_tracking_protection_incognito_blocked_cookies_description;
-        } else if (mBlockAll3PC) {
+        } else if (mBlockAll3pc) {
             summaryString = R.string.page_info_tracking_protection_blocked_cookies_description;
         } else {
             summaryString = R.string.page_info_tracking_protection_description;
@@ -162,7 +159,6 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
         updateStorageDeleteButton();
 
         mOnClearCallback = params.onClearCallback;
-        mOnFeedbackClicked = params.onFeedbackLinkClicked;
         mHostName = params.hostName;
     }
 
@@ -263,22 +259,21 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
      * @param currentOrigin PageInfo current origin.
      * @return a boolean indicating if the RWS info has been shown or not.
      */
-    public boolean maybeShowRWSInfo(RWSCookieInfo rwsInfo, String currentOrigin) {
-        mRWSInfo = rwsInfo;
-        if (rwsInfo == null || mRWSInUse == null) {
+    public boolean maybeShowRwsInfo(RwsCookieInfo rwsInfo, String currentOrigin) {
+        if (rwsInfo == null || mRwsInUse == null) {
             return false;
         }
 
-        assert getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
+        assert getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUiFeatureEnabled()
                         && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
                 : "First Party Sets UI and access should be enabled to show FPS info.";
 
-        mRWSInUse.setVisible(true);
-        mRWSInUse.setTitle(R.string.cookie_info_rws_title);
-        mRWSInUse.setSummary(
+        mRwsInUse.setVisible(true);
+        mRwsInUse.setTitle(R.string.cookie_info_rws_title);
+        mRwsInUse.setSummary(
                 String.format(getString(R.string.cookie_info_rws_summary), rwsInfo.getOwner()));
-        mRWSInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.tenancy));
-        mRWSInUse.setManagedPreferenceDelegate(
+        mRwsInUse.setIcon(SettingsUtils.getTintedIcon(getContext(), R.drawable.tenancy));
+        mRwsInUse.setManagedPreferenceDelegate(
                 new ForwardingManagedPreferenceDelegate(
                         getSiteSettingsDelegate().getManagedPreferenceDelegate()) {
                     @Override
@@ -313,7 +308,7 @@ public class PageInfoTrackingProtectionLaunchSettings extends BaseSiteSettingsFr
 
     private void updateCookieSwitch() {
         // TODO(b/337310050): Put the logic for the tracking protection switch here.
-        return;
+
     }
 
     private void updateTrackingProtectionTitleTemporary(int days) {

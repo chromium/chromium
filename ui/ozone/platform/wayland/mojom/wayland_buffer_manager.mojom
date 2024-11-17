@@ -119,7 +119,6 @@ interface WaylandBufferManagerGpu {
   // `supported_surface_augmentor_version` says what version of the augment
   // surface protocol the client is using. If the version is 0, the surface
   // augmentor is not available.
-  // `server_version` indicates the dotted version number on of the server.
   Initialize(pending_remote<WaylandBufferManagerHost> remote_host,
              map<gfx.mojom.BufferFormat,
                  array<uint64>> buffer_formats_with_modifiers,
@@ -128,8 +127,7 @@ interface WaylandBufferManagerGpu {
              bool supports_acquire_fence,
              bool supports_overlays,
              uint32 supported_surface_augmentor_version,
-             bool supports_single_pixel_buffer,
-             mojo_base.mojom.Version server_version);
+             bool supports_single_pixel_buffer);
 
   // Signals about swap completion and presentation.
   OnSubmission(gfx.mojom.AcceleratedWidget widget,

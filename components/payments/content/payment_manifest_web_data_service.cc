@@ -22,7 +22,7 @@ PaymentManifestWebDataService::PaymentManifestWebDataService(
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : WebDataServiceBase(std::move(wdbs), std::move(ui_task_runner)) {}
 
-PaymentManifestWebDataService::~PaymentManifestWebDataService() {}
+PaymentManifestWebDataService::~PaymentManifestWebDataService() = default;
 
 void PaymentManifestWebDataService::AddPaymentWebAppManifest(
     std::vector<WebAppManifestSection> manifest) {

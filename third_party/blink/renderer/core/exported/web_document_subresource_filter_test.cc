@@ -31,15 +31,16 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
       : load_policy_(policy) {}
 
   LoadPolicy GetLoadPolicy(const WebURL& resource_url,
-                           mojom::blink::RequestContextType) override {
-    String resource_path = KURL(resource_url).GetPath();
+                           network::mojom::RequestDestination) override {
+    String resource_path = KURL(resource_url).GetPath().ToString();
     if (!base::Contains(queried_subresource_paths_, resource_path)) {
       queried_subresource_paths_.push_back(resource_path);
     }
     String resource_string = resource_url.GetString();
     for (const String& suffix : blocklisted_suffixes_) {
-      if (resource_string.EndsWith(suffix))
+      if (resource_string.EndsWith(suffix)) {
         return load_policy_;
+      }
     }
     return LoadPolicy::kAllow;
   }

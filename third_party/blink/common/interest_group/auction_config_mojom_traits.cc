@@ -32,7 +32,7 @@ namespace {
 bool AreBuyerPrioritySignalsValid(
     const base::flat_map<std::string, double>& buyer_priority_signals) {
   for (const auto& priority_signal : buyer_priority_signals) {
-    if (base::StartsWith(priority_signal.first, "browserSignals.")) {
+    if (priority_signal.first.starts_with("browserSignals.")) {
       return false;
     }
     if (!std::isfinite(priority_signal.second)) {
@@ -86,8 +86,7 @@ bool AdConfigMaybePromiseTraitsHelper<View, Wrapper>::Read(View in,
       return true;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 template struct BLINK_COMMON_EXPORT AdConfigMaybePromiseTraitsHelper<

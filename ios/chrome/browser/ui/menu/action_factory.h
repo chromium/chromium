@@ -196,6 +196,12 @@ class TabGroup;
 // Creates a UIAction instance for closing a tab group.
 - (UIAction*)actionToCloseTabGroupWithBlock:(ProceduralBlock)block;
 
+// Creates a UIAction instance for sharing a local tab group.
+- (UIAction*)actionToShareTabGroupWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance for managing the sharing of a tab group.
+- (UIAction*)actionToManageTabGroupWithBlock:(ProceduralBlock)block;
+
 // Creates a UIAction instance whose title and icon are configured for showing
 // details, which will invoke the given `block` when executed.
 - (UIAction*)actionToShowDetailsWithBlock:(ProceduralBlock)block;
@@ -225,6 +231,10 @@ class TabGroup;
 // Creates a UIAction instance whose title and icon are configured for showing
 // manage in a new tab, which will invoke the given `block` when executed.
 - (UIAction*)actionToManageLinkInNewTabWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance to show the recent activity in a shared tab
+// group.
+- (UIAction*)actionToShowRecentActivity:(ProceduralBlock)block;
 
 @end
 

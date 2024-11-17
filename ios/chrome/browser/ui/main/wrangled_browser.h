@@ -9,10 +9,10 @@
 
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 @class BrowserCoordinator;
 @class BrowserViewController;
+class ProfileIOS;
 @protocol SyncPresenter;
 
 // Implementation of BrowserProvider -- for the most part a wrapper around
@@ -34,8 +34,8 @@
 // The inactive browser. This can be nullptr if in an incognito interface or if
 // Inactive Tabs is disabled.
 @property(nonatomic) Browser* inactiveBrowser;
-// The browser state for this interface. This can never be nullptr.
-@property(nonatomic, readonly) ChromeBrowserState* browserState;
+// The profile for this interface. This can never be nullptr.
+@property(nonatomic, readonly) ProfileIOS* profile;
 // YES if this interface is incognito.
 @property(nonatomic, readonly) BOOL incognito;
 // YES if TTS audio is playing.

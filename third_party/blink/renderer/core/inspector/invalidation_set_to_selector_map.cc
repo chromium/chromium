@@ -6,6 +6,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
+#include "third_party/blink/renderer/core/css/invalidation/invalidation_tracing_flag.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 
 namespace blink {
@@ -36,18 +37,14 @@ String InvalidationSetToSelectorMap::IndexedSelector::GetSelectorText() const {
 // static
 void InvalidationSetToSelectorMap::StartOrStopTrackingIfNeeded(
     StyleEngine& style_engine) {
-  DEFINE_STATIC_LOCAL(
-      const unsigned char*, is_tracing_enabled,
-      (TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(TRACE_DISABLED_BY_DEFAULT(
-          "devtools.timeline.invalidationTracking"))));
-
   Persistent<InvalidationSetToSelectorMap>& instance = GetInstanceReference();
-  if (*is_tracing_enabled && instance == nullptr) {
+  const bool is_tracing_enabled = InvalidationTracingFlag::IsEnabled();
+  if (is_tracing_enabled && instance == nullptr) [[unlikely]] {
     instance = MakeGarbageCollected<InvalidationSetToSelectorMap>();
     // Revisit active style sheets to capture relationships for previously
     // existing rules.
     style_engine.RevisitActiveStyleSheetsForInspector();
-  } else if (!*is_tracing_enabled && instance != nullptr) {
+  } else if (!is_tracing_enabled && instance != nullptr) [[unlikely]] {
     instance.Clear();
   }
 }

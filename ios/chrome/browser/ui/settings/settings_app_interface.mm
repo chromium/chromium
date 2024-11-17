@@ -33,7 +33,7 @@ namespace {
 std::vector<std::string> listHosts;
 std::string portForRewrite;
 
-bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
+bool HostToLocalHostRewrite(GURL* url, web::BrowserState* context) {
   DCHECK(url);
   for (const std::string& host : listHosts) {
     if (base::Contains(url->host(), host)) {
@@ -51,9 +51,8 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
 @implementation SettingsAppInterface : NSObject
 
 + (void)restoreClearBrowsingDataCheckmarksToDefault {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
-  PrefService* preferences = browserState->GetPrefs();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  PrefService* preferences = profile->GetPrefs();
   preferences->SetBoolean(browsing_data::prefs::kDeleteBrowsingHistory, true);
   preferences->SetBoolean(browsing_data::prefs::kDeleteCache, true);
   preferences->SetBoolean(browsing_data::prefs::kDeleteCookies, true);
@@ -101,21 +100,19 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
   auto defaultSearchProvider = std::make_unique<TemplateURL>(templateURLData);
   TemplateURL* defaultSearchProviderPtr = defaultSearchProvider.get();
 
-  TemplateURLService* service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(
-          chrome_test_util::GetOriginalBrowserState());
+  TemplateURLService* service = ios::TemplateURLServiceFactory::GetForProfile(
+      chrome_test_util::GetOriginalProfile());
   service->Add(std::move(defaultSearchProvider));
   service->SetUserSelectedDefaultSearchProvider(defaultSearchProviderPtr);
 }
 
 + (void)resetSearchEngine {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
-  PrefService* prefs = chrome_test_util::GetOriginalBrowserState()->GetPrefs();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
+  PrefService* prefs = chrome_test_util::GetOriginalProfile()->GetPrefs();
   TemplateURLService* service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   search_engines::SearchEngineChoiceService* searchEngineChoiceService =
-      ios::SearchEngineChoiceServiceFactory::GetForBrowserState(browserState);
+      ios::SearchEngineChoiceServiceFactory::GetForProfile(profile);
   std::unique_ptr<TemplateURLData> templateURLData =
       TemplateURLPrepopulateData::GetPrepopulatedEngineFromFullList(
           prefs, searchEngineChoiceService,

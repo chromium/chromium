@@ -497,7 +497,7 @@ void DownloadDatabase::QueryDownloads(std::vector<DownloadRow>* results) {
       dropped_reason = DROPPED_REASON_BAD_ID;
     } else if (!ids.insert(info->id).second) {
       dropped_reason = DROPPED_REASON_DUPLICATE_ID;
-      NOTREACHED_IN_MIGRATION() << info->id;
+      NOTREACHED() << info->id;
     } else if (info->state == DownloadState::INVALID) {
       dropped_reason = DROPPED_REASON_BAD_STATE;
     } else if (info->danger_type == DownloadDangerType::INVALID) {
@@ -573,12 +573,10 @@ bool DownloadDatabase::UpdateDownload(const DownloadRow& data) {
 
   DCHECK_NE(kInvalidDownloadId, data.id);
   if (data.state == DownloadState::INVALID) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   if (data.danger_type == DownloadDangerType::INVALID) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   sql::Statement statement(GetDB().GetCachedStatement(

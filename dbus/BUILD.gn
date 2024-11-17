@@ -109,16 +109,30 @@ test("dbus_unittests") {
   configs += [ "//build/config/linux/dbus" ]
 }
 
-executable("dbus_test_server") {
+source_set("dbus_test_service") {
   testonly = true
+
   sources = [
-    "test_server.cc",
     "test_service.cc",
     "test_service.h",
   ]
 
   deps = [
     ":dbus",
+    "//base",
+    "//base/test:test_support",
+  ]
+
+  configs += [ "//build/config/linux/dbus" ]
+}
+
+executable("dbus_test_server") {
+  testonly = true
+  sources = [ "test_server.cc" ]
+
+  deps = [
+    ":dbus",
+    ":dbus_test_service",
     "//base",
     "//base/test:test_support",
   ]

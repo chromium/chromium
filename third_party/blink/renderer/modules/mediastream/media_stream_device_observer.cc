@@ -303,12 +303,13 @@ void MediaStreamDeviceObserver::AddStream(const String& label,
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   Stream stream;
-  if (IsAudioInputMediaType(device.type))
+  if (IsAudioInputMediaType(device.type)) {
     stream.audio_devices.push_back(device);
-  else if (IsVideoInputMediaType(device.type))
+  } else if (IsVideoInputMediaType(device.type)) {
     stream.video_devices.push_back(device);
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 
   label_stream_map_.Set(label, Vector<Stream>{std::move(stream)});
 }

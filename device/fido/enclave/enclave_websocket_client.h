@@ -82,6 +82,10 @@ class EnclaveWebSocketClient : public network::mojom::WebSocketHandshakeClient,
   };
 
   void Connect();
+
+  // All of the methods below have the potential to invoke the response
+  // callback, which can destroy this object. No data members should be
+  // accessed after calling one.
   void InternalWrite(base::span<const uint8_t> data);
   void ReadFromDataPipe(MojoResult, const mojo::HandleSignalsState&);
   void ProcessCompletedResponse();

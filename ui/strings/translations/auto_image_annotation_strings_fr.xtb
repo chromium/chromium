@@ -34,11 +34,9 @@
 <translation id="405782047075994056">Icône Flèche vers la gauche, pouvant signifier "Retour"</translation>
 <translation id="4302299849305494927">Icône Haut-parleur, pouvant indiquer le volume</translation>
 <translation id="4363712632243441817">Icône Cast, pouvant indiquer la diffusion d'une vidéo sur un écran à distance</translation>
-<translation id="4384249794467006333">Aucun libellé n'est associé à cette image. Pour obtenir une description, accédez au menu "Plus d'options" situé en haut à droite.</translation>
 <translation id="4436211924730548766">Icône Chevron vers la gauche</translation>
 <translation id="4444765639179266822">Voici la mention que contient probablement l'image : <ph name="OCR_TEXT" /></translation>
 <translation id="4540719609030900356">Icône Avion en papier, pouvant signifier "Envoyer"</translation>
-<translation id="4576178047100686001">Aucun libellé n'est associé à cette image. Pour obtenir une description, accédez au menu "Plus d'options" situé en haut à gauche.</translation>
 <translation id="4577968231433672268">Icône Plus, pouvant signifier "Ajouter"</translation>
 <translation id="4611825382945206498">Horloge avec une flèche circulaire, pouvant indiquer un historique</translation>
 <translation id="4679853894970977730">Icône Appareil photo, pouvant signifier "Prendre une photo"</translation>
@@ -46,6 +44,7 @@
 <translation id="4908855810237020461">Icône Horloge, pouvant indiquer le temps</translation>
 <translation id="5121688653159243920">Icône Liste à puces</translation>
 <translation id="5214400792580101697">Icône Stop</translation>
+<translation id="5316551112821993767">Aucun libellé n'est associé à cette image. Appuyez deux fois sur le bouton "Plus d'options" en haut du navigateur pour obtenir des descriptions d'images.</translation>
 <translation id="5586467629893654334">Icône Lune, pouvant indiquer la nuit ou le sommeil</translation>
 <translation id="5599474660109692598">Icône Bulle de dialogue, pouvant signifier "Discuter"</translation>
 <translation id="5617165654945759937">Icône Crayon, pouvant signifier "Modifier"</translation>

@@ -15,6 +15,7 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_restrictions.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_storage_adapter.h"
 #include "chromeos/components/cdm_factory_daemon/content_decryption_module_adapter.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/content_decryption_module.mojom.h"
@@ -408,7 +409,12 @@ void ChromeOsCdmFactory::CreateCdm(
           output_protection_remote.InitWithNewPipeAndPassReceiver()));
 
   url::Origin cdm_origin;
-  frame_interfaces_->GetCdmOrigin(&cdm_origin);
+  {
+    // TODO (crbug.com/368792274): Refactor the GetCdmOrigin mojo call to not be
+    // a sync call.
+    base::ScopedAllowBaseSyncPrimitives allow_sync_mojo_call;
+    frame_interfaces_->GetCdmOrigin(&cdm_origin);
+  }
 
   // Now create the remote CDM instance that links everything up.
   remote_factory_->CreateCdm(

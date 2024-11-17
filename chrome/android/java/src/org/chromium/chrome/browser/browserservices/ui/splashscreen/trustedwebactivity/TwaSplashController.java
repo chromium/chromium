@@ -26,9 +26,9 @@ import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashDelegate;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.TranslucentCustomTabActivity;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 
 import javax.inject.Inject;
@@ -66,20 +66,13 @@ public class TwaSplashController implements SplashDelegate {
 
     private final SplashController mSplashController;
     private final Activity mActivity;
-    private final SplashImageHolder mSplashImageCache;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
     @Inject
-    public TwaSplashController(
-            SplashController splashController,
-            Activity activity,
-            ActivityWindowAndroid activityWindowAndroid,
-            SplashImageHolder splashImageCache,
-            BrowserServicesIntentDataProvider intentDataProvider) {
+    public TwaSplashController(SplashController splashController, BaseCustomTabActivity activity) {
         mSplashController = splashController;
         mActivity = activity;
-        mSplashImageCache = splashImageCache;
-        mIntentDataProvider = intentDataProvider;
+        mIntentDataProvider = activity.getIntentDataProvider();
 
         long splashHideAnimationDurationMs =
                 IntentUtils.safeGetInt(
@@ -91,7 +84,7 @@ public class TwaSplashController implements SplashDelegate {
 
     @Override
     public View buildSplashView() {
-        Bitmap bitmap = mSplashImageCache.takeImage(mIntentDataProvider.getSession());
+        Bitmap bitmap = SplashImageHolder.getInstance().takeImage(mIntentDataProvider.getSession());
         if (bitmap == null) {
             return null;
         }

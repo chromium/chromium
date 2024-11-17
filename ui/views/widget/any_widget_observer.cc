@@ -67,6 +67,4 @@ void NamedWidgetShownWaiter::OnAnyWidgetShown(Widget* widget) {
   }
 }
 
-AnyWidgetPasskey::AnyWidgetPasskey() = default;
-
 }  // namespace views

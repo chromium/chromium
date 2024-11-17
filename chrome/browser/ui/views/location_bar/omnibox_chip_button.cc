@@ -64,9 +64,7 @@ OmniboxChipButton::~OmniboxChipButton() = default;
 
 void OmniboxChipButton::VisibilityChanged(views::View* starting_from,
                                           bool is_visible) {
-  for (Observer& observer : observers_) {
-    observer.OnChipVisibilityChanged(is_visible);
-  }
+  observers_.Notify(&Observer::OnChipVisibilityChanged, is_visible);
 }
 
 void OmniboxChipButton::AnimateCollapse(base::TimeDelta duration) {

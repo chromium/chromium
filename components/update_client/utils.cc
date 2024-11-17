@@ -29,7 +29,6 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
-#include "components/update_client/component.h"
 #include "components/update_client/configurator.h"
 #include "components/update_client/network.h"
 #include "components/update_client/update_client.h"
@@ -92,11 +91,11 @@ bool VerifyFileHash256(const base::FilePath& filepath,
   std::unique_ptr<crypto::SecureHash> hasher(
       crypto::SecureHash::Create(crypto::SecureHash::SHA256));
 
-  int64_t file_size = 0;
-  if (!base::GetFileSize(filepath, &file_size)) {
+  std::optional<int64_t> file_size = base::GetFileSize(filepath);
+  if (!file_size.has_value()) {
     return false;
   }
-  if (file_size > 0) {
+  if (file_size.value() > 0) {
     base::MemoryMappedFile mmfile;
     if (!mmfile.Initialize(filepath)) {
       return false;
@@ -192,10 +191,9 @@ bool RetryDeletePathRecursively(const base::FilePath& path) {
       /*seconds_between_tries=*/base::Seconds(1));
 }
 
-bool RetryDeletePathRecursivelyCustom(
-    const base::FilePath& path,
-    size_t tries,
-    const base::TimeDelta& seconds_between_tries) {
+bool RetryDeletePathRecursivelyCustom(const base::FilePath& path,
+                                      size_t tries,
+                                      base::TimeDelta seconds_between_tries) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   for (size_t i = 0;;) {

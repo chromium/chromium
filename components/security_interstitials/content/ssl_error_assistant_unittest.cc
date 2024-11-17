@@ -109,7 +109,7 @@ class SSLErrorAssistantTest : public content::RenderViewHostTestHarness {
     embedded_test_server_ = std::make_unique<net::EmbeddedTestServer>();
   }
 
-  ~SSLErrorAssistantTest() override {}
+  ~SSLErrorAssistantTest() override = default;
 
   SSLErrorAssistant* error_assistant() const { return error_assistant_.get(); }
 

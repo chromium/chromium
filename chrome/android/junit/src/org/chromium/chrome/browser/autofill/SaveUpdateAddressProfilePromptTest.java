@@ -27,13 +27,13 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.autofill.editors.AddressEditorCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -53,7 +53,7 @@ import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 public class SaveUpdateAddressProfilePromptTest {
     private static final long NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER = 100L;
     private static final boolean NO_MIGRATION = false;
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private SaveUpdateAddressProfilePromptController.Natives mPromptControllerJni;
     @Mock private AutofillProfileBridge.Natives mAutofillProfileBridgeJni;
@@ -73,7 +73,6 @@ public class SaveUpdateAddressProfilePromptTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         SyncServiceFactory.setInstanceForTesting(mSyncService);
@@ -85,9 +84,8 @@ public class SaveUpdateAddressProfilePromptTest {
         mPromptController =
                 SaveUpdateAddressProfilePromptController.create(
                         NATIVE_SAVE_UPDATE_ADDRESS_PROFILE_PROMPT_CONTROLLER);
-        mJniMocker.mock(
-                SaveUpdateAddressProfilePromptControllerJni.TEST_HOOKS, mPromptControllerJni);
-        mJniMocker.mock(AutofillProfileBridgeJni.TEST_HOOKS, mAutofillProfileBridgeJni);
+        SaveUpdateAddressProfilePromptControllerJni.setInstanceForTesting(mPromptControllerJni);
+        AutofillProfileBridgeJni.setInstanceForTesting(mAutofillProfileBridgeJni);
     }
 
     private void createAndShowPrompt(boolean isUpdate) {

@@ -18,11 +18,11 @@
 #include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/ax_platform_for_test.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -136,6 +136,11 @@ class LabelTest : public test::BaseControlTestWidget {
   LabelTest(const LabelTest&) = delete;
   LabelTest& operator=(const LabelTest&) = delete;
   ~LabelTest() override = default;
+
+  void MockAXModeAdded() {
+    ui::AXMode mode = ui::AXPlatformForTest::GetInstance().GetProcessMode();
+    widget()->OnAXModeAdded(mode);
+  }
 
   void TearDown() override {
     label_ = nullptr;
@@ -1265,6 +1270,9 @@ TEST_F(LabelTest, MAYBE_ChecksSubpixelRenderingOntoOpaqueSurface) {
 
 #if BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 TEST_F(LabelTest, WordOffsets) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  ASSERT_TRUE(label()->GetViewAccessibility().is_initialized());
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
   const std::u16string text = u"This is a string";
@@ -1283,7 +1291,31 @@ TEST_F(LabelTest, WordOffsets) {
       expected_ends);
 }
 
+TEST_F(LabelTest, WordOffsetsAXNotOn) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  ASSERT_FALSE(label()->GetViewAccessibility().is_initialized());
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+  const std::u16string text = u"This is a string";
+  label()->SetText(text);
+  label()->SizeToPreferredSize();
+  EXPECT_EQ(text, label()->GetDisplayTextForTesting());
+  ui::AXNodeData node_data;
+  label()->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  std::vector<int32_t> expected_starts = {};
+  std::vector<int32_t> expected_ends = {};
+  EXPECT_EQ(
+      node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kWordStarts),
+      expected_starts);
+  EXPECT_EQ(
+      node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kWordEnds),
+      expected_ends);
+}
+
 TEST_F(LabelTest, AccessibleGraphemeOffsets) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  ASSERT_TRUE(label()->GetViewAccessibility().is_initialized());
   struct Case {
     std::u16string text;
     std::vector<int32_t> expected_offsets;
@@ -1317,6 +1349,7 @@ TEST_F(LabelTest, AccessibleGraphemeOffsets) {
   scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
 
   for (size_t i = 0; i < std::size(cases); i++) {
+    ASSERT_TRUE(label()->GetViewAccessibility().is_initialized());
     SCOPED_TRACE(base::StringPrintf("Testing cases[%" PRIuS "]", i));
     label()->SetText(cases[i].text);
     label()->SizeToPreferredSize();
@@ -1331,6 +1364,9 @@ TEST_F(LabelTest, AccessibleGraphemeOffsets) {
 }
 
 TEST_F(LabelTest, AccessibleGraphemeOffsetsObscured) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  ASSERT_TRUE(label()->GetViewAccessibility().is_initialized());
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
   const std::u16string text = u"password";
@@ -1349,8 +1385,12 @@ TEST_F(LabelTest, AccessibleGraphemeOffsetsObscured) {
 }
 
 TEST_F(LabelTest, AccessibleGraphemeOffsetsElided) {
+  const ::ui::ScopedAXModeSetter ax_mode_setter(ui::AXMode::kNativeAPIs);
+  MockAXModeAdded();
+  ASSERT_TRUE(label()->GetViewAccessibility().is_initialized());
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(::features::kUiaProvider);
+  label()->SetElideBehavior(gfx::NO_ELIDE);
   const std::u16string text = u"This is a string";
 
   label()->SetText(text);
@@ -1360,9 +1400,9 @@ TEST_F(LabelTest, AccessibleGraphemeOffsetsElided) {
 
   size.set_width(size.width() / 2);
   label()->SetBoundsRect(gfx::Rect(size));
-  EXPECT_GT(text.size(), label()->GetDisplayTextForTesting().size());
 
   label()->SetElideBehavior(gfx::ELIDE_TAIL);
+  EXPECT_GT(text.size(), label()->GetDisplayTextForTesting().size());
   EXPECT_EQ(u"This i\x2026", label()->GetDisplayTextForTesting());
 
   ui::AXNodeData node_data;
@@ -1669,18 +1709,9 @@ TEST_F(LabelSelectionTest, MouseDragWord) {
   EXPECT_EQ(u"drag word", GetSelectedText());
 }
 
-// TODO(crbug.com/40762193): LabelSelectionTest.SelectionClipboard is failing on
-// linux-lacros.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_SelectionClipboard DISABLED_SelectionClipboard
-#else
-#define MAYBE_SelectionClipboard SelectionClipboard
-#endif
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 // Verify selection clipboard behavior on text selection.
-TEST_F(LabelSelectionTest, MAYBE_SelectionClipboard) {
+TEST_F(LabelSelectionTest, SelectionClipboard) {
   label()->SetText(u"Label selection clipboard");
   label()->SizeToPreferredSize();
   ASSERT_TRUE(label()->SetSelectable(true));

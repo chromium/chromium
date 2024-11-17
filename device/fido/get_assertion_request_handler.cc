@@ -182,7 +182,6 @@ base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
       FidoTransportProtocol::kUsbHumanInterfaceDevice,
       FidoTransportProtocol::kBluetoothLowEnergy,
       FidoTransportProtocol::kHybrid,
-      FidoTransportProtocol::kAndroidAccessory,
   };
 
   const auto& allowed_list = request.allow_list;
@@ -199,7 +198,6 @@ base::flat_set<FidoTransportProtocol> GetTransportsAllowedByRP(
                       credential.transports.end());
   }
 
-  transports.insert(FidoTransportProtocol::kAndroidAccessory);
   return transports;
 }
 

@@ -22,6 +22,7 @@ using testing::StrictMock;
 namespace {
 
 constexpr char kDummyReader[] = "dummy reader";
+constexpr char kDummyReader2[] = "dummy reader 2";
 
 class FakeOneTimePermissionsTracker : public OneTimePermissionsTracker {
  public:
@@ -278,4 +279,93 @@ TEST_F(SmartCardPermissionContextTest, Blocked) {
       HasReaderPermission(permission_context, foo_origin, kDummyReader));
 
   permission_context.RevokeObjectPermissions(foo_origin);
+}
+
+TEST_F(SmartCardPermissionContextTest, RevokeAllPermissions) {
+  auto foo_origin = url::Origin::Create(GURL("https://foo.com/"));
+  auto bar_origin = url::Origin::Create(GURL("https://bar.com/"));
+  auto cthulhu_origin = url::Origin::Create(GURL("https://cthulhu.rlyeh/"));
+
+  SmartCardPermissionContext permission_context(&profile_);
+
+  GrantPersistentReaderPermission(permission_context, foo_origin, kDummyReader);
+  GrantEphemeralReaderPermission(permission_context, bar_origin, kDummyReader);
+  GrantPersistentReaderPermission(permission_context, cthulhu_origin,
+                                  kDummyReader2);
+
+  EXPECT_TRUE(
+      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  EXPECT_TRUE(
+      HasReaderPermission(permission_context, bar_origin, kDummyReader));
+  EXPECT_TRUE(
+      HasReaderPermission(permission_context, cthulhu_origin, kDummyReader2));
+
+  permission_context.RevokeAllPermissions();
+
+  // should reset permissions of all types
+  EXPECT_FALSE(
+      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  EXPECT_FALSE(
+      HasReaderPermission(permission_context, bar_origin, kDummyReader));
+  EXPECT_FALSE(
+      HasReaderPermission(permission_context, cthulhu_origin, kDummyReader2));
+}
+
+TEST_F(SmartCardPermissionContextTest, RevokePersistentPermission) {
+  auto foo_origin = url::Origin::Create(GURL("https://foo.com/"));
+  auto bar_origin = url::Origin::Create(GURL("https://bar.com/"));
+  auto cthulhu_origin = url::Origin::Create(GURL("https://cthulhu.rlyeh/"));
+
+  SmartCardPermissionContext permission_context(&profile_);
+
+  GrantPersistentReaderPermission(permission_context, foo_origin, kDummyReader);
+  GrantEphemeralReaderPermission(permission_context, bar_origin, kDummyReader);
+  GrantPersistentReaderPermission(permission_context, cthulhu_origin,
+                                  kDummyReader2);
+
+  EXPECT_TRUE(
+      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  EXPECT_TRUE(
+      HasReaderPermission(permission_context, bar_origin, kDummyReader));
+  EXPECT_TRUE(
+      HasReaderPermission(permission_context, cthulhu_origin, kDummyReader2));
+
+  permission_context.RevokePersistentPermission(kDummyReader, foo_origin);
+  permission_context.RevokePersistentPermission(kDummyReader, bar_origin);
+  permission_context.RevokePersistentPermission(kDummyReader2, cthulhu_origin);
+
+  // should reset permissions only of the persistent type
+  EXPECT_FALSE(
+      HasReaderPermission(permission_context, foo_origin, kDummyReader));
+  EXPECT_TRUE(
+      HasReaderPermission(permission_context, bar_origin, kDummyReader));
+  EXPECT_FALSE(
+      HasReaderPermission(permission_context, cthulhu_origin, kDummyReader2));
+
+  permission_context.RevokeAllPermissions();
+}
+
+TEST_F(SmartCardPermissionContextTest, GetPersistentReaderGrants) {
+  auto foo_origin = url::Origin::Create(GURL("https://foo.com/"));
+  auto bar_origin = url::Origin::Create(GURL("https://bar.com/"));
+  auto cthulhu_origin = url::Origin::Create(GURL("https://cthulhu.rlyeh/"));
+
+  SmartCardPermissionContext permission_context(&profile_);
+
+  GrantPersistentReaderPermission(permission_context, foo_origin, kDummyReader);
+  GrantEphemeralReaderPermission(permission_context, bar_origin, kDummyReader);
+  GrantPersistentReaderPermission(permission_context, cthulhu_origin,
+                                  kDummyReader2);
+
+  std::vector<SmartCardPermissionContext::ReaderGrants> grants =
+      permission_context.GetPersistentReaderGrants();
+
+  // should return only persistent grants
+  ASSERT_THAT(grants,
+              testing::ElementsAre(SmartCardPermissionContext::ReaderGrants(
+                                       kDummyReader, {foo_origin}),
+                                   SmartCardPermissionContext::ReaderGrants(
+                                       kDummyReader2, {cthulhu_origin})));
+
+  permission_context.RevokeAllPermissions();
 }

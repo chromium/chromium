@@ -144,11 +144,7 @@ public class StandardNotificationBuilderTest {
         Assert.assertTrue(picture.getWidth() > 0 && picture.getHeight() > 0);
 
         Context context = RuntimeEnvironment.getApplication();
-        Bitmap smallIcon =
-                BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_chrome);
-        Assert.assertTrue(
-                smallIcon.sameAs(
-                        NotificationTestUtil.getSmallIconFromNotification(context, notification)));
+        Assert.assertEquals(R.drawable.ic_chrome, notification.getSmallIcon().getResId());
         Assert.assertNotNull(
                 NotificationTestUtil.getLargeIconFromNotification(context, notification));
 

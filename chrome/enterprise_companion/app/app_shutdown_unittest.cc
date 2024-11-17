@@ -22,6 +22,7 @@
 #include "chrome/enterprise_companion/mojom/enterprise_companion.mojom.h"
 #include "chrome/enterprise_companion/test/test_utils.h"
 #include "components/named_mojo_ipc_server/connection_info.h"
+#include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -99,7 +100,9 @@ TEST_F(AppShutdownTest, ServiceReachable) {
   base::RunLoop start_run_loop;
   std::unique_ptr<mojom::EnterpriseCompanion> stub =
       CreateEnterpriseCompanionServiceStub(
-          std::move(mock_service_), {.server_name = server_name_},
+          std::move(mock_service_),
+          {server_name_,
+           named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection},
           base::BindRepeating([](const named_mojo_ipc_server::ConnectionInfo&) {
             return true;
           }),
@@ -115,7 +118,9 @@ TEST_F(AppShutdownTest, UntrustedCallerRejected) {
   base::RunLoop start_run_loop;
   std::unique_ptr<mojom::EnterpriseCompanion> stub =
       CreateEnterpriseCompanionServiceStub(
-          std::move(mock_service_), {.server_name = server_name_},
+          std::move(mock_service_),
+          {server_name_,
+           named_mojo_ipc_server::EndpointOptions::kUseIsolatedConnection},
           base::BindRepeating([](const named_mojo_ipc_server::ConnectionInfo&) {
             return false;
           }),

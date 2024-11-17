@@ -56,7 +56,7 @@ UserCloudPolicyManager::UserCloudPolicyManager(
       component_policy_cache_path_(component_policy_cache_path),
       external_data_manager_(std::move(external_data_manager)) {}
 
-UserCloudPolicyManager::~UserCloudPolicyManager() {}
+UserCloudPolicyManager::~UserCloudPolicyManager() = default;
 
 std::unique_ptr<UserCloudPolicyManager> UserCloudPolicyManager::Create(
     const base::FilePath& profile_path,
@@ -140,7 +140,7 @@ void UserCloudPolicyManager::DisconnectAndRemovePolicy() {
   // that all external data references have been removed, causing the
   // |external_data_manager_| to clear its cache as well.
   user_store_->Clear();
-  SetPoliciesRequired(false, PolicyFetchReason::kUnspecified);
+  SetPoliciesRequired(false, PolicyFetchReason::kDisconnect);
 }
 
 void UserCloudPolicyManager::GetChromePolicy(PolicyMap* policy_map) {

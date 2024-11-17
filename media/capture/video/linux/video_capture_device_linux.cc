@@ -87,11 +87,6 @@ void VideoCaptureDeviceLinux::AllocateAndStart(
     return;
   }
 
-  if (gmb_support_test_) {
-    capture_impl_->SetGPUEnvironmentForTesting(  // IN-TEST
-        std::move(gmb_support_test_));           // IN-TEST
-  }
-
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&V4L2CaptureDelegate::AllocateAndStart,
@@ -163,11 +158,6 @@ void VideoCaptureDeviceLinux::StopAndDeAllocateInternal(
   capture_impl_->StopAndDeAllocate();
   capture_impl_.reset();
   waiter->Signal();
-}
-
-void VideoCaptureDeviceLinux::SetGPUEnvironmentForTesting(
-    std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support) {
-  gmb_support_test_ = std::move(gmb_support);
 }
 
 }  // namespace media

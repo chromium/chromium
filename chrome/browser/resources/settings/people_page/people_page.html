@@ -164,7 +164,8 @@ shown on non-ChromeOS platforms -->
         </settings-subpage>
       </template>
 
-      <template is="dom-if" if="[[showHistorySearchControl_]]">
+      <template is="dom-if" if="[[shouldShowHistorySearchControl_(
+          showHistorySearchControl_, enableAiSettingsPageRefresh_)]]">
         <template is="dom-if" route-path="/historySearch">
           <settings-subpage page-title="$i18n{historySearchSettingLabel}"
               associated-control="[[$$('#sync-setup')]]">

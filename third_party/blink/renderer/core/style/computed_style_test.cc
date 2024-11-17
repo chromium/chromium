@@ -573,7 +573,7 @@ TEST_F(ComputedStyleTest, AnimationFlags) {
   TEST_ANIMATION_FLAG(HasCurrentOpacityAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentFilterAnimation, kNonInherited);
   TEST_ANIMATION_FLAG(HasCurrentBackdropFilterAnimation, kNonInherited);
-  TEST_ANIMATION_FLAG(SubtreeWillChangeContents, kNonInherited);
+  TEST_ANIMATION_FLAG(SubtreeWillChangeContents, kInherited);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningTransformAnimationOnCompositor);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningScaleAnimationOnCompositor);
   TEST_ANIMATION_FLAG_NO_DIFF(IsRunningRotateAnimationOnCompositor);
@@ -1580,9 +1580,9 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
        {CSSValueID::kNone, CSSValueID::kLayout, CSSValueID::kPaint,
         CSSValueID::kSize, CSSValueID::kStyle}) {
     html->SetInlineStyleProperty(CSSPropertyID::kContain,
-                                 getValueName(contain));
+                                 GetCSSValueNameAs<String>(contain));
     body->SetInlineStyleProperty(CSSPropertyID::kContain,
-                                 getValueName(contain));
+                                 GetCSSValueNameAs<String>(contain));
     for (auto html_display : display_types) {
       html->SetInlineStyleProperty(CSSPropertyID::kDisplay, html_display);
       for (auto body_display : display_types) {
@@ -1596,8 +1596,8 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
         EXPECT_EQ(html->GetLayoutObject()->ShouldApplyAnyContainment(),
                   html->GetLayoutObject()->StyleRef().ShouldApplyAnyContainment(
                       *html))
-            << "html contain:" << getValueName(contain)
-            << " display:" << getValueName(html_display);
+            << "html contain:" << GetCSSValueName(contain)
+            << " display:" << GetCSSValueName(html_display);
         if (!body->GetLayoutObject()) {
           if (const auto* body_style = body->GetComputedStyle()) {
             EXPECT_EQ(body_style->Display(), EDisplay::kContents);
@@ -1609,8 +1609,8 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
         EXPECT_EQ(body->GetLayoutObject()->ShouldApplyAnyContainment(),
                   body->GetLayoutObject()->StyleRef().ShouldApplyAnyContainment(
                       *body))
-            << "body contain:" << getValueName(contain)
-            << " display:" << getValueName(body_display);
+            << "body contain:" << GetCSSValueName(contain)
+            << " display:" << GetCSSValueName(body_display);
       }
     }
   }
@@ -1996,7 +1996,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToConstrainedHigh) {
   ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
 
   EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
-            "dynamic-range-limit-mix(standard, constrained-high, 70%)");
+            "dynamic-range-limit-mix(standard 30%, constrained-high 70%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =
@@ -2030,7 +2030,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixStandardToHigh) {
   ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
 
   EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
-            "dynamic-range-limit-mix(standard, high, 60%)");
+            "dynamic-range-limit-mix(standard 40%, high 60%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =
@@ -2064,7 +2064,7 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixConstrainedHighToHigh) {
   ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
 
   EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
-            "dynamic-range-limit-mix(constrained-high, high, 45%)");
+            "dynamic-range-limit-mix(constrained-high 55%, high 45%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =
@@ -2097,9 +2097,9 @@ TEST_F(ComputedStyleTest, DynamicRangeLimitMixAllThree) {
           false /* allow_visited_style */, CSSValuePhase::kComputedValue);
   ASSERT_NE(dynamic_range_limit_mix_value, nullptr);
 
-  EXPECT_EQ(dynamic_range_limit_mix_value->CssText(),
-            "dynamic-range-limit-mix(standard, "
-            "dynamic-range-limit-mix(constrained-high, high, 25%), 80%)");
+  EXPECT_EQ(
+      dynamic_range_limit_mix_value->CssText(),
+      "dynamic-range-limit-mix(standard 20%, constrained-high 60%, high 20%)");
 
   Document& document = GetDocument();
   const ComputedStyle* initial =

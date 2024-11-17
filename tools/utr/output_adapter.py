@@ -8,6 +8,7 @@ workaround and should be replaced once this bug is resolved"""
 
 import json
 import logging
+import os
 import re
 import sys
 
@@ -98,8 +99,10 @@ class LegacyOutputAdapter:
     logger.propagate = False
 
     self._last_line = ''
+    self._last_line_teriminal_lines = 0
     self._current_log_level = logging.DEBUG
     self._single_line_logger = logger
+    self._terminal_columns, _ = os.get_terminal_size()
     self._current_step_name = ''
     self._dot_count = 0
 
@@ -144,7 +147,13 @@ class LegacyOutputAdapter:
       return
     matches = self._ninja_status_re.match(line)
     if matches:
-      self._single_line_logger.log(self._current_log_level, '\33[2K\r' + line)
+      # Remove the last line which might be multiple on the terminal
+      self._single_line_logger.log(self._current_log_level, '\33[2K')
+      if self._last_line_teriminal_lines > 1:
+        for _ in range(self._last_line_teriminal_lines - 1):
+          self._single_line_logger.log(self._current_log_level, '\33[A\33[2K')
+      self._single_line_logger.log(self._current_log_level, '\r' + line)
+      self._single_line_logger.handlers[0].flush()
       return
     if self._last_line.startswith('['):
       basic_logger.log(self._current_log_level, '')
@@ -183,6 +192,8 @@ class LegacyOutputAdapter:
       self._current_log_level = self._get_log_level(self._current_step_name)
     self._current_proccess_fn(line)
     self._last_line = line
+    self._last_line_teriminal_lines = int(
+        (len(line) - 1) / self._terminal_columns) + 1
     if line.startswith(self.STEP_CLOSED_TEXT):
       # Text outside of steps will use the last processor otherwise
       self._current_log_level = logging.DEBUG

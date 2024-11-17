@@ -61,7 +61,7 @@
 #include "ui/views/test/widget_test.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_installation.h"
 #endif
 
@@ -194,13 +194,8 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
       CheckHovercardIsClosed());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_HoverCardShownOnTabFocus DISABLED_HoverCardShownOnTabFocus
-#else
-#define MAYBE_HoverCardShownOnTabFocus HoverCardShownOnTabFocus
-#endif
 IN_PROC_BROWSER_TEST_F(TabHoverCardInteractiveUiTest,
-                       MAYBE_HoverCardShownOnTabFocus) {
+                       HoverCardShownOnTabFocus) {
   TabStrip* const tab_strip = GetTabStrip(browser());
   Tab* const tab = tab_strip->tab_at(0);
   tab_strip->GetFocusManager()->SetFocusedView(tab);
@@ -781,7 +776,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(hover_card_size.height(), total_children_height);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class TabHoverCardSystemWebAppTest : public InteractiveBrowserTest {
  public:
   TabHoverCardSystemWebAppTest()

@@ -54,8 +54,9 @@ void SetRequiredLacrosInitParams() {
 
 }  // namespace
 
-LiveCaptionBrowserTest::LiveCaptionBrowserTest() {
+void LiveCaptionBrowserTest::SetUp() {
   scoped_feature_list_.InitWithFeatures(RequiredFeatureFlags(), {});
+  InProcessBrowserTest::SetUp();
 }
 
 void LiveCaptionBrowserTest::CreatedBrowserMainParts(

@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component("contextual_cueing") {
+  defines = [ "IS_CONTEXTUAL_CUEING_IMPL" ]
+
+  sources = [
+    "contextual_cueing_features.cc",
+    "contextual_cueing_features.h",
+    "contextual_cueing_helper.cc",
+    "contextual_cueing_helper.h",
+  ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+  deps = [ "//url" ]
+}

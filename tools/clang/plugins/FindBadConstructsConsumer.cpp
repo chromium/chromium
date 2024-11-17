@@ -926,8 +926,7 @@ FindBadConstructsConsumer::ClassifyType(const Type* type) {
       return ClassifyType(decl->getUnderlyingType().getTypePtr());
     }
     default: {
-      // Stupid assumption: anything we see that isn't the above is a POD
-      // or reference type.
+      // Assume that anything that isn't the above is a POD or reference type.
       return TypeClassification::kTrivial;
     }
   }

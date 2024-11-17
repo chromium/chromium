@@ -40,6 +40,7 @@
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager.h"
@@ -53,7 +54,6 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
@@ -67,7 +67,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/test_navigation_observer.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/install_warning.h"
@@ -623,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, Crostini) {
     ASSERT_TRUE(base::CreateDirectory(shared2));
   }
   guest_os::GuestOsSharePath* guest_os_share_path =
-      guest_os::GuestOsSharePath::GetForProfile(browser()->profile());
+      guest_os::GuestOsSharePathFactory::GetForProfile(browser()->profile());
   guest_os_share_path->RegisterPersistedPaths(crostini::kCrostiniDefaultVmName,
                                               {shared1});
   guest_os_share_path->RegisterPersistedPaths(crostini::kCrostiniDefaultVmName,
@@ -690,24 +689,6 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, GetVolumeRoot) {
 
   ASSERT_TRUE(RunExtensionTest("file_browser/get_volume_root", {},
                                {.load_as_component = true}));
-}
-
-IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, OpenURL) {
-  const char* target_url = "https://www.google.com/";
-  content::TestNavigationObserver navigation_observer(GURL{target_url});
-  navigation_observer.StartWatchingNewWebContents();
-  ASSERT_TRUE(RunExtensionTest("file_browser/open_url",
-                               {.custom_arg = target_url},
-                               {.load_as_component = true}));
-  // Wait for navigation to finish.
-  navigation_observer.Wait();
-
-  // Check that the current active web contents points to the expected URL.
-  BrowserList* browser_list = BrowserList::GetInstance();
-  Browser* browser = browser_list->GetLastActive();
-  content::WebContents* active_web_contents =
-      browser->tab_strip_model()->GetActiveWebContents();
-  EXPECT_STREQ(target_url, active_web_contents->GetVisibleURL().spec().c_str());
 }
 
 IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, SearchFiles) {

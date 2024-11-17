@@ -9,6 +9,7 @@
 #include <string>
 
 #include "ash/components/arc/mojom/volume_mounter.mojom.h"
+#include "base/containers/queue.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/cros_system_api/dbus/cros-disks/dbus-constants.h"
@@ -27,15 +28,22 @@ class FakeVolumeMounterInstance : public mojom::VolumeMounterInstance {
 
   mojom::MountPointInfoPtr GetMountPointInfo(const std::string& mount_path);
 
+  // Runs the oldest callback in `callbacks_` with `success`.
+  void RunCallback(bool success);
+
   // mojom::VolumeMounterInstance overrides:
   void Init(::mojo::PendingRemote<mojom::VolumeMounterHost> host_remote,
             InitCallback callback) override;
   void OnMountEvent(mojom::MountPointInfoPtr mount_point_info) override;
+  void PrepareForRemovableMediaUnmount(
+      const base::FilePath& mount_path,
+      PrepareForRemovableMediaUnmountCallback callback) override;
 
  private:
   mojo::Remote<mojom::VolumeMounterHost> host_remote_;
   int num_on_mount_event_called_ = 0;
   std::map<std::string, mojom::MountPointInfoPtr> mount_path_to_info_;
+  base::queue<PrepareForRemovableMediaUnmountCallback> callbacks_;
 };
 
 }  // namespace arc

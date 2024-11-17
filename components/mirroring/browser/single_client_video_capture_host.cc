@@ -30,7 +30,7 @@ class DeviceLauncherCallbacks final
   DeviceLauncherCallbacks(const DeviceLauncherCallbacks&) = delete;
   DeviceLauncherCallbacks& operator=(const DeviceLauncherCallbacks&) = delete;
 
-  ~DeviceLauncherCallbacks() override {}
+  ~DeviceLauncherCallbacks() override = default;
 
   // content::VideoCaptureDeviceLauncher::Callbacks implementations
   void OnDeviceLaunched(

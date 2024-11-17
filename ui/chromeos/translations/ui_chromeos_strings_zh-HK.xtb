@@ -19,6 +19,7 @@
 <translation id="115443833402798225">韓文 (安馬太正音)</translation>
 <translation id="1155759005174418845">嘉泰羅尼亞文</translation>
 <translation id="1168100932582989117">Google 域名伺服器</translation>
+<translation id="1170788066030116158">拍攝日期</translation>
 <translation id="1172970565351728681">大約剩餘 <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">重新命名</translation>
 <translation id="1173916544412572294">第 <ph name="NETWORK_INDEX" /> 個網絡，一共有 <ph name="NETWORK_COUNT" /> 個網絡，<ph name="PHONE_NAME" />，<ph name="CONNECTION_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />%，手機電量係 <ph name="BATTERY_STATUS" />%，詳情</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">遠端已拒絕驗證憑證</translation>
 <translation id="4394214039309501350">外部連結</translation>
 <translation id="4394980935660306080">本週較早前</translation>
+<translation id="4397435965699247285">OneDrive 無法離線使用</translation>
 <translation id="4398096759193130964">您可還原這些項目，或將這些項目拖曳至垃圾桶以外的新資料夾</translation>
 <translation id="4401287888955153199">解壓縮全部</translation>
 <translation id="4410695710508688828">擷取操作失敗：<ph name="ERROR_MESSAGE" /></translation>

@@ -23,27 +23,6 @@ namespace {
 
 const char kBackendName[] = "DirectML: ";
 
-// Note that the element count is considered as 1 when the given dimensions is
-// empty.
-uint64_t CalculateElementCount(const std::vector<uint32_t>& dimensions,
-                               const std::vector<uint32_t>& strides = {}) {
-  base::CheckedNumeric<uint64_t> checked_element_count = 1;
-  if (strides.empty()) {
-    for (const auto& d : dimensions) {
-      checked_element_count *= d;
-    }
-  } else {
-    CHECK_EQ(dimensions.size(), strides.size());
-    base::CheckedNumeric<uint32_t> index_of_last_element = 0;
-    for (size_t i = 0; i < dimensions.size(); ++i) {
-      index_of_last_element += (dimensions[i] - 1) * strides[i];
-    }
-    checked_element_count = index_of_last_element + 1;
-  }
-
-  return checked_element_count.ValueOrDie();
-}
-
 D3D12_HEAP_PROPERTIES CreateHeapProperties(D3D12_HEAP_TYPE type) {
   return {.Type = type,
           .CPUPageProperty = D3D12_CPU_PAGE_PROPERTY_UNKNOWN,
@@ -69,43 +48,72 @@ D3D12_RESOURCE_DESC CreateResourceDesc(
 
 }  // namespace
 
+uint64_t CalculatePhysicalElementCount(base::span<const uint32_t> dimensions,
+                                       base::span<const uint32_t> strides) {
+  base::CheckedNumeric<uint64_t> checked_element_count = 1;
+  if (strides.empty()) {
+    for (uint32_t dimension : dimensions) {
+      checked_element_count *= dimension;
+    }
+  } else {
+    CHECK_EQ(dimensions.size(), strides.size());
+    base::CheckedNumeric<uint64_t> index_of_last_element = 0;
+    for (size_t i = 0; i < dimensions.size(); ++i) {
+      index_of_last_element += (dimensions[i] - 1) * strides[i];
+    }
+    checked_element_count = index_of_last_element + 1;
+  }
+
+  return checked_element_count.ValueOrDie();
+}
+
 uint64_t CalculateDMLBufferTensorSize(
     DML_TENSOR_DATA_TYPE data_type,
     const std::vector<uint32_t>& dimensions,
     const std::vector<uint32_t>& strides = {}) {
-  size_t element_size;
+  uint64_t element_size_in_bits;
   switch (data_type) {
+    case DML_TENSOR_DATA_TYPE_FLOAT64:
+    case DML_TENSOR_DATA_TYPE_UINT64:
+    case DML_TENSOR_DATA_TYPE_INT64:
+      element_size_in_bits = 64;
+      break;
     case DML_TENSOR_DATA_TYPE_FLOAT32:
     case DML_TENSOR_DATA_TYPE_UINT32:
     case DML_TENSOR_DATA_TYPE_INT32:
-      element_size = 4;
+      element_size_in_bits = 32;
       break;
     case DML_TENSOR_DATA_TYPE_FLOAT16:
     case DML_TENSOR_DATA_TYPE_UINT16:
     case DML_TENSOR_DATA_TYPE_INT16:
-      element_size = 2;
+      element_size_in_bits = 16;
       break;
     case DML_TENSOR_DATA_TYPE_UINT8:
     case DML_TENSOR_DATA_TYPE_INT8:
-      element_size = 1;
+      element_size_in_bits = 8;
       break;
-    case DML_TENSOR_DATA_TYPE_FLOAT64:
-    case DML_TENSOR_DATA_TYPE_UINT64:
-    case DML_TENSOR_DATA_TYPE_INT64:
-      element_size = 8;
+    case DML_TENSOR_DATA_TYPE_UINT4:
+    case DML_TENSOR_DATA_TYPE_INT4:
+      element_size_in_bits = 4;
       break;
     default:
       NOTREACHED();
   }
 
+  base::CheckedNumeric<uint64_t> checked_buffer_length_in_bytes =
+      (base::CheckedNumeric<uint64_t>(element_size_in_bits) *
+           CalculatePhysicalElementCount(dimensions, strides) +
+       7) /
+      8;
+
   // Calculate the total size of the tensor in bytes. It should be rounded up to
   // the nearest 4 bytes according to the alignment requirement:
   // https://learn.microsoft.com/en-us/windows/ai/directml/dml-helper-functions#dmlcalcbuffertensorsize
-  base::CheckedNumeric<uint64_t> buffer_tensor_size =
-      base::bits::AlignUp<uint64_t>(
-          CalculateElementCount(dimensions, strides) * element_size, 4);
+  uint64_t buffer_tensor_size = base::bits::AlignUp<uint64_t>(
+      checked_buffer_length_in_bytes.ValueOrDie<uint64_t>(), 4);
 
-  return buffer_tensor_size.ValueOrDie();
+  CHECK_NE(buffer_tensor_size, 0u);
+  return buffer_tensor_size;
 }
 
 std::vector<uint32_t> CalculateStrides(base::span<const uint32_t> dimensions) {

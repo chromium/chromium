@@ -123,9 +123,9 @@ class ConnectorDataPipeGetterTest : public testing::Test {
 
 TEST_F(ConnectorDataPipeGetterTest, InvalidFile) {
   ASSERT_EQ(nullptr, ConnectorDataPipeGetter::CreateMultipartPipeGetter(
-                         "boundary", "metadata", base::File()));
-  ASSERT_EQ(nullptr,
-            ConnectorDataPipeGetter::CreateResumablePipeGetter(base::File()));
+                         "boundary", "metadata", base::File(), false));
+  ASSERT_EQ(nullptr, ConnectorDataPipeGetter::CreateResumablePipeGetter(
+                         base::File(), false));
 }
 
 TEST_F(ConnectorDataPipeGetterTest, InvalidPage) {
@@ -151,7 +151,8 @@ class ConnectorDataPipeGetterParametrizedTest
   // files. If there is no space left on the device, return nullptr so the test
   // can end early.
   std::unique_ptr<ConnectorDataPipeGetter> CreateDataPipeGetter(
-      const std::string& content) {
+      const std::string& content,
+      bool is_obfuscated = false) {
     if (is_file_data_pipe()) {
       std::optional<base::File> file = CreateFile(content);
       if (!file)
@@ -159,9 +160,9 @@ class ConnectorDataPipeGetterParametrizedTest
 
       return is_resumable_upload()
                  ? ConnectorDataPipeGetter::CreateResumablePipeGetter(
-                       std::move(*file))
+                       std::move(*file), is_obfuscated)
                  : ConnectorDataPipeGetter::CreateMultipartPipeGetter(
-                       "boundary", metadata_, std::move(*file));
+                       "boundary", metadata_, std::move(*file), is_obfuscated);
     } else {
       base::ReadOnlySharedMemoryRegion page = CreatePage(content);
       if (!page.IsValid())
@@ -380,7 +381,7 @@ TEST_P(ConnectorDataPipeGetterParametrizedTest, DeobfuscationTest) {
   ObfuscateContentInChunks(original_content, obfuscated_content);
 
   std::unique_ptr<ConnectorDataPipeGetter> data_pipe_getter =
-      CreateDataPipeGetter(obfuscated_content);
+      CreateDataPipeGetter(obfuscated_content, true);
   ASSERT_TRUE(data_pipe_getter);
 
   std::string deobfuscated_string =

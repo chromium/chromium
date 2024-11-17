@@ -47,14 +47,14 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.options.AutofillOptionsFragment.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
@@ -92,7 +92,7 @@ public class AutofillOptionsTest {
     private static final @RadioButtonGroupThirdPartyPreference.ThirdPartyOption int USE_3P =
             RadioButtonGroupThirdPartyPreference.ThirdPartyOption.USE_OTHER_PROVIDER;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private UserPrefsJni mMockUserPrefsJni;
     @Mock private PrefService mPrefs;
@@ -104,14 +104,11 @@ public class AutofillOptionsTest {
     @Captor ArgumentCaptor<PropertyModel> mRestartConfirmationDialogModelCaptor;
 
     private AutofillOptionsFragment mFragment;
-    private AutoCloseable mCloseableMocks;
     private FragmentScenario mScenario;
 
     @Before
     public void setUp() {
-        mCloseableMocks = MockitoAnnotations.openMocks(this);
-
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mMockUserPrefsJni);
+        UserPrefsJni.setInstanceForTesting(mMockUserPrefsJni);
         doReturn(mPrefs).when(mMockUserPrefsJni).get(mProfile);
         HelpAndFeedbackLauncherFactory.setInstanceForTesting(mHelpAndFeedbackLauncher);
 
@@ -135,7 +132,6 @@ public class AutofillOptionsTest {
         if (mScenario != null) {
             mScenario.close();
         }
-        mCloseableMocks.close();
     }
 
     @Test
@@ -526,7 +522,7 @@ public class AutofillOptionsTest {
             mediator.onDismiss(model, DialogDismissalCause.NAVIGATE_BACK);
             return;
         }
-        assertNotNull(optButtonToClick.get());
+        assertTrue(optButtonToClick.isPresent());
         mediator.onClick(model, optButtonToClick.get());
         if (optButtonToClick.get() == ButtonType.NEGATIVE) {
             verify(mDialogManager)

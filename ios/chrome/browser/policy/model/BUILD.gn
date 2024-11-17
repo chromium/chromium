@@ -12,10 +12,6 @@ source_set("model") {
     "browser_policy_connector_ios.mm",
     "browser_signin_policy_handler.cc",
     "browser_signin_policy_handler.h",
-    "browser_state_policy_connector.h",
-    "browser_state_policy_connector.mm",
-    "browser_state_policy_connector_factory.h",
-    "browser_state_policy_connector_factory.mm",
     "chrome_browser_cloud_management_controller_ios.h",
     "chrome_browser_cloud_management_controller_ios.mm",
     "chrome_browser_cloud_management_controller_observer_bridge.h",
@@ -40,11 +36,10 @@ source_set("model") {
     "new_tab_page_location_policy_handler.h",
     "policy_conversions_client_ios.h",
     "policy_conversions_client_ios.mm",
-    "policy_watcher_browser_agent.h",
-    "policy_watcher_browser_agent.mm",
-    "policy_watcher_browser_agent_observer.h",
-    "policy_watcher_browser_agent_observer_bridge.h",
-    "policy_watcher_browser_agent_observer_bridge.mm",
+    "profile_policy_connector.h",
+    "profile_policy_connector.mm",
+    "profile_policy_connector_factory.h",
+    "profile_policy_connector_factory.mm",
     "reporting/browser_report_generator_ios.h",
     "reporting/browser_report_generator_ios.mm",
     "reporting/profile_report_generator_ios.h",
@@ -72,6 +67,7 @@ source_set("model") {
     "//components/commerce/core:pref_names",
     "//components/component_updater",
     "//components/enterprise",
+    "//components/enterprise/connectors/core",
     "//components/enterprise/idle",
     "//components/history/core/common",
     "//components/keyed_service/ios",
@@ -94,6 +90,7 @@ source_set("model") {
     "//components/variations/service",
     "//components/version_info:version_info",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
@@ -112,6 +109,33 @@ source_set("model") {
   ]
 
   public_deps = [ "//components/policy/core/browser" ]
+}
+
+source_set("browser_agent") {
+  sources = [
+    "policy_watcher_browser_agent.h",
+    "policy_watcher_browser_agent.mm",
+    "policy_watcher_browser_agent_observer.h",
+    "policy_watcher_browser_agent_observer_bridge.h",
+    "policy_watcher_browser_agent_observer_bridge.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/sync/base",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/prefs:pref_names",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/ui/authentication/signin:signin_headers",
+    "//ios/web/public/thread",
+  ]
 }
 
 source_set("policy_util") {
@@ -149,10 +173,10 @@ source_set("constants") {
 source_set("test_support") {
   testonly = true
   sources = [
-    "browser_state_policy_connector_mock.h",
-    "browser_state_policy_connector_mock.mm",
     "enterprise_policy_test_helper.cc",
     "enterprise_policy_test_helper.h",
+    "profile_policy_connector_mock.h",
+    "profile_policy_connector_mock.mm",
     "test_platform_policy_provider.cc",
     "test_platform_policy_provider.h",
   ]
@@ -206,6 +230,7 @@ source_set("unit_tests") {
     "status_provider/user_cloud_policy_status_provider_unittest.mm",
   ]
   deps = [
+    ":browser_agent",
     ":constants",
     ":model",
     ":policy_util",
@@ -229,6 +254,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//google_apis",
     "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/prefs/model",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -242,6 +268,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:test_support",
@@ -287,6 +315,7 @@ source_set("eg2_tests") {
     "//components/sync/base:features",
     "//google_apis",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/metrics/model:eg_test_support+eg2",
     "//ios/chrome/browser/ntp/ui_bundled:constants",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
@@ -309,6 +338,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings/password:password_constants",
     "//ios/chrome/browser/ui/settings/password/password_settings:password_settings_constants",
     "//ios/chrome/browser/ui/settings/privacy:privacy_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_metrics",
     "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/common/ui/confirmation_alert:constants",
     "//ios/chrome/common/ui/table_view:cells_constants",

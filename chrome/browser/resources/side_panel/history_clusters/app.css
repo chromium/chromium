@@ -27,3 +27,55 @@
   padding-block-start: 0;
   padding-block-end: var(--sp-body-padding);
 }
+
+#historyEmbeddingsDisclaimer {
+  color: var(--cr-secondary-text-color);
+  font-size: 11px;
+  line-height: 16px;
+  margin-block-end: 24px;
+  padding: 0 16px;
+}
+
+#historyEmbeddingsDisclaimer a {
+  color: var(--cr-link-color);
+}
+
+#embeddingsScrollContainer {
+  display: contents;
+}
+
+:host([enable-history-embeddings_]) #embeddingsScrollContainer {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow: auto;
+}
+
+cr-history-embeddings {
+  --cr-card-shadow: none;
+  --cr-history-embeddings-answer-padding: 8px 16px 6px 16px;
+  --cr-history-embeddings-answer-section-margin-block-end: 0;
+  --cr-history-embeddings-answer-source-margin: 0 16px 12px 16px;
+  --cr-history-embeddings-card-padding-block: 8px 0;
+  --cr-history-embeddings-card-padding-block-with-answers: 8px 12px;
+  --cr-history-embeddings-footer-font-size: 11px;
+  --cr-history-embeddings-footer-line-height: 16px;
+  --cr-history-embeddings-footer-padding: 16px;
+  --cr-history-embeddings-footer-padding-with-answers: 16px 8px 8px;
+  --cr-history-embeddings-heading-font-size: 12px;
+  --cr-history-embeddings-heading-line-height: 16px;
+  --cr-history-embeddings-heading-padding: 8px 16px;
+  --cr-history-embeddings-hr-display: none;
+  --cr-history-embeddings-loading-padding: 8px 16px 6px 16px;
+  --cr-history-embeddings-url-list-item-padding: 4px 16px;
+  align-self: center;
+  margin: 0 0 16px 8px;
+  max-width: var(--cluster-max-width);
+  width: calc(100% - 8px);
+}
+
+/* Hide empty history-clusters element when there are history embedding
+ * results to hide the empty placeholder text. */
+:host([has-history-embeddings-results_]) history-clusters[is-empty] {
+  display: none;
+}

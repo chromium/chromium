@@ -47,7 +47,7 @@ void FCMHandler::StopListening() {
   if (IsListening()) {
     gcm_driver_->RemoveAppHandler(app_id_);
     fcm_registration_token_ = std::nullopt;
-    token_validation_timer_.AbandonAndStop();
+    token_validation_timer_.Stop();
   }
 }
 
@@ -72,7 +72,7 @@ void FCMHandler::ShutdownHandler() {
   // In profile service two-phase shutdown, FCM shutdown should have been called
   // before Dtor, which would remove us from listener list. This will never be
   // reached.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FCMHandler::AddListener(InvalidationsListener* listener) {
@@ -127,14 +127,14 @@ void FCMHandler::OnSendError(const std::string& app_id,
                              const gcm::GCMClient::SendErrorDetails& details) {
   // Should never be called because the invalidation service doesn't send GCM
   // messages to the server.
-  NOTREACHED_IN_MIGRATION() << "FCMHandler doesn't send GCM messages.";
+  NOTREACHED() << "FCMHandler doesn't send GCM messages.";
 }
 
 void FCMHandler::OnSendAcknowledged(const std::string& app_id,
                                     const std::string& message_id) {
   // Should never be called because the invalidation service doesn't send GCM
   // messages to the server.
-  NOTREACHED_IN_MIGRATION() << "FCMHandler doesn't send GCM messages.";
+  NOTREACHED() << "FCMHandler doesn't send GCM messages.";
 }
 
 bool FCMHandler::IsListening() const {

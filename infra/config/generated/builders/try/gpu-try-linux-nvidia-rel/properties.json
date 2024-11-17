@@ -81,7 +81,8 @@
           "builder": "Linux Release (NVIDIA)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/gpu-try-linux-nvidia-rel/targets"
     }
   },
   "$build/reclient": {

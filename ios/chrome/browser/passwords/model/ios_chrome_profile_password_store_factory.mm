@@ -52,14 +52,6 @@ GetWipeModelUponSyncDisabledBehaviorForProfileStore() {
 
 // static
 scoped_refptr<password_manager::PasswordStoreInterface>
-IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
-    ProfileIOS* profile,
-    ServiceAccessType access_type) {
-  return GetForProfile(profile, access_type);
-}
-
-// static
-scoped_refptr<password_manager::PasswordStoreInterface>
 IOSChromeProfilePasswordStoreFactory::GetForProfile(
     ProfileIOS* profile,
     ServiceAccessType access_type) {
@@ -115,7 +107,7 @@ IOSChromeProfilePasswordStoreFactory::BuildServiceInstanceFor(
               profile->GetPrefs(), os_crypt_async));
 
   AffiliationService* affiliation_service =
-      IOSChromeAffiliationServiceFactory::GetForBrowserState(profile);
+      IOSChromeAffiliationServiceFactory::GetForProfile(profile);
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper =
       std::make_unique<AffiliatedMatchHelper>(affiliation_service);
   std::unique_ptr<password_manager::PasswordAffiliationSourceAdapter>
@@ -125,7 +117,7 @@ IOSChromeProfilePasswordStoreFactory::BuildServiceInstanceFor(
   store->Init(profile->GetPrefs(), std::move(affiliated_match_helper));
 
   password_manager::SanitizeAndMigrateCredentials(
-      CredentialsCleanerRunnerFactory::GetForBrowserState(profile), store,
+      CredentialsCleanerRunnerFactory::GetForProfile(profile), store,
       password_manager::kProfileStore, profile->GetPrefs(), base::Seconds(60),
       base::NullCallback());
   if (!profile->IsOffTheRecord()) {

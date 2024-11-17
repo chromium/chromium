@@ -820,6 +820,11 @@ public class FeedStream implements Stream {
     }
 
     @Override
+    public @ClosedReason int getClosedReason() {
+        return mClosedReason;
+    }
+
+    @Override
     public void bind(
             RecyclerView rootView,
             FeedListContentManager manager,
@@ -1381,7 +1386,9 @@ public class FeedStream implements Stream {
         mShareHelper = shareWrapper;
     }
 
-    /** @returns True if this feed has been bound. */
+    /**
+     * @return True if this feed has been bound.
+     */
     public boolean getBoundStatusForTest() {
         return mContentManager != null;
     }
@@ -1496,7 +1503,7 @@ public class FeedStream implements Stream {
     }
 
     @VisibleForTesting
-    class UnreadContentObserver extends FeedServiceBridge.UnreadContentObserver {
+    static class UnreadContentObserver extends FeedServiceBridge.UnreadContentObserver {
         ObservableSupplierImpl<Boolean> mHasUnreadContent = new ObservableSupplierImpl<>();
 
         UnreadContentObserver(boolean isWebFeed) {

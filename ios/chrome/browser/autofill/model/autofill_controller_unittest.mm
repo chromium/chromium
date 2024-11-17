@@ -89,9 +89,13 @@ using base::test::ScopedFeatureList;
 @synthesize suggestionRetrievalComplete = _suggestionRetrievalComplete;
 
 - (void)retrieveSuggestionsForForm:(const autofill::FormActivityParams&)params
-                          webState:(web::WebState*)webState {
+                          webState:(web::WebState*)webState
+          accessoryViewUpdateBlock:
+              (FormSuggestionsReadyCompletion)accessoryViewUpdateBlock {
   self.suggestionRetrievalStarted = YES;
-  [super retrieveSuggestionsForForm:params webState:webState];
+  [super retrieveSuggestionsForForm:params
+                           webState:webState
+           accessoryViewUpdateBlock:accessoryViewUpdateBlock];
 }
 
 - (void)updateKeyboardWithSuggestions:(NSArray*)suggestions {
@@ -282,7 +286,7 @@ class AutofillControllerTest : public PlatformTest {
   class TestAutofillManager : public BrowserAutofillManager {
    public:
     explicit TestAutofillManager(AutofillDriverIOS* driver)
-        : BrowserAutofillManager(driver, "en-US") {}
+        : BrowserAutofillManager(driver) {}
 
     TestAutofillManagerWaiter& waiter() { return waiter_; }
 
@@ -396,9 +400,8 @@ void AutofillControllerTest::SetUp() {
       .get_alternative_state_name_map_updater_for_testing()
       ->set_local_state_for_testing(local_state());
 
-  std::string locale("en");
   autofill::AutofillDriverIOSFactory::CreateForWebState(
-      web_state(), autofill_client_.get(), /*autofill_agent=*/nil, locale);
+      web_state(), autofill_client_.get(), autofill_agent_);
 
   autofill_manager_injector_ =
       std::make_unique<TestAutofillManagerInjector<TestAutofillManager>>(

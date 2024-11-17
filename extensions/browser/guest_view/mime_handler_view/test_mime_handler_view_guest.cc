@@ -51,16 +51,16 @@ void TestMimeHandlerViewGuest::WaitForGuestAttached() {
   created_message_loop_runner_->Run();
 }
 
-void TestMimeHandlerViewGuest::CreateWebContents(
+void TestMimeHandlerViewGuest::CreateInnerPage(
     std::unique_ptr<GuestViewBase> owned_this,
     const base::Value::Dict& create_params,
-    WebContentsCreatedCallback callback) {
+    GuestPageCreatedCallback callback) {
   // Delay the creation of the guest's WebContents if |delay_| is set.
   if (delay_) {
     auto delta = base::Milliseconds(delay_);
     content::GetUIThreadTaskRunner({})->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&TestMimeHandlerViewGuest::CallBaseCreateWebContents,
+        base::BindOnce(&TestMimeHandlerViewGuest::CallBaseCreateInnerPage,
                        weak_ptr_factory_.GetWeakPtr(), std::move(owned_this),
                        create_params.Clone(), std::move(callback)),
         delta);
@@ -70,8 +70,8 @@ void TestMimeHandlerViewGuest::CreateWebContents(
     return;
   }
 
-  MimeHandlerViewGuest::CreateWebContents(std::move(owned_this), create_params,
-                                          std::move(callback));
+  MimeHandlerViewGuest::CreateInnerPage(std::move(owned_this), create_params,
+                                        std::move(callback));
 }
 
 void TestMimeHandlerViewGuest::DidAttachToEmbedder() {
@@ -91,13 +91,13 @@ void TestMimeHandlerViewGuest::WaitForGuestLoadStartThenStop(
   ASSERT_TRUE(content::WaitForLoadStop(guest_contents));
 }
 
-void TestMimeHandlerViewGuest::CallBaseCreateWebContents(
+void TestMimeHandlerViewGuest::CallBaseCreateInnerPage(
     std::unique_ptr<GuestViewBase> owned_this,
     base::Value::Dict create_params,
-    WebContentsCreatedCallback callback) {
+    GuestPageCreatedCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  MimeHandlerViewGuest::CreateWebContents(std::move(owned_this), create_params,
-                                          std::move(callback));
+  MimeHandlerViewGuest::CreateInnerPage(std::move(owned_this), create_params,
+                                        std::move(callback));
 }
 
 // static

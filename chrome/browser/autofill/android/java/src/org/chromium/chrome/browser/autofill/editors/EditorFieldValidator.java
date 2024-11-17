@@ -82,12 +82,7 @@ public class EditorFieldValidator {
         mInitialErrorMessage = null;
     }
 
-    /**
-     * Called to check the validity of the field value.
-     *
-     * @param value The value of the field to check.
-     * @return True if the value is valid.
-     */
+    /** Called to check the validity of the field value. */
     public void validate(PropertyModel fieldModel) {
         if (!TextUtils.isEmpty(mInitialErrorMessage)) {
             fieldModel.set(ERROR_MESSAGE, mInitialErrorMessage);

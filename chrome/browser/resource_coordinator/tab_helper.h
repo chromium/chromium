@@ -33,6 +33,7 @@ class ResourceCoordinatorTabHelper
   void DidStopLoading() override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
+  void WasDiscarded() override;
   void WebContentsDestroyed() override;
   void PrimaryPageChanged(content::Page& page) override;
 

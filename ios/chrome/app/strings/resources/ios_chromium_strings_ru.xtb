@@ -12,8 +12,10 @@
 <translation id="1260702988262336471">Откройте меню Chromium.</translation>
 <translation id="12739128458173458">Чтобы отправить вкладку с одного устройства на другое, войдите на них в Chromium.</translation>
 <translation id="1361748954329991663">Версия Chromium устарела. Если в <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> нет обновлений, возможно, ваше устройство не поддерживает новые версии Chromium.</translation>
+<translation id="1383876407941801731">Поиск</translation>
 <translation id="1423007117030725713">Искать в новой вкладке Chromium</translation>
 <translation id="1431818719585918472">Разрешите Chromium блокировать для посторонних доступ к вашим вкладкам инкогнито.</translation>
+<translation id="1451665391191990528">Скрывать открытые вкладки инкогнито при выходе из Chromium</translation>
 <translation id="146407871188825689">Используйте Chromium по умолчанию на iPad</translation>
 <translation id="1471084500615228555">Удалить данные о работе в браузере Chromium</translation>
 <translation id="1472013873724362412">Ваш аккаунт не поддерживается в Chromium. Обратитесь к администратору домена или войдите с помощью обычного аккаунта Google.</translation>
@@ -49,6 +51,7 @@
 <translation id="2195025571279539885">Хотите, чтобы Chromium всегда предлагал перевести этот сайт, когда обнаружит на его страницах <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="22313767259766852">Адрес добавлен в Chromium. Чтобы использовать адрес в других продуктах Google, сохраните его в аккаунте Google (<ph name="USER_EMAIL" />).</translation>
 <translation id="2236584955986023187">Chromium всегда будет запрашивать версию сайта для ПК.</translation>
+<translation id="2270466829363945454">Покупки</translation>
 <translation id="2313870531055795960">Сверяет URL со списком небезопасных сайтов в Chromium. Если вы скачаете вредоносный файл или сайт попытается похитить ваш пароль, Chromium может отправить URL с образцами контента на проверку с помощью Безопасного просмотра.</translation>
 <translation id="231828342043114302">Чтобы получать контент, подобранный специально для вас, войдите в Chromium.</translation>
 <translation id="2326738825692478496">Некоторые данные Chromium ещё не сохранены в аккаунте Google.
@@ -107,6 +110,7 @@
 <translation id="377649297473651452">Развернутый раздел автозаполнения в Chromium</translation>
 <translation id="3780779443901618967">Предупреждает об опасных сайтах, даже если раньше они были неизвестны Google. При этом анализируется больше данных по сравнению со стандартной защитой. Вы можете пропускать такие уведомления Chromium.</translation>
 <translation id="3805899903892079518">У Chromium нет доступа к вашим фото и видео. Чтобы предоставить его, нажмите "Настройки &gt; Конфиденциальность &gt; Фотографии".</translation>
+<translation id="3816686541346279443">Chromium предложит сохранить пароль.</translation>
 <translation id="3827545470516145620">На этом устройстве используется стандартная система защиты.</translation>
 <translation id="3833326979834193417">Chromium ежедневно автоматически запускает проверку безопасности, чтобы обеспечить защиту от утечки данных, подозрительных сайтов и других проблем. Больше о проверке безопасности можно узнать в настройках.</translation>
 <translation id="3855938650519180865">Что нового в Chromium</translation>
@@ -129,6 +133,7 @@
 <translation id="4432744876818348753">Чтобы пользоваться всеми возможностями Chromium, войдите в аккаунт.</translation>
 <translation id="4445228361214254027">В вашей организации отключена возможность использовать данные Chromium и сохранять их в аккаунте Google. Новые закладки, пароли и другие данные будут сохраняться только на этом устройстве.</translation>
 <translation id="4498832288620833153">Указанные URL будут добавлены в список для чтения в Chromium.</translation>
+<translation id="4508268628669724828">Здесь вы найдете советы по использованию всех возможностей Chromium.</translation>
 <translation id="452436063477828504">Обеспечьте доступ к данным Chromium в аккаунте Google.</translation>
 <translation id="4527452566931097835">Сделать Chromium браузером по умолчанию?</translation>
 <translation id="4555020257205549924">Когда эта функция включена, Chrome предлагает перевести страницы с помощью Google Переводчика. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
@@ -177,6 +182,7 @@
 <translation id="5571094606370987472">Открывает недавние вкладки в Chromium.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Открыть последнюю вкладку в Chromium</translation>
+<translation id="5671188105328420281">Советы по работе с Chromium</translation>
 <translation id="5688047395118852662">Карточка с предложениями о том, как наиболее эффективно использовать Chromium.</translation>
 <translation id="5700709190537129682">Не удается проверить пароли в Chromium.</translation>
 <translation id="584550191241316896">Вы вошли в Chromium</translation>
@@ -218,6 +224,7 @@
 <translation id="6752854822223394465">Ваша организация настраивает браузер Chromium…</translation>
 <translation id="6794054469102824109">Открыть игру Chromium Dino.</translation>
 <translation id="6820823224820483452">Браузеру Chromium не удается проверить все пароли. Повторите попытку завтра.</translation>
+<translation id="6831043979455480757">Перевести</translation>
 <translation id="6852419005633611413">Добавьте Chromium на панель Dock для быстрого доступа</translation>
 <translation id="6852799557929001644">Получайте доступ к паролям и другим данным Chromium в приложениях на этом устройстве.</translation>
 <translation id="6887138405044152640">Чтобы отправить вкладку на другое устройство, войдите на нем в Chromium.</translation>

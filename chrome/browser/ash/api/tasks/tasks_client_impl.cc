@@ -17,6 +17,7 @@
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/glanceables/glanceables_metrics.h"
 #include "base/barrier_closure.h"
 #include "base/check.h"
@@ -30,7 +31,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/policy/content/policy_blocklist_service.h"
 #include "components/policy/core/browser/url_blocklist_manager.h"
 #include "components/prefs/pref_service.h"
@@ -165,7 +165,7 @@ bool TasksClientImpl::IsDisabledByAdmin() const {
   auto calendar_app_readiness = apps::Readiness::kUnknown;
   apps::AppServiceProxyFactory::GetForProfile(profile_)
       ->AppRegistryCache()
-      .ForOneApp(web_app::kGoogleCalendarAppId,
+      .ForOneApp(ash::kGoogleCalendarAppId,
                  [&calendar_app_readiness](const apps::AppUpdate& update) {
                    calendar_app_readiness = update.Readiness();
                  });

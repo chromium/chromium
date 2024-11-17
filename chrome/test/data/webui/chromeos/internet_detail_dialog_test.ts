@@ -8,7 +8,7 @@ import {InternetDetailDialogElement} from 'chrome://internet-detail-dialog/inter
 import {InternetDetailDialogBrowserProxy, InternetDetailDialogBrowserProxyImpl} from 'chrome://internet-detail-dialog/internet_detail_dialog_browser_proxy.js';
 import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
-import {ApnList} from 'chrome://resources/ash/common/network/apn_list.js';
+import {ApnListElement} from 'chrome://resources/ash/common/network/apn_list.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkApnListElement} from 'chrome://resources/ash/common/network/network_apnlist.js';
 import {NetworkChooseMobileElement} from 'chrome://resources/ash/common/network/network_choose_mobile.js';
@@ -431,7 +431,7 @@ suite('internet-detail-dialog', () => {
         };
 
         assertFalse(!!getApnSectionSublabel());
-        const getApnList = () => getElement<ApnList>('apn-list');
+        const getApnList = () => getElement<ApnListElement>('apn-list');
         assertTrue(getApnList().shouldOmitLinks);
         assertEquals(errorState, getApnList().errorState);
         assertEquals(PortalState.kNoInternet, getApnList().portalState);
@@ -510,7 +510,7 @@ suite('internet-detail-dialog', () => {
               internetDetailDialog.shadowRoot!.querySelector('#apnManagedIcon');
           assertFalse(!!getApnManagedIcon());
           const apnList =
-              internetDetailDialog.shadowRoot!.querySelector<ApnList>(
+              internetDetailDialog.shadowRoot!.querySelector<ApnListElement>(
                   '#apnList');
           assertTrue(!!apnList);
           assertFalse(apnList.shouldDisallowApnModification);

@@ -302,6 +302,14 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsModes) {
 }
 
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsPolicy) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Chrome OS, the local_state is only used on managed profiles.
+  g_browser_process->platform_part()
+      ->secure_dns_manager()
+      ->SetPrimaryProfilePropertiesForTesting(browser()->profile()->GetPrefs(),
+                                              /*is_profile_managed=*/true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   policy::PolicyMap policy_map;
   SetPolicyForPolicyKey(&policy_map, policy::key::kDnsOverHttpsMode,
                         base::Value(SecureDnsConfig::kModeAutomatic));
@@ -321,6 +329,14 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsPolicy) {
 }
 
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsPolicyChange) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // On Chrome OS, the local_state is only used on managed profiles.
+  g_browser_process->platform_part()
+      ->secure_dns_manager()
+      ->SetPrimaryProfilePropertiesForTesting(browser()->profile()->GetPrefs(),
+                                              /*is_profile_managed=*/true);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   policy::PolicyMap policy_map;
   SetPolicyForPolicyKey(&policy_map, policy::key::kDnsOverHttpsMode,
                         base::Value(SecureDnsConfig::kModeAutomatic));
@@ -396,13 +412,8 @@ IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, DropdownListContents) {
 }
 
 IN_PROC_BROWSER_TEST_F(SecureDnsHandlerTest, SecureDnsTemplates) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  const std::string kDnsOverHttpsTemplatesPrefName =
-      prefs::kDnsOverHttpsEffectiveTemplatesChromeOS;
-#else
   const std::string kDnsOverHttpsTemplatesPrefName =
       prefs::kDnsOverHttpsTemplates;
-#endif
 
   std::string good_post_template = "https://foo.test/";
   std::string good_get_template = "https://bar.test/dns-query{?dns}";

@@ -18,6 +18,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -75,6 +76,8 @@ class ChromeTailoredSecurityServiceTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   raw_ptr<TestingBrowserProcess> browser_process_;
+  // Ensure RenderFrameHostTester to be created and used by the tests.
+  content::RenderViewHostTestEnabler rvh_test_enabler_;
   TestingProfile profile_;
   std::unique_ptr<TestChromeTailoredSecurityService>
       chrome_tailored_security_service_;

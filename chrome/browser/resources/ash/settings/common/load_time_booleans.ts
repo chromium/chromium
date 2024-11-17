@@ -116,6 +116,14 @@ export function isMagicBoostNoticeBannerVisible(): boolean {
   return loadTimeData.getBoolean('isMagicBoostNoticeBannerVisible');
 }
 
+export function isLobsterSettingsToggleVisible(): boolean {
+  return loadTimeData.getBoolean('isLobsterSettingsToggleVisible');
+}
+
+export function isSunfishSettingsToggleVisible(): boolean {
+  return loadTimeData.getBoolean('isSunfishSettingsToggleVisible');
+}
+
 // System preferences page
 export function shouldShowStartup(): boolean {
   return loadTimeData.getBoolean('shouldShowStartup');

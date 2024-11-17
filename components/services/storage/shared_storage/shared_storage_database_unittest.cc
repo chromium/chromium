@@ -100,8 +100,6 @@ class SharedStorageDatabaseTest : public testing::Test {
   ~SharedStorageDatabaseTest() override = default;
 
   void SetUp() override {
-    InitSharedStorageFeature();
-
     // Get a temporary directory for the test DB files.
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
@@ -123,23 +121,24 @@ class SharedStorageDatabaseTest : public testing::Test {
     }
 
     return std::make_unique<SharedStorageDatabase>(
-        file_name_, special_storage_policy_,
-        SharedStorageOptions::Create()->GetDatabaseOptions());
+        file_name_, special_storage_policy_, GetDatabaseOptions());
   }
 
   sql::Database* SqlDB() { return db_ ? db_->db() : nullptr; }
 
-  virtual void InitSharedStorageFeature() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        {blink::features::kSharedStorageAPI},
-        {{"MaxSharedStorageInitTries", "1"},
-         {"SharedStorageBitBudget", base::NumberToString(kBitBudget)},
-         {"SharedStorageBudgetInterval",
-          TimeDeltaToString(base::Hours(kBudgetIntervalHours))}});
+  virtual std::unique_ptr<SharedStorageDatabaseOptions> GetDatabaseOptions() {
+    return std::make_unique<SharedStorageDatabaseOptions>(
+        /*max_page_size=*/4096,
+        /*max_cache_size=*/1024,
+        /*max_bytes_per_origin=*/5242880,
+        /*max_init_tries=*/1,
+        /*max_iterator_batch_size=*/100,
+        /*bit_budget=*/kBitBudget,
+        /*budget_interval=*/base::Hours(kBudgetIntervalHours),
+        /*staleness_threshold=*/base::Days(30));
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   base::FilePath file_name_;
@@ -148,6 +147,44 @@ class SharedStorageDatabaseTest : public testing::Test {
   base::SimpleTestClock clock_;
   base::HistogramTester histogram_tester_;
 };
+
+TEST_F(SharedStorageDatabaseTest, OptionsCreatedFromFeatures) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      {blink::features::kSharedStorageAPI},
+      {{"MaxSharedStoragePageSize", "2048"},
+       {"MaxSharedStorageCacheSize", "1024"},
+       {"MaxSharedStorageInitTries", "5"},
+       {"MaxSharedStorageIteratorBatchSize", "200"},
+       {"SharedStorageBitBudget", "10"},
+       {"SharedStorageBudgetInterval", "12h"},
+       {"SharedStorageStalePurgeInitialInterval", "100s"},
+       {"SharedStorageStalePurgeRecurringInterval", "100d"},
+       {"SharedStorageStalenessThreshold", "50d"}});
+
+  auto options = SharedStorageOptions::Create();
+  EXPECT_EQ(options->max_page_size, 2048);
+  EXPECT_EQ(options->max_cache_size, 1024);
+  EXPECT_EQ(options->max_bytes_per_origin, 5242880);
+  EXPECT_EQ(options->max_init_tries, 5);
+  EXPECT_EQ(options->max_iterator_batch_size, 200);
+  EXPECT_EQ(options->bit_budget, 10);
+  EXPECT_EQ(options->budget_interval, base::Hours(12));
+  EXPECT_EQ(options->stale_purge_initial_interval, base::Seconds(100));
+  EXPECT_EQ(options->stale_purge_recurring_interval, base::Days(100));
+  EXPECT_EQ(options->staleness_threshold, base::Days(50));
+
+  auto db_options = options->GetDatabaseOptions();
+  EXPECT_EQ(db_options->max_page_size, 2048);
+  EXPECT_EQ(db_options->max_cache_size, 1024);
+  EXPECT_EQ(db_options->max_bytes_per_origin, 5242880);
+  EXPECT_EQ(db_options->max_init_tries, 5);
+  EXPECT_EQ(db_options->max_iterator_batch_size, 200);
+  EXPECT_EQ(db_options->bit_budget, 10);
+  EXPECT_EQ(db_options->budget_interval, base::Hours(12));
+  EXPECT_EQ(db_options->staleness_threshold, base::Days(50));
+}
 
 // Test loading current version database.
 TEST_F(SharedStorageDatabaseTest, CurrentVersion_LoadFromFile) {
@@ -548,11 +585,10 @@ class SharedStorageDatabaseParamTest
   void SetUp() override {
     SharedStorageDatabaseTest::SetUp();
 
-    auto options = SharedStorageOptions::Create()->GetDatabaseOptions();
     base::FilePath db_path =
         (GetParam().in_memory_only) ? base::FilePath() : file_name_;
     db_ = std::make_unique<SharedStorageDatabase>(
-        db_path, special_storage_policy_, std::move(options));
+        db_path, special_storage_policy_, GetDatabaseOptions());
     db_->OverrideClockForTesting(&clock_);
     clock_.SetNow(base::Time::Now());
 
@@ -564,16 +600,16 @@ class SharedStorageDatabaseParamTest
     SharedStorageDatabaseTest::TearDown();
   }
 
-  void InitSharedStorageFeature() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        {blink::features::kSharedStorageAPI},
-        {{"MaxSharedStorageBytesPerOrigin",
-          base::NumberToString(kMaxBytesPerOrigin)},
-         {"SharedStorageBitBudget", base::NumberToString(kBitBudget)},
-         {"SharedStorageBudgetInterval",
-          TimeDeltaToString(base::Hours(kBudgetIntervalHours))},
-         {"SharedStorageStalenessThreshold",
-          TimeDeltaToString(base::Days(kStalenessThresholdDays))}});
+  std::unique_ptr<SharedStorageDatabaseOptions> GetDatabaseOptions() override {
+    return std::make_unique<SharedStorageDatabaseOptions>(
+        /*max_page_size=*/4096,
+        /*max_cache_size=*/1024,
+        /*max_bytes_per_origin=*/kMaxBytesPerOrigin,
+        /*max_init_tries=*/1,
+        /*max_iterator_batch_size=*/100,
+        /*bit_budget=*/kBitBudget,
+        /*budget_interval=*/base::Hours(kBudgetIntervalHours),
+        /*staleness_threshold=*/base::Days(kStalenessThresholdDays));
   }
 
   void CheckInitHistograms() {
@@ -1541,20 +1577,24 @@ class SharedStorageDatabasePurgeMatchingOriginsParamTest
   void SetUp() override {
     SharedStorageDatabaseTest::SetUp();
 
-    auto options = SharedStorageOptions::Create()->GetDatabaseOptions();
     base::FilePath db_path =
         (GetParam().in_memory_only) ? base::FilePath() : file_name_;
     db_ = std::make_unique<SharedStorageDatabase>(
-        db_path, special_storage_policy_, std::move(options));
+        db_path, special_storage_policy_, GetDatabaseOptions());
     db_->OverrideClockForTesting(&clock_);
     clock_.SetNow(base::Time::Now());
   }
 
-  void InitSharedStorageFeature() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        {blink::features::kSharedStorageAPI},
-        {{"MaxSharedStorageBytesPerOrigin",
-          base::NumberToString(kMaxBytesPerOrigin)}});
+  std::unique_ptr<SharedStorageDatabaseOptions> GetDatabaseOptions() override {
+    return std::make_unique<SharedStorageDatabaseOptions>(
+        /*max_page_size=*/4096,
+        /*max_cache_size=*/1024,
+        /*max_bytes_per_origin=*/kMaxBytesPerOrigin,
+        /*max_init_tries=*/1,
+        /*max_iterator_batch_size=*/100,
+        /*bit_budget=*/kBitBudget,
+        /*budget_interval=*/base::Hours(kBudgetIntervalHours),
+        /*staleness_threshold=*/base::Days(30));
   }
 };
 
@@ -2395,13 +2435,16 @@ TEST_P(SharedStorageDatabaseParamTest, MaxKeyLengthAndMaxValueLength) {
 
 class SharedStorageDatabaseIteratorTest : public SharedStorageDatabaseTest {
  public:
-  void InitSharedStorageFeature() override {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        {blink::features::kSharedStorageAPI},
-        {{"MaxSharedStorageBytesPerOrigin",
-          base::NumberToString(kMaxBytesPerOriginForIteratorTest)},
-         {"MaxSharedStorageIteratorBatchSize",
-          base::NumberToString(kMaxBatchSizeForIteratorTest)}});
+  std::unique_ptr<SharedStorageDatabaseOptions> GetDatabaseOptions() override {
+    return std::make_unique<SharedStorageDatabaseOptions>(
+        /*max_page_size=*/4096,
+        /*max_cache_size=*/1024,
+        /*max_bytes_per_origin=*/kMaxBytesPerOriginForIteratorTest,
+        /*max_init_tries=*/1,
+        /*max_iterator_batch_size=*/kMaxBatchSizeForIteratorTest,
+        /*bit_budget=*/kBitBudget,
+        /*budget_interval=*/base::Hours(kBudgetIntervalHours),
+        /*staleness_threshold=*/base::Days(30));
   }
 };
 

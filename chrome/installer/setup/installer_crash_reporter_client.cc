@@ -26,11 +26,6 @@ InstallerCrashReporterClient::InstallerCrashReporterClient(
 
 InstallerCrashReporterClient::~InstallerCrashReporterClient() = default;
 
-bool InstallerCrashReporterClient::ShouldCreatePipeName(
-    const std::wstring& process_type) {
-  return true;
-}
-
 bool InstallerCrashReporterClient::GetAlternativeCrashDumpLocation(
     std::wstring* crash_dir) {
   return false;
@@ -59,32 +54,9 @@ void InstallerCrashReporterClient::GetProductNameAndVersion(
       install_static::GetChromeChannelName(/*with_extended_stable=*/true);
 }
 
-bool InstallerCrashReporterClient::ShouldShowRestartDialog(
-    std::wstring* title,
-    std::wstring* message,
-    bool* is_rtl_locale) {
-  // There is no UX associated with the installer, so no dialog should be shown.
-  return false;
-}
-
-bool InstallerCrashReporterClient::AboutToRestart() {
-  // The installer should never be restarted after a crash.
-  return false;
-}
-
-bool InstallerCrashReporterClient::GetIsPerUserInstall() {
-  return is_per_user_install_;
-}
-
 bool InstallerCrashReporterClient::GetShouldDumpLargerDumps() {
   // Use large dumps for all but the stable channel.
   return install_static::GetChromeChannel() != version_info::Channel::STABLE;
-}
-
-int InstallerCrashReporterClient::GetResultCodeRespawnFailed() {
-  // The restart dialog is never shown for the installer.
-  NOTREACHED_IN_MIGRATION();
-  return 0;
 }
 
 bool InstallerCrashReporterClient::GetCrashDumpLocation(

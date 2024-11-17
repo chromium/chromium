@@ -206,8 +206,7 @@ std::string YandexSearchPathFromDeviceFormFactor() {
     case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
       return "search/pad/";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 // Returns true if `enterprise_engine` is strictly better than `other_engine`,
@@ -349,8 +348,7 @@ std::string TemplateURLRef::GetURL() const {
     case INDEXED:
       return owner_->alternate_urls()[index_in_owner_];
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -369,8 +367,7 @@ std::string TemplateURLRef::GetPostParamsString() const {
     case IMAGE_TRANSLATE:
       return owner_->image_url_post_params();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
+      NOTREACHED();
   }
 }
 
@@ -468,6 +465,27 @@ std::string TemplateURLRef::ReplaceSearchTerms(
     query_params.push_back(search_terms_args.additional_query_params);
   if (!gurl.query().empty())
     query_params.push_back(gurl.query());
+
+  if (type_ == SEARCH || type_ == SUGGEST) {
+    auto regulatory_extension_type = owner_->GetRegulatoryExtensionType();
+    base::UmaHistogramEnumeration(
+        type_ == SEARCH
+            ? "Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant"
+            : "Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant",
+        regulatory_extension_type);
+
+    auto* regulatory_extension =
+        owner_->GetRegulatoryExtension(regulatory_extension_type);
+    if (regulatory_extension) {
+      const char* regulatory_params =
+          type_ == SEARCH ? regulatory_extension->search_params
+                          : regulatory_extension->suggest_params;
+      if (regulatory_params && strlen(regulatory_params) > 0) {
+        query_params.push_back(regulatory_params);
+      }
+    }
+  }
+
 #if BUILDFLAG(IS_ANDROID)
   if (!base::FeatureList::IsEnabled(
           switches::kRemoveSearchEngineChoiceAttribution) &&
@@ -717,8 +735,6 @@ bool TemplateURLRef::ParseParameter(size_t start,
   const auto parameter =
       base::MakeStringPiece(original_url.begin() + start + 1,
                             original_url.begin() + start + 1 + length);
-  const auto full_parameter = base::MakeStringPiece(
-      original_url.begin() + start, original_url.begin() + end + 1);
   // Remove the parameter from the string.  For parameters who replacement is
   // constant and already known, just replace them directly.  For other cases,
   // like parameters whose values may change over time, use |replacements|.
@@ -839,26 +855,6 @@ bool TemplateURLRef::ParseParameter(size_t start,
     // We don't support these.
     if (!optional)
       url->insert(start, "1");
-  } else if (!prepopulated_) {
-    base::UmaHistogramBoolean("Omnibox.TemplateUrl.UnrecognizedParameter",
-                              /* is externally supplied template? */ false);
-    // Note: in certain scenarios this function is tested before FeatureFlag is
-    // initialized. Check whether FeatureList has been instantiated before
-    // testing the flag to avoid talking to EarlyFeatureAccessTracker.
-    if (!base::FeatureList::GetInstance() ||
-        !base::FeatureList::IsEnabled(
-            omnibox::kDropUnrecognizedTemplateUrlParameters)) {
-      url->insert(start, full_parameter.data(), full_parameter.size());
-      return false;
-    }
-    // The unrecognized parameters can originate from Chrome's DMA upstream
-    // definitions, or Chrome Extensions. In each case, data has shown that the
-    // parameters don't carry any JSON or Javascript content and should be safe
-    // to be removed.
-    // This still allows JSON payload to be included in the Template URL, but
-    // requires the braces to be escaped ahead of time.
-    //
-    // Fallthrough.
   } else {
     // Despite Chrome normally relying on prepopulated_engines.json file, there
     // are other mechanisms that can supply overrides - see:
@@ -870,7 +866,7 @@ bool TemplateURLRef::ParseParameter(size_t start,
     //
     // Fallthrough.
     base::UmaHistogramBoolean("Omnibox.TemplateUrl.UnrecognizedParameter",
-                              /* is externally supplied template? */ true);
+                              prepopulated_);
   }
   return true;
 }
@@ -1362,22 +1358,17 @@ std::string TemplateURLRef::HandleReplacements(
       case GOOGLE_SEARCH_SOURCE_ID: {
         DCHECK(!replacement.is_post_param);
         switch (search_terms_args.request_source) {
-          case RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX:
-          case RequestSource::CONTEXTUAL_SEARCHBOX:
-          case RequestSource::LENS_SIDE_PANEL_SEARCHBOX:
-            // Searchboxes used by the Lens Overlay have their source set via
-            // the Lens Overlay url builder as it contains entry point
-            // information. Therefore we shouldn't replace anything here.
-            break;
           case RequestSource::NTP_MODULE:
           case RequestSource::SEARCHBOX:
           case RequestSource::CROS_APP_LIST:
-          default:
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
             HandleReplacement("sourceid", "chrome-mobile", replacement, &url);
 #else
             HandleReplacement("sourceid", "chrome", replacement, &url);
 #endif
+            break;
+          case RequestSource::LENS_OVERLAY:
+            // No replacement.
             break;
         }
         break;
@@ -1401,22 +1392,14 @@ std::string TemplateURLRef::HandleReplacements(
             HandleReplacement(std::string(),
                               "chrome-android-search-resumption-module",
                               replacement, &url);
+            break;
 #elif BUILDFLAG(IS_IOS)
             HandleReplacement(std::string(), "chrome-ios-ntp", replacement,
                               &url);
+            break;
 #else
-            NOTREACHED_IN_MIGRATION();
+            NOTREACHED();
 #endif
-            break;
-          case RequestSource::CONTEXTUAL_SEARCHBOX:
-          case RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX:
-            HandleReplacement(std::string(), "chrome-contextual", replacement,
-                              &url);
-            break;
-          case RequestSource::LENS_SIDE_PANEL_SEARCHBOX:
-            HandleReplacement(std::string(), "chrome-multimodal", replacement,
-                              &url);
-            break;
           case RequestSource::SEARCHBOX:
           case RequestSource::CROS_APP_LIST:
 #if BUILDFLAG(IS_ANDROID)
@@ -1431,16 +1414,14 @@ std::string TemplateURLRef::HandleReplacements(
             HandleReplacement(std::string(), "chrome-omni", replacement, &url);
 #endif
             break;
+          case RequestSource::LENS_OVERLAY:
+            // No replacement.
+            break;
         }
         break;
 
       case GOOGLE_SUGGEST_REQUEST_ID:
         switch (search_terms_args.request_source) {
-          case RequestSource::NTP_MODULE:
-          case RequestSource::CONTEXTUAL_SEARCHBOX:
-          case RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX:
-          case RequestSource::LENS_SIDE_PANEL_SEARCHBOX:
-            break;
           case RequestSource::SEARCHBOX:
           case RequestSource::CROS_APP_LIST:
 #if BUILDFLAG(IS_ANDROID)
@@ -1452,6 +1433,10 @@ std::string TemplateURLRef::HandleReplacements(
 #endif
             HandleReplacement(std::string(), "chrome-ext-ansg", replacement,
                               &url);
+            break;
+          case RequestSource::NTP_MODULE:
+          case RequestSource::LENS_OVERLAY:
+            // No replacement.
             break;
         }
         break;
@@ -1589,8 +1574,7 @@ std::string TemplateURLRef::HandleReplacements(
       }
 
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -1982,7 +1966,7 @@ void TemplateURL::EncodeSearchTerms(
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 GURL TemplateURL::GenerateSearchURL(const SearchTermsData& search_terms_data,
@@ -1993,21 +1977,9 @@ GURL TemplateURL::GenerateSearchURL(const SearchTermsData& search_terms_data,
   if (!url_ref().SupportsReplacement(search_terms_data))
     return GURL(url());
 
-  TemplateURLRef::SearchTermsArgs search_terms_args(search_terms);
-  auto regulatory_extension_type = GetRegulatoryExtensionType();
-  base::UmaHistogramEnumeration(
-      "Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant",
-      regulatory_extension_type);
-
-  auto* regulatory_extension =
-      GetRegulatoryExtension(regulatory_extension_type);
-  if (regulatory_extension && regulatory_extension->search_params) {
-    search_terms_args.additional_query_params =
-        regulatory_extension->search_params;
-  }
-
-  return GURL(url_ref().ReplaceSearchTerms(std::move(search_terms_args),
-                                           search_terms_data, nullptr));
+  return GURL(url_ref().ReplaceSearchTerms(
+      TemplateURLRef::SearchTermsArgs(search_terms), search_terms_data,
+      nullptr));
 }
 
 GURL TemplateURL::GenerateSuggestionURL(
@@ -2018,21 +1990,8 @@ GURL TemplateURL::GenerateSuggestionURL(
   if (!suggestions_url_ref().SupportsReplacement(search_terms_data))
     return GURL(suggestions_url());
 
-  TemplateURLRef::SearchTermsArgs search_terms_args{};
-  auto regulatory_extension_type = GetRegulatoryExtensionType();
-  base::UmaHistogramEnumeration(
-      "Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant",
-      regulatory_extension_type);
-
-  auto* regulatory_extension =
-      GetRegulatoryExtension(regulatory_extension_type);
-  if (regulatory_extension && regulatory_extension->suggest_params) {
-    search_terms_args.additional_query_params =
-        regulatory_extension->suggest_params;
-  }
-
   return GURL(suggestions_url_ref().ReplaceSearchTerms(
-      std::move(search_terms_args), search_terms_data, nullptr));
+      TemplateURLRef::SearchTermsArgs(), search_terms_data, nullptr));
 }
 
 RegulatoryExtensionType TemplateURL::GetRegulatoryExtensionType() const {
@@ -2047,7 +2006,7 @@ const TemplateURLData::RegulatoryExtension* TemplateURL::GetRegulatoryExtension(
   auto extension_iter = data_.regulatory_extensions.find(type);
   auto* extension = extension_iter == data_.regulatory_extensions.end()
                         ? nullptr
-                        : extension_iter->second;
+                        : extension_iter->second.get();
 
   DCHECK(extension == nullptr || extension->variant == type);
   return extension;

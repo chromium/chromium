@@ -289,9 +289,15 @@ void AXPlatformNodeWinTest::TearDown() {
   // Destroy the tree and make sure we're not leaking any objects.
   ax_fragment_root_.reset(nullptr);
   DestroyTree();
-  TestAXNodeWrapper::SetGlobalIsWebContent(false);
-  TestAXNodeWrapper::ResetGlobalState();
   ASSERT_EQ(0U, AXPlatformNodeBase::GetInstanceCountForTesting());
+}
+
+void AXPlatformNodeWinTest::DestroyTree() {
+  TestAXNodeWrapper::SetGlobalIsWebContent(false);
+  // Must unregister all observers from the tree before it is destroyed.
+  TestAXNodeWrapper::ResetGlobalState();
+
+  TestSingleAXTreeManager::DestroyTree();
 }
 
 AXPlatformNode* AXPlatformNodeWinTest::AXPlatformNodeFromNode(AXNode* node) {
@@ -335,11 +341,11 @@ AXPlatformNodeWinTest::GetIRawElementProviderSimpleFromChildIndex(
 }
 
 Microsoft::WRL::ComPtr<IRawElementProviderSimple>
-AXPlatformNodeWinTest::GetIRawElementProviderSimpleFromTree(
-    const AXTreeID tree_id,
+AXPlatformNodeWinTest::GetIRawElementProviderSimpleFromId(
     const AXNodeID node_id) {
+  CHECK(GetTree()) << "No tree available";
   return QueryInterfaceFromNode<IRawElementProviderSimple>(
-      GetNodeFromTree(tree_id, node_id));
+      GetTree()->GetFromId(node_id));
 }
 
 ComPtr<IRawElementProviderFragment>
@@ -4114,9 +4120,10 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
   EXPECT_UIA_BSTR_EQ(root_node, UIA_FullDescriptionPropertyId,
                      L"fake description");
   EXPECT_UIA_BSTR_EQ(root_node, UIA_AriaRolePropertyId, L"list");
-  EXPECT_UIA_BSTR_EQ(root_node, UIA_AriaPropertiesPropertyId,
-                     L"readonly=true;expanded=false;multiline=false;"
-                     L"multiselectable=false;required=false;setsize=2");
+  EXPECT_UIA_BSTR_EQ(
+      root_node, UIA_AriaPropertiesPropertyId,
+      L"readonly=true;expanded=false;multiline=false;"
+      L"multiselectable=false;required=false;setsize=2;hasactions=false");
   EXPECT_UIA_BSTR_EQ(root_node, UIA_NamePropertyId, L"fake name");
   EXPECT_UIA_INT_EQ(root_node, UIA_ControlTypePropertyId,
                     int{UIA_ListControlTypeId});
@@ -4139,7 +4146,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
   EXPECT_UIA_BSTR_EQ(
       child_node1, UIA_AriaPropertiesPropertyId,
       L"readonly=true;expanded=false;multiline=false;multiselectable=false;"
-      L"posinset=1;required=false;current=page");
+      L"posinset=1;required=false;hasactions=false;current=page");
 
   ComPtr<IRawElementProviderSimple> child_node2 =
       QueryInterfaceFromNode<IRawElementProviderSimple>(
@@ -4148,7 +4155,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetPropertySimple) {
   EXPECT_UIA_BSTR_EQ(
       child_node2, UIA_AriaPropertiesPropertyId,
       L"readonly=true;expanded=false;multiline=false;multiselectable=false;"
-      L"required=false");
+      L"required=false;hasactions=false");
 }
 
 TEST_F(AXPlatformNodeWinTest, UIAControlContentPropertyForTableElements) {
@@ -4825,8 +4832,7 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_LabeledByTest) {
   // Case 1: |gc_2| is labeled by |static_text_3|.
 
   ComPtr<IRawElementProviderSimple> gc_2_provider =
-      GetIRawElementProviderSimpleFromTree(gc_2_node->tree()->GetAXTreeID(),
-                                           gc_2_node->id());
+      GetIRawElementProviderSimpleFromId(gc_2_node->id());
   ScopedVariant property_value;
   EXPECT_EQ(S_OK, gc_2_provider->GetPropertyValue(UIA_LabeledByPropertyId,
                                                   property_value.Receive()));
@@ -4840,8 +4846,7 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_LabeledByTest) {
   // child of that node, which is |static_text_6|.
 
   ComPtr<IRawElementProviderSimple> gc_4_provider =
-      GetIRawElementProviderSimpleFromTree(gc_4_node->tree()->GetAXTreeID(),
-                                           gc_4_node->id());
+      GetIRawElementProviderSimpleFromId(gc_4_node->id());
   property_value.Reset();
   EXPECT_EQ(S_OK, gc_4_provider->GetPropertyValue(UIA_LabeledByPropertyId,
                                                   property_value.Receive()));
@@ -4857,8 +4862,7 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_LabeledByTest) {
   // |static_text_6|, but shouldn't expose it to the UIA_LabeledByPropertyId.
 
   ComPtr<IRawElementProviderSimple> alert_7_provider =
-      GetIRawElementProviderSimpleFromTree(alert_7_node->tree()->GetAXTreeID(),
-                                           alert_7_node->id());
+      GetIRawElementProviderSimpleFromId(alert_7_node->id());
   property_value.Reset();
   EXPECT_EQ(S_OK, alert_7_provider->GetPropertyValue(UIA_LabeledByPropertyId,
                                                      property_value.Receive()));
@@ -4988,37 +4992,37 @@ TEST_F(AXPlatformNodeWinTest, GetPropertyValue_IsControlElement) {
 
   TestAXNodeWrapper::SetGlobalIsWebContent(true);
 
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 2),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(2),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 3),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(3),
                      UIA_IsControlElementPropertyId, false);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 4),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(4),
                      UIA_IsControlElementPropertyId, false);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 5),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(5),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 6),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(6),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 7),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(7),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 8),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(8),
                      UIA_IsControlElementPropertyId, false);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 9),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(9),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 10),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(10),
                      UIA_IsControlElementPropertyId, false);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 11),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(11),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 12),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(12),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 13),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(13),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 14),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(14),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 15),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(15),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 16),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(16),
                      UIA_IsControlElementPropertyId, true);
-  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromTree(tree_id, 17),
+  EXPECT_UIA_BOOL_EQ(GetIRawElementProviderSimpleFromId(17),
                      UIA_IsControlElementPropertyId, true);
 }
 

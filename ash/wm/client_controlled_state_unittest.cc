@@ -385,18 +385,7 @@ class ClientControlledStateTest : public AshTestBase {
   std::unique_ptr<views::Widget> widget_;
 };
 
-class SnapGroupClientControlledStateTest : public ClientControlledStateTest {
- public:
-  SnapGroupClientControlledStateTest() = default;
-  SnapGroupClientControlledStateTest(
-      const SnapGroupClientControlledStateTest&) = delete;
-  SnapGroupClientControlledStateTest& operator=(
-      const SnapGroupClientControlledStateTest&) = delete;
-  ~SnapGroupClientControlledStateTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSnapGroup};
-};
+using SnapGroupClientControlledStateTest = ClientControlledStateTest;
 
 // This suite runs test cases both in clamshell mode and tablet mode.
 class ClientControlledStateTestClamshellAndTablet

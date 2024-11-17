@@ -525,6 +525,9 @@
   <message name="IDS_OS_SETTINGS_TAG_LOCAL_DATA_RECOVERY" desc="Text for search result item which, when clicked, navigates the user to Local Data Recovery toggle.">
     Local Data Recovery
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_GRADUATION" desc="Text for search result item which, when clicked, navigates to the setting that opens the Content Transfer app.">
+    Content Transfer
+  </message>
 
   <!-- Kerberos section. -->
   <message name="IDS_OS_SETTINGS_TAG_KERBEROS_SECTION" desc="Text for search result item which, when clicked, navigates the user to Kerberos (authentication mechanism) settings section.">
@@ -1472,6 +1475,21 @@
   <message name="IDS_OS_SETTINGS_TAG_A11Y_AUTOMATICALLY_CLICK_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable automatically clicking when the cursor stops. Alternate phrase for: 'Automatically click when cursor stops'">
     Auto clicks
   </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable controlling the computer via facial gestures and movement.">
+    Face control
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT1" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable controlling the computer via facial gestures and movement. Alternate phrase for: 'Face control'">
+    Facial control
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT2" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable controlling the computer via facial gestures and movement. Alternate phrase for: 'Face control'">
+    Facial gestures
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT3" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable controlling the computer via facial gestures and movement. Alternate phrase for: 'Face control'">
+    Head pointer
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_FACEGAZE_ALT4" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable controlling the computer via facial gestures and movement. Alternate phrase for: 'Face control'">
+    Head tracking
+  </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_LARGE_CURSOR" desc="Text for search result item which, when clicked, navigates the user to accessibility settings, with a toggle to enable/disable a large mouse cursor.">
     Large cursor
   </message>
@@ -1583,6 +1601,12 @@
   </message>
   <message name="IDS_OS_SETTINGS_TAG_A11Y_COLOR_CORRECTION_ALT5" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable color correction. One common type of color vision deficiency that can be helped by color correction is tritanopia, and color correction filters include a tritanopia filter.">
     Tritanomaly
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_BOUNCE_KEYS" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable bounce keys.">
+    Bounce keys
+  </message>
+  <message name="IDS_OS_SETTINGS_TAG_A11Y_SLOW_KEYS" desc="Text for search result item which, when clicked, navigates the user to the accessibility settings, with a toggle to enable/disable slow keys.">
+    Slow keys
   </message>
 
   <!-- Reset section. -->

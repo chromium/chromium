@@ -139,7 +139,7 @@ ClipboardProvider::ClipboardProvider(AutocompleteProviderClient* client,
   AddListener(listener);
 }
 
-ClipboardProvider::~ClipboardProvider() {}
+ClipboardProvider::~ClipboardProvider() = default;
 
 void ClipboardProvider::Start(const AutocompleteInput& input,
                               bool minimal_changes) {
@@ -458,13 +458,11 @@ AutocompleteMatch ClipboardProvider::NewBlankURLMatch() {
   return match;
 }
 
-AutocompleteMatch ClipboardProvider::NewClipboardURLMatch(GURL url) {
+AutocompleteMatch ClipboardProvider::NewClipboardURLMatch(const GURL& url) {
   DCHECK(url.is_valid());
 
   AutocompleteMatch match = NewBlankURLMatch();
-
   UpdateClipboardURLContent(url, &match);
-
   return match;
 }
 
@@ -488,7 +486,7 @@ AutocompleteMatch ClipboardProvider::NewBlankTextMatch() {
 }
 
 std::optional<AutocompleteMatch> ClipboardProvider::NewClipboardTextMatch(
-    std::u16string text) {
+    const std::u16string& text) {
   AutocompleteMatch match = NewBlankTextMatch();
 
   if (!UpdateClipboardTextContent(text, &match))

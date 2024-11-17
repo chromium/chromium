@@ -112,8 +112,7 @@ network::mojom::FetchResponseType ProtoResponseTypeToFetchResponseType(
     case proto::CacheResponse::OPAQUE_REDIRECT_TYPE:
       return network::mojom::FetchResponseType::kOpaqueRedirect;
   }
-  NOTREACHED_IN_MIGRATION();
-  return network::mojom::FetchResponseType::kOpaque;
+  NOTREACHED();
 }
 
 proto::CacheResponse::ResponseType FetchResponseTypeToProtoResponseType(
@@ -132,8 +131,7 @@ proto::CacheResponse::ResponseType FetchResponseTypeToProtoResponseType(
     case network::mojom::FetchResponseType::kOpaqueRedirect:
       return proto::CacheResponse::OPAQUE_REDIRECT_TYPE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return proto::CacheResponse::OPAQUE_TYPE;
+  NOTREACHED();
 }
 
 // Assert that ConnectionInfo does not change since we cast it to
@@ -914,12 +912,9 @@ void CacheStorageCache::BatchDidGetBucketSpaceRemaining(
         Delete(std::move(operation), completion_callback);
         break;
       case blink::mojom::OperationType::kUndefined:
-        NOTREACHED_IN_MIGRATION();
         // TODO(nhiroki): This should return "TypeError".
         // http://crbug.com/425505
-        completion_callback.Run(MakeErrorStorage(
-            ErrorStorageType::kBatchDidGetUsageAndQuotaUndefinedOp));
-        break;
+        NOTREACHED();
     }
   }
 }
@@ -2035,7 +2030,7 @@ void CacheStorageCache::PutWriteBlobToCache(
       break;
     }
     case INDEX_HEADERS:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   ScopedWritableEntry entry(put_context->cache_entry.release());

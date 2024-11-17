@@ -176,7 +176,7 @@ class AudioDecoderTest
  protected:
   bool IsSupported() const {
     if (params_.profile == AudioCodecProfile::kXHE_AAC) {
-      return IsSupportedAudioType(
+      return IsDecoderSupportedAudioType(
           {AudioCodec::kAAC, AudioCodecProfile::kXHE_AAC, false});
     }
     return true;

@@ -13,26 +13,32 @@
 namespace autofill::autofill_metrics {
 
 // This includes all possible results.
-// They will be used in metrics, and should not be renumbered.
-enum class SaveIbanBubbleResult {
-  // The user explicitly accepted the bubble by clicking the ok button.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// A java IntDef@ is generated from this.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
+enum class SaveIbanPromptResult {
+  // The user explicitly accepted the prompt by clicking the ok button.
   kAccepted = 0,
-  // The user explicitly cancelled the bubble by clicking the cancel button.
+  // The user explicitly cancelled the prompt by clicking the cancel button.
   kCancelled = 1,
-  // The user explicitly closed the bubble with the close button or ESC.
+  // The user explicitly closed the prompt with the close button or ESC.
   kClosed = 2,
-  // The user did not interact with the bubble.
+  // The user did not interact with the prompt.
   kNotInteracted = 3,
-  // The bubble lost focus and was deactivated.
+  // The prompt lost focus and was deactivated.
   kLostFocus = 4,
-  // The reason why the bubble is closed is not clear. Possible reason is the
+  // The reason why the prompt is closed is not clear. Possible reason is the
   // logging function is invoked before the closed reason is correctly set.
   kUnknown = 5,
   kMaxValue = kUnknown,
 };
 
 // Metrics to track event when the IBAN prompt is offered.
-// They will be used in metrics, and should not be renumbered.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// A java IntDef@ is generated from this.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.autofill
 enum class SaveIbanPromptOffer {
   // The prompt is actually shown.
   kShown = 0,
@@ -143,19 +149,19 @@ void LogIbanSaveNotOfferedDueToMaxStrikesMetric(
 void LogUploadIbanMetric(UploadIbanOriginMetric origin_metric,
                          UploadIbanActionMetric action_metric);
 
-// Logs when IBAN save bubble is offered to users.
-void LogSaveIbanBubbleOfferMetric(SaveIbanPromptOffer metric,
+// Logs when IBAN save prompt is offered to users.
+void LogSaveIbanPromptOfferMetric(SaveIbanPromptOffer metric,
                                   bool is_reshow,
                                   bool is_upload_save);
 
-// Logs when the user makes a decision on the IBAN save bubble.
-void LogSaveIbanBubbleResultMetric(SaveIbanBubbleResult metric,
+// Logs when the user makes a decision on the IBAN save prompt.
+void LogSaveIbanPromptResultMetric(SaveIbanPromptResult metric,
                                    bool is_reshow,
                                    bool is_upload_save);
 
-// Logs when the user accepts the bubble to save an IBAN.
+// Logs when the user accepts the prompt to save an IBAN.
 // `save_with_nickname` donates the user has input a nickname.
-void LogSaveIbanBubbleResultSavedWithNicknameMetric(bool save_with_nickname,
+void LogSaveIbanPromptResultSavedWithNicknameMetric(bool save_with_nickname,
                                                     bool is_upload_save);
 
 // Logs metrics related to IBAN individual suggestions being shown or selected.

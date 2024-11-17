@@ -141,6 +141,7 @@ class CORE_EXPORT SoftNavigationHeuristics
   LocalFrame* GetLocalFrameIfNotDetached() const;
   void OnSoftNavigationEventScopeDestroyed(const EventScope&);
   EventScope CreateEventScope(EventScope::Type type, ScriptState*);
+  uint64_t CalculateRequiredPaintArea() const;
 
   // The set of ongoing potential soft navigations. `SoftNavigationContext`
   // objects are added when they are the active context during an event handler
@@ -179,8 +180,6 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   uint32_t soft_navigation_count_ = 0;
   uint64_t softnav_painted_area_ = 0;
-  uint64_t initial_painted_area_ = 0;
-  uint64_t viewport_area_ = 0;
   bool did_commit_previous_paints_ = false;
   bool paint_conditions_met_ = false;
   bool initial_interaction_encountered_ = false;

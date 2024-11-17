@@ -182,5 +182,5 @@ fuzzable_proto_library("actions") {
   # output directory to rebase under the source root.
   proto_out_dir = rebase_path(".", "//")
 
-  deps = [ ":actions_tmpl" ]
+  proto_deps = [ ":actions_tmpl" ]
 }

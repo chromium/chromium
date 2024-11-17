@@ -137,24 +137,17 @@ bool IsLiveCaptionFeatureSupported() {
 std::string GetCaptionSettingsUrl() {
 #if BUILDFLAG(IS_CHROMEOS)
   return "chrome://os-settings/audioAndCaptions";
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
-#if BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   return "chrome://settings/captions";
-#endif  // BUILDFLAG(IS_LINUX)
-
-#if BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return base::win::GetVersion() >= base::win::Version::WIN10
              ? "chrome://settings/accessibility"
              : "chrome://settings/captions";
-#endif  // BUILDFLAG(IS_WIN)
-
-#if BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return "chrome://settings/accessibility";
-#endif  // BUILDFLAG(IS_MAC)
-
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+#else
+  NOTREACHED();
+#endif
 }
 
 }  // namespace captions

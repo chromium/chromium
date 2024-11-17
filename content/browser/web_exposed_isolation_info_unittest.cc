@@ -91,20 +91,6 @@ TEST_F(WebExposedIsolationInfoTest, Comparisons) {
   EXPECT_FALSE(appB < appA);
 }
 
-TEST_F(WebExposedIsolationInfoTest, ComparisonsWithOptionals) {
-  WebExposedIsolationInfo value = WebExposedIsolationInfo::CreateNonIsolated();
-  std::optional<WebExposedIsolationInfo> optional_value =
-      WebExposedIsolationInfo::CreateNonIsolated();
-
-  ASSERT_DCHECK_DEATH(operator==(value, optional_value));
-  ASSERT_DCHECK_DEATH(operator==(optional_value, value));
-  ASSERT_DCHECK_DEATH(operator==(optional_value, optional_value));
-
-  ASSERT_DCHECK_DEATH(operator!=(value, optional_value));
-  ASSERT_DCHECK_DEATH(operator!=(optional_value, value));
-  ASSERT_DCHECK_DEATH(operator!=(optional_value, optional_value));
-}
-
 TEST_F(WebExposedIsolationInfoTest, AreCompatibleFunctions) {
   url::Origin originA =
       url::Origin::CreateFromNormalizedTuple("https", "aaa.example", 443);

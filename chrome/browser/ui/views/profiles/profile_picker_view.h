@@ -13,13 +13,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/buildflag.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_force_signin_dialog_host.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
@@ -245,12 +244,6 @@ class ProfilePickerView : public views::WidgetDelegateView,
       base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SwitchToSignedInFlow(Profile* signed_in_profile,
-                            std::optional<SkColor> profile_color,
-                            std::unique_ptr<content::WebContents> contents);
-#endif
-
   // Builds the views hierarchy.
   void BuildLayout();
 
@@ -291,6 +284,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // creation.
   void NotifyAccountSelected(const std::string& gaia_id);
 #endif
+
+  void UpdateAccessibleNameForRootView(views::WebView*);
 
   // Create the feature promo that manages the IPH logic that can be displayed
   // through the Profile Picker.
@@ -345,6 +340,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // Manages IPH promos displayed through the Profile Picker.
   std::unique_ptr<ProfilePickerFeaturePromoController> feature_promo_;
+
+  base::CallbackListSubscription web_contents_attached_subscription_;
 
   base::WeakPtrFactory<ProfilePickerView> weak_ptr_factory_{this};
 };

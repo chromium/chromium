@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/strings/pattern.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
@@ -171,6 +173,37 @@ IN_PROC_BROWSER_TEST_F(BlobUrlBrowserTest, ReplaceStateToAddAuthorityToBlob) {
   std::string window_location =
       EvalJs(new_contents, "window.location.href;").ExtractString();
   EXPECT_FALSE(base::MatchPattern(window_location, "*spoof*"));
+}
+
+class BlobURLBrowserTestP : public base::test::WithFeatureOverride,
+                            public BlobUrlBrowserTest {
+ public:
+  BlobURLBrowserTestP()
+      : base::test::WithFeatureOverride(
+            blink::features::kEnforceNoopenerOnBlobURLNavigation) {}
+};
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(BlobURLBrowserTestP);
+
+// Tests that an opaque origin document is able to window.open a Blob URL it
+// created.
+IN_PROC_BROWSER_TEST_P(BlobURLBrowserTestP,
+                       NavigationWithOpaqueTopLevelOrigin) {
+  EXPECT_TRUE(NavigateToURL(shell(), GURL("data:text/html,<script></script>")));
+
+  ShellAddedObserver new_shell_observer;
+  EXPECT_TRUE(ExecJs(
+      shell(),
+      "const blob_url = URL.createObjectURL(new "
+      "Blob(['<!doctype html><body>potato</body>'], {type: 'text/html'}));"
+      "var handle = window.open(blob_url);"));
+
+  Shell* new_shell = new_shell_observer.GetShell();
+  WebContents* new_contents = new_shell->web_contents();
+  EXPECT_TRUE(WaitForLoadStop(new_contents));
+
+  bool handle_null = EvalJs(shell(), "handle === null;").ExtractBool();
+  EXPECT_FALSE(handle_null);
 }
 
 }  // namespace content

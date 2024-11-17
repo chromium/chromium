@@ -42,6 +42,7 @@
         // tune their performance, especially for media rendering.
         // TODO(crbug.com/42050308): Migrate to `fuchsia.scheduler`.
         "fuchsia.media.ProfileProvider",
+        "fuchsia.scheduler.RoleManager",
 
         // Optionally used by the tracing service.
         // TODO(crbug.com/42050521): Provide conditionally when enabled.

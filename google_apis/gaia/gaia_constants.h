@@ -38,6 +38,8 @@ COMPONENT_EXPORT(GOOGLE_APIS) extern const char kPeopleApiReadOnlyOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kPeopleApiReadWriteOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kContactsOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kProfileLanguageReadOnlyOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kProgrammaticChallengeOAuth2Scope[];
@@ -101,6 +103,10 @@ COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kClassroomReadOnlyStudentSubmissionsSelfOAuth2Scope[];
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kClassroomReadOnlyRostersOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kClassroomProfileEmailOauth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS)
+extern const char kClassroomProfilePhotoUrlScope[];
 
 // OAuth2 scopes for Optimization Guide.
 COMPONENT_EXPORT(GOOGLE_APIS)
@@ -111,6 +117,9 @@ extern const char kOptimizationGuideServiceModelExecutionOAuth2Scope[];
 // OAuth2 scopes for Lens.
 COMPONENT_EXPORT(GOOGLE_APIS)
 extern const char kLensOAuth2Scope[];
+
+// OAuth2 scope for DevTools GenAI features.
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAidaOAuth2Scope[];
 
 // Used by wallet sign in helper.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kClientOAuthEmailKey[];

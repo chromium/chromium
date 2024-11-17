@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_animation_play_state.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
@@ -318,7 +319,7 @@ TEST_F(ScrollTimelineTest, AnimationPersistsWhenFinished) {
   scrollable_area->SetScrollOffset(ScrollOffset(0, 100),
                                    mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();
-  EXPECT_EQ("finished", animation->playState());
+  EXPECT_EQ(V8AnimationPlayState::Enum::kFinished, animation->playState());
 
   // Animation should still persist after GC.
   animation = nullptr;
@@ -332,7 +333,7 @@ TEST_F(ScrollTimelineTest, AnimationPersistsWhenFinished) {
   scrollable_area->SetScrollOffset(offset,
                                    mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();
-  EXPECT_EQ("running", animation->playState());
+  EXPECT_EQ(V8AnimationPlayState::Enum::kRunning, animation->playState());
   EXPECT_CURRENT_TIME_AS_PERCENT_NEAR(50.0, animation);
 }
 
@@ -623,7 +624,8 @@ TEST_F(ScrollTimelineTest, FinishedAnimationPlaysOnReversedScrolling) {
   // Simulate a new animation frame  which allows the timeline to compute a new
   // current time.
   SimulateFrame();
-  ASSERT_EQ("finished", scroll_animation->playState());
+  ASSERT_EQ(V8AnimationPlayState::Enum::kFinished,
+            scroll_animation->playState());
   // Verify that the animation was not removed from animations needing update
   // list.
   EXPECT_EQ(1u, scroll_timeline->AnimationsNeedingUpdateCount());
@@ -633,7 +635,8 @@ TEST_F(ScrollTimelineTest, FinishedAnimationPlaysOnReversedScrolling) {
                                    mojom::blink::ScrollType::kProgrammatic);
   SimulateFrame();
   // Verify that the animation as back to running.
-  EXPECT_EQ("running", scroll_animation->playState());
+  EXPECT_EQ(V8AnimationPlayState::Enum::kRunning,
+            scroll_animation->playState());
 }
 
 TEST_F(ScrollTimelineTest, CancelledAnimationDetachedFromTimeline) {
@@ -667,7 +670,7 @@ TEST_F(ScrollTimelineTest, CancelledAnimationDetachedFromTimeline) {
   // Simulate a new animation frame  which allows the timeline to compute a new
   // current time.
   SimulateFrame();
-  ASSERT_EQ("idle", scroll_animation->playState());
+  ASSERT_EQ(V8AnimationPlayState::Enum::kIdle, scroll_animation->playState());
   // Verify that the animation is removed from animations needing update
   // list.
   EXPECT_EQ(0u, scroll_timeline->AnimationsNeedingUpdateCount());

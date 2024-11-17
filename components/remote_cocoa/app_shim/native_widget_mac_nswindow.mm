@@ -266,6 +266,12 @@ void OrderChildWindow(NSWindow* child_window,
   if (self != childWin.parentWindow) {
     return;
   }
+  // Handle ordering groups for AppKit native windows. For instance, the
+  // `TUINSWindow` is added and removed by AppKit when caps lock is active.
+  // See https://crbug.com/369970893 for more details.
+  if (![childWin isKindOfClass:[NativeWidgetMacNSWindow class]]) {
+    [self maybeRemoveTreeFromOrderingGroups];
+  }
   [super removeChildWindow:childWin];
   if (self.childWindowRemovedHandler) {
     self.childWindowRemovedHandler(childWin);

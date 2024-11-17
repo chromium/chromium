@@ -10,6 +10,7 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/resize_shadow.h"
+#include "ash/wm/window_properties.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/frame/frame_utils.h"
@@ -224,7 +225,10 @@ void ResizeShadowController::UpdateShadowVisibility(aura::Window* window,
 bool ResizeShadowController::ShouldShowShadowForWindow(
     aura::Window* window) const {
   // Hide the shadow if it's a maximized/fullscreen/minimized window or the
-  // overview mode is active.
+  // overview mode is active or if the shadow is disabled.
+  if (window->GetProperty(kDisableResizeShadow)) {
+    return false;
+  }
   ui::mojom::WindowShowState show_state =
       window->GetProperty(aura::client::kShowStateKey);
   return show_state != ui::mojom::WindowShowState::kFullscreen &&

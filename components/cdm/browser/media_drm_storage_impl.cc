@@ -401,13 +401,12 @@ void ClearMediaDrmLicensesBlocking(
   for (const auto& origin_id : origin_ids) {
     // MediaDrm will unprovision |origin_id| for all security level. Passing
     // DEFAULT here is OK.
-    scoped_refptr<media::MediaDrmBridge> media_drm_bridge =
-        media::MediaDrmBridge::CreateWithoutSessionSupport(
-            kWidevineKeySystem, origin_id.ToString(),
-            media::MediaDrmBridge::SECURITY_LEVEL_DEFAULT, "ClearMediaLicenses",
-            base::NullCallback());
+    auto media_drm_bridge = media::MediaDrmBridge::CreateWithoutSessionSupport(
+        kWidevineKeySystem, origin_id.ToString(),
+        media::MediaDrmBridge::SECURITY_LEVEL_DEFAULT, "ClearMediaLicenses",
+        base::NullCallback());
 
-    if (media_drm_bridge) {
+    if (media_drm_bridge.has_value()) {
       media_drm_bridge->Unprovision();
     }
   }

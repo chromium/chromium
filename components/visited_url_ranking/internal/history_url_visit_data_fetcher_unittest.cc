@@ -195,7 +195,7 @@ const HistoryScenario SampleScenario_NonOverlappingTimeGroup() {
 namespace visited_url_ranking {
 
 using Source = URLVisit::Source;
-using URLType = visited_url_ranking::FetchOptions::URLType;
+using URLType = visited_url_ranking::URLVisitAggregate::URLType;
 using ResultOption = visited_url_ranking::FetchOptions::ResultOption;
 
 constexpr char kSampleForeignDeviceGUID[] = "foreign_guid";
@@ -479,7 +479,9 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(SampleScenario_OverlappingTimeGroup(),
                       SampleScenario_NonOverlappingTimeGroup()));
 
-TEST_P(HistoryURLVisitDataFetcherDataTest, FetchURLVisitData_AggregateCounts) {
+// TODO(crbug.com/377113308): Fix and re-enable the test.
+TEST_P(HistoryURLVisitDataFetcherDataTest,
+       DISABLED_FetchURLVisitData_AggregateCounts) {
   const auto scenario = GetParam();
   clock_.SetNow(scenario.current_time);
   SetHistoryServiceExpectations(GetSampleAnnotatedVisitsForScenario(scenario));

@@ -11,7 +11,7 @@ source_set("common") {
   ]
   public_deps = [
     "//base",
-    "//components/subresource_filter/core/browser",
+    "//components/subresource_filter/core/common",
   ]
 }
 
@@ -24,4 +24,42 @@ component("features") {
   ]
   public_deps = [ "//base" ]
   deps = [ "//components/subresource_filter/core/mojom" ]
+}
+
+source_set("prefs") {
+  output_name = "fingerprinting_protection_filter_prefs"
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+    "prefs.cc",
+    "prefs.h",
+  ]
+  deps = [ "//components/prefs" ]
+}
+
+source_set("exceptions") {
+  output_name = "fingerprinting_protection_filter_exceptions"
+  sources = [
+    "fingerprinting_protection_breakage_exception.cc",
+    "fingerprinting_protection_breakage_exception.h",
+  ]
+  deps = [
+    ":prefs",
+    "//components/prefs",
+    "//net",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "fingerprinting_protection_breakage_exception_unittest.cc" ]
+  deps = [
+    ":exceptions",
+    ":prefs",
+    "//base",
+    "//components/prefs",
+    "//components/prefs:test_support",
+    "//testing/gtest",
+  ]
 }

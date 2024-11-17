@@ -540,26 +540,10 @@ void WebRtcTextLogHandler::OnGetNetworkInterfaceListFinish(
        enabled_or_disabled_bool_string(IsAudioServiceSandboxEnabled())}));
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (media::IsChromeWideEchoCancellationEnabled()) {
-    LogToCircularBuffer(base::StrCat(
-        {"ChromeWideEchoCancellation : Enabled", ", minimize_resampling = ",
-         media::kChromeWideEchoCancellationMinimizeResampling.Get() ? "true"
-                                                                    : "false",
-         ", allow_all_sample_rates = ",
-         media::kChromeWideEchoCancellationAllowAllSampleRates.Get()
-             ? "true"
-             : "false"}));
-  } else {
-    LogToCircularBuffer("ChromeWideEchoCancellation : Disabled");
-  }
-
-  if (base::FeatureList::IsEnabled(media::kDecreaseProcessingAudioFifoSize)) {
-    LogToCircularBuffer(base::StrCat(
-        {"DecreaseProcessingAudioFifoSize : Enabled", ", fifo_size = ",
-         base::NumberToString(media::GetProcessingAudioFifoSize())}));
-  } else {
-    LogToCircularBuffer("DecreaseProcessingAudioFifoSize : Disabled");
-  }
+  LogToCircularBuffer(
+      base::StrCat({"ChromeWideEchoCancellation : ",
+                    enabled_or_disabled_bool_string(
+                        media::IsChromeWideEchoCancellationEnabled())}));
 #endif
 
   // Audio manager

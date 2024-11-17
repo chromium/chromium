@@ -38,13 +38,11 @@ void AddWritableRequestHeader(net::URLRequest& request) {
 
 std::optional<std::string> GetSharedStorageWriteHeader(
     net::URLRequest& request) {
-  std::string value;
-  if (!request.response_headers() ||
-      !request.response_headers()->GetNormalizedHeader(
-          kSharedStorageWriteHeader, &value)) {
+  if (!request.response_headers()) {
     return std::nullopt;
   }
-  return value;
+  return request.response_headers()->GetNormalizedHeader(
+      kSharedStorageWriteHeader);
 }
 
 void RemoveSharedStorageWriteHeader(net::URLRequest& request) {

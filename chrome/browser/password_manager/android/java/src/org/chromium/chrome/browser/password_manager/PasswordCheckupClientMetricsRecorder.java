@@ -23,6 +23,10 @@ class PasswordCheckupClientMetricsRecorder {
     private static final String GET_BREACHED_CREDENTIALS_COUNT_OPERATION_SUFFIX =
             "GetBreachedCredentialsCount";
     private static final String GET_PASSWORD_CHECKUP_INTENT_OPERATION_SUFFIX = "GetIntent";
+    private static final String GET_WEAK_CREDENTIALS_COUNT_OPERATION_SUFFIX =
+            "GetWeakCredentialsCount";
+    private static final String GET_REUSED_CREDENTIALS_COUNT_OPERATION_SUFFIX =
+            "GetReusedCredentialsCount";
 
     private final @PasswordCheckOperation int mOperation;
     private final long mStartTimeMs;
@@ -57,7 +61,7 @@ class PasswordCheckupClientMetricsRecorder {
         RecordHistogram.recordEnumeratedHistogram(
                 getHistogramName("Error"), error, CredentialManagerError.COUNT);
 
-        if (error == CredentialManagerError.API_ERROR) {
+        if (error == CredentialManagerError.API_EXCEPTION) {
             int apiErrorCode = PasswordManagerAndroidBackendUtil.getApiErrorCode(exception);
             RecordHistogram.recordSparseHistogram(getHistogramName("APIError"), apiErrorCode);
         }
@@ -80,6 +84,10 @@ class PasswordCheckupClientMetricsRecorder {
                 return GET_BREACHED_CREDENTIALS_COUNT_OPERATION_SUFFIX;
             case PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT:
                 return GET_PASSWORD_CHECKUP_INTENT_OPERATION_SUFFIX;
+            case PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT:
+                return GET_WEAK_CREDENTIALS_COUNT_OPERATION_SUFFIX;
+            case PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT:
+                return GET_REUSED_CREDENTIALS_COUNT_OPERATION_SUFFIX;
             default:
                 throw new AssertionError("All operations need to be handled.");
         }

@@ -120,6 +120,8 @@ CastSocketImpl::CastSocketImpl(
   DCHECK(open_params.ip_endpoint.address().IsValid());
 }
 
+CastSocket::~CastSocket() = default;
+
 CastSocketImpl::~CastSocketImpl() {
   // Ensure that resources are freed but do not run pending callbacks that
   // would result in re-entrancy.
@@ -217,8 +219,8 @@ void CastSocketImpl::Connect(OnOpenCallback callback) {
       std::move(callback).Run(this);
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown ReadyState: " << ReadyStateToString(ready_state_);
+      NOTREACHED() << "Unknown ReadyState: "
+                   << ReadyStateToString(ready_state_);
   }
 }
 
@@ -366,12 +368,7 @@ void CastSocketImpl::DoConnectLoop(int result) {
         DCHECK(IsTerminalState(connect_state_));
         break;
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unknown state in connect flow: " << AsInteger(state);
-        SetConnectState(ConnectionState::FINISHED);
-        SetErrorState(ChannelError::UNKNOWN);
-        DoConnectCallback();
-        return;
+        NOTREACHED() << "Unknown state in connect flow: " << AsInteger(state);
     }
   } while (rv != net::ERR_IO_PENDING && !IsTerminalState(connect_state_));
   // Exit the state machine if an asynchronous network operation is pending
@@ -675,7 +672,8 @@ CastSocketImpl::CastSocketMessageDelegate::CastSocketMessageDelegate(
   DCHECK(socket_);
 }
 
-CastSocketImpl::CastSocketMessageDelegate::~CastSocketMessageDelegate() {}
+CastSocketImpl::CastSocketMessageDelegate::~CastSocketMessageDelegate() =
+    default;
 
 // CastTransport::Delegate implementation.
 void CastSocketImpl::CastSocketMessageDelegate::OnError(

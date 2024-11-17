@@ -9,8 +9,11 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -37,6 +40,15 @@ class ThemeColorPickerHandler;
 class CustomizeColorSchemeModeHandler;
 namespace settings {
 
+class SettingsUI;
+
+class SettingsUIConfig : public content::DefaultWebUIConfig<SettingsUI> {
+ public:
+  SettingsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUISettingsHost) {}
+};
+
 // The WebUI handler for chrome://settings.
 class SettingsUI
     : public ui::MojoWebUIController,
@@ -59,6 +71,9 @@ class SettingsUI
   SettingsUI& operator=(const SettingsUI&) = delete;
 
   ~SettingsUI() override;
+
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(
+      kAutofillPredictionImprovementsHeaderElementId);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Initializes the WebUI message handlers for CrOS-specific settings that are

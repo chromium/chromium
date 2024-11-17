@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/utf_string_conversions.h"
@@ -136,14 +135,8 @@ ChromeAutocompleteProviderClient::ChromeAutocompleteProviderClient(
     : profile_(profile),
       scheme_classifier_(profile),
       url_consent_helper_(
-          base::FeatureList::IsEnabled(
-              omnibox::kPrefBasedDataCollectionConsentHelper)
-              ? unified_consent::UrlKeyedDataCollectionConsentHelper::
-                    NewAnonymizedDataCollectionConsentHelper(
-                        profile_->GetPrefs())
-              : unified_consent::UrlKeyedDataCollectionConsentHelper::
-                    NewPersonalizedDataCollectionConsentHelper(
-                        SyncServiceFactory::GetForProfile(profile_))),
+          unified_consent::UrlKeyedDataCollectionConsentHelper::
+              NewAnonymizedDataCollectionConsentHelper(profile_->GetPrefs())),
       tab_matcher_(GetTemplateURLService(), profile_),
       storage_partition_(nullptr),
       omnibox_triggered_feature_service_(
@@ -388,16 +381,16 @@ bool ChromeAutocompleteProviderClient::AllowDeletingBrowserHistory() const {
   return profile_->GetPrefs()->GetBoolean(prefs::kAllowDeletingBrowserHistory);
 }
 
-bool ChromeAutocompleteProviderClient::IsPersonalizedUrlDataCollectionActive()
-    const {
+bool ChromeAutocompleteProviderClient::IsUrlDataCollectionActive() const {
   return url_consent_helper_->IsEnabled();
 }
 
 bool ChromeAutocompleteProviderClient::IsAuthenticated() const {
   const auto* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);
-  return identity_manager &&
-         !identity_manager->GetAccountsInCookieJar().signed_in_accounts.empty();
+  return identity_manager && !identity_manager->GetAccountsInCookieJar()
+                                  .GetPotentiallyInvalidSignedInAccounts()
+                                  .empty();
 }
 
 bool ChromeAutocompleteProviderClient::IsSyncActive() const {
@@ -545,11 +538,6 @@ void ChromeAutocompleteProviderClient::CloseIncognitoWindows() {
 
 bool ChromeAutocompleteProviderClient::OpenJourneys(const std::string& query) {
 #if !BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys) ||
-      !history_clusters::kSidePanelJourneysOpensFromOmnibox.Get()) {
-    return false;
-  }
-
   Browser* browser = BrowserList::GetInstance()->GetLastActive();
   if (!browser)
     return false;

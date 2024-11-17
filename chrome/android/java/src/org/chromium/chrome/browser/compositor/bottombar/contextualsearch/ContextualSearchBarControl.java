@@ -54,9 +54,6 @@ public class ContextualSearchBarControl {
      */
     private final ContextualSearchCardIconControl mCardIconControl;
 
-    /** The width of our icon, including padding, in pixels. */
-    private final float mPaddedIconWidthPx;
-
     /** The {@link ContextualSearchImageControl} for the panel. */
     private ContextualSearchImageControl mImageControl;
 
@@ -78,12 +75,6 @@ public class ContextualSearchBarControl {
     // Dimensions used for laying out the search bar.
     private final float mTextLayerMinHeight;
     private final float mTermCaptionSpacing;
-
-    /** The width of the end button in px. */
-    private final float mEndButtonWidth;
-
-    /** The percentage the panel is expanded. 1.f is fully expanded and 0.f is peeked. */
-    private float mExpandedPercent;
 
     /** Converts dp dimensions to pixels. */
     private final float mDpToPx;
@@ -155,9 +146,7 @@ public class ContextualSearchBarControl {
         mSearchTermControl = new ContextualSearchTermControl(panel, context, container, loader);
 
         mDpToPx = context.getResources().getDisplayMetrics().density;
-        mCaptionControl =
-                new ContextualSearchCaptionControl(
-                        panel, context, container, loader, mCanPromoteToNewTab);
+        mCaptionControl = new ContextualSearchCaptionControl(panel, context, container, loader);
 
         mQuickActionControl = new ContextualSearchQuickActionControl(context, loader);
         mCardIconControl = new ContextualSearchCardIconControl(context, loader);
@@ -167,13 +156,6 @@ public class ContextualSearchBarControl {
                         .getDimension(R.dimen.contextual_search_text_layer_min_height);
         mTermCaptionSpacing =
                 context.getResources().getDimension(R.dimen.contextual_search_term_caption_spacing);
-
-        // Icon attributes.
-        mPaddedIconWidthPx =
-                context.getResources().getDimension(R.dimen.contextual_search_padded_button_width);
-        mEndButtonWidth =
-                mPaddedIconWidthPx
-                        + context.getResources().getDimension(R.dimen.overlay_panel_button_padding);
     }
 
     /**
@@ -230,10 +212,10 @@ public class ContextualSearchBarControl {
 
     /**
      * Updates this bar when in transition between peeked to expanded states.
+     *
      * @param percentage The percentage to the more opened state.
      */
     public void onUpdateFromPeekToExpand(float percentage) {
-        mExpandedPercent = percentage;
 
         getImageControl().onUpdateFromPeekToExpand(percentage);
         mCaptionControl.onUpdateFromPeekToExpand(percentage);
@@ -490,7 +472,7 @@ public class ContextualSearchBarControl {
             float contentWidth = panelWidth - paddedIconWithMarginWidth;
             // Adjust the touch point to panel coordinates.
             xPx -= mContextualSearchPanel.getOffsetX() * mDpToPx;
-            if (isRtl && xPx > paddedIconWithMarginWidth || !isRtl && xPx < contentWidth) {
+            if ((isRtl && xPx > paddedIconWithMarginWidth) || (!isRtl && xPx < contentWidth)) {
                 // Case 2 - Bar minus icon.
                 mTouchHighlightXOffsetPx = isRtl ? paddedIconWithMarginWidth : 0;
                 mTouchHighlightWidthPx = contentWidth;

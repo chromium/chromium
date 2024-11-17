@@ -287,8 +287,12 @@ void ExternalSVGResourceDocumentContent::ResourceNotifyFinished(
     SVGResourceDocumentContent* document_content) {
   DCHECK_EQ(document_content_, document_content);
   Element* new_target = ResolveTarget();
-  if (new_target == target_)
+  // If no target was found when resolving in Load(), we want to notify clients
+  // regardless of if a target was found or not, to be able to update rendering
+  // based on loading state.
+  if (target_ && new_target == target_) {
     return;
+  }
   target_ = new_target;
   NotifyContentChanged();
 }
@@ -300,6 +304,10 @@ void ExternalSVGResourceDocumentContent::ResourceContentChanged(
     return;
   }
   NotifyContentChanged();
+}
+
+bool ExternalSVGResourceDocumentContent::IsLoading() const {
+  return !document_content_ || document_content_->IsLoading();
 }
 
 Element* ExternalSVGResourceDocumentContent::ResolveTarget() {
@@ -332,6 +340,10 @@ void ExternalSVGResourceImageContent::Prefinalize() {
   image_content_ = nullptr;
 }
 
+bool ExternalSVGResourceImageContent::IsLoading() const {
+  return image_content_->IsLoading();
+}
+
 Element* ExternalSVGResourceImageContent::ResolveTarget() {
   if (!image_content_->IsLoaded() || image_content_->ErrorOccurred()) {
     return nullptr;
@@ -351,7 +363,10 @@ Element* ExternalSVGResourceImageContent::ResolveTarget() {
 void ExternalSVGResourceImageContent::ImageNotifyFinished(
     ImageResourceContent*) {
   Element* new_target = ResolveTarget();
-  if (new_target == target_) {
+  // If no target was found when resolving in Load(), we want to notify clients
+  // regardless of if a target was found or not, to be able to update rendering
+  // based on loading state.
+  if (target_ && new_target == target_) {
     return;
   }
   target_ = new_target;

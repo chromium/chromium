@@ -8,8 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Pair;
 
-import org.chromium.base.ContextUtils;
-
 import java.util.Iterator;
 import java.util.PriorityQueue;
 
@@ -86,8 +84,7 @@ public class ThrottlingNotificationScheduler {
                         taskId,
                         PendingNotificationTask.Priority.HIGH,
                         () -> {
-                            BaseNotificationManagerProxyFactory.create(
-                                            ContextUtils.getApplicationContext())
+                            BaseNotificationManagerProxyFactory.create()
                                     .notify(notificationWrapper);
                         });
         addPendingNotificationTask(task);
@@ -109,8 +106,7 @@ public class ThrottlingNotificationScheduler {
     public void cancelPendingNotification(String tag, int id) {
         Pair<String, Integer> taskId = Pair.create(tag, Integer.valueOf(id));
         removePendingNotificationTask(taskId);
-        BaseNotificationManagerProxyFactory.create(ContextUtils.getApplicationContext())
-                .cancel(tag, id);
+        BaseNotificationManagerProxyFactory.create().cancel(tag, id);
     }
 
     /** Clear the pending task queue. */

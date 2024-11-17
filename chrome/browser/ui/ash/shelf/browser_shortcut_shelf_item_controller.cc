@@ -17,6 +17,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
@@ -104,7 +105,11 @@ void BrowserShortcutShelfItemController::ItemSelected(
     ItemSelectedCallback callback,
     const ItemFilterPredicate& filter_predicate) {
   Profile* profile = ChromeShelfController::instance()->profile();
-  ash::full_restore::FullRestoreService::MaybeCloseNotification(profile);
+  if (auto* full_restore_service =
+          ash::full_restore::FullRestoreServiceFactory::GetForProfile(
+              profile)) {
+    full_restore_service->MaybeCloseNotification();
+  }
 
   if (event && (event->flags() & ui::EF_CONTROL_DOWN)) {
     ash::NewWindowDelegate::GetInstance()->NewWindow(

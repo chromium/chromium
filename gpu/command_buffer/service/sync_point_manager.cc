@@ -18,23 +18,9 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
-#include "base/task/single_thread_task_runner.h"
 #include "gpu/config/gpu_finch_features.h"
 
 namespace gpu {
-
-namespace {
-
-void RunOnThread(scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-                 base::OnceClosure callback) {
-  if (task_runner->BelongsToCurrentThread()) {
-    std::move(callback).Run();
-  } else {
-    task_runner->PostTask(FROM_HERE, std::move(callback));
-  }
-}
-
-}  // namespace
 
 SyncPointOrderData::OrderFence::OrderFence(
     uint32_t order,
@@ -238,25 +224,6 @@ SyncPointClientState::DestroyAndReturnCallbacks() {
   return callbacks;
 }
 
-bool SyncPointClientState::Wait(const SyncToken& sync_token,
-                                base::OnceClosure callback) {
-  DCHECK(!destroyed_.IsSet());
-  // Validate that this Wait call is between BeginProcessingOrderNumber() and
-  // FinishProcessingOrderNumber(), or else we may deadlock.
-  DCHECK(order_data_->IsProcessingOrderNumber());
-  return sync_point_manager_->Wait(sync_token, order_data_->sequence_id(),
-                                   order_data_->current_order_num(),
-                                   std::move(callback));
-}
-
-bool SyncPointClientState::WaitNonThreadSafe(
-    const SyncToken& sync_token,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    base::OnceClosure callback) {
-  return Wait(sync_token,
-              base::BindOnce(&RunOnThread, task_runner, std::move(callback)));
-}
-
 bool SyncPointClientState::IsFenceSyncReleased(uint64_t release) {
   base::AutoLock lock(fence_sync_lock_);
   return release <= fence_sync_release_;
@@ -284,16 +251,6 @@ bool SyncPointClientState::WaitForRelease(uint64_t release,
   DLOG(ERROR)
       << "Client waiting on non-existent sync token or sequence destroyed";
   return false;
-}
-
-void SyncPointClientState::ReleaseFenceSync(uint64_t release) {
-  // Validate that this Release call is between BeginProcessingOrderNumber() and
-  // FinishProcessingOrderNumber(), or else we may deadlock.
-  DCHECK(order_data_->IsProcessingOrderNumber());
-  DCHECK(!destroyed_.IsSet())
-      << "Attempting to release fence on destroyed client state.";
-
-  EnsureFenceSyncReleased(release, ReleaseCause::kExplicitClientRelease);
 }
 
 void SyncPointClientState::EnsureFenceSyncReleased(uint64_t release,
@@ -553,16 +510,6 @@ bool SyncPointManager::Wait(const SyncToken& sync_token,
   }
   // Do not run callback if wait is invalid.
   return false;
-}
-
-bool SyncPointManager::WaitNonThreadSafe(
-    const SyncToken& sync_token,
-    SequenceId sequence_id,
-    uint32_t wait_order_num,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    base::OnceClosure callback) {
-  return Wait(sync_token, sequence_id, wait_order_num,
-              base::BindOnce(&RunOnThread, task_runner, std::move(callback)));
 }
 
 uint32_t SyncPointManager::GenerateOrderNumber() {

@@ -1,0 +1,24 @@
+From 5a5cc31a98fa5e3c695b2645060757ed590ef879 Mon Sep 17 00:00:00 2001
+From: Alexander Cooper <alcooper@chromium.org>
+Date: Thu, 14 Nov 2024 10:23:23 -0800
+Subject: [PATCH 2/2] Patch JNIPP for libcxx roll
+
+---
+ third_party/openxr/src_overrides/src/external/jnipp/jnipp.cpp | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/third_party/openxr/src_overrides/src/external/jnipp/jnipp.cpp b/third_party/openxr/src_overrides/src/external/jnipp/jnipp.cpp
+index 3056254b0f2b6..ddd93629fa864 100644
+--- a/third_party/openxr/src_overrides/src/external/jnipp/jnipp.cpp
++++ b/third_party/openxr/src_overrides/src/external/jnipp/jnipp.cpp
+@@ -8,6 +8,7 @@
+ # include <dlfcn.h>
+ # include <unistd.h>
+ # include <tuple>
++# include <stdlib.h>
+ #endif
+ 
+ // External Dependencies
+-- 
+2.47.0.338.g60cca15819-goog
+

@@ -94,8 +94,7 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_STAGE(TotalLatency);
 #undef CASE_FOR_STAGE
       case StageType::kStageTypeCount:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -121,8 +120,7 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_BLINK_BREAKDOWN(BeginMainSentToStarted);
 #undef CASE_FOR_BLINK_BREAKDOWN
       case CompositorFrameReporter::BlinkBreakdown::kBreakdownCount:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -146,8 +144,7 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_VIZ_BREAKDOWN(LatchToSwapEnd);
 #undef CASE_FOR_VIZ_BREAKDOWN
       case CompositorFrameReporter::VizBreakdown::kBreakdownCount:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -173,13 +170,15 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_TRACKER(CanvasAnimation);
       CASE_FOR_TRACKER(JSAnimation);
 #undef CASE_FOR_TRACKER
+      case FrameSequenceTrackerType::kCompositorRasterAnimation:
+      case FrameSequenceTrackerType::kCompositorNativeAnimation:
+        break;
       case FrameSequenceTrackerType::kSETCompositorAnimation:
       case FrameSequenceTrackerType::kSETMainThreadAnimation:
         break;
       case FrameSequenceTrackerType::kCustom:
       case FrameSequenceTrackerType::kMaxType:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -251,8 +250,7 @@ void UkmManager::RecordEventLatencyUKM(
               builder.SetGenerationToRendererCompositor(dispatch_latency);
               break;
             default:
-              NOTREACHED_IN_MIGRATION();
-              break;
+              NOTREACHED();
           }
           break;
         case EventMetrics::DispatchStage::
@@ -275,8 +273,7 @@ void UkmManager::RecordEventLatencyUKM(
               builder.SetRendererCompositorToMain(dispatch_latency);
               break;
             default:
-              NOTREACHED_IN_MIGRATION();
-              break;
+              NOTREACHED();
           }
           break;
         case EventMetrics::DispatchStage::kRendererCompositorStarted:
@@ -295,8 +292,7 @@ void UkmManager::RecordEventLatencyUKM(
           builder.SetRendererMainProcessing(dispatch_latency);
           break;
         case EventMetrics::DispatchStage::kRendererMainFinished:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
 
       dispatch_stage = end_stage;
@@ -338,8 +334,7 @@ void UkmManager::RecordEventLatencyUKM(
 #undef CASE_FOR_STAGE
           case StageType::kTotalLatency:
           case StageType::kStageTypeCount:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
         break;
       case EventMetrics::DispatchStage::kRendererMainFinished:
@@ -360,13 +355,11 @@ void UkmManager::RecordEventLatencyUKM(
 #undef CASE_FOR_STAGE
           case StageType::kTotalLatency:
           case StageType::kStageTypeCount:
-            NOTREACHED_IN_MIGRATION();
-            break;
+            NOTREACHED();
         }
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     for (; stage_it != stage_history.end(); ++stage_it) {
       // Total latency is calculated since the event timestamp.
@@ -417,8 +410,7 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_STAGE(TotalLatency);
 #undef CASE_FOR_STAGE
         case StageType::kStageTypeCount:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
 
@@ -444,8 +436,7 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_BLINK_BREAKDOWN(BeginMainSentToStarted);
 #undef CASE_FOR_BLINK_BREAKDOWN
         case CompositorFrameReporter::BlinkBreakdown::kBreakdownCount:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
 
@@ -469,8 +460,7 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_VIZ_BREAKDOWN(LatchToSwapEnd);
 #undef CASE_FOR_VIZ_BREAKDOWN
         case CompositorFrameReporter::VizBreakdown::kBreakdownCount:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
 

@@ -35,6 +35,7 @@
 #include "chromeos/ash/components/fwupd/histogram_util.h"
 #include "chromeos/ash/components/network/network_state.h"
 #include "chromeos/ash/components/network/network_state_handler.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 #include "components/device_event_log/device_event_log.h"
 #include "crypto/sha2.h"
 #include "dbus/message.h"
@@ -194,11 +195,12 @@ bool CreateDirIfNotExists(const base::FilePath& path) {
 
 firmware_update::mojom::FirmwareUpdatePtr CreateUpdate(
     const FwupdUpdate& update_details,
-    const std::string& device_id,
-    const std::string& device_name) {
+    const FwupdDevice& device) {
   auto update = firmware_update::mojom::FirmwareUpdate::New();
-  update->device_id = device_id;
-  update->device_name = base::UTF8ToUTF16(device_name);
+  update->device_id = device.id;
+  update->device_name = base::UTF8ToUTF16(device.device_name);
+  update->needs_reboot =
+      device.needs_reboot && features::IsFlexFirmwareUpdateEnabled();
   update->device_version = update_details.version;
   update->device_description = base::UTF8ToUTF16(update_details.description);
   update->priority =
@@ -878,8 +880,11 @@ void FirmwareUpdateManager::OnUpdateListResponse(const std::string& device_id,
   // If there are updates, then choose the first one.
   if (!updates->empty()) {
     auto device_name = devices_pending_update_[device_id].device_name;
+    auto needs_reboot = devices_pending_update_[device_id].needs_reboot &&
+                        features::IsFlexFirmwareUpdateEnabled();
     // Create a complete FirmwareUpdate and add to updates_.
-    updates_.push_back(CreateUpdate(updates->front(), device_id, device_name));
+    updates_.push_back(CreateUpdate(
+        updates->front(), FwupdDevice(device_id, device_name, needs_reboot)));
   }
 
   // Remove the pending device.
@@ -1255,6 +1260,24 @@ void FirmwareUpdateManager::AddUpdateProgressObserver(
         observer) {
   update_progress_observer_.reset();
   update_progress_observer_.Bind(std::move(observer));
+}
+
+void FirmwareUpdateManager::Restart() {
+  chromeos::PowerManagerClient::Get()->RequestRestart(
+      power_manager::REQUEST_RESTART_FOR_USER,
+      "Restarting after user installed UEFI firmware update.");
+}
+
+void FirmwareUpdateManager::BindInterface(
+    mojo::PendingReceiver<firmware_update::mojom::SystemUtils>
+        pending_receiver) {
+  // Clear any bound receiver, since this service is a singleton and is bound
+  // to the firmware updater UI it's possible that the app can be closed and
+  // reopened multiple times resulting in multiple attempts to bind to this
+  // receiver.
+  system_utils_receiver_.reset();
+
+  system_utils_receiver_.Bind(std::move(pending_receiver));
 }
 
 }  // namespace ash

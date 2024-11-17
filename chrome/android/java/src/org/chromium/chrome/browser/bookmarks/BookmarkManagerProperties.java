@@ -5,9 +5,9 @@
 package org.chromium.chrome.browser.bookmarks;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.sync.ui.bookmark_batch_upload_card.BookmarkBatchUploadCardCoordinator;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.ui.modelutil.PropertyKey;
-import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
@@ -16,7 +16,8 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 public class BookmarkManagerProperties {
     public static final WritableObjectPropertyKey<BookmarkPromoHeader> BOOKMARK_PROMO_HEADER =
             new WritableObjectPropertyKey<>();
-    public static final ReadableIntPropertyKey PROMO_TOP_MARGIN_RES = new ReadableIntPropertyKey();
+    public static final WritableObjectPropertyKey<BookmarkBatchUploadCardCoordinator>
+            BOOKMARK_BATCH_UPLOAD_CARD_COORDINATOR = new WritableObjectPropertyKey<>();
     // TODO(https://crbug.com/1416611): Replace with individual fields.
     public static final WritableObjectPropertyKey<BookmarkListEntry> BOOKMARK_LIST_ENTRY =
             new WritableObjectPropertyKey<>();
@@ -33,7 +34,7 @@ public class BookmarkManagerProperties {
 
     static final PropertyKey[] ALL_KEYS = {
         BOOKMARK_PROMO_HEADER,
-        PROMO_TOP_MARGIN_RES,
+        BOOKMARK_BATCH_UPLOAD_CARD_COORDINATOR,
         BOOKMARK_LIST_ENTRY,
         BOOKMARK_ID,
         LOCATION,

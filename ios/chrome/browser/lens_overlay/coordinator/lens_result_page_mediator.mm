@@ -9,10 +9,12 @@
 #import <memory>
 
 #import "base/functional/bind.h"
+#import "base/memory/raw_ptr.h"
 #import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/lens/lens_url_utils.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
-#import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_web_state_delegate.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_result_page_mediator_delegate.h"
 #import "ios/chrome/browser/lens_overlay/ui/lens_result_page_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
@@ -21,26 +23,88 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/tabs/model/tab_helper_util.h"
+#import "ios/chrome/browser/web/model/web_navigation_util.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
+#import "ios/web/public/navigation/navigation_context.h"
+#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/navigation/web_state_policy_decider_bridge.h"
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
+#import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_delegate_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
 #import "net/base/url_util.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
 namespace {
 
-/// Returns whether the navigation is allowed inside of the result page.
-BOOL IsValidURLToOpenInResultsPage(const GURL& URL) {
+BOOL URLHostIsGoogle(const GURL& URL) {
   std::string_view host = URL.host_piece();
-  return base::EqualsCaseInsensitiveASCII(host, "google.com") ||
-         base::EqualsCaseInsensitiveASCII(host, "www.google.com") ||
-         base::EqualsCaseInsensitiveASCII(host, "translate.google.com");
+
+  return (base::EqualsCaseInsensitiveASCII(host, "google.com") ||
+          base::EqualsCaseInsensitiveASCII(host, "www.google.com"));
+}
+
+BOOL URLIsFlights(const GURL& URL) {
+  std::string_view path = URL.path_piece();
+  BOOL pathIsFlights = path.rfind("/travel/flights", 0) == 0;
+
+  return URLHostIsGoogle(URL) && pathIsFlights;
+}
+
+BOOL URLIsFinance(const GURL& URL) {
+  std::string_view path = URL.path_piece();
+  BOOL pathIsFinance = path.rfind("/finance", 0) == 0;
+
+  return URLHostIsGoogle(URL) && pathIsFinance;
+}
+
+BOOL URLIsShopping(const GURL& URL) {
+  std::string_view query = URL.query_piece();
+  BOOL queryMatchesShoppingParam = query.find("udm=28") != std::string::npos;
+
+  return URLHostIsGoogle(URL) && queryMatchesShoppingParam;
+}
+
+BOOL URLHasLensRequestQueryParam(const GURL& URL) {
+  std::string request_id;
+  return net::GetValueForKeyInQuery(URL, lens::kLensRequestQueryParameter,
+                                    &request_id);
+}
+
+/// Currently some websites don't render properly in the bottom sheet. Filter
+/// them out explicitly.
+GURL URLByRemovingLensSurfaceParamIfNecessary(const GURL& URL) {
+  // If not a finance or flights URL, do nothing
+  if (URLIsFinance(URL) || URLIsFlights(URL) || URLIsShopping(URL)) {
+    return net::AppendOrReplaceQueryParameter(URL, "lns_surface", std::nullopt);
+  }
+
+  return GURL(URL);
+}
+
+/// Returns whether the navigation is allowed inside of the result page, and the
+/// rewritten URL when applicable. For example, for some websites we temporarily
+/// want to open them in a new tab, and override one of the URL params, while a
+/// server-side fix is pending.
+std::pair<BOOL, std::optional<GURL>> IsValidURLToOpenInResultsPage(
+    const GURL& originalURL) {
+  GURL URL = URLByRemovingLensSurfaceParamIfNecessary(originalURL);
+  if (!URLHostIsGoogle(URL)) {
+    return std::pair(NO, std::nullopt);
+  }
+
+  if (URLHasLensRequestQueryParam(URL)) {
+    return std::pair(YES, URL);
+  }
+
+  return std::pair(URL.spec().find("lns_surface=4") != std::string::npos, URL);
 }
 
 /// Detect special URL that requests the bottom sheet resize.
@@ -85,6 +149,18 @@ const CGFloat kProgressBarEmpty = 0.0f;
 // Value of a full progress bar.
 const CGFloat kProgressBarFull = 1.0f;
 
+// Zoom level values for content sizes.
+const int kZoomPercentageXS = 70;
+const int kZoomPercentageS = 85;
+const int kZoomPercentageM = 100;
+const int kZoomPercentageL = 110;
+const int kZoomPercentageXL = 120;
+const int kZoomPercentage2XL = 130;
+const int kZoomPercentage3XL = 140;
+// Single maximum zoom level for accessibility. This value is only slightly
+// higher than the 3XL zoom avoid visually breaking the LRP.
+const int kZoomPercentageAccesibility = 160;
+
 // Query parameter for dark mode.
 inline constexpr char kDarkModeParameterKey[] = "cs";
 inline constexpr char kDarkModeParameterLightValue[] = "0";
@@ -95,17 +171,13 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 @interface LensResultPageMediator () <CRWWebStateDelegate,
                                       CRWWebStateObserver,
                                       CRWWebStatePolicyDecider>
-
-/// Whether the interface is in dark mode.
-@property(nonatomic, assign) BOOL isDarkMode;
-
 @end
 
 @implementation LensResultPageMediator {
   /// WebState for lens results.
   std::unique_ptr<web::WebState> _webState;
   /// WebState delegate from the browser.
-  web::WebStateDelegate* _browserWebStateDelegate;
+  raw_ptr<web::WebStateDelegate> _browserWebStateDelegate;
   /// Web state policy decider.
   std::unique_ptr<web::WebStatePolicyDeciderBridge> _policyDeciderBridge;
   /// Whether the browser is off the record.
@@ -118,6 +190,12 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   BOOL _isInflightRequestLensInitiated;
   /// WebStateList of the presenting browser.
   base::WeakPtr<WebStateList> _webStateList;
+  /// Whether the interface is in dark mode.
+  BOOL _isDarkMode;
+  /// The last commited progress to the loading bar.
+  float _lastCommitedProgress;
+  /// The content size category.
+  UIContentSizeCategory _contentSizeCategory;
 }
 
 - (instancetype)
@@ -134,6 +212,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
         std::make_unique<web::WebStateObserverBridge>(self);
     [self attachWebState:web::WebState::Create(params)];
     _isIncognito = isIncognito;
+    _contentSizeCategory = UIContentSizeCategoryUnspecified;
     if (webStateList) {
       _webStateList = webStateList->AsWeakPtr();
     }
@@ -145,15 +224,16 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   _consumer = consumer;
   CHECK(_webState, kLensOverlayNotFatalUntil);
   _webState->SetWebUsageEnabled(true);
-  [self.consumer setWebView:_webState->GetView()];
+  // Mark hidden until the first page has finished loading, preventing a
+  // momentary display of the web view's white background.
+  [_consumer setWebViewHidden:YES];
+  [_consumer setWebView:_webState->GetView()];
 }
 
-- (void)setWebStateDelegate:
-    (id<LensResultPageWebStateDelegate>)webStateDelegate {
-  _webStateDelegate = webStateDelegate;
+- (void)setDelegate:(id<LensResultPageMediatorDelegate>)delegate {
+  _delegate = delegate;
   if (_webState) {
-    [self.webStateDelegate
-        lensResultPageDidChangeActiveWebState:_webState.get()];
+    [self.delegate lensResultPageDidChangeActiveWebState:_webState.get()];
   }
 }
 
@@ -166,29 +246,87 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   _webStateDelegateBridge.reset();
 }
 
+#pragma mark - LensResultPageMutator
+
+- (void)setIsDarkMode:(BOOL)isDarkMode {
+  BOOL darkModeChanged = _isDarkMode != isDarkMode;
+
+  _isDarkMode = isDarkMode;
+
+  if (!_webState) {
+    return;
+  }
+
+  GURL latestLoadedURL = _webState->GetLastCommittedURL();
+  BOOL latestURLValid = latestLoadedURL.is_valid();
+  if (darkModeChanged && latestURLValid) {
+    // The web view is hidden until the page fully loads to prevent a brief
+    // flash of mixed dark and light UI elements.
+    [_consumer setWebViewHidden:YES];
+    [self loadResultsURL:latestLoadedURL];
+  }
+}
+
+- (void)setContentSizeCategory:(UIContentSizeCategory)category {
+  _contentSizeCategory = category;
+  [self adjustPageZoomForContentSize];
+}
+
+- (void)adjustPageZoomForContentSize {
+  NSDictionary<NSString*, NSNumber*>* sizeMapping = @{
+    UIContentSizeCategoryExtraSmall : @(kZoomPercentageXS),
+    UIContentSizeCategorySmall : @(kZoomPercentageS),
+    UIContentSizeCategoryMedium : @(kZoomPercentageM),
+    UIContentSizeCategoryLarge : @(kZoomPercentageL),
+    UIContentSizeCategoryExtraLarge : @(kZoomPercentageXL),
+    UIContentSizeCategoryExtraExtraLarge : @(kZoomPercentage2XL),
+    UIContentSizeCategoryExtraExtraExtraLarge : @(kZoomPercentage3XL),
+    UIContentSizeCategoryAccessibilityMedium : @(kZoomPercentageAccesibility),
+    UIContentSizeCategoryAccessibilityLarge : @(kZoomPercentageAccesibility),
+    UIContentSizeCategoryAccessibilityExtraLarge :
+        @(kZoomPercentageAccesibility),
+    UIContentSizeCategoryAccessibilityExtraExtraLarge :
+        @(kZoomPercentageAccesibility),
+    UIContentSizeCategoryAccessibilityExtraExtraExtraLarge :
+        @(kZoomPercentageAccesibility),
+  };
+
+  int zoomValue = [sizeMapping[_contentSizeCategory] intValue];
+  if (_webState && zoomValue) {
+    ios::provider::SetTextZoomForWebState(_webState.get(), zoomValue);
+  }
+}
+
 #pragma mark - LensOverlayResultConsumer
 
 - (void)loadResultsURL:(GURL)URL {
   CHECK(_webState, kLensOverlayNotFatalUntil);
 
   // Add light/dark mode query parameter.
-  URL = net::AppendOrReplaceQueryParameter(URL, kDarkModeParameterKey,
-                                           self.isDarkMode
-                                               ? kDarkModeParameterDarkValue
-                                               : kDarkModeParameterLightValue);
+  URL = net::AppendOrReplaceQueryParameter(
+      URL, kDarkModeParameterKey,
+      _isDarkMode ? kDarkModeParameterDarkValue : kDarkModeParameterLightValue);
 
   _isInflightRequestLensInitiated = YES;
   [_consumer setLoadingProgress:kProgressBarLensResponseReceived];
-  _webState->OpenURL(web::WebState::OpenURLParams(
-      URL, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
-      ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
+
+  web::NavigationManager::WebLoadParams webParams =
+      web::NavigationManager::WebLoadParams(URL);
+
+  // Add variation headers.
+  webParams.extra_headers =
+      web_navigation_util::VariationHeadersForURL(URL, _isIncognito);
+
+  _webState->GetNavigationManager()->LoadURLWithParams(webParams);
 }
 
 - (void)handleSearchRequestStarted {
+  _lastCommitedProgress = kProgressBarLensRequestStarted;
   [_consumer setLoadingProgress:kProgressBarLensRequestStarted];
 }
 
 - (void)handleSearchRequestErrored {
+  _lastCommitedProgress = kProgressBarFull;
   [_consumer setLoadingProgress:kProgressBarFull];
 }
 
@@ -198,8 +336,16 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
                requestInfo:(web::WebStatePolicyDecider::RequestInfo)requestInfo
            decisionHandler:(PolicyDecisionHandler)decisionHandler {
   GURL URL = net::GURLWithNSURL(request.URL);
-  if (requestInfo.target_frame_is_main && !IsValidURLToOpenInResultsPage(URL)) {
+  std::pair<BOOL, std::optional<GURL>> allowURL =
+      IsValidURLToOpenInResultsPage(URL);
+  URL = allowURL.second.value_or(URL);
+
+  if (requestInfo.target_frame_is_main && !allowURL.first) {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Cancel());
+
+    if (URL.IsAboutBlank()) {
+      return;
+    }
 
     if (IsMaximizeBottomSheetURL(URL)) {
       [self.presentationDelegate requestMaximizeBottomSheet];
@@ -211,19 +357,30 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
       return;
     }
 
-    OpenNewTabCommand* command =
-        [[OpenNewTabCommand alloc] initWithURL:URL
-                                      referrer:web::Referrer()
-                                   inIncognito:_isIncognito
-                                  inBackground:NO
-                                      appendTo:OpenPosition::kCurrentTab];
-    [self.applicationHandler openURLInNewTab:command];
+    [self.delegate lensResultPageOpenURLInNewTabRequsted:URL];
+    [self.delegate
+         lensResultPageMediator:self
+        didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kWebNavigation];
   } else {
     decisionHandler(web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
 }
 
 #pragma mark - CRWWebStateObserver
+
+- (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
+  [_consumer setWebViewHidden:NO];
+  [self adjustPageZoomForContentSize];
+}
+
+- (void)webState:(web::WebState*)webState
+    didStartNavigation:(web::NavigationContext*)navigationContext {
+  BOOL isSameDocument = navigationContext->IsSameDocument();
+  // Disregard same document navigation from initiating progress loading.
+  if (!isSameDocument) {
+    _lastCommitedProgress = 0;
+  }
+}
 
 - (void)webState:(web::WebState*)webState
     didFinishNavigation:(web::NavigationContext*)navigationContext {
@@ -244,6 +401,11 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
                     kProgressBarLensResponseReceived, kProgressBarFull);
   }
 
+  if (progress <= _lastCommitedProgress) {
+    return;
+  }
+
+  _lastCommitedProgress = progress;
   [_consumer setLoadingProgress:progress];
 }
 
@@ -334,17 +496,21 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
 - (void)contextMenuConfigurationProvider:
             (ContextMenuConfigurationProvider*)configurationProvider
         didOpenNewTabInBackgroundWithURL:(GURL)URL {
-  MDCSnackbarMessage* snackbarMessage =
-      CreateSnackbarMessage(@"**New tab created**");
+  MDCSnackbarMessage* snackbarMessage = CreateSnackbarMessage(
+      l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_NEW_TAB_MESSAGE));
   MDCSnackbarMessageAction* action = [[MDCSnackbarMessageAction alloc] init];
   __weak __typeof__(self) weakSelf = self;
   action.handler = ^() {
     [weakSelf activateWebStateWithURL:URL];
   };
-  action.title = @"**Open**";
-  action.accessibilityLabel = @"**Open**";
+  action.title = l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_GO_TO_NEW_TAB);
+  action.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_LENS_OVERLAY_GO_TO_NEW_TAB);
   snackbarMessage.action = action;
   [self.snackbarHandler showSnackbarMessage:snackbarMessage bottomOffset:0];
+  [self.delegate
+       lensResultPageMediator:self
+      didOpenNewTabFromSource:lens::LensOverlayNewTabSource::kContextMenu];
 }
 
 #pragma mark - LensWebProvider
@@ -378,13 +544,16 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
   _policyDeciderBridge =
       std::make_unique<web::WebStatePolicyDeciderBridge>(_webState.get(), self);
   AttachTabHelpers(_webState.get(), TabHelperFilter::kBottomSheet);
-  _webState->GetWebViewProxy().allowsBackForwardNavigationGestures = NO;
+  id<CRWWebViewProxy> webViewProxy = _webState->GetWebViewProxy();
+  webViewProxy.allowsBackForwardNavigationGestures = NO;
+  // Allow the scrollView to cover the safe area.
+  webViewProxy.scrollViewProxy.clipsToBounds = NO;
 
   if (self.consumer) {
     _webState->SetWebUsageEnabled(true);
     [self.consumer setWebView:_webState->GetView()];
   }
-  [self.webStateDelegate lensResultPageDidChangeActiveWebState:_webState.get()];
+  [self.delegate lensResultPageDidChangeActiveWebState:_webState.get()];
 }
 
 /// Activates the web state with the given `URL`.
@@ -405,7 +574,7 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
     _webStateObserverBridge.reset();
   }
 
-  [self.webStateDelegate lensResultPageWebStateDestroyed];
+  [self.delegate lensResultPageWebStateDestroyed];
 }
 
 @end

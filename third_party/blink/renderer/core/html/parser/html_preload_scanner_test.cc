@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/client_hints_preferences.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/url_loader_mock_factory.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -450,7 +451,7 @@ class HTMLPreloadScannerTest : public PageTestBase {
     KURL base_url(test_case.base_url);
     scanner_->AppendToEnd(String(test_case.input_html));
     auto data = scanner_->Scan(base_url);
-    EXPECT_EQ(test_case.should_see_csp_tag, data->has_csp_meta_tag);
+    EXPECT_EQ(test_case.should_see_csp_tag, data->csp_meta_tag_count > 0);
   }
 
   void Test(NonceTestCase test_case) {
@@ -1497,23 +1498,42 @@ TEST_F(HTMLPreloadScannerTest, Integrity) {
     Test(test_case);
 }
 
+class MetaCspNoPreloadsAfterTest : public HTMLPreloadScannerTest,
+                                   public ::testing::WithParamInterface<bool> {
+ public:
+  MetaCspNoPreloadsAfterTest() : scopedAllow(GetParam()) {}
+
+  bool ExpectPreloads() const { return GetParam(); }
+
+ private:
+  blink::RuntimeEnabledFeaturesTestHelpers::ScopedAllowPreloadingWithCSPMetaTag
+      scopedAllow;
+};
+
+INSTANTIATE_TEST_SUITE_P(MetaCspNoPreloadsAfterTests,
+                         MetaCspNoPreloadsAfterTest,
+                         testing::Bool());
+
 // Regression test for http://crbug.com/898795 where preloads after a
 // dynamically inserted meta csp tag are dispatched on subsequent calls to the
 // HTMLPreloadScanner, after they had been parsed.
-TEST_F(HTMLPreloadScannerTest, MetaCsp_NoPreloadsAfter) {
+TEST_P(MetaCspNoPreloadsAfterTest, NoPreloadsAfter) {
   PreloadScannerTestCase test_cases[] = {
       {"http://example.test",
        "<meta http-equiv='Content-Security-Policy'><link rel=preload href=bla "
        "as=SCRIPT>",
-       nullptr, "http://example.test/", ResourceType::kScript, 0},
-      // The buffered text referring to the preload above should be cleared, so
-      // make sure it is not preloaded on subsequent calls to Scan.
+       ExpectPreloads() ? "bla" : nullptr, "http://example.test/",
+       ResourceType::kScript, 0},
+      // The buffered text referring to the preload above should be
+      // cleared, so make sure it is not preloaded on subsequent calls to
+      // Scan.
       {"http://example.test", "", nullptr, "http://example.test/",
        ResourceType::kScript, 0},
   };
 
-  for (const auto& test_case : test_cases)
+  for (const auto& test_case : test_cases) {
     Test(test_case);
+  }
 }
 
 TEST_F(HTMLPreloadScannerTest, LazyLoadImage) {

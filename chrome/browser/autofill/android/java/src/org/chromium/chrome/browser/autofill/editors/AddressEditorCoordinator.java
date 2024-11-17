@@ -131,25 +131,11 @@ public class AddressEditorCoordinator {
     }
 
     /**
-     * Sets the runnable deleting the current autofill profile, e.g. when the user selects
-     * the delete option in the menu and confirms autofill profile deletion.
-     *
-     * @param deleteRunnable A {@link Runnable} deleting the current profile.
+     * Sets the runnable deleting the current autofill profile, e.g. when the user selects the
+     * delete option in the menu and confirms autofill profile deletion.
      */
     public void setAllowDelete(boolean allowDelete) {
         mMediator.setAllowDelete(allowDelete);
-    }
-
-    /**
-     * Sets a boolean flag indicating if done callback needs to be triggered prior to dismissing
-     * this address editor.
-     *
-     * @param shouldTrigger If true, done callback is triggered immediately after the user clicked
-     *         on the done button. Otherwise, by default, it is triggered only after the dialog is
-     *         dismissed with animation.
-     */
-    public void setShouldTriggerDoneCallbackBeforeCloseAnimation(boolean shouldTrigger) {
-        mMediator.setShouldTriggerDoneCallbackBeforeCloseAnimation(shouldTrigger);
     }
 
     /** Notifies underlying view that device configuration has changed. */

@@ -377,8 +377,8 @@ std::unique_ptr<TouchInjector> ArcInputOverlayManager::ReadDefaultData(
     return touch_injector;
   }
 
-  const auto json_file =
-      ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
+  std::string json_file =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           resource_id.value());
   if (json_file.empty()) {
     LOG(WARNING) << "No content for: " << package_name;
@@ -398,11 +398,6 @@ std::unique_ptr<TouchInjector> ArcInputOverlayManager::ReadDefaultData(
 void ArcInputOverlayManager::OnFinishReadDefaultData(
     std::unique_ptr<TouchInjector> touch_injector) {
   DCHECK(touch_injector);
-
-  if (!IsBeta() && touch_injector->actions().empty()) {
-    ResetForPendingTouchInjector(std::move(touch_injector));
-    return;
-  }
 
   // Null for unit test.
   if (!data_controller_) {
@@ -426,14 +421,6 @@ void ArcInputOverlayManager::OnProtoDataAvailable(
   DCHECK(touch_injector);
   if (proto) {
     touch_injector->OnProtoDataAvailable(*proto);
-  } else {
-    touch_injector->NotifyFirstTimeLaunch();
-  }
-
-  if (!IsBeta()) {
-    DCHECK(!touch_injector->actions().empty());
-    OnLoadingFinished(std::move(touch_injector));
-    return;
   }
 
   // Steps to check whether enablings Game Controls for `package_name`.
@@ -602,12 +589,6 @@ void ArcInputOverlayManager::RegisterWindow(aura::Window* window) {
   // It should always unregister the window first, then register another window.
   DCHECK(!registered_top_level_window_);
 
-  // For Beta version, it may focus on its transient sibling window.
-  if (!IsBeta()) {
-    DCHECK_EQ(ash::window_util::GetFocusedWindow()->GetToplevelWindow(),
-              window);
-  }
-
   const auto it = input_overlay_enabled_windows_.find(window);
   if (it == input_overlay_enabled_windows_.end()) {
     return;
@@ -663,23 +644,14 @@ void ArcInputOverlayManager::AddDisplayOverlayController(
   }
   DCHECK(!display_overlay_controller_);
 
-  display_overlay_controller_ = std::make_unique<DisplayOverlayController>(
-      touch_injector, touch_injector->first_launch());
+  display_overlay_controller_ =
+      std::make_unique<DisplayOverlayController>(touch_injector);
 }
 
 void ArcInputOverlayManager::RemoveDisplayOverlayController() {
   if (!registered_top_level_window_) {
     return;
   }
-
-  // There is only one `display_overlay_controller_` active at a time. When
-  // window is destroyed, the attached sibling window is destroyed first, which
-  // triggers the window focus change. And then it also triggers the window
-  // unregister and gets `display_overlay_controller_` reset before here.
-  if (!IsBeta()) {
-    DCHECK(display_overlay_controller_);
-  }
-
   if (display_overlay_controller_) {
     display_overlay_controller_.reset();
   }
@@ -692,8 +664,7 @@ void ArcInputOverlayManager::ResetForPendingTouchInjector(
   // If `window` is destroyed, it will be removed from `loading_data_window_` by
   // OnWindowDestroying(). So it is safe to call Window class functions after
   // checking `loading_data_window_`.
-  if (IsBeta() && loading_data_windows_.contains(window) &&
-      !window->is_destroying()) {
+  if (loading_data_windows_.contains(window) && !window->is_destroying()) {
     // GIO status is known here and GIO is not available.
     window->SetProperty(ash::kArcGameControlsFlagsKey,
                         ash::ArcGameControlsFlag::kKnown);
@@ -743,10 +714,8 @@ ArcAppListPrefs* ArcInputOverlayManager::GetArcAppListPrefs() {
 
 aura::Window* ArcInputOverlayManager::GetAnchorWindow(aura::Window* window) {
   // TODO(b/314687082): It still needs to find a way to reproduce the crash.
-  // Right now, return `window` directly for pre-beta version to stabilize
-  // ChromeOS.
-  if (!IsBeta() || !window) {
-    return window;
+  if (!window) {
+    return nullptr;
   }
 
   // Check whether `window` is a bubble dialog window.

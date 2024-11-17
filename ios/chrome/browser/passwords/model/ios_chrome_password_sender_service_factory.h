@@ -7,7 +7,8 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace password_manager {
 class PasswordSenderService;
@@ -17,10 +18,6 @@ class PasswordSenderService;
 class IOSChromePasswordSenderServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static password_manager::PasswordSenderService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static password_manager::PasswordSenderService* GetForProfile(
       ProfileIOS* profile);
   static IOSChromePasswordSenderServiceFactory* GetInstance();

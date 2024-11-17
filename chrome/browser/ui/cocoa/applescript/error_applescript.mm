@@ -65,7 +65,7 @@ void SetError(Error error_code) {
           IDS_JAVASCRIPT_UNSUPPORTED_ERROR_APPLESCRIPT_MAC);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   current_command.scriptErrorString = error_string;
 }

@@ -14,7 +14,7 @@ namespace base {
 
 WaitableEventWatcher::WaitableEventWatcher() = default;
 
-WaitableEventWatcher::~WaitableEventWatcher() {}
+WaitableEventWatcher::~WaitableEventWatcher() = default;
 
 bool WaitableEventWatcher::StartWatching(
     WaitableEvent* event,

@@ -18,27 +18,34 @@
 @property(class, nonatomic, readonly) BOOL isModernTabStripWithTabGroups;
 
 // Whether the new tab button should be bigger and closer to the tab strip.
-@property(class, nonatomic, readonly) BOOL isTabStripCloserNTBEnabled;
+@property(class, nonatomic, readonly) BOOL hasCloserNTB;
 
 // Whether the tab strip should have a darker background.
-@property(class, nonatomic, readonly) BOOL isTabStripDarkerBackgroundEnabled;
+@property(class, nonatomic, readonly) BOOL hasDarkerBackground;
 
-// Whether the tab strip should have a darker background and a closer new tab
-// button.
-@property(class, nonatomic, readonly)
-    BOOL isTabStripCloserNTBDarkerBackgroundEnabled;
+// Whether the tab strip should have a darker background for V3.
+@property(class, nonatomic, readonly) BOOL hasDarkerBackgroundV3;
 
 // Whether the new tab button should have its background removed.
-@property(class, nonatomic, readonly) BOOL isTabStripNTBNoBackgroundEnabled;
+@property(class, nonatomic, readonly) BOOL hasNoNTBBackground;
 
 // Whether the tab strip should have a black background.
-@property(class, nonatomic, readonly) BOOL isTabStripBlackBackgroundEnabled;
+@property(class, nonatomic, readonly) BOOL hasBlackBackground;
 
-// Whether any of the V2 experiments are enabled.
-@property(class, nonatomic, readonly) BOOL isTabStripV2;
+// Whether the NTB button should be bigger.
+@property(class, nonatomic, readonly) BOOL hasBiggerNTB;
 
-// Whether the close button should have a bigger tap target.
-@property(class, nonatomic, readonly) BOOL isTabStripBiggerCloseTargetEnabled;
+// Whether the close button of the non-selected tabs should always be visible.
+@property(class, nonatomic, readonly) BOOL hasCloseButtonsVisible;
+
+// Whether the non-selected tabs should have a higher contrast.
+@property(class, nonatomic, readonly) BOOL hasHighContrastInactiveTabs;
+
+// Whether the New Tab Button should have high contrast.
+@property(class, nonatomic, readonly) BOOL hasHighContrastNTB;
+
+// Whether the tabs should be visually detached.
+@property(class, nonatomic, readonly) BOOL hasDetachedTabs;
 
 @end
 

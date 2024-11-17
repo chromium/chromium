@@ -25,18 +25,18 @@
     "channel": "stable",
     "extension_types": ["platform_app"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   }, {
     "channel": "stable",
     "dependencies": ["behavior:imprivata_extension"],
     "extension_types": ["extension"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"]
+    "platforms": ["chromeos"]
   }, {
     "channel": "stable",
     "extension_types": ["extension"],
     "location": "policy",
-    "platforms": ["chromeos", "lacros"],
+    "platforms": ["chromeos"],
     "allowlist": [
       "0962FDCCF4987E36619F5BDA0A8ED4CE78E6AC34"  // Mercury V-Launcher
     ]

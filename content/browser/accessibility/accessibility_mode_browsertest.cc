@@ -56,13 +56,15 @@ class AccessibilityModeTest : public ContentBrowserTest {
       ax::mojom::Role role,
       const std::string& name) {
     if (node.GetRole() == role &&
-        node.GetStringAttribute(ax::mojom::StringAttribute::kName) == name)
+        node.GetStringAttribute(ax::mojom::StringAttribute::kName) == name) {
       return &node;
+    }
     for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
       const ui::BrowserAccessibility* result =
           FindNodeInSubtree(*node.PlatformGetChild(i), role, name);
-      if (result)
+      if (result) {
         return result;
+      }
     }
     return nullptr;
   }

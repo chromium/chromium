@@ -3754,7 +3754,7 @@ TEST_F(ShellSurfaceTest, OverlayCanResize) {
 
 class TestWindowObserver : public WMHelper::ExoWindowObserver {
  public:
-  TestWindowObserver() {}
+  TestWindowObserver() = default;
 
   TestWindowObserver(const TestWindowObserver&) = delete;
   TestWindowObserver& operator=(const TestWindowObserver&) = delete;
@@ -3837,22 +3837,6 @@ TEST_F(ShellSurfaceTest, Reparent) {
   child_shell_surface->Activate();
   EXPECT_TRUE(child_widget->ShouldPaintAsActive());
   EXPECT_TRUE(widget2->ShouldPaintAsActive());
-}
-
-TEST_F(ShellSurfaceTest, ThrottleFrameRate) {
-  auto shell_surface = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
-  SurfaceObserverForTest observer(
-      shell_surface->root_surface()->window()->GetOcclusionState());
-  shell_surface->root_surface()->AddSurfaceObserver(&observer);
-  aura::Window* window = shell_surface->GetWidget()->GetNativeWindow();
-
-  EXPECT_CALL(observer, ThrottleFrameRate(true));
-  window->SetProperty(ash::kFrameRateThrottleKey, true);
-
-  EXPECT_CALL(observer, ThrottleFrameRate(false));
-  window->SetProperty(ash::kFrameRateThrottleKey, false);
-
-  shell_surface->root_surface()->RemoveSurfaceObserver(&observer);
 }
 
 // Tests raster scale changes happen before occlusion changes on entering
@@ -3938,8 +3922,8 @@ TEST_F(ShellSurfaceTest, RasterScaleChangeVsOcclusionChangeOrder) {
 TEST_F(ShellSurfaceTest, ThrottleFrameRateViaController) {
   ash::FrameThrottlingController* frame_throttling_controller =
       ash::Shell::Get()->frame_throttling_controller();
-  for (auto app_type : {chromeos::AppType::LACROS, chromeos::AppType::BROWSER,
-                        chromeos::AppType::CROSTINI_APP}) {
+  for (auto app_type :
+       {chromeos::AppType::BROWSER, chromeos::AppType::CROSTINI_APP}) {
     auto shell_surface = test::ShellSurfaceBuilder({20, 20})
                              .SetAppType(app_type)
                              .BuildShellSurface();
@@ -3955,11 +3939,6 @@ TEST_F(ShellSurfaceTest, ThrottleFrameRateViaController) {
             : testing::UnorderedElementsAreArray<viz::FrameSinkId>({});
     EXPECT_THAT(frame_throttling_controller->GetFrameSinkIdsToThrottle(),
                 should_throttle_set);
-
-    // ash::kFrameRateThrottleKey is only set for lacros.
-    const bool should_set_property = app_type == chromeos::AppType::LACROS;
-    EXPECT_EQ(should_set_property,
-              window->GetProperty(ash::kFrameRateThrottleKey));
   }
 }
 
@@ -4729,38 +4708,6 @@ TEST_F(ShellSurfaceTest, DeleteWithGrab) {
                             .BuildShellSurface();
   popup_shell_surface->GetWidget()->CloseNow();
   popup_shell_surface.reset();
-}
-
-TEST_F(ShellSurfaceTest, WindowPropertyChangedNotificationWithoutRootSurface) {
-  // Test OnWindowPropertyChanged() notification on a ShellSurface, whose root
-  // surface has gone.
-
-  auto* overview_controller = ash::Shell::Get()->overview_controller();
-
-  std::unique_ptr<ShellSurface> shell_surface =
-      test::ShellSurfaceBuilder({256, 256})
-          .SetAppType(chromeos::AppType::LACROS)
-          .BuildShellSurface();
-
-  std::unique_ptr<ShellSurface> shell_surface1 =
-      test::ShellSurfaceBuilder({256, 256})
-          .SetAppType(chromeos::AppType::LACROS)
-          .BuildShellSurface();
-
-  overview_controller->StartOverview(ash::OverviewStartAction::kTests);
-  ash::WaitForOverviewEnterAnimation();
-
-  test::ShellSurfaceBuilder::DestroyRootSurface(shell_surface1.get());
-
-  // Destroying `shell_surface` will close its aura window, causing update of
-  // frame throttling in the overview mode for the remaining Lacros window(s).
-  // In this case, the remaining window is associated with `shell_surface1`. It
-  // receives OnWindowPropertyChanged() notification with
-  // ash::kFrameRateThrottleKey key. The root surface of `shell_surface1` has
-  // gone at this point. Verify that it doesn't cause crash.
-  shell_surface.reset();
-
-  overview_controller->EndOverview(ash::OverviewEndAction::kTests);
 }
 
 TEST_F(ShellSurfaceTest, SurfaceSyncWithShellSurfaceCreatedOnDisplayWithScale) {

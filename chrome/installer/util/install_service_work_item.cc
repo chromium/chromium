@@ -56,4 +56,9 @@ bool InstallServiceWorkItem::DeleteService(const std::wstring& service_name,
       .DeleteServiceImpl();
 }
 
+// static
+bool InstallServiceWorkItem::IsComServiceInstalled(const GUID& clsid) {
+  return InstallServiceWorkItemImpl::IsComServiceInstalled(clsid);
+}
+
 }  // namespace installer

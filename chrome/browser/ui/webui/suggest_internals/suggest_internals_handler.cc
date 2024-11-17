@@ -5,10 +5,12 @@
 #include "chrome/browser/ui/webui/suggest_internals/suggest_internals_handler.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/autocomplete/remote_suggestions_service_factory.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/simple_url_loader.h"
 
 SuggestInternalsHandler::SuggestInternalsHandler(
     mojo::PendingReceiver<suggest_internals::mojom::PageHandler>
@@ -35,8 +37,16 @@ void SuggestInternalsHandler::SetPage(
 
 void SuggestInternalsHandler::HardcodeResponse(
     const std::string& response,
+    base::TimeDelta delay,
     HardcodeResponseCallback callback) {
-  hardcoded_response_ = response;
+  hardcoded_response_and_delay_ = std::make_pair(response, delay);
+  if (auto* remote_suggestions_service =
+          RemoteSuggestionsServiceFactory::GetForProfile(
+              profile_,
+              /*create_if_necessary=*/true)) {
+    remote_suggestions_service->SetDelegate(weak_ptr_factory_.GetWeakPtr());
+  }
+
   // Update the page with a synthetic request representing the hardcoded
   // response.
   suggest_internals::mojom::RequestPtr mojom_request =
@@ -48,7 +58,7 @@ void SuggestInternalsHandler::HardcodeResponse(
   std::move(callback).Run(std::move(mojom_request));
 }
 
-void SuggestInternalsHandler::OnSuggestRequestCreated(
+void SuggestInternalsHandler::OnRequestCreated(
     const base::UnguessableToken& request_id,
     const network::ResourceRequest* request) {
   // Update the page with the request information.
@@ -61,10 +71,10 @@ void SuggestInternalsHandler::OnSuggestRequestCreated(
   mojom_request->data[variations::kClientDataHeader] = variations_header;
   mojom_request->data[request->method] = request->url.spec();
   mojom_request->status = suggest_internals::mojom::RequestStatus::kCreated;
-  page_->OnSuggestRequestCreated(std::move(mojom_request));
+  page_->OnRequestCreated(std::move(mojom_request));
 }
 
-void SuggestInternalsHandler::OnSuggestRequestStarted(
+void SuggestInternalsHandler::OnRequestStarted(
     const base::UnguessableToken& request_id,
     network::SimpleURLLoader* loader,
     const std::string& request_body) {
@@ -75,10 +85,10 @@ void SuggestInternalsHandler::OnSuggestRequestStarted(
   mojom_request->data["Request-Body"] = request_body;
   mojom_request->status = suggest_internals::mojom::RequestStatus::kSent;
   mojom_request->start_time = base::Time::Now();
-  page_->OnSuggestRequestStarted(std::move(mojom_request));
+  page_->OnRequestStarted(std::move(mojom_request));
 }
 
-void SuggestInternalsHandler::OnSuggestRequestCompleted(
+void SuggestInternalsHandler::OnRequestCompleted(
     const base::UnguessableToken& request_id,
     const int response_code,
     const std::unique_ptr<std::string>& response_body) {
@@ -93,12 +103,37 @@ void SuggestInternalsHandler::OnSuggestRequestCompleted(
                         : suggest_internals::mojom::RequestStatus::kFailed;
   mojom_request->end_time = base::Time::Now();
   mojom_request->response = response_received ? *response_body : "";
-  page_->OnSuggestRequestCompleted(std::move(mojom_request));
+  page_->OnRequestCompleted(std::move(mojom_request));
+}
 
-  // If the page has hardcoded a response, override the response.
-  if (response_received && !hardcoded_response_.empty()) {
-    auto& non_const_response_body =
-        const_cast<std::unique_ptr<std::string>&>(response_body);
-    *non_const_response_body = hardcoded_response_;
+void SuggestInternalsHandler::OnRequestCompleted(
+    const network::SimpleURLLoader* source,
+    const int response_code,
+    std::unique_ptr<std::string> response_body,
+    RemoteSuggestionsService::CompletionCallback completion_callback) {
+  CHECK(hardcoded_response_and_delay_);
+  const auto [hardcoded_response, delay] = *hardcoded_response_and_delay_;
+
+  // Override the response with the hardcoded response given by the page.
+  if (response_code == 200) {
+    *response_body = hardcoded_response;
   }
+
+  // Call the completion callback after the delay given by the page.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::WeakPtr<const network::SimpleURLLoader> weak_source,
+             const int response_code,
+             std::unique_ptr<std::string> response_body,
+             RemoteSuggestionsService::CompletionCallback completion_callback) {
+            if (weak_source) {
+              std::move(completion_callback)
+                  .Run(weak_source.get(), response_code,
+                       std::move(response_body));
+            }
+          },
+          source->GetWeakPtr(), response_code, std::move(response_body),
+          std::move(completion_callback)),
+      delay);
 }

@@ -250,7 +250,7 @@ void GLContext::ReinitializeDynamicBindings() {
 }
 
 void GLContext::ForceReleaseVirtuallyCurrent() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void GLContext::DirtyVirtualContextState() {
@@ -396,8 +396,7 @@ bool GLContext::LosesAllContextsOnContextLost() {
     case kGLImplementationStubGL:
       return false;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
   }
 }
 
@@ -413,9 +412,7 @@ void GLContext::OnContextWillDestroy() {
   DCHECK(!has_called_on_destory_);
   has_called_on_destory_ = true;
 
-  for (auto& obs : observer_list_) {
-    obs.OnGLContextWillDestroy(this);
-  }
+  observer_list_.Notify(&GLContextObserver::OnGLContextWillDestroy, this);
 }
 
 std::unique_ptr<gl::GLVersionInfo> GLContext::GenerateGLVersionInfo() {
@@ -426,9 +423,7 @@ std::unique_ptr<gl::GLVersionInfo> GLContext::GenerateGLVersionInfo() {
 void GLContext::MarkContextLost() {
   context_lost_ = true;
 
-  for (auto& obs : observer_list_) {
-    obs.OnGLContextLost(this);
-  }
+  observer_list_.Notify(&GLContextObserver::OnGLContextLost, this);
 }
 
 void GLContext::SetCurrent(GLSurface* surface) {

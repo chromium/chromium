@@ -32,6 +32,7 @@
 #include "base/i18n/time_formatting.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -223,7 +224,8 @@ SavedDeskItemView::SavedDeskItemView(std::unique_ptr<DeskTemplate> saved_desk)
       this, SystemShadow::Type::kElevation12);
   shadow_->SetRoundedCornerRadius(kSaveDeskCornerRadius);
 
-  if (features::IsBackgroundBlurEnabled()) {
+  if (features::IsBackgroundBlurEnabled() &&
+      chromeos::features::IsSystemBlurEnabled()) {
     background_view->SetPaintToLayer();
     background_view->layer()->SetFillsBoundsOpaquely(false);
     background_view->layer()->SetBackgroundBlur(
@@ -397,15 +399,6 @@ void SavedDeskItemView::UpdateSavedDesk(
   name_view_->OnContentsChanged();
 }
 
-void SavedDeskItemView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  // We must set the updated accessible name directly in the cache to override
-  // the one set in `LabelButton::SetText`. This is temporary.
-  //
-  // TODO(crbug.com/325137417): Remove this once the accessible name is set in
-  // the cache as soon as the name is updated.
-  GetViewAccessibility().SetName(ComputeAccessibleName());
-}
-
 void SavedDeskItemView::Layout(PassKey) {
   LayoutSuperclass<views::View>(this);
 
@@ -569,6 +562,10 @@ std::u16string SavedDeskItemView::ComputeAccessibleName() const {
 
   return l10n_util::GetStringFUTF16(accessible_text_id,
                                     saved_desk_->template_name());
+}
+
+void SavedDeskItemView::SetTooltipText(const std::u16string& tooltip_text) {
+  NOTREACHED();
 }
 
 void SavedDeskItemView::AnimateHover(ui::Layer* layer_to_show,

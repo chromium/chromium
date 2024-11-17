@@ -433,7 +433,7 @@ class CrashpadClient {
   //!     FirstChanceHandler and crashes the current process.
   //!
   //! \param[in] message A message to be logged before crashing.
-  static void CrashWithoutDump(const std::string& message);
+  [[noreturn]] static void CrashWithoutDump(const std::string& message);
 
   //! \brief The type for custom handlers installed by clients.
   using FirstChanceHandler = bool (*)(int, siginfo_t*, ucontext_t*);

@@ -15,6 +15,7 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/extensions/browsertest_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/update_client/crx_update_item.h"
 #include "components/update_client/net/url_loader_post_interceptor.h"
 #include "components/update_client/protocol_handler.h"
 #include "content/public/browser/browser_context.h"
@@ -94,10 +95,7 @@ class TestChromeBrowserMainExtraParts : public ChromeBrowserMainExtraParts {
 class UpdateClientCompleteEventWaiter
     : public update_client::UpdateClient::Observer {
  public:
-  using UpdateClientEvents = update_client::UpdateClient::Observer::Events;
-
-  explicit UpdateClientCompleteEventWaiter(const std::string& id)
-      : id_(id), event_(UpdateClientEvents::COMPONENT_UPDATE_ERROR) {}
+  explicit UpdateClientCompleteEventWaiter(const std::string& id) : id_(id) {}
 
   UpdateClientCompleteEventWaiter(const UpdateClientCompleteEventWaiter&) =
       delete;
@@ -106,25 +104,25 @@ class UpdateClientCompleteEventWaiter
 
   ~UpdateClientCompleteEventWaiter() override = default;
 
-  void OnEvent(update_client::UpdateClient::Observer::Events event,
-               const std::string& id) final {
-    if (id_ == id &&
-        (event == UpdateClientEvents::COMPONENT_UPDATED ||
-         event == UpdateClientEvents::COMPONENT_ALREADY_UP_TO_DATE ||
-         event == UpdateClientEvents::COMPONENT_UPDATE_ERROR)) {
-      event_ = event;
+  void OnEvent(const update_client::CrxUpdateItem& item) final {
+    if (id_ == item.id &&
+        (item.state == update_client::ComponentState::kUpdated ||
+         item.state == update_client::ComponentState::kUpToDate ||
+         item.state == update_client::ComponentState::kUpdateError)) {
+      state_ = item.state;
       run_loop_.Quit();
     }
   }
 
-  UpdateClientEvents Wait() {
+  update_client::ComponentState Wait() {
     run_loop_.Run();
-    return event_;
+    return state_;
   }
 
  private:
   const std::string id_;
-  UpdateClientEvents event_;
+  update_client::ComponentState state_ =
+      update_client::ComponentState::kUpdateError;
   base::RunLoop run_loop_;
 };
 
@@ -208,7 +206,7 @@ void ExtensionUpdateClientBaseTest::SetUpNetworkInterceptors() {
           &ExtensionUpdateClientBaseTest::OnRequest, base::Unretained(this)));
 }
 
-update_client::UpdateClient::Observer::Events
+update_client::ComponentState
 ExtensionUpdateClientBaseTest::WaitOnComponentUpdaterCompleteEvent(
     const std::string& id) {
   UpdateClientCompleteEventWaiter waiter(id);

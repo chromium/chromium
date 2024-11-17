@@ -200,11 +200,15 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterNetworkSource {
   }
 };
 
-// Race network and fetch handler source.
+// Race two sources.
 struct BLINK_COMMON_EXPORT ServiceWorkerRouterRaceSource {
-  bool operator==(const ServiceWorkerRouterRaceSource& other) const {
-    return true;
-  }
+  // Enum to explain which sources race.
+  enum class TargetEnum {
+    kNetworkAndFetchHandler = 0,
+  };
+
+  TargetEnum target = TargetEnum::kNetworkAndFetchHandler;
+  bool operator==(const ServiceWorkerRouterRaceSource& other) const;
 };
 
 // Fetch handler source structure.

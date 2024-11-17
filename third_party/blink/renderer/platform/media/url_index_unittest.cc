@@ -23,11 +23,11 @@ class UrlIndexTest : public testing::Test {
  public:
   UrlIndexTest() = default;
 
-  scoped_refptr<UrlData> GetByUrl(const GURL& gurl,
+  scoped_refptr<UrlData> GetByUrl(const KURL& url,
                                   UrlData::CorsMode cors_mode) {
     scoped_refptr<UrlData> ret =
-        url_index_.GetByUrl(gurl, cors_mode, UrlData::kNormal);
-    EXPECT_EQ(ret->url(), gurl);
+        url_index_.GetByUrl(url, cors_mode, UrlData::kNormal);
+    EXPECT_EQ(ret->url(), url);
     EXPECT_EQ(ret->cors_mode(), cors_mode);
     return ret;
   }
@@ -38,8 +38,8 @@ class UrlIndexTest : public testing::Test {
 };
 
 TEST_F(UrlIndexTest, SimpleTest) {
-  GURL url1("http://foo.bar.com");
-  GURL url2("http://foo.bar.com/urgel");
+  KURL url1("http://foo.bar.com");
+  KURL url2("http://foo.bar.com/urgel");
   scoped_refptr<UrlData> a = GetByUrl(url1, UrlData::CORS_UNSPECIFIED);
   // Make sure it's valid, we still shouldn't get the same one.
   a->Use();
@@ -75,7 +75,7 @@ TEST_F(UrlIndexTest, SimpleTest) {
 }
 
 TEST_F(UrlIndexTest, UrlDataTest) {
-  GURL url("http://foo.bar.com");
+  KURL url("http://foo.bar.com");
   scoped_refptr<UrlData> a = GetByUrl(url, UrlData::CORS_UNSPECIFIED);
 
   // Check default values.
@@ -103,7 +103,7 @@ TEST_F(UrlIndexTest, UrlDataTest) {
 }
 
 TEST_F(UrlIndexTest, UseTest) {
-  GURL url("http://foo.bar.com");
+  KURL url("http://foo.bar.com");
   scoped_refptr<UrlData> a = GetByUrl(url, UrlData::CORS_UNSPECIFIED);
   EXPECT_FALSE(a->Valid());
   a->Use();
@@ -112,7 +112,7 @@ TEST_F(UrlIndexTest, UseTest) {
 }
 
 TEST_F(UrlIndexTest, TryInsert) {
-  GURL url("http://foo.bar.com");
+  KURL url("http://foo.bar.com");
   scoped_refptr<UrlData> a = GetByUrl(url, UrlData::CORS_UNSPECIFIED);
   scoped_refptr<UrlData> c = GetByUrl(url, UrlData::CORS_UNSPECIFIED);
   EXPECT_NE(a, c);
@@ -162,7 +162,7 @@ TEST_F(UrlIndexTest, TryInsert) {
 }
 
 TEST_F(UrlIndexTest, GetByUrlCacheDisabled) {
-  GURL url("http://foo.bar.com");
+  KURL url("http://foo.bar.com");
   UrlData::CorsMode cors = UrlData::CORS_UNSPECIFIED;
 
   scoped_refptr<UrlData> url_data =

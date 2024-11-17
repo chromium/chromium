@@ -221,9 +221,9 @@ class BrowserProcess {
   virtual DownloadStatusUpdater* download_status_updater() = 0;
   virtual DownloadRequestLimiter* download_request_limiter() = 0;
 
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   // Returns the object that manages background applications.
   virtual BackgroundModeManager* background_mode_manager() = 0;
-#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   virtual void set_background_mode_manager_for_test(
       std::unique_ptr<BackgroundModeManager> manager) = 0;
 #endif

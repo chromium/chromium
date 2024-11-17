@@ -26,6 +26,7 @@
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -153,7 +154,7 @@ struct ViewConfig {
     }
     if (@available(iOS 17, *)) {
       NSArray<UITrait>* traits = TraitCollectionSetForTraits(
-          @[ UITraitPreferredContentSizeCategory.self ]);
+          @[ UITraitPreferredContentSizeCategory.class ]);
       [self registerForTraitChanges:traits
                          withAction:@selector(hideDescriptionOnTraitChange)];
     }
@@ -372,7 +373,7 @@ struct ViewConfig {
           IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_TITLE);
     case SetUpListItemType::kDefaultBrowser:
       return l10n_util::GetNSString(
-          UseIPadTailoredStringForDefaultBrowserPromo()
+          ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
               ? IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE_IPAD
               : IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE);
     case SetUpListItemType::kAutofill:

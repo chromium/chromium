@@ -27,8 +27,7 @@ namespace sharing {
 class IpcPacketSocketFactory;
 }  // namespace sharing
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 class WebRtcMedium : public api::WebRtcMedium {
  public:
@@ -50,6 +49,10 @@ class WebRtcMedium : public api::WebRtcMedium {
   const std::string GetDefaultCountryCode() override;
   void CreatePeerConnection(webrtc::PeerConnectionObserver* observer,
                             PeerConnectionCallback callback) override;
+  void CreatePeerConnection(
+      std::optional<webrtc::PeerConnectionFactoryInterface::Options> options,
+      webrtc::PeerConnectionObserver* observer,
+      PeerConnectionCallback callback) override;
   std::unique_ptr<api::WebRtcSignalingMessenger> GetSignalingMessenger(
       std::string_view self_id,
       const location::nearby::connections::LocationHint& location_hint) override;
@@ -80,14 +83,9 @@ class WebRtcMedium : public api::WebRtcMedium {
   // These rtc::Thread* are jingle thread wrappers around the corresponding
   // base::Thread. They get cleaned up on thread shutdown so we don't need to
   // manage lifetime.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
+  // RAW_PTR_EXCLUSION: Performance.
   RAW_PTR_EXCLUSION rtc::Thread* rtc_network_thread_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
   RAW_PTR_EXCLUSION rtc::Thread* rtc_signaling_thread_ = nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
   RAW_PTR_EXCLUSION rtc::Thread* rtc_worker_thread_ = nullptr;
 
   // Used to guard access to peer_connection_factory_.
@@ -114,7 +112,6 @@ class WebRtcMedium : public api::WebRtcMedium {
   base::WeakPtrFactory<WebRtcMedium> weak_ptr_factory_{this};
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_WEBRTC_H_

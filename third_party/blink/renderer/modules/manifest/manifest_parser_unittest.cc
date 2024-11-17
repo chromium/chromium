@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,7 +85,7 @@ class ManifestParserTest : public testing::Test {
     expected_manifest->start_url = document_url;
     expected_manifest->id = document_url;
     expected_manifest->id.RemoveFragmentIdentifier();
-    expected_manifest->scope = KURL(document_url.BaseAsString());
+    expected_manifest->scope = KURL(document_url.BaseAsString().ToString());
     return manifest == expected_manifest;
   }
 
@@ -155,6 +156,7 @@ TEST_F(ManifestParserTest, EmptyStringNull) {
 }
 
 TEST_F(ManifestParserTest, ValidNoContentParses) {
+  base::HistogramTester histogram_tester;
   auto& manifest = ParseManifestWithURLs("{}", KURL(), DefaultDocumentUrl());
 
   // Empty Manifest is not a parsing error.
@@ -175,6 +177,40 @@ TEST_F(ManifestParserTest, ValidNoContentParses) {
   EXPECT_TRUE(manifest->gcm_sender_id.IsNull());
   EXPECT_EQ(DefaultDocumentUrl().BaseAsString(), manifest->scope.GetString());
   EXPECT_TRUE(manifest->shortcuts.empty());
+
+  // Check that the metrics don't record anything
+  EXPECT_THAT(histogram_tester.GetAllSamples("Manifest.HasProperty.name"),
+              testing::IsEmpty());
+  EXPECT_THAT(histogram_tester.GetAllSamples("Manifest.HasProperty.start_url"),
+              testing::IsEmpty());
+  EXPECT_THAT(histogram_tester.GetAllSamples("Manifest.HasProperty.short_name"),
+              testing::IsEmpty());
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Manifest.HasProperty.description"),
+      testing::IsEmpty());
+  EXPECT_THAT(histogram_tester.GetAllSamples("Manifest.HasProperty.start_url"),
+              testing::IsEmpty());
+  EXPECT_THAT(histogram_tester.GetAllSamples("Manifest.HasProperty.display"),
+              testing::IsEmpty());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Manifest.HasProperty.orientation"),
+      testing::IsEmpty());
+  EXPECT_THAT(histogram_tester.GetAllSamples("Manifest.HasProperty.icons"),
+              testing::IsEmpty());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Manifest.HasProperty.screenshots"),
+      testing::IsEmpty());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Manifest.HasProperty.share_target"),
+      testing::IsEmpty());
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Manifest.HasProperty.protocol_handlers"),
+      testing::IsEmpty());
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Manifest.HasProperty.gcm_sender_id"),
+      testing::IsEmpty());
 }
 
 TEST_F(ManifestParserTest, UnrecognizedFieldsIgnored) {
@@ -511,12 +547,16 @@ TEST_F(ManifestParserTest, IdParseRules) {
 TEST_F(ManifestParserTest, StartURLParseRules) {
   // Smoke test.
   {
+    base::HistogramTester histogram_tester;
     auto& manifest = ParseManifest(R"({ "start_url": "land.html" })");
     ASSERT_EQ(manifest->start_url, KURL(DefaultDocumentUrl(), "land.html"));
     ASSERT_FALSE(IsManifestEmpty(manifest));
     EXPECT_THAT(errors(), testing::IsEmpty());
     EXPECT_TRUE(manifest->has_valid_specified_start_url);
     EXPECT_FALSE(HasDefaultValuesWithUrls(manifest));
+    EXPECT_THAT(
+        histogram_tester.GetAllSamples("Manifest.HasProperty.start_url"),
+        base::BucketsAre(base::Bucket(1, 1)));
   }
 
   // Whitespaces.

@@ -322,7 +322,8 @@ class VIZ_SERVICE_EXPORT SurfaceAggregator : public SurfaceObserver {
   // then store it in the |delegated_ink_metadata_| member.
   void TransformAndStoreDelegatedInkMetadata(
       const gfx::Transform& parent_quad_to_root_target_transform,
-      const gfx::DelegatedInkMetadata* metadata);
+      const gfx::DelegatedInkMetadata* metadata,
+      const AggregatedRenderPassId render_pass_id);
 
   // Preliminary check to see if a surface contained in |surface_quad| can
   // potentially merge its root render pass. If so, returns true.

@@ -39,7 +39,8 @@
           "builder": "ios-simulator-noncq",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/ios-simulator-noncq/targets"
     }
   },
   "$build/flakiness": {
@@ -71,5 +72,5 @@
   "builder_group": "tryserver.chromium.mac",
   "cq": "path-based",
   "recipe": "chromium_trybot",
-  "xcode_build_version": "16a242"
+  "xcode_build_version": "16b40"
 }

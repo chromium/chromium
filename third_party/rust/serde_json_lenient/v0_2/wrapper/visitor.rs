@@ -147,9 +147,8 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c> {
     where
         M: MapAccess<'de>,
     {
-        // TODO(danakj): base::Value::Dict doesn't expose a way to reserve space, so we
-        // don't bother using `access.size_hint()` here, unlike when creating a
-        // list.
+        // `serde_json_lenient::de::MapAccess::size_hint` always returns `None`,
+        // so we don't bother trying to reserve space here.
         let mut inner_ctx = match self.aggregate {
             DeserializationTarget::List { ctx } => self.fns.list_append_dict(ctx),
             DeserializationTarget::Dict { ctx, key } => self.fns.dict_set_dict(ctx, &key),
@@ -168,13 +167,11 @@ impl<'de, 'c> Visitor<'de> for ValueVisitor<'c> {
     where
         S: SeqAccess<'de>,
     {
+        // `serde_json_lenient::de::SeqAccess::size_hint` always returns `None`,
+        // so we don't bother trying to reserve space here.
         let mut inner_ctx = match self.aggregate {
-            DeserializationTarget::List { ctx } => {
-                self.fns.list_append_list(ctx, access.size_hint().unwrap_or(0))
-            }
-            DeserializationTarget::Dict { ctx, key } => {
-                self.fns.dict_set_list(ctx, &key, access.size_hint().unwrap_or(0))
-            }
+            DeserializationTarget::List { ctx } => self.fns.list_append_list(ctx),
+            DeserializationTarget::Dict { ctx, key } => self.fns.dict_set_list(ctx, &key),
         };
         while let Some(_) = access.next_element_seed(ValueVisitor {
             fns: self.fns,

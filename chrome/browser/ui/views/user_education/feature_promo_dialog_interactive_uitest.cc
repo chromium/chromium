@@ -43,10 +43,13 @@
 #include "components/feature_engagement/public/feature_list.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/live_caption/caption_util.h"
-#include "components/user_education/common/feature_promo_controller.h"
-#include "components/user_education/common/feature_promo_specification.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/feature_promo/feature_promo_specification.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
+#include "ui/base/interaction/interaction_sequence_test_util.h"
 
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -122,7 +125,7 @@ class FeaturePromoDialogTest : public TestBase {
   void ShowUi(const std::string& name) override {
     auto* const promo_controller =
         BrowserView::GetBrowserViewForBrowser(browser())
-            ->GetFeaturePromoController();
+            ->GetFeaturePromoControllerForTesting();
     ASSERT_TRUE(promo_controller);
 
     // The browser may have already queued a promo for startup. Since the test
@@ -139,9 +142,13 @@ class FeaturePromoDialogTest : public TestBase {
         .WillOnce(Return(true));
     user_education::FeaturePromoParams params(*feature_);
     params.body_params = GetReplacementsForFeature(*feature_);
-    const auto result = promo_controller->MaybeShowPromo(std::move(params));
-    LOG_IF(ERROR, !result) << "Got unexpected result: " << result;
-    ASSERT_TRUE(result);
+    UNCALLED_MOCK_CALLBACK(
+        user_education::FeaturePromoController::ShowPromoResultCallback,
+        show_callback);
+    params.show_promo_result_callback = show_callback.Get();
+    EXPECT_ASYNC_CALL_IN_SCOPE(
+        show_callback, Run(user_education::FeaturePromoResult::Success()),
+        promo_controller->MaybeShowPromo(std::move(params)));
   }
 
  private:

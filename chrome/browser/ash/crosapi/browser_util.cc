@@ -32,7 +32,6 @@
 #include "chromeos/ash/components/channel/channel_info.h"
 #include "chromeos/ash/components/standalone_browser/browser_support.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
-#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
@@ -58,39 +57,15 @@ using version_info::Channel;
 
 namespace crosapi::browser_util {
 
-BASE_FEATURE(kLacrosLaunchAtLoginScreen,
-             "LacrosLaunchAtLoginScreen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 namespace {
 
 // At session start the value for LacrosAvailability logic is applied and the
 // result is stored in this variable which is used after that as a cache.
 std::optional<LacrosAvailability> g_lacros_availability_cache;
 
-// At session start the value for LacrosDataBackwardMigrationMode logic is
-// applied and the result is stored in this variable which is used after that as
-// a cache.
-std::optional<LacrosDataBackwardMigrationMode>
-    g_lacros_data_backward_migration_mode;
-
 // The rootfs lacros-chrome metadata keys.
 constexpr char kLacrosMetadataContentKey[] = "content";
 constexpr char kLacrosMetadataVersionKey[] = "version";
-
-// The conversion map for LacrosDataBackwardMigrationMode policy data. The
-// values must match the ones from LacrosDataBackwardMigrationMode.yaml.
-constexpr auto kLacrosDataBackwardMigrationModeMap =
-    base::MakeFixedFlatMap<std::string_view, LacrosDataBackwardMigrationMode>({
-        {kLacrosDataBackwardMigrationModePolicyNone,
-         LacrosDataBackwardMigrationMode::kNone},
-        {kLacrosDataBackwardMigrationModePolicyKeepNone,
-         LacrosDataBackwardMigrationMode::kKeepNone},
-        {kLacrosDataBackwardMigrationModePolicyKeepSafeData,
-         LacrosDataBackwardMigrationMode::kKeepSafeData},
-        {kLacrosDataBackwardMigrationModePolicyKeepAll,
-         LacrosDataBackwardMigrationMode::kKeepAll},
-    });
 
 // Returns primary user's User instance.
 const user_manager::User* GetPrimaryUser() {
@@ -125,75 +100,12 @@ LacrosAvailability GetCachedLacrosAvailability() {
   return LacrosAvailability::kUserChoice;
 }
 
-// Returns appropriate LacrosAvailability.
-std::optional<LacrosAvailability> GetLacrosAvailability(
-    const user_manager::User* user,
-    ash::standalone_browser::migrator_util::PolicyInitState policy_init_state) {
-  auto* user_manager = user_manager::UserManager::Get();
-  auto* primary_user = user_manager->GetPrimaryUser();
-
-  switch (policy_init_state) {
-    case ash::standalone_browser::migrator_util::PolicyInitState::kBeforeInit: {
-      // If the value is needed before policy initialization, actually,
-      // this should be the case where ash process was restarted, and so
-      // the calculated value in the previous session should be carried
-      // via command line flag.
-      // See also LacrosAvailabilityPolicyObserver how it will be propergated.
-
-      // Check whether given `user` is the one for kLoginUser.
-      CHECK(!primary_user);
-      const user_manager::CryptohomeId cryptohome_id(
-          base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-              ash::switches::kLoginUser));
-      user_manager::KnownUser known_user(user_manager->GetLocalState());
-      const AccountId login_account_id(
-          known_user.GetAccountIdByCryptohomeId(cryptohome_id));
-      if (user->GetAccountId() != login_account_id) {
-        // TODO(b/40286020): Record log once the number of this call is
-        // reduced.
-        return std::nullopt;
-      }
-
-      return ash::standalone_browser::
-          DetermineLacrosAvailabilityFromPolicyValue(
-              user,
-              base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-                  ash::standalone_browser::kLacrosAvailabilityPolicySwitch));
-    }
-    case ash::standalone_browser::migrator_util::PolicyInitState::kAfterInit: {
-      // If policy initialization is done, the calculated value should be
-      // cached.
-      CHECK(primary_user);
-      if (primary_user != user) {
-        // TODO(b/40286020): Record log once the number of this call is
-        // reduced.
-        return std::nullopt;
-      }
-      return GetCachedLacrosAvailability();
-    }
-  }
-}
-
 }  // namespace
 
 const char kLaunchOnLoginPref[] = "lacros.launch_on_login";
-const char kProfileDataBackwardMigrationCompletedForUserPref[] =
-    "lacros.profile_data_backward_migration_completed_for_user";
-// This pref is to record whether the user clicks "Go to files" button
-// on error page of the data migration.
-const char kGotoFilesPref[] = "lacros.goto_files";
-const char kProfileMigrationCompletionTimeForUserPref[] =
-    "lacros.profile_migration_completion_time_for_user";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kLaunchOnLoginPref, /*default_value=*/false);
-}
-
-void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterDictionaryPref(
-      kProfileDataBackwardMigrationCompletedForUserPref);
-  registry->RegisterListPref(kGotoFilesPref);
-  registry->RegisterDictionaryPref(kProfileMigrationCompletionTimeForUserPref);
 }
 
 base::FilePath GetUserDataDir() {
@@ -222,52 +134,11 @@ bool IsLacrosAllowedToBeEnabled() {
 }
 
 bool IsLacrosEnabled() {
-  return ash::standalone_browser::BrowserSupport::IsEnabledInternal(
-      GetPrimaryUser(), GetCachedLacrosAvailability(),
-      /*check_migration_status=*/true);
-}
-
-bool IsLacrosEnabledForMigration(
-    const User* user,
-    ash::standalone_browser::migrator_util::PolicyInitState policy_init_state) {
-  std::optional<LacrosAvailability> lacros_availability =
-      GetLacrosAvailability(user, policy_init_state);
-  if (!lacros_availability.has_value()) {
-    return false;
-  }
-  return ash::standalone_browser::BrowserSupport::IsEnabledInternal(
-      user, *lacros_availability, /*check_migration_status=*/false);
-}
-
-bool IsProfileMigrationEnabled(
-    const user_manager::User* user,
-    ash::standalone_browser::migrator_util::PolicyInitState policy_init_state) {
-  return !base::FeatureList::IsEnabled(ash::standalone_browser::features::
-                                           kLacrosProfileMigrationForceOff) &&
-         IsLacrosEnabledForMigration(user, policy_init_state);
-}
-
-bool IsProfileMigrationAvailable() {
-  auto* user_manager = UserManager::Get();
-  auto* primary_user = user_manager->GetPrimaryUser();
-  if (!IsProfileMigrationEnabled(primary_user,
-                                 ash::standalone_browser::migrator_util::
-                                     PolicyInitState::kAfterInit)) {
-    return false;
-  }
-
-  // If migration is already completed, it is not necessary to run again.
-  if (ash::standalone_browser::migrator_util::
-          IsProfileMigrationCompletedForUser(user_manager->GetLocalState(),
-                                             primary_user->username_hash())) {
-    return false;
-  }
-
-  return true;
+  return false;
 }
 
 bool IsAshWebBrowserEnabled() {
-  return !IsLacrosEnabled();
+  return true;
 }
 
 bool IsLacrosOnlyBrowserAllowed() {
@@ -290,22 +161,8 @@ bool IsLacrosOnlyFlagAllowed() {
          (GetCachedLacrosAvailability() == LacrosAvailability::kUserChoice);
 }
 
-bool IsLacrosAllowedToLaunch() {
-  return UserManager::Get()->GetLoggedInUsers().size() == 1;
-}
-
 bool IsLacrosChromeAppsEnabled() {
-  return !base::FeatureList::IsEnabled(
-             ash::standalone_browser::features::kLacrosDisableChromeApps) &&
-         IsLacrosEnabled();
-}
-
-bool IsLacrosEnabledInWebKioskSession() {
-  return UserManager::Get()->IsLoggedInAsWebKioskApp() && IsLacrosEnabled();
-}
-
-bool IsLacrosEnabledInChromeKioskSession() {
-  return UserManager::Get()->IsLoggedInAsKioskApp() && IsLacrosEnabled();
+  return false;
 }
 
 bool IsLacrosWindow(const aura::Window* window) {
@@ -402,31 +259,8 @@ void CacheLacrosAvailability(const policy::PolicyMap& map) {
           GetPrimaryUser(), value ? value->GetString() : std::string_view());
 }
 
-void CacheLacrosDataBackwardMigrationMode(const policy::PolicyMap& map) {
-  if (g_lacros_data_backward_migration_mode.has_value()) {
-    // Some browser tests might call this multiple times.
-    LOG(ERROR) << "Trying to cache LacrosDataBackwardMigrationMode and the "
-                  "value was set";
-    return;
-  }
-
-  const base::Value* value = map.GetValue(
-      policy::key::kLacrosDataBackwardMigrationMode, base::Value::Type::STRING);
-  g_lacros_data_backward_migration_mode = ParseLacrosDataBackwardMigrationMode(
-      value ? value->GetString() : std::string_view());
-}
-
 LacrosAvailability GetCachedLacrosAvailabilityForTesting() {
   return GetCachedLacrosAvailability();
-}
-
-// Returns the cached value of the LacrosDataBackwardMigrationMode policy.
-LacrosDataBackwardMigrationMode GetCachedLacrosDataBackwardMigrationMode() {
-  if (g_lacros_data_backward_migration_mode.has_value())
-    return g_lacros_data_backward_migration_mode.value();
-
-  // By default migration should be disabled.
-  return LacrosDataBackwardMigrationMode::kNone;
 }
 
 void SetLacrosLaunchSwitchSourceForTest(LacrosAvailability test_value) {
@@ -435,110 +269,6 @@ void SetLacrosLaunchSwitchSourceForTest(LacrosAvailability test_value) {
 
 void ClearLacrosAvailabilityCacheForTest() {
   g_lacros_availability_cache.reset();
-}
-
-void ClearLacrosDataBackwardMigrationModeCacheForTest() {
-  g_lacros_data_backward_migration_mode.reset();
-}
-
-std::optional<MigrationStatus> GetMigrationStatus() {
-  PrefService* local_state = g_browser_process->local_state();
-  if (!local_state) {
-    // This can happen in tests.
-    CHECK_IS_TEST();
-    return std::nullopt;
-  }
-
-  const auto* user = GetPrimaryUser();
-  if (!user) {
-    // The function is intended to be run after primary user is initialized.
-    // The function might be run in tests without primary user being set.
-    CHECK_IS_TEST();
-    return std::nullopt;
-  }
-
-  return GetMigrationStatusForUser(local_state, user);
-}
-
-MigrationStatus GetMigrationStatusForUser(PrefService* local_state,
-                                          const user_manager::User* user) {
-  if (!crosapi::browser_util::IsLacrosEnabledForMigration(
-          user, ash::standalone_browser::migrator_util::PolicyInitState::
-                    kAfterInit)) {
-    return MigrationStatus::kLacrosNotEnabled;
-  }
-
-  std::optional<ash::standalone_browser::migrator_util::MigrationMode> mode =
-      ash::standalone_browser::migrator_util::GetCompletedMigrationMode(
-          local_state, user->username_hash());
-
-  if (!mode.has_value()) {
-    if (ash::standalone_browser::migrator_util::
-            IsMigrationAttemptLimitReachedForUser(local_state,
-                                                  user->username_hash())) {
-      return MigrationStatus::kMaxAttemptReached;
-    }
-
-    return MigrationStatus::kUncompleted;
-  }
-
-  switch (mode.value()) {
-    case ash::standalone_browser::migrator_util::MigrationMode::kCopy:
-      return MigrationStatus::kCopyCompleted;
-    case ash::standalone_browser::migrator_util::MigrationMode::kMove:
-      return MigrationStatus::kMoveCompleted;
-    case ash::standalone_browser::migrator_util::MigrationMode::kSkipForNewUser:
-      return MigrationStatus::kSkippedForNewUser;
-  }
-}
-
-void SetProfileMigrationCompletionTimeForUser(PrefService* local_state,
-                                              const std::string& user_id_hash) {
-  ScopedDictPrefUpdate update(local_state,
-                              kProfileMigrationCompletionTimeForUserPref);
-  update->Set(user_id_hash, base::TimeToValue(base::Time::Now()));
-}
-
-std::optional<base::Time> GetProfileMigrationCompletionTimeForUser(
-    PrefService* local_state,
-    const std::string& user_id_hash) {
-  const auto* pref =
-      local_state->FindPreference(kProfileMigrationCompletionTimeForUserPref);
-
-  if (!pref) {
-    return std::nullopt;
-  }
-
-  const base::Value* value = pref->GetValue();
-  DCHECK(value->is_dict());
-
-  return base::ValueToTime(value->GetDict().Find(user_id_hash));
-}
-
-void ClearProfileMigrationCompletionTimeForUser(
-    PrefService* local_state,
-    const std::string& user_id_hash) {
-  ScopedDictPrefUpdate update(local_state,
-                              kProfileMigrationCompletionTimeForUserPref);
-  base::Value::Dict& dict = update.Get();
-  dict.Remove(user_id_hash);
-}
-
-void SetProfileDataBackwardMigrationCompletedForUser(
-    PrefService* local_state,
-    const std::string& user_id_hash) {
-  ScopedDictPrefUpdate update(
-      local_state, kProfileDataBackwardMigrationCompletedForUserPref);
-  update->Set(user_id_hash, true);
-}
-
-void ClearProfileDataBackwardMigrationCompletedForUser(
-    PrefService* local_state,
-    const std::string& user_id_hash) {
-  ScopedDictPrefUpdate update(
-      local_state, kProfileDataBackwardMigrationCompletedForUserPref);
-  base::Value::Dict& dict = update.Get();
-  dict.Remove(user_id_hash);
 }
 
 LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource() {
@@ -556,70 +286,6 @@ LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource() {
   return GetCachedLacrosAvailability() == LacrosAvailability::kUserChoice
              ? LacrosLaunchSwitchSource::kPossiblySetByUser
              : LacrosLaunchSwitchSource::kForcedByPolicy;
-}
-
-std::optional<LacrosDataBackwardMigrationMode>
-ParseLacrosDataBackwardMigrationMode(std::string_view value) {
-  auto it = kLacrosDataBackwardMigrationModeMap.find(value);
-  if (it != kLacrosDataBackwardMigrationModeMap.end())
-    return it->second;
-
-  if (!value.empty()) {
-    LOG(ERROR) << "Unknown LacrosDataBackwardMigrationMode policy value: "
-               << value;
-  }
-  return std::nullopt;
-}
-
-std::string_view GetLacrosDataBackwardMigrationModeName(
-    LacrosDataBackwardMigrationMode value) {
-  for (const auto& entry : kLacrosDataBackwardMigrationModeMap) {
-    if (entry.second == value)
-      return entry.first;
-  }
-
-  NOTREACHED_IN_MIGRATION();
-  return std::string_view();
-}
-
-bool IsAshBrowserSyncEnabled() {
-  // Turn off sync from Ash if Lacros is enabled and Ash web browser is
-  // disabled.
-  if (IsLacrosEnabled() && !IsAshWebBrowserEnabled())
-    return false;
-
-  return true;
-}
-
-void SetGotoFilesClicked(PrefService* local_state,
-                         const std::string& user_id_hash) {
-  ScopedListPrefUpdate update(local_state, kGotoFilesPref);
-  base::Value::List& list = update.Get();
-  base::Value user_id_hash_value(user_id_hash);
-  if (!base::Contains(list, user_id_hash_value))
-    list.Append(std::move(user_id_hash_value));
-}
-
-void ClearGotoFilesClicked(PrefService* local_state,
-                           const std::string& user_id_hash) {
-  ScopedListPrefUpdate update(local_state, kGotoFilesPref);
-  update->EraseValue(base::Value(user_id_hash));
-}
-
-bool WasGotoFilesClicked(PrefService* local_state,
-                         const std::string& user_id_hash) {
-  const base::Value::List& list = local_state->GetList(kGotoFilesPref);
-  return base::Contains(list, base::Value(user_id_hash));
-}
-
-bool ShouldEnforceAshExtensionKeepList() {
-  return IsLacrosEnabled() && base::FeatureList::IsEnabled(
-                                  ash::features::kEnforceAshExtensionKeeplist);
-}
-
-bool IsAshDevToolEnabled() {
-  return IsAshWebBrowserEnabled() ||
-         base::FeatureList::IsEnabled(ash::features::kAllowDevtoolsInSystemUI);
 }
 
 }  // namespace crosapi::browser_util

@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-let methodName = window.location.origin;
+const methodName = window.location.origin;
 let request = undefined;
 
 /**

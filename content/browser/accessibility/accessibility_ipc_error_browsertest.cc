@@ -35,8 +35,9 @@ class AccessibilityIpcErrorBrowserTest : public ContentBrowserTest {
   std::string GetAttr(const ui::AXNode* node,
                       const ax::mojom::StringAttribute attr) {
     for (const auto& attribute_pair : node->GetStringAttributes()) {
-      if (attribute_pair.first == attr)
+      if (attribute_pair.first == attr) {
         return attribute_pair.second;
+      }
     }
     return std::string();
   }

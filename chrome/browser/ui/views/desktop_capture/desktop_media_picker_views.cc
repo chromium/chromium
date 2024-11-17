@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/desktop_capture/screen_capture_permission_checker.h"
 #include "chrome/browser/ui/views/desktop_capture/share_this_tab_dialog_views.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
+#include "chrome/browser/ui/views/media_picker_utils.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -46,7 +47,6 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
@@ -329,12 +329,6 @@ std::unique_ptr<views::ScrollView> CreateScrollView(bool audio_requested) {
 
 }  // namespace
 
-// Enable an updated dialog UI for the getDisplayMedia picker dialog under the
-// preferCurrentTab constraint.
-BASE_FEATURE(kShareThisTabDialog,
-             "ShareThisTabDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool DesktopMediaPickerDialogView::AudioSupported(DesktopMediaList::Type type) {
   switch (type) {
     case DesktopMediaList::Type::kScreen:
@@ -427,6 +421,8 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   description_label->SetMultiLine(true);
   description_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   description_label->SetTextStyle(views::style::STYLE_BODY_3);
+  description_label->SetEnabledColorId(
+      kColorDesktopMediaPickerDescriptionLabel);
   description_label_ = AddChildView(std::move(description_label));
 
   std::vector<std::pair<std::u16string, std::unique_ptr<View>>> panes;
@@ -472,8 +468,7 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
         screen_scroll_view->SetContents(list_controller->CreateView(
             kGenericScreenStyle, kSingleScreenStyle, screen_title_text,
             DesktopMediaList::Type::kScreen));
-        // If the DisplayMediaPickerRedesign flag is active, clip max height to
-        // 1.5 item heights to allow space for the audio-toggle controller.
+        // Allow space for the audio-toggle controller.
         screen_scroll_view->ClipHeightTo(
             kGenericScreenStyle.item_size.height(),
             kGenericScreenStyle.item_size.height() * 3 / 2);
@@ -627,31 +622,11 @@ DesktopMediaPickerDialogView::DesktopMediaPickerDialogView(
   previously_selected_category_ = GetSelectedTabIndex();
   ConfigureUIForNewPane(previously_selected_category_);
 
-  // If |params.web_contents| is set and it's not a background page then the
-  // picker will be shown modal to the web contents. Otherwise the picker is
-  // shown in a separate window.
-  views::Widget* widget = nullptr;
-  bool modal_dialog = params.web_contents &&
-                      !params.web_contents->GetDelegate()->IsNeverComposited(
-                          params.web_contents);
-  if (modal_dialog) {
-    Browser* browser = chrome::FindBrowserWithTab(params.web_contents);
-    // Close the extension popup to prevent spoofing.
-    if (browser && browser->window() &&
-        browser->window()->GetExtensionsContainer()) {
-      browser->window()->GetExtensionsContainer()->HideActivePopup();
-    }
-    widget =
-        constrained_window::ShowWebModalDialogViews(this, params.web_contents);
-  } else {
-#if BUILDFLAG(IS_MAC)
-    // On Mac, ModalType::kChild with a null parent isn't allowed - fall back to
-    // ModalType::kWindow.
-    SetModalType(ui::mojom::ModalType::kWindow);
-#endif
-    widget = CreateDialogWidget(this, params.context, nullptr);
-    widget->Show();
-  }
+  bool modal_dialog = IsMediaPickerModalWindow(params.web_contents);
+  views::Widget* widget = CreateMediaPickerDialogWidget(
+      modal_dialog ? chrome::FindBrowserWithTab(params.web_contents) : nullptr,
+      params.web_contents,
+      /*delegate=*/this, params.context, /*parent=*/nullptr);
 
   extensions::SecurityDialogTracker::GetInstance()->AddSecurityDialog(widget);
 
@@ -1080,6 +1055,13 @@ void DesktopMediaPickerDialogView::OnSourceListLayoutChanged() {
 }
 
 void DesktopMediaPickerDialogView::OnDelegatedSourceListDismissed() {
+#if BUILDFLAG(IS_MAC)
+  // This function is called when the native picker has been cancelled or has
+  // experienced an error. In both these cases for MacOS, we should reject the
+  // dialog and close it.
+  Reject();
+  return;
+#else
   if (!tabbed_pane_) {
     Reject();
     return;
@@ -1100,6 +1082,7 @@ void DesktopMediaPickerDialogView::OnDelegatedSourceListDismissed() {
   tabbed_pane_->SelectTabAt(fallback_pane_index);
 
   GetCancelButton()->RequestFocus();
+#endif
 }
 
 void DesktopMediaPickerDialogView::OnCanReselectChanged(
@@ -1204,7 +1187,7 @@ void DesktopMediaPickerViews::NotifyDialogResult(const DesktopMediaID& source) {
 // static
 std::unique_ptr<DesktopMediaPicker> DesktopMediaPicker::Create(
     const content::MediaStreamRequest* request) {
-  if (base::FeatureList::IsEnabled(kShareThisTabDialog) && request &&
+  if (request &&
       request->video_type ==
           blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB) {
     return std::make_unique<ShareThisTabDialogViews>();

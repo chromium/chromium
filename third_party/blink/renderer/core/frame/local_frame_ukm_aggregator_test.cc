@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 
 #include "base/metrics/statistics_recorder.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -66,7 +67,10 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
   }
 
   std::string GetMetricName(int index) {
-    std::string name = LocalFrameUkmAggregator::metrics_data()[index].name;
+    std::string name =
+        LocalFrameUkmAggregator::metrics_data()[base::checked_cast<size_t>(
+                                                    index)]
+            .name;
 
     // If `name` is an UMA metric of the form Blink.[MetricName].UpdateTime, the
     // following code extracts out [MetricName] for building up the UKM metric.
@@ -213,12 +217,13 @@ class LocalFrameUkmAggregatorTest : public testing::Test {
       LocalFrameUkmAggregator::MetricId target_metric,
       unsigned expected_num_entries) {
     base::TimeTicks start_time = Now();
-    test_task_runner_->FastForwardBy(base::Milliseconds(10));
-    base::TimeTicks end_time = Now();
-
     aggregator().BeginMainFrame();
-    aggregator().RecordForcedLayoutSample(reason, start_time, end_time);
-    aggregator().RecordEndOfFrameMetrics(start_time, end_time, 0, source_id(),
+    {
+      LocalFrameUkmAggregator::ScopedForcedLayoutTimer timer =
+          aggregator().GetScopedForcedLayoutTimer(reason);
+      test_task_runner_->FastForwardBy(base::Milliseconds(10));
+    }
+    aggregator().RecordEndOfFrameMetrics(start_time, Now(), 0, source_id(),
                                          &recorder());
     ResetAggregator();
 
@@ -1064,7 +1069,7 @@ class LocalFrameUkmAggregatorSyncScrollTest
       case SyncScrollPositionAccess::kSyncScrollDoesNotAccessScrollOffset:
         return "100";
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   std::string GenerateMutation() {
@@ -1086,7 +1091,7 @@ class LocalFrameUkmAggregatorSyncScrollTest
       case SyncScrollMutation::kSyncScrollMutatesNothing:
         return "";
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   std::string GenerateScrollHandler() {
@@ -1117,7 +1122,7 @@ class LocalFrameUkmAggregatorSyncScrollTest
       case SyncScrollHandlerStrategy::kSyncScrollNoEventHandler:
         return "";
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   ScopedTestingPlatformSupport<TestingPlatformSupportWithMockScheduler>

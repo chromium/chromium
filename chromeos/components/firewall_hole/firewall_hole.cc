@@ -28,8 +28,7 @@ const char* PortTypeToString(FirewallHole::PortType type) {
     case FirewallHole::PortType::kUdp:
       return "UDP";
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void PortReleased(FirewallHole::PortType type,

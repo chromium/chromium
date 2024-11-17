@@ -6,6 +6,7 @@
 
 #include <string.h>
 
+#include "base/android/android_image_reader_compat.h"
 #include "base/android/scoped_hardware_buffer_fence_sync.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -49,7 +50,7 @@ std::unique_ptr<ui::ScopedMakeCurrent> MakeCurrent(
 }
 
 TextureOwner::Mode GetTextureOwnerMode() {
-  return features::IsAImageReaderEnabled()
+  return base::android::EnableAndroidImageReader()
              ? TextureOwner::Mode::kAImageReaderInsecure
              : TextureOwner::Mode::kSurfaceTextureInsecure;
 }
@@ -155,8 +156,7 @@ void StreamTexture::NotifyOverlayPromotion(bool promotion,
                                            const gfx::Rect& bounds) {}
 
 bool StreamTexture::RenderToOverlay() {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool StreamTexture::TextureOwnerBindsTextureOnUpdate() {

@@ -60,8 +60,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/data_sharing/public/features.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/saved_tab_groups/features.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "components/tab_groups/tab_group_visual_data.h"
@@ -74,6 +74,7 @@
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/events/types/event_type.h"
@@ -478,6 +479,8 @@ TabGroupEditorBubbleView::BuildDeleteGroupButton() {
       ui::ImageModel::FromVectorIcon(kTrashCanRefreshIcon, ui::kColorMenuIcon,
                                      kDefaultIconSize));
 
+  delete_group_menu_item->SetProperty(views::kElementIdentifierKey,
+                                      kTabGroupEditorBubbleDeleteGroupButtonId);
   if (ShouldShowSavedFooter()) {
     delete_group_menu_item->SetProperty(
         views::kMarginsKey, gfx::Insets::TLBR(0, 0, kSeparatorPadding, 0));
@@ -666,9 +669,8 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupSaved"));
 
-    tab_groups::SavedTabGroup group =
-        tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(group_);
-    tab_group_service->AddGroup(std::move(group));
+    tab_group_service->SaveGroup(
+        tab_groups::SavedTabGroupUtils::CreateSavedTabGroupFromLocalId(group_));
 
     views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
         kTabGroupSavedCustomEventId, save_group_toggle_);
@@ -683,7 +685,7 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
   } else {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupUnsaved"));
-    tab_group_service->RemoveGroup(group_);
+    tab_group_service->UnsaveGroup(group_);
   }
 
   save_group_toggle_->GetViewAccessibility().SetName(
@@ -917,7 +919,7 @@ bool TabGroupEditorBubbleView::TitleFieldController::HandleKeyEvent(
 
 void TabGroupEditorBubbleView::TitleField::ShowContextMenu(
     const gfx::Point& p,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   // There is no easy way to stop the propagation of a ShowContextMenu event,
   // which is sometimes used to open the bubble itself. So when the bubble is
   // opened this way, we manually hide the textfield's context menu the first

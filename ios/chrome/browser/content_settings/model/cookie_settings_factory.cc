@@ -16,9 +16,9 @@ namespace ios {
 
 // static
 scoped_refptr<content_settings::CookieSettings>
-CookieSettingsFactory::GetForBrowserState(ChromeBrowserState* browser_state) {
+CookieSettingsFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<content_settings::CookieSettings*>(
-      GetInstance()->GetServiceForBrowserState(browser_state, true).get());
+      GetInstance()->GetServiceForBrowserState(profile, true).get());
 }
 
 // static
@@ -43,7 +43,7 @@ void CookieSettingsFactory::RegisterBrowserStatePrefs(
 
 web::BrowserState* CookieSettingsFactory::GetBrowserStateToUse(
     web::BrowserState* context) const {
-  // The incognito browser state has its own content settings map. Therefore, it
+  // The incognito profile has its own content settings map. Therefore, it
   // should get its own CookieSettings.
   return GetBrowserStateOwnInstanceInIncognito(context);
 }
@@ -51,12 +51,11 @@ web::BrowserState* CookieSettingsFactory::GetBrowserStateToUse(
 scoped_refptr<RefcountedKeyedService>
 CookieSettingsFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return base::MakeRefCounted<content_settings::CookieSettings>(
-      ios::HostContentSettingsMapFactory::GetForBrowserState(browser_state),
-      browser_state->GetPrefs(), /*tracking_protection_settings=*/nullptr,
-      browser_state->IsOffTheRecord(),
+      ios::HostContentSettingsMapFactory::GetForProfile(profile),
+      profile->GetPrefs(), /*tracking_protection_settings=*/nullptr,
+      profile->IsOffTheRecord(),
       content_settings::CookieSettings::NoFedCmSharingPermissionsCallback(),
       /*tpcd_metadata_manager=*/nullptr);
 }

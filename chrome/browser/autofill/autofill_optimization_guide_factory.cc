@@ -44,7 +44,8 @@ AutofillOptimizationGuideFactory::AutofillOptimizationGuideFactory()
 
 AutofillOptimizationGuideFactory::~AutofillOptimizationGuideFactory() = default;
 
-KeyedService* AutofillOptimizationGuideFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+AutofillOptimizationGuideFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   OptimizationGuideKeyedService* optimization_service =
@@ -57,7 +58,8 @@ KeyedService* AutofillOptimizationGuideFactory::BuildServiceInstanceFor(
     return nullptr;
   }
 
-  return new AutofillOptimizationGuide(/*decider=*/optimization_service);
+  return std::make_unique<AutofillOptimizationGuide>(
+      /*decider=*/optimization_service);
 }
 
 }  // namespace autofill

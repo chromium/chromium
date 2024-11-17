@@ -161,33 +161,6 @@ using range_category_t = iterator_category_t<ranges::iterator_t<Range>>;
 
 namespace ranges {
 
-// C++14 implementation of std::ranges::in_fun_result.
-//
-// Reference: https://wg21.link/algorithms.results#:~:text=in_fun_result
-template <typename I, typename F>
-struct in_fun_result {
-  NO_UNIQUE_ADDRESS I in;
-  NO_UNIQUE_ADDRESS F fun;
-
-  template <typename I2,
-            typename F2,
-            std::enable_if_t<std::is_convertible<const I&, I2>{} &&
-                             std::is_convertible<const F&, F2>{}>>
-  constexpr operator in_fun_result<I2, F2>() const& {
-    return {in, fun};
-  }
-
-  template <typename I2,
-            typename F2,
-            std::enable_if_t<std::is_convertible<I, I2>{} &&
-                             std::is_convertible<F, F2>{}>>
-  constexpr operator in_fun_result<I2, F2>() && {
-    return {std::move(in), std::move(fun)};
-  }
-};
-
-// TODO(crbug.com/40126606): Implement the other result types.
-
 // [alg.nonmodifying] Non-modifying sequence operations
 // Reference: https://wg21.link/alg.nonmodifying
 
@@ -337,7 +310,7 @@ constexpr bool none_of(Range&& range, Pred pred, Proj proj = {}) {
 
 // Reference: https://wg21.link/algorithm.syn#:~:text=for_each_result
 template <typename I, typename F>
-using for_each_result = in_fun_result<I, F>;
+using for_each_result = std::ranges::in_fun_result<I, F>;
 
 // Effects: Calls `invoke(f, invoke(proj, *i))` for every iterator `i` in the
 // range `[first, last)`, starting from `first` and proceeding to `last - 1`.
@@ -384,7 +357,7 @@ constexpr auto for_each(Range&& range, Fun f, Proj proj = {}) {
 
 // Reference: https://wg21.link/algorithm.syn#:~:text=for_each_n_result
 template <typename I, typename F>
-using for_each_n_result = in_fun_result<I, F>;
+using for_each_n_result = std::ranges::in_fun_result<I, F>;
 
 // Preconditions: `n >= 0` is `true`.
 //

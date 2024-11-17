@@ -102,8 +102,7 @@ bool IsDownloadSecuritySensitive(safe_browsing::DownloadCheckResult result) {
     case Result::IMMEDIATE_DEEP_SCAN:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void MaybeLogSecuritySensitiveDownloadEvent(
@@ -127,7 +126,7 @@ const void* const DownloadProtectionService::kDownloadProtectionDataKey =
     &kDownloadProtectionDataKey;
 
 DownloadProtectionService::DownloadProtectionService(
-    SafeBrowsingService* sb_service)
+    SafeBrowsingServiceImpl* sb_service)
     : sb_service_(sb_service),
       enabled_(false),
       binary_feature_extractor_(new BinaryFeatureExtractor()),
@@ -511,7 +510,7 @@ void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(
 
   OnDangerousDownloadOpened(item, profile);
 
-  if (sb_service_ && ShouldSendDangerousDownloadReport(item)) {
+  if (sb_service_) {
     // If the download is opened, it indicates the user has bypassed the warning
     // and decided to proceed, so setting did_proceed to true.
     sb_service_->SendDownloadReport(
@@ -651,6 +650,12 @@ void DownloadProtectionService::UploadForDeepScanning(
     metrics_collector->AddSafeBrowsingEventToPref(
         safe_browsing::SafeBrowsingMetricsCollector::EventType::
             DOWNLOAD_DEEP_SCAN);
+  }
+
+  if (trigger ==
+      DownloadItemWarningData::DeepScanTrigger::TRIGGER_IMMEDIATE_DEEP_SCAN) {
+    profile->GetPrefs()->SetBoolean(
+        prefs::kSafeBrowsingAutomaticDeepScanPerformed, true);
   }
 }
 

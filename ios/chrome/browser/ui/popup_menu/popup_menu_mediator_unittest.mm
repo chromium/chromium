@@ -17,6 +17,7 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
+#import "components/language_detection/core/language_detection_model.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/policy/core/common/mock_configuration_policy_provider.h"
@@ -96,12 +97,14 @@ const int kNumberOfWebStates = 3;
 
 class PopupMenuMediatorTest : public PlatformTest {
  public:
-  PopupMenuMediatorTest() : model_(nullptr) {}
+  PopupMenuMediatorTest()
+      : model_(std::make_unique<language_detection::LanguageDetectionModel>()) {
+  }
 
   void SetUp() override {
     PlatformTest::SetUp();
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
@@ -116,14 +119,14 @@ class PopupMenuMediatorTest : public PlatformTest {
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
     web::test::OverrideJavaScriptFeatures(
-        browser_state_.get(),
+        profile_.get(),
         {language::LanguageDetectionJavaScriptFeature::GetInstance()});
 
     reading_list_model_ =
-        ReadingListModelFactory::GetForBrowserState(browser_state_.get());
+        ReadingListModelFactory::GetForProfile(profile_.get());
 
     popup_menu_ = OCMClassMock([PopupMenuTableViewController class]);
     popup_menu_strict_ =
@@ -132,7 +135,7 @@ class PopupMenuMediatorTest : public PlatformTest {
     OCMExpect([popup_menu_strict_ setDelegate:[OCMArg any]]);
 
     // Set up the TestBrowser.
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     // Set up the WebStateList.
     auto navigation_manager = std::make_unique<ToolbarTestNavigationManager>();
@@ -146,13 +149,13 @@ class PopupMenuMediatorTest : public PlatformTest {
         std::make_unique<web::FakeWebState>();
     test_web_state->SetNavigationManager(std::move(navigation_manager));
     test_web_state->SetLoading(true);
-    test_web_state->SetBrowserState(browser_state_.get());
+    test_web_state->SetBrowserState(profile_.get());
     web_state_ = test_web_state.get();
 
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
         /*security_origin=*/url);
-    main_frame->set_browser_state(browser_state_.get());
+    main_frame->set_browser_state(profile_.get());
     frames_manager->AddWebFrame(std::move(main_frame));
     web::ContentWorld content_world =
         language::LanguageDetectionJavaScriptFeature::GetInstance()
@@ -209,8 +212,7 @@ class PopupMenuMediatorTest : public PlatformTest {
   }
 
   void SetUpBookmarks() {
-    bookmark_model_ =
-        ios::BookmarkModelFactory::GetForBrowserState(browser_state_.get());
+    bookmark_model_ = ios::BookmarkModelFactory::GetForProfile(profile_.get());
     DCHECK(bookmark_model_);
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     mediator_.bookmarkModel = bookmark_model_;
@@ -224,7 +226,7 @@ class PopupMenuMediatorTest : public PlatformTest {
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
         /*security_origin=*/url);
-    main_frame->set_browser_state(browser_state_.get());
+    main_frame->set_browser_state(profile_.get());
     frames_manager->AddWebFrame(std::move(main_frame));
     web::ContentWorld content_world =
         language::LanguageDetectionJavaScriptFeature::GetInstance()
@@ -294,7 +296,7 @@ class PopupMenuMediatorTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_env_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
 
   FakeOverlayPresentationContext presentation_context_;
@@ -508,7 +510,7 @@ TEST_F(PopupMenuMediatorTest, TestBookmarksToolsMenuButtons) {
   EXPECT_FALSE(HasItem(consumer, kToolsMenuAddToBookmarks, /*enabled=*/YES));
   EXPECT_TRUE(HasItem(consumer, kToolsMenuEditBookmark, /*enabled=*/YES));
 
-  ios::BookmarkModelFactory::GetForBrowserState(browser_state_.get())
+  ios::BookmarkModelFactory::GetForProfile(profile_.get())
       ->RemoveAllUserBookmarks(FROM_HERE);
   EXPECT_TRUE(HasItem(consumer, kToolsMenuAddToBookmarks, /*enabled=*/YES));
   EXPECT_FALSE(HasItem(consumer, kToolsMenuEditBookmark, /*enabled=*/YES));

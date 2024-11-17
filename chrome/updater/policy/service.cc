@@ -24,6 +24,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -31,17 +32,20 @@
 #include "chrome/updater/app/app_utils.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/policy_fetcher.h"
 #include "chrome/updater/policy/policy_manager.h"
+#include "chrome/updater/prefs.h"
+#include "chrome/updater/updater_scope.h"
 #if BUILDFLAG(IS_WIN)
 #include "chrome/updater/policy/win/group_policy_manager.h"
 #elif BUILDFLAG(IS_MAC)
 #include "chrome/updater/policy/mac/managed_preference_policy_manager.h"
 #endif
+#include "components/crash/core/common/crash_key.h"
 
 namespace updater {
-
 namespace {
 
 // Sorts the managed policy managers ahead of the non-managed ones in the
@@ -118,8 +122,6 @@ std::vector<scoped_refptr<PolicyManagerInterface>> CreateManagers(
     managers.insert(managers.begin(), external_constants_policy_manager);
   }
 #if BUILDFLAG(IS_MAC)
-  // Managed preference policy manager is being deprecated and thus has a lower
-  // priority than DM policy manager.
   managers.push_back(CreateManagedPreferencePolicyManager(
       external_constants->IsMachineManaged()));
 #endif
@@ -136,9 +138,10 @@ PolicyService::PolicyManagers::~PolicyManagers() = default;
 
 PolicyService::PolicyService(
     std::vector<scoped_refptr<PolicyManagerInterface>> managers,
-    bool usage_stats_enabled)
+    scoped_refptr<PersistedData> persisted_data)
     : policy_managers_(SortManagers(std::move(managers))),
-      usage_stats_enabled_(usage_stats_enabled) {}
+      persisted_data_(persisted_data),
+      is_ceca_experiment_enabled_(false) {}
 
 // The policy managers are initialized without taking the Group Policy critical
 // section here, by passing `false` for `should_take_policy_critical_section`,
@@ -146,13 +149,15 @@ PolicyService::PolicyService(
 // policies are reloaded with the critical section lock.
 PolicyService::PolicyService(
     scoped_refptr<ExternalConstants> external_constants,
-    bool usage_stats_enabled)
+    scoped_refptr<PersistedData> persisted_data,
+    bool is_ceca_experiment_enabled)
     : policy_managers_(SortManagers(CreateManagers(
           /*should_take_policy_critical_section=*/false,
           external_constants,
           CreateDMPolicyManager(external_constants->IsMachineManaged())))),
       external_constants_(external_constants),
-      usage_stats_enabled_(usage_stats_enabled) {
+      persisted_data_(persisted_data),
+      is_ceca_experiment_enabled_(is_ceca_experiment_enabled) {
   VLOG(1) << "Current effective policies:" << std::endl
           << GetAllPoliciesAsString();
 }
@@ -161,22 +166,16 @@ PolicyService::~PolicyService() = default;
 
 void PolicyService::FetchPolicies(base::OnceCallback<void(int)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
-      base::BindOnce([] {
-        scoped_refptr<device_management_storage::DMStorage> dm_storage =
-            device_management_storage::GetDefaultDMStorage();
-        return dm_storage && (dm_storage->IsValidDMToken() ||
-                              (!dm_storage->GetEnrollmentToken().empty() &&
-                               !dm_storage->IsDeviceDeregistered()));
-      }),
-      base::BindOnce(&PolicyService::DoFetchPolicies,
-                     base::WrapRefCounted(this), std::move(callback)));
+  IsCloudManaged(base::BindOnce(&PolicyService::DoFetchPolicies,
+                                base::WrapRefCounted(this),
+                                std::move(callback)));
 }
 
 void PolicyService::DoFetchPolicies(base::OnceCallback<void(int)> callback,
                                     bool is_cbcm_managed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  static crash_reporter::CrashKeyString<6> crash_key_cbcm("cbcm");
+  crash_key_cbcm.Set(is_cbcm_managed ? "true" : "false");
   if (!is_cbcm_managed) {
     VLOG(2) << "Device is not CBCM managed, skipped policy fetch.";
     std::move(callback).Run(0);
@@ -196,12 +195,17 @@ void PolicyService::DoFetchPolicies(base::OnceCallback<void(int)> callback,
   }
 
   fetch_policies_callback_ = std::move(callback);
-  auto fetcher = base::MakeRefCounted<FallbackPolicyFetcher>(
-      CreateOutOfProcessPolicyFetcher(usage_stats_enabled_,
-                                      external_constants_->IsMachineManaged()),
+  scoped_refptr<PolicyFetcher> fetcher =
       CreateInProcessPolicyFetcher(external_constants_->DeviceManagementURL(),
                                    PolicyServiceProxyConfiguration::Get(this),
-                                   external_constants_->IsMachineManaged()));
+                                   external_constants_->IsMachineManaged());
+  if (is_ceca_experiment_enabled_) {
+    fetcher = base::MakeRefCounted<FallbackPolicyFetcher>(
+        CreateOutOfProcessPolicyFetcher(
+            persisted_data_, external_constants_->IsMachineManaged(),
+            external_constants_->CecaConnectionTimeout()),
+        fetcher);
+  }
   fetcher->FetchPolicies(
       base::BindOnce(&PolicyService::FetchPoliciesDone, this, fetcher));
 }
@@ -645,7 +649,7 @@ std::string PolicyService::GetAllPoliciesAsString() const {
                             base::JoinString(policies, "\n  ").c_str());
 }
 
-bool PolicyService::AreUpdatesSuppressedNow(const base::Time& now) const {
+bool PolicyService::AreUpdatesSuppressedNow(base::Time now) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const PolicyStatus<UpdatesSuppressedTimes> suppression =
@@ -664,6 +668,20 @@ bool PolicyService::AreUpdatesSuppressedNow(const base::Time& now) const {
           << ": start_minute_:" << suppression.policy().start_minute_
           << ": duration_minute_:" << suppression.policy().duration_minute_;
   return are_updates_suppressed;
+}
+
+void PolicyService::IsCloudManaged(
+    base::OnceCallback<void(bool)> callback) const {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock(), base::WithBaseSyncPrimitives()},
+      base::BindOnce([] {
+        scoped_refptr<device_management_storage::DMStorage> dm_storage =
+            device_management_storage::GetDefaultDMStorage();
+        return dm_storage && (dm_storage->IsValidDMToken() ||
+                              (!dm_storage->GetEnrollmentToken().empty() &&
+                               !dm_storage->IsDeviceDeregistered()));
+      }),
+      std::move(callback));
 }
 
 template <typename T, typename U>

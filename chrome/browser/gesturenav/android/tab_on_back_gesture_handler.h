@@ -34,17 +34,21 @@ class TabOnBackGestureHandler {
   void OnBackStarted(JNIEnv* env,
                      float progress,
                      /* ui::BackGestureEventSwipeEdge */ int edge,
-                     bool forward);
+                     bool forward,
+                     bool is_gesture_mode);
   void OnBackProgressed(JNIEnv* env,
                         float progress,
-                        /* ui::BackGestureEventSwipeEdge */ int edge);
-  void OnBackCancelled(JNIEnv* env);
-  void OnBackInvoked(JNIEnv* env);
+                        /* ui::BackGestureEventSwipeEdge */ int edge,
+                        bool forward,
+                        bool is_gesture_mode);
+  void OnBackCancelled(JNIEnv* env, bool is_gesture_mode);
+  void OnBackInvoked(JNIEnv* env, bool is_gesture_mode);
   void Destroy(JNIEnv* env);
 
  private:
   const raw_ptr<TabAndroid> tab_android_;
   bool is_in_progress_ = false;
+  bool is_gesture_mode_ = false;
   ui::BackGestureEventSwipeEdge started_edge_ =
       ui::BackGestureEventSwipeEdge::LEFT;
 };

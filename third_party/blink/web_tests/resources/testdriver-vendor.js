@@ -317,178 +317,6 @@
     });
   };
 
-  let virtualAuthenticatorManager_;
-
-  async function findAuthenticator(authenticatorManager, authenticatorId) {
-    let authenticators = (await authenticatorManager.getAuthenticators()).authenticators;
-    let foundAuthenticator;
-    for (let authenticator of authenticators) {
-      if ((await authenticator.getUniqueId()).id == authenticatorId) {
-        foundAuthenticator = authenticator;
-        break;
-      }
-    }
-    if (!foundAuthenticator) {
-      throw "Cannot find authenticator with ID " + authenticatorId;
-    }
-    return foundAuthenticator;
-  }
-
-  async function loadVirtualAuthenticatorManager() {
-    if (!virtualAuthenticatorManager_) {
-      const {VirtualAuthenticatorManager} = await import(
-          '/gen/third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.m.js');
-      virtualAuthenticatorManager_ = VirtualAuthenticatorManager.getRemote();
-    }
-    return virtualAuthenticatorManager_;
-  }
-
-  function urlSafeBase64ToUint8Array(base64url) {
-    let base64 = base64url.replace(/-/g, "+").replace(/_/g, "/");
-    // Add padding to make the length of the base64 string divisible by 4.
-    if (base64.length % 4 != 0)
-      base64 += "=".repeat(4 - base64.length % 4);
-    return Uint8Array.from(atob(base64), c => c.charCodeAt(0));
-  }
-
-  function uint8ArrayToUrlSafeBase64(array) {
-    let binary = "";
-    for (let i = 0; i < array.length; ++i)
-      binary += String.fromCharCode(array[i]);
-
-    return window.btoa(binary)
-      .replace(/\+/g, "-")
-      .replace(/\//g, "_")
-      .replace(/=/g, "");
-  }
-
-  window.test_driver_internal.add_virtual_authenticator = async function(options) {
-    let manager = await loadVirtualAuthenticatorManager();
-
-    const {AuthenticatorAttachment, AuthenticatorTransport} = await import(
-        '/gen/third_party/blink/public/mojom/webauthn/authenticator.mojom.m.js');
-    const {ClientToAuthenticatorProtocol, Ctap2Version} = await import(
-        '/gen/third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.m.js');
-
-    options = Object.assign({
-      hasResidentKey: false,
-      hasUserVerification: false,
-      isUserConsenting: true,
-      isUserVerified: false,
-      extensions: [],
-    }, options);
-    let mojoOptions = {};
-    switch (options.protocol) {
-      case "ctap1/u2f":
-        mojoOptions.protocol = ClientToAuthenticatorProtocol.U2F;
-        break;
-      case "ctap2":
-        mojoOptions.protocol = ClientToAuthenticatorProtocol.CTAP2;
-        mojoOptions.ctap2Version = Ctap2Version.CTAP2_0;
-        break;
-      case "ctap2_1":
-        mojoOptions.protocol = ClientToAuthenticatorProtocol.CTAP2;
-        mojoOptions.ctap2Version = Ctap2Version.CTAP2_1;
-        break;
-      default:
-        throw "Unknown protocol "  + options.protocol;
-    }
-    switch (options.transport) {
-      case "usb":
-        mojoOptions.transport = AuthenticatorTransport.USB;
-        mojoOptions.attachment = AuthenticatorAttachment.CROSS_PLATFORM;
-        break;
-      case "nfc":
-        mojoOptions.transport = AuthenticatorTransport.NFC;
-        mojoOptions.attachment = AuthenticatorAttachment.CROSS_PLATFORM;
-        break;
-      case "ble":
-        mojoOptions.transport = AuthenticatorTransport.BLE;
-        mojoOptions.attachment = AuthenticatorAttachment.CROSS_PLATFORM;
-        break;
-      case "internal":
-        mojoOptions.transport = AuthenticatorTransport.INTERNAL;
-        mojoOptions.attachment = AuthenticatorAttachment.PLATFORM;
-        break;
-      default:
-        throw "Unknown transport "  + options.transport;
-    }
-    mojoOptions.hasResidentKey = options.hasResidentKey;
-    mojoOptions.hasUserVerification = options.hasUserVerification;
-    mojoOptions.hasLargeBlob = options.extensions.indexOf("largeBlob") !== -1;
-    mojoOptions.hasCredBlob = options.extensions.indexOf("credBlob") !== -1;
-    mojoOptions.hasMinPinLength = options.extensions.indexOf("minPinLength") !== -1;
-    mojoOptions.hasPrf = options.extensions.indexOf('prf') !== -1;
-    mojoOptions.isUserPresent = options.isUserConsenting;
-
-    let authenticator = (await manager.createAuthenticator(mojoOptions)).authenticator;
-    await authenticator.setUserVerified(options.isUserVerified);
-    return (await authenticator.getUniqueId()).id;
-  };
-
-  window.test_driver_internal.add_credential = async function(authenticatorId, credential) {
-    if (credential.isResidentCredential) {
-      throw "The mojo virtual authenticator manager does not support resident credentials";
-    }
-    let manager = await loadVirtualAuthenticatorManager();
-    let authenticator = await findAuthenticator(manager, authenticatorId);
-
-    let registration = {
-      keyHandle: urlSafeBase64ToUint8Array(credential.credentialId),
-      privateKey: urlSafeBase64ToUint8Array(credential.privateKey),
-      rpId: credential.rpId,
-      counter: credential.signCount,
-    };
-    let addRegistrationResponse = await authenticator.addRegistration(registration);
-    if (!addRegistrationResponse.added) {
-      throw "Could not add credential";
-    }
-  };
-
-  window.test_driver_internal.get_credentials = async function(authenticatorId) {
-    let manager = await loadVirtualAuthenticatorManager();
-    let authenticator = await findAuthenticator(manager, authenticatorId);
-
-    let getCredentialsResponse = await authenticator.getRegistrations();
-    return getCredentialsResponse.keys.map(key => ({
-      credentialId: uint8ArrayToUrlSafeBase64(key.keyHandle),
-      privateKey: uint8ArrayToUrlSafeBase64(key.privateKey),
-      rpId: key.rpId,
-      signCount: key.counter,
-      isResidentCredential: false,
-    }));
-  };
-
-  window.test_driver_internal.remove_credential = async function(authenticatorId, credentialId) {
-    let manager = await loadVirtualAuthenticatorManager();
-    let authenticator = await findAuthenticator(manager, authenticatorId);
-
-    let removeRegistrationResponse = await authenticator.removeRegistration(
-        urlSafeBase64ToUint8Array(credentialId));
-    if (!removeRegistrationResponse.removed) {
-      throw "Could not remove credential";
-    }
-  };
-
-  window.test_driver_internal.remove_all_credentials = async function(authenticatorId) {
-    let manager = await loadVirtualAuthenticatorManager();
-    let authenticator = await findAuthenticator(manager, authenticatorId);
-    await authenticator.clearRegistrations();
-  }
-
-  window.test_driver_internal.set_user_verified = async function(authenticatorId, options) {
-    let manager = await loadVirtualAuthenticatorManager();
-    let authenticator = await findAuthenticator(manager, authenticatorId);
-    await authenticator.setUserVerified(options.isUserVerified);
-  }
-
-  window.test_driver_internal.remove_virtual_authenticator = async function(authenticatorId) {
-    let manager = await loadVirtualAuthenticatorManager();
-    let response = await manager.removeAuthenticator(authenticatorId);
-    if (!response.removed)
-      throw "Could not remove authenticator";
-  }
-
   window.test_driver_internal.set_permission = function(permission_params) {
     return internals.setPermission(permission_params.descriptor,
                                    permission_params.state);
@@ -590,6 +418,21 @@
 
   window.test_driver_internal.clear_device_posture = function() {
     return internals.clearDevicePostureOverride();
+  }
+
+  window.test_driver_internal.create_virtual_pressure_source = function(
+      source_type, metadata) {
+    return internals.createVirtualPressureSource(source_type, metadata);
+  }
+
+  window.test_driver_internal.update_virtual_pressure_source = function(
+      source_type, sample) {
+    return internals.updateVirtualPressureSource(source_type, sample);
+  }
+
+  window.test_driver_internal.remove_virtual_pressure_source = function(
+      source_type) {
+    return internals.removeVirtualPressureSource(source_type);
   }
 
   // Enable automation so we don't wait for user input on unimplemented APIs

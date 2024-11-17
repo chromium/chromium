@@ -10,6 +10,7 @@
 #include "media/capture/video/android/video_capture_device_android.h"
 
 #include <stdint.h>
+
 #include <utility>
 
 #include "base/android/jni_android.h"
@@ -19,6 +20,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/system/system_monitor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "media/capture/mojom/image_capture_types.h"
@@ -55,7 +57,7 @@ mojom::MeteringMode ToMojomMeteringMode(
       return mojom::MeteringMode::NONE;
     case PhotoCapabilities::AndroidMeteringMode::NOT_SET:
     case PhotoCapabilities::AndroidMeteringMode::NUM_ENTRIES:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return mojom::MeteringMode::NONE;
 }
@@ -86,7 +88,7 @@ mojom::FillLightMode ToMojomFillLightMode(
       return mojom::FillLightMode::OFF;
     case PhotoCapabilities::AndroidFillLightMode::NOT_SET:
     case PhotoCapabilities::AndroidFillLightMode::NUM_ENTRIES:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   NOTREACHED();
 }
@@ -102,6 +104,14 @@ PhotoCapabilities::AndroidFillLightMode ToAndroidFillLightMode(
       return PhotoCapabilities::AndroidFillLightMode::OFF;
   }
   NOTREACHED();
+}
+
+void notifyVideoCaptureDeviceChanged() {
+  base::SystemMonitor* monitor = base::SystemMonitor::Get();
+  if (monitor) {
+    monitor->ProcessDevicesChanged(
+        base::SystemMonitor::DeviceType::DEVTYPE_VIDEO_CAPTURE);
+  }
 }
 
 }  // anonymous namespace
@@ -374,6 +384,11 @@ void VideoCaptureDeviceAndroid::OnError(JNIEnv* env,
   SetErrorState(
       static_cast<media::VideoCaptureError>(android_video_capture_error),
       FROM_HERE, base::android::ConvertJavaStringToUTF8(env, message));
+  // When an external camera is unplugged during use, we cannot rely on
+  // `CameraAvailabilityObserver` since camera availability is unavailable
+  // before/after unplugging. We have to notify `SystemMonitor` that the
+  // video capture device may have changed here.
+  notifyVideoCaptureDeviceChanged();
 }
 
 void VideoCaptureDeviceAndroid::OnFrameDropped(
@@ -393,15 +408,10 @@ void VideoCaptureDeviceAndroid::OnGetPhotoCapabilitiesReply(
     jlong callback_id,
     jobject result) {
   base::AutoLock lock(photo_callbacks_lock_);
-  GetPhotoStateCallback* const cb =
-      reinterpret_cast<GetPhotoStateCallback*>(callback_id);
-  // Search for the pointer |cb| in the list of |take_photo_callbacks_|.
-  const auto reference_it =
-      base::ranges::find(get_photo_state_callbacks_, cb,
-                         &std::unique_ptr<GetPhotoStateCallback>::get);
+
+  const auto reference_it = get_photo_state_callbacks_.find(callback_id);
   if (reference_it == get_photo_state_callbacks_.end()) {
-    NOTREACHED_IN_MIGRATION() << "|callback_id| not found.";
-    return;
+    NOTREACHED() << "|callback_id| not found.";
   }
   if (result == nullptr) {
     get_photo_state_callbacks_.erase(reference_it);
@@ -541,7 +551,7 @@ void VideoCaptureDeviceAndroid::OnGetPhotoCapabilitiesReply(
     modes.push_back(ToMojomFillLightMode(fill_light_mode));
   photo_capabilities->fill_light_mode = modes;
 
-  std::move(*cb).Run(std::move(photo_capabilities));
+  std::move(reference_it->second).Run(std::move(photo_capabilities));
   get_photo_state_callbacks_.erase(reference_it);
 }
 
@@ -557,21 +567,27 @@ void VideoCaptureDeviceAndroid::OnPhotoTaken(
 
   base::AutoLock lock(photo_callbacks_lock_);
 
-  TakePhotoCallback* const cb =
-      reinterpret_cast<TakePhotoCallback*>(callback_id);
-  // Search for the pointer |cb| in the list of |take_photo_callbacks_|.
-  const auto reference_it = base::ranges::find(
-      take_photo_callbacks_, cb, &std::unique_ptr<TakePhotoCallback>::get);
+  const auto reference_it = take_photo_callbacks_.find(callback_id);
   if (reference_it == take_photo_callbacks_.end()) {
-    NOTREACHED_IN_MIGRATION() << "|callback_id| not found.";
+    // `OnPhotoTaken` may be invoked for the same `TakePhoto` callback when
+    // `createCaptureSession` fails. In some cases, when `createCaptureSession`
+    // fails, `CrPhotoSessionListener::onConfigured` will be invoked first, then
+    // camera device hits a FATAL error and throws a CameraAccessException. It
+    // makes `OnPhotoTaken` be invoked twice with the same `callback_id`, but
+    // the callback has been removed from `take_photo_callbacks_` already.
+    // Since it only happens when an error occurs with the camera device, you
+    // won't get `OnPhotoTaken` with the same `callback_id` invoked with photo
+    // data twice.
+    if (data != nullptr) {
+      NOTREACHED() << "|callback_id| not found.";
+    }
     return;
   }
-
   if (data != nullptr) {
     mojom::BlobPtr blob = mojom::Blob::New();
     base::android::JavaByteArrayToByteVector(env, data, &blob->data);
     blob->mime_type = blob->data.empty() ? "" : "image/jpeg";
-    std::move(*cb).Run(std::move(blob));
+    std::move(reference_it->second).Run(std::move(blob));
   }
 
   take_photo_callbacks_.erase(reference_it);
@@ -630,7 +646,8 @@ void VideoCaptureDeviceAndroid::SendIncomingDataToClient(
     return;
   client_->OnIncomingCapturedData(
       data, length, capture_format_, capture_color_space_, rotation,
-      false /* flip_y */, reference_time, timestamp, std::nullopt);
+      false /* flip_y */, reference_time, timestamp,
+      /*capture_begin_timestamp=*/std::nullopt, /*metadata=*/std::nullopt);
 }
 
 VideoPixelFormat VideoCaptureDeviceAndroid::GetColorspace() {
@@ -675,13 +692,11 @@ void VideoCaptureDeviceAndroid::DoTakePhoto(TakePhotoCallback callback) {
   }
 #endif
   JNIEnv* env = AttachCurrentThread();
-
-  // Make copy on the heap so we can pass the pointer through JNI.
-  auto heap_callback = std::make_unique<TakePhotoCallback>(std::move(callback));
-  const intptr_t callback_id = reinterpret_cast<intptr_t>(heap_callback.get());
+  int64_t callback_id;
   {
     base::AutoLock lock(photo_callbacks_lock_);
-    take_photo_callbacks_.push_back(std::move(heap_callback));
+    callback_id = nextPhotoRequestId_++;
+    take_photo_callbacks_[callback_id] = std::move(callback);
   }
   Java_VideoCapture_takePhotoAsync(env, j_capture_, callback_id);
 }
@@ -697,14 +712,11 @@ void VideoCaptureDeviceAndroid::DoGetPhotoState(
   }
 #endif
   JNIEnv* env = AttachCurrentThread();
-
-  // Make copy on the heap so we can pass the pointer through JNI.
-  auto heap_callback =
-      std::make_unique<GetPhotoStateCallback>(std::move(callback));
-  const intptr_t callback_id = reinterpret_cast<intptr_t>(heap_callback.get());
+  int64_t callback_id;
   {
     base::AutoLock lock(photo_callbacks_lock_);
-    get_photo_state_callbacks_.push_back(std::move(heap_callback));
+    callback_id = nextPhotoRequestId_++;
+    get_photo_state_callbacks_[callback_id] = std::move(callback);
   }
   Java_VideoCapture_getPhotoCapabilitiesAsync(env, j_capture_, callback_id);
 }

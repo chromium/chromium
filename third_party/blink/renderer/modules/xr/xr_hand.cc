@@ -14,12 +14,14 @@
 
 namespace blink {
 
+using XRJointVector = HeapVector<Member<XRJointSpace>>;
+
 class XRHandIterationSource final
     : public PairSyncIterable<XRHand>::IterationSource {
  public:
-  explicit XRHandIterationSource(const HeapVector<Member<XRJointSpace>>& joints,
+  explicit XRHandIterationSource(const Member<XRJointVector>& joints,
                                  XRHand* xr_hand)
-      : joints_(&joints), xr_hand_(xr_hand) {}
+      : joints_(joints), xr_hand_(xr_hand) {}
 
   bool FetchNextItem(ScriptState*,
                      V8XRHandJoint& key,
@@ -42,22 +44,23 @@ class XRHandIterationSource final
 
  private:
   wtf_size_t index_ = 0;
-  const Member<const HeapVector<Member<XRJointSpace>>> joints_;
+  const Member<const XRJointVector> joints_;
   Member<XRHand> xr_hand_;  // Owner object of `joints_`
 };
 
 XRHand::XRHand(const device::mojom::blink::XRHandTrackingData* state,
                XRInputSource* input_source)
-    : joints_(kNumJoints) {
+    : joints_(MakeGarbageCollected<XRJointVector>()) {
+  joints_->ReserveInitialCapacity(kNumJoints);
   DCHECK_EQ(kNumJoints, V8XRHandJoint::kEnumSize);
   for (unsigned i = 0; i < kNumJoints; ++i) {
     device::mojom::blink::XRHandJoint joint =
         static_cast<device::mojom::blink::XRHandJoint>(i);
-    DCHECK_EQ(MojomHandJointToString(joint),
-              V8XRHandJoint(static_cast<V8XRHandJoint::Enum>(i)).AsString());
-    joints_[i] = MakeGarbageCollected<XRJointSpace>(
+    DCHECK_EQ(MojomHandJointToV8Enum(joint),
+              static_cast<V8XRHandJoint::Enum>(i));
+    joints_->push_back(MakeGarbageCollected<XRJointSpace>(
         this, input_source->session(), nullptr, joint, 0.0f,
-        input_source->xr_handedness());
+        input_source->xr_handedness()));
   }
 
   updateFromHandTrackingData(state, input_source);
@@ -65,7 +68,7 @@ XRHand::XRHand(const device::mojom::blink::XRHandTrackingData* state,
 
 XRJointSpace* XRHand::get(const V8XRHandJoint& key) const {
   wtf_size_t index = static_cast<wtf_size_t>(key.AsEnum());
-  return joints_[index].Get();
+  return joints_->at(index).Get();
 }
 
 void XRHand::updateFromHandTrackingData(
@@ -86,8 +89,8 @@ void XRHand::updateFromHandTrackingData(
       new_missing_poses = true;
     }
 
-    joints_[joint_index]->UpdateTracking(std::move(mojo_from_joint),
-                                         hand_joint->radius);
+    joints_->at(joint_index)
+        ->UpdateTracking(std::move(mojo_from_joint), hand_joint->radius);
   }
 
   if (new_missing_poses) {
@@ -96,7 +99,7 @@ void XRHand::updateFromHandTrackingData(
   } else if (has_missing_poses_ && new_poses) {
     // Need to check if there are any missing poses
     has_missing_poses_ =
-        !base::ranges::all_of(joints_, &XRJointSpace::MojoFromNative);
+        !base::ranges::all_of(*joints_, &XRJointSpace::MojoFromNative);
   }
 }
 

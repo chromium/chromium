@@ -26,14 +26,17 @@ import {assertExhaustive, castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isSecondaryUser} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
-import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
-import {App, AppPermissionsHandlerInterface, AppPermissionsObserverReceiver} from '../mojom-webui/app_permission_handler.mojom-webui.js';
+import type {SettingsDropdownMenuElement} from '../controls/settings_dropdown_menu.js';
+import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
+import type {App, AppPermissionsHandlerInterface} from '../mojom-webui/app_permission_handler.mojom-webui.js';
+import {AppPermissionsObserverReceiver} from '../mojom-webui/app_permission_handler.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getAppPermissionProvider} from './mojo_interface_provider.js';
-import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
+import type {PrivacyHubBrowserProxy} from './privacy_hub_browser_proxy.js';
+import {PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
 import {getTemplate} from './privacy_hub_geolocation_subpage.html.js';
 import {LOCATION_PERMISSION_CHANGE_FROM_SETTINGS_HISTOGRAM_NAME} from './privacy_hub_metrics_util.js';
 

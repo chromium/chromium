@@ -24,6 +24,8 @@ namespace enterprise_companion {
 
 // Controls the transmission of usage stats (i.e. crash reports).
 extern const char kEnableUsageStatsSwitch[];
+// Provides the Omaha cohort ID to the application for use in event logging.
+extern const char kCohortIdSwitch[];
 
 // Returns the server name for establishing IPC via NamedMojoIpcServer.
 mojo::NamedPlatformChannel::ServerName GetServerName();
@@ -50,6 +52,7 @@ void ConnectAndLaunchServer(
     const base::Clock* clock,
     base::TimeDelta timeout,
     bool enable_usagestats,
+    const std::optional<std::string>& cohort_id,
     base::OnceCallback<void(std::unique_ptr<mojo::IsolatedConnection>,
                             mojo::Remote<mojom::EnterpriseCompanion>)> callback,
     const mojo::NamedPlatformChannel::ServerName& server_name =

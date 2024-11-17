@@ -12,7 +12,7 @@ dictionary XRGPUProjectionLayerInit {
 [
     SecureContext,
     Exposed=Window,
-    RuntimeEnabled=WebXRLayers
+    RuntimeEnabled=WebXRGPUBinding
 ] interface XRGPUBinding {
   [RaisesException] constructor(XRSession session, GPUDevice device);
 

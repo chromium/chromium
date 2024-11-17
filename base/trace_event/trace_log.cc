@@ -1171,7 +1171,7 @@ void TraceLog::FlushInternal(const TraceLog::OutputCallback& cb,
 #else
   // Trace processor isn't enabled so we can't convert the resulting trace into
   // JSON.
-  CHECK(false) << "JSON tracing isn't supported";
+  NOTREACHED() << "JSON tracing isn't supported";
 #endif  // BUILDFLAG(USE_PERFETTO_TRACE_PROCESSOR)
 }
 
@@ -1643,7 +1643,7 @@ std::string TraceLog::EventToConsoleMessage(char phase,
     thread_event_start_times_[thread_id].pop();
   }
 
-  std::string thread_name = thread_names_[thread_id];
+  const std::string& thread_name = thread_names_[thread_id];
   if (thread_colors_.find(thread_name) == thread_colors_.end()) {
     size_t next_color = (thread_colors_.size() % 6) + 1;
     thread_colors_[thread_name] = next_color;

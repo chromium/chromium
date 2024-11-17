@@ -46,7 +46,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorFloss
   device::BluetoothRemoteGattCharacteristic::Permissions GetPermissions()
       const override;
   void ReadRemoteDescriptor(ValueCallback callback) override;
-  void WriteRemoteDescriptor(const std::vector<uint8_t>& new_value,
+  void WriteRemoteDescriptor(base::span<const uint8_t> new_value,
                              base::OnceClosure callback,
                              ErrorCallback error_callback) override;
 

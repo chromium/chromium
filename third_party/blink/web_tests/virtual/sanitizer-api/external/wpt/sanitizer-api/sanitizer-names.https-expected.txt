@@ -1,0 +1,37 @@
+This is a testharness.js-based test.
+[FAIL] Element names in config item: elements
+  sanitizer.getConfiguration is not a function
+[FAIL] Element names in config item: removeElements
+  sanitizer.getConfiguration is not a function
+[FAIL] Element names in config item: replaceWithChildrenElements
+  sanitizer.getConfiguration is not a function
+[FAIL] Attribute names in config item: attributes
+  sanitizer.getConfiguration is not a function
+[FAIL] Attribute names in config item: removeAttributes
+  sanitizer.getConfiguration is not a function
+[FAIL] Namespaced elements #1: elements: ["svg"]
+  assert_equals: expected "Hello" but got "<svg>Hello</svg>"
+[FAIL] Namespaced elements #3: elements: ["math"]
+  assert_equals: expected "Hello" but got "<math>Hello</math>"
+[FAIL] Namespaced elements #4: elements: [{"name":"math","namespace":"http://www.w3.org/2000/svg"}]
+  assert_equals: expected "Hello" but got "<math>Hello</math>"
+[FAIL] Namespaced attributes #3: attributes: [{"name":"href","namespace":"http://www.w3.org/1999/xlink"}]
+  assert_equals: expected "<p></p>" but got "<p xlink:href=\\"bla\\"></p>"
+[FAIL] Namespaced attributes #4: attributes: [{"name":"href","namespace":"http://www.w3.org/1999/xlink"}]
+  assert_equals: expected "<p></p>" but got "<p href=\\"bla\\"></p>"
+[FAIL] Namespaced attributes #5: attributes: [{"name":"href"}]
+  assert_equals: expected "<p></p>" but got "<p xlink:href=\\"bla\\"></p>"
+[FAIL] Upper-case element names #0: "svg:FEBLEND"
+  assert_not_equals: got disallowed value "<feBlend></feBlend>"
+[FAIL] Mixed case element names #0: "feBlend" is preserved in config.
+  (intermediate value).getConfiguration is not a function
+[FAIL] Upper-case element names #1: "svg:FECOLORMATRIX"
+  assert_not_equals: got disallowed value "<feColorMatrix></feColorMatrix>"
+[FAIL] Mixed case element names #1: "feColorMatrix" is preserved in config.
+  (intermediate value).getConfiguration is not a function
+[FAIL] Upper-case element names #2: "svg:TEXTPATH"
+  assert_not_equals: got disallowed value "<textPath></textPath>"
+[FAIL] Mixed case element names #2: "textPath" is preserved in config.
+  (intermediate value).getConfiguration is not a function
+Harness: the test ran to completion.
+

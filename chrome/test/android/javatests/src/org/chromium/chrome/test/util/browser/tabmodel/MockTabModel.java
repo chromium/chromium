@@ -17,18 +17,19 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.EmptyTabModel;
-import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 
 import java.util.ArrayList;
 
 /** Almost empty implementation to mock a TabModel. It only handles tab creation and queries. */
-public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
+public class MockTabModel extends EmptyTabModel {
     /**
-     * Used to create different kinds of Tabs.  If a MockTabModelDelegate is not provided, regular
+     * Used to create different kinds of Tabs. If a MockTabModelDelegate is not provided, regular
      * Tabs are produced.
      */
     public interface MockTabModelDelegate {
@@ -51,6 +52,8 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     private final Profile mProfile;
     private final MockTabModelDelegate mDelegate;
     private boolean mIsActiveModel;
+    private @Nullable TabCreator mTabCreator;
+    private @Nullable TabRemover mTabRemover;
 
     public MockTabModel(Profile profile, MockTabModelDelegate delegate) {
         mProfile = profile;
@@ -75,6 +78,22 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     @Override
     public @NonNull ObservableSupplier<Integer> getTabCountSupplier() {
         return mTabCountSupplier;
+    }
+
+    @Override
+    public @NonNull TabCreator getTabCreator() {
+        if (mTabCreator == null) {
+            return super.getTabCreator();
+        }
+        return mTabCreator;
+    }
+
+    @Override
+    public @NonNull TabRemover getTabRemover() {
+        if (mTabRemover == null) {
+            return super.getTabRemover();
+        }
+        return mTabRemover;
     }
 
     @Override
@@ -112,6 +131,16 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
 
     @Override
     public boolean isIncognito() {
+        return mProfile.isOffTheRecord();
+    }
+
+    @Override
+    public boolean isIncognitoBranded() {
+        return mProfile.isOffTheRecord();
+    }
+
+    @Override
+    public boolean isOffTheRecord() {
         return mProfile.isOffTheRecord();
     }
 
@@ -187,5 +216,13 @@ public class MockTabModel extends EmptyTabModel implements IncognitoTabModel {
     @Override
     public boolean isActiveModel() {
         return mIsActiveModel;
+    }
+
+    public void setTabCreatorForTesting(TabCreator tabCreator) {
+        mTabCreator = tabCreator;
+    }
+
+    public void setTabRemoverForTesting(TabRemover tabRemover) {
+        mTabRemover = tabRemover;
     }
 }

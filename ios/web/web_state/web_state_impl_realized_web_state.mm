@@ -274,10 +274,9 @@ void WebStateImpl::RealizedWebState::OnNavigationStarted(
   // confusion about the origin of a dialog.
   ClearDialogs();
 
-  // Navigation manager loads internal URLs to restore session history and
-  // create back-forward entries for WebUI. Do not trigger external callbacks.
-  if ([CRWErrorPageHelper isErrorPageFileURL:context->GetUrl()] ||
-      wk_navigation_util::IsRestoreSessionUrl(context->GetUrl())) {
+  // Navigation manager loads internal URLs to create back-forward entries for
+  // WebUI. Do not trigger external callbacks.
+  if ([CRWErrorPageHelper isErrorPageFileURL:context->GetUrl()]) {
     return;
   }
 
@@ -301,10 +300,9 @@ void WebStateImpl::RealizedWebState::OnNavigationRedirected(
 
 void WebStateImpl::RealizedWebState::OnNavigationFinished(
     NavigationContextImpl* context) {
-  // Navigation manager loads internal URLs to restore session history and
-  // create back-forward entries for WebUI. Do not trigger external callbacks.
-  if ([CRWErrorPageHelper isErrorPageFileURL:context->GetUrl()] ||
-      wk_navigation_util::IsRestoreSessionUrl(context->GetUrl())) {
+  // Navigation manager loads internal URLs to create back-forward entries for
+  // WebUI. Do not trigger external callbacks.
+  if ([CRWErrorPageHelper isErrorPageFileURL:context->GetUrl()]) {
     return;
   }
 
@@ -357,11 +355,6 @@ void WebStateImpl::RealizedWebState::SetIsLoading(bool is_loading) {
 
 void WebStateImpl::RealizedWebState::OnPageLoaded(const GURL& url,
                                                   bool load_success) {
-  // Navigation manager loads internal URLs to restore session history and
-  // create back-forward entries for WebUI. Do not trigger external callbacks.
-  if (wk_navigation_util::IsWKInternalUrl(url))
-    return;
-
   PageLoadCompletionStatus load_completion_status =
       load_success ? PageLoadCompletionStatus::SUCCESS
                    : PageLoadCompletionStatus::FAILURE;
@@ -674,11 +667,6 @@ void WebStateImpl::RealizedWebState::OpenURL(
 }
 
 void WebStateImpl::RealizedWebState::Stop() {
-  if (navigation_manager_->IsRestoreSessionInProgress()) {
-    // Do not interrupt session restoration process. For embedder session
-    // restoration is opaque and WebState acts like it's idle.
-    return;
-  }
   [web_controller_ stopLoading];
 }
 
@@ -715,9 +703,6 @@ bool WebStateImpl::RealizedWebState::IsLoading() const {
 }
 
 double WebStateImpl::RealizedWebState::GetLoadingProgress() const {
-  if (navigation_manager_->IsRestoreSessionInProgress())
-    return 0.0;
-
   return [web_controller_ loadingProgress];
 }
 
@@ -784,7 +769,6 @@ const GURL& WebStateImpl::RealizedWebState::GetLastCommittedURL() const {
 std::optional<GURL>
 WebStateImpl::RealizedWebState::GetLastCommittedURLIfTrusted() const {
   NavigationItemImpl* item = navigation_manager_->GetLastCommittedItemImpl();
-
   if (!item || item->IsUntrusted()) {
     return std::nullopt;
   }
@@ -877,15 +861,6 @@ bool WebStateImpl::RealizedWebState::SetSessionStateData(NSData* data) {
 }
 
 NSData* WebStateImpl::RealizedWebState::SessionStateData() const {
-  // Don't mix safe and unsafe session restoration -- if a webState still
-  // has unrestored targetUrl pages, leave it that way.
-  for (int i = 0; i < navigation_manager_->GetItemCount(); i++) {
-    NavigationItem* item = navigation_manager_->GetItemAtIndex(i);
-    if (wk_navigation_util::IsRestoreSessionUrl(item->GetURL())) {
-      return nil;
-    }
-  }
-
   return [web_controller_ sessionStateData];
 }
 
@@ -981,9 +956,6 @@ void WebStateImpl::RealizedWebState::Reload() {
 
 void WebStateImpl::RealizedWebState::OnNavigationItemCommitted(
     NavigationItem* item) {
-  if (wk_navigation_util::IsWKInternalUrl(item->GetURL()))
-    return;
-
   // A committed navigation item indicates that NavigationManager has a new
   // valid session history so should invalidate the cached restored session
   // history.

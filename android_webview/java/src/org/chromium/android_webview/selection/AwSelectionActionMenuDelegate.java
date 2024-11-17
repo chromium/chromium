@@ -4,27 +4,21 @@
 
 package org.chromium.android_webview.selection;
 
-import android.content.pm.ResolveInfo;
-
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.autofill.AutofillSelectionActionMenuDelegate;
-import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * The WebView delegate customizing text selection menu items in {@link SelectionPopupController}.
- * It records webview-specific histograms and ensures the order of Samsung-specific menu entries.
+ * It records webview-specific histograms.
  */
 public class AwSelectionActionMenuDelegate extends AutofillSelectionActionMenuDelegate {
-    private static final String TEXT_SELECTION_MENU_ORDERING_HISTOGRAM_NAME =
+    static final String TEXT_SELECTION_MENU_ORDERING_HISTOGRAM_NAME =
             "Android.WebView.TextSelectionMenuOrdering";
 
     // This should be kept in sync with the definition
@@ -36,51 +30,16 @@ public class AwSelectionActionMenuDelegate extends AutofillSelectionActionMenuDe
         TextSelectionMenuOrdering.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
-    public @interface TextSelectionMenuOrdering {
+    @interface TextSelectionMenuOrdering {
         int DEFAULT_MENU_ORDER = 0;
         int SAMSUNG_MENU_ORDER = 1;
         int COUNT = 2;
     }
 
     public AwSelectionActionMenuDelegate() {
-        if (SamsungSelectionActionMenuHelper.shouldUseSamsungMenuItemOrdering()) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    TEXT_SELECTION_MENU_ORDERING_HISTOGRAM_NAME,
-                    TextSelectionMenuOrdering.SAMSUNG_MENU_ORDER,
-                    TextSelectionMenuOrdering.COUNT);
-        } else {
-            RecordHistogram.recordEnumeratedHistogram(
-                    TEXT_SELECTION_MENU_ORDERING_HISTOGRAM_NAME,
-                    TextSelectionMenuOrdering.DEFAULT_MENU_ORDER,
-                    TextSelectionMenuOrdering.COUNT);
-        }
-    }
-
-    @Override
-    public void modifyDefaultMenuItems(
-            List<SelectionMenuItem.Builder> menuItemBuilders,
-            boolean isSelectionPassword,
-            @NonNull String selectedText) {
-        if (SamsungSelectionActionMenuHelper.shouldUseSamsungMenuItemOrdering()) {
-            SamsungSelectionActionMenuHelper.modifyDefaultMenuItems(
-                    menuItemBuilders, isSelectionPassword, selectedText);
-        }
-    }
-
-    @Override
-    public List<ResolveInfo> filterTextProcessingActivities(List<ResolveInfo> activities) {
-        if (SamsungSelectionActionMenuHelper.isManageAppsSupported()) {
-            return SamsungSelectionActionMenuHelper.filterTextProcessingActivities(activities);
-        }
-        return activities;
-    }
-
-    @NonNull
-    @Override
-    public List<SelectionMenuItem> getAdditionalTextProcessingItems() {
-        if (SamsungSelectionActionMenuHelper.isManageAppsSupported()) {
-            return SamsungSelectionActionMenuHelper.getAdditionalTextProcessingItems();
-        }
-        return new ArrayList<>();
+        RecordHistogram.recordEnumeratedHistogram(
+                TEXT_SELECTION_MENU_ORDERING_HISTOGRAM_NAME,
+                TextSelectionMenuOrdering.DEFAULT_MENU_ORDER,
+                TextSelectionMenuOrdering.COUNT);
     }
 }

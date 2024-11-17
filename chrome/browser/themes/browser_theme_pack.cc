@@ -24,6 +24,7 @@
 #include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
@@ -355,8 +356,10 @@ scoped_refptr<base::RefCountedMemory> ReadFileData(const base::FilePath& path) {
         std::vector<unsigned char> raw_data;
         raw_data.resize(size);
         char* data = reinterpret_cast<char*>(&(raw_data.front()));
-        if (file.ReadAtCurrentPos(data, size) == length)
-          return base::RefCountedBytes::TakeVector(&raw_data);
+        if (file.ReadAtCurrentPos(data, size) == length) {
+          return base::MakeRefCounted<base::RefCountedBytes>(
+              std::move(raw_data));
+        }
       }
     }
   }
@@ -441,9 +444,8 @@ class ThemeImagePngSource : public gfx::ImageSkiaSource {
     // decode it, store the result in the bitmap map and return it.
     PngMap::const_iterator exact_png_it = png_map_.find(scale_factor);
     if (exact_png_it != png_map_.end()) {
-      SkBitmap bitmap;
-      if (!gfx::PNGCodec::Decode(exact_png_it->second->data(),
-                                 exact_png_it->second->size(), &bitmap)) {
+      SkBitmap bitmap = gfx::PNGCodec::Decode(*exact_png_it->second);
+      if (bitmap.isNull()) {
         // The image is either broken or a different format.
         return gfx::ImageSkiaRep();
       }
@@ -472,12 +474,10 @@ class ThemeImagePngSource : public gfx::ImageSkiaSource {
     BitmapMap::const_iterator available_bitmap_it =
         bitmap_map_.find(available_scale_factor);
     if (available_bitmap_it == bitmap_map_.end()) {
-      SkBitmap available_bitmap;
-      if (!gfx::PNGCodec::Decode(available_png_it->second->data(),
-                                 available_png_it->second->size(),
-                                 &available_bitmap)) {
-        NOTREACHED_IN_MIGRATION();
-        return gfx::ImageSkiaRep();
+      SkBitmap available_bitmap =
+          gfx::PNGCodec::Decode(*available_png_it->second);
+      if (available_bitmap.isNull()) {
+        NOTREACHED();
       }
       bitmap_map_[available_scale_factor] = available_bitmap;
       available_bitmap_it = bitmap_map_.find(available_scale_factor);
@@ -765,8 +765,7 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
     return nullptr;
   }
 
-  std::optional<std::string_view> pointer =
-      data_pack->GetStringPiece(kHeaderID);
+  std::optional<std::string_view> pointer = data_pack->GetStringView(kHeaderID);
   if (!pointer) {
     return nullptr;
   }
@@ -786,35 +785,35 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
     return nullptr;
   }
 
-  pointer = data_pack->GetStringPiece(kTintsID);
+  pointer = data_pack->GetStringView(kTintsID);
   if (!pointer) {
     return nullptr;
   }
   pack->tints_ =
       reinterpret_cast<TintEntry*>(const_cast<char*>(pointer->data()));
 
-  pointer = data_pack->GetStringPiece(kColorsID);
+  pointer = data_pack->GetStringView(kColorsID);
   if (!pointer) {
     return nullptr;
   }
   pack->colors_ =
       reinterpret_cast<ColorPair*>(const_cast<char*>(pointer->data()));
 
-  pointer = data_pack->GetStringPiece(kDisplayPropertiesID);
+  pointer = data_pack->GetStringView(kDisplayPropertiesID);
   if (!pointer) {
     return nullptr;
   }
   pack->display_properties_ = reinterpret_cast<DisplayPropertyPair*>(
       const_cast<char*>(pointer->data()));
 
-  pointer = data_pack->GetStringPiece(kSourceImagesID);
+  pointer = data_pack->GetStringView(kSourceImagesID);
   if (!pointer) {
     return nullptr;
   }
   pack->source_images_ =
       reinterpret_cast<SourceImage*>(const_cast<char*>(pointer->data()));
 
-  pointer = data_pack->GetStringPiece(kScaleFactorsID);
+  pointer = data_pack->GetStringView(kScaleFactorsID);
   if (!pointer) {
     return nullptr;
   }
@@ -1549,9 +1548,8 @@ bool BrowserThemePack::LoadRawBitmapsTo(
           int raw_id = GetRawIDByPersistentID(prs_id, scale_factor);
           image_memory_[raw_id] = raw_data;
         } else {
-          SkBitmap bitmap;
-          if (gfx::PNGCodec::Decode(raw_data->data(), raw_data->size(),
-                                    &bitmap)) {
+          SkBitmap bitmap = gfx::PNGCodec::Decode(*raw_data);
+          if (!bitmap.isNull()) {
             image_skia.AddRepresentation(gfx::ImageSkiaRep(
                 bitmap, ui::GetScaleForResourceScaleFactor(scale_factor)));
           } else {
@@ -1965,15 +1963,15 @@ void BrowserThemePack::RepackImages(const ImageCache& images,
     DCHECK(!image_reps.empty())
         << "No image reps for resource " << image.first << ".";
     for (const auto& rep : image_reps) {
-      std::vector<unsigned char> bitmap_data;
-      const bool encoded = gfx::PNGCodec::EncodeBGRASkBitmap(
-          rep.GetBitmap(), false, &bitmap_data);
-      DCHECK(encoded) << "Image file for resource " << image.first
-                      << " could not be encoded.";
+      std::optional<std::vector<uint8_t>> bitmap_data =
+          gfx::PNGCodec::EncodeBGRASkBitmap(rep.GetBitmap(),
+                                            /*discard_transparency=*/false);
+      CHECK(bitmap_data) << "Image file for resource " << image.first
+                         << " could not be encoded.";
       int raw_id = GetRawIDByPersistentID(
           image.first, ui::GetSupportedResourceScaleFactor(rep.scale()));
-      (*reencoded_images)[raw_id] =
-          base::RefCountedBytes::TakeVector(&bitmap_data);
+      (*reencoded_images)[raw_id] = base::MakeRefCounted<base::RefCountedBytes>(
+          std::move(bitmap_data).value());
     }
   }
 }
@@ -2078,9 +2076,8 @@ void BrowserThemePack::GenerateRawImageForAllSupportedScales(
   // Get bitmap for the available scale factor.
   int available_raw_id = GetRawIDByPersistentID(prs_id, available_scale_factor);
   RawImages::const_iterator it = image_memory_.find(available_raw_id);
-  SkBitmap available_bitmap;
-  if (!gfx::PNGCodec::Decode(it->second->data(), it->second->size(),
-                             &available_bitmap)) {
+  SkBitmap available_bitmap = gfx::PNGCodec::Decode(*it->second);
+  if (available_bitmap.isNull()) {
     // The image is either broken or a different format.
     return;
   }
@@ -2094,16 +2091,14 @@ void BrowserThemePack::GenerateRawImageForAllSupportedScales(
         CreateLowQualityResizedBitmap(available_bitmap,
                                       available_scale_factor,
                                       scale_factors_[i]);
-    std::vector<unsigned char> bitmap_data;
-    if (!gfx::PNGCodec::EncodeBGRASkBitmap(scaled_bitmap,
-                                           false,
-                                           &bitmap_data)) {
-      NOTREACHED_IN_MIGRATION()
-          << "Unable to encode theme image for prs_id=" << prs_id
-          << " for scale_factor=" << scale_factors_[i];
-      break;
+    std::optional<std::vector<uint8_t>> bitmap_data =
+        gfx::PNGCodec::EncodeBGRASkBitmap(scaled_bitmap,
+                                          /*discard_transparency=*/false);
+    if (!bitmap_data) {
+      NOTREACHED() << "Unable to encode theme image for prs_id=" << prs_id
+                   << " for scale_factor=" << scale_factors_[i];
     }
-    image_memory_[scaled_raw_id] =
-        base::RefCountedBytes::TakeVector(&bitmap_data);
+    image_memory_[scaled_raw_id] = base::MakeRefCounted<base::RefCountedBytes>(
+        std::move(bitmap_data).value());
   }
 }

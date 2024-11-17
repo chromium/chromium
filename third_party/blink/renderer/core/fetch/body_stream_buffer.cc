@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/body_stream_buffer.h"
 
 #include <memory>
@@ -95,7 +90,7 @@ class BodyStreamBuffer::LoaderClient final
     client_->DidFetchDataLoadFailed();
   }
 
-  void Abort() override { NOTREACHED_IN_MIGRATION(); }
+  void Abort() override { NOTREACHED(); }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(buffer_);
@@ -353,20 +348,17 @@ ScriptPromise<IDLUndefined> BodyStreamBuffer::Pull(
   return ToResolvedUndefinedPromise(GetScriptState());
 }
 
-ScriptPromise<IDLUndefined> BodyStreamBuffer::Cancel(
-    ExceptionState& exception_state) {
-  return Cancel(v8::Undefined(GetScriptState()->GetIsolate()), exception_state);
+ScriptPromise<IDLUndefined> BodyStreamBuffer::Cancel() {
+  return Cancel(v8::Undefined(GetScriptState()->GetIsolate()));
 }
 
 ScriptPromise<IDLUndefined> BodyStreamBuffer::Cancel(
-    v8::Local<v8::Value> reason,
-    ExceptionState& exception_state) {
+    v8::Local<v8::Value> reason) {
   ReadableStreamController* controller = Stream()->GetController();
   DCHECK(controller->IsByteStreamController());
   ReadableByteStreamController* byte_controller =
       To<ReadableByteStreamController>(controller);
-  byte_controller->Close(GetScriptState(), byte_controller, exception_state);
-  DCHECK(!exception_state.HadException());
+  byte_controller->Close(GetScriptState(), byte_controller);
   CancelConsumer();
   return ToResolvedUndefinedPromise(GetScriptState());
 }
@@ -479,19 +471,17 @@ void BodyStreamBuffer::Close(ExceptionState& exception_state) {
   // Close() can be called during construction, in which case `stream_`
   // will not be set yet.
   if (stream_) {
+    v8::Isolate* isolate = script_state_->GetIsolate();
+    v8::TryCatch try_catch(isolate);
     if (script_state_->ContextIsValid()) {
       ScriptState::Scope scope(script_state_);
-      stream_->CloseStream(script_state_, exception_state);
+      stream_->CloseStream(script_state_, PassThroughException(isolate));
     } else {
       // If the context is not valid then Close() will not try to resolve the
       // promises, and that is not a problem.
-      stream_->CloseStream(script_state_, exception_state);
+      stream_->CloseStream(script_state_, PassThroughException(isolate));
     }
-    if (exception_state.HadException()) {
-      DLOG(WARNING) << "Controller::close throws exception "
-                    << exception_state.Code() << ", "
-                    << exception_state.Message();
-      exception_state.ClearException();
+    if (try_catch.HasCaught()) {
       return;
     }
   }
@@ -539,9 +529,8 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
 
   base::AutoReset<bool> auto_reset(&in_process_data_, true);
   while (stream_needs_more_) {
-    const char* buffer = nullptr;
-    size_t available = 0;
-    auto result = consumer_->BeginRead(&buffer, &available);
+    base::span<const char> buffer;
+    auto result = consumer_->BeginRead(buffer);
     if (result == BytesConsumer::Result::kShouldWait)
       return;
     DOMUint8Array* array = nullptr;
@@ -553,19 +542,17 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
         if (ReadableStreamBYOBRequest* request =
                 byte_controller->byobRequest()) {
           DOMArrayBufferView* view = request->view().Get();
-          available = std::min(view->byteLength(), available);
-          memcpy(
-              static_cast<char*>(view->buffer()->Data()) + view->byteOffset(),
-              buffer, available);
+          auto view_span = view->ByteSpan();
+          buffer = buffer.first(std::min(view_span.size(), buffer.size()));
+          view_span.copy_prefix_from(base::as_bytes(buffer));
           byob_view = view;
         }
       }
       if (!byob_view) {
         CHECK(!array);
-        array = DOMUint8Array::CreateOrNull(UNSAFE_TODO(base::span(
-            reinterpret_cast<const unsigned char*>(buffer), available)));
+        array = DOMUint8Array::CreateOrNull(base::as_bytes(buffer));
       }
-      result = consumer_->EndRead(available);
+      result = consumer_->EndRead(buffer.size());
       if (!array && !byob_view) {
         RaiseOOMError();
         return;
@@ -578,19 +565,20 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
           // Clear |stream_needs_more_| in order to detect a pull call.
           stream_needs_more_ = false;
           ScriptState::Scope scope(script_state_);
+          v8::TryCatch try_catch(script_state_->GetIsolate());
           auto* byte_controller =
               To<ReadableByteStreamController>(stream_->GetController());
           if (byob_view) {
             ReadableByteStreamController::Respond(
-                script_state_, byte_controller, available, exception_state);
+                script_state_, byte_controller, buffer.size(),
+                PassThroughException(script_state_->GetIsolate()));
           } else {
             CHECK(array);
             ReadableByteStreamController::Enqueue(
                 script_state_, byte_controller, NotShared(array),
-                exception_state);
+                PassThroughException(script_state_->GetIsolate()));
           }
-          if (exception_state.HadException()) {
-            exception_state.ClearException();
+          if (try_catch.HasCaught()) {
             return;
           }
         }
@@ -611,8 +599,7 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
         }
         break;
       case BytesConsumer::Result::kShouldWait:
-        NOTREACHED_IN_MIGRATION();
-        return;
+        NOTREACHED();
       case BytesConsumer::Result::kError:
         GetError();
         return;

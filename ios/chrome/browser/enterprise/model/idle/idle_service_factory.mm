@@ -11,11 +11,6 @@
 namespace enterprise_idle {
 
 // static
-IdleService* IdleServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 IdleService* IdleServiceFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<IdleService*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
@@ -35,8 +30,7 @@ IdleServiceFactory::~IdleServiceFactory() = default;
 
 std::unique_ptr<KeyedService> IdleServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  return std::make_unique<IdleService>(
-      ChromeBrowserState::FromBrowserState(context));
+  return std::make_unique<IdleService>(ProfileIOS::FromBrowserState(context));
 }
 
 void IdleServiceFactory::RegisterBrowserStatePrefs(

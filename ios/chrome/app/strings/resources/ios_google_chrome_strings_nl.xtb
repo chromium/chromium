@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1066101356081285416">Chrome herkent trackingcodes op sites die je bezoekt en toont pakketupdates op de pagina Nieuw tabblad. Het nummer voor pakkettracking en de naam van de website worden naar Google gestuurd om deze functie te bieden en de Shopping-functies voor iedereen te verbeteren. Je kunt dit altijd updaten in de <ph name="BEGIN_LINK" />instellingen voor Verzendstatus bijhouden<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Zoeken met Google Lens</translation>
 <translation id="1143896152279775643">Je wachtwoord wordt opgeslagen in Google Wachtwoordmanager voor <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Nieuw tabblad openen in Chrome</translation>
 <translation id="1166460004393506534">Browsegegevens in Chrome verwijderen</translation>
@@ -38,7 +39,9 @@ Aandachtspunten:
 <translation id="1670609221633730681">Chrome-tip: kies de positie van de adresbalk</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Voegt de ingevoerde URL's toe aan je bookmarks in Chrome.</translation>
+<translation id="1799920918471566157">Chrome-tips</translation>
 <translation id="1830634592642484976">Dit adres is momenteel opgeslagen in Chrome. Als je het wilt gebruiken in andere Google-producten, sla je het op in je Google-account (<ph name="USER_EMAIL" />).</translation>
+<translation id="1891812034154776216">Geopende incognitotabbladen verbergen als je Chrome verlaat</translation>
 <translation id="1917964099031477364">Dit account en niet-opgeslagen gegevens worden verwijderd uit Chrome en andere Google-apps op dit apparaat.</translation>
 <translation id="1919130412786645364">Inloggen bij Chrome toestaan</translation>
 <translation id="1965935827552890526">Maak af wat je aan het doen was in het andere geopende Chrome-venster.</translation>
@@ -70,6 +73,7 @@ Aandachtspunten:
 <translation id="2689064829982324496">Als je op alle websites wilt uitloggen van je Google-account, <ph name="BEGIN_LINK" />log je uit bij Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome kan niet checken op updates. Probeer het later opnieuw.</translation>
 <translation id="2703746758996815929">Zet meldingen aan via de iOS-instellingen om nuttige Chrome-tips te krijgen.</translation>
+<translation id="2728851697704606655">Vertalen met Google Lens</translation>
 <translation id="2736805085127235148">Chrome-meldingen staan momenteel uit in je apparaatinstellingen.</translation>
 <translation id="2754428955276778271">Sommige van je Chrome-gegevens zijn nog niet opgeslagen in je Google-account.
 
@@ -247,6 +251,7 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="7581063337314642333">Het tabbladraster in Chrome bezoeken</translation>
 <translation id="7599894504325210080">Uitgebreide weergave voor automatisch invullen in Chrome</translation>
 <translation id="7642373780953416937">Krijg meldingen over privacy- of beveiligingsproblemen die Chrome automatisch voor je opspoort.</translation>
+<translation id="7660356333829433649">Kom hier later terug voor meer handige tips om het maximale uit Chrome te halen.</translation>
 <translation id="7662994914830945754">Log in en zet de synchronisatie aan om je tabbladen te bekijken vanaf elk apparaat waarop je Chrome gebruikt</translation>
 <translation id="7693590760643069321">Je kunt Chrome nu gebruiken als je op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="7698568245838009292">Chrome vraagt toegang tot de camera</translation>
@@ -261,6 +266,7 @@ Ga naar <ph name="BEGIN_LINK" />Google-services<ph name="END_LINK" /> voor meer 
 <translation id="7948283758957877064">Nieuw in Chrome</translation>
 <translation id="8000174216052461231">Chrome-tip: Gebruik het hoogste beveiligingsniveau van Chrome</translation>
 <translation id="8006014511203279255">Gebruik Chrome als je op links in berichten of andere apps tikt.</translation>
+<translation id="8014670471808569312">Chrome biedt aan je wachtwoord op te slaan.</translation>
 <translation id="8018153653741938705">Blijf beschermd met Google Chrome</translation>
 <translation id="8022947259858476807">Gebruik standaard Chrome om links te openen, te zoeken via widgets en om wachtwoorden in andere apps automatisch in te vullen</translation>
 <translation id="804638182476029347">Chrome-meldingen toestaan om meldingen over prijsdalingen te krijgen</translation>
@@ -292,6 +298,7 @@ Je gegevens zijn op <ph name="TIME" /> versleuteld met je wachtwoordzin. Geef de
 <translation id="8558480467877843976">Je kunt Chrome nu gebruiken als je browst of op links in berichten, documenten en andere apps tikt.</translation>
 <translation id="8603022514504485810">Google Wachtwoordmanager kan niet alle wachtwoorden checken. Probeer het morgen opnieuw of <ph name="BEGIN_LINK" />check de wachtwoorden in je Google-account<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Zet Incognitotabbladen vergrendelen als je Chrome sluit aan.</translation>
+<translation id="8673726683583791503">Winkelen met Google Lens</translation>
 <translation id="8727043961453758442">Haal het maximale uit Chrome</translation>
 <translation id="8765470054473112089">Als je in de adresbalk of het zoekvak typt, stuurt Chrome wat je typt naar je standaard zoekmachine om betere suggesties te krijgen. Dit staat uit in de incognitomodus.</translation>
 <translation id="8772179140489533211">Toont prompts om in te loggen bij Chrome.</translation>

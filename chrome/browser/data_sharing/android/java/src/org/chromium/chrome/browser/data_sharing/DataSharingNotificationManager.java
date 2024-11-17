@@ -12,6 +12,7 @@ import android.content.Intent;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.IntentUtils;
+import org.chromium.base.Token;
 import org.chromium.chrome.browser.intents.BrowserIntentUtils;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
@@ -40,8 +41,8 @@ public class DataSharingNotificationManager {
             // Launch tab switcher view.
             // TODO(b/329155961): Introduce a custom action for all notifications launching from
             // Data Sharing Service.
-            Intent invitation_intent = createInvitationIntent(context, GURL.emptyGURL());
-            IntentUtils.safeStartActivity(context, invitation_intent);
+            Intent invitationIntent = createInvitationIntent(context, GURL.emptyGURL());
+            IntentUtils.safeStartActivity(context, invitationIntent);
         }
     }
 
@@ -53,51 +54,61 @@ public class DataSharingNotificationManager {
      * @return The {@link Intent} to launch the invitation flow.
      */
     public static Intent createInvitationIntent(Context context, GURL url) {
-        Intent launch_intent = new Intent(Intent.ACTION_VIEW);
-        launch_intent.addCategory(Intent.CATEGORY_DEFAULT);
-        launch_intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-        launch_intent.setClassName(context, BrowserIntentUtils.CHROME_LAUNCHER_ACTIVITY_CLASS_NAME);
-        launch_intent.putExtra(DATA_SHARING_EXTRA, url.getSpec());
-        IntentUtils.addTrustedIntentExtras(launch_intent);
-        return launch_intent;
-    }
-
-    @VisibleForTesting
-    DataSharingNotificationManager(Context context, BaseNotificationManagerProxy manager) {
-        mContext = context;
-        mNotificationManagerProxy = manager;
+        Intent launchIntent = new Intent(Intent.ACTION_VIEW);
+        launchIntent.addCategory(Intent.CATEGORY_DEFAULT);
+        launchIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        launchIntent.setClassName(context, BrowserIntentUtils.CHROME_LAUNCHER_ACTIVITY_CLASS_NAME);
+        launchIntent.putExtra(DATA_SHARING_EXTRA, url.getSpec());
+        IntentUtils.addTrustedIntentExtras(launchIntent);
+        return launchIntent;
     }
 
     public DataSharingNotificationManager(Context context) {
-        this(context, BaseNotificationManagerProxyFactory.create(context));
+        mContext = context;
+        mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create();
     }
 
     @VisibleForTesting
     protected NotificationWrapperBuilder getNotificationBuilder() {
         return NotificationWrapperBuilderFactory.createNotificationWrapperBuilder(
-                ChromeChannelDefinitions.ChannelId.BROWSER,
+                ChromeChannelDefinitions.ChannelId.COLLABORATION,
                 new NotificationMetadata(
                         NotificationUmaTracker.SystemNotificationType.DATA_SHARING,
                         TAG,
                         NOTIFICATION_ID));
     }
 
-    /** Show a data sharing notification. */
-    public void showNotification(String sharingOrigin) {
-        String notificationText =
-                mContext.getResources()
-                        .getString(
-                                R.string.data_sharing_invitation_notification_title, sharingOrigin);
+    /**
+     * Shows a notification for being invited to a new collaboration.
+     *
+     * @param displayName The name to display for the inviting user.
+     */
+    public void showInvitationFlowNotification(String displayName) {
+        String contentTitle =
+                mContext.getString(
+                        R.string.data_sharing_invitation_notification_title, displayName);
+        buildAndNotify(contentTitle, /* showWhen= */ false);
+    }
 
+    /**
+     * Shows a notification that another user joined a collaboration.
+     *
+     * @param contentTitle The text to display.
+     * @param tabGroupId The id of the tab group that should be opened upon action interaction.
+     */
+    public void showOtherJoinedNotification(String contentTitle, Token tabGroupId) {
+        // TODO(https://crbug.com/369186228): Add tabGroupId as an extra.
+        buildAndNotify(contentTitle, /* showWhen= */ true);
+    }
+
+    private void buildAndNotify(String contentTitle, boolean showWhen) {
         NotificationWrapper notification =
                 getNotificationBuilder()
                         .setSmallIcon(R.drawable.ic_chrome)
-                        .setShowWhen(false)
+                        .setShowWhen(showWhen)
                         .setAutoCancel(true)
                         .setLocalOnly(true)
-                        // TODO(b/329155961): Remove temporary strings.
-                        .setContentTitle(notificationText)
-                        .setContentText(notificationText)
+                        .setContentTitle(contentTitle)
                         .setContentIntent(createIntent(mContext))
                         .buildNotificationWrapper();
 

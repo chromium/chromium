@@ -27,7 +27,6 @@
 namespace blink {
 
 class WebLocalFrameImpl;
-class WebString;
 
 class CORE_EXPORT FindInPage final : public GarbageCollected<FindInPage>,
                                      public mojom::blink::FindInPage {
@@ -37,7 +36,7 @@ class CORE_EXPORT FindInPage final : public GarbageCollected<FindInPage>,
   FindInPage& operator=(const FindInPage&) = delete;
 
   bool FindInternal(int identifier,
-                    const WebString& search_text,
+                    const String& search_text,
                     const mojom::blink::FindOptions&,
                     bool wrap_within_frame,
                     bool* active_now = nullptr);

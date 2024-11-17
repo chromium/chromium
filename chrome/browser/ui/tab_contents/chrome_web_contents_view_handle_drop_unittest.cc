@@ -14,6 +14,7 @@
 #include <set>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -393,8 +394,8 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Files) {
   ASSERT_TRUE(file_1.IsValid());
   ASSERT_TRUE(file_2.IsValid());
 
-  file_1.WriteAtCurrentPos("foo content", 11);
-  file_2.WriteAtCurrentPos("bar content", 11);
+  file_1.WriteAtCurrentPos(base::byte_span_from_cstring("foo content"));
+  file_2.WriteAtCurrentPos(base::byte_span_from_cstring("bar content"));
 
   content::DropData data;
   data.document_is_handling_drag = true;
@@ -441,7 +442,7 @@ TEST_F(ChromeWebContentsViewDelegateHandleOnPerformingDrop, Directories) {
   for (const auto& path : {path_1, path_2, path_3, path_4, path_5}) {
     base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
     ASSERT_TRUE(file.IsValid());
-    file.WriteAtCurrentPos("foo content", 11);
+    file.WriteAtCurrentPos(base::byte_span_from_cstring("foo content"));
   }
 
   content::DropData data;

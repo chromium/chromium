@@ -24,9 +24,9 @@ import android.view.Surface;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.window.TrustedPresentationThresholds;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -44,6 +44,10 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnownedUserDataHost;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.display.DisplayAndroid;
@@ -59,10 +63,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Consumer;
 
 /** The window base class that has the minimum functionality. */
 @JNINamespace("ui")
-public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidObserver {
+public class WindowAndroid
+        implements AndroidPermissionDelegate,
+                DisplayAndroidObserver,
+                View.OnAttachStateChangeListener {
     private static final String TAG = "WindowAndroid";
     private static final ImmutableWeakReference<Activity> NULL_ACTIVITY_WEAK_REF =
             new ImmutableWeakReference<>(null);
@@ -77,7 +85,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate =
             KeyboardVisibilityDelegate.getInstance();
 
-    private InsetObserver mInsetObserver;
+    private @Nullable InsetObserver mInsetObserver;
 
     // Native pointer to the c++ WindowAndroid object.
     private long mNativeWindowAndroid;
@@ -149,13 +157,16 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     /** An interface to notify listeners of the changes in activity state. */
     public interface ActivityStateObserver {
         /** Called when the activity goes into paused state. */
-        void onActivityPaused();
+        default void onActivityPaused() {}
 
         /** Called when the activity goes into resumed state. */
-        void onActivityResumed();
+        default void onActivityResumed() {}
+
+        /** Called when the activity goes into stopped state. */
+        default void onActivityStopped() {}
 
         /** Called when the activity goes into destroyed state. */
-        void onActivityDestroyed();
+        default void onActivityDestroyed() {}
     }
 
     private ObserverList<ActivityStateObserver> mActivityStateObservers = new ObserverList<>();
@@ -182,24 +193,39 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
 
     private ModalDialogManager mModalDialogManagerForTesting;
 
+    private Consumer<Boolean> mOcclusionObserver;
+
+    private final boolean mTrackOcclusion;
+
+    /** True when this window is occluded. */
+    private final ObservableSupplierImpl<Boolean> mOcclusionSupplier =
+            new ObservableSupplierImpl<>(false);
+
     /**
      * @param context The application {@link Context}.
+     * @param trackOcclusion Whether to track occlusion of the window.
      */
-    public WindowAndroid(Context context) {
-        this(context, DisplayAndroid.getNonMultiDisplay(context));
+    public WindowAndroid(Context context, boolean trackOcclusion) {
+        this(context, DisplayAndroid.getNonMultiDisplay(context), trackOcclusion);
     }
 
-    protected WindowAndroid(Context context, IntentRequestTracker tracker) {
-        this(context, DisplayAndroid.getNonMultiDisplay(context));
+    protected WindowAndroid(
+            Context context,
+            IntentRequestTracker tracker,
+            InsetObserver insetObserver,
+            boolean trackOcclusion) {
+        this(context, DisplayAndroid.getNonMultiDisplay(context), trackOcclusion);
         mIntentRequestTracker = (IntentRequestTrackerImpl) tracker;
+        mInsetObserver = insetObserver;
     }
 
     /**
      * @param context The application {@link Context}.
      * @param display The application {@link DisplayAndroid}.
+     * @param trackOcclusion Whether to track occlusion of the window.
      */
     @SuppressLint("UseSparseArrays")
-    protected WindowAndroid(Context context, DisplayAndroid display) {
+    protected WindowAndroid(Context context, DisplayAndroid display, boolean trackOcclusion) {
         mLifetimeAssert = LifetimeAssert.create(this);
         // context does not have the same lifetime guarantees as an application context so we can't
         // hold a strong reference to it.
@@ -220,8 +246,7 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         // Because of crbug.com/756180, many devices report true for isScreenWideColorGamut in
         // 8.0.0, even when they don't actually support wide color gamut.
         // TODO(boliu): Observe configuration changes to update the value of isScreenWideColorGamut.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-                && !Build.VERSION.RELEASE.equals("8.0.0")
+        if (!Build.VERSION.RELEASE.equals("8.0.0")
                 && ContextUtils.activityFromContext(context) != null) {
             Configuration configuration = context.getResources().getConfiguration();
             boolean isScreenWideColorGamut = configuration.isScreenWideColorGamut();
@@ -231,6 +256,75 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S_V2) {
             mOverlayTransformApiHelper = OverlayTransformApiHelper.create(this);
         }
+
+        mTrackOcclusion = trackOcclusion;
+        if (mTrackOcclusion) {
+            var decorView = getDecorView();
+            assert decorView != null;
+
+            // If the decor view is already attached to the window the listener won't be called.
+            // In this case, the window token exists so we can register the occlusion observer.
+            if (decorView.isAttachedToWindow()) {
+                maybeRegisterOcclusionObserver(getWindowToken());
+            }
+            decorView.addOnAttachStateChangeListener(this);
+        }
+    }
+
+    @Override
+    public void onViewAttachedToWindow(View v) {
+        maybeRegisterOcclusionObserver(v.getWindowToken());
+    }
+
+    @Override
+    public void onViewDetachedFromWindow(View v) {
+        maybeUnregisterOcclusionObserver();
+    }
+
+    private void maybeRegisterOcclusionObserver(IBinder windowToken) {
+        if (!mTrackOcclusion || Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            return;
+        }
+        assert mOcclusionObserver == null;
+
+        Context context = getContext().get();
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+
+        var thresholds = new TrustedPresentationThresholds(Float.MIN_VALUE, Float.MIN_VALUE, 1);
+        mOcclusionObserver =
+                new Consumer<Boolean>() {
+                    @Override
+                    public void accept(Boolean visible) {
+                        mOcclusionSupplier.set(!visible);
+                    }
+                };
+
+        assert windowToken != null;
+        wm.registerTrustedPresentationListener(
+                windowToken,
+                thresholds,
+                (r) -> {
+                    PostTask.postTask(TaskTraits.UI_DEFAULT, r);
+                },
+                mOcclusionObserver);
+    }
+
+    private void maybeUnregisterOcclusionObserver() {
+        if (!mTrackOcclusion || Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            return;
+        }
+        assert mOcclusionObserver != null;
+
+        Context context = getContext().get();
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        wm.unregisterTrustedPresentationListener(mOcclusionObserver);
+
+        mOcclusionObserver = null;
+    }
+
+    /** A supplier that returns whether the window is occluded or not. */
+    public ObservableSupplier<Boolean> getOcclusionSupplier() {
+        return mOcclusionSupplier;
     }
 
     private static boolean isTv(Context context) {
@@ -242,7 +336,9 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
 
     @CalledByNativeForTesting
     private static long createForTesting() {
-        WindowAndroid windowAndroid = new WindowAndroid(ContextUtils.getApplicationContext());
+        WindowAndroid windowAndroid =
+                new WindowAndroid(
+                        ContextUtils.getApplicationContext(), /* trackOcclusion= */ false);
         // |windowAndroid.getNativePointer()| creates native WindowAndroid object
         // which stores a global ref to |windowAndroid|. Therefore |windowAndroid|
         // is not immediately eligible for gc.
@@ -537,11 +633,12 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
     }
 
     /**
-     * For window instances associated with an activity, notifies any listeners
-     * that the activity has been stopped.
+     * For window instances associated with an activity, notifies any listeners that the activity
+     * has been stopped.
      */
     protected void onActivityStopped() {
         if (mNativeWindowAndroid == 0) return;
+        for (ActivityStateObserver observer : mActivityStateObservers) observer.onActivityStopped();
         WindowAndroidJni.get().onActivityStopped(mNativeWindowAndroid, WindowAndroid.this);
     }
 
@@ -784,14 +881,6 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
 
     /** Returns the {@link InsetObserver} for the root view of the activity or null. */
     public InsetObserver getInsetObserver() {
-        if (mInsetObserver == null) {
-            Window window = getWindow();
-            if (window == null) return null;
-
-            mInsetObserver =
-                    new InsetObserver(
-                            new ImmutableWeakReference<>(window.getDecorView().getRootView()));
-        }
         return mInsetObserver;
     }
 
@@ -877,6 +966,13 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         return mContextRef;
     }
 
+    /** Return the decor view, or null. */
+    private View getDecorView() {
+        Window window = getWindow();
+        if (window == null) return null;
+        return window.getDecorView();
+    }
+
     /** Return the current window token, or null. */
     public IBinder getWindowToken() {
         Window window = getWindow();
@@ -936,7 +1032,6 @@ public class WindowAndroid implements AndroidPermissionDelegate, DisplayAndroidO
         recomputeSupportedRefreshRates();
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     @CalledByNative
     public void setWideColorEnabled(boolean enabled) {
         // Although this API was added in Android O, it was buggy.

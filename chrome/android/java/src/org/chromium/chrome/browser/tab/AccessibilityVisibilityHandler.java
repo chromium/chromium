@@ -14,7 +14,6 @@ public class AccessibilityVisibilityHandler
     private final ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
     private final TabObscuringHandler mTabObscuringHandler;
     private TabImpl mTab;
-    private boolean mIsWebContentObscured;
 
     public AccessibilityVisibilityHandler(
             ActivityLifecycleDispatcher lifecycleDispatcher,

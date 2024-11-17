@@ -73,7 +73,7 @@ class MODULES_EXPORT RTCRtpTransport : public ScriptWrappable,
   void createProcessor(ScriptState*,
                        DedicatedWorker* worker,
                        const ScriptValue& options,
-                       HeapVector<ScriptValue>& transfer,
+                       HeapVector<ScriptValue> transfer,
                        ExceptionState&);
 
   void RegisterFeedbackProvider(scoped_refptr<FeedbackProvider> observer);

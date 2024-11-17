@@ -40,6 +40,7 @@
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "content/public/browser/host_zoom_map.h"
 #else
 #include "chrome/browser/browsing_data/counters/tabs_counter.h"
@@ -109,6 +110,11 @@ BrowsingDataCounterFactory::GetForProfileAndPref(Profile* profile,
         autofill::PersonalDataManagerFactory::GetForBrowserContext(profile),
         WebDataServiceFactory::GetAutofillWebDataForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS),
+#if !BUILDFLAG(IS_ANDROID)
+        UserAnnotationsServiceFactory::GetForProfile(profile),
+#else
+        /*user_annotations_service=*/nullptr,
+#endif
         SyncServiceFactory::GetForProfile(profile));
   }
 

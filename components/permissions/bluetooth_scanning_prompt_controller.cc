@@ -18,7 +18,8 @@ BluetoothScanningPromptController::BluetoothScanningPromptController(
     std::u16string title)
     : ChooserController(title), event_handler_(event_handler) {}
 
-BluetoothScanningPromptController::~BluetoothScanningPromptController() {}
+BluetoothScanningPromptController::~BluetoothScanningPromptController() =
+    default;
 
 bool BluetoothScanningPromptController::ShouldShowHelpButton() const {
   return false;

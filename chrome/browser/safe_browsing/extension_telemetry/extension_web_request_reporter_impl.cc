@@ -4,7 +4,6 @@
 
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_web_request_reporter_impl.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/remote_host_contacted_signal.h"
@@ -80,12 +79,6 @@ void ExtensionWebRequestReporterImpl::SendWebRequestData(
     const GURL& telemetry_url,
     mojom::WebRequestProtocolType protocol_type,
     mojom::WebRequestContactInitiatorType contact_initiator_type) {
-  if (protocol_type == mojom::WebRequestProtocolType::kWebSocket) {
-    // Logging "true" represents the data being *received*.
-    base::UmaHistogramBoolean(
-        "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
-        true);
-  }
   auto* telemetry_service =
       safe_browsing::ExtensionTelemetryServiceFactory::GetForProfile(profile_);
   if (!telemetry_service || !telemetry_service->enabled() ||

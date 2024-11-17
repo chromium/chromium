@@ -9,6 +9,7 @@
 
 #include "base/base_export.h"
 #include "base/cancelable_callback.h"
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -100,11 +101,11 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   };
 
   MainSequenceOnly main_sequence_only_;
-  MainSequenceOnly& main_sequence_only() {
+  MainSequenceOnly& main_sequence_only() LIFETIME_BOUND {
     DCHECK_CALLED_ON_VALID_SEQUENCE(associated_thread_->sequence_checker);
     return main_sequence_only_;
   }
-  const MainSequenceOnly& main_sequence_only() const {
+  const MainSequenceOnly& main_sequence_only() const LIFETIME_BOUND {
     DCHECK_CALLED_ON_VALID_SEQUENCE(associated_thread_->sequence_checker);
     return main_sequence_only_;
   }

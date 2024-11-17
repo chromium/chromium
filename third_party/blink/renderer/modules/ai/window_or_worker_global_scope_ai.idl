@@ -10,7 +10,7 @@
     RuntimeEnabled=BuiltInAIAPI
 ] partial interface mixin WindowOrWorkerGlobalScope {
     [
-      Replaceable
+      Replaceable, SecureContext
     ]
     readonly attribute AI ai;
 };

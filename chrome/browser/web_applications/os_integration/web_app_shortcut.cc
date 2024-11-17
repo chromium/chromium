@@ -195,12 +195,14 @@ gfx::ImageFamily PackageIconsIntoImageFamily(
 std::unique_ptr<ShortcutInfo> SetFavicon(
     std::unique_ptr<ShortcutInfo> shortcut_info,
     IconPurpose purpose,
+    bool is_diy_app,
     gfx::ImageFamily image_family) {
   if (purpose == IconPurpose::ANY) {
     shortcut_info->favicon = std::move(image_family);
   } else if (purpose == IconPurpose::MASKABLE) {
     shortcut_info->favicon_maskable = std::move(image_family);
   }
+  shortcut_info->is_diy_app = is_diy_app;
   return shortcut_info;
 }
 
@@ -290,7 +292,8 @@ void PopulateFaviconPurposeForShortcutInfo(
       app->downloaded_icon_sizes(purpose), GetDesiredIconSizesForShortcut());
 
   auto populate_and_return_shortcut_info =
-      base::BindOnce(&SetFavicon, std::move(shortcut_info_to_populate), purpose)
+      base::BindOnce(&SetFavicon, std::move(shortcut_info_to_populate), purpose,
+                     app->is_diy_app())
           .Then(std::move(callback));
 
   if (!icon_sizes_in_px.empty()) {
@@ -553,7 +556,7 @@ base::FilePath GetShortcutDataDir(const ShortcutInfo& shortcut_info) {
 #if !BUILDFLAG(IS_MAC)
 void DeleteMultiProfileShortcutsForApp(const std::string& app_id) {
   // Multi-profile shortcuts exist only on macOS.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif
 

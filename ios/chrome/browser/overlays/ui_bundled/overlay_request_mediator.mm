@@ -32,8 +32,7 @@
 #pragma mark - Public
 
 + (const OverlayRequestSupport*)requestSupport {
-  NOTREACHED_IN_MIGRATION() << "Subclasses implement.";
-  return OverlayRequestSupport::None();
+  NOTREACHED() << "Subclasses implement.";
 }
 
 #pragma mark - Private

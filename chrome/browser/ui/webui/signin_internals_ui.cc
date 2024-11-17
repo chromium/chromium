@@ -166,7 +166,7 @@ void SignInInternalsHandler::HandleGetSignInInfo(
       IdentityManagerFactory::GetForProfile(profile);
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar =
       identity_manager->GetAccountsInCookieJar();
-  if (accounts_in_cookie_jar.accounts_are_fresh) {
+  if (accounts_in_cookie_jar.AreAccountsFresh()) {
     about_signin_internals->OnAccountsInCookieUpdated(
         accounts_in_cookie_jar,
         GoogleServiceAuthError(GoogleServiceAuthError::NONE));

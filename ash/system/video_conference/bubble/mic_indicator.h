@@ -28,6 +28,8 @@ class MicIndicator : public views::BoxLayoutView {
   MicIndicator& operator=(const MicIndicator&) = delete;
   ~MicIndicator() override;
 
+  // views::View
+  void OnThemeChanged() override;
   void OnPaint(gfx::Canvas* canvas) override;
 
  private:

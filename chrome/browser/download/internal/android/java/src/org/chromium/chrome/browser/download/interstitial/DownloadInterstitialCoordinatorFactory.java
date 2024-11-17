@@ -29,6 +29,7 @@ public class DownloadInterstitialCoordinatorFactory {
                 contextSupplier,
                 downloadUrl,
                 OfflineContentAggregatorFactory.get(),
+                windowAndroid.getModalDialogManager(),
                 SnackbarManagerProvider.from(windowAndroid),
                 reloadCallback);
     }

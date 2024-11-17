@@ -4,6 +4,9 @@
 
 module input.mojom;
 
+import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
+import "third_party/blink/public/mojom/input/input_event_result.mojom";
+import "third_party/blink/public/mojom/input/input_handler.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 
 // This struct is useful for sending information relevant to handling input on
@@ -14,4 +17,29 @@ import "third_party/blink/public/mojom/widget/platform_widget.mojom";
 
 struct RenderInputRouterConfig {
   pending_remote<blink.mojom.RenderInputRouterClient> rir_client;
+  // This id allows Viz to use the same RenderWidgetHostInputEventRouter for
+  // non-root layer tree frame sinks under the same WebContents in browser to
+  // mirror 1:1 relationship between RenderWidgetHostInputEventRouter and
+  // WebContentsImpl.
+  uint32 grouping_id;
+};
+
+// Implemented by the browser, this interface defines methods that will be
+// invoked to keep the browser notified of input event handling on the
+// VizCompositor thread.
+interface RenderInputRouterDelegateClient {
+  // Notifies InputEventObservers in the browser of input events being handled
+  // on Viz (with InputVizard).
+  NotifyObserversOfInputEvent(viz.mojom.FrameSinkId id,
+                              blink.mojom.Event event);
+
+  // Notifies InputEventObservers in the browser of input event acks being
+  // handled on Viz (with InputVizard).
+  NotifyObserversOfInputEventAcks(
+      viz.mojom.FrameSinkId id, blink.mojom.InputEventResultSource ack_source,
+      blink.mojom.InputEventResultState ack_result, blink.mojom.Event event);
+
+  // Notifies the browser of an invalid input event source being seen on
+  // the VizCompositor thread when handling input.
+  OnInvalidInputEventSource(viz.mojom.FrameSinkId id);
 };

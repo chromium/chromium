@@ -1,17 +1,13 @@
 caption: Set a custom enterprise label
 default: null
 desc: |-
-  This policy controls a custom label used to identify who managed a profile or browser.
+  This policy controls a custom label used to identify managed profiles. For managed profiles, this label will be shown next to the avatar in the toolbar. The custom label will not be translated.
 
-  This label will be shown in the toolbar.
+  When this policy is applied, any strings that surpass 16 characters will be truncated with a “...” Please refrain from using extended names.
 
-  If this policy is set at the browser level, all profiles will have this label in the toolbar.
+  This policy can only be set as a user policy.
 
-  If this policy is set at the profile level, only that profile will have this label.
-
-  Unlike other policies, this policy set at the profile level takes precedence over a policy set at the browser level.
-
-  The custom label will not be translated.
+  Note that this policy has no effect if the <ph name="ENTERPRISE_PROFILE_BADGE_TOOLBAR_SETTINGS">EnterpriseProfileBadgeToolbarSettings</ph> policy is set to <ph name="HIDE_EXPANDED_ENTERPRISE_TOOLBAR_BADGE">hide_expanded_enterprise_toolbar_badge</ph> (value 1).
 example_value: Chromium
 features:
   dynamic_refresh: true

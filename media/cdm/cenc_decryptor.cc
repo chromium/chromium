@@ -64,7 +64,9 @@ void CopyExtraSettings(const DecoderBuffer& input, DecoderBuffer* output) {
   output->set_timestamp(input.timestamp());
   output->set_duration(input.duration());
   output->set_is_key_frame(input.is_key_frame());
-  output->set_side_data(input.side_data());
+  if (input.has_side_data()) {
+    output->set_side_data(input.side_data()->Clone());
+  }
 }
 
 }  // namespace

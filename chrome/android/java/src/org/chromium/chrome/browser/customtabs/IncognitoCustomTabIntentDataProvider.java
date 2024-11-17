@@ -179,43 +179,43 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
     }
 
     public static void addIncognitoExtrasForChromeFeatures(
-            Intent intent, @IntentHandler.IncognitoCCTCallerId int chromeCallerId) {
+            Intent intent, @IntentHandler.IncognitoCctCallerId int chromeCallerId) {
         intent.putExtra(IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_TAB, true);
         intent.putExtra(IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID, chromeCallerId);
     }
 
-    public @IntentHandler.IncognitoCCTCallerId int getFeatureIdForMetricsCollection() {
+    public @IntentHandler.IncognitoCctCallerId int getFeatureIdForMetricsCollection() {
         if (isIntentFromChrome(mIntent)) {
             assert mIntent.hasExtra(IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID)
                     : "Intent coming from Chrome features should add the extra "
                             + "IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID.";
 
-            @IntentHandler.IncognitoCCTCallerId
-            int incognitoCCTChromeClientId =
+            @IntentHandler.IncognitoCctCallerId
+            int incognitoCctChromeClientId =
                     IntentUtils.safeGetIntExtra(
                             mIntent,
                             IntentHandler.EXTRA_INCOGNITO_CCT_CALLER_ID,
-                            IntentHandler.IncognitoCCTCallerId.OTHER_CHROME_FEATURES);
+                            IntentHandler.IncognitoCctCallerId.OTHER_CHROME_FEATURES);
 
             boolean isValidEntry =
-                    (incognitoCCTChromeClientId
-                                    > IntentHandler.IncognitoCCTCallerId.OTHER_CHROME_FEATURES
-                            && incognitoCCTChromeClientId
-                                    < IntentHandler.IncognitoCCTCallerId.NUM_ENTRIES);
+                    (incognitoCctChromeClientId
+                                    > IntentHandler.IncognitoCctCallerId.OTHER_CHROME_FEATURES
+                            && incognitoCctChromeClientId
+                                    < IntentHandler.IncognitoCctCallerId.NUM_ENTRIES);
             assert isValidEntry : "Invalid EXTRA_INCOGNITO_CCT_CALLER_ID value!";
             if (!isValidEntry) {
-                incognitoCCTChromeClientId =
-                        IntentHandler.IncognitoCCTCallerId.OTHER_CHROME_FEATURES;
+                incognitoCctChromeClientId =
+                        IntentHandler.IncognitoCctCallerId.OTHER_CHROME_FEATURES;
             }
-            return incognitoCCTChromeClientId;
+            return incognitoCctChromeClientId;
         } else if (mIsTrustedIntent) {
-            return IntentHandler.IncognitoCCTCallerId.GOOGLE_APPS;
+            return IntentHandler.IncognitoCctCallerId.GOOGLE_APPS;
         } else {
-            return IntentHandler.IncognitoCCTCallerId.OTHER_APPS;
+            return IntentHandler.IncognitoCctCallerId.OTHER_APPS;
         }
     }
 
-    public static boolean isValidIncognitoIntent(Intent intent) {
+    public static boolean isValidIncognitoIntent(Intent intent, boolean recordMetrics) {
         if (!isIncognitoRequested(intent)) return false;
         var session = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         if (isIntentFromThirdPartyAllowed()
@@ -223,7 +223,10 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
             return true;
         }
         boolean isTrusted = isTrustedCustomTab(intent, session);
-        RecordHistogram.recordBooleanHistogram("CustomTabs.IncognitoCCTCallerIsTrusted", isTrusted);
+        if (recordMetrics) {
+            RecordHistogram.recordBooleanHistogram(
+                    "CustomTabs.IncognitoCCTCallerIsTrusted", isTrusted);
+        }
         return isTrusted;
     }
 

@@ -7,8 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 namespace {
 
@@ -32,6 +31,7 @@ void LogWriteResult(connections::mojom::Medium medium, bool success) {
     case connections::mojom::Medium::kWebRtc:
     case connections::mojom::Medium::kBleL2Cap:
     case connections::mojom::Medium::kUsb:
+    case connections::mojom::Medium::kWebRtcNonCellular:
       break;
   }
 }
@@ -186,5 +186,4 @@ void OutputStreamImpl::DoClose(base::WaitableEvent* task_run_waitable_event) {
   }
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

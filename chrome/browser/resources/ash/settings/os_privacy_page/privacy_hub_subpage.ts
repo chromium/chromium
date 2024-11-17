@@ -23,11 +23,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {MediaDevicesProxy} from '../common/media_devices_proxy.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
-import {PrivacyHubBrowserProxy, PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
+import type {PrivacyHubBrowserProxy} from './privacy_hub_browser_proxy.js';
+import {PrivacyHubBrowserProxyImpl} from './privacy_hub_browser_proxy.js';
 import {GeolocationAccessLevel} from './privacy_hub_geolocation_subpage.js';
 import {PrivacyHubSensorSubpageUserAction} from './privacy_hub_metrics_util.js';
 import {getTemplate} from './privacy_hub_subpage.html.js';
@@ -74,16 +75,9 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
             'prefs.ash.user.geolocation_access_level.value)',
       },
 
-      cameraSubLabel_: String,
-
-      connectedCameraNames_: {
-        type: Array,
-        value: [],
-      },
-
       isCameraListEmpty_: {
         type: Boolean,
-        computed: 'computeIsCameraListEmpty_(connectedCameraNames_)',
+        value: true,
       },
 
       isHatsSurveyEnabled_: {
@@ -94,14 +88,9 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         },
       },
 
-      connectedMicrophoneNames_: {
-        type: Array,
-        value: [],
-      },
-
       isMicListEmpty_: {
         type: Boolean,
-        computed: 'computeIsMicListEmpty_(connectedMicrophoneNames_)',
+        value: true,
       },
 
       microphoneHardwareToggleActive_: {
@@ -127,18 +116,6 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
         type: Boolean,
         computed: 'computeShouldDisableCameraToggle_(isCameraListEmpty_, ' +
             'cameraSwitchForceDisabled_)',
-      },
-
-      /**
-       * Whether the features related to app permissions should be displayed in
-       * privacy hub.
-       */
-      showAppPermissions_: {
-        type: Boolean,
-        readOnly: true,
-        value: () => {
-          return loadTimeData.getBoolean('showAppPermissionsInsidePrivacyHub');
-        },
       },
 
       /**
@@ -196,18 +173,14 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
   private locationSublabel_: string;
   private cameraFallbackMechanismEnabled_: boolean;
   private cameraRowSubtext_: string;
-  private cameraSubLabel_: string;
-  private connectedCameraNames_: string[];
   private isCameraListEmpty_: boolean;
   private isMicListEmpty_: boolean;
   private isHatsSurveyEnabled_: boolean;
   private microphoneRowSubtext_: string;
-  private connectedMicrophoneNames_: string[];
   private microphoneHardwareToggleActive_: boolean;
   private shouldDisableMicrophoneToggle_: boolean;
   private cameraSwitchForceDisabled_: boolean;
   private shouldDisableCameraToggle_: boolean;
-  private showAppPermissions_: boolean;
   private showSpeakOnMuteDetectionPage_: boolean;
 
   constructor() {
@@ -238,12 +211,11 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
 
     this.browserProxy_.getCameraLedFallbackState().then((enabled) => {
       this.cameraFallbackMechanismEnabled_ = enabled;
-      this.setCameraSubLabel_(enabled);
     });
 
-    this.updateMediaDeviceLists_();
+    this.updateMediaDeviceAvailability_();
     MediaDevicesProxy.getMediaDevices().addEventListener(
-        'devicechange', () => this.updateMediaDeviceLists_());
+        'devicechange', () => this.updateMediaDeviceAvailability_());
   }
 
   override currentRouteChanged(route: Route): void {
@@ -260,36 +232,12 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
     this.attemptDeepLink();
   }
 
-  /**
-   * @return Whether the list of cameras displayed in this page is empty.
-   */
-  private computeIsCameraListEmpty_(): boolean {
-    return this.connectedCameraNames_.length === 0;
-  }
-
-  /**
-   * @return Whether the list of microphones displayed in this page is empty.
-   */
-  private computeIsMicListEmpty_(): boolean {
-    return this.connectedMicrophoneNames_.length === 0;
-  }
-
   private setMicrophoneHardwareToggleState_(enabled: boolean): void {
     if (enabled) {
       this.microphoneHardwareToggleActive_ = true;
     } else {
       this.microphoneHardwareToggleActive_ = false;
     }
-  }
-
-  /**
-   * @param fallbackEnabled whether the fallback mechanism for camera LED is
-   * enabled
-   */
-  private setCameraSubLabel_(fallbackEnabled: boolean): void {
-    this.cameraSubLabel_ = fallbackEnabled ?
-        this.i18n('cameraToggleFallbackSubtext') :
-        this.i18n('cameraToggleSubtext');
   }
 
   /**
@@ -306,33 +254,21 @@ export class SettingsPrivacyHubSubpage extends SettingsPrivacyHubSubpageBase {
     return this.cameraSwitchForceDisabled_ || this.isCameraListEmpty_;
   }
 
-  private updateMediaDeviceLists_(): void {
+  private updateMediaDeviceAvailability_(): void {
     MediaDevicesProxy.getMediaDevices().enumerateDevices().then((devices) => {
-      const connectedCameraNames: string[] = [];
-      const connectedMicrophoneNames: string[] = [];
+      let cameraAvailable = false;
+      let microphoneAvailable = false;
       devices.forEach((device) => {
         if (device.kind === 'videoinput') {
-          connectedCameraNames.push(device.label);
+          cameraAvailable = true;
         } else if (
             device.kind === 'audioinput' && device.deviceId !== 'default') {
-          connectedMicrophoneNames.push(device.label);
+          microphoneAvailable = true;
         }
       });
-      this.connectedCameraNames_ = connectedCameraNames;
-      this.connectedMicrophoneNames_ = connectedMicrophoneNames;
+      this.isCameraListEmpty_ = !cameraAvailable;
+      this.isMicListEmpty_ = !microphoneAvailable;
     });
-  }
-
-  private onCameraToggleChanged_(event: Event): void {
-    chrome.metricsPrivate.recordBoolean(
-        'ChromeOS.PrivacyHub.Camera.Settings.Enabled',
-        (event.target as SettingsToggleButtonElement).checked);
-  }
-
-  private onMicrophoneToggleChanged_(event: Event): void {
-    chrome.metricsPrivate.recordBoolean(
-        'ChromeOS.PrivacyHub.Microphone.Settings.Enabled',
-        (event.target as SettingsToggleButtonElement).checked);
   }
 
   private onCameraSubpageLinkClick_(): void {

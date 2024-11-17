@@ -24,7 +24,7 @@ class OptimizationGuideServiceFactoryTest : public PlatformTest {
         OptimizationGuideServiceFactory::GetInstance(),
         OptimizationGuideServiceFactory::GetDefaultFactory());
     profile_ = std::move(builder).Build();
-    profile_->CreateOffTheRecordBrowserStateWithTestingFactories(
+    profile_->CreateOffTheRecordProfileWithTestingFactories(
         {TestProfileIOS::TestingFactory{
             OptimizationGuideServiceFactory::GetInstance(),
             OptimizationGuideServiceFactory::GetDefaultFactory()}});
@@ -43,7 +43,7 @@ TEST_F(OptimizationGuideServiceFactoryTest, CheckNormalServiceNotNull) {
 
 TEST_F(OptimizationGuideServiceFactoryTest, CheckIncognitoServiceNotNull) {
   EXPECT_NE(nullptr, OptimizationGuideServiceFactory::GetForProfile(
-                         profile_->GetOffTheRecordChromeBrowserState()));
+                         profile_->GetOffTheRecordProfile()));
 }
 
 class OptimizationGuideServiceFactoryFeatureDisabledTest : public PlatformTest {

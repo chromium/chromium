@@ -180,8 +180,7 @@ ScrollEventMetrics::ScrollType ToScrollType(ui::ScrollInputType ui_input_type) {
       return metrics_scroll_type;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return ScrollEventMetrics::ScrollType::kMaxValue;
+  NOTREACHED();
 }
 
 PinchEventMetrics::PinchType ToPinchType(ui::ScrollInputType ui_input_type) {
@@ -192,8 +191,7 @@ PinchEventMetrics::PinchType ToPinchType(ui::ScrollInputType ui_input_type) {
       return metrics_pinch_type;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return PinchEventMetrics::PinchType::kMaxValue;
+  NOTREACHED();
 }
 
 bool IsGestureScroll(ui::EventType type) {

@@ -26,6 +26,7 @@
 #include "components/policy/core/common/cloud/test/policy_builder.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/core/common/remote_commands/remote_commands_factory.h"
+#include "components/policy/core/common/remote_commands/remote_commands_fetch_reason.h"
 #include "components/policy/core/common/remote_commands/test_support/echo_remote_command_job.h"
 #include "components/policy/core/common/remote_commands/test_support/remote_command_builders.h"
 #include "components/policy/core/common/remote_commands/test_support/testing_remote_commands_server.h"
@@ -214,6 +215,7 @@ class TestingCloudPolicyClientForRemoteCommands : public CloudPolicyClient {
       const std::vector<em::RemoteCommandResult>& command_results,
       em::PolicyFetchRequest::SignatureType signature_type,
       const std::string& request_type,
+      RemoteCommandsFetchReason reason,
       RemoteCommandCallback callback) override {
     std::vector<em::SignedData> commands =
         server_->FetchCommands(std::move(last_command_id), command_results);
@@ -273,7 +275,8 @@ class RemoteCommandsServiceTest
 
   [[nodiscard]] bool FetchRemoteCommands() {
     // A return value of |true| means the fetch command was successfully issued.
-    return remote_commands_service_->FetchRemoteCommands();
+    return remote_commands_service_->FetchRemoteCommands(
+        RemoteCommandsFetchReason::kTest);
   }
 
   // Return a builder for a signed RemoteCommand, with the important fields set

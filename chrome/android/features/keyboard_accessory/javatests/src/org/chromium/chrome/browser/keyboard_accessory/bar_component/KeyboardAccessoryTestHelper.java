@@ -9,13 +9,16 @@ import android.content.res.Resources;
 import android.graphics.Rect;
 import android.view.View;
 
+import org.hamcrest.Matchers;
+
+import org.chromium.base.test.util.Criteria;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 
 /** Helpers in this class simplify interactions with the Keyboard Accessory bar component. */
 public class KeyboardAccessoryTestHelper {
     /**
      * Returns true if the accessory becomes visible. It is not guaranteed that the view reflects
-     * this state already. Use {@link #accessoryViewFullyShown(Activity)} for that.
+     * this state already. Use {@link #checkThatAccessoryViewFullyShown(Activity)} for that.
      *
      * @param accessory An {@link KeyboardAccessoryCoordinator}
      * @return True iff the component was ordered to show.
@@ -36,18 +39,22 @@ public class KeyboardAccessoryTestHelper {
     }
 
     /**
-     * Helper that finds the accessory bar and checks whether it's shown. Returns false until
-     * animations have concluded.
+     * Helper that finds the accessory bar and checks whether it's shown.
+     *
+     * <p>For use with {@link org.chromium.base.test.util.CriteriaHelper}.
      *
      * @param activity The {@link Activity} containing the accessory bar.
-     * @return True iff the bar view is visible and animations have ended.
      */
-    public static boolean accessoryViewFullyShown(Activity activity) {
+    public static void checkThatAccessoryViewFullyShown(Activity activity) {
         KeyboardAccessoryView accessory = activity.findViewById(R.id.keyboard_accessory);
-        return accessory != null
-                && accessory.isShown()
-                && !accessory.hasRunningAnimation()
-                && isViewOnScreen(accessory);
+        Criteria.checkThat("Null accessory view", accessory, Matchers.notNullValue());
+        Criteria.checkThat("isShown() returning false", accessory.isShown(), Matchers.is(true));
+        Criteria.checkThat(
+                "Accessory has running animations",
+                accessory.hasRunningAnimation(),
+                Matchers.is(false));
+        Criteria.checkThat(
+                "View not fully on screen", isViewOnScreen(accessory), Matchers.is(true));
     }
 
     private static boolean isViewOnScreen(View target) {

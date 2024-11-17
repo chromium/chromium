@@ -205,9 +205,7 @@ int32_t TextExtract(UText*,
                     UErrorCode* error_code) {
   // In the present context, this text provider is used only with ICU functions
   // that do not perform an extract operation.
-  NOTREACHED_IN_MIGRATION();
-  *error_code = U_UNSUPPORTED_ERROR;
-  return 0;
+  NOTREACHED();
 }
 
 void TextClose(UText* text) {
@@ -264,10 +262,12 @@ void TextLatin1MoveInPrimaryContext(UText* text,
                           : 0;
   text->nativeIndexingLimit = text->chunkLength;
   text->chunkOffset = forward ? 0 : text->chunkLength;
-  StringImpl::CopyChars(
-      const_cast<UChar*>(text->chunkContents),
+  auto source = base::span(
       static_cast<const LChar*>(text->p) + (text->chunkNativeStart - text->b),
       static_cast<unsigned>(text->chunkLength));
+  auto dest = base::span(const_cast<UChar*>(text->chunkContents),
+                         static_cast<unsigned>(text->chunkLength));
+  StringImpl::CopyChars(dest, source);
 }
 
 void TextLatin1SwitchToPrimaryContext(UText* text,
@@ -691,8 +691,8 @@ TextBreakIterator* WordBreakIterator(base::span<const UChar> string) {
 }
 
 TextBreakIterator* WordBreakIterator(const String& string,
-                                     int start,
-                                     int length) {
+                                     wtf_size_t start,
+                                     wtf_size_t length) {
   if (string.empty()) {
     return nullptr;
   }
@@ -805,25 +805,23 @@ NonSharedCharacterBreakIterator::NonSharedCharacterBreakIterator(
     return;
   }
 
-  CreateIteratorForBuffer(string.Characters16(), string.length());
+  CreateIteratorForBuffer(string.Span16());
 }
 
 NonSharedCharacterBreakIterator::NonSharedCharacterBreakIterator(
-    const UChar* buffer,
-    unsigned length)
+    base::span<const UChar> buffer)
     : is_8bit_(false),
       charaters8_(nullptr),
       offset_(0),
       length_(0),
       iterator_(nullptr) {
-  CreateIteratorForBuffer(buffer, length);
+  CreateIteratorForBuffer(buffer);
 }
 
 void NonSharedCharacterBreakIterator::CreateIteratorForBuffer(
-    const UChar* buffer,
-    unsigned length) {
+    base::span<const UChar> buffer) {
   iterator_ = GetNonSharedCharacterBreakIterator();
-  SetText16(iterator_, {buffer, length});
+  SetText16(iterator_, buffer);
 }
 
 NonSharedCharacterBreakIterator::~NonSharedCharacterBreakIterator() {

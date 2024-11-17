@@ -626,14 +626,16 @@ bool Job::ConsumeBytesRead(URLRequest* request, int num_bytes) {
   }
 
   // Enforce maximum size bound.
-  if (num_bytes + response_body_.size() > request_params_->max_response_bytes) {
+  const auto num_bytes_s = static_cast<size_t>(num_bytes);
+  if (num_bytes_s + response_body_.size() >
+      request_params_->max_response_bytes) {
     FailRequest(ERR_FILE_TOO_BIG);
     return false;
   }
 
   // Append the data to |response_body_|.
-  response_body_.reserve(response_body_.size() + num_bytes);
-  base::Extend(response_body_, read_buffer_->span().subspan(0, num_bytes));
+  response_body_.reserve(response_body_.size() + num_bytes_s);
+  base::Extend(response_body_, read_buffer_->span().subspan(0, num_bytes_s));
   return true;
 }
 

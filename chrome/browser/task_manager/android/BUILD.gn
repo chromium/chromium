@@ -1,0 +1,30 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+import("//chrome/android/features/android_library_factory_tmpl.gni")
+
+source_set("android") {
+  sources = [ "task_manager_service_bridge.cc" ]
+
+  deps = [
+    ":jni_headers",
+    "//base",
+  ]
+}
+
+group("jni_headers") {
+  public_deps = [ "//chrome/browser/task_manager/internal/android:jni" ]
+}
+
+android_library("java") {
+  sources =
+      [ "java/src/org/chromium/chrome/browser/task_manager/TaskManager.java" ]
+}
+
+android_library_factory("factory_java") {
+  deps = [ ":java" ]
+  sources = [ "//chrome/browser/task_manager/internal/android/java/src/org/chromium/chrome/browser/task_manager/TaskManagerFactory.java" ]
+}

@@ -49,8 +49,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetLongResponseForFullscreen(
   GREYAssertTrue(started, @"Test server failed to start.");
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   [ChromeEarlGrey resetDataForLocalStatePref:prefs::kBottomOmnibox];
 }
 

@@ -132,9 +132,9 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   void SetDomainFromDOM(const String& new_domain);
   bool DomainWasSetInDOM() const { return domain_was_set_in_dom_; }
 
-  String Protocol() const { return protocol_; }
-  String Host() const { return host_; }
-  String Domain() const { return domain_; }
+  const String& Protocol() const { return protocol_; }
+  const String& Host() const { return host_; }
+  const String& Domain() const { return domain_; }
 
   // Returns the registrable domain if available.
   // For non-tuple origin, IP address URL, and public suffixes, this returns a
@@ -380,7 +380,10 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
 
   // Only used for document.domain setting. The method should probably be moved
   // if we need it for something more general.
-  static String CanonicalizeHost(const String& host, bool* success);
+  static String CanonicalizeSpecialHost(const String& host, bool* success);
+  static String CanonicalizeHost(const String& host,
+                                 const String& scheme,
+                                 bool* success);
 
   // Return a security origin that is assigned to the agent cluster. This will
   // be a copy of this security origin if the current agent doesn't match the
@@ -401,6 +404,10 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   // To be removed after shipping DocumentOpenSandboxInheritanceRemoval feature.
   void set_aliased_by_document_open() { aliased_by_document_open_ = true; }
   bool aliased_by_document_open() const { return aliased_by_document_open_; }
+
+  bool block_local_access_from_local_origin() const {
+    return block_local_access_from_local_origin_;
+  }
 
  private:
   // Various serialisation and test routines that need direct nonce access.
@@ -504,7 +511,7 @@ struct HashTraits<scoped_refptr<const blink::SecurityOrigin>>
 #error "Unknown bits"
 #endif
     };
-    return StringHasher::HashMemory<sizeof(hash_codes)>(hash_codes);
+    return StringHasher::HashMemory(base::as_byte_span(hash_codes));
   }
   static unsigned GetHash(
       const scoped_refptr<const blink::SecurityOrigin>& origin) {

@@ -173,6 +173,7 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   void OnParseStart(const mojom::PageLoadTiming& timing) override {}
   void OnParseStop(const mojom::PageLoadTiming& timing) override {}
   void OnConnectStart(const mojom::PageLoadTiming& timing) override {}
+  void OnConnectEnd(const mojom::PageLoadTiming& timing) override {}
   void OnDomainLookupStart(const mojom::PageLoadTiming& timing) override {}
   void OnDomainLookupEnd(const mojom::PageLoadTiming& timing) override {}
   void OnFirstPaintInPage(const mojom::PageLoadTiming& timing) override {}
@@ -263,6 +264,7 @@ class PageLoadMetricsObserver : public PageLoadMetricsObserverInterface {
   void OnAdAuctionComplete(bool is_server_auction,
                            bool is_on_device_auction,
                            content::AuctionResult result) override {}
+  void OnPrimaryPageRenderProcessGone() override {}
 
  private:
   raw_ptr<PageLoadMetricsObserverDelegate> delegate_ = nullptr;

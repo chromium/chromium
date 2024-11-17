@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
@@ -75,6 +76,14 @@ void LayoutImage::WillBeDestroyed() {
   LayoutReplaced::WillBeDestroyed();
 }
 
+void GetImageSizeChangeTracingData(perfetto::TracedValue context,
+                                   Node* node,
+                                   LocalFrame* frame) {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("nodeId", IdentifiersFactory::IntIdForNode(node));
+  dict.Add("frameId", IdentifiersFactory::FrameId(frame));
+}
+
 void LayoutImage::StyleDidChange(StyleDifference diff,
                                  const ComputedStyle* old_style) {
   NOT_DESTROYED();
@@ -85,6 +94,22 @@ void LayoutImage::StyleDidChange(StyleDifference diff,
                 : ComputedStyleInitialValues::InitialImageOrientation();
   if (StyleRef().ImageOrientation() != old_orientation) {
     IntrinsicSizeChanged();
+  }
+
+  bool tracing_enabled;
+  TRACE_EVENT_CATEGORY_GROUP_ENABLED(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), &tracing_enabled);
+
+  if (tracing_enabled) {
+    bool is_unsized = this->IsUnsizedImage();
+    if (is_unsized) {
+      Node* node = GetNode();
+      TRACE_EVENT_INSTANT_WITH_TIMESTAMP1(
+          "devtools.timeline", "LayoutImageUnsized", TRACE_EVENT_SCOPE_THREAD,
+          base::TimeTicks::Now(), "data", [&](perfetto::TracedValue ctx) {
+            GetImageSizeChangeTracingData(std::move(ctx), node, GetFrame());
+          });
+    }
   }
 }
 
@@ -362,6 +387,18 @@ SVGImage* LayoutImage::EmbeddedSVGImage() const {
   if (!cached_image || cached_image->IsCacheValidator())
     return nullptr;
   return DynamicTo<SVGImage>(cached_image->GetImage());
+}
+
+bool LayoutImage::IsUnsizedImage() const {
+  const ComputedStyle& style = this->StyleRef();
+  const auto explicit_width = style.LogicalWidth().IsSpecified();
+  const auto explicit_height = style.LogicalHeight().IsSpecified();
+  bool has_aspect_ratio =
+      style.AspectRatio().GetType() == EAspectRatioType::kRatio;
+  const bool is_fixed_size =
+      (explicit_width && explicit_height) ||
+      (has_aspect_ratio && (explicit_width || explicit_height));
+  return !is_fixed_size;
 }
 
 void LayoutImage::MutableForPainting::UpdatePaintedRect(

@@ -110,7 +110,8 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
   largest_reported_size_ = size;
   const KURL& url = media_timing->Url();
   bool expose_paint_time_to_api =
-      url.ProtocolIsData() || media_timing->TimingAllowPassed();
+      url.ProtocolIsData() || media_timing->TimingAllowPassed() ||
+      RuntimeEnabledFeatures::ExposeCoarsenedRenderTimeEnabled();
   const String& image_string = url.GetString();
   const String& image_url =
       url.ProtocolIsData()
@@ -122,9 +123,11 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
   const AtomicString& image_id =
       image_element ? image_element->GetIdAttribute() : AtomicString();
 
-  base::TimeTicks start_time = expose_paint_time_to_api
-                                   ? largest_image->paint_time
-                                   : largest_image->load_time;
+  base::TimeTicks render_time;
+  base::TimeTicks start_time = largest_image->load_time;
+  if (expose_paint_time_to_api) {
+    start_time = render_time = largest_image->paint_time;
+  }
 
   if (RuntimeEnabledFeatures::ExposeRenderTimeNonTaoDelayedImageEnabled() &&
       !expose_paint_time_to_api) {
@@ -135,11 +138,9 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
     DCHECK(!fcp.is_null());
     start_time = std::max(fcp, largest_image->load_time);
   }
-  base::TimeTicks renderTime =
-      expose_paint_time_to_api ? largest_image->paint_time : base::TimeTicks();
 
   window_performance_->OnLargestContentfulPaintUpdated(
-      /*start_time=*/start_time, /*render_time=*/renderTime,
+      /*start_time=*/start_time, /*render_time=*/render_time,
       /*paint_size=*/largest_image->recorded_size,
       /*load_time=*/largest_image->load_time,
       /*first_animated_frame_time=*/

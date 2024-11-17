@@ -4,6 +4,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "build/buildflag.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -68,8 +69,7 @@ class ProductSpecificationsTest : public WebUIMochaBrowserTest {
   base::WeakPtrFactory<ProductSpecificationsTest> weak_ptr_factory_{this};
 };
 
-// TODO(crbug.com/364441518): Flaky on all platforms.
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DISABLED_App) {
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, App) {
   RunTest("commerce/product_specifications/app_test.js", "mocha.run()");
 }
 
@@ -88,19 +88,18 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DescriptionSection) {
           "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DisclosureApp) {
+// TODO(https://crbug.com/374855688): Fix flaky timeout on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_DisclosureApp DISABLED_DisclosureApp
+#else
+#define MAYBE_DisclosureApp DisclosureApp
+#endif
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, MAYBE_DisclosureApp) {
   RunTest("commerce/product_specifications/disclosure_app_test.js",
           "mocha.run()");
 }
 
-// TODO(crbug.com/365430929): Flaky on
-// linux-blink-web-tests-force-accessibility-rel.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_DragAndDropManager DISABLED_DragAndDropManager
-#else
-#define MAYBE_DragAndDropManager DragAndDropManager
-#endif
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, MAYBE_DragAndDropManager) {
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, DragAndDropManager) {
   RunTest("commerce/product_specifications/drag_and_drop_manager_test.js",
           "mocha.run()");
 }
@@ -114,14 +113,12 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, HorizontalCarousel) {
           "mocha.run()");
 }
 
-// TODO(crbug.com/365430929): Flaky on
-// linux-blink-web-tests-force-accessibility-rel.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_Table DISABLED_Table
-#else
-#define MAYBE_Table Table
-#endif
-IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, MAYBE_Table) {
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, LoadingState) {
+  RunTest("commerce/product_specifications/loading_state_test.js",
+          "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsTest, Table) {
   RunTest("commerce/product_specifications/table_test.js", "mocha.run()");
 }
 

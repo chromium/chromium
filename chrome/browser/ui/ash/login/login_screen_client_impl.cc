@@ -172,16 +172,6 @@ void LoginScreenClientImpl::OnFocusPod(const AccountId& account_id) {
   }
 }
 
-void LoginScreenClientImpl::FocusLockScreenApps(bool reverse) {
-  // If delegate is not set, or it fails to handle focus request, call
-  // |HandleFocusLeavingLockScreenApps| so the lock screen service can
-  // give focus to the next window in the tab order.
-  if (!delegate_ || !delegate_->HandleFocusLockScreenApps(reverse)) {
-    ash::LoginScreen::Get()->GetModel()->HandleFocusLeavingLockScreenApps(
-        reverse);
-  }
-}
-
 void LoginScreenClientImpl::FocusOobeDialog() {
   if (delegate_) {
     delegate_->HandleFocusOobeDialog();

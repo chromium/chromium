@@ -97,7 +97,7 @@ void MaybeFlushBFCacheOnUIThread(base::WeakPtr<content::WebContents> contents,
                                 : BackgroundCacheSizeOnCriticalPressure();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   // Do not flush BFCache if cache_size is negative (such as -1).
   if (cache_size < 0)

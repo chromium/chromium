@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_url_loader.h"
 
 #include "base/check.h"
@@ -239,8 +234,7 @@ mojo::ScopedDataPipeConsumerHandle CreateTestBody() {
 
 SegmentedBuffer CreateTestBodyRawData() {
   SegmentedBuffer result;
-  result.Append(Vector<char>(
-      base::make_span(kTestBodyString.begin(), kTestBodyString.size())));
+  result.Append(kTestBodyString);
   return result;
 }
 
@@ -337,7 +331,7 @@ class FakeURLLoaderClient : public URLLoaderClient {
     return std::move(will_follow_callback).Run(new_url);
   }
   void DidSendData(uint64_t bytesSent, uint64_t totalBytesToBeSent) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void DidReceiveResponse(
       const WebURLResponse& response,
@@ -1241,8 +1235,7 @@ TEST_F(BackgroundResourceFecherTest,
   EXPECT_TRUE(client.cached_metadata());
   EXPECT_FALSE(client.response_body_handle());
   EXPECT_THAT(client.response_body_buffer().CopyAs<Vector<char>>(),
-              testing::ElementsAreArray(base::make_span(
-                  kTestBodyString.begin(), kTestBodyString.size())));
+              testing::ElementsAreArray(kTestBodyString));
 
   loader_client_remote->OnTransferSizeUpdated(10);
   // Call RunUntilIdle() to receive Mojo IPC.
@@ -1319,8 +1312,7 @@ TEST_F(BackgroundResourceFecherTest,
   EXPECT_TRUE(client.cached_metadata());
   EXPECT_FALSE(client.response_body_handle());
   EXPECT_THAT(client.response_body_buffer().CopyAs<Vector<char>>(),
-              testing::ElementsAreArray(base::make_span(
-                  kTestBodyString.begin(), kTestBodyString.size())));
+              testing::ElementsAreArray(kTestBodyString));
   EXPECT_THAT(client.transfer_size_diffs(), testing::ElementsAreArray({10}));
 
   loader_client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
@@ -1394,8 +1386,7 @@ TEST_F(BackgroundResourceFecherTest,
   EXPECT_TRUE(client.cached_metadata());
   EXPECT_FALSE(client.response_body_handle());
   EXPECT_THAT(client.response_body_buffer().CopyAs<Vector<char>>(),
-              testing::ElementsAreArray(base::make_span(
-                  kTestBodyString.begin(), kTestBodyString.size())));
+              testing::ElementsAreArray(kTestBodyString));
   EXPECT_THAT(client.transfer_size_diffs(), testing::ElementsAreArray({10}));
   EXPECT_TRUE(client.did_finish());
   EXPECT_FALSE(client.error());
@@ -1472,8 +1463,7 @@ TEST_F(BackgroundResourceFecherTest,
   EXPECT_TRUE(client.response());
   EXPECT_FALSE(client.response_body_handle());
   EXPECT_THAT(client.response_body_buffer().CopyAs<Vector<char>>(),
-              testing::ElementsAreArray(base::make_span(
-                  kTestBodyString.begin(), kTestBodyString.size())));
+              testing::ElementsAreArray(kTestBodyString));
   EXPECT_THAT(client.transfer_size_diffs(), testing::ElementsAreArray({10}));
   EXPECT_TRUE(client.did_finish());
   EXPECT_FALSE(client.error());
@@ -1546,8 +1536,7 @@ TEST_F(BackgroundResourceFecherTest,
   EXPECT_TRUE(client.response());
   EXPECT_FALSE(client.response_body_handle());
   EXPECT_THAT(client.response_body_buffer().CopyAs<Vector<char>>(),
-              testing::ElementsAreArray(base::make_span(
-                  kTestBodyString.begin(), kTestBodyString.size())));
+              testing::ElementsAreArray(kTestBodyString));
   EXPECT_THAT(client.transfer_size_diffs(), testing::ElementsAreArray({10}));
   EXPECT_TRUE(client.did_finish());
   EXPECT_FALSE(client.error());

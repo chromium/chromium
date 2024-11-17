@@ -5,7 +5,13 @@
 #include "chrome/browser/web_applications/web_install_service_impl.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/commands/web_install_from_url_command.h"
+#include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/web_install/web_install.mojom.h"
 #include "url/gurl.h"
@@ -49,9 +55,30 @@ void WebInstallServiceImpl::CreateIfAllowed(
   new WebInstallServiceImpl(*render_frame_host, std::move(receiver));
 }
 
-void WebInstallServiceImpl::InstallCurrentDocument(
-    const GURL& manifest_id,
-    InstallCurrentDocumentCallback callback) {
+void WebInstallServiceImpl::Install(blink::mojom::InstallOptionsPtr options,
+                                    InstallCallback callback) {
+  GURL install_target;
+  if (!options) {
+    install_target = render_frame_host().GetLastCommittedURL();
+  } else {
+    install_target = options->install_url;
+  }
+
+  // Do not allow installation of file:// or chrome:// urls.
+  if (!install_target.SchemeIsHTTPOrHTTPS()) {
+    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
+                            GURL());
+    return;
+  }
+
+  if (!options) {
+    // TODO(crbug.com/333795265): Queue a web app command against the current
+    // document. For the time being, stub out the callback to prevent the calls
+    // from hanging.
+    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kSuccess,
+                            GURL());
+  }
+
   auto* rfh = content::RenderFrameHost::FromID(frame_routing_id_);
   if (!rfh) {
     std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
@@ -59,35 +86,31 @@ void WebInstallServiceImpl::InstallCurrentDocument(
     return;
   }
 
-  GURL current_url = rfh->GetLastCommittedURL();
-
-  // Do not allow installation of file:// or chrome:// urls.
-  if (!current_url.SchemeIsHTTPOrHTTPS()) {
+  auto* profile = Profile::FromBrowserContext(rfh->GetBrowserContext());
+  if (!profile) {
     std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
                             GURL());
     return;
   }
 
-  // TODO(333795265): Queue a WebInstallCommand to prompt for installation.
-  std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
-                          GURL());
+  auto* provider = WebAppProvider::GetForWebApps(profile);
+  provider->scheduler().InstallAppFromUrl(
+      options->manifest_id, install_target,
+      base::BindOnce(&WebInstallServiceImpl::OnAppInstalled,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void WebInstallServiceImpl::InstallBackgroundDocument(
-    const GURL& manifest_id,
-    const GURL& install_url,
-    InstallBackgroundDocumentCallback callback) {
-  // Do not allow installation of file:// or chrome:// urls.
-  if (!install_url.SchemeIsHTTPOrHTTPS()) {
-    std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
-                            GURL());
-    return;
+void WebInstallServiceImpl::OnAppInstalled(InstallCallback callback,
+                                           const GURL& manifest_id,
+                                           webapps::InstallResultCode code) {
+  blink::mojom::WebInstallServiceResult result =
+      blink::mojom::WebInstallServiceResult::kAbortError;
+
+  if (webapps::IsSuccess(code)) {
+    result = blink::mojom::WebInstallServiceResult::kSuccess;
   }
 
-  // TODO(333795265): Queue a WebInstallCommand to prompt for installation.
-  std::move(callback).Run(blink::mojom::WebInstallServiceResult::kAbortError,
-                          GURL());
-  return;
+  std::move(callback).Run(result, manifest_id);
 }
 
 }  // namespace web_app

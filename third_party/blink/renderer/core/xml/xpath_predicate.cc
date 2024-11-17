@@ -89,8 +89,7 @@ Value NumericOp::Evaluate(EvaluationContext& context) const {
     case kOP_Mod:
       return fmod(left_val, right_val);
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0.0;
+  NOTREACHED();
 }
 
 EqTestOp::EqTestOp(Opcode opcode, Expression* lhs, Expression* rhs)
@@ -152,7 +151,7 @@ bool EqTestOp::Compare(EvaluationContext& context,
       // function is true.
       return Compare(context, lhs.ToBoolean(), rhs);
     }
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   if (rhs.IsNodeSet()) {
     const NodeSet& rhs_set = rhs.ToNodeSet(&context);
@@ -172,7 +171,7 @@ bool EqTestOp::Compare(EvaluationContext& context,
     }
     if (lhs.IsBoolean())
       return Compare(context, lhs, rhs.ToBoolean());
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // Neither side is a NodeSet.
@@ -199,8 +198,7 @@ bool EqTestOp::Compare(EvaluationContext& context,
     case kOpcodeLessOrEqual:
       return lhs.ToNumber() <= rhs.ToNumber();
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 Value EqTestOp::Evaluate(EvaluationContext& context) const {

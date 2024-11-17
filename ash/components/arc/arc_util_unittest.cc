@@ -212,6 +212,14 @@ TEST_F(ArcUtilTest, IsArcVmEnabled) {
   EXPECT_TRUE(IsArcVmEnabled());
 }
 
+TEST_F(ArcUtilTest, IsArcVmDlcEnabled) {
+  EXPECT_FALSE(IsArcVmDlcEnabled());
+
+  auto* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->InitFromArgv({"", "--enable-arcvm-dlc"});
+  EXPECT_TRUE(IsArcVmDlcEnabled());
+}
+
 TEST_F(ArcUtilTest, GetArcAndroidSdkVersionAsInt) {
   // Make sure that the function does not crash even when /etc/lsb-release is
   // not available (e.g. unit tests) or corrupted.
@@ -413,6 +421,9 @@ TEST_F(ArcUtilTest, ConfigureUpstartJobs_Success) {
       JobDesc{"Job_2dA", UpstartOperation::JOB_STOP, {}},
       JobDesc{"Job_2dB", UpstartOperation::JOB_STOP_AND_START, {}},
       JobDesc{"Job_2dC", UpstartOperation::JOB_START, {}},
+      JobDesc{"arcvm_2dinstall_2dandroid_2dimage_2ddlc",
+              UpstartOperation::JOB_START,
+              {}},
   };
   bool result = false;
   ash::FakeUpstartClient::Get()->StartRecordingUpstartOperations();
@@ -427,7 +438,7 @@ TEST_F(ArcUtilTest, ConfigureUpstartJobs_Success) {
   EXPECT_TRUE(result);
 
   auto ops = ash::FakeUpstartClient::Get()->upstart_operations();
-  ASSERT_EQ(4u, ops.size());
+  ASSERT_EQ(5u, ops.size());
   EXPECT_EQ(ops[0].name, "Job_2dA");
   EXPECT_EQ(ops[0].type, ash::FakeUpstartClient::UpstartOperationType::STOP);
   EXPECT_EQ(ops[1].name, "Job_2dB");
@@ -436,6 +447,8 @@ TEST_F(ArcUtilTest, ConfigureUpstartJobs_Success) {
   EXPECT_EQ(ops[2].type, ash::FakeUpstartClient::UpstartOperationType::START);
   EXPECT_EQ(ops[3].name, "Job_2dC");
   EXPECT_EQ(ops[3].type, ash::FakeUpstartClient::UpstartOperationType::START);
+  EXPECT_EQ(ops[4].name, "arcvm_2dinstall_2dandroid_2dimage_2ddlc");
+  EXPECT_EQ(ops[4].type, ash::FakeUpstartClient::UpstartOperationType::START);
 }
 
 TEST_F(ArcUtilTest, ConfigureUpstartJobs_StopFail) {

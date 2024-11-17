@@ -129,8 +129,8 @@ void OffscreenCanvasTest::SetUp() {
     attrs.desynchronized = GetParam().desynchronized;
   }
   context_ = static_cast<OffscreenCanvasRenderingContext2D*>(
-      offscreen_canvas_->GetCanvasRenderingContext(GetWindow(), String("2d"),
-                                                   attrs));
+      offscreen_canvas_->GetCanvasRenderingContext(
+          GetWindow(), CanvasRenderingContext::CanvasRenderingAPI::k2D, attrs));
 
   test_web_shared_image_interface_provider_ =
       TestWebGraphicsSharedImageInterfaceProvider::Create();
@@ -179,8 +179,8 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   const bool context_alpha = GetParam().alpha;
 
   auto canvas_resource = CanvasResourceSharedBitmap::Create(
-      SkImageInfo::MakeN32Premul(offscreen_canvas().Size().width(),
-                                 offscreen_canvas().Size().height()),
+      offscreen_canvas().Size(), kN32_SkColorType, kPremul_SkAlphaType,
+      /*sk_color_space=*/nullptr,
       /*provider=*/nullptr, shared_image_interface_provider(),
       cc::PaintFlags::FilterQuality::kLow);
   EXPECT_TRUE(!!canvas_resource);
@@ -206,8 +206,8 @@ TEST_P(OffscreenCanvasTest, CompositorFrameOpacity) {
   platform->RunUntilIdle();
 
   auto canvas_resource2 = CanvasResourceSharedBitmap::Create(
-      SkImageInfo::MakeN32Premul(offscreen_canvas().Size().width(),
-                                 offscreen_canvas().Size().height()),
+      offscreen_canvas().Size(), kN32_SkColorType, kPremul_SkAlphaType,
+      /*sk_color_space=*/nullptr,
       /*provider=*/nullptr, shared_image_interface_provider(),
       cc::PaintFlags::FilterQuality::kLow);
   EXPECT_CALL(mock_embedded_frame_sink_provider.mock_compositor_frame_sink(),

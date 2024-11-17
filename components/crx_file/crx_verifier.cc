@@ -296,14 +296,13 @@ VerifierResult Verify(
   }
 
   // Finalize file hash.
-  uint8_t final_hash[crypto::kSHA256Length] = {};
-  file_hash->Finish(final_hash, sizeof(final_hash));
+  std::array<uint8_t, crypto::kSHA256Length> final_hash;
+  file_hash->Finish(final_hash);
   if (!required_file_hash.empty()) {
     if (required_file_hash.size() != crypto::kSHA256Length) {
       return VerifierResult::ERROR_EXPECTED_HASH_INVALID;
     }
-    if (!crypto::SecureMemEqual(final_hash, required_file_hash.data(),
-                                crypto::kSHA256Length)) {
+    if (!crypto::SecureMemEqual(final_hash, required_file_hash)) {
       return VerifierResult::ERROR_FILE_HASH_FAILED;
     }
   }

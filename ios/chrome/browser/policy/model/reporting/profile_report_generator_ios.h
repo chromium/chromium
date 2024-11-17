@@ -11,7 +11,8 @@
 #import "components/enterprise/browser/reporting/profile_report_generator.h"
 #import "components/policy/core/browser/policy_conversions_client.h"
 #import "components/policy/proto/device_management_backend.pb.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace base {
 class FilePath;
@@ -51,7 +52,7 @@ class ProfileReportGeneratorIOS : public ProfileReportGenerator::Delegate {
       bool is_machine_scope) override;
 
  private:
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 };
 
 }  // namespace enterprise_reporting

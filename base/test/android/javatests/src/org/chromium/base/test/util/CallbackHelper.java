@@ -241,8 +241,8 @@ public class CallbackHelper {
 
     /**
      * Blocks until the next time the callback is called.
+     *
      * @param msg The error message to use if the callback times out.
-     * @throws TimeoutException
      */
     public void waitForNext(String msg) throws TimeoutException {
         waitForCallback(msg, mLastWaitedForCount, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
@@ -255,9 +255,9 @@ public class CallbackHelper {
 
     /**
      * Blocks until the next time the callback is called.
+     *
      * @param timeout timeout value for all callbacks to occur.
      * @param unit timeout unit.
-     * @throws TimeoutException
      */
     public void waitForNext(long timeout, TimeUnit unit) throws TimeoutException {
         waitForCallback(null, mLastWaitedForCount, 1, timeout, unit);

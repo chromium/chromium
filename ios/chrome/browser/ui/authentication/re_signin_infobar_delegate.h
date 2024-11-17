@@ -15,7 +15,6 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ui/gfx/image/image.h"
 
-@class AppState;
 class AuthenticationService;
 @protocol SigninPresenter;
 
@@ -27,7 +26,6 @@ class ReSignInInfoBarDelegate : public ConfirmInfoBarDelegate,
   static std::unique_ptr<ReSignInInfoBarDelegate> Create(
       AuthenticationService* authentication_service,
       signin::IdentityManager* identity_manager,
-      AppState* app_state,
       id<SigninPresenter> signin_presenter);
 
   ReSignInInfoBarDelegate(const ReSignInInfoBarDelegate&) = delete;

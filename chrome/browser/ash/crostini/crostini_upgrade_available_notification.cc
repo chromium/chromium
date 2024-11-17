@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/crostini_upgrader/crostini_upgrader_dialog.h"
@@ -138,7 +139,7 @@ CrostiniUpgradeAvailableNotification::CrostiniUpgradeAvailableNotification(
 
 CrostiniUpgradeAvailableNotification::~CrostiniUpgradeAvailableNotification() {
   if (notification_ && !profile_->ShutdownStarted()) {
-    NotificationDisplayService::GetForProfile(profile_)->Close(
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, notification_->id());
   }
 }
@@ -151,7 +152,7 @@ void CrostiniUpgradeAvailableNotification::UpgradeDialogShown() {
 }
 
 void CrostiniUpgradeAvailableNotification::ForceRedisplay() {
-  NotificationDisplayService::GetForProfile(profile_)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::TRANSIENT, *notification_,
       /*metadata=*/nullptr);
 }

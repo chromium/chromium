@@ -69,7 +69,6 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       ui::ScrollGranularity granularity) override;
   void StartLoadingForAsyncNavigationApiCommit() override {}
   void DidBlockNavigation(const KURL& blocked_url,
-                          const KURL& initiator_url,
                           mojom::NavigationBlockedReason reason) override;
   void DidChangeLoadProgress(double load_progress) override;
   void DidFinishLoad(const KURL& validated_url) override;
@@ -222,6 +221,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
   void RecordWindowProxyUsageMetrics(
       const blink::FrameToken& target_frame_token,
       blink::mojom::WindowProxyAccessType access_type) override;
+  void NotifyDocumentInteractive() override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

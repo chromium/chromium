@@ -39,9 +39,8 @@ SurveyClientAndroid::SurveyClientAndroid(
                                        ? supplied_trigger_id.value()
                                        : std::string_view());
   jobj_ = Java_SurveyClientBridge_create(
-      env, reinterpret_cast<int64_t>(this), java_trigger,
-      ui_delegate->GetJavaObject(env), profile->GetJavaObject(),
-      java_supplied_trigger_id);
+      env, java_trigger, ui_delegate->GetJavaObject(env),
+      profile->GetJavaObject(), java_supplied_trigger_id);
 }
 
 SurveyClientAndroid::~SurveyClientAndroid() = default;

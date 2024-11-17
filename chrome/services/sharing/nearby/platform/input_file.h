@@ -8,8 +8,7 @@
 #include "base/files/file.h"
 #include "third_party/nearby/src/internal/platform/implementation/input_file.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 // Concrete InputFile implementation.
 class InputFile : public api::InputFile {
@@ -34,7 +33,6 @@ class InputFile : public api::InputFile {
   mutable base::File file_;
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_INPUT_FILE_H_

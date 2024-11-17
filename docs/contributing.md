@@ -227,10 +227,14 @@ feature A change is the parent of the feature B change.  If A
 introduces a new file which B changes, the review for B will only show
 the diff from A.
 
-## Code review
+## Code review {#code-review}
 
-Code reviews are covered in more detail on the [code review
-policies][code-reviews] page.
+This section describes the mechanics and process of code reviews. See also:
+- [Code review policies](code_reviews.md) page for committer, OWNERS, and other
+rules
+- [Code of conduct](../CODE_OF_CONDUCT.md)
+- [Respectful Changes](cl_respect.md)
+- [Respectful Code Reviews](cr_respect.md)
 
 ### Finding a reviewer
 
@@ -396,17 +400,18 @@ general rules of thumb can be helpful in navigating how to structure changes:
   product in the Chromium repositories that depends on that line of code or else
   the line of code should be removed.
 
-  When you are adding support for a new OS, a new architecture, a new port or
-  a new top-level directory, please send an email to
-  chrome-atls@google.com and get approval. For long-term maintenance
+  When you are adding support for a new OS, architecture, compiler/STL
+  implementation, platform, or simply a new top-level directory, please send an
+  email to chrome-atls@google.com and get approval. For long-term maintenance
   reasons, we will accept only things that are used by the Chromium project
   (including Chromium-supported projects like V8 and Skia) and things whose
   benefit to Chromium outweighs any cost increase in maintaining Chromium's
-  supported architectures / platforms (e.g. adding one ifdef branch for an
-  unsupported architecture / platform has negligible cost and is likely fine,
+  supported toolchains, architectures, and platforms (e.g. adding one ifdef
+  branch for an unsupported architecture has negligible cost and is likely fine,
   but introducing new abstractions or changes to higher level directories has
   a high cost and would need to provide Chromium with corresponding benefit).
-  Note that an unsupported architecture / platform will not have bots on
+  See the [documentation on toolchain support](toolchain_support.md) for more
+  details. Note that an unsupported configuration will not have bots on
   Google-managed waterfalls (even FYI bots) or maintained by Chromium
   developers. Please use existing ifdef branches as much as possible.
 

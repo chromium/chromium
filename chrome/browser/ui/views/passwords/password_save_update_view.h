@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
 #include "chrome/browser/ui/views/promos/autofill_bubble_signin_promo_view.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/view.h"
 
@@ -25,6 +26,8 @@ class EditablePasswordCombobox;
 // button and a "Never"/"Nope" button.
 class PasswordSaveUpdateView : public PasswordBubbleViewBase,
                                public views::WidgetObserver {
+  METADATA_HEADER(PasswordSaveUpdateView, PasswordBubbleViewBase)
+
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPasswordBubble);
 

@@ -133,9 +133,9 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Same URL"/>
 </enum>
 
-<enum name="BooleanSentOrReceived">
-  <int value="0" label="Sent"/>
-  <int value="1" label="Received"/>
+<enum name="BooleanSubsequentResponse">
+  <int value="0" label="Initial Response"/>
+  <int value="1" label="Subsequent Response"/>
 </enum>
 
 <enum name="BooleanTransferred">
@@ -658,6 +658,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="SITE_ENGAGEMENT_SCORE_EXISTS"/>
   <int value="8" label="NO_VISITS_TO_ANY_SITE_MORE_THAN_A_DAY_AGO"/>
   <int value="9" label="GLOBAL_ALLOWLIST_NOT_READY"/>
+  <int value="10" label="FAMILIAR_LIKELY_PREVIOUSLY_UNFAMILIAR"/>
 </enum>
 
 <enum name="SiteFamiliarityHistoryHeuristicName">
@@ -665,6 +666,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="VISITED_MORE_THAN_A_DAY_AGO"/>
   <int value="2" label="VISITED_MORE_THAN_FOUR_HOURS_AGO"/>
   <int value="3" label="NO_VISITS_TO_ANY_SITE_MORE_THAN_A_DAY_AGO"/>
+  <int value="4" label="VISITED_MORE_THAN_A_DAY_AGO_PREVIOUSLY_UNFAMILIAR"/>
 </enum>
 
 <enum name="SuspiciousSiteTriggerEvent">
@@ -695,6 +697,15 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="A report will begin when the page loads"/>
   <int value="3" label="A report has started"/>
   <int value="4" label="The trigger is in monitoring mode"/>
+</enum>
+
+<enum name="URTAndBackgroundHPRTResult">
+  <int value="0" label="UrtSafeAndHprtUnfinished"/>
+  <int value="1" label="UrtUnsafeAndHprtUnfinished"/>
+  <int value="2" label="UrtSafeAndHprtSafe"/>
+  <int value="3" label="UrtSafeAndHprtUnsafe"/>
+  <int value="4" label="UrtUnsafeAndHprtSafe"/>
+  <int value="5" label="UrtUnsafeAndHprtUnsafe"/>
 </enum>
 
 </enums>

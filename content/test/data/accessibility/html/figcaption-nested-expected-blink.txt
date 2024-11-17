@@ -1,17 +1,17 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++figure detailsIds=figcaption
+++++++figure
 ++++++++figcaption
 ++++++++++staticText name='External Caption'
 ++++++++++++inlineTextBox name='External Caption'
-++++++++figure detailsIds=figcaption
+++++++++figure
 ++++++++++image name='This is a green box.'
 ++++++++++figcaption
 ++++++++++++staticText name='Internal caption'
 ++++++++++++++inlineTextBox name='Internal caption'
-++++++figure detailsIds=figcaption
-++++++++figure detailsIds=figcaption
+++++++figure
+++++++++figure
 ++++++++++image name='This is a green box.'
 ++++++++++figcaption
 ++++++++++++staticText name='Internal caption'

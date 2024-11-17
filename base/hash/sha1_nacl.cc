@@ -168,7 +168,7 @@ void SHA1Init(SHA1Context& context) {
   context.Init();
 }
 
-void SHA1Update(const std::string_view data, SHA1Context& context) {
+void SHA1Update(std::string_view data, SHA1Context& context) {
   context.Update(data.data(), data.size());
 }
 

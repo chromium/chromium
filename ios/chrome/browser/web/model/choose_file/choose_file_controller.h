@@ -9,6 +9,8 @@
 
 #import <memory>
 
+#import "base/functional/callback.h"
+#import "base/functional/callback_helpers.h"
 #import "ios/chrome/browser/web/model/choose_file/choose_file_event.h"
 
 // Controller object to keep track of a file selection flow in a WebState. It is
@@ -45,6 +47,13 @@ class ChooseFileController {
   // destroyed.
   virtual bool HasExpired() const = 0;
 
+  // Abort the Choose file selection flow by calling the registered handler.
+  // Is no-op if a selection has been submitted.
+  virtual void Abort();
+
+  // Sets the abort handler that can be called to abort the flow.
+  virtual void SetAbortHandler(base::OnceClosure abort_handler);
+
  protected:
   // Actually submits the selection.
   virtual void DoSubmitSelection(NSArray<NSURL*>* file_urls,
@@ -56,6 +65,8 @@ class ChooseFileController {
   bool selection_submitted_ = false;
   // The file selection event associated with this controller.
   ChooseFileEvent choose_file_event_;
+  // A closure to abort the flow.
+  base::OnceClosure abort_handler_ = base::DoNothing();
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_MODEL_CHOOSE_FILE_CHOOSE_FILE_CONTROLLER_H_

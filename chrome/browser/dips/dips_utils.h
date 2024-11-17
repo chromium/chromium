@@ -11,6 +11,7 @@
 
 #include "base/files/file_path.h"
 #include "base/time/time.h"
+#include "chrome/browser/dips/dips_redirect_info.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
@@ -24,6 +25,10 @@ class TimeDelta;
 
 namespace content {
 class BrowserContext;
+}
+
+namespace url {
+class Origin;
 }
 
 // A single cookie-accessing operation (either read or write). Not to be
@@ -40,21 +45,10 @@ const base::FilePath::CharType kDIPSFilename[] = FILE_PATH_LITERAL("DIPS");
 // persisted DIPSDatabase for the BrowserContext or not.
 base::FilePath GetDIPSFilePath(content::BrowserContext* context);
 
-// SiteDataAccessType:
-// NOTE: We use this type as a bitfield, and will soon be logging it. Don't
-// change the values or add additional members.
-enum class SiteDataAccessType {
-  kUnknown = -1,
-  kNone = 0,
-  kRead = 1,
-  kWrite = 2,
-  kReadWrite = 3
-};
 inline SiteDataAccessType ToSiteDataAccessType(CookieOperation op) {
   return (op == CookieOperation::kChange ? SiteDataAccessType::kWrite
                                          : SiteDataAccessType::kRead);
 }
-std::string_view SiteDataAccessTypeToString(SiteDataAccessType type);
 std::ostream& operator<<(std::ostream& os, SiteDataAccessType access_type);
 
 constexpr SiteDataAccessType operator|(SiteDataAccessType lhs,
@@ -63,12 +57,8 @@ constexpr SiteDataAccessType operator|(SiteDataAccessType lhs,
                                          static_cast<int>(rhs));
 }
 
-// DIPSCookieMode:
-enum class DIPSCookieMode { kBlock3PC, kOffTheRecord_Block3PC };
-
 DIPSCookieMode GetDIPSCookieMode(bool is_otr);
 std::string_view GetHistogramSuffix(DIPSCookieMode mode);
-const char* DIPSCookieModeToString(DIPSCookieMode mode);
 std::ostream& operator<<(std::ostream& os, DIPSCookieMode mode);
 
 // DIPSEventRemovalType:
@@ -104,11 +94,7 @@ constexpr DIPSEventRemovalType& operator&=(DIPSEventRemovalType& lhs,
   return lhs = lhs & rhs;
 }
 
-// DIPSRedirectType:
-enum class DIPSRedirectType { kClient, kServer };
-
 std::string_view GetHistogramPiece(DIPSRedirectType type);
-const char* DIPSRedirectTypeToString(DIPSRedirectType type);
 std::ostream& operator<<(std::ostream& os, DIPSRedirectType type);
 
 using TimestampRange = std::optional<std::pair<base::Time, base::Time>>;
@@ -134,6 +120,7 @@ struct PopupsStateValue {
   uint64_t access_id;
   base::Time last_popup_time;
   bool is_current_interaction;
+  bool is_authentication_interaction;
 };
 
 struct PopupWithTime {
@@ -169,6 +156,7 @@ int64_t BucketizeBounceDelay(base::TimeDelta delta);
 // belongs to. Currently returns eTLD+1, but this is an implementation detail
 // and may change.
 std::string GetSiteForDIPS(const GURL& url);
+std::string GetSiteForDIPS(const url::Origin& origin);
 
 // Returns true iff `web_contents` contains an iframe whose committed URL
 // belongs to the same site as `url`.

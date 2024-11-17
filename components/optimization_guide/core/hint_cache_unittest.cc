@@ -38,7 +38,7 @@ class HintCacheTest : public ProtoDatabaseProviderTestBase,
   HintCacheTest(const HintCacheTest&) = delete;
   HintCacheTest& operator=(const HintCacheTest&) = delete;
 
-  ~HintCacheTest() override {}
+  ~HintCacheTest() override = default;
 
   void SetUp() override { ProtoDatabaseProviderTestBase::SetUp(); }
 

@@ -38,6 +38,21 @@
 
 namespace blink {
 
+namespace {
+
+bool IsContextFormatSupported(V8GPUTextureFormat::Enum format) {
+  switch (format) {
+    case V8GPUTextureFormat::Enum::kBgra8Unorm:
+    case V8GPUTextureFormat::Enum::kRgba8Unorm:
+    case V8GPUTextureFormat::Enum::kRgba16Float:
+      return true;
+    default:
+      return false;
+  }
+}
+
+}  // namespace
+
 GPUCanvasContext::Factory::~Factory() = default;
 
 CanvasRenderingContext* GPUCanvasContext::Factory::Create(
@@ -174,13 +189,6 @@ bool GPUCanvasContext::PaintRenderingResultsToCanvas(
     return false;
   }
 
-  return CopyRenderingResultsFromDrawingBuffer(resource_provider,
-                                               source_buffer);
-}
-
-bool GPUCanvasContext::CopyRenderingResultsFromDrawingBuffer(
-    CanvasResourceProvider* resource_provider,
-    SourceDrawingBuffer source_buffer) {
   // TODO(crbug.com/1367056): Handle source_buffer == kFrontBuffer.
   // By returning false here the canvas will show up as black in the scenarios
   // that copy the front buffer, such as printing.
@@ -246,8 +254,7 @@ bool GPUCanvasContext::PushFrame() {
   auto canvas_resource = ExternalCanvasResource::Create(
       std::move(client_si), transferable_resource, std::move(release_callback),
       GetContextProviderWeakPtr(), /*resource_provider=*/nullptr,
-      filter_quality_,
-      /*is_origin_top_left=*/kBottomLeft_GrSurfaceOrigin);
+      filter_quality_);
   if (!canvas_resource)
     return false;
 
@@ -327,13 +334,14 @@ ImageBitmap* GPUCanvasContext::TransferToImageBitmap(
       texture_descriptor_.size.width, texture_descriptor_.size.height,
       sk_color_type, kPremul_SkAlphaType);
 
+  CHECK_EQ(client_si->surface_origin(), kTopLeft_GrSurfaceOrigin);
   return MakeGarbageCollected<ImageBitmap>(
       AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
           std::move(client_si), sk_image_sync_token,
           /* shared_image_texture_id = */ 0, sk_image_info,
           transferable_resource.texture_target(),
-          /* is_origin_top_left = */ kBottomLeft_GrSurfaceOrigin,
-          GetContextProviderWeakPtr(), base::PlatformThread::CurrentRef(),
+          /* is_origin_top_left = */ true, GetContextProviderWeakPtr(),
+          base::PlatformThread::CurrentRef(),
           ThreadScheduler::Current()->CleanupTaskRunner(),
           std::move(release_callback),
           /*supports_display_compositing=*/true,
@@ -375,6 +383,13 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
     }
   }
 
+  if (!IsContextFormatSupported(descriptor->format().AsEnum())) {
+    exception_state.ThrowTypeError(
+        String::Format("Unsupported canvas context format '%s'.",
+                       V8GPUTextureFormat(descriptor->format()).AsCStr()));
+    return;
+  }
+
   // As soon as the validation for extensions for usage and formats passes, the
   // canvas is "configured" and calls to getNextTexture() will return GPUTexture
   // objects (valid or invalid) and not throw.
@@ -413,32 +428,18 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   device_->GetHandle().ValidateTextureDescriptor(&texture_descriptor_);
 
   copy_to_swap_texture_required_ = false;
-  switch (texture_descriptor_.format) {
-    case wgpu::TextureFormat::BGRA8Unorm:
 #if BUILDFLAG(IS_ANDROID)
-      // BGRA8Unorm is not natively supported by Android's compositor.
-      copy_to_swap_texture_required_ = true;
-#endif
-      break;
-
-    case wgpu::TextureFormat::RGBA8Unorm:
-#if BUILDFLAG(IS_MAC)
-      // RGBA8Unorm is not natively supported by MacOS's compositor.
-      copy_to_swap_texture_required_ = true;
-#endif
-      break;
-
-    case wgpu::TextureFormat::RGBA16Float:
-      break;
-
-    default:
-      device_->InjectError(
-          wgpu::ErrorType::Validation,
-          ("Unsupported canvas context format \"" +
-           std::string(FromDawnEnum(texture_descriptor_.format)) + "\"")
-              .c_str());
-      return;
+  if (texture_descriptor_.format == wgpu::TextureFormat::BGRA8Unorm) {
+    // BGRA8Unorm is not natively supported by Android's compositor.
+    copy_to_swap_texture_required_ = true;
   }
+#endif
+#if BUILDFLAG(IS_MAC)
+  if (texture_descriptor_.format == wgpu::TextureFormat::RGBA8Unorm) {
+    // RGBA8Unorm is not natively supported by MacOS's compositor.
+    copy_to_swap_texture_required_ = true;
+  }
+#endif
 
   // If the context is configured with STORAGE_BINDING texture usage and
   // "bgra8unorm" is the preferred format but the adapter doesn't support the
@@ -473,15 +474,7 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   // `swap_texture_descriptor_`: Each can end up being used in operations on the
   // texture depending on whether the operation is on `texture_` or
   // `swap_texture_` (which will of course be the same texture in this case).
-  // NOTE: We gate these additions under the
-  // `kDawnSIRepsUseClientProvidedInternalUsages` feature here just to be safe
-  // while rolling out this feature. In reality, setting internal usages on
-  // `texture_` will be a no-op in this case if the feature is disabled, as the
-  // SI rep backing the texture will use hardcoded internal usages rather than
-  // taking them from the client.
-  if (!copy_to_swap_texture_required_ &&
-      base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+  if (!copy_to_swap_texture_required_) {
     // `texture_` will be used as the source of either CopyTextureForBrowser()
     // or CopyTextureToTexture() operations (the former if the alpha mode is
     // opaque, the latter if it is not). In either case, CopySrc is required.
@@ -535,24 +528,19 @@ void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
   }
 
   gfx::HDRMetadata hdr_metadata;
-  if (descriptor->hasToneMapping()) {
-    if (descriptor->toneMapping()->hasMode()) {
-      switch (descriptor->toneMapping()->mode().AsEnum()) {
-        case V8GPUCanvasToneMappingMode::Enum::kStandard:
-          break;
-        case V8GPUCanvasToneMappingMode::Enum::kExtended:
-          hdr_metadata.extended_range.emplace(
-              /*current_headroom=*/gfx::HdrMetadataExtendedRange::
-                  kDefaultHdrHeadroom,
-              /*desired_headroom=*/gfx::HdrMetadataExtendedRange::
-                  kDefaultHdrHeadroom);
-          break;
-      }
+  if (descriptor->hasToneMapping() && descriptor->toneMapping()->hasMode()) {
+    tone_mapping_mode_ = descriptor->toneMapping()->mode().AsEnum();
+    switch (tone_mapping_mode_) {
+      case V8GPUCanvasToneMappingMode::Enum::kStandard:
+        break;
+      case V8GPUCanvasToneMappingMode::Enum::kExtended:
+        hdr_metadata.extended_range.emplace(
+            /*current_headroom=*/gfx::HdrMetadataExtendedRange::
+                kDefaultHdrHeadroom,
+            /*desired_headroom=*/gfx::HdrMetadataExtendedRange::
+                kDefaultHdrHeadroom);
+        break;
     }
-  } else if (descriptor->hasHdrOptions()) {
-    // TODO(https://crbug.com/333967627): Remove support for this older version
-    // of the API once the new API lands.
-    ParseCanvasHighDynamicRangeOptions(descriptor->hdrOptions(), hdr_metadata);
   }
 
   const wgpu::DawnTextureInternalUsageDescriptor* internal_usage_desc = nullptr;
@@ -610,6 +598,32 @@ void GPUCanvasContext::unconfigure() {
   alpha_clearer_ = nullptr;
   device_ = nullptr;
   configured_ = false;
+}
+
+GPUCanvasConfiguration* GPUCanvasContext::getConfiguration() {
+  if (!configured_) {
+    return nullptr;
+  }
+
+  GPUCanvasConfiguration* configuration = GPUCanvasConfiguration::Create();
+  configuration->setDevice(device_);
+  configuration->setFormat(FromDawnEnum(texture_descriptor_.format));
+  configuration->setUsage(static_cast<uint32_t>(texture_descriptor_.usage));
+
+  Vector<V8GPUTextureFormat> view_formats;
+  for (size_t i = 0; i < texture_descriptor_.viewFormatCount; ++i) {
+    view_formats.push_back(FromDawnEnum(view_formats_[i]));
+  }
+  configuration->setViewFormats(view_formats);
+
+  configuration->setColorSpace(PredefinedColorSpaceToV8(color_space_));
+  configuration->setAlphaMode(alpha_mode_);
+
+  GPUCanvasToneMapping* tone_mapping = GPUCanvasToneMapping::Create();
+  tone_mapping->setMode(tone_mapping_mode_);
+  configuration->setToneMapping(tone_mapping);
+
+  return configuration;
 }
 
 GPUTexture* GPUCanvasContext::getCurrentTexture(
@@ -670,12 +684,13 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
   swap_texture_ = MakeGarbageCollected<GPUTexture>(
       device_, swap_texture_descriptor_.format,
       static_cast<wgpu::TextureUsage>(swap_texture_descriptor_.usage),
-      std::move(mailbox_texture), String(swap_texture_descriptor_.label));
+      std::move(mailbox_texture),
+      String::FromUTF8(swap_texture_descriptor_.label));
 
   if (copy_to_swap_texture_required_) {
     texture_ = MakeGarbageCollected<GPUTexture>(
         device_, device_->GetHandle().CreateTexture(&texture_descriptor_),
-        String(texture_descriptor_.label));
+        String::FromUTF8(texture_descriptor_.label));
     // If the user manually destroys the texture before yielding control back
     // to the browser, do the copy just prior to the texture destruction.
     texture_->SetBeforeDestroyCallback(WTF::BindOnce(
@@ -798,7 +813,6 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
   // must be included on that backing SharedImage.
   DCHECK(resource_provider->GetSharedImageUsageFlags().Has(
       gpu::SHARED_IMAGE_USAGE_WEBGPU_WRITE));
-  DCHECK(resource_provider->IsOriginTopLeft());
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> shared_context_wrapper =
       SharedGpuContext::ContextProviderWrapper();
@@ -878,7 +892,7 @@ bool GPUCanvasContext::CopyTextureToResourceProvider(
         break;
     }
     wgpu::CopyTextureForBrowserOptions options = {
-        .flipY = !resource_provider->IsOriginTopLeft(),
+        .flipY = dst_client_si->surface_origin() == kBottomLeft_GrSurfaceOrigin,
         .srcAlphaMode = srcAlphaMode,
         .dstAlphaMode = dstAlphaMode,
         .internalUsage = true,

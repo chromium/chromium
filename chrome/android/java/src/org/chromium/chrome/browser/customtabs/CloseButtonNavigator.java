@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNa
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
@@ -52,12 +51,11 @@ public class CloseButtonNavigator {
     @Inject
     public CloseButtonNavigator(
             CustomTabActivityTabController tabController,
-            CustomTabActivityTabProvider tabProvider,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            CustomTabMinimizationManagerHolder minimizationManagerHolder) {
+            CustomTabMinimizationManagerHolder minimizationManagerHolder,
+            BaseCustomTabActivity activity) {
         mTabController = tabController;
-        mTabProvider = tabProvider;
-        mButtonClosesChildTab = intentDataProvider.isWebappOrWebApkActivity();
+        mTabProvider = activity.getCustomTabActivityTabProvider();
+        mButtonClosesChildTab = activity.getIntentDataProvider().isWebappOrWebApkActivity();
         mMinimizationManagerHolder = minimizationManagerHolder;
     }
 

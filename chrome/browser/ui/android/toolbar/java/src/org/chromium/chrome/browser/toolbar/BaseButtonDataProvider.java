@@ -19,7 +19,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogManagerObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -37,16 +37,17 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
 
     /**
      * Creates a new instance of {@code BaseButtonDataProvider}.
+     *
      * @param activeTabSupplier Supplier for the current active tab.
      * @param modalDialogManager Modal dialog manager, used to disable the button when a dialog is
-     *         visible. Can be null to disable this behavior.
+     *     visible. Can be null to disable this behavior.
      * @param buttonDrawable Drawable for the button icon.
      * @param contentDescription String for the button's content description.
      * @param supportsTinting Whether the button's icon should be tinted.
      * @param iphCommandBuilder An IPH command builder instance to show when the button is
-     *         displayed, can be null.
+     *     displayed, can be null.
      * @param adaptiveButtonVariant Enum value of {@link AdaptiveToolbarButtonVariant}, used for
-     *         metrics.
+     *     metrics.
      */
     public BaseButtonDataProvider(
             Supplier<Tab> activeTabSupplier,
@@ -55,7 +56,7 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
             String contentDescription,
             @StringRes int actionChipLabelResId,
             boolean supportsTinting,
-            @Nullable IPHCommandBuilder iphCommandBuilder,
+            @Nullable IphCommandBuilder iphCommandBuilder,
             @AdaptiveToolbarButtonVariant int adaptiveButtonVariant,
             @StringRes int tooltipTextResId,
             boolean showHoverHighlight) {
@@ -121,12 +122,13 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
     }
 
     /**
-     * Sets the button's {@link IPHCommandBuilder} if needed, called every time {@code get()} is
+     * Sets the button's {@link IphCommandBuilder} if needed, called every time {@code get()} is
      * invoked.
+     *
      * @param tab Current tab.
      */
     private void maybeSetIphCommandBuilder(Tab tab) {
-        if (mButtonData.getButtonSpec().getIPHCommandBuilder() != null
+        if (mButtonData.getButtonSpec().getIphCommandBuilder() != null
                 || tab == null
                 || !FeatureList.isInitialized()
                 || !AdaptiveToolbarFeatures.isCustomizationEnabled()
@@ -135,7 +137,7 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
             return;
         }
 
-        mButtonData.updateIPHCommandBuilder(getIphCommandBuilder(tab));
+        mButtonData.updateIphCommandBuilder(getIphCommandBuilder(tab));
     }
 
     /** Sets whether the button should be shown on incognito tabs, default is false. */
@@ -144,13 +146,14 @@ public abstract class BaseButtonDataProvider implements ButtonDataProvider, OnCl
     }
 
     /**
-     * Gets an {@link IPHCommandBuilder} builder instance to use on this button. Only called when
-     * native is initialized and when there's no IPHCommandBuilder set.
+     * Gets an {@link IphCommandBuilder} builder instance to use on this button. Only called when
+     * native is initialized and when there's no IphCommandBuilder set.
+     *
      * @param tab Current tab.
-     * @return An {@link org.chromium.chrome.browser.user_education.IPHCommand} instance to set on
-     *         this button, or null if no IPH should be used.
+     * @return An {@link org.chromium.chrome.browser.user_education.IphCommand} instance to set on
+     *     this button, or null if no IPH should be used.
      */
-    protected IPHCommandBuilder getIphCommandBuilder(Tab tab) {
+    protected IphCommandBuilder getIphCommandBuilder(Tab tab) {
         return null;
     }
 

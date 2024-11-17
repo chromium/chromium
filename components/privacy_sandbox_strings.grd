@@ -281,17 +281,24 @@
   </translations>
   <release seq="1">
     <messages fallback_to_english="true">
+      <!-- Ad Topics Page disclaimer -->
       <message name="IDS_SETTINGS_TOPICS_PAGE_DISCLAIMER_CLANK" desc="Disclaimer of the new Ad topics setting. This text appears beneath the sublabel." formatter_data="android_java">
         Ad topics are just one of many things a site can use to personalize ads. Even without ad topics, sites can still show you ads but they may be less personalized. Learn more about <ph name="BEGIN_LINK_1">&lt;link1&gt;</ph>managing your ad privacy<ph name="END_LINK_1">&lt;/link1&gt;</ph>.
       </message>
-      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_ON" desc="" formatter_data="android_java" translateable="false">
-        Protections are on
+      <!-- Third Party Cookie settings  -->
+      <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_LIMITED" desc="Sub-label for a button that links to the 'Third-party cookies' settings page when the user has third-party cookies limited.">
+        Third-party cookies are limited
       </message>
+      <!-- Private State Tokens -->
       <message name="IDS_PRIVATE_STATE_TOKENS_HEADING_LABEL" desc="Title of the page that contains information about Private State Tokens." translateable="false">
         Private State Tokens
       </message>
       <message name="IDS_PRIVATE_STATE_TOKENS_DESCRIPTION_LABEL" desc="Label that provides the user more details about what they can see on this page i.e. the tokens that have been issued and by whom and if and when they were redeemed." translateable="false">
         See who has issued private state tokens on your device and how they are used.
+      </message>
+      <!-- Page Info: Tracking Protection (3PCD) -->
+      <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_ON" desc="" formatter_data="android_java" translateable="false">
+        Protections are on
       </message>
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_TITLE_OFF" desc="" formatter_data="android_java" translateable="false">
         {COUNT, plural,
@@ -325,35 +332,12 @@
       <message name="IDS_PAGE_INFO_TRACKING_PROTECTION_ANTI_FINGERPRINTING_ON" desc="" formatter_data="android_java" translateable="false">
         Digital fingerprinting limited
       </message>
-      <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_LINK_ROW_SUB_LABEL_LIMITED" desc="" translateable="false">
-        Third-party cookies are limited
-      </message>
-      <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are limited." translateable="false">
-        Third-party cookies limited
-      </message>
+      <!-- Tracking Protection Snackbar -->
       <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_TITLE" desc="Title of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
         App not working?
       </message>
       <message name="IDS_PRIVACY_SANDBOX_TRACKING_PROTECTION_SNACKBAR_ACTION" desc="Action of the Tracking Protection snackbar." formatter_data="android_java" translateable="false">
         Change protections
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_TITLE" desc="Label for a toggle that controls the IP protection feature." formatter_data="android_java">
-        Hide your IP address
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUMMARY" desc="Summary for the IP protection toggle. Explains that some traffic may be sent through privacy servers when the feature is on." formatter_data="android_java">
-        When you're signed in to Chrome, this setting helps keep your IP address private. If Chrome suspects a site may be tracking you, some of your traffic may be sent through privacy servers.
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_IP_PROTECTION_LEARN_MORE" desc="Learn more label for the IP protection feature. Provides a link to a help center article." formatter_data="android_java">
-        Learn <ph name="BEGIN_LINK">&lt;link&gt;</ph>how IP protection works<ph name="END_LINK">&lt;/link&gt;</ph>
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TITLE" desc="" formatter_data="android_java" translateable="false">
-        Limit digital fingerprinting
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TOGGLE_SUMMARY" desc="" formatter_data="android_java" translateable="false">
-        Prevent sites from collecting settings from your browser and computer to create a unique digital fingerprint which can be used to track you.
-      </message>
-      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_LEARN_MORE" desc="" formatter_data="android_java" translateable="false">
-        Learn <ph name="BEGIN_LINK">&lt;link&gt;</ph>how limiting digital fingerprinting works<ph name="END_LINK">&lt;/link&gt;</ph>
       </message>
       <!-- User Bypass -->
       <message name="IDS_TRACKING_PROTECTION_BUBBLE_3PC_ALLOWED_SUBTITLE" desc="The subtitle label for the third-party cookies item in User Bypass when 3PC are allowed." translateable="false">
@@ -368,48 +352,17 @@
       <message name="IDS_TRACKING_PROTECTION_BUBBLE_MANAGED_PROTECTIONS_LABEL" desc="The title label for the section in User Bypass containing managed Tracking Protection features." translateable="false">
         Managed protections
       </message>
+      <message name="IDS_COOKIE_CONTROLS_BUBBLE_COOKIES_LIMITED_TITLE" desc="Title shown on the cookie controls bubble when third-party cookies are limited.">
+        Third-party cookies limited
+      </message>
       <!-- Tracking Protection WebUI -->
       <!-- General -->
-      <message name="IDS_SETTINGS_3PC_AND_KNOWN_TRACKERS_PAGE_TITLE" desc="Updated title for the third-party cookie settings page (chrome://settings/cookies) for when the page has additional features related to preventing tracking." translateable="false">
-        Third-party cookies and known trackers
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_HEADER" desc="Header for text describing the default Tracking Protection settings state." translateable="false">
-        Default
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_TPCD_BULLET_TWO_DESCRIPTION" desc="Description of the second bullet for Tracking Protection settings. Explains that you can temporarily give a site access to third-party cookies if the site isn't working." translateable="false">
-        If a site isn’t working, you can try giving it temporary access to third-party cookies
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_HEADER" desc="Header for a section on the Tracking Protection settings page that contains settings for additional tracking tracking protections." translateable="false">
-        Additional protections
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_DESCRIPTION" desc="Text linking out to a help center article that details additional Tracking Protection settings." translateable="false">
-        Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>how these settings can help limit tracking<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_ADDITIONAL_PROTECTIONS_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the Tracking Protection additional protections description." translateable="false">
-        Learn how these additional protection settings can help limit tracking
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_BLOCK_ALL_3PCS_SUB_LABEL" desc="Sub-label for the block all third-party cookies toggle. Explains that features on some sites may not work when the toggle is on and all third-party cookies are blocked." translateable="false">
-        Features on some sites may not work
-      </message>
-      <message name="IDS_SETTINGS_TRACKING_PROTECTION_EXCEPTIONS_LIST_TITLE" desc="Title of the section on the Tracking Protection settings page that lets users manage which sites have Tracking Protection turned off." translateable="false">
-        Sites with Tracking Protection turned off
-      </message>
       <message name="IDS_SETTINGS_TRACKING_PROTECTION_EXCEPTIONS_LIST_DESCRIPTION" desc="Description of the section on the Tracking Protection settings page that lets users manage which sites have Tracking Protection turned off. Explains how to use a wildcard to create an exception for an entire domain." translateable="false">
         Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.com” means that Tracking Protection will also be off for mail.google.com, because it’s part of google.com.
-      </message>
-      <message name="IDS_SETTINGS_3PC_AND_KNOWN_TRACKERS_EXCEPTIONS_LIST_TITLE" desc="Title of the section on the third-party cookies and known trackers settings page that lets users manage which sites are allowed to use third-party cookies and known trackers." translateable="false">
-        Sites allowed to use third-party cookies and known trackers
-      </message>
-      <message name="IDS_SETTINGS_3PC_AND_KNOWN_TRACKERS_EXCEPTIONS_LIST_DESCRIPTION" desc="Description of the section on the third-party cookies and known trackers settings page that lets users manage which sites are allowed to use third-party cookies and known trackers. Explains how to use a wildcard to create an exception for an entire domain." translateable="false">
-        Inserting “[*.]” before a domain name creates an exception for the entire domain. For example, adding “[*.]google.com” means that third-party cookies and known trackers can also be active for mail.google.com, because it’s part of google.com.
       </message>
       <message name="IDS_SETTINGS_THIRD_PARTY_COOKIES_ONLY_EXCEPTION_LABEL" desc="Label for an exception in the Tracking Protection exceptions list indicating that the exception only applies to third-party cookie blocking." translateable="false">
         Only applies to third-party cookie blocking
       </message>
-      <message name="IDS_SETTINGS_3PC_AND_KNOWN_TRACKERS_LINK_ROW_LABEL" desc="Label for the third-party cookies and known trackers settings page entry point." translateable="false">
-        Third-party cookies and known trackers
-      </message>
-
       <!-- ACT -->
       <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_LABEL" desc="Label for a toggle that controls the IP protection feature.">
         Hide your IP address
@@ -429,52 +382,124 @@
           <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUB_LABEL" desc="Sub-label for the IP protection toggle. Explains that the feature only works for signed-in users and that some traffic may be sent through privacy servers when the feature is on. Provides a link to a help center article.">
               When you're signed in to Chrome, this setting helps keep your IP address private. If Chrome suspects a site may be tracking you, some of your traffic may be sent through privacy servers. Learn more about <ph name="LINK_BEGIN">&lt;a href="#" aria-label="$1" aria-description="$2" target="_blank"&gt;</ph>how IP protection works<ph name="LINK_END">&lt;/a&gt;</ph>
           </message>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_DESCRIPTION" desc="Text describing the default Tracking Protection settings state. Contains a learn more link to a help center article." translateable="false">
-              Chrome limits the type of information sites can use to track you as you browse.<ph name="BR">&lt;br&gt;</ph>Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Tracking Protection on Chrome<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
-          </message>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the Tracking Protection default description." translateable="false">
-              Learn about Tracking Protection on Chrome
-          </message>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_TPCD_BULLET_ONE" desc="The first bullet on the Tracking Protection settings page. Informs users that Chrome limits third-party cookies by default." translateable="false">
-              Chrome automatically limits third-party cookies
-          </message>
         </then>
         <else>
           <message name="IDS_SETTINGS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUB_LABEL" desc="Sub-label for the IP protection toggle. Explains that the feature only works for signed-in users and that some traffic may be sent through privacy servers when the feature is on. Provides a link to a help center article.">
               When you're signed in to Chromium, this setting helps keep your IP address private. If Chromium suspects a site may be tracking you, some of your traffic may be sent through privacy servers. Learn more about <ph name="LINK_BEGIN">&lt;a href="#" aria-label="$1" aria-description="$2" target="_blank"&gt;</ph>how IP protection works<ph name="LINK_END">&lt;/a&gt;</ph>
           </message>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_DESCRIPTION" desc="Text describing the default Tracking Protection settings state. Contains a learn more link to a help center article." translateable="false">
-              Chromium limits the type of information sites can use to track you as you browse.<ph name="BR">&lt;br&gt;</ph>Learn more about <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1" aria-label="$2" aria-description="$3"&gt;</ph>Tracking Protection on Chromium<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>.
-          </message>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_DEFAULT_LEARN_MORE_ARIA_LABEL" desc="Screenreader text for the help center article link in the Tracking Protection default description." translateable="false">
-              Learn about Tracking Protection on Chromium
-          </message>
-          <message name="IDS_SETTINGS_TRACKING_PROTECTION_TPCD_BULLET_ONE" desc="The first bullet on the Tracking Protection settings page. Informs users that Chromium limits third-party cookies by default." translateable="false">
-              Chromium automatically limits third-party cookies
-          </message>
         </else>
       </if>
 
+      <message name="IDS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_TITLE" desc="Label for a toggle that controls the IP protection feature." formatter_data="android_java">
+        Hide your IP address
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_IP_PROTECTION_TOGGLE_SUMMARY" desc="Summary for the IP protection toggle. Explains that some traffic may be sent through privacy servers when the feature is on." formatter_data="android_java">
+        When you're signed in to Chrome, this setting helps keep your IP address private. If Chrome suspects a site may be tracking you, some of your traffic may be sent through privacy servers.
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_IP_PROTECTION_LEARN_MORE" desc="Learn more label for the IP protection feature. Provides a link to a help center article." formatter_data="android_java">
+        Learn <ph name="BEGIN_LINK">&lt;link&gt;</ph>how IP protection works<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TITLE" desc="" formatter_data="android_java" translateable="false">
+        Limit digital fingerprinting
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_TOGGLE_SUMMARY" desc="" formatter_data="android_java" translateable="false">
+        Prevent sites from collecting settings from your browser and computer to create a unique digital fingerprint which can be used to track you.
+      </message>
+      <message name="IDS_TRACKING_PROTECTION_FINGERPRINTING_PROTECTION_LEARN_MORE" desc="" formatter_data="android_java" translateable="false">
+        Learn <ph name="BEGIN_LINK">&lt;link&gt;</ph>how limiting digital fingerprinting works<ph name="END_LINK">&lt;/link&gt;</ph>
+      </message>
+
       <!-- Privacy Sandbox Ads Notice -->
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_CLANK" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data." formatter_data="android_java" translateable="false">
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_CLANK" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data." formatter_data="android_java">
         Learn more about how Google protects your data in our <ph name="BEGIN_LINK">&lt;link&gt;</ph>Privacy Policy<ph name="END_LINK">&lt;/link&gt;</ph>.
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data." translateable="false">
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP" desc="A sentence that appears alone at the bottom of the learn more page. It offers the user a path towards additional information about how Google protects their data.">
         Learn more about how Google protects your data in our <ph name="BEGIN_LINK1">&lt;a href="#" id="$1" aria-description="$2" on-click="$3"&gt;</ph>Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>.
       </message>
-
-      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP_ARIA_DESCRIPTION" desc="Screenreader text for the 'Privacy Policy' link." translateable="false">
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_LEARN_MORE_V2_DESKTOP_ARIA_DESCRIPTION" desc="Screenreader text for the 'Privacy Policy' link.">
         Learn more about how Google protects your data in our Privacy Policy.
       </message>
-
-      <!-- Privacy Guide -->
-      <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_TRACKING_PROTECTION_LABEL" desc="Text of the Tracking Protection label in the completion card of the 'Privacy Guide'." translateable="false">
-        Tracking Protection
+      <!-- Ad Topics EEA consent -->
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_2_V2" desc="" translateable="false">
+        Ad topics help websites show you relevant ads while protecting your browsing history and identity. Chrome can note topics of interest based on your recent browsing history. Later, a site you visit can ask Chrome for relevant topics to personalize the ads you see.
       </message>
-      <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_TRACKING_PROTECTION_SUB_LABEL" desc="Text of the Tracking Protection sub-label in the completion card of the 'Privacy Guide'." translateable="false">
-        Manage your tracking protections to make your experience more private on the web
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_DESCRIPTION_4_V2" desc="" translateable="false">
+        You can make changes in ad privacy settings
       </message>
-
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_1_V2" desc="" translateable="false">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>What data is used?<ph name="END_BOLD">&lt;/b&gt;</ph> Your ad topics are based on your recent browsing history, a list of sites you've visited using Chrome on this device.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_V2" desc="" translateable="false">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How we use this data?<ph name="END_BOLD">&lt;/b&gt;</ph> Chrome notes topics of interest as you browse. Topic labels are predefined and include things like, Arts &amp; Entertainment, Shopping, and Sports. Later, a site you visit can ask Chrome for a few of your topics (but not your browsing history) to personalize the ads you see.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_DESCRIPTION" desc="" translateable="false">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK1">&lt;a href="#" id="$1" aria-description="$2" on-click="$3"&gt;</ph>Learn more about how Google protects your data in our Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_2_DESCRIPTION_NO_LINK" desc="" translateable="false">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more about how Google protects your data in our Privacy Policy.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_CONSENT_LEARN_MORE_BULLET_3_V2" desc="" translateable="false">
+        <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How you can manage your data?<ph name="END_BOLD">&lt;/b&gt;</ph> Chrome auto-deletes topics that are older than 4 weeks. As you keep browsing, a topic might reappear on the list. You can also block topics you don't want Chrome to share with sites and turn ad topics off at any time in Chrome settings.
+      </message>
+      <!--Ad Topics EEA Notice-->
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_DESCRIPTION_1_V2" desc="" translateable="false">
+        Ad privacy features help limit what websites and their advertising partners can learn about you when they show you personalized ads.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_TITLE" desc="" translateable="false">
+        Site-suggested ads
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_DESCRIPTION" desc="" translateable="false">
+        Site-suggested ads help protect your browsing history and identity while allowing sites to show you relevant ads. Using your activity, such as how you spend your time on sites you visit, other sites can suggest related ads as you continue browsing. You can see a list of these sites and block the ones you don't want in settings.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_LABEL" desc="" translateable="false">
+        More about site-suggested ads
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_1" desc="" translateable="false">
+       <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How do sites use this data?<ph name="END_BOLD">&lt;/b&gt;</ph> Sites and their advertising partners can use your activity to personalize ads on other sites. For example, if you visit a site to find recipes for dinner, the site might decide that you're interested in cooking. Later, another site may show you a related ad for a grocery delivery service suggested by the first site.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_1_DESCRIPTION" desc="" translateable="false">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK1">&lt;a href="#" id="$1" aria-description="$2" on-click="$3"&gt;</ph>Learn more about how Google protects your data in our Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_1_DESCRIPTION_NO_LINK" desc="" translateable="false">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more about how Google protects your data in our Privacy Policy.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_SITE_SUGGESTED_ADS_LEARN_MORE_BULLET_2" desc="" translateable="false">
+       <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How can you manage this data?<ph name="END_BOLD">&lt;/b&gt;</ph> Chrome auto-deletes sites that are older than 30 days. A site you visit again might reappear on the list. You can also block a site from suggesting ads for you and turn site-suggested ads off at any time in Chrome settings.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_AD_MEASUREMENT_TITLE" desc="" translateable="false">
+        Ad measurement
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_AD_MEASUREMENT_DESCRIPTION" desc="" translateable="false">
+        With ad measurement, limited types of data are shared between sites to measure the performance of their ads, such as whether you made a purchase after visiting a site.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_AD_MEASUREMENT_LEARN_MORE_LABEL" desc="" translateable="false">
+        More about ad measurement
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_AD_MEASUREMENT_LEARN_MORE_BULLET_1" desc="" translateable="false">
+       <ph name="BEGIN_BOLD">&lt;b&gt;</ph>How do sites use this data?<ph name="END_BOLD">&lt;/b&gt;</ph> Sites you visit can ask Chrome for information that helps them measure the performance of their ads. Chrome protects your privacy by limiting the information sites can share with one another.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_EEA_LAST_TEXT" desc="" translateable="false">
+        You can make changes in ad privacy settings
+      </message>
+      <!--Ad Topics ROW Notice-->
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_BULLET_2_V2" desc="" translateable="false">
+        Sites and their advertising partners can use your activity, such as how you spend your time on sites you visit, to personalize ads on other sites. For example, if you visit a site to find recipes for dinner, the site might decide that you're interested in cooking. Later, another site may show you a related ad for a grocery delivery service suggested by the first site.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_2_V2" desc="" translateable="false">
+        A site you visit can ask for this information — either your ad topics or ads suggested by sites you've visited.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_HEADING_3" desc="" translateable="false">
+        How sites use your data
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5_V2" desc="" translateable="false">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. <ph name="BEGIN_LINK1">&lt;a href="#" id="$1" aria-description="$2" on-click="$3"&gt;</ph>Learn more about how Google protects your data in our Privacy Policy<ph name="LINK_END1">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LEARN_MORE_DESCRIPTION_5_V2_NO_LINK" desc="" translateable="false">
+        Google requires companies to state publicly that they won't use this data to track you across sites. Some sites may use your activity to personalize your experience for more than just ads. They may also combine it with other information they already know about you. Companies are responsible for letting you know how they use your data. Learn more about how Google protects your data in our Privacy Policy.
+      </message>
+      <message name="IDS_PRIVACY_SANDBOX_M1_NOTICE_ROW_LAST_TEXT" desc="" translateable="false">
+        You can make changes in ad privacy settings
+      </message>
       <!--Privacy Guide - Ad Topics-->
       <message name="IDS_SETTINGS_PRIVACY_GUIDE_AD_TOPICS_HEADING" desc="Header text on the Ad Topics card of the Privacy Guide.">
         Review your ad topics setting
@@ -510,10 +535,10 @@
         </else>
       </if>
       <!--Privacy Sandbox Privacy Policy-->
-      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_PAGE_TITLE" desc="Title for Google's Privacy Policy page." translateable="false" formatter_data="android_java">
+      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_PAGE_TITLE" desc="Title for Google's Privacy Policy page." formatter_data="android_java">
         Google Privacy Policy
       </message>
-      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_BACK_BUTTON" desc="Content description for the Privacy Policy page back button." translateable="false" formatter_data="android_java">
+      <message name="IDS_PRIVACY_SANDBOX_PRIVACY_POLICY_BACK_BUTTON" desc="Content description for the Privacy Policy page back button." formatter_data="android_java">
         Back
       </message>
 

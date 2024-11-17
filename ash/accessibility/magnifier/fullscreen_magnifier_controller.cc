@@ -12,7 +12,9 @@
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/accessibility/accessibility_delegate.h"
 #include "ash/accessibility/magnifier/magnifier_utils.h"
+#include "ash/display/cursor_window_controller.h"
 #include "ash/display/root_window_transformers.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/host/root_window_transformer.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -142,6 +144,11 @@ void FullscreenMagnifierController::SetEnabled(bool enabled) {
     RedrawKeepingMousePosition(kNonMagnifiedScale, true, false);
     is_enabled_ = enabled;
   }
+
+  Shell::Get()
+      ->window_tree_host_manager()
+      ->cursor_window_controller()
+      ->OnFullscreenMagnifierEnabled(enabled);
 
   // Keyboard overscroll creates layout issues with fullscreen magnification
   // so it needs to be disabled when magnification is enabled.

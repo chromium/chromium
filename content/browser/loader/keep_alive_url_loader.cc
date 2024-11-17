@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
@@ -29,6 +30,7 @@
 #include "content/public/common/url_utils.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
 #include "services/network/public/cpp/content_security_policy/csp_context.h"
 #include "services/network/public/cpp/devtools_observer_util.h"
@@ -491,10 +493,7 @@ void KeepAliveURLLoader::EndReceiveRedirect(
     }
   }
 
-  if (attribution_request_helper_) {
-    attribution_request_helper_->OnReceiveRedirect(head->headers.get(),
-                                                   redirect_info.new_url);
-  }
+  scoped_refptr<net::HttpResponseHeaders> headers = head->headers;
 
   // Stores the redirect data for later use by renderer.
   stored_url_load_->redirects.emplace(
@@ -505,6 +504,11 @@ void KeepAliveURLLoader::EndReceiveRedirect(
   if (net::Error err = WillFollowRedirect(redirect_info); err != net::OK) {
     OnComplete(network::URLLoaderCompletionStatus(err));
     return;
+  }
+
+  if (attribution_request_helper_) {
+    attribution_request_helper_->OnReceiveRedirect(headers.get(),
+                                                   redirect_info.new_url);
   }
 
   // TODO(crbug.com/40236167): Figure out how to deal with lost
@@ -617,6 +621,11 @@ void KeepAliveURLLoader::OnComplete(
   if (completion_status.error_code != net::OK) {
     // If the request succeeds, it should've been logged in `OnReceiveResponse`.
     LogFetchKeepAliveRequestMetric("Failed");
+
+    if (attribution_request_helper_) {
+      attribution_request_helper_->OnError();
+      attribution_request_helper_.reset();
+    }
   }
 
   if (observer_for_testing_) {

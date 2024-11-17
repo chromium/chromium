@@ -383,7 +383,7 @@ public class GCMMessage {
         public void writeStringArray(T out, String key, String[] value);
     }
 
-    private class PersistableBundleWriter implements Writer<PersistableBundle> {
+    private static class PersistableBundleWriter implements Writer<PersistableBundle> {
         @Override
         public PersistableBundle createOutputObject() {
             return new PersistableBundle();
@@ -400,7 +400,7 @@ public class GCMMessage {
         }
     }
 
-    private class BundleWriter implements Writer<Bundle> {
+    private static class BundleWriter implements Writer<Bundle> {
         @Override
         public Bundle createOutputObject() {
             return new Bundle();
@@ -417,7 +417,7 @@ public class GCMMessage {
         }
     }
 
-    private class JSONWriter implements Writer<JSONObject> {
+    private static class JSONWriter implements Writer<JSONObject> {
         @Override
         public JSONObject createOutputObject() {
             return new JSONObject();

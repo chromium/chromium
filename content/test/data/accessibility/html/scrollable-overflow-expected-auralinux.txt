@@ -10,13 +10,13 @@
 ++++[section] class:x-hidden-small not-scrollable
 ++++++[paragraph]
 ++++++++[static] name='x=hidden'
-++++[section] name='x=hidden' class:x-hidden-large scrollable
+++++[section] class:x-hidden-large scrollable
 ++++++[paragraph]
 ++++++++[static] name='x=hidden'
-++++[section] name='x=auto' class:x-auto scrollable
+++++[section] class:x-auto scrollable
 ++++++[paragraph]
 ++++++++[static] name='x=auto'
-++++[section] name='x=scroll' class:x-scroll scrollable
+++++[section] class:x-scroll scrollable
 ++++++[paragraph]
 ++++++++[static] name='x=scroll'
 ++++[paragraph]
@@ -25,13 +25,13 @@
 ++++[section] class:y-hidden-small not-scrollable
 ++++++[paragraph]
 ++++++++[static] name='y=hidden'
-++++[section] name='y=hidden' class:y-hidden-large scrollable
+++++[section] class:y-hidden-large scrollable
 ++++++[paragraph]
 ++++++++[static] name='y=hidden'
-++++[section] name='y=auto' class:y-auto scrollable
+++++[section] class:y-auto scrollable
 ++++++[paragraph]
 ++++++++[static] name='y=auto'
-++++[section] name='y=scroll' class:y-scroll scrollable
+++++[section] class:y-scroll scrollable
 ++++++[paragraph]
 ++++++++[static] name='y=scroll'
 ++++[paragraph]

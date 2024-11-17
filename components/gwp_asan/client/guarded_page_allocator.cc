@@ -145,7 +145,7 @@ void GuardedPageAllocator::PartitionAllocSlotFreeList::Free(
   free_list_[type_mapping_[entry]].push_back(entry);
 }
 
-GuardedPageAllocator::GuardedPageAllocator() {}
+GuardedPageAllocator::GuardedPageAllocator() = default;
 
 void GuardedPageAllocator::Init(const AllocatorSettings& settings,
                                 OutOfMemoryCallback oom_callback,

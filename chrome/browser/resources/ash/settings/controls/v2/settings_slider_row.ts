@@ -44,14 +44,14 @@
 import './settings_slider_v2.js';
 import './settings_row.js';
 
-import {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import type {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseRowMixin} from './base_row_mixin.js';
 import {PrefControlMixinInternal} from './pref_control_mixin_internal.js';
-import {SettingsRowElement} from './settings_row.js';
+import type {SettingsRowElement} from './settings_row.js';
 import {getTemplate} from './settings_slider_row.html.js';
-import {SettingsSliderV2Element} from './settings_slider_v2.js';
+import type {SettingsSliderV2Element} from './settings_slider_v2.js';
 
 export interface SettingsSliderRowElement {
   $: {

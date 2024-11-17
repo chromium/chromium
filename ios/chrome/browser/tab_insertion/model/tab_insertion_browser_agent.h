@@ -61,6 +61,9 @@ struct Params {
   // Note: Currently only applies to web states not instant-loaded.
   std::u16string placeholder_title;
 
+  // Whether the inserted tab is pinned tab.
+  bool insert_pinned = false;
+
   // Whether the inserted tab is in a group.
   bool insert_in_group = false;
 

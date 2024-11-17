@@ -23,6 +23,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/table_model.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
@@ -326,7 +327,7 @@ class ViewAXPlatformNodeDelegateMenuTest
   void RunMenu() {
     runner_.get()->RunMenuAt(owner_.get(), nullptr, gfx::Rect(),
                              MenuAnchorPosition::kTopLeft,
-                             ui::MENU_SOURCE_NONE);
+                             ui::mojom::MenuSourceType::kNone);
   }
 
   ViewAXPlatformNodeDelegate* submenu_accessibility() {

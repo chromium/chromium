@@ -24,6 +24,8 @@ import {MicrophoneInfo} from '../core/microphone_manager.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {settings} from '../core/state/settings.js';
 
+import {withTooltip} from './directives/with-tooltip.js';
+
 /**
  * A button that allows the user to select the input mic of the app.
  */
@@ -165,6 +167,7 @@ export class MicSelectionButton extends ReactiveLitElement {
         menu-corner="end-start"
         menu-type="menu"
         aria-label=${i18n.micSelectionMenuButtonTooltip}
+        ${withTooltip()}
       >
         <cra-icon slot="button-icon" name="mic"></cra-icon>
         ${map(microphones, (mic) => this.renderMicrophone(mic, selectedMic))}

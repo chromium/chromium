@@ -141,11 +141,11 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   for (const char* pref : kCustodianInfoPrefs) {
     registry->RegisterStringPref(pref, std::string());
   }
-  registry->RegisterIntegerPref(
-      prefs::kFirstTimeInterstitialBannerState,
-      static_cast<int>(FirstTimeInterstitialBannerState::kUnknown));
   registry->RegisterBooleanPref(prefs::kChildAccountStatusKnown, false);
   registry->RegisterStringPref(prefs::kFamilyLinkUserMemberRole, std::string());
+  registry->RegisterIntegerPref(
+      prefs::kFamilyLinkUserState,
+      static_cast<int>(FamilyLinkUserState::kUnknown));
 #if BUILDFLAG(ENABLE_EXTENSIONS) && \
     (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX))
   registry->RegisterIntegerPref(

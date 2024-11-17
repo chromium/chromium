@@ -54,7 +54,7 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
   std::unique_ptr<media::KeySystemSupportRegistration> GetSupportedKeySystems(
       content::RenderFrame* render_frame,
       media::GetSupportedKeySystemsCB cb) override;
-  bool IsSupportedVideoType(const media::VideoType& type) override;
+  bool IsDecoderSupportedVideoType(const media::VideoType& type) override;
   std::unique_ptr<blink::URLLoaderThrottleProvider>
   CreateURLLoaderThrottleProvider(
       blink::URLLoaderThrottleProviderType type) override;

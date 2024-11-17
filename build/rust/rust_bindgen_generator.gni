@@ -1,0 +1,355 @@
+# Copyright 2022 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/clang/clang.gni")
+import("//build/config/rust.gni")
+import("//build/config/sysroot.gni")
+import("//build/rust/rust_static_library.gni")
+
+if (is_win) {
+  import("//build/toolchain/win/win_toolchain_data.gni")
+}
+
+_bindgen_path = "${rust_bindgen_root}/bin/bindgen"
+if (host_os == "win") {
+  _bindgen_path = "${_bindgen_path}.exe"
+}
+
+# On Windows, the libclang.dll is beside the bindgen.exe, otherwise it is in
+# ../lib.
+_libclang_path = rust_bindgen_root
+if (host_os == "win") {
+  _libclang_path += "/bin"
+} else {
+  _libclang_path += "/lib"
+}
+
+# Template to build Rust/C bindings with bindgen.
+#
+# If you're developing first-party code then consider using `rust_bindgen`
+# instead of `rust_bindgen_generator` to simplify your build targets.
+#
+# This template expands to an action that generates the Rust side of the
+# bindings. Add it as a dependency through `bindgen_deps` on your
+# rust_target then incorporate it into your library through
+#
+# mod bindings {
+#    include!(concat!(env!("OUT_DIR"), "/{rust_bindgen_generator_target_name}.rs"));
+# }
+#
+# Parameters:
+#
+# header:
+#   The .h file to generate bindings for.
+#
+# deps: (optional)
+#   C targets on which the headers depend in order to build successfully.
+#
+# configs: (optional)
+#   C compilation targets determine the correct list of -D and -I flags based
+#   on their dependencies and any configs applied. The same applies here. Set
+#   any configs here as if this were a C target.
+#
+# cpp: (optional)
+#   Use C++ mode to consume the header instead of C mode (the default).
+#
+# bindgen_flags: (optional)
+#   The additional bindgen flags which are passed to the executable. A `--` will
+#   be prepended to each flag. So use `bindgen_flags = [ "foo" ]` to pass
+#   `--foo` to bindgen.
+#
+# wrap_static_fns: (optional)
+#   If set to true, enables binding `static` and `static inline` functions in
+#   the header. Setting this causes the template to emit a source_set target
+#   named "${target_name}_static_fns", which must be incorporated into the
+#   build. Additionally, `get_target_outputs` will return both the Rust file and
+#   a generated C file, but callers can rely on the Rust file being first.
+template("rust_bindgen_generator") {
+  assert(defined(invoker.header),
+         "Must specify the C/C++ header file to make bindings for.")
+  _wrap_static_fns = defined(invoker.wrap_static_fns) && invoker.wrap_static_fns
+
+  if (!defined(invoker.cpp)) {
+    _cpp = false
+  } else {
+    _cpp = invoker.cpp
+  }
+
+  # This is only created if the bindgen has wrap_static_fns to true
+  _static_fn_target_name = target_name + "_static_fns"
+  if (defined(invoker.library_name)) {
+    _library_name = invoker.library_name
+  }
+
+  _bindgen_target_name = target_name
+  action(target_name) {
+    # bindgen relies on knowing the {{defines}} and {{include_dirs}} required
+    # to build the C++ headers which it's parsing. These are passed to the
+    # script's args and are populated using deps and configs.
+    forward_variables_from(invoker,
+                           TESTONLY_AND_VISIBILITY + [
+                                 "configs",
+                                 "deps",
+                                 "public_configs",
+                                 "public_deps",
+                                 "output_name",
+                               ])
+    sources = [ invoker.header ]
+    if (!defined(configs)) {
+      configs = []
+    }
+
+    # Get rid of the visibility, the user should not control visibility.
+    # We have to do it that way otherwise we might get "visibility not used"
+    # errors.
+    visibility = []
+
+    # This should only be allowed to be used by third_party code.
+    # First-party code should use `rust_bindgen` template.
+    # We're intentionally not allowing visibility to be forwarded
+    # to prevent people from doing visibility = ["*"] which will
+    # allow a rust_bindgen_generator to be used by 1P folks.
+    visibility = [ "//third_party/*" ]
+    if (defined(_library_name)) {
+      # Allow the copy target to be able to depend on the generated file.
+      visibility += [ ":${_library_name}_${_bindgen_target_name}_copy" ]
+    }
+
+    if (_wrap_static_fns) {
+      visibility += [ ":$_static_fn_target_name" ]
+    }
+
+    # Several important compiler flags come from default_compiler_configs
+    configs += default_compiler_configs
+
+    output_dir = "${target_gen_dir}/${target_name}"
+    if (!defined(output_name)) {
+      output_name = target_name
+    }
+
+    output_file = "$output_dir/${output_name}.rs"
+
+    script = rebase_path("//build/rust/run_bindgen.py")
+    inputs = [
+      _bindgen_path,
+      "//build/action_helpers.py",
+      "//build/gn_helpers.py",
+      "//build/rust/filter_clang_args.py",
+    ]
+
+    depfile = "$target_out_dir/${target_name}.d"
+    outputs = [ output_file ]
+
+    args = [
+      "--exe",
+      rebase_path(_bindgen_path, root_build_dir),
+      "--header",
+      rebase_path(invoker.header, root_build_dir),
+      "--depfile",
+      rebase_path(depfile, root_build_dir),
+      "--output",
+      rebase_path(output_file, root_build_dir),
+      "--libclang-path",
+      rebase_path(_libclang_path, root_build_dir),
+    ]
+
+    if (_wrap_static_fns) {
+      if (_cpp) {
+        out_gen_c = "$output_dir/${target_name}.cc"
+      } else {
+        out_gen_c = "$output_dir/${target_name}.c"
+      }
+      outputs += [ out_gen_c ]
+      args += [
+        "--wrap-static-fns",
+        rebase_path(out_gen_c, root_build_dir),
+      ]
+    }
+
+    if (is_linux) {
+      # Linux clang, and clang libs, use a shared libstdc++, which we must
+      # point to.
+      args += [
+        "--ld-library-path",
+        rebase_path(clang_base_path + "/lib", root_build_dir),
+      ]
+    }
+
+    args += [ "--bindgen-flags" ]
+    if (defined(invoker.bindgen_flags)) {
+      foreach(flag, invoker.bindgen_flags) {
+        args += [ flag ]
+      }
+    }
+    if (_cpp) {
+      args += [ "enable-cxx-namespaces" ]
+    }
+
+    # Everything below is passed through to libclang.
+    args += [ "--" ]
+
+    if (_cpp) {
+      args += [
+        "-x",
+        "c++",
+      ]
+    }
+
+    args += [
+      "{{defines}}",
+      "{{include_dirs}}",
+      "{{cflags}}",
+    ]
+    if (_cpp) {
+      args += [ "{{cflags_cc}}" ]
+    } else {
+      args += [ "{{cflags_c}}" ]
+    }
+
+    # libclang will run the system `clang` to find the "resource dir" which it
+    # places before the directory specified in `-isysroot`.
+    # https://github.com/llvm/llvm-project/blob/699e0bed4bfead826e210025bf33e5a1997c018b/clang/lib/Tooling/Tooling.cpp#L499-L510
+    #
+    # This means include files are pulled from the wrong place if the `clang`
+    # says the wrong thing. We point it to our clang's resource dir which will
+    # make it behave consistently with our other command line flags and allows
+    # system headers to be found.
+    clang_resource_dir =
+        rebase_path(clang_base_path + "/lib/clang/" + clang_version,
+                    root_build_dir)
+    args += [
+      "-resource-dir",
+      clang_resource_dir,
+    ]
+
+    # The `--sysroot` flag is not working as expected and gets ignored (we don't
+    # fully understand why, see b/328510249). But we add `-isystem` to point at
+    # the headers in the sysroot which are otherwise not found.
+    if (sysroot != "") {
+      if (is_win) {
+        args +=
+            [ "-I" + rebase_path(sysroot + "/usr/include/", root_build_dir) ]
+      } else {
+        args += [
+          "-isystem",
+          rebase_path(sysroot + "/usr/include/", root_build_dir),
+        ]
+      }
+    }
+
+    if (is_win) {
+      # On Windows we fall back to using system headers from a sysroot from
+      # depot_tools. This is negotiated by python scripts and the result is
+      # available in //build/toolchain/win/win_toolchain_data.gni. From there
+      # we get the `include_flags_imsvc` which point to the system headers.
+      if (host_cpu == "x86") {
+        win_toolchain_data = win_toolchain_data_x86
+      } else if (host_cpu == "x64") {
+        win_toolchain_data = win_toolchain_data_x64
+      } else if (host_cpu == "arm64") {
+        win_toolchain_data = win_toolchain_data_arm64
+      } else {
+        error("Unsupported host_cpu, add it to win_toolchain_data.gni")
+      }
+      args += win_toolchain_data.include_flags_imsvc_list
+    }
+
+    # Passes C comments through as rustdoc attributes.
+    if (is_win) {
+      args += [ "/clang:-fparse-all-comments" ]
+    } else {
+      args += [ "-fparse-all-comments" ]
+    }
+
+    # Default configs include "-fvisibility=hidden", and for some reason this
+    # causes bindgen not to emit function bindings. Override it.
+    if (!is_win) {
+      args += [ "-fvisibility=default" ]
+    }
+
+    if (is_win) {
+      # We pass MSVC style flags to clang on Windows, and libclang needs to be
+      # told explicitly to accept them.
+      args += [ "--driver-mode=cl" ]
+
+      # On Windows, libclang adds arguments that it then fails to understand.
+      # -fno-spell-checking
+      # -fallow-editor-placeholders
+      # These should not cause bindgen to fail.
+      args += [ "-Wno-unknown-argument" ]
+
+      # C++ mode makes bindgen pass /TP to libclang (to parse as C++) which
+      # then libclang says is unused.
+      args += [ "-Wno-unused-command-line-argument" ]
+
+      # Replace these two arguments with a version that clang-cl can parse.
+      args += [
+        "/clang:-fno-spell-checking",
+        "/clang:-fallow-editor-placeholders",
+      ]
+    }
+
+    if (is_cfi) {
+      # LLVM searches for a default CFI ignorelist at (exactly)
+      # $(cwd)/lib/clang/$(llvm_version)/share/cfi_ignorelist.txt
+      # Even if we provide a custom -fsanitize-ignorelist, the absence
+      # of this default file will cause a fatal error. clang finds
+      # it within third_party/llvm-build, but for bindgen our cwd
+      # is the $out_dir. We _could_ create this file at the right
+      # location within the outdir using a "copy" target, but as
+      # we don't actually generate code within bindgen, the easier
+      # option is to tell bindgen to ignore all CFI ignorelists.
+      args += [ "-fno-sanitize-ignorelist" ]
+    }
+    if (!defined(_library_name)) {
+      not_needed([ _bindgen_target_name ])
+    }
+  }
+
+  if (_wrap_static_fns) {
+    source_set(_static_fn_target_name) {
+      forward_variables_from(invoker,
+                             TESTONLY_AND_VISIBILITY + [
+                                   "deps",
+                                   "configs",
+                                   "public_configs",
+                                   "public_deps",
+                                 ])
+      bindgen_output = get_target_outputs(":${_bindgen_target_name}")
+      if (!defined(deps)) {
+        deps = []
+      }
+      deps += [ ":${_bindgen_target_name}" ]
+
+      if (_cpp) {
+        sources = filter_include(bindgen_output, [ "*.cc" ])
+      } else {
+        sources = filter_include(bindgen_output, [ "*.c" ])
+      }
+
+      # bindgen generates a C file whose include is relative to the directory it
+      # runs from.
+      include_dirs = [ root_build_dir ]
+
+      # Get rid of the visibility, the user should not control visibility.
+      # We have to do it that way otherwise we might get "visibility not used"
+      # errors.
+      visibility = []
+      if (defined(_library_name)) {
+        # Allow both the rust target declared through `rust_bindgen` to depend
+        # on this library.
+        visibility = [ ":${_library_name}" ]
+      } else {
+        # This should only be allowed to be used by third_party code.
+        # First-party code should use `rust_bindgen` template.
+        # We're intentionally not allowing visibility to be forwarded
+        # to prevent people from doing visibility = ["*"] which will
+        # allow a rust_bindgen_generator to be used by 1P folks.
+        visibility = [ "//third_party/*" ]
+      }
+    }
+  } else {
+    not_needed([ _static_fn_target_name ])
+  }
+}

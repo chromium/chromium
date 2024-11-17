@@ -30,8 +30,8 @@
 #include "components/autofill/core/common/credit_card_network_identifiers.h"
 #include "components/sync/protocol/entity_data.h"
 
-using autofill::data_util::TruncateUTF8;
-using sync_pb::AutofillWalletSpecifics;
+using ::autofill::data_util::TruncateUTF8;
+using ::sync_pb::AutofillWalletSpecifics;
 
 namespace autofill {
 namespace {
@@ -210,7 +210,7 @@ std::vector<CreditCardBenefit> CreditCardBenefitsFromCardSpecifics(
   // access to the terms and conditions.
   if (!card_specifics.has_product_terms_url() ||
       !base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCardBenefitsSync)) {
+          features::kAutofillEnableCardBenefitsSync)) {
     return benefits_from_specifics;
   }
 
@@ -306,10 +306,31 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
   result.set_product_description(base::UTF8ToUTF16(card.product_description()));
 
   if (card.has_product_terms_url() &&
-      base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableCardBenefitsSync)) {
+      base::FeatureList::IsEnabled(features::kAutofillEnableCardBenefitsSync)) {
     result.set_product_terms_url(GURL(card.product_terms_url()));
   }
+
+  CreditCard::CardInfoRetrievalEnrollmentState enrollment_state =
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified;
+  switch (card.card_info_retrieval_enrollment_state()) {
+    case sync_pb::WalletMaskedCreditCard::RETRIEVAL_ENROLLED:
+      enrollment_state =
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled;
+      break;
+    case sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE:
+      enrollment_state = CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndNotEligible;
+      break;
+    case sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNENROLLED_AND_ELIGIBLE:
+      enrollment_state = CreditCard::CardInfoRetrievalEnrollmentState::
+          kRetrievalUnenrolledAndEligible;
+      break;
+    case sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNSPECIFIED:
+      enrollment_state =
+          CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified;
+      break;
+  }
+  result.set_card_info_retrieval_enrollment_state(enrollment_state);
 
   return result;
 }
@@ -389,6 +410,8 @@ ConvertPaymentInstrumentPaymentRailToSyncPaymentRail(
       return sync_pb::PaymentInstrument_SupportedRail_PIX;
     case PaymentInstrument::PaymentRail::kPaymentHyperlink:
       return sync_pb::PaymentInstrument_SupportedRail_PAYMENT_HYPERLINK;
+    case PaymentInstrument::PaymentRail::kCardNumber:
+      return sync_pb::PaymentInstrument_SupportedRail_CARD_NUMBER;
     case PaymentInstrument::PaymentRail::kUnknown:
       return sync_pb::PaymentInstrument_SupportedRail_SUPPORTED_RAIL_UNKNOWN;
   }
@@ -509,6 +532,28 @@ void SetAutofillWalletSpecificsFromServerCard(
   if (!card.product_terms_url().is_empty()) {
     wallet_card->set_product_terms_url(card.product_terms_url().spec());
   }
+
+  sync_pb::WalletMaskedCreditCard::CardInfoRetrievalEnrollmentState
+      enrollment_state = sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNSPECIFIED;
+  switch (card.card_info_retrieval_enrollment_state()) {
+    case CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled:
+      enrollment_state = sync_pb::WalletMaskedCreditCard::RETRIEVAL_ENROLLED;
+      break;
+    case CreditCard::CardInfoRetrievalEnrollmentState::
+        kRetrievalUnenrolledAndNotEligible:
+      enrollment_state = sync_pb::WalletMaskedCreditCard::
+          RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE;
+      break;
+    case CreditCard::CardInfoRetrievalEnrollmentState::
+        kRetrievalUnenrolledAndEligible:
+      enrollment_state =
+          sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNENROLLED_AND_ELIGIBLE;
+      break;
+    case CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalUnspecified:
+      enrollment_state = sync_pb::WalletMaskedCreditCard::RETRIEVAL_UNSPECIFIED;
+      break;
+  }
+  wallet_card->set_card_info_retrieval_enrollment_state(enrollment_state);
 }
 
 void SetAutofillWalletSpecificsFromPaymentsCustomerData(
@@ -835,6 +880,13 @@ void SetAutofillWalletSpecificsFromBankAccount(
       ConvertBankAccountTypeToSyncBankAccountType(bank_account.account_type()));
 }
 
+void SetAutofillWalletSpecificsFromPaymentInstrument(
+    const sync_pb::PaymentInstrument& payment_instrument,
+    sync_pb::AutofillWalletSpecifics& wallet_specifics) {
+  wallet_specifics.set_type(AutofillWalletSpecifics::PAYMENT_INSTRUMENT);
+  *wallet_specifics.mutable_payment_instrument() = payment_instrument;
+}
+
 void CopyRelevantWalletMetadataAndCvc(
     const PaymentsAutofillTable& table,
     std::vector<CreditCard>* cards_from_server) {
@@ -929,6 +981,9 @@ void PopulateWalletTypesFromSyncData(
               autofill_specifics.payment_instrument());
         }
         break;
+      // TODO(crbug.com/374767814): Implement PopulateWalletTypesFromSyncData
+      // for Payment Instrument Creation Option.
+      case sync_pb::AutofillWalletSpecifics::PAYMENT_INSTRUMENT_CREATION_OPTION:
       // This entry is deprecated and not supported anymore.
       case sync_pb::AutofillWalletSpecifics::MASKED_IBAN:
       case sync_pb::AutofillWalletSpecifics::UNKNOWN:
@@ -989,6 +1044,27 @@ bool AreAnyItemsDifferent(const std::vector<Item>& old_data,
 
 template bool AreAnyItemsDifferent<>(const std::vector<CreditCardBenefit>&,
                                      const std::vector<CreditCardBenefit>&);
+
+template bool AreAnyItemsDifferent<>(const std::vector<std::string>&,
+                                     const std::vector<std::string>&);
+
+bool AreAnyItemsDifferent(
+    const std::vector<sync_pb::PaymentInstrument>& old_instruments,
+    const std::vector<sync_pb::PaymentInstrument>& new_instruments) {
+  if (old_instruments.size() != new_instruments.size()) {
+    return true;
+  }
+
+  std::vector<std::string> old_instrument_strings, new_instrument_strings;
+  for (const auto& instrument : old_instruments) {
+    old_instrument_strings.push_back(instrument.SerializeAsString());
+  }
+  for (const auto& instrument : new_instruments) {
+    new_instrument_strings.push_back(instrument.SerializeAsString());
+  }
+
+  return AreAnyItemsDifferent(old_instrument_strings, new_instrument_strings);
+}
 
 bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics) {
   // A valid offer has a non-empty id.
@@ -1076,6 +1152,12 @@ bool IsEwalletAccountSupported() {
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+bool IsGenericPaymentInstrumentSupported() {
+  // Currently only eWallet account is using generic payment instrument proto
+  // for read/write.
+  return IsEwalletAccountSupported();
 }
 
 }  // namespace autofill

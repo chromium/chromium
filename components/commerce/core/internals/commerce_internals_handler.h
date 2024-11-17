@@ -32,8 +32,6 @@ class CommerceInternalsHandler : public mojom::CommerceInternalsHandler {
   // commerce::mojom::CommerceInternalsHandler:
   void GetIsShoppingListEligible(
       GetIsShoppingListEligibleCallback callback) override;
-  void GetShoppingListEligibleDetails(
-      GetShoppingListEligibleDetailsCallback callback) override;
   void ResetPriceTrackingEmailPref() override;
   void GetProductInfoForUrl(const GURL& url,
                             GetProductInfoForUrlCallback callback) override;
@@ -41,6 +39,8 @@ class CommerceInternalsHandler : public mojom::CommerceInternalsHandler {
   void GetProductSpecificationsDetails(
       GetProductSpecificationsDetailsCallback callback) override;
   void ResetProductSpecifications() override;
+  void GetShoppingEligibilityDetails(
+      GetShoppingEligibilityDetailsCallback callback) override;
 
  private:
   mojo::Remote<mojom::CommerceInternalsPage> page_;
@@ -48,6 +48,7 @@ class CommerceInternalsHandler : public mojom::CommerceInternalsHandler {
 
   void DeleteAllProductSpecificationSets(
       const std::vector<ProductSpecificationsSet> sets);
+
   // The shopping service should always outlive this object since its lifecycle
   // is tied to the browser while this object is tied to a specific tab.
   raw_ptr<ShoppingService> shopping_service_;

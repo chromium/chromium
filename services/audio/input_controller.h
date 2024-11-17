@@ -35,7 +35,6 @@ class AecdumpRecordingManager;
 class AudioBus;
 class AudioInputStream;
 class AudioManager;
-class UserInputMonitor;
 struct AudioGlitchInfo;
 }  // namespace media
 
@@ -132,6 +131,10 @@ class InputController final : public StreamMonitor {
   };
 #endif
 
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  static constexpr int kProcessingFifoSize = 10;
+#endif
+
   // An event handler that receives events from the InputController. The
   // following methods are all called on the audio thread.
   class EventHandler {
@@ -158,7 +161,6 @@ class InputController final : public StreamMonitor {
     // Write certain amount of data from |data|.
     virtual void Write(const media::AudioBus* data,
                        double volume,
-                       bool key_pressed,
                        base::TimeTicks capture_time,
                        const media::AudioGlitchInfo& glitch_info) = 0;
 
@@ -180,12 +182,10 @@ class InputController final : public StreamMonitor {
 
   media::AudioInputStream* stream_for_testing() { return stream_; }
 
-  // |user_input_monitor| is used for typing detection and can be NULL.
   static std::unique_ptr<InputController> Create(
       media::AudioManager* audio_manager,
       EventHandler* event_handler,
       SyncWriter* sync_writer,
-      media::UserInputMonitor* user_input_monitor,
       DeviceOutputListener* device_output_listener,
       media::AecdumpRecordingManager* aecdump_recording_manager,
       media::mojom::AudioProcessingConfigPtr processing_config,
@@ -237,7 +237,6 @@ class InputController final : public StreamMonitor {
 
   InputController(EventHandler* event_handler,
                   SyncWriter* sync_writer,
-                  media::UserInputMonitor* user_input_monitor,
                   DeviceOutputListener* device_output_listener,
                   media::AecdumpRecordingManager* aecdump_recording_manager,
                   media::mojom::AudioProcessingConfigPtr processing_config,
@@ -266,10 +265,6 @@ class InputController final : public StreamMonitor {
 
   // Called by the stream with log messages.
   void LogMessage(const std::string& message);
-
-  // Called on the hw callback thread. Checks for keyboard input if
-  // |user_input_monitor_| is set otherwise returns false.
-  bool CheckForKeyboardInput();
 
   // Does power monitoring on supported platforms.
   // Called on the hw callback thread.
@@ -343,8 +338,6 @@ class InputController final : public StreamMonitor {
   // Manages the |audio_processor_handler_| subscription to output audio.
   std::unique_ptr<OutputTapper> output_tapper_;
 #endif
-
-  const raw_ptr<media::UserInputMonitor, DanglingUntriaged> user_input_monitor_;
 
 #if defined(AUDIO_POWER_MONITORING)
   // Whether the silence state and microphone levels should be checked and sent

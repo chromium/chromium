@@ -125,7 +125,8 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
   views::View* GetChapterListViewForTesting();
   views::Label* GetCurrentTimestampViewForTesting();
   views::Label* GetTotalDurationViewForTesting();
-  base::flat_map<int, ChapterItemView*> GetChaptersForTesting();
+  base::flat_map<int, raw_ptr<ChapterItemView, CtnExperimental>>
+  GetChaptersForTesting();
 #endif
 
  private:
@@ -240,7 +241,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIDetailedView
 
   // The current `ChapterItemView` for the chapter at the index of the chapter
   // list.
-  base::flat_map<int, ChapterItemView*> chapters_;
+  base::flat_map<int, raw_ptr<ChapterItemView, CtnExperimental>> chapters_;
 
   base::WeakPtrFactory<MediaItemUIDetailedView> weak_factory_{this};
 #endif

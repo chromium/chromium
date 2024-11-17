@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/settings/multi_identity/switch_profile_settings_coordinator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -16,7 +17,7 @@
   // View controller for the tabs settings.
   SwitchProfileSettingsTableViewController* _viewController;
   // The ProfileIOS instance passed to the initializer.
-  ProfileIOS* _profile;
+  raw_ptr<ProfileIOS> _profile;
   // Mediator for the switch profile settings.
   SwitchProfileSettingsMediator* _mediator;
 }

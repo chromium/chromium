@@ -105,14 +105,15 @@ void InitWalletCredentialSyncBridgeOnDBSequence(
 
 }  // namespace
 
-WebDataServiceWrapper::WebDataServiceWrapper() {}
+WebDataServiceWrapper::WebDataServiceWrapper() = default;
 
 WebDataServiceWrapper::WebDataServiceWrapper(
     const base::FilePath& context_path,
     const std::string& application_locale,
     const scoped_refptr<base::SequencedTaskRunner>& ui_task_runner,
     const ShowErrorCallback& show_error_callback,
-    os_crypt_async::OSCryptAsync* os_crypt) {
+    os_crypt_async::OSCryptAsync* os_crypt,
+    bool use_in_memory_autofill_account_database) {
   base::FilePath path = context_path.Append(kWebDataFilename);
   auto db_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
@@ -191,14 +192,11 @@ WebDataServiceWrapper::WebDataServiceWrapper(
                        db_task_runner, profile_autofill_web_data_));
   }
 
-  base::FilePath account_storage_path;
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  // On Android and iOS, the account storage is persisted on disk.
-  account_storage_path = context_path.Append(kAccountWebDataFilename);
-#else
-  // On other (desktop) platforms, the account storage is in-memory.
-  account_storage_path = base::FilePath(WebDatabase::kInMemoryPath);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  const base::FilePath account_storage_path =
+      use_in_memory_autofill_account_database
+          ? base::FilePath(WebDatabase::kInMemoryPath)
+          : context_path.Append(kAccountWebDataFilename);
+
   // Account database must run backend on same sequence as profile database. See
   // comment in ChromeSyncClient::CreateDataTypeControllers.
   account_database_ = base::MakeRefCounted<WebDatabaseService>(

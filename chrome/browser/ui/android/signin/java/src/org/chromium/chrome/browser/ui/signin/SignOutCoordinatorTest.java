@@ -39,7 +39,6 @@ import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
@@ -76,8 +75,6 @@ public class SignOutCoordinatorTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Rule public final JniMocker mocker = new JniMocker();
-
     @Mock private Profile mProfile;
     @Mock private FragmentManager mFragmentManager;
     @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
@@ -103,8 +100,8 @@ public class SignOutCoordinatorTest {
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testLegacyDialog_replaceSyncPromosFeatureDisabled() {
         setUpMocks();
-        mocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
-        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)).thenReturn(true);
 
@@ -119,8 +116,8 @@ public class SignOutCoordinatorTest {
     public void testLegacyDialogWithRevokeSyncConsentReason_replaceSyncPromosFeatureEnabled() {
         setUpMocks();
         doReturn(true).when(mIdentityManagerMock).hasPrimaryAccount(ConsentLevel.SYNC);
-        mocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
-        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
         when(mProfile.isChild()).thenReturn(true);
         when(mPrefService.getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)).thenReturn(true);
@@ -137,8 +134,8 @@ public class SignOutCoordinatorTest {
     @MediumTest
     public void testLegacyDialog_hasSyncingAccount() {
         setUpMocks();
-        mocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
-        mocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNatives);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNatives);
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getBoolean(Pref.ALLOW_DELETING_BROWSER_HISTORY)).thenReturn(true);
         doReturn(true).when(mIdentityManagerMock).hasPrimaryAccount(ConsentLevel.SYNC);
@@ -185,6 +182,42 @@ public class SignOutCoordinatorTest {
                             mActivityTestRule
                                     .getActivity()
                                     .getString(R.string.sign_out_snackbar_message));
+                });
+        verify(mOnSignOut).run();
+    }
+
+    /**
+     * Test Snackbar is suppressed when the user signout from the settings panel.
+     *
+     * <p>This is a regression test for crbug.com/361747614.
+     */
+    @Test
+    @MediumTest
+    public void testSnackbarSuppressedByParameter() {
+        setUpMocks();
+        @SignoutReason int signOutReason = SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS;
+        doReturn(true).when(mSigninManagerMock).isSignOutAllowed();
+        doAnswer(
+                        args -> {
+                            args.getArgument(0, Runnable.class).run();
+                            return null;
+                        })
+                .when(mSigninManagerMock)
+                .runAfterOperationInProgress(any(Runnable.class));
+        doAnswer(
+                        args -> {
+                            SigninManager.SignOutCallback signOutCallback = args.getArgument(1);
+                            signOutCallback.signOutComplete();
+                            return null;
+                        })
+                .when(mSigninManagerMock)
+                .signOut(eq(signOutReason), any(SigninManager.SignOutCallback.class), eq(false));
+
+        startSignOutFlow(signOutReason, mOnSignOut, false, /* suppressSnackbar= */ true);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Assert.assertFalse(mSnackbarManager.isShowing());
                 });
         verify(mOnSignOut).run();
     }
@@ -369,7 +402,10 @@ public class SignOutCoordinatorTest {
     }
 
     private void startSignOutFlow(
-            @SignoutReason int signoutReason, Runnable onSignOut, boolean showConfirmDialog) {
+            @SignoutReason int signoutReason,
+            Runnable onSignOut,
+            boolean showConfirmDialog,
+            boolean suppressSnackbar) {
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
                         SignOutCoordinator.startSignOutFlow(
@@ -380,6 +416,12 @@ public class SignOutCoordinatorTest {
                                 mSnackbarManager,
                                 signoutReason,
                                 showConfirmDialog,
-                                onSignOut));
+                                onSignOut,
+                                suppressSnackbar));
+    }
+
+    private void startSignOutFlow(
+            @SignoutReason int signoutReason, Runnable onSignOut, boolean showConfirmDialog) {
+        startSignOutFlow(signoutReason, onSignOut, showConfirmDialog, false);
     }
 }

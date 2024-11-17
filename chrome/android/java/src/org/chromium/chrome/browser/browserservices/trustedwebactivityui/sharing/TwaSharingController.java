@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
 import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder.ShareRequestMethod;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
@@ -38,22 +39,15 @@ import javax.inject.Inject;
 public class TwaSharingController {
     private final CustomTabActivityTabProvider mTabProvider;
     private final CustomTabActivityNavigationController mNavigationController;
-    private final WebApkPostShareTargetNavigator mPostNavigator;
     private final Verifier mVerifierDelegate;
-    private final TrustedWebActivityUmaRecorder mUmaRecorder;
 
     @Inject
     public TwaSharingController(
-            CustomTabActivityTabProvider tabProvider,
             CustomTabActivityNavigationController navigationController,
-            WebApkPostShareTargetNavigator postNavigator,
-            Verifier verifierDelegate,
-            TrustedWebActivityUmaRecorder umaRecorder) {
-        mTabProvider = tabProvider;
+            BaseCustomTabActivity activity) {
+        mTabProvider = activity.getCustomTabActivityTabProvider();
         mNavigationController = navigationController;
-        mPostNavigator = postNavigator;
-        mVerifierDelegate = verifierDelegate;
-        mUmaRecorder = umaRecorder;
+        mVerifierDelegate = activity.getVerifier();
     }
 
     /**
@@ -87,7 +81,7 @@ public class TwaSharingController {
                                     if (shareTarget.isShareMethodPost()) {
                                         boolean success = sendPost(shareData, shareTarget);
                                         if (success) {
-                                            mUmaRecorder.recordShareTargetRequest(
+                                            TrustedWebActivityUmaRecorder.recordShareTargetRequest(
                                                     ShareRequestMethod.POST);
                                         }
                                         return success;
@@ -98,7 +92,8 @@ public class TwaSharingController {
                                                     computeStartUrlForGETShareTarget(
                                                             shareData, shareTarget)),
                                             intent);
-                                    mUmaRecorder.recordShareTargetRequest(ShareRequestMethod.GET);
+                                    TrustedWebActivityUmaRecorder.recordShareTargetRequest(
+                                            ShareRequestMethod.GET);
                                     return true;
                                 });
     }
@@ -140,7 +135,7 @@ public class TwaSharingController {
             assert false : "Null tab when sharing";
             return false;
         }
-        return mPostNavigator.navigateIfPostShareTarget(
+        return WebApkPostShareTargetNavigator.navigateIfPostShareTarget(
                 target.getAction(), target, shareData, tab.getWebContents());
     }
 

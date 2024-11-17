@@ -26,7 +26,7 @@
 
 namespace {
 
-class TestCertificateSelector : public chrome::CertificateSelector {
+class TestCertificateSelector : public CertificateSelector {
  public:
   TestCertificateSelector(net::ClientCertIdentityList certificates,
                           content::WebContents* web_contents)
@@ -61,7 +61,7 @@ class TestCertificateSelector : public chrome::CertificateSelector {
     canceled_ = canceled;
   }
 
-  using chrome::CertificateSelector::table_model_for_testing;
+  using CertificateSelector::table_model_for_testing;
 
   void set_on_destroy(base::OnceClosure on_destroy) {
     on_destroy_ = std::move(on_destroy);

@@ -21,7 +21,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import type {NearbyContactVisibilityElement} from './nearby_contact_visibility.js';
-import {getOnboardingEntryPoint, NearbyShareOnboardingEntryPoint, NearbyShareOnboardingFinalState, processOnboardingCancelledMetrics, processOnboardingCompleteMetrics, processOnePageOnboardingCancelledMetrics, processOnePageOnboardingCompleteMetrics, processOnePageOnboardingManageContactsMetrics, processOnePageOnboardingVisibilityPageShownMetrics} from './nearby_metrics_logger.js';
+import {getOnboardingEntryPoint, NearbyShareOnboardingEntryPoint, NearbyShareOnboardingFinalState, processOnePageOnboardingCancelledMetrics, processOnePageOnboardingCompleteMetrics, processOnePageOnboardingManageContactsMetrics, processOnePageOnboardingVisibilityPageShownMetrics} from './nearby_metrics_logger.js';
 import type {NearbySettings} from './nearby_share_settings_mixin.js';
 import {getTemplate} from './nearby_visibility_page.html.js';
 
@@ -78,24 +78,13 @@ export class NearbyVisibilityPageElement extends
     this.addEventListener('view-enter-start', this.onVisibilityViewEnterStart_);
   }
 
-  /**
-   * Determines if the feature flag for One-page onboarding workflow is enabled.
-   */
-  private isOnePageOnboardingEnabled_(): boolean {
-    return loadTimeData.getBoolean('isOnePageOnboardingEnabled');
-  }
-
   private onNext_(): void {
     this.$.contactVisibility.saveVisibilityAndAllowedContacts();
     this.set('settings.isOnboardingComplete', true);
     this.set('settings.enabled', true);
-    if (this.isOnePageOnboardingEnabled_()) {
-      processOnePageOnboardingCompleteMetrics(
-          this.entryPoint_, NearbyShareOnboardingFinalState.VISIBILITY_PAGE,
-          this.$.contactVisibility.getSelectedVisibility());
-    } else {
-      processOnboardingCompleteMetrics(this.entryPoint_);
-    }
+    processOnePageOnboardingCompleteMetrics(
+        this.entryPoint_, NearbyShareOnboardingFinalState.VISIBILITY_PAGE,
+        this.$.contactVisibility.getSelectedVisibility());
 
     const onboardingCompleteEvent = new CustomEvent('onboarding-complete', {
       bubbles: true,
@@ -105,13 +94,8 @@ export class NearbyVisibilityPageElement extends
   }
 
   private onClose_(): void {
-    if (this.isOnePageOnboardingEnabled_()) {
-      processOnePageOnboardingCancelledMetrics(
-          this.entryPoint_, NearbyShareOnboardingFinalState.VISIBILITY_PAGE);
-    } else {
-      processOnboardingCancelledMetrics(
-          this.entryPoint_, NearbyShareOnboardingFinalState.VISIBILITY_PAGE);
-    }
+    processOnePageOnboardingCancelledMetrics(
+        this.entryPoint_, NearbyShareOnboardingFinalState.VISIBILITY_PAGE);
 
     const onboardingCancelledEvent = new CustomEvent('onboarding-cancelled', {
       bubbles: true,
@@ -121,17 +105,13 @@ export class NearbyVisibilityPageElement extends
   }
 
   private onVisibilityViewEnterStart_(): void {
-    if (this.isOnePageOnboardingEnabled_()) {
-      processOnePageOnboardingVisibilityPageShownMetrics();
-    }
+    processOnePageOnboardingVisibilityPageShownMetrics();
     const url: URL = new URL(document.URL);
     this.entryPoint_ = getOnboardingEntryPoint(url);
   }
 
   private onManageContacts_(): void {
-    if (this.isOnePageOnboardingEnabled_()) {
-      processOnePageOnboardingManageContactsMetrics();
-    }
+    processOnePageOnboardingManageContactsMetrics();
     window.open(this.i18n('nearbyShareManageContactsUrl'), '_blank');
   }
 }

@@ -308,4 +308,19 @@ TEST_P(PrerenderManagerBasicRequirementTest, NavigateAway) {
   }
 }
 
+// Test that a Searched related url is ignored by the prerender BookmarkBar
+// trigger.
+TEST_F(PrerenderManagerTest, DisallowSearchUrlBookmarkBar) {
+  GURL prerendering_url = GetSearchSuggestionUrl("prer", "prerender");
+  ASSERT_FALSE(prerender_manager()->StartPrerenderBookmark(prerendering_url));
+}
+
+// Test that a Searched related url is ignored by the prerender NewTabPage
+// trigger.
+TEST_F(PrerenderManagerTest, DisallowSearchUrlNewTabPage) {
+  GURL prerendering_url = GetSearchSuggestionUrl("prer", "prerender");
+  ASSERT_FALSE(prerender_manager()->StartPrerenderNewTabPage(
+      prerendering_url, chrome_preloading_predictor::kTouchOnNewTabPage));
+}
+
 }  // namespace

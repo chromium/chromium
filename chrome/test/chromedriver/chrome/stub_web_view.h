@@ -18,6 +18,7 @@ class StubWebView : public WebView {
   // Overridden from WebView:
   bool IsServiceWorker() const override;
   std::string GetId() override;
+  std::string GetSessionId() override;
   bool WasCrashed() override;
   Status HandleEventsUntil(const ConditionalFunc& conditional_func,
                            const Timeout& timeout) override;
@@ -65,16 +66,16 @@ class StubWebView : public WebView {
                             std::string* out_frame) override;
   Status DispatchMouseEvents(const std::vector<MouseEvent>& events,
                              const std::string& frame,
-                             bool async_dispatch_events = false) override;
+                             bool async_dispatch_events) override;
   Status DispatchTouchEvent(const TouchEvent& event,
-                            bool async_dispatch_events = false) override;
+                            bool async_dispatch_events) override;
   Status DispatchTouchEvents(const std::vector<TouchEvent>& events,
-                             bool async_dispatch_events = false) override;
+                             bool async_dispatch_events) override;
   Status DispatchTouchEventWithMultiPoints(
       const std::vector<TouchEvent>& events,
-      bool async_dispatch_events = false) override;
+      bool async_dispatch_events) override;
   Status DispatchKeyEvents(const std::vector<KeyEvent>& events,
-                           bool async_dispatch_events = false) override;
+                           bool async_dispatch_events) override;
   Status GetCookies(base::Value* cookies,
                     const std::string& current_page_url) override;
   Status DeleteCookie(const std::string& name,
@@ -134,6 +135,7 @@ class StubWebView : public WebView {
                                  const std::string& function,
                                  const base::Value::List& args,
                                  const base::TimeDelta& timeout,
+                                 const CallFunctionOptions& options,
                                  std::unique_ptr<base::Value>* result) override;
 
   bool IsDialogOpen() const override;
@@ -146,6 +148,7 @@ class StubWebView : public WebView {
 
  private:
   std::string id_;
+  std::string session_id_;
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_STUB_WEB_VIEW_H_

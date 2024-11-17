@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.compositor.layouts.eventfilter.OverlayPanelEv
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -69,6 +70,7 @@ public class OverlayPanelEventFilterTest {
     @Mock private Tab mTab;
     @Mock private OverlayPanelContentDelegate mOverlayPanelContentDelegate;
     @Mock private OverlayPanelContentProgressObserver mOverlayPanelContentProgressObserver;
+    @Mock private InsetObserver mInsetObserver;
 
     private float mTouchSlopDp;
     private float mDpToPx;
@@ -156,7 +158,8 @@ public class OverlayPanelEventFilterTest {
                     profile,
                     compositorViewHolder,
                     MOCK_TOOLBAR_HEIGHT,
-                    () -> tab);
+                    () -> tab,
+                    /* desktopWindowStateManager= */ null);
         }
 
         @Override
@@ -273,7 +276,9 @@ public class OverlayPanelEventFilterTest {
                             new ActivityWindowAndroid(
                                     mActivity,
                                     /* listenToActivityState= */ true,
-                                    IntentRequestTracker.createFromActivity(mActivity));
+                                    IntentRequestTracker.createFromActivity(mActivity),
+                                    mInsetObserver,
+                                    /* trackOcclusion= */ false);
 
                     mPanel =
                             new MockOverlayPanel(

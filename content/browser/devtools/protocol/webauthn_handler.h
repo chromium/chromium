@@ -73,6 +73,11 @@ class WebAuthnHandler : public DevToolsDomainHandler,
   void OnCredentialCreated(
       VirtualAuthenticator* authenticator,
       const device::VirtualFidoDevice::Credential& credential) override;
+  void OnCredentialDeleted(VirtualAuthenticator* authenticator,
+                           base::span<const uint8_t> credential_id) override;
+  void OnCredentialUpdated(
+      VirtualAuthenticator* authenticator,
+      const device::VirtualFidoDevice::Credential& credential) override;
   void OnAssertion(
       VirtualAuthenticator* authenticator,
       const device::VirtualFidoDevice::Credential& credential) override;

@@ -603,6 +603,34 @@ enum class PasswordManagementBubbleInteractions {
   kMaxValue = kManagePasswordButtonClicked,
 };
 
+// Represents different causes for showing the password access loss warning.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Always keep this enum in sync with the
+// corresponding PasswordAccessLossWarningTriggers in enums.xml.
+enum class PasswordAccessLossWarningTriggers {
+  kChromeStartup = 0,
+  kPasswordSaveUpdateMessage = 1,
+  kTouchToFill = 2,
+  kKeyboardAcessorySheet = 3,
+  kKeyboardAcessoryBar = 4,
+  kAllPasswords = 5,
+  kMaxValue = kAllPasswords,
+};
+
+// Represents different actions that the user can take on the password access
+// loss warning.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. Always keep this enum in sync with the
+// corresponding PasswordAccessLossWarningUserActions in enums.xml.
+enum class PasswordAccessLossWarningUserActions {
+  kMainAction = 0,
+  kHelpCenter = 1,
+  kDismissed = 2,
+  kMaxValue = kDismissed,
+};
+
 // Represents different causes for showing the password migration warning.
 //
 // These values are persisted to logs. Entries should not be renumbered and
@@ -700,6 +728,20 @@ enum class LocalPwdMigrationProgressState {
   kMaxValue = kFinished,
 };
 
+// Enum specifying the outcome of an attempt to access credentials stored in a
+// SharedPref. These values are persisted to logs. Entries should not be
+// renumbered and numeric values should never be reused. Keep in sync with
+// `SharedPrefCredentialsAccessOutcome` in passwords' enums.xml.
+enum class SharedPrefCredentialsAccessOutcome {
+  kNoCredentials = 0,
+  kParseError = 1,
+  kBadType = 2,
+  kEmptyCredentials = 3,
+  kLoginMatch = 4,
+  kLoginMismatch = 5,
+  kMaxValue = kLoginMismatch,
+};
+
 // Enum that describes different outcomes on the attempt of triggering the
 // Touch-To-Fill bottom sheet for password generation.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -719,12 +761,12 @@ enum class TouchToFillPasswordGenerationTriggerOutcome {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class PasswordManagerCredentialRemovalReason {
-  // TODO(crbug.com/342519805): Add reasons.
   kSettings = 0,                        // Stored as (1<<0) in the bit vector.
   kClearBrowsingData = 1,               // Stored as (1<<1) in the bit vector.
   kSync = 2,                            // Stored as (1<<2) in the bit vector.
   kDeletingUndecryptablePasswords = 3,  // Stored as (1<<3) in the bit vector.
-  kMaxValue = kDeletingUndecryptablePasswords,
+  kDeleteAllPasswordManagerData = 4,    // Stored as (1<<4) in the bit vector.
+  kMaxValue = kDeleteAllPasswordManagerData,
 };
 
 std::string GetPasswordAccountStorageUsageLevelHistogramSuffix(
@@ -864,11 +906,14 @@ void LogPasswordSettingsReauthResult(device_reauth::ReauthResult result);
 void LogDeleteUndecryptableLoginsReturnValue(
     DeleteCorruptedPasswordsResult result);
 
-// Log metrics about a newly saved password (e.g. whether a saved password was
-// generated).
-void LogNewlySavedPasswordMetrics(
+// Log metrics about a newly saved credential (e.g. whether it had a username).
+void LogNewlySavedPasswordMetrics(bool is_generated_password,
+                                  bool is_username_empty,
+                                  ukm::SourceId ukm_source_id);
+
+// Log whether a saved password value was generated.
+void LogIfSavedPasswordWasGenerated(
     bool is_generated_password,
-    bool is_username_empty,
     password_manager::features_util::PasswordAccountStorageUsageLevel
         account_storage_usage_level,
     ukm::SourceId ukm_source_id);
@@ -959,6 +1004,8 @@ base::OnceCallback<R(Args...)> TimeCallbackMediumTimes(
 void LogTouchToFillPasswordGenerationTriggerOutcome(
     TouchToFillPasswordGenerationTriggerOutcome outcome);
 void LogFormSubmissionsVsSavePromptsHistogram(SaveFlowStep save_flow_step);
+void LogSharedPrefCredentialsAccessOutcome(
+    SharedPrefCredentialsAccessOutcome outcome);
 #endif
 
 // Record that password deletion from Chrome settings happened.

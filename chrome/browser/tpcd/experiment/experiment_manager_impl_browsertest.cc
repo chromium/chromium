@@ -78,11 +78,10 @@ class ExperimentManagerImplBrowserTest : public InProcessBrowserTest {
   }
 
   uint32_t GetSyntheticTrialGroupNameHash() {
-    std::vector<variations::ActiveGroupId> synthetic_trials;
-    g_browser_process->metrics_service()
-        ->GetSyntheticTrialRegistry()
-        ->GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(),
-                                           &synthetic_trials);
+    std::vector<variations::ActiveGroupId> synthetic_trials =
+        g_browser_process->metrics_service()
+            ->GetSyntheticTrialRegistry()
+            ->GetCurrentSyntheticFieldTrialsForTest();
 
     uint32_t group_name_hash = 0u;
     for (const auto& trial : synthetic_trials) {

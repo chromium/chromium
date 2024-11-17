@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.components.browser_ui.widget.scrim.ScrimProperties;
 import org.chromium.ui.base.LocalizationUtils;
@@ -142,6 +143,7 @@ public class ContextualSearchPanel extends OverlayPanel {
      * @param canPromoteToNewTab Whether the panel can be promoted to a new tab.
      * @param currentTabSupplier Supplies the current activity tab.
      * @param edgeToEdgeControllerSupplier Controller for edge-to-edge drawing.
+     * @param desktopWindowStateManager Manager to get desktop window and app header state.
      */
     public ContextualSearchPanel(
             @NonNull Context context,
@@ -155,7 +157,8 @@ public class ContextualSearchPanel extends OverlayPanel {
             @NonNull ToolbarManager toolbarManager,
             boolean canPromoteToNewTab,
             @NonNull Supplier<Tab> currentTabSupplier,
-            @NonNull Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier) {
+            @NonNull Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         super(
                 context,
                 layoutManager,
@@ -165,7 +168,8 @@ public class ContextualSearchPanel extends OverlayPanel {
                 profile,
                 compositorViewHolder,
                 toolbarHeightDp,
-                currentTabSupplier);
+                currentTabSupplier,
+                desktopWindowStateManager);
         mSceneLayer = createNewContextualSearchSceneLayer();
         mPanelMetrics = new ContextualSearchPanelMetrics();
         mToolbarManager = toolbarManager;
@@ -453,7 +457,7 @@ public class ContextualSearchPanel extends OverlayPanel {
     @Override
     protected float getMaximizedHeight() {
         // Max height does not cover the entire content screen.
-        return getTabHeight() * MAXIMIZED_HEIGHT_FRACTION;
+        return super.getMaximizedHeight() * MAXIMIZED_HEIGHT_FRACTION;
     }
 
     @Override
@@ -584,11 +588,6 @@ public class ContextualSearchPanel extends OverlayPanel {
         if (getPanelState() == PanelState.CLOSED || getPanelState() == PanelState.PEEKED) {
             mHasContentBeenTouched = false;
         }
-
-        if ((getPanelState() == PanelState.UNDEFINED || getPanelState() == PanelState.CLOSED)
-                && reason == StateChangeReason.TEXT_SELECT_TAP) {
-            mPanelMetrics.onPanelTriggeredFromTap();
-        }
     }
 
     @Override
@@ -641,7 +640,6 @@ public class ContextualSearchPanel extends OverlayPanel {
     public void setSearchTerm(String searchTerm, @Nullable String pronunciation) {
         getImageControl().hideCustomImage(true);
         getSearchBarControl().setSearchTerm(searchTerm, pronunciation);
-        mPanelMetrics.onSearchRequestStarted();
         // Make sure the new Search Term draws.
         requestUpdate();
     }
@@ -655,7 +653,6 @@ public class ContextualSearchPanel extends OverlayPanel {
     public void setContextDetails(String selection, String end) {
         getImageControl().hideCustomImage(true);
         getSearchBarControl().setContextDetails(selection, end);
-        mPanelMetrics.onSearchRequestStarted();
         // Make sure the new Context draws.
         requestUpdate();
     }
@@ -674,9 +671,7 @@ public class ContextualSearchPanel extends OverlayPanel {
     public void ensureCaption() {
         if (getSearchBarControl().hasCaption()) return;
         getSearchBarControl()
-                .setCaption(
-                        mContext.getResources()
-                                .getString(R.string.contextual_search_default_caption));
+                .setCaption(mContext.getString(R.string.contextual_search_default_caption));
     }
 
     /** Hides the caption. */
@@ -774,11 +769,6 @@ public class ContextualSearchPanel extends OverlayPanel {
      */
     public ContextualSearchPanelMetrics getPanelMetrics() {
         return mPanelMetrics;
-    }
-
-    /** Sets that the contextual search involved the promo. */
-    public void setDidSearchInvolvePromo() {
-        mPanelMetrics.setDidSearchInvolvePromo();
     }
 
     // ============================================================================================

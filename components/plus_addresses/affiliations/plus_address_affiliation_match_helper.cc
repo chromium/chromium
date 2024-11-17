@@ -91,7 +91,6 @@ void PlusAddressAffiliationMatchHelper::RequestGroupInfo(
   // as subdomains.
   GURL::Replacements repl;
   repl.SetHostStr(domain);
-  url.ReplaceComponents(repl);
   FacetURI requested_facet =
       FacetURI::FromPotentiallyInvalidSpec(url.ReplaceComponents(repl).spec());
   affiliation_service_->GetGroupingInfo(

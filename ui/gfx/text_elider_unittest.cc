@@ -19,7 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/font_list.h"
@@ -884,7 +883,7 @@ TEST(TextEliderTest, ElideRectangleTextCheckLineWidth) {
   EXPECT_LE(GetStringWidthF(lines[1], font_list), kAvailableWidth);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // This test was created specifically to test a message from crbug.com/415213.
 // It tests that width of concatenation of words equals sum of widths of the
 // words.
@@ -899,7 +898,7 @@ TEST(TextEliderTest, ElideRectangleTextCheckConcatWidthEqualsSumOfWidths) {
 #undef WIDTH
   SetFontRenderParamsDeviceScaleFactor(1.0f);
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST(TextEliderTest, ElideRectangleString) {
   struct Case {

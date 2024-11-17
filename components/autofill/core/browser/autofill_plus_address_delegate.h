@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/password_form_classification.h"
@@ -21,6 +22,7 @@ class Origin;
 
 namespace autofill {
 
+class FormData;
 struct Suggestion;
 
 // The interface for communication from //components/autofill to
@@ -35,9 +37,6 @@ struct Suggestion;
 // `AutofillClient`.
 class AutofillPlusAddressDelegate {
  public:
-  // Callback to return the list of plus address suggestions.
-  using GetSuggestionsCallback =
-      base::OnceCallback<void(std::vector<Suggestion>)>;
   // Describes interactions with Autofill suggestions for plus addresses.
   // The values are persisted to metrics, do not change them.
   enum class SuggestionEvent {
@@ -68,18 +67,36 @@ class AutofillPlusAddressDelegate {
   virtual bool IsPlusAddress(
       const std::string& potential_plus_address) const = 0;
 
-  // Returns the suggestions to show for the given origin and
-  // `focused_field_value`. If `trigger_source` indicates that this is a manual
-  // fallback (e.g. the suggestions were triggered from the context menu on
-  // Desktop), then `focused_field_value` is ignored. Otherwise, only
-  // suggestions whose prefix matches `focused_field_value` are shown.
-  virtual void GetSuggestions(
-      const url::Origin& last_committed_primary_main_frame_origin,
+  // Returns whether plus address filling is supported for the given `origin`.
+  // This is true iff:
+  // - the `PlusAddressService` is enabled and
+  // - `origin` is not a blocked origin.
+  virtual bool IsPlusAddressFillingEnabled(const url::Origin& origin) const = 0;
+
+  // Returns whether plus address full form filling is supported.
+  virtual bool IsPlusAddressFullFormFillingEnabled() const = 0;
+
+  // Returns a list of plus addresses for the `origin` and all affiliated
+  // domains.
+  virtual void GetAffiliatedPlusAddresses(
+      const url::Origin& origin,
+      base::OnceCallback<void(std::vector<std::string>)> callback) = 0;
+
+  // Returns the suggestions to show for the given list of
+  // `plus_addresses`, `origin` and the `focused_field_id` in `focused_form`.
+  // If `trigger_source` indicates that this is a manual fallback (e.g. the
+  // suggestions were triggered from the context menu on Desktop), then
+  // information about the focused form and field is ignored. Otherwise, only
+  // suggestions whose prefix matches the value in the focused field are shown.
+  virtual std::vector<Suggestion> GetSuggestionsFromPlusAddresses(
+      const std::vector<std::string>& plus_addresses,
+      const url::Origin& origin,
       bool is_off_the_record,
+      const FormData& focused_form,
+      const base::flat_map<FieldGlobalId, FieldTypeGroup>& form_field_types,
       const PasswordFormClassification& focused_form_classification,
-      const FormFieldData& focused_field,
-      AutofillSuggestionTriggerSource trigger_source,
-      GetSuggestionsCallback callback) = 0;
+      const FieldGlobalId& focused_field_id,
+      AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Returns the "Manage plus addresses..." suggestion which redirects the user
   // to the plus address management page.
@@ -120,6 +137,18 @@ class AutofillPlusAddressDelegate {
       PasswordFormClassification::Type form_type,
       SuggestionType suggestion_type) = 0;
 
+  // Called when a plus address was filled into a web input field. HaTS survey
+  // is shown to the user if the plus address was filled using the manual
+  // fallback. Otherwise, if `did_show_email_suggestion` is `true`, a HaTS
+  // survey is launched to ask the user why did they choose a plus address over
+  // an email suggestion.
+  virtual void DidFillPlusAddress(bool did_show_email_suggestion,
+                                  bool is_manual_fallback) = 0;
+
+  // Called when the user accepts an email suggestion given that a plus address
+  // suggestion was shown as well.
+  virtual void DidChooseEmailOverPlusAddress() = 0;
+
   using UpdateSuggestionsCallback =
       base::OnceCallback<void(std::vector<Suggestion>,
                               AutofillSuggestionTriggerSource)>;
@@ -157,6 +186,7 @@ class AutofillPlusAddressDelegate {
       const url::Origin& primary_main_frame_origin,
       base::span<const Suggestion> current_suggestions,
       size_t current_suggestion_index,
+      bool is_manual_fallback,
       UpdateSuggestionsCallback update_suggestions_callback,
       HideSuggestionsCallback hide_suggestions_callback,
       PlusAddressCallback fill_field_callback,

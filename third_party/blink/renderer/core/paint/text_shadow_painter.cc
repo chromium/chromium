@@ -57,8 +57,7 @@ sk_sp<PaintFilter> MakeTextShadowFilter(const TextPaintStyle& text_style) {
   // Reverse to get the proper paint order (last shadow painted first).
   base::span<sk_sp<PaintFilter>> used_filters(shadow_filters.first(count));
   base::ranges::reverse(used_filters);
-  return sk_make_sp<MergePaintFilter>(
-      used_filters.data(), base::saturated_cast<int>(used_filters.size()));
+  return sk_make_sp<MergePaintFilter>(used_filters);
 }
 
 }  // namespace

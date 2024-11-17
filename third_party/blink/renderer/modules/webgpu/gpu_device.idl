@@ -10,6 +10,7 @@
 ] interface GPUDevice : EventTarget {
     [SameObject] readonly attribute GPUSupportedFeatures features;
     [SameObject] readonly attribute GPUSupportedLimits limits;
+    [RuntimeEnabled=WebGPUDeviceAdapterInfo, SameObject] readonly attribute GPUAdapterInfo adapterInfo;
 
     [CallWith=ScriptState] readonly attribute Promise<GPUDeviceLostInfo> lost;
 

@@ -45,6 +45,24 @@ class FingerprintingProtectionFilterBrowserTest
   static constexpr const char kTestFrameSetPath[] =
       "/subresource_filter/frame_set.html";
 
+  // PageLoad histogram names.
+  static constexpr const char kSubresourceLoadsTotalForPage[] =
+      "FingerprintingProtection.PageLoad.NumSubresourceLoads.Total";
+  static constexpr const char kSubresourceLoadsEvaluatedForPage[] =
+      "FingerprintingProtection.PageLoad.NumSubresourceLoads.Evaluated";
+  static constexpr const char kSubresourceLoadsMatchedRulesForPage[] =
+      "FingerprintingProtection.PageLoad.NumSubresourceLoads.MatchedRules";
+  static constexpr const char kSubresourceLoadsDisallowedForPage[] =
+      "FingerprintingProtection.PageLoad.NumSubresourceLoads.Disallowed";
+
+  // Names of the performance measurement histograms.
+  static constexpr const char kEvaluationTotalWallDurationForPage[] =
+      "FingerprintingProtection.PageLoad.SubresourceEvaluation."
+      "TotalWallDuration";
+  static constexpr const char kEvaluationTotalCPUDurationForPage[] =
+      "FingerprintingProtection.PageLoad.SubresourceEvaluation."
+      "TotalCPUDuration";
+
  protected:
 
   void SetUpOnMainThread() override;

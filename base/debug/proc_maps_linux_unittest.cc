@@ -11,16 +11,44 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <sys/utsname.h>
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
+#include "base/system/sys_info.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace debug {
+namespace base::debug {
+
+namespace {
+
+// SmapsRollup was added in Linux 4.14.
+bool IsSmapsRollupSupported() {
+  struct utsname info;
+  if (uname(&info) < 0) {
+    NOTREACHED();
+  }
+
+  int major, minor, patch;
+  if (sscanf(info.release, "%d.%d.%d", &major, &minor, &patch) < 3) {
+    NOTREACHED();
+  }
+
+  if (major > 4) {
+    return true;
+  }
+
+  if (major < 4 || minor < 14) {
+    return false;
+  }
+
+  return true;
+}
+
+}  // namespace
 
 TEST(ProcMapsTest, Empty) {
   std::vector<MappedMemoryRegion> regions;
@@ -330,5 +358,71 @@ TEST(ProcMapsTest, ParseProcMapsWeirdCorrectInput) {
   EXPECT_EQ("[vsys call]", regions[4].path);
 }
 
-}  // namespace debug
-}  // namespace base
+// Disabled on Android. See https://crbug.com/376315475.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ReadAndParse DISABLED_ReadAndParse
+#else
+#define MAYBE_ReadAndParse ReadAndParse
+#endif
+TEST(SmapsRollupTest, MAYBE_ReadAndParse) {
+  if (!IsSmapsRollupSupported()) {
+    GTEST_SKIP() << "smaps_rollup not supported";
+  }
+
+  const auto result = ReadAndParseSmapsRollup();
+
+  EXPECT_TRUE(result.has_value());
+
+  SmapsRollup smaps_rollup = result.value();
+
+  EXPECT_GT(smaps_rollup.rss, 0u);
+  EXPECT_GT(smaps_rollup.pss, 0u);
+  EXPECT_GT(smaps_rollup.pss_anon, 0u);
+  EXPECT_GT(smaps_rollup.private_dirty, 0u);
+}
+
+TEST(SmapsRollupTest, Valid) {
+  const auto result = ParseSmapsRollupForTesting(
+      // This input is based on a real one captured locally, but with some
+      // values changed in order to make them unique (to test that the correct
+      // values are being parsed).
+      R"(55f4d118e000-7ffff6e62000 ---p 00000000 00:00 0                          [rollup]
+Rss:                1908 kB
+Pss:                 573 kB
+Pss_Dirty:           144 kB
+Pss_Anon:            100 kB
+Pss_File:            469 kB
+Pss_Shmem:            12 kB
+Shared_Clean:       1356 kB
+Shared_Dirty:          0 kB
+Private_Clean:       448 kB
+Private_Dirty:       104 kB
+Referenced:         1900 kB
+Anonymous:           105 kB
+KSM:                   0 kB
+LazyFree:              0 kB
+AnonHugePages:         0 kB
+ShmemPmdMapped:        0 kB
+FilePmdMapped:         0 kB
+Shared_Hugetlb:        0 kB
+Private_Hugetlb:       0 kB
+Swap:                 10 kB
+SwapPss:              20 kB
+Locked:                0 kB
+)");
+
+  EXPECT_TRUE(result.has_value());
+
+  SmapsRollup smaps_rollup = result.value();
+
+  EXPECT_EQ(smaps_rollup.rss, 1024 * 1908u);
+  EXPECT_EQ(smaps_rollup.pss, 1024 * 573u);
+  EXPECT_EQ(smaps_rollup.private_dirty, 1024 * 104u);
+  EXPECT_EQ(smaps_rollup.pss_anon, 1024 * 100u);
+  EXPECT_EQ(smaps_rollup.pss_file, 1024 * 469u);
+  EXPECT_EQ(smaps_rollup.pss_shmem, 1024 * 12u);
+  EXPECT_EQ(smaps_rollup.swap, 1024 * 10u);
+  EXPECT_EQ(smaps_rollup.swap_pss, 1024 * 20u);
+}
+
+}  // namespace base::debug

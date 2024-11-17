@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Хангул Ахнматае</translation>
 <translation id="1155759005174418845">Каталанча</translation>
 <translation id="1168100932582989117">Google ысым серверлери</translation>
+<translation id="1170788066030116158">Тартылган күнү</translation>
 <translation id="1172970565351728681">Болжол менен <ph name="REMAINING_TIME" /> калды</translation>
 <translation id="1173894706177603556">Атын өзгөртүү</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Телефондун батареясы <ph name="BATTERY_STATUS" />%, Чоо-жайы</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Аныктыгын текшерүү тастыктамасы алыстан четке кагылды</translation>
 <translation id="4394214039309501350">Тышкы шилтеме</translation>
 <translation id="4394980935660306080">Мурунураак, ушул аптада</translation>
+<translation id="4397435965699247285">OneDrive'ды Интернетсиз колдонууга болбойт</translation>
 <translation id="4398096759193130964">Бул нерселерди калыбына келтирип же таштандыда болбогон жаңы папкага сүйрөңүз</translation>
 <translation id="4401287888955153199">Баарын чыгаруу</translation>
 <translation id="4410695710508688828">Чыгаруу операциясы ишке ашкан жок. <ph name="ERROR_MESSAGE" /></translation>
@@ -637,7 +639,7 @@
 <translation id="5838451609423551646">Бардык пункттар тандоодон чыгарылды.</translation>
 <translation id="5838825566232597749">US Workman эл аралык</translation>
 <translation id="5845721951356578987">Медайым</translation>
-<translation id="5858478190805449225">Батареяны үнөмдөгүч режими күйүк. Режим өчүрүлгөндөн кийин кайра аракет кылыңыз.</translation>
+<translation id="5858478190805449225">Батареяны үнөмдөгүч режими күйүк. Режим өчүрүлгөндөн кийин кайталап көрүңүз.</translation>
 <translation id="5860491529813859533">Күйгүзүү</translation>
 <translation id="5861477046012235702">Оюнчу</translation>
 <translation id="5864471791310927901">DHCP каралбай калды</translation>

@@ -42,7 +42,7 @@
 
   OptimizationGuideService* service =
       OptimizationGuideServiceFactory::GetForProfile(
-          chrome_test_util::GetOriginalBrowserState());
+          chrome_test_util::GetOriginalProfile());
   service->AddHintForTesting(
       GURL(base::SysNSStringToUTF8(url)),
       optimization_guide::proto::OptimizationType::ABOUT_THIS_SITE,

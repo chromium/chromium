@@ -34,6 +34,7 @@ export interface LoadingStateElement {
   $: {
     clipPath: HTMLElement,
     loadingContainer: HTMLElement,
+    gradientContainer: HTMLElement,
     svg: HTMLElement,
   };
 }
@@ -54,10 +55,17 @@ export class LoadingStateElement extends CrLitElement {
   static override get properties() {
     return {
       columnCount: {type: Number},
+      showGradient_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   columnCount: number = 0;
+  protected showGradient_: boolean = false;
+
+  private resizeObserver_: ResizeObserver|null = null;
   private rects_: Rect[] = [
     {y: 0, width: COLUMN_WIDTH, height: 38, rx: 8, firstColumnOnly: false},
     {y: 44, width: COLUMN_WIDTH, height: 130, rx: 9.6, firstColumnOnly: false},
@@ -74,12 +82,23 @@ export class LoadingStateElement extends CrLitElement {
     {y: 468.2, width: 79, height: 17, rx: 4.8, firstColumnOnly: true},
   ];
 
+  override connectedCallback(): void {
+    super.connectedCallback();
+    this.resizeObserver_ = this.createResizeObserver_();
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    if (this.resizeObserver_) {
+      this.resizeObserver_.disconnect();
+      this.resizeObserver_ = null;
+    }
+  }
+
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
 
     if (changedProperties.has('columnCount')) {
-      // Limit the amount of columns that can show in the loading state.
-      this.columnCount = Math.min(5, this.columnCount);
       this.generateLoadingUi_();
     }
   }
@@ -106,10 +125,23 @@ export class LoadingStateElement extends CrLitElement {
         this.$.clipPath.appendChild(rectElement);
       });
     }
-    const svgWidth = this.columnCount === 0 ?
+
+    this.$.svg.setAttribute('width', `${this.svgWidth_}`);
+  }
+
+  private createResizeObserver_(): ResizeObserver {
+    const observer = new ResizeObserver(() => {
+      this.showGradient_ =
+          this.svgWidth_ > this.$.gradientContainer.offsetWidth;
+    });
+    observer.observe(this.$.gradientContainer);
+    return observer;
+  }
+
+  private get svgWidth_() {
+    return this.columnCount === 0 ?
         0 :
         this.columnCount * (COLUMN_WIDTH + GAP_X) - GAP_X;
-    this.$.svg.setAttribute('width', `${svgWidth}`);
   }
 }
 

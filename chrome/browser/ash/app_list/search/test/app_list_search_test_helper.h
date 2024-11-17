@@ -88,7 +88,7 @@ class AppListSearchBrowserTest : public InProcessBrowserTest {
   void StartSearch(const std::string& query);
 
   void SearchAndWaitForProviders(const std::string& query,
-                                 const std::set<ResultType> providers);
+                                 const std::set<ResultType>& providers);
 
   std::vector<raw_ptr<ChromeSearchResult, VectorExperimental>>
   PublishedResults();

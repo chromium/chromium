@@ -14,14 +14,14 @@ import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * DeviceLockActivityLauncher creates the proper intent and then launches the
- * {@link DeviceLockActivity} in different scenarios.
+ * DeviceLockActivityLauncher creates the proper intent and then launches the {@link
+ * DeviceLockActivity} in different scenarios.
  */
 public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLauncher {
-    private static DeviceLockActivityLauncherImpl sLauncher;
+    private static DeviceLockActivityLauncher sLauncher;
 
     /** Singleton instance getter */
-    public static DeviceLockActivityLauncherImpl get() {
+    public static DeviceLockActivityLauncher get() {
         if (sLauncher == null) {
             sLauncher = new DeviceLockActivityLauncherImpl();
         }
@@ -44,7 +44,7 @@ public class DeviceLockActivityLauncherImpl implements DeviceLockActivityLaunche
         windowAndroid.showIntent(intent, callback, null);
     }
 
-    public static void setInstanceForTesting(DeviceLockActivityLauncherImpl launcher) {
+    public static void setInstanceForTesting(DeviceLockActivityLauncher launcher) {
         sLauncher = launcher;
     }
 }

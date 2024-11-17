@@ -10,6 +10,7 @@
 #include "base/base_export.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base::android {
 
@@ -28,7 +29,7 @@ class BASE_EXPORT FeatureMap {
   const Feature* FindFeatureExposedToJava(const std::string& feature_name);
 
  private:
-  flat_map<std::string_view, const Feature*> mapping_;
+  flat_map<std::string_view, raw_ptr<const Feature, CtnExperimental>> mapping_;
 };
 
 }  // namespace base::android

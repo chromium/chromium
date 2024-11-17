@@ -7,6 +7,7 @@ package org.chromium.chrome.browser;
 import android.os.Handler;
 import android.os.Looper;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 
@@ -75,7 +76,7 @@ public class DeferredStartupHandler {
                             // Note that we can't simply check myQueue().isIdle() as this will
                             // continue to return true even if native tasks are queued up (until
                             // we return control to the Looper).
-                            new Handler().post(() -> {});
+                            new Handler().post(CallbackUtils.emptyRunnable());
                             return true;
                         });
     }

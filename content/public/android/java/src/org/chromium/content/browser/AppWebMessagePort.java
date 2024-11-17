@@ -215,17 +215,18 @@ public class AppWebMessagePort implements MessagePort {
     }
 
     /**
-     * A finalizer is required to ensure that the native object associated with
-     * this descriptor gets torn down, otherwise there would be a memory leak.
+     * A finalizer is required to ensure that the native object associated with this descriptor gets
+     * torn down, otherwise there would be a memory leak.
      *
-     * This is safe because posting a task is fast.
+     * <p>This is safe because posting a task is fast.
      *
-     * TODO(chrisha): Chase down the existing offenders that don't call close,
-     * and flip this to use LifetimeAssert.
+     * <p>TODO(chrisha): Chase down the existing offenders that don't call close, and flip this to
+     * use LifetimeAssert. (also: https://crbug.com/40286193)
      *
      * @see java.lang.Object#finalize()
      */
     @Override
+    @SuppressWarnings("Finalize")
     protected void finalize() throws Throwable {
         try {
             if (mNativeAppWebMessagePort == 0L) return;

@@ -15,6 +15,13 @@ const char kTabGridCloseMultipleTabsHistogram[] = "IOS.TabGrid.CloseTabs";
 const char kUMATabSwitcherPageChangeInteractionHistogram[] =
     "IOS.TabSwitcher.PageChangeInteraction";
 
+// Key of the UMA IOS.Incognito.GridStatus histogram.
+const char kUMAIncognitoGridStatusHistogram[] = "IOS.Incognito.GridStatus";
+
 void RecordTabGridCloseTabsCount(int count) {
   base::UmaHistogramCounts100(kTabGridCloseMultipleTabsHistogram, count);
+}
+
+void RecordIncognitoGridStatus(IncognitoGridStatus status) {
+  base::UmaHistogramEnumeration(kUMAIncognitoGridStatusHistogram, status);
 }

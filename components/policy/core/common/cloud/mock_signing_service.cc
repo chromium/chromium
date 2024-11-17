@@ -15,9 +15,9 @@ namespace policy {
 const char kSignedDataNonce[] = "+nonce";
 const char kSignature[] = "fake-signature";
 
-FakeSigningService::FakeSigningService() {}
+FakeSigningService::FakeSigningService() = default;
 
-FakeSigningService::~FakeSigningService() {}
+FakeSigningService::~FakeSigningService() = default;
 
 void FakeSigningService::SignData(const std::string& data,
                                   SigningCallback callback) {
@@ -39,8 +39,8 @@ void FakeSigningService::set_success(bool success) {
   success_ = success;
 }
 
-MockSigningService::MockSigningService() {}
+MockSigningService::MockSigningService() = default;
 
-MockSigningService::~MockSigningService() {}
+MockSigningService::~MockSigningService() = default;
 
 } // namespace policy

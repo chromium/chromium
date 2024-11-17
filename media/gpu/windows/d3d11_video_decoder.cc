@@ -166,8 +166,10 @@ bool D3D11VideoDecoder::InitializeAcceleratedDecoder(
         profile_, config.color_space_info());
   } else if (config.codec() == VideoCodec::kAV1) {
     accelerated_video_decoder_ = std::make_unique<AV1Decoder>(
-        std::make_unique<D3D11AV1Accelerator>(this, media_log_.get()), profile_,
-        config.color_space_info());
+        std::make_unique<D3D11AV1Accelerator>(
+            this, media_log_.get(),
+            gpu_workarounds_.use_current_picture_for_av1_invalid_ref),
+        profile_, config.color_space_info());
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   } else if (config.codec() == VideoCodec::kHEVC) {
     DCHECK(base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport));
@@ -342,7 +344,7 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   // If we don't have support support for a given codec, try to initialize
   // anyways -- otherwise we're certain to fail playback.
   if (gpu_workarounds_.disable_d3d11_video_decoder ||
-      (!is_supported && IsBuiltInVideoCodec(config.codec()))) {
+      (!is_supported && IsDecoderBuiltInVideoCodec(config.codec()))) {
     return PostDecoderStatus(
         DecoderStatus(DecoderStatus::Codes::kUnsupportedConfig)
             .WithData("config", config));
@@ -867,9 +869,8 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
 
   scoped_refptr<VideoFrame> frame = VideoFrame::WrapSharedImage(
       texture_selector_->PixelFormat(), shared_image,
-      shared_image->creation_sync_token(), GL_TEXTURE_EXTERNAL_OES,
-      VideoFrame::ReleaseMailboxCB(), picture_buffer->size(), visible_rect,
-      natural_size, timestamp);
+      shared_image->creation_sync_token(), VideoFrame::ReleaseMailboxCB(),
+      picture_buffer->size(), visible_rect, natural_size, timestamp);
 
   if (!frame) {
     // This can happen if, somehow, we get an unsupported combination of
@@ -915,9 +916,6 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
     frame->set_hdr_metadata(picture->hdr_metadata() ? picture->hdr_metadata()
                                                     : config_.hdr_metadata());
   }
-
-  frame->set_shared_image_format_type(
-      SharedImageFormatType::kSharedImageFormat);
 
   frame->metadata().is_webgpu_compatible = use_shared_handle_;
 

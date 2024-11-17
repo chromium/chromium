@@ -4,11 +4,13 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 
-#include <map>
-#include <utility>
+#include <string>
+#include <vector>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
@@ -16,6 +18,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
@@ -71,7 +74,7 @@ void KioskAppManagerBase::OnKioskAppDataLoadFailure(const std::string& app_id) {
 
 void KioskAppManagerBase::OnExternalCacheDamaged(const std::string& app_id) {
   // Should be implemented only in those kiosks that use ExternalCache.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool KioskAppManagerBase::GetDisableBailoutShortcut() const {
@@ -96,6 +99,12 @@ void KioskAppManagerBase::NotifySessionInitialized() const {
   }
 }
 
+void KioskAppManagerBase::NotifyAppRemoved(const std::string& app_id) const {
+  for (auto& observer : observers_) {
+    observer.OnKioskAppDataRemoved(app_id);
+  }
+}
+
 void KioskAppManagerBase::AddObserver(KioskAppManagerObserver* observer) {
   observers_.AddObserver(observer);
 }
@@ -105,7 +114,7 @@ void KioskAppManagerBase::RemoveObserver(KioskAppManagerObserver* observer) {
 }
 
 void KioskAppManagerBase::ClearRemovedApps(
-    const std::vector<KioskAppDataBase*>& old_apps) {
+    const std::vector<KioskAppDataBase*>& old_apps) const {
   std::vector<AccountId> account_ids_to_remove;
   account_ids_to_remove.reserve(old_apps.size());
   for (KioskAppDataBase* entry : old_apps) {
@@ -114,6 +123,9 @@ void KioskAppManagerBase::ClearRemovedApps(
   }
   KioskCryptohomeRemover::RemoveCryptohomesAndExitIfNeeded(
       account_ids_to_remove);
+  for (const KioskAppDataBase* entry : old_apps) {
+    NotifyAppRemoved(entry->app_id());
+  }
 }
 
 }  // namespace ash

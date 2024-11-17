@@ -91,13 +91,29 @@ struct ServiceWorkerRouterCondition {
 struct ServiceWorkerRouterNetworkSource {
 };
 
+// Enum to represent the race targets.
+// We aim to implement other race-* sources, which are not in the specification
+// yet. race-network-and-fetch-event has already been in the specification.
+// https://w3c.github.io/ServiceWorker/#dom-routersourceenum-race-network-and-fetch-handler
+// race-cache-and-network has already been proposed.
+// https://github.com/WICG/service-worker-static-routing-api/pull/34.
+// However, it can technically be expanded to race arbitrary two or three of
+// "network", "fetch-event", or "cache". Please stay tuned.
+enum ServiceWorkerRouterRaceSourceEnum {
+  // Race network source and the fetch handler.
+  // https://w3c.github.io/ServiceWorker/#dom-routersourceenum-race-network-and-fetch-handler
+  kNetworkAndFetchHandler = 0,
+};
+
+
 // This source is used when the browser should allow a network source and
 // the fetch handler to race, allowing the first one to respond to service
 // the request.
-// https://w3c.github.io/ServiceWorker/#dom-routersourceenum-race-network-and-fetch-handler
 // TODO(crbug.com/1371756): implement fields in the full picture.
 // https://github.com/WICG/service-worker-static-routing-api
 struct ServiceWorkerRouterRaceSource {
+  // Target to race.
+  ServiceWorkerRouterRaceSourceEnum target;
 };
 
 // This is used for explicitly running the fetch event listeners.

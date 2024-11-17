@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/query_parser/query_parser.h"
+#include "third_party/omnibox_proto/groups.pb.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -659,4 +661,29 @@ TEST_F(BookmarkProviderTest, MaxMatches) {
   provider_->Start(input, false);
   matches = provider_->matches();
   EXPECT_EQ(matches.size(), 9u);
+}
+
+TEST_F(BookmarkProviderTest, SetsGroupForHubSearch) {
+  AutocompleteInput input(u"foo", metrics::OmniboxEventProto::ANDROID_HUB,
+                          TestSchemeClassifier());
+  provider_->Start(input, /*minimal_changes=*/false);
+  EXPECT_FALSE(provider_->matches().empty());
+  EXPECT_EQ(omnibox::GROUP_MOBILE_BOOKMARKS,
+            provider_->matches()[0].suggestion_group_id);
+}
+
+TEST_F(BookmarkProviderTest, NoMaxMatchesForHubSearch) {
+  AutocompleteInput input(u"zyx", metrics::OmniboxEventProto::ANDROID_HUB,
+                          TestSchemeClassifier());
+  provider_->Start(input, /*minimal_changes=*/false);
+  EXPECT_EQ(3u, provider_->provider_max_matches());
+  EXPECT_FALSE(provider_->matches().empty());
+  EXPECT_GT(provider_->matches().size(), 3u);
+}
+
+TEST_F(BookmarkProviderTest, MatchingAlgorithmForHubSearch) {
+  AutocompleteInput input(u"foo", metrics::OmniboxEventProto::ANDROID_HUB,
+                          TestSchemeClassifier());
+  EXPECT_EQ(query_parser::MatchingAlgorithm::ALWAYS_PREFIX_SEARCH,
+            provider_->GetMatchingAlgorithm(input));
 }

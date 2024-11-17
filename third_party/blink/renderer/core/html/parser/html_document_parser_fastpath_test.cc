@@ -7,6 +7,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_supported_type.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
@@ -87,7 +88,7 @@ TEST(HTMLDocumentParserFastpathTest, LongTextIsSplit) {
   document->write("<body></body>");
   auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
   std::vector<LChar> chars(Text::kDefaultLengthLimit + 1, 'a');
-  div->setInnerHTML(String(chars.data(), static_cast<unsigned>(chars.size())));
+  div->setInnerHTML(String(base::span(chars)));
   Text* text_node = To<Text>(div->firstChild());
   ASSERT_TRUE(text_node);
   // Text is split at 64k for performance. See
@@ -312,9 +313,9 @@ TEST(HTMLDocumentParserFastpathTest, NullMappedToReplacementChar) {
   auto* div = MakeGarbageCollected<HTMLDivElement>(*document);
 
   base::HistogramTester histogram_tester;
-  // Constructor that takes size is needed because of \0 in string.
+  // Constructor that takes a base::span is needed because of \0 in string.
   div->setInnerHTML(
-      String("<div id='x' name='x\0y'></div>", static_cast<size_t>(29)));
+      String(base::span_from_cstring("<div id='x' name='x\0y'></div>")));
   Element* new_div = div->getElementById(AtomicString("x"));
   ASSERT_TRUE(new_div);
   // Null chars are generally mapped to \uFFFD (at least this test should
@@ -328,7 +329,8 @@ TEST(HTMLDocumentParserFastpathTest, DomParserUsesFastPath) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  parser->parseFromString("<strong>0</strong> items left", keywords::kTextHtml);
+  parser->parseFromString("<strong>0</strong> items left",
+                          V8SupportedType(V8SupportedType::Enum::kTextHtml));
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
 }
 
@@ -337,8 +339,8 @@ TEST(HTMLDocumentParserFastpathTest, BodyWithLeadingWhitespace) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document =
-      parser->parseFromString("\n   <div></div>", keywords::kTextHtml);
+  Document* document = parser->parseFromString(
+      "\n   <div></div>", V8SupportedType(V8SupportedType::Enum::kTextHtml));
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
   EXPECT_EQ("<body><div></div></body>", CreateMarkup(document->body()));
   auto* first_child = document->body()->firstChild();
@@ -350,8 +352,8 @@ TEST(HTMLDocumentParserFastpathTest, BodyWithLeadingAndTrailingWhitespace) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document =
-      parser->parseFromString("\n   x<div></div>y ", keywords::kTextHtml);
+  Document* document = parser->parseFromString(
+      "\n   x<div></div>y ", V8SupportedType(V8SupportedType::Enum::kTextHtml));
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
   EXPECT_EQ("<body>x<div></div>y </body>", CreateMarkup(document->body()));
   auto* first_child = document->body()->firstChild();
@@ -363,8 +365,9 @@ TEST(HTMLDocumentParserFastpathTest, BodyWithLeadingAndTrailingWhitespace2) {
   V8TestingScope scope;
   auto* parser = DOMParser::Create(scope.GetScriptState());
   base::HistogramTester histogram_tester;
-  Document* document = parser->parseFromString("\n   x \n  <div></div>y \n   ",
-                                               keywords::kTextHtml);
+  Document* document = parser->parseFromString(
+      "\n   x \n  <div></div>y \n   ",
+      V8SupportedType(V8SupportedType::Enum::kTextHtml));
   histogram_tester.ExpectTotalCount("Blink.HTMLFastPathParser.ParseResult", 1);
   EXPECT_EQ("<body>x \n  <div></div>y \n   </body>",
             CreateMarkup(document->body()));

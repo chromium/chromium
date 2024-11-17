@@ -289,7 +289,8 @@ void TestAllOSSettingPages(const GURL& base_url) {
           chromeos::settings::mojom::kBluetoothDevicesSubpagePath));
   TestOpenOSSettingsChromePage(
       ChromePage::DATETIME,
-      base_url.Resolve(chromeos::settings::mojom::kDateAndTimeSectionPath));
+      base_url.Resolve(
+          chromeos::settings::mojom::kSystemPreferencesSectionPath));
   TestOpenOSSettingsChromePage(
       ChromePage::DISPLAY,
       base_url.Resolve(chromeos::settings::mojom::kDisplaySubpagePath));
@@ -362,6 +363,9 @@ void TestAllOSSettingPages(const GURL& base_url) {
   TestOpenOSSettingsChromePage(
       ChromePage::GRAPHICSTABLET,
       base_url.Resolve(chromeos::settings::mojom::kGraphicsTabletSubpagePath));
+  TestOpenOSSettingsChromePage(
+      ChromePage::NETWORKS,
+      base_url.Resolve(chromeos::settings::mojom::kNetworkSectionPath));
 }
 
 void TestAllBrowserSettingPages(const GURL& base_url) {

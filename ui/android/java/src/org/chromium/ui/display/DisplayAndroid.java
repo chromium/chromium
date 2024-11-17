@@ -353,8 +353,7 @@ public class DisplayAndroid {
                         && mIsDisplayServerWideColorGamut != isDisplayServerWideColorGamut;
         boolean isRefreshRateChanged = refreshRate != null && mRefreshRate != refreshRate;
         boolean displayModesChanged =
-                supportedModes != null
-                        && (mDisplayModes == null ? true : mDisplayModes.equals(supportedModes));
+                supportedModes != null && !supportedModes.equals(mDisplayModes);
         boolean currentModeChanged =
                 currentMode != null && !currentMode.equals(mCurrentDisplayMode);
         boolean isHdrChanged = isHdr != null && isHdr != mIsHdr;

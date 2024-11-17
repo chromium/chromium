@@ -26,10 +26,10 @@ class DIPSDatabase {
   // Version number of the database schema.
   // NOTE: When changing the version, add a new golden file for the new version
   // at `//chrome/test/data/dips/v<N>.sql`.
-  static constexpr int kLatestSchemaVersion = 7;
+  static constexpr int kLatestSchemaVersion = 8;
 
   // The minimum database schema version this Chrome code is compatible with.
-  static constexpr int kMinCompatibleSchemaVersion = 6;
+  static constexpr int kMinCompatibleSchemaVersion = 8;
 
   static constexpr char kPrepopulatedKey[] = "prepopulated";
 
@@ -64,7 +64,8 @@ class DIPSDatabase {
                   const std::string& popup_site,
                   const uint64_t access_id,
                   const base::Time& popup_time,
-                  bool is_current_interaction);
+                  bool is_current_interaction,
+                  bool is_authentication_interaction);
 
   // This is implicitly `inline`. Don't move its definition to the .cc file.
   bool HasExpired(std::optional<base::Time> time) {

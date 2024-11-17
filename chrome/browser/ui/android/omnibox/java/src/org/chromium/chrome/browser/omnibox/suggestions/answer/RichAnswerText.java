@@ -23,10 +23,7 @@ import org.chromium.ui.text.DownloadableFontTextAppearanceSpan;
 
 import java.util.List;
 
-/**
- * {@link AnswerText} implementation based on RichAnswerTemplate as the source of answer lines (as
- * opposed to SuggestionAnswer, implemented by {@link AnswerTextNewLayout}).
- */
+/** {@link AnswerText} implementation based on RichAnswerTemplate as the source of answer lines. */
 class RichAnswerText implements AnswerText {
 
     /** Content of the line of text in omnibox suggestion. */

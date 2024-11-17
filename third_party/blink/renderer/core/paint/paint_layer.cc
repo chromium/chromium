@@ -470,19 +470,18 @@ void PaintLayer::UpdateDescendantDependentFlags() {
         MarkAncestorChainForFlagsUpdate(kDoesNotNeedDescendantDependentUpdate);
       }
     }
-    GetLayoutObject().DeprecatedInvalidateIntersectionObserverCachedRects();
     needs_visual_overflow_recalc_ = false;
   }
 
   bool previously_has_visible_content = has_visible_content_;
-  if (GetLayoutObject().StyleRef().UsedVisibility() == EVisibility::kVisible) {
+  if (GetLayoutObject().StyleRef().Visibility() == EVisibility::kVisible) {
     has_visible_content_ = true;
   } else {
     // layer may be hidden but still have some visible content, check for this
     has_visible_content_ = false;
     LayoutObject* r = GetLayoutObject().SlowFirstChild();
     while (r) {
-      if (r->StyleRef().UsedVisibility() == EVisibility::kVisible &&
+      if (r->StyleRef().Visibility() == EVisibility::kVisible &&
           (!r->HasLayer() || !r->EnclosingLayer()->IsSelfPaintingLayer())) {
         has_visible_content_ = true;
         break;
@@ -720,7 +719,7 @@ void PaintLayer::RemoveChild(PaintLayer* old_child) {
     MarkAncestorChainForFlagsUpdate();
   }
 
-  if (GetLayoutObject().StyleRef().UsedVisibility() != EVisibility::kVisible) {
+  if (GetLayoutObject().StyleRef().Visibility() != EVisibility::kVisible) {
     DirtyVisibleContentStatus();
   }
 
@@ -1035,8 +1034,7 @@ Node* PaintLayer::EnclosingNode() const {
     if (Node* e = r->GetNode())
       return e;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool PaintLayer::IsInTopOrViewTransitionLayer() const {

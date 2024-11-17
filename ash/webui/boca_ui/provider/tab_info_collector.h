@@ -38,22 +38,33 @@ class TabInfoCollector {
     raw_ptr<content::WebUI> web_ui_;
   };
 
-  explicit TabInfoCollector(content::WebUI* web_ui);
-  explicit TabInfoCollector(
-      std::unique_ptr<TabInfoCollector::ImageGenerator> image_generator);
+  TabInfoCollector(content::WebUI* web_ui, bool is_producer);
+  TabInfoCollector(
+      std::unique_ptr<TabInfoCollector::ImageGenerator> image_generator,
+      bool is_producer);
   TabInfoCollector(const TabInfoCollector&) = delete;
   TabInfoCollector& operator=(const TabInfoCollector&) = delete;
   ~TabInfoCollector();
+
+  // Fetches window tab info based on current boca role.
   void GetWindowTabInfo(GetWindowsTabsListCallback callback);
 
- private:
-  raw_ptr<content::WebUI> web_ui_;
-  std::unique_ptr<ImageGenerator> image_generator_;
+  // Fetches window tab info for provided `target_window`.
+  void GetWindowTabInfoForTarget(aura::Window* target_window,
+                                 GetWindowsTabsListCallback callback);
 
+  // Fetches window tab info for all browser windows.
+  void GetWindowTabInfoForAllBrowserWindows(
+      GetWindowsTabsListCallback callback);
+
+ private:
   mojom::TabInfoPtr AshToPageTabInfo(ash::TabInfo tab);
   void SortWindowList(std::vector<std::vector<ash::TabInfo>>& windows_list);
   std::vector<mojom::WindowPtr> AshToPageWindows(
       std::vector<std::vector<ash::TabInfo>> windows);
+  const bool is_producer_;
+  const raw_ptr<content::WebUI> web_ui_;
+  std::unique_ptr<ImageGenerator> image_generator_;
 };
 
 }  // namespace ash::boca

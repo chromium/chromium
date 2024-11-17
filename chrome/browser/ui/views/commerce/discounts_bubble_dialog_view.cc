@@ -217,10 +217,12 @@ void DiscountsBubbleDialogView::CopyButtonClicked() {
   commerce::metrics::DiscountsMetricCollector::
       RecordDiscountsBubbleCopyButtonClicked(ukm_source_id_);
 
-  auto* tab_helper = tabs::TabInterface::GetFromContents(web_contents())
-                         ->GetTabFeatures()
-                         ->commerce_ui_tab_helper();
+  auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents());
+  if (!tab || !tab->GetTabFeatures()) {
+    return;
+  }
 
+  auto* tab_helper = tab->GetTabFeatures()->commerce_ui_tab_helper();
   if (!tab_helper) {
     return;
   }
@@ -229,10 +231,12 @@ void DiscountsBubbleDialogView::CopyButtonClicked() {
 }
 
 void DiscountsBubbleDialogView::OnDialogClosing() {
-  auto* tab_helper = tabs::TabInterface::GetFromContents(web_contents())
-                         ->GetTabFeatures()
-                         ->commerce_ui_tab_helper();
+  auto* tab = tabs::TabInterface::MaybeGetFromContents(web_contents());
+  if (!tab || !tab->GetTabFeatures()) {
+    return;
+  }
 
+  auto* tab_helper = tab->GetTabFeatures()->commerce_ui_tab_helper();
   if (!tab_helper) {
     return;
   }

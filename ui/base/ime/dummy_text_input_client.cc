@@ -7,7 +7,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -85,6 +84,19 @@ gfx::Rect DummyTextInputClient::GetSelectionBoundingBox() const {
   NOTIMPLEMENTED_LOG_ONCE();
   return gfx::Rect();
 }
+
+#if BUILDFLAG(IS_WIN)
+std::optional<gfx::Rect> DummyTextInputClient::GetProximateCharacterBounds(
+    const gfx::Range& range) const {
+  return std::nullopt;
+}
+
+std::optional<size_t> DummyTextInputClient::GetProximateCharacterIndexFromPoint(
+    const gfx::Point& point,
+    IndexFromPointFlags flags) const {
+  return std::nullopt;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 bool DummyTextInputClient::GetCompositionCharacterBounds(
     size_t index,

@@ -64,7 +64,7 @@ std::unique_ptr<FeatureProvider> ExtensionsClient::CreateFeatureProvider(
   } else if (name == "behavior") {
     method = &ExtensionsAPIProvider::AddBehaviorFeatures;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   for (const auto& api_provider : api_providers_)
     ((*api_provider).*method)(feature_provider.get());

@@ -143,7 +143,7 @@ TEST_F(NewTabPageModulesTest, MakeModuleIdNames_DummyModules) {
 
 const char kSampleUserEmail[] = "user@gmail.com";
 const std::vector<std::pair<const std::string, int>> kSampleModules = {
-    {"drive", IDS_NTP_MODULES_DRIVE_SENTENCE}};
+    {"drive", IDS_NTP_MODULES_DRIVE_NAME}};
 
 TEST_F(NewTabPageModulesTest, HasModulesEnabled_SignedInAccount) {
   signin::IdentityTestEnvironment identity_test_env;

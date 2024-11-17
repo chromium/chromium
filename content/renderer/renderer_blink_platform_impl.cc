@@ -180,8 +180,7 @@ gpu::ContextType ToGpuContextType(blink::Platform::ContextType type) {
     case blink::Platform::kWebGPUContextType:
       return gpu::CONTEXT_TYPE_WEBGPU;
   }
-  NOTREACHED_IN_MIGRATION();
-  return gpu::CONTEXT_TYPE_OPENGLES2;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -648,11 +647,6 @@ bool RendererBlinkPlatformImpl::IsWebRtcHWEncodingEnabled() {
 
 bool RendererBlinkPlatformImpl::IsWebRtcHWDecodingEnabled() {
   return base::FeatureList::IsEnabled(::features::kWebRtcHWDecoding);
-}
-
-bool RendererBlinkPlatformImpl::IsWebRtcSrtpEncryptedHeadersEnabled() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      switches::kEnableWebRtcSrtpEncryptedHeaders);
 }
 
 bool RendererBlinkPlatformImpl::AllowsLoopbackInPeerConnection() {

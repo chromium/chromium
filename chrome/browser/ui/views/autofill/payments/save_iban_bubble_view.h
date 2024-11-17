@@ -11,12 +11,17 @@
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "chrome/browser/ui/views/autofill/payments/payments_view_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
 namespace content {
 class WebContents;
 }
+
+namespace views {
+class Label;
+class Textfield;
+class Throbber;
+}  // namespace views
 
 namespace autofill {
 
@@ -61,23 +66,30 @@ class SaveIbanBubbleView : public AutofillLocationBarBubble,
   // by ID and clicks on it.
   void AssignIdsToDialogButtonsForTesting();
 
-  void OnDialogAccepted();
-
   void LinkClicked(const GURL& url);
 
   // LocationBarBubbleDelegateView:
   void Init() override;
+  bool Accept() override;
 
  private:
   friend class SaveIbanBubbleViewFullFormBrowserTest;
 
   std::unique_ptr<views::View> CreateLegalMessageView();
+  std::unique_ptr<views::View> CreateLoadingRow();
+
+  void ShowThrobber();
 
   // Helper function to update value of `nickname_length_label_`;
   void UpdateNicknameLengthLabel();
 
   raw_ptr<views::Textfield> nickname_textfield_ = nullptr;
   raw_ptr<views::Label> nickname_length_label_ = nullptr;
+
+  // `loading_row_` is only set for upload IBAN saves.
+  raw_ptr<views::View> loading_row_ = nullptr;
+  // `loading_throbber_` is only used after upload save acceptance.
+  raw_ptr<views::Throbber> loading_throbber_ = nullptr;
 
   raw_ptr<IbanBubbleController> controller_;
 };

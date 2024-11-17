@@ -11,13 +11,22 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/elapsed_timer.h"
+#include "chrome/browser/supervised_user/supervised_user_verification_page.h"
 #include "components/supervised_user/core/browser/supervised_user_error_page.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/supervised_users.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 
 class Profile;
+
+namespace supervised_user {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+bool ShouldShowReAuthInterstitial(content::NavigationHandle& navigation_handle,
+                                  bool is_main_frame);
+#endif
+}  // namespace supervised_user
 
 class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
  public:
@@ -62,10 +71,6 @@ class SupervisedUserNavigationThrottle : public content::NavigationThrottle {
                    supervised_user::FilteringBehavior behavior,
                    supervised_user::FilteringBehaviorReason reason,
                    bool uncertain);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-  bool ShouldShowReauthInterstitial(const Profile* profile, bool is_main_frame);
-#endif
 
   void OnInterstitialResult(CallbackActions continue_request,
                             bool already_requested_permission,

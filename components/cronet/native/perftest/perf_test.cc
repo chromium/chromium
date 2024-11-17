@@ -11,6 +11,7 @@
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -229,7 +230,7 @@ class Callback : public cronet::test::TestUrlRequestCallback {
   void OnFailed(Cronet_UrlRequestPtr request,
                 Cronet_UrlResponseInfoPtr info,
                 Cronet_ErrorPtr error) override {
-    CHECK(false) << "Request failed with error code "
+    NOTREACHED() << "Request failed with error code "
                  << Cronet_Error_error_code_get(error) << ", QUIC error code "
                  << Cronet_Error_quic_detailed_error_code_get(error)
                  << ", message " << Cronet_Error_message_get(error);

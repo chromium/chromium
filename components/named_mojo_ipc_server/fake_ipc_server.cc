@@ -34,8 +34,8 @@ mojo::ReceiverId FakeIpcServer::current_receiver() const {
   return test_state_->current_receiver;
 }
 
-base::ProcessId FakeIpcServer::current_peer_pid() const {
-  return test_state_->current_peer_pid;
+const ConnectionInfo& FakeIpcServer::current_connection_info() const {
+  return *test_state_->current_connection_info;
 }
 
 }  // namespace named_mojo_ipc_server

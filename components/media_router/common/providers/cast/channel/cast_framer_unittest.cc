@@ -20,8 +20,8 @@ using ::cast_channel::ChannelError;
 
 class CastFramerTest : public testing::Test {
  public:
-  CastFramerTest() {}
-  ~CastFramerTest() override {}
+  CastFramerTest() = default;
+  ~CastFramerTest() override = default;
 
   void SetUp() override {
     cast_message_.set_protocol_version(CastMessage::CASTV2_1_0);

@@ -998,6 +998,8 @@ int main(int argc, char** argv) {
   bool output_bitstream = false;
   std::optional<uint32_t> encode_bitrate;
   std::vector<base::test::FeatureRef> disabled_features;
+  std::vector<base::test::FeatureRef> enabled_features;
+
   std::string svc_mode = "L1T1";
 
   // Parse command line arguments.
@@ -1067,6 +1069,9 @@ int main(int argc, char** argv) {
     }
   }
 
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
+  enabled_features.push_back(media::kVaapiH264SWBitrateController);
+#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS)
   disabled_features.push_back(media::kGlobalVaapiLock);
 
   if (test_type ==
@@ -1084,8 +1089,8 @@ int main(int argc, char** argv) {
           test_type, video_path, video_metadata_path,
           base::FilePath(output_folder), codec, svc_mode, content_type,
           output_bitstream, encode_bitrate, bitrate_mode, reverse,
-          media::test::FrameOutputConfig(),
-          /*enabled_features=*/{}, disabled_features);
+          media::test::FrameOutputConfig(), enabled_features,
+          disabled_features);
   if (!test_environment)
     return EXIT_FAILURE;
 

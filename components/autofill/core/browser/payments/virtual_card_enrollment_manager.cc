@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/metrics/payments/virtual_card_enrollment_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
@@ -59,8 +60,7 @@ VirtualCardEnrollmentManager::VirtualCardEnrollmentManager(
       payments_network_interface_(payments_network_interface) {
   // |autofill_client_| does not exist on Clank settings page where this flow
   // can also be triggered.
-  if (VirtualCardFeatureEnabled() && autofill_client_ &&
-      autofill_client_->GetStrikeDatabase()) {
+  if (autofill_client_ && autofill_client_->GetStrikeDatabase()) {
     virtual_card_enrollment_strike_database_ =
         std::make_unique<VirtualCardEnrollmentStrikeDatabase>(
             autofill_client_->GetStrikeDatabase());
@@ -72,16 +72,14 @@ VirtualCardEnrollmentManager::~VirtualCardEnrollmentManager() = default;
 void VirtualCardEnrollmentManager::InitVirtualCardEnroll(
     const CreditCard& credit_card,
     VirtualCardEnrollmentSource virtual_card_enrollment_source,
-    std::optional<payments::PaymentsNetworkInterface::
-                      GetDetailsForEnrollmentResponseDetails>
+    std::optional<payments::GetDetailsForEnrollmentResponseDetails>
         get_details_for_enrollment_response_details,
     PrefService* user_prefs,
     RiskAssessmentFunction risk_assessment_function,
     VirtualCardEnrollmentFieldsLoadedCallback
         virtual_card_enrollment_fields_loaded_callback) {
   // If at strike limit, exit enrollment flow.
-  if (VirtualCardFeatureEnabled() &&
-      ShouldBlockVirtualCardEnrollment(
+  if (ShouldBlockVirtualCardEnrollment(
           base::NumberToString(credit_card.instrument_id()),
           virtual_card_enrollment_source)) {
     Reset();
@@ -122,8 +120,7 @@ void VirtualCardEnrollmentManager::Enroll(
   LogUpdateVirtualCardEnrollmentRequestAttempt(
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
       VirtualCardEnrollmentRequestType::kEnroll);
-  payments::PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails
-      request_details;
+  payments::UpdateVirtualCardEnrollmentRequestDetails request_details;
   request_details.virtual_card_enrollment_source =
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source;
   request_details.virtual_card_enrollment_request_type =
@@ -143,10 +140,8 @@ void VirtualCardEnrollmentManager::Enroll(
                          OnDidGetUpdateVirtualCardEnrollmentResponse,
                      weak_ptr_factory_.GetWeakPtr(),
                      VirtualCardEnrollmentRequestType::kEnroll));
-  if (VirtualCardFeatureEnabled()) {
     RemoveAllStrikesToBlockOfferingVirtualCardEnrollment(base::NumberToString(
         state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
-  }
 }
 
 void VirtualCardEnrollmentManager::Unenroll(
@@ -157,8 +152,7 @@ void VirtualCardEnrollmentManager::Unenroll(
       VirtualCardEnrollmentSource::kSettingsPage,
       VirtualCardEnrollmentRequestType::kUnenroll);
 
-  payments::PaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails
-      request_details;
+  payments::UpdateVirtualCardEnrollmentRequestDetails request_details;
   state_.virtual_card_enrollment_fields.virtual_card_enrollment_source =
       VirtualCardEnrollmentSource::kSettingsPage;
 
@@ -359,10 +353,8 @@ void VirtualCardEnrollmentManager::ShowVirtualCardEnrollBubble() {
 }
 
 void VirtualCardEnrollmentManager::OnVirtualCardEnrollmentBubbleCancelled() {
-  if (VirtualCardFeatureEnabled()) {
     AddStrikeToBlockOfferingVirtualCardEnrollment(base::NumberToString(
         state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
-  }
   Reset();
 }
 
@@ -393,8 +385,7 @@ void VirtualCardEnrollmentManager::OnRiskDataLoadedForVirtualCard(
 }
 
 void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
-  payments::PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails
-      request_details;
+  payments::GetDetailsForEnrollmentRequestDetails request_details;
   request_details.app_locale = personal_data_manager_->app_locale();
   request_details.risk_data = state_.risk_data.value_or("");
   request_details.billing_customer_number = payments::GetBillingCustomerId(
@@ -417,8 +408,7 @@ void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
 
 void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
     PaymentsRpcResult result,
-    const payments::PaymentsNetworkInterface::
-        GetDetailsForEnrollmentResponseDetails& response) {
+    const payments::GetDetailsForEnrollmentResponseDetails& response) {
   if (get_details_for_enrollment_request_sent_timestamp_.has_value()) {
     LogGetDetailsForEnrollmentRequestLatency(
         state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
@@ -466,8 +456,7 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
 }
 
 void VirtualCardEnrollmentManager::SetGetDetailsForEnrollmentResponseDetails(
-    const payments::PaymentsNetworkInterface::
-        GetDetailsForEnrollmentResponseDetails& response) {
+    const payments::GetDetailsForEnrollmentResponseDetails& response) {
   enroll_response_details_received_ = true;
   state_.virtual_card_enrollment_fields.google_legal_message =
       std::move(response.google_legal_message);
@@ -551,9 +540,8 @@ void VirtualCardEnrollmentManager::SetInitialVirtualCardEnrollFields(
 
 bool VirtualCardEnrollmentManager::
     IsValidGetDetailsForEnrollmentResponseDetails(
-        const payments::PaymentsNetworkInterface::
-            GetDetailsForEnrollmentResponseDetails&
-                get_details_for_enrollment_response_details) {
+        const payments::GetDetailsForEnrollmentResponseDetails&
+            get_details_for_enrollment_response_details) {
   if (get_details_for_enrollment_response_details.google_legal_message.empty())
     return false;
 

@@ -90,7 +90,7 @@ source_set("unit_tests") {
     "//components/content_settings/core/browser",
     "//components/subresource_filter/content/browser",
     "//components/subresource_filter/content/browser:test_support",
-    "//components/subresource_filter/content/shared/common",
+    "//components/subresource_filter/content/shared/browser",
     "//components/subresource_filter/core/browser",
     "//components/subresource_filter/core/browser:test_support",
     "//components/sync_preferences:test_support",

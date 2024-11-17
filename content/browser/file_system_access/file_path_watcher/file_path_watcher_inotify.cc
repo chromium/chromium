@@ -195,14 +195,74 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   // Returns a WatcherEntry for this, must be called on the original sequence.
   InotifyReader::WatcherEntry GetWatcherEntry();
 
+  size_t current_usage() const override {
+    // `watches_` contains inotify watches of all dir components of `target_`.
+    // `recursive_paths_by_watch_` contains inotify watches for sub dirs under
+    // `target_` of a Type::kRecursive watcher and keyed by inotify watches. All
+    // inotify watches used by this FilePathWatcherImpl are either in `watches_`
+    // or as a key in `recursive_paths_by_watch_`. As a result, the two provide
+    // a good estimate on the number of inotify watches used by this
+    // FilePathWatcherImpl.
+    return watches_.size() + recursive_watches_by_path_.size();
+  }
+
   void UpdateInotifyCountHighWaterMark() {
-    int current_inotify_count =
-        watches_.size() + recursive_watches_by_path_.size();
     inotify_count_high_water_mark_ =
-        std::max(inotify_count_high_water_mark_, current_inotify_count);
+        std::max(inotify_count_high_water_mark_, current_usage());
   }
 
  private:
+  class UsageMonitor;
+
+  // Create a `UsageMonitor` that reports usage changes.
+  [[nodiscard]] UsageMonitor ReportUsageChanges();
+
+  // Create a `UsageMonitor` that ignores usage changes.
+  [[nodiscard]] UsageMonitor IgnoreUsageChanges();
+
+  // Monitors usage changes until it is destroyed or `Stop` is called. If
+  // `report_usage_changes` is true, it reports usage changes after it stops
+  // monitoring.
+  //
+  // Must be created through `ReportUsageChanges()` and `IgnoreUsageChanges()`.
+  //
+  // Any code that changes usage should expect there to be an active
+  // `UsageMonitor` by asserting that `FilePathWatcherImpl`'s
+  // `monitoring_usage_changes_` is `true`.
+  //
+  // This class along with code asserting that we have an active `UsageMonitor`
+  // provides better guarantees that we're reporting usage properly.
+  class UsageMonitor {
+   public:
+    UsageMonitor(const UsageMonitor&) = delete;
+    UsageMonitor& operator=(const UsageMonitor&) = delete;
+    UsageMonitor(UsageMonitor&&) = delete;
+    UsageMonitor& operator=(UsageMonitor&&) = delete;
+
+    ~UsageMonitor();
+
+    // Stops monitoring usage changes and reports usage changes if
+    // `report_usage_changes` is true. If not called, monitoring is stopped on
+    // destruction.
+    void Stop();
+
+   private:
+    friend UsageMonitor FilePathWatcherImpl::ReportUsageChanges();
+    friend UsageMonitor FilePathWatcherImpl::IgnoreUsageChanges();
+
+    UsageMonitor(base::WeakPtr<FilePathWatcherImpl> file_path_watcher_impl,
+                 bool report_usage_changes);
+
+    void StopImpl();
+
+    base::WeakPtr<FilePathWatcherImpl> file_path_watcher_impl_;
+
+    size_t initial_usage_;
+
+    bool report_usage_changes_;
+    bool stopped_ = false;
+  };
+
   // Start watching |path| for changes and notify |delegate| on each change.
   // Returns true if watch for |path| has been added successfully.
   bool Watch(const base::FilePath& path,
@@ -217,10 +277,12 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   bool WatchWithChangeInfo(
       const base::FilePath& path,
       const WatchOptions& options,
-      const FilePathWatcher::CallbackWithChangeInfo& callback) override;
+      const FilePathWatcher::CallbackWithChangeInfo& callback,
+      const FilePathWatcher::UsageChangeCallback& usage_callback) override;
 
   // Cancel the watch. This unregisters the instance with InotifyReader.
   void Cancel() override;
+  void CancelImpl();
 
   // Finds the full modified path, given the path component `child_name`, and
   // updates the watches.
@@ -289,10 +351,13 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
 
   // Invokes the callback with error, and cancels all watches. This occurs if
   // updating watches has caused the exceeded limit error.
-  void CancelAndRunCallbackOnExceededLimit();
+  void CancelAndRunCallbackOnExceededLimit(UsageMonitor& usage_monitor);
 
   // Callback to notify upon changes.
   FilePathWatcher::CallbackWithChangeInfo callback_;
+
+  // Callback to notify upon usage changes.
+  FilePathWatcher::UsageChangeCallback usage_callback_;
 
   // The file or directory we're supposed to watch.
   base::FilePath target_;
@@ -309,7 +374,12 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
       recursive_paths_by_watch_;
   std::map<base::FilePath, InotifyReader::Watch> recursive_watches_by_path_;
 
-  int inotify_count_high_water_mark_ = 0;
+  size_t inotify_count_high_water_mark_ = 0;
+
+  // Any code that changes usage should expect there to be an active
+  // `UsageMonitor` by asserting that `FilePathWatcherImpl`'s
+  // `monitoring_usage_changes_` is `true`.
+  bool monitoring_usage_changes_ = false;
 
   base::WeakPtrFactory<FilePathWatcherImpl> weak_factory_{this};
 };
@@ -613,6 +683,8 @@ void FilePathWatcherImpl::OnFilePathChanged(
   DUMP_WILL_BE_CHECK(!watches_.empty());
   DUMP_WILL_BE_CHECK(HasValidWatchVector());
 
+  UsageMonitor usage_monitor = ReportUsageChanges();
+
   auto file_path_type = event_mask & IN_ISDIR
                             ? FilePathWatcher::FilePathType::kDirectory
                             : FilePathWatcher::FilePathType::kFile;
@@ -640,12 +712,17 @@ void FilePathWatcherImpl::OnFilePathChanged(
 
   if (!result.has_value()) {
     if (result.error() == ChangeProcessError::kLimitExceeded) {
-      CancelAndRunCallbackOnExceededLimit();  // `this` may be deleted.
+      // `this` may be deleted.
+      CancelAndRunCallbackOnExceededLimit(usage_monitor);
     }
     // No need to invoke the callback when the modified path is not found within
     // the watched scope (= ChangeProcessError::kNotFound)
     return;
   }
+
+  // Make sure to stop monitoring usage changes before we run callbacks which
+  // may delete `this`.
+  usage_monitor.Stop();
 
   FilePathWatcher::ChangeInfo change_info(file_path_type, change_type,
                                           result.value());
@@ -664,6 +741,8 @@ void FilePathWatcherImpl::OnFilePathChangedForMoveEvents(
   DUMP_WILL_BE_CHECK(!watches_.empty());
   DUMP_WILL_BE_CHECK(HasValidWatchVector());
 
+  UsageMonitor usage_monitor = ReportUsageChanges();
+
   auto moved_from_result = FindChangedPathAndUpdateWatches(
       moved_from_watch, moved_from_child_name, file_path_type,
       /*created=*/false, /*deleted=*/true);
@@ -671,15 +750,20 @@ void FilePathWatcherImpl::OnFilePathChangedForMoveEvents(
       moved_to_watch, moved_to_child_name, file_path_type, /*created=*/true,
       /*deleted=*/false);
 
+  // If either result yielded the limit exceeded error, no successful callback
+  // should be run.
   if ((!moved_from_result.has_value() &&
        moved_from_result.error() == ChangeProcessError::kLimitExceeded) ||
       (!moved_to_result.has_value() &&
        moved_to_result.error() == ChangeProcessError::kLimitExceeded)) {
-    // If either result yielded the limit exceeded error, no successful callback
-    // should be run.
-    CancelAndRunCallbackOnExceededLimit();  // `this` may be deleted.
+    // `this` may be deleted.
+    CancelAndRunCallbackOnExceededLimit(usage_monitor);
     return;
   }
+
+  // Make sure to stop monitoring usage changes before we run callbacks which
+  // may delete `this`.
+  usage_monitor.Stop();
 
   if (moved_from_result.has_value() && moved_to_result.has_value()) {
     FilePathWatcher::ChangeInfo change_info(
@@ -810,7 +894,8 @@ FilePathWatcherImpl::FindChangedPathAndUpdateWatches(
   return base::unexpected(ChangeProcessError::kNotFound);
 }
 
-void FilePathWatcherImpl::CancelAndRunCallbackOnExceededLimit() {
+void FilePathWatcherImpl::CancelAndRunCallbackOnExceededLimit(
+    UsageMonitor& usage_monitor) {
   DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
 
   // Cancels all in-flight events from inotify thread.
@@ -818,7 +903,11 @@ void FilePathWatcherImpl::CancelAndRunCallbackOnExceededLimit() {
 
   // Reset states and cancels all watches.
   auto callback = callback_;
-  Cancel();
+  CancelImpl();
+
+  // Make sure to stop monitoring usage changes before we run callbacks which
+  // may delete `this`.
+  usage_monitor.Stop();
 
   // Fires the error callback. `this` may be deleted as a result of this call.
   callback.Run(FilePathWatcher::ChangeInfo(), target_, /*error=*/true);
@@ -829,21 +918,22 @@ void FilePathWatcherImpl::CancelAndRunCallbackOnExceededLimit() {
 bool FilePathWatcherImpl::WouldExceedWatchLimit() const {
   DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
 
-  // `watches_` contains inotify watches of all dir components of `target_`.
-  // `recursive_paths_by_watch_` contains inotify watches for sub dirs under
-  // `target_` of a Type::kRecursive watcher and keyed by inotify watches.
-  // All inotify watches used by this FilePathWatcherImpl are either in
-  // `watches_` or as a key in `recursive_paths_by_watch_`. As a result, the
-  // two provide a good estimate on the number of inofiy watches used by this
-  // FilePathWatcherImpl.
-  const size_t number_of_inotify_watches =
-      watches_.size() + recursive_paths_by_watch_.size();
-  return number_of_inotify_watches >= GetMaxNumberOfInotifyWatches();
+  return current_usage() >= GetMaxNumberOfInotifyWatches();
 }
 
 InotifyReader::WatcherEntry FilePathWatcherImpl::GetWatcherEntry() {
   DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
   return {task_runner(), weak_factory_.GetWeakPtr()};
+}
+
+FilePathWatcherImpl::UsageMonitor FilePathWatcherImpl::ReportUsageChanges() {
+  return UsageMonitor(weak_factory_.GetWeakPtr(),
+                      /*report_usage_changes=*/true);
+}
+
+FilePathWatcherImpl::UsageMonitor FilePathWatcherImpl::IgnoreUsageChanges() {
+  return UsageMonitor(weak_factory_.GetWeakPtr(),
+                      /*report_usage_changes=*/false);
 }
 
 bool FilePathWatcherImpl::Watch(const base::FilePath& path,
@@ -852,7 +942,8 @@ bool FilePathWatcherImpl::Watch(const base::FilePath& path,
   return WatchWithChangeInfo(
       path, WatchOptions{.type = type},
       base::IgnoreArgs<const FilePathWatcher::ChangeInfo&>(
-          base::BindRepeating(std::move(callback))));
+          base::BindRepeating(std::move(callback))),
+      base::DoNothingAs<void(size_t, size_t)>());
 }
 
 bool FilePathWatcherImpl::WatchWithOptions(
@@ -862,23 +953,34 @@ bool FilePathWatcherImpl::WatchWithOptions(
   return WatchWithChangeInfo(
       path, options,
       base::IgnoreArgs<const FilePathWatcher::ChangeInfo&>(
-          base::BindRepeating(std::move(callback))));
+          base::BindRepeating(std::move(callback))),
+      base::DoNothingAs<void(size_t, size_t)>());
 }
 
 bool FilePathWatcherImpl::WatchWithChangeInfo(
     const base::FilePath& path,
     const WatchOptions& options,
-    const FilePathWatcher::CallbackWithChangeInfo& callback) {
+    const FilePathWatcher::CallbackWithChangeInfo& callback,
+    const FilePathWatcher::UsageChangeCallback& usage_callback) {
   DUMP_WILL_BE_CHECK(target_.empty());
+
+  // We must have an active UsageMonitor when usage is changing. We don't want
+  // to report any usage changes in the setup of `FilePathWatcher` so create one
+  // that just ignores usage changes.
+  UsageMonitor usage_monitor = IgnoreUsageChanges();
 
   set_task_runner(base::SequencedTaskRunner::GetCurrentDefault());
   callback_ = callback;
+  usage_callback_ = usage_callback;
   target_ = path;
   type_ = options.type;
   report_modified_path_ = options.report_modified_path;
 
   std::vector<base::FilePath::StringType> comps = target_.GetComponents();
   DUMP_WILL_BE_CHECK(!comps.empty());
+
+  // We're adding to `watches_` so make sure we're reporting usage changes.
+  CHECK(monitoring_usage_changes_);
   for (size_t i = 1; i < comps.size(); ++i) {
     watches_.emplace_back(comps[i]);
   }
@@ -888,7 +990,7 @@ bool FilePathWatcherImpl::WatchWithChangeInfo(
   if (!UpdateWatches()) {
     RecordWatchWithChangeInfoResultUma(
         WatchWithChangeInfoResult::kInotifyWatchLimitExceeded);
-    Cancel();
+    CancelImpl();
     // Note `callback` is not invoked since false is returned.
     return false;
   }
@@ -908,9 +1010,26 @@ void FilePathWatcherImpl::Cancel() {
   DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
   DUMP_WILL_BE_CHECK(!is_cancelled());
 
+  UsageMonitor usage_monitor = ReportUsageChanges();
+
+  CancelImpl();
+}
+
+void FilePathWatcherImpl::CancelImpl() {
+  if (!callback_) {
+    // Watch() was never called.
+    set_cancelled();
+    return;
+  }
+
+  DUMP_WILL_BE_CHECK(task_runner()->RunsTasksInCurrentSequence());
+  DUMP_WILL_BE_CHECK(!is_cancelled());
+
   set_cancelled();
   callback_.Reset();
 
+  // We're clearing `watches_` so make sure we're reporting usage changes.
+  CHECK(monitoring_usage_changes_);
   for (const auto& watch : watches_) {
     g_inotify_reader.Get().RemoveWatch(watch.watch, this);
   }
@@ -961,6 +1080,10 @@ bool FilePathWatcherImpl::UpdateRecursiveWatches(
     InotifyReader::Watch fired_watch,
     bool is_dir) {
   DUMP_WILL_BE_CHECK(HasValidWatchVector());
+
+  // This function erases watches in `recursive_paths_by_watch_` so make sure
+  // that we're reporting usage changes for it.
+  CHECK(monitoring_usage_changes_);
 
   if (type_ != Type::kRecursive) {
     return true;
@@ -1031,6 +1154,10 @@ bool FilePathWatcherImpl::UpdateRecursiveWatchesForPath(
   DUMP_WILL_BE_CHECK(!path.empty());
   DUMP_WILL_BE_CHECK(DirectoryExists(path));
 
+  // This function adds and removes watches in `recursive_paths_by_watch_` so
+  // make sure that we're reporting usage changes for it.
+  CHECK(monitoring_usage_changes_);
+
   // Note: SHOW_SYM_LINKS exposes symlinks as symlinks, so they are ignored
   // rather than followed. Following symlinks can easily lead to the undesirable
   // situation where the entire file system is being watched.
@@ -1084,6 +1211,10 @@ void FilePathWatcherImpl::TrackWatchForRecursion(InotifyReader::Watch watch,
   DUMP_WILL_BE_CHECK_EQ(type_, Type::kRecursive);
   DUMP_WILL_BE_CHECK(!path.empty());
   DUMP_WILL_BE_CHECK(target_.IsParent(path));
+
+  // This function adds watches in `recursive_paths_by_watch_` so make sure that
+  // we're reporting usage changes for it.
+  CHECK(monitoring_usage_changes_);
 
   if (watch == InotifyReader::kInvalidWatch) {
     return;
@@ -1155,6 +1286,50 @@ bool FilePathWatcherImpl::HasValidWatchVector() const {
     }
   }
   return watches_.back().subdir.empty();
+}
+
+FilePathWatcherImpl::UsageMonitor::UsageMonitor(
+    base::WeakPtr<FilePathWatcherImpl> file_path_watcher_impl,
+    bool report_usage_changes)
+    : file_path_watcher_impl_(std::move(file_path_watcher_impl)),
+      initial_usage_(file_path_watcher_impl_->current_usage()),
+      report_usage_changes_(report_usage_changes) {
+  // Make sure there's only ever one `UsageMonitor` for a
+  // `FilePathWatcherImpl` at a time.
+  CHECK(!file_path_watcher_impl_->monitoring_usage_changes_);
+  file_path_watcher_impl_->monitoring_usage_changes_ = true;
+}
+
+FilePathWatcherImpl::UsageMonitor::~UsageMonitor() {
+  if (!stopped_) {
+    StopImpl();
+  }
+}
+
+void FilePathWatcherImpl::UsageMonitor::Stop() {
+  CHECK(!stopped_);
+  stopped_ = true;
+
+  StopImpl();
+}
+
+void FilePathWatcherImpl::UsageMonitor::StopImpl() {
+  if (!file_path_watcher_impl_) {
+    return;
+  }
+
+  CHECK(file_path_watcher_impl_->monitoring_usage_changes_);
+  file_path_watcher_impl_->monitoring_usage_changes_ = false;
+
+  if (!report_usage_changes_) {
+    return;
+  }
+
+  size_t current_usage = file_path_watcher_impl_->current_usage();
+
+  if (initial_usage_ != current_usage) {
+    file_path_watcher_impl_->usage_callback_.Run(initial_usage_, current_usage);
+  }
 }
 
 }  // namespace

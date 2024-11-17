@@ -35,6 +35,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/active_field_trials.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/limited_entropy_mode_gate.h"
@@ -120,8 +121,7 @@ Study::CpuArchitecture GetCurrentCpuArchitecture() {
     }
     return Study::X86_64;
   }
-  NOTREACHED_IN_MIGRATION();
-  return Study::X86_64;
+  NOTREACHED();
 }
 
 #if BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
@@ -203,8 +203,7 @@ Study::Channel ConvertProductChannelToStudyChannel(
     case version_info::Channel::UNKNOWN:
       return Study::UNKNOWN;
   }
-  NOTREACHED_IN_MIGRATION();
-  return Study::UNKNOWN;
+  NOTREACHED();
 }
 
 VariationsFieldTrialCreatorBase::VariationsFieldTrialCreatorBase(
@@ -240,7 +239,8 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
     SyntheticTrialRegistry* synthetic_trial_registry,
     PlatformFieldTrials* platform_field_trials,
     SafeSeedManagerBase* safe_seed_manager,
-    bool add_entropy_source_to_variations_ids) {
+    bool add_entropy_source_to_variations_ids,
+    const EntropyProviders& entropy_providers) {
   DCHECK(feature_list);
   DCHECK(metrics_state_manager);
   DCHECK(platform_field_trials);
@@ -272,8 +272,7 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
     case VariationsIdsProvider::ForceIdsResult::INVALID_VECTOR_ENTRY:
       // It should not be possible to have invalid variation ids from the
       // vector param (which corresponds to chrome://flags).
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case VariationsIdsProvider::ForceIdsResult::SUCCESS:
       break;
   }
@@ -318,20 +317,15 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
         command_line->GetSwitchValuePath(switches::kVariationsTestSeedJsonPath));
   }
 
-  auto entropy_providers = metrics_state_manager->CreateEntropyProviders(
-      IsLimitedEntropyRandomizationSourceEnabled(
-          client_->GetChannelForVariations(),
-          limited_entropy_synthetic_trial_));
-
   bool used_seed = false;
   if (!used_testing_config) {
     used_seed =
-        CreateTrialsFromSeed(*entropy_providers, feature_list.get(),
+        CreateTrialsFromSeed(entropy_providers, feature_list.get(),
                              safe_seed_manager, synthetic_trial_registry);
   }
 
   platform_field_trials->SetUpClientSideFieldTrials(
-      used_seed, *entropy_providers, feature_list.get());
+      used_seed, entropy_providers, feature_list.get());
 
   platform_field_trials->RegisterFeatureOverrides(feature_list.get());
 
@@ -689,6 +683,7 @@ bool VariationsFieldTrialCreatorBase::CreateTrialsFromSeed(
   }
   RecordVariationsSeedUsage(run_in_safe_mode ? SeedUsage::kSafeSeedUsed
                                              : SeedUsage::kRegularSeedUsed);
+  SetSeedVersion(seed.version());
 
   RegisterLimitedEntropySyntheticTrialIfNeeded(seed, synthetic_trial_registry);
   VariationsLayers layers(seed, entropy_providers);
@@ -780,6 +775,7 @@ void VariationsFieldTrialCreatorBase::LoadSeedFromJsonFile(
   local_state()->SetInteger(prefs::kVariationsFailedToFetchSeedStreak, 0);
 
   // Override Local State seed prefs.
+  // TODO(crbug.com/369080917): Use SeedReaderWriter to store a seed.
   local_state()->SetString(prefs::kVariationsCompressedSeed,
                            seed_data->GetString());
   local_state()->SetString(prefs::kVariationsSeedSignature,

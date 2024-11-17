@@ -37,7 +37,7 @@ RequestHandlerForDeviceAttributeUpdate::HandleRequest(
   em::DeviceManagementResponse response;
   response.mutable_device_attribute_update_response()->set_result(
       em::DeviceAttributeUpdateResponse::ATTRIBUTE_UPDATE_SUCCESS);
-  return CreateHttpResponse(net::HTTP_OK, response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, response);
 }
 
 }  // namespace policy

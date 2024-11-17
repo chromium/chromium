@@ -35,7 +35,7 @@ class CORE_EXPORT AXContext {
 
   Document* GetDocument();
 
-  const ui::AXMode& GetAXMode() { return ax_mode_; }
+  const ui::AXMode& GetAXMode() const { return ax_mode_; }
 
   void SetAXMode(const ui::AXMode&);
 

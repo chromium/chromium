@@ -72,9 +72,8 @@ public class KeyboardAccessoryButtonGroupCoordinator {
         void onViewBound(View sheetOpenerView);
 
         /**
-         * Called right before the view currently representing this item gets recycled.
-         * It's useful for cleaning up Adapters and MCPs.
-         * @param tabs The {@link View} representing this item.
+         * Called right before the view currently representing this item gets recycled. It's useful
+         * for cleaning up Adapters and MCPs.
          */
         void onViewUnbound(View sheetOpenerView);
     }

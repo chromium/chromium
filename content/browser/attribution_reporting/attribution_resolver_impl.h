@@ -20,12 +20,13 @@
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_resolver.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql.h"
-#include "content/browser/attribution_reporting/event_level_result.mojom-forward.h"
+#include "content/browser/attribution_reporting/create_report_result.h"
 #include "content/browser/attribution_reporting/rate_limit_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/attribution_data_model.h"
 #include "content/public/browser/storage_partition.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class FilePath;
@@ -79,23 +80,18 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
       std::optional<StoredSource::Id>) override;
   void SetDelegate(std::unique_ptr<AttributionResolverDelegate>) override;
 
-  attribution_reporting::mojom::EventLevelResult MaybeCreateEventLevelReport(
+  CreateReportResult::EventLevel MaybeCreateEventLevelReport(
       const AttributionInfo& attribution_info,
       const StoredSource& source,
       const AttributionTrigger& trigger,
-      std::optional<AttributionReport>& report,
       std::optional<uint64_t>& dedup_key)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  attribution_reporting::mojom::AggregatableResult
-  MaybeCreateAggregatableAttributionReport(
+  CreateReportResult::Aggregatable MaybeCreateAggregatableAttributionReport(
       const AttributionInfo& attribution_info,
       const StoredSource& source,
       const AttributionTrigger& trigger,
-      std::optional<AttributionReport>& report,
-      std::optional<uint64_t>& dedup_key,
-      std::optional<int>& max_aggregatable_reports_per_destination,
-      std::optional<int64_t>& rate_limits_max_attributions)
+      std::optional<uint64_t>& dedup_keys)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Generates null aggregatable reports for the given trigger and stores all
@@ -104,7 +100,7 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
       const AttributionTrigger&,
       const AttributionInfo&,
       const StoredSource* source,
-      std::optional<AttributionReport>& new_aggregatable_report,
+      AttributionReport* new_aggregatable_report,
       std::optional<base::Time>& min_null_aggregatable_report_time)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
@@ -112,29 +108,30 @@ class CONTENT_EXPORT AttributionResolverImpl : public AttributionResolver {
                                        base::Time trigger_time) const
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  enum class ReplaceReportResult {
-    kError,
-    kAddNewReport,
-    kDropNewReport,
-    kDropNewReportSourceDeactivated,
-    kReplaceOldReport,
+  struct ReplaceReportError {};
+  struct AddNewReport {};
+  struct DropNewReport {
+    bool source_deactivated;
   };
+  struct ReplaceOldReport {
+    AttributionReport replaced_report;
+  };
+
+  using ReplaceReportResult = absl::variant<ReplaceReportError,
+                                            AddNewReport,
+                                            DropNewReport,
+                                            ReplaceOldReport>;
+
   [[nodiscard]] ReplaceReportResult MaybeReplaceLowerPriorityEventLevelReport(
       const AttributionReport& report,
       const StoredSource& source,
-      int num_attributions,
-      std::optional<AttributionReport>& replaced_report)
-      VALID_CONTEXT_REQUIRED(sequence_checker_);
+      int num_attributions) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
-  attribution_reporting::mojom::EventLevelResult MaybeStoreEventLevelReport(
-      AttributionReport& report,
+  CreateReportResult::EventLevel MaybeStoreEventLevelReport(
       const StoredSource& source,
       std::optional<uint64_t> dedup_key,
       int num_attributions,
-      std::optional<AttributionReport>& replaced_report,
-      std::optional<AttributionReport>& dropped_report,
-      std::optional<int>& max_event_level_reports_per_destination,
-      std::optional<int64_t>& rate_limits_max_attributions)
+      CreateReportResult::EventLevelSuccess)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   std::unique_ptr<AttributionResolverDelegate> delegate_

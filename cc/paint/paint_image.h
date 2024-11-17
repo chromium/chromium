@@ -16,7 +16,6 @@
 #include "cc/paint/image_animation_count.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_record.h"
-#include "cc/paint/paint_worklet_input.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
@@ -303,15 +302,12 @@ class CC_PAINT_EXPORT PaintImage {
   bool IsLazyGenerated() const {
     return paint_record_ || paint_image_generator_;
   }
+  bool IsDeferredPaintRecord() const { return !!deferred_paint_record_; }
   bool IsPaintWorklet() const {
     return deferred_paint_record_ &&
            deferred_paint_record_->IsPaintWorkletInput();
   }
   bool NeedsLayer() const;
-  bool IsCanvasDeferredPaintRecord() const {
-    return deferred_paint_record_ &&
-           deferred_paint_record_->IsCanvasDeferredPaintRecord();
-  }
   bool IsTextureBacked() const;
   // Skia internally buffers commands and flushes them as necessary but there
   // are some cases where we need to force a flush.
@@ -325,6 +321,7 @@ class CC_PAINT_EXPORT PaintImage {
   SkISize GetSkISize(AuxImage aux_image) const {
     return GetSkImageInfo(aux_image).dimensions();
   }
+  bool GetReinterpretAsSRGB() const { return reinterpret_as_srgb_; }
 
   gfx::ContentColorUsage GetContentColorUsage(bool* is_hlg = nullptr) const;
 
@@ -361,15 +358,7 @@ class CC_PAINT_EXPORT PaintImage {
   sk_sp<SkImage> GetSkImageForFrame(size_t index,
                                     GeneratorClientId client_id) const;
 
-  const std::optional<scoped_refptr<PaintWorkletInput>> paint_worklet_input()
-      const {
-    if (!IsPaintWorklet()) {
-      return std::nullopt;
-    }
-    scoped_refptr<PaintWorkletInput> paint_worklet_input(
-        static_cast<PaintWorkletInput*>(deferred_paint_record().get()));
-    return paint_worklet_input;
-  }
+  const scoped_refptr<PaintWorkletInput> GetPaintWorkletInput() const;
 
   const scoped_refptr<DeferredPaintRecord>& deferred_paint_record() const {
     return deferred_paint_record_;
@@ -436,6 +425,10 @@ class CC_PAINT_EXPORT PaintImage {
   ContentId content_id_ = kInvalidContentId;
 
   sk_sp<PaintImageGenerator> paint_image_generator_;
+
+  // If true, then this images will be reinterpreted as being sRGB during paint.
+  // This is used by createImageBitmap's colorSpaceConversion:"none".
+  bool reinterpret_as_srgb_ = false;
 
   // The target HDR headroom for gainmap and global tone map application.
   float target_hdr_headroom_ = 1.f;

@@ -16,12 +16,14 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "device/vr/openxr/openxr_view_configuration.h"
+#include "device/vr/public/cpp/features.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
 #include "device/vr/public/mojom/xr_session.mojom.h"
 #include "third_party/openxr/dev/xr_android.h"
@@ -357,8 +359,13 @@ XrResult OpenXrDepthSensorAndroid::Initialize() {
   XrDepthSwapchainCreateInfoANDROID swapchain_create_info{
       XR_TYPE_DEPTH_SWAPCHAIN_CREATE_INFO_ANDROID};
   swapchain_create_info.resolution = depth_camera_resolution_;
-  swapchain_create_info.createFlags =
-      XR_DEPTH_SWAPCHAIN_CREATE_RAW_DEPTH_IMAGE_BIT_ANDROID;
+  if (base::FeatureList::IsEnabled(features::kOpenXrAndroidSmoothDepth)) {
+    swapchain_create_info.createFlags =
+        XR_DEPTH_SWAPCHAIN_CREATE_SMOOTH_DEPTH_IMAGE_BIT_ANDROID;
+  } else {
+    swapchain_create_info.createFlags =
+        XR_DEPTH_SWAPCHAIN_CREATE_RAW_DEPTH_IMAGE_BIT_ANDROID;
+  }
   RETURN_IF_XR_FAILED(
       extension_helper_->ExtensionMethods().xrCreateDepthSwapchainANDROID(
           session_, &swapchain_create_info, &swapchain_));
@@ -462,8 +469,12 @@ mojom::XRDepthDataPtr OpenXrDepthSensorAndroid::GetDepthDataForEye(
 
   XrDepthViewANDROID depth_view = acquire_result.views[GetDepthViewIndex(eye)];
   size_t pixel_offset = GetDepthImageOffset(eye, num_pixels);
-  base::span<const float> raw_depth_image =
-      base::span(depth_image.rawDepthImage + pixel_offset, num_pixels);
+  auto* depth_image_ptr =
+      base::FeatureList::IsEnabled(features::kOpenXrAndroidSmoothDepth)
+          ? depth_image.smoothDepthImage
+          : depth_image.rawDepthImage;
+  base::span<const float> depth_image_span =
+      base::span(depth_image_ptr + pixel_offset, num_pixels);
 
   mojom::XRDepthDataUpdatedPtr result = mojom::XRDepthDataUpdated::New();
   mojo_base::BigBuffer pixels(buffer_size);
@@ -471,7 +482,7 @@ mojom::XRDepthDataPtr OpenXrDepthSensorAndroid::GetDepthDataForEye(
     case mojom::XRDepthDataFormat::kFloat32:
       // Results are already in meters.
       CHECK(GetByteSize(data_format) == sizeof(float));
-      CopyDepthData<float>(raw_depth_image, pixels, image_size, depth_view,
+      CopyDepthData<float>(depth_image_span, pixels, image_size, depth_view,
                            view, [](float val) { return val; });
       break;
     // Luminance alpha needs to be converted
@@ -482,7 +493,8 @@ mojom::XRDepthDataPtr OpenXrDepthSensorAndroid::GetDepthDataForEye(
 
       CHECK(GetByteSize(data_format) == sizeof(uint16_t));
       CopyDepthData<uint16_t>(
-          raw_depth_image, pixels, image_size, depth_view, view, [](float val) {
+          depth_image_span, pixels, image_size, depth_view, view,
+          [](float val) {
             // val is in meters, so convert to mm to avoid losing precision.
             return base::saturated_cast<uint16_t>(std::nearbyint(val * 1000));
           });

@@ -10,6 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
@@ -77,7 +78,8 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
       .SetOverinstallTimeout(base::Seconds(3))
       .SetIdleCheckPeriod(base::Seconds(4))
       .SetMachineManaged(std::make_optional(true))
-      .SetEnableDiffUpdates(true);
+      .SetEnableDiffUpdates(true)
+      .SetCecaConnectionTimeout(base::Seconds(7));
   EXPECT_TRUE(builder.Overwrite());
 
   scoped_refptr<ExternalConstantsOverrider> verifier =
@@ -101,6 +103,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverridingEverything) {
   EXPECT_TRUE(verifier->IsMachineManaged().has_value());
   EXPECT_TRUE(verifier->IsMachineManaged().value());
   EXPECT_TRUE(verifier->EnableDiffUpdates());
+  EXPECT_EQ(verifier->CecaConnectionTimeout(), base::Seconds(7));
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestPartialOverrideWithMultipleURLs) {
@@ -153,6 +156,7 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
                   .ClearIdleCheckPeriod()
                   .ClearMachineManaged()
                   .ClearEnableDiffUpdates()
+                  .ClearCecaConnectionTimeout()
                   .Overwrite());
 
   scoped_refptr<ExternalConstantsOverrider> verifier =
@@ -173,6 +177,7 @@ TEST_F(ExternalConstantsBuilderTests, TestClearedEverything) {
   EXPECT_EQ(verifier->GroupPolicies().size(), 0U);
   EXPECT_FALSE(verifier->IsMachineManaged().has_value());
   EXPECT_FALSE(verifier->EnableDiffUpdates());
+  EXPECT_EQ(verifier->CecaConnectionTimeout(), kCecaConnectionTimeout);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
@@ -200,6 +205,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
           .SetServerKeepAliveTime(base::Seconds(3))
           .SetMachineManaged(std::make_optional(false))
           .SetEnableDiffUpdates(true)
+          .SetCecaConnectionTimeout(base::Seconds(38))
           .Overwrite());
 
   // Only the second set of values should be observed.
@@ -221,6 +227,7 @@ TEST_F(ExternalConstantsBuilderTests, TestOverSet) {
   EXPECT_TRUE(verifier->IsMachineManaged().has_value());
   EXPECT_FALSE(verifier->IsMachineManaged().value());
   EXPECT_TRUE(verifier->EnableDiffUpdates());
+  EXPECT_EQ(verifier->CecaConnectionTimeout(), base::Seconds(38));
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
@@ -242,6 +249,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
           .SetGroupPolicies(group_policies)
           .SetMachineManaged(std::make_optional(true))
           .SetEnableDiffUpdates(true)
+          .SetCecaConnectionTimeout(base::Seconds(5))
           .Overwrite());
 
   scoped_refptr<ExternalConstantsOverrider> verifier =
@@ -263,6 +271,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_TRUE(verifier->IsMachineManaged().has_value());
   EXPECT_TRUE(verifier->IsMachineManaged().value());
   EXPECT_TRUE(verifier->EnableDiffUpdates());
+  EXPECT_EQ(verifier->CecaConnectionTimeout(), base::Seconds(5));
 
   base::Value::Dict group_policies2;
   group_policies2.Set("b", 2);
@@ -277,6 +286,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
                   .SetGroupPolicies(group_policies2)
                   .ClearMachineManaged()
                   .SetEnableDiffUpdates(false)
+                  .ClearCecaConnectionTimeout()
                   .Overwrite());
 
   // We need a new overrider to verify because it only loads once.
@@ -300,6 +310,7 @@ TEST_F(ExternalConstantsBuilderTests, TestReuseBuilder) {
   EXPECT_EQ(verifier2->GroupPolicies().size(), 1U);
   EXPECT_FALSE(verifier2->IsMachineManaged().has_value());
   EXPECT_FALSE(verifier2->EnableDiffUpdates());
+  EXPECT_EQ(verifier2->CecaConnectionTimeout(), kCecaConnectionTimeout);
 }
 
 TEST_F(ExternalConstantsBuilderTests, TestModify) {
@@ -324,6 +335,7 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
           .SetGroupPolicies(group_policies)
           .SetMachineManaged(std::make_optional(false))
           .SetEnableDiffUpdates(true)
+          .SetCecaConnectionTimeout(base::Seconds(55))
           .Overwrite());
 
   scoped_refptr<ExternalConstantsOverrider> verifier =
@@ -345,6 +357,7 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   EXPECT_TRUE(verifier->IsMachineManaged().has_value());
   EXPECT_FALSE(verifier->IsMachineManaged().value());
   EXPECT_TRUE(verifier->EnableDiffUpdates());
+  EXPECT_EQ(verifier->CecaConnectionTimeout(), base::Seconds(55));
 
   // Now we use a new builder to modify just the group policies.
   ExternalConstantsBuilder builder2;
@@ -375,6 +388,7 @@ TEST_F(ExternalConstantsBuilderTests, TestModify) {
   EXPECT_TRUE(verifier2->IsMachineManaged().has_value());
   EXPECT_FALSE(verifier2->IsMachineManaged().value());
   EXPECT_TRUE(verifier2->EnableDiffUpdates());
+  EXPECT_EQ(verifier2->CecaConnectionTimeout(), base::Seconds(55));
 }
 
 }  // namespace updater

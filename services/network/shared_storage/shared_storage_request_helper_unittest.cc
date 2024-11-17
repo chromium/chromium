@@ -194,18 +194,13 @@ class SharedStorageRequestHelperTest : public net::TestWithTaskEnvironment {
     }
   }
 
-  [[nodiscard]] bool HasSharedStorageWriteResponseHeader(
-      net::URLRequest* request,
-      const std::string& expected_value) {
-    std::string actual_value;
-    bool has_header = request->response_headers() &&
-                      request->response_headers()->GetNormalizedHeader(
-                          kSharedStorageWriteHeader, &actual_value);
-    if (has_header && actual_value != expected_value) {
-      LOG(ERROR) << "actual header value: " << actual_value;
-      LOG(ERROR) << "expected header value: " << expected_value;
+  [[nodiscard]] std::optional<std::string> GetSharedStorageWriteResponseHeader(
+      net::URLRequest* request) {
+    if (!request->response_headers()) {
+      return std::nullopt;
     }
-    return has_header && (actual_value == expected_value);
+    return request->response_headers()->GetNormalizedHeader(
+        kSharedStorageWriteHeader);
   }
 
  protected:
@@ -331,7 +326,7 @@ TEST_F(SharedStorageRequestHelperTest,
   EXPECT_TRUE(r->is_pending());
 
   test_delegate_.WaitUntilResponseStarted();
-  EXPECT_FALSE(HasSharedStorageWriteResponseHeader(r.get(), kHeader));
+  EXPECT_FALSE(GetSharedStorageWriteResponseHeader(r.get()));
 
   RunProcessIncomingResponse(r.get(), /*expect_success=*/false);
   test_delegate_.ResumeOnResponseStarted();
@@ -354,7 +349,7 @@ TEST_F(SharedStorageRequestHelperTest,
   EXPECT_TRUE(r->is_pending());
 
   test_delegate_.WaitUntilResponseStarted();
-  EXPECT_FALSE(HasSharedStorageWriteResponseHeader(r.get(), kHeader));
+  EXPECT_FALSE(GetSharedStorageWriteResponseHeader(r.get()));
 
   RunProcessIncomingResponse(r.get(), /*expect_success=*/false);
   test_delegate_.ResumeOnResponseStarted();
@@ -379,12 +374,12 @@ TEST_F(SharedStorageRequestHelperTest,
   EXPECT_TRUE(r->is_pending());
 
   test_delegate_.WaitUntilResponseStarted();
-  EXPECT_TRUE(HasSharedStorageWriteResponseHeader(r.get(), kHeader));
+  EXPECT_EQ(GetSharedStorageWriteResponseHeader(r.get()), kHeader);
 
   RunProcessIncomingResponse(r.get(), /*expect_success=*/false);
 
   // Header has been removed.
-  EXPECT_FALSE(HasSharedStorageWriteResponseHeader(r.get(), kHeader));
+  EXPECT_FALSE(GetSharedStorageWriteResponseHeader(r.get()));
   test_delegate_.ResumeOnResponseStarted();
 
   EXPECT_EQ(1, test_delegate_.response_started_count());
@@ -418,11 +413,11 @@ class SharedStorageRequestHelperProcessHeaderTest
     request->Start();
     DCHECK(request->is_pending());
     test_delegate_.WaitUntilResponseStarted();
-    EXPECT_TRUE(HasSharedStorageWriteResponseHeader(request, expected_header));
+    EXPECT_EQ(GetSharedStorageWriteResponseHeader(request), expected_header);
     RunProcessIncomingResponse(request, expect_success);
 
     // Header has been parsed and removed.
-    EXPECT_FALSE(HasSharedStorageWriteResponseHeader(request, expected_header));
+    EXPECT_FALSE(GetSharedStorageWriteResponseHeader(request));
     test_delegate_.ResumeOnResponseStarted();
 
     EXPECT_EQ(test_delegate_.response_started_count(), expected_response_count);

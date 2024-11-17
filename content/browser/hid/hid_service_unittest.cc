@@ -278,14 +278,15 @@ class HidServiceBaseTest : public testing::Test, public HidServiceTestHelper {
         }
         break;
     }
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
+    NOTREACHED();
   }
 
   void CheckHidServiceConnectedState(HidServiceCreationType type,
                                      bool expected_state) {
     if (type == kCreateUsingRenderFrameHost) {
-      ASSERT_EQ(web_contents_->IsConnectedToHidDevice(), expected_state);
+      ASSERT_EQ(
+          web_contents_->IsCapabilityActive(WebContents::CapabilityType::kHID),
+          expected_state);
     } else if (type == kCreateUsingServiceWorkerContextCore) {
       ASSERT_EQ(worker_version_->GetExternalRequestCountForTest(),
                 expected_state ? 1u : 0u);
@@ -528,7 +529,8 @@ TEST_F(HidServiceRenderFrameHostTest, OpenAndNavigateCrossOrigin) {
   connection_client()->Bind(
       hid_connection_client.InitWithNewPipeAndPassReceiver());
 
-  EXPECT_FALSE(contents()->IsConnectedToHidDevice());
+  EXPECT_FALSE(
+      contents()->IsCapabilityActive(WebContents::CapabilityType::kHID));
 
   base::RunLoop run_loop;
   mojo::Remote<device::mojom::HidConnection> connection;
@@ -549,7 +551,8 @@ TEST_F(HidServiceRenderFrameHostTest, OpenAndNavigateCrossOrigin) {
   run_loop.Run();
   EXPECT_TRUE(connection.is_connected());
 
-  EXPECT_TRUE(contents()->IsConnectedToHidDevice());
+  EXPECT_TRUE(
+      contents()->IsCapabilityActive(WebContents::CapabilityType::kHID));
 
   EXPECT_CALL(hid_delegate(),
               DecrementConnectionCount(browser_context(),
@@ -560,7 +563,8 @@ TEST_F(HidServiceRenderFrameHostTest, OpenAndNavigateCrossOrigin) {
   connection.set_disconnect_handler(disconnect_loop.QuitClosure());
 
   disconnect_loop.Run();
-  EXPECT_FALSE(contents()->IsConnectedToHidDevice());
+  EXPECT_FALSE(
+      contents()->IsCapabilityActive(WebContents::CapabilityType::kHID));
   EXPECT_FALSE(connection.is_connected());
 }
 

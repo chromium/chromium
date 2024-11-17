@@ -38,10 +38,11 @@ import org.chromium.ui.base.WindowAndroid;
 /**
  * Tab observer that tracks and sends engagement signal via the CCT service connection. The
  * engagement signal includes:
+ *
  * <ul>
- *    <li>User scrolling direction; </li>
- *    <li>Max scroll percent on a specific tab;</li>
- *    <li>Whether user had interaction with any tab when CCT closes.</li>
+ *   <li>User scrolling direction;
+ *   <li>Max scroll percent on a specific tab;
+ *   <li>Whether user had interaction with any tab when CCT closes.
  * </ul>
  *
  * The engagement signal will reset in navigation.
@@ -56,7 +57,6 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     // trying to increase coverage further would require an unreasonably high threshold.
     @VisibleForTesting static final int DEFAULT_AFTER_SCROLL_END_THRESHOLD_MS = 300;
 
-    private final CustomTabsConnection mConnection;
     private final TabObserverRegistrar mTabObserverRegistrar;
     private final EngagementSignalsCallback mCallback;
     private final CustomTabsSessionToken mSession;
@@ -76,8 +76,9 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     /**
      * A tab observer that will send real time scrolling signals to CustomTabsConnection, if a
      * active session exists.
+     *
      * @param tabObserverRegistrar See {@link
-     *         BaseCustomTabActivityComponent#resolveTabObserverRegistrar()}.
+     *     BaseCustomTabActivityComponent#resolveTabObserverRegistrar()}.
      * @param connection See {@link ChromeAppComponent#resolveCustomTabsConnection()}.
      * @param session See {@link CustomTabIntentDataProvider#getSession()}.
      * @param callback The {@link EngagementSignalsCallback} to sends the signals to.
@@ -85,11 +86,9 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
      */
     public RealtimeEngagementSignalObserver(
             TabObserverRegistrar tabObserverRegistrar,
-            CustomTabsConnection connection,
             CustomTabsSessionToken session,
             EngagementSignalsCallback callback,
             boolean hadScrollDown) {
-        mConnection = connection;
         mSession = session;
         mTabObserverRegistrar = tabObserverRegistrar;
         mCallback = callback;
@@ -103,22 +102,24 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
 
     public void destroy() {
         removeWebContentsDependencies(mWebContents);
-        mConnection.setEngagementSignalsAvailableSupplier(mSession, null);
+        CustomTabsConnection.getInstance().setEngagementSignalsAvailableSupplier(mSession, null);
         mTabObserverRegistrar.unregisterActivityTabObserver(this);
     }
 
     // extends CustomTabTabObserver
     @Override
     protected void onAttachedToInitialTab(@NonNull Tab tab) {
-        mConnection.setEngagementSignalsAvailableSupplier(
-                mSession, () -> shouldSendEngagementSignal(tab));
+        CustomTabsConnection.getInstance()
+                .setEngagementSignalsAvailableSupplier(
+                        mSession, () -> shouldSendEngagementSignal(tab));
         maybeStartSendingRealTimeEngagementSignals(tab);
     }
 
     @Override
     protected void onObservingDifferentTab(@NonNull Tab tab) {
-        mConnection.setEngagementSignalsAvailableSupplier(
-                mSession, () -> shouldSendEngagementSignal(tab));
+        CustomTabsConnection.getInstance()
+                .setEngagementSignalsAvailableSupplier(
+                        mSession, () -> shouldSendEngagementSignal(tab));
         removeWebContentsDependencies(mWebContents);
         maybeStartSendingRealTimeEngagementSignals(tab);
     }
@@ -126,8 +127,7 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
     @Override
     protected void onAllTabsClosed() {
         notifySessionEnded(mDidGetUserInteraction);
-        mDidGetUserInteraction = false;
-        mConnection.setEngagementSignalsAvailableSupplier(mSession, null);
+        resetEngagementSignals();
         removeWebContentsDependencies(mWebContents);
     }
 
@@ -165,13 +165,25 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
 
     @Override
     public void onDestroyed(Tab tab) {
+        collectUserInteraction(tab);
+        notifySessionEnded(mDidGetUserInteraction);
+        resetEngagementSignals();
         removeWebContentsDependencies(tab.getWebContents());
-        mConnection.setEngagementSignalsAvailableSupplier(mSession, null);
     }
 
     /** Prevents sending the next #onSessionEnded call. */
     void suppressNextSessionEndedCall() {
         mSuspendSessionEnded = true;
+    }
+
+    /** Collect any user interaction on the given tab. */
+    void collectUserInteraction(Tab tab) {
+        if (!shouldSendEngagementSignal(tab)) return;
+
+        TabInteractionRecorder recorder = TabInteractionRecorder.getFromTab(tab);
+        if (recorder == null) return;
+
+        mDidGetUserInteraction |= recorder.didGetUserInteraction();
     }
 
     /**
@@ -281,15 +293,6 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         mWebContents.addObserver(mEngagementSignalWebContentsObserver);
     }
 
-    private void collectUserInteraction(Tab tab) {
-        if (!shouldSendEngagementSignal(tab)) return;
-
-        TabInteractionRecorder recorder = TabInteractionRecorder.getFromTab(tab);
-        if (recorder == null) return;
-
-        mDidGetUserInteraction |= recorder.didGetUserInteraction();
-    }
-
     private void removeWebContentsDependencies(@Nullable WebContents webContents) {
         if (webContents != null) {
             if (mGestureStateListener != null) {
@@ -361,8 +364,17 @@ class RealtimeEngagementSignalObserver extends CustomTabTabObserver {
         }
     }
 
+    private void resetEngagementSignals() {
+        mDidGetUserInteraction = false;
+        CustomTabsConnection.getInstance().setEngagementSignalsAvailableSupplier(mSession, null);
+    }
+
     boolean getSuspendSessionEndedForTesting() {
         return mSuspendSessionEnded;
+    }
+
+    public boolean getDidGetUserInteractionForTesting() {
+        return mDidGetUserInteraction;
     }
 
     /** Parameter tracking the entire scrolling journey for the associated tab. */

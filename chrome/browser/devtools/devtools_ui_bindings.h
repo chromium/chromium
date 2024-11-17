@@ -101,6 +101,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 
   // Takes ownership over the |delegate|.
   void SetDelegate(Delegate* delegate);
+  void TransferDelegate(DevToolsUIBindings& other);
   void CallClientMethod(
       const std::string& object_name,
       const std::string& method_name,
@@ -350,6 +351,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
   base::TimeTicks session_start_time_;
 
   std::unique_ptr<AidaClient> aida_client_;
+  bool can_access_aida_ = false;
   base::UnguessableToken session_id_for_logging_;
   base::WeakPtrFactory<DevToolsUIBindings> weak_factory_{this};
 };

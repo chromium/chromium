@@ -29,6 +29,9 @@ class ExceptionState;
 class IceTransportAdapterCrossThreadFactory;
 class RTCIceCandidate;
 class RTCPeerConnection;
+class V8RTCIceGatheringState;
+class V8RTCIceRole;
+class V8RTCIceTransportState;
 
 // Blink bindings for the RTCIceTransport JavaScript object.
 //
@@ -83,9 +86,9 @@ class MODULES_EXPORT RTCIceTransport final
   void Stop() { Close(CloseReason::kStopped); }
 
   // rtc_ice_transport.idl
-  String role() const;
-  String state() const;
-  String gatheringState() const;
+  std::optional<V8RTCIceRole> role() const;
+  V8RTCIceTransportState state() const;
+  V8RTCIceGatheringState gatheringState() const;
   const HeapVector<Member<RTCIceCandidate>>& getLocalCandidates() const;
   const HeapVector<Member<RTCIceCandidate>>& getRemoteCandidates() const;
   RTCIceCandidatePair* getSelectedCandidatePair() const;

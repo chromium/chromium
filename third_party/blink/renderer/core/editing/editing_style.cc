@@ -523,7 +523,8 @@ static bool IsRedundantTextAlign(MutableCSSPropertyValueSet* style,
     return false;
   if (text_align == base_text_align)
     return true;
-  const ComputedStyle* node_style = node->GetComputedStyle();
+  const ComputedStyle* node_style =
+      node->GetComputedStyleForElementOrLayoutObject();
   if (!node_style) {
     return true;
   }
@@ -604,7 +605,7 @@ void EditingStyle::Init(Node* node, PropertiesToInclude properties_to_include) {
   }
 
   const ComputedStyle* computed_style =
-      node ? node->GetComputedStyle() : nullptr;
+      node ? node->GetComputedStyleForElementOrLayoutObject() : nullptr;
   if (computed_style) {
     // Fix for crbug.com/768261: due to text-autosizing, reading the current
     // computed font size and re-writing it to an element may actually cause the
@@ -1454,8 +1455,7 @@ static MutableCSSPropertyValueSet* ExtractEditingProperties(
                                    kOnlyInheritableEditingProperties);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void EditingStyle::MergeInlineAndImplicitStyleOfElement(

@@ -1,0 +1,19 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("safe_browsing") {
+  sources = [
+    "chrome_safe_browsing_ui.cc",
+    "chrome_safe_browsing_ui.h",
+  ]
+  public_deps = [
+    "//components/safe_browsing/content/browser/web_ui",
+    "//components/safe_browsing/core/common",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+  deps = [ "//chrome/browser/safe_browsing" ]
+}

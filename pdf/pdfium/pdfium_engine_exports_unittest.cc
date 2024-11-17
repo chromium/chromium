@@ -10,7 +10,9 @@
 #include "base/functional/callback.h"
 #include "base/path_service.h"
 #include "base/test/mock_callback.h"
+#include "build/chromeos_buildflags.h"
 #include "pdf/pdf.h"
+#include "pdf/pdfium/pdfium_api_wrappers.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +24,7 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include <memory>
 #include <string>
 
@@ -32,12 +34,13 @@
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace chrome_pdf {
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 class ScopedLibraryInitializer {
  public:
   ScopedLibraryInitializer() {
@@ -46,6 +49,50 @@ class ScopedLibraryInitializer {
   }
   ~ScopedLibraryInitializer() { ShutdownSDK(); }
 };
+
+// Returns all characters in the page.
+std::string GetText(base::span<const uint8_t> pdf, int page_index) {
+  ScopedFPDFDocument document = LoadPdfData(pdf);
+  CHECK(document);
+  ScopedFPDFPage page(FPDF_LoadPage(document.get(), page_index));
+  CHECK(page);
+  ScopedFPDFTextPage text_page(FPDFText_LoadPage(page.get()));
+  CHECK(text_page);
+  int char_count = FPDFText_CountChars(text_page.get());
+  CHECK_GE(char_count, 0);
+  std::u16string text;
+  text.reserve(char_count);
+  for (int i = 0; i < char_count; ++i) {
+    unsigned int char_code = FPDFText_GetUnicode(text_page.get(), i);
+    text += static_cast<char16_t>(char_code);
+  }
+  return base::UTF16ToUTF8(text);
+}
+
+std::vector<gfx::RectF> GetTextPositions(base::span<const uint8_t> pdf,
+                                         int page_index) {
+  ScopedFPDFDocument document = LoadPdfData(pdf);
+  CHECK(document);
+  ScopedFPDFPage page(FPDF_LoadPage(document.get(), page_index));
+  CHECK(page);
+  ScopedFPDFTextPage text_page(FPDFText_LoadPage(page.get()));
+  CHECK(text_page);
+  int char_count = FPDFText_CountChars(text_page.get());
+  CHECK_GE(char_count, 0);
+  std::vector<gfx::RectF> positions;
+  positions.reserve(char_count);
+  for (int i = 0; i < char_count; ++i) {
+    double left;
+    double right;
+    double bottom;
+    double top;
+    CHECK(
+        FPDFText_GetCharBox(text_page.get(), i, &left, &right, &bottom, &top));
+    positions.push_back(gfx::RectF(left, bottom, right - left, top - bottom));
+  }
+  return positions;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 class PDFiumEngineExportsTest : public testing::Test {
  public:
@@ -67,51 +114,6 @@ class PDFiumEngineExportsTest : public testing::Test {
  private:
   base::FilePath pdf_data_dir_;
 };
-
-// Returns all characters in the page.
-std::string GetText(base::span<const uint8_t> pdf, int page_index) {
-  ScopedFPDFDocument document(
-      FPDF_LoadMemDocument64(pdf.data(), pdf.size(), nullptr));
-  CHECK(document);
-  ScopedFPDFPage page(FPDF_LoadPage(document.get(), page_index));
-  CHECK(page);
-  ScopedFPDFTextPage text_page(FPDFText_LoadPage(page.get()));
-  CHECK(text_page);
-  int char_count = FPDFText_CountChars(text_page.get());
-  CHECK_GE(char_count, 0);
-  std::u16string text;
-  text.reserve(char_count);
-  for (int i = 0; i < char_count; ++i) {
-    unsigned int char_code = FPDFText_GetUnicode(text_page.get(), i);
-    text += static_cast<char16_t>(char_code);
-  }
-  return base::UTF16ToUTF8(text);
-}
-
-std::vector<gfx::RectF> GetTextPositions(base::span<const uint8_t> pdf,
-                                         int page_index) {
-  ScopedFPDFDocument document(
-      FPDF_LoadMemDocument64(pdf.data(), pdf.size(), nullptr));
-  CHECK(document);
-  ScopedFPDFPage page(FPDF_LoadPage(document.get(), page_index));
-  CHECK(page);
-  ScopedFPDFTextPage text_page(FPDFText_LoadPage(page.get()));
-  CHECK(text_page);
-  int char_count = FPDFText_CountChars(text_page.get());
-  CHECK_GE(char_count, 0);
-  std::vector<gfx::RectF> positions;
-  positions.reserve(char_count);
-  for (int i = 0; i < char_count; ++i) {
-    double left;
-    double right;
-    double bottom;
-    double top;
-    CHECK(
-        FPDFText_GetCharBox(text_page.get(), i, &left, &right, &bottom, &top));
-    positions.push_back(gfx::RectF(left, bottom, right - left, top - bottom));
-  }
-  return positions;
-}
 
 }  // namespace
 
@@ -221,7 +223,7 @@ TEST_F(PDFiumEngineExportsTest, ConvertPdfDocumentToNupPdf) {
   }
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#if BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 constexpr char kExpectedText[] = "Hello World! 你好！🙂";
 
 TEST_F(PDFiumEngineExportsTest, Searchify) {
@@ -446,6 +448,6 @@ TEST_F(PDFiumEngineExportsTest, PdfProgressiveSearchifierText) {
   }
 }
 
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+#endif  // BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 }  // namespace chrome_pdf

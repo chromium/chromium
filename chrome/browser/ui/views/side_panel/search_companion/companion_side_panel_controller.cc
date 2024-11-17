@@ -6,7 +6,6 @@
 
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/companion/core/features.h"
 #include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -191,7 +190,8 @@ void CompanionSidePanelController::RemoveObserver() {
 }
 
 std::unique_ptr<views::View>
-CompanionSidePanelController::CreateCompanionWebView() {
+CompanionSidePanelController::CreateCompanionWebView(
+    SidePanelEntryScope& scope) {
   auto panel_container_view = std::make_unique<views::FlexLayoutView>();
   panel_container_view_ = panel_container_view.get();
 
@@ -331,13 +331,7 @@ void CompanionSidePanelController::DidOpenRequestedURL(
   auto* companion_helper =
       companion::CompanionTabHelper::FromWebContents(tab_web_contents);
   if (companion_helper) {
-    auto* pref_service = browser->profile()->GetPrefs();
-    bool is_entry_point_default_pinned =
-        pref_service ? pref_service
-                           ->GetDefaultPrefValue(
-                               prefs::kSidePanelCompanionEntryPinnedToToolbar)
-                           ->GetBool()
-                     : false;
+    bool is_entry_point_default_pinned = false;
     auto link_open_action =
         open_in_current_tab
             ? side_panel::mojom::LinkOpenMetadata::LinkOpenAction::kClobbered

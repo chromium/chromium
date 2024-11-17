@@ -27,15 +27,6 @@ ${this.shouldDisplayVerticalBanners_ ? html`
   <cr-lazy-render-lit id="profileSwitch"
       .template="${() => html`<profile-switch slot="view"></profile-switch>`}">
   </cr-lazy-render-lit>
-
-  <if expr="chromeos_lacros">
-    <cr-lazy-render-lit id="accountSelectionLacros"
-        .template="${() => html`
-          <account-selection-lacros slot="view"
-              .profileThemeInfo="${this.newProfileThemeInfo}">
-          </account-selection-lacros>`}">
-    </cr-lazy-render-lit>
-  </if>
 </cr-view-manager>
 <!--_html_template_end_-->`;
 }

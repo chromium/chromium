@@ -6,11 +6,11 @@
 import 'chrome://extensions/extensions.js';
 
 import type {ExtensionsMv2DeprecationPanelElement} from 'chrome://extensions/extensions.js';
+import {Mv2ExperimentStage} from 'chrome://extensions/extensions.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestService} from './test_service.js';
 import {createExtensionInfo} from './test_util.js';
@@ -29,12 +29,11 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
       isAffectedByMV2Deprecation: true,
       mustRemainInstalled: false,
     })];
-    // Stage 1 represents Mv2ExperimentStage.WARNING.
-    panelElement.mv2ExperimentStage = 1;
+    panelElement.mv2ExperimentStage = Mv2ExperimentStage.WARNING;
     panelElement.delegate = mockDelegate;
     document.body.appendChild(panelElement);
 
-    return flushTasks();
+    return microtasksFinished();
   });
 
   /**
@@ -68,11 +67,14 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
     assertEquals('Extension A', infoA.textContent!.trim());
 
     // Add a new extension to the panel.
-    panelElement.push('extensions', createExtensionInfo({
-                        name: 'Extension B',
-                        isAffectedByMV2Deprecation: true,
-                      }));
-    await flushTasks();
+    panelElement.extensions = [
+      ...panelElement.extensions,
+      createExtensionInfo({
+        name: 'Extension B',
+        isAffectedByMV2Deprecation: true,
+      }),
+    ];
+    await microtasksFinished();
 
     // Verify there are two extension rows.
     extensionRows =
@@ -118,13 +120,13 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
         const recommendationsUrl =
             `https://chromewebstore.google.com/detail/${id}` +
             `/related-recommendations`;
-        panelElement.set('extensions.0', createExtensionInfo({
-                           name: 'Extension A',
-                           id,
-                           isAffectedByMV2Deprecation: true,
-                           recommendationsUrl,
-                         }));
-        await flushTasks();
+        panelElement.extensions = [createExtensionInfo({
+          name: 'Extension A',
+          id,
+          isAffectedByMV2Deprecation: true,
+          recommendationsUrl,
+        })];
+        await microtasksFinished();
 
         // Find alternative button is visible when the extension has a
         // recommendations url.
@@ -148,13 +150,14 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
     assertFalse(isVisible(removeButton));
   });
 
-  test('find alternative action is always hidden', function() {
+  test('find alternative action is always hidden', async () => {
     // Open the extension's action menu.
     const extension = getExtension();
     const actionButton =
         extension.querySelector<CrIconButtonElement>('#actionMenuButton');
     assertTrue(!!actionButton);
     actionButton.click();
+    await microtasksFinished();
 
     // Find alternative action is always hidden.
     const findAlternativeAction =
@@ -173,6 +176,7 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
             extension.querySelector<CrIconButtonElement>('#actionMenuButton');
         assertTrue(!!actionButton);
         actionButton.click();
+        await microtasksFinished();
 
         // Remove button is visible when the extension doesn't need to remain
         // installed.
@@ -190,13 +194,13 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
             mockDelegate.getArgs('deleteItem'));
 
         // Set the extension property to be force installed.
-        panelElement.set('extensions.0', createExtensionInfo({
-                           name: 'Extension A',
-                           id: 'a'.repeat(32),
-                           isAffectedByMV2Deprecation: true,
-                           mustRemainInstalled: true,
-                         }));
-        await flushTasks();
+        panelElement.extensions = [createExtensionInfo({
+          name: 'Extension A',
+          id: 'a'.repeat(32),
+          isAffectedByMV2Deprecation: true,
+          mustRemainInstalled: true,
+        })];
+        await microtasksFinished();
 
         // Open the extension's action menu button again, since clicking on the
         // action closed the menu.
@@ -205,6 +209,7 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
             extension.querySelector<CrIconButtonElement>('#actionMenuButton');
         assertTrue(!!actionButton);
         actionButton.click();
+        await microtasksFinished();
 
         // Remove action is hidden when the extension must remain installed.
         removeAction = panelElement.shadowRoot!.querySelector<HTMLElement>(
@@ -222,6 +227,7 @@ suite('ExtensionsMV2DeprecationPanel_WarningStage', function() {
             extension.querySelector<CrIconButtonElement>('#actionMenuButton');
         assertTrue(!!actionButton);
         actionButton.click();
+        await microtasksFinished();
 
         // Keep action is always visible.
         const keepAction =

@@ -51,8 +51,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.test.util.UiDisableIf;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.Collections;
 import java.util.concurrent.TimeoutException;
@@ -327,7 +326,6 @@ public class TabModelMergingTest {
      * @param activity The activity whose state will be observed.
      * @param expected If true, wait until activity is on the {@code state}; otherwise, wait util
      *     activity is on any state other than {@code state}.
-     * @throws TimeoutException
      */
     private void waitForActivityStateChange(
             @ActivityState int state, Activity activity, boolean expected) throws TimeoutException {
@@ -537,7 +535,7 @@ public class TabModelMergingTest {
     @Test
     @LargeTest
     @Feature({"TabPersistentStore", "MultiWindow"})
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @DisabledTest(message = "https://crbug.com/1275082")
     public void testMergeWhileInTabSwitcher() {
         LayoutTestUtils.startShowingAndWaitForLayout(
@@ -615,7 +613,7 @@ public class TabModelMergingTest {
     @Test
     @LargeTest
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P)
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338997261
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338997261
     public void testMergeOnMultiDisplay_CTA_Resumed_CTA2_Not_Resumed() throws TimeoutException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -667,7 +665,7 @@ public class TabModelMergingTest {
     @Test
     @LargeTest
     @DisableIf.Build(sdk_is_less_than = VERSION_CODES.P)
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338997261
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338997261
     public void testMergeOnMultiDisplay_OnDisplayChanged() throws TimeoutException {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

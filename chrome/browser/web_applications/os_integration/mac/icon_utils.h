@@ -18,6 +18,15 @@ namespace web_app {
 // design templates.
 gfx::Image CreateAppleMaskedAppIcon(const gfx::Image& base_icon);
 
+// Check if an icon has a solid color border
+bool HasSolidColorBorder(const gfx::Image& icon);
+
+// Creates a masked icon image from a base icon image. This mask is only
+// for the DIY app. After resizing, adding a white background, and masking
+// the icon, returns an icon masked to a rounded rect according to Apple
+// design templates.
+gfx::Image MaskDiyAppIcon(const gfx::Image& base_icon);
+
 // Creates a canvas the same size as `overlay`, copies the appropriate
 // representation from `background` into it (according to Cocoa), then draws
 // `overlay` over it using NSCompositingOperationSourceOver.

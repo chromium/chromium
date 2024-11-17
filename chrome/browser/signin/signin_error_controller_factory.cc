@@ -37,7 +37,8 @@ SigninErrorControllerFactory* SigninErrorControllerFactory::GetInstance() {
   return instance.get();
 }
 
-KeyedService* SigninErrorControllerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+SigninErrorControllerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
   SigninErrorController::AccountMode account_mode =
@@ -48,6 +49,6 @@ KeyedService* SigninErrorControllerFactory::BuildServiceInstanceFor(
           ? SigninErrorController::AccountMode::ANY_ACCOUNT
           : SigninErrorController::AccountMode::PRIMARY_ACCOUNT;
 #endif
-  return new SigninErrorController(
+  return std::make_unique<SigninErrorController>(
       account_mode, IdentityManagerFactory::GetForProfile(profile));
 }

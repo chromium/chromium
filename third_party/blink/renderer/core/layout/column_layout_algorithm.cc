@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/not_fatal_until.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm.h"
 #include "third_party/blink/renderer/core/layout/block_layout_algorithm_utils.h"
 #include "third_party/blink/renderer/core/layout/column_spanner_path.h"
@@ -258,6 +259,11 @@ const LayoutResult* ColumnLayoutAlgorithm::Layout() {
   // legacy fragmentainer group machinery needs the count.
   if (!IsBreakInside(GetBreakToken())) {
     node_.StoreColumnSizeAndCount(column_inline_size_, used_column_count_);
+
+    StyleEngine& style_engine = Node().GetDocument().GetStyleEngine();
+    style_engine.SetInScrollMarkersAttachment(true);
+    To<Element>(Node().EnclosingDOMNode())->ClearColumnPseudoElements();
+    style_engine.SetInScrollMarkersAttachment(false);
   }
 
   // If we know the block-size of the fragmentainers in an outer fragmentation
@@ -1049,11 +1055,32 @@ const LayoutResult* ColumnLayoutAlgorithm::LayoutRow(
     *margin_strut = MarginStrut();
   }
 
+  Element* element = To<Element>(Node().EnclosingDOMNode());
+  StyleEngine::AttachScrollMarkersScope scope(
+      Node().GetDocument().GetStyleEngine());
+
+  wtf_size_t num_columns = 0u;
   // Commit all column fragments to the fragment builder.
   for (auto result_with_offset : new_columns) {
     const PhysicalBoxFragment& column = result_with_offset.Fragment();
     container_builder_.AddChild(column, result_with_offset.offset);
     PropagateBaselineFromChild(column, result_with_offset.offset.block_offset);
+
+    // Create a ::column pseudo element, and, if needed, also a
+    // ::column::scroll-marker pseudo element child of ::column.
+    LogicalRect column_logical_rect(result_with_offset.offset, column_size);
+    const WritingModeConverter converter(
+        GetConstraintSpace().GetWritingDirection(),
+        LogicalSize(ChildAvailableSize().inline_size, column_block_size_));
+    ColumnPseudoElement* column_pseudo =
+        element->CreateColumnPseudoElementIfNeeded(
+            num_columns, converter.ToPhysical(column_logical_rect));
+    num_columns += column_pseudo != nullptr;
+    if (column_pseudo &&
+        column_pseudo->GetComputedStyle()->GetScrollSnapAlign() !=
+            cc::ScrollSnapAlign()) {
+      container_builder_.AddSnapAreaForColumn(column_pseudo);
+    }
   }
 
   if (min_break_appeal)
@@ -1459,7 +1486,7 @@ LayoutUnit ColumnLayoutAlgorithm::ConstrainColumnBlockSize(
 
   const Length& block_length = style.LogicalHeight();
   const Length& auto_length = space.IsBlockAutoBehaviorStretch()
-                                  ? Length::FillAvailable()
+                                  ? Length::Stretch()
                                   : Length::FitContent();
 
   extent = ResolveMainBlockLength(space, style, BorderPadding(), block_length,

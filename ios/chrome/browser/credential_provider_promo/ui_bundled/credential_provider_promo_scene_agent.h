@@ -9,7 +9,6 @@
 
 #import "ios/chrome/browser/shared/coordinator/scene/observing_scene_state_agent.h"
 
-class PrefService;
 class PromosManager;
 
 // A scene agent that checks whether the credential provider extension has been
@@ -18,8 +17,7 @@ class PromosManager;
 
 // Initializes an CredentialProviderPromoSceneAgent instance with given
 // PromosManager.
-- (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                          prefService:(PrefService*)prefService;
+- (instancetype)initWithPromosManager:(PromosManager*)promosManager;
 
 // Unavailable. Use initWithPromosManager:.
 - (instancetype)init NS_UNAVAILABLE;

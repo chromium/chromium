@@ -21,6 +21,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/page/draggable_region.mojom.h"
+#include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
 
 namespace views {
 
@@ -45,6 +46,17 @@ class MockHost : public WebUIContentsWrapper::Host {
       content::WebContents* contents) override {
     ++draggable_regions_changed_called_;
   }
+  content::WebContents* AddNewContents(
+      content::WebContents* source,
+      std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
+      WindowOpenDisposition disposition,
+      const blink::mojom::WindowFeatures& window_features,
+      bool user_gesture,
+      bool* was_blocked) override {
+    ++add_new_contents_called_;
+    return nullptr;
+  }
 
   base::WeakPtr<MockHost> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -61,6 +73,7 @@ class MockHost : public WebUIContentsWrapper::Host {
   int draggable_regions_changed_called() const {
     return draggable_regions_changed_called_;
   }
+  int add_new_contents_called() const { return add_new_contents_called_; }
 
  private:
   int show_ui_called_ = 0;
@@ -68,6 +81,7 @@ class MockHost : public WebUIContentsWrapper::Host {
   int show_custom_context_menu_called_ = 0;
   int resize_due_to_auto_resize_called_ = 0;
   int draggable_regions_changed_called_ = 0;
+  int add_new_contents_called_ = 0;
 
   base::WeakPtrFactory<MockHost> weak_ptr_factory_{this};
 };
@@ -243,6 +257,32 @@ TEST_F(WebUIContentsWrapperTest, HostIsResizedOnSetHost) {
       ->SetMainFrameSize(gfx::Size(100, 100));
   contents_wrapper()->SetHost(host.GetWeakPtr());
   EXPECT_EQ(1, host.resize_due_to_auto_resize_called());
+}
+
+TEST_F(WebUIContentsWrapperTest, HostNotifiedOnAddNewContents) {
+  MockHost host;
+  EXPECT_EQ(0, host.add_new_contents_called());
+
+  contents_wrapper()->SetHost(host.GetWeakPtr());
+  bool blocked;
+  contents_wrapper()->AddNewContents(
+      nullptr /* source */,
+      std::unique_ptr<content::WebContents>() /* new_contents */,
+      GURL() /* target_url */,
+      WindowOpenDisposition::CURRENT_TAB /* disposition */,
+      blink::mojom::WindowFeatures() /* window_features */,
+      false /* user_gesture */, &blocked /* was_blocked */);
+  EXPECT_EQ(1, host.add_new_contents_called());
+
+  contents_wrapper()->SetHost(nullptr);
+  contents_wrapper()->AddNewContents(
+      nullptr /* source */,
+      std::unique_ptr<content::WebContents>() /* new_contents */,
+      GURL() /* target_url */,
+      WindowOpenDisposition::CURRENT_TAB /* disposition */,
+      blink::mojom::WindowFeatures() /* window_features */,
+      false /* user_gesture */, &blocked /* was_blocked */);
+  EXPECT_EQ(1, host.add_new_contents_called());
 }
 
 }  // namespace test

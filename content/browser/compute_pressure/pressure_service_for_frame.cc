@@ -38,6 +38,12 @@ std::optional<base::UnguessableToken> PressureServiceForFrame::GetTokenFor(
   return std::nullopt;
 }
 
+RenderFrameHost* PressureServiceForFrame::GetRenderFrameHost() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return &render_frame_host();
+}
+
 DOCUMENT_USER_DATA_KEY_IMPL(PressureServiceForFrame);
 
 }  // namespace content

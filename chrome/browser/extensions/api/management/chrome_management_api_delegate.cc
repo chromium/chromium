@@ -215,16 +215,6 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
       const std::string& title,
       const GURL& launch_url,
       const favicon_base::FaviconImageResult& image_result) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // Avoid accessing the WebAppProvider when web apps are enabled in Lacros
-    // (and thus disabled in Ash).
-    if (web_app::IsWebAppsCrosapiEnabled()) {
-      function->FinishCreateWebApp(std::string(),
-                                   /*install_success=*/false);
-      return;
-    }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     // GenerateAppForLink API doesn't allow a manifest ID to be specified, so
     // just use the launch_url for both manifest ID and start URL. This is a
     // reasonable behavior for "DIY apps" generated for a specific URL but
@@ -386,7 +376,7 @@ void OnWebAppInstallabilityChecked(
           base::BindOnce(&OnWebAppInstallCompleted, std::move(callback)));
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 extensions::SupervisedUserExtensionsDelegate*
@@ -525,15 +515,6 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
     content::BrowserContext* context,
     const GURL& web_app_url,
     InstallOrLaunchWebAppCallback callback) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Avoid accessing the WebAppProvider when web apps are enabled in Lacros (and
-  // thus disabled in Ash).
-  if (web_app::IsWebAppsCrosapiEnabled()) {
-    std::move(callback).Run(InstallOrLaunchWebAppResult::kUnknownError);
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   Profile* profile = Profile::FromBrowserContext(context);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);

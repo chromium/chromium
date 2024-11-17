@@ -6,9 +6,9 @@
 
 namespace gl {
 
-MockEGLInterface::MockEGLInterface() {}
+MockEGLInterface::MockEGLInterface() = default;
 
-MockEGLInterface::~MockEGLInterface() {}
+MockEGLInterface::~MockEGLInterface() = default;
 
 MockEGLInterface* MockEGLInterface::interface_;
 

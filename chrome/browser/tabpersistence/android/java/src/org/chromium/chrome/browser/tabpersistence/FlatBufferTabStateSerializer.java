@@ -90,6 +90,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
         }
         TabStateFlatBufferV1.addTabGroupId(
                 fbb, TabGroupIdToken.createTabGroupIdToken(fbb, tokenHigh, tokenLow));
+        TabStateFlatBufferV1.addTabHasSensitiveContent(fbb, state.tabHasSensitiveContent);
         int r = TabStateFlatBufferV1.endTabStateFlatBufferV1(fbb);
         fbb.finish(r);
         return fbb.dataBuffer();
@@ -123,6 +124,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
             state.tabLaunchTypeAtCreation =
                     getLaunchTypeFromFlatBuffer(tabStateFlatBuffer.launchTypeAtCreation());
             state.themeColor = tabStateFlatBuffer.themeColor();
+            state.tabHasSensitiveContent = tabStateFlatBuffer.tabHasSensitiveContent();
             ByteBuffer webContentsStateBuffer =
                     tabStateFlatBuffer.webContentsStateBytesAsByteBuffer() == null
                             ? ByteBuffer.allocateDirect(0)
@@ -211,6 +213,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchType.FROM_SYNC_BACKGROUND;
             case TabLaunchTypeAtCreation.FROM_RECENT_TABS_FOREGROUND:
                 return TabLaunchType.FROM_RECENT_TABS_FOREGROUND;
+            case TabLaunchTypeAtCreation.FROM_COLLABORATION_BACKGROUND_IN_GROUP:
+                return TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP;
             case TabLaunchTypeAtCreation.SIZE:
                 return TabLaunchType.SIZE;
             case TabLaunchTypeAtCreation.UNKNOWN:
@@ -277,6 +281,8 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
                 return TabLaunchTypeAtCreation.FROM_SYNC_BACKGROUND;
             case TabLaunchType.FROM_RECENT_TABS_FOREGROUND:
                 return TabLaunchTypeAtCreation.FROM_RECENT_TABS_FOREGROUND;
+            case TabLaunchTypeAtCreation.FROM_COLLABORATION_BACKGROUND_IN_GROUP:
+                return TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP;
             case TabLaunchType.SIZE:
                 return TabLaunchTypeAtCreation.SIZE;
             default:

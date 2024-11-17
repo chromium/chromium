@@ -82,13 +82,14 @@ constexpr uint32_t kMaxPdfSizeInBytes = 1024u * 1024u;
 // A function that performs IO operations to read and render PDF thumbnail
 // Must be run by a blocking task runner.
 std::string ReadLocalPdf(const base::FilePath& pdf_file_path) {
-  int64_t file_size;
-  if (!base::GetFileSize(pdf_file_path, &file_size)) {
+  std::optional<int64_t> file_size = base::GetFileSize(pdf_file_path);
+  if (!file_size.has_value()) {
     DLOG(ERROR) << "Failed to get file size of " << pdf_file_path;
     return std::string();
   }
-  if (file_size > kMaxPdfSizeInBytes) {
-    DLOG(ERROR) << "File " << pdf_file_path << " is too large " << file_size;
+  if (file_size.value() > kMaxPdfSizeInBytes) {
+    DLOG(ERROR) << "File " << pdf_file_path << " is too large "
+                << file_size.value();
     return std::string();
   }
   std::string contents;

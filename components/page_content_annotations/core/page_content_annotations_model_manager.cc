@@ -151,7 +151,7 @@ void PageContentAnnotationsModelManager::MaybeStartNextAnnotationJob() {
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace page_content_annotations

@@ -51,11 +51,10 @@
   _viewController = [[BulkUploadViewController alloc] init];
   _viewController.delegate = self;
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browserState);
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
+      IdentityManagerFactory::GetForProfile(profile);
+  syncer::SyncService* syncService = SyncServiceFactory::GetForProfile(profile);
   _mediator = [[BulkUploadMediator alloc] initWithSyncService:syncService
                                               identityManager:identityManager];
   _mediator.delegate = self;

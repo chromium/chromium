@@ -41,13 +41,6 @@ BASE_FEATURE(kAndroidAutofillDeprecateAccessibilityApi,
              "AndroidAutofillDeprecateAccessibilityApi",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, we stop relying on `known_success` in FormSubmitted signal to
-// decide whether to defer submission on not, and instead we directly inform the
-// provider of submission.
-BASE_FEATURE(kAndroidAutofillDirectFormSubmission,
-             "AndroidAutofillDirectFormSubmission",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // If enabled, offer prefill requests (i.e. calls to
 // `AutofillManager.notifyVirtualViewsReady`) to change
 // password forms as well. A form can't be login and change password at the same

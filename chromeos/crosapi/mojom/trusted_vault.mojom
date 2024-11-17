@@ -7,7 +7,7 @@ module crosapi.mojom;
 import "chromeos/crosapi/mojom/account_manager.mojom";
 
 // Allows lacros-chrome to observe trusted vault state changes.
-[Stable, Uuid="3402f0a2-81f4-474a-9076-ffedb5123eaf"]
+[Uuid="3402f0a2-81f4-474a-9076-ffedb5123eaf"]
 interface TrustedVaultBackendObserver {
   // Invoked when the keys inside the vault have changed.
   OnTrustedVaultKeysChanged@0();
@@ -18,7 +18,7 @@ interface TrustedVaultBackendObserver {
 
 // Defines a TrustedVault API (implemented by ash-chrome), allowing to implement
 // TrustedVaultClient in lacros-chrome, that will rely on state in ash-chrome.
-[Stable, Uuid="8f8b16c0-4879-4c42-aa1c-78f76a9839db"]
+[Uuid="8f8b16c0-4879-4c42-aa1c-78f76a9839db"]
 interface TrustedVaultBackend {
   // Adds a new observer.
   AddObserver@0(pending_remote<TrustedVaultBackendObserver> observer);
@@ -61,7 +61,7 @@ interface TrustedVaultBackend {
   ClearLocalDataForAccount@6(AccountKey account_key);
 };
 
-[Stable, Extensible]
+[Extensible]
 enum SecurityDomainId {
   [Default] kUnknown,
   kChromeSync,
@@ -70,7 +70,7 @@ enum SecurityDomainId {
 
 // Defines an API for lacros-chrome to find available `TrustedVaultBackend`
 // services for different security domains. Implemented in ash-chrome.
-[Stable, Uuid="04638808-a1c6-42a0-8857-44094e73ef58"]
+[Uuid="04638808-a1c6-42a0-8857-44094e73ef58"]
 interface TrustedVaultBackendService {
    // Binds `backend` to the `TurstedVaultBackend` service instance for the
    // provided security domain.

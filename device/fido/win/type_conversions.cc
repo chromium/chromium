@@ -95,7 +95,7 @@ uint32_t ToWinTransportsMask(
       case FidoTransportProtocol::kHybrid:
         result |= WEBAUTHN_CTAP_TRANSPORT_HYBRID;
         break;
-      case FidoTransportProtocol::kAndroidAccessory:
+      case FidoTransportProtocol::kDeprecatedAoa:
         // AOA is unsupported by the Windows API.
         break;
     }
@@ -223,8 +223,7 @@ uint32_t ToWinUserVerificationRequirement(
     case UserVerificationRequirement::kDiscouraged:
       return WEBAUTHN_USER_VERIFICATION_REQUIREMENT_DISCOURAGED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return WEBAUTHN_USER_VERIFICATION_REQUIREMENT_REQUIRED;
+  NOTREACHED();
 }
 
 uint32_t ToWinAuthenticatorAttachment(
@@ -237,8 +236,7 @@ uint32_t ToWinAuthenticatorAttachment(
     case AuthenticatorAttachment::kCrossPlatform:
       return WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM;
   }
-  NOTREACHED_IN_MIGRATION();
-  return WEBAUTHN_AUTHENTICATOR_ATTACHMENT_ANY;
+  NOTREACHED();
 }
 
 std::vector<WEBAUTHN_CREDENTIAL> ToWinCredentialVector(
@@ -352,8 +350,7 @@ uint32_t ToWinAttestationConveyancePreference(
                  ? WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_DIRECT
                  : WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return WEBAUTHN_ATTESTATION_CONVEYANCE_PREFERENCE_NONE;
+  NOTREACHED();
 }
 
 std::vector<DiscoverableCredentialMetadata>

@@ -120,7 +120,6 @@ public class BookmarkToolbarMediatorTest {
     private void initModelAndMediator() {
         mModel =
                 new PropertyModel.Builder(BookmarkToolbarProperties.ALL_KEYS)
-                        .with(BookmarkToolbarProperties.BOOKMARK_OPENER, mBookmarkOpener)
                         .with(BookmarkToolbarProperties.SELECTION_DELEGATE, mSelectionDelegate)
                         .with(BookmarkToolbarProperties.BOOKMARK_UI_MODE, BookmarkUiMode.LOADING)
                         .with(BookmarkToolbarProperties.IS_DIALOG_UI, false)

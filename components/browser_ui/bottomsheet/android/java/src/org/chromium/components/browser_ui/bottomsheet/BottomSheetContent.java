@@ -4,10 +4,12 @@
 
 package org.chromium.components.browser_ui.bottomsheet;
 
+import android.content.Context;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -206,15 +208,16 @@ public interface BottomSheetContent {
     default void onBackPressed() {}
 
     /**
-     * @return The resource id of the content description for the bottom sheet. This is
-     *         generally the name of the feature/content that is showing. 'Swipe down to close.'
-     *         will be automatically appended after the content description.
+     * Returns the content description for the bottom sheet. This is generally the name of the
+     * feature/content that is showing. It can be a dynamic string. 'Swipe down to close.' will be
+     * automatically appended after the content description.
      */
-    int getSheetContentDescriptionStringId();
+    @NonNull
+    String getSheetContentDescription(Context context);
 
     /**
-     * @return The resource id of the string announced when the sheet is opened at half height.
-     *         This is typically the name of your feature followed by 'opened at half height'.
+     * @return The resource id of the string announced when the sheet is opened at half height. This
+     *     is typically the name of your feature followed by 'opened at half height'.
      */
     int getSheetHalfHeightAccessibilityStringId();
 

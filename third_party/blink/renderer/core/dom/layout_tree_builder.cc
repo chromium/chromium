@@ -87,7 +87,7 @@ LayoutObject* LayoutTreeBuilderForElement::ParentLayoutObject() const {
   // parent.
   if (node_->IsScrollMarkerGroupPseudoElement()) {
     Element* originating_element =
-        To<PseudoElement>(node_)->OriginatingElement();
+        To<PseudoElement>(node_)->UltimateOriginatingElement();
     ContainerNode* parent_element =
         LayoutTreeBuilderTraversal::LayoutParent(*originating_element);
     DCHECK_EQ(parent_element->GetLayoutObject(), context_.parent);

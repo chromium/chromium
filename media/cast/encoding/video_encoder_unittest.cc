@@ -16,10 +16,13 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/fake_single_thread_task_runner.h"
+#include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
@@ -27,15 +30,13 @@
 #include "media/cast/common/openscreen_conversion_helpers.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/common/sender_encoded_frame.h"
-#include "media/cast/common/video_frame_factory.h"
 #include "media/cast/test/fake_video_encode_accelerator_factory.h"
 #include "media/cast/test/utility/default_config.h"
 #include "media/cast/test/utility/video_utility.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/openscreen/src/cast/streaming/public/encoded_frame.h"
 
-namespace media {
-namespace cast {
+namespace media::cast {
 
 class VideoEncoderTest
     : public ::testing::TestWithParam<std::pair<VideoCodec, bool>> {
@@ -52,10 +53,15 @@ class VideoEncoderTest
                                               task_runner_,
                                               task_runner_)),
         video_config_(GetDefaultVideoSenderConfig()),
-        codec_params_(video_config_.video_codec_params.value()),
-        operational_status_(STATUS_UNINITIALIZED) {
+        codec_params_(video_config_.video_codec_params.value()) {
     testing_clock_.Advance(base::TimeTicks::Now() - base::TimeTicks());
     first_frame_time_ = testing_clock_.NowTicks();
+
+    // Ensure that all of the software video encoders are enabled for testing.
+    feature_list_.InitWithFeatures(
+        std::vector<base::test::FeatureRef>{
+            kCastStreamingVp8, kCastStreamingVp9, kCastStreamingAv1},
+        std::vector<base::test::FeatureRef>{});
   }
 
   ~VideoEncoderTest() override = default;
@@ -80,7 +86,7 @@ class VideoEncoderTest
     RunTasksAndAdvanceClock();
   }
 
-  void CreateEncoder() {
+  void CreateEncoder(VideoEncoder::FrameEncodedCallback output_cb) {
     ASSERT_EQ(STATUS_UNINITIALIZED, operational_status_);
     codec_params_->max_number_of_video_buffers_used = 1;
     video_encoder_ = VideoEncoder::Create(
@@ -88,6 +94,7 @@ class VideoEncoderTest
         std::make_unique<media::MockVideoEncoderMetricsProvider>(),
         base::BindRepeating(&VideoEncoderTest::OnOperationalStatusChange,
                             base::Unretained(this)),
+        std::move(output_cb),
         base::BindRepeating(
             &FakeVideoEncodeAcceleratorFactory::CreateVideoEncodeAccelerator,
             base::Unretained(vea_factory_.get())));
@@ -122,21 +129,13 @@ class VideoEncoderTest
   }
 
   // Creates a new VideoFrame of the given |size|, filled with a test pattern.
-  // When available, it attempts to use the VideoFrameFactory provided by the
-  // encoder.
   scoped_refptr<media::VideoFrame> CreateTestVideoFrame(const gfx::Size& size) {
     const base::TimeDelta timestamp =
         testing_clock_.NowTicks() - first_frame_time_;
     scoped_refptr<media::VideoFrame> frame;
-    if (video_frame_factory_) {
-      DVLOG(1) << "MaybeCreateFrame";
-      frame = video_frame_factory_->MaybeCreateFrame(size, timestamp);
-    }
-    if (!frame) {
-      DVLOG(1) << "No VideoFrame, create using VideoFrame::CreateFrame";
-      frame = media::VideoFrame::CreateFrame(PIXEL_FORMAT_I420, size,
-                                             gfx::Rect(size), size, timestamp);
-    }
+    DVLOG(1) << "No VideoFrame, create using VideoFrame::CreateFrame";
+    frame = media::VideoFrame::CreateFrame(PIXEL_FORMAT_I420, size,
+                                           gfx::Rect(size), size, timestamp);
     PopulateVideoFrame(frame.get(), 123);
     return frame;
   }
@@ -163,11 +162,6 @@ class VideoEncoderTest
 
     EXPECT_TRUE(operational_status_ == STATUS_CODEC_REINIT_PENDING ||
                 operational_status_ == STATUS_INITIALIZED);
-
-    // Create the VideoFrameFactory the first time status changes to
-    // STATUS_INITIALIZED.
-    if (operational_status_ == STATUS_INITIALIZED && !video_frame_factory_)
-      video_frame_factory_ = video_encoder_->CreateVideoFrameFactory();
   }
 
   base::SimpleTestTickClock testing_clock_;
@@ -179,9 +173,10 @@ class VideoEncoderTest
   raw_ref<VideoCodecParams> codec_params_;
   std::unique_ptr<FakeVideoEncodeAcceleratorFactory> vea_factory_;
   base::TimeTicks first_frame_time_;
-  OperationalStatus operational_status_;
+  base::test::ScopedFeatureList feature_list_;
+  OperationalStatus operational_status_ =
+      OperationalStatus::STATUS_UNINITIALIZED;
   std::unique_ptr<VideoEncoder> video_encoder_;
-  std::unique_ptr<VideoFrameFactory> video_frame_factory_;
 };
 
 // Tests that the encoder outputs encoded frames, and also responds to frame
@@ -189,7 +184,6 @@ class VideoEncoderTest
 // complete encode/decode cycle of varied frame sizes that actually checks the
 // frame content.
 TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
-  CreateEncoder();
   SetVEAFactoryAutoRespond(true);
 
   ExpectVEAResponseForExternalVideoEncoder(0);
@@ -213,10 +207,23 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
   base::WeakPtrFactory<EncodedFrames> encoded_frames_weak_factory(
       &encoded_frames);
 
+  CreateEncoder(base::BindRepeating(
+      [](base::WeakPtr<EncodedFrames> encoded_frames,
+         std::unique_ptr<SenderEncodedFrame> encoded_frame) {
+        if (encoded_frames) {
+          encoded_frames->emplace_back(std::move(encoded_frame));
+        }
+      },
+      encoded_frames_weak_factory.GetWeakPtr()));
+
   // Encode several frames at each size. For encoders with a resize delay,
   // expect the first one or more frames are dropped while the encoder
   // re-inits. For all encoders, expect one key frame followed by all delta
   // frames.
+
+  // Keep track of the expected times by mapping the reference time to the
+  // timestamp.
+  std::map<base::TimeTicks, RtpTimeTicks> expectations;
   for (const auto& frame_size : frame_sizes) {
     // Encode frames until there are four consecutive frames successfully
     // encoded.
@@ -225,29 +232,16 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
              encoded_frames[encoded_frames.size() - 2] &&
              encoded_frames[encoded_frames.size() - 3] &&
              encoded_frames[encoded_frames.size() - 4])) {
+      const auto reference_time = Now();
       auto video_frame = CreateTestVideoFrame(frame_size);
-      const base::TimeTicks reference_time = Now();
-      const base::TimeDelta timestamp = video_frame->timestamp();
+      expectations.emplace(
+          reference_time,
+
+          ToRtpTimeTicks(video_frame->timestamp(), kVideoFrequency));
+
       const bool accepted_request = video_encoder()->EncodeVideoFrame(
-          std::move(video_frame), reference_time,
-          base::BindOnce(
-              [](base::WeakPtr<EncodedFrames> encoded_frames,
-                 RtpTimeTicks expected_rtp_timestamp,
-                 base::TimeTicks expected_reference_time,
-                 std::unique_ptr<SenderEncodedFrame> encoded_frame) {
-                if (!encoded_frames) {
-                  return;
-                }
-                if (encoded_frame) {
-                  EXPECT_EQ(expected_rtp_timestamp,
-                            encoded_frame->rtp_timestamp);
-                  EXPECT_EQ(expected_reference_time,
-                            encoded_frame->reference_time);
-                }
-                encoded_frames->emplace_back(std::move(encoded_frame));
-              },
-              encoded_frames_weak_factory.GetWeakPtr(),
-              ToRtpTimeTicks(timestamp, kVideoFrequency), reference_time));
+          std::move(video_frame), reference_time);
+
       if (accepted_request) {
         ++count_frames_accepted;
       }
@@ -275,6 +269,11 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
     if (!encoded_frame) {
       continue;
     }
+
+    // Check that the frame has an expected reference time and RTP timestamp.
+    auto expectation = expectations.find(encoded_frame->reference_time);
+    ASSERT_NE(expectation, expectations.end());
+    EXPECT_EQ(expectation->second, encoded_frame->rtp_timestamp);
 
     if (encoded_frame->dependency ==
         openscreen::cast::EncodedFrame::Dependency::kKeyFrame) {
@@ -308,12 +307,12 @@ TEST_P(VideoEncoderTest, EncodesVariedFrameSizes) {
 // encoders, this tests that the encoder can be safely destroyed before the task
 // is run that delivers the first EncodedFrame.
 TEST_P(VideoEncoderTest, CanBeDestroyedBeforeVEAIsCreated) {
-  CreateEncoder();
+  CreateEncoder(base::BindRepeating(
+      [](std::unique_ptr<SenderEncodedFrame> encoded_frame) {}));
 
   // Send a frame to spawn creation of the ExternalVideoEncoder instance.
-  video_encoder()->EncodeVideoFrame(
-      CreateTestVideoFrame(gfx::Size(128, 72)), Now(),
-      base::BindOnce([](std::unique_ptr<SenderEncodedFrame> encoded_frame) {}));
+  video_encoder()->EncodeVideoFrame(CreateTestVideoFrame(gfx::Size(128, 72)),
+                                    Now());
 
   // Destroy the encoder, and confirm the VEA Factory did not respond yet.
   DestroyEncoder();
@@ -333,8 +332,13 @@ std::vector<std::pair<VideoCodec, bool>> DetermineEncodersToTest() {
   // Fake encoder.
   values.emplace_back(VideoCodec::kUnknown, false);
 
-  // Software VP8 encoder.
+  // Software encoders.
   values.emplace_back(VideoCodec::kVP8, false);
+  values.emplace_back(VideoCodec::kVP9, false);
+
+#if BUILDFLAG(ENABLE_LIBAOM)
+  values.emplace_back(VideoCodec::kAV1, false);
+#endif
 
   // Hardware-accelerated encoders (faked).
   values.emplace_back(VideoCodec::kVP8, true);
@@ -342,11 +346,16 @@ std::vector<std::pair<VideoCodec, bool>> DetermineEncodersToTest() {
 
   return values;
 }
+
 }  // namespace
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         VideoEncoderTest,
-                         ::testing::ValuesIn(DetermineEncodersToTest()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    VideoEncoderTest,
+    ::testing::ValuesIn(DetermineEncodersToTest()),
+    [](const testing::TestParamInfo<VideoEncoderTest::ParamType>& info) {
+      return base::ToUpperASCII(GetCodecName(info.param.first)) +
+             (info.param.second ? "_Hardware" : "_Software");
+    });
 
-}  // namespace cast
-}  // namespace media
+}  // namespace media::cast

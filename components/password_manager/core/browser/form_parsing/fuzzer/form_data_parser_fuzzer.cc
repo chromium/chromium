@@ -37,7 +37,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   FormDataParser parser;
   if (use_predictions) {
-    parser.set_predictions(GenerateFormPredictions(form_data, data_provider));
+    parser.set_server_predictions(
+        GenerateFormPredictions(form_data, data_provider));
   }
 
   std::unique_ptr<PasswordForm> result =

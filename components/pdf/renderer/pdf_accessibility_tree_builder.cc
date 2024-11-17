@@ -13,6 +13,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdf_features.h"
+#include "services/strings/grit/services_strings.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -376,9 +377,40 @@ void PdfAccessibilityTreeBuilder::BuildPageTree() {
   LineHelper line_helper(*text_runs_);
   bool pdf_forms_enabled =
       base::FeatureList::IsEnabled(chrome_pdf::features::kAccessiblePDFForm);
+  bool ocr_block = false;
+  bool has_ocr_text = false;
 
   for (size_t text_run_index = 0; text_run_index < text_runs_->size();
        ++text_run_index) {
+    const chrome_pdf::AccessibilityTextRunInfo& text_run =
+        (*text_runs_)[text_run_index];
+
+    // OCR text should be marked by nodes before and after it.
+    bool ocr_block_start = text_run.is_searchified && !ocr_block;
+    bool ocr_block_end = !text_run.is_searchified && ocr_block;
+    if (ocr_block_start || ocr_block_end) {
+      // If already inside a paragraph, end it.
+      // The searchifier adds the text at the exact position that it is seen in
+      // the image and does not deal with paragraphs or other structures.
+      // The function that creates the text runs only considers text positions
+      // and separates the blocks based on that. Therefore there can be cases
+      // that OCR text will be added in the middle of a paragraph.
+      // TODO(crbug.com/360803943): Add browser tests to verify.
+      if (para_node) {
+        BuildStaticNode(&static_text_node, &static_text);
+        para_node = nullptr;
+      }
+      CHECK(ocr_block_start || text_run_index);
+      gfx::PointF position =
+          ocr_block_start
+              ? text_run.bounds.origin()
+              : (*text_runs_)[text_run_index - 1].bounds.bottom_right();
+      page_node_->child_ids.push_back(
+          CreateOcrWrapperNode(position, ocr_block_start)->id);
+      ocr_block = ocr_block_start;
+      has_ocr_text = true;
+    }
+
     // If we don't have a paragraph, create one.
     if (!para_node) {
       para_node =
@@ -444,8 +476,6 @@ void PdfAccessibilityTreeBuilder::BuildPageTree() {
         para_node->child_ids.push_back(static_text_node->id);
       }
 
-      const chrome_pdf::AccessibilityTextRunInfo& text_run =
-          (*text_runs_)[text_run_index];
       // Add this text run to the current static text node.
       ui::AXNodeData* inline_text_box_node =
           CreateInlineTextBoxNode(text_run, page_char_index);
@@ -492,7 +522,15 @@ void PdfAccessibilityTreeBuilder::BuildPageTree() {
     }
   }
 
-  AddRemainingAnnotations(para_node);
+  // Add the wrapper node if still in OCR block and text runs finish.
+  if (ocr_block) {
+    page_node_->child_ids.push_back(
+        CreateOcrWrapperNode(text_runs_->back().bounds.bottom_right(),
+                             /*start=*/false)
+            ->id);
+  }
+
+  AddRemainingAnnotations(para_node, has_ocr_text);
 }
 
 void PdfAccessibilityTreeBuilder::AddWordStartsAndEnds(
@@ -556,11 +594,16 @@ ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateParagraphNode(
   return para_node;
 }
 
-ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateStaticTextNode(
-    const chrome_pdf::PageCharacterIndex& page_char_index) {
+ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateStaticTextNode() {
   ui::AXNodeData* static_text_node = CreateAndAppendNode(
       ax::mojom::Role::kStaticText, ax::mojom::Restriction::kReadOnly);
   static_text_node->SetNameFrom(ax::mojom::NameFrom::kContents);
+  return static_text_node;
+}
+
+ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateStaticTextNode(
+    const chrome_pdf::PageCharacterIndex& page_char_index) {
+  ui::AXNodeData* static_text_node = CreateStaticTextNode();
   node_id_to_page_char_index_->emplace(static_text_node->id, page_char_index);
   return static_text_node;
 }
@@ -858,6 +901,22 @@ ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateChoiceFieldNode(
   }
 }
 
+ui::AXNodeData* PdfAccessibilityTreeBuilder::CreateOcrWrapperNode(
+    const gfx::PointF& position,
+    bool start) {
+  ui::AXNodeData* wrapper_node = CreateAndAppendNode(
+      start ? ax::mojom::Role::kBanner : ax::mojom::Role::kContentInfo,
+      ax::mojom::Restriction::kReadOnly);
+  wrapper_node->relative_bounds.bounds = gfx::RectF(position, gfx::SizeF(1, 1));
+
+  ui::AXNodeData* text_node = CreateStaticTextNode();
+  text_node->SetNameChecked(l10n_util::GetStringUTF8(
+      start ? IDS_PDF_OCR_RESULT_BEGIN : IDS_PDF_OCR_RESULT_END));
+  text_node->relative_bounds.bounds = wrapper_node->relative_bounds.bounds;
+  wrapper_node->child_ids.push_back(text_node->id);
+  return wrapper_node;
+}
+
 void PdfAccessibilityTreeBuilder::AddTextToAXNode(
     size_t start_text_run_index,
     uint32_t end_text_run_index,
@@ -1041,7 +1100,8 @@ void PdfAccessibilityTreeBuilder::AddChoiceFieldToParaNode(
 }
 
 void PdfAccessibilityTreeBuilder::AddRemainingAnnotations(
-    ui::AXNodeData* para_node) {
+    ui::AXNodeData* para_node,
+    bool ocr_applied) {
   // If we don't have additional links, images or form fields to insert in the
   // tree, then return.
   if (current_link_index_ >= links_->size() &&
@@ -1072,6 +1132,15 @@ void PdfAccessibilityTreeBuilder::AddRemainingAnnotations(
   // Push all the images not anchored to any text run to the last paragraph.
   for (size_t i = current_image_index_; i < images_->size(); i++) {
     const chrome_pdf::AccessibilityImageInfo& image_info = (*images_)[i];
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+    // Drop the image if it's OCRed.
+    // TODO(crbug.com/360803943): Look into the case with more than one image
+    // and only one of them OCRed.
+    if (ocr_applied) {
+      continue;
+    }
+#endif
+
     ui::AXNodeData* image_node = CreateImageNode(image_info);
     para_node->child_ids.push_back(image_node->id);
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)

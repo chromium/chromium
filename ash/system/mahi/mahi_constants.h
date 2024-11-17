@@ -51,6 +51,7 @@ enum ViewId {
   kQuestionAnswerErrorImage,
   kQuestionAnswerErrorLabel,
   kInfoSparkIcon,
+  kSummaryElucidationIndicator,
 };
 
 // The size of the icon that appears in the panel's source row.
@@ -60,19 +61,62 @@ inline constexpr int kPanelDefaultWidth = 360;
 inline constexpr int kPanelDefaultHeight = 492;
 inline constexpr gfx::Insets kPanelPadding = gfx::Insets::TLBR(12, 15, 15, 15);
 
-inline constexpr int kScrollViewWidth = kPanelDefaultWidth -
-                                        views::kHighlightBorderThickness * 2 -
-                                        kPanelPadding.width();
+// The maximum height and width the panel can be resized to.
+inline constexpr int kPanelMaximumWidth = 540;
+inline constexpr int kPanelMaximumHeight = 600;
+
+inline constexpr int kPanelBorderAndPadding =
+    views::kHighlightBorderThickness * 2 + kPanelPadding.width();
+inline constexpr int kScrollViewDefaultWidth =
+    kPanelDefaultWidth - kPanelBorderAndPadding;
 
 inline constexpr int kScrollContentsViewBottomPadding = 40;
 
 inline constexpr int kRefreshBannerStackDepth = 25;
 inline constexpr int kPanelCornerRadius = 16;
 
+inline constexpr SkScalar kContentScrollViewCornerRadius = 16;
+
+inline constexpr int kFeedbackButtonIconSize = 20;
+inline constexpr int kFeedbackButtonIconPaddingAbove = 8;
+inline constexpr int kFeedbackButtonIconPaddingBetween = 16;
+inline constexpr int kFeedbackButtonIconPaddingLeft = 12;
+inline constexpr int kFeedbackButtonIconPaddingRight = 8;
+
+// A feedback button is a "small" `IconButton`, meaning it has a button (view)
+// size of 24px and an icon size of 20px. The feedback button's icon is aligned
+// to the rightmost edge of the view, creating 4px of padding to the left of the
+// icon. Subtract that padding from the expected space between the two icons.
+// NOTE: Changes to the feedback buttons' size will affect this constant.
+inline constexpr int kFeedbackButtonSpacing =
+    kFeedbackButtonIconPaddingBetween - 4;
+
+// Height of the cutout in the content section's bottom-right corner, not
+// including the rounded corner immediately above it.
+inline constexpr int kCutoutHeight =
+    kFeedbackButtonIconSize + kFeedbackButtonIconPaddingAbove;
+
+// Width of the cutout in the content section's bottom-right corner, not
+// including the rounded corner immediately to its left.
+inline constexpr int kCutoutWidth =
+    kFeedbackButtonIconPaddingLeft + kFeedbackButtonIconPaddingRight +
+    kFeedbackButtonIconSize * 2 + kFeedbackButtonIconPaddingBetween;
+
+// Radius of the cutout's first and third curves of the cutout region in the
+// Mahi panel.
+inline constexpr SkScalar kCutoutConvexRadius = 10.f;
+// Radius of the cutout's second curve.
+inline constexpr SkScalar kCutoutConcaveRadius = 12.f;
+
 // Delays used in `FakeMahiManager` for testing.
+inline constexpr int kFakeMahiManagerGetContentDelaySeconds = 2;
 inline constexpr int kFakeMahiManagerLoadAnswerDelaySeconds = 3;
 inline constexpr int kFakeMahiManagerLoadSummaryDelaySeconds = 4;
+inline constexpr int kFakeMahiManagerLoadElucidationDelaySeconds = 4;
 inline constexpr int kFakeMahiManagerLoadOutlinesDelaySeconds = 6;
+
+inline constexpr gfx::Insets kSummaryOutlinesElucidationSectionPadding =
+    gfx::Insets(16);
 
 // Nudge constants
 inline constexpr char kMahiNudgeId[] = "mahi.nudge";
@@ -100,6 +144,8 @@ inline constexpr char kAnswerLoadingTimeHistogramName[] =
     "Ash.Mahi.QuestionAnswer.LoadingTime";
 inline constexpr char kSummaryLoadingTimeHistogramName[] =
     "Ash.Mahi.Summary.LoadingTime";
+inline constexpr char kElucidationLoadingTimeHistogramName[] =
+    "Ash.Mahi.Elucidation.LoadingTime";
 inline constexpr char kMahiUserJourneyTimeHistogramName[] =
     "Ash.Mahi.UserJourneyTime";
 inline constexpr char kMahiQuestionSourceHistogramName[] =

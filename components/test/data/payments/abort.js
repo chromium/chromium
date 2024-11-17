@@ -4,7 +4,7 @@
  * found in the LICENSE file.
  */
 
-var request;
+let request;
 
 /**
  * Launches the PaymentRequest UI with basic-card request.

@@ -109,22 +109,20 @@ class TransformStreamDefaultController::DefaultTransformAlgorithm final
                              int argc,
                              v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 1);
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
+    v8::Isolate* isolate = script_state->GetIsolate();
+    v8::TryCatch try_catch(isolate);
 
     // https://streams.spec.whatwg.org/#set-up-transform-stream-default-controller-from-transformer
     // 3. Let transformAlgorithm be the following steps, taking a chunk
     //    argument:
     //    a. Let result be TransformStreamDefaultControllerEnqueue(controller,
     //       chunk).
-    Enqueue(script_state, controller_, argv[0], exception_state);
+    Enqueue(script_state, controller_, argv[0], PassThroughException(isolate));
 
     //    b. If result is an abrupt completion, return a promise rejected with
     //       result.[[Value]].
-    if (exception_state.HadException()) {
-      v8::Local<v8::Value> exception = exception_state.GetException();
-      exception_state.ClearException();
-      return PromiseReject(script_state, exception);
+    if (try_catch.HasCaught()) {
+      return PromiseReject(script_state, try_catch.Exception());
     }
 
     //    c. Otherwise, return a promise resolved with undefined.
@@ -192,9 +190,9 @@ void TransformStreamDefaultController::SetUp(
     Member<TransformStream> stream_;
   };
 
-  controller->reject_function_ = MakeGarbageCollected<ScriptFunction>(
-      script_state, MakeGarbageCollected<PerformTransformRejectFunction>(
-                        controller->controlled_transform_stream_));
+  controller->reject_function_ =
+      MakeGarbageCollected<PerformTransformRejectFunction>(
+          controller->controlled_transform_stream_);
 }
 
 v8::Local<v8::Value> TransformStreamDefaultController::SetUpFromTransformer(
@@ -307,20 +305,21 @@ void TransformStreamDefaultController::Enqueue(
 
   // 4. Let enqueueResult be ReadableStreamDefaultControllerEnqueue(
   //    readableController, chunk).
-  ReadableStreamDefaultController::Enqueue(script_state, readable_controller,
-                                           chunk, exception_state);
+  v8::Isolate* isolate = script_state->GetIsolate();
+  TryRethrowScope rethrow_scope(isolate, exception_state);
+  ReadableStreamDefaultController::Enqueue(
+      script_state, readable_controller, chunk, PassThroughException(isolate));
 
   // 5. If enqueueResult is an abrupt completion,
-  if (exception_state.HadException()) {
+  if (rethrow_scope.HasCaught()) {
     // a. Perform ! TransformStreamErrorWritableAndUnblockWrite(stream,
     //    enqueueResult.[[Value]]).
-    TransformStream::ErrorWritableAndUnblockWrite(
-        script_state, stream, exception_state.GetException());
-    exception_state.ClearException();
+    TransformStream::ErrorWritableAndUnblockWrite(script_state, stream,
+                                                  rethrow_scope.GetException());
 
     // b. Throw stream.[[readable]].[[storedError]].
-    exception_state.RethrowV8Exception(
-        stream->readable_->GetStoredError(script_state->GetIsolate()));
+    V8ThrowException::ThrowException(
+        isolate, stream->readable_->GetStoredError(isolate));
     return;
   }
 
@@ -358,9 +357,9 @@ v8::Local<v8::Promise> TransformStreamDefaultController::PerformTransform(
     v8::Local<v8::Value> error = V8ThrowException::CreateTypeError(
         script_state->GetIsolate(), "invalid realm");
     v8::MaybeLocal<v8::Value> result_maybe =
-        controller->reject_function_->V8Function()->Call(
-            script_state->GetContext(),
-            v8::Undefined(script_state->GetIsolate()), 1, &error);
+        controller->reject_function_->ToV8Function(script_state)
+            ->Call(script_state->GetContext(),
+                   v8::Undefined(script_state->GetIsolate()), 1, &error);
     v8::Local<v8::Value> result;
     if (!result_maybe.ToLocal(&result)) {
       result = v8::Local<v8::Promise>();
@@ -378,9 +377,8 @@ v8::Local<v8::Promise> TransformStreamDefaultController::PerformTransform(
   DCHECK(!transform_promise.IsEmpty());
 
   // 2. Return the result of transforming transformPromise ...
-  v8::Local<v8::Promise> streamed_promise =
-      StreamThenPromise(script_state->GetContext(), transform_promise, nullptr,
-                        controller->reject_function_);
+  v8::Local<v8::Promise> streamed_promise = StreamThenPromise(
+      script_state, transform_promise, nullptr, controller->reject_function_);
   v8::Local<v8::Value> escapable_streamed_promise =
       scope.Escape(streamed_promise);
   return escapable_streamed_promise.As<v8::Promise>();

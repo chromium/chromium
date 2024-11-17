@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -84,7 +85,8 @@ class GCMDriver {
   // Max number of sender IDs that can be passed to |Register| on desktop.
   constexpr static size_t kMaxSenders = 100;
 
-  using GCMAppHandlerMap = std::map<std::string, GCMAppHandler*>;
+  using GCMAppHandlerMap =
+      std::map<std::string, raw_ptr<GCMAppHandler, CtnExperimental>>;
   using RegisterCallback =
       base::OnceCallback<void(const std::string& registration_id,
                               GCMClient::Result result)>;

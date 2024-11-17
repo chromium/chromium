@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "components/cronet/cronet_context.h"
 #include "net/base/idempotency.h"
@@ -347,7 +348,7 @@ void CronetURLRequest::NetworkTasks::Start(
         traffic_stats_tag_set_ ? traffic_stats_tag_
                                : net::SocketTag::UNSET_TAG));
 #else
-    CHECK(false);
+    NOTREACHED();
 #endif
   }
   url_request_->Start();

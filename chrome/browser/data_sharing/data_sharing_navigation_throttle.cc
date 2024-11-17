@@ -64,7 +64,8 @@ DataSharingNavigationThrottle::CheckIfShouldIntercept() {
   const GURL& url = navigation_handle()->GetURL();
   if (data_sharing_service &&
       data_sharing_service->ShouldInterceptNavigationForShareURL(url)) {
-    data_sharing_service->HandleShareURLNavigationIntercepted(url);
+    data_sharing_service->HandleShareURLNavigationIntercepted(
+        url, /* context = */ nullptr);
 
     // Close the tab if the url interception ends with an empty page.
     const GURL& last_committed_url =

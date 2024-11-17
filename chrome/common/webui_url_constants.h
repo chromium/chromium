@@ -135,6 +135,8 @@ inline constexpr char kChromeUIFlagsHost[] = "flags";
 inline constexpr char kChromeUIFlagsURL[] = "chrome://flags/";
 inline constexpr char16_t kChromeUIFlagsURL16[] = u"chrome://flags/";
 inline constexpr char kChromeUIGCMInternalsHost[] = "gcm-internals";
+inline constexpr char kChromeUIGlicHost[] = "glic";
+inline constexpr char kChromeUIGlicURL[] = "chrome://glic/";
 inline constexpr char kChromeUIHangUIHost[] = "uithreadhang";
 inline constexpr char kChromeUIHelpHost[] = "help";
 inline constexpr char kChromeUIHelpURL[] = "chrome://help/";
@@ -154,9 +156,6 @@ inline constexpr char kChromeUIKillHost[] = "kill";
 inline constexpr char kChromeUILauncherInternalsHost[] = "launcher-internals";
 inline constexpr char kChromeUILauncherInternalsURL[] =
     "chrome://launcher-internals";
-inline constexpr char kChromeUILensSearchBubbleHost[] = "lens-search-bubble";
-inline constexpr char kChromeUILensSearchBubbleURL[] =
-    "chrome://lens-search-bubble/";
 inline constexpr char kChromeUILocalStateHost[] = "local-state";
 inline constexpr char kChromeUILocationInternalsHost[] = "location-internals";
 inline constexpr char kChromeUIManagementHost[] = "management";
@@ -186,6 +185,8 @@ inline constexpr char kChromeUIOmniboxPopupHost[] = "omnibox-popup.top-chrome";
 inline constexpr char kChromeUIOmniboxPopupURL[] =
     "chrome://omnibox-popup.top-chrome/";
 inline constexpr char kChromeUIOmniboxURL[] = "chrome://omnibox/";
+inline constexpr char kChromeUIOnDeviceTranslationInternalsHost[] =
+    "on-device-translation-internals";
 inline constexpr char kChromeUIPasswordManagerCheckupURL[] =
     "chrome://password-manager/checkup?start=true";
 inline constexpr char kChromeUIPasswordManagerInternalsHost[] =
@@ -262,8 +263,6 @@ inline constexpr char kChromeUISyncConfirmationHost[] = "sync-confirmation";
 inline constexpr char kChromeUISyncConfirmationLoadingPath[] = "loading";
 inline constexpr char kChromeUISyncConfirmationURL[] =
     "chrome://sync-confirmation/";
-inline constexpr char kChromeUISyncFileSystemInternalsHost[] =
-    "syncfs-internals";
 inline constexpr char kChromeUISyncHost[] = "sync";
 inline constexpr char kChromeUISyncInternalsHost[] = "sync-internals";
 inline constexpr char kChromeUISyncInternalsUrl[] = "chrome://sync-internals";
@@ -372,6 +371,8 @@ inline constexpr char kChromeUIUntrustedWebUITestURL[] =
 inline constexpr char kChromeUIWebAppInternalsHost[] = "web-app-internals";
 inline constexpr char kChromeUIWebAppInternalsURL[] =
     "chrome://web-app-internals";
+inline constexpr char kChromeUIWebUIJsErrorHost[] = "webuijserror";
+inline constexpr char kChromeUIWebUIJsErrorURL[] = "chrome://webuijserror/";
 inline constexpr char kChromeUIWebUITestHost[] = "webui-test";
 inline constexpr char kCookiesSubPagePath[] = "/cookies";
 inline constexpr char kTrackingProtectionSubPagePath[] = "/trackingProtection";
@@ -578,11 +579,6 @@ inline constexpr char16_t kOsUISystemURL[] = u"os://system";
 inline constexpr char kOsUIVersionURL[] = "os://version";
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-inline constexpr char kChromeUIWebUIJsErrorHost[] = "webuijserror";
-inline constexpr char kChromeUIWebUIJsErrorURL[] = "chrome://webuijserror/";
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_ASH)
 inline constexpr char kChromeUIConnectorsInternalsHost[] =
@@ -668,6 +664,8 @@ inline constexpr char kAdPrivacySubPage[] = "adPrivacy";
 inline constexpr char kAllSitesSettingsSubpage[] = "content/all";
 inline constexpr char kAppearanceSubPage[] = "appearance";
 inline constexpr char kAutofillSubPage[] = "autofill";
+inline constexpr char kAutofillPredictionImprovementsSubPage[] =
+    "autofillPredictionImprovements";
 inline constexpr char kClearBrowserDataSubPage[] = "clearBrowserData";
 inline constexpr char kContentSettingsSubPage[] = "content";
 inline constexpr char kCookieSettingsSubPage[] = "cookies";
@@ -684,6 +682,7 @@ inline constexpr char kLanguageOptionsSubPage[] = "languages";
 inline constexpr char kLanguagesSubPage[] = "languages/details";
 inline constexpr char kManageProfileSubPage[] = "manageProfile";
 inline constexpr char kOfferWritingHelpSubpage[] = "content/offerWritingHelp";
+inline constexpr char kAiHelpMeWriteSubpage[] = "ai/helpMeWrite";
 inline constexpr char kOnDeviceSiteDataSubpage[] = "content/siteData";
 inline constexpr char kOnStartupSubPage[] = "onStartup";
 inline constexpr char kPasskeysSubPage[] = "passkeys";

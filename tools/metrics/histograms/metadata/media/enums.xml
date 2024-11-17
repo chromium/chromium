@@ -258,6 +258,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Destructed Before Timeout"/>
 </enum>
 
+<enum name="CameraCaptureCapability">
+  <int value="0" label="Incapable of HD (1280x720) and FullHD (1980x1080)"/>
+  <int value="1" label="HD or FullHD, without 640x360 and 640x480"/>
+  <int value="2" label="HD or FullHD, with 640x360"/>
+  <int value="3" label="HD or FullHD, with 640x480"/>
+  <int value="4" label="HD or FullHD, with 640x360 and 640x480"/>
+</enum>
+
 <enum name="CastStreamingFrameDropReason">
   <int value="0" label="Frame was not dropped"/>
   <int value="1" label="Too many frames in flight"/>
@@ -266,6 +274,20 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Payload too large"/>
   <int value="5" label="Reached Frame ID span limit"/>
   <int value="6" label="In flight duration too high (after encoding)"/>
+</enum>
+
+<enum name="CdmCapabilityQueryStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Unknown"/>
+  <int value="2" label="HardwareSecureCodecNotSupported"/>
+  <int value="3" label="NoSupportedVideoCodec"/>
+  <int value="4" label="NoSupportedEncryptionScheme"/>
+  <int value="5" label="UnsupportedKeySystem"/>
+  <int value="6" label="MediaFoundationCdmNotSupported"/>
+  <int value="7" label="DisconnectionError"/>
+  <int value="8" label="MediaFoundationGetCdmFactoryFailed"/>
+  <int value="9" label="CreateDummyMediaFoundationCdmFailed"/>
+  <int value="10" label="UnexpectedEmptyCapability"/>
 </enum>
 
 <enum name="CdmHostVerificationStatus">
@@ -328,6 +350,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kDatabaseOpenError"/>
   <int value="3" label="kDatabaseRazeError"/>
   <int value="4" label="kSQLExecutionError"/>
+  <int value="5" label="kAlterTableError"/>
 </enum>
 
 <enum name="CdmStorageStatus">
@@ -383,7 +406,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Succeeded."/>
   <int value="1" label="Unknown error."/>
   <int value="2" label="CDM creation aborted."/>
-  <int value="3" label="Failed to load the CDM."/>
+  <int value="3" label="(Obsolete) Failed to load the CDM."/>
   <int value="4" label="CreateCdmFunc not available."/>
   <int value="5" label="CDM helper creation failed."/>
   <int value="6" label="Failed to get the CDM preference data."/>
@@ -399,12 +422,21 @@ chromium-metrics-reviews@google.com.
       label="Disconnection error. The remote process dropped the callback.
              e.g. in case of crash."/>
   <int value="14" label="EME use is not allowed on unique origins."/>
-  <int value="15" label="MediaDrmBridge creation failed."/>
-  <int value="16" label="MediaCrypto not available."/>
+  <int value="15" label="Android: MediaDrmBridge creation failed."/>
+  <int value="16" label="Android: MediaCrypto not available."/>
   <int value="17" label="CrOs: Only one instance allowed."/>
   <int value="18" label="CrOs: Insufficient GPU memory available."/>
   <int value="19" label="CrOs: Verified Access is disabled."/>
   <int value="20" label="CrOs: Remote factory creation failed."/>
+  <int value="21" label="Android: Illegal argument passed to MediaDrm."/>
+  <int value="22" label="Android: MediaDrm not initialized properly."/>
+  <int value="23" label="Android: Unable to set L1 security level."/>
+  <int value="24" label="Android: Unable to set L3 security level."/>
+  <int value="25" label="Android: Unable to set origin."/>
+  <int value="26" label="Android: Unable to create MediaCrypto session."/>
+  <int value="27" label="Android: Unable to start provisioning."/>
+  <int value="28" label="Android: Unable to create MediaCrypto object."/>
+  <int value="29" label="Android: Crypto scheme not supported."/>
 </enum>
 
 <enum name="CrosBeamformingDeviceState">
@@ -1033,11 +1065,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Ash bundled"/>
 </enum>
 
-<enum name="MakeAudioInputStreamStatus">
+<enum name="MakeAudioStreamStatus">
   <int value="0" label="Success"/>
   <int value="1" label="Error: Had switch fail-audio-stream-creation"/>
   <int value="2" label="Error: Invalid params"/>
-  <int value="3" label="Error: Excessive input streams"/>
+  <int value="3" label="Error: Excessive input/output streams"/>
   <int value="4" label="Error: Failed to create a stream object"/>
 </enum>
 
@@ -1050,6 +1082,30 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Not shown because allowed once"/>
   <int value="6" label="Not shown because blocked"/>
   <int value="7" label="Not shown because incognito"/>
+</enum>
+
+<enum name="MediaCodecError">
+  <int value="0" label="MEDIA_CODEC_OK"/>
+  <int value="1" label="MEDIA_CODEC_TRY_AGAIN_LATER"/>
+  <int value="2" label="MEDIA_CODEC_OUTPUT_BUFFERS_CHANGED"/>
+  <int value="3" label="MEDIA_CODEC_OUTPUT_FORMAT_CHANGED"/>
+  <int value="4" label="MEDIA_CODEC_NO_KEY"/>
+  <int value="5" label="MEDIA_CODEC_ERROR"/>
+  <int value="6" label="MEDIA_CODEC_KEY_EXPIRED"/>
+  <int value="7" label="MEDIA_CODEC_RESOURCE_BUSY"/>
+  <int value="8" label="MEDIA_CODEC_INSUFFICIENT_OUTPUT_PROTECTION"/>
+  <int value="9" label="MEDIA_CODEC_SESSION_NOT_OPENED"/>
+  <int value="10" label="MEDIA_CODEC_UNSUPPORTED_OPERATION"/>
+  <int value="11" label="MEDIA_CODEC_INSUFFICIENT_SECURITY"/>
+  <int value="12" label="MEDIA_CODEC_FRAME_TOO_LARGE"/>
+  <int value="13" label="MEDIA_CODEC_LOST_STATE"/>
+  <int value="14" label="MEDIA_CODEC_GENERIC_OEM"/>
+  <int value="15" label="MEDIA_CODEC_GENERIC_PLUGIN"/>
+  <int value="16" label="MEDIA_CODEC_LICENSE_PARSE"/>
+  <int value="17" label="MEDIA_CODEC_MEDIA_FRAMEWORK"/>
+  <int value="18" label="MEDIA_CODEC_ZERO_SUBSAMPLES"/>
+  <int value="19" label="MEDIA_CODEC_UNKNOWN_CIPHER_MODE"/>
+  <int value="20" label="MEDIA_CODEC_PATTERN_ENCRYPTION_NOT_SUPPORTED"/>
 </enum>
 
 <enum name="MediaContainers">
@@ -1725,6 +1781,11 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Gestures trigger reaction effects"/>
 </enum>
 
+<enum name="ReasonToClearRenderBuffer">
+  <int value="0" label="Video frame with out-of-order timestamp."/>
+  <int value="1" label="Call to UpdateCurrentFrame() is overdue."/>
+</enum>
+
 <enum name="RemotingCompatibility">
   <int value="0" label="Compatible"/>
   <int value="1" label="Incompatible, no audio nor video"/>
@@ -2228,8 +2289,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="I420"/>
   <int value="2" label="YV12"/>
   <int value="3" label="I422"/>
-  <int value="4" label="YV12A"/>
-  <int value="5" label="YV24"/>
+  <int value="4" label="I420A"/>
+  <int value="5" label="I444"/>
   <int value="6" label="NV12"/>
   <int value="7" label="NV21"/>
   <int value="8" label="UYVY"/>

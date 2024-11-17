@@ -53,7 +53,7 @@ std::string TargetEmbeddingTypeToString(TargetEmbeddingType type) {
     case TargetEmbeddingType::kSafetyTip:
       return "kSafetyTip";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // These tests do not use the production top domain list. This is to avoid

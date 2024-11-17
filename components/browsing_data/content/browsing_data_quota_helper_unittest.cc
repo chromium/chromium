@@ -59,7 +59,6 @@ class BrowsingDataQuotaHelperTest : public testing::Test {
     quota_manager_ = base::MakeRefCounted<storage::QuotaManager>(
         /*is_incognito=*/false, temp_dir_.GetPath(),
         content::GetIOThreadTaskRunner({}).get(),
-        /*quota_change_callback=*/base::DoNothing(),
         /*special_storage_policy=*/nullptr, storage::GetQuotaSettingsFunc());
     helper_ =
         base::MakeRefCounted<BrowsingDataQuotaHelperImpl>(quota_manager_.get());

@@ -29,8 +29,8 @@ namespace storage_monitor {
 
 class MediaStorageUtilTest : public testing::Test {
  public:
-  MediaStorageUtilTest() {}
-  ~MediaStorageUtilTest() override {}
+  MediaStorageUtilTest() = default;
+  ~MediaStorageUtilTest() override = default;
 
   // Verify mounted device type.
   void CheckDCIMDeviceType(const base::FilePath& mount_point) {

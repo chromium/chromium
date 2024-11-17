@@ -540,6 +540,25 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
     // exception of spin buttons.
     if (evt.target.state[StateType.EDITABLE] &&
         evt.target.role !== RoleType.SPIN_BUTTON) {
+      // If a value changed event came from NTP Searchbox input, announce the
+      // new value. This is a special behavior for NTP Searchbox to announce
+      // its suggestions when users navigate them using the up/down arrow key.
+      // `evt.intents` is empty when NTP Searchbox gets auto-completed by
+      // navigating a list of suggestions; it won't be empty if users type,
+      // delete, or paste text in NTP Searchbox.
+      // TODO(crbug.com/328824322): Remove the special behavior and implement
+      // the active-descendant-based approach in NTP Searchbox when
+      // crbug.com/346835896 lands in the stable.
+      if (evt.target.root.url === DesktopAutomationHandler.NTP_URL &&
+          evt.target.htmlTag === 'input' && !evt.intents?.length) {
+        new Output()
+            .withString(evt.target.value)
+            .withSpeechCategory(TtsCategory.NAV)
+            .withQueueMode(QueueMode.CATEGORY_FLUSH)
+            .withoutFocusRing()
+            .go();
+        return;
+      }
       this.onEditableChanged_(evt);
       return;
     }
@@ -713,7 +732,7 @@ export class DesktopAutomationHandler extends DesktopAutomationInterface {
           target.className === 'PopupRowView' ||
           target.className === 'PopupRowContentView' ||
           target.className === 'PopupRowPredictionImprovementsFeedbackView' ||
-          target.className === 'PopupRowPredictionImprovementsDetailsView' ||
+          target.className === 'PredictionImprovementsLoadingStateView' ||
           target.className ===
               'PasswordGenerationPopupViewViews::GeneratedPasswordBox') {
         override = true;
@@ -949,5 +968,11 @@ DesktopAutomationHandler.MIN_VALUE_CHANGE_DELAY_MS = 50;
  * @const {number}
  */
 DesktopAutomationHandler.MIN_ALERT_DELAY_MS = 50;
+
+/**
+ * URL for NTP (New tap page).
+ * @const {string}
+ */
+DesktopAutomationHandler.NTP_URL = 'chrome://new-tab-page/';
 
 TestImportManager.exportForTesting(DesktopAutomationHandler);

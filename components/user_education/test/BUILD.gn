@@ -9,16 +9,20 @@ source_set("test") {
   testonly = true
 
   sources = [
-    "feature_promo_session_mocks.cc",
-    "feature_promo_session_mocks.h",
-    "feature_promo_session_test_util.cc",
-    "feature_promo_session_test_util.h",
+    "mock_anchor_element_provider.cc",
+    "mock_anchor_element_provider.h",
     "mock_feature_promo_controller.cc",
     "mock_feature_promo_controller.h",
-    "test_feature_promo_storage_service.cc",
-    "test_feature_promo_storage_service.h",
+    "test_feature_promo_precondition.cc",
+    "test_feature_promo_precondition.h",
     "test_help_bubble.cc",
     "test_help_bubble.h",
+    "test_user_education_storage_service.cc",
+    "test_user_education_storage_service.h",
+    "user_education_session_mocks.cc",
+    "user_education_session_mocks.h",
+    "user_education_session_test_util.cc",
+    "user_education_session_test_util.h",
   ]
 
   deps = [

@@ -8,12 +8,12 @@
 #include <string>
 #include <utility>
 
+#include "base/features.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/rust_buildflags.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -144,8 +144,6 @@ void BindInProcessService(
 }
 #endif
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(BUILD_RUST_JSON_READER)
-
 void ParsingComplete(scoped_refptr<DataDecoder::CancellationFlag> is_cancelled,
                      DataDecoder::ValueParseCallback callback,
                      base::JSONReader::Result value_with_error) {
@@ -159,8 +157,6 @@ void ParsingComplete(scoped_refptr<DataDecoder::CancellationFlag> is_cancelled,
     std::move(callback).Run(std::move(*value_with_error));
   }
 }
-
-#endif
 
 }  // namespace
 
@@ -209,21 +205,25 @@ void DataDecoder::ParseJson(const std::string& json,
       base::ElapsedTimer(), std::move(callback));
 
   if (base::JSONReader::UsingRust()) {
-#if BUILDFLAG(BUILD_RUST_JSON_READER)
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::USER_VISIBLE},
-        base::BindOnce(
-            [](const std::string& json) {
-              return base::JSONReader::ReadAndReturnValueWithError(
-                  json, base::JSON_PARSE_RFC);
-            },
-            json),
-        base::BindOnce(&ParsingComplete, cancel_requests_,
-                       std::move(callback)));
-#else   // BUILDFLAG(BUILD_RUST_JSON_READER)
-    CHECK(false)
-        << "UseJsonParserFeature enabled, but not supported in this build.";
-#endif  // BUILDFLAG(BUILD_RUST_JSON_READER)
+    if (base::features::kUseRustJsonParserInCurrentSequence.Get()) {
+      base::JSONReader::Result result =
+          base::JSONReader::ReadAndReturnValueWithError(json,
+                                                        base::JSON_PARSE_RFC);
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(&ParsingComplete, cancel_requests_,
+                                    std::move(callback), std::move(result)));
+    } else {
+      base::ThreadPool::PostTaskAndReplyWithResult(
+          FROM_HERE, {base::TaskPriority::USER_VISIBLE},
+          base::BindOnce(
+              [](const std::string& json) {
+                return base::JSONReader::ReadAndReturnValueWithError(
+                    json, base::JSON_PARSE_RFC);
+              },
+              json),
+          base::BindOnce(&ParsingComplete, cancel_requests_,
+                         std::move(callback)));
+    }
     return;
   }
 

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.edge_to_edge;
 import android.graphics.RectF;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -26,6 +27,7 @@ import java.util.List;
  */
 @JNINamespace("android")
 public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements SceneOverlay {
+
     /** Handle to the native side of this class. */
     private long mNativePtr;
 
@@ -44,10 +46,12 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
     /** Attributes for the divider. */
     private int mDividerColor;
 
-    private boolean mIsDividerVisible;
+    private final Runnable mRequestRenderRunnable;
 
     /** Build a bottom chin scene layer. */
-    public EdgeToEdgeBottomChinSceneLayer() {}
+    public EdgeToEdgeBottomChinSceneLayer(@NonNull Runnable requestRenderRunnable) {
+        mRequestRenderRunnable = requestRenderRunnable;
+    }
 
     /**
      * Set the view's offset from the bottom of the screen in px. An offset of 0 means the view is
@@ -64,31 +68,36 @@ public class EdgeToEdgeBottomChinSceneLayer extends SceneOverlayLayer implements
      */
     public void setIsVisible(boolean visible) {
         mIsVisible = visible;
+        mRequestRenderRunnable.run();
     }
 
     /**
-     * @param height The height for this {@link SceneLayer}. This new height will apply on the next
-     *     call to #getUpdatedSceneOverlayTree.
+     * @param height The height for this {@link SceneLayer}. This new height will apply as of the
+     *     next scene layer update, which is requested immediately.
      */
     public void setHeight(int height) {
         mHeight = height;
+        mRequestRenderRunnable.run();
     }
 
     /**
-     * @param color The new color for the bottom chin. This new color will apply on the next call to
-     *     #getUpdatedSceneOverlayTree.
+     * @param color The new color for the bottom chin. This new color will apply as of the next
+     *     scene layer update, which is requested immediately.
      */
     public void setColor(@ColorInt int color) {
         mColor = color;
+        mRequestRenderRunnable.run();
     }
 
     /**
-     * Set the color for the divider.
+     * Set the color for the divider. This new color will apply as of the next scene layer update,
+     * which is requested immediately.
      *
      * @see #setDividerVisible(boolean)
      */
     public void setDividerColor(@ColorInt int dividerColor) {
         mDividerColor = dividerColor;
+        mRequestRenderRunnable.run();
     }
 
     @Override

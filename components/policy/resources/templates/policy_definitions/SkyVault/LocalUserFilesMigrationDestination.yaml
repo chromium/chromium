@@ -30,7 +30,7 @@ schema:
     - "google_drive"
     - "microsoft_onedrive"
     - "read_only"
-future_on:
-- chrome_os
+supported_on:
+- chrome_os:132-
 tags: []
 type: string-enum

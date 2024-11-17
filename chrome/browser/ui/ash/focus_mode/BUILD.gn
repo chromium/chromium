@@ -49,6 +49,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
+    "//chrome/browser/ui/ash/focus_mode/test:test_support",
     "//chromeos/ash/components/attestation",
     "//chromeos/ash/components/attestation:test_support",
     "//chromeos/ash/components/dbus/attestation",

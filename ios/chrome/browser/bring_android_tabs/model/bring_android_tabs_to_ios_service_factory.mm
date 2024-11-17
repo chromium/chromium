@@ -18,12 +18,6 @@
 
 // static
 BringAndroidTabsToIOSService*
-BringAndroidTabsToIOSServiceFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
-BringAndroidTabsToIOSService*
 BringAndroidTabsToIOSServiceFactory::GetForProfile(ProfileIOS* profile) {
   DCHECK(!profile->IsOffTheRecord());
   return static_cast<BringAndroidTabsToIOSService*>(

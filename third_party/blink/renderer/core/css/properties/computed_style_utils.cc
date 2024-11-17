@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_quad_value.h"
 #include "third_party/blink/renderer/core/css/css_reflect_value.h"
+#include "third_party/blink/renderer/core/css/css_repeat_value.h"
 #include "third_party/blink/renderer/core/css/css_scroll_value.h"
 #include "third_party/blink/renderer/core/css/css_shadow_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
@@ -157,17 +158,15 @@ CSSValue* ConvertFontPaletteToCSSValue(const blink::FontPalette* palette) {
       return result;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return CSSIdentifierValue::Create(CSSValueID::kNormal);
 }
 
 }  // namespace
 
 static Length Negate(const Length& length) {
   if (length.IsCalculated()) {
-    NOTREACHED_IN_MIGRATION();
-    return length;
+    NOTREACHED();
   }
 
   Length ret = Length(-length.GetFloatValue(), length.GetType());
@@ -235,17 +234,6 @@ CSSValue* ComputedStyleUtils::ValueForOffset(const ComputedStyle& style,
   }
   DCHECK_EQ(anchor_identifier_value->GetValueID(), CSSValueID::kAuto);
   return list;
-}
-
-const CSSValue* ComputedStyleUtils::ValueForColor(
-    const StyleColor& style_color) {
-  if (style_color.IsUnresolvedColorFunction()) {
-    return style_color.GetUnresolvedColorFunction().ToCSSValue();
-  }
-  if (style_color.IsCurrentColor()) {
-    return CSSIdentifierValue::Create(CSSValueID::kCurrentcolor);
-  }
-  return cssvalue::CSSColor::Create(style_color.GetColor());
 }
 
 const CSSValue* ComputedStyleUtils::ValueForColor(
@@ -784,8 +772,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
       is_horizontal_property = false;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
   DCHECK(positions.first && positions.second);
 
@@ -819,7 +806,7 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
         inset = insets.bottom;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     return ZoomAdjustedPixelValue(inset, style);
   }
@@ -1127,8 +1114,7 @@ CSSIdentifierValue* ComputedStyleUtils::ValueForFontVariantCaps(
     case FontDescription::kTitlingCaps:
       return CSSIdentifierValue::Create(CSSValueID::kTitlingCaps);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -1304,8 +1290,7 @@ CSSIdentifierValue* ComputedStyleUtils::ValueForFontVariantPosition(
     case FontDescription::kSuperVariantPosition:
       return CSSIdentifierValue::Create(CSSValueID::kSuper);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CSSIdentifierValue::Create(CSSValueID::kNormal);
+      NOTREACHED();
   }
 }
 
@@ -1320,8 +1305,7 @@ CSSIdentifierValue* ComputedStyleUtils::ValueForFontKerning(
     case FontDescription::kNoneKerning:
       return CSSIdentifierValue::Create(CSSValueID::kNone);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return CSSIdentifierValue::Create(CSSValueID::kAuto);
+      NOTREACHED();
   }
 }
 
@@ -1409,7 +1393,7 @@ CSSValue* ComputedStyleUtils::ValueForFontVariantEastAsian(
       value_list->Append(*CSSIdentifierValue::Create(CSSValueID::kTraditional));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   switch (east_asian.Width()) {
     case FontVariantEastAsian::kNormalWidth:
@@ -1422,7 +1406,7 @@ CSSValue* ComputedStyleUtils::ValueForFontVariantEastAsian(
           *CSSIdentifierValue::Create(CSSValueID::kProportionalWidth));
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   if (east_asian.Ruby()) {
     value_list->Append(*CSSIdentifierValue::Create(CSSValueID::kRuby));
@@ -1612,8 +1596,7 @@ CSSValue* ComputedStyleUtils::SpecifiedValueForGridTrackSize(
       return fit_content_track_breadth;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 enum class NamedLinesType { kNamedLines, kAutoRepeatNamedLines };
@@ -2054,7 +2037,7 @@ void PopulateGridTrackListComputedValues(
         ++track_index;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   // Standalone grids can have line names after sizes and repeaters.
@@ -2307,8 +2290,7 @@ CSSValue* ComputedStyleUtils::ValueForTextDecorationStyle(
       return CSSIdentifierValue::Create(CSSValueID::kWavy);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return CSSInitialValue::Create();
+  NOTREACHED();
 }
 
 CSSValue* ComputedStyleUtils::ValueForTextDecorationSkipInk(
@@ -2416,8 +2398,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationDirection(
     case Timing::PlaybackDirection::ALTERNATE_REVERSE:
       return CSSIdentifierValue::Create(CSSValueID::kAlternateReverse);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -2483,8 +2464,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationFillMode(
     case Timing::FillMode::BOTH:
       return CSSIdentifierValue::Create(CSSValueID::kBoth);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -2611,8 +2591,7 @@ CSSValue* ComputedStyleUtils::ValueForAnimationTimingFunction(
             value_id = CSSValueID::kEaseInOut;
             break;
           default:
-            NOTREACHED_IN_MIGRATION();
-            return nullptr;
+            NOTREACHED();
         }
         return CSSIdentifierValue::Create(value_id);
       }
@@ -3091,9 +3070,7 @@ CSSValue* ComputedStyleUtils::CreateTransitionBehaviorValue(
     case CSSTransitionData::TransitionBehavior::kAllowDiscrete:
       return CSSIdentifierValue::Create(CSSValueID::kAllowDiscrete);
   }
-  NOTREACHED_IN_MIGRATION()
-      << " Unrecognized type: " << static_cast<unsigned>(type);
-  return nullptr;
+  NOTREACHED() << " Unrecognized type: " << static_cast<unsigned>(type);
 }
 
 CSSValue* ComputedStyleUtils::ValueForTransitionProperty(
@@ -3134,8 +3111,7 @@ CSSValueID ValueForQuoteType(const QuoteType quote_type) {
     case QuoteType::kOpen:
       return CSSValueID::kOpenQuote;
   }
-  NOTREACHED_IN_MIGRATION();
-  return CSSValueID::kInvalid;
+  NOTREACHED();
 }
 
 CSSValue* ComputedStyleUtils::ValueForContentData(const ComputedStyle& style,
@@ -3182,7 +3158,7 @@ CSSValue* ComputedStyleUtils::ValueForContentData(const ComputedStyle& style,
           To<AltTextContentData>(content_data)->ConcatenateAltText());
       break;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
   DCHECK(list->length());
@@ -3394,6 +3370,95 @@ CSSValue* ComputedStyleUtils::ValueForSVGResource(
   return CSSIdentifierValue::Create(CSSValueID::kNone);
 }
 
+namespace {
+
+template <typename T>
+const CSSValue* GetGapDecorationPropertyValue(const T& value,
+                                              const ComputedStyle& style,
+                                              CSSValuePhase value_phase);
+
+template <>
+const CSSValue* GetGapDecorationPropertyValue(const StyleColor& value,
+                                              const ComputedStyle& style,
+                                              CSSValuePhase value_phase) {
+  return ComputedStyleUtils::CurrentColorOrValidColor(style, value,
+                                                      value_phase);
+}
+
+template <typename T>
+void PopulateNonRepeaterGapData(CSSValueList* list,
+                                const GapData<T>& gap_data,
+                                const ComputedStyle& style,
+                                CSSValuePhase value_phase) {
+  const CSSValue* value =
+      GetGapDecorationPropertyValue(gap_data.GetValue(), style, value_phase);
+  list->Append(*value);
+}
+
+template <typename T>
+void PopulateRepeaterGapData(CSSValueList* list,
+                             const GapData<T>& gap_data,
+                             const ComputedStyle& style,
+                             CSSValuePhase value_phase) {
+  CSSPrimitiveValue* repetitions = nullptr;
+
+  if (!gap_data.GetValueRepeater()->IsAutoRepeater()) {
+    repetitions = CSSNumericLiteralValue::Create(
+        gap_data.GetValueRepeater()->RepeatCount(),
+        CSSPrimitiveValue::UnitType::kNumber);
+  }
+
+  CSSValueList* repeated_values = CSSValueList::CreateSpaceSeparated();
+
+  for (const auto& value : gap_data.GetValueRepeater()->RepeatedValues()) {
+    const CSSValue* css_value =
+        GetGapDecorationPropertyValue(value, style, value_phase);
+    repeated_values->Append(*css_value);
+  }
+
+  CSSValue* repeater_value = MakeGarbageCollected<cssvalue::CSSRepeatValue>(
+      repetitions, *repeated_values);
+
+  list->Append(*repeater_value);
+}
+
+template <typename T>
+const CSSValue* ValueForGapDecorationPropertyDataList(
+    const GapDataList<T>& gap_color_list,
+    const ComputedStyle& style,
+    CSSValuePhase value_phase) {
+  // The CSS Gap Decorations API [1] can take more than one value. When
+  // that feature is enabled, create a space separated list to hold the
+  // values. Otherwise, return a single value, as is supported in
+  // the legacy `column-rule-*` property.
+  // [1]: https://chromestatus.com/feature/5157805733183488
+  if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
+    return GetGapDecorationPropertyValue(gap_color_list.GetLegacyValue(), style,
+                                         value_phase);
+  }
+
+  CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+
+  for (const auto& gap_data : gap_color_list.GetGapDataList()) {
+    if (gap_data.IsRepeaterData()) {
+      PopulateRepeaterGapData(list, gap_data, style, value_phase);
+    } else {
+      PopulateNonRepeaterGapData(list, gap_data, style, value_phase);
+    }
+  }
+  return list;
+}
+
+}  // namespace
+
+const CSSValue* ComputedStyleUtils::ValueForGapDecorationColorDataList(
+    const GapDataList<StyleColor>& gap_color_list,
+    const ComputedStyle& style,
+    CSSValuePhase value_phase) {
+  return ValueForGapDecorationPropertyDataList(gap_color_list, style,
+                                               value_phase);
+}
+
 CSSValue* ComputedStyleUtils::ValueForShadowData(const ShadowData& shadow,
                                                  const ComputedStyle& style,
                                                  bool use_spread,
@@ -3529,8 +3594,7 @@ CSSValue* ComputedStyleUtils::ValueForFilter(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     list->Append(*filter_value);
   }
@@ -4001,8 +4065,7 @@ CSSValue* ComputedStyleUtils::ValuesForFontVariantProperty(
     case kEmptyString:
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -4053,8 +4116,7 @@ CSSValue* ComputedStyleUtils::ValuesForFontSynthesisProperty(
       return list;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -4259,8 +4321,7 @@ CSSIdentifierValue* PositionAreaSpanToCSSIdentifierValue(
     case PositionAreaRegion::kAll:
     case PositionAreaRegion::kCenter:
       // Should have been handled above
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return CSSIdentifierValue::Create(value_id);
 }

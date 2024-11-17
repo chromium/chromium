@@ -184,10 +184,6 @@ BASE_FEATURE(kEnableHangWatcher,
              "EnableHangWatcher",
              FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kEnableHangWatcherInZygoteChildren,
-             "EnableHangWatcherInZygoteChildren",
-             FEATURE_ENABLED_BY_DEFAULT);
-
 // Browser process.
 constexpr base::FeatureParam<int> kIOThreadLogLevel{
     &kEnableHangWatcher, "io_thread_log_level",
@@ -343,7 +339,6 @@ WatchHangsInScope::~WatchHangsInScope() {
 
 // static
 void HangWatcher::InitializeOnMainThread(ProcessType process_type,
-                                         bool is_zygote_child,
                                          bool emit_crashes) {
   DCHECK(!g_use_hang_watcher);
   DCHECK(g_io_thread_log_level == LoggingLevel::kNone);
@@ -351,14 +346,6 @@ void HangWatcher::InitializeOnMainThread(ProcessType process_type,
   DCHECK(g_threadpool_log_level == LoggingLevel::kNone);
 
   bool enable_hang_watcher = base::FeatureList::IsEnabled(kEnableHangWatcher);
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  if (is_zygote_child) {
-    enable_hang_watcher =
-        enable_hang_watcher &&
-        base::FeatureList::IsEnabled(kEnableHangWatcherInZygoteChildren);
-  }
-#endif
 
   // Do not start HangWatcher in the GPU process until the issue related to
   // invalid magic signature in the GPU WatchDog is fixed
@@ -628,9 +615,6 @@ void HangWatcher::Wait() {
     const bool wait_was_normal =
         wait_time <= (monitoring_period_ + kWaitDriftTolerance);
 
-    UMA_HISTOGRAM_TIMES("HangWatcher.SleepDrift.BrowserProcess",
-                        wait_time - monitoring_period_);
-
     if (!wait_was_normal) {
       // If the time spent waiting was too high it might indicate the machine is
       // very slow or that that it went to sleep. In any case we can't trust the
@@ -797,8 +781,9 @@ void HangWatcher::WatchStateSnapShot::Init(
         const PlatformThreadId thread_id = watch_state.get()->GetThreadID();
         const auto track = perfetto::Track::FromPointer(
             this, perfetto::ThreadTrack::ForThread(thread_id));
-        TRACE_EVENT_BEGIN("base", "HangWatcher::ThreadHung", track, deadline);
-        TRACE_EVENT_END("base", track, now);
+        TRACE_EVENT_BEGIN("latency", "HangWatcher::ThreadHung", track,
+                          deadline);
+        TRACE_EVENT_END("latency", track, now);
       }
 #endif
 
@@ -930,7 +915,7 @@ void HangWatcher::Monitor() {
 
 void HangWatcher::DoDumpWithoutCrashing(
     const WatchStateSnapShot& watch_state_snapshot) {
-  TRACE_EVENT("base", "HangWatcher::DoDumpWithoutCrashing");
+  TRACE_EVENT("latency", "HangWatcher::DoDumpWithoutCrashing");
 
   capture_in_progress_.store(true, std::memory_order_relaxed);
   base::AutoLock scope_lock(capture_lock_);

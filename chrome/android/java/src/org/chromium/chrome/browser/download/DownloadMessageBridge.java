@@ -20,7 +20,8 @@ public class DownloadMessageBridge {
 
     /**
      * Constructor, taking a pointer to the native instance.
-     * @nativeDownloadMessageBridge Pointer to the native object.
+     *
+     * @param nativeDownloadMessageBridge Pointer to the native object.
      */
     public DownloadMessageBridge(long nativeDownloadMessageBridge) {
         mNativeDownloadMessageBridge = nativeDownloadMessageBridge;
@@ -35,7 +36,7 @@ public class DownloadMessageBridge {
     public void showIncognitoDownloadMessage(long callbackId) {
         DownloadMessageUiController messageUiController =
                 DownloadManagerService.getDownloadManagerService()
-                        .getMessageUiController(/* otrProfileID= */ null);
+                        .getMessageUiController(/* otrProfileId= */ null);
         messageUiController.showIncognitoDownloadMessage(
                 (accepted) -> {
                     onConfirmed(callbackId, accepted);

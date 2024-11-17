@@ -41,9 +41,10 @@ NotificationsEngagementServiceFactory::NotificationsEngagementServiceFactory()
 NotificationsEngagementServiceFactory::
     ~NotificationsEngagementServiceFactory() = default;
 
-KeyedService* NotificationsEngagementServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+NotificationsEngagementServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-  return new permissions::NotificationsEngagementService(context,
-                                                         profile->GetPrefs());
+  return std::make_unique<permissions::NotificationsEngagementService>(
+      context, profile->GetPrefs());
 }

@@ -51,7 +51,7 @@ struct Suggestion {
                               std::u16string_view display_signon_realm,
                               bool is_cross_domain);
     PasswordSuggestionDetails(const PasswordSuggestionDetails&);
-    PasswordSuggestionDetails(PasswordSuggestionDetails&);
+    PasswordSuggestionDetails(PasswordSuggestionDetails&&);
     PasswordSuggestionDetails& operator=(const PasswordSuggestionDetails&);
     PasswordSuggestionDetails& operator=(PasswordSuggestionDetails&&);
     virtual ~PasswordSuggestionDetails();
@@ -107,7 +107,8 @@ struct Suggestion {
 
   struct PaymentsPayload final {
     PaymentsPayload();
-    explicit PaymentsPayload(bool should_display_terms_available);
+    PaymentsPayload(std::u16string main_text_content_description,
+                    bool should_display_terms_available);
     PaymentsPayload(const PaymentsPayload&);
     PaymentsPayload(PaymentsPayload&&);
     PaymentsPayload& operator=(const PaymentsPayload&);
@@ -117,17 +118,42 @@ struct Suggestion {
     friend bool operator==(const PaymentsPayload&,
                            const PaymentsPayload&) = default;
 
+    // Value to be announced for the suggestion's `main_text`.
+    std::u16string main_text_content_description;
+
     // If true, the user will be presented with a "Terms apply for card
     // benefits" message below the suggestions list on TTF for mobile.
     bool should_display_terms_available = false;
   };
 
-  using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using Guid = base::StrongAlias<class GuidTag, std::string>;
+
+  struct AutofillProfilePayload final {
+    AutofillProfilePayload();
+    explicit AutofillProfilePayload(Guid guid);
+    AutofillProfilePayload(Guid guid, std::u16string email_override);
+    AutofillProfilePayload(const AutofillProfilePayload&);
+    AutofillProfilePayload(AutofillProfilePayload&&);
+    AutofillProfilePayload& operator=(const AutofillProfilePayload&);
+    AutofillProfilePayload& operator=(AutofillProfilePayload&&);
+    ~AutofillProfilePayload();
+
+    friend bool operator==(const AutofillProfilePayload&,
+                           const AutofillProfilePayload&) = default;
+
+    // Address profile identifier.
+    Guid guid;
+    // If non-empty, the email override is applied on the AutofillProfile
+    // identified by `guid` every time it's loaded.
+    std::u16string email_override;
+  };
+
+  using IsLoading = base::StrongAlias<class IsLoadingTag, bool>;
   using InstrumentId = base::StrongAlias<class InstrumentIdTag, uint64_t>;
-  using BackendId = absl::variant<Guid, InstrumentId>;
   using ValueToFill = base::StrongAlias<struct ValueToFill, std::u16string>;
-  using Payload = absl::variant<BackendId,
+  using Payload = absl::variant<Guid,
+                                InstrumentId,
+                                AutofillProfilePayload,
                                 GURL,
                                 ValueToFill,
                                 PasswordSuggestionDetails,
@@ -151,6 +177,32 @@ struct Suggestion {
                            const FaviconDetails&) = default;
   };
 
+  // This struct is used to provide the In-Product-Help bubble. It contains both
+  // the feature and possibly params. Feature is for showing the suggestion and
+  // params is needed for runtime texts.
+  struct IPHMetadata {
+    IPHMetadata();
+    explicit IPHMetadata(const base::Feature* feature,
+                         std::vector<std::u16string> iph_params = {});
+    IPHMetadata(const IPHMetadata& iph_metadata);
+    IPHMetadata(IPHMetadata&& iph_metadata);
+    IPHMetadata& operator=(const IPHMetadata& iph_metadata);
+    IPHMetadata& operator=(IPHMetadata&& iph_metadata);
+    ~IPHMetadata();
+
+    bool operator==(const IPHMetadata& b) const = default;
+    auto operator<=>(const IPHMetadata& b) const = default;
+
+    // The In-Product-Help feature that should be shown for the suggestion.
+    // Present when a suggestion that will display an IPH bubble is created.
+    raw_ptr<const base::Feature> feature = nullptr;
+
+    // IPH params needed for runtime text replacements in the suggestion's IPH
+    // bubble. Present when runtime texts need to be modified. It is empty when
+    // the IPH strings has no placeholders.
+    std::vector<std::u16string> iph_params;
+  };
+
   // This type is used to specify custom icons by providing a URL to the icon.
   // Used on Android only where `gfx::Image` (`custom_icon` alternative) is
   // not supported.
@@ -166,7 +218,7 @@ struct Suggestion {
                   IsPrimary is_primary = IsPrimary(false),
                   ShouldTruncate should_truncate = ShouldTruncate(false));
     Text(const Text& other);
-    Text(Text& other);
+    Text(Text&& other);
     Text& operator=(const Text& other);
     Text& operator=(Text&& other);
     ~Text();
@@ -228,6 +280,7 @@ struct Suggestion {
     kCardVerve,
     kCardVisa,
     kIban,
+    kAutofillPredictionImprovements,
   };
 
   // This enum is used to control filtration of suggestions (see it's used in
@@ -247,6 +300,19 @@ struct Suggestion {
     // Suggestions, that are excluded from filtration by always staying in
     // in the list (basically, these suggestions ignore filter).
     kStatic,
+  };
+
+  // Describes whether a suggestion can be accepted and how it should be styled
+  // when it cannot be.
+  enum class Acceptability {
+    // The suggestion can be accepted.
+    kAcceptable,
+    // The suggestion cannot be accepted (i.e. trying to accept it is ignored by
+    // the UI controller).
+    kUnacceptable,
+    // The suggestion cannot be accepted and is displayed in a
+    // disabled/grayed-out form.
+    kUnacceptableWithDeactivatedStyle,
   };
 
   // TODO(crbug.com/335194240): Consolidate expected param types for these
@@ -286,12 +352,6 @@ struct Suggestion {
     return absl::holds_alternative<T>(payload) ? absl::get<T>(payload) : T{};
   }
 
-  template <typename T>
-  T GetBackendId() const {
-    CHECK(absl::holds_alternative<BackendId>(payload));
-    return absl::get<T>(absl::get<BackendId>(payload));
-  }
-
 #if DCHECK_IS_ON()
   bool Invariant() const {
     switch (type) {
@@ -300,11 +360,10 @@ struct Suggestion {
         return absl::holds_alternative<PlusAddressPayload>(payload);
       case SuggestionType::kPasswordEntry:
         // Manual fallback password suggestions store the password to preview or
-        // fill in the suggestion's payload. Regular per-domain contain empty
-        // `BackendId`.
-        // TODO(crbug.com/333992198): Use `PasswordSuggestionDetails` for all
-        // suggestions with `SuggestionType::kPasswordEntry`.
-        return absl::holds_alternative<BackendId>(payload) ||
+        // fill in the suggestion's payload.
+        // TODO(crbug.com/333992198): Use `PasswordSuggestionDetails` only for
+        // all suggestions with `SuggestionType::kPasswordEntry`.
+        return absl::holds_alternative<Guid>(payload) ||
                absl::holds_alternative<PasswordSuggestionDetails>(payload);
       case SuggestionType::kFillPassword:
       case SuggestionType::kViewPasswordDetails:
@@ -313,7 +372,8 @@ struct Suggestion {
         return absl::holds_alternative<GURL>(payload);
       case SuggestionType::kIbanEntry:
         return absl::holds_alternative<ValueToFill>(payload) ||
-               absl::holds_alternative<BackendId>(payload);
+               absl::holds_alternative<Guid>(payload) ||
+               absl::holds_alternative<InstrumentId>(payload);
       case SuggestionType::kFillPredictionImprovements:
         return absl::holds_alternative<ValueToFill>(payload) ||
                absl::holds_alternative<PredictionImprovementsPayload>(payload);
@@ -322,10 +382,12 @@ struct Suggestion {
         // TODO(crbug.com/367434234): Use `PaymentsPayload` for all credit card
         // suggestions. Only Touch-To-Fill credit card suggestions currently
         // use this.
-        return absl::holds_alternative<BackendId>(payload) ||
+        return absl::holds_alternative<Guid>(payload) ||
                absl::holds_alternative<PaymentsPayload>(payload);
+      case SuggestionType::kDevtoolsTestAddressEntry:
       default:
-        return absl::holds_alternative<BackendId>(payload);
+        return absl::holds_alternative<Guid>(payload) ||
+               absl::holds_alternative<AutofillProfilePayload>(payload);
     }
   }
 #endif
@@ -394,8 +456,9 @@ struct Suggestion {
   // Whether suggestion was interacted with and is now in a loading state.
   IsLoading is_loading = IsLoading(false);
 
-  // The In-Product-Help feature that should be shown for the suggestion.
-  raw_ptr<const base::Feature> feature_for_iph = nullptr;
+  // The metadata needed for showing the In-Product-Help bubble.
+  // TODO(crbug.com/369472865): Make this an std::optional<>.
+  IPHMetadata iph_metadata;
 
   // The feature for the new badge if one is supposed to be shown. Currently
   // available only on Desktop.
@@ -413,20 +476,14 @@ struct Suggestion {
   // `FieldType` used to build the suggestion's `main_text`.
   std::optional<FieldType> field_by_field_filling_type_used;
 
-  // Whether the user is able to preview the suggestion by hovering on it or
-  // accept it by clicking on it.
-  bool is_acceptable = true;
-
   // How the suggestion should be handled by the filtration logic, see the enum
   // values doc for details.
   // Now used for filtering manually triggered password suggestions only and
   // has no effect on other suggestions.
   FiltrationPolicy filtration_policy = FiltrationPolicy::kFilterable;
 
-  // If true, the user will see the suggestion in a "disabled and grayed-out"
-  // form. This field should be true only when `is_acceptable` is false  which
-  // will make the suggestion deactivated and unclickable.
-  bool apply_deactivated_style = false;
+  // The acceptability of the suggestion, see the enum values doc for details.
+  Acceptability acceptability = Acceptability::kAcceptable;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // If true, selecting a suggestion or, when it exists, expanding its
@@ -434,9 +491,16 @@ struct Suggestion {
   // contained cells.
   bool highlight_on_select = true;
 #endif
+
+  // Returns whether the user is able to preview the suggestion by hovering on
+  // it or accept it by clicking on it.
+  bool IsAcceptable() const;
+
+  // Returns whether the user will see the suggestion in
+  // a "disabled and grayed-out" form.
+  bool HasDeactivatedStyle() const;
 };
 
-std::string_view ConvertIconToPrintableString(Suggestion::Icon icon);
 void PrintTo(const Suggestion& suggestion, std::ostream* os);
 
 }  // namespace autofill

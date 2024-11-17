@@ -45,7 +45,8 @@
     width: var(--product-selector-width);
   }
 
-  #empty {
+  .message {
+    box-sizing: border-box;
     font-weight: 500;
     line-height: 20px;
     padding: 12px;
@@ -66,29 +67,39 @@
 
 <cr-lazy-render id="menu">
   <template>
-    <cr-action-menu on-close="onClose_">
+    <cr-action-menu on-close="onClose_" auto-reposition="true">
       <div id="selectionContainer">
-        <template is="dom-repeat" items="[[sections]]" as="section">
-          <cr-expand-button expanded="{{section.expanded}}" no-hover
-              expand-icon="cr:arrow-drop-down"
-              collapse-icon="cr:arrow-drop-up">
-            <div class="section-title">[[section.title]]</div>
-          </cr-expand-button>
-          <cr-collapse opened="[[section.expanded]]">
-            <template is="dom-repeat" items="[[section.entries]]">
-              <cr-url-list-item class="dropdown-item" size="medium"
-                  url="[[item.url]]" title="[[item.title]]"
-                  data-url-section="[[section.sectionType]]"
-                  description="[[getUrl_(item)]]" no-hover
-                  on-click="onSelect_">
-              </cr-url-list-item>
-            </template>
-            <!-- Add spacer instead of adding margin or padding to the -->
-            <!-- parent for smooth expand/collapse transitions. -->
-            <div class="dropdown-spacer"></div>
-          </cr-collapse>
+        <template is="dom-if"
+            if="[[!showTableFullMessage_(forNewColumn, isTableFull)]]">
+          <template is="dom-repeat" items="[[sections]]" as="section">
+            <cr-expand-button expanded="{{section.expanded}}" no-hover
+                expand-icon="cr:arrow-drop-down"
+                collapse-icon="cr:arrow-drop-up">
+              <div class="section-title">[[section.title]]</div>
+            </cr-expand-button>
+            <cr-collapse opened="[[section.expanded]]">
+              <template is="dom-repeat" items="[[section.entries]]">
+                <cr-url-list-item class="dropdown-item" size="medium"
+                    url="[[item.url]]" title="[[item.title]]"
+                    data-url-section="[[section.sectionType]]"
+                    description="[[getUrl_(item)]]" no-hover
+                    on-click="onSelect_">
+                </cr-url-list-item>
+              </template>
+              <!-- Add spacer instead of adding margin or padding to the -->
+              <!-- parent for smooth expand/collapse transitions. -->
+              <div class="dropdown-spacer"></div>
+            </cr-collapse>
+          </template>
         </template>
-        <div id="empty" hidden="[[sections]]">$i18n{emptyMenu}</div>
+        <div id="empty" class="message"
+            hidden="[[!showEmptySuggestionsMessage_(sections, forNewColumn, isTableFull)]]">
+          $i18n{emptyMenu}
+        </div>
+        <div id="tableFullMessage" class="message"
+            hidden="[[!showTableFullMessage_(forNewColumn, isTableFull)]]">
+          $i18n{tableFullMessage}
+        </div>
       </div>
       <template is="dom-if" if="[[selectedUrl.length]]">
         <hr>

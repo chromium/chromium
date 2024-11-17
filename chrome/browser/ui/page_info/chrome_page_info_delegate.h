@@ -69,6 +69,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
   void OpenCertificateDialog(net::X509Certificate* certificate) override;
   void OpenConnectionHelpCenterPage(const ui::Event& event) override;
   void OpenSafetyTipHelpCenterPage() override;
+  void OpenSafeBrowsingHelpCenterPage(const ui::Event& event) override;
   void OpenContentSettingsExceptions(
       ContentSettingsType content_settings_type) override;
   void OnPageInfoActionOccurred(page_info::PageInfoAction action) override;
@@ -94,6 +95,7 @@ class ChromePageInfoDelegate : public PageInfoDelegate {
 #endif
 
   bool IsHttpsFirstModeEnabled() override;
+  bool IsIncognitoProfile() override;
 
  private:
   Profile* GetProfile() const;

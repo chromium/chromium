@@ -13,6 +13,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/containers/extend.h"
@@ -37,7 +38,7 @@ namespace {
 
 // The first frame of
 // http://www.html5rocks.com/en/tutorials/audio/quick/test.mp3
-unsigned char test_mp3[] = {
+constexpr uint8_t kTestMp3[] = {
     0xff, 0xfb, 0xd2, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x69, 0x05, 0x00,
     0x00, 0x00, 0x00, 0x00, 0x0d, 0x20, 0x00, 0x00, 0x00, 0x2a, 0x7e, 0x40,
     0xc0, 0x19, 0x4a, 0x80, 0x0d, 0x60, 0x48, 0x1b, 0x40, 0xf7, 0xbd, 0xb9,
@@ -108,7 +109,8 @@ unsigned char test_mp3[] = {
     0x8a, 0xb3, 0x52, 0xd1, 0x3d, 0x79, 0x81, 0x4d, 0x31, 0x24, 0xf9, 0x38,
     0x96, 0xbc, 0xf4, 0x8c, 0x25, 0xe9, 0xf2, 0x73, 0x94, 0x85, 0xc2, 0x61,
     0x6a, 0x34, 0x68, 0x65, 0x78, 0x87, 0xa6, 0x4f};
-static const size_t kDecodedAudioLengthInBytes = 9216u;
+
+constexpr size_t kDecodedAudioLengthInBytes = 9216u;
 
 }  // namespace
 
@@ -136,8 +138,7 @@ static inline const base::TimeDelta InfiniteTimeOut() {
 }
 
 void DecodeMediaFrame(MediaCodecBridge* media_codec,
-                      const uint8_t* data,
-                      size_t data_size,
+                      base::span<const uint8_t> data,
                       const base::TimeDelta input_presentation_timestamp,
                       const base::TimeDelta initial_timestamp_lower_bound) {
   base::TimeDelta input_pts = input_presentation_timestamp;
@@ -149,7 +150,7 @@ void DecodeMediaFrame(MediaCodecBridge* media_codec,
         media_codec->DequeueInputBuffer(InfiniteTimeOut(), &input_buf_index);
     ASSERT_TRUE(result.is_ok());
 
-    media_codec->QueueInputBuffer(input_buf_index, data, data_size,
+    media_codec->QueueInputBuffer(input_buf_index, data,
                                   input_presentation_timestamp);
 
     size_t unused_offset = 0;
@@ -174,9 +175,9 @@ void DecodeMediaFrame(MediaCodecBridge* media_codec,
 // - as to key frames, correct sequences of H.264 NALUs (SPS before PPS and
 //   before slices).
 // - as to non key frames, contain no SPS/PPS infront.
-void H264Validate(const uint8_t* frame, size_t size) {
+void H264Validate(base::span<const uint8_t> frame) {
   H264Parser h264_parser;
-  h264_parser.SetStream(frame, static_cast<off_t>(size));
+  h264_parser.SetStream(frame.data(), frame.size());
   bool seen_sps = false;
   bool seen_pps = false;
 
@@ -233,10 +234,8 @@ void EncodeMediaFrame(MediaCodecBridge* media_codec,
       media_codec->DequeueInputBuffer(InfiniteTimeOut(), &input_buf_index);
   ASSERT_TRUE(result.is_ok());
 
-  uint8_t* buffer = nullptr;
-  size_t capacity = 0;
-  result = media_codec->GetInputBuffer(input_buf_index, &buffer, &capacity);
-  ASSERT_TRUE(result.is_ok());
+  auto buffer = media_codec->GetInputBuffer(input_buf_index);
+  ASSERT_TRUE(!buffer.empty());
 
   int stride, yplane_height;
   gfx::Size encoded_size;
@@ -252,19 +251,19 @@ void EncodeMediaFrame(MediaCodecBridge* media_codec,
       (uv_plane_size.height() - 1) * stride +
       // size of the very last line in UV-plane (it's not padded to full stride)
       uv_plane_size.width() * 2;
-  ASSERT_LE(src_size, capacity);
+  ASSERT_LE(src_size, buffer.size());
 
   // Convert to NV12 because H264 encoder is created with color format
   // COLOR_FormatYUV420SemiPlanar, both in main code path and unittest here.
-  bool converted =
-      !libyuv::I420ToNV12(src_data, width, src_data + width * height, width / 2,
-                          src_data + width * height * 5 / 4, width / 2, buffer,
-                          stride, buffer + stride * yplane_height, stride,
-                          encoded_size.width(), encoded_size.height());
+  bool converted = !libyuv::I420ToNV12(
+      src_data, width, src_data + width * height, width / 2,
+      src_data + width * height * 5 / 4, width / 2, buffer.data(), stride,
+      buffer.data() + stride * yplane_height, stride, encoded_size.width(),
+      encoded_size.height());
   ASSERT_TRUE(converted);
 
-  result = media_codec->QueueInputBuffer(input_buf_index, nullptr, src_size,
-                                         input_timestamp);
+  result = media_codec->QueueFilledInputBuffer(input_buf_index, src_size,
+                                               input_timestamp);
   ASSERT_TRUE(result.is_ok());
 
   int32_t buf_index = -1;
@@ -279,13 +278,11 @@ void EncodeMediaFrame(MediaCodecBridge* media_codec,
   } while (buf_index < 0);
   ASSERT_TRUE(result.is_ok() && buf_index >= 0);
 
-  std::unique_ptr<uint8_t[]> output_data =
-      std::make_unique<uint8_t[]>(output_size);
-  result = media_codec->CopyFromOutputBuffer(buf_index, offset,
-                                             output_data.get(), output_size);
+  auto output_data = base::HeapArray<uint8_t>::Uninit(output_size);
+  result = media_codec->CopyFromOutputBuffer(buf_index, offset, output_data);
   ASSERT_TRUE(result.is_ok());
 
-  H264Validate(output_data.get(), output_size);
+  H264Validate(output_data);
 
   media_codec->ReleaseOutputBuffer(buf_index, false);
 }
@@ -324,11 +321,11 @@ TEST(MediaCodecBridgeTest, DoNormal) {
   ASSERT_GE(input_buf_index, 0);
 
   int64_t input_pts = kPresentationTimeBase;
-  media_codec->QueueInputBuffer(input_buf_index, test_mp3, sizeof(test_mp3),
+  media_codec->QueueInputBuffer(input_buf_index, kTestMp3,
                                 base::Microseconds(++input_pts));
 
   result = media_codec->DequeueInputBuffer(InfiniteTimeOut(), &input_buf_index);
-  media_codec->QueueInputBuffer(input_buf_index, test_mp3, sizeof(test_mp3),
+  media_codec->QueueInputBuffer(input_buf_index, kTestMp3,
                                 base::Microseconds(++input_pts));
 
   result = media_codec->DequeueInputBuffer(InfiniteTimeOut(), &input_buf_index);
@@ -416,20 +413,20 @@ TEST(MediaCodecBridgeTest, PresentationTimestampsDoNotDecrease) {
   auto media_codec = MediaCodecBridgeImpl::CreateVideoDecoder(config);
   ASSERT_THAT(media_codec, NotNull());
   scoped_refptr<DecoderBuffer> buffer = ReadTestDataFile("vp8-I-frame-320x240");
-  DecodeMediaFrame(media_codec.get(), buffer->data(), buffer->size(),
-                   base::TimeDelta(), base::TimeDelta());
+  DecodeMediaFrame(media_codec.get(), *buffer, base::TimeDelta(),
+                   base::TimeDelta());
 
   // Simulate a seek to 10 seconds, and each chunk has 2 I-frames.
   std::vector<uint8_t> chunk = base::ToVector(base::span(*buffer));
   base::Extend(chunk, base::span(*buffer));
   media_codec->Flush();
-  DecodeMediaFrame(media_codec.get(), &chunk[0], chunk.size(),
-                   base::Microseconds(10000000), base::Microseconds(9900000));
+  DecodeMediaFrame(media_codec.get(), chunk, base::Microseconds(10000000),
+                   base::Microseconds(9900000));
 
   // Simulate a seek to 5 seconds.
   media_codec->Flush();
-  DecodeMediaFrame(media_codec.get(), &chunk[0], chunk.size(),
-                   base::Microseconds(5000000), base::Microseconds(4900000));
+  DecodeMediaFrame(media_codec.get(), chunk, base::Microseconds(5000000),
+                   base::Microseconds(4900000));
 }
 
 TEST(MediaCodecBridgeTest, CreateUnsupportedCodec) {
@@ -475,16 +472,16 @@ TEST(MediaCodecBridgeTest, H264VideoEncodeAndValidate) {
 
   const char kSrcFileName[] = "bali_640x360_P420.yuv";
   base::FilePath src_file = GetTestDataFilePath(kSrcFileName);
-  int64_t src_file_size = 0;
-  ASSERT_TRUE(base::GetFileSize(src_file, &src_file_size));
+  std::optional<int64_t> src_file_size = base::GetFileSize(src_file);
+  ASSERT_TRUE(src_file_size.has_value());
 
   const VideoPixelFormat kInputFormat = PIXEL_FORMAT_I420;
   const int frame_size = static_cast<int>(
       VideoFrame::AllocationSize(kInputFormat, gfx::Size(width, height)));
   ASSERT_TRUE(frame_size > 0);
-  ASSERT_TRUE(src_file_size % frame_size == 0U);
+  ASSERT_TRUE(src_file_size.value() % frame_size == 0U);
 
-  const int num_frames = src_file_size / frame_size;
+  const int num_frames = src_file_size.value() / frame_size;
   base::File src(src_file, base::File::FLAG_OPEN | base::File::FLAG_READ);
   std::unique_ptr<uint8_t[]> frame_data =
       std::make_unique<uint8_t[]>(frame_size);

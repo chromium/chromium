@@ -12,14 +12,9 @@ namespace {
 TEST(PaymentLinkValidatorTest, validUrls) {
   PaymentLinkValidator validator;
   const std::vector<std::string> kValidUrls = {
-      "duitnow://shopeepay.com.my?code=https://shopeepay.com.my/"
-      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd",
-      "duitnow://tngdigital.com.my?code=https://qr.tngdigital.com.my/"
-      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd",
-      "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
-      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd",
-      "tngditial://tngdigital.com.my?code=https://qr.tngdigital.com.my/"
-      "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd"};
+      "duitnow://paynet.com.my?path=fake_path",
+      "shopeepay://shopeepay.com.my?path=fake_path",
+      "tngd://tngdigital.com.my?path=fake_path"};
 
   for (const auto& link : kValidUrls) {
     EXPECT_TRUE(validator.IsValid(link)) << "Failed for: " << link;
@@ -47,7 +42,7 @@ TEST(PaymentLinkValidatorTest, EmptyLink) {
 
 TEST(PaymentLinkValidatorTest, CaseSensitive) {
   PaymentLinkValidator validator;
-  EXPECT_FALSE(validator.IsValid("duitnow://TNGDIGITAL.COM.MY/abc1234"));
+  EXPECT_FALSE(validator.IsValid("tngd://TNGDIGITAL.COM.MY/abc1234"));
 }
 
 }  // namespace

@@ -42,7 +42,7 @@ namespace blink {
 namespace {
 
 String optionalNameProperty(const String& property) {
-  if (!property) {
+  if (property.empty()) {
     return String();
   }
   return " '" + property + "'";
@@ -57,43 +57,48 @@ String optionalIndexProperty(const String& property) {
 
 }  //  namespace
 
-String ExceptionMessages::AddContextToMessage(const ExceptionContext& context,
+String ExceptionMessages::AddContextToMessage(v8::ExceptionContext type,
+                                              const char* class_name,
+                                              const String& property_name,
                                               const String& message) {
-  const char* c = context.GetClassName();
-  const String& p = context.GetPropertyName();
-  const String& m = message;
-
-  switch (context.GetType()) {
+  switch (type) {
     case v8::ExceptionContext::kConstructor:
-      return ExceptionMessages::FailedToConstruct(c, m);
+      return ExceptionMessages::FailedToConstruct(class_name, message);
     case v8::ExceptionContext::kOperation:
-      return ExceptionMessages::FailedToExecute(p, c, m);
+      return ExceptionMessages::FailedToExecute(property_name, class_name,
+                                                message);
     case v8::ExceptionContext::kAttributeGet:
-      return ExceptionMessages::FailedToGet(p, c, m);
+      return ExceptionMessages::FailedToGet(property_name, class_name, message);
     case v8::ExceptionContext::kAttributeSet:
-      return ExceptionMessages::FailedToSet(p, c, m);
+      return ExceptionMessages::FailedToSet(property_name, class_name, message);
     case v8::ExceptionContext::kNamedEnumerator:
-      return ExceptionMessages::FailedToEnumerate(c, m);
+      return ExceptionMessages::FailedToEnumerate(class_name, message);
     case v8::ExceptionContext::kIndexedGetter:
     case v8::ExceptionContext::kIndexedDescriptor:
     case v8::ExceptionContext::kIndexedQuery:
-      return ExceptionMessages::FailedToGetIndexed(p, c, m);
+      return ExceptionMessages::FailedToGetIndexed(property_name, class_name,
+                                                   message);
     case v8::ExceptionContext::kIndexedSetter:
     case v8::ExceptionContext::kIndexedDefiner:
-      return ExceptionMessages::FailedToSetIndexed(p, c, m);
+      return ExceptionMessages::FailedToSetIndexed(property_name, class_name,
+                                                   message);
     case v8::ExceptionContext::kIndexedDeleter:
-      return ExceptionMessages::FailedToDeleteIndexed(p, c, m);
+      return ExceptionMessages::FailedToDeleteIndexed(property_name, class_name,
+                                                      message);
     case v8::ExceptionContext::kNamedGetter:
     case v8::ExceptionContext::kNamedDescriptor:
     case v8::ExceptionContext::kNamedQuery:
-      return ExceptionMessages::FailedToGetNamed(p, c, m);
+      return ExceptionMessages::FailedToGetNamed(property_name, class_name,
+                                                 message);
     case v8::ExceptionContext::kNamedSetter:
     case v8::ExceptionContext::kNamedDefiner:
-      return ExceptionMessages::FailedToSetNamed(p, c, m);
+      return ExceptionMessages::FailedToSetNamed(property_name, class_name,
+                                                 message);
     case v8::ExceptionContext::kNamedDeleter:
-      return ExceptionMessages::FailedToDeleteNamed(p, c, m);
+      return ExceptionMessages::FailedToDeleteNamed(property_name, class_name,
+                                                    message);
     case v8::ExceptionContext::kUnknown:
-      return m;
+      return message;
   }
   NOTREACHED();
 }
@@ -104,7 +109,11 @@ String ExceptionMessages::FailedToConvertJSValue(const char* type) {
 
 String ExceptionMessages::FailedToConstruct(const char* type,
                                             const String& detail) {
-  return "Failed to construct '" + String(type) +
+  String type_string = String(type);
+  if (type_string.empty()) {
+    return detail;
+  }
+  return "Failed to construct '" + type_string +
          (!detail.empty() ? String("': " + detail) : String("'"));
 }
 

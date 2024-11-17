@@ -182,6 +182,9 @@ def _ParseArgs(args):
   input_opts.add_argument(
       '--verification-library-version-offset',
       help='Subtract this from static-library version for expectation files')
+  input_opts.add_argument('--xml-namespaces',
+                          action='store_true',
+                          help='Do not pass --no-xml-namespaces')
 
   action_helpers.add_depfile_arg(output_opts)
   output_opts.add_argument('--arsc-path', help='Apk output for arsc format.')
@@ -765,7 +768,7 @@ def _PackageApk(options, build):
   if options.shared_resources:
     link_command.append('--shared-lib')
 
-  if int(options.min_sdk_version) > 21:
+  if int(options.min_sdk_version) > 21 and not options.xml_namespaces:
     link_command.append('--no-xml-namespaces')
 
   if options.package_id:

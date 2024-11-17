@@ -42,6 +42,7 @@ class ASH_EXPORT StylusBatteryDelegate
   std::optional<uint8_t> battery_level() const { return battery_level_; }
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(StylusBatteryViewTest, AccessibleProperties);
   bool IsBatteryInfoValid(
       const PeripheralBatteryListener::BatteryInfo& battery) const;
 

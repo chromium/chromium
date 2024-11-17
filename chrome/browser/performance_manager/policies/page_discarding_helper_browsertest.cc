@@ -126,6 +126,9 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
       case DiscardReason::SUGGESTED:
         discard_string = "Suggested";
         break;
+      case DiscardReason::FROZEN_WITH_GROWING_MEMORY:
+        discard_string = "Frozen with growing memory";
+        break;
     }
     SCOPED_TRACE(::testing::Message()
                  << discard_string << " discard from " << location.ToString());
@@ -157,37 +160,53 @@ class PageDiscardingHelperBrowserTest : public InProcessBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest,
-                       DISABLED_DiscardSpecificPage) {
+IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest, DiscardSpecificPage) {
   // Test urgent and proactive discards in a loop to avoid the overhead of
   // starting a new browser every time.
   // TODO(crbug.com/40899366): Add tests for all the other heuristics in
   // PageDiscardingHelper::CanDiscard().
   for (auto discard_reason :
-       {DiscardReason::URGENT, DiscardReason::PROACTIVE}) {
+       {DiscardReason::EXTERNAL, DiscardReason::URGENT,
+        DiscardReason::PROACTIVE, DiscardReason::SUGGESTED,
+        DiscardReason::FROZEN_WITH_GROWING_MEMORY}) {
     {
-      // Background pages can be discarded.
+      // A background page can be discarded.
       const int index1 = OpenNewBackgroundPage();
       ExpectImmediateDiscard(index1, discard_reason, true);
 
-      // Foreground page should be blocked.
-      // TODO(crbug.com/40899366): Also test when the browser window is
-      // occluded. They should still be blocked.
+      // A foreground page blocks URGENT, PROACTIVE and SUGGESTED discards.
       const int index2 = OpenNewBackgroundPage();
       browser()->tab_strip_model()->ActivateTabAt(index2);
-      ExpectImmediateDiscard(index2, discard_reason, false);
+      switch (discard_reason) {
+        case DiscardReason::EXTERNAL:
+        case DiscardReason::FROZEN_WITH_GROWING_MEMORY:
+          ExpectImmediateDiscard(index2, discard_reason, true);
+          break;
+        case DiscardReason::URGENT:
+        case DiscardReason::PROACTIVE:
+        case DiscardReason::SUGGESTED:
+          ExpectImmediateDiscard(index2, discard_reason, false);
+          break;
+      }
     }
 
     {
-      // Updating the title while in the background should block only proactive
-      // discards.
+      // Updating title in background blocks PROACTIVE and SUGGESTED discards.
       const int index1 = OpenNewBackgroundPage();
       UpdatePageTitle(index1);
-      ExpectImmediateDiscard(index1, discard_reason,
-                             discard_reason == DiscardReason::URGENT);
+      switch (discard_reason) {
+        case DiscardReason::EXTERNAL:
+        case DiscardReason::URGENT:
+        case DiscardReason::FROZEN_WITH_GROWING_MEMORY:
+          ExpectImmediateDiscard(index1, discard_reason, true);
+          break;
+        case DiscardReason::PROACTIVE:
+        case DiscardReason::SUGGESTED:
+          ExpectImmediateDiscard(index1, discard_reason, false);
+          break;
+      }
 
-      // Updating the page title while in the foreground should not block any
-      // discards.
+      // Updating favicon in the foreground does not block discards.
       const int index2 = OpenNewBackgroundPage();
       browser()->tab_strip_model()->ActivateTabAt(index2);
       UpdatePageTitle(index2);
@@ -196,15 +215,22 @@ IN_PROC_BROWSER_TEST_F(PageDiscardingHelperBrowserTest,
     }
 
     {
-      // Updating the favicon while in the background should block only
-      // proactive discards.
+      // Updating favicon in background blocks PROACTIVE and SUGGESTED discards.
       const int index1 = OpenNewBackgroundPage();
       UpdateFavicon(index1);
-      ExpectImmediateDiscard(index1, discard_reason,
-                             discard_reason == DiscardReason::URGENT);
+      switch (discard_reason) {
+        case DiscardReason::EXTERNAL:
+        case DiscardReason::URGENT:
+        case DiscardReason::FROZEN_WITH_GROWING_MEMORY:
+          ExpectImmediateDiscard(index1, discard_reason, true);
+          break;
+        case DiscardReason::PROACTIVE:
+        case DiscardReason::SUGGESTED:
+          ExpectImmediateDiscard(index1, discard_reason, false);
+          break;
+      }
 
-      // Updating the favicon while in the foreground should not block any
-      // discards.
+      // Updating favicon in the foreground does not block discards.
       const int index2 = OpenNewBackgroundPage();
       browser()->tab_strip_model()->ActivateTabAt(index2);
       UpdateFavicon(index2);

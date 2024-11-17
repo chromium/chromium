@@ -4,6 +4,8 @@
 
 #include "components/invalidation/profile_invalidation_provider.h"
 
+#include <stdint.h>
+
 #include <utility>
 
 #include "components/invalidation/impl/invalidation_prefs.h"
@@ -31,18 +33,18 @@ IdentityProvider* ProfileInvalidationProvider::GetIdentityProvider() {
 
 std::variant<InvalidationService*, InvalidationListener*>
 ProfileInvalidationProvider::GetInvalidationServiceOrListener(
-    const std::string& sender_id,
-    const std::string& project_id) {
+    int64_t project_number) {
   DCHECK(invalidation_service_or_listener_factory_);
 
-  if (!sender_id_to_invalidation_service_or_listener_.contains(
-          {sender_id, project_id})) {
-    sender_id_to_invalidation_service_or_listener_[{sender_id, project_id}] =
-        invalidation_service_or_listener_factory_.Run(
-            sender_id, project_id, "ProfileInvalidationProvider");
+  auto& service_or_listener =
+      sender_id_to_invalidation_service_or_listener_[project_number];
+
+  if (!std::visit([](auto&& ptr) { return !!ptr; }, service_or_listener)) {
+    service_or_listener = invalidation_service_or_listener_factory_.Run(
+        project_number, "ProfileInvalidationProvider");
   }
-  return invalidation::UniquePointerVariantToPointer(
-      sender_id_to_invalidation_service_or_listener_[{sender_id, project_id}]);
+
+  return invalidation::UniquePointerVariantToPointer(service_or_listener);
 }
 
 void ProfileInvalidationProvider::Shutdown() {

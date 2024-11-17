@@ -173,8 +173,8 @@ class PasswordGenerationControllerTest
                 OnAccessoryActionAvailabilityChanged(
                     ShouldShowAction(false),
                     autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
-    controller()->FocusedInputChanged(FocusedFieldType::kFillablePasswordField,
-                                      active_driver());
+    controller()->FocusedInputChanged(
+        /*is_field_eligible_for_generation=*/true, active_driver());
   }
 
   PasswordGenerationController* controller() {
@@ -365,8 +365,8 @@ TEST_F(PasswordGenerationControllerTest,
                   ShouldShowAction(false),
                   autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
 
-  controller()->FocusedInputChanged(FocusedFieldType::kFillableUsernameField,
-                                    active_driver());
+  controller()->FocusedInputChanged(
+      /*is_field_eligible_for_generation=*/false, active_driver());
   EXPECT_FALSE(controller()->GetActiveFrameDriver());
 }
 
@@ -377,8 +377,8 @@ TEST_F(PasswordGenerationControllerTest,
                   ShouldShowAction(false),
                   autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
 
-  controller()->FocusedInputChanged(FocusedFieldType::kFillablePasswordField,
-                                    non_active_driver());
+  controller()->FocusedInputChanged(
+      /*is_field_eligible_for_generation=*/true, non_active_driver());
   EXPECT_EQ(another_password_manager_driver_.get(),
             controller()->GetActiveFrameDriver().get());
 }
@@ -397,8 +397,8 @@ TEST_F(PasswordGenerationControllerTest, DontShowManualDialogIfFocusChanged) {
               OnAccessoryActionAvailabilityChanged(
                   ShouldShowAction(false),
                   autofill::AccessoryAction::GENERATE_PASSWORD_AUTOMATIC));
-  controller()->FocusedInputChanged(FocusedFieldType::kFillablePasswordField,
-                                    non_active_driver());
+  controller()->FocusedInputChanged(
+      /*is_field_eligible_for_generation=*/true, non_active_driver());
   EXPECT_CALL(create_ttf_generation_controller_, Run).Times(0);
   controller()->ShowManualGenerationDialog(password_manager_driver_.get(),
                                            GetTestGenerationUIData1());

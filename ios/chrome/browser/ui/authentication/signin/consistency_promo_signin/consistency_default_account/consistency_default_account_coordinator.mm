@@ -6,7 +6,6 @@
 
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
@@ -42,12 +41,11 @@
 
 - (void)start {
   [super start];
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   self.mediator = [[ConsistencyDefaultAccountMediator alloc]
       initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                        GetForBrowserState(browserState)
-                        syncService:SyncServiceFactory::GetForBrowserState(
-                                        browserState)
+                                        GetForProfile(profile)
+                        syncService:SyncServiceFactory::GetForProfile(profile)
                         accessPoint:self.accessPoint];
   self.defaultAccountViewController =
       [[ConsistencyDefaultAccountViewController alloc] init];

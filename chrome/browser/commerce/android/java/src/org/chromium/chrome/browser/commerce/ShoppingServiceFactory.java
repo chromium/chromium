@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.commerce;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -38,7 +40,8 @@ public final class ShoppingServiceFactory {
     }
 
     @NativeMethods
-    interface Natives {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public interface Natives {
         ShoppingService getForProfile(@JniType("Profile*") Profile profile);
     }
 }

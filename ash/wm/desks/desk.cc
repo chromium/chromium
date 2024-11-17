@@ -49,9 +49,6 @@ namespace {
 constexpr char kConsecutiveDailyVisitsHistogramName[] =
     "Ash.Desks.ConsecutiveDailyVisits";
 
-// Prefix for the desks lifetime histograms.
-constexpr char kDeskLifetimeHistogramNamePrefix[] = "Ash.Desks.DeskLifetime_";
-
 // The amount of time a user has to stay on a recently activated desk for it to
 // be considered interacted with. Used for tracking weekly active desks metric.
 constexpr base::TimeDelta kDeskInteractedWithTime = base::Seconds(3);
@@ -244,9 +241,10 @@ Desk::ScopedContentUpdateNotificationDisabler::
 // -----------------------------------------------------------------------------
 // Desk:
 
-Desk::Desk(int associated_container_id, bool desk_being_restored)
+Desk::Desk(int associated_container_id, Type type)
     : uuid_(base::Uuid::GenerateRandomV4()),
       container_id_(associated_container_id),
+      type_(type),
       creation_time_(base::Time::Now()) {
   // For the very first default desk added during initialization, there won't be
   // any root windows yet. That's OK, OnRootWindowAdded() will be called
@@ -254,8 +252,9 @@ Desk::Desk(int associated_container_id, bool desk_being_restored)
   for (aura::Window* root : Shell::GetAllRootWindows())
     OnRootWindowAdded(root);
 
-  if (!desk_being_restored)
+  if (type != Type::kRestored) {
     MaybeIncrementWeeklyActiveDesks();
+  }
 }
 
 Desk::~Desk() {
@@ -465,17 +464,10 @@ void Desk::SetGuid(base::Uuid new_guid) {
   }
 }
 
-void Desk::SetLacrosProfileId(
-    uint64_t lacros_profile_id,
-    std::optional<DeskProfilesSelectProfileSource> source,
-    bool skip_prefs_update) {
+void Desk::SetLacrosProfileId(uint64_t lacros_profile_id,
+                              bool skip_prefs_update) {
   if (lacros_profile_id == lacros_profile_id_) {
     return;
-  }
-
-  if (source) {
-    base::UmaHistogramEnumeration(kDeskProfilesSelectProfileHistogramName,
-                                  *source);
   }
 
   lacros_profile_id_ = lacros_profile_id;
@@ -783,15 +775,8 @@ void Desk::RecordLifetimeHistogram(int index) {
   // Desk index is 1-indexed in histograms. The histogram is only defined for
   // the first 8 desks.
   if (const int desk_index = index + 1; desk_index <= 8) {
-    std::string histogram;
-    if (lacros_profile_id() != 0) {
-      histogram = base::StringPrintf(
-          "%sProfile_%i", kDeskLifetimeHistogramNamePrefix, desk_index);
-    } else {
-      histogram = base::StringPrintf("%s%i", kDeskLifetimeHistogramNamePrefix,
-                                     desk_index);
-    }
-
+    const std::string histogram =
+        base::StringPrintf("Ash.Desks.DeskLifetime_%i", desk_index);
     base::UmaHistogramCounts1000(
         histogram, (base::Time::Now() - creation_time_).InHours());
   }

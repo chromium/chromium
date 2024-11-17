@@ -8,9 +8,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 
-FakeDeviceAccountsProvider::FakeDeviceAccountsProvider() {}
+FakeDeviceAccountsProvider::FakeDeviceAccountsProvider() = default;
 
-FakeDeviceAccountsProvider::~FakeDeviceAccountsProvider() {}
+FakeDeviceAccountsProvider::~FakeDeviceAccountsProvider() = default;
 
 void FakeDeviceAccountsProvider::GetAccessToken(
     const std::string& account_id,
@@ -21,7 +21,14 @@ void FakeDeviceAccountsProvider::GetAccessToken(
 }
 
 std::vector<DeviceAccountsProvider::AccountInfo>
-FakeDeviceAccountsProvider::GetAllAccounts() const {
+FakeDeviceAccountsProvider::GetAccountsForProfile() const {
+  return accounts_;
+}
+
+std::vector<DeviceAccountsProvider::AccountInfo>
+FakeDeviceAccountsProvider::GetAccountsOnDevice() const {
+  // TODO(crbug.com/368409110): Add the capability to set accounts-on-device
+  // separate from accounts-for-profile.
   return accounts_;
 }
 

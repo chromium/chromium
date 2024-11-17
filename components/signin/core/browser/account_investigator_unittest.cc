@@ -152,6 +152,13 @@ ListedAccount Account(const CoreAccountId& account_id) {
   return account;
 }
 
+ListedAccount SignedOutAccount(const CoreAccountId& account_id) {
+  ListedAccount account;
+  account.id = account_id;
+  account.signed_out = true;
+  return account;
+}
+
 AccountInfo ToAccountInfo(ListedAccount account) {
   AccountInfo account_info;
   account_info.account_id = account.id;
@@ -171,11 +178,8 @@ const ListedAccount one(Account(CoreAccountId::FromGaiaId(kGaiaId1)));
 const ListedAccount two(Account(CoreAccountId::FromGaiaId(kGaiaId2)));
 const ListedAccount three(Account(CoreAccountId::FromGaiaId(kGaiaId3)));
 
-const std::vector<ListedAccount> no_accounts{};
-const std::vector<ListedAccount> just_one{one};
-const std::vector<ListedAccount> just_two{two};
-const std::vector<ListedAccount> both{one, two};
-const std::vector<ListedAccount> both_reversed{two, one};
+const ListedAccount one_signed_out(
+    SignedOutAccount(CoreAccountId::FromGaiaId(kGaiaId1)));
 
 TEST_F(AccountInvestigatorTest, CalculatePeriodicDelay) {
   const Time epoch;
@@ -190,58 +194,58 @@ TEST_F(AccountInvestigatorTest, CalculatePeriodicDelay) {
 }
 
 TEST_F(AccountInvestigatorTest, HashAccounts) {
-  EXPECT_EQ(Hash(no_accounts, no_accounts), Hash(no_accounts, no_accounts));
-  EXPECT_EQ(Hash(just_one, just_two), Hash(just_one, just_two));
-  EXPECT_EQ(Hash(both, no_accounts), Hash(both, no_accounts));
-  EXPECT_EQ(Hash(no_accounts, both), Hash(no_accounts, both));
-  EXPECT_EQ(Hash(both, no_accounts), Hash(both_reversed, no_accounts));
-  EXPECT_EQ(Hash(no_accounts, both), Hash(no_accounts, both_reversed));
+  EXPECT_EQ(Hash({}, {}), Hash({}, {}));
+  EXPECT_EQ(Hash({one}, {two}), Hash({one}, {two}));
+  EXPECT_EQ(Hash({one, two}, {}), Hash({one, two}, {}));
+  EXPECT_EQ(Hash({}, {one, two}), Hash({}, {one, two}));
+  EXPECT_EQ(Hash({one, two}, {}), Hash({two, one}, {}));
+  EXPECT_EQ(Hash({}, {one, two}), Hash({}, {two, one}));
 
-  EXPECT_NE(Hash(no_accounts, no_accounts), Hash(just_one, no_accounts));
-  EXPECT_NE(Hash(no_accounts, no_accounts), Hash(no_accounts, just_one));
-  EXPECT_NE(Hash(just_one, no_accounts), Hash(just_two, no_accounts));
-  EXPECT_NE(Hash(just_one, no_accounts), Hash(both, no_accounts));
-  EXPECT_NE(Hash(just_one, no_accounts), Hash(no_accounts, just_one));
+  EXPECT_NE(Hash({}, {}), Hash({one}, {}));
+  EXPECT_NE(Hash({}, {}), Hash({}, {one}));
+  EXPECT_NE(Hash({one}, {}), Hash({two}, {}));
+  EXPECT_NE(Hash({one}, {}), Hash({one, two}, {}));
+  EXPECT_NE(Hash({one}, {}), Hash({}, {one}));
 }
 
 TEST_F(AccountInvestigatorTest, DiscernRelation) {
   EXPECT_EQ(AccountRelation::EMPTY_COOKIE_JAR,
-            Relation(ToAccountInfo(one), no_accounts, no_accounts));
+            Relation(ToAccountInfo(one), {}, {}));
   EXPECT_EQ(AccountRelation::SINGLE_SIGNED_IN_MATCH_NO_SIGNED_OUT,
-            Relation(ToAccountInfo(one), just_one, no_accounts));
+            Relation(ToAccountInfo(one), {one}, {}));
   EXPECT_EQ(AccountRelation::SINGLE_SINGED_IN_MATCH_WITH_SIGNED_OUT,
-            Relation(ToAccountInfo(one), just_one, just_two));
+            Relation(ToAccountInfo(one), {one}, {two}));
   EXPECT_EQ(AccountRelation::WITH_SIGNED_IN_NO_MATCH,
-            Relation(ToAccountInfo(one), just_two, no_accounts));
+            Relation(ToAccountInfo(one), {two}, {}));
   EXPECT_EQ(AccountRelation::ONE_OF_SIGNED_IN_MATCH_ANY_SIGNED_OUT,
-            Relation(ToAccountInfo(one), both, just_one));
+            Relation(ToAccountInfo(one), {one, two}, {one}));
   EXPECT_EQ(AccountRelation::ONE_OF_SIGNED_IN_MATCH_ANY_SIGNED_OUT,
-            Relation(ToAccountInfo(one), both, no_accounts));
+            Relation(ToAccountInfo(one), {one, two}, {}));
   EXPECT_EQ(AccountRelation::NO_SIGNED_IN_ONE_OF_SIGNED_OUT_MATCH,
-            Relation(ToAccountInfo(one), no_accounts, both));
+            Relation(ToAccountInfo(one), {}, {one, two}));
   EXPECT_EQ(AccountRelation::NO_SIGNED_IN_SINGLE_SIGNED_OUT_MATCH,
-            Relation(ToAccountInfo(one), no_accounts, just_one));
+            Relation(ToAccountInfo(one), {}, {one}));
   EXPECT_EQ(AccountRelation::WITH_SIGNED_IN_ONE_OF_SIGNED_OUT_MATCH,
-            Relation(ToAccountInfo(one), just_two, just_one));
+            Relation(ToAccountInfo(one), {two}, {one}));
   EXPECT_EQ(AccountRelation::NO_SIGNED_IN_WITH_SIGNED_OUT_NO_MATCH,
-            Relation(ToAccountInfo(three), no_accounts, both));
+            Relation(ToAccountInfo(three), {}, {one, two}));
 }
 
 TEST_F(AccountInvestigatorTest, SignedInAccountRelationReport) {
-  ExpectRelationReport(just_one, no_accounts, ReportingType::PERIODIC,
+  ExpectRelationReport({one}, {}, ReportingType::PERIODIC,
                        AccountRelation::WITH_SIGNED_IN_NO_MATCH);
   identity_test_env()->SetPrimaryAccount("1@mail.com",
                                          signin::ConsentLevel::kSync);
-  ExpectRelationReport(just_one, no_accounts, ReportingType::PERIODIC,
+  ExpectRelationReport({one}, {}, ReportingType::PERIODIC,
                        AccountRelation::SINGLE_SIGNED_IN_MATCH_NO_SIGNED_OUT);
-  ExpectRelationReport(just_two, no_accounts, ReportingType::ON_CHANGE,
+  ExpectRelationReport({two}, {}, ReportingType::ON_CHANGE,
                        AccountRelation::WITH_SIGNED_IN_NO_MATCH);
 }
 
 TEST_F(AccountInvestigatorTest, SharedCookieJarReportEmpty) {
   const HistogramTester histogram_tester;
   const base::TimeDelta expected_stable_age;
-  SharedReport(no_accounts, no_accounts, Time(), ReportingType::PERIODIC);
+  SharedReport({}, {}, Time(), ReportingType::PERIODIC);
   ExpectSharedReportHistograms(ReportingType::PERIODIC, histogram_tester,
                                &expected_stable_age, 0, 0, 0, nullptr, false);
 }
@@ -256,8 +260,7 @@ TEST_F(AccountInvestigatorTest, SharedCookieJarReportWithAccount) {
       AccountRelation::ONE_OF_SIGNED_IN_MATCH_ANY_SIGNED_OUT);
   const HistogramTester histogram_tester;
   const base::TimeDelta expected_stable_age(base::Days(1));
-  SharedReport(both, no_accounts, now + base::Days(1),
-               ReportingType::ON_CHANGE);
+  SharedReport({one, two}, {}, now + base::Days(1), ReportingType::ON_CHANGE);
   ExpectSharedReportHistograms(ReportingType::ON_CHANGE, histogram_tester,
                                &expected_stable_age, 2, 0, 2,
                                &expected_relation, false);
@@ -265,8 +268,8 @@ TEST_F(AccountInvestigatorTest, SharedCookieJarReportWithAccount) {
 
 TEST_F(AccountInvestigatorTest, OnGaiaAccountsInCookieUpdatedError) {
   const HistogramTester histogram_tester;
-  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
-      /*accounts_are_fresh=*/true, just_one, no_accounts};
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info(
+      /*accounts_are_fresh=*/true, {one});
   GoogleServiceAuthError error(GoogleServiceAuthError::SERVICE_UNAVAILABLE);
   investigator()->OnAccountsInCookieUpdated(accounts_in_cookie_jar_info, error);
   EXPECT_EQ(
@@ -275,8 +278,8 @@ TEST_F(AccountInvestigatorTest, OnGaiaAccountsInCookieUpdatedError) {
 
 TEST_F(AccountInvestigatorTest, OnGaiaAccountsInCookieUpdatedOnChange) {
   const HistogramTester histogram_tester;
-  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
-      /*accounts_are_fresh=*/true, just_one, no_accounts};
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info(
+      /*accounts_are_fresh=*/true, {one});
   investigator()->OnAccountsInCookieUpdated(
       accounts_in_cookie_jar_info, GoogleServiceAuthError::AuthErrorNone());
   ExpectSharedReportHistograms(ReportingType::ON_CHANGE, histogram_tester,
@@ -292,10 +295,9 @@ TEST_F(AccountInvestigatorTest, OnGaiaAccountsInCookieUpdatedSigninOnly) {
   const HistogramTester histogram_tester;
   identity_test_env()->SetPrimaryAccount("1@mail.com",
                                          signin::ConsentLevel::kSync);
-  pref_service()->SetString(prefs::kGaiaCookieHash,
-                            Hash(just_one, no_accounts));
-  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
-      /*accounts_are_fresh=*/true, just_one, no_accounts};
+  pref_service()->SetString(prefs::kGaiaCookieHash, Hash({one}, {}));
+  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info(
+      /*accounts_are_fresh=*/true, {one});
   investigator()->OnAccountsInCookieUpdated(
       accounts_in_cookie_jar_info, GoogleServiceAuthError::AuthErrorNone());
   EXPECT_EQ(
@@ -309,19 +311,19 @@ TEST_F(AccountInvestigatorTest,
   const HistogramTester histogram_tester;
   identity_test_env()->SetPrimaryAccount("1@mail.com",
                                          signin::ConsentLevel::kSync);
-  signin::AccountsInCookieJarInfo accounts_in_cookie_jar_info = {
-      /*accounts_are_fresh=*/true, just_one, no_accounts};
+  signin::AccountsInCookieJarInfo signed_in_account_in_cookies(
+      /*accounts_are_fresh=*/true, /*accounts=*/{one});
   investigator()->OnAccountsInCookieUpdated(
-      accounts_in_cookie_jar_info, GoogleServiceAuthError::AuthErrorNone());
+      signed_in_account_in_cookies, GoogleServiceAuthError::AuthErrorNone());
   ExpectRelationReport(ReportingType::ON_CHANGE, histogram_tester,
                        AccountRelation::SINGLE_SIGNED_IN_MATCH_NO_SIGNED_OUT);
 
   // Simulate a sign out of the content area.
   const HistogramTester histogram_tester2;
-  accounts_in_cookie_jar_info = {/*accounts_are_fresh=*/true, no_accounts,
-                                 just_one};
+  signin::AccountsInCookieJarInfo signed_out_account_in_cookies(
+      /*accounts_are_fresh=*/true, /*accounts=*/{one_signed_out});
   investigator()->OnAccountsInCookieUpdated(
-      accounts_in_cookie_jar_info, GoogleServiceAuthError::AuthErrorNone());
+      signed_out_account_in_cookies, GoogleServiceAuthError::AuthErrorNone());
   const AccountRelation expected_relation =
       AccountRelation::NO_SIGNED_IN_SINGLE_SIGNED_OUT_MATCH;
   ExpectSharedReportHistograms(ReportingType::ON_CHANGE, histogram_tester2,

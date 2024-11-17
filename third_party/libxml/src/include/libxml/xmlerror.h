@@ -865,8 +865,16 @@ typedef void (*xmlGenericErrorFunc) (void *ctx,
 typedef void (*xmlStructuredErrorFunc) (void *userData, const xmlError *error);
 
 /** DOC_DISABLE */
+#if defined(LIBXML_THREAD_ENABLED)
+XML_DEPRECATED
+XMLPUBFUN const xmlError *
+__xmlLastError(void);
+#elif !defined(IN_LIBXML)
+XML_DEPRECATED
+XMLPUBVAR const xmlError xmlLastError;
+#endif
+
 #define XML_GLOBALS_ERROR \
-  XML_OP(xmlLastError, xmlError, XML_DEPRECATED) \
   XML_OP(xmlGenericError, xmlGenericErrorFunc, XML_NO_ATTR) \
   XML_OP(xmlGenericErrorContext, void *, XML_NO_ATTR) \
   XML_OP(xmlStructuredError, xmlStructuredErrorFunc, XML_NO_ATTR) \

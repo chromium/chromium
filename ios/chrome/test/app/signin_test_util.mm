@@ -40,12 +40,11 @@ namespace {
 //
 // Note: Forgetting an identity is a asynchronous operation. This function does
 // not wait for the forget identity operation to finish.
-void StartForgetAllIdentities(ChromeBrowserState* browser_state,
-                              ProceduralBlock completion) {
+void StartForgetAllIdentities(ProfileIOS* profile, ProceduralBlock completion) {
   SystemIdentityManager* system_identity_manager =
       GetApplicationContext()->GetSystemIdentityManager();
   ChromeAccountManagerService* account_manager_service =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
 
   NSArray* identities_to_remove = account_manager_service->GetAllIdentities();
   if (identities_to_remove.count == 0) {
@@ -91,8 +90,8 @@ void SignOutAndClearIdentities(ProceduralBlock completion) {
   // important to autorelease all objects that make network requests to avoid
   // EarlGrey being confused about on-going network traffic..
   @autoreleasepool {
-    ChromeBrowserState* browser_state = GetOriginalBrowserState();
-    DCHECK(browser_state);
+    ProfileIOS* profile = GetOriginalProfile();
+    DCHECK(profile);
 
     // Needs to wait for two tasks to complete:
     // - Sign-out & clean browsing data (skipped if the user is already
@@ -108,7 +107,7 @@ void SignOutAndClearIdentities(ProceduralBlock completion) {
 
     // Sign out current user and clear all browsing data on the device.
     AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForBrowserState(browser_state);
+        AuthenticationServiceFactory::GetForProfile(profile);
     if (authentication_service->HasPrimaryIdentity(
             signin::ConsentLevel::kSignin)) {
       authentication_service->SignOut(signin_metrics::ProfileSignout::kTest,
@@ -119,28 +118,24 @@ void SignOutAndClearIdentities(ProceduralBlock completion) {
     }
 
     // Clear last signed in user preference.
-    browser_state->GetPrefs()->ClearPref(
-        prefs::kGoogleServicesLastSyncingGaiaId);
-    browser_state->GetPrefs()->ClearPref(
-        prefs::kGoogleServicesLastSignedInUsername);
-    browser_state->GetPrefs()->ClearPref(
-        prefs::kGoogleServicesLastSyncingUsername);
+    profile->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
+    profile->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSignedInUsername);
+    profile->GetPrefs()->ClearPref(prefs::kGoogleServicesLastSyncingUsername);
 
     // `SignOutAndClearIdentities()` is called during shutdown. Commit all pref
     // changes to ensure that clearing the last signed in account is saved on
     // disk in case Chrome crashes during shutdown.
-    browser_state->GetPrefs()->CommitPendingWrite();
+    profile->GetPrefs()->CommitPendingWrite();
 
     // Once the browser was signed out, start clearing all identities from the
     // ChromeIdentityService.
-    StartForgetAllIdentities(browser_state, tasks_completion);
+    StartForgetAllIdentities(profile, tasks_completion);
   }
 }
 
 bool HasIdentities() {
   ChromeAccountManagerService* account_manager_service =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          GetOriginalBrowserState());
+      ChromeAccountManagerServiceFactory::GetForProfile(GetOriginalProfile());
   return account_manager_service->HasIdentities();
 }
 
@@ -149,8 +144,8 @@ void ResetMockAuthentication() {
 }
 
 void ResetSigninPromoPreferences() {
-  ChromeBrowserState* browser_state = GetOriginalBrowserState();
-  PrefService* prefs = browser_state->GetPrefs();
+  ProfileIOS* profile = GetOriginalProfile();
+  PrefService* prefs = profile->GetPrefs();
   prefs->SetInteger(prefs::kIosBookmarkSigninPromoDisplayedCount, 0);
   prefs->SetBoolean(prefs::kIosBookmarkPromoAlreadySeen, false);
   prefs->SetInteger(prefs::kIosNtpFeedTopSigninPromoDisplayedCount, 0);
@@ -169,29 +164,29 @@ void SignInWithoutSync(id<SystemIdentity> identity) {
                    accessPoint:signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN
              postSignInActions:PostSignInActionSet({PostSignInAction::kNone})
       presentingViewController:viewController];
-  [authenticationFlow startSignInWithCompletion:^(BOOL success) {
-    authenticationFlow = nil;
-  }];
+  [authenticationFlow
+      startSignInWithCompletion:^(SigninCoordinatorResult result) {
+        authenticationFlow = nil;
+      }];
 }
 
 void ResetHistorySyncPreferencesForTesting() {
-  ChromeBrowserState* browser_state = GetOriginalBrowserState();
-  PrefService* prefs = browser_state->GetPrefs();
+  ProfileIOS* profile = GetOriginalProfile();
+  PrefService* prefs = profile->GetPrefs();
   history_sync::ResetDeclinePrefs(prefs);
 }
 
 void ResetSyncAccountSettingsPrefs() {
-  ChromeBrowserState* browser_state =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   // Clear the new per-account selected types and per-account passphrase.
-  SyncServiceFactory::GetForBrowserState(browser_state)
+  SyncServiceFactory::GetForProfile(profile)
       ->GetUserSettings()
       ->KeepAccountSettingsPrefsOnlyForUsers({});
   // And the old global selected types for syncing users. SyncUserSettings::
   // SetSelectedTypes() CHECKs the user is signed-in, so go through SyncPrefs
   // directly.
   // TODO(crbug.com/40066949): Remove once sync-the-feature is gone on iOS.
-  syncer::SyncPrefs(browser_state->GetPrefs())
+  syncer::SyncPrefs(profile->GetPrefs())
       .SetSelectedTypesForSyncingUser(
           /*sync_everything=*/true,
           /*registered_types=*/syncer::UserSelectableTypeSet::All(),

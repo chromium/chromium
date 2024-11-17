@@ -201,7 +201,7 @@ There are several requirements for a builder to be added to the Commit Queue.
   familiar with existing configurations.
 * Tests should use existing test harnesses i.e.
   [gtest](../../third_party/googletest).
-* It should be possible for any committer to replicate any testing run; i.e.
+* It should be possible for any committer to replicate any testing run, i.e.
   tests and their data must be in the public repository.
 * Median cycle time needs to be under 40 minutes for trybots. 90th percentile
   should be around an hour (preferably shorter).

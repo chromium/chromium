@@ -66,7 +66,6 @@ void SVGTransformableElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kTransformAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     UpdatePresentationAttributeStyle(*transform_);
     return;
   }

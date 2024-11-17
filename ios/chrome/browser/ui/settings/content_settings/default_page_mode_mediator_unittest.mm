@@ -20,20 +20,19 @@
 class DefaultPageModeMediatorTest : public PlatformTest {
  protected:
   DefaultPageModeMediatorTest() {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Tests that the pref and the mediator are playing nicely together.
 TEST_F(DefaultPageModeMediatorTest, TestPref) {
   feature_engagement::test::MockTracker tracker;
   scoped_refptr<HostContentSettingsMap> settings_map(
-      ios::HostContentSettingsMapFactory::GetForBrowserState(
-          chrome_browser_state_.get()));
+      ios::HostContentSettingsMapFactory::GetForProfile(profile_.get()));
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::REQUEST_DESKTOP_SITE, CONTENT_SETTING_BLOCK);

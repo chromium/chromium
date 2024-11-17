@@ -17,6 +17,10 @@ enum UnderlineThickness { "none", "thin", "thick" };
 
     readonly attribute unsigned long rangeStart;
     readonly attribute unsigned long rangeEnd;
-    readonly attribute UnderlineStyle underlineStyle;
-    readonly attribute UnderlineThickness underlineThickness;
+
+    // https://crbug.com/354497121 These should be UnderlineStyle and
+    // UnderlineThickness enumerations but the values returned by the
+    // implementation do not match what the IDL defines.
+    readonly attribute DOMString underlineStyle;
+    readonly attribute DOMString underlineThickness;
 };

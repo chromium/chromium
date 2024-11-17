@@ -41,6 +41,7 @@ namespace blink {
 class GraphicsContext;
 class ScrollableArea;
 class WebMouseEvent;
+class WebViewImpl;
 
 class CORE_EXPORT ScrollbarTheme {
   USING_FAST_MALLOC(ScrollbarTheme);
@@ -211,15 +212,13 @@ class CORE_EXPORT ScrollbarTheme {
   // dimensions will be ignored for purposes of painting since the resource can
   // be then resized without a repaint.
   virtual gfx::Size NinePatchThumbCanvasSize(const Scrollbar&) const {
-    NOTREACHED_IN_MIGRATION();
-    return gfx::Size();
+    NOTREACHED();
   }
 
   // For a nine-patch resource, the aperture defines the center patch that will
   // be stretched out.
   virtual gfx::Rect NinePatchThumbAperture(const Scrollbar&) const {
-    NOTREACHED_IN_MIGRATION();
-    return gfx::Rect();
+    NOTREACHED();
   }
 
   // For a nine-patch scrollbar, this defines the painting canvas size which the
@@ -261,6 +260,8 @@ class CORE_EXPORT ScrollbarTheme {
   friend class MockScrollableArea;
   friend class MockScrollableAreaForAnimatorTest;
   friend class Page;
+  // For MockScrollbarsEnabled().
+  friend class WebViewImpl;
 
   // Get the theme based on global scrollbar settings. We should always use
   // Page::GetScrollbarTheme() to get scrollbar theme because we support

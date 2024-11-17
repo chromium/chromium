@@ -25,6 +25,7 @@
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -117,6 +118,12 @@ ExtensionWebContentsObserver::ExtensionWebContentsObserver(
 ExtensionWebContentsObserver::~ExtensionWebContentsObserver() {
 }
 
+content::WebContents* ExtensionWebContentsObserver::GetAssociatedWebContents()
+    const {
+  DCHECK(initialized_);
+  return web_contents();
+}
+
 void ExtensionWebContentsObserver::InitializeRenderFrame(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(initialized_);
@@ -149,13 +156,7 @@ void ExtensionWebContentsObserver::InitializeRenderFrame(
                                 frame_extension);
 }
 
-content::WebContents* ExtensionWebContentsObserver::GetAssociatedWebContents()
-    const {
-  DCHECK(initialized_);
-  return web_contents();
-}
-
-void ExtensionWebContentsObserver::RenderFrameCreated(
+void ExtensionWebContentsObserver::SetUpRenderFrameHost(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(initialized_);
   InitializeRenderFrame(render_frame_host);
@@ -195,6 +196,14 @@ void ExtensionWebContentsObserver::RenderFrameCreated(
       ->ActivateExtensionInProcess(*extension, render_frame_host->GetProcess());
 }
 
+void ExtensionWebContentsObserver::RenderFrameCreated(
+    content::RenderFrameHost* render_frame_host) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kUseReadyToCommitForExtensionFrameSetup)) {
+    return;
+  }
+  SetUpRenderFrameHost(render_frame_host);
+}
 void ExtensionWebContentsObserver::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
   DCHECK(initialized_);
@@ -206,6 +215,11 @@ void ExtensionWebContentsObserver::RenderFrameDeleted(
 
 void ExtensionWebContentsObserver::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (base::FeatureList::IsEnabled(
+          extensions_features::kUseReadyToCommitForExtensionFrameSetup)) {
+    SetUpRenderFrameHost(navigation_handle->GetRenderFrameHost());
+  }
+
   ScriptInjectionTracker::ReadyToCommitNavigation(PassKey(), navigation_handle);
 
   // We don't force autoplay to allow while prerendering.

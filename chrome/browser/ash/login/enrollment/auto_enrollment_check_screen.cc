@@ -84,7 +84,7 @@ void AutoEnrollmentCheckScreen::ShowImpl() {
   network_state_handler->AddObserver(this);
   const NetworkState* default_network = network_state_handler->DefaultNetwork();
   const NetworkState::PortalState new_captive_portal_state =
-      default_network ? default_network->GetPortalState()
+      default_network ? default_network->portal_state()
                       : NetworkState::PortalState::kUnknown;
 
   // Perform an initial UI update.
@@ -318,8 +318,7 @@ bool AutoEnrollmentCheckScreen::ShouldBlockOnServerError() const {
       return true;
     case CheckType::kUnknownDueToMissingSystemClockSync:
     case CheckType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

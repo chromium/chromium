@@ -115,7 +115,7 @@ void AppLoadService::OnExtensionHostCompletedFirstLoad(
           extensions::AppLaunchSource::kSourceLoadAndLaunch);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   post_reload_actions_.erase(it);

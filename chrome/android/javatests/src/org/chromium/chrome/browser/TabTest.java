@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -49,6 +50,8 @@ import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -61,6 +64,7 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.url.GURL;
 
 /** Tests for Tab class. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -72,7 +76,7 @@ public class TabTest {
             new ChromeTabbedActivityTestRule();
 
     @Rule
-    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+    public BlankCTATabInitialStateRule mBlankCtaTabInitialStateRule =
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -249,6 +253,7 @@ public class TabTest {
         tabState.lastNavigationCommittedTimestampMillis = 748932L;
         tabState.rootId = 5;
         tabState.tabGroupId = new Token(1L, 2L);
+        tabState.tabHasSensitiveContent = true;
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -260,10 +265,11 @@ public class TabTest {
                 mTab.getLastNavigationCommittedTimestampMillis());
         assertEquals(tabState.rootId, mTab.getRootId());
         assertEquals(tabState.tabGroupId, mTab.getTabGroupId());
+        assertEquals(tabState.tabHasSensitiveContent, mTab.getTabHasSensitiveContent());
     }
 
     @FunctionalInterface
-    private interface TabCreator {
+    private interface TestTabCreator {
         /** Create a new tab with the provided URL. */
         Tab createTab(String url);
     }
@@ -278,6 +284,18 @@ public class TabTest {
                 sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
         checkFreezingAndAppendingPendingNavigation(
                 this::createSecondFrozenTab, firstUrl, secondUrl, "MyFrozenTitle");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Tab"})
+    public void testFreezeAndAppendPendingNavigation_LazyBackground() {
+        String firstUrl =
+                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/about.html");
+        String secondUrl =
+                sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
+        checkFreezingAndAppendingPendingNavigation(
+                this::createLazyTab, firstUrl, secondUrl, "MyLazyTitle");
     }
 
     @Test
@@ -341,7 +359,7 @@ public class TabTest {
     }
 
     private void checkFreezingAndAppendingPendingNavigation(
-            TabCreator tabCreator,
+            TestTabCreator tabCreator,
             String firstUrl,
             String secondUrl,
             @Nullable String secondTitle) {
@@ -371,6 +389,7 @@ public class TabTest {
 
         assertFalse(bgTab.isLoading());
         assertNull(bgTab.getWebContents());
+        assertNull(bgTab.getPendingLoadParams());
 
         Runnable loadPage =
                 () -> {
@@ -430,6 +449,25 @@ public class TabTest {
                             .getActivity()
                             .getCurrentTabCreator()
                             .createFrozenTab(state, tab.getId(), /* index= */ 1);
+                });
+    }
+
+    private Tab createLazyTab(String url) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    TabCreator tabCreator =
+                            sActivityTestRule
+                                    .getActivity()
+                                    .getTabCreatorManagerSupplier()
+                                    .get()
+                                    .getTabCreator(/* incognito= */ false);
+                    LoadUrlParams params = new LoadUrlParams(new GURL(url));
+                    return tabCreator.createNewTab(
+                            params,
+                            "Lazy Title",
+                            TabLaunchType.FROM_SYNC_BACKGROUND,
+                            /* parent= */ null,
+                            /* position= */ TabList.INVALID_TAB_INDEX);
                 });
     }
 }

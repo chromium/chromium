@@ -73,10 +73,6 @@ TEST_F(WebFormControlElementTest, ResetDocumentClearsEditedState) {
           <option value="Bar">Bar</option>
           <option value="Foo">Foo</option>
         </select>
-        <selectlist id="selectlist_id">
-          <option value="Bar">Bar</option>
-          <option value="Foo">Foo</option>
-        </selectlist>
         <input id="reset" type="reset">
       </form>
     </body>
@@ -86,22 +82,17 @@ TEST_F(WebFormControlElementTest, ResetDocumentClearsEditedState) {
       DynamicTo<HTMLFormControlElement>(GetElementById("text_id")));
   WebFormControlElement select(
       DynamicTo<HTMLFormControlElement>(GetElementById("select_id")));
-  WebFormControlElement selectlist(
-      DynamicTo<HTMLFormControlElement>(GetElementById("selectlist_id")));
 
   text.SetUserHasEditedTheField(true);
   select.SetUserHasEditedTheField(true);
-  selectlist.SetUserHasEditedTheField(true);
 
   EXPECT_TRUE(text.UserHasEditedTheField());
   EXPECT_TRUE(select.UserHasEditedTheField());
-  EXPECT_TRUE(selectlist.UserHasEditedTheField());
 
   To<HTMLFormControlElement>(GetElementById("reset"))->click();
 
   EXPECT_FALSE(text.UserHasEditedTheField());
   EXPECT_FALSE(select.UserHasEditedTheField());
-  EXPECT_FALSE(selectlist.UserHasEditedTheField());
 }
 
 class WebFormControlElementSetAutofillValueTest
@@ -144,20 +135,34 @@ INSTANTIATE_TEST_SUITE_P(
     Values("<input type='text' id=testElement value='test value'>",
            "<textarea id=testElement>test value</textarea>"));
 
-// <button type=selectlist> should not be confused with <selectlist> for
-// autofill.
-TEST_F(WebFormControlElementTest, ButtonTypeSelectlist) {
+TEST_F(WebFormControlElementTest,
+       SetAutofillAndSuggestedValueMaxLengthForInput) {
   GetDocument().documentElement()->setInnerHTML(
-      "<button id=selectbutton type=selectlist>button</button>"
-      "<button id=normalbutton type=button>button</button>");
-  auto selectbutton = WebFormControlElement(To<HTMLFormControlElement>(
-      GetDocument().getElementById(AtomicString("selectbutton"))));
-  auto normalbutton = WebFormControlElement(To<HTMLFormControlElement>(
-      GetDocument().getElementById(AtomicString("normalbutton"))));
-  EXPECT_EQ(normalbutton.FormControlTypeForAutofill(),
-            FormControlType::kButtonButton);
-  EXPECT_EQ(selectbutton.FormControlTypeForAutofill(),
-            FormControlType::kButtonSelectList);
+      "<input type='text' id=testElement maxlength='5'>");
+
+  auto element = WebFormControlElement(To<HTMLFormControlElement>(
+      GetDocument().getElementById(AtomicString("testElement"))));
+
+  element.SetSuggestedValue("valueTooLong");
+  EXPECT_EQ(element.SuggestedValue().Ascii(), "value");
+
+  element.SetAutofillValue("valueTooLong");
+  EXPECT_EQ(element.Value().Ascii(), "value");
+}
+
+TEST_F(WebFormControlElementTest,
+       SetAutofillAndSuggestedValueMaxLengthForTextarea) {
+  GetDocument().documentElement()->setInnerHTML(
+      "<textarea id=testElement maxlength='5'></textarea>");
+
+  auto element = WebFormControlElement(To<HTMLFormControlElement>(
+      GetDocument().getElementById(AtomicString("testElement"))));
+
+  element.SetSuggestedValue("valueTooLong");
+  EXPECT_EQ(element.SuggestedValue().Ascii(), "value");
+
+  element.SetAutofillValue("valueTooLong");
+  EXPECT_EQ(element.Value().Ascii(), "value");
 }
 
 }  // namespace blink

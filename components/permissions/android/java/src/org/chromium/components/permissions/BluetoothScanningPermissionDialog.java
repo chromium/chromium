@@ -56,9 +56,6 @@ public class BluetoothScanningPermissionDialog {
     // The maximum height of the listview in the dialog (in dp).
     private static final int MAX_HEIGHT_DP = (int) (LIST_ROW_HEIGHT_DP * 8.5);
 
-    // The window that owns this dialog.
-    private final WindowAndroid mWindowAndroid;
-
     // Always equal to mWindowAndroid.getActivity().get(), but stored separately to make sure it's
     // not GC'ed.
     private final Activity mActivity;
@@ -91,11 +88,10 @@ public class BluetoothScanningPermissionDialog {
      *
      * @param windowAndroid The window that owns this dialog.
      * @param origin The origin for the site wanting to do Bluetooth scanning.
-     * @param securityLevel The security level of the connection to the site wanting to do
-     *                      Bluetooth scanning. For valid values see
-     *                      SecurityStateModel::SecurityLevel.
+     * @param securityLevel The security level of the connection to the site wanting to do Bluetooth
+     *     scanning. For valid values see SecurityStateModel::SecurityLevel.
      * @param nativeBluetoothScanningPermissionDialogPtr A pointer back to the native part of the
-     *                                                   implementation for this dialog.
+     *     implementation for this dialog.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public BluetoothScanningPermissionDialog(
@@ -104,7 +100,6 @@ public class BluetoothScanningPermissionDialog {
             int securityLevel,
             BluetoothScanningPromptAndroidDelegate delegate,
             long nativeBluetoothScanningPermissionDialogPtr) {
-        mWindowAndroid = windowAndroid;
         mActivity = windowAndroid.getActivity().get();
         assert mActivity != null;
         mContext = windowAndroid.getContext().get();

@@ -193,8 +193,7 @@ bool PatternMatchValue(std::string_view test_value,
     case apps::PatternMatchType::kFileExtension:
     case apps::PatternMatchType::kIsDirectory: {
       // Handled in FileMatchesConditionValue.
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
   }
 }

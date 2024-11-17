@@ -44,6 +44,8 @@ bool HasDuplicateGroupsAndTabsIdentifiers(NSArray<GridItemIdentifier*>* items) {
         break;
       case GridItemType::kSuggestedActions:
         NOTREACHED();
+      case GridItemType::kActivitySummary:
+        NOTREACHED();
     }
   }
   return (identifiers.size() + groups.size()) != items.count;
@@ -57,17 +59,16 @@ bool HasDuplicateIdentifiers(NSArray<TabSwitcherItem*>* items) {
   return identifiers.size() != items.count;
 }
 
-Browser* GetBrowserForTabWithId(BrowserList* browser_list,
-                                web::WebStateID identifier,
-                                bool is_otr_tab) {
+Browser* GetBrowserForTabWithCriteria(BrowserList* browser_list,
+                                      WebStateSearchCriteria criteria,
+                                      bool is_otr_tab) {
   const BrowserList::BrowserType browser_types =
       is_otr_tab ? BrowserList::BrowserType::kIncognito
                  : BrowserList::BrowserType::kRegularAndInactive;
   std::set<Browser*> browsers = browser_list->BrowsersOfType(browser_types);
   for (Browser* browser : browsers) {
     WebStateList* web_state_list = browser->GetWebStateList();
-    int index = GetWebStateIndex(
-        web_state_list, WebStateSearchCriteria{.identifier = identifier});
+    int index = GetWebStateIndex(web_state_list, criteria);
     if (index != WebStateList::kInvalidIndex) {
       return browser;
     }

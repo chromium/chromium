@@ -30,7 +30,7 @@ import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
 import org.chromium.content_public.browser.test.util.TestWebContentsObserver;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -54,7 +54,7 @@ public class DistillabilityServiceTest {
     @Test
     @Feature({"Distillability-Service"})
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @DisabledTest(message = "Flaky - crbug/1455454")
     public void testServiceAliveAfterNativePage() throws TimeoutException, ExecutionException {
         EmbeddedTestServer testServer =

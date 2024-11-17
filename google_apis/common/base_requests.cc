@@ -56,6 +56,36 @@ std::string GetResponseHeadersAsString(
   return response_head.headers->raw_headers();
 }
 
+// Returns the "reason" field from a type.googleapis.com/google.rpc.ErrorInfo
+// dictionary if found in `details`.
+std::optional<std::string> ExtractReasonFromErrorDetails(
+    const base::Value::List& details) {
+  const char kErrorDetailsTypeKey[] = "@type";
+  const char kErrorDetailsTypeName[] =
+      "type.googleapis.com/google.rpc.ErrorInfo";
+  const char kErrorDetailsReasonKey[] = "reason";
+
+  for (const base::Value& detail : details) {
+    const base::Value::Dict* dict = detail.GetIfDict();
+    if (!dict) {
+      continue;
+    }
+
+    if (const std::string* type = dict->FindString(kErrorDetailsTypeKey)) {
+      if (*type != kErrorDetailsTypeName) {
+        continue;
+      }
+
+      if (const std::string* reason =
+              dict->FindString(kErrorDetailsReasonKey)) {
+        return *reason;
+      }
+    }
+  }
+
+  return std::nullopt;
+}
+
 }  // namespace
 
 namespace google_apis {
@@ -67,6 +97,8 @@ std::optional<std::string> MapJsonErrorToReason(const std::string& error_body) {
   const char kErrorReasonKey[] = "reason";
   const char kErrorMessageKey[] = "message";
   const char kErrorCodeKey[] = "code";
+
+  const char kErrorDetailsKey[] = "details";
 
   std::unique_ptr<const base::Value> value(google_apis::ParseJson(error_body));
   const base::Value::Dict* dictionary = value ? value->GetIfDict() : nullptr;
@@ -87,6 +119,16 @@ std::optional<std::string> MapJsonErrorToReason(const std::string& error_body) {
         if (reason) {
           return *reason;
         }
+      }
+    }
+
+    // Also check for the error reason in "details" as specified in
+    // https://google.aip.dev/193.
+    if (const base::Value::List* details = error->FindList(kErrorDetailsKey)) {
+      std::optional<std::string> reason =
+          ExtractReasonFromErrorDetails(*details);
+      if (reason) {
+        return reason;
       }
     }
   }
@@ -169,7 +211,7 @@ void UrlFetchRequestBase::StartAfterPrepare(
   DCHECK(callback);
   DCHECK(re_authenticate_callback_.is_null());
 
-  const GURL url = GetURL();
+  GURL url = GetURL();
   ApiErrorCode error_code;
   if (IsSuccessfulErrorCode(code))
     error_code = code;
@@ -195,7 +237,7 @@ void UrlFetchRequestBase::StartAfterPrepare(
   DVLOG(1) << "URL: " << url.spec();
 
   auto request = std::make_unique<network::ResourceRequest>();
-  request->url = url;
+  request->url = std::move(url);
   request->method = HttpRequestMethodToString(GetRequestType());
   request->load_flags = net::LOAD_DISABLE_CACHE;
   request->credentials_mode = GetOmitCredentialsModeForGaiaRequests();

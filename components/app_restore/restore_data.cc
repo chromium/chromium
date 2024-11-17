@@ -332,17 +332,6 @@ RestoreData::MakeWindowIdsUniqueForDeskTemplate() {
   return mapping;
 }
 
-void RestoreData::UpdateBrowserAppIdToLacros() {
-  auto app_launch_list_iter =
-      app_id_to_launch_list_.find(app_constants::kChromeAppId);
-  if (app_launch_list_iter == app_id_to_launch_list_.end()) {
-    return;
-  }
-  app_id_to_launch_list_[app_constants::kLacrosAppId] =
-      std::move(app_launch_list_iter->second);
-  RemoveApp(app_constants::kChromeAppId);
-}
-
 std::string RestoreData::ToString() const {
   return ConvertToValue().DebugString();
 }

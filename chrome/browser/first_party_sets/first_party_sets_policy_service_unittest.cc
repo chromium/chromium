@@ -260,28 +260,28 @@ TEST_F(FirstPartySetsPolicyServiceTest,
 }
 
 TEST_F(FirstPartySetsPolicyServiceTest,
-       OnFirstPartySetsEnabledChanged_EnabledByBlock3pcToggle) {
+       FirstPartySetsEnabledWhenIn3pcdWith3pcsLimited) {
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, false);
+
   profile()->GetPrefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled,
                                     true);
   profile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, false);
 
-  service()->OnFirstPartySetsEnabledChanged(false);
-  EXPECT_TRUE(service()->is_enabled());
-
-  service()->OnFirstPartySetsEnabledChanged(true);
+  service()->InitForTesting();
   EXPECT_TRUE(service()->is_enabled());
 }
 
 TEST_F(FirstPartySetsPolicyServiceTest,
-       OnFirstPartySetsEnabledChanged_DisabledByBlock3pcToggle) {
+       FirstPartySetsDisabledWhenIn3pcdWithAll3pcsBlocked) {
+  profile()->GetPrefs()->SetBoolean(
+      prefs::kPrivacySandboxRelatedWebsiteSetsEnabled, true);
+
   profile()->GetPrefs()->SetBoolean(prefs::kTrackingProtection3pcdEnabled,
                                     true);
   profile()->GetPrefs()->SetBoolean(prefs::kBlockAll3pcToggleEnabled, true);
 
-  service()->OnFirstPartySetsEnabledChanged(false);
-  EXPECT_FALSE(service()->is_enabled());
-
-  service()->OnFirstPartySetsEnabledChanged(true);
+  service()->InitForTesting();
   EXPECT_FALSE(service()->is_enabled());
 }
 
@@ -601,7 +601,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
 }
 
 TEST_F(FirstPartySetsPolicyServicePrefTest,
-       OnFirstPartySetsEnabledChanged_Default_WithConfig) {
+       OnRelatedWebsiteSetsEnabledChanged_Default_WithConfig) {
   service()->InitForTesting();
 
   EXPECT_CALL(mock_delegate, SetEnabled(_)).Times(1);
@@ -611,7 +611,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
 }
 
 TEST_F(FirstPartySetsPolicyServicePrefTest,
-       OnFirstPartySetsEnabledChanged_Default_WithoutConfig) {
+       OnRelatedWebsiteSetsEnabledChanged_Default_WithoutConfig) {
   EXPECT_CALL(mock_delegate, SetEnabled(_)).Times(1);
   EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
 
@@ -619,11 +619,11 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
 }
 
 TEST_F(FirstPartySetsPolicyServicePrefTest,
-       OnFirstPartySetsEnabledChanged_Disables_WithConfig) {
+       OnRelatedWebsiteSetsEnabledChanged_Disables_WithConfig) {
   service()->InitForTesting();
   EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
 
-  service()->OnFirstPartySetsEnabledChanged(false);
+  service()->OnRelatedWebsiteSetsEnabledChanged(false);
 
   EXPECT_CALL(mock_delegate, SetEnabled(false)).Times(1);
   EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(1);
@@ -632,10 +632,10 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
 }
 
 TEST_F(FirstPartySetsPolicyServicePrefTest,
-       OnFirstPartySetsEnabledChanged_Disables_WithoutConfig) {
+       OnRelatedWebsiteSetsEnabledChanged_Disables_WithoutConfig) {
   EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(1);
 
-  service()->OnFirstPartySetsEnabledChanged(false);
+  service()->OnRelatedWebsiteSetsEnabledChanged(false);
 
   EXPECT_CALL(mock_delegate, SetEnabled(false)).Times(1);
   EXPECT_CALL(mock_delegate, NotifyReady(_)).Times(0);
@@ -644,7 +644,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
 }
 
 TEST_F(FirstPartySetsPolicyServicePrefTest,
-       OnFirstPartySetsEnabledChanged_Enables_WithConfig) {
+       OnRelatedWebsiteSetsEnabledChanged_Enables_WithConfig) {
   net::SchemefulSite test_primary(GURL("https://a.test"));
   net::FirstPartySetEntry test_entry(test_primary, net::SiteType::kPrimary,
                                      std::nullopt);
@@ -653,7 +653,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
   SetContextConfig(test_config.Clone());
 
   service()->InitForTesting();
-  service()->OnFirstPartySetsEnabledChanged(true);
+  service()->OnRelatedWebsiteSetsEnabledChanged(true);
 
   // Ensure access delegate is called with SetEnabled(true) and NotifyReady is
   // called with the config (during initialization -- not due to SetEnabled).
@@ -666,8 +666,8 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
 }
 
 TEST_F(FirstPartySetsPolicyServicePrefTest,
-       OnFirstPartySetsEnabledChanged_Enables_WithoutConfig) {
-  service()->OnFirstPartySetsEnabledChanged(true);
+       OnRelatedWebsiteSetsEnabledChanged_Enables_WithoutConfig) {
+  service()->OnRelatedWebsiteSetsEnabledChanged(true);
 
   // NotifyReady isn't called since the config isn't ready to be sent.
   EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(2);
@@ -677,7 +677,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
 }
 
 TEST_F(FirstPartySetsPolicyServicePrefTest,
-       OnFirstPartySetsEnabledChanged_OTRProfile) {
+       OnRelatedWebsiteSetsEnabledChanged_OTRProfile) {
   testing::NiceMock<MockFirstPartySetsAccessDelegate> mock_delegate;
   EXPECT_CALL(mock_delegate, SetEnabled(false)).Times(1);
   EXPECT_CALL(mock_delegate, SetEnabled(true)).Times(0);
@@ -703,7 +703,7 @@ TEST_F(FirstPartySetsPolicyServicePrefTest,
   ASSERT_FALSE(otr_service->is_enabled());
   env().RunUntilIdle();
 
-  otr_service->OnFirstPartySetsEnabledChanged(true);
+  otr_service->OnRelatedWebsiteSetsEnabledChanged(true);
   EXPECT_FALSE(otr_service->is_enabled());
 
   env().RunUntilIdle();
@@ -843,8 +843,8 @@ TEST_F(ThirdPartyCookieBlockingFirstPartySetsPolicyServiceTest, AlwaysEnabled) {
   service->AddRemoteAccessDelegate(std::move(mock_delegate_remote_));
 
   // These changes should not be forwarded to the delegate.
-  service->OnFirstPartySetsEnabledChanged(false);
-  service->OnFirstPartySetsEnabledChanged(true);
+  service->OnRelatedWebsiteSetsEnabledChanged(false);
+  service->OnRelatedWebsiteSetsEnabledChanged(true);
 
   env().RunUntilIdle();
 }

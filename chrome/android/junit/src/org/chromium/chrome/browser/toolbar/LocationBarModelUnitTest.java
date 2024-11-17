@@ -17,7 +17,6 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -29,10 +28,7 @@ import org.robolectric.annotation.Implements;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifierJni;
@@ -51,7 +47,6 @@ import org.chromium.url.GURL;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowTrustedCdn.class})
-@DisableFeatures(ChromeFeatureList.OMNIBOX_UPDATED_CONNECTION_SECURITY_INDICATORS)
 public class LocationBarModelUnitTest {
     @Implements(TrustedCdn.class)
     static class ShadowTrustedCdn {
@@ -61,15 +56,13 @@ public class LocationBarModelUnitTest {
         }
     }
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private Tab mIncognitoTabMock;
     @Mock private Tab mIncognitoNonPrimaryTabMock;
     @Mock private Tab mRegularTabMock;
 
     @Mock private Profile mRegularProfileMock;
-    @Mock private Profile mPrimaryOTRProfileMock;
-    @Mock private Profile mNonPrimaryOTRProfileMock;
+    @Mock private Profile mPrimaryOtrProfileMock;
+    @Mock private Profile mNonPrimaryOtrProfileMock;
 
     @Mock private LocationBarDataProvider.Observer mLocationBarDataObserver;
     @Mock private LocationBarModel.Natives mLocationBarModelJni;
@@ -83,23 +76,22 @@ public class LocationBarModelUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(
-                ChromeAutocompleteSchemeClassifierJni.TEST_HOOKS,
+        ChromeAutocompleteSchemeClassifierJni.setInstanceForTesting(
                 mChromeAutocompleteSchemeClassifierJni);
-        mJniMocker.mock(LocationBarModelJni.TEST_HOOKS, mLocationBarModelJni);
-        mJniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDomDistillerUrlUtilsJni);
-        mJniMocker.mock(OmniboxUrlEmphasizerJni.TEST_HOOKS, mOmniboxUrlEmphasizerJni);
+        LocationBarModelJni.setInstanceForTesting(mLocationBarModelJni);
+        DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJni);
+        OmniboxUrlEmphasizerJni.setInstanceForTesting(mOmniboxUrlEmphasizerJni);
 
-        when(mPrimaryOTRProfileMock.isOffTheRecord()).thenReturn(true);
-        when(mNonPrimaryOTRProfileMock.isOffTheRecord()).thenReturn(true);
+        when(mPrimaryOtrProfileMock.isOffTheRecord()).thenReturn(true);
+        when(mNonPrimaryOtrProfileMock.isOffTheRecord()).thenReturn(true);
 
         when(mRegularTabMock.getProfile()).thenReturn(mRegularProfileMock);
 
         when(mIncognitoTabMock.isIncognito()).thenReturn(true);
-        when(mIncognitoTabMock.getProfile()).thenReturn(mPrimaryOTRProfileMock);
+        when(mIncognitoTabMock.getProfile()).thenReturn(mPrimaryOtrProfileMock);
 
         when(mIncognitoNonPrimaryTabMock.isIncognito()).thenReturn(true);
-        when(mIncognitoNonPrimaryTabMock.getProfile()).thenReturn(mNonPrimaryOTRProfileMock);
+        when(mIncognitoNonPrimaryTabMock.getProfile()).thenReturn(mNonPrimaryOtrProfileMock);
     }
 
     public static final LocationBarModel.OfflineStatus OFFLINE_STATUS =
@@ -138,21 +130,21 @@ public class LocationBarModelUnitTest {
 
     @Test
     @MediumTest
-    public void getProfile_IncognitoTab_ReturnsPrimaryOTRProfile() {
+    public void getProfile_IncognitoTab_ReturnsPrimaryOtrProfile() {
         LocationBarModel locationBarModel = new TestLocationBarModel();
-        locationBarModel.setTab(mIncognitoTabMock, mPrimaryOTRProfileMock);
+        locationBarModel.setTab(mIncognitoTabMock, mPrimaryOtrProfileMock);
         Profile otrProfile = locationBarModel.getProfile();
-        Assert.assertEquals(mPrimaryOTRProfileMock, otrProfile);
+        Assert.assertEquals(mPrimaryOtrProfileMock, otrProfile);
         locationBarModel.destroy();
     }
 
     @Test
     @MediumTest
-    public void getProfile_IncognitoTab_ReturnsNonPrimaryOTRProfile() {
+    public void getProfile_IncognitoTab_ReturnsNonPrimaryOtrProfile() {
         LocationBarModel locationBarModel = new TestLocationBarModel();
-        locationBarModel.setTab(mIncognitoNonPrimaryTabMock, mNonPrimaryOTRProfileMock);
+        locationBarModel.setTab(mIncognitoNonPrimaryTabMock, mNonPrimaryOtrProfileMock);
         Profile otrProfile = locationBarModel.getProfile();
-        Assert.assertEquals(mNonPrimaryOTRProfileMock, otrProfile);
+        Assert.assertEquals(mNonPrimaryOtrProfileMock, otrProfile);
         locationBarModel.destroy();
     }
 
@@ -163,11 +155,11 @@ public class LocationBarModelUnitTest {
         locationBarModel.setTab(null, mRegularProfileMock);
         Assert.assertEquals(mRegularProfileMock, locationBarModel.getProfile());
 
-        locationBarModel.setTab(null, mPrimaryOTRProfileMock);
-        Assert.assertEquals(mPrimaryOTRProfileMock, locationBarModel.getProfile());
+        locationBarModel.setTab(null, mPrimaryOtrProfileMock);
+        Assert.assertEquals(mPrimaryOtrProfileMock, locationBarModel.getProfile());
 
-        locationBarModel.setTab(null, mNonPrimaryOTRProfileMock);
-        Assert.assertEquals(mNonPrimaryOTRProfileMock, locationBarModel.getProfile());
+        locationBarModel.setTab(null, mNonPrimaryOtrProfileMock);
+        Assert.assertEquals(mNonPrimaryOtrProfileMock, locationBarModel.getProfile());
 
         locationBarModel.destroy();
     }

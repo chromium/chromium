@@ -25,7 +25,6 @@ import java.util.List;
 @JNINamespace("autofill")
 public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectionDialog.Listener {
     private final long mNativeCardUnmaskAuthenticationSelectionDialogView;
-    private final Context mContext;
     private AuthenticatorSelectionDialog mAuthenticatorSelectionDialog;
 
     public AuthenticatorSelectionDialogBridge(
@@ -33,7 +32,6 @@ public class AuthenticatorSelectionDialogBridge implements AuthenticatorSelectio
             Context context,
             ModalDialogManager modalDialogManager) {
         mNativeCardUnmaskAuthenticationSelectionDialogView = nativeAuthenticatorSelectionDialogView;
-        mContext = context;
         mAuthenticatorSelectionDialog =
                 new AuthenticatorSelectionDialog(context, this, modalDialogManager);
     }

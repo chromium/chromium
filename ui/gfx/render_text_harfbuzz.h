@@ -39,7 +39,7 @@ enum class ShapeRunFallback {
   kMaxValue = FALLBACKS
 };
 
-struct GFX_EXPORT TextRunHarfBuzz {
+struct COMPONENT_EXPORT(GFX) TextRunHarfBuzz {
   // Construct the run with |template_font| since determining the details of a
   // default-constructed gfx::Font is expensive, but it will always be replaced.
   explicit TextRunHarfBuzz(const Font& template_font);
@@ -78,7 +78,7 @@ struct GFX_EXPORT TextRunHarfBuzz {
 
   // Font parameters that may be common to multiple text runs within a text run
   // list.
-  struct GFX_EXPORT FontParams {
+  struct COMPONENT_EXPORT(GFX) FontParams {
     // The default constructor for Font is expensive, so always require that a
     // Font be provided.
     explicit FontParams(const Font& template_font);
@@ -130,7 +130,7 @@ struct GFX_EXPORT TextRunHarfBuzz {
   };
 
   // Parameters that are set by ShapeRunWithFont.
-  struct GFX_EXPORT ShapeOutput {
+  struct COMPONENT_EXPORT(GFX) ShapeOutput {
     ShapeOutput();
     ~ShapeOutput();
     ShapeOutput(const ShapeOutput& other);
@@ -230,7 +230,7 @@ class TextRunList {
 
 }  // namespace internal
 
-class GFX_EXPORT RenderTextHarfBuzz : public RenderText {
+class COMPONENT_EXPORT(GFX) RenderTextHarfBuzz : public RenderText {
  public:
   RenderTextHarfBuzz();
 

@@ -30,21 +30,23 @@ void WebLocationBarImpl::OnNavigate(const GURL& destination_url,
     return;
   }
 
-  NewTabPageTabHelper* NTPTabHelper =
-      NewTabPageTabHelper::FromWebState(delegate_.webState);
-  if (NTPTabHelper->IsActive()) {
-    RecordHomeAction(IOSHomeActionType::kOmnibox,
-                     NTPTabHelper->ShouldShowStartSurface());
+  if (delegate_.webState) {
+    NewTabPageTabHelper* NTPTabHelper =
+        NewTabPageTabHelper::FromWebState(delegate_.webState);
+    if (NTPTabHelper->IsActive()) {
+      RecordHomeAction(IOSHomeActionType::kOmnibox,
+                       NTPTabHelper->ShouldShowStartSurface());
+    }
   }
 
-    transition = ui::PageTransitionFromInt(
-        transition | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
-    [URLLoader_ loadGURLFromLocationBar:destination_url
-                                   postContent:post_content
-                                    transition:transition
-                                   disposition:disposition
-        destination_url_entered_without_scheme:
-            destination_url_entered_without_scheme];
+  transition = ui::PageTransitionFromInt(transition |
+                                         ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+  [URLLoader_ loadGURLFromLocationBar:destination_url
+                                 postContent:post_content
+                                  transition:transition
+                                 disposition:disposition
+      destination_url_entered_without_scheme:
+          destination_url_entered_without_scheme];
 }
 
 LocationBarModel* WebLocationBarImpl::GetLocationBarModel() {

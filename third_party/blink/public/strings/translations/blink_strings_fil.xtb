@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Buwang ito</translation>
 <translation id="1637811476055996098">Pumili ng Mga File</translation>
-<translation id="1680090928918677457">Gamitin ang camera</translation>
 <translation id="1729654308190250600">Mangyaring maglagay ng isang non-empty na email address.</translation>
 <translation id="1758486001363313524">Iba pa...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Mangyaring paikliin ang tekstong ito ng <ph name="MAX_CHARACTERS" /> (na) character o mas mababa (kasalukuyan kang gumagamit ng <ph name="CURRENT_LENGTH" /> (na) character).</translation>
 <translation id="2247351761944213033">Linggo <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Track <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Pinapayagan ang camera at mikropono</translation>
 <translation id="2507943997699731163">Pakipunan ang field na ito.</translation>
 <translation id="2613802280814924224">Mangyaring maglagay ng isang wastong value. Ang pinakamalapit na wastong value ay <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Isumite</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Pakihabaan ang text na ito hanggang <ph name="MIN_CHARACTERS" /> (na) character o higit pa (kasalukuyan kang gumagamit ng <ph name="CURRENT_LENGTH" /> (na) character).</translation>
 <translation id="383465348367842624">Hindi dapat naglalaman ng simbolong '<ph name="INVALIDCHARACTER" />' ang bahagi bago ang '<ph name="ATSIGN" />.'</translation>
 <translation id="3846214748874656680">Lumabas sa fullscreen</translation>
-<translation id="4031179711345676612">Pinapayagan ang mikropono</translation>
 <translation id="4360991593054037559">Mangyaring maglagay ng isang wastong value. Ang dalawang pinakamalapit na wastong value ay <ph name="VALID_VALUE_LOW" /> at <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Mga Detalye</translation>
-<translation id="4663373278480897665">Pinapayagan ang camera</translation>
 <translation id="4664250907885839816">Hindi dapat naglalaman ng simbolong '<ph name="INVALIDCHARACTER" />' ang bahagi pagkatapos ng '<ph name="ATSIGN" />.'</translation>
 <translation id="4718048029184481307">Nagpe-play sa picture-in-picture</translation>
-<translation id="4792862212177489858">I-share ang lokasyon</translation>
 <translation id="4812940957355064477">Mangyaring maglagay ng numero.</translation>
-<translation id="49269513399674318">Gamitin ang mikropono</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ang napili</translation>
 <translation id="4992066212339426712">I-unmute</translation>
 <translation id="49969490063480558">Mangyaring maglagay ng isang bahagi pagkatapos ng '<ph name="ATSIGN" />.' Hindi kumpleto ang '<ph name="INVALIDADDRESS" />.'</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Hindi ma-load ang plugin.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">Pakidagdagan ang text na ito nang hanggang <ph name="MIN_CHARACTERS" /> (na) character o higit pa (kasalukuyan kang gumagamit ng 1 character).</translation>
-<translation id="7080893216867146095">Pinapayagan ang pag-share ng lokasyon</translation>
 <translation id="709897737746224366">Pakitugma ang hiniling na format.</translation>
-<translation id="7134810312945846184">Gamitin ang mikropono at camera</translation>
 <translation id="7263440858009898357">Mangyaring pumili ng item sa listahan.</translation>
 <translation id="7364796246159120393">Pumili ng File</translation>
 <translation id="739024184232394898">Iba pa...</translation>

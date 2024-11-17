@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ash/printing/enterprise/managed_printer_translator.h"
 
+#include <cstdint>
 #include <optional>
 #include <string>
 
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "chrome/browser/ash/printing/enterprise/managed_printer_configuration.pb.h"
+#include "chrome/browser/ash/printing/enterprise/print_job_options_translator.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -17,11 +19,12 @@ namespace chromeos {
 namespace {
 
 // Top-level field names.
+const char kGuid[] = "guid";
 const char kDisplayName[] = "display_name";
 const char kDescription[] = "description";
 const char kUri[] = "uri";
 const char kPpdResource[] = "ppd_resource";
-const char kGuid[] = "guid";
+const char kPrintJobOptions[] = "print_job_options";
 
 // PpdResource field names.
 const char kUserSuppliedPpdUri[] = "user_supplied_ppd_uri";
@@ -108,9 +111,11 @@ std::optional<ManagedPrinterConfiguration> ManagedPrinterConfigFromDict(
     const base::Value::Dict& config) {
   const std::string* guid = config.FindString(kGuid);
   const std::string* display_name = config.FindString(kDisplayName);
+  const std::string* description = config.FindString(kDescription);
   const std::string* uri = config.FindString(kUri);
   const base::Value::Dict* ppd_resource = config.FindDict(kPpdResource);
-  const std::string* description = config.FindString(kDescription);
+  const base::Value::Dict* print_job_options =
+      config.FindDict(kPrintJobOptions);
 
   ManagedPrinterConfiguration result;
   if (guid) {
@@ -135,6 +140,10 @@ std::optional<ManagedPrinterConfiguration> ManagedPrinterConfigFromDict(
       return std::nullopt;
     }
     *result.mutable_ppd_resource() = *ppd_resource_opt;
+  }
+  if (print_job_options) {
+    *result.mutable_print_job_options() =
+        ManagedPrintOptionsProtoFromDict(*print_job_options);
   }
   return result;
 }
@@ -188,6 +197,21 @@ std::optional<Printer> PrinterFromManagedPrinterConfig(
   if (managed_printer.has_description()) {
     printer.set_description(managed_printer.description());
   }
+
+  if (managed_printer.has_print_job_options()) {
+    std::optional<Printer::ManagedPrintOptions> print_job_options =
+        ChromeOsPrintOptionsFromManagedPrintOptions(
+            managed_printer.print_job_options());
+    if (!print_job_options) {
+      LOG(WARNING) << base::StringPrintf(
+          "Managed printer '%s' has invalid %s value: %s",
+          managed_printer.display_name().c_str(), kPrintJobOptions,
+          managed_printer.print_job_options().SerializeAsString().c_str());
+      return std::nullopt;
+    }
+    printer.set_print_job_options(print_job_options.value());
+  }
+
   return printer;
 }
 

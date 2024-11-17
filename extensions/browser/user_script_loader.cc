@@ -24,6 +24,7 @@
 #include "base/types/pass_key.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"

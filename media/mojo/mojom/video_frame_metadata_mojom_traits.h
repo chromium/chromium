@@ -16,6 +16,12 @@
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
+namespace intermediate {
+// A type to be used by mojo serialization, because the generated serialization
+// code makes it impossible to map an optional object to a non-optional enum.
+enum class EffectState { kUnknown, kDisabled, kEnabled };
+}  // namespace intermediate
+
 namespace mojo {
 
 // Creates a has_foo() and a foo() to serialize a foo std::optional<>.
@@ -27,6 +33,14 @@ namespace mojo {
   static type field(const media::VideoFrameMetadata& input) {       \
     return input.field.value_or(default_value);                     \
   }
+
+template <>
+struct EnumTraits<media::mojom::EffectState, intermediate::EffectState> {
+  static media::mojom::EffectState ToMojom(intermediate::EffectState input);
+
+  static bool FromMojom(media::mojom::EffectState input,
+                        intermediate::EffectState* output);
+};
 
 template <>
 struct StructTraits<media::mojom::VideoFrameMetadataDataView,
@@ -119,9 +133,9 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
     return input.region_capture_rect;
   }
 
-  static const std::optional<base::UnguessableToken>& overlay_plane_id(
+  static const std::optional<base::UnguessableToken>& tracking_token(
       const media::VideoFrameMetadata& input) {
-    return input.overlay_plane_id;
+    return input.tracking_token;
   }
 
   static std::optional<base::TimeTicks> receive_time(
@@ -172,6 +186,17 @@ struct StructTraits<media::mojom::VideoFrameMetadataDataView,
   static std::optional<uint64_t> frame_sequence(
       const media::VideoFrameMetadata& input) {
     return input.frame_sequence;
+  }
+
+  static intermediate::EffectState background_blur(
+      const media::VideoFrameMetadata& input) {
+    if (!input.background_blur) {
+      return intermediate::EffectState::kUnknown;
+    }
+
+    return input.background_blur->enabled
+               ? intermediate::EffectState::kEnabled
+               : intermediate::EffectState::kDisabled;
   }
 
   static bool Read(media::mojom::VideoFrameMetadataDataView input,

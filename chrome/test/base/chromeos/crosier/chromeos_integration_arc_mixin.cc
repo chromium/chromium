@@ -67,8 +67,7 @@ class ArcBootWaiter : public arc::ArcBootPhaseMonitorBridge::Observer {
 // AppReadyWaiter waits until the given `app_id` is ready and launchable.
 class AppReadyWaiter : public ArcAppListPrefs::Observer {
  public:
-  AppReadyWaiter(ArcAppListPrefs* arc_app_list_prefs,
-                 const std::string_view app_id)
+  AppReadyWaiter(ArcAppListPrefs* arc_app_list_prefs, std::string_view app_id)
       : prefs_(arc_app_list_prefs), app_id_(app_id) {
     scoped_observation_.Observe(arc_app_list_prefs);
   }

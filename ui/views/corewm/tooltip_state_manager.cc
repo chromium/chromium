@@ -13,9 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/text_elider.h"
-#include "ui/ozone/public/ozone_platform.h"
 #include "ui/wm/public/tooltip_client.h"
 #include "ui/wm/public/tooltip_observer.h"
 
@@ -107,22 +105,6 @@ void TooltipStateManager::UpdatePositionIfNeeded(const gfx::Point& position,
   position_ = position;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void TooltipStateManager::OnTooltipShownOnServer(aura::Window* window,
-                                                 const std::u16string& text,
-                                                 const gfx::Rect& bounds) {
-  tooltip_id_ = wm::GetTooltipId(window);
-  tooltip_parent_window_ = window;
-  tooltip_->OnTooltipShownOnServer(text, bounds);
-}
-
-void TooltipStateManager::OnTooltipHiddenOnServer() {
-  tooltip_id_ = nullptr;
-  tooltip_parent_window_ = nullptr;
-  tooltip_->OnTooltipHiddenOnServer();
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 void TooltipStateManager::ShowNow(const std::u16string& trimmed_text,
                                   const base::TimeDelta hide_delay) {
   if (!tooltip_parent_window_)
@@ -146,14 +128,6 @@ void TooltipStateManager::StartWillShowTooltipTimer(
     const std::u16string& trimmed_text,
     const base::TimeDelta show_delay,
     const base::TimeDelta hide_delay) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Send `show_delay` and `hide_delay` together and delegate the timer
-  // handling on Ash side.
-  tooltip_->Update(tooltip_parent_window_, trimmed_text, position_,
-                   tooltip_trigger_);
-  tooltip_->SetDelay(show_delay, hide_delay);
-  tooltip_->Show();
-#else
   if (!show_delay.is_zero()) {
     // Start will show tooltip timer is show_delay is non-zero.
     will_show_tooltip_timer_.Start(
@@ -165,10 +139,9 @@ void TooltipStateManager::StartWillShowTooltipTimer(
     // This other path is needed for the unit tests to pass because Show is not
     // immediately called when we have a `show_delay` of zero.
     // TODO(bebeaudr): Fix this by ensuring that the unit tests wait for the
-    // timer to fire before continuing for non-Lacros platforms.
+    // timer to fire before continuing.
     ShowNow(trimmed_text, hide_delay);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 }  // namespace views::corewm

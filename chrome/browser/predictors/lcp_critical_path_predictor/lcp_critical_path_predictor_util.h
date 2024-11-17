@@ -11,6 +11,7 @@
 #include "chrome/browser/predictors/loading_predictor_config.h"
 #include "components/sqlite_proto/key_value_data.h"
 #include "components/sqlite_proto/key_value_table.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/mojom/lcp_critical_path_predictor/lcp_critical_path_predictor.mojom.h"
 
 namespace url {
@@ -27,6 +28,7 @@ struct LastVisitTimeCompare {
 };
 
 }  // namespace lcpp
+struct PreconnectPrediction;
 
 // Converts LcppStat to LCPCriticalPathPredictorNavigationTimeHint
 // so that it can be passed to the renderer via the navigation handle.
@@ -95,10 +97,11 @@ struct LcppDataInputs {
   // This field keeps the number of preloaded font that is going to be recorded
   // to the database again.
   size_t font_url_reenter_count = 0;
-  // This field keeps the subresource URLs as a key, and the TimeDelta as a
-  // value. TimeDelta stores the duration from navigation start to resource
-  // loading start time.
-  std::map<GURL, base::TimeDelta> subresource_urls;
+  // This field keeps the subresource URLs as a key, and the TimeDelta and
+  // destination as a value. TimeDelta stores the duration from navigation
+  // start to resource loading start time.
+  std::map<GURL, std::pair<base::TimeDelta, network::mojom::RequestDestination>>
+      subresource_urls;
 
   // URLs of preloaded but not actually used resources.
   std::vector<GURL> unused_preload_resources;
@@ -203,6 +206,9 @@ bool IsURLValidForLcpp(const GURL& url);
 // the first level path or it length exceeds kLCPPMultipleKeyMaxPathLength.
 std::string GetFirstLevelPath(const GURL& url);
 
+// Returns true if `url1` and `url2` are the same site.
+bool IsSameSite(const GURL& url1, const GURL& url2);
+
 class LcppDataMap {
  public:
   using DataTable = sqlite_proto::KeyValueTable<LcppData>;
@@ -238,9 +244,11 @@ class LcppDataMap {
 
   void DeleteAllData();
 
-  LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
-              const LoadingPredictorConfig& config,
-              std::unique_ptr<DataTable> data_table_);
+  void GetPreconnectAndPrefetchRequest(
+      const std::optional<url::Origin>& initiator_origin,
+      const GURL& url,
+      PreconnectPrediction& prediction);
+
   static std::unique_ptr<LcppDataMap> CreateWithMockTableForTesting(
 
       scoped_refptr<sqlite_proto::TableManager> manager,
@@ -249,6 +257,12 @@ class LcppDataMap {
  private:
   friend class LcppDataMapTest;
   friend class LcppInitiatorOriginTest;
+
+  LcppDataMap(scoped_refptr<sqlite_proto::TableManager> manager,
+              const LoadingPredictorConfig& config,
+              std::unique_ptr<DataTable> data_table,
+              std::unique_ptr<OriginTable> origin_table);
+
   const std::map<std::string, LcppData>& GetAllCachedForTesting();
   const std::map<std::string, LcppOrigin>& GetAllCachedOriginForTesting();
 

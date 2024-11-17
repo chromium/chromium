@@ -330,9 +330,9 @@ MemoryAllocatorDump* ProcessMemoryDump::CreateSharedGlobalAllocatorDump(
   // have been created already.
   MemoryAllocatorDump* mad = GetSharedGlobalAllocatorDump(guid);
   if (mad && mad != black_hole_mad_.get()) {
-    // The weak flag is cleared because this method should create a non-weak
+    // The kWeak flag is cleared because this method should create a non-weak
     // dump.
-    mad->clear_flags(MemoryAllocatorDump::Flags::WEAK);
+    mad->clear_flags(MemoryAllocatorDump::Flags::kWeak);
     return mad;
   }
   return CreateAllocatorDump(GetSharedGlobalAllocatorDumpName(guid), guid);
@@ -344,7 +344,7 @@ MemoryAllocatorDump* ProcessMemoryDump::CreateWeakSharedGlobalAllocatorDump(
   if (mad && mad != black_hole_mad_.get())
     return mad;
   mad = CreateAllocatorDump(GetSharedGlobalAllocatorDumpName(guid), guid);
-  mad->set_flags(MemoryAllocatorDump::Flags::WEAK);
+  mad->set_flags(MemoryAllocatorDump::Flags::kWeak);
   return mad;
 }
 

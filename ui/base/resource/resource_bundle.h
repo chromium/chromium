@@ -22,12 +22,12 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/models/image_model.h"
 #endif
 
@@ -126,6 +126,10 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
     // default resource.
     virtual gfx::Image GetNativeImageNamed(int resource_id) = 0;
 
+    // Returns true if LoadDataResourceBytes would return non-null data for the
+    // specified |resource_id|.
+    virtual bool HasDataResource(int resource_id) const = 0;
+
     // Return a ref counted memory resource or null to attempt retrieval of the
     // default resource.
     virtual base::RefCountedMemory* LoadDataResourceBytes(
@@ -156,7 +160,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   };
 
   using LottieData = std::vector<uint8_t>;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   using LottieImageParseFunction = gfx::ImageSkia (*)(LottieData);
   using LottieThemedImageParseFunction = ui::ImageModel (*)(LottieData);
 #endif
@@ -207,7 +211,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // Return the global resource loader instance.
   static ResourceBundle& GetSharedInstance();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   static void SetLottieParsingFunctions(
       LottieImageParseFunction parse_lottie_as_still_image,
       LottieThemedImageParseFunction parse_lottie_as_themed_still_image);
@@ -252,28 +256,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   void AddOptionalDataPackFromPath(const base::FilePath& path,
                                    ResourceScaleFactor scale_factor);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Same as AddDataPackFromPath but loads main source `shared_resource_path`
-  // with ash resources `ash_path`.
-  // When creating and adding ResourceHandle for `lacros_path`, we map lacros
-  // resources to ash resources if a resource is common and remove it from
-  // lacros resources. This is for saving memory.
-  // If `shared_resource_path` is not successfully loaded, load `lacros_path`
-  // as DataPack instead. In this case, the memory saving does not work.
-  void AddDataPackFromPathWithAshResources(
-      const base::FilePath& shared_resource_path,
-      const base::FilePath& ash_path,
-      const base::FilePath& lacros_path,
-      ResourceScaleFactor scale_factor);
-
-  // Same as above but does not log an error if the pack fails to load.
-  void AddOptionalDataPackFromPathWithAshResources(
-      const base::FilePath& shared_resource_path,
-      const base::FilePath& ash_path,
-      const base::FilePath& lacros_path,
-      ResourceScaleFactor scale_factor);
-#endif
-
   // Changes the locale for an already-initialized ResourceBundle, returning the
   // name of the newly-loaded locale, or an empty string if initialization
   // failed (e.g. resource bundle not found or corrupted). Future calls to get
@@ -310,11 +292,15 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // `SkottieWrapper`.
   std::optional<LottieData> GetLottieData(int resource_id) const;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Gets a themed Lottie image (not animated) with the specified |resource_id|
   // from the current module data. |ResourceBundle| owns the result.
   const ui::ImageModel& GetThemedLottieImageNamed(int resource_id);
 #endif
+
+  // Returns true if LoadDataResourceBytes would return non-null data for the
+  // specified |resource_id|.
+  bool HasDataResource(int resource_id) const;
 
   // Loads the raw bytes of a scale independent data resource or null.
   base::RefCountedMemory* LoadDataResourceBytes(int resource_id) const;
@@ -464,18 +450,6 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
                                    ResourceScaleFactor scale_factor,
                                    bool optional);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Implementation for the public methods which add a DataPack from a path with
-  // ash resources. If |optional| is false, an error is logged on failure to
-  // load.
-  void AddDataPackFromPathWithAshResourcesInternal(
-      const base::FilePath& shared_resource_path,
-      const base::FilePath& ash_path,
-      const base::FilePath& lacros_path,
-      ResourceScaleFactor scale_factor,
-      bool optional);
-#endif
-
   // Inserts |resource_handle| to |resource_handle_| and updates
   // |max_scale_factor_| accordingly.
   void AddResourceHandle(std::unique_ptr<ResourceHandle> resource_handle);
@@ -529,15 +503,14 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // chunks. For security reasons we can't alter PNGCodec to return this
   // information. Our PNG files are preprocessed by GRIT, and any special chunks
   // should occur immediately after the IHDR chunk.
-  static bool DecodePNG(const unsigned char* buf,
-                        size_t size,
+  static bool DecodePNG(base::span<const uint8_t> buf,
                         SkBitmap* bitmap,
                         bool* fell_back_to_1x);
 
   // Returns an empty image for when a resource cannot be loaded. This is a
   // bright red bitmap.
   gfx::Image& GetEmptyImage();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const ui::ImageModel& GetEmptyImageModel();
 #endif
 
@@ -574,13 +547,13 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   // ownership of the pointers.
   using ImageMap = std::map<int, gfx::Image>;
   ImageMap images_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   using ImageModelMap = std::map<int, ui::ImageModel>;
   ImageModelMap image_models_;
 #endif
 
   gfx::Image empty_image_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ui::ImageModel empty_image_model_;
 #endif
 

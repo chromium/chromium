@@ -4,9 +4,10 @@
 
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_service_impl.h"
 
+#include <tuple>
+
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
-#include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -15,18 +16,25 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_policy_service.h"
 #include "chrome/browser/first_party_sets/scoped_mock_first_party_sets_handler.h"
 #include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/privacy_sandbox/mock_privacy_sandbox_service.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_countries.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_service_factory.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
+#include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/browsing_topics/test_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -48,6 +56,7 @@
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/profile_metrics/browser_profile_type.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/strings/grit/components_strings.h"
@@ -97,12 +106,8 @@ using PromptAction = ::PrivacySandboxService::PromptAction;
 using PromptSuppressedReason = ::PrivacySandboxService::PromptSuppressedReason;
 using PromptType = ::PrivacySandboxService::PromptType;
 using SurfaceType = ::PrivacySandboxService::SurfaceType;
-
-#if BUILDFLAG(IS_ANDROID)
-using ActivityType = PrivacySandboxService::PrivacySandboxStorageActivityType;
-using UserSegment =
-    PrivacySandboxService::PrivacySandboxStorageUserSegmentByRecentActivity;
-#endif  // BUILDFLAG(IS_ANDROID)
+using PrimaryAccountUserGroups =
+    ::PrivacySandboxService::PrimaryAccountUserGroups;
 
 using enum privacy_sandbox_test_util::StateKey;
 using enum privacy_sandbox_test_util::InputKey;
@@ -122,8 +127,10 @@ using privacy_sandbox_test_util::TestOutput;
 using privacy_sandbox_test_util::TestState;
 
 const char kFirstPartySetsStateHistogram[] = "Settings.FirstPartySets.State";
+const char kDefaultProfileUsername[] = "user@gmail.com";
+const char kTestEmail[] = "test@test.com";
 
-const base::Version kFirstPartySetsVersion("1.2.3");
+const base::Version kRelatedWebsiteSetsVersion("1.2.3");
 
 constexpr int kTestTaxonomyVersion = 1;
 
@@ -180,7 +187,7 @@ class TestInterestGroupManager : public content::InterestGroupManager {
   // content::InterestGroupManager:
   void GetAllInterestGroupJoiningOrigins(
       base::OnceCallback<void(std::vector<url::Origin>)> callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void GetAllInterestGroupDataKeys(
       base::OnceCallback<void(std::vector<InterestGroupDataKey>)> callback)
@@ -189,20 +196,20 @@ class TestInterestGroupManager : public content::InterestGroupManager {
   }
   void RemoveInterestGroupsByDataKey(InterestGroupDataKey data_key,
                                      base::OnceClosure callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:
   std::vector<InterestGroupDataKey> data_keys_;
 };
 
-// Remove any user preference settings for First Party Set related preferences,
-// returning them to their default value.
-void ClearFpsUserPrefs(
+// Remove any user preference settings for Related Website Set related
+// preferences, returning them to their default value.
+void ClearRwsUserPrefs(
     sync_preferences::TestingPrefServiceSyncable* pref_service) {
   pref_service->RemoveUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled);
   pref_service->RemoveUserPref(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized);
+      prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized);
 }
 
 std::vector<int> GetTopicsSettingsStringIdentifiers(bool did_consent,
@@ -211,89 +218,64 @@ std::vector<int> GetTopicsSettingsStringIdentifiers(bool did_consent,
   if (did_consent && !has_blocked_topics) {
     return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
             IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2,
+            IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
             IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY_TEXT_V2,
             IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
   } else if (did_consent && has_blocked_topics) {
     return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
             IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2,
+            IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
             IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_NEW,
             IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
   } else if (!did_consent && has_current_topics && has_blocked_topics) {
     return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
             IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2,
+            IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_NEW,
             IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
   } else if (!did_consent && has_current_topics && !has_blocked_topics) {
     return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
             IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2,
+            IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY_TEXT_V2,
             IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
   } else if (!did_consent && !has_current_topics && has_blocked_topics) {
     return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
             IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2,
+            IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_TEXT_V2,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_NEW,
             IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
   } else if (!did_consent && !has_current_topics && !has_blocked_topics) {
     return {IDS_SETTINGS_TOPICS_PAGE_TITLE,
             IDS_SETTINGS_TOPICS_PAGE_TOGGLE_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_HEADING,
+            IDS_SETTINGS_TOPICS_PAGE_TOGGLE_SUB_LABEL_V2,
+            IDS_SETTINGS_TOPICS_PAGE_ACTIVE_TOPICS_HEADING,
             IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2,
-            IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3_CANONICAL,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING,
-            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY,
+            IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_EMPTY_TEXT_V2,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_HEADING_NEW,
+            IDS_SETTINGS_TOPICS_PAGE_BLOCKED_TOPICS_DESCRIPTION_EMPTY_TEXT_V2,
             IDS_SETTINGS_TOPICS_PAGE_FOOTER_CANONICAL};
   }
 
-  NOTREACHED_IN_MIGRATION() << "Invalid topics settings consent state";
-  return {};
+  NOTREACHED() << "Invalid topics settings consent state";
 }
 
 std::vector<int> GetTopicsConfirmationStringIdentifiers() {
@@ -321,6 +303,13 @@ struct NoticeTestingParameters {
 };
 }  // namespace
 
+// A mock implementation of the PrivacySandboxCountries interface for testing.
+class MockPrivacySandboxCountries : public PrivacySandboxCountries {
+ public:
+  MOCK_METHOD(bool, IsConsentCountry, (), (override));
+  MOCK_METHOD(bool, IsRestOfWorldCountry, (), (override));
+};
+
 class PrivacySandboxServiceTest : public testing::Test {
  public:
   PrivacySandboxServiceTest()
@@ -330,6 +319,10 @@ class PrivacySandboxServiceTest : public testing::Test {
             privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {
     notice_storage_ =
         std::make_unique<privacy_sandbox::PrivacySandboxNoticeStorage>();
+    CreateDefaultProfile();
+    first_party_sets_policy_service_ =
+        std::make_unique<first_party_sets::FirstPartySetsPolicyService>(
+            profile()->GetOriginalProfile());
   }
 
   void SetUp() override {
@@ -337,13 +330,79 @@ class PrivacySandboxServiceTest : public testing::Test {
     CreateService();
 
     base::RunLoop run_loop;
-    first_party_sets_policy_service_.WaitForFirstInitCompleteForTesting(
+    first_party_sets_policy_service_->WaitForFirstInitCompleteForTesting(
         run_loop.QuitClosure());
     run_loop.Run();
-    first_party_sets_policy_service_.ResetForTesting();
+    first_party_sets_policy_service_->ResetForTesting();
   }
 
   virtual void InitializeFeaturesBeforeStart() {}
+
+  void CreateDefaultProfile() {
+    default_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(default_profile_manager_->SetUp());
+
+    default_profile_ = default_profile_manager_->CreateTestingProfile(
+        kDefaultProfileUsername, IdentityTestEnvironmentProfileAdaptor::
+                                     GetIdentityTestEnvironmentFactories());
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            default_profile_.get());
+    identity_test_env_adaptor_->identity_test_env()
+        ->EnableRemovalOfExtendedAccountInfo();
+  }
+
+  void EnableSignIn() {
+    auto account_info = identity_test_env_adaptor_->identity_test_env()
+                            ->MakePrimaryAccountAvailable(
+                                kTestEmail, signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    signin::UpdateAccountInfoForAccount(
+        identity_test_env_adaptor_->identity_test_env()->identity_manager(),
+        account_info);
+    mutator.set_can_use_model_execution_features(true);
+    identity_test_env_adaptor_->identity_test_env()
+        ->UpdateAccountInfoForAccount(account_info);
+  }
+
+  void EnableSignInU18() {
+    auto account_info = identity_test_env_adaptor_->identity_test_env()
+                            ->MakePrimaryAccountAvailable(
+                                kTestEmail, signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_run_chrome_privacy_sandbox_trials(false);
+    signin::UpdateAccountInfoForAccount(
+        identity_test_env_adaptor_->identity_test_env()->identity_manager(),
+        account_info);
+    mutator.set_can_use_model_execution_features(true);
+    identity_test_env_adaptor_->identity_test_env()
+        ->UpdateAccountInfoForAccount(account_info);
+  }
+
+  void EnableSignInOver18() {
+    auto account_info = identity_test_env_adaptor_->identity_test_env()
+                            ->MakePrimaryAccountAvailable(
+                                kTestEmail, signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_run_chrome_privacy_sandbox_trials(true);
+    signin::UpdateAccountInfoForAccount(
+        identity_test_env_adaptor_->identity_test_env()->identity_manager(),
+        account_info);
+    mutator.set_can_use_model_execution_features(true);
+    identity_test_env_adaptor_->identity_test_env()
+        ->UpdateAccountInfoForAccount(account_info);
+  }
+
+// ChromeOS users cannot sign out, their account preferences can never be
+// cleared.
+#if !BUILDFLAG(IS_CHROMEOS)
+
+  void SignOut() {
+    identity_test_env_adaptor_->identity_test_env()->ClearPrimaryAccount();
+  }
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   virtual std::unique_ptr<
       privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
@@ -355,27 +414,31 @@ class PrivacySandboxServiceTest : public testing::Test {
     return mock_delegate;
   }
 
+  signin::IdentityTestEnvironment* identity_test_env() {
+    return identity_test_env_adaptor_->identity_test_env();
+  }
+
   void CreateService() {
+    // `CreateService` is sometimes called twice, or more in a tests.
+    // Previous instances must be destroyed in the opposite order of their
+    // construction.
+    privacy_sandbox_service_.reset();
+
     auto mock_delegate = CreateMockDelegate();
     mock_delegate_ = mock_delegate.get();
+    mock_privacy_sandbox_countries_ =
+        std::make_unique<MockPrivacySandboxCountries>();
 
     privacy_sandbox_settings_ =
         std::make_unique<privacy_sandbox::PrivacySandboxSettingsImpl>(
             std::move(mock_delegate), host_content_settings_map(),
             cookie_settings(), tracking_protection_settings(), prefs());
-#if !BUILDFLAG(IS_ANDROID)
-    mock_sentiment_service_ =
-        std::make_unique<::testing::NiceMock<MockTrustSafetySentimentService>>(
-            profile());
-#endif
     privacy_sandbox_service_ = std::make_unique<PrivacySandboxServiceImpl>(
-        privacy_sandbox_settings(), tracking_protection_settings(),
+        profile(), privacy_sandbox_settings(), tracking_protection_settings(),
         cookie_settings(), profile()->GetPrefs(), test_interest_group_manager(),
         GetProfileType(), browsing_data_remover(), host_content_settings_map(),
-#if !BUILDFLAG(IS_ANDROID)
-        mock_sentiment_service(),
-#endif
-        mock_browsing_topics_service(), first_party_sets_policy_service());
+        mock_browsing_topics_service(), first_party_sets_policy_service(),
+        mock_privacy_sandbox_countries());
   }
 
   virtual profile_metrics::BrowserProfileType GetProfileType() {
@@ -404,7 +467,7 @@ class PrivacySandboxServiceTest : public testing::Test {
         managed_provider_raw, TestCase(test_state, test_input, test_output));
   }
 
-  TestingProfile* profile() { return &profile_; }
+  TestingProfile* profile() { return default_profile_; }
   PrivacySandboxServiceImpl* privacy_sandbox_service() {
     return privacy_sandbox_service_.get();
   }
@@ -443,48 +506,186 @@ class PrivacySandboxServiceTest : public testing::Test {
   }
   first_party_sets::FirstPartySetsPolicyService*
   first_party_sets_policy_service() {
-    return &first_party_sets_policy_service_;
+    return first_party_sets_policy_service_.get();
   }
+
+  MockPrivacySandboxCountries* mock_privacy_sandbox_countries() {
+    return mock_privacy_sandbox_countries_.get();
+  }
+
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
   content::BrowserTaskEnvironment* browser_task_environment() {
     return &browser_task_environment_;
   }
-#if !BUILDFLAG(IS_ANDROID)
-  MockTrustSafetySentimentService* mock_sentiment_service() {
-    return mock_sentiment_service_.get();
-  }
-#endif
 
  protected:
-  base::HistogramTester histogram_tester;
+  base::HistogramTester histogram_tester_;
   std::unique_ptr<privacy_sandbox::PrivacySandboxNoticeStorage> notice_storage_;
 
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
+  std::unique_ptr<TestingProfileManager> default_profile_manager_;
+  raw_ptr<TestingProfile> default_profile_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 
-  TestingProfile profile_;
   base::test::ScopedFeatureList outer_feature_list_;
   base::test::ScopedFeatureList inner_feature_list_;
   TestInterestGroupManager test_interest_group_manager_;
   browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
-  raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate,
-          DanglingUntriaged>
-      mock_delegate_;
 
   first_party_sets::ScopedMockFirstPartySetsHandler
       mock_first_party_sets_handler_;
-  first_party_sets::FirstPartySetsPolicyService
-      first_party_sets_policy_service_ =
-          first_party_sets::FirstPartySetsPolicyService(
-              profile_.GetOriginalProfile());
-#if !BUILDFLAG(IS_ANDROID)
-  std::unique_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
-#endif
+  std::unique_ptr<first_party_sets::FirstPartySetsPolicyService>
+      first_party_sets_policy_service_;
+  std::unique_ptr<MockPrivacySandboxCountries> mock_privacy_sandbox_countries_;
   std::unique_ptr<privacy_sandbox::PrivacySandboxSettings>
       privacy_sandbox_settings_;
+  raw_ptr<privacy_sandbox_test_util::MockPrivacySandboxSettingsDelegate>
+      mock_delegate_;  // Owned by |privacy_sandbox_settings_|.
   privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations_;
 
   std::unique_ptr<PrivacySandboxServiceImpl> privacy_sandbox_service_;
 };
+
+// Params correspond to (IsFeatureOn, IsConsentCountry, ExpectedResult).
+class PrivacySandboxPrivacyGuideShouldShowAdTopicsTest
+    : public PrivacySandboxServiceTest,
+      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {};
+
+TEST_P(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
+       ShownAccordingToConsentCountryAndFeature) {
+  bool is_feature_on = static_cast<bool>(std::get<0>(GetParam()));
+  bool is_consent_country = static_cast<bool>(std::get<1>(GetParam()));
+  bool result = static_cast<bool>(std::get<2>(GetParam()));
+
+  feature_list()->Reset();
+  if (is_feature_on) {
+    feature_list()->InitAndEnableFeature(
+        privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics);
+  }
+
+  ON_CALL(*mock_privacy_sandbox_countries(), IsConsentCountry())
+      .WillByDefault(testing::Return(is_consent_country));
+
+  bool should_show_card =
+      privacy_sandbox_service()
+          ->PrivacySandboxPrivacyGuideShouldShowAdTopicsCard();
+  ASSERT_EQ(should_show_card, result);
+}
+
+INSTANTIATE_TEST_SUITE_P(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
+                         PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
+                         testing::Values(std::tuple(true, true, true),
+                                         std::tuple(true, false, false),
+                                         std::tuple(false, true, false),
+                                         std::tuple(false, false, false)));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(PrivacySandboxServiceTest, PrimaryAccountSignedOutOnStartup) {
+  // Mimics the emit call after initial sign in
+  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
+
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              base::Time());
+  EXPECT_THAT(
+      histograms,
+      testing::Not(testing::AnyOf(
+          "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration")));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedOut, 1);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(PrivacySandboxServiceTest,
+       PrimaryAccountSignedInCapabilityUnknownOnStartup) {
+  EnableSignIn();
+  // Mimics the emit call after initial sign in
+  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
+
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              testing::Not(base::Time()));
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedInCapabilityUnknown, 1);
+}
+
+TEST_F(PrivacySandboxServiceTest,
+       PrimaryAccountSignedInCapabilityFalseOnStartup) {
+  EnableSignInU18();
+  // Mimics the emit call after initial sign in
+  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
+
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              testing::Not(base::Time()));
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedInCapabilityFalse, 1);
+}
+
+TEST_F(PrivacySandboxServiceTest,
+       PrimaryAccountSignedInCapabilityTrueOnStartup) {
+  EnableSignInOver18();
+  // Mimics the emit call after initial sign in
+  privacy_sandbox_service()->EmitPrivacySandboxAccountPromptStartupMetrics();
+
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+  histogram_tester()->ExpectBucketCount(
+      "PrivacySandbox.DarkLaunch.Profile_1.PrimaryAccountOnStartup",
+      PrimaryAccountUserGroups::kSignedInCapabilityTrue, 1);
+}
+
+TEST_F(PrivacySandboxServiceTest, OnPrimaryAccountChangedSignIn) {
+  EnableSignIn();
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(histograms,
+              testing::ContainsRegex(
+                  "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignInDuration"));
+
+  auto sign_in_time =
+      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime);
+  EXPECT_THAT(sign_in_time, testing::Not(base::Time()));
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  // Signing in again should not change the metrics.
+  SignOut();
+  EnableSignIn();
+  EXPECT_THAT(prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignInTime),
+              sign_in_time);
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+}
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(PrivacySandboxServiceTest, OnPrimaryAccountChangedSignOut) {
+  EnableSignIn();
+  SignOut();
+
+  EXPECT_THAT(
+      prefs()->GetTime(prefs::kPrivacySandboxFakeNoticeFirstSignOutTime),
+      testing::Not(base::Time()));
+
+  const std::string histograms = histogram_tester()->GetAllHistogramsRecorded();
+  EXPECT_THAT(
+      histograms,
+      testing::ContainsRegex(
+          "PrivacySandbox.DarkLaunch.Profile_1.ProfileSignOutDuration"));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(PrivacySandboxServiceTest, GetFledgeJoiningEtldPlusOne) {
   // Confirm that the set of FLEDGE origins which were top-frame for FLEDGE join
@@ -606,7 +807,7 @@ TEST_F(PrivacySandboxServiceTest, GetFledgeBlockedEtldPlusOne) {
 }
 
 TEST_F(PrivacySandboxServiceTest, HistogramsAreEmptyOnStartup) {
-  const std::string histograms = histogram_tester.GetAllHistogramsRecorded();
+  const std::string histograms = histogram_tester_.GetAllHistogramsRecorded();
   for (const auto& notice_name : privacy_sandbox::kPrivacySandboxNoticeNames) {
     EXPECT_THAT(
         histograms,
@@ -1040,21 +1241,19 @@ TEST_F(PrivacySandboxServiceDeathTest, TPSettingsNullExpectDeath) {
   ASSERT_DEATH(
       {
         PrivacySandboxServiceImpl(
-            privacy_sandbox_settings(),
+            profile(), privacy_sandbox_settings(),
             /*tracking_protection_settings=*/nullptr, cookie_settings(),
             profile()->GetPrefs(), test_interest_group_manager(),
             GetProfileType(), browsing_data_remover(),
-            host_content_settings_map(),
-#if !BUILDFLAG(IS_ANDROID)
-            mock_sentiment_service(),
-#endif
-            mock_browsing_topics_service(), first_party_sets_policy_service());
+            host_content_settings_map(), mock_browsing_topics_service(),
+            first_party_sets_policy_service(),
+            mock_privacy_sandbox_countries());
       },
       "");
 }
 
 TEST_F(PrivacySandboxServiceTest,
-       FirstPartySetsNotRelevantMetricAllowedCookies) {
+       RelatedWebsiteSetsNotRelevantMetricAllowedCookies) {
   base::HistogramTester histogram_tester;
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
@@ -1070,7 +1269,7 @@ TEST_F(PrivacySandboxServiceTest,
 }
 
 TEST_F(PrivacySandboxServiceTest,
-       FirstPartySetsNotRelevantMetricBlockedCookies) {
+       RelatedWebsiteSetsNotRelevantMetricBlockedCookies) {
   base::HistogramTester histogram_tester;
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
@@ -1086,7 +1285,7 @@ TEST_F(PrivacySandboxServiceTest,
       PrivacySandboxServiceImpl::FirstPartySetsState::kFpsNotRelevant, 1);
 }
 
-TEST_F(PrivacySandboxServiceTest, FirstPartySetsEnabledMetric) {
+TEST_F(PrivacySandboxServiceTest, RelatedWebsiteSetsEnabledMetric) {
   base::HistogramTester histogram_tester;
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
@@ -1101,7 +1300,7 @@ TEST_F(PrivacySandboxServiceTest, FirstPartySetsEnabledMetric) {
       PrivacySandboxServiceImpl::FirstPartySetsState::kFpsEnabled, 1);
 }
 
-TEST_F(PrivacySandboxServiceTest, FirstPartySetsDisabledMetric) {
+TEST_F(PrivacySandboxServiceTest, RelatedWebsiteSetsDisabledMetric) {
   base::HistogramTester histogram_tester;
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(false));
@@ -1116,7 +1315,7 @@ TEST_F(PrivacySandboxServiceTest, FirstPartySetsDisabledMetric) {
       PrivacySandboxServiceImpl::FirstPartySetsState::kFpsDisabled, 1);
 }
 
-TEST_F(PrivacySandboxServiceTest, SampleFpsData) {
+TEST_F(PrivacySandboxServiceTest, SampleRwsData) {
   feature_list()->InitAndEnableFeatureWithParameters(
       privacy_sandbox::kPrivacySandboxFirstPartySetsUI,
       {{"use-sample-sets", "true"}});
@@ -1127,22 +1326,22 @@ TEST_F(PrivacySandboxServiceTest, SampleFpsData) {
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwnerForDisplay(
                 GURL("https://mail.google.com.au")),
             u"google.com");
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwnerForDisplay(
                 GURL("https://youtube.com")),
             u"google.com");
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwnerForDisplay(
                 GURL("https://muenchen.de")),
             u"münchen.de");
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwnerForDisplay(
+  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwnerForDisplay(
                 GURL("https://example.com")),
             std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
-       GetFirstPartySetOwner_SimulatedFpsData_DisabledWhen3pcAllowed) {
+       GetRelatedWebsiteSetOwner_SimulatedRwsData_DisabledWhen3pcAllowed) {
   GURL associate1_gurl("https://associate1.test");
   net::SchemefulSite primary_site(GURL("https://primary.test"));
   net::SchemefulSite associate1_site(associate1_gurl);
@@ -1151,7 +1350,7 @@ TEST_F(PrivacySandboxServiceTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
-      kFirstPartySetsVersion,
+      kRelatedWebsiteSetsVersion,
       {
           {primary_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
@@ -1163,12 +1362,12 @@ TEST_F(PrivacySandboxServiceTest,
       {});
 
   // Simulate 3PC are allowed while:
-  // - FPS pref is enabled
+  // - RWS pref is enabled
   // - FPS UI Feature is enabled
   feature_list()->InitWithFeatures(
       {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kCookieControlsMode,
                        std::make_unique<base::Value>(static_cast<int>(
                            content_settings::CookieControlsMode::kOff)));
@@ -1178,13 +1377,15 @@ TEST_F(PrivacySandboxServiceTest,
   mock_first_party_sets_handler().SetGlobalSets(global_sets.Clone());
 
   first_party_sets_policy_service()->InitForTesting();
-  // We shouldn't get associate1's owner since FPS is disabled.
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            std::nullopt);
+  // We shouldn't get associate1's owner since RWS is disabled.
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate1_gurl),
+      std::nullopt);
 }
 
-TEST_F(PrivacySandboxServiceTest,
-       GetFirstPartySetOwner_SimulatedFpsData_DisabledWhenAllCookiesBlocked) {
+TEST_F(
+    PrivacySandboxServiceTest,
+    GetRelatedWebsiteSetOwner_SimulatedRwsData_DisabledWhenAllCookiesBlocked) {
   GURL associate1_gurl("https://associate1.test");
   net::SchemefulSite primary_site(GURL("https://primary.test"));
   net::SchemefulSite associate1_site(associate1_gurl);
@@ -1193,7 +1394,7 @@ TEST_F(PrivacySandboxServiceTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
-      kFirstPartySetsVersion,
+      kRelatedWebsiteSetsVersion,
       {
           {primary_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
@@ -1205,7 +1406,7 @@ TEST_F(PrivacySandboxServiceTest,
       {});
 
   // Simulate all cookies are blocked while:
-  // - FPS pref is enabled
+  // - RWS pref is enabled
   // - FPS UI Feature is enabled
   feature_list()->InitWithFeatures(
       {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
@@ -1215,20 +1416,21 @@ TEST_F(PrivacySandboxServiceTest,
           content_settings::CookieControlsMode::kBlockThirdParty)));
   cookie_settings()->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
   mock_first_party_sets_handler().SetGlobalSets(global_sets.Clone());
 
   first_party_sets_policy_service()->InitForTesting();
-  // We shouldn't get associate1's owner since FPS is disabled.
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            std::nullopt);
+  // We shouldn't get associate1's owner since RWS is disabled.
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate1_gurl),
+      std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
-       GetFirstPartySetOwner_SimulatedFpsData_DisabledByFpsUiFeature) {
+       GetRelatedWebsiteSetOwner_SimulatedRwsData_DisabledByFpsUiFeature) {
   GURL associate1_gurl("https://associate1.test");
   net::SchemefulSite primary_site(GURL("https://primary.test"));
   net::SchemefulSite associate1_site(associate1_gurl);
@@ -1237,7 +1439,7 @@ TEST_F(PrivacySandboxServiceTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
-      kFirstPartySetsVersion,
+      kRelatedWebsiteSetsVersion,
       {
           {primary_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
@@ -1249,7 +1451,7 @@ TEST_F(PrivacySandboxServiceTest,
       {});
 
   // Simulate FPS UI feature disabled while:
-  // - FPS pref is enabled
+  // - RWS pref is enabled
   // - 3PC are being blocked
   feature_list()->InitWithFeatures(
       {}, {privacy_sandbox::kPrivacySandboxFirstPartySetsUI});
@@ -1258,7 +1460,7 @@ TEST_F(PrivacySandboxServiceTest,
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
@@ -1266,13 +1468,14 @@ TEST_F(PrivacySandboxServiceTest,
 
   first_party_sets_policy_service()->InitForTesting();
 
-  // We shouldn't get associate1's owner since FPS is disabled.
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            std::nullopt);
+  // We shouldn't get associate1's owner since RWS is disabled.
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate1_gurl),
+      std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
-       GetFirstPartySetOwner_SimulatedFpsData_DisabledByFpsPref) {
+       GetRelatedWebsiteSetOwner_SimulatedRwsData_DisabledByRwsPref) {
   GURL associate1_gurl("https://associate1.test");
   net::SchemefulSite primary_site(GURL("https://primary.test"));
   net::SchemefulSite associate1_site(associate1_gurl);
@@ -1281,7 +1484,7 @@ TEST_F(PrivacySandboxServiceTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test"}
   net::GlobalFirstPartySets global_sets(
-      kFirstPartySetsVersion,
+      kRelatedWebsiteSetsVersion,
       {
           {primary_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
@@ -1292,7 +1495,7 @@ TEST_F(PrivacySandboxServiceTest,
       },
       {});
 
-  // Simulate FPS pref disabled while:
+  // Simulate RWS pref disabled while:
   // - FPS UI Feature is enabled
   // - 3PC are being blocked
   feature_list()->InitWithFeatures(
@@ -1302,7 +1505,7 @@ TEST_F(PrivacySandboxServiceTest,
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(false));
 
@@ -1310,13 +1513,14 @@ TEST_F(PrivacySandboxServiceTest,
 
   first_party_sets_policy_service()->InitForTesting();
 
-  // We shouldn't get associate1's owner since FPS is disabled.
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            std::nullopt);
+  // We shouldn't get associate1's owner since RWS is disabled.
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate1_gurl),
+      std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
-       SimulatedFpsData_FpsEnabled_WithoutGlobalSets) {
+       SimulatedRwsData_RwsEnabled_WithoutGlobalSets) {
   GURL primary_gurl("https://primary.test");
   GURL associate1_gurl("https://associate1.test");
   GURL associate2_gurl("https://associate2.test");
@@ -1325,7 +1529,7 @@ TEST_F(PrivacySandboxServiceTest,
   net::SchemefulSite associate2_site(associate2_gurl);
 
   // Set up state that fully enables the First-Party Sets for UI; blocking 3PC,
-  // and enabling the FPS UI feature and the FPS enabled pref.
+  // and enabling the FPS UI feature and the RWS enabled pref.
   feature_list()->InitWithFeatures(
       {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   prefs()->SetUserPref(
@@ -1333,20 +1537,22 @@ TEST_F(PrivacySandboxServiceTest,
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
-  // Verify `GetFirstPartySetOwner` returns empty if FPS is enabled but the
+  // Verify `GetRelatedWebsiteSetOwner` returns empty if RWS is enabled but the
   // Global sets are not ready yet.
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl),
-            std::nullopt);
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate2_gurl),
-            std::nullopt);
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate1_gurl),
+      std::nullopt);
+  EXPECT_EQ(
+      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate2_gurl),
+      std::nullopt);
 }
 
 TEST_F(PrivacySandboxServiceTest,
-       SimulatedFpsData_FpsEnabled_WithGlobalSetsAndProfileSets) {
+       SimulatedRwsData_RwsEnabled_WithGlobalSetsAndProfileSets) {
   GURL primary_gurl("https://primary.test");
   GURL associate1_gurl("https://associate1.test");
   GURL associate2_gurl("https://associate2.test");
@@ -1355,7 +1561,7 @@ TEST_F(PrivacySandboxServiceTest,
   net::SchemefulSite associate2_site(associate2_gurl);
 
   // Set up state that fully enables the First-Party Sets for UI; blocking 3PC,
-  // and enabling the FPS UI feature and the FPS enabled pref.
+  // and enabling the FPS UI feature and the RWS enabled pref.
   feature_list()->InitWithFeatures(
       {privacy_sandbox::kPrivacySandboxFirstPartySetsUI}, {});
   prefs()->SetUserPref(
@@ -1363,7 +1569,7 @@ TEST_F(PrivacySandboxServiceTest,
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
@@ -1371,7 +1577,7 @@ TEST_F(PrivacySandboxServiceTest,
   // { primary: "https://primary.test",
   // associatedSites: ["https://associate1.test", "https://associate2.test"] }
   mock_first_party_sets_handler().SetGlobalSets(net::GlobalFirstPartySets(
-      kFirstPartySetsVersion,
+      kRelatedWebsiteSetsVersion,
       {
           {primary_site,
            {net::FirstPartySetEntry(primary_site, net::SiteType::kPrimary,
@@ -1395,16 +1601,18 @@ TEST_F(PrivacySandboxServiceTest,
   first_party_sets_policy_service()->InitForTesting();
 
   // Verify that primary owns associate1, but no longer owns associate2.
+  EXPECT_EQ(privacy_sandbox_service()
+                ->GetRelatedWebsiteSetOwner(associate1_gurl)
+                .value(),
+            primary_site);
   EXPECT_EQ(
-      privacy_sandbox_service()->GetFirstPartySetOwner(associate1_gurl).value(),
-      primary_site);
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(associate2_gurl),
-            std::nullopt);
+      privacy_sandbox_service()->GetRelatedWebsiteSetOwner(associate2_gurl),
+      std::nullopt);
 }
 
-TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
-  // Check that the init of the FPS pref occurs correctly.
-  ClearFpsUserPrefs(prefs());
+TEST_F(PrivacySandboxServiceTest, RwsPrefInit) {
+  // Check that the init of the RWS pref occurs correctly.
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(
       prefs::kCookieControlsMode,
       std::make_unique<base::Value>(static_cast<int>(
@@ -1418,11 +1626,11 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
   EXPECT_TRUE(
       prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_FALSE(prefs()->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
+      prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized));
 
   // If the UI is available, the user blocks 3PC, and the pref has not been
   // previously init, it should be.
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   feature_list()->Reset();
   feature_list()->InitAndEnableFeature(
       privacy_sandbox::kPrivacySandboxFirstPartySetsUI);
@@ -1431,11 +1639,11 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
   EXPECT_FALSE(
       prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
+      prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized));
 
   // Once the pref has been init, it should not be re-init, and updated user
   // cookie settings should not impact it.
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kCookieControlsMode,
                        std::make_unique<base::Value>(static_cast<int>(
                            content_settings::CookieControlsMode::kOff)));
@@ -1444,7 +1652,7 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
   EXPECT_TRUE(
       prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
+      prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized));
 
   prefs()->SetUserPref(
       prefs::kCookieControlsMode,
@@ -1454,10 +1662,10 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
   EXPECT_TRUE(
       prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
+      prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized));
 
-  // Blocking all cookies should also init the FPS pref to off.
-  ClearFpsUserPrefs(prefs());
+  // Blocking all cookies should also init the RWS pref to off.
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kCookieControlsMode,
                        std::make_unique<base::Value>(static_cast<int>(
                            content_settings::CookieControlsMode::kOff)));
@@ -1467,7 +1675,7 @@ TEST_F(PrivacySandboxServiceTest, FpsPrefInit) {
   EXPECT_FALSE(
       prefs()->GetBoolean(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
   EXPECT_TRUE(prefs()->GetBoolean(
-      prefs::kPrivacySandboxFirstPartySetsDataAccessAllowedInitialized));
+      prefs::kPrivacySandboxRelatedWebsiteSetsDataAccessAllowedInitialized));
 }
 
 TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
@@ -1487,7 +1695,7 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
@@ -1501,7 +1709,7 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
   net::SchemefulSite youtube_site(youtube_gurl);
 
   mock_first_party_sets_handler().SetGlobalSets(net::GlobalFirstPartySets(
-      kFirstPartySetsVersion,
+      kRelatedWebsiteSetsVersion,
       {
           {youtube_primary_site,
            {net::FirstPartySetEntry(youtube_primary_site,
@@ -1523,14 +1731,15 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
 
   first_party_sets_policy_service()->InitForTesting();
 
-  // Expect queries to be resolved based on the FPS sample sets.
-  EXPECT_GT(privacy_sandbox_service()->GetSampleFirstPartySets().size(), 0u);
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(
+  // Expect queries to be resolved based on the RWS sample sets.
+  EXPECT_GT(privacy_sandbox_service()->GetSampleRelatedWebsiteSets().size(),
+            0u);
+  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwner(
                 GURL("https://youtube.com")),
             net::SchemefulSite(GURL("https://google.com")));
-  EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedFirstPartySet(
+  EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedRelatedWebsiteSet(
       net::SchemefulSite(GURL("https://googlesource.com"))));
-  EXPECT_FALSE(privacy_sandbox_service()->IsPartOfManagedFirstPartySet(
+  EXPECT_FALSE(privacy_sandbox_service()->IsPartOfManagedRelatedWebsiteSet(
       net::SchemefulSite(GURL("https://google.de"))));
 
   feature_list()->Reset();
@@ -1541,17 +1750,18 @@ TEST_F(PrivacySandboxServiceTest, UsesFpsSampleSetsWhenProvided) {
       std::make_unique<base::Value>(static_cast<int>(
           content_settings::CookieControlsMode::kBlockThirdParty)));
   CreateService();
-  ClearFpsUserPrefs(prefs());
+  ClearRwsUserPrefs(prefs());
   prefs()->SetUserPref(prefs::kPrivacySandboxRelatedWebsiteSetsEnabled,
                        std::make_unique<base::Value>(true));
 
-  // Expect queries to be resolved based on the FPS backend.
-  EXPECT_EQ(privacy_sandbox_service()->GetSampleFirstPartySets().size(), 0u);
-  EXPECT_EQ(privacy_sandbox_service()->GetFirstPartySetOwner(youtube_gurl),
+  // Expect queries to be resolved based on the RWS backend.
+  EXPECT_EQ(privacy_sandbox_service()->GetSampleRelatedWebsiteSets().size(),
+            0u);
+  EXPECT_EQ(privacy_sandbox_service()->GetRelatedWebsiteSetOwner(youtube_gurl),
             youtube_primary_site);
-  EXPECT_FALSE(privacy_sandbox_service()->IsPartOfManagedFirstPartySet(
+  EXPECT_FALSE(privacy_sandbox_service()->IsPartOfManagedRelatedWebsiteSet(
       net::SchemefulSite(GURL("https://googlesource.com"))));
-  EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedFirstPartySet(
+  EXPECT_TRUE(privacy_sandbox_service()->IsPartOfManagedRelatedWebsiteSet(
       net::SchemefulSite(GURL("https://google.de"))));
 }
 
@@ -1966,7 +2176,7 @@ TEST_P(TopicsConsentTest, DidConsentOptInUpdateNoticeStorage) {
 
   // Histogram
   CreateService();
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.",
                     GetParam().notice_name}),
       privacy_sandbox::NoticeStartupState::kFlowCompletedWithOptIn, 1);
@@ -1994,7 +2204,7 @@ TEST_P(TopicsConsentTest, DidConsentOptOutUpdateNoticeStorage) {
 
   // Histogram
   CreateService();
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.",
                     GetParam().notice_name}),
       privacy_sandbox::NoticeStartupState::kFlowCompletedWithOptOut, 1);
@@ -2038,7 +2248,7 @@ TEST_P(NoticeAckTest, DidNoticeAckUpdateNoticeStorage) {
 
   // Histogram
   CreateService();
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.",
                     GetParam().notice_name}),
       privacy_sandbox::NoticeStartupState::kFlowCompleted, 1);
@@ -2066,7 +2276,7 @@ TEST_P(NoticeSettingsTest, DidNoticeSettingsUpdateNoticeStorage) {
 
   // Histogram
   CreateService();
-  histogram_tester.ExpectBucketCount(
+  histogram_tester_.ExpectBucketCount(
       base::StrCat({"PrivacySandbox.Notice.NoticeStartupState.",
                     GetParam().notice_name}),
       privacy_sandbox::NoticeStartupState::kFlowCompleted, 1);
@@ -2568,55 +2778,6 @@ TEST_F(PrivacySandboxServiceM1PromptTest, RestrictedPrompt) {
                  {kM1PromptSuppressedReason,
                   static_cast<int>(PromptSuppressedReason::kRestricted)}});
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(PrivacySandboxServiceM1PromptTest, PromptActionsSentimentService) {
-  // Settings both consent and notice to be true so that we can loop through all
-  // cases interacting with the sentiment service cleanly, without breaking
-  // DCHECKs. Other tests / code paths check that PromptActionOccurred is
-  // working correctly based on notice and consent, and assert that only one is
-  // enabled.
-  feature_list()->Reset();
-  feature_list()->InitAndEnableFeatureWithParameters(
-      privacy_sandbox::kPrivacySandboxSettings4,
-      {{privacy_sandbox::kPrivacySandboxSettings4ConsentRequiredName, "true"},
-       {privacy_sandbox::kPrivacySandboxSettings4NoticeRequiredName, "true"},
-       {privacy_sandbox::kPrivacySandboxSettings4RestrictedNoticeName,
-        "true"}});
-
-  std::map<PromptAction, TrustSafetySentimentService::FeatureArea>
-      expected_feature_areas;
-  expected_feature_areas = {
-      {PromptAction::kNoticeOpenSettings,
-       TrustSafetySentimentService::FeatureArea::
-           kPrivacySandbox4NoticeSettings},
-      {PromptAction::kNoticeAcknowledge,
-       TrustSafetySentimentService::FeatureArea::kPrivacySandbox4NoticeOk},
-      {PromptAction::kConsentAccepted,
-       TrustSafetySentimentService::FeatureArea::kPrivacySandbox4ConsentAccept},
-      {PromptAction::kConsentDeclined,
-       TrustSafetySentimentService::FeatureArea::
-           kPrivacySandbox4ConsentDecline}};
-
-  for (int enum_value = 0;
-       enum_value <= static_cast<int>(PromptAction::kMaxValue); ++enum_value) {
-    auto prompt_action = static_cast<PromptAction>(enum_value);
-    if (expected_feature_areas.count(prompt_action)) {
-      EXPECT_CALL(
-          *mock_sentiment_service(),
-          InteractedWithPrivacySandbox4(expected_feature_areas[prompt_action]))
-          .Times(1);
-    } else {
-      EXPECT_CALL(*mock_sentiment_service(),
-                  InteractedWithPrivacySandbox4(testing::_))
-          .Times(0);
-    }
-    privacy_sandbox_service()->PromptActionOccurred(prompt_action,
-                                                    SurfaceType::kDesktop);
-    testing::Mock::VerifyAndClearExpectations(mock_sentiment_service());
-  }
-}
-#endif
 
 class PrivacySandboxServiceM1ConsentPromptTest
     : public PrivacySandboxServiceM1PromptTest {};
@@ -3391,604 +3552,3 @@ TEST_F(PrivacySandboxServiceM1RestrictedNoticeEnabledNoRestrictionsTest,
                  {kM1PromptSuppressedReason,
                   static_cast<int>(PromptSuppressedReason::kNone)}});
 }
-
-#if BUILDFLAG(IS_ANDROID)
-class PrivacySandboxActivityTypeStorageTests
-    : public PrivacySandboxServiceTest {
- public:
-  PrivacySandboxActivityTypeStorageTests()
-      : local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())) {}
-
-  void InitializeFeaturesBeforeStart() override {
-    feature_list()->InitAndEnableFeatureWithParameters(
-        privacy_sandbox::kPrivacySandboxActivityTypeStorage,
-        {{"last-n-launches", "5"},
-         {"within-x-days", "2"},
-         {"skip-pre-first-tab", "false"}});
-  }
-
- protected:
-  base::HistogramTester histogram_tester;
-  ScopedTestingLocalState* local_state() { return local_state_.get(); }
-
- private:
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
-};
-
-TEST_F(PrivacySandboxActivityTypeStorageTests, VerifyListOverflow) {
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
-  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
-            1u);
-  privacy_sandbox_service()->RecordActivityType(
-      ActivityType::kNonAGSACustomTab);
-  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
-            2u);
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
-            3u);
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
-  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
-            4u);
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
-  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
-            5u);
-  //   Since we are already at a size of 5, and last-n-launches is set to 5, the
-  //   next call of another launch will remove the first element in the list
-  //   before adding the newly created one. The size should still be 5.
-  privacy_sandbox_service()->RecordActivityType(
-      ActivityType::kTrustedWebActivity);
-  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
-            5u);
-}
-
-// This test is ensuring that the start of the list is represented as the newest
-// records and the end is the oldest records.
-TEST_F(PrivacySandboxActivityTypeStorageTests, VerifyListOrder) {
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
-  EXPECT_EQ(*prefs()
-                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[0]
-                 .GetDict()
-                 .Find("activity_type"),
-            static_cast<int>(ActivityType::kAGSACustomTab));
-
-  browser_task_environment()->FastForwardBy(base::Minutes(5));
-  privacy_sandbox_service()->RecordActivityType(
-      ActivityType::kNonAGSACustomTab);
-  EXPECT_EQ(*prefs()
-                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[0]
-                 .GetDict()
-                 .Find("activity_type"),
-            static_cast<int>(ActivityType::kNonAGSACustomTab));
-
-  privacy_sandbox_service()->RecordActivityType(
-      ActivityType::kTrustedWebActivity);
-  EXPECT_EQ(*prefs()
-                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[0]
-                 .GetDict()
-                 .Find("activity_type"),
-            static_cast<int>(ActivityType::kTrustedWebActivity));
-
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
-  EXPECT_EQ(*prefs()
-                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[0]
-                 .GetDict()
-                 .Find("activity_type"),
-            static_cast<int>(ActivityType::kWebapp));
-
-  browser_task_environment()->FastForwardBy(base::Minutes(5));
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
-  EXPECT_EQ(*prefs()
-                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[0]
-                 .GetDict()
-                 .Find("activity_type"),
-            static_cast<int>(ActivityType::kAGSACustomTab));
-  EXPECT_EQ(*prefs()
-                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[1]
-                 .GetDict()
-                 .Find("activity_type"),
-            static_cast<int>(ActivityType::kWebApk));
-  EXPECT_EQ(*prefs()
-                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[2]
-                 .GetDict()
-                 .Find("activity_type"),
-            static_cast<int>(ActivityType::kWebapp));
-  EXPECT_EQ(*prefs()
-                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[3]
-                 .GetDict()
-                 .Find("activity_type"),
-            static_cast<int>(ActivityType::kTabbed));
-  EXPECT_EQ(*prefs()
-                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[4]
-                 .GetDict()
-                 .Find("activity_type"),
-            static_cast<int>(ActivityType::kTrustedWebActivity));
-}
-
-TEST_F(PrivacySandboxActivityTypeStorageTests, VerifyListExpiration) {
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kOther);
-  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
-            1u);
-  privacy_sandbox_service()->RecordActivityType(
-      ActivityType::kNonAGSACustomTab);
-  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
-            2u);
-  // Even though within-x-days is set to 2 days, we still include records that
-  // are inclusive of the time boundary. When we fast forward by 2 days and add
-  // a third record, all three entries are still in the record list.
-  browser_task_environment()->FastForwardBy(base::Days(2));
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kPreFirstTab);
-  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
-            3u);
-  // Now by fast forwarding by 1 more day, we have exceeded the within-x-days of
-  // 2 days, so the first two entries should be removed and the size should
-  // be 2.
-  browser_task_environment()->FastForwardBy(base::Days(1));
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
-  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
-            2u);
-}
-
-TEST_F(PrivacySandboxActivityTypeStorageTests, VerifyTimeBackwards) {
-  // Initializing the activity type record list with entries that have
-  // timestamps set for future dates (e.g., 5 and 7 days from now).
-  base::Value::List old_records;
-  base::Value::Dict first_record;
-  base::Value::Dict second_record;
-
-  first_record.Set("timestamp",
-                   base::TimeToValue(base::Time::Now() + base::Days(5)));
-  first_record.Set("activity_type",
-                   static_cast<int>(ActivityType::kAGSACustomTab));
-
-  second_record.Set("timestamp",
-                    base::TimeToValue(base::Time::Now() + base::Days(7)));
-  second_record.Set("activity_type", static_cast<int>(ActivityType::kTabbed));
-
-  old_records.Append(std::move(first_record));
-  old_records.Append(std::move(second_record));
-
-  prefs()->SetList(prefs::kPrivacySandboxActivityTypeRecord2,
-                   std::move(old_records));
-
-  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
-            2u);
-
-  // After recording a new activity, any previous records with timestamps in the
-  // future (greater than the current timestamp) are not added to the updated
-  // list.
-  privacy_sandbox_service()->RecordActivityType(
-      ActivityType::kTrustedWebActivity);
-  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
-            1u);
-  EXPECT_EQ(*prefs()
-                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[0]
-                 .GetDict()
-                 .Find("activity_type"),
-            static_cast<int>(ActivityType::kTrustedWebActivity));
-}
-
-class PrivacySandboxActivityTypeStorageMetricsTests
-    : public PrivacySandboxServiceTest {
- public:
-  PrivacySandboxActivityTypeStorageMetricsTests()
-      : local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())) {}
-
-  void InitializeFeaturesBeforeStart() override {
-    feature_list()->InitAndEnableFeatureWithParameters(
-        privacy_sandbox::kPrivacySandboxActivityTypeStorage,
-        {{"last-n-launches", "100"},
-         {"within-x-days", "60"},
-         {"skip-pre-first-tab", "false"}});
-  }
-
-  struct PercentageMetricValues {
-    int AGSACCTPercent = 0;
-    int AGSACCTBucketCount = 1;
-    int BrAppPercent = 0;
-    int BrAppBucketCount = 1;
-    int NonAGSACCTPercent = 0;
-    int NonAGSACCTBucketCount = 1;
-    int TWAPercent = 0;
-    int TWABucketCount = 1;
-    int WebappPercent = 0;
-    int WebappBucketCount = 1;
-    int WebAPKPercent = 0;
-    int WebAPKBucketCount = 1;
-    int OtherPercent = 0;
-    int OtherBucketCount = 1;
-    int PreFirstTabPercent = 0;
-    int PreFirstTabCount = 1;
-  };
-
-  void TestMetricValues(PercentageMetricValues values) {
-    histogram_tester.ExpectBucketCount(
-        "PrivacySandbox.ActivityTypeStorage.Percentage.AGSACCT2",
-        values.AGSACCTPercent, values.AGSACCTBucketCount);
-    histogram_tester.ExpectBucketCount(
-        "PrivacySandbox.ActivityTypeStorage.Percentage.BrApp2",
-        values.BrAppPercent, values.BrAppBucketCount);
-    histogram_tester.ExpectBucketCount(
-        "PrivacySandbox.ActivityTypeStorage.Percentage.NonAGSACCT2",
-        values.NonAGSACCTPercent, values.NonAGSACCTBucketCount);
-    histogram_tester.ExpectBucketCount(
-        "PrivacySandbox.ActivityTypeStorage.Percentage.TWA2", values.TWAPercent,
-        values.TWABucketCount);
-    histogram_tester.ExpectBucketCount(
-        "PrivacySandbox.ActivityTypeStorage.Percentage.WebApp2",
-        values.WebappPercent, values.WebappBucketCount);
-    histogram_tester.ExpectBucketCount(
-        "PrivacySandbox.ActivityTypeStorage.Percentage.WebApk2",
-        values.WebAPKPercent, values.WebAPKBucketCount);
-    histogram_tester.ExpectBucketCount(
-        "PrivacySandbox.ActivityTypeStorage.Percentage.Other2",
-        values.OtherPercent, values.OtherBucketCount);
-    histogram_tester.ExpectBucketCount(
-        "PrivacySandbox.ActivityTypeStorage.Percentage.PreFirstTab2",
-        values.PreFirstTabPercent, values.PreFirstTabCount);
-  }
-
- protected:
-  base::HistogramTester histogram_tester;
-  ScopedTestingLocalState* local_state() { return local_state_.get(); }
-
- private:
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
-};
-
-TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
-       VerifyMetricsRecordsLength) {
-  local_state()->Get()->SetInt64(
-      metrics::prefs::kMetricsReportingEnabledTimestamp,
-      (base::Time::Now() - base::Days(10)).ToTimeT());
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 1, 1);
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 2, 1);
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 3, 1);
-  privacy_sandbox_service()->RecordActivityType(
-      ActivityType::kTrustedWebActivity);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 4, 1);
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 5, 1);
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kOther);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 6, 1);
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kPreFirstTab);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.RecordsLength", 7, 1);
-}
-
-TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
-       VerifyMetricsPercentages) {
-  local_state()->Get()->SetInt64(
-      metrics::prefs::kMetricsReportingEnabledTimestamp,
-      (base::Time::Now() - base::Days(10)).ToTimeT());
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
-  TestMetricValues({.AGSACCTPercent = 100});
-
-  privacy_sandbox_service()->RecordActivityType(
-      ActivityType::kNonAGSACustomTab);
-  TestMetricValues({.AGSACCTPercent = 50,
-                    .BrAppBucketCount = 2,
-                    .NonAGSACCTPercent = 50,
-                    .TWABucketCount = 2,
-                    .WebappBucketCount = 2,
-                    .WebAPKBucketCount = 2,
-                    .OtherBucketCount = 2,
-                    .PreFirstTabCount = 2});
-
-  privacy_sandbox_service()->RecordActivityType(
-      ActivityType::kTrustedWebActivity);
-  TestMetricValues({.AGSACCTPercent = 33,
-                    .BrAppBucketCount = 3,
-                    .NonAGSACCTPercent = 33,
-                    .TWAPercent = 33,
-                    .WebappBucketCount = 3,
-                    .WebAPKBucketCount = 3,
-                    .OtherBucketCount = 3,
-                    .PreFirstTabCount = 3});
-
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
-  TestMetricValues({.AGSACCTPercent = 50,
-                    .AGSACCTBucketCount = 2,
-                    .BrAppBucketCount = 4,
-                    .NonAGSACCTPercent = 25,
-                    .TWAPercent = 25,
-                    .WebappBucketCount = 4,
-                    .WebAPKBucketCount = 4,
-                    .OtherBucketCount = 4,
-                    .PreFirstTabCount = 4});
-
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
-  TestMetricValues({.AGSACCTPercent = 40,
-                    .BrAppBucketCount = 5,
-                    .NonAGSACCTPercent = 20,
-                    .TWAPercent = 20,
-                    .WebappBucketCount = 5,
-                    .WebAPKPercent = 20,
-                    .OtherBucketCount = 5,
-                    .PreFirstTabCount = 5});
-
-  privacy_sandbox_service()->RecordActivityType(
-      ActivityType::kTrustedWebActivity);
-  TestMetricValues({.AGSACCTPercent = 33,
-                    .AGSACCTBucketCount = 2,
-                    .BrAppBucketCount = 6,
-                    .NonAGSACCTPercent = 17,
-                    .TWAPercent = 33,
-                    .TWABucketCount = 2,
-                    .WebappBucketCount = 6,
-                    .WebAPKPercent = 17,
-                    .OtherBucketCount = 6,
-                    .PreFirstTabCount = 6});
-
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
-  TestMetricValues({.AGSACCTPercent = 29,
-                    .BrAppBucketCount = 7,
-                    .NonAGSACCTPercent = 14,
-                    .TWAPercent = 29,
-                    .WebappPercent = 14,
-                    .WebAPKPercent = 14,
-                    .OtherBucketCount = 7,
-                    .PreFirstTabCount = 7});
-
-  browser_task_environment()->FastForwardBy(base::Days(61));
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  // Since 61 days have passed, the activity log gets cleared because it is
-  // passed our within-x-days feature param.
-  TestMetricValues({.BrAppPercent = 100,
-                    .NonAGSACCTBucketCount = 2,
-                    .TWABucketCount = 3,
-                    .WebappBucketCount = 7,
-                    .WebAPKBucketCount = 5,
-                    .OtherBucketCount = 8,
-                    .PreFirstTabCount = 8});
-}
-
-TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
-       VerifyUserSegmentMetrics) {
-  local_state()->Get()->SetInt64(
-      metrics::prefs::kMetricsReportingEnabledTimestamp,
-      (base::Time::Now() - base::Days(10)).ToTimeT());
-  for (int i = 0; i < 10; ++i) {
-    privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
-  }
-  histogram_tester.ExpectTotalCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2", 1);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
-      UserSegment::kHasWebapp, 1);
-  histogram_tester.ExpectTotalCount(
-      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2", 0);
-
-  privacy_sandbox_service()->RecordActivityType(
-      ActivityType::kTrustedWebActivity);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
-      UserSegment::kHasTWA, 1);
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebapp);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
-      UserSegment::kHasTWA, 2);
-
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
-      UserSegment::kHasPWA, 1);
-  privacy_sandbox_service()->RecordActivityType(
-      ActivityType::kTrustedWebActivity);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
-      UserSegment::kHasPWA, 2);
-
-  privacy_sandbox_service()->RecordActivityType(
-      ActivityType::kNonAGSACustomTab);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
-      UserSegment::kHasNonAGSACCT, 1);
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kWebApk);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
-      UserSegment::kHasNonAGSACCT, 2);
-
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
-      UserSegment::kHasAGSACCT, 1);
-  privacy_sandbox_service()->RecordActivityType(
-      ActivityType::kNonAGSACustomTab);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
-      UserSegment::kHasAGSACCT, 2);
-
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
-      UserSegment::kHasBrowserApp, 1);
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
-      UserSegment::kHasBrowserApp, 2);
-
-  histogram_tester.ExpectTotalCount(
-      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2", 1);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2",
-      UserSegment::kHasBrowserApp, 1);
-
-  for (int i = 0; i < 9; ++i) {
-    privacy_sandbox_service()->RecordActivityType(ActivityType::kAGSACustomTab);
-  }
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
-      UserSegment::kHasBrowserApp, 10);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
-      UserSegment::kHasAGSACCT, 3);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2",
-      UserSegment::kHasBrowserApp, 10);
-
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
-      UserSegment::kHasOther, 0);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2",
-      UserSegment::kHasOther, 0);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2",
-      UserSegment::kHasPreFirstTab, 0);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2",
-      UserSegment::kHasPreFirstTab, 0);
-}
-
-TEST_F(PrivacySandboxActivityTypeStorageMetricsTests, VerifyNoMetrics) {
-  // Set the kMetricsReportingEnabledTimestamp of UMA opt in to 10 days in the
-  // future and we should receive no metrics on any of the data in the Activity
-  // Type storage list. The list should still be populated to a size of 10
-  // records.
-  local_state()->Get()->SetInt64(
-      metrics::prefs::kMetricsReportingEnabledTimestamp,
-      (base::Time::Now() + base::Days(10)).ToTimeT());
-  for (int i = 0; i < 10; ++i) {
-    privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  }
-  histogram_tester.ExpectTotalCount(
-      "PrivacySandbox.ActivityTypeStorage.10MostRecentRecordsUserSegment2", 0);
-  histogram_tester.ExpectTotalCount(
-      "PrivacySandbox.ActivityTypeStorage.20MostRecentRecordsUserSegment2", 0);
-  histogram_tester.ExpectTotalCount(
-      "PrivacySandbox.ActivityTypeStorage.Percentage.AGSACCT2", 0);
-  histogram_tester.ExpectTotalCount(
-      "PrivacySandbox.ActivityTypeStorage.Percentage.BrApp2", 0);
-  histogram_tester.ExpectTotalCount(
-      "PrivacySandbox.ActivityTypeStorage.Percentage.NonAGSACCT2", 0);
-  histogram_tester.ExpectTotalCount(
-      "PrivacySandbox.ActivityTypeStorage.Percentage.TWA2", 0);
-  histogram_tester.ExpectTotalCount(
-      "PrivacySandbox.ActivityTypeStorage.Percentage.WebApp2", 0);
-  histogram_tester.ExpectTotalCount(
-      "PrivacySandbox.ActivityTypeStorage.Percentage.Other2", 0);
-  histogram_tester.ExpectTotalCount(
-      "PrivacySandbox.ActivityTypeStorage.Percentage.PreFirstTab2", 0);
-  histogram_tester.ExpectTotalCount(
-      "PrivacySandbox.ActivityTypeStorage.RecordsLength2", 0);
-  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
-            10u);
-}
-
-TEST_F(PrivacySandboxActivityTypeStorageMetricsTests,
-       VerifyDurationSinceOldestRecordMetrics) {
-  local_state()->Get()->SetInt64(
-      metrics::prefs::kMetricsReportingEnabledTimestamp,
-      (base::Time::Now() - base::Days(10)).ToTimeT());
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 0, 1);
-  browser_task_environment()->FastForwardBy(base::Days(5));
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 5, 1);
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 5, 2);
-  browser_task_environment()->FastForwardBy(base::Days(10));
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 15, 1);
-  browser_task_environment()->FastForwardBy(base::Days(10));
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 25, 1);
-  browser_task_environment()->FastForwardBy(base::Days(10));
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 35, 1);
-  browser_task_environment()->FastForwardBy(base::Days(10));
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 45, 1);
-  browser_task_environment()->FastForwardBy(base::Days(10));
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 55, 1);
-  browser_task_environment()->FastForwardBy(base::Days(10));
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 60, 1);
-  browser_task_environment()->FastForwardBy(base::Days(10));
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.DaysSinceOldestRecord", 60, 2);
-}
-
-class PrivacySandboxActivityTypeStorageMetricsTypeReceivedTests
-    : public PrivacySandboxActivityTypeStorageMetricsTests,
-      public testing::WithParamInterface<int> {};
-
-TEST_P(PrivacySandboxActivityTypeStorageMetricsTypeReceivedTests,
-       VerifyTypeReceivedMetric) {
-  privacy_sandbox_service()->RecordActivityType(
-      static_cast<ActivityType>(GetParam()));
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.TypeReceived",
-      static_cast<ActivityType>(GetParam()), 1);
-}
-
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    PrivacySandboxActivityTypeStorageMetricsTypeReceivedTests,
-    testing::Range(static_cast<int>(ActivityType::kOther),
-                   static_cast<int>(ActivityType::kMaxValue) + 1));
-
-class PrivacySandboxActivityTypeStorageSkipPreFirstTabTests
-    : public PrivacySandboxActivityTypeStorageTests {
-  void InitializeFeaturesBeforeStart() override {
-    feature_list()->InitAndEnableFeatureWithParameters(
-        privacy_sandbox::kPrivacySandboxActivityTypeStorage,
-        {{"last-n-launches", "100"},
-         {"within-x-days", "60"},
-         {"skip-pre-first-tab", "true"}});
-  }
-};
-
-TEST_F(PrivacySandboxActivityTypeStorageSkipPreFirstTabTests,
-       RecordsOnlyTabbedActivity) {
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kTabbed);
-  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
-            1u);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.TypeReceived", ActivityType::kTabbed,
-      1);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.Percentage.BrApp2", 100, 1);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.Percentage.PreFirstTab2", 0, 1);
-  privacy_sandbox_service()->RecordActivityType(ActivityType::kPreFirstTab);
-  EXPECT_EQ(prefs()->GetList(prefs::kPrivacySandboxActivityTypeRecord2).size(),
-            1u);
-  EXPECT_EQ(*prefs()
-                 ->GetList(prefs::kPrivacySandboxActivityTypeRecord2)[0]
-                 .GetDict()
-                 .Find("activity_type"),
-            static_cast<int>(ActivityType::kTabbed));
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.TypeReceived",
-      ActivityType::kPreFirstTab, 1);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.Percentage.BrApp2", 100, 1);
-  histogram_tester.ExpectBucketCount(
-      "PrivacySandbox.ActivityTypeStorage.Percentage.PreFirstTab2", 0, 1);
-}
-#endif  // BUILDFLAG(IS_ANDROID)

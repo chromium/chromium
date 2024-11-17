@@ -1,0 +1,31 @@
+caption: Show Sharepoint File Card on the New Tab Page
+default: false
+desc: |- # TODO(crbug.com/376287682): insert HC article link
+  This policy controls the visibility of the Sharepoint File Card on the New Tab Page. The card will only be displayed on the New Tab Page if the policy is enabled and your organization authorized the usage of the Sharepoint File data in the browser.
+
+  The Sharepoint Files recommendation card shows a list of recommended files.  It aims to address the issue of context switching and enhance productivity by giving users a shortcut to their most important documents.
+
+  The Microsoft Sharepoint card will require additional admin configuration. For detailed information on connecting the Chrome New Tab Page Card to Sharepoint, please see help article.
+
+  If the <ph name="NTPCARDSVISIBLE">NTPCardsVisible</ph> is disabled, the Sharepoint Card will not be shown. If <ph name="NTPCARDSVISIBLE">NTPCardsVisible</ph> is enabled, the Sharepoint card will be shown if this policy is also enabled and there is data to be shown. If <ph name="NTPCARDSVISIBLE">NTPCardsVisible</ph> is unset, the Sharepoint card will be shown if this policy is also enabled, the user has the card enabled in Customize Chrome, and there is data to be shown.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+future_on:
+- chrome.*
+- chrome_os
+items:
+- caption: Enable NTP Sharepoint File Card
+  value: true
+- caption: Disable NTP Sharepoint File Card
+  value: false
+owners:
+- rtatum@google.com
+- tiborg@chromium.org
+- danpeng@google.com
+- ftirelo@chromium.org
+schema:
+  type: boolean
+tags: []
+type: main

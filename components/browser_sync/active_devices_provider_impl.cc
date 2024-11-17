@@ -9,14 +9,25 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
+#include "base/command_line.h"
 #include "base/ranges/algorithm.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "components/browser_sync/browser_sync_switches.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/engine/active_devices_invalidation_info.h"
 
 namespace browser_sync {
+
+// Max size of FCM registration tokens list used for sync invalidation
+// optimization. If the number of active devices having FCM registration tokens
+// is higher, then the resulting list will be empty meaning unknown FCM
+// registration tokens.
+constexpr size_t kSyncFCMRegistrationTokensListMaxSize = 5;
+
+// An additional threshold to consider devices as active. It extends device's
+// pulse interval to mitigate possible latency after DeviceInfo commit.
+constexpr base::TimeDelta kSyncActiveDeviceMargin = base::Days(7);
 
 ActiveDevicesProviderImpl::ActiveDevicesProviderImpl(
     syncer::DeviceInfoTracker* device_info_tracker,
@@ -36,6 +47,11 @@ ActiveDevicesProviderImpl::CalculateInvalidationInfo(
     const std::string& local_cache_guid) const {
   TRACE_EVENT0("ui", "ActiveDevicesProviderImpl::CalculateInvalidationInfo");
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableSyncInvalidationOptimizations)) {
+    return syncer::ActiveDevicesInvalidationInfo::CreateUninitialized();
+  }
 
   const std::vector<const syncer::DeviceInfo*> active_devices =
       GetActiveDevicesSortedByUpdateTime();
@@ -71,10 +87,7 @@ ActiveDevicesProviderImpl::CalculateInvalidationInfo(
       // sync engine was reset without signout.
       fcm_token_and_interested_data_types[device->fcm_registration_token()] =
           device->interested_data_types();
-      if (base::FeatureList::IsEnabled(
-              switches::kSyncUseFCMRegistrationTokensList)) {
-        all_fcm_registration_tokens.push_back(device->fcm_registration_token());
-      }
+      all_fcm_registration_tokens.push_back(device->fcm_registration_token());
     } else if (!device->interested_data_types().empty()) {
       // An empty FCM registration token may be set for old clients, and for
       // modern clients supporting sync standalone invalidatoins if there was an
@@ -96,8 +109,7 @@ ActiveDevicesProviderImpl::CalculateInvalidationInfo(
   // empty list. Otherwise the client would return only a part of all active
   // clients and other clients might miss an invalidation.
   if (all_fcm_registration_tokens.size() >
-      static_cast<size_t>(
-          switches::kSyncFCMRegistrationTokensListMaxSize.Get())) {
+      kSyncFCMRegistrationTokensListMaxSize) {
     all_fcm_registration_tokens.clear();
   }
   TRACE_EVENT0("ui",
@@ -128,28 +140,29 @@ void ActiveDevicesProviderImpl::OnDeviceInfoChange() {
 
 std::vector<const syncer::DeviceInfo*>
 ActiveDevicesProviderImpl::GetActiveDevicesSortedByUpdateTime() const {
-  std::vector<const syncer::DeviceInfo*> all_devices =
+  std::vector<const syncer::DeviceInfo*> device_infos =
       device_info_tracker_->GetAllDeviceInfo();
 
-  if (base::FeatureList::IsEnabled(
-          switches::kSyncFilterOutInactiveDevicesForSingleClient)) {
-    std::erase_if(all_devices, [this](const syncer::DeviceInfo* device) {
-      const base::Time expected_expiration_time =
-          device->last_updated_timestamp() + device->pulse_interval() +
-          switches::kSyncActiveDeviceMargin.Get();
-      // If the device's expiration time hasn't been reached, then
-      // it is considered active device.
-      return expected_expiration_time <= clock_->Now();
-    });
-  }
+  std::erase_if(device_infos, [this](const syncer::DeviceInfo* device) {
+    const base::Time expected_expiration_time =
+        device->last_updated_timestamp() + device->pulse_interval() +
+        kSyncActiveDeviceMargin;
+    // If the device's expiration time hasn't been reached, then it is
+    // considered active device. Devices without chrome version are always
+    // considered active. Note that all devices still have 56 days expiration
+    // time (see DeviceInfoSyncBridge) and stale devices won't stay around
+    // indefinitely .
+    return !device->chrome_version().empty() &&
+           expected_expiration_time <= clock_->Now();
+  });
 
-  base::ranges::sort(all_devices, [](const syncer::DeviceInfo* left_device,
-                                     const syncer::DeviceInfo* right_device) {
+  base::ranges::sort(device_infos, [](const syncer::DeviceInfo* left_device,
+                                      const syncer::DeviceInfo* right_device) {
     return left_device->last_updated_timestamp() <
            right_device->last_updated_timestamp();
   });
 
-  return all_devices;
+  return device_infos;
 }
 
 }  // namespace browser_sync

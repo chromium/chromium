@@ -15,9 +15,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/trash_unittest_base.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/ash/components/trash_service/public/cpp/trash_service.h"
-#include "chromeos/ash/components/trash_service/public/mojom/trash_service.mojom-forward.h"
-#include "chromeos/ash/components/trash_service/trash_service_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -50,32 +47,12 @@ class ScopedFileForTest {
   const base::FilePath absolute_file_path_;
 };
 
-class RestoreIOTaskTest : public TrashBaseTest {
+class RestoreIOTaskTest : public TrashBaseIOTest {
  public:
   RestoreIOTaskTest() = default;
 
   RestoreIOTaskTest(const RestoreIOTaskTest&) = delete;
   RestoreIOTaskTest& operator=(const RestoreIOTaskTest&) = delete;
-
-  void SetUp() override {
-    TrashBaseTest::SetUp();
-
-    // The TrashService launches a sandboxed process to perform parsing in, in
-    // unit tests this is not possible. So instead override the launcher to
-    // start an in-process TrashService and have `LaunchTrashService` invoke it.
-    ash::trash_service::SetTrashServiceLaunchOverrideForTesting(
-        base::BindRepeating(&RestoreIOTaskTest::CreateInProcessTrashService,
-                            base::Unretained(this)));
-  }
-
-  mojo::PendingRemote<ash::trash_service::mojom::TrashService>
-  CreateInProcessTrashService() {
-    mojo::PendingRemote<ash::trash_service::mojom::TrashService> remote;
-    trash_service_impl_ =
-        std::make_unique<ash::trash_service::TrashServiceImpl>(
-            remote.InitWithNewPipeAndPassReceiver());
-    return remote;
-  }
 
   std::string GenerateTrashInfoContents(const std::string& restore_path) {
     return base::StrCat({"[Trash Info]\nPath=", restore_path, "\nDeletionDate=",
@@ -116,8 +93,7 @@ class RestoreIOTaskTest : public TrashBaseTest {
   }
 
  private:
-  // Maintains ownership fo the in-process parsing service.
-  std::unique_ptr<ash::trash_service::TrashServiceImpl> trash_service_impl_;
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(RestoreIOTaskTest, NoSourceUrlsShouldReturnSuccess) {
@@ -346,7 +322,7 @@ class TrashServiceMojoDisconnector
   mojo::ReceiverSet<ash::trash_service::mojom::TrashService> receivers_;
 };
 
-class RestoreIOTaskDisconnectMojoTest : public TrashBaseTest {
+class RestoreIOTaskDisconnectMojoTest : public TrashBaseIOTest {
  public:
   RestoreIOTaskDisconnectMojoTest() = default;
 
@@ -355,31 +331,8 @@ class RestoreIOTaskDisconnectMojoTest : public TrashBaseTest {
   RestoreIOTaskDisconnectMojoTest& operator=(
       const RestoreIOTaskDisconnectMojoTest&) = delete;
 
-  void SetUp() override {
-    TrashBaseTest::SetUp();
-
-    // Override the TrashService launch method to instead create an instance of
-    // our mock class which will immediately disconnect all receivers when
-    // invoked.
-    ash::trash_service::SetTrashServiceLaunchOverrideForTesting(
-        base::BindRepeating(
-            &RestoreIOTaskDisconnectMojoTest::CreateInProcessTrashService,
-            base::Unretained(this)));
-  }
-
-  mojo::PendingRemote<ash::trash_service::mojom::TrashService>
-  CreateInProcessTrashService() {
-    mojo::PendingRemote<ash::trash_service::mojom::TrashService> remote;
-    trash_service_test_impl_ = std::make_unique<TrashServiceMojoDisconnector>(
-        remote.InitWithNewPipeAndPassReceiver());
-    return remote;
-  }
-
- protected:
-  // Maintains ownership fo the in-process parsing service, this is to ensure
-  // the service stays running for the duration of the test even if the mojo
-  // pipe gets disconnected.
-  std::unique_ptr<TrashServiceMojoDisconnector> trash_service_test_impl_;
+ private:
+  content::BrowserTaskEnvironment task_environment_;
 };
 
 TEST_F(RestoreIOTaskDisconnectMojoTest,

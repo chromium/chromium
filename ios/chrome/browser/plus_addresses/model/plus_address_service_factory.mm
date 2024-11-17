@@ -13,7 +13,7 @@
 #import "components/plus_addresses/affiliations/plus_address_affiliation_source_adapter.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/plus_address_http_client_impl.h"
-#import "components/plus_addresses/plus_address_service.h"
+#import "components/plus_addresses/plus_address_service_impl.h"
 #import "components/variations/service/google_groups_manager.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
@@ -65,35 +65,33 @@ PlusAddressServiceFactory::BuildServiceInstanceFor(
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   affiliations::AffiliationService* affiliation_service =
-      IOSChromeAffiliationServiceFactory::GetForBrowserState(profile);
+      IOSChromeAffiliationServiceFactory::GetForProfile(profile);
 
   // `groups_manager` can be null in tests.
   GoogleGroupsManager* groups_manager =
       GoogleGroupsManagerFactory::GetForProfile(profile);
-  plus_addresses::PlusAddressService::FeatureEnabledForProfileCheck
+  plus_addresses::PlusAddressServiceImpl::FeatureEnabledForProfileCheck
       feature_check =
-          (groups_manager &&
-           base::FeatureList::IsEnabled(
-               plus_addresses::features::kPlusAddressProfileAwareFeatureCheck))
-              ? base::BindRepeating(
-                    &GoogleGroupsManager::IsFeatureEnabledForProfile,
-                    base::Unretained(groups_manager))
-              : base::BindRepeating(&base::FeatureList::IsEnabled);
+          groups_manager ? base::BindRepeating(
+                               &GoogleGroupsManager::IsFeatureEnabledForProfile,
+                               base::Unretained(groups_manager))
+                         : base::BindRepeating(&base::FeatureList::IsEnabled);
 
-  if (auto test_service =
-          tests_hook::GetOverriddenPlusAddressService(profile)) {
+  if (auto test_service = tests_hook::GetOverriddenPlusAddressService()) {
     return test_service;
   }
 
-  std::unique_ptr<plus_addresses::PlusAddressService> plus_address_service =
-      std::make_unique<plus_addresses::PlusAddressService>(
+  // iOS platform doesn't have HaTS surveys.
+  std::unique_ptr<plus_addresses::PlusAddressServiceImpl> plus_address_service =
+      std::make_unique<plus_addresses::PlusAddressServiceImpl>(
           profile->GetPrefs(), identity_manager,
           PlusAddressSettingServiceFactory::GetForProfile(profile),
           std::make_unique<plus_addresses::PlusAddressHttpClientImpl>(
               identity_manager, profile->GetSharedURLLoaderFactory()),
           ios::WebDataServiceFactory::GetPlusAddressWebDataForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS),
-          affiliation_service, std::move(feature_check));
+          affiliation_service, std::move(feature_check),
+          /*launch_hats_survey=*/base::DoNothing());
 
   affiliation_service->RegisterSource(
       std::make_unique<plus_addresses::PlusAddressAffiliationSourceAdapter>(

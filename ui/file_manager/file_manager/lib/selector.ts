@@ -227,8 +227,8 @@ export class SelectorNode<T> implements Selector<T> {
     }
 
     if (isDebugStoreEnabled() && this.name) {
-      console.log(`Selector '${this.name}' emitted a new value:`);
-      console.log(newValue);
+      console.info(`Selector '${this.name}' emitted a new value:`);
+      console.info(newValue);
     }
 
     this.value_ = newValue;

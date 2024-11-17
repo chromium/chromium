@@ -33,6 +33,7 @@
 #include "gpu/command_buffer/service/program_cache.h"
 #include "gpu/command_buffer/service/scheduler_task_runner.h"
 #include "gpu/command_buffer/service/sequence_id.h"
+#include "gpu/command_buffer/service/task_graph.h"
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/service/context_url.h"
@@ -53,7 +54,6 @@ class MemoryTracker;
 struct SyncToken;
 struct WaitForCommandState;
 class GpuChannel;
-class SyncPointClientState;
 
 // CommandBufferStub is a base class for different CommandBuffer backends
 // (e.g. GLES2, Raster, WebGPU) within the GPU service. Each instance lives on
@@ -118,8 +118,8 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   virtual base::WeakPtr<CommandBufferStub> AsWeakPtr() = 0;
 
   // Executes a DeferredRequest routed to this command buffer by a GpuChannel.
-  void ExecuteDeferredRequest(
-      mojom::DeferredCommandBufferRequestParams& params);
+  void ExecuteDeferredRequest(mojom::DeferredCommandBufferRequestParams& params,
+                              FenceSyncReleaseDelegate* release_delegate);
 
   // Instructs the CommandBuffer to wait asynchronously until the reader has
   // updated the token value to be within the [start, end] range (inclusive).
@@ -281,7 +281,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   std::unique_ptr<gpu::MemoryTracker> memory_tracker_;
 
   scoped_refptr<gl::GLSurface> surface_;
-  scoped_refptr<SyncPointClientState> sync_point_client_state_;
+  ScopedSyncPointClientState scoped_sync_point_client_state_;
   scoped_refptr<gl::GLShareGroup> share_group_;
 
   const CommandBufferId command_buffer_id_;
@@ -348,6 +348,10 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
 
   mojo::AssociatedReceiver<mojom::CommandBuffer> receiver_{this};
   mojo::SharedAssociatedRemote<mojom::CommandBufferClient> client_;
+
+  // Caching the `release_delegate` argument of ExecuteDeferredRequest() during
+  // the call.
+  raw_ptr<FenceSyncReleaseDelegate> release_delegate_ = nullptr;
 };
 
 }  // namespace gpu

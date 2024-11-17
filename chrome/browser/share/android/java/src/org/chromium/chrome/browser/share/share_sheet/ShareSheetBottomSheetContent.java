@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.share.share_sheet;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -24,6 +25,7 @@ import android.widget.TextView;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -40,7 +42,7 @@ import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.Link
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleCoordinator.LinkToggleState;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetLinkToggleMetricsHelper.LinkToggleMetricsDetails;
 import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.share.ShareImageFileUtils;
@@ -491,8 +493,8 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
 
         UserEducationHelper userEducationHelper =
                 new UserEducationHelper(mActivity, mProfile, new Handler(Looper.getMainLooper()));
-        userEducationHelper.requestShowIPH(
-                new IPHCommandBuilder(
+        userEducationHelper.requestShowIph(
+                new IphCommandBuilder(
                                 mActivity.getResources(),
                                 FeatureConstants.IPH_SHARING_HUB_LINK_TOGGLE_FEATURE,
                                 R.string.link_toggle_iph,
@@ -681,8 +683,8 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.sharing_hub_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.sharing_hub_content_description);
     }
 
     @Override

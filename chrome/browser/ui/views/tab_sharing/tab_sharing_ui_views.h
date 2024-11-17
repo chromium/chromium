@@ -109,7 +109,8 @@ class TabSharingUIViews : public TabSharingUI,
 #endif
 
  private:
-  using InfoBars = std::map<content::WebContents*, infobars::InfoBar*>;
+  using InfoBars = std::map<content::WebContents*,
+                            raw_ptr<infobars::InfoBar, CtnExperimental>>;
   friend class TabSharingUIViewsBrowserTest;
 
   // Used to identify |TabSharingUIViews| instances to

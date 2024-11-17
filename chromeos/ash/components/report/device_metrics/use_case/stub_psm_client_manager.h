@@ -56,9 +56,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_REPORT)
           query_response) override;
 
   // Provide stub methods to be used in unit tests.
-  void set_ec_cipher_key(const std::string_view ec_cipher_key);
+  void set_ec_cipher_key(std::string_view ec_cipher_key);
 
-  void set_seed(const std::string_view seed);
+  void set_seed(std::string_view seed);
 
   void set_oprf_request(
       const private_membership::rlwe::PrivateMembershipRlweOprfRequest&

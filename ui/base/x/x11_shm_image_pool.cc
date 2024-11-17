@@ -17,7 +17,6 @@
 #include "base/location.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/url_util.h"
 #include "ui/events/platform/platform_event_dispatcher.h"
 #include "ui/events/platform/platform_event_source.h"
@@ -56,7 +55,7 @@ std::size_t MaxShmSegmentSize() {
   return max_size;
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
 bool IsRemoteHost(const std::string& name) {
   if (name.empty())
     return false;
@@ -94,7 +93,7 @@ bool ShouldUseMitShm(x11::Connection* connection) {
 
   return true;
 }
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -138,10 +137,10 @@ bool XShmImagePool::Resize(const gfx::Size& pixel_size) {
   std::unique_ptr<XShmImagePool, decltype(cleanup_fn)> cleanup{this,
                                                                cleanup_fn};
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (!ShouldUseMitShm(connection_))
     return false;
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
   if (!ui::QueryShmSupport())
     return false;

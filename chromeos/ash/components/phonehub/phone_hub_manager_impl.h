@@ -25,11 +25,11 @@ namespace ash {
 
 namespace device_sync {
 class DeviceSyncClient;
-}
+}  // namespace device_sync
 
 namespace multidevice_setup {
 class MultiDeviceSetupClient;
-}
+}  // namespace multidevice_setup
 
 namespace secure_channel {
 class ConnectionManager;

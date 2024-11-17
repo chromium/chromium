@@ -34,7 +34,6 @@ using ::testing::_;
 using ::testing::Eq;
 using ::testing::Return;
 using ::testing::StrictMock;
-using Status = ::leveldb::Status;
 using blink::IndexedDBDatabaseMetadata;
 using blink::IndexedDBIndexMetadata;
 using blink::IndexedDBKey;
@@ -192,7 +191,7 @@ class LevelDbTombstoneSweeperTest : public testing::Test {
         mock_db_,
         Get(_, SliceEq(ExistsEntryKey::Encode(db, os, encoded_primary_key)), _))
         .WillOnce(testing::DoAll(testing::SetArgPointee<2>(exists_value),
-                                 Return(Status::OK())));
+                                 Return(leveldb::Status::OK())));
   }
 
  protected:
@@ -277,7 +276,8 @@ TEST_F(LevelDbTombstoneSweeperTest, NoTombstonesComplexDB) {
 
     // Return next key, which should make it error
     EXPECT_CALL(*mock_iterator, Valid()).WillOnce(Return(false));
-    EXPECT_CALL(*mock_iterator, status()).WillOnce(Return(Status::OK()));
+    EXPECT_CALL(*mock_iterator, status())
+        .WillOnce(Return(leveldb::Status::OK()));
     EXPECT_CALL(*mock_iterator, Valid()).WillOnce(Return(false));
   }
 
@@ -348,7 +348,8 @@ TEST_F(LevelDbTombstoneSweeperTest, AllTombstonesComplexDB) {
 
     // Return next key, which should make it error
     EXPECT_CALL(*mock_iterator, Valid()).WillOnce(Return(false));
-    EXPECT_CALL(*mock_iterator, status()).WillOnce(Return(Status::OK()));
+    EXPECT_CALL(*mock_iterator, status())
+        .WillOnce(Return(leveldb::Status::OK()));
     EXPECT_CALL(*mock_iterator, Valid()).WillOnce(Return(false));
   }
 
@@ -473,7 +474,7 @@ TEST_F(LevelDbTombstoneSweeperTest, LevelDBError) {
     // Return read error.
     EXPECT_CALL(*mock_iterator, Valid()).WillOnce(Return(false));
     EXPECT_CALL(*mock_iterator, status())
-        .WillOnce(Return(Status::Corruption("Test error")));
+        .WillOnce(Return(leveldb::Status::Corruption("Test error")));
   }
 
   ASSERT_TRUE(sweeper_->RunRound());

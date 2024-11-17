@@ -268,7 +268,7 @@
             "field_signature": "4103469401",
             "id": "7542824740940430359_4103469401_0",
             "label_attr": "Email address",
-            "last_classification": "UNKNOWN_TYPE",
+            "last_classification": "EMAIL_ADDRESS",
             "last_correctness": "ignored: USERNAME_AND_EMAIL_ADDRESS",
             "name_attr": "emailAddress",
             "tester_type": [ "USERNAME_AND_EMAIL_ADDRESS" ],
@@ -291,7 +291,7 @@
    } ],
    "stats": {
       "high_level_stats": {
-         "fraction_machtes": 0.9565217391304348,
+         "fraction_matches": 0.9565217391304348,
          "matches": 22,
          "mismatches": 1
       },
@@ -301,62 +301,62 @@
       },
       "per_type_stats": {
          "ADDRESS_HOME_CITY": {
-            "fraction_machtes": 1.0,
+            "fraction_matches": 1.0,
             "matches": 2,
             "mismatches": 0
          },
          "ADDRESS_HOME_COUNTRY": {
-            "fraction_machtes": 1.0,
+            "fraction_matches": 1.0,
             "matches": 1,
             "mismatches": 0
          },
          "ADDRESS_HOME_LINE1": {
-            "fraction_machtes": 1.0,
+            "fraction_matches": 1.0,
             "matches": 2,
             "mismatches": 0
          },
          "ADDRESS_HOME_LINE2": {
-            "fraction_machtes": 1.0,
+            "fraction_matches": 1.0,
             "matches": 2,
             "mismatches": 0
          },
          "ADDRESS_HOME_STATE": {
-            "fraction_machtes": 1.0,
+            "fraction_matches": 1.0,
             "matches": 2,
             "mismatches": 0
          },
          "ADDRESS_HOME_ZIP": {
-            "fraction_machtes": 1.0,
+            "fraction_matches": 1.0,
             "matches": 2,
             "mismatches": 0
          },
          "CREDIT_CARD_NAME_FULL": {
-            "fraction_machtes": 1.0,
+            "fraction_matches": 1.0,
             "matches": 3,
             "mismatches": 0
          },
          "CREDIT_CARD_NUMBER": {
-            "fraction_machtes": 1.0,
+            "fraction_matches": 1.0,
             "matches": 2,
             "mismatches": 0
          },
          "CREDIT_CARD_VERIFICATION_CODE": {
-            "fraction_machtes": 1.0,
+            "fraction_matches": 1.0,
             "matches": 2,
             "mismatches": 0
          },
          "NAME_FIRST": {
-            "fraction_machtes": 1.0,
+            "fraction_matches": 1.0,
             "matches": 2,
             "mismatches": 0
          },
          "NAME_LAST": {
-            "fraction_machtes": 1.0,
+            "fraction_matches": 1.0,
             "matches": 2,
             "mismatches": 0
          },
          "PHONE_HOME_CITY_AND_NUMBER": {
-            "fraction_machtes": 0.0,
+            "fraction_matches": 0.0,
             "matches": 0,
             "mismatches": 1
          }

@@ -12,6 +12,7 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -32,18 +33,19 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.accessibility.AccessibilityEventCompat;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.customview.widget.ExploreByTouchHelper;
 
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
+import org.chromium.base.InputHintChecker;
 import org.chromium.base.ObserverList;
 import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -232,6 +234,9 @@ public class CompositorViewHolder extends FrameLayout
     // Permissions are requested on a drop event, and are released when another drag starts
     // (drag-started event) or when the current page navigates to a new URL or the tab changes.
     private DragAndDropPermissions mDragAndDropPermissions;
+    // The URI when a drop contains a single URI. If the tab changes and is loading this URI, we do
+    // not clear the permissions.
+    private Uri mDropUri;
 
     private final EventOffsetHandler mEventOffsetHandler =
             new EventOffsetHandler(
@@ -761,6 +766,9 @@ public class CompositorViewHolder extends FrameLayout
                 releaseDragAndDropPermissions();
             } else if (e.getAction() == DragEvent.ACTION_DROP) {
                 mDragAndDropPermissions = mActivity.requestDragAndDropPermissions(e);
+                if (e.getClipData() != null && e.getClipData().getItemCount() == 1) {
+                    mDropUri = e.getClipData().getItemAt(0).getUri();
+                }
             }
         }
         boolean ret = super.dispatchDragEvent(e);
@@ -771,6 +779,9 @@ public class CompositorViewHolder extends FrameLayout
     @Override
     public boolean dispatchTouchEvent(MotionEvent e) {
         assert e != null : "The motion event dispatched shouldn't be null!";
+        if (mNativeInitialized) {
+            InputHintChecker.onCompositorViewHolderTouchEvent();
+        }
         updateIsInGesture(e);
         for (TouchEventObserver o : mTouchEventObservers) {
             if (o.dispatchTouchEvent(e)) return true;
@@ -1410,19 +1421,24 @@ public class CompositorViewHolder extends FrameLayout
 
     /**
      * Sets the appropriate objects this class should represent.
-     * @param tabModelSelector        The {@link TabModelSelector} this View should hold and
-     *                                represent.
-     * @param tabCreatorManager       The {@link TabCreatorManager} for this view.
+     *
+     * @param tabModelSelector The {@link TabModelSelector} this View should hold and represent.
+     * @param tabCreatorManager The {@link TabCreatorManager} for this view.
+     * @param bottomControlsOffsetSupplier Supplier of the offset, relative to the bottom of the
+     *     viewport, of the bottom-anchored toolbar.
      */
     public void onFinishNativeInitialization(
-            TabModelSelector tabModelSelector, TabCreatorManager tabCreatorManager) {
+            TabModelSelector tabModelSelector,
+            TabCreatorManager tabCreatorManager,
+            Supplier<Integer> bottomControlsOffsetSupplier) {
         assert mLayoutManager != null;
         mLayoutManager.init(
                 tabModelSelector,
                 tabCreatorManager,
                 mControlContainer,
                 mCompositorView.getResourceManager().getDynamicResourceLoader(),
-                mTopUiThemeColorProvider);
+                mTopUiThemeColorProvider,
+                bottomControlsOffsetSupplier);
 
         mTabModelSelector = tabModelSelector;
         tabModelSelector.addObserver(
@@ -1568,7 +1584,12 @@ public class CompositorViewHolder extends FrameLayout
             mOnscreenContentProvider.onWebContentsChanged(getWebContents());
         }
 
-        releaseDragAndDropPermissions();
+        // Clear drop permissions when tab changes unless this is a new tab loading from the drop.
+        if (mDropUri == null
+                || tab == null
+                || !tab.getUrl().getSpec().equals(mDropUri.toString())) {
+            releaseDragAndDropPermissions();
+        }
     }
 
     private void updateViewStateListener(ContentView newContentView) {
@@ -1632,12 +1653,7 @@ public class CompositorViewHolder extends FrameLayout
 
     @Override
     public void invalidateAccessibilityProvider() {
-        if (mNodeProvider != null) {
-            mNodeProvider.sendEventForVirtualView(
-                    mNodeProvider.getAccessibilityFocusedVirtualViewId(),
-                    AccessibilityEventCompat.TYPE_VIEW_ACCESSIBILITY_FOCUS_CLEARED);
-            mNodeProvider.invalidateRoot();
-        }
+        if (mNodeProvider != null) mNodeProvider.invalidateRoot();
     }
 
     // ChromeAccessibilityUtil.Observer
@@ -1833,5 +1849,6 @@ public class CompositorViewHolder extends FrameLayout
             mDragAndDropPermissions.release();
             mDragAndDropPermissions = null;
         }
+        mDropUri = null;
     }
 }

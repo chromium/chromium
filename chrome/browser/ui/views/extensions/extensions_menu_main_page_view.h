@@ -29,33 +29,15 @@ class ExtensionsMenuHandler;
 class ToolbarActionsModel;
 class ExtensionMenuItemView;
 class ExtensionActionViewController;
-class MessageSection;
 
 // The main view of the extensions menu.
 class ExtensionsMenuMainPageView : public views::View {
   METADATA_HEADER(ExtensionsMenuMainPageView, views::View)
 
  public:
-  enum class MessageSectionState {
-    // Site is restricted to all extensions.
-    kRestrictedAccess,
-    // Site is restricted all non-enterprise extensions by policy.
-    kPolicyBlockedAccess,
-    // User can customize each extension's access to the site.
-    kUserCustomizedAccess,
-    // User can customize each extension's access to the site, but a page
-    // reload is required to reflect changes.
-    kUserCustomizedAccessReload,
-    // User blocked all extensions access to the site.
-    kUserBlockedAccess,
-    // User blocked all extensions access to the site, but a page
-    // reload is required to reflect changes.
-    kUserBlockedAccessReload,
-  };
-
   explicit ExtensionsMenuMainPageView(Browser* browser,
                                       ExtensionsMenuHandler* menu_handler);
-  ~ExtensionsMenuMainPageView() override = default;
+  ~ExtensionsMenuMainPageView() override;
   ExtensionsMenuMainPageView(const ExtensionsMenuMainPageView&) = delete;
   const ExtensionsMenuMainPageView& operator=(
       const ExtensionsMenuMainPageView&) = delete;
@@ -81,39 +63,44 @@ class ExtensionsMenuMainPageView : public views::View {
 
   // Updates the site settings views with the given parameters.
   void UpdateSiteSettings(const std::u16string& current_site,
-                          bool is_site_settings_toggle_visible,
-                          bool is_site_settings_toggle_on);
+                          int label_id,
+                          bool is_tooltip_visible,
+                          bool is_toggle_visible,
+                          bool is_toggle_on);
 
-  // Updates the message section given `state` and `has_enterprise_extensions`.
-  void UpdateMessageSection(MessageSectionState state,
-                            bool has_enterprise_extensions);
+  // Shows the reload section in the menu. Takes precedence over the requests
+  // section.
+  void ShowReloadSection();
 
-  // Returns the `message_section_` current state.
-  MessageSectionState GetMessageSectionState();
+  // Show the requests section in the menu if there are any items in
+  // `requests_entries_` and reload section is not visible.
+  void MaybeShowRequestsSection();
 
   // Adds or updates the extension entry in the `requests_access_section_` with
-  // the given information.
+  // the given information. Doesn't update the requests section view
+  // visibility.
   void AddOrUpdateExtensionRequestingAccess(const extensions::ExtensionId& id,
                                             const std::u16string& name,
                                             const ui::ImageModel& icon,
                                             int index);
 
   // Remove the entry in the `requests_access_section_` corresponding to `id`,
-  // if existent.
+  // if existent. Doesn't update the requests section view visibility.
   void RemoveExtensionRequestingAccess(const extensions::ExtensionId& id);
 
-  // Clears the entries in the `request_access_section_`, if existent.
+  // Clears the entries in the `request_access_section_`, if existent. Doesn't
+  // update the requests section view visibility.
   void ClearExtensionsRequestingAccess();
 
   // Accessors used by tests:
   // Returns the currently-showing menu items.
   const std::u16string& GetSiteSettingLabelForTesting() const;
+  const views::View* site_settings_tooltip() const;
   views::ToggleButton* GetSiteSettingsToggleForTesting() {
     return site_settings_toggle_;
   }
-  views::View* GetTextContainerForTesting();
-  views::View* GetReloadContainerForTesting();
-  views::View* GetRequestsAccessContainerForTesting();
+  const views::View* reload_section() const;
+  const views::View* requests_section() const;
   std::vector<extensions::ExtensionId>
   GetExtensionsRequestingAccessForTesting();
   views::View* GetExtensionRequestingAccessEntryForTesting(
@@ -122,17 +109,38 @@ class ExtensionsMenuMainPageView : public views::View {
  private:
   content::WebContents* GetActiveWebContents() const;
 
+  // Returns the request entry for `extension_id` if existent.
+  views::View* GetExtensionRequestEntry(
+      const extensions::ExtensionId& extension_id) const;
+
+  // Returns the site settings section builder, which contains information and
+  // access controls for the site.
+  [[nodiscard]] views::Builder<views::FlexLayoutView> CreateSiteSettingsBuilder(
+      gfx::Insets margins,
+      views::FlexSpecification,
+      ExtensionsMenuHandler* menu_handler);
+
   const raw_ptr<Browser> browser_;
   const raw_ptr<ExtensionsMenuHandler> menu_handler_;
 
-  // Site settings views.
+  // Site settings section.
   raw_ptr<views::Label> site_settings_label_;
+  raw_ptr<views::View> site_settings_tooltip_;
   raw_ptr<views::ToggleButton> site_settings_toggle_;
 
-  // Contents views.
-  raw_ptr<MessageSection> message_section_;
-  // The view containing the menu items. This is separated for easy insertion
-  // and iteration of menu items. The children are guaranteed to only be
+  // Reload section.
+  raw_ptr<views::View> reload_section_;
+
+  // Site access requests section.
+  raw_ptr<views::View> requests_section_;
+  // View that holds the requests entries in `requests_section_`.
+  raw_ptr<views::View> requests_entries_view_;
+  // A collection of all the requests entries in `requests_section_`. This is
+  // separated for easy insertion and removal of requests entries.
+  std::map<extensions::ExtensionId, raw_ptr<views::View, CtnExperimental>>
+      requests_entries_;
+
+  // Menu items section. The children are guaranteed to only be
   // ExtensionMenuItemViews.
   raw_ptr<views::View> menu_items_ = nullptr;
 };

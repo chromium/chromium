@@ -16,9 +16,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -27,6 +27,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_key.h"
@@ -2010,7 +2011,7 @@ TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, SetFullscreen) {
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest, SetInitialFocus) {
-  widget()->SetInitialFocus(ui::SHOW_STATE_INACTIVE);
+  widget()->SetInitialFocus(ui::mojom::WindowShowState::kInactive);
 }
 
 TEST_P(WidgetWithDestroyedNativeViewOrNativeWidgetTest,
@@ -2560,7 +2561,8 @@ TEST_F(WidgetObserverTest, ClosingOnHiddenParent) {
 // On desktop-Linux cheat and use non-desktop widgets. On X11, minimize is
 // asynchronous. Also (harder) showing a window doesn't activate it without
 // user interaction (or extra steps only done for interactive ui tests).
-// Without that, show_state remains in ui::SHOW_STATE_INACTIVE throughout.
+// Without that, show_state remains in ui::mojom::WindowShowState::kInactive
+// throughout.
 // TODO(tapted): Find a nice way to run this with desktop widgets on Linux.
 TEST_F(WidgetTest, GetWindowPlacement) {
 #else
@@ -2574,7 +2576,7 @@ TEST_F(DesktopWidgetTest, GetWindowPlacement) {
   widget->Show();
 
   // Start with something invalid to ensure it changes.
-  ui::WindowShowState show_state = ui::SHOW_STATE_END;
+  ui::mojom::WindowShowState show_state = ui::mojom::WindowShowState::kEnd;
   gfx::Rect restored_bounds;
 
   internal::NativeWidgetPrivate* native_widget =
@@ -2584,11 +2586,11 @@ TEST_F(DesktopWidgetTest, GetWindowPlacement) {
   EXPECT_EQ(expected_bounds, restored_bounds);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Non-desktop/Ash widgets start off in "default" until a Restore().
-  EXPECT_EQ(ui::SHOW_STATE_DEFAULT, show_state);
+  EXPECT_EQ(ui::mojom::WindowShowState::kDefault, show_state);
   widget->Restore();
   native_widget->GetWindowPlacement(&restored_bounds, &show_state);
 #endif
-  EXPECT_EQ(ui::SHOW_STATE_NORMAL, show_state);
+  EXPECT_EQ(ui::mojom::WindowShowState::kNormal, show_state);
 
   views::test::PropertyWaiter minimize_waiter(
       base::BindRepeating(&Widget::IsMinimized, base::Unretained(widget.get())),
@@ -2597,7 +2599,7 @@ TEST_F(DesktopWidgetTest, GetWindowPlacement) {
   EXPECT_TRUE(minimize_waiter.Wait());
 
   native_widget->GetWindowPlacement(&restored_bounds, &show_state);
-  EXPECT_EQ(ui::SHOW_STATE_MINIMIZED, show_state);
+  EXPECT_EQ(ui::mojom::WindowShowState::kMinimized, show_state);
   EXPECT_EQ(expected_bounds, restored_bounds);
 
   views::test::PropertyWaiter restore_waiter(
@@ -2607,13 +2609,13 @@ TEST_F(DesktopWidgetTest, GetWindowPlacement) {
   EXPECT_TRUE(restore_waiter.Wait());
 
   native_widget->GetWindowPlacement(&restored_bounds, &show_state);
-  EXPECT_EQ(ui::SHOW_STATE_NORMAL, show_state);
+  EXPECT_EQ(ui::mojom::WindowShowState::kNormal, show_state);
   EXPECT_EQ(expected_bounds, restored_bounds);
 
   expected_bounds = gfx::Rect(130, 140, 230, 250);
   widget->SetBounds(expected_bounds);
   native_widget->GetWindowPlacement(&restored_bounds, &show_state);
-  EXPECT_EQ(ui::SHOW_STATE_NORMAL, show_state);
+  EXPECT_EQ(ui::mojom::WindowShowState::kNormal, show_state);
   EXPECT_EQ(expected_bounds, restored_bounds);
 
   widget->SetFullscreen(true);
@@ -2623,15 +2625,15 @@ TEST_F(DesktopWidgetTest, GetWindowPlacement) {
   // Desktop Aura widgets on Windows currently don't update show_state when
   // going fullscreen, and report restored_bounds as the full screen size.
   // See http://crbug.com/475813.
-  EXPECT_EQ(ui::SHOW_STATE_NORMAL, show_state);
+  EXPECT_EQ(ui::mojom::WindowShowState::kNormal, show_state);
 #else
-  EXPECT_EQ(ui::SHOW_STATE_FULLSCREEN, show_state);
+  EXPECT_EQ(ui::mojom::WindowShowState::kFullscreen, show_state);
   EXPECT_EQ(expected_bounds, restored_bounds);
 #endif
 
   widget->SetFullscreen(false);
   native_widget->GetWindowPlacement(&restored_bounds, &show_state);
-  EXPECT_EQ(ui::SHOW_STATE_NORMAL, show_state);
+  EXPECT_EQ(ui::mojom::WindowShowState::kNormal, show_state);
   EXPECT_EQ(expected_bounds, restored_bounds);
 }
 
@@ -3957,7 +3959,9 @@ class AnimationEndObserver : public ui::ImplicitAnimationObserver {
 // An observer that registers the bounds of a widget on destruction.
 class WidgetBoundsObserver : public WidgetObserver {
  public:
-  WidgetBoundsObserver() = default;
+  explicit WidgetBoundsObserver(Widget* widget) {
+    widget_observation_.Observe(widget);
+  }
 
   WidgetBoundsObserver(const WidgetBoundsObserver&) = delete;
   WidgetBoundsObserver& operator=(const WidgetBoundsObserver&) = delete;
@@ -3971,10 +3975,12 @@ class WidgetBoundsObserver : public WidgetObserver {
     EXPECT_TRUE(widget->GetNativeWindow());
     EXPECT_TRUE(Widget::GetWidgetForNativeWindow(widget->GetNativeWindow()));
     bounds_ = widget->GetWindowBoundsInScreen();
+    widget_observation_.Reset();
   }
 
  private:
   gfx::Rect bounds_;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 // Verifies Close() results in destroying.
@@ -4008,7 +4014,7 @@ TEST_F(WidgetTest, CloseWidgetWhileAnimating) {
   std::unique_ptr<Widget> widget =
       CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   AnimationEndObserver animation_observer;
-  WidgetBoundsObserver widget_observer;
+  WidgetBoundsObserver widget_observer(widget.get());
   gfx::Rect bounds(100, 100, 50, 50);
   {
     // Normal animations for tests have ZERO_DURATION, make sure we are actually
@@ -4018,7 +4024,6 @@ TEST_F(WidgetTest, CloseWidgetWhileAnimating) {
     ui::ScopedLayerAnimationSettings animation_settings(
         widget->GetLayer()->GetAnimator());
     animation_settings.AddObserver(&animation_observer);
-    widget->AddObserver(&widget_observer);
     widget->Show();
 
     // Animate the bounds change.
@@ -4054,8 +4059,7 @@ TEST_F(DesktopWidgetTest, ValidDuringOnNativeWidgetDestroyingFromCloseNow) {
   widget->Show();
   gfx::Rect screen_rect(50, 50, 100, 100);
   widget->SetBounds(screen_rect);
-  WidgetBoundsObserver observer;
-  widget->AddObserver(&observer);
+  WidgetBoundsObserver observer(widget);
   widget->CloseNow();
   EXPECT_EQ(screen_rect, observer.bounds());
 }
@@ -4067,15 +4071,12 @@ TEST_F(DesktopWidgetTest, ValidDuringOnNativeWidgetDestroyingFromClose) {
   widget->Show();
   gfx::Rect screen_rect(50, 50, 100, 100);
   widget->SetBounds(screen_rect);
-  WidgetBoundsObserver observer;
-  widget->AddObserver(&observer);
+  WidgetBoundsObserver observer(widget);
   widget->Close();
   EXPECT_EQ(gfx::Rect(), observer.bounds());
   base::RunLoop().RunUntilIdle();
 // Broken on Linux. See http://crbug.com/515379.
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_LINUX)
   EXPECT_EQ(screen_rect, observer.bounds());
 #endif
 }
@@ -4947,9 +4948,8 @@ TEST_F(DesktopWidgetTest, FullscreenStatePropagated_DesktopWidget) {
 // Used to delete the widget when the supplied bounds changes.
 class DestroyingWidgetBoundsObserver : public WidgetObserver {
  public:
-  explicit DestroyingWidgetBoundsObserver(std::unique_ptr<Widget> widget)
-      : widget_(std::move(widget)) {
-    widget_->AddObserver(this);
+  explicit DestroyingWidgetBoundsObserver(Widget* widget) {
+    widget_observation_.Observe(widget);
   }
 
   // There are no assertions here as not all platforms call
@@ -4959,12 +4959,11 @@ class DestroyingWidgetBoundsObserver : public WidgetObserver {
   // WidgetObserver:
   void OnWidgetBoundsChanged(Widget* widget,
                              const gfx::Rect& new_bounds) override {
-    widget_->RemoveObserver(this);
-    widget_.reset();
+    widget_observation_.Reset();
   }
 
  private:
-  std::unique_ptr<Widget> widget_;
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 // Deletes a Widget when the bounds change as part of toggling fullscreen.
@@ -4984,7 +4983,7 @@ TEST_F(DesktopWidgetTest, MAYBE_DeleteInSetFullscreen) {
   params.ownership = Widget::InitParams::CLIENT_OWNS_WIDGET;
   widget->Init(std::move(params));
   Widget* w = widget.get();
-  DestroyingWidgetBoundsObserver destroyer(std::move(widget));
+  DestroyingWidgetBoundsObserver destroyer(w);
   w->SetFullscreen(true);
 }
 
@@ -5066,14 +5065,22 @@ namespace {
 // OnWindowDestroying.
 class IsActiveFromDestroyObserver : public WidgetObserver {
  public:
-  IsActiveFromDestroyObserver() = default;
+  explicit IsActiveFromDestroyObserver(Widget* widget) {
+    widget_observation_.Observe(widget);
+  }
 
   IsActiveFromDestroyObserver(const IsActiveFromDestroyObserver&) = delete;
   IsActiveFromDestroyObserver& operator=(const IsActiveFromDestroyObserver&) =
       delete;
 
   ~IsActiveFromDestroyObserver() override = default;
-  void OnWidgetDestroying(Widget* widget) override { widget->IsActive(); }
+  void OnWidgetDestroying(Widget* widget) override {
+    widget->IsActive();
+    widget_observation_.Reset();
+  }
+
+ private:
+  base::ScopedObservation<Widget, WidgetObserver> widget_observation_{this};
 };
 
 }  // namespace
@@ -5103,14 +5110,13 @@ class ChildDesktopWidgetTest : public DesktopWidgetTest {
 // WidgetObserver::OnWidgetDestroying() in a child widget doesn't crash.
 TEST_F(ChildDesktopWidgetTest, IsActiveFromDestroy) {
   // Create two widgets, one a child of the other.
-  IsActiveFromDestroyObserver observer;
   std::unique_ptr<Widget> parent_widget =
       CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET);
   parent_widget->Show();
 
   std::unique_ptr<Widget> child_widget =
       CreateChildWidget(parent_widget->GetNativeWindow());
-  child_widget->AddObserver(&observer);
+  IsActiveFromDestroyObserver observer(child_widget.get());
   child_widget->Show();
 
   parent_widget->CloseNow();
@@ -5663,7 +5669,7 @@ class TestSaveWindowPlacementWidgetDelegate : public TestDesktopWidgetDelegate {
     return should_save_window_placement_;
   }
   void SaveWindowPlacement(const gfx::Rect& bounds,
-                           ui::WindowShowState show_state) override {
+                           ui::mojom::WindowShowState show_state) override {
     save_window_placement_count_++;
   }
 
@@ -5724,6 +5730,71 @@ TEST_F(WidgetTest, NonClientViewAccessibilityProperties) {
   non_client_view->frame_view()->GetViewAccessibility().GetAccessibleNodeData(
       &node_data);
   EXPECT_EQ(node_data.role, ax::mojom::Role::kClient);
+}
+
+class WidgetChildObserver : public WidgetObserver {
+ public:
+  explicit WidgetChildObserver(Widget* widget) { observation_.Observe(widget); }
+
+  const Widget* child_widget() const { return child_widget_; }
+
+ private:
+  // WidgetObserver:
+  void OnWidgetChildAdded(Widget* widget, Widget* child_widget) override {
+    child_widget_ = child_widget;
+    WidgetObserver::OnWidgetChildAdded(widget, child_widget);
+  }
+
+  void OnWidgetChildRemoved(Widget* widget, Widget* child_widget) override {
+    EXPECT_EQ(widget, observation_.GetSource());
+    EXPECT_EQ(child_widget, child_widget_);
+    child_widget_ = nullptr;
+    WidgetObserver::OnWidgetChildRemoved(widget, child_widget);
+  }
+
+  base::ScopedObservation<Widget, WidgetObserver> observation_{this};
+  raw_ptr<Widget> child_widget_ = nullptr;
+};
+
+TEST_F(WidgetTest, ChildWidgetNotifiesObserverWhenInitializedAndDestroyed) {
+  // Adding a child widget should call back the observer.
+  std::unique_ptr<Widget> widget = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  WidgetChildObserver observer(widget.get());
+  std::unique_ptr<Widget> child_widget =
+      base::WrapUnique(CreateChildPlatformWidget(
+          widget->GetNativeView(), Widget::InitParams::CLIENT_OWNS_WIDGET));
+  EXPECT_EQ(observer.child_widget(), child_widget.get());
+
+  // Destroy the child and verify that the observer was notified.
+  child_widget.reset();
+  EXPECT_EQ(observer.child_widget(), nullptr);
+}
+
+TEST_F(WidgetTest, ChildWidgetNotifiesObserverWhenReparented) {
+  // Verify that reparenting a child widget notifies both the outgoing and
+  // incoming parent widgets.
+  std::unique_ptr<Widget> widget_1 = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  WidgetChildObserver observer_1(widget_1.get());
+
+  std::unique_ptr<Widget> widget_2 = base::WrapUnique(
+      CreateTopLevelPlatformWidget(Widget::InitParams::CLIENT_OWNS_WIDGET));
+  WidgetChildObserver observer_2(widget_2.get());
+
+  // Create a child widget of `widget_1`.
+  std::unique_ptr<Widget> child_widget =
+      base::WrapUnique(CreateChildPlatformWidget(
+          widget_1->GetNativeView(), Widget::InitParams::CLIENT_OWNS_WIDGET));
+  EXPECT_EQ(observer_1.child_widget(), child_widget.get());
+
+  Widget::ReparentNativeView(child_widget->GetNativeView(),
+                             widget_2->GetNativeView());
+  EXPECT_EQ(observer_1.child_widget(), nullptr);
+  EXPECT_EQ(observer_2.child_widget(), child_widget.get());
+
+  child_widget.reset();
+  EXPECT_EQ(observer_2.child_widget(), nullptr);
 }
 
 // Parameterized test that verifies the behavior of SetAspectRatio with respect

@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalán</translation>
 <translation id="1168100932582989117">Servidores de nomes de Google</translation>
+<translation id="1170788066030116158">Data en que se tomou</translation>
 <translation id="1172970565351728681">Tempo restante aproximado: <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Cambiar o nome</translation>
 <translation id="1173916544412572294">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, batería do teléfono ao <ph name="BATTERY_STATUS" /> %, detalles</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Certificado de autenticación rexeitado de forma remota</translation>
 <translation id="4394214039309501350">Ligazón externa</translation>
 <translation id="4394980935660306080">Máis cedo esta semana</translation>
+<translation id="4397435965699247285">OneDrive non está dispoñible sen conexión</translation>
 <translation id="4398096759193130964">Restaura os elementos ou arrástraos a un cartafol novo, fóra da papeleira</translation>
 <translation id="4401287888955153199">Extraer todo</translation>
 <translation id="4410695710508688828">Produciuse un erro durante a extracción. <ph name="ERROR_MESSAGE" /></translation>
@@ -842,7 +844,7 @@
 <translation id="7495372004724182530">Malabar (fonético)</translation>
 <translation id="7505167922889582512">Mostrar ficheiros ocultos</translation>
 <translation id="7514365320538308">Descargar</translation>
-<translation id="751507702149411736">Bielorruso</translation>
+<translation id="751507702149411736">Belaruso</translation>
 <translation id="7521790570754130607">É necesario indicar un PIN para utilizar os datos móbiles</translation>
 <translation id="7532029025027028521">Persa (transliteración)</translation>
 <translation id="7544830582642184299">Concede permiso ás aplicacións de Linux para acceder aos ficheiros de Google Drive. Os cambios sincronizaranse cos demais dispositivos.</translation>

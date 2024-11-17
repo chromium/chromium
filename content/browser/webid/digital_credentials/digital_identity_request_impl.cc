@@ -5,6 +5,7 @@
 #include "content/browser/webid/digital_credentials/digital_identity_request_impl.h"
 
 #include <memory>
+#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
@@ -163,34 +164,37 @@ bool CanRequestCredentialBypassInterstitialForPreviewProtocol(
 
 // Returns whether an interstitial should be shown based on the assertions being
 // requested.
-bool CanRequestCredentialBypassInterstitial(Protocol protocol,
-                                            const base::Value& request) {
-  if (!request.is_dict()) {
+bool CanRequestCredentialBypassInterstitial(
+    const std::optional<std::string>& protocol,
+    const base::Value& request) {
+  if (!request.is_dict() || !protocol.has_value()) {
     return false;
   }
 
-  switch (protocol) {
-    case Protocol::kUnknown:
-      return false;
-    case Protocol::kOpenid4vp:
-      return CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(
-          request);
-    case Protocol::kPreview:
-      return CanRequestCredentialBypassInterstitialForPreviewProtocol(request);
+  if (*protocol == kOpenid4vpProtocol) {
+    return CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(request);
   }
+  return *protocol == kPreviewProtocol &&
+         CanRequestCredentialBypassInterstitialForPreviewProtocol(request);
 }
 
-Protocol GetProtocol(const std::optional<std::string>& protocol_name) {
-  if (!protocol_name.has_value()) {
-    return Protocol::kUnknown;
+blink::mojom::RequestDigitalIdentityStatus ToRequestDigitalIdentityStatus(
+    RequestStatusForMetrics status_for_metrics) {
+  switch (status_for_metrics) {
+    case RequestStatusForMetrics::kSuccess:
+      return blink::mojom::RequestDigitalIdentityStatus::kSuccess;
+    case RequestStatusForMetrics::kErrorAborted:
+      return blink::mojom::RequestDigitalIdentityStatus::kErrorCanceled;
+    case RequestStatusForMetrics::kErrorNoProviders:
+      return blink::mojom::RequestDigitalIdentityStatus::kErrorNoProviders;
+    case RequestStatusForMetrics::kErrorNoTransientUserActivation:
+      return blink::mojom::RequestDigitalIdentityStatus::
+          kErrorNoTransientUserActivation;
+    case RequestStatusForMetrics::kErrorNoCredential:
+    case RequestStatusForMetrics::kErrorUserDeclined:
+    case RequestStatusForMetrics::kErrorOther:
+      return blink::mojom::RequestDigitalIdentityStatus::kError;
   }
-  if (*protocol_name == kOpenid4vpProtocol) {
-    return Protocol::kOpenid4vp;
-  }
-  if (*protocol_name == kPreviewProtocol) {
-    return Protocol::kPreview;
-  }
-  return Protocol::kUnknown;
 }
 
 }  // anonymous namespace
@@ -210,7 +214,7 @@ std::optional<InterstitialType>
 DigitalIdentityRequestImpl::ComputeInterstitialType(
     const url::Origin& rp_origin,
     const DigitalIdentityProvider* provider,
-    Protocol protocol,
+    const std::optional<std::string>& protocol,
     const data_decoder::DataDecoder::ValueOrError& request) {
   std::string dialog_param_value = base::GetFieldTrialParamValueByFeature(
       features::kWebIdentityDigitalCredentials, kDigitalIdentityDialogParam);
@@ -244,14 +248,23 @@ DigitalIdentityRequestImpl::DigitalIdentityRequestImpl(
 DigitalIdentityRequestImpl::~DigitalIdentityRequestImpl() = default;
 
 void DigitalIdentityRequestImpl::CompleteRequest(
+    std::optional<std::string> protocol,
     const base::expected<std::string, RequestStatusForMetrics>& response) {
-  CompleteRequestWithStatus(response.has_value()
-                                ? RequestDigitalIdentityStatus::kSuccess
-                                : RequestDigitalIdentityStatus::kError,
-                            response);
+  CompleteRequestWithStatus(
+      std::move(protocol),
+      response.has_value() ? RequestDigitalIdentityStatus::kSuccess
+                           : ToRequestDigitalIdentityStatus(response.error()),
+      response);
+}
+
+void DigitalIdentityRequestImpl::CompleteRequestWithError(
+    DigitalIdentityProvider::RequestStatusForMetrics status_for_metrics) {
+  CompleteRequest(/*protocol=*/std::nullopt,
+                  base::unexpected(status_for_metrics));
 }
 
 void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
+    std::optional<std::string> protocol,
     RequestDigitalIdentityStatus status,
     const base::expected<std::string, RequestStatusForMetrics>& response) {
   // Invalidate pending requests in case that the request gets aborted.
@@ -265,7 +278,8 @@ void DigitalIdentityRequestImpl::CompleteRequestWithStatus(
                                     ? RequestStatusForMetrics::kSuccess
                                     : response.error());
 
-  std::move(callback_).Run(status, base::OptionalFromExpected(response));
+  std::move(callback_).Run(status, std::move(protocol),
+                           base::OptionalFromExpected(response));
 }
 
 std::optional<base::Value> BuildRequest(
@@ -288,10 +302,12 @@ std::optional<base::Value> BuildRequest(
 }
 
 void DigitalIdentityRequestImpl::Request(
-    blink::mojom::DigitalCredentialProviderPtr digital_credential_provider,
+    std::vector<blink::mojom::DigitalCredentialProviderPtr>
+        digital_credential_providers,
     RequestCallback callback) {
   if (!IsWebIdentityDigitalCredentialsEnabled()) {
-    std::move(callback).Run(RequestDigitalIdentityStatus::kError, std::nullopt);
+    std::move(callback).Run(RequestDigitalIdentityStatus::kError,
+                            /*protocol=*/std::nullopt, /*token=*/std::nullopt);
     return;
   }
 
@@ -305,39 +321,55 @@ void DigitalIdentityRequestImpl::Request(
   if (callback_) {
     // Only allow one in-flight wallet request.
     std::move(callback).Run(RequestDigitalIdentityStatus::kErrorTooManyRequests,
-                            std::nullopt);
+                            /*protocol=*/std::nullopt, /*token=*/std::nullopt);
     return;
   }
 
   callback_ = std::move(callback);
 
   if (!render_frame_host().HasTransientUserActivation()) {
-    CompleteRequest(base::unexpected(RequestStatusForMetrics::kErrorOther));
+    CompleteRequestWithError(
+        RequestStatusForMetrics::kErrorNoTransientUserActivation);
     return;
   }
+
+  if (digital_credential_providers.empty()) {
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorNoProviders);
+    return;
+  }
+
+  // TODO(https://crbug.com/40257092): make sure the Digital Credentials
+  // API works well with multiple providers.
+  if (digital_credential_providers.size() > 1u) {
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
+    return;
+  }
+
+  blink::mojom::DigitalCredentialProviderPtr digital_credential_provider =
+      std::move(digital_credential_providers[0]);
 
   RenderFrameHost* render_frame_host_ptr = &render_frame_host();
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(render_frame_host_ptr);
   if (!web_contents) {
-    CompleteRequest(base::unexpected(RequestStatusForMetrics::kErrorOther));
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
     return;
   }
 
-  Protocol protocol = GetProtocol(digital_credential_provider->protocol);
+  std::optional<std::string> protocol = digital_credential_provider->protocol;
   std::optional<std::string> request_json_string =
       digital_credential_provider->request;
   std::optional<base::Value> request_to_send =
       BuildRequest(std::move(digital_credential_provider));
   if (!request_json_string || !request_to_send) {
-    CompleteRequest(base::unexpected(RequestStatusForMetrics::kErrorOther));
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
     return;
   }
 
   data_decoder::DataDecoder::ParseJsonIsolated(
       *request_json_string,
       base::BindOnce(&DigitalIdentityRequestImpl::OnRequestJsonParsed,
-                     weak_ptr_factory_.GetWeakPtr(), protocol,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
                      std::move(*request_to_send)));
 }
 
@@ -353,12 +385,12 @@ void DigitalIdentityRequestImpl::Abort() {
   }
 
   CompleteRequestWithStatus(
-      RequestDigitalIdentityStatus::kErrorCanceled,
+      /*protocol=*/std::nullopt, RequestDigitalIdentityStatus::kErrorCanceled,
       base::unexpected(RequestStatusForMetrics::kErrorAborted));
 }
 
 void DigitalIdentityRequestImpl::OnRequestJsonParsed(
-    Protocol protocol,
+    std::optional<std::string> protocol,
     base::Value request_to_send,
     data_decoder::DataDecoder::ValueOrError parsed_result) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -367,21 +399,22 @@ void DigitalIdentityRequestImpl::OnRequestJsonParsed(
     GetUIThreadTaskRunner()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
-                       weak_ptr_factory_.GetWeakPtr(), "fake_test_token"),
+                       weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
+                       "fake_test_token"),
         base::Milliseconds(1));
     return;
   }
 
   provider_ = GetContentClient()->browser()->CreateDigitalIdentityProvider();
   if (!provider_) {
-    CompleteRequest(base::unexpected(RequestStatusForMetrics::kErrorOther));
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
     return;
   }
 
   if (!render_frame_host().IsActive() ||
       render_frame_host().GetVisibilityState() !=
           content::PageVisibilityState::kVisible) {
-    CompleteRequest(base::unexpected(RequestStatusForMetrics::kErrorOther));
+    CompleteRequestWithError(RequestStatusForMetrics::kErrorOther);
     return;
   }
 
@@ -390,7 +423,7 @@ void DigitalIdentityRequestImpl::OnRequestJsonParsed(
       provider_.get(), protocol, parsed_result);
 
   if (!interstitial_type) {
-    OnInterstitialDone(std::move(request_to_send),
+    OnInterstitialDone(std::move(protocol), std::move(request_to_send),
                        RequestStatusForMetrics::kSuccess);
     return;
   }
@@ -400,15 +433,16 @@ void DigitalIdentityRequestImpl::OnRequestJsonParsed(
           *WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
           *interstitial_type,
           base::BindOnce(&DigitalIdentityRequestImpl::OnInterstitialDone,
-                         weak_ptr_factory_.GetWeakPtr(),
+                         weak_ptr_factory_.GetWeakPtr(), std::move(protocol),
                          std::move(request_to_send)));
 }
 
 void DigitalIdentityRequestImpl::OnInterstitialDone(
+    std::optional<std::string> protocol,
     base::Value request_to_send,
     RequestStatusForMetrics status_after_interstitial) {
   if (status_after_interstitial != RequestStatusForMetrics::kSuccess) {
-    CompleteRequest(base::unexpected(status_after_interstitial));
+    CompleteRequestWithError(status_after_interstitial);
     return;
   }
 
@@ -416,7 +450,7 @@ void DigitalIdentityRequestImpl::OnInterstitialDone(
       WebContents::FromRenderFrameHost(&render_frame_host()), origin(),
       std::move(request_to_send),
       base::BindOnce(&DigitalIdentityRequestImpl::CompleteRequest,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(protocol)));
 }
 
 }  // namespace content

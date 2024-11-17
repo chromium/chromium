@@ -89,12 +89,14 @@ class Bundle(object):
 
   @staticmethod
   def Kind(platform, extension):
-    if platform == 'iphonesimulator' or platform == 'iphoneos':
+    if platform in ('iphoneos', 'iphonesimulator'):
       return 'ios'
     if platform == 'macosx':
       if extension == '.framework':
         return 'mac_framework'
       return 'mac'
+    if platform in ('watchos', 'watchsimulator'):
+      return 'watchos'
     raise ValueError('unknown bundle type %s for %s' % (extension, platform))
 
   @property
@@ -568,7 +570,7 @@ class CodeSignBundleAction(Action):
       provisioning_profile = FindProvisioningProfile(
           args.mobileprovision_files, bundle.identifier,
           provisioning_profile_required)
-      if provisioning_profile and args.platform != 'iphonesimulator':
+      if provisioning_profile and not args.platform.endswith('simulator'):
         provisioning_profile.Install(embedded_provisioning_profile)
 
         if args.entitlements_path is not None:

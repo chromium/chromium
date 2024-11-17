@@ -28,11 +28,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/animation/css/css_animations.h"
 
 #include <algorithm>
@@ -202,7 +197,8 @@ std::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
   if (animation) {
     // A cancelled CSS animation does not become active again due to an
     // animation update.
-    if (animation->CalculateAnimationPlayState() == Animation::kIdle) {
+    if (animation->CalculateAnimationPlayState() ==
+        V8AnimationPlayState::Enum::kIdle) {
       return std::nullopt;
     }
 
@@ -283,7 +279,8 @@ std::optional<AnimationTimeDelta> CSSAnimationProxy::CalculateInheritedTime(
     // issue is resolved.
     if (previous_timeline && previous_timeline->IsMonotonicallyIncreasing() &&
         !is_paused_ && animation->StartTimeInternal() &&
-        animation->CalculateAnimationPlayState() == Animation::kRunning) {
+        animation->CalculateAnimationPlayState() ==
+            V8AnimationPlayState::Enum::kRunning) {
       return std::nullopt;
     }
     // A new animation with a null timeline will be stuck in the play or pause
@@ -907,8 +904,7 @@ ScrollTimeline::ScrollAxis ComputeAxis(TimelineAxis axis) {
       return ScrollTimeline::ScrollAxis::kY;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return ScrollTimeline::ScrollAxis::kBlock;
+  NOTREACHED();
 }
 
 // The CSSScrollTimelineOptions and CSSViewTimelineOptions structs exist
@@ -1393,6 +1389,8 @@ ScrollTimeline* ComputeScrollFunctionTimeline(
     const StyleTimeline::ScrollData& scroll_data,
     AnimationTimeline* existing_timeline) {
   Document& document = element->GetDocument();
+  UseCounter::Count(element->GetDocument(),
+                    WebFeature::kScrollFunctionTimeline);
   CSSScrollTimelineOptions options(document, scroll_data.GetScroller(),
                                    /* reference_element */ element,
                                    scroll_data.GetAxis());
@@ -1410,6 +1408,7 @@ AnimationTimeline* ComputeViewFunctionTimeline(
     Element* element,
     const StyleTimeline::ViewData& view_data,
     AnimationTimeline* existing_timeline) {
+  UseCounter::Count(element->GetDocument(), WebFeature::kViewFunctionTimeline);
   TimelineAxis axis = view_data.GetAxis();
   const TimelineInset& inset = view_data.GetInset();
   CSSViewTimelineOptions options(element, axis, inset);
@@ -1712,33 +1711,35 @@ void CSSAnimations::CalculateAnimationUpdate(
         // play state and that the change is not blocked by a sticky state.
         bool toggle_pause_state = false;
         bool will_be_playing = false;
-        const Animation::AnimationPlayState play_state =
+        const V8AnimationPlayState::Enum play_state =
             animation->CalculateAnimationPlayState();
         if (is_paused != was_paused && !animation->GetIgnoreCSSPlayState()) {
           switch (play_state) {
-            case Animation::kIdle:
+            case V8AnimationPlayState::Enum::kIdle:
               break;
 
-            case Animation::kPaused:
+            case V8AnimationPlayState::Enum::kPaused:
               toggle_pause_state = !is_paused;
               will_be_playing = !is_paused;
               break;
 
-            case Animation::kRunning:
-            case Animation::kFinished:
+            case V8AnimationPlayState::Enum::kRunning:
+            case V8AnimationPlayState::Enum::kFinished:
               toggle_pause_state = is_paused;
               will_be_playing = !is_paused;
               break;
 
             default:
               // kUnset and kPending.
-              NOTREACHED_IN_MIGRATION();
+              NOTREACHED();
           }
         } else if (!animation->GetIgnoreCSSPlayState()) {
-          will_be_playing = !is_paused && play_state != Animation::kIdle;
+          will_be_playing =
+              !is_paused && play_state != V8AnimationPlayState::Enum::kIdle;
         } else {
-          will_be_playing = (play_state == Animation::kRunning) ||
-                            (play_state == Animation::kFinished);
+          will_be_playing =
+              (play_state == V8AnimationPlayState::Enum::kRunning) ||
+              (play_state == V8AnimationPlayState::Enum::kFinished);
         }
 
         AnimationTimeline* timeline = existing_animation->Timeline();

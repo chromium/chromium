@@ -37,11 +37,15 @@
 #include "media/video/mock_video_encode_accelerator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/platform/testing/video_frame_utils.h"
+#include "third_party/blink/renderer/platform/webrtc/testing/mock_webrtc_video_frame_adapter_shared_resources.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/webrtc/api/video/i420_buffer.h"
+#include "third_party/webrtc/api/video/video_frame_buffer.h"
 #include "third_party/webrtc/api/video_codecs/video_encoder.h"
+#include "third_party/webrtc/common_video/include/video_frame_buffer.h"
 #include "third_party/webrtc/modules/video_coding/include/video_codec_interface.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 #include "third_party/webrtc/rtc_base/time_utils.h"
@@ -68,6 +72,7 @@ using ::testing::ValuesIn;
 using ::testing::WithArgs;
 
 using SpatialLayer = media::VideoEncodeAccelerator::Config::SpatialLayer;
+using Type = webrtc::VideoFrameBuffer::Type;
 
 namespace blink {
 
@@ -86,6 +91,7 @@ const uint16_t kStartBitrate = 100;
 // Less than 360p should result in SW fallback.
 const uint16_t kSoftwareFallbackInputFrameWidth = 479;
 const uint16_t kSoftwareFallbackInputFrameHeight = 359;
+const uint16_t kSoftwareFallbackInputFrameHeightForAV1 = 269;
 #endif
 
 constexpr size_t kDefaultEncodedPayloadSize = 100;
@@ -113,6 +119,47 @@ class EncodedImageCallbackWrapper : public webrtc::EncodedImageCallback {
 
  private:
   EncodedCallback encoded_callback_;
+};
+
+class FakeNativeBufferI420 : public blink::WebRtcVideoFrameAdapter {
+ public:
+  FakeNativeBufferI420(int width, int height, bool allow_to_i420)
+      : blink::WebRtcVideoFrameAdapter(
+            media::VideoFrame::CreateBlackFrame(gfx::Size(480, 360))),
+        width_(width),
+        height_(height),
+        allow_to_i420_(allow_to_i420) {}
+
+  Type type() const override { return Type::kNative; }
+  int width() const override { return width_; }
+  int height() const override { return height_; }
+
+  rtc::scoped_refptr<webrtc::I420BufferInterface> ToI420() override {
+    if (allow_to_i420_) {
+      return webrtc::I420Buffer::Create(width_, height_);
+    } else {
+      return nullptr;
+    }
+  }
+
+  scoped_refptr<media::VideoFrame> getMediaVideoFrame() const override {
+    const gfx::Size kSize360p(480, 360);
+    const gfx::Rect kRect360p(0, 0, 480, 360);
+
+    // The strictness of the mock ensures zero copy.
+    auto resources =
+        base::MakeRefCounted<testing::StrictMock<MockSharedResources>>();
+
+    return CreateTestFrame(kSize360p, kRect360p, kSize360p,
+                           media::VideoFrame::STORAGE_OWNED_MEMORY,
+                           media::VideoPixelFormat::PIXEL_FORMAT_NV12,
+                           base::TimeDelta());
+  }
+
+ private:
+  const int width_;
+  const int height_;
+  const bool allow_to_i420_;
 };
 
 class RTCVideoEncoderWrapper : public webrtc::VideoEncoder {
@@ -390,6 +437,9 @@ class RTCVideoEncoderTest {
         media_profile = media::HEVCPROFILE_MAIN;
         break;
 #endif
+      case webrtc::kVideoCodecAV1:
+        media_profile = media::AV1PROFILE_PROFILE_MAIN;
+        break;
       default:
         ADD_FAILURE() << "Unexpected codec type: " << codec_type;
         media_profile = media::VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -466,8 +516,24 @@ class RTCVideoEncoderTest {
           sl.active = true;
         }
       } break;
+      case webrtc::kVideoCodecAV1: {
+        num_spatial_layers_ = num_spatial_layers;
+        for (size_t sid = 0; sid < num_spatial_layers_; ++sid) {
+          const int denom = 1 << (num_spatial_layers_ - (sid + 1));
+          webrtc::SpatialLayer& sl = codec.spatialLayers[sid];
+          sl.width = kInputFrameWidth / denom;
+          sl.height = kInputFrameHeight / denom;
+          sl.maxFramerate = 24;
+          sl.numberOfTemporalLayers = 1;
+          sl.targetBitrate = kStartBitrate / denom;
+          sl.maxBitrate = sl.targetBitrate / denom;
+          sl.minBitrate = sl.targetBitrate / denom;
+          sl.qpMax = 30;
+          sl.active = true;
+        }
+      } break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     return codec;
   }
@@ -507,7 +573,7 @@ class RTCVideoEncoderTest {
         }
       } break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     return codec;
   }
@@ -629,6 +695,56 @@ class RTCVideoEncoderTest {
     return_svc_layer_frame_times_ += 1;
   }
 
+  void ReturnSVCLayerFrameWithInvalidGenericMetadata(
+      scoped_refptr<media::VideoFrame> frame,
+      bool force_keyframe) {
+    const size_t frame_num = return_svc_layer_frame_times_;
+    CHECK(0 <= frame_num && frame_num <= 4);
+    for (size_t sid = 0; sid < num_spatial_layers_; ++sid) {
+      // Assume the number of TLs is three. expected TL structure is below.
+      // TL2:      [#1]     /-[#3]
+      // TL1:     /_____[#2]
+      // TL0: [#0]-----------------[#4]
+      media::SVCGenericMetadata generic;
+      generic.follow_svc_spec = false;
+      switch (frame_num) {
+        case 0:
+          generic.temporal_idx = 0;
+          generic.reference_flags = 0b00000000;
+          generic.refresh_flags = 0b11111111;
+          break;
+        case 1:
+          generic.temporal_idx = 2;
+          generic.reference_flags = 0b00000001;
+          generic.refresh_flags = 0b00000100;
+          break;
+        case 2:
+          generic.temporal_idx = 1;
+          generic.reference_flags = 0b00000001;
+          generic.refresh_flags = 0b00000010;
+          break;
+        case 3:
+          // Invalid reference_flags with refs a T2 frame.
+          generic.temporal_idx = 2;
+          generic.reference_flags = 0b00000110;
+          generic.refresh_flags = 0b00000000;
+          break;
+        case 4:
+          // Invalid refreshed encode buffer slot index.
+          generic.temporal_idx = 0;
+          generic.reference_flags = 0b00000001;
+          generic.refresh_flags = 0b111111111;
+          break;
+      }
+      media::BitstreamBufferMetadata metadata(
+          100u /* payload_size_bytes */, force_keyframe, frame->timestamp());
+      metadata.key_frame = frame_num == 0 && sid == 0;
+      metadata.svc_generic = generic;
+      client_->BitstreamBufferReady(sid, metadata);
+    }
+    return_svc_layer_frame_times_ += 1;
+  }
+
   void ResetSVCLayerFrameTimes() { return_svc_layer_frame_times_ = 0; }
 
   void VerifyTimestamp(uint32_t rtp_timestamp,
@@ -741,22 +857,28 @@ TEST_P(RTCVideoEncoderInitTest, SoftwareFallbackForLowResolution) {
   CreateEncoder(codec_type);
   webrtc::VideoCodec codec = GetDefaultCodec();
   codec.width = kSoftwareFallbackInputFrameWidth;
-  codec.height = kSoftwareFallbackInputFrameHeight;
+  if (codec_type == webrtc::kVideoCodecAV1) {
+    codec.height = kSoftwareFallbackInputFrameHeightForAV1;
+  } else {
+    codec.height = kSoftwareFallbackInputFrameHeight;
+  }
   codec.codecType = codec_type;
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
 
-TEST_P(RTCVideoEncoderInitTest, SoftwareFallbackForLowResolutionIncludes360p) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kForcingSoftwareIncludes360);
+TEST_P(RTCVideoEncoderInitTest, AV1Supports270p) {
   const webrtc::VideoCodecType codec_type = GetParam();
+  if (codec_type != webrtc::kVideoCodecAV1) {
+    GTEST_SKIP();
+  }
   CreateEncoder(codec_type);
+  ExpectCreateInitAndDestroyVEA();
   webrtc::VideoCodec codec = GetDefaultCodec();
-  codec.width = kInputFrameWidth;
-  codec.height = kInputFrameHeight;
+  codec.width = 480;
+  codec.height = 270;
   codec.codecType = codec_type;
-  EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 }
 
@@ -768,6 +890,9 @@ TEST_P(RTCVideoEncoderInitTest, CreateAndInitSucceedsForTemporalLayer) {
     GTEST_SKIP() << "VP8 temporal layer encoding is not supported";
   if (codec_type == webrtc::kVideoCodecH264)
     GTEST_SKIP() << "H264 temporal layer encoding is not supported";
+  if (codec_type == webrtc::kVideoCodecAV1) {
+    GTEST_SKIP() << "AV1 temporal layer encoding is not supported";
+  }
 
   webrtc::VideoCodec tl_codec = GetSVCLayerCodec(codec_type,
                                                  /*num_spatial_layers=*/1);
@@ -777,10 +902,19 @@ TEST_P(RTCVideoEncoderInitTest, CreateAndInitSucceedsForTemporalLayer) {
             rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
 }
 
+TEST_P(RTCVideoEncoderInitTest, CreateAndInitFailsForAV1SpatialLayer) {
+  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(webrtc::kVideoCodecAV1,
+                                                 /*num_spatial_layers=*/3);
+  CreateEncoder(tl_codec.codecType);
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+            rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
+}
+
 const webrtc::VideoCodecType kInitTestCases[] = {
     webrtc::kVideoCodecH264,
     webrtc::kVideoCodecVP9,
     webrtc::kVideoCodecVP8,
+    webrtc::kVideoCodecAV1,
 };
 
 INSTANTIATE_TEST_SUITE_P(InitTimingAndCodecProfiles,
@@ -1060,6 +1194,38 @@ TEST_F(RTCVideoEncoderEncodeTest, SoftwareFallbackAfterError) {
                                      .build(),
                                  &frame_types));
 }
+
+// On Windows we allow native input that is mappable.
+#if BUILDFLAG(IS_WIN)
+TEST_F(RTCVideoEncoderEncodeTest, NoSoftwareFallbackOnMappableNativeInput) {
+  // Make RTCVideoEncoder expect native input.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kVideoCaptureUseGpuMemoryBuffer);
+
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecH264;
+  CreateEncoder(codec_type);
+  webrtc::VideoCodec codec = GetDefaultCodec();
+  ExpectCreateInitAndDestroyVEA(
+      media::PIXEL_FORMAT_NV12,
+      media::VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer);
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
+
+  rtc::scoped_refptr<webrtc::VideoFrameBuffer> mapped_buffer(
+      rtc::make_ref_counted<FakeNativeBufferI420>(480, 360,
+                                                  /*allow_to_i420=*/false));
+
+  std::vector<webrtc::VideoFrameType> frame_types;
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                     .set_video_frame_buffer(mapped_buffer)
+                                     .set_rtp_timestamp(0)
+                                     .set_timestamp_us(0)
+                                     .set_rotation(webrtc::kVideoRotation_0)
+                                     .build(),
+                                 &frame_types));
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 TEST_F(RTCVideoEncoderEncodeTest, SoftwareFallbackOnBadEncodeInput) {
   // Make RTCVideoEncoder expect native input.
@@ -3048,6 +3214,275 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest, FrameSizeChangeFailure) {
     SetUpEncodingWithFrameSizeChangeSupport(codec);
 
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK, rtc_encoder_->Release());
+}
+
+TEST_F(RTCVideoEncoderEncodeTest, AV1SoftwareFallbackForVEANotSupport) {
+  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(webrtc::kVideoCodecAV1,
+                                                 /*num_spatial_layers=*/1);
+  tl_codec.SetScalabilityMode(webrtc::ScalabilityMode::kL1T3);
+  CreateEncoder(tl_codec.codecType);
+
+  media::VideoEncodeAccelerator::SupportedProfiles profiles = {
+      {media::AV1PROFILE_PROFILE_MAIN,
+       /*max_resolution*/ gfx::Size(1920, 1088),
+       /*max_framerate_numerator*/ 30,
+       /*max_framerate_denominator*/ 1,
+       media::VideoEncodeAccelerator::kConstantMode,
+       {media::SVCScalabilityMode::kL1T1}}};
+  EXPECT_CALL(*mock_gpu_factories_.get(),
+              GetVideoEncodeAcceleratorSupportedProfiles())
+      .WillOnce(Return(profiles));
+  // The mock gpu factories return |profiles| as VEA supported profiles, which
+  // only support AV1 single layer acceleration. When requesting AV1 SVC
+  // encoding, InitEncode() will fail in scalability mode check and return
+  // WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE.
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+            rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
+}
+
+TEST_F(RTCVideoEncoderEncodeTest, AV1TemporalLayerGenericFrameInfo) {
+  class BitStreamVerifier : public webrtc::EncodedImageCallback {
+   public:
+    explicit BitStreamVerifier(size_t picture_id) : picture_id_(picture_id) {}
+    ~BitStreamVerifier() override = default;
+
+    webrtc::EncodedImageCallback::Result OnEncodedImage(
+        const webrtc::EncodedImage& encoded_image,
+        const webrtc::CodecSpecificInfo* codec_specific_info) override {
+      // The template structure should be present for the first frame.
+      if (picture_id_ == 0) {
+        EXPECT_TRUE(codec_specific_info->template_structure.has_value());
+      }
+
+      // The bitstream metadata is generated in
+      // ReturnSVCLayerFrameWithInvalidGenericMetadata().
+      if (picture_id_ >= 3) {
+        EXPECT_FALSE(codec_specific_info->generic_frame_info.has_value());
+      } else {
+        EXPECT_TRUE(codec_specific_info->generic_frame_info.has_value());
+      }
+
+      waiter_.Signal();
+      return Result(Result::OK);
+    }
+
+    void Wait() { waiter_.Wait(); }
+
+   private:
+    base::WaitableEvent waiter_;
+    size_t picture_id_;
+  };
+
+  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(webrtc::kVideoCodecAV1,
+                                                 /*num_spatial_layers=*/1);
+  tl_codec.SetScalabilityMode(webrtc::ScalabilityMode::kL1T3);
+  CreateEncoder(tl_codec.codecType);
+
+  media::VideoEncodeAccelerator::SupportedProfiles profiles{
+      {media::AV1PROFILE_PROFILE_MAIN,
+       /*max_resolution*/ gfx::Size(1920, 1088),
+       /*max_framerate_numerator*/ 30,
+       /*max_framerate_denominator*/ 1,
+       media::VideoEncodeAccelerator::kConstantMode,
+       {media::SVCScalabilityMode::kL1T1, media::SVCScalabilityMode::kL1T3}}};
+  EXPECT_CALL(*mock_gpu_factories_.get(),
+              GetVideoEncodeAcceleratorSupportedProfiles())
+      .Times(AtLeast(1))
+      .WillOnce(Return(profiles));
+  ExpectCreateInitAndDestroyVEA();
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
+
+  size_t kNumEncodeFrames = 5u;
+  for (size_t i = 0; i < kNumEncodeFrames; i++) {
+    const rtc::scoped_refptr<webrtc::I420Buffer> buffer =
+        webrtc::I420Buffer::Create(kInputFrameWidth, kInputFrameHeight);
+    FillFrameBuffer(buffer);
+    std::vector<webrtc::VideoFrameType> frame_types;
+    if (i == 0) {
+      frame_types.emplace_back(webrtc::VideoFrameType::kVideoFrameKey);
+    }
+    base::WaitableEvent event;
+    if (i > 0) {
+      EXPECT_CALL(*mock_vea_, UseOutputBitstreamBuffer(_)).Times(1);
+    }
+    BitStreamVerifier bitstream_verifier(i);
+    rtc_encoder_->RegisterEncodeCompleteCallback(&bitstream_verifier);
+    EXPECT_CALL(*mock_vea_, Encode(_, _))
+        .WillOnce(DoAll(
+            Invoke(this, &RTCVideoEncoderTest::
+                             ReturnSVCLayerFrameWithInvalidGenericMetadata),
+            [&event]() { event.Signal(); }));
+    EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+              rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
+                                       .set_video_frame_buffer(buffer)
+                                       .set_rtp_timestamp(0)
+                                       .set_timestamp_us(i)
+                                       .set_rotation(webrtc::kVideoRotation_0)
+                                       .build(),
+                                   &frame_types));
+    event.Wait();
+  }
+}
+
+TEST_F(RTCVideoEncoderInitTest,
+       CheckInputVisibleSizeWithinSupportedDimensions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine("WebRtcUseMinMaxVEADimensions", "");
+
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
+  CreateEncoder(codec_type);
+  media::VideoEncodeAccelerator::SupportedProfiles profiles = {
+      {
+          media::VP9PROFILE_PROFILE0,
+          /*max_resolution=*/gfx::Size(640, 360),
+          /*max_framerate_numerator=*/30,
+          /*max_framerate_denominator=*/1,
+          media::VideoEncodeAccelerator::kConstantMode,
+          {media::SVCScalabilityMode::kL1T1},
+      },
+      {media::VP9PROFILE_PROFILE0,
+       /*max_resolution=*/gfx::Size(1280, 720),
+       /*max_framerate_numerator=*/30,
+       /*max_framerate_denominator=*/1,
+       media::VideoEncodeAccelerator::kConstantMode,
+       {media::SVCScalabilityMode::kL1T1}}};
+  EXPECT_CALL(*mock_gpu_factories_.get(),
+              GetVideoEncodeAcceleratorSupportedProfiles())
+      .Times(AtLeast(1))
+      .WillOnce(Return(profiles));
+
+  webrtc::VideoCodec codec_settings;
+  codec_settings.codecType = webrtc::kVideoCodecVP9;
+  codec_settings.width = 1280;
+  codec_settings.height = 720;
+
+  ExpectCreateInitAndDestroyVEA();
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&codec_settings, kVideoEncoderSettings));
+}
+
+TEST_F(RTCVideoEncoderInitTest,
+       CheckInputVisibleSizeBeyondSupportedDimensions) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine("WebRtcUseMinMaxVEADimensions", "");
+
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
+  CreateEncoder(codec_type);
+  media::VideoEncodeAccelerator::SupportedProfiles profiles = {
+      {
+          media::VP9PROFILE_PROFILE0,
+          /*max_resolution=*/gfx::Size(1280, 720),
+          /*max_framerate_numerator=*/30,
+          /*max_framerate_denominator=*/1,
+          media::VideoEncodeAccelerator::kConstantMode,
+          {media::SVCScalabilityMode::kL1T1},
+      },
+      {media::VP9PROFILE_PROFILE0,
+       /*max_resolution=*/gfx::Size(640, 360),
+       /*max_framerate_numerator=*/30,
+       /*max_framerate_denominator=*/1,
+       media::VideoEncodeAccelerator::kConstantMode,
+       {media::SVCScalabilityMode::kL1T1}}};
+  EXPECT_CALL(*mock_gpu_factories_.get(),
+              GetVideoEncodeAcceleratorSupportedProfiles())
+      .WillOnce(Return(profiles));
+
+  webrtc::VideoCodec codec_settings;
+  codec_settings.codecType = webrtc::kVideoCodecVP9;
+  codec_settings.width = 1920;
+  codec_settings.height = 1080;
+
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+            rtc_encoder_->InitEncode(&codec_settings, kVideoEncoderSettings));
+}
+
+TEST_F(RTCVideoEncoderInitTest,
+       CheckInputVisibleSizeWithinSupportedDimensionsButIsSoftware) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitFromCommandLine("WebRtcUseMinMaxVEADimensions", "");
+
+  const webrtc::VideoCodecType codec_type = webrtc::kVideoCodecVP9;
+  CreateEncoder(codec_type);
+  media::VideoEncodeAccelerator::SupportedProfile supported_profile;
+  supported_profile.profile = media::VP9PROFILE_PROFILE0;
+  supported_profile.max_resolution = gfx::Size(1280, 720);
+  supported_profile.max_framerate_numerator = 30;
+  supported_profile.max_framerate_denominator = 1;
+  supported_profile.rate_control_modes =
+      media::VideoEncodeAccelerator::kConstantMode;
+  supported_profile.min_resolution = gfx::Size(16, 16);
+  supported_profile.is_software_codec = true;
+  supported_profile.scalability_modes = {media::SVCScalabilityMode::kL1T1};
+  media::VideoEncodeAccelerator::SupportedProfiles profiles = {
+      supported_profile};
+
+  EXPECT_CALL(*mock_gpu_factories_.get(),
+              GetVideoEncodeAcceleratorSupportedProfiles())
+      .WillOnce(Return(profiles));
+
+  webrtc::VideoCodec codec_settings;
+  codec_settings.codecType = webrtc::kVideoCodecVP9;
+  codec_settings.width = 640;
+  codec_settings.height = 360;
+
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+            rtc_encoder_->InitEncode(&codec_settings, kVideoEncoderSettings));
+}
+
+TEST_F(RTCVideoEncoderInitTest,
+       SupportedTemporalLayerIsRejectedSoftwareCodecWillFallback) {
+  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(webrtc::kVideoCodecVP9,
+                                                 /*num_spatial_layers=*/1);
+  CreateEncoder(tl_codec.codecType);
+
+  media::VideoEncodeAccelerator::SupportedProfile supported_profile;
+  supported_profile.profile = media::VP9PROFILE_PROFILE0;
+  supported_profile.max_resolution = gfx::Size(1280, 720);
+  supported_profile.max_framerate_numerator = 30;
+  supported_profile.max_framerate_denominator = 1;
+  supported_profile.rate_control_modes =
+      media::VideoEncodeAccelerator::kConstantMode;
+  supported_profile.min_resolution = gfx::Size(16, 16);
+  supported_profile.is_software_codec = true;
+  supported_profile.scalability_modes = {media::SVCScalabilityMode::kL1T3};
+  media::VideoEncodeAccelerator::SupportedProfiles profiles = {
+      supported_profile};
+
+  EXPECT_CALL(*mock_gpu_factories_.get(),
+              GetVideoEncodeAcceleratorSupportedProfiles())
+      .WillOnce(Return(profiles));
+
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
+            rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
+}
+
+TEST_F(RTCVideoEncoderInitTest, SupportedTemporalLayersAreHardwareInitOK) {
+  webrtc::VideoCodec tl_codec = GetSVCLayerCodec(webrtc::kVideoCodecVP9,
+                                                 /*num_spatial_layers=*/1);
+  CreateEncoder(tl_codec.codecType);
+
+  media::VideoEncodeAccelerator::SupportedProfile supported_profile;
+  supported_profile.profile = media::VP9PROFILE_PROFILE0;
+  supported_profile.max_resolution = gfx::Size(1280, 720);
+  supported_profile.max_framerate_numerator = 30;
+  supported_profile.max_framerate_denominator = 1;
+  supported_profile.rate_control_modes =
+      media::VideoEncodeAccelerator::kConstantMode;
+  supported_profile.min_resolution = gfx::Size(16, 16);
+  supported_profile.is_software_codec = false;
+  supported_profile.scalability_modes = {media::SVCScalabilityMode::kL1T3};
+  media::VideoEncodeAccelerator::SupportedProfiles profiles = {
+      supported_profile};
+
+  EXPECT_CALL(*mock_gpu_factories_.get(),
+              GetVideoEncodeAcceleratorSupportedProfiles())
+      .Times(AtLeast(1))
+      .WillOnce(Return(profiles));
+
+  ExpectCreateInitAndDestroyVEA();
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
 }
 
 }  // namespace blink

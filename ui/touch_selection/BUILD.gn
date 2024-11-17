@@ -63,6 +63,12 @@ component("touch_selection") {
       "touch_selection_magnifier_aura.h",
     ]
   }
+
+  if (use_blink) {
+    sources += [ "touch_editing_controller.h" ]
+
+    deps += [ "//ui/menus" ]
+  }
 }
 
 static_library("test_support") {

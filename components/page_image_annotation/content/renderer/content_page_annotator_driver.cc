@@ -59,7 +59,7 @@ ContentPageAnnotatorDriver::ContentPageAnnotatorDriver(
       next_node_id_(1),
       page_annotator_(RequestAnnotator(render_frame)) {}
 
-ContentPageAnnotatorDriver::~ContentPageAnnotatorDriver() {}
+ContentPageAnnotatorDriver::~ContentPageAnnotatorDriver() = default;
 
 // static
 ContentPageAnnotatorDriver* ContentPageAnnotatorDriver::GetOrCreate(

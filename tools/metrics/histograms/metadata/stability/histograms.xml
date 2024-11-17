@@ -22,6 +22,11 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="CdmUtilityProcessType">
+  <variant name="CdmServiceBroker"/>
+  <variant name="MediaFoundationServiceBroker"/>
+</variants>
+
 <histogram name="ChildProcess.Crashed.UtilityProcessExitCode"
     enum="WindowsExitCode" expires_after="never">
 <!-- expires-never: Critical stability metrics. go/chrome-stability-metrics -->
@@ -78,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChildProcess.Launched.UtilityProcessHash"
-    enum="UtilityProcessNameHash" expires_after="2025-02-10">
+    enum="UtilityProcessNameHash" expires_after="2025-04-13">
   <owner>wfh@chromium.org</owner>
   <summary>
     Count of child utility process launches, bucketed by the hash of their
@@ -126,7 +131,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChildProcess.ProcessLifetime.Utility" units="ms"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>olivierli@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -164,7 +169,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Android.ProcessedRealMinidumps"
-    enum="AndroidProcessedMinidumps" expires_after="2025-03-09">
+    enum="AndroidProcessedMinidumps" expires_after="2025-05-11">
   <owner>wnwen@chromium.org</owner>
   <owner>src/components/minidump_uploader/OWNERS</owner>
   <summary>
@@ -176,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Android.RendererCrash" enum="Boolean"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>wnwen@chromium.org</owner>
   <summary>
     Counts renderer crashes including OOMs. Android only. Mirrors old stability
@@ -185,7 +190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Stability.Android.SystemExitReason"
-    enum="AndroidProcessExitReason" expires_after="2025-03-09">
+    enum="AndroidProcessExitReason" expires_after="2025-05-11">
   <owner>boliu@chromium.org</owner>
   <owner>ssid@chromium.org</owner>
   <owner>wnwen@chromium.org</owner>
@@ -293,7 +298,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.ChildFrameCrash.ShownAfterCrashingReason"
-    enum="ShownAfterCrashingReason" expires_after="2025-02-16">
+    enum="ShownAfterCrashingReason" expires_after="2025-04-20">
   <owner>alexmos@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -326,7 +331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.ChildFrameCrash.Visibility" enum="CrashVisibility"
-    expires_after="2025-02-16">
+    expires_after="2025-04-20">
   <owner>alexmos@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -384,7 +389,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.Experimental.PageLoads" enum="StabilityPageLoadType"
-    expires_after="2025-02-23">
+    expires_after="2025-04-27">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -460,7 +465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.IOS.PostCrashAction" enum="IOSPostCrashAction"
-    expires_after="2025-02-04">
+    expires_after="2025-04-06">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -470,7 +475,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.TabCountBefore{Event}" units="tabs"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>ajuma@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -537,7 +542,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.iOS.UTE.MobileSessionAppState" enum="IOSAppState"
-    expires_after="2024-11-03">
+    expires_after="2025-11-03">
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -606,6 +611,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Stability.Media.{ProcessType}.Crash.ExitCode"
+    enum="WindowsExitCode" expires_after="2025-02-27">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when a crash occurs in a CDM utility process. On crash, the exit
+    code will indicate the exception code of the crash.
+  </summary>
+  <token key="ProcessType" variants="CdmUtilityProcessType"/>
+</histogram>
+
+<histogram name="Stability.Media.{ProcessType}.Launch" enum="Boolean"
+    expires_after="2025-05-11">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when a CDM utility process either succeeded or failed to launch.
+  </summary>
+  <token key="ProcessType" variants="CdmUtilityProcessType"/>
+</histogram>
+
+<histogram name="Stability.Media.{ProcessType}.Launch.LaunchErrorCode"
+    enum="LaunchErrorCodes" expires_after="2025-02-27">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    A platform-specific error code returned from the attempt to launch a CDM
+    utility process. Recorded when a CDM utility process fails to launch.
+  </summary>
+  <token key="ProcessType" variants="CdmUtilityProcessType"/>
+</histogram>
+
+<histogram name="Stability.Media.{ProcessType}.Launch.WinLastError"
+    enum="WinGetLastError" expires_after="2025-02-27">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    An extended Windows error code returned from GetLastError when failing to
+    launch a CDM utility process. Recorded when a utility process fails to
+    launch on Windows.
+  </summary>
+  <token key="ProcessType" variants="CdmUtilityProcessType"/>
+</histogram>
+
 <histogram name="Stability.MobileSessionShutdownType"
     enum="MobileSessionShutdownType" expires_after="2024-12-08">
   <owner>michaeldo@chromium.org</owner>
@@ -624,7 +673,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.MobileSessionShutdownType2"
-    enum="MobileSessionShutdownType" expires_after="2025-02-10">
+    enum="MobileSessionShutdownType" expires_after="2025-04-13">
   <owner>justincohen@chromium.org</owner>
   <owner>ajuma@chromium.org</owner>
   <summary>
@@ -641,7 +690,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.RendererAbnormalTermination2.HostedContentType"
-    enum="RendererHostedContentType" expires_after="2025-03-09">
+    enum="RendererHostedContentType" expires_after="2025-05-11">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -651,7 +700,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.RendererAbnormalTermination2.{HostedContentType}"
-    enum="TerminationStatus" expires_after="2025-03-09">
+    enum="TerminationStatus" expires_after="2025-05-11">
   <owner>fdoray@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>

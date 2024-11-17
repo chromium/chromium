@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">ಸಾಮಾನ್ಯ</translation>
 <translation id="1591562245178063882">ಈ ತಿಂಗಳು</translation>
 <translation id="1637811476055996098">ಫೈಲ್‌ಗಳನ್ನು ಆರಿಸಿ</translation>
-<translation id="1680090928918677457">ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಿ</translation>
 <translation id="1729654308190250600">ಖಾಲಿ-ಅಲ್ಲದ ಇಮೇಲ್ ವಿಳಾಸವನ್ನು ನಮೂದಿಸಿ.</translation>
 <translation id="1758486001363313524">ಇತರೆ...</translation>
 <translation id="1921819250265091946">ದಿದಿ</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">ದಯವಿಟ್ಟು ಈ ಪಠ್ಯವನ್ನು <ph name="MAX_CHARACTERS" /> ಅಕ್ಷರಗಳಿಗೆ ಅಥವಾ ಅದಕ್ಕಿಂತಲೂ ಕಡಿಮೆಗೆ ಸೀಮಿತಗೊಳಿಸಿ (ನೀವು ಪ್ರಸ್ತುತ <ph name="CURRENT_LENGTH" /> ಅಕ್ಷರಗಳನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ).</translation>
 <translation id="2247351761944213033">ವಾರ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ಟ್ರ್ಯಾಕ್ <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">ಕ್ಯಾಮೆರಾ ಮತ್ತು ಮೈಕ್ರೊಫೋನ್ ಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="2507943997699731163">ದಯವಿಟ್ಟು ಈ ಕ್ಷೇತ್ರವನ್ನು ಭರ್ತಿ ಮಾಡಿ.</translation>
 <translation id="2613802280814924224">ಮಾನ್ಯ ಮೌಲ್ಯವನ್ನು ನಮೂದಿಸಿ. ಹತ್ತಿರದ ಮಾನ್ಯ ಮೌಲ್ಯವು <ph name="VALID_VALUE" /> ಆಗಿದೆ.</translation>
 <translation id="2653659639078652383">ಸಲ್ಲಿಸಿ</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">ಈ ಪಠ್ಯವನ್ನು <ph name="MIN_CHARACTERS" /> ಅಕ್ಷರಗಳಿಗೆ ಅಥವಾ ಅದಕ್ಕಿಂತಲೂ ಹೆಚ್ಚಿಗೆ ಸೀಮಿತಗೊಳಿಸಿ (ನೀವು ಪ್ರಸ್ತುತವಾಗಿ <ph name="CURRENT_LENGTH" /> ಅಕ್ಷರಗಳನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' ನಂತರದ ಭಾಗವು '<ph name="INVALIDCHARACTER" />' ಚಿಹ್ನೆಯನ್ನು ಒಳಗೊಂಡಿರಬಾರದು.</translation>
 <translation id="3846214748874656680">ಪೂರ್ಣಪರದೆಯಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
-<translation id="4031179711345676612">ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4360991593054037559">ಮಾನ್ಯವಾದ ಮೌಲ್ಯವನ್ನು ನಮೂದಿಸಿ. <ph name="VALID_VALUE_LOW" /> ಮತ್ತು <ph name="VALID_VALUE_HIGHER" /> ಎರಡು ಹತ್ತಿರದ ಮಾನ್ಯ ಮೌಲ್ಯಗಳಾಗಿವೆ.</translation>
 <translation id="4522570452068850558">ವಿವರಗಳು</translation>
-<translation id="4663373278480897665">ಕ್ಯಾಮೆರಾಗೆ ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' ನಂತರದ ಭಾಗವು '<ph name="INVALIDCHARACTER" />' ಚಿಹ್ನೆಯನ್ನು ಒಳಗೊಂಡಿರಬಾರದು.</translation>
 <translation id="4718048029184481307">ಚಿತ್ರದಲ್ಲಿ ಚಿತ್ರ ಮೋಡ್‌ನಲ್ಲಿ ಪ್ಲೇ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
-<translation id="4792862212177489858">ಸ್ಥಳವನ್ನು ಹಂಚಿಕೊಳ್ಳಿ</translation>
 <translation id="4812940957355064477">ದಯವಿಟ್ಟು ಸಂಖ್ಯೆಯನ್ನು ನಮೂದಿಸಿ.</translation>
-<translation id="49269513399674318">ಮೈಕ್ರೋಫೋನ್ ಅನ್ನು ಬಳಸಿ</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> ಆಯ್ಕೆ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="4992066212339426712">ಅನ್‌ಮ್ಯೂಟ್</translation>
 <translation id="49969490063480558">'<ph name="ATSIGN" />' ನಂತರದ ಒಂದು ಭಾಗವನ್ನು ನಮೂದಿಸಿ. '<ph name="INVALIDADDRESS" />' ಅಪೂರ್ಣವಾಗಿದೆ.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">ಪ್ಲಗ್-ಇನ್ ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ.</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">ಈ ಪಠ್ಯವನ್ನು <ph name="MIN_CHARACTERS" /> ಅಥವಾ ಇದಕ್ಕಿಂತಲೂ ಹೆಚ್ಚಿನ ಅಕ್ಷರಗಳಿಗೆ ಉದ್ದಗೊಳಿಸಿ (ನೀವು ಪ್ರಸ್ತುತ 1 ಅಕ್ಷರಗಳನ್ನು ಬಳಸುತ್ತಿರುವಿರಿ).</translation>
-<translation id="7080893216867146095">ಸ್ಥಳ ಹಂಚಿಕೊಳ್ಳುವಿಕೆಯನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="709897737746224366">ದಯವಿಟ್ಟು ವಿನಂತಿಸಿದ ಸ್ವರೂಪವನ್ನು ಹೊಂದಿಸಿ.</translation>
-<translation id="7134810312945846184">ಮೈಕ್ರೊಫೋನ್ ಮತ್ತು ಕ್ಯಾಮರಾವನ್ನು ಬಳಸಿ</translation>
 <translation id="7263440858009898357">ಪಟ್ಟಿಯಲ್ಲಿನ ಐಟಂ ಅನ್ನು ದಯವಿಟ್ಟು ಆಯ್ಕೆ ಮಾಡಿ.</translation>
 <translation id="7364796246159120393">ಫೈಲ್ ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="739024184232394898">ಇತರೆ...</translation>

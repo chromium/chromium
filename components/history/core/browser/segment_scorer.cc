@@ -11,12 +11,41 @@
 #include <utility>
 
 #include "base/features.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "components/history/core/browser/features.h"
 
 namespace history {
 
 /******** SegmentScorer::RecencyFactor ********/
+
+// static
+std::unique_ptr<SegmentScorer::RecencyFactor>
+SegmentScorer::RecencyFactor::CreateFromFeatureFlags() {
+  std::string recency_factor_name =
+      base::FeatureParam<std::string>(&history::kMostVisitedTilesNewScoring,
+                                      kMvtScoringParamRecencyFactor,
+                                      kMvtScoringParamRecencyFactor_Default)
+          .Get();
+
+  if (recency_factor_name == kMvtScoringParamRecencyFactor_Decay) {
+    double decay_per_day = std::clamp(
+        base::FeatureParam<double>(&history::kMostVisitedTilesNewScoring,
+                                   kMvtScoringParamDecayPerDay, 1.0)
+            .Get(),
+        1E-10, 1.0);
+    return std::make_unique<RecencyFactorDecay>(decay_per_day);
+  }
+
+  if (recency_factor_name == kMvtScoringParamRecencyFactor_DecayStaircase) {
+    return std::make_unique<RecencyFactorDecayStaircase>();
+  }
+
+  if (recency_factor_name != kMvtScoringParamRecencyFactor_Default) {
+    DVLOG(1) << "Unknown recency factor name " << recency_factor_name;
+  }
+  return std::make_unique<RecencyFactorDefault>();
+}
 
 SegmentScorer::RecencyFactor::~RecencyFactor() = default;
 
@@ -28,6 +57,21 @@ SegmentScorer::RecencyFactorDefault::~RecencyFactorDefault() = default;
 // by 2x, 3-week-ago visits by 1.5x, falling off to 1x asymptotically.
 float SegmentScorer::RecencyFactorDefault::Compute(int days_ago) {
   return 1.0f + (2.0f * (1.0f / (1.0f + days_ago / 7.0f)));
+}
+
+/******** SegmentScorer::RecencyFactorDecay ********/
+
+SegmentScorer::RecencyFactorDecay::RecencyFactorDecay(double decay_per_day)
+    : decay_per_day_(decay_per_day) {
+  DCHECK_GT(decay_per_day_, 0);
+  DCHECK_LE(decay_per_day_, 1);
+}
+
+SegmentScorer::RecencyFactorDecay::~RecencyFactorDecay() = default;
+
+// Computes an exponential decay.
+float SegmentScorer::RecencyFactorDecay::Compute(int days_ago) {
+  return ::pow(decay_per_day_, days_ago);
 }
 
 /******** SegmentScorer::RecencyFactorDecayStaircase ********/
@@ -48,29 +92,22 @@ float SegmentScorer::RecencyFactorDecayStaircase::Compute(int days_ago) {
 
 // static
 std::unique_ptr<SegmentScorer> SegmentScorer::CreateFromFeatureFlags() {
-  std::string recency_factor_name =
-      base::FeatureParam<std::string>(&history::kMostVisitedTilesNewScoring,
-                                      kMvtScoringParamRecencyFactor,
-                                      kMvtScoringParamRecencyFactor_Default)
-          .Get();
+  std::unique_ptr<SegmentScorer::RecencyFactor> recency_factor =
+      SegmentScorer::RecencyFactor::CreateFromFeatureFlags();
+
   int daily_visit_count_cap =
       base::FeatureParam<int>(&history::kMostVisitedTilesNewScoring,
                               kMvtScoringParamDailyVisitCountCap, INT_MAX)
           .Get();
   return base::WrapUnique(
-      new SegmentScorer(recency_factor_name, daily_visit_count_cap));
+      new SegmentScorer(std::move(recency_factor), daily_visit_count_cap));
 }
 
-SegmentScorer::SegmentScorer(const std::string& recency_factor_name,
-                             int daily_visit_count_cap) {
-  if (recency_factor_name == kMvtScoringParamRecencyFactor_DecayStaircase) {
-    recency_factor_ = std::make_unique<RecencyFactorDecayStaircase>();
-  } else {
-    CHECK_EQ(recency_factor_name, kMvtScoringParamRecencyFactor_Default);
-    recency_factor_ = std::make_unique<RecencyFactorDefault>();
-  }
-  daily_visit_count_cap_ = daily_visit_count_cap;
-}
+SegmentScorer::SegmentScorer(
+    std::unique_ptr<SegmentScorer::RecencyFactor> recency_factor,
+    int daily_visit_count_cap)
+    : recency_factor_(std::move(recency_factor)),
+      daily_visit_count_cap_(daily_visit_count_cap) {}
 
 SegmentScorer::~SegmentScorer() = default;
 

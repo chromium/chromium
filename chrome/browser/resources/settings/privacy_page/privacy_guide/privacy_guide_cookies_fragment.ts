@@ -19,6 +19,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import type {MetricsBrowserProxy} from '../../metrics_browser_proxy.js';
 import {MetricsBrowserProxyImpl, PrivacyGuideSettingsStates, PrivacyGuideStepsEligibleAndReached} from '../../metrics_browser_proxy.js';
 import {CookieControlsMode} from '../../site_settings/constants.js';
+import {ThirdPartyCookieBlockingSetting} from '../../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {getTemplate} from './privacy_guide_cookies_fragment.html.js';
 
@@ -49,6 +50,12 @@ export class PrivacyGuideCookiesFragmentElement extends
         type: Object,
         value: CookieControlsMode,
       },
+
+      /* Third party cookie blocking settings for use in bindings. */
+      thirdPartyCookieBlockingSettingEnum_: {
+        type: Object,
+        value: ThirdPartyCookieBlockingSetting,
+      },
     };
   }
 
@@ -73,8 +80,8 @@ export class PrivacyGuideCookiesFragmentElement extends
 
   private onViewEnterStart_() {
     this.startStateBlock3PIncognito_ =
-        this.getPref('profile.cookie_controls_mode').value ===
-        CookieControlsMode.INCOGNITO_ONLY;
+        this.getPref('generated.third_party_cookie_blocking_setting').value ===
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY;
     this.metricsBrowserProxy_
         .recordPrivacyGuideStepsEligibleAndReachedHistogram(
             PrivacyGuideStepsEligibleAndReached.COOKIES_REACHED);
@@ -82,8 +89,8 @@ export class PrivacyGuideCookiesFragmentElement extends
 
   private onViewExitFinish_() {
     const endStateBlock3PIncognito =
-        this.getPref('profile.cookie_controls_mode').value ===
-        CookieControlsMode.INCOGNITO_ONLY;
+        this.getPref('generated.third_party_cookie_blocking_setting').value ===
+        ThirdPartyCookieBlockingSetting.INCOGNITO_ONLY;
 
     let state: PrivacyGuideSettingsStates|null = null;
     if (this.startStateBlock3PIncognito_) {

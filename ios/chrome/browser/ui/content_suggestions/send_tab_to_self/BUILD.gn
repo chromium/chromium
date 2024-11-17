@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("send_tab_to_self") {
+  sources = [
+    "send_tab_promo_item.h",
+    "send_tab_promo_item.mm",
+    "send_tab_promo_mediator.h",
+    "send_tab_promo_mediator.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/prefs",
+    "//components/send_tab_to_self",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/content_suggestions:constants",
+    "//ios/chrome/browser/ui/content_suggestions:promo_module_ui",
+    "//ios/chrome/browser/ui/content_suggestions/magic_stack:public",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/favicon:favicon_constants",
+    "//ui/base",
+    "//url",
+  ]
+}

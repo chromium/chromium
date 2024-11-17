@@ -288,7 +288,7 @@ class RlweOprf {
          ->mutable_rlwe_request()
          ->mutable_oprf_request() = *oprf_request;
 
-    VLOG(1) << "Send PSM RLWE OPRF request";
+    LOG(WARNING) << "Send PSM RLWE OPRF request";
     job_ = context.device_management_service->CreateJob(std::move(config));
   }
 
@@ -328,7 +328,7 @@ class RlweOprf {
     }
 
     // Handle success
-    VLOG(1) << "PSM RLWE OPRF request completed successfully";
+    LOG(WARNING) << "PSM RLWE OPRF request completed successfully";
     return std::move(completion_callback)
         .Run(result.response.private_set_membership_response()
                  .rlwe_response()
@@ -386,7 +386,7 @@ class RlweQuery {
          ->mutable_rlwe_request()
          ->mutable_query_request() = *query_request;
 
-    VLOG(1) << "Send PSM RLWE query request";
+    LOG(WARNING) << "Send PSM RLWE query request";
     job_ = context.device_management_service->CreateJob(std::move(config));
   }
 
@@ -567,13 +567,13 @@ class EnrollmentState {
       request->set_server_backed_state_key(context.state_key.value());
     }
     if (context.enrollment_token.has_value()) {
-      VLOG(1) << "Setting enrollment token on DeviceStateRetrievalRequest";
+      LOG(WARNING) << "Setting enrollment token on DeviceStateRetrievalRequest";
       request->set_enrollment_token(context.enrollment_token.value());
     }
     request->set_brand_code(std::string(context.rlz_brand_code));
     request->set_serial_number(std::string(context.serial_number));
 
-    VLOG(1) << "Send unified enrollment state retrieval request";
+    LOG(WARNING) << "Send unified enrollment state retrieval request";
     job_ = context.device_management_service->CreateJob(std::move(config));
   }
 
@@ -656,10 +656,10 @@ class EnrollmentState {
                       state_response.disabled_state().message());
     }
 
-    VLOG(1) << "Initial enrollment mode = '" << mode << "', "
-            << (state_response.is_license_packaged_with_device() ? "with"
-                                                                 : "no")
-            << " packaged license.";
+    LOG(WARNING) << "Initial enrollment mode = '" << mode << "', "
+                 << (state_response.is_license_packaged_with_device() ? "with"
+                                                                      : "no")
+                 << " packaged license.";
 
     base::UmaHistogramBoolean(
         base::StrCat({kUMAStateDeterminationIsInitialByState,
@@ -695,7 +695,7 @@ class EnrollmentState {
                           state_response.license_type().license_type()));
     }
 
-    VLOG(1) << "Received restore mode " << mode;
+    LOG(WARNING) << "Received restore mode " << mode;
     base::UmaHistogramBoolean(
         base::StrCat({kUMAStateDeterminationIsInitialByState,
                       AutoEnrollmentStateToUmaSuffix(result.state)}),
@@ -704,7 +704,7 @@ class EnrollmentState {
   }
 
   void StoreResponse(PrefService* local_state, const base::Value::Dict& dict) {
-    VLOG(1) << "ServerBackedDeviceState pref: " << dict;
+    LOG(WARNING) << "ServerBackedDeviceState pref: " << dict;
     local_state->SetDict(prefs::kServerBackedDeviceState, dict.Clone());
   }
 
@@ -875,7 +875,7 @@ class EnrollmentStateFetcherImpl::Sequence {
         AutoEnrollmentTypeChecker::IsUnifiedStateDeterminationEnabled();
     base::UmaHistogramBoolean(kUMAStateDeterminationEnabled, enabled);
     if (!enabled) {
-      VLOG(1) << "Unified state determination is disabled";
+      LOG(WARNING) << "Unified state determination is disabled";
       return ReportResult(AutoEnrollmentResult::kNoEnrollment);
     }
 
@@ -911,7 +911,7 @@ class EnrollmentStateFetcherImpl::Sequence {
 
     if (status ==
         ash::DeviceSettingsService::OwnershipStatus::kOwnershipTaken) {
-      VLOG(1) << "Device ownership is already taken. Skipping enrollment";
+      LOG(WARNING) << "Device ownership is already taken. Skipping enrollment";
       return ReportResult(AutoEnrollmentResult::kNoEnrollment);
     }
 
@@ -989,26 +989,12 @@ class EnrollmentStateFetcherImpl::Sequence {
     if (state_key.has_value()) {
       context_.state_key = state_key.value();
     } else {
-      switch (state_key.error()) {
-        case ServerBackedStateKeysBroker::ErrorType::kMissingIdentifiers:
-          // Missing identifiers is typically a permanent error, hence we
-          // proceed to attempt state retrieval with just serial number
-          // and brand code.
-          LOG(WARNING)
-              << "Failed to obtain state keys due to missing identifiers";
-          context_.state_key.reset();
-          break;
-        case ServerBackedStateKeysBroker::ErrorType::kCommunicationError:
-        case ServerBackedStateKeysBroker::ErrorType::kInvalidResponse:
-          LOG(ERROR) << "Failed to obtain state keys. Error: "
-                     << static_cast<int>(state_key.error());
-          // These errors are typically transient, hence we block here to
-          // enforce a retry and avoid potential FRE escapes.
-          return ReportResult(
-              base::unexpected(AutoEnrollmentStateKeysRetrievalError{}));
-        case ServerBackedStateKeysBroker::ErrorType::kNoError:
-          NOTREACHED_IN_MIGRATION();
-      }
+      CHECK(state_key.error() !=
+            ServerBackedStateKeysBroker::ErrorType::kNoError);
+      LOG(ERROR) << "Failed to obtain state keys. Error: "
+                 << static_cast<int>(state_key.error());
+      return ReportResult(
+          base::unexpected(AutoEnrollmentStateKeysRetrievalError{}));
     }
     state_.Request(context_, base::BindOnce(&Sequence::OnStateRequestDone,
                                             weak_factory_.GetWeakPtr()));

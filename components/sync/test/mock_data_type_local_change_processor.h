@@ -112,10 +112,10 @@ class MockDataTypeLocalChangeProcessor : public DataTypeLocalChangeProcessor {
   base::WeakPtr<DataTypeLocalChangeProcessor> GetWeakPtr() override;
 
   // Returns a processor that forwards all calls to
-  // |this|. |*this| must outlive the returned processor.
+  // `this`. `*this` must outlive the returned processor.
   std::unique_ptr<DataTypeLocalChangeProcessor> CreateForwardingProcessor();
 
-  // Delegates all calls to another instance. |delegate| must not be null and
+  // Delegates all calls to another instance. `delegate` must not be null and
   // must outlive this object.
   void DelegateCallsByDefaultTo(DataTypeLocalChangeProcessor* delegate);
 

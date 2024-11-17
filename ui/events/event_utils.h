@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/bits.h"
 #include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/events/base_event_utils.h"
@@ -215,6 +216,15 @@ EVENTS_EXPORT void ConvertEventLocationToTargetWindowLocation(
     const gfx::Point& target_window_origin,
     const gfx::Point& current_window_origin,
     ui::LocatedEvent* located_event);
+
+// Converts a value of an unsigned integer type to an Event::PropertyValue.
+template <base::bits::UnsignedInteger T>
+Event::PropertyValue ConvertToEventPropertyValue(const T& value) {
+  Event::PropertyValue property_value;
+  property_value.resize(sizeof(T));
+  std::memcpy(property_value.data(), &value, property_value.size());
+  return property_value;
+}
 
 // The following utilities are useful for debugging and tracing.
 

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.bottom;
 
+import org.chromium.cc.input.OffsetTag;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
@@ -33,6 +34,10 @@ class BottomControlsProperties {
     static final PropertyModel.WritableBooleanPropertyKey IS_OBSCURED =
             new PropertyModel.WritableBooleanPropertyKey();
 
+    /** The tag indicating that this layer should be moved by viz. */
+    static final PropertyModel.WritableObjectPropertyKey<OffsetTag> OFFSET_TAG =
+            new PropertyModel.WritableObjectPropertyKey<>();
+
     static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
                 ANDROID_VIEW_HEIGHT,
@@ -40,6 +45,7 @@ class BottomControlsProperties {
                 ANDROID_VIEW_TRANSLATE_Y,
                 ANDROID_VIEW_VISIBLE,
                 COMPOSITED_VIEW_VISIBLE,
-                IS_OBSCURED
+                IS_OBSCURED,
+                OFFSET_TAG
             };
 }

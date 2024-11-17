@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
-#include "chrome/browser/ui/side_search/side_search_config.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
@@ -91,7 +90,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelInteractiveTest, SidePanelNotShownOnPwa) {
                              ->GetTabFeatures()
                              ->side_panel_registry();
         registry->Register(std::make_unique<SidePanelEntry>(
-            SidePanelEntry::Id::kCustomizeChrome, base::BindRepeating([]() {
+            SidePanelEntry::Id::kCustomizeChrome,
+            base::BindRepeating([](SidePanelEntryScope&) {
               return std::make_unique<views::View>();
             })));
         coordinator->Show(SidePanelEntry::Id::kCustomizeChrome);
@@ -228,7 +228,9 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
   registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kReadAnything,
-      base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+      base::BindRepeating([](SidePanelEntryScope&) {
+        return std::make_unique<views::View>();
+      })));
 
   SidePanelCoordinator* const coordinator =
       browser()->GetFeatures().side_panel_coordinator();
@@ -254,7 +256,9 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       SidePanelEntry::Key(SidePanelEntry::Id::kCustomizeChrome));
   registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kCustomizeChrome,
-      base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+      base::BindRepeating([](SidePanelEntryScope&) {
+        return std::make_unique<views::View>();
+      })));
 
   SidePanelCoordinator* const coordinator =
       browser()->GetFeatures().side_panel_coordinator();
@@ -278,7 +282,9 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
       SidePanelEntry::Key(SidePanelEntry::Id::kHistoryClusters));
   registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kHistoryClusters,
-      base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+      base::BindRepeating([](SidePanelEntryScope&) {
+        return std::make_unique<views::View>();
+      })));
 
   SidePanelCoordinator* const coordinator =
       browser()->GetFeatures().side_panel_coordinator();
@@ -333,7 +339,9 @@ IN_PROC_BROWSER_TEST_F(PinnedSidePanelInteractiveTest,
   registry->Deregister(SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
   registry->Register(std::make_unique<SidePanelEntry>(
       SidePanelEntry::Id::kReadAnything,
-      base::BindRepeating([]() { return std::make_unique<views::View>(); })));
+      base::BindRepeating([](SidePanelEntryScope&) {
+        return std::make_unique<views::View>();
+      })));
 
   PinnedToolbarActionsModel* const actions_model =
       PinnedToolbarActionsModel::Get(browser()->profile());

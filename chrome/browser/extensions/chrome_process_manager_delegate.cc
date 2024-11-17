@@ -23,7 +23,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/permissions/permissions_data.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/component_extensions_allowlist/allowlist.h"
@@ -67,7 +67,7 @@ bool ChromeProcessManagerDelegate::AreBackgroundPagesAllowedForContext(
 bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
     content::BrowserContext* context,
     const Extension& extension) const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(context);
 
   const bool is_signin_profile = ash::ProfileHelper::IsSigninProfile(profile) &&
@@ -91,11 +91,6 @@ bool ChromeProcessManagerDelegate::IsExtensionBackgroundPageAllowed(
            IsComponentExtensionAllowlistedForSignInProfile(extension.id());
   }
 
-  if (ash::ProfileHelper::IsLockScreenAppProfile(profile) &&
-      !profile->IsOffTheRecord()) {
-    return extension.permissions_data()->HasAPIPermission(
-        mojom::APIPermissionID::kLockScreen);
-  }
 #endif
 
   return AreBackgroundPagesAllowedForContext(context);

@@ -17,8 +17,8 @@ import './switch_access_setup_guide_dialog.js';
 import './switch_access_setup_guide_warning_dialog.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
-import {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import type {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import type {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
@@ -28,12 +28,14 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
 import {AUTO_SCAN_SPEED_RANGE_MS, SwitchAccessCommand, SwitchAccessDeviceType} from './switch_access_constants.js';
 import {getTemplate} from './switch_access_subpage.html.js';
-import {SwitchAccessSubpageBrowserProxy, SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
-import {KeyAssignment, SwitchAccessAssignmentsChangedValue} from './switch_access_types.js';
+import type {SwitchAccessSubpageBrowserProxy} from './switch_access_subpage_browser_proxy.js';
+import {SwitchAccessSubpageBrowserProxyImpl} from './switch_access_subpage_browser_proxy.js';
+import type {KeyAssignment, SwitchAccessAssignmentsChangedValue} from './switch_access_types.js';
 
 /**
  * The portion of the setting name common to all Switch Access preferences.

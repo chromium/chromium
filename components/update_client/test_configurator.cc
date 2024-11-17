@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/prefs/pref_service.h"
@@ -67,7 +68,9 @@ TestConfigurator::TestConfigurator(PrefService* pref_service)
   std::ignore = crx_cache_root_temp_dir_.CreateUniqueTempDir();
   auto activity = std::make_unique<TestActivityDataService>();
   activity_data_service_ = activity.get();
-  persisted_data_ = CreatePersistedData(pref_service, std::move(activity));
+  persisted_data_ = CreatePersistedData(
+      base::BindRepeating([](PrefService* pref) { return pref; }, pref_service),
+      std::move(activity));
 }
 
 TestConfigurator::~TestConfigurator() = default;
@@ -166,11 +169,6 @@ scoped_refptr<UnzipperFactory> TestConfigurator::GetUnzipperFactory() {
 scoped_refptr<PatcherFactory> TestConfigurator::GetPatcherFactory() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return patch_factory_;
-}
-
-bool TestConfigurator::EnabledDeltas() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return true;
 }
 
 bool TestConfigurator::EnabledBackgroundDownloader() const {

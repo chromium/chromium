@@ -358,7 +358,7 @@ const scoped_refptr<FrameResource>& V4L2Buffer::GetFrameResource() {
     VLOGF(1) << "Cannot create video frame from non-MMAP buffer";
     // Allow NOTREACHED() on invalid argument because this is an internal
     // method.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // Create the video frame instance if requiring it for the first time.

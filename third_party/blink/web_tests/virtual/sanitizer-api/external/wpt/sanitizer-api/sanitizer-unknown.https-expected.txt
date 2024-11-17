@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Unknown element names get blocked without unknownMarkup.
+  assert_equals: expected "" but got "<hello><world></world></hello>"
+[FAIL] Unknown attributes names get blocked without unknownMarkup.
+  assert_equals: expected "<b></b>" but got "<b hello=\\"1\\" world=\\"\\"></b>"
+Harness: the test ran to completion.
+

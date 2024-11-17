@@ -253,8 +253,7 @@ std::unique_ptr<SignedExchangeHandler> MockSignedExchangeHandlerFactory::Create(
           params, std::move(body), std::move(headers_callback));
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace content

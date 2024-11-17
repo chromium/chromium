@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
@@ -27,12 +26,9 @@ if (is_ios) {
   mojo_ts_files += [ "ui/base/mojom/ui_base_types.mojom-webui.ts" ]
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   mojo_js_files = [
     "chromeos/ash/components/multidevice/mojom/multidevice_types.mojom-webui.js",
-    "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js",
-    "chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.js",
-    "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.js",
     "chromeos/ash/services/device_sync/public/mojom/device_sync.mojom-webui.js",
     "chromeos/ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom-webui.js",
     "chromeos/services/network_config/public/mojom/constants.mojom-webui.js",
@@ -41,6 +37,7 @@ if (is_chromeos_ash) {
     "chromeos/services/network_health/public/mojom/network_diagnostics.mojom-webui.js",
     "chromeos/services/network_health/public/mojom/network_health.mojom-webui.js",
     "chromeos/services/network_health/public/mojom/network_health_types.mojom-webui.js",
+    "mojo/public/mojom/base/absl_status.mojom-webui.js",
     "mojo/public/mojom/base/big_string.mojom-webui.js",
     "mojo/public/mojom/base/big_buffer.mojom-webui.js",
     "mojo/public/mojom/base/file.mojom-webui.js",
@@ -48,7 +45,6 @@ if (is_chromeos_ash) {
     "mojo/public/mojom/base/int128.mojom-webui.js",
     "mojo/public/mojom/base/process_id.mojom-webui.js",
     "mojo/public/mojom/base/read_only_buffer.mojom-webui.js",
-    "mojo/public/mojom/base/read_only_file.mojom-webui.js",
     "mojo/public/mojom/base/safe_base_name.mojom-webui.js",
     "mojo/public/mojom/base/string16.mojom-webui.js",
     "mojo/public/mojom/base/text_direction.mojom-webui.js",
@@ -62,6 +58,9 @@ if (is_chromeos_ash) {
   ]
 
   mojo_ts_files += [
+    "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.ts",
+    "chromeos/ash/services/cellular_setup/public/mojom/cellular_setup.mojom-webui.ts",
+    "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-webui.ts",
     "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-webui.ts",
     "chromeos/components/in_session_auth/mojom/in_session_auth.mojom-webui.ts",
     "chromeos/ash/services/connectivity/public/mojom/passpoint.mojom-webui.ts",
@@ -75,6 +74,7 @@ if (is_chromeos_ash) {
   ]
 } else {
   mojo_ts_files += [
+    "mojo/public/mojom/base/absl_status.mojom-webui.ts",
     "mojo/public/mojom/base/big_string.mojom-webui.ts",
     "mojo/public/mojom/base/big_buffer.mojom-webui.ts",
     "mojo/public/mojom/base/file.mojom-webui.ts",
@@ -82,7 +82,6 @@ if (is_chromeos_ash) {
     "mojo/public/mojom/base/int128.mojom-webui.ts",
     "mojo/public/mojom/base/process_id.mojom-webui.ts",
     "mojo/public/mojom/base/read_only_buffer.mojom-webui.ts",
-    "mojo/public/mojom/base/read_only_file.mojom-webui.ts",
     "mojo/public/mojom/base/safe_base_name.mojom-webui.ts",
     "mojo/public/mojom/base/string16.mojom-webui.ts",
     "mojo/public/mojom/base/text_direction.mojom-webui.ts",
@@ -93,6 +92,10 @@ if (is_chromeos_ash) {
     "mojo/public/mojom/base/values.mojom-webui.ts",
     "url/mojom/url.mojom-webui.ts",
   ]
+}
+
+if (is_mac || is_win || is_linux) {
+  mojo_ts_files += [ "mojo/public/mojom/base/version.mojom-webui.ts" ]
 }
 
 preprocess_if_expr("copy_mojo_ts") {
@@ -110,9 +113,11 @@ preprocess_if_expr("copy_mojo_ts") {
     "//url/mojom:url_mojom_origin_ts__generator",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [
       "//chromeos/ash/services/auth_factor_config/public/mojom:mojom_ts__generator",
+      "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_ts__generator",
+      "//chromeos/ash/services/cellular_setup/public/mojom:mojom_ts__generator",
       "//chromeos/ash/services/connectivity/public/mojom:mojom_ts__generator",
       "//chromeos/ash/services/hotspot_config/public/mojom:mojom_ts__generator",
       "//chromeos/ash/services/nearby/public/mojom:nearby_share_settings_ts__generator",
@@ -129,7 +134,7 @@ preprocess_if_expr("copy_mojo_ts") {
   }
 }
 
-if (is_chromeos_ash) {
+if (is_chromeos) {
   # Move all the files out of mojom-webui to the expected location.
   preprocess_if_expr("copy_mojo") {
     visibility = [ ":build_ts" ]
@@ -140,8 +145,6 @@ if (is_chromeos_ash) {
 
     deps = [
       "//chromeos/ash/components/multidevice/mojom:mojom_js__generator",
-      "//chromeos/ash/services/bluetooth_config/public/mojom:mojom_js__generator",
-      "//chromeos/ash/services/cellular_setup/public/mojom:mojom_js__generator",
       "//chromeos/ash/services/device_sync/public/mojom:mojom_js__generator",
       "//chromeos/ash/services/multidevice_setup/public/mojom:mojom_js__generator",
       "//chromeos/services/network_config/public/mojom:mojom_js__generator",
@@ -162,7 +165,7 @@ ts_library("build_ts") {
 
   in_files = mojo_ts_files
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     in_files += mojo_js_files
   }
 
@@ -172,7 +175,7 @@ ts_library("build_ts") {
     ":copy_bindings_dts",
     ":copy_mojo_ts",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     extra_deps += [ ":copy_mojo" ]
   }
 

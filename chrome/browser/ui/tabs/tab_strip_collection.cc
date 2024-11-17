@@ -35,17 +35,17 @@ size_t TabStripCollection::IndexOfFirstNonPinnedTab() const {
   return pinned_collection_->TabCountRecursive();
 }
 
-bool TabStripCollection::ContainsTab(TabModel* tab_model) const {
-  CHECK(tab_model);
+bool TabStripCollection::ContainsTab(const TabInterface* tab) const {
+  CHECK(tab);
 
   return false;
 }
 
-bool TabStripCollection::ContainsTabRecursive(TabModel* tab_model) const {
-  CHECK(tab_model);
+bool TabStripCollection::ContainsTabRecursive(const TabInterface* tab) const {
+  CHECK(tab);
 
-  return pinned_collection_->ContainsTabRecursive(tab_model) ||
-         unpinned_collection_->ContainsTabRecursive(tab_model);
+  return pinned_collection_->ContainsTabRecursive(tab) ||
+         unpinned_collection_->ContainsTabRecursive(tab);
 }
 
 void TabStripCollection::AddTabRecursive(
@@ -153,13 +153,13 @@ bool TabStripCollection::ContainsCollection(TabCollection* collection) const {
 }
 
 std::optional<size_t> TabStripCollection::GetIndexOfTabRecursive(
-    const TabModel* tab_model) const {
-  CHECK(tab_model);
+    const TabInterface* tab) const {
+  CHECK(tab);
 
   // Check if the tab is present in the pinned collection first and return the
   // index if it is present.
   std::optional<size_t> pinned_index =
-      pinned_collection_->GetIndexOfTabRecursive(tab_model);
+      pinned_collection_->GetIndexOfTabRecursive(tab);
   if (pinned_index.has_value()) {
     return pinned_index.value();
   }
@@ -168,7 +168,7 @@ std::optional<size_t> TabStripCollection::GetIndexOfTabRecursive(
   // pinned tab collection and return the correct index taking pinned tabs into
   // account.
   std::optional<size_t> unpinned_index =
-      unpinned_collection_->GetIndexOfTabRecursive(tab_model);
+      unpinned_collection_->GetIndexOfTabRecursive(tab);
   if (unpinned_index.has_value()) {
     return pinned_collection_->TabCountRecursive() + unpinned_index.value();
   }
@@ -224,9 +224,8 @@ size_t TabStripCollection::ChildCount() const {
   return impl_->GetChildrenCount();
 }
 
-size_t TabStripCollection::TabCountRecursive() const {
-  return pinned_collection_->TabCountRecursive() +
-         unpinned_collection_->TabCountRecursive();
+size_t TabStripCollection::TotalTabCount() const {
+  return TabCountRecursive();
 }
 
 TabGroupTabCollection* TabStripCollection::MaybeCreateNewGroupCollectionForTab(

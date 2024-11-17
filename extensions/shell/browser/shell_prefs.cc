@@ -21,7 +21,7 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/permissions_manager.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/audio/audio_devices_pref_handler_impl.h"
 #endif
 
@@ -33,7 +33,7 @@ namespace {
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   sessions::SessionIdGenerator::RegisterPrefs(registry);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::AudioDevicesPrefHandlerImpl::RegisterPrefs(registry);
 #endif
 }

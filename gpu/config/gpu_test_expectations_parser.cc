@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "gpu/config/gpu_test_expectations_parser.h"
 
 #include <stddef.h>
@@ -97,7 +92,7 @@ struct TokenInfo {
   int32_t flag;
 };
 
-const TokenInfo kTokenData[] = {
+const std::array<TokenInfo, 42> kTokenData = {{
     {"win10", GPUTestConfig::kOsWin10},
     {"win", GPUTestConfig::kOsWin},
     {"snowleopard", GPUTestConfig::kOsMacSnowLeopard},
@@ -140,7 +135,7 @@ const TokenInfo kTokenData[] = {
     {"skip", GPUTestExpectationsParser::kGpuTestSkip},
     {":", 0},
     {"=", 0},
-};
+}};
 
 enum ErrorType {
   kErrorFileIO = 0,
@@ -158,7 +153,7 @@ enum ErrorType {
   kNumberOfErrors,
 };
 
-const char* kErrorMessage[] = {
+const std::array<const char* const, 11> kErrorMessage = {
     "file IO failed",
     "entry with wrong format",
     "entry invalid, likely wrong modifiers combination",

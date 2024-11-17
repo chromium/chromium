@@ -28,13 +28,14 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.shadow.api.Shadow;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageWrapper;
 import org.chromium.components.messages.MessagesFactory;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -43,8 +44,6 @@ import org.chromium.ui.base.WindowAndroid;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SurveyUiDelegateBridgeUnitTest {
     private static final long TEST_NATIVE_POINTER = 123541L;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Rule
     public TestSurveyUtils.TestSurveyComponentRule mSurveyTestRule =
@@ -55,18 +54,23 @@ public class SurveyUiDelegateBridgeUnitTest {
     @Mock private SurveyUiDelegateBridge.Natives mMockSurveyUiDelegateBridge;
     @Mock private ManagedMessageDispatcher mMockMessageDispatcher;
     @Mock private TabModelSelector mTabModelSelector;
+    @Mock private InsetObserver mInsetObserver;
 
     private Activity mActivity;
     private WindowAndroid mWindow;
 
     @Before
     public void setup() {
-        mJniMocker.mock(SurveyUiDelegateBridgeJni.TEST_HOOKS, mMockSurveyUiDelegateBridge);
+        SurveyUiDelegateBridgeJni.setInstanceForTesting(mMockSurveyUiDelegateBridge);
 
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mWindow =
                 new ActivityWindowAndroid(
-                        mActivity, false, IntentRequestTracker.createFromActivity(mActivity));
+                        mActivity,
+                        false,
+                        IntentRequestTracker.createFromActivity(mActivity),
+                        mInsetObserver,
+                        /* trackOcclusion= */ false);
         MessagesFactory.attachMessageDispatcher(mWindow, mMockMessageDispatcher);
         TabModelSelectorSupplier.setInstanceForTesting(mTabModelSelector);
     }
@@ -83,7 +87,10 @@ public class SurveyUiDelegateBridgeUnitTest {
         SurveyUiDelegate delegate = SurveyUiDelegateBridge.create(TEST_NATIVE_POINTER);
         assertNotNull(delegate);
 
-        delegate.showSurveyInvitation(() -> {}, () -> {}, () -> {});
+        delegate.showSurveyInvitation(
+                CallbackUtils.emptyRunnable(),
+                CallbackUtils.emptyRunnable(),
+                CallbackUtils.emptyRunnable());
         verify(mMockSurveyUiDelegateBridge)
                 .showSurveyInvitation(eq(TEST_NATIVE_POINTER), notNull(), notNull(), notNull());
 

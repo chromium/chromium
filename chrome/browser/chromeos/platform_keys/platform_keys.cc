@@ -144,7 +144,7 @@ crosapi::mojom::KeystoreError StatusToKeystoreError(Status status) {
     case Status::kNetErrorCertificateInvalid:
       return KeystoreError::kNetCertificateInvalid;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 Status StatusFromKeystoreError(crosapi::mojom::KeystoreError error) {
@@ -158,8 +158,7 @@ Status StatusFromKeystoreError(crosapi::mojom::KeystoreError error) {
     case KeystoreError::kMojoUnavailable:
     case KeystoreError::kUnsupportedKeyType:
       // Keystore specific errors shouldn't be passed here.
-      NOTREACHED_IN_MIGRATION();
-      return Status::kErrorInternal;
+      NOTREACHED();
 
     case KeystoreError::kAlgorithmNotSupported:
       return Status::kErrorAlgorithmNotSupported;
@@ -193,7 +192,7 @@ Status StatusFromKeystoreError(crosapi::mojom::KeystoreError error) {
       return Status::kNetErrorCertificateInvalid;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string KeystoreErrorToString(crosapi::mojom::KeystoreError error) {

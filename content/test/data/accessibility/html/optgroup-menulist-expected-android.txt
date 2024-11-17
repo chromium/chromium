@@ -1,6 +1,6 @@
 android.webkit.WebView focusable
 ++android.view.View
-++++android.view.View role_description='menu pop up button' clickable expanded focusable name='Transformer'
+++++android.view.View role_description='menu pop up button' clickable expanded focusable name='Random Transformer' hint='Transformer'
 ++++++android.view.View
 ++++++++android.view.View clickable focusable focused selected name='Random Transformer'
 ++++++++android.view.View name='group 1'

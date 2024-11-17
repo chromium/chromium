@@ -33,20 +33,23 @@ import java.util.TimeZone;
 /**
  * Controller for Chrome's tracing feature.
  *
- * We don't have any UI per se. Just call startTracing() to start and
- * stopTracing() to stop. We'll report progress to the user with Toasts.
+ * <p>We don't have any UI per se. Just call startTracing() to start and stopTracing() to stop.
+ * We'll report progress to the user with Toasts.
  *
- * If the host application registers this class's BroadcastReceiver, you can
- * also start and stop the tracer with a broadcast intent, as follows:
+ * <p>If the host application registers this class's BroadcastReceiver, you can also start and stop
+ * the tracer with a broadcast intent, as follows:
+ *
  * <ul>
- * <li>To start tracing: am broadcast -a org.chromium.content_shell_apk.GPU_PROFILER_START
- * <li>Add "-e file /foo/bar/xyzzy" to log trace data to a specific file.
- * <li>To stop tracing: am broadcast -a org.chromium.content_shell_apk.GPU_PROFILER_STOP
+ *   <li>To start tracing: am broadcast -a org.chromium.content_shell_apk.GPU_PROFILER_START
+ *   <li>Add "-e file /foo/bar/xyzzy" to log trace data to a specific file.
+ *   <li>To stop tracing: am broadcast -a org.chromium.content_shell_apk.GPU_PROFILER_STOP
  * </ul>
- * Note that the name of these intents change depending on which application
- * is being traced, but the general form is [app package name].GPU_PROFILER_{START,STOP}.
+ *
+ * Note that the name of these intents change depending on which application is being traced, but
+ * the general form is [app package name].GPU_PROFILER_{START,STOP}.
  */
 @JNINamespace("content")
+@SuppressWarnings("InlineFormatString")
 public class TracingControllerAndroidImpl implements TracingControllerAndroid {
     private static final String TAG = "TracingController";
 
@@ -98,10 +101,7 @@ public class TracingControllerAndroidImpl implements TracingControllerAndroid {
                 context, getBroadcastReceiver(), getIntentFilter(), null);
     }
 
-    /**
-     * Unregister the GPU BroadcastReceiver in the given context.
-     * @param context
-     */
+    /** Unregister the GPU BroadcastReceiver in the given context. */
     public void unregisterReceiver(Context context) {
         context.unregisterReceiver(getBroadcastReceiver());
     }

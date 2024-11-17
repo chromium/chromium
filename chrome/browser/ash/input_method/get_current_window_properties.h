@@ -9,7 +9,6 @@
 
 #include <optional>
 
-#include "base/functional/callback.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -20,10 +19,7 @@ struct WindowProperties {
   std::string arc_package_name;
 };
 
-using GetFocusedTabUrlCallback =
-    base::OnceCallback<void(const std::optional<GURL>&)>;
-
-void GetFocusedTabUrl(GetFocusedTabUrlCallback callback);
+std::optional<GURL> GetFocusedTabUrl();
 
 WindowProperties GetFocusedWindowProperties();
 

@@ -172,12 +172,6 @@ void MediaStreamVideoCapturerSource::ChangeSourceImpl(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(device_capturer_factory_callback_);
 
-  if (!base::FeatureList::IsEnabled(
-          features::kAllowSourceSwitchOnPausedVideoMediaStream) &&
-      state_ != kStarted) {
-    return;
-  }
-
   if (state_ != kStarted && state_ != kStoppedForRestart) {
     return;
   }
@@ -257,6 +251,9 @@ void MediaStreamVideoCapturerSource::OnRunStateChanged(
             break;
           case RunState::kCameraBusyError:
             result = MediaStreamRequestResult::DEVICE_IN_USE;
+            break;
+          case RunState::kStartTimeoutError:
+            result = MediaStreamRequestResult::START_TIMEOUT;
             break;
           default:
             result = MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO;

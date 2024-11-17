@@ -9,6 +9,8 @@
 
 #include "ash/webui/media_app_ui/media_app_guest_ui.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/grit/ash_media_app_resources.h"
 #include "ash/webui/media_app_ui/url_constants.h"
@@ -22,6 +24,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/task/thread_pool.h"
+#include "chromeos/ash/components/mantis/media_app/mantis_media_app_untrusted_service.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources.h"
 #include "chromeos/grit/chromeos_media_app_bundle_resources_map.h"
 #include "content/public/browser/navigation_handle.h"
@@ -272,36 +275,44 @@ void MediaAppGuestUI::BindInterface(
 }
 
 void MediaAppGuestUI::BindInterface(
-    mojo::PendingReceiver<media_app_ui::mojom::UntrustedPageHandlerFactory>
+    mojo::PendingReceiver<media_app_ui::mojom::UntrustedServiceFactory>
         receiver) {
-  if (untrusted_page_handler_factory_.is_bound()) {
-    untrusted_page_handler_factory_.reset();
+  if (untrusted_service_factory_.is_bound()) {
+    untrusted_service_factory_.reset();
   }
-  untrusted_page_handler_factory_.Bind(std::move(receiver));
+  untrusted_service_factory_.Bind(std::move(receiver));
 }
 
-void MediaAppGuestUI::CreateOcrUntrustedPageHandler(
-    mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedPageHandler>
-        receiver,
+void MediaAppGuestUI::CreateOcrUntrustedService(
+    mojo::PendingReceiver<media_app_ui::mojom::OcrUntrustedService> receiver,
     mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page) {
-  delegate_->CreateAndBindOcrHandler(
+  delegate_->CreateAndBindOcrUntrustedService(
       *web_ui()->GetWebContents()->GetBrowserContext(),
       web_ui()->GetWebContents()->GetTopLevelNativeWindow(),
       std::move(receiver), std::move(page));
 }
 
-void MediaAppGuestUI::CreateMahiUntrustedPageHandler(
-    mojo::PendingReceiver<media_app_ui::mojom::MahiUntrustedPageHandler>
-        receiver,
+void MediaAppGuestUI::CreateMahiUntrustedService(
+    mojo::PendingReceiver<media_app_ui::mojom::MahiUntrustedService> receiver,
     mojo::PendingRemote<media_app_ui::mojom::MahiUntrustedPage> page,
     const std::string& file_name) {
-  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppPdfMahi)) {
+  delegate_->CreateAndBindMahiUntrustedService(
+      std::move(receiver), std::move(page), file_name,
+      web_ui()->GetWebContents()->GetTopLevelNativeWindow());
+}
+
+void MediaAppGuestUI::CreateMantisUntrustedService(
+    mojo::PendingReceiver<media_app_ui::mojom::MantisMediaAppUntrustedService>
+        receiver) {
+  if (!base::FeatureList::IsEnabled(ash::features::kMediaAppImageMantis)) {
+    untrusted_service_factory_.ReportBadMessage(
+        "Trying to bind interface when flag is not enabled.");
     return;
   }
 
-  delegate_->CreateAndBindMahiHandler(
-      std::move(receiver), std::move(page), file_name,
-      web_ui()->GetWebContents()->GetTopLevelNativeWindow());
+  // Mantis does not live in //chrome, no need to use delegate.
+  mantis_untrusted_service_ =
+      std::make_unique<MantisMediaAppUntrustedService>(std::move(receiver));
 }
 
 MediaAppUserActions GetMediaAppUserActionsForHappinessTracking() {

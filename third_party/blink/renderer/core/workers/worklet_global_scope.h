@@ -217,6 +217,10 @@ class CORE_EXPORT WorkletGlobalScope
   // and to store generated code cache to disk.
   std::unique_ptr<CodeCacheHost> code_cache_host_;
 
+  // The interface through which the worklet may request interfaces from the
+  // browser. It's currently only set for SharedStorageWorklet.
+  blink::BrowserInterfaceBrokerProxyImpl browser_interface_broker_proxy_;
+
   // A PendingRemote for use in threaded worklets that gets created from the
   // parent frame's BrowserInterfaceBroker and used when instantiating the
   // worklet's PublicURLManager. This remote is used for Blob URL related

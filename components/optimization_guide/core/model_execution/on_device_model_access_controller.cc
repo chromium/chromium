@@ -32,6 +32,18 @@ OnDeviceModelValidationResult ConvertToOnDeviceModelValidationResult(
   return static_cast<OnDeviceModelValidationResult>(value);
 }
 
+base::Time GetNextAttemptAfterBackoff(int current_count,
+                                      int disable_count,
+                                      base::TimeDelta min_backoff,
+                                      base::TimeDelta max_backoff) {
+  int diff = current_count - disable_count;
+  if (diff < 0) {
+    return base::Time::Now();
+  }
+  int scale_factor = pow(2, diff);
+  return base::Time::Now() + std::min(max_backoff, scale_factor * min_backoff);
+}
+
 }  // namespace
 
 OnDeviceModelAccessController::OnDeviceModelAccessController(
@@ -67,11 +79,13 @@ OnDeviceModelAccessController::ShouldStartNewSession() const {
     return OnDeviceModelEligibilityReason::kGpuBlocked;
   }
   if (pref_service_->GetInteger(kOnDeviceModelCrashCount) >=
-      features::GetOnDeviceModelCrashCountBeforeDisable()) {
+          features::GetOnDeviceModelCrashCountBeforeDisable() &&
+      base::Time::Now() < next_attempt_time_after_crash_) {
     return OnDeviceModelEligibilityReason::kTooManyRecentCrashes;
   }
   if (pref_service_->GetInteger(kOnDeviceModelTimeoutCount) >=
-      features::GetOnDeviceModelTimeoutCountBeforeDisable()) {
+          features::GetOnDeviceModelTimeoutCountBeforeDisable() &&
+      base::Time::Now() < next_attempt_time_after_timeout_) {
     return OnDeviceModelEligibilityReason::kTooManyRecentTimeouts;
   }
   if (features::IsOnDeviceModelValidationEnabled() &&
@@ -90,12 +104,19 @@ OnDeviceModelAccessController::ShouldStartNewSession() const {
 void OnDeviceModelAccessController::OnResponseCompleted() {
   pref_service_->SetInteger(kOnDeviceModelCrashCount, 0);
   pref_service_->SetInteger(kOnDeviceModelTimeoutCount, 0);
+  next_attempt_time_after_crash_ = base::Time::Now();
+  next_attempt_time_after_timeout_ = base::Time::Now();
 }
 
 void OnDeviceModelAccessController::OnDisconnectedFromRemote() {
-  pref_service_->SetInteger(
-      kOnDeviceModelCrashCount,
-      pref_service_->GetInteger(kOnDeviceModelCrashCount) + 1);
+  int crash_count = pref_service_->GetInteger(kOnDeviceModelCrashCount) + 1;
+  pref_service_->SetInteger(kOnDeviceModelCrashCount, crash_count);
+  // If the model will be disabled because of crash count, use exponential
+  // backoff to re-enable.
+  next_attempt_time_after_crash_ = GetNextAttemptAfterBackoff(
+      crash_count, features::GetOnDeviceModelCrashCountBeforeDisable(),
+      features::GetOnDeviceModelCrashBackoffBaseTime(),
+      features::GetOnDeviceModelMaxCrashBackoffTime());
 }
 
 void OnDeviceModelAccessController::OnGpuBlocked() {
@@ -103,9 +124,14 @@ void OnDeviceModelAccessController::OnGpuBlocked() {
 }
 
 void OnDeviceModelAccessController::OnSessionTimedOut() {
-  pref_service_->SetInteger(
-      kOnDeviceModelTimeoutCount,
-      pref_service_->GetInteger(kOnDeviceModelTimeoutCount) + 1);
+  int timeout_count = pref_service_->GetInteger(kOnDeviceModelTimeoutCount) + 1;
+  pref_service_->SetInteger(kOnDeviceModelTimeoutCount, timeout_count);
+  // If the model will be disabled because of timeout count, use exponential
+  // backoff to re-enable.
+  next_attempt_time_after_timeout_ = GetNextAttemptAfterBackoff(
+      timeout_count, features::GetOnDeviceModelTimeoutCountBeforeDisable(),
+      features::GetOnDeviceModelTimeoutBackoffBaseTime(),
+      features::GetOnDeviceModelMaxTimeoutBackoffTime());
 }
 
 bool OnDeviceModelAccessController::ShouldValidateModel(

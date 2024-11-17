@@ -733,6 +733,18 @@ Called by update_autofill_enums.py.-->
   <int value="10368"
       label="IMPROVED_PREDICTION: Not autofilled or autofilled value edited"/>
   <int value="10369" label="IMPROVED_PREDICTION: Autofilled value accepted"/>
+  <int value="10432"
+      label="ALTERNATIVE_FULL_NAME: Not autofilled or autofilled value edited"/>
+  <int value="10433" label="ALTERNATIVE_FULL_NAME: Autofilled value accepted"/>
+  <int value="10496"
+      label="ALTERNATIVE_GIVEN_NAME: Not autofilled or autofilled value
+             edited"/>
+  <int value="10497" label="ALTERNATIVE_GIVEN_NAME: Autofilled value accepted"/>
+  <int value="10560"
+      label="ALTERNATIVE_FAMILY_NAME: Not autofilled or autofilled value
+             edited"/>
+  <int value="10561"
+      label="ALTERNATIVE_FAMILY_NAME: Autofilled value accepted"/>
 </enum>
 
 <enum name="AutofillDeveloperEngagement">
@@ -955,6 +967,12 @@ Called by update_autofill_enums.py.-->
   <int value="2561" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: accepted"/>
   <int value="2592" label="IMPROVED_PREDICTION: edited"/>
   <int value="2593" label="IMPROVED_PREDICTION: accepted"/>
+  <int value="2608" label="ALTERNATIVE_FULL_NAME: edited"/>
+  <int value="2609" label="ALTERNATIVE_FULL_NAME: accepted"/>
+  <int value="2624" label="ALTERNATIVE_GIVEN_NAME: edited"/>
+  <int value="2625" label="ALTERNATIVE_GIVEN_NAME: accepted"/>
+  <int value="2640" label="ALTERNATIVE_FAMILY_NAME: edited"/>
+  <int value="2641" label="ALTERNATIVE_FAMILY_NAME: accepted"/>
 </enum>
 
 <enum name="AutofillErrorDialogType">
@@ -1663,6 +1681,20 @@ Called by update_autofill_enums.py.-->
       label="STANDALONE_CREDIT_CARD_VERIFICATION: False Negative (Mismatch)"/>
   <int value="12041"
       label="STANDALONE_CREDIT_CARD_VERIFICATION: False Negative (Unknown)"/>
+  <int value="12288" label="PREDICTION_IMPROVEMENTS: True Positive"/>
+  <int value="12289"
+      label="PREDICTION_IMPROVEMENTS: True Negative (Ambiguous)"/>
+  <int value="12290" label="PREDICTION_IMPROVEMENTS: True Negative (Unknown)"/>
+  <int value="12291" label="PREDICTION_IMPROVEMENTS: True Negative (Empty)"/>
+  <int value="12292"
+      label="PREDICTION_IMPROVEMENTS: False Positive (Mismatch)"/>
+  <int value="12293"
+      label="PREDICTION_IMPROVEMENTS: False Positive (Ambiguous)"/>
+  <int value="12294" label="PREDICTION_IMPROVEMENTS: False Positive (Unknown)"/>
+  <int value="12295" label="PREDICTION_IMPROVEMENTS: False Positive (Empty)"/>
+  <int value="12296"
+      label="PREDICTION_IMPROVEMENTS: False Negative (Mismatch)"/>
+  <int value="12297" label="PREDICTION_IMPROVEMENTS: False Negative (Unknown)"/>
 </enum>
 
 <enum name="AutofillFieldType">
@@ -1769,6 +1801,24 @@ Called by update_autofill_enums.py.-->
   <int value="160" label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES"/>
   <int value="161" label="SERVER_RESPONSE_PENDING"/>
   <int value="162" label="IMPROVED_PREDICTION"/>
+  <int value="163" label="ALTERNATIVE_FULL_NAME"/>
+  <int value="164" label="ALTERNATIVE_GIVEN_NAME"/>
+  <int value="165" label="ALTERNATIVE_FAMILY_NAME"/>
+</enum>
+
+<enum name="AutofillFilledCardInformationBubbleFieldClicked">
+  <int value="0" label="Card number"/>
+  <int value="1" label="Expiration month"/>
+  <int value="2" label="Expiration year"/>
+  <int value="3" label="Cardholder name"/>
+  <int value="4" label="CVC"/>
+</enum>
+
+<enum name="AutofillFilledCardInformationBubbleResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="User closed bubble via corner X"/>
+  <int value="2" label="User did not interact with the bubble"/>
+  <int value="3" label="[Deprecated] Bubble lost focus and was deactivated"/>
 </enum>
 
 <enum name="AutofillFillingMethodMetric">
@@ -2140,6 +2190,14 @@ Called by update_autofill_enums.py.-->
   <int value="4"
       label="OTP input dialog closed automatically after a server failure
              response"/>
+</enum>
+
+<enum name="AutofillPaymentMethodsActionEnum">
+  <int value="0" label="Added with nickname"/>
+  <int value="1" label="Added without nickname"/>
+  <int value="2" label="Deleted"/>
+  <int value="3" label="Editor closed with changes"/>
+  <int value="4" label="Editor closed without changes"/>
 </enum>
 
 <enum name="AutofillPopupInteraction">
@@ -3723,6 +3781,54 @@ Called by update_autofill_enums.py.-->
   <int value="978"
       label="IMPROVED_PREDICTION - Predictions different - Value agrees with
              both predictions"/>
+  <int value="979"
+      label="ALTERNATIVE_FULL_NAME - Predictions equal - Value agrees"/>
+  <int value="980"
+      label="ALTERNATIVE_FULL_NAME - Predictions equal - Value disagrees"/>
+  <int value="981"
+      label="ALTERNATIVE_FULL_NAME - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="982"
+      label="ALTERNATIVE_FULL_NAME - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="983"
+      label="ALTERNATIVE_FULL_NAME - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="984"
+      label="ALTERNATIVE_FULL_NAME - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="985"
+      label="ALTERNATIVE_GIVEN_NAME - Predictions equal - Value agrees"/>
+  <int value="986"
+      label="ALTERNATIVE_GIVEN_NAME - Predictions equal - Value disagrees"/>
+  <int value="987"
+      label="ALTERNATIVE_GIVEN_NAME - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="988"
+      label="ALTERNATIVE_GIVEN_NAME - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="989"
+      label="ALTERNATIVE_GIVEN_NAME - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="990"
+      label="ALTERNATIVE_GIVEN_NAME - Predictions different - Value agrees
+             with both predictions"/>
+  <int value="991"
+      label="ALTERNATIVE_FAMILY_NAME - Predictions equal - Value agrees"/>
+  <int value="992"
+      label="ALTERNATIVE_FAMILY_NAME - Predictions equal - Value disagrees"/>
+  <int value="993"
+      label="ALTERNATIVE_FAMILY_NAME - Predictions different - Value agrees
+             with old prediction"/>
+  <int value="994"
+      label="ALTERNATIVE_FAMILY_NAME - Predictions different - Value agrees
+             with new prediction"/>
+  <int value="995"
+      label="ALTERNATIVE_FAMILY_NAME - Predictions different - Value agrees
+             with neither prediction"/>
+  <int value="996"
+      label="ALTERNATIVE_FAMILY_NAME - Predictions different - Value agrees
+             with both predictions"/>
 </enum>
 
 <enum name="AutofillPreferenceSetter">
@@ -3999,17 +4105,12 @@ Called by update_autofill_enums.py.-->
       label="SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES: Empty on page load"/>
   <int value="2592" label="IMPROVED_PREDICTION: Pre-filled on page load"/>
   <int value="2593" label="IMPROVED_PREDICTION: Empty on page load"/>
-</enum>
-
-<enum name="AutofillPreFilledValueStatus">
-  <int value="0" label="Not changed"/>
-  <int value="1" label="Pre-filled value manually restored after Autofill"/>
-  <int value="2" label="Pre-filled value restored by Autofill"/>
-  <int value="3" label="Changed to empty"/>
-  <int value="4" label="Manually changed to what would have been filled"/>
-  <int value="5"
-      label="Changed to another value of the corresponding field type"/>
-  <int value="6" label="Changed to a value of a different or unknown type"/>
+  <int value="2608" label="ALTERNATIVE_FULL_NAME: Pre-filled on page load"/>
+  <int value="2609" label="ALTERNATIVE_FULL_NAME: Empty on page load"/>
+  <int value="2624" label="ALTERNATIVE_GIVEN_NAME: Pre-filled on page load"/>
+  <int value="2625" label="ALTERNATIVE_GIVEN_NAME: Empty on page load"/>
+  <int value="2640" label="ALTERNATIVE_FAMILY_NAME: Pre-filled on page load"/>
+  <int value="2641" label="ALTERNATIVE_FAMILY_NAME: Empty on page load"/>
 </enum>
 
 <enum name="AutofillProfileImportDecision">
@@ -4358,6 +4459,19 @@ Called by update_autofill_enums.py.-->
              only to Compose suggestions."/>
 </enum>
 
+<!-- LINT.IfChange(AutofillSyncDisabledReason) -->
+
+<enum name="AutofillSyncDisabledReason">
+  <int value="0" label="User is not signed in"/>
+  <int value="1" label="Sync service disabled by policy"/>
+  <int value="2" label="Sync type selected but not active"/>
+  <int value="3" label="Sync type disabled by policy"/>
+  <int value="4" label="Sync type disabled by custodian"/>
+  <int value="5" label="Sync type presumably disabled by user"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/autofill/core/browser/metrics/autofill_settings_metrics.h:SyncDisabledReason) -->
+
 <enum name="AutofillSyncState">
   <int value="0" label="Signed Out"/>
   <int value="1" label="Signed In"/>
@@ -4417,21 +4531,6 @@ Called by update_autofill_enums.py.-->
 <enum name="AutofillVirtualCardEnrollmentStrikeDatabaseEvent">
   <int value="0" label="One strike logged"/>
   <int value="1" label="All strikes cleared"/>
-</enum>
-
-<enum name="AutofillVirtualCardManualFallbackBubbleFieldClicked">
-  <int value="0" label="Card number"/>
-  <int value="1" label="Expiration month"/>
-  <int value="2" label="Expiration year"/>
-  <int value="3" label="Cardholder name"/>
-  <int value="4" label="CVC"/>
-</enum>
-
-<enum name="AutofillVirtualCardManualFallbackBubbleResult">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="User closed bubble via corner X"/>
-  <int value="2" label="User did not interact with the bubble"/>
-  <int value="3" label="[Deprecated] Bubble lost focus and was deactivated"/>
 </enum>
 
 <enum name="AutofillWebauthnOptInPromoUserDecision">
@@ -4518,6 +4617,11 @@ Called by update_autofill_enums.py.-->
 <enum name="BooleanHadPredictions">
   <int value="0" label="No predictions"/>
   <int value="1" label="Has predictions"/>
+</enum>
+
+<enum name="BooleanPredictionQualityByLabelSource">
+  <int value="0" label="Possible types didn't contain heuristic type"/>
+  <int value="1" label="Possible types contained heuristic type"/>
 </enum>
 
 <enum name="BooleanPreviouslyShown">
@@ -4779,6 +4883,8 @@ Called by update_autofill_enums.py.-->
       label="&lt;label&gt; for attribute linked to a control element inside a
              shadow DOM via its name attribute"/>
   <int value="15" label="Succeeding DOM node overlaying the input"/>
+  <int value="16"
+      label="The text of a &lt;select&gt; element's first &lt;option&gt;"/>
 </enum>
 
 <enum name="LocalCardMigrationPrompt">
@@ -5005,6 +5111,7 @@ Called by update_autofill_enums.py.-->
   <int value="57" label="Plus address error"/>
   <int value="58" label="Prediction improvements details"/>
   <int value="59" label="Prediction improvements error"/>
+  <int value="60" label="Edit prediction improvements information"/>
 </enum>
 
 <enum name="TouchToFill.CreditCard.Outcome">

@@ -26,7 +26,6 @@ import jp.tomorrowkey.android.gifplayer.BaseGifImage;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -37,7 +36,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.logo.LogoUtils.LogoSizeForLogoPolish;
 import org.chromium.components.image_fetcher.ImageFetcher;
@@ -61,8 +59,6 @@ public class LogoViewBinderUnitTest {
     private static final String ANIMATED_LOGO_URL =
             "https://www.gstatic.com/chrome/ntp/doodle_test/ddljson_android4.json";
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private LogoView mMockLogoView;
 
     @Mock LogoBridge.Natives mLogoBridgeJniMock;
@@ -76,12 +72,12 @@ public class LogoViewBinderUnitTest {
         public final CallbackHelper hideLoadingCallback = new CallbackHelper();
 
         @Override
-        public void onShowLoadingUIComplete() {
+        public void onShowLoadingUiComplete() {
             showLoadingCallback.notifyCalled();
         }
 
         @Override
-        public void onHideLoadingUIComplete() {
+        public void onHideLoadingUiComplete() {
             hideLoadingCallback.notifyCalled();
         }
     }
@@ -89,7 +85,7 @@ public class LogoViewBinderUnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(LogoBridgeJni.TEST_HOOKS, mLogoBridgeJniMock);
+        LogoBridgeJni.setInstanceForTesting(mLogoBridgeJniMock);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mLogoView = new LogoView(mActivity, null);
         LayoutParams params =
@@ -103,7 +99,6 @@ public class LogoViewBinderUnitTest {
                         /* context= */ null,
                         /* logoClickedCallback= */ null,
                         mLogoModel,
-                        /* shouldFetchDoodle= */ true,
                         /* onLogoAvailableCallback= */ null,
                         /* visibilityObserver= */ null,
                         /* defaultGoogleLogo= */ null);

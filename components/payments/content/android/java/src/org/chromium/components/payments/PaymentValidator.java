@@ -36,4 +36,3 @@ public class PaymentValidator {
         boolean validatePaymentValidationErrorsAndroid(ByteBuffer buffer);
     }
 }
-;

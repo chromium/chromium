@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.download.interstitial.DownloadIntersti
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.SECONDARY_BUTTON_TEXT;
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.STATE;
 import static org.chromium.chrome.browser.download.interstitial.DownloadInterstitialProperties.TITLE_TEXT;
+import static org.chromium.ui.modaldialog.ModalDialogManager.DialogName.DUPLICATE_DOWNLOAD_DIALOG;
 
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -24,6 +25,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.util.Pair;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.CollectionUtil;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -97,6 +99,7 @@ class DownloadInterstitialMediator {
         mProvider = provider;
         mSnackbarManager = snackbarManager;
         mModalDialogManager = modalDialogManager;
+        mModalDialogManager.addObserver(getModalDialogManagerObserver());
 
         mModel.set(ListProperties.ENABLE_ITEM_ANIMATIONS, true);
         mModel.set(ListProperties.CALLBACK_OPEN, this::onOpenItem);
@@ -105,13 +108,13 @@ class DownloadInterstitialMediator {
         mModel.set(ListProperties.CALLBACK_CANCEL, this::onCancelItem);
         mModel.set(ListProperties.CALLBACK_SHARE, this::onShareItem);
         mModel.set(ListProperties.CALLBACK_REMOVE, this::onDeleteItem);
-        mModel.set(ListProperties.PROVIDER_VISUALS, (i, w, h, c) -> (() -> {}));
+        mModel.set(ListProperties.PROVIDER_VISUALS, (i, w, h, c) -> CallbackUtils.emptyRunnable());
         mModel.set(ListProperties.CALLBACK_RENAME, this::onRenameItem);
         mModel.set(ListProperties.CALLBACK_SELECTION, (item) -> {});
 
         mObserver = getOfflineContentProviderObserver();
         mProvider.addObserver(mObserver);
-        UmaHelper.logUIAction(UmaHelper.Action.INITIATED);
+        UmaHelper.logUiAction(UmaHelper.Action.INITIATED);
     }
 
     void setModalDialogManager(ModalDialogManager modalDialogManager) {
@@ -157,7 +160,7 @@ class DownloadInterstitialMediator {
                         SECONDARY_BUTTON_TEXT, mContextSupplier.get().getString(R.string.delete));
                 mModel.set(SECONDARY_BUTTON_CALLBACK, mModel.get(ListProperties.CALLBACK_REMOVE));
                 mModel.set(SECONDARY_BUTTON_IS_VISIBLE, true);
-                UmaHelper.logUIAction(UmaHelper.Action.COMPLETED);
+                UmaHelper.logUiAction(UmaHelper.Action.COMPLETED);
                 break;
             case State.CANCELLED:
                 mModel.set(TITLE_TEXT, mContextSupplier.get().getString(R.string.menu_download));
@@ -188,30 +191,30 @@ class DownloadInterstitialMediator {
     private void onOpenItem(OfflineItem item) {
         OpenParams openParams = new OpenParams(LaunchLocation.DOWNLOAD_INTERSTITIAL);
         mProvider.openItem(openParams, mModel.get(DOWNLOAD_ITEM).id);
-        UmaHelper.logUIAction(UmaHelper.Action.OPENED);
+        UmaHelper.logUiAction(UmaHelper.Action.OPENED);
     }
 
     private void onPauseItem(OfflineItem item) {
         mProvider.pauseDownload(mModel.get(DOWNLOAD_ITEM).id);
-        UmaHelper.logUIAction(UmaHelper.Action.PAUSED);
+        UmaHelper.logUiAction(UmaHelper.Action.PAUSED);
     }
 
     private void onResumeItem(OfflineItem item) {
         if (mModel.get(STATE) == State.PAUSED) {
             mProvider.resumeDownload(mModel.get(DOWNLOAD_ITEM).id);
-            UmaHelper.logUIAction(UmaHelper.Action.RESUMED);
+            UmaHelper.logUiAction(UmaHelper.Action.RESUMED);
         } else {
             mModel.set(STATE, State.PENDING);
             mModel.get(DownloadInterstitialProperties.RELOAD_TAB).run();
             mModel.set(DOWNLOAD_ITEM, null);
-            UmaHelper.logUIAction(UmaHelper.Action.REINITIATED);
+            UmaHelper.logUiAction(UmaHelper.Action.REINITIATED);
         }
     }
 
     private void onCancelItem(OfflineItem item) {
         setState(State.CANCELLED);
         mProvider.cancelDownload(mModel.get(DOWNLOAD_ITEM).id);
-        UmaHelper.logUIAction(UmaHelper.Action.CANCELLED);
+        UmaHelper.logUiAction(UmaHelper.Action.CANCELLED);
     }
 
     private void onDeleteItem(OfflineItem item) {
@@ -223,7 +226,7 @@ class DownloadInterstitialMediator {
                                 showDeletedSnackbar();
                                 setState(State.CANCELLED);
                                 mProvider.removeItem(mModel.get(DOWNLOAD_ITEM).id);
-                                UmaHelper.logUIAction(UmaHelper.Action.DELETED);
+                                UmaHelper.logUiAction(UmaHelper.Action.DELETED);
                             }
                         });
         PropertyModel properties =
@@ -276,7 +279,7 @@ class DownloadInterstitialMediator {
 
     private void shareItemsInternal(Collection<OfflineItem> items) {
         ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.ANDROID_SHARE_SHEET);
-        UmaHelper.logUIAction(UmaHelper.Action.SHARED);
+        UmaHelper.logUiAction(UmaHelper.Action.SHARED);
 
         final Collection<Pair<OfflineItem, OfflineItemShareInfo>> shareInfo = new ArrayList<>();
         for (OfflineItem item : items) {
@@ -315,7 +318,7 @@ class DownloadInterstitialMediator {
         RenameDialogManager mRenameDialogManager =
                 new RenameDialogManager(mContextSupplier.get(), mModalDialogManager);
         mRenameDialogManager.startRename(name, callback);
-        UmaHelper.logUIAction(UmaHelper.Action.RENAMED);
+        UmaHelper.logUiAction(UmaHelper.Action.RENAMED);
     }
 
     private OfflineContentProvider.Observer getOfflineContentProviderObserver() {
@@ -359,6 +362,20 @@ class DownloadInterstitialMediator {
         };
     }
 
+    private ModalDialogManager.ModalDialogManagerObserver getModalDialogManagerObserver() {
+        return new ModalDialogManager.ModalDialogManagerObserver() {
+            @Override
+            public void onDialogSuppressed(PropertyModel model) {
+                if (DUPLICATE_DOWNLOAD_DIALOG == model.get(ModalDialogProperties.NAME)) {
+                    // If the duplicate download dialog is suppressed, we should continue with a
+                    // unique file name. This will dismiss the pending dialog in ModalDialogManager.
+                    model.get(ModalDialogProperties.CONTROLLER)
+                            .onClick(model, ModalDialogProperties.ButtonType.POSITIVE);
+                }
+            }
+        };
+    }
+
     @VisibleForTesting
     static class UmaHelper {
         /**
@@ -397,7 +414,7 @@ class DownloadInterstitialMediator {
             int NUM_ENTRIES = 10;
         }
 
-        public static void logUIAction(@Action int action) {
+        public static void logUiAction(@Action int action) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Download.Interstitial.UIAction", action, Action.NUM_ENTRIES);
         }

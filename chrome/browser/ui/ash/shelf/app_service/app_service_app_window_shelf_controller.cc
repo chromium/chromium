@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/public/cpp/app_types_util.h"
@@ -38,7 +39,6 @@
 #include "chrome/browser/ui/ash/shelf/arc_app_window.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/crostini_app_window.h"
-#include "chrome/browser/ui/ash/shelf/lacros_app_window.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -54,6 +54,7 @@
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/services/app_service/public/cpp/instance.h"
+#include "components/user_manager/user_manager.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
@@ -204,28 +205,6 @@ void AppServiceAppWindowShelfController::OnWindowInitialized(
   observed_windows_.AddObservation(window);
   if (arc_tracker_)
     arc_tracker_->AddCandidateWindow(window);
-
-  // When the visibility of the window changes and if it is not already on a
-  // shelf then it is added to a shelf by `ASAWSC::OnWindowVisibilityChanged()`
-  // but when the window is created as a minimized window there is no change in
-  // visible state and it is not added to the shelf. Hence, when a widget has a
-  // `initial_show_state_` as ui::mojom::WindowShowState::kMinimized, it should
-  // add itself to a shelf during initialization. The below code is applicable
-  // only for Lacros browser app.
-  auto shelf_id = GetShelfId(window);
-  if (!shelf_id.IsNull() &&
-      GetAppType(shelf_id.app_id) == apps::AppType::kStandaloneBrowser &&
-      widget->IsMinimized()) {
-    // Update |state|. The app must be started, and running state. If visible,
-    // set it as |kVisible|, otherwise, clear the visible bit.
-    apps::InstanceState state =
-        app_service_instance_helper_->CalculateVisibilityState(
-            window, /*visible=*/false);
-    app_service_instance_helper_->OnInstances(GetAppId(shelf_id.app_id), window,
-                                              shelf_id.launch_id, state);
-
-    RegisterWindow(window, shelf_id);
-  }
 }
 
 void AppServiceAppWindowShelfController::OnWindowPropertyChanged(
@@ -498,11 +477,6 @@ void AppServiceAppWindowShelfController::AddWindowToShelf(
             arc::ArcAppShelfId::FromString(shelf_id.app_id),
             views::Widget::GetWidgetForNativeWindow(window), this,
             owner()->profile());
-    app_window = app_window_ptr.get();
-    aura_window_to_app_window_[window] = std::move(app_window_ptr);
-  } else if (crosapi::browser_util::IsLacrosWindow(window)) {
-    auto app_window_ptr = std::make_unique<LacrosAppWindow>(
-        shelf_id, views::Widget::GetWidgetForNativeWindow(window));
     app_window = app_window_ptr.get();
     aura_window_to_app_window_[window] = std::move(app_window_ptr);
   } else if (crostini_tracker_ &&

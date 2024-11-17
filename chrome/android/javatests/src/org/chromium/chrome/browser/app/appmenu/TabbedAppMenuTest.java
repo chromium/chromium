@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import android.content.res.Configuration;
-import android.os.Build;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.ListView;
@@ -34,12 +33,10 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
@@ -69,10 +66,10 @@ import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
 import java.util.concurrent.Callable;
@@ -81,9 +78,6 @@ import java.util.concurrent.TimeoutException;
 /** Tests tabbed mode app menu popup. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableIf.Build(
-        sdk_is_greater_than = Build.VERSION_CODES.TIRAMISU,
-        message = "crbug.com/354278364")
 public class TabbedAppMenuTest {
     private static final int RENDER_TEST_REVISION = 2;
 
@@ -106,8 +100,6 @@ public class TabbedAppMenuTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_APP_MENU)
                     .build();
 
-    @Rule public final JniMocker mJniMocker = new JniMocker();
-
     @Mock private PasswordManagerUtilBridge.Natives mPasswordManagerUtilBridgeJniMock;
 
     private AppMenuHandler mAppMenuHandler;
@@ -116,7 +108,7 @@ public class TabbedAppMenuTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         // Prevent "GmsCore outdated" error from being exposed in bots with old version.
-        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
         when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), any()))
                 .thenReturn(false);
 
@@ -135,9 +127,6 @@ public class TabbedAppMenuTest {
 
         showAppMenuAndAssertMenuShown();
 
-        PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, () -> getListView().setSelection(0));
-        CriteriaHelper.pollInstrumentationThread(
-                () -> Criteria.checkThat(getCurrentFocusedRow(), Matchers.is(0)));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
     }
 
@@ -251,7 +240,7 @@ public class TabbedAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testHideMenuOnToggleOverview() throws TimeoutException {
         // App menu is shown during setup.
         Assert.assertTrue("App menu should be showing.", mAppMenuHandler.isAppMenuShowing());
@@ -296,7 +285,7 @@ public class TabbedAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main", "Bookmark", "RenderTest"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testBookmarkMenuItem() throws IOException {
         PropertyModel bookmarkStarPropertyModel =
                 AppMenuTestSupport.getMenuItemPropertyModel(
@@ -343,7 +332,7 @@ public class TabbedAppMenuTest {
     @Test
     @SmallTest
     @Feature({"Browser", "Main", "RenderTest"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testRequestDesktopSiteMenuItem_checkbox() throws IOException {
         Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
         boolean isRequestDesktopSite =
@@ -561,6 +550,13 @@ public class TabbedAppMenuTest {
                     AppMenuTestSupport.showAppMenu(
                             mActivityTestRule.getAppMenuCoordinator(), null, false);
                     Assert.assertTrue(mAppMenuHandler.isAppMenuShowing());
+                });
+
+        // Make sure the menu is ready to be selected.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    getListView().setSelection(0);
+                    Criteria.checkThat(getCurrentFocusedRow(), Matchers.is(0));
                 });
     }
 

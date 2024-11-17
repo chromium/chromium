@@ -21,7 +21,7 @@ DistillerJsRenderFrameObserver::DistillerJsRenderFrameObserver(
       distiller_isolated_world_id_(distiller_isolated_world_id),
       is_distiller_page_(false) {}
 
-DistillerJsRenderFrameObserver::~DistillerJsRenderFrameObserver() {}
+DistillerJsRenderFrameObserver::~DistillerJsRenderFrameObserver() = default;
 
 void DistillerJsRenderFrameObserver::DidStartNavigation(
     const GURL& url,

@@ -175,12 +175,6 @@ void PrintingAPIHandler::OnPrintJobSubmitted(
   DCHECK(!base::Contains(print_jobs_, cups_id));
   print_jobs_[cups_id] = PrintJobInfo{printer_id, info.job_id, extension_id};
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NotifyAshJobCreated(info.job_id, *info.document,
-                      crosapi::mojom::PrintJob::Source::kExtension,
-                      extension_id, local_printer_);
-#endif
-
   if (!extension_registry_->enabled_extensions().Contains(extension_id)) {
     return;
   }
@@ -312,7 +306,7 @@ void PrintingAPIHandler::OnPrintJobUpdateDeprecated(
     const std::string& printer_id,
     unsigned int job_id,
     crosapi::mojom::PrintJobStatus status) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PrintingAPIHandler::OnPrintJobUpdate(
@@ -360,9 +354,10 @@ void PrintingAPIHandler::OnPrintJobUpdate(
 }
 
 template <>
-KeyedService*
-BrowserContextKeyedAPIFactory<PrintingAPIHandler>::BuildServiceInstanceFor(
-    content::BrowserContext* context) const {
+std::unique_ptr<KeyedService>
+BrowserContextKeyedAPIFactory<PrintingAPIHandler>::
+    BuildServiceInstanceForBrowserContext(
+        content::BrowserContext* context) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   Profile* profile = Profile::FromBrowserContext(context);
@@ -371,7 +366,7 @@ BrowserContextKeyedAPIFactory<PrintingAPIHandler>::BuildServiceInstanceFor(
   if (!profile->IsRegularProfile()) {
     return nullptr;
   }
-  return new PrintingAPIHandler(context);
+  return std::make_unique<PrintingAPIHandler>(context);
 }
 
 }  // namespace extensions

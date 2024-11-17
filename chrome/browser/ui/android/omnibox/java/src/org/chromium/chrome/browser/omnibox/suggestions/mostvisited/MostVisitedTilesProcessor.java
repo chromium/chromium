@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSugg
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionViewProperties;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.tile.TileViewProperties;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
@@ -97,9 +98,8 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                         .with(BaseCarouselSuggestionViewProperties.TILES, new ArrayList<>())
                         .with(
                                 BaseCarouselSuggestionViewProperties.CONTENT_DESCRIPTION,
-                                mContext.getResources()
-                                        .getString(
-                                                R.string.accessibility_omnibox_most_visited_list))
+                                mContext.getString(
+                                        R.string.accessibility_omnibox_most_visited_list))
                         .with(
                                 BaseCarouselSuggestionViewProperties.TOP_PADDING,
                                 OmniboxResourceProvider.getMostVisitedCarouselTopPadding(mContext))
@@ -125,8 +125,9 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
     }
 
     @Override
-    public void populateModel(AutocompleteMatch match, PropertyModel model, int matchIndex) {
-        super.populateModel(match, model, matchIndex);
+    public void populateModel(
+            AutocompleteInput input, AutocompleteMatch match, PropertyModel model, int matchIndex) {
+        super.populateModel(input, match, model, matchIndex);
 
         List<ListItem> tileList = model.get(BaseCarouselSuggestionViewProperties.TILES);
 

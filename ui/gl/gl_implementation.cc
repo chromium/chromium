@@ -20,7 +20,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_features.h"
@@ -411,8 +410,8 @@ DisableNullDrawGLBindings::~DisableNullDrawGLBindings() {
   SetNullDrawGLBindingsEnabled(initial_enabled_);
 }
 
-GLWindowSystemBindingInfo::GLWindowSystemBindingInfo() {}
-GLWindowSystemBindingInfo::~GLWindowSystemBindingInfo() {}
+GLWindowSystemBindingInfo::GLWindowSystemBindingInfo() = default;
+GLWindowSystemBindingInfo::~GLWindowSystemBindingInfo() = default;
 
 std::string GetGLExtensionsFromCurrentContext() {
   return GetGLExtensionsFromCurrentContext(g_current_gl_context);

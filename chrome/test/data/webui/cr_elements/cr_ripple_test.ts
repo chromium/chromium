@@ -5,15 +5,35 @@
 import 'chrome://resources/cr_elements/cr_ripple/cr_ripple.js';
 
 import type {CrRippleElement} from 'chrome://resources/cr_elements/cr_ripple/cr_ripple.js';
-import {assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertArrayEquals, assertEquals, assertFalse, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('CrRipple', function() {
   let ripple: CrRippleElement;
+
+  let setPointerCaptureCalls: number[];
+  let releasePointerCaptureCalls: number[];
 
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     ripple = document.createElement('cr-ripple');
     document.body.appendChild(ripple);
+
+    setPointerCaptureCalls = [];
+    releasePointerCaptureCalls = [];
+
+    // Overriding setPointerCapture, releasePointerCapture, to verify they are
+    // called as expected during tests.
+    ripple.setPointerCapture = function(id: number) {
+      setPointerCaptureCalls.push(id);
+    };
+
+    ripple.releasePointerCapture = function(id: number) {
+      releasePointerCaptureCalls.push(id);
+    };
+
+    ripple.hasPointerCapture = function(id: number): boolean {
+      return setPointerCaptureCalls.includes(id);
+    };
   });
 
   function pointerdown() {
@@ -21,9 +41,19 @@ suite('CrRipple', function() {
         new PointerEvent('pointerdown', {pointerId: 1}));
   }
 
+  function pointermove() {
+    ripple.parentElement!.dispatchEvent(
+        new PointerEvent('pointermove', {pointerId: 1}));
+  }
+
   function pointerup() {
     ripple.parentElement!.dispatchEvent(
         new PointerEvent('pointerup', {pointerId: 1}));
+  }
+
+  function pointercancel() {
+    ripple.parentElement!.dispatchEvent(
+        new PointerEvent('pointercancel', {pointerId: 1}));
   }
 
   function keydown(key: string) {
@@ -106,10 +136,47 @@ suite('CrRipple', function() {
     });
   });
 
-  test('RippleShown_PointerEvents', function() {
+  test('RippleShown_PointerDownUp', function() {
     return assertRipplesShown(1, () => {
       pointerdown();
       pointerup();
+
+      assertArrayEquals([], setPointerCaptureCalls);
+      assertArrayEquals([], releasePointerCaptureCalls);
+    });
+  });
+
+  test('RippleShown_PointerDownMoveUp', function() {
+    return assertRipplesShown(1, () => {
+      pointerdown();
+      pointermove();
+      pointermove();
+      pointerup();
+
+      assertArrayEquals([1], setPointerCaptureCalls);
+      assertArrayEquals([1], releasePointerCaptureCalls);
+    });
+  });
+
+  test('RippleShown_PointerDownCancel', function() {
+    return assertRipplesShown(1, () => {
+      pointerdown();
+      pointercancel();
+
+      assertArrayEquals([], setPointerCaptureCalls);
+      assertArrayEquals([], releasePointerCaptureCalls);
+    });
+  });
+
+  test('RippleShown_PointerDownMoveCancel', function() {
+    return assertRipplesShown(1, () => {
+      pointerdown();
+      pointermove();
+      pointermove();
+      pointercancel();
+
+      assertArrayEquals([1], setPointerCaptureCalls);
+      assertArrayEquals([1], releasePointerCaptureCalls);
     });
   });
 

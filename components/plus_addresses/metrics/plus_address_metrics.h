@@ -61,6 +61,10 @@ void RecordAutofillSuggestionEvent(
     autofill::AutofillPlusAddressDelegate::SuggestionEvent
         plus_address_autofill_suggestion_event);
 
+// Logs the `net_error` code of the URL loader at the conclusion of a network
+// request.
+void RecordNetErrorCode(PlusAddressNetworkRequestType type, int net_error);
+
 // Logs latency of a `type` of network request.
 void RecordNetworkRequestLatency(PlusAddressNetworkRequestType type,
                                  base::TimeDelta request_latency);

@@ -25,6 +25,7 @@ class GetSessionRequest : public google_apis::UrlFetchRequestBase {
                      google_apis::ApiErrorCode> result)>;
 
   GetSessionRequest(google_apis::RequestSender* sender,
+                    bool is_producer,
                     std::string gaia_id,
                     Callback callback);
   GetSessionRequest(const GetSessionRequest&) = delete;
@@ -50,6 +51,7 @@ class GetSessionRequest : public google_apis::UrlFetchRequestBase {
 
  private:
   void OnDataParsed(std::unique_ptr<::boca::Session> session);
+  bool is_producer_;
   std::string gaia_id_;
   std::string url_base_;
   Callback callback_;

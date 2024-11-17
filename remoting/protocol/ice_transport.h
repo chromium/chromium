@@ -57,7 +57,8 @@ class IceTransport : public Transport,
   bool ProcessTransportInfo(jingle_xmpp::XmlElement* transport_info) override;
 
  private:
-  typedef std::map<std::string, IceTransportChannel*> ChannelsMap;
+  typedef std::map<std::string, raw_ptr<IceTransportChannel, CtnExperimental>>
+      ChannelsMap;
   using PendingChannelCreatedCallbacks =
       std::map<std::string, ChannelCreatedCallback>;
 

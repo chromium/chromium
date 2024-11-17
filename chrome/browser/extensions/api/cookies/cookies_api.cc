@@ -17,6 +17,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/extensions/api/cookies/cookies_helpers.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
+#include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/cookies_get_all_signal.h"
@@ -28,7 +29,9 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/web_contents.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
@@ -37,6 +40,7 @@
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 using content::BrowserThread;
 
@@ -64,6 +68,17 @@ constexpr char kInvalidUrlError[] = "Invalid url: \"*\".";
 constexpr char kNoHostPermissionsError[] =
     "No host permissions for cookies at url: \"*\".";
 
+bool CheckHostPermissions(const Extension* extension,
+                          const GURL& url,
+                          std::string* error) {
+  if (!extension->permissions_data()->HasHostPermission(url)) {
+    *error =
+        ErrorUtils::FormatErrorMessage(kNoHostPermissionsError, url.spec());
+    return false;
+  }
+  return true;
+}
+
 bool ParseUrl(const Extension* extension,
               const std::string& url_string,
               GURL* url,
@@ -75,10 +90,7 @@ bool ParseUrl(const Extension* extension,
     return false;
   }
   // Check against host permissions if needed.
-  if (check_host_permissions &&
-      !extension->permissions_data()->HasHostPermission(*url)) {
-    *error =
-        ErrorUtils::FormatErrorMessage(kNoHostPermissionsError, url->spec());
+  if (check_host_permissions && !CheckHostPermissions(extension, *url, error)) {
     return false;
   }
   return true;
@@ -176,7 +188,7 @@ void CookiesEventRouter::OnCookieChange(bool otr,
       break;
 
     case net::CookieChangeCause::UNKNOWN_DELETION:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   dict.Set(kCauseKey, cause_dict_entry);
 
@@ -698,6 +710,97 @@ void CookiesRemoveFunction::RemoveCookieCallback(uint32_t /* num_deleted */) {
   }
 
   Respond(ArgumentList(api::cookies::Remove::Results::Create(details)));
+}
+
+CookiesGetPartitionKeyFunction::CookiesGetPartitionKeyFunction() = default;
+
+CookiesGetPartitionKeyFunction::~CookiesGetPartitionKeyFunction() = default;
+
+ExtensionFunction::ResponseAction CookiesGetPartitionKeyFunction::Run() {
+  parsed_args_ = api::cookies::GetPartitionKey::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parsed_args_);
+
+  content::RenderFrameHost* render_frame_host = nullptr;
+  content::WebContents* web_contents = nullptr;
+  std::optional<int> frame_id = parsed_args_->details.frame_id;
+  std::optional<ExtensionApiFrameIdMap::DocumentId> document_id;
+  std::optional<int> tab_id = parsed_args_->details.tab_id;
+
+  if (parsed_args_->details.document_id.has_value()) {
+    document_id = ExtensionApiFrameIdMap::DocumentIdFromString(
+        *parsed_args_->details.document_id);
+    render_frame_host =
+        ExtensionApiFrameIdMap::Get()->GetRenderFrameHostByDocumentId(
+            document_id.value());
+    web_contents = content::WebContents::FromRenderFrameHost(render_frame_host);
+  } else if (tab_id.has_value()) {
+    if (!frame_id.has_value()) {
+      // Default to main frame if no frame is provided.
+      frame_id = 0;
+    }
+
+    if (!ExtensionTabUtil::GetTabById(tab_id.value(), browser_context(),
+                                      include_incognito_information(),
+                                      &web_contents) ||
+        !web_contents) {
+      return RespondNow(Error("Invalid `tabId`."));
+    }
+    render_frame_host = ExtensionApiFrameIdMap::GetRenderFrameHostById(
+        web_contents, frame_id.value());
+  } else if (frame_id.has_value()) {
+    if (frame_id.value() == 0) {
+      return RespondNow(
+          Error("`frameId` may not be 0 if no `tabId` is present."));
+    }
+
+    render_frame_host =
+        ExtensionApiFrameIdMap::Get()->GetRenderFrameHostByFrameId(
+            frame_id.value());
+  } else {
+    return RespondNow(
+        Error("Either `documentId` or `tabId` must be specified."));
+  }
+
+  if (!render_frame_host) {
+    return RespondNow(document_id.has_value() ? Error("Invalid `documentId`.")
+                                              : Error("Invalid `frameId`."));
+  }
+
+  // If both document_id and tab_id are provided, make sure they match.
+  if (document_id.has_value() && tab_id.has_value()) {
+    if (ExtensionTabUtil::GetTabId(web_contents) != tab_id.value() ||
+        ExtensionApiFrameIdMap::GetFrameId(render_frame_host) !=
+            frame_id.value()) {
+      return RespondNow(
+          Error("Provided `tabId` and `frameId` do not match the frame."));
+    }
+  }
+
+  base::expected<net::CookiePartitionKey::SerializedCookiePartitionKey,
+                 std::string>
+      serialized_key = net::CookiePartitionKey::Serialize(
+          render_frame_host->GetStorageKey().ToCookiePartitionKey());
+  if (!serialized_key.has_value()) {
+    return RespondNow(Error("PartitionKey requested is not serializable."));
+  }
+
+  std::string error;
+  if (!CheckHostPermissions(extension(), GURL(serialized_key->TopLevelSite()),
+                            &error) ||
+      !CheckHostPermissions(extension(),
+                            render_frame_host->GetLastCommittedURL(), &error)) {
+    return RespondNow(Error(error));
+  }
+
+  api::cookies::CookiePartitionKey partition_key;
+  partition_key.has_cross_site_ancestor =
+      serialized_key->has_cross_site_ancestor();
+  partition_key.top_level_site = serialized_key->TopLevelSite();
+
+  api::cookies::GetPartitionKey::Results::Details details =
+      api::cookies::GetPartitionKey::Results::Details();
+  details.partition_key = partition_key.Clone();
+  return RespondNow(WithArguments(details.ToValue()));
 }
 
 ExtensionFunction::ResponseAction CookiesGetAllCookieStoresFunction::Run() {

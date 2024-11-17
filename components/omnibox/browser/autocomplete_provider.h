@@ -374,10 +374,10 @@ class AutocompleteProvider
 
   ACMatches matches_;
   // A map of suggestion group IDs to suggestion group information.
-  // `omnibox::BuildDefaultGroups()` will generate static groups. Providers can
-  // set this to create dynamic groups; e.g. the `ZeroSuggestProvider` does this
-  // based on groups received from the server.
-  omnibox::GroupConfigMap suggestion_groups_map_{};
+  // `omnibox::BuildDefaultGroupsForInput(AutocompleteInput)` will generate
+  // static groups. Providers can set this to create dynamic groups; e.g. the
+  // `ZeroSuggestProvider` does this based on groups received from the server.
+  omnibox::GroupConfigMap suggestion_groups_map_;
   bool done_{true};
 
   Type type_;

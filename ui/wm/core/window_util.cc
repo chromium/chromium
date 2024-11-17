@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/display/screen.h"
@@ -39,7 +40,6 @@ void CloneChildren(ui::Layer* to_clone,
       CloneChildren(owner->layer(), old_layer, map_func);
     }
   }
-  parent->set_no_mutation(true);
 }
 
 // Invokes Mirror() on all the children of |to_mirror|, adding the newly cloned
@@ -96,9 +96,10 @@ void SetWindowFullscreen(aura::Window* window,
   // Should only specify display id when entering fullscreen.
   DCHECK(target_display_id == display::kInvalidDisplayId || fullscreen);
 
-  ui::WindowShowState current_show_state =
+  ui::mojom::WindowShowState current_show_state =
       window->GetProperty(aura::client::kShowStateKey);
-  const bool is_fullscreen = current_show_state == ui::SHOW_STATE_FULLSCREEN;
+  const bool is_fullscreen =
+      current_show_state == ui::mojom::WindowShowState::kFullscreen;
   if (fullscreen == is_fullscreen &&
       target_display_id == display::kInvalidDisplayId) {
     return;
@@ -123,7 +124,7 @@ void SetWindowFullscreen(aura::Window* window,
     // WindowState::UpdateWindowStateRestoreHistoryStack(). But We still set the
     // `aura::client::kRestoreShowStateKey` here since this function is also
     // used on other non-ChromeOS platforms.
-    if (current_show_state != ui::SHOW_STATE_MINIMIZED) {
+    if (current_show_state != ui::mojom::WindowShowState::kMinimized) {
       window->SetProperty(aura::client::kRestoreShowStateKey,
                           current_show_state);
     }
@@ -131,22 +132,24 @@ void SetWindowFullscreen(aura::Window* window,
     // property change is processed.
     window->SetProperty(aura::client::kFullscreenTargetDisplayIdKey,
                         target_display_id);
-    window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+    window->SetProperty(aura::client::kShowStateKey,
+                        ui::mojom::WindowShowState::kFullscreen);
     window->ClearProperty(aura::client::kFullscreenTargetDisplayIdKey);
   } else {
     Restore(window);
   }
 }
 
-bool WindowStateIs(const aura::Window* window, ui::WindowShowState state) {
+bool WindowStateIs(const aura::Window* window,
+                   ui::mojom::WindowShowState state) {
   return window->GetProperty(aura::client::kShowStateKey) == state;
 }
 
-ui::WindowShowState GetWindowState(const aura::Window* window) {
+ui::mojom::WindowShowState GetWindowState(const aura::Window* window) {
   return window->GetProperty(aura::client::kShowStateKey);
 }
 
-void SetWindowState(aura::Window* window, ui::WindowShowState state) {
+void SetWindowState(aura::Window* window, ui::mojom::WindowShowState state) {
   window->SetProperty(aura::client::kShowStateKey, state);
 }
 
@@ -159,7 +162,7 @@ void Restore(aura::Window* window) {
 
 void Unminimize(aura::Window* window) {
   DCHECK_EQ(window->GetProperty(aura::client::kShowStateKey),
-            ui::SHOW_STATE_MINIMIZED);
+            ui::mojom::WindowShowState::kMinimized);
   Restore(window);
 }
 

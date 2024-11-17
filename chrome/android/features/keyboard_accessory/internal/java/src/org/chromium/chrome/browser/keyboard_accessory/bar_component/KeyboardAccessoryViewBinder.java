@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryIPHUtils.hasShownAnyAutofillIphBefore;
-import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryIPHUtils.showHelpBubble;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryIphUtils.hasShownAnyAutofillIphBefore;
+import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryIphUtils.showHelpBubble;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.ANIMATION_LISTENER;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BAR_ITEMS;
 import static org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryProperties.BOTTOM_OFFSET_PX;
@@ -125,50 +125,50 @@ class KeyboardAccessoryViewBinder {
         protected void bind(AutofillBarItem item, ChipView chipView) {
             TraceEvent.begin("BarItemChipViewHolder#bind");
             int iconId = item.getSuggestion().getIconId();
-            boolean isIPHShown = false;
-            if (item.getFeatureForIPH() != null) {
-                if (item.getFeatureForIPH()
+            boolean isIphShown = false;
+            if (item.getFeatureForIph() != null) {
+                if (item.getFeatureForIph()
                         .equals(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE)) {
                     if (iconId != 0) {
-                        isIPHShown =
+                        isIphShown =
                                 showHelpBubble(
                                         mKeyboardAccessory.getFeatureEngagementTracker(),
-                                        item.getFeatureForIPH(),
+                                        item.getFeatureForIph(),
                                         chipView.getStartIconViewRect(),
                                         chipView.getContext(),
                                         mRootViewForIPH,
                                         item.getSuggestion().getItemTag());
                     } else {
-                        isIPHShown =
+                        isIphShown =
                                 showHelpBubble(
                                         mKeyboardAccessory.getFeatureEngagementTracker(),
-                                        item.getFeatureForIPH(),
+                                        item.getFeatureForIph(),
                                         chipView,
                                         mRootViewForIPH,
                                         item.getSuggestion().getItemTag());
                     }
-                } else if (item.getFeatureForIPH()
+                } else if (item.getFeatureForIph()
                         .equals(
                                 FeatureConstants
                                         .KEYBOARD_ACCESSORY_PLUS_ADDRESS_CREATE_SUGGESTION)) {
-                    isIPHShown =
+                    isIphShown =
                             showHelpBubble(
                                     mKeyboardAccessory.getFeatureEngagementTracker(),
-                                    item.getFeatureForIPH(),
+                                    item.getFeatureForIph(),
                                     chipView,
                                     mRootViewForIPH,
-                                    item.getSuggestion().getIPHDescriptionText());
+                                    item.getSuggestion().getIphDescriptionText());
                 } else {
-                    isIPHShown =
+                    isIphShown =
                             showHelpBubble(
                                     mKeyboardAccessory.getFeatureEngagementTracker(),
-                                    item.getFeatureForIPH(),
+                                    item.getFeatureForIph(),
                                     chipView,
                                     mRootViewForIPH,
                                     null);
                 }
             }
-            mKeyboardAccessory.setAllowClicksWhileObscured(isIPHShown);
+            mKeyboardAccessory.setAllowClicksWhileObscured(isIphShown);
 
             // Credit card or IBAN chips never occupy the entire width of the window to allow for
             // other cards or IBANs (if they exist) to be seen. Their max width is set to 85% of
@@ -178,11 +178,11 @@ class KeyboardAccessoryViewBinder {
             // the following chip. This might give a more consistent user experience and allow wider
             // windows to show more information in a chip before truncating.
             if (containsIbanInfo(item.getSuggestion())
-                    || ChromeFeatureList.isEnabled(
+                    || (ChromeFeatureList.isEnabled(
                                     ChromeFeatureList.AUTOFILL_ENABLE_VIRTUAL_CARD_METADATA)
                             && ChromeFeatureList.isEnabled(
                                     ChromeFeatureList.AUTOFILL_ENABLE_CARD_PRODUCT_NAME)
-                            && containsCreditCardInfo(item.getSuggestion())) {
+                            && containsCreditCardInfo(item.getSuggestion()))) {
                 int windowWidth =
                         chipView.getContext().getResources().getDisplayMetrics().widthPixels;
                 chipView.setMaxWidth((int) (windowWidth * 0.85));
@@ -218,7 +218,7 @@ class KeyboardAccessoryViewBinder {
             assert action != null : "Tried to bind item without action. Chose a wrong ViewHolder?";
             chipView.setOnClickListener(
                     view -> {
-                        item.maybeEmitEventForIPH(mKeyboardAccessory.getFeatureEngagementTracker());
+                        item.maybeEmitEventForIph(mKeyboardAccessory.getFeatureEngagementTracker());
                         action.getCallback().onResult(action);
                     });
             if (action.getLongPressCallback() != null) {
@@ -343,14 +343,14 @@ class KeyboardAccessoryViewBinder {
             if (model.get(SHOW_SWIPING_IPH)
                     && swipingIphRectProvider != null
                     && hasShownAnyAutofillIphBefore(view.getFeatureEngagementTracker())) {
-                boolean isIPHShown =
+                boolean isIphShown =
                         showHelpBubble(
                                 view.getFeatureEngagementTracker(),
                                 FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE,
                                 swipingIphRectProvider,
                                 view.getContext(),
                                 view.mBarItemsView);
-                view.setAllowClicksWhileObscured(isIPHShown);
+                view.setAllowClicksWhileObscured(isIphShown);
             }
         } else if (propertyKey == HAS_SUGGESTIONS) {
             view.setAccessibilityMessage(model.get(HAS_SUGGESTIONS));

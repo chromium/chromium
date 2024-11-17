@@ -10,8 +10,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import static org.chromium.chrome.browser.tasks.tab_management.SharedGroupObserverTestHelper.GROUP_MEMBER1;
-import static org.chromium.chrome.browser.tasks.tab_management.SharedGroupObserverTestHelper.GROUP_MEMBER2;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.COLLABORATION_ID1;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER1;
+import static org.chromium.components.data_sharing.SharedGroupTestHelper.GROUP_MEMBER2;
 
 import androidx.annotation.Nullable;
 
@@ -31,8 +32,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.data_sharing.DataSharingService;
-import org.chromium.components.data_sharing.DataSharingService.GroupDataOrFailureOutcome;
 import org.chromium.components.data_sharing.PeopleGroupActionFailure;
+import org.chromium.components.data_sharing.SharedGroupTestHelper;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -41,7 +42,6 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SharedGroupObserverUnitTest {
     private static final Token TAB_GROUP_ID = Token.createRandom();
-    private static final String COLLABORATION_ID1 = "collaborationId1";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -49,16 +49,13 @@ public class SharedGroupObserverUnitTest {
     @Mock private TabGroupSyncService mTabGroupSyncService;
     @Mock private Callback<Integer> mOnSharedGroupStateChanged;
 
-    @Captor private ArgumentCaptor<Callback<GroupDataOrFailureOutcome>> mReadGroupCallbackCaptor;
     @Captor private ArgumentCaptor<DataSharingService.Observer> mSharingObserverCaptor;
 
-    private SharedGroupObserverTestHelper mSharedGroupObserverTestHelper;
+    private SharedGroupTestHelper mSharedGroupTestHelper;
 
     @Before
     public void setUp() {
-        mSharedGroupObserverTestHelper =
-                new SharedGroupObserverTestHelper(
-                        mDataSharingService, mTabGroupSyncService, mReadGroupCallbackCaptor);
+        mSharedGroupTestHelper = new SharedGroupTestHelper(mDataSharingService);
     }
 
     @Test
@@ -105,11 +102,8 @@ public class SharedGroupObserverUnitTest {
         SharedGroupObserver observer =
                 new SharedGroupObserver(TAB_GROUP_ID, mTabGroupSyncService, mDataSharingService);
 
-        GroupDataOrFailureOutcome outcome =
-                new GroupDataOrFailureOutcome(
-                        /* groupData= */ null, PeopleGroupActionFailure.TRANSIENT_FAILURE);
-        verify(mDataSharingService).readGroup(any(), mReadGroupCallbackCaptor.capture());
-        mReadGroupCallbackCaptor.getValue().onResult(outcome);
+        mSharedGroupTestHelper.respondToReadGroup(
+                COLLABORATION_ID1, PeopleGroupActionFailure.TRANSIENT_FAILURE);
 
         @GroupSharedState int state = observer.getGroupSharedStateSupplier().get();
         assertEquals(GroupSharedState.NOT_SHARED, state);
@@ -126,7 +120,7 @@ public class SharedGroupObserverUnitTest {
         SharedGroupObserver observer =
                 new SharedGroupObserver(TAB_GROUP_ID, mTabGroupSyncService, mDataSharingService);
 
-        mSharedGroupObserverTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
+        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1);
         @GroupSharedState int state = observer.getGroupSharedStateSupplier().get();
         assertEquals(GroupSharedState.COLLABORATION_ONLY, state);
 
@@ -142,8 +136,7 @@ public class SharedGroupObserverUnitTest {
         SharedGroupObserver observer =
                 new SharedGroupObserver(TAB_GROUP_ID, mTabGroupSyncService, mDataSharingService);
 
-        mSharedGroupObserverTestHelper.respondToReadGroup(
-                COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
+        mSharedGroupTestHelper.respondToReadGroup(COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2);
         @GroupSharedState int state = observer.getGroupSharedStateSupplier().get();
         assertEquals(GroupSharedState.HAS_OTHER_USERS, state);
 
@@ -168,9 +161,7 @@ public class SharedGroupObserverUnitTest {
         verify(mDataSharingService).addObserver(mSharingObserverCaptor.capture());
         mSharingObserverCaptor
                 .getValue()
-                .onGroupAdded(
-                        SharedGroupObserverTestHelper.newGroupData(
-                                COLLABORATION_ID1, GROUP_MEMBER1));
+                .onGroupAdded(SharedGroupTestHelper.newGroupData(COLLABORATION_ID1, GROUP_MEMBER1));
         verify(mOnSharedGroupStateChanged).onResult(GroupSharedState.COLLABORATION_ONLY);
 
         @Nullable String collaborationId = observer.getCollaborationIdSupplier().get();
@@ -179,7 +170,7 @@ public class SharedGroupObserverUnitTest {
         mSharingObserverCaptor
                 .getValue()
                 .onGroupChanged(
-                        SharedGroupObserverTestHelper.newGroupData(
+                        SharedGroupTestHelper.newGroupData(
                                 COLLABORATION_ID1, GROUP_MEMBER1, GROUP_MEMBER2));
         verify(mOnSharedGroupStateChanged).onResult(GroupSharedState.HAS_OTHER_USERS);
 

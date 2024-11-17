@@ -14,7 +14,7 @@ import "ui/gfx/image/mojom/image.mojom";
 import "url/mojom/url.mojom";
 
 // The different print scaling options available for a document.
-[Stable, Extensible]
+[Extensible]
 enum ScalingType {
   // No additional scaling.
   [Default] kDefault = 0,
@@ -27,7 +27,6 @@ enum ScalingType {
 };
 
 // Custom margins of the document.
-[Stable]
 struct MarginsCustom {
   // Right, left, top, bottom margins in pixels.
   uint32 margin_right@0;
@@ -37,7 +36,6 @@ struct MarginsCustom {
 };
 
 // Contains all fields relevant to the media size of the document.
-[Stable]
 struct MediaSize {
   // Dimensions of the media to be printed in microns.
   uint32 height_microns@0;
@@ -68,7 +66,6 @@ struct MediaSize {
 
 // Params used to generate a print preview, these fields are provided by the
 // print preview UI and can be modified by the user to customize their document.
-[Stable]
 struct PrintSettings {
   // The following are settings common all print command requests.
 
@@ -208,7 +205,7 @@ struct PrintSettings {
 
 // Delegate implemented by ash. Informs ash of webcontent-related events from
 // browser (lacros or ash) to ash.
-[Stable, Uuid="b098f7de-cd7b-4970-8d58-becdb32ca560"]
+[Uuid="b098f7de-cd7b-4970-8d58-becdb32ca560"]
 interface PrintPreviewCrosDelegate {
   // Binds mojo client, allows ash to make calls to mojo client.
   RegisterMojoClient@0(pending_remote<PrintPreviewCrosClient> client)
@@ -225,7 +222,7 @@ interface PrintPreviewCrosDelegate {
 
 // Client interface implemented by browser (ash or lacros). Facilitates requests
 // made from ash and implemented by browser.
-[Stable, Uuid="d2ec732b-c29c-4959-b3a7-e7dbb3abdb13"]
+[Uuid="d2ec732b-c29c-4959-b3a7-e7dbb3abdb13"]
 interface PrintPreviewCrosClient {
   // Start the process of generating a preview for the intiating source. This
   // is done asynchronously. Progress of the preview generation is provided by

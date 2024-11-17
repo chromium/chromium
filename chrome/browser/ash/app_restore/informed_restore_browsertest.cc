@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/webui/ash/settings/pref_names.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ash/util/ash_test_util.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -81,37 +82,13 @@ const PillButton* GetInformedRestoreDialogCancelButton() {
 
 }  // namespace
 
-// Class used to wait for multiple browser windows to be created.
-class BrowsersWaiter : public BrowserListObserver {
- public:
-  explicit BrowsersWaiter(int expected_count)
-      : expected_count_(expected_count) {
-    BrowserList::AddObserver(this);
-  }
-  BrowsersWaiter(const BrowsersWaiter&) = delete;
-  BrowsersWaiter& operator=(const BrowsersWaiter&) = delete;
-  ~BrowsersWaiter() override { BrowserList::RemoveObserver(this); }
-
-  void Wait() { run_loop_.Run(); }
-
-  // BrowserListObserver:
-  void OnBrowserAdded(Browser* browser) override {
-    ++current_count_;
-    if (current_count_ == expected_count_) {
-      run_loop_.Quit();
-    }
-  }
-
- private:
-  int current_count_ = 0;
-  const int expected_count_;
-  base::RunLoop run_loop_;
-};
-
 class InformedRestoreTest : public InProcessBrowserTest {
  public:
   InformedRestoreTest() {
     set_launch_browser_for_testing(nullptr);
+
+    feature_list_.InitWithFeatures(
+        {features::kForestFeature, features::kSanitize}, {});
   }
   InformedRestoreTest(const InformedRestoreTest&) = delete;
   InformedRestoreTest& operator=(const InformedRestoreTest&) = delete;
@@ -132,7 +109,7 @@ class InformedRestoreTest : public InProcessBrowserTest {
   base::HistogramTester histogram_tester_;
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kForestFeature};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Creates 2 browser windows that will be restored in the main test.
@@ -160,7 +137,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchBrowsers) {
   ASSERT_TRUE(restore_button);
 
   // Click the "Restore" button and verify we have launched 2 browsers.
-  BrowsersWaiter waiter(/*expected_count=*/2);
+  test::BrowsersWaiter waiter(/*expected_count=*/2);
   test::Click(restore_button, /*flag=*/0);
   waiter.Wait();
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
@@ -199,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, LaunchSWA) {
   ASSERT_TRUE(restore_button);
 
   // Click the "Restore" button.
-  BrowsersWaiter waiter(/*expected_count=*/2);
+  test::BrowsersWaiter waiter(/*expected_count=*/2);
   test::Click(restore_button, /*flag=*/0);
   waiter.Wait();
 
@@ -269,7 +246,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_LaunchBrowsersToDesks) {
   ASSERT_TRUE(restore_button);
 
   // Click the "Restore" button and verify we have launched 3 browsers.
-  BrowsersWaiter waiter(/*expected_count=*/3);
+  test::BrowsersWaiter waiter(/*expected_count=*/3);
   test::Click(restore_button, /*flag=*/0);
   waiter.Wait();
 
@@ -334,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, DISABLED_WindowStates) {
   ASSERT_TRUE(restore_button);
 
   // Click the "Restore" button and verify we have launched 5 browsers.
-  BrowsersWaiter waiter(/*expected_count=*/5);
+  test::BrowsersWaiter waiter(/*expected_count=*/5);
   test::Click(restore_button, /*flag=*/0);
   waiter.Wait();
 
@@ -442,15 +419,15 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, TabInfoWithinLimit) {
       contents_data->apps_infos;
 
   ASSERT_EQ(1u, apps_infos.size());
-  ASSERT_EQ(5u, apps_infos[0].tab_urls.size());
+  ASSERT_EQ(5u, apps_infos[0].tab_infos.size());
 
   // As it was the most recently activated tab, waymo.com should appear first,
   // with the other four tabs appearing afterwards in order.
-  EXPECT_EQ(GURL("https://www.waymo.com/"), apps_infos[0].tab_urls[0]);
-  EXPECT_EQ(GURL("https://www.youtube.com/"), apps_infos[0].tab_urls[1]);
-  EXPECT_EQ(GURL("https://www.google.com/"), apps_infos[0].tab_urls[2]);
-  EXPECT_EQ(GURL("https://x.company/"), apps_infos[0].tab_urls[3]);
-  EXPECT_EQ(GURL(url::kAboutBlankURL), apps_infos[0].tab_urls[4]);
+  EXPECT_EQ(GURL("https://www.waymo.com/"), apps_infos[0].tab_infos[0].url);
+  EXPECT_EQ(GURL("https://www.youtube.com/"), apps_infos[0].tab_infos[1].url);
+  EXPECT_EQ(GURL("https://www.google.com/"), apps_infos[0].tab_infos[2].url);
+  EXPECT_EQ(GURL("https://x.company/"), apps_infos[0].tab_infos[3].url);
+  EXPECT_EQ(GURL(url::kAboutBlankURL), apps_infos[0].tab_infos[4].url);
 }
 
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_TabInfoOutsideLimit) {
@@ -493,19 +470,18 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, TabInfoOutsideLimit) {
   const InformedRestoreContentsData::AppsInfos& apps_infos =
       contents_data->apps_infos;
 
-  // Even though there were seven tabs, we limit the number of tab URLs to five
-  // before `InformedRestoreContentsData` is created.
   ASSERT_EQ(1u, apps_infos.size());
-  ASSERT_EQ(5u, apps_infos[0].tab_urls.size());
+  ASSERT_EQ(7u, apps_infos[0].tab_infos.size());
 
   // As it was the most recently activated tab, chromium.org should appear
   // first, with the first four tabs in the tab strip appearing afterwards in
-  // order.
-  EXPECT_EQ(GURL("https://www.chromium.org/"), apps_infos[0].tab_urls[0]);
-  EXPECT_EQ(GURL("https://www.youtube.com/"), apps_infos[0].tab_urls[1]);
-  EXPECT_EQ(GURL("https://www.google.com/"), apps_infos[0].tab_urls[2]);
-  EXPECT_EQ(GURL("https://www.waymo.com/"), apps_infos[0].tab_urls[3]);
-  EXPECT_EQ(GURL("https://x.company/"), apps_infos[0].tab_urls[4]);
+  // order. Only the first five tabs will be displayed in the informed restore
+  // dialog.
+  EXPECT_EQ(GURL("https://www.chromium.org/"), apps_infos[0].tab_infos[0].url);
+  EXPECT_EQ(GURL("https://www.youtube.com/"), apps_infos[0].tab_infos[1].url);
+  EXPECT_EQ(GURL("https://www.google.com/"), apps_infos[0].tab_infos[2].url);
+  EXPECT_EQ(GURL("https://www.waymo.com/"), apps_infos[0].tab_infos[3].url);
+  EXPECT_EQ(GURL("https://x.company/"), apps_infos[0].tab_infos[4].url);
 }
 
 IN_PROC_BROWSER_TEST_F(InformedRestoreTest, PRE_AppInfo) {
@@ -548,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, AppInfo) {
   // The Camera app should appear first, and the rest of the apps should appear
   // in the reverse of the order they were created. We can check each entry
   // against a known SWA ID to verify. See
-  // `chrome/browser/web_applications/web_app_id_constants.h` for more IDs.
+  // `ash/constants/web_app_id_constants.h` for more IDs.
   ASSERT_EQ(4u, apps_infos.size());
 
   // Camera
@@ -620,7 +596,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreTest, ReenterInformedRestoreSession) {
   // restore dialog data and the next overview enter will not show the dialog.
   ToggleOverview();
   WaitForOverviewExitAnimation();
-  BrowsersWaiter waiter(/*expected_count=*/1);
+  test::BrowsersWaiter waiter(/*expected_count=*/1);
   ASSERT_TRUE(Shell::Get()->accelerator_controller()->PerformActionIfEnabled(
       AcceleratorAction::kNewWindow, {}));
   waiter.Wait();
@@ -733,7 +709,7 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, Onboarding) {
   ASSERT_TRUE(restore_button);
 
   // Click the "Restore" button and verify we have launched 1 browser.
-  BrowsersWaiter waiter(/*expected_count=*/1);
+  test::BrowsersWaiter waiter(/*expected_count=*/1);
   test::Click(restore_button, /*flag=*/0);
   waiter.Wait();
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
@@ -745,6 +721,36 @@ IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, Onboarding) {
       ->MaybeShowInformedRestoreOnboarding(
           /*restore_on=*/true);
   EXPECT_FALSE(InformedRestoreTestApi().GetOnboardingDialog());
+}
+
+IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, PRE_Sanitized) {
+  // The restore pref setting is 'Ask every time' by default.
+  auto* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
+  EXPECT_EQ(static_cast<int>(RestoreOption::kAskEveryTime),
+            prefs->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
+  prefs->SetBoolean(prefs::kShowInformedRestoreOnboarding, true);
+  prefs->SetBoolean(settings::prefs::kSanitizeCompleted, true);
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  CreateBrowser(profile);
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Immediate save to full restore file to bypass the 2.5 second throttle.
+  AppLaunchInfoSaveWaiter::Wait();
+}
+
+// Tests that when the previous session was sanitized, we do not show any
+// informed restore UI.
+IN_PROC_BROWSER_TEST_F(InformedRestoreOnboardingTest, Sanitized) {
+  auto* onboarding_dialog = InformedRestoreTestApi().GetOnboardingDialog();
+  EXPECT_FALSE(onboarding_dialog);
+
+  // The informed restore dialog is built based on the values in this data
+  // structure. Test that it is null since we aren't planning on showing the
+  // dialog if the previous session was sanitized.
+  const InformedRestoreContentsData* contents_data =
+      Shell::Get()->informed_restore_controller()->contents_data();
+  EXPECT_FALSE(contents_data);
 }
 
 }  // namespace ash::full_restore

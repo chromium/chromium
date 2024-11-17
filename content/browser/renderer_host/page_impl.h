@@ -16,6 +16,7 @@
 #include "cc/input/browser_controls_state.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/renderer_host/stored_page.h"
+#include "content/browser/shared_storage/shared_storage_saved_query_data.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/public/browser/page.h"
@@ -87,6 +88,13 @@ class CONTENT_EXPORT PageImpl : public Page {
   }
   void set_is_on_load_completed_in_main_document(bool completed) {
     is_on_load_completed_in_main_document_ = completed;
+  }
+
+  bool did_first_contentful_paint_in_main_document() const {
+    return did_first_contentful_paint_in_main_document_;
+  }
+  void set_did_first_contentful_paint_in_main_document() {
+    did_first_contentful_paint_in_main_document_ = true;
   }
 
   bool is_main_document_element_available() const {
@@ -205,6 +213,37 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Returns the keyboard layout mapping.
   base::flat_map<std::string, std::string> GetKeyboardLayoutMap();
 
+  // Retrieves the index from `select_url_saved_query_index_results_` for the
+  // given key, or a special value indicating the status of the query. The key
+  // is a tuple of (`origin`, `script_url`, `operation_name`, `query_name`).
+  //
+  // - New Query: If no entry exists for the key, initializes a new entry with
+  //   an index of -1 (indicating pending) and returns -2.
+  // - Pending Query: If an entry exists but the index is -1, adds the provided
+  //   `callback` to the list of callbacks for this query and returns -1.
+  // - Completed Query: If an entry exists and the index is nonnegative, returns
+  //   the index.
+  int32_t GetSavedQueryResultIndexOrStoreCallback(
+      const url::Origin& origin,
+      const GURL& script_url,
+      const std::string& operation_name,
+      const std::u16string& query_name,
+      base::OnceCallback<void(uint32_t)> callback);
+
+  // Updates `select_url_saved_query_index_results_` for the given key as
+  // follows. The key is a tuple of (`origin`, `script_url`, `operation_name`,
+  // `query_name`).
+  //  - The index is of the entry is set to `index`.
+  //  - If the entry has any callbacks, runs them in order.
+  //
+  // Precondition: The entry exists and its index has value -1.
+  void SetSavedQueryResultIndexAndRunCallbacks(
+      const url::Origin& origin,
+      const GURL& script_url,
+      const std::string& operation_name,
+      const std::u16string& query_name,
+      uint32_t index);
+
   // Returns whether a pending call to `sharedStorage.selectURL()` has
   // sufficient budget for `site`, debiting `select_url_overall_budget_` and
   // `select_url_per_site_budget_[site]` if so and if
@@ -256,6 +295,9 @@ class CONTENT_EXPORT PageImpl : public Page {
   // True if we've received a notification that the onload() handler has
   // run for the main document.
   bool is_on_load_completed_in_main_document_ = false;
+
+  // True if the main document had done a first contentful paint.
+  bool did_first_contentful_paint_in_main_document_ = false;
 
   // True if we've received a notification that the window.document element
   // became available for the main document.
@@ -331,6 +373,12 @@ class CONTENT_EXPORT PageImpl : public Page {
   // destroyed (e.g. during navigation or not). Used only if
   // `blink::features::kSharedStorageSelectURLLimit` is enabled.
   base::flat_map<net::SchemefulSite, double> select_url_per_site_budget_;
+
+  // A map of tuples (origin, worklet script URL, operation name, query name) to
+  // the index returned for the corresponding `sharedStorage.selectURL()` query.
+  base::flat_map<std::tuple<url::Origin, GURL, std::string, std::u16string>,
+                 SharedStorageSavedQueryData>
+      select_url_saved_query_index_results_;
 
   // This class is owned by the main RenderFrameHostImpl and it's safe to keep a
   // reference to it.

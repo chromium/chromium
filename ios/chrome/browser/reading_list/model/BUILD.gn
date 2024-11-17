@@ -61,6 +61,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/sync/model:data_type_store_service_factory",
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",

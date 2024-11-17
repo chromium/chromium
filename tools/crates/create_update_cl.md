@@ -31,17 +31,12 @@ $ tools/crates/create_update_cl.py auto
 The script depends on `depot_tools` and `git` being present in the `PATH`.
 
 In `auto` mode `//tools/crates/create_update_cl.py` runs `gnrt update` to
-discover all possible minor version updates and then for each update creates a
+discover crate updates and then for each update creates a
 new local git branch (and a Gerrit CL unless invoked with `--no-upload`).
 Each branch contains an update created by `gnrt update <old crate id>`, `gnrt
 vendor`, and `gnrt gen`.
 Depending on how many crates are updated, the script may need 10-15 minutes to
 run.
-
-(Side-note: outside the rotation one may also use the script to update a single
-crate - e.g. `tools/crates/create_update_cl.py single bytemuck`.  When working
-with multi-epoch/version crates the old version to update can be specified
-as follows: `tools/crates/create_update_cl.py single syn@2.0.55`.)
 
 Before the auto-generated CLs can be landed, some additional manual steps need
 to be done first - see the sections below.
@@ -167,13 +162,15 @@ review and landing process.
 
 ## Checking for new major versions
 
-Note that `create_update_cl.py` will only handle minor version changes (e.g.
-123.1 => 123.2, or 0.123.1 => 0.123.2).  Major version changes (e.g. 1.0 => 2.0,
-which may include breaking API changes and other breaking changes) need to be
-handled separately.
+Note that `create_update_cl.py auto` will by default only handle minor version
+updates (e.g.  123.1 => 123.2, or 0.123.1 => 0.123.2).  Major version changes
+(e.g. 1.0 => 2.0, which may include breaking API changes and other breaking
+changes) need to be handled separately - this section describes what to do.
+
+### Detecting available major version updates
 
 As part of the rotation, one should attempt to check for new major versions of
-direct Chromium dependencies (i.e. dependencies directly listed in
+_direct_ Chromium dependencies (i.e. dependencies directly listed in
 `third_party/rust/chromium_crates_io/Cargo.toml`).  To discover direct _and_
 transitive dependencies with a new major version, you can use the command below
 (running it in the final update CL branch - after all the minor version
@@ -187,9 +184,9 @@ $ tools/crates/run_cargo.py -Zunstable-options -C third_party/rust/chromium_crat
 ...
 ```
 
-### Workflow A: Single update CL
+### Major version update: Workflow A: Single update CL
 
-If the updating to a new major version doesn't require lots of Chromium changes,
+If updating to a new major version doesn't require lots of Chromium changes,
 then it may be possible to land the update in a single CL.  This is typically
 possible when the APIs affected by the major version's breaking change either
 weren't used by Chromium, or were used only in a handful of places.
@@ -199,27 +196,12 @@ introduce breaking changes in the _behavior_ of the existing APIs.
 
 To update:
 
-1. Prepare `Cargo.toml` change:
-    1. `git checkout origin/main`
-    1. `git checkout -b major-version-update-of-foo`
-    1. Edit `third_party/rust/chromium_crates_io/Cargo.toml` to change the major
-       version of the crate (or crates) you want to update.
-       **Important**: Do not edit `Cargo.lock` (e.g. don't run `gnrt vendor`
-       etc.).
-    1. `git add third_party/rust/chromium_crates_io/Cargo.toml`
-    1. `git commit -m "Manual edit of Cargo.toml"`
-    1. `git cl upload -m "Manual edit of Cargo.toml" --bypass-hooks --skip-title --force`
-1. Run the helper script as follows:
-   `tools/crates/create_update_cl.py manual
-   --title "Roll foo crate to new major version in //third_party/rust."`
-    - This will fix up the CL description
-    - To make the review easier, one of the patchsets covers just the path
-      changes.  For example - see [the delta here](https://crrev.com/c/5445719/2..7).
+1. `tools/crates/create_update_cl.py auto -- some_crate_name --breaking`
 1. Follow the manual steps from the minor version update rotation:
     1. `cargo vet` audit
     1. Review, landing, etc.
 
-### Workflow B: Incremental transition
+### Major version update: Workflow B: Incremental transition
 
 When lots of first-party code depends on the old major version, then the
 transition to the new major version may need to be done incrementally.  In this
@@ -250,3 +232,52 @@ version = "0.1"
 [dependencies.serde_json_lenient]
 version = "0.2"
 ```
+
+## Other ways to use `create_update_cl.py`
+
+### `auto` mode
+
+Extra arguments passed to `create_update_cl.py auto` end up being passed to
+`cargo update`.  For a complete list of available options, see
+[Cargo documentation here](https://doc.rust-lang.org/cargo/commands/cargo-update.html#update-options)),
+but the most common scenarios are covered in the sections below.
+
+#### Updating all crates during the weekly rotation
+
+`tools/crates/create_update_cl.py auto` with no extra arguments will attempt to
+discover **minor** version updates for **all** crates that Chromium depends on
+and for their transitive dependencies.
+
+#### Updating the minor version of a single crate
+
+`tools/crates/create_update_cl.py auto -- some_crate_name` can be used to
+trigger a **minor** version update of a single crate.
+
+#### Updating the major version of a single crate
+
+`tools/crates/create_update_cl.py auto -- some_crate_name --breaking` can be
+used to trigger a **major** version update of a single crate
+
+### `manual` mode
+
+For maximal control, the script can be used in `manual` mode:
+
+1. Prepare `Cargo.toml` change:
+    1. `git checkout origin/main`
+    1. `git checkout -b manual-update-of-foo`
+    1. Edit `third_party/rust/chromium_crates_io/Cargo.toml` to change the crate
+       version of the crate (or crates) you want to update.
+       **Important**: Do not edit `Cargo.lock` (e.g. don't run `gnrt vendor`
+       etc.).
+    1. `git add third_party/rust/chromium_crates_io/Cargo.toml`
+    1. `git commit -m "Manual edit of Cargo.toml"`
+    1. `git cl upload -m "Manual edit of Cargo.toml" --bypass-hooks --skip-title --force`
+1. Run the helper script as follows:
+   `tools/crates/create_update_cl.py manual
+   --title "Roll foo crate to new version X"`
+    - This will run `gnrt vendor` to discover and execute updates that were
+      requested by the manual edits of `Cargo.toml` in the previous steps.
+    - This will automatically add more details to the CL description
+    - To make the review easier, one of the patchsets covers just the path
+      changes.  For example - see [the delta here](https://crrev.com/c/5445719/2..7).
+

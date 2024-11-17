@@ -26,19 +26,18 @@ class CORE_EXPORT UnderlyingSourceBase
   void Trace(Visitor*) const override;
   ~UnderlyingSourceBase() override = default;
 
-  ScriptPromiseUntyped StartWrapper(ScriptState*,
-                                    ReadableStreamDefaultController*,
-                                    ExceptionState&);
-  virtual ScriptPromiseUntyped Start(ScriptState*, ExceptionState&);
+  ScriptPromise<IDLUndefined> StartWrapper(ScriptState*,
+                                           ReadableStreamDefaultController*);
+  virtual ScriptPromise<IDLUndefined> Start(ScriptState*);
 
-  virtual ScriptPromiseUntyped Pull(ScriptState*, ExceptionState&);
+  virtual ScriptPromise<IDLUndefined> Pull(ScriptState*, ExceptionState&);
 
-  ScriptPromiseUntyped CancelWrapper(ScriptState*,
-                                     ScriptValue reason,
-                                     ExceptionState&);
-  virtual ScriptPromiseUntyped Cancel(ScriptState*,
-                                      ScriptValue reason,
-                                      ExceptionState&);
+  ScriptPromise<IDLUndefined> CancelWrapper(ScriptState*,
+                                            ScriptValue reason,
+                                            ExceptionState&);
+  virtual ScriptPromise<IDLUndefined> Cancel(ScriptState*,
+                                             ScriptValue reason,
+                                             ExceptionState&);
 
   // ExecutionContextLifecycleObserver implementation:
 
@@ -65,8 +64,7 @@ class UnderlyingStartAlgorithm final : public StreamStartAlgorithm {
                            ReadableStreamDefaultController* controller)
       : source_(source), controller_(controller) {}
 
-  v8::MaybeLocal<v8::Promise> Run(ScriptState* script_state,
-                                  ExceptionState&) final;
+  ScriptPromise<IDLUndefined> Run(ScriptState* script_state) final;
   void Trace(Visitor* visitor) const final;
 
  private:

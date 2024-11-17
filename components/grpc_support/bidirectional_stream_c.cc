@@ -151,7 +151,7 @@ BidirectionalStreamAdapter::BidirectionalStreamAdapter(
   c_stream_->annotation = annotation;
 }
 
-BidirectionalStreamAdapter::~BidirectionalStreamAdapter() {}
+BidirectionalStreamAdapter::~BidirectionalStreamAdapter() = default;
 
 void BidirectionalStreamAdapter::OnStreamReady() {
   DCHECK(c_callback_->on_response_headers_received);

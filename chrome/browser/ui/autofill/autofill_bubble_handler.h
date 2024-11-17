@@ -21,7 +21,7 @@ class UpdateAddressBubbleController;
 class AddNewAddressBubbleController;
 class SaveCardBubbleController;
 class IbanBubbleController;
-class VirtualCardManualFallbackBubbleController;
+class FilledCardInformationBubbleController;
 class VirtualCardEnrollBubbleController;
 class MandatoryReauthBubbleController;
 enum class IbanBubbleType;
@@ -95,9 +95,9 @@ class AutofillBubbleHandler {
       std::unique_ptr<AddNewAddressBubbleController> controller,
       bool is_user_gesture) = 0;
 
-  virtual AutofillBubbleBase* ShowVirtualCardManualFallbackBubble(
+  virtual AutofillBubbleBase* ShowFilledCardInformationBubble(
       content::WebContents* web_contents,
-      VirtualCardManualFallbackBubbleController* controller,
+      FilledCardInformationBubbleController* controller,
       bool is_user_gesture) = 0;
 
   virtual AutofillBubbleBase* ShowVirtualCardEnrollBubble(

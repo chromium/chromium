@@ -29,10 +29,10 @@ import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.browserservices.metrics.TrustedWebActivityUmaRecorder;
-import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
+import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionStore;
 import org.chromium.chrome.browser.notifications.NotificationBuilderBase;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
+import org.chromium.chrome.browser.webapps.WebappRegistry;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -53,12 +53,11 @@ public class TrustedWebActivityClientTest {
     @Mock private TrustedWebActivityClientWrappers.ConnectionPool mConnectionPool;
     @Mock private TrustedWebActivityClientWrappers.Connection mService;
     @Mock private NotificationBuilderBase mNotificationBuilder;
-    @Mock private TrustedWebActivityUmaRecorder mRecorder;
     @Mock private NotificationUmaTracker mNotificationUmaTracker;
 
     @Mock private Bitmap mServiceSmallIconBitmap;
     @Mock private NotificationWrapper mNotificationWrapper;
-    @Mock private InstalledWebappPermissionManager mPermissionManager;
+    @Mock private InstalledWebappPermissionStore mPermissionStore;
 
     private TrustedWebActivityClient mClient;
 
@@ -87,9 +86,10 @@ public class TrustedWebActivityClientTest {
 
         Set<Token> delegateApps = new HashSet<>();
         delegateApps.add(createDummyToken());
-        when(mPermissionManager.getAllDelegateApps(any())).thenReturn(delegateApps);
+        when(mPermissionStore.getAllDelegateApps(any())).thenReturn(delegateApps);
+        WebappRegistry.getInstance().setPermissionStoreForTesting(mPermissionStore);
 
-        mClient = new TrustedWebActivityClient(mConnectionPool, mPermissionManager, mRecorder);
+        mClient = new TrustedWebActivityClient(mConnectionPool);
     }
 
     @Test
@@ -155,7 +155,7 @@ public class TrustedWebActivityClientTest {
     @Test
     public void createLaunchIntentForTwaNonHttpScheme() {
         assertNull(
-                TrustedWebActivityClient.createLaunchIntentForTwa(
+                mClient.createLaunchIntentForTwa(
                         RuntimeEnvironment.application,
                         "mailto:miranda@example.com",
                         new ArrayList<ResolveInfo>()));

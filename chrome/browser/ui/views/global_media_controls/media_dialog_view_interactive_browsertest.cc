@@ -58,18 +58,14 @@
 
 using media_session::mojom::MediaSessionAction;
 
-// Global Media Controls are not supported on Chrome OS.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 
 class TestWebContentsPresentationManager
     : public media_router::WebContentsPresentationManager {
  public:
   void NotifyPresentationsChanged(bool has_presentation) {
-    for (auto& observer : observers_) {
-      observer.OnPresentationsChanged(has_presentation);
-    }
+    observers_.Notify(&content::PresentationObserver::OnPresentationsChanged,
+                      has_presentation);
   }
 
   void AddObserver(content::PresentationObserver* observer) override {
@@ -119,8 +115,8 @@ class TestMediaRouter : public media_router::MockMediaRouter {
 
   void NotifyMediaRoutesChanged(
       const std::vector<media_router::MediaRoute>& routes) {
-    for (auto& observer : routes_observers_)
-      observer.OnRoutesUpdated(routes);
+    routes_observers_.Notify(
+        &media_router::MediaRoutesObserver::OnRoutesUpdated, routes);
   }
 
  private:
@@ -1120,5 +1116,3 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewWithBackForwardCacheBrowserTest,
   EXPECT_NE(content::RenderFrameHost::LifecycleState::kInBackForwardCache,
             rfh2->GetLifecycleState());
 }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)

@@ -98,7 +98,6 @@ void SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(
       attr_name == svg_names::kWidthAttr ||
       attr_name == svg_names::kHeightAttr ||
       attr_name == svg_names::kResultAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }

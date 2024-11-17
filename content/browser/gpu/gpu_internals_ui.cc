@@ -386,7 +386,10 @@ base::Value::List GetDisplayInfo() {
       for (size_t i = 0; i < names.size(); ++i) {
         display_info.Append(display::BuildGpuInfoEntry(
             base::StringPrintf("Color space (%s)", names[i].c_str()),
-            color_spaces[i].ToString()));
+            color_spaces[i]
+                .GetWithSdrWhiteLevel(
+                    display_color_spaces.GetSDRMaxLuminanceNits())
+                .ToString()));
         display_info.Append(display::BuildGpuInfoEntry(
             base::StringPrintf("Buffer format (%s)", names[i].c_str()),
             gfx::BufferFormatToString(buffer_formats[i])));
@@ -442,8 +445,7 @@ const char* D3dFeatureLevelToString(D3D_FEATURE_LEVEL level) {
     case D3D_FEATURE_LEVEL_12_2:
       return "12_2";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -456,8 +458,7 @@ const char* HasDiscreteGpuToString(gpu::HasDiscreteGpu has_discrete_gpu) {
     case gpu::HasDiscreteGpu::kYes:
       return "yes";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -616,8 +617,7 @@ const char* GetProfileName(gpu::VideoCodecProfile profile) {
     case gpu::VVCPROFILE_MAIN16_444_STILL_PICTURE:
       return "vvc profile main16 444 stillpicture";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 base::Value::List GetVideoAcceleratorsInfo() {
@@ -670,10 +670,7 @@ base::Value GetANGLEFeatures() {
     base::Value::Dict angle_feature;
     angle_feature.Set("name", feature.name);
     angle_feature.Set("category", feature.category);
-    angle_feature.Set("description", feature.description);
-    angle_feature.Set("bug", feature.bug);
     angle_feature.Set("status", feature.status);
-    angle_feature.Set("condition", feature.condition);
     angle_features_list.Append(std::move(angle_feature));
   }
 

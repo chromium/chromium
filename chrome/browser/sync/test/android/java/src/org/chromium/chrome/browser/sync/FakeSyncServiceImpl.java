@@ -192,11 +192,6 @@ public class FakeSyncServiceImpl implements SyncService {
     }
 
     @Override
-    public boolean isTransportStateActive() {
-        return mDelegate.isTransportStateActive();
-    }
-
-    @Override
     public boolean isSyncFeatureEnabled() {
         return mDelegate.isSyncFeatureEnabled();
     }
@@ -306,6 +301,11 @@ public class FakeSyncServiceImpl implements SyncService {
     @Override
     public int getPassphraseType() {
         return mDelegate.getPassphraseType();
+    }
+
+    @Override
+    public int getTransportState() {
+        return mDelegate.getTransportState();
     }
 
     @Override

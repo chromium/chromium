@@ -31,6 +31,7 @@
 #include "components/optimization_guide/core/model_execution/settings_enabled_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_provider_logos/logo_common.h"
+#include "components/segmentation_platform/public/result.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -58,6 +59,14 @@ namespace search_provider_logos {
 class LogoService;
 }  // namespace search_provider_logos
 
+namespace segmentation_platform {
+class SegmentationPlatformService;
+}  // namespace segmentation_platform
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace ui {
 class ThemeProvider;
 }  // namespace ui
@@ -79,6 +88,9 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       NtpCustomBackgroundService* ntp_custom_background_service,
       ThemeService* theme_service,
       search_provider_logos::LogoService* logo_service,
+      syncer::SyncService* sync_service,
+      segmentation_platform::SegmentationPlatformService*
+          segmentation_platform_service,
       content::WebContents* web_contents,
       std::unique_ptr<NewTabPageFeaturePromoHelper>
           customize_chrome_feature_promo_helper,
@@ -139,6 +151,10 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       bool visible,
       new_tab_page::mojom::CustomizeChromeSection section) override;
   void IncrementCustomizeChromeButtonOpenCount() override;
+  void GetMobilePromoQrCode(GetMobilePromoQrCodeCallback callback) override;
+  void OnMobilePromoShown() override;
+  void OnDismissMobilePromo() override;
+  void OnUndoDismissMobilePromo() override;
   void MaybeShowFeaturePromo(
       new_tab_page::mojom::IphFeature iph_feature) override;
   void IncrementWallpaperSearchButtonShownCount() override;
@@ -223,12 +239,25 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       std::string_view interaction,
       const std::string& module_id);
 
+  // Check if user is eligible to see a mobile promo generated locally. The
+  // callback is a mojo callback that must be called in all cases.
+  void CheckIfUserEligibleForMobilePromo(GetMobilePromoQrCodeCallback callback);
+  // Handle the response from the segmentation platform querying mobile promo
+  // status. The callback is a mojo callback that must be called in all cases.
+  void HandleMobilePromoSegmentationResponse(
+      GetMobilePromoQrCodeCallback callback,
+      base::Time request_start_time,
+      const segmentation_platform::ClassificationResult& result);
+
   ChooseLocalCustomBackgroundCallback choose_local_custom_background_callback_;
   raw_ptr<NtpBackgroundService> ntp_background_service_;
   raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   raw_ptr<search_provider_logos::LogoService> logo_service_;
   raw_ptr<const ui::ThemeProvider> theme_provider_;
   raw_ptr<ThemeService> theme_service_;
+  raw_ptr<syncer::SyncService> sync_service_;
+  raw_ptr<segmentation_platform::SegmentationPlatformService>
+      segmentation_platform_service_;
   GURL last_blocklisted_;
   GetBackgroundCollectionsCallback background_collections_callback_;
   base::TimeTicks background_collections_request_start_time_;

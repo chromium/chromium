@@ -43,10 +43,10 @@ class SavePackageFilePicker : public ui::SelectFileDialog::Listener {
   bool ShouldSaveAsMHTML() const;
 
   // Used to look up the renderer process for this request to get the context.
-  int render_process_id_;
+  const int render_process_id_;
 
   // Whether the web page can be saved as a complete HTML file.
-  bool can_save_as_complete_;
+  const bool can_save_as_complete_;
 
   // TODO(crbug.com/40280922): `download_prefs_` points to
   // `ChromeDownloadManagerDelegate::download_prefs_`.

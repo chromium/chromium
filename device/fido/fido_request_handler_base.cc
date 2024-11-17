@@ -27,7 +27,6 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/fido_discovery_factory.h"
-#include "device/fido/mac/icloud_keychain.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
@@ -37,6 +36,7 @@
 
 #if BUILDFLAG(IS_MAC)
 #include "base/process/process_info.h"
+#include "device/fido/mac/icloud_keychain.h"
 #include "device/fido/mac/util.h"
 #endif
 
@@ -54,7 +54,6 @@ bool IsGpmPasskeyAuthenticator(const FidoAuthenticator& authenticator) {
     case AuthenticatorType::kOther:
       return false;
     case AuthenticatorType::kEnclave:
-    case AuthenticatorType::kChromeOSPasskeys:
       return true;
   }
   NOTREACHED();
@@ -508,10 +507,8 @@ void FidoRequestHandlerBase::AuthenticatorAdded(
   std::tie(std::ignore, was_inserted) =
       active_authenticators_.insert({authenticator->GetId(), authenticator});
   if (!was_inserted) {
-    NOTREACHED_IN_MIGRATION();
-    FIDO_LOG(ERROR) << "Authenticator with duplicate ID "
-                    << authenticator->GetId();
-    return;
+    NOTREACHED() << "Authenticator with duplicate ID "
+                 << authenticator->GetId();
   }
 
   // If |observer_| exists, dispatching request to |authenticator| is

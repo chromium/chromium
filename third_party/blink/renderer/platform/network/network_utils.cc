@@ -38,8 +38,7 @@ getNetPrivateRegistryFilter(
   // There are only two network_utils::PrivateRegistryFilter enum entries, so
   // we should never reach this point. However, we must have a default return
   // value to avoid a compiler error.
-  NOTREACHED_IN_MIGRATION();
-  return net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -48,7 +47,7 @@ namespace blink {
 
 namespace network_utils {
 
-bool IsReservedIPAddress(const String& host) {
+bool IsReservedIPAddress(const StringView& host) {
   net::IPAddress address;
   StringUTF8Adaptor utf8(host);
   if (!net::ParseURLHostnameToAddress(utf8.AsStringView(), &address)) {
@@ -57,11 +56,12 @@ bool IsReservedIPAddress(const String& host) {
   return !address.IsPubliclyRoutable();
 }
 
-String GetDomainAndRegistry(const String& host, PrivateRegistryFilter filter) {
+String GetDomainAndRegistry(const StringView& host,
+                            PrivateRegistryFilter filter) {
   StringUTF8Adaptor host_utf8(host);
   std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
       host_utf8.AsStringView(), getNetPrivateRegistryFilter(filter));
-  return String(domain.data(), domain.length());
+  return String(domain);
 }
 
 std::tuple<int, ResourceResponse, scoped_refptr<SharedBuffer>> ParseDataURL(

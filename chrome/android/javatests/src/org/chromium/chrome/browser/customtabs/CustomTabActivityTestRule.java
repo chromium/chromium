@@ -43,7 +43,7 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
                         + " prevent any IPH from showing. See crbug.com/342240475.");
         Tracker tracker = Mockito.mock(Tracker.class);
         // Disable IPH to prevent it from interfering with the tests.
-        when(tracker.shouldTriggerHelpUI(anyString())).thenReturn(false);
+        when(tracker.shouldTriggerHelpUi(anyString())).thenReturn(false);
         TrackerFactory.setTrackerForTests(tracker);
     }
 
@@ -57,9 +57,9 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
     }
 
     @Override
-    public void launchActivity(@NonNull Intent intent) {
+    public CustomTabActivity launchActivity(@NonNull Intent intent) {
         putCustomTabIdInIntent(intent);
-        super.launchActivity(intent);
+        return super.launchActivity(intent);
     }
 
     /**

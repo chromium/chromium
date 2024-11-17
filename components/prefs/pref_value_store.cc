@@ -70,7 +70,7 @@ PrefValueStore::PrefValueStore(PrefStore* managed_prefs,
   CheckInitializationCompleted();
 }
 
-PrefValueStore::~PrefValueStore() {}
+PrefValueStore::~PrefValueStore() = default;
 
 std::unique_ptr<PrefValueStore> PrefValueStore::CloneAndSpecialize(
     PrefStore* managed_prefs,
@@ -232,8 +232,7 @@ bool PrefValueStore::PrefValueInStoreRange(
     PrefValueStore::PrefStoreType first_checked_store,
     PrefValueStore::PrefStoreType last_checked_store) const {
   if (first_checked_store > last_checked_store) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   for (size_t i = first_checked_store;

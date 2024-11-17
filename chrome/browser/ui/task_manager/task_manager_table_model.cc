@@ -26,7 +26,9 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/task_manager/sampling/task_group.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
+#include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -115,6 +117,29 @@ int OrderUnavailableValue(bool v1, bool v2) {
   if (!v1 && !v2)
     return 0;
   return v1 ? 1 : -1;
+}
+
+bool ShouldKeepTaskForTabs(Task::Type type) {
+  return type == Task::Type::RENDERER;
+}
+
+bool ShouldKeepTaskForExtensions(Task::Type type) {
+  return type == Task::Type::EXTENSION;
+}
+
+bool ShouldKeepTaskForSystem(Task::Type type) {
+  switch (type) {
+    case Task::Type::BROWSER:
+    case Task::Type::GPU:
+    case Task::Type::ARC:
+    case Task::Type::CROSTINI:
+    case Task::Type::PLUGIN_VM:
+    case Task::Type::ZYGOTE:
+    case Task::Type::UTILITY:
+      return true;
+    default:
+      return false;
+  }
 }
 
 }  // namespace
@@ -312,7 +337,9 @@ TableSortDescriptor::TableSortDescriptor(int col_id, bool ascending)
 // TaskManagerTableModel:
 ////////////////////////////////////////////////////////////////////////////////
 
-TaskManagerTableModel::TaskManagerTableModel(TableViewDelegate* delegate)
+TaskManagerTableModel::TaskManagerTableModel(
+    TableViewDelegate* delegate,
+    DisplayCategory initial_display_category)
     : TaskManagerObserver(base::Milliseconds(kRefreshTimeMS),
                           REFRESH_TYPE_NONE),
       table_view_delegate_(delegate),
@@ -321,10 +348,11 @@ TaskManagerTableModel::TaskManagerTableModel(TableViewDelegate* delegate)
 #if BUILDFLAG(ENABLE_NACL)
       is_nacl_debugging_flag_enabled_(
           base::CommandLine::ForCurrentProcess()->HasSwitch(
-              switches::kEnableNaClDebug)) {
+              switches::kEnableNaClDebug)),
 #else
-      is_nacl_debugging_flag_enabled_(false) {
+      is_nacl_debugging_flag_enabled_(false),
 #endif  // BUILDFLAG(ENABLE_NACL)
+      display_category_(initial_display_category) {
   DCHECK(delegate);
   StartUpdating();
 }
@@ -473,8 +501,7 @@ std::u16string TaskManagerTableModel::GetText(size_t row, int column) {
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -585,8 +612,7 @@ int TaskManagerTableModel::CompareValues(size_t row1,
           return ValueCompare(stats1.css_style_sheets.size,
                               stats2.css_style_sheets.size);
         default:
-          NOTREACHED_IN_MIGRATION();
-          return 0;
+          NOTREACHED();
       }
     }
 
@@ -641,8 +667,7 @@ int TaskManagerTableModel::CompareValues(size_t row1,
           observed_task_manager()->GetKeepaliveCount(tasks_[row2]));
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -669,6 +694,12 @@ void TaskManagerTableModel::GetRowsGroupRange(size_t row_index,
   *out_length = limit - i;
 }
 
+void TaskManagerTableModel::FilterTaskList(std::vector<TaskId>& tasks) {
+  std::erase_if(tasks, [this](const TaskId& task_id) {
+    return !ShouldKeepTask(task_id);
+  });
+}
+
 void TaskManagerTableModel::OnTaskAdded(TaskId id) {
   // For the table view scrollbar to behave correctly we must inform it that
   // a new task has been added.
@@ -677,6 +708,11 @@ void TaskManagerTableModel::OnTaskAdded(TaskId id) {
   // adding |id| to |tasks_| because we want to keep |tasks_| sorted by proc IDs
   // and then by Task IDs.
   tasks_ = observed_task_manager()->GetTaskIdsList();
+  FilterTaskList(tasks_);
+
+  if (!ShouldKeepTask(id)) {
+    return;
+  }
 
   if (table_model_observer_) {
     std::vector<TaskId>::difference_type index =
@@ -686,6 +722,10 @@ void TaskManagerTableModel::OnTaskAdded(TaskId id) {
 }
 
 void TaskManagerTableModel::OnTaskToBeRemoved(TaskId id) {
+  if (!ShouldKeepTask(id)) {
+    return;
+  }
+
   auto index = base::ranges::find(tasks_, id);
   if (index == tasks_.end())
     return;
@@ -698,6 +738,7 @@ void TaskManagerTableModel::OnTaskToBeRemoved(TaskId id) {
 void TaskManagerTableModel::OnTasksRefreshed(
     const TaskIdList& task_ids) {
   tasks_ = task_ids;
+  FilterTaskList(tasks_);
   OnRefresh();
 }
 
@@ -818,8 +859,7 @@ void TaskManagerTableModel::UpdateRefreshTypes(int column_id, bool visibility) {
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   if (needs_refresh)
@@ -927,6 +967,7 @@ std::optional<size_t> TaskManagerTableModel::GetRowForActiveTask() {
 void TaskManagerTableModel::StartUpdating() {
   TaskManagerInterface::GetTaskManager()->AddObserver(this);
   tasks_ = observed_task_manager()->GetTaskIdsList();
+  FilterTaskList(tasks_);
   OnRefresh();
 
   // In order for the scrollbar of the TableView to work properly on startup of
@@ -959,6 +1000,24 @@ bool TaskManagerTableModel::IsTaskFirstInGroup(size_t row_index) const {
     return true;
 
   return false;
+}
+
+bool TaskManagerTableModel::ShouldKeepTask(TaskId task_id) const {
+  if (display_category_ == DisplayCategory::kAll) {
+    return true;
+  }
+
+  const Task::Type type = observed_task_manager()->GetType(task_id);
+  switch (display_category_) {
+    case DisplayCategory::kTabs:
+      return ShouldKeepTaskForTabs(type);
+    case DisplayCategory::kExtensions:
+      return ShouldKeepTaskForExtensions(type);
+    case DisplayCategory::kSystem:
+      return ShouldKeepTaskForSystem(type);
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace task_manager

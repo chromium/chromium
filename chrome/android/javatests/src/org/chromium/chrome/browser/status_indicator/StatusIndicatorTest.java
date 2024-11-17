@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -45,7 +46,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.NewTabPageTestUtils;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /**
  * Integration tests for status indicator covering related code in {@link
@@ -54,7 +55,7 @@ import org.chromium.ui.test.util.UiRestriction;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 // TODO(crbug.com/40112282): Enable for tablets once we support them.
-@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+@Restriction({DeviceFormFactor.PHONE})
 public class StatusIndicatorTest {
 
     @Rule
@@ -128,7 +129,7 @@ public class StatusIndicatorTest {
                                 Color.WHITE,
                                 Color.BLACK,
                                 Color.BLACK,
-                                () -> {}));
+                                CallbackUtils.emptyRunnable()));
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // The Android view should be visible.
@@ -254,7 +255,12 @@ public class StatusIndicatorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStatusIndicatorCoordinator.updateContent(
-                            "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {});
+                            "Exit status",
+                            null,
+                            Color.WHITE,
+                            Color.BLACK,
+                            Color.BLACK,
+                            CallbackUtils.emptyRunnable());
                     mStatusIndicatorCoordinator
                             .getMediatorForTesting()
                             .finishAnimationsForTesting();
@@ -333,7 +339,12 @@ public class StatusIndicatorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mStatusIndicatorCoordinator.updateContent(
-                            "Exit status", null, Color.WHITE, Color.BLACK, Color.BLACK, () -> {});
+                            "Exit status",
+                            null,
+                            Color.WHITE,
+                            Color.BLACK,
+                            Color.BLACK,
+                            CallbackUtils.emptyRunnable());
                     mStatusIndicatorCoordinator
                             .getMediatorForTesting()
                             .finishAnimationsForTesting();

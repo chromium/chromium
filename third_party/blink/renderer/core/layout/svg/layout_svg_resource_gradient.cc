@@ -219,8 +219,7 @@ GradientSpreadMethod LayoutSVGResourceGradient::PlatformSpreadMethodFromSVGType(
       return kSpreadMethodRepeat;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return kSpreadMethodPad;
+  NOTREACHED();
 }
 
 }  // namespace blink

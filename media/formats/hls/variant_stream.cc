@@ -38,4 +38,67 @@ VariantStream::VariantStream(VariantStream&&) = default;
 
 VariantStream::~VariantStream() = default;
 
+const std::string VariantStream::Format(
+    const std::vector<FormatComponent>& components,
+    uint32_t stream_index) const {
+  std::stringstream format;
+  for (FormatComponent component : components) {
+    if (format.tellp()) {
+      format << " ";
+    }
+    switch (component) {
+      case FormatComponent::kResolution: {
+        if (!resolution_) {
+          continue;
+        }
+        format << resolution_->width << "x" << resolution_->height;
+        break;
+      }
+      case FormatComponent::kFrameRate: {
+        if (!frame_rate_) {
+          continue;
+        }
+        format << frame_rate_.value() << "fps";
+        break;
+      }
+      case FormatComponent::kCodecs: {
+        if (!codecs_) {
+          continue;
+        }
+        std::string sep = "";
+        for (const std::string& codec : codecs_.value()) {
+          // Get a human readable string for the codec.
+          format << codec << sep;
+          sep = ", ";
+        }
+        break;
+      }
+      case FormatComponent::kScore: {
+        if (!score_) {
+          continue;
+        }
+        format << "*" << score_.value();
+        break;
+      }
+      case FormatComponent::kBandwidth: {
+        if (bandwidth_ > 1000000) {
+          format << bandwidth_ / 1000000 << " Mbps";
+        } else {
+          format << bandwidth_ / 1000 << " Kbps";
+        }
+        break;
+      }
+      case FormatComponent::kUri: {
+        format << primary_rendition_uri_.ExtractFileName();
+        break;
+      }
+      case FormatComponent::kIndex: {
+        format << "Stream: " << stream_index;
+        break;
+      }
+    }
+  }
+  return format.str();
+}
+
 }  // namespace media::hls

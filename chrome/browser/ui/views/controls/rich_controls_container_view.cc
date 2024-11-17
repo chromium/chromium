@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -97,14 +98,11 @@ int RichControlsContainerView::GetFirstLineHeight() {
 views::Label* RichControlsContainerView::AddSecondaryLabel(
     std::u16string text) {
   auto secondary_label = std::make_unique<views::Label>(
-      text, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
+      text, views::style::CONTEXT_LABEL, views::style::STYLE_BODY_4);
   secondary_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   secondary_label->SetMultiLine(true);
+  secondary_label->SetEnabledColorId(kColorPageInfoSubtitleForeground);
 
-  // TODO(https://crbug.com/326376201): Consider using
-  // views::style::STYLE_BODY_5 when CR2023 is enabled to
-  // be consistent with AddSecondaryStyledLabel, as most uses of this method
-  // already change the text style to that anyway.
   return labels_wrapper_->AddChildView(std::move(secondary_label));
 }
 
@@ -114,8 +112,8 @@ views::StyledLabel* RichControlsContainerView::AddSecondaryStyledLabel(
   secondary_label->SetText(text);
   secondary_label->SetTextContext(views::style::CONTEXT_LABEL);
   secondary_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  secondary_label->SetDefaultTextStyle(views::style::STYLE_BODY_5);
-  secondary_label->SetDefaultEnabledColorId(ui::kColorLabelForegroundSecondary);
+  secondary_label->SetDefaultTextStyle(views::style::STYLE_BODY_4);
+  secondary_label->SetDefaultEnabledColorId(kColorPageInfoSubtitleForeground);
   return labels_wrapper_->AddChildView(std::move(secondary_label));
 }
 

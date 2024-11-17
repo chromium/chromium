@@ -113,13 +113,6 @@ void WebAppProviderBridgeLacros::ScheduleNavigateAndTriggerInstallDialog(
       /*can_trigger_fre=*/true);
 }
 
-void WebAppProviderBridgeLacros::GetSubAppIds(const webapps::AppId& app_id,
-                                              GetSubAppIdsCallback callback) {
-  LoadMainProfile(base::BindOnce(&WebAppProviderBridgeLacros::GetSubAppIdsImpl,
-                                 app_id, std::move(callback)),
-                  /*can_trigger_fre=*/false);
-}
-
 void WebAppProviderBridgeLacros::GetSubAppToParentMap(
     GetSubAppToParentMapCallback callback) {
   LoadMainProfile(

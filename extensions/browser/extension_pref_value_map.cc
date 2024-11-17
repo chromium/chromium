@@ -72,11 +72,10 @@ bool ExtensionPrefValueMap::CanExtensionControlPref(
     bool incognito) const {
   auto ext = entries_.find(extension_id);
   if (ext == entries_.end()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Extension " << extension_id
-        << " is not registered but accesses pref " << pref_key
-        << " (incognito: " << incognito << ")." << " http://crbug.com/454513";
-    return false;
+    NOTREACHED() << "Extension " << extension_id
+                 << " is not registered but accesses pref " << pref_key
+                 << " (incognito: " << incognito << ")."
+                 << " http://crbug.com/454513";
   }
 
   if (incognito && !ext->second->incognito_enabled)
@@ -191,8 +190,7 @@ PrefValueMap* ExtensionPrefValueMap::GetExtensionPrefValueMap(
     case ChromeSettingScope::kNone:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 const PrefValueMap* ExtensionPrefValueMap::GetExtensionPrefValueMap(
@@ -212,8 +210,7 @@ const PrefValueMap* ExtensionPrefValueMap::GetExtensionPrefValueMap(
     case ChromeSettingScope::kNone:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void ExtensionPrefValueMap::GetExtensionControlledKeys(

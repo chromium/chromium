@@ -147,7 +147,9 @@ ProfileOAuth2TokenServiceDelegateChromeOS::
 
 ProfileOAuth2TokenServiceDelegateChromeOS::
     ~ProfileOAuth2TokenServiceDelegateChromeOS() {
-  account_manager_facade_->RemoveObserver(this);
+  if (account_manager_facade_) {
+    account_manager_facade_->RemoveObserver(this);
+  }
   network_connection_tracker_->RemoveNetworkConnectionObserver(this);
 }
 
@@ -275,21 +277,9 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::LoadCredentialsInternal(
 void ProfileOAuth2TokenServiceDelegateChromeOS::UpdateCredentialsInternal(
     const CoreAccountId& account_id,
     const std::string& refresh_token) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NOTREACHED_IN_MIGRATION()
-      << "If you're seeing this error in a browser_test, consider "
-         "disabling the test while we set up the testing "
-         "infrastructure to talk to Ash in a browser_test. Also, please add a "
-         "comment / CL ref. to crbug.com/1197201 if you disable your test.";
-  // TODO(sinhak): We need a way to write accounts to Account Manager in
-  // browser_tests and lacros_chrome_browsertests. For browser_tests, the
-  // solution may be to build Account Manager in Lacros. For
-  // lacros_chrome_browsertests, we will need to talk to EngProd.
-#else
   // UpdateCredentials should not be called on Chrome OS. Credentials should be
   // updated through Chrome OS Account Manager.
-  NOTREACHED_IN_MIGRATION();
-#endif
+  NOTREACHED();
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>
@@ -503,7 +493,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeCredentialsInternal(
   ClearAuthError(account_id);
 #else
   // Signing out of Chrome is not possible on Chrome OS Ash / Lacros.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 
@@ -515,7 +505,7 @@ void ProfileOAuth2TokenServiceDelegateChromeOS::RevokeAllCredentialsInternal(
   signin_client_->RemoveAllAccounts();
 #else
   // Signing out of Chrome is not possible on Chrome OS Ash.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 

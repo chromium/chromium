@@ -35,6 +35,7 @@ static_library("assistant") {
     "//base",
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/crosapi:browser_util",

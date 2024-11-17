@@ -36,7 +36,8 @@ class TestImageController : public ImageController {
   // the ImageController is over-ridden here.
   TestImageController()
       : ImageController(base::SingleThreadTaskRunner::GetCurrentDefault().get(),
-                        base::SingleThreadTaskRunner::GetCurrentDefault()) {
+                        base::SingleThreadTaskRunner::GetCurrentDefault(),
+                        base::DoNothing()) {
     SetMaxImageCacheLimitBytesForTesting(kMaxImageCacheSizeBytes);
   }
 

@@ -169,8 +169,7 @@ void Edit::ApplyTo(std::u16string& text) const {
     }
     case Kind::KEEP:
     default: {
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
   }
 }
@@ -409,8 +408,8 @@ class LoadSignificantUrls : public history::HistoryDBTask {
  public:
   using Callback = base::OnceCallback<void(Node)>;
 
-  LoadSignificantUrls(base::WaitableEvent* event, Callback callback)
-      : wait_event_(event), callback_(std::move(callback)) {}
+  explicit LoadSignificantUrls(Callback callback)
+      : callback_(std::move(callback)) {}
   ~LoadSignificantUrls() override = default;
 
   bool RunOnDBThread(history::HistoryBackend* backend,
@@ -437,12 +436,10 @@ class LoadSignificantUrls : public history::HistoryDBTask {
 
   void DoneRunOnMainThread() override {
     std::move(callback_).Run(std::move(node_));
-    wait_event_->Signal();
   }
 
  private:
   Node node_;
-  raw_ptr<base::WaitableEvent, AcrossTasksDanglingUntriaged> wait_event_;
   Callback callback_;
 };
 
@@ -490,7 +487,6 @@ HistoryFuzzyProvider::HistoryFuzzyProvider(AutocompleteProviderClient* client)
     client->GetHistoryService()->ScheduleDBTask(
         FROM_HERE,
         std::make_unique<fuzzy::LoadSignificantUrls>(
-            &urls_loaded_event_,
             base::BindOnce(&HistoryFuzzyProvider::OnUrlsLoaded,
                            weak_ptr_factory_.GetWeakPtr())),
         &task_tracker_);
@@ -682,6 +678,7 @@ int HistoryFuzzyProvider::AddConvertedMatches(const ACMatches& matches,
 
 void HistoryFuzzyProvider::OnUrlsLoaded(fuzzy::Node node) {
   root_ = std::move(node);
+  urls_loaded_event_.Signal();
 }
 
 void HistoryFuzzyProvider::OnURLVisited(

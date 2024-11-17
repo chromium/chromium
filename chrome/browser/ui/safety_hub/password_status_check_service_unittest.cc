@@ -866,7 +866,7 @@ TEST_P(PasswordStatusCheckServiceParameterizedCardTest, PasswordCardState) {
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 TEST_F(PasswordStatusCheckServiceBaseTest, PasswordCardCheckTime) {

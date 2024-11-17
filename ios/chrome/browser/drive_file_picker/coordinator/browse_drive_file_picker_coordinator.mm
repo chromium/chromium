@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
@@ -12,6 +13,7 @@
 #import "ios/chrome/browser/drive_file_picker/coordinator/browse_drive_file_picker_coordinator_delegate.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator.h"
 #import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_mediator_delegate.h"
+#import "ios/chrome/browser/drive_file_picker/coordinator/drive_file_picker_metrics_helper.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_navigation_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller.h"
 #import "ios/chrome/browser/drive_file_picker/ui/drive_file_picker_table_view_controller_delegate.h"
@@ -37,35 +39,20 @@
 
   DriveFilePickerTableViewController* _viewController;
 
-  // WebState for which the Drive file picker is presented.
+  // Parameters to initialize the mediator.
   base::WeakPtr<web::WebState> _webState;
-
-  // A child `BrowseDriveFilePickerCoordinator` created and started to browse an
-  // inner folder.
   BrowseDriveFilePickerCoordinator* _childBrowseCoordinator;
-
-  // The query to execute to fetch this collection of items.
-  DriveListQuery _query;
-
-  // Title of this collection of items.
+  DriveFilePickerCollectionType _collectionType;
+  NSString* _folderIdentifier;
   NSString* _title;
-
-  // Filter applied to this collection of items.
   DriveFilePickerFilter _filter;
-
-  // Whether the list of types accepted by the website is ignored.
   BOOL _ignoreAcceptedTypes;
-
-  // Sorting criteria.
   DriveItemsSortingType _sortingCriteria;
-
-  // Sorting direction.
   DriveItemsSortingOrder _sortingDirection;
-
-  // Identity whose Drive is being browsed.
+  __weak NSMutableSet<NSString*>* _imagesPending;
+  __weak NSCache<NSString*, UIImage*>* _imageCache;
   id<SystemIdentity> _identity;
-
-  drive::DriveService* _driveService;
+  __weak DriveFilePickerMetricsHelper* _metricsHelper;
 }
 
 @synthesize baseNavigationController = _baseNavigationController;
@@ -76,13 +63,20 @@
                                  browser:(Browser*)browser
                                 webState:(base::WeakPtr<web::WebState>)webState
                                    title:(NSString*)title
-                                   query:(DriveListQuery)query
+                           imagesPending:(NSMutableSet<NSString*>*)imagesPending
+                              imageCache:
+                                  (NSCache<NSString*, UIImage*>*)imageCache
+                          collectionType:
+                              (DriveFilePickerCollectionType)collectionType
+                        folderIdentifier:(NSString*)folderIdentifier
                                   filter:(DriveFilePickerFilter)filter
                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
                         sortingDirection:
                             (DriveItemsSortingOrder)sortingDirection
-                                identity:(id<SystemIdentity>)identity {
+                                identity:(id<SystemIdentity>)identity
+                           metricsHelper:
+                               (DriveFilePickerMetricsHelper*)metricsHelper {
   self = [super initWithBaseViewController:baseNavigationController
                                    browser:browser];
   if (self) {
@@ -92,40 +86,46 @@
     _baseNavigationController = baseNavigationController;
     _webState = webState;
     _title = [title copy];
-    _query = query;
+    _collectionType = collectionType;
+    _folderIdentifier = folderIdentifier;
     _filter = filter;
     _ignoreAcceptedTypes = ignoreAcceptedTypes;
     _sortingCriteria = sortingCriteria;
     _sortingDirection = sortingDirection;
+    _imagesPending = imagesPending;
+    _imageCache = imageCache;
     _identity = identity;
+    _metricsHelper = metricsHelper;
   }
   return self;
 }
 
 - (void)start {
-  ChromeBrowserState* browserState =
-      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
   drive::DriveService* driveService =
-      drive::DriveServiceFactory::GetForBrowserState(browserState);
+      drive::DriveServiceFactory::GetForProfile(profile);
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   std::unique_ptr<image_fetcher::ImageDataFetcher> imageFetcher =
       std::make_unique<image_fetcher::ImageDataFetcher>(
-          browserState->GetSharedURLLoaderFactory());
+          profile->GetSharedURLLoaderFactory());
   _viewController = [[DriveFilePickerTableViewController alloc] init];
-  _mediator = [[DriveFilePickerMediator alloc]
-           initWithWebState:_webState.get()
-                     isRoot:NO
-                   identity:_identity
-                      title:_title
-                      query:_query
-                     filter:_filter
-        ignoreAcceptedTypes:_ignoreAcceptedTypes
-            sortingCriteria:_sortingCriteria
-           sortingDirection:_sortingDirection
-               driveService:driveService
-      accountManagerService:accountManagerService
-               imageFetcher:std::move(imageFetcher)];
+  _mediator =
+      [[DriveFilePickerMediator alloc] initWithWebState:_webState.get()
+                                               identity:_identity
+                                                  title:_title
+                                          imagesPending:_imagesPending
+                                             imageCache:_imageCache
+                                         collectionType:_collectionType
+                                       folderIdentifier:_folderIdentifier
+                                                 filter:_filter
+                                    ignoreAcceptedTypes:_ignoreAcceptedTypes
+                                        sortingCriteria:_sortingCriteria
+                                       sortingDirection:_sortingDirection
+                                           driveService:driveService
+                                  accountManagerService:accountManagerService
+                                           imageFetcher:std::move(imageFetcher)
+                                          metricsHelper:_metricsHelper];
 
   id<DriveFilePickerCommands> driveFilePickerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), DriveFilePickerCommands);
@@ -135,6 +135,8 @@
   _mediator.delegate = self;
   _mediator.driveFilePickerHandler = driveFilePickerHandler;
   [_baseNavigationController pushViewController:_viewController animated:YES];
+  _baseNavigationController.sheetPresentationController.prefersGrabberVisible =
+      YES;
 }
 
 - (void)stop {
@@ -148,36 +150,44 @@
   _viewController = nil;
 
   _identity = nil;
-  _query = {};
 }
 
 #pragma mark - DriveFilePickerMediatorDelegate
 
-- (void)browseDriveCollectionWithMediator:
-            (DriveFilePickerMediator*)driveFilePickerMediator
-                                    title:(NSString*)title
-                                    query:(DriveListQuery)query
-                                   filter:(DriveFilePickerFilter)filter
-                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
-                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
-                         sortingDirection:
-                             (DriveItemsSortingOrder)sortingDirection {
+- (void)
+    browseDriveCollectionWithMediator:
+        (DriveFilePickerMediator*)driveFilePickerMediator
+                                title:(NSString*)title
+                        imagesPending:(NSMutableSet<NSString*>*)imagesPending
+                           imageCache:(NSCache<NSString*, UIImage*>*)imageCache
+                       collectionType:
+                           (DriveFilePickerCollectionType)collectionType
+                     folderIdentifier:(NSString*)folderIdentifier
+                               filter:(DriveFilePickerFilter)filter
+                  ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes
+                      sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                     sortingDirection:(DriveItemsSortingOrder)sortingDirection {
+  [_mediator setActive:NO];
   _childBrowseCoordinator = [[BrowseDriveFilePickerCoordinator alloc]
       initWithBaseNavigationViewController:_baseNavigationController
                                    browser:self.browser
                                   webState:_webState
                                      title:title
-                                     query:query
+                             imagesPending:imagesPending
+                                imageCache:imageCache
+                            collectionType:collectionType
+                          folderIdentifier:folderIdentifier
                                     filter:filter
                        ignoreAcceptedTypes:ignoreAcceptedTypes
                            sortingCriteria:sortingCriteria
                           sortingDirection:sortingDirection
-                                  identity:_identity];
+                                  identity:_identity
+                             metricsHelper:_metricsHelper];
   _childBrowseCoordinator.delegate = self;
   [_childBrowseCoordinator start];
 }
 
-- (void)mediatorDidSubmitFileSelection:(DriveFilePickerMediator*)mediator {
+- (void)mediatorDidStopFileSelection:(DriveFilePickerMediator*)mediator {
   __weak id<DriveFilePickerCommands> driveFilePickerHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(),
                          DriveFilePickerCommands);
@@ -192,6 +202,35 @@
   [self.delegate coordinatorShouldStop:self];
 }
 
+- (void)browseDriveCollectionWithMediator:
+            (DriveFilePickerMediator*)driveFilePickerMediator
+                          didUpdateFilter:(DriveFilePickerFilter)filter
+                          sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                         sortingDirection:
+                             (DriveItemsSortingOrder)sortingDirection
+                      ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes {
+  [self.delegate browseDriveFilePickerCoordinator:self
+                                  didUpdateFilter:filter
+                                  sortingCriteria:sortingCriteria
+                                 sortingDirection:sortingDirection
+                              ignoreAcceptedTypes:ignoreAcceptedTypes];
+}
+
+- (void)mediatorDidTapAddAccount:(DriveFilePickerMediator*)mediator {
+  [self.delegate coordinatorDidTapAddAccount:self];
+}
+
+- (void)mediator:(DriveFilePickerMediator*)mediator
+    didAllowDismiss:(BOOL)allowDismiss {
+  [self.delegate coordinator:self didAllowDismiss:allowDismiss];
+}
+
+- (void)mediator:(DriveFilePickerMediator*)mediator
+    didActivateSearch:(BOOL)searchActivated {
+  _baseNavigationController.sheetPresentationController.prefersGrabberVisible =
+      !searchActivated;
+}
+
 #pragma mark - DriveFilePickerTableViewControllerDelegate
 
 - (void)viewControllerDidDisappear:(UIViewController*)viewController {
@@ -204,6 +243,35 @@
   CHECK(coordinator == _childBrowseCoordinator);
   [_childBrowseCoordinator stop];
   _childBrowseCoordinator = nil;
+  // Inform the mediator that it is back on the top.
+  [_mediator setActive:YES];
+}
+
+- (void)browseDriveFilePickerCoordinator:
+            (BrowseDriveFilePickerCoordinator*)coordinator
+                         didUpdateFilter:(DriveFilePickerFilter)filter
+                         sortingCriteria:(DriveItemsSortingType)sortingCriteria
+                        sortingDirection:
+                            (DriveItemsSortingOrder)sortingDirection
+                     ignoreAcceptedTypes:(BOOL)ignoreAcceptedTypes {
+  [_mediator setPendingFilter:filter
+              sortingCriteria:sortingCriteria
+             sortingDirection:sortingDirection
+          ignoreAcceptedTypes:ignoreAcceptedTypes];
+  [self.delegate browseDriveFilePickerCoordinator:self
+                                  didUpdateFilter:filter
+                                  sortingCriteria:sortingCriteria
+                                 sortingDirection:sortingDirection
+                              ignoreAcceptedTypes:ignoreAcceptedTypes];
+}
+
+- (void)coordinatorDidTapAddAccount:(ChromeCoordinator*)coordinator {
+  [self.delegate coordinatorDidTapAddAccount:self];
+}
+
+- (void)coordinator:(ChromeCoordinator*)coordinator
+    didAllowDismiss:(BOOL)allowDismiss {
+  [self.delegate coordinator:self didAllowDismiss:allowDismiss];
 }
 
 @end

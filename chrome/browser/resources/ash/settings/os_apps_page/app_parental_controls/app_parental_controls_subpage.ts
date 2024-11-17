@@ -8,7 +8,8 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {App, AppParentalControlsHandlerInterface, AppParentalControlsObserverReceiver} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
+import type {App, AppParentalControlsHandlerInterface} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
+import {AppParentalControlsObserverReceiver} from '../../mojom-webui/app_parental_controls_handler.mojom-webui.js';
 import {Router, routes} from '../../router.js';
 
 import {getTemplate} from './app_parental_controls_subpage.html.js';

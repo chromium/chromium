@@ -126,9 +126,9 @@ public class CustomTabActivityRenderTest {
     public void setUp() {
         mEmbeddedTestServerRule.setServerUsesHttps(mRunWithHttps);
         mEmbeddedTestServerRule.setServerPort(PORT_NO);
-        prepareCCTIntent();
+        prepareCctIntent();
         // Disable IPH to prevent the highlight showing in the renders.
-        when(mTracker.shouldTriggerHelpUI(anyString())).thenReturn(false);
+        when(mTracker.shouldTriggerHelpUi(anyString())).thenReturn(false);
         TrackerFactory.setTrackerForTests(mTracker);
     }
 
@@ -150,7 +150,7 @@ public class CustomTabActivityRenderTest {
         return bitmap;
     }
 
-    private void prepareCCTIntent() {
+    private void prepareCctIntent() {
         mUrl = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
         mIntent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
@@ -166,14 +166,14 @@ public class CustomTabActivityRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testCCTToolbar() throws IOException {
+    public void testCctToolbar() throws IOException {
         startActivityAndRenderToolbar("default_cct_toolbar_with_https_" + mRunWithHttps);
     }
 
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testCCTToolbarWithTitle() throws IOException {
+    public void testCctToolbarWithTitle() throws IOException {
         mIntent.putExtra(
                 CustomTabsIntent.EXTRA_TITLE_VISIBILITY_STATE, CustomTabsIntent.SHOW_PAGE_TITLE);
         startActivityAndRenderToolbar("cct_toolbar_with_title_with_https_" + mRunWithHttps);
@@ -183,7 +183,7 @@ public class CustomTabActivityRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures({ChromeFeatureList.CCT_MINIMIZED})
-    public void testCCTToolbarWithMinimizeButton() throws IOException {
+    public void testCctToolbarWithMinimizeButton() throws IOException {
         MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
         startActivityAndRenderToolbar(
                 "default_cct_toolbar_with_https_" + mRunWithHttps + "_minimize_button");
@@ -192,7 +192,7 @@ public class CustomTabActivityRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testCCTToolbarWithCustomCloseButton() throws IOException {
+    public void testCctToolbarWithCustomCloseButton() throws IOException {
         Bitmap closeIcon = createVectorDrawableBitmap(R.drawable.btn_back, 24, 24);
         mIntent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON, closeIcon);
         startActivityAndRenderToolbar(
@@ -202,7 +202,7 @@ public class CustomTabActivityRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testCCTToolbarWithDefaultCloseButtonAndMaxTopActionItems() throws IOException {
+    public void testCctToolbarWithDefaultCloseButtonAndMaxTopActionItems() throws IOException {
         CustomTabTopActionIconHelper.addMaxTopActionIconToIntent(mIntent);
         startActivityAndRenderToolbar(
                 "cct_toolbar_with_default_close_button_and_max_top_action_icon_and_with_https_"
@@ -212,7 +212,7 @@ public class CustomTabActivityRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testCCTToolbarWithCustomCloseButtonAndMaxTopActionItems() throws IOException {
+    public void testCctToolbarWithCustomCloseButtonAndMaxTopActionItems() throws IOException {
         Bitmap closeIcon = createVectorDrawableBitmap(R.drawable.btn_back, 24, 24);
         mIntent.putExtra(CustomTabsIntent.EXTRA_CLOSE_BUTTON_ICON, closeIcon);
         CustomTabTopActionIconHelper.addMaxTopActionIconToIntent(mIntent);
@@ -224,7 +224,7 @@ public class CustomTabActivityRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testCCTToolbarWithEndCloseButton() throws IOException {
+    public void testCctToolbarWithEndCloseButton() throws IOException {
         mIntent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, CLOSE_BUTTON_POSITION_END);
 
         startActivityAndRenderToolbar("cct_close_button_end_with_https_" + mRunWithHttps);
@@ -234,7 +234,7 @@ public class CustomTabActivityRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @EnableFeatures({ChromeFeatureList.CCT_MINIMIZED})
-    public void testCCTToolbarWithEndCloseButtonWithMinimizeButton() throws IOException {
+    public void testCctToolbarWithEndCloseButtonWithMinimizeButton() throws IOException {
         MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
         mIntent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, CLOSE_BUTTON_POSITION_END);
 
@@ -245,7 +245,7 @@ public class CustomTabActivityRenderTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    public void testCCTToolbarWithOmnibox() throws IOException {
+    public void testCctToolbarWithOmnibox() throws IOException {
         // Permit Omnibox for any upcoming intent(s).
         var connection = spy(CustomTabsConnection.getInstance());
         doReturn(true).when(connection).shouldEnableOmniboxForIntent(any());

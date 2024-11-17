@@ -116,7 +116,7 @@ class VIEWS_EXPORT MenuModelAdapter : public MenuDelegate,
   int triggerable_event_flags_;
 
   // Map MenuItems to MenuModels.  Used to implement WillShowMenu().
-  std::map<MenuItemView*, ui::MenuModel*> menu_map_;
+  std::map<MenuItemView*, raw_ptr<ui::MenuModel, CtnExperimental>> menu_map_;
 
   // Optional callback triggered during OnMenuClosed().
   base::RepeatingClosure on_menu_closed_callback_;

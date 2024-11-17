@@ -62,6 +62,7 @@
 #include "third_party/blink/public/web/web_meaningful_layout.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/exported/web_page_popup_impl.h"
 #include "third_party/blink/renderer/core/frame/animation_frame_timing_monitor.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -82,6 +83,7 @@
 #include "third_party/blink/renderer/platform/widget/widget_base_client.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink-forward.h"
 #include "ui/base/mojom/window_show_state.mojom-blink-forward.h"
 #include "ui/gfx/ca_layer_result.h"
 
@@ -156,7 +158,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   virtual void Trace(Visitor*) const;
 
   // Shutdown the widget.
-  void Close();
+  void Close(DetachReason detach_reason);
 
   // Returns the WebFrame that this widget is attached to. It will be a local
   // root since only local roots have a widget attached.
@@ -454,7 +456,7 @@ class CORE_EXPORT WebFrameWidgetImpl
   void BeginMainFrame(base::TimeTicks last_frame_time) override;
   void UpdateLifecycle(WebLifecycleUpdate requested_update,
                        DocumentUpdateReason reason) override;
-  void ShowContextMenu(ui::mojom::MenuSourceType source_type,
+  void ShowContextMenu(ui::mojom::blink::MenuSourceType source_type,
                        const gfx::Point& location) override;
   void BindInputTargetClient(
       mojo::PendingReceiver<viz::mojom::blink::InputTargetClient> receiver)
@@ -468,7 +470,11 @@ class CORE_EXPORT WebFrameWidgetImpl
                          const gfx::PointF& screen_point,
                          ui::mojom::blink::DragOperation,
                          base::OnceClosure callback) override;
-  void OnStartStylusWriting(OnStartStylusWritingCallback callback) override;
+  void OnStartStylusWriting(
+#if BUILDFLAG(IS_WIN)
+      const gfx::Rect& focus_rect_in_widget,
+#endif  // BUILDFLAG(IS_WIN)
+      OnStartStylusWritingCallback callback) override;
 #if BUILDFLAG(IS_ANDROID)
   void PassImeRenderWidgetHost(
       mojo::PendingRemote<mojom::blink::ImeRenderWidgetHost>) override;
@@ -929,9 +935,14 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   void SendOverscrollEventFromImplSide(const gfx::Vector2dF& overscroll_delta,
                                        cc::ElementId scroll_latched_element_id);
-  void SendEndOfScrollEvents(bool affects_outer_viewport,
-                             bool affects_inner_viewport,
-                             cc::ElementId scroll_latched_element_id);
+  // TODO(crbug.com/372627916): This function is not used when
+  // MultipleImplOnlyScrollAnimations is enabled. It should be considered
+  // deprecated and should be deleted when the MultipleImplOnlyScrollAnimations
+  // code path is the only existing code path.
+  void SendEndOfScrollEventsDeprecated(bool affects_outer_viewport,
+                                       bool affects_inner_viewport,
+                                       cc::ElementId scroll_latched_element_id);
+  void SendEndOfScrollEvents(const cc::CompositorCommitData& commit_data);
   void SendScrollSnapChangingEventIfNeeded(
       const cc::CompositorCommitData& commit_data);
   void RecordManipulationTypeCounts(cc::ManipulationInfo info);
@@ -1026,6 +1037,17 @@ class CORE_EXPORT WebFrameWidgetImpl
 
   // Triggers onmove event for window.
   void EnqueueMoveEvent();
+
+  // Update scroll-markers for any scroller scrolled by the impl thread.
+  void HandleScrollMarkerUpdates(const cc::CompositorCommitData& commit_data);
+
+#if BUILDFLAG(IS_WIN)
+  // Computes a contiguous range of character bounds within proximity of
+  // `pivot_position` to enable gesture support for StylusHandwritingWin.
+  mojom::blink::ProximateCharacterRangeBoundsPtr
+  ComputeProximateCharacterBounds(
+      const PositionWithAffinity& pivot_position) const;
+#endif  // BUILDFLAG(IS_WIN)
 
   // Stores the current composition line bounds. These bounds are rectangles
   // which surround each line of text in a currently focused input or textarea

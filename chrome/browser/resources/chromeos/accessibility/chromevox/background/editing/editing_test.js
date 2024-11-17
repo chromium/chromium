@@ -1836,13 +1836,13 @@ AX_TEST_F(
       // ensure we don't depend on Blink's behaviors which can change based
       // on style. We want to work directly with only the automation api
       // itself to ensure we have full coverage.
-      let htmlAttributes = {};
       let htmlTag = '';
       let state = {};
-      Object.defineProperty(
-          input, 'htmlAttributes', {get: () => htmlAttributes});
+      let nonAtomicTextFieldRoot = false;
       Object.defineProperty(input, 'htmlTag', {get: () => htmlTag});
       Object.defineProperty(input, 'state', {get: () => state});
+      Object.defineProperty(
+          input, 'nonAtomicTextFieldRoot', {get: () => nonAtomicTextFieldRoot});
 
       // An invalid editable.
       let didThrow = false;
@@ -1855,59 +1855,49 @@ AX_TEST_F(
       assertTrue(didThrow, 'Non-editable created editable handler.');
 
       // A simple editable.
-      htmlAttributes = {};
       htmlTag = '';
       state = {editable: true};
+      nonAtomicTextFieldRoot = false;
       handler = new TextEditHandler(input);
       assertEquals(
           'AutomationEditableText', handler.editableText_.constructor.name,
           'Incorrect backing object for simple editable.');
 
       // A non-rich editable via multiline.
-      htmlAttributes = {};
       htmlTag = '';
       state = {editable: true, multiline: true};
+      nonAtomicTextFieldRoot = false;
       handler = new TextEditHandler(input);
       assertEquals(
           'AutomationEditableText', handler.editableText_.constructor.name,
           'Incorrect object for multiline editable.');
 
       // A rich editable via textarea tag.
-      htmlAttributes = {};
       htmlTag = 'textarea';
       state = {editable: true};
+      nonAtomicTextFieldRoot = false;
       handler = new TextEditHandler(input);
       assertEquals(
           'RichEditableText', handler.editableText_.constructor.name,
           'Incorrect object for textarea html tag.');
 
       // A rich editable via state.
-      htmlAttributes = {};
       htmlTag = '';
       state = {editable: true, richlyEditable: true};
+      nonAtomicTextFieldRoot = false;
       handler = new TextEditHandler(input);
       assertEquals(
           'RichEditableText', handler.editableText_.constructor.name,
           'Incorrect object for richly editable state.');
 
       // A rich editable via contenteditable. (aka <div contenteditable>).
-      htmlAttributes = {contenteditable: ''};
-      htmlTag = '';
+      htmlTag = 'div';
       state = {editable: true};
+      nonAtomicTextFieldRoot = true;
       handler = new TextEditHandler(input);
       assertEquals(
           'RichEditableText', handler.editableText_.constructor.name,
           'Incorrect object for content editable.');
-
-      // A rich editable via contenteditable. (aka <div
-      // contenteditable=true>).
-      htmlAttributes = {contenteditable: 'true'};
-      htmlTag = '';
-      state = {editable: true};
-      handler = new TextEditHandler(input);
-      assertEquals(
-          'RichEditableText', handler.editableText_.constructor.name,
-          'Incorrect object for content editable true.');
 
       // Note that it is not possible to have <div
       // contenteditable="someInvalidValue"> or <div contenteditable=false>
@@ -2343,9 +2333,11 @@ AX_TEST_F(
 
 // Regression test that large text areas produce output.
 // TODO(crbug.com/40944160): re-enable this test once its flakiness is resolved.
-AX_TEST_F('ChromeVoxEditingTest', 'GiantTextAreaPerformance', async function() {
-  const mockFeedback = this.createMockFeedback();
-  const site = `
+AX_TEST_F(
+    'ChromeVoxEditingTest', 'DISABLED_GiantTextAreaPerformance',
+    async function() {
+      const mockFeedback = this.createMockFeedback();
+      const site = `
     <p>start</p>
     <textarea></textarea>
     <script>
@@ -2361,18 +2353,18 @@ AX_TEST_F('ChromeVoxEditingTest', 'GiantTextAreaPerformance', async function() {
       textarea.setSelectionRange(0, 0);
     </script>
   `;
-  const root = await this.runWithLoadedTree(site);
-  await this.focusFirstTextField(root);
+      const root = await this.runWithLoadedTree(site);
+      await this.focusFirstTextField(root);
 
-  const textField = root.find({role: RoleType.TEXT_FIELD});
-  mockFeedback.expectSpeech('Text area')
-      .call(this.press(KeyCode.DOWN))
-      .expectSpeech('amet, consectetur')
-      .call(this.press(KeyCode.RIGHT))
-      .expectSpeech('m')
+      const textField = root.find({role: RoleType.TEXT_FIELD});
+      mockFeedback.expectSpeech('Text area')
+          .call(this.press(KeyCode.DOWN))
+          .expectSpeech('amet, consectetur')
+          .call(this.press(KeyCode.RIGHT))
+          .expectSpeech('m')
 
-      .replay();
-});
+          .replay();
+    });
 
 AX_TEST_F(
     'ChromeVoxEditingTest', 'BrailleMoveByCharacterWord', async function() {

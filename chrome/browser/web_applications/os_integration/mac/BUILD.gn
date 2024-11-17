@@ -6,11 +6,13 @@ import("//build/util/branding.gni")
 import("//chrome/version.gni")
 
 source_set("web_app_shortcut_copier_lib") {
-  sources = [ "web_app_shortcut_copier_mac.mm" ]
+  sources = [ "web_app_shortcut_copier_mac.cc" ]
 
   deps = [
     "//base",
     "//chrome/browser/apps/app_shim:app_shim",
+    "//chrome/browser/web_applications/mojom:web_app_shortcut_copier_mojom",
+    "//chrome/common:version_header",
     "//content/public/common:main_function_params",
   ]
 }

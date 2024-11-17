@@ -44,8 +44,6 @@ std::string KioskAppLaunchError::GetErrorMessage(Error error) {
     case Error::kUnableToRetrieveHash:
     case Error::kPolicyLoadFailed:
     case Error::kUserNotAllowlisted:
-    case Error::kLacrosDataMigrationStarted:
-    case Error::kLacrosBackwardDataMigrationStarted:
       return l10n_util::GetStringUTF8(IDS_KIOSK_APP_FAILED_TO_LAUNCH);
 
     case Error::kCryptohomedNotRunning:
@@ -75,9 +73,8 @@ std::string KioskAppLaunchError::GetErrorMessage(Error error) {
           IDS_KIOSK_APP_ERROR_EXTENSIONS_POLICY_INVALID);
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Unknown kiosk app launch error, error=" << static_cast<int>(error);
-  return l10n_util::GetStringUTF8(IDS_KIOSK_APP_FAILED_TO_LAUNCH);
+  NOTREACHED() << "Unknown kiosk app launch error, error="
+               << static_cast<int>(error);
 }
 
 // static

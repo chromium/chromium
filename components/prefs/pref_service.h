@@ -108,7 +108,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
     Preference(const PrefService* service,
                std::string name,
                base::Value::Type type);
-    ~Preference() {}
+    ~Preference() = default;
 
     // Returns the name of the Preference (i.e., the key, e.g.,
     // browser.window_placement).

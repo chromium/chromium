@@ -190,7 +190,7 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::PASSWORD_PROTECTION, nullptr},
     {ContentSettingsType::MEDIA_ENGAGEMENT, nullptr},
     {ContentSettingsType::CLIENT_HINTS, nullptr},
-    {ContentSettingsType::ACCESSIBILITY_EVENTS, nullptr},
+    {ContentSettingsType::DEPRECATED_ACCESSIBILITY_EVENTS, nullptr},
     {ContentSettingsType::CLIPBOARD_SANITIZED_WRITE, nullptr},
     {ContentSettingsType::BACKGROUND_FETCH, nullptr},
     {ContentSettingsType::INTENT_PICKER_DISPLAY, nullptr},
@@ -245,6 +245,8 @@ const ContentSettingsTypeNameEntry kContentSettingsTypeGroupNames[] = {
     {ContentSettingsType::TOP_LEVEL_TPCD_ORIGIN_TRIAL, nullptr},
     {ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO, nullptr},
     {ContentSettingsType::STORAGE_ACCESS_HEADER_ORIGIN_TRIAL, nullptr},
+    // TODO(crbug.com/368266658): Implement the UI for Direct Sockets PNA.
+    {ContentSettingsType::DIRECT_SOCKETS_PRIVATE_NETWORK_ACCESS, nullptr},
 };
 
 static_assert(
@@ -351,8 +353,7 @@ SiteSettingSource CalculateSiteSettingSource(
     return SiteSettingSource::kPreference;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SiteSettingSource::kPreference;
+  NOTREACHED();
 }
 
 bool IsFromWebUIAllowlistSource(const ContentSettingPatternSource& pattern) {
@@ -535,9 +536,8 @@ std::string_view ContentSettingsTypeToGroupName(ContentSettingsType type) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION() << static_cast<int32_t>(type)
-                            << " is not a recognized content settings type.";
-  return std::string_view();
+  NOTREACHED() << static_cast<int32_t>(type)
+               << " is not a recognized content settings type.";
 }
 
 std::vector<ContentSettingsType> GetVisiblePermissionCategories(
@@ -557,6 +557,7 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
       ContentSettingsType::IDLE_DETECTION,
       ContentSettingsType::IMAGES,
       ContentSettingsType::JAVASCRIPT,
+      ContentSettingsType::JAVASCRIPT_OPTIMIZER,
       ContentSettingsType::LOCAL_FONTS,
       ContentSettingsType::MEDIASTREAM_CAMERA,
       ContentSettingsType::MEDIASTREAM_MIC,
@@ -625,7 +626,8 @@ std::vector<ContentSettingsType> GetVisiblePermissionCategories(
       base_types->push_back(ContentSettingsType::CAPTURED_SURFACE_CONTROL);
     }
 
-    if (base::FeatureList::IsEnabled(features::kKeyboardAndPointerLockPrompt)) {
+    if (base::FeatureList::IsEnabled(
+            permissions::features::kKeyboardAndPointerLockPrompt)) {
       base_types->push_back(ContentSettingsType::KEYBOARD_LOCK);
       base_types->push_back(ContentSettingsType::POINTER_LOCK);
     }
@@ -686,8 +688,7 @@ std::string SiteSettingSourceToString(const SiteSettingSource source) {
     case SiteSettingSource::kPreference:
       return "preference";
     case SiteSettingSource::kNumSources:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -713,8 +714,7 @@ SiteSettingSource ProviderTypeToSiteSettingsSource(
     case ProviderType::kNotificationAndroidProvider:
     case ProviderType::kProviderForTests:
     case ProviderType::kOtherProviderForTests:
-      NOTREACHED_IN_MIGRATION();
-      return SiteSettingSource::kPreference;
+      NOTREACHED();
   }
 }
 
@@ -738,8 +738,7 @@ std::string ProviderToDefaultSettingSourceString(const ProviderType provider) {
     case ProviderType::kNotificationAndroidProvider:
     case ProviderType::kProviderForTests:
     case ProviderType::kOtherProviderForTests:
-      NOTREACHED_IN_MIGRATION();
-      return "preference";
+      NOTREACHED();
   }
 }
 
@@ -1241,7 +1240,7 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
       result = profile->GetPermissionController()
                    ->GetPermissionResultForOriginWithoutContext(
                        permissions::PermissionUtil::
-                           ContentSettingTypeToPermissionType(content_type),
+                           ContentSettingsTypeToPermissionType(content_type),
                        url::Origin::Create(origin));
     } else {
       permissions::PermissionDecisionAutoBlocker* auto_blocker =

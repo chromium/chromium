@@ -115,14 +115,12 @@ void ActiveBlobRegistry::MarkBlobInactive(int64_t database_id,
   DCHECK(DatabaseMetaDataKey::IsValidBlobNumber(blob_number));
   auto db_pair = blob_reference_tracker_.find(database_id);
   if (db_pair == blob_reference_tracker_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   SingleDBMap& blobs_in_db = db_pair->second;
   auto blob_in_db_it = blobs_in_db.find(blob_number);
   if (blob_in_db_it == blobs_in_db.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   bool delete_blob_in_backend = false;
   auto deleted_database_it = deleted_dbs_.find(database_id);

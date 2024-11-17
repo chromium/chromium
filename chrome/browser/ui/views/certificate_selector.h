@@ -29,8 +29,6 @@ namespace ui {
 class TableModel;
 }
 
-namespace chrome {
-
 // A base class for dialogs that show a given list of certificates to the user.
 // The user can select a single certificate and look at details of each
 // certificate.
@@ -109,7 +107,5 @@ class CertificateSelector : public views::DialogDelegateView,
   raw_ptr<views::TableView, DanglingUntriaged> table_ = nullptr;
   raw_ptr<views::LabelButton, DanglingUntriaged> view_cert_button_ = nullptr;
 };
-
-}  // namespace chrome
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CERTIFICATE_SELECTOR_H_

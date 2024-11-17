@@ -10,6 +10,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/frame_replication_state.mojom-blink.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/mouse_event.h"
@@ -45,7 +46,9 @@ void RemoteFrameClientImpl::Detached(FrameDetachType type) {
       web_frame_->GetFrame()->IsRemoteFrameHostRemoteBound()) {
     web_frame_->GetFrame()->GetRemoteFrameHostRemote().Detach();
   }
-  web_frame_->Close();
+  web_frame_->Close((type == FrameDetachType::kSwap)
+                        ? DetachReason::kNavigation
+                        : DetachReason::kFrameDeletion);
 
   if (web_frame_->Parent()) {
     if (type == FrameDetachType::kRemove)

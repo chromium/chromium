@@ -511,7 +511,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
           toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
       break;
     case SyncSettingsAccountState::kSignedOut:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -696,7 +696,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   // which also checks for the case of having no items to upload, thus this case
   // is not reached here.
   if (!_localPasswordsToUpload && !_localItemsToUpload) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   std::u16string userEmail =
@@ -927,8 +927,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case syncer::UserSelectableType::kSharedTabGroupData:
     case syncer::UserSelectableType::kProductComparison:
     case syncer::UserSelectableType::kCookies:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   DCHECK_NE(itemType, 0);
   DCHECK_NE(textStringID, 0);
@@ -1183,8 +1182,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
       case AccountErrorMessageItemType:
       case BatchUploadButtonItemType:
       case BatchUploadRecommendationItemType:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   [self updateSyncEverythingItemNotifyConsumer:YES];
@@ -1498,8 +1496,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
     case syncer::SyncService::UserActionableError::kNone:
       return std::nullopt;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::nullopt;
+  NOTREACHED();
 }
 
 // Returns whether the error state has changed since the last update.

@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_DATA_H_
 #define CONTENT_PUBLIC_BROWSER_CHILD_PROCESS_DATA_H_
 
+#include <optional>
 #include <string>
 
 #include "base/process/process.h"
@@ -33,7 +34,7 @@ struct CONTENT_EXPORT ChildProcessData {
 
   // The Sandbox that this process was launched at. May be invalid prior to
   // process launch.
-  sandbox::mojom::Sandbox sandbox_type;
+  std::optional<sandbox::mojom::Sandbox> sandbox_type;
 
   const base::Process& GetProcess() const { return process_; }
   // Since base::Process is non-copyable, the caller has to provide a rvalue.

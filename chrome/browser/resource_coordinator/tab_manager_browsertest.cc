@@ -26,6 +26,7 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
+#include "chrome/browser/resource_coordinator/tab_load_tracker.h"
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
@@ -69,7 +70,8 @@ namespace {
 constexpr base::TimeDelta kShortDelay = base::Seconds(1);
 
 bool IsTabDiscarded(content::WebContents* web_contents) {
-  return TabLifecycleUnitExternal::FromWebContents(web_contents)->IsDiscarded();
+  return TabLifecycleUnitExternal::FromWebContents(web_contents)
+             ->GetTabState() == ::mojom::LifecycleUnitState::DISCARDED;
 }
 
 class ExpectStateTransitionObserver : public LifecycleUnitObserver {
@@ -131,11 +133,14 @@ class DiscardWaiter : public TabLifecycleObserver {
   void Wait() { run_loop_.Run(); }
 
  private:
-  void OnDiscardedStateChange(content::WebContents* contents,
-                              LifecycleUnitDiscardReason reason,
-                              bool is_discarded) override {
-    if (is_discarded)
+  void OnTabLifecycleStateChange(
+      content::WebContents* contents,
+      mojom::LifecycleUnitState previous_state,
+      mojom::LifecycleUnitState new_state,
+      std::optional<LifecycleUnitDiscardReason> discard_reason) override {
+    if (new_state == mojom::LifecycleUnitState::DISCARDED) {
       run_loop_.Quit();
+    }
   }
 
   base::RunLoop run_loop_;
@@ -379,6 +384,32 @@ IN_PROC_BROWSER_TEST_P(TabManagerTest, TabManagerBasics) {
       browser()->tab_strip_model()->GetActiveWebContents());
   EXPECT_FALSE(chrome::CanGoBack(browser()));
   EXPECT_TRUE(chrome::CanGoForward(browser()));
+}
+
+// Verify that a discarded tab is considered unloaded by `TabLoadTracker`.
+IN_PROC_BROWSER_TEST_P(TabManagerTest, DiscardedTabIsUnloaded) {
+  // Setup a browser with one background and one foreground tab.
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL kURL = embedded_test_server()->GetURL("a.com", "/title1.html");
+  NavigateToURLWithDisposition(browser(), kURL,
+                               WindowOpenDisposition::CURRENT_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  NavigateToURLWithDisposition(browser(), kURL,
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
+  // Discard the background tab.
+  auto* lifecycle_unit_to_discard = GetLifecycleUnitAt(0);
+  ASSERT_EQ(lifecycle_unit_to_discard->GetVisibility(),
+            content::Visibility::HIDDEN);
+  lifecycle_unit_to_discard->Discard(LifecycleUnitDiscardReason::URGENT,
+                                     /* resident_set_size_estimate=*/0);
+
+  // Verify that it is considered unloaded by `TabLoadTracker`.
+  auto* discarded_contents = GetWebContentsAt(0);
+  ASSERT_TRUE(discarded_contents->WasDiscarded());
+  EXPECT_EQ(TabLoadTracker::Get()->GetLoadingState(discarded_contents),
+            TabLoadTracker::LoadingState::UNLOADED);
 }
 
 IN_PROC_BROWSER_TEST_P(TabManagerTest, InvalidOrEmptyURL) {

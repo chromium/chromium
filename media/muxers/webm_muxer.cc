@@ -112,6 +112,9 @@ static double GetFrameRate(const Muxer::VideoParameters& params) {
 }
 
 static const char kH264CodecId[] = "V_MPEG4/ISO/AVC";
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+static const char kHevcCodecId[] = "V_MPEGH/ISO/HEVC";
+#endif
 static const char kPcmCodecId[] = "A_PCM/FLOAT/IEEE";
 
 static const char* MkvCodeIcForMediaVideoCodecId(VideoCodec video_codec) {
@@ -124,10 +127,12 @@ static const char* MkvCodeIcForMediaVideoCodecId(VideoCodec video_codec) {
       return mkvmuxer::Tracks::kAv1CodecId;
     case VideoCodec::kH264:
       return kH264CodecId;
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+    case VideoCodec::kHEVC:
+      return kHevcCodecId;
+#endif
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unsupported codec " << GetCodecName(video_codec);
-      return "";
+      NOTREACHED() << "Unsupported codec " << GetCodecName(video_codec);
   }
 }
 
@@ -268,8 +273,7 @@ void WebmMuxer::AddVideoTrack(
   video_track_index_ =
       segment_.AddVideoTrack(frame_size.width(), frame_size.height(), 0);
   if (video_track_index_ <= 0) {  // See https://crbug.com/616391.
-    NOTREACHED_IN_MIGRATION() << "Error adding video track";
-    return;
+    NOTREACHED() << "Error adding video track";
   }
 
   mkvmuxer::VideoTrack* const video_track =
@@ -277,8 +281,9 @@ void WebmMuxer::AddVideoTrack(
           segment_.GetTrackByNumber(video_track_index_));
   if (color_space) {
     auto colour = ColorFromColorSpace(*color_space);
-    if (colour)
+    if (colour) {
       video_track->SetColour(*colour);
+    }
   }
   DCHECK(video_track);
   video_track->set_codec_id(MkvCodeIcForMediaVideoCodecId(video_codec_));
@@ -293,8 +298,9 @@ void WebmMuxer::AddVideoTrack(
   DCHECK_EQ(1000000ull, segment_.GetSegmentInfo()->timecode_scale());
 
   // Set alpha channel parameters for only VPX (crbug.com/711825).
-  if (video_codec_ == VideoCodec::kH264)
+  if (video_codec_ == VideoCodec::kH264 || video_codec_ == VideoCodec::kHEVC) {
     return;
+  }
   video_track->SetAlphaMode(mkvmuxer::VideoTrack::kAlpha);
   // Alpha channel, if present, is stored in a BlockAdditional next to the
   // associated opaque Block, see
@@ -313,8 +319,7 @@ void WebmMuxer::AddAudioTrack(const AudioParameters& params) {
   audio_track_index_ =
       segment_.AddAudioTrack(params.sample_rate(), params.channels(), 0);
   if (audio_track_index_ <= 0) {  // See https://crbug.com/616391.
-    NOTREACHED_IN_MIGRATION() << "Error adding audio track";
-    return;
+    NOTREACHED() << "Error adding audio track";
   }
 
   mkvmuxer::AudioTrack* const audio_track =
@@ -335,8 +340,9 @@ void WebmMuxer::AddAudioTrack(const AudioParameters& params) {
     uint8_t opus_header[OPUS_EXTRADATA_SIZE];
     WriteOpusHeader(params, opus_header);
 
-    if (!audio_track->SetCodecPrivate(opus_header, OPUS_EXTRADATA_SIZE))
+    if (!audio_track->SetCodecPrivate(opus_header, OPUS_EXTRADATA_SIZE)) {
       LOG(ERROR) << __func__ << ": failed to set opus header.";
+    }
 
     // Segment's timestamps should be in milliseconds, DCHECK it. See
     // http://www.webmproject.org/docs/container/#muxer-guidelines
@@ -352,9 +358,9 @@ bool WebmMuxer::PutFrame(EncodedFrame frame,
 
   AudioParameters* audio_params = absl::get_if<AudioParameters>(&frame.params);
   TRACE_EVENT2("media", __func__, "timestamp", relative_timestamp,
-               "is_keyframe", frame.is_keyframe);
+               "is_keyframe", frame.data->is_key_frame());
   DVLOG(2) << __func__ << " - " << (audio_params ? "A " : "V ")
-           << frame.data.size() << "B ts " << relative_timestamp;
+           << frame.data->size() << "B ts " << relative_timestamp;
   if (audio_params) {
     MaybeForceNewCluster();
     if (!audio_track_index_) {
@@ -363,7 +369,7 @@ bool WebmMuxer::PutFrame(EncodedFrame frame,
   } else {
     // Clusterfuzz: mkvmuxer suffers from use-after-free on receiving zero-sized
     // video data inputs - ignore these.
-    if (frame.data.size() == 0u) {
+    if (frame.data->empty()) {
       return true;
     }
     auto* video_params = absl::get_if<VideoParameters>(&frame.params);
@@ -371,7 +377,11 @@ bool WebmMuxer::PutFrame(EncodedFrame frame,
     DCHECK(video_params->codec == VideoCodec::kVP8 ||
            video_params->codec == VideoCodec::kVP9 ||
            video_params->codec == VideoCodec::kH264 ||
-           video_params->codec == VideoCodec::kAV1)
+           video_params->codec == VideoCodec::kAV1
+#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
+           || video_params->codec == VideoCodec::kHEVC
+#endif
+           )
         << " Unsupported video codec: " << GetCodecName(video_params->codec);
     DCHECK(video_codec_ == VideoCodec::kUnknown ||
            video_codec_ == video_params->codec)
@@ -379,7 +389,7 @@ bool WebmMuxer::PutFrame(EncodedFrame frame,
         << GetCodecName(video_params->codec);
 
     if (!video_track_index_) {
-      CHECK(frame.is_keyframe);
+      CHECK(frame.data->is_key_frame());
 
       // |track_index_|, cannot be zero (!), initialize WebmMuxer in that case.
       // http://www.matroska.org/technical/specs/index.html#Tracks
@@ -425,17 +435,16 @@ bool WebmMuxer::WriteWebmFrame(EncodedFrame frame,
   uint8_t track_index = absl::get_if<AudioParameters>(&frame.params)
                             ? audio_track_index_
                             : video_track_index_;
-  return frame.alpha_data.empty()
-             ? segment_.AddFrame(
-                   reinterpret_cast<const uint8_t*>(frame.data.data()),
-                   frame.data.size(), track_index, recorded_timestamp,
-                   frame.is_keyframe)
-             : segment_.AddFrameWithAdditional(
-                   reinterpret_cast<const uint8_t*>(frame.data.data()),
-                   frame.data.size(),
-                   reinterpret_cast<const uint8_t*>(frame.alpha_data.data()),
-                   frame.alpha_data.size(), 1 /* add_id */, track_index,
-                   recorded_timestamp, frame.is_keyframe);
+  return frame.data->has_side_data() &&
+                 !frame.data->side_data()->alpha_data.empty()
+             ? segment_.AddFrameWithAdditional(
+                   frame.data->data(), frame.data->size(),
+                   frame.data->side_data()->alpha_data.data(),
+                   frame.data->side_data()->alpha_data.size(), /*add_id=*/1,
+                   track_index, recorded_timestamp, frame.data->is_key_frame())
+             : segment_.AddFrame(frame.data->data(), frame.data->size(),
+                                 track_index, recorded_timestamp,
+                                 frame.data->is_key_frame());
 }
 
 void WebmMuxer::MaybeForceNewCluster() {

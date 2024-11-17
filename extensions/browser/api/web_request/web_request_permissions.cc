@@ -180,8 +180,7 @@ PermissionsData::PageAccess CanExtensionAccessURLInternal(
                  : PermissionsData::PageAccess::kDenied;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return PermissionsData::PageAccess::kDenied;
+  NOTREACHED();
 }
 
 // Returns true if |request|.url is of the form clients[0-9]*.google.com.

@@ -75,14 +75,9 @@ UIImage* CustomSymbolTemplateWithPointSize(NSString* symbol_name,
 }
 
 UIImage* MakeSymbolMonochrome(UIImage* symbol) {
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
-  if (@available(iOS 16, *)) {
-    return [symbol
-        imageByApplyingSymbolConfiguration:
-            [UIImageSymbolConfiguration configurationPreferringMonochrome]];
-  }
-#endif  // defined(__IPHONE_16_0)
-  return symbol;
+  return [symbol
+      imageByApplyingSymbolConfiguration:
+          [UIImageSymbolConfiguration configurationPreferringMonochrome]];
 }
 
 UIImage* MakeSymbolMulticolor(UIImage* symbol) {

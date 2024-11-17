@@ -20,6 +20,12 @@
 
 namespace net::device_bound_sessions {
 
+namespace {
+
+constexpr base::TimeDelta kSessionTtl = base::Days(400);
+
+}
+
 Session::Session(Id id, url::Origin origin, GURL refresh)
     : id_(id), refresh_url_(refresh), inclusion_rules_(origin) {}
 
@@ -73,6 +79,8 @@ std::unique_ptr<Session> Session::CreateIfValid(const SessionParams& params,
     }
   }
 
+  session->set_expiry_date(base::Time::Now() + kSessionTtl);
+
   return session;
 }
 
@@ -111,6 +119,10 @@ std::unique_ptr<Session> Session::CreateFromProto(const proto::Session& proto) {
 
   auto expiry_date = base::Time::FromDeltaSinceWindowsEpoch(
       base::Microseconds(proto.expiry_time()));
+  if (base::Time::Now() > expiry_date) {
+    return nullptr;
+  }
+
   std::unique_ptr<Session> result(new Session(
       Id(proto.id()), std::move(refresh), std::move(*inclusion_rules),
       std::move(cravings), proto.should_defer_when_expired(), expiry_date));
@@ -120,7 +132,7 @@ std::unique_ptr<Session> Session::CreateFromProto(const proto::Session& proto) {
 
 proto::Session Session::ToProto() const {
   proto::Session session_proto;
-  session_proto.set_id(static_cast<std::string>(id_));
+  session_proto.set_id(*id_);
   session_proto.set_refresh_url(refresh_url_.spec());
   session_proto.set_should_defer_when_expired(should_defer_when_expired_);
   session_proto.set_expiry_time(
@@ -229,6 +241,10 @@ bool Session::IsEqualForTesting(const Session& other) const {
          expiry_date_ == other.expiry_date_ &&
          key_id_or_error_ == other.key_id_or_error_ &&
          cached_challenge_ == other.cached_challenge_;
+}
+
+void Session::RecordAccess() {
+  expiry_date_ = base::Time::Now() + kSessionTtl;
 }
 
 }  // namespace net::device_bound_sessions

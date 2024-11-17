@@ -17,6 +17,7 @@ android_library("java") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/facilitated_payments/BankAccountViewBinder.java",
+    "java/src/org/chromium/chrome/browser/facilitated_payments/EwalletViewBinder.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsErrorScreen.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsFopSelectorScreen.java",
     "java/src/org/chromium/chrome/browser/facilitated_payments/FacilitatedPaymentsPaymentMethodsControllerBridge.java",
@@ -59,10 +60,13 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/bank_account_icon_background.xml",
+    "java/res/drawable-night/gpay_pix_logo.xml",
     "java/res/drawable/facilitated_payments_error_icon.xml",
+    "java/res/drawable/facilitated_payments_fop_icon_background.xml",
+    "java/res/drawable/gpay_pix_logo.xml",
     "java/res/drawable/lock_icon.xml",
     "java/res/layout/bank_account_item.xml",
+    "java/res/layout/ewallet_item.xml",
     "java/res/layout/facilitated_payments_continue_button.xml",
     "java/res/layout/facilitated_payments_error_screen.xml",
     "java/res/layout/facilitated_payments_fop_selector.xml",
@@ -86,9 +90,11 @@ robolectric_library("junit") {
 
   deps = [
     ":java",
+    "//base:base_java_test_support",
     "//base:base_junit_test_support",
     "//base:callback_java",
     "//chrome/android:chrome_java",
+    "//chrome/browser/facilitated_payments/ui/android:public_java",
     "//chrome/browser/profiles/android:java",
     "//components/autofill/android:autofill_java",
     "//components/browser_ui/bottomsheet/android:factory_java",

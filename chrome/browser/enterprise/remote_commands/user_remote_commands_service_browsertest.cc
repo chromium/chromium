@@ -4,6 +4,10 @@
 
 #include "chrome/browser/enterprise/remote_commands/user_remote_commands_service.h"
 
+#include <stdint.h>
+
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
@@ -31,6 +35,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_switches.h"
+#include "components/policy/core/common/remote_commands/remote_commands_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/policy/test_support/embedded_policy_test_server.h"
 #include "components/policy/test_support/policy_storage.h"
@@ -66,13 +71,13 @@ struct FeaturesTestParam {
 
 std::variant<std::unique_ptr<invalidation::InvalidationService>,
              std::unique_ptr<invalidation::InvalidationListener>>
-CreateInvalidationServiceForSenderId(std::string fcm_sender_id,
-                                     std::string /*project_id*/,
-                                     std::string /*log_prefix*/) {
-  if (base::FeatureList::IsEnabled(
-          invalidation::kInvalidationsWithDirectMessages)) {
-    return std::make_unique<invalidation::FakeInvalidationListener>();
+CreateInvalidationServiceForProjectNumber(int64_t project_number,
+                                          std::string /*log_prefix*/) {
+  if (invalidation::IsInvalidationListenerSupported(project_number)) {
+    return std::make_unique<invalidation::FakeInvalidationListener>(
+        project_number);
   }
+
   return std::make_unique<invalidation::FakeInvalidationService>();
 }
 
@@ -82,7 +87,7 @@ std::unique_ptr<KeyedService> BuildFakeProfileInvalidationProvider(
   return std::make_unique<invalidation::ProfileInvalidationProvider>(
       std::make_unique<invalidation::ProfileIdentityProvider>(
           IdentityManagerFactory::GetForProfile(profile)),
-      base::BindRepeating(&CreateInvalidationServiceForSenderId));
+      base::BindRepeating(&CreateInvalidationServiceForProjectNumber));
 }
 
 }  // namespace
@@ -217,16 +222,15 @@ class UserRemoteCommandsServiceTest
 #endif
   }
 
-  invalidation::FakeInvalidationService* GetInvalidationServiceForSenderId(
-      std::string sender_id) {
+  invalidation::FakeInvalidationService* GetInvalidationServiceForProjectNumber(
+      int64_t project_number) {
     auto* profile_invalidation_provider_factory =
         static_cast<invalidation::ProfileInvalidationProvider*>(
             invalidation::ProfileInvalidationProviderFactory::GetInstance()
                 ->GetForProfile(profile()));
     auto invalidation_service_or_listener =
         profile_invalidation_provider_factory->GetInvalidationServiceOrListener(
-            std::move(sender_id),
-            /*project_id=*/"");
+            project_number);
     CHECK(std::holds_alternative<invalidation::InvalidationService*>(
         invalidation_service_or_listener));
     return static_cast<invalidation::FakeInvalidationService*>(
@@ -289,9 +293,11 @@ IN_PROC_BROWSER_TEST_P(UserRemoteCommandsServiceTest, Success) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     UserRemoteCommandsServiceTest,
-    testing::Values(FeaturesTestParam{},
-                    FeaturesTestParam{
-                        .enabled_features = {
-                            invalidation::kInvalidationsWithDirectMessages}}));
+    testing::Values(
+        FeaturesTestParam{},
+        FeaturesTestParam{
+            .enabled_features = {
+                policy::
+                    kUserRemoteCommandsInvalidationWithDirectMessagesEnabled}}));
 
 }  // namespace enterprise_commands

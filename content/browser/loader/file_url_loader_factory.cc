@@ -622,11 +622,10 @@ class FileURLLoader : public network::mojom::URLLoader {
 
     auto file_data_source = std::make_unique<mojo::FileDataSource>(
         base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ));
-    mojo::DataPipeProducer::DataSource* data_source = file_data_source.get();
 
     std::vector<char> initial_read_buffer(net::kMaxBytesToSniff);
     auto read_result =
-        data_source->Read(0u, base::span<char>(initial_read_buffer));
+        file_data_source->Read(0u, base::span<char>(initial_read_buffer));
     if (read_result.result != MOJO_RESULT_OK) {
       // This can happen when the file is unreadable (which can happen during
       // corruption). We need to be sure to inform the observer that we've
@@ -689,10 +688,11 @@ class FileURLLoader : public network::mojom::URLLoader {
       // applicable. This will always fit in the pipe (see DCHECK above, and
       // assertions near network::features::GetDataPipeDefaultAllocationSize()).
       base::span<const uint8_t> bytes_to_write =
-          base::as_byte_span(initial_read_buffer).subspan(first_byte_to_send);
-      bytes_to_write = bytes_to_write.first(
-          std::min(bytes_to_write.size(),
-                   base::checked_cast<size_t>(total_bytes_to_send)));
+          base::as_byte_span(initial_read_buffer)
+              .subspan(base::checked_cast<size_t>(first_byte_to_send));
+      bytes_to_write = bytes_to_write.first(base::checked_cast<size_t>(std::min(
+          static_cast<uint64_t>(bytes_to_write.size()), total_bytes_to_send)));
+
       size_t actually_written_bytes = 0;
       MojoResult result = producer_handle->WriteData(
           bytes_to_write, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);

@@ -4,6 +4,9 @@
 
 import("//build_overrides/build.gni")
 import("//testing/test.gni")
+if (is_win) {
+  import("//build/toolchain/win/midl.gni")
+}
 
 if (is_android) {
   component("graphics_provider") {
@@ -16,6 +19,14 @@ if (is_android) {
     defines = [ "TRACING_IMPLEMENTATION" ]
 
     deps = [ "//base" ]
+  }
+}
+
+if (is_win) {
+  midl("tracing_service_idl") {
+    sources = [ "common/tracing_service_idl.idl" ]
+
+    writes_tlb = true
   }
 }
 

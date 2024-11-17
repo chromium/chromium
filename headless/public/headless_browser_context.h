@@ -52,10 +52,6 @@ class HEADLESS_EXPORT HeadlessBrowserContext {
   // Returns all web contents owned by this browser context.
   virtual std::vector<HeadlessWebContents*> GetAllWebContents() = 0;
 
-  // See HeadlessBrowser::GetWebContentsForDevToolsAgentHostId.
-  virtual HeadlessWebContents* GetWebContentsForDevToolsAgentHostId(
-      const std::string& devtools_agent_host_id) = 0;
-
   // Destroy this BrowserContext and all WebContents associated with it.
   virtual void Close() = 0;
 

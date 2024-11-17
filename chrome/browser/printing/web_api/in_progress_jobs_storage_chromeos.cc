@@ -65,7 +65,7 @@ void InProgressJobsStorageChromeOS::OnPrintJobUpdateDeprecated(
     const std::string& printer_id,
     uint32_t job_id,
     crosapi::mojom::PrintJobStatus status) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void InProgressJobsStorageChromeOS::OnPrintJobUpdate(

@@ -37,12 +37,12 @@ public class LoadingViewTest {
         public final CallbackHelper hideLoadingCallback = new CallbackHelper();
 
         @Override
-        public void onShowLoadingUIComplete() {
+        public void onShowLoadingUiComplete() {
             showLoadingCallback.notifyCalled();
         }
 
         @Override
-        public void onHideLoadingUIComplete() {
+        public void onHideLoadingUiComplete() {
             hideLoadingCallback.notifyCalled();
         }
     }
@@ -70,13 +70,13 @@ public class LoadingViewTest {
     @Test
     @SmallTest
     public void testLoadingFast() {
-        mLoadingView.showLoadingUI();
+        mLoadingView.showLoadingUi();
         Assert.assertEquals(
-                "showLoadingCallback1 should not be executed as soon as showLoadingUI is called.",
+                "showLoadingCallback1 should not be executed as soon as showLoadingUi is called.",
                 0,
                 mTestObserver1.showLoadingCallback.getCallCount());
         Assert.assertEquals(
-                "showLoadingCallback2 should not be executed as soon as showLoadingUI is called.",
+                "showLoadingCallback2 should not be executed as soon as showLoadingUi is called.",
                 0,
                 mTestObserver2.showLoadingCallback.getCallCount());
 
@@ -94,7 +94,7 @@ public class LoadingViewTest {
                 0,
                 mTestObserver2.showLoadingCallback.getCallCount());
 
-        mLoadingView.hideLoadingUI();
+        mLoadingView.hideLoadingUi();
         Assert.assertEquals(
                 "Progress bar should never be visible.", View.GONE, mLoadingView.getVisibility());
         Assert.assertEquals(
@@ -111,13 +111,13 @@ public class LoadingViewTest {
     @SmallTest
     public void testLoadingSlow() {
         long sleepTime = 500;
-        mLoadingView.showLoadingUI();
+        mLoadingView.showLoadingUi();
         Assert.assertEquals(
-                "showLoadingCallback1 should not be executed as soon as showLoadingUI is called.",
+                "showLoadingCallback1 should not be executed as soon as showLoadingUi is called.",
                 0,
                 mTestObserver1.showLoadingCallback.getCallCount());
         Assert.assertEquals(
-                "showLoadingCallback2 should not be executed as soon as showLoadingUI is called.",
+                "showLoadingCallback2 should not be executed as soon as showLoadingUi is called.",
                 0,
                 mTestObserver2.showLoadingCallback.getCallCount());
 
@@ -135,7 +135,7 @@ public class LoadingViewTest {
                 1,
                 mTestObserver2.showLoadingCallback.getCallCount());
 
-        mLoadingView.hideLoadingUI();
+        mLoadingView.hideLoadingUi();
         Assert.assertEquals(
                 "Progress bar should still be visible until showing for 500ms.",
                 View.VISIBLE,
@@ -168,13 +168,13 @@ public class LoadingViewTest {
     @Test
     @SmallTest
     public void testLoadingSkipDelay() {
-        mLoadingView.showLoadingUI(/* skipDelay= */ true);
+        mLoadingView.showLoadingUi(/* skipDelay= */ true);
         Assert.assertEquals(
-                "showLoadingCallback1 should be executed as soon as showLoadingUI is called.",
+                "showLoadingCallback1 should be executed as soon as showLoadingUi is called.",
                 1,
                 mTestObserver1.showLoadingCallback.getCallCount());
         Assert.assertEquals(
-                "showLoadingCallback2 should be executed as soon as showLoadingUI is called.",
+                "showLoadingCallback2 should be executed as soon as showLoadingUi is called.",
                 1,
                 mTestObserver2.showLoadingCallback.getCallCount());
     }

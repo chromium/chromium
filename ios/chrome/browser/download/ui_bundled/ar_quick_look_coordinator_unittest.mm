@@ -45,8 +45,8 @@ base::FilePath GetTestFilePath() {
 class ARQuickLookCoordinatorTest : public PlatformTest {
  protected:
   ARQuickLookCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     base_view_controller_ = [[UIViewController alloc] init];
     coordinator_ = [[ARQuickLookCoordinator alloc]
         initWithBaseViewController:base_view_controller_
@@ -73,9 +73,9 @@ class ARQuickLookCoordinatorTest : public PlatformTest {
     return ARQuickLookTabHelper::GetOrCreateForWebState(web_state());
   }
 
-  // Needed for test browser state created by TestBrowser().
+  // Needed for test profile created by TestBrowser().
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
   ARQuickLookCoordinator* coordinator_;

@@ -78,7 +78,7 @@ rsync -c -r -q --files-from="lit_include.txt" "node_modules/" \
 
 # `npm install` leaves a bunch of local paths in _where and _args.
 # This is undesired. See: https://github.com/npm/npm/issues/10393
-python clean_json_attrs.py --attr_pattern="^_" --file_pattern="^package\.json$" "node_modules_filtered/"
+python3 clean_json_attrs.py --attr_pattern="^_" --file_pattern="^package\.json$" "node_modules_filtered/"
 
 echo -e "\n---------------------------------------------------------"
 echo "Before filtering:" size: $(du -h node_modules/ | tail -n1 | cut -f1) ", files: " $(find node_modules/ -type f | wc -l)

@@ -36,7 +36,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridgeJni;
@@ -73,8 +72,6 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
-    @Rule public final JniMocker mJniMocker = new JniMocker();
-
     @Mock private SigninManager mSigninManagerMock;
 
     @Mock private IdentityServicesProvider mIdentityServicesProviderMock;
@@ -94,9 +91,8 @@ public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase 
     @Before
     public void setUp() {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
-        mJniMocker.mock(
-                PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsNativeMock);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeNativeMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsNativeMock);
         when(mUserPrefsNativeMock.get(mProfile)).thenReturn(mPrefService);
         when(IdentityServicesProvider.get().getSigninManager(any())).thenReturn(mSigninManagerMock);
         mDelegate =

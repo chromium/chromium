@@ -10,7 +10,6 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/values_equivalent.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,7 +34,7 @@
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #endif
@@ -113,7 +112,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
   const apps::ShareTarget* share_target = MaybeGetShareTarget();
   auto [launch_url, is_file_handling] = GetLaunchUrl(share_target);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   bool is_url_in_system_web_app_scope =
       ash::GetSystemWebAppTypeForAppId(&*profile_, params_->app_id) &&
       ash::SystemWebAppManager::Get(&*profile_)
@@ -148,7 +147,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
   }
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // System Web Apps have their own launch code path.
   std::optional<ash::SystemWebAppType> system_app_type =
       ash::GetSystemWebAppTypeForAppId(&profile_.get(), params_->app_id);
@@ -159,7 +158,7 @@ content::WebContents* WebAppLaunchProcess::Run() {
     return browser ? browser->tab_strip_model()->GetActiveWebContents()
                    : nullptr;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto [browser, is_new_browser] = EnsureBrowser();
 
@@ -169,12 +168,6 @@ content::WebContents* WebAppLaunchProcess::Run() {
   if (!web_contents) {
     return nullptr;
   }
-  // Because the browser could be a non-app browser, ensure that app launches
-  // always set 'acting_as_app' to true, to enable the app settings menu for
-  // the browser tab.
-  auto* helper = WebAppTabHelper::FromWebContents(web_contents);
-  CHECK(helper);
-  helper->set_acting_as_app(true);
 
   MaybeEnqueueWebLaunchParams(
       launch_url, is_file_handling, web_contents,

@@ -35,7 +35,7 @@ class ManifestServiceChannel : public IPC::Listener {
 
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Called when PPAPI initialization in the NaCl plugin is finished.
     virtual void StartupInitializationComplete() = 0;

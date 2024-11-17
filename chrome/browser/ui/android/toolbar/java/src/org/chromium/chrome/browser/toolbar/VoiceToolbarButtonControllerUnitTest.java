@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -89,30 +89,30 @@ public final class VoiceToolbarButtonControllerUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    public void testIPHCommandHelper() {
+    public void testIphCommandHelper() {
         assertNull(
                 mVoiceToolbarButtonController
                         .get(/* tab= */ null)
                         .getButtonSpec()
-                        .getIPHCommandBuilder());
+                        .getIphCommandBuilder());
 
-        // Verify that IPHCommandBuilder is set just once;
-        IPHCommandBuilder builder =
-                mVoiceToolbarButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder();
+        // Verify that IphCommandBuilder is set just once;
+        IphCommandBuilder builder =
+                mVoiceToolbarButtonController.get(mTab).getButtonSpec().getIphCommandBuilder();
 
         assertNotNull(
-                mVoiceToolbarButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder());
+                mVoiceToolbarButtonController.get(mTab).getButtonSpec().getIphCommandBuilder());
         assertEquals(
                 builder,
-                mVoiceToolbarButtonController.get(mTab).getButtonSpec().getIPHCommandBuilder());
+                mVoiceToolbarButtonController.get(mTab).getButtonSpec().getIphCommandBuilder());
     }
 
     @Test
     @EnableFeatures(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2)
-    public void testIPHEvent() {
+    public void testIphEvent() {
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(
+                .shouldTriggerHelpUi(
                         FeatureConstants
                                 .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_FEATURE);
 

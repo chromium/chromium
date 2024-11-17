@@ -4,12 +4,12 @@
 
 #include "system_features_disable_list_policy_handler.h"
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -56,7 +56,7 @@ void SystemFeaturesDisableListPolicyHandler::RegisterPrefs(
 
 SystemFeature SystemFeaturesDisableListPolicyHandler::GetSystemFeatureFromAppId(
     const std::string& app_id) {
-  if (app_id == web_app::kCanvasAppId) {
+  if (app_id == ash::kCanvasAppId) {
     return SystemFeature::kCanvas;
   }
   return SystemFeature::kUnknownSystemFeature;

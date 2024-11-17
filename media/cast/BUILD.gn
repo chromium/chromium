@@ -28,7 +28,6 @@ source_set("common") {
     "common/rtp_time.h",
     "common/sender_encoded_frame.cc",
     "common/sender_encoded_frame.h",
-    "common/video_frame_factory.h",
     "constants.h",
 
     # NOTE: Logging code is pulled in by CastEnvironment.
@@ -168,8 +167,6 @@ static_library("test_support") {
     "test/fake_video_encode_accelerator_factory.h",
     "test/mock_openscreen_environment.cc",
     "test/mock_openscreen_environment.h",
-    "test/receiver/video_decoder.cc",
-    "test/receiver/video_decoder.h",
     "test/utility/audio_utility.cc",
     "test/utility/audio_utility.h",
     "test/utility/default_config.cc",

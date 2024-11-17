@@ -1,0 +1,130 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+option optimize_for = LITE_RUNTIME;
+
+package manta.proto;
+
+message ScannerInput {
+  // A user selected region of their device screen as a serialized jpeg.
+  bytes image = 1;
+  // The action that the user has selected to be invoked from a previous
+  // `ScannerOutput` response. This can be unset to request the full set of
+  // actions that can be performed on the selected region with unpopulated
+  // details.
+  ScannerAction selected_action = 2;
+}
+
+message ScannerOutput {
+  // The objects detected within the selected region, as well as actions the
+  // user may perform on them.
+  repeated ScannerObject objects = 1;
+}
+
+message ScannerObject {
+  // The actions that can be performed on this object.
+  //
+  // If the `ScannerInput` did not contain a `selected_action`, this will
+  // contain the full set of actions that can be performed on the selected
+  // region with unpopulated details.
+  //
+  // If the `ScannerInput` contained a `selected_action`, this will only
+  // contain the action that was selected with populated details.
+  repeated ScannerAction actions = 1;
+}
+
+message ScannerAction {
+  oneof action {
+    NewEventAction new_event = 1;
+    NewContactAction new_contact = 2;
+    NewGoogleDocAction new_google_doc = 3;
+    NewGoogleSheetAction new_google_sheet = 4;
+    CopyToClipboardAction copy_to_clipboard = 5;
+  }
+}
+
+// Details on creating a new Google Calendar event.
+message NewEventAction {
+  string title = 1;
+  string description = 2;
+  // The start and end dates of the event. The format should be either:-
+  // 1. "yyyymmdd/yyyymmdd"
+  // 2. "yyyymmddThhmmss/yyyymmddThhmmss"
+  string dates = 3;
+  string location = 4;
+}
+
+// Details on creating a new Google contact.
+message NewContactAction {
+  message EmailAddress {
+    // The email address.
+    string value = 1;
+    // The type of email address. The type can be custom or one of these
+    // predefined values:
+    // - "home"
+    // - "work"
+    // - "other"
+    string type = 2;
+  }
+  message PhoneNumber {
+    // The phone number.
+    string value = 1;
+    // The type of phone number. The type can be custom or one of these
+    // predefined values:
+    // - "home"
+    // - "work"
+    // - "mobile"
+    // - "homeFax"
+    // - "workFax"
+    // - "otherFax"
+    // - "pager"
+    // - "workMobile"
+    // - "workPager"
+    // - "main"
+    // - "googleVoice"
+    // - "other"
+    string type = 2;
+  }
+
+  // At least one of the following fields must be specified.
+  string given_name = 1;
+  string family_name = 2;
+  // Deprecated. Use `email_addresses` instead.
+  // Will only be used if `email_addresses` is empty.
+  string email = 3 [deprecated = true];
+  // Deprecated. Use `phone_numbers` instead.
+  // Will only be used if `phone_numbers` is empty.
+  string phone = 4 [deprecated = true];
+  repeated EmailAddress email_addresses = 5;
+  repeated PhoneNumber phone_numbers = 6;
+}
+
+// Details on creating a new Google Doc with some initial rich text content.
+message NewGoogleDocAction {
+  // The title of the Google Doc, i.e. the document's filename.
+  string title = 1;
+  // The initial content for the document as a HTML string (rich text). Can
+  // contain simple text, headings, images, tables, lists, etc.
+  string html_contents = 2;
+}
+
+// Details on creating a new Google Sheet with some initial CSV content.
+message NewGoogleSheetAction {
+  // The title of the Google Sheet, i.e. the sheet's filename.
+  string title = 1;
+  // The initial content for the sheet which will form a table. This will be a
+  // string (probably multiline) with comma-separated values.
+  string csv_contents = 2;
+}
+
+// Content that can be copied to the system clipboard, which allows users to
+// paste into any input region.
+message CopyToClipboardAction {
+  // Simple plain text to be copied to the clipboard.
+  string plain_text = 1;
+  // A HTML string (rich text) to be copied to the clipboard. Can contain simple
+  // text, headings, images, tables, lists, etc.
+  string html_text = 2;
+}

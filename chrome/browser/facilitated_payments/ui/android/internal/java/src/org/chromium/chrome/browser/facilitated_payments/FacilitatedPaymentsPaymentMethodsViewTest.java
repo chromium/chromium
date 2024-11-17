@@ -16,11 +16,13 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.FopSelectorProperties.SCREEN_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.EWALLET;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SCREEN_VIEW_MODEL;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.ERROR_SCREEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.FOP_SELECTOR;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SequenceScreen.PROGRESS_SCREEN;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.UI_EVENT_LISTENER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE_STATE;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.HIDDEN;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VisibleState.SHOWN;
@@ -38,7 +40,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -49,6 +50,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.Ewallet;
 import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.autofill.payments.PaymentRail;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -87,6 +89,30 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                     .setAccountNumberSuffix("2222")
                     .setAccountType(AccountType.SAVINGS)
                     .build();
+    private static final Ewallet EWALLET_1 =
+            new Ewallet.Builder()
+                    .setEwalletName("ewallet name 1")
+                    .setAccountDisplayName("account display name 1")
+                    .setPaymentInstrument(
+                            new PaymentInstrument.Builder()
+                                    .setInstrumentId(100)
+                                    .setNickname("nickname 3")
+                                    .setSupportedPaymentRails(new int[] {2})
+                                    .setIsFidoEnrolled(true)
+                                    .build())
+                    .build();
+    private static final Ewallet EWALLET_2 =
+            new Ewallet.Builder()
+                    .setEwalletName("ewallet name 2")
+                    .setAccountDisplayName("account display name 2")
+                    .setPaymentInstrument(
+                            new PaymentInstrument.Builder()
+                                    .setInstrumentId(100)
+                                    .setNickname("nickname 4")
+                                    .setSupportedPaymentRails(new int[] {2})
+                                    .setIsFidoEnrolled(true)
+                                    .build())
+                    .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -101,7 +127,6 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mBottomSheetController =
                 mActivityTestRule
@@ -117,6 +142,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                                             FacilitatedPaymentsPaymentMethodsProperties.ALL_KEYS)
                                     .with(VISIBLE_STATE, HIDDEN)
                                     .with(DISMISS_HANDLER, (Integer unused) -> {})
+                                    .with(UI_EVENT_LISTENER, (Integer unused) -> {})
                                     .build();
                     mView =
                             new FacilitatedPaymentsPaymentMethodsView(
@@ -205,15 +231,43 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
-        assertThat(getBankAccounts().getChildCount(), is(2));
+        assertThat(getSheetItems().getChildCount(), is(2));
 
         String expectedBankAccountSummary1 = String.format("Pix  •  %s ••••%s", "Checking", "1111");
         assertThat(getBankAccountNameAt(0).getText(), is("bankName1"));
         assertThat(getBankAccountSummaryAt(0).getText(), is(expectedBankAccountSummary1));
+        assertThat(getBankAccountAdditionalInfoAt(0).getText(), is("Limit per Pix R$ 500"));
 
         String expectedBankAccountSummary2 = String.format("Pix  •  %s ••••%s", "Savings", "2222");
         assertThat(getBankAccountNameAt(1).getText(), is("bankName2"));
         assertThat(getBankAccountSummaryAt(1).getText(), is(expectedBankAccountSummary2));
+        assertThat(getBankAccountAdditionalInfoAt(1).getText(), is("Limit per Pix R$ 500"));
+    }
+
+    @Test
+    @MediumTest
+    public void testEwalletShown() {
+        runOnUiThreadBlocking(
+                () -> {
+                    mModel.set(SCREEN, FOP_SELECTOR);
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(new ListItem(EWALLET, createEwalletModel(EWALLET_1)));
+                    mModel.get(SCREEN_VIEW_MODEL)
+                            .get(SCREEN_ITEMS)
+                            .add(new ListItem(EWALLET, createEwalletModel(EWALLET_2)));
+                    mModel.set(VISIBLE_STATE, SHOWN);
+                });
+
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        assertThat(getSheetItems().getChildCount(), is(2));
+
+        assertThat(getEwalletNameAt(0).getText(), is("ewallet name 1"));
+        assertThat(getAccountDisplayNameAt(0).getText(), is("account display name 1"));
+
+        assertThat(getEwalletNameAt(1).getText(), is("ewallet name 2"));
+        assertThat(getAccountDisplayNameAt(1).getText(), is("account display name 2"));
     }
 
     @Test
@@ -331,7 +385,7 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
 
         // Confirm the FOP selector is shown.
         assertThat(mView.getContentView().isShown(), is(true));
-        assertNotNull(mView.getContentView().findViewById(R.id.sheet_item_list));
+        assertNotNull(getSheetItems());
 
         // Show the progress screen.
         runOnUiThreadBlocking(
@@ -380,20 +434,36 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                 is(true));
     }
 
+    private RecyclerView getSheetItems() {
+        return mView.getContentView().findViewById(R.id.sheet_item_list);
+    }
+
     private PropertyModel createBankAccountModel(BankAccount bankAccount) {
         return mMediator.createBankAccountModel(mActivityTestRule.getActivity(), bankAccount);
     }
 
-    private RecyclerView getBankAccounts() {
-        return mView.getContentView().findViewById(R.id.sheet_item_list);
-    }
-
     private TextView getBankAccountNameAt(int index) {
-        return getBankAccounts().getChildAt(index).findViewById(R.id.bank_name);
+        return getSheetItems().getChildAt(index).findViewById(R.id.bank_name);
     }
 
     private TextView getBankAccountSummaryAt(int index) {
-        return getBankAccounts().getChildAt(index).findViewById(R.id.bank_account_summary);
+        return getSheetItems().getChildAt(index).findViewById(R.id.bank_account_summary);
+    }
+
+    private TextView getBankAccountAdditionalInfoAt(int index) {
+        return getSheetItems().getChildAt(index).findViewById(R.id.bank_account_additional_info);
+    }
+
+    private PropertyModel createEwalletModel(Ewallet eWallet) {
+        return mMediator.createEwalletModel(mActivityTestRule.getActivity(), eWallet);
+    }
+
+    private TextView getEwalletNameAt(int index) {
+        return getSheetItems().getChildAt(index).findViewById(R.id.ewallet_name);
+    }
+
+    private TextView getAccountDisplayNameAt(int index) {
+        return getSheetItems().getChildAt(index).findViewById(R.id.account_display_name);
     }
 
     private static boolean containsViewOfClass(ViewGroup parent, Class<?> clazz) {

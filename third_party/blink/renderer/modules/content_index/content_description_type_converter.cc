@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/content_index/content_description_type_converter.h"
 
 #include "third_party/blink/public/mojom/content_index/content_index.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_content_category.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_content_icon_definition.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -13,35 +14,38 @@ namespace mojo {
 
 namespace {
 
-blink::mojom::ContentCategory GetContentCategory(const WTF::String& category) {
-  if (category == "")
-    return blink::mojom::ContentCategory::NONE;
-  if (category == "homepage")
-    return blink::mojom::ContentCategory::HOME_PAGE;
-  if (category == "article")
-    return blink::mojom::ContentCategory::ARTICLE;
-  if (category == "video")
-    return blink::mojom::ContentCategory::VIDEO;
-  if (category == "audio")
-    return blink::mojom::ContentCategory::AUDIO;
-
-  NOTREACHED_IN_MIGRATION();
-  return blink::mojom::ContentCategory::NONE;
+blink::mojom::blink::ContentCategory GetContentCategory(
+    blink::V8ContentCategory::Enum category) {
+  switch (category) {
+    case blink::V8ContentCategory::Enum::k:
+      return blink::mojom::blink::ContentCategory::NONE;
+    case blink::V8ContentCategory::Enum::kHomepage:
+      return blink::mojom::blink::ContentCategory::HOME_PAGE;
+    case blink::V8ContentCategory::Enum::kArticle:
+      return blink::mojom::blink::ContentCategory::ARTICLE;
+    case blink::V8ContentCategory::Enum::kVideo:
+      return blink::mojom::blink::ContentCategory::VIDEO;
+    case blink::V8ContentCategory::Enum::kAudio:
+      return blink::mojom::blink::ContentCategory::AUDIO;
+  }
+  NOTREACHED();
 }
 
-WTF::String GetContentCategory(blink::mojom::ContentCategory category) {
+blink::V8ContentCategory::Enum GetContentCategory(
+    blink::mojom::blink::ContentCategory category) {
   switch (category) {
-    case blink::mojom::ContentCategory::NONE:
-      return "";
-    case blink::mojom::ContentCategory::HOME_PAGE:
-      return "homepage";
-    case blink::mojom::ContentCategory::ARTICLE:
-      return "article";
-    case blink::mojom::ContentCategory::VIDEO:
-      return "video";
-    case blink::mojom::ContentCategory::AUDIO:
-      return "audio";
+    case blink::mojom::blink::ContentCategory::NONE:
+      return blink::V8ContentCategory::Enum::k;
+    case blink::mojom::blink::ContentCategory::HOME_PAGE:
+      return blink::V8ContentCategory::Enum::kHomepage;
+    case blink::mojom::blink::ContentCategory::ARTICLE:
+      return blink::V8ContentCategory::Enum::kArticle;
+    case blink::mojom::blink::ContentCategory::VIDEO:
+      return blink::V8ContentCategory::Enum::kVideo;
+    case blink::mojom::blink::ContentCategory::AUDIO:
+      return blink::V8ContentCategory::Enum::kAudio;
   }
+  NOTREACHED();
 }
 
 }  // namespace
@@ -54,7 +58,7 @@ blink::mojom::blink::ContentDescriptionPtr TypeConverter<
   result->id = description->id();
   result->title = description->title();
   result->description = description->description();
-  result->category = GetContentCategory(description->category());
+  result->category = GetContentCategory(description->category().AsEnum());
   for (const auto& icon : description->icons()) {
     result->icons.push_back(blink::mojom::blink::ContentIconDefinition::New(
         icon->src(), icon->hasSizes() ? icon->sizes() : String(),

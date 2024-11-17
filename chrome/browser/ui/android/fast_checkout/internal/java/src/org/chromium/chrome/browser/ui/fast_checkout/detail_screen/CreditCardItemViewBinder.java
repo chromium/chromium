@@ -76,13 +76,11 @@ class CreditCardItemViewBinder {
         if (!expiryDateString.isEmpty()) {
             builder.append(
                     view.getContext()
-                            .getResources()
                             .getString(R.string.fast_checkout_credit_card_item_expire_description));
             builder.append(getIfNotEmpty(" " + expiryDateString));
         }
         builder.append(
                 view.getContext()
-                        .getResources()
                         .getString(
                                 isSelected
                                         ? R.string.fast_checkout_detail_screen_selected_description

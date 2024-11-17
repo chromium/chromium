@@ -10,4 +10,7 @@
 // Accessibility identifier of the Edit Address Cancel Button.
 extern NSString* const kEditProfileBottomSheetCancelButton;
 
+// Accessibility identifier for the Edit Address Bottom Sheet.
+extern NSString* const kEditProfileBottomSheetViewIdentfier;
+
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_BOTTOM_SHEET_BOTTOM_SHEET_CONSTANTS_H_

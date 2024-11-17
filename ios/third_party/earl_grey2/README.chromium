@@ -1,7 +1,8 @@
 Name: Earl Grey 2
 Short Name: EG2
 URL: https://github.com/google/EarlGrey
-Version: 0
+Version: N/A
+Revision: DEPS
 License: Apache 2.0
 License File: LICENSE
 Security Critical: no

@@ -100,6 +100,7 @@
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_impl.h"
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
+#include "chrome/browser/ash/file_manager/file_tasks_notifier_factory.h"
 #include "chrome/browser/ash/file_manager/file_tasks_observer.h"
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_manager/office_file_tasks.h"
@@ -114,9 +115,11 @@
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_mount_provider_registry.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
 #include "chrome/browser/ash/smb_client/smb_errors.h"
 #include "chrome/browser/ash/smb_client/smb_service.h"
@@ -1002,10 +1005,8 @@ ash::LoggedInUserMixin::LogInType LogInTypeFor(
     TestAccountType test_account_type) {
   switch (test_account_type) {
     case kTestAccountTypeNotSet:
-      CHECK(false) << "test_account_type option must be set for "
+      NOTREACHED() << "test_account_type option must be set for "
                       "LoggedInUserFilesAppBrowserTest";
-      // TODO(crbug.com/40122554): `base::ImmediateCrash` is necessary.
-      base::ImmediateCrash();
     case kEnterprise:
     case kGoogler:
       return ash::LoggedInUserMixin::LogInType::kManaged;
@@ -1020,10 +1021,8 @@ ash::LoggedInUserMixin::LogInType LogInTypeFor(
 std::optional<AccountId> AccountIdFor(TestAccountType test_account_type) {
   switch (test_account_type) {
     case kTestAccountTypeNotSet:
-      CHECK(false) << "test_account_type option must be set for "
+      NOTREACHED() << "test_account_type option must be set for "
                       "LoggedInUserFilesAppBrowserTest";
-      // `base::ImmediateCrash` is necessary for https://crbug.com/1061742.
-      base::ImmediateCrash();
     case kGoogler:
       return AccountId::FromUserEmailGaiaId(
           "user@google.com", FakeGaiaMixin::kEnterpriseUser1GaiaId);
@@ -1090,7 +1089,8 @@ class FileManagerBrowserTestBase::MockFileTasksObserver
     : public file_tasks::FileTasksObserver {
  public:
   explicit MockFileTasksObserver(Profile* profile) {
-    observation_.Observe(file_tasks::FileTasksNotifier::GetForProfile(profile));
+    observation_.Observe(
+        file_tasks::FileTasksNotifierFactory::GetForProfile(profile));
   }
 
   MOCK_METHOD2(OnFilesOpenedImpl,
@@ -1156,18 +1156,13 @@ class LocalTestVolume : public TestVolume {
             << "Failed to create a symlink: " << target_path.value();
         break;
       case AddEntriesMessage::TEAM_DRIVE:
-        NOTREACHED_IN_MIGRATION()
-            << "Can't create a team drive in a local volume: "
-            << target_path.value();
-        break;
+        NOTREACHED() << "Can't create a team drive in a local volume: "
+                     << target_path.value();
       case AddEntriesMessage::COMPUTER:
-        NOTREACHED_IN_MIGRATION()
-            << "Can't create a computer in a local volume: "
-            << target_path.value();
-        break;
+        NOTREACHED() << "Can't create a computer in a local volume: "
+                     << target_path.value();
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unsupported entry type for: " << target_path.value();
+        NOTREACHED() << "Unsupported entry type for: " << target_path.value();
     }
 
     ASSERT_TRUE(UpdateModifiedTime(entry, target_path));
@@ -1228,7 +1223,7 @@ class DownloadsTestVolume : public LocalTestVolume {
   // rolled out.
   base::FilePath base_path() const { return root_path().Append("Downloads"); }
 
-  base::FilePath GetFilePath(const std::string relative_path) const {
+  base::FilePath GetFilePath(std::string_view relative_path) const {
     return base_path().Append(relative_path);
   }
 
@@ -1891,11 +1886,9 @@ class DocumentsProviderTestVolume : public TestVolume {
       return 0;
     }
 
-    int64_t file_size = 0;
     const base::FilePath source_path =
         TestVolume::GetTestDataFilePath(entry.source_file_name);
-    bool success = base::GetFileSize(source_path, &file_size);
-    return success ? file_size : 0;
+    return base::GetFileSize(source_path).value_or(0);
   }
 
   std::string GetMimeType(const AddEntriesMessage::TestEntryInfo& entry) {
@@ -2196,8 +2189,7 @@ class MockGuestOsMountProvider : public guest_os::GuestOsMountProvider {
     } else if (vm_type == "unknown") {
       vm_type_ = guest_os::VmType::UNKNOWN;
     } else {
-      NOTREACHED_IN_MIGRATION();
-      vm_type_ = guest_os::VmType::UNKNOWN;
+      NOTREACHED();
     }
   }
 
@@ -2310,7 +2302,7 @@ void FileManagerBrowserTestBase::DevToolsAgentHostCrashed(
   if (devtools_agent_.find(host) == devtools_agent_.end()) {
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FileManagerBrowserTestBase::SetUp() {
@@ -2361,9 +2353,6 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
 
   std::vector<base::test::FeatureRef> enabled_features;
   std::vector<base::test::FeatureRef> disabled_features;
-
-  // Make sure to run the ARC storage UI toast tests.
-  enabled_features.push_back(arc::kUsbStorageUIFeature);
 
   if (options.enable_conflict_dialog) {
     enabled_features.push_back(ash::features::kFilesConflictDialog);
@@ -2464,11 +2453,9 @@ void FileManagerBrowserTestBase::SetUpCommandLine(
   }
 
   if (options.enable_drive_bulk_pinning) {
-    enabled_features.push_back(ash::features::kDriveFsBulkPinning);
     enabled_features.push_back(
         ash::features::kFeatureManagementDriveFsBulkPinning);
   } else {
-    disabled_features.push_back(ash::features::kDriveFsBulkPinning);
     disabled_features.push_back(
         ash::features::kFeatureManagementDriveFsBulkPinning);
   }
@@ -2620,7 +2607,8 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
                                 1234));
     crostini_volume_ = std::make_unique<CrostiniTestVolume>("sftp://3:1234");
 
-    guest_os::GuestOsSharePath::GetForProfile(profile()->GetOriginalProfile())
+    guest_os::GuestOsSharePathFactory::GetForProfile(
+        profile()->GetOriginalProfile())
         ->RegisterGuest(crostini::DefaultContainerId());
     static_cast<ash::FakeCrosDisksClient*>(ash::CrosDisksClient::Get())
         ->AddCustomMountPointCallback(
@@ -2679,7 +2667,8 @@ void FileManagerBrowserTestBase::SetUpOnMainThread() {
                 profile());
       }
     } else {
-      EXPECT_FALSE(file_tasks::FileTasksNotifier::GetForProfile(profile()));
+      EXPECT_FALSE(
+          file_tasks::FileTasksNotifierFactory::GetForProfile(profile()));
     }
 
     if (options.fake_file_system_provider) {
@@ -3104,8 +3093,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
       }
     }
     // Fail the test if the chrome-untrusted:// frame wasn't found.
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (name == "isDevtoolsCoverageActive") {
@@ -3624,11 +3612,11 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     profile()->GetPrefs()->SetBoolean(crostini::prefs::kCrostiniEnabled,
                                       enabled.value());
     if (enabled.value()) {
-      guest_os::GuestOsSharePath::GetForProfile(profile())->RegisterGuest(
-          crostini::DefaultContainerId());
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile())
+          ->RegisterGuest(crostini::DefaultContainerId());
     } else {
-      guest_os::GuestOsSharePath::GetForProfile(profile())->UnregisterGuest(
-          crostini::DefaultContainerId());
+      guest_os::GuestOsSharePathFactory::GetForProfile(profile())
+          ->UnregisterGuest(crostini::DefaultContainerId());
     }
     return;
   }
@@ -3673,8 +3661,7 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     } else if (*status == "connected") {
       SetDriveConnectionStatusForTesting(ConnectionStatus::kConnected);
     } else {
-      NOTREACHED_IN_MIGRATION()
-          << "Unknown status (" << *status << ") provided";
+      NOTREACHED() << "Unknown status (" << *status << ") provided";
     }
 
     auto* const service =
@@ -4167,7 +4154,7 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
     // TODO(davidmunro): Merge with in-constructor derivation.
     // auto id = guest_os::GuestId(guest_os::VmType::UNKNOWN, *displayName,
     // *displayName);
-    auto* registry = guest_os::GuestOsService::GetForProfile(profile())
+    auto* registry = guest_os::GuestOsServiceFactory::GetForProfile(profile())
                          ->MountProviderRegistry();
     auto id = registry->Register(std::make_unique<MockGuestOsMountProvider>(
         profile()->GetOriginalProfile(), *displayName,
@@ -4191,7 +4178,7 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
     const std::string* str = value.FindString("guestId");
     CHECK(str != nullptr);
     CHECK(base::StringToInt(*str, &id));
-    auto* registry = guest_os::GuestOsService::GetForProfile(profile())
+    auto* registry = guest_os::GuestOsServiceFactory::GetForProfile(profile())
                          ->MountProviderRegistry();
     registry->Unregister(id);
     return true;
@@ -4201,7 +4188,7 @@ bool FileManagerBrowserTestBase::HandleGuestOsCommands(
     const std::string* str = value.FindString("guestId");
     CHECK(str != nullptr);
     CHECK(base::StringToInt(*str, &id));
-    auto* registry = guest_os::GuestOsService::GetForProfile(profile())
+    auto* registry = guest_os::GuestOsServiceFactory::GetForProfile(profile())
                          ->MountProviderRegistry();
     registry->Get(id)->Unmount();
     return true;

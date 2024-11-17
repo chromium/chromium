@@ -14,7 +14,7 @@
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
-              "builder_group": "chromium.android.fyi",
+              "builder_group": "chromium.android",
               "execution_mode": "COMPILE_AND_TEST",
               "legacy_android_config": {
                 "config": "main_builder"
@@ -51,7 +51,8 @@
           "builder": "android-mte-arm64-rel",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-mte-arm64-rel/targets"
     }
   },
   "$build/reclient": {
@@ -67,7 +68,7 @@
     "enable_cloud_trace": true,
     "experiments": [],
     "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
+    "remote_jobs": 500
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],
@@ -76,6 +77,6 @@
       "v.test_suite"
     ]
   },
-  "builder_group": "chromium.android.fyi",
+  "builder_group": "chromium.android",
   "recipe": "chromium"
 }

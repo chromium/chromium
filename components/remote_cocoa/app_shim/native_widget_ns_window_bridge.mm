@@ -63,6 +63,17 @@
 using remote_cocoa::mojom::VisibilityTransition;
 using remote_cocoa::mojom::WindowVisibilityState;
 
+// Undocumented API used to prevent a window region from being screen captured.
+using CGSConnectionID = uint32_t;
+using CGSWindowID = NSInteger;
+using CGRegionRef = CFTypeRef;
+
+CG_EXTERN CGSConnectionID CGSMainConnectionID(void);
+CG_EXTERN CGError CGSSetWindowCaptureExcludeShape(CGSConnectionID cid,
+                                                  CGSWindowID wid,
+                                                  CGRegionRef region);
+CG_EXTERN CGRegionRef CGRegionCreateWithRect(CGRect rect);
+
 namespace {
 constexpr auto kUIPaintTimeout = base::Seconds(5);
 
@@ -727,7 +738,7 @@ void NativeWidgetNSWindowBridge::CloseWindow() {
 
 void NativeWidgetNSWindowBridge::CloseWindowNow() {
   // NSWindows must be retained until -[NSWindow close] returns.
-  NSWindow* __attribute__((objc_precise_lifetime)) window_retain = window_;
+  NS_VALID_UNTIL_END_OF_SCOPE NSWindow* window_retain = window_;
 
   // If there's a bridge at this point, it means there must be a window as well.
   DCHECK(window_);
@@ -1104,8 +1115,15 @@ void NativeWidgetNSWindowBridge::DisplayContextMenu(
 }
 
 void NativeWidgetNSWindowBridge::SetAllowScreenshots(bool allow) {
-  [ns_window()
-      setSharingType:allow ? NSWindowSharingReadOnly : NSWindowSharingNone];
+  CGSConnectionID connection_id = CGSMainConnectionID();
+  CGSWindowID window_id = ns_window().windowNumber;
+  CGRect frame = ns_window().frame;
+  frame.origin = CGPointZero;
+  base::apple::ScopedCFTypeRef<CGRegionRef> region;
+  if (!allow) {
+    region.reset(CGRegionCreateWithRect(frame));
+  }
+  CGSSetWindowCaptureExcludeShape(connection_id, window_id, region.get());
 }
 
 void NativeWidgetNSWindowBridge::OnWindowWillClose() {
@@ -1673,7 +1691,7 @@ void NativeWidgetNSWindowBridge::UpdateTooltip() {
   NSPoint nspoint = [window_ convertPointFromScreen:NSEvent.mouseLocation];
   // Note: flip in the view's frame, which matches the window's contentRect.
   gfx::Point point(nspoint.x, NSHeight([bridged_view_ frame]) - nspoint.y);
-  [bridged_view_ updateTooltipIfRequiredAt:point];
+  [bridged_view_ updateTooltipIfRequiredAt:point bridge:this];
 }
 
 bool NativeWidgetNSWindowBridge::NeedsUpdateWindows() {
@@ -1738,7 +1756,7 @@ void NativeWidgetNSWindowBridge::RemoveOrDestroyChildren() {
     // The NSWindow can only be destroyed after -[NSWindow close] is complete.
     // Retain the window, otherwise the reference count can reach zero when the
     // child calls back into RemoveChildWindow() via its OnWindowWillClose().
-    NSWindow* __attribute__((objc_precise_lifetime)) child =
+    NS_VALID_UNTIL_END_OF_SCOPE NSWindow* child =
         child_windows_.back()->ns_window();
     [child close];
   }

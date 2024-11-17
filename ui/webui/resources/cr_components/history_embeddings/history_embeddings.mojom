@@ -9,11 +9,13 @@ import "url/mojom/url.mojom";
 
 enum AnswerStatus {
   kUnspecified,
+  kLoading,
   kSuccess,
   kUnanswerable,
   kModelUnavailable,
   kExecutionFailure,
   kExecutionCanceled,
+  kFiltered,
 };
 
 // Some SearchResultItem may be specialized and marked as the query answer.
@@ -36,8 +38,12 @@ struct SearchResultItem {
   // The URL formatted for display.
   string url_for_display;
 
-  // A localized string for the last visit time for the above URL, from history.
+  // A localized string for how long it has been since the last visit time for
+  // the above URL, from history.
   string relative_time;
+
+  // A localized string for the last visit time for the above URL, from history.
+  string short_date_time;
 
   // The last visit time for the above URL, from history. Used for removing
   // history item.
@@ -99,7 +105,10 @@ interface PageHandler {
 
   // Records the results from an embeddings query: whether the UI received
   // non-empty embeddings results, and if the user clicked one of the results.
-  RecordSearchResultsMetrics(bool nonEmptyResults, bool userClickedResult);
+  RecordSearchResultsMetrics(bool nonEmptyResults, bool userClickedResult,
+                             bool answerShown, bool answerCitationClicked,
+                             bool otherHistoryResultClicked,
+                             uint32 queryWordCount);
 
   // Store the user feedback supplied by the user.
   SetUserFeedback(UserFeedback feedback);
@@ -107,6 +116,10 @@ interface PageHandler {
   // Attempt to show the IPH bubble to promote the feature. Called from the
   // main history app on page load.
   MaybeShowFeaturePromo();
+
+  // Opens the History Search Settings page in a new tab, for use in the side
+  // panel where normal anchor tags do not work.
+  OpenSettingsPage();
 };
 
 // WebUI-side handler for requests from the browser.

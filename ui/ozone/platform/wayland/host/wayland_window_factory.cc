@@ -54,8 +54,7 @@ std::unique_ptr<WaylandWindow> WaylandWindow::Create(
       window = std::make_unique<WaylandToplevelWindow>(delegate, connection);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return window && window->Initialize(std::move(properties)) ? std::move(window)
                                                              : nullptr;

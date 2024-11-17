@@ -169,6 +169,11 @@ constexpr auto kKeyCodeToSixPackKeyRemappingNudgeLastShownPref =
 // Device key of the virtual mouse often used by integration tests, avoid
 // showing notification in this case.
 const char kVirtualMouseDeviceKey[] = "0000:0000";
+// Device key for the Logitech Bolt receiver. This identifies the receiver
+// itself, not the connected mouse or keyboard. We should avoid showing
+// notifications for this VID/PID when the receiver is first plugged in,
+// as the Bolt may not yet be connected to a mouse or keyboard.
+const char kLogiBoltReceiverKey[] = "046d:c548";
 
 const char kNotifierId[] = "input_device_settings_controller";
 const char kAltRightClickRewriteNotificationId[] =
@@ -287,9 +292,24 @@ bool IsActiveUserSession() {
          !session_controller->IsUserSessionBlocked();
 }
 
-bool IsGuestSession() {
-  const auto* session_controller = Shell::Get()->session_controller();
-  return session_controller->IsUserGuest();
+bool ShouldBlockNotification() {
+  const std::optional<user_manager::UserType> user_type =
+      Shell::Get()->session_controller()->GetUserType();
+  if (!user_type) {
+    return false;
+  }
+
+  switch (*user_type) {
+    case user_manager::UserType::kPublicAccount:
+    case user_manager::UserType::kGuest:
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kKioskIWA:
+      return true;
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
+      return false;
+  }
 }
 
 // If the user has reached the settings page through the notification, do
@@ -615,12 +635,20 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::NotifyMouseFirstTimeConnected(
     const mojom::Mouse& mouse,
     const gfx::ImageSkia& device_image) {
-  if (!IsActiveUserSession() || !mouse.is_external || IsGuestSession()) {
+  if (!IsActiveUserSession() || !mouse.is_external ||
+      ShouldBlockNotification()) {
     return;
   }
 
-  // Avoid showing notification for the virtual mouse device.
-  if (mouse.device_key == kVirtualMouseDeviceKey) {
+  // Avoid showing notifications for the virtual mouse device and Logi Bolt
+  // receiver. The virtual mouse device is primarily used in integration tests
+  // and doesn't represent a physical device that requires user notifications.
+  // The Logi Bolt receiver is a special case because it identifies the
+  // receiver itself, not the connected mouse or keyboard. We should avoid
+  // showing notifications for the receiver when it's first plugged in,
+  // as the Bolt may not yet be connected to a mouse or keyboard.
+  if (mouse.device_key == kVirtualMouseDeviceKey ||
+      mouse.device_key == kLogiBoltReceiverKey) {
     return;
   }
 
@@ -655,7 +683,7 @@ void InputDeviceSettingsNotificationController::
     NotifyGraphicsTabletFirstTimeConnected(
         const mojom::GraphicsTablet& graphics_tablet,
         const gfx::ImageSkia& device_image) {
-  if (!IsActiveUserSession() || IsGuestSession()) {
+  if (!IsActiveUserSession() || ShouldBlockNotification()) {
     return;
   }
 
@@ -855,7 +883,8 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::
     NotifyKeyboardFirstTimeConnected(const mojom::Keyboard& keyboard,
                                      const gfx::ImageSkia& device_image) {
-  if (!IsActiveUserSession() || !keyboard.is_external || IsGuestSession()) {
+  if (!IsActiveUserSession() || !keyboard.is_external ||
+      ShouldBlockNotification()) {
     return;
   }
 
@@ -882,7 +911,8 @@ void InputDeviceSettingsNotificationController::
 void InputDeviceSettingsNotificationController::
     NotifyTouchpadFirstTimeConnected(const mojom::Touchpad& touchpad,
                                      const gfx::ImageSkia& device_image) {
-  if (!IsActiveUserSession() || !touchpad.is_external || IsGuestSession()) {
+  if (!IsActiveUserSession() || !touchpad.is_external ||
+      ShouldBlockNotification()) {
     return;
   }
 
@@ -939,7 +969,7 @@ void InputDeviceSettingsNotificationController::
     NotifyPointingStickFirstTimeConnected(
         const mojom::PointingStick& pointing_stick) {
   if (!IsActiveUserSession() || !pointing_stick.is_external ||
-      IsGuestSession()) {
+      ShouldBlockNotification()) {
     return;
   }
 

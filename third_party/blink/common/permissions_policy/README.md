@@ -79,6 +79,14 @@ To test the new feature with permissions policy, refer to
 `third_party/blink/web_tests/external/wpt/permissions-policy/README.md` for
 instructions on how to use the permissions policy test framework.
 
+##### Fenced frame considerations
+
+Reach out to `third_party/blink/renderer/core/html/fenced_frame/OWNERS` when
+adding a new permissions-backed feature so they can audit it for use with the
+Fenced Frames API, or feel free to add to the audit at
+`content/browser/fenced_frame/PERMISSIONS_POLICIES.md` and send to
+`third_party/blink/renderer/core/html/fenced_frame/OWNERS` for review.
+
 ## Document Policy Guide
 ### How to add a new feature to document policy
 

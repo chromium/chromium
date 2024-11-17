@@ -21,7 +21,6 @@
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -980,7 +979,7 @@ gfx::Insets MenuControllerTest::GetBorderAndShadowInsets(bool is_submenu) {
   const MenuConfig& menu_config = MenuConfig::instance();
   int elevation = menu_config.bubble_menu_shadow_elevation;
   BubbleBorder::Shadow shadow_type = BubbleBorder::STANDARD_SHADOW;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Increase the submenu shadow elevation and change the shadow style to
   // ChromeOS system UI shadow style when using Ash System UI layout.
   if (menu_controller_->use_ash_system_ui_layout()) {
@@ -1718,6 +1717,20 @@ TEST_F(MenuControllerTest, AsynchronousDragComplete) {
             menu_controller_delegate()->on_menu_closed_notify_type());
 }
 
+// Tests that completing drag with `should_close` set to false will not close
+// the menu.
+TEST_F(MenuControllerTest, AsynchronousDragCompleteWithoutClose) {
+  TestDragCompleteThenDestroyOnMenuClosed();
+
+  menu_controller()->OnDragWillStart();
+  menu_controller()->OnDragComplete(false);
+
+  // TODO(crbug.com/375959961): For X11, the menu is closed on drag completion
+  // because the native widget's state is not properly updated.
+  EXPECT_EQ(BUILDFLAG(IS_OZONE_X11) ? 1 : 0,
+            menu_controller_delegate()->on_menu_closed_called());
+}
+
 // Tests that if Cancel is called during a drag, that OnMenuClosed is still
 // notified when the drag completes.
 TEST_F(MenuControllerTest, AsynchronousCancelDuringDrag) {
@@ -2272,9 +2285,9 @@ TEST_P(MenuControllerTest, TestSubmenuFitsOnScreen) {
   menu_controller()->set_use_ash_system_ui_layout(true);
   SubmenuView* const submenu = menu_item()->GetSubmenu();
   const std::vector<MenuItemView*> menu_items = submenu->GetMenuItems();
-  base::ranges::for_each(
-      base::make_span(menu_items).subspan(1),
-      [&](auto* item) { menu_item()->RemoveMenuItem(item); });
+  base::ranges::for_each(base::span(menu_items).subspan<1>(), [&](auto* item) {
+    menu_item()->RemoveMenuItem(item);
+  });
   MenuItemView* const sub_item = submenu->GetMenuItemAt(0);
   sub_item->AppendMenuItem(11, u"Subitem.One");
 
@@ -2460,6 +2473,62 @@ TEST_F(MenuControllerTest, CancelAllDuringDrag) {
   aura::client::SetDragDropClient(
       GetRootWindow(menu_item()->GetSubmenu()->GetWidget()), &drag_drop_client);
   StartDrag();
+}
+
+// Tests that capture is restored to the submenu after a drag and drop.
+TEST_F(MenuControllerTest, RestoreCaptureAfterDrag) {
+  // Build the menu so that the appropriate root window is available to set
+  // the drag drop client on.
+  AddButtonMenuItems(/*single_child=*/false);
+  menu_delegate()->set_should_close_on_drag_complete(false);
+  SubmenuView* const base_submenu = menu_item()->GetSubmenu();
+  MenuHost* const base_host = menu_host_for_submenu(base_submenu);
+  base_host->SetCapture(base_submenu);
+  TestDragDropClient drag_drop_client(base::DoNothing());
+  aura::client::SetDragDropClient(
+      GetRootWindow(menu_item()->GetSubmenu()->GetWidget()), &drag_drop_client);
+  EXPECT_TRUE(base_host->HasCapture());
+  StartDrag();
+
+  // TODO(crbug.com/375959961): For X11, the menu is closed on drag completion
+  // because the native widget's state is not properly updated.
+  EXPECT_NE(base_host->HasCapture(), BUILDFLAG(IS_OZONE_X11));
+}
+
+// Tests that capture is not restored to the submenu after a drag and drop where
+// the submenu is no longer showing.
+TEST_F(MenuControllerTest, DontRestoreCaptureOnHiddenHostAfterDrag) {
+  // Build the menu so that the appropriate root window is available to set
+  // the drag drop client on.
+  AddButtonMenuItems(/*single_child=*/false);
+  menu_delegate()->set_should_close_on_drag_complete(true);
+  SubmenuView* const base_submenu = menu_item()->GetSubmenu();
+  MenuHost* const base_host = menu_host_for_submenu(base_submenu);
+  base_host->SetCapture(base_submenu);
+  TestDragDropClient drag_drop_client(base::DoNothing());
+  aura::client::SetDragDropClient(
+      GetRootWindow(menu_item()->GetSubmenu()->GetWidget()), &drag_drop_client);
+  EXPECT_TRUE(base_host->HasCapture());
+  StartDrag();
+  EXPECT_FALSE(base_host->HasCapture());
+}
+
+// Tests that capture is not given to the submenu after drag and drop if the
+// submenu didn't have capture before.
+TEST_F(MenuControllerTest, HostWithoutCaptureAfterDrag) {
+  // Build the menu so that the appropriate root window is available to set
+  // the drag drop client on.
+  AddButtonMenuItems(/*single_child=*/false);
+  menu_delegate()->set_should_close_on_drag_complete(false);
+  SubmenuView* const base_submenu = menu_item()->GetSubmenu();
+  MenuHost* const base_host = menu_host_for_submenu(base_submenu);
+  base_host->ReleaseCapture();
+  TestDragDropClient drag_drop_client(base::DoNothing());
+  aura::client::SetDragDropClient(
+      GetRootWindow(menu_item()->GetSubmenu()->GetWidget()), &drag_drop_client);
+  EXPECT_FALSE(base_host->HasCapture());
+  StartDrag();
+  EXPECT_FALSE(base_host->HasCapture());
 }
 
 // Tests that when releasing the ref on ViewsDelegate and MenuController is

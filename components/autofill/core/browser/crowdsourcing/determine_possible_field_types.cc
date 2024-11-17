@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/crowdsourcing/disambiguate_possible_field_types.h"
 #include "components/autofill/core/browser/data_model/address.h"
@@ -28,7 +29,7 @@ AutofillField* FindFirstFieldWithValue(const FormStructure& form_structure,
                                        const std::u16string& value) {
   for (const auto& field : form_structure) {
     std::u16string trimmed_value;
-    base::TrimWhitespace(field->value(ValueSemantics::kCurrent), base::TRIM_ALL,
+    base::TrimWhitespace(field->value_for_import(), base::TRIM_ALL,
                          &trimmed_value);
     if (trimmed_value == value) {
       return field.get();
@@ -85,7 +86,7 @@ AutofillField* HeuristicallyFindCVCFieldForUpload(
     DCHECK_EQ(1u, type_set.size());
 
     std::u16string trimmed_value;
-    base::TrimWhitespace(field->value(ValueSemantics::kCurrent), base::TRIM_ALL,
+    base::TrimWhitespace(field->value_for_import(), base::TRIM_ALL,
                          &trimmed_value);
 
     // Skip the field if it can be confused with a expiration year.
@@ -131,7 +132,10 @@ void FindAndSetPossibleFieldTypesForField(
     const std::vector<AutofillProfile>& profiles,
     const std::vector<CreditCard>& credit_cards,
     const std::string& app_locale) {
-  if (!field.possible_types().empty() && field.IsEmpty()) {
+  std::u16string value = field.value_for_import();
+  base::TrimWhitespace(value, base::TRIM_ALL, &value);
+
+  if (!field.possible_types().empty() && value.empty()) {
     // This is a password field in a sign-in form. Skip checking its type
     // since |field->value| is not set.
     DCHECK_EQ(1u, field.possible_types().size());
@@ -139,16 +143,6 @@ void FindAndSetPossibleFieldTypesForField(
     return;
   }
   FieldTypeSet matching_types;
-
-  // If `field` has a selected option, we give precedence to the option's text
-  // over its value because the user-visible text is likely more meaningful.
-  // Currently, only <select> elements may have a selected option.
-  base::optional_ref<const SelectOption> selected_option =
-      field.selected_option();
-  std::u16string value = selected_option
-                             ? selected_option->text
-                             : field.value(ValueSemantics::kCurrent);
-  base::TrimWhitespace(value, base::TRIM_ALL, &value);
 
   for (const AutofillProfile& profile : profiles) {
     profile.GetMatchingTypesWithProfileSources(value, app_locale,
@@ -194,6 +188,40 @@ void FindAndSetPossibleFieldTypes(
 }
 
 }  // namespace
+
+void PreProcessStateMatchingTypes(const AutofillClient& client,
+                                  const std::vector<AutofillProfile>& profiles,
+                                  FormStructure& form_structure) {
+  for (const auto& profile : profiles) {
+    std::optional<AlternativeStateNameMap::CanonicalStateName>
+        canonical_state_name_from_profile =
+            profile.GetAddress().GetCanonicalizedStateName();
+
+    if (!canonical_state_name_from_profile) {
+      continue;
+    }
+
+    const std::u16string& country_code = profile.GetInfo(
+        AutofillType(HtmlFieldType::kCountryCode), client.GetAppLocale());
+
+    for (auto& field : form_structure) {
+      if (field->state_is_a_matching_type()) {
+        continue;
+      }
+
+      std::optional<AlternativeStateNameMap::CanonicalStateName>
+          canonical_state_name_from_text =
+              AlternativeStateNameMap::GetCanonicalStateName(
+                  base::UTF16ToUTF8(country_code), field->value_for_import());
+
+      if (canonical_state_name_from_text &&
+          canonical_state_name_from_text.value() ==
+              canonical_state_name_from_profile.value()) {
+        field->set_state_is_a_matching_type();
+      }
+    }
+  }
+}
 
 void DeterminePossibleFieldTypesForUpload(
     const std::vector<AutofillProfile>& profiles,

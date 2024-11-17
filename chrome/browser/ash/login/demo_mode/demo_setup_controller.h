@@ -16,8 +16,6 @@
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 
-class PrefRegistrySimple;
-
 namespace policy {
 class EnrollmentStatus;
 }
@@ -205,8 +203,6 @@ class DemoSetupController
   using OnSetupError = base::OnceCallback<void(const DemoSetupError&)>;
   using OnSetCurrentSetupStep =
       base::RepeatingCallback<void(const DemoSetupStep)>;
-
-  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Clears demo device enrollment requisition if it is set.
   static void ClearDemoRequisition();

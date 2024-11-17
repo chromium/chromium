@@ -156,9 +156,7 @@ NaClListener::NaClListener()
 }
 
 NaClListener::~NaClListener() {
-  NOTREACHED_IN_MIGRATION();
-  shutdown_event_.Signal();
-  g_listener = NULL;
+  NOTREACHED();
 }
 
 bool NaClListener::Send(IPC::Message* msg) {
@@ -196,7 +194,7 @@ class FileTokenMessageFilter : public IPC::MessageFilter {
     g_listener->OnFileTokenResolved(token_lo, token_hi, ipc_fd, file_path);
   }
  private:
-  ~FileTokenMessageFilter() override {}
+  ~FileTokenMessageFilter() override = default;
 };
 
 void NaClListener::Listen() {

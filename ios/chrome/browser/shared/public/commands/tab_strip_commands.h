@@ -24,9 +24,6 @@ class WebStateID;
 // Commands for tab strip changes.
 @protocol TabStripCommands
 
-// Set the `iphHighlighted` state for the new tab button on the tab strip.
-- (void)setNewTabButtonOnTabStripIPHHighlighted:(BOOL)IPHHighlighted;
-
 // Shows the tab group creation view.
 - (void)showTabStripGroupCreationForTabs:
     (const std::set<web::WebStateID>&)identifiers;
@@ -54,6 +51,15 @@ class WebStateID;
 // Displays a snackbar after closing tab groups locally.
 - (void)showTabStripTabGroupSnackbarAfterClosingGroups:
     (int)numberOfClosedGroups;
+
+// Presents the manage shared tab group screen.
+- (void)manageTabGroup:(base::WeakPtr<const TabGroup>)group;
+
+// Starts sharing the local tab group.
+- (void)shareTabGroup:(base::WeakPtr<const TabGroup>)group;
+
+// Shows the recent activity for the shared group.
+- (void)showRecentActivityForTabGroup:(base::WeakPtr<const TabGroup>)tabGroup;
 
 @end
 

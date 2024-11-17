@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -42,7 +43,6 @@
 #include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/webauthn/change_pin_controller.h"
@@ -72,7 +72,6 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/navigation_handle.h"
@@ -126,8 +125,7 @@ extensions::api::passwords_private::ExportProgressStatus ConvertStatus(
           kFailedWriteFailed;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return extensions::api::passwords_private::ExportProgressStatus::kNone;
+  NOTREACHED();
 }
 
 std::u16string GetReauthPurpose(
@@ -161,6 +159,17 @@ std::u16string GetReauthPurpose(
     case extensions::api::passwords_private::PlaintextReason::kNone:
       NOTREACHED();
   }
+#elif BUILDFLAG(IS_CHROMEOS)
+  switch (reason) {
+    case extensions::api::passwords_private::PlaintextReason::kView:
+      return l10n_util::GetStringUTF16(
+          IDS_PASSWORDS_PAGE_AUTHENTICATION_PROMPT_CHROMEOS);
+    case extensions::api::passwords_private::PlaintextReason::kCopy:
+    case extensions::api::passwords_private::PlaintextReason::kEdit:
+      return std::u16string();
+    case extensions::api::passwords_private::PlaintextReason::kNone:
+      NOTREACHED();
+  }
 #else
   return std::u16string();
 #endif
@@ -177,8 +186,7 @@ ConvertPlaintextReason(
     case extensions::api::passwords_private::PlaintextReason::kEdit:
       return password_manager::metrics_util::ACCESS_PASSWORD_EDITED;
     case extensions::api::passwords_private::PlaintextReason::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return password_manager::metrics_util::ACCESS_PASSWORD_VIEWED;
+      NOTREACHED();
   }
 }
 
@@ -197,8 +205,7 @@ ConvertToPasswordFormStores(
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 extensions::api::passwords_private::ImportEntry ConvertImportEntry(
@@ -265,8 +272,13 @@ std::u16string GetMessageForBiometricAuthenticationBeforeFillingSetting(
   message = l10n_util::GetStringUTF16(
       pref_enabled ? IDS_PASSWORD_MANAGER_TURN_OFF_FILLING_REAUTH_WIN
                    : IDS_PASSWORD_MANAGER_TURN_ON_FILLING_REAUTH_WIN);
+#elif BUILDFLAG(IS_CHROMEOS)
+  const bool pref_enabled =
+      prefs->GetBoolean(kBiometricAuthenticationBeforeFilling);
+  message = l10n_util::GetStringUTF16(
+      pref_enabled ? IDS_PASSWORD_MANAGER_TURN_OFF_FILLING_REAUTH_CHROMEOS
+                   : IDS_PASSWORD_MANAGER_TURN_ON_FILLING_REAUTH_CHROMEOS);
 #endif
-  // TODO(lziest, b/366209336): Add ChromeOS Strings
   return message;
 }
 
@@ -275,7 +287,7 @@ std::u16string GetMessageForBiometricAuthenticationBeforeFillingSetting(
 void MaybeShowProfileSwitchIPH(Profile* profile) {
 #if !BUILDFLAG(IS_CHROMEOS)
   Browser* launched_app = web_app::AppBrowserController::FindForWebApp(
-      *profile, web_app::kPasswordManagerAppId);
+      *profile, ash::kPasswordManagerAppId);
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   // Try to show promo only if there is profile menu button and there are
@@ -290,10 +302,7 @@ void MaybeShowProfileSwitchIPH(Profile* profile) {
 
 // Returns a passkey model instance if the feature is enabled.
 webauthn::PasskeyModel* MaybeGetPasskeyModel(Profile* profile) {
-  if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)) {
-    return PasskeyModelFactory::GetInstance()->GetForProfile(profile);
-  }
-  return nullptr;
+  return PasskeyModelFactory::GetInstance()->GetForProfile(profile);
 }
 
 std::string GetGroupIconUrl(const password_manager::AffiliatedGroup& group,
@@ -1023,6 +1032,18 @@ void PasswordsPrivateDelegateImpl::OnDeleteAllDataAuthResult(
   }
 
   saved_passwords_presenter_.DeleteAllData(std::move(success_callback));
+
+  // Record password removal from both stores. "Delete all" requires UI
+  // confirmation and re-authentication, indicating strong user intent to
+  // remove all password data.
+  AddPasswordRemovalReason(
+      profile_->GetPrefs(), password_manager::IsAccountStore(true),
+      password_manager::metrics_util::PasswordManagerCredentialRemovalReason::
+          kDeleteAllPasswordManagerData);
+  AddPasswordRemovalReason(
+      profile_->GetPrefs(), password_manager::IsAccountStore(false),
+      password_manager::metrics_util::PasswordManagerCredentialRemovalReason::
+          kDeleteAllPasswordManagerData);
 }
 
 base::WeakPtr<PasswordsPrivateDelegate>
@@ -1197,7 +1218,7 @@ void PasswordsPrivateDelegateImpl::OnSavedPasswordsChanged(
 
 void PasswordsPrivateDelegateImpl::OnWebAppInstalledWithOsHooks(
     const webapps::AppId& app_id) {
-  if (app_id != web_app::kPasswordManagerAppId) {
+  if (app_id != ash::kPasswordManagerAppId) {
     return;
   }
   // Post task with delay because new browser window for an app isn't created

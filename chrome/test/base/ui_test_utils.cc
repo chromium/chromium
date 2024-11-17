@@ -30,6 +30,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -181,7 +182,7 @@ class AutocompleteChangeObserver : public AutocompleteController::Observer {
  public:
   explicit AutocompleteChangeObserver(Profile* profile) {
     scoped_observation_.Observe(
-        AutocompleteControllerEmitter::GetForBrowserContext(profile));
+        AutocompleteControllerEmitterFactory::GetForBrowserContext(profile));
   }
 
   AutocompleteChangeObserver(const AutocompleteChangeObserver&) = delete;

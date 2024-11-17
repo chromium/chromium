@@ -201,7 +201,7 @@ public class FastCheckoutCreditCard {
 
     public String getFormattedExpirationDate(Context context) {
         return getMonth()
-                + context.getResources().getString(R.string.autofill_expiration_date_separator)
+                + context.getString(R.string.autofill_expiration_date_separator)
                 + getYear();
     }
 

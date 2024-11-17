@@ -89,14 +89,15 @@ v8::ScriptType ScriptTypeForStreamingTask(ScriptResource* script_resource) {
       // of <link rel=modulepreload>. Try streaming parsing as module instead in
       // these cases (https://crbug.com/1178198).
       if (script_resource->IsUnusedPreload()) {
-        if (script_resource->Url().GetPath().EndsWithIgnoringCase(".mjs")) {
+        if (script_resource->Url().GetPath().ToString().EndsWithIgnoringCase(
+                ".mjs")) {
           return v8::ScriptType::kModule;
         }
       }
       return v8::ScriptType::kClassic;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -130,20 +131,17 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
       return 0;
     }
 
-    if (initial_data_) {
-      CHECK_GT(initial_data_len_, 0u);
+    if (!initial_data_.empty()) {
+      size_t len = initial_data_.size();
       if (src) {
-        *src = initial_data_.release();
+        *src = std::move(initial_data_).leak().data();
       } else {
-        initial_data_.reset();
+        initial_data_ = base::HeapArray<uint8_t>();
       }
-      size_t len = initial_data_len_;
-      initial_data_len_ = 0;
       return len;
     }
 
-    CHECK(!initial_data_);
-    CHECK_EQ(initial_data_len_, 0u);
+    CHECK(initial_data_.empty());
     CHECK(data_pipe_.is_valid());
 
     // Start a new two-phase read, blocking until data is available.
@@ -273,20 +271,16 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
 
     const SharedBuffer* resource_buffer = resource->ResourceBuffer().get();
 
-    CHECK(!initial_data_);
-    CHECK_EQ(initial_data_len_, 0u);
+    CHECK(initial_data_.empty());
 
     // Get the data that is already in the ResourceBuffer.
     const size_t length = resource_buffer->size();
 
     if (length > 0) {
-      initial_data_.reset(new uint8_t[length]);
+      initial_data_ = base::HeapArray<uint8_t>::Uninit(length);
 
-      bool success = resource_buffer->GetBytes(
-          reinterpret_cast<void*>(initial_data_.get()), length);
+      bool success = resource_buffer->GetBytes(initial_data_);
       CHECK(success);
-
-      initial_data_len_ = length;
     }
 
     data_pipe_ = std::move(data_pipe);
@@ -302,8 +296,7 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
     CHECK(data_pipe);
     CHECK(!ready_to_run_.IsSet());
     CHECK(!cancelled_.IsSet());
-    CHECK(!initial_data_);
-    CHECK_EQ(initial_data_len_, 0u);
+    CHECK(initial_data_.empty());
     data_pipe_ = std::move(data_pipe);
     script_decoder_ = script_decoder;
     ready_to_run_.Set();
@@ -335,8 +328,7 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
 
   // The initial data that was already on the Resource, rather than being read
   // directly from the data pipe.
-  std::unique_ptr<uint8_t[]> initial_data_;
-  size_t initial_data_len_ = 0;
+  base::HeapArray<uint8_t> initial_data_;
 
   mojo::ScopedDataPipeConsumerHandle data_pipe_;
   absl::variant<ScriptDecoderWithClient*, ScriptDecoder*> script_decoder_;
@@ -631,11 +623,10 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
   {
     // Check for BOM (byte order marks), because that might change our
     // understanding of the data encoding.
-    char maybe_bom[kMaximumLengthOfBOM] = {};
-    if (!script_resource_->ResourceBuffer()->GetBytes(maybe_bom,
-                                                      kMaximumLengthOfBOM)) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+    std::array<char, kMaximumLengthOfBOM> maybe_bom = {};
+    if (!script_resource_->ResourceBuffer()->GetBytes(
+            base::as_writable_byte_span(maybe_bom))) {
+      NOTREACHED();
     }
 
     std::unique_ptr<TextResourceDecoder> decoder(
@@ -692,8 +683,7 @@ bool ResourceScriptStreamer::TryStartStreamingTask() {
           script_resource_->GetV8CrowdsourcedCompileHintsProducer(),
           script_resource_->GetV8CrowdsourcedCompileHintsConsumer(),
           script_resource_->Url(),
-          script_resource_
-              ->GetV8CompileHintsMagicCommentRuntimeFeatureEnabled())
+          script_resource_->GetV8CompileHintsMagicCommentMode())
           .Build((V8CodeCache::HasCompileHints(
                       script_resource_->CacheHandler(),
                       CachedMetadataHandler::kAllowUnchecked) &&
@@ -837,8 +827,7 @@ void ResourceScriptStreamer::OnDataPipeReadable(
       return;
 
     case MOJO_RESULT_SHOULD_WAIT:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
 
     default:
       // Some other error occurred.
@@ -1069,7 +1058,7 @@ v8::ScriptCompiler::StreamedSource* BackgroundInlineScriptStreamer::Source(
   DCHECK_EQ(expected_type, v8::ScriptType::kClassic);
   static const base::FeatureParam<base::TimeDelta> kWaitTimeoutParam{
       &features::kPrecompileInlineScripts, "inline-script-timeout",
-      base::Milliseconds(20)};
+      base::Milliseconds(0)};
   // Make sure the script has finished compiling in the background. See comment
   // above in Run().
   bool signaled = event_.TimedWait(kWaitTimeoutParam.Get());
@@ -1316,8 +1305,7 @@ class BackgroundResourceScriptStreamer::BackgroundProcessorFactory final
                 script_resource->GetV8CrowdsourcedCompileHintsProducer(),
                 script_resource->GetV8CrowdsourcedCompileHintsConsumer(),
                 script_resource->Url(),
-                script_resource
-                    ->GetV8CompileHintsMagicCommentRuntimeFeatureEnabled())),
+                script_resource->GetV8CompileHintsMagicCommentMode())),
         streamer_handle_(std::move(streamer_handle)) {}
   BackgroundProcessorFactory(const BackgroundProcessorFactory&) = delete;
   BackgroundProcessorFactory& operator=(const BackgroundProcessorFactory&) =

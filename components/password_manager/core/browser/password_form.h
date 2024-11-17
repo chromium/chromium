@@ -190,8 +190,9 @@ struct PasswordForm {
     kManuallyAdded = 3,
     kImported = 4,
     kReceivedViaSharing = 5,
+    kImportedViaCredentialExchange = 6,
     kMinValue = kFormSubmission,
-    kMaxValue = kReceivedViaSharing,
+    kMaxValue = kImportedViaCredentialExchange,
   };
 
   // Enum to keep track of what information has been sent to the server about

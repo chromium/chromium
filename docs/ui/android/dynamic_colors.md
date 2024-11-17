@@ -68,7 +68,9 @@ Note: Numeric/elevation surface colors are in the process of being removed or re
 
 ### Illustrations
 
-The guidance for illustrations is still a work in progress. Until it is finalized, the recommended approach is continuing the use of non-dynamic colors (see the non-dynamic colors section below) but making the illustration’s background transparent. In the future, we may recommend using color resources that point to system color resources.
+Illustrations often require a wider range of colors than what the Material color roles allow. To accommodate this, we provide [a palette](https://source.chromium.org/chromium/chromium/src/+/main:components/browser_ui/styles/android/java/res/values-v31/colors.xml;drc=6bf4aa28b8b9f71864024c58ef944b531b685458;l=9) of `@color` resources that support dynamic colors by pointing to the [Android system color resources](https://developer.android.com/reference/android/R.color#system_accent1_0) on API 31+.  For older API levels, [these colors](https://source.chromium.org/chromium/chromium/src/+/main:ui/android/java/res/values/color_palette.xml;drc=8fd1463ba432923e787093971c8ac3a5f2d06fd6;l=144) point to the baseline palette. You can find an example of an illustration that uses dynamic colors [here](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/download/internal/android/java/res/drawable/downloads_empty_state_illustration.xml).
+
+Note: Android and Material use different values to represent the colors on the tonal palette. Material tonal values have a range of 0 (black) to 100 (white), and Android has a range of 0 (white) to 1000 (black).
 
 
 ### Launcher widgets

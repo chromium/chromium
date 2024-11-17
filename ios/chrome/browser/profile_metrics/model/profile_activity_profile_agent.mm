@@ -50,13 +50,26 @@
   }
 }
 
+#pragma mark - ProfileStateObserver
+
+- (void)profileState:(ProfileState*)profileState
+    didTransitionToInitStage:(ProfileInitStage)nextInitStage
+               fromInitStage:(ProfileInitStage)fromInitStage {
+  if (nextInitStage == ProfileInitStage::kUIReady) {
+    if (SceneState* sceneState = profileState.foregroundActiveScene) {
+      [self recordActivationForSceneState:sceneState];
+    }
+  }
+}
+
 #pragma mark - SceneStateObserver
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  DCHECK_GE(self.profileState.initStage, ProfileInitStage::InitStageUIReady);
   if (level == SceneActivationLevelForegroundActive) {
-    [self recordActivationForSceneState:sceneState];
+    if (self.profileState.initStage >= ProfileInitStage::kUIReady) {
+      [self recordActivationForSceneState:sceneState];
+    }
   }
 }
 

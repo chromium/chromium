@@ -28,6 +28,7 @@
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -646,6 +647,21 @@ TEST_F(EcheTrayTest, OnConnectionStatusChanged) {
       ConnectionStatus::kConnectionStatusConnected);
   EXPECT_EQ(GetNumConnectionStatusForUiChangedCalls(), 1u);
   EXPECT_TRUE(eche_tray()->get_initializer_webview_for_test());
+}
+
+TEST_F(EcheTrayTest, BubbleViewAccessibleName) {
+  eche_tray()->LoadBubble(
+      GURL("http://google.com"), CreateTestImage(), u"app 1", u"your phone",
+      eche_app::mojom::ConnectionStatus::kConnectionStatusDisconnected,
+      eche_app::mojom::AppStreamLaunchEntryPoint::APPS_LIST);
+  eche_tray()->ShowBubble();
+  auto* bubble_view = eche_tray()->get_bubble_wrapper_for_test()->bubble_view();
+  EXPECT_TRUE(bubble_view->GetVisible());
+
+  ui::AXNodeData node_data;
+  bubble_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            eche_tray()->GetAccessibleNameForBubble());
 }
 
 }  // namespace ash

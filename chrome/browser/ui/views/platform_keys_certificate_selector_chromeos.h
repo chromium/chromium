@@ -22,7 +22,7 @@ namespace chromeos {
 
 // A certificate selector dialog that explains to the user that an extension
 // requests access to certificates.
-class PlatformKeysCertificateSelector : public chrome::CertificateSelector {
+class PlatformKeysCertificateSelector : public CertificateSelector {
  public:
   // |callback| must not be null.
   PlatformKeysCertificateSelector(const net::CertificateList& certificates,
@@ -39,7 +39,7 @@ class PlatformKeysCertificateSelector : public chrome::CertificateSelector {
 
   void Init();
 
-  // chrome::CertificateSelector:
+  // CertificateSelector:
   void AcceptCertificate(
       std::unique_ptr<net::ClientCertIdentity> identity) override;
 

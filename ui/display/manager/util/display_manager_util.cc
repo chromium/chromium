@@ -20,7 +20,7 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "build/chromeos_buildflags.h"
+#include "chromeos/ash/components/system/statistics_provider.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -29,13 +29,8 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/ash/components/system/statistics_provider.h"
-#endif
-
 namespace display {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::string DisplayPowerStateToString(chromeos::DisplayPowerState state) {
   switch (state) {
     case chromeos::DISPLAY_POWER_ALL_ON:
@@ -94,8 +89,6 @@ int GetDisplayPower(
   return num_on_displays;
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 bool WithinEpsilon(float a, float b) {
   return std::abs(a - b) < std::numeric_limits<float>::epsilon();
 }
@@ -113,8 +106,7 @@ std::string MultipleDisplayStateToString(MultipleDisplayState state) {
     case MULTIPLE_DISPLAY_STATE_MULTI_EXTENDED:
       return "MULTI_EXTENDED";
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown state " << state;
-  return "INVALID";
+  NOTREACHED() << "Unknown state " << state;
 }
 
 bool GetContentProtectionMethods(DisplayConnectionType type,
@@ -191,8 +183,7 @@ std::vector<float> GetDisplayZoomFactorForDsf(float dsf) {
       return std::vector<float>(bucket.second.begin(), bucket.second.end());
     }
   }
-  NOTREACHED_IN_MIGRATION() << "Received a DSF not on the list: " << dsf;
-  return {1.f / dsf, 1.f};
+  NOTREACHED() << "Received a DSF not on the list: " << dsf;
 }
 
 ManagedDisplayInfo::ManagedDisplayModeList CreateInternalManagedDisplayModeList(
@@ -235,18 +226,14 @@ ManagedDisplayInfo::ManagedDisplayModeList CreateUnifiedManagedDisplayModeList(
 
 bool ForceFirstDisplayInternal() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  bool ret = command_line->HasSwitch(::switches::kUseFirstDisplayAsInternal);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Touch view mode is only available to internal display. We force the
   // display as internal for emulator to test touch view mode.
   // However, display mode change is only available to external display. To run
   // tests on a different display mode from default we will need to set the flag
   // --drm-virtual-connector-is-external.
-  ret = ret ||
-        (ash::system::StatisticsProvider::GetInstance()->IsRunningOnVm() &&
-         !command_line->HasSwitch(switches::kDRMVirtualConnectorIsExternal));
-#endif
-  return ret;
+  return command_line->HasSwitch(::switches::kUseFirstDisplayAsInternal) ||
+         (ash::system::StatisticsProvider::GetInstance()->IsRunningOnVm() &&
+          !command_line->HasSwitch(switches::kDRMVirtualConnectorIsExternal));
 }
 
 bool ComputeBoundary(const gfx::Rect& a_bounds,

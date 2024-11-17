@@ -55,7 +55,7 @@ void AppListSearchBrowserTest::StartSearch(const std::string& query) {
 
 void AppListSearchBrowserTest::SearchAndWaitForProviders(
     const std::string& query,
-    const std::set<ResultType> providers) {
+    const std::set<ResultType>& providers) {
   // The waiter should be created before starting the search request, otherwise
   // it may miss synchronous result changes.
   SearchResultsChangedWaiter results_changed_waiter(

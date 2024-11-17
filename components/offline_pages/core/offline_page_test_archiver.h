@@ -28,7 +28,7 @@ class OfflinePageTestArchiver : public OfflinePageArchiver {
  public:
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
     virtual void SetLastPathCreatedByArchiver(
         const base::FilePath& file_path) = 0;
   };

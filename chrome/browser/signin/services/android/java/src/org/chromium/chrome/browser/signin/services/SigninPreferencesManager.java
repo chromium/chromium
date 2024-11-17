@@ -124,6 +124,36 @@ public class SigninPreferencesManager {
     }
 
     /**
+     * Sets the timestamp of the suppression period start for the CCT account mismatch
+     * notifications.
+     *
+     * @param timeMillis the epoch time in milliseconds (see {@link System#currentTimeMillis()}).
+     */
+    public void setCctMismatchNoticeSuppressionPeriodStart(long timeMillis) {
+        mManager.writeLong(
+                ChromePreferenceKeys.CUSTOM_TABS_MISMATCH_NOTICE_SUPPRESSION_PERIOD_START,
+                timeMillis);
+    }
+
+    /**
+     * Returns the timestamp of the suppression period start for the CCT account mismatch
+     * notifications.
+     */
+    public long getCctMismatchNoticeSuppressionPeriodStart() {
+        return mManager.readLong(
+                ChromePreferenceKeys.CUSTOM_TABS_MISMATCH_NOTICE_SUPPRESSION_PERIOD_START);
+    }
+
+    /**
+     * Clears the timestamp of the suppression period start for the CCT account mismatch
+     * notifications.
+     */
+    public void clearCctMismatchNoticeSuppressionPeriodStart() {
+        mManager.removeKey(
+                ChromePreferenceKeys.CUSTOM_TABS_MISMATCH_NOTICE_SUPPRESSION_PERIOD_START);
+    }
+
+    /**
      * Sets the email of the account for which sync was enabled.
      *
      * @param accountEmail The email of the sync account or null if sync isn't enabled.

@@ -436,7 +436,7 @@ public final class Fido2Api {
                 // Two bytestrings for a single PRF input: the null credential ID and then the
                 // hashed salts, concatenated.
                 parcel.writeInt(2);
-                writePrfInput(options.prfInput, /* prfInputsHashed= */ false, parcel);
+                writePrfInput(options.prfInput, parcel);
             } else {
                 // No PRF inputs.
                 parcel.writeInt(0);
@@ -586,7 +586,7 @@ public final class Fido2Api {
             final int d = writeHeader(1, parcel);
             parcel.writeInt(2 * options.extensions.prfInputs.length);
             for (PrfValues input : options.extensions.prfInputs) {
-                writePrfInput(input, options.extensions.prfInputsHashed, parcel);
+                writePrfInput(input, parcel);
             }
             writeLength(d, parcel);
             writeLength(c, parcel);
@@ -606,17 +606,9 @@ public final class Fido2Api {
         writeLength(a, parcel);
     }
 
-    private static void writePrfInput(PrfValues input, boolean prfInputsHashed, Parcel parcel) {
+    private static void writePrfInput(PrfValues input, Parcel parcel) {
         parcel.writeByteArray(input.id);
-        if (prfInputsHashed) {
-            if (input.second == null) {
-                parcel.writeByteArray(input.first);
-            } else {
-                parcel.writeByteArray(concat(input.first, input.second));
-            }
-        } else {
-            parcel.writeByteArray(hashPrfInputs(input));
-        }
+        parcel.writeByteArray(hashPrfInputs(input));
     }
 
     /**
@@ -1476,7 +1468,7 @@ public final class Fido2Api {
                 MIN_TIMEOUT_SECONDS,
                 Math.min(
                         MAX_TIMEOUT_SECONDS,
-                        TimeUnit.MICROSECONDS.toSeconds(timeout.microseconds)));
+                        (double) TimeUnit.MICROSECONDS.toSeconds(timeout.microseconds)));
     }
 
     /** AttestationObjectParts groups together the return values of |parseAttestationObject|. */

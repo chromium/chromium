@@ -220,13 +220,29 @@ void VcTileUiController::DlcDownloadStateRequest::OnAllDlcStatesRetrieved(
   // One or more DLCs is still downloading. Calculate the overall download
   // progress as the average of each DLC's download progress, weighted evenly.
   double progress = 0;
+  int downloading_dlc_size = 0;
+  bool all_downloading = true;
   for (const DlcDownloadState& dlc_download_state : dlc_download_states) {
-    progress += dlc_download_state.dlc_state.progress();
+    if (dlc_download_state.dlc_state.state() ==
+        dlcservice::DlcState::State::DlcState_State_INSTALLING) {
+      progress += dlc_download_state.dlc_state.progress();
+      downloading_dlc_size += 1;
+    } else if (dlc_download_state.dlc_state.state() ==
+               dlcservice::DlcState::State::DlcState_State_NOT_INSTALLED) {
+      all_downloading = false;
+      break;
+    }
   }
-  progress /= dlc_download_states.size();
-  std::move(set_progress_callback_)
-      .Run(FeatureTile::DownloadState::kDownloading,
-           /*progress=*/static_cast<int>(base::ClampFloor(progress * 100)));
+  // Only shows progress text when all DLCs are downloading.
+  if (all_downloading) {
+    progress /= downloading_dlc_size;
+    std::move(set_progress_callback_)
+        .Run(FeatureTile::DownloadState::kDownloading,
+             /*progress=*/static_cast<int>(base::ClampFloor(progress * 100)));
+  } else {
+    std::move(set_progress_callback_)
+        .Run(FeatureTile::DownloadState::kNone, /*progress=*/0);
+  }
 }
 
 void VcTileUiController::UpdateDlcDownloadUi() {

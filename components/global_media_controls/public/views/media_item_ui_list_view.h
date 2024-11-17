@@ -10,6 +10,7 @@
 #include <optional>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
@@ -65,12 +66,13 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
 
   base::WeakPtr<MediaItemUIListView> GetWeakPtr();
 
-  const std::map<const std::string, MediaItemUIView*>& items_for_testing()
-      const {
+  const std::map<const std::string, raw_ptr<MediaItemUIView, CtnExperimental>>&
+  items_for_testing() const {
     return items_;
   }
 
-  const std::map<const std::string, MediaItemUIUpdatedView*>&
+  const std::map<const std::string,
+                 raw_ptr<MediaItemUIUpdatedView, CtnExperimental>>&
   updated_items_for_testing() const {
     return updated_items_;
   }
@@ -80,8 +82,9 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIListView
   // `updated_items_` is used, otherwise `items_` is used. `items_` is always
   // used for CrOS.
   // TODO(b/329160058): Use better naming.
-  std::map<const std::string, MediaItemUIView*> items_;
-  std::map<const std::string, MediaItemUIUpdatedView*> updated_items_;
+  std::map<const std::string, raw_ptr<MediaItemUIView, CtnExperimental>> items_;
+  std::map<const std::string, raw_ptr<MediaItemUIUpdatedView, CtnExperimental>>
+      updated_items_;
 
   std::optional<SeparatorStyle> separator_style_;
 

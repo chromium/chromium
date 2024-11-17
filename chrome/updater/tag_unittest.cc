@@ -505,7 +505,7 @@ TEST(TagParserTest, TagEndsInAmpersand) {
 }
 
 TEST(TagParserTest, WhitespaceOnly) {
-  for (const auto* whitespace : {"", " ", "\t", "\r", "\n", "\r\n"}) {
+  for (const auto& whitespace : {"", " ", "\t", "\r", "\n", "\r\n"}) {
     VerifyTagParseSuccess(whitespace, std::nullopt, TagArgsBuilder().Build());
   }
 }
@@ -658,7 +658,7 @@ TEST(TagParserTest, BackwardSlash3) {
 }
 
 TEST(TagParserTest, AppArgsMustHaveValue) {
-  for (const auto* tag :
+  for (const auto& tag :
        {"appguid", "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&ap",
         "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&experiments",
         "appguid=8617EE50-F91C-4DC1-B937-0969EEF59B0B&appname",

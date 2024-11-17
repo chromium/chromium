@@ -3,18 +3,25 @@
 <translationbundle lang="et">
 <translation id="1444443021901415601">Chrome talletab huvipakkuvad teemad teie hiljutise sirvimisajaloo alusel</translation>
 <translation id="2252052615723281030">Kui olete Chrome'i sisse logitud, aitab see seade teie IP-aadressi privaatsena hoida. Kui Chrome kahtlustab, et mõni sait võib teid jälgida, võidakse osa teie liiklusest saata privaatsete serverite kaudu.</translation>
+<translation id="235789365079050412">Google'i privaatsuseeskirjad</translation>
 <translation id="2793385791865768072">Chromium talletab huvipakkuvad teemad teie hiljutise sirvimisajaloo alusel</translation>
+<translation id="2979365474350987274">Kolmanda osapoole küpsisefailid on piiratud</translation>
 <translation id="33479675708419823">Kui olete Chrome'i sisse logitud, aitab see seade teie IP-aadressi privaatsena hoida. Kui Chrome kahtlustab, et mõni sait võib teid jälgida, võidakse osa teie liiklusest saata privaatsete serverite kaudu. Lisateave <ph name="LINK_BEGIN" />IP kaitse tööpõhimõtete<ph name="LINK_END" /> kohta</translation>
 <translation id="3529311220178827364">Lisateave oma IP-aadressi peitmise kohta</translation>
+<translation id="385051799172605136">Tagasi</translation>
 <translation id="4041687306270459969">Neljast nädalast vanemad reklaamiteemad kustutatakse automaatselt. Teemadeks on näiteks sport, riided jne</translation>
 <translation id="4177501066905053472">Reklaamiteemad</translation>
 <translation id="4301151630239508244">Reklaamiteemad on vaid üks paljudest asjadest, mida sait võib kasutada reklaamide isikupärastamiseks. Saidid võivad teile reklaame näidata ka ilma reklaamiteemadeta, kuid need ei pruugi olla nii isikupärastatud. Vaadake lisateavet <ph name="BEGIN_LINK_1" />oma reklaamide privaatsuse haldamise kohta<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Lisateave selle kohta, kuidas Google teie andmeid kaitseb, on leitav meie <ph name="BEGIN_LINK" />privaatsuseeskirjadest<ph name="END_LINK" />.</translation>
 <translation id="453692855554576066">Chromiumi seadetes saate oma reklaamiteemasid vaadata ja teemade saitidega jagamist blokeerida</translation>
 <translation id="4598427486995631491">Peida oma IP-aadress</translation>
 <translation id="4692439979815346597">Chrome'i seadetes saate oma reklaamiteemasid vaadata ja teemade saitidega jagamist blokeerida</translation>
 <translation id="5413586988657235240">Külastatavad saidid võivad küsida Chromiumilt, mis teemadel teile asjakohaseid reklaame näidata võiks; teie sirvimisajalugu ja identiteet jääb kaitstuks</translation>
+<translation id="6053735090575989697">Lisateave selle kohta, kuidas Google teie andmeid kaitseb, on leitav meie privaatsuseeskirjadest.</translation>
 <translation id="6186536480878693792">Külastatavad saidid võivad küsida Chrome'ilt, mis teemadel teile asjakohaseid reklaame näidata võiks; teie sirvimisajalugu ja identiteet jääb kaitstuks</translation>
+<translation id="6195163219142236913">Kolmanda osapoole küpsisefailid on piiratud</translation>
 <translation id="6371812158043974664">Kui olete Chromiumi sisse logitud, aitab see seade teie IP-aadressi privaatsena hoida. Kui Chromium kahtlustab, et mõni sait võib teid jälgida, võidakse osa teie liiklusest saata privaatsete serverite kaudu. Lisateave <ph name="LINK_BEGIN" />IP kaitse tööpõhimõtete<ph name="LINK_END" /> kohta</translation>
+<translation id="6398358690696005758">Lisateave selle kohta, kuidas Google teie andmeid kaitseb, on leitav meie <ph name="BEGIN_LINK1" />privaatsuseeskirjadest<ph name="LINK_END1" /></translation>
 <translation id="7040031291654706261">Lisateave selle kohta, <ph name="BEGIN_LINK" />IP kaitse toimib<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Vaadake oma reklaamiteemade seadistus üle</translation>
 </translationbundle>

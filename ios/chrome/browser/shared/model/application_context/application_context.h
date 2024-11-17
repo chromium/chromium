@@ -10,6 +10,11 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#import "components/optimization_guide/optimization_guide_buildflags.h"
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+#include "base/memory/weak_ptr.h"
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 namespace component_updater {
 class ComponentUpdateService;
@@ -47,6 +52,13 @@ class NetworkContext;
 namespace network_time {
 class NetworkTimeTracker;
 }
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+namespace optimization_guide {
+class OnDeviceModelComponentStateManager;
+class OnDeviceModelServiceController;
+}  // namespace optimization_guide
+#endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 
 namespace os_crypt_async {
 class OSCryptAsync;
@@ -91,14 +103,23 @@ class ApplicationContext {
 
   virtual ~ApplicationContext();
 
-  // Invoked when application enters foreground. Cancels the effect of
+  // Invoked when the application enters the foreground. Cancels the effect of
   // OnAppEnterBackground(), in particular removes the boolean preference
-  // indicating that the ChromeBrowserStates have been shutdown.
+  // indicating that the Profiles have been shutdown.
   virtual void OnAppEnterForeground() = 0;
 
-  // Invoked when application enters background. Saves any state that must be
-  // saved before shutdown can continue.
+  // Invoked when the application enters the background from the foreground.
+  // Saves any state that must be saved before shutdown can continue.
   virtual void OnAppEnterBackground() = 0;
+
+  // Invoked when the application is launched in the background and begins doing
+  // background update work.
+  virtual void OnAppStartedBackgroundProcessing() = 0;
+
+  // Invoked when the application has completed update work in the background,
+  // but is not yet in the foreground. At this stage the app is effectively
+  // "background idle".
+  virtual void OnAppFinishedBackgroundProcessing() = 0;
 
   // Returns whether the last complete shutdown was clean (i.e. happened while
   // the application was backgrounded).
@@ -197,6 +218,15 @@ class ApplicationContext {
   // Returns the application's AdditionalFeaturesController that manages some
   // features not declared by `BASE_DECLARE_FEATURE()`.
   virtual AdditionalFeaturesController* GetAdditionalFeaturesController() = 0;
+
+#if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
+  // Returns the application's OnDeviceModelServiceController which manages the
+  // on-device model service.
+  virtual optimization_guide::OnDeviceModelServiceController*
+  GetOnDeviceModelServiceController(
+      base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
+          on_device_component_manager) = 0;
+#endif  // BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE
 
  protected:
   // Sets the global ApplicationContext instance.

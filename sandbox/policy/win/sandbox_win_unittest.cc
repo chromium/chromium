@@ -67,9 +67,7 @@ class TestTargetConfig : public TargetConfig {
                              const wchar_t* pattern) override {
     return SBOX_ALL_OK;
   }
-  ResultCode AllowExtraDlls(const wchar_t* pattern) override {
-    return SBOX_ALL_OK;
-  }
+  ResultCode AllowExtraDll(const wchar_t* path) override { return SBOX_ALL_OK; }
   ResultCode SetFakeGdiInit() override { return SBOX_ALL_OK; }
   void AddDllToUnload(const wchar_t* dll_name) override {
     blocklisted_dlls_.push_back(dll_name);
@@ -421,8 +419,7 @@ class TestSandboxDelegate : public SandboxDelegate {
   sandbox::mojom::Sandbox GetSandboxType() override { return sandbox_type_; }
   bool DisableDefaultPolicy() override { return false; }
   bool GetAppContainerId(std::string* appcontainer_id) override {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   MOCK_METHOD1(InitializeConfig, bool(TargetConfig* config));
@@ -434,7 +431,6 @@ class TestSandboxDelegate : public SandboxDelegate {
   bool ShouldUnsandboxedRunInJob() override { return false; }
 
   bool CetCompatible() override { return true; }
-  bool AllowWindowsFontsDir() override { return true; }
 
  private:
   sandbox::mojom::Sandbox sandbox_type_;
@@ -549,36 +545,9 @@ TEST_F(SandboxWinTest, GetJobMemoryLimit) {
     EXPECT_EQ(memory_limit, 8 * kGB);
   }
 
-  // Test Renderer with physical memory > 16GB
-  {
-    base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(k17GB);
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        sandbox::policy::features::kWinSboxHighRendererJobMemoryLimits);
-    std::optional<size_t> memory_limit =
-        SandboxWin::GetJobMemoryLimit(sandbox::mojom::Sandbox::kRenderer);
-    EXPECT_TRUE(memory_limit.has_value());
-    EXPECT_EQ(memory_limit, 16 * kGB);
-  }
-
-  // Test Renderer with physical memory < 16GB
+  // Test that Renderer has high (1TB) memory limit.
   {
     base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(k8GB);
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndDisableFeature(
-        sandbox::policy::features::kWinSboxHighRendererJobMemoryLimits);
-    std::optional<size_t> memory_limit =
-        SandboxWin::GetJobMemoryLimit(sandbox::mojom::Sandbox::kRenderer);
-    EXPECT_TRUE(memory_limit.has_value());
-    EXPECT_EQ(memory_limit, 8 * kGB);
-  }
-
-  // Test Renderer with high renderer limits enabled.
-  {
-    base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(k8GB);
-    base::test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitAndEnableFeature(
-        sandbox::policy::features::kWinSboxHighRendererJobMemoryLimits);
     std::optional<size_t> memory_limit =
         SandboxWin::GetJobMemoryLimit(sandbox::mojom::Sandbox::kRenderer);
     EXPECT_TRUE(memory_limit.has_value());

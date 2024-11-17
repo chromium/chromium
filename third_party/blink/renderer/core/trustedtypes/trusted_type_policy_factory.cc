@@ -265,9 +265,12 @@ TrustedTypePolicy* TrustedTypePolicyFactory::createPolicy(
         disallowed_because_of_duplicate_name
             ? "Policy with name \"" + policy_name + "\" already exists."
             : "Policy \"" + policy_name + "\" disallowed.";
-    exception_state.ThrowTypeError(message);
-    MaybeAssociateExceptionMetaData(exception_state, "issueId",
+    v8::Isolate* isolate = GetExecutionContext()->GetIsolate();
+    TryRethrowScope rethrow_scope(isolate, exception_state);
+    auto exception = V8ThrowException::CreateTypeError(isolate, message);
+    MaybeAssociateExceptionMetaData(exception, "issueId",
                                     IdentifiersFactory::IdFromToken(issue_id));
+    V8ThrowException::ThrowException(isolate, exception);
     return nullptr;
   }
 

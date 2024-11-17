@@ -10,12 +10,12 @@
 #import "base/functional/callback_forward.h"
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
+class ProfileIOS;
 class SessionRestorationService;
 
 // Singleton that owns all SessionRestorationService and associates them with
-// ChromeBrowserState.
+// ProfileIOS.
 class SessionRestorationServiceFactory final
     : public BrowserStateKeyedServiceFactory {
  public:
@@ -25,18 +25,15 @@ class SessionRestorationServiceFactory final
     kOptimized,
   };
 
-  // TODO(crbug.com/358301380): remove this method.
-  static SessionRestorationService* GetForBrowserState(ProfileIOS* profile);
-
   static SessionRestorationService* GetForProfile(ProfileIOS* profile);
   static SessionRestorationServiceFactory* GetInstance();
 
-  // Requests that session storage for `browser_state` is migrated if needed.
+  // Requests that session storage for `profile` is migrated if needed.
   // Invokes `closure` when the migration is complete. If data is already in
   // the correct format, `closure` is called synchronously.
   //
-  // Must be called before GetForBrowserState() is called for `browser_state`.
-  void MigrateSessionStorageFormat(ChromeBrowserState* browser_state,
+  // Must be called before GetForProfile() is called for `profile`.
+  void MigrateSessionStorageFormat(ProfileIOS* profile,
                                    StorageFormat requested_format,
                                    base::OnceClosure closure);
 

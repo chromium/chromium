@@ -94,7 +94,7 @@ void InterfaceProperties::AppendNetworkInterfaces(
     const int kAttributes = 0;
     interfaces->emplace_back(
         properties_.name(), properties_.name(), properties_.id(),
-        internal::ConvertConnectionType(properties_.device_class()),
+        internal::ConvertConnectionType(properties_.port_class()),
         std::move(address), fidl_address.addr().prefix_len, kAttributes);
   }
 }
@@ -117,15 +117,15 @@ bool InterfaceProperties::IsPubliclyRoutable() const {
 }
 
 NetworkChangeNotifier::ConnectionType ConvertConnectionType(
-    const fuchsia::net::interfaces::DeviceClass& device_class) {
+    const fuchsia::net::interfaces::PortClass& device_class) {
   switch (device_class.Which()) {
-    case fuchsia::net::interfaces::DeviceClass::kLoopback:
+    case fuchsia::net::interfaces::PortClass::kLoopback:
       return NetworkChangeNotifier::CONNECTION_NONE;
-    case fuchsia::net::interfaces::DeviceClass::kDevice:
+    case fuchsia::net::interfaces::PortClass::kDevice:
       switch (device_class.device()) {
-        case fuchsia::hardware::network::DeviceClass::WLAN:
+        case fuchsia::hardware::network::PortClass::WLAN_CLIENT:
           return NetworkChangeNotifier::CONNECTION_WIFI;
-        case fuchsia::hardware::network::DeviceClass::ETHERNET:
+        case fuchsia::hardware::network::PortClass::ETHERNET:
           return NetworkChangeNotifier::CONNECTION_ETHERNET;
         default:
           return NetworkChangeNotifier::CONNECTION_UNKNOWN;
@@ -149,7 +149,7 @@ bool VerifyCompleteInterfaceProperties(
   }
   if (!properties.has_online())
     return false;
-  if (!properties.has_device_class())
+  if (!properties.has_port_class())
     return false;
   if (!properties.has_has_default_ipv4_route())
     return false;

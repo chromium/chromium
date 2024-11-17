@@ -21,6 +21,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/bind_post_task.h"
@@ -89,23 +90,19 @@ class FailingVideoDecodeAccelerator : public mojom::VideoDecodeAccelerator {
         mojom::VideoDecodeAccelerator::Result::INSUFFICIENT_RESOURCES);
   }
   void Decode(mojom::BitstreamBufferPtr bitstream_buffer) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
-  void AssignPictureBuffers(uint32_t count) override {
-    NOTREACHED_IN_MIGRATION();
-  }
+  void AssignPictureBuffers(uint32_t count) override { NOTREACHED(); }
   void ImportBufferForPicture(int32_t picture_buffer_id,
                               mojom::HalPixelFormat format,
                               mojo::ScopedHandle handle,
                               std::vector<VideoFramePlane> planes,
                               mojom::BufferModifierPtr modifier) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
-  void ReusePictureBuffer(int32_t picture_buffer_id) override {
-    NOTREACHED_IN_MIGRATION();
-  }
-  void Flush(FlushCallback callback) override { NOTREACHED_IN_MIGRATION(); }
-  void Reset(ResetCallback callback) override { NOTREACHED_IN_MIGRATION(); }
+  void ReusePictureBuffer(int32_t picture_buffer_id) override { NOTREACHED(); }
+  void Flush(FlushCallback callback) override { NOTREACHED(); }
+  void Reset(ResetCallback callback) override { NOTREACHED(); }
 
  private:
   mojo::RemoteSet<mojom::VideoDecodeClient> clients_;
@@ -128,10 +125,10 @@ class VideoAcceleratorFactoryService : public mojom::VideoAcceleratorFactory {
     // VideoAcceleratorFactoryService. If this behavior ever changes,
     // VideoAcceleratorFactoryService will need to be adapted because methods
     // such as CreateDecodeAccelerator() assume that the
-    // VideoAcceleratorFactoryService never dies. Thus the CHECK(false) here:
+    // VideoAcceleratorFactoryService never dies. Thus the NOTREACHED() here:
     // violating this assumption without appropriate changes would be a security
     // problem.
-    CHECK(false);
+    NOTREACHED();
   }
 
   void CreateDecodeAccelerator(

@@ -12,9 +12,15 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/segmentation_platform/public/result.h"
 
+enum class IOSPromoType;
+
+class PrefService;
 class Profile;
 
-enum class IOSPromoType;
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
 namespace promos_utils {
 
 // IOSPromoPrefsConfig is the structure to configure the promo prefs,
@@ -89,6 +95,11 @@ constexpr int kiOSPasswordPromoLookbackWindow = 60;
 inline constexpr base::TimeDelta kiOSDesktopPromoLookbackWindow =
     base::Days(60);
 
+// GetIOSDesktopPromoFeatureEngagement gets the correct "Feature Engagement
+// Tracker" feature for the given promo type.
+const base::Feature& GetIOSDesktopPromoFeatureEngagement(
+    IOSPromoType promo_type);
+
 // RegisterProfilePrefs is a helper to register the synced profile prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -116,9 +127,16 @@ void RecordIOSDesktopPromoUserInteractionHistogram(
 bool ShouldShowIOSPasswordPromo(Profile* profile);
 
 // ShouldShowIOSDesktopPromo checks if the user should be shown the iOS desktop
-// promo (all criteria are met) depending on the given promo type , and returns
+// promo (all criteria are met) depending on the given promo type, and returns
 // true if so.
-bool ShouldShowIOSDesktopPromo(Profile* profile, IOSPromoType promo_type);
+bool ShouldShowIOSDesktopPromo(Profile* profile,
+                               const syncer::SyncService* sync_service,
+                               IOSPromoType promo_type);
+
+// Checks if the user should be shown the Desktop NTP promo based on the current
+// criteria.
+bool ShouldShowIOSDesktopNtpPromo(Profile* profile,
+                                  const syncer::SyncService* sync_service);
 
 // Processes the results of the user classification to make sure there were
 // no errors and the user is not classified as a switcher from a mobile
@@ -139,5 +157,9 @@ void iOSPasswordPromoShown(Profile* profile);
 // the necessary histogram.
 void IOSDesktopPromoShown(Profile* profile, IOSPromoType promo_type);
 
+// Updates any necessary prefs for when the promo is shown.
+void IOSDesktopNtpPromoShown(PrefService* pref_service);
+
 }  // namespace promos_utils
+
 #endif  // CHROME_BROWSER_PROMOS_PROMOS_UTILS_H_

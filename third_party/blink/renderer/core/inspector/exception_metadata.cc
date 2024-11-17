@@ -15,10 +15,9 @@
 
 namespace blink {
 
-void MaybeAssociateExceptionMetaData(ExceptionState& state,
+void MaybeAssociateExceptionMetaData(v8::Local<v8::Value> exception,
                                      const String& key,
                                      const String& value) {
-  v8::Local<v8::Value> exception = state.GetException();
   if (exception.IsEmpty()) {
     // Should only happen in tests.
     return;

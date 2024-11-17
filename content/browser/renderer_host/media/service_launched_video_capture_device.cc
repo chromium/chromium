@@ -102,7 +102,7 @@ void ServiceLaunchedVideoCaptureDevice::SetDesktopCaptureWindowIdAsync(
   // This method should only be called for desktop capture devices.
   // The video_capture Mojo service does not support desktop capture devices
   // (yet) and should not be used for it.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ServiceLaunchedVideoCaptureDevice::OnUtilizationReport(

@@ -30,7 +30,6 @@
 #include "components/tracing/common/background_tracing_utils.h"
 #include "components/variations/active_field_trials.h"
 #include "components/version_info/version_info.h"
-#include "content/public/browser/background_tracing_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/tracing/public/cpp/tracing_features.h"
@@ -55,13 +54,11 @@
 namespace {
 
 using tracing::BackgroundTracingSetupMode;
-using tracing::BackgroundTracingState;
 using tracing::BackgroundTracingStateManager;
 
 bool IsBackgroundTracingCommandLine() {
   auto tracing_mode = tracing::GetBackgroundTracingSetupMode();
-  if (tracing_mode == BackgroundTracingSetupMode::kFromJsonConfigFile ||
-      tracing_mode == BackgroundTracingSetupMode::kFromProtoConfigFile) {
+  if (tracing_mode == BackgroundTracingSetupMode::kFromProtoConfigFile) {
     return true;
   }
   return false;
@@ -149,8 +146,7 @@ void ChromeTracingDelegate::OnBrowserAdded(Browser* browser) {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-bool ChromeTracingDelegate::IsActionAllowed(
-    BackgroundScenarioAction action,
+bool ChromeTracingDelegate::IsRecordingAllowed(
     bool requires_anonymized_data) const {
   // If the background tracing is specified on the command-line, we allow
   // any scenario to be traced and uploaded.
@@ -159,49 +155,13 @@ bool ChromeTracingDelegate::IsActionAllowed(
   }
 
   if (requires_anonymized_data &&
-      (incognito_launched_ || chrome::IsOffTheRecordSessionActive())) {
+      (incognito_launched_ || IsOffTheRecordSessionActive())) {
     tracing::RecordDisallowedMetric(
         tracing::TracingFinalizationDisallowedReason::kIncognitoLaunched);
     return false;
   }
 
-  BackgroundTracingStateManager& state =
-      BackgroundTracingStateManager::GetInstance();
-
-  // Don't start a new trace if the previous trace did not end.
-  if (action == BackgroundScenarioAction::kStartTracing &&
-      state.DidLastSessionEndUnexpectedly()) {
-    tracing::RecordDisallowedMetric(
-        tracing::TracingFinalizationDisallowedReason::
-            kLastTracingSessionDidNotEnd);
-    return false;
-  }
-
   return true;
-}
-
-bool ChromeTracingDelegate::OnBackgroundTracingActive(
-    bool requires_anonymized_data) {
-  BackgroundTracingStateManager& state =
-      BackgroundTracingStateManager::GetInstance();
-
-  if (!IsActionAllowed(BackgroundScenarioAction::kStartTracing,
-                       requires_anonymized_data)) {
-    return false;
-  }
-
-  state.OnTracingStarted();
-  return true;
-}
-
-bool ChromeTracingDelegate::OnBackgroundTracingIdle(
-    bool requires_anonymized_data) {
-  BackgroundTracingStateManager& state =
-      BackgroundTracingStateManager::GetInstance();
-  state.OnTracingStopped();
-
-  return IsActionAllowed(BackgroundScenarioAction::kUploadTrace,
-                         requires_anonymized_data);
 }
 
 bool ChromeTracingDelegate::ShouldSaveUnuploadedTrace() const {

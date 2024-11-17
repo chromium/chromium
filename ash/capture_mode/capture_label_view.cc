@@ -246,7 +246,8 @@ void CaptureLabelView::UpdateIconAndText() {
           // We're now in waiting to select a capture region phase.
           text = capture_mode_session_->active_behavior()
                      ->GetCaptureLabelRegionText();
-        } else {
+        } else if (capture_mode_session_->active_behavior()
+                       ->ShouldShowCaptureButtonAfterRegionSelected()) {
           // We're now in fine-tuning phase (i.e. there's a valid region, and
           // therefore we can show the capture button).
           capture_button_visibility = true;

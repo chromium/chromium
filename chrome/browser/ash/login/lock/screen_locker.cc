@@ -310,7 +310,7 @@ void ScreenLocker::OnAuthSuccess(const UserContext& user_context) {
       quick_unlock_storage->fingerprint_storage()->ResetUnlockAttemptCount();
     }
   } else {
-    NOTREACHED_IN_MIGRATION() << "Logged in user not found.";
+    NOTREACHED() << "Logged in user not found.";
   }
 
   if (pending_auth_state_) {
@@ -787,9 +787,8 @@ void ScreenLocker::OnStatusChanged(
     default:
       break;
   }
-  LOG(ERROR) << "ScreenLocker StatusChanged to an unknown state: "
-             << static_cast<int>(status);
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED() << "ScreenLocker StatusChanged to an unknown state: "
+               << static_cast<int>(status);
 }
 
 void ScreenLocker::OnEnrollScanDone(device::mojom::ScanResult scan_result,

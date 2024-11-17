@@ -66,12 +66,12 @@
     FaviconLoader* faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForProfile(profile);
     syncer::SyncService* syncService =
-        SyncServiceFactory::GetForBrowserState(profile);
+        SyncServiceFactory::GetForProfile(profile);
     auto profilePasswordStore =
-        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+        IOSChromeProfilePasswordStoreFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS);
     auto accountPasswordStore =
-        IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+        IOSChromeAccountPasswordStoreFactory::GetForProfile(
             profile, ServiceAccessType::EXPLICIT_ACCESS);
 
     _passwordMediator = [[ManualFillPasswordMediator alloc]

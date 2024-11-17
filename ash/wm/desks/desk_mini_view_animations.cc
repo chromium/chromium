@@ -116,7 +116,7 @@ void AnimateView(views::View* view,
 void FadeInView(views::View* view,
                 base::TimeDelta duration,
                 base::TimeDelta delay) {
-  if (!view->GetVisible()) {
+  if (!view || !view->GetVisible()) {
     return;
   }
 
@@ -224,13 +224,10 @@ void AnimateDeskBarBounds(DeskBarViewBase* bar_view) {
   base::OnceClosure ondone = base::BindOnce(
       base::BindOnce([](DeskBarViewBase* bar_view) {
         bar_view->set_pause_layout(false);
-
-        // Updated the desk buttons and layout the desk bar to make sure the
-        // buttons visibility will be updated on desk bar state changes. Also
-        // make sure the button's text will be updated correctly while going
+        // Ensure each button's visibility is accurate on desk bar state
+        // changes and that each button's text is updated correctly while going
         // back to zero state.
         bar_view->UpdateDeskButtonsVisibility();
-        bar_view->InvalidateLayout();
         if (OverviewController* overview_controller =
                 Shell::Get()->overview_controller()) {
           if (overview_controller->InOverviewSession()) {

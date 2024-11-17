@@ -26,6 +26,7 @@
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/win/event_creation_utils.h"
 #include "ui/base/win/win_cursor.h"
 #include "ui/compositor/compositor.h"
@@ -266,12 +267,12 @@ aura::WindowTreeHost* DesktopWindowTreeHostWin::AsWindowTreeHost() {
   return this;
 }
 
-void DesktopWindowTreeHostWin::Show(ui::WindowShowState show_state,
+void DesktopWindowTreeHostWin::Show(ui::mojom::WindowShowState show_state,
                                     const gfx::Rect& restore_bounds) {
   OnAcceleratedWidgetMadeVisible(true);
 
   gfx::Rect pixel_restore_bounds;
-  if (show_state == ui::SHOW_STATE_MAXIMIZED) {
+  if (show_state == ui::mojom::WindowShowState::kMaximized) {
     // The window parameter is intentionally passed as nullptr because a
     // non-null window parameter causes errors when restoring windows to saved
     // positions in variable-DPI situations. See https://crbug.com/1252564 for
@@ -323,7 +324,7 @@ void DesktopWindowTreeHostWin::CenterWindow(const gfx::Size& size) {
 
 void DesktopWindowTreeHostWin::GetWindowPlacement(
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   message_handler_->GetWindowPlacement(bounds, show_state);
   InsetBottomRight(bounds, window_enlargement_);
   *bounds = display::win::ScreenWin::ScreenToDIPRect(GetHWND(), *bounds);
@@ -632,7 +633,7 @@ gfx::AcceleratedWidget DesktopWindowTreeHostWin::GetAcceleratedWidget() {
 }
 
 void DesktopWindowTreeHostWin::ShowImpl() {
-  Show(ui::SHOW_STATE_NORMAL, gfx::Rect());
+  Show(ui::mojom::WindowShowState::kNormal, gfx::Rect());
 }
 
 void DesktopWindowTreeHostWin::HideImpl() {
@@ -1019,7 +1020,7 @@ void DesktopWindowTreeHostWin::HandleDestroyed() {
 }
 
 bool DesktopWindowTreeHostWin::HandleInitialFocus(
-    ui::WindowShowState show_state) {
+    ui::mojom::WindowShowState show_state) {
   if (Widget* widget = GetWidget()) {
     return widget->SetInitialFocus(show_state);
   }

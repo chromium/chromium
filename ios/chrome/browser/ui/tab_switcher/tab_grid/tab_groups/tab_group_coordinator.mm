@@ -5,10 +5,23 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_coordinator.h"
 
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
+#import "components/saved_tab_groups/public/saved_tab_group.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
+#import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
+#import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_face_pile_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_manage_configuration.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_share_group_configuration.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -37,7 +50,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
   // Context Menu helper for the tabs.
   TabContextMenuHelper* _tabContextMenuHelper;
   // Tab group to display.
-  const TabGroup* _tabGroup;
+  raw_ptr<const TabGroup> _tabGroup;
 }
 
 #pragma mark - Public
@@ -68,27 +81,22 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  id<TabGroupsCommands> handler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), TabGroupsCommands);
-  _viewController = [[TabGroupViewController alloc]
-      initWithHandler:handler
-            incognito:self.browser->GetBrowserState()->IsOffTheRecord()
-             tabGroup:_tabGroup];
+  [self setUpViewController];
 
-  _viewController.gridViewController.delegate = self;
-
+  Browser* browser = self.browser;
   _mediator = [[TabGroupMediator alloc]
-      initWithWebStateList:self.browser->GetWebStateList()
+      initWithWebStateList:browser->GetWebStateList()
                   tabGroup:_tabGroup->GetWeakPtr()
                   consumer:_viewController
               gridConsumer:_viewController.gridViewController
                 modeHolder:self.modeHolder];
-  _mediator.browser = self.browser;
-  _mediator.tabGroupsHandler = handler;
+  _mediator.browser = browser;
+  _mediator.tabGroupsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupsCommands);
   _mediator.tabGridIdleStatusHandler = self.tabGridIdleStatusHandler;
 
   _tabContextMenuHelper = [[TabContextMenuHelper alloc]
-        initWithBrowserState:self.browser->GetBrowserState()
+             initWithProfile:browser->GetProfile()
       tabContextMenuDelegate:self.tabContextMenuDelegate];
 
   _viewController.mutator = _mediator;
@@ -209,7 +217,7 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
        didSelectItemWithID:(web::WebStateID)itemID {
-  BOOL incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  BOOL incognito = self.browser->GetProfile()->IsOffTheRecord();
   if ([_mediator isItemWithIDSelected:itemID]) {
     if (incognito) {
       base::RecordAction(base::UserMetricsAction(
@@ -315,6 +323,90 @@ constexpr CGFloat kTabGroupBackgroundElementDurationFactor = 0.75;
 - (void)gridViewControllerDropSessionDidExit:
     (BaseGridViewController*)gridViewController {
   // No-op
+}
+
+#pragma mark - Private
+
+// Share the current group.
+- (void)shareGroup {
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(self.browser->GetProfile());
+  if (!_tabGroup || !shareKitService) {
+    return;
+  }
+  ShareKitShareGroupConfiguration* config =
+      [[ShareKitShareGroupConfiguration alloc] init];
+  config.tabGroup = _tabGroup;
+  config.baseViewController = self.baseViewController;
+  config.applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  shareKitService->ShareGroup(config);
+}
+
+// Manage the group with `collabID`.
+- (void)manageGroup:(NSString*)collabID {
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(self.browser->GetProfile());
+  if (!collabID || !shareKitService) {
+    return;
+  }
+  ShareKitManageConfiguration* config =
+      [[ShareKitManageConfiguration alloc] init];
+  config.baseViewController = self.baseViewController;
+  config.collabID = collabID;
+  config.applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  shareKitService->ManageGroup(config);
+}
+
+// Sets up the `_viewController`.
+- (void)setUpViewController {
+  ProfileIOS* profile = self.browser->GetProfile();
+
+  // Get the command handler for TabGroupsCommands.
+  id<TabGroupsCommands> handler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupsCommands);
+
+  // Determine if the tab group is shared and get the collaboration ID.
+  tab_groups::TabGroupSyncService* syncService =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
+  NSString* savedCollabID =
+      tab_groups::utils::GetTabGroupCollabID(_tabGroup, syncService);
+  BOOL isShared = savedCollabID != nil;
+
+  // Initialize the `_viewController`.
+  _viewController = [[TabGroupViewController alloc]
+      initWithHandler:handler
+            incognito:self.browser->GetProfile()->IsOffTheRecord()
+               shared:isShared
+             tabGroup:_tabGroup];
+  _viewController.gridViewController.delegate = self;
+
+  // Prevent the face pile from being set up for tab groups that are not shared
+  // and cannot be shared.
+  if (!isShared && !IsSharedTabGroupsCreateEnabled(profile)) {
+    return;
+  }
+
+  ShareKitService* shareKitService =
+      ShareKitServiceFactory::GetForProfile(profile);
+  if (!shareKitService) {
+    return;
+  }
+
+  // Configure the face pile.
+  ShareKitFacePileConfiguration* config =
+      [[ShareKitFacePileConfiguration alloc] init];
+  config.collabID = savedCollabID;
+  __weak __typeof(self) weakSelf = self;
+  config.completionBlock = ^(NSString* collabID, BOOL isSignedIn) {
+    if (collabID) {
+      [weakSelf manageGroup:collabID];
+    } else {
+      [weakSelf shareGroup];
+    }
+  };
+  _viewController.facePile = shareKitService->FacePile(config);
 }
 
 @end

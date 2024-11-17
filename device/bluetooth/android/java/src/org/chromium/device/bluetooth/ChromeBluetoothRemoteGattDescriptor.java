@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
+import org.chromium.device.bluetooth.wrapper.BluetoothGattDescriptorWrapper;
 
 /**
  * Exposes android.bluetooth.BluetoothGattDescriptor as necessary
@@ -21,12 +22,12 @@ final class ChromeBluetoothRemoteGattDescriptor {
     private static final String TAG = "Bluetooth";
 
     private long mNativeBluetoothRemoteGattDescriptorAndroid;
-    final Wrappers.BluetoothGattDescriptorWrapper mDescriptor;
+    final BluetoothGattDescriptorWrapper mDescriptor;
     final ChromeBluetoothDevice mChromeDevice;
 
     private ChromeBluetoothRemoteGattDescriptor(
             long nativeBluetoothRemoteGattDescriptorAndroid,
-            Wrappers.BluetoothGattDescriptorWrapper descriptorWrapper,
+            BluetoothGattDescriptorWrapper descriptorWrapper,
             ChromeBluetoothDevice chromeDevice) {
         mNativeBluetoothRemoteGattDescriptorAndroid = nativeBluetoothRemoteGattDescriptorAndroid;
         mDescriptor = descriptorWrapper;
@@ -83,7 +84,7 @@ final class ChromeBluetoothRemoteGattDescriptor {
     @CalledByNative
     private static ChromeBluetoothRemoteGattDescriptor create(
             long nativeBluetoothRemoteGattDescriptorAndroid,
-            Wrappers.BluetoothGattDescriptorWrapper descriptorWrapper,
+            BluetoothGattDescriptorWrapper descriptorWrapper,
             ChromeBluetoothDevice chromeDevice) {
         return new ChromeBluetoothRemoteGattDescriptor(
                 nativeBluetoothRemoteGattDescriptorAndroid, descriptorWrapper, chromeDevice);

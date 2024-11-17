@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_DIAL_DIAL_DEVICE_DATA_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/time/time.h"
 #include "net/base/ip_address.h"
@@ -30,10 +31,10 @@ class DialDeviceData {
   }
 
   const std::string& device_id() const { return device_id_; }
-  void set_device_id(const std::string& id) { device_id_ = id; }
+  void set_device_id(std::string_view id) { device_id_ = id; }
 
   const std::string& label() const { return label_; }
-  void set_label(const std::string& label) { label_ = label; }
+  void set_label(std::string_view label) { label_ = label; }
 
   const GURL& device_description_url() const;
   void set_device_description_url(const GURL& url);

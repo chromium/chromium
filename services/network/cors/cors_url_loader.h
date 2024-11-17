@@ -16,6 +16,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/log/net_log_with_source.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/redirect_info.h"
@@ -88,7 +89,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
       const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage,
       raw_ptr<mojom::SharedDictionaryAccessObserver> shared_dictionary_observer,
-      NetworkContext* context);
+      NetworkContext* context,
+      net::CookieSettingOverrides factory_cookie_setting_overrides);
 
   CorsURLLoader(const CorsURLLoader&) = delete;
   CorsURLLoader& operator=(const CorsURLLoader&) = delete;
@@ -389,6 +391,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoader
   std::unique_ptr<SharedDictionaryDataPipeWriter>
       shared_dictionary_data_pipe_writer_;
   std::optional<URLLoaderCompletionStatus> deferred_completion_status_;
+  const net::CookieSettingOverrides factory_cookie_setting_overrides_;
 
   // Used to provide weak pointers of this class for synchronously calling
   // URLLoaderClient methods. This should be reset any time

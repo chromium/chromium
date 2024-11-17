@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChange
 import org.chromium.chrome.browser.compositor.layouts.LayoutUpdateHost;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 
 /** Base abstract class for animating the Overlay Panel. */
@@ -55,10 +56,14 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
      * @param context The current Android {@link Context}.
      * @param updateHost The {@link LayoutUpdateHost} used to request updates in the Layout.
      * @param toolbarHeightDp The height of the toolbar in dp.
+     * @param desktopWindowStateManager Manager to get desktop window and app header state.
      */
     public OverlayPanelAnimation(
-            Context context, LayoutUpdateHost updateHost, float toolbarHeightDp) {
-        super(context, toolbarHeightDp);
+            Context context,
+            LayoutUpdateHost updateHost,
+            float toolbarHeightDp,
+            DesktopWindowStateManager desktopWindowStateManager) {
+        super(context, toolbarHeightDp, desktopWindowStateManager);
         mUpdateHost = updateHost;
     }
 
@@ -130,10 +135,10 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
         // We support resize from any full width to full width, or from narrow width to narrow width
         // when the width does not change (as when the keyboard is shown/hidden).
         boolean isPanelResizeSupported =
-                isFullWidthSizePanel && wasFullWidthSizePanel
-                        || !isFullWidthSizePanel
+                (isFullWidthSizePanel && wasFullWidthSizePanel)
+                        || (!isFullWidthSizePanel
                                 && !wasFullWidthSizePanel
-                                && width == previousWidth;
+                                && width == previousWidth);
 
         // TODO(pedrosimonetti): See crbug.com/568351.
         // We can't keep the panel opened after a viewport size change when the panel's
@@ -270,7 +275,8 @@ public abstract class OverlayPanelAnimation extends OverlayPanelBase {
      * @return The projected state the Panel will be if the given velocity is applied.
      */
     protected @PanelState int getProjectedState(float velocity) {
-        final float kickY = calculateAnimationDisplacement(velocity, BASE_ANIMATION_DURATION_MS);
+        final float kickY =
+                calculateAnimationDisplacement(velocity, (float) BASE_ANIMATION_DURATION_MS);
         final float projectedHeight = getHeight() - kickY;
 
         // Calculate the projected state the Panel will be at the end of the fling movement and the

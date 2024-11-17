@@ -355,8 +355,7 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unexpected status code from delegate: " << status;
+        NOTREACHED() << "Unexpected status code from delegate: " << status;
     }
   }
 
@@ -389,8 +388,7 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unexpected status code from delegate: " << status;
+        NOTREACHED() << "Unexpected status code from delegate: " << status;
     }
   }
 
@@ -419,8 +417,7 @@ class BluetoothAgentServiceProviderImpl : public BluetoothAgentServiceProvider {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION()
-            << "Unexpected status code from delegate: " << status;
+        NOTREACHED() << "Unexpected status code from delegate: " << status;
     }
   }
 

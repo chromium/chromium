@@ -7,13 +7,25 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/user_education/webui/help_bubble_handler.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/webui/resources/cr_components/help_bubble/help_bubble.mojom.h"
 
 class ProfilePickerHandler;
 class ForceSigninUIError;
+class ProfilePickerUI;
+
+class ProfilePickerUIConfig
+    : public content::DefaultWebUIConfig<ProfilePickerUI> {
+ public:
+  ProfilePickerUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIProfilePickerHost) {}
+};
 
 // The WebUI controller for chrome://profile-picker/.
 class ProfilePickerUI : public TopChromeWebUIController,

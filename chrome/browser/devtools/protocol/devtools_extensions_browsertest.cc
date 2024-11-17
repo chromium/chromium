@@ -10,12 +10,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/api/storage/storage_area_namespace.h"
 #include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
+#include "extensions/test/extension_background_page_waiter.h"
 #include "extensions/test/extension_test_message_listener.h"
 
 namespace {
@@ -108,6 +110,31 @@ scoped_refptr<content::DevToolsAgentHost> FindExtensionHost(
   return nullptr;
 }
 
+// Returns the `DevToolsAgentHost` associated with an extension page if
+// available.
+scoped_refptr<content::DevToolsAgentHost> FindBackgroundPageHost(
+    const std::string& path) {
+  for (auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
+    if (host->GetType() == "background_page" && host->GetURL().path() == path) {
+      return host;
+    }
+  }
+  return nullptr;
+}
+
+// Returns the `DevToolsAgentHost` associated with an extension page if
+// available.
+scoped_refptr<content::DevToolsAgentHost> FindPageHost(
+    const std::string& path) {
+  for (auto& host : content::DevToolsAgentHost::GetOrCreateAll()) {
+    if (host->GetType() == content::DevToolsAgentHost::kTypePage &&
+        host->GetURL().path() == path) {
+      return host;
+    }
+  }
+  return nullptr;
+}
+
 IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                        CanGetStorageValues) {
   ExtensionTestMessageListener activated_listener("WORKER_ACTIVATED");
@@ -172,6 +199,87 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
                               base::Value::List().Append("remove-on-clear")));
   ASSERT_TRUE(get_result_3);
   ASSERT_FALSE(get_result_3->FindDict("data")->contains("remove-on-clear"));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       CanGetStorageValuesBackgroundPage) {
+  const base::Value::Dict* load_result =
+      SendLoadUnpackedCommand("background_page_storage_access");
+  ASSERT_TRUE(load_result);
+
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+
+  const extensions::Extension* extension = registry->GetExtensionById(
+      *load_result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
+  ASSERT_TRUE(extension);
+
+  DetachProtocolClient();
+
+  extensions::ExtensionBackgroundPageWaiter(browser()->profile(), *extension)
+      .WaitForBackgroundOpen();
+  agent_host_ = FindBackgroundPageHost("/_generated_background_page.html");
+  agent_host_->AttachClient(this);
+
+  ASSERT_TRUE(SendStorageCommand("Extensions.getStorageItems", extension,
+                                 base::Value::Dict()));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       CanGetStorageValuesContentScript) {
+  const base::Value::Dict* load_result =
+      SendLoadUnpackedCommand("simple_content_script");
+  ASSERT_TRUE(load_result);
+
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+
+  const extensions::Extension* extension = registry->GetExtensionById(
+      *load_result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url =
+      embedded_test_server()->GetURL("/devtools/page_with_content_script.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  DetachProtocolClient();
+  agent_host_ = FindPageHost("/devtools/page_with_content_script.html");
+  agent_host_->AttachClient(this);
+
+  ASSERT_TRUE(SendStorageCommand("Extensions.getStorageItems", extension,
+                                 base::Value::Dict()));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolWithUnsafeDebuggingTest,
+                       CannotGetStorageValuesWithoutContentScript) {
+  // Load an extension with no associated content scripts.
+  const base::Value::Dict* load_result =
+      SendLoadUnpackedCommand("service_worker");
+  ASSERT_TRUE(load_result);
+
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(browser()->profile());
+
+  const extensions::Extension* extension = registry->GetExtensionById(
+      *load_result->FindString("id"), extensions::ExtensionRegistry::ENABLED);
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url =
+      embedded_test_server()->GetURL("/devtools/page_with_content_script.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  DetachProtocolClient();
+  agent_host_ = FindPageHost("/devtools/page_with_content_script.html");
+  agent_host_->AttachClient(this);
+
+  const base::Value::Dict* get_result = SendStorageCommand(
+      "Extensions.getStorageItems", extension, base::Value::Dict());
+
+  // Command should fail as extension has not injected content script.
+  EXPECT_FALSE(get_result);
+  ASSERT_EQ(*error()->FindString("message"), "Extension not found.");
 }
 
 // Test to ensure that the target associated with an extension service worker

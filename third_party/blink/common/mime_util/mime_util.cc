@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <string_view>
 #include <unordered_set>
 
 #include "base/containers/contains.h"
@@ -128,9 +129,9 @@ bool IsSupportedNonImageMimeType(std::string_view mime_type) {
 #if !BUILDFLAG(IS_IOS)
          media::IsSupportedMediaMimeType(mime_lower) ||
 #endif
-         (base::StartsWith(mime_lower, "text/") &&
+         (mime_lower.starts_with("text/") &&
           !kUnsupportedTextTypes.contains(mime_lower)) ||
-         (base::StartsWith(mime_lower, "application/") &&
+         (mime_lower.starts_with("application/") &&
           net::MatchesMimeType("application/*+json", mime_lower));
 }
 

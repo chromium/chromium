@@ -1,6 +1,7 @@
 include_rules = [
-  "+ios/chrome/browser/overlays/model/public",
   "+ios/chrome/browser/default_browser/model",
+  "+ios/chrome/browser/overlays/model/public",
+  "+ios/chrome/browser/tips_manager/model",
 ]
 
 specific_include_rules = {
@@ -14,6 +15,4 @@ specific_include_rules = {
   "^infobar_metrics_recorder.mm": [
     "+ios/chrome/browser/default_promo/ui_bundled/default_browser_utils.h",
   ],
-
 }
-

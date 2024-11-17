@@ -9,17 +9,16 @@
 #include <optional>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
-#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/ui/webauthn/user_actions.h"
 #include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
@@ -28,7 +27,6 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/render_frame_host.h"
 #include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
@@ -38,7 +36,6 @@
 #include "ui/base/resource/resource_bundle.h"
 
 #if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
 #include "crypto/scoped_lacontext.h"
 #include "device/fido/mac/util.h"
 #endif
@@ -74,8 +71,7 @@ std::u16string PossibleResidentKeyWarning(
     case device::ResidentKeyRequirement::kRequired:
       return l10n_util::GetStringUTF16(IDS_WEBAUTHN_RESIDENT_KEY_PRIVACY);
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 // Return a warning about attestation if attestation was requested, otherwise
@@ -185,7 +181,7 @@ void AuthenticatorSheetModelBase::OnBack() {
 }
 
 void AuthenticatorSheetModelBase::OnAccept() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void AuthenticatorSheetModelBase::OnCancel() {
@@ -209,8 +205,8 @@ AuthenticatorMechanismSelectorSheetModel::
     : AuthenticatorSheetModelBase(dialog_model) {
   lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
                                 IDR_WEBAUTHN_PASSKEY_DARK);
-  webauthn::user_actions::RecordMultipleOptionsShown(dialog_model->mechanisms,
-                                                     /*is_create=*/true);
+  webauthn::user_actions::RecordMultipleOptionsShown(
+      dialog_model->mechanisms, dialog_model->request_type);
 }
 
 std::u16string AuthenticatorMechanismSelectorSheetModel::GetStepTitle() const {
@@ -233,6 +229,8 @@ AuthenticatorInsertAndActivateUsbSheetModel::
         AuthenticatorRequestDialogModel* dialog_model)
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kVisible) {
+  webauthn::user_actions::RecordSecurityKeyDialogShown(
+      dialog_model->request_type);
   vector_illustrations_.emplace(kPasskeyUsbIcon, kPasskeyUsbDarkIcon);
 }
 
@@ -570,7 +568,7 @@ AuthenticatorTouchIdSheetModel::AuthenticatorTouchIdSheetModel(
     : AuthenticatorSheetModelBase(dialog_model,
                                   OtherMechanismButtonVisibility::kVisible) {
   webauthn::user_actions::RecordGpmTouchIdDialogShown(
-      dialog_model->request_type == device::FidoRequestType::kMakeCredential);
+      dialog_model->request_type);
 }
 
 std::u16string AuthenticatorTouchIdSheetModel::GetStepTitle() const {
@@ -734,33 +732,6 @@ bool AuthenticatorPaaskSheetModel::IsManageDevicesButtonVisible() const {
 
 void AuthenticatorPaaskSheetModel::OnManageDevices() {
   dialog_model()->OnManageDevicesClicked();
-}
-
-// AuthenticatorAndroidAccessorySheetModel ------------------------------------
-
-AuthenticatorAndroidAccessorySheetModel::
-    AuthenticatorAndroidAccessorySheetModel(
-        AuthenticatorRequestDialogModel* dialog_model)
-    : AuthenticatorSheetModelBase(dialog_model,
-                                  OtherMechanismButtonVisibility::kVisible) {
-  vector_illustrations_.emplace(kPasskeyAoaIcon, kPasskeyAoaDarkIcon);
-}
-
-AuthenticatorAndroidAccessorySheetModel::
-    ~AuthenticatorAndroidAccessorySheetModel() = default;
-
-bool AuthenticatorAndroidAccessorySheetModel::IsActivityIndicatorVisible()
-    const {
-  return true;
-}
-
-std::u16string AuthenticatorAndroidAccessorySheetModel::GetStepTitle() const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_AOA_TITLE);
-}
-
-std::u16string AuthenticatorAndroidAccessorySheetModel::GetStepDescription()
-    const {
-  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CABLEV2_AOA_DESCRIPTION);
 }
 
 // AuthenticatorClientPinEntrySheetModel
@@ -1262,6 +1233,51 @@ std::vector<std::u16string> AuthenticatorQRSheetModel::GetSecurityKeyLabels()
   }
 }
 
+// AuthenticatorHybridAndSecurityKeySheetModel --------------------------------
+
+AuthenticatorHybridAndSecurityKeySheetModel::
+    AuthenticatorHybridAndSecurityKeySheetModel(
+        AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kVisible) {
+  webauthn::user_actions::RecordHybridAndSecurityKeyDialogShown(
+      dialog_model->request_type);
+}
+
+AuthenticatorHybridAndSecurityKeySheetModel::
+    ~AuthenticatorHybridAndSecurityKeySheetModel() = default;
+
+std::u16string AuthenticatorHybridAndSecurityKeySheetModel::GetStepTitle()
+    const {
+  return l10n_util::GetStringUTF16(dialog_model()->show_security_key_on_qr_sheet
+                                       ? IDS_WEBAUTHN_PASSKEYS_AND_SECURITY_KEYS
+                                       : IDS_WEBAUTHN_PASSKEYS);
+}
+
+std::u16string AuthenticatorHybridAndSecurityKeySheetModel::GetStepDescription()
+    const {
+  return u"";
+}
+
+std::u16string
+AuthenticatorHybridAndSecurityKeySheetModel::GetOtherMechanismButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_BACK);
+}
+
+std::optional<std::u16string>
+AuthenticatorHybridAndSecurityKeySheetModel::GetAttestationWarning() const {
+  if (dialog_model()->show_security_key_on_qr_sheet &&
+      (dialog_model()->request_type ==
+       device::FidoRequestType::kMakeCredential)) {
+    std::u16string warning = PossibleAttestationWarning(dialog_model());
+    if (!warning.empty()) {
+      return warning;
+    }
+  }
+  return std::nullopt;
+}
+
 // AuthenticatorConnectingSheetModel ------------------------------------------
 
 AuthenticatorConnectingSheetModel::AuthenticatorConnectingSheetModel(
@@ -1356,17 +1372,10 @@ std::u16string AuthenticatorCreatePasskeySheetModel::GetStepDescription()
 
 std::u16string
 AuthenticatorCreatePasskeySheetModel::passkey_storage_description() const {
-#if BUILDFLAG(IS_WIN)
-  return l10n_util::GetStringUTF16(
-      dialog_model()->is_off_the_record
-          ? IDS_WEBAUTHN_CREATE_PASSKEY_EXTRA_WIN_INCOGNITO
-          : IDS_WEBAUTHN_CREATE_PASSKEY_EXTRA_WIN);
-#else
   return l10n_util::GetStringUTF16(
       dialog_model()->is_off_the_record
           ? IDS_WEBAUTHN_CREATE_PASSKEY_EXTRA_INCOGNITO
           : IDS_WEBAUTHN_CREATE_PASSKEY_EXTRA);
-#endif
 }
 
 bool AuthenticatorCreatePasskeySheetModel::IsAcceptButtonVisible() const {
@@ -1469,8 +1478,8 @@ AuthenticatorMultiSourcePickerSheetModel::
   lottie_illustrations_.emplace(IDR_WEBAUTHN_PASSKEY_LIGHT,
                                 IDR_WEBAUTHN_PASSKEY_DARK);
 
-  webauthn::user_actions::RecordMultipleOptionsShown(dialog_model->mechanisms,
-                                                     /*is_create=*/false);
+  webauthn::user_actions::RecordMultipleOptionsShown(
+      dialog_model->mechanisms, dialog_model->request_type);
   if (base::ranges::any_of(dialog_model->mechanisms,
                            &IsLocalPasskeyOrEnclaveAuthenticator)) {
     primary_passkeys_label_ =
@@ -1716,8 +1725,7 @@ AuthenticatorGpmPinSheetModel::AuthenticatorGpmPinSheetModel(
     : AuthenticatorGpmPinSheetModelBase(dialog_model, mode),
       pin_digits_count_(pin_digits_count) {
   webauthn::user_actions::RecordGpmPinSheetShown(
-      /*is_credential_creation=*/dialog_model->request_type ==
-          device::FidoRequestType::kMakeCredential,
+      dialog_model->request_type,
       /*is_pin_creation=*/mode == Mode::kPinCreate,
       /*is_arbitrary=*/false);
 }
@@ -1789,8 +1797,7 @@ AuthenticatorGpmArbitraryPinSheetModel::AuthenticatorGpmArbitraryPinSheetModel(
     Mode mode)
     : AuthenticatorGpmPinSheetModelBase(dialog_model, mode) {
   webauthn::user_actions::RecordGpmPinSheetShown(
-      /*is_credential_creation=*/dialog_model->request_type ==
-          device::FidoRequestType::kMakeCredential,
+      dialog_model->request_type,
       /*is_pin_creation=*/mode == Mode::kPinCreate,
       /*is_arbitrary=*/true);
 }
@@ -1850,7 +1857,7 @@ AuthenticatorTrustThisComputerAssertionSheetModel::
   lottie_illustrations_.emplace(IDR_WEBAUTHN_LAPTOP_LIGHT,
                                 IDR_WEBAUTHN_LAPTOP_DARK);
 
-  webauthn::user_actions::RecordTrustDialogShown(/*is_create=*/false);
+  webauthn::user_actions::RecordTrustDialogShown(dialog_model->request_type);
 }
 
 AuthenticatorTrustThisComputerAssertionSheetModel::
@@ -2021,7 +2028,7 @@ AuthenticatorTrustThisComputerCreationSheetModel::
   lottie_illustrations_.emplace(IDR_WEBAUTHN_LAPTOP_LIGHT,
                                 IDR_WEBAUTHN_LAPTOP_DARK);
 
-  webauthn::user_actions::RecordTrustDialogShown(/*is_create=*/true);
+  webauthn::user_actions::RecordTrustDialogShown(dialog_model->request_type);
 }
 
 AuthenticatorTrustThisComputerCreationSheetModel::

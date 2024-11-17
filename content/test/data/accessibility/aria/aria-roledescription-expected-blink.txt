@@ -13,7 +13,7 @@ rootWebArea
 ++++++genericContainer
 ++++++++staticText name='foo'
 ++++++++++inlineTextBox name='foo'
-++++++genericContainer name='bar'
+++++++genericContainer
 ++++++++staticText name='bar'
 ++++++++++inlineTextBox name='bar'
 ++++++paragraph roleDescription='Texty'

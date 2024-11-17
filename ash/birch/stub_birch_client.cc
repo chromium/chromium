@@ -51,6 +51,15 @@ StubBirchClient::InstallStubWeatherDataProvider() {
   return weather_provider_ptr;
 }
 
+StubBirchClient::StubDataProvider*
+StubBirchClient::InstallStubCoralDataProvider() {
+  auto coral_provider = std::make_unique<StubDataProvider>();
+  auto* coral_provider_ptr = coral_provider.get();
+  Shell::Get()->birch_model()->OverrideCoralProviderForTest(
+      std::move(coral_provider));
+  return coral_provider_ptr;
+}
+
 bool StubBirchClient::DidRequestCalendarDataFetch() const {
   return calendar_provider_->did_request_birch_data_fetch();
 }

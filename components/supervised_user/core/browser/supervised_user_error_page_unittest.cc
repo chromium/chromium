@@ -58,13 +58,12 @@ INSTANTIATE_TEST_SUITE_P(GetBlockMessageIDParameterized,
 
 struct BuildHtmlTestParameter {
   bool allow_access_requests;
-  // RAW_PTR_EXCLUSION: #global-scope
-  RAW_PTR_EXCLUSION const std::string& profile_image_url;
-  RAW_PTR_EXCLUSION const std::string& profile_image_url2;
-  RAW_PTR_EXCLUSION const std::string& custodian;
-  RAW_PTR_EXCLUSION const std::string& custodian_email;
-  RAW_PTR_EXCLUSION const std::string& second_custodian;
-  RAW_PTR_EXCLUSION const std::string& second_custodian_email;
+  const std::string profile_image_url;
+  const std::string profile_image_url2;
+  const std::string custodian;
+  const std::string custodian_email;
+  const std::string second_custodian;
+  const std::string second_custodian_email;
   FilteringBehaviorReason reason;
   bool has_two_parents;
 };
@@ -84,8 +83,8 @@ TEST_P(SupervisedUserErrorPageTest_BuildHtml, BuildHtml) {
       param.profile_image_url2, param.custodian, param.custodian_email,
       param.second_custodian, param.second_custodian_email, param.reason,
       /*app_locale=*/"",
-      /*already_sent_request=*/false, /*is_main_frame=*/true,
-      /*show_banner=*/true);
+      /*already_sent_request=*/false, /*is_main_frame=*/true);
+
   // The result should contain the original HTML (with $i18n{} replacements)
   // plus scripts that plug values into it. The test can't easily check that the
   // scripts are correct, but can check that the output contains the expected

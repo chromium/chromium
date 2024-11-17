@@ -106,9 +106,6 @@ class HashPrefixMap {
   // Appends |prefix| to the prefix list of size |size|.
   void Append(PrefixSize size, HashPrefixesView prefix);
 
-  // Reserves space for the prefix list of size |size|.
-  virtual void Reserve(PrefixSize size, size_t capacity);
-
   // Reads the map from disk.
   ApplyUpdateResult ReadFromDisk(const V4StoreFileFormat& file_format);
 
@@ -173,7 +170,6 @@ class HashPrefixMap {
 
     base::MemoryMappedFile file_;
     std::unique_ptr<BufferedFileWriter> writer_;
-    std::vector<uint32_t> offsets_;
   };
 
   FileInfo& GetFileInfo(PrefixSize size);

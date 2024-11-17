@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/device/inputs_section.h"
 
+#include <array>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
-#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/input_method/editor_mediator.h"
 #include "chrome/browser/ash/input_method/input_method_settings.h"
@@ -33,7 +35,6 @@ using ::chromeos::settings::mojom::kEditDictionarySubpagePath;
 using ::chromeos::settings::mojom::kInputMethodOptionsSubpagePath;
 using ::chromeos::settings::mojom::kInputSubpagePath;
 using ::chromeos::settings::mojom::kJapaneseManageUserDictionarySubpagePath;
-using ::chromeos::settings::mojom::kLanguagesAndInputSectionPath;
 using ::chromeos::settings::mojom::Section;
 using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
@@ -41,8 +42,8 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetDefaultSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_INPUT,
        mojom::kInputSubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -70,11 +71,11 @@ const std::vector<SearchConcept>& GetDefaultSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kSpellCheckOnOff}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetSuggestionsSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetSuggestionsSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_SUGGESTIONS,
        mojom::kInputSubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -82,11 +83,11 @@ const std::vector<SearchConcept>& GetSuggestionsSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kInput}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetEmojiSuggestionSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_EMOJI_SUGGESTIONS,
        mojom::kInputSubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -94,11 +95,11 @@ const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kShowEmojiSuggestions}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetHelpMeWriteSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetHelpMeWriteSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_HELP_ME_WRITE_SUGGESTIONS,
        mojom::kInputSubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -106,11 +107,11 @@ const std::vector<SearchConcept>& GetHelpMeWriteSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kShowOrca}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetSpellCheckSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetSpellCheckSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_EDIT_DICTIONARY,
        mojom::kEditDictionarySubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -118,11 +119,11 @@ const std::vector<SearchConcept>& GetSpellCheckSearchConcepts() {
        mojom::SearchResultType::kSubpage,
        {.subpage = mojom::Subpage::kEditDictionary}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAutoCorrectionSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAutoCorrectionSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_AUTO_CORRECTION,
        mojom::kInputMethodOptionsSubpagePath,
        mojom::SearchResultIcon::kLanguage,
@@ -130,7 +131,7 @@ const std::vector<SearchConcept>& GetAutoCorrectionSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kShowPKAutoCorrection}},
   });
-  return *tags;
+  return tags;
 }
 
 bool ShouldShowOrcaSettings(input_method::EditorMediator* editor_mediator) {
@@ -343,10 +344,6 @@ void AddInputMethodOptionsLoadTimeData(
       base::FeatureList::IsEnabled(features::kAssistMultiWord) &&
           is_physical_keyboard_predictive_writing_allowed);
   html_source->AddBoolean(
-      "allowDiacriticsOnPhysicalKeyboardLongpress",
-      base::FeatureList::IsEnabled(
-          features::kDiacriticsOnPhysicalKeyboardLongpress));
-  html_source->AddBoolean(
       "allowAutocorrectToggle",
       base::FeatureList::IsEnabled(features::kAutocorrectToggle));
   html_source->AddBoolean(
@@ -428,13 +425,8 @@ InputsSection::InputsSection(Profile* profile,
 InputsSection::~InputsSection() = default;
 
 void InputsSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
-  const bool kIsRevampEnabled =
-      ash::features::IsOsSettingsRevampWayfindingEnabled();
-
   webui::LocalizedString kLocalizedStrings[] = {
-      {"inputPageTitle", kIsRevampEnabled
-                             ? IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE
-                             : IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2},
+      {"inputPageTitle", IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE},
       {"inputMethodEnabled", IDS_SETTINGS_LANGUAGES_INPUT_METHOD_ENABLED},
       {"inputMethodsManagedbyPolicy",
        IDS_SETTINGS_LANGUAGES_INPUT_METHODS_MANAGED_BY_POLICY},
@@ -551,13 +543,10 @@ int InputsSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section InputsSection::GetSection() const {
-  // Note: This is a subsection that exists under the Device section when the
-  // OsSettingsRevampWayfinding feature is enabled, else under the Languages
-  // section. This is not a top-level section and does not have a respective
-  // declaration in chromeos::settings::mojom::Section.
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::Section::kDevice
-             : mojom::Section::kLanguagesAndInput;
+  // Note: This is a subsection that exists under the Device section. This is
+  // not a top-level section and does not have a respective declaration in
+  // chromeos::settings::mojom::Section.
+  return mojom::Section::kDevice;
 }
 
 mojom::SearchResultIcon InputsSection::GetSectionIcon() const {
@@ -565,9 +554,7 @@ mojom::SearchResultIcon InputsSection::GetSectionIcon() const {
 }
 
 const char* InputsSection::GetSectionPath() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kDeviceSectionPath
-             : mojom::kLanguagesAndInputSectionPath;
+  return mojom::kDeviceSectionPath;
 }
 
 bool InputsSection::LogMetric(mojom::Setting setting,
@@ -578,7 +565,7 @@ bool InputsSection::LogMetric(mojom::Setting setting,
 
 void InputsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSubpage(
-      IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE_V2, mojom::Subpage::kInput,
+      IDS_OS_SETTINGS_LANGUAGES_INPUT_PAGE_TITLE, mojom::Subpage::kInput,
       mojom::SearchResultIcon::kLanguage,
       mojom::SearchResultDefaultRank::kMedium, mojom::kInputSubpagePath);
   static constexpr mojom::Setting kInputSubpageSettings[] = {

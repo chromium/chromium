@@ -49,11 +49,12 @@ enum class OtpUnmaskResult;
 class TouchToFillDelegate;
 struct VirtualCardEnrollmentFields;
 class VirtualCardEnrollmentManager;
-struct VirtualCardManualFallbackBubbleOptions;
+struct FilledCardInformationBubbleOptions;
 enum class WebauthnDialogCallbackType;
 
 namespace payments {
 
+class BnplManager;
 class MandatoryReauthManager;
 class PaymentsNetworkInterface;
 class PaymentsWindowManager;
@@ -391,10 +392,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // result to users. `result` holds the outcome of virtual card enrollment.
   virtual void VirtualCardEnrollCompleted(PaymentsRpcResult result);
 
-  // Called when the virtual card has been fetched successfully. Uses the
-  // necessary information in `options` to show the manual fallback bubble.
-  virtual void OnVirtualCardDataAvailable(
-      const VirtualCardManualFallbackBubbleOptions& options);
+  // Called when the card has been fetched successfully. Uses the necessary
+  // information in `options` to show the FilledCardInformationBubble.
+  virtual void OnCardDataAvailable(
+      const FilledCardInformationBubbleOptions& options);
 
   // Runs `callback` once the user makes a decision with respect to the
   // offer-to-save prompt. On desktop, shows the offer-to-save bubble if
@@ -539,22 +540,21 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // possible, and returns `true` on success. `delegate` will be notified of
   // events. `suggestions` are generated using the `cards_to_suggest` data and
   // include fields such as `main_text`, `minor_text`, and
-  // `apply_deactivated_style`. Should be called only if the feature is
-  // supported by the platform. This function is implemented on all platforms,
-  // so this should be a pure virtual function to enforce the override
+  // `HasDeactivatedStyle` member function. Should be called only if the feature
+  // is supported by the platform. This function is implemented on all
+  // platforms so this should be a pure virtual function to enforce the override
   // implementation.
   virtual bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::CreditCard> cards_to_suggest,
+      base::span<const CreditCard> cards_to_suggest,
       base::span<const Suggestion> suggestions);
 
   // Shows the Touch To Fill surface for filling IBAN information, if
   // possible, returning `true` on success. `delegate` will be notified of
   // events. This function is not implemented on iOS and iOS WebView, and
   // should not be used on those platforms.
-  virtual bool ShowTouchToFillIban(
-      base::WeakPtr<TouchToFillDelegate> delegate,
-      base::span<const autofill::Iban> ibans_to_suggest);
+  virtual bool ShowTouchToFillIban(base::WeakPtr<TouchToFillDelegate> delegate,
+                                   base::span<const Iban> ibans_to_suggest);
 
   // Hides the Touch To Fill surface for filling payment information if one is
   // currently shown. Should be called only if the feature is supported by the
@@ -573,6 +573,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // used to handle payments mandatory re-auth related flows.
   virtual payments::MandatoryReauthManager*
   GetOrCreatePaymentsMandatoryReauthManager();
+
+  // Gets the payments BNPL manager owned by the client. This will be used to
+  // handle BNPL flows. It is not implemented on iOS and iOS WebView, and should
+  // not be used on those platforms.
+  virtual payments::BnplManager* GetPaymentsBnplManager();
 };
 
 }  // namespace payments

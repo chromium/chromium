@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+This file contains definitions of resources that will be translated for each
+locale. This file is not checked automatically by translators, and needs to
+be updated manually.
+An entry should be added to "tools/gritsettings/translation_expectations.py"
+if we want to translate this file.
+-->
+
+<grit base_dir="." latest_public_release="0" current_release="1"
+      source_lang_id="en" enc_check="möl">
+  <outputs>
+    <output filename="../../grit/plus_addresses_strings.h" type="rc_header">
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="plus_addresses_strings_af.pak" type="data_package" lang="af" />
+    <output filename="plus_addresses_strings_am.pak" type="data_package" lang="am" />
+    <output filename="plus_addresses_strings_ar.pak" type="data_package" lang="ar" />
+    <output filename="plus_addresses_strings_as.pak" type="data_package" lang="as" />
+    <output filename="plus_addresses_strings_az.pak" type="data_package" lang="az" />
+    <output filename="plus_addresses_strings_be.pak" type="data_package" lang="be" />
+    <output filename="plus_addresses_strings_bg.pak" type="data_package" lang="bg" />
+    <output filename="plus_addresses_strings_bn.pak" type="data_package" lang="bn" />
+    <output filename="plus_addresses_strings_bs.pak" type="data_package" lang="bs" />
+    <output filename="plus_addresses_strings_ca.pak" type="data_package" lang="ca" />
+    <output filename="plus_addresses_strings_cs.pak" type="data_package" lang="cs" />
+    <output filename="plus_addresses_strings_cy.pak" type="data_package" lang="cy" />
+    <output filename="plus_addresses_strings_da.pak" type="data_package" lang="da" />
+    <output filename="plus_addresses_strings_de.pak" type="data_package" lang="de" />
+    <output filename="plus_addresses_strings_el.pak" type="data_package" lang="el" />
+    <output filename="plus_addresses_strings_en-GB.pak" type="data_package" lang="en-GB" />
+    <output filename="plus_addresses_strings_en-US.pak" type="data_package" lang="en" />
+    <output filename="plus_addresses_strings_es.pak" type="data_package" lang="es" />
+    <if expr="is_ios">
+      <!-- iOS uses es-MX for es-419 -->
+      <output filename="plus_addresses_strings_es-MX.pak" type="data_package" lang="es-419" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="plus_addresses_strings_es-419.pak" type="data_package" lang="es-419" />
+    </if>
+    <output filename="plus_addresses_strings_et.pak" type="data_package" lang="et" />
+    <output filename="plus_addresses_strings_eu.pak" type="data_package" lang="eu" />
+    <output filename="plus_addresses_strings_fa.pak" type="data_package" lang="fa" />
+    <output filename="plus_addresses_strings_fi.pak" type="data_package" lang="fi" />
+    <output filename="plus_addresses_strings_fil.pak" type="data_package" lang="fil" />
+    <output filename="plus_addresses_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
+    <output filename="plus_addresses_strings_fr.pak" type="data_package" lang="fr" />
+    <output filename="plus_addresses_strings_gl.pak" type="data_package" lang="gl" />
+    <output filename="plus_addresses_strings_gu.pak" type="data_package" lang="gu" />
+    <output filename="plus_addresses_strings_he.pak" type="data_package" lang="he" />
+    <output filename="plus_addresses_strings_hi.pak" type="data_package" lang="hi" />
+    <output filename="plus_addresses_strings_hr.pak" type="data_package" lang="hr" />
+    <output filename="plus_addresses_strings_hu.pak" type="data_package" lang="hu" />
+    <output filename="plus_addresses_strings_hy.pak" type="data_package" lang="hy" />
+    <output filename="plus_addresses_strings_id.pak" type="data_package" lang="id" />
+    <output filename="plus_addresses_strings_is.pak" type="data_package" lang="is" />
+    <output filename="plus_addresses_strings_it.pak" type="data_package" lang="it" />
+    <output filename="plus_addresses_strings_ja.pak" type="data_package" lang="ja" />
+    <output filename="plus_addresses_strings_ka.pak" type="data_package" lang="ka" />
+    <output filename="plus_addresses_strings_kk.pak" type="data_package" lang="kk" />
+    <output filename="plus_addresses_strings_km.pak" type="data_package" lang="km" />
+    <output filename="plus_addresses_strings_kn.pak" type="data_package" lang="kn" />
+    <output filename="plus_addresses_strings_ko.pak" type="data_package" lang="ko" />
+    <output filename="plus_addresses_strings_ky.pak" type="data_package" lang="ky" />
+    <output filename="plus_addresses_strings_lo.pak" type="data_package" lang="lo" />
+    <output filename="plus_addresses_strings_lt.pak" type="data_package" lang="lt" />
+    <output filename="plus_addresses_strings_lv.pak" type="data_package" lang="lv" />
+    <output filename="plus_addresses_strings_mk.pak" type="data_package" lang="mk" />
+    <output filename="plus_addresses_strings_ml.pak" type="data_package" lang="ml" />
+    <output filename="plus_addresses_strings_mn.pak" type="data_package" lang="mn" />
+    <output filename="plus_addresses_strings_mr.pak" type="data_package" lang="mr" />
+    <output filename="plus_addresses_strings_ms.pak" type="data_package" lang="ms" />
+    <output filename="plus_addresses_strings_my.pak" type="data_package" lang="my" />
+    <output filename="plus_addresses_strings_ne.pak" type="data_package" lang="ne" />
+    <output filename="plus_addresses_strings_nl.pak" type="data_package" lang="nl" />
+    <output filename="plus_addresses_strings_nb.pak" type="data_package" lang="no" />
+    <output filename="plus_addresses_strings_pa.pak" type="data_package" lang="pa" />
+    <output filename="plus_addresses_strings_pl.pak" type="data_package" lang="pl" />
+    <if expr="is_ios">
+      <!-- iOS uses pt for pt-BR -->
+      <output filename="plus_addresses_strings_pt.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <if expr="not is_ios">
+      <output filename="plus_addresses_strings_pt-BR.pak" type="data_package" lang="pt-BR" />
+    </if>
+    <output filename="plus_addresses_strings_pt-PT.pak" type="data_package" lang="pt-PT" />
+    <output filename="plus_addresses_strings_or.pak" type="data_package" lang="or" />
+    <output filename="plus_addresses_strings_ro.pak" type="data_package" lang="ro" />
+    <output filename="plus_addresses_strings_ru.pak" type="data_package" lang="ru" />
+    <output filename="plus_addresses_strings_si.pak" type="data_package" lang="si" />
+    <output filename="plus_addresses_strings_sk.pak" type="data_package" lang="sk" />
+    <output filename="plus_addresses_strings_sl.pak" type="data_package" lang="sl" />
+    <output filename="plus_addresses_strings_sq.pak" type="data_package" lang="sq" />
+    <output filename="plus_addresses_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+    <output filename="plus_addresses_strings_sr.pak" type="data_package" lang="sr" />
+    <output filename="plus_addresses_strings_sv.pak" type="data_package" lang="sv" />
+    <output filename="plus_addresses_strings_sw.pak" type="data_package" lang="sw" />
+    <output filename="plus_addresses_strings_ta.pak" type="data_package" lang="ta" />
+    <output filename="plus_addresses_strings_te.pak" type="data_package" lang="te" />
+    <output filename="plus_addresses_strings_th.pak" type="data_package" lang="th" />
+    <output filename="plus_addresses_strings_tr.pak" type="data_package" lang="tr" />
+    <output filename="plus_addresses_strings_uk.pak" type="data_package" lang="uk" />
+    <output filename="plus_addresses_strings_ur.pak" type="data_package" lang="ur" />
+    <output filename="plus_addresses_strings_uz.pak" type="data_package" lang="uz" />
+    <output filename="plus_addresses_strings_vi.pak" type="data_package" lang="vi" />
+    <output filename="plus_addresses_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
+    <output filename="plus_addresses_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
+    <output filename="plus_addresses_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+    <output filename="plus_addresses_strings_zu.pak" type="data_package" lang="zu" />
+    <!-- Pseudolocales -->
+    <output filename="plus_addresses_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="plus_addresses_strings_en-XA.pak" type="data_package" lang="en-XA" />
+    <!-- On Android, output some strings into Android's xml string format.
+         These strings are tagged with formatter_data="android_java" -->
+    <if expr="is_android">
+      <output filename="java/res/values-af/plus_addresses_strings.xml" lang="af" type="android" context="android_java" />
+      <output filename="java/res/values-am/plus_addresses_strings.xml" lang="am" type="android" context="android_java" />
+      <output filename="java/res/values-ar/plus_addresses_strings.xml" lang="ar" type="android" context="android_java" />
+      <output filename="java/res/values-as/plus_addresses_strings.xml" lang="as" type="android" context="android_java" />
+      <output filename="java/res/values-az/plus_addresses_strings.xml" lang="az" type="android" context="android_java" />
+      <output filename="java/res/values-be/plus_addresses_strings.xml" lang="be" type="android" context="android_java" />
+      <output filename="java/res/values-bg/plus_addresses_strings.xml" lang="bg" type="android" context="android_java" />
+      <output filename="java/res/values-bn/plus_addresses_strings.xml" lang="bn" type="android" context="android_java" />
+      <output filename="java/res/values-bs/plus_addresses_strings.xml" lang="bs" type="android" context="android_java" />
+      <output filename="java/res/values-ca/plus_addresses_strings.xml" lang="ca" type="android" context="android_java" />
+      <output filename="java/res/values-cs/plus_addresses_strings.xml" lang="cs" type="android" context="android_java" />
+      <output filename="java/res/values-da/plus_addresses_strings.xml" lang="da" type="android" context="android_java" />
+      <output filename="java/res/values-de/plus_addresses_strings.xml" lang="de" type="android" context="android_java" />
+      <output filename="java/res/values-el/plus_addresses_strings.xml" lang="el" type="android" context="android_java" />
+      <output filename="java/res/values/plus_addresses_strings.xml" lang="en" type="android" context="android_java" />
+      <output filename="java/res/values-en-rGB/plus_addresses_strings.xml" lang="en-GB" type="android" context="android_java" />
+      <output filename="java/res/values-es/plus_addresses_strings.xml" lang="es" type="android" context="android_java" />
+      <output filename="java/res/values-es-rUS/plus_addresses_strings.xml" lang="es-419" type="android" context="android_java" />
+      <output filename="java/res/values-et/plus_addresses_strings.xml" lang="et" type="android" context="android_java" />
+      <output filename="java/res/values-eu/plus_addresses_strings.xml" lang="eu" type="android" context="android_java" />
+      <output filename="java/res/values-fa/plus_addresses_strings.xml" lang="fa" type="android" context="android_java" />
+      <output filename="java/res/values-fi/plus_addresses_strings.xml" lang="fi" type="android" context="android_java" />
+      <output filename="java/res/values-tl/plus_addresses_strings.xml" lang="fil" type="android" context="android_java" />
+      <output filename="java/res/values-fr/plus_addresses_strings.xml" lang="fr" type="android" context="android_java" />
+      <output filename="java/res/values-fr-rCA/plus_addresses_strings.xml" lang="fr-CA" type="android" context="android_java" />
+      <output filename="java/res/values-gl/plus_addresses_strings.xml" lang="gl" type="android" context="android_java" />
+      <output filename="java/res/values-gu/plus_addresses_strings.xml" lang="gu" type="android" context="android_java" />
+      <output filename="java/res/values-iw/plus_addresses_strings.xml" lang="he" type="android" context="android_java" />
+      <output filename="java/res/values-hi/plus_addresses_strings.xml" lang="hi" type="android" context="android_java" />
+      <output filename="java/res/values-hr/plus_addresses_strings.xml" lang="hr" type="android" context="android_java" />
+      <output filename="java/res/values-hu/plus_addresses_strings.xml" lang="hu" type="android" context="android_java" />
+      <output filename="java/res/values-hy/plus_addresses_strings.xml" lang="hy" type="android" context="android_java" />
+      <output filename="java/res/values-in/plus_addresses_strings.xml" lang="id" type="android" context="android_java" />
+      <output filename="java/res/values-is/plus_addresses_strings.xml" lang="is" type="android" context="android_java" />
+      <output filename="java/res/values-it/plus_addresses_strings.xml" lang="it" type="android" context="android_java" />
+      <output filename="java/res/values-ja/plus_addresses_strings.xml" lang="ja" type="android" context="android_java" />
+      <output filename="java/res/values-ka/plus_addresses_strings.xml" lang="ka" type="android" context="android_java" />
+      <output filename="java/res/values-kk/plus_addresses_strings.xml" lang="kk" type="android" context="android_java" />
+      <output filename="java/res/values-km/plus_addresses_strings.xml" lang="km" type="android" context="android_java" />
+      <output filename="java/res/values-kn/plus_addresses_strings.xml" lang="kn" type="android" context="android_java" />
+      <output filename="java/res/values-ko/plus_addresses_strings.xml" lang="ko" type="android" context="android_java" />
+      <output filename="java/res/values-ky/plus_addresses_strings.xml" lang="ky" type="android" context="android_java" />
+      <output filename="java/res/values-lo/plus_addresses_strings.xml" lang="lo" type="android" context="android_java" />
+      <output filename="java/res/values-lt/plus_addresses_strings.xml" lang="lt" type="android" context="android_java" />
+      <output filename="java/res/values-lv/plus_addresses_strings.xml" lang="lv" type="android" context="android_java" />
+      <output filename="java/res/values-mk/plus_addresses_strings.xml" lang="mk" type="android" context="android_java" />
+      <output filename="java/res/values-ml/plus_addresses_strings.xml" lang="ml" type="android" context="android_java" />
+      <output filename="java/res/values-mn/plus_addresses_strings.xml" lang="mn" type="android" context="android_java" />
+      <output filename="java/res/values-mr/plus_addresses_strings.xml" lang="mr" type="android" context="android_java" />
+      <output filename="java/res/values-ms/plus_addresses_strings.xml" lang="ms" type="android" context="android_java" />
+      <output filename="java/res/values-my/plus_addresses_strings.xml" lang="my" type="android" context="android_java" />
+      <output filename="java/res/values-ne/plus_addresses_strings.xml" lang="ne" type="android" context="android_java" />
+      <output filename="java/res/values-nl/plus_addresses_strings.xml" lang="nl" type="android" context="android_java" />
+      <output filename="java/res/values-nb/plus_addresses_strings.xml" lang="no" type="android" context="android_java" />
+      <output filename="java/res/values-or/plus_addresses_strings.xml" lang="or" type="android" context="android_java" />
+      <output filename="java/res/values-pa/plus_addresses_strings.xml" lang="pa" type="android" context="android_java" />
+      <output filename="java/res/values-pl/plus_addresses_strings.xml" lang="pl" type="android" context="android_java" />
+      <output filename="java/res/values-pt-rBR/plus_addresses_strings.xml" lang="pt-BR" type="android" context="android_java" />
+      <output filename="java/res/values-pt-rPT/plus_addresses_strings.xml" lang="pt-PT" type="android" context="android_java" />
+      <output filename="java/res/values-ro/plus_addresses_strings.xml" lang="ro" type="android" context="android_java" />
+      <output filename="java/res/values-ru/plus_addresses_strings.xml" lang="ru" type="android" context="android_java" />
+      <output filename="java/res/values-si/plus_addresses_strings.xml" lang="si" type="android" context="android_java" />
+      <output filename="java/res/values-sk/plus_addresses_strings.xml" lang="sk" type="android" context="android_java" />
+      <output filename="java/res/values-sl/plus_addresses_strings.xml" lang="sl" type="android" context="android_java" />
+      <output filename="java/res/values-sq/plus_addresses_strings.xml" lang="sq" type="android" context="android_java" />
+      <output filename="java/res/values-sr/plus_addresses_strings.xml" lang="sr" type="android" context="android_java" />
+      <output filename="java/res/values-b+sr+Latn/plus_addresses_strings.xml" lang="sr-Latn" type="android" context="android_java" />
+      <output filename="java/res/values-sv/plus_addresses_strings.xml" lang="sv" type="android" context="android_java" />
+      <output filename="java/res/values-sw/plus_addresses_strings.xml" lang="sw" type="android" context="android_java" />
+      <output filename="java/res/values-ta/plus_addresses_strings.xml" lang="ta" type="android" context="android_java" />
+      <output filename="java/res/values-te/plus_addresses_strings.xml" lang="te" type="android" context="android_java" />
+      <output filename="java/res/values-th/plus_addresses_strings.xml" lang="th" type="android" context="android_java" />
+      <output filename="java/res/values-tr/plus_addresses_strings.xml" lang="tr" type="android" context="android_java" />
+      <output filename="java/res/values-uk/plus_addresses_strings.xml" lang="uk" type="android" context="android_java" />
+      <output filename="java/res/values-ur/plus_addresses_strings.xml" lang="ur" type="android" context="android_java" />
+      <output filename="java/res/values-uz/plus_addresses_strings.xml" lang="uz" type="android" context="android_java" />
+      <output filename="java/res/values-vi/plus_addresses_strings.xml" lang="vi" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rCN/plus_addresses_strings.xml" lang="zh-CN" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rHK/plus_addresses_strings.xml" lang="zh-HK" type="android" context="android_java" />
+      <output filename="java/res/values-zh-rTW/plus_addresses_strings.xml" lang="zh-TW" type="android" context="android_java" />
+      <output filename="java/res/values-zu/plus_addresses_strings.xml" lang="zu" type="android" context="android_java" />
+      <!-- Pseudolocales -->
+      <output filename="java/res/values-ar-rXB/plus_addresses_strings.xml" lang="ar-XB" type="android" context="android_java" />
+      <output filename="java/res/values-en-rXA/plus_addresses_strings.xml" lang="en-XA" type="android" context="android_java" />
+    </if>
+  </outputs>
+  <translations>
+    <!-- TODO(crbug.com/326392415)
+      Add localized output files once we desire translation.
+    -->
+  </translations>
+  <release seq="1">
+    <messages fallback_to_english="true">
+      <!-- TODO(b/326392415): Make all strings translatable. -->
+      <!-- Android strings -->
+      <if expr="is_android">
+        <message name="IDS_PLUS_ADDRESS_CREATE_NEW_PLUS_ADDRESSES_LINK_ANDROID" desc="The text of the link in the address sheet that opens the plus address creation bottom sheet." translateable="false">
+          Create new plus addresses placeholder
+        </message>
+        <message name="IDS_PLUS_ADDRESS_SELECT_PLUS_ADDRESS_LINK_ANDROID" desc="The text of the link in the address sheet that opens the bottom sheet with all user plus addresses." translateable="false">
+          Select Plus Address placeholder
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_LINK_ANDROID" desc="The text of the link in the address sheet that opens the plus address management web page." translateable="false">
+          Manage Plus Addresses placeholder
+        </message>
+
+        <!-- Creation dialog strings -->
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_ANDROID" desc="Title for the experimental enterprise plus addresses feature modal on Android" translateable="false">
+          Lorem Ipsum
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_ANDROID" desc="The description text on the creation dialog for plus addresses on Android." translateable="false">
+          Lorem (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>).
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_PROPOSED_PLUS_ADDRESS_PLACEHOLDER_ANDROID" desc="A placeholder for the plus address on Android" translateable="false">
+          Lorem Ipsum or whatever
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_ANDROID" desc="Cancel button text for the experimental enterprise plus addresses feature on Android" translateable="false">
+          Cancel
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_ANDROID" desc="Ok button text for the experimental enterprise plus addresses feature on Android" translateable="false">
+          Use address
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MODEL_REFRESH_BUTTON_ACCESSIBLE_NAME_ANDROID" desc="The acessible name of the refresh button on the plus address modal" formatter_data="android_java" translateable="false">
+          Refresh
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MODEL_REFRESH_TEMPORARY_LABEL_CONTENT_ANDROID" desc="The content shown in the plus address label of the modal while a refresh is ongoing" formatter_data="android_java" translateable="false">
+          Refreshing...
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_NOTICE_ANDROID" desc="Title for the experimental enterprise plus addresses feature modal on Android used when the modal is shown for the first time." translateable="false">
+          First time usage title placeholder.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_NOTICE_ANDROID" desc="The description text on the creation dialog for plus addresses on Android when the dialog is shown for the first time." translateable="false">
+          First time usage feature description placeholder.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_NOTICE_ANDROID" desc="The notice text on the creation dialog for plus addresses on Android when the dialog is shown for the first time." translateable="false">
+          First time usage notice placeholder (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>), which includes the redirection link <ph name="BEGIN_LINK">&lt;link&gt;</ph>link placeholder<ph name="END_LINK">&lt;/link&gt;</ph>.
+        </message>
+        <!-- Android reserve error strings -->
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_TIMEOUT_ERROR_TITLE_ANDROID" desc="Title shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to the network request timeout." translateable="false">
+          Something went wrong
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_TIMEOUT_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to the network request timeout." translateable="false">
+          Make sure you're online and try again.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_QUOTA_ERROR_TITLE_ANDROID" desc="Title shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to the plus address quota limit exceeded." translateable="false">
+          Too many plus addresses
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_QUOTA_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to the plus address quota limit exceeded." translateable="false">
+          Can't create any more plus addresses.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_GENERIC_ERROR_TITLE_ANDROID" desc="Title shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to an unknown error." translateable="false">
+          Something went wrong
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_RESERVE_GENERIC_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to reserve the plus address after the user click the confirm button due to an unknown error." translateable="false">
+          Can't create plus address right now.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_TIMEOUT_ERROR_TITLE_ANDROID" desc="Title message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to the timeout error." translateable="false">
+          Something went wrong
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_TIMEOUT_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to the timeout error." translateable="false">
+          Make sure you're online and try again.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_QUOTA_ERROR_TITLE_ANDROID" desc="Title message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to the quota error." translateable="false">
+          Too many plus addresses
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_QUOTA_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to the quota error." translateable="false">
+          Can't create any more plus addresses.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_AFFILIATION_ERROR_TITLE_ANDROID" desc="Title message shown in the plus address creation bottom sheet when the backend returns an already existing plus address after the user click the confirm button due to the quota error." translateable="false">
+          Use existing address?
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_AFFILIATION_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend returns an already existing plus address after the user click the confirm button due to the quota error." translateable="false">
+          You already have a plus address for &lt;b1&gt;<ph name="DOMAIN">$1<ex>domain.com</ex></ph>&lt;/b1&gt;. Use existing address &lt;b2&gt;<ph name="GAIA_EMAIL">$2<ex>example@gmail.com</ex></ph>&lt;/b2&gt;?
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_GENERIC_ERROR_TITLE_ANDROID" desc="Title message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to an unknown error." translateable="false">
+          Something went wrong
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CREATE_GENERIC_ERROR_DESCRIPTION_ANDROID" desc="Description message shown in the plus address creation bottom sheet when the backend fails to create the plus address after the user click the confirm button due to an unknown error." translateable="false">
+          Can't create plus address right now.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_OK_BUTTON_TEXT_ANDROID" desc="Confirm button text in the plus address creation bottom sheet that closes the bottom sheet." translateable="false">
+          OK
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_TRY_AGAIN_BUTTON_TEXT_ANDROID" desc="Confirm button text in the plus address creation bottom sheet that retries the previously failed action." translateable="false">
+          Try again
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_USE_EXISTING_ADDRESS_BUTTON_TEXT_ANDROID" desc="Confirm button text in the plus address creation bottom sheet that tries to fill an existing plus address into the triggering field." translateable="false">
+          Use existing address
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_ERROR_CANCEL_BUTTON_TEXT_ANDROID" desc="Cancel button text in the plus address creation bottom sheet that closes the bottom sheet." translateable="false">
+          Cancel
+        </message>
+
+        <!-- Snackbar strings for full form filling -->
+        <message name="IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_DESCRIPTION_TEXT_ANDROID" desc="The text displayed on the snackbar at the bottom of the screen. The snackbar is shown when the user's plus address was filled instead of a regular email." translateable="false">
+          Chrome filled your plus address for this site
+        </message>
+        <message name="IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_ACTION_TEXT_ANDROID" desc="The text displayed on the snackbar at the bottom of the screen. The snackbar is shown when the user's plus address was filled instead of a regular email." translateable="false">
+          Undo
+        </message>
+
+        <!-- Manual fallback strings -->
+        <message name="IDS_PLUS_ADDRESS_FALLBACK_MANUAL_FILLING_SHEET_TITLE" desc="Message in the keyboard accessory manual filling sheet that indicates the origin of the plus addresses in that section." translateable="false">
+          Plus addresses for <ph name="domain">$1<ex>example.com</ex></ph>
+        </message>
+
+        <!-- All plus addresses bottom sheet strings -->
+        <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_TITLE_ANDROID" desc="The title text of the bottom sheet that shows the user the list of all plus addresses." formatter_data="android_java" translateable="false">
+          Select Plus Address placeholder
+        </message>
+        <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_WARNING_ANDROID" desc="The user warning text of the bottom sheet that shows the user the list of all plus addresses." formatter_data="android_java" translateable="false">
+          Select Plus Address warning placeholder.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_QUERY_HINT_ANDROID" desc="The text shown in the search field of the bottom sheet that shows the user the list of all plus addresses." formatter_data="android_java" translateable="false">
+          Search hint placeholder
+        </message>
+        <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_AX_DESCRIPTION" desc="Accessibility string read when the bottom sheet for manual plus address selection is opened." formatter_data="android_java" translateable="false">
+          Select plus address sheet
+        </message>
+        <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_IS_OPENED_AX_DESCRIPTION" desc="Accessibility string read when the bottom sheet for manual plus address selection is opened." formatter_data="android_java" translateable="false">
+          Select plus address sheet opened
+        </message>
+        <message name="IDS_PLUS_ADDRESS_ALL_PLUS_ADDRESSES_BOTTOMSHEET_IS_CLOSED_AX_DESCRIPTION" desc="Accessibility string read when the bottom sheet for manual plus address selection is closed." formatter_data="android_java" translateable="false">
+          Select plus address sheet closed
+        </message>
+
+        <!-- Android settings management entry -->
+        <message name="IDS_PLUS_ADDRESS_SETTINGS_ENTRY_TITLE" desc="Settings entry title for the setting preference that opens plus address management UI on Android." translateable="false" formatter_data="android_java">
+          Plus Addresses
+        </message>
+        <message name="IDS_PLUS_ADDRESS_SETTINGS_ENTRY_SUMMARY" desc="Settings entry summary for the setting preference that opens plus address management UI on Android." translateable="false" formatter_data="android_java">
+          Manage plus addresses you've created
+        </message>
+      </if>
+
+      <!-- iOS strings -->
+      <if expr="is_ios">
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_IOS" desc="Title for the experimental enterprise plus addresses feature modal on iOS." translateable="false">
+          Lorem Ipsum
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_NOTICE_IOS" desc="Title for the experimental enterprise plus addresses feature modal on iOS used when the bottom sheet is shown for the first time." translateable="false">
+          First time usage title placeholder.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_IOS" desc="The description text on the creation bottomsheet for plus addresses on iOS." translateable="false">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>).
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_NOTICE_IOS" desc="The notice text on the creation bottomsheet for plus addresses on iOS." translateable="false">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>). <ph name="BEGIN_LINK">BEGIN_LINK</ph>Ut enim ad minim veniam<ph name="END_LINK">END_LINK</ph>
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_NOTICE_SCREEN" desc="The description text on the creation bottomsheet for plus addresses on iOS." translateable="false">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_REPORT_ERROR_INSTRUCTION_IOS" desc="The error message shown on the iOS bottomsheet." translateable="false">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, <ph name="BEGIN_LINK">BEGIN_LINK</ph>Ut enim ad minim veniam<ph name="END_LINK">END_LINK</ph>.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_IOS" desc="Cancel button text for the experimental enterprise plus addresses feature bottomsheet on iOS." translateable="false">
+          Cancel
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_IOS" desc="Ok button text for the experimental enterprise plus addresses feature bottomsheet on iOS." translateable="false">
+          Use Address
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_LOADING_TEMPORARY_LABEL_CONTENT_IOS" desc="The content shown in the plus address label of the bottomsheet on iOS while a refresh is ongoing." translateable="false">
+          Generating...
+        </message>
+        <message name="IDS_PLUS_ADDRESS_BOTTOMSHEET_REFRESH_TEMPORARY_LABEL_CONTENT_IOS" desc="The content shown in the plus address label of the bottomsheet on iOS while a refresh is ongoing." translateable="false">
+          Refreshing...
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MANUAL_FALLBACK_CELL_INDEX_IOS" desc="Accessibility label for the plus address suggestions in the manual fallback view to indicate the position of the plus address suggestion in the list of plus address suggestions." translateable="false">
+          {count, plural,
+              =1 {{position} of {count} plus address}
+              other {{position} of {count} plus addresses}}
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MANUAL_FALLBACK_MANAGE_ACTION_TEXT_IOS" desc="The action title shown in the manual fallbacks view to manage the plus addresses" translateable="false">
+          Manage Plus Address...
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MANUAL_FALLBACK_CREATE_ACTION_TEXT_IOS" desc="The action title shown in the manual fallbacks view to create a plus addresss" translateable="false">
+          Create Plus Address...
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MANUAL_FALLBACK_SELECT_ACTION_TEXT_IOS" desc="The action title shown in the manual fallbacks view to select a plus addresss from the list of plus addresses" translateable="false">
+          Select Plus Address...
+        </message>
+        <message name="IDS_SELECT_PLUS_ADDRESS_TITLE_IOS" desc="The title shown in the sheet listing all plus addresses for selections" translateable="false">
+          Select Plus Address
+        </message>
+        <message name="IDS_SELECT_PLUS_ADDRESS_HEADER_TEXT_IOS" desc="The header text shown in the sheet listing all plus addresses for selection" translateable="false">
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MANUAL_FALLBACK_SUGGESTION_SUBLABEL_PREFIX_TEXT_IOS" desc="The prefix of the sub label of the plus address manual fallback suggestion." translateable="false">
+          Plus address for <ph name="DOMAIN">$1<ex>foo.com</ex></ph>
+        </message>
+
+        <!-- Error state strings -->
+        <message name="IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_TITLE_IOS" desc="The title of the generic error alert." translateable="false">
+          Something Went Wrong
+        </message>
+        <message name="IDS_PLUS_ADDRESS_GENERIC_ERROR_ALERT_MESSAGE_IOS" desc="The message displayed in the generic error alert." translateable="false">
+          Can't create plus address right now.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_AFFILIATION_ERROR_ALERT_TITLE_IOS" desc="The title of the alert view shown if there is a plus address found for an affiliated site during the creation of a plus address via the bottom sheet." translateable="false">
+          Use existing address?
+        </message>
+        <message name="IDS_PLUS_ADDRESS_AFFILIATION_ERROR_ALERT_MESSAGE_IOS" desc="The message displayed in the alert view shown if there is a plus address found for an affiliated site during the creation of a plus address via the bottom sheet." translateable="false">
+          You already have a plus address for <ph name="DOMAIN">$1<ex>domain.com</ex></ph>. Use existing address <ph name="GAIA_EMAIL">$2<ex>example@gmail.com</ex></ph>?
+        </message>
+        <message name="IDS_PLUS_ADDRESS_AFFILIATION_ERROR_PRIMARY_BUTTON_IOS" desc="The confirmation button displayed in the alert view shown if there is a plus address found for an affiliated site during the creation of a plus address via the bottom sheet." translateable="false">
+          Use existing
+        </message>
+        <message name="IDS_PLUS_ADDRESS_TIMEOUT_ERROR_ALERT_TITLE_IOS" desc="The title of the error alert shown during the creation of plus address when the backend fails to reserve/confirm the plus address due to network timeout." translateable="false">
+          Something Went Wrong
+        </message>
+        <message name="IDS_PLUS_ADDRESS_TIMEOUT_ERROR_ALERT_MESSAGE_IOS" desc="The message displayed in the error alert shown during the creation of plus address when the backend fails to reserve/confirm the plus address due to network timeout." translateable="false">
+          Make sure you're online and try again.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_TITLE_IOS" desc="The title of the error alert shown during the creation of plus address when the backend fails to reserve/confirm the plus address due to the plus address quota limit exceeded." translateable="false">
+          Too many plus addresses
+        </message>
+        <message name="IDS_PLUS_ADDRESS_QUOTA_ERROR_ALERT_MESSAGE_IOS" desc="The message displayed in the error alert shown during the creation of plus address when the backend fails to reserve/confirm the plus address due to the plus address quota limit exceeded." translateable="false">
+          Can't create any more plus addresses.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_ERROR_TRY_AGAIN_PRIMARY_BUTTON_IOS" desc="The confirmation button displayed in the alert view that retries the previous failed action." translateable="false">
+          Try again
+        </message>
+
+        <!-- Snackbar strings -->
+        <message name="IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_DESCRIPTION_TEXT_IOS" desc="The text displayed on the snackbar at the bottom of the screen. The snackbar is shown when the user's plus address was filled instead of a regular email." translateable="false">
+          Chrome filled your plus address for this site
+        </message>
+        <message name="IDS_PLUS_ADDRESS_SNACKBAR_UNDO_EMAIL_SWAP_ACTION_TEXT_IOS" desc="The text displayed on the snackbar at the bottom of the screen. The snackbar is shown when the user's plus address was filled instead of a regular email." translateable="false">
+          Undo
+        </message>
+      </if>
+
+      <!-- Desktop strings -->
+      <if expr="not is_android and not is_ios">
+        <message name="IDS_PLUS_ADDRESS_MODAL_TITLE" desc="Title for the experimental enterprise plus addresses feature modal" translateable="false">
+          Lorem Ipsum
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MODAL_DESCRIPTION" desc="The description text on the creation dialog for plus addresses." translateable="false">
+          Lorem (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>).
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_LINK_TEXT" desc="The text of the link shown on the Plus Address modal." translateable="false">
+          Settings
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MODAL_OK_TEXT" desc="Ok button text for the experimental enterprise plus addresses feature modal" translateable="false">
+          Use address
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MODAL_REFRESH_BUTTON_ACCESSIBLE_NAME" desc="The acessible name of the refresh button on the plus address modal" translateable="false">
+          Refresh
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MODAL_GENERATION_TEMPORARY_LABEL_CONTENT" desc="The content shown in the plus address label of the modal while a server request is ongoing" translateable="false">
+          Generating...
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MODAL_TITLE_NOTICE" desc="Title of the modal dialog on Desktop that is used on the first run, i.e. when the modal contains a notice." translateable="false">
+          First time usage title placeholder.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MODAL_DESCRIPTION_NOTICE" desc="Description of the modal dialog on Desktop that is used on the first run, i.e. when the modal contains a notice." translateable="false">
+          First time usage feature description placeholder.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MODAL_NOTICE" desc="The notice text on the creation modal on Desktop that is used on the first run and thus contains a notice." translateable="false">
+          First time usage notice placeholder (<ph name="GAIA_EMAIL">$1<ex>foo@gmail.com</ex></ph>), which includes the redirection link. <ph name="LEARN_MORE_LINK">$2</ph>
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MODAL_NOTICE_LEARN_MORE_LINK_TEXT" desc="The text of the link to learn more about plus addresses." translateable="false">
+          Learn more
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MODAL_RESERVE_ERROR" desc="The error text shown instead of the suggested plus address if no plus address could be reserved." translateable="false">
+          Can't get address. Try again.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MODAL_CREATE_ERROR" desc="The error text shown below the suggested plus address if a plus address could not be created." translateable="false">
+          Can't create plus address address. Try again.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MODAL_CREATE_TIMEOUT_ERROR" desc="The error text shown below the suggested plus address if a plus address could not be created due to a timeout." translateable="false">
+          Make sure you're online and try again.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_MODAL_CREATE_ERROR_BUTTON" desc="The message on the accept button after an error has occurred during an attempt to create a plus address." translateable="false">
+          Try again
+        </message>
+
+        <!-- Error modal for inline creation strings -->
+        <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_AFFILATION_ERROR_TITLE" desc="The title in the modal that is shown if an affiliation error is encountered during inline creation." translateable="false">
+          Oops! We found an affiliated plus address
+        </message>
+        <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_AFFILATION_ERROR_DESCRIPTION" desc="The description text in the modal that is shown if an affiliation error is encountered during inline creation." translateable="false">
+          We found <ph name="DOMAIN">$1<ex>foo.com</ex></ph> that can be used for: <ph name="PLUS_ADDRESS">$2<ex>foo@bar.com</ex></ph> Use this one instead of creating a new one.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_AFFILATION_ERROR_ACCEPT_BUTTON" desc="The button title of the accept button in the modal that is shown if an affiliation error is encountered during inline creation." translateable="false">
+          Fill with existing address
+        </message>
+        <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_TITLE" desc="The title in the modal that is shown if a generic error is encountered during inline creation." translateable="false">
+          Something went wrong
+        </message>
+        <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_DESCRIPTION" desc="The description text in the modal that is shown if a generic error is encountered during inline creation." translateable="false">
+          Can't save plus address.
+        </message>
+        <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_TIMEOUT_ERROR_DESCRIPTION" desc="The description text in the modal that is shown if a timeout error is encountered during inline creation." translateable="false">
+          Make sure you're online and try again
+        </message>
+        <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_ERROR_ACCEPT_BUTTON" desc="The button title of the accept button in the modal that is shown if a generic error is encountered during inline creation." translateable="false">
+          Try again
+        </message>
+        <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_QUOTA_ERROR_TITLE" desc="The title in the modal that is shown if a quota error is encountered during inline creation." translateable="false">
+          Too many plus addresses
+        </message>
+        <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_QUOTA_ERROR_DESCRIPTION" desc="The description text in the modal that is shown if a quota error is encountered during inline creation." translateable="false">
+          Can't create any more plus addresses for this site or app.
+        </message>
+
+        <!-- Strings for the top toast that is shown after full form filling -->
+        <message name="IDS_PLUS_ADDRESS_FULL_FORM_FILL_TOAST_MESSAGE" desc="The text shown in the Chrome top toast that is displayed after a plus address was automatically swapped in during full form filling." translateable="false">
+          Chrome filled your plus address for this site
+        </message>
+        <message name="IDS_PLUS_ADDRESS_FULL_FORM_FILL_TOAST_UNDO" desc="The label of the menu option in the Chrome top toast to fill the profile's email address instead of the plus address." translateable="false">
+          Replace with <ph name="EMAIL">$1<ex>foo@gmail.com</ex></ph>
+        </message>
+        <message name="IDS_PLUS_ADDRESS_FULL_FORM_FILL_TOAST_MANAGE" desc="The label of the menu option in the Chrome top toast to go to the plus address management surface." translateable="false">
+          Manage plus addresses...
+        </message>
+
+        <!-- Manual fallback strings -->
+        <message name="IDS_PLUS_ADDRESS_FALLBACK_LABEL_CONTEXT_MENU" desc="Label for the context menu entry that serves as a fallback to trigger plus address suggestions on a field." translateable="false">
+          Lorem Ipsum
+        </message>
+      </if>
+
+      <!-- Used across platforms -->
+      <message name="IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT" desc="Cancel button text for the experimental enterprise plus addresses feature modal" translateable="false">
+        Cancel
+      </message>
+
+      <!-- Settings strings -->
+      <message name="IDS_PLUS_ADDRESS_SETTINGS_LABEL" desc="The label for the link in settings to manage plus addresses" translateable="false">
+        Plus Address
+      </message>
+      <message name="IDS_PLUS_ADDRESS_SETTINGS_SUBLABEL" desc="The description of the link in settings to manage plus addresses" translateable="false">
+        Manage plus addresses you've created
+      </message>
+
+      <!-- Suggestion strings -->
+      <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT" desc="The main text in the Autofill suggestion for create a new plus address." translateable="false">
+        Lorem Ipsum
+      </message>
+      <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT" desc="The secondary text in the Autofill suggestion for create a new plus address." translateable="false">
+        Lorem Ipsum
+      </message>
+      <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT_WITH_FORWARDING_INFO" desc="The secondary text in the Autofill suggestion for creating a new plus address." translateable="false">
+        Lorem Ipsum <ph name="GAIA_EMAIL"><ex>foo@gmail.com</ex>$1</ph>
+      </message>
+      <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_SUGGESTION_A11Y_VOICE_OVER" desc="The voice over text read out for an inline suggestion for creating a plus address." translateable="false">
+        Use a plus address (<ph name="EMAIL">$1<ex>example@foo.com</ex></ph>)
+      </message>
+      <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_A11Y_NAME" desc="The accessible name on the button that allows refreshing plus addresses inside an Autofill popup suggestion." translateable="false">
+        Refresh plus address
+      </message>
+      <message name="IDS_PLUS_ADDRESS_CREATE_INLINE_REFRESH_TOOLTIP" desc="The tooltip on the button that allows refreshing plus addresses inside an Autofill popup suggestion." translateable="false">
+        Refresh
+      </message>
+      <message name="IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT" desc="The main text in the Autofill suggestion for filling an existing plus address." translateable="false">
+        Lorem Ipsum dolor
+      </message>
+      <message name="IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT" desc="The main text in the Autofill suggestion for opening the settings page for plus addresses." translateable="false">
+        Lorem Ipsum dolor ...
+      </message>
+      <message name="IDS_PLUS_ADDRESS_RESERVE_GENERIC_ERROR_TEXT" desc="The error description shown inside the popup when an error occurs while attempting to reserve a plus address." translateable="false">
+        Something went wrong. Try again.
+      </message>
+      <message name="IDS_PLUS_ADDRESS_RESERVE_TIMEOUT_ERROR_TEXT" desc="The error description shown inside the popup when a timeout error occurs while attempting to reserve a plus address." translateable="false">
+        Something went wrong. Try again.
+      </message>
+      <message name="IDS_PLUS_ADDRESS_RESERVE_QUOTA_ERROR_TEXT" desc="The error description shown inside the popup when an error occurs while attempting to reserve a plus address." translateable="false">
+        Can't create any more addresses.
+      </message>
+
+      <!-- IPH strings -->
+      <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH" desc="Text shown in the IPH bubble for educating the user on creating plus addresses." translateable="false">
+        Placeholder Plus Address Create Suggestion IPH String
+      </message>
+      <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_SCREENREADER" is_accessibility_with_no_ui="true" desc="Screenreader text shown in the IPH bubble for educating the user on creating plus addresses." translateable="false">
+        Placeholder Plus Address Create Suggestion IPH Screenreader String
+      </message>
+      <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_ANDROID" desc="Text shown in the IPH bubble for educating the user on creating plus addresses on Android." translateable="false">
+        Placeholder Plus Address Create Suggestion IPH String.
+      </message>
+      <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_IOS" desc="Text shown in the IPH bubble for educating the user on creating plus addresses in iOS." translateable="false">
+        Placeholder Plus Address Create Suggestion IPH String
+      </message>
+      <message name="IDS_PLUS_ADDRESS_CREATE_SUGGESTION_IPH_SCREENREADER_IOS" is_accessibility_with_no_ui="true" desc="Screenreader text shown in the IPH bubble for educating the user on creating plus addresses in iOS." translateable="false">
+        Placeholder Plus Address Create Suggestion IPH Screenreader String
+      </message>
+      <message name="IDS_PLUS_ADDRESS_FIRST_SAVE_IPH_TITLE" desc="Title of the IPH shown after saving the first plus address on Desktop" translateable="false">
+        Plus address saved
+      </message>
+      <message name="IDS_PLUS_ADDRESS_FIRST_SAVE_IPH_DESCRIPTION" desc="Body of the IPH shown after saving the first plus address on Desktop" translateable="false">
+        You won't need to remember this address. It's saved to your Google Account and can be used from any device.
+      </message>
+      <message name="IDS_PLUS_ADDRESS_FIRST_SAVE_IPH_ACCEPT" desc="Text of the accept button of the IPH shown after saving the first plus address on Desktop" translateable="false">
+        Manage
+      </message>
+
+    </messages>
+  </release>
+</grit>

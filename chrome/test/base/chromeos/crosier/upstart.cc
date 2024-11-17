@@ -4,6 +4,7 @@
 
 #include "chrome/test/base/chromeos/crosier/upstart.h"
 
+#include "base/notreached.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -291,8 +292,7 @@ bool StopJob(const std::string& job,
     // state. See https://crbug.com/891594.
     //
     // If this is needed, the necessary logic should be added here.
-    CHECK(false) << "StopJob unimplemented for the 'ui' job.";
-    return false;
+    NOTREACHED() << "StopJob unimplemented for the 'ui' job.";
   }
 
   std::vector<std::string> args{"initctl", "stop", job};

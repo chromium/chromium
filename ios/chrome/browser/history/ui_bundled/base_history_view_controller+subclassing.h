@@ -24,7 +24,8 @@
     NSMutableArray<NSIndexPath*>* filteredOutEntriesIndexPaths;
 // YES if the table should be filtered by the next received query result.
 @property(nonatomic, assign) BOOL filterQueryResult;
-// TODO: Investigate further if this can be made private.
+// Object to manage insertion of history entries into the table view model.
+@property(nonatomic, strong) HistoryEntryInserter* entryInserter;
 // Fetches history for search text `query`. If `query` is nil or the empty
 // string, all history is fetched. If continuation is false, then the most
 // recent results are fetched, otherwise the results more recent than the

@@ -1066,15 +1066,13 @@ void HandleCrashDump(const BreakpadInfo& info) {
 
   MimeWriter writer(temp_file_fd, mime_boundary);
   {
-    const char* product_name = "";
-    const char* version = "";
-
-    GetCrashReporterClient()->GetProductNameAndVersion(&product_name, &version);
+    crash_reporter::CrashReporterClient::ProductInfo product_info;
+    GetCrashReporterClient()->GetProductInfo(&product_info);
 
     writer.AddBoundary();
-    writer.AddPairString("prod", product_name);
+    writer.AddPairString("prod", product_info.product_name.c_str());
     writer.AddBoundary();
-    writer.AddPairString("ver", version);
+    writer.AddPairString("ver", product_info.version.c_str());
     writer.AddBoundary();
     if (info.pid > 0) {
       char pid_value_buf[kUint64StringSize];

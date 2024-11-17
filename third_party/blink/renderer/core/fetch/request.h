@@ -11,6 +11,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_request_credentials.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fetch/body.h"
@@ -27,6 +28,13 @@ class AbortSignal;
 class BodyStreamBuffer;
 class ExceptionState;
 class RequestInit;
+class V8ReferrerPolicy;
+class V8RequestDestination;
+class V8RequestCache;
+class V8RequestDuplex;
+class V8RequestMode;
+class V8RequestRedirect;
+class V8IPAddressSpace;
 
 class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   DEFINE_WRAPPERTYPEINFO();
@@ -63,26 +71,26 @@ class CORE_EXPORT Request final : public ScriptWrappable, public Body {
   Request(const Request&) = delete;
   Request& operator=(const Request&) = delete;
 
-  static std::optional<network::mojom::CredentialsMode> ParseCredentialsMode(
-      const String& credentials_mode);
+  static network::mojom::CredentialsMode V8RequestCredentialsToCredentialsMode(
+      V8RequestCredentials::Enum credentials_mode);
 
   // From Request.idl:
   String method() const;
   const KURL& url() const;
   Headers* getHeaders() const { return headers_.Get(); }
-  String destination() const;
+  V8RequestDestination destination() const;
   String referrer() const;
-  String getReferrerPolicy() const;
-  String mode() const;
-  String credentials() const;
-  String cache() const;
-  String redirect() const;
+  V8ReferrerPolicy getReferrerPolicy() const;
+  V8RequestMode mode() const;
+  V8RequestCredentials credentials() const;
+  V8RequestCache cache() const;
+  V8RequestRedirect redirect() const;
   String integrity() const;
   bool keepalive() const;
   bool isHistoryNavigation() const;
   AbortSignal* signal() const { return signal_.Get(); }
-  String duplex() const;
-  String targetAddressSpace() const;
+  V8RequestDuplex duplex() const;
+  V8IPAddressSpace targetAddressSpace() const;
 
   // From Request.idl:
   // This function must be called with entering an appropriate V8 context.

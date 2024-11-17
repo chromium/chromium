@@ -98,8 +98,7 @@ class PortalNetworkMessageHandler : public content::WebUIMessageHandler {
  private:
   void ShowPortalSignin(const base::Value::List& args) {
     if (args.size() < 1 || !args[0].is_string()) {
-      NOTREACHED_IN_MIGRATION() << "Invalid args for: ShowPortalSignin";
-      return;
+      NOTREACHED() << "Invalid args for: ShowPortalSignin";
     }
     const std::string& guid = args[0].GetString();
     NetworkConnect::Get()->ShowPortalSignin(guid,

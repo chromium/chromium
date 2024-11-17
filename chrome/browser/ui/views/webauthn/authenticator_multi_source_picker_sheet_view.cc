@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/views/webauthn/authenticator_multi_source_picker_view.h"
 #include "chrome/browser/ui/webauthn/sheet_models.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 AuthenticatorMultiSourcePickerSheetView::
     AuthenticatorMultiSourcePickerSheetView(
@@ -26,3 +27,6 @@ AuthenticatorMultiSourcePickerSheetView::BuildStepSpecificContent() {
           static_cast<AuthenticatorMultiSourcePickerSheetModel*>(model())),
       AutoFocus::kYes);
 }
+
+BEGIN_METADATA(AuthenticatorMultiSourcePickerSheetView)
+END_METADATA

@@ -50,10 +50,6 @@
 #include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 namespace {
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -79,16 +75,6 @@ void IsMultiCaptureAllowedForAnyOriginOnMainProfileResultReceived(
     std::move(callback).Run(false);
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // To ensure that a user is informed at login time that capturing of all
-  // screens can happen (for privacy reasons), this API is only available on
-  // primary profiles.
-  if (!profile->IsMainProfile()) {
-    std::move(callback).Run(false);
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);
@@ -181,23 +167,9 @@ crosapi::mojom::MultiCaptureService* GetMultiCaptureService() {
     return g_multi_capture_service_for_testing;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
-  const int multi_capture_service_version =
-      lacros_service
-          ->GetInterfaceVersion<crosapi::mojom::MultiCaptureService>();
-  if (multi_capture_service_version >=
-      static_cast<int>(crosapi::mojom::MultiCaptureService::MethodMinVersions::
-                           kIsMultiCaptureAllowedMinVersion)) {
-    return lacros_service->GetRemote<crosapi::mojom::MultiCaptureService>()
-        .get();
-  }
-  return nullptr;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
   return crosapi::CrosapiManager::Get()
       ->crosapi_ash()
       ->multi_capture_service_ash();
-#endif
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -312,21 +284,6 @@ void CheckGetAllScreensMediaAllowedForAnyOrigin(
 void CheckGetAllScreensMediaAllowed(content::BrowserContext* context,
                                     const GURL& url,
                                     base::OnceCallback<void(bool)> callback) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile) {
-    std::move(callback).Run(false);
-    return;
-  }
-  // To ensure that a user is informed at login time that capturing of all
-  // screens can happen (for privacy reasons), this API is only available on
-  // primary profiles.
-  if (!profile->IsMainProfile()) {
-    std::move(callback).Run(false);
-    return;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 #if BUILDFLAG(IS_CHROMEOS)
   crosapi::mojom::MultiCaptureService* multi_capture_service =
       GetMultiCaptureService();
@@ -345,7 +302,7 @@ void CheckGetAllScreensMediaAllowed(content::BrowserContext* context,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 bool IsTransientActivationRequiredForGetDisplayMedia(
     content::WebContents* contents) {
   if (!base::FeatureList::IsEnabled(
@@ -371,7 +328,7 @@ bool IsTransientActivationRequiredForGetDisplayMedia(
       contents->GetURL(), prefs,
       prefs::kScreenCaptureWithoutGestureAllowedForOrigins);
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 DesktopMediaList::WebContentsFilter GetIncludableWebContentsFilter(
     const GURL& request_origin,

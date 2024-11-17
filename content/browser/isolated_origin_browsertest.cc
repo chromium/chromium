@@ -5738,7 +5738,7 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
                        NewBrowsingInstanceInOldProcess) {
   // This test is designed to run without strict site isolation.
   if (AreAllSitesIsolatedForTesting()) {
-    return;
+    GTEST_SKIP();
   }
 
   // Force process reuse for main frames in new BrowsingInstances.
@@ -5831,13 +5831,20 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   // Now that the process only contains a BrowsingInstance where bar.com is
   // considered isolated and cannot reuse the old process, it should lose access
   // to bar.com's data due to citadel enforcement in CanAccessDataForOrigin.
-  if (base::FeatureList::IsEnabled(
-          features::kSiteIsolationCitadelEnforcement)) {
-    EXPECT_FALSE(policy->CanAccessDataForOrigin(old_process_id,
-                                                url::Origin::Create(bar_url)));
-  } else {
+  //
+  // However, note that the access won't be revoked if
+  // ChildProcessSecurityPolicy uses new security enforcements based on lists of
+  // committed origins, since committed origins are currently never revoked from
+  // a process.
+  // TODO(crbug.com/40148776): This may need to be revisited in the future,
+  // e.g., by marking newly isolated origins as needing revocation when their
+  // last instance goes away from a process.
+  if (base::FeatureList::IsEnabled(features::kCommittedOriginEnforcements)) {
     EXPECT_TRUE(policy->CanAccessDataForOrigin(old_process_id,
                                                url::Origin::Create(bar_url)));
+  } else {
+    EXPECT_FALSE(policy->CanAccessDataForOrigin(old_process_id,
+                                                url::Origin::Create(bar_url)));
   }
 }
 
@@ -6776,9 +6783,20 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, SameOriginAllowPopups) {
             coop_instance);
 }
 
+class COOPIsolationNoopenerTest : public COOPIsolationTest {
+ public:
+  COOPIsolationNoopenerTest() {
+    feature_list_.InitAndEnableFeature(
+        network::features::kCoopNoopenerAllowPopups);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 // Verify that the `noopener-allow-popups COOP header value triggers isolation,
 // and that this behaves sanely with window.open().
-IN_PROC_BROWSER_TEST_F(COOPIsolationTest, NoopenerAllowPopups) {
+IN_PROC_BROWSER_TEST_F(COOPIsolationNoopenerTest, NoopenerAllowPopups) {
   if (AreAllSitesIsolatedForTesting()) {
     return;
   }
@@ -6809,10 +6827,9 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, NoopenerAllowPopups) {
   RenderFrameHostImpl* popup_rfh = static_cast<RenderFrameHostImpl*>(
       popup->web_contents()->GetPrimaryMainFrame());
   EXPECT_EQ(popup_rfh->cross_origin_opener_policy().value,
-            network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone);
-  // TODO(https://crbug.com/344963946): Update the test values.
-  EXPECT_EQ(popup_rfh->GetSiteInstance(), coop_instance);
-  EXPECT_EQ(popup_rfh->GetSiteInstance()->GetProcess(),
+            network::mojom::CrossOriginOpenerPolicyValue::kNoopenerAllowPopups);
+  EXPECT_NE(popup_rfh->GetSiteInstance(), coop_instance);
+  EXPECT_NE(popup_rfh->GetSiteInstance()->GetProcess(),
             coop_instance->GetProcess());
 
   // Navigate the popup to another non-isolated site, staying in the same
@@ -6826,20 +6843,20 @@ IN_PROC_BROWSER_TEST_F(COOPIsolationTest, NoopenerAllowPopups) {
   SiteInstanceImpl* new_instance = static_cast<SiteInstanceImpl*>(
       popup->web_contents()->GetPrimaryMainFrame()->GetSiteInstance());
   EXPECT_FALSE(new_instance->RequiresDedicatedProcess());
-  EXPECT_EQ(new_instance, coop_instance);
+  EXPECT_NE(new_instance, coop_instance);
   FrameTreeNode* popup_child =
       static_cast<WebContentsImpl*>(popup->web_contents())
           ->GetPrimaryFrameTree()
           .root()
           ->child_at(0);
-  EXPECT_EQ(popup_child->current_frame_host()->GetSiteInstance(),
+  EXPECT_NE(popup_child->current_frame_host()->GetSiteInstance(),
             coop_instance);
 
   // Navigate the popup to coop.com again, staying in the same
   // BrowsingInstance, and verify that it goes back to the opener's
   // SiteInstance.
   EXPECT_TRUE(NavigateToURLFromRenderer(popup, popup_url));
-  EXPECT_EQ(popup->web_contents()->GetPrimaryMainFrame()->GetSiteInstance(),
+  EXPECT_NE(popup->web_contents()->GetPrimaryMainFrame()->GetSiteInstance(),
             coop_instance);
 }
 

@@ -30,17 +30,14 @@ class SurveyClientBridge implements SurveyClient {
     private static final String TAG = "SurveyClient";
 
     private @NonNull final SurveyClient mDelegate;
-    private final long mNativeSurveyClient;
 
-    private SurveyClientBridge(long nativeSurveyClient, @NonNull SurveyClient delegate) {
-        mNativeSurveyClient = nativeSurveyClient;
+    private SurveyClientBridge(@NonNull SurveyClient delegate) {
         mDelegate = delegate;
     }
 
     @CalledByNative
     @VisibleForTesting
     static SurveyClientBridge create(
-            long nativeSurveyClient,
             String trigger,
             SurveyUiDelegate uiDelegate,
             Profile profile,
@@ -57,7 +54,7 @@ class SurveyClientBridge implements SurveyClient {
             Log.d(TAG, "SurveyClient is null. config: " + SurveyConfig.toString(config));
             return null;
         }
-        return new SurveyClientBridge(nativeSurveyClient, client);
+        return new SurveyClientBridge(client);
     }
 
     /**

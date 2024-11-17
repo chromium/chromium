@@ -96,8 +96,8 @@ void FakeDeviceAttributes::SetFakeDeviceAnnotatedLocation(
 }
 
 void FakeDeviceAttributes::SetFakeDeviceHostname(
-    const std::optional<std::string> device_hostname) {
-  fake_device_hostname_ = device_hostname;
+    std::optional<std::string> device_hostname) {
+  fake_device_hostname_ = std::move(device_hostname);
 }
 
 void FakeDeviceAttributes::SetFakeDirectoryApiId(

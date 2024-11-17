@@ -20,6 +20,11 @@
 
 namespace {
 constexpr float kMinFramesPerSecond = 1.0;
+
+BASE_FEATURE(kUseVideoFrameRateForCaptureRate,
+             "UseVideoFrameRateForCaptureRate",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // anonymous namespace
 
 namespace blink {
@@ -58,16 +63,21 @@ media::VideoCaptureFormats
 HtmlVideoElementCapturerSource::GetPreferredFormats() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  double capture_rate = blink::MediaStreamVideoSource::kDefaultFrameRate;
+  if (base::FeatureList::IsEnabled(kUseVideoFrameRateForCaptureRate)) {
+    if (auto metadata =
+            web_media_player_->GetVideoFramePresentationMetadata()) {
+      if (metadata->average_frame_duration.is_positive()) {
+        capture_rate = 1.0 / metadata->average_frame_duration.InSecondsF();
+      }
+    }
+  }
+
   // WebMediaPlayer has a setRate() but can't be read back.
   // TODO(mcasas): Add getRate() to WMPlayer and/or fix the spec to allow users
   // to specify it.
-  const media::VideoCaptureFormat format(
-      gfx::Size(web_media_player_->NaturalSize()),
-      blink::MediaStreamVideoSource::kDefaultFrameRate,
-      media::PIXEL_FORMAT_I420);
-  media::VideoCaptureFormats formats;
-  formats.push_back(format);
-  return formats;
+  return {media::VideoCaptureFormat(gfx::Size(web_media_player_->NaturalSize()),
+                                    capture_rate, media::PIXEL_FORMAT_I420)};
 }
 
 void HtmlVideoElementCapturerSource::StartCapture(

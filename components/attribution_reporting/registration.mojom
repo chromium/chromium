@@ -131,6 +131,12 @@ struct AttributionScopesData {
   uint32 max_event_states;
 };
 
+// Defines aggregatable names and their associated budget for a trigger to
+// selectively contribute to.
+struct AggregatableNamedBudgetDefs {
+  map<string, int32> budgets;
+};
+
 struct SourceRegistration {
   DestinationSet destinations;
 
@@ -179,6 +185,10 @@ struct SourceRegistration {
   // limit of scopes and the max number of event states. Logic pertaining to
   // scopes are ignored if this field is null.
   AttributionScopesData? attribution_scopes_data;
+
+  // Specifies how the aggregatable budget should be allocated across specified
+  // names for triggers to selectively contribute to.
+  AggregatableNamedBudgetDefs aggregatable_named_budget_defs;
 };
 
 // Mojo representation of the trigger configuration provided by a reporting
@@ -218,6 +228,15 @@ struct AggregatableValues {
   // A map of aggregation key identifier and the corresponding aggregatable
   // values value.
   map<string, AggregatableValuesValue> values;
+
+  FilterPair filters;
+};
+
+struct AggregatableNamedBudgetCandidate {
+  // Name to allocate budget towards as specified by the source registration. If
+  // no name is provided the trigger's contribution will subtract from the total
+  // budget.
+  string? name;
 
   FilterPair filters;
 };
@@ -271,6 +290,10 @@ struct TriggerRegistration {
 
   // Specifies the scopes that this trigger can attribute to.
   AttributionScopesSet attribution_scopes;
+
+  // List of all aggregatable named budgets for matching with source side
+  // budgets to contribute to.
+  array<AggregatableNamedBudgetCandidate> aggregatable_named_budget_candidates;
 };
 
 // Represents a source or trigger registration item that will be passed to the OS, if supported.

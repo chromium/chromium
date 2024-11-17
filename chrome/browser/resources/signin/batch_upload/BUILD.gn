@@ -8,15 +8,23 @@ build_webui("build") {
   non_web_component_files = [
     "batch_upload_app.ts",
     "batch_upload_app.html.ts",
+    "batch_upload.ts",
     "browser_proxy.ts",
+    "data_section.ts",
+    "data_section.html.ts",
   ]
 
-  css_files = [ "batch_upload_app.css" ]
+  css_files = [
+    "batch_upload_app.css",
+    "data_section.css",
+  ]
 
   webui_context_type = "trusted"
 
+  ts_composite = true
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
+    "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]

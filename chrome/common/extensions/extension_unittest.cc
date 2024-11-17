@@ -7,8 +7,11 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "extensions/common/extension.h"
+
 #include <stddef.h>
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/path_service.h"
@@ -23,11 +26,12 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/common/command.h"
-#include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_resource.h"
+#include "extensions/common/features/feature_provider.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/test/test_extension_dir.h"
@@ -414,6 +418,18 @@ TEST(ExtensionTest, ExtraFlags) {
 
   extension = LoadManifest("app", "manifest.json", Extension::NO_FLAGS);
   EXPECT_FALSE(extension->from_webstore());
+}
+
+// Checks that manifest keys excluded from unrecognized key warnings are not
+// registered as manifest features.
+TEST(ExtensionTest, IgnoredUnrecognizedKeysAreNotManifestFeatures) {
+  const extensions::FeatureProvider* manifest_features =
+      extensions::FeatureProvider::GetManifestFeatures();
+  ASSERT_TRUE(manifest_features);
+
+  for (const auto& [key, value] : manifest_features->GetAllFeatures()) {
+    EXPECT_FALSE(base::Contains(manifest_keys::kIgnoredUnrecognizedKeys, key));
+  }
 }
 
 }  // namespace extensions

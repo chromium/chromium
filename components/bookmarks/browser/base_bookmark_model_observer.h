@@ -13,7 +13,7 @@ namespace bookmarks {
 // model funnel into the method BookmarkModelChanged.
 class BaseBookmarkModelObserver : public BookmarkModelObserver {
  public:
-  BaseBookmarkModelObserver() {}
+  BaseBookmarkModelObserver() = default;
 
   BaseBookmarkModelObserver(const BaseBookmarkModelObserver&) = delete;
   BaseBookmarkModelObserver& operator=(const BaseBookmarkModelObserver&) =

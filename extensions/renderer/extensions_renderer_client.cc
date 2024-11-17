@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
+#include "components/guest_view/buildflags/buildflags.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_frame.h"
@@ -148,7 +149,6 @@ bool ExtensionsRendererClient::AllowPopup() {
     case mojom::ContextType::kUntrustedWebUi:
     case mojom::ContextType::kOffscreenExtension:
     case mojom::ContextType::kUserScript:
-    case mojom::ContextType::kLockscreenExtension:
       return false;
     case mojom::ContextType::kPrivilegedExtension:
       return !current_context->IsForServiceWorker();
@@ -172,7 +172,6 @@ ExtensionsRendererClient::GetProtocolHandlerSecurityLevel() {
   switch (current_context->context_type()) {
     case mojom::ContextType::kPrivilegedWebPage:
     case mojom::ContextType::kContentScript:
-    case mojom::ContextType::kLockscreenExtension:
     case mojom::ContextType::kOffscreenExtension:
     case mojom::ContextType::kUnprivilegedExtension:
     case mojom::ContextType::kUnspecified:
@@ -243,19 +242,6 @@ void ExtensionsRendererClient::WillSendRequest(
   } else {
     if (site_for_cookies.scheme() == extensions::kExtensionScheme) {
       extension_id = site_for_cookies.registrable_domain();
-    }
-  }
-
-  if (!extension_id.empty()) {
-    const extensions::RendererExtensionRegistry* extension_registry =
-        extensions::RendererExtensionRegistry::Get();
-    const Extension* extension = extension_registry->GetByID(extension_id);
-    if (!extension) {
-      // If there is no extension installed for the origin, it may be from a
-      // recently uninstalled extension.  The tabs of such extensions are
-      // automatically closed, but subframes and content scripts may stick
-      // around. Fail such requests without killing the process.
-      *new_url = GURL(kExtensionInvalidRequestURL);
     }
   }
 

@@ -28,6 +28,8 @@ import com.google.common.primitives.Ints;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +41,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.R;
@@ -54,7 +57,7 @@ import org.chromium.components.bookmarks.BookmarkType;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectableListToolbar.SearchDelegate;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -69,7 +72,7 @@ import java.util.Set;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
+public class BookmarkToolbarTest {
     private static final List<Integer> SELECTION_MENU_IDS =
             Arrays.asList(
                     R.id.selection_mode_edit_menu_id,
@@ -87,6 +90,12 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     private static final BookmarkId BOOKMARK_ID_READING_LIST =
             new BookmarkId(5, BookmarkType.READING_LIST);
 
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock BookmarkDelegate mBookmarkDelegate;
@@ -97,15 +106,19 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
     @Mock Runnable mNavigateBackRunnable;
     @Mock Profile mProfile;
 
-    private Activity mActivity;
     private WindowAndroid mWindowAndroid;
     private ViewGroup mContentView;
     private BookmarkToolbar mBookmarkToolbar;
 
     private final List<ActivityMonitor> mActivityMonitorList = new ArrayList<>();
 
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
+
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
         when(mBookmarkDelegate.getModel()).thenReturn(mBookmarkModel);
         when(mBookmarkDelegate.getSelectionDelegate()).thenReturn(mSelectionDelegate);
@@ -113,20 +126,19 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         IncognitoUtils.setEnabledForTesting(true);
 
-        mActivity = getActivity();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mWindowAndroid = new WindowAndroid(mActivity);
-                    mContentView = new LinearLayout(mActivity);
+                    mWindowAndroid = new WindowAndroid(sActivity, /* trackOcclusion= */ false);
+                    mContentView = new LinearLayout(sActivity);
                     mContentView.setBackgroundColor(Color.WHITE);
                     FrameLayout.LayoutParams params =
                             new FrameLayout.LayoutParams(
                                     ViewGroup.LayoutParams.MATCH_PARENT,
                                     ViewGroup.LayoutParams.WRAP_CONTENT);
-                    mActivity.setContentView(mContentView, params);
+                    sActivity.setContentView(mContentView, params);
 
                     mBookmarkToolbar =
-                            mActivity
+                            sActivity
                                     .getLayoutInflater()
                                     .inflate(R.layout.bookmark_toolbar, mContentView, true)
                                     .findViewById(R.id.bookmark_toolbar);
@@ -208,7 +220,6 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         mBookmarkToolbar.initializeSearchView(
                 mSearchDelegate, R.string.bookmark_toolbar_search, R.id.search_menu_id);
         mBookmarkToolbar.setSortMenuIds(BookmarkToolbarMediator.SORT_MENU_IDS);
-        mBookmarkToolbar.setBookmarkOpener(mBookmarkOpener);
         mBookmarkToolbar.setSelectionDelegate(mSelectionDelegate);
         mBookmarkToolbar.setBookmarkUiMode(BookmarkUiMode.FOLDER);
         mBookmarkToolbar.setIsDialogUi(true);
@@ -247,7 +258,6 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         for (int menuId : applicableMenuIds) {
             boolean isVisible = !hiddenIdSet.contains(menuId);
             MenuItem menuItem = mBookmarkToolbar.getMenu().findItem(menuId);
-            assertNotNull(menuId);
             assertEquals(
                     "Mismatched visibility for menu item " + menuItem,
                     isVisible,
@@ -259,7 +269,6 @@ public class BookmarkToolbarTest extends BlankUiTestActivityTestCase {
         for (int menuId : applicableMenuIds) {
             boolean isEnabled = !disabledIds.contains(menuId);
             MenuItem menuItem = mBookmarkToolbar.getMenu().findItem(menuId);
-            assertNotNull(menuId);
             assertEquals(
                     "Mismatched enabled state for menu item " + menuItem,
                     isEnabled,

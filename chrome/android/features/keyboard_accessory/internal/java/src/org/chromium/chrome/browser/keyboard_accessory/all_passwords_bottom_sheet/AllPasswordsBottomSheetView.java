@@ -12,6 +12,7 @@ import android.widget.SearchView;
 import android.widget.SearchView.OnQueryTextListener;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -81,6 +82,8 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
                         ? View.LAYOUT_DIRECTION_RTL
                         : View.LAYOUT_DIRECTION_LTR;
         mContentView.setLayoutDirection(layoutDirection);
+
+        mContentView.setOnGenericMotionListener((v, e) -> true); // Filter background interaction.
     }
 
     /**
@@ -196,8 +199,8 @@ class AllPasswordsBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.all_passwords_bottom_sheet_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.all_passwords_bottom_sheet_content_description);
     }
 
     @Override

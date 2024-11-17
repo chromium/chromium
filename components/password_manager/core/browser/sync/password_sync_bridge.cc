@@ -996,9 +996,7 @@ std::string PasswordSyncBridge::GetClientTag(
 
 std::string PasswordSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
-  NOTREACHED_IN_MIGRATION()
-      << "PasswordSyncBridge does not support GetStorageKey.";
-  return std::string();
+  NOTREACHED() << "PasswordSyncBridge does not support GetStorageKey.";
 }
 
 bool PasswordSyncBridge::SupportsGetStorageKey() const {

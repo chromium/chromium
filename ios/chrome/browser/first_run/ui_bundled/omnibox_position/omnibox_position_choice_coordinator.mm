@@ -6,6 +6,7 @@
 
 #import "base/time/time.h"
 #import "base/timer/elapsed_timer.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/metrics.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_mediator.h"
 #import "ios/chrome/browser/first_run/ui_bundled/omnibox_position/omnibox_position_choice_view_controller.h"
@@ -15,6 +16,8 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 
 @interface OmniboxPositionChoiceCoordinator () <
     PromoStyleViewControllerDelegate>
@@ -33,7 +36,7 @@
   [super start];
 
   _mediator = [[OmniboxPositionChoiceMediator alloc] init];
-  if (!self.browser->GetBrowserState()->IsOffTheRecord()) {
+  if (!self.browser->GetProfile()->IsOffTheRecord()) {
     _mediator.deviceSwitcherResultDispatcher =
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDispatcherForProfile(self.browser->GetProfile());
@@ -53,6 +56,10 @@
 
   RecordScreenEvent(OmniboxPositionChoiceScreenEvent::kScreenDisplayed);
   _startTime = base::ElapsedTimer();
+
+  if (IsSegmentationTipsManagerEnabled()) {
+    [self recordScreenDisplayed];
+  }
 }
 
 - (void)stop {
@@ -82,6 +89,22 @@
 }
 
 #pragma mark - Private
+
+// Records that the omnibox position choice screen was displayed.
+// This notifies the Tips Manager to potentially trigger related tips.
+- (void)recordScreenDisplayed {
+  CHECK(IsSegmentationTipsManagerEnabled());
+
+  if (!self.browser) {
+    return;
+  }
+
+  TipsManagerIOS* tipsManager =
+      TipsManagerIOSFactory::GetForProfile(self.browser->GetProfile());
+
+  tipsManager->NotifySignal(segmentation_platform::tips_manager::signals::
+                                kAddressBarPositionChoiceScreenDisplayed);
+}
 
 /// Dismisses the omnibox position choice view controller.
 - (void)dismissScreen {

@@ -8,8 +8,8 @@ import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/user_education/IPHCommand.java",
-    "java/src/org/chromium/chrome/browser/user_education/IPHCommandBuilder.java",
+    "java/src/org/chromium/chrome/browser/user_education/IphCommand.java",
+    "java/src/org/chromium/chrome/browser/user_education/IphCommandBuilder.java",
     "java/src/org/chromium/chrome/browser/user_education/UserEducationHelper.java",
   ]
 
@@ -36,8 +36,8 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [
-    "java/src/org/chromium/chrome/browser/user_education/IPHCommandBuilderUnitTest.java",
-    "java/src/org/chromium/chrome/browser/user_education/IPHCommandUnitTest.java",
+    "java/src/org/chromium/chrome/browser/user_education/IphCommandBuilderUnitTest.java",
+    "java/src/org/chromium/chrome/browser/user_education/IphCommandUnitTest.java",
     "java/src/org/chromium/chrome/browser/user_education/UserEducationHelperUnitTest.java",
   ]
   deps = [

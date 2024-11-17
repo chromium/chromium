@@ -33,6 +33,7 @@
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
+#include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
@@ -172,13 +173,17 @@ PrefService* ChromeOmniboxClient::GetPrefs() {
   return profile_->GetPrefs();
 }
 
+const PrefService* ChromeOmniboxClient::GetPrefs() const {
+  return profile_->GetPrefs();
+}
+
 bookmarks::BookmarkModel* ChromeOmniboxClient::GetBookmarkModel() {
   return BookmarkModelFactory::GetForBrowserContext(profile_);
 }
 
 AutocompleteControllerEmitter*
 ChromeOmniboxClient::GetAutocompleteControllerEmitter() {
-  return AutocompleteControllerEmitter::GetForBrowserContext(profile_);
+  return AutocompleteControllerEmitterFactory::GetForBrowserContext(profile_);
 }
 
 TemplateURLService* ChromeOmniboxClient::GetTemplateURLService() {
@@ -260,7 +265,7 @@ GURL ChromeOmniboxClient::GetNavigationEntryURL() const {
 }
 
 metrics::OmniboxEventProto::PageClassification
-ChromeOmniboxClient::GetPageClassification(bool is_prefetch) {
+ChromeOmniboxClient::GetPageClassification(bool is_prefetch) const {
   return location_bar_->GetLocationBarModel()->GetPageClassification(
       is_prefetch);
 }

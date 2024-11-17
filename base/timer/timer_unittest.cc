@@ -246,7 +246,7 @@ TEST(TimerTest, OneShotTimer_CustomTaskRunner) {
   // The timer will use the TestSimpleTaskRunner to schedule its delays.
   timer.SetTaskRunner(task_runner);
   timer.Start(FROM_HERE, Days(1),
-              BindLambdaForTesting([&]() { task_ran = true; }));
+              BindLambdaForTesting([&] { task_ran = true; }));
 
   EXPECT_FALSE(task_ran);
   EXPECT_TRUE(task_runner->HasPendingTask());
@@ -488,8 +488,8 @@ TEST(TimerTest, AbandonedTaskIsCancelled) {
   timer.Start(FROM_HERE, kTestDelay, base::DoNothing());
   EXPECT_EQ(1u, task_environment.GetPendingMainThreadTaskCount());
 
-  // After AbandonAndStop(), the task is correctly treated as cancelled.
-  timer.AbandonAndStop();
+  // After Stop(), the task is correctly treated as cancelled.
+  timer.Stop();
   EXPECT_EQ(0u, task_environment.GetPendingMainThreadTaskCount());
   EXPECT_FALSE(timer.IsRunning());
 }

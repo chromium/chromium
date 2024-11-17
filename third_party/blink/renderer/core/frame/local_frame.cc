@@ -991,6 +991,12 @@ void LocalFrame::OnFirstPaint(bool text_painted, bool image_painted) {
   }
 }
 
+void LocalFrame::OnFirstContentfulPaint() {
+  if (IsOutermostMainFrame()) {
+    GetPage()->GetChromeClient().OnFirstContentfulPaint();
+  }
+}
+
 bool LocalFrame::CanAccessEvent(
     const WebInputEventAttribution& attribution) const {
   switch (attribution.type()) {
@@ -1284,8 +1290,7 @@ SuddenTerminationDisablerTypeForEventType(const AtomicString& event_type) {
     return mojom::blink::SuddenTerminationDisablerType::
         kVisibilityChangeHandler;
   }
-  NOTREACHED_IN_MIGRATION();
-  return mojom::blink::SuddenTerminationDisablerType::kUnloadHandler;
+  NOTREACHED();
 }
 
 int NumberOfSuddenTerminationEventListeners(const EventTarget& event_target,
@@ -2098,9 +2103,8 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
         // If there is no user activation, fail.
         if (!HasTransientUserActivation(this)) {
           GetLocalFrameHostRemote().DidBlockNavigation(
-              destination_url, GetDocument()->Url(),
-              mojom::blink::NavigationBlockedReason::
-                  kRedirectWithNoUserGestureSandbox);
+              destination_url, mojom::blink::NavigationBlockedReason::
+                                   kRedirectWithNoUserGestureSandbox);
           PrintNavigationErrorMessage(
               target_frame,
               "The frame attempting navigation of the top-level window is "
@@ -2197,7 +2201,7 @@ bool LocalFrame::CanNavigate(const Frame& target_frame,
         "user gesture. See "
         "https://www.chromestatus.com/feature/5851021045661696.");
     GetLocalFrameHostRemote().DidBlockNavigation(
-        destination_url, GetDocument()->Url(),
+        destination_url,
         mojom::blink::NavigationBlockedReason::kRedirectWithNoUserGesture);
 
   } else {
@@ -3980,6 +3984,14 @@ LocalFrame::GetNotRestoredReasons() {
   // web exposed API returns non-null values only for the outermost main frames.
   DCHECK(IsOutermostMainFrame());
   return not_restored_reasons_;
+}
+
+void LocalFrame::SetNavigationConfidence(
+    double randomized_trigger_rate,
+    mojom::blink::ConfidenceLevel confidence) {
+  DCHECK(IsOutermostMainFrame());
+  loader_.GetDocumentLoader()->GetTiming().SetRandomizedConfidence(
+      std::make_pair(randomized_trigger_rate, confidence));
 }
 
 void LocalFrame::AddScrollSnapshotClient(ScrollSnapshotClient& client) {

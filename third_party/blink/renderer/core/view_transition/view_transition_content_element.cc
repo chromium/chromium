@@ -28,12 +28,17 @@ ViewTransitionContentElement::~ViewTransitionContentElement() = default;
 
 void ViewTransitionContentElement::SetIntrinsicSize(
     const gfx::RectF& captured_rect,
-    const gfx::RectF& border_box_rect) {
+    const gfx::RectF& reference_rect_in_enclosing_layer_space,
+    bool propagate_max_extent_rect) {
   captured_rect_ = captured_rect;
-  border_box_rect_ = border_box_rect;
+  reference_rect_in_enclosing_layer_space_ =
+      reference_rect_in_enclosing_layer_space;
+  propagate_max_extent_rect_ = propagate_max_extent_rect;
   if (auto* layout_object = GetLayoutObject()) {
     static_cast<LayoutViewTransitionContent*>(layout_object)
-        ->OnIntrinsicSizeUpdated(captured_rect_, border_box_rect_);
+        ->OnIntrinsicSizeUpdated(captured_rect_,
+                                 reference_rect_in_enclosing_layer_space_,
+                                 propagate_max_extent_rect_);
   }
 }
 

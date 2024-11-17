@@ -7,10 +7,10 @@
 
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 
-enum class ToolbarTabGridButtonStyle;
+enum class ToolbarTabGroupState;
 
 using ToolbarTabGridButtonImageLoader =
-    UIImage* (^)(ToolbarTabGridButtonStyle style);
+    UIImage* (^)(ToolbarTabGroupState tabGroupState);
 
 // ToolbarButton for displaying the number of tab.
 @interface ToolbarTabGridButton : ToolbarButton
@@ -20,13 +20,17 @@ using ToolbarTabGridButtonImageLoader =
 // can be bigger than 100.
 @property(nonatomic, assign) int tabCount;
 
-// The current style for the button.
-@property(nonatomic, assign) ToolbarTabGridButtonStyle tabGridButtonStyle;
+// The Tab Group state of the toolbar.
+// If kNormal, the button features the simple square with the tab count label
+// inside.
+// If kTabGroup, the button features a filled square on a square with the tab
+// count label inside the filled square.
+@property(nonatomic, assign) ToolbarTabGroupState tabGroupState;
 
 // Initialized the button with an image loader that can return a different image
-// based on the tab grid button style.
-- (instancetype)initWithStyledImageLoader:
-    (ToolbarTabGridButtonImageLoader)styledImageLoader
+// based on the tab group state.
+- (instancetype)initWithTabGroupStateImageLoader:
+    (ToolbarTabGridButtonImageLoader)tabGroupStateImageLoader
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader
     NS_UNAVAILABLE;

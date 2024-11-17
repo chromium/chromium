@@ -69,7 +69,7 @@ void CheckPasswordDetailsVisitMetricsCount(
 class PasswordDetailsCoordinatorTest : public PlatformTest {
  protected:
   PasswordDetailsCoordinatorTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
 
     builder.AddTestingFactory(
         IOSChromeProfilePasswordStoreFactory::GetInstance(),
@@ -84,9 +84,8 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
     scene_state_ = [[SceneState alloc] initWithAppState:nil];
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-    browser_state_ = std::move(builder).Build();
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     // Mock ApplicationCommands and SettingsCommands
@@ -115,7 +114,7 @@ class PasswordDetailsCoordinatorTest : public PlatformTest {
   ~PasswordDetailsCoordinatorTest() override { [coordinator_ stop]; }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   MockReauthenticationModule* mock_reauth_module_;
   SceneState* scene_state_;

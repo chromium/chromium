@@ -17,9 +17,11 @@ import {assertExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
-import {OsSyncBrowserProxy, OsSyncBrowserProxyImpl, OsSyncPrefs} from './os_sync_browser_proxy.js';
+import type {OsSyncBrowserProxy, OsSyncPrefs} from './os_sync_browser_proxy.js';
+import {OsSyncBrowserProxyImpl} from './os_sync_browser_proxy.js';
 import {getTemplate} from './os_sync_controls_subpage.html.js';
 
 /**

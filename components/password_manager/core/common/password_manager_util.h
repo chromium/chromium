@@ -9,6 +9,11 @@
 
 namespace autofill {
 class FormData;
+
+namespace mojom {
+enum class FormControlType;
+}  // namespace mojom
+
 }  // namespace autofill
 
 namespace password_manager::util {
@@ -20,9 +25,11 @@ bool IsRendererRecognizedCredentialForm(const autofill::FormData& form);
 
 // Returns whether field attributes allow to consider it as a single
 // username field (e.g. don't indicate it's a search field).
-bool CanFieldBeConsideredAsSingleUsername(const std::u16string& name,
-                                          const std::u16string& id,
-                                          const std::u16string& label);
+bool CanFieldBeConsideredAsSingleUsername(
+    const std::u16string& name,
+    const std::u16string& id,
+    const std::u16string& label,
+    autofill::mojom::FormControlType type);
 
 // Returns whether the field value allows to consider it as a single
 // username field.

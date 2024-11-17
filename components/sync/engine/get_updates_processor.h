@@ -60,7 +60,7 @@ class GetUpdatesProcessor {
                          sync_pb::ClientToServerMessage* message);
 
   // Sends the specified message to the server and stores the response in a
-  // member of the |cycle|'s StatusController.
+  // member of the `cycle`'s StatusController.
   SyncerError ExecuteDownloadUpdates(DataTypeSet* request_types,
                                      SyncCycle* cycle,
                                      sync_pb::ClientToServerMessage* msg);

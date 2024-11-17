@@ -61,6 +61,8 @@ class BackgroundTracingAgentProviderImpl;
 }  // namespace tracing
 
 namespace content {
+
+class ChildPerformanceCoordinator;
 class InProcessChildThreadParams;
 
 // The main thread of a child process derives from this class.
@@ -252,6 +254,8 @@ class ChildThreadImpl : public IPC::Listener, virtual public ChildThread {
   // ChildThreadImpl state which lives on the IO thread, including its
   // implementation of the mojom ChildProcess interface.
   scoped_refptr<IOThreadState> io_thread_state_;
+
+  std::unique_ptr<ChildPerformanceCoordinator> performance_coordinator_;
 
   base::WeakPtrFactory<ChildThreadImpl> weak_factory_{this};
 };

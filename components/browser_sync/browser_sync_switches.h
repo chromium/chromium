@@ -18,24 +18,10 @@ inline constexpr char kEnableLocalSyncBackend[] = "enable-local-sync-backend";
 // flag is present.
 inline constexpr char kLocalSyncBackendDir[] = "local-sync-backend-dir";
 
-// Sync invalidation switches.
-//
-// Enables providing the list of FCM registration tokens in the commit request.
-BASE_DECLARE_FEATURE(kSyncUseFCMRegistrationTokensList);
-// Max size of FCM registration tokens list. If the number of active devices
-// having FCM registration tokens is higher, then the resulting list will be
-// empty meaning unknown FCM registration tokens.
-inline constexpr base::FeatureParam<int> kSyncFCMRegistrationTokensListMaxSize{
-    &kSyncUseFCMRegistrationTokensList, "SyncFCMRegistrationTokensListMaxSize",
-    5};
-// Enables filtering out inactive devices which haven't sent DeviceInfo update
-// recently (depending on the device's pulse_interval and an additional margin).
-BASE_DECLARE_FEATURE(kSyncFilterOutInactiveDevicesForSingleClient);
-// An additional threshold to consider devices as active. It extends device's
-// pulse interval to mitigate possible latency after DeviceInfo commit.
-inline constexpr base::FeatureParam<base::TimeDelta> kSyncActiveDeviceMargin{
-    &kSyncFilterOutInactiveDevicesForSingleClient, "SyncActiveDeviceMargin",
-    base::Days(7)};
+// Disables the optimizations flags in Commit requests for sync invalidations.
+// This is useful for live tests to avoid flakiness.
+inline constexpr char kDisableSyncInvalidationOptimizations[] =
+    "disable-sync-invalidation-optimizations";
 
 // If enabled, eligible users (i.e. those for which Sync-the-feature is active)
 // are migrated, at browser startup, to the signed-in non-syncing state.

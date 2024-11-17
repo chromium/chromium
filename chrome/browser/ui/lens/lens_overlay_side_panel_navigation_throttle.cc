@@ -21,17 +21,19 @@ std::unique_ptr<content::NavigationThrottle>
 LensOverlaySidePanelNavigationThrottle::MaybeCreateFor(
     content::NavigationHandle* handle,
     ThemeService* theme_service) {
-  // We only want to handle navigations within the side panel results frame, so
-  // we can ignore all navigations to a primary main frame. We can also ignore
-  // all navigations that don't occur one level down (e.g. children of iframes
-  // in the WebUI).
-  if (handle->IsInPrimaryMainFrame() || !handle->GetParentFrame() ||
-      !handle->GetParentFrame()->IsInPrimaryMainFrame()) {
+  // We only want to handle navigations within the side panel results frame, we
+  // can ignore all navigations that don't occur one level down (e.g. children
+  // of iframes in the WebUI). However, since the top level frame hosts the
+  // WebUI, we should also handle those navigations within this throttle to
+  // prevent breakages.
+  if (!handle->IsInPrimaryMainFrame() &&
+      (!handle->GetParentFrame() ||
+       !handle->GetParentFrame()->IsInPrimaryMainFrame())) {
     return nullptr;
   }
 
-  auto* controller = LensOverlayController::GetControllerFromWebViewWebContents(
-      handle->GetWebContents());
+  LensOverlayController* controller =
+      LensOverlayController::GetController(handle->GetWebContents());
   // Only create the navigation throttle for this handle if it equals the side
   // panel web contents and the side panel web contents is not null. The entry
   // does not need to be showing as it's possible a new tab was opened that hid
@@ -73,7 +75,7 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
   auto params =
       content::OpenURLParams::FromNavigationHandle(navigation_handle());
 
-  auto* controller = LensOverlayController::GetControllerFromWebViewWebContents(
+  LensOverlayController* controller = LensOverlayController::GetController(
       navigation_handle()->GetWebContents());
   // If the URL is a redirect to a search URL, we want to load it directly in
   // the side panel.

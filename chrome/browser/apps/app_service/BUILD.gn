@@ -12,6 +12,8 @@ source_set("app_service") {
     "app_icon_source.cc",
     "app_icon_source.h",
     "app_service_proxy.h",
+    "app_service_proxy_base.cc",
+    "app_service_proxy_base.h",
     "app_service_proxy_factory.cc",
     "app_service_proxy_factory.h",
     "app_service_proxy_forward.h",
@@ -31,8 +33,14 @@ source_set("app_service") {
     "paused_apps.h",
     "policy_util.cc",
     "policy_util.h",
+    "publisher_host.cc",
+    "publisher_host.h",
     "publishers/app_publisher.cc",
     "publishers/app_publisher.h",
+    "publishers/extension_apps.cc",
+    "publishers/extension_apps.h",
+    "publishers/extension_apps_base.cc",
+    "publishers/extension_apps_base.h",
     "publishers/extension_apps_enable_flow.cc",
     "publishers/extension_apps_enable_flow.h",
     "publishers/extension_apps_util.cc",
@@ -54,6 +62,10 @@ source_set("app_service") {
     "//chrome/app/theme:chrome_unscaled_resources",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/apps/app_service/app_icon:util",
+    "//chrome/browser/apps/link_capturing:features",
+    "//chrome/browser/content_settings",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/prefs",
     "//chrome/browser/profiles",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources:app_icon_resources",
@@ -220,6 +232,8 @@ source_set("app_service") {
     deps += [
       "//ash",
       "//ash/components/arc",
+      "//ash/components/arc:arc_app_constants",
+      "//ash/components/arc:arc_app_constants",
       "//ash/components/arc:arc_base",
       "//ash/components/arc:arc_base_utils",
       "//ash/components/arc:arc_metrics_constants",
@@ -242,6 +256,7 @@ source_set("app_service") {
       "//chrome/browser/ash/app_restore",
       "//chrome/browser/ash/apps",
       "//chrome/browser/ash/arc",
+      "//chrome/browser/ash/arc:arc_util",
       "//chrome/browser/ash/arc/app_shortcuts",
       "//chrome/browser/ash/arc/intent_helper",
       "//chrome/browser/ash/arc/nearby_share",
@@ -266,7 +281,6 @@ source_set("app_service") {
       "//chrome/browser/ash/guest_os",
       "//chrome/browser/ash/guest_os/public",
       "//chrome/browser/ash/login/demo_mode",
-      "//chrome/browser/ash/mall",
       "//chrome/browser/ash/plugin_vm",
       "//chrome/browser/ash/policy/core",
       "//chrome/browser/ash/policy/dlp",
@@ -294,6 +308,7 @@ source_set("app_service") {
       "//chrome/browser/ui/webui/ash/add_supervision",
       "//chrome/browser/ui/webui/ash/settings/app_management",
       "//chromeos/ash/components/browser_context_helper",
+      "//chromeos/ash/components/file_manager:constants",
       "//chromeos/ash/components/login/login_state",
       "//chromeos/components/kiosk:kiosk",
       "//chromeos/components/mgs",
@@ -361,44 +376,10 @@ source_set("app_service") {
     ]
   }
 
-  if (is_chromeos_lacros) {
-    sources += [
-      "app_service_proxy_lacros.cc",
-      "app_service_proxy_lacros.h",
-      "metrics/website_metrics.cc",
-      "metrics/website_metrics.h",
-      "metrics/website_metrics_service_lacros.cc",
-      "metrics/website_metrics_service_lacros.h",
-    ]
-
-    deps += [
-      "//chromeos/lacros",
-      "//components/keep_alive_registry",
-      "//components/webapps/browser",
-      "//services/metrics/public/cpp:ukm_builders",
-      "//ui/wm",
-    ]
-  }
-
   if (!is_chromeos) {
     sources += [
       "app_service_proxy_desktop.cc",
       "app_service_proxy_desktop.h",
-    ]
-  }
-
-  if (!is_chromeos_lacros) {
-    sources += [
-      # TODO(crbug.com/40251315): Make this safe to include in lacros by removing
-      # redefinition of types in app_service_proxy_lacros.
-      "app_service_proxy_base.cc",
-      "app_service_proxy_base.h",
-      "publisher_host.cc",
-      "publisher_host.h",
-      "publishers/extension_apps.cc",
-      "publishers/extension_apps.h",
-      "publishers/extension_apps_base.cc",
-      "publishers/extension_apps_base.h",
     ]
   }
 }
@@ -428,6 +409,7 @@ source_set("unit_tests") {
     "app_service_proxy_unittest.cc",
     "intent_util_unittest.cc",
     "launch_utils_unittest.cc",
+    "publishers/app_publisher_unittest.cc",
     "publishers/publisher_unittest.cc",
   ]
 
@@ -509,6 +491,7 @@ source_set("unit_tests") {
     ]
 
     deps += [
+      "//ash/components/arc:arc_app_constants",
       "//ash/components/arc:arc_test_support",
       "//ash/constants",
       "//chrome/browser/apps/app_service/app_install:unit_tests",
@@ -518,6 +501,7 @@ source_set("unit_tests") {
       "//chrome/browser/ash/app_list/internal_app",
       "//chrome/browser/ash/apps",
       "//chrome/browser/ash/arc",
+      "//chrome/browser/ash/arc:arc_util",
       "//chrome/browser/ash/arc/fileapi",
       "//chrome/browser/ash/borealis",
       "//chrome/browser/ash/borealis/testing:test_support",
@@ -557,15 +541,6 @@ source_set("unit_tests") {
       "//components/webapk:proto",
     ]
   }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "app_service_proxy_lacros_unittest.cc",
-      "metrics/website_metrics_service_lacros_unittest.cc",
-    ]
-  } else {
-    sources += [ "publishers/app_publisher_unittest.cc" ]
-  }
 }
 
 source_set("test_support") {
@@ -597,13 +572,6 @@ source_set("test_support") {
     deps += [
       "//chrome/browser/ash/login/users:test_support",
       "//components/webapk:proto",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    sources += [
-      "mock_crosapi_app_service_proxy.cc",
-      "mock_crosapi_app_service_proxy.h",
     ]
   }
 }

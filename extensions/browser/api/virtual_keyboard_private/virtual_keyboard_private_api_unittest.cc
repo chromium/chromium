@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/browser/api_unittest.h"
@@ -132,7 +133,8 @@ class TestVirtualKeyboardExtensionsAPIClient : public ExtensionsAPIClient {
  private:
   // Points to the last mock delegate created for each browser context. Does not
   // own the delegates.
-  mutable std::map<content::BrowserContext*, MockVirtualKeyboardDelegate*>
+  mutable std::map<content::BrowserContext*,
+                   raw_ptr<MockVirtualKeyboardDelegate, CtnExperimental>>
       delegates_;
 };
 

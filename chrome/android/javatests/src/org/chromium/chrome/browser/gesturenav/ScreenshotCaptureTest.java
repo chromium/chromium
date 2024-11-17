@@ -61,16 +61,12 @@ import java.util.concurrent.TimeoutException;
 
 /** Test that the screenshot was successfully taken when navigating as expected. */
 @RunWith(ParameterizedRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "hide-scrollbars",
-    "enable-features=BackForwardTransitions<Study",
-    "force-fieldtrials=Study/Group",
-    "force-fieldtrial-params=Study.Group:transition_from_native_pages/true/"
-            + "transition_to_native_pages/true"
-})
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "hide-scrollbars"})
 @DoNotBatch(reason = "Affect nav settings")
-@EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+@EnableFeatures({
+    ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS,
+    "BackForwardTransitions:transition_from_native_pages/true/transition_to_native_pages/true"
+})
 @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/337886037")
 @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/337886037")
 public class ScreenshotCaptureTest {

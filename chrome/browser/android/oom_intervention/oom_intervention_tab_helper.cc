@@ -65,7 +65,7 @@ void OomInterventionTabHelper::OnHighMemoryUsage() {
   }
 
   near_oom_detected_time_ = base::TimeTicks::Now();
-  renderer_detection_timer_.AbandonAndStop();
+  renderer_detection_timer_.Stop();
 }
 
 void OomInterventionTabHelper::AcceptIntervention() {
@@ -89,7 +89,7 @@ void OomInterventionTabHelper::DeclineInterventionWithReload() {
 }
 
 void OomInterventionTabHelper::DeclineInterventionSticky() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void OomInterventionTabHelper::WebContentsDestroyed() {
@@ -281,7 +281,7 @@ void OomInterventionTabHelper::
 void OomInterventionTabHelper::ResetInterventionState() {
   near_oom_detected_time_.reset();
   intervention_state_ = InterventionState::NOT_TRIGGERED;
-  renderer_detection_timer_.AbandonAndStop();
+  renderer_detection_timer_.Stop();
 }
 
 void OomInterventionTabHelper::ResetInterfaces() {

@@ -74,7 +74,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge.OnClearBrowsingDataListener;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragment.DialogOption;
@@ -96,11 +95,11 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
 import org.chromium.components.browser_ui.settings.SpinnerPreference;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.components.sync.DataType;
 import org.chromium.ui.test.util.ViewUtils;
 
@@ -126,8 +125,6 @@ public class ClearBrowsingDataFragmentTest {
 
     @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Mock private BrowsingDataBridge.Natives mBrowsingDataBridgeMock;
 
     @Mock private HelpAndFeedbackLauncher mHelpAndFeedbackLauncher;
@@ -140,7 +137,7 @@ public class ClearBrowsingDataFragmentTest {
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
-        mJniMocker.mock(BrowsingDataBridgeJni.TEST_HOOKS, mBrowsingDataBridgeMock);
+        BrowsingDataBridgeJni.setInstanceForTesting(mBrowsingDataBridgeMock);
         // Ensure that whenever the mock is asked to clear browsing data, the callback is
         // immediately called.
         doAnswer(
@@ -210,44 +207,9 @@ public class ClearBrowsingDataFragmentTest {
 
     @Test
     @LargeTest
-    @Features.DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-    public void testSigningOut_Legacy() {
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-        final ClearBrowsingDataFragment preferences =
-                (ClearBrowsingDataFragment) startPreferences().getMainFragment();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    return mSettingsActivityTestRule
-                                    .getActivity()
-                                    .findViewById(R.id.menu_id_targeted_help)
-                            != null;
-                });
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    RecyclerView recyclerView =
-                            preferences.getView().findViewById(R.id.recycler_view);
-                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-                });
-        onView(withText(preferences.buildSignOutOfChromeText().toString()))
-                .perform(clickOnSignOutLink());
-        onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
-        CriteriaHelper.pollUiThread(
-                () ->
-                        !IdentityServicesProvider.get()
-                                .getIdentityManager(ProfileManager.getLastUsedRegularProfile())
-                                .hasPrimaryAccount(ConsentLevel.SIGNIN),
-                "Account should be signed out!");
-
-        // Footer should be hidden after sign-out.
-        onView(withText(preferences.buildSignOutOfChromeText().toString())).check(doesNotExist());
-    }
-
-    @Test
-    @LargeTest
     @Features.EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testSigningOut() {
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         final ClearBrowsingDataFragment preferences =
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
         ViewUtils.waitForVisibleView(withId(R.id.menu_id_targeted_help));
@@ -280,7 +242,7 @@ public class ClearBrowsingDataFragmentTest {
                     fakeSyncService.setTypesWithUnsyncedData(Set.of(DataType.BOOKMARKS));
                     SyncServiceFactory.setInstanceForTesting(fakeSyncService);
                 });
-        mSigninTestRule.addAccountThenSignin(AccountManagerTestRule.TEST_ACCOUNT_1);
+        mSigninTestRule.addAccountThenSignin(TestAccounts.ACCOUNT1);
         final ClearBrowsingDataFragment preferences =
                 (ClearBrowsingDataFragment) startPreferences().getMainFragment();
         ViewUtils.waitForVisibleView(withId(R.id.menu_id_targeted_help));
@@ -485,6 +447,14 @@ public class ClearBrowsingDataFragmentTest {
                                     fragment.getString(R.string.help_context_clear_browsing_data),
                                     null);
                 });
+    }
+
+    @Test
+    @MediumTest
+    public void testTitleShown() {
+        startPreferences();
+        ViewUtils.waitForVisibleView(withId(R.id.menu_id_targeted_help));
+        onView(withText(R.string.clear_browsing_data_title)).check(matches(isDisplayed()));
     }
 
     /**

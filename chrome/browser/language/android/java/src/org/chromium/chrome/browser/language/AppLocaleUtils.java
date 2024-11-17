@@ -57,8 +57,12 @@ public class AppLocaleUtils {
     }
 
     /**
-     * Get the value of application language shared preference or null if there is none. On T+ this
-     * method will use the {@link LocaleManager} service to get the App language.
+     * Get the override language preference or null if the default system locale is used. On T+ this
+     * method uses {@link LocaleManager} to get the override language which can be set from Chrome
+     * Settings or Android Settings. Note: Do not use this to get the current UI language. When
+     * there is an override language the default locale for the main process is updated so {@link
+     * Locale.getDefault()} still returns the current UI language.
+     *
      * @return String BCP-47 language tag (e.g. en-US).
      */
     public static String getAppLanguagePref() {

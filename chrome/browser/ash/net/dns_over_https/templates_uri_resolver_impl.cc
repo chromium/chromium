@@ -247,7 +247,7 @@ void StripUnknownEffectivePlaceholders(std::string& templates) {
 // `kDeviceNotManaged`; e.g for `hash_variable`=true
 // ${DEVICE_ASSET_ID} is replaced by hash(VALUE_NOT_AVAILABLE+salt).
 std::string ReplaceVariables(std::string templates,
-                             const std::string salt,
+                             const std::string& salt,
                              policy::DeviceAttributes* attributes,
                              bool hash_variable) {
   if (!user_manager::UserManager::IsInitialized()) {

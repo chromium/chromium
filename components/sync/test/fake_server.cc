@@ -92,7 +92,7 @@ void VerifyNoProgressMarkerExistsInResponseForFullUpdateType(
   }
 }
 
-// Returns a hash representing |entities| including each entity's ID and
+// Returns a hash representing `entities` including each entity's ID and
 // version, in a way that the order of the entities is irrelevant.
 uint64_t ComputeEntitiesHash(const std::vector<sync_pb::SyncEntity>& entities) {
   // Make sure to pick a token that will be consistent across clients when
@@ -238,8 +238,7 @@ net::HttpStatusCode FakeServer::HandleParsedCommand(
       break;
     case sync_pb::ClientToServerMessage::DEPRECATED_3:
     case sync_pb::ClientToServerMessage::DEPRECATED_4:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (http_error_status_code_) {

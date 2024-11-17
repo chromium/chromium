@@ -55,8 +55,7 @@ AssistantNativeIconType SettingIdToIconType(
     case assistant::SettingSetId::DA:
       return AssistantNativeIconType::kDA;
     case assistant::SettingSetId::UNKNOWN_SETTING_SET_ID:
-      NOTREACHED_IN_MIGRATION();
-      return AssistantNativeIconType::kNone;
+      NOTREACHED();
   }
 }
 
@@ -132,7 +131,6 @@ base::Value::List CreateZippyData(const ActivityControlUi& activity_control_ui,
             .Set("iconUri", setting_zippy.icon_uri())
             .Set("nativeIconType", static_cast<int>(SettingIdToIconType(
                                        setting_zippy.setting_set_id())))
-            .Set("useNativeIcons", features::IsAssistantNativeIconsEnabled())
             .Set("popupLink", l10n_util::GetStringUTF16(
                                   IDS_ASSISTANT_ACTIVITY_CONTROL_POPUP_LINK))
             .Set("learnMoreDialogButton", learn_more_dialog.dismiss_button())

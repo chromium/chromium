@@ -30,6 +30,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/webui/file_manager/url_constants.h"
+#include "ash/webui/sanitize_ui/url_constants.h"
 #include "base/files/scoped_temp_dir.h"
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -333,12 +334,15 @@ TEST_F(ChromeURLsTest, ContainsConfigURLs) {
       std::make_unique<TestWebUIConfig>(content::kChromeUIUntrustedScheme,
                                         "dogs", false));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Redirect the files app config because it assumes an Ash Shell exists
-  // in IsWebUIEnabled(), and the shell does not exist in unit tests.
+  // Redirect the files, and sanitize config because they assume an Ash Shell
+  // exists in IsWebUIEnabled(), and the shell does not exist in unit tests.
   content::ScopedWebUIConfigRegistration replace_files_app(
       std::make_unique<TestWebUIConfig>(
           content::kChromeUIScheme, ash::file_manager::kChromeUIFileManagerHost,
           true));
+  content::ScopedWebUIConfigRegistration replace_sanitize_app(
+      std::make_unique<TestWebUIConfig>(content::kChromeUIScheme,
+                                        ash::kChromeUISanitizeAppHost, true));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   TestDataReceiver chrome_urls_data_receiver;

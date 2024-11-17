@@ -11,14 +11,12 @@ import android.app.Notification.Action;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -29,7 +27,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
@@ -43,8 +40,6 @@ public class WebApkInstallNotificationTest {
     private static final String MANIFEST_URL = "https://test.com/manifest.json";
     private static final String SHORT_NAME = "webapk";
     private static final String URL = "https://test.com";
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     private final Bitmap mIcon = Bitmap.createBitmap(1, 1, Bitmap.Config.ALPHA_8);
     private Context mContext;
@@ -83,11 +78,8 @@ public class WebApkInstallNotificationTest {
         Bitmap largeIcon =
                 ((BitmapDrawable) notification.getLargeIcon().loadDrawable(mContext)).getBitmap();
         Assert.assertTrue(mIcon.sameAs(largeIcon));
-        Bitmap expectedSmallIcon =
-                BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_chrome);
-        Bitmap smallIcon =
-                ((BitmapDrawable) notification.getSmallIcon().loadDrawable(mContext)).getBitmap();
-        Assert.assertTrue(expectedSmallIcon.sameAs(smallIcon));
+
+        Assert.assertEquals(R.drawable.ic_chrome, notification.getSmallIcon().getResId());
     }
 
     @Test
@@ -108,11 +100,8 @@ public class WebApkInstallNotificationTest {
         Bitmap largeIcon =
                 ((BitmapDrawable) notification.getLargeIcon().loadDrawable(mContext)).getBitmap();
         Assert.assertTrue(mIcon.sameAs(largeIcon));
-        Bitmap expectedSmallIcon =
-                BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_chrome);
-        Bitmap smallIcon =
-                ((BitmapDrawable) notification.getSmallIcon().loadDrawable(mContext)).getBitmap();
-        Assert.assertTrue(expectedSmallIcon.sameAs(smallIcon));
+
+        Assert.assertEquals(R.drawable.ic_chrome, notification.getSmallIcon().getResId());
 
         Assert.assertNotNull(notification.contentIntent);
     }
@@ -144,11 +133,8 @@ public class WebApkInstallNotificationTest {
         Bitmap largeIcon =
                 ((BitmapDrawable) notification.getLargeIcon().loadDrawable(mContext)).getBitmap();
         Assert.assertTrue(mIcon.sameAs(largeIcon));
-        Bitmap expectedSmallIcon =
-                BitmapFactory.decodeResource(mContext.getResources(), R.drawable.ic_chrome);
-        Bitmap smallIcon =
-                ((BitmapDrawable) notification.getSmallIcon().loadDrawable(mContext)).getBitmap();
-        Assert.assertTrue(expectedSmallIcon.sameAs(smallIcon));
+
+        Assert.assertEquals(R.drawable.ic_chrome, notification.getSmallIcon().getResId());
 
         Assert.assertNotNull(notification.contentIntent);
 

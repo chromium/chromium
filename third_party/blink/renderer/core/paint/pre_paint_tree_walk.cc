@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/link_highlight.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_property_tree_printer.h"
@@ -98,10 +99,8 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
     // If any change needs a more significant intersection update in a frame
     // view, we should have set the state on that frame view during the tree
     // walk or earlier.
-    if (RuntimeEnabledFeatures::IntersectionOptimizationEnabled()) {
-      root_frame_view.SetIntersectionObservationState(
-          LocalFrameView::kScrollAndVisibilityOnly);
-    }
+    root_frame_view.SetIntersectionObservationState(
+        LocalFrameView::kScrollAndVisibilityOnly);
   }
 }
 
@@ -190,8 +189,7 @@ bool HasBlockingEventHandlerHelper(const LocalFrame& frame,
         registry.EventHandlerTargets(EventHandlerRegistry::kWheelEventBlocking);
     return blocking->Contains(&target);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool HasBlockingEventHandlerHelper(const LayoutObject& object,
@@ -345,7 +343,7 @@ void PrePaintTreeWalk::CheckTreeBuilderContextState(
   DCHECK(!object.DescendantNeedsPaintPropertyUpdate());
   DCHECK(!object.DescendantShouldCheckLayoutForPaintInvalidation());
   DCHECK(!object.ShouldCheckLayoutForPaintInvalidation());
-  NOTREACHED_IN_MIGRATION() << "Unknown reason.";
+  NOTREACHED() << "Unknown reason.";
 }
 #endif
 
@@ -735,12 +733,13 @@ void PrePaintTreeWalk::WalkMissedChildren(
   // fragmentainer. When generating fragments, layout sets their correct
   // block-offset (obviously), as a physical offset. But since we're just
   // pretending to have a fragment in this case, we have to do it ourselves. For
-  // vertical-rl, the block-start offset is at the right edge of the
-  // fragmentainer, not at the left (vertical-lr) (which is zero), and not at
-  // the top (horizontal-tb) (also zero). So we need to adjust for vertical-rl.
+  // vertical-rl and sideways-rl, the block-start offset is at the right edge of
+  // the fragmentainer, not at the left (vertical-lr) (which is zero), and not
+  // at the top (horizontal-tb) (also zero). So we need to adjust for
+  // vertical-rl and sideways-rl.
   PhysicalOffset offset_to_block_start_edge;
   if (fragment.IsFragmentainerBox() &&
-      fragment.Style().GetWritingMode() == WritingMode::kVerticalRl) {
+      fragment.Style().IsFlippedBlocksWritingMode()) {
     offset_to_block_start_edge.left = fragment.Size().width;
   }
 
@@ -1380,6 +1379,10 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   // Early out from the tree walk if possible.
   if (!needs_tree_builder_context_update && !ObjectRequiresPrePaint(object) &&
       !ContextRequiresChildPrePaint(parent_context)) {
+    if (!ClipPathClipper::ClipPathStatusResolved(object)) {
+      // crbug.com/374656290: Convert to CHECK or DCHECK when fix is confirmed.
+      base::debug::DumpWithoutCrashing();
+    }
     return;
   }
 

@@ -13,10 +13,6 @@ extern NSString* const kPageInfoViewAccessibilityIdentifier;
 // Accessibility identifier for the page info's security view.
 extern NSString* const kPageInfoSecurityViewAccessibilityIdentifier;
 
-// Accessibility identifier for the footer of the security section of the page
-// info view.
-extern NSString* const kPageInfoSecurityFooterAccessibilityIdentifier;
-
 // Accessibility identifier for the navigation bar of page info view.
 extern NSString* const kPageInfoViewNavigationBarAccessibilityIdentifier;
 
@@ -29,10 +25,6 @@ extern const CGFloat kPageInfoTableViewSeparatorInset;
 
 // The left edge insect for cell separators of page info with an icon.
 extern const CGFloat kPageInfoTableViewSeparatorInsetWithIcon;
-
-// The vertical padding between the navigation bar and the first section header
-// of page info.
-extern const CGFloat kPageInfoPaddingFirstSectionHeader;
 
 // The size of icons in the left hand side of page info.
 extern const CGFloat kPageInfoSymbolPointSize;

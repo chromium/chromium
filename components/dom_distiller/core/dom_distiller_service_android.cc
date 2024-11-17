@@ -30,7 +30,7 @@ DomDistillerServiceAndroid::DomDistillerServiceAndroid(
   java_ref_.Reset(env, local_java_ref.obj());
 }
 
-DomDistillerServiceAndroid::~DomDistillerServiceAndroid() {}
+DomDistillerServiceAndroid::~DomDistillerServiceAndroid() = default;
 
 jlong DomDistillerServiceAndroid::GetDistilledPagePrefsPtr(JNIEnv* env) {
   return reinterpret_cast<intptr_t>(service_->GetDistilledPagePrefs());

@@ -51,17 +51,8 @@ class DumpAccessibilityNodeTest : public DumpAccessibilityTestBase {
     formatter->SetPropertyFilters(scenario_.property_filters,
                                   AXTreeFormatter::kFiltersDefaultSet);
 
-    ui::BrowserAccessibility* test_node =
-        FindNodeByStringAttribute(ax::mojom::StringAttribute::kHtmlId, "test");
-    if (!test_node)
-      test_node = FindNodeByStringAttribute(
-          ax::mojom::StringAttribute::kClassName, "test");
-
-    std::string contents =
-        test_node ? formatter->FormatNode(test_node) : "Test node not found.";
-
-    std::string escaped_contents = base::EscapeNonASCII(contents);
-    return base::SplitString(escaped_contents, "\n", base::KEEP_WHITESPACE,
+    std::string contents = FormatWebContentsTestNode(*formatter);
+    return base::SplitString(contents, "\n", base::KEEP_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
   }
 

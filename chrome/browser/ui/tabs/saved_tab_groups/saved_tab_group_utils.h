@@ -11,8 +11,8 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/types.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/models/dialog_model.h"
@@ -44,6 +44,9 @@ class SavedTabGroupUtils {
   SavedTabGroupUtils(const SavedTabGroupUtils&) = delete;
   SavedTabGroupUtils& operator=(const SavedTabGroupUtils&) = delete;
 
+  // Helper method for checking whether the feature can be used.
+  static bool IsEnabledForProfile(Profile* profile);
+
   // TODO(crbug.com/350514491): Default to using the TabGroupSyncService when
   // crbug.com/350514491 is complete.
   // When IsTabGroupSyncServiceDesktopMigrationEnabled() is true use the
@@ -60,8 +63,8 @@ class SavedTabGroupUtils {
   static void DeleteSavedGroup(const Browser* browser,
                                const base::Uuid& saved_group_guid);
 
-  // Open the `url` to the end of `browser` tab strip.
-  static void OpenUrlToBrowser(Browser* browser, const GURL& url);
+  // Open the `url` to the end of `browser` tab strip as a new ungrouped tab.
+  static void OpenUrlInNewUngroupedTab(Browser* browser, const GURL& url);
 
   static void OpenOrMoveSavedGroupToNewWindow(
       Browser* browser,
@@ -105,6 +108,10 @@ class SavedTabGroupUtils {
       std::optional<int> tabstrip_index = std::nullopt,
       std::optional<tab_groups::TabGroupId> local_group_id = std::nullopt);
 
+  // Returns whether a navigation was initiated from sync.
+  static bool WasNavigationInitiatedFromSync(
+      content::NavigationHandle* navigation_handle);
+
   // Returns the Browser that contains a local group with id `group_id`.
   static Browser* GetBrowserWithTabGroupId(tab_groups::TabGroupId group_id);
 
@@ -112,7 +119,7 @@ class SavedTabGroupUtils {
   static TabGroup* GetTabGroupWithId(tab_groups::TabGroupId group_id);
 
   // Returns the list of Tabs in the local group `group_id` in order.
-  static std::vector<tabs::TabModel*> GetTabsInGroup(
+  static std::vector<tabs::TabInterface*> GetTabsInGroup(
       tab_groups::TabGroupId group_id);
 
   // TODO(crbug.com/350514491) remove this once all cases are handled by

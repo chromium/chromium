@@ -59,6 +59,7 @@
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "components/power_monitor/make_power_monitor_device_source.h"
+#include "components/variations/net/variations_command_line.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/app/mojo_ipc_support.h"
 #include "content/browser/browser_main.h"
@@ -341,7 +342,6 @@ pid_t LaunchZygoteHelper(base::CommandLine* cmd_line,
       switches::kV,
       switches::kVModule,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      switches::kEnableResourcesFileSharing,
       switches::kCrosWidevineBundledDir,
       switches::kCrosWidevineComponentUpdatedHintFile,
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -656,8 +656,7 @@ NO_STACK_PROTECTOR int RunZygote(ContentMainDelegate* delegate) {
 
   ContentClientInitializer::Set(process_type, delegate);
 
-  const ContentMainDelegate::InvokedInChildProcess invoked_in_child{
-      .is_zygote_child = true};
+  const ContentMainDelegate::InvokedInChildProcess invoked_in_child;
   if (delegate->ShouldCreateFeatureList(invoked_in_child)) {
     InitializeFieldTrialAndFeatureList();
   }
@@ -1176,7 +1175,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
           switches::kSingleProcess)) {
     mojo::SyncCallRestrictions::DisableSyncCallInterrupts();
   }
-
+  variations::MaybeUnpackVariationsStateFile();
   if (!mojo_ipc_support_) {
     const ContentMainDelegate::InvokedInBrowserProcess invoked_in_browser{
         .is_running_test = !main_params.ui_task.is_null()};

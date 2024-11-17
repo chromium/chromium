@@ -63,7 +63,8 @@ public class DeferredIMEWindowInsetApplicationCallback
                 : "DeferredIMEWindowInsetApplicationCallback can only be used in activities with an"
                         + " InsetObserverView";
         mInsetObserver = insetObserver;
-        insetObserver.addInsetsConsumer(this);
+        insetObserver.addInsetsConsumer(
+                this, InsetConsumerSource.DEFERRED_IME_WINDOW_INSET_APPLICATION_CALLBACK);
         insetObserver.addWindowInsetsAnimationListener(this);
     }
 

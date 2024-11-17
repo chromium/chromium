@@ -69,7 +69,7 @@ String BreakToken::ToString() const {
     case kInlineBreakToken:
       return To<InlineBreakToken>(this)->ToString();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BreakToken::ShowBreakTokenTree() const {
@@ -89,7 +89,7 @@ void BreakToken::Trace(Visitor* visitor) const {
       To<InlineBreakToken>(this)->TraceAfterDispatch(visitor);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void BreakToken::TraceAfterDispatch(Visitor* visitor) const {

@@ -31,6 +31,7 @@
 #include "third_party/blink/public/mojom/script/script_type.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_cache_consumer.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_streamer.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/resource/text_resource.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
@@ -78,7 +79,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
       StreamingAllowed,
       v8_compile_hints::V8CrowdsourcedCompileHintsProducer*,
       v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*,
-      bool v8_compile_hints_magic_comment_runtime_enabled);
+      v8_compile_hints::MagicCommentMode magic_comment_mode);
 
   // Public for testing
   static ScriptResource* CreateForTest(
@@ -94,7 +95,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
                  StreamingAllowed,
                  v8_compile_hints::V8CrowdsourcedCompileHintsProducer*,
                  v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*,
-                 bool v8_compile_hints_magic_comment_runtime_enabled,
+                 v8_compile_hints::MagicCommentMode magic_comment_mode,
                  mojom::blink::ScriptType);
   ~ScriptResource() override;
 
@@ -164,8 +165,8 @@ class CORE_EXPORT ScriptResource final : public TextResource {
     return v8_compile_hints_consumer_.Get();
   }
 
-  bool GetV8CompileHintsMagicCommentRuntimeFeatureEnabled() const {
-    return v8_compile_hints_magic_comment_runtime_enabled_;
+  v8_compile_hints::MagicCommentMode GetV8CompileHintsMagicCommentMode() const {
+    return magic_comment_mode_;
   }
 
   // Returns the Isolate if set. This may be null.
@@ -233,7 +234,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
             v8_compile_hints_producer,
         v8_compile_hints::V8CrowdsourcedCompileHintsConsumer*
             v8_compile_hints_consumer,
-        bool v8_compile_hints_magic_comment_runtime_enabled,
+        v8_compile_hints::MagicCommentMode magic_comment_mode,
         mojom::blink::ScriptType initial_request_script_type)
         : ResourceFactory(ResourceType::kScript,
                           TextResourceDecoderOptions::kPlainTextContent),
@@ -241,8 +242,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
           streaming_allowed_(streaming_allowed),
           v8_compile_hints_producer_(v8_compile_hints_producer),
           v8_compile_hints_consumer_(v8_compile_hints_consumer),
-          v8_compile_hints_magic_comment_runtime_enabled_(
-              v8_compile_hints_magic_comment_runtime_enabled),
+          magic_comment_mode_(magic_comment_mode),
           initial_request_script_type_(initial_request_script_type) {}
 
     Resource* Create(
@@ -252,8 +252,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
       return MakeGarbageCollected<ScriptResource>(
           request, options, decoder_options, isolate_, streaming_allowed_,
           v8_compile_hints_producer_, v8_compile_hints_consumer_,
-          v8_compile_hints_magic_comment_runtime_enabled_,
-          initial_request_script_type_);
+          magic_comment_mode_, initial_request_script_type_);
     }
 
    private:
@@ -268,7 +267,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
     // ExecutionContext.
     // TODO(42203853): Remove this once explicit compile hints have launched and
     // the feature is always on.
-    bool v8_compile_hints_magic_comment_runtime_enabled_;
+    v8_compile_hints::MagicCommentMode magic_comment_mode_;
     mojom::blink::ScriptType initial_request_script_type_;
   };
 
@@ -328,7 +327,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   // ExecutionContext.
   // TODO(42203853): Remove this once explicit compile hints have launched and
   // the feature is always on.
-  bool v8_compile_hints_magic_comment_runtime_enabled_;
+  v8_compile_hints::MagicCommentMode magic_comment_mode_;
 
   Member<BackgroundResourceScriptStreamer> background_streamer_;
 };

@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/unguessable_token.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -23,12 +24,22 @@ class ScopedVirtualPressureSourceForDevTools;
 class CONTENT_EXPORT WebContentsPressureManagerProxy final
     : public WebContentsUserData<WebContentsPressureManagerProxy> {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void DidAddVirtualPressureSource(device::mojom::PressureSource) = 0;
+    virtual void DidRemoveVirtualPressureSource(
+        device::mojom::PressureSource) = 0;
+  };
+
   ~WebContentsPressureManagerProxy() override;
 
   static WebContentsPressureManagerProxy* GetOrCreate(WebContents*);
 
   std::optional<base::UnguessableToken> GetTokenFor(
       device::mojom::PressureSource) const;
+
+  void AddObserver(Observer*);
+  void RemoveObserver(Observer*);
 
   std::unique_ptr<ScopedVirtualPressureSourceForDevTools>
       CreateVirtualPressureSourceForDevTools(
@@ -48,6 +59,8 @@ class CONTENT_EXPORT WebContentsPressureManagerProxy final
       const ScopedVirtualPressureSourceForDevTools&);
 
   mojo::Remote<device::mojom::PressureManager> pressure_manager_;
+
+  base::ObserverList<Observer, /*check_empty=*/true> observers_;
 
   base::flat_map<device::mojom::PressureSource, base::UnguessableToken>
       virtual_pressure_sources_tokens_;

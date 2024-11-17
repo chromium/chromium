@@ -129,7 +129,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForDownload(
     case download::DownloadItem::CANCELLED:
       break;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -265,8 +265,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForInterrupted(
     // Deprecated
     case FailState::NETWORK_INSTABILITY:
     case FailState::CANNOT_DOWNLOAD:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case FailState::NO_FAILURE:
       return;
   }
@@ -552,7 +551,7 @@ void DownloadBubbleSecurityViewInfo::PopulateForTailoredWarning(
       return;
     }
     case TailoredWarningType::kNoTailoredWarning: {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }

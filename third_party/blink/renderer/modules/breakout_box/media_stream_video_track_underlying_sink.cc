@@ -269,7 +269,7 @@ MediaStreamVideoTrackUnderlyingSink::MaybeConvertToNV12GMBVideoFrame(
                        format == media::PIXEL_FORMAT_XRGB ||
                        format == media::PIXEL_FORMAT_ARGB);
   bool frame_can_be_converted =
-      video_frame->NumTextures() == 1 &&
+      video_frame->HasSharedImage() &&
       (media::IsOpaque(format) || source_broker_->CanDiscardAlpha());
   bool sink_wants_mapped_frame =
       base::FeatureList::IsEnabled(kBreakoutBoxConversionWithoutSinkSignal) ||

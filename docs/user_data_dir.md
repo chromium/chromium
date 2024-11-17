@@ -45,6 +45,7 @@ The default location is in the local app data folder:
 * [Chrome] `%LOCALAPPDATA%\Google\Chrome\User Data`
 * [Chrome Beta] `%LOCALAPPDATA%\Google\Chrome Beta\User Data`
 * [Chrome Canary] `%LOCALAPPDATA%\Google\Chrome SxS\User Data`
+* [Chrome for Testing] `%LOCALAPPDATA%\Google\Chrome for Testing\User Data`
 * [Chromium] `%LOCALAPPDATA%\Chromium\User Data`
 
 (The canary channel suffix is determined using
@@ -57,6 +58,7 @@ The default location is in the `Application Support` folder:
 * [Chrome] `~/Library/Application Support/Google/Chrome`
 * [Chrome Beta] `~/Library/Application Support/Google/Chrome Beta`
 * [Chrome Canary] `~/Library/Application Support/Google/Chrome Canary`
+* [Chrome for Testing] `~/Library/Application Support/Google/Chrome for Testing`
 * [Chromium] `~/Library/Application Support/Chromium`
 
 (The canary channel suffix is determined using the `CrProductDirName` key in the
@@ -69,6 +71,7 @@ The default location is in `~/.config`:
 * [Chrome Stable] `~/.config/google-chrome`
 * [Chrome Beta] `~/.config/google-chrome-beta`
 * [Chrome Dev] `~/.config/google-chrome-unstable`
+* [Chrome for Testing] `~/.config/google-chrome-for-testing`
 * [Chromium] `~/.config/chromium`
 
 (The beta and dev channel suffixes are determined from `$CHROME_VERSION_EXTRA`,

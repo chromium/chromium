@@ -263,8 +263,7 @@ ChromeSecurityStateTabHelper::GetMaliciousContentStatus() const {
         // These threat types are not currently associated with
         // interstitials, and thus resources with these threat types are
         // not ever whitelisted or pending whitelisting.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   return security_state::MALICIOUS_CONTENT_STATUS_NONE;

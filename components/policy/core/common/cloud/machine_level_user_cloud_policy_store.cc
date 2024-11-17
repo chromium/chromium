@@ -52,7 +52,7 @@ MachineLevelUserCloudPolicyStore::MachineLevelUserCloudPolicyStore(
       machine_dm_token_(machine_dm_token),
       machine_client_id_(machine_client_id) {}
 
-MachineLevelUserCloudPolicyStore::~MachineLevelUserCloudPolicyStore() {}
+MachineLevelUserCloudPolicyStore::~MachineLevelUserCloudPolicyStore() = default;
 
 // static
 std::unique_ptr<MachineLevelUserCloudPolicyStore>

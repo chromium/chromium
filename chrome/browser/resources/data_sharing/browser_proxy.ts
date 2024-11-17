@@ -4,11 +4,13 @@
 
 import type {PageHandlerInterface} from './data_sharing.mojom-webui.js';
 import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './data_sharing.mojom-webui.js';
+import type {Code} from './data_sharing_sdk_types.js';
 
 export interface BrowserProxy {
   callbackRouter: PageCallbackRouter;
   handler?: PageHandlerInterface;
   showUi(): void;
+  closeUi(status: Code): void;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {
@@ -27,6 +29,10 @@ export class BrowserProxyImpl implements BrowserProxy {
 
   showUi() {
     this.handler.showUI();
+  }
+
+  closeUi(status: Code) {
+    this.handler.closeUI(status);
   }
 
   static getInstance(): BrowserProxy {

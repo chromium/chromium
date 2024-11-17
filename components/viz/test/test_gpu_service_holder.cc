@@ -204,6 +204,8 @@ TestGpuServiceHolder::TestGpuServiceHolder(
   gpu_thread_options.message_pump_type = ui::OzonePlatform::GetInstance()
                                              ->GetPlatformProperties()
                                              .message_pump_type_for_gpu;
+#elif BUILDFLAG(IS_MAC)
+  gpu_thread_options.message_pump_type = base::MessagePumpType::UI;
 #endif
 
     CHECK(gpu_main_thread_.StartWithOptions(std::move(gpu_thread_options)));
@@ -263,13 +265,15 @@ scoped_refptr<gl::GLShareGroup> TestGpuServiceHolder::GetShareGroup() {
 
 void TestGpuServiceHolder::ScheduleGpuMainTask(base::OnceClosure callback) {
   DCHECK(gpu_main_task_sequence_);
-  gpu_main_task_sequence_->ScheduleTask(std::move(callback), {});
+  gpu_main_task_sequence_->ScheduleTask(
+      std::move(callback), /*sync_token_fences=*/{}, gpu::SyncToken());
 }
 
 void TestGpuServiceHolder::ScheduleCompositorGpuTask(
     base::OnceClosure callback) {
   if (compositor_gpu_task_sequence_)
-    compositor_gpu_task_sequence_->ScheduleTask(std::move(callback), {});
+    compositor_gpu_task_sequence_->ScheduleTask(
+        std::move(callback), /*sync_token_fences=*/{}, gpu::SyncToken());
   else
     ScheduleGpuMainTask(std::move(callback));
 }
@@ -294,7 +298,7 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
       LOG(FATAL) << "Failed to create and initialize Vulkan implementation.";
     }
 #else
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 #endif
   }
 
@@ -343,8 +347,7 @@ void TestGpuServiceHolder::InitializeOnGpuThread(
   gpu_service_->InitializeWithHost(
       std::move(gpu_host_proxy), gpu::GpuProcessShmCount(),
       gl::init::CreateOffscreenGLSurface(gl::GetDefaultDisplay(), gfx::Size()),
-      /*sync_point_manager=*/nullptr, /*shared_image_manager=*/nullptr,
-      /*scheduler=*/nullptr, /*shutdown_event=*/nullptr);
+      mojom::GpuServiceCreationParams::New());
 
   main_task_executor_ = std::make_unique<gpu::GpuInProcessThreadService>(
       this, gpu_main_thread_.task_runner(), gpu_service_->GetGpuScheduler(),

@@ -21,8 +21,8 @@ NAME_FIRST | nombre | 名 |  | internacion_1
 NAME_LAST | apellidos | 姓 |  | internacion_1
 UNKNOWN_TYPE | sexo | 性別 | 0 | internacion_1
 UNKNOWN_TYPE | fechaNacimiento | 生年月日 |  | internacion_1
-ADDRESS_HOME_COUNTRY | nacionalidad | 国籍(国名) | 0 | internacion_1
-ADDRESS_HOME_STATE | paisNacimiento | 出生国 | 0 | internacion_1
+UNKNOWN_TYPE | nacionalidad | 国籍(国名) | 0 | internacion_1
+ADDRESS_HOME_COUNTRY | paisNacimiento | 出生国 | 0 | internacion_1
 UNKNOWN_TYPE | tipoDocumento | 書類の種類 | 0 | internacion_1
 UNKNOWN_TYPE | numeroDocumento | 書類番号 |  | internacion_1
 UNKNOWN_TYPE | confirmarNumeroDocumento | 書類番号(再入力） |  | internacion_1
@@ -36,13 +36,13 @@ ADDRESS_HOME_LINE1 | direccionResidencia | 現住所 |  | paisResidencia_3
 UNKNOWN_TYPE | motivoViaje | 旅行目的 | 0 | paisResidencia_3
 UNKNOWN_TYPE | especifiqueMotivo | 具体的な目的 | 0 | paisResidencia_3
 ADDRESS_HOME_STATE | estadoDestino | 州名 | 0 | paisResidencia_3
-ADDRESS_HOME_LINE1 | domicilioMexico | メキシコ国内の住所 |  | domicilioMexico_4
+UNKNOWN_TYPE | domicilioMexico | メキシコ国内の住所 |  | paisResidencia_3
 NAME_FIRST | nombreTutor | 名 |  | -default
 NAME_LAST | apellidosTutor | 姓 |  | -default
 UNKNOWN_TYPE | sexoTutor | 性別 | 0 | -default
 UNKNOWN_TYPE | fechaNacimientoTutor | 生年月日 |  | -default
-ADDRESS_HOME_COUNTRY | nacionalidadTutor | 国籍(国名) | 0 | domicilioMexico_4
-ADDRESS_HOME_COUNTRY | paisNacimientoTutor | 出生国 | 0 | domicilioMexico_4
-EMAIL_ADDRESS | correoElectronico | メールアドレス |  | domicilioMexico_4
-EMAIL_ADDRESS | confirmacionCorreoElectronico | メールアドレス(再入力） |  | domicilioMexico_4
-UNKNOWN_TYPE | captcha | 認証コード |  | domicilioMexico_4
+UNKNOWN_TYPE | nacionalidadTutor | 国籍(国名) | 0 | -default
+ADDRESS_HOME_COUNTRY | paisNacimientoTutor | 出生国 | 0 | -default
+EMAIL_ADDRESS | correoElectronico | メールアドレス |  | correoElectronico_4
+EMAIL_ADDRESS | confirmacionCorreoElectronico | メールアドレス(再入力） |  | correoElectronico_4
+UNKNOWN_TYPE | captcha | 認証コード |  | correoElectronico_4

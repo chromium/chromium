@@ -873,6 +873,61 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(2, matchEls.length);
   });
 
+  test('autocomplete should not query for empty inputs', async () => {
+    realbox.$.input.value = 'he';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    // Deleting a character still queries autocomplete.
+    realbox.$.input.value = 'h';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(2, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    // Deleting a character does not query autocomplete for empty input.
+    realbox.$.input.value = '';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+    assertEquals(2, testProxy.handler.getCallCount('queryAutocomplete'));
+  });
+
+  test('query autocomplete for empty inputs when enabled', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({
+      queryAutocompleteOnEmptyInput: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-searchbox');
+    document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
+
+    realbox.$.input.value = 'he';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    // Deleting a character queries autocomplete for non-empty input.
+    realbox.$.input.value = 'h';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(2, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    // Deleting a character still queries autocomplete for empty input in lens
+    // searchboxes.
+    realbox.$.input.value = '';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+    await testProxy.handler.whenCalled('queryAutocomplete');
+    assertEquals(3, testProxy.handler.getCallCount('queryAutocomplete'));
+    // Restore.
+    loadTimeData.overrideValues({
+      queryAutocompleteOnEmptyInput: false,
+    });
+  });
+
   //============================================================================
   // Test Cut/Copy
   //============================================================================
@@ -2063,6 +2118,56 @@ suite('NewTabPageRealboxTest', () => {
         // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
         // assertFavicon(realbox.$.icon, matches[0]!.destinationUrl.url);
       });
+  test('lens searchboxes always use default icons in searchbox', async () => {
+    // Arrange.
+    loadTimeData.overrideValues({
+      searchboxDefaultIcon: 'hello.svg',
+      isLensSearchbox: true,
+    });
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    realbox = document.createElement('cr-searchbox');
+    document.body.appendChild(realbox);
+    await waitAfterNextRender(realbox);
+
+    assertIconMaskImageUrl(realbox.$.icon, 'hello.svg');  // Default icon.
+
+    realbox.$.input.value = 'hello';
+    realbox.$.input.dispatchEvent(new InputEvent('input'));
+
+    const matches = [
+      createUrlMatch({iconUrl: 'page.svg'}),
+    ];
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: stringToMojoString16(realbox.$.input.value.trimStart()),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    assertTrue(await areMatchesShowing());
+
+    const matchEls =
+        realbox.$.matches.shadowRoot!.querySelectorAll('cr-searchbox-match');
+    assertEquals(1, matchEls.length);
+
+    // Select the first match.
+    const arrowDownEvent = new KeyboardEvent('keydown', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      key: 'ArrowDown',
+    });
+    realbox.$.input.dispatchEvent(arrowDownEvent);
+    assertTrue(arrowDownEvent.defaultPrevented);
+
+    // First match is selected.
+    assertTrue(matchEls[0]!.hasAttribute(Attributes.SELECTED));
+    // Icon is still default while match is selected.
+    assertIconMaskImageUrl(realbox.$.icon, 'hello.svg');
+    // Restore.
+    loadTimeData.overrideValues({
+      searchboxDefaultIcon: 'search.svg',
+      isLensSearchbox: false,
+    });
+  });
 
   //============================================================================
   // Test suggestion groups

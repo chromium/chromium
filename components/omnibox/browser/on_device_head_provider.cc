@@ -114,7 +114,7 @@ OnDeviceHeadProvider::OnDeviceHeadProvider(
   AddListener(listener);
 }
 
-OnDeviceHeadProvider::~OnDeviceHeadProvider() {}
+OnDeviceHeadProvider::~OnDeviceHeadProvider() = default;
 
 bool OnDeviceHeadProvider::IsOnDeviceHeadProviderAllowed(
     const AutocompleteInput& input) {
@@ -246,13 +246,8 @@ void OnDeviceHeadProvider::HeadModelSearchDone(
     std::unique_ptr<OnDeviceHeadProviderParams> params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  if (!OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled() ||
+  if (!ShouldFetchTailSuggestions(*params, client()->GetApplicationLocale()) ||
       client()->GetOnDeviceTailModelService() == nullptr) {
-    AllSearchDone(std::move(params));
-    return;
-  }
-
-  if (!ShouldFetchTailSuggestions(*params)) {
     AllSearchDone(std::move(params));
     return;
   }
@@ -362,7 +357,12 @@ std::string OnDeviceHeadProvider::GetOnDeviceHeadModelFilename() const {
 
 // static
 bool OnDeviceHeadProvider::ShouldFetchTailSuggestions(
-    const OnDeviceHeadProviderParams& params) {
+    const OnDeviceHeadProviderParams& params,
+    const std::string& locale) {
+  if (!OmniboxFieldTrial::IsOnDeviceTailSuggestEnabled(locale)) {
+    return false;
+  }
+
   if (!base::GetFieldTrialParamByFeatureAsBool(
           omnibox::kOnDeviceTailModel, "EnableForSingleWordPrefix", false)) {
     std::string sanitized_input = SanitizeInput(params.input.text());

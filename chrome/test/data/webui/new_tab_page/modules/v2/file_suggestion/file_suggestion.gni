@@ -2,4 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-file_suggestion_v2_test_files = [ "modules/v2/file_suggestion/module_test.ts" ]
+file_suggestion_v2_test_files = [
+  "modules/v2/file_suggestion/drive_module_test.ts",
+  "modules/v2/file_suggestion/file_suggestion_test.ts",
+  "modules/v2/file_suggestion/sharepoint_module_test.ts",
+]

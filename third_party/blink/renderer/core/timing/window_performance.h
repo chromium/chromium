@@ -160,6 +160,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   void CreateNavigationTimingInstance(
       mojom::blink::ResourceTimingInfoPtr navigation_resource_timing);
 
+  void OnPageScroll();
+  bool IsAutoscrollActive();
+  void ResetAutoscroll() { autoscroll_active_ = false; }
+
  private:
   static std::pair<AtomicString, DOMWindow*> SanitizedAttribution(
       ExecutionContext*,
@@ -222,6 +226,22 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   DOMHighResTimeStamp pending_pointer_down_start_time_;
   std::optional<base::TimeDelta> pending_pointer_down_processing_time_;
   std::optional<base::TimeDelta> pending_pointer_down_time_to_next_paint_;
+
+  // Set to true when text selection causes scrolling in the page. Reset when
+  // the mouse button is released and autoscroll stops. Used to ignore
+  // recording interaction metrics for all the events during the text
+  // selection autoscroll.
+  // We do this because the interactions following a scroll can cause a lot of
+  // work to be done (intersection observers, etc.) but this doesn't
+  // necessarily result in a degraded user experience.
+  // When users are actively scrolling a page, it is much harder to visualize
+  // the latency for any one specific animation frame, not in the same way as a
+  // typical discrete interaction, which are measured in INP only.
+  // The interactions causing text selection autoscroll are generally rare and
+  // not typically "designed by the site UI". It's more of user agent or
+  // accessibility use case. We don't want any pages to fail INP because of
+  // these interactions.
+  bool autoscroll_active_ = false;
 
   // Calculate responsiveness metrics and record UKM for them.
   Member<ResponsivenessMetrics> responsiveness_metrics_;

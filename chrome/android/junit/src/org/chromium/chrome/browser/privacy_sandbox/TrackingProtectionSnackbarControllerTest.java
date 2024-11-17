@@ -13,7 +13,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -23,7 +22,6 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
@@ -38,15 +36,13 @@ public class TrackingProtectionSnackbarControllerTest {
 
     @Mock private SnackbarManager mSnackbarManagerMock;
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     private FakeCookieControlsBridge mFakeCookieControlsBridge;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         mFakeCookieControlsBridge = new FakeCookieControlsBridge();
-        mocker.mock(CookieControlsBridgeJni.TEST_HOOKS, mFakeCookieControlsBridge);
+        CookieControlsBridgeJni.setInstanceForTesting(mFakeCookieControlsBridge);
     }
 
     @Test

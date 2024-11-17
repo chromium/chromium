@@ -326,8 +326,7 @@ void BrowserGpuChannelHostFactory::EstablishGpuChannel(
 scoped_refptr<gpu::GpuChannelHost>
 BrowserGpuChannelHostFactory::EstablishGpuChannelSync() {
 #if BUILDFLAG(IS_ANDROID)
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 #else
   EstablishGpuChannel(gpu::GpuChannelEstablishedCallback(), true);
   return gpu_channel_;

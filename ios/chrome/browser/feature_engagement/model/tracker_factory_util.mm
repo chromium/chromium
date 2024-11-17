@@ -32,29 +32,28 @@ std::unique_ptr<KeyedService> CreateFeatureEngagementTracker(
     return CreateDemoModeTracker(fetDemoModeOverride.value());
   }
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
-  base::FilePath storage_dir = browser_state->GetStatePath().Append(
+  base::FilePath storage_dir = profile->GetStatePath().Append(
       kIOSFeatureEngagementTrackerStorageDirname);
 
   leveldb_proto::ProtoDatabaseProvider* db_provider =
-      browser_state->GetProtoDatabaseProvider();
+      profile->GetProtoDatabaseProvider();
 
   auto default_browser_event_exporter =
       std::make_unique<DefaultBrowserEventExporter>();
 
   auto session_controller = std::make_unique<IOSTrackerSessionController>();
 
-  return base::WrapUnique(feature_engagement::Tracker::Create(
+  return feature_engagement::Tracker::Create(
       storage_dir, background_task_runner, db_provider,
       std::move(default_browser_event_exporter),
       feature_engagement::Tracker::GetDefaultConfigurationProviders(),
-      std::move(session_controller)));
+      std::move(session_controller));
 }
 
 }  // namespace feature_engagement

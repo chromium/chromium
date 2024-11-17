@@ -35,7 +35,6 @@ class IpProtectionProxyConfigManagerImpl
   bool IsProxyListAvailable() override;
   const std::vector<net::ProxyChain>& ProxyList() override;
   const std::string& CurrentGeo() override;
-  void RefreshProxyListForGeoChange() override;
   void RequestRefreshProxyList() override;
 
   // Set a callback to occur when the proxy list has been refreshed.
@@ -58,7 +57,7 @@ class IpProtectionProxyConfigManagerImpl
 
   void SetProxyListForTesting(
       std::optional<std::vector<net::ProxyChain>> proxy_list,
-      std::optional<ip_protection::GeoHint> geo_hint) {
+      std::optional<GeoHint> geo_hint) {
     current_geo_id_ = GetGeoIdFromGeoHint(geo_hint);
     proxy_list_ = *proxy_list;
     have_fetched_proxy_list_ = true;
@@ -81,7 +80,7 @@ class IpProtectionProxyConfigManagerImpl
   // Current geo of the proxy list.
   std::string current_geo_id_ = "";
 
-  // True if an invocation of `config_getter_.GetProxyList()` is
+  // True if an invocation of `config_getter_.GetProxyConfig()` is
   // outstanding.
   bool fetching_proxy_list_ = false;
 
@@ -98,8 +97,8 @@ class IpProtectionProxyConfigManagerImpl
   // Source of proxy list, when needed.
   raw_ref<IpProtectionConfigGetter> config_getter_;
 
-  // The last time this instance began refreshing the proxy list.
-  base::Time last_proxy_list_refresh_;
+  // The last time this instance began refreshing the proxy list successfully.
+  base::Time last_successful_proxy_list_refresh_;
 
   // The min age of the proxy list before an additional refresh is allowed.
   const base::TimeDelta proxy_list_min_age_;

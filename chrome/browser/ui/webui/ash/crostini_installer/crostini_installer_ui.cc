@@ -13,6 +13,7 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/crostini/crostini_disk.h"
 #include "chrome/browser/ash/crostini/crostini_installer.h"
+#include "chrome/browser/ash/crostini/crostini_installer_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/crostini_installer/crostini_installer_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -196,7 +197,8 @@ void CrostiniInstallerUI::CreatePageHandler(
   DCHECK(pending_page.is_valid());
 
   page_handler_ = std::make_unique<CrostiniInstallerPageHandler>(
-      crostini::CrostiniInstaller::GetForProfile(Profile::FromWebUI(web_ui())),
+      crostini::CrostiniInstallerFactory::GetForProfile(
+          Profile::FromWebUI(web_ui())),
       std::move(pending_page_handler), std::move(pending_page),
       // Using Unretained(this) because |page_handler_| will not out-live
       // |this|.

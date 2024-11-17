@@ -27,9 +27,10 @@ bool AreHeadersEqual(NSHTTPURLResponse* http_response,
   [http_response.allHeaderFields
       enumerateKeysAndObjectsUsingBlock:^(NSString* header_name,
                                           NSString* header_value, BOOL* stop) {
-        std::string value;
-        http_response_headers->GetNormalizedHeader(
-            base::SysNSStringToUTF8(header_name), &value);
+        std::string value =
+            http_response_headers
+                ->GetNormalizedHeader(base::SysNSStringToUTF8(header_name))
+                .value_or(std::string());
         all_headers_present = (value == base::SysNSStringToUTF8(header_value));
         *stop = !all_headers_present;
       }];

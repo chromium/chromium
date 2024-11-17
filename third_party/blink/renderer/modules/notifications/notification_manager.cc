@@ -250,7 +250,7 @@ void NotificationManager::DidDisplayPersistentNotification(
       resolver->Reject();
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void NotificationManager::ClosePersistentNotification(

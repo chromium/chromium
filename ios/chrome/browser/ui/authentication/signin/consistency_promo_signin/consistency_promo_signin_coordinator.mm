@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 
 #import "base/metrics/user_metrics.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -70,9 +71,9 @@
     coordinatorWithBaseViewController:(UIViewController*)viewController
                               browser:(Browser*)browser
                           accessPoint:(signin_metrics::AccessPoint)accessPoint {
-  ChromeBrowserState* browserState = browser->GetBrowserState();
+  ProfileIOS* profile = browser->GetProfile();
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   if (!accountManagerService->HasIdentities() &&
       accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
     RecordConsistencyPromoUserAction(
@@ -110,18 +111,18 @@
   signin_metrics::LogSignInStarted(self.accessPoint);
   base::RecordAction(base::UserMetricsAction("Signin_BottomSheet_Opened"));
   // Create ConsistencyPromoSigninMediator.
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browserState);
+      IdentityManagerFactory::GetForProfile(profile);
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+      ChromeAccountManagerServiceFactory::GetForProfile(profile);
   AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browserState);
+      AuthenticationServiceFactory::GetForProfile(profile);
   self.consistencyPromoSigninMediator = [[ConsistencyPromoSigninMediator alloc]
       initWithAccountManagerService:accountManagerService
               authenticationService:authenticationService
                     identityManager:identityManager
-                    userPrefService:browserState->GetPrefs()
+                    userPrefService:profile->GetPrefs()
                         accessPoint:self.accessPoint];
   self.consistencyPromoSigninMediator.delegate = self;
   // Create ConsistencyDefaultAccountCoordinator.
@@ -283,8 +284,8 @@
   self.accountChooserCoordinator = nil;
   [self.consistencyPromoSigninMediator disconnectWithResult:signinResult];
   self.consistencyPromoSigninMediator = nil;
-  [self runCompletionCallbackWithSigninResult:signinResult
-                               completionInfo:completionInfo];
+  [self runCompletionWithSigninResult:signinResult
+                       completionInfo:completionInfo];
 }
 
 // Starts the sign-in flow.
@@ -320,8 +321,10 @@
 
 - (void)consistencyDefaultAccountCoordinatorSkip:
     (ConsistencyDefaultAccountCoordinator*)coordinator {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  PrefService* userPrefService = browserState->GetPrefs();
+  // This DCHECK is to help to understand crbug.com/372272374.
+  DCHECK(!self.alertCoordinator) << base::SysNSStringToUTF8([self description]);
+  ProfileIOS* profile = self.browser->GetProfile();
+  PrefService* userPrefService = profile->GetPrefs();
   if (self.accessPoint ==
       signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
     const int skipCounter =
@@ -395,8 +398,7 @@
              initWithAnimation:ConsistencySheetSlideAnimationPopping
           navigationController:self.navigationController];
   }
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (id<UIViewControllerInteractiveTransitioning>)

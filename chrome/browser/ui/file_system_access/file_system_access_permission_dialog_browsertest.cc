@@ -27,52 +27,53 @@ class FileSystemAccessPermissionDialogTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     RequestData request(
         RequestType::kNewPermission, kTestOrigin,
-        {{base::FilePath(), HandleType::kFile, AccessType::kWrite}});
+        {{content::PathInfo(), HandleType::kFile, AccessType::kWrite}});
     if (name == "LongFileName") {
-      request.file_request_data[0].path = base::FilePath(FILE_PATH_LITERAL(
-          "/foo/bar/Some Really Really Really Really Long File Name.txt"));
+      request.file_request_data[0].path_info =
+          content::PathInfo(FILE_PATH_LITERAL(
+              "/foo/bar/Some Really Really Really Really Long File Name.txt"));
     } else if (name == "Folder") {
-      request.file_request_data[0].path =
-          base::FilePath(FILE_PATH_LITERAL("/bar/MyProject"));
+      request.file_request_data[0].path_info =
+          content::PathInfo(FILE_PATH_LITERAL("/bar/MyProject"));
       request.file_request_data[0].handle_type = HandleType::kDirectory;
     } else if (name == "LongOrigin") {
-      request.file_request_data[0].path =
-          base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
+      request.file_request_data[0].path_info =
+          content::PathInfo(FILE_PATH_LITERAL("/foo/README.txt"));
       request.origin =
           url::Origin::Create(GURL("https://"
                                    "longextendedsubdomainnamewithoutdashesinord"
                                    "ertotestwordwrapping.appspot.com"));
     } else if (name == "FileOrigin") {
-      request.file_request_data[0].path =
-          base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
+      request.file_request_data[0].path_info =
+          content::PathInfo(FILE_PATH_LITERAL("/foo/README.txt"));
       request.origin = url::Origin::Create(GURL("file:///foo/bar/bla"));
     } else if (name == "ExtensionOrigin") {
-      request.file_request_data[0].path =
-          base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
+      request.file_request_data[0].path_info =
+          content::PathInfo(FILE_PATH_LITERAL("/foo/README.txt"));
       request.origin = url::Origin::Create(GURL(
           "chrome-extension://ehoadneljpdggcbbknedodolkkjodefl/capture.html"));
     } else if (name == "FolderRead") {
-      request.file_request_data[0].path =
-          base::FilePath(FILE_PATH_LITERAL("/bar/MyProject"));
+      request.file_request_data[0].path_info =
+          content::PathInfo(FILE_PATH_LITERAL("/bar/MyProject"));
       request.file_request_data[0].handle_type = HandleType::kDirectory;
       request.file_request_data[0].access = AccessType::kRead;
     } else if (name == "FolderReadWrite") {
-      request.file_request_data[0].path =
-          base::FilePath(FILE_PATH_LITERAL("/bar/MyProject"));
+      request.file_request_data[0].path_info =
+          content::PathInfo(FILE_PATH_LITERAL("/bar/MyProject"));
       request.file_request_data[0].handle_type = HandleType::kDirectory;
       request.file_request_data[0].access = AccessType::kReadWrite;
     } else if (name == "FileRead") {
-      request.file_request_data[0].path =
-          base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
+      request.file_request_data[0].path_info =
+          content::PathInfo(FILE_PATH_LITERAL("/foo/README.txt"));
       request.file_request_data[0].access = AccessType::kRead;
     } else if (name == "FileReadWrite") {
-      request.file_request_data[0].path =
-          base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
+      request.file_request_data[0].path_info =
+          content::PathInfo(FILE_PATH_LITERAL("/foo/README.txt"));
       request.file_request_data[0].access = AccessType::kReadWrite;
     } else {
       CHECK_EQ(name, "default");
-      request.file_request_data[0].path =
-          base::FilePath(FILE_PATH_LITERAL("/foo/README.txt"));
+      request.file_request_data[0].path_info =
+          content::PathInfo(FILE_PATH_LITERAL("/foo/README.txt"));
     }
     ShowFileSystemAccessPermissionDialog(
         request,

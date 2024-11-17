@@ -25,10 +25,6 @@ if (is_apple) {
   import("//build/config/apple/symbols.gni")
 }
 
-if (is_ios) {
-  import("//build/config/ios/config.gni")
-}
-
 declare_args() {
   # Set to true to use lld, the LLVM linker.
   # In late bring-up on macOS (see docs/mac_lld.md).
@@ -324,7 +320,7 @@ if (forbid_non_component_debug_builds) {
   assert(
       symbol_level != 2 || current_toolchain != default_toolchain ||
           is_component_build || is_fuchsia || is_apple || use_debug_fission ||
-          is_android || is_chromeos || host_os == "win",
+          is_android || is_chromeos || is_win,
       "Can't do non-component builds at symbol_level=2 without use_debug_fission=true")
 }
 

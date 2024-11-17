@@ -18,7 +18,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -182,8 +181,7 @@ gfx::Size NativeThemeBase::GetPartSize(Part part,
       NOTIMPLEMENTED();
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown theme part: " << part;
-      break;
+      NOTREACHED() << "Unknown theme part: " << part;
   }
   return gfx::Size();
 }
@@ -239,9 +237,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
                     absl::get<ButtonExtraParams>(extra), color_scheme,
                     accent_color_opaque);
       break;
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
     case kFrameTopArea:
       PaintFrameTopArea(canvas, state, rect,
                         absl::get<FrameTopAreaExtraParams>(extra),
@@ -339,8 +335,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
       NOTIMPLEMENTED();
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unknown theme part: " << part;
-      break;
+      NOTREACHED() << "Unknown theme part: " << part;
   }
 
   canvas->restore();
@@ -351,15 +346,11 @@ bool NativeThemeBase::SupportsNinePatch(Part part) const {
 }
 
 gfx::Size NativeThemeBase::GetNinePatchCanvasSize(Part part) const {
-  NOTREACHED_IN_MIGRATION()
-      << "NativeThemeBase doesn't support nine-patch resources.";
-  return gfx::Size();
+  NOTREACHED() << "NativeThemeBase doesn't support nine-patch resources.";
 }
 
 gfx::Rect NativeThemeBase::GetNinePatchAperture(Part part) const {
-  NOTREACHED_IN_MIGRATION()
-      << "NativeThemeBase doesn't support nine-patch resources.";
-  return gfx::Rect();
+  NOTREACHED() << "NativeThemeBase doesn't support nine-patch resources.";
 }
 
 NativeThemeBase::NativeThemeBase() : NativeThemeBase(false) {}
@@ -1522,8 +1513,7 @@ SkColor NativeThemeBase::GetControlColor(
     case kScrollbarThumb:
       return SkColorSetA(SK_ColorBLACK, 0x33);
   }
-  NOTREACHED_IN_MIGRATION();
-  return gfx::kPlaceholderColor;
+  NOTREACHED();
 }
 
 SkColor NativeThemeBase::GetDarkModeControlColor(
@@ -1605,8 +1595,7 @@ SkColor NativeThemeBase::GetDarkModeControlColor(
     case kScrollbarThumb:
       return SkColorSetA(SK_ColorWHITE, 0x33);
   }
-  NOTREACHED_IN_MIGRATION();
-  return gfx::kPlaceholderColor;
+  NOTREACHED();
 }
 
 SkColor NativeThemeBase::GetControlColorFromColorProvider(

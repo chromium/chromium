@@ -115,9 +115,7 @@ void InternetHandler::OnGmsCoreNotificationStateChanged() {
 
 void InternetHandler::AddThirdPartyVpn(const base::Value::List& args) {
   if (args.size() < 1 || !args[0].is_string()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Invalid args for: " << kAddThirdPartyVpnMessage;
-    return;
+    NOTREACHED() << "Invalid args for: " << kAddThirdPartyVpnMessage;
   }
   const std::string& app_id = args[0].GetString();
   if (app_id.empty()) {
@@ -152,9 +150,7 @@ void InternetHandler::AddThirdPartyVpn(const base::Value::List& args) {
 
 void InternetHandler::ConfigureThirdPartyVpn(const base::Value::List& args) {
   if (args.size() < 1 || !args[0].is_string()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Invalid args for: " << kConfigureThirdPartyVpnMessage;
-    return;
+    NOTREACHED() << "Invalid args for: " << kConfigureThirdPartyVpnMessage;
   }
   const std::string& guid = args[0].GetString();
   if (profile_ != GetProfileForPrimaryUser()) {
@@ -213,9 +209,7 @@ void InternetHandler::RequestGmsCoreNotificationsDisabledDeviceNames(
 
 void InternetHandler::ShowCarrierAccountDetail(const base::Value::List& args) {
   if (args.size() < 1 || !args[0].is_string()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Invalid args for: " << kShowCarrierAccountDetail;
-    return;
+    NOTREACHED() << "Invalid args for: " << kShowCarrierAccountDetail;
   }
   const std::string& guid = args[0].GetString();
   NetworkConnect::Get()->ShowCarrierAccountDetail(guid);
@@ -223,8 +217,7 @@ void InternetHandler::ShowCarrierAccountDetail(const base::Value::List& args) {
 
 void InternetHandler::ShowPortalSignin(const base::Value::List& args) {
   if (args.size() < 1 || !args[0].is_string()) {
-    NOTREACHED_IN_MIGRATION() << "Invalid args for: " << kShowPortalSignin;
-    return;
+    NOTREACHED() << "Invalid args for: " << kShowPortalSignin;
   }
   const std::string& guid = args[0].GetString();
   NetworkConnect::Get()->ShowPortalSignin(guid,
@@ -233,9 +226,7 @@ void InternetHandler::ShowPortalSignin(const base::Value::List& args) {
 
 void InternetHandler::ShowCellularSetupUI(const base::Value::List& args) {
   if (args.size() < 1 || !args[0].is_string()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Invalid args for: " << kConfigureThirdPartyVpnMessage;
-    return;
+    NOTREACHED() << "Invalid args for: " << kConfigureThirdPartyVpnMessage;
   }
   const std::string& guid = args[0].GetString();
   NetworkConnect::Get()->ShowMobileSetup(guid);

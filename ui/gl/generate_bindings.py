@@ -200,6 +200,11 @@ GL_FUNCTIONS = [
                'GLint dstX0, GLint dstY0, GLint dstX1, GLint dstY1, '
                'GLbitfield mask, GLenum filter', },
 { 'return_type': 'void',
+  'versions': [{'name': 'glBlobCacheCallbacksANGLE',
+                'extensions': ['GL_ANGLE_blob_cache']}],
+  'arguments':
+      'GLSETBLOBPROCANGLE set, GLGETBLOBPROCANGLE get, const void* userData', },
+{ 'return_type': 'void',
   'names': ['glBufferData'],
   'arguments':
       'GLenum target, GLsizeiptr size, const void* data, GLenum usage', },
@@ -3236,6 +3241,12 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
         r'EGLDEBUGPROCKHR ([a-zA-Z0-9_]+)',
         r'EGLDEBUGPROCKHR_\1', log_argument_names)
     log_argument_names = re.sub(
+        r'GLSETBLOBPROCANGLE ([a-zA-Z0-9_]+)',
+        r'GLSETBLOBPROCANGLE_\1', log_argument_names)
+    log_argument_names = re.sub(
+        r'GLGETBLOBPROCANGLE ([a-zA-Z0-9_]+)',
+        r'GLGETBLOBPROCANGLE_\1', log_argument_names)
+    log_argument_names = re.sub(
         r'(?<!E)GLenum ([a-zA-Z0-9_]+)', r'GLenum_\1', log_argument_names)
     # Strip remaining types.
     log_argument_names = re.sub(
@@ -3262,6 +3273,12 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
         r'reinterpret_cast<void*>(\1)', log_argument_names)
     log_argument_names = re.sub(
         r'EGLDEBUGPROCKHR_([a-zA-Z0-9_]+)',
+        r'reinterpret_cast<void*>(\1)', log_argument_names)
+    log_argument_names = re.sub(
+        r'GLSETBLOBPROCANGLE_([a-zA-Z0-9_]+)',
+        r'reinterpret_cast<void*>(\1)', log_argument_names)
+    log_argument_names = re.sub(
+        r'GLGETBLOBPROCANGLE_([a-zA-Z0-9_]+)',
         r'reinterpret_cast<void*>(\1)', log_argument_names)
     log_argument_names = re.sub(
         r'GLenum_([a-zA-Z0-9_]+)', r'GLEnums::GetStringEnum(\1)',
@@ -3313,8 +3330,7 @@ void DisplayExtensionsEGL::InitializeExtensionSettings(EGLDisplay display) {
     file.write('void NoContextHelper(const char* method_name) {\n')
     no_context_error = ('<< "Trying to call " << method_name << " without '
                         'current GL context"')
-    file.write('  NOTREACHED_IN_MIGRATION() %s;\n' % no_context_error)
-    file.write('  LOG(ERROR) %s;\n' % no_context_error)
+    file.write('  NOTREACHED() %s;\n' % no_context_error)
     file.write('}\n')
     file.write('}  // namespace\n')
     for func in functions:
@@ -3436,7 +3452,7 @@ namespace gl {
   # GLProcAddress().
   file.write('\n')
   file.write('static void Mock%sInvalidFunction() {\n' % set_name.capitalize())
-  file.write('  NOTREACHED_IN_MIGRATION();\n')
+  file.write('  NOTREACHED();\n')
   file.write('}\n')
 
   # Write a function to lookup a mock GL function based on its name.

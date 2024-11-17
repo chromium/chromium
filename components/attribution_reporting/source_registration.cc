@@ -19,6 +19,7 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_debug_reporting_config.h"
+#include "components/attribution_reporting/aggregatable_named_budget_defs.h"
 #include "components/attribution_reporting/aggregation_keys.h"
 #include "components/attribution_reporting/attribution_scopes_data.h"
 #include "components/attribution_reporting/constants.h"
@@ -48,6 +49,23 @@ base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
     case SourceType::kEvent:
       return expiry.RoundToMultiple(base::Days(1));
   }
+}
+
+void RecordFeatureUsage(const SourceRegistration& result) {
+  base::UmaHistogramExactLinear(
+      "Conversions.ScopesPerSourceRegistration",
+      result.attribution_scopes_data.has_value()
+          ? result.attribution_scopes_data->attribution_scopes_set()
+                .scopes()
+                .size()
+          : 0,
+      /*exclusive_max=*/attribution_reporting::kMaxScopesPerSource + 1);
+  base::UmaHistogramExactLinear(
+      "Conversions.NamedBudgetsPerSourceRegistration",
+      result.aggregatable_named_budget_defs.budgets().size(),
+      /*exclusive_max=*/25 + 1);
+  static_assert(attribution_reporting::kMaxAggregatableNamedBudgetsPerSource ==
+                25);
 }
 
 }  // namespace
@@ -143,6 +161,10 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
       result.aggregation_keys,
       AggregationKeys::FromJSON(registration.Find(kAggregationKeys)));
 
+  ASSIGN_OR_RETURN(result.aggregatable_named_budget_defs,
+                   AggregatableNamedBudgetDefs::FromJSON(
+                       registration.Find(kAggregatableNamedBudgets)));
+
   if (base::Value* scopes_value = registration.Find(kAttributionScopes);
       scopes_value &&
       base::FeatureList::IsEnabled(features::kAttributionScopes)) {
@@ -163,8 +185,6 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
         *std::move(aggregatable_debug_reporting_config);
   }
 
-  if (base::FeatureList::IsEnabled(attribution_reporting::features::
-                                       kAttributionSourceDestinationLimit)) {
     ASSIGN_OR_RETURN(
         result.destination_limit_priority,
         ParseInt64(registration, kDestinationLimitPriority)
@@ -172,19 +192,11 @@ base::expected<SourceRegistration, SourceRegistrationError> ParseDict(
         [](ParseError) {
           return SourceRegistrationError::kDestinationLimitPriorityInvalid;
         });
-  }
 
   CHECK(result.IsValid());
   CHECK(result.IsValidForSourceType(source_type));
 
-  base::UmaHistogramExactLinear(
-      "Conversions.ScopesPerSourceRegistration",
-      result.attribution_scopes_data.has_value()
-          ? result.attribution_scopes_data->attribution_scopes_set()
-                .scopes()
-                .size()
-          : 0,
-      /*exclusive_max=*/attribution_reporting::kMaxScopesPerSource + 1);
+  RecordFeatureUsage(result);
 
   return result;
 }
@@ -256,10 +268,9 @@ base::Value::Dict SourceRegistration::ToJson() const {
     dict.Set(kAttributionScopes, attribution_scopes_data->ToJson());
   }
 
-  if (base::FeatureList::IsEnabled(attribution_reporting::features::
-                                       kAttributionSourceDestinationLimit)) {
     SerializeInt64(dict, kDestinationLimitPriority, destination_limit_priority);
-  }
+
+  aggregatable_named_budget_defs.Serialize(dict);
 
   return dict;
 }

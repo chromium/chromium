@@ -256,10 +256,7 @@ class HttpStreamFactory::JobController
       HttpStreamRequest::Delegate* delegate,
       HttpStreamRequest::StreamType stream_type);
 
-  // Returns the first quic::ParsedQuicVersion that has been advertised in
-  // |advertised_versions| and is supported, following the order of
-  // |advertised_versions|.  If no mutually supported version is found,
-  // quic::ParsedQuicVersion::Unsupported() will be returned.
+  // Just calls QuicContext::SelectQuicVersion().
   quic::ParsedQuicVersion SelectQuicVersion(
       const quic::ParsedQuicVersionVector& advertised_versions);
 
@@ -298,7 +295,7 @@ class HttpStreamFactory::JobController
   // Call site of Start() should destroy the current HttpStreamRequest and
   // switch to the HttpStreamPool. `this` will be destroyed when `request_` is
   // destroyed.
-  void SwitchToHttpStreamPool(quic::ParsedQuicVersion quic_version);
+  void SwitchToHttpStreamPool();
 
   // Called when `this` asked the HttpStreamPool to handle a preconnect and
   // the preconnect completed. Used to notify the factory of completion.
@@ -307,8 +304,7 @@ class HttpStreamFactory::JobController
   // Used to call HttpStreamRequest::OnSwitchesToHttpStreamPool() later.
   void CallOnSwitchesToHttpStreamPool(
       HttpStreamKey stream_key,
-      AlternativeServiceInfo alternative_service_info,
-      quic::ParsedQuicVersion quic_version);
+      AlternativeServiceInfo alternative_service_info);
 
   const raw_ptr<HttpStreamFactory> factory_;
   const raw_ptr<HttpNetworkSession> session_;

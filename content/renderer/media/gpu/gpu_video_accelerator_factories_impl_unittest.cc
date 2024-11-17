@@ -63,6 +63,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::UnorderedElementsAre;
 
 namespace content {
 
@@ -105,6 +106,16 @@ const media::VideoDecoderConfig kVP9BaseConfig(
     media::EmptyExtraData(),
     media::EncryptionScheme::kUnencrypted);
 
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+const media::SupportedVideoDecoderConfig kH265MaxSupportedVideoDecoderConfig =
+    media::SupportedVideoDecoderConfig(
+        media::VideoCodecProfile::HEVCPROFILE_MIN,
+        media::VideoCodecProfile::HEVCPROFILE_MAX,
+        media::kDefaultSwDecodeSizeMin,
+        media::kDefaultSwDecodeSizeMax,
+        true,
+        false);
+#endif
 }  // namespace
 
 class TestGpuChannelHost : public gpu::GpuChannelHost {
@@ -663,6 +674,41 @@ TEST_F(GpuVideoAcceleratorFactoriesImplTest, DecoderConfigIsNotSupported) {
   EXPECT_EQ(
       gpu_video_accelerator_factories->IsDecoderConfigSupported(kVP9BaseConfig),
       media::GpuVideoAcceleratorFactories::Supported::kFalse);
+}
+
+TEST_F(GpuVideoAcceleratorFactoriesImplTest, GetSupportedVideoDecoderConfigs) {
+  fake_media_codec_provider_.SetSupportedVideoDecoderConfigs(
+      {kH264MaxSupportedVideoDecoderConfig
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+       ,
+       kH265MaxSupportedVideoDecoderConfig
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
+      });
+
+  auto gpu_video_accelerator_factories =
+      CreateGpuVideoAcceleratorFactories(true, false);
+
+  EXPECT_TRUE(
+      gpu_video_accelerator_factories->IsGpuVideoDecodeAcceleratorEnabled());
+  EXPECT_TRUE(gpu_video_accelerator_factories->IsDecoderSupportKnown());
+  base::test::TestFuture<void> future;
+  gpu_video_accelerator_factories->NotifyDecoderSupportKnown(
+      future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  auto supported_profiles =
+      gpu_video_accelerator_factories->GetSupportedVideoDecoderConfigs();
+  EXPECT_TRUE(supported_profiles.has_value());
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC)
+  EXPECT_EQ(supported_profiles->size(), static_cast<size_t>(2));
+  EXPECT_THAT(*supported_profiles,
+              UnorderedElementsAre(kH264MaxSupportedVideoDecoderConfig,
+                                   kH265MaxSupportedVideoDecoderConfig));
+#else
+  EXPECT_EQ(supported_profiles->size(), static_cast<size_t>(1));
+  EXPECT_THAT(*supported_profiles,
+              UnorderedElementsAre(kH264MaxSupportedVideoDecoderConfig));
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC)
 }
 
 TEST_F(GpuVideoAcceleratorFactoriesImplTest, CreateVideoDecoder) {

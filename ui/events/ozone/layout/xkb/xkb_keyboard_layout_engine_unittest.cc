@@ -17,7 +17,6 @@
 #include <tuple>
 
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -995,10 +994,6 @@ TEST_F(XkbLayoutEngineVkTest, GetDomCodeByKeysym) {
 
     // NumLock + Numpad1. NumLock
     {65457, kNullopt, ui::DomCode::NUMPAD1},
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // On ChromeOS, NumLock should be interpreted as it is always set.
-    {65457, 0, ui::DomCode::NUMPAD1},
-#endif
     {65457, kNumLockMask, ui::DomCode::NUMPAD1},
   };
 

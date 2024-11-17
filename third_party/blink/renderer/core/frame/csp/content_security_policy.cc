@@ -35,6 +35,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom-shared.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
@@ -118,8 +119,7 @@ bool CheckHeaderTypeMatches(
           return header_type == ContentSecurityPolicyType::kEnforce;
       }
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 int32_t HashAlgorithmsUsed(
@@ -231,10 +231,7 @@ static WebFeature GetUseCounterType(ContentSecurityPolicyType type) {
     case ContentSecurityPolicyType::kReport:
       return WebFeature::kContentSecurityPolicyReportOnly;
   }
-  NOTREACHED_IN_MIGRATION();
-  // Use kPageVisits here which is not a valid use counter, as this is never
-  // supposed to be reached.
-  return WebFeature::kPageVisits;
+  NOTREACHED();
 }
 
 ContentSecurityPolicy::ContentSecurityPolicy()
@@ -691,10 +688,15 @@ std::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
       return CSPDirectiveName::DefaultSrc;
 
     case mojom::blink::RequestContextType::SPECULATION_RULES:
-      // If speculation rules ever supports <script src>, then it will probably
-      // be necessary to use ScriptSrcElem in such cases.
-      return CSPDirectiveName::ScriptSrc;
-
+      // If speculation rules ever supports <script src>, then it will
+      // probably be necessary to use ScriptSrcElem in such cases.
+      if (!base::FeatureList::IsEnabled(
+              features::kExemptSpeculationRulesHeaderFromCSP)) {
+        return CSPDirectiveName::ScriptSrc;
+      }
+      // Speculation Rules loaded from Speculation-Rules header are exempt
+      // from CSP checks.
+      [[fallthrough]];
     case mojom::blink::RequestContextType::CSP_REPORT:
     case mojom::blink::RequestContextType::DOWNLOAD:
     case mojom::blink::RequestContextType::HYPERLINK:
@@ -1286,7 +1288,8 @@ void ContentSecurityPolicy::PostViolationReport(
   csp_report->SetString("effective-directive",
                         violation_data->effectiveDirective());
   csp_report->SetString("original-policy", violation_data->originalPolicy());
-  csp_report->SetString("disposition", violation_data->disposition());
+  csp_report->SetString("disposition",
+                        violation_data->disposition().AsString());
   csp_report->SetString("blocked-uri", violation_data->blockedURI());
   if (violation_data->lineNumber())
     csp_report->SetInteger("line-number", violation_data->lineNumber());
@@ -1499,12 +1502,10 @@ const char* ContentSecurityPolicy::GetDirectiveName(CSPDirectiveName type) {
       return "worker-src";
 
     case CSPDirectiveName::Unknown:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 CSPDirectiveName ContentSecurityPolicy::GetDirectiveType(const String& name) {

@@ -3,10 +3,13 @@
 // found in the LICENSE file.
 
 // clang-format off
+
+import '/strings.m.js';
+
 import type { PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
 // clang-format on
@@ -20,7 +23,10 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
         wasScrolledToBottom: boolean = true;
 
         private didStartWithScrollbar_: boolean = false;
+        private shouldShowV2_: boolean = loadTimeData.getBoolean(
+            'isPrivacySandboxAdsApiUxEnhancementsEnabled');
         private wasScrolledToBottomResolver_: PromiseResolver<void>;
+        private moreButtonInitialized_: PromiseResolver<void>;
 
         static get properties() {
           return {
@@ -39,17 +45,6 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
             this.onContentSizeChanging_(/*expanding=*/ true);
             this.promptActionOccurred(
                 PrivacySandboxPromptAction.CONSENT_MORE_INFO_OPENED);
-            // If the iframe hasn't been loaded yet, load it the first time the
-            // learn more expand section is clicked.
-            const iframe = this.shadowRoot!.querySelector<HTMLIFrameElement>(
-                '#privacyPolicy');
-            if (iframe && iframe!.src === '') {
-              this.shadowRoot!.querySelector<HTMLElement>(
-                                  '.iframe-container')!.style.display = 'block';
-              this.shadowRoot!
-                  .querySelector<HTMLIFrameElement>('#privacyPolicy')!.src =
-                  'chrome-untrusted://privacy-sandbox-dialog/privacy-policy';
-            }
           }
           if (!newValue && oldValue) {
             this.onContentSizeChanging_(/*expanding=*/ false);
@@ -70,6 +65,28 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
             this.onContentSizeChanging_(/*expanding=*/ false);
             this.promptActionOccurred(
                 PrivacySandboxPromptAction.NOTICE_MORE_INFO_CLOSED);
+          }
+        }
+
+        onNoticeSiteSuggestedAdsLearnMoreExpandedChanged(
+            newValue: boolean, oldValue: boolean) {
+          // TODO(crbug.com/377557616): Create new PromptAction and add metrics
+          if (newValue && !oldValue) {
+            this.onContentSizeChanging_(/*expanding=*/ true);
+          }
+          if (!newValue && oldValue) {
+            this.onContentSizeChanging_(/*expanding=*/ false);
+          }
+        }
+
+        onNoticeAdMeasurementLearnMoreExpandedChanged(
+            newValue: boolean, oldValue: boolean) {
+          // TODO(crbug.com/377557616): Create new PromptAction and add metrics
+          if (newValue && !oldValue) {
+            this.onContentSizeChanging_(/*expanding=*/ true);
+          }
+          if (!newValue && oldValue) {
+            this.onContentSizeChanging_(/*expanding=*/ false);
           }
         }
 
@@ -156,6 +173,7 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
         //  container height (64px).
         maybeShowMoreButton(): Promise<void> {
           this.wasScrolledToBottomResolver_ = new PromiseResolver();
+          this.moreButtonInitialized_ = new PromiseResolver();
           return new Promise<void>(resolve => {
             // Determine if the dialog is scrolled to the bottom (or isn't
             // scrollable at all) and update more overlay accordingly.
@@ -166,8 +184,13 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
             this.wasScrolledToBottom = false;
 
             const buttonRowHeight = 64;
+            let lastTextElementId = '#lastTextElement';
+            if (this.shouldShowV2_ &&
+                scrollable.querySelector('#lastTextElementV2')) {
+              lastTextElementId = '#lastTextElementV2';
+            }
             const lastTextElement =
-                scrollable.querySelector('#lastTextElement')!;
+                scrollable.querySelector(lastTextElementId)!;
 
             const options = {
               root: scrollable,
@@ -179,24 +202,32 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
               rootMargin: `0px 0px -${buttonRowHeight}px 0px`,
             };
             const observer = new IntersectionObserver(entries => {
-              assert(entries.length === 1);
-              // We cannot check for intersectionRatio strictly equal to 1
-              // because its value is sometimes reported with ~0.99 values
-              // (see crbug.com/1020466): this can lead to a state where
-              // the more button is always visible, with unclickable action
-              // buttons covered by an overlay (b/299120185).
-              this.wasScrolledToBottom = entries[0].intersectionRatio >= 0.99;
+              for (const entry of entries) {
+                // We cannot check for intersectionRatio strictly equal to 1
+                // because its value is sometimes reported with ~0.99 values
+                // (see crbug.com/1020466): this can lead to a state where
+                // the more button is always visible, with unclickable action
+                // buttons covered by an overlay (crbug.com/299120185).
+                this.wasScrolledToBottom = entry.intersectionRatio >= 0.99;
 
-              // After the whole text content was visible at least once, stop
-              // observing.
-              if (this.wasScrolledToBottom) {
-                this.wasScrolledToBottomResolver_.resolve();
-                observer.disconnect();
+                // After the whole text content was visible at least once, stop
+                // observing.
+                if (this.wasScrolledToBottom) {
+                  this.wasScrolledToBottomResolver_.resolve();
+                  observer.disconnect();
+                }
+
+                // We need to wait to resolve the promise until we update
+                // wasScrolledToBottom.  We set wasScrolledToBottom to false
+                // (and show the "More" button) until the IntersectionObserver
+                // is triggered.  Once triggered we hide the "More" button if
+                // it's not required.  Hence we can't resolve the
+                // maybeShowMoreButton() promise until this observer is called
+                // the first time since the rendering may be incorrect before
+                // then.
+                resolve();
               }
-
-              // After the callback was called once, resolve the returned
-              // promise to inform the caller that the initial layout is done.
-              resolve();
+              this.moreButtonInitialized_.resolve();
             }, options);
             observer.observe(lastTextElement);
           });
@@ -204,6 +235,10 @@ export const PrivacySandboxDialogMixin = dedupingMixin(
 
         whenWasScrolledToBottomForTest(): Promise<void> {
           return this.wasScrolledToBottomResolver_.promise;
+        }
+
+        moreButtonInitializedForTest(): Promise<void> {
+          return this.moreButtonInitialized_.promise;
         }
 
         private onWasScrolledToBottomChange_() {
@@ -229,10 +264,15 @@ export interface PrivacySandboxDialogMixinInterface {
 
   onConsentLearnMoreExpandedChanged(newValue: boolean, oldValue: boolean): void;
   onNoticeLearnMoreExpandedChanged(newValue: boolean, oldValue: boolean): void;
+  onNoticeSiteSuggestedAdsLearnMoreExpandedChanged(
+      newValue: boolean, oldValue: boolean): void;
+  onNoticeAdMeasurementLearnMoreExpandedChanged(
+      newValue: boolean, oldValue: boolean): void;
   onNoticeOpenSettings(): void;
   onNoticeAcknowledge(): void;
   maybeShowMoreButton(): Promise<void>;
   whenWasScrolledToBottomForTest(): Promise<void>;
+  moreButtonInitializedForTest(): Promise<void>;
   promptActionOccurred(action: PrivacySandboxPromptAction): void;
   updateScrollableContents(): void;
 }

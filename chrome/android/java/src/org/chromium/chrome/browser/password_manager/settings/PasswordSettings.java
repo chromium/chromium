@@ -33,6 +33,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
@@ -64,6 +65,8 @@ import java.util.Locale;
 /**
  * The "Passwords" screen in Settings, which allows the user to enable or disable password saving,
  * to view saved passwords (just the username and URL), and to delete saved passwords.
+ *
+ * <p>TODO: crbug.com/372657804 - Make sure that the PasswordSettings is not created in UPM M4.1
  */
 public class PasswordSettings extends ChromeBaseSettingsFragment
         implements PasswordListObserver,
@@ -136,7 +139,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
     /** For controlling the UX flow of exporting passwords. */
-    private ExportFlow mExportFlow = new ExportFlow();
+    private ExportFlow mExportFlow = new ExportFlow(PasswordAccessLossWarningType.NONE);
 
     public ExportFlow getExportFlowForTesting() {
         return mExportFlow;
@@ -410,8 +413,10 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         }
         mNoPasswords = passwordParent.getPreferenceCount() == 0;
         if (mMenu != null) {
-            mMenu.findItem(R.id.export_passwords)
-                    .setEnabled(!mNoPasswords && !mExportFlow.isActive());
+            MenuItem menuItem = mMenu.findItem(R.id.export_passwords);
+            if (menuItem != null) {
+                menuItem.setEnabled(!mNoPasswords && !mExportFlow.isActive());
+            }
         }
         if (mNoPasswords) {
             if (count == 0) displayEmptyScreenMessage(); // Show if the list was already empty.
@@ -538,7 +543,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         if (preference == mLinkPref) {
             Intent intent =
                     new Intent(
-                            Intent.ACTION_VIEW, Uri.parse(PasswordUIView.getAccountDashboardURL()));
+                            Intent.ACTION_VIEW, Uri.parse(PasswordUiView.getAccountDashboardURL()));
             intent.setPackage(getActivity().getPackageName());
             getActivity().startActivity(intent);
         } else {
@@ -739,7 +744,7 @@ public class PasswordSettings extends ChromeBaseSettingsFragment
         Intent intent =
                 new Intent(
                         Intent.ACTION_VIEW,
-                        Uri.parse(PasswordUIView.getTrustedVaultLearnMoreURL()));
+                        Uri.parse(PasswordUiView.getTrustedVaultLearnMoreURL()));
         intent.setPackage(getActivity().getPackageName());
         getActivity().startActivity(intent);
         // Return true to notify the click was handled.

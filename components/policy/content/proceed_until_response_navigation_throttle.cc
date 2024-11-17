@@ -6,7 +6,6 @@
 
 #include "base/notimplemented.h"
 #include "base/strings/strcat.h"
-#include "proceed_until_response_navigation_throttle.h"
 
 ProceedUntilResponseNavigationThrottle::Client::Client(
     content::NavigationHandle* navigation_handle)
@@ -99,7 +98,7 @@ ProceedUntilResponseNavigationThrottle::ProcessEvent(Event event) {
       return DEFER;
     case DeferredState::kDeferredExposed:
       // While we expose DEFER, any event should not be delivered.
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -107,7 +106,7 @@ bool ProceedUntilResponseNavigationThrottle::CanProceedSpeculatively(
     Event event) {
   switch (event) {
     case Event::kNoEvent:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case Event::kWillStartRequest:
     case Event::kWillRedirectRequest:
       return true;
@@ -116,14 +115,14 @@ bool ProceedUntilResponseNavigationThrottle::CanProceedSpeculatively(
     case Event::kWillCommitWithoutUrlLoader:
       return false;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
 ProceedUntilResponseNavigationThrottle::CallInternalThrottle(Event event) {
   switch (event) {
     case Event::kNoEvent:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case Event::kWillStartRequest:
       return client_->WillStartRequest();
     case Event::kWillRedirectRequest:
@@ -135,7 +134,7 @@ ProceedUntilResponseNavigationThrottle::CallInternalThrottle(Event event) {
     case Event::kWillCommitWithoutUrlLoader:
       return client_->WillCommitWithoutUrlLoader();
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 void ProceedUntilResponseNavigationThrottle::ResolveDeferredResult(
@@ -145,11 +144,15 @@ void ProceedUntilResponseNavigationThrottle::ResolveDeferredResult(
   CHECK(proceed || (result.has_value() && result->action() != PROCEED));
   switch (deferred_state_) {
     case DeferredState::kNotDeferred:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
     case DeferredState::kDeferredNotExposed:
       // An asynchronous task finished before the next navigation event arrives.
-      // Remember the result to return it when the next event arrives.
-      result_ = std::move(result);
+      // Remember the result only if the `proceed` is false, to return it when
+      // the next event arrives. If the `proceed` is true, `result` may contain
+      // a junk.
+      if (!proceed) {
+        result_ = std::move(result);
+      }
       deferred_state_ = DeferredState::kNotDeferred;
       break;
     case DeferredState::kDeferredExposed:

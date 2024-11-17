@@ -49,12 +49,13 @@ void SetCookieForGaiaId(
   base::flat_map<std::string, signin::CookieParamsForTest> cookies_by_gaia_id;
   signin::AccountsInCookieJarInfo cookies =
       identity_manager->GetAccountsInCookieJar();
-  for (const gaia::ListedAccount& account : cookies.signed_in_accounts) {
+  for (const gaia::ListedAccount& account :
+       cookies.GetPotentiallyInvalidSignedInAccounts()) {
     cookies_by_gaia_id[account.gaia_id] = {.email = account.email,
                                            .gaia_id = account.gaia_id,
                                            .signed_out = false};
   }
-  for (const gaia::ListedAccount& account : cookies.signed_out_accounts) {
+  for (const gaia::ListedAccount& account : cookies.GetSignedOutAccounts()) {
     cookies_by_gaia_id[account.gaia_id] = {
         .email = account.email, .gaia_id = account.gaia_id, .signed_out = true};
   }

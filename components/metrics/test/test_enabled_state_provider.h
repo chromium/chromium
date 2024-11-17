@@ -19,7 +19,7 @@ class TestEnabledStateProvider : public EnabledStateProvider {
   TestEnabledStateProvider(const TestEnabledStateProvider&) = delete;
   TestEnabledStateProvider& operator=(const TestEnabledStateProvider&) = delete;
 
-  ~TestEnabledStateProvider() override {}
+  ~TestEnabledStateProvider() override = default;
 
   // EnabledStateProvider
   bool IsConsentGiven() const override;

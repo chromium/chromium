@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/auto_reset.h"
 #include "base/check.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/app_list_sync_model_sanitizer.h"
+#include "chrome/browser/ash/app_list/app_list_util.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_app_model_builder.h"
 #include "chrome/browser/ash/app_list/app_service/app_service_promise_app_model_builder.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
@@ -44,17 +46,15 @@
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/extensions/default_app_order.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
-#include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_prefs.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -1651,8 +1651,7 @@ void AppListSyncableService::ProcessNewSyncItem(SyncItem* sync_item) {
     case sync_pb::AppListSpecifics::TYPE_PAGE_BREAK:
       return;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unrecognized sync item type: " << sync_item->ToString();
+  NOTREACHED() << "Unrecognized sync item type: " << sync_item->ToString();
 }
 
 void AppListSyncableService::ProcessExistingSyncItem(SyncItem* sync_item) {
@@ -2223,8 +2222,8 @@ bool AppListSyncableService::IsAppDefaultPositionedForNewUsersOnly(
     return true;
   }
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  if (chromeos::features::IsContainerAppPreinstallEnabled() &&
-      app_id == web_app::kContainerAppId) {
+  if (chromeos::features::IsGeminiAppPreinstallEnabled() &&
+      app_id == ash::kGeminiAppId) {
     return true;
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)

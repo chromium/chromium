@@ -41,6 +41,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace autofill {
@@ -252,7 +253,12 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
     return;
   }
 
-  if (base::checked_cast<size_t>(index) >= suggestions_.size()) {
+  if (base::checked_cast<size_t>(index) >= suggestions_.size() ||
+      !IsAcceptableSuggestionType(suggestions_[index].type)) {
+    // Prevents crashes from crbug.com/521133. It seems that in rare cases or
+    // races the suggestions_ and the user-selected index may be out of sync.
+    // If the index points out of bounds, Chrome will crash. Prevent this by
+    // ignoring the selection and wait for another signal from the user.
     return;
   }
   if (IsPointerLocked(web_contents_.get())) {
@@ -263,7 +269,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
   // Use a copy instead of a reference here. Under certain circumstances,
   // `DidAcceptSuggestion()` invalidate the reference.
   Suggestion suggestion = suggestions_[index];
-  if (!suggestion.is_acceptable) {
+  if (!suggestion.IsAcceptable()) {
     return;
   }
 
@@ -277,8 +283,7 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
     manual_filling_controller->Hide();
   }
 
-  NotifyUserEducationAboutAcceptedSuggestion(web_contents_->GetBrowserContext(),
-                                             suggestion);
+  NotifyUserEducationAboutAcceptedSuggestion(web_contents_.get(), suggestion);
   if (suggestion.acceptance_a11y_announcement && view_) {
     view_->AxAnnounce(*suggestion.acceptance_a11y_announcement);
   }
@@ -304,7 +309,9 @@ void AutofillKeyboardAccessoryControllerImpl::AcceptSuggestion(int index) {
                        profile->GetPrefs(), /*called_at_startup=*/false)) {
       access_loss_warning_bridge_->MaybeShowAccessLossNoticeSheet(
           profile->GetPrefs(), web_contents_->GetTopLevelNativeWindow(),
-          profile, /*called_at_startup=*/false);
+          profile, /*called_at_startup=*/false,
+          password_manager_android_util::PasswordAccessLossWarningTriggers::
+              kKeyboardAcessoryBar);
     }
   }
   if (base::FeatureList::IsEnabled(
@@ -547,8 +554,7 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
   CHECK_LT(base::checked_cast<size_t>(index), suggestions_.size());
   const std::u16string& value = suggestions_[index].main_text.value;
   const SuggestionType type = suggestions_[index].type;
-  const Suggestion::BackendId backend_id =
-      suggestions_[index].GetPayload<Suggestion::BackendId>();
+  const Suggestion::Payload& payload = suggestions_[index].payload;
 
   if (type == SuggestionType::kAutocompleteEntry) {
     if (title) {
@@ -568,39 +574,46 @@ bool AutofillKeyboardAccessoryControllerImpl::GetRemovalConfirmationText(
   PersonalDataManager* pdm = PersonalDataManagerFactory::GetForBrowserContext(
       web_contents_->GetBrowserContext());
 
-  if (const CreditCard* credit_card =
-          pdm->payments_data_manager().GetCreditCardByGUID(
-              absl::get<Suggestion::Guid>(backend_id).value())) {
-    if (!CreditCard::IsLocalCard(credit_card)) {
-      return false;
+  if (absl::holds_alternative<Suggestion::Guid>(payload)) {
+    if (const CreditCard* credit_card =
+            pdm->payments_data_manager().GetCreditCardByGUID(
+                absl::get<Suggestion::Guid>(payload).value())) {
+      if (!CreditCard::IsLocalCard(credit_card)) {
+        return false;
+      }
+      if (title) {
+        title->assign(credit_card->CardNameAndLastFourDigits());
+      }
+      if (body) {
+        body->assign(l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
+      }
+      return true;
     }
-    if (title) {
-      title->assign(credit_card->CardNameAndLastFourDigits());
-    }
-    if (body) {
-      body->assign(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_CREDIT_CARD_SUGGESTION_CONFIRMATION_BODY));
-    }
-    return true;
+    return false;
   }
 
-  if (const AutofillProfile* profile =
-          pdm->address_data_manager().GetProfileByGUID(
-              absl::get<Suggestion::Guid>(backend_id).value())) {
-    if (title) {
-      std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
-      if (!street_address.empty()) {
-        title->swap(street_address);
-      } else {
-        title->assign(value);
+  if (absl::holds_alternative<Suggestion::AutofillProfilePayload>(payload)) {
+    if (const AutofillProfile* profile =
+            pdm->address_data_manager().GetProfileByGUID(
+                absl::get<Suggestion::AutofillProfilePayload>(payload)
+                    .guid.value())) {
+      if (title) {
+        std::u16string street_address = profile->GetRawInfo(ADDRESS_HOME_CITY);
+        if (!street_address.empty()) {
+          title->swap(street_address);
+        } else {
+          title->assign(value);
+        }
       }
-    }
-    if (body) {
-      body->assign(l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
-    }
+      if (body) {
+        body->assign(l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_DELETE_PROFILE_SUGGESTION_CONFIRMATION_BODY));
+      }
 
-    return true;
+      return true;
+    }
+    return false;
   }
 
   return false;  // The ID was valid. The entry may have been deleted in a race.

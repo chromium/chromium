@@ -17,8 +17,8 @@
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "url/gurl.h"
 
-bool IsSaveToPhotosAvailable(ChromeBrowserState* browser_state) {
-  CHECK(browser_state);
+bool IsSaveToPhotosAvailable(ProfileIOS* profile) {
+  CHECK(profile);
 
   // Check flag.
   if (!base::FeatureList::IsEnabled(kIOSSaveToPhotos)) {
@@ -26,27 +26,26 @@ bool IsSaveToPhotosAvailable(ChromeBrowserState* browser_state) {
   }
 
   // Check policy.
-  if (browser_state->GetPrefs()->GetInteger(
+  if (profile->GetPrefs()->GetInteger(
           prefs::kIosSaveToPhotosContextMenuPolicySettings) ==
       static_cast<int>(SaveToPhotosPolicySettings::kDisabled)) {
     return false;
   }
 
   // Check incognito.
-  if (browser_state->IsOffTheRecord()) {
+  if (profile->IsOffTheRecord()) {
     return false;
   }
 
   // Check PhotosService is available.
-  PhotosService* photos_service =
-      PhotosServiceFactory::GetForBrowserState(browser_state);
+  PhotosService* photos_service = PhotosServiceFactory::GetForProfile(profile);
   if (!photos_service || !photos_service->IsAvailable()) {
     return false;
   }
 
   // Check user is signed in.
   signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(browser_state);
+      IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager ||
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return false;

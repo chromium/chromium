@@ -114,11 +114,14 @@ base::FilePath SaveDesktopSnapshot() {
 base::FilePath SaveDesktopSnapshot(const base::FilePath& output_dir) {
   // Take the snapshot and encode it.
   SkBitmap screen = CaptureScreen();
-  if (screen.drawsNothing())
+  if (screen.drawsNothing()) {
     return base::FilePath();
+  }
 
-  std::vector<unsigned char> encoded;
-  if (!gfx::PNGCodec::EncodeBGRASkBitmap(CaptureScreen(), false, &encoded)) {
+  std::optional<std::vector<uint8_t>> encoded =
+      gfx::PNGCodec::EncodeBGRASkBitmap(CaptureScreen(),
+                                        /*discard_transparency=*/false);
+  if (!encoded) {
     LOG(ERROR) << "Failed to PNG encode screen snapshot.";
     return base::FilePath();
   }
@@ -146,10 +149,7 @@ base::FilePath SaveDesktopSnapshot(const base::FilePath& output_dir) {
   }
 
   // Write it to disk.
-  const int to_write = base::checked_cast<int>(encoded.size());
-  int written =
-      file.WriteAtCurrentPos(reinterpret_cast<char*>(encoded.data()), to_write);
-  if (written != to_write) {
+  if (!file.WriteAtCurrentPosAndCheck(encoded.value())) {
     LOG(ERROR) << "Failed to write entire snapshot to file";
     return base::FilePath();
   }

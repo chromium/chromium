@@ -6,7 +6,6 @@
 
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/download/bubble/download_bubble_prefs.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
@@ -32,9 +31,9 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/window/hit_test_utils.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/web_applications/os_integration/mac/app_shim_registry.h"
@@ -101,13 +100,13 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
         std::make_unique<WebAppOriginText>(browser_view_->browser()));
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (app_controller->system_app()) {
     system_app_accessible_name_ =
         AddChildView(std::make_unique<SystemAppAccessibleName>(
             app_controller->GetAppShortName()));
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (app_controller->AppUsesWindowControlsOverlay()) {
     window_controls_overlay_toggle_button_ = AddChildView(
@@ -121,8 +120,9 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   }
 
   if (app_controller->HasTitlebarContentSettings()) {
-    content_settings_container_ = AddChildView(
-        std::make_unique<WebAppContentSettingsContainer>(this, this));
+    content_settings_container_ =
+        AddChildView(std::make_unique<WebAppContentSettingsContainer>(
+            browser_view_->browser(), this, this));
     views::SetHitTestComponent(content_settings_container_,
                                static_cast<int>(HTCLIENT));
   }
@@ -143,11 +143,11 @@ WebAppToolbarButtonContainer::WebAppToolbarButtonContainer(
   page_action_icon_controller_->Init(params, this);
 
   bool create_extensions_container = true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Do not create the extensions or browser actions container if it is a
   // System Web App.
   create_extensions_container = !ash::IsSystemWebApp(browser_view_->browser());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   if (create_extensions_container) {
     // Extensions toolbar area with pinned extensions is lower priority than,

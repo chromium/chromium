@@ -85,7 +85,9 @@ class CORE_EXPORT DOMException : public ScriptWrappable {
   // message is present, we prefer it.
   String ToStringForConsole() const;
 
-  void AddContextToMessages(const ExceptionContext&);
+  void AddContextToMessages(v8::ExceptionContext type,
+                            const char* class_name,
+                            const String& property_name);
 
  private:
   uint16_t legacy_code_;

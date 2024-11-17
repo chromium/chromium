@@ -5,28 +5,28 @@
 #ifndef HEADLESS_LIB_BROWSER_HEADLESS_SCREEN_H_
 #define HEADLESS_LIB_BROWSER_HEADLESS_SCREEN_H_
 
-#include "base/compiler_specific.h"
-#include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
+#include "ui/display/mojom/screen_orientation.mojom-shared.h"
 #include "ui/display/screen_base.h"
-
-namespace gfx {
-class Rect;
-}
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace headless {
 
 class HeadlessScreen : public display::ScreenBase {
  public:
-  // Creates a display::Screen of the specified size (physical pixels).
-  static HeadlessScreen* Create(const gfx::Size& size);
+  // Creates a display::Screen of the specified size and scale factor.
+  static HeadlessScreen* Create(const gfx::Size& size, float scale_factor);
 
   HeadlessScreen(const HeadlessScreen&) = delete;
   HeadlessScreen& operator=(const HeadlessScreen&) = delete;
 
   ~HeadlessScreen() override;
 
- protected:
+  // Updates screen size given the screen orientation.
+  static void UpdateScreenSizeForScreenOrientation(
+      display::mojom::ScreenOrientation screen_orientation);
+
   // display::Screen overrides:
   gfx::Point GetCursorScreenPoint() override;
   bool IsWindowUnderCursor(gfx::NativeWindow window) override;
@@ -37,8 +37,16 @@ class HeadlessScreen : public display::ScreenBase {
   display::Display GetDisplayNearestWindow(
       gfx::NativeWindow window) const override;
 
+  bool IsNaturalPortrait() const { return natural_portrait_; }
+  bool IsNaturalLandscape() const { return !natural_portrait_; }
+
  private:
-  explicit HeadlessScreen(const gfx::Rect& screen_bounds);
+  HeadlessScreen(const gfx::Rect& bounds, float scale_factor);
+
+  void UpdateScreenSizeForScreenOrientationImpl(
+      display::mojom::ScreenOrientation screen_orientation);
+
+  bool natural_portrait_ = false;
 };
 
 }  // namespace headless

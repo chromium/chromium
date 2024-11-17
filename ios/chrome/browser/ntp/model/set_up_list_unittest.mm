@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_ios.h"
@@ -47,24 +48,21 @@ using set_up_list_prefs::SetUpListItemState;
 class SetUpListTest : public PlatformTest {
  public:
   SetUpListTest() {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    browser_state_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
-    prefs_ = GetBrowserState()->GetPrefs();
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        GetBrowserState(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
-    auth_service_ =
-        AuthenticationServiceFactory::GetForBrowserState(GetBrowserState());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
+    prefs_ = GetProfile()->GetPrefs();
+    auth_service_ = AuthenticationServiceFactory::GetForProfile(GetProfile());
     content_notification_feature_enabled_ = false;
   }
 
   ~SetUpListTest() override { [set_up_list_ disconnect]; }
 
-  // Get the test BrowserState.
-  ChromeBrowserState* GetBrowserState() { return browser_state_.get(); }
+  // Get the test profile.
+  ProfileIOS* GetProfile() { return profile_.get(); }
 
   // Get the LocalState prefs.
   PrefService* GetLocalState() {
@@ -77,8 +75,8 @@ class SetUpListTest : public PlatformTest {
     set_up_list_ =
         [SetUpList buildFromPrefs:prefs_
                             localState:GetLocalState()
-                           syncService:SyncServiceFactory::GetForBrowserState(
-                                           GetBrowserState())
+                           syncService:SyncServiceFactory::GetForProfile(
+                                           GetProfile())
                  authenticationService:auth_service_
             contentNotificationEnabled:content_notification_feature_enabled_];
   }
@@ -97,7 +95,7 @@ class SetUpListTest : public PlatformTest {
 
     profile_manager_.GetProfileAttributesStorage()
         ->UpdateAttributesForProfileWithName(
-            browser_state_->GetProfileName(),
+            profile_->GetProfileName(),
             base::BindOnce(
                 [](id<SystemIdentity> identity, ProfileAttributesIOS attr) {
                   attr.SetAuthenticationInfo(
@@ -116,8 +114,8 @@ class SetUpListTest : public PlatformTest {
 
   // Fakes enabling or disabling the credential provider.
   void FakeEnableCredentialProvider(bool enable) {
-    password_manager_util::SetCredentialProviderEnabledOnStartup(prefs_,
-                                                                 enable);
+    password_manager_util::SetCredentialProviderEnabledOnStartup(
+        GetLocalState(), enable);
   }
 
   // Enables/disables tips notifications.
@@ -182,7 +180,7 @@ class SetUpListTest : public PlatformTest {
   base::test::ScopedFeatureList feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   raw_ptr<PrefService> prefs_;
   raw_ptr<AuthenticationService> auth_service_;
   SetUpList* set_up_list_;
@@ -276,6 +274,8 @@ TEST_F(SetUpListTest, BuildListWithAutofill) {
 // Tests that the SetUpList uses the correct criteria when including the
 // Notifications item and tips notification is enabled.
 TEST_F(SetUpListTest, BuildListWithNotifications_Tips) {
+  [PushNotificationUtil
+      updateAuthorizationStatusPref:UNAuthorizationStatusAuthorized];
   feature_list_.InitAndEnableFeature(kIOSTipsNotifications);
   SetTipsNotificationsEnabled(false);
   BuildSetUpList();
@@ -298,6 +298,8 @@ TEST_F(SetUpListTest, BuildListWithNotifications_Tips) {
 // Tests that the SetUpList uses the correct criteria when including the
 // Notifications item and content notifications is enabled.
 TEST_F(SetUpListTest, BuildListWithNotifications_Content) {
+  [PushNotificationUtil
+      updateAuthorizationStatusPref:UNAuthorizationStatusAuthorized];
   content_notification_feature_enabled_ = YES;
 
   SetContentNotificationsEnabled(false);

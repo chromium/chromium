@@ -68,13 +68,15 @@ struct PrintSettings {
   PageMargins requested_custom_margins_in_points;
   int32 pages_per_sheet;
 
-  [EnableIf=is_linux_or_chromeos]
+  [EnableIf=is_chromeos|is_linux]
   map<string, mojo_base.mojom.Value> advanced_settings;
 
   [EnableIf=is_chromeos]
   bool send_user_info;
+
   [EnableIf=is_chromeos]
   string username;
+
   [EnableIf=is_chromeos]
   string pin_value;
 

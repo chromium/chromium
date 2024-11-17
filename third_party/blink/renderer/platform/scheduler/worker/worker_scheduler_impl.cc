@@ -247,11 +247,9 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerSchedulerImpl::GetTaskRunner(
     case TaskType::kInternalInputBlocking:
     case TaskType::kMainThreadTaskQueueIPCTracking:
     case TaskType::kInternalPostMessageForwarding:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void WorkerSchedulerImpl::OnLifecycleStateChanged(

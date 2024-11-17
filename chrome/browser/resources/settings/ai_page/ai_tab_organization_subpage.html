@@ -4,22 +4,27 @@
   }
 </style>
 
-<settings-toggle-button
-    pref="{{prefs.optimization_guide.tab_organization_setting_state}}"
-    numeric-unchecked-values="[[numericUncheckedValues_]]"
-    numeric-checked-value="[[featureOptInStateEnum_.ENABLED]]"
-    label="$i18n{experimentalAdvancedFeature2Label}"
-    sub-label="$i18n{experimentalAdvancedFeature2Sublabel}">
-</settings-toggle-button>
+<div class="cr-row first">
+  <div class="flex cr-padded-text">
+    <div id="tabOrganizationLabel">$i18n{tabOrganizationSettingLabel}</div>
+    <div class="secondary">
+      $i18n{tabOrganizationSettingSublabelV2}$i18n{sentenceEnd}
+      <a href="[[getLearnMoreUrl_(enterprisePref_)]]"
+          aria-label="$i18n{tabOrganizationSettingLearnMoreA11y}"
+          on-click="onLearnMoreClick_" target="_blank">
+        $i18n{learnMore}
+      </a>
+  </div>
+  </div>
+</div>
 <div class="settings-columned-section">
   <div class="column">
-    <h2 class="description-header">$i18n{columnHeadingWhenOn}</h2>
+    <h2 class="description-header">$i18n{columnHeadingWhenUsed}</h2>
     <ul class="icon-bulleted-list">
       <li>
-        <cr-icon icon="settings20:astrophotography-mode" aria-hidden="true">
-        </cr-icon>
+        <cr-icon icon="settings20:auto-tab-group" aria-hidden="true"></cr-icon>
         <div class="secondary">
-          $i18n{experimentalAdvancedFeature2Sublabel}
+          $i18n{tabOrganizationSettingWhenOnAutoGroups}
         </div>
       </li>
     </ul>
@@ -28,20 +33,15 @@
     <h2 class="description-header">$i18n{columnHeadingConsider}</h2>
     <ul class="icon-bulleted-list">
       <li>
-        <cr-icon icon="settings20:ai" aria-hidden="true">
-        </cr-icon>
-        <div class="secondary">$i18n{privacyPageTitle}</div>
+        <cr-icon icon="settings20:psychiatry" aria-hidden="true"></cr-icon>
+        <div class="secondary">$i18n{aiSubpageSublabelAi}</div>
       </li>
       <li>
-        <cr-icon icon="settings20:googleg" aria-hidden="true">
-        </cr-icon>
-        <div class="secondary">$i18n{privacyPageTitle}</div>
+        <cr-icon icon="settings20:googleg" aria-hidden="true"></cr-icon>
+        <div class="secondary">$i18n{tabOrganizationSettingConsiderData}</div>
       </li>
-      <li>
-        <cr-icon icon="settings20:ai" aria-hidden="true">
-        </cr-icon>
-        <div class="secondary">$i18n{privacyPageTitle}</div>
-      </li>
+      <settings-ai-logging-info-bullet pref="[[enterprisePref_]]">
+      </settings-ai-logging-info-bullet>
     </ul>
   </div>
 </div>

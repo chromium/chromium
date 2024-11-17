@@ -224,6 +224,7 @@ public class AccessibilityState {
 
     private static State sState;
     private static boolean sInitialized;
+    private static boolean sHasRegisteredObservers;
     private static boolean sIsInTestingMode;
     private static Boolean sPreInitCachedValuePerformGesturesEnabled;
     private static List<AccessibilityServiceInfo> sServiceInfoListForTesting;
@@ -791,8 +792,6 @@ public class AccessibilityState {
     /**
      * Return a bitmask containing the union of all event types that running accessibility services
      * listen to.
-     *
-     * @return
      */
     @CalledByNative
     private static int getAccessibilityServiceEventTypeMask() {
@@ -803,7 +802,6 @@ public class AccessibilityState {
     /**
      * Return a bitmask containing the union of all feedback types that running accessibility
      * services provide.
-     * @return
      */
     @CalledByNative
     private static int getAccessibilityServiceFeedbackTypeMask() {
@@ -811,10 +809,7 @@ public class AccessibilityState {
         return sFeedbackTypeMask;
     }
 
-    /**
-     * Return a bitmask containing the union of all flags from running accessibility services.
-     * @return
-     */
+    /** Return a bitmask containing the union of all flags from running accessibility services. */
     @CalledByNative
     private static int getAccessibilityServiceFlagsMask() {
         if (!sInitialized) updateAccessibilityServices();
@@ -822,9 +817,8 @@ public class AccessibilityState {
     }
 
     /**
-     * Return a bitmask containing the union of all service capabilities from running
-     * accessibility services.
-     * @return
+     * Return a bitmask containing the union of all service capabilities from running accessibility
+     * services.
      */
     @CalledByNative
     private static int getAccessibilityServiceCapabilitiesMask() {
@@ -832,10 +826,7 @@ public class AccessibilityState {
         return sCapabilitiesMask;
     }
 
-    /**
-     * Return a list of ids of all running accessibility services.
-     * @return
-     */
+    /** Return a list of ids of all running accessibility services. */
     @CalledByNative
     private static String[] getAccessibilityServiceIds() {
         if (!sInitialized) updateAccessibilityServices();
@@ -845,11 +836,11 @@ public class AccessibilityState {
     /**
      * Register observers of various system properties and initialize a state for clients.
      *
-     * Note: This should only be called once, and before any client queries of accessibility state.
-     *       The first time any client queries the state, |this| will be initialized.
+     * <p>Note: This should only be called once, and before any client queries of accessibility
+     * state. The first time any client queries the state, |this| will be initialized.
      */
     public static void registerObservers() {
-        assert !sInitialized || sIsInTestingMode
+        assert !sInitialized || !sHasRegisteredObservers || sIsInTestingMode
                 : "AccessibilityState has been called to register observers, but observers have"
                         + " already been registered, or, a client has already queried the state."
                         + " Observers should only be registered once during browser init and before"
@@ -912,6 +903,8 @@ public class AccessibilityState {
                         "high_text_contrast_enabled"),
                 false,
                 sTextContrastObserver);
+
+        sHasRegisteredObservers = true;
     }
 
     public static void initializeOnStartup() {
@@ -949,7 +942,8 @@ public class AccessibilityState {
         if (newState != ApplicationState.HAS_RUNNING_ACTIVITIES
                 && newState != ApplicationState.HAS_PAUSED_ACTIVITIES) {
             unregisterObservers();
-        } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES && !sInitialized) {
+        } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES
+                && (!sInitialized || !sHasRegisteredObservers)) {
             registerObservers();
         }
     }
@@ -963,6 +957,7 @@ public class AccessibilityState {
         sState = null;
         sPreInitCachedValuePerformGesturesEnabled = null;
         sInitialized = false;
+        sHasRegisteredObservers = false;
         sExtraStateInitialized = false;
         sDisplayInversionEnabled = false;
         sHighContrastEnabled = false;

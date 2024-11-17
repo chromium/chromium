@@ -180,7 +180,7 @@ void OverridePlatformValue(const std::string& platform_value);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Logs message and immediately crashes the current process without triggering a
 // crash dump.
-void CrashWithoutDumping(const std::string& message);
+[[noreturn]] void CrashWithoutDumping(const std::string& message);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 

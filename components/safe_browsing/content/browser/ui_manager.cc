@@ -53,7 +53,7 @@ SafeBrowsingUIManager::SafeBrowsingUIManager(
       blocking_page_factory_(std::move(blocking_page_factory)),
       default_safe_page_(default_safe_page) {}
 
-SafeBrowsingUIManager::~SafeBrowsingUIManager() {}
+SafeBrowsingUIManager::~SafeBrowsingUIManager() = default;
 
 void SafeBrowsingUIManager::Stop(bool shutdown) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -334,8 +334,7 @@ std::string SafeBrowsingUIManager::GetThreatTypeStringForInterstitial(
     case SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
     case SB_THREAT_TYPE_APK_DOWNLOAD:
     case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return std::string();
 }

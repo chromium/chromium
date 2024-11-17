@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.incognito.R;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.widget.BrowserUiListMenuUtils;
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu;
@@ -130,7 +130,7 @@ class IncognitoReauthMenuDelegate implements ListMenu.Delegate {
     }
 
     private void onSettingsMenuItemClicked() {
-        SettingsLauncherFactory.createSettingsLauncher().launchSettingsActivity(mContext);
+        SettingsNavigationFactory.createSettingsNavigation().startSettings(mContext);
     }
 
     /**

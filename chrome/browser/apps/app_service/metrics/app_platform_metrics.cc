@@ -122,9 +122,7 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
     case apps::AppType::kSystemWeb:
       return apps::AppTypeNameV2::kSystemWeb;
     case apps::AppType::kStandaloneBrowserChromeApp:
-      return apps::IsLacrosBrowserWindow(profile, window)
-                 ? apps::AppTypeNameV2::kStandaloneBrowserChromeAppTab
-                 : apps::AppTypeNameV2::kStandaloneBrowserChromeAppWindow;
+      return apps::AppTypeNameV2::kStandaloneBrowserChromeAppWindow;
     case apps::AppType::kExtension:
       return apps::AppTypeNameV2::kExtension;
     case apps::AppType::kStandaloneBrowserExtension:

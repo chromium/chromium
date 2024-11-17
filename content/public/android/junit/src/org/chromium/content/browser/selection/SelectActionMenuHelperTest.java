@@ -51,6 +51,7 @@ public class SelectActionMenuHelperTest {
         public void modifyDefaultMenuItems(
                 List<SelectionMenuItem.Builder> menuItemBuilders,
                 boolean isSelectionPassword,
+                boolean isSelectionReadOnly,
                 String selectedText) {
             for (SelectionMenuItem.Builder builder : menuItemBuilders) {
                 int menuItemOrder = getMenuItemOrder(builder.mId);
@@ -126,6 +127,7 @@ public class SelectActionMenuHelperTest {
                         mDelegate,
                         null,
                         /* isSelectionPassword= */ true,
+                        /* isSelectionReadOnly= */ true,
                         /* selectedText= */ "test");
         assertEquals(7, menuGroup.items.size());
         SelectionMenuItem[] items = menuGroup.items.toArray(new SelectionMenuItem[0]);
@@ -150,6 +152,7 @@ public class SelectActionMenuHelperTest {
                         mDelegate,
                         selectionActionMenuDelegate,
                         /* isSelectionPassword= */ true,
+                        /* isSelectionReadOnly= */ true,
                         /* selectedText= */ "test");
         assertEquals(7, menuGroup.items.size());
         SelectionMenuItem[] items = menuGroup.items.toArray(new SelectionMenuItem[0]);

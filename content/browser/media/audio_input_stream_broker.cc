@@ -23,7 +23,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "media/audio/audio_logging.h"
 #include "media/base/media_switches.h"
-#include "media/base/user_input_monitor.h"
 #include "media/mojo/mojom/audio_processing.mojom.h"
 
 namespace content {
@@ -38,7 +37,6 @@ AudioInputStreamBroker::AudioInputStreamBroker(
     const std::string& device_id,
     const media::AudioParameters& params,
     uint32_t shared_memory_count,
-    media::UserInputMonitorBase* user_input_monitor,
     bool enable_agc,
     media::mojom::AudioProcessingConfigPtr processing_config,
     AudioStreamBroker::DeleterCallback deleter,
@@ -48,7 +46,6 @@ AudioInputStreamBroker::AudioInputStreamBroker(
       device_id_(device_id),
       params_(params),
       shared_memory_count_(shared_memory_count),
-      user_input_monitor_(user_input_monitor),
       enable_agc_(enable_agc),
       deleter_(std::move(deleter)),
       processing_config_(std::move(processing_config)),
@@ -74,11 +71,6 @@ AudioInputStreamBroker::AudioInputStreamBroker(
 AudioInputStreamBroker::~AudioInputStreamBroker() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  // This relies on CreateStream() being called synchronously right after the
-  // constructor.
-  if (user_input_monitor_)
-    user_input_monitor_->DisableKeyPressMonitoring();
-
   NotifyFrameHostOfAudioStreamStopped(render_process_id(), render_frame_id(),
                                       /*is_capturing=*/true);
 
@@ -103,10 +95,6 @@ void AudioInputStreamBroker::CreateStream(
   awaiting_created_ = true;
 
   base::ReadOnlySharedMemoryRegion key_press_count_buffer;
-  if (user_input_monitor_) {
-    key_press_count_buffer =
-        user_input_monitor_->EnableKeyPressMonitoringWithMapping();
-  }
 
   mojo::PendingRemote<media::mojom::AudioInputStreamClient> client;
   pending_client_receiver_ = client.InitWithNewPipeAndPassReceiver();

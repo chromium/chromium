@@ -51,7 +51,7 @@ attribution_reporting_promise_test(async t => {
   };
 
   registerAttributionSrcByImg(createRedirectChain([
-    { source, cookie: attributionDebugCookie },
+    { source },
     { trigger },
   ]));
 
@@ -65,8 +65,7 @@ attribution_reporting_promise_test(async t => {
   trigger.aggregatable_deduplication_keys = inputJSON.aggregatable_deduplication_keys;
 
   registerAttributionSrc({
-    trigger,
-    cookie: attributionDebugCookie,
+    trigger
   });
 
   if (inputJSON.expect_deduplicated) {

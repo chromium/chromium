@@ -94,17 +94,10 @@ class FakeDataPackagePropertySet final
 
   // IDataPackagePropertySet
   IFACEMETHODIMP get_ApplicationListingUri(IUriRuntimeClass** value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
+    NOTREACHED();
   }
-  IFACEMETHODIMP get_ApplicationName(HSTRING* value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
-  IFACEMETHODIMP get_Description(HSTRING* value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
+  IFACEMETHODIMP get_ApplicationName(HSTRING* value) final { NOTREACHED(); }
+  IFACEMETHODIMP get_Description(HSTRING* value) final { NOTREACHED(); }
   IFACEMETHODIMP get_FileTypes(IVector<HSTRING>** value) final {
     if (!file_types_)
       file_types_ = Make<base::win::Vector<HSTRING>>();
@@ -113,13 +106,9 @@ class FakeDataPackagePropertySet final
     return hr;
   }
   IFACEMETHODIMP get_Thumbnail(IRandomAccessStreamReference** value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
+    NOTREACHED();
   }
-  IFACEMETHODIMP get_Title(HSTRING* value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
+  IFACEMETHODIMP get_Title(HSTRING* value) final { NOTREACHED(); }
   IFACEMETHODIMP put_ApplicationListingUri(IUriRuntimeClass* value) final {
     return S_OK;
   }
@@ -135,10 +124,7 @@ class FakeDataPackagePropertySet final
   }
 
   // IDataPackagePropertySet3
-  IFACEMETHODIMP get_EnterpriseId(HSTRING* value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
+  IFACEMETHODIMP get_EnterpriseId(HSTRING* value) final { NOTREACHED(); }
   IFACEMETHODIMP put_EnterpriseId(HSTRING value) final { return S_OK; }
 
  private:
@@ -171,19 +157,14 @@ class FakeDataPackage final
   IFACEMETHODIMP add_Destroyed(
       ITypedEventHandler<DataPackage*, IInspectable*>* handler,
       EventRegistrationToken* token) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
+    NOTREACHED();
   }
   IFACEMETHODIMP add_OperationCompleted(
       ITypedEventHandler<DataPackage*, OperationCompletedEventArgs*>* handler,
       EventRegistrationToken* token) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
+    NOTREACHED();
   }
-  IFACEMETHODIMP GetView(IDataPackageView** result) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
+  IFACEMETHODIMP GetView(IDataPackageView** result) final { NOTREACHED(); }
   IFACEMETHODIMP get_Properties(IDataPackagePropertySet** value) final {
     if (!properties_)
       properties_ = Make<FakeDataPackagePropertySet>(*data_requested_content_);
@@ -192,24 +173,20 @@ class FakeDataPackage final
     return hr;
   }
   IFACEMETHODIMP get_RequestedOperation(DataPackageOperation* value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
+    NOTREACHED();
   }
   IFACEMETHODIMP get_ResourceMap(
       IMap<HSTRING, RandomAccessStreamReference*>** value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
+    NOTREACHED();
   }
   IFACEMETHODIMP put_RequestedOperation(DataPackageOperation value) final {
     return S_OK;
   }
   IFACEMETHODIMP remove_Destroyed(EventRegistrationToken token) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
+    NOTREACHED();
   }
   IFACEMETHODIMP remove_OperationCompleted(EventRegistrationToken token) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
+    NOTREACHED();
   }
   IFACEMETHODIMP SetBitmap(IRandomAccessStreamReference* value) final {
     return S_OK;
@@ -322,10 +299,7 @@ class FakeDataRequest final
   ~FakeDataRequest() final = default;
 
   // IDataRequest
-  IFACEMETHODIMP FailWithDisplayText(HSTRING value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
+  IFACEMETHODIMP FailWithDisplayText(HSTRING value) final { NOTREACHED(); }
   IFACEMETHODIMP get_Data(IDataPackage** value) final {
     if (!data_package_)
       data_package_ = Make<FakeDataPackage>(data_requested_content_);
@@ -334,10 +308,7 @@ class FakeDataRequest final
     return hr;
   }
   IFACEMETHODIMP
-  get_Deadline(DateTime* value) final {
-    NOTREACHED_IN_MIGRATION();
-    return E_NOTIMPL;
-  }
+  get_Deadline(DateTime* value) final { NOTREACHED(); }
   IFACEMETHODIMP GetDeferral(IDataRequestDeferral** value) final {
     if (!data_request_deferral_)
       data_request_deferral_ = Make<FakeDataRequestDeferral>(this);
@@ -450,15 +421,13 @@ IFACEMETHODIMP FakeDataTransferManager::add_TargetApplicationChosen(
     ITypedEventHandler<DataTransferManager*, TargetApplicationChosenEventArgs*>*
         eventHandler,
     EventRegistrationToken* event_cookie) {
-  NOTREACHED_IN_MIGRATION();
-  return E_NOTIMPL;
+  NOTREACHED();
 }
 
 IFACEMETHODIMP
 FakeDataTransferManager::remove_TargetApplicationChosen(
     EventRegistrationToken event_cookie) {
-  NOTREACHED_IN_MIGRATION();
-  return E_NOTIMPL;
+  NOTREACHED();
 }
 
 base::OnceClosure FakeDataTransferManager::GetDataRequestedInvoker() {

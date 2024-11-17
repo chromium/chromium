@@ -9,6 +9,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/multidevice/multidevice_section.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -770,28 +771,14 @@ void MultiDeviceSection::AddLoadTimeData(
   html_source->AddBoolean("isEcheAppEnabled", features::IsEcheSWAEnabled());
   OnEnableScreenLockChanged();
   OnScreenLockStatusChanged();
-  html_source->AddBoolean("isOnePageOnboardingEnabled",
-                          base::FeatureList::IsEnabled(
-                              ::features::kNearbySharingOnePageOnboarding));
   html_source->AddBoolean(
       "isSmartLockSignInRemoved",
       base::FeatureList::IsEnabled(features::kSmartLockSignInRemoved));
 
-  if (base::FeatureList::IsEnabled(features::kPhoneHubAppStreamingBetaBadge)) {
-    html_source->AddString(
-        "multidevicePhoneHubAppsItemTitle",
-        l10n_util::GetStringUTF16(
-            IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_BETA_TITLE));
-  } else {
-    html_source->AddString(
-        "multidevicePhoneHubAppsItemTitle",
-        l10n_util::GetStringUTF16(
-            IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE));
-  }
-
-  html_source->AddBoolean(
-      "isFastPairSoftwareScanningSupportEnabled",
-      ash::features::IsFastPairSoftwareScanningSupportEnabled());
+  html_source->AddString(
+      "multidevicePhoneHubAppsItemTitle",
+      l10n_util::GetStringUTF16(
+          IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE));
 
   html_source->AddBoolean("isQuickShareV2Enabled",
                           chromeos::features::IsQuickShareV2Enabled());

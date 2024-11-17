@@ -47,7 +47,7 @@ class ExtensionActionManagerFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override {
     return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-        context, /*force_guest_profile=*/true);
+        context);
   }
 };
 

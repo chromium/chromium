@@ -18,7 +18,8 @@ ClipboardReadWritePermissionContext::ClipboardReadWritePermissionContext(
           ContentSettingsType::CLIPBOARD_READ_WRITE,
           blink::mojom::PermissionsPolicyFeature::kClipboardRead) {}
 
-ClipboardReadWritePermissionContext::~ClipboardReadWritePermissionContext() {}
+ClipboardReadWritePermissionContext::~ClipboardReadWritePermissionContext() =
+    default;
 
 void ClipboardReadWritePermissionContext::UpdateTabContext(
     const PermissionRequestID& id,

@@ -187,7 +187,7 @@ void ContinueSectionView::SetShownInBackground(bool shown_in_background) {
   // If the privacy notice becomes inactive when it is shown in background, stop
   // the privacy notice shown timer to restart the count on the next show.
   if (shown_in_background && privacy_notice_shown_timer_.IsRunning()) {
-    privacy_notice_shown_timer_.AbandonAndStop();
+    privacy_notice_shown_timer_.Stop();
     return;
   }
 
@@ -389,7 +389,7 @@ void ContinueSectionView::UpdateElementsVisibility() {
       RemoveChildViewT(privacy_toast_.get());
       privacy_toast_ = nullptr;
       nudge_controller_->SetPrivacyNoticeShown(false);
-      privacy_notice_shown_timer_.AbandonAndStop();
+      privacy_notice_shown_timer_.Stop();
     }
     return;
   }
@@ -473,7 +473,7 @@ void ContinueSectionView::OnAppListVisibilityChanged(bool shown,
   // When hiding the launcher, stop the privacy notice shown timer to restart
   // the count on the next show.
   if (!shown && privacy_notice_shown_timer_.IsRunning())
-    privacy_notice_shown_timer_.AbandonAndStop();
+    privacy_notice_shown_timer_.Stop();
 
   if (shown)
     MaybeCreatePrivacyNotice();

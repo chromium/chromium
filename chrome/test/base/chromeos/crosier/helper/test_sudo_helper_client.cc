@@ -94,7 +94,7 @@ bool TestSudoHelperClient::WaitForServer(base::TimeDelta max_wait) {
 }
 
 TestSudoHelperClient::Result TestSudoHelperClient::RunCommand(
-    const std::string_view command) {
+    std::string_view command) {
   // This is a test-only function that does a blocking call to the test helper
   // process that should already be running. Synchronuos blocking operation is
   // expected in this testing context.
@@ -157,7 +157,7 @@ void TestSudoHelperClient::EnsureSessionManagerStopped() {
 
 // static
 TestSudoHelperClient::Result TestSudoHelperClient::ConnectAndRunCommand(
-    const std::string_view command) {
+    std::string_view command) {
   return TestSudoHelperClient().RunCommand(command);
 }
 

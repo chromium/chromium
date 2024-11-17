@@ -21,6 +21,8 @@ class User;
 
 namespace ash {
 
+class CrosSafetyService;
+
 class UserSessionInitializer : public session_manager::SessionManagerObserver {
  public:
   // Parameters to use when initializing the RLZ library.  These fields need
@@ -82,6 +84,8 @@ class UserSessionInitializer : public session_manager::SessionManagerObserver {
   void InitRlzImpl(Profile* profile, const RlzInitParams& params);
 
   raw_ptr<Profile, DanglingUntriaged> primary_profile_ = nullptr;
+
+  std::unique_ptr<CrosSafetyService> cros_safety_service_;
 
   bool inited_for_testing_ = false;
   base::OnceClosure init_rlz_impl_closure_for_testing_;

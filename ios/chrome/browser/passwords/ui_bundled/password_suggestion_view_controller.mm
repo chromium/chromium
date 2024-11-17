@@ -85,4 +85,12 @@ constexpr CGFloat customSpacingAfterImage = 1;
       kPasswordProtectionViewAccessibilityIdentifier;
 }
 
+- (BOOL)canBecomeFirstResponder {
+  // For the proactive view, since the listeners are removed early as soon as
+  // the presentation started, allow the sheet to become a first responder to
+  // not allow the keyboard popping over the sheet when there is a focus event
+  // on the WebView underneath the sheet.
+  return _proactive;
+}
+
 @end

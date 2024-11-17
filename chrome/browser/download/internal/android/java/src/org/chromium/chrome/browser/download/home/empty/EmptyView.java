@@ -53,9 +53,9 @@ class EmptyView {
         mEmptyContainer.setVisibility(state == State.EMPTY ? View.VISIBLE : View.INVISIBLE);
 
         if (state == State.LOADING) {
-            mLoadingView.showLoadingUI();
+            mLoadingView.showLoadingUi();
         } else {
-            mLoadingView.hideLoadingUI();
+            mLoadingView.hideLoadingUi();
         }
     }
 

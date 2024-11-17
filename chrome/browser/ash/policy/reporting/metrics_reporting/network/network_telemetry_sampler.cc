@@ -92,9 +92,7 @@ NetworkType GetNetworkType(const ash::NetworkTypePattern& type) {
   if (type.Equals(ash::NetworkTypePattern::WiFi())) {
     return NetworkType::WIFI;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Unsupported network type: " << type.ToDebugString();
-  return NetworkType::NETWORK_TYPE_UNSPECIFIED;  // Unsupported
+  NOTREACHED() << "Unsupported network type: " << type.ToDebugString();
 }
 
 }  // namespace
@@ -103,7 +101,7 @@ NetworkType GetNetworkType(const ash::NetworkTypePattern& type) {
 NetworkConnectionState NetworkTelemetrySampler::GetNetworkConnectionState(
     const ash::NetworkState* network) {
   if (network->IsConnectedState()) {
-    auto portal_state = network->GetPortalState();
+    auto portal_state = network->portal_state();
     switch (portal_state) {
       case ash::NetworkState::PortalState::kUnknown:
         return NetworkConnectionState::CONNECTED;

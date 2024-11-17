@@ -166,10 +166,10 @@ class InProcessContextFactory::PerCompositorData
   void PreserveChildSurfaceControls() override {}
   void SetSwapCompletionCallbackEnabled(bool enabled) override {}
 #endif  // BUILDFLAG(IS_ANDROID)
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   void SetSupportedRefreshRates(
       const std::vector<float>& refresh_rates) override {}
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
   void SetDelegatedInkPointRenderer(
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver)
       override {}
@@ -343,11 +343,11 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
       /*hint_session_factory=*/nullptr);
 
   data->SetDisplay(std::make_unique<viz::Display>(
-      &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_,
-      &gpu_scheduler_, renderer_settings_, &debug_settings_,
-      compositor->frame_sink_id(), std::move(display_dependency),
-      std::move(output_surface), std::move(overlay_processor),
-      std::move(scheduler), compositor->task_runner()));
+      &shared_bitmap_manager_, &shared_image_manager_, &gpu_scheduler_,
+      renderer_settings_, &debug_settings_, compositor->frame_sink_id(),
+      std::move(display_dependency), std::move(output_surface),
+      std::move(overlay_processor), std::move(scheduler),
+      compositor->task_runner()));
   frame_sink_manager_->RegisterBeginFrameSource(begin_frame_source.get(),
                                                 compositor->frame_sink_id());
   // Note that we are careful not to destroy a prior |data->begin_frame_source|
@@ -358,7 +358,7 @@ void InProcessContextFactory::CreateLayerTreeFrameSink(
       compositor->frame_sink_id(), frame_sink_manager_, data->display(),
       SharedMainThreadRasterContextProvider(),
       shared_worker_context_provider_wrapper_, compositor->task_runner(),
-      &gpu_memory_buffer_manager_);
+      &gpu_memory_buffer_manager_, compositor->widget());
   compositor->SetLayerTreeFrameSink(std::move(layer_tree_frame_sink),
                                     std::move(display_private));
 

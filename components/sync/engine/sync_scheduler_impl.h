@@ -35,7 +35,7 @@ struct ModelNeutralState;
 // Lives on the sync sequence.
 class SyncSchedulerImpl : public SyncScheduler {
  public:
-  // |name| is a display string to identify the sync sequence.
+  // `name` is a display string to identify the sync sequence.
   SyncSchedulerImpl(const std::string& name,
                     std::unique_ptr<BackoffDelayProvider> delay_provider,
                     SyncCycleContext* context,
@@ -149,7 +149,7 @@ class SyncSchedulerImpl : public SyncScheduler {
 
   // Helper to restart pending_wakeup_timer_.
   // This function need to be called in 3 conditions, backoff/throttling
-  // happens, unbackoff/unthrottling happens and after |PerformDelayedNudge|
+  // happens, unbackoff/unthrottling happens and after `PerformDelayedNudge`
   // runs.
   // This function is for scheduling unbackoff/unthrottling jobs, and the
   // poriority is, global unbackoff/unthrottling job first, if there is no

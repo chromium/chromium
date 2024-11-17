@@ -1,0 +1,59 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(!is_android)
+
+source_set("commerce") {
+  sources = [
+    "product_specifications_disclosure_dialog.h",
+    "product_specifications_ui.h",
+    "product_specifications_ui_handler_delegate.h",
+    "shopping_insights_side_panel_ui.h",
+    "shopping_list_context_menu_controller.h",
+    "shopping_ui_handler_delegate.h",
+  ]
+  public_deps = [
+    "//chrome/browser/ui/webui/top_chrome",
+    "//components/commerce/core:commerce_constants",
+    "//components/commerce/core/mojom:mojo_bindings",
+    "//components/commerce/core/webui",
+    "//components/page_image_service/mojom:mojo_bindings",
+    "//ui/views",
+    "//ui/web_dialogs",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "product_specifications_disclosure_dialog.cc",
+    "product_specifications_ui.cc",
+    "product_specifications_ui_handler_delegate.cc",
+    "shopping_insights_side_panel_ui.cc",
+    "shopping_list_context_menu_controller.cc",
+    "shopping_ui_handler_delegate.cc",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    ":commerce",
+    "//chrome/app:command_ids",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/commerce",
+    "//chrome/browser/feedback",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/resources/commerce/product_specifications:resources_grit",
+    "//chrome/browser/resources/side_panel/commerce:resources_grit",
+    "//chrome/browser/resources/side_panel/shared:resources_grit",
+    "//chrome/browser/ui/bookmarks",
+    "//chrome/browser/ui/webui",
+    "//chrome/browser/ui/webui:webui_util",
+    "//components/bookmarks/browser",
+    "//components/commerce/core:feature_list",
+    "//components/commerce/core:shopping_service",
+    "//components/commerce/core:utils",
+    "//components/power_bookmarks/core",
+    "//components/web_modal",
+  ]
+}

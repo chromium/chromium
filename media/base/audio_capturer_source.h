@@ -50,8 +50,7 @@ class AudioCapturerSource
     virtual void Capture(const AudioBus* audio_source,
                          base::TimeTicks audio_capture_time,
                          const AudioGlitchInfo& glitch_info,
-                         double volume,
-                         bool key_pressed) = 0;
+                         double volume) = 0;
 
     // Signals an error has occurred.
     virtual void OnCaptureError(ErrorCode code, const std::string& message) = 0;

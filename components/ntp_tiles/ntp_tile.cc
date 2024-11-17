@@ -11,7 +11,7 @@ NTPTile::NTPTile()
 
 NTPTile::NTPTile(const NTPTile&) = default;
 
-NTPTile::~NTPTile() {}
+NTPTile::~NTPTile() = default;
 
 bool operator==(const NTPTile& a, const NTPTile& b) {
   return (a.title == b.title) && (a.url == b.url) && (a.source == b.source) &&

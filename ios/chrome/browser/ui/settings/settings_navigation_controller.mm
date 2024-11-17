@@ -44,7 +44,7 @@
 #import "ios/chrome/browser/ui/settings/default_browser/default_browser_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_view_controller.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_coordinator.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_coordinator.h"
@@ -142,7 +142,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 @property(nonatomic, strong) NotificationsCoordinator* notificationsCoordinator;
 
 // Accounts coordinator.
-@property(nonatomic, strong) AccountsCoordinator* accountsCoordinator;
+@property(nonatomic, strong)
+    ManageAccountsCoordinator* manageAccountsCoordinator;
 
 // Handler for Snackbar Commands.
 @property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
@@ -195,12 +196,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
           initWithRootViewController:nil
                              browser:browser
                             delegate:delegate];
-  navigationController.accountsCoordinator = [[AccountsCoordinator alloc]
-      initWithBaseNavigationController:navigationController
-                               browser:browser
-             closeSettingsOnAddAccount:YES];
-  navigationController.accountsCoordinator.showSignoutButton = YES;
-  [navigationController.accountsCoordinator start];
+  navigationController.manageAccountsCoordinator =
+      [[ManageAccountsCoordinator alloc]
+          initWithBaseNavigationController:navigationController
+                                   browser:browser
+                 closeSettingsOnAddAccount:YES];
+  navigationController.manageAccountsCoordinator.showSignoutButton = YES;
+  [navigationController.manageAccountsCoordinator start];
   return navigationController;
 }
 
@@ -468,11 +470,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                               delegate
                                     creditCard:(autofill::CreditCard)creditCard
                                     inEditMode:(BOOL)editMode {
-  ChromeBrowserState* browserState =
-      browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
   autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(
-          browserState->GetOriginalChromeBrowserState());
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          profile->GetOriginalProfile());
 
   AutofillCreditCardEditTableViewController* controller =
       [[AutofillCreditCardEditTableViewController alloc]
@@ -602,7 +603,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
                                       (id<SettingsNavigationControllerDelegate>)
                                           delegate {
   CHECK(browser);
-  CHECK(!browser->GetBrowserState()->IsOffTheRecord());
+  CHECK(!browser->GetProfile()->IsOffTheRecord());
   self = [super initWithRootViewController:rootViewController];
   if (self) {
     _browser = browser;
@@ -682,8 +683,8 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
   // GoogleServicesSettingsCoordinator and PasswordsCoordinator must be stopped
   // before dismissing the sync settings view.
-  [self.accountsCoordinator stop];
-  self.accountsCoordinator = nil;
+  [self.manageAccountsCoordinator stop];
+  self.manageAccountsCoordinator = nil;
   [self stopSyncSettingsCoordinator];
   [self stopGoogleServicesSettingsCoordinator];
   [self stopPasswordsCoordinator];
@@ -766,7 +767,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   // users migrated to kSignin in phase 3. See ConsentLevel::kSync
   // documentation for details.
   SyncSettingsAccountState accountState =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState())
+      SyncServiceFactory::GetForProfile(self.browser->GetProfile())
               ->HasSyncConsent()
           ? SyncSettingsAccountState::kSyncing
           : SyncSettingsAccountState::kSignedIn;
@@ -968,7 +969,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   id<ApplicationCommands> applicationHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
 
-  [applicationHandler closeSettingsUI];
+  [applicationHandler closePresentedViews];
 }
 
 #pragma mark PasswordDetailsCoordinatorDelegate
@@ -1120,12 +1121,11 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
   // This command should only be triggered by the settinsg, therefore there is
   // no issue for the UI to be available or not.
   CHECK(!skipIfUINotAvailable);
-  AccountsCoordinator* accountsCoordinator =
-      [[AccountsCoordinator alloc] initWithBaseNavigationController:self
-                                                            browser:self.browser
-                                          closeSettingsOnAddAccount:NO];
-  [accountsCoordinator start];
-  self.accountsCoordinator = accountsCoordinator;
+  self.manageAccountsCoordinator = [[ManageAccountsCoordinator alloc]
+      initWithBaseNavigationController:self
+                               browser:self.browser
+             closeSettingsOnAddAccount:NO];
+  [self.manageAccountsCoordinator start];
 }
 
 // TODO(crbug.com/41352590) : Do not pass `baseViewController` through
@@ -1194,11 +1194,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)showCreditCardDetails:(autofill::CreditCard)creditCard
                    inEditMode:(BOOL)editMode {
-  ChromeBrowserState* browserState =
-      self.browser->GetBrowserState()->GetOriginalChromeBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile()->GetOriginalProfile();
   autofill::PersonalDataManager* personalDataManager =
-      autofill::PersonalDataManagerFactory::GetForBrowserState(
-          browserState->GetOriginalChromeBrowserState());
+      autofill::PersonalDataManagerFactory::GetForProfile(
+          profile->GetOriginalProfile());
   AutofillCreditCardEditTableViewController* controller =
       [[AutofillCreditCardEditTableViewController alloc]
            initWithCreditCard:creditCard

@@ -99,9 +99,9 @@ id<GREYMatcher> TargetUnitMenuButton() {
 
 @implementation UnitConversionTestCase
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [UnitConversionAppInterface stopPresentingUnitConversionFeature];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests

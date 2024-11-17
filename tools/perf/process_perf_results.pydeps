@@ -648,7 +648,6 @@ page_sets/intl_ja_zh.py
 page_sets/intl_ko_th_vi.py
 page_sets/jetstream2_pages.py
 page_sets/key_mobile_sites_smooth.py
-page_sets/loading_mobile.py
 page_sets/login_helpers/__init__.py
 page_sets/login_helpers/autocad_login.py
 page_sets/login_helpers/chrome_login.py

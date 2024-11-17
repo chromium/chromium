@@ -102,10 +102,6 @@ void LineInfo::SetLineStyle(const InlineNode& node,
   const LayoutBox* box = node.GetLayoutBox();
   line_style_ = box->Style(use_first_line_style_);
   needs_accurate_end_position_ = ComputeNeedsAccurateEndPosition();
-  if (!RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
-    is_ruby_base_ = box->IsRubyBase();
-    is_ruby_text_ = box->IsRubyText();
-  }
 
   // Reset block start offset related members.
   annotation_block_start_adjustment_ = LayoutUnit();
@@ -119,18 +115,12 @@ ETextAlign LineInfo::GetTextAlign(bool is_last_line) const {
 
   if (is_ruby_text_) {
     ETextAlign text_align = LineStyle().GetTextAlign();
-    if (!RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
-      if (text_align == ComputedStyleInitialValues::InitialTextAlign()) {
-        return ETextAlign::kJustify;
-      }
-    } else {
-      ERubyAlign ruby_align = LineStyle().RubyAlign();
-      if ((ruby_align == ERubyAlign::kSpaceAround &&
-           (text_align == ComputedStyleInitialValues::InitialTextAlign() ||
-            text_align == ETextAlign::kJustify)) ||
-          ruby_align == ERubyAlign::kSpaceBetween) {
-        return ETextAlign::kJustify;
-      }
+    ERubyAlign ruby_align = LineStyle().RubyAlign();
+    if ((ruby_align == ERubyAlign::kSpaceAround &&
+         (text_align == ComputedStyleInitialValues::InitialTextAlign() ||
+          text_align == ETextAlign::kJustify)) ||
+        ruby_align == ERubyAlign::kSpaceBetween) {
+      return ETextAlign::kJustify;
     }
   }
 
@@ -293,7 +283,7 @@ bool LineInfo::ShouldHangTrailingSpaces() const {
     case ETextAlign::kWebkitRight:
       return IsRtl(BaseDirection());
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool LineInfo::IsHyphenated() const {

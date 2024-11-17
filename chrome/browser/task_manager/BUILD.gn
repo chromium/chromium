@@ -55,6 +55,7 @@ source_set("task_manager") {
     "sampling/task_group_sampler.h",
     "sampling/task_manager_impl.h",
     "task_manager_interface.h",
+    "task_manager_metrics_recorder.h",
     "task_manager_observer.h",
     "web_contents_tags.h",
   ]
@@ -62,7 +63,7 @@ source_set("task_manager") {
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/profiles:profile_attributes",
+    "//chrome/browser/profiles:profile_util",
     "//components/favicon/core",
     "//components/nacl/common:buildflags",
     "//components/sessions:session_id",
@@ -158,6 +159,7 @@ source_set("impl") {
     "sampling/task_group_sampler.cc",
     "sampling/task_manager_impl.cc",
     "task_manager_interface.cc",
+    "task_manager_metrics_recorder.cc",
     "task_manager_observer.cc",
     "web_contents_tags.cc",
   ]
@@ -177,6 +179,7 @@ source_set("impl") {
     "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/task_manager",
+    "//chrome/browser/ui:url_identity",
     "//chrome/common",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",

@@ -4,6 +4,7 @@
 
 #include "ui/wm/core/capture_controller.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "ui/aura/client/capture_client_observer.h"
 #include "ui/aura/env.h"
@@ -67,8 +68,9 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
   aura::client::CaptureDelegate* old_capture_delegate = capture_delegate_;
 
   // Copy the map in case it's modified out from under us.
-  std::map<aura::Window*, aura::client::CaptureDelegate*> delegates =
-      delegates_;
+  std::map<aura::Window*,
+           raw_ptr<aura::client::CaptureDelegate, CtnExperimental>>
+      delegates = delegates_;
 
   aura::WindowTracker tracker;
   if (new_capture_window)
@@ -95,7 +97,7 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
       capture_window_ ? capture_window_->GetRootWindow() : nullptr;
   capture_delegate_ = delegates_.find(capture_root_window) == delegates_.end()
                           ? nullptr
-                          : delegates_[capture_root_window];
+                          : delegates_[capture_root_window].get();
 
   // With more than one delegate (e.g. multiple displays), an earlier
   // UpdateCapture() call could cancel an existing capture and destroy
@@ -114,8 +116,8 @@ void CaptureController::SetCapture(aura::Window* new_capture_window) {
       capture_delegate_->SetNativeCapture();
   }
 
-  for (aura::client::CaptureClientObserver& observer : observers_)
-    observer.OnCaptureChanged(old_capture_window, capture_window_);
+  observers_.Notify(&aura::client::CaptureClientObserver::OnCaptureChanged,
+                    old_capture_window, capture_window_);
 }
 
 void CaptureController::ReleaseCapture(aura::Window* window) {

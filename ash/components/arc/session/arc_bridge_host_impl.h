@@ -88,6 +88,9 @@ class ArcBridgeHostImpl
   void OnCrashCollectorInstanceReady(
       mojo::PendingRemote<mojom::CrashCollectorInstance> crash_collector_remote)
       override;
+  void OnArcShellExecutionInstanceReady(
+      mojo::PendingRemote<mojom::ArcShellExecutionInstance>
+          arc_shell_execution_remote) override;
   void OnDigitalGoodsInstanceReady(
       mojo::PendingRemote<mojom::DigitalGoodsInstance> digital_goods_remote)
       override;
@@ -111,9 +114,6 @@ class ArcBridgeHostImpl
   void OnIntentHelperInstanceReady(
       mojo::PendingRemote<mojom::IntentHelperInstance> intent_helper_remote)
       override;
-  void OnKeyboardShortcutInstanceReady(
-      mojo::PendingRemote<mojom::KeyboardShortcutInstance>
-          keyboard_shortcut_remote) override;
   void OnKeymasterInstanceReady(
       mojo::PendingRemote<mojom::KeymasterInstance> keymaster_remote) override;
   void OnKeyMintInstanceReady(
@@ -140,6 +140,9 @@ class ArcBridgeHostImpl
                                      obb_mounter_remote) override;
   void OnOemCryptoInstanceReady(
       mojo::PendingRemote<mojom::OemCryptoInstance> oemcrypto_remote) override;
+  void OnOnDeviceSafetyInstanceReady(
+      mojo::PendingRemote<mojom::OnDeviceSafetyInstance>
+          on_device_safety_remote) override;
   void OnPaymentAppInstanceReady(
       mojo::PendingRemote<chromeos::payments::mojom::PaymentAppInstance>
           payment_app_remote) override;

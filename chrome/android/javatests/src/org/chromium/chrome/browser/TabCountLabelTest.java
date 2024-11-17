@@ -24,7 +24,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Test suite for the tab count widget on the phone toolbar. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -53,7 +53,7 @@ public class TabCountLabelTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testTabCountLabel() {
         tabCountLabelCheck("Initial state", "1");
         ChromeTabUtils.newTabFromMenu(

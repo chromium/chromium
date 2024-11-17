@@ -55,8 +55,7 @@ v8::Local<v8::Value> SQLValue::ToV8(ScriptState* script_state) const {
     case SQLValue::kStringValue:
       return V8String(isolate, GetString());
   }
-  NOTREACHED_IN_MIGRATION();
-  return v8::Local<v8::Value>();
+  NOTREACHED();
 }
 
 }  // namespace blink

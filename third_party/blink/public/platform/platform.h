@@ -44,7 +44,6 @@
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "cc/tiles/raster_dark_mode_filter.h"
 #include "cc/trees/raster_context_provider_wrapper.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "media/base/audio_capturer_source.h"
@@ -56,12 +55,10 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_audio_device.h"
-#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_v8_value_converter.h"
 #include "third_party/blink/public/platform/websocket_handshake_throttle_provider.h"
-#include "third_party/webrtc/api/video/video_codec_type.h"
 #include "ui/base/resource/resource_scale_factor.h"
 #include "ui/gl/angle_implementation.h"
 #include "v8/include/v8-local-handle.h"
@@ -138,7 +135,6 @@ class WebSandboxSupport;
 class WebSecurityOrigin;
 class WebThemeEngine;
 class WebVideoCaptureImplManager;
-class WebSecurityOrigin;
 struct WebContentSecurityPolicyHeader;
 
 namespace scheduler {
@@ -383,6 +379,10 @@ class BLINK_PLATFORM_EXPORT Platform {
 #endif
 
   // Resources -----------------------------------------------------------
+
+  // Returns true if GetDataResource would return non-null data for the
+  // specified |resource_id|.
+  virtual bool HasDataResource(int resource_id) const { return false; }
 
   // Returns a blob of data corresponding to |resource_id|. This should not be
   // used for resources which have compress="gzip" in *.grd.
@@ -630,8 +630,6 @@ class BLINK_PLATFORM_EXPORT Platform {
 
   virtual bool IsWebRtcEncryptionEnabled() { return true; }
 
-  virtual bool IsWebRtcSrtpEncryptedHeadersEnabled() { return false; }
-
   // TODO(qingsi): Consolidate the legacy |ip_handling_policy| with
   // |allow_mdns_obfuscation| following the latest spec on IP handling modes
   // with mDNS introduced
@@ -812,7 +810,6 @@ class BLINK_PLATFORM_EXPORT Platform {
 
  private:
   static void InitializeMainThreadCommon(
-      Platform* platform,
       std::unique_ptr<MainThread> main_thread);
 };
 

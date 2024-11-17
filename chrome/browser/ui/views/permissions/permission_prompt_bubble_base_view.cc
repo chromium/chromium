@@ -242,7 +242,10 @@ void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
   if (browser_view && browser_view->GetLocationBarView()->GetChipController() &&
       browser_view->GetLocationBarView()
           ->GetChipController()
-          ->IsPermissionPromptChipVisible()) {
+          ->IsPermissionPromptChipVisible() &&
+      browser_view->GetLocationBarView()
+          ->GetChipController()
+          ->IsBubbleShowing()) {
     ChipController* chip_controller =
         browser_view->GetLocationBarView()->GetChipController();
     switch (button) {
@@ -272,7 +275,7 @@ void PermissionPromptBubbleBaseView::RunButtonCallback(int button_id) {
       delegate_->Deny();
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::u16string PermissionPromptBubbleBaseView::GetPermissionFragmentForTesting()

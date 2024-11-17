@@ -214,8 +214,7 @@ DeviceOrientationController::RequestPermission(ScriptState* script_state) {
                 // is no "ask" or "prompt" state in the Chromium
                 // permissions UI for sensors, so HasPermissionStatus() will
                 // always return GRANTED or DENIED.
-                NOTREACHED_IN_MIGRATION();
-                break;
+                NOTREACHED();
             }
           })));
 

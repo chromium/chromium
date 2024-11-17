@@ -7,7 +7,6 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/display/tablet_state.h"
 #include "ui/platform_window/extensions/wayland_extension.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -33,8 +32,7 @@ ui::WaylandOrientationLockType ToWaylandOrientationLockType(
     case device::mojom::ScreenOrientationLockType::NATURAL:
       return ui::WaylandOrientationLockType::kNatural;
   }
-  NOTREACHED_IN_MIGRATION();
-  return ui::WaylandOrientationLockType::kAny;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -54,16 +52,7 @@ bool ScreenOrientationDelegateLacros::FullScreenRequired(
 
 ui::WaylandToplevelExtension* GetWaylandToplevelExtensionFromWebContents(
     content::WebContents* web_contents) {
-  aura::Window* window = web_contents->GetNativeView();
-  if (!window->GetHost())
-    return nullptr;
-
-  auto* dwth_platform =
-      views::DesktopWindowTreeHostLacros::From(window->GetHost());
-  if (!dwth_platform)
-    return nullptr;
-
-  return dwth_platform->GetWaylandToplevelExtension();
+  return nullptr;
 }
 
 void ScreenOrientationDelegateLacros::Lock(

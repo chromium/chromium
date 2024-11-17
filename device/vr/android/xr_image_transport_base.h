@@ -65,7 +65,12 @@ class XrImageTransportBase {
   // GL context via MailboxToSurfaceBridge, and the callback is called
   // once that's complete.
   virtual void Initialize(WebXrPresentationState* webxr,
-                          XrInitStatusCallback callback);
+                          XrInitStatusCallback callback,
+                          bool webgpu_session);
+
+  // Indicates if the session uses WebGPU to produce it's frames. Does not
+  // have any effect on the API used for compositing/display.
+  bool IsWebGPUSession() { return webgpu_session_; }
 
   // Only valid when using SharedBuffers, this ensures that the current
   // animating frame is populated with texture information for a valid and
@@ -128,6 +133,8 @@ class XrImageTransportBase {
   void OnFrameAvailable();
 
   scoped_refptr<base::SingleThreadTaskRunner> gl_thread_task_runner_;
+
+  bool webgpu_session_ = false;
 
   // Used for Surface transport (Android N)
   //

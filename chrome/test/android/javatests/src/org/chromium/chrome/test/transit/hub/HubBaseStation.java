@@ -13,12 +13,12 @@ import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.containsString;
 
 import static org.chromium.base.test.transit.Condition.whether;
 import static org.chromium.base.test.transit.LogicalElement.uiThreadLogicalElement;
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
-import androidx.annotation.StringRes;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 
@@ -41,7 +41,7 @@ import org.chromium.chrome.test.transit.page.PageStation;
 import org.chromium.chrome.test.transit.tabmodel.TabModelSelectorCondition;
 
 /** The base station for Hub, with several panes and a toolbar. */
-public abstract class HubBaseStation extends Station {
+public abstract class HubBaseStation extends Station<ChromeTabbedActivity> {
     public static final ViewSpec HUB_TOOLBAR = viewSpec(withId(R.id.hub_toolbar));
     public static final ViewSpec HUB_PANE_HOST = viewSpec(withId(R.id.hub_pane_host));
     public static final ViewSpec HUB_MENU_BUTTON =
@@ -51,19 +51,20 @@ public abstract class HubBaseStation extends Station {
     public static final ViewSpec HUB_PANE_SWITCHER =
             viewSpec(allOf(isDescendantOfA(withId(R.id.hub_toolbar)), withId(R.id.pane_switcher)));
 
+    // The non-regular toggle tab button contentDescription is a substring found in the string:
+    // R.string.accessibility_tab_switcher_standard_stack.
     public static final ViewSpec REGULAR_TOGGLE_TAB_BUTTON =
-            viewSpec(withContentDescription(R.string.accessibility_tab_switcher_standard_stack));
+            viewSpec(withContentDescription(containsString("standard tab")));
 
     public static final ViewSpec INCOGNITO_TOGGLE_TAB_BUTTON =
             viewSpec(withContentDescription(R.string.accessibility_tab_switcher_incognito_stack));
 
-    protected Supplier<ChromeTabbedActivity> mActivitySupplier;
     protected Supplier<TabModelSelector> mTabModelSelectorSupplier;
     protected final boolean mIncognitoTabsExist;
     protected final boolean mRegularTabsExist;
 
     public HubBaseStation(boolean regularTabsExist, boolean incognitoTabsExist) {
-        super();
+        super(ChromeTabbedActivity.class);
         mRegularTabsExist = regularTabsExist;
         mIncognitoTabsExist = incognitoTabsExist;
     }
@@ -73,9 +74,9 @@ public abstract class HubBaseStation extends Station {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        mActivitySupplier = elements.declareActivity(ChromeTabbedActivity.class);
+        super.declareElements(elements);
         mTabModelSelectorSupplier =
-                elements.declareEnterCondition(new TabModelSelectorCondition(mActivitySupplier));
+                elements.declareEnterCondition(new TabModelSelectorCondition(mActivityElement));
 
         elements.declareView(HUB_TOOLBAR);
         elements.declareView(HUB_PANE_HOST);
@@ -90,24 +91,13 @@ public abstract class HubBaseStation extends Station {
                 uiThreadLogicalElement(
                         "LayoutManager is showing TAB_SWITCHER (Hub)",
                         this::isHubLayoutShowing,
-                        mActivitySupplier));
+                        mActivityElement));
         elements.declareEnterCondition(new HubLayoutNotInTransition());
     }
 
     /** Returns the {@link Condition} that acts as {@link Supplier<TabModelSelector>}. */
     public Supplier<TabModelSelector> getTabModelSelectorSupplier() {
         return mTabModelSelectorSupplier;
-    }
-
-    /** Returns the {@link ChromeTabbedActivity} supplier for this station. */
-    public Supplier<ChromeTabbedActivity> getActivitySupplier() {
-        return mActivitySupplier;
-    }
-
-    /** Returns the {@link ChromeTabbedActivity} for this station. */
-    public ChromeTabbedActivity getActivity() {
-        assertSuppliersCanBeUsed();
-        return mActivitySupplier.get();
     }
 
     /**
@@ -144,12 +134,12 @@ public abstract class HubBaseStation extends Station {
                     "Hub pane switcher is not visible to switch to " + paneId);
         }
 
-        @StringRes
-        int contentDescriptionId = HubStationUtils.getContentDescriptionForIdPaneSelection(paneId);
+        String contentDescription =
+                HubStationUtils.getContentDescriptionSubstringForIdPaneSelection(paneId);
         return travelToSync(
                 destinationStation,
                 () -> {
-                    clickPaneSwitcherForPaneWithContentDescription(contentDescriptionId);
+                    clickPaneSwitcherForPaneWithContentDescription(contentDescription);
                 });
     }
 
@@ -167,27 +157,24 @@ public abstract class HubBaseStation extends Station {
         return whether(activity.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
     }
 
-    private void clickPaneSwitcherForPaneWithContentDescription(
-            @StringRes int contentDescriptionRes) {
+    private void clickPaneSwitcherForPaneWithContentDescription(String contentDescription) {
         // TODO(crbug.com/40287437): Content description seems reasonable for now, this might get
-        // harder
-        // once we use a recycler view with text based buttons.
-        String contentDescription = getActivity().getString(contentDescriptionRes);
+        // harder once we use a recycler view with text based buttons.
         onView(
                         allOf(
                                 isDescendantOfA(HUB_PANE_SWITCHER.getViewMatcher()),
-                                withContentDescription(contentDescription)))
+                                withContentDescription(containsString(contentDescription))))
                 .perform(click());
     }
 
     private class HubLayoutNotInTransition extends UiThreadCondition {
         private HubLayoutNotInTransition() {
-            dependOnSupplier(mActivitySupplier, "ChromeTabbedActivity");
+            dependOnSupplier(mActivityElement, "ChromeTabbedActivity");
         }
 
         @Override
         protected ConditionStatus checkWithSuppliers() {
-            LayoutManager layoutManager = mActivitySupplier.get().getLayoutManager();
+            LayoutManager layoutManager = mActivityElement.get().getLayoutManager();
             boolean startingToShow = layoutManager.isLayoutStartingToShow(LayoutType.TAB_SWITCHER);
             boolean startingToHide = layoutManager.isLayoutStartingToHide(LayoutType.TAB_SWITCHER);
             return whether(

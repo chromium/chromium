@@ -182,7 +182,6 @@ public class DownloadLocationCustomView extends ScrollView
         if (availableSpace < mTotalBytes) {
             locationAvailableSpaceText =
                     getContext()
-                            .getResources()
                             .getString(
                                     R.string.download_manager_list_item_description,
                                     locationAvailableSpaceText,

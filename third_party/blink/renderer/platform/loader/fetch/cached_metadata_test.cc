@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 
 #include "base/containers/span.h"
@@ -49,8 +44,7 @@ void CheckTestCachedMetadata(scoped_refptr<CachedMetadata> cached_metadata) {
   EXPECT_EQ(cached_metadata->DataTypeID(), kTestDataTypeId);
   EXPECT_THAT(cached_metadata->SerializedData(),
               testing::ElementsAreArray(CreateTestSerializedData()));
-  EXPECT_THAT(base::make_span(cached_metadata->Data(), cached_metadata->size()),
-              testing::ElementsAreArray(kTestData));
+  EXPECT_THAT(cached_metadata->Data(), testing::ElementsAreArray(kTestData));
   EXPECT_EQ(cached_metadata->tag(), kTestTag);
   auto drained_data = std::move(*cached_metadata).DrainSerializedData();
 
@@ -62,9 +56,8 @@ void CheckTestCachedMetadata(scoped_refptr<CachedMetadata> cached_metadata) {
   CHECK(absl::holds_alternative<mojo_base::BigBuffer>(drained_data));
   mojo_base::BigBuffer drained_big_buffer =
       std::move(absl::get<mojo_base::BigBuffer>(drained_data));
-  EXPECT_THAT(
-      base::make_span(drained_big_buffer.data(), drained_big_buffer.size()),
-      testing::ElementsAreArray(CreateTestSerializedData()));
+  EXPECT_THAT(base::span(drained_big_buffer),
+              testing::ElementsAreArray(CreateTestSerializedData()));
 }
 
 TEST(CachedMetadataTest, GetSerializedDataHeader) {

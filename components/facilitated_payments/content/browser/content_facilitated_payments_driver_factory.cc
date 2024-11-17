@@ -5,6 +5,7 @@
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 
 #include "base/check_deref.h"
+#include "components/facilitated_payments/content/browser/security_checker.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "content/public/browser/navigation_handle.h"
@@ -37,7 +38,8 @@ ContentFacilitatedPaymentsDriverFactory::GetOrCreateForFrame(
     return *iter->second;
   }
   driver = std::make_unique<ContentFacilitatedPaymentsDriver>(
-      &*client_, optimization_guide_decider_, render_frame_host);
+      &*client_, optimization_guide_decider_, render_frame_host,
+      std::make_unique<SecurityChecker>());
   DCHECK_EQ(driver_map_.find(render_frame_host)->second.get(), driver.get());
   return *iter->second;
 }

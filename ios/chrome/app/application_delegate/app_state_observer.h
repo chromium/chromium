@@ -23,13 +23,13 @@
 // Called when the app is about to transition to `nextInitStage`. The init stage
 // of the app at that moment is still `nextInitStage` - 1.
 - (void)appState:(AppState*)appState
-    willTransitionToInitStage:(InitStage)nextInitStage;
+    willTransitionToInitStage:(AppInitStage)nextInitStage;
 
 // Called right after the app is transitioned out of to the
 // `previousInitStage`. The init stage of the app at that
 // moment is `previousInitStage` + 1.
 - (void)appState:(AppState*)appState
-    didTransitionFromInitStage:(InitStage)previousInitStage;
+    didTransitionFromInitStage:(AppInitStage)previousInitStage;
 
 // Called when Scene with activation level SceneActivationLevelForegroundActive
 // is available.

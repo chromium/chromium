@@ -35,9 +35,12 @@
 using blink::WebDocument;
 using blink::WebElement;
 using testing::AllOf;
+using testing::Each;
 using testing::ElementsAre;
 using testing::Field;
+using testing::IsEmpty;
 using testing::Property;
+using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 namespace autofill {
@@ -527,37 +530,45 @@ TEST_F(FormCacheBrowserTest, FrameLimit) {
 // - the forms [kMaxExtractableChildFrames, kMaxExtractableFields) should have
 //   empty FormData::child_frames,
 // - the forms [kMaxExtractableFields, end) should be skipped.
-// TODO(crbug.com/40816477): Flaky on android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_FieldAndFrameLimit DISABLED_FieldAndFrameLimit
-#else
-#define MAYBE_FieldAndFrameLimit FieldAndFrameLimit
-#endif
-TEST_F(FormCacheBrowserTest, MAYBE_FieldAndFrameLimit) {
+TEST_F(FormCacheBrowserTest, FieldAndFrameLimit) {
+  // Ideally, the test would create `kMaxExtractableFields + 1` forms
+  //   <form><input><iframe></iframe></form>
+  // But that many iframes seem to cause test timeouts. So only the first
+  // `kMaxExtractableChildFrames + 1` forms will get an <iframe>.
   ASSERT_LE(kMaxExtractableChildFrames, kMaxExtractableFields);
+  constexpr size_t kNumFormsWithFrame = kMaxExtractableChildFrames + 1;
+  constexpr size_t kNumFormsWithoutFrame =
+      kMaxExtractableFields + 1 - kNumFormsWithFrame;
 
   std::string html;
-  for (unsigned int i = 0; i < kMaxExtractableFields + 1; i++) {
+  for (size_t i = 0; i < kNumFormsWithFrame; i++) {
     html += "<form><input><iframe></iframe></form>";
+  }
+  for (size_t i = 0; i < kNumFormsWithoutFrame; i++) {
+    html += "<form><input></form>";
   }
   LoadHTML(html.c_str());
 
-  ASSERT_EQ(kMaxExtractableFields + 1, GetDocument().GetTopLevelForms().size());
+  ASSERT_EQ(kMaxExtractableFields + 1,
+            GetDocument().GetElementsByHTMLTagName("form").length());
+  ASSERT_EQ(kMaxExtractableFields + 1,
+            GetDocument().GetElementsByHTMLTagName("input").length());
+  ASSERT_EQ(kMaxExtractableChildFrames + 1,
+            GetDocument().GetElementsByHTMLTagName("iframe").length());
 
   FormCache::UpdateFormCacheResult forms = UpdateFormCache();
 
   EXPECT_EQ(forms.updated_forms.size(), kMaxExtractableFields);
-  EXPECT_TRUE(std::ranges::none_of(forms.updated_forms,
-                                   &std::vector<FormFieldData>::empty,
-                                   &FormData::fields));
-  EXPECT_TRUE(std::ranges::none_of(
+  EXPECT_THAT(forms.updated_forms,
+              Each(Property("fields", &FormData::fields, SizeIs(1))));
+  EXPECT_THAT(
       base::make_span(forms.updated_forms).first(kMaxExtractableChildFrames),
-      &std::vector<FrameTokenWithPredecessor>::empty, &FormData::child_frames));
-  EXPECT_TRUE(std::ranges::all_of(
+      Each(Property("child_frames", &FormData::child_frames, SizeIs(1))));
+  EXPECT_THAT(
       base::make_span(forms.updated_forms).subspan(kMaxExtractableChildFrames),
-      &std::vector<FrameTokenWithPredecessor>::empty, &FormData::child_frames));
+      Each(Property("child_frames", &FormData::child_frames, IsEmpty())));
 
-  EXPECT_TRUE(forms.removed_forms.empty());
+  EXPECT_THAT(forms.removed_forms, IsEmpty());
 }
 
 // Tests that form extraction measures its total time.

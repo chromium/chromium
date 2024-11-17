@@ -86,7 +86,7 @@ gfx::RectF SVGLayoutSupport::LocalVisualRect(const LayoutObject& object) {
   DCHECK(!object.IsSVGRoot());
 
   // Return early for any cases where we don't actually paint
-  if (object.StyleRef().UsedVisibility() != EVisibility::kVisible &&
+  if (object.StyleRef().Visibility() != EVisibility::kVisible &&
       !object.EnclosingLayer()->HasVisibleContent()) {
     return gfx::RectF();
   }

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/arc/vmm/arc_system_state_observation.h"
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/components/arc/test/fake_arc_session.h"
 #include "base/memory/raw_ptr.h"

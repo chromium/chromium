@@ -11,9 +11,10 @@
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
-NavigationTransition::NavigationTransition(ExecutionContext* context,
-                                           const String& navigation_type,
-                                           NavigationHistoryEntry* from)
+NavigationTransition::NavigationTransition(
+    ExecutionContext* context,
+    V8NavigationType::Enum navigation_type,
+    NavigationHistoryEntry* from)
     : navigation_type_(navigation_type),
       from_(from),
       finished_(MakeGarbageCollected<FinishedProperty>(context)) {

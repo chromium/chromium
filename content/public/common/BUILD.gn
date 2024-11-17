@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
+import("//content/public/common/features.gni")
 import("//content/public/common/zygote/features.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -15,6 +16,11 @@ import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")
+}
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "ENABLE_SCREEN_CAPTURE=$enable_screen_capture" ]
 }
 
 # See //content/BUILD.gn for how this works. Note that targets in `//content`
@@ -263,6 +269,7 @@ source_set("common_sources") {
   ]
   deps = [
     ":content_descriptor_keys",
+    "//build:android_buildflags",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//build/config/chromebox_for_meetings:buildflags",

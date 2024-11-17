@@ -9,21 +9,21 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "build/chromeos_buildflags.h"
-
-static_assert(BUILDFLAG(IS_CHROMEOS_ASH), "For ChromeOS ash-chrome only");
 
 namespace variations::cros_early_boot::evaluate_seed {
 class EarlyBootFeatureVisitor;
+}
+
+namespace gin {
+class V8FeatureVisitor;
 }
 
 namespace base {
 
 class TestFeatureVisitor;
 
-// An interface for EarlyBootFeatureVisitor that provides a method to
-// iterate over a feature's name, override state, parameters, and associated
-// field trial.
+// An interface for FeatureList that provides a method to iterate over a
+// feature's name, override state, parameters, and associated field trial.
 //
 // NOTE: This is intended only for the special case of needing to get all
 // feature overrides. Most users should call FeatureList::IsEnabled() to query
@@ -45,6 +45,7 @@ class FeatureVisitor {
 
  private:
   friend variations::cros_early_boot::evaluate_seed::EarlyBootFeatureVisitor;
+  friend gin::V8FeatureVisitor;
   friend TestFeatureVisitor;
 
   // The constructor is private so only friend classes can inherit from this

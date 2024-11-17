@@ -162,17 +162,14 @@ ResourceRequestsAllowedState ResourceRequestStateToHistogramValue(
     case ResourceRequestAllowedNotifier::ALLOWED:
       return RESOURCE_REQUESTS_ALLOWED;
   }
-  NOTREACHED_IN_MIGRATION();
-  return RESOURCE_REQUESTS_NOT_ALLOWED;
+  NOTREACHED();
 }
 
-// Returns the header value for |name| from |headers| or an empty string if not
-// set.
-std::string GetHeaderValue(const net::HttpResponseHeaders* headers,
-                           std::string_view name) {
-  std::string value;
-  headers->EnumerateHeader(nullptr, name, &value);
-  return value;
+// Returns the header value for |name| from |headers| or an empty string_view if
+// not set.
+std::string_view GetHeaderValue(const net::HttpResponseHeaders* headers,
+                                std::string_view name) {
+  return headers->EnumerateHeader(nullptr, name).value_or(std::string_view());
 }
 
 // Returns the list of values for |name| from |headers|. If the header in not
@@ -182,9 +179,9 @@ std::vector<std::string> GetHeaderValuesList(
     std::string_view name) {
   std::vector<std::string> values;
   size_t iter = 0;
-  std::string value;
-  while (headers->EnumerateHeader(&iter, name, &value)) {
-    values.push_back(value);
+  while (std::optional<std::string_view> value =
+             headers->EnumerateHeader(&iter, name)) {
+    values.emplace_back(*value);
   }
   return values;
 }
@@ -353,13 +350,23 @@ VariationsService::VariationsService(
       policy_pref_service_(local_state),
       resource_request_allowed_notifier_(std::move(notifier)),
       safe_seed_manager_(local_state),
+      entropy_providers_(state_manager_->CreateEntropyProviders(
+          VariationsFieldTrialCreatorBase::
+              IsLimitedEntropyRandomizationSourceEnabled(
+                  client_->GetChannelForVariations(),
+                  &limited_entropy_synthetic_trial_))),
       field_trial_creator_(
           client_.get(),
           std::make_unique<VariationsSeedStore>(
               local_state,
               MaybeImportFirstRunSeed(client_.get(), local_state),
               /*signature_verification_enabled=*/true,
-              std::make_unique<VariationsSafeSeedStoreLocalState>(local_state)),
+              std::make_unique<VariationsSafeSeedStoreLocalState>(
+                  local_state,
+                  client_.get()->GetVariationsSeedFileDir()),
+              client_.get()->GetChannelForVariations(),
+              client_.get()->GetVariationsSeedFileDir(),
+              entropy_providers_.get()),
           ui_string_overrider,
           &limited_entropy_synthetic_trial_) {
   DCHECK(client_);
@@ -889,10 +896,11 @@ void VariationsService::OnSimpleLoaderComplete(
     return;
   }
 
-  std::string signature = GetHeaderValue(headers.get(), "X-Seed-Signature");
-  std::string country_code = GetHeaderValue(headers.get(), "X-Country");
-  StoreSeed(std::move(*response_body), std::move(signature),
-            std::move(country_code), response_date.value_or(base::Time()),
+  std::string_view signature =
+      GetHeaderValue(headers.get(), "X-Seed-Signature");
+  std::string_view country_code = GetHeaderValue(headers.get(), "X-Country");
+  StoreSeed(std::move(*response_body), std::string(signature),
+            std::string(country_code), response_date.value_or(base::Time()),
             is_delta_compressed, is_gzip_compressed);
 }
 
@@ -934,15 +942,9 @@ void VariationsService::PerformSimulationWithVersion(
   if (!version.IsValid())
     return;
 
-  auto entropy_providers = state_manager_->CreateEntropyProviders(
-      VariationsFieldTrialCreatorBase::
-          IsLimitedEntropyRandomizationSourceEnabled(
-              client()->GetChannelForVariations(),
-              &limited_entropy_synthetic_trial_));
-
   std::unique_ptr<ClientFilterableState> client_state =
       field_trial_creator_.GetClientFilterableStateForVersion(version);
-  auto result = SimulateSeedStudies(seed, *client_state, *entropy_providers);
+  auto result = SimulateSeedStudies(seed, *client_state, *entropy_providers_);
 
   NotifyObservers(result);
 }
@@ -980,7 +982,7 @@ bool VariationsService::SetUpFieldTrials(
       variation_ids, command_line_variation_ids, extra_overrides,
       std::move(feature_list), state_manager_, synthetic_trial_registry_,
       platform_field_trials, &safe_seed_manager_,
-      /*add_entropy_source_to_variations_ids=*/true);
+      /*add_entropy_source_to_variations_ids=*/true, *entropy_providers_);
 }
 
 std::vector<StudyGroupNames> VariationsService::GetStudiesAvailableToForce() {

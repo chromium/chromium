@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
-#include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
@@ -124,6 +123,7 @@
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
@@ -333,7 +333,7 @@ void LocationBarView::Init() {
       ContentSettingImageModel::GenerateContentSettingImageModels();
   for (auto& model : models) {
     auto image_view = std::make_unique<ContentSettingImageView>(
-        std::move(model), this, this, page_action_font_list);
+        std::move(model), this, this, browser_, page_action_font_list);
     image_view->SetIconColor(icon_color);
     image_view->SetVisible(false);
     content_setting_views_.push_back(AddChildView(std::move(image_view)));
@@ -355,10 +355,6 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kPriceInsights);
     params.types_enabled.push_back(PageActionIconType::kPriceTracking);
 
-    if (side_search::IsEnabledForBrowser(browser_)) {
-      params.types_enabled.push_back(PageActionIconType::kSideSearch);
-    }
-
     params.types_enabled.push_back(PageActionIconType::kClickToCall);
     params.types_enabled.push_back(PageActionIconType::kSmsRemoteFetcher);
     params.types_enabled.push_back(PageActionIconType::kManagePasswords);
@@ -379,8 +375,7 @@ void LocationBarView::Init() {
   params.types_enabled.push_back(PageActionIconType::kSaveCard);
   params.types_enabled.push_back(PageActionIconType::kSaveIban);
   params.types_enabled.push_back(PageActionIconType::kLocalCardMigration);
-  params.types_enabled.push_back(
-      PageActionIconType::kVirtualCardManualFallback);
+  params.types_enabled.push_back(PageActionIconType::kFilledCardInformation);
   params.types_enabled.push_back(PageActionIconType::kVirtualCardEnroll);
   params.types_enabled.push_back(PageActionIconType::kMandatoryReauth);
 
@@ -404,7 +399,7 @@ void LocationBarView::Init() {
     params.types_enabled.push_back(PageActionIconType::kBookmarkStar);
   }
 
-  params.icon_color = color_provider->GetColor(kColorPageActionIcon);
+  params.icon_color = color_provider->GetColor(kColorOmniboxActionIcon);
   params.between_icon_spacing = 8;
   params.font_list = &page_action_font_list;
   params.browser = browser_;
@@ -643,11 +638,6 @@ gfx::Size LocationBarView::CalculatePreferredSize(
     width += trailing_width + padding;
 
   return gfx::Size(width, height);
-}
-
-void LocationBarView::OnKeywordFaviconFetched(const gfx::Image& icon) {
-  DCHECK(!icon.IsEmpty());
-  selected_keyword_view_->SetCustomImage(icon);
 }
 
 void LocationBarView::Layout(PassKey) {
@@ -924,7 +914,8 @@ void LocationBarView::OnThemeChanged() {
   if (!IsInitialized())
     return;
 
-  const SkColor icon_color = GetColorProvider()->GetColor(kColorPageActionIcon);
+  const SkColor icon_color =
+      GetColorProvider()->GetColor(kColorOmniboxActionIcon);
   page_action_icon_controller_->SetIconColor(icon_color);
   for (ContentSettingImageView* image_view : content_setting_views_) {
     image_view->SetIconColor(icon_color);
@@ -1011,7 +1002,7 @@ SkColor LocationBarView::GetIconLabelBubbleSurroundingForegroundColor() const {
   // will inherit the selected "surrounding foreground color".
   const auto color_id = ShouldShowKeywordBubble()
                             ? kColorOmniboxKeywordSeparator
-                            : kColorPageActionIcon;
+                            : kColorOmniboxActionIcon;
   return GetColorProvider()->GetColor(color_id);
 }
 
@@ -1384,7 +1375,7 @@ void LocationBarView::OnMouseExited(const ui::MouseEvent& event) {
 }
 
 void LocationBarView::ShowContextMenu(const gfx::Point& p,
-                                      ui::MenuSourceType source_type) {
+                                      ui::mojom::MenuSourceType source_type) {
   omnibox_view_->ShowContextMenu(p, source_type);
 }
 
@@ -1586,7 +1577,8 @@ bool LocationBarView::ShowPageInfoDialog() {
           this, gfx::Rect(), GetWidget()->GetNativeWindow(), contents,
           entry->GetVirtualURL(), std::move(initialized_callback),
           base::BindOnce(&LocationBarView::OnPageInfoBubbleClosed,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr()),
+          /*allow_about_this_site=*/true);
   bubble->SetHighlightedButton(location_icon_view_);
   bubble->GetWidget()->Show();
   RecordPageInfoMetrics();

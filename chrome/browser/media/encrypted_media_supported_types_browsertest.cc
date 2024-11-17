@@ -901,7 +901,7 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest,
 
 // High 10-bit Profile is supported when using ClearKey if it is supported for
 // clear content on this platform.
-  if (media::IsBuiltInVideoCodec(media::VideoCodec::kH264)) {
+  if (media::IsDecoderBuiltInVideoCodec(media::VideoCodec::kH264)) {
     EXPECT_PROPRIETARY(IsSupportedByKeySystem(kClearKey, kVideoMP4MimeType,
                                               video_mp4_hi10p_codecs()));
   } else {

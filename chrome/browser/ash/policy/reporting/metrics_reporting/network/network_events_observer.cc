@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/queue.h"
-#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/net/network_health/network_health_manager.h"
@@ -36,16 +35,6 @@ bool IsConnectedWifiNetwork(const ash::NetworkState* network_state) {
 }
 
 }  // namespace
-
-BASE_FEATURE(kEnableWifiSignalEventsReporting,
-             "EnableWifiSignalEventsReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kEnableNetworkConnectionStateEventsReporting,
-             "EnableNetworkConnectionStateEventsReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kEnableVpnConnectionStateEventsReporting,
-             "EnableVpnConnectionStateEventsReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 NetworkEventsObserver::NetworkEventsObserver()
     : MojoServiceEventsObserverBase<
@@ -74,14 +63,10 @@ void NetworkEventsObserver::NetworkConnectionStateChanged(
   const auto network_type =
       ::ash::NetworkTypePattern::Primitive(network->type());
 
-  if (network_type.MatchesPattern(ash::NetworkTypePattern::Physical()) &&
-      base::FeatureList::IsEnabled(
-          kEnableNetworkConnectionStateEventsReporting)) {
+  if (network_type.MatchesPattern(ash::NetworkTypePattern::Physical())) {
     metric_data.mutable_event_data()->set_type(
         MetricEventType::NETWORK_STATE_CHANGE);
-  } else if (network_type.Equals(ash::NetworkTypePattern::VPN()) &&
-             base::FeatureList::IsEnabled(
-                 kEnableVpnConnectionStateEventsReporting)) {
+  } else if (network_type.Equals(ash::NetworkTypePattern::VPN())) {
     metric_data.mutable_event_data()->set_type(
         MetricEventType::VPN_CONNECTION_STATE_CHANGE);
   } else {
@@ -213,10 +198,6 @@ void NetworkEventsObserver::SetReportingEnabled(bool is_enabled) {
 
 void NetworkEventsObserver::CheckForSignalStrengthEvent(
     const ash::NetworkState* network_state) {
-  if (!base::FeatureList::IsEnabled(kEnableWifiSignalEventsReporting)) {
-    return;
-  }
-
   auto wifi_signal_rssi_cb = base::BindOnce(
       &NetworkEventsObserver::OnSignalStrengthChangedRssiValueReceived,
       weak_ptr_factory_.GetWeakPtr(), network_state->guid(),

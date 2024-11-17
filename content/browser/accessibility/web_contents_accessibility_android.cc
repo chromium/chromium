@@ -82,16 +82,18 @@ void AddToPredicateMap(const char* search_key_ascii,
                        ui::AccessibilityMatchPredicate predicate) {
   std::u16string search_key_utf16 = base::ASCIIToUTF16(search_key_ascii);
   g_search_key_to_predicate_map.Get()[search_key_utf16] = predicate;
-  if (!g_all_search_keys.Get().empty())
+  if (!g_all_search_keys.Get().empty()) {
     g_all_search_keys.Get() += u",";
+  }
   g_all_search_keys.Get() += search_key_utf16;
 }
 
 // These are special unofficial strings sent from TalkBack/BrailleBack
 // to jump to certain categories of web elements.
 void InitSearchKeyToPredicateMapIfNeeded() {
-  if (!g_search_key_to_predicate_map.Get().empty())
+  if (!g_search_key_to_predicate_map.Get().empty()) {
     return;
+  }
 
   AddToPredicateMap("ARTICLE", ui::AccessibilityArticlePredicate);
   AddToPredicateMap("BLOCKQUOTE", ui::AccessibilityBlockquotePredicate);
@@ -145,8 +147,9 @@ ui::AccessibilityMatchPredicate PredicateForSearchKey(
     const std::u16string& element_type) {
   InitSearchKeyToPredicateMapIfNeeded();
   const auto& iter = g_search_key_to_predicate_map.Get().find(element_type);
-  if (iter != g_search_key_to_predicate_map.Get().end())
+  if (iter != g_search_key_to_predicate_map.Get().end()) {
     return iter->second;
+  }
 
   // If we don't recognize the selector, return any element that a
   // screen reader should navigate to.
@@ -310,10 +313,12 @@ void WebContentsAccessibilityAndroid::Connector::DeleteEarly() {
 void WebContentsAccessibilityAndroid::Connector::UpdateRenderProcessConnection(
     RenderWidgetHostViewAndroid* old_rwhva,
     RenderWidgetHostViewAndroid* new_rwhva) {
-  if (old_rwhva)
+  if (old_rwhva) {
     old_rwhva->SetWebContentsAccessibility(nullptr);
-  if (new_rwhva)
+  }
+  if (new_rwhva) {
     new_rwhva->SetWebContentsAccessibility(accessibility_.get());
+  }
   accessibility_->UpdateBrowserAccessibilityManager();
 }
 
@@ -364,8 +369,9 @@ WebContentsAccessibilityAndroid::WebContentsAccessibilityAndroid(
 WebContentsAccessibilityAndroid::~WebContentsAccessibilityAndroid() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
 
   // Clean up autofill popup proxy node in case the popup was not dismissed.
   DeleteAutofillPopupProxy();
@@ -396,8 +402,9 @@ void WebContentsAccessibilityAndroid::ConnectInstanceToRootManager(
 void WebContentsAccessibilityAndroid::UpdateBrowserAccessibilityManager() {
   BrowserAccessibilityManagerAndroid* manager =
       GetRootBrowserAccessibilityManager();
-  if (manager)
+  if (manager) {
     manager->set_web_contents_accessibility(GetWeakPtr());
+  }
 }
 
 void WebContentsAccessibilityAndroid::DeleteEarly(JNIEnv* env) {
@@ -479,8 +486,9 @@ void WebContentsAccessibilityAndroid::SetAllowImageDescriptions(
 void WebContentsAccessibilityAndroid::HandleContentChanged(int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
 
   // If there are a large number of changes it's too expensive to fire all of
   // them, so we just fire one on the root instead.
@@ -508,8 +516,9 @@ void WebContentsAccessibilityAndroid::HandleContentChanged(int32_t unique_id) {
 void WebContentsAccessibilityAndroid::HandleFocusChanged(int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
   Java_WebContentsAccessibilityImpl_handleFocusChanged(env, obj, unique_id);
 }
 
@@ -517,8 +526,9 @@ void WebContentsAccessibilityAndroid::HandleCheckStateChanged(
     int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
   Java_WebContentsAccessibilityImpl_handleCheckStateChanged(env, obj,
                                                             unique_id);
 }
@@ -527,8 +537,9 @@ void WebContentsAccessibilityAndroid::HandleStateDescriptionChanged(
     int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
   Java_WebContentsAccessibilityImpl_handleStateDescriptionChanged(env, obj,
                                                                   unique_id);
 }
@@ -536,8 +547,9 @@ void WebContentsAccessibilityAndroid::HandleStateDescriptionChanged(
 void WebContentsAccessibilityAndroid::HandleClicked(int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
   Java_WebContentsAccessibilityImpl_handleClicked(env, obj, unique_id);
 }
 
@@ -545,8 +557,9 @@ void WebContentsAccessibilityAndroid::HandleScrollPositionChanged(
     int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
   Java_WebContentsAccessibilityImpl_handleScrollPositionChanged(env, obj,
                                                                 unique_id);
 }
@@ -555,32 +568,34 @@ void WebContentsAccessibilityAndroid::HandleScrolledToAnchor(
     int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
   Java_WebContentsAccessibilityImpl_handleScrolledToAnchor(env, obj, unique_id);
 }
 
-void WebContentsAccessibilityAndroid::HandleDialogModalOpened(
-    int32_t unique_id) {
+void WebContentsAccessibilityAndroid::HandlePaneOpened(int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
 
-  Java_WebContentsAccessibilityImpl_handleDialogModalOpened(env, obj,
-                                                            unique_id);
+  Java_WebContentsAccessibilityImpl_handlePaneOpened(env, obj, unique_id);
 }
 
 void WebContentsAccessibilityAndroid::AnnounceLiveRegionText(
     const std::u16string& text) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
 
   // Do not announce empty text.
-  if (text.empty())
+  if (text.empty()) {
     return;
+  }
 
   Java_WebContentsAccessibilityImpl_announceLiveRegionText(
       env, obj, base::android::ConvertUTF16ToJavaString(env, text));
@@ -590,8 +605,9 @@ void WebContentsAccessibilityAndroid::HandleTextContentChanged(
     int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
   Java_WebContentsAccessibilityImpl_handleTextContentChanged(env, obj,
                                                              unique_id);
 }
@@ -600,8 +616,9 @@ void WebContentsAccessibilityAndroid::HandleTextSelectionChanged(
     int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
   Java_WebContentsAccessibilityImpl_handleTextSelectionChanged(env, obj,
                                                                unique_id);
 }
@@ -610,8 +627,9 @@ void WebContentsAccessibilityAndroid::HandleEditableTextChanged(
     int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
   Java_WebContentsAccessibilityImpl_handleEditableTextChanged(env, obj,
                                                               unique_id);
 }
@@ -625,8 +643,9 @@ void WebContentsAccessibilityAndroid::SignalEndOfTestForTesting(JNIEnv* env) {
 void WebContentsAccessibilityAndroid::HandleEndOfTestSignal() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
 
   Java_WebContentsAccessibilityImpl_handleEndOfTestSignal(env, obj);
 }
@@ -634,16 +653,18 @@ void WebContentsAccessibilityAndroid::HandleEndOfTestSignal() {
 void WebContentsAccessibilityAndroid::HandleSliderChanged(int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
   Java_WebContentsAccessibilityImpl_handleSliderChanged(env, obj, unique_id);
 }
 
 void WebContentsAccessibilityAndroid::SendDelayedWindowContentChangedEvent() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
   Java_WebContentsAccessibilityImpl_sendDelayedWindowContentChangedEvent(env,
                                                                          obj);
 }
@@ -651,8 +672,9 @@ void WebContentsAccessibilityAndroid::SendDelayedWindowContentChangedEvent() {
 void WebContentsAccessibilityAndroid::HandleHover(int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
   Java_WebContentsAccessibilityImpl_handleHover(env, obj, unique_id);
 }
 
@@ -660,13 +682,15 @@ bool WebContentsAccessibilityAndroid::OnHoverEvent(
     const ui::MotionEventAndroid& event) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return false;
+  }
 
   if (!Java_WebContentsAccessibilityImpl_onHoverEvent(
           env, obj,
-          ui::MotionEventAndroid::GetAndroidAction(event.GetAction())))
+          ui::MotionEventAndroid::GetAndroidAction(event.GetAction()))) {
     return false;
+  }
 
   // |HitTest| sends an IPC to the render process to do the hit testing.
   // The response is handled by HandleHover when it returns.
@@ -703,16 +727,18 @@ bool WebContentsAccessibilityAndroid::OnHoverEventNoRenderer(JNIEnv* env,
 void WebContentsAccessibilityAndroid::HandleNavigate(int32_t root_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
   Java_WebContentsAccessibilityImpl_handleNavigate(env, obj, root_id);
 }
 
 void WebContentsAccessibilityAndroid::UpdateMaxNodesInCache() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
 
   Java_WebContentsAccessibilityImpl_updateMaxNodesInCache(env, obj);
 }
@@ -721,8 +747,9 @@ void WebContentsAccessibilityAndroid::ClearNodeInfoCacheForGivenId(
     int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
 
   Java_WebContentsAccessibilityImpl_clearNodeInfoCacheForGivenId(env, obj,
                                                                  unique_id);
@@ -733,8 +760,9 @@ WebContentsAccessibilityAndroid::GenerateAccessibilityNodeInfoString(
     int32_t unique_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return {};
+  }
 
   return base::android::ConvertJavaStringToUTF16(
       Java_WebContentsAccessibilityImpl_generateAccessibilityNodeInfoString(
@@ -752,8 +780,9 @@ jint WebContentsAccessibilityAndroid::GetRootId(JNIEnv* env) {
           GetRootBrowserAccessibilityManager()) {
     auto* root = static_cast<BrowserAccessibilityAndroid*>(
         root_manager->GetBrowserAccessibilityRoot());
-    if (root)
+    if (root) {
       return static_cast<jint>(root->GetUniqueId());
+    }
   }
   return ui::kAXAndroidInvalidViewId;
 }
@@ -765,15 +794,17 @@ jboolean WebContentsAccessibilityAndroid::IsNodeValid(JNIEnv* env,
 
 void WebContentsAccessibilityAndroid::HitTest(JNIEnv* env, jint x, jint y) {
   if (BrowserAccessibilityManagerAndroid* root_manager =
-          GetRootBrowserAccessibilityManager())
+          GetRootBrowserAccessibilityManager()) {
     root_manager->HitTest(gfx::Point(x, y), /*request_id=*/0);
+  }
 }
 
 jboolean WebContentsAccessibilityAndroid::IsEditableText(JNIEnv* env,
                                                          jint unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return false;
+  }
 
   return node->IsTextField();
 }
@@ -781,8 +812,9 @@ jboolean WebContentsAccessibilityAndroid::IsEditableText(JNIEnv* env,
 jboolean WebContentsAccessibilityAndroid::IsFocused(JNIEnv* env,
                                                     jint unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return false;
+  }
 
   return node->IsFocused();
 }
@@ -791,8 +823,9 @@ jint WebContentsAccessibilityAndroid::GetEditableTextSelectionStart(
     JNIEnv* env,
     jint unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return false;
+  }
 
   return node->GetSelectionStart();
 }
@@ -801,8 +834,9 @@ jint WebContentsAccessibilityAndroid::GetEditableTextSelectionEnd(
     JNIEnv* env,
     jint unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return false;
+  }
 
   return node->GetSelectionEnd();
 }
@@ -812,12 +846,14 @@ WebContentsAccessibilityAndroid::GetAbsolutePositionForNode(JNIEnv* env,
                                                             jint unique_id) {
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
-  if (!root_manager)
+  if (!root_manager) {
     return nullptr;
+  }
 
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   float dip_scale = 1 / root_manager->device_scale_factor();
   gfx::Rect absolute_rect = gfx::ScaleToEnclosingRect(
@@ -847,8 +883,9 @@ void WebContentsAccessibilityAndroid::UpdateAccessibilityNodeInfoBoundsRect(
     BrowserAccessibilityAndroid* node) {
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
-  if (!root_manager)
+  if (!root_manager) {
     return;
+  }
 
   ui::AXOffscreenResult offscreen_result = ui::AXOffscreenResult::kOnscreen;
   float dip_scale = 1 / root_manager->device_scale_factor();
@@ -876,16 +913,19 @@ jboolean WebContentsAccessibilityAndroid::UpdateCachedAccessibilityNodeInfo(
     jint unique_id) {
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
-  if (!root_manager)
+  if (!root_manager) {
     return false;
+  }
 
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return false;
+  }
 
   ScopedJavaLocalRef<jobject> obj = java_anib_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return false;
+  }
 
   // Update cached nodes by providing new enclosing Rects
   UpdateAccessibilityNodeInfoBoundsRect(env, obj, info, unique_id, node);
@@ -897,22 +937,26 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
     JNIEnv* env,
     const JavaParamRef<jobject>& info,
     jint unique_id) {
-  if (!GetRootBrowserAccessibilityManager())
+  if (!GetRootBrowserAccessibilityManager()) {
     return false;
+  }
 
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return false;
+  }
 
   ScopedJavaLocalRef<jobject> obj = java_anib_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return false;
+  }
 
   int parent_id = ui::kAXAndroidInvalidViewId;
   auto* parent_node =
       static_cast<BrowserAccessibilityAndroid*>(node->PlatformGetParent());
-  if (parent_node)
+  if (parent_node) {
     parent_id = parent_node->GetUniqueId();
+  }
 
   // Build a vector of child ids
   std::vector<int> child_ids;
@@ -943,7 +987,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->HasNonEmptyValue(), !node->GetTextContentUTF16().empty(),
       node->IsSeekControl(), node->IsFormDescendant());
 
-    Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBaseAttributes(
+  Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoBaseAttributes(
       env, obj, info, unique_id, parent_id,
       GetCanonicalJNIString(env, node->GetClassName()),
       GetCanonicalJNIString(env, node->GetRoleString()),
@@ -953,8 +997,7 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
       node->CanOpenPopup(), node->IsMultiLine(), node->AndroidInputType(),
       node->AndroidLiveRegionType(),
       GetCanonicalJNIString(env, node->GetContentInvalidErrorMessage()),
-      node->ClickableScore(),
-      GetCanonicalJNIString(env, node->GetCSSDisplay()),
+      node->ClickableScore(), GetCanonicalJNIString(env, node->GetCSSDisplay()),
       base::android::ConvertUTF16ToJavaString(env, node->GetBrailleLabel()),
       GetCanonicalJNIString(env, node->GetBrailleRoleDescription()));
 
@@ -1021,11 +1064,10 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
         node->RangeMax(), node->RangeCurrentValue());
   }
 
-  if (ui::IsDialog(node->GetRole())) {
+  if (node->ShouldUsePaneTitle()) {
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoPaneTitle(
         env, obj, info,
-        base::android::ConvertUTF16ToJavaString(
-            env, node->GetDialogModalMessageText()));
+        base::android::ConvertUTF16ToJavaString(env, node->GetPaneTitle()));
   }
 
   if (node->IsTextField()) {
@@ -1042,12 +1084,14 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityEvent(
     jint unique_id,
     jint event_type) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return false;
+  }
 
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return false;
+  }
 
   // We will always set boolean, classname, list and scroll attributes.
   Java_WebContentsAccessibilityImpl_setAccessibilityEventBaseAttributes(
@@ -1085,8 +1129,9 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityEvent(
 
 void WebContentsAccessibilityAndroid::Click(JNIEnv* env, jint unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return;
+  }
 
   // If it's a heading consisting of only a link, click the link.
   if (node->IsHeadingLink()) {
@@ -1100,20 +1145,23 @@ void WebContentsAccessibilityAndroid::Click(JNIEnv* env, jint unique_id) {
   // disabled nodes are secretly clickable if we do not check here.
   // Children of disabled controls/widgets will also have the click action, so
   // ensure that parents/ancestry chain is enabled as well.
-  if (node->IsEnabled() && !node->IsDisabledDescendant())
+  if (node->IsEnabled() && !node->IsDisabledDescendant()) {
     node->manager()->DoDefaultAction(*node);
+  }
 }
 
 void WebContentsAccessibilityAndroid::Focus(JNIEnv* env, jint unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (node)
+  if (node) {
     node->manager()->SetFocus(*node);
+  }
 }
 
 void WebContentsAccessibilityAndroid::Blur(JNIEnv* env) {
   if (BrowserAccessibilityManagerAndroid* root_manager =
-          GetRootBrowserAccessibilityManager())
+          GetRootBrowserAccessibilityManager()) {
     root_manager->SetFocus(*root_manager->GetBrowserAccessibilityRoot());
+  }
 }
 
 void WebContentsAccessibilityAndroid::ScrollToMakeNodeVisible(JNIEnv* env,
@@ -1152,14 +1200,16 @@ jboolean WebContentsAccessibilityAndroid::AdjustSlider(JNIEnv* env,
                                                        jint unique_id,
                                                        jboolean increment) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return false;
+  }
 
   BrowserAccessibilityAndroid* android_node =
       static_cast<BrowserAccessibilityAndroid*>(node);
 
-  if (!android_node->IsSlider() || !android_node->IsEnabled())
+  if (!android_node->IsSlider() || !android_node->IsEnabled()) {
     return false;
+  }
 
   float value =
       node->GetFloatAttribute(ax::mojom::FloatAttribute::kValueForRange);
@@ -1167,8 +1217,9 @@ jboolean WebContentsAccessibilityAndroid::AdjustSlider(JNIEnv* env,
       node->GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange);
   float max =
       node->GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange);
-  if (max <= min)
+  if (max <= min) {
     return false;
+  }
 
   // If this node has defined a step value, move by that amount. Otherwise, to
   // behave similarly to an Android SeekBar, move by an increment of ~5%.
@@ -1194,8 +1245,9 @@ jboolean WebContentsAccessibilityAndroid::AdjustSlider(JNIEnv* env,
 void WebContentsAccessibilityAndroid::ShowContextMenu(JNIEnv* env,
                                                       jint unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (node)
+  if (node) {
     node->manager()->ShowContextMenu(*node);
+  }
 }
 
 jint WebContentsAccessibilityAndroid::FindElementType(
@@ -1206,17 +1258,20 @@ jint WebContentsAccessibilityAndroid::FindElementType(
     jboolean can_wrap_to_last_element,
     jboolean use_default_predicate) {
   BrowserAccessibilityAndroid* start_node = GetAXFromUniqueID(start_id);
-  if (!start_node)
+  if (!start_node) {
     return ui::kInvalidAXNodeID;
+  }
 
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
-  if (!root_manager)
+  if (!root_manager) {
     return ui::kInvalidAXNodeID;
+  }
 
   ui::BrowserAccessibility* root = root_manager->GetBrowserAccessibilityRoot();
-  if (!root)
+  if (!root) {
     return ui::kInvalidAXNodeID;
+  }
 
   // If |element_type_str| was empty, we can skip to the default predicate.
   ui::AccessibilityMatchPredicate predicate;
@@ -1248,8 +1303,9 @@ jint WebContentsAccessibilityAndroid::FindElementType(
   tree_search.SetOnscreenOnly(false);
   tree_search.AddPredicate(predicate);
 
-  if (tree_search.CountMatches() == 0)
+  if (tree_search.CountMatches() == 0) {
     return ui::kInvalidAXNodeID;
+  }
 
   auto* android_node =
       static_cast<BrowserAccessibilityAndroid*>(tree_search.GetMatchAtIndex(0));
@@ -1280,20 +1336,23 @@ jboolean WebContentsAccessibilityAndroid::NextAtGranularity(
     jint cursor_index) {
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
-  if (!root_manager)
+  if (!root_manager) {
     return false;
+  }
 
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return false;
+  }
 
   jint start_index = -1;
   int end_index = -1;
   if (root_manager->NextAtGranularity(granularity, cursor_index, node,
                                       &start_index, &end_index)) {
     ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-    if (obj.is_null())
+    if (obj.is_null()) {
       return false;
+    }
     std::u16string text = node->GetTextContentUTF16();
     Java_WebContentsAccessibilityImpl_finishGranularityMoveNext(
         env, obj, base::android::ConvertUTF16ToJavaString(env, text),
@@ -1306,8 +1365,9 @@ jboolean WebContentsAccessibilityAndroid::NextAtGranularity(
 jint WebContentsAccessibilityAndroid::GetTextLength(JNIEnv* env,
                                                     jint unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return -1;
+  }
   std::u16string text = node->GetTextContentUTF16();
   return text.size();
 }
@@ -1349,20 +1409,23 @@ jboolean WebContentsAccessibilityAndroid::PreviousAtGranularity(
     jint cursor_index) {
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
-  if (!root_manager)
+  if (!root_manager) {
     return false;
+  }
 
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return false;
+  }
 
   jint start_index = -1;
   int end_index = -1;
   if (root_manager->PreviousAtGranularity(granularity, cursor_index, node,
                                           &start_index, &end_index)) {
     ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-    if (obj.is_null())
+    if (obj.is_null()) {
       return false;
+    }
     Java_WebContentsAccessibilityImpl_finishGranularityMovePrevious(
         env, obj,
         base::android::ConvertUTF16ToJavaString(env,
@@ -1373,31 +1436,77 @@ jboolean WebContentsAccessibilityAndroid::PreviousAtGranularity(
   return false;
 }
 
+void WebContentsAccessibilityAndroid::RecordInlineTextBoxMetrics(
+    bool from_focus) {
+  // Track the current AXMode via UMA. We do this here and not in the
+  // manager so that we can get a signal of whether we are making requests
+  // for modes that don't have kInlineTextBoxes mode flag.
+  BrowserAccessibilityStateImpl* accessibility_state =
+      BrowserAccessibilityStateImpl::GetInstance();
+  ui::AXMode mode = accessibility_state->GetAccessibilityMode();
+
+  ui::AXMode::BundleHistogramValue bundle;
+  if (mode == ui::kAXModeBasic) {
+    bundle = ui::AXMode::BundleHistogramValue::kBasic;
+  } else if (mode == ui::kAXModeWebContentsOnly) {
+    bundle = ui::AXMode::BundleHistogramValue::kWebContentsOnly;
+  } else if (mode == ui::kAXModeComplete) {
+    bundle = ui::AXMode::BundleHistogramValue::kComplete;
+  } else if (mode == ui::kAXModeFormControls) {
+    bundle = ui::AXMode::BundleHistogramValue::kFormControls;
+  } else {
+    bundle = ui::AXMode::BundleHistogramValue::kUnnamed;
+  }
+
+  if (from_focus) {
+    base::UmaHistogramEnumeration(
+        "Accessibility.Android.InlineTextBoxes.Bundle.FromFocus", bundle);
+  } else {
+    base::UmaHistogramEnumeration(
+        "Accessibility.Android.InlineTextBoxes.Bundle.ExtraData", bundle);
+  }
+}
+
 void WebContentsAccessibilityAndroid::MoveAccessibilityFocus(
     JNIEnv* env,
     jint old_unique_id,
     jint new_unique_id) {
   BrowserAccessibilityAndroid* old_node = GetAXFromUniqueID(old_unique_id);
-  if (old_node)
+  if (old_node) {
     old_node->manager()->ClearAccessibilityFocus(*old_node);
+  }
 
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(new_unique_id);
-  if (!node)
+  if (!node) {
     return;
+  }
   node->manager()->SetAccessibilityFocus(*node);
 
   // When Android sets accessibility focus to a node, we load inline text
   // boxes for that node so that subsequent requests for character bounding
   // boxes will succeed. However, don't do that for the root of the tree,
   // as that will result in loading inline text boxes for the whole tree.
-  if (node != node->manager()->GetBrowserAccessibilityRoot())
+  if (node != node->manager()->GetBrowserAccessibilityRoot()) {
     node->manager()->LoadInlineTextBoxes(*node);
+    RecordInlineTextBoxMetrics(/*from_focus=*/true);
+  }
+}
+
+void WebContentsAccessibilityAndroid::SetSequentialFocusStartingPoint(
+    JNIEnv* env,
+    jint unique_id) {
+  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
+  if (!node) {
+    return;
+  }
+  node->manager()->SetSequentialFocusNavigationStartingPoint(*node);
 }
 
 bool WebContentsAccessibilityAndroid::IsSlider(JNIEnv* env, jint unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return false;
+  }
 
   return node->GetRole() == ax::mojom::Role::kSlider;
 }
@@ -1405,8 +1514,9 @@ bool WebContentsAccessibilityAndroid::IsSlider(JNIEnv* env, jint unique_id) {
 void WebContentsAccessibilityAndroid::OnAutofillPopupDisplayed(JNIEnv* env) {
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
-  if (!root_manager)
+  if (!root_manager) {
     return;
+  }
 
   ui::BrowserAccessibility* current_focus = root_manager->GetFocus();
   if (!current_focus) {
@@ -1447,8 +1557,9 @@ jint WebContentsAccessibilityAndroid::
     GetIdForElementAfterElementHostingAutofillPopup(JNIEnv* env) {
   if (g_element_after_element_hosting_autofill_popup_unique_id == -1 ||
       !GetAXFromUniqueID(
-          g_element_after_element_hosting_autofill_popup_unique_id))
+          g_element_after_element_hosting_autofill_popup_unique_id)) {
     return ui::kInvalidAXNodeID;
+  }
 
   return g_element_after_element_hosting_autofill_popup_unique_id;
 }
@@ -1467,8 +1578,9 @@ bool WebContentsAccessibilityAndroid::Scroll(JNIEnv* env,
                                              int direction,
                                              bool is_page_scroll) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return false;
+  }
 
   return node->Scroll(direction, is_page_scroll);
 }
@@ -1477,21 +1589,24 @@ bool WebContentsAccessibilityAndroid::SetRangeValue(JNIEnv* env,
                                                     jint unique_id,
                                                     float value) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return false;
+  }
 
   BrowserAccessibilityAndroid* android_node =
       static_cast<BrowserAccessibilityAndroid*>(node);
 
-  if (!android_node->GetData().IsRangeValueSupported())
+  if (!android_node->GetData().IsRangeValueSupported()) {
     return false;
+  }
 
   float min =
       node->GetFloatAttribute(ax::mojom::FloatAttribute::kMinValueForRange);
   float max =
       node->GetFloatAttribute(ax::mojom::FloatAttribute::kMaxValueForRange);
-  if (max <= min)
+  if (max <= min) {
     return false;
+  }
 
   value = std::clamp(value, min, max);
   node->manager()->SetValue(*node, base::NumberToString(value));
@@ -1502,8 +1617,9 @@ jboolean WebContentsAccessibilityAndroid::AreInlineTextBoxesLoaded(
     JNIEnv* env,
     jint unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return false;
+  }
 
   return node->AreInlineTextBoxesLoaded();
 }
@@ -1511,8 +1627,10 @@ jboolean WebContentsAccessibilityAndroid::AreInlineTextBoxesLoaded(
 void WebContentsAccessibilityAndroid::LoadInlineTextBoxes(JNIEnv* env,
                                                           jint unique_id) {
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (node)
+  if (node) {
     node->manager()->LoadInlineTextBoxes(*node);
+    RecordInlineTextBoxMetrics(/*from_focus=*/false);
+  }
 }
 
 ScopedJavaLocalRef<jintArray>
@@ -1522,12 +1640,14 @@ WebContentsAccessibilityAndroid::GetCharacterBoundingBoxes(JNIEnv* env,
                                                            jint len) {
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
-  if (!root_manager)
+  if (!root_manager) {
     return nullptr;
+  }
 
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   if (len <= 0 || len > kMaxCharacterBoundingBoxLen) {
     LOG(ERROR) << "Trying to request EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY "
@@ -1543,8 +1663,9 @@ WebContentsAccessibilityAndroid::GetCharacterBoundingBoxes(JNIEnv* env,
   for (int i = 0; i < len; i++) {
     gfx::Rect char_bounds = node->GetUnclippedRootFrameInnerTextRangeBoundsRect(
         start + i, start + i + 1);
-    if (char_bounds.IsEmpty())
+    if (char_bounds.IsEmpty()) {
       char_bounds = object_bounds;
+    }
 
     char_bounds = gfx::ScaleToEnclosingRect(char_bounds, dip_scale, dip_scale);
 
@@ -1563,12 +1684,14 @@ jboolean WebContentsAccessibilityAndroid::GetImageData(
     jboolean has_sent_previous_request) {
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
-  if (!root_manager)
+  if (!root_manager) {
     return false;
+  }
 
   BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node)
+  if (!node) {
     return false;
+  }
 
   // If this is a valid node, try to get an image data url for it.
   std::string image_data_url =
@@ -1591,8 +1714,9 @@ jboolean WebContentsAccessibilityAndroid::GetImageData(
   }
 
   ScopedJavaLocalRef<jobject> obj = java_anib_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return false;
+  }
 
   // If the image data has been retrieved from the image data url successfully,
   // then convert it to a Java byte array and add it in the Bundle extras of
@@ -1620,13 +1744,15 @@ BrowserAccessibilityAndroid* WebContentsAccessibilityAndroid::GetAXFromUniqueID(
 
 void WebContentsAccessibilityAndroid::UpdateFrameInfo(float page_scale) {
   page_scale_ = page_scale;
-  if (frame_info_initialized_)
+  if (frame_info_initialized_) {
     return;
+  }
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> obj = java_ref_.get(env);
-  if (obj.is_null())
+  if (obj.is_null()) {
     return;
+  }
 
   Java_WebContentsAccessibilityImpl_notifyFrameInfoInitialized(env, obj);
   frame_info_initialized_ = true;
@@ -1654,9 +1780,9 @@ void WebContentsAccessibilityAndroid::RequestAccessibilityTreeSnapshot(
 
   // Define snapshot parameters:
   auto params = mojom::SnapshotAccessibilityTreeParams::New();
-  params->ax_mode =
-      ui::AXMode(ui::kAXModeComplete.flags() | ui::AXMode::kHTMLMetadata)
-          .flags();
+  params->ax_mode = ui::AXMode(ui::kAXModeComplete.flags() | ui::AXMode::kHTML |
+                               ui::AXMode::kHTMLMetadata)
+                        .flags();
   params->max_nodes = 5000;
   params->timeout = base::Seconds(2);
 

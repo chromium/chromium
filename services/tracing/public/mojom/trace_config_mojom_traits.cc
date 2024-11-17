@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "mojo/public/cpp/base/token_mojom_traits.h"
+#include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "services/tracing/public/mojom/data_source_config_mojom_traits.h"
 
 namespace mojo {
@@ -78,12 +79,14 @@ bool StructTraits<tracing::mojom::TraceConfigDataView, perfetto::TraceConfig>::
   std::vector<perfetto::TraceConfig::DataSource> data_sources;
   std::vector<perfetto::TraceConfig::BufferConfig> buffers;
   std::optional<base::Token> trace_uuid;
+  std::optional<base::UnguessableToken> unique_session_name;
   if (!data.ReadDataSources(&data_sources) || !data.ReadBuffers(&buffers) ||
       !data.ReadPerfettoBuiltinDataSource(
           out->mutable_builtin_data_sources()) ||
       !data.ReadIncrementalStateConfig(
           out->mutable_incremental_state_config()) ||
-      !data.ReadTraceUuid(&trace_uuid)) {
+      !data.ReadTraceUuid(&trace_uuid) ||
+      !data.ReadUniqueSessionName(&unique_session_name)) {
     return false;
   }
 
@@ -101,6 +104,9 @@ bool StructTraits<tracing::mojom::TraceConfigDataView, perfetto::TraceConfig>::
   if (trace_uuid) {
     out->set_trace_uuid_msb(trace_uuid->high());
     out->set_trace_uuid_lsb(trace_uuid->low());
+  }
+  if (unique_session_name) {
+    out->set_unique_session_name(unique_session_name->ToString());
   }
   return true;
 }

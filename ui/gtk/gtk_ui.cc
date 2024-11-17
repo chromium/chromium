@@ -48,6 +48,7 @@
 #include "ui/color/color_provider_manager.h"
 #include "ui/display/display.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/dom_keyboard_layout.h"
 #include "ui/events/keycodes/dom/dom_keyboard_layout_manager.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/animation/animation.h"
@@ -170,17 +171,19 @@ std::unique_ptr<GtkUiPlatform> CreateGtkUiPlatform(ui::LinuxUiBackend backend) {
       return std::make_unique<GtkUiPlatformWayland>();
 #endif  // BUILDFLAG(IS_OZONE_WAYLAND)
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
+}
+
+int GetXftDpi() {
+  int dpi = -1;
+  g_object_get(gtk_settings_get_default(), "gtk-xft-dpi", &dpi, nullptr);
+  return dpi < 0 ? 0 : dpi;
 }
 
 double FontScale() {
   double resolution = 0;
-  if (GtkCheckVersion(4)) {
-    auto* settings = gtk_settings_get_default();
-    int dpi = 0;
-    g_object_get(settings, "gtk-xft-dpi", &dpi, nullptr);
+  if (const int dpi = GetXftDpi()) {
     resolution = dpi / 1024.0;
   } else {
     GdkScreen* screen = gdk_screen_get_default();
@@ -260,8 +263,8 @@ bool GtkUi::Initialize() {
   connect(settings, "notify::gtk-enable-animations",
           &GtkUi::OnEnableAnimationsChanged);
 
-  // Listen for DPI changes.
-  if (GtkCheckVersion(4)) {
+  // Listen for DPI changes, if supported.
+  if (GetXftDpi() > 0) {
     connect(settings, "notify::gtk-xft-dpi", &GtkUi::OnGtkXftDpiChanged);
   } else {
     GdkScreen* screen = gdk_screen_get_default();
@@ -503,9 +506,8 @@ void GtkUi::SetWindowButtonOrdering(
   views::WindowButtonOrderProvider::GetInstance()->SetWindowButtonOrder(
       leading_buttons, trailing_buttons);
 
-  for (auto& observer : window_button_order_observer_list_) {
-    observer.OnWindowButtonOrderingChange();
-  }
+  window_button_order_observer_list_.Notify(
+      &ui::WindowButtonOrderObserver::OnWindowButtonOrderingChange);
 }
 
 void GtkUi::SetWindowFrameAction(WindowFrameActionSource source,
@@ -614,9 +616,7 @@ base::flat_map<std::string, std::string> GtkUi::GetKeyboardLayoutMap() {
   auto layouts = std::make_unique<ui::DomKeyboardLayoutManager>();
   auto map = base::flat_map<std::string, std::string>();
 
-  for (unsigned int i_domcode = 0;
-       i_domcode < ui::kWritingSystemKeyDomCodeEntries; ++i_domcode) {
-    ui::DomCode domcode = ui::writing_system_key_domcodes[i_domcode];
+  for (const ui::DomCode domcode : ui::kWritingSystemKeyDomCodes) {
     guint16 keycode = ui::KeycodeConverter::DomCodeToNativeKeycode(domcode);
     GdkKeymapKey* keys = nullptr;
     guint* keyvals = nullptr;
@@ -735,9 +735,9 @@ void GtkUi::OnCursorThemeNameChanged(GtkSettings* settings,
   if (cursor_theme_name.empty()) {
     return;
   }
-  for (auto& observer : cursor_theme_observers()) {
-    observer.OnCursorThemeNameChanged(cursor_theme_name);
-  }
+  cursor_theme_observers().Notify(
+      &ui::CursorThemeManagerObserver::OnCursorThemeNameChanged,
+      cursor_theme_name);
 }
 
 void GtkUi::OnCursorThemeSizeChanged(GtkSettings* settings,
@@ -746,9 +746,9 @@ void GtkUi::OnCursorThemeSizeChanged(GtkSettings* settings,
   if (!cursor_theme_size) {
     return;
   }
-  for (auto& observer : cursor_theme_observers()) {
-    observer.OnCursorThemeSizeChanged(cursor_theme_size);
-  }
+  cursor_theme_observers().Notify(
+      &ui::CursorThemeManagerObserver::OnCursorThemeSizeChanged,
+      cursor_theme_size);
 }
 
 void GtkUi::OnEnableAnimationsChanged(GtkSettings* settings,
@@ -1045,10 +1045,8 @@ void GtkUi::UpdateDeviceScaleFactor() {
   auto new_config = GetDisplayConfig();
   if (display_config() != new_config) {
     display_config() = std::move(new_config);
-    for (ui::DeviceScaleFactorObserver& observer :
-         device_scale_factor_observer_list()) {
-      observer.OnDeviceScaleFactorChanged();
-    }
+    device_scale_factor_observer_list().Notify(
+        &ui::DeviceScaleFactorObserver::OnDeviceScaleFactorChanged);
   }
   set_default_font_settings(std::nullopt);
   default_font_render_params_.reset();

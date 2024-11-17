@@ -226,27 +226,32 @@ class FakeHlsDataSourceProvider : public HlsDataSourceProvider {
 template <typename T>
 class CallbackEnforcer {
  public:
-  explicit CallbackEnforcer(T expected)
-      : expected_(std::move(expected)), was_called_(false) {}
+  explicit CallbackEnforcer(
+      T expected,
+      const base::Location& from = base::Location::Current())
+      : expected_(std::move(expected)), created_(from) {}
 
   base::OnceCallback<void(T)> GetCallback() {
     return base::BindOnce(
-        [](bool* writeback, T expected, T actual) {
+        [](size_t line, bool* writeback, T expected, T actual) {
           *writeback = true;
-          ASSERT_EQ(actual, expected);
+          ASSERT_EQ(actual, expected)
+              << "Callback at line:" << line << " called with wrong parameter";
         },
-        &was_called_, expected_);
+        created_.line_number(), &was_called_, expected_);
   }
 
   // This method is move only, so it must be std::moved.
   void AssertAndReset(base::test::TaskEnvironment& env) && {
     env.RunUntilIdle();
-    ASSERT_TRUE(was_called_);
+    ASSERT_TRUE(was_called_)
+        << "Callback at line:" << created_.line_number() << " never called";
   }
 
  private:
   T expected_;
   bool was_called_ = false;
+  base::Location created_;
 };
 
 class HlsManifestDemuxerEngineTest : public testing::Test {
@@ -390,6 +395,8 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
  public:
   MOCK_METHOD(void, MockInitComplete, (PipelineStatus status), ());
   MOCK_METHOD(void, SeekFinished, (), ());
+  MOCK_METHOD(void, AddMediaTrack, (const MediaTrack&), ());
+  MOCK_METHOD(void, RemoveMediaTrack, (const MediaTrack&), ());
 
   HlsManifestDemuxerEngineTest()
       : media_log_(std::make_unique<NiceMock<media::MockMediaLog>>()),
@@ -406,6 +413,10 @@ class HlsManifestDemuxerEngineTest : public testing::Test {
 
     engine_ = std::make_unique<HlsManifestDemuxerEngine>(
         std::move(dsp), base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::BindRepeating(&HlsManifestDemuxerEngineTest::AddMediaTrack,
+                            base::Unretained(this)),
+        base::BindRepeating(&HlsManifestDemuxerEngineTest::RemoveMediaTrack,
+                            base::Unretained(this)),
         false, GURL("http://media.example.com/manifest.m3u8"),
         media_log_.get());
   }
@@ -499,9 +510,11 @@ TEST_F(HlsManifestDemuxerEngineTest, TestLivePlaybackManifestUpdates) {
       .WillOnce(Return(after_seg_a))                // After appending segment A
       .WillOnce(Return(after_seg_a))                // Second CheckState
       .WillOnce(Return(after_seg_b))                // After appending segment B
+      .WillOnce(Return(after_seg_b))                // MediaLog
       .WillOnce(Return(after_seg_b))                // Third CheckState
       .WillOnce(Return(after_seg_b))                // Fourth CheckState
       .WillOnce(Return(after_seg_c))                // After appending segment C
+      .WillOnce(Return(after_seg_c))                // MediaLog
       .WillOnce(Return(after_seg_c))                // Fifth CheckState
       ;
 

@@ -7,9 +7,9 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class BringAndroidTabsToIOSService;
+class ProfileIOS;
 
 // Singleton that owns all BringAndroidTabsToIOSService and associates them with
 // ProfileIOS.
@@ -20,9 +20,6 @@ class BringAndroidTabsToIOSService;
 class BringAndroidTabsToIOSServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358299863): Remove when fully migrated.
-  static BringAndroidTabsToIOSService* GetForBrowserState(ProfileIOS* profile);
-
   static BringAndroidTabsToIOSService* GetForProfile(ProfileIOS* profile);
   static BringAndroidTabsToIOSService* GetForProfileIfExists(
       ProfileIOS* profile);

@@ -15,6 +15,7 @@
 #import "components/autofill/core/browser/ui/payments/card_unmask_authentication_selection_dialog_controller_impl.h"
 #import "components/autofill/core/browser/ui/payments/virtual_card_enroll_ui_model.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/browser/features/password_features.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -146,7 +147,24 @@ void AutofillBottomSheetTabHelper::OnFormMessageReceived(
 
 void AutofillBottomSheetTabHelper::ShowPasswordBottomSheet(
     const autofill::FormActivityParams params) {
+  // Attempt to show the password suggestions bottom sheet. There is no
+  // guarantee that it will be actually shown.
   [commands_handler_ showPasswordBottomSheet:params];
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kIOSPasswordBottomSheetV2)) {
+    // In V2, detach the listeners right now since they've filled their purpose
+    // of attempting to trigger the bottom sheet upon focusing on the login
+    // field, making the listeners inoperative from now on. This helps
+    // preventing having rogue listeners preempting the login fields forever
+    // because the bottom sheet isn't behaving as expected (e.g. the bottom
+    // sheet remains invisible while still waiting on an interaction from the
+    // user to detach the listeners). In short, detaching the listeners can't
+    // rely on signals from the bottom sheet UI, so we detach right here. There
+    // is another mechanism used in the bottom sheet view itself to prevent the
+    // keyboard from popping up over the bottom sheet. Postpone refocus for
+    // later once the bottom sheet is dismissed.
+    DetachPasswordListenersForAllFrames(/*refocus=*/false);
+  }
 }
 
 void AutofillBottomSheetTabHelper::ShowPaymentsBottomSheet(
@@ -155,6 +173,13 @@ void AutofillBottomSheetTabHelper::ShowPaymentsBottomSheet(
     observer.WillShowPaymentsBottomSheet(params);
   }
   [commands_handler_ showPaymentsBottomSheet:params];
+  if (base::FeatureList::IsEnabled(kAutofillPaymentsSheetV2Ios)) {
+    // In V2, detach the listeners right away to make sure they're always
+    // cleaned up to avoid issues with rogue listeners, see the documentation in
+    // ShowPasswordBottomSheet() for more details. Postpone refocus for
+    // later once the bottom sheet is dismissed.
+    DetachPaymentsListenersForAllFrames(/*refocus=*/false);
+  }
 }
 
 void AutofillBottomSheetTabHelper::ShowProactivePasswordGenerationBottomSheet(
@@ -162,6 +187,12 @@ void AutofillBottomSheetTabHelper::ShowProactivePasswordGenerationBottomSheet(
   if (!web_state_) {
     return;
   }
+
+  // Detach the listeners right away to make sure they're always
+  // cleaned up to avoid issues with rogue listeners, see the documentation in
+  // ShowPasswordBottomSheet() for more details. Postpone refocus for
+  // later once the bottom sheet is dismissed.
+  DetachPasswordGenerationListenersForAllFrames();
 
   web::WebFrame* frame =
       password_manager::PasswordManagerJavaScriptFeature::GetInstance()
@@ -190,7 +221,7 @@ void AutofillBottomSheetTabHelper::AttachPasswordListeners(
       password_manager::features::kIOSPasswordBottomSheetAutofocus);
 
   AttachListeners(renderer_ids, registered_password_renderer_ids_[frame_id],
-                  frame_id, allow_autofocus);
+                  frame_id, allow_autofocus, /*only_new=*/true);
 }
 
 void AutofillBottomSheetTabHelper::AttachPasswordGenerationListeners(
@@ -207,14 +238,15 @@ void AutofillBottomSheetTabHelper::AttachPasswordGenerationListeners(
 
   AttachListeners(renderer_ids,
                   registered_password_generation_renderer_ids_[frame_id],
-                  frame_id, /*allow_autofocus=*/true);
+                  frame_id, /*allow_autofocus=*/true, /*only_new=*/true);
 }
 
 void AutofillBottomSheetTabHelper::AttachListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
     std::set<autofill::FieldRendererId>& registered_renderer_ids,
     const std::string& frame_id,
-    bool allow_autofocus) {
+    bool allow_autofocus,
+    bool only_new) {
   if (!web_state_) {
     return;
   }
@@ -237,14 +269,24 @@ void AutofillBottomSheetTabHelper::AttachListeners(
                                std::back_inserter(new_renderer_ids));
 
   if (!new_renderer_ids.empty()) {
-    // Enable the bottom sheet on the new renderer IDs.
-    AutofillBottomSheetJavaScriptFeature::GetInstance()->AttachListeners(
-        new_renderer_ids, frame, allow_autofocus);
-
     // Add new renderer IDs to the list of registered renderer IDs.
     std::copy(
         new_renderer_ids.begin(), new_renderer_ids.end(),
         std::inserter(registered_renderer_ids, registered_renderer_ids.end()));
+  }
+
+  // Only attach the new renderer ids if `only_new` is true, attach all the
+  // `renderer_ids` passed to AttachListeners() otherwise. The renderer will
+  // end up just attaching the listeners to the elements that do not have a
+  // listener yet, which includes the elements that had a listener in the past
+  // but that were detached, so these elements will have a listener attached
+  // again.
+  auto& rendered_ids_to_attach = only_new ? new_renderer_ids : renderer_ids;
+
+  if (!rendered_ids_to_attach.empty()) {
+    // Enable the bottom sheet on the selected renderer ids.
+    AutofillBottomSheetJavaScriptFeature::GetInstance()->AttachListeners(
+        rendered_ids_to_attach, frame, allow_autofocus);
   }
 }
 
@@ -264,10 +306,11 @@ void AutofillBottomSheetTabHelper::DetachPasswordListeners(
       registered_password_renderer_ids_[frame_id], frame, refocus);
 }
 
-void AutofillBottomSheetTabHelper::DetachPasswordListenersForAllFrames() {
+void AutofillBottomSheetTabHelper::DetachPasswordListenersForAllFrames(
+    bool refocus) {
   for (auto& registered_renderer_ids : registered_password_renderer_ids_) {
     DetachListenersForFrame(registered_renderer_ids.first,
-                            registered_renderer_ids.second, /*refocus=*/true);
+                            registered_renderer_ids.second, refocus);
   }
 }
 
@@ -283,7 +326,7 @@ void AutofillBottomSheetTabHelper::
   for (auto& registered_renderer_ids :
        registered_password_generation_renderer_ids_) {
     DetachListenersForFrame(registered_renderer_ids.first,
-                            registered_renderer_ids.second, /*refocus=*/true);
+                            registered_renderer_ids.second, /*refocus=*/false);
   }
 }
 
@@ -325,6 +368,24 @@ void AutofillBottomSheetTabHelper::DetachListenersForFrame(
   web::WebFrame* frame = webFramesManager->GetFrameWithId(frame_id);
   AutofillBottomSheetJavaScriptFeature::GetInstance()->DetachListeners(
       renderer_ids, frame, refocus);
+}
+
+void AutofillBottomSheetTabHelper::RefocusElementIfNeeded(
+    const std::string& frame_id) {
+  if (!web_state_) {
+    return;
+  }
+
+  web::WebFramesManager* webFramesManager =
+      AutofillBottomSheetJavaScriptFeature::GetInstance()->GetWebFramesManager(
+          web_state_);
+  web::WebFrame* frame = webFramesManager->GetFrameWithId(frame_id);
+  if (!frame) {
+    return;
+  }
+
+  AutofillBottomSheetJavaScriptFeature::GetInstance()->RefocusElementIfNeeded(
+      frame);
 }
 
 // WebStateObserver
@@ -376,10 +437,10 @@ void AutofillBottomSheetTabHelper::OnAutofillManagerStateChanged(
   }
 }
 
-void AutofillBottomSheetTabHelper::OnFieldTypesDetermined(
+void AutofillBottomSheetTabHelper::AttachListenersForPaymentsForm(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id,
-    FieldTypeSource source) {
+    bool only_new) {
   autofill::FormStructure* form_structure = manager.FindCachedFormById(form_id);
   if (!form_structure || !form_structure->IsCompleteCreditCardForm()) {
     return;
@@ -406,7 +467,14 @@ void AutofillBottomSheetTabHelper::OnFieldTypesDetermined(
   }
   std::string frame_id = frame->GetFrameId();
   AttachListeners(renderer_ids, registered_payments_renderer_ids_[frame_id],
-                  frame_id, /*allow_autofocus=*/false);
+                  frame_id, /*allow_autofocus=*/false, only_new);
+}
+
+void AutofillBottomSheetTabHelper::OnFieldTypesDetermined(
+    autofill::AutofillManager& manager,
+    autofill::FormGlobalId form_id,
+    FieldTypeSource source) {
+  AttachListenersForPaymentsForm(manager, form_id, /*only_new=*/true);
 }
 
 std::unique_ptr<autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>

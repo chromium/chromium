@@ -35,9 +35,6 @@ constexpr const char kDeviceRestrictionScheduleNotifierId[] =
 DeviceRestrictionScheduleControllerDelegateImpl::
     DeviceRestrictionScheduleControllerDelegateImpl() = default;
 
-void DeviceRestrictionScheduleControllerDelegateImpl::BlockLogin(bool enabled) {
-}
-
 bool DeviceRestrictionScheduleControllerDelegateImpl::IsUserLoggedIn() const {
   using user_manager::UserManager;
   return (UserManager::IsInitialized() && UserManager::Get()->IsUserLoggedIn());

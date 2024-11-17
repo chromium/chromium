@@ -52,7 +52,6 @@
 namespace thumbnail {
 namespace {
 
-constexpr float kApproximationScaleFactor = 4.f;
 constexpr base::TimeDelta kDefaultCaptureMinRequestTimeMs(
     base::Milliseconds(1000));
 
@@ -296,38 +295,12 @@ void ThumbnailCache::PruneCache() {
   }
 }
 
-void ThumbnailCache::ForkToSaveAsJpeg(
-    base::OnceCallback<void(bool, const SkBitmap&)> callback,
-    int tab_id,
-    bool result,
-    const SkBitmap& bitmap) {
-  if (result && !bitmap.isNull()) {
-    SaveAsJpeg(
-        tab_id,
-        std::unique_ptr<ThumbnailCaptureTracker, base::OnTaskRunnerDeleter>(
-            nullptr, base::OnTaskRunnerDeleter(
-                         base::SequencedTaskRunner::GetCurrentDefault())),
-        bitmap);
-  }
-  std::move(callback).Run(result, bitmap);
-}
-
 void ThumbnailCache::DecompressEtc1ThumbnailFromFile(
     TabId tab_id,
-    bool save_jpeg,
     base::OnceCallback<void(bool, const SkBitmap&)> post_decompress_callback) {
-  base::OnceCallback<void(bool, const SkBitmap&)> transcoding_callback;
-  if (save_jpeg && save_jpeg_thumbnails_) {
-    transcoding_callback = base::BindOnce(
-        &ThumbnailCache::ForkToSaveAsJpeg, weak_factory_.GetWeakPtr(),
-        std::move(post_decompress_callback), tab_id);
-  } else {
-    transcoding_callback = std::move(post_decompress_callback);
-  }
-
   auto decompress_task = base::BindOnce(
       &thumbnail::Etc1ThumbnailHelper::Decompress, etc1_helper_.GetWeakPtr(),
-      std::move(transcoding_callback));
+      std::move(post_decompress_callback));
   etc1_helper_.Read(
       tab_id, base::BindPostTaskToCurrentDefault(std::move(decompress_task)));
 }
@@ -644,28 +617,6 @@ ThumbnailCache::ThumbnailMetaData::ThumbnailMetaData(
     const base::Time& current_time,
     GURL url)
     : capture_time_(current_time), url_(std::move(url)) {}
-
-std::pair<SkBitmap, float> ThumbnailCache::CreateApproximation(
-    const SkBitmap& bitmap,
-    float scale) {
-  DCHECK(!bitmap.empty());
-  DCHECK_GT(scale, 0);
-  float new_scale = 1.f / kApproximationScaleFactor;
-
-  gfx::Size dst_size = gfx::ScaleToFlooredSize(
-      gfx::Size(bitmap.width(), bitmap.height()), new_scale);
-  SkBitmap dst_bitmap;
-  dst_bitmap.allocPixels(SkImageInfo::Make(dst_size.width(), dst_size.height(),
-                                           bitmap.info().colorType(),
-                                           bitmap.info().alphaType()));
-  dst_bitmap.eraseColor(0);
-  SkCanvas canvas(dst_bitmap);
-  canvas.scale(new_scale, new_scale);
-  canvas.drawImage(bitmap.asImage(), 0, 0);
-  dst_bitmap.setImmutable();
-
-  return std::make_pair(dst_bitmap, new_scale * scale);
-}
 
 void ThumbnailCache::OnMemoryPressure(
     base::MemoryPressureListener::MemoryPressureLevel level) {

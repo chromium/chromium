@@ -41,9 +41,8 @@ std::string GetServerTypeString(BaseTestServer::Type type) {
     case BaseTestServer::TYPE_WSS:
       return "ws";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return std::string();
 }
 
 #if !BUILDFLAG(IS_FUCHSIA)
@@ -98,8 +97,9 @@ std::string GetSpawnerUrlBase() {
 RemoteTestServer::RemoteTestServer(Type type,
                                    const base::FilePath& document_root)
     : BaseTestServer(type), io_thread_("RemoteTestServer IO Thread") {
-  if (!Init(document_root))
-    NOTREACHED_IN_MIGRATION();
+  if (!Init(document_root)) {
+    NOTREACHED();
+  }
 }
 
 RemoteTestServer::RemoteTestServer(Type type,
@@ -107,8 +107,9 @@ RemoteTestServer::RemoteTestServer(Type type,
                                    const base::FilePath& document_root)
     : BaseTestServer(type, ssl_options),
       io_thread_("RemoteTestServer IO Thread") {
-  if (!Init(document_root))
-    NOTREACHED_IN_MIGRATION();
+  if (!Init(document_root)) {
+    NOTREACHED();
+  }
 }
 
 RemoteTestServer::~RemoteTestServer() {

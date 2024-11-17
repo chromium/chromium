@@ -11,19 +11,21 @@ import 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import './supported_links_dialog.js';
 import './supported_links_overlapping_apps_dialog.js';
 
-import {App, AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
-import {AppManagementUserAction, AppMap, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
-import {castExists, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
-import {LocalizedLinkElement} from 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
-import {CrRadioButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
-import {CrRadioGroupElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
+import type {CrRadioButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_button/cr_radio_button.js';
+import type {CrRadioGroupElement} from 'chrome://resources/ash/common/cr_elements/cr_radio_group/cr_radio_group.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {LocalizedLinkElement} from 'chrome://resources/ash/common/cr_elements/localized_link/localized_link.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
+import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
+import {AppManagementUserAction, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
+import {castExists, recordAppManagementUserAction} from 'chrome://resources/cr_components/app_management/util.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './supported_links_item.html.js';
-import {AppManagementSupportedLinksOverlappingAppsDialogElement} from './supported_links_overlapping_apps_dialog.js';
+import type {AppManagementSupportedLinksOverlappingAppsDialogElement} from './supported_links_overlapping_apps_dialog.js';
 
 type PreferenceType = 'preferred'|'browser';
 const PREFERRED_APP_PREF = 'preferred' as const;

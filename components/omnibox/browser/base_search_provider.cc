@@ -140,7 +140,6 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
   } else {
     match.suggestion_group_id = suggestion.suggestion_group_id();
   }
-  match.answer = suggestion.answer();
   match.answer_template = suggestion.answer_template();
   match.answer_type = suggestion.answer_type();
   match.suggest_type = suggestion.suggest_type();
@@ -367,31 +366,66 @@ AutocompleteMatch BaseSearchProvider::CreateOnDeviceSearchSuggestion(
 
 // static
 bool BaseSearchProvider::PageURLIsEligibleForSuggestRequest(
-    const GURL& page_url) {
-  return page_url.is_valid() && page_url.SchemeIsHTTPOrHTTPS();
+    const GURL& page_url,
+    metrics::OmniboxEventProto::PageClassification page_classification) {
+  return page_url.is_valid() && page_url.SchemeIsHTTPOrHTTPS() &&
+         !omnibox::IsNTPPage(page_classification);
 }
 
 // static
-bool BaseSearchProvider::CanSendSuggestRequestWithoutPageURL(
+bool BaseSearchProvider::CanSendSuggestRequest(
+    metrics::OmniboxEventProto::PageClassification page_classification,
+    const TemplateURL* template_url,
+    const AutocompleteProviderClient* client) {
+  if (!template_url || template_url->suggestions_url().empty()) {
+    return false;
+  }
+
+  // Setting SuggestUrl the same as SearchUrl is a typical misconfiguration.
+  // It's not possible for a URL to both provide a search results page and
+  // suggested queries response (at least they have different format).  Most
+  // like the user set the search URL correctly; it would be obvious if they did
+  // not. Thus, it's likely that the suggest URL is wrong.  Because it would not
+  // give a valid query suggestion response, don't bother sending queries to it
+  // (otherwise user will quickly hit rate-limit for search queries, that will
+  // harm valid search queries as well).
+  if (template_url->suggestions_url() == template_url->url()) {
+    return false;
+  }
+
+  // Don't make a suggest request if in incognito mode; unless for the Lens
+  // searchboxes.
+  if (client->IsOffTheRecord() &&
+      !omnibox::IsLensSearchbox(page_classification)) {
+    return false;
+  }
+
+  // Don't make a suggest request if suggest is not enabled; unless for the Lens
+  // searchboxes.
+  if (!client->SearchSuggestEnabled() &&
+      !omnibox::IsLensSearchbox(page_classification)) {
+    return false;
+  }
+
+  return true;
+}
+
+// static
+bool BaseSearchProvider::CanSendSecureSuggestRequest(
+    metrics::OmniboxEventProto::PageClassification page_classification,
     const TemplateURL* template_url,
     const SearchTermsData& search_terms_data,
     const AutocompleteProviderClient* client) {
+  if (!CanSendSuggestRequest(page_classification, template_url, client)) {
+    return false;
+  }
+
   // Make sure we are sending the suggest request through a cryptographically
   // secure channel to prevent exposing the current page URL or personalized
   // results without encryption.
   const GURL& suggest_url =
       template_url->GenerateSuggestionURL(search_terms_data);
   if (!suggest_url.is_valid() || !suggest_url.SchemeIsCryptographic()) {
-    return false;
-  }
-
-  // Don't make a suggest request if in incognito mode.
-  if (client->IsOffTheRecord()) {
-    return false;
-  }
-
-  // Don't make a suggest request if suggest is not enabled.
-  if (!client->SearchSuggestEnabled()) {
     return false;
   }
 
@@ -409,19 +443,25 @@ bool BaseSearchProvider::CanSendSuggestRequestWithoutPageURL(
 // static
 bool BaseSearchProvider::CanSendSuggestRequestWithPageURL(
     const GURL& current_page_url,
+    metrics::OmniboxEventProto::PageClassification page_classification,
     const TemplateURL* template_url,
     const SearchTermsData& search_terms_data,
     const AutocompleteProviderClient* client) {
-  if (!CanSendSuggestRequestWithoutPageURL(template_url, search_terms_data,
-                                           client)) {
+  if (!CanSendSecureSuggestRequest(page_classification, template_url,
+                                   search_terms_data, client)) {
     return false;
   }
 
-  // Forbid sending the current page URL to the suggest endpoint if personalized
+  // Forbid sending the current page URL to the suggest endpoint if
   // URL data collection is off; unless the current page is the provider's
-  // Search Results Page.
-  return template_url->IsSearchURL(current_page_url, search_terms_data) ||
-         client->IsPersonalizedUrlDataCollectionActive();
+  // Search Results Page; or for the Lens searchboxes.
+  if (!client->IsUrlDataCollectionActive() &&
+      !template_url->IsSearchURL(current_page_url, search_terms_data) &&
+      !omnibox::IsLensSearchbox(page_classification)) {
+    return false;
+  }
+
+  return true;
 }
 
 void BaseSearchProvider::DeleteMatch(const AutocompleteMatch& match) {
@@ -430,12 +470,15 @@ void BaseSearchProvider::DeleteMatch(const AutocompleteMatch& match) {
   //   non-debugging purposes.
   if (!match.GetAdditionalInfoForDebugging(BaseSearchProvider::kDeletionUrlKey)
            .empty()) {
+    // Remote personalized suggestions in OTR contexts are not OK.
+    DCHECK(!client_->IsOffTheRecord());
     deletion_loaders_.push_back(
         client()
             ->GetRemoteSuggestionsService(/*create_if_necessary=*/true)
             ->StartDeletionRequest(
                 match.GetAdditionalInfoForDebugging(
                     BaseSearchProvider::kDeletionUrlKey),
+                /*is_off_the_record=*/false,
                 base::BindOnce(&BaseSearchProvider::OnDeletionComplete,
                                base::Unretained(this))));
   }
@@ -470,7 +513,7 @@ const char BaseSearchProvider::kDeletionUrlKey[] = "deletion_url";
 const char BaseSearchProvider::kTrue[] = "true";
 const char BaseSearchProvider::kFalse[] = "false";
 
-BaseSearchProvider::~BaseSearchProvider() {}
+BaseSearchProvider::~BaseSearchProvider() = default;
 
 // static
 std::u16string BaseSearchProvider::GetFillIntoEdit(
@@ -631,16 +674,7 @@ void BaseSearchProvider::AddMatchToMap(
     // This is to avoid losing the Answers in Suggest information.
     const auto& less_relevant_duplicate_match =
         existing_match.duplicate_matches.back();
-    if (less_relevant_duplicate_match.answer && !existing_match.answer) {
-      existing_match.answer = less_relevant_duplicate_match.answer;
-      existing_match.answer_type = less_relevant_duplicate_match.answer_type;
-      if (OmniboxFieldTrial::kAnswerActionsShowRichCard.Get()) {
-        existing_match.suggestion_group_id =
-            less_relevant_duplicate_match.suggestion_group_id;
-      }
-    }
-    if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
-        less_relevant_duplicate_match.answer_template &&
+    if (less_relevant_duplicate_match.answer_template &&
         !existing_match.answer_template) {
       existing_match.actions = less_relevant_duplicate_match.actions;
       existing_match.answer_template =

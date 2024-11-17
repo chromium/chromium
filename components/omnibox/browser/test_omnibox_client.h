@@ -50,7 +50,7 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
   std::u16string GetURLForDisplay() const override;
   GURL GetNavigationEntryURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
-      bool is_prefetch) override;
+      bool is_prefetch) const override;
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
@@ -78,7 +78,8 @@ class TestOmniboxClient final : public testing::NiceMock<OmniboxClient> {
                const AutocompleteMatch& alternative_nav_match,
                IDNA2008DeviationCharacter deviation_char_in_hostname));
   MOCK_METHOD(bookmarks::BookmarkModel*, GetBookmarkModel, ());
-  MOCK_METHOD(PrefService*, GetPrefs, ());
+  MOCK_METHOD(PrefService*, GetPrefs, (), (override));
+  MOCK_METHOD(const PrefService*, GetPrefs, (), (const, override));
 
   base::WeakPtr<OmniboxClient> AsWeakPtr() override;
 

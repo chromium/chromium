@@ -7,6 +7,8 @@
 #include "ash/color_enhancement/color_enhancement_controller.h"
 #include "ash/shell.h"
 #include "ui/accessibility/accessibility_features.h"
+#include "ui/message_center/message_center_types.h"
+#include "ui/message_center/public/cpp/notification_types.h"
 
 namespace ash {
 
@@ -30,12 +32,15 @@ FlashScreenController::~FlashScreenController() = default;
 void FlashScreenController::OnNotificationDisplayed(
     const std::string& notification_id,
     const message_center::DisplaySource display_source) {
-  FlashOn();
+  // Only flash when a popup is displayed (not the message center).
+  if (display_source == message_center::DISPLAY_SOURCE_POPUP) {
+    MaybeFlashOn(notification_id);
+  }
 }
 
 void FlashScreenController::OnNotificationAdded(
     const std::string& notification_id) {
-  FlashOn();
+  MaybeFlashOn(notification_id);
 }
 
 void FlashScreenController::AnimationEnded(const gfx::Animation* animation) {
@@ -78,6 +83,35 @@ void FlashScreenController::AnimationProgressed(
 
 void FlashScreenController::AnimationCanceled(const gfx::Animation* animation) {
   FlashOff();
+}
+
+void FlashScreenController::MaybeFlashOn(const std::string& notification_id) {
+  auto* message_center = message_center::MessageCenter::Get();
+  if (!message_center || message_center->IsQuietMode()) {
+    // Do not flash when in quiet mode.
+    return;
+  }
+  message_center::Notification* notification =
+      message_center->FindNotificationById(notification_id);
+  if (!notification || notification->silent()) {
+    // Do not flash for silent notifications.
+    return;
+  }
+  if (notification->group_parent()) {
+    // Do not flash for new groupings of notifications (only for individual
+    // notifications).
+    return;
+  }
+  if (notification->priority() < message_center::DEFAULT_PRIORITY) {
+    // Do not flash for low priority notifications, as no pop-up will
+    // be shown.
+    return;
+  }
+  FlashOn();
+}
+
+void FlashScreenController::PreviewFlash() {
+  FlashOn();
 }
 
 void FlashScreenController::FlashOn() {

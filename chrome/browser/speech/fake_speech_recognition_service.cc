@@ -19,7 +19,6 @@
 namespace speech {
 
 FakeSpeechRecognitionService::FakeSpeechRecognitionService() = default;
-
 FakeSpeechRecognitionService::~FakeSpeechRecognitionService() = default;
 
 void FakeSpeechRecognitionService::BindAudioSourceSpeechRecognitionContext(

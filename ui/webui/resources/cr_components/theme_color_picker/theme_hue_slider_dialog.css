@@ -75,8 +75,16 @@ cr-slider {
   }
 }
 
-cr-slider:focus-visible {
-  --cr-slider-ripple-opacity: 1;
+cr-slider:focus-visible::part(knob)::after {
+  box-shadow: 0 0 0 4px var(--cr-focus-outline-color);
+}
+
+/* Set styles for high contrast mode in Windows. */
+@media (forced-colors: active) {
+  cr-slider:focus-visible::part(knob)::after {
+    /* Set outline to hcm (high contrast mode) value. */
+    outline: var(--cr-focus-outline-hcm) !important;
+  }
 }
 
 cr-slider::part(container) {

@@ -7,30 +7,7 @@
 
 #include <cstdint>
 
-#include "ui/base/mojom/window_show_state.mojom.h"
-
 namespace ui {
-
-// Alias until all clients of `WindowShowState` have been migrated.
-// Will be removed once that is complete.
-using WindowShowState = ::ui::mojom::WindowShowState;
-
-// Alias for the old enumerators of `WindowShowState` until all clients have
-// been migrated. Will be removed once that is complete.
-inline constexpr WindowShowState SHOW_STATE_DEFAULT =
-    ui::mojom::WindowShowState::kDefault;
-inline constexpr WindowShowState SHOW_STATE_NORMAL =
-    ui::mojom::WindowShowState::kNormal;
-inline constexpr WindowShowState SHOW_STATE_MINIMIZED =
-    ui::mojom::WindowShowState::kMinimized;
-inline constexpr WindowShowState SHOW_STATE_MAXIMIZED =
-    ui::mojom::WindowShowState::kMaximized;
-inline constexpr WindowShowState SHOW_STATE_INACTIVE =
-    ui::mojom::WindowShowState::kInactive;
-inline constexpr WindowShowState SHOW_STATE_FULLSCREEN =
-    ui::mojom::WindowShowState::kFullscreen;
-inline constexpr WindowShowState SHOW_STATE_END =
-    ui::mojom::WindowShowState::kEnd;
 
 // Specifies which edges of the window are tiled.
 //
@@ -102,28 +79,6 @@ enum class ZOrderLevel {
   // situations where window modality (as in ModalType) cannot or should not be
   // used.
   kSecuritySurface,
-};
-
-// TODO(varunjain): Remove MENU_SOURCE_NONE (crbug.com/250964)
-// A Java counterpart will be generated for this enum.
-// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.ui.base
-// These are used in histograms, do not remove/renumber entries. Only add at the
-// end just before MENU_SOURCE_TYPE_LAST. Also remember to update the
-// MenuSourceType enum listing in tools/metrics/histograms/enums.xml.
-// Lastly, any new type here needs to be synced with ui_base_types.mojom.
-enum MenuSourceType {
-  MENU_SOURCE_NONE = 0,
-  MENU_SOURCE_MOUSE = 1,
-  MENU_SOURCE_KEYBOARD = 2,
-  MENU_SOURCE_TOUCH = 3,
-  MENU_SOURCE_TOUCH_EDIT_MENU = 4,
-  MENU_SOURCE_LONG_PRESS = 5,
-  MENU_SOURCE_LONG_TAP = 6,
-  MENU_SOURCE_TOUCH_HANDLE = 7,
-  MENU_SOURCE_STYLUS = 8,
-  MENU_SOURCE_ADJUST_SELECTION = 9,
-  MENU_SOURCE_ADJUST_SELECTION_RESET = 10,
-  MENU_SOURCE_TYPE_LAST = MENU_SOURCE_ADJUST_SELECTION_RESET
 };
 
 // Where an owned anchored window should be anchored to. Used by such backends

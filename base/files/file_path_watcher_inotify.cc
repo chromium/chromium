@@ -887,7 +887,7 @@ size_t GetMaxNumberOfInotifyWatches() {
   // Fuchsia has no limit on the number of watches.
   return std::numeric_limits<int>::max();
 #else
-  static const size_t max = []() {
+  static const size_t max = [] {
     size_t max_number_of_inotify_watches = 0u;
 
     std::ifstream in(kInotifyMaxUserWatchesPath);

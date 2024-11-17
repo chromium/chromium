@@ -68,6 +68,8 @@ std::string ToString(PasswordForm::Type type) {
       return "Imported";
     case PasswordForm::Type::kReceivedViaSharing:
       return "ReceivedViaSharing";
+    case PasswordForm::Type::kImportedViaCredentialExchange:
+      return "ImportedViaCredentialExchange";
   }
 
   // In old clients type might contain non-enum values and their mapping is
@@ -85,8 +87,7 @@ std::string ToString(PasswordForm::GenerationUploadStatus status) {
       return "Negative Signal Sent";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string ToString(InsecureType insecure_type) {

@@ -49,10 +49,7 @@ class TestPageLoadMetricsEmbedder
     return false;
   }
   bool IsExtensionUrl(const GURL& url) override { return false; }
-  bool IsSidePanel(content::WebContents* web_contents) override {
-    return false;
-  }
-  bool IsNonTabWebUI() override { return false; }
+  bool IsNonTabWebUI(const GURL& url) override { return false; }
 
   page_load_metrics::PageLoadMetricsMemoryTracker*
   GetMemoryTrackerForBrowserContext(
@@ -62,11 +59,6 @@ class TestPageLoadMetricsEmbedder
 
     return &memory_tracker_;
   }
-
- protected:
-  // page_load_metrics::PageLoadMetricsEmbedderBase:
-  void RegisterEmbedderObservers(
-      page_load_metrics::PageLoadTracker* tracker) override {}
 
  private:
   page_load_metrics::PageLoadMetricsMemoryTracker memory_tracker_;

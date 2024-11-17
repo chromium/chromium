@@ -34,7 +34,6 @@
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/mediastream/media_constraints_consts.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/webaudio_destination_consumer.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -55,9 +54,8 @@ const char* StreamTypeToString(MediaStreamSource::StreamType type) {
     case MediaStreamSource::kTypeVideo:
       return "Video";
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "Invalid";
 }
 
 const char* ReadyStateToString(MediaStreamSource::ReadyState state) {
@@ -69,22 +67,7 @@ const char* ReadyStateToString(MediaStreamSource::ReadyState state) {
     case MediaStreamSource::kReadyStateEnded:
       return "Ended";
     default:
-      NOTREACHED_IN_MIGRATION();
-  }
-  return "Invalid";
-}
-
-const char* EchoCancellationModeToString(
-    MediaStreamSource::EchoCancellationMode mode) {
-  switch (mode) {
-    case MediaStreamSource::EchoCancellationMode::kDisabled:
-      return "disabled";
-    case MediaStreamSource::EchoCancellationMode::kBrowser:
-      return "browser";
-    case MediaStreamSource::EchoCancellationMode::kAec3:
-      return "AEC3";
-    case MediaStreamSource::EchoCancellationMode::kSystem:
-      return "system";
+      NOTREACHED();
   }
 }
 
@@ -218,19 +201,17 @@ void MediaStreamSource::AddObserver(MediaStreamSource::Observer* observer) {
   observers_.insert(observer);
 }
 
-void MediaStreamSource::SetAudioProcessingProperties(
-    EchoCancellationMode echo_cancellation_mode,
-    bool auto_gain_control,
-    bool noise_supression,
-    bool voice_isolation) {
+void MediaStreamSource::SetAudioProcessingProperties(bool echo_cancellation,
+                                                     bool auto_gain_control,
+                                                     bool noise_supression,
+                                                     bool voice_isolation) {
   SendLogMessage(
-      String::Format("%s({echo_cancellation_mode=%s}, {auto_gain_control=%d}, "
+      String::Format("%s({echo_cancellation=%d}, {auto_gain_control=%d}, "
                      "{noise_supression=%d}, {voice_isolation=%d})",
-                     __func__,
-                     EchoCancellationModeToString(echo_cancellation_mode),
-                     auto_gain_control, noise_supression, voice_isolation)
+                     __func__, echo_cancellation, auto_gain_control,
+                     noise_supression, voice_isolation)
           .Utf8());
-  echo_cancellation_mode_ = echo_cancellation_mode;
+  echo_cancellation_ = echo_cancellation;
   auto_gain_control_ = auto_gain_control;
   noise_supression_ = noise_supression;
   voice_isolation_ = voice_isolation;
@@ -260,33 +241,15 @@ void MediaStreamSource::GetSettings(
   settings.device_id = Id();
   settings.group_id = GroupId();
 
-  if (echo_cancellation_mode_) {
-    switch (*echo_cancellation_mode_) {
-      case EchoCancellationMode::kDisabled:
-        settings.echo_cancellation = false;
-        settings.echo_cancellation_type = String();
-        break;
-      case EchoCancellationMode::kBrowser:
-        settings.echo_cancellation = true;
-        settings.echo_cancellation_type =
-            String::FromUTF8(blink::kEchoCancellationTypeBrowser);
-        break;
-      case EchoCancellationMode::kAec3:
-        settings.echo_cancellation = true;
-        settings.echo_cancellation_type =
-            String::FromUTF8(blink::kEchoCancellationTypeAec3);
-        break;
-      case EchoCancellationMode::kSystem:
-        settings.echo_cancellation = true;
-        settings.echo_cancellation_type =
-            String::FromUTF8(blink::kEchoCancellationTypeSystem);
-        break;
-    }
+  if (echo_cancellation_) {
+    settings.echo_cancellation = *echo_cancellation_;
   }
-  if (auto_gain_control_)
+  if (auto_gain_control_) {
     settings.auto_gain_control = *auto_gain_control_;
-  if (noise_supression_)
+  }
+  if (noise_supression_) {
     settings.noise_supression = *noise_supression_;
+  }
   if (voice_isolation_) {
     settings.voice_isolation = *voice_isolation_;
   }

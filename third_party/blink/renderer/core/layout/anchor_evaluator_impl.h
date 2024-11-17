@@ -333,6 +333,12 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   const LogicalAnchorQuery* AnchorQuery() const;
 
+  // Returns the most recent anchor evaluated. If more than one anchor has been
+  // evaluated so far, nullptr is returned. This is done to avoid extra noise
+  // for assistive tech.
+  Element* AccessibilityAnchor() const;
+  void ClearAccessibilityAnchor();
+
   HeapHashSet<Member<Element>>* GetDisplayLocksAffectedByAnchors() const {
     return display_locks_affected_by_anchors_;
   }
@@ -354,6 +360,7 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
       const AnchorSpecifierValue& anchor_specifier,
       CSSAnchorSizeValue anchor_size_value,
       const ScopedCSSName* position_anchor) const;
+  void UpdateAccessibilityAnchor(const LayoutObject* anchor) const;
 
   const LayoutObject* DefaultAnchor(const ScopedCSSName* position_anchor) const;
   const PaintLayer* DefaultAnchorScrollContainerLayer(
@@ -436,6 +443,14 @@ class CORE_EXPORT AnchorEvaluatorImpl : public AnchorEvaluator {
 
   mutable bool needs_scroll_adjustment_in_x_ = false;
   mutable bool needs_scroll_adjustment_in_y_ = false;
+
+  // Most recent anchor evaluated, used for accessibility. This value is cleared
+  // before a @position-try rule is applied.
+  mutable Element* accessibility_anchor_ = nullptr;
+
+  // True if more than one anchor has been evaluated so far. This value is
+  // cleared before a @position-try rule is applied.
+  mutable bool has_multiple_accessibility_anchors_ = false;
 
   // A set of elements whose display locks' skipping status are potentially
   // impacted by anchors found by this evaluator.

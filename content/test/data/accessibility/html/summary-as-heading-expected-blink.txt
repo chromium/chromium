@@ -1,0 +1,26 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++details
+++++++++genericContainer ignored
+++++++++++disclosureTriangle collapsed name='details tag' hierarchicalLevel=5 setSize=2 posInSet=1
+++++++++++++listMarker ignored
+++++++++++++++staticText ignored
+++++++++++++staticText name='details tag'
+++++++++++++++inlineTextBox name='details tag'
+++++++++genericContainer ignored
+++++++++++staticText ignored invisible
+++++++++++staticText ignored invisible
+++++++++++paragraph ignored invisible
+++++++++++staticText ignored invisible
+++++++details
+++++++++genericContainer ignored
+++++++++++disclosureTriangle name='details tag open' hierarchicalLevel=5 setSize=2 posInSet=2
+++++++++++++listMarker ignored
+++++++++++++++staticText ignored
+++++++++++++staticText name='details tag open'
+++++++++++++++inlineTextBox name='details tag open'
+++++++++genericContainer ignored
+++++++++++paragraph
+++++++++++++staticText name='The details tag with open specifies that the details should be visible (open) to the user.'
+++++++++++++++inlineTextBox name='The details tag with open specifies that the details should be visible (open) to the user.'

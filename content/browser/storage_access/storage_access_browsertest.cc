@@ -12,6 +12,7 @@
 #include "content/shell/browser/shell.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/functions.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/mojom/storage_access/storage_access_handle.mojom.h"
 
@@ -42,6 +43,12 @@ class StorageAccessBrowserTest : public ContentBrowserTest {
  public:
   void SetUpOnMainThread() override {
     client_ = std::make_unique<MockContentBrowserClient>();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        "content/test/data");
+    ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
   void TearDownOnMainThread() override { client_.reset(); }
@@ -58,9 +65,8 @@ class StorageAccessBrowserTest : public ContentBrowserTest {
         }));
 
     // Load website.
-    EXPECT_TRUE(embedded_test_server()->Start());
-    EXPECT_TRUE(NavigateToURL(
-        shell(), embedded_test_server()->GetURL("/simple_page.html")));
+    EXPECT_TRUE(NavigateToURL(shell(), embedded_https_test_server().GetURL(
+                                           "a.test", "/simple_page.html")));
 
     // We need access to the interface broker to test bad messages, so must
     // unbind the existing one and bind our own.
@@ -80,6 +86,52 @@ class StorageAccessBrowserTest : public ContentBrowserTest {
 
     // Cleanup message interceptor.
     mojo::SetDefaultProcessErrorHandler(base::NullCallback());
+  }
+
+  void BindDomStorageAndExpect(bool is_connected) {
+    // Load website with third-party iframe.
+    ASSERT_TRUE(NavigateToURL(
+        shell(),
+        embedded_https_test_server().GetURL(
+            "a.test", "/cross_site_iframe_factory.html?a.test(b.test)")));
+    FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                              ->GetPrimaryFrameTree()
+                              .root();
+    ASSERT_EQ(1U, root->child_count());
+    FrameTreeNode* child = root->child_at(0);
+    ASSERT_TRUE(
+        child->current_frame_host()->GetStorageKey().IsThirdPartyContext());
+
+    // We should always be able to load the area for the frame's storage key.
+    mojo::Remote<blink::mojom::StorageArea> third_party_remote;
+    child->current_frame_host()
+        ->GetStoragePartition()
+        ->GetDOMStorageContext()
+        ->OpenLocalStorage(
+            child->current_frame_host()->GetStorageKey(),
+            child->current_frame_host()->GetFrameToken(),
+            third_party_remote.BindNewPipeAndPassReceiver(),
+            ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(
+                child->current_frame_host()->GetProcess()->GetID()),
+            base::DoNothing());
+    third_party_remote.FlushForTesting();
+    EXPECT_TRUE(third_party_remote.is_connected());
+
+    // We might be able to bind a first-party storage area too.
+    mojo::Remote<blink::mojom::StorageArea> first_party_remote;
+    child->current_frame_host()
+        ->GetStoragePartition()
+        ->GetDOMStorageContext()
+        ->OpenLocalStorage(
+            blink::StorageKey::CreateFirstParty(
+                child->current_frame_host()->GetStorageKey().origin()),
+            child->current_frame_host()->GetFrameToken(),
+            first_party_remote.BindNewPipeAndPassReceiver(),
+            ChildProcessSecurityPolicyImpl::GetInstance()->CreateHandle(
+                child->current_frame_host()->GetProcess()->GetID()),
+            base::DoNothing());
+    first_party_remote.FlushForTesting();
+    EXPECT_EQ(first_party_remote.is_connected(), is_connected);
   }
 
   void set_is_full_cookie_access_allowed(bool is_full_cookie_access_allowed) {
@@ -110,18 +162,21 @@ IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest, WithCookiesWithPermission) {
   set_is_full_cookie_access_allowed(true);
   set_storage_access_permission_status(blink::mojom::PermissionStatus::GRANTED);
   BindStorageAccessHandleAndExpect(/*is_connected=*/true, "");
+  BindDomStorageAndExpect(/*is_connected=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest, WithCookiesWithoutPermission) {
   set_is_full_cookie_access_allowed(true);
   set_storage_access_permission_status(blink::mojom::PermissionStatus::DENIED);
   BindStorageAccessHandleAndExpect(/*is_connected=*/true, "");
+  BindDomStorageAndExpect(/*is_connected=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest, WithoutCookiesWithPermission) {
   set_is_full_cookie_access_allowed(false);
   set_storage_access_permission_status(blink::mojom::PermissionStatus::GRANTED);
   BindStorageAccessHandleAndExpect(/*is_connected=*/true, "");
+  BindDomStorageAndExpect(/*is_connected=*/true);
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest,
@@ -136,6 +191,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessBrowserTest,
 #else
   BindStorageAccessHandleAndExpect(/*is_connected=*/false, "");
 #endif
+  BindDomStorageAndExpect(/*is_connected=*/false);
 }
 
 }  // namespace content

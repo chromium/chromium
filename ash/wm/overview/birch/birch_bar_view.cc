@@ -17,6 +17,7 @@
 #include "ash/shell.h"
 #include "ash/wm/overview/birch/birch_chip_loader_view.h"
 #include "ash/wm/overview/birch/birch_privacy_nudge_controller.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_properties.h"
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_set.h"
@@ -31,6 +32,7 @@
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 
@@ -260,6 +262,10 @@ void BirchBarView::ShutdownChips() {
   for (BirchChipButtonBase* chip : chips_) {
     chip->Shutdown();
   }
+
+  for (auto& chip_to_attach : chips_to_attach_) {
+    chip_to_attach->Shutdown();
+  }
 }
 
 void BirchBarView::UpdateAvailableSpace(int available_space) {
@@ -351,6 +357,11 @@ void BirchBarView::RemoveChip(BirchItem* removed_item,
     return;
   }
 
+  // The privacy nudge is attached to the first chip. Hide the nudge if exists.
+  if (std::distance(chips_.begin(), iter) == 0) {
+    Shell::Get()->birch_privacy_nudge_controller()->MaybeHideNudge();
+  }
+
   BirchChipButtonBase* removing_chip = *iter;
   chips_.erase(iter);
 
@@ -363,10 +374,10 @@ void BirchBarView::RemoveChip(BirchItem* removed_item,
 
   // Create a new chip for the attached item.
   if (attached_item) {
-    chip_to_attach_ = views::Builder<BirchChipButton>()
-                          .Init(attached_item)
-                          .SetPreferredSize(chip_size_)
-                          .Build();
+    chips_to_attach_.push_back(views::Builder<BirchChipButton>()
+                                   .Init(attached_item)
+                                   .SetPreferredSize(chip_size_)
+                                   .Build());
   }
 
   // Apply fading-out animation to the chip being removed.
@@ -385,12 +396,22 @@ void BirchBarView::UpdateChip(BirchItem* item) {
   auto iter = std::find_if(
       chips_.begin(), chips_.end(),
       [item](BirchChipButtonBase* chip) { return chip->GetItem() == item; });
-
   if (iter == chips_.end()) {
     return;
   }
 
   (*iter)->Init(item);
+}
+
+void BirchBarView::UpdateChipTitle(BirchItem* item) {
+  auto iter = std::find_if(
+      chips_.begin(), chips_.end(),
+      [item](BirchChipButtonBase* chip) { return chip->GetItem() == item; });
+  if (iter == chips_.end()) {
+    return;
+  }
+
+  views::AsViewClass<BirchChipButton>(*iter)->UpdateTitle();
 }
 
 int BirchBarView::GetMaximumHeight() const {
@@ -452,11 +473,10 @@ void BirchBarView::Clear() {
   chips_.clear();
   primary_row_->RemoveAllChildViews();
   if (secondary_row_) {
-    auto secondary_row = RemoveChildViewT(secondary_row_);
-    secondary_row_ = nullptr;
+    RemoveChildViewT(std::exchange(secondary_row_, nullptr));
   }
 
-  chip_to_attach_.reset();
+  chips_to_attach_.clear();
 
   if (state_ == State::kShuttingDown) {
     Relayout(RelayoutReason::kClearOnDisabled);
@@ -537,8 +557,7 @@ void BirchBarView::Relayout(RelayoutReason reason) {
 
   // Remove the secondary row if it is empty.
   if (chips_in_secondary.empty()) {
-    auto secondary_row = RemoveChildViewT(secondary_row_);
-    secondary_row_ = nullptr;
+    RemoveChildViewT(std::exchange(secondary_row_, nullptr));
   }
 }
 
@@ -718,8 +737,9 @@ void BirchBarView::RemoveChipFromOneRowBar(BirchChipButtonBase* removing_chip) {
   // Remove the chip from its owner.
   removing_chip->parent()->RemoveChildViewT(removing_chip);
 
-  if (chip_to_attach_) {
-    AttachChip(std::move(chip_to_attach_));
+  if (!chips_to_attach_.empty()) {
+    AttachChip(std::move(chips_to_attach_.front()));
+    chips_to_attach_.pop_front();
     // Attaching a chip after removing will not change the bar widget bounds
     // such that chips bounds will not get updated immediately. However, to
     // perform sliding animation, we need to get the chips target bounds to
@@ -754,15 +774,17 @@ void BirchBarView::RemoveChipFromTwoRowsBar(
     BirchChipButtonBase* removing_chip) {
   // TODO(zxdan): implement the animation when the motion spec is ready.
   removing_chip->parent()->RemoveChildViewT(removing_chip);
-  if (chip_to_attach_) {
-    AttachChip(std::move(chip_to_attach_));
+  if (!chips_to_attach_.empty()) {
+    AttachChip(std::move(chips_to_attach_.front()));
+    chips_to_attach_.erase(chips_to_attach_.begin());
   } else {
     Relayout(RelayoutReason::kAddRemoveChip);
   }
 }
 
 void BirchBarView::MaybeShowPrivacyNudge() {
-  if (chips_.empty()) {
+  // Don't show nudge when exiting Overview.
+  if (chips_.empty() || !OverviewController::Get()->InOverviewSession()) {
     return;
   }
   // The nudge is anchored on the first suggestion chip.

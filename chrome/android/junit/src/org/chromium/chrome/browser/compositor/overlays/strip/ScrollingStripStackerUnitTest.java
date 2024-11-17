@@ -4,17 +4,17 @@
 
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
-import static org.mockito.ArgumentMatchers.anyFloat;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.LocalizationUtils;
@@ -22,6 +22,8 @@ import org.chromium.ui.base.LocalizationUtils;
 /** Tests for {@link ScrollingStripStacker}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public final class ScrollingStripStackerUnitTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final float TAB_OFFSET_Y = 2;
     private static final float TAB_WIDTH = 100;
     private static final float CACHED_TAB_WIDTH = 30;
@@ -37,7 +39,6 @@ public final class ScrollingStripStackerUnitTest {
     @Before
     public void setUp() {
         LocalizationUtils.setRtlForTesting(false);
-        MockitoAnnotations.initMocks(this);
         mInput = new StripLayoutTab[] {mTab1, mTab2, mTab3, mTab4, mTab5};
         float ideal_x = 0;
         // First and last tab out of visible area.
@@ -57,13 +58,13 @@ public final class ScrollingStripStackerUnitTest {
         for (StripLayoutTab tab : mInput) {
             verify(tab).getIdealX();
             verify(tab).getOffsetX();
-            verify(tab).setDrawX(expected_x);
             verify(tab).setDrawY(TAB_OFFSET_Y);
             verify(tab).getOffsetY();
             if (LocalizationUtils.isLayoutRtl() && !tabClosing) {
-                verify(tab, times(2)).setDrawX(anyFloat());
-                verify(tab).getDrawX();
+                verify(tab).setDrawX(expected_x + CACHED_TAB_WIDTH - TAB_WIDTH);
                 verify(tab).getWidth();
+            } else {
+                verify(tab).setDrawX(expected_x);
             }
             verifyNoMoreInteractions(tab);
             expected_x += TAB_WIDTH;
@@ -73,36 +74,32 @@ public final class ScrollingStripStackerUnitTest {
     @Test
     public void testSetTabOffsets() {
         boolean tabClosing = false;
-        mTarget.setViewOffsets(
-                mInput, tabClosing, /* groupTitleSlidingAnimRunning= */ false, CACHED_TAB_WIDTH);
+        mTarget.setViewOffsets(mInput, tabClosing, CACHED_TAB_WIDTH);
         verifySetTabOffsets(tabClosing);
     }
 
     @Test
     public void testSetTabOffsets_TabClosing() {
         boolean tabClosing = true;
-        mTarget.setViewOffsets(
-                mInput, tabClosing, /* groupTitleSlidingAnimRunning= */ false, CACHED_TAB_WIDTH);
+        mTarget.setViewOffsets(mInput, tabClosing, CACHED_TAB_WIDTH);
         verifySetTabOffsets(tabClosing);
     }
 
     @Test
-    public void testSetTabOffsets_RTL() {
+    public void testSetTabOffsets_Rtl() {
         LocalizationUtils.setRtlForTesting(true);
 
         boolean tabClosing = false;
-        mTarget.setViewOffsets(
-                mInput, tabClosing, /* groupTitleSlidingAnimRunning= */ false, CACHED_TAB_WIDTH);
+        mTarget.setViewOffsets(mInput, tabClosing, CACHED_TAB_WIDTH);
         verifySetTabOffsets(tabClosing);
     }
 
     @Test
-    public void testSetTabOffsets_TabClosing_RTL() {
+    public void testSetTabOffsets_TabClosing_Rtl() {
         LocalizationUtils.setRtlForTesting(true);
 
         boolean tabClosing = true;
-        mTarget.setViewOffsets(
-                mInput, tabClosing, /* groupTitleSlidingAnimRunning= */ false, CACHED_TAB_WIDTH);
+        mTarget.setViewOffsets(mInput, tabClosing, CACHED_TAB_WIDTH);
         verifySetTabOffsets(tabClosing);
     }
 

@@ -13,10 +13,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/webui/commerce/product_specifications_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/sanitized_image_source.h"
@@ -47,12 +49,6 @@ namespace commerce {
 ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
   Profile* const profile = Profile::FromWebUI(web_ui);
-  commerce::ShoppingService* shopping_service =
-      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
-  if (!shopping_service || !CanLoadProductSpecificationsFullPageUi(
-                               shopping_service->GetAccountChecker())) {
-    return;
-  }
   // Add ThemeSource to serve the chrome logo.
   content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   // Add SanitizedImageSource to embed images in WebUI.
@@ -121,6 +117,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
       {"renameGroup", IDS_COMPARE_RENAME},
       {"seeAll", IDS_COMPARE_SEE_ALL},
       {"suggestedTabs", IDS_COMPARE_SUGGESTIONS_SECTION},
+      {"tableFullMessage", IDS_COMPARE_TABLE_FULL_MESSAGE},
       {"tableMenuA11yLabel", IDS_COMPARE_TABLE_MENU_A11Y_LABEL},
       {"tableNameInputA11yLabel", IDS_COMPARE_TITLE_INPUT_A11Y_LABEL},
       {"thumbsDown", IDS_THUMBS_DOWN},
@@ -132,6 +129,7 @@ ProductSpecificationsUI::ProductSpecificationsUI(content::WebUI* web_ui)
                     kChromeUICompareListsUrl);
   source->AddString("compareLearnMoreUrl", kChromeUICompareLearnMoreUrl);
   source->AddInteger("maxNameLength", kMaxNameLength);
+  source->AddInteger("maxTableSize", kMaxTableSize);
 
   std::string email;
   signin::IdentityManager* identity_manager =
@@ -156,6 +154,14 @@ void ProductSpecificationsUI::BindInterface(
         shopping_service::mojom::ShoppingServiceHandlerFactory> receiver) {
   shopping_service_factory_receiver_.reset();
   shopping_service_factory_receiver_.Bind(std::move(receiver));
+}
+
+void ProductSpecificationsUI::BindInterface(
+    mojo::PendingReceiver<
+        product_specifications::mojom::ProductSpecificationsHandlerFactory>
+        receiver) {
+  product_specifications_handler_factory_receiver_.reset();
+  product_specifications_handler_factory_receiver_.Bind(std::move(receiver));
 }
 
 void ProductSpecificationsUI::CreateShoppingServiceHandler(
@@ -183,6 +189,24 @@ void ProductSpecificationsUI::CreateShoppingServiceHandler(
               : nullptr);
 }
 
+void ProductSpecificationsUI::CreateProductSpecificationsHandler(
+    mojo::PendingRemote<product_specifications::mojom::Page> page,
+    mojo::PendingReceiver<
+        product_specifications::mojom::ProductSpecificationsHandler> receiver) {
+  Profile* const profile = Profile::FromWebUI(web_ui());
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+
+  product_specifications_handler_ =
+      std::make_unique<ProductSpecificationsHandler>(
+          std::move(page), std::move(receiver),
+          std::make_unique<ProductSpecificationsUIHandlerDelegate>(web_ui()),
+          HistoryServiceFactory::GetForProfile(
+              profile, ServiceAccessType::EXPLICIT_ACCESS),
+          profile->GetPrefs(),
+          shopping_service->GetProductSpecificationsService());
+}
+
 // static
 base::RefCountedMemory* ProductSpecificationsUI::GetFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor) {
@@ -200,7 +224,11 @@ ProductSpecificationsUIConfig::ProductSpecificationsUIConfig()
 bool ProductSpecificationsUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
   Profile* const profile = Profile::FromBrowserContext(browser_context);
-  return profile && !profile->IsOffTheRecord();
+  commerce::ShoppingService* shopping_service =
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile);
+  return profile && !profile->IsOffTheRecord() && shopping_service &&
+         CanLoadProductSpecificationsFullPageUi(
+             shopping_service->GetAccountChecker());
 }
 
 ProductSpecificationsUIConfig::~ProductSpecificationsUIConfig() = default;

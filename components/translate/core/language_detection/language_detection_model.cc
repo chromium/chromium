@@ -17,18 +17,6 @@
 #include "components/translate/core/common/translate_util.h"
 #include "components/translate/core/language_detection/language_detection_util.h"
 
-namespace {
-
-// The number of characters to sample and provide as a buffer to the model
-// for determining its language.
-constexpr size_t kTextSampleLength = 256;
-
-// The number of samples of |kTextSampleLength| to evaluate the model when
-// determining the language of the page content.
-constexpr int kNumTextSamples = 3;
-
-}  // namespace
-
 namespace translate {
 // If enabled, the string passed to the language detection model for the whole
 // page is truncated to `kTextSampleLength`
@@ -37,19 +25,31 @@ BASE_FEATURE(kTruncateLanguageDetectionSample,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 LanguageDetectionModel::LanguageDetectionModel(
-    language_detection::LanguageDetectionModel* tflite_model_)
-    : tflite_model_(tflite_model_) {}
+    language_detection::LanguageDetectionModel& shared_tflite_model)
+    : tflite_model_(shared_tflite_model) {}
+
+LanguageDetectionModel::LanguageDetectionModel(
+    std::unique_ptr<language_detection::LanguageDetectionModel>
+        owned_tflite_model)
+    : owned_tflite_model_(std::move(owned_tflite_model)),
+      tflite_model_(*owned_tflite_model_.get()) {
+  owned_tflite_model_->DetachFromSequence();
+}
 
 LanguageDetectionModel::~LanguageDetectionModel() = default;
 
-#if !BUILDFLAG(IS_IOS)
 void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
   tflite_model_->UpdateWithFile(std::move(model_file));
 }
-#endif
+
+void LanguageDetectionModel::UpdateWithFileAsync(base::File model_file,
+                                                 base::OnceClosure callback) {
+  tflite_model_->UpdateWithFileAsync(std::move(model_file),
+                                     std::move(callback));
+}
 
 bool LanguageDetectionModel::IsAvailable() const {
-  return tflite_model_ && tflite_model_->IsAvailable();
+  return tflite_model_->IsAvailable();
 }
 
 std::pair<std::string, float> LanguageDetectionModel::DetectTopLanguage(
@@ -135,8 +135,9 @@ language_detection::Prediction LanguageDetectionModel::DetectLanguage(
     model_predictions.emplace_back(DetectTopLanguage(sampled_str));
   }
 
-  const auto top_language_result =
-      std::max_element(model_predictions.begin(), model_predictions.end());
+  const auto top_language_result = std::max_element(
+      model_predictions.begin(), model_predictions.end(),
+      [](auto& left, auto& right) { return left.second < right.second; });
   base::UmaHistogramTimes(
       "LanguageDetection.TFLiteModel.DetectPageLanguage.Duration",
       timer.Elapsed());

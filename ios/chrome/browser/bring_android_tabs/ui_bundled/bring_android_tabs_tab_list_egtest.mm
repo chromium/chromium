@@ -81,9 +81,9 @@ void TriggerTabList() {
   }
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   CleanUp();
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that all tabs are opened when no tab is deselected from the list.

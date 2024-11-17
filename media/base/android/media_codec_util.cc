@@ -116,14 +116,12 @@ std::string MediaCodecUtil::CodecToAndroidMimeType(AudioCodec codec) {
 std::string MediaCodecUtil::CodecToAndroidMimeType(AudioCodec codec,
                                                    SampleFormat sample_format) {
   // Passthrough is possible for some bitstream formats.
-  const bool is_passthrough = sample_format == kSampleFormatDts ||
-                              sample_format == kSampleFormatDtsxP2 ||
-                              sample_format == kSampleFormatAc3 ||
-                              sample_format == kSampleFormatEac3 ||
-                              sample_format == kSampleFormatMpegHAudio;
-
-  if (IsPassthroughAudioFormat(codec) || is_passthrough)
+  if (sample_format == kSampleFormatDts ||
+      sample_format == kSampleFormatDtsxP2 ||
+      sample_format == kSampleFormatAc3 || sample_format == kSampleFormatEac3 ||
+      sample_format == kSampleFormatMpegHAudio) {
     return kBitstreamAudioMimeType;
+  }
 
   switch (codec) {
     case AudioCodec::kMP3:
@@ -271,20 +269,6 @@ bool MediaCodecUtil::IsSurfaceViewOutputSupported() {
 bool MediaCodecUtil::IsSetOutputSurfaceSupported() {
   JNIEnv* env = AttachCurrentThread();
   return Java_MediaCodecUtil_isSetOutputSurfaceSupported(env);
-}
-
-// static
-bool MediaCodecUtil::IsPassthroughAudioFormat(AudioCodec codec) {
-  switch (codec) {
-    case AudioCodec::kAC3:
-    case AudioCodec::kEAC3:
-    case AudioCodec::kDTS:
-    case AudioCodec::kDTSXP2:
-    case AudioCodec::kMpegHAudio:
-      return true;
-    default:
-      return false;
-  }
 }
 
 // static

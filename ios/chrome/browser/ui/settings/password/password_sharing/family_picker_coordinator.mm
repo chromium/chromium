@@ -82,7 +82,7 @@
   self.viewController.delegate = self;
   self.mediator = [[FamilyPickerMediator alloc]
           initWithRecipients:_recipients
-      sharedURLLoaderFactory:self.browser->GetBrowserState()
+      sharedURLLoaderFactory:self.browser->GetProfile()
                                  ->GetSharedURLLoaderFactory()];
   self.mediator.consumer = self.viewController;
 
@@ -166,7 +166,7 @@
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   OpenNewTabCommand* command = [OpenNewTabCommand
       commandWithURLFromChrome:GURL(kPasswordSharingLearnMoreURL)];
-  [handler closeSettingsUIAndOpenURL:command];
+  [handler closePresentedViewsAndOpenURL:command];
   [self.delegate familyPickerCoordinatorWasDismissed:self];
 }
 

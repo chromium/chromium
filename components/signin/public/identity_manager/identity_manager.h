@@ -41,10 +41,6 @@ class AccountManagerFacade;
 }
 #endif
 
-namespace gaia {
-struct ListedAccount;
-}  // namespace gaia
-
 namespace network {
 class SharedURLLoaderFactory;
 class TestURLLoaderFactory;
@@ -60,7 +56,7 @@ class PrivacySandboxSettingsDelegate;
 
 namespace signin {
 
-struct AccountsInCookieJarInfo;
+class AccountsInCookieJarInfo;
 struct AccountAvailabilityOptions;
 class IdentityManagerTest;
 class IdentityTestEnvironment;
@@ -134,16 +130,19 @@ class IdentityManager : public KeyedService,
     virtual void OnRefreshTokensLoaded() {}
 
     // Called whenever the list of Gaia accounts in the cookie jar has changed.
-    // |accounts_in_cookie_jar_info.accounts| is ordered by the order of the
-    // accounts in the cookie.
     //
-    // This observer method is also called when fetching the list of accounts
-    // in Gaia cookies fails after a number of internal retries. In this case:
-    // * |error| hold the last error to fetch the list of accounts;
-    // * |accounts_in_cookie_jar_info.accounts_are_fresh| is set to false as
-    //   the accounts information is considered stale;
-    // * |accounts_in_cookie_jar_info.accounts| holds the last list of known
-    //   accounts in the cookie jar.
+    // This observer method is also called when fetching the list of accounts in
+    // Gaia cookies fails after a number of internal retries.
+    //
+    // * `accounts_in_cookie_jar_info` contains the information about accounts
+    //    cookies. Accounts in this object are ordered by the order of accounts
+    //    in the cookie. If fetching accounts failed or hasn't finished yet,
+    //    this object will contain the last known state of accounts in the
+    //    cookie jar. See `AccountsInCookieJarInfo` documentation for more
+    //    details on the information available there.
+    // * `error` holds the last error that occurred while fetching the list of
+    //    accounts (or `GoogleServiceAuthError::AuthErrorNone()`, if fetching
+    //    succeeded).
     virtual void OnAccountsInCookieUpdated(
         const AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
         const GoogleServiceAuthError& error) {}
@@ -160,6 +159,11 @@ class IdentityManager : public KeyedService,
 
     // Called after removing an account info.
     virtual void OnExtendedAccountInfoRemoved(const AccountInfo& info) {}
+
+#if BUILDFLAG(IS_IOS)
+    // Called after the list of accounts in `GetAccountsOnDevice` changes.
+    virtual void OnAccountsOnDeviceChanged() {}
+#endif
 
     // Called on Shutdown(), for observers that aren't KeyedServices to remove
     // their observers.
@@ -308,6 +312,11 @@ class IdentityManager : public KeyedService,
   // Returns pointer to the object used to seed accounts information from the
   // device-level accounts. May be null if the system has no such notion.
   DeviceAccountsSynchronizer* GetDeviceAccountsSynchronizer();
+
+#if BUILDFLAG(IS_IOS)
+  // Gets all accounts on the device, including the ones from other profiles.
+  [[nodiscard]] std::vector<AccountInfo> GetAccountsOnDevice();
+#endif
 
   // Observer interface for classes that want to monitor status of various
   // requests. Mostly useful in tests and debugging contexts (e.g., WebUI).
@@ -647,8 +656,7 @@ class IdentityManager : public KeyedService,
 
   // GaiaCookieManagerService callbacks:
   void OnGaiaAccountsInCookieUpdated(
-      const std::vector<gaia::ListedAccount>& signed_in_accounts,
-      const std::vector<gaia::ListedAccount>& signed_out_accounts,
+      const AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error);
   void OnGaiaCookieDeletedByUserAction();
 

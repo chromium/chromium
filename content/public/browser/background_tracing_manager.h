@@ -15,7 +15,6 @@
 #include "third_party/perfetto/protos/perfetto/config/chrome/scenario_config.gen.h"
 
 namespace content {
-class BackgroundTracingConfig;
 
 // BackgroundTracingManager is used on the browser process to trigger the
 // collection of trace data and upload the results. Only the browser UI thread
@@ -29,8 +28,6 @@ class BackgroundTracingManager {
 
   // Returns the global instance created with CreateInstance().
   CONTENT_EXPORT static BackgroundTracingManager& GetInstance();
-
-  CONTENT_EXPORT static const char kContentTriggerConfig[];
 
   // Enabled state observers get a callback when the state of background tracing
   // changes.
@@ -82,26 +79,6 @@ class BackgroundTracingManager {
     ANONYMIZE_DATA_AND_FILTER_PACKAGE_NAME,
   };
 
-  // Set the triggering rules for when to start recording.
-  //
-  // In preemptive mode, recording begins immediately and any calls to
-  // TriggerNamedEvent() will potentially trigger the trace to finalize
-  // and get uploaded. Once the trace has been uploaded, tracing will be
-  // enabled again.
-  //
-  // In reactive mode, recording begins when TriggerNamedEvent() is
-  // called, and continues until either the next call to
-  // TriggerNamedEvent, or a timeout occurs. Tracing will not be
-  // re-enabled after the trace is finalized and uploaded.
-  //
-  // This function uploads traces through UMA using GetTraceToUpload.
-  //
-  // Calls to SetActiveScenario() with a config will fail if tracing is
-  // currently on.
-  virtual bool SetActiveScenario(
-      std::unique_ptr<BackgroundTracingConfig> config,
-      DataFiltering data_filtering) = 0;
-
   // Initializes a list of triggers from `config` to be forwarded to
   // perfetto. This is useful when system tracing is running. This will
   // fail and return false if any scenario was previously enabled,
@@ -123,10 +100,14 @@ class BackgroundTracingManager {
   // tracing configs. Returns true if all scenarios were successfully
   // initialized. This will fail and return false if any scenario was previously
   // enabled, either with InitializeFieldScenarios() or SetEnabledScenarios().
-  // This shouldn't be called if SetActiveScenario() was previously called.
+  // `force_uploads` allows scenario to ignore upload quotas, and
+  // `upload_limit_kb` overrides default upload size limits if not 0. This
+  // shouldn't be called if SetActiveScenario() was previously called.
   virtual bool InitializeFieldScenarios(
       const perfetto::protos::gen::ChromeFieldTracingConfig& config,
-      DataFiltering data_filtering) = 0;
+      DataFiltering data_filtering,
+      bool force_uploads,
+      size_t upload_limit_kb) = 0;
 
   // Saves a set of preset scenarios, each associated with specific tracing
   // configs, without enabling them. These scenarios can be enabled with
@@ -162,10 +143,6 @@ class BackgroundTracingManager {
                               std::optional<std::string> /*system_profile*/)>
           callback) = 0;
 
-  // Returns background tracing configuration for the experiment |trial_name|.
-  virtual std::unique_ptr<BackgroundTracingConfig> GetBackgroundTracingConfig(
-      const std::string& trial_name) = 0;
-
   // Sets a callback that records `SystemProfileProto` when a trace is
   // collected.
   virtual void SetSystemProfileRecorder(
@@ -177,9 +154,6 @@ class BackgroundTracingManager {
                                    const std::string& scenario_name,
                                    const std::string& rule_name,
                                    const base::Token& uuid) = 0;
-
-  using ConfigTextFilterForTesting =
-      base::RepeatingCallback<std::string(const std::string&)>;
 
  protected:
   // Sets the instance returns by GetInstance() globally to |tracing_manager|.

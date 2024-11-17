@@ -44,8 +44,7 @@ QueueName GetControlTaskQueueName(BrowserThread::ID thread_id) {
     case BrowserThread::ID_COUNT:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return QueueName::UNKNOWN_TQ;
+  NOTREACHED();
 }
 
 QueueName GetRunAllPendingTaskQueueName(BrowserThread::ID thread_id) {
@@ -57,8 +56,7 @@ QueueName GetRunAllPendingTaskQueueName(BrowserThread::ID thread_id) {
     case BrowserThread::ID_COUNT:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return QueueName::UNKNOWN_TQ;
+  NOTREACHED();
 }
 
 QueueName GetUITaskQueueName(BrowserTaskQueues::QueueType queue_type) {
@@ -117,8 +115,7 @@ QueueName GetTaskQueueName(BrowserThread::ID thread_id,
     case BrowserThread::ID_COUNT:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return QueueName::UNKNOWN_TQ;
+  NOTREACHED();
 }
 
 }  // namespace

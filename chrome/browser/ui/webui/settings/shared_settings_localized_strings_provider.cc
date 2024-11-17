@@ -119,8 +119,6 @@ void AddCaptionSubpageStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CAPTIONS_LIVE_TRANSLATE_TARGET_LANGUAGE},
       {"captionsLiveTranslateTargetLanguageSubtitle",
        IDS_SETTINGS_CAPTIONS_LIVE_TRANSLATE_TARGET_LANGUAGE_SUBTITLE},
-      {"removeLanguageAriaLabel",
-       IDS_SETTINGS_CAPTIONS_REMOVE_LANGUAGE_ARIA_LABEL},
       {"removeLanguageLabel", IDS_SETTINGS_CAPTIONS_REMOVE_LANGUAGE_LABEL},
       {"makeDefaultLanguageLabel",
        IDS_SETTINGS_CAPTIONS_MAKE_DEFAULT_LANGUAGE_LABEL},
@@ -229,14 +227,6 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing)) {
-    html_source->AddLocalizedString(
-        "manageSyncedDataSubtitle",
-        IDS_SETTINGS_NEW_MANAGE_SYNCED_DATA_SUBTITLE_UNIFIED_CONSENT);
-  }
-#endif
-
   std::string sync_dashboard_url =
       google_util::AppendGoogleLocaleParam(
           GURL(chrome::kSyncGoogleDashboardURL),
@@ -270,10 +260,6 @@ void AddSharedSyncPageStrings(content::WebUIDataSource* html_source) {
       "showSyncSettingsRevamp",
       base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing) &&
           crosapi::browser_util::IsLacrosEnabled());
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  html_source->AddBoolean(
-      "showSyncSettingsRevamp",
-      base::FeatureList::IsEnabled(syncer::kSyncChromeOSAppsToggleSharing));
 #endif
 
   html_source->AddString("syncErrorsHelpUrl", chrome::kSyncErrorsHelpURL);
@@ -307,6 +293,8 @@ void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
       {"secureDnsOsSettingsTitle", IDS_OS_SETTINGS_SECURE_DNS_TITLE},
       {"secureDnsWithIdentifiersDescription",
        IDS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_DESCRIPTION},
+      {"secureDnsWithIdentifiersAndDomainConfigDescription",
+       IDS_OS_SETTINGS_SECURE_DNS_WITH_IDENTIFIERS_AND_DOMAIN_CONFIG_DESCRIPTION},
       {"secureDnsDialogTitle", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_TITLE},
       {"secureDnsDialogBody", IDS_OS_SETTINGS_REVAMP_SECURE_DNS_DIALOG_BODY},
       {"secureDnsDialogCancel",
@@ -326,6 +314,11 @@ void AddSecureDnsStrings(content::WebUIDataSource* html_source) {
       "secureDnsOsSettingsDescription",
       l10n_util::GetStringFUTF16(IDS_OS_SETTINGS_SECURE_DNS_DESCRIPTION,
                                  product_os_name));
+  html_source->AddString(
+      "secureDnsWithDomainConfigDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_OS_SETTINGS_SECURE_DNS_WITH_DOMAIN_CONFIG_DESCRIPTION,
+          product_os_name));
 #endif
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }

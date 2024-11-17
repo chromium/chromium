@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+</head>
+<body id="body">
+
+<ul id="tablist_1" role="tablist">
+<li id="tab_1" role="tab"></li>
+</ul>
+
+<div id="panel_1" role="tabpanel">Panel 1</div>
+<div id="panel_2" role="tabpanel">Panel 2</div>
+
+<p id="description"></p>
+<div id="console"></div>
+
+<script>
+
+  test((t) => {
+    var tab_1_element = document.getElementById("tab_1");
+    var panel_1_element = document.getElementById("panel_1");
+    var panel_2_element = document.getElementById("panel_2");
+    tab_1_element.ariaControlsElements = [panel_1_element, panel_2_element]; 
+
+    var tab_1 = accessibilityController.accessibleElementById("tablist_1").childAtIndex(0);
+    var panel_1 = accessibilityController.accessibleElementById("panel_1");
+    var panel_2 = accessibilityController.accessibleElementById("panel_2");
+
+    assert_true(tab_1.ariaControlsElementAtIndex(0).isEqual(panel_1));
+    assert_true(tab_1.ariaControlsElementAtIndex(1).isEqual(panel_2));
+}, "This tests that aria-controls identifies the correct element");
+
+</script>
+
+</body>
+</html>

@@ -13,8 +13,8 @@ import org.chromium.ui.resources.dynamics.DynamicResourceReadyOnceCallback;
 
 class BottomControlsViewBinder {
     /**
-     * A wrapper class that holds a {@link ScrollingBottomViewResourceFrameLayout}
-     * and a composited layer to be used with the {@link BottomControlsViewBinder}.
+     * A wrapper class that holds a {@link ScrollingBottomViewResourceFrameLayout} and a composited
+     * layer to be used with the {@link BottomControlsViewBinder}.
      */
     static class ViewHolder {
         /** A handle to the Android View based version of the bottom controls. */
@@ -69,6 +69,8 @@ class BottomControlsViewBinder {
                     model.get(BottomControlsProperties.IS_OBSCURED)
                             ? View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS
                             : View.IMPORTANT_FOR_ACCESSIBILITY_AUTO);
+        } else if (BottomControlsProperties.OFFSET_TAG == propertyKey) {
+            view.sceneLayer.setOffsetTag(model.get(BottomControlsProperties.OFFSET_TAG));
         } else {
             assert false : "Unhandled property detected in BottomControlsViewBinder!";
         }

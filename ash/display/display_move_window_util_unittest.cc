@@ -70,19 +70,11 @@ void PerformMoveWindowAccel() {
 
 class DisplayMoveWindowUtilTest : public AshTestBase {
  public:
-  DisplayMoveWindowUtilTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding},
-        /*disabled_features=*/{});
-  }
+  DisplayMoveWindowUtilTest() = default;
   DisplayMoveWindowUtilTest(const DisplayMoveWindowUtilTest&) = delete;
   DisplayMoveWindowUtilTest& operator=(const DisplayMoveWindowUtilTest&) =
       delete;
   ~DisplayMoveWindowUtilTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(DisplayMoveWindowUtilTest, SingleDisplay) {

@@ -9,10 +9,10 @@
 
 #include "media/gpu/vaapi/vp9_vaapi_video_encoder_delegate.h"
 
+#include <va/va.h>
+
 #include <algorithm>
 #include <numeric>
-
-#include <va/va.h>
 
 #include "base/bits.h"
 #include "base/memory/ref_counted_memory.h"
@@ -21,9 +21,9 @@
 #include "base/strings/stringprintf.h"
 #include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
+#include "media/gpu/svc_layers.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
-#include "media/gpu/vp9_svc_layers.h"
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 
 namespace media {
@@ -341,8 +341,8 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
         return false;
       }
     }
-    if (num_spatial_layers > VP9SVCLayers::kMaxSpatialLayers ||
-        num_temporal_layers > VP9SVCLayers::kMaxTemporalLayers) {
+    if (num_spatial_layers > SVCLayers::kMaxSpatialLayers ||
+        num_temporal_layers > SVCLayers::kMaxTemporalLayers) {
       VLOGF(1) << "Unsupported amount of spatial/temporal layers: "
                << ", Spatial layer number: " << num_spatial_layers
                << ", Temporal layer number: " << num_temporal_layers;
@@ -359,10 +359,10 @@ bool VP9VaapiVideoEncoderDelegate::Initialize(
           gfx::Size(spatial_layer.width, spatial_layer.height));
     }
 
-    svc_layers_ = std::make_unique<VP9SVCLayers>(VP9SVCLayers::Config(
-        spatial_layer_resolutions, /*begin_active_layer=*/0,
-        spatial_layer_resolutions.size(), num_temporal_layers,
-        config.inter_layer_pred));
+    svc_layers_ = std::make_unique<SVCLayers>(
+        SVCLayers::Config(spatial_layer_resolutions, /*begin_active_layer=*/0,
+                          spatial_layer_resolutions.size(), num_temporal_layers,
+                          config.inter_layer_pred));
 
     current_params_.error_resilident_mode = true;
   }
@@ -557,10 +557,10 @@ bool VP9VaapiVideoEncoderDelegate::RecreateSVCLayersIfNeeded(
   if (config.begin_active_layer != begin_active_spatial_layer ||
       config.end_active_layer != end_active_spatial_layer ||
       config.num_temporal_layers != num_temporal_layers) {
-    svc_layers_ = std::make_unique<VP9SVCLayers>(VP9SVCLayers::Config(
-        config.spatial_layer_resolutions, begin_active_spatial_layer,
-        end_active_spatial_layer, num_temporal_layers,
-        config.inter_layer_pred));
+    svc_layers_ = std::make_unique<SVCLayers>(
+        SVCLayers::Config(config.spatial_layer_resolutions,
+                          begin_active_spatial_layer, end_active_spatial_layer,
+                          num_temporal_layers, config.inter_layer_pred));
   }
 
   // Change VideoBitrateAllocation so that the active spatial layers to
@@ -673,7 +673,7 @@ VP9VaapiVideoEncoderDelegate::SetFrameHeader(
   picture->frame_hdr->refresh_frame_context =
       !current_params_.error_resilident_mode;
   if (svc_layers_) {
-    VP9SVCLayers::PictureParam picture_param{};
+    SVCLayers::PictureParam picture_param{};
 
     svc_layers_->GetPictureParamAndMetadata(
         picture_param, picture->metadata_for_encoding.emplace());

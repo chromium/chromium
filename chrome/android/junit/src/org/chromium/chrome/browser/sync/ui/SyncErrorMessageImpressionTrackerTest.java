@@ -49,7 +49,7 @@ public class SyncErrorMessageImpressionTrackerTest {
     }
 
     @Test
-    public void testNotEnoughTimeSinceLastSyncErrorUI() {
+    public void testNotEnoughTimeSinceLastSyncErrorUi() {
         final long timeOfFirstSyncMessage = TimeUtils.currentTimeMillis();
         mSharedPrefsManager.writeLong(
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfFirstSyncMessage);
@@ -69,7 +69,7 @@ public class SyncErrorMessageImpressionTrackerTest {
     }
 
     @Test
-    public void testNotEnoughTimeSinceLastPwmUI() {
+    public void testNotEnoughTimeSinceLastPwmUi() {
         final long timeOfFirstSyncMessage = TimeUtils.currentTimeMillis();
         mSharedPrefsManager.writeLong(
                 ChromePreferenceKeys.SYNC_ERROR_MESSAGE_SHOWN_AT_TIME, timeOfFirstSyncMessage);

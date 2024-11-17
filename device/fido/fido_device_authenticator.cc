@@ -190,7 +190,7 @@ void FidoDeviceAuthenticator::InitializeAuthenticatorDone(
       options_.supports_hmac_secret &= chosen_pin_uv_auth_protocol_.has_value();
       break;
     case ProtocolVersion::kUnknown:
-      NOTREACHED_IN_MIGRATION() << "uninitialized device";
+      NOTREACHED() << "uninitialized device";
   }
   std::move(callback).Run();
 }

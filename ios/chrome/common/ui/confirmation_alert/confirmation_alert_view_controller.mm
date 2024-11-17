@@ -385,8 +385,8 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 
   if (@available(iOS 17, *)) {
     NSArray<UITrait>* traits = @[
-      UITraitPreferredContentSizeCategory.self, UITraitHorizontalSizeClass.self,
-      UITraitVerticalSizeClass.self
+      UITraitPreferredContentSizeCategory.class,
+      UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
     ];
     auto* __weak weakSelf = self;
     id handler = ^(id<UITraitEnvironment> traitEnvironment,

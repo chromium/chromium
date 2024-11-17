@@ -117,7 +117,7 @@ Status SignHmac(const std::vector<uint8_t>& raw_key,
 
 class HmacImplementation : public AlgorithmImplementation {
  public:
-  HmacImplementation() {}
+  HmacImplementation() = default;
 
   Status GenerateKey(const blink::WebCryptoAlgorithm& algorithm,
                      bool extractable,
@@ -280,10 +280,7 @@ class HmacImplementation : public AlgorithmImplementation {
     if (status.IsError())
       return status;
 
-    // Do not allow verification of truncated MACs.
-    *signature_match = result.size() == signature.size() &&
-                       crypto::SecureMemEqual(result.data(), signature.data(),
-                                              signature.size());
+    *signature_match = crypto::SecureMemEqual(result, signature);
 
     return Status::Success();
   }

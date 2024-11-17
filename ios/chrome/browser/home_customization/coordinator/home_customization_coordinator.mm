@@ -59,8 +59,8 @@ CGFloat const kSheetCornerRadius = 30;
 
 - (void)start {
   _mediator = [[HomeCustomizationMediator alloc]
-      initWithPrefService:ChromeBrowserState::FromBrowserState(
-                              self.browser->GetBrowserState())
+      initWithPrefService:ProfileIOS::FromBrowserState(
+                              self.browser->GetProfile())
                               ->GetPrefs()];
   _mediator.navigationDelegate = self;
 
@@ -183,7 +183,7 @@ CGFloat const kSheetCornerRadius = 30;
       break;
     }
     case CustomizationMenuPage::kUnknown:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Configure the navigation controller.

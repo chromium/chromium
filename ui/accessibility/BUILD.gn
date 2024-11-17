@@ -72,6 +72,8 @@ component("ax_base") {
     "ax_event.h",
     "ax_event_intent.cc",
     "ax_event_intent.h",
+    "ax_location_and_scroll_updates.cc",
+    "ax_location_and_scroll_updates.h",
     "ax_mode.cc",
     "ax_mode.h",
     "ax_mode_histogram_logger.cc",
@@ -123,9 +125,9 @@ component("ax_base") {
     ]
   }
 
-  deps = [ "//build:chromeos_buildflags" ]
+  deps = []
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//ash/constants" ]
   }
 
@@ -236,7 +238,7 @@ component("accessibility_internal") {
   }
 }
 
-if (is_android || is_chromeos_ash) {
+if (is_android || is_chromeos) {
   source_set("ax_assistant") {
     sources = [
       "ax_assistant_structure.cc",
@@ -317,7 +319,7 @@ test("accessibility_unittests") {
     "mojom/ax_action_data_mojom_traits_unittest.cc",
     "mojom/ax_event_intent_mojom_traits_unittest.cc",
     "mojom/ax_event_mojom_traits_unittest.cc",
-    "mojom/ax_location_changes_mojom_traits_unittest.cc",
+    "mojom/ax_location_and_scroll_updates_mojom_traits_unittest.cc",
     "mojom/ax_mode_mojom_traits_unittest.cc",
     "mojom/ax_node_data_mojom_traits_unittest.cc",
     "mojom/ax_relative_bounds_mojom_traits_unittest.cc",
@@ -419,6 +421,7 @@ test("accessibility_unittests") {
 
     if (is_mac) {
       sources += [
+        "platform/ax_platform_node_cocoa_unittest.mm",
         "platform/browser_accessibility_mac_unittest.mm",
         "platform/inspect/ax_element_wrapper_mac_unittest.mm",
       ]

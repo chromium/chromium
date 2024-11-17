@@ -167,7 +167,6 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
     // Only collect identifiers that match ancestors.
     switch (relation) {
       case CSSSelector::kSubSelector:
-      case CSSSelector::kScopeActivation:
         if (!skip_over_subselectors) {
           CollectDescendantSelectorIdentifierHashes(*current, style_scope,
                                                     hashes);
@@ -190,8 +189,7 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
       case CSSSelector::kRelativeChild:
       case CSSSelector::kRelativeDirectAdjacent:
       case CSSSelector::kRelativeIndirectAdjacent:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     relation = current->Relation();
   }
@@ -200,27 +198,23 @@ void CollectDescendantCompoundSelectorIdentifierHashes(
 }  // namespace
 
 void SelectorFilter::PushParentStackFrame(Element& parent) {
-  DCHECK(ancestor_identifier_filter_);
   parent_stack_.push_back(parent);
   // Mix tags, class names and ids into some sort of weird bouillabaisse.
   // The filter is used for fast rejection of child and descendant selectors.
-  CollectElementIdentifierHashes(parent, [this](unsigned hash) {
-    ancestor_identifier_filter_->Add(hash);
-  });
+  CollectElementIdentifierHashes(
+      parent, [this](unsigned hash) { ancestor_identifier_filter_.Add(hash); });
 }
 
 void SelectorFilter::PopParentStackFrame() {
   DCHECK(!parent_stack_.empty());
-  DCHECK(ancestor_identifier_filter_);
   CollectElementIdentifierHashes(*parent_stack_.back(), [this](unsigned hash) {
-    ancestor_identifier_filter_->Remove(hash);
+    ancestor_identifier_filter_.Remove(hash);
   });
   parent_stack_.pop_back();
   if (parent_stack_.empty()) {
 #if DCHECK_IS_ON()
-    DCHECK(ancestor_identifier_filter_->LikelyEmpty());
+    DCHECK(ancestor_identifier_filter_.LikelyEmpty());
 #endif
-    ancestor_identifier_filter_.reset();
   }
 }
 
@@ -237,17 +231,11 @@ void SelectorFilter::PushAncestors(const Node& node) {
 }
 
 void SelectorFilter::PushParent(Element& parent) {
+#if DCHECK_IS_ON()
   if (parent_stack_.empty()) {
     DCHECK_EQ(parent, parent.GetDocument().documentElement());
-    DCHECK(!ancestor_identifier_filter_);
-    ancestor_identifier_filter_ = std::make_unique<IdentifierFilter>();
-    PushParentStackFrame(parent);
-    return;
-  }
-  DCHECK(ancestor_identifier_filter_);
-#if DCHECK_IS_ON()
-  if (parent_stack_.back() != FlatTreeTraversal::ParentElement(parent) &&
-      parent_stack_.back() != parent.ParentOrShadowHostElement()) {
+  } else if (parent_stack_.back() != FlatTreeTraversal::ParentElement(parent) &&
+             parent_stack_.back() != parent.ParentOrShadowHostElement()) {
     LOG(DFATAL) << "Parent stack must be consistent; pushed " << parent
                 << " with parent " << parent.ParentOrShadowHostElement()
                 << " and flat-tree parent "

@@ -7,6 +7,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_HELPERS_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PROXY_PROXY_API_HELPERS_H_
 
+#include <array>
 #include <memory>
 #include <optional>
 #include <string>
@@ -31,9 +32,22 @@ enum {
   SCHEME_MAX = SCHEME_FALLBACK  // Keep this value up to date.
 };
 
-// The names of the JavaScript properties to extract from the proxy_rules.
-// These must be kept in sync with the SCHEME_* constants.
-extern const char* const field_name[];
+// The names of the schemes to be used to build the preference value string
+// for manual proxy settings.  These must be kept in sync with the SCHEME_*
+// constants.
+inline constexpr std::array kSchemeNames{"*error*", "http", "https", "ftp",
+                                         "socks"};
+
+inline constexpr std::array kFieldNames{"singleProxy", "proxyForHttp",
+                                        "proxyForHttps", "proxyForFtp",
+                                        "fallbackProxy"};
+
+static_assert(SCHEME_MAX == SCHEME_FALLBACK, "SCHEME_MAX is incorrect");
+static_assert(std::size(kFieldNames) == SCHEME_MAX + 1,
+              "kFieldNames array size is incorrect");
+static_assert(std::size(kSchemeNames) == SCHEME_MAX + 1,
+              "kSchemeNames array size is incorrect");
+static_assert(SCHEME_ALL == 0, "SCHEME_ALL must be the first value");
 
 // Conversion between PAC scripts and data-encoding URLs containing these
 // PAC scripts. Data-encoding URLs consist of a data:// prefix, a mime-type and

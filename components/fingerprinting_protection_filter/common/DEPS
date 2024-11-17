@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/subresource_filter/core/common",
+  "+components/subresource_filter/core/mojom",
+  "+components/prefs",
+  "+net"
+]

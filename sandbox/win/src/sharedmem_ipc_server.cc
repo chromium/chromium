@@ -267,8 +267,7 @@ bool SharedMemIPCServer::InvokeCallback(const ServerControl* service_context,
         break;
       }
       default: {
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       }
     }
   }

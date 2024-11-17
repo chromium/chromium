@@ -49,9 +49,7 @@ int TextTrackList::GetTrackIndex(TextTrack* text_track) {
   if (text_track->TrackType() == TextTrack::kAddTrack)
     return element_tracks_.size() + add_track_tracks_.Find(text_track);
 
-  NOTREACHED_IN_MIGRATION();
-
-  return -1;
+  NOTREACHED();
 }
 
 int TextTrackList::GetTrackIndexRelativeToRenderedTracks(
@@ -79,9 +77,7 @@ int TextTrackList::GetTrackIndexRelativeToRenderedTracks(
     ++track_index;
   }
 
-  NOTREACHED_IN_MIGRATION();
-
-  return -1;
+  NOTREACHED();
 }
 
 TextTrack* TextTrackList::AnonymousIndexedGetter(unsigned index) {
@@ -130,7 +126,7 @@ void TextTrackList::InvalidateTrackIndexesAfterTrack(TextTrack* track) {
   } else if (track->TrackType() == TextTrack::kAddTrack) {
     tracks = &add_track_tracks_;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   wtf_size_t index = tracks->Find(track);
@@ -149,7 +145,7 @@ void TextTrackList::Append(TextTrack* track) {
     wtf_size_t index = loadable_text_track->TrackElementIndex();
     element_tracks_.insert(index, track);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   InvalidateTrackIndexesAfterTrack(track);
@@ -168,7 +164,7 @@ void TextTrackList::Remove(TextTrack* track) {
   } else if (track->TrackType() == TextTrack::kAddTrack) {
     tracks = &add_track_tracks_;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   wtf_size_t index = tracks->Find(track);
@@ -188,12 +184,13 @@ void TextTrackList::Remove(TextTrack* track) {
 bool TextTrackList::Contains(TextTrack* track) const {
   const HeapVector<Member<TextTrack>>* tracks = nullptr;
 
-  if (IsA<LoadableTextTrack>(track))
+  if (IsA<LoadableTextTrack>(track)) {
     tracks = &element_tracks_;
-  else if (track->TrackType() == TextTrack::kAddTrack)
+  } else if (track->TrackType() == TextTrack::kAddTrack) {
     tracks = &add_track_tracks_;
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 
   return tracks->Find(track) != kNotFound;
 }

@@ -14,6 +14,7 @@
 #include <shlobj.h>
 #include <stdint.h>
 
+#include <optional>
 #include <tuple>
 
 #include "base/command_line.h"
@@ -48,9 +49,8 @@ bool installer_logging_ = false;
 TruncateResult TruncateLogFileIfNeeded(const base::FilePath& log_file) {
   TruncateResult result = LOGFILE_UNTOUCHED;
 
-  int64_t log_size = 0;
-  if (base::GetFileSize(log_file, &log_size) &&
-      log_size > kMaxInstallerLogFileSize) {
+  std::optional<int64_t> log_size = base::GetFileSize(log_file);
+  if (log_size.has_value() && log_size.value() > kMaxInstallerLogFileSize) {
     // Cause the old log file to be deleted when we are done with it.
     uint32_t file_flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
                           base::File::FLAG_WIN_SHARE_DELETE |
@@ -62,7 +62,7 @@ TruncateResult TruncateLogFileIfNeeded(const base::FilePath& log_file) {
       base::FilePath tmp_log(log_file.value() + FILE_PATH_LITERAL(".tmp"));
       // Note that base::Move will attempt to replace existing files.
       if (base::Move(log_file, tmp_log)) {
-        int64_t offset = log_size - kTruncatedInstallerLogFileSize;
+        int64_t offset = log_size.value() - kTruncatedInstallerLogFileSize;
         auto old_log_data =
             base::HeapArray<uint8_t>::Uninit(kTruncatedInstallerLogFileSize);
         std::optional<size_t> bytes_read =

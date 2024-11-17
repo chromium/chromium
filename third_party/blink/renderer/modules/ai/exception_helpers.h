@@ -19,7 +19,7 @@ extern const char kExceptionMessageInvalidTemperatureAndTopKFormat[];
 extern const char kExceptionMessageUnableToCreateSession[];
 extern const char kExceptionMessageUnableToCloneSession[];
 extern const char kExceptionMessageRequestAborted[];
-extern const char kExceptionMessageSystemPromptAndInitialPromptsExist[];
+extern const char kExceptionMessageSystemPromptIsDefinedMultipleTimes[];
 extern const char kExceptionMessageSystemPromptIsNotTheFirst[];
 
 void ThrowInvalidContextException(ExceptionState& exception_state);

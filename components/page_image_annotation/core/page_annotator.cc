@@ -11,12 +11,12 @@ namespace page_image_annotation {
 
 namespace ia_mojom = image_annotation::mojom;
 
-PageAnnotator::Observer::~Observer() {}
+PageAnnotator::Observer::~Observer() = default;
 
 PageAnnotator::PageAnnotator(mojo::PendingRemote<ia_mojom::Annotator> annotator)
     : annotator_(std::move(annotator)) {}
 
-PageAnnotator::~PageAnnotator() {}
+PageAnnotator::~PageAnnotator() = default;
 
 void PageAnnotator::ImageAddedOrPossiblyModified(
     const ImageMetadata& metadata,

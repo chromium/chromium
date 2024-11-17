@@ -3,18 +3,25 @@
 <translationbundle lang="tr">
 <translation id="1444443021901415601">Chrome, son tarama geçmişinize göre ilgi alanlarınızı not eder.</translation>
 <translation id="2252052615723281030">Chrome'da oturum açtığınızda bu ayar IP adresinizin gizli kalmasına yardımcı olur. Chrome bir sitenin sizi izlediğinden şüpheleniyorsa trafiğinizin bir kısmı gizlilik sunucuları aracılığıyla gönderilebilir.</translation>
+<translation id="235789365079050412">Google Gizlilik Politikası</translation>
 <translation id="2793385791865768072">Chrome, son tarama geçmişinize göre ilgi alanlarınızı not eder</translation>
+<translation id="2979365474350987274">Üçüncü taraf çerezleri sınırlı</translation>
 <translation id="33479675708419823">Chrome'da oturum açtığınızda bu ayar IP adresinizin gizli kalmasına yardımcı olur. Chrome bir sitenin sizi izlediğinden şüpheleniyorsa trafiğinizin bir kısmı gizlilik sunucuları aracılığıyla gönderilebilir. <ph name="LINK_BEGIN" />IP korumasının işleyiş şekli<ph name="LINK_END" /> hakkında daha fazla bilgi edinin.</translation>
 <translation id="3529311220178827364">IP adresinizi gizleme hakkında daha fazla bilgi edinin</translation>
+<translation id="385051799172605136">Geri</translation>
 <translation id="4041687306270459969">4 haftadan daha eski reklam konuları (ör. spor, giyim) otomatik olarak silinir</translation>
 <translation id="4177501066905053472">Reklam konuları</translation>
 <translation id="4301151630239508244">Reklam konuları, bir sitenin reklamları kişiselleştirmek için kullanabileceği pek çok şeyden yalnızca biridir. Reklam konuları olmasa bile siteler size reklam göstermeye devam edebilir, ancak bu reklamlar daha az kişiselleştirilmiş olabilir. <ph name="BEGIN_LINK_1" />Reklam gizliliğinizi yönetme<ph name="END_LINK_1" /> hakkında daha fazla bilgi edinin.</translation>
+<translation id="4501357987281382712">Google'ın verilerinizi nasıl koruduğu hakkında daha fazla bilgiyi <ph name="BEGIN_LINK" />Gizlilik Politikamızda<ph name="END_LINK" /> bulabilirsiniz.</translation>
 <translation id="453692855554576066">Reklam konularınızı Chromium ayarlarında görebilir ve sitelerle paylaşılmasını istemediğiniz konuları engelleyebilirsiniz</translation>
 <translation id="4598427486995631491">IP adresinizi gizleyin</translation>
 <translation id="4692439979815346597">Reklam konularınızı Chrome ayarlarında görebilir ve sitelerle paylaşılmasını istemediğiniz konuları engelleyebilirsiniz</translation>
 <translation id="5413586988657235240">Ziyaret ettiğiniz siteler, tarama geçmişinizi ve kimliğinizi korurken size alakalı reklamlar göstermek için Chromium'dan ilgilendiğiniz konular hakkında bilgi isteyebilir</translation>
+<translation id="6053735090575989697">Google'ın verilerinizi nasıl koruduğu hakkında daha fazla bilgiyi gizlilik politikamızda bulabilirsiniz.</translation>
 <translation id="6186536480878693792">Ziyaret ettiğiniz siteler, tarama geçmişinizi ve kimliğinizi korurken size alakalı reklamlar göstermek için Chrome'dan ilgilendiğiniz konular hakkında bilgi isteyebilir</translation>
+<translation id="6195163219142236913">Üçüncü taraf çerezleri sınırlı</translation>
 <translation id="6371812158043974664">Chromium'da oturum açtığınızda bu ayar IP adresinizin gizli kalmasına yardımcı olur. Chromium bir sitenin sizi izlediğinden şüpheleniyorsa trafiğinizin bir kısmı gizlilik sunucuları aracılığıyla gönderilebilir. <ph name="LINK_BEGIN" />IP korumasının işleyiş şekli<ph name="LINK_END" /> hakkında daha fazla bilgi edinin.</translation>
+<translation id="6398358690696005758">Google'ın verilerinizi nasıl koruduğu hakkında daha fazla bilgiyi <ph name="BEGIN_LINK1" />Gizlilik Politikamızda<ph name="LINK_END1" /> bulabilirsiniz.</translation>
 <translation id="7040031291654706261"><ph name="BEGIN_LINK" />IP korumasının nasıl çalıştığını<ph name="END_LINK" /> öğrenin</translation>
 <translation id="7475768947023614021">Reklam konuları ayarınızı inceleyin</translation>
 </translationbundle>

@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <memory>
 #include <optional>
 #include <string>
@@ -31,6 +32,7 @@
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
+#include "base/trace_event/trace_id_helper.h"
 #include "base/types/optional_util.h"
 #include "content/public/common/content_features.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
@@ -48,6 +50,7 @@
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "content/services/auction_worklet/public/mojom/real_time_reporting.mojom.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "content/services/auction_worklet/real_time_reporting_bindings.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/register_ad_macro_bindings.h"
@@ -57,6 +60,7 @@
 #include "content/services/auction_worklet/set_priority_signals_override_bindings.h"
 #include "content/services/auction_worklet/shared_storage_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
+#include "content/services/auction_worklet/trusted_signals_kvv2_manager.h"
 #include "content/services/auction_worklet/trusted_signals_request_manager.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "content/services/auction_worklet/worklet_util.h"
@@ -290,6 +294,17 @@ size_t GetNumberOfGroupByOriginContextsToKeep() {
   return 1;
 }
 
+size_t CalculateNumberOfContextsToPreparePerThread(
+    size_t max_expected_required_contexts,
+    size_t threads) {
+  return fmin(
+      blink::features::kFledgeMaxBidderContextsPerThreadInAdvance.Get(),
+      fmax(1, (max_expected_required_contexts *
+               blink::features::kFledgeBidderContextsMultiplier.Get()) /
+                  (threads *
+                   blink::features::kFledgeBidderContextsDivisor.Get())));
+}
+
 // Check if trusted bidding signals, if any, are same-origin or cross-origin.
 BidderWorklet::SignalsOriginRelation ClassifyTrustedSignals(
     const GURL& script_source_url,
@@ -339,6 +354,7 @@ BidderWorklet::BidderWorklet(
         pending_url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
+    TrustedSignalsKVv2Manager* trusted_signals_kvv2_manager,
     const GURL& script_source_url,
     const std::optional<GURL>& wasm_helper_url,
     const std::optional<GURL>& trusted_bidding_signals_url,
@@ -349,6 +365,7 @@ BidderWorklet::BidderWorklet(
     mojom::TrustedSignalsPublicKeyPtr public_key)
     : join_origin_hash_salt_(base::NumberToString(base::RandUint64())),
       url_loader_factory_(std::move(pending_url_loader_factory)),
+      trusted_signals_kvv2_manager_(trusted_signals_kvv2_manager),
       script_source_url_(script_source_url),
       wasm_helper_url_(wasm_helper_url),
       top_window_origin_(top_window_origin),
@@ -480,6 +497,7 @@ bool BidderWorklet::SupportMultiBid() {
 
 void BidderWorklet::BeginGenerateBid(
     mojom::BidderWorkletNonSharedParamsPtr bidder_worklet_non_shared_params,
+    mojom::TrustedSignalsCacheKeyPtr trusted_signals_cache_key,
     mojom::KAnonymityBidMode kanon_mode,
     const url::Origin& interest_group_join_origin,
     const std::optional<GURL>& direct_from_seller_per_buyer_signals,
@@ -537,15 +555,41 @@ void BidderWorklet::BeginGenerateBid(
   generate_bid_task->trace_wait_deps_start = base::TimeTicks::Now();
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_generate_bid_deps",
                                     trace_id);
-  if (trusted_signals_request_manager_) {
-    generate_bid_task->trusted_bidding_signals_request =
-        trusted_signals_request_manager_->RequestBiddingSignals(
-            generate_bid_task->bidder_worklet_non_shared_params->name,
-            trusted_bidding_signals_keys,
-            generate_bid_task->bidder_worklet_non_shared_params
-                ->max_trusted_bidding_signals_url_length,
+  if (trusted_signals_cache_key) {
+    // A non-null `trusted_signals_cache_key` indicates that the
+    // TrustedSignalsCache should be used through the
+    // `trusted_signals_kvv2_manager_` interface.
+    generate_bid_task->trusted_bidding_signals_kvv2_request =
+        trusted_signals_kvv2_manager_->RequestSignals(
+            TrustedSignalsKVv2Manager::SignalsType::kBidding,
+            trusted_signals_cache_key->compression_group_token,
+            trusted_signals_cache_key->partition_id,
             base::BindOnce(&BidderWorklet::OnTrustedBiddingSignalsDownloaded,
                            base::Unretained(this), generate_bid_task));
+    return;
+  } else if (trusted_signals_request_manager_) {
+    if (trusted_signals_request_manager_->HasPublicKey()) {
+      DCHECK(base::FeatureList::IsEnabled(
+          blink::features::kFledgeTrustedSignalsKVv2Support));
+      generate_bid_task->trusted_bidding_signals_request =
+          trusted_signals_request_manager_->RequestKVv2BiddingSignals(
+              generate_bid_task->bidder_worklet_non_shared_params->name,
+              trusted_bidding_signals_keys,
+              generate_bid_task->interest_group_join_origin,
+              generate_bid_task->bidder_worklet_non_shared_params
+                  ->execution_mode,
+              base::BindOnce(&BidderWorklet::OnTrustedBiddingSignalsDownloaded,
+                             base::Unretained(this), generate_bid_task));
+    } else {
+      generate_bid_task->trusted_bidding_signals_request =
+          trusted_signals_request_manager_->RequestBiddingSignals(
+              generate_bid_task->bidder_worklet_non_shared_params->name,
+              trusted_bidding_signals_keys,
+              generate_bid_task->bidder_worklet_non_shared_params
+                  ->max_trusted_bidding_signals_url_length,
+              base::BindOnce(&BidderWorklet::OnTrustedBiddingSignalsDownloaded,
+                             base::Unretained(this), generate_bid_task));
+    }
     return;
   }
 
@@ -1436,11 +1480,29 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
       v8_helper_->CreateTimeLimit(per_buyer_timeout);
 
-  // No recycled context, make a fresh one.
+  // No recycled context, make a fresh one or use a premade one.
   if (!context_recycler) {
-    fresh_context_recycler = CreateContextRecyclerAndRunTopLevelForGenerateBid(
-        trace_id, *total_timeout, should_deep_freeze, script_timed_out,
-        errors_out);
+    bool used_premade_context = false;
+    if (unused_context_recyclers_.empty()) {
+      fresh_context_recycler =
+          CreateContextRecyclerAndRunTopLevelForGenerateBid(
+              trace_id, *total_timeout, should_deep_freeze, script_timed_out,
+              errors_out);
+      ++non_premade_contexts_created;
+    } else {
+      fresh_context_recycler = std::move(unused_context_recyclers_.back());
+      unused_context_recyclers_.pop_back();
+      if (should_deep_freeze) {
+        ContextRecyclerScope scope(*fresh_context_recycler);
+        v8::Local<v8::Context> context = scope.GetContext();
+        if (!DeepFreezeContext(context, errors_out)) {
+          fresh_context_recycler.reset();
+        }
+      }
+      used_premade_context = true;
+    }
+    base::UmaHistogramBoolean("Ads.InterestGroup.Auction.UsedPremadeContext",
+                              used_premade_context);
 
     if (!fresh_context_recycler) {
       return std::make_optional(SingleGenerateBidResult(
@@ -1701,20 +1763,16 @@ BidderWorklet::V8State::RunGenerateBidOnce(
   }
   args.push_back(direct_from_seller_signals);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
-    v8::Local<v8::Value> cross_origin_trusted_bidding_signals_value;
-    if (trusted_signals_relation ==
-        SignalsOriginRelation::kCrossOriginSignals) {
-      cross_origin_trusted_bidding_signals_value =
-          TrustedSignals::Result::WrapCrossOriginSignals(
-              v8_helper_.get(), context, *trusted_bidding_signals_origin_,
-              trusted_signals);
-    } else {
-      cross_origin_trusted_bidding_signals_value = v8::Null(isolate);
-    }
-    args.push_back(cross_origin_trusted_bidding_signals_value);
+  v8::Local<v8::Value> cross_origin_trusted_bidding_signals_value;
+  if (trusted_signals_relation == SignalsOriginRelation::kCrossOriginSignals) {
+    cross_origin_trusted_bidding_signals_value =
+        TrustedSignals::Result::WrapCrossOriginSignals(
+            v8_helper_.get(), context, *trusted_bidding_signals_origin_,
+            trusted_signals);
+  } else {
+    cross_origin_trusted_bidding_signals_value = v8::Null(isolate);
   }
+  args.push_back(cross_origin_trusted_bidding_signals_value);
 
   v8::Local<v8::Value> generate_bid_result;
 
@@ -1807,6 +1865,40 @@ BidderWorklet::V8State::RunGenerateBidOnce(
       script_timed_out, std::move(errors_out)));
 }
 
+void BidderWorklet::V8State::PrepareContextRecycler(uint64_t trace_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
+  // This context is not yet associated with a particular interest group,
+  // so we don't have anywhere to put the errors. If this fails or
+  // times out (using the default time out) we simply ignore it.
+  bool script_timed_out;
+  std::vector<std::string> errors_out;
+  std::unique_ptr<AuctionV8Helper::TimeLimit> total_timeout =
+      v8_helper_->CreateTimeLimit(
+          /*script_timeout=*/std::nullopt);
+  AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper_.get());
+  std::unique_ptr<ContextRecycler> context_recycler =
+      CreateContextRecyclerAndRunTopLevelForGenerateBid(
+          trace_id, *total_timeout, /*should_deep_freeze=*/false,
+          script_timed_out, errors_out);
+  if (context_recycler) {
+    unused_context_recyclers_.push_back(std::move(context_recycler));
+  }
+}
+
+bool BidderWorklet::V8State::DeepFreezeContext(
+    v8::Local<v8::Context>& context,
+    std::vector<std::string>& errors_out) {
+  v8::TryCatch try_catch(v8_helper_->isolate());
+  DeepFreezeAllowAll allow_jsapiobject;
+  context->DeepFreeze(&allow_jsapiobject);
+  if (try_catch.HasCaught()) {
+    errors_out.push_back(
+        AuctionV8Helper::FormatExceptionMessage(context, try_catch.Message()));
+    return false;
+  }
+  return true;
+}
+
 std::unique_ptr<ContextRecycler>
 BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
     uint64_t trace_id,
@@ -1863,15 +1955,8 @@ BidderWorklet::V8State::CreateContextRecyclerAndRunTopLevelForGenerateBid(
   context_recycler->AddInterestGroupLazyFiller();
   context_recycler->AddBiddingBrowserSignalsLazyFiller();
 
-  if (should_deep_freeze) {
-    v8::TryCatch try_catch(v8_helper_->isolate());
-    DeepFreezeAllowAll allow_jsapiobject;
-    context->DeepFreeze(&allow_jsapiobject);
-    if (try_catch.HasCaught()) {
-      errors_out.push_back(AuctionV8Helper::FormatExceptionMessage(
-          context, try_catch.Message()));
-      return nullptr;
-    }
+  if (should_deep_freeze && !DeepFreezeContext(context, errors_out)) {
+    return nullptr;
   }
 
   return context_recycler;
@@ -1896,6 +1981,12 @@ BidderWorklet::V8State::~V8State() {
   base::UmaHistogramCounts100000(
       "Ads.InterestGroup.Auction.BidderWorkletIsolateTotalHeapSizeKilobytes",
       heap_statistics.total_heap_size() / 1024);
+
+  base::UmaHistogramCounts100("Ads.InterestGroup.Auction.UnusedPremadeContexts",
+                              unused_context_recyclers_.size());
+  base::UmaHistogramCounts100(
+      "Ads.InterestGroup.Auction.NonPremadeContextsCreated",
+      non_premade_contexts_created);
 }
 
 void BidderWorklet::V8State::FinishInit(
@@ -2047,6 +2138,7 @@ void BidderWorklet::OnScriptDownloaded(
   }
 
   MaybeRecordCodeWait();
+  MaybePrepareContexts();
   RunReadyTasks();
 }
 
@@ -2090,6 +2182,7 @@ void BidderWorklet::OnWasmDownloaded(
   }
 
   MaybeRecordCodeWait();
+  MaybePrepareContexts();
   RunReadyTasks();
 }
 
@@ -2130,11 +2223,71 @@ void BidderWorklet::RunReadyTasks() {
   }
 }
 
+void BidderWorklet::MaybePrepareContexts() {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kFledgePrepareBidderContextsInAdvance) ||
+      generate_bid_tasks_.empty() || !IsCodeReady() ||
+      base::FeatureList::IsEnabled(
+          blink::features::kFledgeAlwaysReuseBidderContext)) {
+    return;
+  }
+
+  // Estimate the maximum number of contexts we'll need.
+  std::set<url::Origin> joining_origins;
+  size_t compatibility_mode_tasks = 0;
+  bool frozen_mode_tasks = false;
+  for (auto generate_bid_task = generate_bid_tasks_.begin();
+       generate_bid_task != generate_bid_tasks_.end(); ++generate_bid_task) {
+    if (IsReadyToGenerateBid(*generate_bid_task)) {
+      return;
+    }
+    switch (
+        generate_bid_task->bidder_worklet_non_shared_params->execution_mode) {
+      case blink::mojom::InterestGroup::ExecutionMode::kGroupedByOriginMode:
+        joining_origins.insert(generate_bid_task->interest_group_join_origin);
+        break;
+      case blink::mojom::InterestGroup::ExecutionMode::kFrozenContext:
+        frozen_mode_tasks = true;
+        break;
+      case blink::mojom::InterestGroup::ExecutionMode::kCompatibilityMode:
+        ++compatibility_mode_tasks;
+        break;
+    }
+  }
+
+  size_t contexts_to_prepare_per_thread =
+      CalculateNumberOfContextsToPreparePerThread(
+          /*max_expected_required_contexts=*/joining_origins.size() +
+              compatibility_mode_tasks + frozen_mode_tasks,
+          /*threads=*/v8_helpers_.size());
+
+  base::UmaHistogramCounts100(
+      "Ads.InterestGroup.Auction.PremadeContextsScheduledPerThread",
+      contexts_to_prepare_per_thread);
+
+  // It doesn't make sense to attach the trace to an arbitrary
+  // generate bid task, so use a new trace id.
+  uint64_t trace_id = base::trace_event::GetNextGlobalTraceId();
+  for (size_t context_index = 0; context_index < contexts_to_prepare_per_thread;
+       ++context_index) {
+    for (size_t thread_index = 0; thread_index < v8_runners_.size();
+         ++thread_index) {
+      context_preparation_task_tracker_.PostTask(
+          v8_runners_[thread_index].get(), FROM_HERE,
+          base::BindOnce(&BidderWorklet::V8State::PrepareContextRecycler,
+                         base::Unretained(v8_state_[thread_index].get()),
+                         trace_id));
+    }
+  }
+}
+
 void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
     GenerateBidTaskList::iterator task,
     scoped_refptr<TrustedSignals::Result> result,
     std::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+
+  task->trusted_bidding_signals_download_complete_time = base::TimeTicks::Now();
 
   const TrustedSignals::Result::PerGroupData* per_group_data = nullptr;
   if (result) {
@@ -2142,9 +2295,14 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
         result->GetPerGroupData(task->bidder_worklet_non_shared_params->name);
   }
 
-  task->trusted_bidding_signals_result = std::move(result);
   task->trusted_bidding_signals_fetch_failed = !result ? true : false;
+  task->trusted_bidding_signals_result = std::move(result);
   task->trusted_bidding_signals_error_msg = std::move(error_msg);
+
+  // If using TrustedSignalsRequestManager, the request is no longer needed, so
+  // delete it to save resources. If using TrustedSignalsKVv2Manager, however,
+  // that request keeps the reusable cached compression group alive, so keep the
+  // KVv2 request around until finished generating the bid.
   task->trusted_bidding_signals_request.reset();
 
   // Deleting `generate_bid_task` will destroy `generate_bid_client` and thus
@@ -2191,6 +2349,10 @@ void BidderWorklet::SignalsReceivedCallback(
   task->signals_received_callback_invoked = true;
   task->wait_trusted_signals =
       base::TimeTicks::Now() - task->trace_wait_deps_start;
+  base::UmaHistogramTimes(
+      "Ads.InterestGroup.Auction.PostSignalsReceivedResumeGenerateBidTime",
+      base::TimeTicks::Now() -
+          task->trusted_bidding_signals_download_complete_time);
   GenerateBidIfReady(task);
 }
 
@@ -2282,6 +2444,10 @@ void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   if (!IsReadyToGenerateBid(*task)) {
     return;
   }
+
+  // Cancel any preparation tasks we have running. We want our v8 runners to
+  // generate bids from now on.
+  context_preparation_task_tracker_.TryCancelAll();
 
   // If there was a trusted signals request, it should have already completed
   // and been cleaned up before `signals_received_callback_invoked` was set to

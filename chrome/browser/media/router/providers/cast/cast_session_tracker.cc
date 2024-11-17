@@ -109,7 +109,6 @@ void CastSessionTracker::HandleReceiverStatusMessage(
 void CastSessionTracker::HandleMediaStatusMessage(
     const MediaSinkInternal& sink,
     const base::Value::Dict& message) {
-  DVLOG(2) << "Initial MEDIA_STATUS: " << message;
   auto session_it = sessions_by_sink_id_.find(sink.sink().id());
   if (session_it == sessions_by_sink_id_.end()) {
     DVLOG(2) << "Got media status message, but no session for: "
@@ -236,13 +235,14 @@ void CastSessionTracker::OnInternalMessage(
   }
 
   if (message.type == cast_channel::CastMessageType::kReceiverStatus) {
-    DVLOG(2) << "Got receiver status: " << message.message;
     HandleReceiverStatusMessage(*sink, message.message);
   } else if (message.type == cast_channel::CastMessageType::kMediaStatus) {
-    DVLOG(2) << "Got media status: " << message.message;
     HandleMediaStatusMessage(*sink, message.message);
   }
 }
+
+void CastSessionTracker::OnMessageSent(int channel_id,
+                                       const CastMessage& message) {}
 
 // static
 void CastSessionTracker::SetInstanceForTest(

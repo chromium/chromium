@@ -10,6 +10,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/browsing_data/core/browsing_data_utils.h"
+#import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -62,6 +63,10 @@ constexpr CGFloat kSectionFooterHeight = 0;
 
 // TableView's corner radius size.
 constexpr CGFloat kTableViewCornerRadius = 10;
+
+// Horizontal padding for the primary button.
+constexpr CGFloat kPrimaryButtonHorizontalPaddingIpad = 64.0;
+constexpr CGFloat kPrimaryButtonHorizontalPaddingIphone = 24.0;
 
 // Section identifiers in Quick Delete's table view.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -148,6 +153,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 
   [super viewDidLoad];
 
+  [self adjustPrimaryActionButtonHorizontalPadding];
   [self displayGradientView:NO];
 
   // Configure the color of the primary button to red in several states, as the
@@ -166,6 +172,11 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
         constraintEqualToAnchor:self.primaryActionButton.widthAnchor],
     _tableViewHeightConstraint
   ]];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  [IntentDonationHelper donateIntent:IntentType::kClearBrowsingData];
 }
 
 - (void)viewWillLayoutSubviews {
@@ -192,7 +203,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   base::UmaHistogramEnumeration(
       browsing_data::kDeleteBrowsingDataDialogHistogram,
       DeleteBrowsingDataDialogAction::kDeletionSelected);
-  [_mutator triggerDeletion];
+  [_mutator triggerDeletionIfPossible];
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -213,7 +224,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   base::UmaHistogramEnumeration(
       browsing_data::kDeleteBrowsingDataDialogHistogram,
       DeleteBrowsingDataDialogAction::kBrowsingDataSelected);
-  [self.presentationHandler showBrowsingDataPage];
+  [self.presentationHandler showBrowsingDataPageWithTimeRange:_timeRange];
 }
 
 - (UIView*)tableView:(UITableView*)tableView
@@ -386,7 +397,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   // Disable accessibility elements on entire window to avoid Voiceover focusing
   // on new elements during the deletion or the animation.
   self.view.window.accessibilityElementsHidden = YES;
-  [self.presentationHandler blockOtherWindows];
+  [self.presentationHandler blockOtherScenesIfPossible];
 }
 
 - (void)deletionFinished {
@@ -431,6 +442,24 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
 }
 
 #pragma mark - Private
+
+// Adjusts the primary action button horizontal padding. It affects the
+// padding of the content of the bottom sheet.
+- (void)adjustPrimaryActionButtonHorizontalPadding {
+  CGFloat buttonHorizontalPadding =
+      ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad
+           ? kPrimaryButtonHorizontalPaddingIpad
+           : kPrimaryButtonHorizontalPaddingIphone);
+
+  [NSLayoutConstraint activateConstraints:@[
+    [self.primaryActionButton.leadingAnchor
+        constraintEqualToAnchor:(self.view.leadingAnchor)
+                       constant:buttonHorizontalPadding],
+    [self.primaryActionButton.trailingAnchor
+        constraintEqualToAnchor:(self.view.trailingAnchor)
+                       constant:-buttonHorizontalPadding],
+  ]];
+}
 
 // Updates the enabled status of the primary button. The primary button should
 // only be enabled if at least one browsing data type is selected for deletion.

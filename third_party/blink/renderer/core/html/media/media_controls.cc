@@ -38,7 +38,7 @@ AtomicString MediaControls::GetSizingCSSClass(
       return AtomicString(kMediaControlsSizingLargeCSSClass);
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 MediaControls::MediaControls(HTMLMediaElement& media_element)

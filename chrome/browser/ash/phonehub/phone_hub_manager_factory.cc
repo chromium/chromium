@@ -17,8 +17,6 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/ash/secure_channel/secure_channel_client_provider.h"
-#include "chrome/browser/ash/sync/sync_mojo_service_ash.h"
-#include "chrome/browser/ash/sync/sync_mojo_service_factory_ash.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/favicon/history_ui_favicon_request_handler_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -103,14 +101,6 @@ PhoneHubManagerFactory::PhoneHubManagerFactory()
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(HistoryUiFaviconRequestHandlerFactory::GetInstance());
   DependsOn(SyncServiceFactory::GetInstance());
-
-  // We typically also check crosapi::browser_util::IsAshWebBrowserEnabled() in
-  // relation to this feature flag but this relies on UserManager which is not
-  // initialized at this point. Since this is just a service dependency simply
-  // checking the flag itself is fine.
-  if (base::FeatureList::IsEnabled(syncer::kChromeOSSyncedSessionSharing)) {
-    DependsOn(SyncMojoServiceFactoryAsh::GetInstance());
-  }
 }
 
 PhoneHubManagerFactory::~PhoneHubManagerFactory() = default;

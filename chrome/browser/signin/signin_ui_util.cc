@@ -125,26 +125,6 @@ class AvatarButtonUserData : public base::SupportsUserData::Data {
   base::TimeTicks animated_identity_last_shown_;
 };
 
-std::string GetReauthAccessPointHistogramSuffix(
-    signin_metrics::ReauthAccessPoint access_point) {
-  switch (access_point) {
-    case signin_metrics::ReauthAccessPoint::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      return std::string();
-    case signin_metrics::ReauthAccessPoint::kAutofillDropdown:
-      return "ToFillPassword";
-    case signin_metrics::ReauthAccessPoint::kPasswordSaveBubble:
-      return "ToSaveOrUpdatePassword";
-    case signin_metrics::ReauthAccessPoint::kPasswordSettings:
-      return "ToManageInSettings";
-    case signin_metrics::ReauthAccessPoint::kGeneratePasswordDropdown:
-    case signin_metrics::ReauthAccessPoint::kGeneratePasswordContextMenu:
-      return "ToGeneratePassword";
-    case signin_metrics::ReauthAccessPoint::kPasswordSaveLocallyBubble:
-      return "ToSavePasswordLocallyThenMove";
-  }
-}
-
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 SigninUiDelegate* g_signin_ui_delegate_for_testing = nullptr;
@@ -231,7 +211,7 @@ void ShowExtensionSigninPrompt(Profile* profile,
                                bool enable_sync,
                                const std::string& email_hint) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // There is no sign-in flow for guest or system profile.
   if (profile->IsGuestSession() || profile->IsSystemProfile())
@@ -268,7 +248,7 @@ void ShowExtensionSigninPrompt(Profile* profile,
 void ShowSigninPromptFromPromo(Profile* profile,
                                signin_metrics::AccessPoint access_point) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
   CHECK_NE(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN, access_point);
   CHECK(!profile->IsOffTheRecord());
@@ -344,7 +324,7 @@ void SignInFromSingleAccountPromo(Profile* profile,
       ->SetPrimaryAccount(account.account_id, signin::ConsentLevel::kSignin,
                           access_point);
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
@@ -437,7 +417,7 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
 }
 
 std::vector<AccountInfo> GetOrderedAccountsForDisplay(
-    signin::IdentityManager* identity_manager,
+    const signin::IdentityManager* identity_manager,
     bool restrict_to_accounts_eligible_for_sync) {
   // Fetch account ids for accounts that have a token and are in cookie jar.
   std::vector<AccountInfo> accounts_with_tokens =
@@ -461,7 +441,8 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
 
   // Then, add the other accounts in the order of the accounts in the cookie
   // jar.
-  for (auto& account_info : accounts_in_jar.signed_in_accounts) {
+  for (auto& account_info :
+       accounts_in_jar.GetPotentiallyInvalidSignedInAccounts()) {
     DCHECK(!account_info.id.empty());
     if (account_info.id == default_account_id ||
         (restrict_to_accounts_eligible_for_sync &&
@@ -485,7 +466,7 @@ std::vector<AccountInfo> GetOrderedAccountsForDisplay(
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 AccountInfo GetSingleAccountForPromos(
-    signin::IdentityManager* identity_manager) {
+    const signin::IdentityManager* identity_manager) {
   std::vector<AccountInfo> accounts = GetOrderedAccountsForDisplay(
       identity_manager, /*restrict_to_accounts_eligible_for_sync=*/true);
   if (!accounts.empty())
@@ -633,36 +614,6 @@ void RecordProfileMenuClick(Profile* profile) {
   } else if (profile->IsIncognitoProfile()) {
     base::RecordAction(
         base::UserMetricsAction("ProfileMenu_ActionableItemClicked_Incognito"));
-  }
-}
-
-void RecordTransactionalReauthResult(
-    signin_metrics::ReauthAccessPoint access_point,
-    signin::ReauthResult result) {
-  const char kHistogramName[] = "Signin.TransactionalReauthResult";
-  base::UmaHistogramEnumeration(kHistogramName, result);
-
-  std::string access_point_suffix =
-      GetReauthAccessPointHistogramSuffix(access_point);
-  if (!access_point_suffix.empty()) {
-    std::string suffixed_histogram_name =
-        base::StrCat({kHistogramName, ".", access_point_suffix});
-    base::UmaHistogramEnumeration(suffixed_histogram_name, result);
-  }
-}
-
-void RecordTransactionalReauthUserAction(
-    signin_metrics::ReauthAccessPoint access_point,
-    SigninReauthViewController::UserAction user_action) {
-  const char kHistogramName[] = "Signin.TransactionalReauthUserAction";
-  base::UmaHistogramEnumeration(kHistogramName, user_action);
-
-  std::string access_point_suffix =
-      GetReauthAccessPointHistogramSuffix(access_point);
-  if (!access_point_suffix.empty()) {
-    std::string suffixed_histogram_name =
-        base::StrCat({kHistogramName, ".", access_point_suffix});
-    base::UmaHistogramEnumeration(suffixed_histogram_name, user_action);
   }
 }
 

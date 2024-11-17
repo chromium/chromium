@@ -13,6 +13,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/grit/generated_resources.h"
@@ -66,7 +67,7 @@ class NotificationDelegate : public message_center::NotificationDelegate,
 
   // Dismisses currently active notification.
   void Dismiss() {
-    NotificationDisplayService::GetForProfile(profile_)->Close(
+    NotificationDisplayServiceFactory::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT,
         kManagementTransitionNotificationId);
   }
@@ -119,7 +120,7 @@ void ShowManagementTransitionNotification(Profile* profile) {
       notifier_id, message_center::RichNotificationData(),
       new NotificationDelegate(profile), GetNotificationIcon(transition),
       message_center::SystemNotificationWarningLevel::NORMAL);
-  NotificationDisplayService::GetForProfile(profile)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
       NotificationHandler::Type::TRANSIENT, notification,
       /*metadata=*/nullptr);
 }

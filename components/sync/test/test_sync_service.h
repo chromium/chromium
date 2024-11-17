@@ -152,7 +152,7 @@ class TestSyncService : public SyncService {
   bool QueryDetailedSyncStatusForDebugging(SyncStatus* result) const override;
   base::Time GetLastSyncedTimeForDebugging() const override;
   SyncCycleSnapshot GetLastCycleSnapshotForDebugging() const override;
-  base::Value::List GetTypeStatusMapForDebugging() const override;
+  TypeStatusMapForDebugging GetTypeStatusMapForDebugging() const override;
   void GetEntityCountsForDebugging(
       base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
       const override;
@@ -174,6 +174,9 @@ class TestSyncService : public SyncService {
       base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
           callback) override;
   void TriggerLocalDataMigration(DataTypeSet types) override;
+  void TriggerLocalDataMigration(
+      std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>> items)
+      override;
 
   // KeyedService implementation.
   void Shutdown() override;

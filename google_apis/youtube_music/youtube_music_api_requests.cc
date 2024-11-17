@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -20,6 +21,101 @@
 namespace {
 
 constexpr char kContentTypeJson[] = "application/json; charset=utf-8";
+constexpr char kUpdateRequiredMessage[] = "UPDATE_REQUIRED";
+
+// Returns true if a localized error message is expected in the response body
+// for a response with error code `error`.
+bool ErrorMessageExpected(google_apis::ApiErrorCode error) {
+  switch (error) {
+    case google_apis::HTTP_BAD_REQUEST:
+    case google_apis::HTTP_UNAUTHORIZED:
+    case google_apis::HTTP_FORBIDDEN:
+    case google_apis::HTTP_NOT_FOUND:
+    case google_apis::HTTP_CONFLICT:
+    case google_apis::HTTP_GONE:
+    case google_apis::HTTP_LENGTH_REQUIRED:
+    case google_apis::HTTP_PRECONDITION:
+    case google_apis::HTTP_INTERNAL_SERVER_ERROR:
+    case google_apis::HTTP_NOT_IMPLEMENTED:
+    case google_apis::HTTP_BAD_GATEWAY:
+    case google_apis::HTTP_SERVICE_UNAVAILABLE:
+    case google_apis::YOUTUBE_MUSIC_UPDATE_REQUIRED:
+      return true;
+    default:
+      return false;
+  }
+}
+
+template <class T>
+void RunCallbackWithError(T callback, google_apis::ApiErrorCode error) {
+  std::move(callback).Run(base::unexpected(google_apis::youtube_music::ApiError{
+      .error_code = error, .error_message = std::string()}));
+}
+
+template <class T>
+void RunErrorCallback(
+    google_apis::ApiErrorCode error_code,
+    base::OnceCallback<
+        void(base::expected<T, google_apis::youtube_music::ApiError>)> callback,
+    base::OnceClosure on_done,
+    std::string error_message) {
+  google_apis::youtube_music::ApiError error{
+      .error_code = error_code, .error_message = std::move(error_message)};
+  std::move(callback).Run(base::unexpected(std::move(error)));
+  std::move(on_done).Run();
+}
+
+// Attempts to parse `response_body` for the localized error message and uses it
+// to populate the ApiError in `callback`. When complete, runs `finish_request`.
+// Parses the `response_body` on `task_runner`.
+template <class T>
+void ParseErrorAsync(
+    base::SequencedTaskRunner* task_runner,
+    google_apis::ApiErrorCode error,
+    std::string response_body,
+    base::OnceCallback<
+        void(base::expected<T, google_apis::youtube_music::ApiError>)> callback,
+    base::OnceClosure finish_request) {
+  task_runner->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(google_apis::youtube_music::ParseErrorJson,
+                     std::move(response_body)),
+      base::BindOnce(RunErrorCallback<T>, error, std::move(callback),
+                     std::move(finish_request)));
+}
+
+template <class T>
+void HandleError(
+    base::SequencedTaskRunner* task_runner,
+    google_apis::ApiErrorCode error,
+    std::string&& response_body,
+    base::OnceCallback<
+        void(base::expected<T, google_apis::youtube_music::ApiError>)> callback,
+    base::OnceClosure finish_request) {
+  if (ErrorMessageExpected(error)) {
+    ParseErrorAsync(task_runner, error, std::move(response_body),
+                    std::move(callback), std::move(finish_request));
+    return;
+  }
+
+  RunCallbackWithError(std::move(callback), error);
+  std::move(finish_request).Run();
+}
+
+// For expected `code` and `reason` combinations, re-maps the error to
+// the service specific value. Otherwise, returns `code` unchanged.
+google_apis::ApiErrorCode RemapError(google_apis::ApiErrorCode code,
+                                     std::string_view reason) {
+  if (code != google_apis::HTTP_BAD_REQUEST) {
+    return code;
+  }
+
+  if (reason == kUpdateRequiredMessage) {
+    return google_apis::YOUTUBE_MUSIC_UPDATE_REQUIRED;
+  }
+
+  return code;
+}
 
 }  // namespace
 
@@ -46,7 +142,7 @@ GURL GetMusicSectionRequest::GetURL() const {
 ApiErrorCode GetMusicSectionRequest::MapReasonToError(
     ApiErrorCode code,
     const std::string& reason) {
-  return code;
+  return RemapError(code, reason);
 }
 
 bool GetMusicSectionRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
@@ -63,24 +159,25 @@ void GetMusicSectionRequest::ProcessURLFetchResults(
     base::FilePath response_file,
     std::string response_body) {
   ApiErrorCode error = GetErrorCode();
-  switch (error) {
-    case HTTP_SUCCESS:
-      blocking_task_runner()->PostTaskAndReplyWithResult(
-          FROM_HERE,
-          base::BindOnce(&GetMusicSectionRequest::Parse,
-                         std::move(response_body)),
-          base::BindOnce(&GetMusicSectionRequest::OnDataParsed,
-                         weak_ptr_factory_.GetWeakPtr()));
-      break;
-    default:
-      RunCallbackOnPrematureFailure(error);
-      OnProcessURLFetchResultsComplete();
-      break;
+  if (error == HTTP_SUCCESS) {
+    blocking_task_runner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&GetMusicSectionRequest::Parse,
+                       std::move(response_body)),
+        base::BindOnce(&GetMusicSectionRequest::OnDataParsed,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
+
+  base::OnceClosure finish_request =
+      base::BindOnce(&GetMusicSectionRequest::OnProcessURLFetchResultsComplete,
+                     weak_ptr_factory_.GetWeakPtr());
+  HandleError(blocking_task_runner(), error, std::move(response_body),
+              std::move(callback_), std::move(finish_request));
 }
 
 void GetMusicSectionRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
-  std::move(callback_).Run(base::unexpected(error));
+  RunCallbackWithError(std::move(callback_), error);
 }
 
 std::unique_ptr<TopLevelMusicRecommendations> GetMusicSectionRequest::Parse(
@@ -92,7 +189,7 @@ std::unique_ptr<TopLevelMusicRecommendations> GetMusicSectionRequest::Parse(
 void GetMusicSectionRequest::OnDataParsed(
     std::unique_ptr<TopLevelMusicRecommendations> recommendations) {
   if (!recommendations) {
-    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+    RunCallbackWithError(std::move(callback_), PARSE_ERROR);
   } else {
     std::move(callback_).Run(std::move(recommendations));
   }
@@ -121,7 +218,7 @@ GURL GetPlaylistRequest::GetURL() const {
 
 ApiErrorCode GetPlaylistRequest::MapReasonToError(ApiErrorCode code,
                                                   const std::string& reason) {
-  return code;
+  return RemapError(code, reason);
 }
 
 bool GetPlaylistRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
@@ -137,24 +234,24 @@ void GetPlaylistRequest::ProcessURLFetchResults(
     base::FilePath response_file,
     std::string response_body) {
   ApiErrorCode error = GetErrorCode();
-
-  switch (error) {
-    case HTTP_SUCCESS:
-      blocking_task_runner()->PostTaskAndReplyWithResult(
-          FROM_HERE,
-          base::BindOnce(&GetPlaylistRequest::Parse, std::move(response_body)),
-          base::BindOnce(&GetPlaylistRequest::OnDataParsed,
-                         weak_ptr_factory_.GetWeakPtr()));
-      break;
-    default:
-      RunCallbackOnPrematureFailure(error);
-      OnProcessURLFetchResultsComplete();
-      break;
+  if (error == HTTP_SUCCESS) {
+    blocking_task_runner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&GetPlaylistRequest::Parse, std::move(response_body)),
+        base::BindOnce(&GetPlaylistRequest::OnDataParsed,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
+
+  base::OnceClosure finish_request =
+      base::BindOnce(&GetPlaylistRequest::OnProcessURLFetchResultsComplete,
+                     weak_ptr_factory_.GetWeakPtr());
+  HandleError(blocking_task_runner(), error, std::move(response_body),
+              std::move(callback_), std::move(finish_request));
 }
 
 void GetPlaylistRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
-  std::move(callback_).Run(base::unexpected(error));
+  RunCallbackWithError(std::move(callback_), error);
 }
 
 std::unique_ptr<Playlist> GetPlaylistRequest::Parse(const std::string& json) {
@@ -164,7 +261,7 @@ std::unique_ptr<Playlist> GetPlaylistRequest::Parse(const std::string& json) {
 
 void GetPlaylistRequest::OnDataParsed(std::unique_ptr<Playlist> playlist) {
   if (!playlist) {
-    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+    RunCallbackWithError(std::move(callback_), PARSE_ERROR);
   } else {
     std::move(callback_).Run(std::move(playlist));
   }
@@ -192,7 +289,7 @@ GURL PlaybackQueuePrepareRequest::GetURL() const {
 ApiErrorCode PlaybackQueuePrepareRequest::MapReasonToError(
     ApiErrorCode code,
     const std::string& reason) {
-  return code;
+  return RemapError(code, reason);
 }
 
 bool PlaybackQueuePrepareRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
@@ -212,25 +309,26 @@ void PlaybackQueuePrepareRequest::ProcessURLFetchResults(
     base::FilePath response_file,
     std::string response_body) {
   ApiErrorCode error = GetErrorCode();
-  switch (error) {
-    case HTTP_SUCCESS:
-      blocking_task_runner()->PostTaskAndReplyWithResult(
-          FROM_HERE,
-          base::BindOnce(&PlaybackQueuePrepareRequest::Parse,
-                         std::move(response_body)),
-          base::BindOnce(&PlaybackQueuePrepareRequest::OnDataParsed,
-                         weak_ptr_factory_.GetWeakPtr()));
-      break;
-    default:
-      RunCallbackOnPrematureFailure(error);
-      OnProcessURLFetchResultsComplete();
-      break;
+  if (error == HTTP_SUCCESS) {
+    blocking_task_runner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&PlaybackQueuePrepareRequest::Parse,
+                       std::move(response_body)),
+        base::BindOnce(&PlaybackQueuePrepareRequest::OnDataParsed,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
+
+  base::OnceClosure finish_request = base::BindOnce(
+      &PlaybackQueuePrepareRequest::OnProcessURLFetchResultsComplete,
+      weak_ptr_factory_.GetWeakPtr());
+  HandleError(blocking_task_runner(), error, std::move(response_body),
+              std::move(callback_), std::move(finish_request));
 }
 
 void PlaybackQueuePrepareRequest::RunCallbackOnPrematureFailure(
     ApiErrorCode error) {
-  std::move(callback_).Run(base::unexpected(error));
+  RunCallbackWithError(std::move(callback_), error);
 }
 
 std::unique_ptr<Queue> PlaybackQueuePrepareRequest::Parse(
@@ -241,7 +339,7 @@ std::unique_ptr<Queue> PlaybackQueuePrepareRequest::Parse(
 
 void PlaybackQueuePrepareRequest::OnDataParsed(std::unique_ptr<Queue> queue) {
   if (!queue) {
-    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+    RunCallbackWithError(std::move(callback_), PARSE_ERROR);
   } else {
     std::move(callback_).Run(std::move(queue));
   }
@@ -270,7 +368,7 @@ GURL PlaybackQueueNextRequest::GetURL() const {
 ApiErrorCode PlaybackQueueNextRequest::MapReasonToError(
     ApiErrorCode code,
     const std::string& reason) {
-  return code;
+  return RemapError(code, reason);
 }
 
 bool PlaybackQueueNextRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
@@ -289,25 +387,26 @@ void PlaybackQueueNextRequest::ProcessURLFetchResults(
     base::FilePath response_file,
     std::string response_body) {
   ApiErrorCode error = GetErrorCode();
-  switch (error) {
-    case HTTP_SUCCESS:
-      blocking_task_runner()->PostTaskAndReplyWithResult(
-          FROM_HERE,
-          base::BindOnce(&PlaybackQueueNextRequest::Parse,
-                         std::move(response_body)),
-          base::BindOnce(&PlaybackQueueNextRequest::OnDataParsed,
-                         weak_ptr_factory_.GetWeakPtr()));
-      break;
-    default:
-      RunCallbackOnPrematureFailure(error);
-      OnProcessURLFetchResultsComplete();
-      break;
+  if (error == HTTP_SUCCESS) {
+    blocking_task_runner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&PlaybackQueueNextRequest::Parse,
+                       std::move(response_body)),
+        base::BindOnce(&PlaybackQueueNextRequest::OnDataParsed,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
+
+  base::OnceClosure finish_request = base::BindOnce(
+      &PlaybackQueueNextRequest::OnProcessURLFetchResultsComplete,
+      weak_ptr_factory_.GetWeakPtr());
+  HandleError(blocking_task_runner(), error, std::move(response_body),
+              std::move(callback_), std::move(finish_request));
 }
 
 void PlaybackQueueNextRequest::RunCallbackOnPrematureFailure(
     ApiErrorCode error) {
-  std::move(callback_).Run(base::unexpected(error));
+  RunCallbackWithError(std::move(callback_), error);
 }
 
 std::unique_ptr<QueueContainer> PlaybackQueueNextRequest::Parse(
@@ -319,7 +418,7 @@ std::unique_ptr<QueueContainer> PlaybackQueueNextRequest::Parse(
 void PlaybackQueueNextRequest::OnDataParsed(
     std::unique_ptr<QueueContainer> queue_container) {
   if (!queue_container) {
-    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+    RunCallbackWithError(std::move(callback_), PARSE_ERROR);
   } else {
     std::move(callback_).Run(std::move(queue_container));
   }
@@ -332,6 +431,7 @@ ReportPlaybackRequest::ReportPlaybackRequest(
     Callback callback)
     : SignedRequest(sender),
       payload_(std::move(payload)),
+      base_url_("https://youtubemediaconnect.googleapis.com"),
       callback_(std::move(callback)) {
   CHECK(payload_);
   CHECK(!callback_.is_null());
@@ -339,15 +439,19 @@ ReportPlaybackRequest::ReportPlaybackRequest(
 
 ReportPlaybackRequest::~ReportPlaybackRequest() = default;
 
+void ReportPlaybackRequest::SetBaseUrlForTesting(const GURL& base_url) {
+  base_url_ = base_url;
+}
+
 GURL ReportPlaybackRequest::GetURL() const {
   // TODO(b/341324009): Move to an util file or class.
-  return GURL("https://youtubemediaconnect.googleapis.com/v1/reports/playback");
+  return base_url_.Resolve("/v1/reports/playback");
 }
 
 ApiErrorCode ReportPlaybackRequest::MapReasonToError(
     ApiErrorCode code,
     const std::string& reason) {
-  return code;
+  return RemapError(code, reason);
 }
 
 bool ReportPlaybackRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
@@ -366,24 +470,24 @@ void ReportPlaybackRequest::ProcessURLFetchResults(
     base::FilePath response_file,
     std::string response_body) {
   ApiErrorCode error = GetErrorCode();
-  switch (error) {
-    case HTTP_SUCCESS:
-      blocking_task_runner()->PostTaskAndReplyWithResult(
-          FROM_HERE,
-          base::BindOnce(&ReportPlaybackRequest::Parse,
-                         std::move(response_body)),
-          base::BindOnce(&ReportPlaybackRequest::OnDataParsed,
-                         weak_ptr_factory_.GetWeakPtr()));
-      break;
-    default:
-      RunCallbackOnPrematureFailure(error);
-      OnProcessURLFetchResultsComplete();
-      break;
+  if (error == HTTP_SUCCESS) {
+    blocking_task_runner()->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(&ReportPlaybackRequest::Parse, std::move(response_body)),
+        base::BindOnce(&ReportPlaybackRequest::OnDataParsed,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
   }
+
+  base::OnceClosure finish_request =
+      base::BindOnce(&ReportPlaybackRequest::OnProcessURLFetchResultsComplete,
+                     weak_ptr_factory_.GetWeakPtr());
+  HandleError(blocking_task_runner(), error, std::move(response_body),
+              std::move(callback_), std::move(finish_request));
 }
 
 void ReportPlaybackRequest::RunCallbackOnPrematureFailure(ApiErrorCode error) {
-  std::move(callback_).Run(base::unexpected(error));
+  RunCallbackWithError(std::move(callback_), error);
 }
 
 std::unique_ptr<ReportPlaybackResult> ReportPlaybackRequest::Parse(
@@ -395,7 +499,7 @@ std::unique_ptr<ReportPlaybackResult> ReportPlaybackRequest::Parse(
 void ReportPlaybackRequest::OnDataParsed(
     std::unique_ptr<ReportPlaybackResult> report_playback_result) {
   if (!report_playback_result) {
-    std::move(callback_).Run(base::unexpected(PARSE_ERROR));
+    RunCallbackWithError(std::move(callback_), PARSE_ERROR);
   } else {
     std::move(callback_).Run(std::move(report_playback_result));
   }

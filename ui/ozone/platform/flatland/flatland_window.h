@@ -18,6 +18,7 @@
 #include "base/component_export.h"
 #include "base/fuchsia/fidl_event_handler.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/ime/fuchsia/keyboard_client.h"
 #include "ui/events/fuchsia/input_event_sink.h"
 #include "ui/events/fuchsia/pointer_events_handler.h"
@@ -117,9 +118,9 @@ class COMPONENT_EXPORT(OZONE) FlatlandWindow : public PlatformWindow,
   void OnFlatlandError(fuchsia::ui::composition::FlatlandError error);
   void OnViewControllerDisconnected(zx_status_t status);
 
-  FlatlandWindowManager* const manager_;
-  PlatformWindowDelegate* const platform_window_delegate_;
-  ScenicWindowDelegate* const scenic_window_delegate_;
+  const raw_ptr<FlatlandWindowManager> manager_;
+  const raw_ptr<PlatformWindowDelegate> platform_window_delegate_;
+  const raw_ptr<ScenicWindowDelegate> scenic_window_delegate_;
   gfx::AcceleratedWidget const window_id_;
 
   fidl::Client<fuchsia_ui_input3::Keyboard> keyboard_fidl_client_;

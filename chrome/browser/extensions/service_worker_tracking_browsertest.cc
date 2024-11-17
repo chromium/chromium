@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -28,6 +29,7 @@
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "url/gurl.h"
@@ -613,6 +615,114 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStopTrackingBrowserTest,
 
   // Confirm the worker state still does not exist.
   EXPECT_FALSE(worker_state);
+}
+
+using ServiceWorkerRendererTrackingBrowserTest = ExtensionApiTest;
+
+// Tests that when reloading an extension that has a worker to a version of the
+// extension that doesn't have a worker, we don't persist the worker activation
+// token in the renderer across extension loads/unloads.
+// Regression test for crbug.com/372753069.
+// TODO(crbug.com/372753069): Duplicate this test for extension updates.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerRendererTrackingBrowserTest,
+                       UnloadingExtensionClearsRendererActivationToken) {
+  embedded_test_server()->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+  ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Initial version has a worker.
+  static constexpr char kManifestWithWorker[] =
+      R"({
+           "name": "Test extension",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": {"service_worker": "background.js"}
+         })";
+  static constexpr char kWorkerBackground[] =
+      R"(chrome.test.sendMessage('ready');)";
+  // New version no longer has a worker (it adds a content script only for test
+  // waiting purposes).
+  static constexpr char kManifestWithoutWorker[] =
+      R"({
+           "name": "Test extension",
+           "manifest_version": 3,
+           "version": "0.2",
+           "content_scripts": [{
+             "matches": ["<all_urls>"],
+             "js": ["script.js"],
+             "all_frames": true,
+             "run_at": "document_start"
+           }]
+         })";
+  static constexpr char kContentScript[] =
+      R"(chrome.test.sendMessage('script injected');)";
+  TestExtensionDir extension_dir;
+  extension_dir.WriteManifest(kManifestWithWorker);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("background.js"),
+                          kWorkerBackground);
+  extension_dir.WriteFile(FILE_PATH_LITERAL("script.js"), kContentScript);
+
+  // Install initial version of the extension with a worker.
+  const Extension* extension = nullptr;
+  ExtensionTestMessageListener listener("ready");
+  {
+    // This installation will populate a worker activation token in the
+    // extension renderer for the worker.
+    SCOPED_TRACE("installing extension with a worker");
+    extension = LoadExtension(extension_dir.UnpackedPath());
+    ASSERT_TRUE(extension);
+  }
+
+  // By waiting for the worker to be started and receive an event, we indirectly
+  // can be fairly certain that the renderer has loaded the extension and
+  // populated the worker activation token.
+  {
+    SCOPED_TRACE("waiting extension with worker's background script to start");
+    ASSERT_TRUE(listener.WaitUntilSatisfied());
+  }
+
+  const ExtensionId original_extension_id = extension->id();
+
+  // Reload to the new version of the extension without a worker.
+  extension_dir.WriteManifest(kManifestWithoutWorker);
+
+  ExtensionTestMessageListener extension_without_worker_loaded(
+      "script injected");
+
+  // Reload the extension so it no longer has a worker.
+  {
+    SCOPED_TRACE(
+        "reloading extension with a worker to new version without a worker");
+    // Reloading the extension should unload the original version of the
+    // extension which will remove the worker activation token in the renderer.
+    // Then the subsequent load will load the new version of the extension
+    // without a worker activation token. The bug was that the token was never
+    // removed and would remain across this reload. We CHECK() that non-worker
+    // based extension do not have activation tokens which would've crash the
+    // renderer prior to the fix.
+    ReloadExtension(original_extension_id);
+  }
+
+  // To indirectly confirm that the extension without a worker loaded in the
+  // renderer we navigate to a page and wait for the content script to run.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
+  {
+    SCOPED_TRACE("waiting for extension without worker to load");
+    ASSERT_TRUE(extension_without_worker_loaded.WaitUntilSatisfied());
+  }
+
+  // Confirm the extension updated to the new version without a worker.
+  const Extension* new_extension_version =
+      ExtensionRegistry::Get(profile())->GetInstalledExtension(
+          original_extension_id);
+  ASSERT_TRUE(new_extension_version);
+  ASSERT_EQ("0.2", new_extension_version->version().GetString());
+
+  // Double-confirm that after our wait the renderer hasn't crashed.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(web_contents);
+  EXPECT_FALSE(web_contents->IsCrashed());
 }
 
 }  // namespace

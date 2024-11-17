@@ -6,7 +6,6 @@
 #include <string>
 
 #include "ash/api/tasks/fake_tasks_client.h"
-#include "ash/constants/ash_features.h"
 #include "ash/glanceables/classroom/fake_glanceables_classroom_client.h"
 #include "ash/glanceables/common/glanceables_view_id.h"
 #include "ash/glanceables/glanceables_controller.h"
@@ -18,7 +17,6 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
 #include "ash/test/pixel/ash_pixel_test_init_params.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "ui/views/controls/scroll_view.h"
@@ -82,8 +80,6 @@ class GlanceablesTasksPixelTest : public AshTestBase {
   std::unique_ptr<api::FakeTasksClient> fake_glanceables_tasks_client_;
 
  private:
-  base::test::ScopedFeatureList features_{
-      ash::features::kGlanceablesTimeManagementTasksView};
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_override_;
 };
 
@@ -100,14 +96,6 @@ TEST_F(GlanceablesTasksPixelTest, Smoke) {
 
 class GlanceablesTimeManagementPixelTest : public GlanceablesTasksPixelTest {
  public:
-  GlanceablesTimeManagementPixelTest() {
-    features_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kGlanceablesTimeManagementTasksView,
-         features::kGlanceablesTimeManagementClassroomStudentView},
-        /*disabled_features=*/{});
-  }
-
   // AshTestBase:
   void SetUp() override {
     GlanceablesTasksPixelTest::SetUp();
@@ -156,9 +144,7 @@ class GlanceablesTimeManagementPixelTest : public GlanceablesTasksPixelTest {
   }
 
  private:
-  base::test::ScopedFeatureList features_;
   std::unique_ptr<FakeGlanceablesClassroomClient> classroom_client_;
-
   raw_ptr<GlanceableTrayBubbleView> view_ = nullptr;
 };
 

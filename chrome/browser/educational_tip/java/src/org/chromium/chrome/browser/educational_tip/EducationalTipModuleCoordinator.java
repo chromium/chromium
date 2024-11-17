@@ -48,4 +48,9 @@ public class EducationalTipModuleCoordinator implements ModuleProvider {
 
     @Override
     public void onContextMenuCreated() {}
+
+    @Override
+    public void onViewCreated() {
+        mMediator.onViewCreated();
+    }
 }

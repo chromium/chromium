@@ -31,8 +31,8 @@ class PLATFORM_EXPORT FETile final : public FilterEffect {
  public:
   FETile(Filter*);
 
-  WTF::TextStream& ExternalRepresentation(WTF::TextStream&,
-                                          int indention) const override;
+  StringBuilder& ExternalRepresentation(StringBuilder&,
+                                        wtf_size_t indent) const override;
 
  private:
   FilterEffectType GetFilterEffectType() const override {

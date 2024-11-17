@@ -8,11 +8,12 @@
 #include "components/autofill/core/common/unique_ids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using autofill::FormFieldData;
-using base::ASCIIToUTF16;
-using base::UTF8ToUTF16;
-
 namespace autofill {
+namespace {
+
+using ::autofill::FormFieldData;
+using ::base::ASCIIToUTF16;
+using ::base::UTF8ToUTF16;
 
 class FieldDataManagerTest : public testing::Test {
  protected:
@@ -101,4 +102,5 @@ TEST_F(FieldDataManagerTest, FindMatchedValue) {
   EXPECT_FALSE(field_data_manager->FindMatchedValue(u"second_element"));
 }
 
+}  // namespace
 }  // namespace autofill

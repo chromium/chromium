@@ -20,7 +20,6 @@
 #import "ios/web/js_messaging/java_script_feature_manager.h"
 #import "ios/web/js_messaging/java_script_feature_util_impl.h"
 #import "ios/web/js_messaging/web_frames_manager_java_script_feature.h"
-#import "ios/web/navigation/session_restore_java_script_feature.h"
 #import "ios/web/public/browser_state.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/web_state/ui/wk_content_rule_list_provider.h"
@@ -120,8 +119,7 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
     // https://github.com/WebKit/webkit/blob/1233effdb7826a5f03b3cdc0f67d713741e70976/Source/WebKit/UIProcess/API/Cocoa/WKWebViewConfiguration.mm#L307
     [configuration_ setValue:@NO forKey:@"longPressActionsEnabled"];
   } @catch (NSException* exception) {
-    NOTREACHED_IN_MIGRATION()
-        << "Error setting value for longPressActionsEnabled";
+    NOTREACHED() << "Error setting value for longPressActionsEnabled";
   }
 
   // WKWebView's "fradulentWebsiteWarning" is an iOS 13+ feature that is
@@ -130,13 +128,11 @@ void WKWebViewConfigurationProvider::ResetWithWebViewConfiguration(
   // Chrome uses Google-provided Safe Browsing.
   [[configuration_ preferences] setFraudulentWebsiteWarningEnabled:NO];
 
-#if defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_16_0
   if (@available(iOS 16.0, *)) {
     if (GetWebClient()->EnableFullscreenAPI()) {
       [[configuration_ preferences] setElementFullscreenEnabled:YES];
     }
   }
-#endif  // defined(__IPHONE_16_0)
 
   [configuration_ setAllowsInlineMediaPlayback:YES];
   // setJavaScriptCanOpenWindowsAutomatically is required to support popups.
@@ -217,8 +213,6 @@ void WKWebViewConfigurationProvider::UpdateScripts() {
        web_frames_manager_features) {
     feature->ConfigureHandlers(user_content_controller);
   }
-  SessionRestoreJavaScriptFeature::FromBrowserState(browser_state_)
-      ->ConfigureHandlers(user_content_controller);
 }
 
 void WKWebViewConfigurationProvider::Purge() {

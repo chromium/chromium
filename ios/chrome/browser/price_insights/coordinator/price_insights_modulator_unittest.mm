@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/price_insights/coordinator/price_insights_modulator.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
@@ -47,7 +48,7 @@ class PriceInsightsModulatorTest : public PlatformTest {
   ~PriceInsightsModulatorTest() override {}
 
   void SetUp() override {
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
                               ios::BookmarkModelFactory::GetDefaultFactory());
     builder.AddTestingFactory(
@@ -57,9 +58,9 @@ class PriceInsightsModulatorTest : public PlatformTest {
               return commerce::MockShoppingService::Build();
             }));
 
-    TestChromeBrowserState* test_chrome_browser_state =
+    TestProfileIOS* test_profile =
         profile_manager_.AddProfileWithBuilder(std::move(builder));
-    browser_ = std::make_unique<TestBrowser>(test_chrome_browser_state);
+    browser_ = std::make_unique<TestBrowser>(test_profile);
     base_view_controller_ = [[FakeUIViewController alloc] init];
     std::unique_ptr<web::FakeNavigationManager> navigation_manager =
         std::make_unique<web::FakeNavigationManager>();
@@ -74,14 +75,13 @@ class PriceInsightsModulatorTest : public PlatformTest {
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate());
     web_state_ptr_->SetNavigationManager(std::move(navigation_manager));
-    web_state_ptr_->SetBrowserState(test_chrome_browser_state);
+    web_state_ptr_->SetBrowserState(test_profile);
     web_state_ptr_->SetNavigationItemCount(1);
     web_state_ptr_->SetCurrentURL(GURL(kTestUrl));
-    web_state_ptr_->SetBrowserState(test_chrome_browser_state);
+    web_state_ptr_->SetBrowserState(test_profile);
     price_insights_model_ = std::make_unique<PriceInsightsModel>();
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
-        commerce::ShoppingServiceFactory::GetForBrowserState(
-            test_chrome_browser_state));
+        commerce::ShoppingServiceFactory::GetForProfile(test_profile));
     shopping_service_->SetResponseForGetProductInfoForUrl(std::nullopt);
     shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(std::nullopt);
     shopping_service_->SetIsShoppingListEligible(true);
@@ -98,7 +98,7 @@ class PriceInsightsModulatorTest : public PlatformTest {
   TestProfileManagerIOS profile_manager_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
-  web::FakeWebState* web_state_ptr_;
+  raw_ptr<web::FakeWebState> web_state_ptr_;
   std::unique_ptr<PriceInsightsModel> price_insights_model_;
   raw_ptr<commerce::MockShoppingService> shopping_service_;
   std::unique_ptr<ContextualPanelItemConfiguration> returned_configuration_;

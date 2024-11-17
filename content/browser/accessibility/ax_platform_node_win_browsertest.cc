@@ -4,6 +4,7 @@
 
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/win/scoped_variant.h"
 #include "content/browser/accessibility/accessibility_content_browsertest.h"
@@ -83,8 +84,9 @@ class AXPlatformNodeWinBrowserTest : public AccessibilityContentBrowserTest {
     ui::BrowserAccessibilityManager* manager =
         web_contents->GetRootBrowserAccessibilityManager();
     ui::BrowserAccessibility* node = begin;
-    while (node && (node->GetName() != name))
+    while (node && (node->GetName() != name)) {
       node = manager->NextInTreeOrder(node);
+    }
 
     return node;
   }
@@ -232,6 +234,34 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
                                   flows_from_variant.Receive());
   ASSERT_EQ(VT_ARRAY | VT_UNKNOWN, flows_from_variant.type());
   ASSERT_EQ(nullptr, V_ARRAY(flows_from_variant.ptr()));
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
+                       UIAGetPropertyValueWebContentsHistogram) {
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <p>Hello World</p>
+      </html>
+  )HTML"));
+
+  base::HistogramTester histogram_tester;
+  base::win::ScopedVariant property_value;
+  ComPtr<IRawElementProviderSimple> node_provider =
+      QueryInterfaceFromNode<IRawElementProviderSimple>(
+          FindNode(ax::mojom::Role::kStaticText, "Hello World"));
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.WinAPIs2.WebContents.UMA_API_GET_PROPERTY_"
+      "VALUE",
+      0);
+
+  node_provider->GetPropertyValue(UIA_NamePropertyId, property_value.Receive());
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.Performance.WinAPIs2.WebContents.UMA_API_GET_PROPERTY_"
+      "VALUE",
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
@@ -727,8 +757,9 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinBrowserTest,
   // Find a node to hit test. Note that this is a really simple page,
   // so synchronous hit testing will work fine.
   ui::BrowserAccessibility* node = manager->GetBrowserAccessibilityRoot();
-  while (node && node->GetRole() != ax::mojom::Role::kButton)
+  while (node && node->GetRole() != ax::mojom::Role::kButton) {
     node = manager->NextInTreeOrder(node);
+  }
   DCHECK(node);
 
   // Get the screen bounds of the hit target and find the point in the middle.

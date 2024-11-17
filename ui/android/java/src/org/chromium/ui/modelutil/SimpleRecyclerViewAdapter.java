@@ -28,7 +28,7 @@ public class SimpleRecyclerViewAdapter
     /**
      * A simple {@link ViewHolder} that keeps a view, view binder, and an MCP that relate the two.
      */
-    public class ViewHolder extends RecyclerView.ViewHolder {
+    public static class ViewHolder extends RecyclerView.ViewHolder {
         /** The model change processor currently associated with this view and model. */
         private PropertyModelChangeProcessor<PropertyModel, View, PropertyKey> mCurrentMcp;
 

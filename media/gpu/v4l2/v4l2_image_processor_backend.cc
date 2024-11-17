@@ -520,8 +520,10 @@ void V4L2ImageProcessorBackend::ProcessJobs() {
     if (!input_queue_->IsStreaming()) {
       const FrameResource& input_frame =
           *(input_job_queue_.front()->input_frame.get());
-      const gfx::Size input_buffer_size(input_frame.stride(0),
-                                        input_frame.coded_size().height());
+      const gfx::Size input_buffer_size(
+          input_frame.stride(0) /
+              VideoFrame::BytesPerElement(input_frame.format(), 0),
+          input_frame.coded_size().height());
       if (!ReconfigureV4L2Format(input_buffer_size,
                                  V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE)) {
         NotifyError();
@@ -534,8 +536,10 @@ void V4L2ImageProcessorBackend::ProcessJobs() {
         !output_queue_->IsStreaming()) {
       const FrameResource& output_frame =
           *(input_job_queue_.front()->output_frame.get());
-      const gfx::Size output_buffer_size(output_frame.stride(0),
-                                         output_frame.coded_size().height());
+      const gfx::Size output_buffer_size(
+          output_frame.stride(0) /
+              VideoFrame::BytesPerElement(output_frame.format(), 0),
+          output_frame.coded_size().height());
       if (!ReconfigureV4L2Format(output_buffer_size,
                                  V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE)) {
         NotifyError();

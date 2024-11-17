@@ -18,8 +18,7 @@
 #include "third_party/abseil-cpp/absl/time/time.h"
 #include "third_party/nearby/src/internal/platform/implementation/scheduled_executor.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 // Concrete ScheduledExecutor implementation.
 class ScheduledExecutor : public api::ScheduledExecutor {
@@ -83,7 +82,6 @@ class ScheduledExecutor : public api::ScheduledExecutor {
   base::WeakPtrFactory<ScheduledExecutor> cancelable_task_weak_factory_{this};
 };
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome
 
 #endif  // CHROME_SERVICES_SHARING_NEARBY_PLATFORM_SCHEDULED_EXECUTOR_H_

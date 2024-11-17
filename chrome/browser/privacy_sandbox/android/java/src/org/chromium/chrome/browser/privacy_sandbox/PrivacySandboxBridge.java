@@ -94,30 +94,30 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().promptActionOccurred(mProfile, action, surfaceType);
     }
 
-    public boolean isFirstPartySetsDataAccessEnabled() {
-        return PrivacySandboxBridgeJni.get().isFirstPartySetsDataAccessEnabled(mProfile);
+    public boolean isRelatedWebsiteSetsDataAccessEnabled() {
+        return PrivacySandboxBridgeJni.get().isRelatedWebsiteSetsDataAccessEnabled(mProfile);
     }
 
-    public boolean isFirstPartySetsDataAccessManaged() {
-        return PrivacySandboxBridgeJni.get().isFirstPartySetsDataAccessManaged(mProfile);
+    public boolean isRelatedWebsiteSetsDataAccessManaged() {
+        return PrivacySandboxBridgeJni.get().isRelatedWebsiteSetsDataAccessManaged(mProfile);
     }
 
-    public boolean isPartOfManagedFirstPartySet(String origin) {
-        return PrivacySandboxBridgeJni.get().isPartOfManagedFirstPartySet(mProfile, origin);
+    public boolean isPartOfManagedRelatedWebsiteSet(String origin) {
+        return PrivacySandboxBridgeJni.get().isPartOfManagedRelatedWebsiteSet(mProfile, origin);
     }
 
-    public void setFirstPartySetsDataAccessEnabled(boolean enabled) {
-        PrivacySandboxBridgeJni.get().setFirstPartySetsDataAccessEnabled(mProfile, enabled);
+    public void setRelatedWebsiteSetsDataAccessEnabled(boolean enabled) {
+        PrivacySandboxBridgeJni.get().setRelatedWebsiteSetsDataAccessEnabled(mProfile, enabled);
     }
 
     /**
-     * Gets the First Party Sets owner hostname given a FPS member origin.
+     * Gets the Related Website Sets owner hostname given a RWS member origin.
      *
-     * @param memberOrigin FPS member origin.
+     * @param memberOrigin RWS member origin.
      * @return A string containing the owner hostname, null if it doesn't exist.
      */
-    public String getFirstPartySetOwner(String memberOrigin) {
-        return PrivacySandboxBridgeJni.get().getFirstPartySetOwner(mProfile, memberOrigin);
+    public String getRelatedWebsiteSetOwner(String memberOrigin) {
+        return PrivacySandboxBridgeJni.get().getRelatedWebsiteSetOwner(mProfile, memberOrigin);
     }
 
     public void topicsToggleChanged(boolean newValue) {
@@ -132,8 +132,9 @@ public class PrivacySandboxBridge {
         PrivacySandboxBridgeJni.get().recordActivityType(mProfile, activityType);
     }
 
-    public boolean isConsentCountry() {
-        return PrivacySandboxBridgeJni.get().isConsentCountry();
+    public boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard() {
+        return PrivacySandboxBridgeJni.get()
+                .privacySandboxPrivacyGuideShouldShowAdTopicsCard(mProfile);
     }
 
     @NativeMethods
@@ -142,15 +143,15 @@ public class PrivacySandboxBridge {
 
         boolean isRestrictedNoticeEnabled(Profile profile);
 
-        boolean isFirstPartySetsDataAccessEnabled(Profile profile);
+        boolean isRelatedWebsiteSetsDataAccessEnabled(Profile profile);
 
-        boolean isFirstPartySetsDataAccessManaged(Profile profile);
+        boolean isRelatedWebsiteSetsDataAccessManaged(Profile profile);
 
-        boolean isPartOfManagedFirstPartySet(Profile profile, String origin);
+        boolean isPartOfManagedRelatedWebsiteSet(Profile profile, String origin);
 
-        void setFirstPartySetsDataAccessEnabled(Profile profile, boolean enabled);
+        void setRelatedWebsiteSetsDataAccessEnabled(Profile profile, boolean enabled);
 
-        String getFirstPartySetOwner(Profile profile, String memberOrigin);
+        String getRelatedWebsiteSetOwner(Profile profile, String memberOrigin);
 
         @JniType("std::vector")
         List<Topic> getCurrentTopTopics(Profile profile);
@@ -184,6 +185,6 @@ public class PrivacySandboxBridge {
 
         void recordActivityType(Profile profile, int activityType);
 
-        boolean isConsentCountry();
+        boolean privacySandboxPrivacyGuideShouldShowAdTopicsCard(Profile profile);
     }
 }

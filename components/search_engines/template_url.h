@@ -219,10 +219,10 @@ class TemplateURLRef {
     // The URL of the current webpage.
     std::string current_page_url;
 
-    // The lens overlay interaction response to be sent as a query parameter in
+    // The lens overlay suggest inputs to be sent in query parameters in
     // the suggest requests.
-    std::optional<lens::proto::LensOverlayInteractionResponse>
-        lens_overlay_interaction_response;
+    std::optional<lens::proto::LensOverlaySuggestInputs>
+        lens_overlay_suggest_inputs;
 
     // Which omnibox the user used to type the prefix.
     metrics::OmniboxEventProto::PageClassification page_classification =

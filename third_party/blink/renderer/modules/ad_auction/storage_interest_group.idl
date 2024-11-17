@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file
+
+typedef (long long or AuctionAd) PreviousWinElement;
+
+typedef sequence<PreviousWinElement> PreviousWin;
+
+dictionary StorageInterestGroup : AuctionAdInterestGroup {
+  unsigned long long joinCount;
+  unsigned long long bidCount;
+  sequence<PreviousWin> prevWinsMs;
+  USVString joiningOrigin;
+  long long timeSinceGroupJoinedMs;
+  long long lifetimeRemainingMs;
+  long long timeSinceLastUpdateMs;
+  long long timeUntilNextUpdateMs;
+  unsigned long long estimatedSize;
+};

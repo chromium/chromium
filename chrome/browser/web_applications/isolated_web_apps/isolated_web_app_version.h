@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/types/expected.h"
+#include "base/version.h"
 
 namespace web_app {
 
@@ -21,9 +22,9 @@ enum class IwaVersionParseError {
 };
 
 // Parses a string representing the version of an Isolated Web App. Returns the
-// parsed version components on success.
-base::expected<std::vector<uint32_t>, IwaVersionParseError>
-ParseIwaVersionIntoComponents(std::string_view version_string);
+// parsed version on success.
+base::expected<base::Version, IwaVersionParseError> ParseIwaVersion(
+    std::string_view version_string);
 
 std::string IwaVersionParseErrorToString(IwaVersionParseError error);
 

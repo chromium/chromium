@@ -154,7 +154,7 @@ void WorkerInspectorController::DetachSession(DevToolsSession*) {
 }
 
 void WorkerInspectorController::InspectElement(const gfx::Point&) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WorkerInspectorController::DebuggerTaskStarted() {

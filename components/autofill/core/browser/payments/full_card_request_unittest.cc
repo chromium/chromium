@@ -32,7 +32,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "url/origin.h"
 
 namespace autofill {
 namespace payments {
@@ -118,17 +117,9 @@ class FullCardRequestTest : public testing::Test {
       return *this;
     }
 
-    FullCardRequestOptions& with_merchant_domain_for_footprints(
-        url::Origin mdff) {
-      merchant_domain_for_footprints = mdff;
-      return *this;
-    }
-
     CreditCard credit_card;
     payments::PaymentsAutofillClient::UnmaskCardReason unmask_card_reason =
         payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill;
-    url::Origin merchant_domain_for_footprints =
-        url::Origin::Create(GURL("https://example.com/"));
   };
 
   FullCardRequestTest()
@@ -182,7 +173,7 @@ class FullCardRequestTest : public testing::Test {
   void OnDidGetRealPan(PaymentsRpcResult result,
                        const std::string& real_pan,
                        bool is_virtual_card = false) {
-    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+    payments::UnmaskResponseDetails response;
     response.card_type = is_virtual_card ? PaymentsRpcCardType::kVirtualCard
                                          : PaymentsRpcCardType::kServerCard;
     request_->OnDidGetRealPan(result, response.with_real_pan(real_pan));
@@ -192,7 +183,7 @@ class FullCardRequestTest : public testing::Test {
                                const std::string& real_pan,
                                const std::string& dcvv,
                                bool is_virtual_card = false) {
-    payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+    payments::UnmaskResponseDetails response;
     response.card_type = is_virtual_card ? PaymentsRpcCardType::kVirtualCard
                                          : PaymentsRpcCardType::kServerCard;
     request_->OnDidGetRealPan(result,
@@ -202,8 +193,7 @@ class FullCardRequestTest : public testing::Test {
   void MakeGetFullCardRequest(FullCardRequestOptions options) {
     request()->GetFullCard(options.credit_card, options.unmask_card_reason,
                            result_delegate()->AsWeakPtr(),
-                           ui_delegate()->AsWeakPtr(),
-                           options.merchant_domain_for_footprints);
+                           ui_delegate()->AsWeakPtr());
   }
 
  private:
@@ -295,15 +285,7 @@ TEST_F(FullCardRequestTest, GetFullCardPanAndCvcForMaskedServerCardViaFido) {
   request()->GetFullCardViaFIDO(
       CreditCard(CreditCard::RecordType::kMaskedServerCard, "server_id"),
       payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill,
-      result_delegate()->AsWeakPtr(), base::Value::Dict(),
-      url::Origin::Create(GURL("https://example.com")),
-      GURL("https://example.com"));
-  payments::PaymentsNetworkInterface::UnmaskRequestDetails* request_details =
-      request()->GetUnmaskRequestDetailsForTesting();
-  EXPECT_EQ(request_details->last_committed_primary_main_frame_origin->spec(),
-            GURL("https://example.com/").spec());
-  EXPECT_EQ(request_details->merchant_domain_for_footprints->Serialize(),
-            "https://example.com");
+      result_delegate()->AsWeakPtr(), base::Value::Dict());
   OnDidGetRealPan(PaymentsRpcResult::kSuccess, "4111");
 }
 
@@ -382,10 +364,9 @@ TEST_F(FullCardRequestTest,
   request()->GetFullVirtualCardViaCVC(
       card, payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill,
       result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr(),
-      GURL("https://example.com/"), "test_context_token", challenge_option,
-      url::Origin::Create(GURL("https://example.com")));
+      GURL("https://example.com/"), "test_context_token", challenge_option);
   ASSERT_TRUE(request()->GetShouldUnmaskCardForTesting());
-  payments::PaymentsNetworkInterface::UnmaskRequestDetails* request_details =
+  payments::UnmaskRequestDetails* request_details =
       request()->GetUnmaskRequestDetailsForTesting();
   EXPECT_EQ(request_details->selected_challenge_option->type,
             CardUnmaskChallengeOptionType::kCvc);
@@ -394,8 +375,6 @@ TEST_F(FullCardRequestTest,
   EXPECT_EQ(request_details->context_token, "test_context_token");
   EXPECT_EQ(request_details->last_committed_primary_main_frame_origin->spec(),
             GURL("https://example.com/").spec());
-  EXPECT_EQ(request_details->merchant_domain_for_footprints->Serialize(),
-            "https://example.com");
 
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";
@@ -403,33 +382,13 @@ TEST_F(FullCardRequestTest,
   details.exp_year = base::UTF8ToUTF16(test::NextYear());
   details.enable_fido_auth = false;
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails response;
+  payments::UnmaskResponseDetails response;
   response.real_pan = "4111";
   response.dcvv = "123";
   response.expiration_month = "12";
   response.expiration_year = test::NextYear();
   response.card_type = PaymentsRpcCardType::kVirtualCard;
   request()->OnDidGetRealPan(PaymentsRpcResult::kSuccess, response);
-}
-
-TEST_F(FullCardRequestTest,
-       DoesNotIncludeMerchantDomainForFootprintsWhenOffTheRecord) {
-  autofill_client()->set_is_off_the_record(true);
-
-  MakeGetFullCardRequest(
-      FullCardRequestOptions()
-          .with_credit_card(CreditCard(
-              CreditCard::RecordType::kMaskedServerCard, "server_id"))
-          .with_merchant_domain_for_footprints(
-              url::Origin::Create(GURL("http://example.com"))));
-  payments::PaymentsNetworkInterface::UnmaskRequestDetails* request_details =
-      request()->GetUnmaskRequestDetailsForTesting();
-  ASSERT_EQ(request_details->merchant_domain_for_footprints, std::nullopt);
-
-  CardUnmaskDelegate::UserProvidedUnmaskDetails details;
-  details.cvc = u"123";
-  card_unmask_delegate()->OnUnmaskPromptAccepted(details);
-  OnDidGetRealPan(PaymentsRpcResult::kSuccess, "4111");
 }
 
 // Only one request at a time should be allowed.
@@ -535,8 +494,7 @@ TEST_F(FullCardRequestTest, VcnRetrievalTemporaryFailure) {
       result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr(),
       GURL("https://example.com/"), "test_context_token",
       test::GetCardUnmaskChallengeOptions(
-          {CardUnmaskChallengeOptionType::kCvc})[0],
-      url::Origin::Create(GURL("https://example.com")));
+          {CardUnmaskChallengeOptionType::kCvc})[0]);
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
@@ -565,8 +523,7 @@ TEST_F(FullCardRequestTest, VcnRetrievalPermanentFailure) {
       result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr(),
       GURL("https://example.com/"), "test_context_token",
       test::GetCardUnmaskChallengeOptions(
-          {CardUnmaskChallengeOptionType::kCvc})[0],
-      url::Origin::Create(GURL("https://example.com")));
+          {CardUnmaskChallengeOptionType::kCvc})[0]);
   CardUnmaskDelegate::UserProvidedUnmaskDetails details;
   details.cvc = u"123";
   card_unmask_delegate()->OnUnmaskPromptAccepted(details);
@@ -685,12 +642,11 @@ TEST_F(FullCardRequestTest, VirtualCardTryAgainFailure) {
       test::GetVirtualCard(),
       payments::PaymentsAutofillClient::UnmaskCardReason::kAutofill,
       result_delegate()->AsWeakPtr(), ui_delegate()->AsWeakPtr(),
-      GURL("https://example.com/"), "test_context_token", challenge_option,
-      url::Origin::Create(GURL("https://example.com")));
+      GURL("https://example.com/"), "test_context_token", challenge_option);
   CardUnmaskDelegate::UserProvidedUnmaskDetails user_provided_details;
   user_provided_details.cvc = u"321";
   card_unmask_delegate()->OnUnmaskPromptAccepted(user_provided_details);
-  PaymentsNetworkInterface::UnmaskResponseDetails response_details;
+  UnmaskResponseDetails response_details;
   response_details.card_type = PaymentsRpcCardType::kVirtualCard;
   response_details.context_token = "test_context_token";
   request()->OnDidGetRealPan(PaymentsRpcResult::kTryAgainFailure,
@@ -709,10 +665,6 @@ TEST_F(FullCardRequestTest, VirtualCardTryAgainFailure) {
                 ->GetUnmaskRequestDetailsForTesting()
                 ->last_committed_primary_main_frame_origin->spec(),
             "https://example.com/");
-  EXPECT_EQ(request()
-                ->GetUnmaskRequestDetailsForTesting()
-                ->merchant_domain_for_footprints->Serialize(),
-            "https://example.com");
   histogram_tester.ExpectUniqueSample(
       "Autofill.CvcAuth.VirtualCard.RetryableError",
       autofill_metrics::CvcAuthEvent::kTemporaryErrorCvcMismatch, 1);

@@ -22,6 +22,7 @@ public class AutofillSuggestion extends DropdownItemBase {
     @Nullable private final String mSecondaryLabel;
     private final String mSublabel;
     @Nullable private final String mSecondarySublabel;
+    @Nullable private final String mLabelContentDescription;
     @Nullable private final String mItemTag;
     private final int mIconId;
     private final boolean mIsIconAtStart;
@@ -31,8 +32,8 @@ public class AutofillSuggestion extends DropdownItemBase {
     private final boolean mIsBoldLabel;
     private final boolean mApplyDeactivatedStyle;
     private final boolean mShouldDisplayTermsAvailable;
-    @Nullable private final String mFeatureForIPH;
-    private final String mIPHDescriptionText;
+    @Nullable private final String mFeatureForIph;
+    private final String mIphDescriptionText;
     @Nullable private final GURL mCustomIconUrl;
     @Nullable private final Drawable mIconDrawable;
 
@@ -55,7 +56,7 @@ public class AutofillSuggestion extends DropdownItemBase {
      * @param isBoldLabel Whether the label is displayed in {@code Typeface.BOLD}.
      * @param applyDeactivatedStyle Whether to apply deactivated style to the suggestion.
      * @param shouldDisplayTermsAvailable Whether the terms message is displayed.
-     * @param featureForIPH The IPH feature for the autofill suggestion. If present, it'll be
+     * @param featureForIph The IPH feature for the autofill suggestion. If present, it'll be
      *     attempted to be shown in the keyboard accessory.
      * @param customIconUrl The {@link GURL} for the custom icon, if any.
      * @param iconDrawable The {@link Drawable} for an icon, if any.
@@ -66,6 +67,7 @@ public class AutofillSuggestion extends DropdownItemBase {
             @Nullable String secondaryLabel,
             String sublabel,
             @Nullable String secondarySublabel,
+            @Nullable String labelContentDescription,
             @Nullable String itemTag,
             int iconId,
             boolean isIconAtStart,
@@ -75,7 +77,7 @@ public class AutofillSuggestion extends DropdownItemBase {
             boolean isBoldLabel,
             boolean applyDeactivatedStyle,
             boolean shouldDisplayTermsAvailable,
-            @Nullable String featureForIPH,
+            @Nullable String featureForIph,
             String iphDescriptionText,
             @Nullable GURL customIconUrl,
             @Nullable Drawable iconDrawable) {
@@ -83,6 +85,7 @@ public class AutofillSuggestion extends DropdownItemBase {
         mSecondaryLabel = secondaryLabel;
         mSublabel = sublabel;
         mSecondarySublabel = secondarySublabel;
+        mLabelContentDescription = labelContentDescription;
         mItemTag = itemTag;
         mIconId = iconId;
         mIsIconAtStart = isIconAtStart;
@@ -92,8 +95,8 @@ public class AutofillSuggestion extends DropdownItemBase {
         mIsBoldLabel = isBoldLabel;
         mApplyDeactivatedStyle = applyDeactivatedStyle;
         mShouldDisplayTermsAvailable = shouldDisplayTermsAvailable;
-        mFeatureForIPH = featureForIPH;
-        mIPHDescriptionText = iphDescriptionText;
+        mFeatureForIph = featureForIph;
+        mIphDescriptionText = iphDescriptionText;
         mCustomIconUrl = customIconUrl;
         mIconDrawable = iconDrawable;
     }
@@ -169,6 +172,11 @@ public class AutofillSuggestion extends DropdownItemBase {
         return mIconDrawable;
     }
 
+    @Nullable
+    public String getLabelContentDescription() {
+        return mLabelContentDescription;
+    }
+
     public int getSuggestionType() {
         return mSuggestionType;
     }
@@ -191,12 +199,12 @@ public class AutofillSuggestion extends DropdownItemBase {
     }
 
     @Nullable
-    public String getFeatureForIPH() {
-        return mFeatureForIPH;
+    public String getFeatureForIph() {
+        return mFeatureForIph;
     }
 
-    public String getIPHDescriptionText() {
-        return mIPHDescriptionText;
+    public String getIphDescriptionText() {
+        return mIphDescriptionText;
     }
 
     @Override
@@ -212,6 +220,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && Objects.equals(this.mSecondaryLabel, other.mSecondaryLabel)
                 && this.mSublabel.equals(other.mSublabel)
                 && Objects.equals(this.mSecondarySublabel, other.mSecondarySublabel)
+                && Objects.equals(this.mLabelContentDescription, other.mLabelContentDescription)
                 && Objects.equals(this.mItemTag, other.mItemTag)
                 && this.mIconId == other.mIconId
                 && this.mIsIconAtStart == other.mIsIconAtStart
@@ -221,8 +230,8 @@ public class AutofillSuggestion extends DropdownItemBase {
                 && this.mIsBoldLabel == other.mIsBoldLabel
                 && this.mApplyDeactivatedStyle == other.mApplyDeactivatedStyle
                 && this.mShouldDisplayTermsAvailable == other.mShouldDisplayTermsAvailable
-                && Objects.equals(this.mFeatureForIPH, other.mFeatureForIPH)
-                && this.mIPHDescriptionText.equals(other.mIPHDescriptionText)
+                && Objects.equals(this.mFeatureForIph, other.mFeatureForIph)
+                && this.mIphDescriptionText.equals(other.mIphDescriptionText)
                 && Objects.equals(this.mCustomIconUrl, other.mCustomIconUrl)
                 && areIconsEqual(this.mIconDrawable, other.mIconDrawable);
     }
@@ -233,6 +242,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                 .setSecondaryLabel(mSecondaryLabel)
                 .setSubLabel(mSublabel)
                 .setSecondarySubLabel(mSecondarySublabel)
+                .setLabelContentDescription(mLabelContentDescription)
                 .setItemTag(mItemTag)
                 .setIconId(mIconId)
                 .setIsIconAtStart(mIsIconAtStart)
@@ -242,8 +252,8 @@ public class AutofillSuggestion extends DropdownItemBase {
                 .setIsBoldLabel(mIsBoldLabel)
                 .setApplyDeactivatedStyle(mApplyDeactivatedStyle)
                 .setShouldDisplayTermsAvailable(mShouldDisplayTermsAvailable)
-                .setFeatureForIPH(mFeatureForIPH)
-                .setIPHDescriptionText(mIPHDescriptionText)
+                .setFeatureForIph(mFeatureForIph)
+                .setIphDescriptionText(mIphDescriptionText)
                 .setCustomIconUrl(mCustomIconUrl)
                 .setIconDrawable(mIconDrawable);
     }
@@ -259,13 +269,14 @@ public class AutofillSuggestion extends DropdownItemBase {
         private boolean mIsMultiLineLabel;
         private boolean mApplyDeactivatedStyle;
         private boolean mShouldDisplayTermsAvailable;
-        private String mFeatureForIPH;
-        private String mIPHDescriptionText;
+        private String mFeatureForIph;
+        private String mIphDescriptionText;
         private String mItemTag;
         private String mLabel;
         private String mSecondaryLabel;
         private String mSubLabel;
         private String mSecondarySubLabel;
+        private String mLabelContentDescription;
         private int mSuggestionType;
 
         public Builder setIconId(int iconId) {
@@ -313,13 +324,13 @@ public class AutofillSuggestion extends DropdownItemBase {
             return this;
         }
 
-        public Builder setFeatureForIPH(String featureForIPH) {
-            this.mFeatureForIPH = featureForIPH;
+        public Builder setFeatureForIph(String featureForIph) {
+            this.mFeatureForIph = featureForIph;
             return this;
         }
 
-        public Builder setIPHDescriptionText(String iphDescriptionText) {
-            this.mIPHDescriptionText = iphDescriptionText;
+        public Builder setIphDescriptionText(String iphDescriptionText) {
+            this.mIphDescriptionText = iphDescriptionText;
             return this;
         }
 
@@ -348,6 +359,11 @@ public class AutofillSuggestion extends DropdownItemBase {
             return this;
         }
 
+        public Builder setLabelContentDescription(String labelContentDescription) {
+            this.mLabelContentDescription = labelContentDescription;
+            return this;
+        }
+
         public Builder setSuggestionType(int popupItemId) {
             this.mSuggestionType = popupItemId;
             return this;
@@ -363,6 +379,7 @@ public class AutofillSuggestion extends DropdownItemBase {
                     mSecondaryLabel,
                     mSubLabel,
                     mSecondarySubLabel,
+                    mLabelContentDescription,
                     mItemTag,
                     mIconId,
                     mIsIconAtStart,
@@ -372,8 +389,8 @@ public class AutofillSuggestion extends DropdownItemBase {
                     mIsBoldLabel,
                     mApplyDeactivatedStyle,
                     mShouldDisplayTermsAvailable,
-                    mFeatureForIPH,
-                    mIPHDescriptionText,
+                    mFeatureForIph,
+                    mIphDescriptionText,
                     mCustomIconUrl,
                     mIconDrawable);
         }

@@ -28,9 +28,11 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/ranges/algorithm.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/values.h"
@@ -98,7 +100,6 @@
 #include "chromeos/ash/components/osauth/public/auth_hub.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
@@ -271,15 +272,13 @@ std::optional<EncryptionMigrationMode> GetEncryptionMigrationMode(
 AccountId GetPublicSessionAutoLoginAccountId(
     const std::vector<policy::DeviceLocalAccount>& device_local_accounts,
     const std::string& auto_login_account_id) {
-  for (std::vector<policy::DeviceLocalAccount>::const_iterator it =
-           device_local_accounts.begin();
-       it != device_local_accounts.end(); ++it) {
-    if (it->account_id == auto_login_account_id) {
-      VLOG(2) << "PublicSession autologin found: " << it->user_id;
-      return AccountId::FromUserEmail(it->user_id);
-    }
-  }
-  return EmptyAccountId();
+  const auto& it = base::ranges::find_if(
+      device_local_accounts, [&auto_login_account_id](const auto& account) {
+        return account.account_id == auto_login_account_id;
+      });
+  return it == device_local_accounts.end()
+             ? EmptyAccountId()
+             : AccountId::FromUserEmail(it->user_id);
 }
 
 int CountRegularUsers(const user_manager::UserList& users) {
@@ -775,6 +774,10 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
                        user_context.GetAccountId(), true));
   }
 
+  if (user_context.GetUserType() == user_manager::UserType::kPublicAccount) {
+    SYSLOG(INFO) << "MGS: Finished login, starting session to load the profile";
+  }
+
   UserSessionManager::StartSessionType start_session_type =
       UserAddingScreen::Get()->IsRunning()
           ? UserSessionManager::StartSessionType::kSecondary
@@ -817,8 +820,8 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 void ExistingUserController::ShowAutoLaunchManagedGuestSessionNotification() {
   DCHECK(ash::InstallAttributes::Get()->IsEnterpriseManaged());
   message_center::RichNotificationData data;
-  data.buttons.push_back(message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_AUTO_LAUNCH_NOTIFICATION_BUTTON)));
+  data.buttons.emplace_back(
+      l10n_util::GetStringUTF16(IDS_AUTO_LAUNCH_NOTIFICATION_BUTTON));
   const std::u16string title =
       l10n_util::GetStringUTF16(IDS_AUTO_LAUNCH_NOTIFICATION_TITLE);
   policy::BrowserPolicyConnectorAsh* connector =
@@ -873,6 +876,10 @@ void ExistingUserController::OnProfilePrepared(Profile* profile,
     if (manager) {
       known_user.SetAccountManager(user_context.GetAccountId(), *manager);
     }
+  }
+
+  if (user_context.GetUserType() == user_manager::UserType::kPublicAccount) {
+    SYSLOG(INFO) << "MGS: Session started, the profile is ready";
   }
 
   // Inform `auth_status_consumers_` about successful login.
@@ -1026,7 +1033,8 @@ void ExistingUserController::DeviceSettingsChanged() {
     // Signed settings or user list changed. Notify views and update them.
     const user_manager::UserList& users =
         UserAddingScreen::Get()->IsRunning()
-            ? user_manager::UserManager::Get()->GetUsersAllowedForMultiProfile()
+            ? user_manager::UserManager::Get()
+                  ->GetUsersAllowedForMultiUserSignIn()
             : user_manager::UserManager::Get()->GetUsers();
 
     UpdateLoginDisplay(users);
@@ -1090,7 +1098,8 @@ void ExistingUserController::LoginAsGuest() {
 
 void ExistingUserController::LoginAsPublicSession(
     const UserContext& user_context) {
-  VLOG(2) << "LoginAsPublicSession";
+  SYSLOG(INFO) << "MGS: Starting login process for account ID "
+               << user_context.GetAccountId();
   PerformPreLoginActions(user_context);
 
   // If there is no public account with the given user ID, logging in is not
@@ -1098,8 +1107,8 @@ void ExistingUserController::LoginAsPublicSession(
   const user_manager::User* user =
       user_manager::UserManager::Get()->FindUser(user_context.GetAccountId());
   if (!user || user->GetType() != user_manager::UserType::kPublicAccount) {
-    VLOG(2) << "Public session user not found";
-    PerformLoginFinishedActions(true /* start auto login timer */);
+    SYSLOG(ERROR) << "MGS: User not found for MGS account ID, cannot log in";
+    PerformLoginFinishedActions(/*start_auto_login_timer=*/true);
     return;
   }
 
@@ -1113,7 +1122,7 @@ void ExistingUserController::LoginAsPublicSession(
   const auto& user_id = user_context.GetAccountId().GetUserEmail();
   DCHECK(policy_service);
   if (!policy_service->IsPolicyAvailableForUser(user_id)) {
-    VLOG(2) << "Policies are not yet available for public session";
+    SYSLOG(INFO) << "MGS: Policies are not available yet, will wait";
     policy_waiter_ = std::make_unique<DeviceLocalAccountPolicyWaiter>(
         policy_service,
         base::BindOnce(
@@ -1129,7 +1138,7 @@ void ExistingUserController::LoginAsPublicSession(
 
 void ExistingUserController::LoginAsPublicSessionWhenPolicyAvailable(
     const UserContext& user_context) {
-  VLOG(2) << __func__;
+  SYSLOG(INFO) << "MGS: Policies are available, proceeding login";
   policy_waiter_.reset();
 
   UserContext new_user_context = user_context;
@@ -1164,7 +1173,7 @@ void ExistingUserController::LoginAsPublicSessionWhenPolicyAvailable(
     // When `locale` is set, a suitable keyboard layout should be chosen. In
     // most cases, this will already be the case because the UI shows a list of
     // keyboard layouts suitable for the `locale` and ensures that one of them
-    // us selected. However, it is still possible that `locale` is set but no
+    // is selected. However, it is still possible that `locale` is set but no
     // keyboard layout was chosen:
     // * The list of keyboard layouts is updated asynchronously. If the user
     //   enters the public session before the list of keyboard layouts for the
@@ -1176,7 +1185,8 @@ void ExistingUserController::LoginAsPublicSessionWhenPolicyAvailable(
     // The list of suitable keyboard layouts is constructed asynchronously. Once
     // it has been retrieved, `SetPublicSessionKeyboardLayoutAndLogin` will
     // select the first layout from the list and continue login.
-    VLOG(2) << "Requesting keyboard layouts for public session";
+    SYSLOG(INFO) << "MGS: Requesting keyboard layouts for locale '" << locale
+                 << "'";
     GetKeyboardLayoutsForLocale(
         base::BindOnce(
             &ExistingUserController::SetPublicSessionKeyboardLayoutAndLogin,
@@ -1205,13 +1215,21 @@ void ExistingUserController::ConfigureAutoLogin() {
 
   public_session_auto_login_account_id_ = GetPublicSessionAutoLoginAccountId(
       device_local_accounts, auto_login_account_id);
+  if (!auto_login_account_id.empty() &&
+      !public_session_auto_login_account_id_.is_valid()) {
+    SYSLOG(ERROR) << "MGS: Found an auto login account ID, but no corresponding"
+                     " device local account '"
+                  << auto_login_account_id << "'";
+  }
 
   const user_manager::User* public_session_user =
       user_manager::UserManager::Get()->FindUser(
           public_session_auto_login_account_id_);
-  if (!public_session_user || public_session_user->GetType() !=
-                                  user_manager::UserType::kPublicAccount) {
-    VLOG(2) << "PublicSession autologin user not found";
+  if (public_session_auto_login_account_id_.is_valid() &&
+      (!public_session_user || public_session_user->GetType() !=
+                                   user_manager::UserType::kPublicAccount)) {
+    SYSLOG(ERROR) << "MGS: No valid user found for auto login account "
+                  << public_session_auto_login_account_id_;
     public_session_auto_login_account_id_ = EmptyAccountId();
   }
 
@@ -1226,6 +1244,9 @@ void ExistingUserController::ConfigureAutoLogin() {
     StopAutoLoginTimer();
     GetLoginDisplayHost()->StartWizard(UpdateRequiredView::kScreenId);
   } else if (public_session_auto_login_account_id_.is_valid()) {
+    SYSLOG(INFO) << "MGS: Setting up auto login timer with delay "
+                 << auto_login_delay_ << "ms for "
+                 << public_session_auto_login_account_id_;
     StartAutoLoginTimer();
   } else {
     StopAutoLoginTimer();
@@ -1242,7 +1263,7 @@ void ExistingUserController::OnUserActivity(const ui::Event* event) {
 
 void ExistingUserController::OnPublicSessionAutoLoginTimerFire() {
   CHECK(public_session_auto_login_account_id_.is_valid());
-  VLOG(2) << "Public session autologin fired";
+  SYSLOG(INFO) << "MGS: Starting auto login";
   SigninSpecifics signin_specifics;
   signin_specifics.is_auto_login = true;
   Login(UserContext(user_manager::UserType::kPublicAccount,
@@ -1331,6 +1352,7 @@ void ExistingUserController::SetPublicSessionKeyboardLayoutAndLogin(
     }
   }
   DCHECK(!keyboard_layout.empty());
+  SYSLOG(INFO) << "MGS: Setting keyboard layout '" << keyboard_layout << "'";
   new_user_context.SetPublicSessionInputMethod(keyboard_layout);
 
   LoginAsPublicSessionInternal(new_user_context);
@@ -1338,9 +1360,8 @@ void ExistingUserController::SetPublicSessionKeyboardLayoutAndLogin(
 
 void ExistingUserController::LoginAsPublicSessionInternal(
     const UserContext& user_context) {
+  SYSLOG(INFO) << "MGS: Performing login for account";
   // Only one instance of LoginPerformer should exist at a time.
-  VLOG(2) << "LoginAsPublicSessionInternal for user: "
-          << user_context.GetAccountId();
   login_performer_.reset(nullptr);
   login_performer_ =
       std::make_unique<ChromeLoginPerformer>(this, AuthEventsRecorder::Get());
@@ -1456,17 +1477,20 @@ void ExistingUserController::ContinueLoginIfDeviceNotDisabled(
 }
 
 void ExistingUserController::DoCompleteLogin(
-    const UserContext& user_context_wo_device_id) {
-  UserContext user_context = user_context_wo_device_id;
+    const UserContext& login_user_context) {
+  UserContext user_context = login_user_context;
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  std::string device_id = known_user.GetDeviceId(user_context.GetAccountId());
-  if (device_id.empty()) {
-    const bool is_ephemeral =
-        user_manager::UserManager::Get()->IsEphemeralAccountId(
-            user_context.GetAccountId());
-    device_id = GenerateSigninScopedDeviceId(is_ephemeral);
+
+  if (user_context.GetDeviceId().empty()) {
+    std::string device_id = known_user.GetDeviceId(user_context.GetAccountId());
+    if (device_id.empty()) {
+      const bool is_ephemeral =
+          user_manager::UserManager::Get()->IsEphemeralAccountId(
+              user_context.GetAccountId());
+      device_id = GenerateSigninScopedDeviceId(is_ephemeral);
+    }
+    user_context.SetDeviceId(device_id);
   }
-  user_context.SetDeviceId(device_id);
 
   const std::string& gaps_cookie = user_context.GetGAPSCookie();
   if (!gaps_cookie.empty()) {
@@ -1525,6 +1549,11 @@ void ExistingUserController::DoLogin(const UserContext& user_context,
 
   if (user_context.GetUserType() == user_manager::UserType::kWebKioskApp) {
     LoginAsKioskApp(KioskAppId::ForWebApp(user_context.GetAccountId()));
+    return;
+  }
+
+  if (user_context.GetUserType() == user_manager::UserType::kKioskIWA) {
+    LoginAsKioskApp(KioskAppId::ForIsolatedWebApp(user_context.GetAccountId()));
     return;
   }
 

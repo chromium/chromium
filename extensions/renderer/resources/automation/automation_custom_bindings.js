@@ -119,7 +119,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   function removeTreeChangeObserver(observer) {
     for (const id in automationUtil.treeChangeObserverMap) {
-      if (automationUtil.treeChangeObserverMap[id] == observer) {
+      if (automationUtil.treeChangeObserverMap[id] === observer) {
         RemoveTreeChangeObserver(id);
         delete automationUtil.treeChangeObserverMap[id];
         return;
@@ -246,8 +246,8 @@ automationInternal.onAllAutomationEventListenersRemoved.addListener(() => {
 automationInternal.onAccessibilityEvent.addListener(function(eventParams) {
   const id = eventParams.treeID;
   const targetTree = AutomationRootNode.getOrCreate(id);
-  if (eventParams.eventType == 'mediaStartedPlaying' ||
-      eventParams.eventType == 'mediaStoppedPlaying') {
+  if (eventParams.eventType === 'mediaStartedPlaying' ||
+      eventParams.eventType === 'mediaStoppedPlaying') {
     // These events are global to the tree.
     eventParams.targetID = privates(targetTree).impl.id;
   }
@@ -263,7 +263,7 @@ automationInternal.onAccessibilityEvent.addListener(function(eventParams) {
   // attribute or child nodes. If we've got that, wait for the full tree before
   // calling the callback.
   // TODO(dmazzoni): Don't send down placeholder (crbug.com/397553)
-  if (id != desktopId && !targetTree.url && targetTree.children.length == 0) {
+  if (id !== desktopId && !targetTree.url && targetTree.children.length === 0) {
     return;
   }
 

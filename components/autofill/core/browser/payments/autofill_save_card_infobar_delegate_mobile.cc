@@ -95,8 +95,7 @@ std::u16string AutofillSaveCardInfoBarDelegateMobile::GetButtonLabel(
     return ui_info_.cancel_text;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unsupported button label requested.";
-  return std::u16string();
+  NOTREACHED() << "Unsupported button label requested.";
 }
 
 bool AutofillSaveCardInfoBarDelegateMobile::Accept() {

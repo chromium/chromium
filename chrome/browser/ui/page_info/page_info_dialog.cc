@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/bubble_anchor_util.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/security_state/core/security_state.h"
 #include "content/public/browser/navigation_entry.h"
@@ -13,7 +14,8 @@
 
 bool ShowPageInfoDialog(content::WebContents* web_contents,
                         PageInfoClosingCallback closing_callback,
-                        bubble_anchor_util::Anchor anchor) {
+                        bubble_anchor_util::Anchor anchor,
+                        std::optional<ContentSettingsType> type) {
   if (!web_contents)
     return false;
 
@@ -33,7 +35,7 @@ bool ShowPageInfoDialog(content::WebContents* web_contents,
 
   ShowPageInfoDialogImpl(browser, web_contents, entry->GetVirtualURL(), anchor,
                          std::move(initialized_callback),
-                         std::move(closing_callback));
+                         std::move(closing_callback), type);
   return true;
 }
 

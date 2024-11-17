@@ -101,7 +101,7 @@ class ScopedLogIn {
         LogInAsPublicAccount();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -162,6 +162,8 @@ class ChromeArcUtilTest : public testing::Test {
   void TearDown() override {
     // Avoid retries, let the next test start safely.
     ResetArcAllowedCheckForTesting(profile_);
+    SetArcvmDlcImageStatusForTesting(
+        /*arcvm dlc image availability=*/std::nullopt);
     profile_manager_->DeleteTestingProfile(kTestProfileName);
     profile_ = nullptr;
     profile_manager_.reset();
@@ -264,6 +266,54 @@ TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_GuestAccount) {
   base::CommandLine::ForCurrentProcess()->InitFromArgv(
       {"", "--arc-availability=officially-supported"});
   ScopedLogIn login(GetFakeUserManager(), user_manager::GuestAccountId());
+  EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
+}
+
+// The reven devices without the ARCVM DLC image is not allowed to
+// use arc.
+TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_NoArcvmDlcImage_Reven) {
+  base::CommandLine::ForCurrentProcess()->InitFromArgv(
+      {"", "--arc-availability=officially-supported", "--reven-branding"});
+  SetArcvmDlcImageStatusForTesting(/*arcvm dlc image availability=*/false);
+  EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
+}
+
+// Unmanaged account on managed device is not allowed to
+// use arc on reven board.
+TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_UnmanagedAccount_Reven) {
+  base::CommandLine::ForCurrentProcess()->InitFromArgv(
+      {"", "--arc-availability=officially-supported", "--reven-branding"});
+  SetArcvmDlcImageStatusForTesting(/*arcvm dlc image availability=*/true);
+  cros_settings_test_helper_.InstallAttributes()->SetCloudManaged(
+      "example.com", "fake-device-id");
+  EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
+}
+
+// Managed account on unmanaged device is not allowed to
+// use arc on reven board.
+TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_UnmanagedDevice_Reven) {
+  base::CommandLine::ForCurrentProcess()->InitFromArgv(
+      {"", "--arc-availability=officially-supported", "--reven-branding"});
+  SetArcvmDlcImageStatusForTesting(/*arcvm dlc image availability=*/true);
+  ScopedLogIn login(GetFakeUserManager(),
+                    AccountId::FromUserEmailGaiaId(
+                        profile()->GetProfileUserName(), kTestGaiaId));
+  SetProfileIsManagedForTesting(profile());
+  EXPECT_FALSE(IsArcAllowedForProfileOnFirstCall(profile()));
+}
+
+// Managed account on managed device is allowed to use arc
+// on reven board.
+TEST_F(ChromeArcUtilTest, IsArcAllowedForProfile_ManagedDeviceAccount_Reven) {
+  base::CommandLine::ForCurrentProcess()->InitFromArgv(
+      {"", "--arc-availability=officially-supported", "--reven-branding"});
+  SetArcvmDlcImageStatusForTesting(/*arcvm dlc image availability=*/true);
+  ScopedLogIn login(GetFakeUserManager(),
+                    AccountId::FromUserEmailGaiaId(
+                        profile()->GetProfileUserName(), kTestGaiaId));
+  SetProfileIsManagedForTesting(profile());
+  cros_settings_test_helper_.InstallAttributes()->SetCloudManaged(
+      "example.com", "fake-device-id");
   EXPECT_TRUE(IsArcAllowedForProfileOnFirstCall(profile()));
 }
 

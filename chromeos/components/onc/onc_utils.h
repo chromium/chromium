@@ -31,11 +31,14 @@ std::optional<base::Value::Dict> ReadDictionaryFromJson(
     const std::string& json);
 
 // Decrypts the given EncryptedConfiguration |onc| (see the ONC specification)
-// using |passphrase|. The resulting UnencryptedConfiguration is returned. If an
-// error occurs, returns nullopt.
+// with a key derived from the ONC configuration's salt. The resulting
+// UnencryptedConfiguration is returned. If an error occurs, returns nullopt.
+//
+// Note that because the key is derived from the salt only, and the salt is
+// included in the clear in the ONC configuration, this provides no actual
+// confidentiality.
 COMPONENT_EXPORT(CHROMEOS_ONC)
-std::optional<base::Value::Dict> Decrypt(const std::string& passphrase,
-                                         const base::Value::Dict& onc);
+std::optional<base::Value::Dict> Decrypt(const base::Value::Dict& onc);
 
 // For logging only: strings not user facing.
 COMPONENT_EXPORT(CHROMEOS_ONC)
@@ -97,19 +100,18 @@ base::Value::Dict MaskCredentialsInOncObject(
     const base::Value::Dict& onc_object,
     const std::string& mask);
 
-// Decrypts |onc_blob| with |passphrase| if necessary. Clears |network_configs|,
-// |global_network_config| and |certificates| and fills them with the validated
-// NetworkConfigurations, GlobalNetworkConfiguration and Certificates of
-// |onc_blob|. Callers can pass nullptr as any of |network_configs|,
-// |global_network_config|, |certificates| if they're not interested in the
-// respective values. Returns false if any validation errors or warnings
-// occurred in any segments (i.e. not only those requested by the caller). Even
-// if false is returned, some configuration might be added to the output
-// arguments and should be further processed by the caller.
+// Decrypts |onc_blob| with an empty passphrase if necessary. Clears
+// |network_configs|, |global_network_config| and |certificates| and fills them
+// with the validated NetworkConfigurations, GlobalNetworkConfiguration and
+// Certificates of |onc_blob|. Callers can pass nullptr as any of
+// |network_configs|, |global_network_config|, |certificates| if they're not
+// interested in the respective values. Returns false if any validation errors
+// or warnings occurred in any segments (i.e. not only those requested by the
+// caller). Even if false is returned, some configuration might be added to the
+// output arguments and should be further processed by the caller.
 COMPONENT_EXPORT(CHROMEOS_ONC)
 bool ParseAndValidateOncForImport(const std::string& onc_blob,
                                   ::onc::ONCSource onc_source,
-                                  const std::string& passphrase,
                                   base::Value::List* network_configs,
                                   base::Value::Dict* global_network_config,
                                   base::Value::List* certificates);

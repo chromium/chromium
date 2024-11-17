@@ -16,7 +16,7 @@ UNKNOWN focusable has_input_focus
 ++++++++++STATIC_TEXT label=' '
 ++++++++++++UNKNOWN label=' '
 ++++++++++UNKNOWN
-++++++++++++UNKNOWN focusable label='3'
+++++++++++++UNKNOWN focusable
 ++++++++++++++UNKNOWN secondary_label='oops'
 ++++++++++++++++STATIC_TEXT label='3'
 ++++++++++++++++++UNKNOWN label='3'

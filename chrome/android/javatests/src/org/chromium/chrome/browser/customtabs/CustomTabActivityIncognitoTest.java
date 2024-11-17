@@ -58,13 +58,10 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.customtabs.CustomTabsIntentTestUtils.OnFinishedForTest;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.IncognitoDataTestUtils;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -108,8 +105,6 @@ public class CustomTabActivityIncognitoTest {
             new IncognitoCustomTabActivityTestRule();
 
     @Rule public EmbeddedTestServerRule mEmbeddedTestServerRule = new EmbeddedTestServerRule();
-
-    @Rule public JniMocker jniMocker = new JniMocker();
     @Mock private TranslateBridge.Natives mTranslateBridgeJniMock;
 
     @Before
@@ -117,10 +112,9 @@ public class CustomTabActivityIncognitoTest {
         MockitoAnnotations.initMocks(this);
 
         // Mock translate bridge so "Translate..." menu item doesn't unexpectedly show up.
-        jniMocker.mock(
-                org.chromium.chrome.browser.translate.TranslateBridgeJni.TEST_HOOKS,
+        org.chromium.chrome.browser.translate.TranslateBridgeJni.setInstanceForTesting(
                 mTranslateBridgeJniMock);
-        jniMocker.mock(TranslateBridgeJni.TEST_HOOKS, mTranslateBridgeJniMock);
+        TranslateBridgeJni.setInstanceForTesting(mTranslateBridgeJniMock);
 
         FirstRunStatus.setFirstRunFlowComplete(true);
         mTestPage = mEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);
@@ -219,7 +213,7 @@ public class CustomTabActivityIncognitoTest {
                                             .getActivity()
                                             .getCurrentWebContents());
                     assertTrue(profile.isOffTheRecord());
-                    assertFalse(profile.isPrimaryOTRProfile());
+                    assertFalse(profile.isPrimaryOtrProfile());
                     assertTrue(profile.isIncognitoBranded());
                 });
     }
@@ -262,14 +256,14 @@ public class CustomTabActivityIncognitoTest {
                 () -> {
                     Profile profile = customTabToolbar.getToolbarDataProvider().getProfile();
                     assertTrue(profile.isOffTheRecord());
-                    assertFalse(profile.isPrimaryOTRProfile());
+                    assertFalse(profile.isPrimaryOtrProfile());
                     assertTrue(profile.isIncognitoBranded());
                 });
     }
 
     @Test
     @MediumTest
-    public void toolbarHasRegularProfile_ForRegularCCT() {
+    public void toolbarHasRegularProfile_ForRegularCct() {
         Intent intent =
                 CustomTabsIntentTestUtils.createMinimalCustomTabIntent(
                         ApplicationProvider.getApplicationContext(), "about:blank");
@@ -399,9 +393,9 @@ public class CustomTabActivityIncognitoTest {
     @MediumTest
     public void ensureAddCustomMenuItemIsEnabledForReaderMode() throws Exception {
         Intent intent = createTestCustomTabIntent();
-        CustomTabIntentDataProvider.addReaderModeUIExtras(intent);
+        CustomTabIntentDataProvider.addReaderModeUiExtras(intent);
         IncognitoCustomTabIntentDataProvider.addIncognitoExtrasForChromeFeatures(
-                intent, IntentHandler.IncognitoCCTCallerId.READER_MODE);
+                intent, IntentHandler.IncognitoCctCallerId.READER_MODE);
         CustomTabActivity activity = launchIncognitoCustomTab(intent);
         CustomTabsTestUtils.openAppMenuAndAssertMenuShown(activity);
 
@@ -492,7 +486,7 @@ public class CustomTabActivityIncognitoTest {
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         // Passes the launch intent to the connection.
-        mCustomTabActivityTestRule.buildSessionWithHiddenTab(connection, token);
+        mCustomTabActivityTestRule.buildSessionWithHiddenTab(token);
         Assert.assertFalse(
                 connection.mayLaunchUrl(token, Uri.parse(mTestPage), intent.getExtras(), null));
         CriteriaHelper.pollUiThread(
@@ -520,7 +514,7 @@ public class CustomTabActivityIncognitoTest {
         final CustomTabsSessionToken token =
                 CustomTabsSessionToken.getSessionTokenFromIntent(intent);
         // Passes null intent here to mimic not having incognito extra in intent at the connection.
-        mCustomTabActivityTestRule.buildSessionWithHiddenTab(connection, token);
+        mCustomTabActivityTestRule.buildSessionWithHiddenTab(token);
         Assert.assertTrue(connection.mayLaunchUrl(token, Uri.parse(mTestPage), null, null));
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -532,7 +526,7 @@ public class CustomTabActivityIncognitoTest {
                 LONG_TIMEOUT_MS,
                 CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         ChromeTabUtils.waitForTabPageLoaded(
-                connection.getSpeculationParamsForTesting().tab, mTestPage);
+                connection.getSpeculationParamsForTesting().hiddenTab.tab, mTestPage);
         mCustomTabActivityTestRule.setCustomSessionInitiatedForIntent();
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
         connection.cleanUpSession(token);
@@ -541,7 +535,6 @@ public class CustomTabActivityIncognitoTest {
     /** Regression test for crbug.com/1325331. */
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID)
     public void testIncognitoReauthControllerCreated_WhenReauthFeatureIsEnabled()
             throws InterruptedException, TimeoutException {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
@@ -569,7 +562,6 @@ public class CustomTabActivityIncognitoTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID)
     public void testIncognitoReauthPageShowing() throws Exception {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
         IncognitoReauthSettingUtils.setIsDeviceScreenLockEnabledForTesting(true);

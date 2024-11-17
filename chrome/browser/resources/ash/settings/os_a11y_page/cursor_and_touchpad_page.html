@@ -129,8 +129,7 @@
     </div>
   </div>
 </template>
-<!-- TODO(b/341770655): Add deep link focus ID -->
-<template is="dom-if" if="[[isAccessibilityFaceGazeEnabled_]]">
+<template is="dom-if" if="[[showFaceGazeRow_]]" restamp>
   <cr-link-row
       id="faceGazePageRow"
       class="hr"
@@ -169,7 +168,7 @@
     $i18n{cursorColorOptionsLabel}
   </div>
   <settings-dropdown-menu id="cursorColorDropdown"
-      aria-labeledby="cursorColorOptionsLabel"
+      aria-labelledby="cursorColorOptionsLabel"
       pref="{{prefs.settings.a11y.cursor_color}}"
       menu-options="[[cursorColorOptions_]]"
       on-settings-control-change="onA11yCursorColorChange_"
@@ -182,24 +181,32 @@
     label="$i18n{cursorHighlightLabel}"
     deep-link-focus-id$="[[Setting.kHighlightCursorWhileMoving]]">
 </settings-toggle-button>
-<template is="dom-if" if="[[isAccessibilityOverscrollSettingFeatureEnabled_]]">
-  <settings-toggle-button id="overscrollToggle"
-      class="hr"
-      pref="{{prefs.settings.a11y.overscroll_history_navigation}}"
-      label="$i18n{overscrollHistoryNavigationTitle}"
-      deep-link-focus-id$="[[Setting.kOverscrollEnabled]]">
-  </settings-toggle-button>
-</template>
-<template is="dom-if" if="[[isAccessibilityDisableTrackpadEnabled_]]">
+<settings-toggle-button id="overscrollToggle"
+    class="hr"
+    pref="{{prefs.settings.a11y.overscroll_history_navigation}}"
+    label="$i18n{overscrollHistoryNavigationTitle}"
+    deep-link-focus-id$="[[Setting.kOverscrollEnabled]]">
+</settings-toggle-button>
+<template is="dom-if" if="[[isAccessibilityDisableTouchpadEnabled_]]">
   <div class="settings-box start-padding">
-      <div class="start settings-box-text" id="disableInternalTrackpadLabel">
-      $i18n{disableTrackpadLabel}
+    <div class="flex start settings-box-text">
+      <div id="disableInternalTouchpadLabel">
+          $i18n{disableTouchpadLabel}
+      </div>
+      <template is="dom-if" if="[[showTouchpadEnableMessage_(
+            prefs.settings.a11y.disable_trackpad_mode.value
+          )]]">
+        <div class="cr-secondary-text sub-label" id="reEnableTouchpadLabel" >
+           <span class="sub-label-text">$i18n{reEnableTouchpadLabel}</span>
+        </div>
+      </template>
     </div>
-    <settings-dropdown-menu id="disableInternalTrackpadDropdown"
-        aria-labeledby="disableInternalTrackpadLabel"
-        pref="{{prefs.settings.a11y.disable_trackpad_mode}}"
-        menu-options="[[disableTrackpadOptions_]]"
-        deep-link-focus-id$="[[Setting.kAccessibilityDisableTrackpad]]">
+    <settings-dropdown-menu id="disableInternalTouchpadDropdown"
+          aria-labelledby="disableInternalTouchpadLabel"
+          pref="{{prefs.settings.a11y.disable_trackpad_mode}}"
+          menu-options="[[disableTouchpadOptions_]]"
+          deep-link-focus-id$="[[Setting.kAccessibilityDisableTrackpad]]"
+          >
     </settings-dropdown-menu>
   </div>
 </template>

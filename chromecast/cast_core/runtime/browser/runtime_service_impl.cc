@@ -18,6 +18,7 @@
 #include "chromecast/metrics/cast_event_builder_simple.h"
 #include "components/cast_receiver/browser/public/content_browser_client_mixins.h"
 #include "components/cast_receiver/browser/public/embedder_application.h"
+#include "components/cast_receiver/common/public/status.h"
 #include "third_party/cast_core/public/src/proto/common/application_config.pb.h"
 
 namespace chromecast {
@@ -54,8 +55,27 @@ cast_receiver::Status RuntimeServiceImpl::Start() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   std::string runtime_id =
       command_line->GetSwitchValueASCII(cast::core::kCastCoreRuntimeIdSwitch);
+  if (runtime_id.empty()) {
+    // This may happen during unfreeze of the browser process. Usually the cast
+    // service process is dead, too, but a certain condition how this happens on
+    // Android is not known. Most probable cause is OS reboot/update etc.
+    LOG(ERROR) << "Runtime id must be specified in command line with: --"
+               << cast::core::kCastCoreRuntimeIdSwitch;
+    return cast_receiver::Status(
+        cast_receiver::StatusCode::kFailedPrecondition);
+  }
+
   std::string runtime_service_path =
       command_line->GetSwitchValueASCII(cast::core::kRuntimeServicePathSwitch);
+  if (runtime_service_path.empty()) {
+    // This may happen during unfreeze of the browser process with cast service
+    // process dead.
+    LOG(ERROR)
+        << "Runtime service endpoint must be specified in command line with: --"
+        << cast::core::kRuntimeServicePathSwitch;
+    return cast_receiver::Status(
+        cast_receiver::StatusCode::kFailedPrecondition);
+  }
   return Start(runtime_id, runtime_service_path);
 }
 
@@ -108,8 +128,11 @@ cast_receiver::Status RuntimeServiceImpl::Start(
   auto status = grpc_server_->Start(std::string(runtime_service_endpoint));
   // Browser runtime must crash if the runtime service failed to start to avoid
   // the process to dangle without any proper connection to the Cast Core.
-  CHECK(status.ok()) << "Failed to start runtime service: status="
-                     << status.error_message();
+  if (!status.ok()) {
+    LOG(ERROR) << "Failed to start runtime service: status="
+               << status.error_message();
+    return cast_receiver::Status(cast_receiver::StatusCode::kInvalidArgument);
+  }
 
   LOG(INFO) << "Runtime service started";
   return cast_receiver::OkStatus();

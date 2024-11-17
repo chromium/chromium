@@ -234,7 +234,7 @@ const std::set<std::string>* ArcSurveyService::GetAllowedPackagesForTesting() {
 }
 
 void ArcSurveyService::AddAllowedPackageNameForTesting(
-    const std::string package_name) {
+    const std::string& package_name) {
   allowed_packages_.emplace(package_name);
 }
 

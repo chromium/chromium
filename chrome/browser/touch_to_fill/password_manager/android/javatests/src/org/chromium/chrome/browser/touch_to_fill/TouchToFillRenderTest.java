@@ -31,7 +31,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -94,6 +95,8 @@ public class TouchToFillRenderTest {
     private static final WebauthnCredential SPOR =
             new WebauthnCredential("example.com", RANDOM_ID, RANDOM_ID, "spor");
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private Callback<Integer> mDismissHandler;
     @Mock private Callback<Credential> mCredentialCallback;
 
@@ -120,7 +123,6 @@ public class TouchToFillRenderTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mActivityTestRule.waitForActivityCompletelyLoaded();
         mBottomSheetController =

@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 
-#include "ash/app_list/views/app_list_drag_and_drop_host.h"
 #include "ash/ash_export.h"
 #include "ash/drag_drop/drag_image_view.h"
 #include "ash/public/cpp/shelf_config.h"
@@ -25,6 +24,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/geometry/linear_gradient.h"
@@ -92,6 +92,10 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   // Scrolls to a new page of shelf icons. |forward| indicates whether the next
   // page or previous page is shown.
   void ScrollToNewPage(bool forward);
+
+  // Called after the widget has been fully initialized to ensure all dependent
+  // components are available.
+  void UpdateAccessiblePreviousAndNextFocus();
 
   // AccessiblePaneView:
   views::FocusSearch* GetFocusSearch() override;
@@ -241,7 +245,6 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   void OnScrollEvent(ui::ScrollEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
@@ -268,9 +271,10 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   void OnAppButtonActivated(const ShelfButton* button) override;
 
   // ContextMenuController:
-  void ShowContextMenuForViewImpl(views::View* source,
-                                  const gfx::Point& point,
-                                  ui::MenuSourceType source_type) override;
+  void ShowContextMenuForViewImpl(
+      views::View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
 
   // ShellObserver:
   void OnShelfAlignmentChanged(aura::Window* root_window,

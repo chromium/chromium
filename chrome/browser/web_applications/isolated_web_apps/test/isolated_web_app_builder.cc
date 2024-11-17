@@ -66,6 +66,12 @@ constexpr char kManifestPath[] = "/.well-known/manifest.webmanifest";
 using InstallResult = base::expected<InstallIsolatedWebAppCommandSuccess,
                                      InstallIsolatedWebAppCommandError>;
 
+base::FilePath GetTestDataRelativePath(std::string_view subpath) {
+  base::FilePath data_dir;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &data_dir);
+  return data_dir.AppendASCII("chrome/test/data/").AppendASCII(subpath);
+}
+
 FakeWebAppProvider* GetFakeWebAppProvider(Profile* profile) {
   // We can't use FakeWebAppProvider::Get here because we don't want it to
   // CHECK that FakeWebAppProvider is non-null.
@@ -196,6 +202,12 @@ BundledIsolatedWebApp::Install(Profile* profile) {
       IsolatedWebAppInstallSource::FromGraphicalInstaller(
           web_app::IwaSourceBundleProdModeWithFileOp(
               path(), web_app::IwaSourceBundleProdFileOp::kCopy)));
+}
+
+base::expected<IsolatedWebAppUrlInfo, std::string>
+BundledIsolatedWebApp::TrustBundleAndInstall(Profile* profile) {
+  TrustSigningKey();
+  return Install(profile);
 }
 
 void BundledIsolatedWebApp::FakeInstallPageState(Profile* profile) {
@@ -580,7 +592,9 @@ IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddResource(
       << "to IsolatedWebAppBuilder::AddResource?";
   return AddResource(
       resource_path, content,
-      {{net::HttpRequestHeaders::kContentType, std::string(content_type)}});
+      {{net::HttpRequestHeaders::kContentType, std::string(content_type)},
+       {"Cross-Origin-Embedder-Policy", "require-corp"},
+       {"Cross-Origin-Resource-Policy", "cross-origin"}});
 }
 
 IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddResource(
@@ -637,10 +651,20 @@ IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddFileFromDisk(
   return *this;
 }
 
+IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddFileFromDisk(
+    std::string_view resource_path,
+    std::string_view chrome_test_data_relative_path,
+    const Headers& headers) {
+  return AddFileFromDisk(
+      resource_path, GetTestDataRelativePath(chrome_test_data_relative_path),
+      headers);
+}
+
 IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddFolderFromDisk(
     std::string_view resource_path,
     const base::FilePath& folder_path) {
   base::ScopedAllowBlockingForTesting allow_blocking;
+  CHECK(base::PathExists(folder_path)) << folder_path << " does not exist";
   base::FileEnumerator files(folder_path, /*recursive=*/true,
                              base::FileEnumerator::FILES);
   for (base::FilePath path = files.Next(); !path.empty(); path = files.Next()) {
@@ -653,13 +677,9 @@ IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddFolderFromDisk(
 
 IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddFolderFromDisk(
     std::string_view resource_path,
-    const std::string& chrome_test_data_relative_path) {
-  base::FilePath base_path;
-  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_path));
-  base::FilePath absolute_path =
-      base_path.AppendASCII("chrome/test/data")
-          .AppendASCII(chrome_test_data_relative_path);
-  return AddFolderFromDisk(resource_path, absolute_path);
+    std::string_view chrome_test_data_relative_path) {
+  return AddFolderFromDisk(
+      resource_path, GetTestDataRelativePath(chrome_test_data_relative_path));
 }
 
 IsolatedWebAppBuilder& IsolatedWebAppBuilder::RemoveResource(
@@ -673,7 +693,8 @@ IsolatedWebAppBuilder::BuildAndStartProxyServer() {
   Validate();
   net::EmbeddedTestServer::HandleRequestCallback handler = base::BindRepeating(
       &IsolatedWebAppBuilder::HandleRequest, manifest_builder_, resources_);
-  auto server = std::make_unique<net::EmbeddedTestServer>();
+  auto server = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
   server->RegisterRequestHandler(handler);
   CHECK(server->Start());
   return std::make_unique<ScopedProxyIsolatedWebApp>(std::move(server),
@@ -720,7 +741,7 @@ std::unique_ptr<BundledIsolatedWebApp> IsolatedWebAppBuilder::BuildBundle(
       manifest_builder_);
 }
 
-std::vector<uint8_t> IsolatedWebAppBuilder ::BuildInMemoryBundle(
+std::vector<uint8_t> IsolatedWebAppBuilder::BuildInMemoryBundle(
     const web_package::SignedWebBundleId& web_bundle_id,
     const web_package::test::KeyPairs& key_pairs) {
   base::ScopedAllowBlockingForTesting allow_blocking;

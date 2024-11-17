@@ -122,7 +122,7 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
       base::UTF16ToUTF8(entry.GetRawInfo(NAME_LAST_CONJUNCTION))));
   specifics->add_name_full(
       data_util::TruncateUTF8(base::UTF16ToUTF8(entry.GetRawInfo(NAME_FULL))));
-  // Set address-related statuses.
+  // Set name-related statuses.
   specifics->add_name_first_status(ConvertProfileToSpecificsVerificationStatus(
       entry.GetVerificationStatus(NAME_FIRST)));
   specifics->add_name_middle_status(ConvertProfileToSpecificsVerificationStatus(
@@ -140,6 +140,28 @@ std::unique_ptr<EntityData> CreateEntityDataFromAutofillProfile(
           entry.GetVerificationStatus(NAME_LAST_SECOND)));
   specifics->add_name_full_status(ConvertProfileToSpecificsVerificationStatus(
       entry.GetVerificationStatus(NAME_FULL)));
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    // Set alternative name-related values.
+    specifics->set_alternative_full_name(
+        base::UTF16ToUTF8(entry.GetRawInfo(ALTERNATIVE_FULL_NAME)));
+    specifics->set_alternative_given_name(
+        base::UTF16ToUTF8(entry.GetRawInfo(ALTERNATIVE_GIVEN_NAME)));
+    specifics->set_alternative_family_name(
+        base::UTF16ToUTF8(entry.GetRawInfo(ALTERNATIVE_FAMILY_NAME)));
+
+    // Set alternative name-related statuses.
+    specifics->set_alternative_full_name_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(ALTERNATIVE_FULL_NAME)));
+    specifics->set_alternative_given_name_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(ALTERNATIVE_GIVEN_NAME)));
+    specifics->set_alternative_family_name_status(
+        ConvertProfileToSpecificsVerificationStatus(
+            entry.GetVerificationStatus(ALTERNATIVE_FAMILY_NAME)));
+  }
 
   // Set email, phone and company values.
   specifics->add_email_address(data_util::TruncateUTF8(
@@ -393,6 +415,25 @@ std::optional<AutofillProfile> CreateAutofillProfileFromSpecifics(
                       AutofillProfileSpecifics_VerificationStatus_VERIFICATION_STATUS_UNSPECIFIED));
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    profile.SetRawInfoWithVerificationStatus(
+        ALTERNATIVE_FULL_NAME,
+        base::UTF8ToUTF16(specifics.alternative_full_name()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.alternative_full_name_status()));
+    profile.SetRawInfoWithVerificationStatus(
+        ALTERNATIVE_GIVEN_NAME,
+        base::UTF8ToUTF16(specifics.alternative_given_name()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.alternative_given_name_status()));
+    profile.SetRawInfoWithVerificationStatus(
+        ALTERNATIVE_FAMILY_NAME,
+        base::UTF8ToUTF16(specifics.alternative_family_name()),
+        ConvertSpecificsToProfileVerificationStatus(
+            specifics.alternative_family_name_status()));
+  }
+
   profile.SetRawInfo(EMAIL_ADDRESS,
                      base::UTF8ToUTF16(specifics.email_address_size()
                                            ? specifics.email_address(0)
@@ -562,7 +603,8 @@ std::optional<AutofillProfile> CreateAutofillProfileFromSpecifics(
 
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.
-  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 163,
+  // TODO(crbug.com/359768803): Handle alternative names here.
+  static_assert(FieldType::MAX_VALID_FIELD_TYPE == 166,
                 "New field type needs to be reviewed for inclusion in sync");
 
   // The profile may be in a legacy state. By calling |FinalizeAfterImport()|

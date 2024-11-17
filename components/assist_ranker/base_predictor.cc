@@ -25,7 +25,7 @@ BasePredictor::BasePredictor(const PredictorConfig& config) : config_(config) {
   }
 }
 
-BasePredictor::~BasePredictor() {}
+BasePredictor::~BasePredictor() = default;
 
 void BasePredictor::LoadModel(std::unique_ptr<RankerModelLoader> model_loader) {
   if (!is_query_enabled_)

@@ -52,7 +52,7 @@ bool GaiaConfig::GetURLIfExists(std::string_view key, GURL* out_url) {
     return false;
   }
 
-  *out_url = url;
+  *out_url = std::move(url);
   return true;
 }
 

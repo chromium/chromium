@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/374320451): Fix and remove.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "content/browser/speech/speech_recognizer_impl.h"
 
 #include <stddef.h>
@@ -96,8 +101,7 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
     std::unique_ptr<NetworkSpeechRecognitionEngineImpl> sr_engine =
         std::make_unique<NetworkSpeechRecognitionEngineImpl>(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &url_loader_factory_),
-            "" /* accept_language */);
+                &url_loader_factory_));
     NetworkSpeechRecognitionEngineImpl::Config config;
     config.audio_num_bits_per_sample =
         SpeechRecognizerImpl::kNumBitsPerAudioSample;
@@ -266,7 +270,7 @@ class SpeechRecognizerImplTest : public SpeechRecognitionEventListener,
     auto* capture_callback =
         static_cast<media::AudioCapturerSource::CaptureCallback*>(
             recognizer_.get());
-    capture_callback->Capture(data, base::TimeTicks::Now(), {}, 0.0, false);
+    capture_callback->Capture(data, base::TimeTicks::Now(), {}, 0.0);
   }
 
   void OnCaptureError() {

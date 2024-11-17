@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/dbus/dlp_files_policy_service_provider.h"
+
 #include <memory>
 
 #include "base/test/gmock_callback_support.h"
-#include "chrome/browser/ash/dbus/dlp_files_policy_service_provider.h"
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/ash/policy/dlp/test/mock_dlp_files_controller_ash.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "dbus/object_path.h"
@@ -54,14 +56,14 @@ class DlpFilesPolicyServiceProviderTest
 
     profile_ = TestingProfile::Builder().Build();
 
-    EXPECT_CALL(*rules_manager_, IsFilesPolicyEnabled)
+    EXPECT_CALL(*rules_manager(), IsFilesPolicyEnabled)
         .WillRepeatedly(testing::Return(true));
-    EXPECT_CALL(*rules_manager_, GetReportingManager())
+    EXPECT_CALL(*rules_manager(), GetReportingManager())
         .WillRepeatedly(::testing::Return(nullptr));
     files_controller_ = std::make_unique<
-        testing::StrictMock<policy::MockDlpFilesControllerAsh>>(*rules_manager_,
-                                                                profile_.get());
-    EXPECT_CALL(*rules_manager_, GetDlpFilesController())
+        testing::StrictMock<policy::MockDlpFilesControllerAsh>>(
+        *rules_manager(), profile_.get());
+    EXPECT_CALL(*rules_manager(), GetDlpFilesController())
         .WillRepeatedly(::testing::Return(files_controller_.get()));
   }
 

@@ -13,7 +13,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -24,7 +23,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -48,8 +46,6 @@ public class PersistedTabDataTest {
 
     @Mock Tab mTab;
 
-    @Rule public JniMocker jniMocker = new JniMocker();
-
     @Before
     public void setUp() throws Exception {
         // TODO(crbug.com/40229155): Remove runOnUiThreadBlocking call after code
@@ -64,7 +60,7 @@ public class PersistedTabDataTest {
 
         PriceTrackingFeatures.setPriceTrackingEnabledForTesting(false);
 
-        jniMocker.mock(PersistedTabDataJni.TEST_HOOKS, mPersistedTabDataJni);
+        PersistedTabDataJni.setInstanceForTesting(mPersistedTabDataJni);
     }
 
     @SmallTest
@@ -242,7 +238,7 @@ public class PersistedTabDataTest {
         ThreadVerifierMockPersistedTabData(Tab tab) {
             super(
                     tab, 0
-                    /** unused in ThreadVerifierMockPersistedTabData */
+                    /* unused in ThreadVerifierMockPersistedTabData */
                     );
         }
 
@@ -265,7 +261,7 @@ public class PersistedTabDataTest {
         OutOfMemoryMockPersistedTabDataGet(Tab tab) {
             super(
                     tab, 0
-                    /** unused in OutOfMemoryMockPersistedTabData */
+                    /* unused in OutOfMemoryMockPersistedTabData */
                     );
         }
 
@@ -282,7 +278,7 @@ public class PersistedTabDataTest {
         OutOfMemoryMockPersistedTabData(Tab tab) {
             super(
                     tab, 0
-                    /** unused in OutOfMemoryMockPersistedTabData */
+                    /* unused in OutOfMemoryMockPersistedTabData */
                     );
         }
 

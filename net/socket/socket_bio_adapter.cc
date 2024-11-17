@@ -10,10 +10,12 @@
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
@@ -123,7 +125,7 @@ int SocketBIOAdapter::BIORead(base::span<uint8_t> out) {
     // overreading, but issuing one is more efficient. SSL sockets are not
     // reused after shutdown for non-SSL traffic, so overreading is fine.
     CHECK(!read_buffer_);
-    CHECK_EQ(0, read_offset_);
+    CHECK_EQ(0u, read_offset_);
     read_buffer_ =
         base::MakeRefCounted<IOBufferWithSize>(read_buffer_capacity_);
     read_result_ = ERR_IO_PENDING;
@@ -156,15 +158,15 @@ int SocketBIOAdapter::BIORead(base::span<uint8_t> out) {
   }
 
   // Report the result of the last Read() if non-empty.
-  CHECK_LT(read_offset_, read_result_);
+  const auto read_result_s = static_cast<size_t>(read_result_);
+  CHECK_LT(read_offset_, read_result_s);
   base::span<const uint8_t> read_data = read_buffer_->span().subspan(
-      read_offset_, std::min(out.size(), base::checked_cast<size_t>(
-                                             read_result_ - read_offset_)));
+      read_offset_, std::min(out.size(), read_result_s - read_offset_));
   out.copy_prefix_from(read_data);
   read_offset_ += read_data.size();
 
   // Release the buffer when empty.
-  if (read_offset_ == read_result_) {
+  if (read_offset_ == read_result_s) {
     read_buffer_ = nullptr;
     read_offset_ = 0;
     read_result_ = 0;
@@ -227,13 +229,13 @@ int SocketBIOAdapter::BIOWrite(base::span<const uint8_t> in) {
 
   // Instantiate the write buffer if needed.
   if (!write_buffer_) {
-    CHECK_EQ(0, write_buffer_used_);
+    CHECK_EQ(0u, write_buffer_used_);
     write_buffer_ = base::MakeRefCounted<GrowableIOBuffer>();
     write_buffer_->SetCapacity(write_buffer_capacity_);
   }
 
   // If the ring buffer is full, inform the caller to try again later.
-  if (write_buffer_used_ == write_buffer_->capacity()) {
+  if (write_buffer_used_ == static_cast<size_t>(write_buffer_->capacity())) {
     BIO_set_retry_write(bio());
     return -1;
   }
@@ -241,11 +243,11 @@ int SocketBIOAdapter::BIOWrite(base::span<const uint8_t> in) {
   int bytes_copied = 0;
 
   // If there is space after the offset, fill it.
-  if (write_buffer_used_ < write_buffer_->RemainingCapacity()) {
-    base::span<const uint8_t> chunk = in.first(
-        std::min(base::checked_cast<size_t>(write_buffer_->RemainingCapacity() -
-                                            write_buffer_used_),
-                 in.size()));
+  const auto remaining_capacity =
+      base::checked_cast<size_t>(write_buffer_->RemainingCapacity());
+  if (write_buffer_used_ < remaining_capacity) {
+    base::span<const uint8_t> chunk =
+        in.first(std::min(remaining_capacity - write_buffer_used_, in.size()));
     write_buffer_->span().subspan(write_buffer_used_).copy_prefix_from(chunk);
     in = in.subspan(chunk.size());
     bytes_copied += chunk.size();
@@ -253,14 +255,14 @@ int SocketBIOAdapter::BIOWrite(base::span<const uint8_t> in) {
   }
 
   // If there is still space for remaining data, try to wrap around.
-  if (in.size() > 0 && write_buffer_used_ < write_buffer_->capacity()) {
+  if (in.size() > 0 && write_buffer_used_ < base::checked_cast<size_t>(
+                                                write_buffer_->capacity())) {
     // If there were any room after the offset, the previous branch would have
     // filled it.
-    CHECK_LE(write_buffer_->RemainingCapacity(), write_buffer_used_);
-    int write_offset = write_buffer_used_ - write_buffer_->RemainingCapacity();
-    base::span<const uint8_t> chunk = in.first(std::min(
-        in.size(), base::checked_cast<size_t>(write_buffer_->capacity() -
-                                              write_buffer_used_)));
+    CHECK_LE(remaining_capacity, write_buffer_used_);
+    const size_t write_offset = write_buffer_used_ - remaining_capacity;
+    base::span<const uint8_t> chunk = in.first(
+        std::min(in.size(), write_buffer_->capacity() - write_buffer_used_));
     write_buffer_->everything().subspan(write_offset).copy_prefix_from(chunk);
     in = in.subspan(chunk.size());
     bytes_copied += chunk.size();
@@ -268,7 +270,8 @@ int SocketBIOAdapter::BIOWrite(base::span<const uint8_t> in) {
   }
 
   // Either the buffer is now full or there is no more input.
-  CHECK(in.empty() || write_buffer_used_ == write_buffer_->capacity());
+  CHECK(in.empty() ||
+        write_buffer_used_ == static_cast<size_t>(write_buffer_->capacity()));
 
   // Schedule a socket Write() if necessary. (The ring buffer may previously
   // have been empty.)
@@ -290,14 +293,15 @@ int SocketBIOAdapter::BIOWrite(base::span<const uint8_t> in) {
 void SocketBIOAdapter::SocketWrite() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   while (write_error_ == OK && write_buffer_used_ > 0) {
-    int write_buffer_used_old = write_buffer_used_;
-    int write_size =
-        std::min(write_buffer_used_, write_buffer_->RemainingCapacity());
+    const size_t write_buffer_used_old = write_buffer_used_;
+    const auto write_size = static_cast<int>(std::min(
+        write_buffer_used_,
+        base::checked_cast<size_t>(write_buffer_->RemainingCapacity())));
 
     // TODO(crbug.com/40064248): Remove this once the crash is resolved.
     char debug[128];
     snprintf(debug, sizeof(debug),
-             "offset=%d;remaining=%d;used=%d;write_size=%d",
+             "offset=%d;remaining=%d;used=%zu;write_size=%d",
              write_buffer_->offset(), write_buffer_->RemainingCapacity(),
              write_buffer_used_, write_size);
     base::debug::Alias(debug);
@@ -338,7 +342,7 @@ void SocketBIOAdapter::HandleSocketWriteResult(int result) {
   }
 
   // Advance the ring buffer.
-  CHECK_LE(result, write_buffer_used_);
+  CHECK_LE(static_cast<size_t>(result), write_buffer_used_);
   CHECK_LE(result, write_buffer_->RemainingCapacity());
   write_buffer_->set_offset(write_buffer_->offset() + result);
   write_buffer_used_ -= result;
@@ -355,7 +359,8 @@ void SocketBIOAdapter::OnSocketWriteComplete(int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(ERR_IO_PENDING, write_error_);
 
-  bool was_full = write_buffer_used_ == write_buffer_->capacity();
+  bool was_full =
+      write_buffer_used_ == static_cast<size_t>(write_buffer_->capacity());
 
   HandleSocketWriteResult(result);
   SocketWrite();

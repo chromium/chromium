@@ -21,7 +21,6 @@ public class FollowManagementItemView extends LinearLayout {
     private TextView mTitle;
     private TextView mUrl;
     private TextView mStatus;
-    private boolean mChecked;
     private ImageView mFavicon;
     private CheckBox mSubscribedCheckbox;
 

@@ -571,12 +571,7 @@ class BookmarkModel : public BookmarkUndoProvider,
   int64_t next_node_id_ = 1;
 
   // The observers.
-#if BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/40277960) Set the parameter to `true` on all platforms.
   base::ObserverList<BookmarkModelObserver, true> observers_;
-#else
-  base::ObserverList<BookmarkModelObserver> observers_;
-#endif
 
   std::unique_ptr<BookmarkClient> client_;
 

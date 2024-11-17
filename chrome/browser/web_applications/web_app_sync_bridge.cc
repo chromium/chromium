@@ -42,6 +42,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/channel_info.h"
+#include "chrome/common/chrome_features.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/report_unrecoverable_error.h"
@@ -668,7 +669,7 @@ ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
   // app_id is storage key.
   const webapps::AppId& app_id = change.storage_key();
 
-  const WebApp* existing_web_app = registrar_->GetAppByIdMutable(app_id);
+  const WebApp* existing_web_app = registrar_->GetAppById(app_id);
 
   // Handle deletion first.
   if (change.type() == syncer::EntityChange::ACTION_DELETE) {
@@ -678,6 +679,10 @@ ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
     }
     auto app_copy = std::make_unique<WebApp>(*existing_web_app);
     app_copy->RemoveSource(WebAppManagement::kSync);
+    // Currently removing an app from sync will uninstall the app on all
+    // profiles that are synced to it; we could consider not removing the
+    // kUserInstalled source in this case.
+    app_copy->RemoveSource(WebAppManagement::kUserInstalled);
     if (!app_copy->HasAnySources()) {
       // Uninstallation from the local database is a two-phase commit. Setting
       // this flag to true signals that uninstallation should occur, and then
@@ -878,6 +883,41 @@ std::optional<syncer::ModelError> WebAppSyncBridge::ApplyIncrementalSyncChanges(
   }
 
   return std::nullopt;
+}
+
+void WebAppSyncBridge::ApplyDisableSyncChanges(
+    std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  if (!base::FeatureList::IsEnabled(
+          features::kWebAppDontAddExistingAppsToSync)) {
+    syncer::DataTypeSyncBridge::ApplyDisableSyncChanges(
+        std::move(delete_metadata_change_list));
+    return;
+  }
+
+  auto update_local_data = std::make_unique<RegistryUpdateData>();
+
+  for (const WebApp& web_app : registrar_->GetAppsIncludingStubs()) {
+    if (web_app.GetSources().Has(WebAppManagement::kSync)) {
+      auto app_copy = std::make_unique<WebApp>(web_app);
+      app_copy->RemoveSource(WebAppManagement::kSync);
+      if (!app_copy->HasAnySources()) {
+        // Uninstallation from the local database is a two-phase commit. Setting
+        // this flag to true signals that uninstallation should occur, and then
+        // when all asynchronous uninstallation tasks are complete then the
+        // entity is deleted from the database.
+        app_copy->SetIsUninstalling(true);
+      }
+      update_local_data->apps_to_update.push_back(std::move(app_copy));
+    }
+  }
+
+  database_->Write(
+      *update_local_data, std::move(delete_metadata_change_list),
+      base::BindOnce(&WebAppSyncBridge::OnDataWritten,
+                     weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
+
+  ApplyIncrementalSyncChangesToRegistrar(std::move(update_local_data),
+                                         /*apps_display_mode_changed=*/{});
 }
 
 std::unique_ptr<syncer::DataBatch> WebAppSyncBridge::GetDataForCommit(

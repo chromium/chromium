@@ -215,7 +215,8 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
   // and is set by updating SystemDisabledMode policy.
   bool is_disabled_apps_mode_hidden_ = false;
 
-  std::map<extensions::AppWindow*, aura::Window*> app_window_to_aura_window_;
+  std::map<extensions::AppWindow*, raw_ptr<aura::Window, CtnExperimental>>
+      app_window_to_aura_window_;
 
   raw_ptr<ArcAppListPrefs> arc_prefs_ = nullptr;
 

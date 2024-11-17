@@ -102,8 +102,7 @@ class AutoPipSettingHelperTest : public views::ViewsTestBase {
     auto* anchor_view =
         anchor_view_widget_->SetContentsView(std::make_unique<views::View>());
     auto setting_overlay = setting_helper_->CreateOverlayViewIfNeeded(
-        close_cb_.Get(), gfx::Rect(), anchor_view,
-        views::BubbleBorder::TOP_CENTER);
+        close_cb_.Get(), anchor_view, views::BubbleBorder::TOP_CENTER);
     if (setting_overlay) {
       setting_overlay_ = static_cast<AutoPipSettingOverlayView*>(
           widget_->SetContentsView(std::move(setting_overlay)));

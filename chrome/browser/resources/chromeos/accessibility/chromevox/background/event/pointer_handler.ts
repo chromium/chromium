@@ -220,7 +220,7 @@ export class PointerHandler extends BaseAutomationHandler {
     this.expectingHoverCount_++;
     this.lastHoverRequested_ = new Date();
     EventGenerator.sendMouseMove(
-        this.mouseX_, this.mouseY_, true /* touchAccessibility */);
+        this.mouseX_, this.mouseY_, {touchAccessibility: true});
   }
 
   /**

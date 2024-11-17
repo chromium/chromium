@@ -18,7 +18,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -33,7 +32,6 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -48,6 +46,7 @@ import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.TabTestUtils;
@@ -67,6 +66,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.File;
 import java.nio.ByteBuffer;
@@ -80,7 +80,6 @@ import java.util.concurrent.atomic.AtomicInteger;
     ChromeFeatureList.ANDROID_TAB_DECLUTTER_RESCUE_KILLSWITCH
 })
 public class TabPersistentStoreIntegrationTest {
-    @Rule public JniMocker jniMocker = new JniMocker();
 
     private static final int TAB_ID = 42;
     private static final WebContentsState WEB_CONTENTS_STATE =
@@ -91,6 +90,7 @@ public class TabPersistentStoreIntegrationTest {
     private TabPersistentStore mTabPersistentStore;
 
     @Mock private ChromeTabbedActivity mChromeActivity;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private TabCreatorManager mTabCreatorManager;
     @Mock private ChromeTabCreator mChromeTabCreator;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
@@ -133,6 +133,7 @@ public class TabPersistentStoreIntegrationTest {
                         new CipherFactory());
         mOrchestrator.createTabModels(
                 mChromeActivity,
+                mModalDialogManager,
                 profileProviderSupplier,
                 mTabCreatorManager,
                 mNextTabPolicySupplier,
@@ -141,10 +142,10 @@ public class TabPersistentStoreIntegrationTest {
         mTabModelSelector = mOrchestrator.getTabModelSelector();
         mTabPersistentStore = mOrchestrator.getTabPersistentStore();
 
-        jniMocker.mock(TabModelJniBridgeJni.TEST_HOOKS, mTabModelJniBridgeJni);
-        jniMocker.mock(RecentlyClosedBridgeJni.TEST_HOOKS, mRecentlyClosedBridgeJni);
-        jniMocker.mock(PersistedTabDataJni.TEST_HOOKS, mPersistedTabDataJni);
-        TabTestUtils.mockTabJni(jniMocker);
+        TabModelJniBridgeJni.setInstanceForTesting(mTabModelJniBridgeJni);
+        RecentlyClosedBridgeJni.setInstanceForTesting(mRecentlyClosedBridgeJni);
+        PersistedTabDataJni.setInstanceForTesting(mPersistedTabDataJni);
+        TabTestUtils.mockTabJni();
         mOrchestrator.onNativeLibraryReady(mTabContentManager);
     }
 
@@ -275,6 +276,58 @@ public class TabPersistentStoreIntegrationTest {
 
         // Step to test: Commit tabs closure.
         tabModel.commitAllTabClosures();
+        runAllAsyncTasks();
+
+        // Verify that metadata was saved.
+        // 2 times because close the last tab will trigger selecting a null tab
+        // which will trigger another metadata save.
+        assertEquals(timesMetadataSavedBefore + 2, timesMetadataSaved.intValue());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"TabPersistentStore"})
+    public void testSelectTabPersistsState() {
+        AtomicInteger timesMetadataSaved = new AtomicInteger();
+        observeOnMetadataSavedAsynchronously(timesMetadataSaved);
+
+        // Setup the test: Create three tabs
+        TabModel tabModel = mTabModelSelector.getModel(false);
+        Tab tab1 = MockTab.createAndInitialize(1, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        Tab tab2 = MockTab.createAndInitialize(2, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        Tab tab3 = MockTab.createAndInitialize(3, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab3, 2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        int timesMetadataSavedBefore = timesMetadataSaved.intValue();
+        // Step to test: Select the first tab.
+        tabModel.setIndex(0, TabSelectionType.FROM_USER);
+        runAllAsyncTasks();
+
+        // Verify that metadata was saved.
+        assertEquals(timesMetadataSavedBefore + 1, timesMetadataSaved.intValue());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"TabPersistentStore"})
+    public void testMoveTabPersistsState() {
+        AtomicInteger timesMetadataSaved = new AtomicInteger();
+        observeOnMetadataSavedAsynchronously(timesMetadataSaved);
+
+        // Setup the test: Create three tabs
+        TabModel tabModel = mTabModelSelector.getModel(false);
+        Tab tab1 = MockTab.createAndInitialize(1, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        Tab tab2 = MockTab.createAndInitialize(2, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        Tab tab3 = MockTab.createAndInitialize(3, mProfile, TabLaunchType.FROM_CHROME_UI);
+        tabModel.addTab(tab3, 2, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+
+        int timesMetadataSavedBefore = timesMetadataSaved.intValue();
+        // Step to test: Move the tab3 to the index 0.
+        tabModel.moveTab(3, 0);
         runAllAsyncTasks();
 
         // Verify that metadata was saved.

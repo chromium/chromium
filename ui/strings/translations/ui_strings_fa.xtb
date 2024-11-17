@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">‏صفحه بار نشد چون مدول واسط کاربر برنامه‌نویس (dev_ui) نصب نشده است</translation>
 <translation id="5574202486608032840">سیستم <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Backspace</translation>
+<translation id="5606865426897221650">Tab</translation>
 <translation id="5613020302032141669">پیکان چپ</translation>
 <translation id="5633029987065897167">خالی</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{۱ دقیقه}one{# دقیقه}other{# دقیقه}}</translation>
@@ -164,7 +165,7 @@
 <translation id="6808150112686056157">توقف رسانه</translation>
 <translation id="6845383723252244143">انتخاب پوشه</translation>
 <translation id="6863590663815976734">{HOURS,plural, =1{۱ ساعت باقی مانده است}one{# ساعت باقی مانده است}other{# ساعت باقی مانده است}}</translation>
-<translation id="688711909580084195">صفحهٔ وب بدون عنوان</translation>
+<translation id="688711909580084195">صفحهٔ وب بی‌عنوان</translation>
 <translation id="6902419395050653510">‏محتوای HTML.</translation>
 <translation id="6907759265145635167"><ph name="QUANTITY" /> پتابایت/ثانیه</translation>
 <translation id="6917971086528278418">{YEARS,plural, =1{۱ سال باقی مانده است}one{#سال باقی مانده است}other{#سال باقی مانده است}}</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">ورود</translation>
 <translation id="8210608804940886430">صفحه پایین</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />،‏ <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Tab</translation>
 <translation id="8259556432390118667">مقدار رنگ در مبنای شانزده</translation>
 <translation id="8328145009876646418">حاشیه چپ</translation>
 <translation id="8331626408530291785">پیمایش به بالا</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{۱ ثانیه}one{# ثانیه}other{# ثانیه}}</translation>
 <translation id="9059834730836941392">کوچک کردن اعلان</translation>
 <translation id="9170848237812810038">&amp;واگرد</translation>
+<translation id="9195990613383871904">فردا</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">منزل</translation>
 <translation id="944069440740578670">اعلان‌های خوانده‌نشده</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{یک ثانیه قبل}one{# ثانیه قبل}other{# ثانیه قبل}}</translation>

@@ -44,24 +44,29 @@ public class MediaAccessPermissionRequestTest extends AwParameterizedTest {
     }
 
     private static final String DATA =
-            "<html> <script> "
-                    + "var constraints = {audio: true, video: true};"
-                    + "var video = document.querySelector('video');"
-                    + "function successCallback(stream) {"
-                    + "  window.document.title = 'grant';"
-                    + "  video.srcObject = stream;"
-                    + "}"
-                    + "function errorCallback(error){"
-                    + "  window.document.title = 'deny';"
-                    + "  console.log('navigator.getUserMedia error: ', error);"
-                    + "}"
-                    + "navigator.webkitGetUserMedia(constraints, successCallback, errorCallback)"
-                    + "</script><body>"
-                    + "<video autoplay></video>"
-                    + "</body></html>";
+            """
+        <html>
+          <script>
+            var constraints = {audio: true, video: true};
+            var video = document.querySelector('video');
+            function successCallback(stream) {
+              window.document.title = 'grant';
+              video.srcObject = stream;
+            }
+            function errorCallback(error) {
+              window.document.title = 'deny';
+              console.log('navigator.getUserMedia error: ', error);
+            }
+            navigator.webkitGetUserMedia(constraints, successCallback, errorCallback);
+          </script>
+          <body>
+            <video autoplay></video>
+          </body>
+        </html>
+        """;
 
     private TestWebServer mTestWebServer;
-    private String mWebRTCPage;
+    private String mWebRtcPage;
 
     public MediaAccessPermissionRequestTest(AwSettingsMutation param) {
         this.mActivityTestRule = new AwActivityTestRule(param.getMutation());
@@ -70,7 +75,7 @@ public class MediaAccessPermissionRequestTest extends AwParameterizedTest {
     @Before
     public void setUp() throws Exception {
         mTestWebServer = TestWebServer.start();
-        mWebRTCPage =
+        mWebRtcPage =
                 mTestWebServer.setResponse(
                         "/WebRTC", DATA, CommonResources.getTextHtmlHeaders(true));
     }
@@ -100,7 +105,7 @@ public class MediaAccessPermissionRequestTest extends AwParameterizedTest {
         final AwContents awContents = testContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         int callCount = helper.getCallCount();
-        mActivityTestRule.loadUrlAsync(awContents, mWebRTCPage, null);
+        mActivityTestRule.loadUrlAsync(awContents, mWebRtcPage, null);
         helper.waitForCallback(callCount);
         pollTitleAs("grant", awContents);
     }
@@ -124,7 +129,7 @@ public class MediaAccessPermissionRequestTest extends AwParameterizedTest {
         final AwContents awContents = testContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         int callCount = helper.getCallCount();
-        mActivityTestRule.loadUrlAsync(awContents, mWebRTCPage, null);
+        mActivityTestRule.loadUrlAsync(awContents, mWebRtcPage, null);
         helper.waitForCallback(callCount);
         pollTitleAs("deny", awContents);
     }
@@ -153,7 +158,7 @@ public class MediaAccessPermissionRequestTest extends AwParameterizedTest {
         final AwContents awContents = testContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         int callCount = helper.getCallCount();
-        mActivityTestRule.loadUrlAsync(awContents, mWebRTCPage, null);
+        mActivityTestRule.loadUrlAsync(awContents, mWebRtcPage, null);
         helper.waitForCallback(callCount);
 
         // Cause AwPermissionRequest to be garbage collected, which should deny
@@ -199,11 +204,11 @@ public class MediaAccessPermissionRequestTest extends AwParameterizedTest {
         final AwContents awContents = testContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(awContents);
         int callCount = helper.getCallCount();
-        mActivityTestRule.loadUrlAsync(awContents, mWebRTCPage, null);
+        mActivityTestRule.loadUrlAsync(awContents, mWebRtcPage, null);
         helper.waitForCallback(callCount);
         callCount = helper.getCallCount();
         // Load the same page again, the previous request should be canceled.
-        mActivityTestRule.loadUrlAsync(awContents, mWebRTCPage, null);
+        mActivityTestRule.loadUrlAsync(awContents, mWebRtcPage, null);
         helper.waitForCallback(callCount);
         Assert.assertTrue(helper.canceled());
     }

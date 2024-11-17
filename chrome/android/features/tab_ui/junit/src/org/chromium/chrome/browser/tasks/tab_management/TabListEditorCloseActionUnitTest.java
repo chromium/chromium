@@ -7,8 +7,6 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -21,21 +19,18 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
-import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.ActionConfirmationManager.ConfirmationResult;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabRemover;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ActionObserver;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorAction.ButtonType;
@@ -63,12 +58,10 @@ public class TabListEditorCloseActionUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabGroupModelFilter mGroupFilter;
+    @Mock private TabRemover mTabRemover;
     @Mock private SelectionDelegate<Integer> mSelectionDelegate;
     @Mock private ActionDelegate mDelegate;
     @Mock private Profile mProfile;
-    @Mock private ActionConfirmationManager mActionConfirmationManager;
-
-    @Captor ArgumentCaptor<Callback<Integer>> mConfirmationResultCallbackCaptor;
 
     private MockTabModel mTabModel;
     private TabListEditorAction mAction;
@@ -80,9 +73,9 @@ public class TabListEditorCloseActionUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         ShowMode.MENU_ONLY,
                         ButtonType.TEXT,
-                        IconPosition.START,
-                        mActionConfirmationManager);
+                        IconPosition.START);
         mTabModel = spy(new MockTabModel(mProfile, null));
+        mTabModel.setTabRemoverForTesting(mTabRemover);
         when(mGroupFilter.getTabModel()).thenReturn(mTabModel);
     }
 
@@ -134,13 +127,11 @@ public class TabListEditorCloseActionUnitTest {
         assertEquals(1, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
         assertTrue(mAction.perform());
-        verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
-                .getValue()
-                .onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
 
-        verify(mGroupFilter).closeTabs(TabClosureParams.closeTabs(List.of(tabs.get(1))).build());
+        verify(mTabRemover)
+                .closeTabs(
+                        TabClosureParams.closeTabs(List.of(tabs.get(1))).build(),
+                        /* allowDialog= */ true);
         verify(mDelegate).hideByAction();
     }
 
@@ -163,27 +154,18 @@ public class TabListEditorCloseActionUnitTest {
         mAction.addActionObserver(observer);
 
         assertTrue(mAction.perform());
-        verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
-                .getValue()
-                .onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
 
-        verify(mGroupFilter).closeTabs(TabClosureParams.closeTabs(tabs).build());
+        verify(mTabRemover)
+                .closeTabs(TabClosureParams.closeTabs(tabs).build(), /* allowDialog= */ true);
         verify(mDelegate).hideByAction();
 
         helper.waitForOnly();
         mAction.removeActionObserver(observer);
 
         assertTrue(mAction.perform());
-        verify(mActionConfirmationManager, times(2))
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
-                .getAllValues()
-                .get(1)
-                .onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
 
-        verify(mGroupFilter, times(2)).closeTabs(TabClosureParams.closeTabs(tabs).build());
+        verify(mTabRemover, times(2))
+                .closeTabs(TabClosureParams.closeTabs(tabs).build(), /* allowDialog= */ true);
         verify(mDelegate, times(2)).hideByAction();
         assertEquals(1, helper.getCallCount());
     }
@@ -250,17 +232,13 @@ public class TabListEditorCloseActionUnitTest {
         assertEquals(1, holder.getSelectedAndRelatedTabs().get(5).getId());
 
         assertTrue(mAction.perform());
-        verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
-                .getValue()
-                .onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
 
-        verify(mGroupFilter)
+        verify(mTabRemover)
                 .closeTabs(
                         TabClosureParams.closeTabs(holder.getSelectedAndRelatedTabs())
                                 .hideTabGroups(true)
-                                .build());
+                                .build(),
+                        /* allowDialog= */ true);
         verify(mDelegate).hideByAction();
     }
 
@@ -318,55 +296,11 @@ public class TabListEditorCloseActionUnitTest {
         assertEquals(3, mAction.getPropertyModel().get(TabListEditorActionProperties.ITEM_COUNT));
 
         assertTrue(mAction.perform());
-        verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
-                .getValue()
-                .onResult(ConfirmationResult.IMMEDIATE_CONTINUE);
 
-        verify(mGroupFilter)
-                .closeTabs(TabClosureParams.closeTabs(holder.getSelectedTabs()).build());
-        verify(mDelegate).hideByAction();
-    }
-
-    @Test
-    @SmallTest
-    public void testCloseActionWithTabGroups_ConfirmationPositive() {
-        configure(false);
-        List<Integer> tabIds = Arrays.asList(5, 3);
-        List<Tab> tabs =
-                tabIds.stream().map(id -> mTabModel.addTab(id)).collect(Collectors.toList());
-        when(mSelectionDelegate.getSelectedItems()).thenReturn(new LinkedHashSet<>(tabIds));
-        mAction.onSelectionStateChange(tabIds);
-
-        assertTrue(mAction.perform());
-        verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
-                .getValue()
-                .onResult(ConfirmationResult.CONFIRMATION_POSITIVE);
-
-        verify(mGroupFilter).closeTabs(TabClosureParams.closeTabs(tabs).allowUndo(false).build());
-        verify(mDelegate).hideByAction();
-    }
-
-    @Test
-    @SmallTest
-    public void testCloseActionWithTabGroups_ConfirmationNegative() {
-        configure(false);
-        List<Integer> tabIds = Arrays.asList(5, 3);
-        tabIds.forEach(id -> mTabModel.addTab(id));
-        when(mSelectionDelegate.getSelectedItems()).thenReturn(new LinkedHashSet<>(tabIds));
-        mAction.onSelectionStateChange(tabIds);
-
-        assertTrue(mAction.perform());
-        verify(mActionConfirmationManager)
-                .processCloseTabAttempt(any(), mConfirmationResultCallbackCaptor.capture());
-        mConfirmationResultCallbackCaptor
-                .getValue()
-                .onResult(ConfirmationResult.CONFIRMATION_NEGATIVE);
-
-        verify(mGroupFilter, never()).closeTabs(any());
+        verify(mTabRemover)
+                .closeTabs(
+                        TabClosureParams.closeTabs(holder.getSelectedTabs()).build(),
+                        /* allowDialog= */ true);
         verify(mDelegate).hideByAction();
     }
 }

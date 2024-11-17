@@ -30,7 +30,7 @@ PaymentsProfileComparator::PaymentsProfileComparator(
     const PaymentOptionsProvider& options)
     : autofill::AutofillProfileComparator(app_locale), options_(options) {}
 
-PaymentsProfileComparator::~PaymentsProfileComparator() {}
+PaymentsProfileComparator::~PaymentsProfileComparator() = default;
 
 PaymentsProfileComparator::ProfileFields
 PaymentsProfileComparator::GetMissingProfileFields(
@@ -288,9 +288,7 @@ std::u16string PaymentsProfileComparator::GetTitleForMissingFields(
     PaymentsProfileComparator::ProfileFields fields) const {
   switch (fields) {
     case 0:
-      NOTREACHED_IN_MIGRATION()
-          << "Title should not be requested if no fields are missing";
-      return std::u16string();
+      NOTREACHED() << "Title should not be requested if no fields are missing";
     case kName:
       return l10n_util::GetStringUTF16(IDS_PAYMENTS_ADD_NAME);
     case kPhone:

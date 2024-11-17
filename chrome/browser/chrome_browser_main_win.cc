@@ -26,23 +26,24 @@
 #include "base/command_line.h"
 #include "base/dcheck_is_on.h"
 #include "base/enterprise_util.h"
-#include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer_cleaner.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/i18n/rtl.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/base_tracing.h"
+#include "base/types/expected.h"
 #include "base/version.h"
 #include "base/win/pe_image.h"
 #include "base/win/win_util.h"
@@ -53,9 +54,9 @@
 #include "chrome/browser/active_use_util.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_policy_observer.h"
 #include "chrome/browser/first_run/first_run.h"
+#include "chrome/browser/performance_manager/public/dll_pre_read_policy_win.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/shell_integration_win.h"
@@ -99,8 +100,8 @@
 #include "components/crash/core/app/dump_hung_process_with_ptype.h"
 #include "components/crash/core/common/crash_key.h"
 #include "components/os_crypt/sync/os_crypt.h"
-#include "components/policy/core/common/management/management_service.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/hashing.h"
 #include "components/version_info/channel.h"
 #include "components/version_info/version_info.h"
 #include "components/webapps/common/web_app_id.h"
@@ -424,6 +425,48 @@ void MaybeBlockDynamicCodeForBrowserProcess() {
             sandbox::MITIGATION_DYNAMIC_CODE_DISABLE_WITH_OPT_OUT);
   }
 }
+
+base::expected<base::FilePath, DWORD> GetProcessExecutablePath(
+    const base::Process& process) {
+  std::wstring image_path(MAX_PATH, L'\0');
+  DWORD path_length = image_path.size();
+  BOOL success = ::QueryFullProcessImageNameW(process.Handle(), 0,
+                                              image_path.data(), &path_length);
+  if (!success && ::GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
+    // Process name is potentially greater than MAX_PATH, try larger max size.
+    // https://docs.microsoft.com/en-us/windows/win32/fileio/maximum-file-path-limitation
+    image_path.resize(UNICODE_STRING_MAX_CHARS);
+    path_length = image_path.size();
+    success = ::QueryFullProcessImageNameW(process.Handle(), 0,
+                                           image_path.data(), &path_length);
+  }
+  if (!success) {
+    PLOG_IF(ERROR, ::GetLastError() != ERROR_GEN_FAILURE)
+        << "Failed to get process image path";
+    return base::unexpected(::GetLastError());
+  }
+  return base::FilePath(image_path);
+}
+
+void ReportParentProcessName() {
+  base::ProcessId ppid =
+      base::GetParentProcessId(base::GetCurrentProcessHandle());
+
+  base::Process process(
+      base::Process::OpenWithAccess(ppid, PROCESS_QUERY_LIMITED_INFORMATION));
+
+  if (process.IsValid()) {
+    auto result = GetProcessExecutablePath(process);
+
+    if (result.has_value()) {
+      uint32_t hash = 0U;
+      hash = variations::HashName(
+          base::ToLowerASCII(base::SysWideToUTF8(result->BaseName().value())));
+      base::UmaHistogramSparse("Windows.ParentProcessNameHash", hash);
+    }
+  }
+}
+
 // This error message is not localized because we failed to load the
 // localization data files.
 const char kMissingLocaleDataTitle[] = "Missing File Error";
@@ -503,16 +546,6 @@ void ChromeBrowserMainPartsWin::PreCreateMainMessageLoop() {
 }
 
 int ChromeBrowserMainPartsWin::PreCreateThreads() {
-  static constexpr std::string_view kIsEnterpriseManaged =
-      "is-enterprise-managed";
-  crash_keys::AllocateCrashKeyInBrowserAndChildren(
-      kIsEnterpriseManaged,
-      policy::ManagementServiceFactory::GetForPlatform()
-                  ->GetManagementAuthorityTrustworthiness() >=
-              policy::ManagementAuthorityTrustworthiness::TRUSTED
-          ? "yes"
-          : "no");
-
   // Set crash keys containing the registry values used to determine Chrome's
   // update channel at process startup; see https://crbug.com/579504.
   const auto& details = install_static::InstallDetails::Get();
@@ -542,6 +575,12 @@ int ChromeBrowserMainPartsWin::PreCreateThreads() {
   }
 
   return ChromeBrowserMainParts::PreCreateThreads();
+}
+
+void ChromeBrowserMainPartsWin::PostCreateThreads() {
+  performance_manager::InitializeDllPrereadPolicy();
+
+  ChromeBrowserMainParts::PostCreateThreads();
 }
 
 void ChromeBrowserMainPartsWin::PostMainMessageLoopRun() {
@@ -674,41 +713,12 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
       base::FeatureList::IsEnabled(features::kRegisterOsUpdateHandlerWin));
 #endif  // GOOGLE_CHROME_BRANDING
 
+  // Record the parent process at a low priority.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(&ReportParentProcessName));
+
   base::ImportantFileWriterCleaner::GetInstance().Start();
-}
-
-// static
-void ChromeBrowserMainPartsWin::PrepareRestartOnCrashEnviroment(
-    const base::CommandLine& parsed_command_line) {
-  // Clear this var so child processes don't show the dialog by default.
-  std::unique_ptr<base::Environment> env(base::Environment::Create());
-  env->UnSetVar(env_vars::kShowRestart);
-
-  // For non-interactive tests we don't restart on crash.
-  if (env->HasVar(env_vars::kHeadless))
-    return;
-
-  // If the known command-line test options are used we don't create the
-  // environment block which means we don't get the restart dialog.
-  if (parsed_command_line.HasSwitch(switches::kBrowserCrashTest) ||
-      parsed_command_line.HasSwitch(switches::kNoErrorDialogs))
-    return;
-
-  // The encoding we use for the info is "title|context|direction" where
-  // direction is either env_vars::kRtlLocale or env_vars::kLtrLocale depending
-  // on the current locale.
-  std::u16string dlg_strings(
-      l10n_util::GetStringUTF16(IDS_CRASH_RECOVERY_TITLE));
-  dlg_strings.push_back('|');
-  std::u16string adjusted_string(
-      l10n_util::GetStringUTF16(IDS_CRASH_RECOVERY_CONTENT));
-  base::i18n::AdjustStringForLocaleDirection(&adjusted_string);
-  dlg_strings.append(adjusted_string);
-  dlg_strings.push_back('|');
-  dlg_strings.append(base::ASCIIToUTF16(
-      base::i18n::IsRTL() ? env_vars::kRtlLocale : env_vars::kLtrLocale));
-
-  env->SetVar(env_vars::kRestartInfo, base::UTF16ToUTF8(dlg_strings));
 }
 
 // static
@@ -823,7 +833,7 @@ std::wstring TranslationDelegate::GetLocalizedString(int installer_string_id) {
     DO_STRING_MAPPING
 #undef HANDLE_STRING
   default:
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   if (resource_id)
     return base::UTF16ToWide(l10n_util::GetStringUTF16(resource_id));

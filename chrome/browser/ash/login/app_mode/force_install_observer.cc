@@ -8,10 +8,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/syslog_logging.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/force_installed_tracker_ash.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -39,13 +35,6 @@ extensions::ForceInstalledTracker* GetForceInstalledTracker(Profile* profile) {
 
   extensions::ExtensionService* service = system->extension_service();
   return service ? service->force_installed_tracker() : nullptr;
-}
-
-crosapi::ForceInstalledTrackerAsh* GetForceInstalledTrackerAsh() {
-  CHECK(crosapi::CrosapiManager::IsInitialized());
-  return crosapi::CrosapiManager::Get()
-      ->crosapi_ash()
-      ->force_installed_tracker_ash();
 }
 
 bool IsExtensionInstallForcelistPolicyValid() {
@@ -77,7 +66,8 @@ void RecordKioskExtensionInstallError(
 }
 
 void RecordKioskExtensionInstallDuration(base::TimeDelta time_delta) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Kiosk.Extensions.InstallDuration", time_delta);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Kiosk.Extensions.InstallDuration",
+                                        time_delta);
 }
 
 void RecordKioskExtensionInstallTimedOut(bool timeout) {
@@ -97,12 +87,7 @@ ForceInstallObserver::ForceInstallObserver(Profile* profile,
     return;
   }
 
-  if (crosapi::browser_util::IsLacrosEnabledInWebKioskSession() ||
-      crosapi::browser_util::IsLacrosEnabledInChromeKioskSession()) {
-    StartObservingLacros();
-  } else {
-    StartObservingAsh(profile);
-  }
+  StartObservingAsh(profile);
 }
 
 ForceInstallObserver::~ForceInstallObserver() = default;
@@ -112,16 +97,6 @@ void ForceInstallObserver::StartObservingAsh(Profile* profile) {
       GetForceInstalledTracker(profile);
   if (tracker && !tracker->IsReady()) {
     observation_for_ash_.Observe(tracker);
-    StartTimerToWaitForExtensions();
-  } else {
-    ReportDone();
-  }
-}
-
-void ForceInstallObserver::StartObservingLacros() {
-  crosapi::ForceInstalledTrackerAsh* tracker = GetForceInstalledTrackerAsh();
-  if (tracker && !tracker->IsReady()) {
-    observation_for_lacros_.Observe(tracker);
     StartTimerToWaitForExtensions();
   } else {
     ReportDone();

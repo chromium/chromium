@@ -31,16 +31,10 @@ class ModuleTestBase {
   v8::Local<v8::Value> GetException(ScriptState* script_state,
                                     ScriptEvaluationResult result);
 
-  static v8::Local<v8::Module> CompileModule(
-      ScriptState*,
-      const char*,
-      const KURL&,
-      ExceptionState& state = DummyExceptionStateForTesting().ReturnThis());
-  static v8::Local<v8::Module> CompileModule(
-      ScriptState*,
-      String,
-      const KURL&,
-      ExceptionState& state = DummyExceptionStateForTesting().ReturnThis());
+  static v8::Local<v8::Module> CompileModule(ScriptState*,
+                                             const char*,
+                                             const KURL&);
+  static v8::Local<v8::Module> CompileModule(ScriptState*, String, const KURL&);
 };
 
 }  // namespace blink

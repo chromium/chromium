@@ -59,7 +59,7 @@ const char kNetworkLoadHistogramName[] =
 
 class CachedImageFetcherTest : public testing::Test {
  public:
-  CachedImageFetcherTest() {}
+  CachedImageFetcherTest() = default;
 
   CachedImageFetcherTest(const CachedImageFetcherTest&) = delete;
   CachedImageFetcherTest& operator=(const CachedImageFetcherTest&) = delete;

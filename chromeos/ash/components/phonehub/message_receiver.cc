@@ -6,8 +6,7 @@
 
 #include "chromeos/ash/components/phonehub/proto/phonehub_api.pb.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 MessageReceiver::MessageReceiver() = default;
 MessageReceiver::~MessageReceiver() = default;
@@ -74,5 +73,4 @@ void MessageReceiver::NotifyAppListIncrementalUpdateReceived(
   }
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

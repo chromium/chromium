@@ -15,7 +15,6 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/notimplemented.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
@@ -26,9 +25,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_mode_idle_app_name_notification.h"
 #include "chrome/browser/ash/app_mode/metrics/network_connectivity_metrics_service.h"
 #include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_manager_observer.h"
-#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -58,11 +54,7 @@ void StartFloatingAccessibilityMenu() {
 bool IsOfflineEnabledForApp(const std::string& app_id, Profile* profile) {
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile);
-  if (!extension_registry) {
-    // If Lacros is enabled, extensions are running in Lacros. So Ash does not
-    // have `extension_registry`.
-    return false;
-  }
+  CHECK(extension_registry);
 
   const extensions::Extension* primary_app =
       extension_registry->GetInstalledExtension(app_id);
@@ -73,59 +65,7 @@ bool IsOfflineEnabledForApp(const std::string& app_id, Profile* profile) {
   return extensions::OfflineEnabledInfo::IsOfflineEnabled(primary_app);
 }
 
-bool IsLacrosEnabled() {
-  return crosapi::browser_util::IsLacrosEnabledInChromeKioskSession() ||
-         crosapi::browser_util::IsLacrosEnabledInWebKioskSession();
-}
-
 }  // namespace
-
-class KioskSystemSession::LacrosWatcher
-    : public crosapi::BrowserManagerObserver {
- public:
-  explicit LacrosWatcher(Profile* profile, const ash::KioskAppId& kiosk_app_id)
-      : profile_(profile), kiosk_app_id_(kiosk_app_id) {
-    observation_.Observe(crosapi::BrowserManager::Get());
-  }
-
-  LacrosWatcher(const LacrosWatcher&) = delete;
-  LacrosWatcher& operator=(const LacrosWatcher&) = delete;
-  ~LacrosWatcher() override = default;
-
-  // `crosapi::BrowserManagerObserver`:
-  void OnStateChanged() override {
-    if (!crosapi::BrowserManager::Get()->IsRunningOrWillRun()) {
-      LOG(WARNING) << "Lacros crashed, restarting Kiosk app in Lacros";
-      RestartKioskSession();
-    }
-  }
-
- private:
-  void RestartKioskSession() {
-    recovery_launcher_ =
-        std::make_unique<CrashRecoveryLauncher>(*profile_, kiosk_app_id_);
-    recovery_launcher_->Start(
-        base::BindOnce(&LacrosWatcher::OnKioskRelaunchComplete,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  void OnKioskRelaunchComplete(bool success,
-                               const std::optional<std::string>& _) {
-    recovery_launcher_.reset();
-    if (!success) {
-      LOG(WARNING) << "Unable to restart kiosk, ending kiosk session";
-      chrome::AttemptUserExit();
-    }
-  }
-
-  const raw_ptr<Profile> profile_;
-  const ash::KioskAppId kiosk_app_id_;
-  std::unique_ptr<CrashRecoveryLauncher> recovery_launcher_;
-  base::ScopedObservation<crosapi::BrowserManager,
-                          crosapi::BrowserManagerObserver>
-      observation_{this};
-  base::WeakPtrFactory<LacrosWatcher> weak_ptr_factory_{this};
-};
 
 KioskSystemSession::KioskSystemSession(
     Profile* profile,
@@ -150,12 +90,8 @@ KioskSystemSession::KioskSystemSession(
       InitForWebKiosk(app_name);
       break;
     case KioskAppType::kIsolatedWebApp:
-      // TODO(crbug.com/361017777): call InitForIwaKiosk or reus existing init.
-      NOTIMPLEMENTED();
+      InitForIwaKiosk(app_name);
       break;
-  }
-  if (IsLacrosEnabled()) {
-    lacros_watcher_ = std::make_unique<LacrosWatcher>(profile, kiosk_app_id_);
   }
 }
 
@@ -164,24 +100,28 @@ KioskSystemSession::~KioskSystemSession() = default;
 void KioskSystemSession::InitForChromeAppKiosk() {
   const std::string& app_id = kiosk_app_id_.app_id.value();
   browser_session_.InitForChromeAppKiosk(app_id);
-  StartFloatingAccessibilityMenu();
   InitKioskAppUpdateService(app_id);
   SetRebootAfterUpdateIfNecessary();
-
-  periodic_metrics_service_->RecordPreviousSessionMetrics();
-  periodic_metrics_service_->StartRecordingPeriodicMetrics(
-      IsOfflineEnabledForApp(app_id, profile()));
+  InitCommon(IsOfflineEnabledForApp(app_id, profile()));
 }
 
 void KioskSystemSession::InitForWebKiosk(
     const std::optional<std::string>& app_name) {
   browser_session_.InitForWebKiosk(app_name);
+  InitCommon(/*is_offline_enabled=*/true);
+}
+
+void KioskSystemSession::InitForIwaKiosk(
+    const std::optional<std::string>& app_name) {
+  browser_session_.InitForIwaKiosk(app_name);
+  InitCommon(/*is_offline_enabled=*/true);
+}
+
+void KioskSystemSession::InitCommon(bool is_offline_enabled) {
   StartFloatingAccessibilityMenu();
 
   periodic_metrics_service_->RecordPreviousSessionMetrics();
-  // Web apps always support offline mode.
-  periodic_metrics_service_->StartRecordingPeriodicMetrics(
-      /*is_offline_enabled=*/true);
+  periodic_metrics_service_->StartRecordingPeriodicMetrics(is_offline_enabled);
 }
 
 void KioskSystemSession::ShuttingDown() {

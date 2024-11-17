@@ -37,6 +37,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "third_party/zlib/google/compression_utils.h"
 #include "url/origin.h"
+#include "v8/include/v8-context.h"
 
 namespace auction_worklet {
 
@@ -51,6 +52,9 @@ constexpr char kTagInterestGroupName[] = "interestGroupNames";
 constexpr char kTagKey[] = "keys";
 constexpr char kTagRenderUrls[] = "renderUrls";
 constexpr char kTagAdComponentRenderUrls[] = "adComponentRenderUrls";
+
+using ResultOrError =
+    base::expected<scoped_refptr<TrustedSignals::Result>, std::string>;
 
 // Wrapper around cbor::Reader::Read that enables reading floating point. While
 // as of this writing, floating point isn't used, failing on floats means adding
@@ -381,13 +385,14 @@ GetKeyValueDataString(
 // `key_group_output_map` with specified tag, and serialize it to
 // `AuctionV8Helper::SerializedValue` as the value. Insert this into a
 // map with the `key` as the key. Return `ErrorInfo` in case of any failure.
+// If `keys` is nullopt, then all keys will be parsed.
 base::expected<std::map<std::string, AuctionV8Helper::SerializedValue>,
                TrustedSignalsKVv2ResponseParser::ErrorInfo>
 SerializeKeyGroupOutputsMap(
     AuctionV8Helper* v8_helper,
     const std::map<std::string, const cbor::Value::MapValue*>&
         key_group_outputs_map,
-    const std::set<std::string>& keys,
+    base::optional_ref<const std::set<std::string>> keys,
     const char* tag) {
   std::map<std::string, AuctionV8Helper::SerializedValue> serialized_value_map;
 
@@ -399,17 +404,19 @@ SerializeKeyGroupOutputsMap(
     return serialized_value_map;
   }
 
-  for (const auto& key : keys) {
-    const auto& key_values_map = tag_it->second;
-    auto cbor_it = key_values_map->find(cbor::Value(key));
+  for (const auto& cbor_it : *tag_it->second) {
+    if (!cbor_it.first.is_string()) {
+      continue;
+    }
 
-    if (cbor_it == key_values_map->end()) {
+    const std::string& key = cbor_it.first.GetString();
+    if (keys && !keys->contains(key)) {
       continue;
     }
 
     base::expected<std::string_view,
                    TrustedSignalsKVv2ResponseParser::ErrorInfo>
-        data_string = GetKeyValueDataString(*cbor_it);
+        data_string = GetKeyValueDataString(cbor_it);
 
     if (!data_string.has_value()) {
       return base::unexpected(std::move(data_string).error());
@@ -442,18 +449,20 @@ SerializeKeyGroupOutputsMap(
 // Return a CBOR value with array type, or `ErrorInfo` in case of any parsing
 // failure.
 base::expected<cbor::Value, TrustedSignalsKVv2ResponseParser::ErrorInfo>
-GetContentFromCompressionGroup(const CompressionGroupResult& group_result) {
+GetContentFromCompressionGroup(
+    mojom::TrustedSignalsCompressionScheme compression_scheme,
+    base::span<const uint8_t> content) {
   base::span<const uint8_t> content_bytes;
   // Buffer for holding the data if we need to decompress.
   std::string decompressed_string;
 
-  if (group_result.compression_scheme ==
+  if (compression_scheme ==
       auction_worklet::mojom::TrustedSignalsCompressionScheme::kNone) {
-    content_bytes = base::as_byte_span(group_result.content);
-  } else if (group_result.compression_scheme ==
+    content_bytes = content;
+  } else if (compression_scheme ==
              auction_worklet::mojom::TrustedSignalsCompressionScheme::kGzip) {
     bool is_decompressed =
-        compression::GzipUncompress(group_result.content, &decompressed_string);
+        compression::GzipUncompress(content, &decompressed_string);
     if (!is_decompressed) {
       return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
           "Failed to decompress content string with Gzip."));
@@ -541,6 +550,149 @@ GetKeyGroupOutputsFromPartition(const cbor::Value& partition_value,
   return &key_group_outputs_value.GetArray();
 }
 
+// Attempts to create a TrustedSignals::Result for all fields in a bidding
+// partition, given the result of calling ParseKeyGroupOutputsToMap() on the
+// partition and the partition's data version.
+ResultOrError ParseBiddingPartition(
+    AuctionV8Helper* v8_helper,
+    const std::map<std::string, const cbor::Value::MapValue*>&
+        key_group_outputs_map,
+    std::optional<uint32_t> data_version) {
+  // Try to find `kTagInterestGroupName` tag and parse its map.
+  TrustedSignals::Result::PerInterestGroupDataMap per_interest_group_data_map;
+  auto tag_interest_group_name_it =
+      key_group_outputs_map.find(kTagInterestGroupName);
+  if (tag_interest_group_name_it != key_group_outputs_map.end()) {
+    for (auto& interest_group_data : *tag_interest_group_name_it->second) {
+      if (!interest_group_data.first.is_string()) {
+        return base::unexpected("Interest group names must be strings");
+      }
+      const std::string* name = &interest_group_data.first.GetString();
+      base::expected<std::string_view,
+                     TrustedSignalsKVv2ResponseParser::ErrorInfo>
+          data_string = GetKeyValueDataString(interest_group_data);
+
+      if (!data_string.has_value()) {
+        return base::unexpected(std::move(data_string.error().error_msg));
+      }
+
+      // Each interest group name should be associated with a JSON string with
+      // fields for that interest group.
+      v8::Local<v8::Value> per_interest_group_data_v8_value;
+      if (!v8_helper
+               ->CreateValueFromJson(v8_helper->scratch_context(),
+                                     std::move(data_string).value())
+               .ToLocal(&per_interest_group_data_v8_value) ||
+          !per_interest_group_data_v8_value->IsObject() ||
+          // V8 considers arrays a subtype of object, but the
+          // response body must be a JSON object, not a JSON
+          // array,
+          // so need to explicitly check if it's an array.
+          per_interest_group_data_v8_value->IsArray()) {
+        return base::unexpected(
+            "Failed to create V8 value from key group output "
+            "data.");
+      }
+
+      v8::Local<v8::Object> per_interest_group_data_v8_object =
+          per_interest_group_data_v8_value.As<v8::Object>();
+      std::optional<TrustedSignals::Result::PriorityVector> priority_vector =
+          TrustedSignals::ParsePriorityVector(
+              v8_helper, per_interest_group_data_v8_object);
+
+      std::optional<base::TimeDelta> update_if_older_than;
+      if (base::FeatureList::IsEnabled(
+              features::kInterestGroupUpdateIfOlderThan)) {
+        update_if_older_than = TrustedSignals::ParseUpdateIfOlderThan(
+            v8_helper, per_interest_group_data_v8_object);
+      }
+
+      if (priority_vector || update_if_older_than) {
+        per_interest_group_data_map.emplace(
+            *name,
+            TrustedSignals::Result::PerGroupData(
+                std::move(priority_vector), std::move(update_if_older_than)));
+      }
+    }
+  }
+
+  // Try to find `kTagKey` tag and parse the map.
+  auto maybe_key_data_map = SerializeKeyGroupOutputsMap(
+      v8_helper, key_group_outputs_map, /*keys=*/std::nullopt, kTagKey);
+  if (!maybe_key_data_map.has_value()) {
+    return base::unexpected(std::move(maybe_key_data_map).error().error_msg);
+  }
+
+  return base::MakeRefCounted<TrustedSignals::Result>(
+      std::move(per_interest_group_data_map),
+      std::move(maybe_key_data_map).value(), data_version);
+}
+
+// Attempts to create a TrustedSignals::Result for all fields in a scoring
+// partition, given the result of calling ParseKeyGroupOutputsToMap() on the
+// partition and the partition's data version.
+ResultOrError ParseScoringPartition(
+    AuctionV8Helper* v8_helper,
+    const std::map<std::string, const cbor::Value::MapValue*>&
+        key_group_outputs_map,
+    std::optional<uint32_t> data_version) {
+  auto maybe_render_urls_map = SerializeKeyGroupOutputsMap(
+      v8_helper, key_group_outputs_map, /*keys=*/std::nullopt, kTagRenderUrls);
+  // Note that the map not being present is valid - there's only an error in the
+  // case invalid data is received.
+  if (!maybe_render_urls_map.has_value()) {
+    return base::unexpected(std::move(maybe_render_urls_map).error().error_msg);
+  }
+
+  auto maybe_ad_component_render_urls_map = SerializeKeyGroupOutputsMap(
+      v8_helper, key_group_outputs_map, /*keys=*/std::nullopt,
+      kTagAdComponentRenderUrls);
+  // Note that the map not being present is valid - there's only an error in the
+  // case invalid data is received.
+  if (!maybe_ad_component_render_urls_map.has_value()) {
+    return base::unexpected(
+        std::move(maybe_ad_component_render_urls_map).error().error_msg);
+  }
+
+  return base::MakeRefCounted<TrustedSignals::Result>(
+      std::move(maybe_render_urls_map).value(),
+      std::move(maybe_ad_component_render_urls_map).value(), data_version);
+}
+
+// Takes a cbor::Value corresponding to a partition of type `signals_type` and
+// attempts to parse it to a TrustedSignals::Result.
+ResultOrError ParsePartition(
+    AuctionV8Helper* v8_helper,
+    TrustedSignalsKVv2ResponseParser::SignalsType signals_type,
+    const cbor::Value& partition_value,
+    int& partition_id) {
+  std::optional<uint32_t> data_version;
+
+  auto maybe_key_group_outputs = GetKeyGroupOutputsFromPartition(
+      partition_value, partition_id, data_version);
+  if (!maybe_key_group_outputs.has_value()) {
+    return base::unexpected(
+        std::move(maybe_key_group_outputs.error().error_msg));
+  }
+
+  base::expected<std::map<std::string, const cbor::Value::MapValue*>,
+                 TrustedSignalsKVv2ResponseParser::ErrorInfo>
+      key_group_outputs_map =
+          ParseKeyGroupOutputsToMap(*maybe_key_group_outputs.value());
+
+  if (!key_group_outputs_map.has_value()) {
+    return base::unexpected(std::move(key_group_outputs_map.error().error_msg));
+  }
+
+  if (signals_type == TrustedSignalsKVv2ResponseParser::SignalsType::kBidding) {
+    return ParseBiddingPartition(v8_helper, *key_group_outputs_map,
+                                 data_version);
+  } else {
+    return ParseScoringPartition(v8_helper, *key_group_outputs_map,
+                                 data_version);
+  }
+}
+
 }  // namespace
 
 TrustedSignalsKVv2RequestHelper::TrustedSignalsKVv2RequestHelper(
@@ -582,8 +734,13 @@ TrustedSignalsKVv2RequestHelperBuilder::Build() {
   cbor::Value::MapValue request_map_value;
   AddPostRequestConstants(request_map_value);
 
-  cbor::Value::ArrayValue partition_array;
+  // Add hostname to metadata.
+  cbor::Value::MapValue metadata;
+  metadata.try_emplace(cbor::Value("hostname"), cbor::Value(hostname()));
+  request_map_value.try_emplace(cbor::Value("metadata"),
+                                cbor::Value(std::move(metadata)));
 
+  cbor::Value::ArrayValue partition_array;
   for (const auto& group_pair : compression_groups()) {
     int compression_group_id = group_pair.first;
     const CompressionGroup& partition_map = group_pair.second;
@@ -611,31 +768,30 @@ TrustedSignalsKVv2RequestHelperBuilder::Partition::Partition(
     int partition_id,
     const std::string& interest_group_name,
     const std::set<std::string>& bidding_keys,
-    const std::string& hostname,
     const std::optional<int>& experiment_group_id,
-    std::pair<std::string, std::string> trusted_bidding_signals_slot_size_param)
+    const std::optional<std::pair<std::string, std::string>>&
+        trusted_bidding_signals_slot_size_param)
     : partition_id(partition_id),
       interest_group_names({interest_group_name}),
       bidding_signals_keys(bidding_keys) {
-  additional_params.Set("hostname", hostname);
   if (experiment_group_id.has_value()) {
     additional_params.Set("experimentGroupId",
                           base::NumberToString(experiment_group_id.value()));
   }
-  additional_params.Set(trusted_bidding_signals_slot_size_param.first,
-                        trusted_bidding_signals_slot_size_param.second);
+  if (trusted_bidding_signals_slot_size_param) {
+    additional_params.Set(trusted_bidding_signals_slot_size_param->first,
+                          trusted_bidding_signals_slot_size_param->second);
+  }
 }
 
 TrustedSignalsKVv2RequestHelperBuilder::Partition::Partition(
     int partition_id,
     const std::string& render_url,
     const std::set<std::string>& ad_component_render_urls,
-    const std::string& hostname,
     const std::optional<int>& experiment_group_id)
     : partition_id(partition_id),
       render_urls({render_url}),
       ad_component_render_urls(ad_component_render_urls) {
-  additional_params.Set("hostname", hostname);
   if (experiment_group_id.has_value()) {
     additional_params.Set("experimentGroupId",
                           base::NumberToString(experiment_group_id.value()));
@@ -667,8 +823,8 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::
     CHECK_NE(pos, std::string::npos);
     std::string key = trusted_bidding_signals_slot_size_param.substr(0, pos);
     std::string value = trusted_bidding_signals_slot_size_param.substr(pos + 1);
-    trusted_bidding_signals_slot_size_param_ = {std::move(key),
-                                                std::move(value)};
+    trusted_bidding_signals_slot_size_param_ = {
+        {std::move(key), std::move(value)}};
   }
 }
 
@@ -726,7 +882,7 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::AddTrustedSignalsRequest(
   // Find or create partition.
   if (partition_it == compression_group_ptr->end()) {
     Partition new_partition(partition_id, interest_group_name, bidding_keys,
-                            hostname(), experiment_group_id(),
+                            experiment_group_id(),
                             trusted_bidding_signals_slot_size_param());
     compression_group_ptr->emplace(partition_id, std::move(new_partition));
   } else {
@@ -754,17 +910,19 @@ TrustedBiddingSignalsKVv2RequestHelperBuilder::BuildMapForPartition(
                                  cbor::Value(compression_group_id));
 
   // metadata
-  cbor::Value::MapValue metadata;
-  for (const auto param : partition.additional_params) {
-    CHECK(param.second.is_string());
-    // TODO(xtlsheep): The slot size param probably will be changed to a new
-    // format in the future. Check if these are still the right types if the
-    // spec is changed.
-    metadata.try_emplace(cbor::Value(param.first),
-                         cbor::Value(param.second.GetString()));
+  if (!partition.additional_params.empty()) {
+    cbor::Value::MapValue metadata;
+    for (const auto param : partition.additional_params) {
+      CHECK(param.second.is_string());
+      // TODO(xtlsheep): The slot size param probably will be changed to a new
+      // format in the future. Check if these are still the right types if the
+      // spec is changed.
+      metadata.try_emplace(cbor::Value(param.first),
+                           cbor::Value(param.second.GetString()));
+    }
+    partition_cbor_map.try_emplace(cbor::Value("metadata"),
+                                   cbor::Value(std::move(metadata)));
   }
-  partition_cbor_map.try_emplace(cbor::Value("metadata"),
-                                 cbor::Value(std::move(metadata)));
 
   cbor::Value::ArrayValue arguments;
   arguments.emplace_back(
@@ -819,8 +977,7 @@ TrustedScoringSignalsKVv2RequestHelperBuilder::AddTrustedSignalsRequest(
   // means the next partition ID is the size of compression group.
   partition_id = compression_group_ptr->size();
   Partition new_partition(partition_id, render_url.spec(),
-                          ad_component_render_urls, hostname(),
-                          experiment_group_id());
+                          ad_component_render_urls, experiment_group_id());
   compression_group_ptr->emplace(partition_id, std::move(new_partition));
 
   return IsolationIndex(compression_group_id, partition_id);
@@ -838,19 +995,23 @@ TrustedScoringSignalsKVv2RequestHelperBuilder::BuildMapForPartition(
                                  cbor::Value(compression_group_id));
 
   // metadata
-  cbor::Value::MapValue metadata;
-  for (const auto param : partition.additional_params) {
-    CHECK(param.second.is_string());
-    metadata.try_emplace(cbor::Value(param.first),
-                         cbor::Value(param.second.GetString()));
+  if (!partition.additional_params.empty()) {
+    cbor::Value::MapValue metadata;
+    for (const auto param : partition.additional_params) {
+      CHECK(param.second.is_string());
+      metadata.try_emplace(cbor::Value(param.first),
+                           cbor::Value(param.second.GetString()));
+    }
+    partition_cbor_map.try_emplace(cbor::Value("metadata"),
+                                   cbor::Value(std::move(metadata)));
   }
-  partition_cbor_map.try_emplace(cbor::Value("metadata"),
-                                 cbor::Value(std::move(metadata)));
 
   cbor::Value::ArrayValue arguments;
   arguments.emplace_back(MakeArgument("renderUrls", partition.render_urls));
-  arguments.emplace_back(MakeArgument("adComponentRenderUrls",
-                                      partition.ad_component_render_urls));
+  if (!partition.ad_component_render_urls.empty()) {
+    arguments.emplace_back(MakeArgument("adComponentRenderUrls",
+                                        partition.ad_component_render_urls));
+  }
 
   partition_cbor_map.try_emplace(cbor::Value("arguments"),
                                  cbor::Value(std::move(arguments)));
@@ -963,7 +1124,9 @@ TrustedSignalsKVv2ResponseParser::ParseBiddingSignalsFetchResultToResultMap(
   TrustedSignalsResultMap result_map;
 
   for (const auto& group : compression_group_result_map) {
-    auto maybe_content = GetContentFromCompressionGroup(group.second);
+    auto maybe_content = GetContentFromCompressionGroup(
+        group.second.compression_scheme,
+        base::as_byte_span(group.second.content));
     if (!maybe_content.has_value()) {
       return base::unexpected(TrustedSignalsKVv2ResponseParser::ErrorInfo(
           std::move(maybe_content).error().error_msg));
@@ -1087,7 +1250,9 @@ TrustedSignalsKVv2ResponseParser::ParseScoringSignalsFetchResultToResultMap(
   TrustedSignalsResultMap result_map;
 
   for (const auto& group : compression_group_result_map) {
-    auto maybe_content_value = GetContentFromCompressionGroup(group.second);
+    auto maybe_content_value = GetContentFromCompressionGroup(
+        group.second.compression_scheme,
+        base::as_byte_span(group.second.content));
     if (!maybe_content_value.has_value()) {
       return base::unexpected(std::move(maybe_content_value).error());
     }
@@ -1145,6 +1310,38 @@ TrustedSignalsKVv2ResponseParser::ParseScoringSignalsFetchResultToResultMap(
     }
   }
   return result_map;
+}
+
+TrustedSignalsKVv2ResponseParser::PartitionMapOrError
+TrustedSignalsKVv2ResponseParser::ParseEntireCompressionGroup(
+    AuctionV8Helper* v8_helper,
+    SignalsType signals_type,
+    mojom::TrustedSignalsCompressionScheme compression_scheme,
+    base::span<const uint8_t> compression_group_bytes) {
+  AuctionV8Helper::FullIsolateScope isolate_scope(v8_helper);
+  v8::Context::Scope context_scope(v8_helper->scratch_context());
+
+  auto maybe_cbor = GetContentFromCompressionGroup(compression_scheme,
+                                                   compression_group_bytes);
+  if (!maybe_cbor.has_value()) {
+    return base::unexpected(std::move(maybe_cbor.error().error_msg));
+  }
+
+  PartitionMap partitions;
+  for (const auto& partition_value : maybe_cbor.value().GetArray()) {
+    int partition_id;
+    ResultOrError result =
+        ParsePartition(v8_helper, signals_type, partition_value, partition_id);
+    if (!result.has_value()) {
+      return base::unexpected(std::move(result).error());
+    }
+    if (!partitions.try_emplace(partition_id, std::move(result).value())
+             .second) {
+      return base::unexpected(
+          base::StringPrintf("Duplicated partition id \"%d\".", partition_id));
+    }
+  }
+  return partitions;
 }
 
 }  // namespace auction_worklet

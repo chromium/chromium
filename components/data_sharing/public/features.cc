@@ -16,6 +16,10 @@ BASE_FEATURE(kDataSharingJoinOnly,
              "DataSharingJoinOnly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kDataSharingAndroidV2,
+             "DataSharingAndroidV2",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<std::string> kDataSharingURL(
     &kDataSharingFeature,
     "data_sharing_url",

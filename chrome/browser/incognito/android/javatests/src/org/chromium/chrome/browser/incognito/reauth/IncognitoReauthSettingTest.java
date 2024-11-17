@@ -32,8 +32,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.R;
 import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
@@ -46,7 +44,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures(ChromeFeatureList.INCOGNITO_REAUTHENTICATION_FOR_ANDROID)
 public class IncognitoReauthSettingTest {
     private final SettingsActivityTestRule<PrivacySettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PrivacySettings.class);
@@ -58,7 +55,7 @@ public class IncognitoReauthSettingTest {
                 .perform(RecyclerViewActions.scrollTo(hasDescendant(matcher)));
     }
 
-    private void launchSettingsActivity() {
+    private void startSettings() {
         mSettingsActivityTestRule.startSettingsActivity();
         mPrivacySettings = mSettingsActivityTestRule.getFragment();
     }
@@ -67,7 +64,7 @@ public class IncognitoReauthSettingTest {
     @LargeTest
     public void testIncognitoReauthSetting_WhenDisabled_AndOnClickSummary() {
         IncognitoReauthManager.setIsIncognitoReauthFeatureAvailableForTesting(true);
-        launchSettingsActivity();
+        startSettings();
         Intent intent = new Intent();
         Instrumentation.ActivityResult result =
                 new Instrumentation.ActivityResult(Activity.RESULT_OK, intent);
@@ -75,7 +72,6 @@ public class IncognitoReauthSettingTest {
         intending(anyIntent()).respondWith(result);
         String summaryText =
                 ApplicationProvider.getApplicationContext()
-                        .getResources()
                         .getString(
                                 R.string.settings_incognito_tab_lock_summary_android_setting_off);
         summaryText = summaryText.replaceAll("</?link>", "");

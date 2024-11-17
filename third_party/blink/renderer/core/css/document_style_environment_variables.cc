@@ -74,8 +74,6 @@ void DocumentStyleEnvironmentVariables::RecordVariableUsage(
     if (document_->GetFrame()->IsOutermostMainFrame()) {
       UseCounter::Count(document_,
                         WebFeature::kViewportFitCoverOrSafeAreaInsetBottom);
-      // TODO(https://crbug.com/1482559#c23) remove this line by end of 2023.
-      VLOG(0) << "E2E_Used SafeAreaInsetBottom";
     }
   } else if (name == "safe-area-inset-right") {
     UseCounter::Count(document_,

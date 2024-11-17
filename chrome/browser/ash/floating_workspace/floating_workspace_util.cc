@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 
+#include <initializer_list>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -45,7 +47,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kFloatingWorkspaceV2Enabled, false);
 }
 
-// TODO(b/297795546): Clean up V1 code path and feature flag check.
+// TODO(crbug.com/297795546): Clean up V1 code path and feature flag check.
 bool IsFloatingWorkspaceV1Enabled() {
   return features::IsFloatingWorkspaceEnabled();
 }
@@ -55,19 +57,26 @@ bool IsFloatingWorkspaceV2Enabled() {
   if (!pref_service) {
     return false;
   }
-  const PrefService::Preference* floating_workspace_pref =
-      pref_service->FindPreference(
-          policy::policy_prefs::kFloatingWorkspaceEnabled);
 
-  DCHECK(floating_workspace_pref);
+  // TODO(crbug.com/297795546): Temporary check both FloatingWorkspaceEnabled
+  // and FloatingWorkspaceV2Enabled policies. The former was originally used to
+  // control V2 behavior and there are testers who might still rely on it. The
+  // latter will be used in the next round of testing. Before it starts, we let
+  // any of the two policies control the feature.
+  for (const auto& pref_name : {policy::policy_prefs::kFloatingWorkspaceEnabled,
+                                prefs::kFloatingWorkspaceV2Enabled}) {
+    const PrefService::Preference* floating_workspace_pref =
+        pref_service->FindPreference(pref_name);
 
-  if (floating_workspace_pref->IsManaged()) {
-    // If there is a policy managing the pref, return what is set by policy.
-    return pref_service->GetBoolean(
-        policy::policy_prefs::kFloatingWorkspaceEnabled);
+    DCHECK(floating_workspace_pref);
+
+    if (floating_workspace_pref->IsManaged()) {
+      // If there is a policy managing the pref, return what is set by policy.
+      return pref_service->GetBoolean(pref_name);
+    }
   }
 
-  // TODO(b/297795546): Remove external ash feature flag.
+  // TODO(crbug.com/297795546): Remove external ash feature flag.
   return features::IsFloatingWorkspaceV2Enabled();
 }
 

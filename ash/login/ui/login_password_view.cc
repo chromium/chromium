@@ -5,6 +5,7 @@
 #include "ash/login/ui/login_password_view.h"
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/login/login_screen_controller.h"
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/hover_notifier.h"
@@ -35,7 +36,6 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer_animation_observer.h"
-#include "ui/events/ash/keyboard_capability.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/types/event_type.h"
@@ -631,9 +631,8 @@ void LoginPasswordView::SubmitPassword() {
 
 void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
   const gfx::VectorIcon& capslock_icon =
-      Shell::Get()->keyboard_capability()->IsModifierSplitEnabled()
-          ? kModifierSplitLockScreenCapsLockIcon
-          : kLockScreenCapsLockIcon;
+      features::IsModifierSplitEnabled() ? kModifierSplitLockScreenCapsLockIcon
+                                         : kLockScreenCapsLockIcon;
   const ui::ColorId enabled_icon_color_id = cros_tokens::kCrosSysOnSurface;
   const ui::ColorId disabled_icon_color_id = cros_tokens::kCrosSysDisabled;
   capslock_icon_->SetImage(ui::ImageModel::FromVectorIcon(

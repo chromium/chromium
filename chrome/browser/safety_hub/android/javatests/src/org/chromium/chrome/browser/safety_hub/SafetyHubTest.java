@@ -66,7 +66,6 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.build.BuildConfig;
@@ -158,8 +157,6 @@ public final class SafetyHubTest {
     public SettingsActivityTestRule<SafetyHubFragment> mSafetyHubFragmentTestRule =
             new SettingsActivityTestRule<>(SafetyHubFragment.class);
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
@@ -202,13 +199,15 @@ public final class SafetyHubTest {
 
     @Before
     public void setUp() {
-        mJniMocker.mock(UnusedSitePermissionsBridgeJni.TEST_HOOKS, mUnusedPermissionsBridge);
-        mJniMocker.mock(
-                NotificationPermissionReviewBridgeJni.TEST_HOOKS,
+        UnusedSitePermissionsBridgeJni.setInstanceForTesting(mUnusedPermissionsBridge);
+        NotificationPermissionReviewBridgeJni.setInstanceForTesting(
                 mNotificationPermissionReviewBridge);
 
         mActivityTestRule.startMainActivityOnBlankPage();
         mProfile = mActivityTestRule.getProfile(/* incognito= */ false);
+
+        // Make sure the compromised passwords count is reset at the beginning of the test suite.
+        clearCompromisedPasswordsCount();
     }
 
     @Test
@@ -473,10 +472,14 @@ public final class SafetyHubTest {
         // Click the button at the bottom of the page.
         onView(withText(R.string.safety_hub_notifications_reset_all_button)).perform(click());
 
-        // Verify tha the notifications subpage has been dismissed and the state of the
+        // Verify that the notifications subpage has been dismissed and the state of the
         // notification module has changed.
-        onViewWaiting(withText(R.string.safety_hub_notifications_review_ok_title))
-                .check(matches(isDisplayed()));
+        String okNotificationTitle =
+                mSafetyHubFragmentTestRule
+                        .getActivity()
+                        .getString(R.string.safety_hub_notifications_review_ok_title);
+        scrollToExpandedPreference(okNotificationTitle);
+        onViewWaiting(withText(okNotificationTitle)).check(matches(isDisplayed()));
 
         // Click on the snackbar action button and verify that the info state is displayed
         // again.
@@ -719,6 +722,172 @@ public final class SafetyHubTest {
 
         scrollToExpandedPreference(notificationsTitle);
         verifyButtonsNextToTextVisibility(notificationsTitle, true);
+
+        // Make sure the compromised passwords count is reset at the end of the test.
+        clearCompromisedPasswordsCount();
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)
+    @RequiresRestart
+    public void testPasswordModule_WeakPasswords() {
+        // Set the passwords module to the information state.
+        int weakPasswordsCount = 5;
+        addCredentialToAccountStore();
+        setCompromisedPasswordsCount(0);
+        setReusedPasswordsCount(0);
+        setWeakPasswordsCount(weakPasswordsCount);
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that passwords module which is in the information state is expanded by default.
+        String weakPasswordsTitle =
+                safetyHubFragment
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_weak_passwords_summary,
+                                weakPasswordsCount,
+                                weakPasswordsCount);
+        scrollToExpandedPreference(weakPasswordsTitle);
+        verifyButtonsNextToTextVisibility(weakPasswordsTitle, true);
+
+        // Verify the other information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        // Make the password module state be warning.
+        int compromisedPasswordsCount = 5;
+        setCompromisedPasswordsCount(compromisedPasswordsCount);
+        mSafetyHubFragmentTestRule.recreateActivity();
+        safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that the password module is expanded, since it's on the warning state.
+        String compromisedPasswordsTitle =
+                safetyHubFragment
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_check_passwords_compromised_exist,
+                                compromisedPasswordsCount,
+                                compromisedPasswordsCount);
+        scrollToExpandedPreference(compromisedPasswordsTitle);
+        verifyButtonsNextToTextVisibility(compromisedPasswordsTitle, true);
+
+        // Verify that the other module in the information state is now collapsed.
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, false);
+
+        // Make sure the compromised passwords count is reset at the end of the test.
+        clearCompromisedPasswordsCount();
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)
+    @RequiresRestart
+    public void testPasswordModule_CompromisedCountUnavailable_WeakAndReusedPasswords() {
+        // Set the passwords module to the unavailable state.
+        addCredentialToAccountStore();
+        setCompromisedPasswordsCount(-1);
+        setWeakPasswordsCount(0);
+        setReusedPasswordsCount(0);
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that passwords module which is in the unavailable state is expanded by
+        // default.
+        String noWeakAndReusedPasswordsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_no_reused_weak_passwords_title);
+        scrollToExpandedPreference(noWeakAndReusedPasswordsTitle);
+        verifyButtonsNextToTextVisibility(noWeakAndReusedPasswordsTitle, true);
+
+        // Verify the other information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        // Set weak and reused passwords to unavailable.
+        setWeakPasswordsCount(-1);
+        setReusedPasswordsCount(-1);
+        mSafetyHubFragmentTestRule.recreateActivity();
+        safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that the password module is still expanded, but now with the unavailable title.
+        String weakPasswordsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_password_check_unavailable_title);
+        scrollToExpandedPreference(weakPasswordsTitle);
+        verifyButtonsNextToTextVisibility(weakPasswordsTitle, true);
+
+        // Verify that the other module in the information state is still expanded.
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+    }
+
+    @Test
+    @MediumTest
+    @Policies.Add({@Policies.Item(key = "SafeBrowsingEnabled", string = "false")})
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
+    @Features.EnableFeatures(ChromeFeatureList.SAFETY_HUB_WEAK_AND_REUSED_PASSWORDS)
+    @RequiresRestart
+    public void testPasswordModule_WeakAndReusedPasswords() {
+        // Set the passwords module to the information state.
+        int weakPasswordsCount = 5;
+        int reusedPasswordsCount = 4;
+        addCredentialToAccountStore();
+        setCompromisedPasswordsCount(0);
+        setWeakPasswordsCount(weakPasswordsCount);
+        setReusedPasswordsCount(reusedPasswordsCount);
+
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that passwords module which is in the information state and is expanded by
+        // default.
+        // Reused passwords are prioritized over weak passwords.
+        String reusedPasswordsTitle =
+                safetyHubFragment
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_reused_passwords_summary,
+                                reusedPasswordsCount,
+                                reusedPasswordsCount);
+        scrollToExpandedPreference(reusedPasswordsTitle);
+        verifyButtonsNextToTextVisibility(reusedPasswordsTitle, true);
+
+        // Verify the other information module is expanded.
+        String safeBrowsingTitle =
+                safetyHubFragment.getString(R.string.prefs_safe_browsing_no_protection_summary);
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
+
+        // Set reused passwords to 0.
+        setReusedPasswordsCount(0);
+        mSafetyHubFragmentTestRule.recreateActivity();
+        safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify that the password module is still expanded, but now with the weak passwords title.
+        String weakPasswordsTitle =
+                safetyHubFragment
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.safety_hub_weak_passwords_summary,
+                                weakPasswordsCount,
+                                weakPasswordsCount);
+        scrollToExpandedPreference(weakPasswordsTitle);
+        verifyButtonsNextToTextVisibility(weakPasswordsTitle, true);
+
+        // Verify that the other module in the information state is still expanded.
+        scrollToPreference(withText(safeBrowsingTitle));
+        verifyButtonsNextToTextVisibility(safeBrowsingTitle, true);
     }
 
     @Test
@@ -835,11 +1004,14 @@ public final class SafetyHubTest {
         // warning states.
         verifyButtonsNextToTextVisibility(notificationsTitle, true);
 
-        // Click on the reset all button and verify the notification module has changed to a
-        // safe state.
+        // Click on the reset all button.
         clickOnPrimaryButtonNextToText(notificationsTitle);
-        onViewWaiting(withText(R.string.safety_hub_notifications_review_ok_title))
-                .check(matches(isDisplayed()));
+
+        // Verify the notification module has changed to a safe state.
+        String okNotificationsTitle =
+                safetyHubFragment.getString(R.string.safety_hub_notifications_review_ok_title);
+        scrollToExpandedPreference(okNotificationsTitle);
+        onViewWaiting(withText(okNotificationsTitle)).check(matches(isDisplayed()));
 
         // Click on the snackbar action button and verify that the notifications are allowed
         // again and the info state is displayed.
@@ -931,7 +1103,7 @@ public final class SafetyHubTest {
     @Test
     @MediumTest
     @Feature({"SafetyHubTips"})
-    public void testSafetyToolsLearnMoreLink_OpensInCCT() {
+    public void testSafetyToolsLearnMoreLink_OpensInCct() {
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
         var histogramWatcher =
@@ -967,7 +1139,7 @@ public final class SafetyHubTest {
     @Test
     @MediumTest
     @Feature({"SafetyHubTips"})
-    public void testIncognitoLearnMoreLink_OpensInCCT() {
+    public void testIncognitoLearnMoreLink_OpensInCct() {
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
         var histogramWatcher =
@@ -1003,7 +1175,7 @@ public final class SafetyHubTest {
     @Test
     @MediumTest
     @Feature({"SafetyHubTips"})
-    public void testSafeBrowsingLearnMoreLink_OpensInCCT() {
+    public void testSafeBrowsingLearnMoreLink_OpensInCct() {
         mSafetyHubFragmentTestRule.startSettingsActivity();
         SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
         var histogramWatcher =
@@ -1110,7 +1282,7 @@ public final class SafetyHubTest {
 
     static View getRootViewSanitized(int text) {
         View[] view = {null};
-        onViewWaiting(withText(text)).check(((v, e) -> view[0] = v.getRootView()));
+        onViewWaiting(withText(text)).check((v, e) -> view[0] = v.getRootView());
         ThreadUtils.runOnUiThreadBlocking(() -> RenderTestRule.sanitize(view[0]));
         return view[0];
     }
@@ -1146,6 +1318,27 @@ public final class SafetyHubTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(mProfile).setInteger(Pref.BREACHED_CREDENTIALS_COUNT, count);
+                });
+    }
+
+    private void clearCompromisedPasswordsCount() {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile).clearPref(Pref.BREACHED_CREDENTIALS_COUNT);
+                });
+    }
+
+    private void setWeakPasswordsCount(int count) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile).setInteger(Pref.WEAK_CREDENTIALS_COUNT, count);
+                });
+    }
+
+    private void setReusedPasswordsCount(int count) {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(mProfile).setInteger(Pref.REUSED_CREDENTIALS_COUNT, count);
                 });
     }
 

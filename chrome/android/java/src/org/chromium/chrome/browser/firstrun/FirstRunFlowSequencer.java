@@ -17,6 +17,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.IntentHandler;
@@ -29,6 +30,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.crash.CrashKeyIndex;
 import org.chromium.components.crash.CrashKeys;
@@ -206,6 +208,7 @@ public abstract class FirstRunFlowSequencer {
      * @param freProperties Resulting FRE properties bundle.
      */
     public void updateFirstRunProperties(Bundle freProperties) {
+        assert freProperties != null;
         boolean isHistorySyncEnabled =
                 ChromeFeatureList.isEnabled(
                         ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS);
@@ -233,10 +236,13 @@ public abstract class FirstRunFlowSequencer {
 
         // Mark the FRE flow as complete.
         FirstRunStatus.setFirstRunFlowComplete(true);
+        SigninPreferencesManager.getInstance()
+                .setCctMismatchNoticeSuppressionPeriodStart(TimeUtils.currentTimeMillis());
     }
 
     /**
      * Checks if the First Run Experience needs to be launched.
+     *
      * @param preferLightweightFre Whether to prefer the Lightweight First Run Experience.
      * @param fromIntent Intent used to launch the caller.
      * @return Whether the First Run Experience needs to be launched.

@@ -374,7 +374,7 @@ void PermissionDashboardController::Collapse(bool hide) {
 }
 
 void PermissionDashboardController::HideIndicators() {
-  collapse_timer_.AbandonAndStop();
+  collapse_timer_.Stop();
   permission_dashboard_view_->GetIndicatorChip()->ResetAnimation();
   is_verbose_ = false;
   permission_dashboard_view_->GetIndicatorChip()
@@ -481,7 +481,8 @@ void PermissionDashboardController::ShowPageInfoDialog() {
           permission_dashboard_view_->GetWidget()->GetNativeWindow(), contents,
           entry->GetVirtualURL(), std::move(initialized_callback),
           base::BindOnce(&PermissionDashboardController::OnPageInfoBubbleClosed,
-                         weak_factory_.GetWeakPtr()));
+                         weak_factory_.GetWeakPtr()),
+          /*allow_about_this_site=*/true);
   bubble->GetWidget()->Show();
   page_info_bubble_tracker_.SetView(bubble);
 }
@@ -596,6 +597,5 @@ std::u16string PermissionDashboardController::GetIndicatorTitle(
     return l10n_util::GetStringUTF16(IDS_MICROPHONE_IN_USE);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }

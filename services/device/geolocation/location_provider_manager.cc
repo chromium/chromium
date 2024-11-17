@@ -15,6 +15,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "components/device_event_log/device_event_log.h"
 #include "services/device/geolocation/network_location_provider.h"
 #include "services/device/geolocation/wifi_polling_policy.h"
 #include "services/device/public/cpp/device_features.h"
@@ -23,6 +24,27 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace device {
+
+namespace {
+
+std::string_view LocationProviderManagerModeAsString(
+    mojom::LocationProviderManagerMode mode) {
+  switch (mode) {
+    case mojom::LocationProviderManagerMode::kNetworkOnly:
+      return "kNetworkOnly";
+    case mojom::LocationProviderManagerMode::kPlatformOnly:
+      return "kPlatformOnly";
+    case mojom::LocationProviderManagerMode::kCustomOnly:
+      return "kCustomOnly";
+    case mojom::LocationProviderManagerMode::kHybridPlatform:
+      return "kHybridPlatform";
+    case mojom::LocationProviderManagerMode::kHybridFallbackNetwork:
+      return "kHybridFallbackNetwork";
+  }
+  NOTREACHED() << "LocationProviderManagerModeAsString: Unexpected mode: ";
+}
+
+}  // namespace
 
 using ::device::mojom::LocationProviderManagerMode::kCustomOnly;
 using ::device::mojom::LocationProviderManagerMode::kHybridFallbackNetwork;
@@ -72,6 +94,10 @@ LocationProviderManager::LocationProviderManager(
   // On macOS / Windows platforms, use the mode specified by the feature flag.
   provider_manager_mode_ = features::kLocationProviderManagerParam.Get();
 #endif
+  GEOLOCATION_LOG(DEBUG) << "LocationProviderManager::LocationProviderManager: "
+                            "provider_manager_mode_ is initialized to "
+                         << LocationProviderManagerModeAsString(
+                                provider_manager_mode_);
 }
 
 LocationProviderManager::~LocationProviderManager() {
@@ -144,6 +170,10 @@ void LocationProviderManager::StopProvider() {
   // fallback.
 #if BUILDFLAG(IS_MAC)
   provider_manager_mode_ = features::kLocationProviderManagerParam.Get();
+  GEOLOCATION_LOG(DEBUG) << "LocationProviderManager::StopProvider: Resetting "
+                            "provider_manager_mode_ to "
+                         << LocationProviderManagerModeAsString(
+                                provider_manager_mode_);
 #endif  // BUILDFLAG(IS_MAC)
 }
 
@@ -220,6 +250,10 @@ void LocationProviderManager::OnLocationUpdate(
             NewNetworkLocationProvider(url_loader_factory_, api_key_);
         RegisterProvider(*network_location_provider_.get());
         network_location_provider_->StartProvider(enable_high_accuracy_);
+        GEOLOCATION_LOG(DEBUG)
+            << "LocationProviderManager::OnLocationUpdate: kWifiDisabled error "
+               "code received, switch provider_manager_mode_ to "
+            << LocationProviderManagerModeAsString(provider_manager_mode_);
         // Skip location update and wait for the network location provider to
         // provide an update.
         return;

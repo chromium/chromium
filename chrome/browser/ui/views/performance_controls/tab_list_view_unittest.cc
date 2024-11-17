@@ -11,9 +11,11 @@
 #include "chrome/browser/ui/performance_controls/tab_list_model.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/performance_controls/tab_list_row_view.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
 #include "components/performance_manager/test_support/test_harness_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/test/event_generator.h"
@@ -122,6 +124,99 @@ TEST_F(TabListViewUnitTest, CloseButtonRemovesListItem) {
 
   EXPECT_EQ(tab_list_view->children().size(), 1u);
   EXPECT_EQ(tab_list_model->page_contexts().size(), 1u);
+}
+
+TEST_F(TabListViewUnitTest, TabListRowViewAccessibleName) {
+  AddTab(browser(), GURL("https://a.com"));
+  AddTab(browser(), GURL("https://b.com"));
+
+  auto tab_list_model =
+      std::make_unique<TabListModel>(GetPageContextAtIndices({0, 1}));
+  auto tab_list_view = std::make_unique<TabListView>(tab_list_model.get());
+
+  std::vector<resource_attribution::PageContext> page_contexts =
+      tab_list_model->page_contexts();
+  auto children = tab_list_view->children();
+  ASSERT_EQ(children.size(), 2u);
+
+  // Clicking on the X button should remove one of the children from the tab
+  // list
+  TabListRowView* const first_row =
+      views::AsViewClass<TabListRowView>(children[0]);
+
+  ui::AXNodeData data;
+  first_row->GetTextContainerForTesting()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            first_row->GetTitleTextForTesting());
+
+  views::ImageButton* const close_button =
+      first_row->GetCloseButtonForTesting();
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(close_button);
+  test_api.NotifyClick(e);
+
+  EXPECT_EQ(tab_list_view->children().size(), 1u);
+  EXPECT_EQ(tab_list_model->page_contexts().size(), 1u);
+
+  children = tab_list_view->children();
+
+  TabListRowView* const second_row =
+      views::AsViewClass<TabListRowView>(children[0]);
+
+  data = ui::AXNodeData();
+  second_row->GetTextContainerForTesting()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            second_row->GetTitleTextForTesting() + u" " +
+                l10n_util::GetStringUTF16(
+                    IDS_PERFORMANCE_INTERVENTION_SINGLE_SUGGESTED_ROW_ACCNAME));
+}
+
+TEST_F(TabListViewUnitTest, TabListViewAccessibleName) {
+  AddTab(browser(), GURL("https://a.com"));
+  AddTab(browser(), GURL("https://b.com"));
+
+  auto tab_list_model =
+      std::make_unique<TabListModel>(GetPageContextAtIndices({0, 1}));
+  auto tab_list_view = std::make_unique<TabListView>(tab_list_model.get());
+
+  std::vector<resource_attribution::PageContext> page_contexts =
+      tab_list_model->page_contexts();
+  auto children = tab_list_view->children();
+  ASSERT_EQ(children.size(), 2u);
+
+  ui::AXNodeData data;
+  tab_list_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetPluralStringFUTF16(
+                IDS_PERFORMANCE_INTERVENTION_TAB_LIST_ACCNAME,
+                tab_list_model->count()));
+
+  // Clicking on the X button should remove one of the children from the tab
+  // list
+  TabListRowView* const first_row =
+      views::AsViewClass<TabListRowView>(children[0]);
+
+  views::ImageButton* const close_button =
+      first_row->GetCloseButtonForTesting();
+  ui::MouseEvent e(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
+                   ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi test_api(close_button);
+  test_api.NotifyClick(e);
+
+  EXPECT_EQ(tab_list_view->children().size(), 1u);
+  EXPECT_EQ(tab_list_model->page_contexts().size(), 1u);
+
+  data = ui::AXNodeData();
+  tab_list_view->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetPluralStringFUTF16(
+                IDS_PERFORMANCE_INTERVENTION_TAB_LIST_ACCNAME,
+                tab_list_model->count()));
 }
 
 TEST_F(TabListViewUnitTest, CloseButtonShowsAndHidesUpdate) {

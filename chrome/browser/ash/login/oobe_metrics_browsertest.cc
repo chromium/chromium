@@ -7,12 +7,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/screens/consolidated_consent_screen.h"
+#include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_screens_utils.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/browser_process.h"
@@ -57,6 +59,8 @@ class OobeMetricsTest : public OobeBaseTest {
     structured_metrics_recorder_->Initialize();
     LoginDisplayHost::default_host()->GetWizardContext()->is_branded_build =
         true;
+    cryptohome_mixin_.ApplyAuthConfigIfUserExists(
+        user_, test::UserAuthConfig::Create(test::kDefaultAuthSetup));
 
     // Set a fake touchpad device to ensure that CHOOBE screen is shown.
     test::SetFakeTouchpadDevice();
@@ -92,6 +96,7 @@ class OobeMetricsTest : public OobeBaseTest {
 
  private:
   FakeGaiaMixin fake_gaia_{&mixin_host_};
+  CryptohomeMixin cryptohome_mixin_{&mixin_host_};
   base::test::ScopedFeatureList feature_list_;
 };
 

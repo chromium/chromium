@@ -129,7 +129,8 @@ GCMProfileServiceFactory::GCMProfileServiceFactory()
 GCMProfileServiceFactory::~GCMProfileServiceFactory() {
 }
 
-KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+GCMProfileServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -139,7 +140,7 @@ KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
 #endif
 
   if (GlobalTestingFactory& testing_factory = GetTestingFactory()) {
-    return testing_factory.Run(context).release();
+    return testing_factory.Run(context);
   }
 
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner(
@@ -173,7 +174,7 @@ KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
   ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey());
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 
-  return service.release();
+  return service;
 }
 
 }  // namespace gcm

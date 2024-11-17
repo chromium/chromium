@@ -19,7 +19,7 @@
 #include "components/dbus/properties/success_barrier_callback.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 namespace {
 

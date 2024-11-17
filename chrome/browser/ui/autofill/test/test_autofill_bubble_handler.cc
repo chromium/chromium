@@ -97,16 +97,15 @@ AutofillBubbleBase* TestAutofillBubbleHandler::ShowAddNewAddressProfileBubble(
   return add_new_address_profile_bubble_view_.get();
 }
 
-AutofillBubbleBase*
-TestAutofillBubbleHandler::ShowVirtualCardManualFallbackBubble(
+AutofillBubbleBase* TestAutofillBubbleHandler::ShowFilledCardInformationBubble(
     content::WebContents* web_contents,
-    VirtualCardManualFallbackBubbleController* controller,
+    FilledCardInformationBubbleController* controller,
     bool is_user_gesture) {
-  if (!virtual_card_manual_fallback_bubble_view_) {
-    virtual_card_manual_fallback_bubble_view_ =
+  if (!filled_card_information_bubble_view_) {
+    filled_card_information_bubble_view_ =
         std::make_unique<TestAutofillBubble>();
   }
-  return virtual_card_manual_fallback_bubble_view_.get();
+  return filled_card_information_bubble_view_.get();
 }
 
 AutofillBubbleBase* TestAutofillBubbleHandler::ShowVirtualCardEnrollBubble(

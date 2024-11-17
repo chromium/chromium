@@ -75,7 +75,6 @@ class ASH_EXPORT DragHandle : public views::Button,
   // views::View:
   void OnGestureEvent(ui::GestureEvent* event) override;
   gfx::Rect GetAnchorBoundsInScreen() const override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
   // OverviewObserver:
@@ -155,7 +154,12 @@ class ASH_EXPORT DragHandle : public views::Button,
   void StopDragHandleNudgeShowTimer();
 
   // Sets accessible states of the view.
-  void UpdateExpandedCollapsedAccessibleState() const;
+  void UpdateExpandedCollapsedAccessibleState();
+
+  void UpdateAccessibleName();
+
+  // Updates previous-focus and next-focus accessible states of the view.
+  void UpdateAccessiblePreviousAndNextFocus();
 
   // Pointer to the shelf that owns the drag handle.
   const raw_ptr<Shelf> shelf_;

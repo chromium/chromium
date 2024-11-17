@@ -38,7 +38,6 @@ public class PlayerCoordinator implements Player {
     private final Delegate mDelegate;
     private final MiniPlayerCoordinator mMiniPlayer;
     private final ExpandedPlayerCoordinator mExpandedPlayer;
-    private Playback mPlayback;
     private boolean mRestoreMiniPlayer;
     private boolean mRestoreExpandedPlayer;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -130,7 +129,6 @@ public class PlayerCoordinator implements Player {
     public void playbackReady(Playback playback, @PlaybackListener.State int currentPlaybackState) {
         mMediator.setPlayback(playback);
         mMediator.setPlaybackState(currentPlaybackState);
-        mPlayback = playback;
     }
 
     @Override

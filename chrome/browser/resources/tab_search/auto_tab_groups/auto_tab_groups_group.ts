@@ -6,7 +6,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
-import '../strings.m.js';
+import '/strings.m.js';
 import './auto_tab_groups_new_badge.js';
 import './auto_tab_groups_results_actions.js';
 import '../tab_search_item.js';
@@ -19,10 +19,11 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {normalizeURL, TabData, TabItemType} from '../tab_data.js';
-import {getCss} from './auto_tab_groups_group.css.js';
-import {getHtml} from './auto_tab_groups_group.html.js';
 import type {Tab} from '../tab_search.mojom-webui.js';
 import type {TabSearchItemElement} from '../tab_search_item.js';
+
+import {getCss} from './auto_tab_groups_group.css.js';
+import {getHtml} from './auto_tab_groups_group.html.js';
 
 function getEventTargetIndex(e: Event): number {
   return Number((e.currentTarget as HTMLElement).dataset['index']);
@@ -248,6 +249,11 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     // selection should move to another element in the list, this will be done
     // in onTabFocus_.
     this.$.selector.select(-1);
+  }
+
+  protected getCloseButtonAriaLabel_(tabData: TabData): string {
+    return loadTimeData.getStringF(
+        'tabOrganizationCloseTabAriaLabel', tabData.tab.title);
   }
 
   protected onEditClick_() {

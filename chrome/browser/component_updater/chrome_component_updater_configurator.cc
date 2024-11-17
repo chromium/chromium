@@ -79,7 +79,6 @@ class ChromeConfigurator : public update_client::Configurator {
       override;
   scoped_refptr<update_client::UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<update_client::PatcherFactory> GetPatcherFactory() override;
-  bool EnabledDeltas() const override;
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
@@ -117,8 +116,11 @@ ChromeConfigurator::ChromeConfigurator(const base::CommandLine* cmdline,
     : configurator_impl_(ComponentUpdaterCommandLineConfigPolicy(cmdline),
                          /*require_encryption=*/false),
       pref_service_(pref_service),
-      persisted_data_(
-          update_client::CreatePersistedData(pref_service, nullptr)) {
+      persisted_data_(update_client::CreatePersistedData(
+          base::BindRepeating(
+              [](PrefService* pref_service) { return pref_service; },
+              pref_service),
+          nullptr)) {
   CHECK(pref_service_);
 }
 
@@ -241,11 +243,6 @@ ChromeConfigurator::GetPatcherFactory() {
         base::BindRepeating(&patch::LaunchFilePatcher));
   }
   return patch_factory_;
-}
-
-bool ChromeConfigurator::EnabledDeltas() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return configurator_impl_.EnabledDeltas();
 }
 
 bool ChromeConfigurator::EnabledBackgroundDownloader() const {

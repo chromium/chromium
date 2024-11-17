@@ -132,7 +132,8 @@ function findChildTextInner(
         return '';
       }
     }
-    skipNode = node.tagName === 'SCRIPT' || node.tagName === 'NOSCRIPT';
+    skipNode = node.tagName === 'SCRIPT' || node.tagName === 'NOSCRIPT' ||
+        node.tagName === 'STYLE';
   }
 
   if (node.tagName === 'DIV') {

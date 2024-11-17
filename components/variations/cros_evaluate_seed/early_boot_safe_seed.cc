@@ -35,11 +35,14 @@ base::Time EarlyBootSafeSeed::GetTimeForStudyDateChecks() const {
 void EarlyBootSafeSeed::SetTimeForStudyDateChecks(
     const base::Time& safe_seed_time) {}
 
-std::string EarlyBootSafeSeed::GetCompressedSeed() const {
-  return safe_seed_details_.b64_compressed_data();
+StoredSeed EarlyBootSafeSeed::GetCompressedSeed() const {
+  return {StoredSeed::StorageFormat::kCompressedAndBase64Encoded,
+          safe_seed_details_.b64_compressed_data()};
 }
 
-void EarlyBootSafeSeed::SetCompressedSeed(const std::string& safe_compressed) {}
+void EarlyBootSafeSeed::SetCompressedSeed(
+    const std::string& safe_compressed,
+    const std::string& base64_safe_compressed) {}
 
 std::string EarlyBootSafeSeed::GetSignature() const {
   return safe_seed_details_.signature();
@@ -65,6 +68,13 @@ std::string EarlyBootSafeSeed::GetSessionConsistencyCountry() const {
 
 void EarlyBootSafeSeed::SetSessionConsistencyCountry(
     const std::string& session_consistency_country) {}
+
+SeedReaderWriter* EarlyBootSafeSeed::GetSeedReaderWriterForTesting() {
+  return nullptr;
+}
+
+void EarlyBootSafeSeed::SetSeedReaderWriterForTesting(
+    std::unique_ptr<SeedReaderWriter> seed_reader_writer) {}
 
 void EarlyBootSafeSeed::ClearState() {}
 

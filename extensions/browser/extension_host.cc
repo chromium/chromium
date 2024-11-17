@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -517,7 +518,7 @@ void ExtensionHost::OnEventAck(int event_id,
 
 content::JavaScriptDialogManager* ExtensionHost::GetJavaScriptDialogManager(
     WebContents* source) {
-  return delegate_->GetJavaScriptDialogManager();
+  return javascript_dialogs::AppModalDialogManager::GetInstance();
 }
 
 content::WebContents* ExtensionHost::AddNewContents(
@@ -638,11 +639,11 @@ void ExtensionHost::RecordStopLoadingUMA() {
   CHECK(load_start_.get());
   if (extension_host_type_ == mojom::ViewType::kExtensionBackgroundPage) {
     if (extension_ && BackgroundInfo::HasLazyBackgroundPage(extension_)) {
-      UMA_HISTOGRAM_MEDIUM_TIMES("Extensions.EventPageLoadTime2",
-                                 load_start_->Elapsed());
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Extensions.EventPageLoadTime2",
+                                            load_start_->Elapsed());
     } else {
-      UMA_HISTOGRAM_MEDIUM_TIMES("Extensions.BackgroundPageLoadTime2",
-                                 load_start_->Elapsed());
+      DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+          "Extensions.BackgroundPageLoadTime2", load_start_->Elapsed());
     }
   }
 }

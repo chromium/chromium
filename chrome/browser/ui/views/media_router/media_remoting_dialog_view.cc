@@ -42,8 +42,9 @@ bool MediaRemotingDialogCoordinatorViews::Show(
     std::move(permission_callback).Run(false);
     return false;
   }
-  views::View* const icon_view =
-      BrowserView::GetBrowserViewForBrowser(browser)->toolbar()->cast_button();
+  views::View* const icon_view = BrowserView::GetBrowserViewForBrowser(browser)
+                                     ->toolbar()
+                                     ->GetCastButton();
   Profile* const profile =
       Profile::FromBrowserContext(web_contents_->GetBrowserContext());
   PrefService* const pref_service = profile->GetPrefs();

@@ -132,7 +132,7 @@ class FontSizeTabHelperTest : public PlatformTest {
     scoped_refptr<PrefRegistrySyncable> registry =
         base::MakeRefCounted<PrefRegistrySyncable>();
     // Registers Translate and Language related prefs.
-    RegisterBrowserStatePrefs(registry.get());
+    RegisterProfilePrefs(registry.get());
     PrefServiceMockFactory factory;
     return factory.CreateSyncable(registry.get());
   }

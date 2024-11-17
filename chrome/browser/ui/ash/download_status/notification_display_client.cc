@@ -22,6 +22,7 @@
 #include "base/strings/strcat.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/notifications/notification_display_service.h"
+#include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/download_status/display_metadata.h"
@@ -361,7 +362,7 @@ void NotificationDisplayClient::AddOrUpdate(
     notification.set_image_path(display_metadata.file_path);
   }
 
-  NotificationDisplayService::GetForProfile(profile())->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
       NotificationHandler::Type::TRANSIENT, std::move(notification),
       /*metadata=*/nullptr);
 
@@ -377,7 +378,7 @@ void NotificationDisplayClient::Remove(const std::string& guid) {
   // receiving download updates. Therefore, remove `guid` from the collection.
   notifications_closed_by_user_guids_.erase(guid);
 
-  NotificationDisplayService::GetForProfile(profile())->Close(
+  NotificationDisplayServiceFactory::GetForProfile(profile())->Close(
       NotificationHandler::Type::TRANSIENT, GetNotificationIdFromGuid(guid));
 }
 

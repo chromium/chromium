@@ -7,14 +7,15 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/policy/core/browser/policy_conversions_client.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace web {
 class BrowserState;
 }
 
 // PolicyConversionsClientIOS provides an implementation of the
-// PolicyConversionsClient interface that is based on ChromeBrowserState and is
+// PolicyConversionsClient interface that is based on Profile and is
 // suitable for use in //ios/chrome.
 class PolicyConversionsClientIOS : public policy::PolicyConversionsClient {
  public:
@@ -36,7 +37,7 @@ class PolicyConversionsClientIOS : public policy::PolicyConversionsClient {
       policy::PolicyDomain policy_domain) override;
 
  private:
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
 };
 
 #endif  // IOS_CHROME_BROWSER_POLICY_MODEL_POLICY_CONVERSIONS_CLIENT_IOS_H_

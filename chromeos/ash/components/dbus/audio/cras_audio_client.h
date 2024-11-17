@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/dbus/audio/audio_node.h"
+#include "chromeos/ash/components/dbus/audio/voice_isolation_ui_appearance.h"
 #include "chromeos/ash/components/dbus/audio/volume_state.h"
 #include "chromeos/dbus/common/dbus_callback.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -93,6 +94,10 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
     // Called when there is a new active node to indicate whether sidetone is
     // supported.
     virtual void SidetoneSupportedChanged(bool supported);
+
+    // Called when there is a new audio effect ui appearance to render.
+    virtual void AudioEffectUIAppearanceChanged(
+        VoiceIsolationUIAppearance appearance);
 
    protected:
     virtual ~Observer();
@@ -184,6 +189,20 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
 
   // Sets input mute state to |mute_on| value.
   virtual void SetInputMute(bool mute_on) = 0;
+
+  // Gets the DLC IDs of the audio effects supported by the device.
+  virtual void GetAudioEffectDlcs(
+      chromeos::DBusMethodCallback<std::string> callback) = 0;
+
+  // Gets the appearance of the voice isolation UI.
+  virtual void GetVoiceIsolationUIAppearance(
+      chromeos::DBusMethodCallback<VoiceIsolationUIAppearance> callback) = 0;
+
+  // Sets input voice isolation state to |voice_isolation_on| value.
+  virtual void SetVoiceIsolationUIEnabled(bool voice_isolation_on) = 0;
+
+  // Sets the preferred effect mode of voice isolation.
+  virtual void SetVoiceIsolationUIPreferredEffect(uint32_t effect_mode) = 0;
 
   // Sets input noise cancellation state to |noise_cancellation_on| value.
   virtual void SetNoiseCancellationEnabled(bool noise_cancellation_on) = 0;
@@ -311,6 +330,13 @@ class COMPONENT_EXPORT(DBUS_AUDIO) CrasAudioClient {
   // Gets the number of active ARC streams.
   virtual void GetNumberOfArcStreams(
       chromeos::DBusMethodCallback<int32_t> callback) = 0;
+
+  // Sets spatial audio state to |spatial_audio| value.
+  virtual void SetSpatialAudio(bool spatial_audio) = 0;
+
+  // Gets if spatial audio is supported.
+  virtual void GetSpatialAudioSupported(
+      chromeos::DBusMethodCallback<bool> callback) = 0;
 
  protected:
   friend class CrasAudioClientTest;

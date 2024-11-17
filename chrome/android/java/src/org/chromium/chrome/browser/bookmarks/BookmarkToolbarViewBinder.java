@@ -11,9 +11,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 class BookmarkToolbarViewBinder {
     /** Binds the given property to the given model for the given view. */
     public static void bind(PropertyModel model, BookmarkToolbar bookmarkToolbar, PropertyKey key) {
-        if (key == BookmarkToolbarProperties.BOOKMARK_OPENER) {
-            bookmarkToolbar.setBookmarkOpener(model.get(BookmarkToolbarProperties.BOOKMARK_OPENER));
-        } else if (key == BookmarkToolbarProperties.SELECTION_DELEGATE) {
+        if (key == BookmarkToolbarProperties.SELECTION_DELEGATE) {
             bookmarkToolbar.setSelectionDelegate(
                     model.get(BookmarkToolbarProperties.SELECTION_DELEGATE));
         } else if (key == BookmarkToolbarProperties.BOOKMARK_UI_MODE) {

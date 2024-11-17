@@ -164,10 +164,7 @@ class FakePaintPreviewCompositorService : public PaintPreviewCompositorService {
 
   void SetTimeout() { timeout_ = true; }
 
-  bool HasActiveClients() const override {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
+  bool HasActiveClients() const override { NOTREACHED(); }
 
   void SetDisconnectHandler(base::OnceClosure disconnect_handler) override {
     disconnect_handler_ = std::move(disconnect_handler);

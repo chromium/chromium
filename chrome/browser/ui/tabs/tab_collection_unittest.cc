@@ -102,8 +102,8 @@ class TabCollectionBaseTest : public ::testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   content::RenderViewHostTestEnabler test_enabler_;
   std::unique_ptr<Profile> testing_profile_;
-  std::unique_ptr<TabStripModel> tab_strip_model_;
   std::unique_ptr<TestTabStripModelDelegate> tab_strip_model_delegate_;
+  std::unique_ptr<TabStripModel> tab_strip_model_;
   tabs::PreventTabFeatureInitialization prevent_;
 };
 
@@ -139,7 +139,7 @@ TEST_F(PinnedTabCollectionTest, AddOperation) {
 
   // Add a tab to the end of the pinned collection.
   pinned_collection_instance->AppendTab(std::move(tab_model_one));
-  EXPECT_TRUE(tab_model_one_ptr->pinned());
+  EXPECT_TRUE(tab_model_one_ptr->IsPinned());
   EXPECT_EQ(tab_model_one_ptr->GetParentCollectionForTesting(),
             pinned_collection_instance);
 
@@ -176,12 +176,12 @@ TEST_F(PinnedTabCollectionTest, RemoveOperation) {
       pinned_collection_instance->GetIndexOfTabRecursive(tab_model_one_ptr),
       3ul);
   EXPECT_EQ(pinned_collection_instance->ChildCount(), 5ul);
-  EXPECT_TRUE(tab_model_one_ptr->pinned());
+  EXPECT_TRUE(tab_model_one_ptr->IsPinned());
 
   // Remove `tab_model_one` from the collection.
   auto removed_tab_model =
       pinned_collection_instance->MaybeRemoveTab(tab_model_one_ptr);
-  EXPECT_FALSE(removed_tab_model->pinned());
+  EXPECT_FALSE(removed_tab_model->IsPinned());
   EXPECT_FALSE(removed_tab_model->GetParentCollectionForTesting());
 
   EXPECT_EQ(pinned_collection_instance->ChildCount(), 4ul);

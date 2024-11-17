@@ -46,21 +46,28 @@ struct BoundEdges {
 // would be the end. However, this flips for RTL, and vertical writing modes
 // additionally complicated matters.
 BoundEdges GetBoundEdges(WritingMode writing_mode, bool is_ltr) {
-  if (IsHorizontalWritingMode(writing_mode)) {
-    if (is_ltr)
-      return {RectEdge::kTopLeftToBottomLeft, RectEdge::kTopRightToBottomRight};
-    else
-      return {RectEdge::kTopRightToBottomRight, RectEdge::kTopLeftToBottomLeft};
-  } else if (IsFlippedBlocksWritingMode(writing_mode)) {
-    if (is_ltr)
-      return {RectEdge::kTopLeftToTopRight, RectEdge::kBottomRightToBottomLeft};
-    else
-      return {RectEdge::kBottomLeftToBottomRight, RectEdge::kTopRightToTopLeft};
-  } else {
-    if (is_ltr)
-      return {RectEdge::kTopRightToTopLeft, RectEdge::kBottomLeftToBottomRight};
-    else
-      return {RectEdge::kBottomRightToBottomLeft, RectEdge::kTopLeftToTopRight};
+  switch (writing_mode) {
+    case WritingMode::kHorizontalTb:
+      return is_ltr ? BoundEdges{RectEdge::kTopLeftToBottomLeft,
+                                 RectEdge::kTopRightToBottomRight}
+                    : BoundEdges{RectEdge::kTopRightToBottomRight,
+                                 RectEdge::kTopLeftToBottomLeft};
+    case WritingMode::kVerticalRl:
+    case WritingMode::kSidewaysRl:
+      return is_ltr ? BoundEdges{RectEdge::kTopLeftToTopRight,
+                                 RectEdge::kBottomRightToBottomLeft}
+                    : BoundEdges{RectEdge::kBottomLeftToBottomRight,
+                                 RectEdge::kTopRightToTopLeft};
+    case WritingMode::kVerticalLr:
+      return is_ltr ? BoundEdges{RectEdge::kTopRightToTopLeft,
+                                 RectEdge::kBottomLeftToBottomRight}
+                    : BoundEdges{RectEdge::kBottomRightToBottomLeft,
+                                 RectEdge::kTopLeftToTopRight};
+    case WritingMode::kSidewaysLr:
+      return is_ltr ? BoundEdges{RectEdge::kBottomLeftToBottomRight,
+                                 RectEdge::kTopLeftToTopRight}
+                    : BoundEdges{RectEdge::kTopLeftToTopRight,
+                                 RectEdge::kBottomLeftToBottomRight};
   }
 }
 
@@ -95,7 +102,7 @@ void SetBoundEdge(gfx::Rect selection_rect,
       bound.edge_end = selection_rect.bottom_left();
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 

@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/bmp/bmp_image_reader.h"
 
 #include "third_party/blink/renderer/platform/image-decoders/jpeg/jpeg_image_decoder.h"
-#include "third_party/blink/renderer/platform/image-decoders/png/png_image_decoder.h"
+#include "third_party/blink/renderer/platform/image-decoders/png/png_decoder_factory.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 
 namespace {
@@ -519,8 +519,7 @@ bool BMPImageReader::IsInfoHeaderValid() const {
     default:
       // Some type we don't understand.  This should have been caught in
       // ReadInfoHeader().
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   // Reject the following valid bitmap types that we don't currently bother
@@ -550,7 +549,7 @@ bool BMPImageReader::DecodeAlternateFormat() {
           parent_->GetAuxImage(), parent_->GetMaxDecodedBytes(),
           img_data_offset_);
     } else {
-      alternate_decoder_ = std::make_unique<PNGImageDecoder>(
+      alternate_decoder_ = CreatePngImageDecoder(
           parent_->GetAlphaOption(), ImageDecoder::kDefaultBitDepth,
           parent_->GetColorBehavior(), parent_->GetMaxDecodedBytes(),
           img_data_offset_);

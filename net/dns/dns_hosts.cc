@@ -233,18 +233,20 @@ bool DnsHostsFileParser::ParseHosts(DnsHosts* dns_hosts) const {
   if (!base::PathExists(hosts_file_path_))
     return true;
 
-  int64_t size;
-  if (!base::GetFileSize(hosts_file_path_, &size))
+  std::optional<int64_t> size = base::GetFileSize(hosts_file_path_);
+  if (!size.has_value()) {
     return false;
+  }
 
   // Reject HOSTS files larger than |kMaxHostsSize| bytes.
   const int64_t kMaxHostsSize = 1 << 25;  // 32MB
 
   // TODO(crbug.com/40874231): Remove this when we have enough data.
-  base::UmaHistogramCustomCounts("Net.DNS.DnsHosts.FileSize", size, 1,
+  base::UmaHistogramCustomCounts("Net.DNS.DnsHosts.FileSize", size.value(), 1,
                                  kMaxHostsSize * 2, 50);
-  if (size > kMaxHostsSize)
+  if (size.value() > kMaxHostsSize) {
     return false;
+  }
 
   std::string contents;
   if (!base::ReadFileToString(hosts_file_path_, &contents))

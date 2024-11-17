@@ -16,8 +16,8 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/instance/backing_store_pre_close_task_queue.h"
+#include "content/browser/indexed_db/status.h"
 #include "content/common/content_export.h"
-#include "third_party/leveldatabase/src/include/leveldb/status.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace blink {
@@ -93,7 +93,7 @@ class CONTENT_EXPORT LevelDbTombstoneSweeper
 
   friend class LevelDbTombstoneSweeperTest;
 
-  enum class Status { SWEEPING, DONE_ERROR, DONE };
+  enum class SweepStatus { SWEEPING, DONE_ERROR, DONE };
 
   // Contains the current sweeping state and position for the sweeper.
   struct SweepState {
@@ -123,20 +123,20 @@ class CONTENT_EXPORT LevelDbTombstoneSweeper
     sweep_state_.start_index_seed = index_seed;
   }
 
-  leveldb::Status FlushDeletions();
+  Status FlushDeletions();
 
-  bool ShouldContinueIteration(Status* sweep_status,
-                               leveldb::Status* leveldb_status,
+  bool ShouldContinueIteration(SweepStatus* sweep_status,
+                               Status* leveldb_status,
                                int* round_iters);
 
-  Status DoSweep(leveldb::Status* status);
+  SweepStatus DoSweep(Status* status);
 
   // Returns true if sweeper can continue iterating.
   bool IterateIndex(int64_t database_id,
                     int64_t object_store_id,
                     const blink::IndexedDBIndexMetadata& index,
-                    Status* sweep_status,
-                    leveldb::Status* leveldb_status,
+                    SweepStatus* sweep_status,
+                    Status* leveldb_status,
                     int* round_iterations);
 
   int num_iterations_ = 0;

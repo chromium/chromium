@@ -34,10 +34,6 @@ const char kWallpaperSearchHistoryMood[] = "mood";
 const char kWallpaperSearchHistoryStyle[] = "style";
 const char kWallpaperSearchHistorySubject[] = "subject";
 
-void WriteFileToPath(const std::string& data, const base::FilePath& path) {
-  base::WriteFile(path, base::as_bytes(base::make_span(data)));
-}
-
 void DeleteWallpaperSearchImage(const std::string& id,
                                 const base::FilePath& profile_path) {
   base::FilePath path = profile_path.AppendASCII(
@@ -208,10 +204,9 @@ void WallpaperSearchBackgroundManager::SelectLocalBackgroundImage(
     return;
   }
 
-  std::vector<unsigned char> encoded;
-  const bool success = gfx::PNGCodec::EncodeBGRASkBitmap(
-      bitmap, /*discard_transparency=*/false, &encoded);
-  if (success) {
+  std::optional<std::vector<uint8_t>> encoded =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  if (encoded) {
     // Do not update theme image unless it is different from the current.
     // Otherwise, we end up deleting the image file as part of the cleanup
     // of the last theme.
@@ -223,10 +218,15 @@ void WallpaperSearchBackgroundManager::SelectLocalBackgroundImage(
       base::ThreadPool::PostTaskAndReply(
           FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
           base::BindOnce(
-              &WriteFileToPath, std::string(encoded.begin(), encoded.end()),
+              // Resolve ambiguous base::WriteFile call with inline lambda.
+              [](const base::FilePath& filename,
+                 base::span<const uint8_t> data) {
+                base::WriteFile(filename, data);
+              },
               profile_->GetPath().AppendASCII(
                   id.ToString() +
-                  chrome::kChromeUIUntrustedNewTabPageBackgroundFilename)),
+                  chrome::kChromeUIUntrustedNewTabPageBackgroundFilename),
+              encoded.value()),
           base::BindOnce(&WallpaperSearchBackgroundManager::
                              SetBackgroundToLocalResourceWithId,
                          weak_ptr_factory_.GetWeakPtr(), id, std::move(timer),

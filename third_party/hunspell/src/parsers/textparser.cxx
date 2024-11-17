@@ -222,6 +222,10 @@ int TextParser::change_token(const char* word) {
   return 0;
 }
 
+std::string TextParser::get_word(const std::string &tok) {
+  return tok;
+}
+
 void TextParser::check_urls() {
   urlline.resize(line[actual].size() + 1);
   int url_state = 0;

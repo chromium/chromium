@@ -27,6 +27,8 @@ buildflag_header("buildflags") {
 
 source_set("base") {
   sources = [
+    "authentication_method.cc",
+    "authentication_method.h",
     "auto_thread.cc",
     "auto_thread.h",
     "auto_thread_task_runner.cc",
@@ -41,6 +43,8 @@ source_set("base") {
     "chromoting_event.h",
     "cloud_service_client.cc",
     "cloud_service_client.h",
+    "cloud_session_authz_service_client_factory.cc",
+    "cloud_session_authz_service_client_factory.h",
     "compound_buffer.cc",
     "compound_buffer.h",
     "constants.cc",
@@ -143,6 +147,7 @@ source_set("base") {
     "//google_apis/common:request_util",
     "//remoting/proto:internal_structs",
     "//remoting/proto/google/internal/remoting/cloud/v1alpha:messages",
+    "//remoting/proto/google/remoting/cloud/v1:messages",
     "//remoting/proto/remoting/v1:cloud_proto",
     "//remoting/proto/remoting/v1:directory_proto",
     "//remoting/proto/remoting/v1:telemetry_messages",
@@ -218,6 +223,8 @@ source_set("authorization") {
     "oauth_token_getter_impl.h",
     "oauth_token_getter_proxy.cc",
     "oauth_token_getter_proxy.h",
+    "oauth_token_info.cc",
+    "oauth_token_info.h",
     "passthrough_oauth_token_getter.cc",
     "passthrough_oauth_token_getter.h",
   ]
@@ -237,37 +244,6 @@ source_set("authorization") {
     "//google_apis",
     "//net",
   ]
-}
-
-source_set("breakpad") {
-  sources = [
-    "breakpad.h",
-    "breakpad_utils.cc",
-    "breakpad_utils.h",
-  ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  deps = [
-    ":remoting_base_version",
-    "//base",
-  ]
-
-  if (is_linux || is_chromeos) {
-    sources += [ "breakpad_linux.cc" ]
-    deps += [ "//third_party/breakpad:client" ]
-  } else if (is_mac) {
-    sources += [ "breakpad_mac.mm" ]
-  } else if (is_win) {
-    sources += [
-      "breakpad_server.cc",
-      "breakpad_win.cc",
-    ]
-    deps += [
-      ":logging",
-      "//third_party/breakpad:breakpad_handler",
-    ]
-  }
 }
 
 source_set("logging") {
@@ -357,8 +333,8 @@ static_library("test_support") {
   public_deps = [
     ":authorization",
     ":base",
-    ":breakpad",
     "//base",
+    "//remoting/base/crash",
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/protobuf:protobuf_lite",

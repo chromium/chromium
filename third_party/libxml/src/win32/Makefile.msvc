@@ -44,8 +44,6 @@ CFLAGS = /nologo /D "_WINDOWS" /D "_MBCS" /D "NOLIBTOOL" /W3 /wd4244 /wd4267 $(C
 CFLAGS = $(CFLAGS) /I$(XML_SRCDIR) /I$(XML_SRCDIR)\include /I$(INCPREFIX)
 !if "$(WITH_THREADS)" == "ctls"
 CFLAGS = $(CFLAGS) /D "XML_THREAD_LOCAL=__declspec(thread)"
-!else if "$(WITH_THREADS)" == "posix"
-CFLAGS = $(CFLAGS) /D "HAVE_PTHREAD_H"
 !endif
 CFLAGS = $(CFLAGS) /D_CRT_SECURE_NO_DEPRECATE /D_CRT_NONSTDC_NO_DEPRECATE
 
@@ -81,6 +79,7 @@ LIBS = $(LIBS) pthreadVC.lib
 !if "$(WITH_MODULES)" == "1"
 LIBS = $(LIBS) kernel32.lib
 !endif
+LIBS = $(LIBS) Bcrypt.lib
 
 # The archiver and its options.
 AR = lib.exe
@@ -253,10 +252,6 @@ UTILS = $(BINDIR)\xmllint.exe\
 	$(BINDIR)\testlimits.exe\
 	$(BINDIR)\testrecurse.exe
 	
-!if "$(WITH_THREADS)" != "no"
-UTILS = $(UTILS) $(BINDIR)\testThreads.exe
-!endif
-
 !if "$(VCMANIFEST)" == "1"
 _VC_MANIFEST_EMBED_EXE= if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;1
 _VC_MANIFEST_EMBED_DLL= if exist $@.manifest mt.exe -nologo -manifest $@.manifest -outputresource:$@;2

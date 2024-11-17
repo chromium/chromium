@@ -1,0 +1,42 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Next MinVersion: 2
+
+module ash.cros_safety.mojom;
+
+import "chromeos/ash/services/cros_safety/public/mojom/cros_safety.mojom";
+
+// This enum type identifies the result of retrieving the cloud safety
+// session from CloudSafetyInstance.
+[Stable, Extensible]
+enum GetCloudSafetySessionResult {
+  kOk = 0,
+  [Default] kGenericError = 1,
+  [MinVersion=1] kMantaServiceFailedToCreate = 2,
+};
+
+// This enum type identifies the result of retrieving the on device safety
+// session from OnDeviceSafetyInstance.
+[Stable, Extensible]
+enum GetOnDeviceSafetySessionResult {
+  kOk = 0,
+  [Default] kGenericError = 1,
+};
+
+// CrosSafetyService runs in Chrome which is the entry point of both creating
+// both on device or cloud safety sessions. For on device classification it
+// connects to the OnDeviceSafetyInstance implementation in ARCVM via the ARC
+// Bridge service, whereas for cloud classification is done using the AIService.
+// Next Method ID: 2
+[Stable]
+interface CrosSafetyService {
+  // Creates a session to be used for on-device classification
+  CreateOnDeviceSafetySession@0(pending_receiver<OnDeviceSafetySession> session)
+      => (GetOnDeviceSafetySessionResult status);
+
+  // Creates a session to be used for cloud-based classification
+  CreateCloudSafetySession@1(pending_receiver<CloudSafetySession> session)
+      => (GetCloudSafetySessionResult status);
+};

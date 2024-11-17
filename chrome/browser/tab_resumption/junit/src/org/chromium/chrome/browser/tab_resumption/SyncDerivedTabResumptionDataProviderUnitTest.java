@@ -26,6 +26,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab_resumption.SyncDerivedSuggestionEntrySource.SourceDataChangedObserver;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionDataProvider.ResultStrength;
@@ -65,7 +66,8 @@ public class SyncDerivedTabResumptionDataProviderUnitTest extends TestSupport {
     public void setUp() {
         mFakeTime = CURRENT_TIME_MS;
         TabResumptionModuleUtils.setFakeCurrentTimeMsForTesting(() -> mFakeTime);
-        mDataProvider = new SyncDerivedTabResumptionDataProvider(mSource, () -> {});
+        mDataProvider =
+                new SyncDerivedTabResumptionDataProvider(mSource, CallbackUtils.emptyRunnable());
         mDataProvider.setStatusChangedCallback(
                 () -> {
                     ++mStatusChangedCallbackCounter;

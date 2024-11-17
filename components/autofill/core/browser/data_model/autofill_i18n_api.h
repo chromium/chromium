@@ -52,13 +52,6 @@ i18n_model_definition::ValueParsingResults ParseValueByI18nRegularExpression(
     FieldType field_type,
     AddressCountryCode country_code);
 
-// Returns the stopwords expression corresponding to the provided parameters.
-// If the expression can't be found or the country is empty, returns
-// `std::nullopt`.
-std::optional<std::u16string_view> GetStopwordsExpression(
-    FieldType field_type,
-    AddressCountryCode country_code);
-
 // The function returns true if the provided `field_type` is included in the
 // hierarchy model of the given country. Otherwise it returns false.
 bool IsTypeEnabledForCountry(FieldType field_type,

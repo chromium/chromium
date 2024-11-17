@@ -213,11 +213,11 @@ void ArcFlossBridge::CloseBluetoothConnectingSocket(
 void ArcFlossBridge::SdpSearchComplete(
     const floss::FlossDeviceId device,
     const device::BluetoothUUID uuid,
-    const std::vector<floss::BtSdpRecord> records) {
+    const std::vector<floss::BtSdpRecord>& records) {
   mojom::BluetoothAddressPtr address =
       mojom::BluetoothAddress::From(device.address);
   std::vector<bluez::BluetoothServiceRecordBlueZ> records_bluez;
-  for (auto record : records) {
+  for (const auto& record : records) {
     records_bluez.push_back(
         mojo::TypeConverter<bluez::BluetoothServiceRecordBlueZ,
                             floss::BtSdpRecord>::Convert(record));

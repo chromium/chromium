@@ -43,7 +43,7 @@ float FloatValueForLength(const Length& length,
       return length.GetFloatValue();
     case Length::kPercent:
       return ClampTo<float>(maximum_value * length.Percent() / 100.0f);
-    case Length::kFillAvailable:
+    case Length::kStretch:
     case Length::kAuto:
       return static_cast<float>(maximum_value);
     case Length::kCalculated:
@@ -58,11 +58,9 @@ float FloatValueForLength(const Length& length,
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 LayoutUnit MinimumValueForLengthInternal(const Length& length,
@@ -76,7 +74,7 @@ LayoutUnit MinimumValueForLengthInternal(const Length& length,
           static_cast<float>(maximum_value * length.Percent() / 100.0f));
     case Length::kCalculated:
       return LayoutUnit(length.NonNanCalculatedValue(maximum_value, input));
-    case Length::kFillAvailable:
+    case Length::kStretch:
     case Length::kAuto:
       return LayoutUnit();
     case Length::kFixed:
@@ -90,11 +88,9 @@ LayoutUnit MinimumValueForLengthInternal(const Length& length,
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return LayoutUnit();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 LayoutUnit ValueForLength(const Length& length,
@@ -105,7 +101,7 @@ LayoutUnit ValueForLength(const Length& length,
     case Length::kPercent:
     case Length::kCalculated:
       return MinimumValueForLength(length, maximum_value, input);
-    case Length::kFillAvailable:
+    case Length::kStretch:
     case Length::kAuto:
       return maximum_value;
     case Length::kMinContent:
@@ -118,11 +114,9 @@ LayoutUnit ValueForLength(const Length& length,
     case Length::kDeviceWidth:
     case Length::kDeviceHeight:
     case Length::kNone:
-      NOTREACHED_IN_MIGRATION();
-      return LayoutUnit();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 gfx::SizeF SizeForLengthSize(const LengthSize& length_size,

@@ -5,9 +5,9 @@
 #include "components/nacl/browser/test_nacl_browser_delegate.h"
 #include "base/functional/callback.h"
 
-TestNaClBrowserDelegate::TestNaClBrowserDelegate() {}
+TestNaClBrowserDelegate::TestNaClBrowserDelegate() = default;
 
-TestNaClBrowserDelegate::~TestNaClBrowserDelegate() {}
+TestNaClBrowserDelegate::~TestNaClBrowserDelegate() = default;
 
 void TestNaClBrowserDelegate::ShowMissingArchInfobar(int render_process_id,
                                                      int render_frame_id) {}

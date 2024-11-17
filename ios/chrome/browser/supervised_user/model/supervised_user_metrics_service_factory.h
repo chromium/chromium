@@ -7,22 +7,18 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace supervised_user {
 class SupervisedUserMetricsService;
 }  // namespace supervised_user
 
-
 // Singleton that owns SupervisedUserMetricsService object and associates
-// them with ChromeBrowserState.
+// them with ProfileIOS.
 class SupervisedUserMetricsServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static supervised_user::SupervisedUserMetricsService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static supervised_user::SupervisedUserMetricsService* GetForProfile(
       ProfileIOS* profile);
   static SupervisedUserMetricsServiceFactory* GetInstance();

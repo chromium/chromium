@@ -31,6 +31,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING;
 import static org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.PASSWORD_SETTINGS_EXPORT_METRICS_ID;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -54,7 +55,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FileUtils;
 import org.chromium.base.ThreadUtils;
@@ -65,6 +67,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
+import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
@@ -84,7 +87,11 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DoNotBatch(reason = "Tests are flaky on API Q+ with batching. This might be fixable. b/40926377")
+// The export from settings was used before the access loss warning feature.
+@DisableFeatures(UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
 public class PasswordSettingsExportTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public SettingsActivityTestRule<PasswordSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PasswordSettings.class);
@@ -95,7 +102,6 @@ public class PasswordSettingsExportTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         PasswordCheckFactory.setPasswordCheckForTesting(mPasswordCheck);
     }
 
@@ -1252,7 +1258,8 @@ public class PasswordSettingsExportTest {
                                     R.string.password_settings_export_no_app,
                                     null,
                                     positiveButtonLabelId,
-                                    HistogramExportResult.NO_CONSUMER);
+                                    HistogramExportResult.NO_CONSUMER,
+                                    PasswordAccessLossWarningExportStep.SAVE_PWD_FILE_FAILED);
                 });
     }
 

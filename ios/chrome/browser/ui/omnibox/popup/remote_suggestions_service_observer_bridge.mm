@@ -10,7 +10,7 @@ RemoteSuggestionsServiceObserverBridge::RemoteSuggestionsServiceObserverBridge(
     : observer_(observer),
       remote_suggestions_service_(remote_suggestions_service) {}
 
-void RemoteSuggestionsServiceObserverBridge::OnSuggestRequestCreated(
+void RemoteSuggestionsServiceObserverBridge::OnRequestCreated(
     const base::UnguessableToken& request_id,
     const network::ResourceRequest* request) {
   [observer_ remoteSuggestionsService:remote_suggestions_service_
@@ -18,7 +18,7 @@ void RemoteSuggestionsServiceObserverBridge::OnSuggestRequestCreated(
                               request:request];
 }
 
-void RemoteSuggestionsServiceObserverBridge::OnSuggestRequestStarted(
+void RemoteSuggestionsServiceObserverBridge::OnRequestStarted(
     const base::UnguessableToken& request_id,
     network::SimpleURLLoader* loader,
     const std::string& request_body) {
@@ -29,7 +29,7 @@ void RemoteSuggestionsServiceObserverBridge::OnSuggestRequestStarted(
                             URLLoader:loader];
 }
 
-void RemoteSuggestionsServiceObserverBridge::OnSuggestRequestCompleted(
+void RemoteSuggestionsServiceObserverBridge::OnRequestCompleted(
     const base::UnguessableToken& request_id,
     const int response_code,
     const std::unique_ptr<std::string>& response_body) {

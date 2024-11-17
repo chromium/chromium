@@ -38,6 +38,7 @@ namespace updater {
 namespace {
 
 const char kPrefQualified[] = "qualified";
+const char kPrefEnableCecaExperiment[] = "enable_ceca_experiment";
 const char kPrefSwapping[] = "swapping";
 const char kPrefMigratedLegacyUpdaters[] = "converted_legacy_updaters";
 const char kPrefActiveVersion[] = "active_version";
@@ -54,7 +55,7 @@ constexpr base::TimeDelta kCreatePrefsWait(base::Minutes(2));
 std::unique_ptr<PrefService> CreatePrefService(
     const base::FilePath& prefs_dir,
     scoped_refptr<PrefRegistrySimple> pref_registry,
-    const base::TimeDelta& wait_period) {
+    base::TimeDelta wait_period) {
   const auto deadline(base::TimeTicks::Now() + wait_period);
   do {
     PrefServiceFactory pref_service_factory;
@@ -151,6 +152,13 @@ void UpdaterPrefsImpl::SetQualified(bool value) {
   prefs_->SetBoolean(kPrefQualified, value);
 }
 
+bool UpdaterPrefsImpl::GetCecaExperimentEnabled() {
+  return prefs_->GetBoolean(kPrefEnableCecaExperiment);
+}
+void UpdaterPrefsImpl::SetCecaExperimentEnabled(bool value) {
+  prefs_->SetBoolean(kPrefEnableCecaExperiment, value);
+}
+
 std::string UpdaterPrefsImpl::GetActiveVersion() const {
   return prefs_->GetString(kPrefActiveVersion);
 }
@@ -207,6 +215,7 @@ scoped_refptr<LocalPrefs> CreateLocalPrefs(UpdaterScope scope) {
   auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
   update_client::RegisterPrefs(pref_registry.get());
   pref_registry->RegisterBooleanPref(kPrefQualified, false);
+  pref_registry->RegisterBooleanPref(kPrefEnableCecaExperiment, false);
   RegisterPersistedDataPrefs(pref_registry);
 
   std::unique_ptr<PrefService> pref_service(

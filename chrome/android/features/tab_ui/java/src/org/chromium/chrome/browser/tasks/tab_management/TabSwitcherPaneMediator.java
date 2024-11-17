@@ -17,16 +17,16 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ValueChangedCallback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.TransitiveObservableSupplier;
-import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherCustomViewManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.PriceMessageService.PriceWelcomeMessageReviewActionProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabGridDialogMediator.DialogController;
@@ -50,8 +50,8 @@ public class TabSwitcherPaneMediator
     private final ObservableSupplierImpl<Boolean> mIsDialogVisibleSupplier =
             new ObservableSupplierImpl<>();
     private final TabActionListener mTabGridDialogOpener = this::onTabGroupClicked;
-    private final ValueChangedCallback<TabModelFilter> mOnTabModelFilterChanged =
-            new ValueChangedCallback<>(this::onTabModelFilterChanged);
+    private final ValueChangedCallback<TabGroupModelFilter> mOnTabGroupModelFilterChanged =
+            new ValueChangedCallback<>(this::onTabGroupModelFilterChanged);
     private final Callback<Boolean> mOnDialogShowingOrAnimatingCallback =
             this::onDialogShowingOrAnimatingChanged;
 
@@ -110,7 +110,7 @@ public class TabSwitcherPaneMediator
     }
 
     private final TabSwitcherResetHandler mResetHandler;
-    private final ObservableSupplier<TabModelFilter> mTabModelFilterSupplier;
+    private final ObservableSupplier<TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private final LazyOneshotSupplier<DialogController> mTabGridDialogControllerSupplier;
     private final PropertyModel mContainerViewModel;
     private final ViewGroup mContainerView;
@@ -130,8 +130,8 @@ public class TabSwitcherPaneMediator
 
     /**
      * @param resetHandler The reset handler for updating the {@link TabListCoordinator}.
-     * @param tabModelFilterSupplier The supplier of the {@link TabModelFilter}. This should usually
-     *     only ever be set once.
+     * @param tabGroupModelFilterSupplier The supplier of the {@link TabGroupModelFilter}. This
+     *     should usually only ever be set once.
      * @param tabGridDialogControllerSupplier The supplier of the {@link DialogController}.
      * @param containerViewModel The {@link PropertyModel} for the {@link TabListRecyclerView}.
      * @param containerView The view that hosts the {@link TabListRecyclerView}.
@@ -143,7 +143,7 @@ public class TabSwitcherPaneMediator
      */
     public TabSwitcherPaneMediator(
             @NonNull TabSwitcherResetHandler resetHandler,
-            @NonNull ObservableSupplier<TabModelFilter> tabModelFilterSupplier,
+            @NonNull ObservableSupplier<TabGroupModelFilter> tabGroupModelFilterSupplier,
             @NonNull LazyOneshotSupplier<DialogController> tabGridDialogControllerSupplier,
             @NonNull PropertyModel containerViewModel,
             @NonNull ViewGroup containerView,
@@ -155,8 +155,8 @@ public class TabSwitcherPaneMediator
         mResetHandler = resetHandler;
         mTabIndexLookup = tabIndexLookup;
         mOnTabClickCallback = onTabClickCallback;
-        mTabModelFilterSupplier = tabModelFilterSupplier;
-        var filter = mTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged);
+        mTabGroupModelFilterSupplier = tabGroupModelFilterSupplier;
+        var filter = mTabGroupModelFilterSupplier.addObserver(mOnTabGroupModelFilterChanged);
         mTryToShowOnFilterChanged = filter == null || !filter.isTabModelRestored();
 
         mTabGridDialogControllerSupplier = tabGridDialogControllerSupplier;
@@ -189,8 +189,8 @@ public class TabSwitcherPaneMediator
     /** Destroys the mediator unregistering all its observers. */
     public void destroy() {
         hideDialogs();
-        mTabModelFilterSupplier.removeObserver(mOnTabModelFilterChanged);
-        removeTabModelObserver(mTabModelFilterSupplier.get());
+        mTabGroupModelFilterSupplier.removeObserver(mOnTabGroupModelFilterChanged);
+        removeTabModelObserver(mTabGroupModelFilterSupplier.get());
 
         mIsVisibleSupplier.removeObserver(mOnVisibilityChanged);
         mIsAnimatingSupplier.removeObserver(mOnAnimatingChanged);
@@ -216,12 +216,13 @@ public class TabSwitcherPaneMediator
     /** Requests accessibility focus on the currently selected tab. */
     public void requestAccessibilityFocusOnCurrentTab() {
         mContainerViewModel.set(
-                FOCUS_TAB_INDEX_FOR_ACCESSIBILITY, mTabModelFilterSupplier.get().index());
+                FOCUS_TAB_INDEX_FOR_ACCESSIBILITY, mTabGroupModelFilterSupplier.get().index());
     }
 
     /** Scrolls to the currently selected tab. */
     public void setInitialScrollIndexOffset() {
-        scrollToTab(mTabIndexLookup.getNthTabIndexInModel(mTabModelFilterSupplier.get().index()));
+        scrollToTab(
+                mTabIndexLookup.getNthTabIndexInModel(mTabGroupModelFilterSupplier.get().index()));
     }
 
     @Override
@@ -244,8 +245,7 @@ public class TabSwitcherPaneMediator
         }
 
         if (Boolean.FALSE.equals(mIsVisibleSupplier.get())) {
-            assert !BackPressManager.isEnabled()
-                    : "Invisible container backpress should be handled.";
+            assert false : "Invisible container backpress should be handled.";
             return BackPressResult.FAILURE;
         }
 
@@ -282,9 +282,16 @@ public class TabSwitcherPaneMediator
 
     /** Scroll to a given tab or tab group by id. */
     public void scrollToTabById(int tabId) {
-        TabModelFilter filter = mTabModelFilterSupplier.get();
+        TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
         TabModel tabModel = filter.getTabModel();
         Tab tab = tabModel.getTabById(tabId);
+
+        // TODO(crbug.com/375309394): Figure out why the tab is null here and prevent it.
+        boolean hasTab = tab != null;
+        RecordHistogram.recordBooleanHistogram(
+                "Tabs.GridTabSwitcher.ScrollToTabById.HasTab", hasTab);
+        if (!hasTab) return;
+
         if (filter.isTabInTabGroup(tab)) {
             tab = tabModel.getTabById(tab.getRootId());
         }
@@ -344,12 +351,12 @@ public class TabSwitcherPaneMediator
     }
 
     private boolean ableToOpenDialog(Tab tab) {
-        TabModelFilter filter = mTabModelFilterSupplier.get();
+        TabGroupModelFilter filter = mTabGroupModelFilterSupplier.get();
         return filter.isIncognito() == tab.isIncognito() && filter.isTabInTabGroup(tab);
     }
 
     public void openTabGroupDialog(int tabId) {
-        List<Tab> relatedTabs = mTabModelFilterSupplier.get().getRelatedTabList(tabId);
+        List<Tab> relatedTabs = mTabGroupModelFilterSupplier.get().getRelatedTabList(tabId);
         if (relatedTabs.size() == 0) {
             relatedTabs = null;
         }
@@ -407,14 +414,14 @@ public class TabSwitcherPaneMediator
         return !supplier.hasValue() ? null : supplier.get();
     }
 
-    private void removeTabModelObserver(@Nullable TabModelFilter filter) {
+    private void removeTabModelObserver(@Nullable TabGroupModelFilter filter) {
         if (filter == null) return;
 
         filter.removeObserver(mTabModelObserver);
     }
 
-    private void onTabModelFilterChanged(
-            @Nullable TabModelFilter newFilter, @Nullable TabModelFilter oldFilter) {
+    private void onTabGroupModelFilterChanged(
+            @Nullable TabGroupModelFilter newFilter, @Nullable TabGroupModelFilter oldFilter) {
         removeTabModelObserver(oldFilter);
 
         if (newFilter != null) {
@@ -423,7 +430,7 @@ public class TabSwitcherPaneMediator
             // this pane is visible. To avoid an empty state, try to show tabs now.
             // `resetWithTabList` will skip in the case the tab model is not initialized so this
             // will no-op if it is racing with `restoreCompleted`. Only do this if in the
-            // constructor there was no TabModelFilter or it wasn't initialized.
+            // constructor there was no TabGroupModelFilter or it wasn't initialized.
             if (mTryToShowOnFilterChanged) {
                 showTabsIfVisible();
                 mTryToShowOnFilterChanged = false;
@@ -470,7 +477,7 @@ public class TabSwitcherPaneMediator
 
     private void showTabsIfVisible() {
         if (Boolean.TRUE.equals(mIsVisibleSupplier.get())) {
-            mResetHandler.resetWithTabList(mTabModelFilterSupplier.get(), false);
+            mResetHandler.resetWithTabList(mTabGroupModelFilterSupplier.get(), false);
             setInitialScrollIndexOffset();
         }
     }

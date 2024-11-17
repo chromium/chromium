@@ -41,11 +41,19 @@ void SetExecutionRequest(
           log_ai_request, request_metadata);
       return;
     case ModelBasedCapabilityKey::kFormsAnnotations:
+      SetExecutionRequestTemplate<FormsAnnotationsFeatureTypeMap>(
+          log_ai_request, request_metadata);
+      return;
     case ModelBasedCapabilityKey::kFormsPredictions:
+      SetExecutionRequestTemplate<FormsPredictionsFeatureTypeMap>(
+          log_ai_request, request_metadata);
+      return;
+    case ModelBasedCapabilityKey::kHistoryQueryIntent:
     case ModelBasedCapabilityKey::kPromptApi:
     case ModelBasedCapabilityKey::kSummarize:
     case ModelBasedCapabilityKey::kTextSafety:
     case ModelBasedCapabilityKey::kTest:
+    case ModelBasedCapabilityKey::kBlingPrototyping:
       // Do not log requests for these features.
       return;
   }
@@ -74,11 +82,19 @@ void SetExecutionResponse(ModelBasedCapabilityKey feature,
           log_ai_request, response_metadata);
       return;
     case ModelBasedCapabilityKey::kFormsAnnotations:
+      SetExecutionResponseTemplate<FormsAnnotationsFeatureTypeMap>(
+          log_ai_request, response_metadata);
+      return;
     case ModelBasedCapabilityKey::kFormsPredictions:
+      SetExecutionResponseTemplate<FormsPredictionsFeatureTypeMap>(
+          log_ai_request, response_metadata);
+      return;
+    case ModelBasedCapabilityKey::kHistoryQueryIntent:
     case ModelBasedCapabilityKey::kPromptApi:
     case ModelBasedCapabilityKey::kSummarize:
     case ModelBasedCapabilityKey::kTextSafety:
     case ModelBasedCapabilityKey::kTest:
+    case ModelBasedCapabilityKey::kBlingPrototyping:
       // Do not log responses for these features.
       return;
   }
@@ -123,7 +139,7 @@ ReadOnDeviceModelExecutionConfig(const base::FilePath& config_path) {
 
 bool WasOnDeviceEligibleFeatureRecentlyUsed(ModelBasedCapabilityKey feature,
                                             const PrefService& local_state) {
-  if (!features::internal::IsOnDeviceModelEnabled(feature)) {
+  if (!features::internal::GetOptimizationTargetForCapability(feature)) {
     return false;
   }
   base::Time last_use = local_state.GetTime(

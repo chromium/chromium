@@ -89,59 +89,47 @@ std::optional<V8SmartCardConnectionState::Enum> ToV8ConnectionState(
   }
 }
 
-class TransactionFulfilledFunction : public ScriptFunction::Callable {
+class TransactionFulfilledFunction
+    : public ThenCallable<IDLNullable<V8SmartCardDisposition>,
+                          TransactionFulfilledFunction> {
  public:
   explicit TransactionFulfilledFunction(SmartCardConnection* connection)
-      : connection_(connection) {}
+      : connection_(connection) {
+    SetExceptionContext(ExceptionContext(v8::ExceptionContext::kOperation,
+                                         "SmartCardConnection",
+                                         "startTransaction"));
+  }
 
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kOperation,
-                                   "SmartCardConnection", "startTransaction");
-
-    if (value.IsUndefined()) {
-      connection_->OnTransactionCallbackDone(SmartCardDisposition::kReset);
-      return ScriptValue();
-    }
-
-    V8SmartCardDisposition v8_disposition =
-        NativeValueTraits<V8SmartCardDisposition>::NativeValue(
-            script_state->GetIsolate(), value.V8Value(), exception_state);
-
-    if (exception_state.HadException()) {
-      ScriptValue exception_value(script_state->GetIsolate(),
-                                  exception_state.GetException());
-      connection_->OnTransactionCallbackFailed(exception_value);
-      return ScriptValue();
-    }
-
-    connection_->OnTransactionCallbackDone(ToMojomDisposition(v8_disposition));
-
-    return ScriptValue();
+  void React(ScriptState*,
+             const std::optional<V8SmartCardDisposition>& disposition) {
+    connection_->OnTransactionCallbackDone(
+        disposition ? ToMojomDisposition(*disposition)
+                    : SmartCardDisposition::kReset);
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(connection_);
-    ScriptFunction::Callable::Trace(visitor);
+    ThenCallable<IDLNullable<V8SmartCardDisposition>,
+                 TransactionFulfilledFunction>::Trace(visitor);
   }
 
  private:
   Member<SmartCardConnection> connection_;
 };
 
-class TransactionRejectedFunction : public ScriptFunction::Callable {
+class TransactionRejectedFunction
+    : public ThenCallable<IDLAny, TransactionRejectedFunction> {
  public:
   explicit TransactionRejectedFunction(SmartCardConnection* connection)
       : connection_(connection) {}
 
-  ScriptValue Call(ScriptState*, ScriptValue value) override {
+  void React(ScriptState*, ScriptValue value) {
     connection_->OnTransactionCallbackFailed(value);
-    return ScriptValue();
   }
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(connection_);
-    ScriptFunction::Callable::Trace(visitor);
+    ThenCallable<IDLAny, TransactionRejectedFunction>::Trace(visitor);
   }
 
  private:
@@ -683,8 +671,7 @@ void SmartCardConnection::OnBeginTransactionDone(
 
   ScriptState::Scope scope(script_state);
   v8::TryCatch try_catch(script_state->GetIsolate());
-  v8::Maybe<ScriptPromiseUntyped> transaction_result =
-      transaction_callback->Invoke(nullptr);
+  auto transaction_result = transaction_callback->Invoke(nullptr);
 
   if (transaction_result.IsNothing()) {
     if (try_catch.HasCaught()) {
@@ -700,13 +687,10 @@ void SmartCardConnection::OnBeginTransactionDone(
     return;
   }
 
-  ScriptPromiseUntyped promise = transaction_result.FromJust();
-  promise.Then(MakeGarbageCollected<ScriptFunction>(
-                   script_state,
-                   MakeGarbageCollected<TransactionFulfilledFunction>(this)),
-               MakeGarbageCollected<ScriptFunction>(
-                   script_state,
-                   MakeGarbageCollected<TransactionRejectedFunction>(this)));
+  auto promise = transaction_result.FromJust();
+  promise.Then(script_state,
+               MakeGarbageCollected<TransactionFulfilledFunction>(this),
+               MakeGarbageCollected<TransactionRejectedFunction>(this));
 }
 
 void SmartCardConnection::OnEndTransactionDone(

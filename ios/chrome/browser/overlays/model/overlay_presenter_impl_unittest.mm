@@ -47,8 +47,8 @@ class MockOverlayPresenterObserver : public OverlayPresenterObserver {
 class OverlayPresenterImplTest : public PlatformTest {
  public:
   OverlayPresenterImplTest() {
-    chrome_browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     OverlayPresenterImpl::Container::CreateForUserData(browser_.get(),
                                                        browser_.get());
     presenter().AddObserver(&observer_);
@@ -107,7 +107,7 @@ class OverlayPresenterImplTest : public PlatformTest {
   web::WebTaskEnvironment task_environment_;
   FakeOverlayPresentationContext presentation_context_;
   MockOverlayPresenterObserver observer_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
 };
 

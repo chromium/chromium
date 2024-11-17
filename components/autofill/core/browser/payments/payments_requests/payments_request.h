@@ -16,9 +16,21 @@
 
 namespace autofill::payments {
 
+// Billable service number is defined in Payments server to distinguish
+// different requests.
+inline constexpr int kUnmaskPaymentMethodBillableServiceNumber = 70154;
+inline constexpr int kUploadPaymentMethodBillableServiceNumber = 70073;
+inline constexpr int kMigrateCardsBillableServiceNumber = 70264;
+
 // Shared class for the various Payments request types.
 class PaymentsRequest {
  public:
+  // The names of the fields used to send non-location elements as part of an
+  // address. Used in the implementation and in tests which verify that these
+  // values are set or not at appropriate times.
+  static constexpr char kRecipientName[] = "recipient_name";
+  static constexpr char kPhoneNumber[] = "phone_number";
+
   PaymentsRequest();
   virtual ~PaymentsRequest();
 

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_INPUT_RENDER_INPUT_ROUTER_ITERATOR_H_
 #define COMPONENTS_INPUT_RENDER_INPUT_ROUTER_ITERATOR_H_
 
+#include "base/component_export.h"
+
 namespace input {
 
 class RenderInputRouter;

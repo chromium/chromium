@@ -51,7 +51,7 @@ void MockRenderWidgetHostDelegate::SelectAll() {}
 
 void MockRenderWidgetHostDelegate::CreateInputEventRouter() {
   rwh_input_event_router_ =
-      std::make_unique<input::RenderWidgetHostInputEventRouter>(
+      base::MakeRefCounted<input::RenderWidgetHostInputEventRouter>(
           GetHostFrameSinkManager(), this);
 }
 

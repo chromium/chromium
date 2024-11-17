@@ -58,6 +58,7 @@ namespace web_app {
 
 class IsolatedWebAppInstallSource;
 class IsolatedWebAppUrlInfo;
+class IsolationData;
 class SignedWebBundleMetadata;
 class WebApp;
 class WebAppProvider;
@@ -66,7 +67,6 @@ enum class FallbackBehavior;
 enum class IsolatedInstallabilityCheckResult;
 struct ComputedAppSize;
 struct IsolatedWebAppApplyUpdateCommandError;
-struct IsolationData;
 struct SynchronizeOsOptions;
 struct WebAppInstallInfo;
 struct WebAppIconDiagnosticResult;
@@ -94,6 +94,9 @@ class WebAppCommandScheduler {
                      CleanupOrphanedIsolatedWebAppsCommandError>)>;
   using WebAppIconDiagnosticResultCallback =
       base::OnceCallback<void(std::optional<WebAppIconDiagnosticResult>)>;
+  using WebInstallFromUrlCommandCallback =
+      base::OnceCallback<void(const GURL& manifest_id,
+                              webapps::InstallResultCode code)>;
 
   explicit WebAppCommandScheduler(Profile& profile);
   virtual ~WebAppCommandScheduler();
@@ -244,7 +247,7 @@ class WebAppCommandScheduler {
 
   // Computes the browsing data size of all installed Isolated Web Apps.
   void GetIsolatedWebAppBrowsingData(
-      base::OnceCallback<void(base::flat_map<url::Origin, int64_t>)> callback,
+      base::OnceCallback<void(base::flat_map<url::Origin, uint64_t>)> callback,
       const base::Location& call_location = FROM_HERE);
 
   // Registers a <controlledframe>'s StoragePartition with the given Isolated
@@ -504,6 +507,14 @@ class WebAppCommandScheduler {
       const webapps::AppId& app_id,
       WebAppIconDiagnosticResultCallback result_callback,
       const base::Location& location = FROM_HERE);
+
+  // Installs the web content at `install_url`, verifying that it has the
+  // given resolved `manifest_id`. Returns the `InstallResultCode` and the
+  // computed manifest id if successful. Used by Web Install API.
+  void InstallAppFromUrl(const GURL& manifest_id,
+                         const GURL& install_url,
+                         WebInstallFromUrlCommandCallback installed_callback,
+                         const base::Location& location = FROM_HERE);
 
   base::WeakPtr<WebAppCommandScheduler> GetWeakPtr();
 

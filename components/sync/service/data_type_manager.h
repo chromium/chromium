@@ -8,17 +8,21 @@
 #include <set>
 #include <string>
 
+#include "base/functional/callback_forward.h"
+#include "base/values.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/engine/configure_reason.h"
-#include "components/sync/model/sync_error.h"
-#include "components/sync/service/data_type_controller.h"
-#include "components/sync/service/data_type_status_table.h"
+#include "components/sync/model/type_entities_count.h"
+#include "components/sync/service/local_data_description.h"
+#include "components/sync/service/sync_error.h"
+#include "components/sync/service/type_status_map_for_debugging.h"
 
 namespace syncer {
 
 struct ConfigureContext;
 class DataTypeConfigurer;
+class DataTypeController;
 
 // This interface is for managing the start up and shut down life cycle
 // of many different syncable data types.
@@ -43,7 +47,6 @@ class DataTypeManager {
   struct ConfigureResult {
     ConfigureStatus status = ABORTED;
     DataTypeSet requested_types;
-    DataTypeStatusTable data_type_status_table;
   };
 
   virtual ~DataTypeManager() = default;
@@ -76,7 +79,7 @@ class DataTypeManager {
 
   // Informs the data type manager that the ready-for-start status of a
   // controller has changed. If the controller is not ready any more, it will
-  // stop |type|. Otherwise, it will trigger reconfiguration so that |type| gets
+  // stop `type`. Otherwise, it will trigger reconfiguration so that `type` gets
   // started again. No-op if the type's state didn't actually change.
   virtual void DataTypePreconditionChanged(DataType type) = 0;
 
@@ -88,7 +91,7 @@ class DataTypeManager {
   // Synchronously stops all registered data types. If called after Configure()
   // is called but before it finishes, it will abort the configure and any data
   // types that have been started will be stopped. If called with metadata fate
-  // |CLEAR_METADATA|, clears sync data for all datatypes.
+  // `CLEAR_METADATA`, clears sync data for all datatypes.
   virtual void Stop(SyncStopMetadataFate metadata_fate) = 0;
 
   // Returns the set of data types that are supported in principle, possibly
@@ -105,9 +108,10 @@ class DataTypeManager {
   // completes the set will be updated.
   virtual DataTypeSet GetActiveDataTypes() const = 0;
 
-  // Returns the datatypes that are stopped that are known to have cleared their
-  // local sync metadata.
-  virtual DataTypeSet GetPurgedDataTypes() const = 0;
+  // Returns the datatypes that are stopped, with or without having cleared
+  // metadata. This function never returns Nigori, which is a control type and
+  // hence never fully stopped.
+  virtual DataTypeSet GetStoppedDataTypesExcludingNigori() const = 0;
 
   // Returns the datatypes that are configured but not connected to the sync
   // engine. Note that during configuration, this will be empty.
@@ -122,13 +126,58 @@ class DataTypeManager {
   // the disk).
   virtual DataTypeSet GetDataTypesWithPermanentErrors() const = 0;
 
+  // Returns the datatypes which have local changes that have not yet been
+  // synced with the server.
+  // Note: This only queries the datatypes in `requested_types`.
+  // Note: This includes deletions as well.
+  virtual void GetTypesWithUnsyncedData(
+      DataTypeSet requested_types,
+      base::OnceCallback<void(DataTypeSet)> callback) const = 0;
+
+  // Queries the count and description/preview of existing local data for
+  // `types` data types. This is usually an asynchronous operation that returns
+  // the result via `callback` once available, which includes the description
+  // for each datatype in `types` that is active and supports batch uploading.
+  // This function may invoke `callback` immediately in some cases, e.g. if
+  // `types` is empty or none of the types is active.
+  virtual void GetLocalDataDescriptions(
+      DataTypeSet types,
+      base::OnceCallback<void(std::map<DataType, LocalDataDescription>)>
+          callback) = 0;
+
+  // Requests sync service to move all local data to account for `types` data
+  // types. This is an asynchronous method which moves the local data for all
+  // `types` to the account store locally. Upload to the server will happen as
+  // part of the regular commit process, and is NOT part of this method.
+  // Note: Only data types that are enabled and support this functionality are
+  // triggered for upload.
+  virtual void TriggerLocalDataMigration(DataTypeSet types) = 0;
+
+  // Requests sync service to move the local data to account for `types` data
+  // types that matches the `syncer::LocalDataItemModel::DataId` in `items`.
+  // This is an asynchronous method which moves the local data for all `types`
+  // to the account store locally. Upload to the server will happen as part of
+  // the regular commit process, and is NOT part of this method. Note: Only data
+  // types that are enabled and support this functionality are triggered for
+  // upload.
+  virtual void TriggerLocalDataMigration(
+      std::map<DataType, std::vector<syncer::LocalDataItemModel::DataId>>
+          items) = 0;
+
   // The current state of the data type manager.
   virtual State state() const = 0;
 
-  // Exposes direct access to underlying controllers. Avoid using if possible,
-  // as DataTypeManager usually offers higher-level APIs.
-  // TODO(crbug.com/40901755): Remove this getter.
-  virtual const DataTypeController::TypeMap& GetControllerMap() const = 0;
+  // Used for debugging only (e.g. chrome://sync-internals).
+  virtual TypeStatusMapForDebugging GetTypeStatusMapForDebugging(
+      DataTypeSet throttled_types,
+      DataTypeSet backed_off_types) const = 0;
+  virtual void GetAllNodesForDebugging(
+      base::OnceCallback<void(base::Value::List)> callback) const = 0;
+  virtual void GetEntityCountsForDebugging(
+      base::RepeatingCallback<void(const TypeEntitiesCount&)> callback)
+      const = 0;
+
+  virtual DataTypeController* GetControllerForTest(DataType type) = 0;
 };
 
 }  // namespace syncer

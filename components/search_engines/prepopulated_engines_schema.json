@@ -9,6 +9,7 @@
 {
   "type_name": "PrepopulatedEngine",
   "headers": [
+    "base/containers/span.h",
     "components/search_engines/search_engine_type.h",
     "components/search_engines/regulatory_extension_type.h"
   ],

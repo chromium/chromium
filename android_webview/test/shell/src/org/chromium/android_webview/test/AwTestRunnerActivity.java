@@ -11,6 +11,10 @@ import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
 
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.shell.AwShellResourceProvider;
 import org.chromium.base.StrictModeContext;
@@ -41,6 +45,7 @@ public class AwTestRunnerActivity extends Activity {
         hideActionBarIfNecessary();
 
         setContentView(mLinearLayout);
+        setupEdgeToEdge();
     }
 
     private void hideActionBarIfNecessary() {
@@ -85,5 +90,24 @@ public class AwTestRunnerActivity extends Activity {
 
     public void setIgnoreStartActivity(boolean ignore) {
         mIgnoreStartActivity = ignore;
+    }
+
+    private void setupEdgeToEdge() {
+        ViewCompat.setOnApplyWindowInsetsListener(
+                mLinearLayout,
+                (v, windowInsets) -> {
+                    Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+                    // Ensure the LinearLayout (container) view does not overlap with the system
+                    // status bar by adjusting its top padding based on the system window insets.
+                    v.setPadding(
+                            v.getPaddingLeft(),
+                            insets.top,
+                            v.getPaddingRight(),
+                            v.getPaddingBottom());
+
+                    // Return CONSUMED to indicate we have handled the insets for this view
+                    // and don't want them to be passed down to descendant views.
+                    return WindowInsetsCompat.CONSUMED;
+                });
     }
 }

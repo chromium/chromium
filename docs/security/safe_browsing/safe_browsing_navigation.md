@@ -17,14 +17,23 @@ dangerous, Chrome shows a warning to the user:
 
 Chrome can perform three types of Safe Browsing checks during navigation:
 
-*   The well-known hash-based database check
-    ([Safe Browsing Update API (v4)](https://developers.google.com/safe-browsing/v4/update-api)).
-*   The [URL-based real-time check](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/core/browser/realtime/).
-*   The [hash-based real-time check](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/core/browser/hashprefix_realtime/).
+*   The hash-prefix database check
+    ([HPD](https://developers.google.com/safe-browsing/v4/update-api)).
+*   The URL real-time check
+    ([URT](https://source.chromium.org/chromium/chromium/src/+/main:components/safe_browsing/core/browser/realtime/)).
+*   The hash-prefix real-time check
+    ([HPRT](https://developers.google.com/safe-browsing/reference)).
 
-All of these checks are on the blocking path of navigation. Before the check is
+Only the HPD check is on the blocking path of navigation. Before the check is
 completed, the navigation is not committed, the page body is not read by the
 renderer, and the user won’t see any page content in their browser.
+
+Real-time checks (URT and HPRT) take longer than HPD checks. To ensure smooth
+user experience, they don't delay navigation. This means the navigation can
+proceed before the check is completed and the user may see the page before the
+warning is shown. When real-time checks are enabled, an additional HPD check is
+added to ensure users are still protected against threats like exploits against
+the browser.
 
 NOTE: There is another type of Safe Browsing check called Client Side Phishing
 Detection (CSD). It also checks the reputation of the page. However, this check
@@ -42,11 +51,11 @@ navigation into two phases:
     the a navigation is committed. Note that at this point, nothing is rendered
     on the page.
     *   Any of the three Safe Browsing checks above may be performed in this
-        phase, depending on user consent. The URL-based real-time check is only
-        performed if the user has agreed to share URLs with Google. The
-        hash-based real-time check is used in most other scenarios, but in
-        incognito mode or other cases when the real-time checks are
-        unavailable, the hash-based database check will be performed instead.
+        phase, depending on user consent. The URT check is only performed if the
+        user has agreed to share URLs with Google. The HPRT check is used in
+        most other scenarios, but in incognito mode or other cases when the
+        real-time checks are unavailable, the HPD check will be performed
+        instead.
 *   **Loading phase**: Consists of reading the response body from the server,
     parsing it, rendering the document so it is visible to the user, executing
     any script, and loading any subresources (images, scripts, CSS files)
@@ -83,13 +92,16 @@ covers a set of important topics to understand navigation, such as:
 
 ![workflow](safe_browsing_navigation_flowchart.png)
 
-As illustrated above, Safe Browsing blocks navigation in the navigation phase.
-It blocks the navigation before it is committed. Safe Browsing needs to finish
-checking all URLs (including redirect URLs) before committing the navigation.
-These checks are initiated from the browser process.
+As illustrated above, only the HPD check delays navigation in the navigation
+phase. It blocks the navigation before it is committed. The check needs to
+finish checking all URLs (including redirect URLs) before committing the
+navigation. If one of the URLs (initial URL or redirect URLs) is classified as
+dangerous, a warning page will be shown and the navigation will be canceled.
 
-If one of the URLs (initial URL or redirect URLs) is classified as dangerous, a
-warning page will be shown and the navigation will be cancelled.
+For URT and HPRT checks, they don't delay navigation. If they find any URL to be
+dangerous, a warning will be triggered immediately.
+
+All three checks are initiated from the browser process.
 
 ## Speed
 
@@ -97,17 +109,19 @@ Safe Browsing checks and network requests are performed in parallel. Performing
 a Safe Browsing check doesn’t block the start of network requests or the fetch
 of response header and body. It doesn’t block redirects either.
 
-However, completion of the Safe Browsing check does block the browser from
-reading or parsing the response body. When the response header is received, Safe
-Browsing will block the navigation if the check is not completed.
+However, completion of the HPD check does block the browser from reading or
+parsing the response body. When the response header is received, the HPD check
+will block the navigation if the check is not completed.
 
-Safe Browsing won’t slow down the navigation if it is completed before the
-response header is received. If Safe Browsing is not completed at this point,
-the response body will still be fetched but the renderer won’t read or parse it.
+HPD check won’t slow down the navigation if it is completed before the response
+header is received. If the HPD check is not completed at this point, the
+response body will still be fetched but the renderer won’t read or parse it.
 
 SafeBrowsing.BrowserThrottle.TotalDelay2 is the metric to measure the speed of
 Safe Browsing checks. 0 means that the Safe Browsing check is completed before
 the response header is received -- it doesn't delay the navigation.
+
+Real-time checks, on the other hand, don't affect the loading speed.
 
 ## Implementation Details
 

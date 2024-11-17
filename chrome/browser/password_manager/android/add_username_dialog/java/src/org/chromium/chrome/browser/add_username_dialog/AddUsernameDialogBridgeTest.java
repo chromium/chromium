@@ -19,7 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -28,7 +27,6 @@ import org.robolectric.android.controller.ActivityController;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.modaldialog.FakeModalDialogManager;
 
@@ -39,7 +37,6 @@ import java.lang.ref.WeakReference;
 @Batch(Batch.PER_CLASS)
 public class AddUsernameDialogBridgeTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private AddUsernameDialogBridge.Natives mBridgeJniMock;
     @Mock private WindowAndroid mWindowAndroid;
@@ -51,8 +48,7 @@ public class AddUsernameDialogBridgeTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        mJniMocker.mock(AddUsernameDialogBridgeJni.TEST_HOOKS, mBridgeJniMock);
+        AddUsernameDialogBridgeJni.setInstanceForTesting(mBridgeJniMock);
 
         mBridge = new AddUsernameDialogBridge(sTestNativePointer, mWindowAndroid);
     }

@@ -41,6 +41,7 @@
 #include "ui/accessibility/platform/ax_system_caret_win.h"
 #include "ui/base/ime/text_input_client.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/view_prop.h"
 #include "ui/base/win/hwnd_metrics.h"
@@ -425,8 +426,7 @@ HWNDMessageHandler::HWNDMessageHandler(HWNDMessageHandlerDelegate* delegate,
       sent_window_size_changing_(false),
       did_return_uia_object_(false),
       left_button_down_on_caption_(false),
-      background_fullscreen_hack_(false),
-      pointer_events_for_touch_(::features::IsUsingWMPointerForTouch()) {}
+      background_fullscreen_hack_(false) {}
 
 HWNDMessageHandler::~HWNDMessageHandler() {
   // Unhook MoveLoopMouseWatcher, to prevent call backs to this after deletion.
@@ -535,7 +535,7 @@ gfx::Rect HWNDMessageHandler::GetClientAreaBounds() const {
 
 void HWNDMessageHandler::GetWindowPlacement(
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   WINDOWPLACEMENT wp;
   wp.length = sizeof(wp);
   bool succeeded = !!::GetWindowPlacement(hwnd(), &wp);
@@ -568,11 +568,11 @@ void HWNDMessageHandler::GetWindowPlacement(
 
   if (show_state) {
     if (wp.showCmd == SW_SHOWMAXIMIZED)
-      *show_state = ui::SHOW_STATE_MAXIMIZED;
+      *show_state = ui::mojom::WindowShowState::kMaximized;
     else if (wp.showCmd == SW_SHOWMINIMIZED)
-      *show_state = ui::SHOW_STATE_MINIMIZED;
+      *show_state = ui::mojom::WindowShowState::kMinimized;
     else
-      *show_state = ui::SHOW_STATE_NORMAL;
+      *show_state = ui::mojom::WindowShowState::kNormal;
   }
 }
 
@@ -642,12 +642,12 @@ void HWNDMessageHandler::StackAtTop() {
                SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE);
 }
 
-void HWNDMessageHandler::Show(ui::WindowShowState show_state,
+void HWNDMessageHandler::Show(ui::mojom::WindowShowState show_state,
                               const gfx::Rect& pixel_restore_bounds) {
   TRACE_EVENT0("views", "HWNDMessageHandler::Show");
 
   int native_show_state;
-  if (show_state == ui::SHOW_STATE_MAXIMIZED &&
+  if (show_state == ui::mojom::WindowShowState::kMaximized &&
       !pixel_restore_bounds.IsEmpty()) {
     WINDOWPLACEMENT placement = {0};
     placement.length = sizeof(WINDOWPLACEMENT);
@@ -660,20 +660,21 @@ void HWNDMessageHandler::Show(ui::WindowShowState show_state,
 
     // Use SW_SHOW/SW_SHOWNA instead of SW_SHOWNORMAL/SW_SHOWNOACTIVATE so that
     // the window is not restored to its original position if it is maximized.
-    // This could be used unconditionally for ui::SHOW_STATE_INACTIVE, but
-    // cross-platform behavior when showing a minimized window is inconsistent,
-    // some platforms restore the position, some do not. See crbug.com/1296710
+    // This could be used unconditionally for
+    // ui::mojom::WindowShowState::kInactive, but cross-platform behavior when
+    // showing a minimized window is inconsistent, some platforms restore the
+    // position, some do not. See crbug.com/1296710
     switch (show_state) {
-      case ui::SHOW_STATE_INACTIVE:
+      case ui::mojom::WindowShowState::kInactive:
         native_show_state = is_maximized ? SW_SHOWNA : SW_SHOWNOACTIVATE;
         break;
-      case ui::SHOW_STATE_MAXIMIZED:
+      case ui::mojom::WindowShowState::kMaximized:
         native_show_state = SW_SHOWMAXIMIZED;
         break;
-      case ui::SHOW_STATE_MINIMIZED:
+      case ui::mojom::WindowShowState::kMinimized:
         native_show_state = SW_SHOWMINIMIZED;
         break;
-      case ui::SHOW_STATE_NORMAL:
+      case ui::mojom::WindowShowState::kNormal:
         if ((GetWindowLong(hwnd(), GWL_EXSTYLE) & WS_EX_TRANSPARENT) ||
             (GetWindowLong(hwnd(), GWL_EXSTYLE) & WS_EX_NOACTIVATE)) {
           native_show_state = is_maximized ? SW_SHOWNA : SW_SHOWNOACTIVATE;
@@ -681,7 +682,7 @@ void HWNDMessageHandler::Show(ui::WindowShowState show_state,
           native_show_state = is_maximized ? SW_SHOW : SW_SHOWNORMAL;
         }
         break;
-      case ui::SHOW_STATE_FULLSCREEN:
+      case ui::mojom::WindowShowState::kFullscreen:
         native_show_state = SW_SHOWNORMAL;
         SetFullscreen(true, display::kInvalidDisplayId);
         break;
@@ -1375,9 +1376,13 @@ void HWNDMessageHandler::OnAppbarAutohideEdgesChanged() {
   // This triggers querying WM_NCCALCSIZE again.
   RECT client;
   GetWindowRect(hwnd(), &client);
+
+  // Add SWP_NOZORDER and SWP_NOACTIVATE flags to SetWindowPos to preserve the
+  // correct Z-order after restarting maximized browsers. Without these flags,
+  // SetWindowPos would always bring the current window to the top.
   SetWindowPos(hwnd(), nullptr, client.left, client.top,
                client.right - client.left, client.bottom - client.top,
-               SWP_FRAMECHANGED);
+               SWP_FRAMECHANGED | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
 void HWNDMessageHandler::SetInitialFocus() {
@@ -1736,9 +1741,6 @@ LRESULT HWNDMessageHandler::OnCreate(CREATESTRUCT* create_struct) {
 
   // Get access to a modifiable copy of the system menu.
   GetSystemMenu(hwnd(), false);
-
-  if (!pointer_events_for_touch_)
-    RegisterTouchWindow(hwnd(), TWF_WANTPALM);
 
   // We need to allow the delegate to size its contents since the window may not
   // receive a size notification when its initial bounds are specified at window
@@ -2132,11 +2134,7 @@ LRESULT HWNDMessageHandler::OnPointerEvent(UINT message,
     case PT_PEN:
       return HandlePointerEventTypePenClient(message, w_param, l_param);
     case PT_TOUCH:
-      if (pointer_events_for_touch_) {
-        return HandlePointerEventTypeTouchOrNonClient(
-            message, w_param, l_param);
-      }
-      [[fallthrough]];
+      return HandlePointerEventTypeTouchOrNonClient(message, w_param, l_param);
     default:
       break;
   }
@@ -2787,96 +2785,11 @@ void HWNDMessageHandler::OnTimeChange() {
 LRESULT HWNDMessageHandler::OnTouchEvent(UINT message,
                                          WPARAM w_param,
                                          LPARAM l_param) {
-  if (pointer_events_for_touch_) {
-    // Release any associated memory with this event.
-    CloseTouchInputHandle(reinterpret_cast<HTOUCHINPUT>(l_param));
-
-    // Claim the event is handled. This shouldn't ever happen
-    // because we don't register touch windows when we are using
-    // pointer events.
-    return 0;
-  }
-
-  // Handle touch events only on Aura for now.
-  WORD num_points = LOWORD(w_param);
-  base::HeapArray<TOUCHINPUT> input =
-      base::HeapArray<TOUCHINPUT>::WithSize(num_points);
-  if (ui::GetTouchInputInfoWrapper(reinterpret_cast<HTOUCHINPUT>(l_param),
-                                   num_points, input.data(),
-                                   sizeof(TOUCHINPUT))) {
-    // input[i].dwTime doesn't necessarily relate to the system time at all,
-    // so use base::TimeTicks::Now().
-    const base::TimeTicks event_time = base::TimeTicks::Now();
-    TouchEvents touch_events;
-    TouchIDs stale_touches(touch_ids_);
-
-    for (size_t i = 0; i < num_points; ++i) {
-      stale_touches.erase(input[i].dwID);
-      POINT point;
-      point.x = TOUCH_COORD_TO_PIXEL(input[i].x);
-      point.y = TOUCH_COORD_TO_PIXEL(input[i].y);
-      ScreenToClient(hwnd(), &point);
-
-      last_touch_or_pen_message_time_ = ::GetMessageTime();
-
-      gfx::Point touch_point(point.x, point.y);
-      auto touch_id = static_cast<ui::PointerId>(
-          id_generator_.GetGeneratedID(input[i].dwID));
-
-      if (input[i].dwFlags & TOUCHEVENTF_DOWN) {
-        touch_ids_.insert(input[i].dwID);
-        GenerateTouchEvent(ui::EventType::kTouchPressed, touch_point, touch_id,
-                           event_time, &touch_events);
-        ui::ComputeEventLatencyOSFromTOUCHINPUT(ui::EventType::kTouchPressed,
-                                                input[i], event_time);
-        touch_down_contexts_++;
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-            FROM_HERE,
-            base::BindOnce(&HWNDMessageHandler::ResetTouchDownContext,
-                           msg_handler_weak_factory_.GetWeakPtr()),
-            kTouchDownContextResetTimeout);
-      } else {
-        if (input[i].dwFlags & TOUCHEVENTF_MOVE) {
-          GenerateTouchEvent(ui::EventType::kTouchMoved, touch_point, touch_id,
-                             event_time, &touch_events);
-          ui::ComputeEventLatencyOSFromTOUCHINPUT(ui::EventType::kTouchMoved,
-                                                  input[i], event_time);
-        }
-
-        if (input[i].dwFlags & TOUCHEVENTF_UP) {
-          touch_ids_.erase(input[i].dwID);
-          GenerateTouchEvent(ui::EventType::kTouchReleased, touch_point,
-                             touch_id, event_time, &touch_events);
-          ui::ComputeEventLatencyOSFromTOUCHINPUT(ui::EventType::kTouchReleased,
-                                                  input[i], event_time);
-          id_generator_.ReleaseNumber(input[i].dwID);
-        }
-      }
-    }
-    // If a touch has been dropped from the list (without a TOUCH_EVENTF_UP)
-    // we generate a simulated TOUCHEVENTF_UP event.
-    for (auto touch_number : stale_touches) {
-      // Log that we've hit this code. When usage drops off, we can remove
-      // this "workaround". See https://crbug.com/811273
-      UMA_HISTOGRAM_BOOLEAN("TouchScreen.MissedTOUCHEVENTF_UP", true);
-      auto touch_id = static_cast<ui::PointerId>(
-          id_generator_.GetGeneratedID(touch_number));
-      touch_ids_.erase(touch_number);
-      GenerateTouchEvent(ui::EventType::kTouchReleased, gfx::Point(0, 0),
-                         touch_id, event_time, &touch_events);
-      id_generator_.ReleaseNumber(touch_number);
-    }
-
-    // Handle the touch events asynchronously. We need this because touch
-    // events on windows don't fire if we enter a modal loop in the context of
-    // a touch event.
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&HWNDMessageHandler::HandleTouchEvents,
-                       msg_handler_weak_factory_.GetWeakPtr(), touch_events));
-  }
+  // Release any associated memory with this event.
   CloseTouchInputHandle(reinterpret_cast<HTOUCHINPUT>(l_param));
-  SetMsgHandled(FALSE);
+
+  // Claim the event is handled. This shouldn't ever happen because we don't
+  // register touch windows when we are using pointer events.
   return 0;
 }
 

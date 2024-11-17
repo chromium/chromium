@@ -29,9 +29,7 @@ AXPlatformNodeWin* GetParentAXPlatformNodeWin(AXPlatformNodeWin* node) {
 
 }  // namespace
 
-AXPlatformNodeTextChildProviderWin::AXPlatformNodeTextChildProviderWin() {
-  DVLOG(1) << __func__;
-}
+AXPlatformNodeTextChildProviderWin::AXPlatformNodeTextChildProviderWin() {}
 
 AXPlatformNodeTextChildProviderWin::~AXPlatformNodeTextChildProviderWin() {}
 

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/arc_util.h"
 #include "base/barrier_closure.h"
 #include "base/files/file_enumerator.h"

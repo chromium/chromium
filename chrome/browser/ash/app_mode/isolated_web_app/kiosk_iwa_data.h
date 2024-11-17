@@ -10,6 +10,8 @@
 
 #include "chrome/browser/ash/app_mode/kiosk_app_data_base.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/common/web_app_id.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -28,8 +30,14 @@ class KioskIwaData : public KioskAppDataBase {
   KioskIwaData& operator=(const KioskIwaData&) = delete;
   ~KioskIwaData() override;
 
-  [[nodiscard]] const std::string& web_bundle_id() const {
-    return iwa_info_.web_bundle_id().id();
+  [[nodiscard]] const url::Origin& origin() const { return iwa_info_.origin(); }
+
+  [[nodiscard]] const webapps::AppId& app_id() const {
+    return iwa_info_.app_id();
+  }
+
+  [[nodiscard]] const web_package::SignedWebBundleId& web_bundle_id() const {
+    return iwa_info_.web_bundle_id();
   }
 
   [[nodiscard]] const GURL& update_manifest_url() const {

@@ -179,8 +179,8 @@ std::vector<mojom::LinkHeaderPtr> ParseLinkHeaders(
     const net::HttpResponseHeaders& headers,
     const GURL& base_url) {
   std::vector<mojom::LinkHeaderPtr> parsed_headers;
-  std::string link_header;
-  headers.GetNormalizedHeader("link", &link_header);
+  std::string link_header =
+      headers.GetNormalizedHeader("link").value_or(std::string());
   for (const auto& pair : link_header_util::SplitLinkHeader(link_header)) {
     std::string url;
     std::unordered_map<std::string, std::optional<std::string>> attrs;

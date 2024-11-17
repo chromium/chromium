@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/task/common/task_annotator.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -118,8 +119,7 @@ ProxyImpl::ProxyImpl(
   host_impl_ = layer_tree_host->CreateLayerTreeHostImpl(this);
 
   SchedulerSettings scheduler_settings(settings->ToSchedulerSettings());
-  scheduler_settings.main_frame_before_commit_enabled =
-      base::FeatureList::IsEnabled(features::kNonBlockingCommit);
+  scheduler_settings.main_frame_before_commit_enabled = true;
 
   std::unique_ptr<CompositorTimingHistory> compositor_timing_history(
       new CompositorTimingHistory(
@@ -282,6 +282,9 @@ void ProxyImpl::SetShouldWarmUpOnImpl() {
 }
 
 void ProxyImpl::ReleaseLayerTreeFrameSinkOnImpl(CompletionEvent* completion) {
+  TRACE_EVENT0("cc", "ProxyImpl::ReleaseLayerTreeFrameSinkOnImpl");
+  base::ScopedUmaHistogramTimer histogram_timer(
+      "Navigation.ProxyImpl.ReleaseLayerTreeFrameSinkOnImpl");
   DCHECK(IsImplThread());
 
   // Unlike DidLoseLayerTreeFrameSinkOnImplThread, we don't need to call
@@ -330,7 +333,7 @@ bool ProxyImpl::IsInSynchronousComposite() const {
 
 void ProxyImpl::FrameSinksToThrottleUpdated(
     const base::flat_set<viz::FrameSinkId>& ids) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ProxyImpl::SetHasActiveThreadedScroll(bool is_scrolling) {
@@ -360,8 +363,6 @@ void ProxyImpl::NotifyReadyToCommitOnImpl(
 
   DCHECK(!data_for_commit_.get());
   DCHECK(IsImplThread());
-  DCHECK(base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
-         IsMainThreadBlocked());
   DCHECK(scheduler_);
   DCHECK(scheduler_->CommitPending());
 
@@ -518,8 +519,12 @@ void ProxyImpl::RenewTreePriority() {
   bool precise_scrolling_in_progress =
       host_impl_->GetActivelyScrollingType() == ActivelyScrollingType::kPrecise;
 
-  bool avoid_entering_smoothness = precise_scrolling_in_progress &&
-                                   host_impl_->IsCurrentScrollMainRepainted();
+  bool avoid_entering_smoothness =
+      (base::FeatureList::IsEnabled(
+           features::kNewContentForCheckerboardedScrolls) &&
+       host_impl_->ScrollCheckerboardsIncompleteRecording()) ||
+      (precise_scrolling_in_progress &&
+       host_impl_->IsCurrentScrollMainRepainted());
 
   bool non_scroll_interaction_in_progress =
       host_impl_->IsPinchGestureActive() ||
@@ -627,11 +632,13 @@ void ProxyImpl::NotifyImageDecodeRequestFinished(int request_id,
   }
 }
 
-void ProxyImpl::NotifyTransitionRequestFinished(uint32_t sequence_id) {
+void ProxyImpl::NotifyTransitionRequestFinished(
+    uint32_t sequence_id,
+    const viz::ViewTransitionElementResourceRects& rects) {
   DCHECK(IsImplThread());
   MainThreadTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&ProxyMain::NotifyTransitionRequestFinished,
-                                proxy_main_weak_ptr_, sequence_id));
+                                proxy_main_weak_ptr_, sequence_id, rects));
 }
 
 void ProxyImpl::DidPresentCompositorFrameOnImplThread(
@@ -824,8 +831,6 @@ void ProxyImpl::ScheduledActionCommit() {
             perfetto::protos::pbzero::MainFramePipeline::Step::COMMIT_ON_IMPL);
       });
   DCHECK(IsImplThread());
-  DCHECK(base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
-         IsMainThreadBlocked());
   DCHECK(data_for_commit_.get());
   DCHECK(data_for_commit_->IsValid());
 
@@ -955,23 +960,38 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
   bool draw_frame = false;
 
   DrawResult result;
-  if (host_impl_->CanDraw()) {
-    result = host_impl_->PrepareToDraw(&frame);
-    draw_frame = forced_draw || result == DrawResult::kSuccess;
-  } else {
-    result = DrawResult::kAbortedCantDraw;
-  }
+  {
+    TRACE_EVENT(
+        "viz,benchmark,graphics.pipeline", "Graphics.Pipeline",
+        perfetto::Flow::Global(host_impl_->CurrentBeginFrameArgs().trace_id),
+        [&](perfetto::EventContext ctx) {
+          base::TaskAnnotator::EmitTaskTimingDetails(ctx);
+          auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* data = event->set_chrome_graphics_pipeline();
+          data->set_step(perfetto::protos::pbzero::ChromeGraphicsPipeline::
+                             StepName::STEP_GENERATE_COMPOSITOR_FRAME);
+          data->set_surface_frame_trace_id(
+              host_impl_->CurrentBeginFrameArgs().trace_id);
+        });
 
-  if (draw_frame) {
-    if (std::optional<SubmitInfo> submit_info =
-            host_impl_->DrawLayers(&frame)) {
-      DCHECK_NE(frame.frame_token, 0u);
-      // Drawing implies we submitted a frame to the LayerTreeFrameSink.
-      scheduler_->DidSubmitCompositorFrame(submit_info.value());
+    if (host_impl_->CanDraw()) {
+      result = host_impl_->PrepareToDraw(&frame);
+      draw_frame = forced_draw || result == DrawResult::kSuccess;
+    } else {
+      result = DrawResult::kAbortedCantDraw;
     }
-    result = DrawResult::kSuccess;
-  } else {
-    DCHECK_NE(DrawResult::kSuccess, result);
+
+    if (draw_frame) {
+      if (std::optional<SubmitInfo> submit_info =
+              host_impl_->DrawLayers(&frame)) {
+        DCHECK_NE(frame.frame_token, 0u);
+        // Drawing implies we submitted a frame to the LayerTreeFrameSink.
+        scheduler_->DidSubmitCompositorFrame(submit_info.value());
+      }
+      result = DrawResult::kSuccess;
+    } else {
+      DCHECK_NE(DrawResult::kSuccess, result);
+    }
   }
 
   host_impl_->DidDrawAllLayers(frame);
@@ -1061,9 +1081,7 @@ ProxyImpl::DataForCommit::DataForCommit(
 ProxyImpl::DataForCommit::~DataForCommit() = default;
 
 bool ProxyImpl::DataForCommit::IsValid() const {
-  return commit_completion_event.get() && commit_state.get() && unsafe_state &&
-         (base::FeatureList::IsEnabled(features::kNonBlockingCommit) ||
-          commit_timestamps);
+  return commit_completion_event.get() && commit_state.get() && unsafe_state;
 }
 
 }  // namespace cc

@@ -143,8 +143,7 @@ bool IsFeatureAllowed(mojom::Feature feature, const PrefService* pref_service) {
              pref_service->GetBoolean(kEcheAllowedPrefName);
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -177,8 +176,7 @@ bool IsDefaultFeatureEnabledValue(mojom::Feature feature,
           ->FindPreference(kPhoneHubTaskContinuationEnabledPrefName)
           ->IsDefaultValue();
     case mojom::Feature::kWifiSync:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     case mojom::Feature::kEche:
       return pref_service->FindPreference(kEcheEnabledPrefName)
           ->IsDefaultValue();

@@ -573,7 +573,7 @@ void InteractiveDetector::OnTimeToInteractiveDetected() {
   LocalFrame* frame = GetSupplementable()->GetFrame();
   DocumentLoader* loader = GetSupplementable()->Loader();
   probe::LifecycleEvent(frame, loader, "InteractiveTime",
-                        base::TimeTicks::Now().since_origin().InSecondsF());
+                        interactive_time_.since_origin().InSecondsF());
 
   TRACE_EVENT_MARK_WITH_TIMESTAMP2(
       "loading,rail", "InteractiveTime", interactive_time_, "frame",

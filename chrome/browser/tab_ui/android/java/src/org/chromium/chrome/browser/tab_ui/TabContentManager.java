@@ -295,11 +295,11 @@ public class TabContentManager {
     }
 
     /**
-     * Call to get an ETC1 thumbnail for a given tab through a {@link Callback}. If there is
-     * no up-to-date thumbnail on disk for the given tab, callback returns null.
+     * Call to get an ETC1 thumbnail for a given tab through a {@link Callback}. If there is no
+     * up-to-date thumbnail on disk for the given tab, callback returns null.
+     *
      * @param tabId The ID of the tab to get the thumbnail for.
-     * @param callback The callback to send the {@link Bitmap} with. Can be called up to twice when
-     *                 {@code forceUpdate}; otherwise always called exactly once.
+     * @param callback The callback to send the {@link Bitmap} with.
      */
     public void getEtc1TabThumbnailWithCallback(int tabId, @NonNull Callback<Bitmap> callback) {
         if (!mSnapshotsEnabled || mNativeTabContentManager == 0) {
@@ -309,9 +309,7 @@ public class TabContentManager {
 
         // Do not capture a JPEG here because we likely already created one when capturing. We just
         // want to fetch the ETC1 off of disk for a higher resolution image to use for animations.
-        TabContentManagerJni.get()
-                .getEtc1TabThumbnail(
-                        mNativeTabContentManager, tabId, /* saveJpeg= */ false, callback);
+        TabContentManagerJni.get().getEtc1TabThumbnail(mNativeTabContentManager, tabId, callback);
     }
 
     /**
@@ -323,7 +321,7 @@ public class TabContentManager {
      * @param callback The callback to send the {@link Bitmap} with.
      */
     public void getTabThumbnailWithCallback(
-            @NonNull int tabId, @NonNull Size thumbnailSize, @NonNull Callback<Bitmap> callback) {
+            int tabId, @NonNull Size thumbnailSize, @NonNull Callback<Bitmap> callback) {
         if (!mSnapshotsEnabled) {
             callback.onResult(null);
             return;
@@ -393,7 +391,7 @@ public class TabContentManager {
     }
 
     private void getTabThumbnailFromDisk(
-            @NonNull int tabId, @NonNull Size thumbnailSize, @NonNull Callback<Bitmap> callback) {
+            int tabId, @NonNull Size thumbnailSize, @NonNull Callback<Bitmap> callback) {
         // Get the JPEG once it is ready if a capture is ongoing.
         if (mNativeTabContentManager != 0) {
             TraceEvent.startAsync("GetTabThumbnailFromDiskJpegAwait", tabId);
@@ -706,10 +704,7 @@ public class TabContentManager {
                 long nativeTabContentManager, int tabId, Callback<Boolean> callback);
 
         void getEtc1TabThumbnail(
-                long nativeTabContentManager,
-                int tabId,
-                boolean saveJpeg,
-                Callback<Bitmap> callback);
+                long nativeTabContentManager, int tabId, Callback<Bitmap> callback);
 
         void setCaptureMinRequestTimeForTesting(long nativeTabContentManager, int timeMs);
 

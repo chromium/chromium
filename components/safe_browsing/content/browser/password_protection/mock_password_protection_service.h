@@ -46,7 +46,7 @@ class MockPasswordProtectionService : public PasswordProtectionService {
                      PasswordProtectionTrigger(ReusedPasswordAccountType));
   MOCK_CONST_METHOD1(GetAccountInfoForUsername,
                      AccountInfo(const std::string&));
-  MOCK_CONST_METHOD1(IsAccountGmail, bool(const std::string&));
+  MOCK_CONST_METHOD1(IsAccountConsumer, bool(const std::string&));
   MOCK_CONST_METHOD1(IsURLAllowlistedForPasswordEntry, bool(const GURL&));
 
   MOCK_METHOD2(FillUserPopulation,

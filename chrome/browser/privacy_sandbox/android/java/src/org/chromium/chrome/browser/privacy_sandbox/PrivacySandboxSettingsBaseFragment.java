@@ -24,7 +24,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
@@ -45,16 +45,15 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
     private PrivacySandboxBridge mPrivacySandboxBridge;
     private PrivacySandboxHelpers.CustomTabIntentHelper mCustomTabHelper;
     private OneshotSupplier<SnackbarManager> mSnackbarManagerSupplier;
-    private Callback<Context> mCookieSettingsLauncher;
+    private Callback<Context> mCookieSettingsNavigation;
 
     /** Launches the right version of PrivacySandboxSettings depending on feature flags. */
     public static void launchPrivacySandboxSettings(
             Context context, @PrivacySandboxReferrer int referrer) {
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(PRIVACY_SANDBOX_REFERRER, referrer);
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(
-                        context, PrivacySandboxSettingsFragment.class, fragmentArgs);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(context, PrivacySandboxSettingsFragment.class, fragmentArgs);
     }
 
     @Override
@@ -157,9 +156,8 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
         }
     }
 
-    protected void launchSettingsActivity(Class<? extends Fragment> fragment) {
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(getContext(), fragment);
+    protected void startSettings(Class<? extends Fragment> fragment) {
+        SettingsNavigationFactory.createSettingsNavigation().startSettings(getContext(), fragment);
     }
 
     @Override
@@ -179,12 +177,12 @@ public abstract class PrivacySandboxSettingsBaseFragment extends ChromeBaseSetti
     }
 
     protected void launchCookieSettings() {
-        if (mCookieSettingsLauncher != null) {
-            mCookieSettingsLauncher.onResult(getContext());
+        if (mCookieSettingsNavigation != null) {
+            mCookieSettingsNavigation.onResult(getContext());
         }
     }
 
-    public void setCookieSettingsIntentHelper(Callback<Context> cookieSettingsLauncher) {
-        mCookieSettingsLauncher = cookieSettingsLauncher;
+    public void setCookieSettingsIntentHelper(Callback<Context> cookieSettingsNavigation) {
+        mCookieSettingsNavigation = cookieSettingsNavigation;
     }
 }

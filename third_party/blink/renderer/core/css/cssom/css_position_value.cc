@@ -35,8 +35,7 @@ CSSNumericValue* FromSingleValue(const CSSValue& value) {
         return CSSUnitValue::Create(100,
                                     CSSPrimitiveValue::UnitType::kPercentage);
       default:
-        NOTREACHED_IN_MIGRATION();
-        return nullptr;
+        NOTREACHED();
     }
   }
 
@@ -65,8 +64,7 @@ CSSNumericValue* FromSingleValue(const CSSValue& value) {
       return CSSMathSum::Create(std::move(args));
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

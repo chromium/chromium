@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/updater/tag.h"
 
 #include <algorithm>
@@ -640,13 +635,9 @@ std::vector<uint8_t> ReadFileTail(const base::FilePath& filename) {
       (file_length > bytes_to_read) ? file_length - bytes_to_read : 0;
 
   std::vector<uint8_t> buffer(bytes_to_read);
-  const int num_bytes_read =
-      file.Read(offset, reinterpret_cast<char*>(&buffer[0]), bytes_to_read);
-  if (num_bytes_read != bytes_to_read) {
-    return {};
-  }
-
-  return buffer;
+  return file.ReadAndCheck(offset, base::make_span(buffer))
+             ? buffer
+             : std::vector<uint8_t>();
 }
 
 std::string ParseTagBuffer(const std::vector<uint8_t>& tag_buffer) {
@@ -660,13 +651,13 @@ std::string ParseTagBuffer(const std::vector<uint8_t>& tag_buffer) {
 }
 
 std::vector<uint8_t> ReadEntireFile(const base::FilePath& file) {
-  int64_t file_size = 0;
-  if (!base::GetFileSize(file, &file_size)) {
+  std::optional<int64_t> file_size = base::GetFileSize(file);
+  if (!file_size.has_value()) {
     PLOG(ERROR) << __func__ << ": Could not get file size: " << file;
     return {};
   }
 
-  std::vector<uint8_t> contents(file_size);
+  std::vector<uint8_t> contents(file_size.value());
   if (base::ReadFile(file, reinterpret_cast<char*>(&contents.front()),
                      contents.size()) == -1) {
     PLOG(ERROR) << __func__ << ": Could not read file: " << file;

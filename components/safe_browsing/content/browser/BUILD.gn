@@ -21,6 +21,7 @@ source_set("safe_browsing_service") {
 
   deps = [
     "//base:base",
+    "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/common/proto:csd_proto",
     "//content/public/browser",
   ]
@@ -173,6 +174,7 @@ source_set("unit_tests") {
     ":client_side_detection_service",
     "//base:base",
     "//base/test:test_support",
+    "//components/optimization_guide/core",
     "//components/optimization_guide/core:model_executor",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",

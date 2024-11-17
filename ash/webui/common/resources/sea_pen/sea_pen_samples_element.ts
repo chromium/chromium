@@ -11,7 +11,7 @@ import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 import 'chrome://resources/ash/common/personalization/personalization_shared_icons.html.js';
 import 'chrome://resources/ash/common/personalization/wallpaper.css.js';
-import 'chrome://resources/ash/common/sea_pen/sea_pen.css.js';
+import './sea_pen.css.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WallpaperGridItemSelectedEvent} from 'chrome://resources/ash/common/personalization/wallpaper_grid_item_element.js';
@@ -65,7 +65,7 @@ export class SeaPenSamplesElement extends SeaPenSamplesElementBase {
 
   private onClickSample_(e: WallpaperGridItemSelectedEvent&
                          {model: {sample: SeaPenSamplePrompt}}) {
-    logSamplePromptClicked();
+    logSamplePromptClicked(e.model.sample.id);
     this.dispatchEvent(new SeaPenSampleSelectedEvent(e.model.sample.prompt));
   }
 }

@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "net/base/net_export.h"
 #include "net/base/upload_element_reader.h"
 
@@ -39,7 +40,7 @@ class NET_EXPORT UploadBytesElementReader : public UploadElementReader {
            CompletionOnceCallback callback) override;
 
  private:
-  const base::span<const uint8_t> bytes_;
+  const base::raw_span<const uint8_t, DanglingUntriaged> bytes_;
   uint64_t offset_ = 0;
 };
 

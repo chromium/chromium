@@ -16,10 +16,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
-#include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
 #include "chromeos/ash/components/boca/babelorca/tachyon_client.h"
-#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 #include "chromeos/ash/components/boca/babelorca/token_manager.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
@@ -52,7 +51,7 @@ void TachyonAuthedClientImpl::StartAuthedRequest(
   auto serialize_cb =
       base::BindOnce(SerializeProtoToString, std::move(request_proto));
   auto reply_post_cb =
-      base::BindOnce(&TachyonAuthedClientImpl::OnRequestProtoSerialized,
+      base::BindOnce(&TachyonAuthedClientImpl::OnRequestSerialized,
                      weak_ptr_factory_.GetWeakPtr(), std::move(request_data));
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, std::move(serialize_cb), std::move(reply_post_cb));
@@ -61,16 +60,16 @@ void TachyonAuthedClientImpl::StartAuthedRequest(
 void TachyonAuthedClientImpl::StartAuthedRequestString(
     std::unique_ptr<RequestDataWrapper> request_data,
     std::string request_string) {
-  OnRequestProtoSerialized(std::move(request_data), request_string);
+  OnRequestSerialized(std::move(request_data), request_string);
 }
 
-void TachyonAuthedClientImpl::OnRequestProtoSerialized(
+void TachyonAuthedClientImpl::OnRequestSerialized(
     std::unique_ptr<RequestDataWrapper> request_data,
     std::optional<std::string> request_string) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!request_string) {
     std::move(request_data->response_cb)
-        .Run(base::unexpected(TachyonRequestError::kInternalError));
+        .Run(TachyonResponse(TachyonResponse::Status::kInternalError));
     return;
   }
   request_data->content_data = std::move(*request_string);
@@ -91,7 +90,7 @@ void TachyonAuthedClientImpl::StartAuthedRequestInternal(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!has_oauth_token) {
     std::move(request_data->response_cb)
-        .Run(base::unexpected(TachyonRequestError::kAuthError));
+        .Run(TachyonResponse(TachyonResponse::Status::kAuthError));
     return;
   }
   std::string oauth_token = *(oauth_token_manager_->GetTokenString());
@@ -108,7 +107,7 @@ void TachyonAuthedClientImpl::OnRequestAuthFailure(
   static int constexpr kMaxAuthRetries = 1;
   if (request_data->oauth_retry_num >= kMaxAuthRetries) {
     std::move(request_data->response_cb)
-        .Run(base::unexpected(TachyonRequestError::kAuthError));
+        .Run(TachyonResponse(TachyonResponse::Status::kAuthError));
     return;
   }
   ++(request_data->oauth_retry_num);

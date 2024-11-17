@@ -480,9 +480,36 @@ const struct QuicErrorMapping {
     {quic::QUIC_HANDSHAKE_FAILED_PACKETS_BUFFERED_TOO_LONG,
      "quic.quic_handshake_failed_packets_buffered_too_long"},
 
+    // Handshake failed due to invalid hostname in ClientHello. Only sent from
+    // server.
+    {quic::QUIC_HANDSHAKE_FAILED_INVALID_HOSTNAME,
+     "quic.quic_handshake_failed_invalid_hostname"},
+
     // Client application lost network access.
     {quic::QUIC_CLIENT_LOST_NETWORK_ACCESS,
      "quic.quic_client_lost_network_access"},
+
+    // Handshake failed because server is rejecting all connections. Only sent
+    // from server.
+    {quic::QUIC_HANDSHAKE_FAILED_REJECTING_ALL_CONNECTIONS,
+     "quic.quic_handshake_failed_rejecting_all_connections"},
+
+    // Handshake failed because the connection failed validity checks in
+    // QuicDispatcher. Only sent from server.
+    {quic::QUIC_HANDSHAKE_FAILED_INVALID_CONNECTION,
+     "quic.quic_handshake_failed_invalid_connection"},
+
+    // Handshake failed because
+    // 1) There used to be a QuicConnection created for the connection ID. And
+    // 2) When the QuicConnection was destroyed, it did not have a termination
+    //    packet so the QuicDispatcher synthesized one using this error code.
+    // Only sent from server.
+    {quic::QUIC_HANDSHAKE_FAILED_SYNTHETIC_CONNECTION_CLOSE,
+     "quic.quic_handshake_failed_synthetic_connection_close"},
+
+    // Handshake failed because there is a CID collision. Only sent from server.
+    {quic::QUIC_HANDSHAKE_FAILED_CID_COLLISION,
+     "quic.quic_handshake_failed_cid_collision"},
 
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};

@@ -100,7 +100,7 @@ class RTCPeerConnectionTest : public testing::Test {
   }
 
   std::string GetExceptionMessage(V8TestingScope& scope) {
-    ExceptionState& exception_state = scope.GetExceptionState();
+    DummyExceptionStateForTesting& exception_state = scope.GetExceptionState();
     return exception_state.HadException() ? exception_state.Message().Utf8()
                                           : "";
   }

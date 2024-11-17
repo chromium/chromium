@@ -9,7 +9,7 @@
 #include <optional>
 #include <vector>
 
-#include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -301,10 +301,13 @@ class TrustedVaultConnection {
   // Enumerates the members of the security domain and determines the
   // recoverability of the security domain. (See the values of
   // `DownloadAuthenticationFactorsRegistrationStateResult`.)
+  // |keep_alive_callback| will be called whenever there's a partial response
+  // from the server, i.e. we got a response but we still need more data.
   [[nodiscard]] virtual std::unique_ptr<Request>
   DownloadAuthenticationFactorsRegistrationState(
       const CoreAccountInfo& account_info,
-      DownloadAuthenticationFactorsRegistrationStateCallback callback) = 0;
+      DownloadAuthenticationFactorsRegistrationStateCallback callback,
+      base::RepeatingClosure keep_alive_callback) = 0;
 };
 
 }  // namespace trusted_vault

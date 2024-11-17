@@ -27,6 +27,7 @@
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/permissions/notifications_engagement_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/notification_content_detection_service_factory.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/common/chrome_features.h"
@@ -39,6 +40,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/content/browser/notification_content_detection/notification_content_detection_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/platform_notification_context.h"
@@ -278,6 +280,17 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
                                  notification_resources, service_worker_scope);
   auto metadata = std::make_unique<PersistentNotificationMetadata>();
   metadata->service_worker_scope = service_worker_scope;
+
+  if (safe_browsing::IsSafeBrowsingEnabled(*profile_->GetPrefs()) &&
+      base::FeatureList::IsEnabled(
+          safe_browsing::kOnDeviceNotificationContentDetectionModel)) {
+    auto* notification_content_service = safe_browsing::
+        NotificationContentDetectionServiceFactory::GetForProfile(profile_);
+    if (notification_content_service) {
+      notification_content_service->MaybeCheckNotificationContentDetectionModel(
+          notification_data, origin);
+    }
+  }
 
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::WEB_PERSISTENT, notification,
@@ -686,11 +699,10 @@ bool PlatformNotificationServiceImpl::IsActivelyInstalledWebAppScope(
   if (!web_app_provider) {
     return false;
   }
-
   const std::optional<webapps::AppId> app_id =
-      web_app_provider->registrar_unsafe().FindAppWithUrlInScope(web_app_url);
-  return app_id.has_value() &&
-         web_app_provider->registrar_unsafe().IsActivelyInstalled(
-             app_id.value());
+      web_app_provider->registrar_unsafe().FindBestAppWithUrlInScope(
+          web_app_url,
+          {web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION});
+  return app_id.has_value();
 #endif
 }

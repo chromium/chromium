@@ -46,15 +46,20 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
       std::vector<mojom::AudioDevicePtr>* output_devices_out,
       std::vector<mojom::AudioDevicePtr>* input_devices_out) const override;
   mojom::MuteState GetInputMuteState() const override;
+  mojom::VoiceIsolationUIAppearancePtr GetVoiceIsolationUIAppearance()
+      const override;
   void SetOutputMuted(bool muted) override;
   void SetOutputVolumePercent(int8_t volume) override;
   void SetInputGainPercent(uint8_t gain) override;
   void SetActiveDevice(uint64_t device_id) override;
   void SetInputMuted(bool muted) override;
+  void RefreshVoiceIsolationState() override;
+  void RefreshVoiceIsolationPreferredEffect() override;
   void SetNoiseCancellationEnabled(bool enabled) override;
   void SetForceRespectUiGainsEnabled(bool enabled) override;
   void SetHfpMicSrEnabled(bool enabled) override;
   void SetStyleTransferEnabled(bool enabled) override;
+  void SetSpatialAudioEnabled(bool enabled) override;
 
   // Records the output volume percentage set by the user to metrics.
   void RecordOutputVolume();
@@ -72,10 +77,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrosAudioConfigImpl
       bool mute_on,
       CrasAudioHandler::InputMuteChangeMethod method) override;
   void OnInputMutedByMicrophoneMuteSwitchChanged(bool muted) override;
+  void OnVoiceIsolationUIAppearanceChanged(
+      VoiceIsolationUIAppearance appearance) override;
   void OnNoiseCancellationStateChanged() override;
   void OnStyleTransferStateChanged() override;
   void OnForceRespectUiGainsStateChanged() override;
   void OnHfpMicSrStateChanged() override;
+  void OnSpatialAudioStateChanged() override;
 
   // Timers used to prevent the output/input volume metrics from recording each
   // time the user moves the slider while setting the desired volume.

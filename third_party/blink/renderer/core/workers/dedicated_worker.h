@@ -86,7 +86,7 @@ class CORE_EXPORT DedicatedWorker final
 
   void postMessage(ScriptState*,
                    const ScriptValue& message,
-                   HeapVector<ScriptValue>& transfer,
+                   HeapVector<ScriptValue> transfer,
                    ExceptionState&);
   void postMessage(ScriptState*,
                    const ScriptValue& message,
@@ -100,7 +100,7 @@ class CORE_EXPORT DedicatedWorker final
           event_factory_callback,
       CrossThreadFunction<Event*(ScriptState*)> event_factory_error_callback,
       const ScriptValue& message,
-      HeapVector<ScriptValue>& transfer,
+      HeapVector<ScriptValue> transfer,
       ExceptionState&);
 
   void terminate();

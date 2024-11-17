@@ -1,5 +1,8 @@
 include_rules = [
+  "+ios/chrome/browser/web/model/choose_file/choose_file_event.h",
+  "+ios/chrome/browser/web/model/choose_file/choose_file_file_utils.h",
   "+ios/chrome/browser/web/model/choose_file/choose_file_tab_helper.h",
+  "+ios/chrome/browser/web/model/choose_file/choose_file_util.h",
   "+ios/chrome/browser/signin/model",
   "+ios/chrome/browser/ui/authentication",
   "+ios/chrome/browser/drive/model",

@@ -50,7 +50,6 @@ import org.chromium.blink.mojom.RpMode;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.AccountProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ContinueButtonProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.DataSharingConsentProperties;
-import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ErrorProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.HeaderProperties.HeaderType;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.IdpSignInProperties;
 import org.chromium.chrome.browser.ui.android.webid.AccountSelectionProperties.ItemProperties;
@@ -79,7 +78,7 @@ import java.util.Collections;
 public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBase {
     @Parameters
     public static Collection<Object> data() {
-        return Arrays.asList(new Object[] {RpMode.WIDGET, RpMode.BUTTON});
+        return Arrays.asList(new Object[] {RpMode.PASSIVE, RpMode.ACTIVE});
     }
 
     @Rule(order = -2)
@@ -463,7 +462,9 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
         pressBack();
         verify(mMockDelegate).onDismissed(IdentityRequestDialogDismissReason.OTHER);
         verify(mMockDelegate).onAccountSelected(mTestConfigUrl, mAnaAccount);
-        verify(mMockDelegate).onAccountsDisplayed();
+        if (mRpMode == RpMode.PASSIVE) {
+            verify(mMockDelegate).onAccountsDisplayed();
+        }
         verifyNoMoreInteractions(mMockDelegate);
         assertTrue(mMediator.wasDismissed());
         // The delayed task should not call delegate after user dismissing.
@@ -568,99 +569,6 @@ public class AccountSelectionControllerTest extends AccountSelectionJUnitTestBas
                     .mOnClickListener
                     .onResult(null);
             verify(mMockDelegate, times(++count)).onLoginToIdP(mTestConfigUrl, mTestLoginUrl);
-        }
-    }
-
-    @Test
-    public void testShowErrorDialogClickGotIt() {
-        int count = 0;
-        for (int rpContext : RP_CONTEXTS) {
-            when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
-                    .thenReturn(true);
-            mMediator.showErrorDialog(
-                    mTestEtldPlusOne,
-                    mTestEtldPlusOne2,
-                    mIdpMetadata,
-                    rpContext,
-                    mTokenErrorEmptyUrl);
-            assertEquals(0, mSheetAccountItems.size());
-            assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
-            verify(mMockDelegate, never()).onAccountsDisplayed();
-
-            // For error dialog, we expect header + error text + got it button
-            assertEquals(3, countAllItems());
-            assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_TEXT));
-
-            ErrorProperties.Properties errorProperties =
-                    mModel.get(ItemProperties.ERROR_TEXT).get(ErrorProperties.PROPERTIES);
-            assertEquals(
-                    "Incorrect provider ETLD+1", mTestEtldPlusOne2, errorProperties.mIdpForDisplay);
-            assertEquals("Incorrect RP ETLD+1", mTestEtldPlusOne, errorProperties.mRpForDisplay);
-            assertEquals("Incorrect token error", mTokenErrorEmptyUrl, errorProperties.mError);
-
-            assertNotNull(
-                    mModel.get(ItemProperties.CONTINUE_BUTTON)
-                            .get(ContinueButtonProperties.PROPERTIES)
-                            .mOnClickListener);
-            assertNull(
-                    mModel.get(ItemProperties.ERROR_TEXT)
-                            .get(ErrorProperties.PROPERTIES)
-                            .mMoreDetailsClickRunnable);
-
-            // Do not let test inputs be ignored.
-            mMediator.setComponentShowTime(-1000);
-            mModel.get(ItemProperties.CONTINUE_BUTTON)
-                    .get(ContinueButtonProperties.PROPERTIES)
-                    .mOnClickListener
-                    .onResult(mAnaAccount);
-            verify(mMockDelegate, times(++count))
-                    .onDismissed(IdentityRequestDialogDismissReason.GOT_IT_BUTTON);
-            assertTrue(mMediator.wasDismissed());
-        }
-    }
-
-    @Test
-    public void testShowErrorDialogClickMoreDetails() {
-        int count = 0;
-        for (int rpContext : RP_CONTEXTS) {
-            when(mMockBottomSheetController.requestShowContent(any(), anyBoolean()))
-                    .thenReturn(true);
-            mMediator.showErrorDialog(
-                    mTestEtldPlusOne, mTestEtldPlusOne2, mIdpMetadata, rpContext, mTokenError);
-            assertEquals(0, mSheetAccountItems.size());
-            assertEquals(HeaderType.SIGN_IN_ERROR, mModel.get(ItemProperties.HEADER).get(TYPE));
-            verify(mMockDelegate, never()).onAccountsDisplayed();
-
-            // For error dialog, we expect header + error text + got it button
-            assertEquals(3, countAllItems());
-            assertTrue(containsItemOfType(mModel, ItemProperties.ERROR_TEXT));
-
-            ErrorProperties.Properties errorProperties =
-                    mModel.get(ItemProperties.ERROR_TEXT).get(ErrorProperties.PROPERTIES);
-            assertEquals(
-                    "Incorrect provider ETLD+1", mTestEtldPlusOne2, errorProperties.mIdpForDisplay);
-            assertEquals("Incorrect RP ETLD+1", mTestEtldPlusOne, errorProperties.mRpForDisplay);
-            assertEquals("Incorrect token error", mTokenError, errorProperties.mError);
-
-            assertNotNull(
-                    mModel.get(ItemProperties.CONTINUE_BUTTON)
-                            .get(ContinueButtonProperties.PROPERTIES)
-                            .mOnClickListener);
-            assertNotNull(
-                    mModel.get(ItemProperties.ERROR_TEXT)
-                            .get(ErrorProperties.PROPERTIES)
-                            .mMoreDetailsClickRunnable);
-
-            // Do not let test inputs be ignored.
-            mMediator.setComponentShowTime(-1000);
-            mModel.get(ItemProperties.ERROR_TEXT)
-                    .get(ErrorProperties.PROPERTIES)
-                    .mMoreDetailsClickRunnable
-                    .run();
-            verify(mMockDelegate, times(++count)).onMoreDetails();
-            verify(mMockDelegate, times(count))
-                    .onDismissed(IdentityRequestDialogDismissReason.MORE_DETAILS_BUTTON);
-            assertTrue(mMediator.wasDismissed());
         }
     }
 

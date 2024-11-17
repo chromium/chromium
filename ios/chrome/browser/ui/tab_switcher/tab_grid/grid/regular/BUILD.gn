@@ -70,7 +70,6 @@ source_set("regular_ui") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs:inactive_tabs_button_ui",
-    "//ios/chrome/browser/ui/tab_switcher/tab_grid/inactive_tabs:inactive_tabs_button_ui_swift",
     "//ios/chrome/common:timing",
     "//ios/chrome/common/ui/colors",
     "//ios/web/public",

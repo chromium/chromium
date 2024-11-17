@@ -90,7 +90,7 @@ class SpeechRecognizerFsm {
 
  protected:
   friend class base::RefCountedThreadSafe<SpeechRecognizerFsm>;
-  virtual ~SpeechRecognizerFsm() {}
+  virtual ~SpeechRecognizerFsm() = default;
   FSMState state_ = STATE_IDLE;
   bool is_dispatching_event_ = false;
 };

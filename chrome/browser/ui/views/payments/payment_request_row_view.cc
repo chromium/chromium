@@ -142,11 +142,6 @@ void PaymentRequestRowView::UpdateButtonState() {
                                      : views::Button::STATE_DISABLED);
 }
 
-void PaymentRequestRowView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  Button::GetAccessibleNodeData(node_data);
-  node_data->SetNameChecked(GetAccessibleNameFromTree(this));
-}
-
 void PaymentRequestRowView::StateChanged(ButtonState old_state) {
   Button::StateChanged(old_state);
   if (!GetClickable())
@@ -159,6 +154,12 @@ void PaymentRequestRowView::StateChanged(ButtonState old_state) {
 void PaymentRequestRowView::OnThemeChanged() {
   Button::OnThemeChanged();
   UpdateBottomSeparatorVisualState();
+}
+
+void PaymentRequestRowView::ViewHierarchyChanged(
+    const views::ViewHierarchyChangedDetails& details) {
+  views::Button::ViewHierarchyChanged(details);
+  GetViewAccessibility().SetName(GetAccessibleNameFromTree(this));
 }
 
 void PaymentRequestRowView::OnFocus() {

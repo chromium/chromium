@@ -134,10 +134,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
     _browser = browser;
     self.title = l10n_util::GetNSString(IDS_IOS_CONTENT_SETTINGS_TITLE);
 
-    ChromeBrowserState* browserState = browser->GetBrowserState();
+    ProfileIOS* profile = browser->GetProfile();
 
     HostContentSettingsMap* settingsMap =
-        ios::HostContentSettingsMapFactory::GetForBrowserState(browserState);
+        ios::HostContentSettingsMapFactory::GetForProfile(profile);
     _disablePopupsSetting = [[ContentSettingBackedBoolean alloc]
         initWithHostContentSettingsMap:settingsMap
                              settingID:ContentSettingsType::POPUPS
@@ -145,17 +145,17 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [_disablePopupsSetting setObserver:self];
 
     _linkPreviewEnabled = [[PrefBackedBoolean alloc]
-        initWithPrefService:browserState->GetPrefs()
+        initWithPrefService:profile->GetPrefs()
                    prefName:prefs::kLinkPreviewEnabled];
     [_linkPreviewEnabled setObserver:self];
 
     _detectAddressesEnabled = [[PrefBackedBoolean alloc]
-        initWithPrefService:browserState->GetPrefs()
+        initWithPrefService:profile->GetPrefs()
                    prefName:prefs::kDetectAddressesEnabled];
     [_detectAddressesEnabled setObserver:self];
 
     _detectUnitsEnabled = [[PrefBackedBoolean alloc]
-        initWithPrefService:browserState->GetPrefs()
+        initWithPrefService:profile->GetPrefs()
                    prefName:prefs::kDetectUnitsEnabled];
     [_detectUnitsEnabled setObserver:self];
 
@@ -167,7 +167,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
     if (web::features::IsWebInspectorSupportEnabled()) {
       _webInspectorEnabled = [[PrefBackedBoolean alloc]
-          initWithPrefService:browserState->GetPrefs()
+          initWithPrefService:profile->GetPrefs()
                      prefName:prefs::kWebInspectorEnabled];
       [_webInspectorEnabled setObserver:self];
     }
@@ -213,9 +213,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addSectionWithIdentifier:SectionIdentifierSettings];
   [model addItem:[self blockPopupsItem]
       toSectionWithIdentifier:SectionIdentifierSettings];
-  NSString* settingsTitle = MailtoHandlerServiceFactory::GetForBrowserState(
-                                _browser->GetBrowserState())
-                                ->SettingsTitle();
+  NSString* settingsTitle =
+      MailtoHandlerServiceFactory::GetForProfile(_browser->GetProfile())
+          ->SettingsTitle();
   // Display email settings only on one window at a time, by checking
   // if this is the current owner.
   _openedInAnotherWindowItem = nil;
@@ -299,9 +299,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _composeEmailDetailItem = [[TableViewDetailIconItem alloc]
       initWithType:ItemTypeSettingsComposeEmail];
   // Use the handler's preferred title string for the compose email item.
-  NSString* settingsTitle = MailtoHandlerServiceFactory::GetForBrowserState(
-                                _browser->GetBrowserState())
-                                ->SettingsTitle();
+  NSString* settingsTitle =
+      MailtoHandlerServiceFactory::GetForProfile(_browser->GetProfile())
+          ->SettingsTitle();
   DCHECK([settingsTitle length]);
   // .detailText can display the selected mailto handling app, but the current
   // MailtoHandlerService does not expose this through its API.
@@ -320,9 +320,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   _openedInAnotherWindowItem = [[TableViewMultiDetailTextItem alloc]
       initWithType:ItemTypeSettingsComposeEmail];
   // Use the handler's preferred title string for the compose email item.
-  NSString* settingsTitle = MailtoHandlerServiceFactory::GetForBrowserState(
-                                _browser->GetBrowserState())
-                                ->SettingsTitle();
+  NSString* settingsTitle =
+      MailtoHandlerServiceFactory::GetForProfile(_browser->GetProfile())
+          ->SettingsTitle();
   DCHECK([settingsTitle length]);
   // .detailText can display the selected mailto handling app, but the current
   // MailtoHandlerService does not expose this through its API.
@@ -439,7 +439,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeSettingsBlockPopups: {
       BlockPopupsTableViewController* controller =
           [[BlockPopupsTableViewController alloc]
-              initWithBrowserState:_browser->GetBrowserState()];
+              initWithProfile:_browser->GetProfile()];
       [self configureHandlersForRootViewController:controller];
       [self.navigationController pushViewController:controller animated:YES];
       break;
@@ -449,8 +449,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         break;
 
       UIViewController* controller =
-          MailtoHandlerServiceFactory::GetForBrowserState(
-              _browser->GetBrowserState())
+          MailtoHandlerServiceFactory::GetForProfile(_browser->GetProfile())
               ->CreateSettingsController();
       if (controller) {
         [self.navigationController pushViewController:controller animated:YES];
@@ -510,7 +509,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     self.detectUnitsItem.on = [self.detectUnitsEnabled value];
     [self reconfigureCellsForItems:@[ self.detectUnitsItem ]];
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -551,9 +550,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // it detects if the flow is coming back from it, based on the navigation
   // bar stack items.
   NSString* top = self.navigationController.navigationBar.topItem.title;
-  NSString* mailToTitle = MailtoHandlerServiceFactory::GetForBrowserState(
-                              _browser->GetBrowserState())
-                              ->SettingsTitle();
+  NSString* mailToTitle =
+      MailtoHandlerServiceFactory::GetForProfile(_browser->GetProfile())
+          ->SettingsTitle();
   if ([top isEqualToString:mailToTitle]) {
     openedMailTo = NO;
     [[NSNotificationCenter defaultCenter]

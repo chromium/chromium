@@ -1,0 +1,7 @@
+{
+  "mac-arm64-on-arm64-rel": {
+    "additional_compile_targets": [
+      "all"
+    ]
+  }
+}

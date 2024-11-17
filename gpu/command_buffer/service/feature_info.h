@@ -147,6 +147,7 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool angle_polygon_mode = false;
     bool ext_clip_control = false;
     bool ext_polygon_offset_clamp = false;
+    bool angle_blob_cache = false;
   };
 
   FeatureInfo();

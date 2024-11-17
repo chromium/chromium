@@ -59,15 +59,13 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   const HTMLElement& ToHTMLElement() const;
   HTMLElement& ToHTMLElement();
 
-  static HTMLFormElement* FindAssociatedForm(const HTMLElement*,
-                                             const AtomicString& form_id,
-                                             HTMLFormElement* form_ancestor);
   HTMLFormElement* Form() const { return form_.Get(); }
   ValidityState* validity();
 
-  virtual bool IsFormControlElement() const = 0;
+  virtual bool IsFormControlElement() const;
   virtual bool IsFormControlElementWithState() const;
   virtual bool IsElementInternals() const;
+  virtual bool IsObjectElement() const;
   virtual bool IsEnumeratable() const = 0;
 
   // Returns the 'name' attribute value. If this element has no name
@@ -189,8 +187,14 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   virtual void WillChangeForm();
   virtual void DidChangeForm();
 
+  enum class WillValidateReason {
+    kDefault,
+    kForInsertionOrRemoval,
+  };
+
   // This must be called any time the result of WillValidate() has changed.
-  void UpdateWillValidateCache();
+  void UpdateWillValidateCache(
+      WillValidateReason = WillValidateReason::kDefault);
   virtual bool RecalcWillValidate() const;
 
   String CustomValidationMessage() const;
@@ -206,6 +210,10 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   mutable AncestorDisabledState ancestor_disabled_state_ =
       AncestorDisabledState::kUnknown;
 
+  // exposed so that HTMLFieldSetElement can update the document's cache of
+  // disabled fieldsets.  Should not be used more generally.
+  bool IsSelfDisabledIgnoringAncestors() const { return is_element_disabled_; }
+
  private:
   void UpdateAncestorDisabledState() const;
   void SetFormAttributeTargetObserver(FormAttributeTargetObserver*);
@@ -213,7 +221,8 @@ class CORE_EXPORT ListedElement : public GarbageCollectedMixin {
   // Requests validity recalc for the form owner, if one exists.
   void FormOwnerSetNeedsValidityCheck();
   // Requests validity recalc for all ancestor fieldsets, if exist.
-  void FieldSetAncestorsSetNeedsValidityCheck(Node*);
+  enum class StartingNodeType { IS_PARENT, IS_INSERTION_POINT };
+  void FieldSetAncestorsSetNeedsValidityCheck(Node*, StartingNodeType);
 
   ValidationMessageClient* GetValidationMessageClient() const;
 

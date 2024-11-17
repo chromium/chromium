@@ -107,6 +107,10 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   wallet_specifics_card1.mutable_masked_card()
       ->mutable_card_issuer()
       ->set_issuer_id("amex");
+  wallet_specifics_card1.mutable_masked_card()
+      ->set_card_info_retrieval_enrollment_state(
+          sync_pb::WalletMaskedCreditCard::
+              RETRIEVAL_UNENROLLED_AND_NOT_ELIGIBLE);
   // Add the second card that has nickname.
   std::string nickname("Grocery card");
   sync_pb::AutofillWalletSpecifics wallet_specifics_card2 =
@@ -130,6 +134,9 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
       "https://www.example.com/card.png");
   wallet_specifics_card2.mutable_masked_card()->set_product_description(
       "fake product description");
+  wallet_specifics_card2.mutable_masked_card()
+      ->set_card_info_retrieval_enrollment_state(
+          sync_pb::WalletMaskedCreditCard::RETRIEVAL_ENROLLED);
   sync_pb::AutofillWalletSpecifics wallet_specifics_iban =
       CreateAutofillWalletSpecificsForIban(
           /*client_tag=*/iban_id);
@@ -205,6 +212,13 @@ TEST_F(PaymentsSyncBridgeUtilTest, PopulateWalletTypesFromSyncData) {
   EXPECT_TRUE(wallet_cards.front().product_description().empty());
   EXPECT_EQ(wallet_cards.back().product_description(),
             u"fake product description");
+
+  // Verify that the `card_info_retrieval_enrollment_state` is set correctly.
+  EXPECT_EQ(wallet_cards.front().card_info_retrieval_enrollment_state(),
+            CreditCard::CardInfoRetrievalEnrollmentState::
+                kRetrievalUnenrolledAndNotEligible);
+  EXPECT_EQ(wallet_cards.back().card_info_retrieval_enrollment_state(),
+            CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
 }
 
 // Test suite for benefit syncing helpers that takes a bool indicating
@@ -215,14 +229,13 @@ class PaymentsSyncBridgeUtilCardBenefitsTest
  public:
   PaymentsSyncBridgeUtilCardBenefitsTest() {
     feature_list_.InitWithFeatureState(
-        autofill::features::kAutofillEnableCardBenefitsSync,
-        IsBenefitsSyncEnabled());
+        features::kAutofillEnableCardBenefitsSync, IsBenefitsSyncEnabled());
   }
 
   ~PaymentsSyncBridgeUtilCardBenefitsTest() override = default;
 
   sync_pb::AutofillWalletSpecifics PrepareCardSpecificForBenefit(
-      const std::string_view card_tag,
+      std::string_view card_tag,
       const int64_t instrument_id) {
     sync_pb::AutofillWalletSpecifics wallet_specifics_card =
         CreateAutofillWalletSpecificsForCard(
@@ -1127,21 +1140,19 @@ INSTANTIATE_TEST_SUITE_P(
     PaymentsSyncBridgeUtilTest_WalletCardMapping,
     testing::Values(
         WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::AMEX,
-                              autofill::kAmericanExpressCard},
+                              kAmericanExpressCard},
         WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::DISCOVER,
-                              autofill::kDiscoverCard},
-        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::ELO,
-                              autofill::kEloCard},
-        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::JCB,
-                              autofill::kJCBCard},
+                              kDiscoverCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::ELO, kEloCard},
+        WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::JCB, kJCBCard},
         WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::MASTER_CARD,
-                              autofill::kMasterCard},
+                              kMasterCard},
         WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::UNIONPAY,
-                              autofill::kUnionPay},
+                              kUnionPay},
         WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::VERVE,
-                              autofill::kVerveCard},
+                              kVerveCard},
         WalletCardTypeMapping{sync_pb::WalletMaskedCreditCard::VISA,
-                              autofill::kVisaCard}));
+                              kVisaCard}));
 
 // These two tests verify the same case as
 // `PaymentsSyncBridgeUtilTest_WalletCardMapping` but with the added caveat of
@@ -1154,7 +1165,7 @@ TEST_F(PaymentsSyncBridgeUtilTest,
       features::kAutofillEnableVerveCardSupport);
 
   CreditCard credit_card = test::GetMaskedServerCard();
-  credit_card.SetNetworkForMaskedCard(autofill::kVerveCard);
+  credit_card.SetNetworkForMaskedCard(kVerveCard);
 
   sync_pb::AutofillWalletSpecifics wallet_specifics;
   SetAutofillWalletSpecificsFromServerCard(credit_card, &wallet_specifics);
@@ -1199,7 +1210,80 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   ASSERT_EQ(1U, wallet_cards.size());
   // With the flag off, the card network is `kGenericCard` instead of
   // `kVerveCard`.
-  EXPECT_EQ(autofill::kGenericCard, wallet_cards.front().network());
+  EXPECT_EQ(kGenericCard, wallet_cards.front().network());
+}
+
+TEST_F(PaymentsSyncBridgeUtilTest,
+       AreAnyPaymentInstrumentsDifferent_ReturnFalseForSameData) {
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/2345);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_1 = {
+      payment_instrument_1, payment_instrument_2};
+
+  sync_pb::PaymentInstrument payment_instrument_3 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  sync_pb::PaymentInstrument payment_instrument_4 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/2345);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_2 = {
+      payment_instrument_3, payment_instrument_4};
+
+  EXPECT_FALSE(
+      AreAnyItemsDifferent(payment_instruments_1, payment_instruments_2));
+}
+
+TEST_F(PaymentsSyncBridgeUtilTest,
+       AreAnyPaymentInstrumentsDifferent_ReturnTrueForDifferentDataSize) {
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/2345);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_1 = {
+      payment_instrument_1, payment_instrument_2};
+
+  sync_pb::PaymentInstrument payment_instrument_3 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_2 = {
+      payment_instrument_3};
+
+  EXPECT_TRUE(
+      AreAnyItemsDifferent(payment_instruments_1, payment_instruments_2));
+}
+
+TEST_F(PaymentsSyncBridgeUtilTest,
+       AreAnyPaymentInstrumentsDifferent_ReturnTrueForDifferentInstrumentId) {
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_1 = {
+      payment_instrument_1};
+
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/2345);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_2 = {
+      payment_instrument_2};
+
+  EXPECT_TRUE(
+      AreAnyItemsDifferent(payment_instruments_1, payment_instruments_2));
+}
+
+TEST_F(PaymentsSyncBridgeUtilTest,
+       AreAnyPaymentInstrumentsDifferent_ReturnTrueForDifferentEwalletDetails) {
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_1 = {
+      payment_instrument_1};
+
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  sync_pb::EwalletDetails* ewallet_2 =
+      payment_instrument_2.mutable_ewallet_details();
+  ewallet_2->set_ewallet_name("different_ewallet_name");
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_2 = {
+      payment_instrument_2};
+
+  EXPECT_TRUE(
+      AreAnyItemsDifferent(payment_instruments_1, payment_instruments_2));
 }
 
 }  // namespace

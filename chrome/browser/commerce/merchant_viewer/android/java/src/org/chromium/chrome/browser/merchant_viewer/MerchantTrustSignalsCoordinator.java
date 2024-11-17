@@ -316,7 +316,7 @@ public class MerchantTrustSignalsCoordinator
         mMetrics.recordMetricsForBottomSheetOpenedSource(openSource);
         mDetailsTabCoordinator.requestOpenSheet(
                 detailsPageUrl,
-                mContext.getResources().getString(R.string.merchant_viewer_preview_sheet_title),
+                mContext.getString(R.string.merchant_viewer_preview_sheet_title),
                 () -> onBottomSheetDismissed(openSource, messageAssociatedUrl));
     }
 

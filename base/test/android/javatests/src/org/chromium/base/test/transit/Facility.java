@@ -4,8 +4,6 @@
 
 package org.chromium.base.test.transit;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.test.transit.Transition.Trigger;
 
 /**
@@ -27,10 +25,10 @@ import org.chromium.base.test.transit.Transition.Trigger;
  *
  * @param <HostStationT> the type of host {@link Station} this is scoped to.
  */
-public abstract class Facility<HostStationT extends Station> extends ConditionalState {
+public abstract class Facility<HostStationT extends Station<?>> extends ConditionalState {
     private static int sLastFacilityId = 1000;
     private final int mId = ++sLastFacilityId;
-    protected @Nullable HostStationT mHostStation;
+    protected HostStationT mHostStation;
 
     void setHostStation(Station station) {
         assert mHostStation == null

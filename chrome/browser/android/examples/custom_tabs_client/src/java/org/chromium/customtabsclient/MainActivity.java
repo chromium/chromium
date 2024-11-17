@@ -16,6 +16,7 @@ import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_S
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_POSITION;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ACTIVITY_SIDE_SHEET_ROUNDED_CORNERS_POSITION;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_CLOSE_BUTTON_POSITION;
+import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_ENABLE_EPHEMERAL_BROWSING;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_INITIAL_ACTIVITY_HEIGHT_PX;
 import static androidx.browser.customtabs.CustomTabsIntent.EXTRA_TOOLBAR_CORNER_RADIUS_DP;
 
@@ -83,12 +84,10 @@ import org.chromium.customtabsclient.shared.CustomTabsHelper;
 import org.chromium.customtabsclient.shared.ServiceConnection;
 import org.chromium.customtabsclient.shared.ServiceConnectionCallback;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
 
 /** Example client activity for using Chrome Custom Tabs. */
 public class MainActivity extends AppCompatActivity
@@ -177,7 +176,7 @@ public class MainActivity extends AppCompatActivity
     private CheckBox mSideSheetMaxButtonCheckbox;
     private CheckBox mSideSheetRoundedCornerCheckbox;
     private CheckBox mContentScrollCheckbox;
-    private CheckBox mSearchInCCTCheckbox;
+    private CheckBox mSearchInCctCheckbox;
     private CheckBox mSendToExternalAppCheckbox;
     private CheckBox mShareIdentityCheckbox;
     private TextView mPcctBreakpointLabel;
@@ -201,13 +200,21 @@ public class MainActivity extends AppCompatActivity
     private final ActivityResultLauncher<Intent> mLauncher =
             AuthTabIntent.registerActivityResultLauncher(this, this::handleAuthResult);
 
-    private void handleAuthResult(Uri uri) {
-        // Canceling CCT also invokes this method. See if the uri is empty.
-        boolean success = !Objects.equals(uri, Uri.EMPTY);
-        String message =
-                getResources()
-                        .getString(success ? R.string.auth_tab_result : R.string.auth_tab_canceled);
-        message += " uri: " + uri;
+    private void handleAuthResult(AuthTabIntent.AuthResult result) {
+        int messageRes =
+                switch (result.resultCode) {
+                    case AuthTabIntent.RESULT_OK -> R.string.auth_tab_result;
+                    case AuthTabIntent.RESULT_CANCELED -> R.string.auth_tab_canceled;
+                    case AuthTabIntent.RESULT_VERIFICATION_FAILED -> R.string
+                            .auth_tab_verification_failed;
+                    case AuthTabIntent.RESULT_VERIFICATION_TIMED_OUT -> R.string
+                            .auth_tab_verification_timed_out;
+                    default -> R.string.auth_tab_unknown_result;
+                };
+        String message = getResources().getString(messageRes);
+        if (result.resultCode == AuthTabIntent.RESULT_OK) {
+            message += " Uri: " + result.resultUri;
+        }
         Toast.makeText(this, message, Toast.LENGTH_LONG).show();
         Log.i(TAG, message);
     }
@@ -320,7 +327,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private class EngagementCallback implements EngagementSignalsCallback {
+    private static class EngagementCallback implements EngagementSignalsCallback {
         @Override
         public void onVerticalScrollEvent(boolean isDirectionUp, Bundle extras) {
             Log.w(
@@ -697,8 +704,8 @@ public class MainActivity extends AppCompatActivity
         mContentScrollCheckbox = findViewById(R.id.content_scroll_checkbox);
         mContentScrollCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_CONTENT_SCROLL, UNCHECKED) == CHECKED);
-        mSearchInCCTCheckbox = findViewById(R.id.search_in_cct_checkbox);
-        mSearchInCCTCheckbox.setChecked(mSharedPref.getBoolean(SHARED_PREF_SEARCH_IN_CCT, false));
+        mSearchInCctCheckbox = findViewById(R.id.search_in_cct_checkbox);
+        mSearchInCctCheckbox.setChecked(mSharedPref.getBoolean(SHARED_PREF_SEARCH_IN_CCT, false));
         mShareIdentityCheckbox = findViewById(R.id.share_identity_checkbox);
         mShareIdentityCheckbox.setChecked(
                 mSharedPref.getInt(SHARED_PREF_SHARE_IDENTITY, UNCHECKED) == CHECKED);
@@ -891,7 +898,7 @@ public class MainActivity extends AppCompatActivity
             editor.putBoolean(SHARED_PREF_MAY_LAUNCH_BUTTON, mMayLaunchButton.isEnabled());
             editor.putBoolean(
                     SHARED_PREF_ENGAGEMENT_SIGNALS_BUTTON, mEngagementSignalsButton.isEnabled());
-            editor.putBoolean(SHARED_PREF_SEARCH_IN_CCT, mSearchInCCTCheckbox.isChecked());
+            editor.putBoolean(SHARED_PREF_SEARCH_IN_CCT, mSearchInCctCheckbox.isChecked());
             editor.apply();
         }
         super.onDestroy();
@@ -984,8 +991,8 @@ public class MainActivity extends AppCompatActivity
         CustomTabsIntent.Builder builder = new CustomTabsIntent.Builder(session);
         prepareMenuItems(builder);
         prepareActionButton(builder);
-        boolean isPCCT = mCctType.equals(CCT_OPTION_PARTIAL);
-        prepareAesthetics(builder, isPCCT);
+        boolean isPcct = mCctType.equals(CCT_OPTION_PARTIAL);
+        prepareAesthetics(builder, isPcct);
 
         // @CloseButtonPosition
         int closeButtonPosition =
@@ -1011,7 +1018,7 @@ public class MainActivity extends AppCompatActivity
         CustomTabsIntent customTabsIntent;
         editor.putString(SHARED_PREF_CCT, mCctType);
 
-        if (isPCCT) {
+        if (isPcct) {
             int pcctInitialWidthPx = mPcctInitialWidthSlider.getProgress();
             if (pcctInitialWidthPx != 0) {
                 builder.setInitialActivityWidthPx(pcctInitialWidthPx);
@@ -1071,17 +1078,12 @@ public class MainActivity extends AppCompatActivity
                     "com.google.android.apps.chrome.EXTRA_OPEN_NEW_INCOGNITO_TAB",
                     mCctType.equals(CCT_OPTION_INCOGNITO));
             customTabsIntent.intent.putExtra(
-                    "androidx.browser.customtabs.extra.ENABLE_EPHEMERAL_BROWSING",
-                    mCctType.equals(CCT_OPTION_EPHEMERAL));
-            // TODO(crbug.com/358346921): Remove when crrev.com/c/5770644 lands.
-            customTabsIntent.intent.putExtra(
-                    "com.google.android.apps.chrome.EXTRA_OPEN_NEW_EPHEMERAL_TAB",
-                    mCctType.equals(CCT_OPTION_EPHEMERAL));
+                    EXTRA_ENABLE_EPHEMERAL_BROWSING, mCctType.equals(CCT_OPTION_EPHEMERAL));
 
             customTabsIntent.intent.putExtra(EXTRA_CLOSE_BUTTON_POSITION, closeButtonPosition);
         }
 
-        customTabsIntent.intent.putExtra(EXTRA_OMNIBOX_ENABLED, mSearchInCCTCheckbox.isChecked());
+        customTabsIntent.intent.putExtra(EXTRA_OMNIBOX_ENABLED, mSearchInCctCheckbox.isChecked());
 
         if (mCctType.equals(CCT_OPTION_AUTHTAB)) {
             launchAuthTab(url);
@@ -1121,19 +1123,7 @@ public class MainActivity extends AppCompatActivity
 
     private void launchAuthTab(String url) {
         AuthTabIntent authIntent = new AuthTabIntent.Builder().build();
-        try {
-            // Set the package name of the Chrome to use. The Android intent wrapped in
-            // AuthTabIntent is a private field that doesn't allow the access. Use reflection
-            // for testing. This is not likely necessary for production since the AuthTab
-            // launches a CCT of the default browser.
-            Field intentField = AuthTabIntent.class.getDeclaredField("mIntent");
-            intentField.setAccessible(true);
-            Intent intent = (Intent) intentField.get(authIntent);
-            intent.setPackage(mPackageNameToBind);
-        } catch (Exception e) {
-            Log.e(TAG, "Error setting the Chrome package to the Intent!");
-            return;
-        }
+        authIntent.intent.setPackage(mPackageNameToBind);
         String scheme = ((EditText) findViewById(R.id.custom_scheme)).getText().toString();
         if (TextUtils.isEmpty(scheme)) {
             String message = getResources().getString(R.string.missing_scheme);

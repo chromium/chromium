@@ -11,7 +11,6 @@
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/field_types.h"
-#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "url/origin.h"
 
@@ -61,33 +60,21 @@ class FormStructureRationalizer {
   // contenteditables in their own code.
   void RationalizeContentEditables(LogManager* log_manager);
 
-  // Tunes the fields with identical predictions.
-  // The `form_signature` is needed for logging.
-  void RationalizeRepeatedFields(FormSignature form_signature,
-                                 AutofillMetrics::FormInteractionsUkmLogger*,
-                                 LogManager* log_manager);
-
   // A helper function to review the predictions and do appropriate adjustments
   // when it considers necessary.
-  void RationalizeFieldTypePredictions(const url::Origin& main_origin,
-                                       const GeoIpCountryCode& client_country,
-                                       const LanguageCode& language_code,
-                                       LogManager* log_manager);
+  void RationalizeFieldTypePredictions(
+      const url::Origin& main_origin,
+      const GeoIpCountryCode& client_country,
+      const LanguageCode& language_code,
+      LogManager* log_manager);
 
   // Ensures that only a single phone number (which can be split across multiple
-  // fields) is autofilled in the `section`. If the section contains multiple
-  // phone numbers, `set_only_fill_when_focused(true)` is set for the remaining
-  // fields.
-  // Contrary to the other rationalization logic of this class, this one happens
-  // at filling time.
-  void RationalizePhoneNumbersInSection(const Section& section);
+  // fields) is autofilled per section. If a section contains multiple phone
+  // numbers, `only_fill_when_focused` is set for the remaining fields.
+  void RationalizePhoneNumbersForFilling();
 
  private:
   friend class FormStructureTestApi;
-
-  // This class wraps a vector of vectors of field indices. The indices of a
-  // vector belong to the same group.
-  class SectionedFieldsIndexes;
 
   // Fine-tunes the credit cards related predictions. For example: lone credit
   // card fields in an otherwise non-credit-card related form is unlikely to be
@@ -105,6 +92,11 @@ class FormStructureRationalizer {
   // likely be filled with the the first, second, third, and fourth,
   // respectively, block of four digits.
   void RationalizeCreditCardNumberOffsets(LogManager* log_manager);
+
+  // Rewrites two or three (not necessarily consecutive)
+  // ADDRESS_HOME_STREET_ADDRESS fields in the same section into address line 1,
+  // 2 and 3.
+  void RationalizeRepeatedStreetAddressFields(LogManager* log_manager);
 
   // Rewrites sequences of (street address, address_line2) into (address_line1,
   // address_line2) as server predictions sometimes introduce wrong street
@@ -126,61 +118,9 @@ class FormStructureRationalizer {
   // accordingly.
   void RationalizePhoneNumberTrunkTypes(LogManager* log_manager);
 
-  // The rationalization is based on the visible fields, but should be applied
-  // to the hidden select fields. This is because hidden 'select' fields are
-  // also autofilled to take care of the synthetic fields.
-  void ApplyRationalizationsToHiddenSelects(
-      size_t field_index,
-      FieldType new_type,
-      FormSignature form_signature,
-      AutofillMetrics::FormInteractionsUkmLogger*);
-
-  // Returns true if we can replace server predictions with the heuristics one.
-  bool HeuristicsPredictionsAreApplicable(size_t upper_index,
-                                          size_t lower_index,
-                                          FieldType first_type,
-                                          FieldType second_type);
-
-  // Applies upper type to upper field, and lower type to lower field, and
-  // applies the rationalization also to hidden select fields if necessary.
-  void ApplyRationalizationsToFields(
-      size_t upper_index,
-      size_t lower_index,
-      FieldType upper_type,
-      FieldType lower_type,
-      FormSignature form_signature,
-      AutofillMetrics::FormInteractionsUkmLogger*);
-
-  // Returns true if the fields_[index] server type should be rationalized to
-  // ADDRESS_HOME_COUNTRY.
-  bool FieldShouldBeRationalizedToCountry(size_t index);
-
-  // Set fields_[|field_index|] to |new_type| and log this change.
-  void ApplyRationalizationsToFieldAndLog(
-      size_t field_index,
-      FieldType new_type,
-      FormSignature form_signature,
-      AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger);
-
-  // Two or three fields predicted as the whole address should be address lines
-  // 1, 2 and 3 instead.
-  void RationalizeAddressLineFields(
-      SectionedFieldsIndexes* sections_of_address_indexes,
-      FormSignature form_signature,
-      AutofillMetrics::FormInteractionsUkmLogger*,
-      LogManager* log_manager);
-
-  // Rationalize state and country interdependently.
-  void RationalizeAddressStateCountry(
-      SectionedFieldsIndexes* sections_of_state_indexes,
-      SectionedFieldsIndexes* sections_of_country_indexes,
-      FormSignature form_signature,
-      AutofillMetrics::FormInteractionsUkmLogger*,
-      LogManager* log_manager);
-
-  // Filters out fields that don't meet the relationship ruleset for their type
-  // defined in |type_relationships_rules_|.
-  void RationalizeTypeRelationships(LogManager* log_manager);
+  // Rationalizes all PHONE_HOME_COUNTRY_CODE fields to UNKNOWN_TYPE if no other
+  // phone number fields exist among the `fields_`.
+  void RationalizePhoneCountryCode(LogManager* log_manager);
 
   // Executes a set of declarative rationalization rules. See
   // ApplyRationalizationEngineRules in

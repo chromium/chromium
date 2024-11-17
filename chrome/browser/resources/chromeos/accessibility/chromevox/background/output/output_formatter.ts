@@ -260,18 +260,18 @@ export class OutputFormatter implements OutputFormatParserObserver {
     const formatLog = data.outputFormatLogger;
 
     // TODO(b/314203187): Not null asserted, check that this is correct.
-    if (node.htmlAttributes!['aria-coltext']) {
-      let value = node.htmlAttributes!['aria-coltext'];
+    if (node.ariaCellColumnIndexText) {
+      let value = node.ariaCellColumnIndexText;
       let row: AutomationNode | undefined = node;
       while (row && row.role !== RoleType.ROW) {
         row = row.parent;
       }
       // TODO(b/314203187): Not null asserted, check that this is correct.
-      if (!row || !row.htmlAttributes!['aria-rowtext']) {
+      if (!row || !row.ariaCellRowIndexText) {
         return;
       }
       // TODO(b/314203187): Not null asserted, check that this is correct.
-      value += row.htmlAttributes!['aria-rowtext'];
+      value += row.ariaCellRowIndexText;
       this.output_.append(buff, value, options);
       formatLog.writeTokenWithValue(token, value);
     } else {

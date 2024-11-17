@@ -49,7 +49,7 @@ struct AvailableIds {
   int64_t ver_id;
 
   AvailableIds() : reg_id(-1), res_id(-1), ver_id(-1) {}
-  ~AvailableIds() {}
+  ~AvailableIds() = default;
 };
 
 GURL URL(const GURL& origin, const std::string& path) {
@@ -3246,11 +3246,12 @@ const network::mojom::WebSandboxFlags kWebSandboxFlags[] = {
     network::mojom::WebSandboxFlags::kDownloads,
     network::mojom::WebSandboxFlags::kStorageAccessByUserActivation,
     network::mojom::WebSandboxFlags::kTopNavigationToCustomProtocols,
+    network::mojom::WebSandboxFlags::kAllowSameSiteNoneCookies,
     network::mojom::WebSandboxFlags::kAll,
 };
 
 static_assert(
-    network::mojom::WebSandboxFlags::kTopNavigationToCustomProtocols ==
+    network::mojom::WebSandboxFlags::kAllowSameSiteNoneCookies ==
         network::mojom::WebSandboxFlags::kMaxValue,
     "The array should contain all the flags");
 

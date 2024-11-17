@@ -6,10 +6,12 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_config.h"
 #include "chrome/browser/permissions/quiet_notification_permission_ui_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
@@ -40,12 +42,14 @@
 #include "components/permissions/test/permission_request_observer.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/permissions_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/test_event.h"
@@ -1594,4 +1598,244 @@ IN_PROC_BROWSER_TEST_F(PermissionChipInteractiveUITest,
   manager->Accept();
 
   EXPECT_TRUE(content::EvalJs(main_rfh, kCheckNotifications).value.GetBool());
+}
+
+class TestWebContentsObserver : content::WebContentsObserver {
+ public:
+  explicit TestWebContentsObserver(content::WebContents* web_contents)
+      : content::WebContentsObserver(web_contents) {}
+
+  void Wait() { loop_.Run(); }
+
+  void OnCapabilityTypesChanged(
+      content::WebContents::CapabilityType capability_type,
+      bool used) override {
+    if (capability_type == content::WebContents::CapabilityType::kGeolocation) {
+      loop_.Quit();
+    }
+  }
+  base::RunLoop loop_;
+};
+
+class GeolocationUsageObserverBrowsertest : public InProcessBrowserTest {
+ public:
+  GeolocationUsageObserverBrowsertest() {
+    geolocation_overrider_ =
+        std::make_unique<device::ScopedGeolocationOverrider>(0, 0);
+  }
+
+  void SetPermission(ContentSettingsType type,
+                     ContentSetting setting,
+                     const GURL url) {
+    HostContentSettingsMap* map =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+
+    map->SetContentSettingDefaultScope(url, url, type, setting);
+  }
+
+ private:
+  std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
+};
+
+IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
+                       GetCurrentPosition) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents);
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
+  ASSERT_TRUE(main_rfh);
+  ASSERT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
+
+  // Set geolocation permission to allow.
+  SetPermission(ContentSettingsType::GEOLOCATION,
+                ContentSetting::CONTENT_SETTING_ALLOW, url);
+
+  constexpr char kGetCurrentPosition[] = R"(
+     navigator.geolocation.getCurrentPosition(_=>_);
+    )";
+
+  // The Geolocation service should stop automatically after one call.
+  TestWebContentsObserver observer_1(embedder_contents);
+  ASSERT_TRUE(content::ExecJs(main_rfh, kGetCurrentPosition));
+  observer_1.Wait();
+  EXPECT_TRUE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
+  TestWebContentsObserver observer_2(embedder_contents);
+  observer_2.Wait();
+  EXPECT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
+}
+
+IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
+                       WatchPositionAndClearWatch) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents);
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
+  ASSERT_TRUE(main_rfh);
+
+  ASSERT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
+
+  // Set geolocation permission to allow.
+  SetPermission(ContentSettingsType::GEOLOCATION,
+                ContentSetting::CONTENT_SETTING_ALLOW, url);
+
+  constexpr char kWatchPosition[] = R"(
+     navigator.geolocation.watchPosition(_=>_);
+    )";
+
+  constexpr char kClearWatch[] = R"(
+     navigator.geolocation.clearWatch(1);
+    )";
+
+  // javascript watchPosition() should start geolocation service.
+  TestWebContentsObserver observer_1(embedder_contents);
+  ASSERT_TRUE(content::ExecJs(main_rfh, kWatchPosition));
+  observer_1.Wait();
+  EXPECT_TRUE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
+  // javascript clearWatch() should stop geolocation service.
+  TestWebContentsObserver observer_2(embedder_contents);
+  ASSERT_TRUE(content::ExecJs(main_rfh, kClearWatch));
+  observer_2.Wait();
+  EXPECT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
+}
+
+IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
+                       GetCurrentPositionWhileWatchingPosition) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents);
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
+  ASSERT_TRUE(main_rfh);
+
+  ASSERT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
+
+  // Set geolocation permission to allow.
+  SetPermission(ContentSettingsType::GEOLOCATION,
+                ContentSetting::CONTENT_SETTING_ALLOW, url);
+
+  constexpr char kGetCurrentPosition[] = R"(
+     navigator.geolocation.getCurrentPosition(_=>_);
+    )";
+
+  constexpr char kWatchPosition[] = R"(
+     navigator.geolocation.watchPosition(_=>_);
+    )";
+
+  constexpr char kClearWatch[] = R"(
+     navigator.geolocation.clearWatch(1);
+    )";
+
+  TestWebContentsObserver observer_1(embedder_contents);
+  ASSERT_TRUE(content::ExecJs(main_rfh, kWatchPosition));
+  observer_1.Wait();
+  EXPECT_TRUE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
+  ASSERT_TRUE(content::ExecJs(main_rfh, kGetCurrentPosition));
+  EXPECT_TRUE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
+  TestWebContentsObserver observer_2(embedder_contents);
+  ASSERT_TRUE(content::ExecJs(main_rfh, kClearWatch));
+  observer_2.Wait();
+  EXPECT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
+}
+
+IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest,
+                       StartGeolocationInDifferentTab) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents);
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
+  ASSERT_TRUE(main_rfh);
+
+  ASSERT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
+
+  // Set geolocation permission to allow.
+  SetPermission(ContentSettingsType::GEOLOCATION,
+                ContentSetting::CONTENT_SETTING_ALLOW, url);
+
+  constexpr char kWatchPosition[] = R"(
+     navigator.geolocation.watchPosition(_=>_);
+    )";
+
+  // Watch geolocation on different tab.
+  // The usage will not record on main tab even they have the same origin.
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  chrome::NewTabToRight(browser());
+  EXPECT_EQ(2, tab_strip->count());
+  tab_strip->ActivateTabAt(1);
+  content::RenderFrameHost* rfh_tab_1 =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  content::WebContents* web_contents_2 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  TestWebContentsObserver observer_2(web_contents_2);
+  ASSERT_TRUE(content::ExecJs(rfh_tab_1, kWatchPosition));
+  observer_2.Wait();
+  tab_strip->ActivateTabAt(0);
+  EXPECT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
+}
+
+IN_PROC_BROWSER_TEST_F(GeolocationUsageObserverBrowsertest, ReloadPage) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents);
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  content::WebContents::FromRenderFrameHost(main_rfh)->Focus();
+  ASSERT_TRUE(main_rfh);
+
+  ASSERT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
+
+  // Set geolocation permission to allow.
+  SetPermission(ContentSettingsType::GEOLOCATION,
+                ContentSetting::CONTENT_SETTING_ALLOW, url);
+
+  constexpr char kWatchPosition[] = R"(
+     navigator.geolocation.watchPosition(_=>_);
+    )";
+
+  // watchPosition then reload page, the geolocation service should remain.
+  TestWebContentsObserver observer_1(embedder_contents);
+  ASSERT_TRUE(content::ExecJs(main_rfh, kWatchPosition));
+  observer_1.Wait();
+  EXPECT_TRUE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
+  content::TestNavigationObserver reload_observer(embedder_contents);
+  main_rfh->Reload();
+  reload_observer.Wait();
+  EXPECT_FALSE(embedder_contents->IsCapabilityActive(
+      content::WebContents::CapabilityType::kGeolocation));
 }

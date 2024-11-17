@@ -13,8 +13,15 @@ namespace client_certificates::features {
 // is enabled or not (still requires the policy to be enabled).
 BASE_DECLARE_FEATURE(kManagedClientCertificateForUserEnabled);
 
-// Return true if the user's managed client cert feature is enabled.
+// Return true if the managed user's client cert feature is enabled.
 bool IsManagedClientCertificateForUserEnabled();
+
+// Controls whether the management of a client certificate for the browser
+// is enabled or not (still requires the policy to be enabled).
+BASE_DECLARE_FEATURE(kManagedBrowserClientCertificateEnabled);
+
+// Return true if the managed browser's client cert feature is enabled.
+bool IsManagedBrowserClientCertificateEnabled();
 
 }  // namespace client_certificates::features
 

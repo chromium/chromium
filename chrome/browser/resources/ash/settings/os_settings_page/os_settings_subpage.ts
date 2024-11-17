@@ -16,9 +16,11 @@ import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import '../settings_shared.css.js';
 import './settings_card.js';
 
-import {CrSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_search_field/cr_search_field.js';
-import {FindShortcutMixin, FindShortcutMixinInterface} from 'chrome://resources/ash/common/cr_elements/find_shortcut_mixin.js';
-import {I18nMixin, I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {CrSearchFieldElement} from 'chrome://resources/ash/common/cr_elements/cr_search_field/cr_search_field.js';
+import type {FindShortcutMixinInterface} from 'chrome://resources/ash/common/cr_elements/find_shortcut_mixin.js';
+import {FindShortcutMixin} from 'chrome://resources/ash/common/cr_elements/find_shortcut_mixin.js';
+import type {I18nMixinInterface} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {focusWithoutInk} from 'chrome://resources/js/focus_without_ink.js';
@@ -28,10 +30,12 @@ import {IronResizableBehavior} from 'chrome://resources/polymer/v3_0/iron-resiza
 import {afterNextRender, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-import {RouteObserverMixin, RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
+import type {RouteObserverMixinInterface} from '../common/route_observer_mixin.js';
+import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {getSettingIdParameter} from '../common/setting_id_param_util.js';
-import {Constructor} from '../common/types.js';
-import {Route, Router} from '../router.js';
+import type {Constructor} from '../common/types.js';
+import type {Route} from '../router.js';
+import {Router} from '../router.js';
 
 import {getTemplate} from './os_settings_subpage.html.js';
 
@@ -130,6 +134,20 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
         },
         readOnly: true,
       },
+
+      /**
+       * Whether the subpage allows multiple cards or a single card.
+       *
+       * If this property is true, then no card will be populated by default and
+       * the subpages are responsible for organizing content into cards. If this
+       * property is false, then the subpage should populate content directly in
+       * this page into a single card.
+       */
+      multiCard: {
+        type: Boolean,
+        value: false,
+      },
+
     };
   }
 
@@ -143,6 +161,7 @@ export class OsSettingsSubpageElement extends OsSettingsSubpageElementBase {
   hideBackButton: boolean;
   associatedControl: HTMLElement|null;
   preserveSearchTerm: boolean;
+  multiCard: boolean;
   private active_: boolean;
   private lastActiveValue_: boolean = false;
   private eventTracker_: EventTracker|null = null;

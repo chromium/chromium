@@ -38,7 +38,6 @@ class DownloadBubblePartialView : public DownloadBubblePrimaryView,
   ~DownloadBubblePartialView() override;
 
   // DownloadBubblePrimaryView:
-  std::string_view GetVisibleTimeHistogramName() const override;
   void AddedToWidget() override;
   void RemovedFromWidget() override;
   void OnMouseEntered(const ui::MouseEvent& event) override;

@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 #include "ios/chrome/browser/download/model/download_mimetype_util.h"
-#include "ios/chrome/browser/download/model/mime_type_util.h"
+
+#include "ios/chrome/browser/shared/model/utils/mime_type_util.h"
 
 DownloadMimeTypeResult GetDownloadMimeTypeResultFromMimeType(
     const std::string& mime_type) {

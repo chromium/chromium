@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/prefs/pref_service.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/sync/base/data_type.h"
@@ -49,7 +50,8 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
       base::Clock* clock,
       syncer::OnceDataTypeStoreFactory create_store_callback,
       history::HistoryService* history_service,
-      syncer::DeviceInfoTracker* device_info_tracker);
+      syncer::DeviceInfoTracker* device_info_tracker,
+      PrefService* pref_service);
 
   SendTabToSelfBridge(const SendTabToSelfBridge&) = delete;
   SendTabToSelfBridge& operator=(const SendTabToSelfBridge&) = delete;
@@ -174,6 +176,9 @@ class SendTabToSelfBridge : public syncer::DataTypeSyncBridge,
 
   // |device_info_tracker_| isn't owned.
   const raw_ptr<syncer::DeviceInfoTracker> device_info_tracker_;
+
+  // `pref_service_` isn't owned.
+  const raw_ptr<PrefService> pref_service_;
 
   // The name of this local device.
   std::string local_device_name_;

@@ -23,12 +23,6 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 
 #include <algorithm>
@@ -184,7 +178,7 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
           conversion_data, size, document, style);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   scoped_refptr<Image> new_image =
@@ -308,7 +302,7 @@ static void ReplaceColorHintsWithColorStops(
       continue;
     }
 
-    GradientStop new_stops[9];
+    std::array<GradientStop, 9> new_stops;
     // Position the new color stops. These must be in the range
     // [offset_left, offset_right], and in non-decreasing order, even in the
     // face of floating-point rounding.
@@ -360,7 +354,7 @@ static void ReplaceColorHintsWithColorStops(
 
     // Replace the color hint with the new color stops.
     stops.EraseAt(x);
-    stops.insert(x, new_stops, 9);
+    stops.insert(x, new_stops.data(), 9);
     index_offset += 8;
   }
 }
@@ -638,8 +632,7 @@ void CSSGradientValue::AddStops(
       gradient_length = 1;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      gradient_length = 0;
+      NOTREACHED();
   }
 
   bool has_hints = false;
@@ -658,7 +651,7 @@ void CSSGradientValue::AddStops(
         stops[i].offset =
             stop.offset_->ComputePercentage(conversion_data) / 100;
       } else if (stop.offset_->IsLength() ||
-                 stop.offset_->IsCalculatedPercentageWithLength()) {
+                 !stop.offset_->IsResolvableBeforeLayout()) {
         float length;
         if (stop.offset_->IsLength()) {
           length = stop.offset_->ComputeLength<float>(conversion_data);
@@ -672,8 +665,7 @@ void CSSGradientValue::AddStops(
         stops[i].offset =
             stop.offset_->ComputeDegrees(conversion_data) / 360.0f;
       } else {
-        NOTREACHED_IN_MIGRATION();
-        stops[i].offset = 0;
+        NOTREACHED();
       }
       stops[i].specified = true;
     } else {
@@ -792,7 +784,7 @@ void CSSGradientValue::AddStops(
       }
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -834,8 +826,7 @@ static float PositionFromValue(const CSSValue* value,
       case CSSValueID::kCenter:
         return origin + sign * .5f * edge_distance;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -851,7 +842,7 @@ static float PositionFromValue(const CSSValue* value,
                         100.f * edge_distance;
   }
 
-  if (primitive_value->IsCalculatedPercentageWithLength()) {
+  if (!primitive_value->IsResolvableBeforeLayout()) {
     return origin + sign * To<CSSMathFunctionValue>(primitive_value)
                                ->ToCalcValue(conversion_data)
                                ->Evaluate(edge_distance);
@@ -910,9 +901,8 @@ CSSGradientValue* CSSGradientValue::ComputedCSSValue(
       return To<CSSConstantGradientValue>(this)->ComputedCSSValue(
           style, allow_visited_style, value_phase);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return nullptr;
 }
 
 Vector<Color> CSSGradientValue::GetStopColors(
@@ -1202,7 +1192,7 @@ scoped_refptr<Gradient> CSSLinearGradientValue::CreateGradient(
         }
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -1566,8 +1556,8 @@ gfx::SizeF RadiusToCorner(const gfx::PointF& point,
                           EndShapeType shape,
                           bool (*compare)(float, float)) {
   const gfx::RectF rect(size);
-  const gfx::PointF corners[] = {rect.origin(), rect.top_right(),
-                                 rect.bottom_right(), rect.bottom_left()};
+  const std::array<gfx::PointF, 4> corners = {
+      rect.origin(), rect.top_right(), rect.bottom_right(), rect.bottom_left()};
 
   unsigned corner_index = 0;
   float distance = (point - corners[corner_index]).Length();

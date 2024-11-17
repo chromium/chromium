@@ -55,7 +55,7 @@ void DetectLanguageWithModel(
   for (const auto& it : score_by_language) {
     predictions.emplace_back(it.first, it.second / count);
   }
-  std::move(on_complete).Run(predictions);
+  std::move(on_complete).Run(std::move(predictions));
 }
 
 }  // namespace

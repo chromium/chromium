@@ -9,7 +9,8 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
+
+class ProfileIOS;
 
 namespace dom_distiller {
 class DomDistillerService;
@@ -19,9 +20,6 @@ namespace dom_distiller {
 
 class DomDistillerServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static DomDistillerService* GetForBrowserState(ProfileIOS* profile);
-
   static DomDistillerService* GetForProfile(ProfileIOS* profile);
   static DomDistillerServiceFactory* GetInstance();
 

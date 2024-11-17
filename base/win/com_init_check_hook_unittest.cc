@@ -25,8 +25,8 @@ TEST(ComInitCheckHook, AssertNotInitialized) {
   AssertComApartmentType(ComApartmentType::NONE);
   ComPtr<IUnknown> shell_link;
 #if defined(COM_INIT_CHECK_HOOK_ENABLED)
-  EXPECT_DCHECK_DEATH(::CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_ALL,
-                                         IID_PPV_ARGS(&shell_link)));
+  EXPECT_NOTREACHED_DEATH(::CoCreateInstance(
+      CLSID_ShellLink, nullptr, CLSCTX_ALL, IID_PPV_ARGS(&shell_link)));
 #else
   EXPECT_EQ(CO_E_NOTINITIALIZED,
             ::CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_ALL,
@@ -57,8 +57,8 @@ TEST(ComInitCheckHook, MultipleHooks) {
   AssertComApartmentType(ComApartmentType::NONE);
   ComPtr<IUnknown> shell_link;
 #if defined(COM_INIT_CHECK_HOOK_ENABLED)
-  EXPECT_DCHECK_DEATH(::CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_ALL,
-                                         IID_PPV_ARGS(&shell_link)));
+  EXPECT_NOTREACHED_DEATH(::CoCreateInstance(
+      CLSID_ShellLink, nullptr, CLSCTX_ALL, IID_PPV_ARGS(&shell_link)));
 #else
   EXPECT_EQ(CO_E_NOTINITIALIZED,
             ::CoCreateInstance(CLSID_ShellLink, nullptr, CLSCTX_ALL,
@@ -85,7 +85,7 @@ TEST(ComInitCheckHook, UnexpectedHook) {
                 reinterpret_cast<const void*>(&unexpected_byte),
                 sizeof(unexpected_byte)));
 
-  EXPECT_DCHECK_DEATH({ ComInitCheckHook com_check_hook; });
+  EXPECT_NOTREACHED_DEATH({ ComInitCheckHook com_check_hook; });
 
   // If this call fails, really bad things are going to happen to other tests
   // so CHECK here.
@@ -117,7 +117,7 @@ TEST(ComInitCheckHook, ExternallyHooked) {
                 reinterpret_cast<const void*>(&jmp_byte), sizeof(jmp_byte)));
 
   // Externally patched instances should crash so we catch these cases on bots.
-  EXPECT_DCHECK_DEATH({ ComInitCheckHook com_check_hook; });
+  EXPECT_NOTREACHED_DEATH({ ComInitCheckHook com_check_hook; });
 
   // If this call fails, really bad things are going to happen to other tests
   // so CHECK here.
@@ -151,7 +151,7 @@ TEST(ComInitCheckHook, UnexpectedChangeDuringHook) {
                 reinterpret_cast<const void*>(&unexpected_byte),
                 sizeof(unexpected_byte)));
 
-  EXPECT_DCHECK_DEATH({
+  EXPECT_NOTREACHED_DEATH({
     ComInitCheckHook com_check_hook;
 
     internal::ModifyCode(

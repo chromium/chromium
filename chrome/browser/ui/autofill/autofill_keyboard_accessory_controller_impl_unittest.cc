@@ -57,10 +57,12 @@ class AutofillKeyboardAccessoryControllerImplTest
   AutofillProfile ShowAutofillProfileSuggestion() {
     AutofillProfile complete_profile = test::GetFullProfile();
     personal_data().address_data_manager().AddProfile(complete_profile);
-    ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
-                                   SuggestionType::kAddressEntry,
-                                   u"Complete autofill profile",
-                                   Suggestion::Guid(complete_profile.guid()))});
+    ShowSuggestions(
+        manager(),
+        {test::CreateAutofillSuggestion(
+            SuggestionType::kAddressEntry, u"Complete autofill profile",
+            Suggestion::AutofillProfilePayload(
+                Suggestion::Guid(complete_profile.guid())))});
     return complete_profile;
   }
 
@@ -240,7 +242,8 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   ShowSuggestions(manager(), {test::CreateAutofillSuggestion(
                                  SuggestionType::kAddressEntry,
                                  u"Autofill profile without city",
-                                 Suggestion::Guid(profile.guid()))});
+                                 Suggestion::AutofillProfilePayload(
+                                     Suggestion::Guid(profile.guid())))});
 
   EXPECT_TRUE(client().popup_controller(manager()).GetRemovalConfirmationText(
       0, &title, &body));
@@ -384,10 +387,12 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
               ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
                                               /*called_at_startup=*/false))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(
-      *client().access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
-                                     /*called_at_startup=*/false));
+  EXPECT_CALL(*client().access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet(
+                  profile()->GetPrefs(), _, profile(),
+                  /*called_at_startup=*/false,
+                  password_manager_android_util::
+                      PasswordAccessLossWarningTriggers::kKeyboardAcessoryBar));
   task_environment()->FastForwardBy(base::Milliseconds(500));
   client().popup_controller(manager()).AcceptSuggestion(0);
 }
@@ -405,10 +410,12 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
               ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
                                               /*called_at_startup=*/false))
       .WillRepeatedly(Return(true));
-  EXPECT_CALL(
-      *client().access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
-                                     /*called_at_startup=*/false));
+  EXPECT_CALL(*client().access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet(
+                  profile()->GetPrefs(), _, profile(),
+                  /*called_at_startup=*/false,
+                  password_manager_android_util::
+                      PasswordAccessLossWarningTriggers::kKeyboardAcessoryBar));
   task_environment()->FastForwardBy(base::Milliseconds(500));
   client().popup_controller(manager()).AcceptSuggestion(0);
 }
@@ -474,7 +481,7 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
 TEST_F(AutofillKeyboardAccessoryControllerImplTest,
        DoesNotAcceptUnacceptableSuggestions) {
   Suggestion suggestion(u"Open the pod bay doors, HAL");
-  suggestion.is_acceptable = false;
+  suggestion.acceptability = Suggestion::Acceptability::kUnacceptable;
   ShowSuggestions(manager(), {std::move(suggestion)});
   task_environment()->FastForwardBy(base::Milliseconds(500));
 
@@ -522,6 +529,20 @@ TEST_F(AutofillKeyboardAccessoryControllerImplTest,
   // If the password has less than 8 bullets, show the exact amount.
   EXPECT_THAT(client().popup_controller(manager()).GetSuggestionLabelsAt(3),
               label_is(u"***"));
+}
+
+// This is a regression test for crbug.com/521133 to ensure that we don't crash
+// when suggestions updates race with user selections.
+TEST_F(AutofillKeyboardAccessoryControllerImplTest, SelectInvalidSuggestion) {
+  ShowSuggestions(manager(), {SuggestionType::kMixedFormMessage});
+
+  EXPECT_CALL(manager().external_delegate(), DidAcceptSuggestion).Times(0);
+
+  // The following should not crash:
+  client().popup_controller(manager()).AcceptSuggestion(
+      /*index=*/0);  // Non-acceptable type.
+  client().popup_controller(manager()).AcceptSuggestion(
+      /*index=*/1);  // Out of bounds!
 }
 
 }  // namespace

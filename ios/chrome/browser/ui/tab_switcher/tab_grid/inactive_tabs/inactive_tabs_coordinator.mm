@@ -183,7 +183,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   [super start];
 
   _contextMenuProvider = [[TabContextMenuHelper alloc]
-        initWithBrowserState:self.browser->GetActiveBrowser()->GetBrowserState()
+             initWithProfile:self.browser->GetActiveBrowser()->GetProfile()
       tabContextMenuDelegate:self.tabContextMenuDelegate];
 
   Browser* browser = self.browser;
@@ -331,7 +331,7 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 - (void)gridViewControllerDidMoveItem:
     (BaseGridViewController*)gridViewController {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)gridViewController:(BaseGridViewController*)gridViewController
@@ -361,17 +361,17 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 - (void)gridViewControllerDropAnimationWillBegin:
     (BaseGridViewController*)gridViewController {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)gridViewControllerDropAnimationDidEnd:
     (BaseGridViewController*)gridViewController {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)didTapInactiveTabsButtonInGridViewController:
     (BaseGridViewController*)gridViewController {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)didTapInactiveTabsSettingsLinkInGridViewController:
@@ -485,18 +485,15 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 }
 
 - (id<ApplicationCommands, BrowserCommands>)handlerForSettings {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (id<ApplicationCommands>)handlerForApplicationCommands {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (id<SnackbarCommands>)handlerForSnackbarCommands {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 #pragma mark - Actions

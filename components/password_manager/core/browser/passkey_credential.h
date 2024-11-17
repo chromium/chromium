@@ -67,11 +67,9 @@ class PasskeyCredential {
   // belongs to.
   std::u16string GetAuthenticatorLabel() const;
 
-  // Sets an authenticator label for this passkey. If no label is set, a generic
-  // device name will be returned by GetAuthenticatorLabel().
-  void set_authenticator_label(const std::u16string& authenticator_label) {
-    authenticator_label_ = authenticator_label;
-  }
+  // Sets an authenticator label for this passkey. If no label is set, the
+  // source type will determine the result of GetAuthenticatorLabel().
+  void SetAuthenticatorLabel(const std::u16string& authenticator_label);
 
   Source source() const { return source_; }
   const std::string& rp_id() const { return rp_id_; }
@@ -84,6 +82,7 @@ class PasskeyCredential {
   }
 
  private:
+  std::u16string GetAuthenticatorLabelBySourceType() const;
   friend bool operator==(const PasskeyCredential& lhs,
                          const PasskeyCredential& rhs);
 

@@ -73,9 +73,7 @@ int ReadBufferingStreamSocket::DoLoop(int result) {
         break;
       case STATE_NONE:
       default:
-        NOTREACHED_IN_MIGRATION() << "Unexpected state: " << current_state;
-        rv = ERR_UNEXPECTED;
-        break;
+        NOTREACHED() << "Unexpected state: " << current_state;
     }
   } while (rv != ERR_IO_PENDING && state_ != STATE_NONE);
   return rv;

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/typed_macros.h"
@@ -142,11 +143,11 @@ void DedicatedWorker::Dispose() {
 
 void DedicatedWorker::postMessage(ScriptState* script_state,
                                   const ScriptValue& message,
-                                  HeapVector<ScriptValue>& transfer,
+                                  HeapVector<ScriptValue> transfer,
                                   ExceptionState& exception_state) {
   PostMessageOptions* options = PostMessageOptions::Create();
   if (!transfer.empty())
-    options->setTransfer(transfer);
+    options->setTransfer(std::move(transfer));
   postMessage(script_state, message, options, exception_state);
 }
 
@@ -204,7 +205,7 @@ void DedicatedWorker::PostCustomEvent(
         event_factory_callback,
     CrossThreadFunction<Event*(ScriptState*)> event_factory_error_callback,
     const ScriptValue& message,
-    HeapVector<ScriptValue>& transfer,
+    HeapVector<ScriptValue> transfer,
     ExceptionState& exception_state) {
   CHECK(!GetExecutionContext() || GetExecutionContext()->IsContextThread());
   if (!GetExecutionContext()) {
@@ -213,7 +214,7 @@ void DedicatedWorker::PostCustomEvent(
 
   StructuredSerializeOptions* options = StructuredSerializeOptions::Create();
   if (!transfer.empty()) {
-    options->setTransfer(transfer);
+    options->setTransfer(std::move(transfer));
   }
   CustomEventMessage transferable_message;
   Transferables transferables;
@@ -275,15 +276,13 @@ void DedicatedWorker::Start() {
     // https://html.spec.whatwg.org/C/#workeroptions
     auto credentials_mode = network::mojom::CredentialsMode::kSameOrigin;
     if (options_->type() == script_type_names::kModule) {
-      std::optional<network::mojom::CredentialsMode> result =
-          Request::ParseCredentialsMode(options_->credentials());
-      DCHECK(result);
-      credentials_mode = result.value();
+      credentials_mode = Request::V8RequestCredentialsToCredentialsMode(
+          options_->credentials().AsEnum());
     }
 
     mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token;
     if (script_request_url_.ProtocolIs("blob")) {
-      GetExecutionContext()->GetPublicURLManager().Resolve(
+      GetExecutionContext()->GetPublicURLManager().ResolveForWorkerScriptFetch(
           script_request_url_, blob_url_token.InitWithNewPipeAndPassReceiver());
     }
 
@@ -376,8 +375,7 @@ void DedicatedWorker::OnHostCreated(
                   std::move(back_forward_cache_controller_host));
     return;
   }
-  NOTREACHED_IN_MIGRATION()
-      << "Invalid type: " << IDLEnumAsString(options_->type());
+  NOTREACHED() << "Invalid type: " << IDLEnumAsString(options_->type());
 }
 
 void DedicatedWorker::terminate() {
@@ -407,6 +405,8 @@ void DedicatedWorker::OnWorkerHostCreated(
         dedicated_worker_host,
     const WebSecurityOrigin& origin) {
   TRACE_EVENT("blink.worker", "DedicatedWorker::OnWorkerHostCreated");
+  base::UmaHistogramTimes("Worker.TopLevelScript.WorkerHostCreatedTime",
+                          base::TimeTicks::Now() - start_time_);
   DCHECK(!browser_interface_broker_);
   browser_interface_broker_ = std::move(browser_interface_broker);
   pending_dedicated_worker_host_ = std::move(dedicated_worker_host);

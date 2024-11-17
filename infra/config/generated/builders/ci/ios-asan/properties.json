@@ -51,7 +51,8 @@
           "group": "tryserver.chromium.mac"
         }
       ],
-      "retry_failed_shards": true
+      "retry_failed_shards": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ios-asan/targets"
     }
   },
   "$build/reclient": {
@@ -84,5 +85,5 @@
   "sheriff_rotations": [
     "ios"
   ],
-  "xcode_build_version": "16a242"
+  "xcode_build_version": "16b40"
 }

@@ -36,7 +36,6 @@ class ASH_EXPORT LockContentsViewTestApi {
   AccountId focused_user() const;
   ScrollableUsersListView* users_list() const;
   LockScreenMediaView* media_view() const;
-  views::View* note_action() const;
   views::View* tooltip_bubble() const;
   views::View* management_bubble() const;
   LoginErrorBubble* detachable_base_error_bubble() const;
@@ -49,6 +48,8 @@ class ASH_EXPORT LockContentsViewTestApi {
   views::View* main_view() const;
   const std::vector<UserState>& users() const;
   LoginCameraTimeoutView* login_camera_timeout_view() const;
+  base::WeakPtr<ManagementDisclosureDialog> management_disclosure_dialog()
+      const;
 
   // Finds and focuses (if needed) Big User View view specified by
   // |account_id|. Returns nullptr if the user not found.

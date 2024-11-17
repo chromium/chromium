@@ -13,17 +13,20 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
 
 PasskeySavedConfirmationView::PasskeySavedConfirmationView(
     content::WebContents* web_contents,
-    views::View* anchor_view)
+    views::View* anchor_view,
+    std::string passkey_rp_id)
     : PasswordBubbleViewBase(web_contents,
                              anchor_view,
                              /*easily_dismissable=*/true),
-      controller_(PasswordsModelDelegateFromWebContents(web_contents)) {
+      controller_(PasswordsModelDelegateFromWebContents(web_contents),
+                  std::move(passkey_rp_id)) {
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   SetShowIcon(true);
   SetTitle(controller_.GetTitle());
@@ -69,3 +72,6 @@ void PasskeySavedConfirmationView::OnGooglePasswordManagerLinkClicked() {
   controller_.OnGooglePasswordManagerLinkClicked();
   CloseBubble();
 }
+
+BEGIN_METADATA(PasskeySavedConfirmationView)
+END_METADATA

@@ -41,7 +41,6 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.MockitoHelper;
-import org.chromium.url.JUnitTestGURLs;
 
 /** Unit test for {@link MessageSurveyUiDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -96,6 +95,26 @@ public class MessageSurveyUiDelegateUnitTest {
                 State.ACCEPTED,
                 mMessageSurveyUiDelegate.getStateForTesting());
         assertEquals("OnAcceptedCallback is not called.", 1, mOnAcceptedCallback.getCallCount());
+    }
+
+    @Test
+    public void surveyShownAfterTabLoaded() {
+        mTabModelHelper.tabStateInitialized().tabInteractabilityChanged(true);
+        showSurveyInvitation();
+        mTestMessageDispatcher.assertMessageEnqueued(false);
+        mTabModelHelper.tabFullyLoaded();
+        mTestMessageDispatcher.assertMessageEnqueued(true);
+        mMessageSurveyUiDelegate.dismiss();
+    }
+
+    @Test
+    public void surveyShownAfterTabInteractable() {
+        mTabModelHelper.tabStateInitialized().tabFullyLoaded();
+        showSurveyInvitation();
+        mTestMessageDispatcher.assertMessageEnqueued(false);
+        mTabModelHelper.tabInteractabilityChanged(true);
+        mTestMessageDispatcher.assertMessageEnqueued(true);
+        mMessageSurveyUiDelegate.dismiss();
     }
 
     @Test
@@ -413,7 +432,7 @@ public class MessageSurveyUiDelegateUnitTest {
 
             doReturn(false).when(mTab).isLoading();
             for (var observer : mTabObserverCaptor) {
-                observer.onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
+                observer.onLoadStopped(mTab, false);
             }
             return this;
         }

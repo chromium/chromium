@@ -36,15 +36,13 @@ std::string MachineIdProvider::GetMachineId() {
   base::FilePath executable_path;
 
   if (!base::PathService::Get(base::FILE_EXE, &executable_path)) {
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
+    NOTREACHED();
   }
 
   std::vector<base::FilePath::StringType> path_components =
       executable_path.GetComponents();
   if (path_components.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
+    NOTREACHED();
   }
   base::FilePath::StringType drive_name = L"\\\\.\\" + path_components[0];
 

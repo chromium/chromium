@@ -30,8 +30,8 @@ const CGFloat kDialogVerticalLocation = 20;
 class RepostFormCoordinatorTest : public PlatformTest {
  protected:
   RepostFormCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     view_controller_ = [[UIViewController alloc] init];
     CGPoint dialogLocation =
         CGPointMake(kDialogHorizontalLocation, kDialogVerticalLocation);
@@ -58,7 +58,7 @@ class RepostFormCoordinatorTest : public PlatformTest {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   ScopedKeyWindow scoped_key_window_;
   web::FakeWebState web_state_;

@@ -9,7 +9,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
-#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_grid_button_style.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_tab_group_state.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -18,7 +18,7 @@
 namespace {
 // Size of the tab count label.
 const CGFloat kLabelSize = 14;
-// Offset of the tab count label when in kTabGroup style.
+// Offset of the tab count label when in kTabGroup state.
 const CGFloat kLabelOffset = 3;
 }  // namespace
 
@@ -31,22 +31,22 @@ const CGFloat kLabelOffset = 3;
 @end
 
 @implementation ToolbarTabGridButton {
-  // The positioning constraints for the tab count label in kNormal style.
-  NSArray<NSLayoutConstraint*>* _normalStyleConstraints;
-  // The positioning constraints for the tab count label in kTabGroup style.
-  NSArray<NSLayoutConstraint*>* _tabGroupStyleConstraints;
-  // The image loader for the button in kNormal style.
-  ToolbarButtonImageLoader _normalStyleImageLoader;
-  // The image loader for the button in kTabGroup style.
-  ToolbarButtonImageLoader _tabGroupStyleImageLoader;
+  // The positioning constraints for the tab count label in kNormal state.
+  NSArray<NSLayoutConstraint*>* _normalStateConstraints;
+  // The positioning constraints for the tab count label in kTabGroup state.
+  NSArray<NSLayoutConstraint*>* _tabGroupStateConstraints;
+  // The image loader for the button in kNormal state.
+  ToolbarButtonImageLoader _normalStateImageLoader;
+  // The image loader for the button in kTabGroup state.
+  ToolbarButtonImageLoader _tabGroupStateImageLoader;
 }
 
 @synthesize tabCountLabel = _tabCountLabel;
 @synthesize tabCount = _tabCount;
 
-- (instancetype)initWithStyledImageLoader:
-    (ToolbarTabGridButtonImageLoader)styledImageLoader {
-  CHECK(styledImageLoader);
+- (instancetype)initWithTabGroupStateImageLoader:
+    (ToolbarTabGridButtonImageLoader)tabGroupStateImageLoader {
+  CHECK(tabGroupStateImageLoader);
   self = [super
       initWithImageLoader:^{
         return [[UIImage alloc] init];
@@ -55,11 +55,11 @@ const CGFloat kLabelOffset = 3;
         return [[UIImage alloc] init];
       }];
   if (self) {
-    _normalStyleImageLoader = ^{
-      return styledImageLoader(ToolbarTabGridButtonStyle::kNormal);
+    _normalStateImageLoader = ^{
+      return tabGroupStateImageLoader(ToolbarTabGroupState::kNormal);
     };
-    _tabGroupStyleImageLoader = ^{
-      return styledImageLoader(ToolbarTabGridButtonStyle::kTabGroup);
+    _tabGroupStateImageLoader = ^{
+      return tabGroupStateImageLoader(ToolbarTabGroupState::kTabGroup);
     };
     [self updateImageLoader];
   }
@@ -77,13 +77,13 @@ const CGFloat kLabelOffset = 3;
   [self setAccessibilityValue:tabStripButtonValue];
 }
 
-- (void)setTabGridButtonStyle:(ToolbarTabGridButtonStyle)tabGridButtonStyle {
+- (void)setTabGroupState:(ToolbarTabGroupState)tabGroupState {
   CHECK(IsTabGroupIndicatorEnabled() ||
-        tabGridButtonStyle == ToolbarTabGridButtonStyle::kNormal);
-  if (_tabGridButtonStyle == tabGridButtonStyle) {
+        tabGroupState == ToolbarTabGroupState::kNormal);
+  if (_tabGroupState == tabGroupState) {
     return;
   }
-  _tabGridButtonStyle = tabGridButtonStyle;
+  _tabGroupState = tabGroupState;
   [self updateImageLoader];
   [self updatePositionConstraints];
   [self updateTabCountLabelTextColor];
@@ -96,10 +96,10 @@ const CGFloat kLabelOffset = 3;
 }
 
 - (NSString*)accessibilityLabel {
-  switch (self.tabGridButtonStyle) {
-    case ToolbarTabGridButtonStyle::kNormal:
+  switch (self.tabGroupState) {
+    case ToolbarTabGroupState::kNormal:
       return l10n_util::GetNSString(IDS_IOS_TOOLBAR_SHOW_TABS);
-    case ToolbarTabGridButtonStyle::kTabGroup:
+    case ToolbarTabGroupState::kTabGroup:
       return l10n_util::GetNSString(IDS_IOS_TOOLBAR_SHOW_TAB_GROUP);
   }
 }
@@ -142,11 +142,11 @@ const CGFloat kLabelOffset = 3;
       [_tabCountLabel.widthAnchor constraintEqualToConstant:kLabelSize],
       [_tabCountLabel.heightAnchor constraintEqualToConstant:kLabelSize],
     ]];
-    _normalStyleConstraints = @[
+    _normalStateConstraints = @[
       [_tabCountLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor],
       [_tabCountLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor],
     ];
-    _tabGroupStyleConstraints = @[
+    _tabGroupStateConstraints = @[
       [_tabCountLabel.centerXAnchor constraintEqualToAnchor:self.centerXAnchor
                                                    constant:kLabelOffset],
       [_tabCountLabel.centerYAnchor constraintEqualToAnchor:self.centerYAnchor
@@ -170,10 +170,10 @@ const CGFloat kLabelOffset = 3;
       TextForTabCount(self.tabCount, kTabGridButtonFontSize);
 }
 
-// Updates the tab count text label color based on the current style.
+// Updates the tab count text label color based on the current tab group state.
 - (void)updateTabCountLabelTextColor {
-  switch (self.tabGridButtonStyle) {
-    case ToolbarTabGridButtonStyle::kNormal:
+  switch (self.tabGroupState) {
+    case ToolbarTabGroupState::kNormal:
       if (self.iphHighlighted) {
         self.tabCountLabel.textColor =
             self.toolbarConfiguration.buttonsTintColorIPHHighlighted;
@@ -185,34 +185,35 @@ const CGFloat kLabelOffset = 3;
             self.toolbarConfiguration.buttonsTintColor;
       }
       break;
-    case ToolbarTabGridButtonStyle::kTabGroup:
+    case ToolbarTabGroupState::kTabGroup:
       self.tabCountLabel.textColor = self.toolbarConfiguration.backgroundColor;
       break;
   }
 }
 
-// Swaps the image loader based on the current style.
+// Swaps the image loader based on the current tab group state.
 - (void)updateImageLoader {
-  switch (self.tabGridButtonStyle) {
-    case ToolbarTabGridButtonStyle::kNormal:
-      [self setImageLoader:_normalStyleImageLoader];
+  switch (self.tabGroupState) {
+    case ToolbarTabGroupState::kNormal:
+      [self setImageLoader:_normalStateImageLoader];
       break;
-    case ToolbarTabGridButtonStyle::kTabGroup:
-      [self setImageLoader:_tabGroupStyleImageLoader];
+    case ToolbarTabGroupState::kTabGroup:
+      [self setImageLoader:_tabGroupStateImageLoader];
       break;
   }
 }
 
-// Swaps the tab count label positioning constraints based on the current style.
+// Swaps the tab count label positioning constraints based on the current tab
+// group state.
 - (void)updatePositionConstraints {
-  switch (self.tabGridButtonStyle) {
-    case ToolbarTabGridButtonStyle::kNormal:
-      [NSLayoutConstraint deactivateConstraints:_tabGroupStyleConstraints];
-      [NSLayoutConstraint activateConstraints:_normalStyleConstraints];
+  switch (self.tabGroupState) {
+    case ToolbarTabGroupState::kNormal:
+      [NSLayoutConstraint deactivateConstraints:_tabGroupStateConstraints];
+      [NSLayoutConstraint activateConstraints:_normalStateConstraints];
       break;
-    case ToolbarTabGridButtonStyle::kTabGroup:
-      [NSLayoutConstraint deactivateConstraints:_normalStyleConstraints];
-      [NSLayoutConstraint activateConstraints:_tabGroupStyleConstraints];
+    case ToolbarTabGroupState::kTabGroup:
+      [NSLayoutConstraint deactivateConstraints:_normalStateConstraints];
+      [NSLayoutConstraint activateConstraints:_tabGroupStateConstraints];
       break;
   }
 }

@@ -3,18 +3,25 @@
 <translationbundle lang="hu">
 <translation id="1444443021901415601">A Chrome az Önt esetlegesen érdeklő témaköröket a legutóbbi böngészési előzményei alapján állapítja meg</translation>
 <translation id="2252052615723281030">Amikor be van jelentkezve a Chrome-ba, ennek a beállításnak a segítségével megőrizheti IP-címének privát jellegét. Ha a Chrome azt gyanítja, hogy egy webhely nyomon követi Önt, akkor előfordulhat, hogy a forgalmának egy részét privát szervereken keresztül küldi el.</translation>
+<translation id="235789365079050412">Google Adatvédelmi irányelvek</translation>
 <translation id="2793385791865768072">A Chromium az Önt esetlegesen érdeklő témaköröket a legutóbbi böngészési előzményei alapján állapítja meg</translation>
+<translation id="2979365474350987274">A harmadik féltől származó cookie-k korlátozva vannak</translation>
 <translation id="33479675708419823">Amikor be van jelentkezve a Chrome-ba, ennek a beállításnak a segítségével megőrizheti IP-címének privát jellegét. Ha a Chrome azt gyanítja, hogy egy webhely nyomon követi Önt, akkor előfordulhat, hogy a forgalmának egy részét privát szervereken keresztül küldi el. További információ az <ph name="LINK_BEGIN" />IP-védettség működéséről<ph name="LINK_END" />.</translation>
 <translation id="3529311220178827364">További információ az IP-cím elrejtéséről</translation>
+<translation id="385051799172605136">Vissza</translation>
 <translation id="4041687306270459969">A négy hétnél régebbi hirdetéstémák automatikusan törlődnek. A témák közé olyanok tartoznak például, mint a sport, a ruházat és egyebek</translation>
 <translation id="4177501066905053472">Hirdetéstémák</translation>
 <translation id="4301151630239508244">A hirdetéstéma csupán egy azon számos dolog közül, amelyet a webhelyek a hirdetések személyre szabásához használhatnak. A webhelyek a hirdetéstémák nélkül is megjeleníthetnek Önnek hirdetéseket, de előfordulhat, hogy ezek a hirdetések kevésbé lesznek személyre szabottak. További információ a <ph name="BEGIN_LINK_1" />hirdetésekhez kapcsolódó adatvédelem kezeléséről<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Az <ph name="BEGIN_LINK" />adatvédelmi irányelveinkben<ph name="END_LINK" /> talál további információkat arról, hogy a Google miként gondoskodik az Ön adatainak védelméről.</translation>
 <translation id="453692855554576066">A hirdetéstémákat megtekintheti a Chromium beállításaiban, és letilthatja azokat, amelyeket nem szeretne megosztani a webhelyekkel</translation>
 <translation id="4598427486995631491">IP-cím elrejtése</translation>
 <translation id="4692439979815346597">A hirdetéstémákat megtekintheti a Chrome beállításaiban, és letilthatja azokat, amelyeket nem szeretne megosztani a webhelyekkel</translation>
 <translation id="5413586988657235240">A felkeresett webhelyek kérhetnek a Chromiumtól témákat, hogy releváns hirdetéseket tudjanak megjeleníteni Önnek, miközben az Ön böngészési előzményei és személyazonossága biztonságban maradnak</translation>
+<translation id="6053735090575989697">Az adatvédelmi irányelveinkben talál további információkat arról, hogy a Google miként gondoskodik az Ön adatainak védelméről.</translation>
 <translation id="6186536480878693792">A felkeresett webhelyek kérhetnek a Chrome-tól témákat, hogy releváns hirdetéseket tudjanak megjeleníteni Önnek, miközben az Ön böngészési előzményei és személyazonossága biztonságban maradnak</translation>
+<translation id="6195163219142236913">A harmadik féltől származó cookie-k korlátozva vannak</translation>
 <translation id="6371812158043974664">Amikor be van jelentkezve a Chromiumba, ennek a beállításnak a segítségével megőrizheti IP-címének privát jellegét. Ha a Chromium azt gyanítja, hogy egy webhely nyomon követi Önt, akkor előfordulhat, hogy a forgalmának egy részét privát szervereken keresztül küldi el. További információ az <ph name="LINK_BEGIN" />IP-védettség működéséről<ph name="LINK_END" />.</translation>
+<translation id="6398358690696005758">Az <ph name="BEGIN_LINK1" />adatvédelmi irányelveinkben<ph name="LINK_END1" /> talál további információkat arról, hogy a Google miként gondoskodik az Ön adatainak védelméről.</translation>
 <translation id="7040031291654706261">További információ az <ph name="BEGIN_LINK" />IP-védettség működéséről<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">A hirdetéstémák beállításának áttekintése</translation>
 </translationbundle>

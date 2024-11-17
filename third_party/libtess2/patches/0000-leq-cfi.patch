@@ -1,0 +1,93 @@
+diff --git a/third_party/libtess2/src/Source/dict.c b/third_party/libtess2/src/Source/dict.c
+index 650adda21d848..579ab09b170dc 100644
+--- a/third_party/libtess2/src/Source/dict.c
++++ b/third_party/libtess2/src/Source/dict.c
+@@ -35,7 +35,7 @@
+ #include "dict.h"
+ 
+ /* really tessDictListNewDict */
+-Dict *dictNewDict( TESSalloc* alloc, void *frame, int (*leq)(void *frame, DictKey key1, DictKey key2) )
++Dict *dictNewDict( TESSalloc* alloc, void *frame, int (*leq)(TESStesselator *frame, ActiveRegion *key1, ActiveRegion *key2) )
+ {
+ 	Dict *dict = (Dict *)alloc->memalloc( alloc->userData, sizeof( Dict ));
+ 	DictNode *head;
+@@ -68,7 +68,7 @@ void dictDeleteDict( TESSalloc* alloc, Dict *dict )
+ }
+ 
+ /* really tessDictListInsertBefore */
+-DictNode *dictInsertBefore( Dict *dict, DictNode *node, DictKey key )
++DictNode *dictInsertBefore( Dict *dict, DictNode *node, ActiveRegion *key )
+ {
+ 	DictNode *newNode;
+ 
+@@ -97,7 +97,7 @@ void dictDelete( Dict *dict, DictNode *node ) /*ARGSUSED*/
+ }
+ 
+ /* really tessDictListSearch */
+-DictNode *dictSearch( Dict *dict, DictKey key )
++DictNode *dictSearch( Dict *dict, ActiveRegion *key )
+ {
+ 	DictNode *node = &dict->head;
+ 
+diff --git a/third_party/libtess2/src/Source/dict.h b/third_party/libtess2/src/Source/dict.h
+index 4cf322657b7d7..e72aabf16e191 100644
+--- a/third_party/libtess2/src/Source/dict.h
++++ b/third_party/libtess2/src/Source/dict.h
+@@ -32,11 +32,13 @@
+ #ifndef DICT_LIST_H
+ #define DICT_LIST_H
+ 
+-typedef void *DictKey;
++#include "../Include/tesselator.h"
++#include "mesh.h"
++
+ typedef struct Dict Dict;
+ typedef struct DictNode DictNode;
+ 
+-Dict *dictNewDict( TESSalloc* alloc, void *frame, int (*leq)(void *frame, DictKey key1, DictKey key2) );
++Dict *dictNewDict( TESSalloc* alloc, void *frame, int (*leq)(TESStesselator *frame, ActiveRegion *key1, ActiveRegion *key2) );
+ 
+ void dictDeleteDict( TESSalloc* alloc, Dict *dict );
+ 
+@@ -44,8 +46,8 @@ void dictDeleteDict( TESSalloc* alloc, Dict *dict );
+ * to the given key.  If there is no such key, returns a node whose
+ * key is NULL.  Similarly, Succ(Max(d)) has a NULL key, etc.
+ */
+-DictNode *dictSearch( Dict *dict, DictKey key );
+-DictNode *dictInsertBefore( Dict *dict, DictNode *node, DictKey key );
++DictNode *dictSearch( Dict *dict, ActiveRegion *key );
++DictNode *dictInsertBefore( Dict *dict, DictNode *node, ActiveRegion *key );
+ void dictDelete( Dict *dict, DictNode *node );
+ 
+ #define dictKey(n)	((n)->key)
+@@ -59,7 +61,7 @@ void dictDelete( Dict *dict, DictNode *node );
+ /*** Private data structures ***/
+ 
+ struct DictNode {
+-	DictKey	key;
++	ActiveRegion *key;
+ 	DictNode *next;
+ 	DictNode *prev;
+ };
+@@ -68,7 +70,7 @@ struct Dict {
+ 	DictNode head;
+ 	void *frame;
+ 	struct BucketAlloc *nodePool;
+-	int (*leq)(void *frame, DictKey key1, DictKey key2);
++	int (*leq)(TESStesselator *frame, ActiveRegion *key1, ActiveRegion *key2);
+ };
+ 
+ #endif
+diff --git a/third_party/libtess2/src/Source/sweep.c b/third_party/libtess2/src/Source/sweep.c
+index 32a56bf406040..8bcd839f73cc4 100644
+--- a/third_party/libtess2/src/Source/sweep.c
++++ b/third_party/libtess2/src/Source/sweep.c
+@@ -1115,7 +1115,7 @@ static void InitEdgeDict( TESStesselator *tess )
+ 	TESSreal w, h;
+ 	TESSreal smin, smax, tmin, tmax;
+ 
+-	tess->dict = dictNewDict( &tess->alloc, tess, (int (*)(void *, DictKey, DictKey)) EdgeLeq );
++	tess->dict = dictNewDict( &tess->alloc, tess, EdgeLeq );
+ 	if (tess->dict == NULL) longjmp(tess->env,1);
+ 
+ 	/* If the bbox is empty, ensure that sentinels are not coincident by slightly enlarging it. */

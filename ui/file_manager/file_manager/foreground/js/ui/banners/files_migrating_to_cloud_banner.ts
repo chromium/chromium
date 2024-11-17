@@ -51,7 +51,7 @@ export class FilesMigratingToCloudBanner extends WarningBanner {
       return;
     }
     const text =
-        this.shadowRoot!.querySelector('span[slot="text"]')! as HTMLSpanElement;
+        this.shadowRoot!.querySelector<HTMLSpanElement>('span[slot="text"]')!;
 
     switch (context.cloudProvider) {
       case chrome.fileManagerPrivate.CloudProvider.GOOGLE_DRIVE:

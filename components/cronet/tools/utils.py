@@ -18,7 +18,8 @@ REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 
 _MB_PATH = os.path.join(REPOSITORY_ROOT, 'tools/mb/mb.py')
-_GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
+GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
+NINJA_PATH = os.path.join(REPOSITORY_ROOT, 'third_party/ninja/ninja')
 _GN_ARG_MATCHER = re.compile("^.*=.*$")
 
 
@@ -61,7 +62,7 @@ def gn(out_dir, gn_args, gn_extra=None, **kwargs):
   Returns:
     Exit code of running `gn gen` command with argument provided.
   """
-  cmd = [_GN_PATH, 'gen', out_dir, '--args=%s' % gn_args]
+  cmd = [GN_PATH, 'gen', out_dir, '--args=%s' % gn_args]
   if gn_extra:
     cmd += gn_extra
   return run(cmd, **kwargs)
@@ -99,16 +100,33 @@ def read_file(path):
 
 
 def build(out_dir, build_target, extra_options=None):
-  """Runs `autoninja build`.
+  """Runs `ninja build`.
 
-  Runs `autoninja -C |out_dir| |build_target| |extra_options|` which will build
+  Runs `ninja -C |out_dir| |build_target| |extra_options|` which will build
   the target |build_target| for the GN configuration living under |out_dir|.
   This is done locally on the same chromium checkout.
 
   Returns:
-    Exit code of running `autoninja ..` command with the argument provided.
+    Exit code of running `ninja ..` command with the argument provided.
   """
-  cmd = ['autoninja', '-C', out_dir, build_target]
+  cmd = [_NINJA_PATH, '-C', out_dir, build_target]
+  if extra_options:
+    cmd += extra_options
+  return run(cmd)
+
+
+def build_all(out_dir, build_targets, extra_options=None):
+  """Runs `ninja build`.
+
+  Runs `ninja -C |out_dir| |build_targets| |extra_options|` which will build
+  the targets |build_targets| for the GN configuration living under |out_dir|.
+  This is done locally on the same chromium checkout.
+
+  Returns:
+    Exit code of running `ninja ..` command with the argument provided.
+  """
+  cmd = [NINJA_PATH, '-C', out_dir]
+  cmd.extend(build_targets)
   if extra_options:
     cmd += extra_options
   return run(cmd)

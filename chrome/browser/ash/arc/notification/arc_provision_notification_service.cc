@@ -125,7 +125,7 @@ void ArcProvisionNotificationService::ShowNotification() {
       l10n_util::GetStringUTF16(IDS_ARC_NOTIFICATION_DISPLAY_SOURCE), GURL(),
       notifier_id, optional_fields, new message_center::NotificationDelegate());
 
-  NotificationDisplayService::GetForProfile(profile)->Display(
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
       NotificationHandler::Type::TRANSIENT, notification, /*metadata=*/nullptr);
 }
 
@@ -134,7 +134,7 @@ void ArcProvisionNotificationService::HideNotification() {
     show_on_session_starts_ = false;
     session_observation_.Reset();
   } else {
-    NotificationDisplayService::GetForProfile(
+    NotificationDisplayServiceFactory::GetForProfile(
         Profile::FromBrowserContext(context_))
         ->Close(NotificationHandler::Type::TRANSIENT,
                 kManagedProvisionNotificationId);

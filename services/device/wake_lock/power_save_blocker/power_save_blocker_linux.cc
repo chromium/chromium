@@ -88,8 +88,7 @@ bool ShouldPreventDisplaySleep(mojom::WakeLockType type) {
     case mojom::WakeLockType::kPreventDisplaySleepAllowDimming:
       return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 const char* GetUninhibitMethodName(DBusAPI api) {
@@ -100,8 +99,7 @@ const char* GetUninhibitMethodName(DBusAPI api) {
     case FREEDESKTOP_SCREENSAVER_API:
       return "UnInhibit";
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void GetDbusStringsForApi(DBusAPI api,
@@ -125,7 +123,7 @@ void GetDbusStringsForApi(DBusAPI api,
       *object_path = kFreeDesktopAPIScreenObjectPath;
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace

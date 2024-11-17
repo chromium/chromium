@@ -4,6 +4,12 @@
 
 // Example WebIDL compatible schema for testing API definition features.
 // This will be added to as support for each features is implemented.
+
+// This comment is an example of a top level API description, which will be
+// extracted and added to the processed python dictionary as a description.
+//
+// Note: All comment lines preceding the thing they are attached to will be part
+// of the description, until a blank new line or non-comment is reached.
 interface TestWebIdl {
 
   static void returnsVoid();
@@ -11,6 +17,33 @@ interface TestWebIdl {
   static double returnsDouble();
   static long returnsLong();
   static DOMString returnsDOMString();
+
+  static void takesNoArguments();
+  static void takesDOMString(DOMString stringArgument);
+  static void takesOptionalBoolean(optional boolean optionalBoolean);
+  static void takesMultipleArguments(
+      DOMString argument1, optional double argument2);
+  static void takesOptionalInnerArgument(
+      DOMString first, optional DOMString optionalInner, DOMString last);
+
+  static ExampleType returnsCustomType();
+  static void takesCustomType(ExampleType customTypeArgument);
+  static void takesOptionalCustomType(
+  optional ExampleType optionalCustomTypeArgument);
+
+  static Promise<DOMString> stringPromiseReturn();
+  static Promise<DOMString?> nullablePromiseReturn();
+  static Promise<ExampleType> customTypePromiseReturn();
+  static Promise<undefined> undefinedPromiseReturn();
+};
+
+dictionary ExampleType {
+  // Attribute comment attached to ExampleType.someString.
+  DOMString someString;
+  // Comment where <var>someNumber</var> has some markup.
+  double someNumber;
+  // Comment with HTML comment. <!-- Which should get through -->
+  boolean? optionalBoolean;
 };
 
 partial interface Browser {

@@ -28,10 +28,11 @@ public class BankAccount extends PaymentInstrument {
             String nickname,
             GURL displayIconUrl,
             @PaymentRail int[] supportedPaymentRails,
+            boolean isFidoEnrolled,
             String bankName,
             String accountNumberSuffix,
             @AccountType int accountType) {
-        super(instrumentId, nickname, displayIconUrl, supportedPaymentRails);
+        super(instrumentId, nickname, displayIconUrl, supportedPaymentRails, isFidoEnrolled);
         mBankName = bankName;
         mAccountNumberSuffix = accountNumberSuffix;
         mAccountType = accountType;
@@ -43,6 +44,7 @@ public class BankAccount extends PaymentInstrument {
             String nickname,
             GURL displayIconUrl,
             @PaymentRail int[] supportedPaymentRails,
+            boolean isFidoEnrolled,
             String bankName,
             String accountNumberSuffix,
             @AccountType int accountType) {
@@ -53,6 +55,7 @@ public class BankAccount extends PaymentInstrument {
                                 .setNickname(nickname)
                                 .setDisplayIconUrl(displayIconUrl)
                                 .setSupportedPaymentRails(supportedPaymentRails)
+                                .setIsFidoEnrolled(isFidoEnrolled)
                                 .build())
                 .setBankName(bankName)
                 .setAccountNumberSuffix(accountNumberSuffix)
@@ -132,6 +135,7 @@ public class BankAccount extends PaymentInstrument {
                     mPaymentInstrument.getNickname(),
                     mPaymentInstrument.getDisplayIconUrl(),
                     mPaymentInstrument.getSupportedPaymentRails(),
+                    mPaymentInstrument.getIsFidoEnrolled(),
                     mBankName,
                     mAccountNumberSuffix,
                     mAccountType);

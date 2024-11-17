@@ -85,8 +85,7 @@ void SafeBrowsingServiceImpl::Initialize(
   safe_browsing_db_manager_ = safe_browsing::V4LocalDatabaseManager::Create(
       safe_browsing_data_path, web::GetUIThreadTaskRunner({}),
       web::GetIOThreadTaskRunner({}),
-      safe_browsing::ExtendedReportingLevelCallback(),
-      safe_browsing::V4LocalDatabaseManager::RecordMigrationMetricsCallback());
+      safe_browsing::ExtendedReportingLevelCallback());
 
   io_thread_enabler_ = base::MakeRefCounted<IOThreadEnabler>();
 
@@ -173,7 +172,8 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
               pref_change_registrar_->prefs(),
               safe_browsing::hash_realtime_utils::GetCountryCode(
                   client->GetVariationsService()),
-              /*log_usage_histograms=*/true);
+              /*log_usage_histograms=*/true,
+              /*are_background_lookups_allowed=*/false);
 
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       /*headers=*/net::HttpRequestHeaders(), /*load_flags=*/0,
@@ -218,7 +218,8 @@ SafeBrowsingServiceImpl::CreateAsyncChecker(
               pref_change_registrar_->prefs(),
               safe_browsing::hash_realtime_utils::GetCountryCode(
                   client->GetVariationsService()),
-              /*log_usage_histograms=*/true);
+              /*log_usage_histograms=*/true,
+              /*are_background_lookups_allowed=*/false);
 
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       /*headers=*/net::HttpRequestHeaders(), /*load_flags=*/0,
@@ -297,7 +298,8 @@ bool SafeBrowsingServiceImpl::ShouldCreateAsyncChecker(
               pref_change_registrar_->prefs(),
               safe_browsing::hash_realtime_utils::GetCountryCode(
                   client->GetVariationsService()),
-              /*log_usage_histograms=*/true);
+              /*log_usage_histograms=*/true,
+              /*are_background_lookups_allowed=*/false);
 
   if (!can_perform_full_url_lookup &&
       hash_real_time_selection ==

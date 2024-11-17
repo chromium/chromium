@@ -15,7 +15,7 @@ namespace autofill {
 
 // Returns the index of the shortest entry in the given select field of which
 // |value| is a substring. Returns -1 if no such entry exists.
-int FindShortestSubstringMatchInSelect(
+std::optional<size_t> FindShortestSubstringMatchInSelect(
     const std::u16string& value,
     bool ignore_whitespace,
     base::span<const SelectOption> field_options);

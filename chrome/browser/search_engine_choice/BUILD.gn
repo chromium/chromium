@@ -56,7 +56,10 @@ source_set("impl") {
     ]
 
     if (is_chromeos) {
-      deps += [ "//chromeos/components/kiosk" ]
+      deps += [
+        "//chromeos/components/kiosk",
+        "//chromeos/components/mgs",
+      ]
     }
   }
 }
@@ -78,6 +81,7 @@ if (!is_android) {
         "//chrome/browser",
         "//chrome/browser:browser_process",
         "//chrome/browser:test_support",
+        "//chrome/browser/prefs:util",
         "//chrome/browser/search_engines",
         "//chrome/browser/ui",
         "//chrome/browser/web_applications",

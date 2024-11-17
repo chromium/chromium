@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_FILLING_SKIP_REASON_H_
 
 #include <cstdint>
+#include <string_view>
 
 namespace autofill {
 
@@ -32,6 +33,8 @@ enum class FieldFillingSkipReason : uint8_t {
   kAutofilledValueDidNotChange = 17,
   kMaxValue = kAutofilledValueDidNotChange
 };
+
+std::string_view GetSkipFieldFillLogMessage(FieldFillingSkipReason skip_reason);
 
 }  // namespace autofill
 

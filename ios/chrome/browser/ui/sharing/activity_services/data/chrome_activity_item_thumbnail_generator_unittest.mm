@@ -47,7 +47,7 @@ TEST_F(ChromeActivityItemThumbnailGeneratorTest, DeallocOnBackgroundSequence) {
   // a background sequence.
   base::OnceClosure closure;
   @autoreleasepool {
-    __attribute__((objc_precise_lifetime))
+    NS_VALID_UNTIL_END_OF_SCOPE
     ChromeActivityItemThumbnailGenerator* generator =
         [[ChromeActivityItemThumbnailGenerator alloc]
             initWithWebState:&fake_web_state_];

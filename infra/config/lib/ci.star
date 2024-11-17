@@ -94,6 +94,10 @@ def ci_builder(
         5 if settings.project.startswith("chrome") else 100,
     )
 
+    # TODO(crbug.com/355218109): Remove when the experiment is the default.
+    if settings.project.startswith("chromium"):
+        experiments.setdefault("chromium.use_per_builder_build_dir_name", 100)
+
     try_only_kwargs = [k for k in ("mirrors", "try_settings") if k in kwargs]
     if try_only_kwargs:
         fail("CI builders cannot specify the following try-only arguments: {}".format(try_only_kwargs))
@@ -130,7 +134,7 @@ def ci_builder(
             predicate = resultdb.test_result_predicate(
                 # Match the "blink_web_tests" target and all of its
                 # flag-specific versions, e.g. "vulkan_swiftshader_blink_web_tests".
-                test_id_regexp = "(ninja://[^/]*blink_web_tests/.+)|(ninja://[^/]*_wpt_tests/.+)",
+                test_id_regexp = "(ninja://[^/]*blink_web_tests/.+)|(ninja://[^/]*_wpt_tests/.+)|(ninja://[^/]*headless_shell_wpt/.+)",
             ),
         ),
     ]

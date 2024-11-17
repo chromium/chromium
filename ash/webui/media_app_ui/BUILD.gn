@@ -39,6 +39,7 @@ static_library("media_app_ui") {
     "//ash/webui/system_apps/public:system_web_app_config",
     "//ash/webui/system_apps/public:system_web_app_type",
     "//ash/webui/web_applications",
+    "//chromeos/ash/components/mantis/media_app",
     "//chromeos/constants",
     "//chromeos/strings",
     "//content/public/browser",
@@ -96,6 +97,7 @@ mojom("mojo_bindings") {
 mojom("mojo_bindings_untrusted") {
   sources = [ "media_app_ui_untrusted.mojom" ]
   public_deps = [
+    "//chromeos/ash/components/mantis/mojom",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]
@@ -107,16 +109,20 @@ copy("copy_mojo") {
     ":build_ts",
     "//ash/webui/media_app_ui/resources/mock/js:stage_for_mock_tsc",
   ]
-  public_deps = [ ":mojo_bindings_untrusted_ts__generator" ]
+  public_deps = [
+    ":mojo_bindings_untrusted_ts__generator",
+    "//chromeos/ash/components/mantis/mojom:mojom_ts__generator",
+  ]
   sources = []
   foreach(file, media_app_mojom_sources) {
-    sources += [ "$target_gen_dir/$file" ]
+    sources += [ "$root_gen_dir/$file" ]
   }
   outputs = [ "${ts_root_dir}/{{source_file_part}}" ]
 }
 
 # All files in the rollup for the untrusted context should be here.
 webui_ts_library("build_ts") {
+  tsconfig_base = "tsconfig_base.json"
   root_dir = ts_root_dir
 
   in_files = media_app_converted_ts_sources + media_app_unconverted_js_sources +
@@ -158,6 +164,7 @@ webui_ts_library("build_ts") {
 # rules must be here, in the common ancestor. Staging in ./test would trigger
 # `Error: root_dir (...) should be within gen/.../test or ../../.../test`.
 ts_library("test_build_ts") {
+  tsconfig_base = "tsconfig_base.json"
   root_dir = ts_root_dir
   testonly = true
   in_files = media_app_test_ts

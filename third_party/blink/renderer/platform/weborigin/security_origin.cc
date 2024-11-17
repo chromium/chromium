@@ -53,6 +53,7 @@
 #include "url/scheme_host_port.h"
 #include "url/url_canon.h"
 #include "url/url_canon_ip.h"
+#include "url/url_constants.h"
 #include "url/url_util.h"
 
 namespace blink {
@@ -86,7 +87,7 @@ KURL SecurityOrigin::ExtractInnerURL(const KURL& url) {
     return *url.InnerURL();
   // FIXME: Update this callsite to use the innerURL member function when
   // we finish implementing it.
-  return KURL(url.GetPath());
+  return KURL(url.GetPath().ToString());
 }
 
 // Note: When changing ShouldTreatAsOpaqueOrigin, consider also updating
@@ -152,7 +153,8 @@ scoped_refptr<SecurityOrigin> SecurityOrigin::CreateInternal(const KURL& url) {
                       ? url.Port()
                       : DefaultPortForProtocol(url.Protocol());
   return base::AdoptRef(new SecurityOrigin(EnsureNonNull(url.Protocol()),
-                                           EnsureNonNull(url.Host()), port));
+                                           EnsureNonNull(url.Host().ToString()),
+                                           port));
 }
 
 SecurityOrigin::SecurityOrigin(const String& protocol,
@@ -703,17 +705,39 @@ const SecurityOrigin* SecurityOrigin::GetOriginOrPrecursorOriginIfOpaque()
   return precursor_origin_.get();
 }
 
-String SecurityOrigin::CanonicalizeHost(const String& host, bool* success) {
+String SecurityOrigin::CanonicalizeSpecialHost(const String& host,
+                                               bool* success) {
   url::Component out_host;
   url::RawCanonOutputT<char> canon_output;
   if (host.Is8Bit()) {
     StringUTF8Adaptor utf8(host);
-    *success = url::CanonicalizeHost(
-        utf8.data(), url::Component(0, utf8.size()), &canon_output, &out_host);
+    *success = url::CanonicalizeSpecialHost(
+        utf8.data(), url::Component(0, utf8.size()), canon_output, out_host);
   } else {
-    *success = url::CanonicalizeHost(host.Characters16(),
-                                     url::Component(0, host.length()),
-                                     &canon_output, &out_host);
+    *success = url::CanonicalizeSpecialHost(host.Characters16(),
+                                            url::Component(0, host.length()),
+                                            canon_output, out_host);
+  }
+  return String::FromUTF8(canon_output.view());
+}
+
+String SecurityOrigin::CanonicalizeHost(const String& host,
+                                        const String& scheme,
+                                        bool* success) {
+  if (scheme != url::kFileScheme) {
+    return CanonicalizeSpecialHost(host, success);
+  }
+
+  url::Component out_host;
+  url::RawCanonOutputT<char> canon_output;
+  if (host.Is8Bit()) {
+    StringUTF8Adaptor utf8(host);
+    *success = url::CanonicalizeFileHost(
+        utf8.data(), url::Component(0, utf8.size()), canon_output, out_host);
+  } else {
+    *success = url::CanonicalizeFileHost(host.Characters16(),
+                                         url::Component(0, host.length()),
+                                         canon_output, out_host);
   }
   return String::FromUTF8(canon_output.view());
 }

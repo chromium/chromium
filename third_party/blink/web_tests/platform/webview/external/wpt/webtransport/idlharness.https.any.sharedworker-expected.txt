@@ -1,0 +1,92 @@
+This is a testharness.js-based test.
+Found 44 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] WebTransport interface: attribute reliability
+  assert_true: The prototype object must have a property "reliability" expected true got false
+[FAIL] WebTransport interface: attribute congestionControl
+  assert_true: The prototype object must have a property "congestionControl" expected true got false
+[FAIL] WebTransport interface: attribute anticipatedConcurrentIncomingUnidirectionalStreams
+  assert_true: The prototype object must have a property "anticipatedConcurrentIncomingUnidirectionalStreams" expected true got false
+[FAIL] WebTransport interface: attribute anticipatedConcurrentIncomingBidirectionalStreams
+  assert_true: The prototype object must have a property "anticipatedConcurrentIncomingBidirectionalStreams" expected true got false
+[FAIL] WebTransport interface: attribute draining
+  assert_true: The prototype object must have a property "draining" expected true got false
+[FAIL] WebTransport interface: operation createSendGroup()
+  assert_own_property: interface prototype object missing non-static operation expected property "createSendGroup" missing
+[FAIL] WebTransport interface: attribute supportsReliableOnly
+  assert_own_property: The interface object must have a property "supportsReliableOnly" expected property "supportsReliableOnly" missing
+[FAIL] WebTransport interface: webTransport must inherit property "reliability" with the proper type
+  assert_inherits: property "reliability" not found in prototype chain
+[FAIL] WebTransport interface: webTransport must inherit property "congestionControl" with the proper type
+  assert_inherits: property "congestionControl" not found in prototype chain
+[FAIL] WebTransport interface: webTransport must inherit property "anticipatedConcurrentIncomingUnidirectionalStreams" with the proper type
+  assert_inherits: property "anticipatedConcurrentIncomingUnidirectionalStreams" not found in prototype chain
+[FAIL] WebTransport interface: webTransport must inherit property "anticipatedConcurrentIncomingBidirectionalStreams" with the proper type
+  assert_inherits: property "anticipatedConcurrentIncomingBidirectionalStreams" not found in prototype chain
+[FAIL] WebTransport interface: webTransport must inherit property "draining" with the proper type
+  assert_inherits: property "draining" not found in prototype chain
+[FAIL] WebTransport interface: webTransport must inherit property "createSendGroup()" with the proper type
+  assert_inherits: property "createSendGroup" not found in prototype chain
+[FAIL] WebTransportSendStream interface: existence and properties of interface object
+  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
+[FAIL] WebTransportSendStream interface object length
+  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
+[FAIL] WebTransportSendStream interface object name
+  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
+[FAIL] WebTransportSendStream interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
+[FAIL] WebTransportSendStream interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
+[FAIL] WebTransportSendStream interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
+[FAIL] WebTransportSendStream interface: attribute sendGroup
+  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
+[FAIL] WebTransportSendStream interface: attribute sendOrder
+  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
+[FAIL] WebTransportSendStream interface: operation getStats()
+  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
+[FAIL] WebTransportSendStream interface: operation getWriter()
+  assert_own_property: self does not have own property "WebTransportSendStream" expected property "WebTransportSendStream" missing
+[FAIL] WebTransportSendGroup interface: existence and properties of interface object
+  assert_own_property: self does not have own property "WebTransportSendGroup" expected property "WebTransportSendGroup" missing
+[FAIL] WebTransportSendGroup interface object length
+  assert_own_property: self does not have own property "WebTransportSendGroup" expected property "WebTransportSendGroup" missing
+[FAIL] WebTransportSendGroup interface object name
+  assert_own_property: self does not have own property "WebTransportSendGroup" expected property "WebTransportSendGroup" missing
+[FAIL] WebTransportSendGroup interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "WebTransportSendGroup" expected property "WebTransportSendGroup" missing
+[FAIL] WebTransportSendGroup interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "WebTransportSendGroup" expected property "WebTransportSendGroup" missing
+[FAIL] WebTransportSendGroup interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "WebTransportSendGroup" expected property "WebTransportSendGroup" missing
+[FAIL] WebTransportSendGroup interface: operation getStats()
+  assert_own_property: self does not have own property "WebTransportSendGroup" expected property "WebTransportSendGroup" missing
+[FAIL] WebTransportReceiveStream interface: existence and properties of interface object
+  assert_own_property: self does not have own property "WebTransportReceiveStream" expected property "WebTransportReceiveStream" missing
+[FAIL] WebTransportReceiveStream interface object length
+  assert_own_property: self does not have own property "WebTransportReceiveStream" expected property "WebTransportReceiveStream" missing
+[FAIL] WebTransportReceiveStream interface object name
+  assert_own_property: self does not have own property "WebTransportReceiveStream" expected property "WebTransportReceiveStream" missing
+[FAIL] WebTransportReceiveStream interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "WebTransportReceiveStream" expected property "WebTransportReceiveStream" missing
+[FAIL] WebTransportReceiveStream interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "WebTransportReceiveStream" expected property "WebTransportReceiveStream" missing
+[FAIL] WebTransportReceiveStream interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "WebTransportReceiveStream" expected property "WebTransportReceiveStream" missing
+[FAIL] WebTransportReceiveStream interface: operation getStats()
+  assert_own_property: self does not have own property "WebTransportReceiveStream" expected property "WebTransportReceiveStream" missing
+[FAIL] WebTransportWriter interface: existence and properties of interface object
+  assert_own_property: self does not have own property "WebTransportWriter" expected property "WebTransportWriter" missing
+[FAIL] WebTransportWriter interface object length
+  assert_own_property: self does not have own property "WebTransportWriter" expected property "WebTransportWriter" missing
+[FAIL] WebTransportWriter interface object name
+  assert_own_property: self does not have own property "WebTransportWriter" expected property "WebTransportWriter" missing
+[FAIL] WebTransportWriter interface: existence and properties of interface prototype object
+  assert_own_property: self does not have own property "WebTransportWriter" expected property "WebTransportWriter" missing
+[FAIL] WebTransportWriter interface: existence and properties of interface prototype object's "constructor" property
+  assert_own_property: self does not have own property "WebTransportWriter" expected property "WebTransportWriter" missing
+[FAIL] WebTransportWriter interface: existence and properties of interface prototype object's @@unscopables property
+  assert_own_property: self does not have own property "WebTransportWriter" expected property "WebTransportWriter" missing
+[FAIL] WebTransportWriter interface: operation atomicWrite(optional any)
+  assert_own_property: self does not have own property "WebTransportWriter" expected property "WebTransportWriter" missing
+Harness: the test ran to completion.
+

@@ -16,7 +16,6 @@
 #import "base/strings/utf_string_conversions.h"
 #import "base/test/gtest_util.h"
 #import "base/test/ios/wait_util.h"
-#import "base/test/scoped_feature_list.h"
 #import "base/test/test_timeouts.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/autofill_test_utils.h"
@@ -90,7 +89,7 @@ FormSuggestion* SimpleFormSuggestion(std::u16string value,
                           displayDescription:@""
                                         icon:nil
                                         type:type
-                           backendIdentifier:@""
+                                     payload:autofill::Suggestion::Payload()
                               requiresReauth:NO];
 }
 
@@ -104,7 +103,7 @@ FormSuggestion* SimpleFormSuggestion(std::u16string value,
 // Test fixture for AutofillAgent testing.
 class AutofillAgentTests : public web::WebTest {
  public:
-  AutofillAgentTests() {}
+  AutofillAgentTests() = default;
 
   AutofillAgentTests(const AutofillAgentTests&) = delete;
   AutofillAgentTests& operator=(const AutofillAgentTests&) = delete;
@@ -127,12 +126,18 @@ class AutofillAgentTests : public web::WebTest {
 
     fake_web_state_.SetBrowserState(GetBrowserState());
     fake_web_state_.SetContentIsHTML(true);
-    auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
-    fake_web_frames_manager_ = frames_manager.get();
-    web::ContentWorld content_world =
-        AutofillJavaScriptFeature::GetInstance()->GetSupportedContentWorld();
-    fake_web_state_.SetWebFramesManager(content_world,
-                                        std::move(frames_manager));
+
+    for (auto content_world : {web::ContentWorld::kIsolatedWorld,
+                               web::ContentWorld::kPageContentWorld}) {
+      auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
+      fake_web_state_.SetWebFramesManager(content_world,
+                                          std::move(frames_manager));
+    }
+
+    fake_web_frames_manager_ = static_cast<web::FakeWebFramesManager*>(
+        fake_web_state_.GetWebFramesManager(
+            AutofillJavaScriptFeature::GetInstance()
+                ->GetSupportedContentWorld()));
 
     GURL url("https://example.com");
     fake_web_state_.SetCurrentURL(url);
@@ -185,9 +190,7 @@ class AutofillAgentTests : public web::WebTest {
 // not autofilled are skipped. Tests logic based on renderer ids usage.
 TEST_F(AutofillAgentTests,
        OnFormDataFilledTestWithFrameMessagingUsingRendererIDs) {
-  std::string locale("en");
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              locale);
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   std::vector<autofill::FormFieldData::FillData> fill_data;
   autofill::FormFieldData field;
@@ -239,9 +242,7 @@ TEST_F(AutofillAgentTests,
 // Tests that `fillSpecificFormField` in `autofill_agent_` dispatches the
 // correct javascript call to the autofill controller.
 TEST_F(AutofillAgentTests, FillSpecificFormField) {
-  std::string locale("en");
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              locale);
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
@@ -267,8 +268,7 @@ TEST_F(AutofillAgentTests, FillSpecificFormField) {
 // successfully.
 TEST_F(AutofillAgentTests,
        FillSpecificFormField_UpdateWithResults_WhenSuccess) {
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              "en");
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   std::vector<autofill::FormFieldData::FillData> fields =
       MinimalFormFieldDataForFilling();
@@ -306,8 +306,7 @@ TEST_F(AutofillAgentTests,
 // failed.
 TEST_F(AutofillAgentTests,
        FillSpecificFormField_UpdateWithResults_WhenFailure) {
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              "en");
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   std::vector<autofill::FormFieldData::FillData> fields =
       MinimalFormFieldDataForFilling();
@@ -342,9 +341,8 @@ TEST_F(AutofillAgentTests,
 // Tests that `ApplyFieldAction` in `AutofillDriverIOS` dispatches the
 // correct javascript call to the autofill controller.
 TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
-  std::string locale("en");
   AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_,
-                                              autofill_agent_, locale);
+                                              autofill_agent_);
 
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
@@ -373,9 +371,8 @@ TEST_F(AutofillAgentTests, DriverFillSpecificFormField) {
 // Tests that `ApplyFieldAction` with `ActionPersistence::kPreview`in
 // `AutofillDriverIOS` does not dispatch a JS call.
 TEST_F(AutofillAgentTests, DriverPreviewSpecificFormField) {
-  std::string locale("en");
   AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_,
-                                              autofill_agent_, locale);
+                                              autofill_agent_);
 
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
@@ -487,10 +484,6 @@ TEST_F(AutofillAgentTests, onSuggestionsReady_ShowAccountCards) {
 // is the 'Virtual card' string and the minor_text is the card name + last 4 or
 // the card holder's name
 TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
-  base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      autofill::features::kAutofillEnableVirtualCards);
-
   __block NSUInteger suggestion_array_size = 0;
   __block FormSuggestion* virtual_card_suggestion = nil;
   __block FormSuggestion* credit_card_suggestion = nil;
@@ -530,7 +523,7 @@ TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
                  displayDescription:[suggestions[0].displayDescription copy]
                                icon:[suggestions[0].icon copy]
                                type:suggestions[0].type
-                  backendIdentifier:suggestions[0].backendIdentifier
+                            payload:suggestions[0].payload
         fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
                      requiresReauth:suggestions[0].requiresReauth
          acceptanceA11yAnnouncement:[suggestions[0]
@@ -541,7 +534,7 @@ TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
                  displayDescription:[suggestions[1].displayDescription copy]
                                icon:[suggestions[1].icon copy]
                                type:suggestions[1].type
-                  backendIdentifier:suggestions[1].backendIdentifier
+                            payload:suggestions[1].payload
         fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
                      requiresReauth:suggestions[1].requiresReauth
          acceptanceA11yAnnouncement:[suggestions[1]
@@ -567,7 +560,7 @@ TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
       gfx::test::PlatformImagesEqual(virtual_card_suggestion.icon, visa_icon));
   EXPECT_EQ(autofill::SuggestionType::kVirtualCreditCardEntry,
             virtual_card_suggestion.type);
-  EXPECT_NSEQ(@"", virtual_card_suggestion.backendIdentifier);
+  EXPECT_EQ(autofill::Suggestion::Payload(), virtual_card_suggestion.payload);
   EXPECT_EQ(false, virtual_card_suggestion.requiresReauth);
   EXPECT_NSEQ(nil, virtual_card_suggestion.acceptanceA11yAnnouncement);
 
@@ -580,7 +573,7 @@ TEST_F(AutofillAgentTests, showAutofillPopup_ShowVirtualCards) {
       gfx::test::PlatformImagesEqual(credit_card_suggestion.icon, visa_icon));
   EXPECT_EQ(autofill::SuggestionType::kCreditCardEntry,
             credit_card_suggestion.type);
-  EXPECT_NSEQ(@"", credit_card_suggestion.backendIdentifier);
+  EXPECT_EQ(autofill::Suggestion::Payload(), credit_card_suggestion.payload);
   EXPECT_EQ(false, credit_card_suggestion.requiresReauth);
   EXPECT_NSEQ(nil, credit_card_suggestion.acceptanceA11yAnnouncement);
 }
@@ -896,8 +889,8 @@ class AutofillAgentTestFrameInitializationOrderFrames
     AutofillAgentTests::SetUp();
     RemoveWebFrame(fake_main_frame_->GetFrameId());
     ASSERT_FALSE(AutofillDriverIOSFactory::FromWebState(&fake_web_state_));
-    AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                                "en");
+    AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_,
+                                                nil);
   }
 };
 
@@ -1020,9 +1013,7 @@ TEST_F(AutofillAgentTestFrameInitializationOrderFrames,
 TEST_F(AutofillAgentTests, FillData_UpdateWithResults) {
   auto test_recorder = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 
-  std::string locale("en");
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              locale);
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   std::vector<autofill::FormFieldData::FillData> fields =
       MinimalFormFieldDataForFilling();
@@ -1070,8 +1061,7 @@ TEST_F(AutofillAgentTests, FillData_UpdateWithResults) {
 // Tests that if there is an unknown field id in the results, the agent isn't
 // notified.
 TEST_F(AutofillAgentTests, FillData_UnknowFieldIdInResults) {
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              "en");
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   std::vector<autofill::FormFieldData::FillData> fields =
       MinimalFormFieldDataForFilling();
@@ -1100,8 +1090,7 @@ TEST_F(AutofillAgentTests, FillData_UnknowFieldIdInResults) {
 
 // Tests selecting an autocomplete suggestion.
 TEST_F(AutofillAgentTests, DidSelectSuggestion_AutocompleteEntry) {
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              /*locale=*/"en");
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   FormRendererId form_id(1);
   FieldRendererId field1_id(2);
@@ -1151,8 +1140,7 @@ TEST_F(AutofillAgentTests, DidSelectSuggestion_AutocompleteEntry) {
 }
 
 TEST_F(AutofillAgentTests, DidSelectSuggestion_ClearFormEntry) {
-  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil,
-                                              /*locale=*/"en");
+  AutofillDriverIOSFactory::CreateForWebState(&fake_web_state_, &client_, nil);
 
   FormRendererId form_id(1);
   FieldRendererId field1_id(2);

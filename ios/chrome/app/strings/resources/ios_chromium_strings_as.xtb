@@ -12,8 +12,10 @@
 <translation id="1260702988262336471">Chromiumৰ মেনুখন খোলক</translation>
 <translation id="12739128458173458">অন্য এটা ডিভাইচলৈ এই টেবটো পঠিয়াবলৈ, দুয়োটা ডিভাইচতে Chromiumত ছাইন ইন কৰক।</translation>
 <translation id="1361748954329991663">Chromium পুৰণি হৈছে। <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />ত কোনো আপডে’ট নাথাকিলে এয়া সম্ভৱ যে আপোনাৰ ডিভাইচটোৱে Chromiumৰ নতুন সংস্কৰণসমূহ আৰু সমৰ্থন নকৰে।</translation>
+<translation id="1383876407941801731">সন্ধান কৰক</translation>
 <translation id="1423007117030725713">Chromiumৰ নতুন টেবত সন্ধান আৰম্ভ কৰক।</translation>
 <translation id="1431818719585918472">Chromiumক আপোনাৰ ইনক’গনিট’ টেবসমূহ লক কৰিবলৈ দিয়ক।</translation>
+<translation id="1451665391191990528">আপুনি Chromiumৰ পৰা বাহিৰ ওলালে, খুলি থোৱা ইনক’গ্নিট’ টেবসমূহ লুকুৱাওক</translation>
 <translation id="146407871188825689">ডিফ’ল্ট হিচাপে iPadত Chromium ব্যৱহাৰ কৰক</translation>
 <translation id="1471084500615228555">Chromiumত ব্ৰাউজিঙৰ ডেটা মচক</translation>
 <translation id="1472013873724362412">আপোনাৰ একউণ্টটো Chromiumত কাম নকৰে। ছাইন ইন কৰিবলৈ অনুগ্ৰহ কৰি আপোনাৰ ড’মেইনৰ প্ৰশাসকৰ সৈতে যোগাযোগ কৰক বা সচৰাচৰ ব্যৱহাৰ কৰা এটা Google Account ব্যৱহাৰ কৰক।</translation>
@@ -49,6 +51,7 @@
 <translation id="2195025571279539885">আপুনি এই ছাইটবোৰৰ <ph name="LANGUAGE_NAME" /> পৃষ্ঠাবোৰ Chromiumএ অনুবাদ কৰি দিয়াটো বিচাৰিবনে?</translation>
 <translation id="22313767259766852">এই ঠিকনাটো বৰ্তমান Chromiumত ছেভ কৰা আছে। এইটো সমগ্ৰ Google প্ৰ’ডাক্টসমূহত ব্যৱহাৰ কৰিবলৈ, ইয়াক আপোনাৰ Google একাউণ্ট <ph name="USER_EMAIL" />ত ছেভ কৰক।</translation>
 <translation id="2236584955986023187">ইয়াৰ অৰ্থ হৈছে Chromiumএ প্ৰত্যেকবাৰ ডেস্কটপ ছাইটৰ অনুৰোধ কৰিব।</translation>
+<translation id="2270466829363945454">কিনক</translation>
 <translation id="2313870531055795960">Chromiumত ষ্ট’ৰ কৰি ৰখা অসুৰক্ষিত ছাইটসমূহৰ এখন সূচীৰ সৈতে URLসমূহ পৰীক্ষা কৰে। যদি কোনোবা ছাইটে আপোনাৰ পাছৱৰ্ড চুৰি কৰিবলৈ চেষ্টা কৰে অথবা আপুনি কোনো ক্ষতিকাৰক ফাইল ডাউনল’ড কৰাৰ সময়ত Chromiumএ পৃষ্ঠাৰ সমলৰ বিটসমূহকে ধৰি URLসমূহো সুৰক্ষিত ব্ৰাউজিঙলৈ পঠিয়াব পাৰে।</translation>
 <translation id="231828342043114302">আপোনাৰ আগ্ৰহৰ ওপৰত ভিত্তি কৰি ব্যক্তিগতকৃত সমল লাভ কৰিবলৈ, Chromiumত ছাইন ইন কৰক।</translation>
 <translation id="2326738825692478496">আপোনাৰ Chromiumৰ কিছুমান ডেটা এতিয়াও আপোনাৰ Google একাউণ্টত ছেভ কৰা হোৱা নাই।
@@ -107,6 +110,7 @@
 <translation id="377649297473651452">Chromiumৰ স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাৰ বিস্তৃত ভিউ</translation>
 <translation id="3780779443901618967">মানক সুৰক্ষাৰ তুলনাত ছাইটসমূহৰ পৰা অধিক ডেটা বিশ্লেষণ কৰি আনকি Googleৰ বাবেও পূৰ্বে অজ্ঞাত বিপজ্জনক ছাইটসমূহৰ বিষয়ে আপোনাক সতৰ্ক কৰি দিয়ে। আপুনি Chromiumৰ সকীয়নি এৰি যোৱাটো বাছনি কৰিব পাৰে।</translation>
 <translation id="3805899903892079518">আপোনাৰ ফট’ আৰু ভিডিঅ’সমূহত Chromiumৰ এক্সেছ নাই। iOS ছেটিং &gt; গোপনীয়তা &gt; ফট’-ত এক্সেছ সক্ষম কৰক।</translation>
+<translation id="3816686541346279443">Chromiumএ আপোনাৰ পাছৱৰ্ড ছেভ কৰিবলৈ সেৱা আগবঢ়াব।</translation>
 <translation id="3827545470516145620">আপুনি এই ডিভাইচটোত মান্য সুৰক্ষা লাভ কৰি আছে</translation>
 <translation id="3833326979834193417">Chromiumএ আপোনাক ডেটা উলংঘন, অসুৰক্ষিত ৱেবছাইট আৰু অধিকৰ পৰা সুৰক্ষিত কৰি ৰাখিবলৈ প্ৰতিদিনে স্বয়ংক্ৰিয়ভাৱে সুৰক্ষা পৰীক্ষাটো চলায়। আপুনি ছেটিঙত সুৰক্ষা পৰীক্ষাৰ বিষয়ে অধিক তথ্য পাব পাৰে।</translation>
 <translation id="3855938650519180865">Chromiumত নতুন কি আছে</translation>
@@ -129,6 +133,7 @@
 <translation id="4432744876818348753">Chromiumৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ ছাইন ইন কৰক।</translation>
 <translation id="4445228361214254027">আপোনাৰ প্ৰতিষ্ঠানে আপোনাৰ Google একাউণ্টত Chromium ডেটা ব্যৱহাৰ আৰু ছেভ কৰাৰ ক্ষমতা অফ কৰিছে। নতুন বুকমাৰ্ক, পাছৱৰ্ড আৰু অধিক কেৱল এই ডিভাইচত ছেভ কৰা হ’ব।</translation>
 <translation id="4498832288620833153">Chromiumত আপোনাৰ পঢ়াৰ সূচীত ইনপুট কৰা URL যোগ দিয়ে।</translation>
+<translation id="4508268628669724828">Chromiumৰ পৰা পাৰ্যমানে উপকৃত হ’বলৈ অধিক উপযোগী পৰামৰ্শসমূহ পাবলৈ ইয়াত পুনৰ চাওক।</translation>
 <translation id="452436063477828504">আপোনাৰ Google একাউণ্টত আপুনি সদায়ে Chromiumৰ ডেটা ব্যৱহাৰ কৰিব পৰাটো নিশ্চিত কৰক</translation>
 <translation id="4527452566931097835">Chromiumক ডিফ’ল্ট হিচাপে ছেট কৰিবনে?</translation>
 <translation id="4555020257205549924">যেতিয়া এই সুবিধাটো অন কৰি ৰখা হয় তেতিয়া Chromiumএ অন্য ভাষাত থকা পৃষ্ঠা Google Translate ব্যৱহাৰ কৰি অনুবাদ কৰাৰ সুবিধা দিয়ে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
@@ -177,6 +182,7 @@
 <translation id="5571094606370987472">Chromiumৰ শেহতীয়া টেব খোলে।</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Chromiumত মোৰ শেহতীয়া টেব খোলক</translation>
+<translation id="5671188105328420281">Chromiumৰ কিটিপ</translation>
 <translation id="5688047395118852662">এই কাৰ্ডখনে আপোনাক Chromiumৰ পৰা কেনেকৈ পাৰ্যমানে উপকৃত হ’ব পাৰি তাৰ পৰামৰ্শ দেখুৱায়।</translation>
 <translation id="5700709190537129682">Chromiumএ আপোনাৰ পাছৱর্ডসমূহ পৰীক্ষা কৰিব নোৱাৰে</translation>
 <translation id="584550191241316896">Chromiumত ছাইন ইন কৰক</translation>
@@ -218,6 +224,7 @@
 <translation id="6752854822223394465">আপোনাৰ প্ৰতিষ্ঠানে Chromium ছেট আপ কৰি আছে...</translation>
 <translation id="6794054469102824109">Chromium Dino গে’মটো খোলে।</translation>
 <translation id="6820823224820483452">Chromiumএ সকলো পাছৱৰ্ড পৰীক্ষা কৰিব নোৱাৰিলে। কাইলৈ পুনৰ চেষ্টা কৰক।</translation>
+<translation id="6831043979455480757">Translate</translation>
 <translation id="6852419005633611413">আপোনাৰ গৃহ স্ক্ৰীনৰ ড’কৰ পৰা অধিক দ্ৰুতভাৱে Chromium এক্সেছ কৰক</translation>
 <translation id="6852799557929001644">এই ডিভাইচটোত থকা অন্য এপত আপোনাৰ Chromiumৰ পাছৱৰ্ড আৰু অধিক বস্তু এক্সেছ কৰক।</translation>
 <translation id="6887138405044152640">অন্য এটা ডিভাইচলৈ এই টেবটো পঠিয়াবলৈ, তাত Chromiumত ছাইন ইন কৰক।</translation>
@@ -292,7 +299,7 @@
 <translation id="8860548555286245440">ইনক’গনিট’ত Chromiumত URL খোলক</translation>
 <translation id="8866191443434488382">Chromiumএ আপুনি চোৱা ছাইটসমূহত ট্ৰেকিং নম্বৰ চিনাক্ত কৰিব আৰু আপোনাক নতুন টেবৰ পৃষ্ঠাখনত পেকেজৰ আপডে’ট দেখুৱাব। এই সুবিধাটো প্ৰদান কৰিবলৈ আৰু সকলোৰে বাবে বজাৰ কৰাৰ সুবিধা উন্নত কৰিবলৈ পেকেজ ট্ৰেকিং নম্বৰ আৰু ৱেবছাইটৰ নাম Chromiumলৈ পঠিওৱা হ’ব। আপুনি <ph name="BEGIN_LINK" />পেকেজ ট্ৰেকিঙৰ ছেটিঙ<ph name="END_LINK" />ত যিকোনো সময়তে এইটো আপডে’ট কৰিব পাৰে।</translation>
 <translation id="8880024619507699923">Chromium ব্যৱহাৰ কৰিবলৈ আপোনাৰ প্ৰতিষ্ঠানৰ বাবে আপুনি ছাইন ইন কৰাৰ আৱশ্যক। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
-<translation id="8900052431807804054">Chromiumৰ আটাইতকৈ শক্তিশালী সুৰক্ষাৰ পাওক</translation>
+<translation id="8900052431807804054">Chromiumৰ আটাইতকৈ শক্তিশালী সুৰক্ষা পাওক</translation>
 <translation id="894437814105052438">আপুনি ছাইন আউট কৰিলে Chromiumএ আপোনাৰ Google একাউণ্টত কোনো নতুন ডেটা ছিংক নকৰিব। পূৰ্বে ছিংক কৰা ডেটাখিনি একাউণ্টটোতে থাকে।</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়}one{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়}other{Chromium {THRESHOLD} মিনিটলৈকে ব্যৱহাৰ কৰা নহ’লে এনে হয়}}</translation>
 <translation id="8963279154877372067">মূল্য কমাৰ সতৰ্কবাৰ্তা লাভ কৰিবলৈ Chromiumৰ জাননীৰ অনুমতি দিয়ক</translation>

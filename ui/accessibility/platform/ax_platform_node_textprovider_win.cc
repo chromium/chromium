@@ -24,9 +24,7 @@
 
 namespace ui {
 
-AXPlatformNodeTextProviderWin::AXPlatformNodeTextProviderWin() {
-  DVLOG(1) << __func__;
-}
+AXPlatformNodeTextProviderWin::AXPlatformNodeTextProviderWin() {}
 
 AXPlatformNodeTextProviderWin::~AXPlatformNodeTextProviderWin() {}
 

@@ -2,7 +2,7 @@
 ++[section] tag:body
 ++++[document frame] name='Text descendants' tag:svg
 ++++++[section] tag:text
-++++++++[section] name='focusable' tag:a
+++++++++[section] tag:a
 ++++++++++[static] name='focusable'
 ++++++[section] tag:text
 ++++++++[static] name='not focusable'

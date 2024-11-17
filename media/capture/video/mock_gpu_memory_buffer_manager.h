@@ -36,9 +36,7 @@ class MockGpuMemoryBufferManager : public gpu::GpuMemoryBufferManager {
                     base::UnsafeSharedMemoryRegion memory_region,
                     base::OnceCallback<void(bool)> callback));
 
-  MOCK_METHOD2(CopyGpuMemoryBufferSync,
-               bool(gfx::GpuMemoryBufferHandle buffer_handle,
-                    base::UnsafeSharedMemoryRegion memory_region));
+  MOCK_METHOD0(IsConnected, bool());
 
   static std::unique_ptr<gfx::GpuMemoryBuffer> CreateFakeGpuMemoryBuffer(
       const gfx::Size& size,

@@ -95,11 +95,13 @@ class IncludeNodeUnittest(unittest.TestCase):
     self.assertTrue(checkIsGzipped('test_js.js', ''))
     self.assertTrue(checkIsGzipped('test_css.css', ''))
     self.assertTrue(checkIsGzipped('test_svg.svg', ''))
+    self.assertTrue(checkIsGzipped('test_json.json', ''))
 
     self.assertTrue(checkIsGzipped('test_html.html', 'compress="default"'))
     self.assertTrue(checkIsGzipped('test_js.js', 'compress="default"'))
     self.assertTrue(checkIsGzipped('test_css.css', 'compress="default"'))
     self.assertTrue(checkIsGzipped('test_svg.svg', 'compress="default"'))
+    self.assertTrue(checkIsGzipped('test_json.json', 'compress="default"'))
 
   def testSkipInResourceMap(self):
     root = util.ParseGrdForUnittest('''

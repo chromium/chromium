@@ -516,6 +516,7 @@ XMLPUBFUN void
 
 XMLPUBFUN void
 		xmlXPathRoot			(xmlXPathParserContextPtr ctxt);
+XML_DEPRECATED
 XMLPUBFUN void
 		xmlXPathEvalExpr		(xmlXPathParserContextPtr ctxt);
 XMLPUBFUN xmlChar *

@@ -177,13 +177,13 @@ export class WallpaperFullscreenElement extends WithPersonalizationStore {
       case FullscreenPreviewState.OFF:
         this.showContainer_ = false;
         document.body.classList.remove(fullscreenClass);
+        cancelPreviewWallpaper(getWallpaperProvider());
         await waitForOpacityTransition();
         document.body.classList.remove(fullscreenTransitionClass);
         this.selectedLayout_ = null;
         if (this.getFullscreenElement()) {
           await this.exitFullscreen();
         }
-        cancelPreviewWallpaper(getWallpaperProvider());
         return;
       case FullscreenPreviewState.LOADING:
         // Do not assign this.showContainer_ here. If last state was

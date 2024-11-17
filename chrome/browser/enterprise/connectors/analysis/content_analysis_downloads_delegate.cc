@@ -19,8 +19,8 @@ ContentAnalysisDownloadsDelegate::ContentAnalysisDownloadsDelegate(
     const std::u16string& custom_message,
     GURL custom_learn_more_url,
     bool bypass_justification_required,
-    base::OnceCallback<void()> open_file_callback,
-    base::OnceCallback<void()> discard_file_callback,
+    base::OnceClosure open_file_callback,
+    base::OnceClosure discard_file_callback,
     download::DownloadItem* download_item,
     const ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage&
         custom_rule_message)
@@ -61,8 +61,13 @@ void ContentAnalysisDownloadsDelegate::BypassWarnings(
     }
   }
 
-  if (open_file_callback_)
+  Open();
+}
+
+void ContentAnalysisDownloadsDelegate::Open() {
+  if (open_file_callback_) {
     std::move(open_file_callback_).Run();
+  }
   ResetCallbacks();
 }
 
@@ -80,14 +85,12 @@ void ContentAnalysisDownloadsDelegate::ResetCallbacks() {
 std::optional<std::u16string>
 ContentAnalysisDownloadsDelegate::GetCustomMessage() const {
   // Rule-based custom messages take precedence over policy-based.
-  if (IsDialogCustomRuleMessageEnabled()) {
-    std::u16string custom_rule_message =
-        GetCustomRuleString(custom_rule_message_);
-    if (!custom_rule_message.empty()) {
-      return l10n_util::GetStringFUTF16(
-          IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_CUSTOM_MESSAGE, filename_,
-          custom_rule_message);
-    }
+  std::u16string custom_rule_message =
+      GetCustomRuleString(custom_rule_message_);
+  if (!custom_rule_message.empty()) {
+    return l10n_util::GetStringFUTF16(
+        IDS_DEEP_SCANNING_DIALOG_DOWNLOADS_CUSTOM_MESSAGE, filename_,
+        custom_rule_message);
   }
 
   if (custom_message_.empty())

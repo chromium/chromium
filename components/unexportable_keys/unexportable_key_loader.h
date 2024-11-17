@@ -64,8 +64,7 @@ class COMPONENT_EXPORT(UNEXPORTABLE_KEYS) UnexportableKeyLoader {
 
   // If a key hasn't been loaded yet, returns ServiceError::kKeyNotReady.
   // Otherwise, returns a loaded key ID or a terminal error state.
-  // Public for testing.
-  ServiceErrorOr<UnexportableKeyId> GetKeyIdOrErrorForTesting();
+  ServiceErrorOr<UnexportableKeyId> GetKeyIdOrError();
 
   // Returns the current state of the loader.
   // Public for testing.

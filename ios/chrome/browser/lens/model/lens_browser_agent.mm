@@ -66,10 +66,10 @@ std::optional<LensEntrypoint> LensBrowserAgent::CurrentResultsEntrypoint()
   }
 
   // Lens camera is unsupported if the default search engine is not Google.
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(web_state->GetBrowserState());
   const TemplateURLService* url_service =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browser_state);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   DCHECK(url_service);
 
   const TemplateURL* default_url = url_service->GetDefaultSearchProvider();

@@ -28,6 +28,6 @@ rootWebArea
 ++++++group ispopup=hint
 ++++++++staticText name='Test popover, open' nameFrom=contents
 ++++++++++inlineTextBox name='Test popover, open' nameFrom=contents
-++++++button expanded description='Test popover, open' name='popover6' nameFrom=contents descriptionFrom=popoverAttribute detailsIds=group
+++++++button expanded description='Test popover, open' name='popover6' nameFrom=contents descriptionFrom=popoverTarget
 ++++++++staticText name='popover6' nameFrom=contents
 ++++++++++inlineTextBox name='popover6' nameFrom=contents

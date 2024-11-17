@@ -37,7 +37,7 @@ source_set("resources_private") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//chromeos/ash/components/browser_context_helper" ]
   }
 }

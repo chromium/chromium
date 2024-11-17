@@ -41,12 +41,6 @@ void GetTextFieldContextualInfo(TextFieldContextualInfoCallback cb);
 // Get the current tab url if the text field is hosted by a tab.
 std::optional<GURL> GetUrlForTextFieldOnAshChrome();
 
-using TextFieldTabUrlCallback =
-    base::OnceCallback<void(const std::optional<GURL>& url)>;
-// Get the current tab url if the text field is hosted by a tab from Lacros.
-// This query requires a further call over IPC.
-void GetUrlForTextFieldOnLacros(TextFieldTabUrlCallback cb);
-
 }  // namespace input_method
 }  // namespace ash
 

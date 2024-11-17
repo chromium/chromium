@@ -188,27 +188,24 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestInsecureContext) {
 }
 
 TEST_F(HTMLFencedFrameElementTest, HistogramTestIncompatibleUrlHTTPDefault) {
+  std::vector<String> test_cases = {
+      "http://example.com",
+      "blob:https://example.com",
+      "file://path/to/file",
+      "file://localhost/path/to/file",
+  };
+
   Document& doc = GetDocument();
 
-  auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
-  fenced_frame->setConfig(
-      FencedFrameConfig::Create(String("http://example.com/")));
-  doc.body()->AppendChild(fenced_frame);
+  for (const String& url : test_cases) {
+    auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
+    fenced_frame->setConfig(FencedFrameConfig::Create(url));
+    doc.body()->AppendChild(fenced_frame);
+  }
+
   histogram_tester_.ExpectUniqueSample(
       kFencedFrameCreationOrNavigationOutcomeHistogram,
-      FencedFrameCreationOutcome::kIncompatibleURLDefault, 1);
-}
-
-TEST_F(HTMLFencedFrameElementTest, HistogramTestIncompatibleUrlOpaque) {
-  Document& doc = GetDocument();
-
-  auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
-  fenced_frame->setConfig(
-      FencedFrameConfig::Create(String("http://example.com")));
-  doc.body()->AppendChild(fenced_frame);
-  histogram_tester_.ExpectUniqueSample(
-      kFencedFrameCreationOrNavigationOutcomeHistogram,
-      FencedFrameCreationOutcome::kIncompatibleURLDefault, 1);
+      FencedFrameCreationOutcome::kIncompatibleURLDefault, test_cases.size());
 }
 
 TEST_F(HTMLFencedFrameElementTest, HistogramTestResizeAfterFreeze) {
@@ -240,8 +237,9 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestSandboxFlags) {
       WebSandboxFlags::kAll);
 
   auto* fenced_frame = MakeGarbageCollected<HTMLFencedFrameElement>(doc);
-  fenced_frame->setAttribute(html_names::kSrcAttr, String("https://test.com/"),
-                             ASSERT_NO_EXCEPTION);
+  fenced_frame->SetAttributeWithValidation(html_names::kSrcAttr,
+                                           AtomicString("https://test.com/"),
+                                           ASSERT_NO_EXCEPTION);
   doc.body()->AppendChild(fenced_frame);
   histogram_tester_.ExpectUniqueSample(
       kFencedFrameCreationOrNavigationOutcomeHistogram,
@@ -270,8 +268,9 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestSandboxFlagsInIframe) {
 
   // Create iframe and embed it in the main document
   auto* iframe = MakeGarbageCollected<HTMLIFrameElement>(doc);
-  iframe->setAttribute(html_names::kSrcAttr, String("https://test.com/"),
-                       ASSERT_NO_EXCEPTION);
+  iframe->SetAttributeWithValidation(html_names::kSrcAttr,
+                                     AtomicString("https://test.com/"),
+                                     ASSERT_NO_EXCEPTION);
   doc.body()->AppendChild(iframe);
   Document* iframe_doc = iframe->contentDocument();
   iframe_doc->GetFrame()->DomWindow()->GetSecurityContext().SetSandboxFlags(
@@ -280,8 +279,9 @@ TEST_F(HTMLFencedFrameElementTest, HistogramTestSandboxFlagsInIframe) {
   // Create fenced frame and embed it in the main frame
   auto* fenced_frame =
       MakeGarbageCollected<HTMLFencedFrameElement>(*iframe_doc);
-  fenced_frame->setAttribute(html_names::kSrcAttr, String("https://test.com/"),
-                             ASSERT_NO_EXCEPTION);
+  fenced_frame->SetAttributeWithValidation(html_names::kSrcAttr,
+                                           AtomicString("https://test.com/"),
+                                           ASSERT_NO_EXCEPTION);
   iframe_doc->body()->AppendChild(fenced_frame);
 
   // Test that it logged that the fenced frame creation attempt was NOT in the

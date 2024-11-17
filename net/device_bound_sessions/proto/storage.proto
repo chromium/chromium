@@ -105,3 +105,9 @@ message Session {
   // Set of credentials required by this session.
   repeated CookieCraving cookie_cravings = 7;
 }
+
+// All the sessions associated with a site (eTLD+1) and it's subdomains.
+message SiteSessions {
+  // The key is a session id string.
+  map<string, Session> sessions = 1;
+}

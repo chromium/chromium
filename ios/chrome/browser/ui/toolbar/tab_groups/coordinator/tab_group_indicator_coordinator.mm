@@ -7,14 +7,16 @@
 #import <MaterialComponents/MaterialSnackbar.h>
 
 #import "base/strings/sys_string_conversions.h"
-#import "components/saved_tab_groups/tab_group_sync_service.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
+#import "ios/chrome/browser/share_kit/model/share_kit_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
+#import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/create_or_edit_tab_group_coordinator_delegate.h"
@@ -24,6 +26,7 @@
 #import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_mediator.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/coordinator/tab_group_indicator_mediator_delegate.h"
 #import "ios/chrome/browser/ui/toolbar/tab_groups/ui/tab_group_indicator_view.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -45,19 +48,26 @@
 
 - (void)start {
   CHECK(IsTabGroupIndicatorEnabled());
+  BOOL incognito = self.browser->GetProfile()->IsOffTheRecord();
   _view = [[TabGroupIndicatorView alloc] init];
   _view.displayedOnNTP = _displayedOnNTP;
-  _view.incognito = self.browser->GetBrowserState()->IsOffTheRecord();
+  _view.incognito = incognito;
   _view.toolbarHeightDelegate = self.toolbarHeightDelegate;
+  ProfileIOS* profile = self.browser->GetProfile();
   tab_groups::TabGroupSyncService* tabGroupSyncService =
-      tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile);
   _mediator = [[TabGroupIndicatorMediator alloc]
-          initWithProfile:self.browser->GetProfile()
-      tabGroupSyncService:tabGroupSyncService
-                 consumer:_view
-             webStateList:self.browser->GetWebStateList()];
+      initWithTabGroupSyncService:tabGroupSyncService
+                  shareKitService:ShareKitServiceFactory::GetForProfile(profile)
+                         consumer:_view
+                     webStateList:self.browser->GetWebStateList()
+                        URLLoader:UrlLoadingBrowserAgent::FromBrowser(
+                                      self.browser)
+                        incognito:incognito];
   _mediator.delegate = self;
+  _mediator.baseViewController = self.baseViewController;
+  _mediator.applicationHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
   _view.mutator = _mediator;
 }
 
@@ -82,6 +92,12 @@
                                        tabGroup:tabGroup.get()];
   _createTabGroupCoordinator.delegate = self;
   [_createTabGroupCoordinator start];
+}
+
+- (void)showRecentActivityForGroup:(base::WeakPtr<const TabGroup>)tabGroup {
+  id<TabGroupsCommands> tabGroupsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), TabGroupsCommands);
+  [tabGroupsHandler showRecentActivityForGroup:tabGroup];
 }
 
 - (void)showTabGroupIndicatorConfirmationForAction:

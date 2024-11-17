@@ -4,7 +4,7 @@
 <translation id="1002108253973310084">S'ha detectat una versió del protocol incompatible. Assegureu-vos que tingueu instal·lada la versió més recent del programari als dos ordinadors i torneu-ho a provar.</translation>
 <translation id="1008557486741366299">Ara no</translation>
 <translation id="1201402288615127009">Següent</translation>
-<translation id="1297009705180977556">S'ha produït un error en connectar amb <ph name="HOSTNAME" /></translation>
+<translation id="1297009705180977556">Hi ha hagut un error en connectar amb <ph name="HOSTNAME" /></translation>
 <translation id="1450760146488584666">L'objecte sol·licitat no existeix.</translation>
 <translation id="1480046233931937785">Crèdits</translation>
 <translation id="1520828917794284345">Ajusta la mida de l'escriptori</translation>
@@ -14,7 +14,7 @@
 <translation id="177040763384871009">Per permetre que els enllaços en què es faci clic al dispositiu remot s'obrin al navegador client, has de canviar el navegador web del sistema per "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP del canal del client: <ph name="CLIENT_GAIA_IDENTIFIER" /> ip='<ph name="CLIENT_IP_ADDRESS_AND_PORT" />' host_ip='<ph name="HOST_IP_ADDRESS_AND_PORT" />' channel='<ph name="CHANNEL_TYPE" />' connection='<ph name="CONNECTION_TYPE" />'.</translation>
 <translation id="1897488610212723051">Suprimeix</translation>
-<translation id="2009755455353575666">S'ha produït un error en la connexió</translation>
+<translation id="2009755455353575666">Hi ha hagut un error en la connexió</translation>
 <translation id="2038229918502634450">L'amfitrió s'està reiniciant per aplicar un canvi en la política.</translation>
 <translation id="2078880767960296260">Procés de l'amfitrió</translation>
 <translation id="20876857123010370">Mode de ratolí tàctil</translation>
@@ -110,7 +110,7 @@ Si la casella <ph name="SERVICE_SCRIPT_NAME" /> ja està marcada, desmarca-la i 
 <translation id="5841343754884244200">Opcions de visualització</translation>
 <translation id="6033507038939587647">Opcions del teclat</translation>
 <translation id="6040143037577758943">Tanca</translation>
-<translation id="6062854958530969723">S'ha produït un error en iniciar l'amfitrió.</translation>
+<translation id="6062854958530969723">Hi ha hagut un error en iniciar l'amfitrió.</translation>
 <translation id="6099500228377758828">Servei d'escriptori remot de Chrome</translation>
 <translation id="6122191549521593678">En línia</translation>
 <translation id="6178645564515549384">Amfitrió de missatgeria nativa per a l'assistència remota</translation>

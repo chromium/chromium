@@ -31,13 +31,13 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabWebContentsObserver;
+import org.chromium.chrome.browser.tabmodel.TabClosureParams;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -267,9 +267,9 @@ public class ChromeTabUtils {
 
     private static String tabDebugInfo(final Tab tab, @Nullable final String url) {
         WebContents webContents = tab.getWebContents();
-        boolean shouldShowLoadingUI = false;
+        boolean shouldShowLoadingUi = false;
         if (webContents != null) {
-            shouldShowLoadingUI =
+            shouldShowLoadingUi =
                     ThreadUtils.runOnUiThreadBlocking(() -> webContents.shouldShowLoadingUI());
         }
         return String.format(
@@ -282,17 +282,17 @@ public class ChromeTabUtils {
                 Math.round(100 * tab.getProgress()),
                 tab.isLoading(),
                 webContents != null,
-                shouldShowLoadingUI);
+                shouldShowLoadingUi);
     }
 
     /**
      * Waits for the given tab to start loading its current page.
      *
      * @param tab The tab to wait for the page loading to be started.
-     * @param expectedUrl The expected url of the started page load.  Pass in null if starting
-     *                    any load is sufficient.
-     * @param loadTrigger The trigger action that will result in a page load started event
-     *                    to be fired (not run on the UI thread by default).
+     * @param expectedUrl The expected url of the started page load. Pass in null if starting any
+     *     load is sufficient.
+     * @param loadTrigger The trigger action that will result in a page load started event to be
+     *     fired (not run on the UI thread by default).
      */
     public static void waitForTabPageLoadStart(
             final Tab tab, @Nullable final String expectedUrl, Runnable loadTrigger) {
@@ -333,14 +333,15 @@ public class ChromeTabUtils {
         try {
             startedCallback.waitForCallback(0, 1, secondsToWait, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
-            Assert.fail(
+            throw new AssertionError(
                     "Page did not start loading.  Tab information at time of failure --"
                             + " url: "
                             + tab.getUrl().getSpec()
                             + ", load progress: "
                             + tab.getProgress()
                             + ", is loading: "
-                            + Boolean.toString(tab.isLoading()));
+                            + Boolean.toString(tab.isLoading()),
+                    e);
         }
     }
 
@@ -409,15 +410,11 @@ public class ChromeTabUtils {
         try {
             interactableCallback.waitForCallback(0, 1, 10L, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
-            Assert.fail("Page never became interactable.");
+            throw new AssertionError("Page never became interactable.", e);
         }
     }
 
-    /**
-     * Switch to the given TabIndex in the current tabModel.
-     *
-     * @param tabIndex
-     */
+    /** Switch to the given TabIndex in the current tabModel. */
     public static void switchTabInCurrentTabModel(
             final ChromeActivity activity, final int tabIndex) {
         ThreadUtils.runOnUiThreadBlocking(
@@ -465,7 +462,7 @@ public class ChromeTabUtils {
         try {
             createdCallback.waitForCallback(null, 0, 1, 10, TimeUnit.SECONDS);
         } catch (TimeoutException e) {
-            Assert.fail("Never received tab creation event");
+            throw new AssertionError("Never received tab creation event", e);
         }
     }
 
@@ -519,12 +516,12 @@ public class ChromeTabUtils {
         try {
             createdCallback.waitForCallback(0);
         } catch (TimeoutException ex) {
-            Assert.fail("Never received tab created event");
+            throw new AssertionError("Never received tab created event", ex);
         }
         try {
             selectedCallback.waitForCallback(0);
         } catch (TimeoutException ex) {
-            Assert.fail("Never received tab selected event");
+            throw new AssertionError("Never received tab selected event", ex);
         }
         ThreadUtils.runOnUiThreadBlocking(() -> tabModel.removeObserver(observer));
 
@@ -619,8 +616,15 @@ public class ChromeTabUtils {
                                 new Runnable() {
                                     @Override
                                     public void run() {
-                                        TabModelUtils.closeCurrentTab(
-                                                activity.getCurrentTabModel());
+                                        TabModel model = activity.getCurrentTabModel();
+                                        Tab tab = TabModelUtils.getCurrentTab(model);
+                                        if (tab == null) return;
+                                        model.getTabRemover()
+                                                .closeTabs(
+                                                        TabClosureParams.closeTab(tab)
+                                                                .allowUndo(false)
+                                                                .build(),
+                                                        /* allowDialog= */ false);
                                     }
                                 });
                     }
@@ -654,7 +658,7 @@ public class ChromeTabUtils {
         try {
             closeCallback.waitForCallback(0);
         } catch (TimeoutException e) {
-            Assert.fail("Tab closed event was never received");
+            throw new AssertionError("Tab closed event was never received", e);
         }
         instrumentation.runOnMainSync(
                 new Runnable() {
@@ -701,7 +705,7 @@ public class ChromeTabUtils {
         try {
             closeCallback.waitForCallback(0);
         } catch (TimeoutException e) {
-            Assert.fail("All tabs pending closure event was never received");
+            throw new AssertionError("All tabs pending closure event was never received", e);
         }
         instrumentation.runOnMainSync(
                 new Runnable() {
@@ -753,7 +757,7 @@ public class ChromeTabUtils {
         try {
             selectCallback.waitForCallback(0);
         } catch (TimeoutException e) {
-            Assert.fail("Tab selected event was never received");
+            throw new AssertionError("Tab selected event was never received", e);
         }
         instrumentation.runOnMainSync(
                 new Runnable() {
@@ -804,12 +808,11 @@ public class ChromeTabUtils {
         // Verify that the two tabs do not belong with different models.
         Assert.assertEquals(tab1.isIncognito(), tab2.isIncognito());
         final TabModelSelector selector = getTabModelSelector(tab1.getWindowAndroid());
-        final TabModelFilter filter =
-                selector.getTabModelFilterProvider().getTabModelFilter(tab1.isIncognito());
-        Assert.assertTrue(filter instanceof TabGroupModelFilter);
-        TabGroupModelFilter groupingFilter = (TabGroupModelFilter) filter;
+        final TabGroupModelFilter filter =
+                selector.getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(tab1.isIncognito());
 
-        groupingFilter.mergeTabsToGroup(tab1.getId(), tab2.getId());
+        filter.mergeTabsToGroup(tab1.getId(), tab2.getId());
         Assert.assertEquals(getRootId(tab1), getRootId(tab2));
     }
 
@@ -862,7 +865,7 @@ public class ChromeTabUtils {
         try {
             createdCallback.waitForCallback(0);
         } catch (TimeoutException e) {
-            Assert.fail("Never received tab creation event");
+            throw new AssertionError("Never received tab creation event", e);
         }
 
         if (expectIncognito) {
@@ -924,7 +927,7 @@ public class ChromeTabUtils {
         try {
             createdCallback.waitForCallback(0);
         } catch (TimeoutException e) {
-            Assert.fail("Never received tab creation event");
+            throw new AssertionError("Never received tab creation event", e);
         }
 
         if (expectIncognito) {
@@ -951,9 +954,10 @@ public class ChromeTabUtils {
         try {
             titleObserver.waitForTitleUpdate(TITLE_UPDATE_TIMEOUT_SECONDS);
         } catch (TimeoutException e) {
-            Assert.fail(
+            throw new AssertionError(
                     String.format(
-                            Locale.ENGLISH, "Tab title didn't update to %s in time.", newTitle));
+                            Locale.ENGLISH, "Tab title didn't update to %s in time.", newTitle),
+                    e);
         }
     }
 

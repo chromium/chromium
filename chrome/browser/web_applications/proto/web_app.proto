@@ -80,6 +80,7 @@ message SourcesProto {
   optional bool iwa_shimless_rma = 12;
   optional bool iwa_policy = 13;
   optional bool iwa_user_installed = 14;
+  optional bool user_installed = 15;
 }
 
 // Properties for integrating with Chrome OS.
@@ -139,6 +140,7 @@ enum WebAppManagementProto {
   IWA_SHIMLESS_RMA = 12;
   IWA_POLICY = 13;
   IWA_USER_INSTALLED = 14;
+  USER_INSTALLED = 15;
 }
 
 // This stores data per-external-WebAppManagement::Type, as each installation

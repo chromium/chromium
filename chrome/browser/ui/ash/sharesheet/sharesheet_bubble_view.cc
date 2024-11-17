@@ -531,8 +531,7 @@ bool SharesheetBubbleView::OnKeyPressed(const ui::KeyEvent& event) {
       delta = base::i18n::IsRTL() ? -1 : 1;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   const size_t default_views = default_view_->children().size();

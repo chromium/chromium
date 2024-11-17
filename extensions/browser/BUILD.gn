@@ -4,11 +4,15 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 assert(enable_extensions_core)
+
+# If enable_extensions is true then enable_guest_view must also be true.
+assert(!enable_extensions || enable_guest_view)
 
 # The overarching "build all the things" for the browser side of the
 # //extensions module. In particular, this includes:
@@ -67,6 +71,7 @@ source_set("core_keyed_service_factories") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   deps = [
+    "//components/guest_view/buildflags",
     "//extensions/browser:browser_sources",
     "//extensions/browser/updater",
     "//extensions/buildflags",
@@ -391,6 +396,8 @@ source_set("browser_sources") {
     "media_capture_util.h",
     "message_service_api.cc",
     "message_service_api.h",
+    "message_tracker.cc",
+    "message_tracker.h",
     "mojo/keep_alive_impl.cc",
     "mojo/keep_alive_impl.h",
     "network_permissions_updater.cc",
@@ -508,7 +515,9 @@ source_set("browser_sources") {
     "//components/crash/core/common",
     "//components/crx_file",
     "//components/crx_file:crx_creator",
+    "//components/guest_view/buildflags",
     "//components/input",
+    "//components/javascript_dialogs",
     "//components/keyed_service/content",
     "//components/keyed_service/content:content",
     "//components/keyed_service/core",
@@ -566,6 +575,7 @@ source_set("browser_sources") {
     "//tools/json_schema_compiler:generated_api_util",
     "//ui/color",
     "//ui/display",
+    "//ui/menus",
     "//url",
   ]
 
@@ -710,30 +720,18 @@ source_set("browser_sources") {
     frameworks = [ "CoreServices.framework" ]
   }
 
-  if (is_chromeos_ash) {
-    deps += [
-      "//chrome/browser/ash/crosapi:browser_util",
-      "//chromeos/ash/components/login/login_state",
-    ]
-  }
-
   if (is_chromeos) {
     sources += [
       "api/clipboard/clipboard_api.cc",
       "api/clipboard/clipboard_api.h",
     ]
     deps += [
+      "//chrome/browser/ash/crosapi:browser_util",
+      "//chromeos/ash/components/login/login_state",
       "//chromeos/constants",
       "//chromeos/dbus/permission_broker",
       "//components/prefs:prefs",
       "//ui/base/clipboard",
-    ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [
-      "//chromeos/crosapi/mojom",
-      "//chromeos/startup",
     ]
   }
 
@@ -801,7 +799,7 @@ source_set("test_support") {
     "//ui/base/idle:idle",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [
       "api/feedback_private/mock_feedback_service.cc",
       "api/feedback_private/mock_feedback_service.h",
@@ -821,6 +819,27 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "api/alarms/alarms_api_unittest.cc",
+    "api/declarative/declarative_rule_unittest.cc",
+    "api/declarative/deduping_factory_unittest.cc",
+    "api/declarative/rules_registry_unittest.cc",
+    "api/declarative_net_request/composite_matcher_unittest.cc",
+    "api/declarative_net_request/file_sequence_helper_unittest.cc",
+    "api/declarative_net_request/flat_ruleset_indexer_unittest.cc",
+    "api/declarative_net_request/indexed_rule_unittest.cc",
+    "api/declarative_net_request/indexed_ruleset_format_version_unittest.cc",
+    "api/declarative_net_request/prefs_helper_unittest.cc",
+    "api/declarative_net_request/ruleset_matcher_unittest.cc",
+    "api/idle/idle_api_unittest.cc",
+    "api/storage/session_storage_manager_unittest.cc",
+    "api/storage/settings_quota_unittest.cc",
+    "api/storage/storage_api_unittest.cc",
+    "api/storage/storage_frontend_unittest.cc",
+    "api/web_request/form_data_parser_unittest.cc",
+    "api/web_request/upload_data_presenter_unittest.cc",
+    "api/web_request/web_request_info_unittest.cc",
+    "api/web_request/web_request_permissions_unittest.cc",
+    "api/web_request/web_request_time_tracker_unittest.cc",
     "browser_frame_context_data_unittest.cc",
     "computed_hashes_unittest.cc",
     "content_hash_fetcher_unittest.cc",
@@ -851,6 +870,7 @@ source_set("unit_tests") {
     "json_file_sanitizer_unittest.cc",
     "lazy_background_task_queue_unittest.cc",
     "management_policy_unittest.cc",
+    "message_tracker_unittest.cc",
     "mojo/keep_alive_impl_unittest.cc",
     "path_util_unittest.cc",
     "permissions_manager_unittest.cc",
@@ -902,6 +922,7 @@ source_set("unit_tests") {
     "//device/bluetooth:mocks",
     "//extensions:extensions_browser_resources",
     "//extensions:test_support",
+    "//extensions/browser/api/storage:settings_namespace",
     "//extensions/browser/updater:updater",
     "//extensions/buildflags",
     "//extensions/common",
@@ -926,53 +947,31 @@ source_set("unit_tests") {
   # in the desktop-android build when the related APIs are enabled.
   if (enable_extensions) {
     sources += [
-      "api/alarms/alarms_api_unittest.cc",
       "api/api_resource_manager_unittest.cc",
       "api/bluetooth/bluetooth_event_router_unittest.cc",
       "api/bluetooth_socket/bluetooth_socket_api_unittest.cc",
       "api/content_settings/content_settings_store_unittest.cc",
       "api/content_settings/content_settings_unittest.cc",
-      "api/declarative/declarative_rule_unittest.cc",
-      "api/declarative/deduping_factory_unittest.cc",
-      "api/declarative/rules_registry_unittest.cc",
-      "api/declarative_net_request/composite_matcher_unittest.cc",
-      "api/declarative_net_request/file_sequence_helper_unittest.cc",
-      "api/declarative_net_request/flat_ruleset_indexer_unittest.cc",
-      "api/declarative_net_request/indexed_rule_unittest.cc",
-      "api/declarative_net_request/indexed_ruleset_format_version_unittest.cc",
-      "api/declarative_net_request/prefs_helper_unittest.cc",
-      "api/declarative_net_request/ruleset_matcher_unittest.cc",
       "api/declarative_webrequest/webrequest_condition_attribute_unittest.cc",
       "api/declarative_webrequest/webrequest_condition_unittest.cc",
       "api/feedback_private/feedback_service_unittest.cc",
       "api/file_handlers/app_file_handler_util_unittest.cc",
       "api/file_handlers/directory_util_unittest.cc",
       "api/file_handlers/mime_util_unittest.cc",
-      "api/idle/idle_api_unittest.cc",
       "api/mime_handler_private/mime_handler_private_unittest.cc",
       "api/power/power_api_unittest.cc",
       "api/runtime/restart_after_delay_api_unittest.cc",
       "api/socket/mojo_data_pump_unittest.cc",
       "api/sockets_tcp/sockets_tcp_api_unittest.cc",
       "api/sockets_udp/sockets_udp_api_unittest.cc",
-      "api/storage/session_storage_manager_unittest.cc",
-      "api/storage/settings_quota_unittest.cc",
-      "api/storage/storage_api_unittest.cc",
-      "api/storage/storage_frontend_unittest.cc",
       "api/system_info/system_info_api_unittest.cc",
       "api/system_network/system_network_api_unittest.cc",
-      "api/web_request/form_data_parser_unittest.cc",
-      "api/web_request/upload_data_presenter_unittest.cc",
-      "api/web_request/web_request_info_unittest.cc",
-      "api/web_request/web_request_permissions_unittest.cc",
-      "api/web_request/web_request_time_tracker_unittest.cc",
     ]
 
     deps += [
       "//components/storage_monitor:test_support",
       "//extensions/browser/api/content_settings:content_settings",
       "//extensions/browser/api/declarative_net_request/filter_list_converter:unit_tests",
-      "//extensions/browser/api/storage:settings_namespace",
       "//extensions/shell:app_shell_lib",
     ]
   }
@@ -982,13 +981,6 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos) {
-    deps += [
-      "//chromeos/constants",
-      "//chromeos/crosapi/mojom",
-    ]
-  }
-
-  if (is_chromeos_ash) {
     sources += [
       "api/audio/audio_device_id_calculator_unittest.cc",
       "api/audio/audio_service_utils_unittest.cc",
@@ -997,9 +989,6 @@ source_set("unit_tests") {
       "api/feedback_private/feedback_private_api_unittest_base_chromeos.cc",
       "api/feedback_private/feedback_private_api_unittest_base_chromeos.h",
       "api/feedback_private/log_source_access_manager_chromeos_unittest.cc",
-      "api/lock_screen_data/data_item_unittest.cc",
-      "api/lock_screen_data/lock_screen_item_storage_unittest.cc",
-      "api/lock_screen_data/lock_screen_value_store_migrator_impl_unittest.cc",
       "api/media_perception_private/conversion_utils_unittest.cc",
       "api/media_perception_private/media_perception_api_manager_unittest.cc",
       "api/networking_private/networking_private_chromeos_unittest.cc",
@@ -1023,6 +1012,8 @@ source_set("unit_tests") {
       "//chromeos/ash/components/network:test_support",
       "//chromeos/ash/components/standalone_browser",
       "//chromeos/ash/components/standalone_browser:test_support",
+      "//chromeos/constants",
+      "//chromeos/crosapi/mojom",
       "//chromeos/dbus/permission_broker",
       "//chromeos/dbus/power",
       "//components/account_id",
@@ -1032,10 +1023,6 @@ source_set("unit_tests") {
       "//components/user_manager:test_support",
       "//extensions/shell:app_shell_lib",
     ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/startup" ]
   }
 
   data = [
@@ -1109,7 +1096,7 @@ if (enable_extensions) {
 
     public_deps = [ "//content/test:test_support" ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos) {
       sources += [
         "api/audio/audio_apitest_chromeos.cc",
         "api/cec_private/cec_private_ash_apitest.cc",
@@ -1132,14 +1119,6 @@ if (enable_extensions) {
         "//chromeos/dbus/power:power_manager_proto",
         "//components/crash/content/browser/error_reporting:mock_crash_endpoint",
         "//extensions/common:mojom",
-      ]
-    }
-
-    if (is_chromeos_lacros) {
-      sources += [ "api/cec_private/cec_private_lacros_apitest.cc" ]
-      deps += [
-        "//chromeos/crosapi/mojom",
-        "//chromeos/lacros",
       ]
     }
   }

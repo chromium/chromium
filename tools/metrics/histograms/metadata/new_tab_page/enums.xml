@@ -67,12 +67,6 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="The native page is frozen"/>
 </enum>
 
-<enum name="FeedPositionSegmentationResult">
-  <int value="0" label="Uninitialized."/>
-  <int value="1" label="Is a Feed active user."/>
-  <int value="2" label="Is a non-Feed user."/>
-</enum>
-
 <enum name="ItemSuggestRequestResult">
   <int value="0" label="Success"/>
   <int value="1" label="Network error"/>
@@ -266,23 +260,36 @@ chromium-metrics-reviews@google.com.
   <int value="-1343974988" label="lgbtq_artists_collection">
     LGBTQ Artists Collection
   </int>
+  <int value="-1183898243" label="aapi_artists_collection">AAPI Artists</int>
   <int value="-1108481773" label="art">Art</int>
   <int value="-1059944606" label="satellite">Earth</int>
+  <int value="-1012742544" label="art_for_NTP">Art for NTP</int>
+  <int value="-802608769" label="abstract_for_NTP">Abstract for NTP</int>
+  <int value="-330191104" label="geometric_shapes_NTP">
+    Geometric shapes for NTP
+  </int>
+  <int value="-190868901" label="material-texture_for_NTP">
+    Material Texture For NTP
+  </int>
   <int value="-67630116" label="abstract">Life</int>
   <int value="-55617381" label="solidcolors">Colors</int>
   <int value="0" label="">Unknown collection ID</int>
+  <int value="310530253" label="satellite_for_NTP">Satellite for NTP</int>
   <int value="324372171" label="material-texture">Textures</int>
   <int value="325491925" label="black_artists_collection">
     Black Artists Collection
   </int>
   <int value="596779358" label="city">Cityscapes</int>
+  <int value="755625558" label="city_for_NTP">City for NTP</int>
   <int value="1223583762" label="latinx_artists_collection">
     Latino Artists Collection
   </int>
   <int value="1395980614" label="underwater">Seascapes</int>
+  <int value="1613535621" label="landscape_for_NTP">Landscapes for NTP</int>
   <int value="1829058549" label="rising_artists_collection">
     Rising Artists Collection
   </int>
+  <int value="1967788069" label="solidcolors_for_NTP">Colors for NTP</int>
 </enum>
 
 <enum name="NTPCustomizeChromeBackgroundAction">

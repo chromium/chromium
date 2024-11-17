@@ -33,11 +33,6 @@ NSString* const kCardUnmaskPromptTableViewAccessibilityID =
 
 namespace {
 
-BOOL VirtualCardFeatureEnabled() {
-  return base::FeatureList::IsEnabled(
-      autofill::features::kAutofillEnableVirtualCards);
-}
-
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierHeader = kSectionIdentifierEnumZero,
   SectionIdentifierInputs,
@@ -173,12 +168,10 @@ const char kFooterDummyLinkTarget[] = "about:blank";
   [model setHeader:_headerItem
       forSectionWithIdentifier:SectionIdentifierHeader];
 
-  if (VirtualCardFeatureEnabled()) {
-    _cardInfoItem = [self createCardInfoItem];
-    if (_cardInfoItem != nil) {
-      [self.tableViewModel addItem:_cardInfoItem
-           toSectionWithIdentifier:SectionIdentifierHeader];
-    }
+  _cardInfoItem = [self createCardInfoItem];
+  if (_cardInfoItem != nil) {
+    [self.tableViewModel addItem:_cardInfoItem
+         toSectionWithIdentifier:SectionIdentifierHeader];
   }
 
   [model addSectionWithIdentifier:SectionIdentifierInputs];

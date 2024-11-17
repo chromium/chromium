@@ -52,36 +52,33 @@ std::optional<std::string> CheckHeader(
     scoped_refptr<net::HttpResponseHeaders> headers) {
   // TODO(crbug.com/40269364): Remove support for old header names once API
   // users have switched.
-  std::string old_header_value;
-  std::string new_header_value;
-  // TODO(crbug.com/40269364): Remove old names once API users have migrated to
-  // new names.
-  const bool got_new_header =
-      headers->GetNormalizedHeader("Ad-Auction-Only", &new_header_value);
-  const bool got_old_header =
-      headers->GetNormalizedHeader("X-FLEDGE-Auction-Only", &old_header_value);
-  if (!got_new_header && !got_old_header) {
+  std::optional<std::string> old_header_value =
+      headers->GetNormalizedHeader("X-FLEDGE-Auction-Only");
+  std::optional<std::string> new_header_value =
+      headers->GetNormalizedHeader("Ad-Auction-Only");
+  if (!new_header_value && !old_header_value) {
     return "Missing Ad-Auction-Only (or deprecated X-FLEDGE-Auction-Only) "
            "header.";
   }
-  if (got_old_header) {
-    if (got_new_header) {
+  if (old_header_value) {
+    if (new_header_value) {
       if (old_header_value != new_header_value) {
         return base::StringPrintf(
             "Ad-Auction-Only: %s does not match deprecated header "
             "X-FLEDGE-Auction-Only: %s.",
-            new_header_value.c_str(), old_header_value.c_str());
+            new_header_value->c_str(), old_header_value->c_str());
       }
     } else {
       new_header_value = std::move(old_header_value);
     }
   }
-  if (!base::EqualsCaseInsensitiveASCII(new_header_value, "true")) {
+  if (!new_header_value ||
+      !base::EqualsCaseInsensitiveASCII(*new_header_value, "true")) {
     return base::StringPrintf(
         "Wrong Ad-Auction-Only (or deprecated X-FLEDGE-Auction-Only) header "
         "value. Expected \"true\", found "
         "\"%s\".",
-        new_header_value.c_str());
+        new_header_value.value_or(std::string()).c_str());
   }
 
   return std::nullopt;

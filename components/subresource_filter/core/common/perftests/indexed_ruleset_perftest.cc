@@ -35,12 +35,12 @@ static constexpr char kMetricMedianMatchTimeUs[] = "median_match_time";
 
 class IndexedRulesetPerftest : public testing::Test {
  public:
-  IndexedRulesetPerftest() {}
+  IndexedRulesetPerftest() = default;
 
   IndexedRulesetPerftest(const IndexedRulesetPerftest&) = delete;
   IndexedRulesetPerftest& operator=(const IndexedRulesetPerftest&) = delete;
 
-  ~IndexedRulesetPerftest() override {}
+  ~IndexedRulesetPerftest() override = default;
 
   void SetUp() override {
     base::FilePath dir_path;

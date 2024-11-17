@@ -10,11 +10,9 @@
 // Testing category to expose private methods of
 // PasswordDetailsTableViewController for testing.
 @interface PasswordDetailsTableViewController (Testing)
-#if !defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0
-- (void)copyPasswordDetails:(id)sender;
-#endif
-
-- (void)copyPasswordDetailsHelper:(NSInteger)itemType;
+- (void)copyPasswordDetailsHelper:(NSInteger)itemType
+                       completion:(void (^)())completion;
+;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_PASSWORD_PASSWORD_DETAILS_PASSWORD_DETAILS_TABLE_VIEW_CONTROLLER_TESTING_H_

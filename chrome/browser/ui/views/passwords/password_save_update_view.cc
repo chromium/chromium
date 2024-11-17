@@ -38,6 +38,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -455,5 +456,8 @@ void PasswordSaveUpdateView::TogglePasswordRevealed() {
       },
       base::Unretained(this), std::move(pin)));
 }
+
+BEGIN_METADATA(PasswordSaveUpdateView)
+END_METADATA
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordSaveUpdateView, kPasswordBubble);

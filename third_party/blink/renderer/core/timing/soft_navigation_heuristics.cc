@@ -28,9 +28,6 @@ namespace blink {
 
 namespace {
 
-const size_t SOFT_NAVIGATION_PAINT_AREA_PRECENTAGE = 2;
-const size_t HUNDRED_PERCENT = 100;
-
 const char kPageLoadInternalSoftNavigationOutcome[] =
     "PageLoad.Internal.SoftNavigationOutcome";
 
@@ -124,8 +121,6 @@ SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window) {
   LocalFrame* frame = window.GetFrame();
   CHECK(frame && frame->View());
-
-  viewport_area_ = frame->View()->GetLayoutSize().Area64();
 }
 
 SoftNavigationHeuristics* SoftNavigationHeuristics::From(
@@ -315,24 +310,6 @@ void SoftNavigationHeuristics::RecordPaint(
     LocalFrame* frame,
     uint64_t painted_area,
     bool is_modified_by_soft_navigation) {
-  if (!initial_interaction_encountered_ && is_modified_by_soft_navigation) {
-    // TODO(crbug.com/41496928): Paints can be reported for Nodes which had
-    // is_modified... flag set but a different instance of a
-    // SoftNavigationHeuristics class.  This happens when Nodes are re-parented
-    // into a new document, e.g. into an open() window.
-    // Instead of just ignoring the worst case of this issue as we do here, we
-    // should support this use case.  Either by clearing the flag on nodes, or,
-    // by staring an interaction/navigation id on Node, rathan than boolean.
-    return;
-  }
-  if (!initial_interaction_encountered_) {
-    // We haven't seen an interaction yet, so we are still measuring initial
-    // paint area.
-    CHECK(!is_modified_by_soft_navigation);
-    initial_painted_area_ += painted_area;
-    return;
-  }
-
   if (potential_soft_navigations_.empty()) {
     // We aren't measuring a soft-nav so we can just exit.
     return;
@@ -344,27 +321,17 @@ void SoftNavigationHeuristics::RecordPaint(
 
   softnav_painted_area_ += painted_area;
 
-  uint64_t required_paint_area =
-      std::min(initial_painted_area_, viewport_area_);
+  uint64_t required_paint_area = CalculateRequiredPaintArea();
 
   if (required_paint_area == 0) {
     return;
   }
 
-  float softnav_painted_area_ratio =
-      (float)softnav_painted_area_ / (float)required_paint_area;
-
-  uint64_t required_paint_area_scaled =
-      required_paint_area * SOFT_NAVIGATION_PAINT_AREA_PRECENTAGE;
-  uint64_t softnav_painted_area_scaled =
-      softnav_painted_area_ * HUNDRED_PERCENT;
-  bool is_above_threshold =
-      (softnav_painted_area_scaled > required_paint_area_scaled);
+  bool is_above_threshold = (softnav_painted_area_ > required_paint_area);
 
   TRACE_EVENT_INSTANT(
       "loading", "SoftNavigationHeuristics_RecordPaint", "softnav_painted_area",
-      softnav_painted_area_, "softnav_painted_area_ratio",
-      softnav_painted_area_ratio, "url",
+      softnav_painted_area_, "required_paint_area", required_paint_area, "url",
       (last_detected_soft_navigation_ ? last_detected_soft_navigation_->Url()
                                       : ""),
       "is_above_threshold", is_above_threshold);
@@ -600,6 +567,22 @@ void SoftNavigationHeuristics::OnSoftNavigationEventScopeDestroyed(
 
   // TODO(crbug.com/1502640): We should also reset the heuristic a few seconds
   // after a click event handler is done, to reduce potential cycles.
+}
+
+uint64_t SoftNavigationHeuristics::CalculateRequiredPaintArea() const {
+  LocalDOMWindow* window = GetSupplementable();
+  CHECK(window);
+  LocalFrame* frame = window->GetFrame();
+  CHECK(frame);
+  LocalFrameView* local_frame_view = frame->View();
+  CHECK(local_frame_view);
+
+  constexpr int kSoftNavigationPaintAreaPercentage = 2;
+  uint64_t viewport_area = local_frame_view->GetLayoutSize().Area64();
+  uint64_t required_paint_area =
+      (viewport_area * kSoftNavigationPaintAreaPercentage) / 100;
+  CHECK_GE(required_paint_area, 0u);
+  return required_paint_area;
 }
 
 // SoftNavigationHeuristics::EventScope implementation

@@ -93,29 +93,6 @@ class SigninReauthViewController
     kGaiaReauthTab = 3
   };
 
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum class UserAction {
-    // The user clicked on the confirm button in the Reauth confirmation dialog.
-    // The Gaia Reauth was auto-approved and did not show up as a next step.
-    kClickConfirmButton = 0,
-    // The user clicked on the next button in the Reauth confirmation dialog.
-    // The Gaia Reauth showed up as a next step.
-    kClickNextButton = 1,
-    // The user clicked on the cancel button in the Reauth confirmation dialog.
-    kClickCancelButton = 2,
-    // The user closed the Reauth confirmation dialog without clicking on the
-    // cancel button.
-    kCloseConfirmationDialog = 3,
-    // The user closed the Gaia Reauth page displayed in a dialog.
-    kCloseGaiaReauthDialog = 4,
-    // The user closed the Gaia Reauth page displayed in a tab.
-    kCloseGaiaReauthTab = 5,
-    // The user successfully authenticated on the Gaia Reauth page.
-    kPassGaiaReauth = 6,
-    kMaxValue = kPassGaiaReauth
-  };
-
   SigninReauthViewController(
       Browser* browser,
       const CoreAccountId& account_id,
@@ -167,8 +144,6 @@ class SigninReauthViewController
 
   void OnGaiaReauthTypeDetermined(GaiaReauthType reauth_type);
 
-  void RecordClickOnce(UserAction click_action);
-
   signin::ReauthTabHelper* GetReauthTabHelper();
 
   void ShowReauthConfirmationDialog();
@@ -186,7 +161,6 @@ class SigninReauthViewController
 
   // Dialog state useful for recording metrics.
   UIState ui_state_ = UIState::kNone;
-  bool has_recorded_click_ = false;
 
   // Delegate displaying the dialog.
   raw_ptr<SigninViewControllerDelegate> dialog_delegate_ = nullptr;

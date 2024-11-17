@@ -19,8 +19,6 @@ package org.chromium.chrome.browser.omnibox.geo;
 
 option java_outer_classname = "PartnerLocationDescriptor";
 option java_package = "org.chromium.chrome.browser.omnibox.geo";
-
-// TODO(jkrcal): Remove when protobuf 4.0 is out, https://crbug.com/800281.
 option optimize_for = LITE_RUNTIME;
 
 enum LocationRole {
@@ -38,47 +36,11 @@ message LatLng {
   optional sfixed32 longitude_e7 = 2;
 }
 
-message VisibleNetwork {
-
-  message WiFi {
-    optional string bssid = 1;
-    optional int32 level_dbm = 2;
-  }
-
-  message Cell {
-
-    enum Type {
-      UNKNOWN = 0;
-      GSM = 1;
-      LTE = 2;
-      CDMA = 3;
-      WCDMA = 4;
-    }
-
-    optional Type type = 1;
-    optional int32 cell_id = 2;
-    optional int32 location_area_code = 3;
-    optional int32 mobile_country_code = 4;
-    optional int32 mobile_network_code = 5;
-    optional int32 primary_scrambling_code = 6;
-    optional int32 physical_cell_id = 7;
-    optional int32 tracking_area_code = 8;
-  }
-
-  oneof type {
-    WiFi wifi = 1;
-    Cell cell = 2;
-  }
-
-  optional bool connected = 3;
-  optional int64 timestamp_ms = 4;
-}
-
 message LocationDescriptor {
   optional LocationRole role = 1 [default = UNKNOWN_ROLE];
   optional LocationProducer producer = 2 [default = UNKNOWN_PRODUCER];
   optional int64 timestamp = 3;
   optional LatLng latlng = 5;
   optional float radius = 7;
-  repeated VisibleNetwork visible_network = 23;
+  reserved 23;
 }

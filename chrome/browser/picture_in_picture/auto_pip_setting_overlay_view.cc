@@ -29,7 +29,6 @@ constexpr int kFadeInDurationMs = 500;
 AutoPipSettingOverlayView::AutoPipSettingOverlayView(
     ResultCb result_cb,
     const GURL& origin,
-    const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow)
     : show_timer_(std::make_unique<base::OneShotTimer>()) {
@@ -39,7 +38,7 @@ AutoPipSettingOverlayView::AutoPipSettingOverlayView(
       std::move(result_cb),
       base::BindOnce(&AutoPipSettingOverlayView::OnHideView,
                      weak_factory_.GetWeakPtr()),
-      origin, browser_view_overridden_bounds, anchor_view, arrow);
+      origin, anchor_view, arrow);
   // Create the content setting UI.
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);

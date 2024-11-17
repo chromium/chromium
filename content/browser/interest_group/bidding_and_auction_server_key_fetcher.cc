@@ -17,6 +17,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/blink/public/common/features.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -61,6 +62,18 @@ constexpr net::NetworkTrafficAnnotationTag
     comments:
       ""
     )");
+
+const struct {
+  const char* origin;
+  const char* key_url;
+} kDefaultKeys[] = {
+    {kDefaultBiddingAndAuctionGCPCoordinatorOrigin,
+     kBiddingAndAuctionGCPCoordinatorKeyURL},
+    {kBiddingAndAuctionGCPCoordinatorOrigin,
+     kBiddingAndAuctionGCPCoordinatorKeyURL},
+    {kBiddingAndAuctionAWSCoordinatorOrigin,
+     kBiddingAndAuctionAWSCoordinatorKeyURL},
+};
 }  // namespace
 
 BiddingAndAuctionServerKeyFetcher::PerCoordinatorFetcherState::
@@ -77,6 +90,17 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
     InterestGroupManagerImpl* manager,
     scoped_refptr<network::SharedURLLoaderFactory> loader_factory)
     : loader_factory_(std::move(loader_factory)), manager_(manager) {
+  for (const auto& key_config : kDefaultKeys) {
+    url::Origin coordinator = url::Origin::Create(GURL(key_config.origin));
+    DCHECK_EQ(coordinator.scheme(), url::kHttpsScheme);
+    PerCoordinatorFetcherState state;
+    state.key_url = GURL(key_config.key_url);
+    if (!state.key_url.is_valid()) {
+      continue;
+    }
+    fetcher_state_map_.insert_or_assign(std::move(coordinator),
+                                        std::move(state));
+  }
   if (base::FeatureList::IsEnabled(
           blink::features::kFledgeBiddingAndAuctionServer)) {
     std::string config =
@@ -95,6 +119,10 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
 
           PerCoordinatorFetcherState state;
           state.key_url = GURL(kv.second.GetString());
+          if (!state.key_url.is_valid()) {
+            fetcher_state_map_.erase(coordinator);
+            continue;
+          }
           fetcher_state_map_.insert_or_assign(std::move(coordinator),
                                               std::move(state));
         }
@@ -104,9 +132,7 @@ BiddingAndAuctionServerKeyFetcher::BiddingAndAuctionServerKeyFetcher(
     if (key_url.is_valid()) {
       PerCoordinatorFetcherState state;
       state.key_url = std::move(key_url);
-      url::Origin coordinator = url::Origin::Create(
-          GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin));
-      fetcher_state_map_.insert_or_assign(std::move(coordinator),
+      fetcher_state_map_.insert_or_assign(default_gcp_coordinator_,
                                           std::move(state));
     }
   }
@@ -136,10 +162,11 @@ void BiddingAndAuctionServerKeyFetcher::MaybePrefetchKeys() {
 }
 
 void BiddingAndAuctionServerKeyFetcher::GetOrFetchKey(
-    std::optional<url::Origin> maybe_coordinator,
+    const std::optional<url::Origin>& maybe_coordinator,
     BiddingAndAuctionServerKeyFetcherCallback callback) {
-  url::Origin coordinator = maybe_coordinator.value_or(
-      url::Origin::Create(GURL(kDefaultBiddingAndAuctionGCPCoordinatorOrigin)));
+  const url::Origin& coordinator = maybe_coordinator.has_value()
+                                       ? *maybe_coordinator
+                                       : default_gcp_coordinator_;
   auto it = fetcher_state_map_.find(coordinator);
   if (it == fetcher_state_map_.end()) {
     std::move(callback).Run(
@@ -192,7 +219,7 @@ void BiddingAndAuctionServerKeyFetcher::FetchKeys(
 }
 
 void BiddingAndAuctionServerKeyFetcher::OnFetchKeysFromDatabaseComplete(
-    const url::Origin coordinator,
+    const url::Origin& coordinator,
     std::pair<base::Time, std::vector<BiddingAndAuctionServerKey>>
         expiration_and_keys) {
   if (expiration_and_keys.second.empty() ||

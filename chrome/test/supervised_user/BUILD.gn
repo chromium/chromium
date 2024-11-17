@@ -1,0 +1,47 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "api_mock_setup_mixin.cc",
+    "api_mock_setup_mixin.h",
+    "embedded_test_server_setup_mixin.cc",
+    "embedded_test_server_setup_mixin.h",
+    "family_live_test.cc",
+    "family_live_test.h",
+    "family_member.cc",
+    "family_member.h",
+    "google_auth_state_waiter_mixin.cc",
+    "google_auth_state_waiter_mixin.h",
+    "supervision_mixin.cc",
+    "supervision_mixin.h",
+  ]
+
+  deps = [ "//chrome/browser/content_settings:content_settings_factory" ]
+
+  public_deps = [
+    ":child_accounts",
+    "//base",
+    "//chrome/browser/signin/e2e_tests:test_support",
+    "//chrome/test:sync_integration_test_support",
+    "//chrome/test:test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/supervised_user/test_support",
+    "//ui/base:test_support",
+  ]
+}
+
+static_library("child_accounts") {
+  testonly = true
+  sources = [
+    "child_account_test_utils.cc",
+    "child_account_test_utils.h",
+  ]
+  public_deps = [
+    "//base",
+    "//net:test_support",
+    "//services/network/public/cpp:cpp",
+    ]
+}

@@ -11,7 +11,7 @@ import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
 if (is_ios) {
-  import("//build/config/ios/ios_sdk.gni")
+  import("//build/config/apple/mobile_config.gni")
 }
 
 # libfuzzer can't cope with shared objects being unloaded, which sometimes
@@ -61,7 +61,7 @@ group("deps") {
     data += [ "//tools/memory/sanitizer/escalate_sanitizer_warnings.py" ]
   }
   if (is_asan || is_ubsan_any) {
-    if ((is_win && is_component_build) || is_apple) {
+    if (is_win || is_apple) {
       data_deps = [ ":copy_sanitizer_runtime" ]
     }
     if (is_apple) {
@@ -79,7 +79,7 @@ group("deps") {
 assert(!(is_win && is_asan && current_cpu == "x86"),
        "ASan is only supported in 64-bit builds on Windows.")
 
-if ((is_apple || (is_win && is_component_build)) && (is_asan || is_ubsan_any)) {
+if ((is_apple || is_win) && (is_asan || is_ubsan_any)) {
   if (is_mac || (is_ios && target_environment == "catalyst")) {
     if (is_asan) {
       _clang_rt_dso_path = "darwin/libclang_rt.asan_osx_dynamic.dylib"
@@ -89,12 +89,16 @@ if ((is_apple || (is_win && is_component_build)) && (is_asan || is_ubsan_any)) {
     }
   } else if (is_ios) {
     if (is_asan) {
-      _clang_rt_dso_path = "darwin/libclang_rt.asan_iossim_dynamic.dylib"
+      if (target_environment == "simulator") {
+        _clang_rt_dso_path = "darwin/libclang_rt.asan_iossim_dynamic.dylib"
+      } else {
+        _clang_rt_dso_path = "darwin/libclang_rt.asan_ios_dynamic.dylib"
+      }
     } else {
       assert(is_ubsan_any)
       _clang_rt_dso_path = "darwin/libclang_rt.ubsan_iossim_dynamic.dylib"
     }
-  } else if (is_win && current_cpu == "x64" && is_component_build) {
+  } else if (is_win && current_cpu == "x64") {
     if (is_asan) {
       _clang_rt_dso_path = "windows/clang_rt.asan_dynamic-x86_64.dll"
     } else {
@@ -245,6 +249,13 @@ config("default_sanitizer_ldflags") {
       } else {
         ldflags += [ "-fsanitize-coverage=$sanitizer_coverage_flags" ]
       }
+      if (is_mac && use_centipede) {
+        # OS X linking doesn't allow undefined symbols at link time
+        # and in a component build, component shared objects will
+        # need to use this symbol to report control flow coverage
+        # to the main binary
+        ldflags += [ "-Wl,-undefined,dynamic_lookup" ]
+      }
     }
 
     if (is_cfi && current_toolchain == default_toolchain) {
@@ -269,15 +280,17 @@ config("default_sanitizer_ldflags") {
     # Windows directly calls link.exe instead of the compiler driver when
     # linking.  Hence, pass the runtime libraries instead of -fsanitize=address
     # or -fsanitize=fuzzer.
-    if (is_asan && is_component_build) {
-      # In the static-library build, ASan libraries are different for
-      # executables and dlls, see link_executable and link_shared_library below.
-      # This here handles only the component build.
+    ldflags = []
+    if (is_asan) {
       assert(current_cpu == "x64", "WinASan unsupported architecture")
-      libs = [
-        "clang_rt.asan_dynamic-x86_64.lib",
-        "clang_rt.asan_dynamic_runtime_thunk-x86_64.lib",
-      ]
+      libs = [ "clang_rt.asan_dynamic-x86_64.lib" ]
+      if (is_component_build) {
+        ldflags +=
+            [ "-wholearchive:clang_rt.asan_dynamic_runtime_thunk-x86_64.lib" ]
+      } else {
+        ldflags +=
+            [ "-wholearchive:clang_rt.asan_static_runtime_thunk-x86_64.lib" ]
+      }
     }
     if (use_libfuzzer) {
       assert(current_cpu == "x64", "LibFuzzer unsupported architecture")
@@ -286,7 +299,7 @@ config("default_sanitizer_ldflags") {
 
       # Incremental linking causes padding that messes up SanitizerCoverage.
       # Don't do it.
-      ldflags = [ "/INCREMENTAL:NO" ]
+      ldflags += [ "/INCREMENTAL:NO" ]
     }
   }
   if (use_dlcloseshim) {
@@ -318,8 +331,10 @@ config("common_sanitizer_flags") {
 
 config("asan_flags") {
   cflags = []
+  rustflags = []
   if (is_asan) {
     cflags += [ "-fsanitize=address" ]
+    rustflags += [ "-Zsanitizer=address" ]
     if (!is_win && !is_apple && !is_fuchsia) {
       # TODO(crbug.com/1459233, crbug.com/1462248): This causes asan
       # odr-violation errors in rust code, and link failures for cros/asan.
@@ -334,20 +349,6 @@ config("asan_flags") {
       }
       cflags += [ "-fsanitize-ignorelist=$asan_win_blocklist_path" ]
     }
-  }
-}
-
-config("link_executable") {
-  if (is_asan && is_win && !is_component_build) {
-    assert(current_cpu == "x64", "WinASan unsupported architecture")
-    ldflags = [ "-wholearchive:clang_rt.asan-x86_64.lib" ]
-  }
-}
-
-config("link_shared_library") {
-  if (is_asan && is_win && !is_component_build) {
-    assert(current_cpu == "x64", "WinASan unsupported architecture")
-    libs = [ "clang_rt.asan_dll_thunk-x86_64.lib" ]
   }
 }
 

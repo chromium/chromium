@@ -34,12 +34,6 @@
 #define HWCAP2_MTE (1 << 18)
 #define HWCAP2_BTI (1 << 17)
 #endif
-
-struct ProcCpuInfo {
-  std::string brand;
-  uint8_t implementer = 0;
-  uint32_t part_number = 0;
-};
 #endif
 
 #if defined(ARCH_CPU_X86_FAMILY)
@@ -90,10 +84,10 @@ X86ModelInfo ComputeX86FamilyAndModel(const std::string& vendor,
 }  // namespace internal
 #endif  // defined(ARCH_CPU_X86_FAMILY)
 
-CPU::CPU(bool require_branding) {
-  Initialize(require_branding);
+CPU::CPU() {
+  Initialize();
 }
-CPU::CPU() : CPU(true) {}
+
 CPU::CPU(CPU&&) = default;
 
 namespace {
@@ -153,79 +147,11 @@ uint64_t xgetbv(uint32_t xcr) {
 
 #endif  // ARCH_CPU_X86_FAMILY
 
-#if defined(ARCH_CPU_ARM_FAMILY) && \
-    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-StringPairs::const_iterator FindFirstProcCpuKey(const StringPairs& pairs,
-                                                std::string_view key) {
-  return ranges::find_if(pairs, [key](const StringPairs::value_type& pair) {
-    return TrimWhitespaceASCII(pair.first, base::TRIM_ALL) == key;
-  });
-}
-
-// Parses information about the ARM processor. Note that depending on the CPU
-// package, processor configuration, and/or kernel version, this may only
-// report information about the processor on which this thread is running. This
-// can happen on heterogeneous-processor SoCs like Snapdragon 808, which has 4
-// Cortex-A53 and 2 Cortex-A57. Unfortunately there is not a universally
-// reliable way to examine the CPU part information for all cores.
-const ProcCpuInfo& ParseProcCpu() {
-  static const NoDestructor<ProcCpuInfo> info([]() {
-    // This function finds the value from /proc/cpuinfo under the key "model
-    // name" or "Processor". "model name" is used in Linux 3.8 and later (3.7
-    // and later for arm64) and is shown once per CPU. "Processor" is used in
-    // earler versions and is shown only once at the top of /proc/cpuinfo
-    // regardless of the number CPUs.
-    const char kModelNamePrefix[] = "model name";
-    const char kProcessorPrefix[] = "Processor";
-
-    std::string cpuinfo;
-    ReadFileToString(FilePath("/proc/cpuinfo"), &cpuinfo);
-    DCHECK(!cpuinfo.empty());
-
-    ProcCpuInfo info;
-
-    StringPairs pairs;
-    if (!SplitStringIntoKeyValuePairs(cpuinfo, ':', '\n', &pairs)) {
-      // TODO(crbug.com/368077955): This still hits and needs to be diagnosed.
-      DUMP_WILL_BE_NOTREACHED() << cpuinfo;
-      return info;
-    }
-
-    auto model_name = FindFirstProcCpuKey(pairs, kModelNamePrefix);
-    if (model_name == pairs.end())
-      model_name = FindFirstProcCpuKey(pairs, kProcessorPrefix);
-    if (model_name != pairs.end()) {
-      TrimWhitespaceASCII(model_name->second, TRIM_ALL, &info.brand);
-    }
-
-    auto implementer_string = FindFirstProcCpuKey(pairs, "CPU implementer");
-    if (implementer_string != pairs.end()) {
-      // HexStringToUInt() handles the leading whitespace on the value.
-      uint32_t implementer;
-      HexStringToUInt(implementer_string->second, &implementer);
-      if (!CheckedNumeric<uint32_t>(implementer)
-               .AssignIfValid(&info.implementer)) {
-        info.implementer = 0;
-      }
-    }
-
-    auto part_number_string = FindFirstProcCpuKey(pairs, "CPU part");
-    if (part_number_string != pairs.end())
-      HexStringToUInt(part_number_string->second, &info.part_number);
-
-    return info;
-  }());
-
-  return *info;
-}
-#endif  // defined(ARCH_CPU_ARM_FAMILY) && (BUILDFLAG(IS_ANDROID) ||
-        // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-
 DEFINE_PROTECTED_DATA base::ProtectedMemory<CPU> g_cpu_instance;
 
 }  // namespace
 
-void CPU::Initialize(bool require_branding) {
+void CPU::Initialize() {
 #if defined(ARCH_CPU_X86_FAMILY)
   int cpu_info[4] = {-1};
 
@@ -358,26 +284,12 @@ void CPU::Initialize(bool require_branding) {
     }
   }
 #elif defined(ARCH_CPU_ARM_FAMILY)
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  if (require_branding) {
-    const ProcCpuInfo& info = ParseProcCpu();
-
-    // Ensure the brand can be stored in the internal array.
-    SpanWriter writer{span(cpu_brand_)};
-    writer.Write(span(info.brand));
-    writer.Write('\0');
-
-    implementer_ = info.implementer;
-    part_number_ = info.part_number;
-  }
-
-#if defined(ARCH_CPU_ARM64)
+#if defined(ARCH_CPU_ARM64) && \
+    (BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
   // Check for Armv8.5-A BTI/MTE support, exposed via HWCAP2
   unsigned long hwcap2 = getauxval(AT_HWCAP2);
   has_mte_ = hwcap2 & HWCAP2_MTE;
   has_bti_ = hwcap2 & HWCAP2_BTI;
-#endif
-
 #elif BUILDFLAG(IS_WIN)
   // Windows makes high-resolution thread timing information available in
   // user-space.
@@ -406,7 +318,7 @@ CPU::IntelMicroArchitecture CPU::GetIntelMicroArchitecture() const {
 #endif
 
 const CPU& CPU::GetInstanceNoAllocation() {
-  static ProtectedMemoryInitializer cpu_initializer(g_cpu_instance, CPU(false));
+  static ProtectedMemoryInitializer cpu_initializer(g_cpu_instance, CPU());
 
   return *g_cpu_instance;
 }

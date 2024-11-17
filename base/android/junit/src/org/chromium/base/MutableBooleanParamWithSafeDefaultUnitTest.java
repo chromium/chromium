@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.BaseFlagTestRule;
+import org.chromium.base.test.util.Features.EnableFeatures;
 
 /** Unit Tests for {@link MutableBooleanParamWithSafeDefault}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -58,6 +59,13 @@ public class MutableBooleanParamWithSafeDefaultUnitTest {
         assertFalse(paramAB.getValue());
         assertFalse(paramBA.getValue());
         assertFalse(paramBB.getValue());
+    }
+
+    @Test
+    @EnableFeatures(FEATURE_A + ":" + PARAM_A + "/true")
+    public void testAnnotationOverride() {
+        MutableBooleanParamWithSafeDefault paramAA = makeParam(FEATURE_A, PARAM_A, false);
+        assertTrue(paramAA.getValue());
     }
 
     private MutableBooleanParamWithSafeDefault makeParam(

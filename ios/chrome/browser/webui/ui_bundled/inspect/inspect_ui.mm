@@ -91,15 +91,14 @@ InspectDOMHandler::~InspectDOMHandler() {
 
 void InspectDOMHandler::HandleSetLoggingEnabled(const base::Value::List& args) {
   if (args.size() != 1) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   bool enabled = false;
   if (args[0].is_bool()) {
     enabled = args[0].GetBool();
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   SetLoggingEnabled(enabled);

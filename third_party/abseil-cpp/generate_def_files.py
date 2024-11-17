@@ -79,7 +79,7 @@ def _GenerateDefFile(cpu, is_debug, extra_gn_args=[], suffix=None):
     symbol_dumper = ['dumpbin', '/symbols']
     import shutil
     if not shutil.which('dumpbin'):
-      logging.error('dumpbin not found. Run tools\win\setenv.bat.')
+      logging.error('dumpbin not found. Run tools\\win\\setenv.bat.')
       exit(1)
   cwd = os.getcwd()
   with tempfile.TemporaryDirectory(dir=cwd) as out_dir:

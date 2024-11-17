@@ -15,7 +15,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -28,7 +27,6 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -54,8 +52,6 @@ public class ContextualPageActionControllerUnitTest {
     @Mock private AdaptiveToolbarButtonController mMockAdaptiveToolbarController;
     @Mock private ContextualPageActionController.Natives mMockControllerJni;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -63,7 +59,7 @@ public class ContextualPageActionControllerUnitTest {
         mProfileSupplier = new ObservableSupplierImpl<>();
         mTabSupplier = new ObservableSupplierImpl<>();
 
-        mJniMocker.mock(ContextualPageActionControllerJni.TEST_HOOKS, mMockControllerJni);
+        ContextualPageActionControllerJni.setInstanceForTesting(mMockControllerJni);
         doReturn(mMockConfiguration).when(mMockResources).getConfiguration();
         doReturn(true).when(mMockActivityLifecycleDispatcher).isNativeInitializationFinished();
     }

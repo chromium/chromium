@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
 <translation id="1066101356081285416">Chrome détectera le numéro de suivi sur les sites que vous consulterez et vous présentera les notifications de colis sur la page "Nouvel onglet". Le numéro de suivi du colis et le nom du site Web seront envoyés à Google afin de fournir cette fonctionnalité et d'améliorer les fonctionnalités de shopping Google pour tous. Vous pouvez modifier cette option à tout moment dans les <ph name="BEGIN_LINK" />paramètres de suivi des colis<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Rechercher avec Google Lens</translation>
 <translation id="1143896152279775643">Votre mot de passe sera enregistré dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" /></translation>
 <translation id="1146503048444965320">Ouvrir un nouvel onglet dans Chrome</translation>
 <translation id="1166460004393506534">Supprimer les données de navigation dans Chrome</translation>
@@ -38,7 +39,9 @@ Points à prendre en compte :
 <translation id="1670609221633730681">Astuce Chrome : choisissez la position de la barre d'adresse</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Ajoute les URL saisies à vos favoris dans Chrome.</translation>
+<translation id="1799920918471566157">Astuces Chrome</translation>
 <translation id="1830634592642484976">Cette adresse est actuellement enregistrée dans Chrome. Pour l'utiliser avec d'autres produits Google, enregistrez-la dans votre compte Google (<ph name="USER_EMAIL" />).</translation>
+<translation id="1891812034154776216">Masquer les onglets de navigation privée ouverts quand vous quittez Chrome</translation>
 <translation id="1917964099031477364">Ce compte et les données non enregistrées seront supprimés de Chrome et des autres applications Google sur cet appareil.</translation>
 <translation id="1919130412786645364">Autoriser la connexion à Chrome</translation>
 <translation id="1965935827552890526">Terminez ce que vous étiez en train de faire dans l'autre fenêtre Chrome ouverte.</translation>
@@ -70,6 +73,7 @@ Points à prendre en compte :
 <translation id="2689064829982324496">Pour vous déconnecter de votre compte Google sur tous les sites Web, <ph name="BEGIN_LINK" />déconnectez-vous de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome n'est pas parvenu à rechercher les mises à jour. Réessayez plus tard.</translation>
 <translation id="2703746758996815929">Pour recevoir des conseils pratiques sur Chrome, activez les notifications dans les réglages iOS.</translation>
+<translation id="2728851697704606655">Traduire avec Google Lens</translation>
 <translation id="2736805085127235148">Les notifications Chrome sont actuellement désactivées dans les paramètres de votre appareil.</translation>
 <translation id="2754428955276778271">Certaines de vos données Chrome n'ont pas encore été enregistrées dans votre compte Google.
 
@@ -247,6 +251,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="7581063337314642333">Accéder à la grille d'onglets dans Chrome</translation>
 <translation id="7599894504325210080">Vue développée de la saisie automatique Chrome</translation>
 <translation id="7642373780953416937">Recevez des alertes concernant les problèmes de confidentialité ou de sécurité que Chrome détecte automatiquement pour vous.</translation>
+<translation id="7660356333829433649">Revenez ici pour découvrir d'autres conseils utiles afin de profiter au maximum de Chrome.</translation>
 <translation id="7662994914830945754">Pour retrouver vos onglets Chrome quel que soit l'appareil utilisé, connectez-vous et activez la synchronisation</translation>
 <translation id="7693590760643069321">Chaque fois que vous appuierez sur des liens dans des messages, des documents et d'autres applis, le contenu s'affichera dans Chrome.</translation>
 <translation id="7698568245838009292">Chrome souhaite accéder à l'appareil photo</translation>
@@ -261,6 +266,7 @@ Pour voir d'autres paramètres qui utilisent les données pour améliorer votre 
 <translation id="7948283758957877064">Nouveautés de Chrome</translation>
 <translation id="8000174216052461231">Astuce Chrome : profitez de la protection renforcée de Chrome</translation>
 <translation id="8006014511203279255">Utilisez Chrome chaque fois que vous appuyez sur un lien dans un message ou une autre appli.</translation>
+<translation id="8014670471808569312">Chrome vous proposera d'enregistrer votre mot de passe.</translation>
 <translation id="8018153653741938705">Protégez-vous avec Google Chrome</translation>
 <translation id="8022947259858476807">Utilisez Chrome par défaut pour ouvrir les liens, faire des recherches depuis les widgets et saisir automatiquement les mots de passe dans d'autres applis</translation>
 <translation id="804638182476029347">Autoriser les notifications Chrome à recevoir des alertes en cas de baisse de prix</translation>
@@ -292,6 +298,7 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="8558480467877843976">Vous pouvez désormais utiliser Chrome chaque fois que vous parcourez ou appuyez sur des liens dans des messages, des documents et d'autres applis.</translation>
 <translation id="8603022514504485810">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Activez l'option "Verrouiller les onglets de navigation privée lorsque vous fermez Chrome".</translation>
+<translation id="8673726683583791503">Acheter avec Google Lens</translation>
 <translation id="8727043961453758442">Profiter pleinement de Chrome</translation>
 <translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome envoie le contenu saisi à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en navigation privée.</translation>
 <translation id="8772179140489533211">Permet d'afficher des invites de connexion à Chrome.</translation>

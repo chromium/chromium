@@ -43,8 +43,7 @@ std::string SslValidityChecker::GetInvalidSslCertificateErrorMessage(
       break;
 
     case security_state::SECURITY_LEVEL_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      return errors::kInvalidSslCertificate;
+      NOTREACHED();
   }
 
   std::string message;

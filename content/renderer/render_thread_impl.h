@@ -30,6 +30,7 @@
 #include "base/process/process.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "cc/tiles/gpu_image_decode_cache.h"
@@ -264,7 +265,7 @@ class CONTENT_EXPORT RenderThreadImpl
   // The OverlayStateService is only available where Media Foundation for
   // clear is supported, otherwise GetOverlayStateServiceProvider will return
   // nullptr.
-  OverlayStateServiceProvider* GetOverlayStateServiceProvider();
+  scoped_refptr<OverlayStateServiceProvider> GetOverlayStateServiceProvider();
 #endif
 
   blink::WebVideoCaptureImplManager* video_capture_impl_manager() const {
@@ -377,6 +378,8 @@ class CONTENT_EXPORT RenderThreadImpl
 #endif
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(RenderThreadImplBrowserTest,
+                           TransferSharedLastForegroundTime);
   friend class RenderThreadImplBrowserTest;
   friend class AgentSchedulingGroup;
 
@@ -453,8 +456,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void OnRendererBackgrounded();
   void OnRendererForegrounded();
 
-  void ReleaseFreeMemory();
-
   void OnSyncMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel memory_pressure_level);
 
@@ -489,7 +490,9 @@ class CONTENT_EXPORT RenderThreadImpl
   // Updated via an IPC from the browser process. If nullopt, the browser
   // process has yet to send an update and the state is unknown.
   std::optional<base::Process::Priority> process_priority_;
+  perfetto::NamedTrack process_priority_track_{"Renderer priority"};
   std::optional<mojom::RenderProcessVisibleState> visible_state_;
+  perfetto::NamedTrack process_visibility_track_{"Renderer visibility"};
 
   // A read-only mapping of a std::atomic<base::TimeTicks> set to
   // TimeTicks::Now() by RenderProcessHostImpl when this process is foregrounded
@@ -533,7 +536,7 @@ class CONTENT_EXPORT RenderThreadImpl
 
 #if BUILDFLAG(IS_WIN)
   scoped_refptr<DCOMPTextureFactory> dcomp_texture_factory_;
-  std::unique_ptr<OverlayStateServiceProviderImpl>
+  scoped_refptr<OverlayStateServiceProviderImpl>
       overlay_state_service_provider_;
 #endif
 

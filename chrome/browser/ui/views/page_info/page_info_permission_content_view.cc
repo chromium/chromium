@@ -14,6 +14,7 @@
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -39,13 +40,6 @@
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/views/media_preview/media_preview_feature.h"
 #endif
-
-bool UseUpdatedFileSystemPersistentPermissionUI() {
-  return base::FeatureList::IsEnabled(
-             features::kFileSystemAccessPersistentPermissions) &&
-         base::FeatureList::IsEnabled(
-             features::kFileSystemAccessPersistentPermissionsUpdatedPageInfo);
-}
 
 PageInfoPermissionContentView::PageInfoPermissionContentView(
     PageInfo* presenter,
@@ -85,23 +79,36 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
       std::make_unique<views::Label>(PageInfoUI::PermissionTypeToUIString(type),
                                      views::style::CONTEXT_DIALOG_BODY_TEXT));
   title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_->SetTextStyle(views::style::STYLE_BODY_3_MEDIUM);
+  title_->SetEnabledColorId(kColorPageInfoForeground);
+
+  // Without this, the title text inside the submenu of
+  // |CAPTURED_SURFACE_CONTROL| permission type would be the same as in the main
+  // page info. This block sets the submenu title text to a different one.
+  if (type == ContentSettingsType::CAPTURED_SURFACE_CONTROL) {
+    title_->SetText(l10n_util::GetStringUTF16(
+        IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_SUB_MENU));
+  }
 
   state_label_ = label_wrapper->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_LABEL,
-      views::style::STYLE_SECONDARY));
+      views::style::STYLE_BODY_4));
+  state_label_->SetEnabledColorId(kColorPageInfoSubtitleForeground);
   state_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   // Add extra details as sublabel.
   std::u16string detail = ui_delegate_->GetPermissionDetail(type);
   if (!detail.empty()) {
     auto detail_label = std::make_unique<views::Label>(
-        detail, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY);
+        detail, views::style::CONTEXT_LABEL, views::style::STYLE_BODY_4);
     detail_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    detail_label->SetEnabledColorId(kColorPageInfoSubtitleForeground);
     label_wrapper->AddChildView(std::move(detail_label));
   }
 
   if (type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
-      UseUpdatedFileSystemPersistentPermissionUI()) {
+      base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
     std::vector<base::FilePath> granted_file_paths;
     auto* context =
         FileSystemAccessPermissionContextFactory::GetForProfileIfExists(
@@ -174,6 +181,9 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
       std::u16string(), PageInfoViewFactory::GetLaunchIcon()));
   subpage_manage_button->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_SUBPAGE_MANAGE_BUTTON);
+  subpage_manage_button->title()->SetTextStyle(
+      views::style::STYLE_BODY_3_MEDIUM);
+  subpage_manage_button->title()->SetEnabledColorId(kColorPageInfoForeground);
   presenter_->InitializeUiState(this, base::DoNothing());
 }
 
@@ -208,7 +218,8 @@ void PageInfoPermissionContentView::SetPermissionInfo(
     // displayed on this view to meet UX requirements for the Persistent
     // Permissions feature.
     if (type_ != ContentSettingsType::FILE_SYSTEM_WRITE_GUARD ||
-        !UseUpdatedFileSystemPersistentPermissionUI()) {
+        !base::FeatureList::IsEnabled(
+            features::kFileSystemAccessPersistentPermissions)) {
       state_label_->SetText(
           PageInfoUI::PermissionStateToUIString(ui_delegate_, permission_));
     }
@@ -224,7 +235,8 @@ void PageInfoPermissionContentView::SetPermissionInfo(
 #endif
 
   if (type_ == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD &&
-      UseUpdatedFileSystemPersistentPermissionUI()) {
+      base::FeatureList::IsEnabled(
+          features::kFileSystemAccessPersistentPermissions)) {
     if (web_contents_.MaybeValid()) {
       auto* context =
           FileSystemAccessPermissionContextFactory::GetForProfileIfExists(

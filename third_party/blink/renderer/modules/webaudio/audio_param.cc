@@ -26,8 +26,9 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_automation_rate.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
@@ -145,34 +146,36 @@ void AudioParam::SetCustomParamName(const String name) {
   Handler().SetCustomParamName(name);
 }
 
-String AudioParam::automationRate() const {
+V8AutomationRate AudioParam::automationRate() const {
   switch (Handler().GetAutomationRate()) {
     case AudioParamHandler::AutomationRate::kAudio:
-      return "a-rate";
+      return V8AutomationRate(V8AutomationRate::Enum::kARate);
     case AudioParamHandler::AutomationRate::kControl:
-      return "k-rate";
-    default:
-      NOTREACHED_IN_MIGRATION();
-      return "a-rate";
+      return V8AutomationRate(V8AutomationRate::Enum::kKRate);
   }
+  NOTREACHED();
 }
 
-void AudioParam::setAutomationRate(const String& rate,
+void AudioParam::setAutomationRate(const V8AutomationRate& rate,
                                    ExceptionState& exception_state) {
   if (Handler().IsAutomationRateFixed()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         Handler().GetParamName() +
-            ".automationRate is fixed and cannot be changed to \"" + rate +
-            "\"");
+            ".automationRate is fixed and cannot be changed to \"" +
+            rate.AsString() + "\"");
     return;
   }
 
-  if (rate == "a-rate") {
-    Handler().SetAutomationRate(AudioParamHandler::AutomationRate::kAudio);
-  } else if (rate == "k-rate") {
-    Handler().SetAutomationRate(AudioParamHandler::AutomationRate::kControl);
+  switch (rate.AsEnum()) {
+    case V8AutomationRate::Enum::kARate:
+      Handler().SetAutomationRate(AudioParamHandler::AutomationRate::kAudio);
+      return;
+    case V8AutomationRate::Enum::kKRate:
+      Handler().SetAutomationRate(AudioParamHandler::AutomationRate::kControl);
+      return;
   }
+  NOTREACHED();
 }
 
 AudioParam* AudioParam::setValueAtTime(float value,

@@ -8,7 +8,6 @@
 
 #include "base/check_op.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -27,7 +26,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/components/arc/touch_selection_menu/touch_selection_menu_runner_chromeos.h"
 #include "chromeos/ui/base/app_types.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -67,7 +66,7 @@ PrefService* GetPrefsForWindow(const views::Widget* window) {
 // ChromeViewsDelegate --------------------------------------------------------
 
 ChromeViewsDelegate::ChromeViewsDelegate() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // ViewsDelegate's constructor may have created a menu runner already, and
   // since TouchSelectionMenuRunner is a singleton with checks to not
   // initialize it if there is already an existing runner we need to first
@@ -135,7 +134,7 @@ bool ChromeViewsDelegate::GetSavedWindowPlacement(
   *show_state = maximized ? ui::mojom::WindowShowState::kMaximized
                           : ui::mojom::WindowShowState::kNormal;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   AdjustSavedWindowPlacementChromeOS(widget, bounds);
 #endif
   return true;
@@ -181,7 +180,7 @@ void ChromeViewsDelegate::ReleaseRef() {
 void ChromeViewsDelegate::OnBeforeWidgetInit(
     views::Widget::InitParams* params,
     views::internal::NativeWidgetDelegate* delegate) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Only for dialog widgets, if this is not going to be a transient child,
   // then we mark it as an OS system app, otherwise its transient root's app
   // type should be used.
@@ -192,11 +191,11 @@ void ChromeViewsDelegate::OnBeforeWidgetInit(
     params->init_properties_container.SetProperty(
         chromeos::kAppTypeKey, chromeos::AppType::SYSTEM_APP);
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // We need to determine opacity if it's not already specified.
   if (params->opacity == views::Widget::InitParams::WindowOpacity::kInferred) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     chromeos::ResolveInferredOpacity(params);
 #else
     params->opacity = views::Widget::InitParams::WindowOpacity::kOpaque;

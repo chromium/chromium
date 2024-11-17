@@ -169,6 +169,8 @@ class PaymentRequestTestController {
 
   base::WeakPtr<ContentPaymentRequestDelegate> delegate_;
 #endif
+
+  base::WeakPtrFactory<PaymentRequestTestController> weak_ptr_factory_{this};
 };
 
 }  // namespace payments

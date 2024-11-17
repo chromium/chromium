@@ -81,8 +81,7 @@ const CGFloat kButtonCircularCornerRadiusDivisor = 2.0;
 - (NSString*)accessibilityIdentifierForAcceptedState:(BOOL)accepted {
   switch (self.badgeType) {
     case kBadgeTypeNone:
-      NOTREACHED_IN_MIGRATION() << "A badge should not have kBadgeTypeNone";
-      return nil;
+      NOTREACHED() << "A badge should not have kBadgeTypeNone";
     case kBadgeTypePasswordSave:
       return accepted ? kBadgeButtonSavePasswordAcceptedAccessibilityIdentifier
                       : kBadgeButtonSavePasswordAccessibilityIdentifier;

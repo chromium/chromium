@@ -21,7 +21,6 @@
 namespace {
 constexpr int kGapSize = 8;
 constexpr int kGpmIconSize = 20;
-constexpr int kSmallIconSize = 20;
 constexpr int kMediumIconSize = 26;
 constexpr int kHorizontalInset = 8;
 constexpr int kHorizontalSpacing = 16;
@@ -52,20 +51,6 @@ std::unique_ptr<views::View> CreatePasskeyWithUsernameLabel(
 
   container->AddChildView(std::move(username_column));
   return std::move(container);
-}
-
-std::unique_ptr<views::View> CreatePasskeyIconWithLabelRow(
-    const gfx::VectorIcon& icon,
-    const std::u16string& label) {
-  auto row = std::make_unique<views::BoxLayoutView>();
-  row->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
-  row->SetBetweenChildSpacing(kGapSize);
-
-  row->AddChildView(std::make_unique<views::ImageView>(
-      ui::ImageModel::FromVectorIcon(icon, ui::kColorIcon, kSmallIconSize)));
-  row->AddChildView(std::make_unique<views::Label>(
-      label, views::style::CONTEXT_DIALOG_BODY_TEXT));
-  return row;
 }
 
 std::unique_ptr<views::View> CreateGpmIconWithLabel() {

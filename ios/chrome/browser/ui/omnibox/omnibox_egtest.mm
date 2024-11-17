@@ -167,13 +167,6 @@ id<GREYMatcher> CutButton() {
                     chrome_test_util::SystemSelectionCallout(), nil);
 }
 
-// Returns Copy button from UIMenuController.
-id<GREYMatcher> CopyButton() {
-  NSString* a11yLabelCopy = @"Copy";
-  return grey_allOf(grey_accessibilityLabel(a11yLabelCopy),
-                    chrome_test_util::SystemSelectionCallout(), nil);
-}
-
 // Returns Search Copied Text button from UIMenuController.
 id<GREYMatcher> SearchCopiedTextButton() {
   NSString* a11yLabelCopiedText =
@@ -284,14 +277,16 @@ void FocusFakebox() {
   _URL1 = self.testServer->GetURL(kPage1URL);
 
   [ChromeEarlGrey clearPasteboard];
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 
   [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Helpers
@@ -334,7 +329,9 @@ void FocusFakebox() {
   // TODO(crbug.com/40145916) This test is flakily because of a DCHECK in
   // ios/web.  Clearing browser history first works around the problem, but
   // shouldn't be necessary otherwise.  Remove once the bug is fixed.
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 
   // Rewrite the google URL to localhost URL.
   [OmniboxAppInterface rewriteGoogleURLToLocalhost];
@@ -488,92 +485,6 @@ void FocusFakebox() {
       assertWithMatcher:chrome_test_util::OmniboxContainingText("google")];
 }
 
-// Tests that copying in the omnibox will trigger the share button IPH to be
-// displayed, if certain conditions are met, with bottom omnibox for phone form
-// factor.
-- (void)testCopyInOmniboxTriggersShareButtonIPHWithBottomOmnibox {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no bottom omnibox in tablet)");
-  }
-
-  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
-
-  // Enable the IPH flag to ensure the IPH triggersenable)
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.iph_feature_enabled = "IPH_iOSShareToolbarItemFeature";
-  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
-  // Force the conditions that allow the iph to show.
-  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
-  config.additional_args.push_back("SyncedAndFirstDevice");
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  [self openPage1];
-
-  [ChromeEarlGreyUI focusOmnibox];
-
-  // By default the address should be selected. Tapping should open the system
-  // menu.
-  TapOnPreEditTextInOmnibox();
-
-  // Verify that the Copy button is displayed.
-  [[EarlGrey selectElementWithMatcher:CopyButton()]
-      assertWithMatcher:grey_notNil()];
-
-  // Tapping it should copy the URL.
-  [[EarlGrey selectElementWithMatcher:CopyButton()] performAction:grey_tap()];
-  [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
-
-  DefocusOmnibox();
-
-  // Verify the share button IPH is shown.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
-                                              @"BubbleViewLabelIdentifier")];
-}
-
-// Tests that copying in the omnibox will trigger the share button IPH to be
-// displayed, if certain conditions are met, when omnibox is at the top.
-- (void)testCopyInOmniboxTriggersShareButtonIPHWithTopOmnibox {
-  // Enable the IPH flag to ensure the IPH triggers
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.iph_feature_enabled = "IPH_iOSShareToolbarItemFeature";
-  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
-  // Force the conditions that allow the iph to show.
-  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
-  config.additional_args.push_back("SyncedAndFirstDevice");
-
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  [self openPage1];
-
-  [ChromeEarlGreyUI focusOmnibox];
-
-  // By default the address should be selected. Tapping should open the system
-  // menu.
-  TapOnPreEditTextInOmnibox();
-
-  // Verify that the Copy button is displayed.
-  [[EarlGrey selectElementWithMatcher:CopyButton()]
-      assertWithMatcher:grey_notNil()];
-
-  // Tapping it should copy the URL.
-  [[EarlGrey selectElementWithMatcher:CopyButton()] performAction:grey_tap()];
-  [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
-
-  DefocusOmnibox();
-
-  // Verify the omnibox is at the top.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:chrome_test_util::OmniboxOnTop()];
-
-  // Verify the share button IPH is shown.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
-                                              @"BubbleViewLabelIdentifier")];
-}
-
 @end
 
 #pragma mark - Steady state tests
@@ -604,7 +515,9 @@ void FocusFakebox() {
   _URL1 = self.testServer->GetURL(kPage1URL);
   _URL2 = self.testServer->GetURL(kPage2URL);
 
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 
   // Clear the pasteboard in case there is a URL copied.
   UIPasteboard* pasteboard = UIPasteboard.generalPasteboard;
@@ -613,9 +526,9 @@ void FocusFakebox() {
   [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [ChromeEarlGrey setBoolValue:NO forLocalStatePref:prefs::kBottomOmnibox];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tapping on steady view starts editing.
@@ -702,134 +615,6 @@ void FocusFakebox() {
 
   [ChromeEarlGrey waitForPageToFinishLoading];
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
-}
-
-// Tests that copying the location bar by long pressing will trigger the share
-// button IPH to be displayed, if certain conditions are met, with the omnibox
-// at the bottom. Runs for phone factor only.
-- (void)testCopyLocationBarTriggersShareButtonIPHWithBottomOmnibox {
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad (no bottom omnibox in tablet)");
-  }
-
-  [ChromeEarlGrey setBoolValue:YES forLocalStatePref:prefs::kBottomOmnibox];
-
-  // Enable the IPH flag to ensure the IPH triggers
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.iph_feature_enabled = "IPH_iOSShareToolbarItemFeature";
-  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
-  // Force the conditions that allow the iph to show.
-  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
-  config.additional_args.push_back("SyncedAndFirstDevice");
-
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  [self openPage1];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:chrome_test_util::OmniboxAtBottom()];
-
-  // Long pressing should allow copying.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
-      performAction:grey_longPress()];
-
-  // Verify that the Copy button is displayed.
-  [[EarlGrey selectElementWithMatcher:CopyContextMenuButton()]
-      assertWithMatcher:grey_notNil()];
-
-  // Tapping it should copy the URL.
-  [[EarlGrey selectElementWithMatcher:CopyContextMenuButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
-
-  // Verify the share button IPH is shown.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
-                                              @"BubbleViewLabelIdentifier")];
-}
-
-// Tests that copying the location bar by long pressing will trigger the share
-// button IPH to be displayed, if certain conditions are met, with the omnibox
-// at the top.
-- (void)testCopyLocationBarTriggersShareButtonIPHWithTopOmnibox {
-  // Enable the IPH flag to ensure the IPH triggers
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.iph_feature_enabled = "IPH_iOSShareToolbarItemFeature";
-  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
-  // Force the conditions that allow the iph to show.
-  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
-  config.additional_args.push_back("SyncedAndFirstDevice");
-
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  [self openPage1];
-
-  // Long pressing should allow copying.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
-      performAction:grey_longPress()];
-
-  // Verify that the Copy button is displayed.
-  [[EarlGrey selectElementWithMatcher:CopyContextMenuButton()]
-      assertWithMatcher:grey_notNil()];
-
-  // Tapping it should copy the URL.
-  [[EarlGrey selectElementWithMatcher:CopyContextMenuButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey verifyStringCopied:base::SysUTF8ToNSString(_URL1.spec())];
-
-  // Verify the omnibox is at the top.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:chrome_test_util::OmniboxOnTop()];
-
-  // Verify the share button IPH is shown.
-  GREYAssert([ChromeEarlGrey testUIElementAppearanceWithMatcher:
-                                 chrome_test_util::TabShareButton()],
-             @"The share button is not found");
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:grey_accessibilityID(
-                                              @"BubbleViewLabelIdentifier")];
-}
-
-// Tests that copying the location bar by long pressing will NOT trigger the
-// share button IPH to be displayed, if the share button is disabled because the
-// url is not sharable.
-- (void)testCopyLocationBarNotTriggersShareButtonIPHWhenButtonDisabled {
-  // Enable the IPH flag to ensure the IPH triggers
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.iph_feature_enabled = "IPH_iOSShareToolbarItemFeature";
-  config.additional_args.push_back("--enable-features=IPHForSafariSwitcher");
-  // Force the conditions that allow the iph to show.
-  config.additional_args.push_back("-ForceExperienceForDeviceSwitcher");
-  config.additional_args.push_back("SyncedAndFirstDevice");
-  config.additional_args.push_back(
-      base::StringPrintf("--disable-features=BottomOmniboxSteadyState"));
-
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
-  [ChromeEarlGrey loadURL:GURL("chrome://version")];
-
-  // Long pressing should allow copying.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
-      performAction:grey_longPress()];
-
-  // Verify that the Copy button is displayed.
-  [[EarlGrey selectElementWithMatcher:CopyContextMenuButton()]
-      assertWithMatcher:grey_notNil()];
-
-  // Tapping it should copy the URL.
-  [[EarlGrey selectElementWithMatcher:CopyContextMenuButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey
-      verifyStringCopied:base::SysUTF8ToNSString("chrome://version")];
-
-  // Verify the share button is shown but the IPH is not shown.
-  GREYAssert([ChromeEarlGrey testUIElementAppearanceWithMatcher:
-                                 chrome_test_util::TabShareButton()],
-             @"The share button is not found");
-  GREYAssert(
-      ![ChromeEarlGrey
-          testUIElementAppearanceWithMatcher:grey_accessibilityID(
-                                                 @"BubbleViewLabelIdentifier")],
-      @"The share button IPH is displayed");
 }
 
 - (void)testDismissesEditMenu {
@@ -972,7 +757,9 @@ void FocusFakebox() {
 - (void)setUp {
   [super setUp];
 
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 
   // Start a server to be able to navigate to a web page.
   self.testServer->RegisterRequestHandler(
@@ -985,10 +772,10 @@ void FocusFakebox() {
   [ChromeEarlGrey clearPasteboard];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Clear the pasteboard after every test.
   [ChromeEarlGrey clearPasteboard];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 // Tests that tapping on steady view on webpage and starting typing a query
@@ -1124,7 +911,9 @@ void FocusFakebox() {
 - (void)setUp {
   [super setUp];
 
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 
   // Start a server to be able to navigate to a web page.
   self.testServer->RegisterRequestHandler(
@@ -1448,8 +1237,9 @@ void FocusFakebox() {
 - (void)setUp {
   [super setUp];
 
-  [ChromeEarlGrey clearBrowsingHistory];
-
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
   // Start a server to be able to navigate to a web page.
   self.testServer->RegisterRequestHandler(
       base::BindRepeating(&StandardResponse));
@@ -1462,8 +1252,8 @@ void FocusFakebox() {
   [ChromeEarlGrey clearPasteboard];
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   // HW keyboard simulation can mess up the SW keyboard simulator state.
   // Relaunching resets the state.
   AppLaunchConfiguration config = [super appConfigurationForTestCase];

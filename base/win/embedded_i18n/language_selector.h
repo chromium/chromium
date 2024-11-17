@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 
 namespace base {
@@ -56,10 +57,12 @@ class BASE_EXPORT LanguageSelector {
   size_t offset() const { return selected_offset_; }
 
   // The full name of the candidate language for which a match was found.
-  const std::wstring& matched_candidate() const { return matched_candidate_; }
+  const std::wstring& matched_candidate() const LIFETIME_BOUND {
+    return matched_candidate_;
+  }
 
   // The name of the selected translation.
-  const std::wstring& selected_translation() const {
+  const std::wstring& selected_translation() const LIFETIME_BOUND {
     return selected_language_;
   }
 

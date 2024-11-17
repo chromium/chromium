@@ -57,14 +57,26 @@ export function parseNumber(val: string|null|undefined): number|null {
 }
 
 /**
- * Returns the number of space-delimited words in a given string.
+ * Counts words in the given string, respecting word boundaries defined by the
+ * given locale.
  *
- * TODO(hsuanling): Apply different logic so that it can work for languages like
- * Chinese or Japanese.
+ * Returns 0 if string is empty.
  */
-export function getWordCount(s: string): number {
-  const words = s.match(/\S+/g);
-  return words?.length ?? 0;
+export function getWordCount(s: string, locale: Intl.LocalesArgument): number {
+  const segmenter = new Intl.Segmenter(locale, {granularity: 'word'});
+  const segments = segmenter.segment(s);
+  let wordCount = 0;
+  for (const segment of segments) {
+    // "word-like" is implementation-dependent. In general, segments consisting
+    // solely of spaces and/or punctuation (such as those terminated with
+    // "WORD_NONE" boundaries by ICU [International Components for Unicode,
+    // documented at https://unicode-org.github.io/icu-docs/]) are not
+    // considered to be "word-like". See
+    // https://tc39.es/ecma402/#sec-%segmentsprototype%.containing for
+    // reference.
+    wordCount += segment.isWordLike === true ? 1 : 0;
+  }
+  return wordCount;
 }
 
 /**

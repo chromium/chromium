@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
+#include "content/public/common/buildflags.h"
 
 class GURL;
 class PrefRegistrySimple;
@@ -91,10 +92,10 @@ void CheckGetAllScreensMediaAllowedForAnyOrigin(
     content::BrowserContext* context,
     base::OnceCallback<void(bool)> callback);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 bool IsTransientActivationRequiredForGetDisplayMedia(
     content::WebContents* contents);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(ENABLE_SCREEN_CAPTURE)
 
 }  // namespace capture_policy
 

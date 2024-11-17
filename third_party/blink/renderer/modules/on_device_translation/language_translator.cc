@@ -18,26 +18,25 @@
 namespace blink {
 
 LanguageTranslator::LanguageTranslator(
-    const WTF::String source_lang,
-    const WTF::String target_lang,
+    const String source_lang,
+    const String target_lang,
+    mojo::PendingRemote<mojom::blink::Translator> pending_remote,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
-    : source_lang_(source_lang),
-      target_lang_(target_lang),
-      task_runner_(task_runner) {}
+    : source_lang_(source_lang), target_lang_(target_lang) {
+  translator_remote_.Bind(std::move(pending_remote), task_runner);
+}
 
 void LanguageTranslator::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   visitor->Trace(translator_remote_);
+  visitor->Trace(pending_resolvers_);
 }
 
-mojo::PendingReceiver<blink::mojom::blink::Translator>
-LanguageTranslator::GetTranslatorReceiver() {
-  return translator_remote_.BindNewPipeAndPassReceiver(task_runner_);
-}
-
+// TODO(crbug.com/322229993): The new version is AITranslator::translate().
+// Delete this old version.
 ScriptPromise<IDLString> LanguageTranslator::translate(
     ScriptState* script_state,
-    const WTF::String& input,
+    const String& input,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
@@ -45,28 +44,49 @@ ScriptPromise<IDLString> LanguageTranslator::translate(
     return EmptyPromise();
   }
 
+  if (!translator_remote_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "The translator has been destoried.");
+    return EmptyPromise();
+  }
+
   ScriptPromiseResolver<IDLString>* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<IDLString>>(script_state);
+  pending_resolvers_.insert(resolver);
   ScriptPromise<IDLString> promise = resolver->Promise();
 
-  // TODO(crbug.com/335374928): implement the error handling for the translation
-  // service crash.
   translator_remote_->Translate(
-      input, WTF::BindOnce(
-                 [](ScriptPromiseResolver<IDLString>* resolver,
-                    const WTF::String& output) {
-                   if (output.IsNull()) {
-                     resolver->Reject(DOMException::Create(
-                         "Unable to translate the given text.",
-                         DOMException::GetErrorName(
-                             DOMExceptionCode::kNotReadableError)));
-                   } else {
-                     resolver->Resolve(output);
-                   }
-                 },
-                 WrapPersistent(resolver)));
-
+      input, WTF::BindOnce(&LanguageTranslator::OnTranslateFinished,
+                           WrapWeakPersistent(this), WrapPersistent(resolver)));
   return promise;
+}
+
+void LanguageTranslator::destroy() {
+  translator_remote_.reset();
+  auto resolvers = std::move(pending_resolvers_);
+  for (auto resolver : resolvers) {
+    resolver->Reject(DOMException::Create(
+        "The translator has been destoried.",
+        DOMException::GetErrorName(DOMExceptionCode::kAbortError)));
+  }
+}
+
+void LanguageTranslator::OnTranslateFinished(
+    ScriptPromiseResolver<IDLString>* resolver,
+    const WTF::String& output) {
+  auto it = pending_resolvers_.find(resolver);
+  if (it == pending_resolvers_.end()) {
+    return;
+  }
+  pending_resolvers_.erase(it);
+
+  if (output.IsNull()) {
+    resolver->Reject(DOMException::Create(
+        "Unable to translate the given text.",
+        DOMException::GetErrorName(DOMExceptionCode::kNotReadableError)));
+  } else {
+    resolver->Resolve(output);
+  }
 }
 
 }  // namespace blink

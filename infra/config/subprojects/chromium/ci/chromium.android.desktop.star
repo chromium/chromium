@@ -5,7 +5,7 @@
 
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builder_health_indicators.star", "health_spec")
-load("//lib/builders.star", "builders", "os", "siso")
+load("//lib/builders.star", "gardener_rotations", "os", "siso")
 load("//lib/branches.star", "branches")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -16,8 +16,7 @@ ci.defaults.set(
     executable = ci.DEFAULT_EXECUTABLE,
     builder_group = "chromium.android.desktop",
     pool = ci.DEFAULT_POOL,
-    builderless = True,
-    cores = 8,
+    builderless = False,
     os = os.LINUX_DEFAULT,
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = ci.DEFAULT_EXECUTION_TIMEOUT,
@@ -125,8 +124,6 @@ ci.builder(
     targets = targets.bundle(
         additional_compile_targets = "all",
     ),
-    ssd = True,
-    free_space = builders.free_space.high,
     console_view_entry = consoles.console_view_entry(
         category = "builder|arm64",
         short_name = "rel",
@@ -213,11 +210,11 @@ ci.builder(
             "webview_shell",
         ],
     ),
-    targets = targets.bundle(
-        additional_compile_targets = "all",
-    ),
-    ssd = True,
-    free_space = builders.free_space.high,
+    # This is empty because we automatically compile any tests required for
+    # the builders that triggered this.
+    targets = targets.bundle(targets = []),
+    gardener_rotations = gardener_rotations.ANDROID,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "builder|x64",
         short_name = "rel",
@@ -265,6 +262,8 @@ ci.thin_tester(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
+    builderless = True,
+    cores = 8,
     console_view_entry = consoles.console_view_entry(
         category = "tester|x64",
         short_name = "rel",

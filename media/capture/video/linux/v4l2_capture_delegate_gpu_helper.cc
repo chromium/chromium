@@ -10,6 +10,10 @@
 #include "media/capture/video/linux/v4l2_capture_delegate_gpu_helper.h"
 
 #include "base/trace_event/trace_event.h"
+#include "components/viz/common/resources/shared_image_format.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
+#include "media/capture/video/video_capture_gpu_channel_host.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
@@ -18,8 +22,8 @@ namespace media {
 namespace {
 constexpr media::VideoPixelFormat kTargetPixelFormat =
     media::VideoPixelFormat::PIXEL_FORMAT_NV12;
-constexpr gfx::BufferFormat kTargetBufferFormat =
-    gfx::BufferFormat::YUV_420_BIPLANAR;
+constexpr viz::SharedImageFormat kTargetSharedImageFormat =
+    viz::MultiPlaneFormat::kNV12;
 
 libyuv::FourCC VideoCaptureFormatToLibyuvFourcc(
     const VideoCaptureFormat& capture_format) {
@@ -65,7 +69,7 @@ libyuv::FourCC VideoCaptureFormatToLibyuvFourcc(
       fourcc_format = libyuv::FOURCC_MJPG;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return fourcc_format;
 }
@@ -87,11 +91,7 @@ libyuv::RotationMode TranslateRotation(int rotation_degrees) {
 
 }  // namespace
 
-V4L2CaptureDelegateGpuHelper::V4L2CaptureDelegateGpuHelper(
-    std::unique_ptr<gpu::GpuMemoryBufferSupport> gmb_support)
-    : gmb_support_(gmb_support
-                       ? std::move(gmb_support)
-                       : std::make_unique<gpu::GpuMemoryBufferSupport>()) {}
+V4L2CaptureDelegateGpuHelper::V4L2CaptureDelegateGpuHelper() = default;
 
 V4L2CaptureDelegateGpuHelper::~V4L2CaptureDelegateGpuHelper() = default;
 
@@ -131,27 +131,44 @@ int V4L2CaptureDelegateGpuHelper::OnIncomingCapturedData(
     return -1;
   }
 
-  std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buff =
-      gmb_support_->CreateGpuMemoryBufferImplFromHandle(
-          capture_buffer.handle_provider->GetGpuMemoryBufferHandle(),
-          dimensions, kTargetBufferFormat,
-          gfx::BufferUsage::GPU_READ_CPU_READ_WRITE, base::NullCallback());
-  if (!gpu_memory_buff || !gpu_memory_buff->Map()) {
-    DLOG(ERROR) << "Failed to allocate gpu memory buffer buffer.";
+  auto sii =
+      VideoCaptureGpuChannelHost::GetInstance().GetSharedImageInterface();
+  if (!sii) {
+    LOG(ERROR) << "Failed to get SharedImageInterface.";
     client->OnFrameDropped(ConvertReservationFailureToFrameDropReason(
         VideoCaptureDevice::Client::ReserveResult::kAllocationFailed));
     return -1;
   }
 
-  uint8_t* dst_y = (uint8_t*)gpu_memory_buff->memory(VideoFrame::Plane::kY);
-  uint8_t* dst_uv = (uint8_t*)gpu_memory_buff->memory(VideoFrame::Plane::kUV);
-  const int dst_stride_y = gpu_memory_buff->stride(VideoFrame::Plane::kY);
-  const int dst_stride_uv = gpu_memory_buff->stride(VideoFrame::Plane::kUV);
+  // Setting some default usage in order to get a mappable shared image.
+  constexpr auto si_usage =
+      gpu::SHARED_IMAGE_USAGE_CPU_WRITE | gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  auto shared_image = sii->CreateSharedImage(
+      {kTargetSharedImageFormat, dimensions, gfx::ColorSpace(),
+       gpu::SharedImageUsageSet(si_usage), "V4L2CaptureDelegateGpuHelper"},
+      gpu::kNullSurfaceHandle, gfx::BufferUsage::GPU_READ_CPU_READ_WRITE,
+      capture_buffer.handle_provider->GetGpuMemoryBufferHandle());
+  if (!shared_image) {
+    LOG(ERROR) << "Failed to create a mappable shared image.";
+    client->OnFrameDropped(ConvertReservationFailureToFrameDropReason(
+        VideoCaptureDevice::Client::ReserveResult::kAllocationFailed));
+    return -1;
+  }
+
+  auto scoped_mapping = shared_image->Map();
+  if (!scoped_mapping) {
+    LOG(ERROR) << "Failed to map the shared image.";
+    client->OnFrameDropped(ConvertReservationFailureToFrameDropReason(
+        VideoCaptureDevice::Client::ReserveResult::kAllocationFailed));
+    return -1;
+  }
+
   int status = ConvertCaptureDataToNV12(
       sample, sample_size, capture_format, dimensions, data_color_space,
-      rotation, dst_y, dst_uv, dst_stride_y, dst_stride_uv);
-
-  gpu_memory_buff->Unmap();
+      rotation, scoped_mapping->GetMemoryForPlane(VideoFrame::Plane::kY).data(),
+      scoped_mapping->GetMemoryForPlane(VideoFrame::Plane::kUV).data(),
+      scoped_mapping->Stride(VideoFrame::Plane::kY),
+      scoped_mapping->Stride(VideoFrame::Plane::kUV));
 
   if (status != 0) {
     DLOG(ERROR) << "Failed to convert capture data.";

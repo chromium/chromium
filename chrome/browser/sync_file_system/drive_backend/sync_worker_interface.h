@@ -77,10 +77,6 @@ class SyncWorkerInterface {
   virtual void SetRemoteChangeProcessor(
       RemoteChangeProcessorOnWorker* remote_change_processor_on_worker) = 0;
   virtual RemoteServiceState GetCurrentState() const = 0;
-  virtual void GetOriginStatusMap(
-      RemoteFileSyncService::StatusMapCallback callback) = 0;
-  virtual base::Value::List DumpFiles(const GURL& origin) = 0;
-  virtual base::Value::List DumpDatabase() = 0;
   virtual void SetSyncEnabled(bool enabled) = 0;
   virtual void PromoteDemotedChanges(base::OnceClosure callback) = 0;
 

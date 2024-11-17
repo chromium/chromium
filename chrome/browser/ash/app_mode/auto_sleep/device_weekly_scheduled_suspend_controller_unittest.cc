@@ -4,17 +4,21 @@
 
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_controller.h"
 
+#include <cstddef>
 #include <functional>
 #include <memory>
 #include <optional>
-#include <string>
+#include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/task_environment.h"
+#include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_test_policy_builder.h"
-#include "chrome/browser/ash/app_mode/auto_sleep/fake_repeating_time_interval_task_executor.h"
+#include "chrome/browser/ash/app_mode/auto_sleep/repeating_time_interval_task_executor.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -22,7 +26,6 @@
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -45,8 +48,9 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
         task_environment_.GetMockTickClock());
     device_weekly_scheduled_suspend_controller_
         ->SetTaskExecutorFactoryForTesting(
-            std::make_unique<FakeRepeatingTimeIntervalTaskExecutor::Factory>(
-                task_environment_.GetMockClock()));
+            std::make_unique<RepeatingTimeIntervalTaskExecutor::Factory>(
+                task_environment_.GetMockClock(),
+                base::DefaultTickClock::GetInstance()));
     user_activity_calls_ = 0;
     chromeos::FakePowerManagerClient::Get()->set_user_activity_callback(
         base::BindRepeating([](int& count) { ++count; },

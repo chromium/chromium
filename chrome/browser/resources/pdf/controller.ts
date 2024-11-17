@@ -6,7 +6,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 
 // <if expr="enable_pdf_ink2">
-import type {AnnotationBrush} from './constants.js';
+import type {AnnotationBrush, AnnotationBrushType} from './constants.js';
 // </if>
 import type {NamedDestinationMessageData, Rect, SaveRequestType} from './constants.js';
 import type {PdfPluginElement} from './internal_plugin.js';
@@ -46,10 +46,10 @@ interface ThumbnailMessageData {
 }
 
 // <if expr="enable_pdf_ink2">
-// The message sent to the backend to set the annotation brush.
+// Messages for setting and getting the annotation brush.
 interface AnnotationBrushMessage {
   type: string;
-  data: Partial<AnnotationBrush>;
+  data: AnnotationBrush;
 }
 // </if>
 
@@ -112,6 +112,7 @@ export interface ContentController {
 /** Event types dispatched by the plugin controller. */
 export enum PluginControllerEventType {
   // <if expr="enable_pdf_ink2">
+  CONTENT_FOCUSED = 'PluginControllerEventType.CONTENT_FOCUSED',
   FINISH_INK_STROKE = 'PluginControllerEventType.FINISH_INK_STROKE',
   UPDATE_INK_THUMBNAIL = 'PluginControllerEventType.UPDATE_INK_THUMBNAIL',
   // </if>
@@ -200,6 +201,14 @@ export class PluginController implements ContentController {
     this.postMessage_({
       type: 'setAnnotationMode',
       enable,
+    });
+  }
+
+  getAnnotationBrush(brushType?: AnnotationBrushType):
+      Promise<AnnotationBrushMessage> {
+    return this.postMessageWithReply_({
+      type: 'getAnnotationBrush',
+      brushType,
     });
   }
 

@@ -54,7 +54,8 @@
             aria-haspopup="menu"
             aria-label="$i18n{lockScreenPinMoreButtonAriaLabel}"
             on-click="onMoreButtonClicked_"
-            disabled$="[[quickUnlockDisabledByPolicy_]]">
+            disabled$="[[removeDisabled_(
+              hasPassword_, quickUnlockDisabledByPolicy_)]]">
         </cr-icon-button>
         <cr-action-menu id="moreMenu"
             role-description="$i18n{menu}"
@@ -62,7 +63,8 @@
           <button
               class="dropdown-item"
               on-click="onRemovePinButtonClicked_"
-              disabled$="[[quickUnlockDisabledByPolicy_]]">
+              disabled$="[[removeDisabled_(
+                hasPassword_, quickUnlockDisabledByPolicy_)]]">
             $i18n{lockScreenRemovePinButton}
           </button>
         </cr-action-menu>

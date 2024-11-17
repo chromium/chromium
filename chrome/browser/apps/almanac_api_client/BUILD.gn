@@ -30,6 +30,7 @@ source_set("almanac_api_client") {
     "//chrome/browser/apps/almanac_api_client/proto",
     "//chrome/browser/apps/app_service/app_icon",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/borealis",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/profiles",

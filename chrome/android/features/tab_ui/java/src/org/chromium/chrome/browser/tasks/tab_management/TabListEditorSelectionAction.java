@@ -8,7 +8,6 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.tab.Tab;
@@ -21,7 +20,6 @@ import java.util.List;
 
 /** Select all and deselect all toggle action for the {@link TabListEditorMenu}. */
 public class TabListEditorSelectionAction extends TabListEditorAction {
-    private Context mContext;
     private @ActionState int mActionState;
     private final Drawable mSelectAllIcon;
     private final Drawable mDeselectAllIcon;
@@ -36,11 +34,11 @@ public class TabListEditorSelectionAction extends TabListEditorAction {
 
     /**
      * Create an action for closing tabs.
+     *
      * @param context to load drawable from.
      * @param showMode whether to show an action view.
      * @param buttonType the type of the action view.
      * @param iconPosition the position of the icon in the action view.
-     * @param isIncognito whether the current tab model is incognito this will update dynamically.
      */
     public static TabListEditorAction createAction(
             Context context,
@@ -52,12 +50,10 @@ public class TabListEditorSelectionAction extends TabListEditorAction {
         Drawable deselectAllIcon =
                 AppCompatResources.getDrawable(context, R.drawable.ic_deselect_all_24dp);
         return new TabListEditorSelectionAction(
-                context, showMode, buttonType, iconPosition, selectAllIcon, deselectAllIcon);
+                showMode, buttonType, iconPosition, selectAllIcon, deselectAllIcon);
     }
 
-    @VisibleForTesting
-    TabListEditorSelectionAction(
-            Context context,
+    private TabListEditorSelectionAction(
             @ShowMode int showMode,
             @ButtonType int buttonType,
             @IconPosition int iconPosition,
@@ -72,7 +68,6 @@ public class TabListEditorSelectionAction extends TabListEditorAction {
                 null,
                 selectAllIcon);
 
-        mContext = context;
         mActionState = ActionState.UNKNOWN;
         mSelectAllIcon = selectAllIcon;
         mDeselectAllIcon = deselectAllIcon;

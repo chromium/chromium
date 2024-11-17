@@ -60,6 +60,7 @@ buildflag_header("buildflags") {
     "ENABLE_BACKGROUND_CONTENTS=$enable_background_contents",
     "ENABLE_CHROME_NOTIFICATIONS=$enable_chrome_notifications",
     "ENABLE_DOWNGRADE_PROCESSING=$enable_downgrade_processing",
+    "ENABLE_GLIC=$enable_glic",
     "ENABLE_HANGOUT_SERVICES_EXTENSION=$enable_hangout_services_extension",
     "ENABLE_SERVICE_DISCOVERY=$enable_service_discovery",
     "ENABLE_SESSION_SERVICE=$enable_session_service",
@@ -228,6 +229,7 @@ static_library("common_lib") {
     "//components/prefs",
     "//components/safe_browsing:buildflags",
     "//components/safe_search_api",
+    "//components/sampling_profiler",
     "//components/services/app_service",
     "//components/services/heap_profiling/public/cpp",
     "//components/strings",
@@ -365,8 +367,8 @@ static_library("common_lib") {
     # Non-Android.
     public_deps += [ "//chrome/common/importer" ]
     sources += [
-      "accessibility/read_anything_constants.cc",
-      "accessibility/read_anything_constants.h",
+      "read_anything/read_anything_constants.cc",
+      "read_anything/read_anything_constants.h",
     ]
   }
 
@@ -576,6 +578,7 @@ static_library("constants") {
     ":non_code_constants",
     "//components/compose:buildflags",
     "//components/signin/public/base:signin_buildflags",
+    "//content/public/common:buildflags",
     "//content/public/common:result_codes",
     "//rlz/buildflags",
     "//third_party/widevine/cdm:buildflags",

@@ -4,7 +4,10 @@
 
 #include "components/history_embeddings/history_embeddings_service.h"
 
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
@@ -18,6 +21,9 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/history_embeddings/history_embeddings_features.h"
+#include "components/history_embeddings/mock_answerer.h"
+#include "components/history_embeddings/mock_embedder.h"
+#include "components/history_embeddings/mock_intent_classifier.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
@@ -39,16 +45,37 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    optimization_guide::EnableSigninAndModelExecutionCapability(
-        browser()->profile());
+    InitSignin();
     browser()->profile()->GetPrefs()->SetInteger(
         optimization_guide::prefs::GetSettingEnabledPrefName(
             optimization_guide::UserVisibleFeatureKey::kHistorySearch),
         static_cast<int>(
             optimization_guide::prefs::FeatureOptInState::kEnabled));
+
+    HistoryEmbeddingsServiceFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindLambdaForTesting([](content::BrowserContext* context) {
+          return HistoryEmbeddingsServiceFactory::
+              BuildServiceInstanceForBrowserContextForTesting(
+                  context, std::make_unique<MockEmbedder>(),
+                  std::make_unique<MockAnswerer>(),
+                  std::make_unique<MockIntentClassifier>());
+        }));
+
+    InProcessBrowserTest::SetUpOnMainThread();
   }
 
  protected:
+  virtual void InitSignin() {
+    OptimizationGuideKeyedService* optimization_guide_keyed_service =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile());
+    optimization_guide_keyed_service->AllowUnsignedUserForTesting(
+        optimization_guide::UserVisibleFeatureKey::kHistorySearch);
+    optimization_guide::EnableSigninAndModelExecutionCapability(
+        browser()->profile());
+  }
+
   HistoryEmbeddingsService* service() {
     return HistoryEmbeddingsServiceFactory::GetForProfile(browser()->profile());
   }
@@ -91,12 +118,9 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
     // properly.
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings,
-          {
-              {"UseMlEmbedder", "false"},
-              {"SendQualityLog", "true"},
-              {"ContentVisibilityThreshold", "0.01"},
-              {"UseUrlFilter", "false"},
-          }},
+          {{"SendQualityLog", "true"},
+           {"ContentVisibilityThreshold", "0.01"},
+           {"UseUrlFilter", "false"}}},
          {page_content_annotations::features::kPageContentAnnotations, {{}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}}
@@ -111,10 +135,22 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
   page_content_annotations::TestPageContentAnnotator page_content_annotator_;
 };
 
+class HistoryEmbeddingsRestrictedSigninBrowserTest
+    : public HistoryEmbeddingsBrowserTest {
+ protected:
+  void InitSignin() override {
+    OptimizationGuideKeyedService* optimization_guide_keyed_service =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(
+            browser()->profile());
+    optimization_guide_keyed_service->AllowUnsignedUserForTesting(
+        optimization_guide::UserVisibleFeatureKey::kHistorySearch);
+    optimization_guide::EnableSigninWithoutModelExecutionCapability(
+        browser()->profile());
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, ServiceFactoryWorks) {
-  auto* service =
-      HistoryEmbeddingsServiceFactory::GetForProfile(browser()->profile());
-  EXPECT_TRUE(service);
+  EXPECT_TRUE(service());
 }
 
 IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, BrowserRetrievesPassages) {
@@ -175,8 +211,7 @@ class HistoryEmbeddingsWithLowAggregationBrowserTest
   void InitializeFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings,
-          {{"UseMlEmbedder", "false"},
-           {"SendQualityLog", "true"},
+          {{"SendQualityLog", "true"},
            {"PassageExtractionMaxWordsPerAggregatePassage", "10"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
@@ -308,9 +343,9 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, LogDataIsPrepared) {
       ScoredUrlRow(ScoredUrl(0, 0, base::Time::Now(), 0.5f)),
   };
   service()->SendQualityLog(
-      result,
-      optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED, {1},
-      3, false);
+      result, {1}, 3,
+      optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED,
+      optimization_guide::proto::UiSurface::UI_SURFACE_HISTORY_PAGE);
   histogram_tester.ExpectUniqueSample(
       "History.Embeddings.Quality.LogEntryPrepared", true, 1);
 }
@@ -320,9 +355,7 @@ class HistoryEmbeddingsWithDatabaseCacheBrowserTest
   void InitializeFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings,
-          {{"UseMlEmbedder", "false"},
-           {"SendQualityLog", "true"},
-           {"UseDatabaseBeforeEmbedder", "true"}}},
+          {{"SendQualityLog", "true"}, {"UseDatabaseBeforeEmbedder", "true"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -406,9 +439,7 @@ class HistoryEmbeddingsWithUrlFilterBrowserTest
   void InitializeFeatureList() override {
     feature_list_.InitWithFeaturesAndParameters(
         {{kHistoryEmbeddings,
-          {{"UseMlEmbedder", "false"},
-           {"SendQualityLog", "true"},
-           {"UseUrlFilter", "true"}}},
+          {{"SendQualityLog", "true"}, {"UseUrlFilter", "true"}}},
 #if BUILDFLAG(IS_CHROMEOS)
          {chromeos::features::kFeatureManagementHistoryEmbedding, {{}}},
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -482,6 +513,108 @@ IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsWithUrlFilterBrowserTest,
                                       1);
   histogram_tester.ExpectUniqueSample(
       "History.Embeddings.NumMatchedUrlsVisible", 1, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest,
+                       SearchReceivesAnswerWhenQueryIsAnswerable) {
+  OverrideVisibilityScoresForTesting({
+      {"A a B C b a 2 D", 0.99},
+  });
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::test::TestFuture<UrlPassages> store_future;
+  callback_for_tests() = store_future.GetRepeatingCallback();
+
+  const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(store_future.Wait());
+
+  {
+    base::HistogramTester histogram_tester;
+
+    // Search with an answerable query by ending it with '?'.
+    base::test::TestFuture<SearchResult> search_future;
+    service()->Search(nullptr, "A B C D?", {}, 1,
+                      search_future.GetRepeatingCallback());
+    SearchResult first_result = search_future.Take();
+    EXPECT_EQ(first_result.scored_url_rows.size(), 1u);
+    EXPECT_EQ(first_result.answerer_result.status,
+              ComputeAnswerStatus::kUnspecified);
+    EXPECT_TRUE(first_result.AnswerText().empty());
+
+    // Second published search result includes loading state.
+    SearchResult second_result = search_future.Take();
+    EXPECT_EQ(second_result.scored_url_rows.size(), 1u);
+    EXPECT_EQ(second_result.answerer_result.status,
+              ComputeAnswerStatus::kLoading);
+    EXPECT_TRUE(second_result.AnswerText().empty());
+
+    SearchResult final_result = search_future.Take();
+    EXPECT_EQ(final_result.scored_url_rows.size(), 1u);
+    EXPECT_EQ(final_result.answerer_result.status,
+              ComputeAnswerStatus::kSuccess);
+    EXPECT_FALSE(final_result.AnswerText().empty());
+
+    histogram_tester.ExpectUniqueSample("History.Embeddings.QueryAnswerable",
+                                        true, 1);
+  }
+  {
+    base::HistogramTester histogram_tester;
+
+    // Search with a query that does not signal query intent (not answerable).
+    base::test::TestFuture<SearchResult> search_future;
+    service()->Search(nullptr, "A B C D", {}, 1,
+                      search_future.GetRepeatingCallback());
+    SearchResult first_result = search_future.Take();
+    EXPECT_EQ(first_result.scored_url_rows.size(), 1u);
+    EXPECT_TRUE(first_result.AnswerText().empty());
+
+    // Second search result with answer will never be published, and the
+    // histogram being logged indicates the service finished without consulting
+    // the answerer.
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return histogram_tester.GetBucketCount(
+                 "History.Embeddings.QueryAnswerable", false) > 0;
+    }));
+    histogram_tester.ExpectUniqueSample("History.Embeddings.QueryAnswerable",
+                                        false, 1);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsRestrictedSigninBrowserTest,
+                       SearchDoesNotReceiveAnswerForRestrictedSignin) {
+  OverrideVisibilityScoresForTesting({
+      {"A a B C b a 2 D", 0.99},
+  });
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  base::test::TestFuture<UrlPassages> store_future;
+  callback_for_tests() = store_future.GetRepeatingCallback();
+
+  const GURL url = embedded_test_server()->GetURL("/inner_text/test1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  EXPECT_TRUE(store_future.Wait());
+
+  base::HistogramTester histogram_tester;
+
+  // Search with a query that signals question intent, but is not answerable
+  // due to account restriction.
+  base::test::TestFuture<SearchResult> search_future;
+  service()->Search(nullptr, "A B C D?", {}, 1,
+                    search_future.GetRepeatingCallback());
+  SearchResult first_result = search_future.Take();
+  EXPECT_EQ(first_result.scored_url_rows.size(), 1u);
+  EXPECT_TRUE(first_result.AnswerText().empty());
+
+  // Second search result with answer will never be published, and the
+  // histogram being logged indicates the service finished without consulting
+  // the answerer.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return histogram_tester.GetBucketCount("History.Embeddings.QueryAnswerable",
+                                           false) > 0;
+  }));
+  histogram_tester.ExpectUniqueSample("History.Embeddings.QueryAnswerable",
+                                      false, 1);
 }
 
 }  // namespace history_embeddings

@@ -5,7 +5,10 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_REQUEST_DATA_PROVIDER_H_
 #define CHROMEOS_ASH_COMPONENTS_BOCA_BABELORCA_TACHYON_REQUEST_DATA_PROVIDER_H_
 
+#include <optional>
 #include <string>
+
+#include "base/functional/callback_forward.h"
 
 namespace ash::babelorca {
 
@@ -18,9 +21,15 @@ class TachyonRequestDataProvider {
 
   virtual ~TachyonRequestDataProvider() = default;
 
-  virtual std::string session_id() = 0;
-  virtual std::string tachyon_token() = 0;
-  virtual std::string group_id() = 0;
+  // Signin to Tachyon and run the callback with `true` on success and with
+  // `false` otherwise.
+  virtual void SigninToTachyonAndRespond(
+      base::OnceCallback<void(bool)> on_response_cb) = 0;
+
+  virtual std::optional<std::string> session_id() const = 0;
+  virtual std::optional<std::string> tachyon_token() const = 0;
+  virtual std::optional<std::string> group_id() const = 0;
+  virtual std::optional<std::string> sender_email() const = 0;
 
  protected:
   TachyonRequestDataProvider() = default;

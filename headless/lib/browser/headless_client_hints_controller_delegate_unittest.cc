@@ -17,12 +17,6 @@ TEST(HeadlessClientHintsControllerDelegateTests, GetNetworkQualityTracker) {
   EXPECT_EQ(delegate.GetNetworkQualityTracker(), nullptr);
 }
 
-TEST(HeadlessClientHintsControllerDelegateTests, AreThirdPartyCookiesBlocked) {
-  HeadlessClientHintsControllerDelegate delegate;
-  EXPECT_FALSE(delegate.AreThirdPartyCookiesBlocked(GURL("https://example.com"),
-                                                    nullptr));
-}
-
 TEST(HeadlessClientHintsControllerDelegateTests, PersistentClientHints) {
   HeadlessClientHintsControllerDelegate delegate;
   auto kOrigin = url::Origin::Create(GURL("https://example.com"));

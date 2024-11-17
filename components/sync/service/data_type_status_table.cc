@@ -31,84 +31,68 @@ DataTypeStatusTable::DataTypeStatusTable(const DataTypeStatusTable& other) =
 
 DataTypeStatusTable::~DataTypeStatusTable() = default;
 
-void DataTypeStatusTable::UpdateFailedDataTypes(const TypeErrorMap& errors) {
-  DVLOG(1) << "Setting " << errors.size() << " new failed types.";
-
-  for (const auto& [data_type, error] : errors) {
-    UpdateFailedDataType(data_type, error);
-  }
-}
-
 bool DataTypeStatusTable::UpdateFailedDataType(DataType type,
                                                const SyncError& error) {
   switch (error.error_type()) {
-    case SyncError::UNSET:
-      NOTREACHED_IN_MIGRATION();
-      break;
-    case SyncError::DATATYPE_ERROR:
+    case SyncError::MODEL_ERROR:
+    case SyncError::CONFIGURATION_ERROR:
       return data_type_errors_.emplace(type, error).second;
-    case SyncError::DATATYPE_POLICY_ERROR:
-      return data_type_policy_errors_.emplace(type, error).second;
     case SyncError::CRYPTO_ERROR:
       return crypto_errors_.emplace(type, error).second;
-    case SyncError::UNREADY_ERROR:
-      return unready_errors_.emplace(type, error).second;
+    case SyncError::PRECONDITION_ERROR_WITH_KEEP_DATA:
+      return precondition_errors_with_keep_data_.emplace(type, error).second;
+    case SyncError::PRECONDITION_ERROR_WITH_CLEAR_DATA:
+      return precondition_errors_with_clear_data_.emplace(type, error).second;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void DataTypeStatusTable::Reset() {
   DVLOG(1) << "Resetting data type errors.";
   data_type_errors_.clear();
-  data_type_policy_errors_.clear();
+  precondition_errors_with_clear_data_.clear();
   crypto_errors_.clear();
-  unready_errors_.clear();
+  precondition_errors_with_keep_data_.clear();
 }
 
 void DataTypeStatusTable::ResetCryptoErrors() {
   crypto_errors_.clear();
 }
 
-bool DataTypeStatusTable::ResetDataTypePolicyErrorFor(DataType type) {
-  return data_type_policy_errors_.erase(type) > 0;
-}
-
-bool DataTypeStatusTable::ResetUnreadyErrorFor(DataType type) {
-  return unready_errors_.erase(type) > 0;
+bool DataTypeStatusTable::ResetPreconditionErrorFor(DataType type) {
+  // Avoid operator || below to make sure `type` is removed from both sets, for
+  // the hypothetical case where it is present in both.
+  return (precondition_errors_with_clear_data_.erase(type) +
+          precondition_errors_with_keep_data_.erase(type)) > 0;
 }
 
 DataTypeStatusTable::TypeErrorMap DataTypeStatusTable::GetAllErrors() const {
   TypeErrorMap result;
   result.insert(data_type_errors_.begin(), data_type_errors_.end());
-  result.insert(data_type_policy_errors_.begin(),
-                data_type_policy_errors_.end());
+  result.insert(precondition_errors_with_clear_data_.begin(),
+                precondition_errors_with_clear_data_.end());
   result.insert(crypto_errors_.begin(), crypto_errors_.end());
-  result.insert(unready_errors_.begin(), unready_errors_.end());
+  result.insert(precondition_errors_with_keep_data_.begin(),
+                precondition_errors_with_keep_data_.end());
   return result;
 }
 
 DataTypeSet DataTypeStatusTable::GetFailedTypes() const {
   DataTypeSet result = GetFatalErrorTypes();
   result.PutAll(GetCryptoErrorTypes());
-  result.PutAll(GetUnreadyErrorTypes());
+  result.PutAll(GetTypesFromErrorMap(precondition_errors_with_keep_data_));
   return result;
 }
 
 DataTypeSet DataTypeStatusTable::GetFatalErrorTypes() const {
   DataTypeSet result;
   result.PutAll(GetTypesFromErrorMap(data_type_errors_));
-  result.PutAll(GetTypesFromErrorMap(data_type_policy_errors_));
+  result.PutAll(GetTypesFromErrorMap(precondition_errors_with_clear_data_));
   return result;
 }
 
 DataTypeSet DataTypeStatusTable::GetCryptoErrorTypes() const {
   DataTypeSet result = GetTypesFromErrorMap(crypto_errors_);
-  return result;
-}
-
-DataTypeSet DataTypeStatusTable::GetUnreadyErrorTypes() const {
-  DataTypeSet result = GetTypesFromErrorMap(unready_errors_);
   return result;
 }
 

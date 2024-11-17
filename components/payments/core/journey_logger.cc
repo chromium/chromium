@@ -147,7 +147,7 @@ void JourneyLogger::SetSelectedMethod(PaymentMethodCategory category) {
       SetEvent2Occurred(Event2::kSelectedOther);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 }
 
@@ -253,7 +253,7 @@ void JourneyLogger::RecordJourneyStatsHistograms(
     case COMPLETION_STATUS_COULD_NOT_SHOW:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // These following metrics only make sense if the Payment Request was
@@ -296,7 +296,7 @@ void JourneyLogger::RecordEventsMetric(CompletionStatus completion_status) {
       SetEvent2Occurred(Event2::kUserOptedOut);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // Add whether the user had and initial form of payment to the events.

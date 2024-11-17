@@ -409,7 +409,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
 
   const MediaTracksUpdatedCB media_tracks_updated_cb_;
 
-  base::flat_map<MediaTrack::Id, FFmpegDemuxerStream*>
+  base::flat_map<MediaTrack::Id, raw_ptr<FFmpegDemuxerStream, CtnExperimental>>
       track_id_to_demux_stream_map_;
 
   const bool is_local_file_;

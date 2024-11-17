@@ -3,18 +3,25 @@
 <translationbundle lang="sv">
 <translation id="1444443021901415601">Chrome registrerar ämnen du är intresserad av baserat på din senaste webbhistorik</translation>
 <translation id="2252052615723281030">När du är inloggad i Chrome bidrar den här inställningen till att hålla din IP-adress privat. Om Chrome misstänker att en webbplats spårar dig kan en del av din trafik skickas via integritetsservrar.</translation>
+<translation id="235789365079050412">Googles integritetspolicy</translation>
 <translation id="2793385791865768072">Chromium registrerar ämnen du är intresserad av baserat på din senaste webbhistorik</translation>
+<translation id="2979365474350987274">Tredjepartscookies är begränsade</translation>
 <translation id="33479675708419823">När du är inloggad i Chrome bidrar den här inställningen till att hålla din IP-adress privat. Om Chrome misstänker att en webbplats spårar dig kan en del av din trafik skickas via integritetsservrar. Läs mer om <ph name="LINK_BEGIN" />hur IP-skydd fungerar<ph name="LINK_END" />.</translation>
 <translation id="3529311220178827364">Läs mer om att dölja din IP-adress</translation>
+<translation id="385051799172605136">Tillbaka</translation>
 <translation id="4041687306270459969">Annonsämnen som är äldre än fyra veckor raderas automatiskt. Exempel på ämnen är Sport, Kläder med mera</translation>
 <translation id="4177501066905053472">Annonsämnen</translation>
 <translation id="4301151630239508244">Annonsämnen är bara en av många saker som en webbplats kan använda för att anpassa annonser. Webbplatser kan visa annonser även utan annonsämnen, men de kanske är mindre anpassade. Läs mer om hur du <ph name="BEGIN_LINK_1" />hanterar annonsintegritet<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Läs mer om hur Google skyddar din data i vår <ph name="BEGIN_LINK" />integritetspolicy<ph name="END_LINK" />.</translation>
 <translation id="453692855554576066">Du kan se dina annonsämnen i Chromium-inställningarna och blockera de du inte vill ska delas med webbplatser</translation>
 <translation id="4598427486995631491">Dölj din IP-adress</translation>
 <translation id="4692439979815346597">Du kan se dina annonsämnen i Chrome-inställningarna och blockera de du inte vill ska delas med webbplatser</translation>
 <translation id="5413586988657235240">Webbplatser du besöker kan be Chromium om ämnen för att visa relevanta annonser samtidigt som din webbhistorik och identitet skyddas</translation>
+<translation id="6053735090575989697">Läs mer om hur Google skyddar din data i vår integritetspolicy.</translation>
 <translation id="6186536480878693792">Webbplatser du besöker kan be Chrome om ämnen för att visa relevanta annonser samtidigt som din webbhistorik och identitet skyddas</translation>
+<translation id="6195163219142236913">Tredjepartscookies är begränsade</translation>
 <translation id="6371812158043974664">När du är inloggad i Chromium bidrar den här inställningen till att hålla din IP-adress privat. Om Chromium misstänker att en webbplats spårar dig kan en del av din trafik skickas via integritetsservrar. Läs mer om <ph name="LINK_BEGIN" />hur IP-skydd fungerar<ph name="LINK_END" />.</translation>
+<translation id="6398358690696005758">Läs mer om hur Google skyddar din data i vår <ph name="BEGIN_LINK1" />integritetspolicy<ph name="LINK_END1" />.</translation>
 <translation id="7040031291654706261">Läs mer om <ph name="BEGIN_LINK" />hur IP-skydd fungerar<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Granska inställningen för annonsämnen</translation>
 </translationbundle>

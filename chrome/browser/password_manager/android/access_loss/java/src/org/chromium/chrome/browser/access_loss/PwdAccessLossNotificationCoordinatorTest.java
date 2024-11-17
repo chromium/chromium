@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -33,6 +32,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker.SystemNotificationType;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.components.browser_ui.notifications.AsyncNotificationManagerProxy;
+import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
@@ -50,11 +50,9 @@ public class PwdAccessLossNotificationCoordinatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
-
         mContext = RuntimeEnvironment.getApplication();
-        mCoordinator =
-                new PwdAccessLossNotificationCoordinator(mContext, mNotificationManagerProxy);
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(mNotificationManagerProxy);
+        mCoordinator = new PwdAccessLossNotificationCoordinator(mContext);
     }
 
     @Test

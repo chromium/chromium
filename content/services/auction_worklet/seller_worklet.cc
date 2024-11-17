@@ -39,12 +39,14 @@
 #include "content/services/auction_worklet/public/cpp/auction_network_events_delegate.h"
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "content/services/auction_worklet/public/mojom/trusted_signals_cache.mojom.h"
 #include "content/services/auction_worklet/real_time_reporting_bindings.h"
 #include "content/services/auction_worklet/register_ad_beacon_bindings.h"
 #include "content/services/auction_worklet/report_bindings.h"
 #include "content/services/auction_worklet/seller_lazy_filler.h"
 #include "content/services/auction_worklet/shared_storage_bindings.h"
 #include "content/services/auction_worklet/trusted_signals.h"
+#include "content/services/auction_worklet/trusted_signals_kvv2_manager.h"
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "content/services/auction_worklet/worklet_loader.h"
 #include "content/services/auction_worklet/worklet_util.h"
@@ -427,13 +429,18 @@ SellerWorklet::SellerWorklet(
         pending_url_loader_factory,
     mojo::PendingRemote<auction_worklet::mojom::AuctionNetworkEventsHandler>
         auction_network_events_handler,
+    TrustedSignalsKVv2Manager* trusted_signals_kvv2_manager,
     const GURL& decision_logic_url,
     const std::optional<GURL>& trusted_scoring_signals_url,
     const url::Origin& top_window_origin,
     mojom::AuctionWorkletPermissionsPolicyStatePtr permissions_policy_state,
     std::optional<uint16_t> experiment_group_id,
-    GetNextThreadIndexCallback get_next_thread_index_callback)
+    mojom::TrustedSignalsPublicKeyPtr public_key,
+    GetNextThreadIndexCallback get_next_thread_index_callback,
+    mojo::PendingRemote<auction_worklet::mojom::LoadSellerWorkletClient>
+        load_seller_worklet_client)
     : url_loader_factory_(std::move(pending_url_loader_factory)),
+      trusted_signals_kvv2_manager_(trusted_signals_kvv2_manager),
       script_source_url_(decision_logic_url),
       trusted_scoring_signals_origin_(
           trusted_scoring_signals_url ? std::make_optional(url::Origin::Create(
@@ -442,7 +449,8 @@ SellerWorklet::SellerWorklet(
       auction_network_events_handler_(
           std::move(auction_network_events_handler)),
       get_next_thread_index_callback_(
-          std::move(get_next_thread_index_callback)) {
+          std::move(get_next_thread_index_callback)),
+      load_seller_worklet_client_(std::move(load_seller_worklet_client)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
   DCHECK(!v8_helpers.empty());
@@ -475,7 +483,7 @@ SellerWorklet::SellerWorklet(
                  *trusted_scoring_signals_url,
                  /*experiment_group_id=*/experiment_group_id,
                  /*trusted_bidding_signals_slot_size_param=*/std::string(),
-                 /*public_key=*/nullptr,
+                 std::move(public_key),
                  v8_helpers_[get_next_thread_index_callback_.Run()].get())
            : nullptr);
   trusted_signals_relation_ = ClassifyTrustedSignals(
@@ -509,6 +517,7 @@ void SellerWorklet::ScoreAd(
     const std::optional<blink::AdCurrency>& bid_currency,
     const blink::AuctionConfig::NonSharedParams&
         auction_ad_config_non_shared_params,
+    mojom::TrustedSignalsCacheKeyPtr trusted_signals_cache_key,
     const std::optional<GURL>& direct_from_seller_seller_signals,
     const std::optional<std::string>&
         direct_from_seller_seller_signals_header_ad_slot,
@@ -529,6 +538,7 @@ void SellerWorklet::ScoreAd(
     bool browser_signal_for_debugging_only_in_cooldown_or_lockout,
     const std::optional<base::TimeDelta> seller_timeout,
     uint64_t trace_id,
+    const url::Origin& bidder_joining_origin,
     mojo::PendingRemote<auction_worklet::mojom::ScoreAdClient>
         score_ad_client) {
   CHECK((!direct_from_seller_seller_signals &&
@@ -552,6 +562,7 @@ void SellerWorklet::ScoreAd(
   score_ad_task->component_expect_bid_currency = component_expect_bid_currency;
   score_ad_task->browser_signal_interest_group_owner =
       browser_signal_interest_group_owner;
+  score_ad_task->bidder_joining_origin = bidder_joining_origin;
   score_ad_task->browser_signal_render_url = browser_signal_render_url;
   score_ad_task->browser_signal_selected_buyer_and_seller_reporting_id =
       browser_signal_selected_buyer_and_seller_reporting_id;
@@ -614,9 +625,38 @@ void SellerWorklet::ScoreAd(
   score_ad_task->trace_wait_deps_start = base::TimeTicks::Now();
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("fledge", "wait_score_ad_deps", trace_id);
 
-  // If `trusted_signals_request_manager_` exists, there's a trusted scoring
-  // signals URL which needs to be fetched before the auction can be run.
+  if (trusted_signals_cache_key) {
+    // When using the TrustedSignalsCache, must have already discovered that the
+    // signals are allowed before a key is provided. If signals were not
+    // permitted, a null key should be passed in, and no signals will be
+    // retrieved.
+    CHECK(trusted_signals_relation_ ==
+              SignalsOriginRelation::kSameOriginSignals ||
+          trusted_signals_relation_ ==
+              SignalsOriginRelation::kPermittedCrossOriginSignals);
+
+    score_ad_task->waiting_for_signals_fetch = true;
+    score_ad_task->trusted_scoring_signals_kvv2_request =
+        trusted_signals_kvv2_manager_->RequestSignals(
+            TrustedSignalsKVv2Manager::SignalsType::kScoring,
+            trusted_signals_cache_key->compression_group_token,
+            trusted_signals_cache_key->partition_id,
+            base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
+                           base::Unretained(this), score_ad_task));
+    return;
+  }
+
   if (trusted_signals_request_manager_) {
+    // If there's a coordinator and `trusted_signals_kvv2_manager_` is non-null,
+    // then the KVv2 cache should be in use, and either the caller should have
+    // passed in a `trusted_signals_cache_key`, or the trusted signals URL is
+    // cross-origin and we've learned that cross-origin signals aren't allowed,
+    // which will result in the destruction of
+    // `trusted_signals_request_manager_`.
+    CHECK(!auction_ad_config_non_shared_params
+               .trusted_scoring_signals_coordinator ||
+          !trusted_signals_kvv2_manager_);
+
     // Can only start fetching trusted seller signals if they're same-origin or
     // we have confirmation they are authorized by guaranteed-same-origin
     // script, as otherwise we may end up sending sensitive IG information to an
@@ -1053,20 +1093,17 @@ void SellerWorklet::V8State::ScoreAd(
   }
   args.push_back(direct_from_seller_signals);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kFledgePermitCrossOriginTrustedSignals)) {
-    v8::Local<v8::Value> cross_origin_trusted_scoring_signals_value;
-    if (trusted_signals_relation_ ==
-        SignalsOriginRelation::kPermittedCrossOriginSignals) {
-      cross_origin_trusted_scoring_signals_value =
-          TrustedSignals::Result::WrapCrossOriginSignals(
-              v8_helper_.get(), context, *trusted_scoring_signals_origin_,
-              trusted_scoring_signals_value);
-    } else {
-      cross_origin_trusted_scoring_signals_value = v8::Null(isolate);
-    }
-    args.push_back(cross_origin_trusted_scoring_signals_value);
+  v8::Local<v8::Value> cross_origin_trusted_scoring_signals_value;
+  if (trusted_signals_relation_ ==
+      SignalsOriginRelation::kPermittedCrossOriginSignals) {
+    cross_origin_trusted_scoring_signals_value =
+        TrustedSignals::Result::WrapCrossOriginSignals(
+            v8_helper_.get(), context, *trusted_scoring_signals_origin_,
+            trusted_scoring_signals_value);
+  } else {
+    cross_origin_trusted_scoring_signals_value = v8::Null(isolate);
   }
+  args.push_back(cross_origin_trusted_scoring_signals_value);
 
   v8::Local<v8::Value> score_ad_result;
   v8_helper_->MaybeTriggerInstrumentationBreakpoint(
@@ -1916,6 +1953,15 @@ void SellerWorklet::OnDownloadComplete(
 
   DCHECK_NE(trusted_signals_relation_,
             SignalsOriginRelation::kUnknownPermissionCrossOriginSignals);
+  if (load_seller_worklet_client_) {
+    mojo::Remote<mojom::LoadSellerWorkletClient>(
+        std::move(load_seller_worklet_client_))
+        ->SellerWorkletLoaded(
+            trusted_signals_relation_ ==
+                SignalsOriginRelation::kSameOriginSignals ||
+            trusted_signals_relation_ ==
+                SignalsOriginRelation::kPermittedCrossOriginSignals);
+  }
 
   for (size_t i = 0; i < v8_runners_.size(); ++i) {
     v8_runners_[i]->PostTask(
@@ -1999,6 +2045,9 @@ void SellerWorklet::OnGotCrossOriginTrustedSignalsPermissions(
   // more.
   trusted_signals_request_manager_.reset();
 
+  // The KVv2 manager will not be needed.
+  trusted_signals_kvv2_manager_ = nullptr;
+
   // If we're here, we don't actually have to worry about kicking off scoreAd()
   // execution since we only got the headers for the script; the body hasn't
   // been handed to us yet.
@@ -2011,14 +2060,30 @@ void SellerWorklet::StartFetchingSignalsForTask(
             SignalsOriginRelation::kSameOriginSignals ||
         trusted_signals_relation_ ==
             SignalsOriginRelation::kPermittedCrossOriginSignals);
-  score_ad_task->trusted_scoring_signals_request =
-      trusted_signals_request_manager_->RequestScoringSignals(
-          score_ad_task->browser_signal_render_url,
-          score_ad_task->browser_signal_ad_components,
-          score_ad_task->auction_ad_config_non_shared_params
-              .max_trusted_scoring_signals_url_length,
-          base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
-                         base::Unretained(this), score_ad_task));
+
+  score_ad_task->waiting_for_signals_fetch = true;
+  if (trusted_signals_request_manager_->HasPublicKey()) {
+    DCHECK(base::FeatureList::IsEnabled(
+        blink::features::kFledgeTrustedSignalsKVv2Support));
+
+    score_ad_task->trusted_scoring_signals_request =
+        trusted_signals_request_manager_->RequestKVv2ScoringSignals(
+            score_ad_task->browser_signal_render_url,
+            score_ad_task->browser_signal_ad_components,
+            score_ad_task->browser_signal_interest_group_owner,
+            score_ad_task->bidder_joining_origin,
+            base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
+                           base::Unretained(this), score_ad_task));
+  } else {
+    score_ad_task->trusted_scoring_signals_request =
+        trusted_signals_request_manager_->RequestScoringSignals(
+            score_ad_task->browser_signal_render_url,
+            score_ad_task->browser_signal_ad_components,
+            score_ad_task->auction_ad_config_non_shared_params
+                .max_trusted_scoring_signals_url_length,
+            base::BindOnce(&SellerWorklet::OnTrustedScoringSignalsDownloaded,
+                           base::Unretained(this), score_ad_task));
+  }
 }
 
 void SellerWorklet::OnTrustedScoringSignalsDownloaded(
@@ -2026,11 +2091,15 @@ void SellerWorklet::OnTrustedScoringSignalsDownloaded(
     scoped_refptr<TrustedSignals::Result> result,
     std::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  DCHECK(task->waiting_for_signals_fetch);
 
-  task->trusted_scoring_signals_result = std::move(result);
+  task->waiting_for_signals_fetch = false;
   task->trusted_bidding_signals_fetch_failed = !result ? true : false;
+  task->trusted_scoring_signals_result = std::move(result);
   task->trusted_scoring_signals_error_msg = std::move(error_msg);
-  // Clean up single-use object, now that it has done its job.
+  // Clean up single-use object, now that it has done its job. Still need to
+  // keep `trusted_scoring_signals_kvv2_request` alive, if non-null, to allow
+  // reusing the cached data.
   task->trusted_scoring_signals_request.reset();
 
   task->wait_trusted_signals =
@@ -2089,7 +2158,7 @@ bool SellerWorklet::IsReadyToScoreAd(const ScoreAdTask& task) const {
   // The first check should be implied by IsCodeReady(), but best to be safe.
   return trusted_signals_relation_ !=
              SignalsOriginRelation::kUnknownPermissionCrossOriginSignals &&
-         !task.trusted_scoring_signals_request &&
+         !task.waiting_for_signals_fetch &&
          !task.direct_from_seller_request_seller_signals &&
          !task.direct_from_seller_request_auction_signals && IsCodeReady();
 }

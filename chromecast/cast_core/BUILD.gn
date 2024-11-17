@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//base/allocator/partition_allocator/partition_alloc.gni")
 import("//chromecast/chromecast.gni")
 
 cast_source_set("cast_core_switches") {
@@ -68,6 +69,15 @@ cast_executable("core_runtime_starboard") {
     ":core_runtime_lib_starboard",
     "//chromecast:chromecast_locales_pak",
   ]
+  if (!use_partition_alloc_as_malloc) {
+    # Makes all symbols local.
+    #
+    # This cannot be done if use_partition_alloc_as_malloc is true, since that
+    # can cause issues with conflicting malloc/free implementations. This
+    # restriction can be removed once https://crbug.com/375680879 is resolved.
+    ldflags = [ "-Wl,--version-script=" +
+                rebase_path("core_runtime_starboard.sym", root_build_dir) ]
+  }
 }
 
 cast_source_set("child_log_process") {

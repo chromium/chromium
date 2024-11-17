@@ -66,7 +66,8 @@ BrowsingTopicsServiceFactory::BrowsingTopicsServiceFactory()
 
 BrowsingTopicsServiceFactory::~BrowsingTopicsServiceFactory() = default;
 
-KeyedService* BrowsingTopicsServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+BrowsingTopicsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!base::FeatureList::IsEnabled(blink::features::kBrowsingTopics))
     return nullptr;
@@ -118,7 +119,7 @@ KeyedService* BrowsingTopicsServiceFactory::BuildServiceInstanceFor(
   std::unique_ptr<Annotator> annotator = std::make_unique<AnnotatorNoOp>();
 #endif
 
-  return new BrowsingTopicsServiceImpl(
+  return std::make_unique<BrowsingTopicsServiceImpl>(
       profile->GetPath(), privacy_sandbox_settings, history_service,
       site_data_manager, std::move(annotator),
       base::BindRepeating(

@@ -55,6 +55,16 @@ void XRRenderState::Update(const XRRenderStateInit* init) {
   }
 }
 
+XRLayer* XRRenderState::GetFirstLayer() const {
+  if (base_layer_) {
+    return base_layer_.Get();
+  }
+  if (layers_->size()) {
+    return layers_->at(0);
+  }
+  return nullptr;
+}
+
 HTMLCanvasElement* XRRenderState::output_canvas() const {
   if (base_layer_) {
     return base_layer_->output_canvas();

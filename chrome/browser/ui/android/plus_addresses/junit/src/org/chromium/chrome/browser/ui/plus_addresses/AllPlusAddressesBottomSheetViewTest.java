@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.ui.plus_addresses.AllPlusAddressesBottomSheetProperties.PLUS_PROFILES;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.View.MeasureSpec;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -29,6 +30,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -46,9 +48,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class AllPlusAddressesBottomSheetViewTest {
     private static final int WIDTH = 2000;
     private static final int HEIGHT = 2000;
-    private static final String BOTTOMSHEET_TITLE = "Bottom sheet title";
-    private static final String BOTTOMSHEET_WARNING = "Bottom sheet warning";
-    private static final String BOTTOMSHEET_QUERY_HINT = "Query hint";
     private static final PlusProfile PROFILE_1 =
             new PlusProfile("example@gmail.com", "google.com", "https://google.com");
 
@@ -80,27 +79,27 @@ public class AllPlusAddressesBottomSheetViewTest {
 
     @Test
     @SmallTest
-    public void testSetTitle() {
-        mView.setTitle(BOTTOMSHEET_TITLE);
+    public void testBottomSheetStrings() {
+        Context context = RuntimeEnvironment.application;
+
         TextView title = mView.getContentView().findViewById(R.id.sheet_title);
-        assertEquals(title.getText(), BOTTOMSHEET_TITLE);
-    }
+        assertEquals(
+                title.getText(),
+                context.getString(
+                        R.string.plus_address_all_plus_addresses_bottomsheet_title_android));
 
-    @Test
-    @SmallTest
-    public void testSetWarning() {
-        mView.setWarning(BOTTOMSHEET_WARNING);
-        TextView title = mView.getContentView().findViewById(R.id.sheet_warning);
-        assertEquals(title.getText(), BOTTOMSHEET_WARNING);
-    }
+        TextView warning = mView.getContentView().findViewById(R.id.sheet_warning);
+        assertEquals(
+                warning.getText(),
+                context.getString(
+                        R.string.plus_address_all_plus_addresses_bottomsheet_warning_android));
 
-    @Test
-    @SmallTest
-    public void testQueryHint() {
-        mView.setQueryHint(BOTTOMSHEET_QUERY_HINT);
         SearchView search =
                 mView.getContentView().findViewById(R.id.all_plus_addresses_search_view);
-        assertEquals(search.getQueryHint(), BOTTOMSHEET_QUERY_HINT);
+        assertEquals(
+                search.getQueryHint(),
+                context.getString(
+                        R.string.plus_address_all_plus_addresses_bottomsheet_query_hint_android));
     }
 
     @Test

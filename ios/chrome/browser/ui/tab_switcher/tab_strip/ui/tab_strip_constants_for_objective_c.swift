@@ -22,6 +22,7 @@ import ios_chrome_browser_ui_tab_switcher_tab_strip_ui_swift_constants
   public static let horizontalSpacing = TabStripConstants.TabItem.horizontalSpacing
   public static let closeButtonAccessibilityIdentifier = TabStripConstants.TabItem
     .closeButtonAccessibilityIdentifier
+  public static let maxWidth = TabStripConstants.TabItem.maxWidth
 }
 
 /// Bridge to access `TabStripConstants.GroupItem` from Objective-C code.

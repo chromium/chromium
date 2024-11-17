@@ -13,6 +13,7 @@
 #include "ash/app_list/apps_collections_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -55,7 +56,6 @@
 #include "chrome/browser/ash/app_list/search/test/app_list_search_test_helper.h"
 #include "chrome/browser/ash/app_list/search/test/search_results_changed_waiter.h"
 #include "chrome/browser/ash/app_list/test/chrome_app_list_test_support.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/hats/hats_notification_controller.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
@@ -79,7 +79,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -106,11 +105,11 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/window.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/display.h"
 #include "ui/display/scoped_display_for_new_windows.h"
 #include "ui/display/screen.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/wm/core/window_util.h"
 
 // Browser Test for AppListClientImpl.
@@ -817,30 +816,6 @@ IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest,
   }
   EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(),
             client->GetAppListDisplayId());
-}
-
-class AppListClientImplLacrosOnlyBrowserTest
-    : public AppListClientImplBrowserTest {
- public:
-  AppListClientImplLacrosOnlyBrowserTest() {
-    feature_list_.InitWithFeatures(ash::standalone_browser::GetFeatureRefs(),
-                                   {});
-    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
-        ash::switches::kEnableLacrosForTesting);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  base::test::ScopedCommandLine scoped_command_line_;
-};
-
-IN_PROC_BROWSER_TEST_F(AppListClientImplLacrosOnlyBrowserTest, ChromeApp) {
-  AppListControllerDelegate* delegate = AppListClientImpl::GetInstance();
-  ASSERT_TRUE(delegate);
-  ASSERT_TRUE(profile());
-  EXPECT_EQ(
-      extensions::LAUNCH_TYPE_INVALID,
-      delegate->GetExtensionLaunchType(profile(), app_constants::kChromeAppId));
 }
 
 IN_PROC_BROWSER_TEST_F(AppListClientImplBrowserTest, ChromeApp) {
@@ -1641,11 +1616,10 @@ IN_PROC_BROWSER_TEST_P(AppListModifiedDefaultAppOrderTest,
   // Install some default apps by syncing.
   // In the default app order, youtube appears before the camera app. For the
   // apps collections experimental arm, camera appears first.
-  AddSyncedItem(web_app::kCameraAppId, model_updater);
+  AddSyncedItem(ash::kCameraAppId, model_updater);
   AddSyncedItem(extension_misc::kYoutubeAppId, model_updater);
 
-  ChromeAppListItem* camera_item =
-      model_updater->FindItem(web_app::kCameraAppId);
+  ChromeAppListItem* camera_item = model_updater->FindItem(ash::kCameraAppId);
   const syncer::StringOrdinal camera_ordinal = camera_item->position();
 
   ChromeAppListItem* youtube_item =
@@ -1685,12 +1659,11 @@ IN_PROC_BROWSER_TEST_P(AppListModifiedDefaultAppOrderTest,
   ChromeAppListModelUpdater* model_updater = GetChromeAppListModelUpdater();
   ASSERT_TRUE(model_updater);
   // Install some default apps by syncing.
-  AddSyncedItem(web_app::kCameraAppId, model_updater);
+  AddSyncedItem(ash::kCameraAppId, model_updater);
   AddSyncedItem(extension_misc::kYoutubeAppId, model_updater);
-  AddSyncedItem(web_app::kCalculatorAppId, model_updater);
+  AddSyncedItem(ash::kCalculatorAppId, model_updater);
 
-  ChromeAppListItem* camera_item =
-      model_updater->FindItem(web_app::kCameraAppId);
+  ChromeAppListItem* camera_item = model_updater->FindItem(ash::kCameraAppId);
   const syncer::StringOrdinal camera_ordinal = camera_item->position();
 
   ChromeAppListItem* youtube_item =
@@ -1698,7 +1671,7 @@ IN_PROC_BROWSER_TEST_P(AppListModifiedDefaultAppOrderTest,
   const syncer::StringOrdinal youtube_ordinal = youtube_item->position();
 
   ChromeAppListItem* calculator_item =
-      model_updater->FindItem(web_app::kCalculatorAppId);
+      model_updater->FindItem(ash::kCalculatorAppId);
   syncer::StringOrdinal calculator_ordinal = calculator_item->position();
 
   // Before calculating the experimental arm, the default apps should be ordered
@@ -1709,7 +1682,7 @@ IN_PROC_BROWSER_TEST_P(AppListModifiedDefaultAppOrderTest,
 
   // Move the calculator before the camera
   model_updater->RequestPositionUpdate(
-      web_app::kCalculatorAppId, camera_ordinal.CreateBefore(),
+      ash::kCalculatorAppId, camera_ordinal.CreateBefore(),
       ash::RequestPositionUpdateReason::kMoveItem);
   calculator_ordinal = calculator_item->position();
   EXPECT_TRUE(calculator_ordinal.LessThan(camera_ordinal));

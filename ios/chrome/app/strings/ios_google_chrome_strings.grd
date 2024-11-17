@@ -249,6 +249,9 @@ Try waiting a few minutes before signing out. If you sign out now, this data wil
         Some of your Chrome data hasn't been saved in <ph name="EMAIL">$1<ex>johndoe@gmail.com</ex></ph> yet.
 Try waiting a few minutes before switching accounts. If you switch accounts now, this data will be deleted.
       </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_BANNER_PROMO_TEXT" desc="Text for the default browser banner promo [iOS only]">
+        Open links in Chrome by Default
+      </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_LEARN_MORE_INSTRUCTIONS_MESSAGE" desc="Description to user about how to reach the default browser setting in their device. [iOS only]">
           To make Chrome your default:
   1. Open Settings
@@ -416,6 +419,9 @@ Things to consider:
       <message name="IDS_IOS_INCOGNITO_INTERSTITIAL_OPEN_IN_CHROME_INCOGNITO" desc="Button to open a link from an external app in Incognito mode rather than a regular tab. [iOS only]">
         Open in Chrome Incognito
       </message>
+      <message name="IDS_IOS_INCOGNITO_LOCK_HEADER" desc="Header string for incognito lock settings page.  This appears in the incognito lock settings page under privacy and security. [iOS only]">
+       Hide open Incognito tabs when you leave Chrome
+      </message>
       <message name="IDS_IOS_INCOGNITO_REAUTH_SETTING_NAME" desc="Name of the Setting to protect Incognito tabs with biometric authentication, e.g. Face ID or Touch ID. [iOS only]">
        Lock Incognito tabs when you close Chrome
       </message>
@@ -537,7 +543,7 @@ Things to consider:
         Search in Chrome
       </message>
       <message name="IDS_IOS_INTENTS_SEARCH_IN_CHROME_TITLE" desc="Siri Shortcut for search in chrome title [iOS only].">
-          Search in Chrome
+        Search in Chrome
       </message>
       <message name="IDS_IOS_INTENTS_SEARCH_WITH_VOICE_DESCRIPTION" desc="Siri Shortcut description for searching with voice [iOS only]">
         Search with voice in Chrome.
@@ -561,7 +567,7 @@ Things to consider:
         You can open Google Lens here.
       </message>
       <message name="IDS_IOS_LOCATION_WHEN_IN_USE_USAGE_DESCRIPTION" desc="Specifies the reason for accessing the user's location information while the app is in use [Length: unlimited] [iOS only].">
-          Chrome shares your location with sites you allow.
+        Chrome shares your location with sites you allow.
       </message>
       <message name="IDS_IOS_LOCKDOWN_MODE_INFO_BUTTON_SUMMARY_FOR_IPAD" desc="iPad summary for lockdown mode info button">
         To disable Lockdown Mode in Chrome turn it off on your iPad.
@@ -571,6 +577,33 @@ Things to consider:
       </message>
       <message name="IDS_IOS_LOGIN_ERROR_AUTHENTICATING_HOSTED" desc="Couldn't sign in because hosted account is used.">
         Your account does not work on Google Chrome. Please contact your domain administrator or use a regular Google Account to sign in.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_CONTEXT_MENU_DESCRIPTION" desc="The description of the context menu for the Chrome Tips Magic Stack card.">
+        This card shows you suggestions on how to get the most out of Chrome.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_DEFAULT_TITLE" desc="The default title of the Lens tip for the Magic Stack.">
+        Search with Google Lens
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_SHOP_TITLE" desc="The title of the use Lens for shopping tip for the Magic Stack.">
+        Shop with Google Lens
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_LENS_TRANSLATE_TITLE" desc="The title of the use Lens for translation tip for the Magic Stack.">
+        Translate with Google Lens
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORDS_TUTORIAL_STEP_2" desc="The second step of the Save Passwords tutorial for the Magic Stack.">
+        Chrome will offer to save your password.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SAVE_PASSWORD_TITLE" desc="The title of the Save Password tip for the Magic Stack.">
+        Save Your Passwords in Chrome
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SAFE_BROWSING_TITLE" desc="The title of the Safe Browsing tip for the Magic Stack.">
+        Get Chrome's Strongest Security
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_SET_UP_COMPLETION_DESCRIPTION" desc="The description of the Set Up List completion for the Magic Stack.">
+        Check back here for more useful tips to get the most out of Chrome.
+      </message>
+      <message name="IDS_IOS_MAGIC_STACK_TIP_TITLE" desc="The name of the Chrome Tips Magic Stack.">
+        Chrome Tips
       </message>
       <message name="IDS_IOS_MANAGED_DISCONNECT_DIALOG_INFO_UNITY" desc="Message explaining that signing out of a managed account will clear all the Chrome data. [Length: 200em, may be line wrapped to multiple lines at run time.] [iOS only].">
         Because you're signing out of an account managed by <ph name="SIGNOUT_MANAGED_DOMAIN">$1<ex>google.com</ex></ph>, your Chrome data will be deleted from this device. Your data will remain in your Google Account.

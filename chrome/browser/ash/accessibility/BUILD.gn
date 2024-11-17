@@ -209,6 +209,7 @@ source_set("browser_tests") {
     "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper",
     "//components/live_caption:constants",
+    "//ui/base/mojom:ui_base_types",
     "//ui/events:test_support",
 
     # Tests from subdirectories:

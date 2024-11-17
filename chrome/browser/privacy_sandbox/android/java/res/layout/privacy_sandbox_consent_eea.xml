@@ -207,7 +207,9 @@ found in the LICENSE file.
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:padding="16dp"
-            android:background="?android:attr/colorBackground">
+            android:paddingStart="12dp"
+            android:gravity="center_vertical"
+            android:background="@macro/default_bg_color">
 
             <org.chromium.ui.widget.ChromeImageButton
                 android:id="@+id/privacy_policy_back_button"
@@ -215,14 +217,15 @@ found in the LICENSE file.
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_arrow_back"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:contentDescription="@string/privacy_sandbox_privacy_policy_back_button" />
+                android:contentDescription="@string/privacy_sandbox_privacy_policy_back_button"
+                android:padding="12dp"/>
 
             <TextView
                 android:id="@+id/privacy_policy_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/privacy_sandbox_privacy_policy_page_title"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="12dp"
                 style="@style/TextAppearance.Headline.Primary"/>
         </LinearLayout>
 

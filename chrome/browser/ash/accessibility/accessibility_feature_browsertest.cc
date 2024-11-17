@@ -5,11 +5,8 @@
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
 
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/ui_test_utils.h"
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "components/privacy_sandbox/privacy_sandbox_features.h"
 
 namespace ash {
 
@@ -17,42 +14,9 @@ AccessibilityFeatureBrowserTest::AccessibilityFeatureBrowserTest() {}
 
 AccessibilityFeatureBrowserTest::~AccessibilityFeatureBrowserTest() {}
 
-void AccessibilityFeatureBrowserTest::SetUpInProcessBrowserTestFixture() {
-  ash_starter_ = std::make_unique<::test::AshBrowserTestStarter>();
-  if (ash_starter_->HasLacrosArgument()) {
-    ASSERT_TRUE(ash_starter_->PrepareEnvironmentForLacros());
-    ash_starter_->EnableFeaturesInLacros(
-        {privacy_sandbox::kDisablePrivacySandboxPrompts});
-  }
-}
-
-void AccessibilityFeatureBrowserTest::SetUpOnMainThread() {
-  CHECK(ash_starter_);
-  if (ash_starter_->HasLacrosArgument()) {
-    ash_starter_->StartLacros(this);
-  }
-}
-
-void AccessibilityFeatureBrowserTest::TearDownInProcessBrowserTestFixture() {
-  ash_starter_.reset();
-}
-
 void AccessibilityFeatureBrowserTest::NavigateToUrl(const GURL& url) {
-  CHECK(ash_starter_);
-  if (ash_starter_->HasLacrosArgument()) {
-    crosapi::BrowserManager::Get()->OpenUrl(
-        url, crosapi::mojom::OpenUrlFrom::kUnspecified,
-        crosapi::mojom::OpenUrlParams::WindowOpenDisposition::
-            kNewForegroundTab);
-  } else {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(
         BrowserList::GetInstance()->GetLastActive(), url));
-  }
-}
-
-bool AccessibilityFeatureBrowserTest::IsLacrosRunning() const {
-  CHECK(ash_starter_);
-  return ash_starter_->HasLacrosArgument();
 }
 
 Profile* AccessibilityFeatureBrowserTest::GetProfile() const {

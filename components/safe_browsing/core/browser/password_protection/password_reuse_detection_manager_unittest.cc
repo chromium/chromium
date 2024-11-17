@@ -156,8 +156,11 @@ TEST_F(PasswordReuseDetectionManagerTest, NoReuseCheckingAfterReuseFound) {
   PasswordReuseDetectionManager manager(&client_);
 
   // Simulate that reuse found.
-  manager.OnReuseCheckDone(true, 0ul, std::nullopt, {{"https://example.com"}},
-                           0, std::string(), 0);
+  manager.OnReuseCheckDone(
+      true, 0ul, std::nullopt,
+      {password_manager::MatchingReusedCredential(
+          "https://example.com", GURL("https://example.com"), u"username")},
+      0, std::string(), 0);
 
   // Expect no checking of reuse.
   EXPECT_CALL(reuse_manager_, CheckReuse).Times(0);
@@ -237,10 +240,10 @@ TEST_F(PasswordReuseDetectionManagerTest,
   manager.OnPaste(kInput);
   testing::Mock::VerifyAndClearExpectations(&reuse_manager_);
 
-  std::vector<password_manager::MatchingReusedCredential> reused_credentials = {
-      {.signon_realm = "www.example2.com",
-       .username = u"username1",
-       .in_store = password_manager::PasswordForm::Store::kProfileStore}};
+  std::vector<password_manager::MatchingReusedCredential> reused_credentials;
+  reused_credentials.emplace_back(
+      "www.example2.com", GURL("www.example2.com"), u"username1",
+      password_manager::PasswordForm::Store::kProfileStore);
 
   // CheckProtectedPasswordEntry should get called once, and the reused
   // credentials get used reported once in this call.

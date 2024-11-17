@@ -35,11 +35,6 @@
 @synthesize appState = _appState;
 
 - (instancetype)initWithAppState:(AppState*)appState
-                    browserState:(ChromeBrowserState*)browserState {
-  return [self initWithAppState:appState profile:browserState];
-}
-
-- (instancetype)initWithAppState:(AppState*)appState
                          profile:(ProfileIOS*)profile {
   if ((self = [super initWithAppState:appState])) {
     DCHECK(profile);
@@ -65,12 +60,6 @@
         .browser = _incognito_browser.get();
   }
   return self;
-}
-
-+ (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count
-                                    browserState:
-                                        (ChromeBrowserState*)browserState {
-  return [FakeSceneState sceneArrayWithCount:count profile:browserState];
 }
 
 + (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count

@@ -321,8 +321,7 @@ void OnOfflinePageAcquireFileAccessPermissionDone(
       offline_pages::OfflinePageUtils::GetOriginalURLFromWebContents(
           web_contents);
   OfflinePageUtils::CheckDuplicateDownloads(
-      chrome::GetBrowserContextRedirectedInIncognito(
-          web_contents->GetBrowserContext()),
+      GetBrowserContextRedirectedInIncognito(web_contents->GetBrowserContext()),
       url,
       base::BindOnce(&DuplicateCheckDone, url, original_url, j_tab_ref,
                      origin));

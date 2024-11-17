@@ -20,10 +20,9 @@ import org.chromium.chrome.browser.price_insights.PriceInsightsBottomSheetCoordi
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.BaseButtonDataProvider;
-import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -39,10 +38,8 @@ import org.chromium.ui.modaldialog.ModalDialogManager;
 public class PriceInsightsButtonController extends BaseButtonDataProvider {
 
     private final Context mContext;
-    private final SnackbarManager mSnackbarManager;
     private final BottomSheetController mBottomSheetController;
     private final BottomSheetObserver mBottomSheetObserver;
-    private final ButtonSpec mButtonSpec;
     private final Supplier<ShoppingService> mShoppingServiceSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<Tab> mTabSupplier;
@@ -78,8 +75,6 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
                 /* showHoverHighlight= */ false);
 
         mContext = context;
-        mButtonSpec = mButtonData.getButtonSpec();
-        mSnackbarManager = snackbarManager;
         mBottomSheetController = bottomSheetController;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mShoppingServiceSupplier = shoppingServiceSupplier;
@@ -138,9 +133,9 @@ public class PriceInsightsButtonController extends BaseButtonDataProvider {
     }
 
     @Override
-    protected IPHCommandBuilder getIphCommandBuilder(Tab tab) {
-        IPHCommandBuilder iphCommandBuilder =
-                new IPHCommandBuilder(
+    protected IphCommandBuilder getIphCommandBuilder(Tab tab) {
+        IphCommandBuilder iphCommandBuilder =
+                new IphCommandBuilder(
                         tab.getContext().getResources(),
                         FeatureConstants.CONTEXTUAL_PAGE_ACTIONS_QUIET_VARIANT,
                         /* stringId= */ R.string.price_insights_price_is_low_title,

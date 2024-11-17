@@ -91,6 +91,7 @@ import org.chromium.chrome.browser.tasks.ReturnToChromeUtil;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupCreationDialogManager;
 import org.chromium.chrome.browser.toolbar.top.Toolbar;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicSmoothTransitionDelegate;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
@@ -546,7 +547,6 @@ public class NewTabPage
                 mFeedSurfaceProvider.getTouchEnabledDelegate(),
                 mFeedSurfaceProvider.getUiConfig(),
                 lifecycleDispatcher,
-                uma,
                 mTab.getProfile(),
                 windowAndroid,
                 mIsTablet,
@@ -892,7 +892,7 @@ public class NewTabPage
     /** Records UMA for the NTP being hidden and the time spent on it. */
     private void recordNtpHidden() {
         mJankTracker.finishTrackingScenario(JankScenario.NEW_TAB_PAGE);
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "NewTabPage.TimeSpent",
                 (System.nanoTime() - mLastShownTimeNs) / TimeUtils.NANOSECONDS_PER_MILLISECOND);
         SuggestionsMetrics.recordSurfaceHidden();
@@ -1013,7 +1013,7 @@ public class NewTabPage
 
     @Override
     public boolean supportsEdgeToEdge() {
-        return true;
+        return !EdgeToEdgeUtils.DISABLE_NTP_E2E.getValue();
     }
 
     @Override
@@ -1160,7 +1160,7 @@ public class NewTabPage
         }
 
         if (mHomeModulesCoordinator == null) {
-            initializeMagicStack(mostRecentTab);
+            initializeMagicStack();
         }
         mHomeModulesCoordinator.show(this::onMagicStackShown);
     }
@@ -1198,7 +1198,7 @@ public class NewTabPage
      * Initializes the magic stack to show home modules on the current new tab page which is used as
      * the home surface.
      */
-    private void initializeMagicStack(Tab mostRecentTab) {
+    private void initializeMagicStack() {
         mHomeModulesContainer =
                 (ViewGroup)
                         ((ViewStub)

@@ -49,7 +49,8 @@ LanguageDetectionModelServiceFactory::LanguageDetectionModelServiceFactory()
 LanguageDetectionModelServiceFactory::~LanguageDetectionModelServiceFactory() =
     default;
 
-KeyedService* LanguageDetectionModelServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+LanguageDetectionModelServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   if (!translate::IsTFLiteLanguageDetectionEnabled()) {
     return nullptr;
@@ -64,7 +65,7 @@ KeyedService* LanguageDetectionModelServiceFactory::BuildServiceInstanceFor(
     scoped_refptr<base::SequencedTaskRunner> background_task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
-    return new language_detection::LanguageDetectionModelService(
+    return std::make_unique<language_detection::LanguageDetectionModelService>(
         opt_guide, background_task_runner);
   }
   return nullptr;

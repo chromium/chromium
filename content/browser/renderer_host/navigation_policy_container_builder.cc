@@ -215,9 +215,23 @@ void NavigationPolicyContainerBuilder::ComputeSandboxFlags(
   // sandboxed, providing exceptions only for creating new windows. This
   // includes disallowing javascript and using an opaque origin.
   if (is_inside_mhtml) {
-    sandbox_flags_to_commit |= ~network::mojom::WebSandboxFlags::kPopups &
-                               ~network::mojom::WebSandboxFlags::
-                                   kPropagatesToAuxiliaryBrowsingContexts;
+    network::mojom::WebSandboxFlags allowed_flags =
+        network::mojom::WebSandboxFlags::kPopups |
+        network::mojom::WebSandboxFlags::kPropagatesToAuxiliaryBrowsingContexts;
+
+    // Allow JS to execute in saved MHTML documents, since certain constructs
+    // like custom elements, require additional JS to support. This is believed
+    // to be safe because:
+    // - MHTML serialization generally tries to drop script, though this is on
+    //   a best-effort basis
+    // - a MHTML document and all its descendant frames are sandboxed without
+    //   the allow-same-origin flag, so even though an MHTML archive can claim
+    //   to contain resources from arbitrary URLs, each frame will have a
+    //   unique opaque origin, which should limit any potential damage.
+    if (base::FeatureList::IsEnabled(blink::features::kMHTML_Improvements)) {
+      allowed_flags |= network::mojom::WebSandboxFlags::kScripts;
+    }
+    sandbox_flags_to_commit |= ~allowed_flags;
   }
 
   policies.sandbox_flags = sandbox_flags_to_commit;

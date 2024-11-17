@@ -281,47 +281,6 @@ TEST(CSSSelector, NonImplicitPseudoChild) {
   EXPECT_EQ(":scope > div", selector[0].SelectorText());
 }
 
-TEST(CSSSelector, PseudoTrueBefore) {
-  test::TaskEnvironment task_environment;
-  CSSSelector selector[2] = {
-      CSSSelector(),
-      CSSSelector(AtomicString("hover"), /* is_implicit */ false)};
-  selector[0].SetTrue();
-  selector[0].SetRelation(CSSSelector::kSubSelector);
-  selector[1].SetLastInComplexSelector(true);
-  EXPECT_EQ(":hover", selector[0].SelectorText());
-}
-
-TEST(CSSSelector, PseudoTrueAfter) {
-  test::TaskEnvironment task_environment;
-  CSSSelector selector[2] = {
-      CSSSelector(AtomicString("hover"), /* is_implicit */ false),
-      CSSSelector()};
-  selector[0].SetRelation(CSSSelector::kSubSelector);
-  selector[1].SetTrue();
-  selector[1].SetLastInComplexSelector(true);
-  EXPECT_EQ(":hover", selector[0].SelectorText());
-}
-
-TEST(CSSSelector, PseudoTrueChild) {
-  test::TaskEnvironment task_environment;
-  CSSSelector selector[2] = {CSSSelector(html_names::kDivTag,
-                                         /* is_implicit */ false),
-                             CSSSelector()};
-  selector[0].SetRelation(CSSSelector::kChild);
-  selector[1].SetTrue();
-  selector[1].SetLastInComplexSelector(true);
-  EXPECT_EQ("> div", selector[0].SelectorText());
-}
-
-TEST(CSSSelector, PseudoTrueSpecificity) {
-  test::TaskEnvironment task_environment;
-  CSSSelector selector;
-  selector.SetTrue();
-  selector.SetLastInComplexSelector(true);
-  EXPECT_EQ(0u, selector.Specificity());
-}
-
 TEST(CSSSelector, ImplicitScopeSpecificity) {
   test::TaskEnvironment task_environment;
   CSSSelector selector[2] = {
@@ -392,6 +351,90 @@ TEST(CSSSelector, CheckSelectorTextExpandingPseudoParent) {
   EXPECT_EQ(".f:has(> &)", selector->SelectorText());
   EXPECT_EQ(".f:has(> :is(.d .e))",
             selector->SelectorTextExpandingPseudoParent());
+}
+
+TEST(CSSSelector, CheckHasArgumentMatchInShadowTreeFlag) {
+  test::TaskEnvironment task_environment;
+
+  css_test_helpers::TestStyleSheet sheet;
+  sheet.AddCSSRules(
+      ":host:has(.a) {}"
+      ":host:has(.a):has(.b) {}"
+      ":host:has(.a) .b {}"
+      ":host:has(.a):has(.b) .c {}"
+      ":host :has(.a) {}"
+      ":host :has(.a) .b {}"
+      ":host:has(.a):host(.b):has(.c):host-context(.d):has(.e) :has(.f) {}");
+  RuleSet& rule_set = sheet.GetRuleSet();
+
+  base::span<const RuleData> rules = rule_set.ShadowHostRules();
+  ASSERT_EQ(2u, rules.size());
+  const CSSSelector* selector = &rules[0].Selector();
+  EXPECT_EQ(":host:has(.a)", selector->SelectorText());
+  selector = selector->NextSimpleSelector();
+  EXPECT_EQ(selector->GetPseudoType(), CSSSelector::kPseudoHas);
+  EXPECT_TRUE(selector->HasArgumentMatchInShadowTree());
+
+  selector = &rules[1].Selector();
+  EXPECT_EQ(":host:has(.a):has(.b)", selector->SelectorText());
+  selector = selector->NextSimpleSelector();
+  EXPECT_EQ(selector->GetPseudoType(), CSSSelector::kPseudoHas);
+  EXPECT_TRUE(selector->HasArgumentMatchInShadowTree());
+  selector = selector->NextSimpleSelector();
+  EXPECT_EQ(selector->GetPseudoType(), CSSSelector::kPseudoHas);
+  EXPECT_TRUE(selector->HasArgumentMatchInShadowTree());
+
+  rules = rule_set.ClassRules(AtomicString("b"));
+  ASSERT_EQ(2u, rules.size());
+  selector = &rules[0].Selector();
+  EXPECT_EQ(":host:has(.a) .b", selector->SelectorText());
+  selector = selector->NextSimpleSelector();
+  selector = selector->NextSimpleSelector();
+  EXPECT_EQ(selector->GetPseudoType(), CSSSelector::kPseudoHas);
+  EXPECT_TRUE(selector->HasArgumentMatchInShadowTree());
+
+  selector = &rules[1].Selector();
+  EXPECT_EQ(":host :has(.a) .b", selector->SelectorText());
+  selector = selector->NextSimpleSelector();
+  EXPECT_EQ(selector->GetPseudoType(), CSSSelector::kPseudoHas);
+  EXPECT_FALSE(selector->HasArgumentMatchInShadowTree());
+
+  rules = rule_set.ClassRules(AtomicString("c"));
+  ASSERT_EQ(1u, rules.size());
+  selector = &rules[0].Selector();
+  EXPECT_EQ(":host:has(.a):has(.b) .c", selector->SelectorText());
+  selector = selector->NextSimpleSelector();
+  selector = selector->NextSimpleSelector();
+  EXPECT_EQ(selector->GetPseudoType(), CSSSelector::kPseudoHas);
+  EXPECT_TRUE(selector->HasArgumentMatchInShadowTree());
+  selector = selector->NextSimpleSelector();
+  EXPECT_EQ(selector->GetPseudoType(), CSSSelector::kPseudoHas);
+  EXPECT_TRUE(selector->HasArgumentMatchInShadowTree());
+
+  rules = rule_set.UniversalRules();
+  ASSERT_EQ(2u, rules.size());
+  selector = &rules[0].Selector();
+  EXPECT_EQ(":host :has(.a)", selector->SelectorText());
+  EXPECT_EQ(selector->GetPseudoType(), CSSSelector::kPseudoHas);
+  EXPECT_FALSE(selector->HasArgumentMatchInShadowTree());
+
+  selector = &rules[1].Selector();
+  EXPECT_EQ(":host:has(.a):host(.b):has(.c):host-context(.d):has(.e) :has(.f)",
+            selector->SelectorText());
+  EXPECT_EQ(selector->GetPseudoType(), CSSSelector::kPseudoHas);
+  EXPECT_FALSE(selector->HasArgumentMatchInShadowTree());
+  selector = selector->NextSimpleSelector();
+  selector = selector->NextSimpleSelector();
+  EXPECT_EQ(selector->GetPseudoType(), CSSSelector::kPseudoHas);
+  EXPECT_TRUE(selector->HasArgumentMatchInShadowTree());
+  selector = selector->NextSimpleSelector();
+  selector = selector->NextSimpleSelector();
+  EXPECT_EQ(selector->GetPseudoType(), CSSSelector::kPseudoHas);
+  EXPECT_TRUE(selector->HasArgumentMatchInShadowTree());
+  selector = selector->NextSimpleSelector();
+  selector = selector->NextSimpleSelector();
+  EXPECT_EQ(selector->GetPseudoType(), CSSSelector::kPseudoHas);
+  EXPECT_TRUE(selector->HasArgumentMatchInShadowTree());
 }
 
 }  // namespace blink

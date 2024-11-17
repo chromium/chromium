@@ -69,8 +69,7 @@ void LayoutTreeRebuildRoot::SubtreeModified(ContainerNode& parent) {
   Element* ancestor = DynamicTo<Element>(parent);
   if (!ancestor) {
     // The parent should be the pseudo element's originating element.
-    NOTREACHED_IN_MIGRATION();
-    ancestor = parent.ParentOrShadowHostElement();
+    NOTREACHED();
   }
   for (; ancestor; ancestor = ancestor->GetReattachParent()) {
     DCHECK(ancestor->ChildNeedsReattachLayoutTree());

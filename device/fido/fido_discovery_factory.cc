@@ -10,21 +10,19 @@
 #include "build/chromeos_buildflags.h"
 #include "components/device_event_log/device_event_log.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
-#include "device/fido/aoa/android_accessory_discovery.h"
 #include "device/fido/cable/fido_cable_discovery.h"
 #include "device/fido/cable/v2_discovery.h"
 #include "device/fido/enclave/enclave_discovery.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_discovery_base.h"
 #include "device/fido/hid/fido_hid_discovery.h"
-#include "device/fido/mac/icloud_keychain.h"
 
 #if BUILDFLAG(IS_WIN)
 // clang-format off
 // rpc.h needs to be included before winuser.h.
 #include <rpc.h>
 #include <Winuser.h>
-//clang-format on
+// clang-format on
 
 #include "device/fido/win/discovery.h"
 #include "device/fido/win/webauthn_api.h"
@@ -33,6 +31,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/process/process_info.h"
 #include "device/fido/mac/discovery.h"
+#include "device/fido/mac/icloud_keychain.h"
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -72,7 +71,19 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
                            "self-responsible. Launch from Finder to fix.";
         return {};
       }
-#endif
+#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
+      {
+        device::WinWebAuthnApi* const webauthn_api =
+            device::WinWebAuthnApi::GetDefault();
+        if (webauthn_api && webauthn_api->SupportsHybrid() &&
+            base::FeatureList::IsEnabled(
+                device::kWebAuthnSkipHybridConfigIfSystemSupported)) {
+          FIDO_LOG(EVENT) << "Not starting hybrid because Windows handles it.";
+          return {};
+        }
+      }
+#endif  // BUILDFLAG(IS_WIN)
       if (device::BluetoothAdapterFactory::Get()->IsLowEnergySupported() &&
           (cable_data_.has_value() || qr_generator_key_.has_value())) {
         auto v1_discovery = std::make_unique<FidoCableDiscovery>(
@@ -108,18 +119,10 @@ std::vector<std::unique_ptr<FidoDiscoveryBase>> FidoDiscoveryFactory::Create(
 #endif
       return discoveries;
     }
-    case FidoTransportProtocol::kAndroidAccessory:
-      if (usb_device_manager_) {
-        auto ret = SingleDiscovery(std::make_unique<AndroidAccessoryDiscovery>(
-            std::move(usb_device_manager_.value()),
-            std::move(aoa_request_description_)));
-        usb_device_manager_.reset();
-        return ret;
-      }
-      return {};
+    case FidoTransportProtocol::kDeprecatedAoa:
+      NOTREACHED() << "Android Open Accessory is deprecated.";
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled transport type";
-  return {};
+  NOTREACHED() << "Unhandled transport type";
 }
 
 std::optional<std::unique_ptr<FidoDiscoveryBase>>
@@ -144,13 +147,6 @@ void FidoDiscoveryFactory::set_cable_data(
   request_type_ = request_type;
   cable_data_ = std::move(cable_data);
   qr_generator_key_ = std::move(qr_generator_key);
-}
-
-void FidoDiscoveryFactory::set_android_accessory_params(
-    mojo::Remote<device::mojom::UsbDeviceManager> usb_device_manager,
-    std::string aoa_request_description) {
-  usb_device_manager_.emplace(std::move(usb_device_manager));
-  aoa_request_description_ = std::move(aoa_request_description);
 }
 
 void FidoDiscoveryFactory::set_cable_pairing_callback(

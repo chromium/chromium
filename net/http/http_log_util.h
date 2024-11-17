@@ -6,6 +6,7 @@
 #define NET_HTTP_HTTP_LOG_UTIL_H_
 
 #include <string>
+#include <string_view>
 
 #include "net/base/net_export.h"
 #include "net/log/net_log_capture_mode.h"
@@ -21,8 +22,8 @@ class HttpRequestHeaders;
 // of the header value at |log_level|.
 NET_EXPORT_PRIVATE std::string ElideHeaderValueForNetLog(
     NetLogCaptureMode capture_mode,
-    const std::string& header,
-    const std::string& value);
+    std::string_view header,
+    std::string_view value);
 
 NET_EXPORT void NetLogResponseHeaders(const NetLogWithSource& net_log,
                                       NetLogEventType type,

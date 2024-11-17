@@ -58,7 +58,7 @@ void TestInstaller::Install(const base::FilePath& unpack_path,
 void TestInstaller::InstallComplete(Callback callback,
                                     ProgressCallback progress_callback,
                                     const Result& result) {
-  for (auto sample : installer_progress_samples_) {
+  for (const auto& sample : installer_progress_samples_) {
     progress_callback.Run(sample);
   }
   task_runner_->PostTask(FROM_HERE,

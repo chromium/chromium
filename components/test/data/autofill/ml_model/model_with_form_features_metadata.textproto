@@ -1,0 +1,33 @@
+input_token: "nome"
+input_token: "completo"
+input_token: "cpf"
+input_token: "data"
+input_token: "de"
+input_token: "nascimento"
+input_token: "ddmmaaaa"
+input_token: "seu"
+input_token: "telefone"
+input_token: "email"
+input_token: "senha"
+input_token: "cep"
+input_token: "number"
+output_type: 1
+output_type: 35
+output_type: 7
+output_type: 9
+output_type: 13
+input_version: 3
+encoding_parameters {
+  maximum_number_of_fields: 30
+  max_tokens_per_feature: 5
+  features: FEATURE_LABEL
+  features: FEATURE_PLACEHOLDER
+  features: FEATURE_AUTOCOMPLETE
+  features: FEATURE_TYPE
+  form_features: FEATURE_FORM_BUTTON_TITLES
+  form_features: FEATURE_FORM_ID
+  form_features: FEATURE_FORM_NAME
+  form_features: FEATURE_FRAME_URL_PATH
+  lowercase: true
+  replace_chars_with_whitespace: "#$%&()\\*+,-./:;<=>?@[]^_`{|}~'×—•∗…–“▼)\u200b\u3164\u2062\u2063"
+}

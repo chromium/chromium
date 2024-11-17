@@ -10,11 +10,13 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/country_codes/country_codes.h"
 #include "components/search_engines/prepopulated_engines.h"
+#include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -141,6 +143,7 @@ TEST_F(SearchEnginesHandlerTest,
   first_call_args.Append(1);
   first_call_args.Append(static_cast<int>(
       search_engines::ChoiceMadeLocation::kSearchEngineSettings));
+  first_call_args.Append(base::Value());  // saveGuestChoice
   web_ui()->HandleReceivedMessage("setDefaultSearchEngine", first_call_args);
 
   histogram_tester().ExpectUniqueSample(
@@ -152,6 +155,7 @@ TEST_F(SearchEnginesHandlerTest,
   second_call_args.Append(1);
   second_call_args.Append(
       static_cast<int>(search_engines::ChoiceMadeLocation::kSearchSettings));
+  second_call_args.Append(base::Value());  // saveGuestChoice
   web_ui()->HandleReceivedMessage("setDefaultSearchEngine", second_call_args);
 
   histogram_tester().ExpectUniqueSample(
@@ -180,6 +184,7 @@ TEST_F(SearchEnginesHandlerTest,
   args.Append(1);
   args.Append(static_cast<int>(
       search_engines::ChoiceMadeLocation::kSearchEngineSettings));
+  args.Append(base::Value());  // saveGuestChoice
   web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
 
   EXPECT_NEAR(pref_service->GetInt64(
@@ -215,10 +220,110 @@ TEST_F(SearchEnginesHandlerTest,
   args.Append(1);
   args.Append(static_cast<int>(
       search_engines::ChoiceMadeLocation::kSearchEngineSettings));
+  args.Append(base::Value());  // saveGuestChoice
   web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
 
   histogram_tester().ExpectUniqueSample(
       search_engines::kSearchEngineChoiceScreenDefaultSearchEngineTypeHistogram,
       SearchEngineType::SEARCH_ENGINE_BING, 1);
 }
+
+TEST_F(SearchEnginesHandlerTest, GetSaveGuestChoiceRegularProfile) {
+  EXPECT_EQ(0U, web_ui()->call_data().size());
+  base::Value::List args;
+  args.Append("callback_id");
+  web_ui()->HandleReceivedMessage("getSaveGuestChoice", args);
+  EXPECT_EQ(1U, web_ui()->call_data().size());
+  auto& call_data = web_ui()->call_data().back();
+  EXPECT_EQ(call_data->arg1()->GetString(), "callback_id");
+  // arg2 is a boolean that is true if the callback is successful.
+  EXPECT_TRUE(call_data->arg2()->GetBool());
+  // arg3 is our result.
+  EXPECT_TRUE(call_data->arg3()->is_none());
+}
+
+TEST_F(SearchEnginesHandlerTest, GetSaveGuestChoiceGuestProfile) {
+  auto* choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+          profile());
+  choice_service->SetIsProfileEligibleForDseGuestPropagationForTesting(true);
+
+  EXPECT_EQ(0U, web_ui()->call_data().size());
+  {
+    base::Value::List args;
+    args.Append("callback_id_1");
+    web_ui()->HandleReceivedMessage("getSaveGuestChoice", args);
+    EXPECT_EQ(1U, web_ui()->call_data().size());
+    auto& call_data = web_ui()->call_data().back();
+    EXPECT_EQ(call_data->arg1()->GetString(), "callback_id_1");
+    // arg2 is a boolean that is true if the callback is successful.
+    EXPECT_TRUE(call_data->arg2()->GetBool());
+    // arg3 is our result.
+    EXPECT_FALSE(call_data->arg3()->GetBool());
+  }
+
+  choice_service->SetSavedSearchEngineBetweenGuestSessions(2);
+  {
+    base::Value::List args;
+    args.Append("callback_id_2");
+    web_ui()->HandleReceivedMessage("getSaveGuestChoice", args);
+    EXPECT_EQ(2U, web_ui()->call_data().size());
+    auto& call_data = web_ui()->call_data().back();
+    EXPECT_EQ(call_data->arg1()->GetString(), "callback_id_2");
+    // arg2 is a boolean that is true if the callback is successful.
+    EXPECT_TRUE(call_data->arg2()->GetBool());
+    // arg3 is our result.
+    EXPECT_TRUE(call_data->arg3()->GetBool());
+  }
+}
+
+TEST_F(SearchEnginesHandlerTest, UpdateSavedGuestSearch) {
+  auto* choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(
+          profile());
+  choice_service->SetIsProfileEligibleForDseGuestPropagationForTesting(true);
+
+  EXPECT_EQ(std::nullopt,
+            choice_service->GetSavedSearchEngineBetweenGuestSessions());
+  {
+    base::Value::List args;
+    // Search engine model id.
+    args.Append(1);
+    args.Append(static_cast<int>(
+        search_engines::ChoiceMadeLocation::kSearchEngineSettings));
+    args.Append(true);  // saveGuestChoice
+    web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
+  }
+  // Check that saved guest DSE is updated.
+  EXPECT_EQ(TemplateURLPrepopulateData::bing.id,
+            choice_service->GetSavedSearchEngineBetweenGuestSessions());
+
+  {
+    base::Value::List args;
+    // Search engine model id.
+    args.Append(0);
+    args.Append(static_cast<int>(
+        search_engines::ChoiceMadeLocation::kSearchEngineSettings));
+    args.Append(base::Value());  // saveGuestChoice
+    web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
+  }
+  // Check that saved DSE doesn't change if a null saveGuestChoice parameter is
+  // passed in.
+  EXPECT_EQ(TemplateURLPrepopulateData::bing.id,
+            choice_service->GetSavedSearchEngineBetweenGuestSessions());
+
+  {
+    base::Value::List args;
+    // Search engine model id.
+    args.Append(0);
+    args.Append(static_cast<int>(
+        search_engines::ChoiceMadeLocation::kSearchEngineSettings));
+    args.Append(false);  // saveGuestChoice
+    web_ui()->HandleReceivedMessage("setDefaultSearchEngine", args);
+  }
+  // Check that saved DSE is removed when saveGuestChoice is off.
+  EXPECT_EQ(std::nullopt,
+            choice_service->GetSavedSearchEngineBetweenGuestSessions());
+}
+
 }  // namespace settings

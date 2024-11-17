@@ -272,13 +272,15 @@ TEST_F(CSSToLengthConversionDataTest, Flags) {
   Flags em = static_cast<Flags>(Flag::kEm);
   Flags rem = static_cast<Flags>(Flag::kRootFontRelative);
   Flags glyph = static_cast<Flags>(Flag::kGlyphRelative);
-  Flags rex = rem | glyph;
-  Flags rch = rem | glyph;
-  Flags ric = rem | glyph;
-  Flags cap = glyph;
-  Flags rcap = glyph | rem;
-  Flags lh = static_cast<Flags>(Flag::kLineHeightRelative);
-  Flags rlh = glyph | rem | lh;
+  Flags rex = rem | glyph | static_cast<Flags>(Flag::kRexRelative);
+  Flags ch = glyph | static_cast<Flags>(Flag::kChRelative);
+  Flags rch = rem | glyph | static_cast<Flags>(Flag::kRchRelative);
+  Flags ic = glyph | static_cast<Flags>(Flag::kIcRelative);
+  Flags ric = rem | glyph | static_cast<Flags>(Flag::kRicRelative);
+  Flags cap = glyph | static_cast<Flags>(Flag::kCapRelative);
+  Flags rcap = glyph | rem | static_cast<Flags>(Flag::kRcapRelative);
+  Flags lh = glyph | static_cast<Flags>(Flag::kLhRelative);
+  Flags rlh = glyph | rem | static_cast<Flags>(Flag::kRlhRelative);
   Flags sv = static_cast<Flags>(Flag::kStaticViewport);
   Flags dv = static_cast<Flags>(Flag::kDynamicViewport);
   Flags cq = static_cast<Flags>(Flag::kContainerRelative);
@@ -296,10 +298,10 @@ TEST_F(CSSToLengthConversionDataTest, Flags) {
   EXPECT_EQ(rcap, ConversionFlags("1rcap"));
 
   EXPECT_EQ(glyph, ConversionFlags("1ex"));
-  EXPECT_EQ(glyph, ConversionFlags("1ch"));
-  EXPECT_EQ(glyph, ConversionFlags("1ic"));
+  EXPECT_EQ(ch, ConversionFlags("1ch"));
+  EXPECT_EQ(ic, ConversionFlags("1ic"));
 
-  EXPECT_EQ(glyph | lh, ConversionFlags("1lh"));
+  EXPECT_EQ(lh, ConversionFlags("1lh"));
   EXPECT_EQ(rlh, ConversionFlags("1rlh"));
 
   EXPECT_EQ(sv, ConversionFlags("1svw"));

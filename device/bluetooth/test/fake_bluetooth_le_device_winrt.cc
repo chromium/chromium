@@ -211,7 +211,11 @@ HRESULT FakeBluetoothLEDeviceWinrt::GetGattServicesAsync(
 HRESULT FakeBluetoothLEDeviceWinrt::GetGattServicesWithCacheModeAsync(
     BluetoothCacheMode cache_mode,
     IAsyncOperation<GattDeviceServicesResult*>** operation) {
-  return E_NOTIMPL;
+  auto hr = GetGattServicesAsync(operation);
+  bluetooth_test_winrt_
+      ->OnFakeBluetoothDeviceGattServiceDiscoveryAttemptWithCacheMode(
+          cache_mode);
+  return hr;
 }
 
 HRESULT FakeBluetoothLEDeviceWinrt::GetGattServicesForUuidAsync(
@@ -232,7 +236,11 @@ HRESULT FakeBluetoothLEDeviceWinrt::GetGattServicesForUuidWithCacheModeAsync(
     GUID service_uuid,
     BluetoothCacheMode cache_mode,
     IAsyncOperation<GattDeviceServicesResult*>** operation) {
-  return E_NOTIMPL;
+  auto hr = GetGattServicesForUuidAsync(service_uuid, operation);
+  bluetooth_test_winrt_
+      ->OnFakeBluetoothDeviceGattServiceDiscoveryAttemptWithCacheMode(
+          cache_mode);
+  return hr;
 }
 
 HRESULT FakeBluetoothLEDeviceWinrt::get_BluetoothDeviceId(

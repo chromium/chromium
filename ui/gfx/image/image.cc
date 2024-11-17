@@ -267,7 +267,7 @@ const ImageSkia* Image::ToImageSkia() const {
       }
 #endif
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     CHECK(scoped_rep);
     rep = AddRepresentation(std::move(scoped_rep));
@@ -296,7 +296,7 @@ UIImage* Image::ToUIImage() const {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     CHECK(scoped_rep);
     rep = AddRepresentation(std::move(scoped_rep));
@@ -325,7 +325,7 @@ NSImage* Image::ToNSImage() const {
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     CHECK(scoped_rep);
     rep = AddRepresentation(std::move(scoped_rep));
@@ -376,7 +376,7 @@ scoped_refptr<base::RefCountedMemory> Image::As1xPNGBytes() const {
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   if (!png_bytes.get() || !png_bytes->size()) {
     // Add an ImageRepPNG with no data such that the conversion is not

@@ -6,7 +6,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/browser/tab_group_sync/factory_jni_headers/TabGroupSyncServiceFactory_jni.h"

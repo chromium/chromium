@@ -54,7 +54,7 @@ class RecordUploadRequestBuilderTest
 
  protected:
   EncryptedRecord GenerateEncryptedRecord(
-      const std::string_view encrypted_wrapped_record,
+      std::string_view encrypted_wrapped_record,
       const bool set_compression = false) const {
     EncryptedRecord record;
     record.set_encrypted_wrapped_record(std::string(encrypted_wrapped_record));

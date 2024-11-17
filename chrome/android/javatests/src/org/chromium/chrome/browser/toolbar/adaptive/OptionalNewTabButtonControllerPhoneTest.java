@@ -36,6 +36,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -46,8 +47,8 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.test.util.DeviceRestriction;
-import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.test.util.ViewUtils;
 
 /**
@@ -56,15 +57,10 @@ import org.chromium.ui.test.util.ViewUtils;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "enable-features="
-            + ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2
-            + "<Study",
-    "force-fieldtrials=Study/Group",
-    "force-fieldtrial-params=Study.Group:mode/always-new-tab"
-})
-@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@Features.EnableFeatures(
+        ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_V2 + ":mode/always-new-tab")
+@Restriction({DeviceFormFactor.PHONE})
 public class OptionalNewTabButtonControllerPhoneTest {
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
 

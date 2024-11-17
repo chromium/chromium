@@ -23,8 +23,6 @@ component("startup") {
       "browser_init_params.h",
       "browser_params_proxy.cc",
       "browser_params_proxy.h",
-      "browser_postlogin_params.cc",
-      "browser_postlogin_params.h",
     ]
   }
 }

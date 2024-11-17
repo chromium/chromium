@@ -69,6 +69,7 @@ extern NSString* const kTabGroupFaviconBackgroundColor;
 extern NSString* const kOmniboxPopoutOverlayColor;
 // Color of the Tab Strip.
 extern NSString* const kTabStripBackgroundColor;
+extern NSString* const kTabStripV3BackgroundColor;
 // Color of the symbol of the Tab Strip new tab button.
 extern NSString* const kTabStripNewTabButtonColor;
 // Colors for the TabGroup.
@@ -82,6 +83,7 @@ extern NSString* const kTabGroupGreyColor;
 extern NSString* const kWhiteBlackAlpha50Color;
 // Lens overlay consent dialog description text color.
 extern NSString* const kLensOverlayConsentDialogDescriptionColor;
+extern NSString* const kLensOverlayConsentDialogAnimationPlayerButtonColor;
 // ***************
 // Standard Colors
 // ***************

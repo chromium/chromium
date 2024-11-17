@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/ash/common/smb_shares/add_smb_share_dialog.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {I18nBehavior} from 'chrome://resources/ash/common/i18n_behavior.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';

@@ -15,12 +15,12 @@
 #include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/android/media_codec_util.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/encoder_status.h"
+#include "media/base/media_serializers_base.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
@@ -354,7 +354,7 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
                             BITRATE_MODE_VBR);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_BIT_RATE,
@@ -377,6 +377,16 @@ MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
   }
 
   return result;
+}
+
+bool IsHardwareCodec(const std::string& codec_name) {
+  for (const auto& info : GetEncoderInfoCache()) {
+    if (info.name == codec_name) {
+      return !info.profile.is_software_codec;
+    }
+  }
+  LOG(ERROR) << "Unknown codec name: " << codec_name;
+  return false;
 }
 
 std::optional<std::string> FindMediaCodecFor(
@@ -518,20 +528,43 @@ bool NdkVideoEncodeAccelerator::Initialize(
     return false;
   }
 
-  // Conservative upper bound for output buffer size: decoded size + 2KB.
-  // Adding 2KB just in case the frame is really small, we don't want to
-  // end up with no space for a video codec's headers.
-  const size_t output_buffer_capacity =
-      VideoFrame::AllocationSize(config.input_format,
-                                 config.input_visible_size) +
-      2048;
+  const size_t bitstream_buffer_size = EstimateBitstreamBufferSize(
+      config_.bitrate, config_.framerate, config.input_visible_size);
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VideoEncodeAccelerator::Client::RequireBitstreamBuffers,
                      client_ptr_factory_->GetWeakPtr(), 1,
-                     config.input_visible_size, output_buffer_capacity));
+                     config.input_visible_size, bitstream_buffer_size));
 
+  NotifyEncoderInfo();
   return true;
+}
+
+void NdkVideoEncodeAccelerator::NotifyEncoderInfo() {
+  CHECK(media_codec_);
+  std::string codec_name = "unknown";
+  char* name_ptr = nullptr;
+  media_status_t status = AMediaCodec_getName(media_codec_->codec(), &name_ptr);
+  if (status == AMEDIA_OK && name_ptr) {
+    codec_name = std::string(name_ptr);
+    AMediaCodec_releaseName(media_codec_->codec(), name_ptr);
+  }
+
+  encoder_info_.implementation_name =
+      "NdkVideoEncodeAccelerator(" + codec_name + ")";
+  encoder_info_.supports_native_handle = false;
+  encoder_info_.has_trusted_rate_controller = false;
+  encoder_info_.is_hardware_accelerated = IsHardwareCodec(codec_name);
+  encoder_info_.supports_simulcast = false;
+  encoder_info_.reports_average_qp = true;
+  if (codec_name == "c2.cr52.avc.encoder") {
+    encoder_info_.reports_average_qp = false;
+  }
+  encoder_info_.supports_frame_size_change = false;
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&VideoEncodeAccelerator::Client::NotifyEncoderInfoChange,
+                     client_ptr_factory_->GetWeakPtr(), encoder_info_));
 }
 
 void NdkVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
@@ -1101,14 +1134,13 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
 
     if (aligned_size_.value_or(configured_size) != configured_size) {
       // Give the client a chance to handle realignment itself.
-      VideoEncoderInfo encoder_info;
-      encoder_info.requested_resolution_alignment = 16;
-      encoder_info.apply_alignment_to_all_simulcast_layers = true;
+      encoder_info_.requested_resolution_alignment = 16;
+      encoder_info_.apply_alignment_to_all_simulcast_layers = true;
       task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(
               &VideoEncodeAccelerator::Client::NotifyEncoderInfoChange,
-              client_ptr_factory_->GetWeakPtr(), encoder_info));
+              client_ptr_factory_->GetWeakPtr(), encoder_info_));
 
       // We must recreate the MediaCodec now since setParameters() doesn't work
       // consistently across devices and versions of Android.

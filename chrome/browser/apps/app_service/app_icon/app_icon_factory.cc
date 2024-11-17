@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/containers/span.h"
 #include "base/debug/stack_trace.h"
@@ -282,27 +283,22 @@ std::vector<uint8_t> EncodeImageToPngBytes(const gfx::ImageSkia image,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
-  std::vector<uint8_t> image_data;
-
   const gfx::ImageSkiaRep& image_skia_rep =
       image.GetRepresentation(rep_icon_scale);
   if (image_skia_rep.scale() != rep_icon_scale) {
-    return image_data;
+    return std::vector<uint8_t>();
   }
 
   const SkBitmap& bitmap = image_skia_rep.GetBitmap();
   if (bitmap.drawsNothing()) {
-    return image_data;
+    return std::vector<uint8_t>();
   }
 
   base::AssertLongCPUWorkAllowed();
-  constexpr bool discard_transparency = false;
-  bool success = gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency,
-                                                   &image_data);
-  if (!success) {
-    return std::vector<uint8_t>();
-  }
-  return image_data;
+  constexpr bool kDiscardTransparency = false;
+  std::optional<std::vector<uint8_t>> image_data =
+      gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, kDiscardTransparency);
+  return image_data.value_or(std::vector<uint8_t>());
 }
 
 gfx::ImageSkia LoadMaskImage(const ScaleToSize& scale_to_size) {

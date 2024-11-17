@@ -43,7 +43,7 @@ class BluetoothRemoteGATTDescriptor final : public ScriptWrappable {
   ScriptPromise<NotShared<DOMDataView>> readValue(ScriptState*,
                                                   ExceptionState&);
   ScriptPromise<IDLUndefined> writeValue(ScriptState*,
-                                         const DOMArrayPiece&,
+                                         base::span<const uint8_t> value,
                                          ExceptionState&);
 
   // Interface required by garbage collection.
@@ -61,10 +61,10 @@ class BluetoothRemoteGATTDescriptor final : public ScriptWrappable {
 
   void ReadValueCallback(ScriptPromiseResolver<NotShared<DOMDataView>>*,
                          mojom::blink::WebBluetoothResult,
-                         const std::optional<Vector<uint8_t>>&);
+                         base::span<const uint8_t>);
 
   void WriteValueCallback(ScriptPromiseResolver<IDLUndefined>*,
-                          const Vector<uint8_t>&,
+                          DOMDataView* new_value,
                           mojom::blink::WebBluetoothResult);
 
   String CreateInvalidDescriptorErrorMessage();

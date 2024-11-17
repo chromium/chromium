@@ -24,7 +24,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests starting the activity with URLs. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -55,7 +55,7 @@ public class MainActivityWithURLTest {
     @Test
     @SmallTest
     @Feature({"Navigation"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET) // https://crbug.com/1392547
+    @Restriction(DeviceFormFactor.TABLET) // https://crbug.com/1392547
     public void testLaunchActivity() {
         // Launch chrome
         mActivityTestRule.startMainActivityFromLauncher();

@@ -47,7 +47,6 @@
 
 class AutocompleteProvider;
 class OmniboxAction;
-class SuggestionAnswer;
 class TemplateURL;
 class TemplateURLService;
 
@@ -297,8 +296,9 @@ struct AutocompleteMatch {
 #endif
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
-  // Converts SuggestionAnswer::AnswerType to an answer vector icon.
-  static const gfx::VectorIcon& AnswerTypeToAnswerIcon(int type);
+  // Converts omnibox::AnswerType to an answer vector icon.
+  static const gfx::VectorIcon& AnswerTypeToAnswerIcon(
+      omnibox::AnswerType type);
 
   // Gets the vector icon identifier for the icon to be shown for this match. If
   // `is_bookmark` is true, returns a bookmark icon rather than what the type
@@ -851,9 +851,6 @@ struct AutocompleteMatch {
   // before displaying.
   bool swap_contents_and_description = false;
 
-  // A rich-format version of the display for the dropdown.
-  std::optional<SuggestionAnswer> answer;
-
   std::optional<omnibox::RichAnswerTemplate> answer_template;
 
   // AnswerType for answer verticals, including rich answers.
@@ -990,6 +987,12 @@ struct AutocompleteMatch {
   // their contents/description text.
   std::u16string iph_link_text;
   GURL iph_link_url;
+
+  // The text to show above the match contents & description for
+  // `HISTORY_EMBEDDINGS_ANSWER` matches.
+  std::u16string history_embeddings_answer_header_text;
+  // Whether the answer is still loading and should therefore show a throbber.
+  bool history_embeddings_answer_header_loading = false;
 
   // The user feedback on the match.
   FeedbackType feedback_type = FeedbackType::kNone;

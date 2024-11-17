@@ -182,7 +182,7 @@ class ChannelSteadyPingPongListener : public Listener {
 
   void StopPingPong() {
     cpu_logger_.reset();
-    timer_.AbandonAndStop();
+    timer_.Stop();
     std::move(quit_closure_).Run();
   }
 
@@ -359,7 +359,7 @@ class MojoSteadyPingPongTest : public mojo::core::test::MojoTestBase {
 
   void StopPingPong() {
     cpu_logger_.reset();
-    timer_.AbandonAndStop();
+    timer_.Stop();
     std::move(quit_closure_).Run();
   }
 

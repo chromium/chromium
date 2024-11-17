@@ -46,8 +46,7 @@ void ClickInputTracker::OnUserInput(const blink::WebInputEvent& event) {
         static_cast<const blink::WebMouseEvent&>(event);
     position = mouse_click.PositionInScreen();
   } else {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (!last_click_timestamp_.is_null()) {

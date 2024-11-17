@@ -35,7 +35,6 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/browser/lacros/profile_util.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 #else
 #include "ui/wm/core/window_util.h"
 #endif
@@ -43,33 +42,6 @@
 namespace apps {
 
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-bool HaveSameWindowTreeHostLacros(aura::Window* window1,
-                                  aura::Window* window2) {
-  if (window1 == nullptr || window2 == nullptr) {
-    return false;
-  }
-  views::DesktopWindowTreeHostPlatform* host1 =
-      views::DesktopWindowTreeHostLacros::From(window1->GetHost());
-  views::DesktopWindowTreeHostPlatform* host2 =
-      views::DesktopWindowTreeHostLacros::From(window2->GetHost());
-
-  if (host1 == nullptr || host2 == nullptr) {
-    return false;
-  } else {
-    // If the host is a window_tree_host for bubble, the associated browser is
-    // up in the window_parent() chain.
-    while (host1->window_parent()) {
-      host1 = host1->window_parent();
-    }
-    while (host2->window_parent()) {
-      host2 = host2->window_parent();
-    }
-    return host1 == host2;
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 Browser* GetBrowserWithTabStripModel(TabStripModel* tab_strip_model) {
   for (Browser* browser : *BrowserList::GetInstance()) {
@@ -85,9 +57,6 @@ Browser* GetBrowserWithAuraWindow(aura::Window* aura_window) {
   for (Browser* browser : *BrowserList::GetInstance()) {
     BrowserWindow* window = browser->window();
     if (window && window->GetNativeWindow() == aura_window) {
-      return browser;
-    }
-    if (HaveSameWindowTreeHostLacros(window->GetNativeWindow(), aura_window)) {
       return browser;
     }
   }
@@ -114,13 +83,7 @@ wm::ActivationClient* ActivationClientForBrowser(Browser* browser) {
 
 bool IsBrowserActive(Browser* browser) {
   auto* aura_window = AuraWindowForBrowser(browser);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* activation_client = ActivationClientForBrowser(browser);
-  return HaveSameWindowTreeHostLacros(aura_window,
-                                      activation_client->GetActiveWindow());
-#else
   return wm::IsActiveWindow(aura_window);
-#endif
 }
 
 bool IsWebContentsActive(Browser* browser, content::WebContents* contents) {

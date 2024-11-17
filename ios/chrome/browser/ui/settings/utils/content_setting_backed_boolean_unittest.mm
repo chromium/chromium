@@ -22,8 +22,8 @@ const ContentSettingsType kTestContentSettingID = ContentSettingsType::POPUPS;
 class ContentSettingBackedBooleanTest : public PlatformTest {
  public:
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
     observable_boolean_ = [[ContentSettingBackedBoolean alloc]
         initWithHostContentSettingsMap:SettingsMap()
                              settingID:kTestContentSettingID
@@ -44,12 +44,11 @@ class ContentSettingBackedBooleanTest : public PlatformTest {
   }
 
   HostContentSettingsMap* SettingsMap() {
-    return ios::HostContentSettingsMapFactory::GetForBrowserState(
-        chrome_browser_state_.get());
+    return ios::HostContentSettingsMapFactory::GetForProfile(profile_.get());
   }
 
   sync_preferences::TestingPrefServiceSyncable* PrefService() {
-    return chrome_browser_state_->GetTestingPrefService();
+    return profile_->GetTestingPrefService();
   }
 
   ContentSettingBackedBoolean* GetObservableBoolean() {
@@ -64,7 +63,7 @@ class ContentSettingBackedBooleanTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   ContentSettingBackedBoolean* observable_boolean_;
 };
 

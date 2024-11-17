@@ -9,6 +9,7 @@
 #include "third_party/blink/public/platform/web_encrypted_media_types.h"
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_status.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_keys_requirement.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -74,8 +75,8 @@ class EncryptedMediaUtils {
       const WebEncryptedMediaKeyInformation::KeyStatus);
 
   static WebMediaKeySystemConfiguration::Requirement
-  ConvertToMediaKeysRequirement(const String&);
-  static String ConvertMediaKeysRequirementToString(
+      ConvertToMediaKeysRequirement(V8MediaKeysRequirement::Enum);
+  static V8MediaKeysRequirement::Enum ConvertMediaKeysRequirementToEnum(
       WebMediaKeySystemConfiguration::Requirement);
 
   static WebEncryptedMediaClient* GetEncryptedMediaClientFromLocalDOMWindow(

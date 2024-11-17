@@ -26,6 +26,13 @@ if (fuzzing_engine_supports_custom_main) {
       ":in_process_fuzzer_buildflags",
       "//testing/libfuzzer:fuzzing_engine_no_main",
     ]
+    if (!is_android) {
+      # See crbug.com/375763408. We need the locales to properly run our
+      # fuzzers, but those aren't packed with //chrome/test:test_support for
+      # windows builds. This ensures we're depending on them for all the
+      # supported platforms.
+      deps += [ "//chrome:packed_resources" ]
+    }
     public_deps = [
       "//chrome/test:chrome_test_launcher",
       "//chrome/test:test_support",

@@ -54,6 +54,8 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
     LANGUAGES = 1 << 9,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     DNS_CONFIGURATIONS = 1 << 10,
+    PROXY_SETTINGS = 1 << 11,
+    KEYBOARD_SETTINGS = 1 << 12,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     // This flag should be used for ResetProfile function, if you intend to add
@@ -61,28 +63,20 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
     PROFILE_RESETS = DEFAULT_SEARCH_ENGINE | HOMEPAGE | CONTENT_SETTINGS |
                      COOKIES_AND_SITE_DATA | EXTENSIONS | STARTUP_PAGES |
                      PINNED_TABS | SHORTCUTS | NTP_CUSTOMIZATIONS | LANGUAGES,
-
-    // Some of the resets have to wait for other resets to be done before
-    // getting reset. For example, for a proper DNS reset, all extensions need
-    // to be reset before the DNS configurations are reset, because otherwise
-    // there is a possibility that an extension sets DNS config between DNS
-    // config reset and extension reset.
-    PHASE_2_RESETS =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        DNS_CONFIGURATIONS |
+    // These flags are used in conjunction with
+    // ResetSettingsHandler::SanitizeSettings, as they are not included by
+    // default in a profile reset and DNS configs are not tied to a specific
+    // user.
+    SANITIZE_RESETS = DNS_CONFIGURATIONS | PROXY_SETTINGS | KEYBOARD_SETTINGS,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-        0,
 
     // Update ALL if you add new values and check whether the type of
     // ResettableFlags needs to be enlarged.
-    ALL =
+    ALL = PROFILE_RESETS
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-        DNS_CONFIGURATIONS |
+          | SANITIZE_RESETS
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-        DEFAULT_SEARCH_ENGINE | HOMEPAGE | CONTENT_SETTINGS |
-        COOKIES_AND_SITE_DATA | EXTENSIONS | STARTUP_PAGES | PINNED_TABS |
-        SHORTCUTS | NTP_CUSTOMIZATIONS | LANGUAGES,
-
   };
 
   // Bit vector for Resettable enum.
@@ -110,6 +104,12 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Call to reset a users's DNS settings.
   virtual void ResetDnsConfigurations();
+  // Call to reset a users's setting, "Allow proxies for shared networks",
+  // which is a network setting that affects all networks.
+  virtual void ResetProxySettings();
+  // Call to reset a user's keyboard input settings to language and spell
+  // checker defaults using the local browser locale.
+  virtual void ResetKeyboardInputSettings();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   ~ProfileResetter() override;
@@ -161,10 +161,6 @@ class ProfileResetter : public content::BrowsingDataRemover::Observer {
 
   // Called on UI thread when reset has been completed.
   base::OnceClosure callback_;
-
-  // Set when the phase 2 resets have started in order to make sure we
-  // only start these resets once.
-  bool phase_2_resets_started_ = false;
 
   // If non-null it means removal is in progress. BrowsingDataRemover takes care
   // of deleting itself when done.

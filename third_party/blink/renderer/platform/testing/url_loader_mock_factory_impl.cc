@@ -239,13 +239,11 @@ void URLLoaderMockFactoryImpl::LoadRequest(const WebURL& url,
   ResponseInfo response_info;
   if (!LookupURL(url, error, &response_info)) {
     // Non mocked URLs should not have been passed to the default URLLoader.
-    NOTREACHED_IN_MIGRATION() << url;
-    return;
+    NOTREACHED() << url;
   }
 
   if (!*error && !ReadFile(response_info.file_path, data)) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   *response = response_info.response;

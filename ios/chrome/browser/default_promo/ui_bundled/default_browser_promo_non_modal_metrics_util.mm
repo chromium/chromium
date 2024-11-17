@@ -37,8 +37,7 @@ void LogNonModalPromoAction(NonModalPromoAction action,
       // No-op.
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   std::string histogramString;
@@ -107,8 +106,7 @@ void LogNonModalPromoAction(NonModalPromoAction action,
 
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

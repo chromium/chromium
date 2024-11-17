@@ -33,7 +33,6 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/most_visited_tiles_config.h"
@@ -70,7 +69,7 @@
   return self;
 }
 
-+ (void)registerBrowserStatePrefs:(user_prefs::PrefRegistrySyncable*)registry {
++ (void)registerProfilePrefs:(user_prefs::PrefRegistrySyncable*)registry {
   registry->RegisterInt64Pref(prefs::kIosDiscoverFeedLastRefreshTime, 0);
   registry->RegisterInt64Pref(prefs::kIosDiscoverFeedLastUnseenRefreshTime, 0);
 }
@@ -114,10 +113,10 @@
   if (!self.consumer) {
     return;
   }
-  if (!ShouldPutMostVisitedSitesInMagicStack() &&
-      self.mostVisitedTilesMediator.mostVisitedConfig) {
-    [self.consumer setMostVisitedTilesConfig:self.mostVisitedTilesMediator
-                                                 .mostVisitedConfig];
+  MostVisitedTilesConfig* mvtConfig =
+      self.mostVisitedTilesMediator.mostVisitedConfig;
+  if (mvtConfig && !mvtConfig.inMagicStack) {
+    [self.consumer setMostVisitedTilesConfig:mvtConfig];
   }
 }
 

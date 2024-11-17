@@ -12,6 +12,7 @@
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
 #include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/window_show_state.mojom-forward.h"
 #include "ui/base/ui_base_types.h"
 
 namespace gfx {
@@ -116,7 +117,7 @@ AURA_EXPORT extern const WindowProperty<struct ui::OwnedWindowAnchor*>* const
 // immediately resizes its shadows. Generally, resizing and content rendering
 // happen in server side without any client involved, so without any delay in
 // communication this value should be true: shadow bounds are the same as
-// window bounds which define content bounds. For LaCros and other windows with
+// window bounds which define content bounds. For other clients' windows with
 // server-controlled shadow but client-controlled content, this value should be
 // false to ensure that the shadow is not immediately resized along with window
 // in server side. Instead, the shadow waits for client content to catch up with
@@ -143,9 +144,9 @@ AURA_EXPORT extern const WindowProperty<int>* const kResizeBehaviorKey;
 // window.
 AURA_EXPORT extern const WindowProperty<gfx::Rect*>* const kRestoreBoundsKey;
 
-// A property key to store ui::WindowShowState for a window.
+// A property key to store ui::mojom::WindowShowState for a window.
 // See ui/base/ui_base_types.h for its definition.
-AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
+AURA_EXPORT extern const WindowProperty<ui::mojom::WindowShowState>* const
     kShowStateKey;
 
 // A property key to store the display id on which to put the fullscreen window.
@@ -153,13 +154,14 @@ AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
 AURA_EXPORT extern const WindowProperty<int64_t>* const
     kFullscreenTargetDisplayIdKey;
 
-// A property key to store ui::WindowShowState for a window to restore back to
-// from the current window show state.
-AURA_EXPORT extern const WindowProperty<ui::WindowShowState>* const
+// A property key to store ui::mojom::WindowShowState for a window to restore
+// back to from the current window show state.
+AURA_EXPORT extern const WindowProperty<ui::mojom::WindowShowState>* const
     kRestoreShowStateKey;
 
 // A property key to store the raster scale. This affects the scale that exo
-// windows are rasterized at. Currently, this only applies for lacros windows.
+// windows are rasterized at.
+// TODO(b/374122147): consider removing this.
 AURA_EXPORT extern const WindowProperty<float>* const kRasterScale;
 
 // A property key to indicate if a window is currently being restored. Normally

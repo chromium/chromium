@@ -51,7 +51,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Renderer.BrowserLaunchToRunLoopStart" units="ms"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>sky@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Renderer.Core.Timing.Performance.SwapsPerPerformanceEntryInsertion"
-    units="swaps" expires_after="2025-03-02">
+    units="swaps" expires_after="2025-05-04">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.BlockingResourcesLoadTime" units="ms"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.CriticalFontDelay" units="ms"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.CriticalFonts.PreloadedFontsLoadTime" units="ms"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>iclelland@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
@@ -133,21 +133,6 @@ chromium-metrics-reviews@google.com.
     <variant name="WithoutPrediction" summary="without point prediction"/>
     <variant name="WithPrediction" summary="using point draw prediction"/>
   </token>
-</histogram>
-
-<histogram name="Renderer.DelegatedInkTrail.Prediction.WrongDirection"
-    enum="BooleanDirection" expires_after="2025-08-01">
-  <owner>jonross@chromium.org</owner>
-  <owner>sahir.vellani@microsoft.com</owner>
-  <owner>gastonr@microsoft.com</owner>
-  <summary>
-    Boolean that indicates whether the prediction is in the same direction as
-    the real trajectory at the same prediction time. True means the direction is
-    not the same (wrong direction).
-
-    Warning: this histogram was expired from 02-26-2021 to 09-11-2024; data may
-    be missing.
-  </summary>
 </histogram>
 
 <histogram name="Renderer.DelegatedInkTrail.Prediction.{Direction}Prediction"
@@ -238,7 +223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.DomContentLoaded" units="ms"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -250,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.DomContentLoaded.Style" units="ms"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -262,7 +247,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.FCP" units="ms"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -274,7 +259,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.PrimaryFont.FCP.Style" units="ms"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -286,7 +271,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Font.SystemFallback.DomContentLoaded" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2025-05-11">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -294,11 +279,14 @@ chromium-metrics-reviews@google.com.
     The time spent finding the system fallback font consumed in the main tread
     before DomContentLoaded. On Windows, this includes IPC roundtrip to browser
     process and DirectWriteFontProxy and DirectWrite calls.
+
+    Warning: This histogram was expired from 2024-09-01 to 2024-11-14. Data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Renderer.Font.SystemFallback.FCP" units="ms"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>kojii@chromium.org</owner>
   <owner>tkent@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
@@ -377,21 +365,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Layout.TextWrapBalance" units="ms"
-    expires_after="2025-03-02">
+    expires_after="2025-05-04">
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>The time spent to balance lines of paragraphs.</summary>
 </histogram>
 
 <histogram name="Renderer.Layout.TextWrapPretty" units="ms"
-    expires_after="2025-03-02">
+    expires_after="2025-05-04">
   <owner>kojii@chromium.org</owner>
   <owner>layout-dev@chromium.org</owner>
   <summary>The time spent to optimize line breaks.</summary>
 </histogram>
 
 <histogram name="Renderer.PaintPreview.Capture.MainFrameBlinkCaptureDuration"
-    units="ms" expires_after="2025-02-16">
+    units="ms" expires_after="2025-04-20">
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>chrome-fdt@google.com</owner>
@@ -447,7 +435,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Preload.UnusedResource2{Trigger}" enum="ResourceType"
-    expires_after="2025-02-02">
+    expires_after="2025-04-06">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -465,7 +453,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.Preload.UnusedResourceCount" units="count"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>sisidovski@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -476,7 +464,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.ProcessLifetime3{RendererHostedContentType}"
-    units="ms" expires_after="2025-02-02">
+    units="ms" expires_after="2025-04-06">
   <owner>fdoray@chromium.org</owner>
   <owner>olivierli@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -502,7 +490,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Renderer.RenderThreadImpl.Init" units="ms"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>jam@chromium.org</owner>
   <owner>sky@chromium.org</owner>
   <summary>
@@ -511,15 +499,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Renderer.Unresponsive.PageVisible.WidgetVisibility"
-    enum="BooleanVisible" expires_after="2024-11-30">
+<histogram name="Renderer.Unresponsive.Reason{WidgetVisibility}"
+    enum="RendererIsUnresponsiveReason" expires_after="2025-04-06">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
-    Records the visibility of the RenderWidgetHost when a renderer is deemed
-    unresponsive (WebContentsImpl::RendererUnresponsive is called). Only
-    recorded if the WebContents is visible.
+    Records the reason for which RenderWidgetHostImpl::RendererIsUnresponsive()
+    was called.
   </summary>
+  <token key="WidgetVisibility">
+    <variant name="" summary="Either visibility"/>
+    <variant name=".NotVisible" summary="The RenderWidgetHostImpl is hidden"/>
+    <variant name=".Visible" summary="The RenderWidgetHostImpl is visible"/>
+  </token>
 </histogram>
 
 <histogram name="Renderer.Unresponsive.Visibility" enum="BooleanVisible"
@@ -532,8 +524,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Renderer.Unresponsive.{UIElementVisible}.RenderProcessHostPriority"
+    enum="RenderProcessHostPriority" expires_after="2025-04-06">
+  <owner>pmonette@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records the priority of the RenderProcessHost at the time a renderer is is
+    deemed unresponsive (WebContentsImpl::RendererUnresponsive is called). Only
+    recorded if the UI element is visible.
+  </summary>
+  <token key="UIElementVisible">
+    <variant name="PageVisible" summary="The WebContents is visible"/>
+    <variant name="WidgetVisible" summary="The RenderWidgetHost is visible"/>
+  </token>
+</histogram>
+
 <histogram name="RendererScheduler.QueueingDuration.{Priority}Priority"
-    units="microseconds" expires_after="2025-03-09">
+    units="microseconds" expires_after="2025-05-11">
   <owner>szager@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
@@ -561,7 +569,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="RendererScheduler.RendererMainThreadLoad5" units="%"
-    expires_after="2025-02-02">
+    expires_after="2025-04-06">
   <owner>altimin@chromium.org</owner>
   <summary>
     Renderer main thread load (percentage of time spent in tasks), reported in

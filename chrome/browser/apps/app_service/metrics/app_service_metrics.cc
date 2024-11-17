@@ -4,27 +4,28 @@
 
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/webui/mall/app_id.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "components/app_constants/constants.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "extensions/common/constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/welcome_tour/welcome_tour_metrics.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
-#include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
+#include "chromeos/ash/components/file_manager/app_id.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -175,13 +176,17 @@ void RecordDefaultAppLaunch(apps::DefaultAppName default_app_name,
       base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromSparky",
                                     default_app_name);
       break;
+    case apps::LaunchSource::kFromWebInstallApi:
+      base::UmaHistogramEnumeration("Apps.DefaultAppLaunch.FromWebInstallApi",
+                                    default_app_name);
+      break;
     case apps::LaunchSource::kFromCommandLine:
     case apps::LaunchSource::kFromBackgroundMode:
     case apps::LaunchSource::kFromAppHomePage:
     case apps::LaunchSource::kFromReparenting:
     case apps::LaunchSource::kFromProfileMenu:
-      NOTREACHED_IN_MIGRATION();
-      break;
+    case apps::LaunchSource::kFromNavigationCapturing:
+      NOTREACHED();
   }
 }
 
@@ -305,47 +310,45 @@ void RecordAppLaunch(const std::string& app_id,
 
 const std::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
     const std::string& app_id) {
-  if (app_id == web_app::kCalculatorAppId) {
+  if (app_id == ash::kCalculatorAppId) {
     return apps::DefaultAppName::kCalculator;
-  } else if (app_id == web_app::kCanvasAppId) {
+  } else if (app_id == ash::kCanvasAppId) {
     return apps::DefaultAppName::kChromeCanvas;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-  } else if (app_id == web_app::kContainerAppId) {
-    return apps::DefaultAppName::kContainer;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
-  } else if (app_id == web_app::kCursiveAppId) {
+  } else if (app_id == ash::kCursiveAppId) {
     return apps::DefaultAppName::kCursive;
-  } else if (app_id == web_app::kGmailAppId) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+  } else if (app_id == ash::kGeminiAppId) {
+    return apps::DefaultAppName::kGemini;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+  } else if (app_id == ash::kGmailAppId) {
     return apps::DefaultAppName::kGmail;
-  } else if (app_id == web_app::kGoogleMoviesAppId) {
+  } else if (app_id == ash::kGoogleMoviesAppId) {
     return apps::DefaultAppName::kPlayMovies;
-  } else if (app_id == web_app::kGoogleCalendarAppId) {
+  } else if (app_id == ash::kGoogleCalendarAppId) {
     return apps::DefaultAppName::kGoogleCalendar;
-  } else if (app_id == web_app::kGoogleChatAppId) {
+  } else if (app_id == ash::kGoogleChatAppId) {
     return apps::DefaultAppName::kGoogleChat;
-  } else if (app_id == web_app::kGoogleDocsAppId) {
+  } else if (app_id == ash::kGoogleDocsAppId) {
     return apps::DefaultAppName::kDocs;
-  } else if (app_id == web_app::kGoogleDriveAppId) {
+  } else if (app_id == ash::kGoogleDriveAppId) {
     return apps::DefaultAppName::kDrive;
-  } else if (app_id == web_app::kGoogleMeetAppId) {
+  } else if (app_id == ash::kGoogleMeetAppId) {
     return apps::DefaultAppName::kGoogleMeet;
-  } else if (app_id == web_app::kGoogleSheetsAppId) {
+  } else if (app_id == ash::kGoogleSheetsAppId) {
     return apps::DefaultAppName::kSheets;
-  } else if (app_id == web_app::kGoogleSlidesAppId) {
+  } else if (app_id == ash::kGoogleSlidesAppId) {
     return apps::DefaultAppName::kSlides;
-  } else if (app_id == web_app::kGoogleKeepAppId) {
+  } else if (app_id == ash::kGoogleKeepAppId) {
     return apps::DefaultAppName::kKeep;
-  } else if (app_id == web_app::kGoogleMapsAppId) {
+  } else if (app_id == ash::kGoogleMapsAppId) {
     return apps::DefaultAppName::kGoogleMaps;
-  } else if (app_id == web_app::kMallAppId) {
-    return DefaultAppName::kMall;
-  } else if (app_id == web_app::kMessagesAppId) {
+  } else if (app_id == ash::kMessagesAppId) {
     return apps::DefaultAppName::kGoogleMessages;
-  } else if (app_id == web_app::kPlayBooksAppId) {
+  } else if (app_id == ash::kPlayBooksAppId) {
     return apps::DefaultAppName::kPlayBooks;
-  } else if (app_id == web_app::kYoutubeAppId) {
+  } else if (app_id == ash::kYoutubeAppId) {
     return apps::DefaultAppName::kYouTube;
-  } else if (app_id == web_app::kYoutubeMusicAppId) {
+  } else if (app_id == ash::kYoutubeMusicAppId) {
     return apps::DefaultAppName::kYouTubeMusic;
   } else {
     return std::nullopt;
@@ -356,38 +359,40 @@ const std::optional<apps::DefaultAppName> PreinstalledWebAppIdToName(
 const std::optional<apps::DefaultAppName> SystemWebAppIdToName(
     const std::string& app_id) {
   // These apps should all have chrome:// URLs.
-  if (app_id == web_app::kCameraAppId) {
+  if (app_id == ash::kCameraAppId) {
     return apps::DefaultAppName::kCamera;
-  } else if (app_id == web_app::kDiagnosticsAppId) {
+  } else if (app_id == ash::kDiagnosticsAppId) {
     return apps::DefaultAppName::kDiagnosticsApp;
   } else if (app_id == file_manager::kFileManagerSwaAppId) {
     return apps::DefaultAppName::kFiles;
-  } else if (app_id == web_app::kFirmwareUpdateAppId) {
+  } else if (app_id == ash::kFirmwareUpdateAppId) {
     return apps::DefaultAppName::kFirmwareUpdateApp;
-  } else if (app_id == web_app::kHelpAppId) {
+  } else if (app_id == ash::kGraduationAppId) {
+    return apps::DefaultAppName::kGraduationApp;
+  } else if (app_id == ash::kHelpAppId) {
     return apps::DefaultAppName::kHelpApp;
   } else if (app_id == ash::kMallSystemAppId) {
     return apps::DefaultAppName::kMall;
-  } else if (app_id == web_app::kMediaAppId) {
+  } else if (app_id == ash::kMediaAppId) {
     return apps::DefaultAppName::kMediaApp;
     // `MockSystemApp` is for tests only.
-  } else if (app_id == web_app::kMockSystemAppId) {
+  } else if (app_id == ash::kMockSystemAppId) {
     return apps::DefaultAppName::kMockSystemApp;
-  } else if (app_id == web_app::kOsFeedbackAppId) {
+  } else if (app_id == ash::kOsFeedbackAppId) {
     return apps::DefaultAppName::kOsFeedbackApp;
-  } else if (app_id == web_app::kOsSettingsAppId) {
+  } else if (app_id == ash::kOsSettingsAppId) {
     return apps::DefaultAppName::kSettings;
-  } else if (app_id == web_app::kPrintManagementAppId) {
+  } else if (app_id == ash::kPrintManagementAppId) {
     return apps::DefaultAppName::kPrintManagementApp;
   } else if (app_id == ash::kChromeUIUntrustedProjectorSwaAppId) {
     return apps::DefaultAppName::kProjector;
-  } else if (app_id == web_app::kSanitizeAppId) {
+  } else if (app_id == ash::kSanitizeAppId) {
     return apps::DefaultAppName::kSanitizeApp;
-  } else if (app_id == web_app::kScanningAppId) {
+  } else if (app_id == ash::kScanningAppId) {
     return apps::DefaultAppName::kScanningApp;
-  } else if (app_id == web_app::kShimlessRMAAppId) {
+  } else if (app_id == ash::kShimlessRMAAppId) {
     return apps::DefaultAppName::kShimlessRMAApp;
-  } else if (app_id == web_app::kShortcutCustomizationAppId) {
+  } else if (app_id == ash::kShortcutCustomizationAppId) {
     return apps::DefaultAppName::kShortcutCustomizationApp;
   } else {
     return std::nullopt;

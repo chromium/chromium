@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] <textPath> - sideways-lr
+  assert_equals: F expected 225 but got 45
+Harness: the test ran to completion.
+

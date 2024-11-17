@@ -42,7 +42,7 @@ TEST(DevToolsObserverUtilTest, ExtractURLResponseHead) {
   head.service_worker_router_info = mojom::ServiceWorkerRouterInfo::New(
       /*rule_id_matched*/ 1, mojom::ServiceWorkerRouterSourceType::kNetwork,
       mojom::ServiceWorkerRouterSourceType::kNetwork, 1, base::TimeDelta::Min(),
-      mojom::ServiceWorkerStatus::kRunning);
+      base::TimeDelta::Min(), mojom::ServiceWorkerStatus::kRunning);
   head.ssl_info = net::SSLInfo();
   head.remote_endpoint = net::IPEndPoint(net::IPAddress(1, 2, 3, 4), 99);
 

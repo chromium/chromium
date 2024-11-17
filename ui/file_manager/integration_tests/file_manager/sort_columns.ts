@@ -94,7 +94,7 @@ export async function sortColumns() {
   a11yMessages = await remoteCall.callRemoteTestUtil<string[]>(
       'getA11yAnnounces', appId, []);
   chrome.test.assertEq(1, a11yMessages.length, 'Missing a11y message');
-  console.log(a11yMessages[0]);
+  console.info(a11yMessages[0]);
 
   // Check: sort-button has aria-haspopup set to true
   const sortButton = await remoteCall.waitForElement(appId, '#sort-button');

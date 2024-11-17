@@ -5,6 +5,7 @@
 #include "components/services/on_device_translation/public/cpp/features.h"
 
 #include "base/command_line.h"
+#include "third_party/blink/public/common/features_generated.h"
 
 namespace on_device_translation {
 
@@ -20,9 +21,21 @@ base::FilePath GetPathFromCommandLine(const char* switch_name) {
 
 }  // namespace
 
-BASE_FEATURE(kEnableTranslateKitComponent,
-             "EnableTranslateKitComponent",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kTranslationAPIAcceptLanguagesCheck{
+    &blink::features::kEnableTranslationAPI,
+    "TranslationAPIAcceptLanguagesCheck", true};
+
+const base::FeatureParam<bool> kTranslationAPILimitLanguagePackCount{
+    &blink::features::kEnableTranslationAPI,
+    "TranslationAPILimitLanguagePackCount", true};
+
+const base::FeatureParam<base::TimeDelta> kTranslationAPIServiceIdleTimeout{
+    &blink::features::kEnableTranslationAPI, "TranslationAPIServiceIdleTimeout",
+    base::Minutes(1)};
+
+const base::FeatureParam<size_t> kTranslationAPIMaxServiceCount{
+    &blink::features::kEnableTranslationAPI, "TranslationAPIMaxServiceCount",
+    10};
 
 // static
 base::FilePath GetTranslateKitBinaryPathFromCommandLine() {

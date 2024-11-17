@@ -66,14 +66,14 @@ class PlusAddressBlocklistInstallerPolicyTest : public PlatformTest {
   MockComponentUpdateService cus_;
   PlusAddressBlocklistInstallerPolicy policy_;
   base::test::ScopedFeatureList scoped_list{
-      plus_addresses::features::kPlusAddressBlocklistEnabled};
+      plus_addresses::features::kPlusAddressesEnabled};
 };
 
 TEST_F(PlusAddressBlocklistInstallerPolicyTest,
        ComponentRegistrationWhenFeatureDisabled) {
   base::test::ScopedFeatureList scoped_list;
   scoped_list.InitAndDisableFeature(
-      plus_addresses::features::kPlusAddressBlocklistEnabled);
+      plus_addresses::features::kPlusAddressesEnabled);
   EXPECT_CALL(cus_, RegisterComponent(testing::_)).Times(0);
   RegisterPlusAddressBlocklistComponent(&cus_);
   RunUntilIdle();

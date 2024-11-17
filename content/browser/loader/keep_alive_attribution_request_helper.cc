@@ -16,7 +16,9 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/unguessable_token.h"
+#include "components/attribution_reporting/attribution_src_request_status.h"
 #include "components/attribution_reporting/eligibility.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
@@ -35,6 +37,7 @@ namespace content {
 
 namespace {
 
+using ::attribution_reporting::AttributionSrcRequestStatus;
 using ::attribution_reporting::mojom::RegistrationEligibility;
 
 }  // namespace
@@ -74,18 +77,26 @@ KeepAliveAttributionRequestHelper::CreateIfNeeded(
   data_host_manager->NotifyBackgroundRegistrationStarted(
       id, context, *registration_eligibility, std::move(token),
       devtools_request_id);
-  return base::WrapUnique(
-      new KeepAliveAttributionRequestHelper(id, data_host_manager,
-                                            /*reporting_url=*/request_url));
+
+  return base::WrapUnique(new KeepAliveAttributionRequestHelper(
+      id, data_host_manager,
+      /*reporting_url=*/request_url,
+      /*is_navigation_tied=*/eligibility ==
+          network::mojom::AttributionReportingEligibility::kNavigationSource));
 }
 
 KeepAliveAttributionRequestHelper::KeepAliveAttributionRequestHelper(
     BackgroundRegistrationsId id,
     AttributionDataHostManager* attribution_data_host_manager,
-    const GURL& reporting_url)
-    : id_(id), reporting_url_(reporting_url) {
+    const GURL& reporting_url,
+    bool is_navigation_tied)
+    : id_(id),
+      reporting_url_(reporting_url),
+      is_navigation_tied_(is_navigation_tied) {
   CHECK(attribution_data_host_manager);
   attribution_data_host_manager_ = attribution_data_host_manager->AsWeakPtr();
+
+  RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kRequested);
 }
 
 void KeepAliveAttributionRequestHelper::OnReceiveRedirect(
@@ -93,6 +104,11 @@ void KeepAliveAttributionRequestHelper::OnReceiveRedirect(
     const GURL& redirect_url) {
   if (!attribution_data_host_manager_) {
     return;
+  }
+
+  if (!redirected_) {
+    redirected_ = true;
+    RecordAttributionSrcRequestStatus(AttributionSrcRequestStatus::kRedirected);
   }
 
   attribution_data_host_manager_->NotifyBackgroundRegistrationData(
@@ -106,17 +122,44 @@ void KeepAliveAttributionRequestHelper::OnReceiveResponse(
     return;
   }
 
+  RecordAttributionSrcRequestStatus(
+      redirected_ ? AttributionSrcRequestStatus::kReceivedAfterRedirected
+                  : AttributionSrcRequestStatus::kReceived);
+
   attribution_data_host_manager_->NotifyBackgroundRegistrationData(
       id_, headers, reporting_url_);
+  OnComplete();
+}
+
+void KeepAliveAttributionRequestHelper::OnError() {
+  RecordAttributionSrcRequestStatus(
+      redirected_ ? AttributionSrcRequestStatus::kFailedAfterRedirected
+                  : AttributionSrcRequestStatus::kFailed);
+
+  OnComplete();
+}
+
+void KeepAliveAttributionRequestHelper::OnComplete() {
+  if (!attribution_data_host_manager_) {
+    return;
+  }
+
   attribution_data_host_manager_->NotifyBackgroundRegistrationCompleted(id_);
   attribution_data_host_manager_.reset();
 }
 
-KeepAliveAttributionRequestHelper::~KeepAliveAttributionRequestHelper() {
-  if (!attribution_data_host_manager_) {
+void KeepAliveAttributionRequestHelper::RecordAttributionSrcRequestStatus(
+    AttributionSrcRequestStatus status) {
+  if (!is_navigation_tied_) {
     return;
   }
-  attribution_data_host_manager_->NotifyBackgroundRegistrationCompleted(id_);
+
+  base::UmaHistogramEnumeration(
+      "Conversions.AttributionSrcRequestStatus.Navigation.Browser", status);
+}
+
+KeepAliveAttributionRequestHelper::~KeepAliveAttributionRequestHelper() {
+  OnComplete();
 }
 
 }  // namespace content

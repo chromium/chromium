@@ -10,7 +10,6 @@
 #include <string_view>
 #include <vector>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -242,12 +241,6 @@ TEST(InterestGroupMojomTraitsTest,
 
 TEST(InterestGroupMojomTraitsTest,
      SerializeAndDeserializeCrossOriginTrustedBiddingSignalsUrl) {
-  // Like with everything here, the negative test is in
-  // validate_blink_interest_group_test.cc
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      blink::features::kFledgePermitCrossOriginTrustedSignals);
-
   InterestGroup interest_group = CreateInterestGroup();
   interest_group.trusted_bidding_signals_url =
       GURL("https://cross-origin.test/");

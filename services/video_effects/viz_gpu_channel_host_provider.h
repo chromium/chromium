@@ -19,10 +19,24 @@ class VizGpuChannelHostProvider : public video_effects::GpuChannelHostProvider {
   explicit VizGpuChannelHostProvider(std::unique_ptr<viz::Gpu> viz_gpu);
   ~VizGpuChannelHostProvider() override;
 
+  // GpuChannelHostProvider:
+  scoped_refptr<viz::ContextProviderCommandBuffer> GetWebGpuContextProvider()
+      override;
+  scoped_refptr<viz::RasterContextProvider> GetRasterInterfaceContextProvider()
+      override;
+  scoped_refptr<gpu::ClientSharedImageInterface> GetSharedImageInterface()
+      override;
+
+ protected:
   scoped_refptr<gpu::GpuChannelHost> GetGpuChannelHost() override;
 
  private:
   std::unique_ptr<viz::Gpu> viz_gpu_;
+  scoped_refptr<gpu::GpuChannelHost> gpu_channel_host_;
+  scoped_refptr<viz::ContextProviderCommandBuffer> webgpu_context_provider_;
+  scoped_refptr<viz::ContextProviderCommandBuffer>
+      raster_interface_context_provider_;
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 };
 
 }  // namespace video_effects

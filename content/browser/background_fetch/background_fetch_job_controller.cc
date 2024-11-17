@@ -354,7 +354,7 @@ void BackgroundFetchJobController::DidMarkRequestAsComplete(
       Abort(BackgroundFetchFailureReason::QUOTA_EXCEEDED, base::DoNothing());
       return;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (completed_downloads_ == total_downloads_) {

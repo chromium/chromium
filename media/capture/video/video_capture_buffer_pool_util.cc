@@ -51,6 +51,8 @@ int DeviceVideoCaptureMaxBufferPoolSize() {
     // We may need 2x as many buffers if video effects are going to be applied
     // to account for the fact that each captured video frame will have
     // additional buffer allocated for post-processing result.
+    // TODO(crbug.com//375229156): Make pool size dependant on whether there is
+    // an effects processor in use.
     max_buffer_count = max_buffer_count * 2;
   }
 #endif

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #import "components/autofill/ios/browser/autofill_driver_ios_factory.h"
@@ -81,21 +82,28 @@ class AutofillBottomSheetTabHelperTest : public PlatformTest {
     infobars::InfoBarManager* infobar_manager =
         InfoBarManagerImpl::FromWebState(web_state_.get());
 
+    // The AutofillClient has strange dependencies:
+    // - It must be initialized *after* `web_state_` because it depends on
+    //   `web_state_`.
+    // - It must be destroyed *after* `web_state_` because AutofillDriverIOS
+    //   holds a reference to it and is destroyed together with `web_state_`.
+    //
+    // That's why we initialize it in the constructor but put it in the
+    // declaration order above `web_state_`.
     autofill_client_ = std::make_unique<TestAutofillClient>(
         profile_.get(), web_state_.get(), infobar_manager, autofill_agent_);
 
     autofill::AutofillDriverIOSFactory::CreateForWebState(
-        web_state_.get(), autofill_client_.get(), autofill_agent_,
-        /*app_locale=*/"en");
+        web_state_.get(), autofill_client_.get(), autofill_agent_);
   }
 
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   web::WebTaskEnvironment task_environment_;
   web::ScopedTestingWebClient web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
-  std::unique_ptr<web::WebState> web_state_;
-  AutofillBottomSheetTabHelper* helper_;
   std::unique_ptr<autofill::AutofillClient> autofill_client_;
+  std::unique_ptr<web::WebState> web_state_;
+  raw_ptr<AutofillBottomSheetTabHelper> helper_;
   AutofillAgent* autofill_agent_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -138,6 +146,10 @@ TEST_F(AutofillBottomSheetTabHelperTest,
   // Using OnFormMessageReceived to emulate receiving a signal from the
   // proactive password generation listeners. This emulates the trigger (the
   // focus on the listened field), so the bottom sheet should show.
+  helper_->OnFormMessageReceived(form_message);
+
+  // Attempt to trigger a second time but this should be no op this time
+  // because the listeners were detached on the first trigger.
   helper_->OnFormMessageReceived(form_message);
 
   // Verify that the bottom sheet is triggered upon receiving the signal from

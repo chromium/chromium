@@ -44,7 +44,6 @@ Keep the < > around `config.pbtxt` from the command above.
 
 3. And run chrome with command line:
 ```
---enable-features=BackgroundTracingDatabase \
 --enable-background-tracing=config.pb
 ```
 

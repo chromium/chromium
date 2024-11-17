@@ -16,6 +16,7 @@
 #include "cc/paint/render_surface_filters.h"
 #include "ui/aura/window.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/display.h"
 #include "ui/display/manager/display_manager.h"
@@ -91,14 +92,22 @@ void WallpaperView::SetLockShieldEnabled(bool enabled) {
 
   if (enabled) {
     DCHECK(!shield_view_);
+    // TODO(crbug.com/374034250): Remove the shield layer once the bug is fixed and
+    // the compositor can fallback to solid color background for missing tiles.
     shield_view_ = new views::View();
     parent()->AddChildViewAt(shield_view_.get(), 0);
     shield_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
     shield_view_->layer()->SetColor(SK_ColorBLACK);
     shield_view_->layer()->SetName("WallpaperViewShield");
     shield_view_->SetBoundsRect(parent()->GetLocalBounds());
+    // Mark the layer transparent to make sure that the compositor will draw the
+    // solid color even if the texture for the wallpaper is missing.  This will
+    // increase the overdraw, but the impact on the performance should be
+    // minimum.
+    layer()->SetFillsBoundsOpaquely(false);
   } else {
     DCHECK(shield_view_);
+    layer()->SetFillsBoundsOpaquely(true);
     parent()->RemoveChildViewT(shield_view_.get());
     shield_view_ = nullptr;
   }
@@ -124,9 +133,10 @@ void WallpaperView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   }
 }
 
-void WallpaperView::ShowContextMenuForViewImpl(views::View* source,
-                                               const gfx::Point& point,
-                                               ui::MenuSourceType source_type) {
+void WallpaperView::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
   Shell::Get()->ShowContextMenu(point, source_type);
 }
 

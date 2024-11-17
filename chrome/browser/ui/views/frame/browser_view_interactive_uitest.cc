@@ -36,8 +36,8 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/wm/window_pin_util.h"
 #endif
 
 using views::FocusManager;
@@ -188,14 +188,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, BrowserFullscreenShowTopView) {
             chrome::IsCommandEnabled(browser(), IDC_SHOW_BOOKMARK_BAR));
 
   // Return to regular mode.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
-#else
-  // Adding `FullscreenWaiter` will make the TESTs on Lacros fail
-  // determinately, which should have been a no-op.
-  // TODO(crbug.com/40857465): Repair this defect.
-  chrome::ToggleFullscreenMode(browser());
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_FALSE(browser_view->IsFullscreen());
   EXPECT_TRUE(browser_view->GetTabStripVisible());
 }
@@ -231,12 +224,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, TabFullscreenShowTopView) {
 }
 
 // Test whether bookmark bar shows up or hides correctly for fullscreen modes.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_FullscreenShowBookmarkBar DISABLED_FullscreenShowBookmarkBar
-#else
-#define MAYBE_FullscreenShowBookmarkBar FullscreenShowBookmarkBar
-#endif
-IN_PROC_BROWSER_TEST_F(BrowserViewTest, MAYBE_FullscreenShowBookmarkBar) {
+IN_PROC_BROWSER_TEST_F(BrowserViewTest, FullscreenShowBookmarkBar) {
   BrowserView* browser_view = static_cast<BrowserView*>(browser()->window());
 
   // If the bookmark bar is not showing, enable showing it so that we can check
@@ -284,14 +272,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, MAYBE_FullscreenShowBookmarkBar) {
 #endif
 
   // Exit from fullscreen mode.
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   ui_test_utils::ToggleFullscreenModeAndWait(browser());
-#else
-  // Adding `FullscreenWaiter` will make the TESTs on Lacros fail
-  // determinately, which should have been a no-op.
-  // TODO(crbug.com/40857465): Repair this defect.
-  chrome::ToggleFullscreenMode(browser());
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_FALSE(browser_view->IsFullscreen());
   EXPECT_TRUE(browser_view->GetTabStripVisible());
   EXPECT_TRUE(browser_view->IsBookmarkBarVisible());
@@ -333,7 +314,7 @@ class BrowserViewFullscreenTest : public BrowserViewTest {
 // Disabled on platforms where async fullscreen state transition is not
 // yet supported.
 // TODO(b/40276379): Apply this to all remaining desktop platforms.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_Fullscreen Fullscreen
 #else
 #define MAYBE_Fullscreen DISABLED_Fullscreen
@@ -400,17 +381,14 @@ class BrowserViewTestWithStopLoadingAnimationForHiddenWindow
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(b/326134178): Disable the flaky test on branded Lacros builder
-// (ci/linux-lacros-chrome).
-// TODO(crbug.com/41484767): Disable flaky test on Lacros.
 // TODO(b/342017720): Re-enable on Mac
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_LoadingAnimationChangeOnMinimizeAndRestore \
   DISABLED_LoadingAnimationChangeOnMinimizeAndRestore
 #else
 #define MAYBE_LoadingAnimationChangeOnMinimizeAndRestore \
   LoadingAnimationChangeOnMinimizeAndRestore
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(BrowserViewTestWithStopLoadingAnimationForHiddenWindow,
                        MAYBE_LoadingAnimationChangeOnMinimizeAndRestore) {
   auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
@@ -498,7 +476,7 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTitle) {
 }
 #endif  // !BUILDFLAG(IS_MAC)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 using BrowserViewLockedFullscreenTestChromeOS = BrowserViewTest;
 
 IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
@@ -548,4 +526,4 @@ IN_PROC_BROWSER_TEST_F(BrowserViewLockedFullscreenTestChromeOS,
   PinWindow(browser()->window()->GetNativeWindow(), /*trusted=*/true);
   EXPECT_TRUE(browser_view()->immersive_mode_controller()->IsEnabled());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)

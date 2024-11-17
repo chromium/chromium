@@ -139,6 +139,9 @@ class CONTENT_EXPORT PreloadingDataImpl
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
 
+  // A commonly used `PredictorDomainCallback`.
+  static bool IsLinkClickNavigation(NavigationHandle* navigation_handle);
+
   size_t GetPredictionsSizeForTesting() const;
   void SetMaxPredictionsToTenForTesting();
 

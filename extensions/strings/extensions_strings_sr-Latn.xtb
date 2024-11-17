@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Ulazna vrednost privatnog ključa mora biti važeća putanja.</translation>
 <translation id="388442998277590542">Nije moguće učitati stranicu opcija „<ph name="OPTIONS_PAGE" />“.</translation>
 <translation id="3984413272403535372">Došlo je do greške prilikom potpisivanja dodatka.</translation>
-<translation id="4115165561519362854">Administrator ovog računara zahteva da <ph name="EXTENSION_NAME" /> ima minimalnu verziju <ph name="EXTENSION_VERSION" />. Ne možete da ga omogućite dok ga ne ažurirate na tu verziju (ili noviju).</translation>
 <translation id="4233778200880751280">Nije moguće učitati stranicu sa osnovnim podacima „<ph name="ABOUT_PAGE" />“.</translation>
 <translation id="471800408830181311">Formiranje izlaznih rezultata privatnog ključa nije uspelo.</translation>
 <translation id="4811956658694082538">Instaliranje paketa nije uspelo zato što je uslužni proces otkazao. Probajte da ponovo pokrenete Chrome i pokušajte ponovo.</translation>

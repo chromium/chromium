@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="61dp"
+    android:height="48dp"
+    android:viewportWidth="61"
+    android:viewportHeight="48">
+  <path
+      android:pathData="M11.803,0L29.902,0A11.803,11.803 0,0 1,41.705 11.803L41.705,12.59A11.803,11.803 0,0 1,29.902 24.393L11.803,24.393A11.803,11.803 0,0 1,0 12.59L0,11.803A11.803,11.803 0,0 1,11.803 0z"
+      android:fillColor="@color/default_browser_promo_illustration_1"/>
+  <path
+      android:pathData="M5.508,17.658C5.508,16.602 5.508,16.074 5.674,15.656C5.914,15.05 6.394,14.57 7,14.33C7.419,14.164 7.946,14.164 9.002,14.164H18.319C20.6,14.164 21.741,14.164 22.32,14.531C23.16,15.065 23.576,16.068 23.359,17.04C23.209,17.709 22.403,18.515 20.79,20.128L11.472,29.446C9.86,31.059 9.053,31.865 8.384,32.014C7.412,32.232 6.409,31.816 5.876,30.976C5.508,30.396 5.508,29.256 5.508,26.975V17.658Z"
+      android:fillColor="@color/default_browser_promo_illustration_1"/>
+  <path
+      android:pathData="M30.689,12.59L48.787,12.59A11.803,11.803 0,0 1,60.59 24.393L60.59,24.393A11.803,11.803 0,0 1,48.787 36.197L30.689,36.197A11.803,11.803 0,0 1,18.885 24.393L18.885,24.393A11.803,11.803 0,0 1,30.689 12.59z"
+      android:fillColor="@color/default_browser_promo_illustration_2"/>
+  <path
+      android:pathData="M18.885,24.393C18.885,17.875 24.17,12.59 30.688,12.59H41.705C41.704,12.719 41.703,12.814 41.701,12.899C41.536,19.176 36.487,24.225 30.211,24.389C30.056,24.393 29.874,24.393 29.508,24.393L18.885,24.393Z"
+      android:fillColor="@color/default_browser_promo_illustration_3"
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="M24.393,30.248C24.393,29.192 24.393,28.664 24.559,28.246C24.799,27.64 25.279,27.16 25.885,26.92C26.304,26.754 26.832,26.754 27.887,26.754H37.205C39.486,26.754 40.626,26.754 41.205,27.122C42.046,27.655 42.461,28.658 42.244,29.63C42.094,30.299 41.288,31.105 39.675,32.718L30.358,42.036C28.745,43.649 27.938,44.455 27.269,44.605C26.298,44.822 25.294,44.406 24.761,43.566C24.393,42.987 24.393,41.846 24.393,39.565V30.248Z"
+      android:fillColor="@color/default_browser_promo_illustration_2"/>
+</vector>

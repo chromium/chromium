@@ -8,6 +8,8 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -58,6 +60,19 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   void TearDownOnMainThread() override;
 
  protected:
+  using MockTrackerFactoryMethod =
+      base::RepeatingCallback<std::unique_ptr<KeyedService>(
+          content::BrowserContext*)>;
+
+  // Returns a function to create a `MockTracker`. For using real tracker, you
+  // can return a null callback.
+  virtual MockTrackerFactoryMethod GetMockTrackerFactoryMethod();
+
+  // Set up fake tracker initialization behaviors to the passed mock tracker.
+  static std::unique_ptr<feature_engagement::test::MockTracker>
+  SetUpFakeInitializationCalls(
+      std::unique_ptr<feature_engagement::test::MockTracker> mock_tracker);
+
   void SetUpMocks();
 
   // Allow sub-classes to initialize scoped feature list with different values.
@@ -127,10 +142,6 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   // Set false in the constructor to disable `ash::features::kScalableIphDebug`.
   bool enable_scalable_iph_debug_ = true;
 
-  // Set false in the constructor not to use a mock tracker, i.e. Use a real
-  // tracker.
-  bool enable_mock_tracker_ = true;
-
   // Set false in the constructor to not enforce scalable IPH set-up.
   // If `enable_scalable_iph_` is set to false, this should also be false.
   bool setup_scalable_iph_ = true;
@@ -144,20 +155,22 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   bool force_disable_manta_service_ = false;
 
  private:
-  static void SetTestingFactories(bool enable_mock_tracker,
-                                  content::BrowserContext* browser_context);
+  static void SetTestingFactories(
+      MockTrackerFactoryMethod mock_tracker_factory_method,
+      content::BrowserContext* browser_context);
   static std::unique_ptr<KeyedService> CreateMockTracker(
       content::BrowserContext* browser_context);
   static std::unique_ptr<scalable_iph::ScalableIphDelegate> CreateMockDelegate(
       Profile* profile,
       scalable_iph::Logger* logger);
-  static void SetCanUseMantaService(Profile* profile);
+  static void SetCanUseMantaService(content::BrowserContext* browser_context);
 
   chromeos::network_config::FakeCrosNetworkConfig fake_cros_network_config_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::CallbackListSubscription subscription_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_ = nullptr;
   raw_ptr<test::MockScalableIphDelegate> mock_delegate_ = nullptr;
+  bool mock_tracker_enabled_ = false;
 };
 
 }  // namespace ash

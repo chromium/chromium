@@ -713,8 +713,7 @@ UsbDeviceHandleWin::Interface* UsbDeviceHandleWin::GetFirstInterfaceForFunction(
     Interface* interface) {
   switch (device_->driver_type()) {
     case UsbDeviceWin::DriverType::kUnsupported:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     case UsbDeviceWin::DriverType::kWinUSB:
       // If WinUSB has been loaded for a composite device then all of its
       // interfaces must be treated as a single function.
@@ -1130,8 +1129,7 @@ void UsbDeviceHandleWin::ReportIsochronousError(
 bool UsbDeviceHandleWin::AllFunctionsEnumerated() const {
   switch (device_->driver_type()) {
     case UsbDeviceWin::DriverType::kUnsupported:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     case UsbDeviceWin::DriverType::kWinUSB:
       return true;
     case UsbDeviceWin::DriverType::kComposite:

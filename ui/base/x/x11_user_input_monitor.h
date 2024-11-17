@@ -24,8 +24,9 @@ class COMPONENT_EXPORT(UI_BASE_X) XUserInputMonitor
     : public base::CurrentThread::DestructionObserver,
       public x11::EventObserver {
  public:
-  using WriteKeyPressCallback = base::RepeatingCallback<
-      void(const base::WritableSharedMemoryMapping& shmem, uint32_t count)>;
+  using WriteKeyPressCallback =
+      base::RepeatingCallback<void(base::WritableSharedMemoryMapping& shmem,
+                                   uint32_t count)>;
 
   explicit XUserInputMonitor(
       const scoped_refptr<base::SingleThreadTaskRunner>& io_task_runner);

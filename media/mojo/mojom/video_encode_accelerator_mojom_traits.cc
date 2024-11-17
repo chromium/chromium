@@ -207,12 +207,6 @@ bool UnionTraits<media::mojom::OptionalMetadataDataView,
     case media::mojom::OptionalMetadataDataView::Tag::kVp9: {
       return data.ReadVp9(&out->vp9);
     }
-    case media::mojom::OptionalMetadataDataView::Tag::kAv1: {
-      return data.ReadAv1(&out->av1);
-    }
-    case media::mojom::OptionalMetadataDataView::Tag::kH265: {
-      return data.ReadH265(&out->h265);
-    }
   }
   NOTREACHED();
 }
@@ -232,6 +226,9 @@ bool StructTraits<media::mojom::BitstreamBufferMetadataDataView,
     return false;
   }
   if (!data.ReadEncodedColorSpace(&metadata->encoded_color_space)) {
+    return false;
+  }
+  if (!data.ReadSvcGeneric(&metadata->svc_generic)) {
     return false;
   }
 
@@ -254,14 +251,6 @@ bool StructTraits<media::mojom::H264MetadataDataView, media::H264Metadata>::
          media::H264Metadata* out_metadata) {
   out_metadata->temporal_idx = data.temporal_idx();
   out_metadata->layer_sync = data.layer_sync();
-  return true;
-}
-
-// static
-bool StructTraits<media::mojom::H265MetadataDataView, media::H265Metadata>::
-    Read(media::mojom::H265MetadataDataView data,
-         media::H265Metadata* out_metadata) {
-  out_metadata->temporal_idx = data.temporal_idx();
   return true;
 }
 
@@ -298,10 +287,15 @@ bool StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata>::Read(
 }
 
 // static
-bool StructTraits<media::mojom::Av1MetadataDataView, media::Av1Metadata>::Read(
-    media::mojom::Av1MetadataDataView data,
-    media::Av1Metadata* out_metadata) {
+bool StructTraits<media::mojom::SVCGenericMetadataDataView,
+                  media::SVCGenericMetadata>::
+    Read(media::mojom::SVCGenericMetadataDataView data,
+         media::SVCGenericMetadata* out_metadata) {
+  out_metadata->follow_svc_spec = data.follow_svc_spec();
   out_metadata->temporal_idx = data.temporal_idx();
+  out_metadata->spatial_idx = data.spatial_idx();
+  out_metadata->reference_flags = data.reference_flags();
+  out_metadata->refresh_flags = data.refresh_flags();
   return true;
 }
 

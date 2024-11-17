@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.chrome.browser.device_lock.DeviceLockActivityLauncherImpl;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
@@ -34,11 +35,19 @@ import org.chromium.components.sync.SyncService;
  */
 public class SigninTestRule extends AccountManagerTestRule {
     private boolean mIsSignedIn;
+    private final SigninTestUtil.CustomDeviceLockActivityLauncher mDeviceLockActivityLauncher =
+            new SigninTestUtil.CustomDeviceLockActivityLauncher();
 
     public SigninTestRule() {}
 
     public SigninTestRule(@NonNull FakeAccountManagerFacade fakeAccountManagerFacade) {
         super(fakeAccountManagerFacade);
+    }
+
+    @Override
+    public void setUpRule() {
+        super.setUpRule();
+        DeviceLockActivityLauncherImpl.setInstanceForTesting(mDeviceLockActivityLauncher);
     }
 
     /** Signs out if user is signed in. */
@@ -56,6 +65,7 @@ public class SigninTestRule extends AccountManagerTestRule {
             // sign out).
             forceSignOut();
         }
+        DeviceLockActivityLauncherImpl.setInstanceForTesting(null);
         super.tearDownRule();
     }
 
@@ -68,20 +78,6 @@ public class SigninTestRule extends AccountManagerTestRule {
     public CoreAccountInfo addTestAccountThenSignin() {
         assert !mIsSignedIn : "An account is already signed in!";
         CoreAccountInfo coreAccountInfo = addAccount(TEST_ACCOUNT_EMAIL);
-        SigninTestUtil.signin(coreAccountInfo);
-        mIsSignedIn = true;
-        return coreAccountInfo;
-    }
-
-    /**
-     * Adds and signs in an account with the specified name without sync consent.
-     *
-     * @deprecated Use the version with {@link AccountInfo}.
-     */
-    @Deprecated
-    public CoreAccountInfo addAccountThenSignin(String email, String name) {
-        assert !mIsSignedIn : "An account is already signed in!";
-        CoreAccountInfo coreAccountInfo = addAccount(email, name);
         SigninTestUtil.signin(coreAccountInfo);
         mIsSignedIn = true;
         return coreAccountInfo;
@@ -116,13 +112,12 @@ public class SigninTestRule extends AccountManagerTestRule {
     }
 
     /** Adds and signs in an account with the specified name and enables sync. */
-    public CoreAccountInfo addAccountThenSigninAndEnableSync(String email, String name) {
+    public void addAccountThenSigninAndEnableSync(AccountInfo accountInfo) {
         assert !mIsSignedIn : "An account is already signed in!";
-        CoreAccountInfo coreAccountInfo = addAccount(email, name);
+        addAccount(accountInfo);
         SigninTestUtil.signinAndEnableSync(
-                coreAccountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
+                accountInfo, SyncTestUtil.getSyncServiceForLastUsedProfile());
         mIsSignedIn = true;
-        return coreAccountInfo;
     }
 
     /** Waits for the account corresponding to coreAccountInfo to finish signin. */
@@ -222,5 +217,10 @@ public class SigninTestRule extends AccountManagerTestRule {
     public void forceSignOut() {
         SigninTestUtil.forceSignOut();
         mIsSignedIn = false;
+    }
+
+    /** Completes the device lock flow when on automotive devices. */
+    public void completeDeviceLockIfOnAutomotive() {
+        SigninTestUtil.completeDeviceLockIfOnAutomotive(mDeviceLockActivityLauncher);
     }
 }

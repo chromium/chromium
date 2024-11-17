@@ -32,12 +32,14 @@
 #include "base/test/simple_test_clock.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
+#include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/dips/dips_redirect_info.h"
 #include "chrome/browser/dips/dips_service.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/dips/dips_test_utils.h"
 #include "chrome/browser/dips/dips_utils.h"
@@ -51,6 +53,7 @@
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/content_settings/common/content_settings_manager.mojom.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -78,6 +81,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/render_frame_host_test_support.h"
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -383,6 +387,7 @@ class DIPSBounceDetectorBrowserTest
 
   void SetUpOnMainThread() override {
     prerender_test_helper_.RegisterServerRequestMonitor(embedded_test_server());
+    net::test_server::RegisterDefaultHandlers(embedded_test_server());
     ASSERT_TRUE(embedded_test_server()->Start());
     host_resolver()->AddRule("*", "127.0.0.1");
     SetUpDIPSWebContentsObserver();
@@ -1593,12 +1598,18 @@ class RedirectHeuristicBrowserTest : public PlatformBrowserTest {
   void SimulateMouseClick() {
     SimulateMouseClickAndWait(GetActiveWebContents());
   }
+
+  void SimulateWebAuthnAssertion() {
+    content::WebAuthnAssertionRequestSucceeded(
+        GetActiveWebContents()->GetPrimaryMainFrame());
+  }
 };
 
 // Tests the conditions for recording RedirectHeuristic_CookieAccess2 and
 // RedirectHeuristic_CookieAccessThirdParty2 UKM events.
+// TODO(crbug.com/369920781): Flaky
 IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
-                       RecordsRedirectHeuristicCookieAccessEvent) {
+                       DISABLED_RecordsRedirectHeuristicCookieAccessEvent) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
   WebContents* web_contents = GetActiveWebContents();
 
@@ -1722,9 +1733,9 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
 
   GURL final_url = embedded_test_server()->GetURL("a.test", "/title1.html");
 
-  GURL tracker_url_with_interaction =
+  GURL tracker_url_with_user_activation_interaction =
       embedded_test_server()->GetURL("b.test", "/title1.html");
-  GURL image_url_with_interaction =
+  GURL image_url_with_user_activation_interaction =
       https_server.GetURL("sub.b.test", "/favicon/icon.png");
 
   GURL tracker_url_in_iframe =
@@ -1732,10 +1743,15 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
   GURL image_url_in_iframe =
       https_server.GetURL("sub.c.test", "/favicon/icon.png");
 
-  GURL target_url_3pc_allowed =
+  GURL tracker_url_with_authentication_interaction =
       embedded_test_server()->GetURL("d.test", "/title1.html");
+  GURL image_url_with_authentication_interaction =
+      https_server.GetURL("sub.d.test", "/favicon/icon.png");
+
+  GURL target_url_3pc_allowed =
+      embedded_test_server()->GetURL("e.test", "/title1.html");
   GURL target_url_3pc_blocked =
-      embedded_test_server()->GetURL("e.test", "/iframe_blank.html");
+      embedded_test_server()->GetURL("f.test", "/iframe_blank.html");
 
   // Initialize 3PC settings for the target sites.
   HostContentSettingsMap* map = HostContentSettingsMapFactory::GetForProfile(
@@ -1758,11 +1774,21 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
   ASSERT_TRUE(NavigateToSetCookie(web_contents, &https_server, "sub.c.test",
                                   /*is_secure_cookie_set=*/true,
                                   /*is_ad_tagged=*/false));
+  ASSERT_TRUE(NavigateToSetCookie(web_contents, &https_server, "sub.d.test",
+                                  /*is_secure_cookie_set=*/true,
+                                  /*is_ad_tagged=*/false));
 
-  // Start on `tracker_url_with_interaction` and record a current interaction.
-  ASSERT_TRUE(
-      content::NavigateToURL(web_contents, tracker_url_with_interaction));
+  // Start on `tracker_url_with_user_activation_interaction` and record a
+  // current user activation interaction.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, tracker_url_with_user_activation_interaction));
   SimulateMouseClick();
+
+  // Redirect to on `tracker_url_with_authentication_interaction` and record a
+  // current authentication interaction.
+  ASSERT_TRUE(content::NavigateToURL(
+      web_contents, tracker_url_with_authentication_interaction));
+  SimulateWebAuthnAssertion();
 
   // Redirect to one of the target URLs, to set DoesFirstPartyPrecedeThirdParty.
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
@@ -1771,15 +1797,21 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, tracker_url_in_iframe));
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
-      web_contents, tracker_url_with_interaction));
+      web_contents, tracker_url_with_user_activation_interaction));
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, tracker_url_with_authentication_interaction));
 
   // Redirect to target URL with cookies allowed.
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
       web_contents, target_url_3pc_allowed));
-  // Read a cookie from the tracking URL with interaction.
+  // Read a cookie from the tracking URL with user activation interaction.
   CreateImageAndWaitForCookieAccess(
       web_contents,
       https_server.GetURL("sub.b.test", "/favicon/icon.png?isad=1"));
+
+  // Read a cookie from the tracking URL with authentication interaction.
+  CreateImageAndWaitForCookieAccess(web_contents,
+                                    image_url_with_authentication_interaction);
 
   // Redirect to target URL with cookies blocked.
   ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
@@ -1803,10 +1835,11 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
           {"AccessId", "AccessAllowed", "IsAdTagged",
            "HoursSinceLastInteraction", "MillisecondsSinceRedirect",
            "OpenerHasSameSiteIframe", "SitesPassedCount",
-           "DoesFirstPartyPrecedeThirdParty", "IsCurrentInteraction"});
+           "DoesFirstPartyPrecedeThirdParty", "IsCurrentInteraction",
+           "InteractionType"});
 
-  // Expect UKM entries from both of the cookie accesses.
-  ASSERT_EQ(2u, ukm_entries.size());
+  // Expect UKM entries from all three cookie accesses.
+  ASSERT_EQ(3u, ukm_entries.size());
 
   // Expect reasonable delays between the redirect and cookie access.
   for (const auto& entry : ukm_entries) {
@@ -1814,10 +1847,11 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
     EXPECT_LT(entry.metrics.at("MillisecondsSinceRedirect"), 1000);
   }
 
-  // The first cookie access was from a tracking site with a user interaction
-  // within the last hour, on a site with 3PC access allowed.
+  // The first cookie access was from a tracking site with a user activation
+  // interaction within the last hour, on a site with 3PC access allowed.
 
-  // 1 site was passed: tracker_url_with_interaction -> target_url_3pc_allowed
+  // 2 site were passed: tracker_url_with_user_activation_interaction ->
+  // tracker_url_with_authentication_interaction -> target_url_3pc_allowed
   auto access_id_1 = ukm_entries[0].metrics.at("AccessId");
   EXPECT_THAT(
       ukm_recorder.GetSourceForSourceId(ukm_entries[0].source_id)->url(),
@@ -1828,54 +1862,92 @@ IN_PROC_BROWSER_TEST_F(RedirectHeuristicBrowserTest,
   EXPECT_EQ(ukm_entries[0].metrics.at("HoursSinceLastInteraction"), 0);
   EXPECT_EQ(ukm_entries[0].metrics.at("OpenerHasSameSiteIframe"),
             static_cast<int32_t>(OptionalBool::kFalse));
-  EXPECT_EQ(ukm_entries[0].metrics.at("SitesPassedCount"), 1);
+  EXPECT_EQ(ukm_entries[0].metrics.at("SitesPassedCount"), 2);
   EXPECT_EQ(ukm_entries[0].metrics.at("DoesFirstPartyPrecedeThirdParty"),
             false);
   EXPECT_EQ(ukm_entries[0].metrics.at("IsCurrentInteraction"), 1);
+  EXPECT_EQ(ukm_entries[0].metrics.at("InteractionType"),
+            static_cast<int32_t>(
+                RedirectHeuristicTabHelper::InteractionType::UserActivation));
+
+  // The second cookie access was from a tracking site with an authentication
+  // within the last hour, on a site with 3PC access allowed.
+
+  // 1 site was passed: tracker_url_with_authentication_interaction ->
+  // target_url_3pc_allowed
+  auto access_id_2 = ukm_entries[1].metrics.at("AccessId");
+  EXPECT_THAT(
+      ukm_recorder.GetSourceForSourceId(ukm_entries[1].source_id)->url(),
+      Eq(target_url_3pc_allowed));
+  EXPECT_EQ(ukm_entries[1].metrics.at("AccessAllowed"), true);
+  EXPECT_EQ(ukm_entries[0].metrics.at("IsAdTagged"),
+            static_cast<int32_t>(OptionalBool::kFalse));
+  EXPECT_EQ(ukm_entries[1].metrics.at("HoursSinceLastInteraction"), 0);
+  EXPECT_EQ(ukm_entries[1].metrics.at("OpenerHasSameSiteIframe"),
+            static_cast<int32_t>(OptionalBool::kFalse));
+  EXPECT_EQ(ukm_entries[1].metrics.at("SitesPassedCount"), 1);
+  EXPECT_EQ(ukm_entries[1].metrics.at("DoesFirstPartyPrecedeThirdParty"),
+            false);
+  EXPECT_EQ(ukm_entries[1].metrics.at("IsCurrentInteraction"), 1);
+  EXPECT_EQ(ukm_entries[1].metrics.at("InteractionType"),
+            static_cast<int32_t>(
+                RedirectHeuristicTabHelper::InteractionType::Authentication));
 
   // The third cookie access was from a tracking site in an iframe of the
   // target, on a site with 3PC access blocked.
 
-  // 3 sites were passed: tracker_url_in_iframe -> tracker_url_with_interaction
-  // -> target_url_3pc_allowed -> target_url_3pc_blocked
-  auto access_id_2 = ukm_entries[1].metrics.at("AccessId");
+  // 4 sites were passed: tracker_url_in_iframe ->
+  // tracker_url_with_user_activation_interaction
+  // -> tracker_url_with_authentication_interaction -> target_url_3pc_allowed ->
+  // target_url_3pc_blocked
+  auto access_id_3 = ukm_entries[2].metrics.at("AccessId");
   EXPECT_THAT(
-      ukm_recorder.GetSourceForSourceId(ukm_entries[1].source_id)->url(),
+      ukm_recorder.GetSourceForSourceId(ukm_entries[2].source_id)->url(),
       Eq(target_url_3pc_blocked));
-  EXPECT_EQ(ukm_entries[1].metrics.at("AccessAllowed"), false);
-  EXPECT_EQ(ukm_entries[1].metrics.at("IsAdTagged"),
+  EXPECT_EQ(ukm_entries[2].metrics.at("AccessAllowed"), false);
+  EXPECT_EQ(ukm_entries[2].metrics.at("IsAdTagged"),
             static_cast<int32_t>(OptionalBool::kFalse));
-  EXPECT_EQ(ukm_entries[1].metrics.at("HoursSinceLastInteraction"), -1);
-  EXPECT_EQ(ukm_entries[1].metrics.at("OpenerHasSameSiteIframe"),
+  EXPECT_EQ(ukm_entries[2].metrics.at("HoursSinceLastInteraction"), -1);
+  EXPECT_EQ(ukm_entries[2].metrics.at("OpenerHasSameSiteIframe"),
             static_cast<int32_t>(OptionalBool::kTrue));
-  EXPECT_EQ(ukm_entries[1].metrics.at("SitesPassedCount"), 3);
-  EXPECT_EQ(ukm_entries[1].metrics.at("DoesFirstPartyPrecedeThirdParty"), true);
-  EXPECT_EQ(ukm_entries[1].metrics.at("IsCurrentInteraction"), 0);
+  EXPECT_EQ(ukm_entries[2].metrics.at("SitesPassedCount"), 4);
+  EXPECT_EQ(ukm_entries[2].metrics.at("DoesFirstPartyPrecedeThirdParty"), true);
+  EXPECT_EQ(ukm_entries[2].metrics.at("IsCurrentInteraction"), 0);
+  EXPECT_EQ(ukm_entries[2].metrics.at("InteractionType"),
+            static_cast<int32_t>(
+                RedirectHeuristicTabHelper::InteractionType::NoInteraction));
 
-  // Verify there are 2 corresponding CookieAccessThirdParty entries with
+  // Verify there are 3 corresponding CookieAccessThirdParty entries with
   // matching access IDs.
   std::vector<ukm::TestUkmRecorder::HumanReadableUkmEntry>
       ukm_third_party_entries = ukm_recorder.GetEntries(
           "RedirectHeuristic.CookieAccessThirdParty2", {"AccessId"});
-  ASSERT_EQ(2u, ukm_third_party_entries.size());
+  ASSERT_EQ(3u, ukm_third_party_entries.size());
 
   EXPECT_THAT(
       ukm_recorder.GetSourceForSourceId(ukm_third_party_entries[0].source_id)
           ->url(),
-      Eq(tracker_url_with_interaction));
+      Eq(tracker_url_with_user_activation_interaction));
   EXPECT_EQ(ukm_third_party_entries[0].metrics.at("AccessId"), access_id_1);
 
   EXPECT_THAT(
       ukm_recorder.GetSourceForSourceId(ukm_third_party_entries[1].source_id)
           ->url(),
-      Eq(tracker_url_in_iframe));
+      Eq(tracker_url_with_authentication_interaction));
   EXPECT_EQ(ukm_third_party_entries[1].metrics.at("AccessId"), access_id_2);
+
+  EXPECT_THAT(
+      ukm_recorder.GetSourceForSourceId(ukm_third_party_entries[2].source_id)
+          ->url(),
+      Eq(tracker_url_in_iframe));
+  EXPECT_EQ(ukm_third_party_entries[2].metrics.at("AccessId"), access_id_3);
 }
 
 struct RedirectHeuristicFlags {
   bool write_redirect_grants = false;
   bool require_aba_flow = true;
   bool require_current_interaction = true;
+  bool user_activation_interaction = true;
 };
 
 // chrome/browser/ui/browser.h (for changing profile prefs) is not available on
@@ -2039,6 +2111,96 @@ IN_PROC_BROWSER_TEST_P(
                 : CONTENT_SETTING_BLOCK);
 }
 
+IN_PROC_BROWSER_TEST_P(RedirectHeuristicGrantTest,
+                       CreatesRedirectHeuristicGrantsWithWebAuthnInteractions) {
+  WebContents* web_contents = GetActiveWebContents();
+  auto cookie_settings = CookieSettingsFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents->GetBrowserContext()));
+
+  // Initialize first party URL and two trackers.
+  GURL first_party_url =
+      embedded_test_server()->GetURL("a.test", "/title1.html");
+  GURL past_interaction_url =
+      embedded_test_server()->GetURL("b.test", "/title1.html");
+  GURL current_interaction_url =
+      embedded_test_server()->GetURL("c.test", "/title1.html");
+
+  // Record a past web authentication interaction on `past_interaction_url`.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, past_interaction_url));
+  SimulateWebAuthnAssertion();
+
+  // Start redirect chain on `first_party_url` with an interaction that simulate
+  // a user starting the authentication process
+  ASSERT_TRUE(content::NavigateToURL(web_contents, first_party_url));
+  SimulateMouseClick();
+
+  // Navigate through 'past_interaction_url', 'current_interaction_url' with a
+  // web authentication interaction, and back to 'first_party_url'
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, past_interaction_url));
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, current_interaction_url));
+  SimulateWebAuthnAssertion();
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, first_party_url));
+  EndRedirectChain();
+
+  // Wait on async tasks for the grants to be created.
+  WaitOnStorage(GetDipsService(web_contents));
+
+  // Expect some cookie grants on `first_party_url` based on flags and criteria.
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                past_interaction_url, net::SiteForCookies(), first_party_url,
+                net::CookieSettingOverrides(), nullptr),
+            (GetParam().write_redirect_grants &&
+             !GetParam().require_current_interaction)
+                ? CONTENT_SETTING_ALLOW
+                : CONTENT_SETTING_BLOCK);
+  EXPECT_EQ(cookie_settings->GetCookieSetting(
+                current_interaction_url, net::SiteForCookies(), first_party_url,
+                net::CookieSettingOverrides(), nullptr),
+            (GetParam().write_redirect_grants && !GetParam().require_aba_flow)
+                ? CONTENT_SETTING_ALLOW
+                : CONTENT_SETTING_BLOCK);
+}
+
+IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
+                       RedirectInfoHttpStatusPersistence) {
+  WebContents* const web_contents = GetActiveWebContents();
+
+  // The "final" URL will not have any server redirects.
+  GURL final_url = embedded_test_server()->GetURL("/echo");
+  // The "302" and "303" URLs will have a server redirect to the final URL,
+  // giving a 302 and 303 HTTP response code status, respectively.
+  GURL redirect_303 = embedded_test_server()->GetURL("/server-redirect-303?" +
+                                                     final_url.spec());
+  GURL redirect_302 = embedded_test_server()->GetURL("/server-redirect-302?" +
+                                                     final_url.spec());
+  // The "301" URL will give a 301 response code and redirect to the "302" URL.
+  GURL redirect_301 = embedded_test_server()->GetURL("/server-redirect-301?" +
+                                                     redirect_302.spec());
+
+  // Navigate to a URL that will give a 301 redirect to another URL that will
+  // give a 302 redirect, before settling on a third URL.
+  ASSERT_TRUE(content::NavigateToURL(web_contents, redirect_301, final_url));
+
+  // Do client redirect to a URL that gives a 303 redirect.
+  ASSERT_TRUE(content::NavigateToURLFromRendererWithoutUserGesture(
+      web_contents, redirect_303, final_url));
+
+  RedirectChainDetector* wco =
+      RedirectChainDetector::FromWebContents(web_contents);
+  const DIPSRedirectContext& context = wco->CommittedRedirectContext();
+
+  ASSERT_EQ(context.size(), 4u);
+
+  EXPECT_EQ(context[0].response_code, 301);
+  EXPECT_EQ(context[1].response_code, 302);
+  // The client redirect does not have an explicit HTTP response status.
+  EXPECT_EQ(context[2].response_code, 0);
+  EXPECT_EQ(context[3].response_code, 303);
+}
+
 const RedirectHeuristicFlags kRedirectHeuristicTestCases[] = {
     {
         .write_redirect_grants = false,
@@ -2057,6 +2219,12 @@ const RedirectHeuristicFlags kRedirectHeuristicTestCases[] = {
         .write_redirect_grants = true,
         .require_aba_flow = true,
         .require_current_interaction = false,
+    },
+    {
+        .write_redirect_grants = true,
+        .require_aba_flow = false,
+        .require_current_interaction = false,
+        .user_activation_interaction = false,
     },
 };
 
@@ -4042,7 +4210,7 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, LateCookieAccessTest) {
 
   const DIPSRedirectContext& context = wco->CommittedRedirectContext();
   ASSERT_EQ(context.size(), 1u);
-  const DIPSRedirectInfo& redirect = context.AtForTesting(0);
+  const DIPSRedirectInfo& redirect = context[0];
   EXPECT_EQ(redirect.url.url, bounce_url);
   // A request to /favicon.ico may cause a cookie read in addition to the write
   // we explicitly performed.
@@ -4153,7 +4321,7 @@ IN_PROC_BROWSER_TEST_P(DIPSBounceDetectorBFCacheTest, LateInteractionTest) {
 
   const DIPSRedirectContext& context = wco->CommittedRedirectContext();
   ASSERT_EQ(context.size(), 1u);
-  const DIPSRedirectInfo& redirect = context.AtForTesting(0);
+  const DIPSRedirectInfo& redirect = context[0];
   EXPECT_EQ(redirect.url.url, bounce_url);
   EXPECT_THAT(redirect.has_sticky_activation, true);
 }

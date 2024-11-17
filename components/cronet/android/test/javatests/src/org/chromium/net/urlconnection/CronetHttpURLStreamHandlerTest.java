@@ -88,6 +88,7 @@ public class CronetHttpURLStreamHandlerTest {
 
     @Test
     @SmallTest
+    @SuppressWarnings("AddressSelection")
     public void testOpenConnectionWithProxy() throws Exception {
         URL url = new URL(NativeTestServer.getEchoMethodURL());
         CronetHttpURLStreamHandler streamHandler =

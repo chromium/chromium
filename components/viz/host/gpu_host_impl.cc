@@ -78,7 +78,7 @@ class FontRenderParams {
 
   FontRenderParams() = default;
 
-  ~FontRenderParams() { NOTREACHED_IN_MIGRATION(); }
+  ~FontRenderParams() { NOTREACHED(); }
 
   THREAD_CHECKER(thread_checker_);
   std::optional<gfx::FontRenderParams> params_;
@@ -131,11 +131,34 @@ GpuHostImpl::GpuHostImpl(Delegate* delegate,
   viz_main_->SetHostProcessId(base::GetCurrentProcId());
 #endif
 
+  mojom::GpuServiceCreationParamsPtr gpu_service_params =
+      mojom::GpuServiceCreationParams::New();
+#if BUILDFLAG(IS_OZONE)
+
+#if BUILDFLAG(IS_LINUX)
+  // Linux has an issue when running in single-process mode wherein
+  // GetPlatformRuntimeProperties() browser-side calls can have a data race with
+  // in-process GPU service initialization. The call to
+  // GetPlatformRuntimeProperties() below tickles that data race. Note that
+  // running in single-process mode on Linux is done only in test contexts.
+  const bool can_initialize_supports_overlays =
+      !params_.gpu_service_running_in_process;
+#else
+  constexpr bool can_initialize_supports_overlays = true;
+#endif
+
+  if (can_initialize_supports_overlays) {
+    gpu_service_params->supports_overlays = ui::OzonePlatform::GetInstance()
+                                                ->GetPlatformRuntimeProperties()
+                                                .supports_overlays;
+  }
+#endif
+
   viz_main_->CreateGpuService(
       gpu_service_remote_.BindNewPipeAndPassReceiver(task_runner),
       gpu_host_receiver_.BindNewPipeAndPassRemote(task_runner),
       std::move(discardable_manager_remote),
-      use_shader_cache_shm_count_.CloneRegion());
+      use_shader_cache_shm_count_.CloneRegion(), std::move(gpu_service_params));
   MaybeSendFontRenderParams();
 
 #if BUILDFLAG(IS_OZONE)
@@ -400,13 +423,6 @@ std::string GpuHostImpl::GetShaderPrefixKey() {
     std::string build_fp =
         base::android::BuildInfo::GetInstance()->android_build_fp();
     shader_prefix_key_ += "-" + build_fp;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-    // ChromeOS can update independently of Lacros and the GPU driver
-    // information is not enough to ensure blob compatibility. See
-    // crbug.com/1444684
-    std::string chromeos_version = base::SysInfo::OperatingSystemName() + " " +
-                                   base::SysInfo::OperatingSystemVersion();
-    shader_prefix_key_ += "-" + chromeos_version;
 #endif
   }
 

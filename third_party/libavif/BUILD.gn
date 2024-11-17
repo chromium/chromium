@@ -32,8 +32,10 @@ libavif_decoder_sources = [
   "src/src/alpha.c",
   "src/src/avif.c",
   "src/src/colr.c",
+  "src/src/colrconvert.c",
   "src/src/diag.c",
   "src/src/exif.c",
+  "src/src/gainmap.c",
   "src/src/io.c",
   "src/src/mem.c",
   "src/src/obu.c",
@@ -79,7 +81,9 @@ component("libavif_enc") {
   public = [ "src/include/avif/avif.h" ]
   public_configs = [ ":avif_public_config" ]
 
-  sources = libavif_decoder_sources + [ "src/src/write.c" ]
+  sources = libavif_decoder_sources + [
+              "src/src/write.c",
+            ]
   testonly = true
 
   configs += [ ":avif_config" ]

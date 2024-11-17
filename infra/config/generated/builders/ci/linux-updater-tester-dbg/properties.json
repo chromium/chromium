@@ -68,7 +68,8 @@
           "builder": "linux-updater-try-builder-dbg",
           "group": "tryserver.chromium.updater"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-updater-tester-dbg/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

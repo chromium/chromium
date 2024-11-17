@@ -42,7 +42,8 @@ found in the LICENSE file.
 
     <!-- Dimens for theme refactor 2021 -->
     <dimen name="tab_grid_card_bg_radius">16dp</dimen>
-    <dimen name="tab_grid_card_favicon_padding">11dp</dimen>
+    <dimen name="tab_grid_card_favicon_padding_start">11dp</dimen>
+    <dimen name="tab_grid_card_favicon_padding_end">9dp</dimen>
     <dimen name="tab_grid_card_header_height">40dp</dimen>
     <dimen name="tab_grid_card_margin">8dp</dimen>
     <dimen name="tab_grid_card_between_card_padding">4dp</dimen>
@@ -82,8 +83,11 @@ found in the LICENSE file.
     <dimen name="color_picker_color_item_vertical_padding">12dp</dimen>
     <dimen name="color_picker_inner_layer_inset">5dp</dimen>
     <dimen name="color_picker_selection_layer_inset">2dp</dimen>
-    <dimen name="tab_group_color_icon_inset">2dp</dimen>
-    <dimen name="tab_group_color_icon_item_size">16dp</dimen>
+    <dimen name="tab_group_color_icon_stroke">2dp</dimen>
+    <dimen name="tab_group_color_icon_item_size">22dp</dimen>
+    <dimen name="tab_group_color_icon_item_radius">11dp</dimen>
+    <dimen name="tab_group_color_icon_with_avatar_item_size">24dp</dimen>
+    <dimen name="tab_group_color_icon_with_avatar_item_radius">12dp</dimen>
     <dimen name="tab_group_color_picker_popup_padding">10dp</dimen>
     <dimen name="tab_group_visual_data_dialog_margin_padding">3dp</dimen>
 
@@ -100,9 +104,6 @@ found in the LICENSE file.
     <dimen name="tab_group_quarter_outer_radius">12dp</dimen>
 
     <!-- Dimens for TabGroupShare features-->
-    <dimen name="tab_group_color_share_icon_inset">4dp</dimen>
-    <dimen name="tab_group_color_share_icon_item_size">12dp</dimen>
-    <dimen name="tab_group_share_icon_item_size">16dp</dimen>
     <dimen name="tab_group_share_tiles_padding">14dp</dimen>
 
     <!-- Dimens for Hub integration. -->

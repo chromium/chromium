@@ -46,16 +46,25 @@ std::unique_ptr<ImageDecoder> CreateAVIFDecoderWithOptions(
     ImageDecoder::AlphaOption alpha_option,
     ImageDecoder::HighBitDepthDecodingOption high_bit_depth_option,
     ColorBehavior color_behavior,
+    cc::AuxImage aux_image,
     ImageDecoder::AnimationOption animation_option) {
   return std::make_unique<CrabbyAVIFImageDecoder>(
-      alpha_option, high_bit_depth_option, color_behavior,
+      alpha_option, high_bit_depth_option, color_behavior, aux_image,
       ImageDecoder::kNoDecodedImageByteLimit, animation_option);
 }
 
 std::unique_ptr<ImageDecoder> CreateAVIFDecoder() {
   return CreateAVIFDecoderWithOptions(
       ImageDecoder::kAlphaNotPremultiplied, ImageDecoder::kDefaultBitDepth,
-      ColorBehavior::kTag, ImageDecoder::AnimationOption::kUnspecified);
+      ColorBehavior::kTag, cc::AuxImage::kDefault,
+      ImageDecoder::AnimationOption::kUnspecified);
+}
+
+std::unique_ptr<ImageDecoder> CreateGainMapAVIFDecoder() {
+  return CreateAVIFDecoderWithOptions(
+      ImageDecoder::kAlphaNotPremultiplied, ImageDecoder::kDefaultBitDepth,
+      ColorBehavior::kTag, cc::AuxImage::kGainmap,
+      ImageDecoder::AnimationOption::kUnspecified);
 }
 
 struct ExpectedColor {
@@ -805,7 +814,7 @@ void InspectImage(
     ImageDecoder::HighBitDepthDecodingOption high_bit_depth_option) {
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoderWithOptions(
       param.alpha_option, high_bit_depth_option, param.color_behavior,
-      ImageDecoder::AnimationOption::kUnspecified);
+      cc::AuxImage::kDefault, ImageDecoder::AnimationOption::kUnspecified);
   scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(param.path);
   ASSERT_TRUE(data.get());
 #if FIXME_DISTINGUISH_LOSSY_OR_LOSSLESS
@@ -915,7 +924,6 @@ constexpr AVIFImageParam kStaticTestParams[] = {
     {"/images/resources/avif/dice_444_10b_grid4x3.avif", 1, kAnimationNone},
     {"/images/resources/avif/gracehopper_422_12b_grid2x4.avif", 1,
      kAnimationNone},
-    {"/images/resources/avif/small-with-gainmap-adobe.avif", 1, kAnimationNone},
     {"/images/resources/avif/small-with-gainmap-iso.avif", 1, kAnimationNone},
 };
 
@@ -1006,61 +1014,6 @@ TEST(CrabbyStaticAVIFTests, invalidImages) {
       ErrorPhase::kDecode);
 }
 
-TEST(CrabbyStaticAVIFTests, GetAdobeGainmapInfoAndData) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kAvifGainmapHdrImages},
-      /*disabled_features=*/{});
-
-  scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
-      "/images/resources/avif/small-with-gainmap-adobe.avif");
-  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
-  decoder->SetData(data, true);
-  SkGainmapInfo gainmap_info;
-  scoped_refptr<SegmentReader> gainmap_data;
-  const bool has_gainmap =
-      decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
-  ASSERT_TRUE(has_gainmap);
-
-  // Check gainmap metadata.
-  constexpr double kEpsilon = 0.00001;
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[0], 1.0, kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[1], 1.0, kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[2], 1.0, kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMin[3], 1.0, kEpsilon);
-
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[0], std::exp2(2.753770), kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[1], std::exp2(2.753770), kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[2], std::exp2(2.753770), kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapRatioMax[3], 1.0, kEpsilon);
-
-  EXPECT_NEAR(gainmap_info.fGainmapGamma[0], 1. / 0.31108, kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapGamma[1], 1. / 0.31108, kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapGamma[2], 1. / 0.31108, kEpsilon);
-  EXPECT_NEAR(gainmap_info.fGainmapGamma[3], 1.0, kEpsilon);
-
-  EXPECT_NEAR(gainmap_info.fEpsilonSdr[0], 0.015625, kEpsilon);
-  EXPECT_NEAR(gainmap_info.fEpsilonSdr[1], 0.015625, kEpsilon);
-  EXPECT_NEAR(gainmap_info.fEpsilonSdr[2], 0.015625, kEpsilon);
-  EXPECT_NEAR(gainmap_info.fEpsilonSdr[3], 1.0, kEpsilon);
-
-  EXPECT_NEAR(gainmap_info.fEpsilonHdr[0], 0.015625, kEpsilon);
-  EXPECT_NEAR(gainmap_info.fEpsilonHdr[1], 0.015625, kEpsilon);
-  EXPECT_NEAR(gainmap_info.fEpsilonHdr[2], 0.015625, kEpsilon);
-  EXPECT_NEAR(gainmap_info.fEpsilonHdr[3], 1.0, kEpsilon);
-
-  EXPECT_NEAR(gainmap_info.fDisplayRatioSdr, 1.0, kEpsilon);
-  EXPECT_NEAR(gainmap_info.fDisplayRatioHdr, std::exp2(2.8), kEpsilon);
-
-  EXPECT_EQ(gainmap_info.fGainmapMathColorSpace, nullptr);
-
-  // Check that the gainmap can be decoded.
-  std::unique_ptr<ImageDecoder> gainmap_decoder = CreateAVIFDecoder();
-  gainmap_decoder->SetData(gainmap_data, true);
-  ImageFrame* gainmap_frame = decoder->DecodeFrameBufferAtIndex(0);
-  EXPECT_TRUE(gainmap_frame);
-}
-
 TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndData) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
@@ -1071,6 +1024,8 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndData) {
       "/images/resources/avif/small-with-gainmap-iso.avif");
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   decoder->SetData(data, true);
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(decoder->Size(), gfx::Size(134, 100));
   SkGainmapInfo gainmap_info;
   scoped_refptr<SegmentReader> gainmap_data;
   const bool has_gainmap =
@@ -1112,9 +1067,11 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndData) {
   EXPECT_EQ(gainmap_info.fGainmapMathColorSpace, nullptr);
 
   // Check that the gainmap can be decoded.
-  std::unique_ptr<ImageDecoder> gainmap_decoder = CreateAVIFDecoder();
+  std::unique_ptr<ImageDecoder> gainmap_decoder = CreateGainMapAVIFDecoder();
   gainmap_decoder->SetData(gainmap_data, true);
-  ImageFrame* gainmap_frame = decoder->DecodeFrameBufferAtIndex(0);
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(gainmap_decoder->Size(), gfx::Size(33, 25));
+  ImageFrame* gainmap_frame = gainmap_decoder->DecodeFrameBufferAtIndex(0);
   EXPECT_TRUE(gainmap_frame);
 }
 
@@ -1128,6 +1085,8 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndDataHdrToSdr) {
       "/images/resources/avif/small-with-gainmap-iso-hdrbase.avif");
   std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
   decoder->SetData(data, true);
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(decoder->Size(), gfx::Size(134, 100));
   SkGainmapInfo gainmap_info;
   scoped_refptr<SegmentReader> gainmap_data;
   const bool has_gainmap =
@@ -1167,9 +1126,11 @@ TEST(CrabbyStaticAVIFTests, GetIsoGainmapInfoAndDataHdrToSdr) {
   EXPECT_EQ(gainmap_info.fBaseImageType, SkGainmapInfo::BaseImageType::kHDR);
 
   // Check that the gainmap can be decoded.
-  std::unique_ptr<ImageDecoder> gainmap_decoder = CreateAVIFDecoder();
+  std::unique_ptr<ImageDecoder> gainmap_decoder = CreateGainMapAVIFDecoder();
   gainmap_decoder->SetData(gainmap_data, true);
-  ImageFrame* gainmap_frame = decoder->DecodeFrameBufferAtIndex(0);
+  EXPECT_FALSE(decoder->Failed());
+  EXPECT_EQ(gainmap_decoder->Size(), gfx::Size(33, 25));
+  ImageFrame* gainmap_frame = gainmap_decoder->DecodeFrameBufferAtIndex(0);
   EXPECT_TRUE(gainmap_frame);
 }
 
@@ -1269,18 +1230,16 @@ TEST(CrabbyStaticAVIFTests, GetGainmapInfoAndDataWithFeatureDisabled) {
       /*enabled_features=*/{},
       /*disabled_features=*/{features::kAvifGainmapHdrImages});
 
-  for (const std::string image :
-       {"small-with-gainmap-adobe.avif", "small-with-gainmap-iso.avif"}) {
-    scoped_refptr<SharedBuffer> data = ReadFileToSharedBuffer(
-        "web_tests/images/resources/avif", image.c_str());
-    std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
-    decoder->SetData(data, true);
-    SkGainmapInfo gainmap_info;
-    scoped_refptr<SegmentReader> gainmap_data;
-    const bool has_gainmap =
-        decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
-    ASSERT_FALSE(has_gainmap);
-  }
+  const std::string image = "small-with-gainmap-iso.avif";
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer("web_tests/images/resources/avif", image.c_str());
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
+  decoder->SetData(data, true);
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  const bool has_gainmap =
+      decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
+  ASSERT_FALSE(has_gainmap);
 }
 
 TEST(CrabbyStaticAVIFTests, GetGainmapInfoAndDataWithTruncatedData) {
@@ -1289,21 +1248,37 @@ TEST(CrabbyStaticAVIFTests, GetGainmapInfoAndDataWithTruncatedData) {
       /*enabled_features=*/{features::kAvifGainmapHdrImages},
       /*disabled_features=*/{});
 
-  for (const std::string image :
-       {"small-with-gainmap-adobe.avif", "small-with-gainmap-iso.avif"}) {
-    const Vector<char> data_vector =
-        ReadFile("web_tests/images/resources/avif", image.c_str());
-    scoped_refptr<SharedBuffer> half_data =
-        SharedBuffer::Create(data_vector.data(), data_vector.size() / 2);
+  const std::string image = "small-with-gainmap-iso.avif";
+  const Vector<char> data_vector =
+      ReadFile("web_tests/images/resources/avif", image.c_str());
+  scoped_refptr<SharedBuffer> half_data =
+      SharedBuffer::Create(data_vector.data(), data_vector.size() / 2);
 
-    std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
-    decoder->SetData(half_data, true);
-    SkGainmapInfo gainmap_info;
-    scoped_refptr<SegmentReader> gainmap_data;
-    const bool has_gainmap =
-        decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
-    ASSERT_FALSE(has_gainmap);
-  }
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
+  decoder->SetData(half_data, true);
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  const bool has_gainmap =
+      decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
+  ASSERT_FALSE(has_gainmap);
+}
+
+TEST(CrabbyStaticAVIFTests, GetGainmapWithGammaZero) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAvifGainmapHdrImages},
+      /*disabled_features=*/{});
+
+  const std::string image = "small-with-gainmap-iso-gammazero.avif";
+  scoped_refptr<SharedBuffer> data =
+      ReadFileToSharedBuffer("web_tests/images/resources/avif", image.c_str());
+  std::unique_ptr<ImageDecoder> decoder = CreateAVIFDecoder();
+  decoder->SetData(data, true);
+  SkGainmapInfo gainmap_info;
+  scoped_refptr<SegmentReader> gainmap_data;
+  const bool has_gainmap =
+      decoder->GetGainmapInfoAndData(gainmap_info, gainmap_data);
+  ASSERT_FALSE(has_gainmap);
 }
 
 TEST(CrabbyStaticAVIFTests, YUV) {

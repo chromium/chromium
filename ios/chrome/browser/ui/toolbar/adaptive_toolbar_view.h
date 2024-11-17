@@ -11,7 +11,7 @@
 @class ToolbarButton;
 @class ToolbarTabGridButton;
 @class ToolbarToolsMenuButton;
-enum class ToolbarTabGridButtonStyle;
+enum class ToolbarTabGroupState;
 
 // Protocol defining the interface for interacting with a view of the adaptive
 // toolbar.
@@ -52,8 +52,8 @@ enum class ToolbarTabGridButtonStyle;
 // Sets the location bar view containing the omnibox.
 - (void)setLocationBarView:(UIView*)locationBarView;
 
-// Sets the style on the Tab Grid button.
-- (void)setTabGridButtonStyle:(ToolbarTabGridButtonStyle)tabGridButtonStyle;
+// Updates the toolbar for the given TabGroup state.
+- (void)updateTabGroupState:(ToolbarTabGroupState)tabGroupState;
 
 @end
 

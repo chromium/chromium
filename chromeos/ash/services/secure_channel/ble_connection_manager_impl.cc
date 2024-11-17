@@ -402,12 +402,11 @@ void BleConnectionManagerImpl::SetAuthenticatingChannel(
   PauseConnectionAttemptsToDevice(remote_device_id);
 
   if (DoesAuthenticatingChannelExist(remote_device_id)) {
-    PA_LOG(ERROR) << "BleConnectionManager::SetAuthenticatingChannel(): A new "
-                  << "channel was created, one already exists for the same "
-                  << "remote device ID. ID: "
-                  << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
-                         remote_device_id);
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "BleConnectionManager::SetAuthenticatingChannel(): A new "
+                 << "channel was created, one already exists for the same "
+                 << "remote device ID. ID: "
+                 << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
+                        remote_device_id);
   }
 
   SecureChannel* secure_channel_raw = secure_channel.get();
@@ -496,10 +495,8 @@ std::string BleConnectionManagerImpl::GetRemoteDeviceIdForSecureChannel(
       return map_entry.first;
   }
 
-  PA_LOG(ERROR) << "BleConnectionManager::GetRemoteDeviceIdForSecureChannel(): "
-                << "No remote device ID mapped to the provided SecureChannel. ";
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED() << "BleConnectionManager::GetRemoteDeviceIdForSecureChannel(): "
+               << "No remote device ID mapped to the provided SecureChannel. ";
 }
 
 void BleConnectionManagerImpl::HandleSecureChannelDisconnection(
@@ -510,12 +507,11 @@ void BleConnectionManagerImpl::HandleSecureChannelDisconnection(
   remote_device_id_to_timestamps_map_[remote_device_id]->Reset();
 
   if (!DoesAuthenticatingChannelExist(remote_device_id)) {
-    PA_LOG(ERROR) << "BleConnectionManagerImpl::"
-                  << "HandleSecureChannelDisconnection(): Disconnected channel "
-                  << "not present in map. Remote device ID: "
-                  << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
-                         remote_device_id);
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "BleConnectionManagerImpl::"
+                 << "HandleSecureChannelDisconnection(): Disconnected channel "
+                 << "not present in map. Remote device ID: "
+                 << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
+                        remote_device_id);
   }
 
   for (const auto& details : GetDetailsForRemoteDevice(remote_device_id)) {
@@ -613,15 +609,11 @@ ConnectionAttemptDetails BleConnectionManagerImpl::ChooseChannelRecipient(
     }
   }
 
-  PA_LOG(ERROR) << "BleConnectionManager::ChooseChannelRecipient(): Could not "
-                << "find DeviceIdPair to receive channel. Remote device ID: "
-                << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
-                       remote_device_id)
-                << ", Role: " << connection_role;
-  NOTREACHED_IN_MIGRATION();
-  return ConnectionAttemptDetails(std::string(), std::string(),
-                                  ConnectionMedium::kBluetoothLowEnergy,
-                                  ConnectionRole::kInitiatorRole);
+  NOTREACHED() << "BleConnectionManager::ChooseChannelRecipient(): Could not "
+               << "find DeviceIdPair to receive channel. Remote device ID: "
+               << multidevice::RemoteDeviceRef::TruncateDeviceIdForLogs(
+                      remote_device_id)
+               << ", Role: " << connection_role;
 }
 
 void BleConnectionManagerImpl::StartConnectionAttemptTimerMetricsIfNecessary(

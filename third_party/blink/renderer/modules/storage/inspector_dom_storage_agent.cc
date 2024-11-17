@@ -46,7 +46,8 @@
 
 namespace blink {
 
-static protocol::Response ToResponse(ExceptionState& exception_state) {
+static protocol::Response ToResponse(
+    DummyExceptionStateForTesting& exception_state) {
   if (!exception_state.HadException())
     return protocol::Response::Success();
 

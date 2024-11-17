@@ -90,21 +90,12 @@ TEST_F(SigninPromoViewTest, ChangeLayout) {
   EXPECT_TRUE(view.primaryButton.backgroundColor);
   EXPECT_GT(view.primaryButton.layer.cornerRadius, 0.0);
 
-  // Switch to compact vertical layout.
-  view.promoViewStyle = SigninPromoViewStyleCompactVertical;
-  EXPECT_EQ(view.promoViewStyle, SigninPromoViewStyleCompactVertical);
-  // In compact vertical layout, the primary button has a background color.
+  // Switch to compact layout.
+  view.promoViewStyle = SigninPromoViewStyleCompact;
+  EXPECT_EQ(view.promoViewStyle, SigninPromoViewStyleCompact);
+  // In compact layout, the primary button has a background color.
   EXPECT_TRUE(view.primaryButton.backgroundColor);
   EXPECT_GT(view.primaryButton.layer.cornerRadius, 0.0);
-  // The secondary button should be hidden.
-  EXPECT_TRUE(view.secondaryButton.hidden);
-
-  // Switch to compact horizontal layout.
-  view.promoViewStyle = SigninPromoViewStyleCompactHorizontal;
-  EXPECT_EQ(view.promoViewStyle, SigninPromoViewStyleCompactHorizontal);
-  // In compact vertical layout, the primary button is plain.
-  EXPECT_FALSE(view.primaryButton.backgroundColor);
-  EXPECT_EQ(view.primaryButton.layer.cornerRadius, 0.0);
   // The secondary button should be hidden.
   EXPECT_TRUE(view.secondaryButton.hidden);
 }

@@ -252,7 +252,8 @@
           "builder": "gpu-fyi-try-android-s23-64",
           "group": "tryserver.chromium.android"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Android arm64 Builder/targets"
     }
   },
   "$build/reclient": {

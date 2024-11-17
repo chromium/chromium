@@ -17,6 +17,7 @@
 #include "chrome/browser/keyboard_accessory/android/password_accessory_controller.h"
 #include "chrome/browser/password_manager/android/access_loss/password_access_loss_warning_bridge.h"
 #include "chrome/browser/password_manager/android/all_passwords_bottom_sheet_helper.h"
+#include "chrome/browser/password_manager/android/grouped_affiliations/acknowledge_grouped_credential_sheet_controller.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-forward.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/password_manager/core/browser/credential_cache.h"
@@ -78,7 +79,8 @@ class PasswordAccessoryControllerImpl
   void RegisterPlusProfilesProvider(
       base::WeakPtr<AffiliatedPlusProfilesProvider> provider) override;
   void RefreshSuggestionsForField(
-      autofill::mojom::FocusedFieldType focused_field_type) override;
+      autofill::mojom::FocusedFieldType focused_field_type,
+      bool is_field_eligible_for_manual_generation) override;
   void OnGenerationRequested(
       autofill::password_generation::PasswordGenerationType type) override;
   void UpdateCredManReentryUi(
@@ -101,6 +103,8 @@ class PasswordAccessoryControllerImpl
       base::WeakPtr<ManualFillingController> manual_filling_controller,
       password_manager::PasswordManagerClient* password_client,
       PasswordDriverSupplierForFocusedFrame driver_supplier,
+      std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
+          grouped_credential_sheet_controller,
       ShowMigrationWarningCallback show_migration_warning_callback,
       std::unique_ptr<PasswordAccessLossWarningBridge>
           access_loss_warning_bridge);
@@ -115,6 +119,11 @@ class PasswordAccessoryControllerImpl
       security_state::SecurityLevel security_level) {
     security_level_for_testing_ = security_level;
   }
+
+  plus_addresses::AllPlusAddressesBottomSheetController*
+  GetAllPlusAddressesControllerForTesting() {
+    return all_plus_addresses_bottom_sheet_controller_.get();
+  }
 #endif
  protected:
   // This constructor can also be used by |CreateForWebContentsForTesting|
@@ -126,6 +135,8 @@ class PasswordAccessoryControllerImpl
       base::WeakPtr<ManualFillingController> manual_filling_controller,
       password_manager::PasswordManagerClient* password_client,
       PasswordDriverSupplierForFocusedFrame driver_supplier,
+      std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
+          grouped_credential_sheet_controller,
       ShowMigrationWarningCallback show_migration_warning_callback,
       std::unique_ptr<PasswordAccessLossWarningBridge>
           access_loss_warning_bridge);
@@ -134,11 +145,12 @@ class PasswordAccessoryControllerImpl
   friend class content::WebContentsUserData<PasswordAccessoryControllerImpl>;
 
   // This struct is used to remember the meta information about the last focused
-  // field.
-  struct LastFocusedFieldInfo {
-    LastFocusedFieldInfo(url::Origin focused_origin,
-                         autofill::mojom::FocusedFieldType focused_field,
-                         bool manual_generation_available);
+  // field and the frame.
+  struct LastFocusInfo {
+    LastFocusInfo(url::Origin focused_origin,
+                  autofill::mojom::FocusedFieldType focused_field,
+                  bool generation_allowed_in_frame,
+                  bool field_eligible_for_manual_generation);
 
     // Records the origin at the time of focusing the field to double-check that
     // the frame origin hasn't changed.
@@ -149,8 +161,19 @@ class PasswordAccessoryControllerImpl
     autofill::mojom::FocusedFieldType focused_field_type =
         autofill::mojom::FocusedFieldType::kUnknown;
 
-    // If true, manual generation will be available for the focused field.
-    bool is_manual_generation_available = false;
+    // If true, password generation is available in the frame.
+    bool is_generation_allowed_in_frame = false;
+
+    // True in one of the following cases:
+    // 1) The field has type="password".
+    // 2) The field was type="password" field at some point of time.
+    // 3) The field has a variation of the word "password" in name/id
+    // attributes.
+    // 4) The server predicts the field as new password field.
+    // If true, manual password generation is allowed on the field.
+    // This, however, does not affect manual filling on the field.
+    // If false, no manual password generation should be offered on the field.
+    bool is_field_eligible_for_manual_generation = false;
   };
 
   // WebContentsObserver:
@@ -164,9 +187,9 @@ class PasswordAccessoryControllerImpl
   // or adding blocklisted entry in the |PasswordStore|.
   void ChangeCurrentOriginSavePasswordsStatus(bool enabled);
 
-  // Returns true if |suggestion| matches a credential for |origin|.
-  bool AppearsInSuggestions(const std::u16string& suggestion,
-                            bool is_password,
+  // Always returns false for badly formed |origin|. Returns true if
+  // |suggestion| matches a credential for |origin| or if it's a shielded email.
+  bool AppearsInSuggestions(const autofill::AccessorySheetField& selection,
                             const url::Origin& origin) const;
 
   // Returns true if the `origin` of a focused field allows to show
@@ -190,11 +213,13 @@ class PasswordAccessoryControllerImpl
   // Called when the biometric authentication completes. If |auth_succeeded| is
   // true, |selection| will be passed on to be filled.
   void OnReauthCompleted(autofill::AccessorySheetField selection,
+                         const url::Origin& origin,
                          bool auth_succeeded);
 
   // Sends |selection| to the renderer to be filled, if it's a valid
   // entry for the origin of the frame that is currently focused.
-  void FillSelection(const autofill::AccessorySheetField& selection);
+  void FillSelection(const autofill::AccessorySheetField& selection,
+                     const url::Origin& origin);
 
   // Called From |AllPasswordsBottomSheetController| when
   // the Bottom Sheet view is destroyed.
@@ -214,6 +239,25 @@ class PasswordAccessoryControllerImpl
 
   // AffiliatedPlusProfilesProvider::Observer:
   void OnAffiliatedPlusProfilesFetched() override;
+
+  // Depending on the credential match type, there may be additional user
+  // confirmation needed (e. g. for grouped credentials). After confirmation,
+  // it will trigger `OnAcknowledgementBeforeFillingReceived`. If the credential
+  // doesn't require additional confirmation,
+  // `OnAcknowledgementBeforeFillingReceived` will be triggered immediately.
+  void EnsureAcknowledgementBeforeFilling(
+      const autofill::AccessorySheetField& selection);
+
+  // Triggered upon user confirmation to fill the credential.
+  void OnAcknowledgementBeforeFillingReceived(
+      const autofill::AccessorySheetField& selection,
+      const url::Origin& origin,
+      bool accepted);
+
+  // Checks if reauthentication is required; if yes, schedules re-auth, if no,
+  // fills right away.
+  void ReauthenticateAndFill(const autofill::AccessorySheetField& selection,
+                             const url::Origin& origin_to_fill_on);
 
   content::WebContents& GetWebContents() const;
 
@@ -235,11 +279,12 @@ class PasswordAccessoryControllerImpl
   // null, if there is no ongoing authentication.
   std::unique_ptr<device_reauth::DeviceAuthenticator> authenticator_;
 
-  // Information about the currently focused field. This is the only place
-  // allowed to store frame-specific data. If a new field is focused or focus is
-  // lost, this data needs to be reset to std::nullopt to make sure that data
-  // related to a former frame isn't displayed incorrectly in a different one.
-  std::optional<LastFocusedFieldInfo> last_focused_field_info_ = std::nullopt;
+  // Information about the currently focused field and frame. This is the only
+  // place allowed to store frame-specific data. If a new field is focused or
+  // focus is lost, this data needs to be reset to std::nullopt to make sure
+  // that data related to a former frame isn't displayed incorrectly in a
+  // different one.
+  std::optional<LastFocusInfo> last_focus_info_ = std::nullopt;
 
   // The observer to notify if available suggestions change.
   FillingSourceObserver source_observer_;
@@ -262,6 +307,11 @@ class PasswordAccessoryControllerImpl
   security_state::SecurityLevel security_level_for_testing_ =
       security_state::NONE;
 
+  // Used to show the sheet to ask additional user verification before filling
+  // credential with the grouped match type.
+  std::unique_ptr<AcknowledgeGroupedCredentialSheetController>
+      grouped_credential_sheet_controller_;
+
   // Callback attempting to display the migration warning when invoked.
   // Used to facilitate injecting a mock bridge in tests.
   ShowMigrationWarningCallback show_migration_warning_callback_;
@@ -270,7 +320,7 @@ class PasswordAccessoryControllerImpl
   // filling credentials.
   std::unique_ptr<PasswordAccessLossWarningBridge> access_loss_warning_bridge_;
 
-  const raw_ptr<const plus_addresses::PlusAddressService> plus_address_service_;
+  const raw_ptr<plus_addresses::PlusAddressService> plus_address_service_;
 
   std::unique_ptr<plus_addresses::AllPlusAddressesBottomSheetController>
       all_plus_addresses_bottom_sheet_controller_;

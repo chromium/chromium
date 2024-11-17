@@ -20,6 +20,7 @@ source_set("unit_tests") {
     "//ash:test_support",
     "//chromeos/ash/services/assistant:tests",
     "//chromeos/ash/services/bluetooth_config:unit_tests",
+    "//chromeos/ash/services/boca/babelorca/cpp:unit_tests",
     "//chromeos/ash/services/cellular_setup:unit_tests",
     "//chromeos/ash/services/connectivity/public/cpp:unit_tests",
     "//chromeos/ash/services/cros_healthd/private/cpp:unit_tests",

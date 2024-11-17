@@ -54,6 +54,7 @@ struct SyncPointStream {
   scoped_refptr<SyncPointOrderData> order_data;
   scoped_refptr<SyncPointClientState> client_state;
   base::queue<uint32_t> order_numbers;
+  const raw_ptr<SyncPointManager> sync_point_manager;
 
   SyncPointStream(SyncPointManager* sync_point_manager,
                   CommandBufferNamespace namespace_id,
@@ -62,7 +63,8 @@ struct SyncPointStream {
         client_state(sync_point_manager->CreateSyncPointClientState(
             namespace_id,
             command_buffer_id,
-            order_data->sequence_id())) {}
+            order_data->sequence_id())),
+        sync_point_manager(sync_point_manager) {}
 
   ~SyncPointStream() {
     if (order_data)
@@ -78,6 +80,12 @@ struct SyncPointStream {
   void BeginProcessing() {
     ASSERT_FALSE(order_numbers.empty());
     order_data->BeginProcessingOrderNumber(order_numbers.front());
+  }
+
+  bool Wait(const SyncToken& sync_token, base::OnceClosure closure) {
+    return sync_point_manager->Wait(sync_token, order_data->sequence_id(),
+                                    order_data->current_order_num(),
+                                    std::move(closure));
   }
 
   void EndProcessing() {
@@ -140,7 +148,8 @@ TEST_P(SyncPointManagerTest, BasicFenceSyncRelease) {
   EXPECT_FALSE(sync_point_manager_->IsSyncTokenReleased(sync_token));
 
   stream.order_data->BeginProcessingOrderNumber(1);
-  stream.client_state->ReleaseFenceSync(release_count);
+  sync_point_manager_->EnsureFenceSyncReleased(
+      sync_token, ReleaseCause::kExplicitClientRelease);
   stream.order_data->FinishProcessingOrderNumber(1);
 
   EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token));
@@ -167,14 +176,16 @@ TEST_P(SyncPointManagerTest, OutOfOrderSyncTokenRelease) {
   // Releasing the first sync token also releases the second because the first
   // token's release count is larger.
   stream.order_data->BeginProcessingOrderNumber(1);
-  stream.client_state->ReleaseFenceSync(release_count_1);
+  sync_point_manager_->EnsureFenceSyncReleased(
+      sync_token_1, ReleaseCause::kExplicitClientRelease);
   stream.order_data->FinishProcessingOrderNumber(1);
   EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token_1));
   EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token_2));
 
   // Releasing the second token should be a no-op.
   stream.order_data->BeginProcessingOrderNumber(2);
-  stream.client_state->ReleaseFenceSync(release_count_2);
+  sync_point_manager_->EnsureFenceSyncReleased(
+      sync_token_2, ReleaseCause::kExplicitClientRelease);
   stream.order_data->FinishProcessingOrderNumber(2);
   EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token_1));
   EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token_2));
@@ -201,7 +212,8 @@ TEST_P(SyncPointManagerTest, MultipleClientsPerOrderData) {
   EXPECT_FALSE(sync_point_manager_->IsSyncTokenReleased(sync_token2));
 
   stream1.order_data->BeginProcessingOrderNumber(1);
-  stream1.client_state->ReleaseFenceSync(release_count);
+  sync_point_manager_->EnsureFenceSyncReleased(
+      sync_token1, ReleaseCause::kExplicitClientRelease);
   stream1.order_data->FinishProcessingOrderNumber(1);
 
   EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token1));
@@ -226,7 +238,7 @@ TEST_P(SyncPointManagerTest, BasicFenceSyncWaitRelease) {
 
   wait_stream.BeginProcessing();
   int test_num = 10;
-  bool valid_wait = wait_stream.client_state->Wait(
+  bool valid_wait = wait_stream.Wait(
       sync_token, base::BindOnce(&SyncPointManagerTest::SetIntegerFunction,
                                  &test_num, 123));
   EXPECT_TRUE(valid_wait);
@@ -234,7 +246,8 @@ TEST_P(SyncPointManagerTest, BasicFenceSyncWaitRelease) {
   EXPECT_FALSE(sync_point_manager_->IsSyncTokenReleased(sync_token));
 
   release_stream.BeginProcessing();
-  release_stream.client_state->ReleaseFenceSync(release_count);
+  sync_point_manager_->EnsureFenceSyncReleased(
+      sync_token, ReleaseCause::kExplicitClientRelease);
   EXPECT_EQ(123, test_num);
   EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token));
 }
@@ -266,7 +279,7 @@ TEST_P(SyncPointManagerTest, WaitWithOutOfOrderSyncTokenRelease) {
 
   wait_stream.AllocateOrderNum();
   wait_stream.BeginProcessing();
-  bool valid_wait = wait_stream.client_state->Wait(
+  bool valid_wait = wait_stream.Wait(
       sync_token_1, base::BindOnce(&SyncPointManagerTest::SetIntegerFunction,
                                    &test_num_1, 123));
   EXPECT_TRUE(valid_wait);
@@ -276,7 +289,7 @@ TEST_P(SyncPointManagerTest, WaitWithOutOfOrderSyncTokenRelease) {
 
   wait_stream.AllocateOrderNum();
   wait_stream.BeginProcessing();
-  valid_wait = wait_stream.client_state->Wait(
+  valid_wait = wait_stream.Wait(
       sync_token_2, base::BindOnce(&SyncPointManagerTest::SetIntegerFunction,
                                    &test_num_2, 123));
   EXPECT_TRUE(valid_wait);
@@ -286,7 +299,7 @@ TEST_P(SyncPointManagerTest, WaitWithOutOfOrderSyncTokenRelease) {
 
   wait_stream.AllocateOrderNum();
   wait_stream.BeginProcessing();
-  valid_wait = wait_stream.client_state->Wait(
+  valid_wait = wait_stream.Wait(
       sync_token_3, base::BindOnce(&SyncPointManagerTest::SetIntegerFunction,
                                    &test_num_3, 123));
   EXPECT_TRUE(valid_wait);
@@ -297,7 +310,8 @@ TEST_P(SyncPointManagerTest, WaitWithOutOfOrderSyncTokenRelease) {
   // Releasing the first sync token should release the second one. Then,
   // releasing the second one should be a no-op.
   release_stream.BeginProcessing();
-  release_stream.client_state->ReleaseFenceSync(release_count_1);
+  sync_point_manager_->EnsureFenceSyncReleased(
+      sync_token_1, ReleaseCause::kExplicitClientRelease);
   EXPECT_EQ(123, test_num_1);
   EXPECT_EQ(123, test_num_2);
   EXPECT_EQ(10, test_num_3);
@@ -307,7 +321,8 @@ TEST_P(SyncPointManagerTest, WaitWithOutOfOrderSyncTokenRelease) {
   release_stream.EndProcessing();
 
   release_stream.BeginProcessing();
-  release_stream.client_state->ReleaseFenceSync(release_count_2);
+  sync_point_manager_->EnsureFenceSyncReleased(
+      sync_token_2, ReleaseCause::kExplicitClientRelease);
   EXPECT_EQ(123, test_num_1);
   EXPECT_EQ(123, test_num_2);
   EXPECT_EQ(10, test_num_3);
@@ -335,7 +350,7 @@ TEST_P(SyncPointManagerTest, WaitOnSelfFails) {
 
   wait_stream.BeginProcessing();
   int test_num = 10;
-  bool valid_wait = wait_stream.client_state->Wait(
+  bool valid_wait = wait_stream.Wait(
       sync_token, base::BindOnce(&SyncPointManagerTest::SetIntegerFunction,
                                  &test_num, 123));
   EXPECT_FALSE(valid_wait);
@@ -362,7 +377,7 @@ TEST_P(SyncPointManagerOrderValidationTest, ReleaseAfterWaitOrderNumber) {
 
   wait_stream.BeginProcessing();
   int test_num = 10;
-  bool valid_wait = wait_stream.client_state->Wait(
+  bool valid_wait = wait_stream.Wait(
       sync_token, base::BindOnce(&SyncPointManagerTest::SetIntegerFunction,
                                  &test_num, 123));
   EXPECT_FALSE(valid_wait);
@@ -389,13 +404,14 @@ TEST_P(SyncPointManagerTest, HigherOrderNumberRelease) {
 
   // Order number was higher but it was actually released.
   release_stream.BeginProcessing();
-  release_stream.client_state->ReleaseFenceSync(release_count);
+  sync_point_manager_->EnsureFenceSyncReleased(
+      sync_token, ReleaseCause::kExplicitClientRelease);
   release_stream.EndProcessing();
 
   // Release stream has already released so there's no need to wait.
   wait_stream.BeginProcessing();
   int test_num = 10;
-  bool valid_wait = wait_stream.client_state->Wait(
+  bool valid_wait = wait_stream.Wait(
       sync_token, base::BindOnce(&SyncPointManagerTest::SetIntegerFunction,
                                  &test_num, 123));
   EXPECT_FALSE(valid_wait);
@@ -422,7 +438,7 @@ TEST_P(SyncPointManagerTest, DestroyedClientRelease) {
   wait_stream.BeginProcessing();
 
   int test_num = 10;
-  bool valid_wait = wait_stream.client_state->Wait(
+  bool valid_wait = wait_stream.Wait(
       sync_token, base::BindOnce(&SyncPointManagerTest::SetIntegerFunction,
                                  &test_num, 123));
   EXPECT_TRUE(valid_wait);
@@ -458,7 +474,7 @@ TEST_P(SyncPointManagerOrderValidationTest, NonExistentRelease) {
 
   wait_stream.BeginProcessing();
   int test_num = 10;
-  bool valid_wait = wait_stream.client_state->Wait(
+  bool valid_wait = wait_stream.Wait(
       sync_token, base::BindOnce(&SyncPointManagerTest::SetIntegerFunction,
                                  &test_num, 123));
   EXPECT_TRUE(valid_wait);
@@ -504,7 +520,7 @@ TEST_P(SyncPointManagerOrderValidationTest, NonExistentRelease2) {
   wait_stream.BeginProcessing();
   EXPECT_EQ(3u, wait_stream.order_data->current_order_num());
   int test_num = 10;
-  bool valid_wait = wait_stream.client_state->Wait(
+  bool valid_wait = wait_stream.Wait(
       sync_token, base::BindOnce(&SyncPointManagerTest::SetIntegerFunction,
                                  &test_num, 123));
   EXPECT_TRUE(valid_wait);
@@ -524,7 +540,8 @@ TEST_P(SyncPointManagerOrderValidationTest, NonExistentRelease2) {
   test_num = 1;
   release_stream.AllocateOrderNum();
   release_stream.BeginProcessing();
-  release_stream.client_state->ReleaseFenceSync(release_count);
+  sync_point_manager_->EnsureFenceSyncReleased(
+      sync_token, ReleaseCause::kExplicitClientRelease);
   release_stream.EndProcessing();
   EXPECT_EQ(1, test_num);
   EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token));
@@ -561,7 +578,7 @@ TEST_P(SyncPointManagerOrderValidationTest, NonExistentOrderNumRelease) {
   wait_stream.BeginProcessing();
   EXPECT_EQ(3u, wait_stream.order_data->current_order_num());
   int test_num = 10;
-  bool valid_wait = wait_stream.client_state->Wait(
+  bool valid_wait = wait_stream.Wait(
       sync_token, base::BindOnce(&SyncPointManagerTest::SetIntegerFunction,
                                  &test_num, 123));
   EXPECT_TRUE(valid_wait);
@@ -579,7 +596,8 @@ TEST_P(SyncPointManagerOrderValidationTest, NonExistentOrderNumRelease) {
   // actually released.
   release_stream.BeginProcessing();
   test_num = 10;
-  release_stream.client_state->ReleaseFenceSync(1);
+  sync_point_manager_->EnsureFenceSyncReleased(
+      sync_token, ReleaseCause::kExplicitClientRelease);
   EXPECT_EQ(10, test_num);
   EXPECT_TRUE(sync_point_manager_->IsSyncTokenReleased(sync_token));
 }

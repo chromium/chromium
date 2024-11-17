@@ -22,7 +22,7 @@ ChildFrame::ChildFrame(
     CopyOutputRequestQueue copy_requests,
     bool did_invalidate,
     const viz::BeginFrameArgs& begin_frame_args,
-    const base::flat_set<base::PlatformThreadId>& renderer_thread_ids,
+    const std::vector<viz::Thread>& renderer_threads,
     base::PlatformThreadId browser_io_thread_id)
     : frame_future(std::move(frame_future)),
       frame_sink_id(frame_sink_id),
@@ -33,7 +33,7 @@ ChildFrame::ChildFrame(
       copy_requests(std::move(copy_requests)),
       did_invalidate(did_invalidate),
       begin_frame_args(begin_frame_args),
-      renderer_thread_ids(renderer_thread_ids),
+      renderer_threads(renderer_threads),
       browser_io_thread_id(browser_io_thread_id) {}
 
 ChildFrame::~ChildFrame() {

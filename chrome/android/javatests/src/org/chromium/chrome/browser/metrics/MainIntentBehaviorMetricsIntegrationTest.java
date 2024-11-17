@@ -47,7 +47,7 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.browser_ui.settings.PlaceholderSettingsForTest;
-import org.chromium.ui.test.util.UiDisableIf;
+import org.chromium.ui.base.DeviceFormFactor;
 
 /** Tests the metrics recording for main intent behaviours. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -153,7 +153,7 @@ public class MainIntentBehaviorMetricsIntegrationTest {
 
     @MediumTest
     @Test
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338974184
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338974184
     public void testLaunch_From_InAppActivities() {
         try {
             MainIntentBehaviorMetrics.setTimeoutDurationMsForTesting(0);

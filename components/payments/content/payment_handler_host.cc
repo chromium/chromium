@@ -63,7 +63,7 @@ PaymentHandlerHost::PaymentHandlerHost(content::WebContents* web_contents,
   web_contents_ = web_contents->GetWeakPtr();
 }
 
-PaymentHandlerHost::~PaymentHandlerHost() {}
+PaymentHandlerHost::~PaymentHandlerHost() = default;
 
 mojo::PendingRemote<mojom::PaymentHandlerHost> PaymentHandlerHost::Bind() {
   receiver_.reset();

@@ -15,6 +15,8 @@ import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
 import {assertExhaustive} from '../core/utils/assert.js';
 
+import {withTooltip} from './directives/with-tooltip.js';
+
 export enum UserRating {
   THUMB_UP,
   THUMB_DOWN,
@@ -115,6 +117,7 @@ export class GenaiFeedbackButtons extends ReactiveLitElement {
         .selected=${rating === UserRating.THUMB_UP}
         @click=${this.onThumbUpClick}
         aria-label=${i18n.genaiPositiveFeedbackButtonTooltip}
+        ${withTooltip()}
       >
         <cra-icon name="thumb_up" slot="icon"></cra-icon>
         <cra-icon name="thumb_up_filled" slot="selectedIcon"></cra-icon>
@@ -125,6 +128,7 @@ export class GenaiFeedbackButtons extends ReactiveLitElement {
         .selected=${rating === UserRating.THUMB_DOWN}
         @click=${this.onThumbDownClick}
         aria-label=${i18n.genaiNegativeFeedbackButtonTooltip}
+        ${withTooltip()}
       >
         <cra-icon name="thumb_down" slot="icon"></cra-icon>
         <cra-icon name="thumb_down_filled" slot="selectedIcon"></cra-icon>

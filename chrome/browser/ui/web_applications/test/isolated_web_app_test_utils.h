@@ -97,9 +97,11 @@ webapps::AppId AddDummyIsolatedAppToRegistry(
     Profile* profile,
     const GURL& start_url,
     const std::string& name,
-    const WebApp::IsolationData& isolation_data = WebApp::IsolationData(
-        IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
-        base::Version("1.0.0")),
+    const IsolationData& isolation_data =
+        IsolationData::Builder(IwaStorageOwnedBundle{/*dir_name_ascii=*/"",
+                                                     /*dev_mode=*/false},
+                               base::Version("1.0.0"))
+            .Build(),
     webapps::WebappInstallSource install_source =
         webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER);
 
@@ -162,30 +164,27 @@ MATCHER_P5(IsolationDataIs,
            integrity_block_data,
            "") {
   return ExplainMatchResult(
-      Optional(
-          AllOf(Field("location", &WebApp::IsolationData::location, location),
-                Field("version", &WebApp::IsolationData::version, version),
-                Field("controlled_frame_partitions",
-                      &WebApp::IsolationData::controlled_frame_partitions,
-                      controlled_frame_partitions),
-                Property("pending_update_info",
-                         &WebApp::IsolationData::pending_update_info,
-                         pending_update_info),
-                Field("integrity_block_data",
-                      &WebApp::IsolationData::integrity_block_data,
-                      integrity_block_data))),
+      Optional(AllOf(
+          Property("location", &IsolationData::location, location),
+          Property("version", &IsolationData::version, version),
+          Property("controlled_frame_partitions",
+                   &IsolationData::controlled_frame_partitions,
+                   controlled_frame_partitions),
+          Property("pending_update_info", &IsolationData::pending_update_info,
+                   pending_update_info),
+          Property("integrity_block_data", &IsolationData::integrity_block_data,
+                   integrity_block_data))),
       arg, result_listener);
 }
 
 MATCHER_P3(PendingUpdateInfoIs, location, version, integrity_block_data, "") {
   return ExplainMatchResult(
       Optional(AllOf(
-          Field("location", &WebApp::IsolationData::PendingUpdateInfo::location,
+          Field("location", &IsolationData::PendingUpdateInfo::location,
                 location),
-          Field("version", &WebApp::IsolationData::PendingUpdateInfo::version,
-                version),
+          Field("version", &IsolationData::PendingUpdateInfo::version, version),
           Field("integrity_block_data",
-                &WebApp::IsolationData::PendingUpdateInfo::integrity_block_data,
+                &IsolationData::PendingUpdateInfo::integrity_block_data,
                 integrity_block_data))),
       arg, result_listener);
 }

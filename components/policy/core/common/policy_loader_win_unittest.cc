@@ -125,8 +125,7 @@ bool InstallValue(const base::Value& value,
     case base::Value::Type::BINARY:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // This class provides sandboxing and mocking for the parts of the Windows
@@ -202,7 +201,7 @@ class RegistryTestHarness : public PolicyProviderTestHarness {
   ScopedGroupPolicyRegistrySandbox registry_sandbox_;
 };
 
-ScopedGroupPolicyRegistrySandbox::ScopedGroupPolicyRegistrySandbox() {}
+ScopedGroupPolicyRegistrySandbox::ScopedGroupPolicyRegistrySandbox() = default;
 
 ScopedGroupPolicyRegistrySandbox::~ScopedGroupPolicyRegistrySandbox() {
   RemoveOverrides();
@@ -267,7 +266,7 @@ RegistryTestHarness::RegistryTestHarness(HKEY hive, PolicyScope scope)
       hive_(hive) {
 }
 
-RegistryTestHarness::~RegistryTestHarness() {}
+RegistryTestHarness::~RegistryTestHarness() = default;
 
 void RegistryTestHarness::SetUp() {
   // SetUp is called at gtest SetUp time, and gtest documentation guarantees
@@ -398,7 +397,7 @@ class PolicyLoaderWinTest : public PolicyTestBase {
   static const wchar_t kTestPolicyKey[];
 
   PolicyLoaderWinTest() : scoped_domain_(false) {}
-  ~PolicyLoaderWinTest() override {}
+  ~PolicyLoaderWinTest() override = default;
 
   void SetUp() override {
     PolicyTestBase::SetUp();

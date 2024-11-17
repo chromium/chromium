@@ -166,7 +166,7 @@ TEST_F(BrowserViewTest, BrowserView) {
   EXPECT_EQ(customize_chrome_action->GetEnabled(), true);
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(BrowserViewTest, OnTaskLockedBrowserView) {
   ASSERT_TRUE(browser_view()->browser());
   browser_view()->browser()->SetLockedForOnTask(true);
@@ -525,6 +525,22 @@ TEST_F(BrowserViewTest, DISABLED_AccessibleWindowTitle) {
           TestingProfile::Builder().BuildIncognito(profile)));
 }
 
+TEST_F(BrowserViewTest, UpdateWindowTitle) {
+  AddTab(browser(), GURL("about:blank"));
+  AddTab(browser(), GURL("about:blank"));
+  std::string user_title1 = "Test Title";
+  browser()->SetWindowUserTitle(user_title1);
+  auto window_title = browser_view()->GetAccessibleWindowTitle();
+  EXPECT_EQ(base::UTF8ToUTF16(user_title1),
+            window_title.substr(0, user_title1.size()));
+
+  std::string user_title2 = "Test Title 2";
+  browser()->SetWindowUserTitle(user_title2);
+  window_title = browser_view()->GetAccessibleWindowTitle();
+  EXPECT_EQ(base::UTF8ToUTF16(user_title2),
+            window_title.substr(0, user_title2.size()));
+}
+
 TEST_F(BrowserViewTest, WindowTitleOmitsLowMemoryUsage) {
   scoped_refptr<TabResourceUsage> tab_resource_usage_ =
       base::MakeRefCounted<TabResourceUsage>();
@@ -615,6 +631,16 @@ TEST_F(BrowserViewTest, AccessibleProperties) {
 
   browser_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kClient);
+
+  ui::AXNodeData root_view_data;
+  browser_view()
+      ->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&root_view_data);
+  EXPECT_EQ(
+      root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      browser_view()->GetAccessibleWindowTitle());
 }
 
 //  Macs do not have fullscreen policy.

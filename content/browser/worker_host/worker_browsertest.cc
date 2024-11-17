@@ -52,6 +52,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/test/test_data_directory.h"
+#include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/blink/public/common/features.h"
@@ -116,8 +117,7 @@ class WorkerTest : public ContentBrowserTest,
             {});
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -167,8 +167,10 @@ class WorkerTest : public ContentBrowserTest,
     RunTest(shell(), url, expect_failure);
   }
 
-  static void QuitUIMessageLoop(base::OnceClosure callback,
-                                bool is_primary_main_frame /* unused */) {
+  static void QuitUIMessageLoop(
+      base::OnceClosure callback,
+      bool is_primary_main_frame_navigation /* unused */,
+      bool is_navigation /* unused */) {
     GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(callback));
   }
 
@@ -961,7 +963,9 @@ IN_PROC_BROWSER_TEST_P(WorkerFromCredentiallessIframeNikBrowserTest,
         ->PreconnectSockets(1, worker_url.DeprecatedGetOriginAsURL(),
                             network::mojom::CredentialsMode::kInclude,
                             main_rfh->GetIsolationInfoForSubresources()
-                                .network_anonymization_key());
+                                .network_anonymization_key(),
+                            net::MutableNetworkTrafficAnnotationTag(
+                                TRAFFIC_ANNOTATION_FOR_TESTS));
 
     connection_tracker_->WaitForAcceptedConnections(1);
     EXPECT_EQ(1u, connection_tracker_->GetAcceptedSocketCount());

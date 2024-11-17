@@ -52,7 +52,7 @@ class PerformanceDetectionManagerBrowserTest : public InProcessBrowserTest {
 
   void SetUp() override {
     feature_list_.InitAndEnableFeature(
-        performance_manager::features::kPerformanceIntervention);
+        performance_manager::features::kPerformanceInterventionUI);
     InProcessBrowserTest::SetUp();
   }
 

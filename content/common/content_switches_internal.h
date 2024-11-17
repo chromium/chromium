@@ -15,8 +15,6 @@ class CommandLine;
 
 namespace content {
 
-bool IsPinchToZoomEnabled();
-
 blink::mojom::V8CacheOptions GetV8CacheOptions();
 
 void WaitForDebugger(const std::string& label);

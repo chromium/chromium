@@ -10,9 +10,9 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "build/build_config.h"
 #include "ui/gfx/buffer_types.h"
-#include "ui/gfx/gfx_export.h"
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/files/scoped_file.h"
@@ -29,7 +29,7 @@ class Size;
 
 // NativePixmapPlane is used to carry the plane related information for GBM
 // buffer. More fields can be added if they are plane specific.
-struct GFX_EXPORT NativePixmapPlane {
+struct COMPONENT_EXPORT(GFX) NativePixmapPlane {
   NativePixmapPlane();
   NativePixmapPlane(int stride,
                     int offset,
@@ -63,7 +63,7 @@ struct GFX_EXPORT NativePixmapPlane {
 #endif
 };
 
-struct GFX_EXPORT NativePixmapHandle {
+struct COMPONENT_EXPORT(GFX) NativePixmapHandle {
   // This is the same value as DRM_FORMAT_MOD_INVALID, which is not a valid
   // modifier. We use this to indicate that layout information
   // (tiling/compression) if any will be communicated out of band.
@@ -106,8 +106,8 @@ struct GFX_EXPORT NativePixmapHandle {
 // Returns an instance of |handle| which can be sent over IPC. This duplicates
 // the file-handles, so that the IPC code take ownership of them, without
 // invalidating |handle|.
-GFX_EXPORT NativePixmapHandle
-CloneHandleForIPC(const NativePixmapHandle& handle);
+COMPONENT_EXPORT(GFX)
+NativePixmapHandle CloneHandleForIPC(const NativePixmapHandle& handle);
 
 // Returns true iff the plane metadata (number of planes, plane size, offset,
 // and stride) in |handle| corresponds to a buffer that can store an image of
@@ -127,11 +127,11 @@ CloneHandleForIPC(const NativePixmapHandle& handle);
 //   - The offset and size of each plane can fit in a size_t.
 //   - The result of offset + size for each plane does not overflow and can fit
 //     in a size_t.
-GFX_EXPORT bool CanFitImageForSizeAndFormat(
-    const gfx::NativePixmapHandle& handle,
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    bool assume_single_memory_object);
+COMPONENT_EXPORT(GFX)
+bool CanFitImageForSizeAndFormat(const gfx::NativePixmapHandle& handle,
+                                 const gfx::Size& size,
+                                 gfx::BufferFormat format,
+                                 bool assume_single_memory_object);
 }  // namespace gfx
 
 #endif  // UI_GFX_NATIVE_PIXMAP_HANDLE_H_

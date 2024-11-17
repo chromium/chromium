@@ -3,18 +3,25 @@
 <translationbundle lang="sq">
 <translation id="1444443021901415601">Chrome mban shënim temat e interesit bazuar në historikun më të fundit të shfletimit</translation>
 <translation id="2252052615723281030">Kur je i identifikuar në Chrome, ky cilësim ndihmon për ta mbajtur private adresën tënde IP. Nëse Chrome dyshon se një sajt mund të jetë duke të të gjurmuar, një pjesë e trafikut tënd mund të dërgohet nëpërmjet serverëve privatë.</translation>
+<translation id="235789365079050412">Politika e privatësisë e Google</translation>
 <translation id="2793385791865768072">Chromium mban shënim temat e interesit bazuar në historikun më të fundit të shfletimit</translation>
+<translation id="2979365474350987274">Kukit e palëve të treta janë të kufizuara</translation>
 <translation id="33479675708419823">Kur je i identifikuar në Chrome, ky cilësim ndihmon për ta mbajtur private adresën tënde IP. Nëse Chrome dyshon se një sajt mund të jetë duke të të gjurmuar, një pjesë e trafikut tënd mund të dërgohet nëpërmjet serverëve privatë. Mëso më shumë <ph name="LINK_BEGIN" />se si funksionon "Mbrojtja e IP-së"<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Mëso më shumë rreth fshehjes së adresës sate IP</translation>
+<translation id="385051799172605136">Prapa</translation>
 <translation id="4041687306270459969">Temat e reklamave që janë më të vjetra se 4 javë fshihen automatikisht. Temat përfshijnë gjëra të tilla si "Sporte", "Veshje" etj.</translation>
 <translation id="4177501066905053472">Temat e reklamave</translation>
 <translation id="4301151630239508244">Temat e reklamave janë vetëm një nga shumë gjëra që mund të përdorë një sajt për personalizimin e reklamave. Edhe pa temat e reklamave, sajtet mund të të shfaqin përsëri reklama, por ato mund të jenë më pak të personalizuara. Mëso më shumë rreth <ph name="BEGIN_LINK_1" />menaxhimit të privatësisë së reklamave<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Mëso më shumë se si i mbron Google të dhënat e tua në <ph name="BEGIN_LINK" />Politikën tonë të privatësisë<ph name="END_LINK" />.</translation>
 <translation id="453692855554576066">Mund t'i shikosh temat e reklamave në cilësimet e Chromium dhe t'i bllokosh ato që nuk dëshiron të ndahen me sajtet</translation>
 <translation id="4598427486995631491">Fshih adresën tënde IP</translation>
 <translation id="4692439979815346597">Mund t'i shikosh temat e reklamave në cilësimet e Chrome dhe t'i bllokosh ato që nuk dëshiron të ndahen me sajtet</translation>
 <translation id="5413586988657235240">Sajtet që ti viziton mund të kërkojnë temat nga Chromium për të të shfaqur reklama përkatëse ndërkohë që ai mbron historikun e shfletimit dhe identitetin tënd.</translation>
+<translation id="6053735090575989697">Mëso më shumë se si i mbron Google të dhënat e tua në "Politikën tonë të privatësisë".</translation>
 <translation id="6186536480878693792">Sajtet që ti viziton mund të kërkojnë temat nga Chrome për të të shfaqur reklama përkatëse ndërkohë që ai mbron historikun e shfletimit dhe identitetin tënd.</translation>
+<translation id="6195163219142236913">Kukit e palëve të treta janë të kufizuara</translation>
 <translation id="6371812158043974664">Kur je i identifikuar në Chromium, ky cilësim ndihmon për ta mbajtur private adresën tënde IP. Nëse Chromium dyshon se një sajt mund të jetë duke të të gjurmuar, një pjesë e trafikut tënd mund të dërgohet nëpërmjet serverëve privatë. Mëso më shumë <ph name="LINK_BEGIN" />se si funksionon "Mbrojtja e IP-së"<ph name="LINK_END" /></translation>
+<translation id="6398358690696005758">Mëso më shumë se si i mbron Google të dhënat e tua në <ph name="BEGIN_LINK1" />Politikën tonë të privatësisë<ph name="LINK_END1" />.</translation>
 <translation id="7040031291654706261">Mëso <ph name="BEGIN_LINK" />se si funksionon "Mbrojtja e IP-së"<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Rishiko cilësimin e temave të reklamave</translation>
 </translationbundle>

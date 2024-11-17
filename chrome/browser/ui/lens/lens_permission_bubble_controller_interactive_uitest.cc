@@ -8,7 +8,9 @@
 #include "chrome/browser/ui/lens/lens_permission_bubble_controller.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/lens/lens_features.h"
+#include "components/lens/lens_overlay_invocation_source.h"
 #include "components/lens/lens_overlay_permission_utils.h"
+#include "components/lens/lens_permission_user_action.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,17 +28,24 @@ class LensPermissionBubbleInteractiveUiTest : public InteractiveBrowserTest {
 
   auto* GetPrefService() { return browser()->profile()->GetPrefs(); }
 
+  void SetUp() override {
+    feature_list_.InitWithFeatures(
+        {lens::features::kLensOverlay},
+        {lens::features::kLensOverlayContextualSearchbox});
+    InteractiveBrowserTest::SetUp();
+  }
+
   void SetUpOnMainThread() override {
     InteractiveBrowserTest::SetUpOnMainThread();
     controller_ = std::make_unique<lens::LensPermissionBubbleController>(
-        browser(), GetPrefService(), "AppMenu");
+        browser(), GetPrefService(), LensOverlayInvocationSource::kAppMenu);
     request_permission_callback_called_ = false;
   }
 
   auto RequestPermission() {
     return Do(base::BindLambdaForTesting([&]() {
       controller_->RequestPermission(
-          browser()->tab_strip_model()->GetActiveTab()->contents(),
+          browser()->tab_strip_model()->GetActiveTab()->GetContents(),
           base::BindRepeating(
               &LensPermissionBubbleInteractiveUiTest::RequestPermissionCallback,
               base::Unretained(this)));
@@ -49,11 +58,11 @@ class LensPermissionBubbleInteractiveUiTest : public InteractiveBrowserTest {
     return Do(base::BindLambdaForTesting([&]() {
       histogram_tester.ExpectBucketCount(
           "Lens.Overlay.PermissionBubble.UserAction",
-          LensPermissionBubbleController::UserAction::kCancelButtonPressed,
+          LensPermissionUserAction::kCancelButtonPressed,
           /*expected_count=*/1);
       histogram_tester.ExpectBucketCount(
           "Lens.Overlay.PermissionBubble.ByInvocationSource.AppMenu.UserAction",
-          LensPermissionBubbleController::UserAction::kCancelButtonPressed,
+          LensPermissionUserAction::kCancelButtonPressed,
           /*expected_count=*/1);
       histogram_tester.ExpectTotalCount(
           "Lens.Overlay.PermissionBubble.UserAction", 1);
@@ -69,11 +78,11 @@ class LensPermissionBubbleInteractiveUiTest : public InteractiveBrowserTest {
     return Do(base::BindLambdaForTesting([&]() {
       histogram_tester.ExpectBucketCount(
           "Lens.Overlay.PermissionBubble.UserAction",
-          LensPermissionBubbleController::UserAction::kAcceptButtonPressed,
+          LensPermissionUserAction::kAcceptButtonPressed,
           /*expected_count=*/1);
       histogram_tester.ExpectBucketCount(
           "Lens.Overlay.PermissionBubble.ByInvocationSource.AppMenu.UserAction",
-          LensPermissionBubbleController::UserAction::kAcceptButtonPressed,
+          LensPermissionUserAction::kAcceptButtonPressed,
           /*expected_count=*/1);
       histogram_tester.ExpectTotalCount(
           "Lens.Overlay.PermissionBubble.UserAction", 1);
@@ -95,7 +104,7 @@ class LensPermissionBubbleInteractiveUiTest : public InteractiveBrowserTest {
   base::HistogramTester histogram_tester;
 
  private:
-  base::test::ScopedFeatureList feature_list_{lens::features::kLensOverlay};
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<LensPermissionBubbleController> controller_;
   bool request_permission_callback_called_;
 };

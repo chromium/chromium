@@ -279,10 +279,12 @@ void TranslateInfoBarDelegate::InfoBarDismissed() {
   }
 }
 
+#if BUILDFLAG(IS_IOS)
 TranslateInfoBarDelegate*
 TranslateInfoBarDelegate::AsTranslateInfoBarDelegate() {
   return this;
 }
+#endif
 
 void TranslateInfoBarDelegate::OnInfoBarClosedByUser() {
   ui_delegate_.OnUIClosedByUser();

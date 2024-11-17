@@ -63,8 +63,7 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
                                FilteringBehaviorReason reason,
                                const std::string& app_locale,
                                bool already_sent_remote_request,
-                               bool is_main_frame,
-                               bool show_banner) {
+                               bool is_main_frame) {
   base::Value::Dict strings;
   strings.Set("blockPageTitle",
               l10n_util::GetStringUTF8(IDS_BLOCK_INTERSTITIAL_TITLE));
@@ -86,11 +85,6 @@ std::string BuildErrorPageHtml(bool allow_access_requests,
   bool local_web_approvals_enabled =
       supervised_user::IsLocalWebApprovalsEnabled();
   strings.Set("isLocalWebApprovalsEnabled", local_web_approvals_enabled);
-  strings.Set("showBanner", show_banner);
-  strings.Set("bannerTitle",
-              l10n_util::GetStringUTF8(IDS_PARENT_BLOCKED_SITE_BANNER_TITLE));
-  strings.Set("bannerMessage",
-              l10n_util::GetStringUTF8(IDS_PARENT_BLOCKED_SITE_BANNER_MESSAGE));
 
   std::string block_header;
   std::string block_message;

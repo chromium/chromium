@@ -42,6 +42,8 @@ void TestUserAnnotationsService::RemoveAllEntries(base::OnceClosure callback) {
 }
 
 void TestUserAnnotationsService::AddFormSubmission(
+    const GURL& url,
+    const std::string& title,
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
     std::unique_ptr<autofill::FormStructure> form,
     ImportFormCallback callback) {
@@ -57,11 +59,12 @@ void TestUserAnnotationsService::AddFormSubmission(
       entries_.emplace_back(std::move(entry));
     }
     std::move(callback).Run(std::move(form),
-                            /*to_be_upserted_entries=*/entries_,
+                            std::make_unique<FormAnnotationResponse>(
+                                entries_, /*model_execution_id=*/std::string()),
                             /*prompt_acceptance_callback=*/base::DoNothing());
     return;
   }
-  std::move(callback).Run(std::move(form), /*to_be_upserted_entries=*/{},
+  std::move(callback).Run(std::move(form), /*form_annotation_response=*/nullptr,
                           /*prompt_acceptance_callback=*/base::DoNothing());
 }
 
@@ -86,6 +89,19 @@ void TestUserAnnotationsService::RemoveAnnotationsInRange(
     const base::Time& delete_end) {
   last_received_remove_annotations_in_range_ =
       std::make_pair(delete_begin, delete_end);
+}
+
+void TestUserAnnotationsService::GetCountOfValuesContainedBetween(
+    base::Time,
+    base::Time,
+    base::OnceCallback<void(int)> callback) {
+  std::move(callback).Run(entries_.size());
+}
+
+void TestUserAnnotationsService::SaveAutofillProfile(
+    const autofill::AutofillProfile& autofill_profile,
+    base::OnceCallback<void(UserAnnotationsExecutionResult)> callback) {
+  std::move(callback).Run(UserAnnotationsExecutionResult::kSuccess);
 }
 
 }  // namespace user_annotations

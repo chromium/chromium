@@ -12,7 +12,6 @@
 #include "components/autofill/core/browser/form_structure_rationalization_engine.h"
 #include "components/autofill/core/browser/heuristic_source.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
-#include "components/autofill/core/browser/rationalization_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
@@ -24,72 +23,178 @@ namespace autofill {
 
 namespace {
 
-// Defines necessary types for the rationalization logic, meaning that fields of
-// `type` are only filled if at least one field of some `GetNecessaryTypesFor()`
-// is present.
-// TODO(crbug.com/40220393) Cleanup when launched.
-FieldTypeSet GetNecessaryTypesFor(FieldType type) {
-  switch (type) {
-    case PHONE_HOME_COUNTRY_CODE: {
-      return FieldTypeSet{PHONE_HOME_NUMBER, PHONE_HOME_NUMBER_PREFIX,
-                          PHONE_HOME_CITY_AND_NUMBER,
-                          PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX};
+void RationalizePhoneNumbersForFilling(std::vector<AutofillField*>& fields) {
+  // A whole phone number can be structured in the following ways:
+  // - whole number
+  // - country code, city and number
+  // - country code, city code, number field
+  // - country code, city code, number field, second number field
+  // In this function more or less anything ending in a local number field
+  // (see `phone_number_found` below) is accepted as a valid phone number. Any
+  // phone number fields after that number are labeled as
+  // set_only_fill_when_focused(true) so that they don't get filled.
+  AutofillField* found_number_field = nullptr;
+  AutofillField* found_number_field_second = nullptr;
+  AutofillField* found_city_code_field = nullptr;
+  AutofillField* found_country_code_field = nullptr;
+  AutofillField* found_city_and_number_field = nullptr;
+  AutofillField* found_whole_number_field = nullptr;
+  // The "number" here refers to the local part of a phone number (i.e.,
+  // the part after a country code and a city code). It can be found as a
+  // dedicated field or as part of a bigger scope (e.g. a whole number
+  // field contains a "number"). The naming is sad but a relict from the past.
+  bool phone_number_found = false;
+  // Whether the number field (i.e. the local part) is split into two pieces.
+  // This can be observed in the US, where 650 234-5678 would be a phone
+  // number whose local parts are 234 and 5678.
+  bool phone_number_separate_fields = false;
+  // Iterate through all given fields. Iteration stops when it first finds a
+  // field that indicates the end of a phone number (this can be the local
+  // part of a phone number or a whole number). The |found_*| pointers will be
+  // set to that set of fields when iteration finishes.
+  for (AutofillField* field : fields) {
+    if (!field->is_visible()) {
+      continue;
     }
-    default:
-      return {};
+    // This phone number rationalization marks all but the first phone number as
+    // `set_only_fill_when_focused(true)`. Since it doesn't change the types, it
+    // intentionally uses the rationalized `Type()` (over the `ComputedType()`).
+    FieldType current_field_type = field->Type().GetStorableType();
+    switch (current_field_type) {
+      case PHONE_HOME_NUMBER:
+        found_number_field = field;
+        phone_number_found = true;
+        break;
+      case PHONE_HOME_NUMBER_PREFIX:
+        if (!found_number_field) {
+          found_number_field = field;
+          // phone_number_found is not set to true because the suffix needs to
+          // be found first.
+          phone_number_separate_fields = true;
+        }
+        break;
+      case PHONE_HOME_NUMBER_SUFFIX:
+        if (phone_number_separate_fields) {
+          found_number_field_second = field;
+          phone_number_found = true;
+        }
+        break;
+      case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
+      case PHONE_HOME_CITY_CODE:
+        if (!found_city_code_field) {
+          found_city_code_field = field;
+        }
+        break;
+      case PHONE_HOME_COUNTRY_CODE:
+        if (!found_country_code_field) {
+          found_country_code_field = field;
+        }
+        break;
+      case PHONE_HOME_CITY_AND_NUMBER:
+      case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
+        DCHECK(!phone_number_found && !found_city_and_number_field);
+        found_city_and_number_field = field;
+        phone_number_found = true;
+        break;
+      case PHONE_HOME_WHOLE_NUMBER:
+        DCHECK(!phone_number_found && !found_whole_number_field);
+        found_whole_number_field = field;
+        phone_number_found = true;
+        break;
+      default:
+        break;
+    }
+    // Break here if the local part of a phone number was found because we
+    // assume an order over the fields, where the local part comes last.
+    if (phone_number_found) {
+      break;
+    }
+  }
+
+  // The first number of found may be the whole number field, the
+  // city and number field, or neither. But it cannot be both.
+  DCHECK(!(found_whole_number_field && found_city_and_number_field));
+
+  // Prefer to fill the first complete phone number found. The whole_number
+  // and city_and_number fields are only set if they occur before the local
+  // part of a phone number. If we see the local part of a complete phone
+  // number, we assume that the complete phone number is represented as a
+  // sequence of fields (country code, city code, local part). These scenarios
+  // are mutually exclusive, so clean up any inconsistencies.
+  if (found_whole_number_field) {
+    found_number_field = nullptr;
+    found_number_field_second = nullptr;
+    found_city_code_field = nullptr;
+    found_country_code_field = nullptr;
+  } else if (found_city_and_number_field) {
+    found_number_field = nullptr;
+    found_number_field_second = nullptr;
+    found_city_code_field = nullptr;
+  }
+
+  // A second update pass.
+  // At this point, either |phone_number_found| is false and we should do a
+  // best-effort filling for the field whose types we have seen a first time.
+  // Or |phone_number_found| is true and the pointers to the fields that
+  // compose the first phone number are set to not-NULL. Specifically we hope
+  // to find the following:
+  // 1. |found_whole_number_field| is not NULL, other pointers set to NULL, or
+  // 2. |found_city_and_number_field| is not NULL, |found_country_code_field|
+  // is
+  //    probably not NULL, and other pointers set to NULL, or
+  // 3. |found_city_code_field| and |found_number_field| are not NULL,
+  //    |found_country_code_field| is probably not NULL, and other pointers
+  //    are NULL.
+  // 4. |found_city_code_field|, |found_number_field| and
+  //    |found_number_field_second| are not NULL, |found_country_code_field|
+  //    is probably not NULL, and other pointers are NULL.
+  //
+  // We currently don't guarantee these values. E.g. it is possible that
+  // |found_city_code_field| is NULL but |found_number_field| is not NULL.
+
+  // For all above cases, in the update pass, if one field is phone
+  // number related but not one of the found fields from first pass, set their
+  // |only_fill_when_focused| field to true.
+  for (AutofillField* field : fields) {
+    // As above, using the rationalized `Type()` is intentional.
+    FieldType current_field_type = field->Type().GetStorableType();
+    switch (current_field_type) {
+      case PHONE_HOME_NUMBER:
+      case PHONE_HOME_NUMBER_PREFIX:
+      case PHONE_HOME_NUMBER_SUFFIX:
+        if (field != found_number_field && field != found_number_field_second) {
+          field->set_only_fill_when_focused(true);
+        }
+        break;
+      case PHONE_HOME_CITY_CODE:
+      case PHONE_HOME_CITY_CODE_WITH_TRUNK_PREFIX:
+        if (field != found_city_code_field) {
+          field->set_only_fill_when_focused(true);
+        }
+        break;
+      case PHONE_HOME_COUNTRY_CODE:
+        if (field != found_country_code_field) {
+          field->set_only_fill_when_focused(true);
+        }
+        break;
+      case PHONE_HOME_CITY_AND_NUMBER:
+      case PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX:
+        if (field != found_city_and_number_field) {
+          field->set_only_fill_when_focused(true);
+        }
+        break;
+      case PHONE_HOME_WHOLE_NUMBER:
+        if (field != found_whole_number_field) {
+          field->set_only_fill_when_focused(true);
+        }
+        break;
+      default:
+        break;
+    }
   }
 }
 
 }  // namespace
-
-class FormStructureRationalizer::SectionedFieldsIndexes {
- public:
-  SectionedFieldsIndexes() = default;
-  ~SectionedFieldsIndexes() = default;
-
-  size_t LastFieldIndex() const {
-    if (sectioned_indexes_.empty())
-      return std::numeric_limits<size_t>::max();  // Shouldn't happen.
-    return sectioned_indexes_.back().back();
-  }
-
-  void AddFieldIndex(const size_t index, bool is_new_section) {
-    if (is_new_section || Empty()) {
-      sectioned_indexes_.emplace_back();
-    }
-    sectioned_indexes_.back().push_back(index);
-  }
-
-  void WalkForwardToTheNextSection() { current_section_ptr_++; }
-
-  bool IsFinished() const {
-    return current_section_ptr_ >= sectioned_indexes_.size();
-  }
-
-  size_t CurrentIndex() const {
-    return current_section_ptr_ < sectioned_indexes_.size()
-               ? sectioned_indexes_[current_section_ptr_].front()
-               : std::numeric_limits<size_t>::max();
-  }
-
-  const std::vector<size_t>* CurrentSection() const {
-    return current_section_ptr_ < sectioned_indexes_.size()
-               ? &sectioned_indexes_[current_section_ptr_]
-               : nullptr;
-  }
-
-  void Reset() { current_section_ptr_ = 0; }
-
-  bool Empty() const { return sectioned_indexes_.empty(); }
-
- private:
-  // A vector of sections. Each section is a vector of some of the indexes
-  // that belong to the same section. The sections and indexes are sorted by
-  // their order of appearance on the form.
-  std::vector<std::vector<size_t>> sectioned_indexes_;
-  // Points to a vector of indexes that belong to the same section.
-  size_t current_section_ptr_ = 0;
-};
 
 FormStructureRationalizer::FormStructureRationalizer(
     std::vector<std::unique_ptr<AutofillField>>* fields)
@@ -151,7 +256,7 @@ void FormStructureRationalizer::RationalizeAutocompleteAttributes(
       case HtmlFieldType::kCreditCardExpYear:
       case HtmlFieldType::kCreditCardExp2DigitYear:
       case HtmlFieldType::kCreditCardExp4DigitYear:
-        if (!is_text_field & !field->IsSelectOrSelectListElement()) {
+        if (!is_text_field & !field->IsSelectElement()) {
           continue;
         }
         if (base::FeatureList::IsEnabled(
@@ -295,7 +400,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
   // found. See comments inline below.
   for (auto it = fields_->begin(); it != fields_->end(); ++it) {
     auto& field = *it;
-    FieldType current_field_type = field->Type().GetStorableType();
+    FieldType current_field_type = field->ComputedType().GetStorableType();
     switch (current_field_type) {
       case CREDIT_CARD_NAME_FIRST:
         if (!keep_cc_fields)
@@ -345,7 +450,8 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
                    "months and the last field was an expiration month";
             field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
           } else {
-            FieldType next_field_type = (*it2)->Type().GetStorableType();
+            FieldType next_field_type =
+                (*it2)->ComputedType().GetStorableType();
             if (next_field_type != CREDIT_CARD_EXP_2_DIGIT_YEAR &&
                 next_field_type != CREDIT_CARD_EXP_4_DIGIT_YEAR) {
               LOG_AF(log_manager)
@@ -666,331 +772,44 @@ void FormStructureRationalizer::RationalizePhoneNumberTrunkTypes(
   }
 }
 
-void FormStructureRationalizer::RationalizePhoneNumbersInSection(
-    const Section& section) {
-  std::vector<AutofillField*> fields;
-  for (const auto& field : *fields_) {
-    if (field->section() != section) {
-      continue;
-    }
-    fields.push_back(field.get());
+void FormStructureRationalizer::RationalizePhoneNumbersForFilling() {
+  std::map<Section, std::vector<AutofillField*>> section_fields;
+  for (const std::unique_ptr<AutofillField>& field : *fields_) {
+    section_fields[field->section()].push_back(field.get());
   }
-  rationalization_util::RationalizePhoneNumberFields(fields);
-}
-
-void FormStructureRationalizer::ApplyRationalizationsToFieldAndLog(
-    size_t field_index,
-    FieldType new_type,
-    FormSignature form_signature,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
-  if (field_index >= fields_->size())
-    return;
-  auto old_type = (*fields_)[field_index]->Type().GetStorableType();
-  (*fields_)[field_index]->SetTypeTo(AutofillType(new_type));
-  if (form_interactions_ukm_logger) {
-    form_interactions_ukm_logger->LogRepeatedServerTypePredictionRationalized(
-        form_signature, *(*fields_)[field_index], old_type);
+  for (auto& [section, fields] : section_fields) {
+    autofill::RationalizePhoneNumbersForFilling(fields);
   }
 }
 
-void FormStructureRationalizer::RationalizeAddressLineFields(
-    SectionedFieldsIndexes* sections_of_address_indexes,
-    FormSignature form_signature,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
+void FormStructureRationalizer::RationalizeRepeatedStreetAddressFields(
     LogManager* log_manager) {
-  // The rationalization happens within sections.
-  for (sections_of_address_indexes->Reset();
-       !sections_of_address_indexes->IsFinished();
-       sections_of_address_indexes->WalkForwardToTheNextSection()) {
-    auto* current_section = sections_of_address_indexes->CurrentSection();
+  // Group ADDRESS_HOME_STREET_ADDRESS `fields_` by section.
+  std::map<Section, std::vector<AutofillField*>> street_address_fields;
+  for (const std::unique_ptr<AutofillField>& field : *fields_) {
+    if (field->IsFocusable() && field->ComputedType().GetStorableType() ==
+                                    ADDRESS_HOME_STREET_ADDRESS) {
+      street_address_fields[field->section()].push_back(field.get());
+    }
+  }
 
-    // The rationalization only applies to sections that have 2 or 3 visible
-    // street address predictions.
-    if (!current_section ||
-        (current_section->size() != 2 && current_section->size() != 3)) {
+  constexpr static std::array<FieldType, 3> kAddressLineTypes = {
+      ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3};
+  // Rationalise the street address fields in every section.
+  for (auto& [section, fields] : street_address_fields) {
+    if (fields.size() != 2 && fields.size() != 3) {
       continue;
     }
-
-    int nb_address_rationalized = 0;
-    for (auto field_index : *current_section) {
+    auto next_type = kAddressLineTypes.begin();
+    for (AutofillField* field : fields) {
       LOG_AF(log_manager)
           << LoggingScope::kRationalization << LogMessage::kRationalization
-          << "RationalizeAddressLineFields ADDRESS_HOME_STREET_ADDRESS to ";
-      switch (nb_address_rationalized) {
-        case 0:
-          ApplyRationalizationsToFieldAndLog(field_index, ADDRESS_HOME_LINE1,
-                                             form_signature,
-                                             form_interactions_ukm_logger);
-          LOG_AF(log_manager)
-              << LoggingScope::kRationalization << LogMessage::kRationalization
-              << "ADDRESS_HOME_LINE1";
-          break;
-        case 1:
-          ApplyRationalizationsToFieldAndLog(field_index, ADDRESS_HOME_LINE2,
-                                             form_signature,
-                                             form_interactions_ukm_logger);
-          LOG_AF(log_manager)
-              << LoggingScope::kRationalization << LogMessage::kRationalization
-              << "ADDRESS_HOME_LINE2";
-          break;
-        case 2:
-          ApplyRationalizationsToFieldAndLog(field_index, ADDRESS_HOME_LINE3,
-                                             form_signature,
-                                             form_interactions_ukm_logger);
-          LOG_AF(log_manager)
-              << LoggingScope::kRationalization << LogMessage::kRationalization
-              << "ADDRESS_HOME_LINE3";
-          break;
-        default:
-          NOTREACHED_IN_MIGRATION();
-          break;
-      }
-      ++nb_address_rationalized;
+          << "RationalizeAddressLineFields ADDRESS_HOME_STREET_ADDRESS to "
+          << FieldTypeToString(*next_type);
+      field->SetTypeTo(AutofillType(*next_type));
+      ++next_type;
     }
   }
-}
-
-void FormStructureRationalizer::ApplyRationalizationsToHiddenSelects(
-    size_t field_index,
-    FieldType new_type,
-    FormSignature form_signature,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
-  FieldType old_type = (*fields_)[field_index]->Type().GetStorableType();
-
-  // Walk on the unfocusable select fields right after the field_index which
-  // share the same type with the field_index, and apply the rationalization to
-  // them as well. These fields, if any, function as one field with the
-  // field_index.
-  for (auto current_index = field_index + 1; current_index < fields_->size();
-       current_index++) {
-    if ((*fields_)[current_index]->IsFocusable() ||
-        !(*fields_)[current_index]->IsSelectElement() ||
-        (*fields_)[current_index]->Type().GetStorableType() != old_type) {
-      break;
-    }
-    ApplyRationalizationsToFieldAndLog(current_index, new_type, form_signature,
-                                       form_interactions_ukm_logger);
-  }
-
-  // Same for the fields coming right before the field_index. (No need to check
-  // for the fields appearing before the first field!)
-  if (field_index == 0)
-    return;
-  for (auto current_index = field_index - 1;; current_index--) {
-    if ((*fields_)[current_index]->IsFocusable() ||
-        !(*fields_)[current_index]->IsSelectElement() ||
-        (*fields_)[current_index]->Type().GetStorableType() != old_type) {
-      break;
-    }
-    ApplyRationalizationsToFieldAndLog(current_index, new_type, form_signature,
-                                       form_interactions_ukm_logger);
-    if (current_index == 0)
-      break;
-  }
-}
-
-bool FormStructureRationalizer::HeuristicsPredictionsAreApplicable(
-    size_t upper_index,
-    size_t lower_index,
-    FieldType first_type,
-    FieldType second_type) {
-  // The predictions are applicable if one field has one of the two types, and
-  // the other has the other type.
-  if ((*fields_)[upper_index]->heuristic_type() ==
-      (*fields_)[lower_index]->heuristic_type())
-    return false;
-  if (((*fields_)[upper_index]->heuristic_type() == first_type ||
-       (*fields_)[upper_index]->heuristic_type() == second_type) &&
-      ((*fields_)[lower_index]->heuristic_type() == first_type ||
-       (*fields_)[lower_index]->heuristic_type() == second_type))
-    return true;
-  return false;
-}
-
-void FormStructureRationalizer::ApplyRationalizationsToFields(
-    size_t upper_index,
-    size_t lower_index,
-    FieldType upper_type,
-    FieldType lower_type,
-    FormSignature form_signature,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
-  // Unfocusable fields are ignored during the rationalization, but unfocusable
-  // 'select' fields also get autofilled to support their corresponding visible
-  // 'synthetic fields'. So, if a field's type is rationalized, we should make
-  // sure that the rationalization is also applied to its corresponding
-  // unfocusable fields, if any.
-  ApplyRationalizationsToHiddenSelects(upper_index, upper_type, form_signature,
-                                       form_interactions_ukm_logger);
-  ApplyRationalizationsToFieldAndLog(upper_index, upper_type, form_signature,
-                                     form_interactions_ukm_logger);
-
-  ApplyRationalizationsToHiddenSelects(lower_index, lower_type, form_signature,
-                                       form_interactions_ukm_logger);
-  ApplyRationalizationsToFieldAndLog(lower_index, lower_type, form_signature,
-                                     form_interactions_ukm_logger);
-}
-
-bool FormStructureRationalizer::FieldShouldBeRationalizedToCountry(
-    size_t upper_index) {
-  // Upper field is country if and only if it's the first visible address field
-  // in its section. Otherwise, the upper field is a state, and the lower one
-  // is a country.
-  for (int field_index = upper_index - 1; field_index >= 0; --field_index) {
-    if ((*fields_)[field_index]->IsFocusable() &&
-        GroupTypeOfFieldType(
-            (*fields_)[field_index]->Type().GetStorableType()) ==
-            FieldTypeGroup::kAddress &&
-        (*fields_)[field_index]->section() ==
-            (*fields_)[upper_index]->section()) {
-      return false;
-    }
-  }
-  return true;
-}
-
-void FormStructureRationalizer::RationalizeAddressStateCountry(
-    SectionedFieldsIndexes* sections_of_state_indexes,
-    SectionedFieldsIndexes* sections_of_country_indexes,
-    FormSignature form_signature,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    LogManager* log_manager) {
-  // Walk on the sections of state and country indexes simultaneously. If they
-  // both point to the same section, it means that the section includes both the
-  // country and the state type. This means that no rationalization is needed.
-  // So, walk both pointers forward. Otherwise, look at the section that appears
-  // earlier on the form. That section doesn't have any field of the other type.
-  // Rationalize the fields on the earlier section if needed. Walk the pointer
-  // that points to the earlier section forward. Stop when both sections of
-  // indexes are processed. (This resembles the merge in the merge sort.)
-  sections_of_state_indexes->Reset();
-  sections_of_country_indexes->Reset();
-
-  while (!sections_of_state_indexes->IsFinished() ||
-         !sections_of_country_indexes->IsFinished()) {
-    // If there are still sections left with both country and state type, and
-    // state and country current sections are equal, then that section has both
-    // state and country. No rationalization needed.
-    if (!sections_of_state_indexes->IsFinished() &&
-        !sections_of_country_indexes->IsFinished() &&
-        (*fields_)[sections_of_state_indexes->CurrentIndex()]->section() ==
-            (*fields_)[sections_of_country_indexes->CurrentIndex()]
-                ->section()) {
-      sections_of_state_indexes->WalkForwardToTheNextSection();
-      sections_of_country_indexes->WalkForwardToTheNextSection();
-      continue;
-    }
-
-    size_t upper_index = 0;
-    size_t lower_index = 0;
-
-    auto* current_section_of_state_indexes =
-        sections_of_state_indexes->CurrentSection();
-    auto* current_section_of_country_indexes =
-        sections_of_country_indexes->CurrentSection();
-    DCHECK(current_section_of_state_indexes ||
-           current_section_of_country_indexes);
-
-    // If country section is before the state ones, it means that that section
-    // misses states, and the other way around.
-    if (!current_section_of_country_indexes ||
-        (current_section_of_state_indexes &&
-         *current_section_of_state_indexes <
-             *current_section_of_country_indexes)) {
-      // We only rationalize when we have exactly two visible fields of a kind.
-      if (current_section_of_state_indexes->size() == 2) {
-        upper_index = (*current_section_of_state_indexes)[0];
-        lower_index = (*current_section_of_state_indexes)[1];
-      }
-      sections_of_state_indexes->WalkForwardToTheNextSection();
-    } else {
-      // We only rationalize when we have exactly two visible fields of a kind.
-      if (current_section_of_country_indexes->size() == 2) {
-        upper_index = (*current_section_of_country_indexes)[0];
-        lower_index = (*current_section_of_country_indexes)[1];
-      }
-      sections_of_country_indexes->WalkForwardToTheNextSection();
-    }
-
-    // This is when upper and lower indexes are not changed, meaning that there
-    // is no need for rationalization.
-    if (upper_index == lower_index) {
-      continue;
-    }
-
-    if (HeuristicsPredictionsAreApplicable(upper_index, lower_index,
-                                           ADDRESS_HOME_STATE,
-                                           ADDRESS_HOME_COUNTRY)) {
-      ApplyRationalizationsToFields(
-          upper_index, lower_index, (*fields_)[upper_index]->heuristic_type(),
-          (*fields_)[lower_index]->heuristic_type(), form_signature,
-          form_interactions_ukm_logger);
-      LOG_AF(log_manager)
-          << LoggingScope::kRationalization << LogMessage::kRationalization
-          << "RationalizeAddressStateCountry: Heuristics are applicable";
-      continue;
-    }
-
-    if (FieldShouldBeRationalizedToCountry(upper_index)) {
-      ApplyRationalizationsToFields(
-          upper_index, lower_index, ADDRESS_HOME_COUNTRY, ADDRESS_HOME_STATE,
-          form_signature, form_interactions_ukm_logger);
-      LOG_AF(log_manager) << LoggingScope::kRationalization
-                          << LogMessage::kRationalization
-                          << "RationalizeAddressStateCountry: "
-                             "FieldShouldBeRationalizedToCountry";
-    } else {
-      ApplyRationalizationsToFields(
-          upper_index, lower_index, ADDRESS_HOME_STATE, ADDRESS_HOME_COUNTRY,
-          form_signature, form_interactions_ukm_logger);
-      LOG_AF(log_manager) << LoggingScope::kRationalization
-                          << LogMessage::kRationalization
-                          << "RationalizeAddressStateCountry: "
-                             "!FieldShouldBeRationalizedToCountry";
-    }
-  }
-}
-
-void FormStructureRationalizer::RationalizeRepeatedFields(
-    FormSignature form_signature,
-    AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger,
-    LogManager* log_manager) {
-  // The type of every field whose index is in
-  // sectioned_field_indexes_by_type[|type|] is predicted by server as |type|.
-  // Example: sectioned_field_indexes_by_type[FULL_NAME] is a sectioned fields
-  // indexes of fields whose types are predicted as FULL_NAME by the server.
-  std::array<SectionedFieldsIndexes, MAX_VALID_FIELD_TYPE>
-      sectioned_field_indexes_by_type;
-
-  for (size_t i = 0; i < fields_->size(); ++i) {
-    const AutofillField& field = *(*fields_)[i];
-    // The unfocusable fields are considered invisible and therefore not
-    // considered when rationalizing.
-    if (!field.IsFocusable())
-      continue;
-    // The billing and non-billing types are aggregated.
-    auto current_type = field.Type().GetStorableType();
-
-    if (current_type != UNKNOWN_TYPE && current_type < MAX_VALID_FIELD_TYPE) {
-      // Look at the sectioned field indexes for the current type, if the
-      // current field belongs to that section, then the field index should be
-      // added to that same section, otherwise, start a new section.
-      sectioned_field_indexes_by_type[current_type].AddFieldIndex(
-          i,
-          /*is_new_section*/ sectioned_field_indexes_by_type[current_type]
-                  .Empty() ||
-              (*fields_)[sectioned_field_indexes_by_type[current_type]
-                             .LastFieldIndex()]
-                      ->section() != field.section());
-    }
-  }
-
-  RationalizeAddressLineFields(
-      &(sectioned_field_indexes_by_type[ADDRESS_HOME_STREET_ADDRESS]),
-      form_signature, form_interactions_ukm_logger, log_manager);
-  RationalizeAddressStateCountry(
-      &(sectioned_field_indexes_by_type[ADDRESS_HOME_STATE]),
-      &(sectioned_field_indexes_by_type[ADDRESS_HOME_COUNTRY]), form_signature,
-      form_interactions_ukm_logger, log_manager);
 }
 
 void FormStructureRationalizer::RationalizeFieldTypePredictions(
@@ -1001,35 +820,33 @@ void FormStructureRationalizer::RationalizeFieldTypePredictions(
   RationalizeCreditCardFieldPredictions(log_manager);
   RationalizeMultiOriginCreditCardFields(main_origin, log_manager);
   RationalizeCreditCardNumberOffsets(log_manager);
+  RationalizeRepeatedStreetAddressFields(log_manager);
   RationalizeStreetAddressAndAddressLine(log_manager);
   RationalizeBetweenStreetFields(log_manager);
   RationalizePhoneNumberTrunkTypes(log_manager);
-  for (const auto& field : *fields_)
-    field->SetTypeTo(field->Type());
-  RationalizeTypeRelationships(log_manager);
+  RationalizePhoneCountryCode(log_manager);
   RationalizeByRationalizationEngine(client_country, language_code,
                                      log_manager);
 }
 
-void FormStructureRationalizer::RationalizeTypeRelationships(
+void FormStructureRationalizer::RationalizePhoneCountryCode(
     LogManager* log_manager) {
-  // Create a local set of all the types for faster lookup.
-  FieldTypeSet types;
-  for (const auto& field : *fields_) {
-    types.insert(field->Type().GetStorableType());
+  constexpr static FieldTypeSet kRelevantPhoneTypes{
+      PHONE_HOME_NUMBER, PHONE_HOME_NUMBER_PREFIX, PHONE_HOME_CITY_AND_NUMBER,
+      PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX};
+  if (std::ranges::any_of(*fields_, [&](const auto& field) {
+        return kRelevantPhoneTypes.contains(
+            field->ComputedType().GetStorableType());
+      })) {
+    return;
   }
-
-  for (const auto& field : *fields_) {
-    FieldType field_type = field->Type().GetStorableType();
-    FieldTypeSet necessary_types = GetNecessaryTypesFor(field_type);
-    if (!necessary_types.empty() && !types.contains_any(necessary_types)) {
-      // We have relationship rules for this type, but no `necessary_type` was
-      // found. Disabling Autofill for this field.
+  for (const std::unique_ptr<AutofillField>& field : *fields_) {
+    if (field->ComputedType().GetStorableType() == PHONE_HOME_COUNTRY_CODE) {
       field->SetTypeTo(AutofillType(UNKNOWN_TYPE));
       LOG_AF(log_manager)
           << "RationalizeTypeRelationships: Fields of type "
-          << FieldTypeToStringView(field_type)
-          << " can only exist if other fields of specific types exist.";
+             "PHONE_HOME_COUNTRY_CODE can only coexist with other"
+             "phone number types.";
     }
   }
 }

@@ -126,13 +126,12 @@ class NewTabPageTest : public InProcessBrowserTest,
     // Enable network events. We use completion of network loads as a signal
     // of steady state.
     agent_host_->DispatchProtocolMessage(
-        this, base::as_bytes(base::make_span(
-                  std::string("{\"id\": 1, \"method\": \"Network.enable\"}"))));
+        this,
+        base::as_byte_span("{\"id\": 1, \"method\": \"Network.enable\"}"));
     // Enable DOM events. We determine completion of lazy load by reading a DOM
     // attribute.
     agent_host_->DispatchProtocolMessage(
-        this, base::as_bytes(base::make_span(
-                  std::string("{\"id\": 2, \"method\": \"DOM.enable\"}"))));
+        this, base::as_byte_span("{\"id\": 2, \"method\": \"DOM.enable\"}"));
 
     NavigateParams params(browser(), GURL(chrome::kChromeUINewTabPageURL),
                           ui::PageTransition::PAGE_TRANSITION_FIRST);
@@ -142,8 +141,8 @@ class NewTabPageTest : public InProcessBrowserTest,
     // Request the DOM. We will only receive DOM events for DOMs we have
     // requested.
     agent_host_->DispatchProtocolMessage(
-        this, base::as_bytes(base::make_span(std::string(
-                  "{\"id\": 3, \"method\": \"DOM.getDocument\"}"))));
+        this,
+        base::as_byte_span("{\"id\": 3, \"method\": \"DOM.getDocument\"}"));
     // Read initial value of lazy-loaded in case lazy load is already complete
     // at this point in time.
     lazy_loaded_ =

@@ -9,7 +9,6 @@
 #include <set>
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/search_engines/template_url_service.h"
@@ -21,8 +20,6 @@
 class Profile;
 
 namespace extensions {
-
-BASE_DECLARE_FEATURE(kPrepopulatedSearchEngineOverrideRollout);
 
 class SettingsOverridesAPI : public BrowserContextKeyedAPI,
                              public ExtensionRegistryObserver {

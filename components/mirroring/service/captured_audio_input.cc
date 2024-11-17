@@ -24,7 +24,7 @@ CapturedAudioInput::CapturedAudioInput(
   DCHECK(!stream_creator_callback_.is_null());
 }
 
-CapturedAudioInput::~CapturedAudioInput() {}
+CapturedAudioInput::~CapturedAudioInput() = default;
 
 void CapturedAudioInput::CreateStream(media::AudioInputIPCDelegate* delegate,
                                       const media::AudioParameters& params,
@@ -67,7 +67,7 @@ void CapturedAudioInput::CloseStream() {
 
 void CapturedAudioInput::SetOutputDeviceForAec(
     const std::string& output_device_id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CapturedAudioInput::StreamCreated(

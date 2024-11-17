@@ -10,30 +10,12 @@ config("one_euro_filter_config") {
 
 static_library("one_euro_filter") {
   sources = [
-    "src/low_pass_filter.cc",
-    "src/low_pass_filter.h",
-    "src/one_euro_filter.cc",
-    "src/one_euro_filter.h",
+    "src/OneEuroFilter.cpp",
+    "src/OneEuroFilter.h",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
-
-  public_configs = [ ":one_euro_filter_config" ]
-}
-
-test("one_euro_filter_unittests") {
-  include_dirs = [ "tests" ]
-
-  sources = [
-    "tests/gtest_main.cc",
-    "tests/one_euro_filter_unittest.cc",
-  ]
-
-  deps = [
-    ":one_euro_filter",
-    "//testing/gtest",
-  ]
 
   public_configs = [ ":one_euro_filter_config" ]
 }

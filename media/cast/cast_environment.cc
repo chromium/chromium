@@ -53,8 +53,7 @@ scoped_refptr<SingleThreadTaskRunner> CastEnvironment::GetTaskRunner(
     case CastEnvironment::VIDEO:
       return video_thread_proxy_;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid Thread identifier";
-      return nullptr;
+      NOTREACHED() << "Invalid Thread identifier";
   }
 }
 
@@ -70,8 +69,7 @@ bool CastEnvironment::CurrentlyOn(ThreadId identifier) {
       return video_thread_proxy_.get() &&
              video_thread_proxy_->RunsTasksInCurrentSequence();
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid thread identifier";
-      return false;
+      NOTREACHED() << "Invalid thread identifier";
   }
 }
 

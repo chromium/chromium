@@ -34,7 +34,7 @@ namespace mirroring {
 
 class COMPONENT_EXPORT(MIRRORING_SERVICE) RtpStreamClient {
  public:
-  virtual ~RtpStreamClient() {}
+  virtual ~RtpStreamClient() = default;
 
   // Called when error happened during streaming.
   virtual void OnError(const std::string& message) = 0;

@@ -8,10 +8,6 @@
 #include <memory>
 #include <string>
 
-namespace gfx {
-struct VectorIcon;
-}  // namespace gfx
-
 namespace views {
 class View;
 }  // namespace views
@@ -24,14 +20,6 @@ class View;
 // +---------------------+
 std::unique_ptr<views::View> CreatePasskeyWithUsernameLabel(
     std::u16string username);
-
-// Creates a simple view with an icon and a label.
-// +---------------------+
-// | <icon>      label   |
-// +---------------------+
-std::unique_ptr<views::View> CreatePasskeyIconWithLabelRow(
-    const gfx::VectorIcon& icon,
-    const std::u16string& label);
 
 // Creates a simple view with a password manager icon and a label.
 // +---------------------+

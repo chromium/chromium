@@ -104,10 +104,16 @@ void CardboardRenderLoop::CreateSession(
     return;
   }
 
+  // Set whether or not the session produces frames with WebGPU based on in the
+  // 'webgpu' feature was requested.
+  bool webgpu_session =
+      enabled_features_.contains(device::mojom::XRSessionFeature::WEBGPU);
+
   cardboard_image_transport_->Initialize(
       webxr_.get(),
       base::BindOnce(&CardboardRenderLoop::OnCardboardImageTransportReady,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr()),
+      webgpu_session);
 
   left_eye_ = mojom::XRView::New();
   left_eye_->eye = mojom::XREye::kLeft;

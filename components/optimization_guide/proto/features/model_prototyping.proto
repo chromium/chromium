@@ -8,6 +8,8 @@ package optimization_guide.proto;
 
 import "components/optimization_guide/proto/features/common_quality_data.proto";
 
+import "components/optimization_guide/proto/model_quality_metadata.proto";
+
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
 
@@ -23,9 +25,12 @@ message ModelPrototypingLoggingData {
   ModelPrototypingRequest request = 1;
 
   ModelPrototypingResponse response = 2;
+
+  ModelPrototypingMetadata metadata = 3;
+
+  ModelExecutionInfo model_execution_info = 6;
 }
 
-// Next ID: 4
 message ModelPrototypingRequest {
   ModelingInputs modeling_inputs = 1;
 
@@ -39,7 +44,6 @@ message ModelPrototypingRequest {
   // e.g., something like {{index .GetModelResponses 0}}.
   repeated string model_responses = 3;
 
-  // Next ID: 6
   // Defines a single prompt to be sent to the model.
   message PrototypingPrompt {
     // Prompt variables that can be used in the rest of the prompt. These are in
@@ -68,67 +72,55 @@ message ModelPrototypingRequest {
     // Information about the model to use.
     ModelInformation model_information = 5;
 
+    // The image to use in the prompt.
+    string image_template = 6;
+
+    // The pre-existing conversation between the user and the model.
+    Conversation conversation = 7;
+
     message ModelInformation {
       ModelEnum model_enum = 1;
 
+      bool skip_model = 2;
+
       enum ModelEnum {
-        MODEL_UNSPECIFIED = 0;
+        MODEL_ENUM_UNSPECIFIED = 0;
 
-        // Returns the filled templates without running an LLM.
-        MODEL_RETURN_FILLED_TEMPLATES = 1;
+        MODEL_ENUM_EVERGREEN_GEMINI_V2 = 1;
 
-        // The compose s-dense model.
-        MODEL_COMPOSE = 2;
+        MODEL_ENUM_SUP_GEMINI_V2 = 2;
+
+        MODEL_ENUM_EVERGREEN_GEMINI_V2_MULTI_MODAL = 3;
+
+        MODEL_ENUM_EVERGREEN_GEMINI_V2_MULTI_MODAL_MPP = 4;
       }
     }
   }
 
-  // All the information collected from the browser along with the user input
-  // (for features like Compose).
-  message BrowserCollectedInformation {
-    // The page context of the page the model is acting on.
-    PageContext page_context = 1;
-
-    // TODO(b/361790650): Deprecate these fields in favor of the content in
-    // PageContext.
-    // The inner text of the page the model is acting on (excluding x-origin
-    // frames)
-    string inner_text = 2;
-
-    // The offset of the focused element into the |inner_text|.
-    uint64 inner_text_offset = 3;
-
-    // Custom text that a prototyper can inject into prompts. If the browser
-    // collected information is not sufficient, an early stage prototype can
-    // build a string in Chrome/colab to be used in the prompt. This allows
-    // separation of prompt definition and call specific data.
-    repeated string custom_data = 4;
-
-    // The form to predict values for. It is expected for the values for each
-    // field to be empty.
-    FormData form_data = 5;
-
-    // The current entries in the user annotations database helpful for filling
-    // out this form.
-    repeated UserAnnotationsEntry entries = 6;
-
-    // The ungrouped tabs that are requested to be organized.
-    repeated Tab tabs = 7;
-
-    // The tab that was active at the time the user requested tab organization.
-    int64 active_tab_id = 8;
-
-    // All pre-existing tab groups.
-    repeated TabGroup pre_existing_tab_groups = 9;
-  }
-
-  // Next ID: 3
   // Data specific to the feature.
   message ModelingInputs {
     BrowserCollectedInformation browser_collected_information = 1;
 
     string user_input = 2;
   }
+}
+
+// A representation of an ongoing conversation.
+message Conversation {
+  // The turns of various messages in the conversation.
+  repeated ConversationTurn conversation_turns = 1;
+}
+
+// A single turn in a conversation.
+message ConversationTurn {
+  // The text of the conversation turn.
+  string conversation_text = 1;
+
+  // Which participant in the conversation this turn is from.
+  string role = 2;
+
+  // The mime type of the conversation turn.
+  string mime_type = 3;
 }
 
 message ModelPrototypingResponse {
@@ -138,4 +130,16 @@ message ModelPrototypingResponse {
 
   // The responses from the model corresponding to |model_prompts|.
   repeated string model_responses = 2;
+
+  // Ordered conversation between the user and the model.
+  repeated Conversation conversations = 3;
+}
+
+message ModelPrototypingMetadata {
+  // An optional tag to use for querying the record from MQLS logs.
+  string logging_tag = 1;
+
+  // An optional description to provide more context about the data uploaded by
+  // the user.
+  string logging_description = 2;
 }

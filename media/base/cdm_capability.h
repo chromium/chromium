@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
+#include "base/types/expected.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/content_decryption_module.h"
 #include "media/base/encryption_scheme.h"
@@ -17,6 +18,11 @@
 #include "media/base/video_codecs.h"
 
 namespace media {
+
+static constexpr char kMediaFoundationGetCdmFactoryHresultUmaPostfix[] =
+    "MediaFoundationGetCdmFactoryHresult";
+static constexpr char kCreateDummyMediaFoundationCdmHresultUmaPostfix[] =
+    "CreateDummyMediaFoundationCdmHresult";
 
 struct MEDIA_EXPORT VideoCodecInfo {
   VideoCodecInfo();
@@ -72,10 +78,51 @@ struct MEDIA_EXPORT CdmCapability {
 bool MEDIA_EXPORT operator==(const CdmCapability& lhs,
                              const CdmCapability& rhs);
 
-// Callback for when a capability is initialized if lazy initialization
-// required.
-using CdmCapabilityCB = base::OnceCallback<void(std::optional<CdmCapability>)>;
+// Status of the CDM capability query. This can be used to inspect the reason
+// when no capability reported. These values are persisted to logs. Entries
+// should not be renumbered and numeric values should never be reused. Please
+// keep the consistency with CdmCapabilityQueryStatus in
+// tools/metrics/histograms/metadata/media/enums.xml.
+enum class CdmCapabilityQueryStatus {
+  // Capability query succeeded. Used only for reporting the result UMA when one
+  // or more capabilities reported.
+  kSuccess = 0,
+  // Unknown. e.g. CDM is disabled for some reasons.
+  kUnknown = 1,
+  // Hardware secure codec not supported for the key system.
+  kHardwareSecureCodecNotSupported = 2,
+  // No supported video codec.
+  kNoSupportedVideoCodec = 3,
+  // No supported encryption scheme.
+  kNoSupportedEncryptionScheme = 4,
+  // Unsupported key system.
+  kUnsupportedKeySystem = 5,
+  // MediaFoundation CDM is not supported. e.g. Unsupported OS version. Note
+  // that this is only applicable on Windows.
+  kMediaFoundationCdmNotSupported = 6,
+  // Disconnection error. e.g. crash while checking capability.
+  kDisconnectionError = 7,
+  // MediaFoundationCdmModule::GetCdmFactory failed with error code (HRESULT).
+  kMediaFoundationGetCdmFactoryFailed = 8,
+  // CreateDummyMediaFoundationCdm failed with error code (HRESULT).
+  kCreateDummyMediaFoundationCdmFailed = 9,
+  // Unexpected empty video codec, encryption scheme or session type.
+  kUnexpectedEmptyCapability = 10,
+  kMaxValue = kUnexpectedEmptyCapability,
+};
 
+// Returns a string version of the status.
+MEDIA_EXPORT std::string CdmCapabilityQueryStatusToString(
+    const std::optional<CdmCapabilityQueryStatus>& status);
+
+// CdmCapability or status if no capability.
+using CdmCapabilityOrStatus =
+    base::expected<CdmCapability, CdmCapabilityQueryStatus>;
+
+// Callback for when a capability is initialized if lazy initialization
+// required. CdmCapabilityQueryStatus can be used to inspect the reason behind
+// no capability.
+using CdmCapabilityCB = base::OnceCallback<void(CdmCapabilityOrStatus)>;
 }  // namespace media
 
 #endif  // MEDIA_BASE_CDM_CAPABILITY_H_

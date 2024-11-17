@@ -37,6 +37,11 @@ void ShowBubble(Browser* browser,
       gfx::NativeWindow window = anchor_view->GetWidget()->GetNativeWindow();
       if (!window || !BrowserView::GetBrowserViewForNativeWindow(window))
         return;
+      // Attempts to show first the Supervised user IPH (which has higher
+      // priority), then the profile switch IPH. Whether the IPH will show (if
+      // all conditions are met) is decided by the IPH framework.
+      BrowserView::GetBrowserViewForNativeWindow(window)
+          ->MaybeShowSupervisedUserProfileSignInIPH();
       BrowserView::GetBrowserViewForNativeWindow(window)
           ->MaybeShowProfileSwitchIPH();
       return;

@@ -119,6 +119,51 @@ TEST_F(TokenBindingHelperTest, ClearAllKeys) {
   EXPECT_FALSE(helper().HasBindingKey(account_id2));
 }
 
+TEST_F(TokenBindingHelperTest, GetBoundTokenCount) {
+  EXPECT_EQ(helper().GetBoundTokenCount(), 0u);
+  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id"),
+                         GetWrappedKey(GenerateNewKey()));
+  EXPECT_EQ(helper().GetBoundTokenCount(), 1u);
+  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id2"),
+                         GetWrappedKey(GenerateNewKey()));
+  EXPECT_EQ(helper().GetBoundTokenCount(), 2u);
+}
+
+using TokenBindingHelperAreAllBindingKeysSameTest = TokenBindingHelperTest;
+
+TEST_F(TokenBindingHelperAreAllBindingKeysSameTest, TrueIfEmpty) {
+  EXPECT_TRUE(helper().AreAllBindingKeysSame());
+}
+
+TEST_F(TokenBindingHelperAreAllBindingKeysSameTest, TrueIfOnlyOne) {
+  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id"),
+                         GetWrappedKey(GenerateNewKey()));
+  EXPECT_TRUE(helper().AreAllBindingKeysSame());
+}
+
+TEST_F(TokenBindingHelperAreAllBindingKeysSameTest, TrueIfAllSame) {
+  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
+  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id"),
+                         wrapped_key);
+  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id2"),
+                         wrapped_key);
+  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id3"),
+                         wrapped_key);
+  EXPECT_TRUE(helper().AreAllBindingKeysSame());
+}
+
+TEST_F(TokenBindingHelperAreAllBindingKeysSameTest, FalseIfDifferent) {
+  std::vector<uint8_t> wrapped_key = GetWrappedKey(GenerateNewKey());
+  // Two accounts share the same key but the third one is different.
+  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id"),
+                         wrapped_key);
+  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id2"),
+                         wrapped_key);
+  helper().SetBindingKey(CoreAccountId::FromGaiaId("test_gaia_id3"),
+                         GetWrappedKey(GenerateNewKey()));
+  EXPECT_FALSE(helper().AreAllBindingKeysSame());
+}
+
 TEST_F(TokenBindingHelperTest, GenerateBindingKeyAssertion) {
   CoreAccountId account_id = CoreAccountId::FromGaiaId("test_gaia_id");
   unexportable_keys::UnexportableKeyId key_id = GenerateNewKey();

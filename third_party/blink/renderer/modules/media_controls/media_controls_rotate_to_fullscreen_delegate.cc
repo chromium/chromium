@@ -115,7 +115,7 @@ void MediaControlsRotateToFullscreenDelegate::Invoke(
     return;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void MediaControlsRotateToFullscreenDelegate::OnStateChange() {
@@ -287,8 +287,7 @@ MediaControlsRotateToFullscreenDelegate::ComputeScreenOrientation() const {
       return SimpleOrientation::kUnknown;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return SimpleOrientation::kUnknown;
+  NOTREACHED();
 }
 
 void MediaControlsRotateToFullscreenDelegate::Trace(Visitor* visitor) const {

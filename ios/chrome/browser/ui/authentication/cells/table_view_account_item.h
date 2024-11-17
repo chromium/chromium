@@ -45,14 +45,21 @@ typedef NS_ENUM(NSInteger, TableViewAccountMode) {
 // user interaction will be disabled.
 @interface TableViewAccountCell : TableViewCell
 
-// Rounded image used for the account user picture.
+// Rounded image used for the account user picture. On the leading side of the
+// cell.
 @property(nonatomic, readonly, strong) UIImageView* imageView;
 // Cell title.
 @property(nonatomic, readonly, strong) UILabel* textLabel;
 // Cell subtitle.
 @property(nonatomic, readonly, strong) UILabel* detailTextLabel;
-// Error icon that will be displayed on the left side of the cell.
-@property(nonatomic, readonly, strong) UIImageView* errorIcon;
+
+// Set the status view on the trailing side of the cell. `statusView` can be
+// nil. It is similar to what `accessoryView` is supposed to be, but does not
+// bug on iOS 18. (crbug.com/375377471)
+- (void)setStatusView:(UIView*)statusView;
+
+// Same as `setStatusView`, except the argument is an image.
+- (void)setStatusViewWithImage:(UIImage*)statusImage;
 
 @end
 

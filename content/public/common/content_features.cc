@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/time/time.h"
+#include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"
@@ -53,6 +54,12 @@ const base::FeatureParam<int> kAndroidSpareRendererCreationDelayMs{
 const base::FeatureParam<int> kAndroidSpareRendererTimeoutSeconds{
     &kAndroidWarmUpSpareRendererWithTimeout, "spare_renderer_timeout_seconds",
     60};
+
+// The lower memory limit to create a spare renderer after each navigation on
+// Android.
+const base::FeatureParam<int> kAndroidSpareRendererMemoryThreshold{
+    &kAndroidWarmUpSpareRendererWithTimeout, "spare_renderer_memory_threshold",
+    1077};
 
 // Launches the audio service on the browser startup.
 BASE_FEATURE(kAudioServiceLaunchOnStartup,
@@ -191,26 +198,18 @@ BASE_FEATURE(kCapturedSurfaceControlStickyPermissions,
              "CapturedSurfaceControlStickyPermissions",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// This serves as an overall kill switch to kill CdmStorageDatabase. If
-// disabled, no operations will be routed through the CdmStorage* path, even in
-// the migration code that lives in MediaLicense* code path.
-// This feature is enabled as default alongside with
-// kCdmStorageDatabaseMigration enabled by default as to allow for data transfer
-// from the MediaLicenseDatabase to CdmStorageDatabase to occur. Refer to
-// go/cdm-storage-migration-details for more details.
-BASE_FEATURE(kCdmStorageDatabase,
-             "CdmStorageDatabase",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// This guards between using the MediaLicense* code path and the CdmStorage*
-// code path for storing Cdm data. This will be enabled by default as we do not
-// want the CdmStorageDatabase to be used solely.
-// Later when the migration is finished, we will remove this flag so that
-// kCdmStorageDatabase serves as the only flag. Refer to
-// go/cdm-storage-migration-details for more details.
-BASE_FEATURE(kCdmStorageDatabaseMigration,
-             "CdmStorageDatabaseMigration",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+// If enabled, render processes associated only with tabs in unfocused windows
+// will be downgraded to "vis" priority, rather than remaining at "fg". This
+// will allow tabs in unfocused windows to be prioritized for OOM kill in
+// low-memory scenarios.
+BASE_FEATURE(kChangeUnfocusedPriority,
+             "ChangeUnfocusedPriority",
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+             base::FEATURE_ENABLED_BY_DEFAULT
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // BUILDFLAG(IS_DESKTOP_ANDROID)
+);
 
 // Clear the window.name property for the top-level cross-site navigations that
 // swap BrowsingContextGroups(BrowsingInstances).
@@ -310,6 +309,10 @@ BASE_FEATURE(kDigitalGoodsApi,
 // behavior (database persistence, DIPS deletion) will be gated by params.
 BASE_FEATURE(kDIPS, "DIPS", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Flag used to control |interaction_ttl| separately from the kDIPS feature
+// flag.
+BASE_FEATURE(kDIPSTtl, "DIPSTtl", base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Set whether DIPS persists its database to disk.
 const base::FeatureParam<bool> kDIPSPersistedDatabaseEnabled{
     &kDIPS, "persist_database", true};
@@ -338,7 +341,7 @@ const base::FeatureParam<base::TimeDelta> kDIPSTimerDelay{&kDIPS, "timer_delay",
 // NOTE: Updating this param name (to reflect WAA) is deemed unnecessary as far
 // as readability is concerned.
 const base::FeatureParam<base::TimeDelta> kDIPSInteractionTtl{
-    &kDIPS, "interaction_ttl", base::Days(45)};
+    &kDIPSTtl, "interaction_ttl", base::Days(45)};
 
 constexpr base::FeatureParam<content::DIPSTriggeringAction>::Option
     kDIPSTriggeringActionOptions[] = {
@@ -396,6 +399,11 @@ BASE_FEATURE(kDisconnectExtensionMessagePortWhenPageEntersBFCache,
              "DisconnectExtensionMessagePortWhenPageEntersBFCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables the Origin Trial of Document-Isolation-Policy.
+BASE_FEATURE(kDocumentIsolationPolicyOriginTrial,
+             "DocumentIsolationPolicyOriginTrial",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enable drawing under System Bars within DisplayCutout.
 BASE_FEATURE(kDrawCutoutEdgeToEdge,
              "DrawCutoutEdgeToEdge",
@@ -421,6 +429,12 @@ BASE_FEATURE(kEnableServiceWorkersForChromeScheme,
              "EnableServiceWorkersForChromeScheme",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Ensures the renderer is not dead when getting the process host for a site
+// instance.
+BASE_FEATURE(kEnsureExistingRendererAlive,
+             "EnsureExistingRendererAlive",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables JavaScript API to intermediate federated identity requests.
 // Note that actual exposure of the FedCM API to web content is controlled
 // by the flag in RuntimeEnabledFeatures on the blink side. See also
@@ -435,7 +449,11 @@ BASE_FEATURE(kFedCmUseOtherAccount,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM Authz API.
-BASE_FEATURE(kFedCmAuthz, "FedCmAuthz", base::FEATURE_DISABLED_BY_DEFAULT);
+// Note that actual exposure of the API to web content is controlled by
+// the flag in RuntimeEnabledFeatures on the blink side. See also the use
+// of kSetOnlyIfOverridden in content/child/runtime_features.cc. We enable
+// it here by default to support use in origin trials and web platform tests.
+BASE_FEATURE(kFedCmAuthz, "FedCmAuthz", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM ButtonMode feature.
 // Note that actual exposure of the API to web content is controlled by
@@ -486,10 +504,22 @@ BASE_FEATURE(kFencedFramesEnforceFocus,
              "FencedFramesEnforceFocus",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Whether a memory pressure signal in a renderer should be forwarded to Blink
+// isolates. Forwarding the signal triggers a GC (critical) or starts
+// incremental marking (moderate), see `v8::Heap::CheckMemoryPressure`.
+BASE_FEATURE(kForwardMemoryPressureToBlinkIsolates,
+             "ForwardMemoryPressureToBlinkIsolates",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables the Digital Credential API.
 BASE_FEATURE(kWebIdentityDigitalCredentials,
              "WebIdentityDigitalCredentials",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables the Digital Credentials Creation API.
+BASE_FEATURE(kWebIdentityDigitalCredentialsCreation,
+             "WebIdentityDigitalCredentialsCreation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables scrollers inside Blink to store scroll offsets in fractional
 // floating-point numbers rather than truncating to integers.
@@ -509,10 +539,27 @@ BASE_FEATURE(kNetworkQualityEstimatorWebHoldback,
 // (activated by kUserAgentClientHint)
 BASE_FEATURE(kGreaseUACH, "GreaseUACH", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether GuestViews (see components/guest_view/README.md) are implemented
+// using MPArch inner pages. See https://crbug.com/40202416
+BASE_FEATURE(kGuestViewMPArch,
+             "GuestViewMPArch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // See crbug.com/359623664
 BASE_FEATURE(kIdbPrioritizeForegroundClients,
              "IdbPrioritizeForegroundClients",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Controls whether we ignore duplicate navigations or not, in favor of
+// preserving the already ongoing navigation.
+BASE_FEATURE(kIgnoreDuplicateNavs,
+             "IgnoreDuplicateNavs",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kDuplicateNavThreshold,
+                   &kIgnoreDuplicateNavs,
+                   "duplicate_nav_threshold",
+                   base::Milliseconds(2000));
 
 // Kill switch for the GetInstalledRelatedApps API.
 BASE_FEATURE(kInstalledApp, "InstalledApp", base::FEATURE_ENABLED_BY_DEFAULT);
@@ -560,11 +607,6 @@ BASE_FEATURE(kIsolateOrigins,
              "IsolateOrigins",
              base::FEATURE_DISABLED_BY_DEFAULT);
 const char kIsolateOriginsFieldTrialParamName[] = "OriginsList";
-
-// Enables experimental JavaScript shared memory features.
-BASE_FEATURE(kJavaScriptExperimentalSharedMemory,
-             "JavaScriptExperimentalSharedMemory",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enable lazy initialization of the media controls.
 BASE_FEATURE(kLazyInitializeMediaControls,
@@ -915,11 +957,32 @@ constexpr base::FeatureParam<double> kProcessPerSiteMainFrameTotalMemoryLimit{
     &kProcessPerSiteUpToMainFrameThreshold,
     "ProcessPerSiteMainFrameTotalMemoryLimit", 2 * 1024 * 1024 * 1024u};
 
+// Enables auto preloading for fetch requests before invoking the fetch handler
+// in ServiceWorker. The fetch request inside the fetch handler is resolved with
+// this preload response. If the fetch handler result is fallback, uses this
+// preload request as a fallback network request.
+//
+// Unlike navigation preload, this preloading is applied to subresources. Also,
+// it doesn't require a developer opt-in.
+//
+// crbug.com/1472634 for more details.
+BASE_FEATURE(kServiceWorkerAutoPreload,
+             "ServiceWorkerAutoPreload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables ServiceWorker static routing API.
 // https://github.com/WICG/service-worker-static-routing-api
 BASE_FEATURE(kServiceWorkerStaticRouter,
              "ServiceWorkerStaticRouter",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// crbug.com/374606637: When this is enabled, race-network-and-fetch-hander will
+// prioritize the response processing for the network request over the
+// processing for the fetch handler.
+BASE_FEATURE(
+    kServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement,
+    "ServiceWorkerStaticRouterRaceNetworkRequestPerformanceImprovement",
+    base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Run video capture service in the Browser process as opposed to a dedicated
 // utility process.
@@ -1061,7 +1124,7 @@ const base::FeatureParam<SkiaFontServiceTypefaceType>
 // initialize COM.
 BASE_FEATURE(kUtilityWithUiPumpInitializesCom,
              "UtilityWithUiPumpInitializesCom",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 // When enabled, OOPIFs will not try to reuse compatible processes from
@@ -1145,6 +1208,12 @@ const base::FeatureParam<int> kTouchDragMovementThresholdDip{
 // https://crbug.com/1144104
 BASE_FEATURE(kUnrestrictedSharedArrayBuffer,
              "UnrestrictedSharedArrayBuffer",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enable using browser-calculated origins on navigations, instead of
+// renderer-calculated ones.
+BASE_FEATURE(kUseBrowserCalculatedOrigin,
+             "UseBrowserCalculatedOrigin",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID) && BUILDFLAG(INCLUDE_BOTH_V8_SNAPSHOTS)
@@ -1272,20 +1341,18 @@ BASE_FEATURE(kAccessibilityIncludeLongClickAction,
              "AccessibilityIncludeLongClickAction",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Allows the use of page zoom in place of accessibility text autosizing, and
-// updated UI to replace existing Chrome Accessibility Settings.
-BASE_FEATURE(kAccessibilityPageZoom,
-             "AccessibilityPageZoom",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Controls whether the OS-level font setting is adjusted for.
-const base::FeatureParam<bool> kAccessibilityPageZoomOSLevelAdjustment{
-    &kAccessibilityPageZoom, "AdjustForOSLevel", false};
-
 // Enables the use of enhancements to the Page Zoom feature based on user
-// feedback from the v1 version (e.g. reset button, better IPH, etc).
+// feedback from the v1 version (e.g. reset button, Site Settings, etc).
+// This flag is the fast-follow for the AccessibilityPageZoom experiment.
 BASE_FEATURE(kAccessibilityPageZoomEnhancements,
              "AccessibilityPageZoomEnhancements",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the second iteration of AccessibilityPageZoom, which continues
+// the work completed in the first experiment and the subsequent fast-follow.
+// This version of the experiment explores enabling OS-level adjustments.
+BASE_FEATURE(kAccessibilityPageZoomV2,
+             "AccessibilityPageZoomV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the use of a unified code path for AXTree snapshots.
@@ -1297,7 +1364,7 @@ BASE_FEATURE(kAccessibilityUnifiedSnapshots,
 // background thread.
 BASE_FEATURE(kAccessibilityManageBroadcastReceiverOnBackground,
              "AccessibilityManageBroadcastReceiverOnBackground",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable open PDF inline on Android.
 BASE_FEATURE(kAndroidOpenPdfInline,
@@ -1398,8 +1465,13 @@ const base::FeatureParam<CapturingState>::Option kNavigationCapturingParams[] =
 
 const base::FeatureParam<CapturingState> kNavigationCapturingDefaultState{
     &kPwaNavigationCapturing, "link_capturing_state",
-    CapturingState::kDefaultOn, &kNavigationCapturingParams};
+    CapturingState::kReimplDefaultOn, &kNavigationCapturingParams};
 
+const base::FeatureParam<std::string> kForcedOffCapturingAppsOnFirstNavigation{
+    &kPwaNavigationCapturing, "initial_nav_forced_off_apps", ""};
+
+const base::FeatureParam<std::string> kForcedOffCapturingAppsUserSetting{
+    &kPwaNavigationCapturing, "user_settings_forced_off_apps", ""};
 namespace {
 enum class VideoCaptureServiceConfiguration {
   kEnabledForOutOfProcess,

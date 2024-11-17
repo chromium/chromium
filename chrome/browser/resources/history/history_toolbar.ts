@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import './shared_style.css.js';
-import './strings.m.js';
+import '/strings.m.js';
 import 'chrome://resources/cr_components/history_embeddings/icons.html.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_selection_overlay.js';
@@ -179,6 +179,18 @@ export class HistoryToolbarElement extends PolymerElement {
   private computeSearchPrompt_(): string {
     if (loadTimeData.getBoolean('enableHistoryEmbeddings') &&
         TABBED_PAGES.includes(this.selectedPage)) {
+      if (loadTimeData.getBoolean('enableHistoryEmbeddingsAnswers')) {
+        const possiblePrompts = [
+          'historyEmbeddingsSearchPrompt',
+          'historyEmbeddingsAnswersSearchAlternativePrompt1',
+          'historyEmbeddingsAnswersSearchAlternativePrompt2',
+          'historyEmbeddingsAnswersSearchAlternativePrompt3',
+          'historyEmbeddingsAnswersSearchAlternativePrompt4',
+        ];
+        const randomIndex = Math.floor(Math.random() * possiblePrompts.length);
+        return loadTimeData.getString(possiblePrompts[randomIndex]);
+      }
+
       return loadTimeData.getString('historyEmbeddingsSearchPrompt');
     }
 

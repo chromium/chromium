@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/permissions/features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -106,7 +107,8 @@ bool KeyboardLockController::IsKeyboardLockActive() const {
 void KeyboardLockController::RequestKeyboardLock(WebContents* web_contents,
                                                  bool esc_key_locked) {
   DCHECK(!exclusive_access_tab() || exclusive_access_tab() == web_contents);
-  if (!base::FeatureList::IsEnabled(features::kKeyboardAndPointerLockPrompt)) {
+  if (!base::FeatureList::IsEnabled(
+          permissions::features::kKeyboardAndPointerLockPrompt)) {
     LockKeyboard(web_contents->GetWeakPtr(), esc_key_locked);
     return;
   }
@@ -168,6 +170,7 @@ void KeyboardLockController::LockKeyboard(
     base::WeakPtr<content::WebContents> web_contents,
     bool esc_key_locked) {
   if (!web_contents) {
+    NotifyLockRequestResult();
     return;
   }
   // Call GotResponseToKeyboardLockRequest() to notify `web_contents` of the
@@ -192,6 +195,7 @@ void KeyboardLockController::LockKeyboard(
             ? base::BindOnce(bubble_hide_callback_for_test_)
             : base::NullCallback());
   }
+  NotifyLockRequestResult();
 }
 
 void KeyboardLockController::UnlockKeyboard() {
@@ -210,6 +214,7 @@ void KeyboardLockController::UnlockKeyboardForWebContents(
   web_contents->GotResponseToKeyboardLockRequest(false);
   SetTabWithExclusiveAccess(nullptr);
   exclusive_access_manager()->UpdateBubble(base::NullCallback());
+  NotifyLockRequestResult();
 }
 
 void KeyboardLockController::HandleUserHeldEscapeDeprecated() {
@@ -242,5 +247,11 @@ void KeyboardLockController::ReShowExitBubbleIfNeeded() {
 
     if (esc_repeat_triggered_for_test_)
       std::move(esc_repeat_triggered_for_test_).Run();
+  }
+}
+
+void KeyboardLockController::NotifyLockRequestResult() {
+  if (lock_state_callback_for_test_) {
+    std::move(lock_state_callback_for_test_).Run();
   }
 }

@@ -6,22 +6,54 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_CANVAS_HIBERNATION_HANDLER_H_
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ref.h"
 #include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
+#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
 
+class CanvasResourceHost;
+
 PLATFORM_EXPORT BASE_DECLARE_FEATURE(kCanvasHibernationSnapshotZstd);
 
 // All the fields are main-thread only. See DCheckInvariant() for invariants.
 class PLATFORM_EXPORT CanvasHibernationHandler {
  public:
+  // The values of the enum entries must not change because they are used for
+  // usage metrics histograms. New values can be added to the end.
+  enum HibernationEvent {
+    kHibernationScheduled = 0,
+    kHibernationAbortedDueToDestructionWhileHibernatePending = 1,
+    // kHibernationAbortedDueToPendingDestruction = 2, (obsolete)
+    kHibernationAbortedDueToVisibilityChange = 3,
+    kHibernationAbortedDueGpuContextLoss = 4,
+    kHibernationAbortedDueToSwitchToUnacceleratedRendering = 5,
+    // kHibernationAbortedDueToAllocationFailure = 6, (obsolete)
+    kHibernationAbortedDueSnapshotFailure = 7,
+    kHibernationEndedNormally = 8,
+    kHibernationEndedWithSwitchToBackgroundRendering = 9,
+    kHibernationEndedWithFallbackToSW = 10,
+    kHibernationEndedWithTeardown = 11,
+    kHibernationAbortedBecauseNoSurface = 12,
+    kMaxValue = kHibernationAbortedBecauseNoSurface,
+  };
+
+  static void ReportHibernationEvent(
+      CanvasHibernationHandler::HibernationEvent event) {
+    UMA_HISTOGRAM_ENUMERATION("Blink.Canvas.HibernationEvents", event);
+  }
+
+  explicit CanvasHibernationHandler(CanvasResourceHost& resource_host);
+  CanvasHibernationHandler(const CanvasHibernationHandler&) = delete;
+  CanvasHibernationHandler& operator=(const CanvasHibernationHandler&) = delete;
+
   ~CanvasHibernationHandler();
   // Semi-arbitrary threshold. Some past experiments (e.g. tile discard) have
   // shown that taking action after 5 minutes has a positive impact on memory,
@@ -130,6 +162,7 @@ class PLATFORM_EXPORT CanvasHibernationHandler {
   int height_;
   int bytes_per_pixel_;
 
+  const base::raw_ref<CanvasResourceHost> resource_host_;
   base::WeakPtrFactory<CanvasHibernationHandler> weak_ptr_factory_{this};
 };
 

@@ -187,7 +187,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
 
     @Override
     void logEnterFullscreen(View contentView) {
-        Log.i(TAG, "enterFullscreen, systemUiVisibility=" + getSystemUIVisibility(contentView));
+        Log.i(TAG, "enterFullscreen, systemUiVisibility=" + getSystemUiVisibility(contentView));
     }
 
     @Override
@@ -197,7 +197,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
 
     @Override
     void logExitFullscreen(View contentView) {
-        Log.i(TAG, "exitFullscreen, systemUiVisibility=" + getSystemUIVisibility(contentView));
+        Log.i(TAG, "exitFullscreen, systemUiVisibility=" + getSystemUiVisibility(contentView));
     }
 
     @Override
@@ -205,7 +205,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
         Log.i(
                 TAG,
                 "handleMessage clear fullscreen flag, systemUiVisibility="
-                        + getSystemUIVisibility(contentView));
+                        + getSystemUiVisibility(contentView));
     }
 
     @Override
@@ -213,7 +213,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
         Log.i(
                 TAG,
                 "handleMessage set flags, systemUiVisibility="
-                        + getSystemUIVisibility(contentView));
+                        + getSystemUiVisibility(contentView));
     }
 
     private WindowInsetsCompat getWindowInsets(View contentView) {
@@ -226,7 +226,7 @@ public class FullscreenHtmlApiHandlerCompat extends FullscreenHtmlApiHandlerBase
         return WindowCompat.getInsetsController(window, window.getDecorView());
     }
 
-    private String getSystemUIVisibility(View contentView) {
+    private String getSystemUiVisibility(View contentView) {
         boolean statusBarVisibility = !isStatusBarHidden(contentView);
         boolean navBarVisibility = !isNavigationBarHidden(contentView);
         boolean systemBarVisibility =

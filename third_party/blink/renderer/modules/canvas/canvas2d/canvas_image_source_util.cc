@@ -83,8 +83,7 @@ CanvasImageSource* ToCanvasImageSource(const V8CanvasImageSource* value,
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 bool WouldTaintCanvasOrigin(CanvasImageSource* image_source) {

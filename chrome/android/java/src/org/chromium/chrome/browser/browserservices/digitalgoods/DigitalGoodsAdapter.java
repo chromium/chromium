@@ -36,13 +36,9 @@ public class DigitalGoodsAdapter {
     // Legacy commands kept around for backwards compatibility.
     public static final String COMMAND_ACKNOWLEDGE = "acknowledge";
 
-    private final TrustedWebActivityClient mClient;
+    private DigitalGoodsAdapter() {}
 
-    public DigitalGoodsAdapter(TrustedWebActivityClient client) {
-        mClient = client;
-    }
-
-    public void getDetails(Uri scope, String[] itemIds, GetDetails_Response response) {
+    public static void getDetails(Uri scope, String[] itemIds, GetDetails_Response response) {
         Bundle args = GetDetailsConverter.convertParams(itemIds);
         TrustedWebActivityCallback callback = GetDetailsConverter.convertCallback(response);
         Runnable onError = () -> GetDetailsConverter.returnClientAppError(response);
@@ -51,7 +47,7 @@ public class DigitalGoodsAdapter {
         execute(scope, COMMAND_GET_DETAILS, args, callback, onError, onUnavailable);
     }
 
-    public void listPurchases(Uri scope, ListPurchases_Response response) {
+    public static void listPurchases(Uri scope, ListPurchases_Response response) {
         Bundle args = new Bundle();
         TrustedWebActivityCallback callback = ListPurchasesConverter.convertCallback(response);
         Runnable onError = () -> ListPurchasesConverter.returnClientAppError(response);
@@ -60,7 +56,7 @@ public class DigitalGoodsAdapter {
         execute(scope, COMMAND_LIST_PURCHASES, args, callback, onError, onUnavailable);
     }
 
-    public void listPurchaseHistory(Uri scope, ListPurchaseHistory_Response response) {
+    public static void listPurchaseHistory(Uri scope, ListPurchaseHistory_Response response) {
         Bundle args = new Bundle();
         TrustedWebActivityCallback callback =
                 ListPurchaseHistoryConverter.convertCallback(response);
@@ -71,7 +67,7 @@ public class DigitalGoodsAdapter {
         execute(scope, COMMAND_LIST_PURCHASE_HISTORY, args, callback, onError, onUnavailable);
     }
 
-    public void consume(Uri scope, String purchaseToken, Consume_Response response) {
+    public static void consume(Uri scope, String purchaseToken, Consume_Response response) {
         Bundle args = ConsumeConverter.convertParams(purchaseToken);
         TrustedWebActivityCallback callback = ConsumeConverter.convertCallback(response);
         Runnable onUnavailable = () -> ConsumeConverter.returnClientAppUnavailable(response);
@@ -97,41 +93,45 @@ public class DigitalGoodsAdapter {
         execute(scope, COMMAND_CONSUME, args, callback, tryAcknowledgeOnError, onUnavailable);
     }
 
-    private void execute(
+    private static void execute(
             Uri scope,
             String command,
             Bundle args,
             TrustedWebActivityCallback callback,
             Runnable onClientAppError,
             Runnable onClientAppUnavailable) {
-        mClient.connectAndExecute(
-                scope,
-                new TrustedWebActivityClient.ExecutionCallback() {
-                    @Override
-                    public void onConnected(
-                            Origin origin, TrustedWebActivityClientWrappers.Connection service)
-                            throws RemoteException {
-                        // Wrap this call so that crashes in the TWA client don't cause crashes in
-                        // Chrome.
-                        Bundle result = null;
-                        try {
-                            result = service.sendExtraCommand(command, args, callback);
-                        } catch (Exception e) {
-                            Log.w(TAG, "Exception communicating with client.");
-                            onClientAppError.run();
-                        }
+        TrustedWebActivityClient.getInstance()
+                .connectAndExecute(
+                        scope,
+                        new TrustedWebActivityClient.ExecutionCallback() {
+                            @Override
+                            public void onConnected(
+                                    Origin origin,
+                                    TrustedWebActivityClientWrappers.Connection service)
+                                    throws RemoteException {
+                                // Wrap this call so that crashes in the TWA client don't cause
+                                // crashes in
+                                // Chrome.
+                                Bundle result = null;
+                                try {
+                                    result = service.sendExtraCommand(command, args, callback);
+                                } catch (Exception e) {
+                                    Log.w(TAG, "Exception communicating with client.");
+                                    onClientAppError.run();
+                                }
 
-                        boolean success = result != null && result.getBoolean(KEY_SUCCESS, false);
-                        if (!success) {
-                            onClientAppError.run();
-                        }
-                    }
+                                boolean success =
+                                        result != null && result.getBoolean(KEY_SUCCESS, false);
+                                if (!success) {
+                                    onClientAppError.run();
+                                }
+                            }
 
-                    @Override
-                    public void onNoTwaFound() {
-                        Log.w(TAG, "Unable to execute " + command + ".");
-                        onClientAppUnavailable.run();
-                    }
-                });
+                            @Override
+                            public void onNoTwaFound() {
+                                Log.w(TAG, "Unable to execute " + command + ".");
+                                onClientAppUnavailable.run();
+                            }
+                        });
     }
 }

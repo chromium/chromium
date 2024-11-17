@@ -9,9 +9,9 @@
 
 namespace ui {
 
-EventProcessor::EventProcessor() {}
+EventProcessor::EventProcessor() = default;
 
-EventProcessor::~EventProcessor() {}
+EventProcessor::~EventProcessor() = default;
 
 EventDispatchDetails EventProcessor::OnEventFromSource(Event* event) {
   base::WeakPtr<EventProcessor> weak_this = weak_ptr_factory_.GetWeakPtr();

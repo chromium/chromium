@@ -171,12 +171,12 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
         try {
             createdCallback.waitForCallback(0);
         } catch (TimeoutException ex) {
-            Assert.fail("Never received tab created event");
+            throw new AssertionError("Never received tab created event", ex);
         }
         try {
             selectedCallback.waitForCallback(0);
         } catch (TimeoutException ex) {
-            Assert.fail("Never received tab selected event");
+            throw new AssertionError("Never received tab selected event", ex);
         }
         ThreadUtils.runOnUiThreadBlocking(() -> incognitoTabModel.removeObserver(observer));
 
@@ -201,13 +201,10 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
     }
 
     /**
-     * Looks up the Omnibox in the view hierarchy and types the specified
-     * text into it, requesting focus and using an inter-character delay of
-     * 200ms.
+     * Looks up the Omnibox in the view hierarchy and types the specified text into it, requesting
+     * focus and using an inter-character delay of 200ms.
      *
      * @param oneCharAtATime Whether to type text one character at a time or all at once.
-     *
-     * @throws InterruptedException
      */
     public void typeInOmnibox(String text, boolean oneCharAtATime) throws InterruptedException {
         final UrlBar urlBar = getActivity().findViewById(R.id.url_bar);

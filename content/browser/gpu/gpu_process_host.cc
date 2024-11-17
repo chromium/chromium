@@ -94,6 +94,7 @@
 #include "ui/display/display_switches.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/switches.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/latency/janky_duration_tracker.h"
 #include "ui/latency/latency_info.h"
@@ -155,8 +156,7 @@ const char* GetProcessLifetimeUmaName(gpu::GpuMode gpu_mode) {
   switch (gpu_mode) {
     // TODO(rivr): Add separate histograms for the different hardware modes.
     case gpu::GpuMode::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     case gpu::GpuMode::HARDWARE_GL:
     case gpu::GpuMode::HARDWARE_GRAPHITE:
     case gpu::GpuMode::HARDWARE_VULKAN:
@@ -230,12 +230,10 @@ GpuTerminationStatus ConvertToGpuTerminationStatus(
     case base::TERMINATION_STATUS_OOM:
       return GpuTerminationStatus::OOM;
     case base::TERMINATION_STATUS_MAX_ENUM:
-      NOTREACHED_IN_MIGRATION();
-      return GpuTerminationStatus::MAX_ENUM;
+      NOTREACHED();
       // Do not add default.
   }
-  NOTREACHED_IN_MIGRATION();
-  return GpuTerminationStatus::ABNORMAL_TERMINATION;
+  NOTREACHED();
 }
 
 // Command-line switches to propagate to the GPU process.
@@ -270,10 +268,12 @@ static const char* const kSwitchNames[] = {
     switches::kEnableGpuMainTimeKeeperMetrics,
     switches::kEnableGpuRasterization,
     switches::kEnableSkiaGraphite,
+    switches::kEnableSkiaGraphitePrecompilation,
     switches::kDoubleBufferCompositing,
     switches::kHeadless,
     switches::kEnableLowEndDeviceMode,
     switches::kDisableSkiaGraphite,
+    switches::kDisableSkiaGraphitePrecompilation,
     switches::kDisableLowEndDeviceMode,
     switches::kProfilingAtStart,
     switches::kProfilingFile,
@@ -290,6 +290,7 @@ static const char* const kSwitchNames[] = {
     switches::kUseGpuInTests,
     switches::kWatchDirForScrollJankReport,
     switches::kWebViewDrawFunctorUsesVulkan,
+    switches::kSuppressPerformanceLogs,
 #if BUILDFLAG(IS_MAC)
     sandbox::policy::switches::kEnableSandboxLogging,
     sandbox::policy::switches::kDisableMetalShaderCache,
@@ -870,8 +871,7 @@ GpuProcessHost::~GpuProcessHost() {
         break;
 #endif
       case base::TERMINATION_STATUS_MAX_ENUM:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
             switches::kForceBrowserCrashOnGpuCrash)) {
@@ -935,6 +935,7 @@ bool GpuProcessHost::Init() {
   params.main_thread_task_runner = GetUIThreadTaskRunner({});
   params.info_collection_gpu_process =
       kind_ == GPU_PROCESS_KIND_INFO_COLLECTION;
+  params.gpu_service_running_in_process = in_process_;
   gpu_host_ = std::make_unique<viz::GpuHostImpl>(
       this, std::move(viz_main_pending_remote), std::move(params));
 
@@ -1257,7 +1258,10 @@ bool GpuProcessHost::LaunchGpuProcess() {
   int child_flags = gpu_launcher.empty() ? ChildProcessHost::CHILD_ALLOW_SELF
                                          : ChildProcessHost::CHILD_NORMAL;
 #elif BUILDFLAG(IS_MAC)
-  int child_flags = ChildProcessHost::CHILD_GPU;
+  int child_flags =
+      features::IsSwiftShaderAllowed(base::CommandLine::ForCurrentProcess())
+          ? ChildProcessHost::CHILD_GPU
+          : ChildProcessHost::CHILD_NORMAL;
 #else
   int child_flags = ChildProcessHost::CHILD_NORMAL;
 #endif

@@ -9,8 +9,6 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_restore/app_launch_handler.h"
-#include "chrome/browser/ash/crosapi/browser_manager.h"
-#include "chrome/browser/ash/crosapi/browser_manager_observer.h"
 #include "chrome/browser/sessions/session_restore_observer.h"
 #include "components/app_restore/restore_data.h"
 #include "components/services/app_service/public/cpp/app_types.h"
@@ -71,8 +69,7 @@ enum class SessionRestoreWindowCount {
 // the notification dialog.
 // 3. The app is ready.
 class FullRestoreAppLaunchHandler : public AppLaunchHandler,
-                                    public SessionRestoreObserver,
-                                    public crosapi::BrowserManagerObserver {
+                                    public SessionRestoreObserver {
  public:
   explicit FullRestoreAppLaunchHandler(Profile* profile,
                                        bool should_init_service = false);
@@ -100,10 +97,6 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
 
   // SessionRestoreObserver:
   void OnGotSession(Profile* profile, bool for_apps, int window_count) override;
-
-  // crosapi::BrowserManagerObserver:
-  void OnMojoDisconnected() override;
-  void OnStateChanged() override;
 
   // Force launch browser for testing.
   void ForceLaunchBrowserForTesting();
@@ -136,8 +129,6 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
   // browsers when upgrading to the full restore version.
   void LaunchBrowserForFirstRunFullRestore();
 
-  void MaybeRestoreLacros();
-
   // AppLaunchHandler:
   void RecordRestoredAppLaunch(apps::AppTypeName app_type_name) override;
 
@@ -168,10 +159,6 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
   // Restored browser window count. This is used for debugging and metrics.
   int browser_app_window_count_ = 0;
   int browser_window_count_ = 0;
-
-  base::ScopedObservation<crosapi::BrowserManager,
-                          crosapi::BrowserManagerObserver>
-      observation_{this};
 
   base::WeakPtrFactory<FullRestoreAppLaunchHandler> weak_ptr_factory_{this};
 };

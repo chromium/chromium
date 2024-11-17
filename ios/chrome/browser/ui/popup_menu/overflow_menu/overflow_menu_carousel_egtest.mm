@@ -115,7 +115,7 @@ void ResolvePassphraseErrorFromOverflowMenu() {
                        syncTimeout:syncher::kSyncUKMOperationsTimeout];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Clean up sign-in and Sync data.
   [SigninEarlGrey signOut];
   [ChromeEarlGrey
@@ -125,7 +125,7 @@ void ResolvePassphraseErrorFromOverflowMenu() {
 
   CleanupDestinationsHighlightFeaturesData();
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests
@@ -255,7 +255,6 @@ void ResolvePassphraseErrorFromOverflowMenu() {
   AppLaunchConfiguration config;
   config.iph_feature_enabled =
       feature_engagement::kIPHiOSOverflowMenuCustomizationFeature.name;
-  config.features_enabled.push_back(kOverflowMenuCustomization);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   // Open tools menu and see IPH appears.

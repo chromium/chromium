@@ -727,9 +727,11 @@ class AutofillAgentSubmissionTest : public AutofillAgentTest,
                                     public testing::WithParamInterface<int> {
  public:
   AutofillAgentSubmissionTest() {
-    EXPECT_LE(GetParam(), 3);
+    EXPECT_LE(GetParam(), 5);
     std::vector<base::test::FeatureRef> features = {
-        features::kAutofillUnifyAndFixFormTracking,
+        features::kAutofillFixFormTracking,
+        features::kAutofillUseSubmittedFormInHtmlSubmission,
+        features::kAutofillPreferSavedFormAsSubmittedForm,
         features::kAutofillReplaceCachedWebElementsByRendererIds,
         features::kAutofillReplaceFormElementObserver};
 
@@ -740,9 +742,9 @@ class AutofillAgentSubmissionTest : public AutofillAgentTest,
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }
 
-  bool improved_submission_detection() {
+  bool prefer_saved_form() {
     return base::FeatureList::IsEnabled(
-        features::kAutofillReplaceFormElementObserver);
+        features::kAutofillPreferSavedFormAsSubmittedForm);
   }
 
  private:
@@ -751,14 +753,16 @@ class AutofillAgentSubmissionTest : public AutofillAgentTest,
 
 INSTANTIATE_TEST_SUITE_P(AutofillSubmissionTest,
                          AutofillAgentSubmissionTest,
-                         ::testing::Values(0, 1, 2, 3));
+                         ::testing::Values(0, 1, 2, 3, 4, 5));
 
 // Test that AutofillAgent::JavaScriptChangedValue updates the
 // last interacted saved state.
 TEST_P(AutofillAgentSubmissionTest,
        JavaScriptChangedValueUpdatesLastInteractedSavedState) {
-  base::test::ScopedFeatureList scoped_feature_list{
-      features::kAutofillReplaceFormElementObserver};
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillReplaceFormElementObserver)) {
+    GTEST_SKIP();
+  }
   LoadHTML(R"(<form id="form_id"><input id="text_id"></form>)");
 
   blink::WebFormElement form =
@@ -791,6 +795,8 @@ TEST_P(AutofillAgentSubmissionTest,
   EXPECT_EQ(provisionally_saved_form->renderer_id(), form_id);
   ASSERT_EQ(1u, provisionally_saved_form->fields().size());
   EXPECT_EQ(u"js_set_value", provisionally_saved_form->fields()[0].value());
+  EXPECT_EQ(u"user_set_value",
+            provisionally_saved_form->fields()[0].user_input());
 }
 
 // Test that AutofillAgent::ApplyFormAction(mojom::ActionPersistence::kFill)
@@ -969,7 +975,7 @@ TEST_P(AutofillAgentSubmissionTest,
                   AllOf(FieldsAre(HasFieldIdAttribute(u"name"),
                                   HasFieldIdAttribute(u"address")),
                         FieldsAre(HasValue(u"Ariel"), HasValue(u"Atlantica"))),
-                  _, _));
+                  _));
 
   // Simulate inferred form submission as a result the focused field being
   // removed after an AJAX call.
@@ -1001,7 +1007,7 @@ TEST_P(AutofillAgentSubmissionTest,
                                             HasFieldIdAttribute(u"address")),
                                   FieldsAre(HasValue(u""), HasValue(u"Ariel"),
                                             HasValue(u"Atlantica"))),
-                            _, _));
+                            _));
 
   // Simulate inferred form submission as a result the focused field being
   // removed after an AJAX call.
@@ -1028,18 +1034,18 @@ TEST_P(AutofillAgentSubmissionTest,
   SimulateUserInputChangeForElementById("name", "Ariel");
   SimulateUserInputChangeForElementById("address", "Atlantica");
 
-  if (improved_submission_detection()) {
+  if (prefer_saved_form()) {
     EXPECT_CALL(autofill_driver(),
                 FormSubmitted(AllOf(FieldsAre(HasFieldIdAttribute(u"name"),
                                               HasFieldIdAttribute(u"address")),
                                     FieldsAre(HasValue(u"Ariel"),
                                               HasValue(u"Atlantica"))),
-                              _, _));
+                              _));
   } else {
     EXPECT_CALL(autofill_driver(),
                 FormSubmitted(AllOf(FieldsAre(HasFieldIdAttribute(u"address")),
                                     FieldsAre(HasValue(u"Atlantica"))),
-                              _, _));
+                              _));
   }
 
   // Remove element that the user did not interact with last.
@@ -1102,7 +1108,7 @@ TEST_P(AutofillAgentSubmissionTest,
   EXPECT_CALL(autofill_driver(),
               FormSubmitted(AllOf(FieldsAre(HasFieldIdAttribute(u"input2")),
                                   FieldsAre(HasValue(u"input2 autofilled"))),
-                            _, _));
+                            _));
   ExecuteJavaScriptForTests(R"(document.getElementById('form').remove();)");
   autofill_agent().OnInferredFormSubmission(
       mojom::SubmissionSource::XHR_SUCCEEDED);
@@ -1321,10 +1327,6 @@ class AutofillAgentTestCaret
     }
     task_environment_.FastForwardBy(pause_for);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      autofill::features::kAutofillCaretExtraction};
 };
 
 INSTANTIATE_TEST_SUITE_P(AutofillAgentTest,
@@ -1461,10 +1463,6 @@ class AutofillAgentTestClick
                                    %s)",
                                 field_html()));
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillContentEditableLeftClickFix};
 };
 
 INSTANTIATE_TEST_SUITE_P(

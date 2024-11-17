@@ -28,13 +28,9 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/public/web/web_frame.h"
 
+#include <array>
 #include <initializer_list>
 #include <limits>
 #include <memory>
@@ -228,7 +224,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "ui/base/ime/mojom/text_input_state.mojom-blink.h"
-#include "ui/base/mojom/ui_base_types.mojom-shared.h"
+#include "ui/base/mojom/menu_source_type.mojom-blink.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/geometry/transform.h"
@@ -2342,15 +2338,15 @@ TEST_F(WebFrameTest,
 }
 
 TEST_F(WebFrameTest, SmallPermanentInitialPageScaleFactorIsClobbered) {
-  const char* pages[] = {
-      // These pages trigger the clobbering condition. There must be a matching
-      // item in "pageScaleFactors" array.
-      "viewport-device-0.5x-initial-scale.html",
-      "viewport-initial-scale-1.html",
-      // These ones do not.
-      "viewport-auto-initial-scale.html",
-      "viewport-target-densitydpi-device-and-fixed-width.html"};
-  float page_scale_factors[] = {0.5f, 1.0f};
+  const auto pages = std::to_array<const char*>(
+      {// These pages trigger the clobbering condition. There must be a matching
+       // item in "pageScaleFactors" array.
+       "viewport-device-0.5x-initial-scale.html",
+       "viewport-initial-scale-1.html",
+       // These ones do not.
+       "viewport-auto-initial-scale.html",
+       "viewport-target-densitydpi-device-and-fixed-width.html"});
+  const std::array<float, 2> page_scale_factors = {0.5f, 1.0f};
   for (size_t i = 0; i < std::size(pages); ++i)
     RegisterMockedHttpURLLoad(pages[i]);
 
@@ -2993,7 +2989,7 @@ TEST_F(WebFrameTest, targetDensityDpiHigh) {
 
   // high-dpi = 240
   float target_dpi = 240.0f;
-  float device_scale_factors[] = {1.0f, 4.0f / 3.0f, 2.0f};
+  std::array<float, 3> device_scale_factors = {1.0f, 4.0f / 3.0f, 2.0f};
   int viewport_width = 640;
   int viewport_height = 480;
 
@@ -3041,7 +3037,7 @@ TEST_F(WebFrameTest, targetDensityDpiHigh) {
 TEST_F(WebFrameTest, targetDensityDpiDevice) {
   RegisterMockedHttpURLLoad("viewport-target-densitydpi-device.html");
 
-  float device_scale_factors[] = {1.0f, 4.0f / 3.0f, 2.0f};
+  std::array<float, 3> device_scale_factors = {1.0f, 4.0f / 3.0f, 2.0f};
 
   int viewport_width = 640;
   int viewport_height = 480;
@@ -3087,7 +3083,7 @@ TEST_F(WebFrameTest, targetDensityDpiDeviceAndFixedWidth) {
   RegisterMockedHttpURLLoad(
       "viewport-target-densitydpi-device-and-fixed-width.html");
 
-  float device_scale_factors[] = {1.0f, 4.0f / 3.0f, 2.0f};
+  std::array<float, 3> device_scale_factors = {1.0f, 4.0f / 3.0f, 2.0f};
 
   int viewport_width = 640;
   int viewport_height = 480;
@@ -6611,8 +6607,8 @@ class CompositedSelectionBoundsTest
 
     UpdateAllLifecyclePhases(web_view_helper_.GetWebView());
 
-    v8::HandleScope handle_scope(
-        web_view_helper_.GetAgentGroupScheduler().Isolate());
+    v8::Isolate* isolate = web_view_helper_.GetAgentGroupScheduler().Isolate();
+    v8::HandleScope handle_scope(isolate);
     v8::Local<v8::Value> result =
         web_view_helper_.GetWebView()
             ->MainFrameImpl()
@@ -6624,7 +6620,7 @@ class CompositedSelectionBoundsTest
     ASSERT_GE(expected_result.Length(), 10u);
 
     v8::Local<v8::Context> context =
-        expected_result.GetCreationContext().ToLocalChecked();
+        expected_result.GetCreationContext(isolate).ToLocalChecked();
     v8::Context::Scope v8_context_scope(context);
 
     int start_edge_start_in_layer_x = expected_result.Get(context, 1)
@@ -7335,6 +7331,7 @@ class TestAccessInitialDocumentLocalFrameHost
   }
   void DraggableRegionsChanged(
       Vector<mojom::blink::DraggableRegionPtr> regions) override {}
+  void OnFirstContentfulPaint() override {}
 
   // !!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!
   // If the actual counts in the tests below increase, this could be an
@@ -11782,8 +11779,8 @@ class BlobRegistryForSaveImageFromDataURL : public mojom::blink::BlobRegistry {
     auto& element0 = elements[0];
     const auto& bytes = element0->get_bytes();
     auto length = bytes->length;
-    String body(reinterpret_cast<const char*>(bytes->embedded_data->data()),
-                static_cast<uint32_t>(length));
+    String body(
+        base::span(*bytes->embedded_data).first(static_cast<uint32_t>(length)));
     mojo::MakeSelfOwnedReceiver(std::make_unique<FakeBlob>(uuid, body),
                                 std::move(blob));
     std::move(callback).Run();
@@ -11796,13 +11793,7 @@ class BlobRegistryForSaveImageFromDataURL : public mojom::blink::BlobRegistry {
       mojo::ScopedDataPipeConsumerHandle,
       mojo::PendingAssociatedRemote<mojom::blink::ProgressClient>,
       RegisterFromStreamCallback) override {
-    NOTREACHED_IN_MIGRATION();
-  }
-
-  void GetBlobFromUUID(mojo::PendingReceiver<mojom::blink::Blob>,
-                       const String& uuid,
-                       GetBlobFromUUIDCallback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 };
 
@@ -11850,8 +11841,7 @@ class TestLocalFrameHostForSaveImageFromDataURL : public FakeLocalFrameHost {
     void Run() { run_loop_.Run(); }
 
     void OnDataAvailable(base::span<const uint8_t> data) override {
-      std::string_view chars = base::as_string_view(data);
-      *output_ = String(chars.data(), chars.size());
+      *output_ = String(data);
     }
     void OnDataComplete() override { run_loop_.Quit(); }
 
@@ -13318,24 +13308,6 @@ TEST_F(WebFrameSimTest, LayoutViewportExceedsLayoutOverflow) {
   ASSERT_EQ(gfx::Size(400, 600), area->ContentsSize());
 }
 
-TEST_F(WebFrameSimTest, LayoutViewLocalVisualRect) {
-  UseAndroidSettings();
-
-  WebView().MainFrameViewWidget()->Resize(gfx::Size(600, 400));
-  WebView().SetDefaultPageScaleLimits(0.5f, 2);
-
-  SimRequest main_resource("https://example.com/test.html", "text/html");
-  LoadURL("https://example.com/test.html");
-  main_resource.Complete(R"HTML(
-    <meta name='viewport' content='width=device-width, minimum-scale=0.5'>
-    <body style='margin: 0; width: 1800px; height: 1200px'></div>
-  )HTML");
-
-  Compositor().BeginFrame();
-  ASSERT_EQ(PhysicalRect(0, 0, 1200, 800),
-            GetDocument().GetLayoutView()->LocalVisualRect());
-}
-
 TEST_F(WebFrameSimTest, NamedLookupIgnoresEmptyNames) {
   SimRequest main_resource("https://example.com/main.html", "text/html");
   LoadURL("https://example.com/main.html");
@@ -13358,9 +13330,9 @@ TEST_F(WebFrameTest, NoLoadingCompletionCallbacksInDetach) {
     ~LoadingObserverFrameClient() override = default;
 
     // frame_test_helpers::TestWebFrameClient:
-    void FrameDetached() override {
+    void FrameDetached(DetachReason detach_reason) override {
       did_call_frame_detached_ = true;
-      TestWebFrameClient::FrameDetached();
+      TestWebFrameClient::FrameDetached(detach_reason);
     }
 
     void DidStopLoading() override {
@@ -13638,7 +13610,7 @@ TEST_F(WebFrameTest, ContextMenuDataNonLocatedMenu) {
       WebCoalescedInputEvent(mouse_event, ui::LatencyInfo()));
 
   web_view->MainFrameImpl()->LocalRootFrameWidget()->ShowContextMenu(
-      ui::mojom::MenuSourceType::TOUCH,
+      ui::mojom::blink::MenuSourceType::kTouch,
       web_view->MainFrameImpl()->GetPositionInViewportForTesting());
 
   RunPendingTasks();

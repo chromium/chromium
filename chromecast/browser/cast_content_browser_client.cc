@@ -150,11 +150,11 @@ CastContentBrowserClient::CastContentBrowserClient(
           std::make_unique<CastNetworkContexts>(GetCorsExemptHeadersList())),
       cast_feature_list_creator_(cast_feature_list_creator) {
   std::vector<const base::Feature*> extra_enable_features = {
-    &::media::kInternalMediaSession,
-    &features::kNetworkServiceInProcess,
+      &::media::kInternalMediaSession,
+      &features::kNetworkServiceInProcess,
 #if BUILDFLAG(USE_V4L2_CODEC)
-    // Enable accelerated video decode if v4l2 codec is supported.
-    &::media::kVaapiVideoDecodeLinux,
+      // Enable accelerated video decode if v4l2 codec is supported.
+      &::media::kAcceleratedVideoDecodeLinux,
 #endif  // BUILDFLAG(USE_V4L2_CODEC)
   };
 

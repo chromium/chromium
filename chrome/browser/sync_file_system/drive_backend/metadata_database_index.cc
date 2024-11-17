@@ -158,8 +158,7 @@ void RemoveUnreachableItemsFromDB(DatabaseContents* contents,
     pending.pop_back();
 
     if (!visited_trackers.insert(tracker_id).second) {
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     AppendContents(
@@ -279,8 +278,7 @@ void MetadataDatabaseIndex::StoreFileMetadata(
     std::unique_ptr<FileMetadata> metadata) {
   PutFileMetadataToDB(*metadata.get(), db_);
   if (!metadata) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   std::string file_id = metadata->file_id();
@@ -291,8 +289,7 @@ void MetadataDatabaseIndex::StoreFileTracker(
     std::unique_ptr<FileTracker> tracker) {
   PutFileTrackerToDB(*tracker.get(), db_);
   if (!tracker) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   int64_t tracker_id = tracker->tracker_id();
@@ -330,8 +327,7 @@ void MetadataDatabaseIndex::RemoveFileTracker(int64_t tracker_id) {
 
   auto tracker_it = tracker_by_id_.find(tracker_id);
   if (tracker_it == tracker_by_id_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   FileTracker* tracker = tracker_it->second.get();
 
@@ -406,11 +402,6 @@ bool MetadataDatabaseIndex::HasDemotedDirtyTracker() const {
   return !demoted_dirty_trackers_.empty();
 }
 
-bool MetadataDatabaseIndex::IsDemotedDirtyTracker(int64_t tracker_id) const {
-  return demoted_dirty_trackers_.find(tracker_id) !=
-      demoted_dirty_trackers_.end();
-}
-
 void MetadataDatabaseIndex::PromoteDemotedDirtyTracker(int64_t tracker_id) {
   if (demoted_dirty_trackers_.erase(tracker_id) == 1)
     dirty_trackers_.insert(tracker_id);
@@ -476,8 +467,7 @@ int64_t MetadataDatabaseIndex::GetLargestChangeID() const {
 
 int64_t MetadataDatabaseIndex::GetNextTrackerID() const {
   if (!service_metadata_->has_next_tracker_id()) {
-    NOTREACHED_IN_MIGRATION();
-    return kInvalidTrackerID;
+    NOTREACHED();
   }
   return service_metadata_->next_tracker_id();
 }
@@ -486,20 +476,6 @@ std::vector<std::string> MetadataDatabaseIndex::GetRegisteredAppIDs() const {
   std::vector<std::string> result;
   result.reserve(app_root_by_app_id_.size());
   for (const auto& pair : app_root_by_app_id_)
-    result.push_back(pair.first);
-  return result;
-}
-
-std::vector<int64_t> MetadataDatabaseIndex::GetAllTrackerIDs() const {
-  std::vector<int64_t> result;
-  for (const auto& pair : tracker_by_id_)
-    result.push_back(pair.first);
-  return result;
-}
-
-std::vector<std::string> MetadataDatabaseIndex::GetAllMetadataIDs() const {
-  std::vector<std::string> result;
-  for (const auto& pair : metadata_by_id_)
     result.push_back(pair.first);
   return result;
 }
@@ -584,8 +560,7 @@ void MetadataDatabaseIndex::RemoveFromFileIDIndexes(
     const FileTracker& tracker) {
   auto found = trackers_by_file_id_.find(tracker.file_id());
   if (found == trackers_by_file_id_.end()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   DVLOG(3) << "  Remove from trackers_by_file_id_: "
@@ -646,7 +621,7 @@ void MetadataDatabaseIndex::UpdateInPathIndexes(
       if (found->second.empty())
         trackers_by_title->erase(found);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     DVLOG(3) << "  Add to trackers_by_parent_and_title_: "

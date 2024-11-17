@@ -469,8 +469,7 @@ void LocalFileChangeTracker::ResetForURL(const storage::FileSystemURL& url,
 
   std::string serialized_url;
   if (!SerializeSyncableFileSystemURL(url, &serialized_url)) {
-    NOTREACHED_IN_MIGRATION() << "Failed to serialize: " << url.DebugString();
-    return;
+    NOTREACHED() << "Failed to serialize: " << url.DebugString();
   }
   batch->Delete(serialized_url);
 }
@@ -511,8 +510,7 @@ SyncStatusCode LocalFileChangeTracker::TrackerDB::Init(
     case REPAIR_ON_CORRUPTION:
       return Repair(path);
   }
-  NOTREACHED_IN_MIGRATION();
-  return SYNC_DATABASE_ERROR_FAILED;
+  NOTREACHED();
 }
 
 SyncStatusCode LocalFileChangeTracker::TrackerDB::Repair(

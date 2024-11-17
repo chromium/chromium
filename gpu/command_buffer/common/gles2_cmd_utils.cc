@@ -956,8 +956,7 @@ uint32_t GLES2Util::GLErrorToErrorBit(uint32_t error) {
     case GL_CONTEXT_LOST_KHR:
       return gl_error_bit::kContextLost;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return gl_error_bit::kNoError;
+      NOTREACHED();
   }
 }
 
@@ -976,8 +975,7 @@ uint32_t GLES2Util::GLErrorBitToGLError(uint32_t error_bit) {
     case gl_error_bit::kContextLost:
       return GL_CONTEXT_LOST_KHR;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return GL_NO_ERROR;
+      NOTREACHED();
   }
 }
 
@@ -1011,8 +1009,7 @@ size_t GLES2Util::GLTargetToFaceIndex(uint32_t target) {
     case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:
       return 5;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -1032,8 +1029,7 @@ uint32_t GLES2Util::GLFaceTargetToTextureTarget(uint32_t target) {
     case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:
       return GL_TEXTURE_CUBE_MAP;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -1343,8 +1339,7 @@ void GLES2Util::GetColorFormatComponentSizes(
           internal_format = GL_R32F;
           return;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     case GL_LUMINANCE_ALPHA:
@@ -1359,8 +1354,7 @@ void GLES2Util::GetColorFormatComponentSizes(
           internal_format = GL_RGBA32F;
           return;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
       break;
     default:
@@ -1508,8 +1502,7 @@ void GLES2Util::GetColorFormatComponentSizes(
       *g = 32;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -1755,10 +1748,8 @@ uint32_t GLES2Util::ConvertToSizedFormat(uint32_t format, uint32_t type) {
         case GL_UNSIGNED_SHORT:
           return GL_RGB16_EXT;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     case GL_RGBA:
       switch (type) {
         case GL_UNSIGNED_BYTE:
@@ -1774,10 +1765,8 @@ uint32_t GLES2Util::ConvertToSizedFormat(uint32_t format, uint32_t type) {
         case GL_UNSIGNED_SHORT:
           return GL_RGBA16_EXT;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     case GL_ALPHA:
       switch (type) {
         case GL_UNSIGNED_BYTE:
@@ -1787,10 +1776,8 @@ uint32_t GLES2Util::ConvertToSizedFormat(uint32_t format, uint32_t type) {
         case GL_FLOAT:
           return GL_ALPHA32F_EXT;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     case GL_RED:
       switch (type) {
         case GL_UNSIGNED_BYTE:
@@ -1802,10 +1789,8 @@ uint32_t GLES2Util::ConvertToSizedFormat(uint32_t format, uint32_t type) {
         case GL_UNSIGNED_SHORT:
           return GL_R16_EXT;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     case GL_RG:
       switch (type) {
         case GL_UNSIGNED_BYTE:
@@ -1817,37 +1802,29 @@ uint32_t GLES2Util::ConvertToSizedFormat(uint32_t format, uint32_t type) {
         case GL_UNSIGNED_SHORT:
           return GL_RG16_EXT;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     case GL_SRGB_EXT:
       switch (type) {
         case GL_UNSIGNED_BYTE:
           return GL_SRGB8;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     case GL_SRGB_ALPHA_EXT:
       switch (type) {
         case GL_UNSIGNED_BYTE:
           return GL_SRGB8_ALPHA8;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     case GL_BGRA_EXT:
       switch (type) {
         case GL_UNSIGNED_BYTE:
           return GL_BGRA8_EXT;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
-      break;
     default:
       break;
   }

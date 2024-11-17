@@ -110,7 +110,7 @@ inline void TransitionPseudoElementData::SetPseudoElement(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   if (previous_element)
@@ -144,7 +144,7 @@ inline PseudoElement* TransitionPseudoElementData::GetPseudoElement(
       return it == transition_containers_.end() ? nullptr : it->value.Get();
     }
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return nullptr;
 }

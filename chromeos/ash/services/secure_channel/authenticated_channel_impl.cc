@@ -75,10 +75,9 @@ void AuthenticatedChannelImpl::PerformSendMessage(
   int sequence_number = secure_channel_->SendMessage(feature, payload);
 
   if (base::Contains(sequence_number_to_callback_map_, sequence_number)) {
-    PA_LOG(ERROR) << "AuthenticatedChannelImpl::SendMessage(): Started sending "
-                  << "a message whose sequence number already exists in the "
-                  << "map.";
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "AuthenticatedChannelImpl::SendMessage(): Started sending "
+                 << "a message whose sequence number already exists in the "
+                 << "map.";
   }
 
   sequence_number_to_callback_map_[sequence_number] =

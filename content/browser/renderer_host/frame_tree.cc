@@ -20,6 +20,7 @@
 #include "base/memory/safe_ref.h"
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
+#include "base/ranges/from_range.h"
 #include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/unguessable_token.h"
@@ -148,7 +149,7 @@ FrameTree::NodeIterator::NodeIterator(
       should_descend_into_inner_trees_(should_descend_into_inner_trees),
       include_delegate_nodes_for_inner_frame_trees_(
           include_delegate_nodes_for_inner_frame_trees),
-      queue_(starting_nodes.begin(), starting_nodes.end()) {
+      queue_(base::from_range, starting_nodes) {
   // If `include_delegate_nodes_for_inner_frame_trees_` is true then
   // `should_descend_into_inner_trees_` must be true.
   DCHECK(!include_delegate_nodes_for_inner_frame_trees_ ||
@@ -483,8 +484,7 @@ FrameTreeNode* FrameTree::AddFrame(
 void FrameTree::RemoveFrame(FrameTreeNode* child) {
   RenderFrameHostImpl* parent = child->parent();
   if (!parent) {
-    NOTREACHED_IN_MIGRATION() << "Unexpected RemoveFrame call for main frame.";
-    return;
+    NOTREACHED() << "Unexpected RemoveFrame call for main frame.";
   }
 
   parent->RemoveChild(child);
@@ -799,7 +799,6 @@ void FrameTree::RegisterRenderViewHost(RenderViewHostMapId id,
                             render_view_host_map_[id]->renderer_view_created());
       CHECK_EQ(rvh, render_view_host_map_[id]);
     }
-    base::debug::DumpWithoutCrashing();
   }
   render_view_host_map_[id] = rvh;
   rvh->set_is_registered_with_frame_tree(true);

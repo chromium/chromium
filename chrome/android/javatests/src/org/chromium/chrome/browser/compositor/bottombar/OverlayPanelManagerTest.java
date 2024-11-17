@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.ui.InsetObserver;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
@@ -63,6 +64,7 @@ public class OverlayPanelManagerTest {
     @Mock private ViewGroup mCompositorViewHolder;
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
+    @Mock private InsetObserver mInsetObserver;
 
     Activity mActivity;
     ActivityWindowAndroid mWindowAndroid;
@@ -98,7 +100,8 @@ public class OverlayPanelManagerTest {
                     profile,
                     compositorViewHolder,
                     MOCK_TOOLBAR_HEIGHT,
-                    () -> tab);
+                    () -> tab,
+                    /* desktopWindowStateManager= */ null);
             mPriority = priority;
             mCanBeSuppressed = canBeSuppressed;
         }
@@ -172,7 +175,9 @@ public class OverlayPanelManagerTest {
                             return new ActivityWindowAndroid(
                                     mActivity,
                                     /* listenToActivityState= */ true,
-                                    IntentRequestTracker.createFromActivity(mActivity));
+                                    IntentRequestTracker.createFromActivity(mActivity),
+                                    mInsetObserver,
+                                    /* trackOcclusion= */ false);
                         });
     }
 

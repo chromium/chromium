@@ -4,6 +4,7 @@ include_rules = [
   "+components/url_formatter",
   "+tools/json_schema_compiler",
   "+components/nacl/common/buildflags.h",
+  "+components/pdf/common/pdf_util.h",
   "+components/safe_browsing/core/common",
   "+components/safe_browsing/core/common/hashprefix_realtime",
   "+components/version_info/channel.h",

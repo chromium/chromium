@@ -1,0 +1,109 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/action_link_lit.css.js
+ * #import=chrome://resources/cr_elements/md_select_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=./shared_style.css.js
+ * #include=action-link-lit md-select-lit cr-shared-style-lit shared-style
+ * #css_wrapper_metadata_end */
+
+cr-icon {
+  --iron-icon-height: var(--cr-icon-size);
+  --iron-icon-width: var(--cr-icon-size);
+}
+
+.link-icon-button {
+  margin-inline-start: 6px;
+}
+
+#section-heading {
+  --md-select-width: 160px;
+  align-items: center;
+  display: flex;
+}
+
+#section-heading-heading {
+  display: flex;
+  flex: 1;
+}
+
+#section-heading .link-icon-button {
+  margin-inline-start: 6px;
+}
+
+#hostAccess {
+  margin-inline-start: 12px;
+  width: 100%;
+}
+
+#hosts {
+  margin-bottom: 0;
+  padding-inline-start: calc(
+      var(--cr-section-indent-padding) - var(--cr-section-padding));
+}
+
+#hosts li {
+  align-items: center;
+  border-top: var(--cr-separator-line);
+  display: flex;
+  height: var(--cr-section-min-height);
+}
+
+#hosts li:first-child {
+  border-top: none;
+}
+
+#add-host {
+  font-weight: 500;
+  width: 100%;
+}
+
+#permissions-mode {
+  color: var(--cr-primary-text-color);
+  margin-top: 12px;
+}
+
+#new-permissions-mode {
+  color: var(--cr-primary-text-color);
+  margin-top: 12px;
+  padding-inline-start: calc(
+      var(--cr-section-indent-padding) - var(--cr-section-padding));
+}
+
+#new-section-heading {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+}
+
+#new-section-heading-title {
+  display: flex;
+}
+
+#new-section-heading-subtext {
+  color: var(--cr-secondary-text-color);
+  margin-top: 3px;
+}
+
+#host-access-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 18px;
+  width: 100%;
+}
+
+.site {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.site-favicon {
+  margin-inline-end: calc(
+      var(--cr-section-padding) + var(--cr-icon-ripple-margin));
+}

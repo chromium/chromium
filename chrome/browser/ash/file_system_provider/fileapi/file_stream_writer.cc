@@ -243,8 +243,7 @@ int FileStreamWriter::Write(net::IOBuffer* buffer,
       break;
 
     case INITIALIZING:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case INITIALIZED:
       WriteAfterInitialized(buffer, buffer_length,
@@ -256,8 +255,7 @@ int FileStreamWriter::Write(net::IOBuffer* buffer,
     case FAILED:
     case CANCELLING:
     case FINALIZED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return net::ERR_IO_PENDING;

@@ -288,8 +288,7 @@ v8::MaybeLocal<v8::Object> ModuleSystem::Require(
 void ModuleSystem::RequireForJs(
     const v8::FunctionCallbackInfo<v8::Value>& args) {
   if (!args[0]->IsString()) {
-    NOTREACHED_IN_MIGRATION() << "require() called with a non-string argument";
-    return;
+    NOTREACHED() << "require() called with a non-string argument";
   }
   v8::Local<v8::String> module_name = args[0].As<v8::String>();
   args.GetReturnValue().Set(RequireForJsInner(module_name, true /* create */));
@@ -407,7 +406,8 @@ void ModuleSystem::LazyFieldGetter(
   v8::HandleScope handle_scope(isolate);
   v8::Local<v8::Object> parameters = v8::Local<v8::Object>::Cast(info.Data());
   // This context should be the same as context()->v8_context().
-  v8::Local<v8::Context> context = parameters->GetCreationContextChecked();
+  v8::Local<v8::Context> context =
+      parameters->GetCreationContextChecked(isolate);
   v8::Local<v8::Object> global(context->Global());
   v8::Local<v8::Value> module_system_value;
   if (!GetPrivate(context, global, kModuleSystem, &module_system_value) ||
@@ -522,8 +522,7 @@ void ModuleSystem::OnNativeBindingCreated(
     if (!GetPrivate(context()->v8_context()->Global(), kModulesField,
                     &modules) ||
         !modules->IsObject()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
 
     NativesEnabledScope enabled(this);
@@ -683,8 +682,7 @@ v8::Local<v8::Value> ModuleSystem::LoadModuleWithNativeAPIBridge(
   v8::Local<v8::String> wrapped_source(WrapSource(source));
   v8::Local<v8::String> v8_module_name;
   if (!ToV8String(GetIsolate(), module_name.c_str(), &v8_module_name)) {
-    NOTREACHED_IN_MIGRATION() << "module_name is too long";
-    return v8::Undefined(GetIsolate());
+    NOTREACHED() << "module_name is too long";
   }
   // Modules are wrapped in (function(){...}) so they always return functions.
   v8::Local<v8::Value> func_as_value =
@@ -703,14 +701,12 @@ v8::Local<v8::Value> ModuleSystem::LoadModuleWithNativeAPIBridge(
       v8::Local<v8::Signature>(), 0, v8::ConstructorBehavior::kThrow);
   v8::Local<v8::String> v8_key;
   if (!ToV8String(GetIsolate(), "$set", &v8_key)) {
-    NOTREACHED_IN_MIGRATION();
-    return v8::Undefined(GetIsolate());
+    NOTREACHED();
   }
 
   v8::Local<v8::Function> function;
   if (!tmpl->GetFunction(v8_context).ToLocal(&function)) {
-    NOTREACHED_IN_MIGRATION();
-    return v8::Undefined(GetIsolate());
+    NOTREACHED();
   }
 
   exports->DefineOwnProperty(v8_context, v8_key, function, v8::ReadOnly)
@@ -734,8 +730,7 @@ v8::Local<v8::Value> ModuleSystem::LoadModuleWithNativeAPIBridge(
     if (binding_util.IsEmpty()) {
       // The NativeExtensionBindingsSystem was destroyed. This shouldn't happen,
       // but JS makes the impossible possible!
-      NOTREACHED_IN_MIGRATION();
-      return v8::Undefined(GetIsolate());
+      NOTREACHED();
     }
   } else {
     binding_util = v8::Undefined(GetIsolate());

@@ -38,8 +38,10 @@
 #include "chrome/browser/ash/guest_os/guest_id.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_terminal_provider_registry.h"
 #include "chrome/browser/ash/guest_os/public/types.h"
@@ -362,15 +364,17 @@ TerminalPrivateOpenTerminalProcessFunction::OpenProcess(
             << ", cmdline=" << cmdline.GetCommandLineString();
 
     Profile* profile = Profile::FromBrowserContext(browser_context());
-    auto* service = guest_os::GuestOsService::GetForProfile(profile);
+    auto* service = guest_os::GuestOsServiceFactory::GetForProfile(profile);
     guest_os::GuestOsTerminalProvider* provider = nullptr;
     if (service) {
       provider = service->TerminalProviderRegistry()->Get(*guest_id_);
     }
-    auto* tracker = guest_os::GuestOsSessionTracker::GetForProfile(profile);
+    auto* tracker =
+        guest_os::GuestOsSessionTrackerFactory::GetForProfile(profile);
     bool verbose = !(tracker && tracker->GetInfo(*guest_id_).has_value());
     auto status_printer = std::make_unique<StartupStatusPrinter>(
-        base::BindRepeating(&NotifyProcessOutput, browser_context(), startup_id,
+        base::BindRepeating(&NotifyProcessOutput, browser_context(),
+                            std::move(startup_id),
                             api::terminal_private::ToString(
                                 api::terminal_private::OutputType::kStdout)),
         verbose);

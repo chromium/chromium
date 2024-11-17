@@ -43,8 +43,8 @@ public class OverlayPanelContentDelegate {
 
     /**
      * Determine if a particular navigation should be intercepted.
+     *
      * @param externalNavHandler External navigation handler for the activity the panel is in.
-     * @param navigationHandle The NavigationHandle for the current navigation.
      * @return True if the navigation should be intercepted.
      */
     public boolean shouldInterceptNavigation(

@@ -317,7 +317,7 @@ TEST_F(ThreadPoolDelayedTaskManagerTest, PostTaskDuringStart) {
 
   WaitableEvent task_posted;
 
-  other_thread.task_runner()->PostTask(FROM_HERE, BindLambdaForTesting([&]() {
+  other_thread.task_runner()->PostTask(FROM_HERE, BindLambdaForTesting([&] {
                                          delayed_task_manager_.AddDelayedTask(
                                              std::move(task_),
                                              BindOnce(&PostTaskNow));

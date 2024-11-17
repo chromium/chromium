@@ -162,7 +162,7 @@ ScriptPromise<AudioDecoderSupport> AudioDecoder::isConfigSupported(
   }
 
   AudioDecoderSupport* support = AudioDecoderSupport::Create();
-  support->setSupported(media::IsSupportedAudioType(*audio_type));
+  support->setSupported(media::IsDecoderSupportedAudioType(*audio_type));
   support->setConfig(CopyConfig(*config));
   return ToResolvedPromise<AudioDecoderSupport>(script_state, support);
 }
@@ -229,8 +229,7 @@ AudioDecoder::MakeMediaAudioDecoderConfig(const ConfigType& config,
       IsValidAudioDecoderConfig(config, js_error_message);
   if (!audio_type) {
     // Checked by IsValidConfig().
-    NOTREACHED_IN_MIGRATION();
-    return std::nullopt;
+    NOTREACHED();
   }
   if (audio_type->codec == media::AudioCodec::kUnknown) {
     return std::nullopt;

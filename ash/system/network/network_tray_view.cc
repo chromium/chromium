@@ -40,10 +40,6 @@ NetworkTrayView::~NetworkTrayView() {
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
-void NetworkTrayView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->SetNameChecked(accessible_name_);
-}
-
 std::u16string NetworkTrayView::GetAccessibleNameString() const {
   return tooltip_;
 }
@@ -113,14 +109,16 @@ void NetworkTrayView::UpdateNetworkStateHandlerIcon() {
 }
 
 void NetworkTrayView::UpdateConnectionStatus(bool notify_a11y) {
-  std::u16string prev_accessible_name = accessible_name_;
+  std::u16string prev_accessible_name = GetViewAccessibility().GetCachedName();
+  std::u16string accessible_name;
   Shell::Get()
       ->system_tray_model()
       ->active_network_icon()
-      ->GetConnectionStatusStrings(type_, &accessible_name_,
+      ->GetConnectionStatusStrings(type_, &accessible_name,
                                    &accessible_description_, &tooltip_);
-  if (notify_a11y && !accessible_name_.empty() &&
-      accessible_name_ != prev_accessible_name) {
+  GetViewAccessibility().SetName(accessible_name);
+  if (notify_a11y && !accessible_name.empty() &&
+      accessible_name != prev_accessible_name) {
     NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
   }
 

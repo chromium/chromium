@@ -72,12 +72,13 @@ suite('CertificateEntryV2Test', () => {
 
     assertTrue(isVisible(certEntry.$.delete));
     certEntry.$.delete.click();
-    const [source, hash] =
+    const [source, name, hash] =
         await testProxy.handler.whenCalled('deleteCertificate');
     assertEquals(
         CertificateSource.kChromeRootStore, source,
         'click provided wrong source');
     assertEquals('deadbeef', hash, 'click provided wrong hash');
+    assertEquals('certname', name, 'click provided wrong name');
 
     assertDeepEquals(deleteResult, kExpectedDeleteResult);
   });

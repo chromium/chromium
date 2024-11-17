@@ -2,15 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "device/bluetooth/dbus/bluetooth_gatt_application_service_provider.h"
+
 #include <string>
 #include <vector>
 
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
-#include "device/bluetooth/dbus/bluetooth_gatt_application_service_provider.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_application_service_provider_impl.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_characteristic_service_provider_impl.h"
 #include "device/bluetooth/dbus/bluetooth_gatt_descriptor_service_provider_impl.h"
@@ -352,7 +354,8 @@ TEST_F(BluetoothGattApplicationServiceProviderTest, GetManagedObjects) {
   std::unique_ptr<BluetoothGattApplicationServiceProviderImpl> app_provider =
       std::make_unique<BluetoothGattApplicationServiceProviderImpl>(
           nullptr, dbus::ObjectPath(kAppObjectPath),
-          std::map<dbus::ObjectPath, BluetoothLocalGattServiceBlueZ*>());
+          std::map<dbus::ObjectPath,
+                   raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>());
   CreateFakeAttributes(app_provider.get());
 
   dbus::MethodCall method_call("com.example.Interface", "SomeMethod");
@@ -366,7 +369,8 @@ TEST_F(BluetoothGattApplicationServiceProviderTest, SendValueChanged) {
   std::unique_ptr<BluetoothGattApplicationServiceProviderImpl> app_provider =
       std::make_unique<BluetoothGattApplicationServiceProviderImpl>(
           nullptr, dbus::ObjectPath(kAppObjectPath),
-          std::map<dbus::ObjectPath, BluetoothLocalGattServiceBlueZ*>());
+          std::map<dbus::ObjectPath,
+                   raw_ptr<BluetoothLocalGattServiceBlueZ, CtnExperimental>>());
   const std::string& kServicePath =
       CreateFakeService(app_provider.get(), "service0");
   const std::string& kCharacteristicPath = CreateFakeCharacteristic(

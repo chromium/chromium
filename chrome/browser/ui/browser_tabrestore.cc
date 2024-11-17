@@ -32,10 +32,6 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/range/range.h"
 
-#if defined(TOOLKIT_VIEWS)
-#include "chrome/browser/ui/side_search/side_search_utils.h"
-#endif  // defined(TOOLKIT_VIEWS)
-
 using content::NavigationEntry;
 using content::RestoreType;
 using content::WebContents;
@@ -96,13 +92,6 @@ std::unique_ptr<WebContents> CreateRestoredTab(
   web_contents->GetController().Restore(selected_navigation,
                                         RestoreType::kRestored, &entries);
   DCHECK_EQ(0u, entries.size());
-
-#if defined(TOOLKIT_VIEWS)
-  if (IsSideSearchEnabled(browser->profile())) {
-    side_search::SetSideSearchTabStateFromRestoreData(web_contents.get(),
-                                                      extra_data);
-  }
-#endif  // defined(TOOLKIT_VIEWS)
 
   return web_contents;
 }

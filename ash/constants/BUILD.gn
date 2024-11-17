@@ -31,6 +31,7 @@ component("constants") {
     "tray_background_view_catalog.h",
     "url_constants.cc",
     "url_constants.h",
+    "web_app_id_constants.h",
   ]
   public_deps = [
     "//base",

@@ -49,7 +49,7 @@ class MockPrivacySandboxObserver
   MockPrivacySandboxObserver();
   ~MockPrivacySandboxObserver();
   MOCK_METHOD(void, OnTopicsDataAccessibleSinceUpdated, (), (override));
-  MOCK_METHOD1(OnFirstPartySetsEnabledChanged, void(bool));
+  MOCK_METHOD1(OnRelatedWebsiteSetsEnabledChanged, void(bool));
 };
 
 class MockPrivacySandboxSettingsDelegate
@@ -247,8 +247,8 @@ enum class OutputKey {
   kIsSharedStorageBlockSiteSettingSpecific = 50,
   kIsSharedStorageSelectURLBlockSiteSettingSpecific = 51,
   kIsPrivateAggregationBlockSiteSettingSpecific = 52,
-  kIsLocalUnpartitionedDataAccessAllowed = 53,
-  kIsLocalUnpartitionedDataAccessAllowedMetric = 54,
+  kIsFencedStorageReadAllowed = 53,
+  kIsFencedStorageReadAllowedMetric = 54,
 };
 
 // To allow multiple input keys to map to the same value, without having to

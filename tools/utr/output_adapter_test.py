@@ -14,6 +14,12 @@ import output_adapter
 
 class PassthroughAdapterTests(unittest.TestCase):
 
+  def setUp(self):
+    patch_terminal_size = mock.patch('os.get_terminal_size')
+    mock_terminal_size = patch_terminal_size.start()
+    mock_terminal_size.return_value = (128, 1)
+    self.addCleanup(patch_terminal_size.stop)
+
   def testBasic(self):
     adapter = output_adapter.PassthroughAdapter()
     with self.assertLogs('basic_logger', level=logging.DEBUG) as info_log:
@@ -33,6 +39,12 @@ fake std_out text"""
 
 
 class LegacyOutputAdapterTests(unittest.TestCase):
+
+  def setUp(self):
+    patch_terminal_size = mock.patch('os.get_terminal_size')
+    mock_terminal_size = patch_terminal_size.start()
+    mock_terminal_size.return_value = (128, 1)
+    self.addCleanup(patch_terminal_size.stop)
 
   def testNoRecipeEngineOutput(self):
     adapter = output_adapter.LegacyOutputAdapter()
@@ -220,8 +232,10 @@ RBE Stats: down 0 B, up 0 B,
           ])
           # The ninja statuses are sent to another logger to remove new lines
           self.assertEqual(compile_steps_log.output, [
-              'INFO:single_line_logger:\x1b[2K\r[1/2] ACTION fake_action',
-              'INFO:single_line_logger:\x1b[2K\r[2/2] ACTION fake_action'
+              'INFO:single_line_logger:\x1b[2K',
+              'INFO:single_line_logger:\r[1/2] ACTION fake_action',
+              'INFO:single_line_logger:\x1b[2K',
+              'INFO:single_line_logger:\r[2/2] ACTION fake_action'
           ])
 
 

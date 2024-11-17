@@ -79,9 +79,16 @@ OpenXrDevice::OpenXrDevice(
         mojom::XRSessionFeature::HAND_INPUT);
 
   // Only support layers if the feature flag is enabled.
-  if (base::FeatureList::IsEnabled(features::kWebXrLayers))
+  if (base::FeatureList::IsEnabled(features::kWebXrLayers)) {
     device_data.supported_features.emplace_back(
         mojom::XRSessionFeature::LAYERS);
+  }
+
+  // Only support WebGPU sessions if feature flag is enabled.
+  if (base::FeatureList::IsEnabled(features::kWebXrWebGpuBinding)) {
+    device_data.supported_features.emplace_back(
+        mojom::XRSessionFeature::WEBGPU);
+  }
 
   // Only support hit test if the feature flag is enabled.
   if (device::features::IsOpenXrArEnabled()) {
@@ -246,7 +253,7 @@ void OpenXrDevice::ShutdownSession(
 
 void OpenXrDevice::SetFrameDataRestricted(bool restricted) {
   // Presentation sessions can not currently be restricted.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace device

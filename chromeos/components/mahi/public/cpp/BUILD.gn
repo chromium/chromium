@@ -10,6 +10,8 @@ component("cpp") {
   defines = [ "IS_MAHI_PUBLIC_CPP_IMPL" ]
 
   sources = [
+    "mahi_browser_util.cc",
+    "mahi_browser_util.h",
     "mahi_manager.cc",
     "mahi_manager.h",
     "mahi_media_app_content_manager.cc",
@@ -20,6 +22,8 @@ component("cpp") {
     "mahi_switches.h",
     "mahi_util.cc",
     "mahi_util.h",
+    "mahi_web_contents_manager.cc",
+    "mahi_web_contents_manager.h",
   ]
 
   deps = [

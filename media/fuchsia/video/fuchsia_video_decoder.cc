@@ -165,14 +165,11 @@ class FuchsiaVideoDecoder::OutputMailbox {
     reuse_callback_ = std::move(reuse_callback);
 
     auto frame = VideoFrame::WrapSharedImage(
-        pixel_format, shared_image_, create_sync_token_, 0,
+        pixel_format, shared_image_, create_sync_token_,
         base::BindPostTaskToCurrentDefault(base::BindOnce(
             &OutputMailbox::OnFrameDestroyed, base::Unretained(this))),
         coded_size, visible_rect, natural_size, timestamp);
     create_sync_token_.Clear();
-
-    frame->set_shared_image_format_type(
-        media::SharedImageFormatType::kSharedImageFormatExternalSampler);
 
     // Request a fence we'll wait on before reusing the buffer.
     frame->metadata().read_lock_fences_enabled = true;

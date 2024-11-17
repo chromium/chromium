@@ -70,7 +70,7 @@ class InteractiveUITestSuite : public ChromeTestSuite {
     // interactive_ui_tests to run longer.
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
     // Force the HTTPS-Upgrades timeout to zero.
-    HttpsUpgradesNavigationThrottle::set_timeout_for_testing(0);
+    HttpsUpgradesNavigationThrottle::set_timeout_for_testing(base::TimeDelta());
 #endif
   }
 

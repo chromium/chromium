@@ -12,8 +12,6 @@
 #import "base/time/default_clock.h"
 #import "base/time/time.h"
 
-BASE_DECLARE_FEATURE(kFeatureEngagementSessionReset);
-
 // An implementation with iOS-specific logic of managing the lifecycle of the
 // SessionController. Injected into the feature engagement tracker replacing
 // the default implementation.

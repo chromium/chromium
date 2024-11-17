@@ -12,6 +12,7 @@
 #include <set>
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -188,7 +189,7 @@ class FakeBinaryUploadService : public CloudBinaryUploadService {
         case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
         case AnalysisConnector::FILE_DOWNLOADED:
         case AnalysisConnector::FILE_TRANSFER:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
   }
@@ -1717,7 +1718,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateBlockingSettingBrowserTest,
   std::string chunk = std::string(kLargeSize, 'a');
   base::File file(created_file_paths()[0],
                   base::File::FLAG_OPEN | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(chunk.data(), chunk.size());
+  file.WriteAtCurrentPos(base::as_byte_span(chunk));
 
   ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(
       browser()->profile(), GURL(kTestUrl), &data, FILE_ATTACHED));
@@ -2313,7 +2314,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Paste) {
       base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
                           content_analysis_run_loop.QuitClosure()));
 
-  FakeBinaryUploadServiceStorage()->SetAuthForTesting(dm_token(), false);
+  FakeBinaryUploadServiceStorage()->SetAuthForTesting(
+      dm_token(), BinaryUploadService::Result::UNAUTHORIZED);
   FakeBinaryUploadServiceStorage()->SetAuthorized(false);
 
   bool called = false;
@@ -2363,7 +2365,8 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisDelegateUnauthorizedBrowserTest, Files) {
       base::BindRepeating(&MinimalFakeContentAnalysisDelegate::Create,
                           content_analysis_run_loop.QuitClosure()));
 
-  FakeBinaryUploadServiceStorage()->SetAuthForTesting(dm_token(), false);
+  FakeBinaryUploadServiceStorage()->SetAuthForTesting(
+      dm_token(), BinaryUploadService::Result::UNAUTHORIZED);
   // Make sure all auth retries fail.
   FakeBinaryUploadServiceStorage()->SetAuthorized(false);
   FakeBinaryUploadServiceStorage()->SetShouldAutomaticallyAuthorize(true);

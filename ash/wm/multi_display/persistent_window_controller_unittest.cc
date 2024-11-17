@@ -25,23 +25,7 @@ using session_manager::SessionState;
 
 namespace ash {
 
-class PersistentWindowControllerTest : public AshTestBase {
- public:
-  PersistentWindowControllerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding},
-        /*disabled_features=*/{});
-  }
-  PersistentWindowControllerTest(const PersistentWindowControllerTest&) =
-      delete;
-  PersistentWindowControllerTest& operator=(
-      const PersistentWindowControllerTest&) = delete;
-  ~PersistentWindowControllerTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using PersistentWindowControllerTest = AshTestBase;
 
 display::ManagedDisplayInfo CreateDisplayInfo(int64_t id,
                                               const gfx::Rect& bounds) {

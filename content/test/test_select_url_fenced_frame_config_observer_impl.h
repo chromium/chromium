@@ -6,14 +6,14 @@
 #define CONTENT_TEST_TEST_SELECT_URL_FENCED_FRAME_CONFIG_OBSERVER_IMPL_H_
 
 #include "content/browser/fenced_frame/fenced_frame_config.h"
-#include "content/browser/shared_storage/shared_storage_worklet_host_manager.h"
+#include "content/browser/shared_storage/shared_storage_runtime_manager.h"
 
 class GURL;
 
 namespace content {
 
 class TestSelectURLFencedFrameConfigObserverImpl
-    : public SharedStorageWorkletHostManager::SharedStorageObserverInterface {
+    : public SharedStorageRuntimeManager::SharedStorageObserverInterface {
  public:
   TestSelectURLFencedFrameConfigObserverImpl();
   ~TestSelectURLFencedFrameConfigObserverImpl() override;

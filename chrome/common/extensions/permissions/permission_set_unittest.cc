@@ -823,8 +823,17 @@ TEST(PermissionsTest, PermissionMessages) {
   // to warn you further.
   skip.insert(APIPermissionID::kExperimental);
 
+  // The Experimental AI Data API is gated on commandline switches, in
+  // addition to the permission in the manifest. If you've turned on the
+  // experimental AI Data command-line flag, we don't need to warn you further.
+  skip.insert(APIPermissionID::kExperimentalAiData);
+
   // The Identity API has its own server-driven permission prompts.
   skip.insert(APIPermissionID::kIdentity);
+
+  // This API is still in origin trial so we don't want to show a permission
+  // prompt.
+  skip.insert(APIPermissionID::kAILanguageModelOriginTrial);
 
   // These are private.
   skip.insert(APIPermissionID::kAccessibilityPrivate);
@@ -883,10 +892,6 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kSocket);
   skip.insert(APIPermissionID::kUsb);
   skip.insert(APIPermissionID::kVirtualKeyboard);
-
-  // The lock screen apps are set by user through settings, no need to warn at
-  // installation time.
-  skip.insert(APIPermissionID::kLockScreen);
 
   // We already have a generic message for declaring externally_connectable.
   skip.insert(APIPermissionID::kDeprecated_ExternallyConnectableAllUrls);

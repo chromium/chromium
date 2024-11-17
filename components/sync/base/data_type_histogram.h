@@ -23,15 +23,15 @@ enum class UpdateDropReason {
   kDroppedByBridge
 };
 
-// Records that a remote update of an entity of type |type| got dropped into a
-// |reason| related histogram.
+// Records that a remote update of an entity of type `type` got dropped into a
+// `reason` related histogram.
 void SyncRecordDataTypeUpdateDropReason(UpdateDropReason reason, DataType type);
 
-// Converts memory size |bytes| into kilobytes and records it into |data_type|
+// Converts memory size `bytes` into kilobytes and records it into `data_type`
 // related histogram for memory footprint of sync data.
 void SyncRecordDataTypeMemoryHistogram(DataType data_type, size_t bytes);
 
-// Records |count| into a |data_type| related histogram for count of sync
+// Records `count` into a `data_type` related histogram for count of sync
 // entities.
 void SyncRecordDataTypeCountHistogram(DataType data_type, size_t count);
 
@@ -48,7 +48,7 @@ void SyncRecordDataTypeEntitySizeHistogram(DataType data_type,
 // `WipeModelUponSyncDisabledBehavior::kOnceIfTrackingMetadata`.
 void SyncRecordModelClearedOnceHistogram(DataType data_type);
 
-// Records the amount of unsynced entities for the given |data_type| upon
+// Records the amount of unsynced entities for the given `data_type` upon
 // DataTypeLocalChangeProcessor::ModelReadyToSync() call.
 void SyncRecordDataTypeNumUnsyncedEntitiesOnModelReady(
     DataType data_type,

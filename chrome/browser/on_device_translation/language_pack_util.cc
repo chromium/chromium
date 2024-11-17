@@ -12,6 +12,11 @@
 namespace on_device_translation {
 namespace {
 
+constexpr char kPrefNamePrefix[] =
+    "on_device_translation.translate_kit_packages.";
+constexpr char kComponentPathPrefNameSuffix[] = "_path";
+constexpr char kRegisteredFlagPrefNameSuffix[] = "_registered";
+
 // Currently we always translate via English, so the number of
 // SupportedLanguages needs to include English in addition to all the
 // LanguagePackKeys.
@@ -20,23 +25,66 @@ static_assert(static_cast<unsigned>(SupportedLanguage::kMaxValue) ==
               "Missmatching SupportedLanguage size and LanguagePackKey size");
 
 // The supported languages for on-device translation.
-inline constexpr auto kSupportedLanguageCodeMap =
-    base::MakeFixedFlatMap<SupportedLanguage, std::string_view>({
-        {SupportedLanguage::kEn, "en"},
-        {SupportedLanguage::kEs, "es"},
-        {SupportedLanguage::kJa, "ja"},
-    });
+inline constexpr auto kSupportedLanguageCodeMap = base::MakeFixedFlatMap<
+    SupportedLanguage,
+    std::string_view>(
+    {{SupportedLanguage::kEn, "en"},          {SupportedLanguage::kEs, "es"},
+     {SupportedLanguage::kJa, "ja"},          {SupportedLanguage::kAr, "ar"},
+     {SupportedLanguage::kBn, "bn"},          {SupportedLanguage::kDe, "de"},
+     {SupportedLanguage::kFr, "fr"},          {SupportedLanguage::kHi, "hi"},
+     {SupportedLanguage::kIt, "it"},          {SupportedLanguage::kKo, "ko"},
+     {SupportedLanguage::kNl, "nl"},          {SupportedLanguage::kPl, "pl"},
+     {SupportedLanguage::kPt, "pt"},          {SupportedLanguage::kRu, "ru"},
+     {SupportedLanguage::kTh, "th"},          {SupportedLanguage::kTr, "tr"},
+     {SupportedLanguage::kVi, "vi"},          {SupportedLanguage::kZh, "zh"},
+     {SupportedLanguage::kZhHant, "zh-Hant"}, {SupportedLanguage::kBg, "bg"},
+     {SupportedLanguage::kCs, "cs"},          {SupportedLanguage::kDa, "da"},
+     {SupportedLanguage::kEl, "el"},          {SupportedLanguage::kFi, "fi"},
+     {SupportedLanguage::kHr, "hr"},          {SupportedLanguage::kHu, "hu"},
+     {SupportedLanguage::kId, "id"},          {SupportedLanguage::kIw, "iw"},
+     {SupportedLanguage::kLt, "lt"},          {SupportedLanguage::kNo, "no"},
+     {SupportedLanguage::kRo, "ro"},          {SupportedLanguage::kSk, "sk"},
+     {SupportedLanguage::kSl, "sl"},          {SupportedLanguage::kSv, "sv"},
+     {SupportedLanguage::kUk, "uk"}});
 static_assert(std::size(kSupportedLanguageCodeMap) ==
                   static_cast<unsigned>(SupportedLanguage::kMaxValue) + 1,
               "All languages must be in kSupportedLanguageCodeMap.");
 
+// Returns the language pair for a non-English supported language. The order of
+// the language pair is determined by the language code's alphabetical order.
+inline std::pair<SupportedLanguage, SupportedLanguage>
+SupportedLanguagePairFromNonEnglishSupportedLanguage(
+    SupportedLanguage supported_language) {
+  CHECK_NE(supported_language, SupportedLanguage::kEn);
+  if (kSupportedLanguageCodeMap.at(supported_language) < "en") {
+    return std::make_pair(supported_language, SupportedLanguage::kEn);
+  } else {
+    return std::make_pair(SupportedLanguage::kEn, supported_language);
+  }
+}
+
 // The inverse of kSupportedLanguageCodeMap.
-inline constexpr auto kSupportedLanguageCodeInverseMap =
-    base::MakeFixedFlatMap<std::string_view, SupportedLanguage>({
-        {"en", SupportedLanguage::kEn},
-        {"es", SupportedLanguage::kEs},
-        {"ja", SupportedLanguage::kJa},
-    });
+inline constexpr auto kSupportedLanguageCodeInverseMap = base::MakeFixedFlatMap<
+    std::string_view,
+    SupportedLanguage>(
+    {{"en", SupportedLanguage::kEn},          {"es", SupportedLanguage::kEs},
+     {"ja", SupportedLanguage::kJa},          {"ar", SupportedLanguage::kAr},
+     {"bn", SupportedLanguage::kBn},          {"de", SupportedLanguage::kDe},
+     {"fr", SupportedLanguage::kFr},          {"hi", SupportedLanguage::kHi},
+     {"it", SupportedLanguage::kIt},          {"ko", SupportedLanguage::kKo},
+     {"nl", SupportedLanguage::kNl},          {"pl", SupportedLanguage::kPl},
+     {"pt", SupportedLanguage::kPt},          {"ru", SupportedLanguage::kRu},
+     {"th", SupportedLanguage::kTh},          {"tr", SupportedLanguage::kTr},
+     {"vi", SupportedLanguage::kVi},          {"zh", SupportedLanguage::kZh},
+     {"zh-Hant", SupportedLanguage::kZhHant}, {"bg", SupportedLanguage::kBg},
+     {"cs", SupportedLanguage::kCs},          {"da", SupportedLanguage::kDa},
+     {"el", SupportedLanguage::kEl},          {"fi", SupportedLanguage::kFi},
+     {"hr", SupportedLanguage::kHr},          {"hu", SupportedLanguage::kHu},
+     {"id", SupportedLanguage::kId},          {"iw", SupportedLanguage::kIw},
+     {"lt", SupportedLanguage::kLt},          {"no", SupportedLanguage::kNo},
+     {"ro", SupportedLanguage::kRo},          {"sk", SupportedLanguage::kSk},
+     {"sl", SupportedLanguage::kSl},          {"sv", SupportedLanguage::kSv},
+     {"uk", SupportedLanguage::kUk}});
 static_assert(std::size(kSupportedLanguageCodeInverseMap) ==
                   static_cast<unsigned>(SupportedLanguage::kMaxValue) + 1,
               "All languages must be in kSupportedLanguageCodeInverseMap.");
@@ -56,6 +104,20 @@ SupportedLanguage NonEnglishSupportedLanguageFromLanguagePackKey(
 
 }  // namespace
 
+bool IsPopularLanguage(SupportedLanguage supported_language) {
+  return supported_language == SupportedLanguage::kEn ||
+         supported_language == SupportedLanguage::kZh ||
+         supported_language == SupportedLanguage::kZhHant ||
+         supported_language == SupportedLanguage::kJa ||
+         supported_language == SupportedLanguage::kPt ||
+         supported_language == SupportedLanguage::kRu ||
+         supported_language == SupportedLanguage::kEs ||
+         supported_language == SupportedLanguage::kTr ||
+         supported_language == SupportedLanguage::kHi ||
+         supported_language == SupportedLanguage::kVi ||
+         supported_language == SupportedLanguage::kBn;
+}
+
 // Converts a SupportedLanguage to a language code.
 std::string_view ToLanguageCode(SupportedLanguage supported_language) {
   return kSupportedLanguageCodeMap.at(supported_language);
@@ -69,6 +131,20 @@ std::optional<SupportedLanguage> ToSupportedLanguage(
     return it->second;
   }
   return std::nullopt;
+}
+
+std::string GetComponentPathPrefName(
+    const LanguagePackComponentConfig& config) {
+  return base::StrCat({kPrefNamePrefix, ToLanguageCode(config.language1), "_",
+                       ToLanguageCode(config.language2),
+                       kComponentPathPrefNameSuffix});
+}
+
+std::string GetRegisteredFlagPrefName(
+    const LanguagePackComponentConfig& config) {
+  return base::StrCat({kPrefNamePrefix, ToLanguageCode(config.language1), "_",
+                       ToLanguageCode(config.language2),
+                       kRegisteredFlagPrefNameSuffix});
 }
 
 // Returns the config for a language pack component.
@@ -103,26 +179,53 @@ std::set<LanguagePackKey> CalculateRequiredLanguagePacks(
 }
 
 std::string GetPackageInstallDirName(LanguagePackKey language_pack_key) {
+  const auto supported_language =
+      NonEnglishSupportedLanguageFromLanguagePackKey(language_pack_key);
+  const auto lang_pair =
+      SupportedLanguagePairFromNonEnglishSupportedLanguage(supported_language);
   return base::StrCat(
-      {"en_", ToLanguageCode(NonEnglishSupportedLanguageFromLanguagePackKey(
-                  language_pack_key))});
+      {ToLanguageCode(lang_pair.first), "_", ToLanguageCode(lang_pair.second)});
 }
 
 std::string GetPackageNameSuffix(LanguagePackKey language_pack_key) {
+  const auto supported_language =
+      NonEnglishSupportedLanguageFromLanguagePackKey(language_pack_key);
+  const auto lang_pair =
+      SupportedLanguagePairFromNonEnglishSupportedLanguage(supported_language);
   return base::StrCat(
-      {"en-", ToLanguageCode(NonEnglishSupportedLanguageFromLanguagePackKey(
-                  language_pack_key))});
+      {ToLanguageCode(lang_pair.first), "-", ToLanguageCode(lang_pair.second)});
 }
 
 std::vector<std::string> GetPackageInstallSubDirNamesForVerification(
     LanguagePackKey language_pack_key) {
-  const std::string_view non_english_language = ToLanguageCode(
-      NonEnglishSupportedLanguageFromLanguagePackKey(language_pack_key));
+  const auto supported_language =
+      NonEnglishSupportedLanguageFromLanguagePackKey(language_pack_key);
+  const auto lang_pair =
+      SupportedLanguagePairFromNonEnglishSupportedLanguage(supported_language);
   return {
-      base::StrCat({"en_", non_english_language, "_dictionary"}),
-      base::StrCat({"en_", non_english_language, "_nmt"}),
-      base::StrCat({non_english_language, "_en_nmt"}),
+      base::StrCat({ToLanguageCode(lang_pair.first), "_",
+                    ToLanguageCode(lang_pair.second), "_dictionary"}),
+      base::StrCat({ToLanguageCode(lang_pair.first), "_",
+                    ToLanguageCode(lang_pair.second), "_nmt"}),
+      base::StrCat({ToLanguageCode(lang_pair.second), "_",
+                    ToLanguageCode(lang_pair.first), "_nmt"}),
   };
+}
+
+std::string_view GetSourceLanguageCode(LanguagePackKey language_pack_key) {
+  const SupportedLanguage supported_language =
+      NonEnglishSupportedLanguageFromLanguagePackKey(language_pack_key);
+  const auto [source_lang, _] =
+      SupportedLanguagePairFromNonEnglishSupportedLanguage(supported_language);
+  return ToLanguageCode(source_lang);
+}
+
+std::string_view GetTargetLanguageCode(LanguagePackKey language_pack_key) {
+  const SupportedLanguage supported_language =
+      NonEnglishSupportedLanguageFromLanguagePackKey(language_pack_key);
+  const auto [_, target_lang] =
+      SupportedLanguagePairFromNonEnglishSupportedLanguage(supported_language);
+  return ToLanguageCode(target_lang);
 }
 
 }  // namespace on_device_translation

@@ -300,8 +300,6 @@ public class FakeServerHelper {
      * <p>In other words, this method injects a tombstone into the fake Sync server.
      *
      * @param id the server ID of the entity to delete
-     * @param clientTagHash the client defined unique tag hash of the entity to delete (or an empty
-     *     string if sync does not care about this being a hash)
      */
     public void deleteEntity(final String id) {
         deleteEntity(id, "");

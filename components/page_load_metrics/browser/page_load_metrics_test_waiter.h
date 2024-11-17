@@ -186,7 +186,7 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   // Manages a bitset of TimingFields.
   class TimingFieldBitSet {
    public:
-    TimingFieldBitSet() {}
+    TimingFieldBitSet() = default;
 
     // Returns whether this bitset has all bits unset.
     bool Empty() const { return bitmask_ == 0; }

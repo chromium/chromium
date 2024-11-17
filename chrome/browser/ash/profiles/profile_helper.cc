@@ -15,6 +15,7 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -59,7 +60,8 @@ class ProfileHelperImpl : public ProfileHelper {
   std::unique_ptr<BrowserContextHelper> browser_context_helper_;
 
   // Used for testing by unit tests and FakeUserManager.
-  std::map<const user_manager::User*, Profile*> user_to_profile_for_testing_;
+  std::map<const user_manager::User*, raw_ptr<Profile, CtnExperimental>>
+      user_to_profile_for_testing_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -109,16 +111,6 @@ base::FilePath ProfileHelper::GetUserProfileDir(
 // static
 bool ProfileHelper::IsSigninProfile(const Profile* profile) {
   return ash::IsSigninBrowserContext(const_cast<Profile*>(profile));
-}
-
-// static
-bool ProfileHelper::IsLockScreenAppProfile(const Profile* profile) {
-  return ash::IsLockScreenAppBrowserContext(const_cast<Profile*>(profile));
-}
-
-// static
-base::FilePath ProfileHelper::GetLockScreenAppProfilePath() {
-  return BrowserContextHelper::Get()->GetLockScreenAppBrowserContextPath();
 }
 
 // static

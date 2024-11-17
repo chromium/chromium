@@ -21,6 +21,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -34,13 +35,20 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.text.format.DateUtils;
+import android.view.Gravity;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
+import androidx.test.espresso.Root;
 import androidx.test.filters.MediumTest;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -49,6 +57,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
@@ -59,13 +68,17 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.FederatedIdentityTestUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
+import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.history.HistoryContentManager;
 import org.chromium.chrome.browser.history.StubbedHistoryProvider;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
@@ -84,8 +97,10 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.browser_ui.util.date.CalendarUtils;
 import org.chromium.components.browser_ui.util.date.StringUtils;
+import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoAdPersonalizationController;
@@ -99,6 +114,9 @@ import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.GURLUtils;
 import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.net.test.ServerCertificate;
+import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.url.GURL;
 
@@ -125,7 +143,10 @@ import java.util.concurrent.TimeoutException;
 // TODO(crbug.com/344672095): Failing when batched, batch this again.
 // Disable TrackingProtection3pcd as we use prefs instead of the feature in
 // these tests.
-@DisableFeatures(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
+@DisableFeatures({
+    ChromeFeatureList.TRACKING_PROTECTION_3PCD,
+    ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX
+})
 public class PageInfoViewTest {
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
     private static final String sSiteDataHtml = "/content/test/data/browsing_data/site_data.html";
@@ -266,6 +287,13 @@ public class PageInfoViewTest {
         }
     }
 
+    private void enableTpcdGrantEnforcement() {
+        PageInfoController controller = PageInfoController.getLastPageInfoControllerForTesting();
+        assertNotNull(controller);
+        var tpController = controller.getTrackingProtectionControllerForTesting();
+        tpController.setEnforcementForTesting(CookieControlsEnforcement.ENFORCED_BY_TPCD_GRANT);
+    }
+
     private void setThirdPartyCookieBlocking(@CookieControlsMode int value) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -282,7 +310,7 @@ public class PageInfoViewTest {
                 });
     }
 
-    private void setBlockAll3PC(boolean value) {
+    private void setBlockAll3pc(boolean value) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
@@ -572,6 +600,17 @@ public class PageInfoViewTest {
         mRenderTestRule.render(getPageInfoView(), "PageInfo_History");
     }
 
+    /** Tests PageInfo on an allowlisted website. */
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testShowTrackingProtectionStatusSubtitleOnAllowlistedSite() throws IOException {
+        enableTrackingProtection();
+        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
+        enableTpcdGrantEnforcement();
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_AllowlistedSite");
+    }
+
     /** Tests the connection info page of the PageInfo UI - insecure website. */
     @Test
     @MediumTest
@@ -710,7 +749,7 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     public void testShowCookiesSubpageTrackingProtection() throws IOException {
         enableTrackingProtection();
-        setBlockAll3PC(false);
+        setBlockAll3pc(false);
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         enableTrackingProtectionFixedExpiration();
@@ -733,7 +772,7 @@ public class PageInfoViewTest {
         mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionSubpage_Toggle_On");
     }
 
-    private void launchAndCheckTrackingProtectionLaunchUI() {
+    private void launchAndCheckTrackingProtectionLaunchUi() {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         enableTrackingProtectionFixedExpiration();
@@ -760,20 +799,20 @@ public class PageInfoViewTest {
     })
     @Feature({"RenderTest"})
     @DisabledTest(message = "crbug.com/330745124: only 3PC status is implemented in the TPF UI")
-    public void testShowCookiesSubpageTrackingProtectionLaunchIPP() throws IOException {
-        setBlockAll3PC(false);
+    public void testShowCookiesSubpageTrackingProtectionLaunchIpp() throws IOException {
+        setBlockAll3pc(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .setBoolean(Pref.IP_PROTECTION_ENABLED, true);
                 });
-        launchAndCheckTrackingProtectionLaunchUI();
+        launchAndCheckTrackingProtectionLaunchUi();
         mRenderTestRule.render(
-                getPageInfoView(), "PageInfo_TrackingProtectionLaunchIPP_Toggle_Off");
+                getPageInfoView(), "PageInfo_TrackingProtectionLaunchIpp_Toggle_Off");
         // Check that the cookie toggle is displayed and try clicking it.
         onViewWaiting(allOf(withText(containsString("You have extra protections")), isDisplayed()));
         onView(withText(containsString("You have extra protections"))).perform(click());
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunchIPP_Toggle_On");
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunchIpp_Toggle_On");
     }
 
     /** Same as the previous one but with Fingerprinting Protection feature enabled. */
@@ -785,20 +824,20 @@ public class PageInfoViewTest {
     @Features.DisableFeatures(ChromeFeatureList.IP_PROTECTION_V1)
     @Feature({"RenderTest"})
     @DisabledTest(message = "crbug.com/330745124: only 3PC status is implemented in the TPF UI")
-    public void testShowCookiesSubpageTrackingProtectionLaunchFPP() throws IOException {
-        setBlockAll3PC(false);
+    public void testShowCookiesSubpageTrackingProtectionLaunchFpp() throws IOException {
+        setBlockAll3pc(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .setBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED, true);
                 });
-        launchAndCheckTrackingProtectionLaunchUI();
+        launchAndCheckTrackingProtectionLaunchUi();
         mRenderTestRule.render(
-                getPageInfoView(), "PageInfo_TrackingProtectionLaunchFPP_Toggle_Off");
+                getPageInfoView(), "PageInfo_TrackingProtectionLaunchFpp_Toggle_Off");
         // Check that the cookie toggle is displayed and try clicking it.
         onViewWaiting(allOf(withText(containsString("You have extra protections")), isDisplayed()));
         onView(withText(containsString("You have extra protections"))).perform(click());
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunchFPP_Toggle_On");
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunchFpp_Toggle_On");
     }
 
     /** Same as the previous one but with both IP and Fingerprinting Protection features enabled. */
@@ -811,8 +850,8 @@ public class PageInfoViewTest {
     })
     @Feature({"RenderTest"})
     @DisabledTest(message = "crbug.com/330745124: only 3PC status is implemented in the TPF UI")
-    public void testShowCookiesSubpageTrackingProtectionLaunchFPPIPP() throws IOException {
-        setBlockAll3PC(false);
+    public void testShowCookiesSubpageTrackingProtectionLaunchFppIpp() throws IOException {
+        setBlockAll3pc(false);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
@@ -820,14 +859,14 @@ public class PageInfoViewTest {
                     UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                             .setBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED, true);
                 });
-        launchAndCheckTrackingProtectionLaunchUI();
+        launchAndCheckTrackingProtectionLaunchUi();
         mRenderTestRule.render(
-                getPageInfoView(), "PageInfo_TrackingProtectionLaunchFPPIPP_Toggle_Off");
+                getPageInfoView(), "PageInfo_TrackingProtectionLaunchFppIpp_Toggle_Off");
         // Check that the cookie toggle is displayed and try clicking it.
         onViewWaiting(allOf(withText(containsString("You have extra protections")), isDisplayed()));
         onView(withText(containsString("You have extra protections"))).perform(click());
         mRenderTestRule.render(
-                getPageInfoView(), "PageInfo_TrackingProtectionLaunchFPPIPP_Toggle_On");
+                getPageInfoView(), "PageInfo_TrackingProtectionLaunchFppIpp_Toggle_On");
     }
 
     /** Tests the cookies page of the PageInfo UI with the Tracking Protection UI enabled. */
@@ -836,7 +875,7 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     public void testShowCookiesSubpageTrackingProtectionBlockAll() throws IOException {
         enableTrackingProtection();
-        setBlockAll3PC(true);
+        setBlockAll3pc(true);
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         enableTrackingProtectionFixedExpiration();
@@ -1057,7 +1096,8 @@ public class PageInfoViewTest {
                             null,
                             PageInfoController.OpenedFromSource.MENU,
                             pageInfoControllerDelegate,
-                            ChromePageInfoHighlight.noHighlight());
+                            ChromePageInfoHighlight.noHighlight(),
+                            Gravity.TOP);
                 });
         onViewWaiting(
                 allOf(withText(R.string.page_info_connection_paint_preview), isDisplayed()), true);
@@ -1092,7 +1132,8 @@ public class PageInfoViewTest {
                             null,
                             PageInfoController.OpenedFromSource.MENU,
                             pageInfoControllerDelegate,
-                            ChromePageInfoHighlight.noHighlight());
+                            ChromePageInfoHighlight.noHighlight(),
+                            Gravity.TOP);
                 });
         onViewWaiting(
                 allOf(withText(R.string.page_info_connection_transient_pdf), isDisplayed()), true);
@@ -1127,7 +1168,8 @@ public class PageInfoViewTest {
                             null,
                             PageInfoController.OpenedFromSource.MENU,
                             pageInfoControllerDelegate,
-                            ChromePageInfoHighlight.noHighlight());
+                            ChromePageInfoHighlight.noHighlight(),
+                            Gravity.TOP);
                 });
         onViewWaiting(
                 allOf(
@@ -1165,7 +1207,8 @@ public class PageInfoViewTest {
                             null,
                             PageInfoController.OpenedFromSource.MENU,
                             pageInfoControllerDelegate,
-                            ChromePageInfoHighlight.noHighlight());
+                            ChromePageInfoHighlight.noHighlight(),
+                            Gravity.TOP);
                 });
         onViewWaiting(
                 allOf(withText(R.string.page_info_connection_local_pdf), isDisplayed()), true);
@@ -1339,6 +1382,126 @@ public class PageInfoViewTest {
         // Leave settings view.
         onView(withContentDescription("Navigate up")).perform(click());
         onView(withText(R.string.ad_privacy_page_topics_link_row_label)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.PHONE})
+    public void testBottomGravity() {
+        float cornerRadius =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            ChromeActivity activity = sActivityTestRule.getActivity();
+                            BrowserControlsManager browserControlsManager =
+                                    BrowserControlsManagerSupplier.getValueOrNullFrom(
+                                            activity.getWindowAndroid());
+                            browserControlsManager.setControlsPosition(
+                                    ControlsPosition.BOTTOM,
+                                    0,
+                                    0,
+                                    browserControlsManager.getTopControlsHeight(),
+                                    0);
+                            return activity.getResources()
+                                    .getDimension(R.dimen.page_info_popup_corners_radius);
+                        });
+
+        loadUrlAndOpenPageInfo(
+                mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));
+        Matcher<Root> isBottomMatcher =
+                new TypeSafeMatcher<>() {
+                    @Override
+                    protected boolean matchesSafely(Root root) {
+                        return (root.getWindowLayoutParams().get().gravity & Gravity.BOTTOM) != 0;
+                    }
+
+                    @Override
+                    public void describeTo(Description description) {
+                        description.appendText("Root view with bottom gravity");
+                    }
+                };
+        onViewWaiting(instanceOf(FadingEdgeScrollView.class))
+                .inRoot(allOf(isDialog(), isBottomMatcher))
+                .check(
+                        matches(
+                                new TypeSafeMatcher<>() {
+                                    private final float[] mCornerRadii =
+                                            new float[] {
+                                                cornerRadius,
+                                                cornerRadius,
+                                                cornerRadius,
+                                                cornerRadius,
+                                                0,
+                                                0,
+                                                0,
+                                                0
+                                            };
+
+                                    @Override
+                                    public void describeTo(Description description) {
+                                        description.appendText(
+                                                "View with bg drawable with top rounded"
+                                                        + " corners");
+                                    }
+
+                                    @Override
+                                    protected boolean matchesSafely(View view) {
+                                        Drawable bg = view.getBackground();
+                                        if (!(bg instanceof GradientDrawable drawable)) {
+                                            return false;
+                                        }
+
+                                        return Arrays.equals(
+                                                drawable.getCornerRadii(), mCornerRadii);
+                                    }
+
+                                    @Override
+                                    public void describeMismatchSafely(
+                                            View view, Description description) {
+                                        Drawable bg = view.getBackground();
+                                        if (!(bg instanceof GradientDrawable drawable)) {
+                                            description.appendText("Bg not a GradientDrawable");
+                                            return;
+                                        }
+
+                                        description.appendText(
+                                                "Expected corner radii "
+                                                        + Arrays.toString(mCornerRadii)
+                                                        + " but received "
+                                                        + Arrays.toString(
+                                                                drawable.getCornerRadii()));
+                                    }
+                                }));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({DeviceFormFactor.TABLET})
+    public void testBottomGravityTablets() {
+        ObservableSupplier<ModalDialogManager> modalDialogManagerSupplier =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            ChromeActivity activity = sActivityTestRule.getActivity();
+                            BrowserControlsManager browserControlsManager =
+                                    BrowserControlsManagerSupplier.getValueOrNullFrom(
+                                            activity.getWindowAndroid());
+                            browserControlsManager.setControlsPosition(
+                                    ControlsPosition.BOTTOM,
+                                    0,
+                                    0,
+                                    browserControlsManager.getTopControlsHeight(),
+                                    0);
+                            return activity.getModalDialogManagerSupplier();
+                        });
+
+        loadUrlAndOpenPageInfo(
+                mTestServerRule.getServer().getURLWithHostName("example.com", sSimpleHtml));
+        assertTrue(modalDialogManagerSupplier.get().isShowing());
+        assertEquals(
+                PageInfoController.getLastPageInfoControllerForTesting(),
+                modalDialogManagerSupplier
+                        .get()
+                        .getCurrentDialogForTest()
+                        .get(ModalDialogProperties.CONTROLLER));
     }
 
     // TODO(crbug.com/40685274): Add tests for preview pages, offline pages, offline

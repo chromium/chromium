@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/css/font_size_functions.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -47,15 +42,20 @@ TEST_F(FontSizeFunctionsTest, GetComputedSizeFromSpecifiedSize_MinFontSize) {
   GetDocument().GetSettings()->SetMinimumFontSize(min_font_size);
   GetDocument().GetSettings()->SetMinimumLogicalFontSize(0);
 
-  int test_cases[][2] = {
+  struct FontSizeTestData {
+    const float specified_size;
+    const float expected_computed_size;
+  } test_cases[] = {
       {1, min_font_size}, {10, min_font_size}, {40, min_font_size}, {120, 120}};
-  for (const auto* font_sizes : test_cases) {
-    EXPECT_EQ(font_sizes[1] * zoom_factor,
+  for (const auto font_sizes : test_cases) {
+    EXPECT_EQ(font_sizes.expected_computed_size * zoom_factor,
               FontSizeFunctions::GetComputedSizeFromSpecifiedSize(
-                  &GetDocument(), zoom_factor, is_absolute, font_sizes[0]));
-    EXPECT_EQ(font_sizes[1] * zoom_factor,
+                  &GetDocument(), zoom_factor, is_absolute,
+                  font_sizes.specified_size));
+    EXPECT_EQ(font_sizes.expected_computed_size * zoom_factor,
               FontSizeFunctions::GetComputedSizeFromSpecifiedSize(
-                  &GetDocument(), zoom_factor, is_logical, font_sizes[0]));
+                  &GetDocument(), zoom_factor, is_logical,
+                  font_sizes.specified_size));
   }
 }
 
@@ -69,15 +69,21 @@ TEST_F(FontSizeFunctionsTest,
   GetDocument().GetSettings()->SetMinimumFontSize(0);
   GetDocument().GetSettings()->SetMinimumLogicalFontSize(min_font_size);
 
-  int test_cases[][2] = {
+  struct FontSizeTestData {
+    const float specified_size;
+    const float expected_computed_size;
+  } test_cases[] = {
       {1, min_font_size}, {10, min_font_size}, {40, min_font_size}, {120, 120}};
-  for (const auto* font_sizes : test_cases) {
-    EXPECT_EQ(font_sizes[0] * zoom_factor,
+
+  for (const auto font_sizes : test_cases) {
+    EXPECT_EQ(font_sizes.specified_size * zoom_factor,
               FontSizeFunctions::GetComputedSizeFromSpecifiedSize(
-                  &GetDocument(), zoom_factor, is_absolute, font_sizes[0]));
-    EXPECT_EQ(font_sizes[1] * zoom_factor,
+                  &GetDocument(), zoom_factor, is_absolute,
+                  font_sizes.specified_size));
+    EXPECT_EQ(font_sizes.expected_computed_size * zoom_factor,
               FontSizeFunctions::GetComputedSizeFromSpecifiedSize(
-                  &GetDocument(), zoom_factor, is_logical, font_sizes[0]));
+                  &GetDocument(), zoom_factor, is_logical,
+                  font_sizes.specified_size));
   }
 }
 

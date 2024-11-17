@@ -317,14 +317,12 @@ public class WebServer implements AutoCloseable {
     }
 
     /**
-     * Create and start a local HTTP server instance. Additional must only be true
-     * if an instance was already created. You are responsible for calling
-     * shutdown() on each instance you create.
+     * Create and start a local HTTP server instance. Additional must only be true if an instance
+     * was already created. You are responsible for calling shutdown() on each instance you create.
      *
      * @param port Port number the server must use, or 0 to automatically choose a free port.
      * @param ssl True if the server should be using secure sockets.
      * @param additional True if creating an additional server instance.
-     * @throws Exception
      */
     public WebServer(int port, boolean ssl, boolean additional) throws Exception {
         mPort = port;
@@ -370,7 +368,6 @@ public class WebServer implements AutoCloseable {
      *
      * @param port Port number the server must use, or 0 to automatically choose a free port.
      * @param ssl True if the server should be using secure sockets.
-     * @throws Exception
      */
     public WebServer(int port, boolean ssl) throws Exception {
         this(port, ssl, false);

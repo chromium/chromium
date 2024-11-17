@@ -28,7 +28,7 @@
  * Example of using a cr-iconset to supply an icon via the iron-icon parameter:
  * In the .html.ts template file (if using a .html template file instead, the
  * import should be in the corresponding .ts file):
- * import 'chrome://resources/cr_elements/icons_lit.html.js';
+ * import 'chrome://resources/cr_elements/icons.html.js';
  *
  * export function getHtml() {
  *   return html`

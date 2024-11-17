@@ -18,21 +18,21 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/android/motion_event_android.h"
+#include "ui/events/android/motion_event_android_java.h"
 
 namespace content {
 namespace {
 
-ui::MotionEventAndroid CreateTouchEventAt(
+std::unique_ptr<ui::MotionEventAndroid> CreateTouchEventAt(
     float x,
     float y,
     jobject event,
     base::TimeTicks event_time = base::TimeTicks()) {
   ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);
   ui::MotionEventAndroid::Pointer pointer1(0, 0, 0, 0, 0, 0, 0, 0);
-  return ui::MotionEventAndroid(nullptr, event, 1.f, 0, 0, 0, event_time, 0, 1,
-                                0, 0, 0, 0, 0, 0, 0, 0, false, &pointer0,
-                                &pointer1);
+  return std::unique_ptr<ui::MotionEventAndroid>(new ui::MotionEventAndroidJava(
+      nullptr, event, 1.f, 0, 0, 0, event_time, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      false, &pointer0, &pointer1));
 }
 
 }  // namespace
@@ -82,7 +82,9 @@ TEST_F(AttributionInputEventTrackerAndroidTest, EventExpiryApplied) {
   EXPECT_FALSE(input1.id.has_value());
 
   base::android::ScopedJavaLocalRef<jstring> str = GetJavaString("str");
-  OnTouchEvent(CreateTouchEventAt(100.f, 100.f, str.obj()));
+  std::unique_ptr<ui::MotionEventAndroid> event =
+      CreateTouchEventAt(100.f, 100.f, str.obj());
+  OnTouchEvent(*event);
   AttributionInputEventTrackerAndroid::InputEvent input2 =
       input_event_tracker_->GetMostRecentEvent();
   EXPECT_TRUE(IsSameObject(input2.event, str));

@@ -12,7 +12,7 @@
 #include "ash/user_education/user_education_util.h"
 #include "ash/user_education/views/help_bubble_view_ash_test_base.h"
 #include "ash/wm/window_util.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,6 +23,7 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -187,6 +188,18 @@ TEST_F(HelpBubbleViewAshTest, BackgroundColor) {
 TEST_F(HelpBubbleViewAshTest, CanActivate) {
   const auto* const help_bubble_view = CreateHelpBubbleView();
   EXPECT_TRUE(help_bubble_view->CanActivate());
+}
+
+TEST_F(HelpBubbleViewAshTest, RootViewAccessibleName) {
+  auto* const help_bubble_view = CreateHelpBubbleView();
+  ui::AXNodeData root_view_data;
+  help_bubble_view->GetWidget()
+      ->GetRootView()
+      ->GetViewAccessibility()
+      .GetAccessibleNodeData(&root_view_data);
+  EXPECT_EQ(
+      root_view_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      help_bubble_view->GetAccessibleWindowTitle());
 }
 
 // Verifies that help bubbles do not handle events within their shadows.

@@ -78,7 +78,7 @@ static_library("browser") {
 
   public_deps = [ ":translate_pref_names" ]
 
-  if (is_ios || is_android) {
+  if (is_ios) {
     sources += [
       "translate_infobar_delegate.cc",
       "translate_infobar_delegate.h",
@@ -135,7 +135,7 @@ source_set("unit_tests") {
     "//ui/base",
   ]
 
-  if (is_ios || is_android) {
+  if (is_ios) {
     sources += [ "translate_infobar_delegate_unittest.cc" ]
   }
 }
@@ -168,7 +168,7 @@ source_set("test_support") {
     "//url",
   ]
 
-  if (is_ios || is_android) {
+  if (is_ios) {
     sources += [
       "mock_translate_infobar_delegate.cc",
       "mock_translate_infobar_delegate.h",

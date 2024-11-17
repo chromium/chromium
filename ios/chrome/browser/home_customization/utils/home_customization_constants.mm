@@ -36,6 +36,8 @@ NSString* const kCustomizationToggleTabResumptionIdentifier =
     @"kCustomizationToggleTabResumptionIdentifier";
 NSString* const kCustomizationToggleParcelTrackingIdentifier =
     @"kCustomizationToggleParcelTrackingIdentifier";
+NSString* const kCustomizationToggleTipsIdentifier =
+    @"kCustomizationToggleTipsIdentifier";
 
 NSString* const kCustomizationToggleMostVisitedNavigableIdentifier =
     @"kCustomizationToggleMostVisitedNavigableIdentifier";

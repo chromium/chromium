@@ -170,17 +170,14 @@ InlineBoxState* LogicalLineBuilder::HandleItemResults(
       DCHECK(main_line_helper);
       main_line_helper->PlaceBlockInInline(item, &item_result, line_box);
     } else if (item.Type() == InlineItem::kOpenRubyColumn) {
-      DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
       if (item_result.ruby_column) {
         box = PlaceRubyColumn(line_info, item_result, *line_box, box);
       } else {
         line_box->AddChild(item.BidiLevel());
       }
     } else if (item.Type() == InlineItem::kCloseRubyColumn) {
-      DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
       line_box->AddChild(item.BidiLevel());
     } else if (item.Type() == InlineItem::kRubyLinePlaceholder) {
-      DCHECK(RuntimeEnabledFeatures::RubyLineBreakableEnabled());
       // Overhang values are zero or negative.
       LayoutUnit start_overhang = item_result.margins.inline_start;
       LayoutUnit end_overhang = item_result.margins.inline_end;

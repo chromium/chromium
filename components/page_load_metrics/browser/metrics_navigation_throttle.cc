@@ -16,7 +16,7 @@ std::unique_ptr<content::NavigationThrottle> MetricsNavigationThrottle::Create(
   return base::WrapUnique(new MetricsNavigationThrottle(handle));
 }
 
-MetricsNavigationThrottle::~MetricsNavigationThrottle() {}
+MetricsNavigationThrottle::~MetricsNavigationThrottle() = default;
 
 content::NavigationThrottle::ThrottleCheckResult
 MetricsNavigationThrottle::WillStartRequest() {

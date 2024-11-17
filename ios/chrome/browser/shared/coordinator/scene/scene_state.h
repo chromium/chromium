@@ -37,9 +37,6 @@
 - (instancetype)initWithAppState:(AppState*)appState NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// The app state for the app that owns this scene. Set in init.
-@property(nonatomic, weak, readonly) AppState* appState;
-
 // The profile state for profile that owns this scene.
 @property(nonatomic, weak) ProfileState* profileState;
 
@@ -60,6 +57,9 @@
 // The scene object backing this scene state. It's in a 1-to-1 relationship and
 // the window scene owns this object (indirectly through scene delegate).
 @property(nonatomic, weak) UIWindowScene* scene;
+
+// The root view controller of the current scene if any.
+@property(nonatomic, readonly) UIViewController* rootViewController;
 
 // Connection options of `scene`, if any, from when the scene was connected.
 @property(nonatomic, strong) UISceneConnectionOptions* connectionOptions;
@@ -103,6 +103,12 @@
 // sign-in prompt UI.
 @property(nonatomic, assign) BOOL signinInProgress;
 
+// Root view's safe area insets.
+@property(nonatomic, assign, readonly) UIEdgeInsets safeAreaInsets;
+
+// Root view's accessibility identifier.
+@property(nonatomic, assign, readonly) NSString* accessibilityIdentifier;
+
 // Adds an observer to this scene state. The observers will be notified about
 // scene state changes per SceneStateObserver protocol.
 - (void)addObserver:(id<SceneStateObserver>)observer;
@@ -123,6 +129,15 @@
 // Stores `object` as a per-session preference if supported by the device or
 // into NSUserDefaults otherwise (old table, phone, ...).
 - (void)setSessionObject:(NSObject*)object forKey:(NSString*)key;
+
+// Set the root view controller with the given view controller. Set
+// `makeKeyAndVisible` to YES if it is needed to show and position it in front
+// of all other windows.
+- (void)setRootViewController:(UIViewController*)rootViewController
+            makeKeyAndVisible:(BOOL)makeKeyAndVisible;
+
+// Shows and positions rootViewController in front of all others window.
+- (void)setRootViewControllerKeyAndVisible;
 
 @end
 

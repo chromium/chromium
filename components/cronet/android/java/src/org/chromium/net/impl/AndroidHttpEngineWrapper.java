@@ -248,8 +248,18 @@ class AndroidHttpEngineWrapper extends CronetEngineBase {
                 mBackend.newUrlRequestBuilder(url, executor, wrappedCallback);
 
         requestBuilder.setPriority(priority);
-        requestBuilder.setCacheDisabled(disableCache);
-        requestBuilder.setDirectExecutorAllowed(allowDirectExecutor);
+        // Note we only call `setCacheDisabled()` if `disableCache` is true because some versions
+        // of HttpEngine suffer from a bug where `setCacheDisabled(false)` will disable the cache.
+        // See https://crbug.com/372653292.
+        if (disableCache) {
+            requestBuilder.setCacheDisabled(disableCache);
+        }
+        // Note we only call `setDirectExecutorAllowed()` if `allowDirectExecutor` is true because
+        // some versions of HttpEngine suffer from a bug where `setDirectExecutorAllowed(false)`
+        // will end up *allowing* direct execution. See https://crbug.com/372852416.
+        if (allowDirectExecutor) {
+            requestBuilder.setDirectExecutorAllowed(allowDirectExecutor);
+        }
         if (trafficStatsTagSet) {
             requestBuilder.setTrafficStatsTag(trafficStatsTag);
         }

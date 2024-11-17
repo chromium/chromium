@@ -90,7 +90,7 @@ ChromePolicyConversionsClient::ChromePolicyConversionsClient(
     content::BrowserContext* context) {
   DCHECK(context);
   profile_ = Profile::FromBrowserContext(
-      chrome::GetBrowserContextRedirectedInIncognito(context));
+      GetBrowserContextRedirectedInIncognito(context));
 }
 
 ChromePolicyConversionsClient::~ChromePolicyConversionsClient() = default;

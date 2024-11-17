@@ -70,29 +70,26 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
         new user_prefs::PrefRegistrySyncable);
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs =
         factory.CreateSyncable(registry.get());
-    RegisterBrowserStatePrefs(registry.get());
+    RegisterProfilePrefs(registry.get());
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
                               base::BindRepeating(&CreateTestSyncService));
     builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
     account_manager_service_ =
-        ChromeAccountManagerServiceFactory::GetForBrowserState(
-            browser_state_.get());
+        ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
 
     // Load TemplateURLService.
-    template_url_service_ = ios::TemplateURLServiceFactory::GetForBrowserState(
-        browser_state_.get());
+    template_url_service_ =
+        ios::TemplateURLServiceFactory::GetForProfile(profile_.get());
     template_url_service_->Load();
 
     FakeSystemIdentityManager* fake_system_identity_manager =
@@ -103,19 +100,19 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
 
     model_ = [[TableViewModel alloc] init];
     remover_ = std::make_unique<FakeBrowsingDataRemover>();
-    manager_ = [[ClearBrowsingDataManager alloc]
-                      initWithBrowserState:browser_state_.get()
-                       browsingDataRemover:remover_.get()
-        browsingDataCounterWrapperProducer:
-            [[FakeBrowsingDataCounterWrapperProducer alloc]
-                initWithBrowserState:browser_state_.get()]];
+    manager_ =
+        [[ClearBrowsingDataManager alloc] initWithProfile:profile_.get()
+                                      browsingDataRemover:remover_.get()
+                       browsingDataCounterWrapperProducer:
+                           [[FakeBrowsingDataCounterWrapperProducer alloc]
+                               initWithProfile:profile_.get()]];
     [manager_ prepare];
 
     test_sync_service_ = static_cast<syncer::TestSyncService*>(
-        SyncServiceFactory::GetForBrowserState(browser_state_.get()));
+        SyncServiceFactory::GetForProfile(profile_.get()));
 
     time_range_pref_.Init(browsing_data::prefs::kDeleteTimePeriod,
-                          browser_state_->GetPrefs());
+                          profile_->GetPrefs());
     scoped_feature_list_.InitWithFeatures(
         {feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature},
         {});
@@ -172,7 +169,7 @@ class ClearBrowsingDataManagerTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   TableViewModel* model_;
   std::unique_ptr<BrowsingDataRemover> remover_;
   ClearBrowsingDataManager* manager_;
@@ -204,7 +201,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
   // Ensure that sync is not running.
   test_sync_service_->SetSignedIn(signin::ConsentLevel::kSignin);
 
-  AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
       ->SignIn(fake_identity(),
                signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 
@@ -232,10 +229,10 @@ TEST_F(ClearBrowsingDataManagerTest, TestModelSignedInSyncOff) {
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {
-  PrefService* prefs = browser_state_->GetPrefs();
+  PrefService* prefs = profile_->GetPrefs();
   prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
                     static_cast<int>(browsing_data::TimePeriod::ALL_TIME));
-  CacheCounter counter(browser_state_.get());
+  CacheCounter counter(profile_.get());
 
   NSByteCountFormatter* formatter = [[NSByteCountFormatter alloc] init];
   formatter.allowedUnits = NSByteCountFormatterUseAll &
@@ -277,10 +274,10 @@ TEST_F(ClearBrowsingDataManagerTest, TestCacheCounterFormattingForAllTime) {
 
 TEST_F(ClearBrowsingDataManagerTest,
        TestCacheCounterFormattingForLessThanAllTime) {
-  PrefService* prefs = browser_state_->GetPrefs();
+  PrefService* prefs = profile_->GetPrefs();
   prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
                     static_cast<int>(browsing_data::TimePeriod::LAST_HOUR));
-  CacheCounter counter(browser_state_.get());
+  CacheCounter counter(profile_.get());
 
   NSByteCountFormatter* formatter = [[NSByteCountFormatter alloc] init];
   formatter.allowedUnits = NSByteCountFormatterUseAll &
@@ -354,7 +351,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestOnPreferenceChanged) {
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedIn) {
-  AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
       ->SignIn(fake_identity(),
                signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 
@@ -374,7 +371,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedIn) {
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedOut) {
-  AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
       ->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
                 /*force_clear_browsing_data=*/false, nil);
 
@@ -385,7 +382,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestGoogleDSETextSignedOut) {
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedIn) {
-  AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
       ->SignIn(fake_identity(),
                signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 
@@ -418,7 +415,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedIn) {
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedOut) {
-  AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
       ->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
                 /*force_clear_browsing_data=*/false, nil);
 
@@ -452,7 +449,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestPrepopulatedTextSignedOut) {
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestCustomTextSignedIn) {
-  AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
       ->SignIn(fake_identity(),
                signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
 
@@ -487,7 +484,7 @@ TEST_F(ClearBrowsingDataManagerTest, TestCustomTextSignedIn) {
 }
 
 TEST_F(ClearBrowsingDataManagerTest, TestCustomeTextSignedOut) {
-  AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+  AuthenticationServiceFactory::GetForProfile(profile_.get())
       ->SignOut(signin_metrics::ProfileSignout::kAbortSignin,
                 /*force_clear_browsing_data=*/false, nil);
 

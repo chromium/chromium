@@ -31,7 +31,6 @@ BASE_EXPORT BASE_DECLARE_FEATURE(kAboveNormalCompositingBrowserWin);
 #endif
 
 BASE_EXPORT BASE_DECLARE_FEATURE(kEnableHangWatcher);
-BASE_EXPORT BASE_DECLARE_FEATURE(kEnableHangWatcherInZygoteChildren);
 
 }  // namespace base
 

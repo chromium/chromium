@@ -1,0 +1,11 @@
+include_rules = [
+  "+components/data_sharing/public",
+  "+ios/chrome/browser/collaboration/model",
+  "+ios/chrome/browser/data_sharing/model",
+  "+ios/chrome/browser/signin/model",
+  "+ios/chrome/browser/saved_tab_groups/favicon/coordinator",
+  "+ios/chrome/browser/saved_tab_groups/favicon/ui",
+  "+ios/chrome/browser/favicon/model",
+  "+ios/chrome/browser/saved_tab_groups/model",
+  "+components/saved_tab_groups/test_support",
+]

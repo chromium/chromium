@@ -207,7 +207,7 @@ class MockHostResolverBase : public HostResolver {
     std::optional<RuleResultOrError> default_result_;
   };
 
-  using RequestMap = std::map<size_t, RequestBase*>;
+  using RequestMap = std::map<size_t, raw_ptr<RequestBase, CtnExperimental>>;
 
   // A set of states in MockHostResolver. This is used to observe the internal
   // state variables after destructing a MockHostResolver.

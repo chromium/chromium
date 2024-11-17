@@ -7,21 +7,16 @@
 import 'chrome://resources/cr_components/certificate_manager/local_certs_section_v2.js';
 import 'chrome://certificate-manager/strings.m.js';
 
-// <if expr="not is_chromeos">
 import {PluralStringProxyImpl} from '//resources/js/plural_string_proxy.js';
-// </if>
 import type {CertManagementMetadata} from 'chrome://resources/cr_components/certificate_manager/certificate_manager_v2.mojom-webui.js';
 import {CertificatesV2BrowserProxy} from 'chrome://resources/cr_components/certificate_manager/certificates_v2_browser_proxy.js';
 import type {LocalCertsSectionV2Element} from 'chrome://resources/cr_components/certificate_manager/local_certs_section_v2.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-// <if expr="not is_chromeos">
 import {TestPluralStringProxy} from 'chrome://webui-test/test_plural_string_proxy.js';
-// </if>
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestCertificateManagerProxy} from './certificate_manager_v2_test_support.js';
 
-// <if expr="not is_chromeos">
 class CertManagerTestPluralStringProxy extends TestPluralStringProxy {
   override text: string = '';
 
@@ -32,7 +27,6 @@ class CertManagerTestPluralStringProxy extends TestPluralStringProxy {
     return Promise.resolve(this.text);
   }
 }
-// </if>
 
 suite('LocalCertsSectionV2Test', () => {
   let localCertsSection: LocalCertsSectionV2Element;
@@ -61,6 +55,8 @@ suite('LocalCertsSectionV2Test', () => {
       isIncludeSystemTrustStoreManaged: true,
       // </if>
       numPolicyCerts: 0,
+      numUserCerts: 0,
+      showUserCertsUi: false,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
@@ -84,6 +80,8 @@ suite('LocalCertsSectionV2Test', () => {
       isIncludeSystemTrustStoreManaged: true,
       // </if>
       numPolicyCerts: 0,
+      numUserCerts: 0,
+      showUserCertsUi: false,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
@@ -116,6 +114,8 @@ suite('LocalCertsSectionV2Test', () => {
       isIncludeSystemTrustStoreManaged: false,
       // </if>
       numPolicyCerts: 0,
+      numUserCerts: 0,
+      showUserCertsUi: false,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
@@ -149,6 +149,8 @@ suite('LocalCertsSectionV2Test', () => {
       isIncludeSystemTrustStoreManaged: true,
       // </if>
       numPolicyCerts: 0,
+      numUserCerts: 0,
+      showUserCertsUi: false,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
@@ -183,6 +185,8 @@ suite('LocalCertsSectionV2Test', () => {
       isIncludeSystemTrustStoreManaged: false,
       // </if>
       numPolicyCerts: 0,
+      numUserCerts: 0,
+      showUserCertsUi: false,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
@@ -217,6 +221,8 @@ suite('LocalCertsSectionV2Test', () => {
       isIncludeSystemTrustStoreManaged: false,
       // </if>
       numPolicyCerts: 0,
+      numUserCerts: 0,
+      showUserCertsUi: false,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
@@ -238,6 +244,8 @@ suite('LocalCertsSectionV2Test', () => {
       isIncludeSystemTrustStoreManaged: true,
       // </if>
       numPolicyCerts: 0,
+      numUserCerts: 0,
+      showUserCertsUi: false,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
@@ -252,7 +260,7 @@ suite('LocalCertsSectionV2Test', () => {
   });
   // </if>
 
-  test('no admin certs, hide custom section', async () => {
+  test('no admin certs, hide admin certs section', async () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 0,
@@ -260,6 +268,8 @@ suite('LocalCertsSectionV2Test', () => {
       isIncludeSystemTrustStoreManaged: true,
       // </if>
       numPolicyCerts: 0,
+      numUserCerts: 0,
+      showUserCertsUi: true,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
@@ -268,10 +278,12 @@ suite('LocalCertsSectionV2Test', () => {
     await microtasksFinished();
     const customSection =
         localCertsSection.shadowRoot!.querySelector('#customCertsSection');
-    assertNull(customSection, 'custom certs section not hidden');
+    const adminLinkRow =
+        customSection!.querySelector('#adminCertsInstalledLinkRow');
+    assertNull(adminLinkRow, 'admin certs section not hidden');
   });
 
-  test('have admin certs, show custom section', async () => {
+  test('have admin certs, show admin certs section', async () => {
     const metadata: CertManagementMetadata = {
       includeSystemTrustStore: true,
       numUserAddedSystemCerts: 0,
@@ -279,6 +291,8 @@ suite('LocalCertsSectionV2Test', () => {
       isIncludeSystemTrustStoreManaged: true,
       // </if>
       numPolicyCerts: 5,
+      numUserCerts: 0,
+      showUserCertsUi: false,
     };
     testProxy.handler.setCertManagementMetadata(metadata);
     initializeElement();
@@ -287,7 +301,157 @@ suite('LocalCertsSectionV2Test', () => {
     await microtasksFinished();
     const customSection =
         localCertsSection.shadowRoot!.querySelector('#customCertsSection');
-    const linkRow = customSection!.querySelector('cr-link-row');
-    assertEquals('5 certificates', linkRow!.subLabel);
+    const adminLinkRow = customSection!.querySelector('cr-link-row');
+    assertEquals('5 certificates', adminLinkRow!.subLabel);
   });
+
+  // <if expr="not is_chromeos">
+  test('os certs set by policy, disable OS certs toggle', async () => {
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
+      isIncludeSystemTrustStoreManaged: true,
+      numPolicyCerts: 5,
+      numUserCerts: 0,
+      showUserCertsUi: false,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await microtasksFinished();
+    assertTrue(localCertsSection.$.importOsCerts.disabled);
+  });
+
+  test('os certs not set by policy, enable OS certs toggle', async () => {
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
+      isIncludeSystemTrustStoreManaged: false,
+      numPolicyCerts: 5,
+      numUserCerts: 0,
+      showUserCertsUi: false,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await microtasksFinished();
+    assertFalse(localCertsSection.$.importOsCerts.disabled);
+  });
+  // </if>
+
+  // <if expr="not is_chromeos">
+  test('import OS certs toggle disable', async () => {
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
+      isIncludeSystemTrustStoreManaged: false,
+      numPolicyCerts: 0,
+      numUserCerts: 0,
+      showUserCertsUi: false,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await microtasksFinished();
+
+    localCertsSection.$.importOsCerts.click();
+    await testProxy.handler.whenCalled('setIncludeSystemTrustStore');
+    assertFalse(testProxy.handler.getArgs('setIncludeSystemTrustStore')[0]);
+  });
+
+  test('import OS certs toggle enable', async () => {
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: false,
+      numUserAddedSystemCerts: 0,
+      isIncludeSystemTrustStoreManaged: false,
+      numPolicyCerts: 0,
+      numUserCerts: 0,
+      showUserCertsUi: false,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await microtasksFinished();
+
+    localCertsSection.$.importOsCerts.click();
+    await testProxy.handler.whenCalled('setIncludeSystemTrustStore');
+    assertTrue(testProxy.handler.getArgs('setIncludeSystemTrustStore')[0]);
+  });
+  // </if>
+
+  test('user certs write enabled, show user certs section', async () => {
+    const pluralStringProxy = new CertManagerTestPluralStringProxy();
+    PluralStringProxyImpl.setInstance(pluralStringProxy);
+    pluralStringProxy.text = '5 certificates';
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
+      // <if expr="not is_chromeos">
+      isIncludeSystemTrustStoreManaged: true,
+      // </if>
+      numPolicyCerts: 5,
+      numUserCerts: 5,
+      showUserCertsUi: true,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await microtasksFinished();
+    const customSection =
+        localCertsSection.shadowRoot!.querySelector('#customCertsSection');
+    const userLinkDiv = customSection!.querySelector('#userCertsSection');
+    const userLinkRow = userLinkDiv!.querySelector('cr-link-row');
+    assertEquals('5 certificates', userLinkRow!.subLabel);
+  });
+
+  test('user certs write disabled, hide user certs section', async () => {
+    const metadata: CertManagementMetadata = {
+      includeSystemTrustStore: true,
+      numUserAddedSystemCerts: 0,
+      // <if expr="not is_chromeos">
+      isIncludeSystemTrustStoreManaged: true,
+      // </if>
+      numPolicyCerts: 1,
+      numUserCerts: 0,
+      showUserCertsUi: false,
+    };
+    testProxy.handler.setCertManagementMetadata(metadata);
+    initializeElement();
+
+    await testProxy.handler.whenCalled('getCertManagementMetadata');
+    await microtasksFinished();
+    const customSection =
+        localCertsSection.shadowRoot!.querySelector('#customCertsSection');
+    const userLinkRow =
+        customSection!.querySelector('#userCertsInstalledLinkRow');
+    assertNull(userLinkRow, 'user certs section not hidden');
+  });
+
+  test(
+      'no admin certs, user certs write disabled, hide custom certs section',
+      async () => {
+        const metadata: CertManagementMetadata = {
+          includeSystemTrustStore: true,
+          numUserAddedSystemCerts: 0,
+          // <if expr="not is_chromeos">
+          isIncludeSystemTrustStoreManaged: true,
+          // </if>
+          numPolicyCerts: 0,
+          numUserCerts: 0,
+          showUserCertsUi: false,
+        };
+        testProxy.handler.setCertManagementMetadata(metadata);
+        initializeElement();
+
+        await testProxy.handler.whenCalled('getCertManagementMetadata');
+        await microtasksFinished();
+        const customSection =
+            localCertsSection.shadowRoot!.querySelector('#customCertsSection');
+        assertNull(customSection, 'custom certs section not hidden');
+      });
 });

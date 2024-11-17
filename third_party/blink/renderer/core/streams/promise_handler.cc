@@ -53,10 +53,11 @@ void PromiseHandlerWithValue::CallRaw(
   args.GetReturnValue().Set(ret);
 }
 
-v8::Local<v8::Promise> StreamThenPromise(v8::Local<v8::Context> context,
+v8::Local<v8::Promise> StreamThenPromise(ScriptState* script_state,
                                          v8::Local<v8::Promise> promise,
                                          ScriptFunction* on_fulfilled,
                                          ScriptFunction* on_rejected) {
+  v8::Local<v8::Context> context = script_state->GetContext();
   v8::Context::Scope v8_context_scope(context);
   v8::MaybeLocal<v8::Promise> result_maybe;
   if (!on_fulfilled) {
@@ -72,12 +73,15 @@ v8::Local<v8::Promise> StreamThenPromise(v8::Local<v8::Context> context,
                << "by shutdown and ignoring it";
       return AttemptToReturnDummyPromise(context, promise);
     }
-    result_maybe = promise->Then(context, noop, on_rejected->V8Function());
+    result_maybe =
+        promise->Then(context, noop, on_rejected->ToV8Function(script_state));
   } else if (on_rejected) {
-    result_maybe = promise->Then(context, on_fulfilled->V8Function(),
-                                 on_rejected->V8Function());
+    result_maybe =
+        promise->Then(context, on_fulfilled->ToV8Function(script_state),
+                      on_rejected->ToV8Function(script_state));
   } else {
-    result_maybe = promise->Then(context, on_fulfilled->V8Function());
+    result_maybe =
+        promise->Then(context, on_fulfilled->ToV8Function(script_state));
   }
 
   v8::Local<v8::Promise> result;

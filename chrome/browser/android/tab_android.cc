@@ -19,6 +19,7 @@
 #include "cc/slim/layer.h"
 #include "chrome/browser/android/background_tab_manager.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
+#include "chrome/browser/android/tab_features_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/browser_about_handler.h"
 #include "chrome/browser/browser_process.h"
@@ -324,6 +325,8 @@ void TabAndroid::InitWebContents(
   web_contents()->SetDelegate(web_contents_delegate_.get());
 
   AttachTabHelpers(web_contents_.get());
+  tab_features_ =
+      std::make_unique<TabFeaturesAndroid>(web_contents_.get(), profile());
   // When restoring a frame that was unloaded we re-create the TabAndroid and
   // its host. This triggers visibility changes in both the Browser and
   // Renderer. We need to start tracking the content-to-visible time now. On
@@ -352,7 +355,7 @@ void TabAndroid::InitWebContents(
   content_layer_->InsertChild(web_contents_->GetNativeView()->GetLayer(), 0);
 
   // Shows a warning notification for dangerous flags in about:flags.
-  chrome::ShowBadFlagsPrompt(web_contents());
+  ShowBadFlagsPrompt(web_contents());
 
   for (Observer& observer : observers_)
     observer.OnInitWebContents(this);
@@ -418,6 +421,7 @@ void TabAndroid::DestroyWebContents(JNIEnv* env) {
   if (process)
     process->FastShutdownIfPossible(1, false);
 
+  tab_features_.reset();
   web_contents_.reset();
 
   synced_tab_delegate_->ResetWebContents();
@@ -428,6 +432,7 @@ void TabAndroid::ReleaseWebContents(JNIEnv* env) {
 
   // Ownership of |released_contents| is assumed by the code that initiated the
   // release.
+  tab_features_.reset();
   content::WebContents* released_contents = web_contents_.release();
   if (released_contents) {
     released_contents->SetOwnerLocationForDebug(std::nullopt);

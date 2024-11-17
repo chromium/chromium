@@ -65,9 +65,10 @@ gfx::ImageSkia CreateImageSkia(int width, int height, SkColor color) {
 scoped_refptr<base::RefCountedMemory> CreatePNGBytes(int edge_size,
                                                      SkColor color) {
   SkBitmap bitmap = CreateBitmap(edge_size, edge_size, color);
-  scoped_refptr<base::RefCountedBytes> bytes(new base::RefCountedBytes());
-  PNGCodec::EncodeBGRASkBitmap(bitmap, false, &bytes->as_vector());
-  return bytes;
+  std::optional<std::vector<uint8_t>> data =
+      PNGCodec::EncodeBGRASkBitmap(bitmap, /*discard_transparency=*/false);
+  return scoped_refptr<base::RefCountedBytes>(
+      new base::RefCountedBytes(data.value_or(std::vector<uint8_t>())));
 }
 
 gfx::Image CreateImage(int size, SkColor color) {
@@ -137,9 +138,10 @@ bool AreBitmapsClose(const SkBitmap& bmp1,
 bool ArePNGBytesCloseToBitmap(base::span<const uint8_t> bytes,
                               const SkBitmap& bitmap,
                               int max_deviation) {
-  SkBitmap decoded;
-  if (!PNGCodec::Decode(bytes.data(), bytes.size(), &decoded))
+  SkBitmap decoded = PNGCodec::Decode(bytes);
+  if (decoded.isNull()) {
     return bitmap.isNull();
+  }
 
   return AreBitmapsClose(bitmap, decoded, max_deviation);
 }

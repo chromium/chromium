@@ -4,10 +4,10 @@ rootWebArea
 ++++++tab name='First Tab' selected=true controlsIds=tabPanel
 ++++++++staticText name='First Tab'
 ++++++++++inlineTextBox name='First Tab'
-++++++tab name='Second Tab' selected=false controlsIds=
+++++++tab name='Second Tab' selected=false
 ++++++++staticText name='Second Tab'
 ++++++++++inlineTextBox name='Second Tab'
-++++++tab name='Third Tab' selected=false controlsIds=
+++++++tab name='Third Tab' selected=false
 ++++++++staticText name='Third Tab'
 ++++++++++inlineTextBox name='Third Tab'
 ++++++tabPanel name='First Tab'

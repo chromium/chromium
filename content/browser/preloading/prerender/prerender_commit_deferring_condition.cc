@@ -97,6 +97,10 @@ PrerenderCommitDeferringCondition::WillCommitNavigation(
   return Result::kDefer;
 }
 
+const char* PrerenderCommitDeferringCondition::TraceEventName() const {
+  return "PrerenderCommitDeferringCondition";
+}
+
 void PrerenderCommitDeferringCondition::DidFinishNavigation(
     NavigationHandle* handle) {
   auto* finished_navigation_request = NavigationRequest::From(handle);

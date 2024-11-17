@@ -8,26 +8,27 @@ import subprocess
 import time
 
 from contextlib import suppress
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import browser_runner
-from common import catch_sigterm, wait_for_sigterm
+from common import catch_sigterm, get_ip_address, wait_for_sigterm
 from test_runner import TestRunner
 
 _DEVTOOLS_PORT_FILE = 'webpage_test_runner.devtools.port'
 
 
-def capture_devtools_port(proc: subprocess.Popen, logs_dir: str) -> int:
-    """Returns the devtools port initiated by the running |proc|. This
-    function should only be used when the WebpageTestRunner is executed by a
-    different process."""
+def capture_devtools_addr(proc: subprocess.Popen,
+                          logs_dir: str) -> Tuple[str, int]:
+    """Returns the devtools address and port initiated by the running |proc|.
+    This function should only be used when the WebpageTestRunner is executed by
+    a different process."""
     port_file = os.path.join(logs_dir, _DEVTOOLS_PORT_FILE)
 
     def try_reading_port():
         if not os.path.isfile(port_file):
             return None
         with open(port_file, encoding='utf-8') as inp:
-            return int(inp.read())
+            return inp.read().rsplit(':', 1)
 
     while True:
         result = try_reading_port()
@@ -54,11 +55,16 @@ class WebpageTestRunner(TestRunner):
     def run_test(self):
         catch_sigterm()
         self._runner.start()
+        device_ip = get_ip_address(self._target_id, ipv4_only=True)
+        addr = device_ip.exploded
+        if device_ip.version == 6:
+            addr = '[' + addr + ']'
+        addr += ':' + str(self._runner.devtools_port)
         if self.port_file:
             with open(self.port_file, 'w') as out:
-                out.write(str(self._runner.devtools_port))
+                out.write(addr)
         else:
-            print('DevTools is running on ' + str(self._runner.devtools_port))
+            print('DevTools is running on ' + addr)
         try:
             wait_for_sigterm('shutting down the webpage.')
         finally:

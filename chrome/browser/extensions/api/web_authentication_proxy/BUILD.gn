@@ -1,0 +1,38 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+
+source_set("web_authentication_proxy") {
+  sources = [
+    "remote_session_state_change.cc",
+    "remote_session_state_change.h",
+    "web_authentication_proxy_api.cc",
+    "web_authentication_proxy_api.h",
+    "web_authentication_proxy_service.cc",
+    "web_authentication_proxy_service.h",
+  ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//chrome/common/extensions/api",
+    "//components/keyed_service/core",
+    "//content/public/browser",
+    "//extensions/browser",
+    "//extensions/common",
+    "//services/data_decoder/public/cpp",
+  ]
+
+  deps = [
+    "//chrome/common:constants",
+    "//components/webauthn/json",
+    "//device/fido",
+    "//url",
+  ]
+}

@@ -57,7 +57,7 @@ ScopedJavaLocalRef<jobject> BrowsingDataModelAndroid::GetBrowsingDataInfo(
   int i = 0;
   for (const auto& [origin, data] : origin_to_data_map) {
     Java_BrowsingDataModel_insertBrowsingDataInfoIntoMap(
-        env, map, origin.ToJavaObject(), /*cookieCount=*/data.first,
+        env, map, origin.ToJavaObject(env), /*cookieCount=*/data.first,
         /*storageSize=*/data.second,
         /*importantDomain=*/
         fetch_important ? important_notations[i++].second : false);

@@ -40,15 +40,23 @@ class TaskGraphTest : public testing::Test {
     }
   }
 
-  void CreateSequence(int sequence_key) {
+  void CreateSequence(int sequence_key, bool manual_validation = false) {
     CommandBufferId command_buffer_id =
         CommandBufferId::FromUnsafeValue(sequence_key);
     SequenceId sequence_id = task_graph_->CreateSequence(
-        base::DoNothing(), base::SingleThreadTaskRunner::GetCurrentDefault(),
+        base::DoNothing(),
+        manual_validation ? scoped_refptr<base::SingleThreadTaskRunner>()
+                          : base::SingleThreadTaskRunner::GetCurrentDefault(),
         kNamespaceId, command_buffer_id);
 
     sequence_info_.emplace(sequence_key,
                            SequenceInfo(sequence_id, command_buffer_id));
+  }
+
+  SequenceId GetSequenceId(int sequence_key) {
+    auto info_it = sequence_info_.find(sequence_key);
+    CHECK(info_it != sequence_info_.end());
+    return info_it->second.sequence_id;
   }
 
   void CreateSyncToken(int sequence_key, int release_sync) {
@@ -133,16 +141,18 @@ class TaskGraphTest : public testing::Test {
     } while (previous_tasks_executed != tasks_executed_.size());
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  void RunValidation(int sequence_key) {
+    auto info_it = sequence_info_.find(sequence_key);
+    ASSERT_TRUE(info_it != sequence_info_.end());
 
-  std::vector<int> tasks_executed_;
+    TaskGraph::Sequence* sequence = nullptr;
+    {
+      base::AutoLock auto_lock(task_graph_->lock());
+      sequence = task_graph_->GetSequence(info_it->second.sequence_id);
+    }
 
-  std::unique_ptr<SyncPointManager> sync_point_manager_;
-
- private:
-  const CommandBufferNamespace kNamespaceId = CommandBufferNamespace::GPU_IO;
-
-  int num_tasks_added_ = 0;
+    task_graph_->ValidateSequenceTaskFenceDeps(sequence);
+  }
 
   struct SequenceInfo {
     SequenceInfo(SequenceId sequence_id, CommandBufferId command_buffer_id)
@@ -152,13 +162,50 @@ class TaskGraphTest : public testing::Test {
     CommandBufferId command_buffer_id;
   };
 
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::SingleThreadTaskEnvironment task_environment_;
+
+  std::vector<int> tasks_executed_;
+
+  std::unique_ptr<SyncPointManager> sync_point_manager_;
 
   std::unique_ptr<TaskGraph> task_graph_;
 
   std::map<int, const SequenceInfo> sequence_info_;
+
   std::map<int, const SyncToken> sync_tokens_;
+
+ private:
+  const CommandBufferNamespace kNamespaceId = CommandBufferNamespace::GPU_IO;
+
+  int num_tasks_added_ = 0;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+TEST_F(TaskGraphTest, DestroySequenceReleasesSyncPoints) {
+  // Test that when a sequence is destroyed, all wait fences that are supposed
+  // to be released by the destroyed sequence will be unblocked. No validation
+  // is required.
+
+  CreateSequence(0);
+  CreateSequence(1);
+
+  CreateSyncToken(1, 0);  // declare sync_token 0 on seq 1
+
+  AddTask(0, 0, -1);  // task 0: seq 0, wait 0, no release
+
+  RunAllPendingTasks();
+
+  EXPECT_TRUE(tasks_executed_.empty());
+
+  task_graph_->DestroySequence(GetSequenceId(1));
+  sequence_info_.erase(1);
+
+  RunAllPendingTasks();
+
+  std::vector<int> expected_task_order{0};
+  EXPECT_THAT(tasks_executed_, testing::ElementsAreArray(expected_task_order));
+}
 
 TEST_F(TaskGraphTest, ValidationWaitWithoutRelease) {
   // Two tasks on the same sequence wait for unreleased fences.
@@ -193,6 +240,53 @@ TEST_F(TaskGraphTest, ValidationWaitWithoutRelease) {
   // of task 1.
   task_environment_.FastForwardBy(TaskGraph::kMaxValidationDelay +
                                   base::Seconds(1));
+  RunAllPendingTasks();
+
+  expected_task_order = {0, 1};
+  EXPECT_THAT(tasks_executed_, testing::ElementsAreArray(expected_task_order));
+}
+
+TEST_F(TaskGraphTest, ManuallyCallValidationWaitWithoutRelease) {
+  // Two tasks on the same sequence wait for unreleased fences.
+  CreateSequence(0, /*manual_validation=*/true);
+  CreateSequence(1);
+  CreateSequence(2);
+
+  CreateSyncToken(1, 0);  // declare sync_token 0 on seq 1
+  CreateSyncToken(1, 1);  // declare sync_token 1 on seq 1
+
+  CreateSyncToken(2, 2);  // declare sync_token 2 on seq 2
+  CreateSyncToken(2, 3);  // declare sync_token 3 on seq 2
+
+  AddTask(0, {0, 3}, -1);  // task 0: seq 0, wait {0,3}, no release
+
+  // Submit a task close to the time when the validation timer would fired if
+  // it were configured to run.
+  task_environment_.FastForwardBy(TaskGraph::kMaxValidationDelay -
+                                  TaskGraph::kMinValidationDelay +
+                                  base::Seconds(1));
+  AddTask(0, {1, 2}, -1);  // task 1: seq 0, wait {1,2}, no release
+
+  // Validation is configured to be triggered manually. Moving time forward
+  // shouldn't trigger validation.
+  task_environment_.FastForwardBy(TaskGraph::kMinValidationDelay);
+  RunAllPendingTasks();
+  EXPECT_TRUE(tasks_executed_.empty());
+
+  RunValidation(0);
+  RunAllPendingTasks();
+
+  // Only task 0 is supposed to be executed.
+  // Task 1 has unsatisfied waits, but it is too new to be validated.
+  std::vector<int> expected_task_order = {0};
+  EXPECT_THAT(tasks_executed_, testing::ElementsAreArray(expected_task_order));
+
+  task_environment_.FastForwardBy(TaskGraph::kMaxValidationDelay +
+                                  base::Seconds(1));
+  RunAllPendingTasks();
+  EXPECT_THAT(tasks_executed_, testing::ElementsAreArray(expected_task_order));
+
+  RunValidation(0);
   RunAllPendingTasks();
 
   expected_task_order = {0, 1};
@@ -446,6 +540,39 @@ TEST_F(TaskGraphTest, ValidationPartiallyValidated) {
 
   RunAllPendingTasks();
   std::vector<int> expected_task_order{1, 0, 3, 2};
+  EXPECT_THAT(tasks_executed_, testing::ElementsAreArray(expected_task_order));
+}
+
+TEST_F(TaskGraphTest, ValidationNonExistentReleaseSequence) {
+  // Test validation happens between
+  // (1) a sequence has been destroyed and
+  // (2) wait fences that are supposed to be released by the destroyed sequence
+  //     haven't been cleaned up from other sequences.
+
+  CreateSequence(0, /*manual_validation=*/true);
+  CreateSequence(1);
+
+  CreateSyncToken(1, 0);  // declare sync_token 0 on seq 1
+  SyncToken sync_token = sync_tokens_[0];
+
+  // Add a callback waiting for `sync_token` before adding task 0. When
+  // sequence 1 is destroyed, this callback will be run before cleaning up
+  // wait fences of task 0.
+  sync_point_manager_->Wait(
+      sync_token, GetSequenceId(0), sync_point_manager_->GenerateOrderNumber(),
+      base::BindLambdaForTesting([this]() { RunValidation(0); }));
+
+  AddTask(0, 0, -1);  // task 0: seq 0, wait 0, no release
+
+  task_environment_.FastForwardBy(TaskGraph::kMaxValidationDelay +
+                                  base::Seconds(1));
+
+  task_graph_->DestroySequence(GetSequenceId(1));
+  sequence_info_.erase(1);
+
+  RunAllPendingTasks();
+
+  std::vector<int> expected_task_order{0};
   EXPECT_THAT(tasks_executed_, testing::ElementsAreArray(expected_task_order));
 }
 

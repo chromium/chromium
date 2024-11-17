@@ -52,6 +52,8 @@ class OptimizationGuideBridge {
       GURL& url,
       jint optimization_type,
       const base::android::JavaParamRef<jobject>& java_callback);
+  base::android::ScopedJavaLocalRef<jobject>
+  CanApplyOptimizationSync(JNIEnv* env, GURL& url, jint optimization_type);
   void CanApplyOptimizationOnDemand(
       JNIEnv* env,
       std::vector<GURL>& urls,

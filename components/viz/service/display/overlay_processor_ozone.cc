@@ -37,6 +37,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "gpu/config/gpu_finch_features.h"
+#include "ui/display/display_features.h"
 #include "ui/gl/gl_switches.h"
 #endif
 
@@ -200,8 +201,7 @@ bool AllowColorSpaceCombination(
   //
   // TODO(b/243150091): Remove the call to IsYUVColorSpace() or turn it into a
   // DCHECK() once LaCrOS plumbs the correct color space.
-  bool is_yuv_color_space = features::IsLacrosColorManagementEnabled() ||
-                            IsYUVColorSpace(source_color_space);
+  bool is_yuv_color_space = IsYUVColorSpace(source_color_space);
   if ((source_format == MultiPlaneFormat::kNV12 ||
        source_format == MultiPlaneFormat::kYV12 ||
        source_format == MultiPlaneFormat::kP010) &&
@@ -210,6 +210,16 @@ bool AllowColorSpaceCombination(
            gfx::ColorSpace::MatrixID::BT2020_NCL ||
        source_color_space.GetRangeID() == gfx::ColorSpace::RangeID::FULL)) {
     return false;
+  }
+
+  // Do not promote SDR content to overlay if the screen is in HDR10 mode.
+  // TODO(b/367739334): Fix color conversion layer in skia_renderer.cc
+  if (base::FeatureList::IsEnabled(
+          display::features::kEnableExternalDisplayHDR10Mode) &&
+      destination_color_space.GetContentColorUsage() ==
+          gfx::ContentColorUsage::kHDR) {
+    return source_color_space.GetContentColorUsage() ==
+           destination_color_space.GetContentColorUsage();
   }
 
   // Allow color space mismatches as long as either a) the source color space is
@@ -258,7 +268,7 @@ OverlayProcessorOzone::OverlayProcessorOzone(
         break;
 #endif
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }
@@ -275,9 +285,7 @@ bool OverlayProcessorOzone::NeedsSurfaceDamageRectList() const {
 
 bool OverlayProcessorOzone::SupportsFlipRotateTransform() const {
   // TODO(petermcneeley): Test and enable for ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return false;
-#elif BUILDFLAG(IS_CASTOS)
+#if BUILDFLAG(IS_CASTOS)
   return false;
 #else
   return false;

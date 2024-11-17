@@ -47,6 +47,7 @@ class VideoFrameBufferInit;
 class VideoFrameCopyToOptions;
 class VideoFrameInit;
 class VideoFrameLayout;
+class VideoFrameMetadata;
 
 class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
                                         public CanvasImageSource,
@@ -90,10 +91,15 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   DOMRectReadOnly* codedRect();
   DOMRectReadOnly* visibleRect();
 
+  uint32_t rotation() const;
+  bool flip() const;
+
   uint32_t displayWidth() const;
   uint32_t displayHeight() const;
 
   VideoColorSpace* colorSpace();
+
+  VideoFrameMetadata* metadata(ExceptionState&);
 
   uint32_t allocationSize(VideoFrameCopyToOptions* options, ExceptionState&);
 

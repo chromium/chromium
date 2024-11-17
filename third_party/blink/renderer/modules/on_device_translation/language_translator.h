@@ -8,8 +8,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "third_party/blink/public/mojom/on_device_translation/translator.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -20,26 +23,29 @@ class LanguageTranslator final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  LanguageTranslator(const WTF::String source_lang,
-                     const WTF::String target_lang,
-                     scoped_refptr<base::SequencedTaskRunner> task_runner);
+  LanguageTranslator(
+      const String source_lang,
+      const String target_lang,
+      mojo::PendingRemote<mojom::blink::Translator> pending_remote,
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~LanguageTranslator() override = default;
 
   void Trace(Visitor* visitor) const override;
 
-  mojo::PendingReceiver<blink::mojom::blink::Translator>
-  GetTranslatorReceiver();
-
   // language_translator.idl implementation.
   ScriptPromise<IDLString> translate(ScriptState* script_state,
-                                     const WTF::String& input,
+                                     const String& input,
                                      ExceptionState& exception_state);
+  void destroy();
 
  private:
-  const WTF::String source_lang_;
-  const WTF::String target_lang_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  void OnTranslateFinished(ScriptPromiseResolver<IDLString>* resolver,
+                           const WTF::String& output);
+
+  const String source_lang_;
+  const String target_lang_;
   HeapMojoRemote<blink::mojom::blink::Translator> translator_remote_{nullptr};
+  HeapHashSet<Member<ScriptPromiseResolver<IDLString>>> pending_resolvers_;
 };
 
 }  // namespace blink

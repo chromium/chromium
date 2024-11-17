@@ -14,8 +14,17 @@ NavigationCurrentEntryChangeEvent::NavigationCurrentEntryChangeEvent(
     const AtomicString& type,
     NavigationCurrentEntryChangeEventInit* init)
     : Event(type, init), from_(init->from()) {
-  if (init->navigationType())
-    navigation_type_ = *init->navigationType();
+  if (init->navigationType()) {
+    navigation_type_ = init->navigationType()->AsEnum();
+  }
+}
+
+std::optional<V8NavigationType>
+NavigationCurrentEntryChangeEvent::navigationType() {
+  if (!navigation_type_) {
+    return std::nullopt;
+  }
+  return V8NavigationType(navigation_type_.value());
 }
 
 const AtomicString& NavigationCurrentEntryChangeEvent::InterfaceName() const {

@@ -84,8 +84,9 @@ if (target_cpu == "arm64" || target_cpu == "x64" || target_cpu == "mips64el" ||
   assert(false, "Unknown target CPU: $target_cpu")
 }
 
-android_64bit_current_cpu = current_cpu == "arm64" || target_cpu == "x64" ||
-                            target_cpu == "mips64el" || current_cpu == "riscv64"
+android_64bit_current_cpu =
+    current_cpu == "arm64" || current_cpu == "x64" ||
+    current_cpu == "mips64el" || current_cpu == "riscv64"
 
 # Do not define android_secondary_abi_cpu or android_app_secondary_abi for
 # target_cpu's that are 32-bit-only or 64-bit-only, as they are not used. The

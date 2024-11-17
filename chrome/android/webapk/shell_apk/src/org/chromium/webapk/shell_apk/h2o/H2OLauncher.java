@@ -36,7 +36,6 @@ public class H2OLauncher {
     /**
      * Changes which components are enabled.
      *
-     * @param context
      * @param enableComponent Component to enable.
      * @param disableComponent Component to disable.
      */
@@ -72,7 +71,6 @@ public class H2OLauncher {
     /**
      * Launches the given component, passing extras from the given intent.
      *
-     * @param context
      * @param intentToCopy Intent whose extras should be copied.
      * @param selectedShareTargetActivity Class name of the share activity that the user selected.
      * @param launchTimeMs Timestamp of when WebAPK's initial activity was launched. -1 if the time

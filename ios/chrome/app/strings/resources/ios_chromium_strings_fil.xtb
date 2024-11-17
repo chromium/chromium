@@ -12,8 +12,10 @@
 <translation id="1260702988262336471">Buksan ang menu ng Chromium</translation>
 <translation id="12739128458173458">Para maipadala ang tab na ito sa ibang device, mag-sign in sa Chromium sa parehong device.</translation>
 <translation id="1361748954329991663">Luma na ang Chromium. Kung walang available na update sa <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, posibleng hindi na sinusuportahan ng iyong device ang mga bagong bersyon ng Chromium.</translation>
+<translation id="1383876407941801731">Hanapin</translation>
 <translation id="1423007117030725713">Magsimula ng paghahanap sa isang bagong tab sa Chromium.</translation>
 <translation id="1431818719585918472">Payagan ang Chromium na i-lock ang iyong mga tab na Incognito.</translation>
+<translation id="1451665391191990528">I-hide ang mga nakabukas na tab na Incognito kapag umalis ka sa Chromium</translation>
 <translation id="146407871188825689">Gamitin ang Chromium sa iPad bilang Default</translation>
 <translation id="1471084500615228555">I-delete ang data mula sa pag-browse sa Chromium</translation>
 <translation id="1472013873724362412">Hindi gumagana ang iyong account sa Chromium. Mangyaring makipag-ugnayan sa iyong administrator ng domain o gumamit ng regular na Google Account upang mag-sign in.</translation>
@@ -49,6 +51,7 @@
 <translation id="2195025571279539885">Gusto mo bang mag-alok ang Chromium na isalin ang mga <ph name="LANGUAGE_NAME" /> page mula sa site na ito sa susunod na pagkakataon?</translation>
 <translation id="22313767259766852">Kasalukuyang naka-save ang address na ito sa Chromium. Para magamit ito sa mga produkto ng Google, i-save ito sa iyong Google Account,<ph name="USER_EMAIL" />.</translation>
 <translation id="2236584955986023187">Nangangahulugan itong hihilingin ng Chromium ang pang-desktop na site sa lahat ng pagkakataon.</translation>
+<translation id="2270466829363945454">Mamili</translation>
 <translation id="2313870531055795960">Sinusuri ang mga URL sa pamamagitan ng listahan ng mga hindi ligtas na site na naka-store sa Chromium. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chromium sa Ligtas na Pag-browse ng mga URL, kabilang ang ilang content ng page.</translation>
 <translation id="231828342043114302">Para makatanggap ng naka-personalize na content batay sa iyong mga interes, mag-sign in sa Chromium.</translation>
 <translation id="2326738825692478496">Hindi pa nase-save sa Google Account mo ang ilan sa iyong data sa Chromium.
@@ -107,6 +110,7 @@ Subukang maghintay nang ilang minuto bago lumipat ng account. Kung lilipat ka ng
 <translation id="377649297473651452">Naka-expand na view ng Autofill ng Chromium</translation>
 <translation id="3780779443901618967">Babalaan ka tungkol sa mga mapanganib na site, kahit iyong mga hindi alam ng Google noon, sa pamamagitan ng pagsusuri sa higit pang data mula sa mga site kaysa sa karaniwang proteksyon. Puwede mong piliing laktawan ang mga babala ng Chromium.</translation>
 <translation id="3805899903892079518">Walang access ang Chromium sa mga larawan o video mo. I-enable ang access sa Mga Setting ng iOS &gt; Privacy &gt; Mga Larawan.</translation>
+<translation id="3816686541346279443">Mag-aalok ang Chromium na i-save ang iyong password.</translation>
 <translation id="3827545470516145620">Mayroon kang standard na proteksyon sa seguridad sa device na ito</translation>
 <translation id="3833326979834193417">Awtomatikong pinapatakbo ng Chromium ang Pag-check sa Kaligtasan araw-araw para panatilihin kang ligtas laban sa mga paglabag sa data, hindi ligtas na website, at higit pa. Makakakita ka ng higit pa tungkol sa Pag-check sa Kaligtasan sa Mga Setting.</translation>
 <translation id="3855938650519180865">Ano'ng Bago sa Chromium</translation>
@@ -129,6 +133,7 @@ Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at 
 <translation id="4432744876818348753">Mag-sign in para masulit ang Chromium.</translation>
 <translation id="4445228361214254027">In-off ng iyong organisasyon ang kakayahang gumamit at mag-save ng data sa Chromium sa iyong Google Account. Sa device na ito lang mase-save ang mga bagong bookmark, password, at higit pa.</translation>
 <translation id="4498832288620833153">Idaragdag ang mga in-input na URL sa iyong listahan ng babasahin sa Chromium.</translation>
+<translation id="4508268628669724828">Bumalik dito para sa higit pang kapaki-pakinabang na tip para masulit ang Chromium.</translation>
 <translation id="452436063477828504">Tiyaking magagamit mo sa anumang oras ang data ng Chromium sa iyong Google Account</translation>
 <translation id="4527452566931097835">Itakda ang Chromium bilang default?</translation>
 <translation id="4555020257205549924">Kapag naka-on ang feature na ito, mag-aalok ang Chromium na magsalin ng mga page na nakasulat sa ibang mga wika gamit ang Google Translate. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -177,6 +182,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Ch
 <translation id="5571094606370987472">Mabubuksan ang Mga Kamakailang Tab sa Chromium.</translation>
 <translation id="5603085937604338780">chromium</translation>
 <translation id="5664395081284292058">Buksan ang aking pinakabagong tab sa Chromium</translation>
+<translation id="5671188105328420281">Mga Tip sa Chromium</translation>
 <translation id="5688047395118852662">Magpapakita sa iyo ang card na ito ng mga suhestyon sa kung paano masusulit ang Chromium.</translation>
 <translation id="5700709190537129682">Hindi masuri ng Chromium ang iyong mga password</translation>
 <translation id="584550191241316896">Naka-sign in sa Chromium</translation>
@@ -218,6 +224,7 @@ Mga bagay na dapat isaalang-alang:
 <translation id="6752854822223394465">Sine-set up ng iyong organisasyon ang Chromium...</translation>
 <translation id="6794054469102824109">Mabubuksan ang Dino Game ng Chromium.</translation>
 <translation id="6820823224820483452">Hindi masuri ng Chromium ang lahat ng password. Subukan ulit bukas.</translation>
+<translation id="6831043979455480757">Isalin</translation>
 <translation id="6852419005633611413">Mas mabilis na i-access ang Chromium mula sa dock ng iyong home screen</translation>
 <translation id="6852799557929001644">I-access ang iyong mga password sa Chromium at higit pa sa iba pang app sa device na ito.</translation>
 <translation id="6887138405044152640">Para maipadala ang tab na ito sa ibang device, mag-sign in sa Chromium doon.</translation>

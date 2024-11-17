@@ -544,9 +544,7 @@ void Connection::DispatchEvent(const Event& event) {
   // will incorrectly think that the current event being dispatched is
   // an old event.  This means base::AutoReset should not be used.
   dispatching_event_ = &event;
-  for (auto& observer : event_observers_) {
-    observer.OnEvent(event);
-  }
+  event_observers_.Notify(&EventObserver::OnEvent, event);
   dispatching_event_ = nullptr;
 }
 
@@ -582,7 +580,7 @@ void Connection::InitRootDepthAndVisual() {
       }
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void Connection::InitializeExtensions() {
@@ -623,7 +621,7 @@ void Connection::InitializeExtensions() {
   if (auto response = shm_future.Sync()) {
     shm_version_ = {response->major_version, response->minor_version};
   }
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Chrome for ChromeOS can be run with X11 on a Linux desktop. In this case,
   // NotifySwapAfterResize is never called as the compositor does not notify
   // about swaps after resize. Thus, simply disable usage of XSyncCounter on

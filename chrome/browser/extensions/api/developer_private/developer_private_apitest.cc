@@ -554,9 +554,12 @@ class DeveloperPrivateApiWithMV2DeprecationApiTest
             extensions_features::kExtensionManifestV2Unsupported);
         break;
       case MV2ExperimentStage::kUnsupported:
-        // TODO(https://crbug.com/367395349): Add tests for the kUnsupported
-        // experiment stage.
-        NOTREACHED();
+        enabled_features.push_back(
+            extensions_features::kExtensionManifestV2Unsupported);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2Disabled);
+        disabled_features.push_back(
+            extensions_features::kExtensionManifestV2DeprecationWarning);
     }
 
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
@@ -573,7 +576,8 @@ INSTANTIATE_TEST_SUITE_P(
     ,
     DeveloperPrivateApiWithMV2DeprecationApiTest,
     testing::Values(MV2ExperimentStage::kWarning,
-                    MV2ExperimentStage::kDisableWithReEnable),
+                    MV2ExperimentStage::kDisableWithReEnable,
+                    MV2ExperimentStage::kUnsupported),
     [](const testing::TestParamInfo<MV2ExperimentStage>& info) {
       switch (info.param) {
         case MV2ExperimentStage::kNone:
@@ -617,33 +621,62 @@ IN_PROC_BROWSER_TEST_P(DeveloperPrivateApiWithMV2DeprecationApiTest,
       api::DeveloperPrivateDismissMv2DeprecationNoticeForExtensionFunction>();
   std::string args = base::StringPrintf(R"(["%s"])", extension->id().c_str());
 
-  if (experiment_stage() == MV2ExperimentStage::kDisableWithReEnable) {
-    // The function will trigger a dialog for this stage. Add a waiter for the
-    // dialog.
-    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                         "Mv2DeprecationKeepDialog");
-    api_test_utils::SendResponseHelper response_helper(
-        dismiss_notice_function.get());
+  switch (experiment_stage()) {
+    case MV2ExperimentStage::kNone:
+      NOTREACHED();
+    case MV2ExperimentStage::kWarning:
+      api_test_utils::RunFunction(dismiss_notice_function.get(), args,
+                                  profile());
 
-    // Add a dispatcher to wait for the response since the function won't return
-    // till the dialog is accepted/canceled.
-    std::unique_ptr<ExtensionFunctionDispatcher> dispatcher(
-        new ExtensionFunctionDispatcher(profile()));
-    dismiss_notice_function->SetDispatcher(dispatcher->AsWeakPtr());
-    dismiss_notice_function->SetArgs(base::test::ParseJsonList(args));
-    dismiss_notice_function->RunWithValidation().Execute();
+      // Extension's notice should be marked as acknowledged.
+      EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
+      EXPECT_TRUE(
+          experiment_manager->DidUserAcknowledgeNotice(extension->id()));
+      break;
 
-    // Wait for the dialog and accept it.
-    auto* widget = waiter.WaitIfNeededAndGet();
-    widget->widget_delegate()->AsDialogDelegate()->AcceptDialog();
-    response_helper.WaitForResponse();
-  } else {
-    api_test_utils::RunFunction(dismiss_notice_function.get(), args, profile());
+    case MV2ExperimentStage::kDisableWithReEnable: {
+      // The function will trigger a dialog for this stage. Add a waiter for the
+      // dialog.
+      views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                           "Mv2DeprecationKeepDialog");
+      api_test_utils::SendResponseHelper response_helper(
+          dismiss_notice_function.get());
+
+      // Add a dispatcher to wait for the response since the function won't
+      // return till the dialog is accepted/canceled.
+      std::unique_ptr<ExtensionFunctionDispatcher> dispatcher(
+          new ExtensionFunctionDispatcher(profile()));
+      dismiss_notice_function->SetDispatcher(dispatcher->AsWeakPtr());
+      dismiss_notice_function->SetArgs(base::test::ParseJsonList(args));
+      dismiss_notice_function->RunWithValidation().Execute();
+
+      // Wait for the dialog and accept it.
+      auto* widget = waiter.WaitIfNeededAndGet();
+      widget->widget_delegate()->AsDialogDelegate()->AcceptDialog();
+      response_helper.WaitForResponse();
+
+      // Extension's notice should be marked as acknowledged.
+      EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
+      EXPECT_TRUE(
+          experiment_manager->DidUserAcknowledgeNotice(extension->id()));
+      break;
+    }
+
+    case MV2ExperimentStage::kUnsupported: {
+      std::string error = api_test_utils::RunFunctionAndReturnError(
+          dismiss_notice_function.get(), args, profile());
+      EXPECT_EQ(error, base::StringPrintf(
+                           "Cannot dismiss the MV2 deprecation notice for "
+                           "extension with ID '%s' on the unsupported stage.",
+                           extension->id().c_str()));
+
+      // Extension's notice should not be marked as acknowledged.
+      EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
+      EXPECT_FALSE(
+          experiment_manager->DidUserAcknowledgeNotice(extension->id()));
+      break;
+    }
   }
-
-  // Extension's notice should be marked as acknowledged.
-  EXPECT_TRUE(experiment_manager->IsExtensionAffected(*extension));
-  EXPECT_TRUE(experiment_manager->DidUserAcknowledgeNotice(extension->id()));
 }
 
 }  // namespace extensions

@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/contains.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -25,6 +24,7 @@
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_controller_client.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
+#include "chrome/browser/lookalikes/lookalike_url_service_factory.h"
 #include "chrome/browser/lookalikes/lookalike_url_tab_storage.h"
 #include "chrome/browser/preloading/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -86,7 +86,7 @@ bool IsLookalikeUrl(Profile* profile,
                     base::TimeDelta* get_domain_info_duration) {
   DCHECK(get_domain_info_duration->is_zero());
   LookalikeUrlService::LookalikeUrlCheckResult result =
-      LookalikeUrlService::Get(profile)->CheckUrlForLookalikes(
+      LookalikeUrlServiceFactory::GetForProfile(profile)->CheckUrlForLookalikes(
           url, engaged_sites,
           /*stop_checking_on_allowlist_or_ignore=*/true);
   if (result.action_type == LookalikeActionType::kNone) {
@@ -99,10 +99,6 @@ bool IsLookalikeUrl(Profile* profile,
 }
 
 }  // namespace
-
-BASE_FEATURE(kPrewarmLookalikeCheck,
-             "PrewarmLookalikeCheck",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 LookalikeUrlNavigationThrottle::LookalikeUrlNavigationThrottle(
     content::NavigationHandle* navigation_handle)
@@ -117,20 +113,17 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillStartRequest() {
     return content::NavigationThrottle::PROCEED;
 
 #if BUILDFLAG(IS_ANDROID)
-  auto* service = LookalikeUrlService::Get(profile_);
+  auto* service = LookalikeUrlServiceFactory::GetForProfile(profile_);
   if (service->EngagedSitesNeedUpdating())
     service->ForceUpdateEngagedSites(base::DoNothing());
 #endif
-  if (base::FeatureList::IsEnabled(kPrewarmLookalikeCheck))
-    PrewarmLookalikeCheckAsync();
+  PrewarmLookalikeCheckAsync();
   return content::NavigationThrottle::PROCEED;
 }
 
 ThrottleCheckResult LookalikeUrlNavigationThrottle::WillRedirectRequest() {
-  if (base::FeatureList::IsEnabled(kPrewarmLookalikeCheck) &&
-      redirect_lookup_cache_checks_ <
-          base::GetFieldTrialParamByFeatureAsInt(
-              kPrewarmLookalikeCheck, "redirect_lookup_cache_limit", 2)) {
+  constexpr int kRedirectLookupCacheLimit = 2;
+  if (redirect_lookup_cache_checks_ < kRedirectLookupCacheLimit) {
     redirect_lookup_cache_checks_++;
     PrewarmLookalikeCheckAsync();
   }
@@ -138,12 +131,11 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillRedirectRequest() {
 }
 
 void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckAsync() {
+  constexpr base::TimeDelta kDelayBeforeTaskStart = base::Milliseconds(50);
   if (lookup_timer_.IsRunning())
     return;
   lookup_timer_.Start(
-      FROM_HERE,
-      base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-          kPrewarmLookalikeCheck, "delay_before_task_start", 50)),
+      FROM_HERE, kDelayBeforeTaskStart,
       base::BindOnce(&LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckSync,
                      base::Unretained(this)));
 }
@@ -155,7 +147,8 @@ void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckSyncWithSites(
 
 void LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckSync() {
   // Update engaged sites if needed, and try again.
-  LookalikeUrlService* service = LookalikeUrlService::Get(profile_);
+  LookalikeUrlService* service =
+      LookalikeUrlServiceFactory::GetForProfile(profile_);
   if (!use_test_profile_ && service->EngagedSitesNeedUpdating()) {
     service->ForceUpdateEngagedSites(base::BindOnce(
         &LookalikeUrlNavigationThrottle::PrewarmLookalikeCheckSyncWithSites,
@@ -251,7 +244,8 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::WillProcessResponse() {
     return content::NavigationThrottle::CANCEL_AND_IGNORE;
   }
 
-  LookalikeUrlService* service = LookalikeUrlService::Get(profile_);
+  LookalikeUrlService* service =
+      LookalikeUrlServiceFactory::GetForProfile(profile_);
   if (!use_test_profile_ && service->EngagedSitesNeedUpdating()) {
     service->ForceUpdateEngagedSites(
         base::BindOnce(&LookalikeUrlNavigationThrottle::PerformChecksDeferred,
@@ -342,7 +336,8 @@ LookalikeUrlNavigationThrottle::CheckAndMaybeShowInterstitial(
     return content::NavigationThrottle::CANCEL;
   }
 
-  lookalikes::RecordUMAFromMatchType(match_type);
+  lookalikes::RecordUMAFromMatchType(match_type,
+                                     profile_->IsIncognitoProfile());
 
   // Punycode interstitial doesn't have a target site, so safe_domain isn't
   // valid.
@@ -512,7 +507,8 @@ ThrottleCheckResult LookalikeUrlNavigationThrottle::PerformChecks(
   DCHECK_NE(LookalikeUrlMatchType::kNone, match_type);
   DCHECK(action_type == LookalikeActionType::kRecordMetrics ||
          action_type == LookalikeActionType::kShowSafetyTip);
-  lookalikes::RecordUMAFromMatchType(match_type);
+  lookalikes::RecordUMAFromMatchType(match_type,
+                                     profile_->IsIncognitoProfile());
   RecordPerformCheckLatenciesForAllowedNavigation(
       perform_checks_start, is_lookalike_url_duration,
       total_get_domain_info_duration);

@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/crostini/crostini_security_delegate.h"
 #include "chrome/browser/ash/guest_os/guest_os_security_delegate.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -41,7 +42,7 @@ void GuestOsWaylandServer::ListenOnSocket(
     std::move(response_callback).Run({"Invalid owner_id"});
     return;
   }
-  GuestOsService::GetForProfile(profile)->WaylandServer()->Listen(
+  GuestOsServiceFactory::GetForProfile(profile)->WaylandServer()->Listen(
       std::move(socket_fd), request.desc().type(), request.desc().name(),
       std::move(response_callback));
 }
@@ -56,7 +57,7 @@ void GuestOsWaylandServer::CloseSocket(
     std::move(response_callback).Run({"Invalid owner_id"});
     return;
   }
-  GuestOsService::GetForProfile(profile)->WaylandServer()->Close(
+  GuestOsServiceFactory::GetForProfile(profile)->WaylandServer()->Close(
       request.desc().type(), request.desc().name(),
       std::move(response_callback));
 }

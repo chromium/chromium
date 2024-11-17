@@ -2,7 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/capture_mode/search_results_panel.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
@@ -50,6 +55,8 @@ class SunfishBrowserTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_{features::kSunfishFeature};
+  base::AutoReset<bool> ignore_sunfish_secret_key =
+      switches::SetIgnoreSunfishSecretKeyForTest();
 };
 
 // Tests the basic functionalities of `SearchResultsView`.
@@ -65,12 +72,21 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, SearchResultsView) {
 
 // Tests that links are opened in new tabs.
 IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, OpenLinksInNewTabs) {
-  auto widget = CreateWidget();
-  ChromeCaptureModeDelegate* delegate = ChromeCaptureModeDelegate::Get();
-  auto* contents_view =
-      widget->SetContentsView(delegate->CreateSearchResultsView());
+  base::HistogramTester histogram_tester;
+  constexpr char kSearchResultClickedHistogram[] =
+      "Ash.CaptureModeController.SearchResultClicked.ClamshellMode";
+
+  histogram_tester.ExpectTotalCount(kSearchResultClickedHistogram, 0);
+
+  auto* controller = CaptureModeController::Get();
+  controller->StartSunfishSession();
+  VerifyActiveBehavior(BehaviorType::kSunfish);
+
+  // Simulate showing the panel while the session is active.
+  controller->ShowSearchResultsPanel(gfx::ImageSkia(), GURL("kTestUrl1"));
+  ASSERT_TRUE(controller->IsActive());
   auto* search_results_view =
-      views::AsViewClass<SearchResultsView>(contents_view);
+      controller->GetSearchResultsPanel()->search_results_view();
 
   // Browser tests start out with 1 browser tab by default.
   EXPECT_EQ(1, browser()->tab_strip_model()->count());
@@ -110,8 +126,31 @@ IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, OpenLinksInNewTabs) {
   observer.Wait();
   EXPECT_TRUE(observer.last_navigation_succeeded());
 
-  // Test it opens a new tab.
+  // Test it opens a new tab and ends the session.
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_FALSE(controller->IsActive());
+  histogram_tester.ExpectTotalCount(kSearchResultClickedHistogram, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SunfishBrowserTest, SendSearchRequests) {
+  // Send a region search.
+  ChromeCaptureModeDelegate* delegate = ChromeCaptureModeDelegate::Get();
+  delegate->SendRegionSearch(SkBitmap(), gfx::Rect(),
+                             base::BindRepeating([](GURL url) {}));
+
+  // Send a multimodal search.
+  delegate->SendMultimodalSearch(SkBitmap(), gfx::Rect(), "Search",
+                                 base::BindRepeating([](GURL url) {}));
+
+  // Send a region search with a new region to simulate adjusting the selected
+  // region.
+  delegate->SendRegionSearch(SkBitmap(), gfx::Rect(10, 10, 400, 400),
+                             base::BindRepeating([](GURL url) {}));
+
+  // Simulate sending a multimodal search with the adjusted region.
+  delegate->SendMultimodalSearch(SkBitmap(), gfx::Rect(10, 10, 400, 400),
+                                 "Search",
+                                 base::BindRepeating([](GURL url) {}));
 }
 
 }  // namespace ash

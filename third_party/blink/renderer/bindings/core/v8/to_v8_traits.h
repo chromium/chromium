@@ -49,13 +49,6 @@ class UnionBase;
 template <typename T, typename SFINAEHelper = void>
 struct ToV8Traits;
 
-// Used only for allowing a ScriptPromiseProperty to specify that it will
-// resolve/reject with v8::Undefined.
-struct ToV8UndefinedGenerator {
-  DISALLOW_NEW();
-  using ImplType = ToV8UndefinedGenerator;
-};
-
 // undefined
 template <>
 struct ToV8Traits<IDLUndefined> {
@@ -87,6 +80,12 @@ struct ToV8Traits<IDLAny> {
     if (value.IsEmpty())
       return v8::Undefined(script_state->GetIsolate());
     return value;
+  }
+
+  [[nodiscard]] static v8::Local<v8::Value> ToV8(
+      ScriptState* script_state,
+      const bindings::NativeValueTraitsAnyAdapter& adapter) {
+    return adapter;
   }
 };
 
@@ -239,17 +238,6 @@ struct ToV8Traits<IDLObject> {
     if (!v8_value->IsObject())
       return v8::Undefined(script_state->GetIsolate());
     return v8_value;
-  }
-};
-
-// Promise
-template <>
-struct ToV8Traits<IDLPromise> {
-  [[nodiscard]] static v8::Local<v8::Value> ToV8(
-      ScriptState* script_state,
-      const ScriptPromiseUntyped& script_promise) {
-    DCHECK(!script_promise.IsEmpty());
-    return script_promise.V8Value();
   }
 };
 
@@ -897,15 +885,6 @@ struct ToV8Traits<IDLOptional<T>> {
     return ToV8Traits<T>::ToV8(script_state, value);
   }
 };
-
-template <typename IDLType, typename BlinkType>
-ScriptPromise<IDLType> ToResolvedPromise(ScriptState* script_state,
-                                         BlinkType value) {
-  auto v8_value = ToV8Traits<IDLType>::ToV8(script_state, value);
-  return ScriptPromise<IDLType>(
-      script_state->GetIsolate(),
-      ScriptPromiseUntyped::ResolveRaw(script_state, v8_value));
-}
 
 }  // namespace blink
 

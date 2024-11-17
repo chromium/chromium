@@ -30,6 +30,8 @@ data/ac4-only-ajoc-frag.mp4
 data/ac4-only-channel-based-coding-frag.mp4
 data/ac4-only-ims-frag.mp4
 data/audio-start-time-only.webm
+data/av1-1-b8-02-allintra.ivf
+data/av1-1-b8-02-allintra.ivf.json
 data/av1-I-frame-1280x720
 data/av1-I-frame-320x240
 data/av1-film_grain.ivf
@@ -317,6 +319,10 @@ data/buck-1280x720-vp9.webm
 data/bunny-opus-intensity-stereo.webm
 data/butterfly-853x480.webm
 data/cleaner.html
+data/color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-2sec.mp4
+data/color_pattern_24_dvhe05_1920x1080__dvh1_st-3sec-frag-cenc.mp4
+data/color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-cenc-clearlead-2sec.mp4
+data/color_pattern_24_dvhe081_compressed_rpu_1920x1080__dvh1_st-3sec-frag-cenc.mp4
 data/colour.webm
 data/colour_unspecified_range.webm
 data/corrupt.mp3

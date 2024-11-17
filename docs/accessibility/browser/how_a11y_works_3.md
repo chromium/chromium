@@ -104,7 +104,7 @@ semantics around which events are fired when, and where. As a few examples:
 * On macOS, there are separate events for expanding and collapsing a row
   in a table or tree, vs expanding or collapsing a pop-up menu
 * On Android there's a separate event for the checked state changing, while
-  on other platforms there's just a generic state changed event
+  on other platforms, there's just a generic state changed event
 * On Windows there are SHOW and HIDE events that need to be fired when
   a node or subtree is created or destroyed
 

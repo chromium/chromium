@@ -71,7 +71,7 @@ public final class CustomTabLaunchCauseMetricsTest {
     @Test
     @SmallTest
     @UiThreadTest
-    public void testCCTLaunch() throws Throwable {
+    public void testCctLaunch() throws Throwable {
         int count = histogramCountForValue(LaunchCauseMetrics.LaunchCause.CUSTOM_TAB);
         CustomTabLaunchCauseMetrics metrics = makeLaunchCauseMetrics(false);
         metrics.onReceivedIntent();

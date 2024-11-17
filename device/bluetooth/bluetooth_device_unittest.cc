@@ -1443,6 +1443,15 @@ TEST_F(BluetoothTest, MAYBE_CreateGattConnection) {
   ASSERT_EQ(1u, gatt_connections_.size());
   EXPECT_TRUE(device->IsGattConnected());
   EXPECT_TRUE(gatt_connections_[0]->IsConnected());
+
+#if BUILDFLAG(IS_WIN)
+  if (!UsesNewGattSessionHandling() &&
+      UncachedGattDiscoveryForGattConnection()) {
+    EXPECT_EQ(gatt_discovery_attempts_with_uncached_mode(), 1);
+  } else {
+    EXPECT_EQ(gatt_discovery_attempts_with_uncached_mode(), 0);
+  }
+#endif
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE)

@@ -78,8 +78,7 @@ void EnumerateLocalWallpaperFiles(
   std::vector<base::FilePath> trash_paths;
   if (file_manager::trash::IsTrashEnabledForProfile(profile)) {
     auto enabled_trash_locations =
-        file_manager::trash::GenerateEnabledTrashLocationsForProfile(
-            profile, /*base_path=*/base::FilePath());
+        file_manager::trash::GenerateEnabledTrashLocationsForProfile(profile);
     for (const auto& it : enabled_trash_locations) {
       base::FilePath trash_path =
           it.first.Append(it.second.relative_folder_path);

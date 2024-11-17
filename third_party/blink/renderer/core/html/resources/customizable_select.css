@@ -8,30 +8,13 @@
 
 @namespace "http://www.w3.org/1999/xhtml";
 
-/* These rules are intended to apply to appearance:base-select when the author
- * provides a child <button> element. They still apply when appearance computes
- * to auto, but the values provided in the
- * -internal-appearance-auto-base-select() value should make it the same as the
- * select rules in html.css for appearance:auto when the computed value of
- * appearance is auto. */
-select:not(:-internal-list-box):-internal-select-has-child-button {
-  background-color: -internal-appearance-auto-base-select(Field, transparent);
-  border: -internal-appearance-auto-base-select(1px, 0px),
-          -internal-appearance-auto-base-select(solid, none),
-          -internal-appearance-auto-base-select(light-dark(#767676, #858585), transparent);
-}
-
-/* These rules are intended to apply to appearance:base-select when the author
- * does NOT provide a child <button> element. They still apply when appearance
- * computes to auto, but the values provided in the
- * -internal-appearance-auto-base-select() value should make it the same as the
- * select rules in html.css for appearance:auto when the computed value of
- * appearance is auto. */
-select:not(:-internal-list-box):not(:-internal-select-has-child-button) {
+select:not(:-internal-list-box) {
+  font: -internal-appearance-auto-base-select(-webkit-small-control, inherit);
+  color: -internal-appearance-auto-base-select(FieldText, inherit);
+  background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 10%, transparent));
+  border: 1px solid -internal-appearance-auto-base-select(light-dark(#767676, #858585), currentColor);
   padding: -internal-appearance-auto-base-select(0, 0.25em);
-  border: 1px solid -internal-appearance-auto-base-select(light-dark(#767676, #858585), ButtonBorder);
-  /* TODO(crbug.com/1511354): Adding border-radius here makes it impossible to
-   * pass the reftest due to indistinguishable differences in a few pixels. */
+
   /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
    * https://github.com/openui/open-ui/issues/1026
    * https://www.w3.org/WAI/WCAG22/Understanding/target-size-minimum.html */
@@ -42,25 +25,41 @@ select:not(:-internal-list-box):not(:-internal-select-has-child-button) {
   /* The 1.2em here makes sure that options with no text still make the button
    * have the same height as options with text. */
   min-block-size: -internal-appearance-auto-base-select(auto, max(24px, 1.2em));
-  /* TODO(crbug.com/1511354): Make the UA stylesheet use something standardized
-   * for the font property instead of -webkit-small-control. */
+}
+
+select:not(:-internal-list-box) > button:first-child {
+  all: unset;
+  display: contents;
+}
+
+select:not(:-internal-list-box):enabled:hover {
+  background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 20%, transparent));
+}
+select:not(:-internal-list-box):enabled:active {
+  background-color: -internal-appearance-auto-base-select(Field, color-mix(in lab, currentColor 30%, transparent));
+}
+
+/* Without this rule, we would be changing the styles for disabled
+ * appearance:auto selects. */
+select:not(:-internal-list-box):disabled {
+  color: -internal-appearance-auto-base-select(light-dark(GrayText, #aaa), inherit);
+  border-color: -internal-appearance-auto-base-select(rgba(118, 118, 118, 0.3), inherit);
 }
 
 /* Undo unwanted styles from select rules */
-select:not(:-internal-list-box) > button,
+select:not(:-internal-list-box) > button:first-child,
 select::picker(select) {
   white-space: normal;
 }
 
 select:not(:-internal-list-box)::picker(select) {
-  box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
   box-sizing: border-box;
   overflow: auto;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  border-radius: 0.25em;
+  border: solid;
   padding-block: 0.25em;
   padding-inline: 0;
-  background-color: Field;
+  color: CanvasText;
+  background-color: Canvas;
   margin: 0;
   inset: auto;
   min-inline-size: anchor-size(self-inline);
@@ -92,16 +91,6 @@ select::picker(select) {
   display: block !important;
 }
 
-/* TODO(crbug.com/1511354): These hover styles should only be applied when
- * the select has appearance:base-select. This will be challenging because
- * the selector is targeting an option rather than the select itself. However,
- * these hover rules don't seem to affect appearance:auto options in the popup
- * for now. */
-select:not(:-internal-list-box) option:not(:disabled):hover {
-  background-color: SelectedItem;
-  color: SelectedItemText;
-}
-
 select:not(:-internal-list-box) option {
   /* min-size rules ensure that we meet accessibility guidelines for minimum target size.
    * https://github.com/openui/open-ui/issues/1026
@@ -112,14 +101,24 @@ select:not(:-internal-list-box) option {
   min-inline-size: 24px;
   min-block-size: max(24px, 1.2em);
   align-content: center;
+  font-weight: -internal-appearance-auto-base-select(normal, inherit);
 }
 
-/* TODO(crbug.com/1511354): Consider using ::marker or a whole new
- * pseudo-element to implement this. */
-select:not(:-internal-list-box) option::before {
+select:not(:-internal-list-box) option:enabled:hover {
+  background-color: color-mix(in lab, currentColor 20%, transparent);
+}
+select:not(:-internal-list-box) option:enabled:active {
+  background-color: color-mix(in lab, currentColor 30%, transparent);
+}
+select:not(:-internal-list-box) option:disabled {
+  color: -internal-appearance-auto-base-select(inherit, color-mix(in lab, currentColor 50%, transparent));
+}
+
+
+select:not(:-internal-list-box) option::check {
   content: '\2713' / '';
 }
-select option:not(:checked)::before {
+select option:not(:checked)::check {
   visibility: hidden;
 }
 
@@ -146,19 +145,14 @@ select::-internal-select-autofill-preview-text {
   white-space: nowrap;
 }
 
-/* TODO(crbug.com/1511354): select::select-fallback-button::after can't be
- * targeted with author styles but it should be and I don't know why. */
-select:not(-internal-list-box):not(:-internal-select-has-child-button)::after {
+select:not(-internal-list-box)::select-arrow {
   /* We don't have to use -internal-appearance-auto-base-select() here because
    * the pseudo-element won't get generated unless the content property is set. */
   padding-inline-start: 0.5em;
   display: block;
 }
-select:not(:-internal-list-box):not(:-internal-select-has-child-button):open::after {
+select:not(:-internal-list-box)::select-arrow {
   content: -internal-appearance-auto-base-select(none, counter(fake-counter-name, disclosure-open));
-}
-select:not(:-internal-list-box):not(:-internal-select-has-child-button):not(:open)::after {
-  content: -internal-appearance-auto-base-select(none, counter(fake-counter-name, disclosure-closed));
 }
 
 select:not(:-internal-list-box) optgroup {
@@ -167,4 +161,11 @@ select:not(:-internal-list-box) optgroup {
 /* This can be merged with the :-internal-list-box rule in html.css */
 select:not(:-internal-list-box) optgroup option {
   padding-inline-start: 20px;
+  font-weight: normal;
+}
+
+/* These styles are copied from optgroup's label attribute inline style properties */
+select:not(:-internal-list-box) optgroup legend {
+  padding: 0 2px 1px 2px;
+  min-height: 1.2em;
 }

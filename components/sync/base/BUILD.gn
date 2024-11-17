@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
@@ -10,16 +11,33 @@ declare_args() {
   sync_user_agent_product = "Chrome"
 }
 
+if (is_ios) {
+  # TODO(crbug.com/371589349): This import from //ios is temporary. It is needed
+  # because passkey sync on that platform needs to be enabled iff the
+  # Credential Provider Extension is built with passkey support.
+  import("//ios/build/chrome_build.gni")
+  buildflag_header("ios_cpe_passkey_buildflag") {
+    header = "ios_cpe_passkey_buildflag.h"
+    flags = [ "IOS_PASSKEYS_ENABLED=$ios_cpe_enable_passkey_capabilities" ]
+  }
+}
+
 source_set("features") {
   sources = [
     "features.cc",
     "features.h",
   ]
   deps = [ "//base" ]
+
+  if (is_ios) {
+    deps += [ ":ios_cpe_passkey_buildflag" ]
+  }
 }
 
 static_library("base") {
   sources = [
+    "account_pref_utils.cc",
+    "account_pref_utils.h",
     "client_tag_hash.cc",
     "client_tag_hash.h",
     "command_line_switches.cc",

@@ -14,13 +14,22 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "ui/base/models/simple_menu_model.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/menus/simple_menu_model.h"
 
 class PrefRegistrySimple;
 
 namespace ash {
+
+inline constexpr char kUserFeedbackPrompt[] =
+    "## Your Feedback Matters!\n"
+    "We're always looking for ways to improve the smart grouping. "
+    "Please tell us what you think:\n\n\n"
+    "----------\n"
+    "Auto-generated logs:\n";
+
+inline constexpr char kMarkdownBackticks[] = "```";
 
 class BirchBarMenuModelAdapter;
 class BirchBarView;
@@ -45,8 +54,6 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
 
   std::vector<raw_ptr<BirchBarView>>& bar_views() { return bar_views_; }
 
-  bool is_informed_restore() const { return is_informed_restore_; }
-
   // Register a bar view.
   void RegisterBar(BirchBarView* bar_view);
 
@@ -57,7 +64,7 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   void ShowChipContextMenu(BirchChipButton* chip,
                            BirchSuggestionType chip_type,
                            const gfx::Point& point,
-                           ui::MenuSourceType source_type);
+                           ui::mojom::MenuSourceType source_type);
 
   // Called if a suggestion is hidden by user from context menu.
   void OnItemHiddenByUser(BirchItem* item);
@@ -80,6 +87,17 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   // Toggles temperature units for weather chip between F and C.
   void ToggleTemperatureUnits();
 
+  // Called when the coral group with `group_id` is being removed.
+  void OnCoralGroupRemoved(const base::Token& group_id);
+
+  // Called when the content of a group with given `group_id` gets updated.
+  void OnCoralGroupUpdated(const base::Token& group_id);
+
+  // Called when an entity with given `identifier` is removed from the group
+  // with given id.
+  void OnCoralEntityRemoved(const base::Token& group_id,
+                            std::string_view identifier);
+
   // Executes the commands from bar and chip context menus. `from_chip` will be
   // true if the command is from a chip context menu.
   // Please note that most of the bar menu commands should be executed by the
@@ -95,11 +113,15 @@ class ASH_EXPORT BirchBarController : public BirchModel::Observer,
   // ui::SimpleMenuModel::Delegate:
   void ExecuteCommand(int command_id, int event_flags) override;
 
+  // Launches feedback diaglog for Coral items.
+  void ProvideFeedbackForCoral();
+
   BirchBarMenuModelAdapter* chip_menu_model_adapter_for_testing() {
     return chip_menu_model_adapter_.get();
   }
 
  private:
+  friend class BirchBarAnimationTest;
   friend class BirchBarMenuTest;
 
   // Fetches data from birch model if there is no fetching in progress.

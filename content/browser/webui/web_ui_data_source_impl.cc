@@ -297,6 +297,14 @@ std::string WebUIDataSourceImpl::GetSource() {
   return source_name_;
 }
 
+std::string WebUIDataSourceImpl::GetScheme() {
+  auto pos = source_name_.find("://");
+  if (pos == std::string::npos) {
+    return kChromeUIScheme;
+  }
+  return source_name_.substr(0, pos);
+}
+
 void WebUIDataSourceImpl::SetSupportedScheme(std::string_view scheme) {
   CHECK(!supported_scheme_.has_value());
 

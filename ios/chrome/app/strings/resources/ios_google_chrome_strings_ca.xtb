@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1066101356081285416">Chrome detectarà els números de seguiment als llocs web que visitis i et mostrarà novetats sobre els paquets a la pàgina Pestanya nova. El número de seguiment de l'enviament i el nom del lloc web s'enviaran a Google per oferir aquesta funció i millorar les funcions de compra a Google per a tothom. Pots actualitzar-ho en qualsevol moment a la <ph name="BEGIN_LINK" />configuració del seguiment d'enviaments<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Cerca amb Google Lens</translation>
 <translation id="1143896152279775643">La contrasenya es desarà al gestor de contrasenyes de Google per a <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Obre una pestanya nova a Chrome</translation>
 <translation id="1166460004393506534">Suprimeix les dades de navegació a Chrome</translation>
@@ -38,7 +39,9 @@ Aspectes que cal tenir en compte:
 <translation id="1670609221633730681">Consell de Chrome: tria la posició de la barra d'adreces</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Afegeix els URL introduïts a les adreces d'interès de Chrome.</translation>
+<translation id="1799920918471566157">Consells per a Chrome</translation>
 <translation id="1830634592642484976">Actualment aquesta adreça està desada a Chrome. Per utilitzar-la en tots els productes de Google, desa-la al teu Compte de Google, <ph name="USER_EMAIL" />.</translation>
+<translation id="1891812034154776216">Amaga les pestanyes d'incògnit obertes quan surtis de Chrome</translation>
 <translation id="1917964099031477364">Aquest compte i totes les dades que no s'hagin desat se suprimiran de Chrome i de la resta d'aplicacions de Google instal·lades en aquest dispositiu.</translation>
 <translation id="1919130412786645364">Permet l'inici de sessió a Chrome</translation>
 <translation id="1965935827552890526">Acaba el que estaves fent a l'altra finestra de Chrome oberta.</translation>
@@ -70,6 +73,7 @@ Aspectes que cal tenir en compte:
 <translation id="2689064829982324496">Per tancar la sessió del teu Compte de Google en tots els llocs web, <ph name="BEGIN_LINK" />tanca la sessió de Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome no ha pogut cercar actualitzacions. Torna-ho a provar més tard.</translation>
 <translation id="2703746758996815929">Per rebre consells útils sobre Chrome, activa les notificacions a la configuració d'iOS.</translation>
+<translation id="2728851697704606655">Tradueix amb Google Lens</translation>
 <translation id="2736805085127235148">En aquests moments, les notificacions de Chrome estan desactivades a la configuració del dispositiu.</translation>
 <translation id="2754428955276778271">Algunes dades de Chrome encara no s'han desat al teu Compte de Google.
 
@@ -247,6 +251,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="7581063337314642333">Visita la quadrícula de pestanyes a Chrome</translation>
 <translation id="7599894504325210080">Visualització ampliada de la funció Emplenament automàtic de Chrome</translation>
 <translation id="7642373780953416937">Rep alertes sobre qualsevol problema de privadesa o de seguretat que Chrome detecti automàticament.</translation>
+<translation id="7660356333829433649">Torna aquí per veure més consells útils i treure el màxim profit de Chrome.</translation>
 <translation id="7662994914830945754">Per veure les pestanyes des de tots els llocs on facis servir Chrome, inicia la sessió i activa la sincronització</translation>
 <translation id="7693590760643069321">Ara pots utilitzar Chrome cada vegada que toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="7698568245838009292">Chrome sol·licita accés a la càmera</translation>
@@ -261,6 +266,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="7948283758957877064">Novetats de Chrome</translation>
 <translation id="8000174216052461231">Consell de Chrome: obtén la seguretat més efectiva de Chrome</translation>
 <translation id="8006014511203279255">Utilitza Chrome cada vegada que toquis enllaços en missatges o en altres aplicacions.</translation>
+<translation id="8014670471808569312">Chrome t'oferirà desar la contrasenya.</translation>
 <translation id="8018153653741938705">Protegeix-te amb Google Chrome</translation>
 <translation id="8022947259858476807">Utilitza Chrome de manera predeterminada per obrir enllaços, cercar des de widgets i emplenar automàticament contrasenyes en altres aplicacions</translation>
 <translation id="804638182476029347">Permet que les notificacions de Chrome incloguin alertes de baixada de preu</translation>
@@ -292,6 +298,7 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 <translation id="8558480467877843976">Ara pots utilitzar Chrome cada vegada que naveguis o toquis enllaços en missatges, documents i altres aplicacions.</translation>
 <translation id="8603022514504485810">El gestor de contrasenyes de Google no ha pogut comprovar totes les contrasenyes. Torna-ho a provar demà o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Activa l'opció Bloqueja les pestanyes d'incògnit després de tancar Chrome.</translation>
+<translation id="8673726683583791503">Compra amb Google Lens</translation>
 <translation id="8727043961453758442">Aprofita Chrome al màxim</translation>
 <translation id="8765470054473112089">Quan escrius a la barra d'adreces o al quadre de cerca, Chrome envia el que escrius al teu motor de cerca predeterminat per obtenir millors suggeriments. Aquesta opció està desactivada en el mode d'incògnit.</translation>
 <translation id="8772179140489533211">Mostra sol·licituds per iniciar la sessió a Chrome.</translation>

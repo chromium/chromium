@@ -8,6 +8,20 @@
 #include "content/browser/compositor/surface_utils.h"
 
 namespace content {
+namespace {
+// Use this to get a new unique ID for a NavigationTransitionData during
+// construction. The returned ID is guaranteed to be nonzero (which is the "no
+// ID" indicator).
+int GenerateUniqueId() {
+  // Purposely differentiate from `NavigationEntryImpl::unique_id_`, which is
+  // 1-indexed. Helps with debugging.
+  static int unique_id_counter = 1000;
+  return unique_id_counter++;
+}
+}  // namespace
+
+NavigationTransitionData::NavigationTransitionData()
+    : unique_id_(GenerateUniqueId()) {}
 
 void NavigationTransitionData::SetSameDocumentNavigationEntryScreenshotToken(
     const std::optional<blink::SameDocNavigationScreenshotDestinationToken>&

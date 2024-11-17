@@ -32,7 +32,6 @@
 <translation id="2175927920773552910">คิวอาร์โค้ด</translation>
 <translation id="2244252133441425811">เปิดใช้เครื่องมือเลือก FPS ของวิดีโอ</translation>
 <translation id="2271433936731426666">เปิดใช้ภาพรวมของวิดีโอขนาดเต็ม</translation>
-<translation id="2281736597583450397">ดูรายละเอียดได้คมชัดยิ่งขึ้นด้วยการซูมที่ปรับปรุงใหม่</translation>
 <translation id="2320741269052147773">เลื่อนไปทางซ้าย</translation>
 <translation id="2360840973209616515">แอปกล้องจัดการโดยผู้ดูแลระบบ
         โปรดสอบถามรายละเอียดจากผู้ดูแลระบบ</translation>
@@ -112,7 +111,6 @@
 <translation id="5975083100439434680">ย่อ</translation>
 <translation id="5976160379964388480">อื่นๆ</translation>
 <translation id="6073451960410192870">หยุดบันทึก</translation>
-<translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6197807149213783179">บันทึกข้อมูลเมตา</translation>
 <translation id="6233780560267770709">3 x 3</translation>
 <translation id="6243827288366940320">อัตราส่วนทองคำ</translation>
@@ -122,7 +120,6 @@
 หากความคิดนั้นเห็นเกี่ยวกับคุณภาพของรูปภาพหรือวิดีโอ โปรดแนบตัวอย่างรูปภาพหรือวิดีโอแล้วอธิบายปัญหาที่พบ (เช่น รูปภาพมืดเกินไปหรือวัตถุไม่อยู่ในโฟกัส)</translation>
 <translation id="6519884562954018934">เข้าร่วม <ph name="WIFINAME" /></translation>
 <translation id="6527303717912515753">แชร์</translation>
-<translation id="6586509689874700895">ขั้นแรกให้กด <ph name="BUTTON_NAME" /> เพื่อซูมเข้า จากนั้นเมื่อถ่ายรูปแล้ว คุณจะเห็นรายละเอียดที่คมชัดขึ้น</translation>
 <translation id="659539649712855529">คัดลอก <ph name="CONTENT" /> แล้ว</translation>
 <translation id="6617916774429601017">แสดงความละเอียดทั้งหมด</translation>
 <translation id="6631515515009660915">ปิดมิเรอร์</translation>
@@ -168,7 +165,6 @@
 <translation id="8609951387004618906">เปิด <ph name="URL" /></translation>
 <translation id="8629662593426079630">360p</translation>
 <translation id="8711011893539266636">เปิด/ปิดเสียงไมโครโฟน ปิดเสียงอยู่</translation>
-<translation id="8712637175834984815">รับทราบ</translation>
 <translation id="8730621377337864115">เสร็จสิ้น</translation>
 <translation id="8732462232047530626">แสดงตัวอย่างข้อมูลเมตา</translation>
 <translation id="874854738381978209">ตรวจพบเครือข่าย Wi-Fi</translation>

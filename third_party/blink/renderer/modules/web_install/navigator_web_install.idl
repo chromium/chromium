@@ -8,6 +8,6 @@
   RuntimeEnabled=WebAppInstallation,
   ImplementedAs=NavigatorWebInstall
 ] partial interface Navigator {
-  [CallWith=ScriptState, RaisesException] Promise<WebInstallResult> install(USVString manifest_id);
+  [CallWith=ScriptState, RaisesException] Promise<WebInstallResult> install();
   [CallWith=ScriptState, RaisesException] Promise<WebInstallResult> install(USVString manifest_id, USVString install_url);
 };

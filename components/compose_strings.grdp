@@ -17,11 +17,11 @@
   <message name="IDS_COMPOSE_SUGGESTION_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element.">
     Powered by Google
   </message>
-  <message name="IDS_COMPOSE_SUGGESTION_SAVED_TEXT" desc="The main text displayed in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved.">
-    Resume writing
+  <message name="IDS_COMPOSE_SUGGESTION_SAVED_TEXT" desc="Main text of a notification that the current text field has an open 'Help me write' session. Clicking the notification will re-open the 'Help me write' dialog.">
+    Continue writing
   </message>
-  <message name="IDS_COMPOSE_SUGGESTION_SAVED_LABEL" desc="The label beneath the main text in the Autofill suggestion that a user sees after interacting with a supported text element, indicating that user state was saved.">
-    Open to continue
+  <message name="IDS_COMPOSE_SUGGESTION_SAVED_LABEL" desc="The label beneath the main text of a notification that the current text field has an open 'Help me write' session. Clicking on the notification will re-open the 'Help me write' dialog.">
+    Open to resume
   </message>
   <message name="IDS_COMPOSE_SUGGESTION_AX_MESSAGE_ON_SHOW_PROACTIVE" desc="The message read out by a screen reader when the Compose nudge is shown.">
     Help me write. Tab and press enter to open
@@ -38,6 +38,7 @@
   <message name="IDS_COMPOSE_GO_TO_SETTINGS_CHILD_SUGGESTION_TEXT" desc="Text a user sees in one of the Autofill popup child suggestions for the Help me write feature. When selected, the user is navigate to a decicated Help me write feature settings page.">
     Go to Settings
   </message>
+
   <!-- FRE dialog -->
   <message name="IDS_COMPOSE_FRE_TITLE" desc="The title of the Help me write disclaimer dialog.">
     Write with more confidence anywhere on the web
@@ -100,6 +101,15 @@
   <message name="IDS_COMPOSE_INPUT_FOOTER" desc="Privacy disclaimer in the input dialog.">
     Your text and page content are sent to Google and may be used to improve this feature.
   <ph name="BEGIN_LINK">&lt;a href=""&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+  </message>
+  <message name="IDS_COMPOSE_INPUT_MODE_POLISH" desc="The chip title used to select the Polish mode for a Help me write request.">
+    Polish
+  </message>
+  <message name="IDS_COMPOSE_INPUT_MODE_ELABORATE" desc="The chip title used to select the Elaborate mode for a Help me write request.">
+    Elaborate
+  </message>
+  <message name="IDS_COMPOSE_INPUT_MODE_FORMALIZE" desc="The chip title used to select the Formalize mode for a Help me write request.">
+    Formalize
   </message>
   <message name="IDS_COMPOSE_SUBMIT_BUTTON" desc="The button to request Compose to generate text.">
     Create

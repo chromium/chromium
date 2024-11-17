@@ -1015,6 +1015,14 @@
       "features": [
         "test_feature_0"
       ]
+    },
+    {
+      "id": 82,
+      "description": "GpuControlListEntryTest.GlTypeEntry",
+      "gl_type": "gl",
+      "features": [
+        "test_feature_0"
+      ]
     }
   ]
 }

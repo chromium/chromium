@@ -40,10 +40,10 @@ class PageLiveStateDecorator : public GraphOwnedDefaultImpl,
   PageLiveStateDecorator(const PageLiveStateDecorator& other) = delete;
   PageLiveStateDecorator& operator=(const PageLiveStateDecorator&) = delete;
 
-  // Must be called when the device connection types used by `contents` change.
-  static void OnDeviceConnectionTypesChanged(
+  // Must be called when the capability types used by `contents` change.
+  static void OnCapabilityTypesChanged(
       content::WebContents* contents,
-      content::WebContentsObserver::DeviceConnectionType connection_type,
+      content::WebContents::CapabilityType capability_type,
       bool used);
 
   // Functions that should be called by a MediaStreamCaptureIndicator::Observer.

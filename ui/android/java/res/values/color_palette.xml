@@ -70,13 +70,17 @@ found in the LICENSE file.
     <color name="baseline_neutral_variant_50">#747775</color>
     <color name="baseline_neutral_variant_30">#444746</color>
     <color name="baseline_neutral_variant_30_alpha_20">#33444746</color>
+    <color name="baseline_secondary_95">#DFF3FF</color>
     <color name="baseline_secondary_90">#C2E7FF</color>
     <color name="baseline_secondary_90_with_neutral_10_alpha_8">#B3D7EF</color>
     <color name="baseline_secondary_90_with_neutral_10_alpha_24">#94B7CF</color>
+    <color name="baseline_secondary_80">#7FCFFF</color>
     <color name="baseline_secondary_70">#5AB3F0</color>
     <color name="baseline_secondary_70_with_neutral_90_alpha_8">#53A7E1</color>
     <color name="baseline_secondary_70_with_neutral_90_alpha_24">#448FC4</color>
+    <color name="baseline_secondary_35">#005789</color>
     <color name="baseline_secondary_30">#004A77</color>
+    <color name="baseline_secondary_25">#003F66</color>
     <color name="baseline_secondary_10">#001D35</color>
     <color name="baseline_tertiary_90">#C4EED0</color>
     <color name="baseline_tertiary_80">#6DD58C</color>

@@ -10,7 +10,6 @@
 #include "base/i18n/case_conversion.h"
 #include "base/time/default_tick_clock.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/range/range.h"
@@ -96,6 +95,21 @@ gfx::Rect PrefixSelector::GetSelectionBoundingBox() const {
   NOTIMPLEMENTED_LOG_ONCE();
   return gfx::Rect();
 }
+
+#if BUILDFLAG(IS_WIN)
+std::optional<gfx::Rect> PrefixSelector::GetProximateCharacterBounds(
+    const gfx::Range& range) const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return std::nullopt;
+}
+
+std::optional<size_t> PrefixSelector::GetProximateCharacterIndexFromPoint(
+    const gfx::Point& point,
+    ui::IndexFromPointFlags flags) const {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return std::nullopt;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 bool PrefixSelector::GetCompositionCharacterBounds(size_t index,
                                                    gfx::Rect* rect) const {

@@ -77,6 +77,7 @@ include_rules = [
     "+ui/accessibility/ax_tree_data.h",
     "+ui/accessibility/ax_tree_id.h",
     "+ui/accessibility/ax_tree_source.h",
+    "+ui/accessibility/ax_location_and_scroll_updates.h",
     "+ui/base/ime/mojom/ime_types.mojom-shared.h",
     "+ui/base/ime/mojom/virtual_keyboard_types.mojom-shared.h",
 

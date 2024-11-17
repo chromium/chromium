@@ -133,6 +133,10 @@ void MainThreadMetricsHelper::ResetForTest(base::TimeTicks now) {
       kThreadLoadTrackerReportingInterval);
 }
 
+void MainThreadMetricsHelper::DisableMetricsSubsamplingForTesting() {
+  sampling_ratio_ = 1.;
+}
+
 void MainThreadMetricsHelper::RecordTaskMetrics(
     MainThreadTaskQueue* queue,
     const base::sequence_manager::Task& task,
@@ -161,7 +165,8 @@ void MainThreadMetricsHelper::RecordTaskMetrics(
   background_main_thread_load_tracker_.RecordTaskTime(task_timing.start_time(),
                                                       task_timing.end_time());
 
-  if (queue && base::TimeTicks::IsHighResolution()) {
+  if (queue && base::TimeTicks::IsHighResolution() &&
+      metrics_subsampler_.ShouldSample(sampling_ratio_)) {
     base::TimeDelta elapsed =
         task_timing.start_time() - task.GetDesiredExecutionTime();
     queueing_delay_histograms_[static_cast<size_t>(queue->GetQueuePriority())]

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!-- A non-transparent background is needed for the custom #onDraw to work. -->
+<org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeBaseLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/edge_to_edge_base_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/window_background_color">
+</org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeBaseLayout>

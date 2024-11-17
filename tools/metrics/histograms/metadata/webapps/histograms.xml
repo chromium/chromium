@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="AppBanners.BeforeInstallEvent"
-    enum="AppBannersBeforeInstallEvent" expires_after="2025-03-09">
+    enum="AppBannersBeforeInstallEvent" expires_after="2025-05-11">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <owner>pwa-team@google.com</owner>
@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.DisplayEvent" enum="AppBannersDisplayEvent"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>pjmclachlan@google.com</owner>
   <owner>pcovell@google.com</owner>
   <summary>
@@ -62,7 +62,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.InstallableStatusCode" enum="InstallableStatusCode"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <summary>
@@ -75,7 +75,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.InstallEvent" enum="AppBannersInstallEvent"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <owner>pcovell@google.com</owner>
@@ -88,7 +88,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppBanners.UserResponse" enum="AppBannersUserResponse"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>dominickn@chromium.org</owner>
   <owner>pjmclachlan@google.com</owner>
   <summary>
@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Launch.WebAppDisplayMode" enum="WebAppDisplayMode"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>peter@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -223,7 +223,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.AmbientBadge.Terminate"
-    enum="InstallableAmbientBadgeState" expires_after="2025-03-09">
+    enum="InstallableAmbientBadgeState" expires_after="2025-05-11">
   <owner>eirage@chromium.org</owner>
   <owner>src/chrome/android/webapk/OWNERS</owner>
   <summary>
@@ -433,6 +433,172 @@ chromium-metrics-reviews@google.com.
     <variant name="UpToThreeUserInstalledApps"
         summary="happened in web site for user with [1-3] user-installed apps"/>
   </token>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Active" enum="BooleanValid"
+    expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Whether the foreground window is a PWA, or if a foreground tab is in scope
+    of an installed PWA. Installed PWAs can be from the user, from sources like
+    administrator policies, and also preinstalled for all Chrome users. On
+    non-ChromeOS, preinstalled apps will open in a browser tab by default (and
+    are likely the majority of this count). See preinstalled_web_apps.cc. This
+    metric is recorded every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Count" units="count" expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The number of PWA windows that are running, including any browser tabs whose
+    urls are in scope of an installed PWA. Installed PWAs can be from the user,
+    from sources like administrator policies, and also preinstalled for all
+    Chrome users. On non-ChromeOS, preinstalled apps will open in a browser tab
+    by default (and are likely the majority of this count). See
+    preinstalled_web_apps.cc. This metric is recorded every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Standalone.Active" enum="BooleanValid"
+    expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Whether the foreground window is a standalone PWA. This metric is recorded
+    every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Standalone.Count" units="count"
+    expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The number of standalone PWAs that are running. This metric is recorded
+    every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Tabbed.Active" enum="BooleanValid"
+    expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Whether the foreground window is a normal browser window whose foreground
+    tab is a url in scope of a PWA. This includes PWAs installed to open as a
+    standalone window, as well as PWAs installed to open in a browser tab.
+    Installed PWAs can be from the user, from sources like administrator
+    policies, and also preinstalled for all Chrome users. On non-ChromeOS,
+    preinstalled apps will open in a browser tab by default (and are likely the
+    majority of this count). See preinstalled_web_apps.cc. This metric is
+    recorded every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Tabbed.Count" units="count"
+    expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The number of browser tabs that have urls in scope of an installed PWA. This
+    includes PWAs installed to open as a standalone window, as well as PWAs
+    installed to open in a browser tab. Installed PWAs can be from the user,
+    from sources like administrator policies, and also preinstalled for all
+    Chrome users. On non-ChromeOS, preinstalled apps will open in a browser tab
+    by default (and are likely the majority of this count). See
+    preinstalled_web_apps.cc. This metric is recorded every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Tabbed.UserDisplayModeBrowser.Count"
+    units="count" expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The number of browser tabs that have urls in scope of an installed PWA which
+    is configured to open in a browser tab. Installed PWAs can be from the user,
+    from sources like administrator policies, and also preinstalled for all
+    Chrome users. On non-ChromeOS, preinstalled apps will open in a browser tab
+    by default (and are likely the majority of this count). See
+    preinstalled_web_apps.cc. This metric is recorded every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebApp.Engagement2.Tabbed.UserDisplayModeBrowserInstalledByUser.Count"
+    units="count" expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The number of browser tabs that have urls in scope of an installed PWA which
+    is configured to open in a browser tab and also installed by the user. While
+    the app could be installed via admin or preinstalled too, this will filter
+    out all apps that aren't explicitly installed by the user in this profile.
+    Currently to get an app into this state, the user has to install the app,
+    and then go to chrome://apps and turn off the &quot;open in a window&quot;
+    setting. This metric is recorded every 5 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Engagement2.Tabbed.UserDisplayModeStandalone.Count"
+    units="count" expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The number of browser tabs that have urls in scope of an installed PWA which
+    is configured to open in a standalone window. Installed PWAs can be from the
+    user, from sources like administrator policies, and also preinstalled for
+    all Chrome users. On non-ChromeOS, preinstalled apps will open in a browser
+    tab by default. See preinstalled_web_apps.cc. This metric is recorded every
+    5 minutes.
+  </summary>
+</histogram>
+
+<histogram
+    name="WebApp.Engagement2.Tabbed.UserDisplayModeStandaloneInstalledByUser.Count"
+    units="count" expires_after="never">
+<!-- expires-never: This is used for dashboard metrics. pwa-team@google.com -->
+
+  <owner>dmurph@chromium.org</owner>
+  <owner>erikchen@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    The number of browser tabs that have urls in scope of an installed PWA which
+    is configured to open in a standalone window and also installed by the user.
+    While the app could be installed via admin or preinstalled too, this will
+    filter out all apps that aren't explicitly installed by the user in this
+    profile. This metric is recorded every 5 minutes.
+  </summary>
 </histogram>
 
 <histogram name="WebApp.Engagement{Context}.{Container}"
@@ -836,7 +1002,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.InstallConfirmation.CloseReason"
-    enum="WidgetClosedReason" expires_after="2025-03-09">
+    enum="WidgetClosedReason" expires_after="2025-05-11">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -872,7 +1038,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.InstalledCount.ByUserNotLocallyInstalled" units="count"
-    expires_after="2025-01-12">
+    expires_after="2025-09-12">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -880,6 +1046,32 @@ chromium-metrics-reviews@google.com.
     locally installed by the user. This is recorded on the initialization of the
     Profile object, which can happen either at chrome startup or when the user
     switches profiles.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.InstalledCount.ByUserNotLocallyInstalled.SyncDisabled"
+    units="count" expires_after="2025-09-12">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the number of web apps that were installed by sync but not yet
+    locally installed by the user, in profiles where syncing of apps is
+    currently disabled. This is recorded on the initialization of the Profile
+    object, which can happen either at chrome startup or when the user switches
+    profiles.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.InstalledCount.NotSyncing.SyncEnabled" units="count"
+    expires_after="2025-09-12">
+  <owner>mek@chromium.org</owner>
+  <owner>pwa-team@google.com</owner>
+  <summary>
+    Records the number of fully installed web apps, installed by the user but
+    not included in the users sync data, for profiles that do have app syncing
+    enabled. This includes apps that were installed before sync was enabled.
+    This is recorded on the initialization of the Profile object, which can
+    happen either at chrome startup or when the user switches profiles.
   </summary>
 </histogram>
 
@@ -1090,7 +1282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Launcher.LaunchResult"
-    enum="WebAppLauncherLaunchResult" expires_after="2025-03-09">
+    enum="WebAppLauncherLaunchResult" expires_after="2025-05-11">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>jessemckenna@google.com</owner>
   <summary>
@@ -1126,7 +1318,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.MlInstall.DialogResponse"
-    enum="WebAppMlInstallResponse" expires_after="2025-01-12">
+    enum="WebAppMlInstallResponse" expires_after="2025-03-23">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1205,7 +1397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.OsSettingsUninstallRegistration.Result"
-    enum="BooleanSuccess" expires_after="2025-03-09">
+    enum="BooleanSuccess" expires_after="2025-05-11">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1495,14 +1687,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Shortcuts.Creation.Result"
-    enum="ShortcutsCreationResult" expires_after="2025-03-09">
+    enum="ShortcutsCreationResult" expires_after="2025-05-11">
   <owner>phillis@chromium.org</owner>
   <owner>dmurph@chromium.org</owner>
   <summary>Records the result of shortcut creation for PWA.</summary>
 </histogram>
 
 <histogram name="WebApp.Shortcuts.Delete.Result" enum="BooleanSuccess"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>dmurph@google.com</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1516,7 +1708,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Shortcuts.Update.Result" enum="BooleanSuccess"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>camdenking@google.com</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1584,7 +1776,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Sync.CorruptSyncEntity"
-    enum="WebAppManifestIdParseResult" expires_after="2025-01-15">
+    enum="WebAppManifestIdParseResult" expires_after="2025-03-23">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1596,7 +1788,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Sync.InvalidEntity" enum="WebAppStorageKeyParseResult"
-    expires_after="2025-01-15">
+    expires_after="2025-03-23">
   <owner>dmurph@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>
@@ -1727,7 +1919,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.WebAppUrlLoaderPrepareForLoadResult"
-    enum="WebAppUrlLoaderResult" expires_after="2025-01-05">
+    enum="WebAppUrlLoaderResult" expires_after="2025-04-20">
   <owner>ortuno@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>Records the result of WebAppUrlLoader::PrepareForLoad().</summary>

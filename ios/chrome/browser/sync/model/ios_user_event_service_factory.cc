@@ -26,12 +26,6 @@
 #include "ios/web/public/browser_state.h"
 
 // static
-syncer::UserEventService* IOSUserEventServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 syncer::UserEventService* IOSUserEventServiceFactory::GetForProfile(
     ProfileIOS* profile) {
   return static_cast<syncer::UserEventService*>(
@@ -61,18 +55,15 @@ IOSUserEventServiceFactory::BuildServiceInstanceFor(
     return std::make_unique<syncer::NoOpUserEventService>();
   }
 
-  ChromeBrowserState* browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   syncer::OnceDataTypeStoreFactory store_factory =
-      DataTypeStoreServiceFactory::GetForBrowserState(browser_state)
-          ->GetStoreFactory();
+      DataTypeStoreServiceFactory::GetForProfile(profile)->GetStoreFactory();
   auto bridge = std::make_unique<syncer::UserEventSyncBridge>(
       std::move(store_factory),
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
           syncer::USER_EVENTS, /*dump_stack=*/base::BindRepeating(
               &syncer::ReportUnrecoverableError, ::GetChannel())),
-      SessionSyncServiceFactory::GetForBrowserState(browser_state)
-          ->GetGlobalIdMapper());
+      SessionSyncServiceFactory::GetForProfile(profile)->GetGlobalIdMapper());
   return std::make_unique<syncer::UserEventServiceImpl>(std::move(bridge));
 }
 

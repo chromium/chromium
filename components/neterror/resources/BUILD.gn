@@ -3,20 +3,42 @@
 # found in the LICENSE file.
 
 import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/bundle_js.gni")
+
+js_files = [
+  "constants.js",
+  "neterror.js",
+  "dino_game/background_el.js",
+  "dino_game/cloud.js",
+  "dino_game/constants.js",
+  "dino_game/distance_meter.js",
+  "dino_game/generated_sound_fx.js",
+  "dino_game/game_over_panel.js",
+  "dino_game/horizon_line.js",
+  "dino_game/horizon.js",
+  "dino_game/night_mode.js",
+  "dino_game/obstacle.js",
+  "dino_game/offline.js",
+  "dino_game/offline-sprite-definitions.js",
+  "dino_game/trex.js",
+  "dino_game/utils.js",
+]
 
 preprocess_if_expr("preprocess") {
   out_folder = "${target_gen_dir}/preprocessed"
-  in_files = [
-    "constants.js",
-    "neterror.js",
-    "offline.js",
-    "offline-sprite-definitions.js",
-  ]
-
+  in_files = js_files
   if (is_ios) {
     in_files += [ "error_page_controller_ios.js" ]
   }
+}
+
+ts_library("build_ts") {
+  root_dir = "${target_gen_dir}/preprocessed"
+  out_dir = "$target_gen_dir/tsc"
+  in_files = js_files
+  deps = [ "//ui/webui/resources/js:build_ts" ]
+  extra_deps = [ ":preprocess" ]
 }
 
 # Generate a JS bundle regradless of the `optimize_webui` GN arg, as this UI
@@ -27,7 +49,7 @@ bundle_js("bundle_js") {
   # Using a dummy value for`host` which is ignored anyway since the code being
   # bundled below is not served from any host.
   host = "_ignored_"
-  input = rebase_path("${target_gen_dir}/preprocessed", root_build_dir)
+  input = rebase_path("${target_gen_dir}/tsc", root_build_dir)
   out_folder = "${target_gen_dir}/bundled"
   js_module_in_files = [ "neterror.js" ]
 
@@ -44,8 +66,7 @@ bundle_js("bundle_js") {
     "chrome://resources/js/jstemplate_compiled.js|$jstemplate_compiled_path",
   ]
   deps = [
-    ":preprocess",
+    ":build_ts",
     "../../security_interstitials/core/common/resources:preprocess",
-    "//ui/webui/resources/js:build_ts",
   ]
 }

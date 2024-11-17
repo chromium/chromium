@@ -160,8 +160,9 @@ enum ChromePage {
   PERDEVICETOUCHPAD = 87,
   PERDEVICEPOINTINGSTICK = 88,
   GRAPHICSTABLET = 89,
+  NETWORKS = 90,
 
-  // Next value to be used is 90.
+  // Next value to be used is 91.
 };
 
 // Describes an unique chrome app.

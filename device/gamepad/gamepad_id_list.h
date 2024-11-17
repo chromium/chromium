@@ -115,6 +115,7 @@ enum class GamepadId : uint32_t {
   kSonyProduct0ba0 = 0x054c0ba0,
   kSonyProduct0ce6 = 0x054c0ce6,
   kSonyProduct0df2 = 0x054c0df2,
+  kSonyProduct0e5f = 0x054c0e5f,
   kSteelSeriesBtProduct1419 = 0x01111419,
   kSteelSeriesBtProduct1431 = 0x01111431,
   kSteelSeriesBtProduct1434 = 0x01111434,

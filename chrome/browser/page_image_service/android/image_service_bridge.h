@@ -35,16 +35,22 @@ class ImageServiceBridge {
                         const GURL& page_url,
                         const base::android::JavaParamRef<jobject>& j_callback);
 
+  // Returns whether the client has consented to fetch images.
+  jboolean HasConsentToFetchImages(JNIEnv* env, const bool is_account_data);
+
  private:
+  friend class ImageServiceBridgeTest;
   FRIEND_TEST_ALL_PREFIXES(ImageServiceBridgeTest, TestGetImageUrl);
   FRIEND_TEST_ALL_PREFIXES(ImageServiceBridgeTest,
                            TestGetImageUrlWithInvalidURL);
+  FRIEND_TEST_ALL_PREFIXES(ImageServiceBridgeTest, TestHasConsentToFetchImages);
 
   void FetchImageUrlForImpl(
       const bool is_account_data,
       const page_image_service::mojom::ClientId client_id,
       const GURL& page_url,
       page_image_service::ImageService::ResultCallback callback);
+  bool HasConsentToFetchImagesImpl(const bool is_account_data);
 
   const raw_ptr<page_image_service::ImageService> image_service_;  // weak
   const raw_ptr<signin::IdentityManager> identity_manager_;        // weak

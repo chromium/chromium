@@ -35,7 +35,9 @@
       base::BindRepeating(&omnibox::OmniboxHTTPResponses));
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -133,11 +135,13 @@
   [OmniboxAppInterface
       setUpFakeSuggestionsService:@"fake_suggestions_sample.json"];
 
-  [ChromeEarlGrey clearBrowsingHistory];
+  if (![ChromeTestCase forceRestartAndWipe]) {
+    [ChromeEarlGrey clearBrowsingHistory];
+  }
 }
 
-- (void)tearDown {
-  [super tearDown];
+- (void)tearDownHelper {
+  [super tearDownHelper];
   [OmniboxAppInterface tearDownFakeSuggestionsService];
 }
 
@@ -145,8 +149,8 @@
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
 
   // Enable flags for rich inline autocomplete tests.
-  if ([self isRunningTest:@selector(testRichInlineRemovedByTap)] ||
-      [self isRunningTest:@selector(testRichInlineRemovedByDelete)] ||
+  if ([self isRunningTest:@selector(DISABLED_testRichInlineRemovedByTap)] ||
+      [self isRunningTest:@selector(DISABLED_testRichInlineRemovedByDelete)] ||
       [self isRunningTest:@selector(testRichInlineRemovedWithArrowKey)]) {
     config.features_enabled.push_back(omnibox::kRichAutocompletion);
   }
@@ -185,7 +189,8 @@
 #pragma mark - Test rich inline
 
 // Tests removing rich inline autocomplete by tapping the omnibox.
-- (void)testRichInlineRemovedByTap {
+// TODO(crbug.com/375219994): Re-enable test.
+- (void)DISABLED_testRichInlineRemovedByTap {
   // Add 2 shortcuts Page(1) and Page(2).
   [OmniboxEarlGrey addShorcuts:2 toTestServer:self.testServer];
 
@@ -205,7 +210,8 @@
 }
 
 // Tests removing rich inline autocomplete by pressing delete.
-- (void)testRichInlineRemovedByDelete {
+// TODO(crbug.com/374727611): Re-enable test.
+- (void)DISABLED_testRichInlineRemovedByDelete {
   // Add 2 shortcuts Page(1) and Page(2).
   [OmniboxEarlGrey addShorcuts:2 toTestServer:self.testServer];
 

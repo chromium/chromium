@@ -6,52 +6,27 @@
 
 #include <algorithm>
 
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "media/base/media_log.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace blink {
 
 namespace {
 
-// Default maximum  post decode queue size to trigger max queue size reduction.
-constexpr int16_t kDefaultMaxPostDecodeQueueSize = 7;
-// Default count of maximum number of consecutive frames to drop during a max
-// queue size reduction. A value of 0 indicates to drop all the frames in the
-// queue when maximum queue size is reached.
-constexpr int16_t kDefaultMaxConsecutiveFramesToDrop = 0;
-// Default count of consecutive rendered frames with a new frame in the queue to
+// Maximum post decode queue size to trigger max queue size reduction.
+constexpr int16_t kMaxPostDecodeQueueSize = 7;
+// Count of consecutive rendered frames with a new frame in the queue to
 // initiate a steady state reduction.
-constexpr int16_t kDefaultReduceSteadyThreshold = 10;
+constexpr int16_t kReduceSteadyThreshold = 10;
 // Vsyncs boundaries are not aligned to 16.667ms boundaries on some platforms
 // due to hardware and software clock mismatch.
 constexpr double kVsyncBoundaryErrorRate = 0.05;
 
 }  // namespace
 
-namespace features {
-
-BASE_FEATURE(kLowLatencyVideoRendererAlgorithm,
-             "LowLatencyVideoRendererAlgorithm",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-}  // namespace features
-
 LowLatencyVideoRendererAlgorithm::LowLatencyVideoRendererAlgorithm(
     media::MediaLog* media_log) {
   Reset();
-  max_post_decode_queue_size_ = base::GetFieldTrialParamByFeatureAsInt(
-      features::kLowLatencyVideoRendererAlgorithm, "max_post_decode_queue_size",
-      kDefaultMaxPostDecodeQueueSize);
-  max_consecutive_frames_to_drop_ = base::GetFieldTrialParamByFeatureAsInt(
-      features::kLowLatencyVideoRendererAlgorithm,
-      "max_consecutive_frames_to_drop", kDefaultMaxConsecutiveFramesToDrop);
-  reduce_steady_state_queue_size_threshold_ =
-      base::GetFieldTrialParamByFeatureAsInt(
-          features::kLowLatencyVideoRendererAlgorithm,
-          "reduce_steady_state_queue_size_threshold",
-          kDefaultReduceSteadyThreshold);
 }
 
 LowLatencyVideoRendererAlgorithm::~LowLatencyVideoRendererAlgorithm() = default;
@@ -189,24 +164,15 @@ size_t LowLatencyVideoRendererAlgorithm::DetermineModeAndNumberOfFramesToRender(
   // mode_.
   size_t number_of_frames_to_render = fractional_frames_to_render;
   if (number_of_frames_to_render < frame_queue_.size()) {
-    // |kMaxQueueSize| is a safety mechanism that should be activated only in
-    // rare circumstances. The drain mode should normally take care of high
-    // queue levels. |kMaxQueueSize| should be set to the lowest possible value
-    // that doesn't shortcut the drain mode. If the number of frames in the
-    // queue is too high, we may run out of buffers in the HW decoder resulting
-    // in a fallback to SW decoder.
-    if (frame_queue_.size() > max_post_decode_queue_size_) {
-      // If max_consecutive_frames_to_drop_ = 0, clear all but the last enqueued
-      // frame and enter normal mode. Else, drop max_consecutive_frames_to_drop_
-      // frames if max_consecutive_frames_to_drop_ is less than frame queue
-      // size.
-      if (max_consecutive_frames_to_drop_ != 0) {
-        number_of_frames_to_render = std::min<uint16_t>(
-            max_consecutive_frames_to_drop_ + 1, frame_queue_.size());
-      } else {
-        // Clear all but the last enqueued frame and enter normal mode.
-        number_of_frames_to_render = frame_queue_.size();
-      }
+    // `kMaxPostDecodeQueueSize` is a safety mechanism that should be activated
+    // only in rare circumstances. The drain mode should normally take care of
+    // high queue levels. `kMaxPostDecodeQueueSize` should be set to the lowest
+    // possible value that doesn't shortcut the drain mode. If the number of
+    // frames in the queue is too high, we may run out of buffers in the HW
+    // decoder resulting in a fallback to SW decoder.
+    if (frame_queue_.size() > kMaxPostDecodeQueueSize) {
+      // Clear all but the last enqueued frame and enter normal mode.
+      number_of_frames_to_render = frame_queue_.size();
       mode_ = Mode::kNormal;
       ++stats_.max_size_drop_queue;
     } else {
@@ -221,9 +187,9 @@ size_t LowLatencyVideoRendererAlgorithm::DetermineModeAndNumberOfFramesToRender(
                   kDefaultMaxCompositionDelayInFrames);
 
       // The number of frames in the queue is in the range
-      // [number_of_frames_to_render + 1, kMaxQueueSize] due to the conditions
-      // that lead up to this point. This means that the active range of
-      // |max_queue_length| is [1, kMaxQueueSize].
+      // [number_of_frames_to_render + 1, kMaxPostDecodeQueueSize] due to the
+      // conditions that lead up to this point. This means that the active range
+      // of |max_queue_length| is [1, kMaxPostDecodeQueueSize].
       if (max_remaining_queue_length <
           static_cast<int>(frame_queue_.size() - number_of_frames_to_render +
                            1)) {
@@ -241,16 +207,14 @@ size_t LowLatencyVideoRendererAlgorithm::DetermineModeAndNumberOfFramesToRender(
 bool LowLatencyVideoRendererAlgorithm::ReduceSteadyStateQueue(
     size_t number_of_frames_to_render) {
   // Reduce steady state queue if we have observed
-  // `reduce_steady_state_queue_size_threshold_` count of consecutive rendered
-  // frames where there was a newer frame in the queue that could have been
-  // selected.
+  // `kReduceSteadyThreshold` count of consecutive rendered frames where there
+  // was a newer frame in the queue that could have been selected.
   bool reduce_steady_state_queue = false;
   // Has enough time passed so that at least one frame should be rendered?
   if (number_of_frames_to_render > 0) {
     // Is there a newer frame in the queue that could have been rendered?
     if (frame_queue_.size() >= number_of_frames_to_render + 1) {
-      if (++consecutive_frames_with_back_up_ >
-          reduce_steady_state_queue_size_threshold_) {
+      if (++consecutive_frames_with_back_up_ > kReduceSteadyThreshold) {
         reduce_steady_state_queue = true;
         consecutive_frames_with_back_up_ = 0;
       }

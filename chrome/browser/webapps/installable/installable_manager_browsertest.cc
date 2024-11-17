@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ssl/https_upgrades_util.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -1427,6 +1428,10 @@ class InstallableManagerAllowlistOriginBrowserTest
 
 IN_PROC_BROWSER_TEST_F(InstallableManagerAllowlistOriginBrowserTest,
                        SecureOriginCheckRespectsUnsafeFlag) {
+  // TODO(crbug.com/361129282): Remove scoped http allowlisting once the
+  // `unsafely-treat-insecure-origin-as-secure` flag adds to the HTTP allowlist.
+  ScopedAllowHttpForHostnamesForTesting allow_http(
+      {"www.google.com", "maps.google.com"}, browser()->profile()->GetPrefs());
   // The allowlisted origin should be regarded as secure.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kInsecureOrigin)));
   content::WebContents* contents =

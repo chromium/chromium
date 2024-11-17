@@ -10,42 +10,92 @@ found in the LICENSE file.
     margin-top: 37px;
   }
 </style>
+
 <oobe-adaptive-dialog id="setup" role="dialog" for-step="start,confirm">
   <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>
-  <h1 slot="title" for-step="start" aria-live="polite">
-    <div hidden="[[isChildAccount]]">
-      [[i18nDynamic(locale, 'discoverPinSetupTitle1')]]
+  <h1 id="setupTitle" slot="title" for-step="start" aria-live="polite">
+    <!-- REGULAR PIN SETUP -->
+    <div hidden="[[isRecoveryMode]]">
+      <div hidden="[[!usingPinAsMainSignInFactor]]">
+        <!-- "Set a PIN to make it easier to sign in" -->
+        [[i18nDynamic(locale, 'discoverPinSetupPinAsMainFactorTitle')]]
+      </div>
+      <div hidden="[[usingPinAsMainSignInFactor]]">
+        <div hidden="[[isChildAccount]]">
+          <!-- "Choose your PIN" -->
+          [[i18nDynamic(locale, 'discoverPinSetupTitle1')]]
+        </div>
+        <div hidden="[[!isChildAccount]]">
+          <!-- "Choose a PIN" -->
+          [[i18nDynamic(locale, 'discoverPinSetupTitle1ForChild')]]
+        </div>
+      </div>
     </div>
-    <div hidden="[[!isChildAccount]]">
-      [[i18nDynamic(locale, 'discoverPinSetupTitle1ForChild')]]
+    <!-- PIN RESET VIA RECOVERY -->
+    <div hidden="[[!isRecoveryMode]]">
+      <!-- "Reset your PIN"-->
+      [[i18nDynamic(locale, 'discoverPinSetupResetTitle')]]
     </div>
   </h1>
+
+  <div id="setupSubtitle" slot="subtitle" for-step="start">
+    <!-- REGULAR PIN SETUP -->
+    <div hidden="[[isRecoveryMode]]">
+      <div hidden="[[!usingPinAsMainSignInFactor]]">
+        <!-- "Instead of entering your Google Account password to sign in,
+              you can create a PIN for this Chromebook" -->
+        [[i18nDynamic(locale, 'discoverPinSetupPinAsMainFactorSubtitle')]]
+      </div>
+      <div hidden="[[usingPinAsMainSignInFactor]]">
+        <div hidden="[[isChildAccount]]">
+          <!-- "Use a number (PIN) instead of a password to unlock your device.
+                To set your PIN later, go to Settings." -->
+          [[i18nDynamic(locale, 'discoverPinSetupSubtitle1')]]
+        </div>
+        <div hidden="[[!isChildAccount]]">
+          <!-- "Your child can use a number (PIN) instead of a password to unlock
+                this device. To set a PIN later, go to Settings." -->
+          [[i18nDynamic(locale, 'discoverPinSetupSubtitle1ForChild')]]
+        </div>
+      </div>
+    </div>
+    <!-- PIN RESET VIA RECOVERY -->
+    <div hidden="[[!isRecoveryMode]]">
+      <div hidden="[[isChildAccount]]">
+        <!-- "You can use this PIN to sign in to your device" -->
+        [[i18nDynamic(locale, 'discoverPinSetupResetSubtitle')]]
+      </div>
+      <div hidden="[[!isChildAccount]]">
+        <!-- "Your child can use this PIN to sign in to their device" -->
+        [[i18nDynamic(locale, 'discoverPinSetupResetSubtitle')]]
+      </div>
+    </div>
+  </div>
+
+  <!-- CONFIRMATION STEP - NO SUBTITLE  -->
   <h1 slot="title" for-step="confirm" aria-live="polite">
     <div hidden="[[isChildAccount]]">
+      <!-- "Type your PIN again" -->
       [[i18nDynamic(locale, 'discoverPinSetupTitle2')]]
     </div>
     <div hidden="[[!isChildAccount]]">
+      <!-- "Type the PIN again" -->
       [[i18nDynamic(locale, 'discoverPinSetupTitle2ForChild')]]
     </div>
   </h1>
-  <div slot="subtitle" for-step="start">
-    <div hidden="[[isChildAccount]]">
-      [[i18nDynamic(locale, 'discoverPinSetupSubtitle1')]]
-    </div>
-    <div hidden="[[!isChildAccount]]">
-      [[i18nDynamic(locale, 'discoverPinSetupSubtitle1ForChild')]]
-    </div>
-  </div>
+
   <div slot="content" class="flex-grow layout vertical center
       center-justified">
     <setup-pin-keyboard id="pinKeyboard"
         enable-submit="{{enableSubmit}}"
         is-confirm-step="{{isConfirmStep}}"
+        use-recovery-mode-api="[[isRecoveryMode]]"
         on-pin-submit="onPinSubmit"
         on-set-pin-done="onSetPinDone"
         auth-token="[[authToken]]"
         quick-unlock-private="[[quickUnlockPrivate]]"
         class="focus-on-show"
+        enable-visibility-icon
         enable-placeholder>
     </setup-pin-keyboard>
   </div>
@@ -56,8 +106,8 @@ found in the LICENSE file.
   </div>
   <div slot="bottom-buttons">
     <oobe-text-button id="setupSkipButton" on-click="onSkipButton"
-        text-key="discoverPinSetupSkip"
-        for-step="start, confirm">
+        disabled="[[isRecoveryMode]]" for-step="start, confirm"
+        text-key="[[getSkipButtonLabel(usingPinAsMainSignInFactor)]]">
     </oobe-text-button>
     <oobe-next-button inverse
         id="nextButton"
@@ -66,29 +116,52 @@ found in the LICENSE file.
         for-step="start, confirm"></oobe-next-button>
   </div>
 </oobe-adaptive-dialog>
+
 <oobe-adaptive-dialog id="doneDialog" role="dialog" for-step="done"
     footer-shrinkable>
   <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>
-  <h1 slot="title" hidden="[[isChildAccount]]" aria-live="polite">
-    [[i18nDynamic(locale, 'discoverPinSetupTitle3')]]
-  </h1>
-  <h1 slot="title" hidden="[[!isChildAccount]]" aria-live="polite">
-    [[i18nDynamic(locale, 'discoverPinSetupTitle3ForChild')]]
+  <h1 slot="title" aria-live="polite">
+    <!-- REGULAR PIN SETUP -->
+    <div hidden="[[isRecoveryMode]]">
+      <div hidden="[[isChildAccount]]">
+        <!-- "Your PIN has been added" -->
+        [[i18nDynamic(locale, 'discoverPinSetupTitle3')]]
+      </div>
+      <div hidden="[[!isChildAccount]]">
+        <!-- "Your child’s PIN has been added" -->
+        [[i18nDynamic(locale, 'discoverPinSetupTitle3ForChild')]]
+      </div>
+    </div>
+    <!-- PIN RESET VIA RECOVERY -->
+    <div hidden="[[!isRecoveryMode]]">
+      <div hidden="[[isChildAccount]]">
+        <!-- "Your PIN has been updated" -->
+      [[i18nDynamic(locale, 'discoverPinSetupResetDoneTitle')]]
+      </div>
+      <div hidden="[[!isChildAccount]]">
+        <!-- "Your child’s PIN has been updated" -->
+        [[i18nDynamic(locale, 'discoverPinSetupResetDoneTitleChild')]]
+      </div>
+    </div>
   </h1>
   <div slot="subtitle">
     <div hidden="[[hasLoginSupport]]">
       <div hidden="[[isChildAccount]]">
+        <!-- "You can use your PIN to unlock your device." -->
         [[i18nDynamic(locale, 'discoverPinSetupSubtitle3NoLogin')]]
       </div>
       <div hidden="[[!isChildAccount]]">
+        <!-- "Your child can use a PIN to unlock the device." -->
         [[i18nDynamic(locale, 'discoverPinSetupSubtitle3NoLoginForChild')]]
       </div>
     </div>
     <div hidden="[[!hasLoginSupport]]">
       <div hidden="[[isChildAccount]]">
+        <!-- "You can use your PIN to sign in to or unlock your device." -->
         [[i18nDynamic(locale, 'discoverPinSetupSubtitle3WithLogin')]]
       </div>
       <div hidden="[[!isChildAccount]]">
+        <!-- "Your child can use a PIN to sign in to or unlock the device." -->
         [[i18nDynamic(locale,
             'discoverPinSetupSubtitle3WithLoginForChild')]]
       </div>

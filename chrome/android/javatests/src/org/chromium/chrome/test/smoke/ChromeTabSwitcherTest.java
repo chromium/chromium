@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiApplicationTestRule;
 import org.chromium.chrome.test.pagecontroller.rules.ChromeUiAutomatorTestRule;
@@ -69,6 +70,7 @@ public class ChromeTabSwitcherTest {
     }
 
     @Test
+    @DisabledTest(message = "crbug.com/372837954")
     public void testTabSwitcher() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
         String url = sEmbeddedTestServerRule.getServer().getURL(TEST_PAGE);

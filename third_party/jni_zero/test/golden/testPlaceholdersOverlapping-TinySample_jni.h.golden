@@ -44,4 +44,5 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1T
 }
 
 
+
 #endif  // org_jni_1zero_TinySample_JNI

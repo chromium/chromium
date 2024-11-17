@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
@@ -19,9 +20,11 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/commerce_utils.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/mock_discounts_storage.h"
+#include "components/commerce/core/mock_tab_restore_service.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/proto/shopping_page_types.pb.h"
 #include "components/commerce/core/shopping_service_test_base.h"
@@ -37,6 +40,8 @@
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/search/ntp_features.h"
+#include "components/sessions/core/serialized_navigation_entry.h"
+#include "components/sessions/core/tab_restore_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/features.h"
@@ -46,6 +51,7 @@
 #include "net/base/url_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using optimization_guide::AnyWrapProto;
 using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::OptimizationGuideDecisionCallback;
 using optimization_guide::OptimizationMetadata;
@@ -101,6 +107,8 @@ const std::vector<std::vector<std::string>> kProductCategories = {
     {"Dress", "Red Dress"}};
 
 using NiceMockWebWrapper = testing::NiceMock<MockWebWrapper>;
+using PriceSummary_ProductOfferCondition::
+    PriceSummary_ProductOfferCondition_CONDITION_NEW;
 
 }  // namespace
 
@@ -162,11 +170,16 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse) {
   // Ensure a feature that uses product info is enabled. This doesn't
   // necessarily need to be the shopping list.
   test_features_.InitWithFeatures(
-      {commerce::kShoppingList, commerce::kCommerceAllowServerImages}, {});
+      {commerce::kShoppingList, commerce::kCommerceAllowServerImages,
+       kProductSpecifications},
+      {});
 
   OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
       kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
       kCurrencyCode, kGpcTitle, kProductCategories);
+  opt_guide_->AddPriceSummaryToPriceTrackingResponse(
+      &meta, PriceSummary_ProductOfferCondition_CONDITION_NEW, 100u, 200u,
+      "usd");
   opt_guide_->AddPriceUpdateToPriceTrackingResponse(&meta, kCurrencyCode,
                                                     kNewPrice, kPrice);
 
@@ -207,6 +220,19 @@ TEST_P(ShoppingServiceTest, TestProductInfoResponse) {
                           labels[j].category_default_label());
               }
             }
+
+            ASSERT_EQ(1u, info->price_summary.size());
+            ASSERT_EQ(PriceSummary_ProductOfferCondition_CONDITION_NEW,
+                      info->price_summary[0].condition());
+            ASSERT_EQ(100u,
+                      info->price_summary[0].lowest_price().amount_micros());
+            ASSERT_EQ("usd",
+                      info->price_summary[0].lowest_price().currency_code());
+            ASSERT_EQ(200u,
+                      info->price_summary[0].highest_price().amount_micros());
+            ASSERT_EQ("usd",
+                      info->price_summary[0].highest_price().currency_code());
+
             run_loop->Quit();
           },
           &run_loop));
@@ -747,6 +773,39 @@ TEST_P(ShoppingServiceTest, TestProductSpecificationsSetUrlsRetained) {
   // There should no longer be any references in the cache.
   ASSERT_EQ(0u, GetCache().GetUrlRefCount(url1));
   ASSERT_EQ(0u, GetCache().GetUrlRefCount(url2));
+}
+
+TEST_P(ShoppingServiceTest, TestRecentTabsCleanedUpOnDeletion) {
+  const GURL url("http://example.com/");
+  base::Uuid id = base::Uuid::GenerateRandomV4();
+
+  ProductSpecificationsSet spec_set(id.AsLowercaseString(), 0, 0, {url},
+                                    "specs");
+
+  EXPECT_CALL(*GetMockTabRestoreService(), DeleteNavigationEntries).Times(1);
+  ON_CALL(*GetMockTabRestoreService(), DeleteNavigationEntries)
+      .WillByDefault(
+          [spec_set = spec_set](
+              const sessions::TabRestoreService::DeletionPredicate& predicate) {
+            // A totally unrelated URL should be ignored.
+            sessions::SerializedNavigationEntry entry1;
+            entry1.set_virtual_url(GURL("http://example.com"));
+            ASSERT_FALSE(predicate.Run(entry1));
+
+            // An exact match should be removed.
+            sessions::SerializedNavigationEntry entry2;
+            entry2.set_virtual_url(GetProductSpecsTabUrlForID(spec_set.uuid()));
+            ASSERT_TRUE(predicate.Run(entry2));
+
+            // A matching URL with extra params should be removed as well.
+            sessions::SerializedNavigationEntry entry3;
+            entry3.set_virtual_url(
+                GURL(GetProductSpecsTabUrlForID(spec_set.uuid()).spec() +
+                     "?param=1"));
+            ASSERT_TRUE(predicate.Run(entry3));
+          });
+
+  shopping_service_->OnProductSpecificationsSetRemoved(spec_set);
 }
 
 TEST_P(ShoppingServiceTest, TestProductSpecificationsUrlCountMetrics) {
@@ -1862,10 +1921,7 @@ TEST_P(ShoppingServiceTest, TestIsShoppingPage) {
   data.add_shopping_page_types(commerce::ShoppingPageTypes::SHOPPING_PAGE);
   data.add_shopping_page_types(
       commerce::ShoppingPageTypes::MERCHANT_DOMAIN_PAGE);
-  Any any;
-  any.set_type_url(data.GetTypeName());
-  data.SerializeToString(any.mutable_value());
-  meta.set_any_metadata(any);
+  meta.set_any_metadata(AnyWrapProto(data));
   opt_guide_->SetResponse(GURL(kProductUrl),
                           OptimizationType::SHOPPING_PAGE_TYPES,
                           OptimizationGuideDecision::kTrue, meta);
@@ -1898,8 +1954,7 @@ TEST_P(ShoppingServiceTest, TestIsShoppingPage) {
   data.clear_shopping_page_types();
   data.add_shopping_page_types(
       commerce::ShoppingPageTypes::MERCHANT_DOMAIN_PAGE);
-  data.SerializeToString(any.mutable_value());
-  meta.set_any_metadata(any);
+  meta.set_any_metadata(AnyWrapProto(data));
   opt_guide_->SetResponse(GURL(kProductUrl),
                           OptimizationType::SHOPPING_PAGE_TYPES,
                           OptimizationGuideDecision::kTrue, meta);
@@ -2096,6 +2151,46 @@ TEST_P(ShoppingServiceTest, TestDiscountInfoResponse_InfoWithoutDiscountCode) {
                                 },
                                 &run_loop));
   run_loop.Run();
+}
+
+TEST_P(ShoppingServiceTest, TestProductSpecificationsCache) {
+  test_features_.InitWithFeatures({kProductSpecifications}, {});
+
+  const GURL url("http://example.com");
+  OptimizationMetadata meta = opt_guide_->BuildPriceTrackingResponse(
+      kTitle, kImageUrl, kOfferId, kClusterId, kCountryCode, kPrice,
+      kCurrencyCode, kGpcTitle, kProductCategories);
+  opt_guide_->SetResponse(url, OptimizationType::PRICE_TRACKING,
+                          OptimizationGuideDecision::kTrue, meta);
+
+  ProductSpecifications specs;
+  specs.product_dimension_map[1L] = kTitle;
+  MockProductSpecificationsServerProxy* mock_server_proxy =
+      new MockProductSpecificationsServerProxy();
+  mock_server_proxy->SetGetProductSpecificationsForClusterIdsResponse(
+      std::move(specs));
+  SetProductSpecificationsServerProxy(base::WrapUnique(mock_server_proxy));
+
+  base::RunLoop run_loop[2];
+
+  shopping_service_->GetProductSpecificationsForUrls(
+      {url}, base::BindOnce([](std::vector<uint64_t> cluster_ids,
+                               std::optional<ProductSpecifications> specs) {
+             }).Then(run_loop[0].QuitClosure()));
+  run_loop[0].Run();
+
+  // The first product specs should be cached, so this empty value should not be
+  // returned.
+  mock_server_proxy->SetGetProductSpecificationsForClusterIdsResponse(
+      std::nullopt);
+
+  shopping_service_->GetProductSpecificationsForUrls(
+      {url}, base::BindOnce([](std::vector<uint64_t> cluster_ids,
+                               std::optional<ProductSpecifications> specs) {
+               ASSERT_TRUE(specs.has_value());
+               ASSERT_TRUE(specs->product_dimension_map[1L] == kTitle);
+             }).Then(run_loop[1].QuitClosure()));
+  run_loop[1].Run();
 }
 
 INSTANTIATE_TEST_SUITE_P(All, ShoppingServiceTest, ::testing::Bool());

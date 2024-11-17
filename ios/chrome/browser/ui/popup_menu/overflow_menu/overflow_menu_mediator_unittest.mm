@@ -19,13 +19,16 @@
 #import "components/feature_engagement/test/mock_tracker.h"
 #import "components/language/ios/browser/ios_language_detection_tab_helper.h"
 #import "components/language/ios/browser/language_detection_java_script_feature.h"
+#import "components/language_detection/core/language_detection_model.h"
 #import "components/password_manager/core/browser/password_manager_test_utils.h"
 #import "components/password_manager/core/browser/password_store/mock_password_store_interface.h"
 #import "components/policy/core/common/mock_configuration_policy_provider.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/testing_pref_service.h"
+#import "components/reading_list/core/fake_reading_list_model_storage.h"
 #import "components/reading_list/core/reading_list_model.h"
+#import "components/reading_list/core/reading_list_model_impl.h"
 #import "components/signin/public/base/consent_level.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
@@ -140,13 +143,13 @@ void CleanupNSUserDefaults() {
       removeObjectForKey:kWhatsNewM116UsageEntryKey];
 }
 
-// Creates a PrefService that can be used by the browser state.
-std::unique_ptr<PrefServiceSyncable> CreatePrefServiceForBrowserState() {
+// Creates a PrefService that can be used by the profile.
+std::unique_ptr<PrefServiceSyncable> CreatePrefServiceForProfile() {
   PrefServiceMockFactory factory;
   scoped_refptr<PrefRegistrySyncable> registry(new PrefRegistrySyncable);
   std::unique_ptr<PrefServiceSyncable> prefs =
       factory.CreateSyncable(registry.get());
-  RegisterBrowserStatePrefs(registry.get());
+  RegisterProfilePrefs(registry.get());
   return prefs;
 }
 
@@ -154,7 +157,9 @@ std::unique_ptr<PrefServiceSyncable> CreatePrefServiceForBrowserState() {
 
 class OverflowMenuMediatorTest : public PlatformTest {
  public:
-  OverflowMenuMediatorTest() : language_detection_model_(nullptr) {
+  OverflowMenuMediatorTest()
+      : language_detection_model_(
+            std::make_unique<language_detection::LanguageDetectionModel>()) {
     pref_service_.registry()->RegisterBooleanPref(
         translate::prefs::kOfferTranslateEnabled, true);
     pref_service_.registry()->RegisterStringPref(prefs::kSupervisedUserId,
@@ -170,11 +175,11 @@ class OverflowMenuMediatorTest : public PlatformTest {
     // properly clean up their NSUserDefaults on teardown.
     CleanupNSUserDefaults();
 
-    TestChromeBrowserState::Builder builder;
-    // Set a pref service for the ChromeBrowserState that is needed by some
+    TestProfileIOS::Builder builder;
+    // Set a pref service for the ProfileIOS that is needed by some
     // factories (e.g. AuthenticationServiceFactory). The browser prefs for
-    // testing the mediator are usually hosted in `browserStatePrefs_`.
-    builder.SetPrefService(CreatePrefServiceForBrowserState());
+    // testing the mediator are usually hosted in `profilePrefs_`.
+    builder.SetPrefService(CreatePrefServiceForProfile());
     builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
@@ -186,25 +191,18 @@ class OverflowMenuMediatorTest : public PlatformTest {
                             web::BrowserState,
                             password_manager::MockPasswordStoreInterface>));
     builder.AddTestingFactory(
-        ReadingListModelFactory::GetInstance(),
-        base::BindRepeating(&BuildReadingListModelWithFakeStorage,
-                            std::vector<scoped_refptr<ReadingListEntry>>()));
-    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
 
-    browser_state_ = std::move(builder).Build();
-
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        browser_state_.get(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
+    profile_ = std::move(builder).Build();
 
     web::test::OverrideJavaScriptFeatures(
-        browser_state_.get(),
+        profile_.get(),
         {language::LanguageDetectionJavaScriptFeature::GetInstance()});
 
     // Set up the TestBrowser.
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     // Set up the WebStateList.
     auto navigation_manager = std::make_unique<ToolbarTestNavigationManager>();
@@ -218,13 +216,13 @@ class OverflowMenuMediatorTest : public PlatformTest {
         std::make_unique<web::FakeWebState>();
     test_web_state->SetNavigationManager(std::move(navigation_manager));
     test_web_state->SetLoading(true);
-    test_web_state->SetBrowserState(browser_state_.get());
+    test_web_state->SetBrowserState(profile_.get());
     web_state_ = test_web_state.get();
 
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
         /*security_origin=*/url);
-    main_frame->set_browser_state(browser_state_.get());
+    main_frame->set_browser_state(profile_.get());
     frames_manager->AddWebFrame(std::move(main_frame));
     web::ContentWorld content_world =
         language::LanguageDetectionJavaScriptFeature::GetInstance()
@@ -280,9 +278,9 @@ class OverflowMenuMediatorTest : public PlatformTest {
     return mediator_;
   }
 
-  void CreateBrowserStatePrefs() {
-    browserStatePrefs_ = std::make_unique<TestingPrefServiceSimple>();
-    browserStatePrefs_->registry()->RegisterBooleanPref(
+  void CreateProfilePrefs() {
+    profilePrefs_ = std::make_unique<TestingPrefServiceSimple>();
+    profilePrefs_->registry()->RegisterBooleanPref(
         bookmarks::prefs::kEditBookmarksEnabled,
         /*default_value=*/true);
   }
@@ -300,22 +298,26 @@ class OverflowMenuMediatorTest : public PlatformTest {
   }
 
   void SetUpBookmarks() {
-    bookmark_model_ =
-        ios::BookmarkModelFactory::GetForBrowserState(browser_state_.get());
+    bookmark_model_ = ios::BookmarkModelFactory::GetForProfile(profile_.get());
     DCHECK(bookmark_model_);
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     mediator_.bookmarkModel = bookmark_model_;
   }
 
   void SetUpReadingList() {
-    reading_list_model_ =
-        ReadingListModelFactory::GetForBrowserState(browser_state_.get());
-    DCHECK(reading_list_model_);
+    auto storage = std::make_unique<FakeReadingListModelStorage>();
+    base::WeakPtr<FakeReadingListModelStorage> storage_ptr =
+        storage->AsWeakPtr();
+    reading_list_model_ = std::make_unique<ReadingListModelImpl>(
+        std::move(storage), syncer::StorageType::kUnspecified,
+        syncer::WipeModelUponSyncDisabledBehavior::kNever,
+        base::DefaultClock::GetInstance());
+    storage_ptr->TriggerLoadCompletion();
     ASSERT_TRUE(
         base::test::ios::WaitUntilConditionOrTimeout(base::Seconds(5), ^{
           return reading_list_model_->loaded();
         }));
-    mediator_.readingListModel = reading_list_model_;
+    mediator_.readingListModel = reading_list_model_.get();
   }
 
   void InsertNewWebState(int index) {
@@ -326,7 +328,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
     auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
     auto main_frame = web::FakeWebFrame::CreateMainWebFrame(
         /*security_origin=*/url);
-    main_frame->set_browser_state(browser_state_.get());
+    main_frame->set_browser_state(profile_.get());
     frames_manager->AddWebFrame(std::move(main_frame));
     web::ContentWorld content_world =
         language::LanguageDetectionJavaScriptFeature::GetInstance()
@@ -413,7 +415,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
   }
 
   signin::IdentityManager* identity_manager() {
-    return IdentityManagerFactory::GetForProfile(browser_state_.get());
+    return IdentityManagerFactory::GetForProfile(profile_.get());
   }
 
   FakeSystemIdentityManager* fake_system_identity_manager() {
@@ -425,7 +427,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
     const FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
     fake_system_identity_manager()->AddIdentityWithUnknownCapabilities(
         identity);
-    AuthenticationServiceFactory::GetForBrowserState(browser_state_.get())
+    AuthenticationServiceFactory::GetForProfile(profile_.get())
         ->SignIn(identity, signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
     CoreAccountInfo core_account_info =
         identity_manager()->GetPrimaryAccountInfo(
@@ -443,7 +445,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
   // AuthenticationServiceFactory. Valid local state prefs for testing the
   // mediator are usually hosted in `localStatePrefs_`.
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
 
   FakeOverlayPresentationContext presentation_context_;
@@ -451,8 +453,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
   OverflowMenuMediator* mediator_;
   OverflowMenuOrderer* orderer_;
   raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
-  raw_ptr<ReadingListModel> reading_list_model_;
-  std::unique_ptr<TestingPrefServiceSimple> browserStatePrefs_;
+  std::unique_ptr<ReadingListModel> reading_list_model_;
+  std::unique_ptr<TestingPrefServiceSimple> profilePrefs_;
   std::unique_ptr<TestingPrefServiceSimple> localStatePrefs_;
   raw_ptr<web::FakeWebState> web_state_;
   std::unique_ptr<web::NavigationItem> navigation_item_;
@@ -464,8 +466,7 @@ class OverflowMenuMediatorTest : public PlatformTest {
 
 // Tests that the feature engagement tracker get notified when the mediator is
 // disconnected and the tracker wants the notification badge displayed.
-// TODO(crbug.com/368359469): re-enable after fixing the test failure.
-TEST_F(OverflowMenuMediatorTest, DISABLED_TestFeatureEngagementDisconnect) {
+TEST_F(OverflowMenuMediatorTest, TestFeatureEngagementDisconnect) {
   CreateMediator(/*is_incognito=*/NO);
   EXPECT_CALL(tracker_, ShouldTriggerHelpUI(testing::_))
       .WillRepeatedly(Return(true));
@@ -480,8 +481,7 @@ TEST_F(OverflowMenuMediatorTest, DISABLED_TestFeatureEngagementDisconnect) {
 
 // Tests that the mediator is returning the right number of items and sections
 // for the Tools Menu type.
-// TODO(crbug.com/368359469): re-enable after fixing the test failure.
-TEST_F(OverflowMenuMediatorTest, DISABLED_TestMenuItemsCount) {
+TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
   CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   mediator_.localStatePrefs = localStatePrefs_.get();
@@ -524,8 +524,7 @@ TEST_F(OverflowMenuMediatorTest, DISABLED_TestMenuItemsCount) {
 
 // Tests that the items returned by the mediator are correctly enabled on a
 // WebPage.
-// TODO(crbug.com/368359469): re-enable after fixing the test failure.
-TEST_F(OverflowMenuMediatorTest, DISABLED_TestItemsStatusOnWebPage) {
+TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnWebPage) {
   CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
@@ -544,8 +543,7 @@ TEST_F(OverflowMenuMediatorTest, DISABLED_TestItemsStatusOnWebPage) {
 
 // Tests that the items returned by the mediator are correctly enabled on the
 // NTP.
-// TODO(crbug.com/368359469): re-enable after fixing the test failure.
-TEST_F(OverflowMenuMediatorTest, DISABLED_TestItemsStatusOnNTP) {
+TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnNTP) {
   CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
@@ -568,13 +566,13 @@ TEST_F(OverflowMenuMediatorTest, DISABLED_TestItemsStatusOnNTP) {
 TEST_F(OverflowMenuMediatorTest, TestReadLaterDisabled) {
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
-  CreateBrowserStatePrefs();
+  CreateProfilePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
   mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
       browser_.get(), OverlayModality::kWebContentArea);
-  mediator_.browserStatePrefs = browserStatePrefs_.get();
+  mediator_.profilePrefs = profilePrefs_.get();
 
   // Force model update.
   mediator_.model = model_;
@@ -652,10 +650,9 @@ TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShownForUserLevelPolicies) {
 
   // Emulate signing in with managed account.
   AuthenticationService* authentication_service =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
+      AuthenticationServiceFactory::GetForProfile(profile_.get());
   ChromeAccountManagerService* account_manager =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          browser_state_.get());
+      ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   authentication_service->SignIn(
       account_manager->GetDefaultIdentity(),
       signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
@@ -665,8 +662,8 @@ TEST_F(OverflowMenuMediatorTest, TestEnterpriseInfoShownForUserLevelPolicies) {
   CreateMediator(/*is_incognito=*/NO);
   // Set the objects needed to detect the signed in managed account.
   mediator_.authenticationService =
-      AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
-  mediator_.browserStatePrefs = browser_state_->GetPrefs();
+      AuthenticationServiceFactory::GetForProfile(profile_.get());
+  mediator_.profilePrefs = profile_->GetPrefs();
 
   // Force model update.
   mediator_.model = model_;
@@ -733,7 +730,7 @@ TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoHiddenWithSupervisionPrefs) {
   scoped_feature_list.InitAndDisableFeature(
       supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
 
-  supervised_user::DisableParentalControls(*browser_state_->GetPrefs());
+  supervised_user::DisableParentalControls(*profile_->GetPrefs());
 
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
@@ -773,7 +770,7 @@ TEST_F(OverflowMenuMediatorTest, TestFamilyLinkInfoShownWithSupervisionPrefs) {
   scoped_feature_list.InitAndDisableFeature(
       supervised_user::kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS);
 
-  supervised_user::EnableParentalControls(*browser_state_->GetPrefs());
+  supervised_user::EnableParentalControls(*profile_->GetPrefs());
 
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
@@ -798,13 +795,13 @@ TEST_F(OverflowMenuMediatorTest, TestBookmarksToolsMenuButtons) {
   SetUpActiveWebState();
 
   CreateMediator(/*is_incognito=*/NO);
-  CreateBrowserStatePrefs();
+  CreateProfilePrefs();
   SetUpBookmarks();
   bookmark_model_->AddURL(bookmark_model_->mobile_node(), 0,
                           base::SysNSStringToUTF16(@"Test bookmark"),
                           bookmarkedURL);
   mediator_.webStateList = browser_->GetWebStateList();
-  mediator_.browserStatePrefs = browserStatePrefs_.get();
+  mediator_.profilePrefs = profilePrefs_.get();
 
   // Force model update.
   mediator_.model = model_;
@@ -819,7 +816,7 @@ TEST_F(OverflowMenuMediatorTest, TestBookmarksToolsMenuButtons) {
   EXPECT_FALSE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/YES));
   EXPECT_TRUE(HasItem(kToolsMenuEditBookmark, /*enabled=*/YES));
 
-  ios::BookmarkModelFactory::GetForBrowserState(browser_state_.get())
+  ios::BookmarkModelFactory::GetForProfile(profile_.get())
       ->RemoveAllUserBookmarks(FROM_HERE);
   EXPECT_TRUE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/YES));
   EXPECT_FALSE(HasItem(kToolsMenuEditBookmark, /*enabled=*/YES));
@@ -833,17 +830,16 @@ TEST_F(OverflowMenuMediatorTest, TestDisableBookmarksButton) {
   SetUpActiveWebState();
 
   CreateMediator(/*is_incognito=*/NO);
-  CreateBrowserStatePrefs();
+  CreateProfilePrefs();
   mediator_.webStateList = browser_->GetWebStateList();
-  mediator_.browserStatePrefs = browserStatePrefs_.get();
+  mediator_.profilePrefs = profilePrefs_.get();
 
   // Force model update.
   mediator_.model = model_;
 
   EXPECT_TRUE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/YES));
 
-  browserStatePrefs_->SetBoolean(bookmarks::prefs::kEditBookmarksEnabled,
-                                 false);
+  profilePrefs_->SetBoolean(bookmarks::prefs::kEditBookmarksEnabled, false);
   EXPECT_TRUE(HasItem(kToolsMenuAddToBookmarks, /*enabled=*/NO));
 }
 
@@ -852,14 +848,14 @@ TEST_F(OverflowMenuMediatorTest, TestDisableBookmarksButton) {
 TEST_F(OverflowMenuMediatorTest, TestWhatsNewEnabled) {
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
-  CreateBrowserStatePrefs();
+  CreateProfilePrefs();
   CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
   mediator_.webStateList = browser_->GetWebStateList();
   mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
       browser_.get(), OverlayModality::kWebContentArea);
-  mediator_.browserStatePrefs = browserStatePrefs_.get();
+  mediator_.profilePrefs = profilePrefs_.get();
   mediator_.localStatePrefs = localStatePrefs_.get();
 
   // Force model update.
@@ -990,7 +986,7 @@ TEST_F(OverflowMenuMediatorTest, TestNoSyncError) {
 TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
   const GURL kUrl("https://chromium.test");
   web_state_->SetCurrentURL(kUrl);
-  CreateBrowserStatePrefs();
+  CreateProfilePrefs();
   CreateMediator(/*is_incognito=*/NO);
   // Show the new label badge for What's New.
   ON_CALL(tracker_, ShouldTriggerHelpUI(testing::Ref(
@@ -1001,7 +997,7 @@ TEST_F(OverflowMenuMediatorTest, TestIdentityErrorWithWhatsNewPromo) {
   mediator_.webStateList = browser_->GetWebStateList();
   mediator_.webContentAreaOverlayPresenter = OverlayPresenter::FromBrowser(
       browser_.get(), OverlayModality::kWebContentArea);
-  mediator_.browserStatePrefs = browserStatePrefs_.get();
+  mediator_.profilePrefs = profilePrefs_.get();
   CreateLocalStatePrefs();
   mediator_.localStatePrefs = localStatePrefs_.get();
 
@@ -1081,7 +1077,6 @@ TEST_F(OverflowMenuMediatorTest,
 
 // Tests that the actions have the correct longpress items set.
 TEST_F(OverflowMenuMediatorTest, ActionLongpressItems) {
-  base::test::ScopedFeatureList scoped_feature_list(kOverflowMenuCustomization);
   CreateMediator(/*is_incognito=*/NO);
 
   mediator_.model = model_;
@@ -1104,7 +1099,6 @@ TEST_F(OverflowMenuMediatorTest, ActionLongpressItems) {
 
 // Tests that the destinations have the correct longpress items set.
 TEST_F(OverflowMenuMediatorTest, DestinationLongpressItems) {
-  base::test::ScopedFeatureList scoped_feature_list(kOverflowMenuCustomization);
   CreateMediator(/*is_incognito=*/NO);
 
   mediator_.model = model_;
@@ -1127,7 +1121,6 @@ TEST_F(OverflowMenuMediatorTest, DestinationLongpressItems) {
 // Tests that when a destination becomes hidden during customization, the
 // corresponding action gains a subtitle and a highlight.
 TEST_F(OverflowMenuMediatorTest, DestinationHideShowsActionSubtitle) {
-  base::test::ScopedFeatureList scoped_feature_list(kOverflowMenuCustomization);
   CreateMediator(/*is_incognito=*/NO);
 
   mediator_.model = model_;

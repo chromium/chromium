@@ -40,7 +40,7 @@ void PolicyDetailsMap::SetDetails(const std::string& policy,
 
 const PolicyDetails* PolicyDetailsMap::Lookup(const std::string& policy) const {
   auto it = map_.find(policy);
-  return it == map_.end() ? NULL : it->second;
+  return it == map_.end() ? NULL : it->second.get();
 }
 
 bool PolicyServiceIsEmpty(const PolicyService* service) {

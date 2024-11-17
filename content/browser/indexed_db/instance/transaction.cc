@@ -49,8 +49,7 @@ std::string WriteBlobToFileResultToString(
     case storage::mojom::WriteBlobToFileResult::kSuccess:
       return "Success";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 // Disabled in some tests.
@@ -86,9 +85,8 @@ UmaIDBException ExceptionCodeToUmaEnum(blink::mojom::IDBException code) {
     case blink::mojom::IDBException::kTimeoutError:
       return UmaIDBExceptionTimeoutError;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return UmaIDBExceptionUnknownError;
 }
 
 }  // namespace
@@ -217,9 +215,9 @@ void Transaction::ScheduleAbortTask(AbortOperation abort_task) {
   abort_task_stack_.push(std::move(abort_task));
 }
 
-leveldb::Status Transaction::Abort(const DatabaseError& error) {
+Status Transaction::Abort(const DatabaseError& error) {
   if (state_ == FINISHED) {
-    return leveldb::Status::OK();
+    return Status::OK();
   }
 
   base::UmaHistogramEnumeration("WebCore.IndexedDB.TransactionAbortReason",
@@ -263,11 +261,11 @@ leveldb::Status Transaction::Abort(const DatabaseError& error) {
 
   bucket_context_->QueueRunTasks();
   bucket_context_.Release();
-  return leveldb::Status::OK();
+  return Status::OK();
 }
 
 // static
-leveldb::Status Transaction::CommitPhaseTwoProxy(Transaction* transaction) {
+Status Transaction::CommitPhaseTwoProxy(Transaction* transaction) {
   return transaction->CommitPhaseTwo();
 }
 
@@ -299,9 +297,8 @@ bool Transaction::IsTransactionBlockingOtherClients(
   CHECK_EQ(state_, STARTED);
   std::set<PartitionedLockHolder*> blocked_requests =
       bucket_context_->lock_manager().GetBlockedRequests(lock_ids());
-  return std::any_of(
-      blocked_requests.begin(), blocked_requests.end(),
-      [&](PartitionedLockHolder* blocked_lock_holder) {
+  return std::ranges::any_of(
+      blocked_requests, [&](PartitionedLockHolder* blocked_lock_holder) {
         auto* lock_request_data = static_cast<LockRequestData*>(
             blocked_lock_holder->GetUserData(LockRequestData::kKey));
         if (!lock_request_data) {
@@ -329,6 +326,8 @@ void Transaction::Start() {
     return;
   }
   DCHECK_EQ(CREATED, state_);
+  std::optional scheduling_priority_at_last_state_change =
+      scheduling_priority_at_last_state_change_;
   SetState(STARTED);
   DCHECK(!locks_receiver_.locks.empty());
   diagnostics_.start_time = base::Time::Now();
@@ -345,15 +344,30 @@ void Transaction::Start() {
     case blink::mojom::IDBTransactionMode::ReadOnly:
       base::UmaHistogramMediumTimes(
           "WebCore.IndexedDB.Transaction.ReadOnly.TimeQueued", time_queued);
+      if (scheduling_priority_at_last_state_change == 0) {
+        base::UmaHistogramMediumTimes(
+            "WebCore.IndexedDB.Transaction.ReadOnly.TimeQueued.Foreground",
+            time_queued);
+      }
       break;
     case blink::mojom::IDBTransactionMode::ReadWrite:
       base::UmaHistogramMediumTimes(
           "WebCore.IndexedDB.Transaction.ReadWrite.TimeQueued", time_queued);
+      if (scheduling_priority_at_last_state_change == 0) {
+        base::UmaHistogramMediumTimes(
+            "WebCore.IndexedDB.Transaction.ReadWrite.TimeQueued.Foreground",
+            time_queued);
+      }
       break;
     case blink::mojom::IDBTransactionMode::VersionChange:
       base::UmaHistogramMediumTimes(
           "WebCore.IndexedDB.Transaction.VersionChange.TimeQueued",
           time_queued);
+      if (scheduling_priority_at_last_state_change == 0) {
+        base::UmaHistogramMediumTimes(
+            "WebCore.IndexedDB.Transaction.VersionChange.TimeQueued.Foreground",
+            time_queued);
+      }
       break;
   }
 
@@ -508,11 +522,11 @@ uint64_t Transaction::CreateExternalObjects(
         if (info->file) {
           DCHECK_NE(info->size, IndexedDBExternalObject::kUnknownSize);
           (*external_objects)[i] = IndexedDBExternalObject(
-              std::move(info->blob), info->uuid, info->file->name,
-              info->mime_type, info->file->last_modified, info->size);
+              std::move(info->blob), info->file->name, info->mime_type,
+              info->file->last_modified, info->size);
         } else {
           (*external_objects)[i] = IndexedDBExternalObject(
-              std::move(info->blob), info->uuid, info->mime_type, info->size);
+              std::move(info->blob), info->mime_type, info->size);
         }
         break;
       }
@@ -525,18 +539,18 @@ uint64_t Transaction::CreateExternalObjects(
   return total_blob_size.ValueOrDie();
 }
 
-leveldb::Status Transaction::BlobWriteComplete(
+Status Transaction::BlobWriteComplete(
     BlobWriteResult result,
     storage::mojom::WriteBlobToFileResult error) {
   TRACE_EVENT0("IndexedDB", "Transaction::BlobWriteComplete");
   if (state_ == FINISHED) {  // aborted
-    return leveldb::Status::OK();
+    return Status::OK();
   }
   DCHECK_EQ(state_, COMMITTING);
 
   switch (result) {
     case BlobWriteResult::kFailure: {
-      leveldb::Status status = Abort(
+      Status status = Abort(
           DatabaseError(blink::mojom::IDBException::kDataError,
                         base::ASCIIToUTF16(base::StringPrintf(
                             "Failed to write blobs (%s)",
@@ -545,20 +559,20 @@ leveldb::Status Transaction::BlobWriteComplete(
         bucket_context_->OnDatabaseError(status, {});
       }
       // The result is ignored.
-      return leveldb::Status::OK();
+      return Status::OK();
     }
     case BlobWriteResult::kRunPhaseTwoAsync:
       ScheduleTask(base::BindOnce(&CommitPhaseTwoProxy));
       bucket_context_->QueueRunTasks();
-      return leveldb::Status::OK();
+      return Status::OK();
     case BlobWriteResult::kRunPhaseTwoAndReturnResult: {
       return CommitPhaseTwo();
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
-leveldb::Status Transaction::DoPendingCommit() {
+Status Transaction::DoPendingCommit() {
   TRACE_EVENT1("IndexedDB", "Transaction::DoPendingCommit", "txn.id", id());
 
   ResetTimeoutTimer();
@@ -567,7 +581,7 @@ leveldb::Status Transaction::DoPendingCommit() {
   // an abort has already been initiated asynchronously by the
   // back-end.
   if (state_ == FINISHED) {
-    return leveldb::Status::OK();
+    return Status::OK();
   }
   DCHECK_NE(state_, COMMITTING);
 
@@ -577,14 +591,14 @@ leveldb::Status Transaction::DoPendingCommit() {
   // other transactions. The commit will be initiated when the transaction
   // coordinator unblocks this transaction.
   if (state_ != STARTED) {
-    return leveldb::Status::OK();
+    return Status::OK();
   }
 
   // Front-end has requested a commit, but there may be tasks like
   // create_index which are considered synchronous by the front-end
   // but are processed asynchronously.
   if (HasPendingTasks()) {
-    return leveldb::Status::OK();
+    return Status::OK();
   }
 
   // If a transaction is being committed but it has sent more errors to the
@@ -598,7 +612,7 @@ leveldb::Status Transaction::DoPendingCommit() {
 
   SetState(COMMITTING);
 
-  leveldb::Status s;
+  Status s;
   if (!used_) {
     s = CommitPhaseTwo();
   } else {
@@ -608,7 +622,7 @@ leveldb::Status Transaction::DoPendingCommit() {
         [](base::WeakPtr<Transaction> transaction, BlobWriteResult result,
            storage::mojom::WriteBlobToFileResult error) {
           if (!transaction) {
-            return leveldb::Status::OK();
+            return Status::OK();
           }
           return transaction->BlobWriteComplete(result, error);
         },
@@ -618,17 +632,19 @@ leveldb::Status Transaction::DoPendingCommit() {
   return s;
 }
 
-leveldb::Status Transaction::CommitPhaseTwo() {
+Status Transaction::CommitPhaseTwo() {
   // Abort may have been called just as the blob write completed.
   if (state_ == FINISHED) {
-    return leveldb::Status::OK();
+    return Status::OK();
   }
 
   DCHECK_EQ(state_, COMMITTING);
 
+  std::optional scheduling_priority_at_last_state_change =
+      scheduling_priority_at_last_state_change_;
   SetState(FINISHED);
 
-  leveldb::Status s;
+  Status s;
   bool committed;
   if (!used_) {
     committed = true;
@@ -646,28 +662,44 @@ leveldb::Status Transaction::CommitPhaseTwo() {
 
     switch (mode_) {
       case blink::mojom::IDBTransactionMode::ReadOnly:
-        UMA_HISTOGRAM_MEDIUM_TIMES(
+        DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
             "WebCore.IndexedDB.Transaction.ReadOnly.TimeActive", active_time);
         base::UmaHistogramMediumTimes(
             "WebCore.IndexedDB.Transaction.ReadOnly.TimeActive2", active_time2);
+        if (scheduling_priority_at_last_state_change == 0) {
+          base::UmaHistogramMediumTimes(
+              "WebCore.IndexedDB.Transaction.ReadOnly.TimeActive2.Foreground",
+              active_time2);
+        }
         break;
       case blink::mojom::IDBTransactionMode::ReadWrite:
-        UMA_HISTOGRAM_MEDIUM_TIMES(
+        DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
             "WebCore.IndexedDB.Transaction.ReadWrite.TimeActive", active_time);
         base::UmaHistogramMediumTimes(
             "WebCore.IndexedDB.Transaction.ReadWrite.TimeActive2",
             active_time2);
+        if (scheduling_priority_at_last_state_change == 0) {
+          base::UmaHistogramMediumTimes(
+              "WebCore.IndexedDB.Transaction.ReadWrite.TimeActive2.Foreground",
+              active_time2);
+        }
         break;
       case blink::mojom::IDBTransactionMode::VersionChange:
-        UMA_HISTOGRAM_MEDIUM_TIMES(
+        DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
             "WebCore.IndexedDB.Transaction.VersionChange.TimeActive",
             active_time);
         base::UmaHistogramMediumTimes(
             "WebCore.IndexedDB.Transaction.VersionChange.TimeActive2",
             active_time2);
+        if (scheduling_priority_at_last_state_change == 0) {
+          base::UmaHistogramMediumTimes(
+              "WebCore.IndexedDB.Transaction.VersionChange.TimeActive2."
+              "Foreground",
+              active_time2);
+        }
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     committed = s.ok();
@@ -710,7 +742,7 @@ leveldb::Status Transaction::CommitPhaseTwo() {
   }
 
   DatabaseError error;
-  if (leveldb_env::IndicatesDiskFull(s)) {
+  if (leveldb_env::IndicatesDiskFull(s.leveldb_status())) {
     error =
         DatabaseError(blink::mojom::IDBException::kQuotaError,
                       "Encountered disk full while committing transaction.");
@@ -722,18 +754,17 @@ leveldb::Status Transaction::CommitPhaseTwo() {
   return s;
 }
 
-std::tuple<Transaction::RunTasksResult, leveldb::Status>
-Transaction::RunTasks() {
+std::tuple<Transaction::RunTasksResult, Status> Transaction::RunTasks() {
   TRACE_EVENT1("IndexedDB", "Transaction::RunTasks", "txn.id", id());
 
   DCHECK(!processing_event_queue_);
 
   // May have been aborted.
   if (aborted_) {
-    return {RunTasksResult::kAborted, leveldb::Status::OK()};
+    return {RunTasksResult::kAborted, Status::OK()};
   }
   if (IsTaskQueueEmpty() && !is_commit_pending_) {
-    return {RunTasksResult::kNotFinished, leveldb::Status::OK()};
+    return {RunTasksResult::kNotFinished, Status::OK()};
   }
 
   processing_event_queue_ = true;
@@ -750,7 +781,7 @@ Transaction::RunTasks() {
   while (!task_queue->empty() && state_ != FINISHED) {
     DCHECK(state_ == STARTED || state_ == COMMITTING) << state_;
     Operation task(task_queue->pop());
-    leveldb::Status result = std::move(task).Run(this);
+    Status result = std::move(task).Run(this);
     if (!run_preemptive_queue) {
       DCHECK(diagnostics_.tasks_completed < diagnostics_.tasks_scheduled);
       ++diagnostics_.tasks_completed;
@@ -775,7 +806,7 @@ Transaction::RunTasks() {
   if (!HasPendingTasks() && state_ == STARTED && is_commit_pending_) {
     processing_event_queue_ = false;
     // This can delete |this|.
-    leveldb::Status result = DoPendingCommit();
+    Status result = DoPendingCommit();
     if (!result.ok()) {
       return {RunTasksResult::kError, result};
     }
@@ -785,7 +816,7 @@ Transaction::RunTasks() {
   if (state_ == FINISHED) {
     processing_event_queue_ = false;
     return {aborted_ ? RunTasksResult::kAborted : RunTasksResult::kCommitted,
-            leveldb::Status::OK()};
+            Status::OK()};
   }
 
   DCHECK(state_ == STARTED || state_ == COMMITTING) << state_;
@@ -798,7 +829,7 @@ Transaction::RunTasks() {
                                              ptr_factory_.GetWeakPtr()));
   }
   processing_event_queue_ = false;
-  return {RunTasksResult::kNotFinished, leveldb::Status::OK()};
+  return {RunTasksResult::kNotFinished, Status::OK()};
 }
 
 storage::mojom::IdbTransactionMetadataPtr Transaction::GetIdbInternalsMetadata()
@@ -857,7 +888,7 @@ void Transaction::TimeoutFired() {
   }
 
   if (++timeout_strikes_ >= kMaxTimeoutStrikes) {
-    leveldb::Status result =
+    Status result =
         Abort(DatabaseError(blink::mojom::IDBException::kTimeoutError,
                             u"Transaction timed out due to inactivity."));
     if (!result.ok()) {
@@ -874,6 +905,12 @@ void Transaction::ResetTimeoutTimer() {
 
 void Transaction::SetState(State state) {
   state_ = state;
+  if (connection_) {
+    scheduling_priority_at_last_state_change_ =
+        connection_->scheduling_priority();
+  } else {
+    scheduling_priority_at_last_state_change_ = std::nullopt;
+  }
   NotifyOfIdbInternalsRelevantChange();
 }
 

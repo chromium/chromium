@@ -120,7 +120,7 @@ found in the LICENSE file.
 
     <!-- Find in Page dimensions -->
     <dimen name="find_in_page_popup_width">375dp</dimen>
-    <dimen name="find_in_page_popup_height">60dp</dimen>
+    <dimen name="find_in_page_popup_height">64dp</dimen>
     <dimen name="find_in_page_popup_margin_end">62dp</dimen>
 
     <!-- NTP dimensions -->
@@ -178,7 +178,6 @@ found in the LICENSE file.
     <dimen name="improved_bookmark_row_horizontal_padding">6dp</dimen>
     <dimen name="improved_bookmark_row_horizontal_negative_margin">-10dp</dimen>
     <dimen name="improved_bookmark_row_vertical_margin">1dp</dimen>
-    <dimen name="bookmark_promo_top_margin_with_search_box">4dp</dimen>
     <dimen name="shopping_chip_padding">8dp</dimen>
 
     <!-- Improved bookmark save flow properties-->

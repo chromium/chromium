@@ -45,6 +45,8 @@ class TestSharedImageInterface : public SharedImageInterface {
                     gpu::SurfaceHandle surface_handle,
                     gfx::BufferUsage buffer_usage));
 
+  MOCK_METHOD0(DoFlush, void());
+
   scoped_refptr<ClientSharedImage> CreateSharedImage(
       const SharedImageInfo& si_info,
       SurfaceHandle surface_handle,

@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Yksityisen avaimen syötearvon täytyy olla kelvollinen polku.</translation>
 <translation id="388442998277590542">Asetussivun <ph name="OPTIONS_PAGE" /> lataaminen epäonnistui.</translation>
 <translation id="3984413272403535372">Virhe allekirjoittaessa varmennetta.</translation>
-<translation id="4115165561519362854">Tämän laitteen järjestelmänvalvoja edellyttää laajennuksen <ph name="EXTENSION_NAME" /> version olevan vähintään <ph name="EXTENSION_VERSION" />. Laajennusta ei voida ottaa käyttöön ennen kuin se on päivitetty kyseiseen tai sitä uudempaan versioon.</translation>
 <translation id="4233778200880751280">Tietosivun <ph name="ABOUT_PAGE" /> lataus epäonnistui.</translation>
 <translation id="471800408830181311">Yksityisen avaimen tulostus ei onnistunut.</translation>
 <translation id="4811956658694082538">Pakettia ei voi asentaa, koska apuohjelmaprosessi kaatui. Käynnistä Chrome uudelleen ja yritä uudelleen.</translation>

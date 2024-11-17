@@ -381,15 +381,12 @@ crbug.com/950932 [ android-webview-instrumentation android-nexus-5x ] * [ RetryO
 # investigate later. Filed a bug to track the debug.
 crbug.com/984734 [ android android-webview-instrumentation android-nexus-5x ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
-# Failing on Lacros x64 Release Intel
-crbug.com/1458976 [ linux angle-opengles display-server-wayland intel passthrough release renderer-skia-gl no-clang-coverage ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositing [ Failure ]
-crbug.com/1458976 [ linux angle-opengles display-server-wayland intel passthrough release renderer-skia-gl no-clang-coverage ] Pixel_OffscreenCanvasUnaccelerated2DGPUCompositingWorker [ Failure ]
 
 # Times out / fails on Pixel 4s in webview.
 crbug.com/1176918 [ android android-pixel-4 android-webview-instrumentation renderer-skia-gl ] Pixel_Video_Context_Loss_VP9 [ Failure ]
 
 # WebGL drawingBufferStorage does not work on Android devices yet.
-crbug.com/1230619 [ android-chromium android-pie android-pixel-2 angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl ] Pixel_WebGLFloat [ Failure ]
+crbug.com/1230619 [ android-chromium android-pie android-pixel-2 angle-disabled no-passthrough qualcomm renderer-skia-gl ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android-chromium android-pixel-6 angle-disabled arm no-clang-coverage no-passthrough renderer-skia-vulkan target-cpu-64 ] Pixel_WebGLFloat [ Failure ]
 crbug.com/1230619 [ android-chromium android-pixel-4 android-r angle-disabled no-clang-coverage no-passthrough qualcomm renderer-skia-gl target-cpu-32 ] Pixel_WebGLFloat [ Failure ]
 
@@ -420,15 +417,14 @@ crbug.com/1392806 [ chromeos lacros-chrome ] Pixel_WebGLPreservedAfterTabSwitch 
 # jacuzzi produces the wrong aspect ratio image
 crbug.com/1392806 [ chromeos chromeos-board-jacuzzi ] Pixel_Video_MP4_FourColors_Aspect_4x3 [ Failure ]
 
-# Shader compilation failure on lacros device bots.
-crbug.com/1495176 [ chromeos lacros-chrome chromeos-board-octopus ] Pixel_WebGLSadCanvas [ Failure ]
 
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLCopyImage [ Skip ]
 crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas [ Skip ]
 
 
 # Flaky, but if it fails, retries also always fail.
-crbug.com/1494227 [ mac graphite-enabled intel ] Pixel_CSSFilterEffects [ Failure ]
+crbug.com/1494227 [ asan graphite-enabled intel mac no-clang-coverage release ] Pixel_CSSFilterEffects [ Failure ]
+crbug.com/1494227 [ graphite-enabled intel mac no-asan no-clang-coverage ] Pixel_CSSFilterEffects [ Failure ]
 
 crbug.com/1474611 [ mac nvidia angle-opengl graphite-disabled ] Pixel_WebGLGreenTriangle_NonChromiumImage_NoAA_NoAlpha [ Failure ]
 crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
@@ -436,8 +432,8 @@ crbug.com/1477318 [ mac ] Pixel_WebGLPreservedAfterTabSwitch [ RetryOnFailure ]
 crbug.com/354152172 [ amd-0x67ef angle-opengl mac ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
 crbug.com/354152172 [ angle-opengl intel mac no-asan ] Pixel_OffscreenCanvasIBRCWebGLHighPerfMain [ Failure ]
 
+crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAccelerated2D [ RetryOnFailure ]
 crbug.com/354748635 [ mac amd-0x7340 angle-opengl ] Pixel_OffscreenCanvasAccelerated2DWorker [ Failure ]
-
 
 # Fails almost consistently, but likely to pass when run on its own in the retry.
 crbug.com/1484212 [ win debug nvidia ] Pixel_WebGL2_BlitFramebuffer_Result_Displayed [ RetryOnFailure ]
@@ -467,7 +463,7 @@ crbug.com/345146895 [ chromeos cros-chrome chromeos-board-amd64-generic renderer
 
 # Failures on fuchsia
 crbug.com/40935289 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_WebGLFloat [ Failure ]
-crbug.com/40935289 [ fuchsia web-engine-shell ] Pixel_Video_AV1 [ Failure ]
+crbug.com/40935289 [ fuchsia no-asan web-engine-shell ] Pixel_Video_AV1 [ Failure ]
 crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_BackdropFilter [ Failure ]
 crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_Context_Loss_MP4 [ Failure ]
 crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_Context_Loss_VP9 [ Failure ]
@@ -480,8 +476,14 @@ crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4
 crbug.com/40935289 [ angle-vulkan arm fuchsia web-engine-shell ] Pixel_Video_MP4_Rounded_Corner [ Failure ]
 crbug.com/40935289 [ angle-vulkan arm fuchsia no-clang-coverage web-engine-shell ] Pixel_Video_VP9 [ Failure ]
 
-# Mac ASAN Devtools Serialization crashes
-crbug.com/338574390 [ mac intel-0x3e9b asan angle-metal passthrough ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
+# Flaky on Mac ASAN
+crbug.com/372055518 [ mac asan ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Failure ]
+
+# Flaky failure on Pixel 6
+crbug.com/371019880 [ android android-pixel-6 graphite-disabled renderer-skia-vulkan ] Pixel_Video_HEVC [ Failure ]
+
+# Flaky hang on Mac AMD GL ASAN
+crbug.com/40277254 [ mac amd angle-opengl asan ] Pixel_WebGPUDisplayP3 [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

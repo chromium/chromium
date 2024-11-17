@@ -133,8 +133,9 @@ struct ParsedJpegImage {
     // Encode the generated image in the JPEG format, the output buffer will be
     // automatically resized while encoding.
     constexpr int kJpegQuality = 100;
-    std::vector<unsigned char> encoded;
-    LOG_ASSERT(gfx::JPEGCodec::Encode(src, kJpegQuality, downsample, &encoded));
+    std::optional<std::vector<uint8_t>> encoded =
+        gfx::JPEGCodec::Encode(src, kJpegQuality, downsample);
+    LOG_ASSERT(encoded.has_value());
 
     base::FilePath filename;
     LOG_ASSERT(base::GetTempDir(&filename));
@@ -142,7 +143,8 @@ struct ParsedJpegImage {
         filename.Append(base::StringPrintf("black-%dx%d.jpg", width, height));
 
     auto image = std::make_unique<ParsedJpegImage>(filename);
-    image->data_str.append(encoded.begin(), encoded.end());
+    image->data_str =
+        std::string(base::as_string_view(std::move(encoded).value()));
     image->InitializeSizes(width, height);
     return image;
   }
@@ -601,7 +603,7 @@ JpegClient::JpegClient(
       use_dmabuf_(use_dmabuf),
       skip_result_checking_(skip_result_checking) {}
 
-JpegClient::~JpegClient() {}
+JpegClient::~JpegClient() = default;
 
 void JpegClient::CreateJpegDecoder() {
   decoder_ = nullptr;
@@ -776,18 +778,16 @@ void JpegClient::SaveToFile(int32_t task_id,
   LOG_ASSERT(conversion_status == 0);
 
   // Save as a PNG.
-  std::vector<uint8_t> png_output;
-  const bool png_encode_status = gfx::PNGCodec::Encode(
+  std::optional<std::vector<uint8_t>> png_output = gfx::PNGCodec::Encode(
       argb_out_frame->visible_data(media::VideoFrame::Plane::kARGB),
       gfx::PNGCodec::FORMAT_BGRA, argb_out_frame->visible_rect().size(),
       argb_out_frame->stride(media::VideoFrame::Plane::kARGB),
-      true, /* discard_transparency */
-      std::vector<gfx::PNGCodec::Comment>(), &png_output);
-  LOG_ASSERT(png_encode_status);
+      /*discard_transparency=*/true, std::vector<gfx::PNGCodec::Comment>());
+  LOG_ASSERT(png_output.has_value());
   const base::FilePath in_filename(task.image->filename());
   const base::FilePath out_filename =
       in_filename.ReplaceExtension(".png").InsertBeforeExtension(suffix);
-  const bool success = base::WriteFile(out_filename, png_output);
+  const bool success = base::WriteFile(out_filename, png_output.value());
   LOG_ASSERT(success);
 }
 

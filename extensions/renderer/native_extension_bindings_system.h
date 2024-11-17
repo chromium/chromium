@@ -159,6 +159,13 @@ class NativeExtensionBindingsSystem {
   // content scripts running in an isolated world.
   void SetScriptingParams(ScriptContext* context);
 
+  // Updates the bindings to expose the prompt API available for extensions.
+  void UpdateBindingsForPromptAPI(ScriptContext* context);
+
+  // Remove the prompt API bindings if none of the other feature flags are
+  // enabled.
+  void MaybeRemoveUnnecessaryPromptAPIBinding(ScriptContext* context);
+
   const raw_ptr<Delegate> delegate_;
 
   std::unique_ptr<IPCMessageSender> ipc_message_sender_;

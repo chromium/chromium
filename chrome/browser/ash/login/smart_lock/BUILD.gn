@@ -88,6 +88,7 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/login/users:test_support",
+    "//chrome/browser/prefs",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/multidevice_setup",
     "//chrome/common:constants",

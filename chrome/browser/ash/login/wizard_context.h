@@ -10,7 +10,9 @@
 #include <string>
 
 #include "base/values.h"
+#include "chrome/browser/ash/login/enrollment/timebound_user_context_holder.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
+#include "chromeos/ash/components/login/auth/public/user_context.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 
@@ -105,6 +107,16 @@ class WizardContext {
   // allowing screen to correctly display/handle Back button.
   enum class DataLossBackOptions { kNone, kBackToOnlineAuth, kBackToLocalAuth };
 
+  // The mode in which the PinSetupScreen will be surfaced.
+  enum class PinSetupMode {
+    kSetupAsPrimaryFactor,
+    kSetupAsSecondaryFactor,
+    kRecovery,
+    // Setup modes that reflect the past user choice.
+    kAlreadyPerformed,
+    kUserChosePasswordInstead,
+  };
+
   struct KnowledgeFactorSetup {
     // Whether usage of local password is forced.
     bool local_password_forced = false;
@@ -114,6 +126,8 @@ class WizardContext {
     DataLossBackOptions data_loss_back_option = DataLossBackOptions::kNone;
 
     AuthFactorsSet modified_factors;
+
+    PinSetupMode pin_setup_mode = PinSetupMode::kSetupAsSecondaryFactor;
   };
 
   enum class OSAuthErrorKind {
@@ -160,7 +174,9 @@ class WizardContext {
   bool skip_to_update_for_tests = false;
 
   // Whether the post login screens should be skipped. Used in MaybeSkip by
-  // screens in tests. Is set by WizardController::SkipPostLoginScreensForTests.
+  // screens in tests. Is set by WizardController::SkipPostLoginScreensForTests
+  // and LoginDisplayHost::SkipPostLoginScreensForDemoMode.
+  // TODO(crbug.com/376527458): Rename to `skip_post_login_screens`.
   bool skip_post_login_screens_for_tests = false;
 
   // Whether CHOOBE screen should be skipped. Setting this flag will force skip
@@ -260,18 +276,17 @@ class WizardContext {
   // selected screen.
   bool return_to_choobe_screen = false;
 
-  // Information that is used during Cryptohome recovery, password changed
-  // or add user with cached credentials flow.
+  // Information that is used during Cryptohome recovery or password changed.
   std::unique_ptr<UserContext> user_context;
+
+  // Holds the UserContext for the flow which allows to skip the gaia
+  // screen. The wrapper manages the lifetime of the UserContext inside.
+  std::unique_ptr<TimeboundUserContextHolder> timebound_user_context_holder;
 
   // Configuration for GAIA screen. If the configs needs to be updated, it
   // should be updated before showing the GAIA screen. If the GAIA screen is
   // already shown, a call to reload GAIA webview may be necessary.
   GaiaConfig gaia_config;
-
-  // If this flag is true and the user_context contains cached credentials
-  // there will be an attempt to skip the GAIA screen and signin directly.
-  bool add_user_from_cached_credentials = false;
 };
 
 // Returns |true| if this is an OOBE flow after enterprise enrollment.

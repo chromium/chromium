@@ -1,0 +1,27 @@
+{
+  "ToTLinuxASanLibfuzzer": {
+    "additional_compile_targets": [
+      "all"
+    ],
+    "isolated_scripts": [
+      {
+        "merge": {
+          "script": "//tools/perf/process_perf_results.py"
+        },
+        "name": "chrome_sizes",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "os": "Ubuntu-22.04"
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "chrome_sizes",
+        "test_id_prefix": "ninja://chrome/test:chrome_sizes/"
+      }
+    ]
+  }
+}

@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "components/global_media_controls/media_view_utils.h"
+#include "components/global_media_controls/public/format_duration.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/strings/grit/components_strings.h"
@@ -324,6 +325,7 @@ MediaItemUIUpdatedView::~MediaItemUIUpdatedView() {
   for (auto& observer : observers_) {
     observer.OnMediaItemUIDestroyed(id_);
   }
+  observers_.Clear();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

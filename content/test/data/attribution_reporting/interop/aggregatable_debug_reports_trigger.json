@@ -1,0 +1,386 @@
+{
+  "description": "Aggregatable debug reports creation for trigger registrations",
+  "api_config": {
+    "needs_aggregatable_debug": true
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination1.test"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination2.test",
+                "aggregatable_debug_reporting": {
+                  "budget": 1024,
+                  "key_piece": "0x1"
+                }
+              }
+            }
+          }
+        ]
+      },
+      // No matching source and has matching debug type, creates an
+      // aggregatable debug report.
+      {
+        "timestamp": "2",
+        "registration_request": {
+          "context_origin": "https://destination3.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "a": 1
+                },
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x2",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-no-matching-source"],
+                      "key_piece": "0x4",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // No matching source and no matching debug type, creates a null
+      // aggregatable debug report.
+      {
+        "timestamp": "3",
+        "registration_request": {
+          "context_origin": "https://destination3.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "a": 1
+                },
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x2",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-aggregate-no-contributions"],
+                      "key_piece": "0x4",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Aggregatable debug reporting not configured for the matched source and
+      // no matching debug type, creates a null aggregatable debug report.
+      {
+        "timestamp": "4",
+        "registration_request": {
+          "context_origin": "https://destination1.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "a": 1
+                },
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x2",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-no-matching-source"],
+                      "key_piece": "0x4",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Aggregatable debug reporting not configured for the matched source and
+      // has matching debug type, creates a null aggregatable debug report.
+      {
+        "timestamp": "5",
+        "registration_request": {
+          "context_origin": "https://destination1.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "a": 1
+                },
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x2",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-aggregate-no-contributions"],
+                      "key_piece": "0x4",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Aggregatable debug reporting configured for the matched source and no
+      // matching debug type, creates a null aggregatable debug report.
+      {
+        "timestamp": "6",
+        "registration_request": {
+          "context_origin": "https://destination2.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "a": 1
+                },
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x2",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-no-matching-source"],
+                      "key_piece": "0x4",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Aggregatable debug reporting configured for the matched source and has
+      // matching debug type, creates an aggregatable debug report.
+      {
+        "timestamp": "7",
+        "registration_request": {
+          "context_origin": "https://destination2.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "a": 1
+                },
+                "aggregatable_debug_reporting": {
+                  "key_piece": "0x2",
+                  "debug_data": [
+                    {
+                      "types": ["trigger-aggregate-no-contributions"],
+                      "key_piece": "0x4",
+                      "value": 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Aggregatable debug reporting not configured for the source and the
+      // trigger, no aggregatable debug report is created.
+      {
+        "timestamp": "8",
+        "registration_request": {
+          "context_origin": "https://destination1.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "a": 1
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Aggregatable debug reporting configured for the source but not for the
+      // trigger, no aggregatable debug report is created.
+      {
+        "timestamp": "9",
+        "registration_request": {
+          "context_origin": "https://destination2.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "aggregatable_values": {
+                  "a": 1
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x6",
+            "value": 1
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination3.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "0",
+            "version": "1.0"
+          }
+        },
+        "report_time": "2",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination3.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "0",
+            "version": "1.0"
+          }
+        },
+        "report_time": "3",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination1.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "0",
+            "version": "1.0"
+          }
+        },
+        "report_time": "4",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination1.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "0",
+            "version": "1.0"
+          }
+        },
+        "report_time": "5",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x0",
+            "value": 0
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination2.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "0",
+            "version": "1.0"
+          }
+        },
+        "report_time": "6",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      },
+      {
+        "payload": {
+          "aggregation_coordinator_origin": "https://coordinator.test",
+          "histograms": [ {
+            "id": "0",
+            "key": "0x7",
+            "value": 1
+          } ],
+          "shared_info": {
+            "api": "attribution-reporting-debug",
+            "attribution_destination": "https://destination2.test",
+            "reporting_origin": "https://reporter.test",
+            "scheduled_report_time": "0",
+            "version": "1.0"
+          }
+        },
+        "report_time": "7",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/report-aggregate-debug"
+      }
+    ]
+  }
+}

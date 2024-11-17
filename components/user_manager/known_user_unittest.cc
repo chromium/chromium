@@ -17,7 +17,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_manager_base.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -45,7 +45,7 @@ class KnownUserTest : public testing::Test {
     scoped_user_manager_ =
         std::make_unique<ScopedUserManager>(std::move(fake_user_manager));
 
-    UserManagerBase::RegisterPrefs(local_state_.registry());
+    UserManagerImpl::RegisterPrefs(local_state_.registry());
   }
   ~KnownUserTest() override = default;
 

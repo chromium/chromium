@@ -400,9 +400,11 @@ std::vector<AXNode*> AutomationAXTreeWrapper::GetChildTreeNodesForAppID(
       continue;
 
     AXNode* node = wrapper->ax_tree()->GetFromId(app_node_info.node_id);
-    // TODO(b:269669313): We don't expect this to ever be null, however this
-    // case arises occasionally in the wild and consistently in Dictation C++
-    // tests running on Lacros.
+    // We don't expect this to ever be null, however in crbug.com/269669313 we
+    // see that it is occasionally null. This DCHECK might help sus out what's
+    // going on, meanwhile don't add the node to the result if it is null to
+    // avoid crashes in non-debug builds.
+    DCHECK(node);
     if (node != nullptr) {
       nodes.push_back(node);
     }
@@ -560,13 +562,6 @@ bool AutomationAXTreeWrapper::IsTreeIgnored() {
       return true;
   }
   return false;
-}
-
-AXNode* AutomationAXTreeWrapper::GetNodeFromTree(const AXTreeID& tree_id,
-                                                 const AXNodeID node_id) const {
-  AutomationAXTreeWrapper* tree_wrapper =
-      owner_->GetAutomationAXTreeWrapperFromTreeID(tree_id);
-  return tree_wrapper ? tree_wrapper->GetNode(node_id) : nullptr;
 }
 
 AXTreeID AutomationAXTreeWrapper::GetParentTreeID() const {

@@ -25,9 +25,6 @@ enum class ContentSuggestionsModuleType;
 // Delegate for this container.
 @property(nonatomic, weak) id<MagicStackModuleContainerDelegate> delegate;
 
-// Returns the title string for the module `type`.
-+ (NSString*)titleStringForModule:(ContentSuggestionsModuleType)type;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_MAGIC_STACK_MAGIC_STACK_MODULE_CONTAINER_H_

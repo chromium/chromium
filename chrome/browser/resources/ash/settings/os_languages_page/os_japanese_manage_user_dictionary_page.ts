@@ -17,7 +17,7 @@ import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetMixin} from '../common/global_scroll_target_mixin.js';
-import {JapaneseDictionary} from '../mojom-webui/user_data_japanese_dictionary.mojom-webui.js';
+import type {JapaneseDictionary} from '../mojom-webui/user_data_japanese_dictionary.mojom-webui.js';
 import {routes} from '../router.js';
 
 import {getTemplate} from './os_japanese_manage_user_dictionary_page.html.js';

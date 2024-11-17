@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.signin.account_picker;
 
 import android.app.Activity;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,6 +15,7 @@ import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -77,7 +79,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     private final ViewFlipper mViewFlipper;
     private final RecyclerView mAccountListView;
     private final View mSelectedAccountView;
-    private final View mSigninInProgressView;
     private final ButtonCompat mDismissButton;
     private final Space mDismissButtonGoneMarginSpace;
     private @Nullable @ViewState Integer mCurrentViewState;
@@ -111,10 +112,6 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
                 mViewFlipper
                         .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
                         .findViewById(R.id.account_picker_selected_account);
-        mSigninInProgressView =
-                mViewFlipper
-                        .getChildAt(ViewState.SIGNIN_IN_PROGRESS)
-                        .findViewById(R.id.account_picker_state_signin_in_progress);
         mDismissButton =
                 mViewFlipper
                         .getChildAt(ViewState.COLLAPSED_ACCOUNT_LIST)
@@ -306,8 +303,8 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.signin_account_picker_bottom_sheet_subtitle;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.signin_account_picker_bottom_sheet_subtitle);
     }
 
     @Override

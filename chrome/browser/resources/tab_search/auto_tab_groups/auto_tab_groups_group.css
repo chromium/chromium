@@ -68,6 +68,7 @@ tab-search-item {
   line-height: 20px;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
   width: 184px;
 }
 

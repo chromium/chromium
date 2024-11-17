@@ -25,12 +25,10 @@ struct AudioProcessingStats {
 struct AudioProcessingSettings {
   bool echo_cancellation;
   bool noise_suppression;
-  bool transient_noise_suppression;
   bool automatic_gain_control;
   bool high_pass_filter;
   bool multi_channel_capture_processing;
   bool stereo_mirroring;
-  bool force_apm_creation;
 };
 
 // This interface is hosted in the audio service and called from the renderer.

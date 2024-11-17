@@ -96,7 +96,7 @@ scoped_refptr<const Extension> AddExtensionWithIdAndPermissions(
     }
 
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   std::string error;

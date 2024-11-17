@@ -136,8 +136,7 @@ std::string GetMachineName() {
 #elif BUILDFLAG(IS_ANDROID)
   return std::string();
 #elif BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 #else
 #error Unsupported platform
 #endif
@@ -154,8 +153,7 @@ std::string GetOSVersion() {
                             version_number.minor, version_number.build,
                             version_number.patch);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 #endif
 }
 
@@ -211,8 +209,7 @@ std::string GetOSUsername() {
   // support in fuchsia.
   return std::string();
 #else
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 #endif
 }
 

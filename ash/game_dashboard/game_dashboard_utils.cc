@@ -47,7 +47,7 @@ bool ShouldEnableFeatures() {
 }
 
 views::Widget* GetNextWidgetToFocus(
-    const std::vector<views::Widget*> widget_list,
+    const std::vector<views::Widget*>& widget_list,
     const views::Widget* focused_widget,
     bool reverse) {
   if (auto it =

@@ -99,9 +99,9 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   enum class LayoutType {
     // Can have its own size given by |OnSizeChanged| events.
-    NORMAL,
+    kNormal,
     // Always follows its parent's size.
-    MATCH_PARENT
+    kMatchParent
   };
 
   explicit ViewAndroid(LayoutType layout_type);
@@ -294,7 +294,7 @@ class UI_ANDROID_EXPORT ViewAndroid {
 
   bool has_event_forwarder() const { return !!event_forwarder_; }
 
-  bool match_parent() const { return layout_type_ == LayoutType::MATCH_PARENT; }
+  bool match_parent() const { return layout_type_ == LayoutType::kMatchParent; }
 
   // Checks if there is any event forwarder in any node up to root.
   static bool RootPathHasEventForwarder(ViewAndroid* view);

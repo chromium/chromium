@@ -132,6 +132,8 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
   DatabaseClient* GetDatabaseClient() override;
   bool IsPlatformInitialized() override;
 
+  bool IsMetricsEnabledForTesting() const { return is_metrics_enabled_; }
+
  private:
   friend class SegmentationPlatformServiceImplTest;
   friend class TestServicesForPlatform;
@@ -175,6 +177,8 @@ class SegmentationPlatformServiceImpl : public SegmentationPlatformService {
 
   // Signal processing.
   SignalHandler signal_handler_;
+
+  bool is_metrics_enabled_{false};
 
   ExecutionService execution_service_;
 

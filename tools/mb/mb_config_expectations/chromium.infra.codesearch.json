@@ -82,21 +82,6 @@
       "use_remoteexec": true
     }
   },
-  "codesearch-gen-chromium-lacros": {
-    "gn_args": {
-      "blink_enable_generated_code_formatting": true,
-      "chromeos_is_browser_only": true,
-      "clang_use_chrome_plugins": false,
-      "enable_kythe_annotations": true,
-      "is_clang": true,
-      "is_component_build": true,
-      "is_debug": true,
-      "symbol_level": 1,
-      "target_os": "chromeos",
-      "use_cups": true,
-      "use_remoteexec": true
-    }
-  },
   "codesearch-gen-chromium-linux": {
     "gn_args": {
       "blink_enable_generated_code_formatting": true,

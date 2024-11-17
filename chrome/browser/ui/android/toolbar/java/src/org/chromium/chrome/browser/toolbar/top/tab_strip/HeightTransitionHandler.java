@@ -21,6 +21,7 @@ import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
@@ -28,6 +29,7 @@ import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoord
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceReadyOnceCallback;
+import org.chromium.ui.util.TokenHolder;
 
 /**
  * Owned and used by {@link TabStripTransitionCoordinator} to manage tab strip height transitions
@@ -51,7 +53,23 @@ class HeightTransitionHandler {
     private final View mToolbarLayout;
     private final int mTabStripHeightFromResource;
 
-    private OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
+    // Defer transition token state.
+    private final TokenHolder mDeferTransitionTokenHolder;
+
+    /**
+     * Internal state used to block the transition until the TRANSITION_DELAY_MS after the last
+     * #onLayout pass.
+     */
+    private int mOnLayoutToken = TokenHolder.INVALID_TOKEN;
+
+    /** Token used to block the transition when URL bar has focus. */
+    private int mUrlBarFocusToken = TokenHolder.INVALID_TOKEN;
+
+    private int mTabObscureToken = TokenHolder.INVALID_TOKEN;
+    private final TabObscuringHandler mTabObscuringHandler;
+    private TabObscuringHandler.Observer mTabObscuringHandlerObserver;
+
+    private final OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
 
     /**
      * Current height of the tab strip represented by the space reserved on top of the toolbar
@@ -91,6 +109,7 @@ class HeightTransitionHandler {
      * @param callbackController The {@link CallbackController} used by {@link
      *     TabStripTransitionCoordinator}.
      * @param handler The {@link Handler} used by {@link TabStripTransitionCoordinator}.
+     * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param tabStripTransitionDelegateSupplier Supplier for the {@link
      *     TabStripTransitionDelegate}.
      */
@@ -101,6 +120,7 @@ class HeightTransitionHandler {
             int tabStripHeightFromResource,
             @NonNull CallbackController callbackController,
             @NonNull Handler handler,
+            TabObscuringHandler tabObscuringHandler,
             OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier) {
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mControlContainer = controlContainer;
@@ -112,6 +132,27 @@ class HeightTransitionHandler {
 
         mTabStripHeight = tabStripHeightFromResource;
         mTabStripVisible = mTabStripHeight > 0;
+        mDeferTransitionTokenHolder =
+                new TokenHolder(mCallbackController.makeCancelable(this::onTokenUpdate));
+
+        mTabObscuringHandler = tabObscuringHandler;
+        mTabObscuringHandlerObserver =
+                (obscureTabContent, obscureToolbar) -> {
+                    // Do not block transition if the toolbar is also obscured.
+                    if (obscureToolbar) return;
+
+                    if (obscureTabContent) {
+                        int token = requestDeferTabStripTransitionToken();
+                        if (mTabObscureToken != TokenHolder.INVALID_TOKEN) {
+                            releaseTabStripToken(mTabObscureToken);
+                        }
+                        mTabObscureToken = token;
+                    } else {
+                        releaseTabStripToken(mTabObscureToken);
+                        mTabObscureToken = TokenHolder.INVALID_TOKEN;
+                    }
+                };
+        mTabObscuringHandler.addObserver(mTabObscuringHandlerObserver);
     }
 
     /** Remove observers and release reference to dependencies. */
@@ -127,6 +168,32 @@ class HeightTransitionHandler {
             mTransitionFinishedObserver = null;
         }
         mTabStripHeightObservers.clear();
+        if (mTabObscuringHandlerObserver != null) {
+            mTabObscuringHandler.removeObserver(mTabObscuringHandlerObserver);
+            mTabObscuringHandlerObserver = null;
+        }
+    }
+
+    /**
+     * Called when URL bar gains / lost focus. When gaining focus, block the tab strip transition.
+     */
+    // TODO(crbug.com/41492673): Remove this APIs - location bar is also using TabObscuringHandler.
+    void onUrlFocusChange(boolean hasFocus) {
+        if (hasFocus) {
+            int token = requestDeferTabStripTransitionToken();
+            if (mUrlBarFocusToken != TokenHolder.INVALID_TOKEN) {
+                releaseTabStripToken(mUrlBarFocusToken);
+            }
+            mUrlBarFocusToken = token;
+        }
+    }
+
+    /** Called when URL bar focus animation finished. Release the token for tab strip transition. */
+    void onUrlAnimationFinished(boolean hasFocus) {
+        if (!hasFocus) {
+            releaseTabStripToken(mUrlBarFocusToken);
+            mUrlBarFocusToken = TokenHolder.INVALID_TOKEN;
+        }
     }
 
     /** Return the current tab strip height. */
@@ -144,6 +211,19 @@ class HeightTransitionHandler {
         mTabStripHeightObservers.removeObserver(observer);
     }
 
+    /** Request the token to defer the tab strip transition to a later time. */
+    int requestDeferTabStripTransitionToken() {
+        return mDeferTransitionTokenHolder.acquireToken();
+    }
+
+    /**
+     * Release the token acquired from {@link #requestDeferTabStripTransitionToken()} so the tab
+     * strip can transition based on its current size.
+     */
+    void releaseTabStripToken(int token) {
+        mDeferTransitionTokenHolder.releaseToken(token);
+    }
+
     void updateTabStripTransitionThreshold(DisplayMetrics displayMetrics) {
         mTabStripTransitionThreshold =
                 ViewUtils.dpToPx(displayMetrics, getScreenWidthThresholdDp());
@@ -153,12 +233,7 @@ class HeightTransitionHandler {
         }
     }
 
-    void setTabStripSize(int width, int topPadding) {
-        mTabStripWidth = width;
-        mTopPadding = topPadding;
-    }
-
-    void requestTransition() {
+    private void requestTransition() {
         mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
                 mCallbackController.makeCancelable(delegate -> maybeUpdateTabStripVisibility()));
     }
@@ -212,6 +287,23 @@ class HeightTransitionHandler {
 
     void setForceUpdateHeight(boolean forceUpdateHeight) {
         mForceUpdateHeight = forceUpdateHeight;
+    }
+
+    void onTabStripSizeChanged(int width, int topPadding) {
+        if (width == mTabStripWidth && topPadding == mTopPadding) return;
+        mTabStripWidth = width;
+        mTopPadding = topPadding;
+
+        int oldToken = mOnLayoutToken;
+        mOnLayoutToken = mDeferTransitionTokenHolder.acquireToken();
+        mDeferTransitionTokenHolder.releaseToken(oldToken);
+        mDeferTransitionTokenHolder.releaseToken(mOnLayoutToken);
+    }
+
+    private void onTokenUpdate() {
+        // Block new request for transitions as long as there's any token left.
+        if (mDeferTransitionTokenHolder.hasTokens()) return;
+        requestTransition();
     }
 
     private View controlContainerView() {
@@ -451,5 +543,9 @@ class HeightTransitionHandler {
             return TabStripTransitionCoordinator.sHeightTransitionThresholdForTesting;
         }
         return TRANSITION_THRESHOLD_DP;
+    }
+
+    boolean isHeightTransitionBlocked() {
+        return mDeferTransitionTokenHolder.hasTokens();
     }
 }

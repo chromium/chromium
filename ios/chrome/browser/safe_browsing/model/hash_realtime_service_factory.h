@@ -7,10 +7,10 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "services/network/public/mojom/network_context.mojom.h"
 
 class KeyedService;
+class ProfileIOS;
 
 namespace safe_browsing {
 class HashRealTimeService;
@@ -20,10 +20,6 @@ class HashRealTimeService;
 // It returns nullptr for incognito profiles.
 class HashRealTimeServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static safe_browsing::HashRealTimeService* GetForBrowserState(
-      ProfileIOS* profile);
-
   static safe_browsing::HashRealTimeService* GetForProfile(ProfileIOS* profile);
   // Returns the singleton instance of HashRealTimeServiceFactory.
   static HashRealTimeServiceFactory* GetInstance();

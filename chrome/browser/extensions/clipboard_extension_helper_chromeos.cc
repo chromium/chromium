@@ -48,8 +48,7 @@ class ClipboardExtensionHelper::ClipboardImageDataDecoder
         codec = ImageDecoder::DEFAULT_CODEC;
         break;
       case clipboard::ImageType::kNone:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     has_request_pending_ = true;

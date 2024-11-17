@@ -24,6 +24,11 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.components.location.LocationUtils;
+import org.chromium.device.bluetooth.wrapper.BluetoothAdapterWrapper;
+import org.chromium.device.bluetooth.wrapper.BluetoothDeviceWrapper;
+import org.chromium.device.bluetooth.wrapper.BluetoothLeScannerWrapper;
+import org.chromium.device.bluetooth.wrapper.ScanCallbackWrapper;
+import org.chromium.device.bluetooth.wrapper.ScanResultWrapper;
 
 import java.util.List;
 import java.util.Map;
@@ -41,7 +46,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
 
     private long mNativeBluetoothAdapterAndroid;
     // mAdapter is final to ensure registerReceiver is followed by unregisterReceiver.
-    private final Wrappers.BluetoothAdapterWrapper mAdapter;
+    private final BluetoothAdapterWrapper mAdapter;
     private ScanCallback mScanCallback;
 
     // ---------------------------------------------------------------------------------------------
@@ -55,8 +60,8 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
      *                       but may be either null if an adapter is not available
      *                       or a fake for testing.
      */
-    public ChromeBluetoothAdapter(
-            long nativeBluetoothAdapterAndroid, Wrappers.BluetoothAdapterWrapper adapterWrapper) {
+    private ChromeBluetoothAdapter(
+            long nativeBluetoothAdapterAndroid, BluetoothAdapterWrapper adapterWrapper) {
         mNativeBluetoothAdapterAndroid = nativeBluetoothAdapterAndroid;
         mAdapter = adapterWrapper;
         registerBroadcastReceiver();
@@ -81,7 +86,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
     // Implements BluetoothAdapterAndroid::Create.
     @CalledByNative
     private static ChromeBluetoothAdapter create(
-            long nativeBluetoothAdapterAndroid, Wrappers.BluetoothAdapterWrapper adapterWrapper) {
+            long nativeBluetoothAdapterAndroid, BluetoothAdapterWrapper adapterWrapper) {
         return new ChromeBluetoothAdapter(nativeBluetoothAdapterAndroid, adapterWrapper);
     }
 
@@ -147,7 +152,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
      */
     @CalledByNative
     private boolean startScan(List<ScanFilter> filters) {
-        Wrappers.BluetoothLeScannerWrapper scanner = mAdapter.getBluetoothLeScanner();
+        BluetoothLeScannerWrapper scanner = mAdapter.getBluetoothLeScanner();
 
         if (scanner == null) {
             return false;
@@ -189,7 +194,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
         }
 
         try {
-            Wrappers.BluetoothLeScannerWrapper scanner = mAdapter.getBluetoothLeScanner();
+            BluetoothLeScannerWrapper scanner = mAdapter.getBluetoothLeScanner();
             if (scanner != null) {
                 scanner.stopScan(mScanCallback);
             }
@@ -256,14 +261,14 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
      * Implements callbacks used during a Low Energy scan by notifying upon
      * devices discovered or detecting a scan failure.
      */
-    private class ScanCallback extends Wrappers.ScanCallbackWrapper {
+    private class ScanCallback implements ScanCallbackWrapper {
         @Override
-        public void onBatchScanResult(List<Wrappers.ScanResultWrapper> results) {
+        public void onBatchScanResult(List<ScanResultWrapper> results) {
             Log.v(TAG, "onBatchScanResults");
         }
 
         @Override
-        public void onScanResult(int callbackType, Wrappers.ScanResultWrapper result) {
+        public void onScanResult(int callbackType, ScanResultWrapper result) {
             Log.v(
                     TAG,
                     "onScanResult %d %s %s",
@@ -402,7 +407,7 @@ final class ChromeBluetoothAdapter extends BroadcastReceiver {
                 long nativeBluetoothAdapterAndroid,
                 ChromeBluetoothAdapter caller,
                 String address,
-                Wrappers.BluetoothDeviceWrapper deviceWrapper,
+                BluetoothDeviceWrapper deviceWrapper,
                 String localName,
                 int rssi,
                 String[] advertisedUuids,

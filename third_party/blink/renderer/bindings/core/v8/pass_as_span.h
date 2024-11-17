@@ -30,7 +30,7 @@ class CORE_EXPORT ByteSpanWithInlineStorage {
   ByteSpanWithInlineStorage& operator=(const ByteSpanWithInlineStorage& r);
 
   void Assign(base::span<const uint8_t> span) { span_ = span; }
-
+  void Assign(v8::MemorySpan<const uint8_t> span) { span_ = span; }
   // This class allows implicit conversion to span, because it's an internal
   // class tightly coupled to the bindings generator that knows how to use it.
   // Note rvalue conversion is explicitly disabled.
@@ -39,9 +39,7 @@ class CORE_EXPORT ByteSpanWithInlineStorage {
   operator base::span<const uint8_t>() const&& = delete;
   const base::span<const uint8_t> as_span() const { return span_; }
 
-  base::span<uint8_t, kInlineStorageSize> GetInlineStorage() {
-    return inline_storage_;
-  }
+  v8::MemorySpan<uint8_t> GetInlineStorage() { return inline_storage_; }
 
  private:
   base::span<const uint8_t> span_;
@@ -76,8 +74,7 @@ class SpanWithInlineStorage {
   }
 
   void Assign(base::span<const uint8_t> span) { bytes_.Assign(span); }
-  base::span<uint8_t, ByteSpanWithInlineStorage::kInlineStorageSize>
-  GetInlineStorage() {
+  v8::MemorySpan<uint8_t> GetInlineStorage() {
     return bytes_.GetInlineStorage();
   }
 
@@ -104,8 +101,7 @@ class SpanOrVector {
         base::make_span(reinterpret_cast<const uint8_t*>(vector_.data()),
                         vector_.size() * sizeof(T)));
   }
-  base::span<uint8_t, ByteSpanWithInlineStorage::kInlineStorageSize>
-  GetInlineStorage() {
+  v8::MemorySpan<uint8_t> GetInlineStorage() {
     return span_.GetInlineStorage();
   }
 

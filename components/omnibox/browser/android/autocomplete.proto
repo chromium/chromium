@@ -1,0 +1,68 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+import "third_party/omnibox_proto/groups.proto";
+
+package omnibox;
+option java_package = "org.chromium.components.omnibox";
+option java_outer_classname = "AutocompleteProto";
+option optimize_for = LITE_RUNTIME;
+
+message AutocompleteResultProto {
+  // Suggestions included in this AutocompleteResult object.
+  repeated AutocompleteMatchProto match = 1;
+
+  // GroupConfig definitions, specifying rendering details of each suggestion
+  // group.
+  GroupsInfo groups = 2;
+}
+
+message AutocompleteMatchProto {
+  // Native type of the suggestion.
+  int32 type = 1;
+  // Set of suggestion subtypes, if any.
+  repeated int32 subtype = 2;
+  // Whether suggestion is of SEARCH type.
+  bool is_search_type = 3;
+
+  // The primary suggestion text and its rendering classifications.
+  string display_text = 4;
+  repeated MatchClassificationProto display_text_classification = 5;
+
+  // The secondary suggestion text and its rendering classifications.
+  string description = 6;
+  repeated MatchClassificationProto description_classification = 7;
+
+  // Text to append in the Omnibox when this suggestion is highlighted.
+  string fill_into_edit = 8;
+
+  // Destination URL of this suggestion, and the URL of its decoration.
+  string url = 9;
+  string image_url = 10;
+
+  // How the suggestion was formulated.
+  int32 transition = 11;
+
+  // Group assignment for visually grouping suggestions of the same semantic
+  // type.
+  int32 group_id = 12;
+
+  // Whether suggestion is the default/top match.
+  bool allowed_to_be_default_match = 13;
+
+  // Additional content to present in the Omnibox in relation to the Default
+  // suggestion.
+  string inline_autocompletion = 14;
+  string additional_text = 15;
+}
+
+message MatchClassificationProto {
+  // First character of the text that should be styled.
+  int32 offset = 1;
+
+  // The style to apply to the text.
+  int32 style = 2;
+}

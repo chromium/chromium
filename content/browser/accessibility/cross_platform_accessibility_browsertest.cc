@@ -97,10 +97,12 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
         ISOLATED_WORLD_ID_GLOBAL);
   }
 
-  void LoadInitialAccessibilityTreeFromHtml(const std::string& html) {
-    AccessibilityNotificationWaiter waiter(shell()->web_contents(),
-                                           ui::kAXModeComplete,
-                                           ax::mojom::Event::kLoadComplete);
+  void LoadInitialAccessibilityTreeFromHtml(
+      const std::string& html,
+      const ui::AXMode& additional_mode_flags = ui::AXMode()) {
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::kAXModeComplete | additional_mode_flags,
+        ax::mojom::Event::kLoadComplete);
     GURL html_data_url(
         base::EscapeExternalHandlerValue("data:text/html," + html));
     ASSERT_TRUE(NavigateToURL(shell(), html_data_url));
@@ -109,8 +111,9 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
 
   void LoadInitialAccessibilityTreeFromHtmlFilePath(
       const std::string& html_file_path) {
-    if (!embedded_test_server()->Started())
+    if (!embedded_test_server()->Started()) {
       ASSERT_TRUE(embedded_test_server()->Start());
+    }
     ASSERT_TRUE(embedded_test_server()->Started());
     AccessibilityNotificationWaiter waiter(shell()->web_contents(),
                                            ui::kAXModeComplete,
@@ -159,8 +162,9 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
     for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
       ui::BrowserAccessibility* result =
           FindNodeInSubtree(*node.PlatformGetChild(i), name_or_value);
-      if (result)
+      if (result) {
         return result;
+      }
     }
 
     return nullptr;
@@ -174,14 +178,16 @@ class CrossPlatformAccessibilityBrowserTest : public ContentBrowserTest {
   ui::BrowserAccessibility* FindFirstNodeWithRoleInSubtree(
       ui::BrowserAccessibility& node,
       ax::mojom::Role role_value) {
-    if (node.GetRole() == role_value)
+    if (node.GetRole() == role_value) {
       return &node;
+    }
 
     for (unsigned int i = 0; i < node.PlatformChildCount(); ++i) {
       ui::BrowserAccessibility* result =
           FindFirstNodeWithRoleInSubtree(*node.PlatformGetChild(i), role_value);
-      if (result)
+      if (result) {
         return result;
+      }
     }
 
     return nullptr;
@@ -233,8 +239,7 @@ void CrossPlatformAccessibilityBrowserTest::SetUp() {
 
 void CrossPlatformAccessibilityBrowserTest::ChooseFeatures(
     std::vector<base::test::FeatureRef>* enabled_features,
-    std::vector<base::test::FeatureRef>* disabled_features) {
-}
+    std::vector<base::test::FeatureRef>* disabled_features) {}
 
 void CrossPlatformAccessibilityBrowserTest::SetUpOnMainThread() {
 #if BUILDFLAG(IS_WIN)
@@ -250,8 +255,9 @@ std::string CrossPlatformAccessibilityBrowserTest::GetAttr(
     const ax::mojom::StringAttribute attr) {
   const ui::AXNodeData& data = node->data();
   for (size_t i = 0; i < data.string_attributes.size(); ++i) {
-    if (data.string_attributes[i].first == attr)
+    if (data.string_attributes[i].first == attr) {
       return data.string_attributes[i].second;
+    }
   }
   return std::string();
 }
@@ -263,8 +269,9 @@ int CrossPlatformAccessibilityBrowserTest::GetIntAttr(
     const ax::mojom::IntAttribute attr) {
   const ui::AXNodeData& data = node->data();
   for (size_t i = 0; i < data.int_attributes.size(); ++i) {
-    if (data.int_attributes[i].first == attr)
+    if (data.int_attributes[i].first == attr) {
       return data.int_attributes[i].second;
+    }
   }
   return -1;
 }
@@ -276,8 +283,9 @@ bool CrossPlatformAccessibilityBrowserTest::GetBoolAttr(
     const ax::mojom::BoolAttribute attr) {
   const ui::AXNodeData& data = node->data();
   for (size_t i = 0; i < data.bool_attributes.size(); ++i) {
-    if (data.bool_attributes[i].first == attr)
+    if (data.bool_attributes[i].first == attr) {
       return data.bool_attributes[i].second;
+    }
   }
   return false;
 }
@@ -287,8 +295,9 @@ namespace {
 // Convenience method to find a node by its role value.
 ui::BrowserAccessibility* FindNodeByRole(ui::BrowserAccessibility* root,
                                          ax::mojom::Role role) {
-  if (root->GetRole() == role)
+  if (root->GetRole() == role) {
     return root;
+  }
   for (uint32_t i = 0; i < root->InternalChildCount(); ++i) {
     ui::BrowserAccessibility* child = root->InternalGetChild(i);
     DCHECK(child);
@@ -314,7 +323,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
         <input type="checkbox">
       </body>
       </html>)HTML");
-  LoadInitialAccessibilityTreeFromHtml(url_str);
+  LoadInitialAccessibilityTreeFromHtml(url_str, ui::AXMode::kHTML);
 
   const ui::AXTree& tree = GetAXTree();
   const ui::AXNode* root = tree.root();
@@ -347,16 +356,12 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   EXPECT_EQ("push", GetAttr(button, ax::mojom::StringAttribute::kName));
   EXPECT_EQ("inline-block",
             GetAttr(button, ax::mojom::StringAttribute::kDisplay));
-  EXPECT_THAT(button->data().html_attributes,
-              ElementsAre(Pair("type", "button"), Pair("value", "push")));
 
   const ui::AXNode* checkbox = body->GetUnignoredChildAtIndex(1);
   EXPECT_EQ(ax::mojom::Role::kCheckBox, checkbox->data().role);
   EXPECT_EQ("input", GetAttr(checkbox, ax::mojom::StringAttribute::kHtmlTag));
   EXPECT_EQ("inline-block",
             GetAttr(checkbox, ax::mojom::StringAttribute::kDisplay));
-  EXPECT_THAT(checkbox->data().html_attributes,
-              ElementsAre(Pair("type", "checkbox")));
 }
 
 // Android's text representation is different, so disable the test there.
@@ -617,6 +622,188 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   run_loop.Run();
 
   ASSERT_FALSE(received_event) << "Received accessibility event when location "
+                                  "changes shouldn't mark anything as dirty.";
+}
+
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       EnsureVerticalScrollSendScrollUpdatesOnly) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          .container {
+            padding: 100px;
+            height: 900px;
+            overflow: scroll;
+          }
+
+          .bigbutton {
+            display: block;
+            width: 600px;
+            height: 600px;
+          }
+        </style>
+      </head>
+      <body>
+        <div id="container" class="container" role="group">
+          <button class="bigbutton">One</button>
+          <button class="bigbutton">Two</button>
+          <button class="bigbutton">Three</button>
+        </div>
+      </body>
+      </html>)HTML");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(), "One");
+
+  const ui::BrowserAccessibility* root =
+      GetManager()->GetBrowserAccessibilityRoot();
+  ASSERT_EQ(1U, root->PlatformChildCount());
+  const ui::BrowserAccessibility* container = root->PlatformGetChild(0);
+
+  EXPECT_EQ(ax::mojom::Role::kGroup, container->GetRole());
+  ASSERT_EQ(3U, container->PlatformChildCount());
+  EXPECT_EQ(container->GetIntAttribute(ax::mojom::IntAttribute::kScrollY), 0);
+  EXPECT_FALSE(container->PlatformGetChild(0)->IsOffscreen());
+  EXPECT_TRUE(container->PlatformGetChild(2)->IsOffscreen());
+
+  // Even though SCROLL_VERTICAL_POSITION_CHANGED looks like a Blink event, it
+  // is not actually fired by Blink. Its now fired in the browser process.
+  AccessibilityNotificationWaiter waiter1(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::SCROLL_VERTICAL_POSITION_CHANGED);
+
+  // Ensure a normal serialization doesn't happen.
+  // When something like only locations change in a document. We want to avoid
+  // full-scale serialization as it's not required. A lightweight locations-only
+  // serialization already occurs. This check below ensures a full serialization
+  // doesn't occur. Marking objects as dirty is pretty expensive and in
+  // cases of scroll changes, we don't need it while we already know what
+  // changed.
+  bool received_event = false;
+  base::RunLoop run_loop;
+  RenderFrameHostImpl* rfh_impl = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  rfh_impl->SetAccessibilityCallbackForTesting(base::BindLambdaForTesting(
+      [&](RenderFrameHostImpl* rfhi, ax::mojom::Event event_type,
+          int event_target_id) {
+        received_event = true;
+        run_loop.Quit();
+      }));
+
+  // Scroll the container to a location and expect a scroll update with new
+  // scroll.
+  ExecuteScript("document.querySelector('#container').scrollTop = 900;");
+  ASSERT_TRUE(waiter1.WaitForNotification());
+  EXPECT_EQ(container->GetIntAttribute(ax::mojom::IntAttribute::kScrollY), 900);
+  EXPECT_TRUE(container->PlatformGetChild(0)->IsOffscreen());
+  EXPECT_FALSE(container->PlatformGetChild(2)->IsOffscreen());
+
+  // Since we're expecting NO calls, we need a timer to avoid waiting too long.
+  // Five seconds should be enough to fail on some builds. It's ok if test
+  // passes incorrectly on slow ones. Waiting for (30 seconds) will
+  // cost a lot of wait-time.
+  base::OneShotTimer quit_timer;
+  quit_timer.Start(FROM_HERE, base::Milliseconds(5000),
+                   run_loop.QuitWhenIdleClosure());
+  run_loop.Run();
+
+  ASSERT_FALSE(received_event) << "Received accessibility event when scroll "
+                                  "changes shouldn't mark anything as dirty.";
+}
+
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       EnsureHorizontalScrollSendScrollUpdatesOnly) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          .container {
+            padding: 100px;
+            height: 900px;
+            overflow: scroll;
+          }
+
+          .inner {
+            width: 2000px;
+          }
+
+          .bigbutton {
+            display:inline-block;
+            width: 600px;
+            height: 600px;
+          }
+        </style>
+      </head>
+      <body>
+        <div id="container" class="container">
+          <div class="inner">
+            <button class="bigbutton">One</button>
+            <button class="bigbutton">Two</button>
+            <button class="bigbutton">Three</button>
+          </div>
+        </div>
+      </body>
+      </html>)HTML");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(), "One");
+
+  const ui::BrowserAccessibility* root =
+      GetManager()->GetBrowserAccessibilityRoot();
+  ASSERT_EQ(1U, root->PlatformChildCount());
+  const ui::BrowserAccessibility* container = root->PlatformGetChild(0);
+
+  EXPECT_EQ(ax::mojom::Role::kGenericContainer, container->GetRole());
+  ASSERT_EQ(1U, container->PlatformChildCount());
+  EXPECT_EQ(container->GetIntAttribute(ax::mojom::IntAttribute::kScrollX), 0);
+  const ui::BrowserAccessibility* parentOfItems =
+      container->PlatformGetChild(0);
+  EXPECT_FALSE(parentOfItems->PlatformGetChild(0)->IsOffscreen());
+  EXPECT_TRUE(parentOfItems->PlatformGetChild(2)->IsOffscreen());
+
+  // Even though SCROLL_HORIZONTAL_POSITION_CHANGED looks like a Blink event, it
+  // is not actually fired by Blink. Its now fired in the browser process.
+  AccessibilityNotificationWaiter waiter1(
+      shell()->web_contents(), ui::kAXModeComplete,
+      ui::AXEventGenerator::Event::SCROLL_HORIZONTAL_POSITION_CHANGED);
+
+  // Ensure a normal serialization doesn't happen.
+  // When something like only locations change in a document. We want to avoid
+  // full-scale serialization as it's not required. A lightweight locations-only
+  // serialization already occurs. This check below ensures a full serialization
+  // doesn't occur. Marking objects as dirty is pretty expensive and in
+  // cases of scroll changes, we don't need it while we already know what
+  // changed.
+  bool received_event = false;
+  base::RunLoop run_loop;
+  RenderFrameHostImpl* rfh_impl = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame());
+  rfh_impl->SetAccessibilityCallbackForTesting(base::BindLambdaForTesting(
+      [&](RenderFrameHostImpl* rfhi, ax::mojom::Event event_type,
+          int event_target_id) {
+        received_event = true;
+        run_loop.Quit();
+      }));
+
+  // Scroll the container to a location and expect a scroll update with new
+  // scroll.
+  ExecuteScript("document.querySelector('#container').scrollLeft = 900;");
+  ASSERT_TRUE(waiter1.WaitForNotification());
+  EXPECT_EQ(container->GetIntAttribute(ax::mojom::IntAttribute::kScrollX), 900);
+  EXPECT_TRUE(parentOfItems->PlatformGetChild(0)->IsOffscreen());
+  EXPECT_FALSE(parentOfItems->PlatformGetChild(2)->IsOffscreen());
+
+  // Since we're expecting NO calls, we need a timer to avoid waiting too long.
+  // Five seconds should be enough to fail on some builds. It's ok if test
+  // passes incorrectly on slow ones. Waiting for (30 seconds) will
+  // cost a lot of wait-time.
+  base::OneShotTimer quit_timer;
+  quit_timer.Start(FROM_HERE, base::Milliseconds(5000),
+                   run_loop.QuitWhenIdleClosure());
+  run_loop.Run();
+
+  ASSERT_FALSE(received_event) << "Received accessibility event when scroll "
                                   "changes shouldn't mark anything as dirty.";
 }
 
@@ -1316,60 +1503,6 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
-
-// Android uses kComboboxSelect instead of kListbox for <select size > 1>.
-#if !BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
-                       SelectListWithOptgroupActiveDescendant) {
-  LoadInitialAccessibilityTreeFromHtml(R"HTML(
-      <!DOCTYPE html>
-      <html>
-      <body>
-        <select autofocus size="8" aria-label="Select">
-          <optgroup label="A">
-            <option>Option 1</option>
-          </optgroup>
-          <optgroup label="B">
-            <option selected>Option 2</option>
-            <option>Option 3</option>
-          </optgroup>
-        </select>
-      </body>
-      </html>)HTML");
-
-  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
-                                                "Select");
-
-  const ui::BrowserAccessibility* root =
-      GetManager()->GetBrowserAccessibilityRoot();
-  ASSERT_NE(root, nullptr);
-  const ui::BrowserAccessibility* body = root->PlatformGetChild(0);
-  ASSERT_NE(body, nullptr);
-  ui::BrowserAccessibility* select = body->PlatformGetChild(0);
-  ASSERT_NE(select, nullptr);
-  EXPECT_EQ(ax::mojom::Role::kListBox, select->GetRole());
-
-  // Get Optgroup "B"
-  const ui::BrowserAccessibility* opt_group_2 = select->PlatformGetChild(1);
-  ASSERT_NE(opt_group_2, nullptr);
-  EXPECT_EQ(ax::mojom::Role::kGroup, opt_group_2->GetRole());
-  EXPECT_EQ("B",
-            opt_group_2->GetStringAttribute(ax::mojom::StringAttribute::kName));
-
-  // Get "Option 2".
-  const ui::BrowserAccessibility* option_2 = opt_group_2->PlatformGetChild(0);
-  ASSERT_NE(option_2, nullptr);
-  EXPECT_EQ(ax::mojom::Role::kListBoxOption, option_2->GetRole());
-  EXPECT_EQ("Option 2",
-            option_2->GetStringAttribute(ax::mojom::StringAttribute::kName));
-
-  // Ensure active descendant is "Option 2"
-  int active_descendant_id = -1;
-  EXPECT_TRUE(select->GetIntAttribute(
-      ax::mojom::IntAttribute::kActivedescendantId, &active_descendant_id));
-  EXPECT_EQ(active_descendant_id, option_2->GetId());
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        PlatformIterator) {

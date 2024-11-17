@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
 <translation id="1066101356081285416">Chrome akan mengesan nombor penjejakan pada laman yang anda lawati dan menunjukkan kepada anda kemaskinian pakej pada halaman Tab Baharu. Nombor penjejakan bungkusan dan nama laman web akan dihantar kepada Google untuk menyediakan ciri ini dan untuk meningkatkan ciri beli-belah untuk semua. Anda boleh mengemaskinikan tetapan ini pada bila-bila masa dalam <ph name="BEGIN_LINK" />Tetapan Penjejakan Bungkusan<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Cari dengan Google Lens</translation>
 <translation id="1143896152279775643">Kata laluan anda akan disimpan pada Pengurus Kata Laluan Google untuk <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Buka tab baharu dalam Chrome</translation>
 <translation id="1166460004393506534">Padamkan data semakan imbas dalam Chrome</translation>
@@ -38,7 +39,9 @@ Perkara yang perlu dipertimbangkan:
 <translation id="1670609221633730681">Petua Chrome: Pilih kedudukan bar alamat anda</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Menambahkan URL yang diinput pada penanda halaman anda dalam Chrome.</translation>
+<translation id="1799920918471566157">Petua Chrome</translation>
 <translation id="1830634592642484976">Alamat ini disimpan dalam Chrome pada masa ini. Untuk menggunakan alamat ini pada seluruh produk Google, simpan alamat ini dalam Google Account anda, <ph name="USER_EMAIL" />.</translation>
+<translation id="1891812034154776216">Sembunyikan tab Inkognito yang dibuka apabila anda meninggalkan Chrome</translation>
 <translation id="1917964099031477364">Akaun ini dan sebarang data yang tidak disimpan akan dialih keluar daripada Chrome dan apl Google yang lain pada peranti ini.</translation>
 <translation id="1919130412786645364">Benarkan log masuk Chrome</translation>
 <translation id="1965935827552890526">Selesaikan perkara yang anda lakukan di tetingkap Chrome lain yang terbuka.</translation>
@@ -70,6 +73,7 @@ Perkara yang perlu dipertimbangkan:
 <translation id="2689064829982324496">Untuk log keluar daripada Google Account dalam semua laman web, <ph name="BEGIN_LINK" />log keluar daripada Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome tidak dapat menyemak kemaskinian. Cuba lagi nanti.</translation>
 <translation id="2703746758996815929">Untuk mendapatkan petua berguna Chrome, hidupkan pemberitahuan pada tetapan iOS anda.</translation>
+<translation id="2728851697704606655">Terjemahkan dengan Google Lens</translation>
 <translation id="2736805085127235148">Pemberitahuan Chrome dimatikan dalam tetapan peranti anda pada masa ini.</translation>
 <translation id="2754428955276778271">Sesetengah data Chrome anda belum disimpan dalam Google Account anda.
 
@@ -247,6 +251,7 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="7581063337314642333">Lawati Grid Tab dalam Chrome</translation>
 <translation id="7599894504325210080">Paparan Autolengkap Chrome dikembangkan</translation>
 <translation id="7642373780953416937">Terima makluman tentang sebarang masalah privasi atau keselamatan yang dikesan secara automatik oleh Chrome untuk anda.</translation>
+<translation id="7660356333829433649">Kembali ke sini semula untuk lebih banyak petua berguna bagi memanfaatkan Chrome sepenuhnya.</translation>
 <translation id="7662994914830945754">Untuk melihat tab anda daripada mana-mana tempat anda menggunakan Chrome, log masuk dan hidupkan penyegerakan</translation>
 <translation id="7693590760643069321">Kini anda boleh menggunakan Chrome pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
 <translation id="7698568245838009292">Chrome Ingin Mengakses Kamera Anda</translation>
@@ -261,6 +266,7 @@ Untuk mendapatkan lebih banyak tetapan yang menggunakan data untuk meningkatkan 
 <translation id="7948283758957877064">Item Baharu dalam Chrome</translation>
 <translation id="8000174216052461231">Petua Chrome: Dapatkan keselamatan Chrome yang paling kukuh</translation>
 <translation id="8006014511203279255">Gunakan Chrome pada bila-bila masa anda mengetik pautan dalam mesej dan apl lain.</translation>
+<translation id="8014670471808569312">Chrome akan menawarkan untuk menyimpan kata laluan anda.</translation>
 <translation id="8018153653741938705">Kekal selamat dengan Google Chrome</translation>
 <translation id="8022947259858476807">Gunakan Chrome secara lalai untuk membuka pautan, mencari daripada widget dan melengkapkan kata laluan secara automatik dalam apl lain</translation>
 <translation id="804638182476029347">Benarkan pemberitahuan Chrome untuk menerima makluman penurunan harga</translation>
@@ -292,6 +298,7 @@ Data anda telah disulitkan dengan ungkapan laluan pada <ph name="TIME" />. Masuk
 <translation id="8558480467877843976">Kini anda boleh menggunakan Chrome pada bila-bila masa anda menyemak imbas atau mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
 <translation id="8603022514504485810">Google Password Manager tidak dapat menyemak semua kata laluan. Cuba lagi esok atau <ph name="BEGIN_LINK" />semak kata laluan dalam Google Account anda.<ph name="END_LINK" /></translation>
 <translation id="8630122478628016441">Hidupkan “Kunci tab Inkognito apabila anda menutup Chrome”.</translation>
+<translation id="8673726683583791503">Membeli-belah dengan Google Lens</translation>
 <translation id="8727043961453758442">Manfaatkan Chrome sepenuhnya</translation>
 <translation id="8765470054473112089">Apabila anda menaip dalam bar alamat atau kotak carian, Chrome menghantar perkara yang anda taip ke enjin carian lalai anda untuk mendapatkan cadangan yang lebih baik. Tetapan ini dimatikan dalam Inkognito.</translation>
 <translation id="8772179140489533211">Memaparkan gesaan untuk log masuk ke Chrome.</translation>

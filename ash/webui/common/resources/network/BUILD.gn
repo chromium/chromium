@@ -12,7 +12,6 @@ js_type_check("closure_compile_module") {
 
   deps = [
     ":apn_detail_dialog",
-    ":apn_list",
     ":apn_list_item",
     ":apn_selection_dialog",
     ":apn_selection_dialog_list_item",
@@ -20,7 +19,6 @@ js_type_check("closure_compile_module") {
     ":cr_policy_network_behavior_mojo",
     ":cr_policy_network_indicator_mojo",
     ":mojo_interface_provider",
-    ":network_apnlist",
     ":network_choose_mobile",
     ":network_config",
     ":network_config_element_behavior",
@@ -33,14 +31,10 @@ js_type_check("closure_compile_module") {
     ":network_list_item",
     ":network_list_types",
     ":network_listener_behavior",
-    ":network_nameservers",
     ":network_password_input",
     ":network_property_list_mojo",
-    ":network_proxy",
     ":network_proxy_exclusions",
     ":network_proxy_input",
-    ":network_select",
-    ":network_siminfo",
     ":onc_mojo",
     ":sim_lock_dialogs",
   ]
@@ -70,22 +64,6 @@ js_library("cr_policy_network_indicator_mojo") {
   ]
 }
 
-js_library("apn_list") {
-  deps = [
-    ":apn_detail_dialog",
-    ":apn_selection_dialog",
-    ":onc_mojo",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//ash/webui/common/resources/network:apn_list_item",
-    "//chromeos/services/network_config/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = []
-}
-
 js_library("apn_list_item") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
@@ -95,22 +73,6 @@ js_library("apn_list_item") {
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
   externs_list = [ "//ash/webui/common/resources/cr_elements/cr_action_menu/cr_action_menu_externs.js" ]
-}
-
-js_library("network_apnlist") {
-  deps = [
-    ":network_property_list_mojo",
-    ":onc_mojo",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//ash/webui/common/resources:load_time_data.m",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "$externs_path/metrics_private.js",
-    "//ash/webui/common/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ash/webui/common/resources/cr_elements/policy/cr_tooltip_icon_externs.js",
-  ]
 }
 
 js_library("network_choose_mobile") {
@@ -288,20 +250,6 @@ js_library("network_listener_behavior") {
   ]
 }
 
-js_library("network_nameservers") {
-  deps = [
-    ":cr_policy_network_behavior_mojo",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
-    "//ash/webui/common/resources/cr_elements/cr_radio_button/cr_radio_button_externs.js",
-    "//ash/webui/common/resources/cr_elements/policy/cr_policy_indicator_externs.js",
-  ]
-}
-
 js_library("network_password_input") {
   deps = [
     ":cr_policy_network_behavior_mojo",
@@ -328,24 +276,6 @@ js_library("network_property_list_mojo") {
   ]
 }
 
-js_library("network_proxy") {
-  deps = [
-    ":cr_policy_network_behavior_mojo",
-    ":network_proxy_exclusions",
-    ":network_proxy_input",
-    ":onc_mojo",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ash/webui/common/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
-    "//ash/webui/common/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
-  ]
-}
-
 js_library("network_proxy_exclusions") {
   deps = [
     "//ash/webui/common/resources:i18n_behavior",
@@ -362,37 +292,6 @@ js_library("network_proxy_input") {
   ]
   externs_list = [
     "//ash/webui/common/resources/cr_elements/cr_input/cr_input_externs.js",
-  ]
-}
-
-js_library("network_select") {
-  deps = [
-    ":network_list",
-    ":network_list_types",
-    ":network_listener_behavior",
-    ":onc_mojo",
-    "//third_party/polymer/v3_0/components-chromium/paper-progress:paper-progress",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("network_siminfo") {
-  deps = [
-    ":mojo_interface_provider",
-    ":network_list_types",
-    ":network_password_input",
-    ":onc_mojo",
-    ":sim_lock_dialogs",
-    "//ash/webui/common/resources:assert",
-    "//ash/webui/common/resources:focus_without_ink_js",
-    "//ash/webui/common/resources:i18n_behavior",
-    "//third_party/polymer/v3_0/components-chromium/iron-flex-layout:iron-flex-layout-classes",
-    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [
-    "//ash/webui/common/resources/cr_elements/cr_button/cr_button_externs.js",
-    "//ash/webui/common/resources/cr_elements/cr_toggle/cr_toggle_externs.js",
   ]
 }
 

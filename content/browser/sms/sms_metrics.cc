@@ -16,16 +16,18 @@ void RecordSmsReceiveTime(base::TimeDelta duration, ukm::SourceId source_id) {
       ukm::GetExponentialBucketMinForUserTiming(duration.InMilliseconds()));
   builder.Record(ukm::UkmRecorder::Get());
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeSmsReceive", duration);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeSmsReceive",
+                                        duration);
 }
 
 void RecordCancelOnSuccessTime(base::TimeDelta duration) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeCancelOnSuccess", duration);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeCancelOnSuccess",
+                                        duration);
 }
 
 void RecordContinueOnSuccessTime(base::TimeDelta duration) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeContinueOnSuccess",
-                             duration);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+      "Blink.Sms.Receive.TimeContinueOnSuccess", duration);
 }
 
 void RecordSmsParsingStatus(SmsParsingStatus status, ukm::SourceId source_id) {
@@ -54,7 +56,8 @@ void RecordSmsOutcome(blink::WebOTPServiceOutcome outcome,
 void RecordSmsSuccessTime(base::TimeDelta duration,
                           ukm::SourceId source_id,
                           ukm::UkmRecorder* ukm_recorder) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeSuccess", duration);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeSuccess",
+                                        duration);
 
   DCHECK_NE(source_id, ukm::kInvalidSourceId);
   DCHECK(ukm_recorder);
@@ -67,13 +70,15 @@ void RecordSmsSuccessTime(base::TimeDelta duration,
 }
 
 void RecordSmsCancelTime(base::TimeDelta duration) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeCancel", duration);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeCancel",
+                                        duration);
 }
 
 void RecordSmsUserCancelTime(base::TimeDelta duration,
                              ukm::SourceId source_id,
                              ukm::UkmRecorder* ukm_recorder) {
-  UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeUserCancel", duration);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("Blink.Sms.Receive.TimeUserCancel",
+                                        duration);
 
   DCHECK_NE(source_id, ukm::kInvalidSourceId);
   DCHECK(ukm_recorder);

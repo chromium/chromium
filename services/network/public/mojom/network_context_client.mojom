@@ -4,8 +4,8 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
@@ -27,23 +27,24 @@ interface NetworkContextClient {
   OnFileUploadRequested(int32 process_id,
                         bool async,
                         array<mojo_base.mojom.FilePath> file_paths,
-                        url.mojom.Url destination_url) =>
-      (int32 net_error, array<mojo_base.mojom.ReadOnlyFile> files);
+                        url.mojom.Url destination_url)
+      => (int32 net_error, array<mojo_base.mojom.ReadOnlyFile> files);
 
   // Checks if network error reports could be sent for the given origins.
   // Replies with the origins that are allowed.
-  OnCanSendReportingReports(array<url.mojom.Origin> origins) =>
-      (array<url.mojom.Origin> origins);
+  OnCanSendReportingReports(array<url.mojom.Origin> origins)
+      => (array<url.mojom.Origin> origins);
 
   // Checks if a Domain Reliability report can be uploaded for the given origin.
   OnCanSendDomainReliabilityUpload(url.mojom.Origin origin) => (bool allowed);
 
   // Called to generate an auth token for SPNEGO authentication on Android.
   [EnableIf=is_android]
-  OnGenerateHttpNegotiateAuthToken(string server_auth_token, bool can_delegate,
+  OnGenerateHttpNegotiateAuthToken(string server_auth_token,
+                                   bool can_delegate,
                                    string auth_negotiate_android_account_type,
-                                   string spn) =>
-                                   (int32 result, string auth_token);
+                                   string spn)
+      => (int32 result, string auth_token);
 
   // Notification that a trust anchor was used for the given user.
   [EnableIf=is_chromeos]

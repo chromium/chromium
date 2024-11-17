@@ -184,8 +184,7 @@ BrowserDevToolsAgentHost::~BrowserDevToolsAgentHost() {
   BrowserDevToolsAgentHostInstances().erase(this);
 }
 
-bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session,
-                                             bool acquire_wake_lock) {
+bool BrowserDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   if (!session->GetClient()->IsTrusted())
     return false;
 

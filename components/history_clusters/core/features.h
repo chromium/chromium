@@ -85,11 +85,6 @@ BASE_DECLARE_FEATURE(kJourneysZeroStateFiltering);
 // At one point, we put everything in the Config class for performance, but
 // since crbug.com/1341292 has been fixed, we no longer need to.
 
-// Enables Side Panel Journeys.
-BASE_DECLARE_FEATURE(kSidePanelJourneys);
-extern const base::FeatureParam<bool> kSidePanelJourneysOpensFromOmnibox;
-BASE_DECLARE_FEATURE(kSidePanelJourneysQueryless);
-
 // Enables Side Panel Grouped History and WebUI Grouped History to find
 // ungrouped visits as well when the user has typed a search query.
 BASE_DECLARE_FEATURE(kSearchesFindUngroupedVisits);

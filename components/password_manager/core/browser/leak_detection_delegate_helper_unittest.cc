@@ -74,6 +74,7 @@ class LeakDetectionDelegateHelperTestBase {
       std::vector<GURL> all_urls_with_leaked_credentials = {}) {
     EXPECT_CALL(callback_, Run(in_stores, is_reused, GURL(kLeakedOrigin),
                                std::u16string(kLeakedUsername),
+                               std::u16string(kLeakedPassword),
                                all_urls_with_leaked_credentials))
         .Times(1);
   }

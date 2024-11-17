@@ -37,7 +37,7 @@ VariationsFieldTrialCreator::VariationsFieldTrialCreator(
           limited_entropy_synthetic_trial),
       ui_string_overrider_(ui_string_overrider) {}
 
-VariationsFieldTrialCreator::~VariationsFieldTrialCreator() {}
+VariationsFieldTrialCreator::~VariationsFieldTrialCreator() = default;
 
 void VariationsFieldTrialCreator::OverrideCachedUIStrings() {
   DCHECK(ui::ResourceBundle::HasSharedInstance());

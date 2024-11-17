@@ -76,11 +76,8 @@ bool TestManagementPolicyProvider::MustRemainEnabled(
 
 bool TestManagementPolicyProvider::MustRemainDisabled(
     const Extension* extension,
-    disable_reason::DisableReason* reason,
-    std::u16string* error) const {
+    disable_reason::DisableReason* reason) const {
   if (must_remain_disabled_) {
-    if (error)
-      *error = error_message_;
     if (reason)
       *reason = disable_reason_;
   }

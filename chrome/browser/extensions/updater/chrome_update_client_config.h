@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/component_updater/configurator_impl.h"
 #include "components/update_client/configurator.h"
@@ -74,7 +75,6 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
       override;
   scoped_refptr<update_client::UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<update_client::PatcherFactory> GetPatcherFactory() override;
-  bool EnabledDeltas() const override;
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
@@ -99,9 +99,10 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
       FactoryCallback factory);
 
  private:
-  raw_ptr<content::BrowserContext, LeakedDanglingUntriaged> context_ = nullptr;
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtr<content::BrowserContext> context_ = nullptr;
   component_updater::ConfiguratorImpl impl_;
-  raw_ptr<PrefService, LeakedDanglingUntriaged> pref_service_;
   std::unique_ptr<update_client::PersistedData> persisted_data_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;

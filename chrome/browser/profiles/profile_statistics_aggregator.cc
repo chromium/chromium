@@ -26,6 +26,7 @@ ProfileStatisticsAggregator::ProfileStatisticsAggregator(
     scoped_refptr<password_manager::PasswordStoreInterface>
         profile_password_store,
     PrefService* pref_service,
+    user_annotations::UserAnnotationsService* user_annotations_service,
     std::unique_ptr<device::fido::PlatformCredentialStore>
         platform_credential_store,
     base::OnceClosure done_callback)
@@ -35,6 +36,7 @@ ProfileStatisticsAggregator::ProfileStatisticsAggregator(
       history_service_(history_service),
       profile_password_store_(profile_password_store),
       pref_service_(pref_service),
+      user_annotations_service_(user_annotations_service),
       platform_credential_store_(std::move(platform_credential_store)),
       done_callback_(std::move(done_callback)) {}
 
@@ -82,6 +84,7 @@ void ProfileStatisticsAggregator::StartAggregator() {
   // Initiate autofill counting.
   AddCounter(std::make_unique<browsing_data::AutofillCounter>(
       personal_data_manager_, autofill_web_data_service_,
+      user_annotations_service_,
       /*sync_service=*/nullptr));
 }
 
@@ -110,7 +113,7 @@ void ProfileStatisticsAggregator::OnCounterResult(
   } else if (pref_name == browsing_data::prefs::kDeleteFormData) {
     StatisticsCallback(profiles::kProfileStatisticsAutofill, count);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

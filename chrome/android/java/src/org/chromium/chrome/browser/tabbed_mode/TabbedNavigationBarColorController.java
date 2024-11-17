@@ -45,10 +45,10 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.chrome.browser.ui.edge_to_edge.NavigationBarColorProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSupplier.ChangeObserver;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.InsetObserver;
 import org.chromium.ui.UiUtils;
@@ -70,7 +70,6 @@ class TabbedNavigationBarColorController
     private final Context mContext;
     private final FullscreenManager mFullScreenManager;
     private final @ColorInt int mDefaultScrimColor;
-    private final boolean mLightNavigationBar;
 
     // May be null if we return from the constructor early. Otherwise will be set.
     private final @Nullable TabModelSelector mTabModelSelector;
@@ -192,8 +191,6 @@ class TabbedNavigationBarColorController
         mContext = mRootView.getContext();
         mDefaultScrimColor = mContext.getColor(R.color.default_scrim_color);
         mFullScreenManager = fullscreenManager;
-        mLightNavigationBar =
-                mContext.getResources().getBoolean(R.bool.window_light_navigation_bar);
 
         mBottomAttachedUiObserver = bottomAttachedUiObserver;
         if (mBottomAttachedUiObserver != null) {
@@ -350,7 +347,6 @@ class TabbedNavigationBarColorController
         boolean toEdge = isDrawingToEdge();
         boolean forceDarkNavigation = mTabModelSelector.isIncognitoSelected();
 
-        forceDarkNavigation &= !UiUtils.isSystemUiThemingDisabled();
         forceDarkNavigation |= mIsInFullscreen;
         mForceDarkNavigationBarColor = forceDarkNavigation;
 
@@ -401,9 +397,18 @@ class TabbedNavigationBarColorController
 
         endNavigationBarColorAnimationIfRunning();
         if (toEdge) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                // When setting a transparent navbar for drawing toEdge, the system navbar contrast
+                // should not be enforced - otherwise, some devices will apply a scrim to the
+                // navbar.
+                mWindow.setNavigationBarContrastEnforced(false);
+            }
             // When drawing to edge, the new window nav bar color is always transparent.
             // This is called only once when |currentWindowNavigationBarColor| is another color.
             mWindow.setNavigationBarColor(Color.TRANSPARENT);
+            // TODO (crbug.com/370526173) Refactor to a single method setting both navbar and
+            // divider colors.
+            setWindowNavigationBarDividerColor(windowDividerColor);
         } else if (animateColorUpdate) { // if (!toEdge)
             animateNavigationBarColor(currentWindowNavigationBarColor, newWindowNavigationBarColor);
         } else { // if (!toEdge && !animateColorUpdate)
@@ -487,11 +492,6 @@ class TabbedNavigationBarColorController
      * @param fraction The scrim fraction in range [0, 1].
      */
     public void setNavigationBarScrimFraction(float fraction) {
-        if (mEdgeToEdgeControllerSupplier.get() != null
-                && mEdgeToEdgeControllerSupplier.get().isPageOptedIntoEdgeToEdge()) {
-            return;
-        }
-
         mNavigationBarScrimFraction = fraction;
         @ColorInt
         int scrimNavigationBarColor =

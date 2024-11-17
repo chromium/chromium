@@ -22,6 +22,7 @@ class OptimizationGuideDecider;
 namespace payments::facilitated {
 
 class FacilitatedPaymentsClient;
+class SecurityChecker;
 
 // Implementation of `FacilitatedPaymentsDriver` for Android/Desktop. It
 // is owned by `ContentFacilitatedPaymentsFactory`.
@@ -34,7 +35,8 @@ class ContentFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver,
   ContentFacilitatedPaymentsDriver(
       FacilitatedPaymentsClient* client,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-      content::RenderFrameHost* render_frame_host);
+      content::RenderFrameHost* render_frame_host,
+      std::unique_ptr<SecurityChecker> security_checker);
   ContentFacilitatedPaymentsDriver(const ContentFacilitatedPaymentsDriver&) =
       delete;
   ContentFacilitatedPaymentsDriver& operator=(
@@ -63,6 +65,9 @@ class ContentFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver,
   const content::GlobalRenderFrameHostId render_frame_host_id_;
 
   mojo::Receiver<mojom::PaymentLinkHandler> receiver_{this};
+
+  // Helps with checking the security properties of the webpage.
+  std::unique_ptr<SecurityChecker> security_checker_;
 };
 
 }  // namespace payments::facilitated

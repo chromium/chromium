@@ -44,7 +44,7 @@ const int kOverMaxCacheSize = 65 * 1024 * 1024;
 
 class CachedImageFetcherImageCacheTest : public testing::Test {
  public:
-  CachedImageFetcherImageCacheTest() {}
+  CachedImageFetcherImageCacheTest() = default;
 
   CachedImageFetcherImageCacheTest(const CachedImageFetcherImageCacheTest&) =
       delete;

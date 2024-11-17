@@ -83,13 +83,6 @@ class PinnedToolbarActionsModel : public KeyedService {
   virtual void UpdatePinnedState(const actions::ActionId& action_id,
                                  const bool should_pin);
 
-  // TODO(b/307350981): Remove MaybeUpdateSearchCompanionPinnedState() and
-  // UpdateSearchCompanionDefaultState() after migration is complete.
-  // Migrate the search companion pin state
-  // `kSidePanelCompanionEntryPinnedToToolbar` into kPinnedActions.
-  void MaybeUpdateSearchCompanionPinnedState(
-      bool companion_should_be_default_pinned);
-
   // Resets the pinned actions to default. NOTE: This also affects the home and
   // forward buttons, even though those are not otherwise managed by this model.
   virtual void ResetToDefault();
@@ -117,11 +110,6 @@ class PinnedToolbarActionsModel : public KeyedService {
   // maintain insertion order. Notify observers the model has been updated with
   // the latest data from the pref.
   void UpdatePinnedActionIds();
-
-  // Calculates and updates `kPinnedActions` with current default pinned state
-  // of the search companion feature.
-  void UpdateSearchCompanionDefaultState(
-      bool companion_should_be_default_pinned);
 
   void UpdatePref(const std::vector<actions::ActionId>& updated_list);
 

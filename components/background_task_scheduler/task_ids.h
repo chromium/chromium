@@ -143,6 +143,10 @@ enum class TaskIds {
   // team_email: chrome-privacy-controls@google.com
   // owner: zalmashni@google.com, rubindl@chromium.org
   SAFETY_HUB_JOB_ID = 112,
+  // component: UI>Browser>Mobile>Start
+  // team_email: clank-start@google.com
+  // owner:hanxi@chromium.org
+  AUXILIARY_SEARCH_DONATE_JOB_ID = 113,
 };
 
 }  // namespace background_task

@@ -45,7 +45,7 @@ class PortLocker {
   // doesn't do anything other than pass through to the private accessor on
   // |port_ref|, but it does force callers to go through a PortLocker to get to
   // the state, thus minimizing the likelihood that they'll go and do something
-  // stupid.
+  // bad.
   Port* GetPort(const PortRef& port_ref) const {
 #if DCHECK_IS_ON()
     // Sanity check when DCHECK is on to ensure this is actually a port whose

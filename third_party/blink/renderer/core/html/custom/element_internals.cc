@@ -84,7 +84,7 @@ const V8ControlValue* RestoreFromFormControlState(
       restored_value = MakeGarbageCollected<V8ControlValue>(form_data);
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   return restored_value;
 }
@@ -334,10 +334,11 @@ void ElementInternals::DidUpgrade() {
       *this);
 }
 
-void ElementInternals::SetElementAttribute(const QualifiedName& name,
+void ElementInternals::SetElementAttribute(const QualifiedName& attribute,
                                            Element* element) {
   if (!element) {
-    explicitly_set_attr_elements_map_.erase(name);
+    explicitly_set_attr_elements_map_.erase(attribute);
+    setAttribute(attribute, g_null_atom);
     return;
   }
 
@@ -345,11 +346,16 @@ void ElementInternals::SetElementAttribute(const QualifiedName& name,
   vector.push_back(element);
   FrozenArray<Element>* array =
       MakeGarbageCollected<FrozenArray<Element>>(std::move(vector));
-  explicitly_set_attr_elements_map_.Set(name, array);
+  explicitly_set_attr_elements_map_.Set(attribute, array);
+
+  // Ensure that the appropriate updates are made in the AXObjectCache, and that
+  // these attributes are serialized to the browser.
+  setAttribute(attribute, g_empty_atom);
 }
 
-Element* ElementInternals::GetElementAttribute(const QualifiedName& name) {
-  auto it = explicitly_set_attr_elements_map_.find(name);
+Element* ElementInternals::GetElementAttribute(
+    const QualifiedName& attribute) const {
+  auto it = explicitly_set_attr_elements_map_.find(attribute);
   if (it == explicitly_set_attr_elements_map_.end()) {
     return nullptr;
   }
@@ -360,28 +366,33 @@ Element* ElementInternals::GetElementAttribute(const QualifiedName& name) {
 }
 
 void ElementInternals::SetElementArrayAttribute(
-    const QualifiedName& name,
+    const QualifiedName& attribute,
     const HeapVector<Member<Element>>* given_elements) {
   if (!given_elements) {
-    explicitly_set_attr_elements_map_.erase(name);
+    explicitly_set_attr_elements_map_.erase(attribute);
+    setAttribute(attribute, g_empty_atom);
     return;
   }
 
   FrozenArray<Element>* frozen_elements =
       MakeGarbageCollected<FrozenArray<Element>>((std::move(*given_elements)));
-  explicitly_set_attr_elements_map_.Set(name, frozen_elements);
+  explicitly_set_attr_elements_map_.Set(attribute, frozen_elements);
+
+  // Ensure that the appropriate updates are made in the AXObjectCache, and that
+  // these attributes are serialized to the browser.
+  setAttribute(attribute, g_empty_atom);
 }
 
 const FrozenArray<Element>* ElementInternals::GetElementArrayAttribute(
-    const QualifiedName& name) {
-  auto it = explicitly_set_attr_elements_map_.find(name);
+    const QualifiedName& attribute) const {
+  auto it = explicitly_set_attr_elements_map_.find(attribute);
   if (it == explicitly_set_attr_elements_map_.end()) {
     return nullptr;
   }
   return it->value.Get();
 }
 
-const FrozenArray<Element>* ElementInternals::ariaControlsElements() {
+const FrozenArray<Element>* ElementInternals::ariaControlsElements() const {
   return GetElementArrayAttribute(html_names::kAriaControlsAttr);
 }
 void ElementInternals::setAriaControlsElements(
@@ -389,7 +400,7 @@ void ElementInternals::setAriaControlsElements(
   SetElementArrayAttribute(html_names::kAriaControlsAttr, given_elements);
 }
 
-const FrozenArray<Element>* ElementInternals::ariaDescribedByElements() {
+const FrozenArray<Element>* ElementInternals::ariaDescribedByElements() const {
   return GetElementArrayAttribute(html_names::kAriaDescribedbyAttr);
 }
 void ElementInternals::setAriaDescribedByElements(
@@ -397,7 +408,7 @@ void ElementInternals::setAriaDescribedByElements(
   SetElementArrayAttribute(html_names::kAriaDescribedbyAttr, given_elements);
 }
 
-const FrozenArray<Element>* ElementInternals::ariaDetailsElements() {
+const FrozenArray<Element>* ElementInternals::ariaDetailsElements() const {
   return GetElementArrayAttribute(html_names::kAriaDetailsAttr);
 }
 void ElementInternals::setAriaDetailsElements(
@@ -405,7 +416,7 @@ void ElementInternals::setAriaDetailsElements(
   SetElementArrayAttribute(html_names::kAriaDetailsAttr, given_elements);
 }
 
-const FrozenArray<Element>* ElementInternals::ariaErrorMessageElements() {
+const FrozenArray<Element>* ElementInternals::ariaErrorMessageElements() const {
   return GetElementArrayAttribute(html_names::kAriaErrormessageAttr);
 }
 void ElementInternals::setAriaErrorMessageElements(
@@ -413,7 +424,7 @@ void ElementInternals::setAriaErrorMessageElements(
   SetElementArrayAttribute(html_names::kAriaErrormessageAttr, given_elements);
 }
 
-const FrozenArray<Element>* ElementInternals::ariaFlowToElements() {
+const FrozenArray<Element>* ElementInternals::ariaFlowToElements() const {
   return GetElementArrayAttribute(html_names::kAriaFlowtoAttr);
 }
 void ElementInternals::setAriaFlowToElements(
@@ -421,7 +432,7 @@ void ElementInternals::setAriaFlowToElements(
   SetElementArrayAttribute(html_names::kAriaFlowtoAttr, given_elements);
 }
 
-const FrozenArray<Element>* ElementInternals::ariaLabelledByElements() {
+const FrozenArray<Element>* ElementInternals::ariaLabelledByElements() const {
   return GetElementArrayAttribute(html_names::kAriaLabelledbyAttr);
 }
 void ElementInternals::setAriaLabelledByElements(
@@ -429,7 +440,7 @@ void ElementInternals::setAriaLabelledByElements(
   SetElementArrayAttribute(html_names::kAriaLabelledbyAttr, given_elements);
 }
 
-const FrozenArray<Element>* ElementInternals::ariaOwnsElements() {
+const FrozenArray<Element>* ElementInternals::ariaOwnsElements() const {
   return GetElementArrayAttribute(html_names::kAriaOwnsAttr);
 }
 void ElementInternals::setAriaOwnsElements(
@@ -457,10 +468,6 @@ bool ElementInternals::IsTargetFormAssociated() const {
     return false;
   auto* definition = registry->DefinitionForName(Target().localName());
   return definition && definition->IsFormAssociated();
-}
-
-bool ElementInternals::IsFormControlElement() const {
-  return false;
 }
 
 bool ElementInternals::IsElementInternals() const {

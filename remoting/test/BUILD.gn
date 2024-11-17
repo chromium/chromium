@@ -50,8 +50,6 @@ static_library("test_support") {
     "//net",
     "//remoting/base",
     "//remoting/base:logging",
-    "//remoting/client",
-    "//remoting/client/audio",
     "//remoting/codec:decoder",
     "//remoting/codec:encoder",
     "//remoting/protocol",
@@ -180,47 +178,6 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
       "//remoting/host/base",
     ]
   }
-}
-
-# A binary for testing and fiddling FTL services.
-executable("ftl_services_playground") {
-  testonly = true
-  sources = [
-    "ftl_services_playground.cc",
-    "ftl_services_playground.h",
-    "ftl_services_playground_main.cc",
-  ]
-  deps = [
-    ":test_support",
-    "//mojo/core/embedder",
-    "//remoting/base",
-    "//remoting/base:authorization",
-    "//remoting/base:logging",
-    "//remoting/proto/ftl/v1:ftl_messages",
-    "//remoting/signaling",
-    "//services/network:network_service",
-  ]
-}
-
-# A binary for testing and fiddling the FTL signaling process.
-executable("ftl_signaling_playground") {
-  testonly = true
-  sources = [
-    "ftl_signaling_playground.cc",
-    "ftl_signaling_playground.h",
-    "ftl_signaling_playground_main.cc",
-  ]
-  deps = [
-    ":test_support",
-    "//components/webrtc:thread_wrapper",
-    "//mojo/core/embedder",
-    "//remoting/base",
-    "//remoting/base:authorization",
-    "//remoting/base:errors",
-    "//remoting/base:logging",
-    "//remoting/signaling",
-    "//services/network:network_service",
-  ]
 }
 
 if (enable_me2me_host && is_linux) {

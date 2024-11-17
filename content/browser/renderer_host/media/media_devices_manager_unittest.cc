@@ -18,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_devices_permission_checker.h"
 #include "content/browser/renderer_host/media/mock_video_capture_provider.h"
@@ -278,6 +279,10 @@ class MockMediaDevicesDispatcherHost
   MOCK_METHOD(void,
               GetAudioInputCapabilities,
               (GetAudioInputCapabilitiesCallback callback));
+  MOCK_METHOD(void,
+              SelectAudioOutput,
+              (const std::string& device_id,
+               SelectAudioOutputCallback callback));
   MOCK_METHOD(
       void,
       AddMediaDevicesListener,
@@ -466,6 +471,30 @@ class MediaDevicesManagerTest : public ::testing::Test {
     media_devices_manager_->OnDevicesChanged(type);
     task_environment_.RunUntilIdle();
   }
+  const base::flat_map<
+      GlobalRenderFrameHostId,
+      std::set<blink::WebMediaDeviceInfo,
+               MediaDevicesManager::WebMediaDeviceInfoComparator>>&
+  GetAudioDeviceOriginMap() {
+    return media_devices_manager_->audio_device_origin_map_;
+  }
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+  void InitVideoCaptureDevicesChangedObserver() {
+    media_devices_manager_->video_capture_service_device_changed_observer_ =
+        std::make_unique<
+            MediaDevicesManager::VideoCaptureDevicesChangedObserver>(
+            /*disconnect_cb=*/base::BindRepeating([]() {}),
+            /*listener_cb=*/base::BindRepeating([]() {}));
+  }
+
+  bool IsDisconnectVideoSourceProviderTimerRunning() {
+    return media_devices_manager_->disconnect_video_source_provider_timer_
+        .IsRunning();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+#endif
 
   // Must outlive MediaDevicesManager as ~MediaDevicesManager() verifies it's
   // running on the IO thread.
@@ -1602,4 +1631,83 @@ TEST_F(MediaDevicesManagerTest, DevicePropertyChanges) {
   FireDevicesChanged(base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
 }
 
+TEST_F(MediaDevicesManagerTest, AddAudioDeviceToOriginMap) {
+  blink::WebMediaDeviceInfo device_info;
+  device_info.device_id = "test_device_id";
+
+  media_devices_manager_->AddAudioDeviceToOriginMap(kRenderFrameHostId,
+                                                    device_info);
+
+  // Access the map using the helper function.
+  const auto& map = GetAudioDeviceOriginMap();
+
+  auto it = map.find(kRenderFrameHostId);
+  ASSERT_NE(it, map.end());
+  EXPECT_EQ(it->second.size(), 1u);
+  EXPECT_EQ(it->second.begin()->device_id, "test_device_id");
+}
+
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+TEST_F(MediaDevicesManagerTest, VideoSourceProviderTimer) {
+  InitVideoCaptureDevicesChangedObserver();
+
+  scoped_feature_list_.Reset();
+  scoped_feature_list_
+      .InitFromCommandLine(/*enable_features=*/
+                           "ReleaseVideoSourceProviderIfNotInUse",
+                           /*disable_features=*/"");
+
+  // The timer should not be running initially.
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  media_devices_manager_->UpdateVideoCaptureHostsEmptyState(false);
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  // With VideoCaptureHosts set is empty, the timer should be started.
+  media_devices_manager_->UpdateVideoCaptureHostsEmptyState(true);
+  EXPECT_TRUE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  media_devices_manager_->UpdateVideoCaptureHostsEmptyState(false);
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  // Add device-change event listeners.
+  MockMediaDevicesListener listener_all;
+  MediaDevicesManager::BoolDeviceTypes all_devices_to_subscribe;
+  all_devices_to_subscribe[static_cast<size_t>(
+      MediaDeviceType::kMediaAudioInput)] = true;
+  all_devices_to_subscribe[static_cast<size_t>(
+      MediaDeviceType::kMediaVideoInput)] = true;
+  all_devices_to_subscribe[static_cast<size_t>(
+      MediaDeviceType::kMediaAudioOutput)] = true;
+  uint32_t subscription_id =
+      media_devices_manager_->SubscribeDeviceChangeNotifications(
+          kRenderFrameHostId, all_devices_to_subscribe,
+          listener_all.CreateInterfacePtrAndBind());
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  MockMediaDevicesListener listener_video;
+  MediaDevicesManager::BoolDeviceTypes video_devices_to_subscribe;
+  video_devices_to_subscribe[static_cast<size_t>(
+      MediaDeviceType::kMediaVideoInput)] = true;
+  uint32_t video_subscription_id =
+      media_devices_manager_->SubscribeDeviceChangeNotifications(
+          kRenderFrameHostId, all_devices_to_subscribe,
+          listener_video.CreateInterfacePtrAndBind());
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  media_devices_manager_->UnsubscribeDeviceChangeNotifications(subscription_id);
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  // VideoCaptureHosts set is empty, but subscriptions is not empty, the timer
+  // should not be running
+  media_devices_manager_->UpdateVideoCaptureHostsEmptyState(true);
+  EXPECT_FALSE(IsDisconnectVideoSourceProviderTimerRunning());
+
+  // Both VideoCaptureHosts set and subscriptions are empty, the timer should be
+  // running
+  media_devices_manager_->UnsubscribeDeviceChangeNotifications(
+      video_subscription_id);
+  EXPECT_TRUE(IsDisconnectVideoSourceProviderTimerRunning());
+}
+#endif
 }  // namespace content

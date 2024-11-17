@@ -41,7 +41,7 @@ std::unique_ptr<KeyedService> AccountReconcilorFactory::BuildServiceInstanceFor(
   ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   auto reconcilor = std::make_unique<AccountReconcilor>(
-      identity_manager, SigninClientFactory::GetForBrowserState(profile),
+      identity_manager, SigninClientFactory::GetForProfile(profile),
       std::make_unique<signin::MirrorAccountReconcilorDelegate>(
           identity_manager));
   reconcilor->Initialize(true /* start_reconcile_if_tokens_available */);

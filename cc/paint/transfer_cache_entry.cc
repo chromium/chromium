@@ -53,8 +53,7 @@ bool ServiceTransferCacheEntry::UsesGpuContext(TransferCacheEntryType type) {
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 }  // namespace cc

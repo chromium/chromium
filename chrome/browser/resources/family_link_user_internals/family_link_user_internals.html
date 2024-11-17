@@ -13,19 +13,8 @@ found in the LICENSE file.
 </head>
 
 <body>
-<div id='info'>
-  <div id='basic-info' class="section" jsselect="sections">
-    <h2 jscontent="title"></h2>
-    <table class="section-details">
-      <tr jsselect="data"
-            jsvalues="class:$this.is_valid ? '' : 'uninitialized'"
-            jseval='highlightIfChanged(
-                this, this.children[1].innerText, stat_value)'>
-        <td class="detail" jscontent="stat_name" width=50%></td>
-        <td class="value" jscontent="stat_value" width=50%></td>
-      </tr>
-    </table>
-  </div>
+<div id="info">
+  <div id="basic-info"></div>
 
   <div class="section" jsskip="true">
     <h2>Try a URL</h2>
@@ -44,25 +33,11 @@ found in the LICENSE file.
     </table>
   </div>
 
-  <div id='user-settings' class="section">
-    <h2>Family Link User Settings</h2>
-    <table class="section-details">
-      <tr jsselect="settings">
-        <td jscontent="key"></td>
-        <td><pre jscontent="value"></pre></td>
-      </tr>
-    </table>
-  </div>
+  <div id="user-settings" class="section"></div>
 
-  <div class="section" id="filtering-results-container-wrapper" jsskip="true">
+  <div class="section" id="filtering-results-container-wrapper">
     <h2>Filtering Results</h2>
-    <div id="filtering-results-container">
-      <div class="filtering-results-entry" jsselect="results">
-        <div class="url" jscontent="url"></div>
-        <span class="result" jscontent="result"></span>
-        <span class="reason" jscontent="reason"></span>
-      </div>
-    </div>
+    <div id="filtering-results-container"></div>
   </div>
 </div>
 

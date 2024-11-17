@@ -23,11 +23,11 @@ namespace ip_protection {
 
 namespace {
 
-bool HasSubdomainCoverage(const std::string_view domain) {
+bool HasSubdomainCoverage(std::string_view domain) {
   return domain.starts_with(".") || domain.starts_with("*");
 }
 
-void AddRulesToMatcher(const std::string_view domain,
+void AddRulesToMatcher(std::string_view domain,
                        const bool include_subdomains,
                        net::SchemeHostPortMatcher& matcher) {
   auto domain_rule =
@@ -36,8 +36,8 @@ void AddRulesToMatcher(const std::string_view domain,
   if (domain_rule) {
     matcher.AddAsLastRule(std::move(domain_rule));
   } else {
-    DVLOG(3) << "UrlMatcherWithBypass::UpdateMatcher() - " << domain
-             << " is not a valid rule";
+    VLOG(3) << "UrlMatcherWithBypass::UpdateMatcher() - " << domain
+            << " is not a valid rule";
     return;
   }
 
@@ -49,8 +49,8 @@ void AddRulesToMatcher(const std::string_view domain,
     if (subdomain_rule) {
       matcher.AddAsLastRule(std::move(subdomain_rule));
     } else {
-      DVLOG(3) << "UrlMatcherWithBypass::UpdateMatcher() - " << subdomain
-               << " is not a valid rule";
+      VLOG(3) << "UrlMatcherWithBypass::UpdateMatcher() - " << subdomain
+              << " is not a valid rule";
       return;
     }
   }
@@ -158,10 +158,10 @@ UrlMatcherWithBypassResult UrlMatcherWithBypass::Matches(
     const GURL& request_url,
     const std::optional<net::SchemefulSite>& top_frame_site,
     bool skip_bypass_check) const {
-  auto dvlog = [&](std::string_view message, bool matches) {
-    DVLOG(3) << "UrlMatcherWithBypass::Matches(" << request_url << ", "
-             << top_frame_site.value() << ") - " << message
-             << " - matches: " << (matches ? "true" : "false");
+  auto vlog = [&](std::string_view message, bool matches) {
+    VLOG(3) << "UrlMatcherWithBypass::Matches(" << request_url << ", "
+            << top_frame_site.value() << ") - " << message
+            << " - matches: " << (matches ? "true" : "false");
   };
 
   if (!skip_bypass_check && !top_frame_site.has_value()) {
@@ -170,14 +170,14 @@ UrlMatcherWithBypassResult UrlMatcherWithBypass::Matches(
   }
 
   if (!IsPopulated()) {
-    dvlog("skipped (match list not populated)", false);
+    vlog("skipped (match list not populated)", false);
     return UrlMatcherWithBypassResult::kNoMatch;
   }
 
   std::string resource_host_suffix = PartitionMapKey(request_url.host());
 
   if (!match_list_with_bypass_map_.contains(resource_host_suffix)) {
-    dvlog("no suffix match", false);
+    vlog("no suffix match", false);
     return UrlMatcherWithBypassResult::kNoMatch;
   }
 
@@ -186,19 +186,19 @@ UrlMatcherWithBypassResult UrlMatcherWithBypass::Matches(
     auto rule_result = matcher.Evaluate(request_url);
     if (rule_result == net::SchemeHostPortMatcherResult::kInclude) {
       if (skip_bypass_check) {
-        dvlog("matched with skipped bypass check", true);
+        vlog("matched with skipped bypass check", true);
         return UrlMatcherWithBypassResult::kMatchAndNoBypass;
       }
       const bool no_match =
           bypass_matcher->Evaluate(top_frame_site->GetURL()) ==
           net::SchemeHostPortMatcherResult::kNoMatch;
-      dvlog("bypass_matcher.NoMatch", no_match);
+      vlog("bypass_matcher.NoMatch", no_match);
       return no_match ? UrlMatcherWithBypassResult::kMatchAndNoBypass
                       : UrlMatcherWithBypassResult::kMatchAndBypass;
     }
   }
 
-  dvlog("no request match", false);
+  vlog("no request match", false);
   return UrlMatcherWithBypassResult::kNoMatch;
 }
 

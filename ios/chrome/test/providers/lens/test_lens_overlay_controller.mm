@@ -39,4 +39,16 @@
   // NO-OP
 }
 
+- (void)resetSelectionAreaToInitialPosition:(void (^)())completion {
+  // NO-OP
+}
+
+- (void)setTopIconsHidden:(BOOL)hidden {
+  // NO-OP
+}
+
+- (void)disableFlyoutMenu:(BOOL)disable {
+  // NO-OP
+}
+
 @end

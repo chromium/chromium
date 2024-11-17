@@ -16,24 +16,41 @@ static_library("event_based_logs") {
     "event_observer_base.h",
   ]
 
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
   deps = [
+    ":utils",
     "//base",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/reporting/event_based_logs/event_observers",
     "//chrome/browser/ash/policy/reporting/os_updates",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/support_tool:support_tool_proto",
+    "//chromeos/ash/components/browser_context_helper:browser_context_helper",
     "//chromeos/ash/components/settings",
     "//components/prefs",
+    "//components/reporting/client:report_queue",
+    "//components/reporting/client:report_queue_factory",
     "//components/reporting/util:status",
     "//services/preferences/public/cpp",
   ]
 
   allow_circular_includes_from = [
+    "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/reporting/event_based_logs/event_observers",
     "//chrome/browser/ash/policy/reporting/os_updates",
   ]
+}
+
+static_library("utils") {
+  sources = [
+    "event_based_log_utils.cc",
+    "event_based_log_utils.h",
+  ]
+
+  deps = [ "//base" ]
 }
 
 source_set("unit_tests") {
@@ -42,11 +59,13 @@ source_set("unit_tests") {
 
   deps = [
     ":event_based_logs",
+    ":utils",
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
+    "//chrome/browser/prefs",
     "//chrome/browser/support_tool:support_tool_proto",
     "//chrome/test:test_support",
     "//components/prefs",
@@ -61,16 +80,26 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "event_based_log_manager_browsertest.cc" ]
+  sources = [
+    "event_based_log_manager_browsertest.cc",
+    "event_based_log_uploader_browsertest.cc",
+  ]
 
   deps = [
     ":event_based_logs",
+    "//chrome/browser:browser",
+    "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/policy/core:test_support",
+    "//chrome/browser/ash/policy/remote_commands:test_support",
+    "//chrome/browser/ash/policy/test_support:test_support",
     "//chrome/browser/ash/settings",
     "//chrome/browser/ash/settings:test_support",
     "//chrome/browser/policy/messaging_layer/proto:log_upload_event_proto",
     "//chrome/browser/support_tool:support_tool_proto",
+    "//chrome/test:test_support",
     "//chromeos/ash/components/settings",
+    "//chromeos/ash/components/system:system",
+    "//components/reporting/storage:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",

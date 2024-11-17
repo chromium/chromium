@@ -9,20 +9,14 @@ module mojom;
 enum LifecycleUnitState {
   // The LifecycleUnit is alive and active with no CPU throttling.
   ACTIVE = 0,
-  // The LifecycleUnit is currently being CPU throttled.
-  THROTTLED = 1,
-  // Deprecated: The LifecycleUnit is currently transitioning to a FROZEN state.
-  // PENDING_FREEZE = 2,
+  // Deprecated: THROTTLED = 1,
+  // Deprecated: PENDING_FREEZE = 2,
   // The LifecycleUnit is frozen.
   FROZEN = 3,
-  // Deprecated: The LifecycleUnit is currently transitioning to a DISCARDED
-  // state.
-  // PENDING_DISCARD = 4,
+  // Deprecated: PENDING_DISCARD = 4,
   // The LifecycleUnit is discarded, and is consuming no system resources.
   DISCARDED = 5,
-  // Deprecated: The LifecycleUnit is currently transitioning from the FROZEN
-  // state to the ACTIVE state.
-  // PENDING_UNFREEZE = 6,
+  // Deprecated: PENDING_UNFREEZE = 6,
 };
 
 // Indicates the loading state of a lifecycle unit, orthogonal to the basic
@@ -67,4 +61,7 @@ enum LifecycleUnitDiscardReason {
   // manager has detected intensive resource usage and suggests discarding
   // certain tabs in an attempt to improve resource usage.
   SUGGESTED = 3,
+  // The discard is requested by FreezingPolicy for a frozen tab that grew its
+  // memory usage above a threshold.
+  FROZEN_WITH_GROWING_MEMORY = 4,
 };

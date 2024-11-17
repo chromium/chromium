@@ -120,7 +120,7 @@ PublicURLManager::PublicURLManager(ExecutionContext* execution_context)
           execution_context->GetTaskRunner(TaskType::kFileReading));
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -291,6 +291,32 @@ void PublicURLManager::Resolve(
   };
 
   GetBlobURLStore().ResolveForNavigation(
+      url, std::move(token_receiver),
+      WTF::BindOnce(metrics_callback, WrapPersistent(GetExecutionContext())));
+}
+
+void PublicURLManager::ResolveForWorkerScriptFetch(
+    const KURL& url,
+    mojo::PendingReceiver<mojom::blink::BlobURLToken> token_receiver) {
+  if (is_stopped_) {
+    return;
+  }
+
+  DCHECK(url.ProtocolIs("blob"));
+
+  // This code used to be executed as part of the ResolveForNavigation flow, so
+  // it is repeated to preserve the existing functionality.
+  auto metrics_callback =
+      [](ExecutionContext* execution_context,
+         const std::optional<base::UnguessableToken>& unsafe_agent_cluster_id) {
+        if (execution_context->GetAgentClusterID() != unsafe_agent_cluster_id) {
+          execution_context->CountUse(
+              WebFeature::
+                  kBlobStoreAccessAcrossAgentClustersInResolveForNavigation);
+        }
+      };
+
+  GetBlobURLStore().ResolveForWorkerScriptFetch(
       url, std::move(token_receiver),
       WTF::BindOnce(metrics_callback, WrapPersistent(GetExecutionContext())));
 }

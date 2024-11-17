@@ -8,7 +8,6 @@
 namespace webapps {
 namespace switches {
 
-extern const char kBypassAppBannerEngagementChecks[];
 extern const char kBypassInstallThrottleForTesting[];
 
 }  // namespace switches

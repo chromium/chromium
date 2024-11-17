@@ -79,6 +79,8 @@ class BASE_EXPORT MessagePumpAndroid : public MessagePump {
  private:
   void ScheduleWorkInternal(bool do_idle_work);
 
+  void OnReturnFromLooper();
+
   // Unlike other platforms, we don't control the message loop as it's
   // controlled by the Android Looper, so we can't run a RunLoop to keep the
   // Thread this pump belongs to alive. However, threads are expected to have an

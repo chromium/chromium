@@ -9,6 +9,7 @@
 
 #include "services/viz/public/cpp/compositing/quads_mojom_traits.h"
 
+#include <algorithm>
 #include <optional>
 
 #include "base/notreached.h"
@@ -61,8 +62,7 @@ viz::DrawQuad* AllocateAndConstruct(
       quad->material = viz::DrawQuad::Material::kSharedElement;
       return quad;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // static
@@ -130,6 +130,8 @@ bool StructTraits<viz::mojom::SolidColorQuadStateDataView, viz::DrawQuad>::Read(
   quad->force_anti_aliasing_off = data.force_anti_aliasing_off();
   if (!data.ReadColor(&quad->color))
     return false;
+  // Clamp the alpha component of the color to the range of [0, 1].
+  quad->color.fA = std::clamp(quad->color.fA, 0.0f, 1.0f);
   return true;
 }
 
@@ -212,7 +214,7 @@ bool StructTraits<viz::mojom::SharedElementQuadStateDataView, viz::DrawQuad>::
     Read(viz::mojom::SharedElementQuadStateDataView data, viz::DrawQuad* out) {
   viz::SharedElementDrawQuad* shared_element_quad =
       static_cast<viz::SharedElementDrawQuad*>(out);
-  return data.ReadResourceId(&shared_element_quad->resource_id);
+  return data.ReadElementResourceId(&shared_element_quad->element_resource_id);
 }
 
 // static

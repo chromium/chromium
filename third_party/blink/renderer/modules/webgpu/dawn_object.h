@@ -102,16 +102,16 @@ class DawnObject : public DawnObjectImpl {
 template <>
 class DawnObject<wgpu::Device> : public DawnObjectBase {
  public:
-  DawnObject(scoped_refptr<DawnControlClientHolder> dawn_control_client,
-             wgpu::Device handle,
-             const String& label)
-      : DawnObjectBase(dawn_control_client, label),
-        handle_(std::move(handle)) {}
-
   const wgpu::Device& GetHandle() const { return handle_; }
 
+ protected:
+  // Support setting the handle after creation to allow for GPUDevice's
+  // two-step initialization.
+  using DawnObjectBase::DawnObjectBase;
+  void SetHandle(wgpu::Device handle) { handle_ = std::move(handle); }
+
  private:
-  const wgpu::Device handle_;
+  wgpu::Device handle_;
 };
 
 template <>

@@ -96,8 +96,7 @@ bool SadTab::ShouldShow(base::TerminationStatus status) {
     case base::TERMINATION_STATUS_MAX_ENUM:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 int SadTab::GetTitle() {
@@ -116,8 +115,7 @@ int SadTab::GetTitle() {
     case SAD_TAB_KIND_KILLED:
       return IDS_SAD_TAB_RELOAD_TITLE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 int SadTab::GetErrorCodeFormatString() {
@@ -140,8 +138,7 @@ int SadTab::GetInfoMessage() {
       return is_repeatedly_crashing_ ? IDS_SAD_TAB_RELOAD_TRY
                                      : IDS_SAD_TAB_MESSAGE;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 int SadTab::GetButtonTitle() {
@@ -186,8 +183,7 @@ std::vector<int> SadTab::GetSubMessages() {
 #endif
       return message_ids;
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::vector<int>();
+  NOTREACHED();
 }
 
 int SadTab::GetCrashedErrorCode() {

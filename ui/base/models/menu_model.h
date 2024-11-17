@@ -105,6 +105,10 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel {
   virtual bool GetAcceleratorAt(size_t index,
                                 ui::Accelerator* accelerator) const = 0;
 
+  // Returns whether an accelerator should be shown next to menu item
+  // disregarding of the platform.
+  virtual bool GetForceShowAcceleratorForItemAt(size_t index) const;
+
   // Returns the checked state of the item at the specified index.
   virtual bool IsItemCheckedAt(size_t index) const = 0;
 

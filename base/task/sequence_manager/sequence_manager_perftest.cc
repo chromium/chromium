@@ -102,7 +102,7 @@ class PerfTestDelegate {
 
 class BaseSequenceManagerPerfTestDelegate : public PerfTestDelegate {
  public:
-  BaseSequenceManagerPerfTestDelegate() {}
+  BaseSequenceManagerPerfTestDelegate() = default;
 
   ~BaseSequenceManagerPerfTestDelegate() override = default;
 

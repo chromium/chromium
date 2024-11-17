@@ -141,7 +141,7 @@
       // Don't create PromosManagerMediator unless promos exist that are
       // registered with PromosManagerCoordinator via `registerPromos`.
       PromosManager* promosManager =
-          PromosManagerFactory::GetForBrowserState(browser->GetBrowserState());
+          PromosManagerFactory::GetForProfile(browser->GetProfile());
       _mediator = [[PromosManagerMediator alloc]
           initWithPromosManager:promosManager
                    promoConfigs:[self promoConfigs]];
@@ -180,8 +180,8 @@
   };
 
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(
+          self.browser->GetProfile());
   tracker->AddOnInitializedCallback(base::BindOnce(onInitializedBlock));
 }
 
@@ -215,8 +215,8 @@
     }
 
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+        feature_engagement::TrackerFactory::GetForProfile(
+            self.browser->GetProfile());
     tracker->Dismissed(*it->feature_engagement_feature);
   }
   _currentPromoData = std::nullopt;
@@ -568,8 +568,8 @@
   // What's New promo handler.
   _displayHandlerPromos[promos_manager::Promo::WhatsNew] =
       [[WhatsNewPromoDisplayHandler alloc]
-          initWithPromosManager:PromosManagerFactory::GetForBrowserState(
-                                    self.browser->GetBrowserState())];
+          initWithPromosManager:PromosManagerFactory::GetForProfile(
+                                    self.browser->GetProfile())];
 
   // Credentials provider promo handler.
   _displayHandlerPromos[promos_manager::Promo::CredentialProviderExtension] =

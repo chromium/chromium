@@ -93,17 +93,9 @@ bool DelegatedInkPointRendererGpu::Initialize(
 
 bool DelegatedInkPointRendererGpu::DelegatedInkIsSupported(
     const Microsoft::WRL::ComPtr<IDCompositionDevice2>& dcomp_device) const {
-  const base::win::OSInfo::VersionNumber& os_version =
-      base::win::OSInfo::GetInstance()->version_number();
-  // Win11 24H2 is first introduced in insider build #26100. Issues related to
-  // the delegated ink trail API, such as flickering in the top 3rd of the
-  // screen are addressed in 24H2.
-  // TODO(crbug.com/40153696) Add 24H2 to base::win::Version.
-  const bool is_24h2_or_greater =
-      (os_version.major > 10) ||
-      (os_version.major == 10 && os_version.build >= 26100);
-
-  if (!is_24h2_or_greater) {
+  // Issues related to the delegated ink trail API, such as flickering in the
+  // top 3rd of the screen are addressed in 24H2.
+  if (base::win::GetVersion() < base::win::Version::WIN11_24H2) {
     return false;
   }
 
@@ -275,6 +267,7 @@ void DelegatedInkPointRendererGpu::StoreDelegatedInkPoint(
 
   DCHECK(delegated_ink_points_.find(pointer_id) ==
              delegated_ink_points_.end() ||
+         delegated_ink_points_[pointer_id].empty() ||
          point.timestamp() >
              delegated_ink_points_[pointer_id].rbegin()->first.timestamp());
 

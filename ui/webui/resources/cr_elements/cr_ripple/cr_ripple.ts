@@ -52,11 +52,29 @@ export class CrRippleElement extends CrLitElement {
         (this.parentNode as ShadowRoot).host :
         this.parentElement!;
 
-    this.eventTracker_.add(
-        keyEventTarget, 'pointerdown',
-        (e: Event) => this.uiDownAction(e as PointerEvent));
-    this.eventTracker_.add(
-        keyEventTarget, 'pointerup', () => this.uiUpAction());
+    this.eventTracker_.add(keyEventTarget, 'pointerdown', (e: Event) => {
+      const handled = this.uiDownAction(e as PointerEvent);
+
+      if (!handled) {
+        return;
+      }
+
+      this.eventTracker_.add(keyEventTarget, 'pointermove', (e: Event) => {
+        // Only call setPointerCapture() if 'pointermove' happens and not
+        // in 'pointerdown', so that clicking any links or other elements
+        // within the parent works as expected.
+        this.setPointerCapture((e as PointerEvent).pointerId);
+        this.eventTracker_.remove(keyEventTarget, 'pointermove');
+      });
+    });
+
+    const cancelOrUp = (e: Event) => {
+      this.eventTracker_.remove(keyEventTarget, 'pointermove');
+      this.uiUpAction(e as PointerEvent);
+    };
+
+    this.eventTracker_.add(keyEventTarget, 'pointercancel', cancelOrUp);
+    this.eventTracker_.add(keyEventTarget, 'pointerup', cancelOrUp);
 
     this.eventTracker_.add(keyEventTarget, 'keydown', (e: KeyboardEvent) => {
       if (e.defaultPrevented) {
@@ -97,15 +115,18 @@ export class CrRippleElement extends CrLitElement {
     }
   }
 
-  uiDownAction(e?: PointerEvent) {
+  uiDownAction(e?: PointerEvent): boolean {
     if (e !== undefined && e.button !== 0) {
       // Ignore secondary mouse button clicks.
-      return;
+      return false;
     }
 
-    if (!this.noink) {
-      this.downAction_(e);
+    if (this.noink) {
+      return false;
     }
+
+    this.downAction_(e);
+    return true;
   }
 
   private downAction_(e?: PointerEvent) {
@@ -192,19 +213,27 @@ export class CrRippleElement extends CrLitElement {
         });
   }
 
-  uiUpAction() {
-    if (!this.noink) {
-      this.upAction_();
+  uiUpAction(e?: PointerEvent) {
+    if (this.noink) {
+      return;
     }
+
+    this.upAction_(e);
   }
 
-  private upAction_() {
-    if (!this.holdDown) {
-      this.hideRipple_();
+  private upAction_(e?: PointerEvent) {
+    if (this.holdDown) {
+      return;
     }
+
+    this.hideRipple_(e);
   }
 
-  private hideRipple_() {
+  private hideRipple_(e?: PointerEvent) {
+    if (e !== undefined && this.hasPointerCapture(e.pointerId)) {
+      this.releasePointerCapture(e.pointerId);
+    }
+
     if (this.ripples_.length === 0) {
       return;
     }

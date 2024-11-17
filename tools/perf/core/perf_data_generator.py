@@ -225,6 +225,9 @@ FYI_BUILDERS = {
             'pool': 'chrome.tests',
         },
     },
+    'win-arm64-builder-perf': {
+        'perf_trigger': False,
+    },
     'win-10_laptop_low_end-perf_HP-Candidate': {
         'tests': [
             {
@@ -251,6 +254,46 @@ FYI_BUILDERS = {
             'Windows-10',
             'synthetic_product_name':
             'HP Laptop 15-bs1xx [Type1ProductConfigId] (HP)'
+        },
+    },
+    'win-arm64-snapdragon-plus-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Windows-11',
+            'cpu': 'arm64-64-Snapdragon(R)_X_Plus_-_X1P64100_-_Qualcomm(R)_Oryon(TM)_CPU',
+            'synthetic_product_name': 'Inspiron 14 Plus 7441 (Dell Inc.)'
+        },
+    },
+    'win-arm64-snapdragon-elite-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'win',
+        'target_bits':
+        64,
+        'dimension': {
+            'pool': 'chrome.tests.perf',
+            'os': 'Windows-11',
+            'cpu': 'arm64-64-Snapdragon(R)_X_Elite_-_X1E80100_-_Qualcomm(R)_Oryon(TM)_CPU',
+            'synthetic_product_name': 'Inspiron 14 Plus 7441 (Dell Inc.)'
         },
     },
     'chromeos-kevin-builder-perf-fyi': {
@@ -513,6 +556,19 @@ BUILDERS = {
         'platform': 'android-webview-trichrome-google-bundle',
         'dimension': {
             'pool': 'chrome.tests.perf-webview',
+            'os': 'Android',
+            'device_type': 'flame',
+            'device_os': 'RP1A.201105.002',
+            'device_os_flavor': 'google',
+        },
+    },
+    'android-pixel4_webview-perf-pgo': {
+        'tests': [{
+            'isolate': 'performance_webview_test_suite',
+        }],
+        'platform': 'android-webview-trichrome-google-bundle',
+        'dimension': {
+            'pool': 'chrome.tests.perf-webview-pgo',
             'os': 'Android',
             'device_type': 'flame',
             'device_os': 'RP1A.201105.002',
@@ -907,6 +963,30 @@ BUILDERS = {
             'MacBookAir7,2_x86-64-i5-5350U_Intel Broadwell HD Graphics 6000_8192_APPLE SSD SM0128G'
         },
     },
+    'mac-intel-perf': {
+        'tests': [
+            {
+                'isolate': 'performance_test_suite',
+                'extra_args': [
+                    '--assert-gpu-compositing',
+                ],
+            },
+        ],
+        'platform':
+        'mac',
+        'dimension': {
+            'cpu':
+            'x86-64',
+            'gpu':
+            '8086:3e9b',
+            'os':
+            'Mac-15',
+            'pool':
+            'chrome.tests.perf',
+            'synthetic_product_name':
+            'Macmini8,1_x86-64-i7-8700B_Intel UHD Graphics 630_65536_APPLE SSD AP1024M'
+        },
+    },
     'mac-laptop_low_end-perf-pgo': {
         'tests': [
             {
@@ -1015,12 +1095,16 @@ BUILDERS = {
         'platform':
         'mac',
         'dimension': {
-            'cpu': 'arm',
-            'mac_model': 'Mac14,7',
-            'os': 'Mac',
-            'pool': 'chrome.tests.perf',
+            'cpu':
+            'arm',
+            'mac_model':
+            'Mac14,7',
+            'os':
+            'Mac',
+            'pool':
+            'chrome.tests.perf',
             'synthetic_product_name':
-                'Mac14,7_arm64-64-Apple_M2_apple m2_8192_APPLE SSD AP0256Z',
+            'Mac14,7_arm64-64-Apple_M2_apple m2_8192_APPLE SSD AP0256Z',
         },
     },
     'linux-perf': {
@@ -1621,15 +1705,17 @@ def generate_telemetry_args(tester_config, platform):
   elif tester_config['platform'] == 'lacros':
     browser_name = 'lacros-chrome'
   elif (tester_config['platform'] == 'win'
+        and not tester_config['dimension'].get('cpu', '').startswith('arm64')
         and tester_config['target_bits'] == 64):
-    browser_name = 'release_x64'
+    browser_name = 'builder'  # crbug.com/377748127
   elif tester_config['platform'] == 'fuchsia-wes':
     browser_name = 'web-engine-shell'
   elif tester_config['platform'] == 'fuchsia-chrome':
     browser_name = 'fuchsia-chrome'
   else:
-    browser_name = 'release'
+    browser_name = 'builder'  # crbug.com/377748127
   test_args = [
+      '-v',
       '-v',
       '--browser=%s' % browser_name,
       '--upload-results',

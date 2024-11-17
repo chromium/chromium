@@ -29,12 +29,16 @@
 #include "net/log/net_log_capture_mode.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/boringssl/src/include/openssl/bytestring.h"
 
 using net::ct::CTPolicyCompliance;
 
 namespace certificate_transparency {
 
 namespace {
+
+// Type of a leaf index extension in an SCT from a Static CT API log.
+const uint8_t kExtensionTypeLeafIndex = 0;
 
 base::Value::Dict NetLogCertComplianceCheckResultParams(
     net::X509Certificate* cert,
@@ -44,6 +48,58 @@ base::Value::Dict NetLogCertComplianceCheckResultParams(
   dict.Set("build_timely", build_timely);
   dict.Set("ct_compliance_status", CTPolicyComplianceToString(compliance));
   return dict;
+}
+
+// Returns true if the extension is a leaf index extension from a Static CT API
+// log. See
+// https://github.com/C2SP/C2SP/blob/main/static-ct-api.md#sct-extension
+bool IsValidLeafIndexExtension(CBS* in) {
+  uint8_t bytes[5];
+  if (!CBS_copy_bytes(in, bytes, 5)) {
+    return false;
+  }
+  // Any value is a valid leaf index.
+  return true;
+}
+
+// Returns true if the SCT has only one valid leaf index extension.
+bool HasValidLeafIndex(
+    const scoped_refptr<net::ct::SignedCertificateTimestamp> sct) {
+  CBS extension_cbs;
+  CBS_init(&extension_cbs, reinterpret_cast<uint8_t*>(sct->extensions.data()),
+           sct->extensions.size());
+  enum class LeafIndexStatus {
+    kFoundValid,
+    kFoundInvalid,
+    kNotFound,
+  };
+  LeafIndexStatus status = LeafIndexStatus::kNotFound;
+
+  // Look for a valid leaf index extension. The extension can be anywhere, so
+  // keep looking until we can find one. There must not be more than one leaf
+  // index extension.
+  while (CBS_len(&extension_cbs) != 0) {
+    uint8_t extension_type;
+    if (!CBS_get_u8(&extension_cbs, &extension_type)) {
+      return false;
+    }
+
+    CBS extension_data;
+    if (!CBS_get_u16_length_prefixed(&extension_cbs, &extension_data)) {
+      return false;
+    }
+
+    if (extension_type == kExtensionTypeLeafIndex) {
+      if (status != LeafIndexStatus::kNotFound) {
+        // Must not have multiple leaf index extensions.
+        return false;
+      }
+      status = IsValidLeafIndexExtension(&extension_data)
+                   ? LeafIndexStatus::kFoundValid
+                   : LeafIndexStatus::kFoundInvalid;
+    }
+  }
+  return status == LeafIndexStatus::kFoundValid;
 }
 
 }  // namespace
@@ -56,12 +112,14 @@ OperatorHistoryEntry::OperatorHistoryEntry(const OperatorHistoryEntry& other) =
 ChromeCTPolicyEnforcer::ChromeCTPolicyEnforcer(
     base::Time log_list_date,
     std::vector<std::pair<std::string, base::Time>> disqualified_logs,
-    std::map<std::string, OperatorHistoryEntry> log_operator_history)
+    std::map<std::string, LogInfo> log_info,
+    bool enable_static_ct_api_enforcement)
     : disqualified_logs_(std::move(disqualified_logs)),
-      log_operator_history_(std::move(log_operator_history)),
-      log_list_date_(log_list_date) {}
+      log_info_(std::move(log_info)),
+      log_list_date_(log_list_date),
+      enable_static_ct_api_enforcement_(enable_static_ct_api_enforcement) {}
 
-ChromeCTPolicyEnforcer::~ChromeCTPolicyEnforcer() {}
+ChromeCTPolicyEnforcer::~ChromeCTPolicyEnforcer() = default;
 
 CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCompliance(
     net::X509Certificate* cert,
@@ -160,6 +218,7 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
   bool has_valid_embedded_sct = false;
   bool has_valid_nonembedded_sct = false;
   bool has_diverse_log_operators = false;
+  bool has_rfc6962_log = false;
   std::vector<std::string_view> embedded_log_ids;
   std::string first_seen_operator;
   for (const auto& sct : verified_scts) {
@@ -170,6 +229,13 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
         sct->origin != net::ct::SignedCertificateTimestamp::SCT_EMBEDDED) {
       // For OCSP and TLS delivered SCTs, only SCTs that are valid at the
       // time of check are accepted.
+      continue;
+    }
+
+    auto log_type = GetLogType(sct->log_id);
+    if (enable_static_ct_api_enforcement_ &&
+        log_type == network::mojom::CTLogInfo::LogType::kStaticCTAPI &&
+        !HasValidLeafIndex(sct)) {
       continue;
     }
 
@@ -194,6 +260,14 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
         has_diverse_log_operators |= first_seen_operator != sct_operator;
       }
     }
+
+    if (enable_static_ct_api_enforcement_) {
+      // TODO(crbug.com/370724580): Disallow kUnspecified once all logs in the
+      // hardcoded and component updater protos have proper log types.
+      has_rfc6962_log |=
+          (log_type == network::mojom::CTLogInfo::LogType::kRFC6962 ||
+           log_type == network::mojom::CTLogInfo::LogType::kUnspecified);
+    }
   }
 
   // Option 1:
@@ -205,7 +279,8 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
   // Note: Because SCTs embedded via TLS or OCSP can be updated on the fly,
   // the issuance date is irrelevant, as any policy changes can be
   // accommodated.
-  if (has_valid_nonembedded_sct && has_diverse_log_operators) {
+  if (has_valid_nonembedded_sct && has_diverse_log_operators &&
+      (!enable_static_ct_api_enforcement_ || has_rfc6962_log)) {
     return CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
   }
   // Note: If has_valid_nonembedded_sct was true, but Option 2 isn't met,
@@ -232,6 +307,12 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
   if (!has_diverse_log_operators) {
     return CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
   }
+
+  // ... AND at least one of the SCTs must come from an RFC6962 log.
+  if (enable_static_ct_api_enforcement_ && !has_rfc6962_log) {
+    return CTPolicyCompliance::CT_POLICY_NOT_DIVERSE_SCTS;
+  }
+
   // ... AND the certificate embeds SCTs from AT LEAST the number of logs
   //   once or currently qualified shown in Table 1 of the CT Policy.
   base::TimeDelta lifetime = cert.valid_expiry() - cert.valid_start();
@@ -251,8 +332,9 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
   size_t num_embedded_scts =
       std::distance(embedded_log_ids.begin(), sorted_end);
 
-  if (num_embedded_scts >= num_required_embedded_scts)
+  if (num_embedded_scts >= num_required_embedded_scts) {
     return CTPolicyCompliance::CT_POLICY_COMPLIES_VIA_SCTS;
+  }
 
   // Under Option 2, there weren't enough SCTs, and potentially under Option
   // 1, there weren't diverse enough SCTs. Try to signal the error that is
@@ -263,10 +345,11 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
 }
 
 std::string ChromeCTPolicyEnforcer::GetOperatorForLog(
-    std::string log_id,
+    const std::string& log_id,
     base::Time timestamp) const {
-  DCHECK(log_operator_history_.find(log_id) != log_operator_history_.end());
-  OperatorHistoryEntry log_history = log_operator_history_.at(log_id);
+  DCHECK(log_info_.find(log_id) != log_info_.end());
+  const OperatorHistoryEntry& log_history =
+      log_info_.at(log_id).operator_history;
   for (auto operator_entry : log_history.previous_operators_) {
     if (timestamp < operator_entry.second)
       return operator_entry.first;
@@ -274,6 +357,12 @@ std::string ChromeCTPolicyEnforcer::GetOperatorForLog(
   // Either the log has only ever had one operator, or the timestamp is after
   // the last operator change.
   return log_history.current_operator_;
+}
+
+network::mojom::CTLogInfo::LogType ChromeCTPolicyEnforcer::GetLogType(
+    const std::string& log_id) const {
+  DCHECK(log_info_.find(log_id) != log_info_.end());
+  return log_info_.at(log_id).log_type;
 }
 
 }  // namespace certificate_transparency

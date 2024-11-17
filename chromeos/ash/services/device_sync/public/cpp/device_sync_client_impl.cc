@@ -140,16 +140,14 @@ DeviceSyncClientImpl::GetLocalDeviceMetadata() {
   // Because we expect the the client to be ready when this function is called,
   // we also expect the local device to be non-null.
   std::optional<multidevice::RemoteDeviceRef> local_device =
-      expiring_device_cache_->GetRemoteDevice(local_instance_id_,
-                                              local_legacy_device_id_);
+      expiring_device_cache_->GetRemoteDevice(local_instance_id_, std::nullopt);
   base::UmaHistogramBoolean("CryptAuth.GetLocalDeviceMetadata.Result",
                             local_device.has_value());
   if (!local_device) {
     PA_LOG(ERROR)
         << "DeviceSyncClientImpl::" << __func__
         << ": Could not retrieve local device metadata. local_instance_id="
-        << local_instance_id_.value_or("[null]") << ", local_legacy_device_id="
-        << local_legacy_device_id_.value_or("[null]")
+        << local_instance_id_.value_or("[null]")
         << ", is_ready=" << (is_ready() ? "yes" : "no");
   }
 
@@ -285,23 +283,12 @@ void DeviceSyncClientImpl::OnGetLocalDeviceMetadataCompleted(
     return;
   }
 
-  if (features::ShouldUseV1DeviceSync()) {
-    local_instance_id_ = local_device_metadata->instance_id.empty()
-                             ? std::nullopt
-                             : std::make_optional<std::string>(
-                                   local_device_metadata->instance_id);
-    local_legacy_device_id_ = local_device_metadata->GetDeviceId().empty()
-                                  ? std::nullopt
-                                  : std::make_optional<std::string>(
-                                        local_device_metadata->GetDeviceId());
-  } else {
-    local_instance_id_ = local_device_metadata->instance_id.empty()
-                             ? std::nullopt
-                             : std::make_optional<std::string>(
-                                   local_device_metadata->instance_id);
-  }
+  local_instance_id_ =
+      local_device_metadata->instance_id.empty()
+          ? std::nullopt
+          : std::make_optional<std::string>(local_device_metadata->instance_id);
 
-  bool has_id = local_instance_id_ || local_legacy_device_id_;
+  bool has_id = local_instance_id_.has_value();
   base::UmaHistogramBoolean("CryptAuth.GetLocalDeviceMetadata.HasId", has_id);
   if (!has_id) {
     PA_LOG(ERROR) << "DeviceSyncClientImpl::" << __func__

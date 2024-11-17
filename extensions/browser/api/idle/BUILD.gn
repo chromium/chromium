@@ -5,8 +5,8 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//extensions/buildflags/buildflags.gni")
 
-assert(enable_extensions,
-       "Cannot depend on extensions because enable_extensions=false.")
+assert(enable_extensions_core,
+       "Cannot depend on extensions because enable_extensions_core=false.")
 
 source_set("idle") {
   sources = [
@@ -33,10 +33,6 @@ source_set("idle") {
 
   if (is_chromeos) {
     deps += [ "//chromeos/dbus/power" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
   }
 
   public_deps = [ "//extensions/browser:browser_sources" ]

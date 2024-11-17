@@ -9,9 +9,12 @@ export interface HistoryEmbeddingsBrowserProxy {
   search(query: SearchQuery): void;
   sendQualityLog(selectedIndices: number[], numCharsForQuery: number): void;
   recordSearchResultsMetrics(
-      nonEmptyResults: boolean, userClickedResult: boolean): void;
+      nonEmptyResults: boolean, userClickedResult: boolean,
+      answerShown: boolean, answerCitationClicked: boolean,
+      otherHistoryResultClicked: boolean, queryWordCount: number): void;
   setUserFeedback(userFeedback: UserFeedback): void;
   maybeShowFeaturePromo(): void;
+  openSettingsPage(): void;
 
   handler: PageHandlerRemote;
   callbackRouter: PageCallbackRouter;
@@ -53,8 +56,12 @@ export class HistoryEmbeddingsBrowserProxyImpl implements
   }
 
   recordSearchResultsMetrics(
-      nonEmptyResults: boolean, userClickedResult: boolean) {
-    this.handler.recordSearchResultsMetrics(nonEmptyResults, userClickedResult);
+      nonEmptyResults: boolean, userClickedResult: boolean,
+      answerShown: boolean, answerCitationClicked: boolean,
+      otherHistoryResultClicked: boolean, queryWordCount: number) {
+    this.handler.recordSearchResultsMetrics(
+        nonEmptyResults, userClickedResult, answerShown, answerCitationClicked,
+        otherHistoryResultClicked, queryWordCount);
   }
 
   setUserFeedback(userFeedback: UserFeedback) {
@@ -63,5 +70,9 @@ export class HistoryEmbeddingsBrowserProxyImpl implements
 
   maybeShowFeaturePromo() {
     this.handler.maybeShowFeaturePromo();
+  }
+
+  openSettingsPage() {
+    this.handler.openSettingsPage();
   }
 }

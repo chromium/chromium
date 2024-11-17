@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.share;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -74,7 +75,11 @@ public class ShareHelperUnitTest {
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mWindow =
                 new ActivityWindowAndroid(
-                        mActivity, false, IntentRequestTracker.createFromActivity(mActivity));
+                        mActivity,
+                        /* listenToActivityState= */ false,
+                        IntentRequestTracker.createFromActivity(mActivity),
+                        /* insetObserver= */ null,
+                        /* trackOcclusion= */ false);
         mImageUri = Uri.parse(IMAGE_URI);
     }
 
@@ -224,6 +229,15 @@ public class ShareHelperUnitTest {
                 "Intent component name does not match.",
                 TEST_COMPONENT_NAME_1,
                 nextIntent.getComponent());
+    }
+
+    @Test
+    public void doNotShareWhenWindowDestroying() {
+        mWindow.destroy();
+        ShareHelper.shareWithSystemShareSheetUi(emptyShareParams(), null, true);
+
+        Intent nextIntent = Shadows.shadowOf(mActivity).peekNextStartedActivity();
+        assertNull("Shared intent is sending during window destoy.", nextIntent);
     }
 
     @Test

@@ -18,7 +18,7 @@ sequenceDiagram
     autonumber
 
     participant User
-    participant Caller as Caller:<br/>BrowserServiceLacros /<br/>StartupBrowserCreator
+    participant Caller as Caller:StartupBrowserCreator
     participant FRS as FirstRunService
     participant PPV as ProfilePickerView
     participant FC as FirstRunFlowController

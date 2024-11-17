@@ -362,6 +362,24 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
       return *this;
     }
 
+    // Adds a password field. See DialogModel::AddPasswordField().
+    Builder& AddPasswordField(ElementIdentifier id,
+                              std::u16string label,
+                              std::u16string accessible_text,
+                              std::u16string incorrect_password_text,
+                              const DialogModelPasswordField::Params& params =
+                                  DialogModelPasswordField::Params()) {
+      model_->AddPasswordField(id, std::move(label), std::move(accessible_text),
+                               std::move(incorrect_password_text), params);
+      return *this;
+    }
+
+    // Sets the footnote. See DialogModel::SetFootnote().
+    Builder& SetFootnote(const DialogModelLabel& label) {
+      model_->SetFootnote(label);
+      return *this;
+    }
+
     // Adds a custom field. See DialogModel::AddCustomField().
     Builder& AddCustomField(
         std::unique_ptr<DialogModelCustomField::Field> field,
@@ -456,6 +474,25 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     contents_.AddTextfield(id, std::move(label), std::move(text), params);
   }
 
+  // Adds a labeled password field at the end of the dialog model.
+  void AddPasswordField(ElementIdentifier id,
+                        std::u16string label,
+                        std::u16string accessible_text,
+                        std::u16string incorrect_password_text,
+                        const DialogModelPasswordField::Params& params =
+                            DialogModelField::Params()) {
+    contents_.AddPasswordField(id, std::move(label), std::move(accessible_text),
+                               std::move(incorrect_password_text), params);
+  }
+
+  // Sets the footnote.
+  void SetFootnote(const DialogModelLabel& label) {
+    // It's not supported to set a footnote while the dialog is already showing.
+    CHECK(!host_);
+
+    footnote_label_.emplace(label);
+  }
+
   // Adds a custom field at the end of the dialog model. This is used to inject
   // framework-specific custom UI into dialogs that are otherwise constructed as
   // DialogModels.
@@ -482,6 +519,9 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   }
   DialogModelTextfield* GetTextfieldByUniqueId(ElementIdentifier id) {
     return contents_.GetTextfieldByUniqueId(id);
+  }
+  DialogModelPasswordField* GetPasswordFieldByUniqueId(ElementIdentifier id) {
+    return contents_.GetPasswordFieldByUniqueId(id);
   }
   Button* GetButtonByUniqueId(ElementIdentifier id);
 
@@ -575,6 +615,10 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
     return extra_link_.has_value() ? &extra_link_.value() : nullptr;
   }
 
+  const std::optional<DialogModelLabel>& footnote_label() const {
+    return footnote_label_;
+  }
+
   bool close_on_deactivate(base::PassKey<DialogModelHost>) const {
     return close_on_deactivate_;
   }
@@ -620,6 +664,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   std::optional<Button> cancel_button_;
   std::optional<Button> extra_button_;
   std::optional<DialogModelLabel::TextReplacement> extra_link_;
+  std::optional<DialogModelLabel> footnote_label_;
 
   ButtonCallbackVariant accept_action_callback_;
   ButtonCallbackVariant cancel_action_callback_;

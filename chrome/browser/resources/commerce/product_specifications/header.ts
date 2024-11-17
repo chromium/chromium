@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../strings.m.js';
+import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import './header_menu.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
@@ -77,7 +77,7 @@ export class HeaderElement extends PolymerElement {
     this.showingMenu_ = false;
   }
 
-  private getInput_(): CrInputElement {
+  private get input_(): CrInputElement {
     const input = this.shadowRoot!.querySelector('cr-input');
     assert(!!input);
     return input;
@@ -85,33 +85,38 @@ export class HeaderElement extends PolymerElement {
 
   private onRenaming_() {
     this.showingInput_ = true;
-    afterNextRender(this, () => this.getInput_().focus());
+    afterNextRender(this, () => this.input_.focus());
   }
 
   private onInputKeyDown_(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       event.stopPropagation();
-      this.getInput_().blur();
+      this.input_.blur();
     }
   }
 
   private onInputBlur_() {
-    const inputValue = this.getInput_().value;
+    const inputValue = this.input_.value;
     this.showingInput_ = false;
     if (!inputValue) {
       if (this.subtitle) {
-        this.getInput_().value = this.subtitle;
+        this.input_.value = this.subtitle;
       }
-      return;
+    } else {
+      this.subtitle = inputValue;
+      this.dispatchEvent(new CustomEvent('name-change', {
+        bubbles: true,
+        composed: true,
+        detail: {
+          name: inputValue,
+        },
+      }));
     }
-    this.subtitle = inputValue;
-    this.dispatchEvent(new CustomEvent('name-change', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        name: inputValue,
-      },
-    }));
+
+    // Move the cursor back to the end of the input.
+    if (this.subtitle) {
+      this.input_.select(this.subtitle.length, this.subtitle.length);
+    }
   }
 
   private onSubtitleKeyDown_(event: KeyboardEvent) {

@@ -18,7 +18,7 @@ ChangeRequestsStateTask::ChangeRequestsStateTask(
       new_state_(new_state),
       callback_(std::move(callback)) {}
 
-ChangeRequestsStateTask::~ChangeRequestsStateTask() {}
+ChangeRequestsStateTask::~ChangeRequestsStateTask() = default;
 
 void ChangeRequestsStateTask::Run() {
   ReadRequests();

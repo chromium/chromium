@@ -41,7 +41,7 @@ class ArcAppsIconFactoryTest : public testing::Test {
   }
 
   arc::mojom::RawIconPngDataPtr GenerateRawArcAppIcon(
-      const std::string app_id,
+      const std::string& app_id,
       ui::ResourceScaleFactor scale_factor) {
     ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile());
     base::test::TestFuture<arc::mojom::RawIconPngDataPtr> result;
@@ -104,7 +104,7 @@ class AppServiceArcAppIconTest : public ArcAppsIconFactoryTest,
     proxy_ = AppServiceProxyFactory::GetForProfile(profile());
   }
 
-  void GenerateArcAppUncompressedIcon(const std::string app_id,
+  void GenerateArcAppUncompressedIcon(const std::string& app_id,
                                       gfx::ImageSkia& image_skia) {
     gfx::ImageSkia foreground_image_skia;
     gfx::ImageSkia background_image_skia;
@@ -114,18 +114,10 @@ class AppServiceArcAppIconTest : public ArcAppsIconFactoryTest,
       ASSERT_TRUE(raw_icon_data->foreground_icon_png_data.has_value());
       ASSERT_TRUE(raw_icon_data->background_icon_png_data.has_value());
 
-      auto foreground_icon_data =
-          raw_icon_data->foreground_icon_png_data.value();
-      auto background_icon_data =
-          raw_icon_data->background_icon_png_data.value();
-      SkBitmap foreground_bitmap;
-      SkBitmap background_bitmap;
-      gfx::PNGCodec::Decode(
-          reinterpret_cast<const unsigned char*>(&foreground_icon_data.front()),
-          foreground_icon_data.size(), &foreground_bitmap);
-      gfx::PNGCodec::Decode(
-          reinterpret_cast<const unsigned char*>(&background_icon_data.front()),
-          background_icon_data.size(), &background_bitmap);
+      SkBitmap foreground_bitmap = gfx::PNGCodec::Decode(
+          raw_icon_data->foreground_icon_png_data.value());
+      SkBitmap background_bitmap = gfx::PNGCodec::Decode(
+          raw_icon_data->background_icon_png_data.value());
 
       foreground_image_skia.AddRepresentation(gfx::ImageSkiaRep(
           foreground_bitmap, ui::GetScaleForResourceScaleFactor(scale_factor)));
@@ -138,20 +130,19 @@ class AppServiceArcAppIconTest : public ArcAppsIconFactoryTest,
     image_skia.MakeThreadSafe();
   }
 
-  void GenerateArcAppCompressedIcon(const std::string app_id,
-                                    float scale,
-                                    std::vector<uint8_t>& result) {
+  std::vector<uint8_t> GenerateArcAppCompressedIcon(const std::string& app_id,
+                                                    float scale) {
     gfx::ImageSkia image_skia;
     GenerateArcAppUncompressedIcon(app_id, image_skia);
 
     const gfx::ImageSkiaRep& image_skia_rep =
         image_skia.GetRepresentation(scale);
-    ASSERT_EQ(image_skia_rep.scale(), scale);
+    CHECK_EQ(image_skia_rep.scale(), scale);
 
     const SkBitmap& bitmap = image_skia_rep.GetBitmap();
     const bool discard_transparency = false;
-    ASSERT_TRUE(gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency,
-                                                  &result));
+    return gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency)
+        .value();
   }
 
   apps::IconValuePtr LoadIcon(const std::string& app_id, IconType icon_type) {
@@ -223,8 +214,8 @@ TEST_F(AppServiceArcAppIconTest, GetCompressedIconDataForCompressedIcon) {
   arc_test()->app_instance()->SendRefreshAppList(fake_apps);
 
   // Generate the source compressed icon for comparing.
-  std::vector<uint8_t> src_data;
-  GenerateArcAppCompressedIcon(app_id, /*scale=*/1.0, src_data);
+  std::vector<uint8_t> src_data =
+      GenerateArcAppCompressedIcon(app_id, /*scale=*/1.0);
 
   // Verify the icon reading and writing function in AppService for the
   // compressed icon.
@@ -279,8 +270,8 @@ TEST_F(AppServiceArcAppIconTest, GetCompressedIconDataFromArcDiskCache) {
   }
 
   // Generate the source compressed icon for comparing.
-  std::vector<uint8_t> src_data;
-  GenerateArcAppCompressedIcon(app_id, /*scale=*/1.0, src_data);
+  std::vector<uint8_t> src_data =
+      GenerateArcAppCompressedIcon(app_id, /*scale=*/1.0);
 
   // Stop ARC from running so that LoadIcon requests must load from the disk
   // cache rather than ARC itself.

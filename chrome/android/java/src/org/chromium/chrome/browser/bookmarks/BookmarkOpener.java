@@ -50,7 +50,6 @@ public class BookmarkOpener {
     /**
      * Open the given id in the current tab.
      *
-     * @param bookmarkIds The bookmark id to open.
      * @param incognito Whether the bookmark should be opened in incognito mode.
      * @return Whether the bookmark id was successfully opened.
      */

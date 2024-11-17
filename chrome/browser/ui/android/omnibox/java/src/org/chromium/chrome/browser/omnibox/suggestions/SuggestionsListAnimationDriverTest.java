@@ -5,12 +5,18 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+
+import android.os.Handler;
+import android.os.Looper;
+import android.view.View;
+import android.view.Window;
 
 import androidx.core.view.WindowInsetsAnimationCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -19,11 +25,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.ui.InsetObserver;
-import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
@@ -39,29 +47,90 @@ public class SuggestionsListAnimationDriverTest {
     private WindowInsetsAnimationCompat mImeAnimation;
     private WindowInsetsAnimationCompat mNonImeAnimation;
     private PropertyModel mListModel = new PropertyModel(SuggestionListProperties.ALL_KEYS);
-    @Mock private WindowAndroid mWindowAndroid;
     @Mock InsetObserver mInsetObserver;
     @Mock Runnable mShowRunnable;
+    @Mock Window mWindow;
+    @Mock View mRootView;
+
+    private WindowInsetsControllerCompat mWindowInsetsControllerCompat;
     private float mTranslation;
+    private Handler mHandler;
 
     @Before
     public void setUp() {
         mTranslation = 0.0f;
-        when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
+        doReturn(mRootView).when(mWindow).getDecorView();
         mImeAnimation = new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.ime(), null, 160);
         mNonImeAnimation =
                 new WindowInsetsAnimationCompat(WindowInsetsCompat.Type.statusBars(), null, 160);
+        mWindowInsetsControllerCompat = new WindowInsetsControllerCompat(mWindow, mRootView);
+        mHandler = new Handler(Looper.getMainLooper());
         mDriver =
                 new SuggestionsListAnimationDriver(
-                        mWindowAndroid,
+                        mInsetObserver,
                         mListModel,
                         () -> mTranslation,
                         mShowRunnable,
-                        VERTICAL_OFFSET);
+                        VERTICAL_OFFSET,
+                        mHandler,
+                        mWindow);
+        mDriver.onViewAttachedToWindow(mRootView);
+    }
+
+    @Test
+    public void testImeNotControllable() {
+        mDriver.onControllableInsetsChanged(
+                mWindowInsetsControllerCompat, WindowInsetsCompat.Type.statusBars());
+        mDriver.onOmniboxSessionStateChange(true);
+        verify(mInsetObserver, never()).addWindowInsetsAnimationListener(mDriver);
+        verify(mShowRunnable, never()).run();
+
+        mDriver.onPrepare(mImeAnimation);
+        verify(mShowRunnable, never()).run();
+    }
+
+    @Test
+    public void testTimeout() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(OmniboxMetrics.HISTOGRAM_FOCUS_TO_IME_ANIMATION_START)
+                        .build();
+        mDriver.onControllableInsetsChanged(
+                mWindowInsetsControllerCompat, WindowInsetsCompat.Type.ime());
+        mDriver.onOmniboxSessionStateChange(true);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+
+        verify(mShowRunnable).run();
+        // Driver should keep listening for onPrepare for metrics purposes.
+        verify(mInsetObserver, never()).removeWindowInsetsAnimationListener(mDriver);
+
+        mDriver.onPrepare(mImeAnimation);
+
+        verify(mShowRunnable).run();
+        verify(mInsetObserver).removeWindowInsetsAnimationListener(mDriver);
+        histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void testTimeoutCancelledByOnPrepare() {
+        mDriver.onControllableInsetsChanged(
+                mWindowInsetsControllerCompat, WindowInsetsCompat.Type.ime());
+        mDriver.onOmniboxSessionStateChange(true);
+
+        mDriver.onPrepare(mImeAnimation);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mShowRunnable).run();
     }
 
     @Test
     public void testShowAnimation() {
+        var histogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectAnyRecord(OmniboxMetrics.HISTOGRAM_FOCUS_TO_IME_ANIMATION_START)
+                        .build();
+        mDriver.onControllableInsetsChanged(
+                mWindowInsetsControllerCompat, WindowInsetsCompat.Type.ime());
         mDriver.onOmniboxSessionStateChange(true);
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.0f, MathUtils.EPSILON);
         verify(mInsetObserver).addWindowInsetsAnimationListener(mDriver);
@@ -115,10 +184,13 @@ public class SuggestionsListAnimationDriverTest {
                 mListModel.get(SuggestionListProperties.CHILD_TRANSLATION_Y),
                 0.0f,
                 MathUtils.EPSILON);
+        histogramWatcher.assertExpected();
     }
 
     @Test
     public void testNonImeAnimation() {
+        mDriver.onControllableInsetsChanged(
+                mWindowInsetsControllerCompat, WindowInsetsCompat.Type.ime());
         mDriver.onOmniboxSessionStateChange(true);
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.0f, MathUtils.EPSILON);
 
@@ -140,5 +212,34 @@ public class SuggestionsListAnimationDriverTest {
         mDriver.onEnd(mNonImeAnimation);
         assertEquals(mListModel.get(SuggestionListProperties.ALPHA), 0.1f, MathUtils.EPSILON);
         verify(mInsetObserver, never()).removeWindowInsetsAnimationListener(mDriver);
+    }
+
+    @Test
+    public void testRootViewStartsAttached() {
+        doReturn(true).when(mRootView).isAttachedToWindow();
+        mDriver =
+                new SuggestionsListAnimationDriver(
+                        mInsetObserver,
+                        mListModel,
+                        () -> mTranslation,
+                        mShowRunnable,
+                        VERTICAL_OFFSET,
+                        mHandler,
+                        mWindow);
+        verify(mRootView, never()).addOnAttachStateChangeListener(mDriver);
+
+        // IME insets aren't yet controllable. Animation logic shouldn't be active.
+        mDriver.onOmniboxSessionStateChange(true);
+        verify(mInsetObserver, never()).addWindowInsetsAnimationListener(mDriver);
+        verify(mShowRunnable, never()).run();
+
+        mDriver.onOmniboxSessionStateChange(false);
+        // IME insets are now controllable. Animation logic should be active.
+        mDriver.onControllableInsetsChanged(
+                mWindowInsetsControllerCompat, WindowInsetsCompat.Type.ime());
+        mDriver.onOmniboxSessionStateChange(true);
+
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        verify(mShowRunnable).run();
     }
 }

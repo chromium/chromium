@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "components/autofill/core/browser/data_model/address.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_name.h"
 #include "components/autofill/core/browser/data_model/contact_info.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -138,11 +139,8 @@ class AutofillProfileComparator {
   // Populates |name_info| with the result of merging the names in |p1| and
   // |p2|. Returns true if successful. Expects that |p1| and |p2| have already
   // been found to be mergeable.
-  //
-  // Heuristic: If one name is empty, select the other; othwerwise, attempt to
-  // parse the names in each profile and determine if one name can be derived
-  // from the other. For example, J Smith can be derived from John Smith, so
-  // prefer the latter.
+  // Regular names are merged first, after they are done, merging of alternative
+  // names starts.
   bool MergeNames(const AutofillProfile& p1,
                   const AutofillProfile& p2,
                   NameInfo& name_info) const;
@@ -209,6 +207,9 @@ class AutofillProfileComparator {
   // nullopt is returned, since profiles of different countries are generally
   // not considered mergeable due to the differences in the underlying address
   // model.
+  // If `a` or `b` has a field value which length is greater than
+  // `kAutofillLogDeduplicationMetricsMaxFieldLengthForMergingParam` it is not
+  // considered mergeable.
   std::optional<FieldTypeSet> NonMergeableSettingVisibleTypes(
       const AutofillProfile& a,
       const AutofillProfile& b) const;
@@ -264,6 +265,17 @@ class AutofillProfileComparator {
   bool HaveMergeableNames(const AutofillProfile& p1,
                           const AutofillProfile& p2) const;
 
+  // Returns true if |p1| and |p2| have alternative names which are equivalent
+  // for the purposes of merging the two profiles. This means one of the
+  // alternative names is empty, the names are the same, or one name is a
+  // variation of the other. The alternative name comparison is insensitive to
+  // case, punctuation and diacritics.
+  //
+  // Note that this method does not provide any guidance on actually merging
+  // the alternative names.
+  bool HaveMergeableAlternativeNames(const AutofillProfile& p1,
+                                     const AutofillProfile& p2) const;
+
   // Returns true if |p1| and |p2| have email addresses which are equivalent for
   // the purposes of merging the two profiles. This means one of the email
   // addresses is empty, or the email addresses are the same (modulo case).
@@ -304,14 +316,33 @@ class AutofillProfileComparator {
   bool HaveMergeableAddresses(const AutofillProfile& p1,
                               const AutofillProfile& p2) const;
 
-  // Populates |name_info| with the result of merging the Chinese, Japanese or
-  // Korean names in |p1| and |p2|. Returns true if successful. Expects that
-  // |p1| and |p2| have already been found to be mergeable, and have CJK names.
-  bool MergeCJKNames(const AutofillProfile& p1,
-                     const AutofillProfile& p2,
-                     NameInfo& info) const;
-
  private:
+  // Returns true if `full_name_1` and `full_name_2` are equivalent for the
+  // purposes of merging two profiles. This means one of the names is
+  // empty, the names are the same, or one name is a variation of the other.
+  // The name comparison is insensitive to case, punctuation and diacritics.
+  // Can be used for both regular and alternative (e.g. phonetic) names.
+  // This method contains the shared logic between `HaveMergeableNames` and
+  // `HaveMergeableAlternativeNames`.
+  //
+  // Note that this method does not provide any guidance on actually merging
+  // the names.
+  bool AreNamesMergeable(const std::u16string& full_name_1,
+                         const std::u16string& full_name_2) const;
+
+  // Populates |name_info| with the result of merging the `name_type` names in
+  // |p1| and |p2|. Returns true if successful. Expects that |p1| and |p2| have
+  // already been found to be mergeable.
+  //
+  // Heuristic: If one regular name is empty, select the other; otherwise,
+  // attempt to parse the names in each profile and determine if one
+  // name can be derived from the other. For example, J Smith can be derived
+  // from John Smith, so prefer the latter.
+  bool MergeNamesImpl(const AutofillProfile& p1,
+                      const AutofillProfile& p2,
+                      FieldType name_type,
+                      AddressComponent& name_component) const;
+
   const std::string app_locale_;
 };
 

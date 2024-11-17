@@ -32,11 +32,6 @@
 #include "content/public/browser/network_service_instance.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/media/router/discovery/access_code/access_code_cast_pref_updater_lacros.h"
-#include "chromeos/lacros/crosapi_pref_observer.h"
-#endif
-
 namespace media_router {
 
 namespace {
@@ -139,12 +134,6 @@ AccessCodeCastSinkService::AccessCodeCastSinkService(
       prefs::kAccessCodeCastEnabled,
       base::BindRepeating(&AccessCodeCastSinkService::OnEnabledPrefChange,
                           base::Unretained(this)));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  user_prefs_registrar_->Add(
-      prefs::kAccessCodeCastDevices,
-      base::BindRepeating(&AccessCodeCastSinkService::OnDevicesPrefChange,
-                          base::Unretained(this)));
-#endif
 }
 
 AccessCodeCastSinkService::AccessCodeCastSinkService(Profile* profile)
@@ -544,10 +533,6 @@ void AccessCodeCastSinkService::CheckMediaSinkForExpiration(
                      GetWeakPtr(), sink_id));
 }
 
-bool AccessCodeCastSinkService::IsAccessCodeCastLacrosSyncEnabledForTesting() {
-  return IsAccessCodeCastLacrosSyncEnabled();
-}
-
 void AccessCodeCastSinkService::ShutdownForTesting() {
   Shutdown();
 }
@@ -671,19 +656,6 @@ void AccessCodeCastSinkService::OnStoredDevicesValidated(
   }
   AddStoredDevicesToMediaRouter(validated_devices);
   InitExpirationTimers(validated_devices);
-}
-
-void AccessCodeCastSinkService::OnSyncedDevicesValidated(
-    const std::vector<MediaSinkInternal>& validated_sinks) {
-  for (auto sink : validated_sinks) {
-    AddSinkToMediaRouter(sink, base::DoNothing());
-    // This function is called after a new sink is stored in the prefs service.
-    // In that case, we don't need to set the expiration timer again.
-    auto existing_timer = current_session_expiration_timers_.find(sink.id());
-    if (existing_timer == current_session_expiration_timers_.end()) {
-      SetExpirationTimer(sink.id());
-    }
-  }
 }
 
 void AccessCodeCastSinkService::FetchAndValidateStoredDevices(
@@ -862,11 +834,7 @@ void AccessCodeCastSinkService::OnExpiration(const MediaSink::Id& sink_id) {
 }
 
 void AccessCodeCastSinkService::ExpireSink(const MediaSink::Id& sink_id) {
-  // There is no need to remove sinks from the prefs service from the Lacros
-  // side if Lacros is using prefs stored in Ash.
-  if (!IsAccessCodeCastLacrosSyncEnabled()) {
-    RemoveSinkIdFromAllEntries(sink_id);
-  }
+  RemoveSinkIdFromAllEntries(sink_id);
 
   // Must find the sink from media router for removal since it has more total
   // information.
@@ -909,7 +877,7 @@ void AccessCodeCastSinkService::StoreSinkInPrefs(
         sink->id());
     return;
   }
-  // Enforce the ordering of updating the pref service so that when Ash/Lacros
+  // Enforce the ordering of updating the pref service so that when ChromeOS
   // gets notified of changes in the devices dict, it's guaranteed that the
   // device added time dict has been updated and can be used to set proper
   // expiration timers.
@@ -1058,6 +1026,17 @@ void AccessCodeCastSinkService::LogError(const std::string& log_message,
 void AccessCodeCastSinkService::OnNetworksChanged(
     const std::string& network_id) {
   RemoveAndDisconnectExistingSinksOnNetwork();
+  // TODO: b/370067417 - Investigate if it is possible to remove this delay by
+  // refactoring this file and/or media_router
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AccessCodeCastSinkService::
+                         ResetExpirationTimersAndInitAllStoredDevices,
+                     GetWeakPtr()),
+      kExpirationDelay + kNetworkChangeBuffer);
+}
+
+void AccessCodeCastSinkService::ResetExpirationTimersAndInitAllStoredDevices() {
   ResetExpirationTimers();
   InitAllStoredDevices();
 }
@@ -1078,12 +1057,6 @@ void AccessCodeCastSinkService::OnEnabledPrefChange() {
       pref_updater_->ClearDeviceAddedTimeDict(base::DoNothing());
     }
   }
-}
-
-void AccessCodeCastSinkService::OnDevicesPrefChange() {
-  FetchAndValidateStoredDevices(
-      base::BindOnce(&AccessCodeCastSinkService::OnSyncedDevicesValidated,
-                     base::Unretained(this)));
 }
 
 void AccessCodeCastSinkService::Shutdown() {
@@ -1109,65 +1082,10 @@ void AccessCodeCastSinkService::SetIdentityManagerForTesting(
 void AccessCodeCastSinkService::InitializePrefUpdater() {
   // If `pref_updater_` has been instantiated (i.e. for testing), do not
   // overwrite its value.
-  if (pref_updater_) {
-    InitAllStoredDevices();
-    return;
-  }
-
-// On Lacros, we should check if kAccessCodeCastDevices pref is synced from Ash
-// and then instantiate `pref_updater_` with the corresponding proper
-// implementation. Since querying the prefs stored in Ash is asynchronous,
-// `InitAllStoredDevices()` has to be called in
-// `MaybeCreateAccessCodePrefUpdaterLacros()`.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  AccessCodeCastPrefUpdaterLacros::IsAccessCodeCastDevicePrefAvailable(
-      base::BindOnce(
-          &AccessCodeCastSinkService::MaybeCreateAccessCodePrefUpdaterLacros,
-          GetWeakPtr()));
-#else
-  pref_updater_ = std::make_unique<AccessCodeCastPrefUpdaterImpl>(prefs_);
-  InitAllStoredDevices();
-#endif
-}
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-void AccessCodeCastSinkService::MaybeCreateAccessCodePrefUpdaterLacros(
-    bool is_pref_registered) {
-  // If the access code prefs are registered for crosapi, replace the current
-  // `pref_updater_` with the AccessCodeCastPrefUpdaterLacros and run the
-  // callback to continue validating stored devices.
-  if (is_pref_registered) {
-    lacros_device_sync_enabled_ = true;
-    pref_updater_ = std::make_unique<AccessCodeCastPrefUpdaterLacros>();
-    access_code_cast_devices_observer_ = std::make_unique<CrosapiPrefObserver>(
-        crosapi::mojom::PrefPath::kAccessCodeCastDevices,
-        base::BindRepeating(
-            &AccessCodeCastSinkService::OnAccessCodeCastDevicesChanged,
-            base::Unretained(this)));
-  } else {
+  if (!pref_updater_) {
     pref_updater_ = std::make_unique<AccessCodeCastPrefUpdaterImpl>(prefs_);
   }
-
   InitAllStoredDevices();
-}
-
-void AccessCodeCastSinkService::OnAccessCodeCastDevicesChanged(
-    base::Value value) {
-  if (value.is_dict()) {
-    ValidateStoredDevices(
-        base::BindOnce(&AccessCodeCastSinkService::OnSyncedDevicesValidated,
-                       weak_ptr_factory_.GetWeakPtr()),
-        std::move(value).TakeDict());
-  }
-}
-#endif
-
-bool AccessCodeCastSinkService::IsAccessCodeCastLacrosSyncEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return lacros_device_sync_enabled_;
-#else
-  return false;
-#endif
 }
 
 }  // namespace media_router

@@ -12,7 +12,7 @@ import android.os.ParcelFileDescriptor;
 
 import androidx.javascriptengine.EvaluationFailedException;
 import androidx.javascriptengine.EvaluationResultSizeLimitExceededException;
-import androidx.javascriptengine.FileDescriptorIOException;
+import androidx.javascriptengine.DataInputException;
 import androidx.javascriptengine.IsolateStartupParameters;
 import androidx.javascriptengine.IsolateTerminatedException;
 import androidx.javascriptengine.JavaScriptConsoleCallback;
@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 
 import java.io.File;
@@ -48,6 +49,7 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Instrumentation test for JavaScriptSandbox. */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS)
+@Batch(Batch.PER_CLASS)
 public class JsSandboxServiceTest {
     // This value is somewhat arbitrary. It might need bumping if V8 snapshots become significantly
     // larger in future. However, we don't want it too large as that will make the tests slower and
@@ -328,8 +330,7 @@ public class JsSandboxServiceTest {
                     jsSandbox.isFeatureSupported(
                             JavaScriptSandbox.JS_FEATURE_PROVIDE_CONSUME_ARRAY_BUFFER));
 
-            boolean provideNamedDataReturn = jsIsolate.provideNamedData("id-1", bytes);
-            Assert.assertTrue(provideNamedDataReturn);
+            jsIsolate.provideNamedData("id-1", bytes);
             ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavaScriptAsync(code);
             String result = resultFuture1.get(5, TimeUnit.SECONDS);
 
@@ -465,7 +466,7 @@ public class JsSandboxServiceTest {
         // Invalid offset extending beyond end of file.
         // Note that file contains only ascii characters for testing purposes, hence we
         // can assume the length of the string to be the number of bytes it contains.
-        long offsetBeyondEof = fileContent.length() + 10;
+        long offsetBeyondEof = (long) fileContent.length() + 10;
         try (AssetFileDescriptor afd =
                 new AssetFileDescriptor(pfd, offsetBeyondEof, fileContent.length())) {
             ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
@@ -481,7 +482,7 @@ public class JsSandboxServiceTest {
                     Assert.fail("Should have thrown.");
                 } catch (ExecutionException e) {
                     Assert.assertTrue(
-                            e.getCause().getClass().equals(FileDescriptorIOException.class));
+                            e.getCause().getClass().equals(DataInputException.class));
                 }
             }
         } finally {
@@ -532,7 +533,7 @@ public class JsSandboxServiceTest {
         // Read only up to call to `hello();
         // File contains only ascii characters for testing purposes, hence we can predict the
         // number of bytes to remove from the end.
-        long length = fileContent.length() - "bye();".length();
+        long length = (long) fileContent.length() - "bye();".length();
         try (AssetFileDescriptor afd = new AssetFileDescriptor(pfd, 0, length)) {
             ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                     JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
@@ -588,7 +589,7 @@ public class JsSandboxServiceTest {
         // Declare length beyond EOF.
         // Note that file contains only ascii characters for testing purposes, hence we
         // can assume the length of the string to be the number of bytes it contains.
-        long length = fileContent.length() + 10;
+        long length = (long) fileContent.length() + 10;
         try (AssetFileDescriptor afd = new AssetFileDescriptor(pfd, 0, length)) {
             ListenableFuture<JavaScriptSandbox> jsSandboxFuture =
                     JavaScriptSandbox.createConnectedInstanceForTestingAsync(context);
@@ -603,7 +604,7 @@ public class JsSandboxServiceTest {
                     Assert.fail("Should have thrown.");
                 } catch (ExecutionException e) {
                     Assert.assertTrue(
-                            e.getCause().getClass().equals(FileDescriptorIOException.class));
+                            e.getCause().getClass().equals(DataInputException.class));
                 }
             }
         } finally {
@@ -638,8 +639,7 @@ public class JsSandboxServiceTest {
             Assume.assumeTrue(
                     jsSandbox.isFeatureSupported(JavaScriptSandbox.JS_FEATURE_WASM_COMPILATION));
 
-            boolean provideNamedDataReturn = jsIsolate.provideNamedData("id-1", bytes);
-            Assert.assertTrue(provideNamedDataReturn);
+            jsIsolate.provideNamedData("id-1", bytes);
             ListenableFuture<String> resultFuture1 = jsIsolate.evaluateJavaScriptAsync(code);
             String result = resultFuture1.get(5, TimeUnit.SECONDS);
 
@@ -1085,8 +1085,7 @@ public class JsSandboxServiceTest {
                 final long memoryUseFactor = 2;
                 final long allocationsToTry = memoryUseFactor * maxHeapSize / LARGE_NAMED_DATA_SIZE;
                 for (int i = 0; i < allocationsToTry; i++) {
-                    boolean provideNamedDataReturn = jsIsolate.provideNamedData("id-" + i, bytes);
-                    Assert.assertTrue(provideNamedDataReturn);
+                    jsIsolate.provideNamedData("id-" + i, bytes);
                     final String code =
                             ""
                                     + "android.consumeNamedDataAsArrayBuffer('id-' + "
@@ -1175,8 +1174,7 @@ public class JsSandboxServiceTest {
             IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
             isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
-                boolean provideNamedDataReturn = jsIsolate.provideNamedData("test", bytes);
-                Assert.assertTrue(provideNamedDataReturn);
+                jsIsolate.provideNamedData("test", bytes);
                 ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
                 // Execution time may be unstable if the GC kicks in, so go with 60 seconds.
                 String result = resultFuture.get(60, TimeUnit.SECONDS);
@@ -1285,12 +1283,8 @@ public class JsSandboxServiceTest {
             IsolateStartupParameters isolateStartupParameters = new IsolateStartupParameters();
             isolateStartupParameters.setMaxHeapSizeBytes(maxHeapSize);
             try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate(isolateStartupParameters)) {
-                boolean provideNamedDataLargeReturn =
-                        jsIsolate.provideNamedData("large", largeBytes);
-                Assert.assertTrue(provideNamedDataLargeReturn);
-                boolean provideNamedDataSmallReturn =
-                        jsIsolate.provideNamedData("small", smallBytes);
-                Assert.assertTrue(provideNamedDataSmallReturn);
+                jsIsolate.provideNamedData("large", largeBytes);
+                jsIsolate.provideNamedData("small", smallBytes);
                 ListenableFuture<String> resultFuture = jsIsolate.evaluateJavaScriptAsync(code);
                 String result = resultFuture.get(5, TimeUnit.SECONDS);
                 Assert.assertEquals(provideString, result);
@@ -1316,9 +1310,7 @@ public class JsSandboxServiceTest {
             for (int i = 0; i < numIsolates; i++) {
                 try (JavaScriptIsolate jsIsolate = jsSandbox.createIsolate()) {
                     for (int j = 0; j < numNames; j++) {
-                        boolean provideNamedDataReturn =
-                                jsIsolate.provideNamedData("id-" + j, bytes);
-                        Assert.assertTrue(provideNamedDataReturn);
+                        jsIsolate.provideNamedData("id-" + j, bytes);
                     }
                 }
             }

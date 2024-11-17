@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -87,8 +87,8 @@ sk_sp<PaintFilter> FEGaussianBlur::CreateImageFilter() {
       std::move(input), base::OptionalToPtr(crop_rect));
 }
 
-WTF::TextStream& FEGaussianBlur::ExternalRepresentation(WTF::TextStream& ts,
-                                                        int indent) const {
+StringBuilder& FEGaussianBlur::ExternalRepresentation(StringBuilder& ts,
+                                                      wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feGaussianBlur";
   FilterEffect::ExternalRepresentation(ts);

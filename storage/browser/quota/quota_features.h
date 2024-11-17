@@ -13,14 +13,6 @@ namespace storage {
 
 namespace features {
 
-COMPONENT_EXPORT(STORAGE_BROWSER)
-BASE_DECLARE_FEATURE(kDisableQuotaDbFullFSync);
-
-COMPONENT_EXPORT(STORAGE_BROWSER)
-BASE_DECLARE_FEATURE(kNewQuotaEvictionRoutine);
-
-COMPONENT_EXPORT(STORAGE_BROWSER) BASE_DECLARE_FEATURE(kStoragePressureEvent);
-
 COMPONENT_EXPORT(STORAGE_BROWSER) BASE_DECLARE_FEATURE(kStorageQuotaSettings);
 extern const base::FeatureParam<double> kMustRemainAvailableBytes;
 extern const base::FeatureParam<double> kMustRemainAvailableRatio;
@@ -39,6 +31,8 @@ BASE_DECLARE_FEATURE(kEvictOrphanQuotaStorage);
 // See crbug.com/40281870 for more info.
 COMPONENT_EXPORT(STORAGE_BROWSER)
 BASE_DECLARE_FEATURE(kEvictStaleQuotaStorage);
+
+COMPONENT_EXPORT(STORAGE_BROWSER) BASE_DECLARE_FEATURE(kStaticStorageQuota);
 
 }  // namespace features
 

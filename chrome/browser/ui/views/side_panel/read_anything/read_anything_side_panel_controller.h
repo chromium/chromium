@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+class SidePanelEntryScope;
 class SidePanelRegistry;
 
 namespace content {
@@ -90,7 +91,7 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver,
 
  private:
   // Creates the container view and all its child views for side panel entry.
-  std::unique_ptr<views::View> CreateContainerView();
+  std::unique_ptr<views::View> CreateContainerView(SidePanelEntryScope& scope);
 
   // Decides whether the active page is distillable.
   bool IsActivePageDistillable() const;

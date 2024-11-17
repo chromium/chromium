@@ -40,7 +40,7 @@ source_set("model") {
     "//components/pref_registry",
     "//components/prefs",
     "//components/reading_list/core",
-    "//components/saved_tab_groups:core",
+    "//components/saved_tab_groups/public",
     "//components/search_engines",
     "//components/send_tab_to_self",
     "//components/sessions",
@@ -105,7 +105,6 @@ source_set("model") {
   allow_circular_includes_from = [
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/passwords/model:store_factory",
-    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model/glue",
   ]
 }
@@ -171,11 +170,11 @@ source_set("sync_error_browser_agent") {
   sources = [
     "sync_error_browser_agent.h",
     "sync_error_browser_agent.mm",
-    "sync_error_browser_agent_app_state_observer.h",
-    "sync_error_browser_agent_app_state_observer.mm",
+    "sync_error_browser_agent_profile_state_observer.h",
+    "sync_error_browser_agent_profile_state_observer.mm",
   ]
   deps = [
-    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/profile",
     "//ios/chrome/browser/infobars/model",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
@@ -184,6 +183,7 @@ source_set("sync_error_browser_agent") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/ui/authentication",
     "//ios/chrome/browser/ui/authentication:signin_presenter",
     "//ui/base",
@@ -206,7 +206,6 @@ source_set("test_support") {
     "//components/keyed_service/ios",
     "//components/sync",
     "//components/sync:test_support",
-    "//ios/chrome/browser/signin/model",
     "//ios/chrome/common",
     "//ui/base",
   ]

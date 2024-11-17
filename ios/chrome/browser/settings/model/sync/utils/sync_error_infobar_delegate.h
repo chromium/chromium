@@ -12,8 +12,8 @@
 #import "components/infobars/core/confirm_infobar_delegate.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_observer.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
+class ProfileIOS;
 @protocol SyncPresenter;
 
 namespace infobars {
@@ -24,8 +24,7 @@ class InfoBarManager;
 class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
                                  public syncer::SyncServiceObserver {
  public:
-  SyncErrorInfoBarDelegate(ChromeBrowserState* browser_state,
-                           id<SyncPresenter> presenter);
+  SyncErrorInfoBarDelegate(ProfileIOS* profile, id<SyncPresenter> presenter);
 
   SyncErrorInfoBarDelegate(const SyncErrorInfoBarDelegate&) = delete;
   SyncErrorInfoBarDelegate& operator=(const SyncErrorInfoBarDelegate&) = delete;
@@ -34,7 +33,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
 
   // Creates a sync error infobar and adds it to `infobar_manager`.
   static bool Create(infobars::InfoBarManager* infobar_manager,
-                     ChromeBrowserState* browser_state,
+                     ProfileIOS* profile,
                      id<SyncPresenter> presenter);
 
   // InfoBarDelegate implementation.
@@ -51,7 +50,7 @@ class SyncErrorInfoBarDelegate : public ConfirmInfoBarDelegate,
   void OnStateChanged(syncer::SyncService* sync) override;
 
  private:
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   syncer::SyncService::UserActionableError error_state_;
   std::u16string title_;
   std::u16string message_;

@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/bookmarks/bookmark_context_menu_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/views/controls/menu/menu_delegate.h"
 
 class Browser;
@@ -62,7 +63,7 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
 
   // Shows the context menu at the specified point.
   void RunMenuAt(const gfx::Point& point,
-                 ui::MenuSourceType source_type);
+                 ui::mojom::MenuSourceType source_type);
 
   views::MenuItemView* menu() const { return menu_; }
 

@@ -4,17 +4,18 @@
 
 #include "chrome/browser/invalidation/profile_invalidation_provider_factory.h"
 
+#include <stdint.h>
+
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/account_id/account_id.h"
-#include "components/invalidation/invalidation_factory.h"
+#include "components/invalidation/invalidation_constants.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/profile_invalidation_provider.h"
 #include "components/invalidation/public/invalidation_service.h"
@@ -26,8 +27,7 @@
 namespace invalidation {
 
 namespace {
-constexpr char kFakeSenderId[] = "fake_sender_id";
-constexpr char kFakeProjectId[] = "fake_project_id";
+constexpr int64_t kFakeProjectNumber = 1234567890;
 }  // namespace
 
 class ProfileInvalidationProviderFactoryTestBase : public InProcessBrowserTest {
@@ -151,23 +151,20 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(provider);
 
   auto service_or_listener =
-      provider->GetInvalidationServiceOrListener(kFakeSenderId, kFakeProjectId);
+      provider->GetInvalidationServiceOrListener(kFakeProjectNumber);
 
   EXPECT_TRUE(
       std::holds_alternative<InvalidationService*>(service_or_listener));
 }
 
 class ProfileInvalidationProviderFactoryWithDirectInvalidationsBrowserTest
-    : public ProfileInvalidationProviderFactoryBrowserTest {
+    : public ProfileInvalidationProviderFactoryBrowserTest,
+      public testing::WithParamInterface<int64_t> {
  protected:
-  ProfileInvalidationProviderFactoryWithDirectInvalidationsBrowserTest()
-      : scoped_feature_list_(invalidation::kInvalidationsWithDirectMessages) {}
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  const auto& GetProjectNumber() const { return GetParam(); }
 };
 
-IN_PROC_BROWSER_TEST_F(
+IN_PROC_BROWSER_TEST_P(
     ProfileInvalidationProviderFactoryWithDirectInvalidationsBrowserTest,
     CreatesInvalidationListenerForRegularProfileWhenDirectInvalidationsFeatureEnabled) {
   std::unique_ptr<TestingProfile> testing_profile =
@@ -179,10 +176,17 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(provider);
 
   auto service_or_listener =
-      provider->GetInvalidationServiceOrListener(kFakeSenderId, kFakeProjectId);
+      provider->GetInvalidationServiceOrListener(GetProjectNumber());
 
-  EXPECT_TRUE(
+  ASSERT_TRUE(
       std::holds_alternative<InvalidationListener*>(service_or_listener));
+  EXPECT_TRUE(std::get<InvalidationListener*>(service_or_listener));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ProfileInvalidationProviderFactoryWithDirectInvalidationsBrowserTest,
+    testing::Values(kCriticalInvalidationsProjectNumber,
+                    kNonCriticalInvalidationsProjectNumber));
 
 }  // namespace invalidation

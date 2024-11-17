@@ -115,9 +115,7 @@ void SetSecurityStyleAndDetails(const GURL& url,
   }
 
   if (!ssl_info.cert) {
-    NOTREACHED_IN_MIGRATION();
-    response->SetSecurityStyle(SecurityStyle::kUnknown);
-    return;
+    NOTREACHED();
   }
 
   response->SetSSLInfo(ssl_info);
@@ -496,6 +494,7 @@ void WebURLResponse::SetServiceWorkerRouterInfo(
   info->SetRouteRuleNum(value.route_rule_num);
   info->SetEvaluationWorkerStatus(value.evaluation_worker_status);
   info->SetRouterEvaluationTime(value.router_evaluation_time);
+  info->SetCacheLookupTime(value.cache_lookup_time);
   resource_response_->SetServiceWorkerRouterInfo(std::move(info));
 }
 

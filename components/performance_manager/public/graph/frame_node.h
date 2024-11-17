@@ -16,7 +16,7 @@
 #include "components/performance_manager/public/mojom/coordination_unit.mojom.h"
 #include "components/performance_manager/public/mojom/lifecycle.mojom.h"
 #include "components/performance_manager/public/resource_attribution/frame_context.h"
-#include "components/performance_manager/public/viewport_intersection_state.h"
+#include "components/performance_manager/public/viewport_intersection.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/site_instance.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
@@ -212,12 +212,13 @@ class FrameNode : public TypedNode<FrameNode> {
   // Returns true if the frame is capturing a media stream (audio or video).
   virtual bool IsCapturingMediaStream() const = 0;
 
-  // Returns the ViewportIntersectionState of this frame. This is initially null
-  // on node creation and is initialized during layout when the viewport
-  // intersection is first calculated. May only be called for a child frame, as
-  // the main frame is always considered to be intersecting the viewport.
-  virtual std::optional<ViewportIntersectionState>
-  GetViewportIntersectionState() const = 0;
+  // Returns the ViewportIntersection of this frame. For the outermost main
+  // frame, this always returns a valid value indicating that the frame fully
+  // intersects with the viewport. For child frames, this is initially null on
+  // node creation and is initialized during layout when the viewport
+  // intersection is first calculated.
+  virtual std::optional<ViewportIntersection> GetViewportIntersection()
+      const = 0;
 
   // Returns true if the frame is visible. This value is based on the viewport
   // intersection of the frame, and the visibility of the page.
@@ -225,6 +226,13 @@ class FrameNode : public TypedNode<FrameNode> {
   // Note that for the visibility of the page, page mirroring *is* taken into
   // account, as opposed to `PageNode::IsVisible()`.
   virtual Visibility GetVisibility() const = 0;
+
+  // Returns true if the frame is deemed important. This means that the frame
+  // had been interacted with by the user, or is intersecting with a large area
+  // of the viewport. Note that this is the importance in the context of the
+  // containing page. If the page is not visible, the frame should not be
+  // considered important, regardless of this value.
+  virtual bool IsImportant() const = 0;
 
   // Returns a proxy to the RenderFrameHost associated with this node. The
   // proxy may only be dereferenced on the UI thread.
@@ -270,9 +278,8 @@ class FrameNodeObserver : public base::CheckedObserver {
   // Notifications of property changes.
 
   // Invoked when the current frame changes. Both arguments can be nullptr.
-  virtual void OnCurrentFrameChanged(
-      const FrameNode* previous_frame_node,
-      const FrameNode* current_current_frame) = 0;
+  virtual void OnCurrentFrameChanged(const FrameNode* previous_frame_node,
+                                     const FrameNode* current_frame_node) = 0;
 
   // Invoked when the NetworkAlmostIdle property changes.
   virtual void OnNetworkAlmostIdleChanged(const FrameNode* frame_node) = 0;
@@ -325,14 +332,18 @@ class FrameNodeObserver : public base::CheckedObserver {
   // Invoked when the IsCapturingMediaStream property changes.
   virtual void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) = 0;
 
-  // Invoked when a frame's intersection with the viewport changes
-  virtual void OnViewportIntersectionStateChanged(
-      const FrameNode* frame_node) = 0;
+  // Invoked when a frame's intersection with the viewport changes. Will only be
+  // invoked for a child frame, as the outermost main frame is always considered
+  // to be fully intersecting with the viewport.
+  virtual void OnViewportIntersectionChanged(const FrameNode* frame_node) = 0;
 
   // Invoked when the visibility property changes.
   virtual void OnFrameVisibilityChanged(
       const FrameNode* frame_node,
       FrameNode::Visibility previous_value) = 0;
+
+  // Invoked when the `IsImportant` property changes.
+  virtual void OnIsImportantChanged(const FrameNode* frame_node) = 0;
 
   // Events with no property changes.
 
@@ -387,11 +398,11 @@ class FrameNode::ObserverDefaultImpl : public FrameNodeObserver {
   void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) override {}
   void OnIsAudibleChanged(const FrameNode* frame_node) override {}
   void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) override {}
-  void OnViewportIntersectionStateChanged(
-      const FrameNode* frame_node) override {}
+  void OnViewportIntersectionChanged(const FrameNode* frame_node) override {}
   void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                 FrameNode::Visibility previous_value) override {
   }
+  void OnIsImportantChanged(const FrameNode* frame_node) override {}
   void OnNonPersistentNotificationCreated(
       const FrameNode* frame_node) override {}
   void OnFirstContentfulPaint(

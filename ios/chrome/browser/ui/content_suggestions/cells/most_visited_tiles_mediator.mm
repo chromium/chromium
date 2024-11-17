@@ -8,6 +8,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "base/ios/ios_util.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
@@ -19,6 +20,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_provider.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_utils.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_actions_delegate.h"
 #import "ios/chrome/browser/ntp_tiles/model/most_visited_sites_observer_bridge.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -73,11 +75,13 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   // Whether incognito mode is available.
   BOOL _incognitoAvailable;
   BOOL _recordedPageImpression;
-  PrefService* _prefService;
-  UrlLoadingBrowserAgent* _URLLoadingBrowserAgent;
+  raw_ptr<PrefService> _prefService;
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoadingBrowserAgent;
   // Consumer of model updates when MVTs are in the Magic Stack.
   id<MostVisitedTilesStackViewConsumer> _stackViewConsumer;
 }
+
+@synthesize inMagicStack = _inMagicStack;
 
 - (instancetype)
     initWithMostVisitedSite:
@@ -91,6 +95,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
     _prefService = prefService;
     _URLLoadingBrowserAgent = URLLoadingBrowserAgent;
     _incognitoAvailable = !IsIncognitoModeDisabled(prefService);
+    _inMagicStack = ShouldPutMostVisitedSitesInMagicStack(
+        FeedActivityBucketForPrefs(prefService));
     _mostVisitedAttributesProvider = [[FaviconAttributesProvider alloc]
         initWithFaviconSize:kMagicStackFaviconWidth
              minFaviconSize:kMagicStackMostVisitedFaviconMinimalSize
@@ -335,47 +341,49 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
 
 // Replaces the Most Visited items currently displayed by the most recent ones.
 - (void)useFreshMostVisited {
-    const base::Value::List& oldMostVisitedSites =
-        _prefService->GetList(prefs::kIosLatestMostVisitedSites);
-    base::Value::List freshMostVisitedSites;
-    for (ContentSuggestionsMostVisitedItem* item in _freshMostVisitedItems) {
-      freshMostVisitedSites.Append(item.URL.spec());
-    }
-    // Don't check for a change in the Most Visited Sites if the device doesn't
-    // have any saved sites to begin with. This will not log for users with no
-    // top sites that have a new top site, but the benefit of not logging for
-    // new installs outweighs it.
-    if (!oldMostVisitedSites.empty()) {
-      [self lookForNewMostVisitedSite:freshMostVisitedSites
-                  oldMostVisitedSites:oldMostVisitedSites];
-    }
-    _prefService->SetList(prefs::kIosLatestMostVisitedSites,
-                          std::move(freshMostVisitedSites));
+  base::Value::List oldMostVisitedSites =
+      _prefService->GetList(prefs::kIosLatestMostVisitedSites).Clone();
+  base::Value::List freshMostVisitedSites;
+  for (ContentSuggestionsMostVisitedItem* item in _freshMostVisitedItems) {
+    freshMostVisitedSites.Append(item.URL.spec());
+  }
 
-    _mostVisitedConfig = [[MostVisitedTilesConfig alloc] init];
-    _mostVisitedConfig.imageDataSource = self;
-    _mostVisitedConfig.commandHandler = self;
-    _mostVisitedConfig.mostVisitedItems = _freshMostVisitedItems;
-    _mostVisitedConfig.consumerSource = self;
-    if (ShouldPutMostVisitedSitesInMagicStack()) {
-      if ([_freshMostVisitedItems count] == 0) {
-        [self.delegate removeMostVisitedTilesModule];
-      } else if (!oldMostVisitedSites.empty()) {
-        [_stackViewConsumer updateWithConfig:_mostVisitedConfig];
-      } else {
-        [self.delegate didReceiveInitialMostVistedTiles];
-      }
+  // Don't check for a change in the Most Visited Sites if the device doesn't
+  // have any saved sites to begin with. This will not log for users with no
+  // top sites that have a new top site, but the benefit of not logging for
+  // new installs outweighs it.
+  if (!oldMostVisitedSites.empty()) {
+    [self lookForNewMostVisitedSite:freshMostVisitedSites
+                oldMostVisitedSites:oldMostVisitedSites];
+  }
+  _prefService->SetList(prefs::kIosLatestMostVisitedSites,
+                        std::move(freshMostVisitedSites));
+
+  _mostVisitedConfig = [[MostVisitedTilesConfig alloc] init];
+  _mostVisitedConfig.inMagicStack = self.inMagicStack;
+  _mostVisitedConfig.imageDataSource = self;
+  _mostVisitedConfig.commandHandler = self;
+  _mostVisitedConfig.mostVisitedItems = _freshMostVisitedItems;
+  _mostVisitedConfig.consumerSource = self;
+  if (self.inMagicStack) {
+    if ([_freshMostVisitedItems count] == 0) {
+      [self.delegate removeMostVisitedTilesModule];
+    } else if (!oldMostVisitedSites.empty()) {
+      [_stackViewConsumer updateWithConfig:_mostVisitedConfig];
     } else {
-      [self.consumer setMostVisitedTilesConfig:_mostVisitedConfig];
-      [self.contentSuggestionsDelegate contentSuggestionsWasUpdated];
+      [self.delegate didReceiveInitialMostVistedTiles];
     }
+  } else {
+    [self.consumer setMostVisitedTilesConfig:_mostVisitedConfig];
+    [self.contentSuggestionsDelegate contentSuggestionsWasUpdated];
+  }
 }
 
 // Logs a histogram due to a Most Visited item being opened.
 - (void)logMostVisitedOpening:(ContentSuggestionsMostVisitedItem*)item
                       atIndex:(NSInteger)mostVisitedIndex {
   [self.NTPActionsDelegate mostVisitedTileOpened];
-  if (ShouldPutMostVisitedSitesInMagicStack()) {
+  if (self.inMagicStack) {
     [self.delegate logMagicStackEngagementForType:ContentSuggestionsModuleType::
                                                       kMostVisited];
   }

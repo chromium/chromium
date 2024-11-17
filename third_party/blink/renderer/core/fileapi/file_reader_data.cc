@@ -36,7 +36,7 @@ String ToDataURL(ArrayBufferContents raw_data, const String& data_type) {
   if (raw_data.DataLength()) {
     Vector<char> out;
     Base64Encode(raw_data.ByteSpan(), out);
-    builder.Append(out.data(), out.size());
+    builder.Append(base::as_byte_span(out));
   }
 
   return builder.ToString();
@@ -44,8 +44,7 @@ String ToDataURL(ArrayBufferContents raw_data, const String& data_type) {
 
 String ToBinaryString(ArrayBufferContents raw_data) {
   CHECK(raw_data.IsValid());
-  return String(static_cast<const char*>(raw_data.Data()),
-                static_cast<size_t>(raw_data.DataLength()));
+  return String(raw_data.ByteSpan());
 }
 
 String ToTextString(ArrayBufferContents raw_data,
@@ -82,9 +81,8 @@ String ToString(ArrayBufferContents raw_data,
     case FileReadType::kReadAsDataURL:
       return ToDataURL(std::move(raw_data), std::move(data_type));
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return "";
 }
 
 }  // namespace

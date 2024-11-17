@@ -13,6 +13,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
@@ -194,6 +195,15 @@ bool WidgetDelegate::RotatePaneFocusFromView(View* focused_view,
   }
 }
 
+void WidgetDelegate::SetTitleChangedCallback(TitleChangedCallback callback) {
+  title_changed_callback_ = std::move(callback);
+}
+
+void WidgetDelegate::SetAccessibleTitleChangedCallback(
+    AccessibleTitleChangedCallback callback) {
+  accessible_title_changed_callback_ = std::move(callback);
+}
+
 bool WidgetDelegate::ShouldShowCloseButton() const {
   return params_.show_close_button;
 }
@@ -223,8 +233,9 @@ std::string WidgetDelegate::GetWindowName() const {
   return std::string();
 }
 
-void WidgetDelegate::SaveWindowPlacement(const gfx::Rect& bounds,
-                                         ui::WindowShowState show_state) {
+void WidgetDelegate::SaveWindowPlacement(
+    const gfx::Rect& bounds,
+    ui::mojom::WindowShowState show_state) {
   std::string window_name = GetWindowName();
   if (!window_name.empty()) {
     ViewsDelegate::GetInstance()->SaveWindowPlacement(GetWidget(), window_name,
@@ -239,7 +250,7 @@ bool WidgetDelegate::ShouldSaveWindowPlacement() const {
 bool WidgetDelegate::GetSavedWindowPlacement(
     const Widget* widget,
     gfx::Rect* bounds,
-    ui::WindowShowState* show_state) const {
+    ui::mojom::WindowShowState* show_state) const {
   std::string window_name = GetWindowName();
   if (window_name.empty() ||
       !ViewsDelegate::GetInstance()->GetSavedWindowPlacement(
@@ -378,6 +389,10 @@ void WidgetDelegate::SetAccessibleWindowRole(ax::mojom::Role role) {
 
 void WidgetDelegate::SetAccessibleTitle(std::u16string title) {
   params_.accessible_title = std::move(title);
+
+  if (accessible_title_changed_callback_) {
+    accessible_title_changed_callback_.Run();
+  }
 }
 
 void WidgetDelegate::SetCanFullscreen(bool can_fullscreen) {
@@ -463,6 +478,10 @@ void WidgetDelegate::SetTitle(const std::u16string& title) {
   params_.title = title;
   if (GetWidget())
     GetWidget()->UpdateWindowTitle();
+
+  if (title_changed_callback_) {
+    title_changed_callback_.Run();
+  }
 }
 
 void WidgetDelegate::SetTitle(int title_message_id) {

@@ -38,7 +38,6 @@ class AboutSigninInternals;
 class GaiaAuthFetcher;
 class GoogleServiceAuthError;
 class SigninClient;
-class Profile;
 
 namespace signin {
 class IdentityManager;
@@ -107,10 +106,6 @@ class DiceResponseHandler : public KeyedService {
   using RegistrationTokenHelperFactory = base::RepeatingClosure;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
-  // Returns the DiceResponseHandler associated with this profile.
-  // May return nullptr if there is none (e.g. in incognito).
-  static DiceResponseHandler* GetForProfile(Profile* profile);
-
   // `registration_token_helper_factory` might be null. If that's the case,
   // Chrome won't make an attempt to bind a refresh token.
   DiceResponseHandler(
@@ -140,8 +135,6 @@ class DiceResponseHandler : public KeyedService {
   void SetRegistrationTokenHelperFactoryForTesting(
       RegistrationTokenHelperFactory factory);
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-
-  static void EnsureFactoryBuilt();
 
  private:
   // Helper class to fetch a refresh token from an authorization code.

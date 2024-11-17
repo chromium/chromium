@@ -5,18 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_DATA_SHARING_MODEL_DATA_SHARING_SDK_DELEGATE_IOS_H_
 #define IOS_CHROME_BROWSER_DATA_SHARING_MODEL_DATA_SHARING_SDK_DELEGATE_IOS_H_
 
-#include "base/functional/callback_forward.h"
-#include "base/types/expected.h"
-#include "components/data_sharing/public/data_sharing_sdk_delegate.h"
-#include "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
-#include "third_party/abseil-cpp/absl/status/status.h"
+#import "base/functional/callback_forward.h"
+#import "base/memory/raw_ptr.h"
+#import "base/types/expected.h"
+#import "components/data_sharing/public/data_sharing_sdk_delegate.h"
+#import "components/data_sharing/public/protocol/data_sharing_sdk.pb.h"
+#import "third_party/abseil-cpp/absl/status/status.h"
+
+class ShareKitService;
 
 namespace data_sharing {
 
 // Used by DataSharingService to provide access to SDK.
 class DataSharingSDKDelegateIOS : public DataSharingSDKDelegate {
  public:
-  explicit DataSharingSDKDelegateIOS();
+  explicit DataSharingSDKDelegateIOS(ShareKitService* share_kit_service);
   ~DataSharingSDKDelegateIOS() override;
 
   DataSharingSDKDelegateIOS(const DataSharingSDKDelegateIOS&) = delete;
@@ -42,6 +45,9 @@ class DataSharingSDKDelegateIOS : public DataSharingSDKDelegate {
   void RemoveMember(
       const data_sharing_pb::RemoveMemberParams& params,
       base::OnceCallback<void(const absl::Status&)> callback) override;
+  void LeaveGroup(
+      const data_sharing_pb::LeaveGroupParams& params,
+      base::OnceCallback<void(const absl::Status&)> callback) override;
   void DeleteGroup(
       const data_sharing_pb::DeleteGroupParams& params,
       base::OnceCallback<void(const absl::Status&)> callback) override;
@@ -56,6 +62,9 @@ class DataSharingSDKDelegateIOS : public DataSharingSDKDelegate {
       base::OnceCallback<
           void(const base::expected<data_sharing_pb::AddAccessTokenResult,
                                     absl::Status>&)> callback) override;
+
+ private:
+  raw_ptr<ShareKitService> share_kit_service_;
 };
 
 }  // namespace data_sharing

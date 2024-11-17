@@ -678,8 +678,7 @@ void LogoServiceImpl::OnFreshLogoAvailable(
       break;
 
     case DOWNLOAD_OUTCOME_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   NotifyAndClear(&on_fresh_encoded_logo_, &on_fresh_decoded_logo_,

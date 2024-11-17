@@ -142,7 +142,8 @@ public class InMemoryCachedImageFetcherTest {
                     ImageFetcher.Params.create(URL, UMA_CLIENT_NAME, WIDTH_PX, HEIGHT_PX);
             mInMemoryCachedImageFetcher.fetchImage(params, (Bitmap bitmap) -> {});
         } catch (Exception e) {
-            Assert.fail("Destroy called in the middle of execution shouldn't throw");
+            throw new AssertionError(
+                    "Destroy called in the middle of execution shouldn't throw", e);
         }
     }
 

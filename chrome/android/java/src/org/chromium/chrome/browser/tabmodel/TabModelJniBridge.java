@@ -16,7 +16,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -24,7 +23,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 /** Bridges between the C++ and Java {@link TabModel} interfaces. */
-public abstract class TabModelJniBridge implements TabModel {
+public abstract class TabModelJniBridge implements TabModelInternal {
     private final Profile mProfile;
 
     /** The type of the Activity for which this tab model works. */
@@ -180,13 +179,10 @@ public abstract class TabModelJniBridge implements TabModel {
     @CalledByNative
     @VisibleForTesting
     static boolean isTabInTabGroup(@NonNull Tab tab) {
-        final TabModelFilter filter = TabModelUtils.getTabModelFilterByTab(tab);
+        final TabGroupModelFilter filter = TabModelUtils.getTabGroupModelFilterByTab(tab);
         if (filter == null) return false;
 
-        assert filter instanceof TabGroupModelFilter;
-        final TabGroupModelFilter groupingFilter = (TabGroupModelFilter) filter;
-
-        return groupingFilter.isTabInTabGroup(tab);
+        return filter.isTabInTabGroup(tab);
     }
 
     @Override

@@ -251,6 +251,7 @@ cast_source_set("browser") {
     "//components/cast_receiver/browser:permissions_manager",
     "//components/download/public/common:public",
     "//components/heap_profiling/multi_process",
+    "//components/input",
     "//components/media_control/browser",
     "//components/memory_pressure",
     "//components/metrics",
@@ -320,6 +321,7 @@ cast_source_set("browser") {
     ]
     deps += [
       "//chromecast/browser/android:jni_headers",
+      "//components/android_autofill/browser:android",
       "//components/embedder_support/android:view",
     ]
   } else {

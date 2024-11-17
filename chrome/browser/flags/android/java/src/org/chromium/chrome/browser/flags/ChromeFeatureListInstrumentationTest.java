@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.flags;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -25,7 +24,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
-import java.util.HashMap;
 import java.util.Map;
 
 /** Tests the behavior of {@link ChromeFeatureList} in instrumentation tests. */
@@ -69,22 +67,5 @@ public class ChromeFeatureListInstrumentationTest {
         assertFalse(ChromeFeatureList.isEnabled(ChromeFeatureList.TEST_DEFAULT_ENABLED));
 
         FeatureList.setTestFeatures(null);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.EXPERIMENTS_FOR_AGSA + "<Trial"})
-    @CommandLineFlags.Add({
-        "force-fieldtrials=Trial/Group",
-        "force-fieldtrial-params=Trial.Group:101/x/y/z"
-    })
-    public void testGetFieldTrialParamsForFeature() {
-        Map<String, String> features =
-                ChromeFeatureList.getFieldTrialParamsForFeature(
-                        ChromeFeatureList.EXPERIMENTS_FOR_AGSA);
-        Map<String, String> expectedFeatures = new HashMap<String, String>();
-        expectedFeatures.put("101", "x");
-        expectedFeatures.put("y", "z");
-        assertEquals(expectedFeatures, features);
     }
 }

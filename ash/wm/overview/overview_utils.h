@@ -50,9 +50,9 @@ void FadeInAndTransformWidgetToOverview(views::Widget* widget,
 // Fades `widget` to opacity one with the enter overview settings.
 // Have OverviewController observe this animation as a enter animation if
 // `observe` is true.
-void FadeInWidgetToOverview(views::Widget* widget,
-                            OverviewAnimationType animation_type,
-                            bool observe);
+ASH_EXPORT void FadeInWidgetToOverview(views::Widget* widget,
+                                       OverviewAnimationType animation_type,
+                                       bool observe);
 
 // Makes `widget` not be able to process events. This should only be used if
 // `widget` is shutting down with animation, as `widget` will no longer be

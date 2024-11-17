@@ -49,9 +49,13 @@ class SitePermissionsHelper {
                                      content::WebContents* web_contents) const;
 
   // Updates the site access pointed to by `web_contents` to `new_access` for
-  // `extension`. If relevant, this will run any pending extension actions on
-  // that site.
+  // `extension` or `extensions`. If relevant, this will run any pending
+  // extension actions on that site and/or show a reload dialog for new site
+  // access to take effect.
   void UpdateSiteAccess(const Extension& extension,
+                        content::WebContents* web_contents,
+                        PermissionsManager::UserSiteAccess new_access);
+  void UpdateSiteAccess(const std::vector<const Extension*>& extensions,
                         content::WebContents* web_contents,
                         PermissionsManager::UserSiteAccess new_access);
 

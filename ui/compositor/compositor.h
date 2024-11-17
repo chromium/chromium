@@ -22,7 +22,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/paint/element_id.h"
@@ -520,14 +519,14 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
     return vrr_state_;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Sets the list of refresh rates that the compositor may request to use.
   void SetSeamlessRefreshRates(
       const std::vector<float>& seamless_refresh_rates);
 
   // Notifies observers of a new refresh rate preference.
   void OnSetPreferredRefreshRate(float refresh_rate);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   friend class base::RefCounted<Compositor>;
@@ -599,9 +598,9 @@ class COMPOSITOR_EXPORT Compositor : public base::PowerSuspendObserver,
   std::optional<base::TimeDelta> max_vsync_interval_ = std::nullopt;
   display::VariableRefreshRateState vrr_state_ =
       display::VariableRefreshRateState::kVrrNotCapable;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::vector<float> seamless_refresh_rates_;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   const bool use_external_begin_frame_control_;
   const bool force_software_compositor_;

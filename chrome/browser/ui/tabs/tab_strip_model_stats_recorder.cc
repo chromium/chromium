@@ -14,11 +14,13 @@
 #include "base/supports_user_data.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 
 TabStripModelStatsRecorder::TabStripModelStatsRecorder()
-    : browser_tab_strip_tracker_(this, nullptr) {
-  browser_tab_strip_tracker_.Init();
+    : browser_tab_strip_tracker_(
+          std::make_unique<BrowserTabStripTracker>(this, nullptr)) {
+  browser_tab_strip_tracker_->Init();
 }
 
 TabStripModelStatsRecorder::~TabStripModelStatsRecorder() {
@@ -71,8 +73,7 @@ void TabStripModelStatsRecorder::TabInfo::UpdateState(TabState new_state) {
       break;
     case TabState::CLOSED:
     case TabState::MAX:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   current_state_ = new_state;

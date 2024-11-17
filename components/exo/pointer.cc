@@ -644,8 +644,7 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
     case ui::EventType::kMouseExited:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (stylus_delegate_) {

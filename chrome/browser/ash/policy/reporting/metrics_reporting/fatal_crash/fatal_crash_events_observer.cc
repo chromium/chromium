@@ -27,7 +27,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
-#include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_uploader.h"
+#include "chrome/browser/ash/policy/reporting/event_based_logs/event_based_log_utils.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_reported_local_id_manager.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_settings_for_test.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/fatal_crash/fatal_crash_events_observer_uploaded_crash_info_manager.h"
@@ -72,6 +72,8 @@ FatalCrashTelemetry::SessionType GetSessionType(
     case user_manager::UserType::kKioskApp:
       return FatalCrashTelemetry::SESSION_TYPE_KIOSK_APP;
     case user_manager::UserType::kWebKioskApp:
+    // TODO(crbug.com/358536558): Process a new user type for IWA kiosk
+    case user_manager::UserType::kKioskIWA:
       return FatalCrashTelemetry::SESSION_TYPE_WEB_KIOSK_APP;
     default:
       NOTREACHED();
@@ -389,7 +391,7 @@ FatalCrashEventsObserver::NotifyFatalCrashEventLog() {
   if (event_log_observers_.empty()) {
     return std::nullopt;
   }
-  std::string upload_id = policy::EventBasedLogUploader::GenerateUploadId();
+  std::string upload_id = policy::GenerateEventBasedLogUploadId();
   for (auto& observer : event_log_observers_) {
     observer.OnFatalCrashEvent(upload_id);
   }

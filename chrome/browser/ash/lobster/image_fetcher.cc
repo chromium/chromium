@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/lobster/lobster_result.h"
 #include "base/barrier_callback.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -73,7 +74,7 @@ ash::LobsterErrorCode MantaToLobsterStatusCode(
     case manta::MantaStatusCode::kRestrictedCountry:
       return ash::LobsterErrorCode::kRestrictedRegion;
     case manta::MantaStatusCode::kOk:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 }
 
@@ -83,16 +84,18 @@ std::optional<ash::LobsterImageCandidate> ToLobsterImageCandidate(
     const std::string& query,
     const SkBitmap& decoded_bitmap) {
   base::AssertLongCPUWorkAllowed();
-  std::vector<unsigned char> data;
 
-  if (!gfx::JPEGCodec::Encode(decoded_bitmap, /*quality=*/100, &data)) {
+  std::optional<std::vector<uint8_t>> data =
+      gfx::JPEGCodec::Encode(decoded_bitmap, /*quality=*/100);
+  if (!data) {
     return std::nullopt;
   }
 
-  return ash::LobsterImageCandidate(/*id=*/id, /*image_bytes=*/
-                                    std::string(data.begin(), data.end()),
-                                    /*seed=*/seed,
-                                    /*query=*/query.data());
+  return ash::LobsterImageCandidate(
+      /*id=*/id, /*image_bytes=*/
+      std::string(base::as_string_view(data.value())),
+      /*seed=*/seed,
+      /*query=*/query.data());
 }
 
 void EncodeBitmap(

@@ -18,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
@@ -281,19 +282,7 @@ StreamingSearchPrefetchURLLoader::StreamingSearchPrefetchURLLoader(
       network_traffic_annotation_(network_traffic_annotation),
       navigation_prefetch_(navigation_prefetch) {
   DCHECK(streaming_prefetch_request_);
-  if (navigation_prefetch_ || SearchPrefetchBlockBeforeHeadersIsEnabled()) {
-    if (!navigation_prefetch_ &&
-        SearchPrefetchBlockHeadStart() > base::TimeDelta()) {
-      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(
-              &StreamingSearchPrefetchURLLoader::MarkPrefetchAsServable,
-              weak_factory_.GetWeakPtr()),
-          SearchPrefetchBlockHeadStart());
-    } else {
-      MarkPrefetchAsServable();
-    }
-  }
+  MarkPrefetchAsServable();
   prefetch_url_ = resource_request->url;
 
   // Maybe proxies the prefetch URL loader via the Extension Web Request API, so
@@ -528,14 +517,6 @@ void StreamingSearchPrefetchURLLoader::OnReceiveResponse(
   // whether we still have a parent pointer.
   if (!can_be_served) {
     if (!streaming_prefetch_request_) {
-      // That `streaming_prefetch_request_` is nullptr means this loader is
-      // serving to network stack. And we can serve a loader that has not
-      // received response yet to the network stack iff the loader was created
-      // by a navigation prefetch or we are experimenting with
-      // kSearchPrefetchBlockBeforeHeaders enabled.
-      DCHECK(navigation_prefetch_ ||
-             SearchPrefetchBlockBeforeHeadersIsEnabled());
-
       // SetUpForwardingClient() needs to be called before fallback.
       if (is_activated_) {
         Fallback();
@@ -605,7 +586,7 @@ void StreamingSearchPrefetchURLLoader::OnUploadProgress(
     int64_t total_size,
     OnUploadProgressCallback callback) {
   // We only handle GETs.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void StreamingSearchPrefetchURLLoader::OnTransferSizeUpdated(
@@ -763,17 +744,18 @@ void StreamingSearchPrefetchURLLoader::Finish() {
 
 void StreamingSearchPrefetchURLLoader::OnComplete(
     const network::URLLoaderCompletionStatus& status) {
+  TRACE_EVENT0("loading", "StreamingSearchPrefetchURLLoader::OnComplete");
   network_url_loader_.reset();
+  status_ = status;
+  if (response_reader_for_prerender_) {
+    response_reader_for_prerender_->OnStatusCodeReady(status);
+  }
   if (forwarding_client_ && (!serving_from_data_ || is_in_fallback_)) {
     DCHECK(!streaming_prefetch_request_);
     forwarding_client_->OnComplete(status);
     forwarding_result_ = ForwardingResult::kCompleted;
     OnForwardingComplete();
     return;
-  }
-  status_ = status;
-  if (response_reader_for_prerender_) {
-    response_reader_for_prerender_->OnStatusCodeReady(status);
   }
 
   if (streaming_prefetch_request_) {
@@ -815,7 +797,7 @@ void StreamingSearchPrefetchURLLoader::FollowRedirect(
     return;
   }
   // This should never be called for a non-network service URLLoader.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void StreamingSearchPrefetchURLLoader::SetPriority(
@@ -899,8 +881,6 @@ void StreamingSearchPrefetchURLLoader::PostTaskToReleaseOwnership() {
 }
 
 void StreamingSearchPrefetchURLLoader::Fallback() {
-  CHECK(navigation_prefetch_ || SearchPrefetchBlockBeforeHeadersIsEnabled());
-
   is_scheduled_to_fallback_ = false;
 
   CHECK(!is_in_fallback_);

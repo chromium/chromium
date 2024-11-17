@@ -180,11 +180,13 @@ def CheckoutGitRepo(name, git_url, commit, dir):
   sys.exit(1)
 
 
-def GitCherryPick(git_repository, git_remote, commit):
+def GitCherryPick(git_repository, git_remote, commit, git_remote_name='github'):
   print(f'Cherry-picking {commit} in {git_repository} from {git_remote}')
   git_cmd = ['git', '-C', git_repository]
-  RunCommand(git_cmd + ['remote', 'add', 'github', git_remote], fail_hard=False)
-  RunCommand(git_cmd + ['fetch', '--recurse-submodules=no', 'github', commit])
+  RunCommand(git_cmd + ['remote', 'add', git_remote_name, git_remote],
+             fail_hard=False)
+  RunCommand(git_cmd +
+             ['fetch', '--recurse-submodules=no', git_remote_name, commit])
   is_ancestor = RunCommand(git_cmd +
                            ['merge-base', '--is-ancestor', commit, 'HEAD'],
                            fail_hard=False)
@@ -236,37 +238,32 @@ def AddCMakeToPath():
   os.environ['PATH'] = cmake_dir + os.pathsep + os.environ.get('PATH', '')
 
 
-def AddGnuWinToPath():
-  """Download some GNU win tools and add them to PATH."""
+def AddGitForWindowsToPath():
+  """Download Git for Windows and add it to PATH.
+
+  Git for Windows provides command line utilities (not Git) for tests."""
   assert sys.platform == 'win32'
 
-  gnuwin_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'gnuwin')
-  GNUWIN_VERSION = '14'
-  GNUWIN_STAMP = os.path.join(gnuwin_dir, 'stamp')
-  if ReadStampFile(GNUWIN_STAMP) == GNUWIN_VERSION:
-    print('GNU Win tools already up to date.')
+  git_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'git-for-windows')
+  version = '2.47.0'
+  stamp_file = os.path.join(git_dir, 'stamp')
+  if ReadStampFile(stamp_file) == version:
+    print('Git for Windows already up to date.')
   else:
-    zip_name = 'gnuwin-%s.zip' % GNUWIN_VERSION
-    DownloadAndUnpack(CDS_URL + '/tools/' + zip_name, LLVM_BUILD_TOOLS_DIR)
-    WriteStampFile(GNUWIN_VERSION, GNUWIN_STAMP)
+    archive_name = 'PortableGit-%s-64-bit.zip' % version
+    DownloadAndUnpack(CDS_URL + '/tools/' + archive_name, git_dir)
+    WriteStampFile(version, stamp_file)
 
-  os.environ['PATH'] = gnuwin_dir + os.pathsep + os.environ.get('PATH', '')
-
-  # find.exe, mv.exe and rm.exe are from MSYS (see crrev.com/389632). MSYS uses
-  # Cygwin under the hood, and initializing Cygwin has a race-condition when
-  # getting group and user data from the Active Directory is slow. To work
-  # around this, use a horrible hack telling it not to do that.
-  # See https://crbug.com/905289
-  etc = os.path.join(gnuwin_dir, '..', '..', 'etc')
-  EnsureDirExists(etc)
-  with open(os.path.join(etc, 'nsswitch.conf'), 'w') as f:
-    f.write('passwd: files\n')
-    f.write('group: files\n')
+  os.environ['PATH'] = os.path.join(
+      git_dir, 'usr', 'bin') + os.pathsep + os.environ.get('PATH', '')
 
 
-def AddZlibToPath():
+def AddZlibToPath(dry_run = False):
   """Download and build zlib, and add to PATH."""
   zlib_dir = os.path.join(LLVM_BUILD_TOOLS_DIR, 'zlib-1.2.11')
+  if dry_run:
+    return zlib_dir
+
   if os.path.exists(zlib_dir):
     RmTree(zlib_dir)
   zip_name = 'zlib-1.2.11.tar.gz'
@@ -648,7 +645,13 @@ def main():
                       'clang-extra-tools. Overrides --extra-tools.')
   parser.add_argument('--extra-tools', nargs='*', default=[],
                       help='select additional chrome tools to build')
-  parser.add_argument('--use-system-cmake', action='store_true',
+  parser.add_argument('--no-runtimes',
+                      action='store_true',
+                      help='don\'t build compiler-rt, sanitizer and profile '
+                      'runtimes. This is incompatible with --pgo. On Mac, '
+                      'compiler-rt is always built regardless.')
+  parser.add_argument('--use-system-cmake',
+                      action='store_true',
                       help='use the cmake from PATH instead of downloading '
                       'and using prebuilt cmake binaries')
   parser.add_argument('--tf-path',
@@ -701,6 +704,9 @@ def main():
     print('https://www.chromium.org/developers/how-tos/android-build-instructions')
     print('for how to install the NDK, or pass --without-android.')
     return 1
+  if args.no_runtimes and args.pgo:
+    print('--pgo requires runtimes, can\'t use --no-runtimes')
+    return 1
 
   if args.with_fuchsia and not os.path.exists(FUCHSIA_SDK_DIR):
     print('Fuchsia SDK not found at ' + FUCHSIA_SDK_DIR)
@@ -742,6 +748,49 @@ def main():
   if not args.skip_checkout:
     CheckoutGitRepo('LLVM monorepo', LLVM_GIT_URL, checkout_revision, LLVM_DIR)
 
+    if not args.llvm_force_head_revision:
+      # Apply https://github.com/llvm/llvm-project/pull/113951 to make rolling
+      # libc++ not blocked on a clang roll. Remove this when rolling past that
+      # revision.
+      GitCherryPick(LLVM_DIR, 'https://github.com/llvm/llvm-project.git',
+                    # This is llvmorg-20-init-10276-g9f69da35e2e5
+                    '9f69da35e2e5438d0c042f76277fff397f6a1505',
+                    git_remote_name='github-llvm')
+
+    if sys.platform == 'win32' and not args.llvm_force_head_revision:
+      # Apply https://github.com/zmodem/llvm-project/commit/802b816836f1 which
+      # adds printfs to the win/asan runtime which get printed at high verbosity
+      # level or on errors such as CHECK failure.
+      # TODO(crbug.com/341936875): Remove once debugging is done.
+      GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
+                    '802b816836f1dcf9544f250ee5c6977b4cb2bb41')
+
+      # Apply https://github.com/zmodem/llvm-project/commit/89a723c438a5 which
+      # should fix the issue of win/asan failing to allocate memory for
+      # trampoline functions.
+      # TODO(crbug.com/341936875): Land this upstream and remove after debugging.
+      GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
+                    '89a723c438a50a34507a71159ba37f6e60afcea9')
+
+      # Apply https://github.com/zmodem/llvm-project/commit/72112845b8e3 which
+      # fixes an issue in the previous patch and adds more printfs.
+      # TODO(crbug.com/341936875): Remove after debugging.
+      GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
+                    '72112845b8e37ba5296858d0224f916f0afbf88b')
+
+      # Apply https://github.com/zmodem/llvm-project/commit/723a2efebddf which
+      # tries to speed up the runtime by removing calls to GetModuleFileName and
+      # VPrintfs for contigous_containers.
+      # TODO(crbug.com/341936875): Remove after debugging.
+      GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
+                    '723a2efebddf250b58c2dd3bd064c1cd0f57b85f')
+
+      # Apply https://github.com/zmodem/llvm-project/commit/a86b7e95a8a7 which
+      # adds proper clamping of {min,max}_addr in AllocateTrampolineRegion.
+      # TODO(crbug.com/341936875): Remove after debugging.
+      GitCherryPick(LLVM_DIR, 'https://github.com/zmodem/llvm-project.git',
+                    'a86b7e95a8a7a7de750d19e4d189e9a9497e31e8')
+
   if args.llvm_force_head_revision:
     CLANG_REVISION = GetCommitDescription(checkout_revision)
     PACKAGE_VERSION = '%s-0' % CLANG_REVISION
@@ -773,9 +822,17 @@ def main():
   ldflags = []
 
   targets = 'AArch64;ARM;LoongArch;Mips;PowerPC;RISCV;SystemZ;WebAssembly;X86'
-  projects = 'clang;lld;clang-tools-extra'
+  projects = 'clang;lld'
+  if not args.no_tools:
+    projects += ';clang-tools-extra'
   if args.bolt:
     projects += ';bolt'
+
+  runtimes = ''
+  # On macOS, we always need to build compiler-rt because dsymutil's link needs
+  # libclang_rt.osx.a.
+  if not args.no_runtimes or sys.platform == 'darwin':
+    runtimes = 'compiler-rt'
 
   pic_default = sys.platform == 'win32'
   pic_mode = 'ON' if args.pic or pic_default else 'OFF'
@@ -784,9 +841,9 @@ def main():
       '-GNinja',
       '-DCMAKE_BUILD_TYPE=Release',
       '-DLLVM_ENABLE_ASSERTIONS=%s' % ('OFF' if args.disable_asserts else 'ON'),
-      '-DLLVM_ENABLE_PROJECTS=' + projects,
-      '-DLLVM_ENABLE_RUNTIMES=compiler-rt',
-      '-DLLVM_TARGETS_TO_BUILD=' + targets,
+      f'-DLLVM_ENABLE_PROJECTS={projects}',
+      f'-DLLVM_ENABLE_RUNTIMES={runtimes}',
+      f'-DLLVM_TARGETS_TO_BUILD={targets}',
       f'-DLLVM_ENABLE_PIC={pic_mode}',
       '-DLLVM_ENABLE_TERMINFO=OFF',
       '-DLLVM_ENABLE_Z3_SOLVER=OFF',
@@ -863,7 +920,7 @@ def main():
       base_cmake_args.append('-DCMAKE_SYSROOT=' + sysroot_amd64)
 
   if sys.platform == 'win32':
-    AddGnuWinToPath()
+    AddGitForWindowsToPath()
 
     base_cmake_args.append('-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded')
 
@@ -1263,6 +1320,8 @@ def main():
             'DARWIN_ios_ARCHS=arm64',
             'DARWIN_iossim_ARCHS=arm64;x86_64',
             'DARWIN_osx_ARCHS=arm64;x86_64',
+            'DARWIN_watchos_BUILTIN_ARCHS=arm64',
+            'DARWIN_watchossim_BUILTIN_ARCHS=arm64;x86_64',
         ],
         "sanitizers":
         True,
@@ -1388,9 +1447,13 @@ def main():
       else:
         cmake_args.append('-DRUNTIMES_' + triple + '_' + arg)
         cmake_args.append('-DBUILTINS_' + triple + '_' + arg)
-    for arg in compiler_rt_cmake_flags(
-        profile=runtimes_triples_args[triple]["profile"],
-        sanitizers=runtimes_triples_args[triple]["sanitizers"]):
+    if not args.no_runtimes:
+      profile = runtimes_triples_args[triple]["profile"],
+      sanitizers = runtimes_triples_args[triple]["sanitizers"]
+    else:
+      profile = False
+      sanitizers = False
+    for arg in compiler_rt_cmake_flags(profile=profile, sanitizers=sanitizers):
       # 'default' is specially handled to pass through relevant CMake flags.
       if triple == 'default':
         cmake_args.append('-D' + arg)

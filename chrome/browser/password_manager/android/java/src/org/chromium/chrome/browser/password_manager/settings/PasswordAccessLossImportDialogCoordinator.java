@@ -4,10 +4,14 @@
 
 package org.chromium.chrome.browser.password_manager.settings;
 
+import static org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.logExportFlowLastStepMetric;
+
 import android.content.Context;
 import android.content.res.Resources;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.access_loss.AccessLossWarningMetricsRecorder.PasswordAccessLossWarningExportStep;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.loading_modal.LoadingModalDialogCoordinator;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
@@ -30,8 +34,18 @@ public class PasswordAccessLossImportDialogCoordinator {
         @Override
         public void onClick(PropertyModel model, int buttonType) {
             if (buttonType == ButtonType.POSITIVE) {
+                // If password import is accepted, the GMS Core UI will be opened and the export
+                // flow in Chrome ends here.
+                logExportFlowLastStepMetric(
+                        PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED,
+                        PasswordAccessLossWarningExportStep.PASSWORD_IMPORT);
                 launchCredentialManager();
                 mChromeShutDownRunnable.run();
+            } else {
+                // If password import is rejected, then the export flow ends at this step.
+                logExportFlowLastStepMetric(
+                        PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED,
+                        PasswordAccessLossWarningExportStep.IMPORT_CANCELED);
             }
             mModalDialogManagerSupplier
                     .get()

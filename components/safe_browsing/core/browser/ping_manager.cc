@@ -241,7 +241,7 @@ PingManager::PingManager(
       kReadPersistedReportsDelay);
 }
 
-PingManager::~PingManager() {}
+PingManager::~PingManager() = default;
 
 // All SafeBrowsing request responses are handled here.
 void PingManager::OnURLLoaderComplete(
@@ -501,7 +501,7 @@ GURL PingManager::SafeBrowsingHitUrl(
       threat_list = "phishcsdhit";
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   std::string threat_source = "none";
@@ -525,7 +525,7 @@ GURL PingManager::SafeBrowsingHitUrl(
       threat_source = "asb";
       break;
     case safe_browsing::ThreatSource::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return GURL(base::StringPrintf(

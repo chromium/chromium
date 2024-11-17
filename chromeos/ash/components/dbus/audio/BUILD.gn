@@ -29,7 +29,18 @@ component("audio") {
     "fake_floss_media_client.h",
     "floss_media_client.cc",
     "floss_media_client.h",
+    "voice_isolation_ui_appearance.cc",
+    "voice_isolation_ui_appearance.h",
     "volume_state.cc",
     "volume_state.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "voice_isolation_ui_appearance_unittest.cc" ]
+  deps = [
+    ":audio",
+    "//testing/gtest",
   ]
 }

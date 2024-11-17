@@ -17,10 +17,8 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
-#if !BUILDFLAG(ENABLE_EXTENSIONS) && \
-    !BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
-#error "Extensions must be enabled"
-#endif
+static_assert(BUILDFLAG(ENABLE_EXTENSIONS) ||
+              BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS));
 
 namespace base {
 class OneShotEvent;

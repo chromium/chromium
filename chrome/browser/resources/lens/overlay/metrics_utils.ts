@@ -4,6 +4,7 @@
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {UserAction} from './lens.mojom-webui.js';
+import type {SemanticEvent} from './lens.mojom-webui.js';
 
 export function recordLensOverlayInteraction(
     invocationSource: string, interaction: UserAction) {
@@ -14,6 +15,11 @@ export function recordLensOverlayInteraction(
       interaction, UserAction.MAX_VALUE + 1);
   BrowserProxyImpl.getInstance()
       .handler.recordUkmAndTaskCompletionForLensOverlayInteraction(interaction);
+}
+
+export function recordLensOverlaySemanticEvent(semanticEvent: SemanticEvent) {
+  BrowserProxyImpl.getInstance().handler.recordLensOverlaySemanticEvent(
+      semanticEvent);
 }
 
 /** Records |durationMs| in the |metricName| histogram. */
@@ -27,4 +33,19 @@ export function recordTimeToWebUIReady(durationMs: number) {
         buckets: 100,
       },
       Math.floor(durationMs));
+}
+
+/**
+ * Records |averageFps| in the Lens.Overlay.Performance.AverageFPS histogram.
+ */
+export function recordAverageFps(averageFps: number) {
+  chrome.metricsPrivate.recordValue(
+      {
+        metricName: 'Lens.Overlay.Performance.AverageFPS',
+        type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
+        min: 1,
+        max: 200,
+        buckets: 50,
+      },
+      Math.floor(averageFps));
 }

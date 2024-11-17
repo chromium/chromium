@@ -1,0 +1,56 @@
+caption: Enterprise search aggregator settings
+desc: |-
+  This policy allows administrators to set a designated enterprise search aggregator that will provide search recommendations and results within the address bar when triggered by a specific keyword. Users can initiate a search by typing the keyword specified in the <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">shortcut</ph> field with or without the @ prefix (e.g. <ph name="SHORTCUT_EXAMPLE_SEARCH_AGGREGATOR_SETTINGS">@work</ph>), followed by Space or Tab, in the address bar.
+
+  The following fields are required: <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD">name</ph>, <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">shortcut</ph>, <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">search_url</ph>, <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">suggest_url</ph>.
+
+  The <ph name="NAME_SEARCH_AGGREGATOR_SETTINGS_FIELD">name</ph> field corresponds to the search engine name shown to the user in the address bar.
+
+  The <ph name="SHORTCUT_SEARCH_AGGREGATOR_SETTINGS_FIELD">shortcut</ph> field corresponds to the keyword that the user enters to trigger the search. The shortcut can include plain words and characters, but cannot include spaces or start with the @ symbol. Shortcuts must be unique.
+
+  The <ph name="SEARCH_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">search_url</ph> field specifies the URL on which to search. Enter the web address for the search engine's results page, and use <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph> in place of the query.
+
+  The <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">suggest_url</ph> field specifies the URL that provides search suggestions. If <ph name="SUGGEST_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">suggest_url</ph> contains <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph>, then Chrome will obtain search suggestions by a GET request to the URL replacing <ph name="SEARCH_TERM_MARKER">'{searchTerms}'</ph> with the user's search query. Otherwise, a POST request will be made, the the user's query will be passed in the POST params under key <ph name="SEARCH_SUGGEST_POST_PARAMS_QUERY_KEY">'query'</ph>.
+
+  The <ph name="ICON_URL_SEARCH_AGGREGATOR_SETTINGS_FIELD">icon_url</ph> field specifies the URL to an image that will be used on the search suggestions. A default icon will be used when this field is not set. It's recommended to use a favicon (example <ph name="ICON_URL_EXAMPLE">https://www.google.com/favicon.ico</ph>).
+
+  On <ph name="MS_WIN_NAME">Microsoft® Windows®</ph>, this policy is only available on instances that are joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain, joined to <ph name="MS_AAD_NAME">Microsoft® Azure® Active Directory®</ph> or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>.
+
+  On <ph name="MAC_OS_NAME">macOS</ph>, this policy is only available on instances that are managed via MDM, joined to a domain via MCX or enrolled in <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME">Chrome Browser Cloud Management</ph>.
+
+example_value:
+  name: My Search Aggregator
+  shortcut: work
+  search_url: https://www.aggregator.com/search?q=site%3Awikipedia.com+{searchTerms}
+  suggest_url: https://www.aggregator.com/suggest?q={searchTerms}
+  icon_url: https://www.google.com/favicon.ico
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- ftirelo@chromium.org
+- jdonnelly@chromium.org
+- mahmadi@chromium.org
+schema:
+  type: object
+  properties:
+    name:
+      type: string
+    shortcut:
+      type: string
+    search_url:
+      type: string
+    suggest_url:
+      type: string
+    icon_url:
+      type: string
+  required:
+  - name
+  - shortcut
+  - suggest_url
+  - search_url
+future_on:
+- chrome.*
+- chrome_os
+tags: []
+type: dict

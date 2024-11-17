@@ -401,7 +401,8 @@ class RasterBufferProviderPerfTest
     resource_pool_ = std::make_unique<ResourcePool>(
         resource_provider_.get(), compositor_context_provider_.get(),
         task_runner_, ResourcePool::kDefaultExpirationDelay, false);
-    tile_task_manager_ = TileTaskManagerImpl::Create(task_graph_runner_.get());
+    tile_task_manager_ = TileTaskManagerImpl::Create(task_graph_runner_.get(),
+                                                     base::DoNothing());
   }
   void TearDown() override {
     tile_task_manager_->Shutdown();
@@ -560,8 +561,7 @@ class RasterBufferProviderPerfTest
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:
         return std::string("_bitmap_raster_buffer_provider");
     }
-    NOTREACHED_IN_MIGRATION();
-    return std::string();
+    NOTREACHED();
   }
 
   std::unique_ptr<TileTaskManager> tile_task_manager_;

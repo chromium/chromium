@@ -70,7 +70,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
-    PrefService* prefs,
+    const PrefService* prefs,
     int suggestion_group_id) {
   DCHECK(prefs);
 

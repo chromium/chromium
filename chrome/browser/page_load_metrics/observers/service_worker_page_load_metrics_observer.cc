@@ -8,6 +8,7 @@
 #include "chrome/browser/page_load_metrics/observers/from_gws_page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -559,9 +560,17 @@ void ServiceWorkerPageLoadMetricsObserver::RecordSubresourceLoad() {
                 sw_metrics.matched_race_network_and_fetch_router_source_count));
 
     if (!sw_metrics.total_router_evaluation_time_for_subresources.is_zero()) {
+      builder.SetTotalRouterEvaluationTime(
+          sw_metrics.total_router_evaluation_time_for_subresources
+              .InMicroseconds());
       PAGE_LOAD_SHORT_HISTOGRAM(
           internal::kHistogramServiceWorkerSubresourceTotalRouterEvaluationTime,
           sw_metrics.total_router_evaluation_time_for_subresources);
+    }
+
+    if (!sw_metrics.total_cache_lookup_time_for_subresources.is_zero()) {
+      builder.SetTotalCacheLookupTime(
+          sw_metrics.total_cache_lookup_time_for_subresources.InMilliseconds());
     }
   }
   builder.Record(ukm::UkmRecorder::Get());

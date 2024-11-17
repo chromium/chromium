@@ -212,8 +212,7 @@ void OffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
   for (auto& unit : base::Reversed(mapping_units_)) {
     if (unit.text_content_end_ < offset) {
       // There are no collapsed unit.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
     if (unit.text_content_start_ != offset ||
         unit.text_content_end_ != offset ||
@@ -238,8 +237,7 @@ void OffsetMappingBuilder::RestoreTrailingCollapsibleSpace(
                           unit.text_content_end_, unit.text_content_end_));
     return;
   }
-  NOTREACHED_IN_MIGRATION();
-  return;
+  NOTREACHED();
 }
 
 bool OffsetMappingBuilder::SetDestinationString(const String& string) {

@@ -55,12 +55,10 @@ IndexedDBExternalObject::IndexedDBExternalObject()
 
 IndexedDBExternalObject::IndexedDBExternalObject(
     mojo::PendingRemote<blink::mojom::Blob> blob_remote,
-    const std::string& uuid,
     const std::u16string& type,
     int64_t size)
     : object_type_(ObjectType::kBlob),
       blob_remote_(std::move(blob_remote)),
-      uuid_(uuid),
       type_(type),
       size_(size) {}
 
@@ -74,14 +72,12 @@ IndexedDBExternalObject::IndexedDBExternalObject(const std::u16string& type,
 
 IndexedDBExternalObject::IndexedDBExternalObject(
     mojo::PendingRemote<blink::mojom::Blob> blob_remote,
-    const std::string& uuid,
     const std::u16string& file_name,
     const std::u16string& type,
     const base::Time& last_modified,
     const int64_t size)
     : object_type_(ObjectType::kFile),
       blob_remote_(std::move(blob_remote)),
-      uuid_(uuid),
       type_(type),
       size_(size),
       file_name_(file_name),

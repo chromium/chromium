@@ -24,7 +24,6 @@
 <translation id="3561217442734750519">Giá trị dữ liệu nhập cho khóa cá nhân phải là một đường dẫn hợp lệ.</translation>
 <translation id="388442998277590542">Không thể tải trang tùy chọn '<ph name="OPTIONS_PAGE" />'.</translation>
 <translation id="3984413272403535372">Lỗi khi ký tiện ích.</translation>
-<translation id="4115165561519362854">Quản trị viên của máy này yêu cầu <ph name="EXTENSION_NAME" /> có phiên bản tối thiểu của <ph name="EXTENSION_VERSION" />. Không thể kích hoạt phiên bản cho đến khi máy cập nhật lên phiên bản đó (hoặc phiên bản cao hơn).</translation>
 <translation id="4233778200880751280">Không thể tải trang giới thiệu '<ph name="ABOUT_PAGE" />'.</translation>
 <translation id="471800408830181311">Không thể đăng nhập khóa cá nhân đầu ra.</translation>
 <translation id="4811956658694082538">Không thể cài đặt gói vì một quá trình tiện ích bị lỗi. Thử khởi động lại Chrome rồi thử lại.</translation>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:name="vector"
+    android:width="160dp"
+    android:height="160dp"
+    android:viewportWidth="160"
+    android:viewportHeight="160">
+    <path
+        android:name="path"
+        android:pathData="M 36 108 C 36 100.577 38.952 93.45 44.201 88.201 C 49.45 82.952 56.577 80 64 80 L 96 80 C 100.915 80 105.744 81.294 110 83.751 C 114.256 86.209 117.791 89.744 120.249 94 C 122.706 98.256 124 103.085 124 108 C 124 112.915 122.706 117.744 120.249 122 C 117.791 126.256 114.256 129.791 110 132.249 C 105.744 134.706 100.915 136 96 136 L 64 136 C 56.577 136 49.45 133.048 44.201 127.799 C 38.952 122.55 36 115.423 36 108"
+        android:fillColor="@color/address_bar_preference_header_background"
+        android:strokeWidth="1"/>
+    <path
+        android:name="path_1"
+        android:pathData="M 102 38 L 102 122 C 102 122.795 101.684 123.559 101.121 124.121 C 100.559 124.684 99.795 125 99 125 L 61 125 C 60.205 125 59.441 124.684 58.879 124.121 C 58.316 123.559 58 122.795 58 122 L 58 38 C 58 37.205 58.316 36.441 58.879 35.879 C 59.441 35.316 60.205 35 61 35 L 99 35 C 99.795 35 100.559 35.316 101.121 35.879 C 101.684 36.441 102 37.205 102 38"
+        android:fillColor="@color/address_bar_preference_header_background"
+        android:strokeColor="@color/address_bar_preference_header_primary"
+        android:strokeWidth="2"/>
+    <path
+        android:name="path_2"
+        android:pathData="M 57 116 L 103 116 L 103 122 C 103 123.105 102.105 124 101 124 L 59 124 C 57.895 124 57 123.105 57 122 L 57 116 Z"
+        android:fillColor="@color/address_bar_preference_header_primary"
+        android:strokeWidth="1"/>
+    <path
+        android:name="path_3"
+        android:pathData="M 67.5 118 L 92.5 118 C 93.163 118 93.799 118.264 94.268 118.732 C 94.736 119.201 95 119.837 95 120.5 C 95 121.163 94.736 121.799 94.268 122.268 C 93.799 122.736 93.163 123 92.5 123 L 67.5 123 C 66.837 123 66.201 122.736 65.732 122.268 C 65.264 121.799 65 121.163 65 120.5 C 65 119.837 65.264 119.201 65.732 118.732 C 66.201 118.264 66.837 118 67.5 118"
+        android:fillColor="@color/address_bar_preference_header_background"
+        android:strokeWidth="1"/>
+</vector>

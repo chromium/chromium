@@ -32,13 +32,9 @@
 #include "url/url_canon_ip.h"
 #include "url/url_util.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/constants/url_constants.h"           // nogncheck
-#include "chromeos/crosapi/cpp/lacros_startup_state.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"  // nogncheck
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -279,27 +275,6 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
       url_formatter::FixupURL(base::UTF16ToUTF8(text), desired_tld);
   if (!canonicalized_url->is_valid())
     return metrics::OmniboxInputType::QUERY;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  const bool is_lacros_or_lacros_is_enabled =
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      true;
-#else
-      // ChromeOS's launcher is using the omnibox from Ash. As such we have to
-      // allow Ash to use the os scheme if Lacros is the primary browser.
-      crosapi::lacros_startup_state::IsLacrosEnabled();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (is_lacros_or_lacros_is_enabled &&
-      crosapi::gurl_os_handler_utils::IsOsScheme(parsed_scheme_utf8)) {
-    // Lacros and Ash have a different set of internal chrome:// pages.
-    // However - once Lacros is the primary browser, the Ash browser cannot be
-    // reached anymore and many internal status / information / ... pages
-    // become inaccessible (e.g. the flags page which allows to disable Lacros).
-    // The os:// scheme is able to forward a keyed set of pages to Ash, hence
-    // making them accessible again.
-    return metrics::OmniboxInputType::URL;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::EqualsCaseInsensitiveASCII(parsed_scheme_utf8,
@@ -781,7 +756,7 @@ void AutocompleteInput::Clear() {
   omit_asynchronous_matches_ = false;
   focus_type_ = metrics::OmniboxFocusType::INTERACTION_DEFAULT;
   terms_prefixed_by_http_or_https_.clear();
-  lens_overlay_interaction_response_.reset();
+  lens_overlay_suggest_inputs_.reset();
   https_port_for_testing_ = 0;
   use_fake_https_for_https_upgrade_testing_ = false;
 }

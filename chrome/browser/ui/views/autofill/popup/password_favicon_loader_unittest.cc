@@ -104,13 +104,13 @@ MATCHER_P(ImagesAreEqual, img, "") {
 }
 
 favicon_base::LargeIconResult GetFaviconResult(const gfx::Image& image) {
-  scoped_refptr<base::RefCountedBytes> data =
-      base::MakeRefCounted<base::RefCountedBytes>();
-  gfx::PNGCodec::EncodeBGRASkBitmap(
-      /*input=*/*image.ToSkBitmap(),
-      /*discard_transparency=*/false, /*output=*/&data->as_vector());
+  std::optional<std::vector<uint8_t>> encoded =
+      gfx::PNGCodec::EncodeBGRASkBitmap(
+          /*input=*/*image.ToSkBitmap(),
+          /*discard_transparency=*/false);
   favicon_base::FaviconRawBitmapResult bitmap_result;
-  bitmap_result.bitmap_data = data;
+  bitmap_result.bitmap_data =
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(encoded.value()));
   return favicon_base::LargeIconResult(bitmap_result);
 }
 

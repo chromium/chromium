@@ -12,6 +12,8 @@ static_library("people") {
     "account_manager_ui_handler.h",
     "fingerprint_handler.cc",
     "fingerprint_handler.h",
+    "graduation_handler.cc",
+    "graduation_handler.h",
     "os_sync_handler.cc",
     "os_sync_handler.h",
     "parental_controls_handler.cc",
@@ -23,11 +25,14 @@ static_library("people") {
   ]
 
   public_deps = [
+    "//ash",
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/account_manager",
     "//chrome/browser/ash/auth",
+    "//chrome/browser/ui/webui/ash/settings/pages/people/mojom",
     "//chrome/browser/ui/webui/ash/settings/pages/privacy",
+    "//chrome/browser/ui/webui/settings",
     "//chromeos/ash/components/login/auth",
     "//components/account_id",
     "//components/account_manager_core",
@@ -41,6 +46,7 @@ static_library("people") {
   ]
 
   deps = [
+    "//ash/components/arc:arc_app_constants",
     "//ash/constants",
     "//ash/public/cpp",
     "//base:i18n",
@@ -49,7 +55,6 @@ static_library("people") {
     "//chrome/browser:browser_process",
     "//chrome/browser:resources",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/child_accounts",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/login/quick_unlock",

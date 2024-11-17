@@ -7,17 +7,14 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
 class PriceInsightsModel;
+class ProfileIOS;
 
 // Singleton that owns all PriceInsightsModels and associates them with
 // profile.
 class PriceInsightsModelFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static PriceInsightsModel* GetForBrowserState(ProfileIOS* profile);
-
   static PriceInsightsModel* GetForProfile(ProfileIOS* profile);
   static PriceInsightsModelFactory* GetInstance();
 

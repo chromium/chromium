@@ -17,7 +17,7 @@
     : ChromeCoordinator <WhatsNewInstructionsViewDelegate>
 
 // `navigationController`: Handles user movement to check subpages.
-// `browser`: browser state for preferences and password check.
+// `browser`: profile for preferences and password check.
 - (instancetype)
     initWithBaseNavigationController:
         (UINavigationController*)navigationController

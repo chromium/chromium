@@ -24,8 +24,6 @@ import DisplayUnitInfo = chrome.system.display.DisplayUnitInfo;
 const kDisplayIdPrefix = '123456789';
 
 suite('<settings-display>', () => {
-  const isRevampWayfindingEnabled =
-      loadTimeData.getBoolean('isRevampWayfindingEnabled');
   let displayPage: SettingsDisplayElement;
   let fakeSystemDisplay: FakeSystemDisplay;
   let browserProxy: any;
@@ -421,8 +419,7 @@ suite('<settings-display>', () => {
       // Mock user toggling mirror mode setting.
       const mirrorDisplayControl =
           displayPage.shadowRoot!.querySelector<HTMLElement>(
-              isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
-                                          '#displayMirrorCheckbox');
+              '#mirrorDisplayToggle');
       assertTrue(!!mirrorDisplayControl);
       mirrorDisplayControl.click();
 
@@ -436,33 +433,29 @@ suite('<settings-display>', () => {
           displaySettingsProvider.getDisplayMirrorModeStatusHistogram().get(
               /*mirror_mode_status=*/ true));
 
-      // When revamp wayfinding is enabled, clicking on the row should toggle
-      // mirror mode, too.
-      if (isRevampWayfindingEnabled) {
-        const mirrorDisplayRow =
-            displayPage.shadowRoot!.querySelector<HTMLElement>(
-                '#mirrorDisplayToggleButton');
-        assertTrue(!!mirrorDisplayRow);
-        mirrorDisplayRow.click();
+      // Clicking on the row should toggle mirror mode, too.
+      const mirrorDisplayRow =
+          displayPage.shadowRoot!.querySelector<HTMLElement>(
+              '#mirrorDisplayToggleButton');
+      assertTrue(!!mirrorDisplayRow);
+      mirrorDisplayRow.click();
 
-        // Verify histogram count for mirror mode setting.
-        assertEquals(
-            2,
-            displayHistogram.get(
-                displaySettingsProviderMojom.DisplaySettingsType.kMirrorMode));
-        assertEquals(
-            1,
-            displaySettingsProvider.getDisplayMirrorModeStatusHistogram().get(
-                /*mirror_mode_status=*/ false));
-      }
+      // Verify histogram count for mirror mode setting.
+      assertEquals(
+          2,
+          displayHistogram.get(
+              displaySettingsProviderMojom.DisplaySettingsType.kMirrorMode));
+      assertEquals(
+          1,
+          displaySettingsProvider.getDisplayMirrorModeStatusHistogram().get(
+              /*mirror_mode_status=*/ false));
     });
 
     test('mirror mode with keyboard', () => {
       // Mock user toggling mirror mode setting with keyboard.
       const mirrorDisplayControl =
           displayPage.shadowRoot!.querySelector<HTMLElement>(
-              isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
-                                          '#displayMirrorCheckbox');
+              '#mirrorDisplayToggle');
       assertTrue(!!mirrorDisplayControl);
 
       mirrorDisplayControl.focus();
@@ -689,9 +682,7 @@ suite('<settings-display>', () => {
 
           // Mirror the displays.
           const mirrorDisplayControl = strictQuery(
-              isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
-                                          '#displayMirrorCheckbox',
-              displayPage.shadowRoot, HTMLElement);
+              '#mirrorDisplayToggle', displayPage.shadowRoot, HTMLElement);
           assertTrue(!!mirrorDisplayControl);
           mirrorDisplayControl.click();
           flush();
@@ -774,8 +765,7 @@ suite('<settings-display>', () => {
     assertTrue(displayPage.shouldShowArrangementSection());
 
     const deepLinkElement = displayPage.shadowRoot!.querySelector<HTMLElement>(
-        isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
-                                    '#displayMirrorCheckbox');
+        '#mirrorDisplayToggle');
     assertTrue(!!deepLinkElement);
     await waitAfterNextRender(deepLinkElement);
     assertEquals(
@@ -874,7 +864,7 @@ suite('<settings-display>', () => {
         });
   });
 
-  test('Exclude display not supported without flag', async () => {
+  test('Exclude display visibility without flag/pref and with pref', async () => {
     await initPage();
 
     addDisplay(1);
@@ -885,10 +875,22 @@ suite('<settings-display>', () => {
     await fakeSystemDisplay.getLayoutCalled.promise;
     assertEquals(3, displayPage.displays.length);
 
-    // Exclude Display is not supported without flag.
-    const excludeDisplayToggleRow =
+    // Exclude Display is not supported without flag or pref.
+    let excludeDisplayToggleRow =
         displayPage.shadowRoot!.querySelector('#excludeDisplayToggleRow');
     assertFalse(isVisible(excludeDisplayToggleRow));
+
+    // Set pref to true.
+    const newPrefs = getFakePrefs();
+    newPrefs.settings.display.allow_exclude_display_in_mirror_mode.value = true;
+    displayPage.prefs = newPrefs;
+    flush();
+
+    // Should now be visible.
+    excludeDisplayToggleRow =
+        displayPage.shadowRoot!.querySelector('#excludeDisplayToggleRow');
+    assertTrue(isVisible(excludeDisplayToggleRow));
+    // Visibility with flag will be tested with the feature.
   });
 
   test('Exclude display support with flag', async () => {
@@ -906,7 +908,7 @@ suite('<settings-display>', () => {
     assertEquals(3, displayPage.displays.length);
     assertEquals(0, displayPage.mirroringDestinationIds.length);
 
-    // Exclude Display is not supported without flag.
+    // Check the Exclude Display toggle is visible with flag set.
     const excludeDisplayToggleRow =
         displayPage.shadowRoot!.querySelector('#excludeDisplayToggleRow');
     assertTrue(isVisible(excludeDisplayToggleRow));
@@ -927,9 +929,7 @@ suite('<settings-display>', () => {
     assertFalse(displayPage.isMirrored(displayPage.displays));
     // Mirror the displays.
     const mirrorDisplayControl = strictQuery(
-        isRevampWayfindingEnabled ? '#mirrorDisplayToggle' :
-                                    '#displayMirrorCheckbox',
-        displayPage.shadowRoot, HTMLElement);
+        '#mirrorDisplayToggle', displayPage.shadowRoot, HTMLElement);
     assertTrue(!!mirrorDisplayControl);
     mirrorDisplayControl.click();
     flush();

@@ -156,8 +156,7 @@ int GetDaysInMonthInEpochYear(UCalendarMonths month) {
     case UCAL_UNDECIMBER:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 bool AdvanceTimeAndSetDayOfMonth(int day_of_month, icu::Calendar* time) {

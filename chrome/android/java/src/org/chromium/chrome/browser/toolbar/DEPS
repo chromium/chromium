@@ -11,9 +11,11 @@ include_rules = [
   "+base/android/java/src/org/chromium/base",
   "+chrome/android/java/src/org/chromium/chrome/browser/toolbar",
   "+components/browser_ui/widget/android/java",
+  "+components/commerce/core/android/java",
   "+ui/android/java/src/org/chromium/ui",
   "+url/android",
   "+components/browser_ui/bottomsheet/android/java",
+  "+components/browser_ui/desktop_windowing/android",
   "+content/public/android/java/src/org/chromium/content_public",
 ]
 

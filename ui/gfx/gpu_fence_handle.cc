@@ -66,7 +66,7 @@ gfx::GpuFenceHandle::ScopedPlatformFence PlatformDuplicate(
   }
   return base::win::ScopedHandle(duplicated_handle);
 #else
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #endif
 }
 

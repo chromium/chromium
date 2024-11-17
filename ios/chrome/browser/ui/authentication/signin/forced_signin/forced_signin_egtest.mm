@@ -27,7 +27,7 @@
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
 #import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
@@ -273,7 +273,7 @@ void CompleteSigninFlow() {
   [super setUp];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Sign out then wait for the sign-in screen to reappear if not already
   // displayed. This is to avoid a conflict between the dismiss animation and
   // the presentation animation of the sign-in screen UI which can be triggered
@@ -284,7 +284,7 @@ void CompleteSigninFlow() {
   [ChromeEarlGrey signOutAndClearIdentities];
   [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests

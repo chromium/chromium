@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_form_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_response_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_response_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_url_search_params.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/blob_bytes_consumer.h"
@@ -457,24 +458,23 @@ FetchResponseData* Response::FilterResponseData(
   return FilterResponseDataInternal(response_type, response, headers);
 }
 
-String Response::type() const {
+V8ResponseType Response::type() const {
   // "The type attribute's getter must return response's type."
   switch (response_->GetType()) {
     case network::mojom::FetchResponseType::kBasic:
-      return "basic";
+      return V8ResponseType(V8ResponseType::Enum::kBasic);
     case network::mojom::FetchResponseType::kCors:
-      return "cors";
+      return V8ResponseType(V8ResponseType::Enum::kCors);
     case network::mojom::FetchResponseType::kDefault:
-      return "default";
+      return V8ResponseType(V8ResponseType::Enum::kDefault);
     case network::mojom::FetchResponseType::kError:
-      return "error";
+      return V8ResponseType(V8ResponseType::Enum::kError);
     case network::mojom::FetchResponseType::kOpaque:
-      return "opaque";
+      return V8ResponseType(V8ResponseType::Enum::kOpaque);
     case network::mojom::FetchResponseType::kOpaqueRedirect:
-      return "opaqueredirect";
+      return V8ResponseType(V8ResponseType::Enum::kOpaqueredirect);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 String Response::url() const {

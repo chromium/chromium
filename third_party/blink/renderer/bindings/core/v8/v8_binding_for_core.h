@@ -492,17 +492,8 @@ CORE_EXPORT bool IsValidEnum(const Vector<String>& values,
                              const String& enum_name,
                              ExceptionState&);
 
-CORE_EXPORT v8::Local<v8::Value> FromJSONString(v8::Isolate*,
-                                                v8::Local<v8::Context>,
-                                                const String& stringified_json,
-                                                ExceptionState&);
-
-// The `TryRethrowScope` parameter is unused, but expected to be on stack to
-// handle any exceptions thrown by V8 if JSON parsing fails.
-CORE_EXPORT v8::Local<v8::Value> FromJSONString(v8::Isolate*,
-                                                v8::Local<v8::Context>,
-                                                const String& stringified_json,
-                                                TryRethrowScope&);
+CORE_EXPORT v8::Local<v8::Value> FromJSONString(ScriptState* script_state,
+                                                const String& stringified_json);
 
 // Ensure that a typed array value is not backed by a SharedArrayBuffer. If it
 // is, an exception will be thrown. The return value will use the NotShared
@@ -555,6 +546,44 @@ CORE_EXPORT bool IsInParallelAlgorithmRunnable(
 CORE_EXPORT void ApplyContextToException(ScriptState*,
                                          v8::Local<v8::Value> exception,
                                          const ExceptionContext&);
+CORE_EXPORT void ApplyContextToException(v8::Isolate*,
+                                         v8::Local<v8::Context>,
+                                         v8::Local<v8::Value> exception,
+                                         v8::ExceptionContext type,
+                                         const char* class_name,
+                                         const String& property_name);
+
+class CORE_EXPORT DictionaryConversionContext {
+ public:
+  DictionaryConversionContext(v8::Isolate* isolate, const char* dictionary_name)
+      : per_isolate_data_(V8PerIsolateData::From(isolate)),
+        dictionary_name_(dictionary_name) {
+    auto* per_isolate_data = V8PerIsolateData::From(isolate);
+    previous_ = per_isolate_data->TopOfDictionaryStack();
+    per_isolate_data->SetTopOfDictionaryStack(this);
+  }
+  DictionaryConversionContext(const DictionaryConversionContext&) = delete;
+  DictionaryConversionContext& operator=(const DictionaryConversionContext&) =
+      delete;
+
+  ~DictionaryConversionContext() {
+    per_isolate_data_->SetTopOfDictionaryStack(previous_);
+  }
+
+  void SetCurrentPropertyName(const char* property_name) {
+    property_name_ = property_name;
+  }
+
+  DictionaryConversionContext* Previous() const { return previous_; }
+  const char* DictionaryName() const { return dictionary_name_; }
+  const char* PropertyName() const { return property_name_; }
+
+ private:
+  V8PerIsolateData* const per_isolate_data_;
+  const char* const dictionary_name_;
+  const char* property_name_ = nullptr;
+  DictionaryConversionContext* previous_;
+};
 
 }  // namespace blink
 

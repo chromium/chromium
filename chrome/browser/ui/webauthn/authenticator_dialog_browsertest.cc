@@ -24,7 +24,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/features.h"
 #include "components/trusted_vault/features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
@@ -95,7 +94,6 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
         AuthenticatorTransport::kUsbHumanInterfaceDevice,
         AuthenticatorTransport::kInternal,
         AuthenticatorTransport::kHybrid,
-        AuthenticatorTransport::kAndroidAccessory,
     };
 
     std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
@@ -103,10 +101,6 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     phone->from_sync_deviceinfo = false;
     phone->name = kPhoneName;
     phones.emplace_back(std::move(phone));
-    if (name == "cable_server_link_activate") {
-      transport_availability.available_transports.insert(
-          AuthenticatorTransport::kAndroidAccessory);
-    }
     transport_availability.has_platform_authenticator_credential = device::
         FidoRequestHandlerBase::RecognizedCredential::kNoRecognizedCredential;
     transport_availability.request_type =
@@ -157,8 +151,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     } else if (name == "touchid_incognito") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kOffTheRecordInterstitial);
-    } else if (name == "cable_activate" ||
-               name == "cable_server_link_activate") {
+    } else if (name == "cable_activate") {
       controller_->set_cable_transport_info(
           /*extension_is_v2=*/false, std::move(phones),
           /*contact_phone_callback=*/base::DoNothing(), "fido://qrcode");
@@ -184,9 +177,6 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     } else if (name == "cable_v2_error") {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kCableV2Error);
-    } else if (name == "phone_aoa") {
-      controller_->SetCurrentStepForTesting(
-          AuthenticatorRequestDialogModel::Step::kAndroidAccessory);
     } else if (name == "set_pin") {
       controller_->CollectPIN(device::pin::PINEntryReason::kSet,
                               device::pin::PINEntryError::kNoError, 6, 0,
@@ -375,8 +365,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     }
 #endif
 
-    controller_->StartFlow(std::move(transport_availability),
-                           /*is_conditional_mediation=*/false);
+    controller_->StartFlow(std::move(transport_availability));
     if (name.ends_with("_disabled")) {
       model_->ui_disabled_ = true;
       model_->OnSheetModelChanged();
@@ -470,11 +459,6 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_activate) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest,
-                       InvokeUi_cable_server_link_activate) {
-  ShowAndVerifyUi();
-}
-
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_v2_activate) {
   ShowAndVerifyUi();
 }
@@ -492,10 +476,6 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_v2_connected) {
 }
 
 IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_cable_v2_error) {
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_phone_aoa) {
   ShowAndVerifyUi();
 }
 
@@ -611,13 +591,6 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_phone_confirmation) {
 // where test_name is the second arg to IN_PROC_BROWSER_TEST_F().
 class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
  public:
-  GPMPasskeysAuthenticatorDialogTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {syncer::kSyncWebauthnCredentials,
-         device::kWebAuthnEnclaveAuthenticator},
-        /*disabled_features=*/{});
-  }
-
   void SetUpOnMainThread() override {
     signin::MakePrimaryAccountAvailable(
         IdentityManagerFactory::GetForProfile(browser()->profile()),
@@ -649,7 +622,6 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
         AuthenticatorTransport::kUsbHumanInterfaceDevice,
         AuthenticatorTransport::kInternal,
         AuthenticatorTransport::kHybrid,
-        AuthenticatorTransport::kAndroidAccessory,
     };
 
     device::DiscoverableCredentialMetadata gpm_cred(
@@ -814,10 +786,9 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
       controller_->SetCurrentStepForTesting(
           AuthenticatorRequestDialogModel::Step::kGPMLockedPin);
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
-    controller_->StartFlow(std::move(transport_availability),
-                           /*is_conditional_mediation=*/false);
+    controller_->StartFlow(std::move(transport_availability));
     if (name.ends_with("_disabled")) {
       model_->ui_disabled_ = true;
       model_->OnSheetModelChanged();
@@ -827,7 +798,8 @@ class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
  private:
   scoped_refptr<AuthenticatorRequestDialogModel> model_;
   std::unique_ptr<AuthenticatorRequestDialogController> controller_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnEnclaveAuthenticator};
 };
 
 IN_PROC_BROWSER_TEST_F(GPMPasskeysAuthenticatorDialogTest,

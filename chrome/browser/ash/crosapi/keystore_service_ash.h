@@ -64,7 +64,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       mojom::KeystoreType type,
       const std::vector<uint8_t>& challenge,
       bool migrate,
-      mojom::KeystoreSigningAlgorithmName algorithm,
+      mojom::KeystoreAlgorithmName algorithm,
       ChallengeAttestationOnlyKeystoreCallback callback) override;
   void GetKeyStores(GetKeyStoresCallback callback) override;
   void SelectClientCertificates(
@@ -79,10 +79,10 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
                          const std::vector<uint8_t>& certificate,
                          RemoveCertificateCallback callback) override;
   void GetPublicKey(const std::vector<uint8_t>& certificate,
-                    mojom::KeystoreSigningAlgorithmName algorithm_name,
+                    mojom::KeystoreAlgorithmName algorithm_name,
                     GetPublicKeyCallback callback) override;
   void GenerateKey(mojom::KeystoreType keystore,
-                   mojom::KeystoreSigningAlgorithmPtr algorithm,
+                   mojom::KeystoreAlgorithmPtr algorithm,
                    GenerateKeyCallback callback) override;
   void RemoveKey(KeystoreType keystore,
                  const std::vector<uint8_t>& public_key,
@@ -105,7 +105,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   // DEPRECATED, use `GenerateKey` instead.
   void DEPRECATED_ExtensionGenerateKey(
       mojom::KeystoreType keystore,
-      mojom::KeystoreSigningAlgorithmPtr algorithm,
+      mojom::KeystoreAlgorithmPtr algorithm,
       const std::optional<std::string>& extension_id,
       DEPRECATED_ExtensionGenerateKeyCallback callback) override;
   // DEPRECATED, use `Sign` instead.
@@ -119,7 +119,7 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   // DEPRECATED, use `GetPublicKey` instead.
   void DEPRECATED_GetPublicKey(
       const std::vector<uint8_t>& certificate,
-      mojom::KeystoreSigningAlgorithmName algorithm_name,
+      mojom::KeystoreAlgorithmName algorithm_name,
       DEPRECATED_GetPublicKeyCallback callback) override;
   // DEPRECATED, use `GetKeyStores` instead.
   void DEPRECATED_GetKeyStores(

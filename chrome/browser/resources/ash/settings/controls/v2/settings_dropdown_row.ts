@@ -40,8 +40,8 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {BaseRowMixin} from './base_row_mixin.js';
 import {PrefControlMixinInternal} from './pref_control_mixin_internal.js';
 import {getTemplate} from './settings_dropdown_row.html.js';
-import {DropdownOption, DropdownOptionList, SettingsDropdownV2Element} from './settings_dropdown_v2.js';
-import {SettingsRowElement} from './settings_row.js';
+import type {DropdownOption, DropdownOptionList, SettingsDropdownV2Element} from './settings_dropdown_v2.js';
+import type {SettingsRowElement} from './settings_row.js';
 
 export interface SettingsDropdownRowElement {
   $: {

@@ -457,8 +457,7 @@ bool GetValidLocales(const base::FilePath& locale_path,
   while (!(locale_folder = locales.Next()).empty()) {
     std::string locale_name = locale_folder.BaseName().MaybeAsASCII();
     if (locale_name.empty()) {
-      NOTREACHED_IN_MIGRATION();
-      continue;  // Not ASCII.
+      NOTREACHED();  // Not ASCII.
     }
     if (!AddLocale(
             chrome_locales, locale_folder, locale_name, valid_locales, error)) {
@@ -549,8 +548,7 @@ bool ShouldSkipValidation(const base::FilePath& locales_path,
   // '.svn' directories.
   base::FilePath relative_path;
   if (!locales_path.AppendRelativePath(locale_path, &relative_path)) {
-    NOTREACHED_IN_MIGRATION();
-    return true;
+    NOTREACHED();
   }
   std::string subdir = relative_path.MaybeAsASCII();
   if (subdir.empty())

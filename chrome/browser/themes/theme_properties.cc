@@ -116,14 +116,10 @@ SkColor GetLightModeColor(int id) {
         COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_ACTIVE:
     case ThemeProperties::
         COLOR_WINDOW_CONTROL_BUTTON_BACKGROUND_INCOGNITO_INACTIVE:
-      NOTREACHED_IN_MIGRATION()
-          << "This color should be queried via its non-incognito "
-             "equivalent and an appropriate |incognito| value.";
-      return gfx::kPlaceholderColor;
+      NOTREACHED() << "This color should be queried via its non-incognito "
+                      "equivalent and an appropriate |incognito| value.";
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "This color should only be queried through ThemeService.";
-      return gfx::kPlaceholderColor;
+      NOTREACHED() << "This color should only be queried through ThemeService.";
   }
 }
 

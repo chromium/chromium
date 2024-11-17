@@ -95,6 +95,10 @@ bool IpProtectionTokenManagerImpl::IsAuthTokenAvailable(
                                                              : kDefaultGeo);
 }
 
+bool IpProtectionTokenManagerImpl::WasTokenCacheEverFilled() {
+  return cache_has_been_filled_;
+}
+
 // If this is a good time to request another batch of tokens, do so. This
 // method is idempotent, and can be called at any time.
 void IpProtectionTokenManagerImpl::MaybeRefillCache() {
@@ -262,7 +266,10 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
     return;
   }
 
-  VLOG(2) << "IPPATC::OnGotAuthTokens got " << tokens->size() << " tokens";
+  // Log is consumed by E2E tests. Please CC potassium-engprod@google.com if you
+  // have to change this log.
+  VLOG(2) << "IPPATC::OnGotAuthTokens got " << tokens->size()
+          << " tokens for proxy " << int(proxy_layer_);
   try_get_auth_tokens_after_ = base::Time();
 
   RemoveExpiredTokens();
@@ -285,7 +292,7 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
   // contains a single `geo_hint`.
   std::string geo_id_from_token =
       enable_token_caching_by_geo_
-          ? ip_protection::GetGeoIdFromGeoHint(tokens->front().geo_hint)
+          ? GetGeoIdFromGeoHint(tokens->front().geo_hint)
           : kDefaultGeo;
 
   // Metric should only be recorded under the following conditions:
@@ -314,6 +321,9 @@ void IpProtectionTokenManagerImpl::OnGotAuthTokens(
             [](BlindSignedAuthToken& a, BlindSignedAuthToken& b) {
               return a.expiration < b.expiration;
             });
+
+  // Cache at this point should be filled with tokens at least once.
+  cache_has_been_filled_ = true;
 
   // If a refill is still needed, we do not want to immediately re-request
   // tokens, lest we overwhelm the server. This is unlikely to happen in
@@ -430,16 +440,23 @@ void IpProtectionTokenManagerImpl::MeasureTokenRates() {
 
 void IpProtectionTokenManagerImpl::DisableCacheManagementForTesting(
     base::OnceClosure on_cache_management_disabled) {
-  disable_cache_management_for_testing_ = true;
-  ScheduleMaybeRefillCache();
-
   if (fetching_auth_tokens_) {
     // If a `TryGetAuthTokens()` call is underway (due to active cache
     // management), wait for it to finish.
     SetOnTryGetAuthTokensCompletedForTesting(  // IN-TEST
-        std::move(on_cache_management_disabled));
+        base::BindOnce(
+            &IpProtectionTokenManagerImpl::DisableCacheManagementForTesting,
+            weak_ptr_factory_.GetWeakPtr(),
+            std::move(on_cache_management_disabled)));
     return;
   }
+
+  // Mark cache management as disabled and reset everything.
+  disable_cache_management_for_testing_ = true;
+  try_get_auth_tokens_after_ = base::Time();
+  cache_by_geo_.clear();
+  next_maybe_refill_cache_.Stop();
+
   std::move(on_cache_management_disabled).Run();
 }
 

@@ -16,6 +16,7 @@ if (!is_chromeos_device) {
 
     deps = [
       "//ash",
+      "//ash/constants",
       "//ash/public/cpp:accelerator_actions",
       "//ash/webui/settings/public/constants:mojom",
       "//base",

@@ -3,7 +3,7 @@ rootWebArea
 ++++genericContainer ignored
 ++++++table ariaColumnCount=3 ariaRowCount=3
 ++++++++rowGroup
-++++++++++row ariaCellRowIndex=-1
+++++++++++row
 ++++++++++++columnHeader name='row1 colheader1' ariaCellColumnIndex=1 ariaCellRowIndex=1
 ++++++++++++++staticText name='row1 colheader1'
 ++++++++++++++++inlineTextBox name='row1 colheader1'
@@ -14,7 +14,7 @@ rootWebArea
 ++++++++++++++staticText name='row1 colheader3'
 ++++++++++++++++inlineTextBox name='row1 colheader3'
 ++++++++rowGroup
-++++++++++row ariaCellRowIndex=0
+++++++++++row
 ++++++++++++cell name='row2 col1' ariaCellColumnIndex=1 ariaCellRowIndex=2
 ++++++++++++++staticText name='row2 col1'
 ++++++++++++++++inlineTextBox name='row2 col1'

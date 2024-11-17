@@ -3,18 +3,25 @@
 <translationbundle lang="uz">
 <translation id="1444443021901415601">Chrome qiziqish mavzularini oxirgi brauzer tarixi asosoida qayd qiladi</translation>
 <translation id="2252052615723281030">Chrome hisobiga kirsangiz, bu sozlama IP manzilingizni maxfiy saqlashga yordam beradi. Chrome saytning sizni kuzatishini gumon qilsa, trafikning ayrim qismi maxfiylik serverlariga yuborilishi mumkin.</translation>
+<translation id="235789365079050412">Google maxfiylik siyosati</translation>
 <translation id="2793385791865768072">Chromium qiziqish mavzularini oxirgi brauzer tarixi asosoida qayd qiladi</translation>
+<translation id="2979365474350987274">Tashqi cookie fayllar cheklangan</translation>
 <translation id="33479675708419823">Chrome hisobiga kirsangiz, bu sozlama IP manzilingizni maxfiy saqlashga yordam beradi. Chrome saytning sizni kuzatishini gumon qilsa, trafikning ayrim qismi maxfiylik serverlariga yuborilishi mumkin. <ph name="LINK_BEGIN" />IP himoyasi qanday ishlashi haqida<ph name="LINK_END" /> batafsil</translation>
 <translation id="3529311220178827364">IP manzilni yashirish haqida batafsil</translation>
+<translation id="385051799172605136">Orqaga</translation>
 <translation id="4041687306270459969">Reklama mavzulari 4 haftadan keyin avtomatik oʻchiriladi. Mavzular sport, kiyim-kechak va boshqalardan iborat boʻladi</translation>
 <translation id="4177501066905053472">Reklama mavzulari</translation>
 <translation id="4301151630239508244">Reklama mavzulari sayt reklamani moslashtirishda ishlatadigan maʼlumotlarning faqat bir qismi hisoblanadi. Mavzusiz reklamalar ham chiqishda davom etishi mumkin, lekin ular sizga moslanmagan boʻlishi mumkin. <ph name="BEGIN_LINK_1" />Reklamada maxfiylikni boshqarish<ph name="END_LINK_1" /> haqida batafsil.</translation>
+<translation id="4501357987281382712"><ph name="BEGIN_LINK" />Maxfiylik siyosatimizda<ph name="END_LINK" /> Google maʼlumotlarni qanday himoyalashi haqida batafsil axborot mavjud.</translation>
 <translation id="453692855554576066">Reklama mavzularini Chromium sozlamalari orqali koʻrish va saytlarga xabar qilinmaydiganini bloklash mumkin.</translation>
 <translation id="4598427486995631491">IP manzilni yashiring</translation>
 <translation id="4692439979815346597">Reklama mavzularini Chrome sozlamalari orqali koʻrish va saytlarga xabar qilinmaydiganini bloklash mumkin.</translation>
 <translation id="5413586988657235240">Ochilgan saytlar mos reklama chiqarish maqsadida Chromiumdan sizga qiziq mavzularni soʻrashi mumkin. Bunda brauzer tarixi va shaxsingiz himoya ostida qoladi.</translation>
+<translation id="6053735090575989697">Maxfiylik siyosatimizda Google maʼlumotlarni qanday himoyalashi haqida batafsil axborot mavjud.</translation>
 <translation id="6186536480878693792">Ochilgan saytlar mos reklama chiqarish maqsadida Chromedan sizga qiziq mavzularni soʻrashi mumkin. Bunda brauzer tarixi va shaxsingiz himoya ostida qoladi.</translation>
+<translation id="6195163219142236913">Tashqi cookie fayllar cheklangan</translation>
 <translation id="6371812158043974664">Chromium hisobiga kirsangiz, bu sozlama IP manzilingizni maxfiy saqlashga yordam beradi. Chromium saytning sizni kuzatishini gumon qilsa, trafikning ayrim qismi maxfiylik serverlariga yuborilishi mumkin. <ph name="LINK_BEGIN" />IP himoyasi qanday ishlashi haqida<ph name="LINK_END" /> batafsil</translation>
+<translation id="6398358690696005758"><ph name="BEGIN_LINK1" />Maxfiylik siyosatimizda<ph name="LINK_END1" /> Google maʼlumotlarni qanday himoyalashi haqida batafsil axborot mavjud.</translation>
 <translation id="7040031291654706261"><ph name="BEGIN_LINK" />IP himoyasi qanday ishlashi<ph name="END_LINK" /> haqida</translation>
 <translation id="7475768947023614021">Reklama mavzulari sozlamasini tekshiring</translation>
 </translationbundle>

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/supervised_user/supervised_user_google_auth_navigation_throttle.h"
 
+#include <utility>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_browser_utils.h"
+#include "chrome/browser/supervised_user/supervised_user_verification_page_blocked_sites.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/google/core/common/google_util.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -29,6 +32,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/supervised_user/child_accounts/child_account_service_android.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "ui/android/view_android.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/supervised_user/supervised_user_verification_controller_client.h"
 #include "chrome/browser/supervised_user/supervised_user_verification_page.h"
@@ -40,8 +45,9 @@ SupervisedUserGoogleAuthNavigationThrottle::MaybeCreate(
     content::NavigationHandle* navigation_handle) {
   Profile* profile = Profile::FromBrowserContext(
       navigation_handle->GetWebContents()->GetBrowserContext());
-  if (!profile->IsChild())
+  if (!profile->IsChild()) {
     return nullptr;
+  }
 
   return base::WrapUnique(new SupervisedUserGoogleAuthNavigationThrottle(
       profile, navigation_handle));
@@ -126,7 +132,7 @@ void SupervisedUserGoogleAuthNavigationThrottle::OnGoogleAuthStateChanged() {
     case content::NavigationThrottle::BLOCK_REQUEST:
     case content::NavigationThrottle::BLOCK_REQUEST_AND_COLLAPSE:
     case content::NavigationThrottle::BLOCK_RESPONSE: {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }
@@ -139,7 +145,8 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
       supervised_user::ChildAccountService::AuthState::AUTHENTICATED) {
     return content::NavigationThrottle::PROCEED;
   }
-  if (authStatus == supervised_user::ChildAccountService::AuthState::PENDING) {
+  if (authStatus == supervised_user::ChildAccountService::AuthState::
+                        TRANSIENT_MOVING_TO_AUTHENTICATED) {
     return content::NavigationThrottle::DEFER;
   }
 
@@ -156,7 +163,9 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
           supervised_user::kForceSupervisedUserReauthenticationForYouTube) ||
       !google_util::IsYoutubeDomainUrl(request_url,
                                        google_util::ALLOW_SUBDOMAIN,
-                                       google_util::ALLOW_NON_STANDARD_PORTS)) {
+                                       google_util::ALLOW_NON_STANDARD_PORTS) ||
+     !SupervisedUserVerificationPage::ShouldShowPage(
+          *child_account_service_)) {
     // This interstitial should only be displayed for YouTube request.
     return content::NavigationThrottle::PROCEED;
   }
@@ -177,30 +186,35 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
     case content::FrameType::kPrerenderMainFrame:
       return content::NavigationThrottle::PROCEED;
     default:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Cancel the navigation and show the re-authentication page.
   std::string interstitial_html =
-      supervised_user::CreateReauthenticationInterstitial(
-          *navigation_handle(), SupervisedUserVerificationPage::
-                                    VerificationPurpose::REAUTH_REQUIRED_SITE);
+      supervised_user::CreateReauthenticationInterstitialForYouTube(
+          *navigation_handle());
   return content::NavigationThrottle::ThrottleCheckResult(
       content::NavigationThrottle::CANCEL, net::ERR_BLOCKED_BY_CLIENT,
-      interstitial_html);
+      std::move(interstitial_html));
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   // A credentials re-mint is already underway when we reach here (Mirror
   // account reconciliation). Nothing to do here except block the navigation
   // while re-minting is underway.
   return content::NavigationThrottle::DEFER;
 #elif BUILDFLAG(IS_ANDROID)
+  // TODO(crbug.com/375383826): Improve / verify coverage of the code below.
   if (!has_shown_reauth_) {
     has_shown_reauth_ = true;
 
     content::WebContents* web_contents = navigation_handle()->GetWebContents();
+    if (!web_contents->GetNativeView()->GetWindowAndroid()) {
+      return content::NavigationThrottle::CANCEL_AND_IGNORE;
+    }
+
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
-    auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(profile);
     // This class doesn't care about browser sync consent.
     CoreAccountInfo account_info =
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
@@ -225,11 +239,6 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
     }
   }
   return content::NavigationThrottle::DEFER;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // On Lacros, we do not currently provide the same guarantees that a
-  // user must be signed in for relevant domains.
-  // Allow the navigation to proceed even in an unauthenticated state.
-  return content::NavigationThrottle::PROCEED;
 #else
 #error Unsupported platform
 #endif

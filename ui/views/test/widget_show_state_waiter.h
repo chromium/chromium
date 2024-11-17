@@ -5,7 +5,7 @@
 #ifndef UI_VIEWS_TEST_WIDGET_SHOW_STATE_WAITER_H_
 #define UI_VIEWS_TEST_WIDGET_SHOW_STATE_WAITER_H_
 
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 
 namespace views {
 
@@ -13,7 +13,8 @@ class Widget;
 
 namespace test {
 
-void WaitForWidgetShowState(Widget* widget, ui::WindowShowState show_state);
+void WaitForWidgetShowState(Widget* widget,
+                            ui::mojom::WindowShowState show_state);
 
 }  // namespace test
 

@@ -2,19 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/services/print_compositor/print_compositor_impl.h"
+
 #include <memory>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "components/crash/core/common/crash_key.h"
-#include "components/services/print_compositor/print_compositor_impl.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/services/print_compositor/public/cpp/print_service_mojo_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+#include "base/test/scoped_feature_list.h"
+#include "cc/test/pixel_test_utils.h"                      // nogncheck
+#include "components/enterprise/watermarking/features.h"   // nogncheck
+#include "components/enterprise/watermarking/watermark.h"  // nogncheck
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkCanvas.h"
+#include "third_party/skia/include/docs/SkMultiPictureDocument.h"
+#endif
 
 namespace printing {
 
@@ -27,8 +40,8 @@ class MockPrintCompositorImpl : public PrintCompositorImpl {
  public:
   MockPrintCompositorImpl()
       : PrintCompositorImpl(mojo::NullReceiver(),
-                            false /* initialize_environment */,
-                            nullptr /* io_task_runner */) {}
+                            /*initialize_environment=*/false,
+                            /*io_task_runner=*/nullptr) {}
   ~MockPrintCompositorImpl() override = default;
 
   MOCK_METHOD2(OnFulfillRequest, void(uint64_t, int));
@@ -50,8 +63,8 @@ class MockCompletionPrintCompositorImpl : public PrintCompositorImpl {
  public:
   MockCompletionPrintCompositorImpl()
       : PrintCompositorImpl(mojo::NullReceiver(),
-                            false /* initialize_environment */,
-                            nullptr /* io_task_runner */) {}
+                            /*initialize_environment=*/false,
+                            /*io_task_runner=*/nullptr) {}
   ~MockCompletionPrintCompositorImpl() override = default;
 
   MOCK_CONST_METHOD0(OnFinishDocumentRequest, void());
@@ -77,6 +90,34 @@ class MockCompletionPrintCompositorImpl : public PrintCompositorImpl {
     OnFinishDocumentRequest();
   }
 };
+
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+class MockPrintCompositorImplEnterpriseWatermark : public PrintCompositorImpl {
+ public:
+  MockPrintCompositorImplEnterpriseWatermark()
+      : PrintCompositorImpl(mojo::NullReceiver(),
+                            /*initialize_environment=*/false,
+                            /*io_task_runner=*/nullptr) {}
+  ~MockPrintCompositorImplEnterpriseWatermark() override = default;
+
+  static constexpr SkSize kSize{200, 200};
+  static constexpr char kWatermarkText[] = "example-watermark";
+
+  void DrawPage(SkDocument* doc,
+                const SkDocumentPage& page,
+                const std::string& watermark_text) override {
+    bitmap_.allocN32Pixels(kSize.fWidth, kSize.fHeight);
+    SkCanvas canvas(bitmap_);
+    canvas.clear(SK_ColorBLACK);
+    DrawEnterpriseWatermark(&canvas, kSize, watermark_text);
+  }
+
+  const SkBitmap& bitmap() const { return bitmap_; }
+
+ private:
+  SkBitmap bitmap_;
+};
+#endif  //  BUILDFLAG(ENTERPRISE_WATERMARK)
 
 class PrintCompositorImplTest : public testing::Test {
  public:
@@ -133,16 +174,89 @@ class PrintCompositorImplTest : public testing::Test {
       mojom::PrintCompositor::Status::kSuccess;
 };
 
+#if BUILDFLAG(ENTERPRISE_WATERMARK)
+class PrintCompositorImplEnterpriseWatermarkTest
+    : public testing::TestWithParam<bool> {
+ public:
+  PrintCompositorImplEnterpriseWatermarkTest() {
+    // Enable finch flag based on params.
+    bool is_watermark_enabled = GetParam();
+    if (is_watermark_enabled) {
+      feature_list_.InitAndEnableFeature(
+          enterprise_watermark::features::kEnablePrintWatermark);
+    } else {
+      feature_list_.InitAndDisableFeature(
+          enterprise_watermark::features::kEnablePrintWatermark);
+    }
+
+    // Create reference bitmap.
+    reference_watermark_.allocN32Pixels(
+        MockPrintCompositorImplEnterpriseWatermark::kSize.fWidth,
+        MockPrintCompositorImplEnterpriseWatermark::kSize.fHeight);
+    SkCanvas canvas(reference_watermark_);
+    canvas.clear(SK_ColorBLACK);
+    enterprise_watermark::DrawWatermark(
+        &canvas, MockPrintCompositorImplEnterpriseWatermark::kSize,
+        MockPrintCompositorImplEnterpriseWatermark::kWatermarkText,
+        PrintCompositorImpl::kWatermarkBlockWidth,
+        PrintCompositorImpl::kWatermarkTextSize);
+  }
+
+  const SkBitmap& reference_watermark() const { return reference_watermark_; }
+
+ protected:
+  base::test::ScopedFeatureList feature_list_;
+  SkBitmap reference_watermark_;
+};
+
+TEST_P(PrintCompositorImplEnterpriseWatermarkTest, EnterpriseWatermarkSet) {
+  MockPrintCompositorImplEnterpriseWatermark compositor;
+  compositor.DrawPage(
+      nullptr, {}, MockPrintCompositorImplEnterpriseWatermark::kWatermarkText);
+
+  // If the feature is enabled, the watermark will equal the reference.
+  bool enterprise_watermark_enabled = GetParam();
+  ASSERT_EQ(cc::MatchesBitmap(compositor.bitmap(), reference_watermark(),
+                              cc::ExactPixelComparator()),
+            enterprise_watermark_enabled);
+}
+
+TEST_P(PrintCompositorImplEnterpriseWatermarkTest,
+       IsPageBlankWhenWatermarkingDisabled) {
+  MockPrintCompositorImplEnterpriseWatermark compositor;
+  compositor.DrawPage(
+      nullptr, {}, MockPrintCompositorImplEnterpriseWatermark::kWatermarkText);
+  // If the feature is disabled, the page rendered will be blank.
+  bool enterprise_watermark_enabled = GetParam();
+  base::FilePath path =
+      base::PathService::CheckedGet(base::DIR_SRC_TEST_DATA_ROOT);
+  path = path.AppendASCII("components")
+             .AppendASCII("services")
+             .AppendASCII("print_compositor")
+             .AppendASCII("test")
+             .AppendASCII("data")
+             .AppendASCII("blank.png");
+  ASSERT_NE(
+      cc::MatchesPNGFile(compositor.bitmap(), path, cc::ExactPixelComparator()),
+      enterprise_watermark_enabled);
+}
+
+INSTANTIATE_TEST_SUITE_P(WatermarkStateTest,
+                         PrintCompositorImplEnterpriseWatermarkTest,
+                         testing::Bool());
+
+#endif  //  BUILDFLAG(ENTERPRISE_WATERMARK)
+
 class PrintCompositorImplCrashKeyTest : public PrintCompositorImplTest {
  public:
-  PrintCompositorImplCrashKeyTest() {}
+  PrintCompositorImplCrashKeyTest() = default;
 
   PrintCompositorImplCrashKeyTest(const PrintCompositorImplCrashKeyTest&) =
       delete;
   PrintCompositorImplCrashKeyTest& operator=(
       const PrintCompositorImplCrashKeyTest&) = delete;
 
-  ~PrintCompositorImplCrashKeyTest() override {}
+  ~PrintCompositorImplCrashKeyTest() override = default;
 
   void SetUp() override {
     crash_reporter::ResetCrashKeysForTesting();
@@ -154,8 +268,8 @@ class PrintCompositorImplCrashKeyTest : public PrintCompositorImplTest {
 
 TEST_F(PrintCompositorImplTest, IsReadyToComposite) {
   PrintCompositorImpl impl(mojo::NullReceiver(),
-                           false /* initialize_environment */,
-                           nullptr /* io_task_runner */);
+                           /*initialize_environment=*/false,
+                           /*io_task_runner=*/nullptr);
   // Frame 2 and 3 are painted.
   impl.AddSubframeContent(2, CreateTestData(2, -1), ContentToFrameMap());
   impl.AddSubframeContent(3, CreateTestData(3, -1), ContentToFrameMap());
@@ -192,8 +306,8 @@ TEST_F(PrintCompositorImplTest, IsReadyToComposite) {
 
 TEST_F(PrintCompositorImplTest, MultiLayerDependency) {
   PrintCompositorImpl impl(mojo::NullReceiver(),
-                           false /* initialize_environment */,
-                           nullptr /* io_task_runner */);
+                           /*initialize_environment=*/false,
+                           /*io_task_runner=*/nullptr);
   // Frame 3 has content 1 which refers to subframe 1.
   ContentToFrameMap subframe_content_map = {{1, 1}};
   impl.AddSubframeContent(3, CreateTestData(3, -1), subframe_content_map);
@@ -234,8 +348,8 @@ TEST_F(PrintCompositorImplTest, MultiLayerDependency) {
 
 TEST_F(PrintCompositorImplTest, DependencyLoop) {
   PrintCompositorImpl impl(mojo::NullReceiver(),
-                           false /* initialize_environment */,
-                           nullptr /* io_task_runner */);
+                           /*initialize_environment=*/false,
+                           /*io_task_runner=*/nullptr);
   // Frame 3 has content 1, which refers to frame 1.
   // Frame 1 has content 3, which refers to frame 3.
   ContentToFrameMap subframe_content_map = {{3, 3}};
@@ -377,8 +491,8 @@ TEST_F(PrintCompositorImplTest, NotifyUnavailableSubframe) {
 #endif
 TEST_F(PrintCompositorImplCrashKeyTest, MAYBE_SetCrashKey) {
   PrintCompositorImpl impl(mojo::NullReceiver(),
-                           false /* initialize_environment */,
-                           nullptr /* io_task_runner */);
+                           /*initialize_environment=*/false,
+                           /*io_task_runner=*/nullptr);
   std::string url_str("https://www.example.com/");
   GURL url(url_str);
   impl.SetWebContentsURL(url);

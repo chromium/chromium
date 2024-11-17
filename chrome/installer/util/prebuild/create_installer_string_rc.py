@@ -30,6 +30,7 @@ STRING_IDS = [
   'IDS_SETUP_PATCH_FAILED',
   'IDS_SHORTCUT_NEW_WINDOW',
   'IDS_SHORTCUT_TOOLTIP',
+  'IDS_TRACING_SERVICE_DESCRIPTION',
 ]
 
 # Certain strings are conditional on a brand's install mode (see

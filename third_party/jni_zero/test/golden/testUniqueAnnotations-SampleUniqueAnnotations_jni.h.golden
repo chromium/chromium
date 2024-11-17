@@ -10,7 +10,7 @@
 
 #include "third_party/jni_zero/jni_export.h"
 #include "third_party/jni_zero/jni_zero_helper.h"
-// Class Accessors.
+// Class Accessors
 #ifndef org_jni_1zero_SampleUniqueAnnotations_clazz_defined
 #define org_jni_1zero_SampleUniqueAnnotations_clazz_defined
 inline jclass org_jni_1zero_SampleUniqueAnnotations_clazz(JNIEnv* env) {
@@ -19,6 +19,7 @@ inline jclass org_jni_1zero_SampleUniqueAnnotations_clazz(JNIEnv* env) {
   return jni_zero::internal::LazyGetClass(env, kClassName, &cached_class);
 }
 #endif
+
 
 // Java to native functions
 // Forward declaration. To be implemented by the including .cc file.
@@ -69,6 +70,7 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleUniqueAnnotations_nat
       jni_zero::JavaParamRef<jobject>(env, jcaller));
 }
 
+
 // Native to Java functions
 static void Java_SampleUniqueAnnotations_useBar1(
     JNIEnv* env,
@@ -85,6 +87,7 @@ static void Java_SampleUniqueAnnotations_useBar1(
       &cached_method_id);
   env->CallStaticVoidMethod(clazz, call_context.method_id(), inner.obj());
 }
+
 
 
 #endif  // org_jni_1zero_SampleUniqueAnnotations_JNI

@@ -23,7 +23,7 @@ class UrlListManager {
  public:
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
     virtual void BlockedUrlAdded(int32_t id, const GURL& url) = 0;
   };
 

@@ -29,6 +29,7 @@
 #include "gpu/command_buffer/service/gpu_tracer.h"
 #include "gpu/command_buffer/service/multi_draw_manager.h"
 #include "gpu/command_buffer/service/passthrough_discardable_manager.h"
+#include "gpu/command_buffer/service/passthrough_program_cache.h"
 #include "gpu/command_buffer/service/program_cache.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
@@ -226,6 +227,28 @@ void APIENTRY PassthroughGLDebugMessageCallback(GLenum source,
   command_decoder->OnDebugMessage(source, type, id, severity, length, message);
   LogGLDebugMessage(source, type, id, severity, length, message,
                     command_decoder->GetLogger());
+}
+
+GLsizeiptr APIENTRY PassthroughGLBlobCacheGetCallback(const void* key,
+                                                      GLsizeiptr key_size,
+                                                      void* value,
+                                                      GLsizeiptr value_size,
+                                                      const void* user_param) {
+  DCHECK(user_param != nullptr);
+  GLES2DecoderPassthroughImpl* command_decoder =
+      static_cast<GLES2DecoderPassthroughImpl*>(const_cast<void*>(user_param));
+  return command_decoder->BlobCacheGet(key, key_size, value, value_size);
+}
+
+void APIENTRY PassthroughGLBlobCacheSetCallback(const void* key,
+                                                GLsizeiptr key_size,
+                                                const void* value,
+                                                GLsizeiptr value_size,
+                                                const void* user_param) {
+  DCHECK(user_param != nullptr);
+  GLES2DecoderPassthroughImpl* command_decoder =
+      static_cast<GLES2DecoderPassthroughImpl*>(const_cast<void*>(user_param));
+  command_decoder->BlobCacheSet(key, key_size, value, value_size);
 }
 
 void RunCallbacks(std::vector<base::OnceClosure> callbacks) {
@@ -815,33 +838,34 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
         gl::GetRequestableGLExtensionsFromCurrentContext());
 
     static constexpr const char* kRequiredFunctionalityExtensions[] = {
-      "GL_ANGLE_framebuffer_blit",
+        "GL_ANGLE_blob_cache",
+        "GL_ANGLE_framebuffer_blit",
 #if BUILDFLAG(IS_FUCHSIA)
-      "GL_ANGLE_memory_object_fuchsia",
+        "GL_ANGLE_memory_object_fuchsia",
 #endif
-      "GL_ANGLE_memory_size",
-      "GL_ANGLE_native_id",
+        "GL_ANGLE_memory_size",
+        "GL_ANGLE_native_id",
 #if BUILDFLAG(IS_FUCHSIA)
-      "GL_ANGLE_semaphore_fuchsia",
+        "GL_ANGLE_semaphore_fuchsia",
 #endif
-      "GL_ANGLE_texture_storage_external",
-      "GL_ANGLE_texture_usage",
-      "GL_CHROMIUM_bind_uniform_location",
-      "GL_CHROMIUM_sync_query",
-      "GL_EXT_debug_marker",
-      "GL_EXT_memory_object",
-      "GL_EXT_memory_object_fd",
-      "GL_EXT_semaphore",
-      "GL_EXT_semaphore_fd",
-      "GL_KHR_debug",
-      "GL_NV_fence",
-      "GL_OES_EGL_image",
-      "GL_OES_EGL_image_external",
-      "GL_OES_EGL_image_external_essl3",
+        "GL_ANGLE_texture_storage_external",
+        "GL_ANGLE_texture_usage",
+        "GL_CHROMIUM_bind_uniform_location",
+        "GL_CHROMIUM_sync_query",
+        "GL_EXT_debug_marker",
+        "GL_EXT_memory_object",
+        "GL_EXT_memory_object_fd",
+        "GL_EXT_semaphore",
+        "GL_EXT_semaphore_fd",
+        "GL_KHR_debug",
+        "GL_NV_fence",
+        "GL_OES_EGL_image",
+        "GL_OES_EGL_image_external",
+        "GL_OES_EGL_image_external_essl3",
 #if BUILDFLAG(IS_APPLE)
-      "GL_ANGLE_texture_rectangle",
+        "GL_ANGLE_texture_rectangle",
 #endif
-      "GL_ANGLE_vulkan_image",
+        "GL_ANGLE_vulkan_image",
     };
     RequestExtensions(api(), requestable_extensions,
                       kRequiredFunctionalityExtensions,
@@ -938,6 +962,11 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
                    "ES 3.1 context type requires an ES 3.1 ANGLE context");
 
 #undef FAIL_INIT_IF_NOT
+
+  if (feature_info_->feature_flags().angle_blob_cache) {
+    api()->glBlobCacheCallbacksANGLEFn(PassthroughGLBlobCacheSetCallback,
+                                       PassthroughGLBlobCacheGetCallback, this);
+  }
 
   bind_generates_resource_ = group_->bind_generates_resource();
 
@@ -1059,6 +1088,10 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
 }
 
 void GLES2DecoderPassthroughImpl::Destroy(bool have_context) {
+  if (have_context && feature_info_->feature_flags().angle_blob_cache) {
+    api()->glBlobCacheCallbacksANGLEFn(nullptr, nullptr, nullptr);
+  }
+
   if (have_context) {
     FlushErrors();
   }
@@ -1679,6 +1712,50 @@ void GLES2DecoderPassthroughImpl::OnDebugMessage(GLenum source,
   }
 }
 
+GLsizeiptr GLES2DecoderPassthroughImpl::BlobCacheGet(const void* key,
+                                                     GLsizeiptr key_size,
+                                                     void* value,
+                                                     GLsizeiptr value_size) {
+  PassthroughProgramCache* cache = get_passthrough_program_cache();
+  if (!cache) {
+    return 0;
+  }
+
+  if (key_size < 0) {
+    return 0;
+  }
+
+  const uint8_t* key_begin = reinterpret_cast<const uint8_t*>(key);
+  PassthroughProgramCache::Key entry_key(key_begin, key_begin + key_size);
+  return cache->Get(entry_key, value, value_size);
+}
+
+void GLES2DecoderPassthroughImpl::BlobCacheSet(const void* key,
+                                               GLsizeiptr key_size,
+                                               const void* value,
+                                               GLsizeiptr value_size) {
+  PassthroughProgramCache* cache = get_passthrough_program_cache();
+  if (!cache) {
+    return;
+  }
+
+  if (key_size < 0 || value_size < 0) {
+    return;
+  }
+
+  const uint8_t* key_begin = reinterpret_cast<const uint8_t*>(key);
+  PassthroughProgramCache::Key entry_key(key_begin, key_begin + key_size);
+
+  const uint8_t* value_begin = reinterpret_cast<const uint8_t*>(value);
+  PassthroughProgramCache::Value entry_value(value_begin,
+                                             value_begin + value_size);
+
+  cache->Set(
+      std::move(entry_key), std::move(entry_value),
+      base::BindRepeating(&DecoderClient::CacheBlob, base::Unretained(client()),
+                          gpu::GpuDiskCacheType::kGlShaders));
+}
+
 void GLES2DecoderPassthroughImpl::SetCopyTextureResourceManagerForTest(
     CopyTextureCHROMIUMResourceManager* copy_texture_resource_manager) {
   NOTIMPLEMENTED();
@@ -1921,8 +1998,7 @@ GLES2DecoderPassthroughImpl::PatchGetFramebufferAttachmentParameter(
           break;
 
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     } break;
 
@@ -2111,8 +2187,7 @@ bool GLES2DecoderPassthroughImpl::CheckResetStatus() {
       MarkContextLost(error::kUnknown);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
   reset_by_robustness_extension_ = true;
   return true;
@@ -2138,6 +2213,11 @@ bool GLES2DecoderPassthroughImpl::OnlyHasPendingProgramCompletionQueries() {
   return base::ranges::all_of(pending_queries_, [](const auto& query) {
     return query.target == GL_PROGRAM_COMPLETION_QUERY_CHROMIUM;
   });
+}
+
+PassthroughProgramCache*
+GLES2DecoderPassthroughImpl::get_passthrough_program_cache() const {
+  return static_cast<PassthroughProgramCache*>(group_->get_program_cache());
 }
 
 error::Error GLES2DecoderPassthroughImpl::ProcessQueries(bool did_finish) {
@@ -2346,8 +2426,7 @@ void GLES2DecoderPassthroughImpl::ReadBackBuffersIntoShadowCopies(
     if (!resources_->buffer_id_map.GetServiceID(client_id, &service_id)) {
       // Buffer no longer exists, this shadow update should have been removed by
       // DoDeleteBuffers
-      NOTREACHED_IN_MIGRATION();
-      continue;
+      NOTREACHED();
     }
 
     const auto& update = u.second;

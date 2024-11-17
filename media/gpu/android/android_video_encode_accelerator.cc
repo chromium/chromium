@@ -355,23 +355,20 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
   }
   scoped_refptr<VideoFrame> frame = std::get<0>(input);
 
-  uint8_t* buffer = nullptr;
-  size_t capacity = 0;
-  result = media_codec_->GetInputBuffer(input_buf_index, &buffer, &capacity);
-  if (!result.is_ok()) {
+  auto buffer = media_codec_->GetInputBuffer(input_buf_index);
+  if (buffer.empty()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
-                       "MediaCodec error in GetInputBuffer",
-                       std::move(result)});
+                       "MediaCodec error in GetInputBuffer"});
     return;
   }
   const auto visible_size =
       aligned_size_.value_or(frame->visible_rect().size());
 
-  uint8_t* dst_y = buffer;
+  uint8_t* dst_y = buffer.data();
   const int dst_stride_y = input_buffer_stride_;
   const int uv_plane_offset =
       input_buffer_yplane_height_ * input_buffer_stride_;
-  uint8_t* dst_uv = buffer + uv_plane_offset;
+  uint8_t* dst_uv = buffer.data() + uv_plane_offset;
   const int dst_stride_uv = input_buffer_stride_;
 
   const gfx::Size uv_plane_size = VideoFrame::PlaneSizeInSamples(
@@ -384,11 +381,11 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
       // size of the very last line in UV-plane (it's not padded to full stride)
       uv_plane_size.width() * 2;
 
-  if (queued_size > capacity) {
+  if (queued_size > buffer.size()) {
     NotifyErrorStatus({EncoderStatus::Codes::kInvalidInputFrame,
                        "Frame doesn't fit into the input buffer. queue_size: " +
                            base::NumberToString(queued_size) +
-                           "capacity: " + base::NumberToString(capacity)});
+                           "capacity: " + base::NumberToString(buffer.size())});
     return;
   }
 
@@ -421,8 +418,8 @@ void AndroidVideoEncodeAccelerator::QueueInput() {
          frame_timestamp_map_.end());
   frame_timestamp_map_[presentation_timestamp_] = frame->timestamp();
 
-  result = media_codec_->QueueInputBuffer(input_buf_index, nullptr, queued_size,
-                                          presentation_timestamp_);
+  result = media_codec_->QueueFilledInputBuffer(input_buf_index, queued_size,
+                                                presentation_timestamp_);
   UMA_HISTOGRAM_TIMES("Media.AVDA.InputQueueTime",
                       base::Time::Now() - std::get<2>(input));
   if (!result.is_ok()) {
@@ -474,8 +471,7 @@ void AndroidVideoEncodeAccelerator::DequeueOutput() {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   const auto it = frame_timestamp_map_.find(presentaion_timestamp);
@@ -501,8 +497,8 @@ void AndroidVideoEncodeAccelerator::DequeueOutput() {
              base::NumberToString(bitstream_buffer.size())});
     return;
   }
-  result = media_codec_->CopyFromOutputBuffer(buf_index, offset,
-                                              mapping.memory(), size);
+  result = media_codec_->CopyFromOutputBuffer(
+      buf_index, offset, mapping.GetMemoryAsSpan<uint8_t>(size));
   if (!result.is_ok()) {
     NotifyErrorStatus({EncoderStatus::Codes::kEncoderFailedEncode,
                        "MediaCodec error in CopyFromOutputBuffer",

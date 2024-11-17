@@ -19,8 +19,8 @@
 class ActionSheetCoordinatorTest : public PlatformTest {
  protected:
   ActionSheetCoordinatorTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = TestProfileIOS::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
   }
 
   void SetUp() override {
@@ -52,7 +52,7 @@ class ActionSheetCoordinatorTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
 
   ScopedKeyWindow scoped_key_window_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
   UIView* test_view_;

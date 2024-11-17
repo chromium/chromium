@@ -13,12 +13,10 @@ import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Token;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
 import java.util.ArrayList;
@@ -73,25 +71,20 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
     @CalledByNative
     private void restoreTabGroup(
             TabModel tabModel,
-            @JniType("std::string") String savedTabGroupId,
             @JniType("std::u16string") String title,
             int color,
             @JniType("std::vector") int[] tabIds) {
         if (tabIds.length == 0) return;
 
         assert mTabModelSelector.getModel(tabModel.isIncognito()) == tabModel;
-        TabModelFilter filter =
+        TabGroupModelFilter filter =
                 mTabModelSelector
-                        .getTabModelFilterProvider()
-                        .getTabModelFilter(tabModel.isIncognito());
-        assert filter instanceof TabGroupModelFilter;
-        TabGroupModelFilter groupFilter = (TabGroupModelFilter) filter;
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(tabModel.isIncognito());
+        TabGroupModelFilter groupFilter = filter;
 
         int rootId = tabIds[0];
-
-        if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-            groupFilter.setTabGroupColor(rootId, color);
-        }
+        groupFilter.setTabGroupColor(rootId, color);
 
         // TODO(b/336589861): Use savedTabGroupId to reassociate this tab group with a sync entity.
 
@@ -114,7 +107,8 @@ public class RecentlyClosedBridge implements RecentlyClosedTabManager {
      * Initializes this class with the given profile.
      *
      * @param profile The {@link Profile} whose recently closed tabs will be queried.
-     * @param tabModelSelector The {@link TabModelSelector} to use to get {@link TabModelFilter}s.
+     * @param tabModelSelector The {@link TabModelSelector} to use to get {@link
+     *     TabGroupModelFilter}s.
      */
     public RecentlyClosedBridge(Profile profile, TabModelSelector tabModelSelector) {
         mNativeBridge = RecentlyClosedBridgeJni.get().init(RecentlyClosedBridge.this, profile);

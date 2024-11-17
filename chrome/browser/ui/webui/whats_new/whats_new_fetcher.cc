@@ -24,7 +24,6 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
 #include "chrome/common/chrome_version.h"
 #include "components/user_education/common/user_education_features.h"
-#include "components/user_education/webui/whats_new_registry.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
@@ -53,21 +52,26 @@ GURL GetV2ServerURL(bool is_staging) {
                                    base::NumberToString(CHROME_VERSION_MAJOR));
 }
 
-GURL GetV2ServerURLForRender(bool is_staging) {
-  auto* registry = g_browser_process->GetFeatures()->whats_new_registry();
-  CHECK(registry);
-
+GURL GetV2ServerURLForRender(const WhatsNewRegistry& whats_new_registry,
+                             bool is_staging) {
   GURL url = GetV2ServerURL(is_staging);
-  auto active_features = registry->GetActiveFeatureNames();
-  if (active_features.size() > 0) {
+  const auto active_features = whats_new_registry.GetActiveFeatureNames();
+  if (!active_features.empty()) {
     url = net::AppendQueryParameter(
         url, "enabled", base::JoinString(active_features, std::string(",")));
   }
 
-  auto rolled_features = registry->GetRolledFeatureNames();
-  if (rolled_features.size() > 0) {
+  const auto rolled_features = whats_new_registry.GetRolledFeatureNames();
+  if (!rolled_features.empty()) {
     url = net::AppendQueryParameter(
         url, "rolled", base::JoinString(rolled_features, std::string(",")));
+  }
+
+  const auto customizations = whats_new_registry.GetCustomizations();
+  if (!customizations.empty()) {
+    url = net::AppendQueryParameter(
+        url, "customization",
+        base::JoinString(customizations, std::string(",")));
   }
 
   return net::AppendQueryParameter(url, "internal", "true");

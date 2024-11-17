@@ -16,9 +16,11 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/process/process_iterator.h"
 #include "base/values.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/test/server.h"
 #include "chrome/updater/update_service.h"
+#include "chrome/updater/updater_version.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -32,8 +34,8 @@ class GURL;
 
 namespace base {
 class CommandLine;
+class TimeDelta;
 class Value;
-class Version;
 }  // namespace base
 
 namespace updater {
@@ -92,6 +94,11 @@ struct AppUpdateExpectation {
   const std::string response_status;
 };
 
+struct TestUpdaterVersion {
+  base::FilePath updater_setup_path;
+  base::Version version;
+};
+
 // Returns the path to the updater installer program (in the build output
 // directory). This is typically the updater setup, or the updater itself for
 // the platforms where a setup program is not provided.
@@ -106,12 +113,12 @@ std::set<base::FilePath::StringType> GetTestProcessNames();
 class VersionProcessFilter : public base::ProcessFilter {
  public:
   VersionProcessFilter();
+  ~VersionProcessFilter() override;
 
   bool Includes(const base::ProcessEntry& entry) const override;
 
  private:
-  const base::Version this_version_;
-  const base::Version older_version_;
+  const std::vector<base::Version> versions_;
 };
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -141,12 +148,17 @@ void Clean(UpdaterScope scope);
 // test.
 void ExpectClean(UpdaterScope scope);
 
+// The overinstall timeout for `EnterTestMode`. Different for windows/mac/linux.
+base::TimeDelta GetOverinstallTimeoutForEnterTestMode();
+
 // Places the updater into test mode (redirect server URLs and disable CUP).
 void EnterTestMode(const GURL& update_url,
                    const GURL& crash_upload_url,
                    const GURL& device_management_url,
                    const GURL& app_logo_url,
-                   const base::TimeDelta& idle_timeout);
+                   base::TimeDelta idle_timeout,
+                   base::TimeDelta server_keep_alive_time,
+                   base::TimeDelta ceca_connection_timeout);
 
 // Takes the updater our of the test mode by deleting the external constants
 // JSON file.
@@ -185,7 +197,8 @@ void InstallUpdaterAndApp(UpdaterScope scope,
                           bool always_launch_cmd,
                           bool verify_app_logo_loaded,
                           bool expect_success,
-                          bool wait_for_the_installer);
+                          bool wait_for_the_installer,
+                          const base::Value::List& additional_switches);
 
 // Expects that the updater is installed on the system and the specified
 // version is active.
@@ -199,7 +212,7 @@ void Uninstall(UpdaterScope scope);
 
 // Runs the wake client and wait for it to exit. Assert that it exits with
 // `exit_code`. The server should exit a few seconds after.
-void RunWake(UpdaterScope scope, int exit_code);
+void RunWake(UpdaterScope scope, int exit_code, const base::Version& version);
 
 // Runs the wake-all client and wait for it to exit. Assert that it exits with
 // kErrorOk. The server should exit a few seconds after.
@@ -271,12 +284,15 @@ std::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope);
 // Sets up a fake updater on the system at a version lower than the test.
 void SetupFakeUpdaterLowerVersion(UpdaterScope scope);
 
-// Gets the file path for the real updater lower version.
-base::FilePath GetRealUpdaterLowerVersionPath();
+// Gets the real updater lower version paths/versions.
+std::vector<TestUpdaterVersion> GetRealUpdaterLowerVersions();
 
-// Sets up a real updater on the system at a version lower than the test. The
-// exact version of the updater is not defined.
-void SetupRealUpdaterLowerVersion(UpdaterScope scope);
+// Gets the real updater current and lower version paths/versions.
+std::vector<TestUpdaterVersion> GetRealUpdaterVersions();
+
+// Sets up a real updater on the system given any (higher or lower) version of
+// `UpdaterSetup.exe` in `updater_path`.
+void SetupRealUpdater(UpdaterScope scope, const base::FilePath& updater_path);
 
 // Sets up a fake updater on the system at a version higher than the test.
 void SetupFakeUpdaterHigherVersion(UpdaterScope scope);
@@ -387,16 +403,20 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
                                const std::string& app_id,
                                UpdateService::Priority priority,
                                const base::Version& from_version,
-                               const base::Version& to_version);
+                               const base::Version& to_version,
+                               const base::Version& updater_version);
 
-void ExpectUpdateSequence(UpdaterScope scope,
-                          ScopedServer* test_server,
-                          const std::string& app_id,
-                          const std::string& install_data_index,
-                          UpdateService::Priority priority,
-                          const base::Version& from_version,
-                          const base::Version& to_version,
-                          bool do_fault_injection);
+void ExpectUpdateSequence(
+    UpdaterScope scope,
+    ScopedServer* test_server,
+    const std::string& app_id,
+    const std::string& install_data_index,
+    UpdateService::Priority priority,
+    const base::Version& from_version,
+    const base::Version& to_version,
+    bool do_fault_injection,
+    bool skip_download,
+    const base::Version& updater_version = base::Version(kUpdaterVersion));
 
 void ExpectUpdateSequenceBadHash(UpdaterScope scope,
                                  ScopedServer* test_server,
@@ -413,12 +433,18 @@ void ExpectInstallSequence(UpdaterScope scope,
                            UpdateService::Priority priority,
                            const base::Version& from_version,
                            const base::Version& to_version,
-                           bool do_fault_injection);
+                           bool do_fault_injection,
+                           bool skip_download,
+                           const base::Version& updater_version);
 
-void ExpectAppsUpdateSequence(UpdaterScope scope,
-                              ScopedServer* test_server,
-                              const base::Value::Dict& request_attributes,
-                              const std::vector<AppUpdateExpectation>& apps);
+void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer* test_server);
+
+void ExpectAppsUpdateSequence(
+    UpdaterScope scope,
+    ScopedServer* test_server,
+    const base::Value::Dict& request_attributes,
+    const std::vector<AppUpdateExpectation>& apps,
+    const base::Version& updater_version = base::Version(kUpdaterVersion));
 
 void StressUpdateService(UpdaterScope scope);
 
@@ -434,7 +460,8 @@ void RunFakeLegacyUpdater(UpdaterScope scope);
 
 // Dismiss the installation completion dialog, then wait for the process
 // exit.
-void CloseInstallCompleteDialog(const std::wstring& child_window_text_to_find,
+void CloseInstallCompleteDialog(const std::u16string& bundle_name,
+                                const std::wstring& child_window_text_to_find,
                                 bool verify_app_logo_loaded = false);
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -450,7 +477,7 @@ void RunRecoveryComponent(UpdaterScope scope,
                           const std::string& app_id,
                           const base::Version& version);
 
-void SetLastChecked(UpdaterScope scope, const base::Time& time);
+void SetLastChecked(UpdaterScope scope, base::Time time);
 
 void ExpectLastChecked(UpdaterScope scope);
 
@@ -481,8 +508,28 @@ void DMDeregisterDevice(UpdaterScope scope);
 
 void DMCleanup(UpdaterScope scope);
 
-// Installs the enterprise companion app, always at the system scope.
-void InstallEnterpriseCompanionApp(const base::Value::Dict& external_overrides);
+// Installs the enterprise companion app from the test's data deps, always at
+// the system scope.
+void InstallEnterpriseCompanionApp();
+
+// Manually uninstalls the enterprise companion app installed via
+// `InstallBrokenEnterpriseCompanionApp`. This should be done before the updater
+// uninstalls, as the broken companion app is unable to uninstall itself which
+// will cause the updater's uninstaller to return an error.
+void UninstallBrokenEnterpriseCompanionApp();
+
+// Installs a stub enterprise companion app which will fail to launch, always at
+// the system scope.
+void InstallBrokenEnterpriseCompanionApp();
+
+// Installs the constants overrides for the enterprise companion app, always at
+// the system scope.
+void InstallEnterpriseCompanionAppOverrides(
+    const base::Value::Dict& external_overrides);
+
+// Expects that the enterprise companion app is not installed, always at system
+// scope.
+void ExpectEnterpriseCompanionAppNotInstalled();
 
 // Uninstalls the enterprise companion app, always at the system scope.
 void UninstallEnterpriseCompanionApp();

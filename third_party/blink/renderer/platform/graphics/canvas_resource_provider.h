@@ -181,7 +181,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
     filter_quality_ = quality;
   }
   gfx::Size Size() const;
-  bool IsOriginTopLeft() const { return is_origin_top_left_; }
+  virtual bool IsOriginTopLeft() const { return true; }
   virtual bool IsValid() const = 0;
   virtual bool IsAccelerated() const = 0;
   // Returns true if the resource can be used by the display compositor.
@@ -223,14 +223,47 @@ class PLATFORM_EXPORT CanvasResourceProvider
                            int x,
                            int y);
 
+  // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
+  // exists, after flushing the resource and signaling that an external write
+  // will occur on it. The caller should wait on `internal_access_sync_token`
+  // before writing the contents unless the caller's usage model makes such a
+  // wait unnecessary (in which case the client should pass `nullptr` for the
+  // token together with an explanation at the callsite).
+  // `required_shared_image_usages` is a set of usages that the passed-back
+  // ClientSharedImage must support. A copy will be performed if either (a) the
+  // display compositor is reading the current resource or (b) the current
+  // resource does not support `required_shared_image_usages.` In these cases,
+  // `was_copy_performed` will be set to true if it is non-null.
   virtual scoped_refptr<gpu::ClientSharedImage>
-  GetBackingClientSharedImageForOverwrite() {
-    NOTREACHED_IN_MIGRATION();
+  GetBackingClientSharedImageForExternalWrite(
+      gpu::SyncToken* internal_access_sync_token,
+      gpu::SharedImageUsageSet required_shared_image_usages,
+      bool* was_copy_performed = nullptr) {
     return nullptr;
   }
+
+  // Signals that an external write has completed, passing the token that this
+  // instance should wait on for the service-side operations of the external
+  // write to complete.
+  virtual void EndExternalWrite(
+      const gpu::SyncToken& external_write_sync_token) {
+    NOTREACHED();
+  }
+
+  // Returns the ClientSharedImage backing this CanvasResourceProvider, if one
+  // exists, for the purpose of allowing the caller to overwrite its contents.
+  // First flushes the resource and signals that an external write will occur on
+  // it.
+  // TODO(crbug.com/340922308): Eliminate this method in favor of all callers
+  // calling the above method with explanations at callsites for why they don't
+  // need to wait for any internal writes to finish.
+  virtual scoped_refptr<gpu::ClientSharedImage>
+  GetBackingClientSharedImageForOverwrite() {
+    return GetBackingClientSharedImageForExternalWrite(
+        /*internal_access_sync_token=*/nullptr, gpu::SharedImageUsageSet());
+  }
   virtual gpu::SharedImageUsageSet GetSharedImageUsageFlags() const {
-    NOTREACHED_IN_MIGRATION();
-    return gpu::SharedImageUsageSet();
+    NOTREACHED();
   }
 
   CanvasResourceProvider(const CanvasResourceProvider&) = delete;
@@ -291,8 +324,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // with a WebGPUMailboxTexture.
   bool OverwriteImage(const gpu::Mailbox& shared_image_mailbox,
                       const gfx::Rect& copy_rect,
-                      bool unpack_flip_y,
-                      bool unpack_premultiply_alpha,
                       const gpu::SyncToken& ready_sync_token,
                       gpu::SyncToken& completion_sync_token);
 
@@ -324,10 +355,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       const {
     return context_provider_wrapper_;
   }
-  GrSurfaceOrigin GetGrSurfaceOrigin() const {
-    return is_origin_top_left_ ? kTopLeft_GrSurfaceOrigin
-                               : kBottomLeft_GrSurfaceOrigin;
-  }
   cc::PaintFlags::FilterQuality FilterQuality() const {
     return filter_quality_;
   }
@@ -340,7 +367,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
       const ResourceProviderType&,
       const SkImageInfo&,
       cc::PaintFlags::FilterQuality,
-      bool is_origin_top_left,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
       base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
@@ -373,6 +399,12 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   CanvasResourceHost* resource_host() { return resource_host_; }
 
+  // Returns whether `resource` is usable. Returns true by default, but
+  // subclasses may override this to do implementation-specific checks.
+  // Unusable resources will be dropped when returned rather than put back into
+  // the cache.
+  virtual bool IsResourceUsable(CanvasResource* resource) { return true; }
+
  private:
   friend class FlushForImageListener;
   virtual sk_sp<SkSurface> CreateSkSurface() const = 0;
@@ -397,6 +429,7 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // Called after the recording was cleared from any draw ops it might have had.
   void RecordingCleared() override;
 
+  // IsResourceUsable() must be true for `resource`.
   void RegisterUnusedResource(scoped_refptr<CanvasResource>&& resource);
   void MaybePostUnusedResourcesReclaimTask();
   void ClearOldUnusedResources();
@@ -413,7 +446,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
   // constructors do not exist.
   SkImageInfo info_;
   cc::PaintFlags::FilterQuality filter_quality_;
-  const bool is_origin_top_left_;
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   raw_ptr<CanvasResourceHost> resource_host_ = nullptr;

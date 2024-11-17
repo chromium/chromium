@@ -41,6 +41,7 @@
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "components/viz/common/traced_value.h"
+#include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -415,13 +416,38 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
     if (transform_tree_index() == scroll_node->transform_id) {
       if (const gfx::Rect* cull_rect =
               scroll_tree.ScrollingContentsCullRect(scroll_node->element_id)) {
-        scaled_cull_rect =
-            gfx::ScaleToEnclosingRect(*cull_rect, max_contents_scale);
+        scaled_cull_rect = gfx::ToEnclosingRect(gfx::ScaleRect(
+            // Convert into layer space.
+            gfx::RectF(*cull_rect) - offset_to_transform_parent(),
+            max_contents_scale));
       }
     }
   }
 
-  int missing_tile_count = 0u;
+  if (const auto& display_list = raster_source_->GetDisplayItemList()) {
+    for (auto& [element_id, info] : display_list->raster_inducing_scrolls()) {
+      if (!info.visual_rect.Intersects(visible_layer_rect())) {
+        continue;
+      }
+      if (const gfx::Rect* cull_rect =
+              scroll_tree.ScrollingContentsCullRect(element_id)) {
+        if (const auto* scroll_node =
+                scroll_tree.FindNodeFromElementId(element_id)) {
+          gfx::RectF visible_rect(
+              gfx::Rect(scroll_node->container_origin,
+                        scroll_tree.container_bounds(scroll_node->id)));
+          visible_rect.Offset(
+              scroll_tree.current_scroll_offset(element_id).OffsetFromOrigin());
+          if (!cull_rect->Contains(gfx::ToEnclosedRect(visible_rect))) {
+            append_quads_data->checkerboarded_needs_record = true;
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  int missing_tile_count = 0;
   only_used_low_res_last_append_quads_ = true;
   gfx::Rect scaled_recorded_bounds = gfx::ScaleToEnclosingRect(
       raster_source_->recorded_bounds(), max_contents_scale);
@@ -476,7 +502,7 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
           if (iter->contents_scale_key() != raster_contents_scale_key() &&
               iter->contents_scale_key() < ideal_contents_scale_key() &&
               geometry_rect.Intersects(scaled_viewport_for_tile_priority)) {
-            append_quads_data->num_incompletely_rastered_tiles++;
+            append_quads_data->checkerboarded_needs_raster = true;
           }
 
           auto* quad =
@@ -511,17 +537,9 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       }
     }
 
-    int64_t needs_record_content_area = 0;
-    if (scaled_cull_rect) {
-      gfx::Rect fully_recorded_rect =
-          gfx::IntersectRects(*scaled_cull_rect, visible_geometry_rect);
-      if (fully_recorded_rect != visible_geometry_rect) {
-        append_quads_data->num_incompletely_recorded_tiles++;
-        needs_record_content_area =
-            visible_geometry_area - fully_recorded_rect.size().Area64();
-        append_quads_data->checkerboarded_needs_record_content_area +=
-            needs_record_content_area;
-      }
+    if (!append_quads_data->checkerboarded_needs_record && scaled_cull_rect &&
+        !scaled_cull_rect->Contains(visible_geometry_rect)) {
+      append_quads_data->checkerboarded_needs_record = true;
     }
 
     if (!has_draw_quad) {
@@ -538,19 +556,8 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       ValidateQuadResources(quad);
 
       if (geometry_rect.Intersects(scaled_viewport_for_tile_priority)) {
-        append_quads_data->num_missing_tiles++;
         ++missing_tile_count;
       }
-      append_quads_data->checkerboarded_visible_content_area +=
-          visible_geometry_area;
-      // Intersect checkerboard rect with recorded bounds to generate rect where
-      // we checkerboarded and has recording. The area where we don't have
-      // recording is not necessarily a Rect, and its area is calculated using
-      // subtraction.
-      gfx::Rect visible_rect_has_recording = visible_geometry_rect;
-      visible_rect_has_recording.Intersect(scaled_recorded_bounds);
-      append_quads_data->checkerboarded_needs_raster_content_area +=
-          visible_rect_has_recording.size().Area64();
 
       // Report data on any missing images that might be the largest
       // contentful image.
@@ -562,9 +569,6 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 
       continue;
     }
-
-    append_quads_data->checkerboarded_visible_content_area +=
-        needs_record_content_area;
 
     if (iter.resolution() != HIGH_RESOLUTION) {
       append_quads_data->approximated_visible_content_area +=
@@ -589,6 +593,8 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   shared_quad_state->visible_quad_layer_rect.Offset(quad_offset);
 
   if (missing_tile_count) {
+    append_quads_data->num_missing_tiles += missing_tile_count;
+    append_quads_data->checkerboarded_needs_raster = true;
     TRACE_EVENT_INSTANT1("cc", "PictureLayerImpl::AppendQuads checkerboard",
                          TRACE_EVENT_SCOPE_THREAD, "missing_tile_count",
                          missing_tile_count);

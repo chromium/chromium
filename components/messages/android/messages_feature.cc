@@ -30,13 +30,6 @@ base::android::FeatureMap* GetFeatureMap() {
 
 }  // namespace
 
-BASE_FEATURE(kMessagesForAndroidAdsBlocked,
-             "MessagesForAndroidAdsBlocked",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kMessagesForAndroidSaveCard,
-             "MessagesForAndroidSaveCard",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kMessagesForAndroidFullyVisibleCallback,
              "MessagesForAndroidFullyVisibleCallback",
@@ -46,18 +39,6 @@ BASE_FEATURE(kMessagesForAndroidFullyVisibleCallback,
 BASE_FEATURE(kMessagesAndroidExtraHistograms,
              "MessagesAndroidExtraHistograms",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsAdsBlockedMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidAdsBlocked);
-}
-
-bool IsSaveCardMessagesUiEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidSaveCard);
-}
-
-bool ISdFullyVisibleCallbackEnabled() {
-  return base::FeatureList::IsEnabled(kMessagesForAndroidFullyVisibleCallback);
-}
 
 static jlong JNI_MessageFeatureMap_GetNativeMap(JNIEnv* env) {
   return reinterpret_cast<jlong>(GetFeatureMap());

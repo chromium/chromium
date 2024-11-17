@@ -258,8 +258,14 @@ from the file picker.
 
 <a name="TOC-I-can-download-a-file-with-an-unsafe-extension-but-a-different-extension-or-file-type-is-shown-to-the-user-"></a>
 ### I can download a file with an unsafe extension but a different extension or file type is shown to the user - is this a security bug?
+
+See [file types](#TOC-The-wrong-description-for-a-file-type-is-added-by-Chrome-).
+
 <a name="TOC-Extensions-for-downloaded-files-are-not-shown-in-a-file-dialog-"></a>
 ### Extensions for downloaded files are not shown in a file dialog - is this a security bug?
+
+See [file types](#TOC-The-wrong-description-for-a-file-type-is-added-by-Chrome-).
+
 <a name="TOC-The-wrong-description-for-a-file-type-is-added-by-Chrome-"></a>
 ### The wrong description for a file type is added by Chrome - is this a security bug?
 
@@ -329,7 +335,7 @@ These browser's actions/shortcuts are specific to Chrome. They are different
 from the behavior specified by the web-platform, such as using executing
 `window.open()` or opening a link with the `target=_blank` attribute.
 
-<a name="TOC-What-is-the-threat-model-for-Chrome-for-Testing"</a>
+<a name="TOC-What-is-the-threat-model-for-Chrome-for-Testing"></a>
 ### What is the threat model for Chrome for Testing?
 
 [Chrome for Testing](https://developer.chrome.com/blog/chrome-for-testing) is a
@@ -461,6 +467,14 @@ Security](https://web.archive.org/web/20160311224620/https://technet.microsoft.c
 Other cases covered by this section include leaving a debugger port open to
 the world, remote shells, and so forth.
 
+<a name="TOC-If-a-website-can-open-an-android-app-via-an-intent"></a>
+### If a website can open an Android app via an intent is this a security bug?
+
+No - websites can link to external handlers or applications - but there are
+restrictions around requiring a user gesture and the type of intent that can
+be launched. Full details are available in the
+[external_intents](../../components/external_intents/README.md) documentation.
+
 <a name="TOC-Does-entering-JavaScript:-URLs-in-the-URL-bar-or-running-script-in-the-developer-tools-mean-there-s-an-XSS-vulnerability-"></a>
 ### Does entering JavaScript: URLs in the URL bar or running script in the developer tools mean there's an XSS vulnerability?
 
@@ -498,6 +512,27 @@ No. PDF files have some powerful capabilities including invoking printing or
 posting form data. To mitigate abuse of these capabiliies, such as beaconing
 upon document open, we require interaction with the document (a "user gesture")
 before allowing their use.
+
+<a name="TOC-Are-non_committed-URLs-entered-by-the-user-considered-URL-spoofs-"></a>
+### Are non-committed URLs entered by the user considered URL spoofs?
+
+No. When a user enters a URL into the address bar (whether by typing,
+copy/pasting, drag and drop, or otherwise), Chrome intentionally displays
+it instead of the last committed URL of the currently active page, until
+both the navigation begins and the new page commits. During this time, the
+currently active page can change its appearance to mimic the new URL while
+its own URL is not shown. However, the active page does not have control
+over which URL the user entered into the address bar, limiting the
+effectiveness of a spoof attempt. The new
+[lock-replacement icon](https://blog.chromium.org/2023/05/an-update-on-lock-icon.html)
+is also not present in this state, and in many cases (i.e., once the new
+navigation has started), the loading indicators are present.
+
+The confusion between the non-committed URL and the active page's
+appearance is a consequence of the address bar needing to serve two roles:
+showing both where you are and where you are going.
+
+See also https://crbug.com/378932942 for context.
 
 <a name="TOC-What-about-URL-spoofs-using-Internationalized-Domain-Names-IDN-"></a>
 ### What about URL spoofs using Internationalized Domain Names (IDN)?

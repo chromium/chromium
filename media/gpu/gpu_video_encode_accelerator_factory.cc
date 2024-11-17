@@ -119,13 +119,20 @@ std::vector<VEAFactoryFunction> GetVEAFactoryFunctions(
 
 #if BUILDFLAG(USE_VAAPI)
 #if BUILDFLAG(IS_LINUX)
-  if (base::FeatureList::IsEnabled(kVaapiVideoEncodeLinux))
+  if (base::FeatureList::IsEnabled(kAcceleratedVideoEncodeLinux)) {
     vea_factory_functions.push_back(base::BindRepeating(&CreateVaapiVEA));
+  }
 #else
   vea_factory_functions.push_back(base::BindRepeating(&CreateVaapiVEA));
 #endif
 #elif BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(IS_LINUX)
+  if (base::FeatureList::IsEnabled(kAcceleratedVideoEncodeLinux)) {
+    vea_factory_functions.push_back(base::BindRepeating(&CreateV4L2VEA));
+  }
+#else
   vea_factory_functions.push_back(base::BindRepeating(&CreateV4L2VEA));
+#endif
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

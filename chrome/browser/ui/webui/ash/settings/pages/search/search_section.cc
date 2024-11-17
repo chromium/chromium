@@ -9,13 +9,17 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/url_constants.h"
+#include "ash/lobster/lobster_controller.h"
 #include "ash/public/cpp/assistant/assistant_state.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
+#include "chrome/browser/ash/lobster/lobster_service.h"
+#include "chrome/browser/ash/lobster/lobster_service_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/assistant_optin/assistant_optin_utils.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/search/google_assistant_handler.h"
@@ -38,6 +42,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/devicetype_utils.h"
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 namespace ash::settings {
 
@@ -81,10 +89,17 @@ bool IsMagicBoostNoticeBannerVisible(Profile* profile) {
   return hmr_needs_notice_banner || hmw_needs_notice_banner;
 }
 
-const std::vector<SearchConcept>& GetSearchPageSearchConcepts(
-    const char* section_path) {
+bool IsLobsterSettingsToggleVisible(Profile* profile) {
+  LobsterService* lobster_service =
+      ash::features::IsLobsterEnabled()
+          ? LobsterServiceProvider::GetForProfile(profile)
+          : nullptr;
+  return lobster_service != nullptr && lobster_service->UserHasAccess();
+}
+
+base::span<const SearchConcept> GetSearchPageSearchConcepts() {
   if (IsQuickAnswersSupported()) {
-    static const base::NoDestructor<std::vector<SearchConcept>> tags({
+    static constexpr auto tags = std::to_array<SearchConcept>({
         {IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE,
          mojom::kSearchSubpagePath,
          mojom::SearchResultIcon::kSearch,
@@ -92,22 +107,22 @@ const std::vector<SearchConcept>& GetSearchPageSearchConcepts(
          mojom::SearchResultType::kSetting,
          {.setting = mojom::Setting::kPreferredSearchEngine}},
     });
-    return *tags;
+    return tags;
   }
 
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_PREFERRED_SEARCH_ENGINE,
-       section_path,
+       mojom::kSystemPreferencesSectionPath,
        mojom::SearchResultIcon::kSearch,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kPreferredSearchEngine}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetQuickAnswersSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetQuickAnswersSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_QUICK_ANSWERS,
        mojom::kSearchSubpagePath,
        mojom::SearchResultIcon::kSearch,
@@ -118,11 +133,11 @@ const std::vector<SearchConcept>& GetQuickAnswersSearchConcepts() {
         IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_ALT2,
         IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_ALT3, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetQuickAnswersOnSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetQuickAnswersOnSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_QUICK_ANSWERS_DEFINITION,
        mojom::kSearchSubpagePath,
        mojom::SearchResultIcon::kSearch,
@@ -142,11 +157,11 @@ const std::vector<SearchConcept>& GetQuickAnswersOnSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kQuickAnswersUnitConversion}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAssistantSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAssistantSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_ASSISTANT,
        mojom::kAssistantSubpagePath,
        mojom::SearchResultIcon::kAssistant,
@@ -163,11 +178,11 @@ const std::vector<SearchConcept>& GetAssistantSearchConcepts() {
         IDS_OS_SETTINGS_TAG_ASSISTANT_OK_GOOGLE_ALT2,
         SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAssistantOnSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAssistantOnSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_ASSISTANT_TURN_OFF,
        mojom::kAssistantSubpagePath,
        mojom::SearchResultIcon::kAssistant,
@@ -195,11 +210,11 @@ const std::vector<SearchConcept>& GetAssistantOnSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAssistantRelatedInfo}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAssistantOffSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAssistantOffSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_ASSISTANT_TURN_ON,
        mojom::kAssistantSubpagePath,
        mojom::SearchResultIcon::kAssistant,
@@ -208,11 +223,11 @@ const std::vector<SearchConcept>& GetAssistantOffSearchConcepts() {
        {.setting = mojom::Setting::kAssistantOnOff},
        {IDS_OS_SETTINGS_TAG_ASSISTANT_TURN_ON_ALT1, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetAssistantVoiceMatchSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetAssistantVoiceMatchSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_ASSISTANT_TRAIN_VOICE_MODEL,
        mojom::kAssistantSubpagePath,
        mojom::SearchResultIcon::kAssistant,
@@ -220,39 +235,37 @@ const std::vector<SearchConcept>& GetAssistantVoiceMatchSearchConcepts() {
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kTrainAssistantVoiceModel}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetMagicBoostSearchConcepts(
-    const char* section_path) {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetMagicBoostSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_MAGIC_BOOST,
-       section_path,
+       mojom::kSystemPreferencesSectionPath,
        mojom::SearchResultIcon::kMagicBoost,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kMagicBoostOnOff}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetMagicBoostSubSearchConcepts(
-    const char* section_path) {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetMagicBoostSubSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_MAGIC_BOOST_HMR,
-       section_path,
+       mojom::kSystemPreferencesSectionPath,
        mojom::SearchResultIcon::kHelpMeRead,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kMahiOnOff}},
       {IDS_OS_SETTINGS_TAG_MAGIC_BOOST_HMW,
-       section_path,
+       mojom::kSystemPreferencesSectionPath,
        mojom::SearchResultIcon::kHelpMeWrite,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kShowOrca}},
   });
-  return *tags;
+  return tags;
 }
 
 bool IsVoiceMatchAllowed() {
@@ -333,7 +346,7 @@ SearchSection::SearchSection(Profile* profile,
     : OsSettingsSection(profile, search_tag_registry) {
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
-  updater.AddSearchTags(GetSearchPageSearchConcepts(GetSectionPath()));
+  updater.AddSearchTags(GetSearchPageSearchConcepts());
 
   AssistantState* assistant_state = AssistantState::Get();
   if (IsAssistantAllowed() && assistant_state) {
@@ -350,7 +363,7 @@ SearchSection::SearchSection(Profile* profile,
 
   auto* magic_boost_state = chromeos::MagicBoostState::Get();
   if (magic_boost_state && magic_boost_state->IsMagicBoostAvailable()) {
-    updater.AddSearchTags(GetMagicBoostSearchConcepts(GetSectionPath()));
+    updater.AddSearchTags(GetMagicBoostSearchConcepts());
     magic_boost_state->AddObserver(this);
     UpdateSubMagicBoostSearchTags();
   }
@@ -380,6 +393,10 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"enableHelpMeWrite", IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE},
       {"enableHelpMeWriteDesc",
        IDS_OS_SETTINGS_ENABLE_HELP_ME_WRITE_DESCRIPTION},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      {"enableLobster", IDS_OS_SETTINGS_ENABLE_LOBSTER},
+      {"enableLobsterDesc", IDS_OS_SETTINGS_ENABLE_LOBSTER_DESCRIPTION},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
       {"osSearchEngineLabel", kIsRevampEnabled
                                   ? IDS_OS_SETTINGS_REVAMP_SEARCH_ENGINE_LABEL
                                   : IDS_OS_SETTINGS_SEARCH_ENGINE_LABEL},
@@ -403,10 +420,17 @@ void SearchSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean(
       "isMagicBoostFeatureEnabled",
-      chromeos::MagicBoostState::Get()->IsMagicBoostAvailable());
+      chromeos::MagicBoostState::Get()->IsMagicBoostAvailable() ||
+          IsLobsterSettingsToggleVisible(profile()));
 
   html_source->AddBoolean("isMagicBoostNoticeBannerVisible",
                           IsMagicBoostNoticeBannerVisible(profile()));
+
+  html_source->AddBoolean("isLobsterSettingsToggleVisible",
+                          IsLobsterSettingsToggleVisible(profile()));
+
+  html_source->AddBoolean("isSunfishSettingsToggleVisible",
+                          ash::IsSunfishOrScannerEnabled());
 
   const bool is_assistant_allowed = IsAssistantAllowed();
   html_source->AddBoolean("isAssistantAllowed", is_assistant_allowed);
@@ -434,9 +458,7 @@ int SearchSection::GetSectionNameMessageId() const {
 }
 
 mojom::Section SearchSection::GetSection() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::Section::kSystemPreferences
-             : mojom::Section::kSearchAndAssistant;
+  return mojom::Section::kSystemPreferences;
 }
 
 mojom::SearchResultIcon SearchSection::GetSectionIcon() const {
@@ -444,9 +466,7 @@ mojom::SearchResultIcon SearchSection::GetSectionIcon() const {
 }
 
 const char* SearchSection::GetSectionPath() const {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kSystemPreferencesSectionPath
-             : mojom::kSearchAndAssistantSectionPath;
+  return mojom::kSystemPreferencesSectionPath;
 }
 
 bool SearchSection::LogMetric(mojom::Setting setting,
@@ -467,6 +487,16 @@ bool SearchSection::LogMetric(mojom::Setting setting,
           "ChromeOS.Settings.MagicBoost.HelpMeWriteEnabled", value.GetBool());
       return true;
 
+    case mojom::Setting::kLobsterOnOff:
+      base::UmaHistogramBoolean("ChromeOS.Settings.MagicBoost.LobsterEnabled",
+                                value.GetBool());
+      return true;
+
+    case mojom::Setting::kSunfishOnOff:
+      base::UmaHistogramBoolean("ChromeOS.Settings.SunfishEnabled",
+                                value.GetBool());
+      return true;
+
     default:
       return false;
   }
@@ -484,6 +514,8 @@ void SearchSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   // log it.
   generator->RegisterTopLevelSetting(mojom::Setting::kMahiOnOff);
   generator->RegisterTopLevelSetting(mojom::Setting::kMagicBoostOnOff);
+  generator->RegisterTopLevelSetting(mojom::Setting::kLobsterOnOff);
+  generator->RegisterTopLevelSetting(mojom::Setting::kSunfishOnOff);
 
   // Search.
   generator->RegisterTopLevelSubpage(
@@ -628,10 +660,10 @@ void SearchSection::UpdateSubMagicBoostSearchTags() {
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
 
-  updater.RemoveSearchTags(GetMagicBoostSubSearchConcepts(GetSectionPath()));
+  updater.RemoveSearchTags(GetMagicBoostSubSearchConcepts());
 
   if (magic_boost_state->magic_boost_enabled().value_or(false)) {
-    updater.AddSearchTags(GetMagicBoostSubSearchConcepts(GetSectionPath()));
+    updater.AddSearchTags(GetMagicBoostSubSearchConcepts());
   }
 }
 

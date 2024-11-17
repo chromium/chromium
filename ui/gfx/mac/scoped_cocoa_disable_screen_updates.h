@@ -5,7 +5,7 @@
 #ifndef UI_GFX_MAC_SCOPED_COCOA_DISABLE_SCREEN_UPDATES_H_
 #define UI_GFX_MAC_SCOPED_COCOA_DISABLE_SCREEN_UPDATES_H_
 
-#include "ui/gfx/gfx_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 
@@ -14,7 +14,7 @@ namespace gfx {
 // can be nested, and there is a time-maximum (about 1 second) after which
 // Cocoa will automatically re-enable updating. This class doesn't attempt to
 // overrule that.
-class GFX_EXPORT ScopedCocoaDisableScreenUpdates {
+class COMPONENT_EXPORT(GFX) ScopedCocoaDisableScreenUpdates {
  public:
   ScopedCocoaDisableScreenUpdates();
 

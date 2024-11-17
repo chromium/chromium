@@ -80,8 +80,7 @@ gfx::BufferFormat GetBufferFormatFromFourCCFormat(int format) {
     case DRM_FORMAT_ABGR16161616F:
       return gfx::BufferFormat::RGBA_F16;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return gfx::BufferFormat::BGRA_8888;
+      NOTREACHED();
   }
 }
 
@@ -120,6 +119,7 @@ const char* DrmFormatToString(uint32_t format) {
     STRINGIFY(DRM_FORMAT_ARGB2101010);
     STRINGIFY(DRM_FORMAT_ABGR2101010);
     STRINGIFY(DRM_FORMAT_RGB565);
+    STRINGIFY(DRM_FORMAT_NV12);
     STRINGIFY(DRM_FORMAT_YVU420);
     STRINGIFY(DRM_FORMAT_P010);
     STRINGIFY(DRM_FORMAT_ABGR16161616F);

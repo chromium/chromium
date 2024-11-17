@@ -4,14 +4,19 @@
 
 #include "chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.h"
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/settings/cros_settings_holder.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/token_encryptor.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -110,6 +115,11 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
     content::RunAllTasksUntilIdle();
   }
 
+  base::FilePath GetTempPath() const {
+    base::FilePath temp_path = base::MakeAbsoluteFilePath(temp_dir_.GetPath());
+    return temp_path.Append("device_refresh_token_test");
+  }
+
   void StoreV1TokenInLocalState(const std::string& token) {
     ash::CryptohomeTokenEncryptor encryptor(GetStubSaltAsString());
     scoped_testing_local_state_.Get()->SetUserPref(
@@ -125,6 +135,17 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
         std::make_unique<base::Value>(encryptor.EncryptWithSystemSalt(token)));
   }
 
+  void StoreV3Token(const std::string& token) {
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(base::PathService::OverrideAndCreateIfNeeded(
+        chrome::FILE_CHROME_OS_DEVICE_REFRESH_TOKEN, GetTempPath(), true,
+        false));
+    ASSERT_TRUE(base::WriteFile(GetTempPath(), token));
+    scoped_testing_local_state_.Get()->SetUserPref(
+        prefs::kDeviceRefreshTokenAnyApiIsV3Used,
+        std::make_unique<base::Value>(true));
+  }
+
   content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState scoped_testing_local_state_;
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
@@ -133,6 +154,7 @@ class DeviceOAuth2TokenStoreChromeOSTest : public testing::Test {
       ash::DeviceSettingsService::Get(), scoped_testing_local_state_.Get()};
   ash::FakeSessionManagerClient session_manager_client_;
   policy::DevicePolicyBuilder device_policy_;
+  base::ScopedTempDir temp_dir_;
 };
 
 TEST_F(DeviceOAuth2TokenStoreChromeOSTest, InitSuccessful) {
@@ -181,12 +203,24 @@ TEST_F(DeviceOAuth2TokenStoreChromeOSTest, LoadV2Token) {
   EXPECT_EQ("test-token", store.GetRefreshToken());
 }
 
+TEST_F(DeviceOAuth2TokenStoreChromeOSTest, LoadV3Token) {
+  chromeos::DeviceOAuth2TokenStoreChromeOS store(
+      scoped_testing_local_state_.Get());
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(chromeos::kRefreshTokenV3Feature);
+  StoreV3Token("test-token");
+  InitStore(&store);
+
+  EXPECT_EQ("test-token", store.GetRefreshToken());
+}
+
 TEST_F(DeviceOAuth2TokenStoreChromeOSTest, LoadPrefersV2Token) {
   chromeos::DeviceOAuth2TokenStoreChromeOS store(
       scoped_testing_local_state_.Get());
 
   StoreV1TokenInLocalState("test-token-v1");
   StoreV2TokenInLocalState("test-token-v2");
+  StoreV3Token("test-token-v3");
   InitStore(&store);
 
   EXPECT_EQ("test-token-v2", store.GetRefreshToken());

@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.hasItem;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING;
 import static org.chromium.chrome.browser.pwd_migration.R.id.password_migration_more_options_button;
 import static org.chromium.chrome.browser.pwd_migration.R.id.password_migration_next_button;
@@ -44,16 +45,19 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.FileUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.password_manager.PasswordMetricsUtil.HistogramExportResult;
 import org.chromium.chrome.browser.password_manager.settings.ExportFlow;
@@ -78,8 +82,12 @@ import java.io.IOException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+// The export from the migration warning sheet was used before the access loss warning feature.
+@DisableFeatures(UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
 @EnableFeatures(UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)
 public class PasswordMigrationWarningExportFlowTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeTabbedActivityTestRule mChromeActivityRule = new ChromeTabbedActivityTestRule();
 
@@ -90,7 +98,6 @@ public class PasswordMigrationWarningExportFlowTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mChromeActivityRule.startMainActivityOnBlankPage();
         Context context = mChromeActivityRule.getActivity();
         BottomSheetController bottomSheetController =
@@ -100,7 +107,7 @@ public class PasswordMigrationWarningExportFlowTest {
                         .getBottomSheetController();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mExportFlow = new ExportFlow();
+                    mExportFlow = new ExportFlow(PasswordAccessLossWarningType.NONE);
                     mFakePasswordManagerHandler =
                             new FakePasswordManagerHandler(
                                     PasswordManagerHandlerProvider.getForProfile(

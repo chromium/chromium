@@ -7,6 +7,7 @@
 #import "base/containers/span.h"
 #import "base/files/file_path.h"
 #import "base/files/scoped_temp_dir.h"
+#import "base/memory/raw_ptr_exclusion.h"
 #import "base/strings/stringprintf.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "ios/chrome/browser/sessions/model/proto_util.h"
@@ -44,8 +45,8 @@ struct GroupInfo {
 struct SessionInfo {
   const int active_index = -1;
   const int pinned_tab_count = 0;
-  const base::span<const TabInfo> tabs;
-  const base::span<const GroupInfo> groups;
+  RAW_PTR_EXCLUSION const base::span<const TabInfo> tabs;
+  RAW_PTR_EXCLUSION const base::span<const GroupInfo> groups;
 };
 
 // Constants representing the default session used for tests.

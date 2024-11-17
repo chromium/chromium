@@ -12,7 +12,6 @@ import android.graphics.Bitmap;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.media.MediaSessionHelper;
 import org.chromium.components.favicon.LargeIconBridge;
@@ -40,7 +39,7 @@ public class MediaNotificationTestTabHolder {
     MediaSessionTabHelper mMediaSessionTabHelper;
 
     // Mock LargeIconBridge that always returns false.
-    private class TestLargeIconBridge extends LargeIconBridge {
+    private static class TestLargeIconBridge extends LargeIconBridge {
         @Override
         public boolean getLargeIconForStringUrl(
                 final String pageUrl, int desiredSizePx, final LargeIconCallback callback) {
@@ -48,7 +47,7 @@ public class MediaNotificationTestTabHolder {
         }
     }
 
-    public MediaNotificationTestTabHolder(int tabId, String url, String title, JniMocker mocker) {
+    public MediaNotificationTestTabHolder(int tabId, String url, String title) {
         MockitoAnnotations.initMocks(this);
 
         when(mTab.getWebContents()).thenReturn(mWebContents);

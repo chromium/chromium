@@ -39,7 +39,8 @@ verify_pep425_tag: [
 ]
 
 # Used by:
-#   build/android/pylib/local/emulator/avd.py
+#   //build/android/pylib/local/emulator/avd.py
+#   //tools/perf/crossbench
 wheel: <
   name: "infra/python/wheels/protobuf-py3"
   version: "version:4.25.1"
@@ -125,7 +126,7 @@ wheel: <
 # Chromium tests using Telemetry function properly.
 wheel: <
   name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.2x.supported.1"
+  version: "version:1.23.5.chromium.4"
 >
 wheel: <
   name: "infra/python/wheels/pexpect/${vpython_platform}"
@@ -141,7 +142,7 @@ wheel: <
 >
 wheel: <
   name: "infra/python/wheels/pillow/${vpython_platform}"
-  version: "version:8.3.1"
+  version: "version:10.4.0"
   # There is currently no Linux arm/arm64 version in CIPD.
   not_match_tag: <
     platform: "linux_arm64"
@@ -181,7 +182,7 @@ wheel: <
 >
 
 # Used by:
-#   build/chromeos/test_runner.py
+#   //build/chromeos/test_runner.py
 wheel: <
   name: "infra/python/wheels/jsonlines-py2_py3"
   version: "version:1.2.0"
@@ -286,7 +287,7 @@ wheel: <
 >
 
 # Used by Web Platform Tests (WPT) codebase in
-# //third_party/wpt_tools
+#   //third_party/wpt_tools
 wheel: <
   name: "infra/python/wheels/html5lib-py2_py3"
   version: "version:1.0.1"
@@ -389,7 +390,7 @@ wheel: <
 >
 
 # Used by:
-#   chrome/test/chromedriver/test/run_webdriver_tests.py
+#   //chrome/test/chromedriver/test/run_webdriver_tests.py
 wheel: <
   name: "infra/python/wheels/iniconfig-py3"
   version: "version:1.1.1"
@@ -468,7 +469,7 @@ wheel: <
 >
 
 # Used by:
-#   testing/buildbot/generate_buildbot_json_coveragetest.py
+#   //testing/buildbot/generate_buildbot_json_coveragetest.py
 wheel: <
   name: "infra/python/wheels/coverage/${vpython_platform}"
   version: "version:5.5.chromium.3"
@@ -490,6 +491,7 @@ wheel: <
 
 # Used by:
 #   //tools/infra/find_bad_builds.py
+#   //tools/perf/crossbench
 wheel: <
   name: "infra/python/wheels/pytz-py2_py3"
   version: "version:2018.4"
@@ -522,14 +524,15 @@ wheel: <
 >
 
 # Used by:
-#   tools/perf/core/results_dashboard.py
+#   //tools/perf/core/results_dashboard.py
 wheel: <
   name: "infra/python/wheels/httplib2-py3"
   version: "version:0.19.1"
 >
 
 # Used by:
-#   tools/perf/flakiness_cli
+#   //tools/perf/flakiness_cli
+#   //tools/perf/crossbench
 wheel: <
   name: "infra/python/wheels/pandas/${vpython_platform}"
   version: "version:1.3.2.chromium.1"
@@ -539,7 +542,7 @@ wheel: <
 >
 
 # Used by:
-#   tools/perf/crossbench
+#   //tools/perf/crossbench
 wheel: <
   name: "infra/python/wheels/hjson-py2_py3"
   version: "version:3.1.0"
@@ -555,10 +558,15 @@ wheel: <
   version: "version:4.1.0"
 >
 
+wheel: <
+  name: "infra/python/wheels/perfetto-py3"
+  version: "version:0.10.0"
+>
+
 # Used by:
 #   chrome/test/mini_installer/test_chrome_with_chromedriver.py
 #   testing/script/run_variations_smoke_tests.py
-#   tools/perf/crossbench
+#   //tools/perf/crossbench
 # Keep this to the same revision as third_party/webdriver/pylib, which is pulled
 # in via DEPS.
 wheel: <
@@ -623,7 +631,7 @@ wheel: <
 >
 
 # Used by:
-#   //third_party/crossbench
+#   //tools/perf/crossbench
 wheel: <
   name: "infra/python/wheels/immutabledict-py3"
   version: "version:4.1.0"

@@ -6,9 +6,10 @@
  * #type=style-lit
  * #import=chrome://resources/cr_elements/cr_hidden_style_lit.css.js
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/cr_spinner_style_lit.css.js
  * #import=./elements/shared_vars.css.js
  * #import=./pdf_viewer_shared_style.css.js
- * #include=pdf-viewer-shared-style cr-hidden-style-lit
+ * #include=pdf-viewer-shared-style cr-hidden-style-lit cr-spinner-style-lit
  * #css_wrapper_metadata_end */
 
 :host {
@@ -40,6 +41,11 @@ viewer-toolbar {
   viewer-toolbar {
     display: none;
   }
+}
+
+#bottom {
+  display: flex;
+  justify-content: center;
 }
 
 #sidenav-container {
@@ -147,4 +153,22 @@ viewer-ink-host {
 /* Hide scrollbars when in Presentation mode. */
 #scroller:fullscreen {
   overflow: hidden;
+}
+
+.spinner {
+  mask-image: url(chrome://resources/images/throbber_small.svg);
+  margin-inline-end: 10px;
+}
+
+/* Dark mode styles copied from
+   ui/webui/resources/cr_elements/shared_vars_css.html. Unfortunately there
+   seems to be no great way to share styles with the
+   "prefers-color-scheme: dark" @media query selector.
+   TODO(crbug.com/40779507): Remove these overrides when the PDF viewer
+   supports light and dark modes. */
+#searchifyProgress {
+  /* color-inverse-surface */
+  --cr-toast-background: rgb(227, 227, 227);
+  /* color-surface */
+  --cr-toast-text-color: rgb(31, 31, 31);
 }

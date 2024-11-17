@@ -150,6 +150,17 @@ public class IntentUtils {
         }
     }
 
+    /** Just like {@link Bundle#getLong(String, long)} but doesn't throw exceptions. */
+    public static long safeGetLong(Bundle bundle, String name, long defaultValue) {
+        try {
+            return bundle.getLong(name, defaultValue);
+        } catch (Throwable t) {
+            // Catches un-parceling exceptions.
+            Log.e(TAG, "getLong failed on bundle " + bundle);
+            return defaultValue;
+        }
+    }
+
     /** Just like {@link Intent#getStringExtra(String)} but doesn't throw exceptions. */
     public static String safeGetStringExtra(Intent intent, String name) {
         try {

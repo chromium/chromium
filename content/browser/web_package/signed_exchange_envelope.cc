@@ -98,11 +98,11 @@ bool IsCacheableBySharedCache(const SignedExchangeEnvelope::HeaderMap& headers,
   if (found == headers.end())
     return true;
   net::HttpUtil::NameValuePairsIterator it(
-      found->second.begin(), found->second.end(), ',',
+      found->second, /*delimiter=*/',',
       net::HttpUtil::NameValuePairsIterator::Values::NOT_REQUIRED,
       net::HttpUtil::NameValuePairsIterator::Quotes::STRICT_QUOTES);
   while (it.GetNext()) {
-    std::string_view name = it.name_piece();
+    std::string_view name = it.name();
     if (name == "no-store" || name == "private") {
       signed_exchange_utils::ReportErrorAndTraceEvent(
           devtools_proxy,

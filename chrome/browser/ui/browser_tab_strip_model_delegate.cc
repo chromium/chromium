@@ -15,7 +15,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/reading_list/reading_list_model_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
-#include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -36,7 +35,7 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/reading_list/core/reading_list_model.h"
-#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/sessions/content/content_live_tab.h"
 #include "components/sessions/core/session_id.h"
@@ -92,7 +91,8 @@ Browser* BrowserTabStripModelDelegate::CreateNewStripWithTabs(
     if (i == 0)
       item.add_types |= AddTabTypes::ADD_ACTIVE;
 
-    content::WebContents* const raw_web_contents = item.tab.get()->contents();
+    content::WebContents* const raw_web_contents =
+        item.tab.get()->GetContents();
     new_model->InsertDetachedTabAt(static_cast<int>(i), std::move(item.tab),
                                    item.add_types);
     // Make sure the loading state is updated correctly, otherwise the throbber
@@ -108,9 +108,6 @@ Browser* BrowserTabStripModelDelegate::CreateNewStripWithTabs(
 void BrowserTabStripModelDelegate::WillAddWebContents(
     content::WebContents* contents) {
   TabHelpers::AttachTabHelpers(contents);
-
-  // Make the tab show up in the task manager.
-  task_manager::WebContentsTags::CreateForTabContents(contents);
 }
 
 int BrowserTabStripModelDelegate::GetDragActions() const {
@@ -332,11 +329,21 @@ BrowserTabStripModelDelegate::GetBrowserWindowInterface() {
 
 void BrowserTabStripModelDelegate::OnGroupsDestruction(
     const std::vector<tab_groups::TabGroupId>& group_ids,
-    base::OnceCallback<void()> callback) {
-  tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
-      browser_,
-      tab_groups::DeletionDialogController::DialogType::CloseTabAndDelete,
-      group_ids, std::move(callback));
+    base::OnceCallback<void()> close_callback,
+    bool delete_groups) {
+  if (!delete_groups && tab_groups::IsTabGroupsSaveV2Enabled()) {
+    // Close the groups rather than delete them to retain the saved group.
+    for (auto group_id : group_ids) {
+      tab_groups::SavedTabGroupUtils::RemoveGroupFromTabstrip(browser_,
+                                                              group_id);
+    }
+    std::move(close_callback).Run();
+  } else {
+    tab_groups::SavedTabGroupUtils::MaybeShowSavedTabGroupDeletionDialog(
+        browser_,
+        tab_groups::DeletionDialogController::DialogType::CloseTabAndDelete,
+        group_ids, std::move(close_callback));
+  }
 }
 
 void BrowserTabStripModelDelegate::OnRemovingAllTabsFromGroups(

@@ -61,6 +61,7 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
       bool has_user_gesture,
       const std::optional<url::Origin>& initiating_origin,
       RenderFrameHost* initiator_document,
+      const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory)
       override {
     external_protocol_call_count_++;

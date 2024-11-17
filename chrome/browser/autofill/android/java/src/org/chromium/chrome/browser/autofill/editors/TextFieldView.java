@@ -23,7 +23,6 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.TextView.OnEditorActionListener;
 
 import androidx.annotation.Nullable;
@@ -71,7 +70,6 @@ class TextFieldView extends FrameLayout implements FieldView {
     private TextInputLayout mInputLayout;
     private AutoCompleteTextView mInput;
     private View mIconsLayer;
-    private ImageView mActionIcon;
     private boolean mShowRequiredIndicator;
     @Nullable private EditorFieldValidator mValidator;
     @Nullable private TextWatcher mTextFormatter;

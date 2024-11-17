@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 
 #import "base/files/file_path.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -24,10 +25,10 @@ class BrowserPrefsTest : public PlatformTest {
 
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
-    RegisterBrowserStatePrefs(pref_service_->registry());
+    RegisterProfilePrefs(pref_service_->registry());
 
     // TODO(crbug.com/40282890): Remove this line ~one year after full launch.
-    // Manually register IdentityManagerFactory preferences as BrowserPrefs do
+    // Manually register IdentityManagerFactory preferences as ProfilePrefs do
     // not register KeyedService factories prefs.
     signin::IdentityManager::RegisterProfilePrefs(pref_service_->registry());
   }
@@ -50,10 +51,20 @@ class BrowserPrefsTest : public PlatformTest {
 
 // Check that the migration of a pref from profile prefService to
 // localState prefService is performed correctly.
-TEST_F(BrowserPrefsTest, VerifyBrowserStatePrefsMigration) {
+TEST_F(BrowserPrefsTest, VerifyProfilePrefsMigration) {
+  base::Time now = base::Time::Now();
+
   // Simulate registering a value different from default in profile prefService.
   pref_service()->SetBoolean(prefs::kBottomOmnibox, true);
   pref_service()->SetBoolean(prefs::kBottomOmniboxByDefault, true);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kCredentialProviderEnabledOnStartup, true);
+  pref_service()->SetTime(prefs::kIdentityConfirmationSnackbarLastPromptTime,
+                          now);
+  pref_service()->SetInteger(prefs::kIdentityConfirmationSnackbarDisplayCount,
+                             1);
+  pref_service()->SetBoolean(prefs::kIncognitoInterstitialEnabled, true);
+  pref_service()->SetInteger(prefs::kAddressBarSettingsNewBadgeShownCount, 1);
 
   EXPECT_EQ(pref_service()->GetBoolean(prefs::kBottomOmnibox), true);
   EXPECT_EQ(local_state()->GetBoolean(prefs::kBottomOmnibox), false);
@@ -61,7 +72,40 @@ TEST_F(BrowserPrefsTest, VerifyBrowserStatePrefsMigration) {
   EXPECT_EQ(pref_service()->GetBoolean(prefs::kBottomOmniboxByDefault), true);
   EXPECT_EQ(local_state()->GetBoolean(prefs::kBottomOmniboxByDefault), false);
 
-  MigrateObsoleteBrowserStatePrefs(base::FilePath(), pref_service());
+  EXPECT_EQ(pref_service()->GetBoolean(
+                password_manager::prefs::kCredentialProviderEnabledOnStartup),
+            true);
+  EXPECT_EQ(local_state()->GetBoolean(
+                password_manager::prefs::kCredentialProviderEnabledOnStartup),
+            false);
+
+  EXPECT_EQ(pref_service()->GetTime(
+                prefs::kIdentityConfirmationSnackbarLastPromptTime),
+            now);
+  EXPECT_EQ(local_state()->GetTime(
+                prefs::kIdentityConfirmationSnackbarLastPromptTime),
+            base::Time());
+
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kIdentityConfirmationSnackbarDisplayCount),
+            1);
+  EXPECT_EQ(local_state()->GetInteger(
+                prefs::kIdentityConfirmationSnackbarDisplayCount),
+            0);
+
+  EXPECT_EQ(pref_service()->GetBoolean(prefs::kIncognitoInterstitialEnabled),
+            true);
+  EXPECT_EQ(local_state()->GetBoolean(prefs::kIncognitoInterstitialEnabled),
+            false);
+
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount),
+      1);
+  EXPECT_EQ(
+      local_state()->GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount),
+      0);
+
+  MigrateObsoleteProfilePrefs(base::FilePath(), pref_service());
 
   // Verify that the prefs were migrated successfully.
   EXPECT_EQ(pref_service()->GetBoolean(prefs::kBottomOmnibox), false);
@@ -69,6 +113,39 @@ TEST_F(BrowserPrefsTest, VerifyBrowserStatePrefsMigration) {
 
   EXPECT_EQ(pref_service()->GetBoolean(prefs::kBottomOmniboxByDefault), false);
   EXPECT_EQ(local_state()->GetBoolean(prefs::kBottomOmniboxByDefault), true);
+
+  EXPECT_EQ(pref_service()->GetBoolean(
+                password_manager::prefs::kCredentialProviderEnabledOnStartup),
+            false);
+  EXPECT_EQ(local_state()->GetBoolean(
+                password_manager::prefs::kCredentialProviderEnabledOnStartup),
+            true);
+
+  EXPECT_EQ(pref_service()->GetTime(
+                prefs::kIdentityConfirmationSnackbarLastPromptTime),
+            base::Time());
+  EXPECT_EQ(local_state()->GetTime(
+                prefs::kIdentityConfirmationSnackbarLastPromptTime),
+            now);
+
+  EXPECT_EQ(pref_service()->GetInteger(
+                prefs::kIdentityConfirmationSnackbarDisplayCount),
+            0);
+  EXPECT_EQ(local_state()->GetInteger(
+                prefs::kIdentityConfirmationSnackbarDisplayCount),
+            1);
+
+  EXPECT_EQ(pref_service()->GetBoolean(prefs::kIncognitoInterstitialEnabled),
+            false);
+  EXPECT_EQ(local_state()->GetBoolean(prefs::kIncognitoInterstitialEnabled),
+            true);
+
+  EXPECT_EQ(
+      pref_service()->GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount),
+      0);
+  EXPECT_EQ(
+      local_state()->GetInteger(prefs::kAddressBarSettingsNewBadgeShownCount),
+      1);
 }
 
 // Check that the migration of a pref from localState prefService to
@@ -121,7 +198,7 @@ TEST_F(BrowserPrefsTest, VerifyLocalStatePrefsMigration) {
   EXPECT_EQ(local_state()->GetDict(prefs::kIosPreRestoreAccountInfo),
             dict_example);
 
-  MigrateObsoleteBrowserStatePrefs(base::FilePath(), pref_service());
+  MigrateObsoleteProfilePrefs(base::FilePath(), pref_service());
 
   // Verify that the prefs were migrated successfully.
   EXPECT_EQ(

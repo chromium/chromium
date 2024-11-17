@@ -27,10 +27,6 @@ namespace ui {
 class ColorChangeHandler;
 }
 
-namespace tabs {
-class TabDeclutterController;
-}
-
 class TabSearchUI;
 
 class TabSearchUIConfig : public DefaultTopChromeWebUIConfig<TabSearchUI> {
@@ -73,13 +69,6 @@ class TabSearchUI : public TopChromeWebUIController,
     page_handler_creation_callback_ = std::move(callback);
   }
 
-  void InstallTabDeclutterController(
-      tabs::TabDeclutterController* tab_declutter_controller);
-
-  tabs::TabDeclutterController* tab_declutter_controller() {
-    return tab_declutter_controller_;
-  }
-
  private:
   // tab_search::mojom::PageHandlerFactory
   void CreatePageHandler(
@@ -99,8 +88,6 @@ class TabSearchUI : public TopChromeWebUIController,
   WebuiLoadTimer webui_load_timer_;
 
   base::OnceClosure page_handler_creation_callback_;
-
-  raw_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
 
   // A timer used to track the duration between when the WebUI is constructed
   // and when the TabSearchPageHandler is constructed.

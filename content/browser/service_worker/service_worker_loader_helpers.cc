@@ -4,6 +4,9 @@
 
 #include "content/browser/service_worker/service_worker_loader_helpers.h"
 
+#include <optional>
+#include <string_view>
+
 #include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
@@ -38,7 +41,7 @@ bool IsPathRestrictionSatisfiedInternal(
     const GURL& scope,
     const GURL& script_url,
     bool service_worker_allowed_header_supported,
-    const std::string* service_worker_allowed_header_value,
+    const std::optional<std::string_view>& service_worker_allowed_header_value,
     std::string* error_message) {
   DCHECK(scope.is_valid());
   DCHECK(!scope.has_ref());
@@ -156,8 +159,7 @@ bool ShouldBypassCacheDueToUpdateViaCache(
     case blink::mojom::ServiceWorkerUpdateViaCache::kAll:
       return false;
   }
-  NOTREACHED_IN_MIGRATION() << static_cast<int>(cache_mode);
-  return false;
+  NOTREACHED() << static_cast<int>(cache_mode);
 }
 
 bool ShouldValidateBrowserCacheForScript(
@@ -316,7 +318,7 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
 bool IsPathRestrictionSatisfied(
     const GURL& scope,
     const GURL& script_url,
-    const std::string* service_worker_allowed_header_value,
+    const std::optional<std::string_view>& service_worker_allowed_header_value,
     std::string* error_message) {
   return IsPathRestrictionSatisfiedInternal(scope, script_url, true,
                                             service_worker_allowed_header_value,
@@ -326,8 +328,8 @@ bool IsPathRestrictionSatisfied(
 bool IsPathRestrictionSatisfiedWithoutHeader(const GURL& scope,
                                              const GURL& script_url,
                                              std::string* error_message) {
-  return IsPathRestrictionSatisfiedInternal(scope, script_url, false, nullptr,
-                                            error_message);
+  return IsPathRestrictionSatisfiedInternal(scope, script_url, false,
+                                            std::nullopt, error_message);
 }
 
 const base::flat_set<std::string> FetchHandlerBypassedHashStrings() {

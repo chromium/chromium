@@ -249,8 +249,7 @@ int8_t HighlightRegistry::CompareOverlayStackingPosition(
         return kOverlayStackingPositionAbove;
       }
     }
-    NOTREACHED_IN_MIGRATION();
-    return kOverlayStackingPositionEquivalent;
+    NOTREACHED();
   }
 
   return highlight1->priority() > highlight2->priority()
@@ -290,6 +289,14 @@ void HighlightRegistry::IterationSource::Trace(blink::Visitor* visitor) const {
 HighlightRegistryMapIterable::IterationSource*
 HighlightRegistry::CreateIterationSource(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<IterationSource>(*this);
+}
+
+HeapVector<Member<Highlight>> HighlightRegistry::highlightsFromPoint(
+    float x,
+    float y,
+    const HighlightsFromPointOptions* options) {
+  // TODO(crbug.com/365046212): implement this function.
+  return HeapVector<Member<Highlight>>();
 }
 
 }  // namespace blink

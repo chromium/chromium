@@ -21,11 +21,12 @@ _BINARY_NAME_BY_BROWSER_CONFIG = {
     _targets_common.browser_config.ANDROID_WEBVIEW: "telemetry_gpu_integration_test_android_webview",
 }
 
-def _get_gpu_telemetry_test_binary_node(settings):
+def _get_gpu_telemetry_test_binary_node(settings, is_android_webview):
     if settings.is_android:
-        # TODO: crbug.com/40258588 - Handle equivalent of test_suites key
-        # android_webview_gpu_telemetry_tests: telemetry_gpu_integration_test_android_webview
-        binary_name = _BINARY_NAME_BY_BROWSER_CONFIG[settings.browser_config]
+        if is_android_webview:
+            binary_name = "telemetry_gpu_integration_test_android_webview"
+        else:
+            binary_name = _BINARY_NAME_BY_BROWSER_CONFIG[settings.browser_config]
     elif settings.is_fuchsia:
         binary_name = "telemetry_gpu_integration_test_fuchsia"
     else:
@@ -33,15 +34,19 @@ def _get_gpu_telemetry_test_binary_node(settings):
     return graph.node(_targets_nodes.BINARY.key(binary_name))
 
 def _gpu_telemetry_test_spec_init(node, settings):
-    binary_node = _get_gpu_telemetry_test_binary_node(settings)
+    is_android_webview = node.props.details.is_android_webview
+
+    binary_node = _get_gpu_telemetry_test_binary_node(settings, is_android_webview)
     spec_value = _isolated_script_test_spec_handler.init(node, settings, binary_node = binary_node)
+
+    browser_config = "android-webview-instrumentation" if is_android_webview else settings.browser_config
+    spec_value["browser_config"] = browser_config
     spec_value["telemetry_test_name"] = node.props.details.telemetry_test_name
+
     return spec_value
 
-def _gpu_telemetry_test_spec_finalize(name, settings, spec_value):
-    browser_config = settings.browser_config
-    # TODO: crbug.com/40258588 - Handle browser for
-    # android_webview_gpu_telemetry_tests and cast_streaming_tests keys
+def _gpu_telemetry_test_spec_finalize(builder_name, test_name, settings, spec_value):
+    browser_config = spec_value.pop("browser_config")
 
     extra_browser_args = []
 
@@ -50,7 +55,6 @@ def _gpu_telemetry_test_spec_finalize(name, settings, spec_value):
     # stderr goes nowhere on CrOS) AND --log-level=0 is required for some reason
     # in order to see JavaScript console messages. See
     # https://chromium.googlesource.com/chromium/src.git/+/HEAD/docs/chrome_os_logging.md
-    # TODO: crbug.com/40258588 - Handle log level for CrOS
     if settings.is_cros:
         extra_browser_args.append("--log-level=0")
     elif not settings.is_fuchsia or browser_config != "fuchsia-chrome":
@@ -62,8 +66,14 @@ def _gpu_telemetry_test_spec_finalize(name, settings, spec_value):
     # reproduce GC-related bugs in the V8 bindings.
     extra_browser_args.append("--js-flags=--expose-gc")
 
+    telemetry_test_name = spec_value["telemetry_test_name"]
+    if not telemetry_test_name:
+        telemetry_test_name = test_name
+        if "variant_id" in spec_value:
+            telemetry_test_name = telemetry_test_name[:-(len(spec_value["variant_id"]) + 1)]
+
     spec_value["args"] = args_lib.listify(
-        spec_value.get("telemetry_test_name", name),
+        telemetry_test_name,
         "--show-stdout",
         "--browser={}".format(browser_config),
         # --passthrough displays more of the logging in Telemetry when run via
@@ -79,7 +89,7 @@ def _gpu_telemetry_test_spec_finalize(name, settings, spec_value):
 
     spec_value["swarming"] = structs.evolve(spec_value["swarming"], idempotent = False)
 
-    test_type, sort_key, spec_value = _isolated_script_test_spec_handler.finalize(name, settings, spec_value)
+    test_type, sort_key, spec_value = _isolated_script_test_spec_handler.finalize(builder_name, test_name, settings, spec_value)
 
     spec_value.pop("telemetry_test_name")
 
@@ -100,6 +110,7 @@ def gpu_telemetry_test(
         *,
         name,
         telemetry_test_name = None,
+        is_android_webview = False,
         args = None,
         mixins = None):
     """Define a GPU telemetry test.
@@ -134,6 +145,7 @@ def gpu_telemetry_test(
             args = args,
             additional_fields = dict(
                 telemetry_test_name = telemetry_test_name,
+                is_android_webview = is_android_webview,
             ),
         ),
         mixins = mixins,

@@ -427,7 +427,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBuffer) {
 TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBufferNG) {
   // "[] []" with an accent mark over the last square bracket.
   const UChar kStr[] = {0x5B, 0x5D, 0x20, 0x5B, 0x301, 0x5D};
-  String string(kStr, base::make_span(kStr).size());
+  String string{base::span(kStr)};
 
   Font font(font_description);
   HarfBuzzShaper shaper(string);
@@ -453,7 +453,7 @@ TEST_F(ShapeResultBloberizerTest, CommonAccentRightToLeftFillGlyphBufferNG) {
 TEST_F(ShapeResultBloberizerTest, FourByteUtf8CodepointsNG) {
   // Codepoints which encode to four UTF-8 code units.
   const UChar kStr[] = {0xD841, 0xDF31, 0xD841, 0xDF79};
-  String string(kStr, base::make_span(kStr).size());
+  String string{base::span(kStr)};
 
   Font font(font_description);
   HarfBuzzShaper shaper(string);
@@ -479,7 +479,7 @@ TEST_F(ShapeResultBloberizerTest, FourByteUtf8CodepointsNG) {
 TEST_F(ShapeResultBloberizerTest, OffsetIntoTrailingSurrogateNG) {
   // Codepoints which encode to four UTF-8 code units.
   const UChar kStr[] = {0xD841, 0xDF31, 0xD841, 0xDF79};
-  String string(kStr, base::make_span(kStr).size());
+  String string{base::span(kStr)};
 
   Font font(font_description);
   HarfBuzzShaper shaper(string);
@@ -572,7 +572,7 @@ TEST_F(ShapeResultBloberizerTest, SupplementaryMultiRunNG) {
   const UChar kStrSupp[] = {0xD841, 0xDF0E, 0xD841, 0xDF31, 0xD841, 0xDF79,
                             0xD843, 0xDC53, 0xD843, 0xDC78, 0xD843, 0xDC96,
                             0xD843, 0xDCCF, 0xD843, 0xDCD5};
-  String string(kStrSupp, base::make_span(kStrSupp).size());
+  String string{base::span(kStrSupp)};
 
   ExpectedRange range_a{0, 6};
   ExpectedRange range_b{6, 12};

@@ -4616,6 +4616,37 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   }
 
   {
+    // |heading_text_node| = "more text" (without quotes)
+    // In this, 'text' is annotated with a spelling error.
+    //
+    // We want to test for spelling errors in 'text' selection combined with
+    // character(s) from adjacent anchor(s) which do not have any such
+    // annotations.
+    //
+    // start: TextPosition, anchor_id=4, text_offset=5,
+    //        annotated_text=more <t>ext marked text
+    // end  : TextPosition, anchor_id=6, text_offset=9,
+    //        annotated_text=more text m<a>rked text
+    AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
+        AXPlatformNodeFromNode(heading_text_node));
+    ComPtr<AXPlatformNodeTextRangeProviderWin> range_with_annotations;
+    CreateTextRangeProviderWin(
+        range_with_annotations, owner,
+        /*start_anchor=*/heading_text_node, /*start_offset=*/5,
+        /*start_affinity*/ ax::mojom::TextAffinity::kDownstream,
+        /*end_anchor=*/mark_text_node, /*end_offset=*/1,
+        /*end_affinity*/ ax::mojom::TextAffinity::kDownstream);
+
+    base::win::ScopedVariant annotation_types_variant;
+    EXPECT_HRESULT_SUCCEEDED(range_with_annotations->GetAttributeValue(
+        UIA_AnnotationTypesAttributeId, annotation_types_variant.Receive()));
+
+    std::vector<int> expected_annotations = {AnnotationType_SpellingError};
+    EXPECT_UIA_SAFEARRAY_EQ(V_ARRAY(annotation_types_variant.ptr()),
+                            expected_annotations);
+  }
+
+  {
     base::win::ScopedVariant empty_variant;
     EXPECT_UIA_TEXTATTRIBUTE_EQ(mark_text_range_provider,
                                 UIA_AnnotationTypesAttributeId, empty_variant);
@@ -5020,7 +5051,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:2 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire subtree, and not only AXID:3 for example.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 2)));
+      AXPlatformNodeFromNode(tree->GetFromId(2)));
 
   // start: TextPosition, anchor_id=4, text_offset=0, annotated_text=<s>ome text
   // end  : TextPosition, anchor_id=5, text_offset=8,
@@ -5229,9 +5260,9 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
 
   AXTree* tree = Init(update);
 
-  AXNode* text_field = GetNodeFromTree(tree->GetAXTreeID(), 2);
-  AXNode* static_text = GetNodeFromTree(tree->GetAXTreeID(), 3);
-  AXNode* inline_text_box = GetNodeFromTree(tree->GetAXTreeID(), 4);
+  AXNode* text_field = tree->GetFromId(2);
+  AXNode* static_text = tree->GetFromId(3);
+  AXNode* inline_text_box = tree->GetFromId(4);
 
   ComPtr<ITextRangeProvider> text_range_provider;
   GetTextRangeProviderFromTextNode(text_range_provider, text_field);
@@ -5520,14 +5551,13 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.nodes[4].SetName("Hello World");
 
   AXTree* tree = Init(update);
-
-  AXNode* input_node = GetNodeFromTree(tree->GetAXTreeID(), 2);
+  AXNode* input_node = tree->GetFromId(2);
 
   AXPlatformNodeWin* input_platform_node =
       static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(input_node));
 
   AXPlatformNodeWin* root = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   input_platform_node->SetFocus();
 
@@ -5629,9 +5659,8 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   update.nodes = {root_1, generic_container_2, paragraph_3, static_text_4,
                   inline_box_5};
 
-  Init(update);
-
-  AXNode* div_node = GetNodeFromTree(tree_data.tree_id, generic_container_2.id);
+  AXTree* tree = Init(update);
+  AXNode* div_node = tree->GetFromId(generic_container_2.id);
 
   AXPlatformNodeWin* owner =
       static_cast<AXPlatformNodeWin*>(AXPlatformNodeFromNode(div_node));
@@ -6242,26 +6271,18 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   )HTML"));
 
   AXTreeID tree_id = update.tree_data.tree_id;
-  Init(update);
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 1),
-                           GetNodeFromTree(tree_id, 1));
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 3),
-                           GetNodeFromTree(tree_id, 3));
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 4),
-                           GetNodeFromTree(tree_id, 4));
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 5),
-                           GetNodeFromTree(tree_id, 5));
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 11),
-                           GetNodeFromTree(tree_id, 11));
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 13),
-                           GetNodeFromTree(tree_id, 13));
-  EXPECT_ENCLOSING_ELEMENT(GetNodeFromTree(tree_id, 14),
-                           GetNodeFromTree(tree_id, 14));
+  AXTree* tree = Init(update);
+  EXPECT_ENCLOSING_ELEMENT(tree->GetFromId(1), tree->GetFromId(1));
+  EXPECT_ENCLOSING_ELEMENT(tree->GetFromId(3), tree->GetFromId(3));
+  EXPECT_ENCLOSING_ELEMENT(tree->GetFromId(4), tree->GetFromId(4));
+  EXPECT_ENCLOSING_ELEMENT(tree->GetFromId(5), tree->GetFromId(5));
+  EXPECT_ENCLOSING_ELEMENT(tree->GetFromId(11), tree->GetFromId(11));
+  EXPECT_ENCLOSING_ELEMENT(tree->GetFromId(13), tree->GetFromId(13));
+  EXPECT_ENCLOSING_ELEMENT(tree->GetFromId(14), tree->GetFromId(14));
 
   // Test movement and GetText()
   ComPtr<ITextRangeProvider> text_range_provider;
-  GetTextRangeProviderFromTextNode(text_range_provider,
-                                   GetNodeFromTree(tree_id, 1));
+  GetTextRangeProviderFromTextNode(text_range_provider, tree->GetFromId(1));
 
   ASSERT_HRESULT_SUCCEEDED(
       text_range_provider->ExpandToEnclosingUnit(TextUnit_Character));
@@ -6307,11 +6328,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   initial_state.nodes[2].role = ax::mojom::Role::kInlineTextBox;
   initial_state.nodes[2].SetName("aaa");
 
-  Init(initial_state);
+  AXTree* tree = Init(initial_state);
 
   ComPtr<ITextRangeProvider> text_range_provider;
-  GetTextRangeProviderFromTextNode(text_range_provider,
-                                   GetNodeFromTree(tree_id, 3));
+  GetTextRangeProviderFromTextNode(text_range_provider, tree->GetFromId(3));
 
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"aaa");
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
@@ -6379,11 +6399,10 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   initial_state.nodes[3].AddState(ax::mojom::State::kIgnored);
   initial_state.nodes[3].SetName("ignored");
 
-  Init(initial_state);
+  AXTree* tree = Init(initial_state);
 
   ComPtr<ITextRangeProvider> text_range_provider;
-  GetTextRangeProviderFromTextNode(text_range_provider,
-                                   GetNodeFromTree(tree_id, 3));
+  GetTextRangeProviderFromTextNode(text_range_provider, tree->GetFromId(3));
 
   EXPECT_UIA_TEXTRANGE_EQ(text_range_provider, L"aaa");
   EXPECT_UIA_MOVE_ENDPOINT_BY_UNIT(
@@ -6456,7 +6475,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // start: TextPosition, anchor_id=3, text_offset=1, annotated_text=i<g>nored
   // end  : TextPosition, anchor_id=3, text_offset=6, annotated_text=ignore<d>
@@ -6529,7 +6548,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // Original range before NormalizeTextRange()
   // |before<>||ignored1||ignored2||<a>fter|
@@ -6594,7 +6613,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   const AXNode* inline_box_7_node = tree->GetFromId(7);
 
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // start: TextPosition, anchor_id=3, text_offset=1, annotated_text=/xFFFC<>
   // end  : TextPosition, anchor_id=7, text_offset=0, annotated_text=<p>i
@@ -6664,7 +6683,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, TestValidateStartAndEnd) {
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // start: TextPosition, anchor_id=1, text_offset=0, annotated_text=<s>ome text
   // end  : TextPosition, anchor_id=3, text_offset=9, annotated_text=more text<>
@@ -6818,7 +6837,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // start: TextPosition, anchor_id=3, text_offset=0, annotated_text=<s>ome text
   // end  : TextPosition, anchor_id=5, text_offset=9, annotated_text=more text<>
@@ -6978,7 +6997,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // Create a range that spans " two three" located on the leaf nodes.
 
@@ -7110,7 +7129,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // Create a range that spans " two three" located on the leaf nodes.
 
@@ -7238,7 +7257,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   // Create a range that spans " two three" located on the leaf nodes.
 
@@ -7411,7 +7430,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree_id, 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   ComPtr<AXPlatformNodeTextRangeProviderWin> range;
   CreateTextRangeProviderWin(
@@ -7486,7 +7505,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest, CaretAtEndOfTextFieldReadOnly) {
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   ComPtr<AXPlatformNodeTextRangeProviderWin> range;
   base::win::ScopedVariant expected_variant;
@@ -7563,7 +7582,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   base::win::ScopedVariant expected_variant;
 
@@ -7637,7 +7656,7 @@ TEST_F(AXPlatformNodeTextRangeProviderTest,
   // Making |owner| AXID:1 so that |TestAXNodeWrapper::BuildAllWrappers|
   // will build the entire tree.
   AXPlatformNodeWin* owner = static_cast<AXPlatformNodeWin*>(
-      AXPlatformNodeFromNode(GetNodeFromTree(tree->GetAXTreeID(), 1)));
+      AXPlatformNodeFromNode(tree->GetFromId(1)));
 
   ComPtr<AXPlatformNodeTextRangeProviderWin> range;
   base::win::ScopedVariant expected_variant;

@@ -5,6 +5,7 @@
 #include "chrome/browser/ai/ai_summarizer.h"
 
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_utils.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/summarize.pb.h"
@@ -52,24 +53,24 @@ optimization_guide::proto::SummarizerOutputLength ToProtoOutputLength(
 }  // namespace
 
 AISummarizer::AISummarizer(
+    AIContextBoundObjectSet& context_bound_object_set,
     std::unique_ptr<optimization_guide::OptimizationGuideModelExecutor::Session>
         summarize_session,
     blink::mojom::AISummarizerCreateOptionsPtr options,
     mojo::PendingReceiver<blink::mojom::AISummarizer> receiver)
-    : summarize_session_(std::move(summarize_session)),
+    : AIContextBoundObject(context_bound_object_set),
+      summarize_session_(std::move(summarize_session)),
       receiver_(this, std::move(receiver)),
-      options_(std::move(options)) {}
+      options_(std::move(options)) {
+  receiver_.set_disconnect_handler(base::BindOnce(
+      &AIContextBoundObject::RemoveFromSet, base::Unretained(this)));
+}
 
 AISummarizer::~AISummarizer() {
   for (auto& responder : responder_set_) {
-    responder->OnResponse(
-        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
-        std::nullopt, std::nullopt);
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
   }
-}
-
-void AISummarizer::SetDeletionCallback(base::OnceClosure deletion_callback) {
-  receiver_.set_disconnect_handler(std::move(deletion_callback));
 }
 
 void AISummarizer::ModelExecutionCallback(
@@ -83,21 +84,18 @@ void AISummarizer::ModelExecutionCallback(
   }
 
   if (!result.response.has_value()) {
-    responder->OnResponse(
-        AIUtils::ConvertModelExecutionError(result.response.error().error()),
-        std::nullopt, std::nullopt);
+    responder->OnError(
+        AIUtils::ConvertModelExecutionError(result.response.error().error()));
     return;
   }
 
   auto response = optimization_guide::ParsedAnyMetadata<
       optimization_guide::proto::StringValue>(result.response->response);
   if (response->has_value()) {
-    responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
-                          response->value(), std::nullopt);
+    responder->OnStreaming(response->value());
   }
   if (result.response->is_complete) {
-    responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
-                          std::nullopt, std::nullopt);
+    responder->OnCompletion(/*context_info=*/nullptr);
   }
 }
 
@@ -109,9 +107,8 @@ void AISummarizer::Summarize(
   if (!summarize_session_) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
-    responder->OnResponse(
-        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed,
-        std::nullopt, std::nullopt);
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorSessionDestroyed);
     return;
   }
 

@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUPS_TAB_GROUP_SYNC_SERVICE_OBSERVER_BRIDGE_H_
 #define IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GROUPS_TAB_GROUP_SYNC_SERVICE_OBSERVER_BRIDGE_H_
 
-#import "components/saved_tab_groups/tab_group_sync_service.h"
+#import "components/saved_tab_groups/public/tab_group_sync_service.h"
 
 namespace tab_groups {
 class TabGroupSyncService;
@@ -28,6 +28,12 @@ class TabGroupSyncService;
 - (void)tabGroupSyncServiceSavedTabGroupRemoved:(const base::Uuid&)syncID
                                      fromSource:
                                          (tab_groups::TriggerSource)source;
+- (void)tabGroupSyncServiceSavedTabGroupLocalIdChanged:(const base::Uuid&)syncID
+                                               localID:
+                                                   (const std::optional<
+                                                       tab_groups::
+                                                           LocalTabGroupID>&)
+                                                       localID;
 @end
 
 // Bridge class to forward events from the tab_groups::TabGroupSyncService to
@@ -55,6 +61,9 @@ class TabGroupSyncServiceObserverBridge final
                          tab_groups::TriggerSource source) override;
   void OnTabGroupRemoved(const base::Uuid& sync_id,
                          tab_groups::TriggerSource source) override;
+  void OnTabGroupLocalIdChanged(
+      const base::Uuid& sync_id,
+      const std::optional<tab_groups::LocalTabGroupID>& local_id) override;
 
  private:
   __weak id<TabGroupSyncServiceObserverDelegate> delegate_ = nil;

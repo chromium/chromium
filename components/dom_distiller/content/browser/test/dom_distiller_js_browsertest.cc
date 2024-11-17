@@ -67,7 +67,7 @@ const char* kRunJsTestsJs =
 
 class DomDistillerJsTest : public content::ContentBrowserTest {
  public:
-  DomDistillerJsTest() {}
+  DomDistillerJsTest() = default;
 
   // content::ContentBrowserTest:
   void SetUpOnMainThread() override {

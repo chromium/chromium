@@ -20,6 +20,7 @@
 namespace blink {
 
 class CSSStyleDeclaration;
+class ColumnPseudoElement;
 class ShadowRoot;
 class NamedNodeMap;
 class DOMTokenList;
@@ -30,11 +31,9 @@ typedef HeapVector<Member<Attr>> AttrNodeList;
 class ElementIntersectionObserverData;
 class ContainerQueryEvaluator;
 class EditContext;
-class ScrollMarkerPseudoElement;
 class AnchorElementObserver;
 class InlineStylePropertyMap;
 class ElementInternals;
-class AccessibleNode;
 class DisplayLockContext;
 class ContainerQueryData;
 class ResizeObserver;
@@ -64,27 +63,26 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
     kPart = 10,
     kCssomMapWrapper = 11,
     kElementInternals = 12,
-    kAccessibleNode = 13,
-    kDisplayLockContext = 14,
-    kContainerQueryData = 15,
-    kRegionCaptureCropId = 16,
-    kResizeObserverData = 17,
-    kCustomElementDefinition = 18,
-    kPopoverData = 19,
-    kPartNamesMap = 20,
-    kNonce = 21,
-    kIsValue = 22,
-    kSavedLayerScrollOffset = 23,
-    kAnchorPositionScrollData = 24,
-    kAnchorElementObserver = 25,
-    kImplicitlyAnchoredElementCount = 26,
-    kLastRememberedBlockSize = 27,
-    kLastRememberedInlineSize = 28,
-    kRestrictionTargetId = 29,
-    kStyleScopeData = 30,
-    kOutOfFlowData = 31,
+    kDisplayLockContext = 13,
+    kContainerQueryData = 14,
+    kRegionCaptureCropId = 15,
+    kResizeObserverData = 16,
+    kCustomElementDefinition = 17,
+    kPopoverData = 18,
+    kPartNamesMap = 19,
+    kNonce = 20,
+    kIsValue = 21,
+    kSavedLayerScrollOffset = 22,
+    kAnchorPositionScrollData = 23,
+    kAnchorElementObserver = 24,
+    kImplicitlyAnchoredElementCount = 25,
+    kLastRememberedBlockSize = 26,
+    kLastRememberedInlineSize = 27,
+    kRestrictionTargetId = 28,
+    kStyleScopeData = 29,
+    kOutOfFlowData = 30,
 
-    kNumFields = 32,
+    kNumFields = 31,
   };
 
   ElementRareDataField* GetField(FieldId field_id) const;
@@ -160,10 +158,9 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
       PseudoId,
       const AtomicString& document_transition_tag = g_null_atom) const;
   PseudoElementData::PseudoElementVector GetPseudoElements() const;
-  void AddColumnScrollMarker(ScrollMarkerPseudoElement&);
-  const PseudoElementData::ColumnScrollMarkersVector* GetColumnScrollMarkers()
-      const;
-  void ClearColumnScrollMarkers();
+  void AddColumnPseudoElement(ColumnPseudoElement&);
+  const ColumnPseudoElementsVector* GetColumnPseudoElements() const;
+  void ClearColumnPseudoElements();
 
   CSSStyleDeclaration& EnsureInlineCSSStyleDeclaration(Element* owner_element);
 
@@ -219,10 +216,6 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
 
   const ElementInternals* GetElementInternals() const;
   ElementInternals& EnsureElementInternals(HTMLElement& target);
-
-  AccessibleNode* GetAccessibleNode() const;
-  AccessibleNode* EnsureAccessibleNode(Element* owner_element);
-  void ClearAccessibleNode();
 
   DisplayLockContext* EnsureDisplayLockContext(Element* element);
   DisplayLockContext* GetDisplayLockContext() const;

@@ -34,14 +34,22 @@ const tests = [
   },
   {
     name:
-        '[dequantizeLinear] Throw if the shape of scale is not broadcastable to the shape of input.',
-    input: {dataType: 'uint8', shape: [3, 2, 5]},
-    scale: {dataType: 'float32', shape: [2]},
-    zeroPoint: {dataType: 'uint8', shape: [5]},
+        '[dequantizeLinear] Test block-wise quantization with block_size = [2, 2, 5].',
+    input: {dataType: 'uint8', shape: [6, 4, 5]},
+    scale: {dataType: 'float32', shape: [3, 2, 1]},
+    zeroPoint: {dataType: 'uint8', shape: [3, 2, 1]},
+    output: {dataType: 'float32', shape: [6, 4, 5]},
   },
   {
     name:
-        '[dequantizeLinear] Throw if the shape of zero_point is not broadcastable to the shape of input.',
+        '[dequantizeLinear] Throw if the scale size is not a factor of input size.',
+    input: {dataType: 'uint8', shape: [3, 2, 5]},
+    scale: {dataType: 'float32', shape: [2]},
+    zeroPoint: {dataType: 'uint8', shape: [2]},
+  },
+  {
+    name:
+        '[dequantizeLinear] Throw if the shape of zero_point is not the same as the shape of input.',
     input: {dataType: 'uint8', shape: [3, 2, 5]},
     scale: {dataType: 'float32', shape: [5]},
     zeroPoint: {dataType: 'uint8', shape: [2]},
@@ -55,14 +63,14 @@ const tests = [
   },
   {
     name:
-        '[dequantizeLinear] Throw if the data type of input is not int8 or uint8.',
+        '[dequantizeLinear] Throw if the data type of input is not one of {int4, uint4, int8, uint8}.',
     input: {dataType: 'float16', shape: [3, 2, 5]},
     scale: {dataType: 'float32', shape: [5]},
     zeroPoint: {dataType: 'int8', shape: [5]},
   },
   {
     name:
-        '[dequantizeLinear] Throw if the data type of zero_point is not int8 or uint8.',
+        '[dequantizeLinear] Throw if the data type of zero_point is not one of {int4, uint4, int8, uint8}.',
     input: {dataType: 'int8', shape: [3, 2, 5]},
     scale: {dataType: 'float32', shape: [5]},
     zeroPoint: {dataType: 'int32', shape: [5]},
@@ -83,8 +91,8 @@ tests.forEach(
       const zeroPoint = builder.input('zeroPoint', test.zeroPoint);
       if (test.output) {
         const output = builder.dequantizeLinear(input, scale, zeroPoint);
-        assert_equals(output.dataType(), test.output.dataType);
-        assert_array_equals(output.shape(), test.output.shape);
+        assert_equals(output.dataType, test.output.dataType);
+        assert_array_equals(output.shape, test.output.shape);
       } else {
         const label = 'dequantize_linear_123';
         const options = {label};

@@ -27,10 +27,6 @@ BASE_DECLARE_FEATURE(kAllowWindowDragUsingSystemDragDrop);
 
 BASE_DECLARE_FEATURE(kAllowEyeDropperWGCScreenCapture);
 
-BASE_DECLARE_FEATURE(kChromeLabs);
-extern const char kChromeLabsActivationParameterName[];
-extern const base::FeatureParam<int> kChromeLabsActivationPercentage;
-
 BASE_DECLARE_FEATURE(kCloseOmniboxPopupOnInactiveAreaClick);
 
 BASE_DECLARE_FEATURE(kDefaultBrowserPromptRefresh);
@@ -72,10 +68,6 @@ extern const base::FeatureParam<bool> kAppMenuChipColorPrimary;
 BASE_DECLARE_FEATURE(kExtensionsMenuInAppMenu);
 bool IsExtensionMenuInRootAppMenu();
 
-#if !defined(ANDROID)
-BASE_DECLARE_FEATURE(kAccessCodeCastUI);
-#endif
-
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_DECLARE_FEATURE(kFewerUpdateConfirmations);
 #endif
@@ -85,25 +77,16 @@ BASE_DECLARE_FEATURE(kIOSPromoRefreshedPasswordBubble);
 
 BASE_DECLARE_FEATURE(kIOSPromoAddressBubble);
 
-BASE_DECLARE_FEATURE(kIOSPromoBookmarkBubble);
-// This enum lists the possible params for the kIOSPromoBookmarkBubble promo.
-// The first is the launch candidate, the other one is for debugging/testing.
-enum class IOSPromoBookmarkBubbleActivation {
-  kContextual,
-  kAlwaysShowWithBookmarkBubble,
-};
-extern const base::FeatureParam<IOSPromoBookmarkBubbleActivation>
-    kIOSPromoBookmarkBubbleActivationParam;
-
 BASE_DECLARE_FEATURE(kIOSPromoPaymentBubble);
+
+// String params for the Desktop to iOS promos' QR code URLs.
+extern const base::FeatureParam<std::string> kIOSPromoPasswordBubbleQRCodeURL;
+extern const base::FeatureParam<std::string> kIOSPromoAddressBubbleQRCodeURL;
+extern const base::FeatureParam<std::string> kIOSPromoPaymentBubbleQRCodeURL;
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kHaTSWebUI);
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kKeyboardAndPointerLockPrompt);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -142,11 +125,21 @@ extern const base::FeatureParam<bool> kPreloadTopChromeWebUISmartPreload;
 extern const char kPreloadTopChromeWebUIDelayPreloadName[];
 extern const base::FeatureParam<bool> kPreloadTopChromeWebUIDelayPreload;
 
+// An list of exclude origins for WebUIs that don't participate in preloading.
+// The list is a string of format "<origin>,<origin2>,...,<origin-n>", where
+// each <origin> is a WebUI origin, e.g. "chrome://tab-search.top-chrome". This
+// is used for emergency preloading shutoff for problematic WebUIs.
+extern const char kPreloadTopChromeWebUIExcludeOriginsName[];
+extern const base::FeatureParam<std::string>
+    kPreloadTopChromeWebUIExcludeOrigins;
+
 #if !BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kPressAndHoldEscToExitBrowserFullscreen);
 #endif
 
 BASE_DECLARE_FEATURE(kResponsiveToolbar);
+
+BASE_DECLARE_FEATURE(kTabDuplicateMetrics);
 
 BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);
 extern const char kTabScrollingButtonPositionParameterName[];
@@ -157,16 +150,12 @@ BASE_DECLARE_FEATURE(kSidePanelWebView);
 BASE_DECLARE_FEATURE(kSidePanelCompanionDefaultPinned);
 #endif
 
-BASE_DECLARE_FEATURE(kSidePanelJourneysQueryless);
 BASE_DECLARE_FEATURE(kSidePanelResizing);
 BASE_DECLARE_FEATURE(kSidePanelSearchCompanion);
 
 BASE_DECLARE_FEATURE(kSideSearch);
 BASE_DECLARE_FEATURE(kSideSearchFeedback);
 BASE_DECLARE_FEATURE(kSearchWebInSidePanel);
-
-BASE_DECLARE_FEATURE(kSideSearchAutoTriggering);
-extern const base::FeatureParam<int> kSideSearchAutoTriggeringReturnCount;
 
 BASE_DECLARE_FEATURE(kTabGroupsCollapseFreezing);
 
@@ -200,6 +189,9 @@ bool IsTabOrganization();
 BASE_DECLARE_FEATURE(kTabstripDeclutter);
 bool IsTabstripDeclutterEnabled();
 
+BASE_DECLARE_FEATURE(kTabstripDedupe);
+bool IsTabstripDedupeEnabled();
+
 BASE_DECLARE_FEATURE(kMultiTabOrganization);
 
 BASE_DECLARE_FEATURE(kTabOrganizationAppMenuItem);
@@ -211,6 +203,17 @@ BASE_DECLARE_FEATURE(kTabReorganizationDivider);
 BASE_DECLARE_FEATURE(kTabOrganizationModelStrategy);
 
 BASE_DECLARE_FEATURE(kTabOrganizationEnableNudgeForEnterprise);
+
+// Duration of inactivity after which a tab is considered stale for declutter.
+extern const base::FeatureParam<base::TimeDelta>
+    kTabstripDeclutterStaleThresholdDuration;
+// Interval between a recomputation of stale tabs for declutter.
+extern const base::FeatureParam<base::TimeDelta>
+    kTabstripDeclutterTimerInterval;
+// Default interval after showing a nudge to prevent another nudge from being
+// shown for declutter.
+extern const base::FeatureParam<base::TimeDelta>
+    kTabstripDeclutterNudgeTimerInterval;
 
 // The target (and minimum) interval between proactive nudge triggers. Measured
 // against a clock that only runs while Chrome is in the foreground.
@@ -230,10 +233,6 @@ extern const base::FeatureParam<double>
 // predictably and frequently.
 extern const base::FeatureParam<bool> KTabOrganizationTriggerDemoMode;
 
-BASE_DECLARE_FEATURE(kTabSearchChevronIcon);
-
-BASE_DECLARE_FEATURE(kTabSearchFeedback);
-
 BASE_DECLARE_FEATURE(kTabSearchRecentlyClosed);
 
 // Default number of recently closed entries to display by default when no
@@ -252,16 +251,14 @@ BASE_DECLARE_FEATURE(kToolbarPinning);
 
 bool IsToolbarPinningEnabled();
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-BASE_DECLARE_FEATURE(kUpdateTextOptions);
-extern const base::FeatureParam<int> kUpdateTextOptionNumber;
-#endif
+BASE_DECLARE_FEATURE(kPinnedCastButton);
 
-BASE_DECLARE_FEATURE(kEnterpriseProfileBadging);
+BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingForAvatar);
+BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingForMenu);
+BASE_DECLARE_FEATURE(kEnterpriseProfileBadgingPolicies);
+BASE_DECLARE_FEATURE(kEnterpriseManagementDisclaimerUsesCustomLabel);
 BASE_DECLARE_FEATURE(kEnterpriseUpdatedProfileCreationScreen);
-
-BASE_DECLARE_FEATURE(kManagementToolbarButton);
-BASE_DECLARE_FEATURE(kManagementToolbarButtonForTrustedManagementSources);
+BASE_DECLARE_FEATURE(kManagedProfileRequiredInterstitial);
 
 BASE_DECLARE_FEATURE(kWebUITabStrip);
 
@@ -289,6 +286,17 @@ BASE_DECLARE_FEATURE(kCompactMode);
 // Controls whether the site-specific data dialog shows a related installed
 // applications section.
 BASE_DECLARE_FEATURE(kPageSpecificDataDialogRelatedInstalledAppsSection);
+
+// Feature for the promotion banner on the top of chrome://management page
+BASE_DECLARE_FEATURE(kEnableManagementPromotionBanner);
+
+// Enable display for the Chrome Enterprise Core promotion banner on
+// the chrome://policy page.
+BASE_DECLARE_FEATURE(kEnablePolicyPromotionBanner);
+
+// Controls whether a performance improvement in browser feature support
+// checking is enabled.
+BASE_DECLARE_FEATURE(kInlineFullscreenPerfExperiment);
 
 }  // namespace features
 

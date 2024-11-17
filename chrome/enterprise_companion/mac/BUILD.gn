@@ -34,6 +34,68 @@ mac_app_bundle("enterprise_companion_bundle") {
   ]
 }
 
+mac_app_bundle("test_bundle") {
+  info_plist_target = ":enterprise_companion_plist"
+  output_name = enterprise_companion_product_full_name + "_test"
+  extra_substitutions =
+      [ "MAC_BUNDLE_IDENTIFIER=$mac_enterprise_companion_bundle_identifier" ]
+
+  sources = [ "//chrome/enterprise_companion/main.cc" ]
+  deps = [
+    "//chrome/enterprise_companion:base",
+    "//chrome/enterprise_companion:constants_test",
+    "//chrome/updater:constants_test",
+  ]
+  defines = [ "ENTERPRISE_COMPANION_TEST_ONLY" ]
+  visibility = [ ":*" ]
+}
+
+copy("test_bundle_copy_exe") {
+  sources = [ "${root_out_dir}/${enterprise_companion_product_full_name}_test.app/Contents/MacOS/${enterprise_companion_product_full_name}_test" ]
+  outputs = [ "${root_out_dir}/EnterpriseCompanionTestApp/${enterprise_companion_product_full_name}.app/Contents/MacOS/${enterprise_companion_product_full_name}" ]
+  deps = [ ":test_bundle" ]
+}
+
+copy("test_bundle_copy_pkginfo") {
+  sources = [ "${root_out_dir}/${enterprise_companion_product_full_name}_test.app/Contents/PkgInfo" ]
+  outputs = [ "${root_out_dir}/EnterpriseCompanionTestApp/${enterprise_companion_product_full_name}.app/Contents/{{source_file_part}}" ]
+  deps = [ ":test_bundle" ]
+}
+
+copy("test_bundle_copy_plist") {
+  sources = [ "${root_out_dir}/${enterprise_companion_product_full_name}_test.app/Contents/Info.plist" ]
+  outputs = [ "${root_out_dir}/EnterpriseCompanionTestApp/${enterprise_companion_product_full_name}.app/Contents/{{source_file_part}}" ]
+  deps = [ ":test_bundle" ]
+}
+
+if (is_asan) {
+  copy("test_bundle_copy_asan_dylib") {
+    sources = [ "${root_out_dir}/${enterprise_companion_product_full_name}_test.app/Contents/MacOS/libclang_rt.asan_osx_dynamic.dylib" ]
+    outputs = [ "${root_out_dir}/EnterpriseCompanionTestApp/${enterprise_companion_product_full_name}.app/Contents/MacOS/{{source_file_part}}" ]
+    deps = [ ":test_bundle" ]
+  }
+}
+
+# Creates an application bundle containing the test version of the application.
+# This bundle has the same name and structure as the non-test application, thus
+# to avoid name collisions it is first built with a "_test" suffix, and then
+# copied into the "EnterpriseCompanionTestApp" directory in the build output.
+group("enterprise_companion_bundle_test") {
+  public_deps = [
+    ":test_bundle_copy_exe",
+    ":test_bundle_copy_pkginfo",
+    ":test_bundle_copy_plist",
+  ]
+  data = get_target_outputs(":test_bundle_copy_exe") +
+         get_target_outputs(":test_bundle_copy_pkginfo") +
+         get_target_outputs(":test_bundle_copy_plist")
+
+  if (is_asan) {
+    public_deps += [ ":test_bundle_copy_asan_dylib" ]
+    data += get_target_outputs(":test_bundle_copy_asan_dylib")
+  }
+}
+
 process_version("postinstall") {
   extra_args = [
     "-e",
@@ -52,4 +114,12 @@ if (host_os == "mac") {
     install_location = "/Library/Application Support/$enterprise_companion_company_short_name/$enterprise_companion_product_full_name/PkgStaging.app"
     postinstall_script_target = ":postinstall"
   }
+}
+
+copy("copy_signing") {
+  sources = [
+    "//chrome/installer/mac/pkg-dmg",
+    "sign.py",
+  ]
+  outputs = [ "$root_out_dir/EnterpriseCompanionSigning/{{source_file_part}}" ]
 }

@@ -20,6 +20,7 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -36,6 +37,7 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
+#include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -80,6 +82,7 @@ class RealboxOmniboxClient final : public OmniboxClient {
   bool IsPasteAndGoEnabled() const override;
   SessionID GetSessionID() const override;
   PrefService* GetPrefs() override;
+  const PrefService* GetPrefs() const override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() override;
   TemplateURLService* GetTemplateURLService() override;
@@ -94,12 +97,12 @@ class RealboxOmniboxClient final : public OmniboxClient {
   std::u16string GetURLForDisplay() const override;
   GURL GetNavigationEntryURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
-      bool is_prefetch) override;
+      bool is_prefetch) const override;
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  std::optional<lens::proto::LensOverlayInteractionResponse>
-    GetLensOverlayInteractionResponse() const override;
+  std::optional<lens::proto::LensOverlaySuggestInputs>
+  GetLensOverlaySuggestInputs() const override;
   void OnThumbnailRemoved() override;
   gfx::Image GetFaviconForPageUrl(
       const GURL& page_url,
@@ -175,13 +178,17 @@ PrefService* RealboxOmniboxClient::GetPrefs() {
   return profile_->GetPrefs();
 }
 
+const PrefService* RealboxOmniboxClient::GetPrefs() const {
+  return profile_->GetPrefs();
+}
+
 bookmarks::BookmarkModel* RealboxOmniboxClient::GetBookmarkModel() {
   return BookmarkModelFactory::GetForBrowserContext(profile_);
 }
 
 AutocompleteControllerEmitter*
 RealboxOmniboxClient::GetAutocompleteControllerEmitter() {
-  return AutocompleteControllerEmitter::GetForBrowserContext(profile_);
+  return AutocompleteControllerEmitterFactory::GetForBrowserContext(profile_);
 }
 
 TemplateURLService* RealboxOmniboxClient::GetTemplateURLService() {
@@ -228,7 +235,7 @@ GURL RealboxOmniboxClient::GetNavigationEntryURL() const {
 }
 
 metrics::OmniboxEventProto::PageClassification
-RealboxOmniboxClient::GetPageClassification(bool is_prefetch) {
+RealboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
   if (lens_searchbox_client_) {
     return lens_searchbox_client_->GetPageClassification();
   }
@@ -253,11 +260,10 @@ gfx::Image RealboxOmniboxClient::GetFaviconForPageUrl(
   return gfx::Image();
 }
 
-std::optional<lens::proto::LensOverlayInteractionResponse>
-    RealboxOmniboxClient::GetLensOverlayInteractionResponse() const {
-  if (lens_searchbox_client_ &&
-      lens_searchbox_client_->GetLensResponse().has_suggest_signals()) {
-    return lens_searchbox_client_->GetLensResponse();
+std::optional<lens::proto::LensOverlaySuggestInputs>
+RealboxOmniboxClient::GetLensOverlaySuggestInputs() const {
+  if (lens_searchbox_client_) {
+    return lens_searchbox_client_->GetLensSuggestInputs();
   }
   return std::nullopt;
 }
@@ -333,8 +339,11 @@ RealboxHandler::RealboxHandler(
     controller_ = omnibox_controller;
   } else {
     owned_controller_ = std::make_unique<OmniboxController>(
-        /*view=*/nullptr, std::make_unique<RealboxOmniboxClient>(
-                              profile_, web_contents_, lens_searchbox_client));
+        /*view=*/nullptr,
+        std::make_unique<RealboxOmniboxClient>(profile_, web_contents_,
+                                               lens_searchbox_client),
+        lens_searchbox_client ? base::Milliseconds(3000)
+                              : kAutocompleteDefaultStopTimerDuration);
     controller_ = owned_controller_.get();
   }
 
@@ -381,6 +390,9 @@ void RealboxHandler::OnFocusChanged(bool focused) {
     edit_model()->OnWillKillFocus();
     edit_model()->OnKillFocus();
   }
+  if (lens_searchbox_client_) {
+    lens_searchbox_client_->OnFocusChanged(focused);
+  }
 }
 
 void RealboxHandler::QueryAutocomplete(const std::u16string& input,
@@ -417,10 +429,10 @@ void RealboxHandler::QueryAutocomplete(const std::u16string& input,
   // Disable keyword matches as NTP realbox has no UI affordance for it.
   autocomplete_input.set_prefer_keyword(false);
   autocomplete_input.set_allow_exact_keyword_match(false);
-  // Set the lens overlay interaction response, if available.
-  if (std::optional<lens::proto::LensOverlayInteractionResponse> response =
-          controller_->client()->GetLensOverlayInteractionResponse()) {
-    autocomplete_input.set_lens_overlay_interaction_response(*response);
+  // Set the lens overlay suggest inputs, if available.
+  if (std::optional<lens::proto::LensOverlaySuggestInputs> suggest_inputs =
+          controller_->client()->GetLensOverlaySuggestInputs()) {
+    autocomplete_input.set_lens_overlay_suggest_inputs(*suggest_inputs);
   }
 
   omnibox_controller()->StartAutocomplete(autocomplete_input);
@@ -543,10 +555,8 @@ searchbox::mojom::SelectionLineState ConvertLineState(
       return searchbox::mojom::SelectionLineState::
           kFocusedButtonRemoveSuggestion;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
-  return searchbox::mojom::SelectionLineState::kNormal;
 }
 
 void RealboxHandler::SetInputText(const std::string& input_text) {
@@ -595,4 +605,13 @@ const AutocompleteMatch* RealboxHandler::GetMatchWithUrl(size_t index,
     return nullptr;
   }
   return &match;
+}
+
+void RealboxHandler::OnAutocompleteStopTimerTriggered(
+    const AutocompleteInput& input) {
+  // Only notify the lens controller when autocomplete stop timer is triggered
+  // for zero suggest inputs.
+  if (lens_searchbox_client_ && input.IsZeroSuggest()) {
+    lens_searchbox_client_->OnAutocompleteStopTimerTriggered();
+  }
 }

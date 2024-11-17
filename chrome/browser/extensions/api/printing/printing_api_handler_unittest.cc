@@ -367,12 +367,8 @@ class PrintingAPIHandlerUnittest : public testing::Test {
     EXPECT_TRUE(job_id);
     EXPECT_TRUE(submit_job_status);
     EXPECT_EQ(api::printing::SubmitJobStatus::kOk, submit_job_status);
-    // Only lacros needs to report the print job to ash chrome.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    EXPECT_EQ(1u, TakePrintJobs().size());
-#else
     EXPECT_EQ(0u, TakePrintJobs().size());
-#endif
+
     return *job_id;
   }
 

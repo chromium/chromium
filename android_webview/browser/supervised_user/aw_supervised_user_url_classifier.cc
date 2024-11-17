@@ -5,6 +5,7 @@
 #include "android_webview/browser/supervised_user/aw_supervised_user_url_classifier.h"
 
 #include "android_webview/browser/aw_browser_process.h"
+#include "android_webview/browser/supervised_user/aw_supervised_user_safemode_action.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
@@ -44,6 +45,9 @@ void AwSupervisedUserUrlClassifier::RegisterPrefs(
 
 bool AwSupervisedUserUrlClassifier::ShouldCreateThrottle() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!AwSupervisedUserSafeModeAction::GetInstance()->IsSupervisionEnabled()) {
+    return false;
+  }
   bool user_requires_url_checks =
       local_state_->GetBoolean(prefs::kShouldBlockRestrictedContent);
   return platform_supports_url_checks_ && user_requires_url_checks;

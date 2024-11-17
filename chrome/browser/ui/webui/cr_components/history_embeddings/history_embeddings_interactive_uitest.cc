@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
@@ -15,6 +16,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
+#include "components/history_embeddings/mock_embedder.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/page_content_annotations/core/page_content_annotations_features.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
@@ -34,10 +36,24 @@ class HistoryEmbeddingsInteractiveTest
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
-        {{history_embeddings::kHistoryEmbeddings, {{"UseMlEmbedder", "false"}}},
+        {{history_embeddings::kHistoryEmbeddings, {{}}},
          {page_content_annotations::features::kPageContentAnnotations, {{}}}},
         /*disabled_features=*/{});
+
     InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    HistoryEmbeddingsServiceFactory::GetInstance()->SetTestingFactory(
+        browser()->profile(),
+        base::BindLambdaForTesting([](content::BrowserContext* context) {
+          return HistoryEmbeddingsServiceFactory::
+              BuildServiceInstanceForBrowserContextForTesting(
+                  context, std::make_unique<history_embeddings::MockEmbedder>(),
+                  /*answerer=*/nullptr, /*intent_classfier=*/nullptr);
+        }));
+
+    InteractiveBrowserTest::SetUpOnMainThread();
   }
 
  protected:
@@ -80,7 +96,15 @@ class HistoryEmbeddingsInteractiveTest
 // which cannot be easily tested here. Instead, LaCrOS has a separate feedback
 // browser test which gives some coverage.
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsInteractiveTest, FeedbackDialog) {
+
+// TODO(crbug.com/374710231): Reenable - currently, this fails consistently on
+// Win11 ARM debug builds.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_FeedbackDialog DISABLED_FeedbackDialog
+#else
+#define MAYBE_FeedbackDialog FeedbackDialog
+#endif
+IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsInteractiveTest, MAYBE_FeedbackDialog) {
   optimization_guide::EnableSigninAndModelExecutionCapability(
       browser()->profile());
   browser()->profile()->GetPrefs()->SetInteger(

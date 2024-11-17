@@ -10,6 +10,7 @@
 #include "components/autofill/core/common/autofill_clock.h"
 
 namespace autofill::data_logs {
+
 namespace {
 // Time limit within which the last autofill event is considered related to the
 // feedback report.
@@ -23,12 +24,12 @@ std::string FillDataTypeToStr(FillDataType type) {
       return "AutofillProfile";
     case FillDataType::kCreditCard:
       return "CreditCard";
-    case FillDataType::kSingleFieldFormFillerAutocomplete:
-      return "SingleFieldFormFillerAutocomplete";
-    case FillDataType::kSingleFieldFormFillerIban:
-      return "SingleFieldFormFillerIban";
-    case FillDataType::kSingleFieldFormFillerPromoCode:
-      return "SingleFieldFormFillerPromoCode";
+    case FillDataType::kSingleFieldFillerAutocomplete:
+      return "SingleFieldFillerAutocomplete";
+    case FillDataType::kSingleFieldFillerIban:
+      return "SingleFieldFillerIban";
+    case FillDataType::kSingleFieldFillerPromoCode:
+      return "SingleFieldFillerPromoCode";
   }
 }
 
@@ -60,7 +61,7 @@ base::Value::Dict BuildFieldDataLogs(AutofillField* field) {
       "rankInHostFormSignatureGroup",
       base::NumberToString(field->rank_in_host_form_signature_group()));
 
-  field_data.Set("isEmpty", field->IsEmpty());
+  field_data.Set("isEmpty", field->value(ValueSemantics::kCurrent).empty());
   field_data.Set("isFocusable", field->IsFocusable());
   field_data.Set("isVisible", field->is_visible());
   return field_data;
@@ -76,7 +77,7 @@ base::Value::Dict BuildLastAutofillEventLogs(AutofillManager* manager) {
   for (const auto& [form_id, form] : manager->form_structures()) {
     for (const auto& field : form->fields()) {
       for (const auto& field_log_event : field->field_log_events()) {
-        if (const autofill::TriggerFillFieldLogEvent* trigger_event =
+        if (const TriggerFillFieldLogEvent* trigger_event =
                 absl::get_if<TriggerFillFieldLogEvent>(&field_log_event)) {
           had_trigger_event = true;
           if (trigger_event->timestamp > last_autofill_event_timestamp) {

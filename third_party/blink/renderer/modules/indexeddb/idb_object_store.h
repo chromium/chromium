@@ -44,6 +44,7 @@ namespace blink {
 
 class DOMStringList;
 class ExceptionState;
+class IDBGetAllRecordsOptions;
 
 class MODULES_EXPORT IDBObjectStore final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -74,11 +75,11 @@ class MODULES_EXPORT IDBObjectStore final : public ScriptWrappable {
 
   IDBRequest* openCursor(ScriptState*,
                          const ScriptValue& range,
-                         const String& direction,
+                         const V8IDBCursorDirection& direction,
                          ExceptionState&);
   IDBRequest* openKeyCursor(ScriptState*,
                             const ScriptValue& range,
-                            const String& direction,
+                            const V8IDBCursorDirection& direction,
                             ExceptionState&);
   IDBRequest* get(ScriptState*, const ScriptValue& key, ExceptionState&);
   IDBRequest* getKey(ScriptState*, const ScriptValue& key, ExceptionState&);
@@ -94,6 +95,9 @@ class MODULES_EXPORT IDBObjectStore final : public ScriptWrappable {
   IDBRequest* getAllKeys(ScriptState*,
                          const ScriptValue& range,
                          ExceptionState&);
+  IDBRequest* getAllRecords(ScriptState*,
+                            const IDBGetAllRecordsOptions*,
+                            ExceptionState&);
   IDBRequest* add(ScriptState*, const ScriptValue& value, ExceptionState&);
   IDBRequest* add(ScriptState*,
                   const ScriptValue& value,
@@ -205,6 +209,14 @@ class MODULES_EXPORT IDBObjectStore final : public ScriptWrappable {
                     ExceptionState&);
 
   int64_t FindIndexId(const String& name) const;
+
+  IDBRequest* CreateGetAllRequest(IDBRequest::TypeForMetrics,
+                                  ScriptState*,
+                                  const ScriptValue& range,
+                                  mojom::blink::IDBGetAllResultType,
+                                  uint32_t max_count,
+                                  mojom::blink::IDBCursorDirection,
+                                  ExceptionState&);
 
   // The IDBObjectStoreMetadata is shared with the object store map in the
   // database's metadata.

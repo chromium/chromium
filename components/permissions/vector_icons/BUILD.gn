@@ -7,6 +7,7 @@ import("//components/vector_icons/vector_icons.gni")
 aggregate_vector_icons("permissions_vector_icons") {
   icon_directory = "."
 
+  # TODO(accessibility) Can we remove this?
   sources = [ "accessibility.icon" ]
 }
 

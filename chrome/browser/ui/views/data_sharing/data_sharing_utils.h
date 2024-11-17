@@ -9,8 +9,10 @@
 
 #include "base/uuid.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/data_sharing/data_sharing.mojom.h"
+#include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/group_data.h"
-#include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/public/types.h"
 
 namespace data_sharing {
 
@@ -42,6 +44,16 @@ GURL GetShareLink(const std::string& group_id,
                   const std::string& access_token,
                   Profile* profile);
 
+void ProcessPreviewOutcome(
+    data_sharing::mojom::PageHandler::GetTabGroupPreviewCallback callback,
+    const data_sharing::DataSharingService::SharedDataPreviewOrFailureOutcome&
+        outcome);
+
+void GetTabGroupPreview(
+    const std::string& group_id,
+    const std::string& access_token,
+    Profile* profile,
+    data_sharing::mojom::PageHandler::GetTabGroupPreviewCallback callback);
 }  // namespace data_sharing
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DATA_SHARING_DATA_SHARING_UTILS_H_

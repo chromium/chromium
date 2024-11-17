@@ -16,6 +16,7 @@
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_data_channel_state.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
@@ -300,7 +301,7 @@ TEST_F(RTCDataChannelTest, ChangeStateEarly) {
   base::RunLoop().RunUntilIdle();
 
   // Verify that the early state change was not lost.
-  EXPECT_EQ("open", channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kOpen, channel->readyState());
 }
 
 TEST_F(RTCDataChannelTest, BufferedAmount) {
@@ -345,7 +346,7 @@ TEST_F(RTCDataChannelTest, Open) {
   auto* channel =
       MakeGarbageCollected<RTCDataChannel>(execution_context_, webrtc_channel);
   channel->OnStateChange(webrtc::DataChannelInterface::kOpen);
-  EXPECT_EQ("open", channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kOpen, channel->readyState());
 }
 
 TEST_F(RTCDataChannelTest, Close) {
@@ -354,7 +355,7 @@ TEST_F(RTCDataChannelTest, Close) {
   auto* channel =
       MakeGarbageCollected<RTCDataChannel>(execution_context_, webrtc_channel);
   channel->OnStateChange(webrtc::DataChannelInterface::kClosed);
-  EXPECT_EQ("closed", channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kClosed, channel->readyState());
 }
 
 TEST_F(RTCDataChannelTest, Message) {
@@ -394,7 +395,7 @@ TEST_F(RTCDataChannelTest, CloseAfterContextDestroyed) {
 
   channel->ContextDestroyed();
   channel->close();
-  EXPECT_EQ(String::FromUTF8("closed"), channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kClosed, channel->readyState());
 }
 
 TEST_F(RTCDataChannelTest, StopsThrottling) {
@@ -408,25 +409,25 @@ TEST_F(RTCDataChannelTest, StopsThrottling) {
       new rtc::RefCountedObject<MockDataChannel>(signaling_thread()));
   auto* channel = MakeGarbageCollected<RTCDataChannel>(
       scope.GetExecutionContext(), webrtc_channel);
-  EXPECT_EQ("connecting", channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kConnecting, channel->readyState());
   EXPECT_FALSE(scheduler->OptedOutFromAggressiveThrottlingForTest());
 
   // Transitioning to 'open' enables the opt-out.
   webrtc_channel->ChangeState(webrtc::DataChannelInterface::kOpen);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ("open", channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kOpen, channel->readyState());
   EXPECT_TRUE(scheduler->OptedOutFromAggressiveThrottlingForTest());
 
   // Transitioning to 'closing' keeps the opt-out enabled.
   webrtc_channel->ChangeState(webrtc::DataChannelInterface::kClosing);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ("closing", channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kClosing, channel->readyState());
   EXPECT_TRUE(scheduler->OptedOutFromAggressiveThrottlingForTest());
 
   // Transitioning to 'closed' stops the opt-out.
   webrtc_channel->ChangeState(webrtc::DataChannelInterface::kClosed);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ("closed", channel->readyState());
+  EXPECT_EQ(V8RTCDataChannelState::Enum::kClosed, channel->readyState());
   EXPECT_FALSE(scheduler->OptedOutFromAggressiveThrottlingForTest());
 }
 

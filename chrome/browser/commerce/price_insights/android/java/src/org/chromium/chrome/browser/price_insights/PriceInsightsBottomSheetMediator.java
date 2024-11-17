@@ -46,11 +46,12 @@ import org.chromium.url.GURL;
 public class PriceInsightsBottomSheetMediator {
     private final Context mContext;
     private final Tab mTab;
-    private final ShoppingService mShoppingService;
     private final TabModelSelector mTabModelSelector;
     private final PropertyModel mPropertyModel;
     private final PriceInsightsDelegate mPriceInsightsDelegate;
     private final ObservableSupplier<Boolean> mPriceTrackingStateSupplier;
+    private final Callback<Boolean> mUpdatePriceTrackingButtonModelCallback =
+            this::updatePriceTrackingButtonModel;
 
     private @PriceBucket int mPriceBucket;
 
@@ -64,12 +65,11 @@ public class PriceInsightsBottomSheetMediator {
         mContext = context;
         mTab = tab;
         mTabModelSelector = tabModelSelector;
-        mShoppingService = shoppingService;
         mPriceInsightsDelegate = priceInsightsDelegate;
         mPropertyModel = propertyModel;
 
         mPriceTrackingStateSupplier = priceInsightsDelegate.getPriceTrackingStateSupplier(tab);
-        mPriceTrackingStateSupplier.addObserver(this::updatePriceTrackingButtonModel);
+        mPriceTrackingStateSupplier.addObserver(mUpdatePriceTrackingButtonModelCallback);
     }
 
     public void requestShowContent() {
@@ -86,7 +86,7 @@ public class PriceInsightsBottomSheetMediator {
     }
 
     public void closeContent() {
-        mPriceTrackingStateSupplier.removeObserver(this::updatePriceTrackingButtonModel);
+        mPriceTrackingStateSupplier.removeObserver(mUpdatePriceTrackingButtonModelCallback);
     }
 
     private void updatePriceTrackingButtonModel(boolean isPriceTracked) {
@@ -116,10 +116,8 @@ public class PriceInsightsBottomSheetMediator {
     private void updatePriceTrackingButtonIneligible() {
         mPropertyModel.set(
                 PRICE_TRACKING_BUTTON_TEXT,
-                mContext.getResources()
-                        .getString(
-                                R.string
-                                        .price_insights_content_price_tracking_disabled_button_text));
+                mContext.getString(
+                        R.string.price_insights_content_price_tracking_disabled_button_text));
         mPropertyModel.set(
                 PRICE_TRACKING_BUTTON_ICON,
                 R.drawable.price_insights_sheet_price_tracking_button_disabled);
@@ -150,8 +148,7 @@ public class PriceInsightsBottomSheetMediator {
                         ? SemanticColorUtils.getDefaultBgColor(mContext)
                         : SemanticColorUtils.getColorPrimaryContainer(mContext);
 
-        mPropertyModel.set(
-                PRICE_TRACKING_BUTTON_TEXT, mContext.getResources().getString(buttonTextResId));
+        mPropertyModel.set(PRICE_TRACKING_BUTTON_TEXT, mContext.getString(buttonTextResId));
         mPropertyModel.set(PRICE_TRACKING_BUTTON_ICON, buttonIconResId);
         mPropertyModel.set(PRICE_TRACKING_BUTTON_FOREGROUND_COLOR, buttonForegroundColor);
         mPropertyModel.set(PRICE_TRACKING_BUTTON_BACKGROUND_COLOR, buttonBackgroundColor);
@@ -206,8 +203,7 @@ public class PriceInsightsBottomSheetMediator {
             priceHistoryTitleResId = R.string.price_history_multiple_catalogs_title;
             mPropertyModel.set(PRICE_HISTORY_DESCRIPTION, info.catalogAttributes.get());
         }
-        mPropertyModel.set(
-                PRICE_HISTORY_TITLE, mContext.getResources().getString(priceHistoryTitleResId));
+        mPropertyModel.set(PRICE_HISTORY_TITLE, mContext.getString(priceHistoryTitleResId));
         mPropertyModel.set(
                 PRICE_HISTORY_CHART,
                 mPriceInsightsDelegate.getPriceHistoryChartForPriceInsightsInfo(info));

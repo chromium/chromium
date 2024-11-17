@@ -49,6 +49,8 @@ source_set("unit_tests") {
     ":ui_bundled",
     "//base",
     "//base/test:test_support",
+    "//components/metrics",
+    "//components/metrics:test_support",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
     "//components/prefs",

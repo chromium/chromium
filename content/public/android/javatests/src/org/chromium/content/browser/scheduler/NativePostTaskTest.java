@@ -46,9 +46,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Batch(Batch.PER_CLASS)
 public class NativePostTaskTest {
     private static class BlockedTask extends BackgroundOnlyAsyncTask<Integer> {
-        private Object mStartLock = new Object();
-        private AtomicInteger mValue = new AtomicInteger(0);
-        private AtomicBoolean mStarted = new AtomicBoolean(false);
+        private final Object mStartLock = new Object();
+        private final AtomicInteger mValue = new AtomicInteger(0);
+        private final AtomicBoolean mStarted = new AtomicBoolean(false);
         private Thread mBackgroundThread;
 
         @Override

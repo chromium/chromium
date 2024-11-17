@@ -19,7 +19,7 @@ namespace arc {
 namespace {
 
 ArcProcess CreateFromPattern(const ArcProcess& pattern,
-                             const std::string process_name) {
+                             const std::string& process_name) {
   return ArcProcess(pattern.nspid(), pattern.pid(), process_name,
                     pattern.process_state(), pattern.is_focused(),
                     pattern.last_activity_time());

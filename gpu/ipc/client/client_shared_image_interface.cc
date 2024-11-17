@@ -25,7 +25,16 @@ namespace gpu {
 ClientSharedImageInterface::ClientSharedImageInterface(
     SharedImageInterfaceProxy* proxy,
     scoped_refptr<gpu::GpuChannelHost> channel)
-    : gpu_channel_(std::move(channel)), proxy_(proxy) {}
+    : gpu_channel_(std::move(channel)),
+      proxy_(proxy),
+      shared_memory_pool_(
+#if BUILDFLAG(IS_WIN)
+          base::MakeRefCounted<base::UnsafeSharedMemoryPool>()
+#else
+          nullptr
+#endif
+      ) {
+}
 
 ClientSharedImageInterface::~ClientSharedImageInterface() {
   gpu::SyncToken sync_token;
@@ -149,7 +158,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
       GpuMemoryBufferHandleInfo(std::move(buffer_handle),
                                 si_info_copy.meta.format,
                                 si_info_copy.meta.size, buffer_usage),
-      holder_);
+      holder_, shared_memory_pool_);
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
@@ -172,7 +181,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
       GpuMemoryBufferHandleInfo(std::move(client_buffer_handle),
                                 si_info.meta.format, si_info.meta.size,
                                 buffer_usage),
-      holder_);
+      holder_, shared_memory_pool_);
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
@@ -260,6 +269,31 @@ void ClientSharedImageInterface::UpdateSharedImage(
     scoped_refptr<gfx::D3DSharedFence> d3d_shared_fence,
     const Mailbox& mailbox) {
   proxy_->UpdateSharedImage(sync_token, std::move(d3d_shared_fence), mailbox);
+}
+
+bool ClientSharedImageInterface::CopyNativeGmbToSharedMemorySync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region) {
+  CHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
+  CHECK(memory_region.IsValid());
+  bool status = false;
+  proxy_->CopyNativeGmbToSharedMemorySync(std::move(buffer_handle),
+                                          std::move(memory_region), &status);
+  return status;
+}
+
+void ClientSharedImageInterface::CopyNativeGmbToSharedMemoryAsync(
+    gfx::GpuMemoryBufferHandle buffer_handle,
+    base::UnsafeSharedMemoryRegion memory_region,
+    base::OnceCallback<void(bool)> callback) {
+  CHECK_EQ(buffer_handle.type, gfx::GpuMemoryBufferType::DXGI_SHARED_HANDLE);
+  CHECK(memory_region.IsValid());
+  proxy_->CopyNativeGmbToSharedMemoryAsync(
+      std::move(buffer_handle), std::move(memory_region), std::move(callback));
+}
+
+bool ClientSharedImageInterface::IsConnected() {
+  return proxy_->IsConnected();
 }
 #endif
 

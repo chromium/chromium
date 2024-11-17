@@ -27,6 +27,7 @@
 #include "components/variations/variations_switches.h"
 #include "net/base/features.h"
 #include "net/base/host_mapping_rules.h"
+#include "net/disk_cache/backend_experiment.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_factory.h"
 #include "net/quic/quic_context.h"
@@ -34,9 +35,9 @@
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/third_party/quiche/src/quiche/common/platform/api/quiche_flags.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_protocol.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_tag.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_protocol.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
@@ -475,14 +476,14 @@ bool DelayMainJobWithAvailableSpdySession(
 }
 
 bool IsOriginFrameEnabled(const VariationParameters& quic_trial_params) {
-  return base::EqualsCaseInsensitiveASCII(
-      GetVariationParam(quic_trial_params, "enable_origin_frame"), "true");
+  return !base::EqualsCaseInsensitiveASCII(
+      GetVariationParam(quic_trial_params, "enable_origin_frame"), "false");
 }
 
 bool IsDnsSkippedWithOriginFrame(const VariationParameters& quic_trial_params) {
-  return base::EqualsCaseInsensitiveASCII(
+  return !base::EqualsCaseInsensitiveASCII(
       GetVariationParam(quic_trial_params, "skip_dns_with_origin_frame"),
-      "true");
+      "false");
 }
 
 bool IgnoreIpMatchingWhenFindingExistingSessions(
@@ -491,6 +492,11 @@ bool IgnoreIpMatchingWhenFindingExistingSessions(
       GetVariationParam(quic_trial_params,
                         "ignore_ip_matching_when_finding_existing_sessions"),
       "true");
+}
+
+bool AllowServerMigration(const VariationParameters& quic_trial_params) {
+  return !base::EqualsCaseInsensitiveASCII(
+      GetVariationParam(quic_trial_params, "allow_server_migration"), "false");
 }
 
 void SetQuicFlags(const VariationParameters& quic_trial_params) {
@@ -712,6 +718,8 @@ void ConfigureQuicParams(const base::CommandLine& command_line,
         IsDnsSkippedWithOriginFrame(quic_trial_params);
     quic_params->ignore_ip_matching_when_finding_existing_sessions =
         IgnoreIpMatchingWhenFindingExistingSessions(quic_trial_params);
+    quic_params->allow_server_migration =
+        AllowServerMigration(quic_trial_params);
     SetQuicFlags(quic_trial_params);
   }
 
@@ -828,32 +836,13 @@ void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line,
 }
 
 net::URLRequestContextBuilder::HttpCacheParams::Type ChooseCacheType() {
-#if !BUILDFLAG(IS_ANDROID)
-  const std::string experiment_name =
-      base::FieldTrialList::FindFullName("SimpleCacheTrial");
-  if (base::StartsWith(experiment_name, "Disable",
-                       base::CompareCase::INSENSITIVE_ASCII)) {
-    return net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE;
-  }
-
-  if (base::StartsWith(experiment_name, "ExperimentYes",
-                       base::CompareCase::INSENSITIVE_ASCII)) {
+  if constexpr (disk_cache::IsSimpleBackendEnabledByDefaultPlatform()) {
     return net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
   }
-#endif  // #if !BUILDFLAG(IS_ANDROID)
-
-  // Blockfile breaks on macOS 10.14 (see https://crbug.com/899874); so use
-  // SimpleCache even when we don't enable it via experiment, as long as we
-  // don't force it off (not used at this time). This unfortunately
-  // muddles the experiment data, but as this was written to be considered for
-  // backport, having it behave differently than in stable would be a bigger
-  // problem. TODO: Does this work in later macOS releases?
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC)
-  return net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
-#else
+  if (disk_cache::InSimpleBackendExperimentGroup()) {
+    return net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
+  }
   return net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE;
-#endif
 }
 
 }  // namespace network_session_configurator

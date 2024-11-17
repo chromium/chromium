@@ -1,0 +1,174 @@
+// Copyright 2023 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module dlp_internals.mojom;
+
+import "url/mojom/url.mojom";
+
+// Represents the type of the data source object.
+// See ui/base/data_transfer_policy/data_transfer_endpoint.h
+// for EndpointType enum.
+enum EndpointType {
+  kDefault = 0,
+  kUrl = 1,
+  kClipboardHistory = 2,
+  kUnknownVm = 3,
+  kArc = 4,
+  kBorealis = 5,
+  kCrostini = 6,
+  kPluginVm = 7,
+};
+
+struct DataTransferEndpoint {
+  // Represents the object type.
+  EndpointType type;
+
+  // The URL of the data endpoint. It always has a value
+  // if the object type is URL, otherwise it's empty.
+  url.mojom.Url? url;
+};
+
+// Represents DLP content restrictions.
+// See chrome/browser/chromeos/policy/dlp/dlp_content_restriction_set.h
+// for DlpContentRestriction enum.
+enum ContentRestriction {
+  kScreenshot = 0,
+  kPrivacyScreen = 1,
+  kPrint = 2,
+  kScreenShare = 3,
+};
+
+// Represents the enforcement level of DLP restrictions.
+// See components/enterprise/data_controls/core/rule.h for Level enum.
+enum Level {
+  kNotSet = 0,
+  kReport = 1,
+  kWarn = 2,
+  kBlock = 3,
+  kAllow = 4,
+};
+
+struct ContentRestrictionInfo {
+  // Restriction enforced.
+  ContentRestriction restriction;
+  // Enforcement level of the restriction.
+  Level level;
+  // The url that caused the restriction to be enforced.
+  url.mojom.Url url;
+};
+
+struct RenderFrameHostInfo {
+  // Last committed URL.
+  url.mojom.Url last_committed_url;
+  // An array of content restrictions info.
+  array<ContentRestrictionInfo> restrictions_info;
+};
+
+struct WebContentsInfo {
+  // Last committed URL.
+  url.mojom.Url last_committed_url;
+  // An array of content restrictions info.
+  array<ContentRestrictionInfo> restrictions_info;
+  // An array of DLP info for all the frames in this WebContents object.
+  array<RenderFrameHostInfo> frames_info;
+};
+
+// Represents DLP policy event destination.
+// See components/enterprise/data_controls/dlp_policy_event.proto
+// for DlpPolicyEventDestination.
+struct EventDestination {
+  // Represents DLP policy components.
+  // See components/enterprise/data_controls/component.h for Component enum.
+  enum Component {
+    kUndefinedComponent = 0,
+    kArc = 1,
+    kCrostini = 2,
+    kPluginVm = 3,
+    kUsb = 4,
+    kDrive = 5,
+    kOnedrive = 6,
+  };
+
+  // Either |url| or |component| should be set.
+  string? url_pattern;
+  Component? component;
+};
+
+// Represents DLP policy event.
+// See components/enterprise/data_controls/dlp_policy_event.proto
+// for DlpPolicyEvent.
+struct DlpEvent {
+  // The restriction that was triggered.
+  enum Restriction {
+    kUndefinedRestriction = 0,
+    kClipboard = 1,
+    kScreenshot = 2,
+    kScreencast = 3,
+    kPrinting = 4,
+    kEprivacy = 5,
+    kFiles = 6,
+  };
+
+  // The mode of the applied restriction.
+  enum Mode {
+    kUndefinedMode = 0,
+    kBlock = 1,
+    kReport = 2,
+    kWarn = 3,
+    kWarnProceed = 4,
+  };
+
+  // Type of user session from which the event is reported.
+  enum UserType {
+    kUndefinedUserType = 0,
+    kRegular = 1,
+    kManagedGuest = 2,
+    kKiosk = 3,
+  };
+
+  string? source_pattern;
+  EventDestination? destination;
+  Restriction? restriction;
+  Mode? mode;
+  int64? timestamp_micro;
+  UserType? user_type;
+  string? content_name;
+  string? triggered_rule_name;
+  string? triggered_rule_id;
+};
+
+// Represents the database entry of a single file.
+struct FileDatabaseEntry {
+  uint64? inode;
+  uint64? crtime;
+  string? source_url;
+  string? referrer_url;
+};
+
+// Observer interface to receive updates about DLP reporting events.
+// This interface is implement in Javascript in chrome://dlp-internals WebUI.
+interface ReportingObserver {
+  // Called when an event is reported.
+  OnReportEvent(DlpEvent event);
+};
+
+// Browser interface for the page. Consists of calls for data and hooks for
+// interactivity.
+interface PageHandler {
+  // Get information about clipboard data source.
+  GetClipboardDataSource() => (DataTransferEndpoint? source);
+
+  // Returns content restrictions information for all the tracked WebContents.
+  GetContentRestrictionsInfo() => (array<WebContentsInfo> web_contents_info);
+
+  // Allows the caller to observe reporting events.
+  ObserveReporting(pending_remote<ReportingObserver> observer);
+
+  // Returns files' database entries.
+  GetFilesDatabaseEntries() => (array<FileDatabaseEntry> db_entries);
+
+  // Returns the inode number of the requested file only if the file is in
+  // MyFiles/Downloads directory.
+  GetFileInode(string file_name) => (uint64 inode);
+};

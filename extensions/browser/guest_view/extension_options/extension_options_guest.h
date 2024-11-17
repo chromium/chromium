@@ -32,9 +32,9 @@ class ExtensionOptionsGuest
   explicit ExtensionOptionsGuest(content::RenderFrameHost* owner_rfh);
 
   // GuestViewBase implementation.
-  void CreateWebContents(std::unique_ptr<GuestViewBase> owned_this,
-                         const base::Value::Dict& create_params,
-                         WebContentsCreatedCallback callback) final;
+  void CreateInnerPage(std::unique_ptr<GuestViewBase> owned_this,
+                       const base::Value::Dict& create_params,
+                       GuestPageCreatedCallback callback) final;
   void DidInitialize(const base::Value::Dict& create_params) final;
   void MaybeRecreateGuestContents(
       content::RenderFrameHost* outer_contents_frame) final;
@@ -43,6 +43,10 @@ class ExtensionOptionsGuest
   int GetTaskPrefix() const final;
   bool IsPreferredSizeModeEnabled() const final;
   void OnPreferredSizeChanged(const gfx::Size& pref_size) final;
+
+  // GuestpageHolder::Delegate implementation.
+  bool GuestHandleContextMenu(content::RenderFrameHost& render_frame_host,
+                              const content::ContextMenuParams& params) final;
 
   // content::WebContentsDelegate implementation.
   content::WebContents* AddNewContents(

@@ -17,6 +17,7 @@ source_set("model") {
     "//components/version_info",
     "//ios/chrome/browser/metrics/model:accessor",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/common",
     "//ios/web/public",
   ]

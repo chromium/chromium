@@ -110,8 +110,7 @@ MediaStreamComponent* MediaStreamTrackGenerator::MakeMediaStreamComponent(
           std::make_unique<MediaStreamAudioTrack>(/*is_local_track=*/true);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 
   const String track_id = WTF::CreateCanonicalUUIDString();

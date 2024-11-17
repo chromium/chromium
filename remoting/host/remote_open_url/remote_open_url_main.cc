@@ -13,7 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/core/embedder/embedder.h"
 #include "mojo/core/embedder/scoped_ipc_support.h"
-#include "remoting/base/breakpad.h"
+#include "remoting/base/crash/breakpad.h"
 #include "remoting/base/host_settings.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"

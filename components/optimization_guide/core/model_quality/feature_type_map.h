@@ -7,12 +7,14 @@
 
 #include <string_view>
 
+#include "components/optimization_guide/proto/features/bling_prototyping.pb.h"
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/features/default.pb.h"
 #include "components/optimization_guide/proto/features/forms_annotations.pb.h"
 #include "components/optimization_guide/proto/features/forms_predictions.pb.h"
 #include "components/optimization_guide/proto/features/history_answer.pb.h"
 #include "components/optimization_guide/proto/features/history_query.pb.h"
+#include "components/optimization_guide/proto/features/history_query_intent.pb.h"
 #include "components/optimization_guide/proto/features/model_prototyping.pb.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
 #include "components/optimization_guide/proto/features/wallpaper_search.pb.h"
@@ -91,6 +93,19 @@ class HistoryQueryFeatureTypeMap {
   static std::string_view ToString() { return "HistoryQuery"; }
 };
 
+class HistoryQueryIntentFeatureTypeMap {
+ public:
+  using LoggingData = proto::HistoryQueryIntentLoggingData;
+  using Request = proto::HistoryQueryIntentRequest;
+  using Response = proto::HistoryQueryIntentResponse;
+
+  static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
+    return ai_data_request.mutable_history_query_intent();
+  }
+
+  static std::string_view ToString() { return "HistoryQueryIntent"; }
+};
+
 class HistoryAnswerFeatureTypeMap {
  public:
   using LoggingData = proto::HistoryAnswerLoggingData;
@@ -120,6 +135,9 @@ class ProductSpecificationsFeatureTypeMap {
 class FormsAnnotationsFeatureTypeMap {
  public:
   using LoggingData = proto::FormsAnnotationsLoggingData;
+  using Request = proto::FormsAnnotationsRequest;
+  using Response = proto::FormsAnnotationsResponse;
+  using Quality = proto::FormsAnnotationsQuality;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_forms_annotations();
@@ -131,12 +149,28 @@ class FormsAnnotationsFeatureTypeMap {
 class FormsPredictionsFeatureTypeMap {
  public:
   using LoggingData = proto::FormsPredictionsLoggingData;
+  using Request = proto::FormsPredictionsRequest;
+  using Response = proto::FormsPredictionsResponse;
+  using Quality = proto::FormsPredictionsQuality;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_forms_predictions();
   }
 
   static std::string_view ToString() { return "FormsPredictions"; }
+};
+
+class BlingPrototypingFeatureTypeMap {
+ public:
+  using LoggingData = proto::BlingPrototypingLoggingData;
+  using Request = proto::BlingPrototypingRequest;
+  using Response = proto::BlingPrototypingResponse;
+
+  static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
+    return ai_data_request.mutable_bling_prototyping();
+  }
+
+  static std::string_view ToString() { return "BlingPrototyping"; }
 };
 
 class ModelPrototypingFeatureTypeMap {

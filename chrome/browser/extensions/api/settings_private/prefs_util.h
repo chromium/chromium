@@ -70,7 +70,7 @@ class PrefsUtil {
   // Returns whether |pref_name| corresponds to a pref whose type is URL.
   bool IsPrefTypeURL(const std::string& pref_name);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Returns whether |pref_name| corresponds to a pref that is enterprise
   // managed.
   bool IsPrefEnterpriseManaged(const std::string& pref_name);

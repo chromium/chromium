@@ -154,6 +154,36 @@ TEST_F(GoogleGroupsManagerTest, ClearProfilePrefsClearsTargetPref) {
   CheckTargetPref({});
 }
 
+// Tests that `IsFeatureGroupControlled` checks whether the internal feature
+// parameter that contains the ids in the google_groups filter is non-empty.
+TEST_F(GoogleGroupsManagerTest, IsFeatureGroupControlled) {
+  static BASE_FEATURE(kGroupControlledFeature, "GroupControlledFeature",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  static BASE_FEATURE(kOtherFeature, "OtherFeature",
+                      base::FEATURE_DISABLED_BY_DEFAULT);
+  auto feature_list = std::make_unique<base::FeatureList>();
+  GoogleGroupsManager google_groups_updater(target_prefs_, key_, source_prefs_);
+
+  constexpr char kTrialName[] = "SampleTrial";
+  constexpr char kGroupName[] = "SampleGroup";
+  constexpr char kRelevantGroupId[] = "1234";
+  base::FieldTrial* trial =
+      base::FieldTrialList::CreateFieldTrial(kTrialName, kGroupName);
+  feature_list->RegisterFieldTrialOverride(
+      "GroupControlledFeature", base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+      trial);
+  ASSERT_TRUE(base::AssociateFieldTrialParams(
+      kTrialName, kGroupName,
+      {{variations::internal::kGoogleGroupFeatureParamName,
+        kRelevantGroupId}}));
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  EXPECT_TRUE(
+      GoogleGroupsManager::IsFeatureGroupControlled(kGroupControlledFeature));
+  EXPECT_FALSE(GoogleGroupsManager::IsFeatureGroupControlled(kOtherFeature));
+}
+
 // Tests that `IsFeatureEnabledForProfile` returns true if the feature is
 // enabled and the source prefs of the `GoogleGroupsManager` contain at
 // least one of the google_groups specified for the feature.

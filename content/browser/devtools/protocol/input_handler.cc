@@ -714,8 +714,8 @@ class InputHandler::InputInjector
     pending_key_callbacks_.push_back(std::move(callback));
     ui::LatencyInfo latency;
     std::vector<blink::mojom::EditCommandPtr> edit_commands;
-    if (commands.has_value()) {
-      for (const std::string& command : commands.value()) {
+    if (commands) {
+      for (const std::string& command : *commands) {
         edit_commands.push_back(blink::mojom::EditCommand::New(command, ""));
       }
     }
@@ -1245,7 +1245,7 @@ void InputHandler::ImeSetComposition(
   // Currently no DevTools target for Prerender.
   if (host_->GetLifecycleState() ==
       RenderFrameHost::LifecycleState::kPrerendering) {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   // |RenderFrameHostImpl::GetRenderWidgetHost| returns the RWHImpl of the
@@ -1870,8 +1870,7 @@ SyntheticPointerActionParams InputHandler::PrepareSyntheticPointerActionParams(
     case SyntheticPointerActionParams::PointerActionType::LEAVE:
     case SyntheticPointerActionParams::PointerActionType::IDLE:
     case SyntheticPointerActionParams::PointerActionType::NOT_INITIALIZED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return action_params;
 }

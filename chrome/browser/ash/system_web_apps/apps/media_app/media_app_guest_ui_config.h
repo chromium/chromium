@@ -7,7 +7,7 @@
 
 #include "ash/webui/media_app_ui/media_app_guest_ui.h"
 #include "ash/webui/media_app_ui/media_app_ui_untrusted.mojom.h"
-#include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_handler.h"
+#include "chrome/browser/accessibility/media_app/ax_media_app_untrusted_service.h"
 #include "content/public/browser/webui_config.h"
 
 namespace content {
@@ -27,16 +27,16 @@ class ChromeMediaAppGuestUIDelegate : public ash::MediaAppGuestUIDelegate {
   void PopulateLoadTimeData(content::WebUI* web_ui,
                             content::WebUIDataSource* source) override;
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
-  void CreateAndBindOcrHandler(
+  void CreateAndBindOcrUntrustedService(
       content::BrowserContext& context,
       gfx::NativeWindow native_window,
-      mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedPageHandler>
+      mojo::PendingReceiver<ash::media_app_ui::mojom::OcrUntrustedService>
           receiver,
       mojo::PendingRemote<ash::media_app_ui::mojom::OcrUntrustedPage> page)
       override;
 
-  void CreateAndBindMahiHandler(
-      mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedPageHandler>
+  void CreateAndBindMahiUntrustedService(
+      mojo::PendingReceiver<ash::media_app_ui::mojom::MahiUntrustedService>
           receiver,
       mojo::PendingRemote<ash::media_app_ui::mojom::MahiUntrustedPage> page,
       const std::string& file_name,

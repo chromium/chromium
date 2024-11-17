@@ -38,10 +38,12 @@ build_webui("build") {
   ts_tsconfig_base = "tsconfig_base.json"
   ts_composite = true
   ts_deps = [
+    "//third_party/d3:library",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
+
   webui_context_type = "trusted"
 }

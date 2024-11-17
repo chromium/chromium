@@ -8,6 +8,12 @@
 #include "chromeos/ash/components/boca/boca_app_client.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
 #include "chromeos/ash/components/boca/session_api/create_session_request.h"
+#include "chromeos/ash/components/boca/session_api/get_session_request.h"
+#include "chromeos/ash/components/boca/session_api/join_session_request.h"
+#include "chromeos/ash/components/boca/session_api/remove_student_request.h"
+#include "chromeos/ash/components/boca/session_api/update_session_request.h"
+#include "chromeos/ash/components/boca/session_api/update_student_activities_request.h"
+#include "chromeos/ash/components/boca/session_api/upload_token_request.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/request_sender.h"
@@ -37,7 +43,7 @@ SessionClientImpl::CreateRequestSender() {
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(),
            /* `USER_VISIBLE` is because the requested/returned data is visible
-               to the user on System UI surfaces. */
+               to the user on Web UI surfaces. */
            base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}),
       /*custom_user_agent=*/"", kTrafficAnnotation);
@@ -57,4 +63,23 @@ void SessionClientImpl::UploadToken(
   sender_->StartRequestWithAuthRetry(std::move(request));
 }
 
+void SessionClientImpl::UpdateSession(
+    std::unique_ptr<UpdateSessionRequest> request) {
+  sender_->StartRequestWithAuthRetry(std::move(request));
+}
+
+void SessionClientImpl::UpdateStudentActivity(
+    std::unique_ptr<UpdateStudentActivitiesRequest> request) {
+  sender_->StartRequestWithAuthRetry(std::move(request));
+}
+
+void SessionClientImpl::RemoveStudent(
+    std::unique_ptr<RemoveStudentRequest> request) {
+  sender_->StartRequestWithAuthRetry(std::move(request));
+}
+
+void SessionClientImpl::JoinSession(
+    std::unique_ptr<JoinSessionRequest> request) {
+  sender_->StartRequestWithAuthRetry(std::move(request));
+}
 }  // namespace ash::boca

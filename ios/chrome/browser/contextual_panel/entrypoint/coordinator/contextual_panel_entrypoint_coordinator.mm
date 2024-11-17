@@ -62,8 +62,8 @@
       HandlerForProtocol(dispatcher, ContextualPanelEntrypointIPHCommands);
 
   feature_engagement::Tracker* engagementTracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      feature_engagement::TrackerFactory::GetForProfile(
+          self.browser->GetProfile());
 
   _mediator = [[ContextualPanelEntrypointMediator alloc]
         initWithWebStateList:webStateList

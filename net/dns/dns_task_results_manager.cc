@@ -104,7 +104,7 @@ DnsTaskResultsManager::~DnsTaskResultsManager() = default;
 
 void DnsTaskResultsManager::ProcessDnsTransactionResults(
     DnsQueryType query_type,
-    const std::set<std::unique_ptr<HostResolverInternalResult>>& results) {
+    std::set<const HostResolverInternalResult*> results) {
   CHECK(query_types_.Has(query_type));
 
   bool should_update_endpoints = false;
@@ -130,32 +130,25 @@ void DnsTaskResultsManager::ProcessDnsTransactionResults(
     }
   }
 
-  for (auto& result : results) {
+  for (const auto& result : results) {
     aliases_.insert(result->domain_name());
 
     switch (result->type()) {
       case HostResolverInternalResult::Type::kData: {
         PerDomainResult& per_domain_result =
             GetOrCreatePerDomainResult(result->domain_name());
-        if (query_type == DnsQueryType::A) {
-          for (const auto& ip_endpoint : result->AsData().endpoints()) {
-            CHECK(ip_endpoint.address().IsIPv4());
-            CHECK_EQ(ip_endpoint.port(), 0);
+        for (const auto& ip_endpoint : result->AsData().endpoints()) {
+          CHECK_EQ(ip_endpoint.port(), 0);
+          // TODO(crbug.com/41493696): This will eventually need to handle
+          // DnsQueryType::HTTPS to support getting ipv{4,6}hints.
+          if (ip_endpoint.address().IsIPv4()) {
             per_domain_result.ipv4_endpoints.emplace_back(ip_endpoint.address(),
                                                           host_.GetPort());
-          }
-        } else if (query_type == DnsQueryType::AAAA) {
-          for (const auto& ip_endpoint : result->AsData().endpoints()) {
+          } else {
             CHECK(ip_endpoint.address().IsIPv6());
-            CHECK_EQ(ip_endpoint.port(), 0);
             per_domain_result.ipv6_endpoints.emplace_back(ip_endpoint.address(),
                                                           host_.GetPort());
           }
-        } else {
-          // TODO(crbug.com/41493696): This will eventually need to handle
-          // DnsQueryType::HTTPS to support getting ipv{4,6}hints.
-          NOTREACHED_IN_MIGRATION()
-              << "Unexpected query type: " << kDnsQueryTypes.at(query_type);
         }
 
         should_update_endpoints |= !result->AsData().endpoints().empty();

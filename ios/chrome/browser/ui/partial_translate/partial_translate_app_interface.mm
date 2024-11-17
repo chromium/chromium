@@ -16,13 +16,12 @@
 @implementation PartialTranslateAppInterface
 
 + (BOOL)installedPartialTranslate {
-  ChromeBrowserState* browserState =
-      chrome_test_util::GetOriginalBrowserState();
+  ProfileIOS* profile = chrome_test_util::GetOriginalProfile();
   bool incognito = chrome_test_util::IsIncognitoMode();
   if (incognito) {
-    browserState = chrome_test_util::GetCurrentIncognitoBrowserState();
+    profile = chrome_test_util::GetCurrentIncognitoProfile();
   }
-  PrefService* prefService = browserState->GetPrefs();
+  PrefService* prefService = profile->GetPrefs();
   UIViewController* viewController =
       chrome_test_util::GetActiveViewController();
   Browser* browser = chrome_test_util::GetMainBrowser();

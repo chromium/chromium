@@ -19,6 +19,7 @@
 <translation id="115443833402798225">hangul ahnmatae</translation>
 <translation id="1155759005174418845">Kataloński</translation>
 <translation id="1168100932582989117">Serwery nazw Google</translation>
+<translation id="1170788066030116158">Data zrobienia</translation>
 <translation id="1172970565351728681">Zostało około <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Zmień nazwę</translation>
 <translation id="1173916544412572294">Sieć <ph name="NETWORK_INDEX" /> z <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, siła sygnału: <ph name="SIGNAL_STRENGTH" />%, bateria telefonu: <ph name="BATTERY_STATUS" />%, szczegóły</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Certyfikat uwierzytelniania został odrzucony zdalnie</translation>
 <translation id="4394214039309501350">Link zewnętrzny</translation>
 <translation id="4394980935660306080">Wcześniej w tym tygodniu</translation>
+<translation id="4397435965699247285">Usługa OneDrive jest niedostępna w trybie offline</translation>
 <translation id="4398096759193130964">Przywróć elementy lub przeciągnij je do nowego folderu poza koszem</translation>
 <translation id="4401287888955153199">Wyodrębnij wszystko</translation>
 <translation id="4410695710508688828">Operacja wyodrębnienia zakończona niepowodzeniem. <ph name="ERROR_MESSAGE" /></translation>

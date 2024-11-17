@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.payments.handler.toolbar;
 
 import android.app.Activity;
+import android.view.Gravity;
 import android.view.View;
 
 import androidx.annotation.DrawableRes;
@@ -135,7 +136,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                 securityLevel,
                 mIsSmallDevice,
                 /* skipIconForNeutralState= */ false,
-                /* useUpdatedConnectionSecurityIndicators= */ false);
+                /* useLockIconForSecureState= */ true);
     }
 
     // Implement PaymentHandlerToolbarMediatorDelegate.
@@ -166,6 +167,7 @@ public class PaymentHandlerToolbarCoordinator implements PaymentHandlerToolbarMe
                         /* ephemeralTabCoordinatorSupplier= */ null,
                         ChromePageInfoHighlight.noHighlight(),
                         null),
-                ChromePageInfoHighlight.noHighlight());
+                ChromePageInfoHighlight.noHighlight(),
+                Gravity.TOP);
     }
 }

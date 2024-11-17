@@ -4,7 +4,6 @@
 
 #include "components/update_client/net/url_loader_post_interceptor.h"
 
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"

@@ -17,6 +17,7 @@
 #include "base/containers/enum_set.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/test/views_test_utils.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/root_view.h"
@@ -26,12 +27,14 @@ namespace ash {
 
 namespace {
 
-class AuthContainerUnitTest : public AshTestBase {
+class AuthContainerBaseUnitTest : public AshTestBase {
  public:
-  AuthContainerUnitTest() = default;
-  AuthContainerUnitTest(const AuthContainerUnitTest&) = delete;
-  AuthContainerUnitTest& operator=(const AuthContainerUnitTest&) = delete;
-  ~AuthContainerUnitTest() override = default;
+  explicit AuthContainerBaseUnitTest(AuthFactorSet auth_factors)
+      : auth_factors_(auth_factors) {}
+  AuthContainerBaseUnitTest(const AuthContainerBaseUnitTest&) = delete;
+  AuthContainerBaseUnitTest& operator=(const AuthContainerBaseUnitTest&) =
+      delete;
+  ~AuthContainerBaseUnitTest() override = default;
 
  protected:
   void SetUp() override {
@@ -41,9 +44,8 @@ class AuthContainerUnitTest : public AshTestBase {
     widget_->SetFullscreen(true);
     widget_->Show();
 
-    container_view_ =
-        widget_->SetContentsView(std::make_unique<AuthContainerView>(
-            AuthFactorSet{AuthInputType::kPassword, AuthInputType::kPin}));
+    container_view_ = widget_->SetContentsView(
+        std::make_unique<AuthContainerView>(auth_factors_));
     test_api_ = std::make_unique<AuthContainerView::TestApi>(container_view_);
     test_api_pin_container_ = std::make_unique<PinContainerView::TestApi>(
         test_api_->GetPinContainerView());
@@ -60,10 +62,6 @@ class AuthContainerUnitTest : public AshTestBase {
     mock_observer_ = std::make_unique<MockAuthContainerViewObserver>();
     container_view_->AddObserver(mock_observer_.get());
 
-    // At start the the password is visible and the pin is hidden.
-    CHECK(test_api_password_->GetView()->GetVisible());
-    CHECK(!test_api_pin_container_->GetView()->GetVisible());
-    CHECK(test_api_->GetSwitchButton()->GetVisible());
     CHECK(widget_->GetRootView());
   }
 
@@ -81,6 +79,7 @@ class AuthContainerUnitTest : public AshTestBase {
     AshTestBase::TearDown();
   }
 
+  const AuthFactorSet auth_factors_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<MockAuthContainerViewObserver> mock_observer_;
   std::unique_ptr<AuthInputRowView::TestApi> test_api_pin_input_;
@@ -92,9 +91,32 @@ class AuthContainerUnitTest : public AshTestBase {
   raw_ptr<AuthContainerView> container_view_ = nullptr;
 };
 
+class AuthContainerWithPasswordAndPinTest : public AuthContainerBaseUnitTest {
+ public:
+  AuthContainerWithPasswordAndPinTest()
+      : AuthContainerBaseUnitTest(
+            {AuthInputType::kPin, AuthInputType::kPassword}) {}
+  AuthContainerWithPasswordAndPinTest(
+      const AuthContainerWithPasswordAndPinTest&) = delete;
+  AuthContainerWithPasswordAndPinTest& operator=(
+      const AuthContainerWithPasswordAndPinTest&) = delete;
+  ~AuthContainerWithPasswordAndPinTest() override = default;
+
+ protected:
+  void SetUp() override {
+    AuthContainerBaseUnitTest::SetUp();
+
+    // At start the password is visible and the pin is hidden.
+    CHECK(test_api_password_->GetView()->GetVisible());
+    CHECK(!test_api_pin_container_->GetView()->GetVisible());
+    CHECK(test_api_->GetSwitchButton()->GetVisible());
+  }
+};
+
 // Verify pin UI with key presses and submit.
-TEST_F(AuthContainerUnitTest, PinUITestWithPinPad) {
-  EXPECT_EQ(test_api_->GetCurrentInputType(), AuthInputType::kPassword);
+TEST_F(AuthContainerWithPasswordAndPinTest, PinUITestWithPinPad) {
+  EXPECT_THAT(test_api_->GetCurrentInputType(),
+              testing::Optional(AuthInputType::kPassword));
 
   const std::u16string kPin(u"6893112");
   // The auth container content changes kPin times because of the input changes
@@ -105,6 +127,7 @@ TEST_F(AuthContainerUnitTest, PinUITestWithPinPad) {
 
   views::test::RunScheduledLayout(widget_.get());
 
+  EXPECT_TRUE(test_api_->GetCurrentInputType().has_value());
   EXPECT_EQ(test_api_->GetCurrentInputType(), AuthInputType::kPin);
   EXPECT_EQ(test_api_password_->GetView()->GetVisible(), false);
   EXPECT_TRUE(test_api_pin_container_->GetView()->GetVisible());
@@ -124,7 +147,8 @@ TEST_F(AuthContainerUnitTest, PinUITestWithPinPad) {
 }
 
 // Verify pin UI and submit.
-TEST_F(AuthContainerUnitTest, PinUITestWithKeyPress) {
+TEST_F(AuthContainerWithPasswordAndPinTest, PinUITestWithKeyPress) {
+  EXPECT_TRUE(test_api_->GetCurrentInputType().has_value());
   EXPECT_EQ(test_api_->GetCurrentInputType(), AuthInputType::kPassword);
 
   const std::u16string kPin(u"6893112");
@@ -136,6 +160,7 @@ TEST_F(AuthContainerUnitTest, PinUITestWithKeyPress) {
 
   views::test::RunScheduledLayout(widget_.get());
 
+  EXPECT_TRUE(test_api_->GetCurrentInputType().has_value());
   EXPECT_EQ(test_api_->GetCurrentInputType(), AuthInputType::kPin);
   EXPECT_EQ(test_api_password_->GetView()->GetVisible(), false);
   EXPECT_TRUE(test_api_pin_container_->GetView()->GetVisible());
@@ -158,7 +183,8 @@ TEST_F(AuthContainerUnitTest, PinUITestWithKeyPress) {
 }
 
 // Verify switch button is not operate with disabled input.
-TEST_F(AuthContainerUnitTest, DisabledSwitchTest) {
+TEST_F(AuthContainerWithPasswordAndPinTest, DisabledSwitchTest) {
+  EXPECT_TRUE(test_api_->GetCurrentInputType().has_value());
   EXPECT_EQ(test_api_->GetCurrentInputType(), AuthInputType::kPassword);
   container_view_->SetInputEnabled(false);
   // The auth container content changes two times since at the two press the
@@ -169,11 +195,13 @@ TEST_F(AuthContainerUnitTest, DisabledSwitchTest) {
 
   views::test::RunScheduledLayout(widget_.get());
 
+  EXPECT_TRUE(test_api_->GetCurrentInputType().has_value());
   EXPECT_EQ(test_api_->GetCurrentInputType(), AuthInputType::kPassword);
 }
 
 // Verify double switch button press shows password UI.
-TEST_F(AuthContainerUnitTest, DoubleSwitchTest) {
+TEST_F(AuthContainerWithPasswordAndPinTest, DoubleSwitchTest) {
+  EXPECT_TRUE(test_api_->GetCurrentInputType().has_value());
   EXPECT_EQ(test_api_->GetCurrentInputType(), AuthInputType::kPassword);
   // The auth container content changes two times since at the two press the
   // toggle.
@@ -183,6 +211,7 @@ TEST_F(AuthContainerUnitTest, DoubleSwitchTest) {
 
   views::test::RunScheduledLayout(widget_.get());
 
+  EXPECT_TRUE(test_api_->GetCurrentInputType().has_value());
   EXPECT_EQ(test_api_->GetCurrentInputType(), AuthInputType::kPin);
   EXPECT_EQ(test_api_password_->GetView()->GetVisible(), false);
   EXPECT_TRUE(test_api_pin_container_->GetView()->GetVisible());
@@ -194,13 +223,14 @@ TEST_F(AuthContainerUnitTest, DoubleSwitchTest) {
 
   views::test::RunScheduledLayout(widget_.get());
 
+  EXPECT_TRUE(test_api_->GetCurrentInputType().has_value());
   EXPECT_EQ(test_api_->GetCurrentInputType(), AuthInputType::kPassword);
   EXPECT_TRUE(test_api_password_->GetView()->GetVisible());
   EXPECT_EQ(test_api_pin_container_->GetView()->GetVisible(), false);
   EXPECT_TRUE(test_api_->GetSwitchButton()->GetVisible());
 }
 
-TEST_F(AuthContainerUnitTest, PasswordSubmitTest) {
+TEST_F(AuthContainerWithPasswordAndPinTest, PasswordSubmitTest) {
   const std::u16string kPassword(u"password");
   container_view_->GetFocusManager()->SetFocusedView(
       test_api_password_->GetTextfield());
@@ -217,7 +247,7 @@ TEST_F(AuthContainerUnitTest, PasswordSubmitTest) {
 }
 
 // Verify password is not functioning with disabled input area.
-TEST_F(AuthContainerUnitTest, DisabledPasswordSubmitTest) {
+TEST_F(AuthContainerWithPasswordAndPinTest, DisabledPasswordSubmitTest) {
   container_view_->SetInputEnabled(false);
   const std::u16string kPassword(u"password");
   container_view_->GetFocusManager()->SetFocusedView(
@@ -235,7 +265,7 @@ TEST_F(AuthContainerUnitTest, DisabledPasswordSubmitTest) {
 }
 
 // Verify the UI after turning off the password factor.
-TEST_F(AuthContainerUnitTest, PinOnlyTest) {
+TEST_F(AuthContainerWithPasswordAndPinTest, PinOnlyTest) {
   // Turn off the password factor availability.
   EXPECT_TRUE(test_api_->GetView()->HasPassword());
   EXPECT_TRUE(test_api_->GetView()->HasPin());
@@ -251,7 +281,7 @@ TEST_F(AuthContainerUnitTest, PinOnlyTest) {
 }
 
 // Verify the UI after turning off the pin factor.
-TEST_F(AuthContainerUnitTest, PasswordOnlyTest) {
+TEST_F(AuthContainerWithPasswordAndPinTest, PasswordOnlyTest) {
   // Turn off the password factor availability.
   EXPECT_TRUE(test_api_->GetView()->HasPassword());
   EXPECT_TRUE(test_api_->GetView()->HasPin());
@@ -266,7 +296,7 @@ TEST_F(AuthContainerUnitTest, PasswordOnlyTest) {
 }
 
 // Verify the ResetInputfields functionality.
-TEST_F(AuthContainerUnitTest, ResetInputfieldsTest) {
+TEST_F(AuthContainerWithPasswordAndPinTest, ResetInputfieldsTest) {
   test_api_password_->GetTextfield()->SetText(u"password");
   test_api_pin_input_->GetTextfield()->SetText(u"pin");
   test_api_->GetView()->ResetInputfields();
@@ -276,7 +306,7 @@ TEST_F(AuthContainerUnitTest, ResetInputfieldsTest) {
 }
 
 // Verify the ResetInputfields functionality.
-TEST_F(AuthContainerUnitTest, ResetInputfieldsWithSwitchTest) {
+TEST_F(AuthContainerWithPasswordAndPinTest, ResetInputfieldsWithSwitchTest) {
   test_api_password_->GetTextfield()->SetText(u"password");
   test_api_pin_input_->GetTextfield()->SetText(u"pin");
   LeftClickOn(test_api_->GetSwitchButton());
@@ -285,7 +315,7 @@ TEST_F(AuthContainerUnitTest, ResetInputfieldsWithSwitchTest) {
   EXPECT_EQ(test_api_pin_input_->GetTextfield()->GetText(), std::u16string());
 }
 
-TEST_F(AuthContainerUnitTest, SetPinStatusTest) {
+TEST_F(AuthContainerWithPasswordAndPinTest, SetPinStatusTest) {
   const std::u16string status_message = u"Too many PIN attempts";
 
   cryptohome::PinStatus pin_status(base::TimeDelta::Max());
@@ -302,7 +332,7 @@ TEST_F(AuthContainerUnitTest, SetPinStatusTest) {
 }
 
 // Verify the fingerprint view visibility.
-TEST_F(AuthContainerUnitTest, FingerprintTest) {
+TEST_F(AuthContainerWithPasswordAndPinTest, FingerprintTest) {
   FingerprintView* fp_view = test_api_->GetFingerprintView();
   FingerprintView::TestApi test_fp_view(fp_view);
 
@@ -318,6 +348,110 @@ TEST_F(AuthContainerUnitTest, FingerprintTest) {
   container_view_->SetFingerprintState(FingerprintState::UNAVAILABLE);
   EXPECT_FALSE(fp_view->GetVisible());
   EXPECT_EQ(test_fp_view.GetState(), FingerprintState::UNAVAILABLE);
+}
+
+TEST_F(AuthContainerWithPasswordAndPinTest, AccessibleProperties) {
+  ui::AXNodeData node_data;
+  container_view_->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_TRUE(node_data.HasState(ax::mojom::State::kInvisible));
+}
+
+class AuthContainerWithPinTest : public AuthContainerBaseUnitTest {
+ public:
+  AuthContainerWithPinTest()
+      : AuthContainerBaseUnitTest({AuthInputType::kPin}) {}
+  AuthContainerWithPinTest(const AuthContainerWithPinTest&) = delete;
+  AuthContainerWithPinTest& operator=(const AuthContainerWithPinTest&) = delete;
+  ~AuthContainerWithPinTest() override = default;
+
+ protected:
+  void SetUp() override {
+    AuthContainerBaseUnitTest::SetUp();
+
+    // At start the password is hidden and the pin is visible.
+    CHECK(!test_api_password_->GetView()->GetVisible());
+    CHECK(test_api_pin_container_->GetView()->GetVisible());
+    CHECK(!test_api_->GetSwitchButton()->GetVisible());
+  }
+};
+
+TEST_F(AuthContainerWithPinTest, PinSubmitTest) {
+  const std::u16string kPin(u"6893112");
+  // The auth container content changes kPin times because of the input changes
+  EXPECT_CALL(*mock_observer_, OnContentsChanged()).Times(kPin.size());
+
+  EXPECT_TRUE(test_api_->GetCurrentInputType().has_value());
+  EXPECT_EQ(test_api_->GetCurrentInputType(), AuthInputType::kPin);
+  EXPECT_TRUE(test_api_pin_keyboard_->GetEnabled());
+
+  for (auto c : kPin) {
+    LeftClickOn(test_api_pin_keyboard_->digit_button(c - u'0'));
+  }
+
+  EXPECT_EQ(test_api_pin_input_->GetTextfield()->GetText(), kPin);
+  EXPECT_EQ(test_api_password_->GetTextfield()->GetText(), std::u16string());
+
+  EXPECT_CALL(*mock_observer_, OnPinSubmit(kPin));
+  // Click on Submit.
+  LeftClickOn(test_api_pin_input_->GetSubmitButton());
+}
+
+TEST_F(AuthContainerWithPinTest, LockoutTest) {
+  const std::u16string status_message = u"Too many PIN attempts";
+
+  cryptohome::PinStatus pin_status(base::TimeDelta::Max());
+
+  test_api_->GetView()->SetPinStatus(
+      std::make_unique<cryptohome::PinStatus>(pin_status));
+
+  EXPECT_EQ(test_pin_status_->GetCurrentText(), status_message);
+  EXPECT_TRUE(test_pin_status_->GetView()->GetVisible());
+
+  CHECK(!test_api_password_->GetView()->GetVisible());
+  CHECK(!test_api_pin_container_->GetView()->GetVisible());
+
+  // Now set the status back to an empty string.
+  test_api_->GetView()->SetPinStatus(nullptr);
+  EXPECT_FALSE(test_pin_status_->GetView()->GetVisible());
+}
+
+class AuthContainerWithLockedOutPinTest : public AuthContainerBaseUnitTest {
+ public:
+  AuthContainerWithLockedOutPinTest() : AuthContainerBaseUnitTest({}) {}
+  AuthContainerWithLockedOutPinTest(const AuthContainerWithLockedOutPinTest&) =
+      delete;
+  AuthContainerWithLockedOutPinTest& operator=(
+      const AuthContainerWithLockedOutPinTest&) = delete;
+  ~AuthContainerWithLockedOutPinTest() override = default;
+
+ protected:
+  void SetUp() override {
+    AuthContainerBaseUnitTest::SetUp();
+
+    // At start both the password and the pin are hidden.
+    CHECK(!test_api_password_->GetView()->GetVisible());
+    CHECK(!test_api_pin_container_->GetView()->GetVisible());
+    CHECK(!test_api_->GetSwitchButton()->GetVisible());
+  }
+};
+
+TEST_F(AuthContainerWithLockedOutPinTest, LockoutReopenTest) {
+  const std::u16string status_message = u"Too many PIN attempts";
+
+  cryptohome::PinStatus pin_status(base::TimeDelta::Max());
+
+  test_api_->GetView()->SetPinStatus(
+      std::make_unique<cryptohome::PinStatus>(pin_status));
+
+  EXPECT_EQ(test_pin_status_->GetCurrentText(), status_message);
+  EXPECT_TRUE(test_pin_status_->GetView()->GetVisible());
+
+  CHECK(!test_api_password_->GetView()->GetVisible());
+  CHECK(!test_api_pin_container_->GetView()->GetVisible());
+
+  // Now set the status back to an empty string.
+  test_api_->GetView()->SetPinStatus(nullptr);
+  EXPECT_FALSE(test_pin_status_->GetView()->GetVisible());
 }
 
 }  // namespace

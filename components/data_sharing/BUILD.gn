@@ -47,12 +47,17 @@ source_set("test_support") {
 
 if (is_android) {
   android_library("test_support_java") {
-    sources = [ "test_support/android/java/src/org/chromium/components/data_sharing/TestDataSharingService.java" ]
+    testonly = true
+    sources = [
+      "test_support/android/java/src/org/chromium/components/data_sharing/SharedGroupTestHelper.java",
+      "test_support/android/java/src/org/chromium/components/data_sharing/TestDataSharingService.java",
+    ]
     deps = [
       "//base:base_java",
       "//components/data_sharing/public:public_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
+      "//third_party/mockito:mockito_java",
       "//url:gurl_java",
     ]
   }

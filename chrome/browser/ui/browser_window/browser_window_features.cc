@@ -10,8 +10,11 @@
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/collaboration/collaboration_service_factory.h"
+#include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_command_controller.h"
@@ -19,6 +22,7 @@
 #include "chrome/browser/ui/commerce/product_specifications_entry_point_controller.h"
 #include "chrome/browser/ui/extensions/mv2_disabled_dialog_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
+#include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/session_service_tab_group_sync_observer.h"
@@ -27,13 +31,20 @@
 #include "chrome/browser/ui/toasts/toast_service.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/data_sharing/data_sharing_open_group_helper.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/media_router/cast_browser_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_toolbar_bubble_controller.h"
+#include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
+#include "components/collaboration/public/collaboration_service.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/feature_utils.h"
+#include "components/commerce/core/shopping_service.h"
 #include "components/lens/lens_features.h"
 #include "components/profile_metrics/browser_profile_type.h"
-#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/public/features.h"
 
 namespace {
 
@@ -77,9 +88,16 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // with an omnibox and a tab strip). By default most features should be
   // instantiated in this block.
   if (browser->GetType() == BrowserWindowInterface::Type::TYPE_NORMAL) {
-    product_specifications_entry_point_controller_ =
-        std::make_unique<commerce::ProductSpecificationsEntryPointController>(
-            browser);
+    if (browser->GetProfile()->IsRegularProfile()) {
+      auto* shopping_service =
+          commerce::ShoppingServiceFactory::GetForBrowserContext(
+              browser->GetProfile());
+      if (shopping_service && commerce::CanLoadProductSpecificationsFullPageUi(
+                                  shopping_service->GetAccountChecker())) {
+        product_specifications_entry_point_controller_ = std::make_unique<
+            commerce::ProductSpecificationsEntryPointController>(browser);
+      }
+    }
 
     if (browser->GetProfile()->IsRegularProfile() &&
         tab_groups::IsTabGroupsSaveV2Enabled() &&
@@ -91,10 +109,10 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
     }
 
     if (features::IsTabstripDeclutterEnabled() &&
-        browser->GetProfile()->IsRegularProfile()) {
+        (browser->GetProfile()->IsRegularProfile() ||
+         browser->GetProfile()->IsGuestSession())) {
       tab_declutter_controller_ =
-          std::make_unique<tabs::TabDeclutterController>(
-              browser->GetTabStripModel());
+          std::make_unique<tabs::TabDeclutterController>(browser);
     }
   }
 
@@ -132,17 +150,30 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
     auto* experiment_manager =
         extensions::ManifestV2ExperimentManager::Get(browser->profile());
-    if (experiment_manager &&
-        experiment_manager->GetCurrentExperimentStage() ==
-            extensions::MV2ExperimentStage::kDisableWithReEnable) {
-      mv2_disabled_dialog_controller_ =
-          std::make_unique<extensions::Mv2DisabledDialogController>(browser);
+    if (experiment_manager) {
+      extensions::MV2ExperimentStage experiment_stage =
+          experiment_manager->GetCurrentExperimentStage();
+      if (experiment_stage ==
+              extensions::MV2ExperimentStage::kDisableWithReEnable ||
+          experiment_stage == extensions::MV2ExperimentStage::kUnsupported) {
+        mv2_disabled_dialog_controller_ =
+            std::make_unique<extensions::Mv2DisabledDialogController>(browser);
+      }
     }
   }
 
   if ((browser->is_type_normal() || browser->is_type_app()) &&
       base::FeatureList::IsEnabled(toast_features::kToastFramework)) {
     toast_service_ = std::make_unique<ToastService>(browser);
+  }
+
+  collaboration::CollaborationService* service =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser->profile());
+  if (service && service->GetServiceStatus().IsAllowedToJoin() &&
+      tab_groups::IsTabGroupSyncServiceDesktopMigrationEnabled()) {
+    data_sharing_open_group_helper_ =
+        std::make_unique<DataSharingOpenGroupHelper>(browser);
   }
 }
 
@@ -157,9 +188,31 @@ void BrowserWindowFeatures::InitPostBrowserViewConstruction(
   // unified_side_panel_.
   side_panel_coordinator_ =
       std::make_unique<SidePanelCoordinator>(browser_view);
+  side_panel_coordinator_->Init(browser_view->browser());
+
+  extension_side_panel_manager_ =
+      std::make_unique<extensions::ExtensionSidePanelManager>(
+          browser_view->browser(),
+          side_panel_coordinator_->GetWindowRegistry());
+
+  // Memory Saver mode is default off but is available to turn on.
+  // The controller relies on performance manager which isn't initialized in
+  // some unit tests without browser view.
+  if (browser_view->GetIsNormalType()) {
+    memory_saver_opt_in_iph_controller_ =
+        std::make_unique<MemorySaverOptInIPHController>(
+            browser_view->browser());
+
+    if (media_router::MediaRouterEnabled(browser_view->browser()->profile())) {
+      cast_browser_controller_ =
+          std::make_unique<media_router::CastBrowserController>(browser_view->browser());
+    }
+  }
 }
 
 void BrowserWindowFeatures::TearDownPreBrowserViewDestruction() {
+  memory_saver_opt_in_iph_controller_.reset();
+
   // TODO(crbug.com/346148093): This logic should not be gated behind a
   // conditional.
   if (side_panel_coordinator_) {

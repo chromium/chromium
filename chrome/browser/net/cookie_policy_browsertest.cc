@@ -606,8 +606,14 @@ class CookiePolicyStorageBrowserTest
   ContextType ContextType() const { return GetParam(); }
 };
 
+// TODO(crbug.com/372780565): Test failing on Windows-asan
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ThirdPartyIFrameStorage DISABLED_ThirdPartyIFrameStorage
+#else
+#define MAYBE_ThirdPartyIFrameStorage ThirdPartyIFrameStorage
+#endif
 IN_PROC_BROWSER_TEST_P(CookiePolicyStorageBrowserTest,
-                       ThirdPartyIFrameStorage) {
+                       MAYBE_ThirdPartyIFrameStorage) {
   NavigateToPageWithFrame(kHostA);
   NavigateFrameTo(kHostB, "/browsing_data/site_data.html");
 

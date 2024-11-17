@@ -32,9 +32,8 @@ signin::ConsentLevel GetConsentLevelFromProfileDetails(
       return signin::ConsentLevel::kSync;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unexpected value for account_status: "
-                            << api::identity::ToString(account_status);
-  return signin::ConsentLevel::kSync;
+  NOTREACHED() << "Unexpected value for account_status: "
+               << api::identity::ToString(account_status);
 }
 }  // namespace
 

@@ -22,8 +22,6 @@ import java.util.List;
  */
 public class PhotoPickerDialog extends FullscreenAlertDialog
         implements PhotoPickerToolbar.PhotoPickerToolbarDelegate, PhotoPicker {
-    // Our window.
-    private WindowAndroid mWindowAndroid;
 
     // The category we're showing photos for.
     private PickerCategoryView mCategoryView;
@@ -91,7 +89,6 @@ public class PhotoPickerDialog extends FullscreenAlertDialog
             List<String> mimeTypes) {
         super(windowAndroid.getContext().get());
 
-        mWindowAndroid = windowAndroid;
         mListenerWrapper = new PhotoPickerListenerWrapper(listener);
 
         // Initialize the main content view.

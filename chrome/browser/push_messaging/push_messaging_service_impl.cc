@@ -133,14 +133,6 @@ const char kSenderIdRegistrationDeprecatedMessage[] =
 // Notifications permission.
 const char kNotificationsPermissionRevocationGracePeriodDate[] =
     "notifications_permission_revocation_grace_period";
-
-// The grace period that will be applied before site-level Notifications
-// permissions will be revoked and FCM unsubscribed.
-int GetNotificationsRevocationGracePeriodInDays() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      features::kRevokeNotificationsPermissionIfDisabledOnAppLevel,
-      features::kNotificationRevocationGracePeriodInDays, 3);
-}
 #endif
 
 void RecordDeliveryStatus(blink::mojom::PushEventStatus status) {
@@ -315,7 +307,7 @@ bool PushMessagingServiceImpl::CanHandle(const std::string& app_id) const {
 void PushMessagingServiceImpl::ShutdownHandler() {
   // Shutdown() should come before and it removes us from the list of app
   // handlers of gcm::GCMDriver so this shouldn't ever been called.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void PushMessagingServiceImpl::OnStoreReset() {
@@ -377,7 +369,10 @@ void PushMessagingServiceImpl::OnMessage(const std::string& app_id,
       /* was_encrypted= */ message.decrypted, std::string() /* error_message */,
       message.decrypted ? message.raw_data : std::string());
 
-  if (IsPermissionSet(app_identifier.origin())) {
+  bool user_visible =
+      !base::Contains(origins_requesting_user_visible_requirement_bypass,
+                      app_identifier.origin());
+  if (IsPermissionSet(app_identifier.origin(), user_visible)) {
     messages_pending_permission_check_.emplace(app_id, message);
     // Start abusive and disruptive origin verifications only if no other
     // respective verification is in progress.
@@ -433,10 +428,13 @@ void PushMessagingServiceImpl::OnCheckedOrigin(
   int64_t service_worker_registration_id =
       app_identifier.service_worker_registration_id();
 
+  bool user_visible = !base::Contains(
+      origins_requesting_user_visible_requirement_bypass, origin);
+
   // It is possible that Notifications permission has been revoked by a user
   // during abusive origin verification.
   if (outcome == PermissionRevocationRequest::Outcome::PERMISSION_NOT_REVOKED &&
-      IsPermissionSet(origin)) {
+      IsPermissionSet(origin, user_visible)) {
     std::queue<PendingMessage>& delivery_queue =
         message_delivery_queue_[{origin, service_worker_registration_id}];
     delivery_queue.push(std::move(message));
@@ -464,7 +462,7 @@ void PushMessagingServiceImpl::OnCheckedOrigin(
         status = blink::mojom::PushEventStatus::PERMISSION_REVOKED_DISRUPTIVE;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
 
     // Drop message and unregister if origin has lost push permission.
@@ -498,9 +496,12 @@ void PushMessagingServiceImpl::
       weak_factory_.GetWeakPtr(), app_id, origin,
       service_worker_registration_id, message, /*did_enqueue_message=*/true);
 
+  bool user_visible = !base::Contains(
+      origins_requesting_user_visible_requirement_bypass, origin);
+
   // It is possible that Notification permissions have been revoked by a user
   // while handling previous messages for |origin|.
-  if (!IsPermissionSet(origin)) {
+  if (!IsPermissionSet(origin, user_visible)) {
     std::move(deliver_message_callback)
         .Run(blink::mojom::PushEventStatus::PERMISSION_DENIED);
     return;
@@ -568,8 +569,9 @@ void PushMessagingServiceImpl::DeliverMessageCallback(
       if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
               switches::kAllowSilentPush)) {
         // Defaults to true since that is the more restrictive option.
-        bool user_visible_only = base::Contains(
-            origins_bypassing_user_visible_requirement, requesting_origin);
+        bool user_visible_only =
+            base::Contains(origins_requesting_user_visible_requirement_bypass,
+                           requesting_origin);
         notification_manager_.EnforceUserVisibleOnlyRequirements(
             requesting_origin, service_worker_registration_id,
             std::move(message_handled_callback), user_visible_only);
@@ -726,15 +728,13 @@ void PushMessagingServiceImpl::OnMessagesDeleted(const std::string& app_id) {
 void PushMessagingServiceImpl::OnSendError(
     const std::string& app_id,
     const gcm::GCMClient::SendErrorDetails& send_error_details) {
-  NOTREACHED_IN_MIGRATION()
-      << "The Push API shouldn't have sent messages upstream";
+  NOTREACHED() << "The Push API shouldn't have sent messages upstream";
 }
 
 void PushMessagingServiceImpl::OnSendAcknowledged(
     const std::string& app_id,
     const std::string& message_id) {
-  NOTREACHED_IN_MIGRATION()
-      << "The Push API shouldn't have sent messages upstream";
+  NOTREACHED() << "The Push API shouldn't have sent messages upstream";
 }
 
 void PushMessagingServiceImpl::OnMessageDecryptionFailed(
@@ -858,7 +858,8 @@ void PushMessagingServiceImpl::SubscribeFromWorker(
   }
 
   if (!options->user_visible_only) {
-    origins_bypassing_user_visible_requirement.insert(app_identifier.origin());
+    origins_requesting_user_visible_requirement_bypass.insert(
+        app_identifier.origin());
   }
 
   DoSubscribe(std::move(app_identifier), std::move(options),
@@ -870,12 +871,16 @@ void PushMessagingServiceImpl::SubscribeFromWorker(
 blink::mojom::PermissionStatus PushMessagingServiceImpl::GetPermissionStatus(
     const GURL& origin,
     bool user_visible) {
-  // Allows some origins to pass userVisibleOnly false to the push manager if
-  // they request it, but deny others.
-  if (!user_visible &&
-      !notification_manager_.ShouldSkipUserVisibleOnlyRequirements(
-          origin, /*requested_user_visible_only=*/!user_visible)) {
-    return blink::mojom::PermissionStatus::DENIED;
+  // Allows some origins to pass userVisibleOnly:false and allow Push API
+  // usage, but deny all others that attempt.
+  if (!user_visible) {
+    if (notification_manager_.ShouldBypassNotificationPermissionRequirement(
+            origin, /*requested_user_visible_only=*/!user_visible)) {
+      return blink::mojom::PermissionStatus::GRANTED;
+
+    } else {
+      return blink::mojom::PermissionStatus::DENIED;
+    }
   }
 
   // Because the Push API is tied to Service Workers, many usages of the API
@@ -907,11 +912,6 @@ JNI_PushMessagingServiceBridge_VerifyAndRevokeNotificationsPermission(
     std::string& origin,
     std::string& profile_id,
     jboolean app_level_notifications_enabled) {
-  if (!base::FeatureList::IsEnabled(
-          features::kRevokeNotificationsPermissionIfDisabledOnAppLevel)) {
-    return;
-  }
-
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   DCHECK(profile_manager);
 
@@ -945,8 +945,13 @@ void PushMessagingServiceImpl::RevokePermissionIfPossible(
   base::TimeDelta permission_revocation_activated_duration =
       base::Time::Now() -
       prefs->GetTime(kNotificationsPermissionRevocationGracePeriodDate);
+
+  // The grace period that will be applied before site-level Notifications
+  // permissions will be revoked and FCM unsubscribed.
+  constexpr int kNotificationsRevocationGracePeriodInDays = 3;
+
   if (permission_revocation_activated_duration.InDays() >=
-      GetNotificationsRevocationGracePeriodInDays()) {
+      kNotificationsRevocationGracePeriodInDays) {
     content::PermissionController* permission_controller =
         profile->GetPermissionController();
 
@@ -1240,7 +1245,7 @@ void PushMessagingServiceImpl::UnsubscribeInternal(
                      weak_factory_.GetWeakPtr(), reason, app_id, sender_id,
                      std::move(callback)));
 
-  origins_bypassing_user_visible_requirement.erase(origin);
+  origins_requesting_user_visible_requirement_bypass.erase(origin);
 }
 
 void PushMessagingServiceImpl::DidClearPushSubscriptionId(
@@ -1426,7 +1431,11 @@ void PushMessagingServiceImpl::OnContentSettingChanged(
       continue;
     }
 
-    if (IsPermissionSet(app_identifier.origin())) {
+    bool user_visible =
+        !base::Contains(origins_requesting_user_visible_requirement_bypass,
+                        app_identifier.origin());
+
+    if (IsPermissionSet(app_identifier.origin(), user_visible)) {
       barrier_closure.Run();
       continue;
     }
@@ -1668,9 +1677,9 @@ void PushMessagingServiceImpl::UpdateSubscription(
       blink::mojom::PermissionStatus::GRANTED;
 
   if (!options->user_visible_only) {
-    if (notification_manager_.ShouldSkipUserVisibleOnlyRequirements(
+    if (notification_manager_.ShouldBypassUserVisibleOnlyRequirement(
             app_identifier.origin(), options->user_visible_only)) {
-      origins_bypassing_user_visible_requirement.insert(
+      origins_requesting_user_visible_requirement_bypass.insert(
           app_identifier.origin());
     } else {
       permission_status = blink::mojom::PermissionStatus::DENIED;
@@ -1757,8 +1766,6 @@ void PushMessagingServiceImpl::SetRemoveExpiredSubscriptionsCallbackForTesting(
   remove_expired_subscriptions_callback_for_testing_ = std::move(closure);
 }
 
-// Assumes user_visible always since this is just meant to check
-// if the permission was previously granted and not revoked.
 bool PushMessagingServiceImpl::IsPermissionSet(const GURL& origin,
                                                bool user_visible) {
   return GetPermissionStatus(origin, user_visible) ==

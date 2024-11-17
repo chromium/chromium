@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_UKM_AGGREGATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_UKM_AGGREGATOR_H_
 
+#include <optional>
+
 #include "base/rand_util.h"
 #include "base/time/time.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
@@ -261,6 +263,36 @@ class CORE_EXPORT LocalFrameUkmAggregator
     int64_t metric_index_ = -1;
   };
 
+  // Scoped helper class for timing forced style and layout updates.
+  // Encapsulates the TimeTicks::Now() calls which are expensive on arm. The
+  // time from object creation to destruction is recorded and aggregated within
+  // LocalFrameUkmAggregator.
+  class CORE_EXPORT ScopedForcedLayoutTimer {
+   public:
+    ScopedForcedLayoutTimer(LocalFrameUkmAggregator& aggregator,
+                            DocumentUpdateReason update_reason,
+                            bool avoid_unnecessary_forced_layout_measurements,
+                            bool should_report_uma_this_frame,
+                            bool is_pre_fcp,
+                            bool record_ukm_for_current_frame);
+    ~ScopedForcedLayoutTimer();
+
+    ScopedForcedLayoutTimer(const ScopedForcedLayoutTimer&) = delete;
+    ScopedForcedLayoutTimer& operator=(const ScopedForcedLayoutTimer&) = delete;
+
+    ScopedForcedLayoutTimer(ScopedForcedLayoutTimer&& other);
+    ScopedForcedLayoutTimer& operator=(ScopedForcedLayoutTimer&& other);
+
+   private:
+    scoped_refptr<LocalFrameUkmAggregator> aggregator_;
+    DocumentUpdateReason update_reason_;
+    base::TimeTicks start_time_;
+    bool avoid_unnecessary_forced_layout_measurements_;
+    bool should_report_uma_this_frame_;
+    bool is_pre_fcp_;
+    bool record_ukm_for_current_frame_;
+  };
+
   LocalFrameUkmAggregator();
   LocalFrameUkmAggregator(const LocalFrameUkmAggregator&) = delete;
   LocalFrameUkmAggregator& operator=(const LocalFrameUkmAggregator&) = delete;
@@ -274,6 +306,10 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // Create a scoped timer with the index of the metric. Note the index must
   // correspond to the matching index in metric_names.
   ScopedUkmHierarchicalTimer GetScopedTimer(size_t metric_index);
+
+  // Create a ScopedForcedLayoutTimer
+  ScopedForcedLayoutTimer GetScopedForcedLayoutTimer(
+      DocumentUpdateReason update_reason);
 
   // Record a main frame time metric, that also computes the ratios for the
   // sub-metrics and generates UMA samples. UKM is only reported when
@@ -295,16 +331,6 @@ class CORE_EXPORT LocalFrameUkmAggregator
 
   // Record a sample for a count-based sub-metric.
   void RecordCountSample(size_t metric_index, int64_t count);
-
-  // Mark the beginning of a forced layout.
-  void BeginForcedLayout();
-
-  // Record a ForcedLayout sample. The reason will determine which, if any,
-  // additional metrics are reported in order to diagnose the cause of
-  // ForcedLayout regressions.
-  void RecordForcedLayoutSample(DocumentUpdateReason reason,
-                                base::TimeTicks start,
-                                base::TimeTicks end);
 
   // Record a sample for the impl-side compositor processing.
   // - requested is the time the renderer proxy requests a commit
@@ -371,9 +397,22 @@ class CORE_EXPORT LocalFrameUkmAggregator
   };
 
   void UpdateEventTimeAndUpdateSampleIfNeeded(
-      cc::ActiveFrameSequenceTrackers trackers);
+      cc::ActiveFrameSequenceTrackers trackers,
+      bool& record_ukm_for_next_frame);
   void UpdateSample(cc::ActiveFrameSequenceTrackers trackers);
   void ResetAllMetrics();
+
+  // Mark the beginning of a forced layout.
+  void BeginForcedLayout();
+
+  // Mark the end of a forced layout. The reason will determine which, if any,
+  // additional metrics are reported in order to diagnose the cause of
+  // ForcedLayout regressions.
+  void EndForcedLayout(DocumentUpdateReason reason,
+                       base::TimeDelta duration,
+                       bool avoid_unnecessary_forced_layout_measurements,
+                       bool should_report_uma_this_frame,
+                       bool is_pre_fcp);
 
   // Reports the current sample to the UKM system. Called on the first main
   // frame update after First Contentful Paint and at destruction. Also resets
@@ -415,6 +454,7 @@ class CORE_EXPORT LocalFrameUkmAggregator
   // events per page load, which in turn maximizes client counts.
   SampleToRecord current_sample_;
   unsigned frames_since_last_report_ = 0;
+  bool record_ukm_for_current_frame_ = true;
 
   // Control for the ForcedStyleAndUpdate UMA metric sampling
   unsigned mean_calls_between_forced_style_layout_uma_ = 500;

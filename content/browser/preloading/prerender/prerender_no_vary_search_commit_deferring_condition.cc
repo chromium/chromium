@@ -114,4 +114,9 @@ PrerenderNoVarySearchCommitDeferringCondition::WillCommitNavigation(
   return Result::kDefer;
 }
 
+const char* PrerenderNoVarySearchCommitDeferringCondition::TraceEventName()
+    const {
+  return "PrerenderNoVarySearchCommitDeferringCondition";
+}
+
 }  // namespace content

@@ -8,6 +8,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/input_device_settings/input_device_settings_utils.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -21,6 +22,12 @@
 namespace ash {
 
 namespace {
+
+// Set of Device IDs (Vendor ID:Product ID) for devices with companion apps.
+constexpr auto kDevicesWithCompanionApps =
+    base::MakeFixedFlatSet<std::string_view>(
+        {"1038:1824", "1038:1830", "1038:1836", "1038:1838", "1038:1850",
+         "1038:1852", "1038:1858", "0111:185a", "1b1c:1b79"});
 
 std::vector<mojom::ButtonRemappingPtr> GetDefaultButtonRemappingList() {
   return {};
@@ -385,22 +392,33 @@ const base::flat_map<VendorProductId, MouseMetadata>& GetMouseMetadataList() {
            {mojom::CustomizationRestriction::
                 kAllowAlphabetOrNumberKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
+          // HyperX Pulsefire Haste Gaming Mouse
+          {{0x03f0, 0x0f8f},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey,
+            "HyperX Pulsefire Haste Gaming Mouse"}},
+          // HyperX Pulsefire Surge Gaming Mouse
+          {{0x03f0, 0x0490},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey,
+            "HyperX Pulsefire Surge Gaming Mouse"}},
+          // HyperX Pulsefire Haste 2 Gaming Mouse
+          {{0x03f0, 0x0b97},
+           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
+            mojom::MouseButtonConfig::kFiveKey,
+            "HyperX Pulsefire Haste 2 Gaming Mouse"}},
           /////////////////////////////////
           // Below is data for imposter devices, and is not official metadata.
           /////////////////////////////////
-          // HP HyperX Pulsefire Haste Wireless
+          // HyperX Pulsefire Haste Wireless
           {{0x03f0, 0x028e},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
-          // HP HyperX Pulsefire Core
+          // HyperX Pulsefire Core
           {{0x03f0, 0x0d8f},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
-          // HP HyperX Pulsefire Haste
-          {{0x03f0, 0x0f8f},
-           {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
-            mojom::MouseButtonConfig::kNoConfig}},
-          // HP HyperX Pulsefire Haste 2 Wireless
+          // HyperX Pulsefire Haste 2 Wireless
           {{0x03f0, 0x0f98},
            {mojom::CustomizationRestriction::kDisableKeyEventRewrites,
             mojom::MouseButtonConfig::kNoConfig}},
@@ -1045,7 +1063,7 @@ GetGraphicsTabletMetadataList() {
             mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnly,
             "One by Wacom S"}},
           // One by Wacom M
-          {{0x056a, 0x0301},
+          {{0x056a, 0x037b},
            {mojom::CustomizationRestriction::kAllowCustomizations,
             mojom::GraphicsTabletButtonConfig::kWacomStandardPenOnly,
             "One by Wacom M"}},
@@ -1338,6 +1356,8 @@ GetKeyboardMetadataList() {
           {{0x3434, 0x0271}, {}},
           // Keychron K10 Pro Keyboard
           {{0x3434, 0x02a0}, {}},
+          // Keychron K14 Pro Keyboard
+          {{0x3434, 0x02e0}, {}},
           // Keychron V3 Keyboard
           {{0x3434, 0x0330}, {}},
           // Keychron C3 Pro Keyboard
@@ -1504,17 +1524,33 @@ const base::flat_map<VendorProductId, VendorProductId>& GetVidPidAliasList() {
           // Wacom Intuos S (Bluetooth -> USB)
           {{0x056a, 0x0376}, {0x056a, 0x0374}},
           // Wacom Intuos S (Bluetooth -> USB)
+          {{0x056a, 0x0377}, {0x056a, 0x0374}},
+          // Wacom Intuos S (Bluetooth -> USB)
           {{0x056a, 0x03c5}, {0x056a, 0x0374}},
+          // Wacom Intuos S (Bluetooth -> USB)
+          {{0x056a, 0x03c6}, {0x056a, 0x0374}},
           // Wacom Intuos M (Bluetooth -> USB)
           {{0x056a, 0x0378}, {0x056a, 0x0375}},
           // Wacom Intuos M (Bluetooth -> USB)
+          {{0x056a, 0x0379}, {0x056a, 0x0375}},
+          // Wacom Intuos M (Bluetooth -> USB)
           {{0x056a, 0x03c7}, {0x056a, 0x0375}},
+          // Wacom Intuos M (Bluetooth -> USB)
+          {{0x056a, 0x03c8}, {0x056a, 0x0375}},
+          // Wacom One Pen tablet M (Bluetooth -> USB)
+          {{0x0531, 0x0103}, {0x0531, 0x0102}},
+          // Wacom One Pen tablet S (Bluetooth -> USB)
+          {{0x0531, 0x0101}, {0x0531, 0x0100}},
           // SteelSeries Aerox 9 WL (USB Dongle -> USB)
           {{0x1038, 0x1858}, {0x1038, 0x185a}},
           // SteelSeries Aerox 9 WL (Bluetooth -> USB)
           {{0x0111, 0x185a}, {0x1038, 0x185a}},
           // Razer Naga Pro (Bluetooth -> USB Dongle)
           {{0x1532, 0x0092}, {0x1532, 0x0090}},
+          // HyperX Pulsefire Haste Wireless (Bluetooth -> USB Dongle)
+          {{0x03f0, 0x028e}, {0x03f0, 0x0f8f}},
+          // HyperX Pulsefire Haste 2 Wireless (Bluetooth -> USB Dongle)
+          {{0x03f0, 0x0f98}, {0x03f0, 0x0b97}},
           /////////////////////////////////
           // Below is data for imposter devices, and is not official metadata.
           /////////////////////////////////
@@ -1636,6 +1672,10 @@ const GraphicsTabletMetadata* GetGraphicsTabletMetadata(
   }
 
   return nullptr;
+}
+
+bool DeviceHasCompanionAppAvailable(const std::string& device_key) {
+  return kDevicesWithCompanionApps.contains(device_key);
 }
 
 const KeyboardMetadata* GetKeyboardMetadata(const ui::InputDevice& device) {

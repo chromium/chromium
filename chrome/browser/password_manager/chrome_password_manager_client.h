@@ -14,6 +14,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "components/autofill/content/browser/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/autofill_manager.h"
@@ -40,11 +41,14 @@
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "extensions/buildflags/buildflags.h"
 #include "url/origin.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/account_storage_notice/account_storage_notice.h"
+#include "chrome/browser/password_manager/android/cct_password_saving_metrics_recorder_bridge.h"
 #include "chrome/browser/password_manager/android/generated_password_saved_message_delegate.h"
+#include "chrome/browser/password_manager/android/password_access_loss_warning_startup_launcher.h"
 #include "chrome/browser/password_manager/android/password_manager_error_message_delegate.h"
 #include "chrome/browser/password_manager/android/password_migration_warning_startup_launcher.h"
 #include "chrome/browser/password_manager/android/save_update_password_message_delegate.h"
@@ -197,10 +201,7 @@ class ChromePasswordManagerClient
       const password_manager::PasswordForm& preferred_match,
       const password_manager::PasswordFormManagerForUI* form_manager) override;
   void NotifyUserCredentialsWereLeaked(
-      password_manager::CredentialLeakType leak_type,
-      const GURL& url,
-      const std::u16string& username,
-      bool in_account_store) override;
+      password_manager::LeakedPasswordDetails details) override;
   void NotifyKeychainError() override;
   void TriggerReauthForPrimaryAccount(
       signin_metrics::ReauthAccessPoint access_point,
@@ -215,6 +216,8 @@ class ChromePasswordManagerClient
   password_manager::PasswordStoreInterface* GetAccountPasswordStore()
       const override;
   password_manager::PasswordReuseManager* GetPasswordReuseManager()
+      const override;
+  password_manager::PasswordChangeServiceInterface* GetPasswordChangeService()
       const override;
   bool WasLastNavigationHTTPError() const override;
 
@@ -247,8 +250,8 @@ class ChromePasswordManagerClient
                                    const GURL& frame_url) override;
 #endif
 
-  // Reporting these events is only supported on desktop platforms.
-#if !BUILDFLAG(IS_ANDROID)
+  // Reporting these events is only supported when extensions are enabled.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   void MaybeReportEnterpriseLoginEvent(
       const GURL& url,
       bool is_federated,
@@ -265,6 +268,7 @@ class ChromePasswordManagerClient
 #if BUILDFLAG(IS_ANDROID)
   password_manager::FirstCctPageLoadPasswordsUkmRecorder*
   GetFirstCctPageLoadUkmRecorder() override;
+  void PotentialSaveFormSubmitted() override;
 #endif
   password_manager::PasswordRequirementsService*
   GetPasswordRequirementsService() override;
@@ -536,11 +540,21 @@ class ChromePasswordManagerClient
   std::unique_ptr<PasswordMigrationWarningStartupLauncher>
       password_migration_warning_startup_launcher_;
 
+  // Launcher used to trigger the password access loss warning once passwords
+  // have been fetched. Only invoked once on startup.
+  std::unique_ptr<PasswordAccessLossWarningStartupLauncher>
+      password_access_loss_warning_startup_launcher_;
+
   // Recorder of metrics that is associated with the first page loaded by a
   // CCT. Created only if the WebContents corresponds to a CCT. Records
   // metrics on destruction, which happens on navigation.
   std::unique_ptr<password_manager::FirstCctPageLoadPasswordsUkmRecorder>
       first_cct_page_load_metrics_recorder_;
+
+  // Used for recording metrics related to password saving in CCTs, such as
+  // time elapsed between form submission and CCt closure.
+  std::unique_ptr<CctPasswordSavingMetricsRecorderBridge>
+      cct_saving_metrics_recorder_bridge_;
 
 #endif  // BUILDFLAG(IS_ANDROID)
 

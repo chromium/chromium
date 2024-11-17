@@ -17,7 +17,7 @@ namespace permissions {
 MockNfcSystemLevelSetting::MockNfcSystemLevelSetting()
     : NfcSystemLevelSetting() {}
 
-MockNfcSystemLevelSetting::~MockNfcSystemLevelSetting() {}
+MockNfcSystemLevelSetting::~MockNfcSystemLevelSetting() = default;
 
 void MockNfcSystemLevelSetting::SetNfcAccessIsPossible(bool is_possible) {
   nfc_access_is_possible_ = is_possible;

@@ -35,19 +35,21 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
     private TestAwServiceWorkerClient mServiceWorkerClient;
 
     private static final String INDEX_HTML =
-            "<!DOCTYPE html>\n"
-                    + "<html>\n"
-                    + "  <body>\n"
-                    + "    <script>\n"
-                    + "      success = 0;\n"
-                    + "      navigator.serviceWorker.register('sw.js').then(function(reg) {;\n"
-                    + "         success = 1;\n"
-                    + "      }).catch(function(err) { \n"
-                    + "         console.error(err);\n"
-                    + "      });\n"
-                    + "    </script>\n"
-                    + "  </body>\n"
-                    + "</html>\n";
+            """
+        <!DOCTYPE html>
+        <html>
+          <body>
+            <script>
+              success = 0;
+              navigator.serviceWorker.register('sw.js').then(function(reg) {
+                 success = 1;
+              }).catch(function(err) {
+                 console.error(err);
+              });
+            </script>
+          </body>
+        </html>
+        """;
 
     private static final String SW_HTML = "fetch('fetch.html');";
     private static final String FETCH_HTML = ";)";
@@ -143,12 +145,12 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
         Assert.assertEquals(fullIndexUrl, onPageFinishedHelper.getUrl());
 
         // Check that the service worker has been registered successfully.
-        AwActivityTestRule.pollInstrumentationThread(() -> getSuccessFromJS() == 1);
+        AwActivityTestRule.pollInstrumentationThread(() -> getSuccessFromJs() == 1);
 
         helper.waitForCallback(currentShouldInterceptRequestCount, expectedInterceptRequestCount);
     }
 
-    private int getSuccessFromJS() {
+    private int getSuccessFromJs() {
         int result = -1;
         try {
             result =
@@ -156,7 +158,7 @@ public class AwServiceWorkerClientTest extends AwParameterizedTest {
                             mActivityTestRule.executeJavaScriptAndWaitForResult(
                                     mAwContents, mContentsClient, "success"));
         } catch (Exception e) {
-            Assert.fail("Unable to get success");
+            throw new AssertionError("Unable to get success", e);
         }
         return result;
     }

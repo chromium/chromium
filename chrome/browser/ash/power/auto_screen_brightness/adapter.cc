@@ -527,8 +527,7 @@ void Adapter::SetMetricsReporterDeviceClass() {
           MetricsReporter::DeviceClass::kUnsupportedAls);
       return;
     case AlsReader::AlsInitStatus::kInProgress:
-      NOTREACHED_IN_MIGRATION()
-          << "ALS should have been initialized with a valid value.";
+      NOTREACHED() << "ALS should have been initialized with a valid value.";
   }
 }
 

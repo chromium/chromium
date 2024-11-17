@@ -384,13 +384,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // GetUpdates request. The next sync cycle may download the latest committed
   // DeviceInfo reflection and drop optimization flags. Hence, make it sure that
   // there are at least 2 sync cycles and check the second one only.
-  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"));
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
                   /*profile=*/0, GetSyncService(0), GetFakeServer())
                   .Wait());
 
   // Perform the second sync cycle.
-  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"));
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
                   /*profile=*/0, GetSyncService(0), GetFakeServer())
                   .Wait());
@@ -425,13 +425,13 @@ IN_PROC_BROWSER_TEST_F(
   // GetUpdates request. The next sync cycle may download the latest committed
   // DeviceInfo reflection and drop optimization flags. Hence, make it sure that
   // there are at least 2 sync cycles and check the second one only.
-  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"));
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
                   /*profile=*/0, GetSyncService(0), GetFakeServer())
                   .Wait());
 
   // Perform the second sync cycle.
-  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"));
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
                   /*profile=*/0, GetSyncService(0), GetFakeServer())
                   .Wait());
@@ -459,13 +459,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // GetUpdates request. The next sync cycle may download the latest committed
   // DeviceInfo reflection and drop optimization flags. Hence, make it sure that
   // there are at least 2 sync cycles and check the second one only.
-  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"));
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
                   /*profile=*/0, GetSyncService(0), GetFakeServer())
                   .Wait());
 
   // Perform the second sync cycle.
-  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"));
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
                   /*profile=*/0, GetSyncService(0), GetFakeServer())
                   .Wait());
@@ -501,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   // Everything's ready to verify that the next commit request contains
   // single_client which is false. Commit a bookmark to trigger a commit
   // request.
-  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  bookmarks_helper::AddURL(/*profile=*/0, u"Title", GURL("http://foo.com"));
   ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
                   /*profile=*/0, GetSyncService(0), GetFakeServer())
                   .Wait());

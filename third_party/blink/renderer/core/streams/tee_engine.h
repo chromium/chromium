@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_TEE_ENGINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_TEE_ENGINE_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -18,7 +19,6 @@ class ReadableStream;
 class ReadableStreamDefaultController;
 class ReadableStreamDefaultReader;
 class ScriptState;
-class StreamPromiseResolver;
 
 // Implementation of "ReadableStreamDefaultTee()" from the standard.
 // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamdefaulttee
@@ -61,7 +61,7 @@ class TeeEngine final : public GarbageCollected<TeeEngine> {
 
   Member<ReadableStream> stream_;
   Member<ReadableStreamDefaultReader> reader_;
-  Member<StreamPromiseResolver> cancel_promise_;
+  Member<ScriptPromiseResolver<IDLUndefined>> cancel_promise_;
   bool reading_ = false;
   bool read_again_ = false;
   bool clone_for_branch2_ = false;

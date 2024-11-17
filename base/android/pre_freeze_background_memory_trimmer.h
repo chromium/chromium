@@ -7,6 +7,8 @@
 
 #include <deque>
 
+#include "base/compiler_specific.h"
+#include "base/debug/proc_maps_linux.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
@@ -69,7 +71,7 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
     // when unregistering metrics).
     virtual std::optional<uint64_t> Measure() const = 0;
 
-    const std::string& name() const { return name_; }
+    const std::string& name() const LIFETIME_BOUND { return name_; }
 
    protected:
     friend class PreFreezeBackgroundMemoryTrimmer;
@@ -104,6 +106,12 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   static void UnregisterMemoryMetric(const PreFreezeMetric* metric)
       LOCKS_EXCLUDED(Instance().lock_);
 
+  static bool SelfCompactionIsSupported();
+
+  // Compacts the memory for the process, and returns the number of bytes
+  // processed on success.
+  static std::optional<int64_t> CompactSelf();
+
   static void SetSupportsModernTrimForTesting(bool is_supported);
   static void ClearMetricsForTesting() LOCKS_EXCLUDED(lock_);
   size_t GetNumberOfPendingBackgroundTasksForTesting() const
@@ -113,6 +121,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   bool DidRegisterTasksForTesting() const;
 
   static void OnPreFreezeForTesting() LOCKS_EXCLUDED(lock_) { OnPreFreeze(); }
+
+  static std::optional<int64_t> CompactRegion(debug::MappedMemoryRegion region);
 
   // Called when Chrome is about to be frozen. Runs as many delayed tasks as
   // possible immediately, before we are frozen.
@@ -128,6 +138,8 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
       JNIEnv* env);
   friend class base::android::MemoryPurgeManagerAndroid;
   friend class base::OneShotDelayedBackgroundTimer;
+  friend class PreFreezeBackgroundMemoryTrimmerTest;
+  friend class PreFreezeSelfCompactionTest;
 
   // We use our own implementation here, based on |PostCancelableDelayedTask|,
   // rather than relying on something like |base::OneShotTimer|, since
@@ -167,6 +179,9 @@ class BASE_EXPORT PreFreezeBackgroundMemoryTrimmer {
   };
 
   PreFreezeBackgroundMemoryTrimmer();
+
+  static std::optional<int64_t> CompactMemory(
+      std::vector<debug::MappedMemoryRegion> regions);
 
   void RegisterMemoryMetricInternal(const PreFreezeMetric* metric)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);

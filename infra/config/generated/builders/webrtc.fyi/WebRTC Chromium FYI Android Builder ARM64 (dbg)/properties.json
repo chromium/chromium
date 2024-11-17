@@ -92,7 +92,8 @@
           "builder": "WebRTC Chromium FYI Android Tests ARM64 (dbg)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/webrtc.fyi/WebRTC Chromium FYI Android Builder ARM64 (dbg)/targets"
     }
   },
   "$build/reclient": {

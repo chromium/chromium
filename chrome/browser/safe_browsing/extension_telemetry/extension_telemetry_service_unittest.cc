@@ -1545,10 +1545,7 @@ TEST_F(ExtensionTelemetryServiceSystemTimeTest,
                                            .AppendASCII("CRXTelemetry")
                                            .AppendASCII("CRXTelemetry_0");
   EXPECT_TRUE(base::test::RunUntil([&] {
-    int64_t file_size = 0;
-    return base::PathExists(persisted_file_path) &&
-           base::GetFileSize(persisted_file_path, &file_size) &&
-           file_size > kMinReportSize;
+    return base::GetFileSize(persisted_file_path).value_or(0) > kMinReportSize;
   }));
 
   std::string persisted_report;

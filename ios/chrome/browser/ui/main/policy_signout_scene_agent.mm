@@ -27,7 +27,7 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
-  AppState* appState = self.sceneState.appState;
+  AppState* appState = self.sceneState.profileState.appState;
   // Can only present UI when activation level is
   // SceneActivationLevelForegroundActive. Show the sign-out prompt if the user
   // was signed out due to policy.

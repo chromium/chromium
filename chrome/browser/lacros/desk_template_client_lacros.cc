@@ -27,7 +27,6 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/platform_window/platform_window.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_lacros.h"
 
 namespace {
 
@@ -255,16 +254,6 @@ void DeskTemplateClientLacros::GetBrowserInformation(
     const std::string& window_unique_id,
     GetBrowserInformationCallback callback) {
   Browser* browser = nullptr;
-
-  for (Browser* b : *BrowserList::GetInstance()) {
-    if (views::DesktopWindowTreeHostLacros::From(
-            b->window()->GetNativeWindow()->GetHost())
-            ->platform_window()
-            ->GetWindowUniqueId() == window_unique_id) {
-      browser = b;
-      break;
-    }
-  }
 
   if (!browser) {
     std::move(callback).Run(serial, window_unique_id, {});

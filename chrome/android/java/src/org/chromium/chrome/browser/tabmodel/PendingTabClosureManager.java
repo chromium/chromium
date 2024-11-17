@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.ThreadUtils.ThreadChecker;
 import org.chromium.chrome.browser.tab.Tab;
@@ -50,23 +51,34 @@ public class PendingTabClosureManager {
          * @param tabs The list of tabs to close together.
          */
         void notifyOnFinishingMultipleTabClosure(List<Tab> tabs);
+
+        /**
+         * Called when a TabClosureEvent is completely cancelled and about to be removed.
+         *
+         * @param event The event that's been cancelled.
+         */
+        void notifyOnCancelingTabClosure(@Nullable Runnable undoRunnable);
     }
 
     /** Represents a set of tabs closed together. */
-    private class TabClosureEvent {
+    static class TabClosureEvent {
         private final LinkedList<Tab> mClosingTabs;
         private final HashSet<Tab> mUnhandledTabs;
+        private final @Nullable Runnable mUndoRunnable;
 
         /**
          * @param tabs The list of closing tabs.
+         * @param undoRunnable The runnable to run if the event was undone.
          */
-        public TabClosureEvent(List<Tab> tabs) {
+        public TabClosureEvent(List<Tab> tabs, @Nullable Runnable undoRunnable) {
             mClosingTabs = new LinkedList<>(tabs);
             mUnhandledTabs = new HashSet<>(mClosingTabs);
+            mUndoRunnable = undoRunnable;
         }
 
         /**
          * @param tab The tab to mark as having closed.
+         * @return Whether the tab was removed.
          */
         public boolean markReadyToCommit(Tab tab) {
             return mUnhandledTabs.remove(tab);
@@ -74,6 +86,7 @@ public class PendingTabClosureManager {
 
         /**
          * @param tab The tab to mark as having been cancelled.
+         * @return Whether the event was marked as cancelled.
          */
         public boolean markCancelled(Tab tab) {
             final boolean removed = mUnhandledTabs.remove(tab);
@@ -83,18 +96,19 @@ public class PendingTabClosureManager {
             return removed;
         }
 
-        /**
-         * @return true once all tabs have been marked as ready to commit or were cancelled.
-         */
+        /** Returns true once all tabs have been marked as ready to commit or were cancelled. */
         public boolean allTabsHandled() {
             return mUnhandledTabs.isEmpty();
         }
 
-        /**
-         * @return the list of tabs marked as closing in this event.
-         */
+        /** Returns the list of tabs marked as closing in this event. */
         public LinkedList<Tab> getList() {
             return mClosingTabs;
+        }
+
+        /** Returns the undo runnable. */
+        public @Nullable Runnable getUndoRunnable() {
+            return mUndoRunnable;
         }
     }
 
@@ -275,14 +289,15 @@ public class PendingTabClosureManager {
 
     /**
      * Creates a new closure event when pending tabs are closed.
+     *
      * @param tabs The list of {@link Tab} that are closing.
      */
-    public void addTabClosureEvent(List<Tab> tabs) {
+    public void addTabClosureEvent(List<Tab> tabs, @Nullable Runnable undoRunnable) {
         mThreadChecker.assertOnValidThread();
         assert !mIsCommittingAllTabClosures
                 : "Modifying mTabClosureEvents while committing all tab closures.";
 
-        mTabClosureEvents.add(new TabClosureEvent(tabs));
+        mTabClosureEvents.add(new TabClosureEvent(tabs, undoRunnable));
     }
 
     /**
@@ -354,6 +369,7 @@ public class PendingTabClosureManager {
                 if (!closingTabs.isEmpty()) {
                     commitClosuresInternal(closingTabs);
                 }
+                mDelegate.notifyOnCancelingTabClosure(event.getUndoRunnable());
             }
             break;
         }

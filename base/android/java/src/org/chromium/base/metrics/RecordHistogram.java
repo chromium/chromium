@@ -154,13 +154,34 @@ public class RecordHistogram {
     /**
      * Records a sample in a histogram of times. Useful for recording medium durations. This is the
      * Java equivalent of the UMA_HISTOGRAM_MEDIUM_TIMES C++ macro.
-     * <p>
-     * Note that histogram samples will always be converted to milliseconds when logged.
+     *
+     * <p>Note that histogram samples will always be converted to milliseconds when logged.
      *
      * @param name name of the histogram
      * @param durationMs duration to be recorded in milliseconds
      */
     public static void recordMediumTimesHistogram(String name, long durationMs) {
+        recordCustomTimesHistogramMilliseconds(
+                name, durationMs, 1, DateUtils.MINUTE_IN_MILLIS * 3, 50);
+    }
+
+    /**
+     * Records a sample in a histogram of times. Useful for recording medium durations. This is the
+     * Java equivalent of the DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES C++ macro.
+     *
+     * <p>Warning: This method has been deprecated in order to be consistent with this function:
+     * https://source.chromium.org/chromium/chromium/src/+/main:base/metrics/histogram_functions.h?q=UmaHistogramMediumTimes
+     * If you modify your logging to use the new method, you will be making a meaningful semantic
+     * change to your data, and should change your histogram's name, as per the guidelines at
+     * https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/README.md#revising-histograms.
+     *
+     * <p>Note that histogram samples will always be converted to milliseconds when logged.
+     *
+     * @param name name of the histogram
+     * @param durationMs duration to be recorded in milliseconds
+     */
+    @Deprecated
+    public static void deprecatedRecordMediumTimesHistogram(String name, long durationMs) {
         recordCustomTimesHistogramMilliseconds(
                 name, durationMs, 10, DateUtils.MINUTE_IN_MILLIS * 3, 50);
     }
@@ -213,11 +234,11 @@ public class RecordHistogram {
     /**
      * Records a sample in a histogram of sizes in KB. This is the Java equivalent of the
      * UMA_HISTOGRAM_MEMORY_KB C++ macro.
-     * <p>
-     * Good for sizes up to about 500MB.
+     *
+     * <p>Good for sizes up to about 500MB.
      *
      * @param name name of the histogram
-     * @param sizeInkB Sample to record in KB
+     * @param sizeInKB Sample to record in KB
      */
     public static void recordMemoryKBHistogram(String name, int sizeInKB) {
         UmaRecorderHolder.get().recordExponentialHistogram(name, sizeInKB, 1000, 500000, 50);

@@ -11,6 +11,7 @@
 #include "base/time/time.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
@@ -20,19 +21,11 @@ namespace ui {
 
 namespace {
 
-// TODO(crbug.com/40235357): Remove this method when Compositors other
-// than Exo comply with `wl_touch.frame`.
-//
-// For instance, on Gnome/Wayland, KDE and Weston compositors a wl_touch.up does
-// not come accompanied by a respective wl_touch.frame event. On these scenarios
-// be conservative and always dispatch the events immediately.
-wl::EventDispatchPolicy EventDispatchPolicyForPlatform() {
-  return
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-      wl::EventDispatchPolicy::kOnFrame;
-#else
-      wl::EventDispatchPolicy::kImmediate;
-#endif
+// See TODO in //ui/ozone/common/features.cc
+wl::EventDispatchPolicy GetEventDispatchPolicy() {
+  return IsDispatchTouchEventsOnFrameEventEnabled()
+             ? wl::EventDispatchPolicy::kOnFrame
+             : wl::EventDispatchPolicy::kImmediate;
 }
 
 }  // namespace
@@ -83,11 +76,9 @@ void WaylandTouch::OnTouchDown(void* data,
     return;
   }
 
-  gfx::PointF location = self->connection_->MaybeConvertLocation(
-      gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), window);
-  self->delegate_->OnTouchPressEvent(window, location,
-                                     wl::EventMillisecondsToTimeTicks(time), id,
-                                     EventDispatchPolicyForPlatform());
+  self->delegate_->OnTouchPressEvent(
+      window, gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)),
+      wl::EventMillisecondsToTimeTicks(time), id, GetEventDispatchPolicy());
 }
 
 // static
@@ -100,7 +91,7 @@ void WaylandTouch::OnTouchUp(void* data,
   DCHECK(self);
 
   self->delegate_->OnTouchReleaseEvent(wl::EventMillisecondsToTimeTicks(time),
-                                       id, EventDispatchPolicyForPlatform(),
+                                       id, GetEventDispatchPolicy(),
                                        /*is_synthesized=*/false);
 }
 
@@ -119,12 +110,10 @@ void WaylandTouch::OnTouchMotion(void* data,
     LOG(WARNING) << "Touch event fired with wrong id";
     return;
   }
-  gfx::PointF location = self->connection_->MaybeConvertLocation(
-      gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)), target);
-  self->delegate_->OnTouchMotionEvent(location,
-                                      wl::EventMillisecondsToTimeTicks(time),
-                                      id, EventDispatchPolicyForPlatform(),
-                                      /*is_synthesized=*/false);
+  self->delegate_->OnTouchMotionEvent(
+      gfx::PointF(wl_fixed_to_double(x), wl_fixed_to_double(y)),
+      wl::EventMillisecondsToTimeTicks(time), id, GetEventDispatchPolicy(),
+      /*is_synthesized=*/false);
 }
 
 // static

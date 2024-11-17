@@ -197,6 +197,9 @@ std::u16string ErrorToString(int error_code) {
     case 7013:
       error_string = "SBOX_FATAL_WARMUP";
       break;
+    case 7014:
+      error_string = "SBOX_FATAL_BROKER_SHUTDOWN_HUNG";
+      break;
     case 36861:
       error_string = "Crashpad_NotConnectedToHandler";
       break;
@@ -559,6 +562,18 @@ SadTabView::SadTabView(content::WebContents* web_contents, SadTabKind kind)
   auto* actions_container =
       container->AddChildView(std::make_unique<views::FlexLayoutView>());
   actions_container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
+
+  // TODO(crbug.com/363826230): See View::SetLayoutManagerUseConstrainedSpace.
+  //
+  // `actions_container` is a horizontal FlexLayout, and its child element
+  // `action_button` has an unbounded horizontal size. This causes it to consume
+  // the size of the entire constraint space when we calculate the preferred
+  // size under the current constraint space. This causes the actual width
+  // occupied by action_button to be too wide.
+  //
+  // There is currently no good way to handle kEnd alignment for a single
+  // element.
+  actions_container->SetLayoutManagerUseConstrainedSpace(false);
 
   EnableHelpLink(actions_container);
 

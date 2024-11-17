@@ -3,11 +3,7 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.metrics;
 
-/**
- * Base class for defining methods where different behavior is required by downstream targets. The
- * correct version of {@link AppUpdateInfoDelegateImpl} will be determined at compile time via build
- * rules.
- */
+/** Base class for defining methods where different behavior is required by downstream targets. */
 public class AppUpdateInfoDelegate {
     public void emitToHistogram() {}
 }

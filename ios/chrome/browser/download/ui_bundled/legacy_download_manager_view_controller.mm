@@ -602,8 +602,7 @@ NSString* GetSizeString(long long size_in_bytes) {
     }
     case kDownloadManagerStateInProgress: {
       // The button should not be visible.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     }
     case kDownloadManagerStateSucceeded: {
       SEL selector = @selector(presentOpenInForDownloadManagerViewController:);

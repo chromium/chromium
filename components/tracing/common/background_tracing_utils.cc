@@ -39,8 +39,6 @@ BASE_FEATURE(kPresetTracing,
 
 namespace {
 
-const char kBackgroundTracingFieldTrial[] = "BackgroundTracing";
-
 const base::FeatureParam<std::string> kTracingTriggerRulesConfig{
     &kTracingTriggers, "config", ""};
 const base::FeatureParam<bool> kTracingTriggerRulesCompressed{
@@ -51,6 +49,10 @@ const base::FeatureParam<bool> kFieldTracingCompressed{&kFieldTracing,
                                                        "compressed", false};
 const base::FeatureParam<bool> kFieldTracingAnonymized{&kFieldTracing,
                                                        "anonymized", true};
+const base::FeatureParam<bool> kFieldTracingForceUploads{
+    &kFieldTracing, "force_uploads", false};
+const base::FeatureParam<size_t> kFieldTracingUploadLimitKb{
+    &kFieldTracing, "upload_limit_kb", 0};
 const base::FeatureParam<bool> kStartupFieldTracing{&kFieldTracing, "startup",
                                                     false};
 const base::FeatureParam<std::string> kPresetTracingConfig{&kPresetTracing,
@@ -85,40 +87,6 @@ void WriteTraceToFile(
       std::move(done_callback));
 }
 
-std::unique_ptr<content::BackgroundTracingConfig>
-GetBackgroundTracingConfigFromFile(const base::FilePath& config_file) {
-  std::string config_text;
-  if (!base::ReadFileToString(config_file, &config_text) ||
-      config_text.empty()) {
-    LOG(ERROR) << "Failed to read background tracing config file "
-               << config_file.value();
-    return nullptr;
-  }
-
-  auto value_with_error = base::JSONReader::ReadAndReturnValueWithError(
-      config_text, base::JSON_ALLOW_TRAILING_COMMAS);
-  if (!value_with_error.has_value()) {
-    LOG(ERROR) << "Background tracing has incorrect config: "
-               << value_with_error.error().message;
-    return nullptr;
-  }
-
-  if (!value_with_error->is_dict()) {
-    LOG(ERROR) << "Background tracing config is not a dict";
-    return nullptr;
-  }
-
-  auto config = content::BackgroundTracingConfig::FromDict(
-      std::move(*value_with_error).TakeDict());
-
-  if (!config) {
-    LOG(ERROR) << "Background tracing config dict has invalid contents";
-    return nullptr;
-  }
-
-  return config;
-}
-
 std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
 GetTracingConfigFromFeature(const base::Feature& feature,
                             const base::FeatureParam<std::string> feature_param,
@@ -147,26 +115,49 @@ GetTracingConfigFromFeature(const base::Feature& feature,
   return std::nullopt;
 }
 
+std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
+GetFieldTracingConfig() {
+  return GetTracingConfigFromFeature(kFieldTracing, kFieldTracingConfig,
+                                     kFieldTracingCompressed.Get());
+}
+
+std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
+GetPresetTracingConfig() {
+  return GetTracingConfigFromFeature(kPresetTracing, kPresetTracingConfig,
+                                     kPresetTracingCompressed.Get());
+}
+
+std::optional<perfetto::protos::gen::TracingTriggerRulesConfig>
+GetTracingTriggerRulesConfig() {
+  if (!base::FeatureList::IsEnabled(kTracingTriggers)) {
+    return std::nullopt;
+  }
+  std::string serialized_config;
+  if (!base::Base64Decode(kTracingTriggerRulesConfig.Get(),
+                          &serialized_config)) {
+    return std::nullopt;
+  }
+
+  if (kTracingTriggerRulesCompressed.Get()) {
+    std::string decompressed_config;
+    if (!snappy::Uncompress(serialized_config.data(), serialized_config.size(),
+                            &decompressed_config)) {
+      return std::nullopt;
+    }
+    serialized_config = std::move(decompressed_config);
+  }
+  perfetto::protos::gen::TracingTriggerRulesConfig config;
+  if (config.ParseFromString(serialized_config)) {
+    return config;
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 void RecordDisallowedMetric(TracingFinalizationDisallowedReason reason) {
   UMA_HISTOGRAM_ENUMERATION("Tracing.Background.FinalizationDisallowedReason",
                             reason);
-}
-
-bool SetupBackgroundTracingFromJsonConfigFile(
-    const base::FilePath& config_file) {
-  std::unique_ptr<content::BackgroundTracingConfig> config =
-      GetBackgroundTracingConfigFromFile(config_file);
-  if (!config) {
-    return false;
-  }
-
-  // NO_DATA_FILTERING is set because the trace is saved to a local output file
-  // instead of being uploaded to a metrics server, so there are no PII
-  // concerns.
-  return content::BackgroundTracingManager::GetInstance().SetActiveScenario(
-      std::move(config), content::BackgroundTracingManager::NO_DATA_FILTERING);
 }
 
 bool SetupBackgroundTracingFromProtoConfigFile(
@@ -207,10 +198,6 @@ bool SetupBackgroundTracingFromCommandLine() {
   switch (GetBackgroundTracingSetupMode()) {
     case BackgroundTracingSetupMode::kDisabledInvalidCommandLine:
       return false;
-    case BackgroundTracingSetupMode::kFromJsonConfigFile:
-      return SetupBackgroundTracingFromJsonConfigFile(
-          command_line->GetSwitchValuePath(
-              switches::kEnableLegacyBackgroundTracing));
     case BackgroundTracingSetupMode::kFromProtoConfigFile:
       return SetupBackgroundTracingFromProtoConfigFile(
           command_line->GetSwitchValuePath(switches::kEnableBackgroundTracing));
@@ -228,9 +215,13 @@ bool SetupPresetTracingFromFieldTrial() {
   auto& manager = content::BackgroundTracingManager::GetInstance();
   auto field_tracing_config = tracing::GetPresetTracingConfig();
   if (field_tracing_config) {
-    manager.AddPresetScenarios(
-        std::move(*field_tracing_config),
-        content::BackgroundTracingManager::NO_DATA_FILTERING);
+    content::BackgroundTracingManager::DataFiltering data_filtering =
+        tracing::BackgroundTracingStateManager::GetInstance()
+                .privacy_filter_enabled()
+            ? content::BackgroundTracingManager::ANONYMIZE_DATA
+            : content::BackgroundTracingManager::NO_DATA_FILTERING;
+    manager.AddPresetScenarios(std::move(*field_tracing_config),
+                               data_filtering);
     const auto& enabled_scenarios =
         tracing::BackgroundTracingStateManager::GetInstance()
             .enabled_scenarios();
@@ -262,33 +253,36 @@ bool SetupFieldTracingFromFieldTrial() {
     return false;
   }
 
-  content::BackgroundTracingManager::DataFiltering data_filtering =
-      content::BackgroundTracingManager::ANONYMIZE_DATA;
+  bool is_local_scenario = false;
   if (tracing::HasBackgroundTracingOutputPath()) {
-    data_filtering = content::BackgroundTracingManager::NO_DATA_FILTERING;
+    is_local_scenario = true;
     if (!tracing::SetBackgroundTracingOutputPath()) {
       return false;
     }
-  } else if (!tracing::ShouldAnonymizeFieldTracing()) {
-    data_filtering = content::BackgroundTracingManager::NO_DATA_FILTERING;
+  } else if (!kFieldTracingAnonymized.Get()) {
+    is_local_scenario = true;
   }
 
   auto& manager = content::BackgroundTracingManager::GetInstance();
   auto field_tracing_config = tracing::GetFieldTracingConfig();
-  if (field_tracing_config) {
-    if (data_filtering ==
-        content::BackgroundTracingManager::NO_DATA_FILTERING) {
-      auto enabled_scenarios = manager.AddPresetScenarios(
-          std::move(*field_tracing_config),
-          content::BackgroundTracingManager::NO_DATA_FILTERING);
-      return manager.SetEnabledScenarios(enabled_scenarios);
-    }
-    return manager.InitializeFieldScenarios(std::move(*field_tracing_config),
-                                            data_filtering);
+  if (!field_tracing_config) {
+    return false;
   }
-  std::unique_ptr<content::BackgroundTracingConfig> config =
-      manager.GetBackgroundTracingConfig(kBackgroundTracingFieldTrial);
-  return manager.SetActiveScenario(std::move(config), data_filtering);
+
+  if (is_local_scenario) {
+    content::BackgroundTracingManager::DataFiltering data_filtering =
+        tracing::BackgroundTracingStateManager::GetInstance()
+                .privacy_filter_enabled()
+            ? content::BackgroundTracingManager::ANONYMIZE_DATA
+            : content::BackgroundTracingManager::NO_DATA_FILTERING;
+    auto enabled_scenarios = manager.AddPresetScenarios(
+        std::move(*field_tracing_config), data_filtering);
+    return manager.SetEnabledScenarios(enabled_scenarios);
+  }
+  return manager.InitializeFieldScenarios(
+      std::move(*field_tracing_config),
+      content::BackgroundTracingManager::ANONYMIZE_DATA,
+      kFieldTracingForceUploads.Get(), kFieldTracingUploadLimitKb.Get());
 }
 
 bool HasBackgroundTracingOutputPath() {
@@ -314,16 +308,8 @@ bool SetBackgroundTracingOutputPath() {
 
 BackgroundTracingSetupMode GetBackgroundTracingSetupMode() {
   auto* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(switches::kEnableBackgroundTracing) &&
-      !command_line->HasSwitch(switches::kEnableLegacyBackgroundTracing)) {
+  if (!command_line->HasSwitch(switches::kEnableBackgroundTracing)) {
     return BackgroundTracingSetupMode::kFromFieldTrial;
-  }
-
-  if (command_line->HasSwitch(switches::kEnableBackgroundTracing) &&
-      command_line->HasSwitch(switches::kEnableLegacyBackgroundTracing)) {
-    LOG(ERROR) << "Can't specify both --enable-background-tracing and "
-                  "--enable-legacy-background-tracing";
-    return BackgroundTracingSetupMode::kDisabledInvalidCommandLine;
   }
 
   if (command_line->HasSwitch(switches::kEnableBackgroundTracing) &&
@@ -333,68 +319,14 @@ BackgroundTracingSetupMode GetBackgroundTracingSetupMode() {
     return BackgroundTracingSetupMode::kDisabledInvalidCommandLine;
   }
 
-  if (command_line->HasSwitch(switches::kEnableLegacyBackgroundTracing) &&
-      command_line
-          ->GetSwitchValueNative(switches::kEnableLegacyBackgroundTracing)
-          .empty()) {
-    LOG(ERROR) << "--enable-legacy-background-tracing needs a config file path";
-    return BackgroundTracingSetupMode::kDisabledInvalidCommandLine;
-  }
-
   if (command_line->HasSwitch(switches::kEnableBackgroundTracing)) {
     return BackgroundTracingSetupMode::kFromProtoConfigFile;
   }
-  return BackgroundTracingSetupMode::kFromJsonConfigFile;
-}
-
-std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
-GetFieldTracingConfig() {
-  return GetTracingConfigFromFeature(kFieldTracing, kFieldTracingConfig,
-                                     kFieldTracingCompressed.Get());
-}
-
-bool ShouldAnonymizeFieldTracing() {
-  return kFieldTracingAnonymized.Get();
+  return BackgroundTracingSetupMode::kDisabledInvalidCommandLine;
 }
 
 bool ShouldTraceStartup() {
   return kStartupFieldTracing.Get();
-}
-
-std::optional<perfetto::protos::gen::ChromeFieldTracingConfig>
-GetPresetTracingConfig() {
-  return GetTracingConfigFromFeature(kPresetTracing, kPresetTracingConfig,
-                                     kPresetTracingCompressed.Get());
-}
-
-std::optional<perfetto::protos::gen::TracingTriggerRulesConfig>
-GetTracingTriggerRulesConfig() {
-  if (!base::FeatureList::IsEnabled(kTracingTriggers)) {
-    return std::nullopt;
-  }
-  std::string serialized_config;
-  if (!base::Base64Decode(kTracingTriggerRulesConfig.Get(),
-                          &serialized_config)) {
-    return std::nullopt;
-  }
-
-  if (kTracingTriggerRulesCompressed.Get()) {
-    std::string decompressed_config;
-    if (!snappy::Uncompress(serialized_config.data(), serialized_config.size(),
-                            &decompressed_config)) {
-      return std::nullopt;
-    }
-    serialized_config = std::move(decompressed_config);
-  }
-  perfetto::protos::gen::TracingTriggerRulesConfig config;
-  if (config.ParseFromString(serialized_config)) {
-    return config;
-  }
-  return std::nullopt;
-}
-
-bool IsFieldTracingEnabled() {
-  return base::FeatureList::IsEnabled(kFieldTracing);
 }
 
 }  // namespace tracing

@@ -33,6 +33,7 @@
 #include "remoting/protocol/transport_context.h"
 #include "remoting/protocol/webrtc_audio_module.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
+#include "third_party/webrtc/api/audio/builtin_audio_processing_builder.h"
 #include "third_party/webrtc/api/audio_codecs/audio_decoder_factory_template.h"
 #include "third_party/webrtc/api/audio_codecs/audio_encoder_factory_template.h"
 #include "third_party/webrtc/api/audio_codecs/opus/audio_decoder_opus.h"
@@ -41,7 +42,6 @@
 #include "third_party/webrtc/api/peer_connection_interface.h"
 #include "third_party/webrtc/api/rtc_event_log/rtc_event_log_factory.h"
 #include "third_party/webrtc/api/video_codecs/builtin_video_decoder_factory.h"
-#include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 #include "third_party/webrtc_overrides/task_queue_factory.h"
 
 #if !defined(NDEBUG)
@@ -120,7 +120,7 @@ std::string GetTransportProtocol(const cricket::CandidatePair& candidate_pair) {
 }
 
 // Returns true if the selected candidate-pair indicates a relay connection.
-std::optional<bool> IsConnectionRelayed(
+bool IsConnectionRelayed(
     const cricket::CandidatePair& selected_candidate_pair) {
   const cricket::Candidate& local_candidate =
       selected_candidate_pair.local_candidate();
@@ -292,7 +292,8 @@ class WebrtcTransport::PeerConnectionWrapper
         webrtc::CreateAudioDecoderFactory<webrtc::AudioDecoderOpus>();
     pcf_deps.video_encoder_factory = std::move(encoder_factory);
     pcf_deps.video_decoder_factory = webrtc::CreateBuiltinVideoDecoderFactory();
-    pcf_deps.audio_processing = webrtc::AudioProcessingBuilder().Create();
+    pcf_deps.audio_processing_builder =
+        std::make_unique<webrtc::BuiltinAudioProcessingBuilder>();
     webrtc::EnableMedia(pcf_deps);
     peer_connection_factory_ =
         webrtc::CreateModularPeerConnectionFactory(std::move(pcf_deps));
@@ -970,7 +971,6 @@ void WebrtcTransport::OnIceConnectionChange(
   if (!connected_ &&
       new_state == webrtc::PeerConnectionInterface::kIceConnectionConnected) {
     connected_ = true;
-    connection_relayed_.reset();
     close_after_disconnect_timer_.Stop();
     event_handler_->OnWebrtcTransportConnected();
   } else if (connected_ &&
@@ -1031,12 +1031,8 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
       IsConnectionRelayed(event.selected_candidate_pair);
   if (connection_relayed != connection_relayed_) {
     connection_relayed_ = connection_relayed;
-    if (connection_relayed_.has_value()) {
-      VLOG(0) << "Relay connection: "
-              << (connection_relayed_.value() ? "true" : "false");
-    } else {
-      LOG(ERROR) << "Connection type unknown, treating as direct.";
-    }
+    VLOG(0) << "Relay connection: "
+            << (*connection_relayed_ ? "true" : "false");
 
     // The max-bitrate needs to be applied even for direct (non-TURN)
     // connections. Otherwise the video-sender b/w estimate is capped to a low

@@ -38,12 +38,16 @@ bool EncodeImage(const gfx::ImageSkia& image_skia,
   base::AssertLongCPUWorkAllowed();
   SkBitmap bitmap = *(image_skia.bitmap());
   DCHECK(!bitmap.drawsNothing());
-
   *output = base::MakeRefCounted<base::RefCountedBytes>();
 
   if (image_metadata.empty()) {
-    return gfx::JPEGCodec::Encode(bitmap, kDefaultEncodingQuality,
-                                  &(*output)->as_vector());
+    std::optional<std::vector<uint8_t>> data =
+        gfx::JPEGCodec::Encode(bitmap, kDefaultEncodingQuality);
+    if (!data) {
+      return false;
+    }
+    (*output)->as_vector() = std::move(data.value());
+    return true;
   }
 
   SkPixmap pixmap;
@@ -52,11 +56,16 @@ bool EncodeImage(const gfx::ImageSkia& image_skia,
     return false;
   }
 
-  auto xmpMetadata = SkData::MakeWithCString(image_metadata.c_str());
+  auto xmp_metadata = SkData::MakeWithCString(image_metadata.c_str());
 
-  return gfx::JPEGCodec::Encode(pixmap, kDefaultEncodingQuality,
-                                SkJpegEncoder::Downsample::k420,
-                                &(*output)->as_vector(), xmpMetadata.get());
+  std::optional<std::vector<uint8_t>> data = gfx::JPEGCodec::Encode(
+      pixmap, kDefaultEncodingQuality, SkJpegEncoder::Downsample::k420,
+      xmp_metadata.get());
+  if (!data) {
+    return false;
+  }
+  (*output)->as_vector() = std::move(data.value());
+  return true;
 }
 
 // Resizes `image` to a resolution which is nearest to `preferred_width` and

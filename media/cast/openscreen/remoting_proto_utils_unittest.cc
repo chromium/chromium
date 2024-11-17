@@ -33,14 +33,14 @@ class ProtoUtilsTest : public testing::Test {
 
 TEST_F(ProtoUtilsTest, PassEOSDecoderBuffer) {
   // 1. To DecoderBuffer
-  scoped_refptr<media::DecoderBuffer> input_buffer =
+  const scoped_refptr<media::DecoderBuffer> input_buffer =
       media::DecoderBuffer::CreateEOSBuffer();
 
   // 2. To Byte Array
-  std::vector<uint8_t> data = DecoderBufferToByteArray(*input_buffer);
+  const base::HeapArray<uint8_t> data = DecoderBufferToByteArray(*input_buffer);
 
   // 3. To DecoderBuffer
-  scoped_refptr<media::DecoderBuffer> output_buffer =
+  const scoped_refptr<media::DecoderBuffer> output_buffer =
       ByteArrayToDecoderBuffer(data);
   DCHECK(output_buffer);
 
@@ -62,21 +62,21 @@ TEST_F(ProtoUtilsTest, PassValidDecoderBuffer) {
       72,  116, 78,  141, 133, 76,  225, 209, 13,  221, 49,  187, 83,  123, 193,
       112, 123, 112, 74,  121, 133};
   const uint8_t side_buffer[] = {'X', 'X'};
-  base::TimeDelta pts = base::Milliseconds(5);
+  const base::TimeDelta pts = base::Milliseconds(5);
 
   // 1. To DecoderBuffer
-  scoped_refptr<media::DecoderBuffer> input_buffer =
+  const scoped_refptr<media::DecoderBuffer> input_buffer =
       media::DecoderBuffer::CopyFrom(buffer);
   input_buffer->set_timestamp(pts);
   input_buffer->set_is_key_frame(true);
-  input_buffer->WritableSideData().alpha_data.assign(std::begin(side_buffer),
-                                                     std::end(side_buffer));
+  input_buffer->WritableSideData().alpha_data =
+      base::HeapArray<uint8_t>::CopiedFrom(side_buffer);
 
   // 2. To Byte Array
-  std::vector<uint8_t> data = DecoderBufferToByteArray(*input_buffer);
+  const base::HeapArray<uint8_t> data = DecoderBufferToByteArray(*input_buffer);
 
   // 3. To DecoderBuffer
-  scoped_refptr<media::DecoderBuffer> output_buffer =
+  const scoped_refptr<media::DecoderBuffer> output_buffer =
       ByteArrayToDecoderBuffer(data);
   DCHECK(output_buffer);
 
@@ -85,7 +85,7 @@ TEST_F(ProtoUtilsTest, PassValidDecoderBuffer) {
   ASSERT_EQ(output_buffer->timestamp(), pts);
   EXPECT_EQ(base::span(*output_buffer), base::span(buffer));
   ASSERT_TRUE(output_buffer->has_side_data());
-  EXPECT_EQ(base::span(output_buffer->side_data()->alpha_data),
+  EXPECT_EQ(output_buffer->side_data()->alpha_data.as_span(),
             base::span(side_buffer));
 }
 

@@ -133,8 +133,7 @@ MonitoredProcessType GetMonitoredProcessTypeForNonRendererChildProcess(
     case content::PROCESS_TYPE_BROWSER:
     case content::PROCESS_TYPE_RENDERER:
       // Not a non-renderer child process.
-      NOTREACHED_IN_MIGRATION();
-      return kCount;
+      NOTREACHED();
     case content::PROCESS_TYPE_GPU:
       return MonitoredProcessType::kGpu;
     case content::PROCESS_TYPE_UTILITY: {
@@ -330,6 +329,7 @@ void ProcessMonitor::BrowserChildProcessLaunchedAndConnected(
 #if BUILDFLAG(IS_WIN)
   // Cannot gather process metrics for elevated process as browser has no
   // access to them.
+  CHECK(data.sandbox_type.has_value());
   if (data.sandbox_type ==
       sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
     return;
@@ -353,6 +353,7 @@ void ProcessMonitor::BrowserChildProcessHostDisconnected(
 #if BUILDFLAG(IS_WIN)
   // Cannot gather process metrics for elevated process as browser has no
   // access to them.
+  CHECK(data.sandbox_type.has_value());
   if (data.sandbox_type ==
       sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
     return;
@@ -391,6 +392,7 @@ void ProcessMonitor::OnBrowserChildProcessExited(
 #if BUILDFLAG(IS_WIN)
   // Cannot gather process metrics for elevated process as browser has no
   // access to them.
+  CHECK(data.sandbox_type.has_value());
   if (data.sandbox_type ==
       sandbox::mojom::Sandbox::kNoSandboxAndElevatedPrivileges) {
     return;

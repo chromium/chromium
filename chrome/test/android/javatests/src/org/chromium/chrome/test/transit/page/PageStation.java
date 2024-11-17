@@ -9,9 +9,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 
+import androidx.test.platform.app.InstrumentationRegistry;
+
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.ActivityElement;
 import org.chromium.base.test.transit.CallbackCondition;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
@@ -26,10 +27,15 @@ import org.chromium.base.test.transit.ViewSpec;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.test.transit.hub.IncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.hub.RegularTabSwitcherStation;
+import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
+import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
+import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.base.PageTransition;
 
@@ -43,7 +49,7 @@ import java.util.function.Function;
  * <p>Contains extra configurable Conditions such as waiting for a tab to be created, selected, have
  * the expected title, etc.
  */
-public class PageStation extends Station {
+public class PageStation extends Station<ChromeTabbedActivity> {
     /**
      * Builder for all PageStation subclasses.
      *
@@ -147,17 +153,22 @@ public class PageStation extends Station {
     protected final String mExpectedTitle;
 
     public static final ViewSpec HOME_BUTTON = viewSpec(withId(R.id.home_button));
+    public static final ViewSpec URL_BAR = viewSpec(withId(R.id.url_bar));
     public static final ViewSpec TAB_SWITCHER_BUTTON = viewSpec(withId(R.id.tab_switcher_button));
     public static final ViewSpec MENU_BUTTON = viewSpec(withId(R.id.menu_button));
-
-    protected ActivityElement<ChromeTabbedActivity> mActivityElement;
     protected Supplier<Tab> mActivityTabSupplier;
     protected Supplier<Tab> mSelectedTabSupplier;
     protected Supplier<Tab> mPageLoadedSupplier;
 
+    /** Prefer the PageStation's subclass |newBuilder()|. */
+    public static Builder<PageStation> newGenericBuilder() {
+        return new Builder<>(PageStation::new);
+    }
+
     /** Use the PageStation's subclass |newBuilder()|. */
     protected <T extends PageStation> PageStation(Builder<T> builder) {
         // incognito is optional and defaults to false
+        super(ChromeTabbedActivity.class);
         mIncognito = builder.mIncognito == null ? false : builder.mIncognito;
 
         // isEntryPoint is optional and defaults to false
@@ -193,8 +204,7 @@ public class PageStation extends Station {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);
-
+        super.declareElements(elements);
         // TODO(crbug.com/41497463): These should be scoped, but for now they need to be unscoped
         // since they unintentionally still exist in the non-Hub tab switcher. They are mostly
         // occluded by the tab switcher toolbar, but at least the tab_switcher_button is still
@@ -311,6 +321,57 @@ public class PageStation extends Station {
         return enterFacilitySync(new PageAppMenuFacility<PageStation>(), MENU_BUTTON::click);
     }
 
+    /** Shortcut to open a new tab programmatically as if selecting "New Tab" from the app menu. */
+    public RegularNewTabPageStation openNewTabFast() {
+        return travelToSync(
+                RegularNewTabPageStation.newBuilder()
+                        .withIsOpeningTabs(1)
+                        .withIsSelectingTabs(1)
+                        .build(),
+                () ->
+                        MenuUtils.invokeCustomMenuActionSync(
+                                InstrumentationRegistry.getInstrumentation(),
+                                getActivity(),
+                                R.id.new_tab_menu_id));
+    }
+
+    /**
+     * Shortcut to open a new incognito tab programmatically as if selecting "New Incognito Tab"
+     * from the app menu.
+     */
+    public IncognitoNewTabPageStation openNewIncognitoTabFast() {
+        return travelToSync(
+                IncognitoNewTabPageStation.newBuilder()
+                        .withIsOpeningTabs(1)
+                        .withIsSelectingTabs(1)
+                        .build(),
+                () ->
+                        MenuUtils.invokeCustomMenuActionSync(
+                                InstrumentationRegistry.getInstrumentation(),
+                                getActivity(),
+                                R.id.new_incognito_tab_menu_id));
+    }
+
+    /** Shortcut to select a different tab programmatically. */
+    public <T extends PageStation> T selectTabFast(
+            Tab tabToSelect, Supplier<Builder<T>> pageStationFactory) {
+        return travelToSync(
+                pageStationFactory
+                        .get()
+                        .withIncognito(tabToSelect.isIncognitoBranded())
+                        .withIsOpeningTabs(0)
+                        .withIsSelectingTabs(1)
+                        .build(),
+                () ->
+                        ThreadUtils.runOnUiThreadBlocking(
+                                () -> {
+                                    TabModelUtils.selectTabById(
+                                            getActivity().getTabModelSelector(),
+                                            tabToSelect.getId(),
+                                            TabSelectionType.FROM_USER);
+                                }));
+    }
+
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */
     public RegularTabSwitcherStation openRegularTabSwitcher() {
         assert !mIncognito;
@@ -351,17 +412,6 @@ public class PageStation extends Station {
         return loadPageProgrammatically("about:blank", WebPageStation.newBuilder());
     }
 
-    /**
-     * Returns the {@link ChromeTabbedActivity} matched to the ActivityCondition.
-     *
-     * <p>The element is only guaranteed to exist as long as the station is ACTIVE or in transition
-     * triggers when it is already TRANSITIONING_FROM.
-     */
-    public ChromeTabbedActivity getActivity() {
-        assertSuppliersCanBeUsed();
-        return mActivityElement.get();
-    }
-
     public Tab getLoadedTab() {
         assertSuppliersCanBeUsed();
         return mPageLoadedSupplier.get();
@@ -398,6 +448,7 @@ public class PageStation extends Station {
 
         @Override
         public void onStopMonitoring() {
+            super.onStopMonitoring();
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mTabModel.removeObserver(this);

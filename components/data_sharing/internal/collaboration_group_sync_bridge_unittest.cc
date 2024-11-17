@@ -94,7 +94,7 @@ class MockObserver : public CollaborationGroupSyncBridge::Observer {
                const std::vector<GroupId>&,
                const std::vector<GroupId>&),
               (override));
-  MOCK_METHOD(void, OnDataLoaded, (), (override));
+  MOCK_METHOD(void, OnCollaborationGroupSyncDataLoaded, (), (override));
 };
 
 class CollaborationGroupSyncBridgeTest : public testing::Test {
@@ -206,7 +206,7 @@ TEST_F(CollaborationGroupSyncBridgeTest, ShouldMergeFullSyncData) {
 
 TEST_F(CollaborationGroupSyncBridgeTest,
        ShouldApplyIncrementalSyncChangesAndNotifyObserver) {
-  EXPECT_CALL(observer(), OnDataLoaded);
+  EXPECT_CALL(observer(), OnCollaborationGroupSyncDataLoaded);
   CreateBridgeAndWaitForReadyToSync();
   testing::Mock::VerifyAndClearExpectations(&observer());
 
@@ -394,7 +394,7 @@ TEST(CollaborationGroupSyncBridgeNoFixtureTest, ShouldReportIsDataLoaded) {
   EXPECT_FALSE(bridge.IsDataLoaded());
 
   // Data should be loaded by the time ModelReadyToSync() is called.
-  EXPECT_CALL(observer, OnDataLoaded);
+  EXPECT_CALL(observer, OnCollaborationGroupSyncDataLoaded);
   run_loop.Run();
   EXPECT_TRUE(bridge.IsDataLoaded());
 }

@@ -5,15 +5,11 @@
 #include "crypto/features.h"
 
 #include "base/feature_list.h"
-#include "build/build_config.h"
 
-namespace crypto {
+namespace crypto::features {
 
-#if BUILDFLAG(IS_MAC)
-// Enabled in M124. Remove in or after M127.
-BASE_FEATURE(kEnableMacUnexportableKeys,
-             "EnableMacUnexportableKeys",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_MAC)
+BASE_FEATURE(kProcessBoundStringEncryption,
+             "ProcessBoundStringEncryption",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
-}  // namespace crypto
+}  // namespace crypto::features

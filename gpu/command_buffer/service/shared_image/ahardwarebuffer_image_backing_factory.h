@@ -18,6 +18,10 @@ class Size;
 class ColorSpace;
 }  // namespace gfx
 
+namespace viz {
+class VulkanContextProvider;
+}
+
 namespace gpu {
 
 namespace gles2 {
@@ -34,7 +38,8 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
  public:
   explicit AHardwareBufferImageBackingFactory(
       const gles2::FeatureInfo* feature_info,
-      const GpuPreferences& gpu_preferences);
+      const GpuPreferences& gpu_preferences,
+      const scoped_refptr<viz::VulkanContextProvider>& vulkan_context_provider);
 
   AHardwareBufferImageBackingFactory(
       const AHardwareBufferImageBackingFactory&) = delete;
@@ -132,6 +137,8 @@ class GPU_GLES2_EXPORT AHardwareBufferImageBackingFactory
     CHECK(iter != format_infos_.end());
     return iter->second;
   }
+
+  scoped_refptr<viz::VulkanContextProvider> vulkan_context_provider_;
 
   base::flat_map<viz::SharedImageFormat, FormatInfo> format_infos_;
 

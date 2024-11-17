@@ -3,3 +3,6 @@
 
 # TODO(crbug.com/40276082)
 -org.chromium.components.browser_ui.photo_picker.ImageDecoderTest.testServiceDecodeSimple
+
+# TODO(crbug.com/377388268)
+-org.chromium.components.browser_ui.widget.CheckBoxWithDescriptionRenderTest.testCheckBoxWithDescription

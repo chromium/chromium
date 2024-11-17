@@ -38,6 +38,22 @@ TEST_F(ContextMenuUtilsTest, TitleNoTitle) {
   EXPECT_FALSE(IsImageTitle(params));
 }
 
+// If there is a link URL, then it must be displayed as this is what the user
+// will open or share.
+TEST_F(ContextMenuUtilsTest, linkURLAndTitle) {
+  web::ContextMenuParams params;
+  params.link_url = GURL(kLinkUrl);
+  params.src_url = GURL(kSrcUrl);
+  params.title_attribute = @(kTitle);
+  params.alt_text = @(kAltText);
+
+  std::u16string urlText = url_formatter::FormatUrl(GURL(kLinkUrl));
+  NSString* title = base::SysUTF16ToNSString(urlText);
+
+  EXPECT_NSEQ(GetContextMenuTitle(params), title);
+  EXPECT_FALSE(IsImageTitle(params));
+}
+
 // Tests title is set to "JavaScript" if there is no title and "href" links to
 // JavaScript URL.
 TEST_F(ContextMenuUtilsTest, TitleJavascriptTitle) {
@@ -66,7 +82,7 @@ TEST_F(ContextMenuUtilsTest, TitleDataTitle) {
   EXPECT_FALSE(IsImageTitle(params));
 }
 
-// Tests that the menu title prepends the element's alt text if it is an image
+// Tests that the image src prepends the element's alt text if it is an image
 // without a link.
 TEST_F(ContextMenuUtilsTest, TitlePrependAltForImage) {
   web::ContextMenuParams params;

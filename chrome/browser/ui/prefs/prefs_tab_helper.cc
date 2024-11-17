@@ -268,23 +268,23 @@ void OverrideFontFamily(blink::web_pref::WebPreferences* prefs,
                         const std::string& script,
                         const std::string& pref_value) {
   blink::web_pref::ScriptFontFamilyMap* map = nullptr;
-  if (generic_family == "standard")
+  if (generic_family == "standard") {
     map = &prefs->standard_font_family_map;
-  else if (generic_family == "fixed")
+  } else if (generic_family == "fixed") {
     map = &prefs->fixed_font_family_map;
-  else if (generic_family == "serif")
+  } else if (generic_family == "serif") {
     map = &prefs->serif_font_family_map;
-  else if (generic_family == "sansserif")
+  } else if (generic_family == "sansserif") {
     map = &prefs->sans_serif_font_family_map;
-  else if (generic_family == "cursive")
+  } else if (generic_family == "cursive") {
     map = &prefs->cursive_font_family_map;
-  else if (generic_family == "fantasy")
+  } else if (generic_family == "fantasy") {
     map = &prefs->fantasy_font_family_map;
-  else if (generic_family == "math")
+  } else if (generic_family == "math") {
     map = &prefs->math_font_family_map;
-  else
-    NOTREACHED_IN_MIGRATION()
-        << "Unknown generic font family: " << generic_family;
+  } else {
+    NOTREACHED() << "Unknown generic font family: " << generic_family;
+  }
   (*map)[script] = base::UTF8ToUTF16(pref_value);
 }
 
@@ -376,13 +376,11 @@ void PrefsTabHelper::RegisterProfilePrefs(
       prefs::kEnableReferrers,
       !base::FeatureList::IsEnabled(features::kNoReferrers));
   registry->RegisterBooleanPref(prefs::kEnableEncryptedMedia, true);
-  registry->RegisterStringPref(prefs::kPrefixedVideoFullscreenApiAvailability,
-                               "runtime-enabled");
   registry->RegisterBooleanPref(prefs::kScrollToTextFragmentEnabled, true);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterDoublePref(browser_ui::prefs::kWebKitFontScaleFactor, 1.0);
   registry->RegisterIntegerPref(prefs::kAccessibilityTextSizeContrastFactor, 0);
-  registry->RegisterBooleanPref(browser_ui::prefs::kWebKitForceEnableZoom,
+  registry->RegisterBooleanPref(prefs::kAccessibilityForceEnableZoom,
                                 pref_defaults.force_enable_zoom);
   registry->RegisterBooleanPref(prefs::kWebKitPasswordEchoEnabled,
                                 pref_defaults.password_echo_enabled);

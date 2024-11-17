@@ -22,6 +22,7 @@ source_set("model") {
     "//components/prefs",
     "//components/segmentation_platform/embedder",
     "//components/segmentation_platform/embedder/default_model",
+    "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal/proto",
     "//components/segmentation_platform/public",
@@ -82,6 +83,7 @@ source_set("segmented_default_browser") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ui/base",
   ]
 }
 
@@ -121,6 +123,7 @@ source_set("unit_tests") {
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:features",
     "//components/segmentation_platform/embedder",
+    "//components/segmentation_platform/embedder/home_modules:constants",
     "//components/segmentation_platform/internal",
     "//components/segmentation_platform/internal:test_support",
     "//components/segmentation_platform/internal/proto",

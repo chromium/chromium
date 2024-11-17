@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DEVTOOLS_DEVTOOLS_BROWSER_CONTEXT_MANAGER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_multi_source_observation.h"
@@ -48,7 +49,7 @@ class DevToolsBrowserContextManager : public BrowserListObserver,
 
   base::ScopedMultiSourceObservation<Profile, ProfileObserver>
       profile_observation_{this};
-  base::flat_map<std::string, Profile*> otr_profiles_;
+  base::flat_map<std::string, raw_ptr<Profile, CtnExperimental>> otr_profiles_;
   base::flat_map<std::string, content::DevToolsManagerDelegate::DisposeCallback>
       pending_context_disposals_;
 

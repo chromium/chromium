@@ -295,9 +295,7 @@ class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
                             wgpu::TextureUsage internal_usage) final {
     AccessMode access_mode =
         webgpu_usage & kWriteUsage ? AccessMode::kWrite : AccessMode::kRead;
-    if (base::FeatureList::IsEnabled(
-            features::kDawnSIRepsUseClientProvidedInternalUsages) &&
-        (internal_usage & kWriteUsage)) {
+    if (internal_usage & kWriteUsage) {
       access_mode = AccessMode::kWrite;
     }
     compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kDawn,
@@ -770,8 +768,7 @@ CompoundImageBacking::ElementHolder& CompoundImageBacking::GetElement(
       return element;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return elements_.back();
+  NOTREACHED();
 }
 
 SharedImageBacking* CompoundImageBacking::GetBacking(

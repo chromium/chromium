@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "build/chromecast_buildflags.h"
 #include "components/embedder_support/user_agent_utils.h"
@@ -104,7 +105,7 @@ class DevToolsManagerDelegate final : public content::DevToolsManagerDelegate {
   }
 
  private:
-  WebEngineBrowserMainParts* const main_parts_;
+  const raw_ptr<WebEngineBrowserMainParts> main_parts_;
 };
 
 std::vector<std::string> GetCorsExemptHeaders() {
@@ -350,7 +351,10 @@ WebEngineContentBrowserClient::CreateURLLoaderThrottles(
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
   auto* frame_impl = FrameImpl::FromWebContents(wc_getter.Run());
-  DCHECK(frame_impl);
+  if (!frame_impl) {
+    // `wc_getter` may access stale data, and may return nullptr.
+    return {};
+  }
   auto rules =
       frame_impl->url_request_rewrite_rules_manager()->GetCachedRules();
   if (rules) {

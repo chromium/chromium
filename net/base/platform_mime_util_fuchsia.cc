@@ -18,14 +18,14 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
 }
 
 bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
-    const std::string& mime_type,
+    std::string_view mime_type,
     base::FilePath::StringType* extension) const {
   // TODO(fuchsia): Integrate with MIME DB when Fuchsia provides an API.
   return false;
 }
 
 void PlatformMimeUtil::GetPlatformExtensionsForMimeType(
-    const std::string& mime_type,
+    std::string_view mime_type,
     std::unordered_set<base::FilePath::StringType>* extensions) const {
   // TODO(fuchsia): Integrate with MIME DB when Fuchsia provides an API.
 }

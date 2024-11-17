@@ -5,51 +5,74 @@
 package org.chromium.chrome.browser.autofill.vcn;
 
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isEmptyString;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 
+import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.test.filters.SmallTest;
 
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.Description;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.IssuerIcon;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LegalMessages;
 import org.chromium.chrome.browser.autofill.vcn.AutofillVcnEnrollBottomSheetProperties.LinkOpener;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.autofill.AutofillFeatures;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.components.autofill.payments.LegalMessageLine;
 import org.chromium.components.autofill.payments.LegalMessageLine.Link;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.widget.LoadingView;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.LinkedList;
+import java.util.Optional;
+import java.util.TreeMap;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for {@link AutofillVcnEnrollBottomSheetViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
-public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTestActivityTestCase
-        implements LinkOpener {
+@EnableFeatures(AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER)
+public final class AutofillVcnEnrollBottomSheetViewBinderTest implements LinkOpener {
+    @ClassRule
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
+
+    private static Activity sActivity;
+
     private PropertyModel.Builder mModelBuilder;
     private PropertyModel mModel;
     private AutofillVcnEnrollBottomSheetView mView;
+    private final FakeIconFetcher mFakeIconFetcher = new FakeIconFetcher();
 
     private static class LoadingViewObserver implements LoadingView.Observer {
         private final CallbackHelper mOnShowHelper = new CallbackHelper();
@@ -57,31 +80,34 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         private final CallbackHelper mOnHideHelper = new CallbackHelper();
 
         @Override
-        public void onShowLoadingUIComplete() {
+        public void onShowLoadingUiComplete() {
             mOnShowHelper.notifyCalled();
         }
 
         @Override
-        public void onHideLoadingUIComplete() {
+        public void onHideLoadingUiComplete() {
             mOnHideHelper.notifyCalled();
         }
 
-        public CallbackHelper getOnShowLoadingUICompleteHelper() {
+        public CallbackHelper getOnShowLoadingUiCompleteHelper() {
             return mOnShowHelper;
         }
 
-        public CallbackHelper getOnHideLoadingUICompleteHelper() {
+        public CallbackHelper getOnHideLoadingUiCompleteHelper() {
             return mOnHideHelper;
         }
     }
 
-    @Override
-    public void setUpTest() throws Exception {
-        super.setUpTest();
+    @BeforeClass
+    public static void setupSuite() {
+        sActivity = sActivityTestRule.launchActivity(null);
+    }
 
+    @Before
+    public void setUp() throws Exception {
         mModelBuilder = new PropertyModel.Builder(AutofillVcnEnrollBottomSheetProperties.ALL_KEYS);
-        mView = new AutofillVcnEnrollBottomSheetView(getActivity());
-        ThreadUtils.runOnUiThreadBlocking(() -> getActivity().setContentView(mView.mContentView));
+        mView = new AutofillVcnEnrollBottomSheetView(sActivity);
+        ThreadUtils.runOnUiThreadBlocking(() -> sActivity.setContentView(mView.mContentView));
         bind(mModelBuilder);
     }
 
@@ -89,7 +115,13 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
     private void bind(PropertyModel.Builder modelBuilder) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mModel = modelBuilder.build();
+                    mModel =
+                            modelBuilder
+                                    .with(
+                                            AutofillVcnEnrollBottomSheetProperties
+                                                    .ISSUER_ICON_FETCH_CALLBACK,
+                                            mFakeIconFetcher::fetchIcon)
+                                    .build();
                     PropertyModelChangeProcessor.create(
                             mModel, mView, AutofillVcnEnrollBottomSheetViewBinder::bind);
                 });
@@ -201,6 +233,7 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
 
     @Test
     @SmallTest
+    @DisableFeatures(AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER)
     public void testIssuerIcon() {
         assertThat(mView.mIssuerIcon.getDrawable(), nullValue());
 
@@ -212,6 +245,79 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
                                 /* width= */ 5,
                                 /* height= */ 5)));
         assertThat(mView.mIssuerIcon.getDrawable(), notNullValue());
+    }
+
+    @Test
+    @SmallTest
+    public void testIssuerIconFromCardArtUrl() {
+        assertThat(mView.mIssuerIcon.getDrawable(), nullValue());
+        int fakeIconResourceId = 1234;
+        GURL fakeIconUrl = new GURL(/* uri= */ "https://example.test/card.png");
+        Bitmap cardArtBitmapAtUrl = createBitmap(/* dimensions= */ 17, /* color= */ 0xFFFF0000);
+        mFakeIconFetcher.putBitmap(
+                new IssuerIcon(fakeIconResourceId, fakeIconUrl), cardArtBitmapAtUrl);
+
+        bind(
+                mModelBuilder.with(
+                        AutofillVcnEnrollBottomSheetProperties.ISSUER_ICON,
+                        new IssuerIcon(fakeIconResourceId, fakeIconUrl)));
+        assertThat(
+                (BitmapDrawable) mView.mIssuerIcon.getDrawable(),
+                drawableWithSameBitmap(cardArtBitmapAtUrl));
+    }
+
+    Matcher<BitmapDrawable> drawableWithSameBitmap(Bitmap expectedBitmap) {
+        return new TypeSafeMatcher<BitmapDrawable>() {
+            @Override
+            protected boolean matchesSafely(BitmapDrawable drawable) {
+                return drawable.getBitmap().sameAs(expectedBitmap);
+            }
+
+            @Override
+            public void describeTo(org.hamcrest.Description description) {
+                description.appendText("a BitmapDrawable with bitmap(");
+                description.appendValue(expectedBitmap);
+                description.appendText(")");
+            }
+
+            @Override
+            protected void describeMismatchSafely(
+                    BitmapDrawable item, org.hamcrest.Description mismatchDescription) {
+                mismatchDescription.appendText("was BitmapDrawable with bitmap(");
+                mismatchDescription.appendValue(item.getBitmap());
+                mismatchDescription.appendText(")");
+            }
+        };
+    }
+
+    private static class FakeIconFetcher {
+        private final TreeMap<IssuerIcon, Bitmap> mIconBitmapLookup =
+                new TreeMap<>(
+                        Comparator.comparingInt((IssuerIcon issuerIcon) -> issuerIcon.mIconResource)
+                                .thenComparing(
+                                        (IssuerIcon issuerIcon) ->
+                                                Optional.of(issuerIcon.mIconUrl)
+                                                        .map(Object::toString)
+                                                        .orElse(null)));
+
+        private void putBitmap(IssuerIcon issuerIcon, Bitmap bitmap) {
+            mIconBitmapLookup.put(issuerIcon, bitmap);
+        }
+
+        /**
+         * Implements the icon fetcher function of the view binder.
+         *
+         * <p>See {@link AutofillVcnEnrollBottomSheetProperties#ISSUER_ICON_FETCH_CALLBACK}
+         */
+        private Drawable fetchIcon(IssuerIcon icon) {
+            if (icon == null) {
+                return null;
+            }
+            // IssuerIcon#mBitmap must not be set when
+            // AutofillFeatures.AUTOFILL_ENABLE_VIRTUAL_CARD_JAVA_PAYMENTS_DATA_MANAGER is enabled.
+            assert icon.mBitmap == null;
+            return new BitmapDrawable(mIconBitmapLookup.get(icon));
+        }
     }
 
     private static Bitmap createBitmap(int dimensions, int color) {
@@ -353,21 +459,21 @@ public final class AutofillVcnEnrollBottomSheetViewBinderTest extends BlankUiTes
         assertEquals(View.VISIBLE, mView.mAcceptButton.getVisibility());
         assertEquals(View.VISIBLE, mView.mCancelButton.getVisibility());
 
-        int onShowLoadingUICompleteCount =
-                observer.getOnShowLoadingUICompleteHelper().getCallCount();
+        int onShowLoadingUiCompleteCount =
+                observer.getOnShowLoadingUiCompleteHelper().getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, true));
-        observer.getOnShowLoadingUICompleteHelper().waitForCallback(onShowLoadingUICompleteCount);
+        observer.getOnShowLoadingUiCompleteHelper().waitForCallback(onShowLoadingUiCompleteCount);
         assertEquals(View.VISIBLE, mView.mLoadingViewContainer.getVisibility());
         assertEquals(View.VISIBLE, mView.mLoadingView.getVisibility());
         assertEquals(View.GONE, mView.mAcceptButton.getVisibility());
         assertEquals(View.GONE, mView.mCancelButton.getVisibility());
 
-        int onHideLoadingUICompleteCount =
-                observer.getOnHideLoadingUICompleteHelper().getCallCount();
+        int onHideLoadingUiCompleteCount =
+                observer.getOnHideLoadingUiCompleteHelper().getCallCount();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mModel.set(AutofillVcnEnrollBottomSheetProperties.SHOW_LOADING_STATE, false));
-        observer.getOnHideLoadingUICompleteHelper().waitForCallback(onHideLoadingUICompleteCount);
+        observer.getOnHideLoadingUiCompleteHelper().waitForCallback(onHideLoadingUiCompleteCount);
         assertEquals(View.GONE, mView.mLoadingViewContainer.getVisibility());
         assertEquals(View.GONE, mView.mLoadingView.getVisibility());
         assertEquals(View.VISIBLE, mView.mAcceptButton.getVisibility());

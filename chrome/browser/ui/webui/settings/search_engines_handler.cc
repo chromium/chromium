@@ -73,6 +73,10 @@ void SearchEnginesHandler::RegisterMessages() {
       base::BindRepeating(&SearchEnginesHandler::HandleGetSearchEnginesList,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
+      "getSaveGuestChoice",
+      base::BindRepeating(&SearchEnginesHandler::HandleGetSaveGuestChoice,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
       "setDefaultSearchEngine",
       base::BindRepeating(&SearchEnginesHandler::HandleSetDefaultSearchEngine,
                           base::Unretained(this)));
@@ -291,7 +295,7 @@ void SearchEnginesHandler::HandleGetSearchEnginesList(
 
 void SearchEnginesHandler::HandleSetDefaultSearchEngine(
     const base::Value::List& args) {
-  CHECK_EQ(2U, args.size());
+  CHECK_EQ(3U, args.size());
   int index = args[0].GetInt();
   if (index < 0 || static_cast<size_t>(index) >=
                        list_controller_.table_model()->RowCount()) {
@@ -305,8 +309,46 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
         choice_made_location ==
             search_engines::ChoiceMadeLocation::kSearchEngineSettings);
   list_controller_.MakeDefaultTemplateURL(index, choice_made_location);
-
   base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
+
+  auto* choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile_);
+  if (!choice_service->IsProfileEligibleForDseGuestPropagation()) {
+    return;
+  }
+
+  if (args[2].is_none()) {
+    return;
+  }
+
+  bool saveGuestChoice = args[2].GetBool();
+  if (!saveGuestChoice) {
+    choice_service->SetSavedSearchEngineBetweenGuestSessions(std::nullopt);
+    return;
+  }
+
+  int prepopulate_id =
+      list_controller_.GetDefaultSearchProvider()->prepopulate_id();
+  if (prepopulate_id > 0 &&
+      prepopulate_id <= TemplateURLPrepopulateData::kMaxPrepopulatedEngineID) {
+    choice_service->SetSavedSearchEngineBetweenGuestSessions(prepopulate_id);
+  }
+}
+
+void SearchEnginesHandler::HandleGetSaveGuestChoice(
+    const base::Value::List& args) {
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
+  AllowJavascript();
+
+  base::Value save_guest_choice;
+  auto* choice_service =
+      search_engines::SearchEngineChoiceServiceFactory::GetForProfile(profile_);
+  if (choice_service->IsProfileEligibleForDseGuestPropagation()) {
+    save_guest_choice = base::Value(
+        choice_service->GetSavedSearchEngineBetweenGuestSessions().has_value());
+  }
+  ResolveJavascriptCallback(callback_id, std::move(save_guest_choice));
 }
 
 void SearchEnginesHandler::HandleSetIsActiveSearchEngine(
@@ -385,14 +427,15 @@ bool SearchEnginesHandler::CheckFieldValidity(const std::string& field_name,
     return false;
 
   bool is_valid = false;
-  if (field_name.compare(kSearchEngineField) == 0)
+  if (field_name.compare(kSearchEngineField) == 0) {
     is_valid = edit_controller_->IsTitleValid(base::UTF8ToUTF16(field_value));
-  else if (field_name.compare(kKeywordField) == 0)
+  } else if (field_name.compare(kKeywordField) == 0) {
     is_valid = edit_controller_->IsKeywordValid(base::UTF8ToUTF16(field_value));
-  else if (field_name.compare(kQueryUrlField) == 0)
+  } else if (field_name.compare(kQueryUrlField) == 0) {
     is_valid = edit_controller_->IsURLValid(field_value);
-  else
-    NOTREACHED_IN_MIGRATION();
+  } else {
+    NOTREACHED();
+  }
 
   return is_valid;
 }

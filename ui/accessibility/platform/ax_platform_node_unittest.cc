@@ -8,6 +8,7 @@
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 #include "ui/accessibility/test_ax_tree_update.h"
+#include "ui/accessibility/test_single_ax_tree_manager.h"
 
 namespace ui {
 
@@ -16,13 +17,13 @@ AXPlatformNodeTest::AXPlatformNodeTest() = default;
 AXPlatformNodeTest::~AXPlatformNodeTest() = default;
 
 void AXPlatformNodeTest::TearDown() {
-  // Destroy the tree and make sure we're not leaking any objects.
-  DestroyTree();
-
-#if BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
+#if BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
   TestAXNodeWrapper::SetGlobalIsWebContent(false);
   TestAXNodeWrapper::ResetGlobalState();
-#endif  // BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
+#endif  // BUILDFLAG(HAS_NATIVE_ACCESSIBILITY)
+
+  // Destroy the tree and make sure we're not leaking any objects.
+  DestroyTree();
 
   ASSERT_EQ(0U, AXPlatformNodeBase::GetInstanceCountForTesting());
 }
@@ -388,6 +389,17 @@ AXTreeUpdate AXPlatformNodeTest::BuildListBox(
   update.has_tree_data = true;
   update.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   return update;
+}
+
+void AXPlatformNodeTest::SetTree(std::unique_ptr<AXTree> tree) {
+#if BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
+  if (ax_tree_) {
+    // Make sure to reset the observers, as this tree is about to be destroyed.
+    TestAXNodeWrapper::ResetGlobalState();
+  }
+#endif  // BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
+
+  TestSingleAXTreeManager::SetTree(std::move(tree));
 }
 
 }  // namespace ui

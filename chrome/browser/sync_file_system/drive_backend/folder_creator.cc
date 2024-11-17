@@ -73,9 +73,7 @@ void FolderCreator::DidListFolders(
   }
 
   if (!file_list) {
-    NOTREACHED_IN_MIGRATION();
-    std::move(callback).Run(std::string(), SYNC_STATUS_FAILED);
-    return;
+    NOTREACHED();
   }
 
   candidates.reserve(candidates.size() + file_list->items().size());

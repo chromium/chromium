@@ -41,7 +41,7 @@ class SafetyConfig final {
   int NumRequestChecks() const;
 
   // Constructs input for a request safety check.
-  // check_idx must be < NumRequestChecks().
+  // `check_idx` must be < `NumResponseChecks()`.
   std::optional<SubstitutionResult> GetRequestCheckInput(
       int check_idx,
       const google::protobuf::MessageLite& request_metadata) const;
@@ -53,7 +53,7 @@ class SafetyConfig final {
   bool ShouldIgnoreLanguageResultForRequestCheck(int check_idx) const;
 
   // Evaluates scores for a request safety check.
-  // check_idx must be < NumRequestChecks().
+  // `check_idx` must be < `NumResponseChecks()`.
   bool IsRequestUnsafe(
       int check_idx,
       const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
@@ -64,6 +64,23 @@ class SafetyConfig final {
   // Get the input for the raw output check.
   std::optional<SubstitutionResult> GetRawOutputCheckInput(
       const std::string&) const;
+
+  // The number of request safety checks to perform.
+  int NumResponseChecks() const;
+
+  std::optional<SubstitutionResult> GetResponseCheckInput(
+      int check_idx,
+      const google::protobuf::MessageLite& request,
+      const google::protobuf::MessageLite& response) const;
+
+  // Whether the language result for this check should be ignored.
+  bool ShouldIgnoreLanguageResultForResponseCheck(int check_idx) const;
+
+  // Evaluates scores for a response safety check.
+  // `check_idx` must be < `NumResponseChecks()`.
+  bool IsResponseUnsafe(
+      int check_idx,
+      const on_device_model::mojom::SafetyInfoPtr& safety_info) const;
 
  private:
   std::optional<proto::FeatureTextSafetyConfiguration> proto_;

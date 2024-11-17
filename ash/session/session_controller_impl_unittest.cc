@@ -27,6 +27,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -475,6 +476,31 @@ TEST_F(SessionControllerImplTest, IsUserChild) {
   controller()->UpdateUserSession(session);
 
   EXPECT_TRUE(controller()->IsUserChild());
+}
+
+// Tests that Ash.Login.Lock.SessionStateChange is populated properly
+// when user session state is toggled between LOCKED and ACTIVE.
+TEST_F(SessionControllerImplTest, UserSessionLockMetrics) {
+  base::HistogramTester histograms;
+  SessionInfo info;
+  FillDefaultSessionInfo(&info);
+
+  histograms.ExpectBucketCount("Ash.Login.Lock.SessionStateChange",
+                               /*lock=*/0, 0);
+  histograms.ExpectBucketCount("Ash.Login.Lock.SessionStateChange",
+                               /*unlock=*/1, 0);
+  info.state = SessionState::LOCKED;
+  controller()->SetSessionInfo(info);
+  histograms.ExpectBucketCount("Ash.Login.Lock.SessionStateChange",
+                               /*lock=*/0, 1);
+  histograms.ExpectBucketCount("Ash.Login.Lock.SessionStateChange",
+                               /*unlock=*/1, 0);
+  info.state = SessionState::ACTIVE;
+  controller()->SetSessionInfo(info);
+  histograms.ExpectBucketCount("Ash.Login.Lock.SessionStateChange",
+                               /*lock=*/0, 1);
+  histograms.ExpectBucketCount("Ash.Login.Lock.SessionStateChange",
+                               /*unlock=*/1, 1);
 }
 
 class SessionControllerImplPrefsTest : public NoSessionAshTestBase {

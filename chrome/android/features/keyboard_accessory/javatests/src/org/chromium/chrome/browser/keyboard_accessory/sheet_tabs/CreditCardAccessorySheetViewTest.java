@@ -36,7 +36,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -47,6 +48,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -77,6 +79,8 @@ public class CreditCardAccessorySheetViewTest {
     private AccessorySheetTabItemsModel mModel;
     private AtomicReference<RecyclerView> mView = new AtomicReference<>();
 
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
@@ -84,8 +88,6 @@ public class CreditCardAccessorySheetViewTest {
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
-
         mActivityTestRule.startMainActivityOnBlankPage();
         PersonalDataManagerFactory.setInstanceForTesting(mMockPersonalDataManager);
         ThreadUtils.runOnUiThreadBlocking(
@@ -317,16 +319,38 @@ public class CreditCardAccessorySheetViewTest {
                 () -> {
                     UserInfo infoWithUnclickableField = new UserInfo("", false);
                     infoWithUnclickableField.addField(
-                            new UserInfoField(
-                                    "4111111111111111", "4111111111111111", "", false, null));
+                            new UserInfoField.Builder()
+                                    .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_NUMBER)
+                                    .setDisplayText("4111111111111111")
+                                    .setA11yDescription("4111111111111111")
+                                    .build());
                     infoWithUnclickableField.addField(
-                            new UserInfoField("", "", "month", false, null));
+                            new UserInfoField.Builder()
+                                    .setSuggestionType(
+                                            AccessorySuggestionType.CREDIT_CARD_EXPIRATION_MONTH)
+                                    .setDisplayText("month")
+                                    .setId("month")
+                                    .build());
                     infoWithUnclickableField.addField(
-                            new UserInfoField("", "", "year", false, null));
+                            new UserInfoField.Builder()
+                                    .setSuggestionType(
+                                            AccessorySuggestionType.CREDIT_CARD_EXPIRATION_YEAR)
+                                    .setDisplayText("year")
+                                    .setId("year")
+                                    .build());
                     infoWithUnclickableField.addField(
-                            new UserInfoField("", "", "name", false, null));
+                            new UserInfoField.Builder()
+                                    .setSuggestionType(
+                                            AccessorySuggestionType.CREDIT_CARD_NAME_FULL)
+                                    .setDisplayText("name")
+                                    .setId("name")
+                                    .build());
                     infoWithUnclickableField.addField(
-                            new UserInfoField("", "", "cvc", false, null));
+                            new UserInfoField.Builder()
+                                    .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_CVC)
+                                    .setDisplayText("cvc")
+                                    .setId("cvc")
+                                    .build());
                     mModel.add(
                             new AccessorySheetDataPiece(
                                     infoWithUnclickableField,
@@ -418,12 +442,12 @@ public class CreditCardAccessorySheetViewTest {
                 () -> {
                     PromoCodeInfo info = new PromoCodeInfo();
                     info.setPromoCode(
-                            new UserInfoField(
-                                    kPromoCode,
-                                    "Promo code for test store",
-                                    "",
-                                    false,
-                                    item -> clicked.set(true)));
+                            new UserInfoField.Builder()
+                                    .setSuggestionType(AccessorySuggestionType.PROMO_CODE)
+                                    .setDisplayText(kPromoCode)
+                                    .setA11yDescription("Promo code for test store")
+                                    .setCallback(item -> clicked.set(true))
+                                    .build());
                     info.setDetailsText(kDetailsText);
                     mModel.add(
                             new AccessorySheetDataPiece(
@@ -474,11 +498,40 @@ public class CreditCardAccessorySheetViewTest {
             AtomicBoolean clickRecorder) {
         UserInfo info = new UserInfo(origin, true, iconUrl);
         info.addField(
-                new UserInfoField(number, number, "", false, item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(month, month, "", false, item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(year, year, "", false, item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(name, name, "", false, item -> clickRecorder.set(true)));
-        info.addField(new UserInfoField(cvc, cvc, "", false, item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_NUMBER)
+                        .setDisplayText(number)
+                        .setA11yDescription(number)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
+        info.addField(
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_EXPIRATION_MONTH)
+                        .setDisplayText(month)
+                        .setA11yDescription(month)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
+        info.addField(
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_EXPIRATION_YEAR)
+                        .setDisplayText(year)
+                        .setA11yDescription(year)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
+        info.addField(
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_NAME_FULL)
+                        .setDisplayText(name)
+                        .setA11yDescription(name)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
+        info.addField(
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.CREDIT_CARD_CVC)
+                        .setDisplayText(cvc)
+                        .setA11yDescription(cvc)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         return info;
     }
 

@@ -1,0 +1,66 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/md_select_lit.css.js
+ * #include=cr-shared-style-lit md-select-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --radio-group-height: 132px;
+  --dialog-height: 360px;
+}
+
+#dialog-title {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+#title-subtext {
+  color: var(--cr-secondary-text-color);
+  font-size: 81.25%; /* Default font size. */
+}
+
+cr-radio-group {
+  padding-inline: 8px;
+}
+
+.site-access-list {
+  max-height: var(--dialog-height);
+}
+
+.indented-site-access-list {
+  margin-inline-start: 36px;
+  max-height: calc(var(--dialog-height) - var(--radio-group-height));
+}
+
+.extension-row {
+  --md-select-width: 180px;
+  align-items: center;
+  border-top: var(--cr-separator-line);
+  display: flex;
+  height: 32px;
+  padding: 12px 0;
+}
+
+.extension-row:first-child {
+  border-top: none;
+}
+
+.extension-icon {
+  height: 24px;
+  margin-inline-end: 12px;
+  width: 24px;
+}
+
+.extension-name {
+  flex-grow: 1;
+  margin-inline-end: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

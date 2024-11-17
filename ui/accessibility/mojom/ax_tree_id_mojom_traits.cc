@@ -21,8 +21,7 @@ bool UnionTraits<ax::mojom::AXTreeIDDataView, ui::AXTreeID>::Read(
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace mojo

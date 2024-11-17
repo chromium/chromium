@@ -45,7 +45,8 @@
           "project": "chromium"
         }
       ],
-      "retry_failed_shards": true
+      "retry_failed_shards": true,
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/android-asan/targets"
     }
   },
   "$build/reclient": {

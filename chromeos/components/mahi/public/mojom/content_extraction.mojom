@@ -21,9 +21,8 @@ struct ExtractionMethods {
 
 // The struct of the content extraction request.
 struct ExtractionRequest {
-  // `ukm::SourceID` is required by Screen2X to tie the UKM event to the main
-  // frame URL for metrics collection.
-  int64? ukm_source_id@0;
+  // `ukm::SourceID` is no longer required.
+  int64? deprecated_ukm_source_id@0;
 
   // The accessibility tree snapshot that requires content extraction.
   // This is obtained by taking a snapshot of a accessibility tree.

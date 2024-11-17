@@ -329,8 +329,7 @@ std::optional<RequestAction> RulesetManager::GetAction(
       case RequestAction::Type::ALLOW_ALL_REQUESTS:
         return 1;
       case RequestAction::Type::MODIFY_HEADERS:
-        NOTREACHED_IN_MIGRATION();
-        return 0;
+        NOTREACHED();
     }
   };
 

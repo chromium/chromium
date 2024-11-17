@@ -167,6 +167,14 @@ function attachListeners(
 }
 
 /**
+ * Refocuses on the last element that was blurred by the listeners.
+ */
+function refocusLastBlurredElement() {
+  lastBlurredElement_?.focus();
+  lastBlurredElement_ = null;
+}
+
+/**
  * Removes all previously attached listeners before re-triggering
  * a focus event on the previously blurred element.
  */
@@ -175,13 +183,13 @@ function detachListeners(renderer_ids: number[], refocus: boolean): void {
   // page, so remove the event listeners.
   detachListeners_(renderer_ids);
 
-  if (refocus && lastBlurredElement_) {
-    // Re-focus the previously blurred element.
-    lastBlurredElement_.focus();
+  if (refocus) {
+    refocusLastBlurredElement();
   }
 }
 
 gCrWeb.bottomSheet = {
   attachListeners,
-  detachListeners
+  detachListeners,
+  refocusLastBlurredElement
 };

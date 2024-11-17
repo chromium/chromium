@@ -59,6 +59,14 @@ public class SettingsActivityTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
+    // TODO(crbug.com/378133407): Extend tests
+    public void testEdgeToEdgeEverywhere() {
+        mSettingsActivityTestRule.startSettingsActivity();
+    }
+
+    @Test
+    @SmallTest
     @EnableFeatures({ChromeFeatureList.SETTINGS_SINGLE_ACTIVITY})
     public void testStandaloneFragments() {
         // Start the main settings, which is an embeddable fragment.

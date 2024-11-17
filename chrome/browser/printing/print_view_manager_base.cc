@@ -75,10 +75,6 @@
 #include "chrome/browser/win/conflicts/module_database.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/printing/local_printer_utils_chromeos.h"
-#endif
-
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 #include "chrome/browser/enterprise/data_protection/print_utils.h"
 #endif
@@ -624,10 +620,7 @@ void PrintViewManagerBase::DidPrintDocument(
 
   const mojom::DidPrintContentParams& content = *params->content;
   if (!content.metafile_data_region.IsValid()) {
-    NOTREACHED_IN_MIGRATION() << "invalid memory handle";
-    web_contents()->Stop();
-    OnDidPrintDocument(std::move(callback), /*succeeded=*/false);
-    return;
+    NOTREACHED() << "invalid memory handle";
   }
 
   if (IsOopifEnabled() && print_job_->document()->settings().is_modifiable()) {
@@ -645,10 +638,7 @@ void PrintViewManagerBase::DidPrintDocument(
   auto data = base::RefCountedSharedMemoryMapping::CreateFromWholeRegion(
       content.metafile_data_region);
   if (!data) {
-    NOTREACHED_IN_MIGRATION() << "couldn't map";
-    web_contents()->Stop();
-    OnDidPrintDocument(std::move(callback), /*succeeded=*/false);
-    return;
+    NOTREACHED() << "couldn't map";
   }
 
   PrintDocument(data, params->page_size, params->content_area,
@@ -945,9 +935,6 @@ bool PrintViewManagerBase::GetPrintingEnabledBooleanPref() const {
 }
 
 void PrintViewManagerBase::OnDocDone(int job_id, PrintedDocument* document) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NotifyAshJobCreated(*print_job_, job_id, *document);
-#endif
 #if BUILDFLAG(IS_ANDROID)
   DCHECK_LE(number_pages(), kMaxPageCount);
   PdfWritingDone(base::checked_cast<int>(number_pages()));

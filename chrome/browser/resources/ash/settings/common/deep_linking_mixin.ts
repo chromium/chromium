@@ -7,11 +7,12 @@
  * setting elements with deep links.
  */
 
-import {afterNextRender, dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, dedupingMixin, type PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 
 import {getSettingIdParameter} from './setting_id_param_util.js';
-import {Constructor} from './types.js';
-import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import type {Constructor} from './types.js';
 
 const DEEP_LINK_FOCUS_ID = 'deep-link-focus-id';
 

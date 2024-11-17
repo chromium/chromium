@@ -193,6 +193,7 @@ test("device_unittests") {
       "fido/fake_fido_discovery_unittest.cc",
       "fido/fido_device_authenticator_unittest.cc",
       "fido/fido_device_discovery_unittest.cc",
+      "fido/fido_discovery_factory_unittest.cc",
       "fido/fido_parsing_utils_unittest.cc",
       "fido/fido_request_handler_unittest.cc",
       "fido/filter_unittest.cc",
@@ -461,6 +462,10 @@ test("device_unittests") {
       "vr/util/stage_utils_unittest.cc",
       "vr/vr_device_base_unittest.cc",
     ]
+
+    if (enable_openxr) {
+      sources += [ "vr/openxr/openxr_hand_utils_unittest.cc" ]
+    }
 
     defines = [ "DEVICE_VR_IMPLEMENTATION" ]
 

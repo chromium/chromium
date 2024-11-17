@@ -4,7 +4,7 @@
 
 module crosapi.mojom;
 
-[Stable, Extensible]
+[Extensible]
 enum PrintTarget {
   [Default] kUnknown = 0,
   kLayer = 1, // ui::Layer
@@ -25,14 +25,14 @@ enum PrintTarget {
 // well, can easily become a technical debt.
 // It is not to say that its not forbidden to add such a feature but please
 // weight the future cost carefully.
-[Stable, Uuid="c559b216-17d8-4b5d-ac06-bc7c10c7a83f"]
+[Uuid="c559b216-17d8-4b5d-ac06-bc7c10c7a83f"]
 interface DebugInterface{
   // Tells lacros-chrome to print `target` hierarches of its windows.
   PrintUiHierarchy@0(PrintTarget target);
 };
 
 // Implemented by ash-chrome to register `DebugInterface`.
-[Stable, Uuid="1accb814-297f-4087-96a8-268226b59643"]
+[Uuid="1accb814-297f-4087-96a8-268226b59643"]
 interface DebugInterfaceRegisterer {
     // A crosapi client can register itself as a debug interface to
     // handle debug related actions.

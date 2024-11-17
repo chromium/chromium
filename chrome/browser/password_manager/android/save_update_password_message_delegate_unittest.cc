@@ -656,8 +656,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(
       *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
-                                     /*called_at_startup=*/false));
+      MaybeShowAccessLossNoticeSheet(
+          profile()->GetPrefs(), _, profile(),
+          /*called_at_startup=*/false,
+          password_manager_android_util::PasswordAccessLossWarningTriggers::
+              kPasswordSaveUpdateMessage));
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
@@ -769,8 +772,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(
       *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
-                                     /*called_at_startup=*/false));
+      MaybeShowAccessLossNoticeSheet(
+          profile()->GetPrefs(), _, profile(),
+          /*called_at_startup=*/false,
+          password_manager_android_util::PasswordAccessLossWarningTriggers::
+              kPasswordSaveUpdateMessage));
   TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
 }
 
@@ -862,8 +868,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
       .WillRepeatedly(testing::Return(true));
   EXPECT_CALL(
       *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
-                                     /*called_at_startup=*/false));
+      MaybeShowAccessLossNoticeSheet(
+          profile()->GetPrefs(), _, profile(),
+          /*called_at_startup=*/false,
+          password_manager_android_util::PasswordAccessLossWarningTriggers::
+              kPasswordSaveUpdateMessage));
   TriggerActionClick();
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
@@ -882,7 +891,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(GetMigrationWarningCallback(), Run);
   EXPECT_CALL(*GetClient(),
               ShowPasswordManagerErrorMessage(
                   password_manager::ErrorMessageFlowType::kSaveFlow,
@@ -910,7 +918,6 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
   EXPECT_NE(nullptr, GetMessageWrapper());
-  EXPECT_CALL(GetMigrationWarningCallback(), Run);
   EXPECT_CALL(*GetClient(),
               ShowPasswordManagerErrorMessage(
                   password_manager::ErrorMessageFlowType::kSaveFlow,
@@ -1033,8 +1040,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
                                 /*password=*/kPassword);
   EXPECT_CALL(
       *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
-                                     /*called_at_startup=*/false));
+      MaybeShowAccessLossNoticeSheet(
+          profile()->GetPrefs(), _, profile(),
+          /*called_at_startup=*/false,
+          password_manager_android_util::PasswordAccessLossWarningTriggers::
+              kPasswordSaveUpdateMessage));
   TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
 }
 
@@ -1042,6 +1052,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // update password message and the confirmation dialog.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        NudgeToUpdateGmsCore_OnUpdatePasswordDialogAccepted) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndEnableFeature(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
@@ -1074,6 +1088,10 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
 // the update password message and the confirmation dialog.
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        DontNudgeToUpdateGmsCore_OnUpdatePasswordDialogAccepted) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndEnableFeature(
+      password_manager::features::
+          kUnifiedPasswordManagerLocalPasswordsMigrationWarning);
   SetPendingCredentials(kUsername, kPassword);
   auto form_manager =
       CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
@@ -1157,8 +1175,11 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   TriggerActionClick();
   EXPECT_CALL(
       *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
-                                     /*called_at_startup=*/false));
+      MaybeShowAccessLossNoticeSheet(
+          profile()->GetPrefs(), _, profile(),
+          /*called_at_startup=*/false,
+          password_manager_android_util::PasswordAccessLossWarningTriggers::
+              kPasswordSaveUpdateMessage));
   TriggerDialogDismissedCallback(/*dialog_accepted=*/false);
 }
 

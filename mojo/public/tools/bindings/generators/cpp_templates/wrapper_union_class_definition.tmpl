@@ -55,9 +55,19 @@ size_t {{union.name}}::Hash(size_t seed) const {
 {%  for field in union.fields %}
     case Tag::k{{field.name|under_to_camel}}:
 {%-   if for_blink %}
+{%-   if field.kind|is_object_kind or
+         field.kind|is_any_handle_or_interface_kind %}
+      return mojo::internal::WTFHash(seed, *data_.{{field.name}});
+{%-   else %}
       return mojo::internal::WTFHash(seed, data_.{{field.name}});
+{%-   endif %}
+{%-   else %}
+{%-   if field.kind|is_object_kind or
+         field.kind|is_any_handle_or_interface_kind %}
+      return mojo::internal::Hash(seed, *data_.{{field.name}});
 {%-   else %}
       return mojo::internal::Hash(seed, data_.{{field.name}});
+{%-   endif %}
 {%-   endif %}
 {%- endfor %}
     default:

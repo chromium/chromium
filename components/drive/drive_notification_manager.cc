@@ -307,8 +307,7 @@ std::string DriveNotificationManager::NotificationSourceToString(
       return "NOTIFICATION_POLLING";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 invalidation::Topic DriveNotificationManager::GetDriveInvalidationTopic()

@@ -21,21 +21,10 @@ class MockIbanManager : public IbanManager {
 
   MOCK_METHOD(bool,
               OnGetSingleFieldSuggestions,
-              (const FormStructure* form_structure,
-               const FormFieldData& field,
-               const AutofillField* autofill_field,
+              (const FormFieldData& field,
+               const AutofillField& autofill_field,
                const AutofillClient& client,
-               SingleFieldFormFiller::OnSuggestionsReturnedCallback callback),
-              (override));
-  MOCK_METHOD(void,
-              OnWillSubmitFormWithFields,
-              (const std::vector<FormFieldData>& fields,
-               bool is_autocomplete_enabled),
-              (override));
-  MOCK_METHOD(void, CancelPendingQueries, (), (override));
-  MOCK_METHOD(void,
-              OnRemoveCurrentSingleFieldSuggestion,
-              (const std::u16string&, const std::u16string&, SuggestionType),
+               SingleFieldFillRouter::OnSuggestionsReturnedCallback& callback),
               (override));
   MOCK_METHOD(void,
               OnSingleFieldSuggestionSelected,

@@ -11,6 +11,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/identity_chooser/identity_chooser_mediator.h"
@@ -77,10 +78,11 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
       self.transitionController;
 
   // Creates the mediator.
+  ChromeAccountManagerService* accountManagerService =
+      ChromeAccountManagerServiceFactory::GetForProfile(
+          self.browser->GetProfile()->GetOriginalProfile());
   self.identityChooserMediator = [[IdentityChooserMediator alloc]
-      initWithAccountManagerService:ChromeAccountManagerServiceFactory::
-                                        GetForBrowserState(
-                                            self.browser->GetBrowserState())];
+      initWithAccountManagerService:accountManagerService];
 
   self.identityChooserMediator.consumer = self.identityChooserViewController;
   // Setups.
@@ -118,8 +120,7 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
   switch (self.state) {
     case IdentityChooserCoordinatorStateNotStarted:
     case IdentityChooserCoordinatorStateClosedByDismiss:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case IdentityChooserCoordinatorStateStarted:
       // Dismissing the identity chooser dialog should be the same as accepting
       // the identity selected by default.

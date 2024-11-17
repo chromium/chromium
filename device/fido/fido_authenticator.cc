@@ -26,14 +26,14 @@ void FidoAuthenticator::GetPlatformCredentialInfoForRequest(
     const CtapGetAssertionRequest& request,
     const CtapGetAssertionOptions& options,
     GetPlatformCredentialInfoForRequestCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FidoAuthenticator::GetTouch(base::OnceCallback<void()> callback) {}
 
 void FidoAuthenticator::GetPinRetries(
     FidoAuthenticator::GetRetriesCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FidoAuthenticator::GetPINToken(
@@ -41,12 +41,12 @@ void FidoAuthenticator::GetPINToken(
     std::vector<pin::Permissions> permissions,
     std::optional<std::string> rp_id,
     FidoAuthenticator::GetTokenCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FidoAuthenticator::GetUvRetries(
     FidoAuthenticator::GetRetriesCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FidoAuthenticator::CanGetUvToken() {
@@ -57,33 +57,30 @@ void FidoAuthenticator::GetUvToken(
     std::vector<pin::Permissions> permissions,
     std::optional<std::string> rp_id,
     FidoAuthenticator::GetTokenCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 uint32_t FidoAuthenticator::CurrentMinPINLength() {
-  NOTREACHED_IN_MIGRATION();
-  return kMinPinLength;
+  NOTREACHED();
 }
 
 uint32_t FidoAuthenticator::NewMinPINLength() {
-  NOTREACHED_IN_MIGRATION();
-  return kMinPinLength;
+  NOTREACHED();
 }
 
 bool FidoAuthenticator::ForcePINChange() {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void FidoAuthenticator::SetPIN(const std::string& pin,
                                FidoAuthenticator::SetPINCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FidoAuthenticator::ChangePIN(const std::string& old_pin,
                                   const std::string& new_pin,
                                   SetPINCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 FidoAuthenticator::PINUVDisposition
@@ -103,20 +100,20 @@ FidoAuthenticator::PINUVDispositionForGetAssertion(
 void FidoAuthenticator::GetCredentialsMetadata(
     const pin::TokenResponse& pin_token,
     GetCredentialsMetadataCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FidoAuthenticator::EnumerateCredentials(
     const pin::TokenResponse& pin_token,
     EnumerateCredentialsCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FidoAuthenticator::DeleteCredential(
     const pin::TokenResponse& pin_token,
     const PublicKeyCredentialDescriptor& credential_id,
     DeleteCredentialCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool FidoAuthenticator::SupportsUpdateUserInformation() const {
@@ -128,50 +125,50 @@ void FidoAuthenticator::UpdateUserInformation(
     const PublicKeyCredentialDescriptor& credential_id,
     const PublicKeyCredentialUserEntity& updated_user,
     UpdateUserInformationCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FidoAuthenticator::GetModality(BioEnrollmentCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FidoAuthenticator::GetSensorInfo(BioEnrollmentCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FidoAuthenticator::BioEnrollFingerprint(
     const pin::TokenResponse&,
     std::optional<std::vector<uint8_t>> template_id,
     BioEnrollmentCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FidoAuthenticator::BioEnrollCancel(BioEnrollmentCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FidoAuthenticator::BioEnrollEnumerate(const pin::TokenResponse&,
                                            BioEnrollmentCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FidoAuthenticator::BioEnrollRename(const pin::TokenResponse&,
                                         std::vector<uint8_t>,
                                         std::string,
                                         BioEnrollmentCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FidoAuthenticator::BioEnrollDelete(const pin::TokenResponse&,
                                         std::vector<uint8_t>,
                                         BioEnrollmentCallback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FidoAuthenticator::GarbageCollectLargeBlob(
     const pin::TokenResponse& pin_uv_auth_token,
     base::OnceCallback<void(CtapDeviceResponseCode)> callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::optional<base::span<const int32_t>> FidoAuthenticator::GetAlgorithms() {

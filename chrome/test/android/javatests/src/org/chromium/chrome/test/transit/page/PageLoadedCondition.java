@@ -36,7 +36,7 @@ public class PageLoadedCondition extends ConditionWithResult<Tab> {
         boolean shouldShowLoadingUi = webContents != null && webContents.shouldShowLoadingUI();
         String message =
                 String.format(
-                        "incognito %b, isLoading %b, hasWebContents %b, shouldShowLoadingUI %b",
+                        "incognito %b, isLoading %b, hasWebContents %b, shouldShowLoadingUi %b",
                         isIncognito, isLoading, webContents != null, shouldShowLoadingUi);
         if (isIncognito == mIncognito
                 && !isLoading

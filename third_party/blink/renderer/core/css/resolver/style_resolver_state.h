@@ -79,6 +79,9 @@ class CORE_EXPORT StyleResolverState {
   Element* GetStyledElement() const { return styled_element_; }
   // These are all just pass-through methods to ElementResolveContext.
   Element& GetElement() const { return element_context_.GetElement(); }
+  Element& GetUltimateOriginatingElementOrSelf() const {
+    return element_context_.GetUltimateOriginatingElementOrSelf();
+  }
   const Element* ParentElement() const {
     return element_context_.ParentElement();
   }
@@ -191,9 +194,6 @@ class CORE_EXPORT StyleResolverState {
   void SetPositionAnchor(ScopedCSSName*);
   void SetPositionAreaOffsets(const std::optional<PositionAreaOffsets>&);
 
-  void SetHasAttrFunction() { has_attr_function_ = true; }
-  bool HasAttrFunction() const { return has_attr_function_; }
-
   CSSParserMode GetParserMode() const;
 
   // If the input CSSValue is a CSSLightDarkValuePair, return the light or dark
@@ -259,6 +259,13 @@ class CORE_EXPORT StyleResolverState {
 
   void SetHasTreeScopedReference() { has_tree_scoped_reference_ = true; }
   bool HasTreeScopedReference() const { return has_tree_scoped_reference_; }
+
+  void SetHasUnsupportedGuaranteedInvalid() {
+    has_unsupported_guaranteed_invalid_ = true;
+  }
+  bool HasUnsupportedGuaranteedInvalid() const {
+    return has_unsupported_guaranteed_invalid_;
+  }
 
  private:
   CSSToLengthConversionData UnzoomedLengthConversionData(const FontSizeStyle&);
@@ -348,7 +355,9 @@ class CORE_EXPORT StyleResolverState {
   // True if the resolved ComputedStyle depends on tree-scoped references.
   bool has_tree_scoped_reference_ = false;
 
-  bool has_attr_function_ = false;
+  // Tried to apply a guaranteed-invalid value to a custom property that doesn't
+  // support it.
+  bool has_unsupported_guaranteed_invalid_ = false;
 };
 
 }  // namespace blink

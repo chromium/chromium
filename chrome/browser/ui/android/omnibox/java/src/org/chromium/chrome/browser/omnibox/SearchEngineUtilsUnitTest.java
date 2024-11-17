@@ -31,36 +31,36 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.annotation.Config;
 import org.robolectric.shadow.api.Shadow;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
+import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.JumpStartContext;
 import org.chromium.chrome.browser.omnibox.test.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
+import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.search_engines.TemplateUrl;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.url.GURL;
 
 /** Tests for SearchEngineUtils. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
 public class SearchEngineUtilsUnitTest {
     private static final String LOGO_URL = "https://www.search.com/";
     private static final String TEMPLATE_URL = "https://www.search.com/search?q={query}";
     private static final String EVENTS_HISTOGRAM = "AndroidSearchEngineLogo.Events";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Captor ArgumentCaptor<FaviconHelper.FaviconImageCallback> mCallbackCaptor;
     @Mock FaviconHelper mFaviconHelper;
@@ -70,7 +70,6 @@ public class SearchEngineUtilsUnitTest {
     @Mock Resources mResources;
     @Mock Profile mProfile;
 
-    SearchEngineUtils mSearchEngineUtils;
     Bitmap mBitmap;
 
     @Before
@@ -96,8 +95,6 @@ public class SearchEngineUtilsUnitTest {
 
         // Used when creating bitmaps, needs to be greater than 0.
         doReturn(1).when(mResources).getDimensionPixelSize(anyInt());
-
-        mSearchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
     }
 
     @After
@@ -107,28 +104,29 @@ public class SearchEngineUtilsUnitTest {
 
     @Test
     public void testDefaultEnabledBehavior() {
+        var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
         // Show DSE logo when using regular profile.
         doReturn(false).when(mProfile).isOffTheRecord();
-        mSearchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
-        assertTrue(mSearchEngineUtils.shouldShowSearchEngineLogo());
+        searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+        assertTrue(searchEngineUtils.shouldShowSearchEngineLogo());
 
         // Suppress DSE logo when using incognito profile.
         doReturn(true).when(mProfile).isOffTheRecord();
-        mSearchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
-        assertFalse(mSearchEngineUtils.shouldShowSearchEngineLogo());
+        searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+        assertFalse(searchEngineUtils.shouldShowSearchEngineLogo());
     }
 
     @Test
     public void recordEvent() {
         UmaRecorderHolder.resetForTesting();
 
-        mSearchEngineUtils.recordEvent(SearchEngineUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST);
+        SearchEngineUtils.recordEvent(SearchEngineUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST);
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         EVENTS_HISTOGRAM, SearchEngineUtils.Events.FETCH_NON_GOOGLE_LOGO_REQUEST));
 
-        mSearchEngineUtils.recordEvent(SearchEngineUtils.Events.FETCH_SUCCESS_CACHE_HIT);
+        SearchEngineUtils.recordEvent(SearchEngineUtils.Events.FETCH_SUCCESS_CACHE_HIT);
         assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
@@ -137,6 +135,7 @@ public class SearchEngineUtilsUnitTest {
 
     @Test
     public void getSearchEngineLogo() {
+        var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
         // SearchEngineUtils retrieves logo when it's first created, and whenever the DSE changes.
         verify(mFaviconHelper).getLocalFaviconImageForURL(any(), any(), anyInt(), any());
         mCallbackCaptor.getValue().onFaviconAvailable(mBitmap, new GURL(LOGO_URL));
@@ -151,41 +150,152 @@ public class SearchEngineUtilsUnitTest {
                         EVENTS_HISTOGRAM, SearchEngineUtils.Events.FETCH_SUCCESS));
 
         var expected = new StatusIconResource(LOGO_URL, mBitmap, 0);
-        var icon = mSearchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
+        var icon = searchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
         assertEquals(icon, expected);
     }
 
     @Test
     public void getSearchEngineLogo_nullTemplateUrlService() {
+        var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
         StatusIconResource expected =
                 SearchEngineUtils.getFallbackSearchIcon(BrandedColorScheme.APP_DEFAULT);
 
-        var icon = mSearchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
+        var icon = searchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
 
         assertEquals(icon, expected);
     }
 
     @Test
     public void getSearchEngineLogo_searchEngineGoogle() {
+        var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
         // Simulate DSE change to Google.
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
-        mSearchEngineUtils.onTemplateURLServiceChanged();
+        searchEngineUtils.onTemplateURLServiceChanged();
 
         var expected = new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0);
-        var icon = mSearchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
+        var icon = searchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
         assertEquals(icon, expected);
+    }
+
+    private void configureSearchEngine(String keyword) {
+        doReturn("google".equals(keyword)).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
+        doReturn(keyword).when(mTemplateUrl).getKeyword();
+    }
+
+    private void verifyPersistedSearchEngine(String keyword) {
+        var dseMetadata = CachedZeroSuggestionsManager.readSearchEngineMetadata();
+        assertEquals(keyword, dseMetadata.keyword);
+    }
+
+    private void saveSearchEngineSpecificDataToCache() {
+        CachedZeroSuggestionsManager.saveJumpStartContext(
+                new JumpStartContext(new GURL("https://some.url"), 12345));
+    }
+
+    private void verifyNoSearchEngineSpecificDataInCache() {
+        var jumpStartContext = CachedZeroSuggestionsManager.readJumpStartContext();
+        assertEquals(UrlConstants.NTP_URL, jumpStartContext.url.getSpec());
+        assertEquals(
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE,
+                jumpStartContext.pageClass);
+    }
+
+    private void verifySearchEngineSpecificDataRetainedInCache() {
+        var jumpStartContext = CachedZeroSuggestionsManager.readJumpStartContext();
+        assertEquals(new GURL("https://some.url"), jumpStartContext.url);
+        assertEquals(12345, jumpStartContext.pageClass);
+    }
+
+    @Test
+    public void onTemplateUrlServiceChanged_newTemplateUrl_noPreviousEngine() {
+        {
+            // To Google
+            saveSearchEngineSpecificDataToCache();
+            configureSearchEngine("google");
+            new SearchEngineUtils(mProfile, mFaviconHelper);
+            verifyPersistedSearchEngine("google");
+            verifyNoSearchEngineSpecificDataInCache();
+        }
+
+        {
+            // To Non-Google
+            saveSearchEngineSpecificDataToCache();
+            configureSearchEngine("engine");
+            new SearchEngineUtils(mProfile, mFaviconHelper);
+            verifyPersistedSearchEngine("engine");
+            verifyNoSearchEngineSpecificDataInCache();
+        }
+    }
+
+    @Test
+    public void onTemplateUrlServiceChanged_newTemplateUrl_withDifferentPreviousEngine() {
+        {
+            // To Google
+            configureSearchEngine("engine");
+            var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+
+            // Make an update
+            saveSearchEngineSpecificDataToCache();
+            configureSearchEngine("google");
+            searchEngineUtils.onTemplateURLServiceChanged();
+            verifyPersistedSearchEngine("google");
+            verifyNoSearchEngineSpecificDataInCache();
+        }
+
+        {
+            // To Non-Google
+            configureSearchEngine("google");
+            var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+
+            // Make an update
+            saveSearchEngineSpecificDataToCache();
+            configureSearchEngine("engine");
+            searchEngineUtils.onTemplateURLServiceChanged();
+            verifyPersistedSearchEngine("engine");
+            verifyNoSearchEngineSpecificDataInCache();
+        }
+    }
+
+    @Test
+    public void onTemplateUrlServiceChanged_newTemplateUrl_withSamePreviousEngine() {
+        {
+            // Google to Google
+            configureSearchEngine("google");
+            var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+
+            // Make an update
+            saveSearchEngineSpecificDataToCache();
+            configureSearchEngine("google");
+            searchEngineUtils.onTemplateURLServiceChanged();
+            verifyPersistedSearchEngine("google");
+            verifySearchEngineSpecificDataRetainedInCache();
+        }
+
+        {
+            // Non-Google to same non-Google.
+            configureSearchEngine("engine");
+            var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
+
+            // Make an update
+            saveSearchEngineSpecificDataToCache();
+            configureSearchEngine("engine");
+            searchEngineUtils.onTemplateURLServiceChanged();
+            verifyPersistedSearchEngine("engine");
+            verifySearchEngineSpecificDataRetainedInCache();
+        }
     }
 
     @Test
     public void getSearchEngineLogo_faviconCached() {
+        var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
         verify(mFaviconHelper).getLocalFaviconImageForURL(any(), any(), anyInt(), any());
         mCallbackCaptor.getValue().onFaviconAvailable(mBitmap, new GURL(LOGO_URL));
 
         var expected = new StatusIconResource(LOGO_URL, mBitmap, 0);
-        var icon = mSearchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
+        var icon = searchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
         assertEquals(icon, expected);
 
-        icon = mSearchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
+        icon = searchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
         assertEquals(icon, expected);
 
         // Expect only one actual fetch, that happens independently from get request.
@@ -207,13 +317,14 @@ public class SearchEngineUtilsUnitTest {
     @Test
     public void getSearchEngineLogo_nullUrl() {
         UmaRecorderHolder.resetForTesting();
+        var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
 
         // Simulate DSE change - policy blocking searches
         doReturn(null).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
-        mSearchEngineUtils.onTemplateURLServiceChanged();
+        searchEngineUtils.onTemplateURLServiceChanged();
 
         var expected = SearchEngineUtils.getFallbackSearchIcon(BrandedColorScheme.APP_DEFAULT);
-        var icon = mSearchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
+        var icon = searchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
 
         assertEquals(icon, expected);
         assertEquals(
@@ -234,10 +345,10 @@ public class SearchEngineUtilsUnitTest {
         doReturn(false)
                 .when(mFaviconHelper)
                 .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
-        mSearchEngineUtils.onTemplateURLServiceChanged();
+        var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
 
         var expected = SearchEngineUtils.getFallbackSearchIcon(BrandedColorScheme.APP_DEFAULT);
-        var icon = mSearchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
+        var icon = searchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
 
         assertEquals(icon, expected);
         assertEquals(
@@ -253,10 +364,11 @@ public class SearchEngineUtilsUnitTest {
 
     @Test
     public void getSearchEngineLogo_returnedBitmapNull() {
+        var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
         StatusIconResource expected =
                 SearchEngineUtils.getFallbackSearchIcon(BrandedColorScheme.APP_DEFAULT);
 
-        var icon = mSearchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
+        var icon = searchEngineUtils.getSearchEngineLogo(BrandedColorScheme.APP_DEFAULT);
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(any(), any(), anyInt(), mCallbackCaptor.capture());
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
@@ -276,6 +388,7 @@ public class SearchEngineUtilsUnitTest {
 
     @Test
     public void getFallbackSearchIcon() {
+        var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
         StatusIconResource expected =
                 new StatusIconResource(
                         R.drawable.ic_search, R.color.default_icon_color_white_tint_list);
@@ -293,6 +406,7 @@ public class SearchEngineUtilsUnitTest {
 
     @Test
     public void getFallbackNavigationIcon() {
+        var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
         StatusIconResource expected =
                 new StatusIconResource(
                         R.drawable.ic_globe_24dp, R.color.default_icon_color_white_tint_list);
@@ -312,50 +426,53 @@ public class SearchEngineUtilsUnitTest {
 
     @Test
     public void needToCheckForSearchEnginePromo_SecurityExceptionThrown() {
+        var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
         doThrow(SecurityException.class)
                 .when(mLocaleManagerDelegate)
                 .needToCheckForSearchEnginePromo();
 
         try {
-            mSearchEngineUtils.needToCheckForSearchEnginePromo();
+            searchEngineUtils.needToCheckForSearchEnginePromo();
         } catch (Exception e) {
-            Assert.fail("No exception should be thrown.");
+            throw new AssertionError("No exception should be thrown.", e);
         }
     }
 
     @Test
     public void needToCheckForSearchEnginePromo_DeadObjectRuntimeExceptionThrown() {
+        var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
         doThrow(RuntimeException.class)
                 .when(mLocaleManagerDelegate)
                 .needToCheckForSearchEnginePromo();
 
         try {
-            mSearchEngineUtils.needToCheckForSearchEnginePromo();
+            searchEngineUtils.needToCheckForSearchEnginePromo();
         } catch (Exception e) {
-            Assert.fail("No exception should be thrown.");
+            throw new AssertionError("No exception should be thrown.", e);
         }
     }
 
     @Test
     public void needToCheckForSearchEnginePromo_resultCached() {
+        var searchEngineUtils = new SearchEngineUtils(mProfile, mFaviconHelper);
         doThrow(RuntimeException.class)
                 .when(mLocaleManagerDelegate)
                 .needToCheckForSearchEnginePromo();
-        assertFalse(mSearchEngineUtils.needToCheckForSearchEnginePromo());
+        assertFalse(searchEngineUtils.needToCheckForSearchEnginePromo());
 
         Mockito.reset(mLocaleManagerDelegate);
 
         doReturn(true).when(mLocaleManagerDelegate).needToCheckForSearchEnginePromo();
 
-        assertTrue(mSearchEngineUtils.needToCheckForSearchEnginePromo());
+        assertTrue(searchEngineUtils.needToCheckForSearchEnginePromo());
 
         Mockito.reset(mLocaleManagerDelegate);
 
         doReturn(false).when(mLocaleManagerDelegate).needToCheckForSearchEnginePromo();
 
-        assertFalse(mSearchEngineUtils.needToCheckForSearchEnginePromo());
-        assertFalse(mSearchEngineUtils.needToCheckForSearchEnginePromo());
-        assertFalse(mSearchEngineUtils.needToCheckForSearchEnginePromo());
+        assertFalse(searchEngineUtils.needToCheckForSearchEnginePromo());
+        assertFalse(searchEngineUtils.needToCheckForSearchEnginePromo());
+        assertFalse(searchEngineUtils.needToCheckForSearchEnginePromo());
 
         verify(mLocaleManagerDelegate, times(1)).needToCheckForSearchEnginePromo();
     }

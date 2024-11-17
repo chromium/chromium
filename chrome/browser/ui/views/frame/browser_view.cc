@@ -33,7 +33,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
@@ -80,13 +79,12 @@
 #include "chrome/browser/ui/find_bar/find_bar.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/performance_controls/memory_saver_opt_in_iph_controller.h"
+#include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/qrcode_generator/qrcode_generator_bubble_controller.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_controller.h"
 #include "chrome/browser/ui/sharing_hub/sharing_hub_bubble_view.h"
-#include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/sync/one_click_signin_links_delegate_impl.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
@@ -95,6 +93,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs/chrome_labs_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/accessibility/accessibility_focus_highlight.h"
@@ -171,7 +170,6 @@
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/browser/ui/views/update_recommended_message_box.h"
 #include "chrome/browser/ui/views/upgrade_notification_controller.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -216,9 +214,11 @@
 #include "components/sync/service/sync_service.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
-#include "components/user_education/common/feature_promo_handle.h"
-#include "components/user_education/common/help_bubble_factory_registry.h"
-#include "components/user_education/common/new_badge_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "components/user_education/common/feature_promo/feature_promo_handle.h"
+#include "components/user_education/common/feature_promo/feature_promo_result.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/version_info/channel.h"
@@ -289,25 +289,20 @@
 #include "ui/views/window/dialog_delegate.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
-#include "chrome/browser/ui/views/frame/top_controls_slide_controller_chromeos.h"
-#include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
-#include "chromeos/ui/wm/desks/desks_helper.h"
-#else
-#include "chrome/browser/ui/views/enterprise/managed_menu_coordinator.h"
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/wm/window_properties.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
+#include "chrome/browser/ui/views/frame/top_controls_slide_controller_chromeos.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
+#include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
+#include "chromeos/ui/wm/desks/desks_helper.h"
 #include "ui/compositor/throughput_tracker.h"
 #else
 #include "chrome/browser/ui/signin/signin_view_controller.h"
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
@@ -320,7 +315,6 @@
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chrome/browser/promos/promos_types.h"
 #include "chrome/browser/promos/promos_utils.h"
-#include "chrome/browser/ui/views/promos/ios_promo_bubble.h"
 #include "chrome/browser/ui/views/promos/ios_promo_password_bubble.h"
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
@@ -371,7 +365,7 @@ constexpr base::FeatureParam<base::TimeDelta> kLoadingTabAnimationFrameDelay = {
 // locate this object using just the handle.
 const char* const kBrowserViewKey = "__BROWSER_VIEW__";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // UMA histograms that record animation smoothness for tab loading animation.
 constexpr char kTabLoadingSmoothnessHistogramName[] =
     "Chrome.Tabs.AnimationSmoothness.TabLoading";
@@ -812,11 +806,11 @@ class BrowserViewLayoutDelegateImpl : public BrowserViewLayoutDelegate {
   }
 
   bool BrowserIsSystemWebApp() const override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     return browser_view_->browser()->app_controller()->system_app();
 #else
     return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   bool BrowserIsWebApp() const override {
@@ -1033,7 +1027,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
   unified_side_panel_ = AddChildView(std::make_unique<SidePanel>(
-      this, is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft));
+      this, is_right_aligned ? SidePanel::HorizontalAlignment::kRight
+                             : SidePanel::HorizontalAlignment::kLeft));
   left_aligned_side_panel_separator_ =
       AddChildView(std::make_unique<ContentsSeparator>());
   side_panel_rounded_corner_ =
@@ -1066,10 +1061,6 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   }
 #endif
 
-  // Memory Saver mode is default off but is available to turn on
-  memory_saver_opt_in_iph_controller_ =
-      std::make_unique<MemorySaverOptInIPHController>(browser_.get());
-
   registrar_.Init(GetProfile()->GetPrefs());
   registrar_.Add(
       prefs::kFullscreenAllowed,
@@ -1090,9 +1081,19 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
   browser_->GetFeatures().InitPostBrowserViewConstruction(this);
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kClient);
+
+  if (GetFocusManager()) {
+    GetFocusManager()->AddFocusChangeListener(this);
+  }
 }
 
 void BrowserView::ToggleCompactModeUI() {
+  if (!browser()->is_type_normal()) {
+    return;
+  }
+
+  bool is_compact_mode = chrome::ShouldUseCompactMode(GetProfile());
+  GetBrowserViewLayout()->set_compact_mode(is_compact_mode);
   InvalidateLayout();
 }
 
@@ -1126,9 +1127,30 @@ BrowserView::~BrowserView() {
     global_registry->set_registry_for_active_window(nullptr);
   }
 
-  // `watermark_view_` is a raw pointer to a child view, so it needs to be set
-  // to null before `RemoveAllChildViews()` is called to avoid dangling.
+  // These are raw pointers to child views, so they need to be set to null
+  // before `RemoveAllChildViews()` is called to avoid dangling.
+  frame_ = nullptr;
+  top_container_ = nullptr;
+  web_app_frame_toolbar_ = nullptr;
+  web_app_window_title_ = nullptr;
+  tab_strip_region_view_ = nullptr;
+  tabstrip_ = nullptr;
+  webui_tab_strip_ = nullptr;
+  toolbar_ = nullptr;
+  contents_separator_ = nullptr;
+  loading_bar_ = nullptr;
+  find_bar_host_view_ = nullptr;
+  download_shelf_ = nullptr;
+  infobar_container_ = nullptr;
+  contents_web_view_ = nullptr;
+  devtools_web_view_ = nullptr;
   watermark_view_ = nullptr;
+  contents_container_ = nullptr;
+  unified_side_panel_ = nullptr;
+  right_aligned_side_panel_separator_ = nullptr;
+  left_aligned_side_panel_separator_ = nullptr;
+  side_panel_rounded_corner_ = nullptr;
+  toolbar_button_provider_ = nullptr;
 
   // Child views maintain PrefMember attributes that point to
   // OffTheRecordProfile's PrefService which gets deleted by ~Browser.
@@ -1371,7 +1393,7 @@ views::Widget* BrowserView::GetWidgetForAnchoring() {
 // BrowserView, BrowserWindow implementation:
 
 void BrowserView::Show() {
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   // The Browser associated with this browser window must become the active
   // browser at the time |Show()| is called. This is the natural behavior under
   // Windows and Chrome OS, but other platforms will not trigger
@@ -1405,12 +1427,12 @@ void BrowserView::Show() {
     SetFocusToLocationBar(false);
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   if (!accessibility_focus_highlight_) {
     accessibility_focus_highlight_ =
         std::make_unique<AccessibilityFocusHighlight>(this);
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 void BrowserView::ShowInactive() {
@@ -1463,7 +1485,7 @@ void BrowserView::Close() {
 }
 
 void BrowserView::Activate() {
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_CHROMEOS)
   // Update the list managed by `BrowserList` synchronously the same way
   // `BrowserView::Show()` does.
   BrowserList::SetLastActive(browser());
@@ -1646,7 +1668,7 @@ void BrowserView::UpdateLoadingAnimations(bool is_visible) {
   }
 
   if (should_animate) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     loading_animation_tracker_.emplace(
         GetWidget()->GetCompositor()->RequestNewThroughputTracker());
     loading_animation_tracker_->Start(ash::metrics_util::ForSmoothnessV3(
@@ -1659,7 +1681,7 @@ void BrowserView::UpdateLoadingAnimations(bool is_visible) {
                                    &BrowserView::LoadingAnimationCallback);
   } else {
     loading_animation_timer_.Stop();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     loading_animation_tracker_->Stop();
 #endif
     // Loads are now complete, update the state if a task was scheduled.
@@ -1721,10 +1743,6 @@ void BrowserView::SetStarredState(bool is_starred) {
           PageActionIconType::kBookmarkStar);
   if (star_icon)
     star_icon->SetActive(is_starred);
-}
-
-void BrowserView::SetTranslateIconToggled(bool is_lit) {
-  // Translate icon is never active on Views.
 }
 
 void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
@@ -2088,7 +2106,8 @@ void BrowserView::UpdateExclusiveAccessBubble(
 }
 
 bool BrowserView::IsExclusiveAccessBubbleDisplayed() const {
-  return exclusive_access_bubble_ && exclusive_access_bubble_->IsShowing();
+  return exclusive_access_bubble_ && (exclusive_access_bubble_->IsShowing() ||
+                                      exclusive_access_bubble_->IsVisible());
 }
 
 void BrowserView::OnExclusiveAccessUserInput() {
@@ -2148,11 +2167,9 @@ void BrowserView::FullscreenStateChanged() {
   // OnTask.
   bool avoid_using_immersive_mode =
       platform_util::IsBrowserLockedFullscreen(browser_.get());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (browser_->IsLockedForOnTask()) {
     avoid_using_immersive_mode = false;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (avoid_using_immersive_mode) {
     immersive_mode_controller_->SetEnabled(false);
   } else {
@@ -2203,7 +2220,7 @@ void BrowserView::SetToolbarButtonProvider(ToolbarButtonProvider* provider) {
   // Recreate the autofill bubble handler when toolbar button provider changes.
   autofill_bubble_handler_ =
       std::make_unique<autofill::AutofillBubbleHandlerImpl>(
-          browser_.get(), toolbar_button_provider_);
+          toolbar_button_provider_);
 }
 
 void BrowserView::UpdatePageActionIcon(PageActionIconType type) {
@@ -2239,7 +2256,7 @@ void BrowserView::SetFocusToLocationBar(bool is_user_initiated) {
   // already. On Chrome OS, changing focus makes a view believe it has a focus
   // even if the widget doens't have a focus. Either cases, we need to ignore
   // this when the browser window isn't active.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   if (!IsActive())
     return;
 #endif
@@ -2343,11 +2360,7 @@ void BrowserView::ToolbarSizeChanged(bool is_animating) {
 }
 
 void BrowserView::TabDraggingStatusChanged(bool is_dragging) {
-  // TODO(crbug.com/40142064): Remove explicit OS_CHROMEOS check once OS_LINUX
-  // CrOS cleanup is done.
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_LINUX)
   contents_web_view_->SetFastResize(is_dragging);
   if (!is_dragging) {
     // When tab dragging is ended, we need to make sure the web contents get
@@ -2599,7 +2612,8 @@ void BrowserView::UpdateSidePanelHorizontalAlignment() {
   const bool is_right_aligned = GetProfile()->GetPrefs()->GetBoolean(
       prefs::kSidePanelHorizontalAlignment);
   unified_side_panel_->SetHorizontalAlignment(
-      is_right_aligned ? SidePanel::kAlignRight : SidePanel::kAlignLeft);
+      is_right_aligned ? SidePanel::HorizontalAlignment::kRight
+                       : SidePanel::HorizontalAlignment::kLeft);
   GetBrowserViewLayout()->Layout(this);
   side_panel_rounded_corner_->DeprecatedLayoutImmediately();
   side_panel_rounded_corner_->SchedulePaint();
@@ -2850,6 +2864,10 @@ void BrowserView::DidFirstVisuallyNonEmptyPaint() {
   NotifyWidgetSizeConstraintsChanged();
 }
 
+void BrowserView::TitleWasSet(content::NavigationEntry* entry) {
+  UpdateAccessibleNameForRootView();
+}
+
 void BrowserView::TouchModeChanged() {
   MaybeInitializeWebUITabStrip();
   MaybeShowWebUITabStripIPH();
@@ -2970,6 +2988,9 @@ void BrowserView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+// TODO(crbug.com/339262105): Clean up the old password promo methods after the
+// generic promo launch.
 void BrowserView::VerifyUserEligibilityIOSPasswordPromoBubble() {
   if (!browser_) {
     return;
@@ -3005,6 +3026,8 @@ void BrowserView::VerifyUserEligibilityIOSPasswordPromoBubble() {
   }
 }
 
+// TODO(crbug.com/339262105): Clean up the old password promo methods after the
+// generic promo launch.
 void BrowserView::MaybeShowIOSPasswordPromoBubble(
     const segmentation_platform::ClassificationResult& result) {
   if (!browser_) {
@@ -3023,29 +3046,17 @@ void BrowserView::MaybeShowIOSPasswordPromoBubble(
   }
 }
 
+// TODO(crbug.com/339262105): Clean up the old password promo methods after the
+// generic promo launch.
 void BrowserView::ShowIOSPasswordPromoBubble() {
-  if (!browser_) {
-    return;
-  }
-
-  ToolbarButtonProvider* button_provider =
-      BrowserView::GetBrowserViewForBrowser(browser_.get())
-          ->toolbar_button_provider();
-  if (base::FeatureList::IsEnabled(
-          features::kIOSPromoRefreshedPasswordBubble)) {
-    IOSPromoBubble::ShowPromoBubble(
-        button_provider->GetAnchorView(PageActionIconType::kManagePasswords),
-        button_provider->GetPageActionIconView(
-            PageActionIconType::kManagePasswords),
-        browser_.get(), IOSPromoType::kPassword);
-  } else {
-    IOSPromoPasswordBubble::ShowBubble(
-        button_provider->GetAnchorView(PageActionIconType::kManagePasswords),
-        button_provider->GetPageActionIconView(
-            PageActionIconType::kManagePasswords),
-        browser_.get());
-  }
+  IOSPromoPasswordBubble::ShowBubble(
+      toolbar_button_provider_->GetAnchorView(
+          PageActionIconType::kManagePasswords),
+      toolbar_button_provider_->GetPageActionIconView(
+          PageActionIconType::kManagePasswords),
+      browser_.get());
 }
+
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 qrcode_generator::QRCodeGeneratorBubbleView*
@@ -3373,13 +3384,13 @@ content::KeyboardEventProcessingResult BrowserView::PreHandleKeyboardEvent(
     return content::KeyboardEventProcessingResult::NOT_HANDLED;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (ash::AcceleratorController::Get()->IsDeprecated(accelerator)) {
     return (event.GetType() == blink::WebInputEvent::Type::kRawKeyDown)
                ? content::KeyboardEventProcessingResult::NOT_HANDLED_IS_SHORTCUT
                : content::KeyboardEventProcessingResult::NOT_HANDLED;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   content::KeyboardEventProcessingResult result =
       frame_->PreHandleKeyboardEvent(event);
@@ -3565,6 +3576,8 @@ void BrowserView::OnTabStripModelChanged(
 #endif
     web_contents_close_handler_->TabInserted();
   }
+
+  UpdateAccessibleNameForRootView();
 }
 
 void BrowserView::TabStripEmpty() {
@@ -3669,7 +3682,7 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
   int active_index = browser_->tab_strip_model()->active_index();
   std::u16string title;
   if (active_index > -1)
-    title = GetAccessibleTabLabel(active_index);
+    title = GetAccessibleTabLabel(active_index, /* include_app_name */ false);
   else
     title = browser_->GetWindowTitleForCurrentTab(false /* include_app_name */);
 
@@ -3716,9 +3729,24 @@ std::u16string BrowserView::GetAccessibleWindowTitleForChannelAndProfile(
   return title;
 }
 
+void BrowserView::UpdateAccessibleNameForAllTabs() {
+  for (int i = 0; i < tabstrip_->GetTabCount(); ++i) {
+    tabstrip_->tab_at(i)->UpdateAccessibleName();
+  }
+}
+
+// This function constructs the accessible label for a tab, which is used by
+// assistive technologies to provide meaningful descriptions of the tab's
+// content. The label is based on various properties of the tab, such as the
+// title, group, alerts and memory usage.
+//
+// Note: If any new parameters are added or existing ones are removed that
+// affect the accessible name, ensure that the corresponding logic in
+// Tab::UpdateAccessibleName is updated accordingly to maintain consistency.
 std::u16string BrowserView::GetAccessibleTabLabel(int index,
                                                   bool is_for_tab) const {
-  std::u16string title = browser_->GetWindowTitleForTab(index);
+  std::u16string title = is_for_tab ? browser_->GetTitleForTab(index)
+                                    : browser_->GetWindowTitleForTab(index);
 
   std::optional<tab_groups::TabGroupId> group =
       tabstrip_->tab_at(index)->group();
@@ -3895,7 +3923,7 @@ bool BrowserView::CanChangeWindowIcon() const {
     return false;
   if (browser_->app_controller())
     return true;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On ChromeOS, the tabbed browser always use a static image for the window
   // icon. See GetWindowIcon().
   if (browser_->is_type_normal())
@@ -3958,7 +3986,7 @@ ui::ImageModel BrowserView::GetWindowIcon() {
   if (app_controller)
     return app_controller->GetWindowIcon();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
   if (browser_->is_type_normal()) {
     int resource_id = ash::switches::IsAshDebugBrowserEnabled()
@@ -4099,6 +4127,7 @@ views::View* BrowserView::CreateMacOverlayView() {
     params.shadow_type = views::Widget::InitParams::ShadowType::kNone;
     params.activatable = views::Widget::InitParams::Activatable::kNo;
     params.is_overlay = true;
+    params.name = "mac-fullscreen-overlay";
     OverlayWidget* overlay_widget = new OverlayWidget(GetWidget());
 
     // When the overlay is used some Views are moved to the overlay_widget. When
@@ -4116,8 +4145,8 @@ views::View* BrowserView::CreateMacOverlayView() {
     // have an associated Widget. This will cause issues in sublevel manager
     // which operates at the Widget level.
     if (overlay_widget->GetSublevelManager()) {
-      overlay_widget->parent()->GetSublevelManager()->UntrackChildWidget(
-          overlay_widget);
+      overlay_widget->parent()->GetSublevelManager()->OnWidgetChildRemoved(
+          overlay_widget->parent(), overlay_widget);
     }
 
     return overlay_widget;
@@ -4265,7 +4294,7 @@ const views::Widget* BrowserView::GetWidget() const {
 }
 
 void BrowserView::CreateTabSearchBubble(
-    const int tab_index,
+    const tab_search::mojom::TabSearchSection section,
     const tab_search::mojom::TabOrganizationFeature organization_feature) {
   // Do not spawn the bubble if using the WebUITabStrip.
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
@@ -4274,7 +4303,7 @@ void BrowserView::CreateTabSearchBubble(
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
   if (auto* tab_search_host = GetTabSearchBubbleHost()) {
-    tab_search_host->ShowTabSearchBubble(true, tab_index, organization_feature);
+    tab_search_host->ShowTabSearchBubble(true, section, organization_feature);
   }
 }
 
@@ -4614,6 +4643,19 @@ void BrowserView::AddedToWidget() {
       user_education::features::GetSessionStartGracePeriod() +
           base::Minutes(5));
 
+  // Accessible name of the tab is dependent on the visibility state of the chip
+  // view, so it needs to be made aware of any changes.
+  if (toolbar_ && toolbar_->location_bar() &&
+      toolbar_->location_bar()->GetChipController()) {
+    chip_visibility_subscription_ =
+        toolbar_->location_bar()
+            ->GetChipController()
+            ->chip()
+            ->AddVisibleChangedCallback(base::BindRepeating(
+                &BrowserView::UpdateAccessibleNameForAllTabs,
+                weak_ptr_factory_.GetWeakPtr()));
+  }
+
   initialized_ = true;
 }
 
@@ -4720,12 +4762,10 @@ void BrowserView::MaybeInitializeWebUITabStrip() {
     }
   } else if (webui_tab_strip_) {
     top_container_->RemoveChildView(webui_tab_strip_);
-    delete webui_tab_strip_;
-    webui_tab_strip_ = nullptr;
+    webui_tab_strip_.ClearAndDelete();
 
     top_container_->RemoveChildView(loading_bar_);
-    delete loading_bar_;
-    loading_bar_ = nullptr;
+    loading_bar_.ClearAndDelete();
   }
   GetBrowserViewLayout()->set_webui_tab_strip(webui_tab_strip_);
   GetBrowserViewLayout()->set_loading_bar(loading_bar_);
@@ -4760,6 +4800,17 @@ void BrowserView::CreateJumpList() {
   JumpListFactory::GetForProfile(browser_->profile());
 }
 #endif
+
+bool BrowserView::ShouldShowAvatarToolbarIPH() {
+  if (GetGuestSession() || GetIncognito()) {
+    return false;
+  }
+  AvatarToolbarButton* avatar_button =
+      toolbar_button_provider_
+          ? toolbar_button_provider_->GetAvatarToolbarButton()
+          : nullptr;
+  return avatar_button != nullptr;
+}
 
 BrowserViewLayout* BrowserView::GetBrowserViewLayout() const {
   return static_cast<BrowserViewLayout*>(GetLayoutManager());
@@ -4939,14 +4990,10 @@ void BrowserView::ProcessFullscreen(bool fullscreen, const int64_t display_id) {
   // TODO(b/40276379): Move this out from ProcessFullscreen.
   RequestFullscreen(fullscreen, display_id);
 
-#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if !BUILDFLAG(IS_MAC)
   // On Mac platforms, FullscreenStateChanged() is invoked from
   // BrowserFrameMac::OnWindowFullscreenTransitionComplete when the asynchronous
   // fullscreen transition is complete.
-  // On Lacros, FullscreenStateChanged() is invoked from
-  // BrowserDesktopWindowTreeHostLacros::OnFullscreenModeChanged when the
-  // fullscreen state is updated on Ash side and Lacros is notified of the
-  // updates through wayland messages.
   // On other platforms, there is no asynchronous transition so we synchronously
   // invoke the function.
   FullscreenStateChanged();
@@ -5020,32 +5067,12 @@ void BrowserView::RequestFullscreen(bool fullscreen, int64_t display_id) {
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace {
-bool ShouldBeHandledByLacrosInstead(int command) {
-  switch (command) {
-    case IDC_NEW_INCOGNITO_WINDOW:
-    case IDC_NEW_TAB:
-    case IDC_NEW_WINDOW:
-    case IDC_RESTORE_TAB:
-      // TODO(neis): Add more here, perhaps anything tab-related.
-      return true;
-    default:
-      return false;
-  }
-}
-}  // namespace
-#endif
-
 void BrowserView::LoadAccelerators() {
   views::FocusManager* focus_manager = GetFocusManager();
   DCHECK(focus_manager);
 
   // Let's fill our own accelerator table.
   const bool is_app_mode = IsRunningInForcedAppMode();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  const bool is_lacros_only = !crosapi::browser_util::IsAshWebBrowserEnabled();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(IS_CHROMEOS)
   const bool is_captive_portal_signin_window =
       browser_->profile()->IsOffTheRecord() &&
@@ -5053,19 +5080,12 @@ void BrowserView::LoadAccelerators() {
 #endif
   const std::vector<AcceleratorMapping> accelerator_list(GetAcceleratorList());
   for (const auto& entry : accelerator_list) {
-    // In app mode, only allow accelerators of white listed commands to pass
+    // In app mode, only allow accelerators of allowlisted commands to pass
     // through.
     if (is_app_mode && !IsCommandAllowedInAppMode(entry.command_id,
                                                   browser()->is_type_popup())) {
       continue;
     }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // When Lacros is the only browser, disable some browser commands in Ash so
-    // that Lacros can handle them instead.
-    if (is_lacros_only && ShouldBeHandledByLacrosInstead(entry.command_id))
-      continue;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS)
     if (is_captive_portal_signin_window) {
@@ -5173,7 +5193,7 @@ void BrowserView::UpdateAcceleratorMetrics(const ui::Accelerator& accelerator,
     }
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Collect information about the relative popularity of various accelerators
   // on Chrome OS.
   switch (command_id) {
@@ -5233,21 +5253,20 @@ void BrowserView::ShowAvatarBubbleFromAvatarButton(bool is_source_accelerator) {
       is_source_accelerator);
 }
 
-void BrowserView::ShowBubbleFromManagementToolbarButton() {
-#if !BUILDFLAG(IS_CHROMEOS)
-  ManagedMenuCoordinator::GetOrCreateForBrowser(browser())->Show();
-#endif
+void BrowserView::MaybeShowProfileSwitchIPH() {
+  if (!ShouldShowAvatarToolbarIPH()) {
+    return;
+  }
+  toolbar_button_provider_->GetAvatarToolbarButton()
+      ->MaybeShowProfileSwitchIPH();
 }
 
-void BrowserView::MaybeShowProfileSwitchIPH() {
-  if (GetGuestSession() || GetIncognito())
+void BrowserView::MaybeShowSupervisedUserProfileSignInIPH() {
+  if (!ShouldShowAvatarToolbarIPH()) {
     return;
-  AvatarToolbarButton* avatar_button =
-      toolbar_button_provider_
-          ? toolbar_button_provider_->GetAvatarToolbarButton()
-          : nullptr;
-  if (avatar_button)
-    avatar_button->MaybeShowProfileSwitchIPH();
+  }
+  toolbar_button_provider_->GetAvatarToolbarButton()
+      ->MaybeShowSupervisedUserSignInIPH();
 }
 
 void BrowserView::ShowHatsDialog(
@@ -5309,7 +5328,8 @@ std::unique_ptr<content::EyeDropper> BrowserView::OpenEyeDropper(
   return ShowEyeDropper(frame, listener);
 }
 
-BrowserFeaturePromoController* BrowserView::GetFeaturePromoController() {
+user_education::FeaturePromoControllerCommon*
+BrowserView::GetFeaturePromoControllerImpl() {
   return feature_promo_controller_.get();
 }
 
@@ -5332,7 +5352,7 @@ user_education::FeaturePromoResult BrowserView::CanShowFeaturePromo(
   return feature_promo_controller_->CanShowPromo(iph_feature);
 }
 
-user_education::FeaturePromoResult BrowserView::MaybeShowFeaturePromo(
+void BrowserView::MaybeShowFeaturePromo(
     user_education::FeaturePromoParams params) {
   // Trying to show a promo before the browser is initialized can result in a
   // failure to retrieve accelerators, which can cause issues for screen reader
@@ -5340,27 +5360,33 @@ user_education::FeaturePromoResult BrowserView::MaybeShowFeaturePromo(
   if (!initialized_) {
     LOG(ERROR) << "Attempting to show IPH " << params.feature->name
                << " before browser initialization; IPH will not be shown.";
-    return user_education::FeaturePromoResult::kError;
+    user_education::FeaturePromoController::PostShowPromoResult(
+        std::move(params.show_promo_result_callback),
+        user_education::FeaturePromoResult::kError);
+    return;
   }
 
   if (!feature_promo_controller_) {
-    return user_education::FeaturePromoResult::kBlockedByContext;
+    user_education::FeaturePromoController::PostShowPromoResult(
+        std::move(params.show_promo_result_callback),
+        user_education::FeaturePromoResult::kBlockedByContext);
+    return;
   }
 
-  return feature_promo_controller_->MaybeShowPromo(std::move(params));
+  feature_promo_controller_->MaybeShowPromo(std::move(params));
 }
 
-bool BrowserView::MaybeShowStartupFeaturePromo(
+void BrowserView::MaybeShowStartupFeaturePromo(
     user_education::FeaturePromoParams params) {
-  return feature_promo_controller_ &&
-         feature_promo_controller_->MaybeShowStartupPromo(std::move(params));
+  if (feature_promo_controller_) {
+    feature_promo_controller_->MaybeShowStartupPromo(std::move(params));
+  }
 }
 
-bool BrowserView::CloseFeaturePromo(
-    const base::Feature& iph_feature,
-    user_education::EndFeaturePromoReason end_promo_reason) {
+bool BrowserView::AbortFeaturePromo(const base::Feature& iph_feature) {
   return feature_promo_controller_ &&
-         feature_promo_controller_->EndPromo(iph_feature, end_promo_reason);
+         feature_promo_controller_->EndPromo(
+             iph_feature, user_education::EndFeaturePromoReason::kAbortPromo);
 }
 
 user_education::FeaturePromoHandle BrowserView::CloseFeaturePromoAndContinue(
@@ -5373,23 +5399,27 @@ user_education::FeaturePromoHandle BrowserView::CloseFeaturePromoAndContinue(
   return feature_promo_controller_->CloseBubbleAndContinuePromo(iph_feature);
 }
 
-void BrowserView::NotifyFeatureEngagementEvent(const char* event_name) {
+bool BrowserView::NotifyFeaturePromoFeatureUsed(
+    const base::Feature& feature,
+    FeaturePromoFeatureUsedAction action) {
+  if (feature_promo_controller_) {
+    feature_promo_controller_->NotifyFeatureUsedIfValid(feature);
+    if (action == FeaturePromoFeatureUsedAction::kClosePromoIfPresent) {
+      return feature_promo_controller_->EndPromo(
+          feature, user_education::EndFeaturePromoReason::kFeatureEngaged);
+    }
+  }
+  return false;
+}
+
+void BrowserView::NotifyAdditionalConditionEvent(const char* event_name) {
   if (!feature_promo_controller_) {
     return;
   }
-  feature_promo_controller_->feature_engagement_tracker()->NotifyEvent(
-      event_name);
-}
-
-void BrowserView::NotifyPromoFeatureUsed(const base::Feature& feature) {
-  if (feature_promo_controller_) {
-    feature_promo_controller_->NotifyFeatureUsedIfValid(feature);
-  }
-  auto* const service =
-      UserEducationServiceFactory::GetForBrowserContext(GetProfile());
-  if (service && service->new_badge_registry() &&
-      service->new_badge_registry()->IsFeatureRegistered(feature)) {
-    service->new_badge_controller()->NotifyFeatureUsedIfValid(feature);
+  if (auto* const tracker =
+          feature_engagement::TrackerFactory::GetForBrowserContext(
+              GetProfile())) {
+    tracker->NotifyEvent(event_name);
   }
 }
 
@@ -5401,6 +5431,15 @@ user_education::DisplayNewBadge BrowserView::MaybeShowNewBadgeFor(
     return user_education::DisplayNewBadge();
   }
   return service->new_badge_controller()->MaybeShowNewBadge(feature);
+}
+
+void BrowserView::NotifyNewBadgeFeatureUsed(const base::Feature& feature) {
+  auto* const service =
+      UserEducationServiceFactory::GetForBrowserContext(GetProfile());
+  if (service && service->new_badge_registry() &&
+      service->new_badge_registry()->IsFeatureRegistered(feature)) {
+    service->new_badge_controller()->NotifyFeatureUsedIfValid(feature);
+  }
 }
 
 void BrowserView::ActivateAppModalDialog() const {
@@ -5466,6 +5505,10 @@ void BrowserView::HideDownloadShelf() {
   StatusBubble* status_bubble = GetStatusBubble();
   if (status_bubble)
     status_bubble->Hide();
+}
+
+bool BrowserView::CanUserEnterFullscreen() const {
+  return CanFullscreen();
 }
 
 bool BrowserView::CanUserExitFullscreen() const {
@@ -5563,6 +5606,13 @@ void BrowserView::OnInstallableWebAppStatusUpdated(
   UpdatePageActionIcon(PageActionIconType::kPwaInstall);
 }
 
+void BrowserView::OnWillChangeFocus(View* focused_before, View* focused_now) {
+  UpdateAccessibleNameForRootView();
+}
+void BrowserView::OnDidChangeFocus(View* focused_before, View* focused_now) {
+  UpdateAccessibleNameForRootView();
+}
+
 WebAppFrameToolbarView* BrowserView::web_app_frame_toolbar() {
   return web_app_frame_toolbar_;
 }
@@ -5586,6 +5636,12 @@ void BrowserView::FrameColorsChanged() {
         BrowserFrameActiveState::kUseCurrent);
     web_app_window_title_->SetBackgroundColor(frame_color);
     web_app_window_title_->SetEnabledColor(caption_color);
+  }
+}
+
+void BrowserView::UpdateAccessibleNameForRootView() {
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
   }
 }
 

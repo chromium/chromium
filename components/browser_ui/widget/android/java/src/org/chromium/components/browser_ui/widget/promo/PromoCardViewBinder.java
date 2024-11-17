@@ -43,6 +43,13 @@ class PromoCardViewBinder
                 return;
             }
             view.mSecondaryButton.setText(model.get(PromoCardProperties.SECONDARY_BUTTON_TEXT));
+        } else if (propertyKey == PromoCardProperties.BUTTONS_WIDTH) {
+            view.mPrimaryButton.getLayoutParams().width =
+                    model.get(PromoCardProperties.BUTTONS_WIDTH);
+            if (view.mSecondaryButton != null) {
+                view.mSecondaryButton.getLayoutParams().width =
+                        model.get(PromoCardProperties.BUTTONS_WIDTH);
+            }
 
             // Visibility properties
         } else if (propertyKey == PromoCardProperties.HAS_SECONDARY_BUTTON) {
@@ -52,6 +59,13 @@ class PromoCardViewBinder
             }
             view.mSecondaryButton.setVisibility(
                     model.get(PromoCardProperties.HAS_SECONDARY_BUTTON) ? View.VISIBLE : View.GONE);
+        } else if (propertyKey == PromoCardProperties.HAS_CLOSE_BUTTON) {
+            if (view.mCloseButton == null) {
+                Log.w(TAG, "Close button does not exist in the promo card.");
+                return;
+            }
+            view.mCloseButton.setVisibility(
+                    model.get(PromoCardProperties.HAS_CLOSE_BUTTON) ? View.VISIBLE : View.GONE);
 
             // Callback properties
         } else if (propertyKey == PromoCardProperties.PRIMARY_BUTTON_CALLBACK) {
@@ -64,6 +78,13 @@ class PromoCardViewBinder
             }
             Callback<View> callback = model.get(PromoCardProperties.SECONDARY_BUTTON_CALLBACK);
             view.mSecondaryButton.setOnClickListener(callback::onResult);
+        } else if (propertyKey == PromoCardProperties.CLOSE_BUTTON_CALLBACK) {
+            if (view.mCloseButton == null) {
+                Log.w(TAG, "Close button does not exist in the promo card.");
+                return;
+            }
+            Callback<View> callback = model.get(PromoCardProperties.CLOSE_BUTTON_CALLBACK);
+            view.mCloseButton.setOnClickListener(callback::onResult);
         }
     }
 }

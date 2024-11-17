@@ -108,7 +108,6 @@ build_webui("build") {
     "sync_confirmation/sync_confirmation_app.css",
     "sync_confirmation/sync_disabled_confirmation_app.css",
     "tangible_sync_style_shared.css",
-    "tangible_sync_style_shared_lit.css",
   ]
 
   if (!is_chromeos_ash) {
@@ -138,18 +137,25 @@ build_webui("build") {
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_components/localized_link:build_ts",
     "//ui/webui/resources/cr_components/theme_color_picker:build_ts",
     "//ui/webui/resources/cr_elements:build_ts",
     "//ui/webui/resources/js:build_ts",
   ]
 
   ts_path_mappings = [
+    "/icons.html.js|" +
+        rebase_path("$target_gen_dir/preprocessed/icons.html.ts",
+                    target_gen_dir),
     "/signin_shared.css.js|" +
         rebase_path("$target_gen_dir/preprocessed/signin_shared.css.ts",
                     target_gen_dir),
-    "/tangible_sync_style_shared_lit.css.js|" + rebase_path(
-            "$target_gen_dir/preprocessed/tangible_sync_style_shared_lit.css.ts",
+    "/signin_vars.css.js|" +
+        rebase_path("$target_gen_dir/preprocessed/signin_vars.css.ts",
+                    target_gen_dir),
+    "/tangible_sync_style_shared.css.js|" +
+        rebase_path(
+            "$target_gen_dir/preprocessed/tangible_sync_style_shared.css.ts",
             target_gen_dir),
   ]
 

@@ -47,7 +47,8 @@
           "builder": "linux-chromeos-dbg-oslogin",
           "group": "tryserver.chromium.chromiumos"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/linux-chromeos-dbg-oslogin/targets"
     }
   },
   "$build/reclient": {

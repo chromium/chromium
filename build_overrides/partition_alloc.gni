@@ -143,6 +143,9 @@ enable_dangling_raw_ptr_checks_default =
     # at the moment. The other Android bots are not ready for it yet.
     !is_android
 
+enable_ios_corruption_hardening_default =
+    is_ios && ios_partition_alloc_corruption_hardening_enabled
+
 raw_ptr_zero_on_construct_default = true
 raw_ptr_zero_on_move_default = true
 raw_ptr_zero_on_destruct_default = false

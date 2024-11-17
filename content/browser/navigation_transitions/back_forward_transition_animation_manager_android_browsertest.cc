@@ -46,6 +46,7 @@
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/update_user_activation_state_interceptor.h"
 #include "content/shell/browser/shell.h"
+#include "content/shell/browser/shell_javascript_dialog_manager.h"
 #include "content/test/content_browser_test_utils_internal.h"
 #include "content/test/did_commit_navigation_interceptor.h"
 #include "content/test/render_document_feature.h"
@@ -54,6 +55,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-test-utils.h"
+#include "ui/android/fake_modal_dialog_manager_bridge.h"
 #include "ui/android/progress_bar_config.h"
 #include "ui/android/ui_android_features.h"
 #include "ui/android/window_android.h"
@@ -70,6 +72,7 @@ namespace content {
 namespace {
 
 using SwipeEdge = ui::BackGestureEventSwipeEdge;
+using AnimationStage = BackForwardTransitionAnimationManager::AnimationStage;
 using NavType = BackForwardTransitionAnimationManager::NavigationDirection;
 using base::test::TestFuture;
 using testing::AssertionFailure;
@@ -128,11 +131,13 @@ AssertionResult ColorsNear(const SkColor4f& e, const SkColor4f& a) {
          << "," << a.fA << "].";
 }
 
-// For light mode.
-static constexpr SkColor4f kScrimColorAtStart = {0, 0, 0, 0.1f};
-static constexpr SkColor4f kScrimColorAt30 = {0, 0, 0, 0.0745f};
-static constexpr SkColor4f kScrimColorAt60 = {0, 0, 0, 0.049f};
-static constexpr SkColor4f kScrimColorAt90 = {0, 0, 0, 0.0235f};
+// Color values with scrim for light/dark modes.
+// The scrim is calculated as follows: 0.65 * (1 - [percent] * 0.85)
+// For example, scrim at 30% is 0.65 * (1 - 0.3 * 0.85).
+static constexpr SkColor4f kScrimColorAtStart = {0, 0, 0, 0.65f};
+static constexpr SkColor4f kScrimColorAt30 = {0, 0, 0, 0.48425f};
+static constexpr SkColor4f kScrimColorAt60 = {0, 0, 0, 0.3185f};
+static constexpr SkColor4f kScrimColorAt90 = {0, 0, 0, 0.15275f};
 
 int64_t GetItemSequenceNumberForNavigation(
     NavigationHandle* navigation_handle) {
@@ -309,9 +314,6 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
   void set_duration_between_frames(base::TimeDelta duration) {
     duration_between_frames_ = duration;
   }
-  void set_subframe_navigation(bool subframe_navigation) {
-    subframe_navigation_ = subframe_navigation;
-  }
 
   State state() const { return state_; }
 
@@ -325,8 +327,6 @@ class AnimatorForTesting : public BackForwardTransitionAnimator {
   base::TimeDelta duration_between_frames_ = kLongDurationBetweenFrames;
 
   bool intercept_render_frame_metadata_changed_ = false;
-
-  bool subframe_navigation_ = false;
 
   std::optional<State> pause_on_animate_at_state_;
 
@@ -876,45 +876,29 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
-                       DarkModeScrim) {
+                       Scrim) {
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
-
-  blink::web_pref::WebPreferences prefs =
-      web_contents()->GetOrCreateWebPreferences();
-  prefs.preferred_color_scheme = blink::mojom::PreferredColorScheme::kDark;
-  web_contents()->SetWebPreferences(prefs);
-
-  // Dark mode has twice the scrim from the light mode.
-  const SkColor4f kDMScrimColorAtStart = {0, 0, 0, kScrimColorAtStart.fA * 2};
-  const SkColor4f kDMScrimColorAt30 = {0, 0, 0, kScrimColorAt30.fA * 2};
-  const SkColor4f kDMScrimColorAt60 = {0, 0, 0, kScrimColorAt60.fA * 2};
-  const SkColor4f kDMScrimColorAt90 = {0, 0, 0, kScrimColorAt90.fA * 2};
 
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0), BackEdge(),
                                           NavType::kBackward);
   ASSERT_TRUE(GetScrimLayer());
   EXPECT_TRUE(
-      ColorsNear(kDMScrimColorAtStart, GetScrimLayer()->background_color()));
+      ColorsNear(kScrimColorAtStart, GetScrimLayer()->background_color()));
 
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-  EXPECT_TRUE(
-      ColorsNear(kDMScrimColorAt30, GetScrimLayer()->background_color()));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt30, GetScrimLayer()->background_color()));
 
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_TRUE(
-      ColorsNear(kDMScrimColorAt60, GetScrimLayer()->background_color()));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt60, GetScrimLayer()->background_color()));
 
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
-  EXPECT_TRUE(
-      ColorsNear(kDMScrimColorAt90, GetScrimLayer()->background_color()));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt90, GetScrimLayer()->background_color()));
 
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-  EXPECT_TRUE(
-      ColorsNear(kDMScrimColorAt30, GetScrimLayer()->background_color()));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt30, GetScrimLayer()->background_color()));
 
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
-  EXPECT_TRUE(
-      ColorsNear(kDMScrimColorAt60, GetScrimLayer()->background_color()));
+  EXPECT_TRUE(ColorsNear(kScrimColorAt60, GetScrimLayer()->background_color()));
 }
 
 // Tests the translation of the live page as the gesture is progressed in both
@@ -1103,7 +1087,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardTransitionAnimationManagerBothEdgeBrowserTest,
   // Only a screenshot layer with a scrim should have been added, under the live
   // page.
   ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
-  ASSERT_EQ(GetScrimLayer()->background_color().fA, 0.1f);
+  ASSERT_EQ(GetScrimLayer()->background_color().fA, 0.65f);
 
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.9));
 
@@ -1484,7 +1468,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 
     GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
     GetAnimationManager()->OnGestureInvoked();
-    EXPECT_STATE_EQ(kDisplayingCancelAnimation, GetAnimator()->state());
+    EXPECT_STATE_EQ(kDisplayingInvokeAnimation, GetAnimator()->state());
     ASSERT_TRUE(did_invoke_first.Wait());
   }
 
@@ -1668,8 +1652,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   ASSERT_FALSE(back_nav_to_red.was_committed());
 }
 
-// The user swipes across the screen while a cross-doc navigation commits. We
-// destroy the animation manager synchronously.
+// The user swipes across the screen while a cross-doc navigation commits. The
+// live page should be replaced by the page that was navigated to while the
+// animation continues.
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
                        NavigationWhileOnGestureProgressed) {
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
@@ -1679,16 +1664,27 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   TestFuture<AnimatorState> destroyed;
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
   ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
-  ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
 
-  ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
-  EXPECT_TRANSFORM_NEAR(kIdentityTransform, GetLivePageLayer()->transform(),
-                        kFloatTolerance);
+  // The current live page should be blue.html.
+  ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+            BlueURL());
+
+  EXPECT_STATE_EQ(kStarted, GetAnimator()->state());
+
+  // The gesture should have created and attached a screenshot layer with a
+  // child scrim layer, under the live page.
+  ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureInvoked();
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
+  ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+            RedURL());
 }
 
-// The cancel animation is displaying while a cross-doc navigation commits. We
-// destroy the animation manager synchronously.
+// The cancel animation is displaying while a cross-doc navigation commits. The
+// live page should be replaced by the page that was navigated to while the
+// animation continues.
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
                        NavigationWhileDisplayingCancelAnimation) {
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
@@ -1700,12 +1696,21 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimator()->PauseAnimationAtDisplayingCancelAnimation();
   GetAnimationManager()->OnGestureCancelled();
   ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
-  ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+  EXPECT_STATE_EQ(kDisplayingCancelAnimation, GetAnimator()->state());
 
-  ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
-  EXPECT_TRANSFORM_NEAR(kIdentityTransform, GetLivePageLayer()->transform(),
-                        kFloatTolerance);
+  // The current live page should be blue.html.
+  ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+            BlueURL());
+
+  // The gesture should have created and attached a screenshot layer with a
+  // child scrim layer, under the live page.
+  ASSERT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimator()->UnpauseAnimation();
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
+  ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+            BlueURL());
 }
 
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
@@ -1737,7 +1742,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 
   ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
   ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
   EXPECT_TRANSFORM_NEAR(kIdentityTransform, GetLivePageLayer()->transform(),
@@ -2136,8 +2141,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
   TestFuture<AnimatorState> destroyed;
+  TestFuture<void> invoke_played;
   TestFuture<bool> did_finish_navigation;
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimator()->set_on_invoke_animation_displayed(invoke_played.GetCallback());
   GetAnimator()->set_did_finish_navigation_callback(
       did_finish_navigation.GetCallback());
 
@@ -2162,8 +2169,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
     ASSERT_TRUE(nav_to_blue.WaitForNavigationFinished());
   }
 
+  GetAnimator()->UnpauseAnimation();
+  EXPECT_TRUE(invoke_played.Wait());
   ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
   EXPECT_TRANSFORM_NEAR(kIdentityTransform, GetLivePageLayer()->transform(),
@@ -2211,9 +2220,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
     ASSERT_TRUE(nav_to_blue.WaitForNavigationFinished());
   }
 
-  ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
-  EXPECT_FALSE(did_cross_fade.IsReady());
+  EXPECT_TRUE(did_cross_fade.Wait());
+  EXPECT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 
   ASSERT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
   EXPECT_TRANSFORM_NEAR(kIdentityTransform, GetLivePageLayer()->transform(),
@@ -2324,6 +2333,74 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
       NavigationEntryScreenshot::kUserDataKey));
 }
 
+// When the primary main frame renderer gest destroyed mid gesture, the
+// animation should be immedietly aborted.
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       PrimaryMainFrameRenderProcessDestroyedMidGesture) {
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+
+  TestFuture<AnimatorState> destroyed;
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+
+  // Crash the green page.
+  RenderFrameHostWrapper crashed(web_contents()->GetPrimaryMainFrame());
+  RenderProcessHostWatcher crashed_obs(
+      crashed->GetProcess(), RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  crashed->GetProcess()->Shutdown(content::RESULT_CODE_KILLED);
+  crashed_obs.Wait();
+  ASSERT_TRUE(crashed.WaitUntilRenderFrameDeleted());
+  // The crashed RFH is still owned by the RFHManager.
+  ASSERT_FALSE(crashed.IsDestroyed());
+  ASSERT_FALSE(crashed->IsRenderFrameLive());
+  ASSERT_FALSE(crashed->GetView());
+
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+}
+
+// When the primary main frame renderer gest destroyed after the gesture was
+// invoked, the animation should be aborted.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTest,
+    PrimaryMainFrameRenderProcessDestroyedAfterGestureInvoked) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+
+  TestFuture<AnimatorState> destroyed;
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+
+  TestNavigationManager back_to_red(web_contents(), RedURL());
+  GetAnimator()->OnGestureInvoked();
+  ASSERT_TRUE(back_to_red.WaitForRequestStart());
+
+  // Crash the green page.
+  RenderFrameHostWrapper crashed(web_contents()->GetPrimaryMainFrame());
+  RenderProcessHostWatcher crashed_obs(
+      crashed->GetProcess(), RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  crashed->GetProcess()->Shutdown(content::RESULT_CODE_KILLED);
+  crashed_obs.Wait();
+  ASSERT_TRUE(crashed.WaitUntilRenderFrameDeleted());
+  // The crashed RFH is still owned by the RFHManager.
+  ASSERT_FALSE(crashed.IsDestroyed());
+  ASSERT_FALSE(crashed->IsRenderFrameLive());
+  ASSERT_FALSE(crashed->GetView());
+
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_FALSE(back_to_red.was_committed());
+  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+}
+
 // Regression test for https://crbug.com/326516254: If the destination page is
 // skipped for a back/forward navigation due to the lack of user activation, the
 // animator should also skip that entry.
@@ -2420,6 +2497,39 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
       NavigationEntryScreenshot::kUserDataKey));
 }
 
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       HasUaVisualTransitionSameDocument) {
+  GURL url1 = embedded_test_server()->GetURL(
+      "a.com", "/has-ua-visual-transition.html#frag1");
+  GURL url2 = embedded_test_server()->GetURL(
+      "a.com", "/has-ua-visual-transition.html#frag2");
+  NavigationHandleCommitObserver navigation_0(web_contents(), url1);
+  NavigationHandleCommitObserver navigation_1(web_contents(), url2);
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
+  NavigationEntry* entry =
+      web_contents()->GetController().GetLastCommittedEntry();
+  ASSERT_TRUE(NavigateToURL(web_contents(), url2));
+  // The NavigationEntry changes on a same-document navigation.
+  EXPECT_NE(web_contents()->GetController().GetLastCommittedEntry(), entry);
+  EXPECT_FALSE(
+      EvalJs(web_contents(), "hasUAVisualTransitionValue").ExtractBool());
+
+  EXPECT_TRUE(navigation_0.has_committed());
+  EXPECT_TRUE(navigation_1.has_committed());
+  EXPECT_FALSE(navigation_0.was_same_document());
+  EXPECT_TRUE(navigation_1.was_same_document());
+
+  TestNavigationManager manager(web_contents(), url1);
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimationManager()->OnGestureInvoked();
+
+  ASSERT_TRUE(manager.WaitForNavigationFinished());
+  ASSERT_TRUE(
+      EvalJs(web_contents(), "hasUAVisualTransitionValue").ExtractBool());
+}
+
 namespace {
 
 // Wait for the main frame to receive a UpdateUserActivationState from the
@@ -2497,48 +2607,6 @@ void InjectBeforeUnloadAndSetStickyUserActivation(
   }
 }
 
-// Intercept the BeforeUnload dialog. Used to block the execution until the
-// confirmation dialog shows up, and to interact with the dialog to either
-// cancel or start the navigation.
-class BeforeUnloadDialogObserver
-    : public blink::mojom::LocalFrameHostInterceptorForTesting {
- public:
-  explicit BeforeUnloadDialogObserver(RenderFrameHostImpl* frame)
-      : frame_(frame), impl_(receiver().SwapImplForTesting(this)) {}
-  ~BeforeUnloadDialogObserver() override = default;
-
-  // `blink::mojom::LocalFrameHostInterceptorForTesting`:
-  LocalFrameHost* GetForwardingInterface() override { return impl_; }
-  void RunBeforeUnloadConfirm(
-      bool is_reload,
-      RunBeforeUnloadConfirmCallback callback) override {
-    CHECK(!is_reload);
-    ack_ = std::move(callback);
-    run_loop_.Quit();
-    // Reset immediately. `frame_` and `impl_` will be destroyed once
-    // `ack_` is executed with "proceed".
-    std::ignore = receiver().SwapImplForTesting(impl_);
-    frame_ = nullptr;
-    impl_ = nullptr;
-  }
-
-  void WaitForDialog() { run_loop_.Run(); }
-
-  void RespondToDialogue(bool proceed) { std::move(ack_).Run(proceed); }
-
-  [[nodiscard]] bool shown() const { return !frame_; }
-
- private:
-  mojo::AssociatedReceiver<blink::mojom::LocalFrameHost>& receiver() {
-    return frame_->local_frame_host_receiver_for_testing();
-  }
-
-  raw_ptr<RenderFrameHostImpl> frame_;
-  raw_ptr<blink::mojom::LocalFrameHost> impl_;
-  base::RunLoop run_loop_;
-  RunBeforeUnloadConfirmCallback ack_;
-};
-
 }  // namespace
 
 // Test the case where the renderer acks the BeforeUnload message without
@@ -2569,8 +2637,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimator()->set_on_cancel_animation_displayed(did_cancel.GetCallback());
   GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
 
-  BeforeUnloadDialogObserver dialog_observer(
-      web_contents()->GetPrimaryMainFrame());
   TestFrameNavigationObserver back_to_red(web_contents());
   GetAnimationManager()->OnGestureInvoked();
 
@@ -2581,7 +2647,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   back_to_red.Wait();
   ASSERT_EQ(back_to_red.last_committed_url(), RedURL());
 
-  ASSERT_FALSE(dialog_observer.shown());
   ASSERT_FALSE(did_cancel.IsReady());
 }
 
@@ -2608,15 +2673,25 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimator()->set_on_cancel_animation_displayed(did_cancel.GetCallback());
   GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
 
-  BeforeUnloadDialogObserver dialog_observer(
-      web_contents()->GetPrimaryMainFrame());
+  auto* dialog_manager = static_cast<ShellJavaScriptDialogManager*>(
+      shell()->GetJavaScriptDialogManager(web_contents()));
+  ASSERT_TRUE(dialog_manager);
+  TestFuture<void> dialog_shown;
+  dialog_manager->set_dialog_request_callback(dialog_shown.GetCallback());
+  // Not to proceed immediately, so we can enter the
+  // `kWaitingForBeforeUnloadUserInteraction` state. When `proceed` is false,
+  // the value of `success` doesn't matter.
+  dialog_manager->set_should_proceed_on_beforeunload(
+      /*proceed=*/false, /*success=*/true);
+
   TestFrameNavigationObserver back_to_red(web_contents());
   GetAnimationManager()->OnGestureInvoked();
 
+  ASSERT_TRUE(dialog_shown.Wait());
   ASSERT_TRUE(did_cancel.Wait());
-  dialog_observer.WaitForDialog();
-  EXPECT_STATE_EQ(kWaitingForBeforeUnloadResponse, GetAnimator()->state());
-  dialog_observer.RespondToDialogue(/*proceed=*/true);
+  EXPECT_STATE_EQ(kWaitingForBeforeUnloadUserInteraction,
+                  GetAnimator()->state());
+  EXPECT_TRUE(dialog_manager->RunBeforeUnloadCallback(true, u"title"));
 
   ASSERT_TRUE(destroyed.Wait());
   EXPECT_TRUE(did_invoke.IsReady());
@@ -2624,8 +2699,50 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 
   back_to_red.Wait();
   ASSERT_EQ(back_to_red.last_committed_url(), RedURL());
+}
 
-  ASSERT_TRUE(dialog_observer.shown());
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       BeforeUnload_Proceed_BeforeCancelAnimationFinishes) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+  InjectBeforeUnloadAndSetStickyUserActivation(web_contents());
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+
+  TestFuture<AnimatorState> destroyed;
+  TestFuture<bool> did_finish_nav;
+  TestFuture<void> did_cancel;
+  TestFuture<void> did_invoke;
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimator()->set_did_finish_navigation_callback(
+      did_finish_nav.GetCallback());
+  GetAnimator()->set_on_cancel_animation_displayed(did_cancel.GetCallback());
+  GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
+
+  auto* dialog_manager = static_cast<ShellJavaScriptDialogManager*>(
+      shell()->GetJavaScriptDialogManager(web_contents()));
+  ASSERT_TRUE(dialog_manager);
+  TestFuture<void> dialog_shown;
+  dialog_manager->set_dialog_request_callback(dialog_shown.GetCallback());
+  // Proceed immediately, so we skip`kWaitingForBeforeUnloadUserInteraction`
+  // state.
+  dialog_manager->set_should_proceed_on_beforeunload(
+      /*proceed=*/true, /*success=*/true);
+
+  TestFrameNavigationObserver back_to_red(web_contents());
+  GetAnimationManager()->OnGestureInvoked();
+
+  ASSERT_TRUE(dialog_shown.Wait());
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_TRUE(did_invoke.IsReady());
+  EXPECT_TRUE(did_finish_nav.IsReady());
+
+  back_to_red.Wait();
+  ASSERT_EQ(back_to_red.last_committed_url(), RedURL());
+  ASSERT_FALSE(did_cancel.IsReady());
 }
 
 // Test the case where the user cancels the navigation via the prompt, after
@@ -2649,21 +2766,27 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimator()->set_on_cancel_animation_displayed(did_cancel.GetCallback());
   GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
 
-  BeforeUnloadDialogObserver dialog_observer(
-      web_contents()->GetPrimaryMainFrame());
+  auto* dialog_manager = static_cast<ShellJavaScriptDialogManager*>(
+      shell()->GetJavaScriptDialogManager(web_contents()));
+  ASSERT_TRUE(dialog_manager);
+  TestFuture<void> dialog_shown;
+  dialog_manager->set_dialog_request_callback(dialog_shown.GetCallback());
+  dialog_manager->set_should_proceed_on_beforeunload(
+      /*proceed=*/false, /*success=*/true);
+
   TestFrameNavigationObserver back_to_red(web_contents());
   GetAnimationManager()->OnGestureInvoked();
 
+  ASSERT_TRUE(dialog_shown.Wait());
   ASSERT_TRUE(did_cancel.Wait());
-  dialog_observer.WaitForDialog();
-  EXPECT_STATE_EQ(kWaitingForBeforeUnloadResponse, GetAnimator()->state());
-  dialog_observer.RespondToDialogue(/*proceed=*/false);
+  EXPECT_STATE_EQ(kWaitingForBeforeUnloadUserInteraction,
+                  GetAnimator()->state());
+  EXPECT_TRUE(dialog_manager->RunBeforeUnloadCallback(false, u"title"));
 
   ASSERT_TRUE(destroyed.Wait());
   ASSERT_FALSE(back_to_red.last_navigation_succeeded());
 
   ASSERT_FALSE(did_invoke.IsReady());
-  ASSERT_TRUE(dialog_observer.shown());
 }
 
 // Test the case where the user cancels the navigation via the prompt, before
@@ -2687,31 +2810,39 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimator()->set_on_cancel_animation_displayed(did_cancel.GetCallback());
   GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
 
-  BeforeUnloadDialogObserver dialog_observer(
-      web_contents()->GetPrimaryMainFrame());
+  auto* dialog_manager = static_cast<ShellJavaScriptDialogManager*>(
+      shell()->GetJavaScriptDialogManager(web_contents()));
+  ASSERT_TRUE(dialog_manager);
+  TestFuture<void> dialog_shown;
+  dialog_manager->set_dialog_request_callback(dialog_shown.GetCallback());
+  dialog_manager->set_should_proceed_on_beforeunload(
+      /*proceed=*/false, /*success=*/false);
+
   TestFrameNavigationObserver back_to_red(web_contents());
   GetAnimator()->PauseAnimationAtDisplayingCancelAnimation();
   GetAnimationManager()->OnGestureInvoked();
 
-  dialog_observer.WaitForDialog();
+  EXPECT_TRUE(dialog_shown.Wait());
   EXPECT_STATE_EQ(kDisplayingCancelAnimation, GetAnimator()->state());
-  dialog_observer.RespondToDialogue(/*proceed=*/false);
+  EXPECT_TRUE(dialog_manager->RunBeforeUnloadCallback(false, u"title"));
   GetAnimator()->UnpauseAnimation();
 
-  ASSERT_TRUE(destroyed.Wait());
-  EXPECT_TRUE(did_cancel.IsReady());
-  ASSERT_FALSE(back_to_red.last_navigation_succeeded());
+  EXPECT_TRUE(did_cancel.Wait());
+  EXPECT_TRUE(destroyed.Wait());
 
-  ASSERT_FALSE(did_invoke.IsReady());
-  ASSERT_TRUE(dialog_observer.shown());
+  EXPECT_FALSE(did_invoke.IsReady());
+  EXPECT_EQ(web_contents()->GetPrimaryMainFrame()->GetLastCommittedURL(),
+            GreenURL());
 }
 
 // Test that when the user has decided not leave the current page by interacting
 // with the prompt and the cancel animation is still playing, another navigation
-// commits in the main frame. We should destroy the animator when the other
-// navigation commits.
+// commits in the main frame. The animator should continue animating and the
+// live page should be replaced by the page that was navigated to.
+//
+// TODO(https://crbug.com/379166889): Investigate and re-enable.
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
-                       BeforeUnload_RequestCancelledBeforeStart) {
+                       DISABLED_BeforeUnload_RequestCancelledBeforeStart) {
   DisableBackForwardCacheForTesting(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
@@ -2729,74 +2860,53 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimator()->set_on_cancel_animation_displayed(did_cancel.GetCallback());
   GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
 
-  BeforeUnloadDialogObserver dialog_observer(
-      web_contents()->GetPrimaryMainFrame());
-  TestFrameNavigationObserver back_to_red(web_contents());
-  GetAnimator()->set_duration_between_frames(base::Microseconds(1));
+  auto* dialog_manager = static_cast<ShellJavaScriptDialogManager*>(
+      shell()->GetJavaScriptDialogManager(web_contents()));
+  ASSERT_TRUE(dialog_manager);
+  TestFuture<void> dialog_shown;
+  dialog_manager->set_dialog_request_callback(dialog_shown.GetCallback());
+  dialog_manager->set_should_proceed_on_beforeunload(
+      /*proceed=*/false, /*success=*/true);
+
+  TestFrameNavigationObserver back_nav(web_contents());
   GetAnimator()->PauseAnimationAtDisplayingCancelAnimation();
   GetAnimationManager()->OnGestureInvoked();
 
-  dialog_observer.WaitForDialog();
+  EXPECT_TRUE(dialog_shown.Wait());
   EXPECT_STATE_EQ(kDisplayingCancelAnimation, GetAnimator()->state());
-  // Expectation the animator will be destroyed while playing the cancel
-  // animation.
-  dialog_observer.RespondToDialogue(/*proceed=*/false);
-  GetAnimator()->UnpauseAnimation();
 
-  ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
-  ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+  // When the browser is processing a BeforeUnload handler, it sets some state
+  // on the current frame. If that state is not reset, we can't start another
+  // navigation with a BeforeUnload handler.
+  TestFuture<void> beforeunload_complete;
+  web_contents()
+      ->GetPrimaryMainFrame()
+      ->set_on_process_before_unload_completed_for_testing(
+          beforeunload_complete.GetCallback());
+  EXPECT_TRUE(dialog_manager->RunBeforeUnloadCallback(false, u"title1"));
+  EXPECT_TRUE(beforeunload_complete.Wait());
+  EXPECT_STATE_EQ(kDisplayingCancelAnimation, GetAnimator()->state());
+
+  EXPECT_TRUE(NavigateToURL(web_contents(), BlueURL()));
 
   ASSERT_FALSE(did_invoke.IsReady());
   ASSERT_FALSE(did_cancel.IsReady());
-  ASSERT_TRUE(dialog_observer.shown());
 
+  GetAnimator()->UnpauseAnimation();
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
+
+  ASSERT_EQ(back_nav.last_committed_url(), BlueURL());
   ASSERT_EQ(web_contents()->GetController().GetEntryCount(), 3);
   ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntryIndex(), 2);
 }
 
-IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
-                       HasUaVisualTransitionSameDocument) {
-  GURL url1 = embedded_test_server()->GetURL(
-      "a.com", "/has-ua-visual-transition.html#frag1");
-  GURL url2 = embedded_test_server()->GetURL(
-      "a.com", "/has-ua-visual-transition.html#frag2");
-  NavigationHandleCommitObserver navigation_0(web_contents(), url1);
-  NavigationHandleCommitObserver navigation_1(web_contents(), url2);
-
-  ASSERT_TRUE(NavigateToURL(web_contents(), url1));
-  NavigationEntry* entry =
-      web_contents()->GetController().GetLastCommittedEntry();
-  ASSERT_TRUE(NavigateToURL(web_contents(), url2));
-  // The NavigationEntry changes on a same-document navigation.
-  EXPECT_NE(web_contents()->GetController().GetLastCommittedEntry(), entry);
-  EXPECT_FALSE(
-      EvalJs(web_contents(), "hasUAVisualTransitionValue").ExtractBool());
-
-  EXPECT_TRUE(navigation_0.has_committed());
-  EXPECT_TRUE(navigation_1.has_committed());
-  EXPECT_FALSE(navigation_0.was_same_document());
-  EXPECT_TRUE(navigation_1.was_same_document());
-
-  TestNavigationManager manager(web_contents(), url1);
-  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
-                                          SwipeEdge::LEFT, NavType::kBackward);
-  GetAnimationManager()->OnGestureInvoked();
-
-  ASSERT_TRUE(manager.WaitForNavigationFinished());
-  ASSERT_TRUE(
-      EvalJs(web_contents(), "hasUAVisualTransitionValue").ExtractBool());
-}
-
-// Test the case where script commits a same-document navigation in beforeunload
-// while the cancel animation is playing.
+// Test the case where script commits a same-document navigation (via pushState)
+// in beforeunload.
 IN_PROC_BROWSER_TEST_F(
     BackForwardTransitionAnimationManagerBrowserTest,
     BeforeUnload_SameDocumentNavigation_DuringCancelAnimation) {
-  DisableBackForwardCacheForTesting(
-      web_contents(),
-      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
-
+  // [red, green, before_unload_same_doc_nav*]
   ASSERT_TRUE(NavigateToURL(
       web_contents(),
       embedded_test_server()->GetURL("/before_unload_same_doc_nav.html")));
@@ -2808,16 +2918,32 @@ IN_PROC_BROWSER_TEST_F(
 
   TestFuture<AnimatorState> destroyed;
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
-  GetAnimator()->PauseAnimationAtDisplayingCancelAnimation();
 
+  // before_unload_same_doc_nav.html does a pushState in its beforeunload
+  // even listener. So we won't actually show a dialog.
+  auto* dialog_manager = static_cast<ShellJavaScriptDialogManager*>(
+      shell()->GetJavaScriptDialogManager(web_contents()));
+  ASSERT_TRUE(dialog_manager);
+  TestFuture<void> dialog_shown;
+  dialog_manager->set_dialog_request_callback(dialog_shown.GetCallback());
+
+  // "#foo" as the pushState in before_unload_same_doc_nav.html's beforeunload.
+  const auto foo_url =
+      embedded_test_server()->GetURL("/before_unload_same_doc_nav.html#foo");
+  TestNavigationManager nav_to_foo(web_contents(), foo_url);
+  LoadStopObserver load_stop_observer(web_contents());
   GetAnimationManager()->OnGestureInvoked();
-  EXPECT_TRUE(web_contents()->HasUncommittedNavigationInPrimaryMainFrame());
 
-  ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
-  EXPECT_EQ(
-      web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
-      embedded_test_server()->GetURL("/before_unload_same_doc_nav.html#foo"));
+  EXPECT_TRUE(nav_to_foo.WaitForNavigationFinished());
+  EXPECT_TRUE(destroyed.Wait());
+  // The same-doc nav to #foo shouldn't cancel the animation.
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
+  // Dialog not shown.
+  EXPECT_FALSE(dialog_shown.IsReady());
+
+  // Wait for both navigations to finish.
+  load_stop_observer.Wait();
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), GreenURL());
 }
 
 namespace {
@@ -2867,17 +2993,22 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
   GetAnimator()->set_on_cancel_animation_displayed(did_cancel.GetCallback());
 
-  BeforeUnloadDialogObserver dialog_observer(
-      web_contents()->GetPrimaryMainFrame());
+  auto* dialog_manager = static_cast<ShellJavaScriptDialogManager*>(
+      shell()->GetJavaScriptDialogManager(web_contents()));
+  ASSERT_TRUE(dialog_manager);
+  TestFuture<void> dialog_shown;
+  dialog_manager->set_dialog_request_callback(dialog_shown.GetCallback());
+  dialog_manager->set_should_proceed_on_beforeunload(
+      /*proceed=*/false, /*success=*/true);
   GetAnimationManager()->OnGestureInvoked();
 
-  ASSERT_TRUE(did_cancel.Wait());
-  dialog_observer.WaitForDialog();
-  EXPECT_STATE_EQ(kWaitingForBeforeUnloadResponse, GetAnimator()->state());
-  dialog_observer.RespondToDialogue(/*proceed=*/true);
+  EXPECT_TRUE(dialog_shown.Wait());
+  EXPECT_TRUE(did_cancel.Wait());
+  EXPECT_STATE_EQ(kWaitingForBeforeUnloadUserInteraction,
+                  GetAnimator()->state());
+  EXPECT_TRUE(dialog_manager->RunBeforeUnloadCallback(true, u"title"));
 
   ASSERT_TRUE(destroyed.Wait());
-  ASSERT_TRUE(dialog_observer.shown());
 
   // Still on the green page.
   ASSERT_EQ(web_contents()->GetController().GetEntryCount(), 2);
@@ -2888,10 +3019,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
 
 // Testing that, on the back nav from green.html to red.html, red.html redirects
 // to blue.html. while the cross-fading animation is playing from the red.html's
-// screenshot to the live page. We should abort the cross-fade animation when
-// the redirect to blue.html commits.
+// screenshot to the live page. The animator should continue cross-fading to
+// blue.html.
 IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
-                       ClientRedirect_AnimatorDestroyedDuringCrossFade) {
+                       ClientRedirect_RedirectDuringCrossFade) {
   DisableBackForwardCacheForTesting(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
@@ -2948,9 +3079,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   ASSERT_TRUE(did_invoke.Wait());
   EXPECT_STATE_EQ(kDisplayingCrossFadeAnimation, GetAnimator()->state());
 
+  GetAnimator()->UnpauseAnimation();
   ASSERT_TRUE(nav_to_blue.WaitForNavigationFinished());
   ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 
   ASSERT_EQ(web_contents()->GetController().GetEntryCount(), 2);
   ASSERT_EQ(web_contents()->GetController().GetEntryAtIndex(0)->GetURL(),
@@ -3047,44 +3179,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   }
 }
 
-// Regression test for https://crbug.com/339501357: If the animator is destroyed
-// in the middle of a gesture, the history navigation should still proceed.
-IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
-                       AnimatorDestroyedMidGesture) {
-  DisableBackForwardCacheForTesting(
-      web_contents(),
-      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
-
-  // Start a navigation and wait until the request has been sent
-  TestNavigationManager nav_to_blue(web_contents(), BlueURL());
-  web_contents()->GetController().LoadURL(
-      BlueURL(), Referrer{},
-      ui::PageTransitionFromInt(
-          ui::PageTransition::PAGE_TRANSITION_FROM_ADDRESS_BAR |
-          ui::PageTransition::PAGE_TRANSITION_TYPED),
-      std::string{});
-  ASSERT_TRUE(nav_to_blue.WaitForRequestStart());
-
-  // Start a swipe gesture
-  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
-                                          SwipeEdge::LEFT, NavType::kBackward);
-  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
-
-  TestFuture<AnimatorState> destroyed;
-  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
-
-  // When the navigation above commits the animator should be destroyed with an
-  // abort
-  ASSERT_TRUE(nav_to_blue.WaitForNavigationFinished());
-  ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
-
-  TestNavigationManager back_nav_to_red(web_contents(), RedURL());
-  GetAnimationManager()->OnGestureInvoked();
-  ASSERT_TRUE(back_nav_to_red.WaitForNavigationFinished());
-  ASSERT_TRUE(back_nav_to_red.was_committed());
-}
-
 // Regression test for https://crbug.com/344761329: If the
 // WebContentsViewAndroid's native view is detached from the root window, we
 // should abort the transition.
@@ -3112,6 +3206,33 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
       /*env=*/nullptr,
       /*jwindow_android=*/base::android::JavaParamRef<jobject>(nullptr));
   ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       AbortAnimationOnPhysicalSizeChange) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
+
+  TestNavigationManager back_nav_to_red(web_contents(), RedURL());
+
+  TestFuture<AnimatorState> destroyed;
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimationManager()->OnGestureInvoked();
+  EXPECT_TRUE(back_nav_to_red.WaitForRequestStart());
+
+  web_contents()->GetNativeView()->OnPhysicalBackingSizeChanged(
+      gfx::Size(1, 1));
+
+  // The navigation should proceed regardless of the animation.
+  EXPECT_TRUE(back_nav_to_red.WaitForNavigationFinished());
+
+  EXPECT_TRUE(destroyed.Wait());
   EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
 }
 
@@ -3187,6 +3308,46 @@ IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
   EXPECT_TRUE(cc::MatchesBitmap(actual_pixels, expected_pixels, comparator));
 }
 
+// Regression test for https://crbug.com/377338996: If the destination frame
+// navigation entry item sequence number is invalid, we immediately play the
+// cross-fade animation after the invoke animation has finished.
+IN_PROC_BROWSER_TEST_F(BackForwardTransitionAnimationManagerBrowserTest,
+                       InvalidFrameNavigationEntryItemSequenceNumber) {
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+  ASSERT_TRUE(GetAnimator());
+
+  // Modifying the item sequence number to -1.
+  auto* frame_tree_node =
+      web_contents()->GetPrimaryMainFrame()->frame_tree_node();
+  std::optional<int> index =
+      web_contents()->GetController().GetIndexForGoBack();
+  ASSERT_TRUE(index);
+  NavigationEntryImpl* red_entry =
+      web_contents()->GetController().GetEntryAtIndex(*index);
+  red_entry->GetFrameEntry(frame_tree_node)
+      ->set_item_sequence_number_for_testing(-1);
+
+  TestFuture<void> did_cross_fade;
+  TestFuture<AnimatorState> destroyed;
+  TestFuture<void> did_invoke;
+  GetAnimator()->set_on_cross_fade_animation_displayed(
+      did_cross_fade.GetCallback());
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
+
+  TestNavigationObserver back_to_red(web_contents());
+  GetAnimationManager()->OnGestureInvoked();
+  back_to_red.Wait();
+
+  ASSERT_TRUE(did_invoke.Wait());
+  ASSERT_TRUE(did_cross_fade.Wait());
+  ASSERT_TRUE(destroyed.Wait());
+
+  ASSERT_EQ(back_to_red.last_navigation_url(), RedURL());
+}
+
 namespace {
 class BackForwardTransitionAnimationManagerBrowserTestWithProgressBar
     : public BackForwardTransitionAnimationManagerBrowserTest {
@@ -3218,26 +3379,50 @@ class BackForwardTransitionAnimationManagerBrowserTestWithProgressBar
 IN_PROC_BROWSER_TEST_F(
     BackForwardTransitionAnimationManagerBrowserTestWithProgressBar,
     ProgressBar) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
   GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
                                           SwipeEdge::LEFT, NavType::kBackward);
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.3));
   ValidateNoProgressBar();
 
+  TestNavigationManager back_to_red(web_contents(), RedURL());
+
   GetAnimationManager()->OnGestureInvoked();
   {
+    ASSERT_TRUE(back_to_red.WaitForRequestStart());
     // Progress bar should be displayed when invoke animation starts.
     TestFuture<void> on_animate;
     GetAnimator()->set_next_on_animate_callback(on_animate.GetCallback());
     ASSERT_TRUE(on_animate.Wait())
         << "Timed out waiting for invoke animation to start";
+
     EXPECT_STATE_EQ(kDisplayingInvokeAnimation, GetAnimator()->state());
+    ValidateNoProgressBar();
+  }
+
+  {
+    // Since the gap between the two time ticks are long enough, the next
+    // OnAnimate() drives the animation to the commit-pending state.
+    TestFuture<void> on_animate;
+    GetAnimator()->set_next_on_animate_callback(on_animate.GetCallback());
+    ASSERT_TRUE(on_animate.Wait())
+        << "Timed out waiting for invoke animation to start";
+
+    ASSERT_FALSE(back_to_red.was_committed());
+
     const auto* progress_layer = GetProgressBarLayer();
+    ASSERT_TRUE(progress_layer);
     const int viewport_width = GetViewportSize().width();
     EXPECT_EQ(progress_layer->bounds(),
               gfx::Size(viewport_width, kConfig.height_physical));
   }
 
   {
+    ASSERT_TRUE(back_to_red.WaitForNavigationFinished());
+
     TestFuture<void> did_invoke;
     GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
     ASSERT_TRUE(did_invoke.Wait())
@@ -3386,7 +3571,7 @@ class BackForwardTransitionAnimationManagerWithRedirectBrowserTest
 
 IN_PROC_BROWSER_TEST_F(
     BackForwardTransitionAnimationManagerWithRedirectBrowserTest,
-    AbortedOnCrossOriginRedirect) {
+    CrossOriginRedirect) {
   DisableBackForwardCacheForTesting(
       web_contents(),
       BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
@@ -3415,9 +3600,9 @@ IN_PROC_BROWSER_TEST_F(
   GetAnimationManager()->OnGestureInvoked();
 
   ASSERT_TRUE(redirect_nav.WaitForNavigationFinished());
-  ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
-  ASSERT_FALSE(did_invoke.IsReady());
+  EXPECT_TRUE(did_invoke.Wait());
+  EXPECT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 
   // [empty.html*, green&]
   ASSERT_EQ(web_contents()->GetController().GetEntryCount(), 2);
@@ -3620,8 +3805,6 @@ IN_PROC_BROWSER_TEST_F(
                                           SwipeEdge::LEFT, NavType::kBackward);
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
-  GetAnimator()->set_subframe_navigation(true);
-
   TestFuture<void> crossfade_displayed;
   TestFuture<AnimatorState> destroyed;
   TestFuture<void> did_invoke;
@@ -3671,8 +3854,6 @@ IN_PROC_BROWSER_TEST_F(
                                           SwipeEdge::LEFT, NavType::kBackward);
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
-  GetAnimator()->set_subframe_navigation(true);
-
   TestFuture<void> cancel_displayed;
   TestFuture<void> crossfade_displayed;
   TestFuture<AnimatorState> destroyed;
@@ -3684,14 +3865,21 @@ IN_PROC_BROWSER_TEST_F(
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
   GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
 
-  BeforeUnloadDialogObserver dialog_observer(iframe->current_frame_host());
+  auto* dialog_manager = static_cast<ShellJavaScriptDialogManager*>(
+      shell()->GetJavaScriptDialogManager(web_contents()));
+  ASSERT_TRUE(dialog_manager);
+  TestFuture<void> dialog_shown;
+  dialog_manager->set_dialog_request_callback(dialog_shown.GetCallback());
+  dialog_manager->set_should_proceed_on_beforeunload(
+      /*proceed=*/false, /*success=*/true);
   TestNavigationObserver iframe_back_to_red(web_contents());
   GetAnimationManager()->OnGestureInvoked();
 
+  ASSERT_TRUE(dialog_shown.Wait());
   ASSERT_TRUE(cancel_displayed.Wait());
-  dialog_observer.WaitForDialog();
-  EXPECT_STATE_EQ(kWaitingForBeforeUnloadResponse, GetAnimator()->state());
-  dialog_observer.RespondToDialogue(/*proceed=*/true);
+  EXPECT_STATE_EQ(kWaitingForBeforeUnloadUserInteraction,
+                  GetAnimator()->state());
+  ASSERT_TRUE(dialog_manager->RunBeforeUnloadCallback(true, u"title"));
   iframe_back_to_red.Wait();
   ASSERT_TRUE(iframe_back_to_red.last_navigation_succeeded());
   ASSERT_EQ(iframe_back_to_red.last_navigation_url(), RedURL());
@@ -3699,7 +3887,6 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(did_invoke.Wait());
   ASSERT_TRUE(crossfade_displayed.Wait());
   ASSERT_TRUE(destroyed.Wait());
-  ASSERT_TRUE(dialog_observer.shown());
 }
 
 // Test that the user cancels the navigation via the prompt, after the cancel
@@ -3722,8 +3909,6 @@ IN_PROC_BROWSER_TEST_F(
                                           SwipeEdge::LEFT, NavType::kBackward);
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
-  GetAnimator()->set_subframe_navigation(true);
-
   TestFuture<void> cancel_displayed;
   TestFuture<AnimatorState> destroyed;
   TestFuture<void> did_invoke;
@@ -3732,20 +3917,26 @@ IN_PROC_BROWSER_TEST_F(
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
   GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
 
-  BeforeUnloadDialogObserver dialog_observer(iframe->current_frame_host());
+  auto* dialog_manager = static_cast<ShellJavaScriptDialogManager*>(
+      shell()->GetJavaScriptDialogManager(web_contents()));
+  ASSERT_TRUE(dialog_manager);
+  TestFuture<void> dialog_shown;
+  dialog_manager->set_dialog_request_callback(dialog_shown.GetCallback());
+  dialog_manager->set_should_proceed_on_beforeunload(
+      /*proceed=*/false, /*success=*/true);
   TestNavigationObserver back_to_red(web_contents());
   GetAnimationManager()->OnGestureInvoked();
 
+  ASSERT_TRUE(dialog_shown.Wait());
   ASSERT_TRUE(cancel_displayed.Wait());
-  dialog_observer.WaitForDialog();
-  EXPECT_STATE_EQ(kWaitingForBeforeUnloadResponse, GetAnimator()->state());
-  dialog_observer.RespondToDialogue(/*proceed=*/false);
+  EXPECT_STATE_EQ(kWaitingForBeforeUnloadUserInteraction,
+                  GetAnimator()->state());
+  ASSERT_TRUE(dialog_manager->RunBeforeUnloadCallback(false, u"title"));
 
   ASSERT_TRUE(destroyed.Wait());
   ASSERT_FALSE(back_to_red.last_navigation_succeeded());
 
   ASSERT_FALSE(did_invoke.IsReady());
-  ASSERT_TRUE(dialog_observer.shown());
   ASSERT_EQ(iframe->current_frame_host()->GetLastCommittedURL(), GreenURL());
 }
 
@@ -3769,8 +3960,6 @@ IN_PROC_BROWSER_TEST_F(
                                           SwipeEdge::LEFT, NavType::kBackward);
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
-  GetAnimator()->set_subframe_navigation(true);
-
   TestFuture<void> cancel_displayed;
   TestFuture<AnimatorState> destroyed;
   TestFuture<void> did_invoke;
@@ -3779,27 +3968,32 @@ IN_PROC_BROWSER_TEST_F(
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
   GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
 
-  BeforeUnloadDialogObserver dialog_observer(iframe->current_frame_host());
+  auto* dialog_manager = static_cast<ShellJavaScriptDialogManager*>(
+      shell()->GetJavaScriptDialogManager(web_contents()));
+  ASSERT_TRUE(dialog_manager);
+  TestFuture<void> dialog_shown;
+  dialog_manager->set_dialog_request_callback(dialog_shown.GetCallback());
+  dialog_manager->set_should_proceed_on_beforeunload(
+      /*proceed=*/false, /*success=*/true);
   GetAnimator()->PauseAnimationAtDisplayingCancelAnimation();
   GetAnimationManager()->OnGestureInvoked();
 
-  dialog_observer.WaitForDialog();
+  ASSERT_TRUE(dialog_shown.Wait());
   EXPECT_STATE_EQ(kDisplayingCancelAnimation, GetAnimator()->state());
-  dialog_observer.RespondToDialogue(/*proceed=*/false);
+  ASSERT_TRUE(dialog_manager->RunBeforeUnloadCallback(false, u"title"));
   GetAnimator()->UnpauseAnimation();
 
   ASSERT_TRUE(cancel_displayed.Wait());
   ASSERT_TRUE(destroyed.Wait());
 
   ASSERT_FALSE(did_invoke.IsReady());
-  ASSERT_TRUE(dialog_observer.shown());
   ASSERT_EQ(iframe->current_frame_host()->GetLastCommittedURL(), GreenURL());
 }
 
 // Test that when the user has decided not leave the current page by interacting
 // with the prompt and the cancel animation is still playing, another navigation
-// commits in the main frame. We should destroy the animator when the other
-// navigation commits.
+// commits in the main frame. The live page should be replaced by the page that
+// was navigated to while the animation continues.
 IN_PROC_BROWSER_TEST_F(
     BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions,
     BeforeUnload_RequestCancelledBeforeStart) {
@@ -3818,36 +4012,53 @@ IN_PROC_BROWSER_TEST_F(
                                           SwipeEdge::LEFT, NavType::kBackward);
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
-  GetAnimator()->set_subframe_navigation(true);
-
-  bool cancel_played = false;
-  GetAnimator()->set_on_cancel_animation_displayed(
-      base::BindLambdaForTesting([&]() { cancel_played = true; }));
   TestFuture<AnimatorState> destroyed;
+  TestFuture<void> did_cancel;
   TestFuture<void> did_invoke;
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+  GetAnimator()->set_on_cancel_animation_displayed(did_cancel.GetCallback());
   GetAnimator()->set_on_invoke_animation_displayed(did_invoke.GetCallback());
 
-  BeforeUnloadDialogObserver dialog_observer(iframe->current_frame_host());
-  TestNavigationObserver back_to_red(web_contents());
-  GetAnimator()->set_duration_between_frames(base::Microseconds(1));
+  auto* dialog_manager = static_cast<ShellJavaScriptDialogManager*>(
+      shell()->GetJavaScriptDialogManager(web_contents()));
+  ASSERT_TRUE(dialog_manager);
+  TestFuture<void> dialog_shown;
+  dialog_manager->set_dialog_request_callback(dialog_shown.GetCallback());
+  dialog_manager->set_should_proceed_on_beforeunload(
+      /*proceed=*/false, /*success=*/true);
+  TestNavigationObserver back_nav(web_contents());
   GetAnimator()->PauseAnimationAtDisplayingCancelAnimation();
   GetAnimationManager()->OnGestureInvoked();
 
-  dialog_observer.WaitForDialog();
+  EXPECT_TRUE(dialog_shown.Wait());
   EXPECT_STATE_EQ(kDisplayingCancelAnimation, GetAnimator()->state());
-  // Expectation the animator will be destroyed while playing the cancel
-  // animation.
-  dialog_observer.RespondToDialogue(/*proceed=*/false);
+
+  // When the browser is processing a BeforeUnload handler, it sets some state
+  // on the current frame. If that state is not reset, we can't start another
+  // navigation with a BeforeUnload handler.
+  TestFuture<void> beforeunload_complete;
+  iframe->current_frame_host()
+      ->set_on_process_before_unload_completed_for_testing(
+          beforeunload_complete.GetCallback());
+  EXPECT_TRUE(dialog_manager->RunBeforeUnloadCallback(false, u"title1"));
+  EXPECT_TRUE(beforeunload_complete.Wait());
+  EXPECT_STATE_EQ(kDisplayingCancelAnimation, GetAnimator()->state());
+
   GetAnimator()->UnpauseAnimation();
 
   ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
-  ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+
+  // The current live page should be blue.html.
+  ASSERT_EQ(web_contents()->GetController().GetLastCommittedEntry()->GetURL(),
+            BlueURL());
 
   ASSERT_FALSE(did_invoke.IsReady());
-  ASSERT_FALSE(cancel_played);
-  ASSERT_TRUE(dialog_observer.shown());
+  ASSERT_TRUE(did_cancel.Wait());
+
+  ASSERT_EQ(back_nav.last_navigation_url(), BlueURL());
+  ASSERT_FALSE(did_invoke.IsReady());
+  ASSERT_TRUE(destroyed.Wait());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 }
 
 // Test that the animator is behaving correctly, even after the renderer acks
@@ -3878,8 +4089,6 @@ IN_PROC_BROWSER_TEST_F(
                                           SwipeEdge::LEFT, NavType::kBackward);
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
-  GetAnimator()->set_subframe_navigation(true);
-
   // Fail the next `BeginNavigationImpl()`.
   FailBeginNavigationImpl fail_begin_navigation_client;
 
@@ -3889,13 +4098,20 @@ IN_PROC_BROWSER_TEST_F(
   GetAnimator()->set_on_cancel_animation_displayed(
       cancel_displayed.GetCallback());
 
-  BeforeUnloadDialogObserver dialog_observer(iframe->current_frame_host());
+  auto* dialog_manager = static_cast<ShellJavaScriptDialogManager*>(
+      shell()->GetJavaScriptDialogManager(web_contents()));
+  ASSERT_TRUE(dialog_manager);
+  TestFuture<void> dialog_shown;
+  dialog_manager->set_dialog_request_callback(dialog_shown.GetCallback());
+  dialog_manager->set_should_proceed_on_beforeunload(
+      /*proceed=*/false, /*success=*/true);
   GetAnimationManager()->OnGestureInvoked();
 
+  ASSERT_TRUE(dialog_shown.Wait());
   ASSERT_TRUE(cancel_displayed.Wait());
-  dialog_observer.WaitForDialog();
-  EXPECT_STATE_EQ(kWaitingForBeforeUnloadResponse, GetAnimator()->state());
-  dialog_observer.RespondToDialogue(/*proceed=*/true);
+  EXPECT_STATE_EQ(kWaitingForBeforeUnloadUserInteraction,
+                  GetAnimator()->state());
+  ASSERT_TRUE(dialog_manager->RunBeforeUnloadCallback(true, u"title"));
 
   ASSERT_TRUE(destroyed.Wait());
 
@@ -3904,6 +4120,78 @@ IN_PROC_BROWSER_TEST_F(
     entries_after.push_back(web_contents()->GetController().GetEntryAtIndex(i));
   }
   ASSERT_THAT(entries_after, ::testing::ContainerEq(entries_before));
+}
+
+// If A embeds B and B has a BeforeUnload, the navigation on main frame A should
+// show a dialog from B.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSubframeTransitions,
+    BeforeUnload_MainFrameRequest_SubframeDialog) {
+  // [red, blue, title1(green)*], subframe green with a BeforeUnload.
+  ASSERT_TRUE(NavigateToURL(web_contents(), RedURL()));
+  WaitForCopyableViewInWebContents(web_contents());
+  web_contents()->GetController().PruneAllButLastCommitted();
+  {
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
+    ASSERT_TRUE(NavigateToURL(web_contents(), BlueURL()));
+    observer.Wait();
+    WaitForCopyableViewInWebContents(web_contents());
+  }
+  {
+    ScopedScreenshotCapturedObserverForTesting observer(
+        web_contents()->GetController().GetLastCommittedEntryIndex());
+    ASSERT_TRUE(NavigateToURL(web_contents(), MainFrameURL()));
+    observer.Wait();
+    WaitForCopyableViewInWebContents(web_contents());
+  }
+  {
+    AddIFrame(GreenURL());
+    RenderFrameHostImpl* iframe =
+        GetIFrameFrameTreeNodeAt(0)->current_frame_host();
+    InjectBeforeUnloadAndSetStickyUserActivation(iframe, true);
+    ASSERT_TRUE(iframe->HasStickyUserActivation());
+  }
+
+  ASSERT_EQ(web_contents()->GetController().GetEntryCount(), 3);
+  web_contents()
+      ->GetController()
+      .GetEntryAtIndex(1)
+      ->set_should_skip_on_back_forward_ui(true);
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
+
+  TestFuture<AnimatorState> destroyed;
+  GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
+  TestFuture<void> cancel_displayed;
+  GetAnimator()->set_on_cancel_animation_displayed(
+      cancel_displayed.GetCallback());
+
+  auto* dialog_manager = static_cast<ShellJavaScriptDialogManager*>(
+      shell()->GetJavaScriptDialogManager(web_contents()));
+  ASSERT_TRUE(dialog_manager);
+  TestFuture<void> dialog_shown;
+  dialog_manager->set_dialog_request_callback(dialog_shown.GetCallback());
+  dialog_manager->set_should_proceed_on_beforeunload(
+      /*proceed=*/false, /*success=*/false);
+
+  TestNavigationObserver back_nav(web_contents());
+
+  // From title1(green) to red. The dialog's initiator is title1 but the dialog
+  // is dispatched from green.
+  GetAnimationManager()->OnGestureInvoked();
+
+  EXPECT_TRUE(dialog_shown.Wait());
+  EXPECT_TRUE(cancel_displayed.Wait());
+  EXPECT_STATE_EQ(kWaitingForBeforeUnloadUserInteraction,
+                  GetAnimator()->state());
+  EXPECT_TRUE(dialog_manager->RunBeforeUnloadCallback(true, u"title"));
+
+  EXPECT_TRUE(destroyed.Wait());
+  back_nav.Wait();
+  EXPECT_EQ(back_nav.last_navigation_url(), RedURL());
 }
 
 // If a primary main frame request is present, all subframe requests are
@@ -4099,8 +4387,6 @@ IN_PROC_BROWSER_TEST_F(
                                           SwipeEdge::LEFT, NavType::kBackward);
   GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6));
 
-  GetAnimator()->set_subframe_navigation(true);
-
   TestFuture<AnimatorState> destroyed;
   GetAnimator()->set_on_impl_destroyed(destroyed.GetCallback());
 
@@ -4211,7 +4497,7 @@ IN_PROC_BROWSER_TEST_F(
       kFloatTolerance));
   GetAnimator()->dismiss_screenshot_timer_for_testing()->FireNow();
   ASSERT_TRUE(destroyed.Wait());
-  EXPECT_STATE_EQ(kAnimationAborted, destroyed.Get());
+  EXPECT_STATE_EQ(kAnimationFinished, destroyed.Get());
 }
 
 // Test that the timer to dismiss the screenshot is stopped once the renderer
@@ -4301,6 +4587,17 @@ IN_PROC_BROWSER_TEST_F(
             ChildrenInOrder(*GetViewLayer()));
 
   ASSERT_TRUE(did_cancel.Wait());
+  EXPECT_EQ("[Screenshot[Scrim],LivePage,EmbedderContentLayer]",
+            ChildrenInOrder(*GetViewLayer()));
+
+  EXPECT_EQ(GetAnimationManager()->GetCurrentAnimationStage(),
+            AnimationStage::kWaitingForEmbedderContentForCommittedEntry);
+  TestFuture<AnimatorForTesting::State> did_finish;
+  GetAnimator()->set_on_impl_destroyed(did_finish.GetCallback());
+
+  GetAnimationManager()->OnContentForNavigationEntryShown();
+
+  EXPECT_EQ(did_finish.Get(), AnimatorForTesting::State::kAnimationFinished);
   EXPECT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
 }
 
@@ -4335,6 +4632,202 @@ IN_PROC_BROWSER_TEST_F(
   GetAnimator()->set_on_impl_destroyed(did_finish.GetCallback());
   EXPECT_EQ(did_finish.Get(), AnimatorForTesting::State::kAnimationFinished);
   EXPECT_EQ("[LivePage]", ChildrenInOrder(*GetViewLayer()));
+}
+
+namespace {
+
+using ModalDialogType = ui::ModalDialogManagerBridge::ModalDialogType;
+
+// Note: This set of tests are unittesting ModalDialogManager#suspendType()
+// and ModalDialogManager#resumeType(), as `ShellJavaScriptDialogManager` is
+// not wired to Java UI code.
+class BackForwardTransitionAnimationManagerBrowserTestSuspendDialog
+    : public BackForwardTransitionAnimationManagerBrowserTest {
+ public:
+  ~BackForwardTransitionAnimationManagerBrowserTestSuspendDialog() override =
+      default;
+
+  void SetUpOnMainThread() override {
+    BackForwardTransitionAnimationManagerBrowserTest::SetUpOnMainThread();
+    fake_dialog_manager_ = ui::FakeModalDialogManagerBridge::CreateForTab(
+        web_contents()->GetTopLevelNativeWindow(),
+        /*use_empty_java_presenter=*/true);
+  }
+
+  void TearDown() override {
+    // If the tests are skipped on emulators, `fake_dialog_manager()` is null.
+    if (fake_dialog_manager()) {
+      EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+      EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+    }
+  }
+
+  ui::FakeModalDialogManagerBridge* fake_dialog_manager() {
+    return fake_dialog_manager_.get();
+  }
+
+ private:
+  std::unique_ptr<ui::FakeModalDialogManagerBridge> fake_dialog_manager_;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSuspendDialog,
+    JavascriptDialogSuspendedDuringTransition) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  TestNavigationManager back_nav_to_red(web_contents(), RedURL());
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  TestFuture<AnimatorForTesting::State> on_destroyed;
+  GetAnimator()->set_on_impl_destroyed(on_destroyed.GetCallback());
+  EXPECT_TRUE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6f));
+  EXPECT_TRUE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+
+  GetAnimationManager()->OnGestureInvoked();
+  ASSERT_TRUE(back_nav_to_red.WaitForRequestStart());
+  EXPECT_TRUE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+
+  ASSERT_TRUE(back_nav_to_red.WaitForNavigationFinished());
+  ASSERT_TRUE(back_nav_to_red.was_successful());
+  // The navigation has finished. Tab level dialogs are resumed immediately.
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+  ASSERT_TRUE(on_destroyed.Wait());
+  EXPECT_EQ(on_destroyed.Get(), kAnimationFinished);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSuspendDialog,
+    JavascriptDialogResumedOnCancel) {
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  TestFuture<AnimatorForTesting::State> on_destroyed;
+  GetAnimator()->set_on_impl_destroyed(on_destroyed.GetCallback());
+  EXPECT_TRUE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6f));
+  EXPECT_TRUE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+
+  GetAnimationManager()->OnGestureCancelled();
+  // Tab level dialogs are resumed immediately after the gesture is cancelled.
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+  ASSERT_TRUE(on_destroyed.Wait());
+  EXPECT_EQ(on_destroyed.Get(), kAnimationFinished);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSuspendDialog,
+    JavascriptDialogResumedOnAbort) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  TestNavigationManager back_nav_to_red(web_contents(), RedURL());
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+
+  TestFuture<AnimatorForTesting::State> on_destroyed;
+  GetAnimator()->set_on_impl_destroyed(on_destroyed.GetCallback());
+  EXPECT_TRUE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6f));
+  EXPECT_TRUE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+
+  GetAnimationManager()->OnGestureInvoked();
+  ASSERT_TRUE(back_nav_to_red.WaitForRequestStart());
+  EXPECT_TRUE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+
+  GetAnimationManager()->OnDetachCompositor();
+  ASSERT_TRUE(on_destroyed.Wait());
+  EXPECT_EQ(on_destroyed.Get(), kAnimationAborted);
+  // Dialogs are resumed when the transition is aborted.
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+}
+
+// For subframe navigations, we resume the dialogs as soon as the subframe
+// navigation starts.
+IN_PROC_BROWSER_TEST_F(
+    BackForwardTransitionAnimationManagerBrowserTestSuspendDialog,
+    JavascriptDialogNotSuppressedForSubframeNavs) {
+  DisableBackForwardCacheForTesting(
+      web_contents(),
+      BackForwardCache::DisableForTestingReason::TEST_REQUIRES_NO_CACHING);
+
+  FrameTreeNode* iframe = nullptr;
+  {
+    ASSERT_TRUE(NavigateToURL(web_contents(), RedURL()));
+    web_contents()->GetController().PruneAllButLastCommitted();
+    static constexpr char kAddIframeScript[] = R"({
+      (()=>{
+          return new Promise((resolve) => {
+            const frame = document.createElement('iframe');
+            frame.addEventListener('load', () => {resolve();});
+            frame.src = $1;
+            document.body.appendChild(frame);
+          });
+      })();
+    })";
+    ASSERT_TRUE(ExecJs(web_contents()->GetPrimaryMainFrame(),
+                       JsReplace(kAddIframeScript, BlueURL())));
+    ASSERT_EQ(
+        web_contents()->GetPrimaryMainFrame()->frame_tree_node()->child_count(),
+        1u);
+    iframe =
+        web_contents()->GetPrimaryMainFrame()->frame_tree_node()->child_at(0);
+    ASSERT_TRUE(
+        NavigateToURLFromRenderer(iframe->current_frame_host(), GreenURL()));
+  }
+
+  // [red(blue), red(green)*] -> [red(blue)*, red(green)]
+  TestNavigationManager iframe_back_to_blue(web_contents(), BlueURL());
+
+  GetAnimationManager()->OnGestureStarted(ui::BackGestureEvent(0),
+                                          SwipeEdge::LEFT, NavType::kBackward);
+  EXPECT_EQ("[Screenshot[Scrim],LivePage]", ChildrenInOrder(*GetViewLayer()));
+  EXPECT_TRUE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+
+  GetAnimationManager()->OnGestureProgressed(ui::BackGestureEvent(0.6f));
+  EXPECT_TRUE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+
+  TestFuture<AnimatorForTesting::State> on_destroyed;
+  GetAnimator()->set_on_impl_destroyed(on_destroyed.GetCallback());
+  GetAnimationManager()->OnGestureInvoked();
+  ASSERT_TRUE(iframe_back_to_blue.WaitForRequestStart());
+  // As soon as `OnGestureInvoked()` is called the dialogs are resumed.
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
+
+  GetAnimationManager()->OnDetachCompositor();
+  ASSERT_TRUE(on_destroyed.Wait());
+  EXPECT_EQ(on_destroyed.Get(), kAnimationAborted);
+  // Dialogs are resumed when the transition is aborted.
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kTab));
+  EXPECT_FALSE(fake_dialog_manager()->IsSuspend(ModalDialogType::kApp));
 }
 
 }  // namespace content

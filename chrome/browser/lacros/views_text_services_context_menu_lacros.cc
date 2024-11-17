@@ -14,8 +14,8 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/menu_source_utils.h"
-#include "ui/base/pointer/touch_editing_controller.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/touch_selection/touch_editing_controller.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/views_text_services_context_menu_base.h"
 

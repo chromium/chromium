@@ -16,6 +16,7 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 using signin::Tribool;
 
@@ -23,7 +24,7 @@ namespace {
 
 // Fallback value for the capability
 // CanShowHistorySyncOptInsWithoutMinorModeRestrictions if it is not available
-// after `kMinorModeRestrictionsFetchDeadlineMs`.
+// after `kMinorModeRestrictionsFetchDeadline`.
 const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kUnknown;
 
 }  // namespace
@@ -93,8 +94,7 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kUnknown;
           [weakSelf onRestrictionCapabilityReceived:
                         kCanShowUnrestrictedOptInsFallbackValue];
         }),
-        base::Milliseconds(
-            switches::kMinorModeRestrictionsFetchDeadlineMs.Get()));
+        kMinorModeRestrictionsFetchDeadline);
   }
 }
 
@@ -111,15 +111,12 @@ const Tribool kCanShowUnrestrictedOptInsFallbackValue = Tribool::kUnknown;
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
 - (void)onExtendedAccountInfoUpdated:(const AccountInfo&)accountInfo {
-  if (base::FeatureList::IsEnabled(
-          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
-    signin::Tribool capability =
-        accountInfo.capabilities
-            .can_show_history_sync_opt_ins_without_minor_mode_restrictions();
-    // Only process known capability values.
-    if (capability != Tribool::kUnknown) {
-      [self onRestrictionCapabilityReceived:capability];
-    }
+  signin::Tribool capability =
+      accountInfo.capabilities
+          .can_show_history_sync_opt_ins_without_minor_mode_restrictions();
+  // Only process known capability values.
+  if (capability != Tribool::kUnknown) {
+    [self onRestrictionCapabilityReceived:capability];
   }
 }
 

@@ -12,8 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
-#include "components/omnibox/common/omnibox_features.h"
 #include "components/policy/core/browser/configuration_policy_pref_store.h"
 #include "components/policy/core/browser/configuration_policy_pref_store_test.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -23,7 +21,8 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/search_engines/default_search_manager.h"
-#include "components/search_engines/enterprise/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
+#include "components/search_engines/enterprise/field_validation_test_utils.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/strings/grit/components_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -245,56 +244,6 @@ base::Value::Dict GenerateSiteSearchPolicyEntry(TestProvider test_case) {
   return entry;
 }
 
-// Accepts a dictionary that has a string field `field_name` with value
-// `expected_value`.
-MATCHER_P2(HasStringField,
-           field_name,
-           expected_value,
-           base::StringPrintf("%s string field `%s` with value `%s`",
-                              negation ? "does not contain" : "contains",
-                              field_name,
-                              expected_value.c_str())) {
-  const std::string* dict_value = (arg).GetDict().FindString(field_name);
-  return dict_value && *dict_value == expected_value;
-}
-
-// Accepts a dictionary that has a boolean field `field_name` with value
-// `expected_value`.
-MATCHER_P2(HasBooleanField,
-           field_name,
-           expected_value,
-           base::StringPrintf("%s boolean field `%s` with value `%d`",
-                              negation ? "does not contain" : "contains",
-                              field_name,
-                              expected_value)) {
-  std::optional<bool> dict_value = (arg).GetDict().FindBool(field_name);
-  return dict_value && *dict_value == expected_value;
-}
-
-// Accepts a dictionary that has a double field `field_name` with non-zero
-// value.
-MATCHER_P2(HasIntegerField,
-           field_name,
-           expected_value,
-           base::StringPrintf("%s integer field `%s` with value `%d`",
-                              negation ? "does not contain" : "contains",
-                              field_name,
-                              expected_value)) {
-  std::optional<int> dict_value = (arg).GetDict().FindInt(field_name);
-  return dict_value && *dict_value == expected_value;
-}
-
-// Accepts a dictionary that has a double field `field_name` with non-zero
-// value.
-MATCHER_P(HasDoubleField,
-          field_name,
-          base::StringPrintf("%s double field `%s` with non-zero value",
-                             negation ? "does not contain" : "contains",
-                             field_name)) {
-  std::optional<double> dict_value = (arg).GetDict().FindDouble(field_name);
-  return dict_value && *dict_value != 0.0;
-}
-
 // Returns a matcher that accepts entries for the pref corresponding to the
 // site search policy. Field values are obtained from |test_case|.
 testing::Matcher<const base::Value&> IsSiteSearchEntry(TestProvider test_case,
@@ -342,37 +291,7 @@ MATCHER_P(HasValidationError,
 
 }  // namespace
 
-TEST(SiteSearchPolicyHandlerTest, FeatureDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(omnibox::kSiteSearchSettingsPolicy);
-
-  SiteSearchPolicyHandler handler(
-      policy::Schema::Wrap(policy::GetChromeSchemaData()));
-  policy::PolicyMap policies;
-  PolicyErrorMap errors;
-  PrefValueMap prefs;
-
-  base::Value::List policy_value;
-  policy_value.Append(GenerateSiteSearchPolicyEntry(kValidTestProviders[0]));
-  policy_value.Append(GenerateSiteSearchPolicyEntry(kValidTestProviders[1]));
-
-  policies.Set(key::kSiteSearchSettings, policy::POLICY_LEVEL_MANDATORY,
-               policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
-               base::Value(std::move(policy_value)), nullptr);
-
-  ASSERT_TRUE(handler.CheckPolicySettings(policies, &errors));
-  EXPECT_TRUE(errors.empty());
-
-  handler.ApplyPolicySettings(policies, &prefs);
-  base::Value* unset = nullptr;
-  ASSERT_FALSE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &unset));
-}
-
 TEST(SiteSearchPolicyHandlerTest, PolicyNotSet) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -386,16 +305,13 @@ TEST(SiteSearchPolicyHandlerTest, PolicyNotSet) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_TRUE(providers->GetList().empty());
 }
 
 TEST(SiteSearchPolicyHandlerTest, ValidSiteSearchEntries) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -417,7 +333,7 @@ TEST(SiteSearchPolicyHandlerTest, ValidSiteSearchEntries) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(
@@ -427,9 +343,6 @@ TEST(SiteSearchPolicyHandlerTest, ValidSiteSearchEntries) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, InvalidFormat) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -446,9 +359,6 @@ TEST(SiteSearchPolicyHandlerTest, InvalidFormat) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, TooManySiteSearchEntries) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -478,9 +388,6 @@ TEST(SiteSearchPolicyHandlerTest, TooManySiteSearchEntries) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, TooManyFeaturedSiteSearchEntries) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -511,9 +418,6 @@ TEST(SiteSearchPolicyHandlerTest, TooManyFeaturedSiteSearchEntries) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, MissingRequiredField) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -536,9 +440,6 @@ TEST(SiteSearchPolicyHandlerTest, MissingRequiredField) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, ShortcutNotUnique) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -564,7 +465,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutNotUnique) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(providers->GetList(), ElementsAre(IsNonFeaturedSiteSearchEntry(
@@ -572,9 +473,6 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutNotUnique) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, NoUniqueShortcut) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -599,9 +497,6 @@ TEST(SiteSearchPolicyHandlerTest, NoUniqueShortcut) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, EmptyRequiredField) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -631,9 +526,6 @@ TEST(SiteSearchPolicyHandlerTest, EmptyRequiredField) {
 TEST(SiteSearchPolicyHandlerTest, UnknownField) {
   constexpr char kUnknownFieldName[] = "unknown_field";
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -659,7 +551,7 @@ TEST(SiteSearchPolicyHandlerTest, UnknownField) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(
@@ -668,9 +560,6 @@ TEST(SiteSearchPolicyHandlerTest, UnknownField) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, ShortcutWithSpace) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -699,9 +588,6 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutWithSpace) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, ShortcutStartsWithAt) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -729,7 +615,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutStartsWithAt) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(providers->GetList(),
@@ -738,9 +624,6 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutStartsWithAt) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, InvalidUrl) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -770,9 +653,6 @@ TEST(SiteSearchPolicyHandlerTest, InvalidUrl) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabledNotSet) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -799,7 +679,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabledNotSet) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(providers->GetList(),
@@ -810,9 +690,6 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabledNotSet) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPDisabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -842,7 +719,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPDisabled) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(providers->GetList(),
@@ -853,9 +730,6 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPDisabled) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabled) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -889,7 +763,7 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabled) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(providers->GetList(),
@@ -898,9 +772,6 @@ TEST(SiteSearchPolicyHandlerTest, ShortcutSameAsDSPKeyword_DSPEnabled) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, NonHttpsUrl) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -925,7 +796,7 @@ TEST(SiteSearchPolicyHandlerTest, NonHttpsUrl) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(
@@ -934,9 +805,6 @@ TEST(SiteSearchPolicyHandlerTest, NonHttpsUrl) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, NoValidEntry) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -954,9 +822,6 @@ TEST(SiteSearchPolicyHandlerTest, NoValidEntry) {
 }
 
 TEST(SiteSearchPolicyHandlerTest, FeaturedSiteSearchEntries) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(omnibox::kSiteSearchSettingsPolicy);
-
   SiteSearchPolicyHandler handler(
       policy::Schema::Wrap(policy::GetChromeSchemaData()));
 
@@ -980,7 +845,7 @@ TEST(SiteSearchPolicyHandlerTest, FeaturedSiteSearchEntries) {
   handler.ApplyPolicySettings(policies, &prefs);
   base::Value* providers = nullptr;
   ASSERT_TRUE(prefs.GetValue(
-      EnterpriseSiteSearchManager::kSiteSearchSettingsPrefName, &providers));
+      EnterpriseSearchManager::kSiteSearchSettingsPrefName, &providers));
   ASSERT_NE(providers, nullptr);
   ASSERT_TRUE(providers->is_list());
   EXPECT_THAT(

@@ -10,11 +10,11 @@
 #import "components/policy/core/common/schema_registry.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
-std::unique_ptr<policy::SchemaRegistry> BuildSchemaRegistryForBrowserState(
-    ChromeBrowserState* browser_state,
+std::unique_ptr<policy::SchemaRegistry> BuildSchemaRegistryForProfile(
+    ProfileIOS* profile,
     const policy::Schema& chrome_schema,
     policy::CombinedSchemaRegistry* global_registry) {
-  DCHECK(!browser_state->IsOffTheRecord());
+  DCHECK(!profile->IsOffTheRecord());
 
   auto registry = std::make_unique<policy::SchemaRegistry>();
 

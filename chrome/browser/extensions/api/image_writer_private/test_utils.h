@@ -23,7 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "chromeos/ash/components/disks/mock_disk_mount_manager.h"
 #endif
@@ -31,7 +31,7 @@
 namespace extensions {
 namespace image_writer {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 class ImageWriterFakeImageBurnerClient;
 #endif
 
@@ -66,7 +66,7 @@ class MockOperationManager : public OperationManager {
                              const std::string& error_message));
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // A fake for the DiskMountManager that will successfully call the unmount
 // callback.
 class FakeDiskMountManager : public ash::disks::MockDiskMountManager {
@@ -150,7 +150,7 @@ class ImageWriterTestUtils {
   ImageWriterTestUtils();
   virtual ~ImageWriterTestUtils();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   using UtilityClientCreationCallback =
       base::OnceCallback<void(FakeImageWriterClient*)>;
   void RunOnUtilityClientCreation(UtilityClientCreationCallback callback);
@@ -182,7 +182,7 @@ class ImageWriterTestUtils {
   base::FilePath test_image_path_;
   base::FilePath test_device_path_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<ImageWriterFakeImageBurnerClient> image_burner_client_;
   bool concierge_client_initialized_ = false;
 #else

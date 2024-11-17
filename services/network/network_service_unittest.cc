@@ -1155,6 +1155,11 @@ TEST_P(NetworkServiceCookieTest, CookieEncryptionProvider) {
   params->enable_encrypted_cookies = IsEncryptionEnabled();
   params->file_paths->data_directory = temp_dir.GetPath();
   params->file_paths->cookie_database_name = cookie_path;
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/377940976): Remove this once the background sequence runner
+  // can be fully drained of tasks during network context shutdown.
+  params->enable_locking_cookie_database = false;
+#endif  // BUILDFLAG(IS_WIN)
 
   mojo::Remote<mojom::NetworkContext> network_context;
   service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
@@ -1563,13 +1568,15 @@ class TestNetworkChangeManagerClient
 
   // NetworkChangeManagerClient implementation:
   void OnInitialConnectionType(mojom::ConnectionType type) override {
-    if (type == connection_type_)
+    if (type == connection_type_) {
       run_loop_.Quit();
+    }
   }
 
   void OnNetworkChanged(mojom::ConnectionType type) override {
-    if (type == connection_type_)
+    if (type == connection_type_) {
       run_loop_.Quit();
+    }
   }
 
   // Waits for the desired |connection_type| notification.

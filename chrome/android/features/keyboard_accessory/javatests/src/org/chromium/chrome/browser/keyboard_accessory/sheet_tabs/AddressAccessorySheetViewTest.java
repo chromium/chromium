@@ -34,6 +34,7 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.autofill.helpers.FaviconHelper;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.keyboard_accessory.AccessorySuggestionType;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -206,6 +207,8 @@ public class AddressAccessorySheetViewTest {
                                     new PlusAddressInfo(
                                             /* origin= */ "google.com",
                                             new UserInfoField.Builder()
+                                                    .setSuggestionType(
+                                                            AccessorySuggestionType.PLUS_ADDRESS)
                                                     .setDisplayText("example@gmail.com")
                                                     .setTextToFill("example@gmail.com")
                                                     .setIsObfuscated(false)
@@ -238,62 +241,75 @@ public class AddressAccessorySheetViewTest {
             AtomicBoolean clickRecorder) {
         UserInfo info = new UserInfo("", false);
         info.addField(
-                new UserInfoField(nameFull, nameFull, "", false, item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.NAME_FULL)
+                        .setDisplayText(nameFull)
+                        .setA11yDescription(nameFull)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        companyName, companyName, "", false, item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.COMPANY_NAME)
+                        .setDisplayText(companyName)
+                        .setA11yDescription(companyName)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        addressHomeLine1,
-                        addressHomeLine1,
-                        "",
-                        false,
-                        item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.ADDRESS_LINE1)
+                        .setDisplayText(addressHomeLine1)
+                        .setA11yDescription(addressHomeLine1)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        addressHomeLine2,
-                        addressHomeLine2,
-                        "",
-                        false,
-                        item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.ADDRESS_LINE2)
+                        .setDisplayText(addressHomeLine2)
+                        .setA11yDescription(addressHomeLine2)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        addressHomeZip,
-                        addressHomeZip,
-                        "",
-                        false,
-                        item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.ZIP)
+                        .setDisplayText(addressHomeZip)
+                        .setA11yDescription(addressHomeZip)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        addressHomeCity,
-                        addressHomeCity,
-                        "",
-                        false,
-                        item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.CITY)
+                        .setDisplayText(addressHomeCity)
+                        .setA11yDescription(addressHomeCity)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        addressHomeState,
-                        addressHomeState,
-                        "",
-                        false,
-                        item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.STATE)
+                        .setDisplayText(addressHomeState)
+                        .setA11yDescription(addressHomeState)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        addressHomeCountry,
-                        addressHomeCountry,
-                        "",
-                        false,
-                        item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.COUNTRY)
+                        .setDisplayText(addressHomeCountry)
+                        .setA11yDescription(addressHomeCountry)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        phoneHomeWholeNumber,
-                        phoneHomeWholeNumber,
-                        "",
-                        false,
-                        item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.PHONE_NUMBER)
+                        .setDisplayText(phoneHomeWholeNumber)
+                        .setA11yDescription(phoneHomeWholeNumber)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         info.addField(
-                new UserInfoField(
-                        emailAddress, emailAddress, "", false, item -> clickRecorder.set(true)));
+                new UserInfoField.Builder()
+                        .setSuggestionType(AccessorySuggestionType.EMAIL_ADDRESS)
+                        .setDisplayText(emailAddress)
+                        .setA11yDescription(emailAddress)
+                        .setCallback(item -> clickRecorder.set(true))
+                        .build());
         return info;
     }
 

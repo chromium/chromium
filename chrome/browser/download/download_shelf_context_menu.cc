@@ -17,8 +17,8 @@
 #include "content/public/common/content_features.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/menus/simple_menu_model.h"
 
 using InsecureDownloadStatus = download::DownloadItem::InsecureDownloadStatus;
 
@@ -188,8 +188,7 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
       break;
     case DownloadCommands::COPY_TO_CLIPBOARD:
       // This command is implemented only for the Download notification.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case DownloadCommands::DEEP_SCAN:
       id = IDS_DOWNLOAD_MENU_DEEP_SCAN;
       break;
@@ -205,8 +204,7 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
     case DownloadCommands::BYPASS_DEEP_SCANNING:
     case DownloadCommands::OPEN_WITH_MEDIA_APP:
     case DownloadCommands::EDIT_WITH_MEDIA_APP:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   CHECK(id != -1);
   return l10n_util::GetStringUTF16(id);

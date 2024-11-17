@@ -19,7 +19,7 @@ namespace {
 // Log trials and their groups on activation, for debugging purposes.
 class TrialLogger : public base::FieldTrialList::Observer {
  public:
-  TrialLogger() {}
+  TrialLogger() = default;
 
   TrialLogger(const TrialLogger&) = delete;
   TrialLogger& operator=(const TrialLogger&) = delete;
@@ -39,7 +39,7 @@ class TrialLogger : public base::FieldTrialList::Observer {
   }
 
  protected:
-  ~TrialLogger() override {}
+  ~TrialLogger() override = default;
 };
 
 base::LazyInstance<TrialLogger>::Leaky g_trial_logger =

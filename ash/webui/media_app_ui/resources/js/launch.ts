@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './strings.m.js';
+import '/strings.m.js';
 import './unguessable_token.mojom-lite.js';
 import './file_system_access_transfer_token.mojom-lite.js';
 import './url.mojom-lite.js';

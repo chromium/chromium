@@ -9,8 +9,8 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
+class ProfileIOS;
 class ReadingListDownloadService;
 
 // Singleton that creates the ReadingListDownloadService and associates that
@@ -18,9 +18,6 @@ class ReadingListDownloadService;
 class ReadingListDownloadServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static ReadingListDownloadService* GetForBrowserState(ProfileIOS* profile);
-
   static ReadingListDownloadService* GetForProfile(ProfileIOS* profile);
   static ReadingListDownloadServiceFactory* GetInstance();
 

@@ -268,9 +268,6 @@ void Range::collapse(bool to_start) {
   } else {
     start_ = end_;
   }
-  // If Range is collapsed, then the start and end endpoints are the same.
-  // It cannot be across a composed tree.
-  composed_range_ = nullptr;
 }
 
 void Range::CollapseIfNeeded(bool did_move_document, bool collapse_to_start) {
@@ -284,32 +281,6 @@ void Range::CollapseIfNeeded(bool did_move_document, bool collapse_to_start) {
   if (did_move_document || different_tree_scopes ||
       compareBoundaryPoints(start_, end_, ASSERT_NO_EXCEPTION) > 0) {
     collapse(collapse_to_start);
-  } else {
-    // Else, if endpoints should stay as is, then we can return without checking
-    // the composed range.
-    composed_range_ = nullptr;
-    return;
-  }
-  // If endpoints are in different tree scopes, but in the same document, then
-  // we should compare boundary points across the flat tree to determine if
-  // composed range should be stored.
-  if (RuntimeEnabledFeatures::SelectionAcrossShadowDOMEnabled() &&
-      !did_move_document && different_tree_scopes) {
-    bool no_common_ancestor = false;
-    bool composed_start_before_or_equal_end =
-        ComparePositionsInFlatTree(
-            &original_start.Container(), original_start.Offset(),
-            &original_end.Container(), original_end.Offset(),
-            &no_common_ancestor) <= 0;
-    // If endpoints are not in the same flat tree, we do not store the composed
-    // range.
-    if (no_common_ancestor) {
-      return;
-    }
-    if (composed_start_before_or_equal_end) {
-      composed_range_ = MakeGarbageCollected<RangeBoundaryPoints>(
-          original_start, original_end);
-    }
   }
 }
 
@@ -434,8 +405,7 @@ int16_t Range::compareBoundaryPoints(unsigned how,
       return compareBoundaryPoints(start_, source_range->end_, exception_state);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 int16_t Range::compareBoundaryPoints(Node* container_a,
@@ -922,9 +892,11 @@ void Range::insertNode(Node* new_node, ExceptionState& exception_state) {
                                          : To<ContainerNode>(start_node);
 
   // 6. Ensure pre-insertion validity of node into parent before referenceNode.
-  if (!parent.EnsurePreInsertionValidity(*new_node, reference_node, nullptr,
-                                         exception_state))
+  if (!parent.EnsurePreInsertionValidity(new_node, /*new_children*/ nullptr,
+                                         reference_node, nullptr,
+                                         exception_state)) {
     return;
+  }
 
   EventQueueScope scope;
   // 7. If range's start node is a Text node, set referenceNode to the result of
@@ -1107,8 +1079,7 @@ Node* Range::CheckNodeWOffset(Node* n,
       return child_before;
     }
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void Range::CheckNodeBA(Node* n, ExceptionState& exception_state) const {
@@ -1849,7 +1820,6 @@ void Range::Trace(Visitor* visitor) const {
   visitor->Trace(owner_document_);
   visitor->Trace(start_);
   visitor->Trace(end_);
-  visitor->Trace(composed_range_);
   ScriptWrappable::Trace(visitor);
 }
 

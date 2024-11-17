@@ -8,6 +8,8 @@ package optimization_guide.proto;
 
 import "components/optimization_guide/proto/features/common_quality_data.proto";
 
+import "components/optimization_guide/proto/model_quality_metadata.proto";
+
 option optimize_for = LITE_RUNTIME;
 option java_package = "org.chromium.components.optimization_guide.features.proto";
 
@@ -19,15 +21,20 @@ option java_outer_classname = "TabOrganizationProto";
 // refer to http://go/chrome-intelligence-feature-protos (Google-internal link),
 // and then changes will be synced with Chrome automatically.
 
+// Next ID: 7
 message TabOrganizationLoggingData {
   TabOrganizationRequest request = 1;
 
   TabOrganizationResponse response = 2;
 
   TabOrganizationQuality quality = 3;
+
+  ModelExecutionInfo model_execution_info = 6;
+
+  reserved 4, 5;
 }
 
-// Next ID: 5
+// Next ID: 6
 message TabOrganizationRequest {
   // The ungrouped tabs that are requested to be organized.
   repeated Tab tabs = 1;
@@ -41,6 +48,23 @@ message TabOrganizationRequest {
   // Whether or not the tab organization response can include reorganizing
   // existing tab groups.
   bool allow_reorganizing_existing_groups = 4;
+
+  // The clustering algorithm that the user prefers the model to use for
+  // grouping the tabs. For now it is an experimental field and should not be
+  // used in prod.
+  TabOrganizationModelStrategy model_strategy = 5;
+
+  // The clustering algorithm that the user prefers the model to use for
+  // grouping the tabs.
+  enum TabOrganizationModelStrategy {
+    STRATEGY_UNSPECIFIED = 0;
+
+    STRATEGY_TOPIC_BASED = 1;
+
+    STRATEGY_TASK_BASED = 2;
+
+    STRATEGY_DOMAIN_BASED = 3;
+  }
 }
 
 // Next ID: 2
@@ -70,7 +94,7 @@ message TabOrganizationQuality {
 
     Choice choice = 3;
 
-    // TODO(b/331852814): Remove along with the multi tab organization flag
+    // TODO(crbug.com/331852814): Remove along with the multi tab organization flag
     UserFeedback user_feedback = 4;
 
     // The label of the organization if it was accepted. |edited| signifies that

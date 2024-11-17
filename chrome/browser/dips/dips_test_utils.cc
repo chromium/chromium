@@ -10,10 +10,12 @@
 #include "chrome/browser/dips/dips_cleanup_service_factory.h"
 #include "chrome/browser/dips/dips_service.h"
 #include "chrome/browser/dips/dips_service_factory.h"
+#include "chrome/browser/dips/dips_service_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/hit_test_region_observer.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -53,6 +55,58 @@ void AccessCookieViaJSIn(content::WebContents* web_contents,
   ASSERT_TRUE(content::ExecJs(frame, "document.cookie = 'foo=bar';",
                               content::EXECUTE_SCRIPT_NO_USER_GESTURE));
   observer.Wait();
+}
+
+[[nodiscard]] testing::AssertionResult ClientSideRedirectViaMetaTag(
+    content::WebContents* web_contents,
+    content::RenderFrameHost* frame,
+    const GURL& target_url) {
+  content::TestFrameNavigationObserver nav_observer(frame);
+  bool js_succeeded = content::ExecJs(frame,
+                                      content::JsReplace(
+                                          R"(
+      var element = document.createElement('meta');
+      element.setAttribute('http-equiv', 'refresh');
+      element.setAttribute('content', '0; url=$1');
+      document.getElementsByTagName('head')[0].appendChild(element);)",
+                                          target_url),
+                                      content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  if (!js_succeeded) {
+    return testing::AssertionFailure()
+           << "Failed to execute script to client-side redirect to URL "
+           << target_url;
+  }
+  nav_observer.Wait();
+  if (nav_observer.last_committed_url() == target_url) {
+    return testing::AssertionSuccess();
+  } else {
+    return testing::AssertionFailure()
+           << "Expected to arrive at " << target_url << " but URL was actually "
+           << nav_observer.last_committed_url();
+  }
+}
+
+[[nodiscard]] testing::AssertionResult ClientSideRedirectViaJS(
+    content::WebContents* web_contents,
+    content::RenderFrameHost* frame,
+    const GURL& target_url) {
+  content::TestFrameNavigationObserver nav_observer(frame);
+  bool js_succeeded = content::ExecJs(
+      frame, content::JsReplace(R"(window.location.replace($1);)", target_url),
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE);
+  if (!js_succeeded) {
+    return testing::AssertionFailure()
+           << "Failed to execute script to client-side redirect to URL "
+           << target_url;
+  }
+  nav_observer.Wait();
+  if (nav_observer.last_committed_url() == target_url) {
+    return testing::AssertionSuccess();
+  } else {
+    return testing::AssertionFailure()
+           << "Expected to arrive at " << target_url << " but URL was actually "
+           << nav_observer.last_committed_url();
+  }
 }
 
 bool NavigateToSetCookie(content::WebContents* web_contents,

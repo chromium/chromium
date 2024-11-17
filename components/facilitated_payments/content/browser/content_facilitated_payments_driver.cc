@@ -8,6 +8,8 @@
 
 #include "base/functional/callback.h"
 #include "components/facilitated_payments/content/browser/facilitated_payments_api_client_factory.h"
+#include "components/facilitated_payments/content/browser/security_checker.h"
+#include "components/facilitated_payments/core/browser/ewallet_manager.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_manager.h"
 #include "content/public/browser/render_frame_host.h"
@@ -18,14 +20,20 @@ namespace payments::facilitated {
 ContentFacilitatedPaymentsDriver::ContentFacilitatedPaymentsDriver(
     FacilitatedPaymentsClient* client,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-    content::RenderFrameHost* render_frame_host)
+    content::RenderFrameHost* render_frame_host,
+    std::unique_ptr<SecurityChecker> security_checker)
     : FacilitatedPaymentsDriver(std::make_unique<FacilitatedPaymentsManager>(
-          /*driver=*/this,
-          client,
-          GetFacilitatedPaymentsApiClientCreator(
-              render_frame_host->GetGlobalId()),
-          optimization_guide_decider)),
-      render_frame_host_id_(render_frame_host->GetGlobalId()) {}
+                                    /*driver=*/this,
+                                    client,
+                                    GetFacilitatedPaymentsApiClientCreator(
+                                        render_frame_host->GetGlobalId()),
+                                    optimization_guide_decider),
+                                std::make_unique<EwalletManager>(
+                                    client,
+                                    GetFacilitatedPaymentsApiClientCreator(
+                                        render_frame_host->GetGlobalId()))),
+      render_frame_host_id_(render_frame_host->GetGlobalId()),
+      security_checker_(std::move(security_checker)) {}
 
 ContentFacilitatedPaymentsDriver::~ContentFacilitatedPaymentsDriver() = default;
 
@@ -39,8 +47,8 @@ void ContentFacilitatedPaymentsDriver::TriggerPixCodeDetection(
   }
 }
 
-// TODO(crbug.com//40280186): Add test for this method once FPManager
-// refactoring is done.
+// TODO(crbug.com/40280186): Add test for this method once FPManager refactoring
+// is done.
 void ContentFacilitatedPaymentsDriver::HandlePaymentLink(const GURL& url) {
   content::RenderFrameHost* render_frame_host =
       content::RenderFrameHost::FromID(render_frame_host_id_);
@@ -48,13 +56,20 @@ void ContentFacilitatedPaymentsDriver::HandlePaymentLink(const GURL& url) {
     return;
   }
 
-  // TODO(crbug.com//40280186): Add security check and triggering the eWallet
-  // push flow.
-  return;
+  if (!security_checker_->IsSecureForPaymentLinkHandling(*render_frame_host)) {
+    return;
+  }
+
+  TriggerEwalletPushPayment(
+      /*payment_link_url=*/url,
+      /*page_url=*/render_frame_host->GetLastCommittedURL());
 }
 
 void ContentFacilitatedPaymentsDriver::SetPaymentLinkHandlerReceiver(
     mojo::PendingReceiver<mojom::PaymentLinkHandler> pending_receiver) {
+  if (receiver_.is_bound()) {
+    receiver_.reset();
+  }
   receiver_.Bind(std::move(pending_receiver));
 }
 

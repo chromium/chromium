@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
 #include "chrome/browser/ash/policy/skyvault/migration_coordinator.h"
 #include "chrome/browser/ash/policy/skyvault/migration_notification_manager.h"
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace policy::local_user_files {
@@ -35,6 +36,8 @@ class MockMigrationObserver : public LocalFilesMigrationManager::Observer {
   ~MockMigrationObserver();
 
   MOCK_METHOD(void, OnMigrationSucceeded, (), (override));
+
+  MOCK_METHOD(void, OnMigrationReset, (), (override));
 };
 
 // Mock implementation of MigrationNotificationManager.
@@ -47,6 +50,11 @@ class MockMigrationNotificationManager : public MigrationNotificationManager {
               ShowMigrationInfoDialog,
               (CloudProvider, base::Time, base::OnceClosure),
               (override));
+
+  MOCK_METHOD(void,
+              ShowConfigurationErrorNotification,
+              (CloudProvider),
+              (override));
 };
 
 // Mock implementation of MigrationCoordinator, with the default behavior to
@@ -58,22 +66,28 @@ class MockMigrationCoordinator : public MigrationCoordinator {
 
   // MigrationCoordinator overrides:
   bool IsRunning() const override { return is_running_; }
-  void OnMigrationDone(
-      MigrationDoneCallback callback,
-      std::map<base::FilePath, MigrationUploadError> errors) override;
+  void OnMigrationDone(MigrationDoneCallback callback,
+                       std::map<base::FilePath, MigrationUploadError> errors,
+                       base::FilePath upload_root_path,
+                       base::FilePath error_log_path) override;
 
   // By default waits some minutes and completes the upload successfully.
   MOCK_METHOD(void,
               Run,
-              (CloudProvider cloud_provider,
-               std::vector<base::FilePath> file_paths,
-               const std::string& destination_dir,
-               MigrationDoneCallback callback),
+              (CloudProvider,
+               std::vector<base::FilePath>,
+               const std::string&,
+               MigrationDoneCallback),
               (override));
-  MOCK_METHOD(void, Stop, (), (override));
+  MOCK_METHOD(void, Cancel, (MigrationStoppedCallback callback), (override));
+
+  // Sets a callback to be invoked when Run() is called.
+  void SetRunCallback(base::RepeatingClosure run_cb);
 
  private:
   bool is_running_ = false;
+  // If set, invoked when Run() is.
+  base::RepeatingClosure run_cb_;
 
   base::WeakPtrFactory<MockMigrationCoordinator> weak_ptr_factory_{this};
 };

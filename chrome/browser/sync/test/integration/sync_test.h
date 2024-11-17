@@ -12,7 +12,6 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -434,9 +433,6 @@ class SyncTest : public PlatformBrowserTest, public ProfileObserver {
   bool use_new_user_data_dir_ = false;
 
   syncer::DataTypeSet excluded_types_from_check_for_data_type_failures_;
-
-  // The feature list to override features for all sync tests.
-  base::test::ScopedFeatureList feature_list_;
 
 #if !BUILDFLAG(IS_ANDROID)
   // Disable extension install verification.

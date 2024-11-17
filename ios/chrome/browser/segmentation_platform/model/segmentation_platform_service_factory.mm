@@ -93,7 +93,7 @@ class SegmentationPlatformServiceSubscription
 // Returns the ShoppingService for `weak_profile`.
 ShoppingService* GetShoppingService(base::WeakPtr<ProfileIOS> weak_profile) {
   if (ProfileIOS* profile = weak_profile.get()) {
-    return commerce::ShoppingServiceFactory::GetForBrowserState(profile);
+    return commerce::ShoppingServiceFactory::GetForProfile(profile);
   }
 
   return nullptr;
@@ -118,13 +118,13 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
     return nullptr;
   }
   sync_sessions::SessionSyncService* session_sync_service =
-      SessionSyncServiceFactory::GetForBrowserState(profile);
+      SessionSyncServiceFactory::GetForProfile(profile);
   auto tab_fetcher = std::make_unique<TabFetcher>(session_sync_service);
 
   auto params = std::make_unique<SegmentationPlatformServiceImpl::InitParams>();
   params->profile_id = params->profile_id =
       base::NumberToString(base::PersistentHash(profile_path.value()));
-  params->history_service = ios::HistoryServiceFactory::GetForBrowserState(
+  params->history_service = ios::HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
   base::TaskPriority priority = base::TaskPriority::BEST_EFFORT;
   if (base::FeatureList::IsEnabled(features::kSegmentationPlatformUserVisibleTaskRunner)) {
@@ -153,7 +153,7 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
   // Guaranteed to outlive the SegmentationPlatformService, which depends on the
   // DeviceInfoSynceService.
   params->device_info_tracker =
-      DeviceInfoSyncServiceFactory::GetForBrowserState(profile)
+      DeviceInfoSyncServiceFactory::GetForProfile(profile)
           ->GetDeviceInfoTracker();
   params->input_delegate_holder = SetUpInputDelegates(
       params->configs, session_sync_service, tab_fetcher.get());
@@ -171,8 +171,13 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
       std::make_unique<SegmentationPlatformServiceImpl>(std::move(params));
 
   // The IncognitoSessionTracker can be null during tests.
-  if (IncognitoSessionTracker* tracker =
-          GetApplicationContext()->GetIncognitoSessionTracker()) {
+  IncognitoSessionTracker* tracker =
+      GetApplicationContext()->GetIncognitoSessionTracker();
+
+  // Notify if OTR state was created before registration.
+  service->EnableMetrics(tracker ? !tracker->HasIncognitoSessionTabs() : true);
+
+  if (tracker) {
     // Usage of base::Unretained(...) is safe since the callback subscription
     // is owned by the SegmentationPlatformServiceSubscription attached to the
     // SegmentationPlatformService and deleted before the object itself.
@@ -186,13 +191,12 @@ std::unique_ptr<KeyedService> BuildSegmentationPlatformService(
                 base::Unretained(service.get())))));
   }
 
-  service->SetUserData(
-      kSegmentationDeviceSwitcherUserDataKey,
-      std::make_unique<DeviceSwitcherResultDispatcher>(
-          service.get(),
-          DeviceInfoSyncServiceFactory::GetForBrowserState(profile)
-              ->GetDeviceInfoTracker(),
-          profile->GetPrefs(), field_trial_register));
+  service->SetUserData(kSegmentationDeviceSwitcherUserDataKey,
+                       std::make_unique<DeviceSwitcherResultDispatcher>(
+                           service.get(),
+                           DeviceInfoSyncServiceFactory::GetForProfile(profile)
+                               ->GetDeviceInfoTracker(),
+                           profile->GetPrefs(), field_trial_register));
   service->SetUserData(
       kSegmentationTabRankDispatcherUserDataKey,
       std::make_unique<TabRankDispatcher>(service.get(), session_sync_service,
@@ -249,10 +253,10 @@ SegmentationPlatformServiceFactory::GetDispatcherForProfile(
 
 // static
 home_modules::HomeModulesCardRegistry*
-SegmentationPlatformServiceFactory::GetHomeCardRegistryForBrowserState(
-    ChromeBrowserState* context) {
-  CHECK(!context->IsOffTheRecord());
-  SegmentationPlatformService* service = GetForProfile(context);
+SegmentationPlatformServiceFactory::GetHomeCardRegistryForProfile(
+    ProfileIOS* profile) {
+  CHECK(!profile->IsOffTheRecord());
+  SegmentationPlatformService* service = GetForProfile(profile);
   if (!service) {
     return nullptr;
   }

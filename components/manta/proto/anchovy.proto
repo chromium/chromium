@@ -12,11 +12,11 @@ message AnchovyDescription {
 
   enum Type {
     UNKNOWN = 0;
-    ONE = 1;
-    TWO = 2;
-    THREE = 3;
-    FOUR = 4;
-    FIVE = 5;
+    PRIMARY_CAPTION = 1;
+    SECONDARY_CAPTION = 2;
+    LABEL = 3;
+    OCR = 4;
+    UNUSED = 5;
   }
   optional Type type = 1;
 

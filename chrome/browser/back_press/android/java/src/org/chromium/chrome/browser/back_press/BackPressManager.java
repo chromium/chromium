@@ -13,10 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.base.CallbackUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
@@ -28,19 +27,15 @@ import java.util.List;
 
 /**
  * A central manager class to handle the back gesture. Every component/feature which is going to
- * intercept the back press event must implement the {@link BackPressHandler} and be registered
- * in a proper order.
- * In order to register a Handler:
- * 1. Implement {@link BackPressHandler}.
- * 2. Add a new {@link Type} which implies the order of intercepting.
- * 3. Add a new value in {@link #sMetricsMap} which stands for the histograms.
- * 4. Call {@link #addHandler(BackPressHandler, int)} to register the implementer of
- * {@link BackPressHandler} with the new defined {@link Type}.
+ * intercept the back press event must implement the {@link BackPressHandler} and be registered in a
+ * proper order. In order to register a Handler:
+ *   1. Implement {@link BackPressHandler}.
+ *   2. Add a new {@link Type} which implies the order of intercepting.
+ *   3. Add a new value in {@link #sMetricsMap} which stands for the histograms.
+ *   4. Call {@link #addHandler(BackPressHandler, int)} to register the implementer of
+ *      {@link BackPressHandler} with the new defined {@link Type}.
  */
 public class BackPressManager implements Destroyable {
-    public static final BooleanCachedFieldTrialParameter TAB_HISTORY_RECOVER =
-            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
-                    ChromeFeatureList.BACK_GESTURE_REFACTOR, "tab_history_recover", false);
     private static final SparseIntArray sMetricsMap;
     private static final int sMetricsMaxValue;
 
@@ -75,59 +70,85 @@ public class BackPressManager implements Destroyable {
         sMetricsMap = map;
     }
 
-    private final OnBackPressedCallback mCallback =
-            new OnBackPressedCallback(false) {
-                private BackPressHandler mActiveHandler;
-                private BackEventCompat mLastBackEvent;
+    private class OnBackPressedCallbackImpl extends OnBackPressedCallback {
+        private BackPressHandler mActiveHandler;
+        private BackEventCompat mLastBackEvent;
 
-                @SuppressLint("WrongConstant") // Suppress mLastCalledHandlerType assignment warning
-                @Override
-                public void handleOnBackPressed() {
-                    if (mOnBackPressed != null) mOnBackPressed.run();
-                    recordSystemBackCountIfBeforeFirstVisibleContent();
-                    mLastCalledHandlerType = -1;
-                    BackPressManager.this.handleBackPress();
+        public OnBackPressedCallbackImpl(boolean enabled) {
+            super(enabled);
+        }
 
-                    // This means this back is triggered by a gesture rather than the back button.
-                    if (mLastBackEvent != null
-                            && mLastCalledHandlerType != -1
-                            && mIsGestureNavEnabledSupplier.get()) {
-                        BackPressMetrics.recordBackPressFromEdge(
-                                mLastCalledHandlerType, mLastBackEvent.getSwipeEdge());
+        public void willRemoveHandler(@NonNull BackPressHandler handler) {
+            if (handler == mActiveHandler) {
+                handleOnBackCancelled();
+            }
+        }
 
-                        if (mLastCalledHandlerType == Type.TAB_HISTORY) {
-                            BackPressMetrics.recordTabNavigationSwipedFromEdge(
-                                    mLastBackEvent.getSwipeEdge());
-                        }
+        @SuppressLint("WrongConstant") // Suppress mLastCalledHandlerType assignment warning
+        @Override
+        public void handleOnBackPressed() {
+            if (mOnBackPressed != null) mOnBackPressed.run();
+            mLastCalledHandlerType = -1;
+            if (ChromeFeatureList.sLockBackPressHandlerAtStart.isEnabled()
+                    && mActiveHandler != null) {
+                Boolean enabled = mActiveHandler.getHandleBackPressChangedSupplier().get();
+                if (enabled != null && enabled) {
+                    int result = mActiveHandler.handleBackPress();
+                    int index = BackPressManager.this.getIndex(mActiveHandler);
+                    mLastCalledHandlerType = index;
+                    if (result == BackPressResult.FAILURE) {
+                        BackPressManager.this.handleBackPress();
+                    } else {
+                        record(index);
                     }
-
-                    mActiveHandler = null;
-                    mLastBackEvent = null;
+                } else {
+                    BackPressManager.this.handleBackPress();
                 }
+            } else {
+                BackPressManager.this.handleBackPress();
+            }
 
-                // Following methods are only triggered on API 34+.
-                @Override
-                public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
-                    mActiveHandler = getEnabledBackPressHandler();
-                    assert mActiveHandler != null;
-                    mActiveHandler.handleOnBackStarted(backEvent);
-                    mLastBackEvent = backEvent;
-                }
+            // This means this back is triggered by a gesture rather than the back button.
+            if (mLastBackEvent != null
+                    && mLastCalledHandlerType != -1
+                    && mIsGestureNavEnabledSupplier.get()) {
+                BackPressMetrics.recordBackPressFromEdge(
+                        mLastCalledHandlerType, mLastBackEvent.getSwipeEdge());
 
-                @Override
-                public void handleOnBackCancelled() {
-                    if (mActiveHandler == null) return;
-                    mActiveHandler.handleOnBackCancelled();
-                    mActiveHandler = null;
-                    mLastBackEvent = null;
+                if (mLastCalledHandlerType == Type.TAB_HISTORY) {
+                    BackPressMetrics.recordTabNavigationSwipedFromEdge(
+                            mLastBackEvent.getSwipeEdge());
                 }
+            }
+            mActiveHandler = null;
+            mLastBackEvent = null;
+        }
 
-                @Override
-                public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
-                    if (mActiveHandler == null) return;
-                    mActiveHandler.handleOnBackProgressed(backEvent);
-                }
-            };
+        // Following methods are only triggered on API 34+.
+        @Override
+        public void handleOnBackStarted(@NonNull BackEventCompat backEvent) {
+            mActiveHandler = getEnabledBackPressHandler();
+            assert mActiveHandler != null;
+            mActiveHandler.handleOnBackStarted(backEvent);
+            mLastBackEvent = backEvent;
+        }
+
+        @Override
+        public void handleOnBackCancelled() {
+            if (mActiveHandler == null) return;
+            mActiveHandler.handleOnBackCancelled();
+            mActiveHandler = null;
+            mLastBackEvent = null;
+        }
+
+        @Override
+        public void handleOnBackProgressed(@NonNull BackEventCompat backEvent) {
+            if (mActiveHandler == null) return;
+            mActiveHandler.handleOnBackProgressed(backEvent);
+        }
+    }
+
+    private final OnBackPressedCallbackImpl mCallback = new OnBackPressedCallbackImpl(false);
 
     static final String HISTOGRAM = "Android.BackPress.Intercept";
     static final String HISTOGRAM_CUSTOM_TAB_SAME_TASK =
@@ -143,42 +164,19 @@ public class BackPressManager implements Destroyable {
     private final Callback<Boolean>[] mObserverCallbacks = new Callback[Type.NUM_TYPES];
     private Runnable mFallbackOnBackPressed;
     private int mLastCalledHandlerType = -1;
-    private boolean mBackBeforeFirstVisibleContentRecorded;
-    private Supplier<Boolean> mIsFirstVisibleContentDrawnSupplier;
     private Runnable mOnBackPressed;
     private Supplier<Boolean> mIsGestureNavEnabledSupplier = () -> false;
-
-    /**
-     * @return True if the back gesture refactor is enabled.
-     */
-    public static boolean isEnabled() {
-        return ChromeFeatureList.sBackGestureRefactorAndroid.isEnabled();
-    }
-
-    /**
-     * @return True if ActivityTabProvider should replace ChromeTabActivity#getActivityTab
-     */
-    public static boolean shouldUseActivityTabProvider() {
-        return isEnabled() || ChromeFeatureList.sBackGestureActivityTabProvider.isEnabled();
-    }
 
     /**
      * @return True if the tab navigation should be corrected on fallback callback.
      */
     public static boolean correctTabNavigationOnFallback() {
-        return isEnabled() && TAB_HISTORY_RECOVER.getValue();
-    }
-
-    /**
-     * @return True if app should be moved to back by manually calling `moveTaskToBack` when back is
-     *     pressed during start up. Otherwise, call `onBackPressed` to trigger default behavior.
-     */
-    public static boolean shouldMoveToBackDuringStartup() {
-        return ChromeFeatureList.sBackGestureMoveToBackDuringStartup.isEnabled();
+        return false;
     }
 
     /**
      * Record when the back press is consumed by a certain feature.
+     *
      * @param type The {@link Type} which consumes the back press event.
      */
     public static void record(@Type int type) {
@@ -213,7 +211,7 @@ public class BackPressManager implements Destroyable {
     }
 
     public BackPressManager() {
-        mFallbackOnBackPressed = () -> {};
+        mFallbackOnBackPressed = CallbackUtils.emptyRunnable();
         mUseSystemBack = MinimizeAppAndCloseTabBackPressHandler.shouldUseSystemBack();
         backPressStateChanged();
     }
@@ -246,10 +244,12 @@ public class BackPressManager implements Destroyable {
 
     /**
      * Remove a registered handler. The methods of handler will not be called any more.
+     *
      * @param type {@link Type} to be removed.
      */
     public void removeHandler(@Type int type) {
         BackPressHandler handler = mHandlers[type];
+        mCallback.willRemoveHandler(handler);
         handler.getHandleBackPressChangedSupplier().removeObserver(mObserverCallbacks[type]);
         mObserverCallbacks[type] = null;
         mHandlers[type] = null;
@@ -298,26 +298,9 @@ public class BackPressManager implements Destroyable {
         mHasSystemBackArm = hasSystemBackArm;
     }
 
-    /** Set a supplier to provide whether first visible content has been drawn. */
-    public void setIsFirstVisibleContentDrawnSupplier(Supplier<Boolean> supplier) {
-        mIsFirstVisibleContentDrawnSupplier = supplier;
-    }
-
     /** Set a supplier to provide whether gesture nav mode is on when called. */
     public void setIsGestureNavEnabledSupplier(Supplier<Boolean> supplier) {
         mIsGestureNavEnabledSupplier = supplier;
-    }
-
-    /**
-     * Record if back press occurs before first visible content is drawn. TODO(crbug.com/40944523):
-     * remove after it is fixed.
-     */
-    public void recordSystemBackCountIfBeforeFirstVisibleContent() {
-        if (mBackBeforeFirstVisibleContentRecorded) return;
-        if (mIsFirstVisibleContentDrawnSupplier != null
-                && mIsFirstVisibleContentDrawnSupplier.get()) return;
-        mBackBeforeFirstVisibleContentRecorded = true;
-        RecordUserAction.record("SystemBackBeforeFirstVisibleContent");
     }
 
     private void backPressStateChanged() {
@@ -346,6 +329,16 @@ public class BackPressManager implements Destroyable {
         }
         assert false;
         return null;
+    }
+
+    private int getIndex(BackPressHandler handler) {
+        for (int i = 0; i < mHandlers.length; i++) {
+            if (mHandlers[i] == null) continue;
+            if (mHandlers[i] == handler) {
+                return i;
+            }
+        }
+        throw new AssertionError("Handler not found.");
     }
 
     private void handleBackPress() {

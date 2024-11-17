@@ -65,6 +65,8 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Hash verification of encrypted value failed"/>
   <int value="7"
       label="Cookie was encrypted but no crypto delegate was passed"/>
+  <int value="8"
+      label="Cookie had values in both the plaintext and encrypted fields"/>
 </enum>
 
 <enum name="CookiePrefix">

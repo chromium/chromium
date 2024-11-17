@@ -13,8 +13,7 @@
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 namespace {
 
@@ -203,5 +202,4 @@ TEST_F(IconDecoderImplTest, BatchDecodeWithInProgresRequests) {
   VerifyDecodedItems(result);
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

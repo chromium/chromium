@@ -4,9 +4,11 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import android.content.Context;
 import android.view.View;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.Px;
 import androidx.recyclerview.widget.RecyclerView;
@@ -14,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 
@@ -24,8 +27,8 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     /**
      * The maximum number of accounts that should be fully visible when the the account picker is
-     * displayed. Button mode UI is generally bigger because it requires user interaction to
-     * trigger. Therefore, we are able to show more accounts at once compared to widget mode.
+     * displayed. Active mode UI is generally bigger because it requires user interaction to
+     * trigger. Therefore, we are able to show more accounts at once compared to passive mode.
      */
     private static final float MAX_VISIBLE_ACCOUNTS_WIDGET_MODE = 2.5f;
 
@@ -92,25 +95,26 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     }
 
     /**
-     * Returns the height of the full state in button mode.
+     * Returns the height of the full state in active mode.
      *
      * @return the full state height in pixels. Never 0. Can theoretically exceed the screen height.
      */
-    private @Px int getMaximumButtonModeSheetHeightPx() {
+    private @Px int getMaximumActiveModeSheetHeightPx() {
+        int width = mBottomSheetController.getMaxSheetWidth();
         View accountSelectionSheet = mContentView.findViewById(R.id.account_selection_sheet);
         accountSelectionSheet.measure(
-                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
         return accountSelectionSheet.getMeasuredHeight();
     }
 
     /**
-     * Returns the height of the half state in button mode. For up to 3 accounts, it shows all
+     * Returns the height of the half state in active mode. For up to 3 accounts, it shows all
      * accounts fully. For 4+ accounts, it shows the first 3.5 accounts to encourage scrolling.
      *
      * @return the half state height in pixels. Never 0. Can theoretically exceed the screen height.
      */
-    private @Px int getDesiredButtonModeSheetHeightPx() {
+    private @Px int getDesiredActiveModeSheetHeightPx() {
         View sheetContainer = mContentView.findViewById(R.id.sheet_item_list_container);
         // When we're in the multi-account chooser and there are more than {@link
         // MAX_VISIBLE_ACCOUNTS_BUTTON_MODE} accounts, resize the list so that only {@link
@@ -127,9 +131,9 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
             @Px
             int desiredHeight =
                     Math.round(accountRow.getMeasuredHeight() * MAX_VISIBLE_ACCOUNTS_BUTTON_MODE);
-            return getMaximumButtonModeSheetHeightPx() - measuredHeight + desiredHeight;
+            return getMaximumActiveModeSheetHeightPx() - measuredHeight + desiredHeight;
         }
-        return getMaximumButtonModeSheetHeightPx();
+        return getMaximumActiveModeSheetHeightPx();
     }
 
     @Override
@@ -157,8 +161,8 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
 
     @Override
     public boolean hasCustomScrimLifecycle() {
-        // For widget mode, return true to ensure no scrim is created behind the view.
-        if (mRpMode == RpMode.WIDGET) return true;
+        // For passive mode, return true to ensure no scrim is created behind the view.
+        if (mRpMode == RpMode.PASSIVE) return true;
         return false;
     }
 
@@ -179,22 +183,22 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getFullHeightRatio() {
-        if (mRpMode == RpMode.WIDGET) return HeightMode.WRAP_CONTENT;
+        if (mRpMode == RpMode.PASSIVE) return HeightMode.WRAP_CONTENT;
         // WRAP_CONTENT would be the right fit but this disables the HALF state.
         return Math.min(
-                        getMaximumButtonModeSheetHeightPx(),
+                        getMaximumActiveModeSheetHeightPx(),
                         mBottomSheetController.getContainerHeight())
                 / (float) mBottomSheetController.getContainerHeight();
     }
 
     @Override
     public float getHalfHeightRatio() {
-        if (mRpMode == RpMode.WIDGET) {
-            computeAndUpdateAccountListHeight();
-            return HeightMode.WRAP_CONTENT;
+        // Passive mode does not use half height.
+        if (mRpMode == RpMode.PASSIVE) {
+            return HeightMode.DISABLED;
         }
         return Math.min(
-                        getDesiredButtonModeSheetHeightPx(),
+                        getDesiredActiveModeSheetHeightPx(),
                         mBottomSheetController.getContainerHeight())
                 / (float) mBottomSheetController.getContainerHeight();
     }
@@ -224,8 +228,8 @@ public class AccountSelectionBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.account_selection_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.account_selection_content_description);
     }
 
     @Override

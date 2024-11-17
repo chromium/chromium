@@ -89,7 +89,7 @@ class TestDeviceStatusListener : public DeviceStatusListener {
 
 class DeviceStatusListenerTest : public testing::Test {
  public:
-  DeviceStatusListenerTest() {}
+  DeviceStatusListenerTest() = default;
 
   void SetUp() override {
     auto battery_listener = std::make_unique<TestBatteryStatusListener>();

@@ -21,6 +21,18 @@
 #include "components/variations/service/google_groups_manager_prefs.h"
 #include "components/variations/variations_seed_processor.h"
 
+namespace {
+
+std::string GetGoogleGroupsParam(const base::Feature& feature) {
+  // The `FeatureParam` is created on the fly because `feature` is only known
+  // at runtime.
+  return base::FeatureParam<std::string>(
+             &feature, variations::internal::kGoogleGroupFeatureParamName, "")
+      .Get();
+}
+
+}  // namespace
+
 GoogleGroupsManager::GoogleGroupsManager(
     PrefService& target_prefs,
     const std::string& key,
@@ -57,16 +69,19 @@ void GoogleGroupsManager::RegisterProfilePrefs(
   );
 }
 
+// static
+bool GoogleGroupsManager::IsFeatureGroupControlled(
+    const base::Feature& feature) {
+  return !GetGoogleGroupsParam(feature).empty();
+}
+
 bool GoogleGroupsManager::IsFeatureEnabledForProfile(
     const base::Feature& feature) const {
   if (!base::FeatureList::IsEnabled(feature)) {
     return false;
   }
 
-  const std::string google_groups_param =
-      base::FeatureParam<std::string>(
-          &feature, variations::internal::kGoogleGroupFeatureParamName, "")
-          .Get();
+  const std::string google_groups_param = GetGoogleGroupsParam(feature);
   const std::vector<std::string_view> group_strings = base::SplitStringPiece(
       google_groups_param,
       variations::internal::kGoogleGroupFeatureParamSeparator,

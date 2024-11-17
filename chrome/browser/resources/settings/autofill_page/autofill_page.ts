@@ -9,7 +9,7 @@
  */
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import '/shared/settings/prefs/prefs.js';
 import '../settings_page/settings_animated_pages.js';
 import '../settings_page/settings_subpage.js';
@@ -35,6 +35,7 @@ import {Router} from '../router.js';
 
 import {getTemplate} from './autofill_page.html.js';
 import {PasswordManagerImpl, PasswordManagerPage} from './password_manager_proxy.js';
+import {UserAnnotationsManagerProxyImpl} from './user_annotations_manager_proxy.js';
 
 const SettingsAutofillPageElementBase =
     PrefsMixin(I18nMixin(BaseMixin(PolymerElement)));
@@ -86,18 +87,53 @@ export class SettingsAutofillPageElement extends
         },
       },
 
-      autofillPredictionImprovementsEnabled_: {
+      userEligibleForAutofillPredictionImprovements_: {
         type: Boolean,
-        value() {
-          return loadTimeData.getBoolean(
-              'autofillPredictionImprovementsEnabled');
-        },
+        value: false,
+      },
+
+
+      userHasAutofillPredictionImprovementsEntries_: {
+        type: Boolean,
+        value: false,
+      },
+
+      autofillPredictionImprovementsAvailable_: {
+        type: Boolean,
+        computed: 'computeAutofillPredictionImprovementsAvailable_(' +
+            'userEligibleForAutofillPredictionImprovements_, ' +
+            'userHasAutofillPredictionImprovementsEntries_)',
       },
     };
   }
 
   private passkeyFilter_: string;
+  private userEligibleForAutofillPredictionImprovements_: boolean;
+  private userHasAutofillPredictionImprovementsEntries_: boolean;
+  private autofillPredictionImprovementsAvailable_: boolean;
   private focusConfig_: Map<string, string>;
+
+  override connectedCallback() {
+    super.connectedCallback();
+    // TODO(crbug.com/368565649): Consider updating on sign-in state changes.
+    UserAnnotationsManagerProxyImpl.getInstance().isUserEligible().then(
+        eligible => {
+          this.userEligibleForAutofillPredictionImprovements_ = eligible;
+        });
+    UserAnnotationsManagerProxyImpl.getInstance().hasEntries().then(value => {
+      this.userHasAutofillPredictionImprovementsEntries_ = value;
+    });
+  }
+
+  /**
+   * Computes `autofillPredictionImprovementsAvailable_`.
+   */
+  private computeAutofillPredictionImprovementsAvailable_(): boolean {
+    return loadTimeData.getBoolean('autofillPredictionImprovementsEnabled') &&
+        (this.userEligibleForAutofillPredictionImprovements_ ||
+         this.userHasAutofillPredictionImprovementsEntries_);
+  }
+
 
   /**
    * Shows the manage addresses sub page.

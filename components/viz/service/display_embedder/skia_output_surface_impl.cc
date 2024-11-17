@@ -417,7 +417,8 @@ SkiaOutputSurfaceImpl::~SkiaOutputSurfaceImpl() {
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/false,
                  /*need_framebuffer=*/false);
   // Flush GPU tasks and block until all tasks are finished.
-  FlushGpuTasksWithImpl(SyncMode::kWaitForTasksFinished, impl_on_gpu);
+  FlushGpuTasksWithImpl(SyncMode::kWaitForTasksFinished, impl_on_gpu,
+                        gpu::SyncToken());
 }
 
 gpu::SurfaceHandle SkiaOutputSurfaceImpl::GetSurfaceHandle() const {
@@ -684,10 +685,15 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImageMultiPlane(
   CHECK(format.is_multi_plane());
   SkYUVAInfo::PlaneConfig plane_config = gpu::ToSkYUVAPlaneConfig(format);
   SkYUVAInfo::Subsampling subsampling = gpu::ToSkYUVASubsampling(format);
-  // TODO(crbug.com/41380578): This should really default to rec709.
-  SkYUVColorSpace sk_yuv_color_space = kRec601_SkYUVColorSpace;
-  color_space.ToSkYUVColorSpace(format.MultiplanarBitDepth(),
-                                &sk_yuv_color_space);
+  // TODO(crbug.com/368870063): Implement RGB matrix support in
+  // ToSkYUVColorSpace.
+  SkYUVColorSpace sk_yuv_color_space = kIdentity_SkYUVColorSpace;
+  if (color_space.GetMatrixID() != gfx::ColorSpace::MatrixID::RGB) {
+    // TODO(crbug.com/41380578): This should really default to rec709.
+    sk_yuv_color_space = kRec601_SkYUVColorSpace;
+    color_space.ToSkYUVColorSpace(format.MultiplanarBitDepth(),
+                                  &sk_yuv_color_space);
+  }
   SkYUVAInfo yuva_info(gfx::SizeToSkISize(image_context->size()), plane_config,
                        subsampling, sk_yuv_color_space);
   if (graphite_recorder_) {
@@ -1127,8 +1133,12 @@ void SkiaOutputSurfaceImpl::InitializeOnGpuThread(bool* result) {
   auto release_overlays_callback =
       base::BindRepeating(&SkiaOutputSurfaceImpl::ReleaseOverlays, weak_ptr_);
 
+  sync_point_client_state_ = gpu_task_scheduler_->CreateSyncPointClientState(
+      gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE,
+      display_compositor_controller_->controller_on_gpu()->command_buffer_id());
+
   impl_on_gpu_ = SkiaOutputSurfaceImplOnGpu::Create(
-      dependency_, renderer_settings_, gpu_task_scheduler_->GetSequenceId(),
+      dependency_, renderer_settings_,
       display_compositor_controller_->controller_on_gpu(),
       std::move(did_swap_buffer_complete_callback),
       std::move(buffer_presented_callback), std::move(context_lost_callback),
@@ -1378,13 +1388,15 @@ void SkiaOutputSurfaceImpl::EnqueueGpuTask(
   need_framebuffer_ |= need_framebuffer;
 }
 
-void SkiaOutputSurfaceImpl::FlushGpuTasks(SyncMode sync_mode) {
-  FlushGpuTasksWithImpl(sync_mode, impl_on_gpu_.get());
+void SkiaOutputSurfaceImpl::FlushGpuTasks(SyncMode sync_mode,
+                                          const gpu::SyncToken& release) {
+  FlushGpuTasksWithImpl(sync_mode, impl_on_gpu_.get(), release);
 }
 
 void SkiaOutputSurfaceImpl::FlushGpuTasksWithImpl(
     SyncMode sync_mode,
-    SkiaOutputSurfaceImplOnGpu* impl_on_gpu) {
+    SkiaOutputSurfaceImplOnGpu* impl_on_gpu,
+    const gpu::SyncToken& release) {
   TRACE_EVENT1("viz", "SkiaOutputSurfaceImpl::FlushGpuTasks", "sync_mode",
                sync_mode);
 
@@ -1394,8 +1406,13 @@ void SkiaOutputSurfaceImpl::FlushGpuTasksWithImpl(
 
   // If |wait_for_finish| is true, a GPU task will be always scheduled to make
   // sure all pending tasks are finished on the GPU thread.
-  if (gpu_tasks_.empty() && sync_mode == SyncMode::kNoWait)
+  if (gpu_tasks_.empty() && sync_mode == SyncMode::kNoWait) {
+    if (release.HasData()) {
+      gpu_task_scheduler_->ScheduleGpuTask(base::DoNothing(),
+                                           /*sync_token_fences=*/{}, release);
+    }
     return;
+  }
 
   auto event = sync_mode != SyncMode::kNoWait
                    ? std::make_unique<base::WaitableEvent>()
@@ -1440,7 +1457,7 @@ void SkiaOutputSurfaceImpl::FlushGpuTasksWithImpl(
       std::move(gpu_tasks_), sync_mode, event.get(), impl_on_gpu, make_current_,
       need_framebuffer_, post_task_timestamp);
 
-  gpu::GpuTaskSchedulerHelper::ReportingCallback reporting_callback;
+  gpu::ReportingCallback reporting_callback;
   if (should_measure_next_post_task_) {
     // Note that the usage of base::Unretained() with the impl_on_gpu_ is
     // considered safe as it is also owned by |callback| and share the same
@@ -1452,7 +1469,7 @@ void SkiaOutputSurfaceImpl::FlushGpuTasksWithImpl(
 
   gpu_task_scheduler_->ScheduleGpuTask(std::move(callback),
                                        std::move(gpu_task_sync_tokens_),
-                                       std::move(reporting_callback));
+                                       release, std::move(reporting_callback));
 
   make_current_ = false;
   need_framebuffer_ = false;
@@ -1547,12 +1564,7 @@ gpu::SyncToken SkiaOutputSurfaceImpl::Flush() {
       gpu::CommandBufferNamespace::VIZ_SKIA_OUTPUT_SURFACE,
       impl_on_gpu_->command_buffer_id(), ++sync_fence_release_);
   sync_token.SetVerifyFlush();
-  auto callback =
-      base::BindOnce(&SkiaOutputSurfaceImplOnGpu::ReleaseFenceSync,
-                     base::Unretained(impl_on_gpu_.get()), sync_fence_release_);
-  EnqueueGpuTask(std::move(callback), {}, /*make_current=*/false,
-                 /*need_framebuffer=*/false);
-  FlushGpuTasks(SyncMode::kNoWait);
+  FlushGpuTasks(SyncMode::kNoWait, sync_token);
   return sync_token;
 }
 

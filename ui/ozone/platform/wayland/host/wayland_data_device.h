@@ -46,8 +46,6 @@ class WaylandDataDevice : public WaylandDataDeviceBase {
     virtual void OnDragLeave(base::TimeTicks timestamp) = 0;
     virtual void OnDragDrop(base::TimeTicks timestamp) = 0;
 
-    virtual const WaylandWindow* GetDragTarget() const = 0;
-
    protected:
     virtual ~DragDelegate() = default;
   };

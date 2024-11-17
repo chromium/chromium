@@ -12,8 +12,11 @@
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "components/signin/internal/identity_manager/oauth_multilogin_token_request.h"
+#include "components/signin/internal/identity_manager/oauth_multilogin_token_response.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/signin_client.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace {
 
@@ -32,8 +35,7 @@ OAuthMultiloginTokenFetcher::OAuthMultiloginTokenFetcher(
     const std::vector<CoreAccountId>& account_ids,
     SuccessCallback success_callback,
     FailureCallback failure_callback)
-    : OAuth2AccessTokenManager::Consumer("oauth_multilogin_token_fetcher"),
-      signin_client_(signin_client),
+    : signin_client_(signin_client),
       token_service_(token_service),
       account_ids_(account_ids),
       success_callback_(std::move(success_callback)),
@@ -51,58 +53,71 @@ OAuthMultiloginTokenFetcher::OAuthMultiloginTokenFetcher(
   DCHECK_EQ(account_ids_.size(), accounts_no_duplicates.size());
 #endif
 
-  for (const CoreAccountId& account_id : account_ids_)
+  for (const CoreAccountId& account_id : account_ids_) {
     StartFetchingToken(account_id);
+  }
 }
 
 OAuthMultiloginTokenFetcher::~OAuthMultiloginTokenFetcher() = default;
 
 void OAuthMultiloginTokenFetcher::StartFetchingToken(
     const CoreAccountId& account_id) {
-  DCHECK(!account_id.empty());
-  token_requests_.push_back(
-      token_service_->StartRequestForMultilogin(account_id, this));
+  CHECK(!account_id.empty());
+  // Add a request to `token_requests_` before calling `token_service_` to
+  // ensure that a request cannot complete before it's added to
+  // `token_requests_`.
+  // base::Unretained(this) is safe because `this` owns
+  // `OAuthMultiloginTokenRequest` which owns the callback.
+  token_requests_.push_back(std::make_unique<OAuthMultiloginTokenRequest>(
+      account_id,
+      base::BindOnce(&OAuthMultiloginTokenFetcher::OnTokenRequestComplete,
+                     base::Unretained(this))));
+  token_service_->StartRequestForMultilogin(*token_requests_.back());
 }
 
-void OAuthMultiloginTokenFetcher::OnGetTokenSuccess(
-    const OAuth2AccessTokenManager::Request* request,
-    const OAuth2AccessTokenConsumer::TokenResponse& token_response) {
-  CoreAccountId account_id = request->GetAccountId();
-  DCHECK(base::Contains(account_ids_, account_id));
-
-  const std::string token = token_response.access_token;
-  DCHECK(!token.empty());
-  // Do not use |request| and |token_response| below this line, as they are
-  // deleted.
-  EraseRequest(request);
-
-  const auto& inserted =
-      access_tokens_.insert(std::make_pair(account_id, token));
-  DCHECK(inserted.second);  // If this fires, we have a duplicate account.
-
-  if (access_tokens_.size() == account_ids_.size()) {
-    std::vector<AccountIdTokenPair> account_token_pairs;
-    for (const auto& id : account_ids_) {
-      const auto& it = access_tokens_.find(id);
-      DCHECK(!it->second.empty());
-      account_token_pairs.emplace_back(id, it->second);
-    }
-    RecordGetAccessTokenFinished(GoogleServiceAuthError::AuthErrorNone());
-    std::move(success_callback_).Run(account_token_pairs);
-    // Do not add anything below this line, as this may be deleted.
+void OAuthMultiloginTokenFetcher::OnTokenRequestComplete(
+    const OAuthMultiloginTokenRequest* request,
+    OAuthMultiloginTokenRequest::Result result) {
+  CoreAccountId account_id = request->account_id();
+  CHECK(base::Contains(account_ids_, account_id));
+  size_t num_erased = std::erase_if(
+      token_requests_,
+      [request](const auto& element) { return element.get() == request; });
+  CHECK_EQ(num_erased, 1U);
+  // Do not use `request` below this line, as it is deleted.
+  if (result.has_value()) {
+    TokenRequestSucceeded(account_id, std::move(result).value());
+  } else {
+    TokenRequestFailed(account_id, std::move(result).error());
   }
 }
 
-void OAuthMultiloginTokenFetcher::OnGetTokenFailure(
-    const OAuth2AccessTokenManager::Request* request,
-    const GoogleServiceAuthError& error) {
-  CoreAccountId account_id = request->GetAccountId();
-  VLOG(1) << "Failed to retrieve accesstoken account=" << account_id
+void OAuthMultiloginTokenFetcher::TokenRequestSucceeded(
+    const CoreAccountId& account_id,
+    OAuthMultiloginTokenResponse response) {
+  CHECK(!response.oauth_token().empty());
+  auto [_, inserted] =
+      token_responses_.insert({account_id, std::move(response)});
+  CHECK(inserted);  // If this fires, we have a duplicate account.
+
+  if (token_responses_.size() != account_ids_.size()) {
+    return;
+  }
+
+  // We've received access tokens for all accounts, return the result.
+  RecordGetAccessTokenFinished(GoogleServiceAuthError::AuthErrorNone());
+  std::move(success_callback_).Run(std::move(token_responses_));
+  // Do not add anything below this line, as `this` may be deleted.
+}
+
+void OAuthMultiloginTokenFetcher::TokenRequestFailed(
+    const CoreAccountId& account_id,
+    GoogleServiceAuthError error) {
+  VLOG(1) << "Failed to retrieve a token for multilogin. account=" << account_id
           << " error=" << error.ToString();
   if (error.IsTransientError() &&
       retried_requests_.find(account_id) == retried_requests_.end()) {
     retried_requests_.insert(account_id);
-    EraseRequest(request);
     // Fetching fresh access tokens requires network.
     signin_client_->DelayNetworkCall(
         base::BindOnce(&OAuthMultiloginTokenFetcher::StartFetchingToken,
@@ -110,22 +125,9 @@ void OAuthMultiloginTokenFetcher::OnGetTokenFailure(
     return;
   }
   RecordGetAccessTokenFinished(error);
-  // Copy the error because it is a reference owned by token_requests_.
-  GoogleServiceAuthError error_copy = error;
   token_requests_.clear();  // Cancel pending requests.
-  std::move(failure_callback_).Run(error_copy);
-  // Do not add anything below this line, as this may be deleted.
-}
-
-void OAuthMultiloginTokenFetcher::EraseRequest(
-    const OAuth2AccessTokenManager::Request* request) {
-  for (auto it = token_requests_.begin(); it != token_requests_.end(); ++it) {
-    if (it->get() == request) {
-      token_requests_.erase(it);
-      return;
-    }
-  }
-  NOTREACHED_IN_MIGRATION() << "Request not found";
+  std::move(failure_callback_).Run(error);
+  // Do not add anything below this line, as `this` may be deleted.
 }
 
 }  // namespace signin

@@ -147,15 +147,13 @@ std::string OCSPErrorToString(const bssl::OCSPVerifyResult& ocsp_result) {
 
   switch (ocsp_result.revocation_status) {
     case bssl::OCSPRevocationStatus::GOOD:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case bssl::OCSPRevocationStatus::REVOKED:
       return "OCSP response indicates that the certificate is revoked.";
     case bssl::OCSPRevocationStatus::UNKNOWN:
       return "OCSP responder doesn't know about the certificate.";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -175,11 +173,11 @@ void SignedExchangeHandler::SetShouldIgnoreCertValidityPeriodErrorForTesting(
 SignedExchangeHandler::SignedExchangeHandler(
     bool is_secure_transport,
     bool has_nosniff,
-    std::string content_type,
+    std::string_view content_type,
     std::unique_ptr<net::SourceStream> body,
     ExchangeHeadersCallback headers_callback,
     std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory,
-    const std::optional<net::IsolationInfo> outer_request_isolation_info,
+    std::optional<net::IsolationInfo> outer_request_isolation_info,
     int load_flags,
     const net::IPEndPoint& remote_endpoint,
     std::unique_ptr<blink::WebPackageRequestMatcher> request_matcher,
@@ -231,7 +229,7 @@ SignedExchangeHandler::SignedExchangeHandler(
                            "content type must be "
                            "\"application/signed-exchange;v=b3\". But the "
                            "response content type was \"%s\"",
-                           content_type.c_str()));
+                           std::string(content_type).c_str()));
     // Proceed to extract and redirect to the fallback URL.
   }
 
@@ -317,7 +315,7 @@ void SignedExchangeHandler::DidReadHeader(bool completed_syncly,
         result = ParseHeadersAndFetchCertificate();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
     if (result != SignedExchangeLoadResult::kSuccess) {
       RunErrorCallback(result, net::ERR_INVALID_SIGNED_EXCHANGE);
@@ -484,8 +482,8 @@ void SignedExchangeHandler::OnCertReceived(
     reporter_->set_cert_server_ip_address(cert_server_ip_address_);
 
   if (result != SignedExchangeLoadResult::kSuccess) {
-    UMA_HISTOGRAM_MEDIUM_TIMES("SignedExchange.Time.CertificateFetch.Failure",
-                               cert_fetch_duration);
+    DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+        "SignedExchange.Time.CertificateFetch.Failure", cert_fetch_duration);
 
     signed_exchange_utils::ReportErrorAndTraceEvent(
         devtools_proxy_.get(), "Failed to fetch the certificate.",
@@ -495,8 +493,8 @@ void SignedExchangeHandler::OnCertReceived(
     return;
   }
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("SignedExchange.Time.CertificateFetch.Success",
-                             cert_fetch_duration);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+      "SignedExchange.Time.CertificateFetch.Success", cert_fetch_duration);
   unverified_cert_chain_ = std::move(cert_chain);
 
   DCHECK(version_.has_value());

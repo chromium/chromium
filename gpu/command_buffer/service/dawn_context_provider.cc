@@ -38,6 +38,7 @@
 #include "gpu/config/gpu_preferences.h"
 #include "gpu/config/gpu_switches.h"
 #include "gpu/config/gpu_util.h"
+#include "third_party/dawn/include/dawn/webgpu_cpp_print.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnBackendContext.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnUtils.h"
@@ -50,6 +51,10 @@
 #include "third_party/dawn/include/dawn/native/D3D11Backend.h"
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
 #endif
 
 namespace gpu {
@@ -117,12 +122,21 @@ std::vector<const char*> GetEnabledToggles(
     // Use packed D24_UNORM_S8_UINT DXGI format for Depth24PlusStencil8
     // format.
     enabled_toggles.push_back("use_packed_depth24_unorm_stencil8_format");
-    // ClearRenderTargetView() is buggy with some GPUs, so use draw instead.
-    // TODO(crbug.com/329702368): only enable color_clear_with_draw for GPUs
-    // with the issue.
-    enabled_toggles.push_back("clear_color_with_draw");
   }
 #endif
+
+  if (backend_type == wgpu::BackendType::Vulkan) {
+#if BUILDFLAG(IS_ANDROID)
+    const auto* build_info = base::android::BuildInfo::GetInstance();
+    // Samsung devices are failing validation checks that texture allocation
+    // size is bigger than AHB size when they should. See
+    // https://crbug.com/377935752 for details.
+    if (std::string_view(build_info->brand()) == "samsung") {
+      enabled_toggles.push_back(
+          "ignore_imported_ahardwarebuffer_vulkan_image_size");
+    }
+#endif
+  }
 
   // Skip expensive swiftshader vkCmdDraw* for tests.
   // TODO(penghuang): rename kDisableGLDrawingForTests to
@@ -142,7 +156,6 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
   std::vector<wgpu::FeatureName> features = {
       wgpu::FeatureName::DawnInternalUsages,
       wgpu::FeatureName::ImplicitDeviceSynchronization,
-      wgpu::FeatureName::SurfaceCapabilities,
 #if BUILDFLAG(IS_ANDROID)
       wgpu::FeatureName::TextureCompressionETC2,
 #endif
@@ -183,7 +196,7 @@ std::vector<wgpu::FeatureName> GetRequiredFeatures(
       // The following features are always supported when running on the Vulkan
       // backend on Android.
       wgpu::FeatureName::SharedTextureMemoryAHardwareBuffer,
-      wgpu::FeatureName::SharedFenceVkSemaphoreSyncFD,
+      wgpu::FeatureName::SharedFenceSyncFD,
 
       // The following features are always supported by the the D3D backends.
       wgpu::FeatureName::SharedTextureMemoryD3D11Texture2D,
@@ -312,8 +325,7 @@ wgpu::BackendType DawnContextProvider::GetDefaultBackendType() {
 #elif BUILDFLAG(IS_APPLE)
   return wgpu::BackendType::Metal;
 #else
-  NOTREACHED_IN_MIGRATION();
-  return wgpu::BackendType::Null;
+  NOTREACHED();
 #endif
 }
 
@@ -395,15 +407,16 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
   // Provided to wgpu::Device as logging callback.
   static void LogInfo(WGPULoggingType type,
-                      char const* message,
-                      void* userdata) {
+                      WGPUStringView message,
+                      void*) {
+    std::string_view view = {message.data, message.length};
     switch (static_cast<wgpu::LoggingType>(type)) {
       case wgpu::LoggingType::Warning:
-        LOG(WARNING) << message;
+        LOG(WARNING) << view;
         break;
       case wgpu::LoggingType::Error:
-        LOG(ERROR) << message;
-        SetDawnErrorCrashKey(message);
+        LOG(ERROR) << view;
+        SetDawnErrorCrashKey(view);
         base::debug::DumpWithoutCrashing();
         break;
       default:
@@ -413,7 +426,7 @@ class DawnSharedContext : public base::RefCountedThreadSafe<DawnSharedContext>,
 
   ~DawnSharedContext() override;
 
-  void OnError(wgpu::ErrorType error_type, const char* message);
+  void OnError(wgpu::ErrorType error_type, wgpu::StringView message);
 
   // base::trace_event::MemoryDumpProvider implementation:
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs& args,
@@ -561,7 +574,7 @@ bool DawnSharedContext::Initialize(
 
   wgpu::DeviceDescriptor descriptor;
   descriptor.SetUncapturedErrorCallback(
-      [](const wgpu::Device&, wgpu::ErrorType type, const char* message,
+      [](const wgpu::Device&, wgpu::ErrorType type, wgpu::StringView message,
          DawnSharedContext* state) {
         if (type != wgpu::ErrorType::NoError) {
           state->OnError(type, message);
@@ -571,7 +584,7 @@ bool DawnSharedContext::Initialize(
   descriptor.SetDeviceLostCallback(
       wgpu::CallbackMode::AllowSpontaneous,
       [](const wgpu::Device&, wgpu::DeviceLostReason reason,
-         const char* message, DawnSharedContext* state) {
+         wgpu::StringView message, DawnSharedContext* state) {
         if (reason != wgpu::DeviceLostReason::Destroyed) {
           state->OnError(wgpu::ErrorType::DeviceLost, message);
         }
@@ -669,7 +682,7 @@ std::optional<error::ContextLostReason> DawnSharedContext::GetResetStatus()
 }
 
 void DawnSharedContext::OnError(wgpu::ErrorType error_type,
-                                const char* message) {
+                                wgpu::StringView message) {
   LOG(ERROR) << message;
   SetDawnErrorCrashKey(message);
 

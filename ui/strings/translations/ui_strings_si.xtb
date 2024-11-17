@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">සංවර්ධක UI මොඩියුලය (dev_ui) ස්ථාපන කර නැති බැවින් පිටුව පූරණ කිරීම අසමත් විය</translation>
 <translation id="5574202486608032840"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> පද්ධතිය</translation>
 <translation id="5583640892426849032">ආපසුයවනය</translation>
+<translation id="5606865426897221650">පටිත්ත</translation>
 <translation id="5613020302032141669">වම් ඊතලය</translation>
 <translation id="5633029987065897167">හිස්</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{මිනි 1}one{මිනි #}other{මිනි #}}</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">ඇතුළු කරන්න</translation>
 <translation id="8210608804940886430">පිටුව පහළට</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">ටැබ යතුර</translation>
 <translation id="8259556432390118667">ෂඩ් වර්ණ අගය</translation>
 <translation id="8328145009876646418">වම් කෙළවර</translation>
 <translation id="8331626408530291785">ඉහළට අනුචලනය කරන්න</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{තත් 1}one{තත් #}other{තත් #}}</translation>
 <translation id="9059834730836941392">දැනුම්දීම හකුළන්න</translation>
 <translation id="9170848237812810038">&amp;පසුගමනය</translation>
+<translation id="9195990613383871904">හෙට</translation>
+<translation id="928628199082367701">සුපිරි</translation>
 <translation id="932327136139879170">මුල් පිටුව</translation>
 <translation id="944069440740578670">නොකියවූ දැනුම්දීම්</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{තත්පර 1කට පෙර}one{තත්පර #කට පෙර}other{තත්පර #කට පෙර}}</translation>

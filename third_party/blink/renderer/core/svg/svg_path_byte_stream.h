@@ -23,6 +23,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
@@ -68,9 +69,10 @@ class SVGPathByteStream {
   bool operator==(const SVGPathByteStream& other) const {
     return data_ == other.data_;
   }
+  unsigned Hash() const { return StringHasher::HashMemory(data_); }
 
  private:
-  SVGPathByteStream(const Data& data) : data_(data) {}
+  explicit SVGPathByteStream(const Data& data) : data_(data) {}
 
   Data data_;
 };

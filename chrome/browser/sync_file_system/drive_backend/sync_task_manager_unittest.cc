@@ -230,7 +230,7 @@ class BlockerUpdateTestHelper : public SyncTask {
                           Log* log)
       : name_(name),
         app_id_(app_id),
-        paths_(paths.begin(), paths.end()),
+        paths_(base::from_range, paths),
         log_(log) {}
 
   BlockerUpdateTestHelper(const BlockerUpdateTestHelper&) = delete;

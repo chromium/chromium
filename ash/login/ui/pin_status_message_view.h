@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/account_id/account_id.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/view.h"
 
@@ -28,17 +29,20 @@ class PinStatusMessageView : public views::View {
     const raw_ptr<PinStatusMessageView> view_;
   };
 
-  using OnPinUnlock = base::RepeatingClosure;
+  using OnPinUnlock = base::RepeatingCallback<void(const AccountId&)>;
 
-  explicit PinStatusMessageView(base::RepeatingClosure on_pin_unlocked);
+  explicit PinStatusMessageView(OnPinUnlock on_pin_unlocked);
 
   PinStatusMessageView(const PinStatusMessageView&) = delete;
   PinStatusMessageView& operator=(const PinStatusMessageView&) = delete;
 
   ~PinStatusMessageView() override;
 
-  // Set remaining time to be shown in the message.
-  void SetPinAvailbleAt(base::Time available_at);
+  // Set the relevant PIN information (account ID, pin available time, if pin
+  // the only auth factor) to be shown in the message.
+  void SetPinInfo(const AccountId& user,
+                  base::Time available_at,
+                  bool is_pin_only);
 
   // views::View:
   void RequestFocus() override;
@@ -50,6 +54,8 @@ class PinStatusMessageView : public views::View {
   raw_ptr<views::Label> message_;
 
   OnPinUnlock on_pin_unlock_;
+  AccountId user_;
+  bool is_pin_only_;
   base::Time available_at_;
   base::MetronomeTimer timer_;
 };

@@ -58,7 +58,8 @@ class WebContentsTaskProvider::WebContentsEntry
   // Returns the |RendererTask| that corresponds to the given
   // |render_frame_host| or |nullptr| if the given frame is not tracked by this
   // entry.
-  RendererTask* GetTaskForFrame(RenderFrameHost* render_frame_host) const;
+  base::WeakPtr<RendererTask> GetTaskForFrame(
+      RenderFrameHost* render_frame_host) const;
 
   // content::WebContentsObserver:
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
@@ -161,7 +162,8 @@ void WebContentsTaskProvider::WebContentsEntry::ClearAllTasks(
   primary_main_frame_site_instance_ = nullptr;
 }
 
-RendererTask* WebContentsTaskProvider::WebContentsEntry::GetTaskForFrame(
+base::WeakPtr<RendererTask>
+WebContentsTaskProvider::WebContentsEntry::GetTaskForFrame(
     RenderFrameHost* render_frame_host) const {
   SiteInstance* site_instance = render_frame_host->GetSiteInstance();
   auto itr = site_instance_infos_.find(site_instance);
@@ -172,7 +174,7 @@ RendererTask* WebContentsTaskProvider::WebContentsEntry::GetTaskForFrame(
   if (!itr->second.frames.count(FindLocalRoot(render_frame_host)))
     return nullptr;
 
-  return itr->second.renderer_task.get();
+  return itr->second.renderer_task->AsWeakPtr();
 }
 
 RenderFrameHost* WebContentsTaskProvider::WebContentsEntry::FindLocalRoot(
@@ -236,14 +238,14 @@ void WebContentsTaskProvider::WebContentsEntry::RenderFrameReady(
   if (!render_frame_host)
     return;
 
-  Task* task = GetTaskForFrame(render_frame_host);
-
-  if (!task)
+  base::WeakPtr<Task> task = GetTaskForFrame(render_frame_host);
+  if (!task) {
     return;
+  }
 
   const base::ProcessId determine_pid_from_handle = base::kNullProcessId;
   provider_->UpdateTaskProcessInfoAndNotifyObserver(
-      task, render_frame_host->GetProcess()->GetProcess().Handle(),
+      task.get(), render_frame_host->GetProcess()->GetProcess().Handle(),
       determine_pid_from_handle);
 }
 
@@ -309,13 +311,14 @@ void WebContentsTaskProvider::WebContentsEntry::DidFinishNavigation(
     return;
   }
 
-  RendererTask* main_frame_task =
+  base::WeakPtr<RendererTask> main_frame_task =
       GetTaskForFrame(web_contents()->GetPrimaryMainFrame());
-  if (!main_frame_task)
+  if (!main_frame_task) {
     return;
+  }
 
   for (auto& it : site_instance_infos_) {
-    RendererTask* task = it.second.renderer_task.get();
+    base::WeakPtr<RendererTask> task = it.second.renderer_task->AsWeakPtr();
 
     // Listening to WebContentsObserver::TitleWasSet() only is not enough in
     // some cases when the the web page doesn't have a title. That's why we
@@ -351,9 +354,8 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
     case RenderFrameHost::LifecycleState::kActive:
       break;
     default:
-      NOTREACHED_IN_MIGRATION() << "Illegal RFH state for TaskManager: "
-                                << static_cast<int>(rfh_state);
-      break;
+      NOTREACHED() << "Illegal RFH state for TaskManager: "
+                   << static_cast<int>(rfh_state);
   }
 
   // Exclude sad tabs, sad OOPIFs.
@@ -393,8 +395,9 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
   // represented by a SubframeTask.
   if (!site_instance_exists ||
       (is_primary_main_frame && !site_instance_is_main)) {
-    auto* primary_main_frame_task =
+    base::WeakPtr<RendererTask> primary_main_frame_task =
         GetTaskForFrame(web_contents()->GetPrimaryMainFrame());
+
     if (rfh_state == RenderFrameHost::LifecycleState::kInBackForwardCache) {
       // Use RFH::GetMainFrame instead web_contents()->GetPrimaryMainFrame()
       // because the BFCached frames are not the currently active main frame.
@@ -409,11 +412,11 @@ void WebContentsTaskProvider::WebContentsEntry::CreateTaskForFrame(
       new_task = tag->CreateTask(provider_);
       primary_main_frame_site_instance_ = site_instance;
     } else if (render_frame_host->IsFencedFrameRoot()) {
-      new_task = std::make_unique<FencedFrameTask>(render_frame_host,
-                                                   primary_main_frame_task);
+      new_task = std::make_unique<FencedFrameTask>(
+          render_frame_host, std::move(primary_main_frame_task));
     } else {
-      new_task = std::make_unique<SubframeTask>(render_frame_host,
-                                                primary_main_frame_task);
+      new_task = std::make_unique<SubframeTask>(
+          render_frame_host, std::move(primary_main_frame_task));
     }
   }
 
@@ -547,7 +550,7 @@ void WebContentsTaskProvider::OnWebContentsTagRemoved(
 Task* WebContentsTaskProvider::GetTaskOfUrlRequest(int child_id, int route_id) {
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromID(child_id, route_id);
-  return GetTaskOfFrame(rfh);
+  return GetTaskOfFrame(rfh).get();
 }
 
 bool WebContentsTaskProvider::HasWebContents(
@@ -555,7 +558,8 @@ bool WebContentsTaskProvider::HasWebContents(
   return entries_map_.count(web_contents) != 0;
 }
 
-Task* WebContentsTaskProvider::GetTaskOfFrame(content::RenderFrameHost* rfh) {
+base::WeakPtr<Task> WebContentsTaskProvider::GetTaskOfFrame(
+    content::RenderFrameHost* rfh) {
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
 

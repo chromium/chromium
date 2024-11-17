@@ -46,7 +46,7 @@ import java.util.function.Function;
  *
  * @param <HostStationT> the type of host {@link Station} where this app menu is opened.
  */
-public abstract class AppMenuFacility<HostStationT extends Station>
+public abstract class AppMenuFacility<HostStationT extends Station<?>>
         extends ScrollableFacility<HostStationT> {
 
     /** Create a new app menu item stub which throws UnsupportedOperationException if selected. */
@@ -63,7 +63,7 @@ public abstract class AppMenuFacility<HostStationT extends Station>
     }
 
     /** Create a new app menu item which transitions to a |DestinationStationT| when selected. */
-    protected <DestinationStationT extends Station>
+    protected <DestinationStationT extends Station<?>>
             Item<DestinationStationT> declareMenuItemToStation(
                     ItemsBuilder items,
                     @IdRes int id,

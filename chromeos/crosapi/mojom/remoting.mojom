@@ -10,7 +10,7 @@ import "remoting/host/mojom/remote_support.mojom";
 // in lacros-chrome.
 // Next version: 1
 // Next method id: 2
-[Stable, Uuid="9865af55-8513-4f06-a785-2cb064963c3b"]
+[Uuid="9865af55-8513-4f06-a785-2cb064963c3b"]
 interface Remoting {
   // Returns the version and supported features of the CRD host in ash-chrome.
   GetSupportHostDetails@0() => (remoting.mojom.SupportHostDetails host_details);

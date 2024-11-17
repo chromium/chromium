@@ -55,9 +55,25 @@ BASE_DECLARE_FEATURE(kLensOverlay);
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayTranslateButton);
 
+// Enables the Lens overlay translate button.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayTranslateLanguages);
+
+// Enables the Lens overlay image context menu actions.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayImageContextMenuActions);
+
 // Enables the Lens overlay searchbox.
 COMPONENT_EXPORT(LENS_FEATURES)
 BASE_DECLARE_FEATURE(kLensOverlayContextualSearchbox);
+
+// Enables the Lens overlay optimizations.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlayLatencyOptimizations);
+
+// Enables the Lens overlay HaTS survey.
+COMPONENT_EXPORT(LENS_FEATURES)
+BASE_DECLARE_FEATURE(kLensOverlaySurvey);
 
 // The base URL for Lens.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -238,6 +254,10 @@ extern bool GetLensOverlaySendLatencyGen204();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool GetLensOverlaySendTaskCompletionGen204();
 
+// Returns whether or not to send semantic event pings.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlaySendSemanticEventGen204();
+
 // Returns the finch configured max image height for the Lens overlay feature
 // when tiered downscaling approach is disabled.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -337,6 +357,57 @@ extern bool UseVideoContextForTextOnlyLensOverlayRequests();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseVideoContextForMultimodalLensOverlayRequests();
 
+// Returns whether to use the new optimized request flow which makes a request
+// to get the cluster info prior to uploading any image or page content bytes.
+// This also decouples sending the images and page content bytes in the same
+// request.
+// TODO(crbug.com/373878302): Move this flag to LensOverlayLatencyOptimizations
+// feature.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseOptimizedRequestFlow();
+
+// Returns the finch configured endpoint URL for the cluster info request.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensOverlayClusterInfoEndpointUrl();
+
+// Returns whether or not to send the search session and visual
+// search request ids in suggest requests from the contextual
+// search box.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlaySendLensInputsForContextualSuggest();
+
+// Returns whether or not to send the search session and visual
+// search request ids in suggest requests from the Lens
+// search box.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlaySendLensInputsForLensSuggest();
+
+// Returns whether or not to send the visual search interaction data
+// in suggest requests from the Lens search box.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool GetLensOverlaySendLensVisualInteractionDataForLensSuggest();
+
+// Returns the max number of bytes to allow for content uploads.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern uint32_t GetLensOverlayFileUploadLimitBytes();
+
+// Returns whether to use the &vit=pdf param for the search request.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UsePdfVitParam();
+
+// Returns whether to use the &vit=wp param for the search request.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseWebpageVitParam();
+
+// Returns whether to use the PDF_QUERY interaction type for PDF queries.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UsePdfInteractionType();
+
+// Returns whether to use the WEBPAGE_QUERY interaction type for webpage
+// queries.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool UseWebpageInteractionType();
+
 // Returns whether to include PDFs from the underlying page in the request to be
 // used as page context.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -354,6 +425,14 @@ extern bool UseInnerTextAsContext();
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool UseInnerHtmlAsContext();
 
+// Returns whether to include the page URL in the page content upload request.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool SendPageUrlForContextualization();
+
+// The timeout set for page content upload requests in milliseconds.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayPageContentRequestTimeoutMs();
+
 // Returns the margin in pixels to add to the top and bottom of word bounding
 // boxes.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -363,10 +442,6 @@ extern int GetLensOverlayVerticalTextMargin();
 // boxes.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern int GetLensOverlayHorizontalTextMargin();
-
-// Returns whether to show the lens overlay search bubble.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool IsLensOverlaySearchBubbleEnabled();
 
 // Returns whether to render the Lens overlay shimmer.
 COMPONENT_EXPORT(LENS_FEATURES)
@@ -449,11 +524,6 @@ extern bool SendVisualSearchInteractionParamForLensTextQueries();
 // as a threshold for triggering select text chip over region search.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern double GetLensOverlaySelectTextOverRegionTriggerThreshold();
-
-// Returns whether the shimmer should be rendered using Canvas2D or CSS Paint
-// Api.
-COMPONENT_EXPORT(LENS_FEATURES)
-extern bool GetLensOverlayUseShimmerCanvas();
 
 // Minimum area (in device-independent pixels) for significant regions to send
 // with the screenshot.
@@ -548,6 +618,53 @@ int GetLensOverlayImageContextMenuActionsTextReceivedTimeout();
 // Whether to show the contextual searchbox in the Lens Overlay.
 COMPONENT_EXPORT(LENS_FEATURES)
 extern bool IsLensOverlayContextualSearchboxEnabled();
+
+// Whether to enable the early interaction optimization for the Lens Overlay.
+// This optimization allows the interaction request to be sent before the full
+// image response is received, if the cluster info is already available. This
+// optimization will do nothing if the cluster info optimization is disabled.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayEarlyInteractionOptimizationEnabled();
+
+// Time delay for the results trigger of the Lens Overlay HaTS survey.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern base::TimeDelta GetLensOverlaySurveyResultsTime();
+
+// Whether to enable a fetch to get the list of languages supported by the Lens
+// server.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool IsLensOverlayTranslateLanguagesFetchEnabled();
+
+// The translate endpoint URL for fetching supported languages.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensOverlayTranslateEndpointURL();
+
+// Returns whether to show the ghost loader in the contextual searchbox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool ShowContextualSearchboxGhostLoaderLoadingState();
+
+// The list of source languages supported by Lens.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensOverlayTranslateSourceLanguages();
+
+// The list of additional target translate languages supported by Lens. To get
+// the full list of supported target languages, we add this value to the list of
+// source languages supported by Lens.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern std::string GetLensOverlayTranslateTargetLanguages();
+
+// The timeout for resetting the cache of supported languages in the WebUI.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern base::TimeDelta GetLensOverlaySupportedLanguagesCacheTimeoutMs();
+
+// Returns whether to show autocomplete search suggestions in the contextual
+// searchbox.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern bool ShowContextualSearchboxSearchSuggest();
+
+// The amount of recent languages to show in the language pickers.
+COMPONENT_EXPORT(LENS_FEATURES)
+extern int GetLensOverlayTranslateRecentLanguagesAmount();
 
 }  // namespace lens::features
 

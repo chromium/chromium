@@ -248,24 +248,6 @@ TEST_F(BlobDataHandleTest, CreateFromEmptyData) {
   TestCreateBlob(std::move(data), {});
 }
 
-TEST_F(BlobDataHandleTest, CreateFromUUID) {
-  String kUuid = WTF::CreateCanonicalUUIDString();
-  String kType = "content/type";
-  uint64_t kSize = 1234;
-
-  scoped_refptr<BlobDataHandle> handle =
-      BlobDataHandle::Create(kUuid, kType, kSize);
-  EXPECT_EQ(kUuid, handle->Uuid());
-  EXPECT_EQ(kType, handle->GetType());
-  EXPECT_EQ(kSize, handle->size());
-  EXPECT_FALSE(handle->IsSingleUnknownSizeFile());
-
-  blob_registry_remote_.FlushForTesting();
-  EXPECT_EQ(0u, mock_blob_registry_.registrations.size());
-  ASSERT_EQ(1u, mock_blob_registry_.owned_receivers.size());
-  EXPECT_EQ(kUuid, mock_blob_registry_.owned_receivers[0].uuid);
-}
-
 TEST_F(BlobDataHandleTest, CreateFromFile) {
   String kPath = "path";
   uint64_t kOffset = 0;

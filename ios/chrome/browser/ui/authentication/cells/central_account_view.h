@@ -34,6 +34,9 @@ struct ManagementState;
 - (NSString*)email;
 - (BOOL)managed;
 
+// update the top padding.
+- (void)updateTopPadding:(CGFloat)existingPadding;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_CELLS_CENTRAL_ACCOUNT_VIEW_H_

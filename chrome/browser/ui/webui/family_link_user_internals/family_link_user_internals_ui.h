@@ -5,7 +5,20 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_FAMILY_LINK_USER_INTERNALS_FAMILY_LINK_USER_INTERNALS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_FAMILY_LINK_USER_INTERNALS_FAMILY_LINK_USER_INTERNALS_UI_H_
 
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
+
+class FamilyLinkUserInternalsUI;
+
+class FamilyLinkUserInternalsUIConfig
+    : public content::DefaultWebUIConfig<FamilyLinkUserInternalsUI> {
+ public:
+  FamilyLinkUserInternalsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIFamilyLinkUserInternalsHost) {}
+};
 
 // The implementation for the chrome://family-link-user-internals page.
 class FamilyLinkUserInternalsUI : public content::WebUIController {

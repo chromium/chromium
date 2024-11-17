@@ -144,8 +144,6 @@ public class SearchActivityPreferencesManagerTest {
         SearchActivityPreferences p2 =
                 new SearchActivityPreferences(
                         "test", new GURL("https://test.url"), true, true, true);
-        Assert.assertEquals(p1, p1);
-        Assert.assertEquals(p2, p2);
         Assert.assertEquals(p1, p2);
         Assert.assertEquals(p1.hashCode(), p2.hashCode());
 

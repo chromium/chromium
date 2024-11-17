@@ -46,6 +46,7 @@ source_set("unit_tests") {
     "//ios/chrome/app",
     "//ios/chrome/app:enterprise_app_agent",
     "//ios/chrome/app:safe_mode_app_state_agent",
+    "//ios/chrome/app/profile",
     "//ios/chrome/app/startup",
     "//ios/chrome/browser/crash_report/model",
     "//ios/chrome/browser/device_sharing/model",
@@ -61,7 +62,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
-    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/main",
@@ -139,8 +141,9 @@ source_set("app_state_header") {
     "startup_information.h",
   ]
   public_deps = [
+    "//ios/chrome/app/background_refresh:headers",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_observer",
-    "//ios/chrome/browser/ui/scoped_iphone_portrait_only",
+    "//ios/chrome/browser/ui/device_orientation",
     "//ios/chrome/browser/ui/scoped_ui_blocker",
   ]
 }
@@ -184,6 +187,7 @@ source_set("application_delegate_internal") {
     "//components/previous_session_info",
     "//components/ukm/ios:ukm_reporting_ios_util",
     "//ios/chrome/app",
+    "//ios/chrome/app:task_names",
     "//ios/chrome/app/profile",
     "//ios/chrome/app/startup",
     "//ios/chrome/app/startup:ios_enable_sandbox_dump_buildflags",
@@ -210,13 +214,15 @@ source_set("application_delegate_internal") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/public/features:system_flags",
-    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/tabs/model/inactive_tabs",
     "//ios/chrome/browser/ui/authentication",
+    "//ios/chrome/browser/ui/device_orientation",
     "//ios/chrome/browser/ui/main",
-    "//ios/chrome/browser/ui/scoped_iphone_portrait_only",
     "//ios/chrome/browser/url_loading/model",
     "//ios/chrome/browser/web_state_list/model:session_metrics",
     "//ios/chrome/browser/web_state_list/model/web_usage_enabler",
@@ -250,6 +256,8 @@ source_set("application_delegate_internal") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "app_init_stage_test_utils.cc",
+    "app_init_stage_test_utils.h",
     "fake_startup_information.h",
     "fake_startup_information.mm",
     "metrics_mediator_testing.h",

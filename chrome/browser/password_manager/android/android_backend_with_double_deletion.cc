@@ -149,11 +149,20 @@ void AndroidBackendWithDoubleDeletion::RemoveLoginsCreatedBetweenAsync(
     const base::Location& location,
     base::Time delete_begin,
     base::Time delete_end,
+    base::OnceCallback<void(bool)> sync_completion,
     PasswordChangesOrErrorReply callback) {
+  // The `sync_completion` callback is only relevant for Account Password Sync
+  // which don't exist on Android, thus, implementing such a callback is
+  // problematic.
+  // TODO(crbug.com/377474356): remove sync_completion callback in this
+  // interface.
+  CHECK(!sync_completion);
   android_backend_->RemoveLoginsCreatedBetweenAsync(
-      location, delete_begin, delete_end, std::move(callback));
+      location, delete_begin, delete_end, base::NullCallback(),
+      std::move(callback));
   built_in_backend_->RemoveLoginsCreatedBetweenAsync(
-      location, delete_begin, delete_end, base::DoNothing());
+      location, delete_begin, delete_end, base::NullCallback(),
+      base::DoNothing());
 }
 
 void AndroidBackendWithDoubleDeletion::DisableAutoSignInForOriginsAsync(

@@ -88,8 +88,7 @@ double CSSNumericLiteralValue::ComputeSeconds() const {
   if (current_type == UnitType::kMilliseconds) {
     return num_ / 1000;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 double CSSNumericLiteralValue::ComputeDegrees() const {
@@ -105,8 +104,7 @@ double CSSNumericLiteralValue::ComputeDegrees() const {
     case UnitType::kTurns:
       return Turn2deg(num_);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 
@@ -309,13 +307,12 @@ String CSSNumericLiteralValue::CustomCSSText() const {
         int int_value = value;
         const char* unit_type = UnitTypeToString(GetType());
         builder.AppendNumber(int_value);
-        builder.Append(unit_type, static_cast<unsigned>(strlen(unit_type)));
+        builder.Append(StringView(unit_type));
         text = builder.ReleaseString();
       }
     } break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return text;
 }
@@ -368,6 +365,12 @@ bool CSSNumericLiteralValue::Equals(const CSSNumericLiteralValue& other) const {
     default:
       return false;
   }
+}
+
+unsigned CSSNumericLiteralValue::CustomHash() const {
+  uint64_t val = base::bit_cast<uint64_t>(num_);
+  return WTF::HashInts(static_cast<unsigned>(GetType()),
+                       WTF::HashInts(val >> 32, val));
 }
 
 CSSPrimitiveValue::UnitType CSSNumericLiteralValue::CanonicalUnit() const {

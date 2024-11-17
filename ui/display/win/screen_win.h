@@ -15,6 +15,7 @@
 #include "ui/display/display_export.h"
 #include "ui/display/screen.h"
 #include "ui/display/win/color_profile_reader.h"
+#include "ui/display/win/screen_win_display.h"
 #include "ui/display/win/uwp_text_scale_factor.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/mojom/dxgi_info.mojom.h"
@@ -184,6 +185,9 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
       gfx::NativeWindow window) const;
 
  protected:
+  FRIEND_TEST_ALL_PREFIXES(ScreenWinTestSingleDisplay1x,
+                           DisconnectPrimaryDisplay);
+
   // `initialize_from_system` is true if the ScreenWin should be initialized
   // from the Windows desktop environment, e.g., the monitor information and
   // configuration. It is false in unit tests, true in Chrome and browser
@@ -218,12 +222,13 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
       const std::vector<internal::DisplayInfo>& display_infos);
 
   // Virtual to support mocking by unit tests.
-  virtual MONITORINFOEX MonitorInfoFromScreenPoint(
+  virtual std::optional<MONITORINFOEX> MonitorInfoFromScreenPoint(
       const gfx::Point& screen_point) const;
-  virtual MONITORINFOEX MonitorInfoFromScreenRect(const gfx::Rect& screen_rect)
-      const;
-  virtual MONITORINFOEX MonitorInfoFromWindow(HWND hwnd, DWORD default_options)
-      const;
+  virtual std::optional<MONITORINFOEX> MonitorInfoFromScreenRect(
+      const gfx::Rect& screen_rect) const;
+  virtual std::optional<MONITORINFOEX> MonitorInfoFromWindow(
+      HWND hwnd,
+      DWORD default_options) const;
   virtual HWND GetRootWindow(HWND hwnd) const;
   virtual int GetSystemMetrics(int metric) const;
 
@@ -255,7 +260,8 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // Returns the ScreenWinDisplay corresponding to the primary monitor.
   ScreenWinDisplay GetPrimaryScreenWinDisplay() const;
 
-  ScreenWinDisplay GetScreenWinDisplay(const MONITORINFOEX& monitor_info) const;
+  ScreenWinDisplay GetScreenWinDisplay(
+      std::optional<MONITORINFOEX> monitor_info) const;
 
   // Returns the result of calling |getter| with |value| on the global
   // ScreenWin if it exists, otherwise return the default ScreenWinDisplay.
@@ -266,8 +272,6 @@ class DISPLAY_EXPORT ScreenWin : public Screen,
   // Returns the result of GetSystemMetrics for |metric| scaled to the specified
   // |scale_factor|.
   int GetSystemMetricsForScaleFactor(float scale_factor, int metric) const;
-
-  void RecordDisplayScaleFactors() const;
 
   //-----------------------------------------------------------------
   // UwpTextScaleFactor::Observer:

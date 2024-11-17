@@ -346,8 +346,7 @@ GLenum GetSwizzleForChannel(GLenum channel,
     case GL_ALPHA:
       return swizzle->alpha;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return GL_NONE;
+      NOTREACHED();
   }
 }
 
@@ -1416,8 +1415,7 @@ GLenum Texture::SetParameteri(
     case GL_REQUIRED_TEXTURE_IMAGE_UNITS_OES:
       return GL_INVALID_ENUM;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return GL_INVALID_ENUM;
+      NOTREACHED();
   }
   Update();
   UpdateCleared();
@@ -1923,7 +1921,7 @@ void TextureManager::RemoveFramebufferManager(
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TextureManager::Initialize() {
@@ -2449,8 +2447,7 @@ TextureRef* TextureManager::GetTextureInfoForTarget(
       texture = unit.bound_texture_2d_array.get();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
   return texture;
 }
@@ -3245,7 +3242,7 @@ GLenum TextureManager::AdjustTexInternalFormat(
             return GL_RG8;
         }
       } else {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
   }
@@ -3927,7 +3924,7 @@ bool Texture::CompatibleWithSamplerUniformType(
       category = SAMPLER_SHADOW;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   const LevelInfo* level_info = GetBaseLevelInfo();
@@ -3986,13 +3983,12 @@ bool Texture::CompatibleWithSamplerUniformType(
       // Unsigned integer formats.
       return category == SAMPLER_UNSIGNED;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Type: " << GLES2Util::GetStringEnum(level_info->type)
-          << " Format: " << GLES2Util::GetStringEnum(level_info->format)
-          << "  Internal format: "
-          << GLES2Util::GetStringEnum(level_info->internal_format);
+      NOTREACHED() << "Type: " << GLES2Util::GetStringEnum(level_info->type)
+                   << " Format: "
+                   << GLES2Util::GetStringEnum(level_info->format)
+                   << "  Internal format: "
+                   << GLES2Util::GetStringEnum(level_info->internal_format);
   }
-  return false;
 }
 
 }  // namespace gles2

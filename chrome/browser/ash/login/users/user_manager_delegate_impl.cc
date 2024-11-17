@@ -64,8 +64,7 @@ std::optional<user_manager::UserType>
 UserManagerDelegateImpl::GetDeviceLocalAccountUserType(std::string_view email) {
   auto type = policy::GetDeviceLocalAccountType(email);
   if (!type.has_value()) {
-    NOTREACHED_IN_MIGRATION();
-    return std::nullopt;
+    NOTREACHED();
   }
   return chrome_user_manager_util::DeviceLocalAccountTypeToUserType(*type);
 }

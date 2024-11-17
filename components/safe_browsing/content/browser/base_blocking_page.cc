@@ -71,7 +71,7 @@ BaseBlockingPage::BaseBlockingPage(
           /* created_prior_to_navigation */
           IsMainPageLoadPending(unsafe_resources))) {}
 
-BaseBlockingPage::~BaseBlockingPage() {}
+BaseBlockingPage::~BaseBlockingPage() = default;
 
 // static
 const security_interstitials::BaseSafeBrowsingErrorUI::SBErrorDisplayOptions
@@ -159,8 +159,7 @@ std::string BaseBlockingPage::GetMetricPrefix(
     case BaseSafeBrowsingErrorUI::SB_REASON_PHISHING:
       return "phishing";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "unkown_metric_prefix";
+  NOTREACHED();
 }
 
 // static

@@ -242,6 +242,15 @@ void DownloadFileImpl::Initialize(
   } else {
     bytes_so_far = save_info_->GetStartingFileWriteOffset();
   }
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  // Create the obfuscator if enterprise deep scanning is enabled.
+  if (save_info_->needs_obfuscation && !IsParallelDownloadEnabled()) {
+    obfuscator_ =
+        std::make_unique<enterprise_obfuscation::DownloadObfuscator>();
+  }
+#endif
+
   int64_t bytes_wasted = 0;
   DownloadInterruptReason reason = file_.Initialize(
       save_info_->file_path, default_download_directory_,
@@ -305,7 +314,11 @@ DownloadInterruptReason DownloadFileImpl::ValidateAndWriteDataToFile(
     size_t bytes_to_write) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Check if some of the data is for validation purpose.
-  if (bytes_to_validate > 0 &&
+  bool should_validate = bytes_to_validate > 0;
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  should_validate = should_validate && !obfuscator_;
+#endif
+  if (should_validate &&
       !file_.ValidateDataInFile(offset, data, bytes_to_validate)) {
     return DOWNLOAD_INTERRUPT_REASON_FILE_HASH_MISMATCH;
   }
@@ -313,6 +326,31 @@ DownloadInterruptReason DownloadFileImpl::ValidateAndWriteDataToFile(
   // and read the next chunk.
   if (bytes_to_write <= 0)
     return DOWNLOAD_INTERRUPT_REASON_NONE;
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  if (obfuscator_) {
+    bool is_last_chunk =
+        save_info_->total_bytes > 0 &&
+        static_cast<int64_t>(offset + bytes_to_validate + bytes_to_write) ==
+            save_info_->total_bytes;
+    auto obfuscated_data = obfuscator_->ObfuscateChunk(
+        base::span(reinterpret_cast<const uint8_t*>(data + bytes_to_validate),
+                   bytes_to_write),
+        is_last_chunk);
+
+    // TODO(b/367259664): Add better error handling for file obfuscation.
+    if (!obfuscated_data.has_value()) {
+      return DOWNLOAD_INTERRUPT_REASON_FILE_FAILED;
+    }
+
+    WillWriteToDisk(obfuscated_data.value().size());
+    return file_.WriteDataToFile(
+        file_.bytes_so_far(),
+        reinterpret_cast<const char*>(obfuscated_data.value().data()),
+        obfuscated_data.value().size());
+  }
+#endif
+
   // Write the remaining data to disk.
   WillWriteToDisk(bytes_to_write);
   return file_.WriteDataToFile(offset + bytes_to_validate,
@@ -449,6 +487,18 @@ void DownloadFileImpl::RenameWithRetryInternal(
 
   DownloadInterruptReason reason = file_.Rename(new_path);
 
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  // Handle the case where the file is shorter due to deobfuscation.
+  if (obfuscator_ && reason == DOWNLOAD_INTERRUPT_REASON_FILE_TOO_SHORT) {
+    int64_t expected_size = bytes_seen_ + obfuscator_->GetTotalOverhead();
+    int64_t actual_size = file_.bytes_so_far();
+    if (expected_size >= 0 && actual_size == expected_size) {
+      // Ignore error as the file was deobfuscated before being renamed.
+      reason = DOWNLOAD_INTERRUPT_REASON_NONE;
+    }
+  }
+#endif
+
   // Attempt to retry the rename if possible. If the rename failed and the
   // subsequent open also failed, then in_progress() would be false. We don't
   // try to retry renames if the in_progress() was false to begin with since we
@@ -539,6 +589,12 @@ void DownloadFileImpl::SetPotentialFileLength(int64_t length) {
       potential_file_length_ == kUnknownContentLength) {
     potential_file_length_ = length;
   }
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  if (obfuscator_) {
+    potential_file_length_ += obfuscator_->GetTotalOverhead();
+  }
+#endif
 
   // TODO(qinmin): interrupt the download if the received bytes are larger
   // than content length limit.
@@ -637,8 +693,7 @@ void DownloadFileImpl::StreamActive(SourceStream* source_stream,
       case InputStream::COMPLETE:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     now = base::TimeTicks::Now();
   } while (state == InputStream::HAS_DATA &&
@@ -721,7 +776,34 @@ void DownloadFileImpl::NotifyObserver(SourceStream* source_stream,
 void DownloadFileImpl::OnDownloadCompleted() {
   RecordFileBandwidth(bytes_seen_, base::TimeTicks::Now() - download_start_);
   weak_factory_.InvalidateWeakPtrs();
+
+#if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
+  // If total bytes not provided, we append an empty obfuscated chunk to
+  // protect against truncation.
+  if (obfuscator_ && save_info_->total_bytes == 0) {
+    auto obfuscated_empty_data = obfuscator_->ObfuscateChunk({}, true);
+    if (!obfuscated_empty_data.has_value()) {
+      SendErrorUpdateIfFinished(DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
+      return;
+    }
+
+    DownloadInterruptReason reason = file_.WriteDataToFile(
+        file_.bytes_so_far(),
+        reinterpret_cast<const char*>(obfuscated_empty_data.value().data()),
+        obfuscated_empty_data.value().size());
+
+    if (reason != DOWNLOAD_INTERRUPT_REASON_NONE) {
+      SendErrorUpdateIfFinished(reason);
+      return;
+    }
+  }
+
+  std::unique_ptr<crypto::SecureHash> hash_state =
+      obfuscator_ ? obfuscator_->GetUnobfuscatedHash() : file_.Finish();
+#else
   std::unique_ptr<crypto::SecureHash> hash_state = file_.Finish();
+#endif
+
   update_timer_.reset();
   main_task_runner_->PostTask(
       FROM_HERE,
@@ -867,6 +949,8 @@ void DownloadFileImpl::SendErrorUpdateIfFinished(
   // Shut down processing and signal an error to our observer.
   // Our observer will clean us up.
   weak_factory_.InvalidateWeakPtrs();
+
+  // TODO(b/367257039): Maintain obfuscated file hash for interrupted downloads.
   std::unique_ptr<crypto::SecureHash> hash_state = file_.Finish();
   main_task_runner_->PostTask(
       FROM_HERE,
@@ -931,6 +1015,6 @@ DownloadFileImpl::RenameParameters::RenameParameters(
       retries_left(kMaxRenameRetries),
       completion_callback(std::move(completion_callback)) {}
 
-DownloadFileImpl::RenameParameters::~RenameParameters() {}
+DownloadFileImpl::RenameParameters::~RenameParameters() = default;
 
 }  // namespace download

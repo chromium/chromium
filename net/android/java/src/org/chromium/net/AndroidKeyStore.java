@@ -114,7 +114,7 @@ public class AndroidKeyStore {
      *
      * @param privateKey The PrivateKey handle.
      * @param algorithm The cipher to use.
-     * @param input The input to encrypt.
+     * @param message The input to encrypt.
      * @return ciphertext as a byte buffer.
      */
     @CalledByNative

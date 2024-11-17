@@ -588,7 +588,7 @@ public class PaymentRequestService
         }
         mSpec = spec;
         mBrowserPaymentRequest.onSpecValidated(mSpec);
-        logRequestedMethods(mSpec.getMethodData());
+        logRequestedMethods();
         startPaymentAppService();
         return true;
     }
@@ -720,7 +720,7 @@ public class PaymentRequestService
         return sNativeObserverForTest;
     }
 
-    private void logRequestedMethods(Map<String, PaymentMethodData> methodDataMap) {
+    private void logRequestedMethods() {
         List<Integer> methodTypes = new ArrayList<>();
         for (String methodName : mSpec.getMethodData().keySet()) {
             switch (methodName) {

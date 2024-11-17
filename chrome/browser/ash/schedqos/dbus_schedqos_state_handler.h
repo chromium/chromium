@@ -97,12 +97,13 @@ class DBusSchedQOSStateHandler
   explicit DBusSchedQOSStateHandler(
       scoped_refptr<base::SequencedTaskRunner> main_task_runner);
 
+  void WaitForResourcedAvailable();
+
   void CheckResourcedDisconnected(dbus::DBusResult result);
 
   void OnServiceConnected(bool success);
 
-  void SetProcessPriorityOnThread(base::ProcessId process_id,
-                                  base::Process::Priority priority);
+  void SetProcessPriorityOnThread(base::ProcessId process_id);
 
   void OnSetProcessPriorityFinish(base::ProcessId process_id,
                                   base::Process::Priority priority,
@@ -130,9 +131,17 @@ class DBusSchedQOSStateHandler
   SEQUENCE_CHECKER(sequence_checker_);
 
   bool is_connected_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool is_dbus_down_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   base::Lock process_state_map_lock_;
 
+  // process_state_map_ is used for 2 purposes:
+  //
+  // * To return the latest process state from GetProcessPriority().
+  //    * GetProcessPriority() return the latest value set by
+  //      SetProcessPriority() as if it is synchronously updated while the
+  //      actual request is asynchronously sent to resourced.
+  // * To hold pending requests while resourced is not available.
   std::map<base::ProcessId, ProcessState> process_state_map_
       GUARDED_BY(process_state_map_lock_);
 

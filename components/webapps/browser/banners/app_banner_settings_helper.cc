@@ -333,8 +333,8 @@ std::optional<base::Time> AppBannerSettingsHelper::GetSingleBannerEvent(
 }
 
 bool AppBannerSettingsHelper::HasSufficientEngagement(double total_engagement) {
-  return (base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kBypassAppBannerEngagementChecks)) ||
+  return (base::FeatureList::IsEnabled(
+             webapps::features::kBypassAppBannerEngagementChecks)) ||
          (total_engagement >= gTotalEngagementToTrigger);
 }
 

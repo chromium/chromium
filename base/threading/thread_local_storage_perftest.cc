@@ -116,23 +116,21 @@ class ThreadLocalStoragePerfTest : public testing::Test {
                  size_t num_threads) {
     write(2);
 
-    BenchmarkImpl(kMetricBaseRead, story_name,
-                  base::BindLambdaForTesting([&]() {
+    BenchmarkImpl(kMetricBaseRead, story_name, base::BindLambdaForTesting([&] {
                     volatile intptr_t total = 0;
                     for (size_t i = 0; i < num_operation; ++i)
                       total = total + read();
                   }),
                   num_operation, num_threads);
 
-    BenchmarkImpl(kMetricBaseWrite, story_name,
-                  base::BindLambdaForTesting([&]() {
+    BenchmarkImpl(kMetricBaseWrite, story_name, base::BindLambdaForTesting([&] {
                     for (size_t i = 0; i < num_operation; ++i)
                       write(i);
                   }),
                   num_operation, num_threads);
 
     BenchmarkImpl(kMetricBaseReadWrite, story_name,
-                  base::BindLambdaForTesting([&]() {
+                  base::BindLambdaForTesting([&] {
                     for (size_t i = 0; i < num_operation; ++i)
                       write(read() + 1);
                   }),
@@ -149,7 +147,7 @@ class ThreadLocalStoragePerfTest : public testing::Test {
 
     base::RepeatingClosure done = BarrierClosure(
         num_threads,
-        base::BindLambdaForTesting([&]() { complete_thread.Signal(); }));
+        base::BindLambdaForTesting([&] { complete_thread.Signal(); }));
 
     std::vector<std::unique_ptr<TLSThread>> threads;
     for (size_t i = 0; i < num_threads; ++i) {
@@ -179,7 +177,7 @@ class ThreadLocalStoragePerfTest : public testing::Test {
 
 TEST_F(ThreadLocalStoragePerfTest, ThreadLocalStorage) {
   ThreadLocalStorage::Slot tls;
-  auto read = [&]() { return reinterpret_cast<intptr_t>(tls.Get()); };
+  auto read = [&] { return reinterpret_cast<intptr_t>(tls.Get()); };
   auto write = [&](intptr_t value) { tls.Set(reinterpret_cast<void*>(value)); };
 
   Benchmark(kStoryBaseTLS, read, write, 10000000, 1);
@@ -195,7 +193,7 @@ TEST_F(ThreadLocalStoragePerfTest, PlatformFls) {
   DWORD key = FlsAlloc(destroy);
   ASSERT_NE(PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES, key);
 
-  auto read = [&]() { return reinterpret_cast<intptr_t>(FlsGetValue(key)); };
+  auto read = [&] { return reinterpret_cast<intptr_t>(FlsGetValue(key)); };
   auto write = [&](intptr_t value) {
     FlsSetValue(key, reinterpret_cast<void*>(value));
   };
@@ -209,7 +207,7 @@ TEST_F(ThreadLocalStoragePerfTest, PlatformTls) {
   DWORD key = TlsAlloc();
   ASSERT_NE(PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES, key);
 
-  auto read = [&]() { return reinterpret_cast<intptr_t>(TlsGetValue(key)); };
+  auto read = [&] { return reinterpret_cast<intptr_t>(TlsGetValue(key)); };
   auto write = [&](intptr_t value) {
     TlsSetValue(key, reinterpret_cast<void*>(value));
   };
@@ -226,7 +224,7 @@ TEST_F(ThreadLocalStoragePerfTest, PlatformTls) {
   ASSERT_FALSE(pthread_key_create(&key, [](void*) {}));
   ASSERT_NE(PlatformThreadLocalStorage::TLS_KEY_OUT_OF_INDEXES, key);
 
-  auto read = [&]() {
+  auto read = [&] {
     return reinterpret_cast<intptr_t>(pthread_getspecific(key));
   };
   auto write = [&](intptr_t value) {
@@ -243,7 +241,7 @@ TEST_F(ThreadLocalStoragePerfTest, PlatformTls) {
 TEST_F(ThreadLocalStoragePerfTest, Cpp11Tls) {
   thread_local intptr_t thread_local_variable;
 
-  auto read = [&]() { return thread_local_variable; };
+  auto read = [&] { return thread_local_variable; };
   auto write = [&](intptr_t value) {
     reinterpret_cast<volatile intptr_t*>(&thread_local_variable)[0] = value;
   };

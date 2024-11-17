@@ -13,6 +13,7 @@
 #include "build/build_config.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/events/event_processor.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -424,7 +425,7 @@ TEST_F(DialogTest, InitialFocusWithDeactivatedWidget) {
   // Set the initial focus while the Widget is unactivated to prevent the
   // initially focused View from receiving focus. Use a minimised state here to
   // prevent the Widget from being activated while this happens.
-  dialog_widget->SetInitialFocus(ui::SHOW_STATE_MINIMIZED);
+  dialog_widget->SetInitialFocus(ui::mojom::WindowShowState::kMinimized);
 
   // Nothing should be focused, because the Widget is still deactivated.
   EXPECT_EQ(nullptr, dialog_widget->GetFocusManager()->GetFocusedView());

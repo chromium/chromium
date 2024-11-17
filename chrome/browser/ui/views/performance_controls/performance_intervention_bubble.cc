@@ -29,6 +29,7 @@
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace {
 const char kViewClassName[] = "PerformanceInterventionBubble";
@@ -99,7 +100,10 @@ views::BubbleDialogModelHost* PerformanceInterventionBubble::CreateBubble(
       std::move(dialog_model), anchor_view, views::BubbleBorder::TOP_RIGHT);
   auto* const bubble = bubble_unique.get();
 
-  views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique))->Show();
+  views::Widget* widget =
+      views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique));
+  widget->widget_delegate()->SetEnableArrowKeyTraversal(true);
+  widget->Show();
   button_controller->OnBubbleShown();
 
   return bubble;

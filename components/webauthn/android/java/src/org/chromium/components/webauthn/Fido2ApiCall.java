@@ -109,6 +109,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
     public static final int METHOD_BROWSER_GETCREDENTIALS = 5430;
     public static final int METHOD_BROWSER_HYBRID_SIGN = 5442;
     public static final int METHOD_GET_LINK_INFO = 5450;
+    public static final int METHOD_LIST_PASSKEYS_FOR_RP = 0;
 
     public static final int METHOD_APP_REGISTER = 5407;
     public static final int METHOD_APP_SIGN = 5408;
@@ -120,6 +121,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
     public static final int TRANSACTION_GETCREDENTIALS = IBinder.FIRST_CALL_TRANSACTION + 3;
     public static final int TRANSACTION_HYBRID_SIGN = IBinder.FIRST_CALL_TRANSACTION + 4;
     public static final int TRANSACTION_GET_LINK_INFO = IBinder.FIRST_CALL_TRANSACTION + 0;
+    public static final int TRANSACTION_LIST_PASSKEYS_FOR_RP = IBinder.FIRST_CALL_TRANSACTION + 0;
 
     private static final String APP_DESCRIPTOR =
             "com.google.android.gms.fido.fido2.internal.regular.IFido2AppService";
@@ -239,6 +241,31 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
                                     FIRSTPARTY_API_ID),
                             FIRSTPARTY_CLIENT_KEY),
                     FIRSTPARTY_DESCRIPTOR,
+                    /* callbackDescriptor */ null,
+                    /* registerMethodId */ 0,
+                    /* signMethodId */ 0,
+                    /* isUserVerifyingPlatformAuthenticatorAvailable */ 0,
+                    /* methodInterfaces */ null);
+
+    private static final String PERSISTENT_DESCRIPTOR =
+            "com.google.android.gms.auth.api.fido.IFidoPersistentService";
+    private static final String PERSISTENT_START_SERVICE_ACTION =
+            "com.google.android.gms.auth.api.passkeys_cache.START";
+    private static final int PERSISTENT_API_ID = 404;
+    private static final Api.ClientKey<FidoClient> PERSISTENT_CLIENT_KEY = new Api.ClientKey<>();
+
+    public static final String PERSISTENT_API_INTERFACE =
+            "com.google.android.gms.auth.api.fido.IListPasskeysForRpCallback";
+    public static final Fido2ApiCallParams PERSISTENT_API =
+            new Fido2ApiCallParams(
+                    new Api<>(
+                            "Fido.PERSISTENT_API",
+                            new FidoClient.Builder(
+                                    PERSISTENT_DESCRIPTOR,
+                                    PERSISTENT_START_SERVICE_ACTION,
+                                    PERSISTENT_API_ID),
+                            PERSISTENT_CLIENT_KEY),
+                    PERSISTENT_DESCRIPTOR,
                     /* callbackDescriptor */ null,
                     /* registerMethodId */ 0,
                     /* signMethodId */ 0,
@@ -367,15 +394,21 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
     public static final class WebauthnCredentialDetailsListResult extends Binder
             implements Callback<List<WebauthnCredentialDetails>> {
         private TaskCompletionSource<List<WebauthnCredentialDetails>> mCompletionSource;
+        private String mInterfaceName =
+                "com.google.android.gms.fido.fido2.api.ICredentialListCallback";
 
         @Override
         public void setCompletionSource(TaskCompletionSource<List<WebauthnCredentialDetails>> cs) {
             mCompletionSource = cs;
         }
 
+        public void setInterface(String interfaceName) {
+            mInterfaceName = interfaceName;
+        }
+
         @Override
         public boolean onTransact(int code, Parcel data, Parcel reply, int flags) {
-            data.enforceInterface("com.google.android.gms.fido.fido2.api.ICredentialListCallback");
+            data.enforceInterface(mInterfaceName);
             switch (code) {
                 case IBinder.FIRST_CALL_TRANSACTION + 0:
                     try {
@@ -465,6 +498,12 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
     private static final class FidoClient extends GmsClient<Interface> {
         private final String mDescriptor;
         private final String mStartServiceAction;
+        // mNeedDynamicLookup is true if the service requires support for
+        // dynamic lookup in Play Services. In this mode the start action isn't
+        // actually invoked but rather a generic action on Play Services is
+        // used. This avoids the needed for every Play Services API to be have
+        // an action listed in the manifest.
+        private final boolean mNeedDynamicLookup;
 
         FidoClient(
                 String descriptor,
@@ -476,6 +515,7 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
                 ConnectionCallbacks callbacks,
                 OnConnectionFailedListener failedListener) {
             super(context, looper, apiId, clientSettings, callbacks, failedListener);
+            mNeedDynamicLookup = apiId == PERSISTENT_API_ID;
             mDescriptor = descriptor;
             mStartServiceAction = startServiceAction;
         }
@@ -504,8 +544,16 @@ public final class Fido2ApiCall extends GoogleApi<ApiOptions.NoOptions> {
 
         @Override
         public int getMinApkVersion() {
+            if (mNeedDynamicLookup) {
+                return GmsCoreUtils.GMSCORE_MIN_VERSION_DYNAMIC_LOOKUP;
+            }
             // This minimum should be moot because it's enforced in `AuthenticatorImpl`.
             return GmsCoreUtils.GMSCORE_MIN_VERSION;
+        }
+
+        @Override
+        protected boolean getUseDynamicLookup() {
+            return mNeedDynamicLookup;
         }
 
         public static class Builder

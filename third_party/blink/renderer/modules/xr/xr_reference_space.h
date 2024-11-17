@@ -9,6 +9,7 @@
 #include <string>
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_reference_space_type.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
 #include "ui/gfx/geometry/transform.h"
 
@@ -20,8 +21,8 @@ class XRReferenceSpace : public XRSpace {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static device::mojom::blink::XRReferenceSpaceType StringToReferenceSpaceType(
-      const String& reference_space_type);
+  static device::mojom::blink::XRReferenceSpaceType V8EnumToReferenceSpaceType(
+      V8XRReferenceSpaceType::Enum reference_space_type);
 
   XRReferenceSpace(XRSession* session,
                    device::mojom::blink::XRReferenceSpaceType type);

@@ -4,15 +4,19 @@
 
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_web_contents_helper.h"
 
+#include <string>
+
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/fingerprinting_protection_filter/browser/fingerprinting_protection_observer.h"
 #include "components/fingerprinting_protection_filter/browser/throttle_manager.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_breakage_exception.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_constants.h"
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/site_engagement/content/site_engagement_service.h"
-#include "components/subresource_filter/content/shared/common/subresource_filter_utils.h"
+#include "components/subresource_filter/content/shared/browser/utils.h"
 #include "components/subresource_filter/core/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "content/public/browser/navigation_handle.h"
@@ -22,6 +26,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace content {
 class NavigationHandle;
@@ -40,7 +45,7 @@ using ::subresource_filter::GetSubresourceFilterRootPage;
 using ::subresource_filter::IsInSubresourceFilterRoot;
 using ::subresource_filter::VerifiedRulesetDealer;
 
-bool WillCreateNewThrottleManager(content::NavigationHandle& handle) {
+bool IsRootNavigationToNewDocument(content::NavigationHandle& handle) {
   return IsInSubresourceFilterRoot(&handle) && !handle.IsSameDocument() &&
          !handle.IsPageActivation();
 }
@@ -82,6 +87,44 @@ NAVIGATION_HANDLE_USER_DATA_KEY_IMPL(ThrottleManagerInUserDataContainer);
 
 }  // namespace
 
+// RefreshMetricsManager
+RefreshMetricsManager::RefreshMetricsManager() = default;
+RefreshMetricsManager::~RefreshMetricsManager() = default;
+
+ukm::SourceId RefreshMetricsManager::GetUkmSourceId(
+    content::WebContents& web_contents) const {
+  return web_contents.GetPrimaryMainFrame()->GetPageUkmSourceId();
+}
+
+void RefreshMetricsManager::IncrementRefreshCount(
+    const GURL& url,
+    content::WebContents& web_contents) {
+  std::string etld_plus_one = GetEtldPlusOne(url);
+  if (!etld_plus_one.empty()) {
+    refresh_count_by_etld_plus_one_[etld_plus_one].refresh_count++;
+    refresh_count_by_etld_plus_one_[etld_plus_one].last_visited_source_id =
+        GetUkmSourceId(web_contents);
+  }
+}
+
+void RefreshMetricsManager::LogMetrics() const {
+  // Log metrics for each eTLD+1.
+  for (const auto& [unused_etld_plus_one, refresh_count_and_source] :
+       refresh_count_by_etld_plus_one_) {
+    // Log refresh count to UMA.
+    base::UmaHistogramCounts100(RefreshCountHistogramName,
+                                refresh_count_and_source.refresh_count);
+
+    // Log refresh count to UKM, keyed to the most recently visited URL for this
+    // eTLD+1.
+    ukm::builders::FingerprintingProtectionUsage(
+        refresh_count_and_source.last_visited_source_id)
+        .SetRefreshCount(refresh_count_and_source.refresh_count)
+        .Record(ukm::UkmRecorder::Get());
+  }
+}
+
+// FingerprintingProtectionWebContentsHelper
 // static
 void FingerprintingProtectionWebContentsHelper::CreateForWebContents(
     content::WebContents* web_contents,
@@ -101,7 +144,8 @@ void FingerprintingProtectionWebContentsHelper::CreateForWebContents(
 
   content::WebContentsUserData<FingerprintingProtectionWebContentsHelper>::
       CreateForWebContents(web_contents, pref_service,
-                           tracking_protection_settings, dealer_handle);
+                           tracking_protection_settings, dealer_handle,
+                           is_incognito);
 }
 
 // private
@@ -111,13 +155,15 @@ FingerprintingProtectionWebContentsHelper::
         PrefService* pref_service,
         privacy_sandbox::TrackingProtectionSettings*
             tracking_protection_settings,
-        VerifiedRulesetDealer::Handle* dealer_handle)
+        VerifiedRulesetDealer::Handle* dealer_handle,
+        bool is_incognito)
     : content::WebContentsUserData<FingerprintingProtectionWebContentsHelper>(
           *web_contents),
       content::WebContentsObserver(web_contents),
       pref_service_(pref_service),
       tracking_protection_settings_(tracking_protection_settings),
-      dealer_handle_(dealer_handle) {}
+      dealer_handle_(dealer_handle),
+      is_incognito_(is_incognito) {}
 
 FingerprintingProtectionWebContentsHelper::
     ~FingerprintingProtectionWebContentsHelper() = default;
@@ -143,7 +189,7 @@ ThrottleManager* FingerprintingProtectionWebContentsHelper::GetThrottleManager(
   // TODO(https://crbug.com/40280666): Consider storing pointers to existing
   // throttle managers to enable short-circuiting this function in most cases.
 
-  if (WillCreateNewThrottleManager(handle)) {
+  if (IsRootNavigationToNewDocument(handle)) {
     auto* container =
         ThrottleManagerInUserDataContainer::GetForNavigationHandle(handle);
     if (!container) {
@@ -212,12 +258,17 @@ void FingerprintingProtectionWebContentsHelper::FrameDeleted(
 
 void FingerprintingProtectionWebContentsHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!WillCreateNewThrottleManager(*navigation_handle)) {
-    return;
+  if (IsRootNavigationToNewDocument(*navigation_handle)) {
+    CreateThrottleManagerForNavigation(navigation_handle);
   }
+}
 
+void FingerprintingProtectionWebContentsHelper::
+    CreateThrottleManagerForNavigation(
+        content::NavigationHandle* navigation_handle) {
   std::unique_ptr<ThrottleManager> new_manager =
-      ThrottleManager::CreateForNewPage(dealer_handle_.get(), *this);
+      ThrottleManager::CreateForNewPage(dealer_handle_.get(), *this,
+                                        *navigation_handle, is_incognito_);
 
   throttle_managers_.insert(new_manager.get());
 
@@ -240,8 +291,16 @@ void FingerprintingProtectionWebContentsHelper::ReadyToCommitNavigation(
 
 void FingerprintingProtectionWebContentsHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      !navigation_handle->IsSameDocument() &&
+      navigation_handle->HasCommitted()) {
+    // Reset subresource-blocked "dirty bit" on primary page change.
+    subresource_blocked_in_current_primary_page_ = false;
+  }
+
   if (navigation_handle->GetReloadType() != content::ReloadType::NONE) {
-    refresh_count_++;
+    GetRefreshMetricsManager().IncrementRefreshCount(
+        navigation_handle->GetURL(), *web_contents());
   }
   if (navigation_handle->IsPrerenderedPageActivation() ||
       navigation_handle->IsServedFromBackForwardCache()) {
@@ -277,7 +336,7 @@ void FingerprintingProtectionWebContentsHelper::DidFinishNavigation(
       !navigation_handle->IsSameDocument() &&
       navigated_frames_.insert(navigation_handle->GetFrameTreeNodeId()).second;
 
-  if (WillCreateNewThrottleManager(*navigation_handle)) {
+  if (IsRootNavigationToNewDocument(*navigation_handle)) {
     auto* container =
         ThrottleManagerInUserDataContainer::GetForNavigationHandle(
             *navigation_handle);
@@ -341,8 +400,8 @@ void FingerprintingProtectionWebContentsHelper::DidFinishLoad(
   }
 }
 
-void FingerprintingProtectionWebContentsHelper::NotifyOnBlockedResources() {
-  is_subresource_blocked_ = true;
+void FingerprintingProtectionWebContentsHelper::NotifyOnBlockedSubresource() {
+  subresource_blocked_in_current_primary_page_ = true;
   for (auto& observer : observer_list_) {
     observer.OnSubresourceBlocked();
   }
@@ -351,18 +410,7 @@ void FingerprintingProtectionWebContentsHelper::NotifyOnBlockedResources() {
 void FingerprintingProtectionWebContentsHelper::WebContentsDestroyed() {
   // The user has closed the tab or otherwise destroyed the web contents. Flush
   // metrics.
-  Detach();
-}
-
-void FingerprintingProtectionWebContentsHelper::Detach() {
-  base::UmaHistogramCounts100(
-      "FingerprintingProtection.WebContentsObserver.RefreshCount",
-      refresh_count_);
-  ukm::SourceId source_id =
-      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId();
-  ukm::builders::FingerprintingProtectionUsage(source_id)
-      .SetRefreshCount(refresh_count_)
-      .Record(ukm::UkmRecorder::Get());
+  GetRefreshMetricsManager().LogMetrics();
 }
 
 void FingerprintingProtectionWebContentsHelper::AddObserver(
@@ -373,6 +421,11 @@ void FingerprintingProtectionWebContentsHelper::AddObserver(
 void FingerprintingProtectionWebContentsHelper::RemoveObserver(
     FingerprintingProtectionObserver* observer) {
   observer_list_.RemoveObserver(observer);
+}
+
+RefreshMetricsManager&
+FingerprintingProtectionWebContentsHelper::GetRefreshMetricsManager() {
+  return refresh_metrics_manager_;
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(FingerprintingProtectionWebContentsHelper);

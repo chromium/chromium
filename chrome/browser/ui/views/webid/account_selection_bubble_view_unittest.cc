@@ -81,7 +81,7 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
         kRpETLDPlusOne, title, blink::mojom::RpContext::kSignIn,
         test_web_contents_.get(), anchor_widget_->GetContentsView(),
         shared_url_loader_factory(),
-        /*observer=*/nullptr, /*widget_observer=*/nullptr);
+        /*observer=*/nullptr);
   }
 
   void CreateAndShowSingleAccountPicker(
@@ -392,13 +392,18 @@ class AccountSelectionBubbleViewTest : public ChromeViewsTestBase,
 
   void CheckUseOtherAccount(
       const std::vector<raw_ptr<views::View, VectorExperimental>>& accounts,
-      size_t& accounts_index) {
-    EXPECT_TRUE(IsViewClass<views::Separator>(accounts[accounts_index++]));
+      size_t& accounts_index,
+      const std::optional<std::u16string>& expected_idp = std::nullopt) {
     views::View* button = accounts[accounts_index++];
     EXPECT_TRUE(IsViewClass<HoverButton>(button));
     HoverButton* idp_button = static_cast<HoverButton*>(button);
     ASSERT_TRUE(idp_button);
-    EXPECT_EQ(idp_button->GetText(), u"Use a different account");
+    if (expected_idp.has_value()) {
+      EXPECT_EQ(GetHoverButtonTitle(idp_button),
+                u"Use a different " + *expected_idp + u" account");
+    } else {
+      EXPECT_EQ(GetHoverButtonTitle(idp_button), u"Use a different account");
+    }
   }
 
   void CheckChooseAnAccount(
@@ -557,6 +562,7 @@ TEST_F(AccountSelectionBubbleViewTest, UseDifferentAccount) {
       GetAccounts(children[1]);
 
   size_t index = 1;
+  EXPECT_TRUE(IsViewClass<views::Separator>(accounts[index++]));
   CheckUseOtherAccount(accounts, index);
 }
 
@@ -873,7 +879,7 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpUseOtherAccount) {
   PerformHeaderChecks(children[0], kTitleSignInWithoutIdp,
                       /*expect_idp_brand_icon_in_header=*/false);
 
-  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/7,
+  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/6,
                             /*expected_mismatch_rows=*/0);
 
   std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
@@ -887,8 +893,9 @@ TEST_F(MultipleIdpAccountSelectionBubbleViewTest, MultiIdpUseOtherAccount) {
   // Check the second IDP.
   CheckHoverableAccountRows(accounts, kAccountSuffixes2, accounts_index,
                             /*expect_idp=*/true);
-  CheckUseOtherAccount(accounts, accounts_index);
-  CheckUseOtherAccount(accounts, accounts_index);
+  EXPECT_TRUE(IsViewClass<views::Separator>(accounts[accounts_index++]));
+  CheckUseOtherAccount(accounts, accounts_index, u"idp-example.com");
+  CheckUseOtherAccount(accounts, accounts_index, u"idp2.com");
 }
 
 TEST_F(MultipleIdpAccountSelectionBubbleViewTest,
@@ -1331,4 +1338,119 @@ TEST_F(AccountSelectionBubbleViewTest, InvalidBrandIconUrlHidesBrandIcon) {
       GetViewWithClassName(dialog()->children()[0], "BrandIconImageView"));
   ASSERT_TRUE(brand_icon_image_view);
   EXPECT_FALSE(brand_icon_image_view->GetVisible());
+}
+
+TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccount) {
+  IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
+      kAccountSuffix, idp_data_, LoginState::kSignUp);
+  account->is_filtered_out = true;
+  idp_data_->idp_metadata.has_filtered_out_account = true;
+
+  CreateAccountSelectionBubble(/*exclude_title=*/false);
+  // The backend will invoke ShowMultiAccountPicker with a single account since
+  // there are filtered out accounts.
+  dialog_->ShowMultiAccountPicker({account}, {idp_data_},
+                                  /*show_back_button=*/false,
+                                  /*is_choose_an_account=*/false);
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> children =
+      dialog()->children();
+  // The separator is in the multiple accounts container.
+  ASSERT_EQ(children.size(), 2u);
+  PerformHeaderChecks(children[0], kTitleSignIn,
+                      /*expect_idp_brand_icon_in_header=*/true);
+
+  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/3,
+                            /*expected_mismatch_rows=*/0);
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+      GetAccounts(children[1]);
+
+  // Check the filtered account and use a different account button.
+  CheckHoverableAccountRow(accounts[0], kAccountSuffix,
+                           /*expect_idp=*/false, /*is_modal_dialog=*/false,
+                           /*is_disabled=*/true);
+  size_t index = 1;
+  EXPECT_TRUE(IsViewClass<views::Separator>(accounts[index++]));
+  CheckUseOtherAccount(accounts, index);
+}
+
+TEST_F(AccountSelectionBubbleViewTest, MultipleDisabledAccounts) {
+  idp_data_->idp_metadata.has_filtered_out_account = true;
+  std::vector<IdentityRequestAccountPtr> accounts_list;
+  for (size_t i = 0; i < 3; ++i) {
+    IdentityRequestAccountPtr account = CreateTestIdentityRequestAccount(
+        kAccountSuffix + base::NumberToString(i), idp_data_,
+        LoginState::kSignIn);
+    account->is_filtered_out = true;
+    accounts_list.push_back(std::move(account));
+  }
+  CreateAccountSelectionBubble(/*exclude_title=*/false);
+  dialog_->ShowMultiAccountPicker(accounts_list, {idp_data_},
+                                  /*show_back_button=*/false,
+                                  /*is_choose_an_account=*/false);
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> children =
+      dialog()->children();
+  // The separator is in the multiple accounts container.
+  ASSERT_EQ(children.size(), 2u);
+  PerformHeaderChecks(children[0], kTitleSignIn,
+                      /*expect_idp_brand_icon_in_header=*/true);
+
+  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/5,
+                            /*expected_mismatch_rows=*/0);
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+      GetAccounts(children[1]);
+
+  // Check the text shown.
+  for (size_t i = 0; i < 3; ++i) {
+    CheckHoverableAccountRow(accounts[i],
+                             kAccountSuffix + base::NumberToString(i),
+                             /*expect_idp=*/false, /*is_modal_dialog=*/false,
+                             /*is_disabled=*/true);
+  }
+  size_t index = 3;
+  EXPECT_TRUE(IsViewClass<views::Separator>(accounts[index++]));
+  CheckUseOtherAccount(accounts, index);
+}
+
+TEST_F(AccountSelectionBubbleViewTest, OneDisabledAccountAndOneEnabledAccount) {
+  idp_data_->idp_metadata.has_filtered_out_account = true;
+  std::vector<IdentityRequestAccountPtr> accounts_list;
+  const std::vector<std::string> kAccountSuffixes = {"enabled", "disabled"};
+  IdentityRequestAccountPtr account1 = CreateTestIdentityRequestAccount(
+      kAccountSuffixes[0], idp_data_, LoginState::kSignIn);
+  accounts_list.push_back(std::move(account1));
+  IdentityRequestAccountPtr account2 = CreateTestIdentityRequestAccount(
+      kAccountSuffixes[1], idp_data_, LoginState::kSignUp);
+  account2->is_filtered_out = true;
+  accounts_list.push_back(std::move(account2));
+
+  CreateAccountSelectionBubble(/*exclude_title=*/false);
+  dialog_->ShowMultiAccountPicker(accounts_list, {idp_data_},
+                                  /*show_back_button=*/false,
+                                  /*is_choose_an_account=*/false);
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> children =
+      dialog()->children();
+  // The separator is in the multiple accounts container.
+  ASSERT_EQ(children.size(), 2u);
+  PerformHeaderChecks(children[0], kTitleSignIn,
+                      /*expect_idp_brand_icon_in_header=*/true);
+
+  PerformMultiAccountChecks(children[1], /*expected_account_rows=*/4,
+                            /*expected_mismatch_rows=*/0);
+
+  std::vector<raw_ptr<views::View, VectorExperimental>> accounts =
+      GetAccounts(children[1]);
+  CheckHoverableAccountRow(accounts[0], kAccountSuffixes[0],
+                           /*expect_idp=*/false, /*is_modal_dialog=*/false,
+                           /*is_disabled=*/false);
+  CheckHoverableAccountRow(accounts[1], kAccountSuffixes[1],
+                           /*expect_idp=*/false, /*is_modal_dialog=*/false,
+                           /*is_disabled=*/true);
+  size_t index = 2;
+  EXPECT_TRUE(IsViewClass<views::Separator>(accounts[index++]));
+  CheckUseOtherAccount(accounts, index);
 }

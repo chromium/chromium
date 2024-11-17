@@ -4,8 +4,13 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/people/people_section.h"
 
+#include <array>
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/edusumer/graduation_utils.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/i18n/number_formatting.h"
@@ -70,17 +75,10 @@ using ::chromeos::settings::mojom::Subpage;
 
 namespace {
 
-const char* GetAccountsPath() {
-  return ash::features::IsOsSettingsRevampWayfindingEnabled()
-             ? mojom::kPeopleSectionPath
-             : mojom::kMyAccountsSubpagePath;
-}
-
-const std::vector<SearchConcept>& GetPeopleSearchConcepts() {
-  const char* kAccountsPath = GetAccountsPath();
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetPeopleSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS,
-       kAccountsPath,
+       mojom::kPeopleSectionPath,
        mojom::SearchResultIcon::kAvatar,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSubpage,
@@ -92,31 +90,30 @@ const std::vector<SearchConcept>& GetPeopleSearchConcepts() {
        mojom::SearchResultType::kSection,
        {.section = mojom::Section::kPeople}},
       {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS_ADD_V2,
-       kAccountsPath,
+       mojom::kPeopleSectionPath,
        mojom::SearchResultIcon::kAvatar,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kAddAccount}},
   });
 
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetRemoveAccountSearchConcepts(
-    const char* accounts_path) {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetRemoveAccountSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_PEOPLE_ACCOUNTS_REMOVE,
-       accounts_path,
+       mojom::kPeopleSectionPath,
        mojom::SearchResultIcon::kAvatar,
        mojom::SearchResultDefaultRank::kMedium,
        mojom::SearchResultType::kSetting,
        {.setting = mojom::Setting::kRemoveAccount}},
   });
-  return *tags;
+  return tags;
 }
 
-const std::vector<SearchConcept>& GetParentalSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+base::span<const SearchConcept> GetParentalSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
       {IDS_OS_SETTINGS_TAG_PARENTAL_CONTROLS,
        mojom::kPeopleSectionPath,
        mojom::SearchResultIcon::kAvatar,
@@ -126,7 +123,19 @@ const std::vector<SearchConcept>& GetParentalSearchConcepts() {
        {IDS_OS_SETTINGS_TAG_PARENTAL_CONTROLS_ALT1,
         IDS_OS_SETTINGS_TAG_PARENTAL_CONTROLS_ALT2, SearchConcept::kAltTagEnd}},
   });
-  return *tags;
+  return tags;
+}
+
+base::span<const SearchConcept> GetGraduationSearchConcepts() {
+  static constexpr auto tags = std::to_array<SearchConcept>({
+      {IDS_OS_SETTINGS_TAG_GRADUATION,
+       mojom::kPeopleSectionPath,
+       mojom::SearchResultIcon::kGraduation,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kGraduation}},
+  });
+  return tags;
 }
 
 void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
@@ -220,13 +229,10 @@ void AddAccountManagerPageStrings(content::WebUIDataSource* html_source,
   html_source->AddBoolean(
       "arcAccountRestrictionsEnabled",
       AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
-  html_source->AddBoolean(
-      "arcManagedAccountRestrictionEnabled",
-      AccountAppsAvailability::IsArcManagedAccountRestrictionEnabled());
 }
 
 void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
-                              PrefService* pref_service) {
+                              Profile* profile) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"lockScreenNotificationTitle",
        IDS_ASH_SETTINGS_LOCK_SCREEN_NOTIFICATION_TITLE},
@@ -266,8 +272,6 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_REMOVE_PIN_BUTTON},
       {"lockScreenPasswordLabel",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_LABEL},
-      {"lockScreenPasswordDescription",
-       IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_DESCRIPTION},
       {"lockScreenPinLabel", IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PIN_LABEL},
       {"lockScreenSetupPasswordButton",
        IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SETUP_PASSWORD_BUTTON},
@@ -302,6 +306,8 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
        IDS_OS_SETTINGS_PEOPLE_SET_LOCAL_PASSWORD_DIALOG_INTERNAL_ERROR},
       {"showPassword", IDS_AUTH_SETUP_SHOW_PASSWORD},
       {"hidePassword", IDS_AUTH_SETUP_HIDE_PASSWORD},
+      {"showPin", IDS_AUTH_SETUP_SHOW_PIN},
+      {"hidePin", IDS_AUTH_SETUP_HIDE_PIN},
       {"setLocalPasswordPlaceholder",
        IDS_AUTH_SETUP_SET_LOCAL_PASSWORD_PLACEHOLDER},
       {"setLocalPasswordConfirmPlaceholder",
@@ -314,9 +320,10 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("quickUnlockEnabled", quick_unlock::IsPinEnabled());
-  html_source->AddBoolean("quickUnlockDisabledByPolicy",
-                          quick_unlock::IsPinDisabledByPolicy(
-                              pref_service, quick_unlock::Purpose::kAny));
+  html_source->AddBoolean(
+      "quickUnlockDisabledByPolicy",
+      quick_unlock::IsPinDisabledByPolicy(profile->GetPrefs(),
+                                          quick_unlock::Purpose::kAny));
   html_source->AddBoolean("lockScreenNotificationsEnabled",
                           ash::features::IsLockScreenNotificationsEnabled());
   html_source->AddBoolean(
@@ -329,6 +336,11 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
       "lockScreenSwitchLocalPasswordDescription",
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_PEOPLE_LOCK_SCREEN_SWITCH_LOCAL_PASSWORD_DESCRIPTION,
+          ui::GetChromeOSDeviceName()));
+  html_source->AddString(
+      "lockScreenSwitchSetLocalPasswordDescription",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_PEOPLE_LOCK_SCREEN_PASSWORD_DESCRIPTION,
           ui::GetChromeOSDeviceName()));
   html_source->AddString("lockScreenFingerprintNotice",
                          l10n_util::GetStringFUTF16(
@@ -464,6 +476,21 @@ void AddParentalControlStrings(content::WebUIDataSource* html_source,
                           are_parental_control_settings_allowed);
 }
 
+void AddGraduationStrings(content::WebUIDataSource* html_source,
+                          Profile* profile) {
+  static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"graduationSectionTitle", IDS_SETTINGS_GRADUATION_SECTION_TITLE},
+      {"graduationRowTitle", IDS_SETTINGS_GRADUATION_ROW_TITLE},
+      {"graduationRowSubtitle", IDS_SETTINGS_GRADUATION_ROW_SUBTITLE}};
+
+  html_source->AddLocalizedStrings(kLocalizedStrings);
+
+  html_source->AddBoolean("isGraduationAppEnabled",
+                          ShouldShowGraduationAppSetting(profile));
+  html_source->AddBoolean("isGraduationFlagEnabled",
+                          features::IsGraduationEnabled());
+}
+
 bool IsSameAccount(const ::account_manager::AccountKey& account_key,
                    const AccountId& account_id) {
   switch (account_key.account_type()) {
@@ -525,6 +552,10 @@ PeopleSection::PeopleSection(Profile* profile,
   if (ShouldShowParentalControlSettings(profile)) {
     updater.AddSearchTags(GetParentalSearchConcepts());
   }
+  if (features::IsGraduationEnabled() &&
+      ShouldShowGraduationAppSetting(profile)) {
+    updater.AddSearchTags(GetGraduationSearchConcepts());
+  }
 }
 
 PeopleSection::~PeopleSection() = default;
@@ -570,7 +601,7 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(omnibox::kDocumentProvider));
 
   AddAccountManagerPageStrings(html_source, profile());
-  AddLockScreenPageStrings(html_source, profile()->GetPrefs());
+  AddLockScreenPageStrings(html_source, profile());
   AddFingerprintListStrings(html_source);
   AddFingerprintResources(html_source, AreFingerprintSettingsAllowed());
   AddSetupFingerprintDialogStrings(html_source);
@@ -578,6 +609,7 @@ void PeopleSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   AddUsersStrings(html_source);
   AddParentalControlStrings(html_source,
                             ShouldShowParentalControlSettings(profile()));
+  AddGraduationStrings(html_source, profile());
 
   ::settings::AddPasswordPromptDialogStrings(html_source);
 
@@ -649,6 +681,7 @@ bool PeopleSection::LogMetric(mojom::Setting setting,
 
 void PeopleSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   generator->RegisterTopLevelSetting(mojom::Setting::kSetUpParentalControls);
+  generator->RegisterTopLevelSetting(mojom::Setting::kGraduation);
 
   generator->RegisterTopLevelSubpage(
       IDS_SETTINGS_ACCOUNT_MANAGER_PAGE_TITLE, mojom::Subpage::kMyAccounts,
@@ -709,7 +742,7 @@ void PeopleSection::UpdateAccountManagerSearchTags(
 
   // Start with no Account Manager search tags.
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
-  updater.RemoveSearchTags(GetRemoveAccountSearchConcepts(GetAccountsPath()));
+  updater.RemoveSearchTags(GetRemoveAccountSearchConcepts());
 
   user_manager::User* user = ProfileHelper::Get()->GetUserByProfile(profile());
   DCHECK(user);
@@ -720,7 +753,7 @@ void PeopleSection::UpdateAccountManagerSearchTags(
     }
 
     // If a non-device account exists, add the "Remove Account" search tag.
-    updater.AddSearchTags(GetRemoveAccountSearchConcepts(GetAccountsPath()));
+    updater.AddSearchTags(GetRemoveAccountSearchConcepts());
     return;
   }
 }

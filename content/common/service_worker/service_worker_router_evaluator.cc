@@ -225,7 +225,7 @@ base::Value ConditionToValue(
 }
 
 bool IsValidSources(
-    const std::vector<blink::ServiceWorkerRouterSource> sources) {
+    const std::vector<blink::ServiceWorkerRouterSource>& sources) {
   if (sources.empty()) {
     // At least a source must exist.
     RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kEmptySource);
@@ -790,8 +790,9 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
           source.Append("network");
           break;
         case network::mojom::ServiceWorkerRouterSourceType::kRace:
-          // TODO(crbug.com/40241479): we may need to update the name per
-          // target.
+          CHECK_EQ(s.race_source->target,
+                   blink::ServiceWorkerRouterRaceSource::TargetEnum::
+                       kNetworkAndFetchHandler);
           source.Append("race-network-and-fetch-handler");
           break;
         case network::mojom::ServiceWorkerRouterSourceType::kFetchEvent:

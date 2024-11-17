@@ -117,6 +117,7 @@ experimental domain Accessibility
   # - from 'activedescendant' to 'owns' - relationships between elements other than parent/child/sibling.
   type AXPropertyName extends string
     enum
+      actions
       busy
       disabled
       editable
@@ -517,6 +518,8 @@ experimental domain Audits
       ExcludeDomainNonASCII
       ExcludeThirdPartyCookieBlockedInFirstPartySet
       ExcludeThirdPartyPhaseout
+      ExcludePortMismatch
+      ExcludeSchemeMismatch
 
   type CookieWarningReason extends string
     enum
@@ -918,7 +921,7 @@ experimental domain Audits
       ThirdPartyCookiesBlocked
       NotSignedInWithIdp
       MissingTransientUserActivation
-      ReplacedByButtonMode
+      ReplacedByActiveMode
       InvalidFieldsSpecified
       RelyingPartyOriginIsOpaque
       TypeNotMatching
@@ -1798,6 +1801,9 @@ experimental domain CSS
       experimental optional array of CSSScope scopes
       # The array keeps the types of ancestor CSSRules from the innermost going outwards.
       experimental optional array of CSSRuleType ruleTypes
+      # @starting-style CSS at-rule array.
+      # The array enumerates @starting-style at-rules starting with the innermost one, going outwards.
+      experimental optional array of CSSStartingStyle startingStyles
 
   # Enum indicating the type of a CSS rule, used to represent the order of a style rule's ancestors.
   # This list only contains rule types that are collected during the ancestor rule collection.
@@ -1809,6 +1815,7 @@ experimental domain CSS
       LayerRule
       ScopeRule
       StyleRule
+      StartingStyleRule
 
   # CSS coverage information.
   type RuleUsage extends object
@@ -1951,6 +1958,8 @@ experimental domain CSS
       optional DOM.PhysicalAxes physicalAxes
       # Optional logical axes queried for the container.
       optional DOM.LogicalAxes logicalAxes
+      # true if the query contains scroll-state() queries.
+      optional boolean queriesScrollState
 
   # CSS Supports at-rule descriptor.
   experimental type CSSSupports extends object
@@ -1981,6 +1990,15 @@ experimental domain CSS
     properties
       # Layer name.
       string text
+      # The associated rule header range in the enclosing stylesheet (if
+      # available).
+      optional SourceRange range
+      # Identifier of the stylesheet containing this object (if exists).
+      optional StyleSheetId styleSheetId
+
+  # CSS Starting Style at-rule descriptor.
+  experimental type CSSStartingStyle extends object
+    properties
       # The associated rule header range in the enclosing stylesheet (if
       # available).
       optional SourceRange range
@@ -2301,6 +2319,16 @@ experimental domain CSS
     returns
       array of SourceRange ranges
 
+  # Starts tracking the given node for the computed style updates
+  # and whenever the computed style is updated for node, it queues
+  # a `computedStyleUpdated` event with throttling.
+  # There can only be 1 node tracked for computed style updates
+  # so passing a new node id removes tracking from the previous node.
+  # Pass `undefined` to disable tracking.
+  experimental command trackComputedStyleUpdatesForNode
+    parameters
+      optional DOM.NodeId nodeId
+
   # Starts tracking the given computed styles for updates. The specified array of properties
   # replaces the one previously specified. Pass empty array to disable tracking.
   # Use takeComputedStyleUpdates to retrieve the list of nodes that had properties modified.
@@ -2467,6 +2495,11 @@ experimental domain CSS
     parameters
       # Identifier of the removed stylesheet.
       StyleSheetId styleSheetId
+
+  experimental event computedStyleUpdated
+    parameters
+      # The node id that has updated computed styles.
+      DOM.NodeId nodeId
 
 experimental domain CacheStorage
   depends on Storage
@@ -2677,8 +2710,10 @@ domain DOM
     enum
       first-line
       first-letter
+      check
       before
       after
+      select-arrow
       marker
       backdrop
       column
@@ -2709,8 +2744,6 @@ domain DOM
       placeholder
       file-selector-button
       details-content
-      select-fallback-button
-      select-fallback-button-text
       picker
 
   # Shadow root type.
@@ -3388,15 +3421,17 @@ domain DOM
       optional NodeId nodeId
 
   # Returns the query container of the given node based on container query
-  # conditions: containerName, physical, and logical axes. If no axes are
-  # provided, the style container is returned, which is the direct parent or the
-  # closest element with a matching container-name.
+  # conditions: containerName, physical and logical axes, and whether it queries
+  # scroll-state. If no axes are provided and queriesScrollState is false, the
+  # style container is returned, which is the direct parent or the closest
+  # element with a matching container-name.
   experimental command getContainerForNode
     parameters
       NodeId nodeId
       optional string containerName
       optional PhysicalAxes physicalAxes
       optional LogicalAxes logicalAxes
+      optional boolean queriesScrollState
     returns
       # The container node for the given node, or null if not found.
       optional NodeId nodeId
@@ -5672,7 +5707,9 @@ domain Network
   # Unique loader identifier.
   type LoaderId extends string
 
-  # Unique request identifier.
+  # Unique network request identifier.
+  # Note that this does not identify individual HTTP requests that are part of
+  # a network request.
   type RequestId extends string
 
   # Unique intercepted request identifier.
@@ -6186,6 +6223,7 @@ domain Network
         preflight
         other
       # Initiator JavaScript stack trace, set for Script only.
+      # Requires the Debugger domain to be enabled.
       optional Runtime.StackTrace stack
       # Initiator URL, set for Parser type or for Script type (when script is importing module) or for SignedExchange type.
       optional string url
@@ -6365,6 +6403,10 @@ domain Network
       # The cookie's name/value pair size exceeded the size limit defined in
       # RFC6265bis.
       NameValuePairExceedsMaxSize
+      # The cookie's source port value does not match the request origin's port.
+      PortMismatch
+      # The cookie's source scheme value does not match the request origin's scheme.
+      SchemeMismatch
 
   # Types of reasons why a cookie should have been blocked by 3PCD but is exempted for the request.
   experimental type CookieExemptionReason extends string
@@ -8088,6 +8130,7 @@ domain Page
       controlled-frame
       cross-origin-isolated
       deferred-fetch
+      deferred-fetch-minimal
       digital-credentials-get
       direct-sockets
       direct-sockets-private
@@ -8096,6 +8139,7 @@ domain Page
       encrypted-media
       execution-while-out-of-viewport
       execution-while-not-rendered
+      fenced-unpartitioned-storage-read
       focus-without-user-activation
       fullscreen
       frobulate
@@ -9364,7 +9408,8 @@ domain Page
       # Default dialog prompt.
       optional string defaultPrompt
 
-  # Fired for top level page lifecycle events such as navigation, load, paint, etc.
+  # Fired for lifecycle events (navigation, load, paint, etc) in the current
+  # target (including local frames).
   event lifecycleEvent
     parameters
       # Id of the frame.
@@ -9520,6 +9565,7 @@ domain Page
       EmbedderExtensionMessagingForOpenPort
       EmbedderExtensionSentMessageToCachedFrame
       RequestedByWebViewClient
+      PostMessageByWebViewClient
 
   # Types of not restored reasons for back-forward cache.
   experimental type BackForwardCacheNotRestoredReasonType extends string
@@ -10714,6 +10760,7 @@ experimental domain Storage
       SignedInt64AsBase10 destinationLimitPriority
       AttributionReportingAggregatableDebugReportingConfig aggregatableDebugReportingConfig
       optional AttributionScopesData scopesData
+      integer maxEventLevelReports
 
   experimental type AttributionReportingSourceRegistrationResult extends string
     enum
@@ -10824,6 +10871,7 @@ experimental domain Storage
       excessiveReportingOrigins
       noHistograms
       insufficientBudget
+      insufficientNamedBudget
       noMatchingSourceFilterData
       notRegistered
       prohibitedByBrowserPolicy
@@ -11462,6 +11510,8 @@ domain Fetch
   depends on Page
 
   # Unique request identifier.
+  # Note that this does not identify individual HTTP requests that are part of
+  # a network request.
   type RequestId extends string
 
   # Stages of the request to handle. Request will intercept before the request is
@@ -11718,6 +11768,7 @@ experimental domain WebAudio
       suspended
       running
       closed
+      interrupted
 
   # Enum of AudioNode types
   type NodeType extends string
@@ -11993,6 +12044,13 @@ experimental domain WebAuthn
       # flag set to this value. Defaults to the authenticator's
       # defaultBackupState value.
       optional boolean backupState
+      # The credential's user.name property. Equivalent to empty if not set.
+      # https://w3c.github.io/webauthn/#dom-publickeycredentialentity-name
+      optional string userName
+      # The credential's user.displayName property. Equivalent to empty if
+      # not set.
+      # https://w3c.github.io/webauthn/#dom-publickeycredentialuserentity-displayname
+      optional string userDisplayName
 
   # Enable the WebAuthn domain and start intercepting credential storage and
   # retrieval with a virtual authenticator.
@@ -12092,6 +12150,20 @@ experimental domain WebAuthn
 
   # Triggered when a credential is added to an authenticator.
   event credentialAdded
+    parameters
+      AuthenticatorId authenticatorId
+      Credential credential
+
+  # Triggered when a credential is deleted, e.g. through
+  # PublicKeyCredential.signalUnknownCredential().
+  event credentialDeleted
+    parameters
+      AuthenticatorId authenticatorId
+      binary credentialId
+
+  # Triggered when a credential is updated, e.g. through
+  # PublicKeyCredential.signalCurrentUserDetails().
+  event credentialUpdated
     parameters
       AuthenticatorId authenticatorId
       Credential credential
@@ -12409,6 +12481,8 @@ experimental domain Preload
       WindowClosed
       SlowNetwork
       OtherPrerenderedPageActivated
+      V8OptimizerDisabled
+      PrerenderFailedDuringPrefetch
 
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated

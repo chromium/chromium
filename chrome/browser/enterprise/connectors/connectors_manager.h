@@ -52,11 +52,7 @@ class ConnectorsManager : public ConnectorsManagerBase {
   ConnectorsManager(PrefService* pref_service,
                     const ServiceProviderConfig* config,
                     bool observe_prefs = true);
-#if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
   ~ConnectorsManager() override;
-#else
-  ~ConnectorsManager() override;
-#endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
   // Validates which settings should be applied to an analysis connector event
   // against cached policies. This function will prioritize new connector

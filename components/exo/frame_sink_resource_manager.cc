@@ -9,7 +9,7 @@
 
 namespace exo {
 
-FrameSinkResourceManager::FrameSinkResourceManager() {}
+FrameSinkResourceManager::FrameSinkResourceManager() = default;
 FrameSinkResourceManager::~FrameSinkResourceManager() {
   ClearAllCallbacks();
 }

@@ -45,7 +45,7 @@ import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
@@ -53,7 +53,7 @@ import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider.ButtonDataObserver;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSettingsFragment;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.util.List;
@@ -69,7 +69,7 @@ public class AdaptiveToolbarButtonControllerTest {
     @Mock private ButtonDataProvider mVoiceToolbarButtonController;
     @Mock private ButtonDataProvider mNewTabButtonController;
     @Mock private ButtonDataProvider mPriceTrackingButtonController;
-    @Mock private SettingsLauncher mSettingsLauncher;
+    @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private Profile mProfile;
     @Mock private Tab mTab;
@@ -83,7 +83,7 @@ public class AdaptiveToolbarButtonControllerTest {
         MockitoAnnotations.initMocks(this);
         VoiceRecognitionUtil.setIsVoiceSearchEnabledForTesting(true);
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
-        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncher);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         mButtonData =
                 new ButtonDataImpl(
                         /* canShow= */ true,
@@ -235,8 +235,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         mActivityLifecycleDispatcher,
                         mProfileSupplier,
                         menuCoordinator,
-                        mAndroidPermissionDelegate,
-                        ChromeSharedPreferences.getInstance());
+                        mAndroidPermissionDelegate);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
         mProfileSupplier.set(mProfile);
@@ -253,8 +252,7 @@ public class AdaptiveToolbarButtonControllerTest {
         longClickListener.onLongClick(view);
         adaptiveToolbarButtonController.destroy();
 
-        verify(mSettingsLauncher)
-                .launchSettingsActivity(activity, AdaptiveToolbarSettingsFragment.class);
+        verify(mSettingsNavigation).startSettings(activity, AdaptiveToolbarSettingsFragment.class);
     }
 
     @Test
@@ -286,8 +284,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         mActivityLifecycleDispatcher,
                         mProfileSupplier,
                         menuCoordinator,
-                        mAndroidPermissionDelegate,
-                        ChromeSharedPreferences.getInstance());
+                        mAndroidPermissionDelegate);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.PRICE_TRACKING, mPriceTrackingButtonController);
         ButtonDataObserver observer = mock(ButtonDataObserver.class);
@@ -447,8 +444,7 @@ public class AdaptiveToolbarButtonControllerTest {
                         mActivityLifecycleDispatcher,
                         mProfileSupplier,
                         mock(AdaptiveButtonActionMenuCoordinator.class),
-                        mAndroidPermissionDelegate,
-                        ChromeSharedPreferences.getInstance());
+                        mAndroidPermissionDelegate);
         adaptiveToolbarButtonController.addButtonVariant(
                 AdaptiveToolbarButtonVariant.NEW_TAB, mNewTabButtonController);
         adaptiveToolbarButtonController.addButtonVariant(

@@ -74,8 +74,14 @@
 #include "components/account_manager_core/account_manager_util.h"
 #endif
 
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/android/tab_model/tab_model.h"
+#include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile_window.h"
+#include "chrome/browser/ui/browser.h"
 #endif
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -384,6 +390,7 @@ void ChromeSigninClient::OnPrimaryAccountChanged(
     signin::PrimaryAccountChangeEvent event_details) {
   for (signin::ConsentLevel consent_level :
        {signin::ConsentLevel::kSignin, signin::ConsentLevel::kSync}) {
+    // Only record metrics when setting the primary account.
     switch (event_details.GetEventTypeFor(consent_level)) {
       case signin::PrimaryAccountChangeEvent::Type::kNone:
       case signin::PrimaryAccountChangeEvent::Type::kCleared:
@@ -393,7 +400,6 @@ void ChromeSigninClient::OnPrimaryAccountChanged(
         signin_metrics::AccessPoint access_point =
             event_details.GetSetPrimaryAccountAccessPoint().value();
 
-        // Only record metrics when setting the primary account.
         std::optional<size_t> all_bookmarks_count = GetAllBookmarksCount();
         std::optional<size_t> bar_bookmarks_count =
             GetBookmarkBarBookmarksCount();
@@ -403,12 +409,17 @@ void ChromeSigninClient::OnPrimaryAccountChanged(
                                 all_bookmarks_count.value(),
                                 bar_bookmarks_count.value());
         }
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
         std::optional<size_t> extensions_count = GetExtensionsCount();
         if (extensions_count.has_value()) {
           RecordExtensionsCounts(access_point, consent_level,
                                  extensions_count.value());
         }
+#endif
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+        RecordOpenTabCount(access_point, consent_level);
 #endif
     }
   }
@@ -577,6 +588,38 @@ std::optional<size_t> ChromeSigninClient::GetExtensionsCount() {
   return user_installed_extension_count;
 }
 #endif
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+void ChromeSigninClient::RecordOpenTabCount(
+    signin_metrics::AccessPoint access_point,
+    signin::ConsentLevel consent_level) {
+  size_t tabs_count = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  for (const TabModel* model : TabModelList::models()) {
+    // Note: Even though on Android only a single regular profile is supported,
+    // there can also be an incognito profile which should be excluded here.
+    if (model->GetProfile() != profile_) {
+      continue;
+    }
+
+    tabs_count += model->GetTabCount();
+  }
+#else   // !BUILDFLAG(IS_ANDROID)
+  for (Browser* browser : *BrowserList::GetInstance()) {
+    if (browser->profile() != profile_) {
+      continue;
+    }
+    if (TabStripModel* tab_strip_model = browser->tab_strip_model()) {
+      tabs_count += tab_strip_model->count();
+    }
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+  signin_metrics::RecordOpenTabCountOnSignin(access_point, consent_level,
+                                             tabs_count);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Returns the account that must be auto-signed-in to the Main Profile in

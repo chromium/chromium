@@ -2,6 +2,7 @@ include_rules = [
     "+base/apple/scoped_cftyperef.h",
     "+base/check.h",
     "+base/check_op.h",
+    "+base/containers/checked_iterators.h",
     "+base/containers/flat_set.h",
     "+base/containers/flat_map.h",
     "+base/containers/span.h",

@@ -51,9 +51,6 @@ crbug.com/933880 [ Release ] http/tests/inspector-protocol/network/security-info
 crbug.com/933880 http/tests/inspector-protocol/network/xhr-interception-auth-fail.js [ Failure ]
 crbug.com/933880 http/tests/misc/redirect-to-about-blank.html [ Timeout ]
 
-crbug.com/1106413 [ Linux ] external/wpt/webmessaging/multi-globals/broadcastchannel-current.sub.html [ Failure ]
-crbug.com/1106413 [ Linux ] external/wpt/webmessaging/multi-globals/broadcastchannel-incumbent.sub.html [ Failure ]
-
 # Opt-in origin-keying is intentionally disabled with --disable-site-isolation-trials.
 virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Skip ]
 
@@ -82,6 +79,8 @@ crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigati
 crbug.com/1209223 [ Linux ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/377965584 virtual/fenced-frame-mparch/external/wpt/fenced-frame/csp-allowed.https.html [ Timeout ]
+crbug.com/373924121 external/wpt/html/semantics/interactive-elements/the-dialog-element/toggle-events.tentative.html [ Crash ]
 crbug.com/360956939 external/wpt/digital-credentials/identity-get.tentative.https.html [ Crash Timeout ]
 wpt_internal/webxr/ar/ar_hittestsource_lifetimes.https.html [ Failure Timeout ]
 wpt_internal/html/semantics/forms/the-select-element/customizable-select/native-popup-with-datalist.tentative.html [ Failure ]
@@ -155,3 +154,4 @@ virtual/document-isolation-policy/* [ Skip ]
 # All tests in isolated-context require SiteIsolation to establish an
 # IsolatedContext, so skip them here.
 virtual/isolated-context/* [ Skip ]
+virtual/isolated-context-stable/* [ Skip ]

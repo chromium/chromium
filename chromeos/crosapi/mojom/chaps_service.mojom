@@ -7,7 +7,7 @@ module crosapi.mojom;
 // This interface is implemented by Ash-Chrome. It allows Ash-Chrome and
 // Lacros-Chrome to communicate with the Chaps system daemon (instead of using
 // D-Bus directly, which doesn't have backwards-compatibility safeguards).
-[Stable, Uuid="d1956d76-2141-4638-aee8-fb0e313418e4"]
+[Uuid="d1956d76-2141-4638-aee8-fb0e313418e4"]
 interface ChapsService {
     // PKCS #11 v2.20 section 11.5 page 106.
     GetSlotList@0(bool token_present) =>

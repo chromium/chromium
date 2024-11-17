@@ -27,6 +27,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1180,10 +1181,14 @@ IN_PROC_BROWSER_TEST_F(ScriptInjectionTrackerBrowserTest, HistoryPushState) {
 class DynamicScriptsTrackerBrowserTest
     : public ScriptInjectionTrackerBrowserTest {
  public:
-  DynamicScriptsTrackerBrowserTest() = default;
+  DynamicScriptsTrackerBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kProcessPerSiteUpToMainFrameThreshold);
+  }
 
  private:
   ScopedCurrentChannel current_channel_{version_info::Channel::UNKNOWN};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests tracking of content scripts dynamically injected/declared via

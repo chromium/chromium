@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Κανονική λειτουργία</translation>
 <translation id="1591562245178063882">Αυτόν το μήνα</translation>
 <translation id="1637811476055996098">Επιλογή αρχείων</translation>
-<translation id="1680090928918677457">Χρήση κάμερας</translation>
 <translation id="1729654308190250600">Καταχωρίστε μια διεύθυνση ηλεκτρονικού ταχυδρομείου.</translation>
 <translation id="1758486001363313524">Άλλες…</translation>
 <translation id="1921819250265091946">ηη</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Κάντε πιο σύντομο αυτό το κείμενο ώστε να έχει το πολύ <ph name="MAX_CHARACTERS" /> χαρακτήρες (αυτήν τη στιγμή χρησιμοποιείτε <ph name="CURRENT_LENGTH" /> χαρακτήρες).</translation>
 <translation id="2247351761944213033">Εβδομάδα <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Κομμάτι <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Η κάμερα και το μικρόφωνο επιτρέπονται</translation>
 <translation id="2507943997699731163">Συμπληρώστε αυτό το πεδίο.</translation>
 <translation id="2613802280814924224">Καταχωρίστε μια έγκυρη τιμή. Η κοντινότερη έγκυρη τιμή είναι <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Υποβολή</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Αυξήστε την έκταση αυτού του κειμένου στους <ph name="MIN_CHARACTERS" /> χαρακτήρες ή περισσότερο (αυτήν τη στιγμή χρησιμοποιείτε <ph name="CURRENT_LENGTH" /> χαρακτήρες).</translation>
 <translation id="383465348367842624">Το τμήμα της διεύθυνσης πριν το σύμβολο "<ph name="ATSIGN" />" δεν πρέπει να περιέχει το σύμβολο "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Έξοδος από πλήρη οθόνη</translation>
-<translation id="4031179711345676612">Επιτρέπεται το μικρόφωνο</translation>
 <translation id="4360991593054037559">Καταχωρίστε μια έγκυρη τιμή. Οι δύο πιο κοντινές έγκυρες τιμές είναι <ph name="VALID_VALUE_LOW" /> και <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Λεπτομέρειες</translation>
-<translation id="4663373278480897665">Επιτρέπεται η κάμερα</translation>
 <translation id="4664250907885839816">Το τμήμα της διεύθυνσης μετά το σύμβολο "<ph name="ATSIGN" />" δεν πρέπει να περιέχει το σύμβολο "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Αναπαραγωγή σε λειτουργία picture-in-picture</translation>
-<translation id="4792862212177489858">Κοινοποίηση τοποθεσίας</translation>
 <translation id="4812940957355064477">Εισαγάγετε έναν αριθμό.</translation>
-<translation id="49269513399674318">Χρήση μικροφώνου</translation>
 <translation id="4975562563186953947">Επιλέχτηκαν <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Κατάργηση σίγασης</translation>
 <translation id="49969490063480558">Καταχωρίστε το τμήμα της διεύθυνσης μετά το σύμβολο "<ph name="ATSIGN" />". Η διεύθυνση "<ph name="INVALIDADDRESS" />" δεν είναι πλήρης.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Δεν είναι δυνατή η φόρτωση της προσθήκης.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Αυξήστε την έκταση αυτού του κειμένου στους <ph name="MIN_CHARACTERS" /> χαρακτήρες ή περισσότερο (αυτήν τη στιγμή χρησιμοποιείτε 1 χαρακτήρα).</translation>
-<translation id="7080893216867146095">Επιτράπηκε η κοινοποίηση τοποθεσίας</translation>
 <translation id="709897737746224366">Αντιστοιχίστε τη ζητούμενη μορφή.</translation>
-<translation id="7134810312945846184">Χρήση μικροφώνου και κάμερας</translation>
 <translation id="7263440858009898357">Επιλέξτε ένα στοιχείο από τη λίστα.</translation>
 <translation id="7364796246159120393">Επιλογή αρχείου</translation>
 <translation id="739024184232394898">Άλλες…</translation>

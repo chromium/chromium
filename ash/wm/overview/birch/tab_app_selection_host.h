@@ -9,7 +9,10 @@
 
 namespace ash {
 class BirchChipButton;
+class ScopedA11yOverrideWindowSetter;
 
+// The host which contains the TabAppSelectionView. This widget slides in when
+// shown.
 class TabAppSelectionHost : public views::Widget {
  public:
   explicit TabAppSelectionHost(BirchChipButton* coral_chip);
@@ -19,12 +22,32 @@ class TabAppSelectionHost : public views::Widget {
 
   void ProcessKeyEvent(ui::KeyEvent* event);
 
+  // Called when an item is removed from the selection view. Reloads the chip
+  // button image.
+  void OnItemRemoved();
+
+  // Slides the widget under `owner_` before hiding it.
+  void SlideOut();
+
+  // Removes an item associated with given `identifier` from selection view.
+  void RemoveItem(std::string_view identifier);
+
+  // views::Widget:
+  void OnNativeWidgetVisibilityChanged(bool visible) override;
+
   const BirchChipButton* owner_for_testing() const { return owner_; }
 
  private:
+  class SelectionHostHider;
+
   gfx::Rect GetDesiredBoundsInScreen();
 
+  std::unique_ptr<SelectionHostHider> hider_;
   const raw_ptr<BirchChipButton> owner_;
+
+  // This widget isn't activatable so this is a way to force accessibility
+  // features to focus on the underlying window.
+  std::unique_ptr<ScopedA11yOverrideWindowSetter> scoped_a11y_overrider_;
 };
 
 }  // namespace ash

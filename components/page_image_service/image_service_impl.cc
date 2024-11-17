@@ -75,9 +75,10 @@ class ImageServiceImpl::SuggestEntityImageURLFetcher {
         metrics::OmniboxEventProto::JOURNEYS;
     search_terms_args.search_terms = search_query_;
 
+    // ImageServiceFactory does not create a service instance for OTR profiles.
     loader_ = remote_suggestions_service->StartSuggestionsRequest(
-        RemoteRequestType::kImages, template_url, search_terms_args,
-        search_terms_data,
+        RemoteRequestType::kImages, /*is_off_the_record=*/false, template_url,
+        search_terms_args, search_terms_data,
         base::BindOnce(&SuggestEntityImageURLFetcher::OnURLLoadComplete,
                        weak_factory_.GetWeakPtr()));
   }
@@ -223,6 +224,7 @@ void ImageServiceImpl::GetConsentToFetchImage(
   switch (client_id) {
     case mojom::ClientId::Journeys:
     case mojom::ClientId::JourneysSidePanel:
+    case mojom::ClientId::HistoryEmbeddings:
     case mojom::ClientId::NtpQuests:
     case mojom::ClientId::NtpTabResumption: {
       return history_consent_helper_->EnqueueRequest(std::move(callback),
@@ -353,7 +355,8 @@ void ImageServiceImpl::ProcessAllBatchedOptimizationGuideRequests(
   optimization_guide::proto::RequestContext request_context;
   switch (client_id) {
     case mojom::ClientId::Journeys:
-    case mojom::ClientId::JourneysSidePanel: {
+    case mojom::ClientId::JourneysSidePanel:
+    case mojom::ClientId::HistoryEmbeddings: {
       request_context = optimization_guide::proto::CONTEXT_JOURNEYS;
       break;
     }

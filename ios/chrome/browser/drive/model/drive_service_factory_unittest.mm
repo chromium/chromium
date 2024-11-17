@@ -13,23 +13,24 @@
 class DriveServiceFactoryTest : public PlatformTest {
  protected:
   DriveServiceFactoryTest() {
-    scoped_feature_list_.InitAndEnableFeature(kIOSSaveToDrive);
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    scoped_feature_list_.InitWithFeatures(
+        {kIOSSaveToDrive, kIOSChooseFromDrive}, {});
+    profile_ = TestProfileIOS::Builder().Build();
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Checks that the same instance is returned for on-the-record and
-// off-the-record browser states.
-TEST_F(DriveServiceFactoryTest, BrowserStateRedirectedInIncognito) {
+// off-the-record profiles.
+TEST_F(DriveServiceFactoryTest, ProfileRedirectedInIncognito) {
   drive::DriveService* on_the_record_service =
-      drive::DriveServiceFactory::GetForBrowserState(browser_state_.get());
+      drive::DriveServiceFactory::GetForProfile(profile_.get());
   drive::DriveService* off_the_record_service =
-      drive::DriveServiceFactory::GetForBrowserState(
-          browser_state_->GetOffTheRecordChromeBrowserState());
+      drive::DriveServiceFactory::GetForProfile(
+          profile_->GetOffTheRecordProfile());
   EXPECT_TRUE(on_the_record_service != nullptr);
   EXPECT_EQ(on_the_record_service, off_the_record_service);
 }

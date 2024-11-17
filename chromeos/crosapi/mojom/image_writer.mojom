@@ -8,7 +8,6 @@ import "mojo/public/mojom/base/file_path.mojom";
 import "url/mojom/url.mojom";
 
 // A struct representing a removable storage device.
-[Stable]
 struct RemovableStorageDevice {
   // Identifier for the storage unit.
   string storage_unit_id@0;
@@ -23,7 +22,7 @@ struct RemovableStorageDevice {
 };
 
 // The different stages of a write call.
-[Stable, Extensible]
+[Extensible]
 enum Stage {
   [Default] kUnknown = 0,
   kConfirmation  = 1,  /* prompting the user for confirmation */
@@ -37,7 +36,7 @@ enum Stage {
 // Interface for image writer client. Implemented by lacros-chrome. Used by
 // ash-chrome to dispatch the extension events about the progress of writing
 // to the Lacros extension that initiates the remote writing in ash.
-[Stable, Uuid="18f14c56-9dea-480a-a7d1-9ef94c223f2e"]
+[Uuid="18f14c56-9dea-480a-a7d1-9ef94c223f2e"]
 interface ImageWriterClient {
   // Dispatches OnWriteProgress event to the Lacros extension which initiates
   // the write request.
@@ -58,7 +57,7 @@ interface ImageWriterClient {
 // Interface for image writer. Implemented by ash-chrome. Used by lacros-chrome
 // to forward the removable disk operations to ash to support the image writer
 // private extension API in Lacros.
-[Stable, Uuid="13df62d0-b72c-46ed-9024-e8ee4a30590c"]
+[Uuid="13df62d0-b72c-46ed-9024-e8ee4a30590c"]
 interface ImageWriter {
   // Lists all the removable storage devices currently attached to the system.
   // Returns removable devices if the operation succeeds.

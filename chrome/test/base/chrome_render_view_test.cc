@@ -30,12 +30,15 @@
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/public/web/web_view.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/renderer/extensions/chrome_extensions_renderer_client.h"
-#include "extensions/browser/extension_function_dispatcher.h"
-#include "extensions/common/extension.h"
 #include "extensions/renderer/dispatcher.h"                        // nogncheck
 #include "extensions/renderer/extensions_renderer_api_provider.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/browser/extension_function_dispatcher.h"
+#include "extensions/common/extension.h"
 #endif
 
 using autofill::AutofillAgent;
@@ -122,7 +125,7 @@ void ChromeRenderViewTest::RegisterMainFrameRemoteInterfaces() {}
 
 void ChromeRenderViewTest::InitChromeContentRendererClient(
     ChromeContentRendererClient* client) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   ChromeExtensionsRendererClient::Create();
   extensions::ExtensionsRendererClient::Get()->SetDispatcherForTesting(
       std::make_unique<extensions::Dispatcher>(

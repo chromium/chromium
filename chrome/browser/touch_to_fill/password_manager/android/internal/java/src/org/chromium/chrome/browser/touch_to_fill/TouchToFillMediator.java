@@ -351,7 +351,7 @@ class TouchToFillMediator {
         return o != null && !o.uri().isOpaque() ? credentialOrigin : siteUrl.getSpec();
     }
 
-    private void reportCredentialSelection(int userAction, int index) {
+    private void reportCredentialSelection(int index) {
         if (mCredentials.size() + mWebAuthnCredentials.size() > 1) {
             // We only record this histogram in case multiple credentials were shown to the user.
             // Otherwise the single credential case where position should always be 0 will dominate
@@ -362,16 +362,14 @@ class TouchToFillMediator {
 
     private void onSelectedCredential(Credential credential) {
         mModel.set(VISIBLE, false);
-        reportCredentialSelection(UserAction.SELECTED_CREDENTIAL, mCredentials.indexOf(credential));
+        reportCredentialSelection(mCredentials.indexOf(credential));
         mDelegate.onCredentialSelected(credential);
     }
 
     private void onSelectedWebAuthnCredential(WebauthnCredential credential) {
         mModel.set(VISIBLE, false);
         // The index assumes WebAuthn credentials are listed after password credentials.
-        reportCredentialSelection(
-                UserAction.SELECTED_PASSKEY_CREDENTIAL,
-                mCredentials.size() + mWebAuthnCredentials.indexOf(credential));
+        reportCredentialSelection(mCredentials.size() + mWebAuthnCredentials.indexOf(credential));
         mDelegate.onWebAuthnCredentialSelected(credential);
     }
 

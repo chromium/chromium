@@ -317,7 +317,7 @@ class SystemAccentColorTest : public InProcessBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "CSSSystemAccentColor");
+                                    "CSSAccentColorKeyword");
   }
 
   void SetWebAppScope(const GURL web_app_scope) {
@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColors) {
 IN_PROC_BROWSER_TEST_P(ForcedColorsTest, ForcedColorsWithBlockList) {
   test_theme_.set_forced_colors(GetParam());
 
-  const char* url = "http://foo.com";
+  const char* url = "https://foo.com";
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
 
   // Add url to the page colors block list.
@@ -1305,7 +1305,7 @@ class IsClipboardPasteAllowedTest : public InProcessBrowserTest {
     base::ScopedAllowBlockingForTesting allow_blocking;
     base::FilePath path = temp_dir_.GetPath().Append(filename);
     base::File file(path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-    file.WriteAtCurrentPos(content.data(), content.size());
+    file.WriteAtCurrentPos(base::as_byte_span(content));
     return path;
   }
 

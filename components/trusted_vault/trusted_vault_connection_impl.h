@@ -74,7 +74,8 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
   std::unique_ptr<TrustedVaultConnection::Request>
   DownloadAuthenticationFactorsRegistrationState(
       const CoreAccountInfo& account_info,
-      DownloadAuthenticationFactorsRegistrationStateCallback callback) override;
+      DownloadAuthenticationFactorsRegistrationStateCallback callback,
+      base::RepeatingClosure keep_alive_callback) override;
 
  private:
   std::unique_ptr<Request> SendJoinSecurityDomainsRequest(

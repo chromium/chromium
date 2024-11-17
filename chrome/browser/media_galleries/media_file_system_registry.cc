@@ -576,8 +576,7 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
                        path.value(), fs_name, true /* read only */));
     return result;
 #else
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
 #endif
   }
 };

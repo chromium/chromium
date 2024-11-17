@@ -34,12 +34,14 @@ aom_av1_common_intrin_neon_dotprod = [
   "//third_party/libaom/source/libaom/av1/common/arm/av1_convolve_scale_neon_dotprod.c",
   "//third_party/libaom/source/libaom/av1/common/arm/compound_convolve_neon_dotprod.c",
   "//third_party/libaom/source/libaom/av1/common/arm/convolve_neon_dotprod.c",
+  "//third_party/libaom/source/libaom/av1/common/arm/resize_neon_dotprod.c",
 ]
 
 aom_av1_common_intrin_neon_i8mm = [
   "//third_party/libaom/source/libaom/av1/common/arm/av1_convolve_scale_neon_i8mm.c",
   "//third_party/libaom/source/libaom/av1/common/arm/compound_convolve_neon_i8mm.c",
   "//third_party/libaom/source/libaom/av1/common/arm/convolve_neon_i8mm.c",
+  "//third_party/libaom/source/libaom/av1/common/arm/resize_neon_i8mm.c",
 ]
 
 aom_av1_common_intrin_sse2 = [
@@ -383,10 +385,8 @@ aom_common_app_util_sources = [
   "//third_party/libaom/source/libaom/common/y4menc.h",
 ]
 
-aom_dsp_common_asm_sse2 = [
-  "//third_party/libaom/source/libaom/aom_dsp/x86/intrapred_asm_sse2.asm",
-  "//third_party/libaom/source/libaom/aom_dsp/x86/inv_wht_sse2.asm",
-]
+aom_dsp_common_asm_sse2 =
+    [ "//third_party/libaom/source/libaom/aom_dsp/x86/intrapred_asm_sse2.asm" ]
 
 aom_dsp_common_asm_ssse3 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/aom_subpixel_8t_ssse3.asm",
@@ -626,6 +626,8 @@ aom_encoder_app_util_sources = [
   "//third_party/libaom/source/libaom/common/y4minput.h",
   "//third_party/libaom/source/libaom/examples/encoder_util.c",
   "//third_party/libaom/source/libaom/examples/encoder_util.h",
+  "//third_party/libaom/source/libaom/examples/multilayer_metadata.cc",
+  "//third_party/libaom/source/libaom/examples/multilayer_metadata.h",
 ]
 
 aom_encoder_stats_sources = [

@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/check.h"
+#import "base/memory/raw_ptr.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/scoped_multi_source_observation.h"
@@ -40,16 +41,16 @@
   // List of tabs to add to the tab group.
   std::set<web::WebStateID> _identifiers;
   // Web state list where the tab group belong.
-  WebStateList* _webStateList;
+  raw_ptr<WebStateList> _webStateList;
   // Tab group to edit.
-  const TabGroup* _tabGroup;
+  raw_ptr<const TabGroup> _tabGroup;
   // Array of all pictures of the group.
   NSMutableArray<GroupTabInfo*>* _tabGroupInfos;
   // Item to fetch pictures.
   TabGroupItem* _groupItem;
   // Source browser. Only set when creating a new group, not when editing an
   // existing one.
-  Browser* _browser;
+  raw_ptr<Browser> _browser;
   // Observers for WebStateList. Only set when editing an existing group,
   // when creating a new one.
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
@@ -78,9 +79,8 @@
     [_consumer setDefaultGroupColor:TabGroup::DefaultColorForNewTabGroup(
                                         _webStateList)];
 
-    ChromeBrowserState* browserState = browser->GetBrowserState();
-    BrowserList* browserList =
-        BrowserListFactory::GetForBrowserState(browserState);
+    ProfileIOS* profile = browser->GetProfile();
+    BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
 
     _tabGroupInfos = [[NSMutableArray alloc] init];
 
@@ -99,8 +99,9 @@
         // search can display all tabs from the same profile at the same time.
         // The selected tab is currently in a different web state list (inactive
         // tab, or tab from another window).
-        Browser* selectedTabBrowser = GetBrowserForTabWithId(
-            browserList, identifier, browserState->IsOffTheRecord());
+        Browser* selectedTabBrowser = GetBrowserForTabWithCriteria(
+            browserList, WebStateSearchCriteria{.identifier = identifier},
+            profile->IsOffTheRecord());
         CHECK(browser);
         currentWebStateList = selectedTabBrowser->GetWebStateList();
         index =

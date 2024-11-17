@@ -9,13 +9,23 @@ class GURL;
 
 namespace webui {
 
-// Name of histogram that WebUI URLs are logged to.
+// Name of histogram that WebUI URLs are logged to when the WebUI object is
+// created.
 extern const char kWebUICreatedForUrl[];
 
-// Called when WebUI objects are created to get aggregate usage data (i.e. is
-// chrome://history used more than chrome://help?). Only internal (e.g.
-// chrome://) URLs are logged. Returns whether the URL was actually logged.
-bool LogWebUIUrl(const GURL& web_ui_url);
+// Name of histogram that WebUI URLs are logged to when the WebUI is shown.
+extern const char kWebUIShownUrl[];
+
+// Called when WebUI objects are created. Only internal (e.g. chrome://) URLs
+// are logged. Note that a WebUI can be created but never shown, which will
+// also be logged by this function. Returns whether the URL was actually logged.
+// This is used to collect WebUI usage data.
+bool LogWebUICreated(const GURL& web_ui_url);
+
+// Called when a WebUI completes the first non-empty paint. Only internal
+// (e.g. chrome://) URLs are logged. Returns whether the URL was actually
+// logged. This is used to collect WebUI usage data.
+bool LogWebUIShown(const GURL& web_ui_url);
 
 }  // namespace webui
 

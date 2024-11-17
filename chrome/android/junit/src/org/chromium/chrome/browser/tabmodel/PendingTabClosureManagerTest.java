@@ -8,6 +8,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.spy;
 
+import androidx.annotation.NonNull;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -34,7 +36,7 @@ import java.util.List;
 public class PendingTabClosureManagerTest {
     private PendingTabClosureManager mPendingTabClosureManager;
 
-    private class FakeTabModel extends EmptyTabModel {
+    private static class FakeTabModel extends EmptyTabModel {
         private LinkedList<Tab> mTabs = new LinkedList<Tab>();
         private int mIndex = TabModel.INVALID_TAB_INDEX;
 
@@ -103,6 +105,9 @@ public class PendingTabClosureManagerTest {
 
         @Override
         public void notifyOnFinishingMultipleTabClosure(List<Tab> tabs) {}
+
+        @Override
+        public void notifyOnCancelingTabClosure(@NonNull Runnable undoRunnable) {}
     }
 
     FakeTabModel mTabModel;
@@ -154,7 +159,8 @@ public class PendingTabClosureManagerTest {
         Tab[] tabList = new Tab[] {tab0};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
-        mPendingTabClosureManager.addTabClosureEvent(Arrays.asList(tabList));
+        mPendingTabClosureManager.addTabClosureEvent(
+                Arrays.asList(tabList), /* undoRunnable= */ null);
         checkRewoundState(mPendingTabClosureManager, tabList, false);
 
         mPendingTabClosureManager.commitTabClosure(tab0.getId());
@@ -173,13 +179,32 @@ public class PendingTabClosureManagerTest {
         Tab[] tabList = new Tab[] {tab0};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
-        mPendingTabClosureManager.addTabClosureEvent(Arrays.asList(tabList));
+        mPendingTabClosureManager.addTabClosureEvent(
+                Arrays.asList(tabList), /* undoRunnable= */ null);
         checkRewoundState(mPendingTabClosureManager, tabList, false);
 
         mPendingTabClosureManager.cancelTabClosure(tab0.getId());
         delegateInOrder.verify(mDelegate).insertUndoneTabClosureAt(eq(tab0), eq(0));
         // Still in rewound state as the tab continues to exist.
         checkRewoundState(mPendingTabClosureManager, tabList, true);
+    }
+
+    @Test
+    public void testCancelSingleTabEvent_WithUndoRunnable() {
+        InOrder delegateInOrder = inOrder(mDelegate);
+        Tab tab0 = new MockTab(0, mProfile);
+        Tab[] tabList = new Tab[] {tab0};
+        setupRewoundState(mPendingTabClosureManager, tabList);
+
+        Runnable undoRunnable = () -> {};
+        mPendingTabClosureManager.addTabClosureEvent(Arrays.asList(tabList), undoRunnable);
+        checkRewoundState(mPendingTabClosureManager, tabList, false);
+
+        mPendingTabClosureManager.cancelTabClosure(tab0.getId());
+        delegateInOrder.verify(mDelegate).insertUndoneTabClosureAt(eq(tab0), eq(0));
+        // Still in rewound state as the tab continues to exist.
+        checkRewoundState(mPendingTabClosureManager, tabList, true);
+        delegateInOrder.verify(mDelegate).notifyOnCancelingTabClosure(undoRunnable);
     }
 
     /**
@@ -194,7 +219,8 @@ public class PendingTabClosureManagerTest {
         Tab[] tabList = new Tab[] {tab1, tab0};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
-        mPendingTabClosureManager.addTabClosureEvent(Arrays.asList(tabList));
+        mPendingTabClosureManager.addTabClosureEvent(
+                Arrays.asList(tabList), /* undoRunnable= */ null);
         checkRewoundState(mPendingTabClosureManager, tabList, false);
 
         mPendingTabClosureManager.commitTabClosure(tab0.getId());
@@ -218,7 +244,8 @@ public class PendingTabClosureManagerTest {
         Tab[] tabList = new Tab[] {tab1, tab0};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
-        mPendingTabClosureManager.addTabClosureEvent(Arrays.asList(tabList));
+        mPendingTabClosureManager.addTabClosureEvent(
+                Arrays.asList(tabList), /* undoRunnable= */ null);
         checkRewoundState(mPendingTabClosureManager, tabList, false);
 
         mPendingTabClosureManager.cancelTabClosure(tab0.getId());
@@ -238,7 +265,8 @@ public class PendingTabClosureManagerTest {
         Tab[] tabList = new Tab[] {tab1, tab0};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
-        mPendingTabClosureManager.addTabClosureEvent(Arrays.asList(tabList));
+        mPendingTabClosureManager.addTabClosureEvent(
+                Arrays.asList(tabList), /* undoRunnable= */ null);
         checkRewoundState(mPendingTabClosureManager, tabList, false);
 
         mPendingTabClosureManager.commitTabClosure(tab0.getId());
@@ -259,7 +287,8 @@ public class PendingTabClosureManagerTest {
         Tab[] tabList = new Tab[] {tab1, tab0};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
-        mPendingTabClosureManager.addTabClosureEvent(Arrays.asList(tabList));
+        mPendingTabClosureManager.addTabClosureEvent(
+                Arrays.asList(tabList), /* undoRunnable= */ null);
         checkRewoundState(mPendingTabClosureManager, tabList, false);
 
         mPendingTabClosureManager.cancelTabClosure(tab0.getId());
@@ -283,9 +312,12 @@ public class PendingTabClosureManagerTest {
         Tab[] tabList = new Tab[] {tab0, tab1, tab2, tab3, tab4};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
-        mPendingTabClosureManager.addTabClosureEvent(Collections.singletonList(tab0));
-        mPendingTabClosureManager.addTabClosureEvent(Arrays.asList(new Tab[] {tab2, tab4}));
-        mPendingTabClosureManager.addTabClosureEvent(Arrays.asList(new Tab[] {tab1, tab3}));
+        mPendingTabClosureManager.addTabClosureEvent(
+                Collections.singletonList(tab0), /* undoRunnable= */ null);
+        mPendingTabClosureManager.addTabClosureEvent(
+                Arrays.asList(new Tab[] {tab2, tab4}), /* undoRunnable= */ null);
+        mPendingTabClosureManager.addTabClosureEvent(
+                Arrays.asList(new Tab[] {tab1, tab3}), /* undoRunnable= */ null);
         checkRewoundState(mPendingTabClosureManager, tabList, false);
 
         mPendingTabClosureManager.cancelTabClosure(tab3.getId());
@@ -333,10 +365,14 @@ public class PendingTabClosureManagerTest {
         Tab[] tabList = new Tab[] {tab0, tab1, tab2, tab3, tab4, tab5};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
-        mPendingTabClosureManager.addTabClosureEvent(Collections.singletonList(tab0));
-        mPendingTabClosureManager.addTabClosureEvent(Arrays.asList(new Tab[] {tab1, tab4}));
-        mPendingTabClosureManager.addTabClosureEvent(Collections.singletonList(tab2));
-        mPendingTabClosureManager.addTabClosureEvent(Arrays.asList(new Tab[] {tab3, tab5}));
+        mPendingTabClosureManager.addTabClosureEvent(
+                Collections.singletonList(tab0), /* undoRunnable= */ null);
+        mPendingTabClosureManager.addTabClosureEvent(
+                Arrays.asList(new Tab[] {tab1, tab4}), /* undoRunnable= */ null);
+        mPendingTabClosureManager.addTabClosureEvent(
+                Collections.singletonList(tab2), /* undoRunnable= */ null);
+        mPendingTabClosureManager.addTabClosureEvent(
+                Arrays.asList(new Tab[] {tab3, tab5}), /* undoRunnable= */ null);
         checkRewoundState(mPendingTabClosureManager, tabList, false);
 
         mPendingTabClosureManager.commitTabClosure(tab1.getId());
@@ -388,8 +424,10 @@ public class PendingTabClosureManagerTest {
         Tab[] tabList = new Tab[] {tab0, tab1, tab2, tab3};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
-        mPendingTabClosureManager.addTabClosureEvent(Collections.singletonList(tab0));
-        mPendingTabClosureManager.addTabClosureEvent(Arrays.asList(new Tab[] {tab1, tab2, tab3}));
+        mPendingTabClosureManager.addTabClosureEvent(
+                Collections.singletonList(tab0), /* undoRunnable= */ null);
+        mPendingTabClosureManager.addTabClosureEvent(
+                Arrays.asList(new Tab[] {tab1, tab2, tab3}), /* undoRunnable= */ null);
         checkRewoundState(mPendingTabClosureManager, tabList, false);
 
         mPendingTabClosureManager.commitTabClosure(tab1.getId());
@@ -418,8 +456,10 @@ public class PendingTabClosureManagerTest {
         Tab[] tabList = new Tab[] {tab0, tab1, tab2, tab3};
         setupRewoundState(mPendingTabClosureManager, tabList);
 
-        mPendingTabClosureManager.addTabClosureEvent(Collections.singletonList(tab0));
-        mPendingTabClosureManager.addTabClosureEvent(Arrays.asList(new Tab[] {tab1, tab2, tab3}));
+        mPendingTabClosureManager.addTabClosureEvent(
+                Collections.singletonList(tab0), /* undoRunnable= */ null);
+        mPendingTabClosureManager.addTabClosureEvent(
+                Arrays.asList(new Tab[] {tab1, tab2, tab3}), /* undoRunnable= */ null);
         checkRewoundState(mPendingTabClosureManager, tabList, false);
 
         // Restore tab 2.

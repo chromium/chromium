@@ -21,9 +21,9 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.CLUSTER_DATA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DELETE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.DISPLAY_AS_SHARED;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.GET_IMAGE_TILE_CONTAINER_CALLBACK;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.LEAVE_RUNNABLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.OPEN_RUNNABLE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.SHARED_IMAGE_TILES_VIEW;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProperties.TITLE_DATA;
 
 import android.app.Activity;
@@ -48,6 +48,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupFaviconCluster.ClusterData;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.TestActivity;
@@ -76,7 +77,7 @@ public class TabGroupRowViewUnitTest {
     @Mock Runnable mRunnable;
     @Mock Drawable mDrawable;
     @Mock FaviconResolver mFaviconResolver;
-    @Mock Callback<FrameLayout> mFrameLayoutCallback;
+    @Mock SharedImageTilesView mSharedImageTilesView;
 
     private Activity mActivity;
     private TabGroupRowView mTabGroupRowView;
@@ -89,7 +90,7 @@ public class TabGroupRowViewUnitTest {
 
     @Before
     public void setUp() {
-        mActivityScenarioRule.getScenario().onActivity((activity -> mActivity = activity));
+        mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
         MockitoHelper.doCallback(1, (Callback<Drawable> callback) -> callback.onResult(mDrawable))
                 .when(mFaviconResolver)
                 .resolve(any(), any());
@@ -112,7 +113,7 @@ public class TabGroupRowViewUnitTest {
         mTabGroupRowView.setTimeAgoResolverForTesting(mTimeAgoResolver);
 
         PropertyModelChangeProcessor.create(
-                mPropertyModel, mTabGroupRowView, new TabGroupRowViewBinder());
+                mPropertyModel, mTabGroupRowView, TabGroupRowViewBinder::bind);
 
         mActivity.setContentView(mTabGroupRowView);
     }
@@ -278,7 +279,9 @@ public class TabGroupRowViewUnitTest {
 
     @Test
     public void testImageTileContainerCallback() {
-        remakeWithProperty(GET_IMAGE_TILE_CONTAINER_CALLBACK, mFrameLayoutCallback);
-        verify(mFrameLayoutCallback).onResult(any());
+        remakeWithProperty(SHARED_IMAGE_TILES_VIEW, mSharedImageTilesView);
+        assertEquals(1, mImageTilesContainer.getChildCount());
+        remakeWithProperty(SHARED_IMAGE_TILES_VIEW, null);
+        assertEquals(0, mImageTilesContainer.getChildCount());
     }
 }

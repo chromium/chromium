@@ -204,31 +204,6 @@ public class FullscreenManagerTest {
     @MediumTest
     @Feature({"Fullscreen"})
     @DisableFeatures({
-        ChromeFeatureList.BACK_GESTURE_REFACTOR,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
-    public void testBackPressExitPersistentFullscreenLegacy() {
-        testBackPressExitPersistentFullscreenInternal(false);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Fullscreen"})
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    @EnableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
-    public void testBackPressExitPersistentFullscreen() {
-        testBackPressExitPersistentFullscreenInternal(true);
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Fullscreen"})
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    @DisableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
@@ -240,7 +215,6 @@ public class FullscreenManagerTest {
     @MediumTest
     @Feature({"Fullscreen"})
     @EnableFeatures({
-        ChromeFeatureList.BACK_GESTURE_REFACTOR,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
@@ -1166,11 +1140,10 @@ public class FullscreenManagerTest {
     @MediumTest
     @Feature({"Fullscreen"})
     @DisableFeatures({
-        ChromeFeatureList.BACK_GESTURE_REFACTOR,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
-    @DisabledTest(message = "https://crbug.com/1469553")
+    @DisabledTest(message = "b/352829204 - flaky test")
     public void testFullscreenExitWithSelectionPopPresentLegacy() throws InterruptedException {
         mActivityTestRule.startMainActivityWithURL(FULLSCREEN_WITH_SELECTION_POPUP);
         // Click to trigger java scripts callback
@@ -1218,13 +1191,13 @@ public class FullscreenManagerTest {
     @Test
     @MediumTest
     @Feature({"Fullscreen"})
-    @DisableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
     @EnableFeatures({
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
         ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
     })
-    @DisabledTest(message = "https://crbug.com/1469553")
-    public void testFullscreenExitWithSelectionPopPresent() throws InterruptedException {
+    @DisabledTest(message = "b/326041467 - flaky test")
+    public void testFullscreenExitWithSelectionPopPresent_BackGestureRefactor()
+            throws InterruptedException {
         mActivityTestRule.startMainActivityWithURL(FULLSCREEN_WITH_SELECTION_POPUP);
         // Click to trigger java scripts callback
         TestTouchUtils.singleClick(
@@ -1266,34 +1239,6 @@ public class FullscreenManagerTest {
         FullscreenTestUtils.waitForFullscreen(tab, false);
         FullscreenTestUtils.waitForPersistentFullscreen(delegate, false);
         Assert.assertTrue(controller.isSelectActionBarShowing());
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Fullscreen"})
-    @EnableFeatures(ChromeFeatureList.BACK_GESTURE_REFACTOR)
-    @DisableFeatures({
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
-    @DisabledTest(message = "b/352829204 - flaky test")
-    public void testFullscreenExitWithSelectionPopPresent_BackGestureRefactorLegacy()
-            throws InterruptedException {
-        testFullscreenExitWithSelectionPopPresentLegacy();
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"Fullscreen"})
-    @EnableFeatures({
-        ChromeFeatureList.BACK_GESTURE_REFACTOR,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION,
-        ChromeFeatureList.FULLSCREEN_INSETS_API_MIGRATION_ON_AUTOMOTIVE
-    })
-    @DisabledTest(message = "b/326041467 - flaky test")
-    public void testFullscreenExitWithSelectionPopPresent_BackGestureRefactor()
-            throws InterruptedException {
-        testFullscreenExitWithSelectionPopPresent();
     }
 
     private void waitForEditableNodeToLoseFocus(final Tab tab) {

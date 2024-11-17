@@ -4,4 +4,4 @@
 
 // https://streams.spec.whatwg.org/#callbackdef-underlyingsourcecancelcallback
 
-callback UnderlyingSourceCancelCallback = Promise<void> (optional any reason);
+callback UnderlyingSourceCancelCallback = Promise<undefined> (optional any reason);

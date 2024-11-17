@@ -34,20 +34,19 @@ BASE_DECLARE_FEATURE(kOneTimePermission);
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kFailFastQuietChip);
 
+#if !BUILDFLAG(IS_ANDROID)
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
-BASE_DECLARE_FEATURE(kPermissionElementPromptPositioning);
+BASE_DECLARE_FEATURE(kKeyboardAndPointerLockPrompt);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
-BASE_DECLARE_FEATURE(kPermissionPredictionServiceUseUrlOverride);
+BASE_DECLARE_FEATURE(kPermissionElementPromptPositioning);
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionOnDeviceNotificationPredictions);
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionOnDeviceGeolocationPredictions);
-
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-BASE_DECLARE_FEATURE(kPermissionDedicatedCpssSetting);
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kPermissionPredictionsV2);
@@ -88,6 +87,9 @@ BASE_DECLARE_FEATURE(kShowRelatedWebsiteSetsPermissionGrants);
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 BASE_DECLARE_FEATURE(kCpssQuietChipTextUpdate);
 
+COMPONENT_EXPORT(PERMISSIONS_COMMON)
+BASE_DECLARE_FEATURE(kCpssUseTfliteSignatureRunner);
+
 }  // namespace features
 namespace feature_params {
 
@@ -115,10 +117,6 @@ enum class PermissionElementPromptPosition {
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<PermissionElementPromptPosition>
     kPermissionElementPromptPositioningParam;
-
-COMPONENT_EXPORT(PERMISSIONS_COMMON)
-extern const base::FeatureParam<std::string>
-    kPermissionPredictionServiceUrlOverride;
 
 COMPONENT_EXPORT(PERMISSIONS_COMMON)
 extern const base::FeatureParam<double>

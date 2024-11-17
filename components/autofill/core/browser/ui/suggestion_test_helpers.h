@@ -17,6 +17,10 @@ namespace autofill {
     SuggestionType id,
     const std::u16string& main_text);
 
+::testing::Matcher<Suggestion> EqualsSuggestion(
+    SuggestionType id,
+    const Suggestion::Payload& payload);
+
 ::testing::Matcher<Suggestion> EqualsSuggestion(SuggestionType id,
                                                 const std::u16string& main_text,
                                                 Suggestion::Icon icon);

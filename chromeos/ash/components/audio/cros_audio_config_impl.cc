@@ -10,6 +10,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/audio/public/mojom/cros_audio_config.mojom-shared.h"
 
 namespace ash::audio_config {
 
@@ -132,6 +133,21 @@ mojom::AudioEffectState GetHfpMicSrState(const AudioDevice& device) {
              : mojom::AudioEffectState::kNotEnabled;
 }
 
+// Determines the correct `mojom::AudioEffectState` for an audio device
+mojom::AudioEffectState GetSpatialAudioState(const AudioDevice& device) {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+  CHECK(audio_handler);
+
+  if (!audio_handler->IsSpatialAudioSupportedForDevice(device.id)) {
+    return mojom::AudioEffectState::kNotSupported;
+  }
+
+  // Get current device wide preference state from `CrasAudioHandler`.
+  return audio_handler->GetSpatialAudioState()
+             ? mojom::AudioEffectState::kEnabled
+             : mojom::AudioEffectState::kNotEnabled;
+}
+
 }  // namespace
 
 mojom::AudioDeviceType ComputeDeviceType(const AudioDeviceType& device_type) {
@@ -184,6 +200,7 @@ mojom::AudioDevicePtr GenerateMojoAudioDevice(const AudioDevice& device) {
   mojo_device->force_respect_ui_gains_state =
       GetForceRespectUiGainsState(device);
   mojo_device->hfp_mic_sr_state = GetHfpMicSrState(device);
+  mojo_device->spatial_audio_state = GetSpatialAudioState(device);
   return mojo_device;
 }
 
@@ -201,8 +218,9 @@ CrosAudioConfigImpl::CrosAudioConfigImpl()
 }
 
 CrosAudioConfigImpl::~CrosAudioConfigImpl() {
-  if (CrasAudioHandler::Get())
+  if (CrasAudioHandler::Get()) {
     CrasAudioHandler::Get()->RemoveAudioObserver(this);
+  }
 }
 
 uint8_t CrosAudioConfigImpl::GetOutputVolumePercent() const {
@@ -215,11 +233,13 @@ uint8_t CrosAudioConfigImpl::GetInputGainPercent() const {
 
 mojom::MuteState CrosAudioConfigImpl::GetOutputMuteState() const {
   // TODO(crbug.com/1092970): Add kMutedExternally.
-  if (CrasAudioHandler::Get()->IsOutputMutedByPolicy())
+  if (CrasAudioHandler::Get()->IsOutputMutedByPolicy()) {
     return mojom::MuteState::kMutedByPolicy;
+  }
 
-  if (CrasAudioHandler::Get()->IsOutputMuted())
+  if (CrasAudioHandler::Get()->IsOutputMuted()) {
     return mojom::MuteState::kMutedByUser;
+  }
 
   return mojom::MuteState::kNotMuted;
 }
@@ -327,8 +347,8 @@ void CrosAudioConfigImpl::SetActiveDevice(uint64_t device_id) {
       audio_handler->GetDeviceFromId(device_id);
 
   if (!next_active_device) {
-    LOG(ERROR) << "SetActiveDevice: Cannot find device id="
-               << "0x" << std::hex << device_id;
+    LOG(ERROR) << "SetActiveDevice: Cannot find device id=" << "0x" << std::hex
+               << device_id;
     return;
   }
 
@@ -365,6 +385,32 @@ void CrosAudioConfigImpl::SetInputMuted(bool muted) {
       audio_handler->GetPrimaryActiveInputNode(), muted,
       CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
   RecordMuteStateChanged(kInputMuteChangeHistogramName, muted);
+}
+
+mojom::VoiceIsolationUIAppearancePtr
+CrosAudioConfigImpl::GetVoiceIsolationUIAppearance() const {
+  auto mojom_appearance = mojom::VoiceIsolationUIAppearance::New();
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+  if (audio_handler->input_muted_by_microphone_mute_switch()) {
+    return mojom_appearance;
+  }
+
+  VoiceIsolationUIAppearance appearance =
+      audio_handler->GetVoiceIsolationUIAppearance();
+  mojom_appearance->toggle_type =
+      static_cast<mojom::AudioEffectType>(appearance.toggle_type);
+  mojom_appearance->effect_mode_options = appearance.effect_mode_options;
+  mojom_appearance->show_effect_fallback_message =
+      appearance.show_effect_fallback_message;
+  return mojom_appearance;
+}
+
+void CrosAudioConfigImpl::RefreshVoiceIsolationState() {
+  CrasAudioHandler::Get()->RefreshVoiceIsolationState();
+}
+
+void CrosAudioConfigImpl::RefreshVoiceIsolationPreferredEffect() {
+  CrasAudioHandler::Get()->RefreshVoiceIsolationPreferredEffect();
 }
 
 void CrosAudioConfigImpl::SetNoiseCancellationEnabled(bool enabled) {
@@ -414,6 +460,13 @@ void CrosAudioConfigImpl::SetHfpMicSrEnabled(bool enabled) {
 
   audio_handler->SetHfpMicSrState(
       enabled, CrasAudioHandler::AudioSettingsChangeSource::kOsSettings);
+}
+
+void CrosAudioConfigImpl::SetSpatialAudioEnabled(bool enabled) {
+  CrasAudioHandler* audio_handler = CrasAudioHandler::Get();
+  CHECK(audio_handler);
+
+  audio_handler->SetSpatialAudioState(enabled);
 }
 
 void CrosAudioConfigImpl::RecordOutputVolume() {
@@ -478,6 +531,11 @@ void CrosAudioConfigImpl::OnInputMutedByMicrophoneMuteSwitchChanged(
   NotifyObserversAudioSystemPropertiesChanged();
 }
 
+void CrosAudioConfigImpl::OnVoiceIsolationUIAppearanceChanged(
+    VoiceIsolationUIAppearance appearance) {
+  NotifyObserversAudioSystemPropertiesChanged();
+}
+
 void CrosAudioConfigImpl::OnNoiseCancellationStateChanged() {
   NotifyObserversAudioSystemPropertiesChanged();
 }
@@ -491,6 +549,10 @@ void CrosAudioConfigImpl::OnForceRespectUiGainsStateChanged() {
 }
 
 void CrosAudioConfigImpl::OnHfpMicSrStateChanged() {
+  NotifyObserversAudioSystemPropertiesChanged();
+}
+
+void CrosAudioConfigImpl::OnSpatialAudioStateChanged() {
   NotifyObserversAudioSystemPropertiesChanged();
 }
 

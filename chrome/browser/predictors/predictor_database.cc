@@ -31,13 +31,13 @@ namespace {
 const base::FilePath::CharType kPredictorDatabaseName[] =
     FILE_PATH_LITERAL("Network Action Predictor");
 
-void ReportUMA(const base::FilePath file_path) {
-  int64_t db_file_size;
-  if (!base::GetFileSize(file_path, &db_file_size)) {
+void ReportUMA(const base::FilePath& file_path) {
+  std::optional<int64_t> db_file_size = base::GetFileSize(file_path);
+  if (!db_file_size.has_value()) {
     return;
   }
   // "x>>10 == x/1024"
-  const int kb_size = base::saturated_cast<int>(db_file_size >> 10);
+  const int kb_size = base::saturated_cast<int>(db_file_size.value() >> 10);
   base::UmaHistogramCounts1M("LoadingPredictor.PredictorDatabaseFileSize",
                              kb_size);
 }

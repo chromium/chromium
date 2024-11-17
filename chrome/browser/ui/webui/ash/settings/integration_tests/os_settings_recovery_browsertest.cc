@@ -8,6 +8,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/os_settings_lock_screen_browser_test_base.h"
 #include "chrome/test/data/webui/chromeos/settings/test_api.test-mojom-test-utils.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
@@ -22,7 +23,12 @@ const char kRecoveryFactorBehaviorPolicy[] = "RecoveryFactorBehavior";
 
 namespace ash::settings {
 
-class OSSettingsRecoveryTest : public OSSettingsLockScreenBrowserTestBase {};
+class OSSettingsRecoveryTest : public OSSettingsLockScreenBrowserTestBase {
+ public:
+  OSSettingsRecoveryTest()
+      : OSSettingsLockScreenBrowserTestBase(ash::AshAuthFactor::kGaiaPassword) {
+  }
+};
 
 // A test fixture that runs tests with recovery feature enabled but without
 // hardware support.

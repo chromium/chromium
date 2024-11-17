@@ -382,6 +382,13 @@ chromium-metrics-reviews@google.com.
   <int value="15" label="Not-ECT, ECT(1), ECT(0), CE"/>
 </enum>
 
+<enum name="HSTSRedirectUpgradeReason">
+  <int value="0" label="URL not HTTP"/>
+  <int value="1" label="HSTS unavailable"/>
+  <int value="2" label="No HSTS pin"/>
+  <int value="3" label="URL upgraded by HSTS"/>
+</enum>
+
 <enum name="Http2WireErrorCodes">
   <summary>
     Error codes defined at
@@ -526,6 +533,14 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="3G"/>
 </enum>
 
+<enum name="IpProtectionJobResult">
+  <int value="0" label="IP Protection was not attempted"/>
+  <int value="1"
+      label="The request was IP Protected and carried via IP Protection
+             proxies or, if the direct-only parameter is true, made directly"/>
+  <int value="2" label="The request was IP Protected, but fell back to direct"/>
+</enum>
+
 <enum name="JobProtocolErrorLocation">
   <int value="0" label="kSessionStartReadingFailedAsync"/>
   <int value="1" label="kSessionStartReadingFailedSync"/>
@@ -534,6 +549,15 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="CryptoConnectFailedSync"/>
   <int value="5" label="CryptoConnectFailedAsync"/>
 </enum>
+
+<!-- LINT.IfChange(MultiplexedSessionCreationInitiator) -->
+
+<enum name="MultiplexedSessionCreationInitiator">
+  <int value="0" label="kUnknown"/>
+  <int value="1" label="kPreconnect"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/spdy/multiplexed_session_creation_initiator.h:MultiplexedSessionCreationInitiator) -->
 
 <enum name="MultiPortStatusOnMigration">
   <int value="0" label="Not validated"/>
@@ -557,6 +581,13 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Byte equal Names"/>
   <int value="2" label="Normalized Names"/>
   <int value="3" label="Chain contained only one certificate"/>
+</enum>
+
+<enum name="NetCertVerifierNSSCertMigrationResult">
+  <int value="0" label="NSS DB empty"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Partial Success"/>
+  <int value="3" label="Failure"/>
 </enum>
 
 <enum name="NetErrorPageEvents">
@@ -2421,6 +2452,14 @@ Called by update_net_trust_anchors.py.-->
   <int value="7" label="FailedToGetTotalDictSize"/>
   <int value="8" label="FailedToSetTotalDictSize"/>
   <int value="9" label="TooBigDictionary"/>
+</enum>
+
+<enum name="SkipCompletionPortOnSuccessOutcome">
+  <int value="0"
+      label="Not all available transport protocols return Installable File
+             System (IFS) handles"/>
+  <int value="1" label="SetFileCompletionNotificationModes failed"/>
+  <int value="2" label="Succeeded"/>
 </enum>
 
 <enum name="SpdyFrameFlowControlState">

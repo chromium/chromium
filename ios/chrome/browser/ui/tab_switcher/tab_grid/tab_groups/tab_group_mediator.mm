@@ -11,7 +11,6 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
-#import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_util.h"
 #import "ios/chrome/browser/saved_tab_groups/model/tab_group_sync_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -30,8 +29,9 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_idle_status_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups/tab_group_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 
@@ -73,7 +73,13 @@
 - (BOOL)addNewItemInGroup {
   [self.tabGridIdleStatusHandler
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
-  return [self addTabToGroup:_tabGroup.get()];
+  if (!_tabGroup) {
+    return NO;
+  }
+  GURL URL(kChromeUINewTabURL);
+  int groupCount = _tabGroup->range().count();
+  [self insertNewWebStateAtGridIndex:groupCount withURL:URL];
+  return groupCount != _tabGroup->range().count();
 }
 
 - (void)ungroup {
@@ -89,8 +95,8 @@
       tabGridDidPerformAction:TabGridActionType::kInPageAction];
   if (IsTabGroupSyncEnabled()) {
     tab_groups::TabGroupSyncService* syncService =
-        tab_groups::TabGroupSyncServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
+        tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+            self.browser->GetProfile());
     tab_groups::utils::CloseTabGroupLocally(_tabGroup.get(), self.webStateList,
                                             syncService);
   } else {
@@ -196,26 +202,29 @@
 }
 
 - (void)insertNewWebStateAtGridIndex:(int)index withURL:(const GURL&)newTabURL {
-  CHECK(self.browser->GetBrowserState());
+  ProfileIOS* profile = self.browser->GetProfile();
 
-  web::WebState::CreateParams params(self.browser->GetBrowserState());
-  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
+  if (!self.browser || !_tabGroup || !profile) {
+    return;
+  }
+
+  WebStateList* webStateList = self.webStateList;
+  if (!webStateList->ContainsGroup(_tabGroup.get())) {
+    return;
+  }
 
   int webStateListIndex = _tabGroup->range().range_begin() + index;
   webStateListIndex =
       std::clamp(webStateListIndex, _tabGroup->range().range_begin(),
                  _tabGroup->range().range_end());
 
-  const auto insertionParams =
-      WebStateList::InsertionParams::AtIndex(webStateListIndex)
-          .InGroup(_tabGroup.get())
-          .Activate();
-
-  web::NavigationManager::WebLoadParams loadParams(newTabURL);
-  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
-  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
-
-  self.webStateList->InsertWebState(std::move(webState), insertionParams);
+  UrlLoadParams params = UrlLoadParams::InNewTab(newTabURL);
+  params.in_incognito = profile->IsOffTheRecord();
+  params.append_to = OpenPosition::kSpecifiedIndex;
+  params.insertion_index = webStateListIndex;
+  params.load_in_group = true;
+  params.tab_group = _tabGroup;
+  self.URLLoader->Load(params);
 }
 
 - (BOOL)canHandleTabGroupDrop:(TabGroupInfo*)tabGroupInfo {
@@ -292,7 +301,10 @@
   if (webStateList->IsBatchInProgress() || !_tabGroup) {
     return;
   }
-  CHECK(detachChange.group() == _tabGroup.get());
+  if (detachChange.group() != _tabGroup.get()) {
+    // This can occur if a tab from a different group is closed.
+    return;
+  }
 
   web::WebState* detachedWebState = detachChange.detached_web_state();
   GridItemIdentifier* identifierToRemove =
@@ -434,37 +446,6 @@
 }
 
 #pragma mark - Private
-
-// Adds a tab to the `group`. Returns whether it succeed.
-- (BOOL)addTabToGroup:(const TabGroup*)group {
-  if (!self.browser || !group) {
-    return NO;
-  }
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  if (!browserState ||
-      !IsAddNewTabAllowedByPolicy(browserState->GetPrefs(),
-                                  browserState->IsOffTheRecord())) {
-    return NO;
-  }
-
-  WebStateList* webStateList = self.webStateList;
-  if (!webStateList->ContainsGroup(group)) {
-    return NO;
-  }
-
-  web::WebState::CreateParams params(browserState);
-  std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
-
-  web::NavigationManager::WebLoadParams loadParams((GURL(kChromeUINewTabURL)));
-  loadParams.transition_type = ui::PAGE_TRANSITION_TYPED;
-  webState->GetNavigationManager()->LoadURLWithParams(loadParams);
-
-  webStateList->InsertWebState(
-      std::move(webState),
-      WebStateList::InsertionParams::Automatic().InGroup(group).Activate());
-
-  return YES;
-}
 
 // Inserts an item representing `webState` in the consumer at `index`.
 - (void)insertInConsumerWebState:(web::WebState*)webState atIndex:(int)index {

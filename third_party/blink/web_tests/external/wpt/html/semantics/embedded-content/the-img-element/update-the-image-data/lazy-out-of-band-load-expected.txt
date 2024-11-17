@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] src = /images/green.png
+  assert_unreached: load: should never try to load Reached unreachable code
+[FAIL] src = /images/not-found
+  assert_unreached: error: should never try to load Reached unreachable code
+[FAIL] srcset = /images/green.png
+  assert_unreached: load: should never try to load Reached unreachable code
+[FAIL] srcset = /images/not-found
+  assert_unreached: error: should never try to load Reached unreachable code
+Harness: the test ran to completion.
+

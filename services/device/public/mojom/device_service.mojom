@@ -21,25 +21,24 @@ import "services/device/public/mojom/usb_manager_test.mojom";
 import "services/device/public/mojom/vibration_manager.mojom";
 import "services/device/public/mojom/wake_lock_provider.mojom";
 
-[EnableIf=is_android]
-import "services/device/public/mojom/nfc_provider.mojom";
-
-[EnableIf=is_chromeos_ash]
-import "services/device/public/mojom/mtp_manager.mojom";
-
-[EnableIf=enable_hid]
+[EnableIfNot=is_android]
 import "services/device/public/mojom/hid.mojom";
-
-[EnableIf=enable_compute_pressure]
-import "services/device/public/mojom/pressure_manager.mojom";
 
 [EnableIf=enable_input_device_manager]
 import "services/device/public/mojom/input_service.mojom";
 
+[EnableIf=is_chromeos_ash]
+import "services/device/public/mojom/mtp_manager.mojom";
+
+[EnableIf=is_android]
+import "services/device/public/mojom/nfc_provider.mojom";
+
+[EnableIf=enable_compute_pressure]
+import "services/device/public/mojom/pressure_manager.mojom";
+
 // The main interface to the Device Service. This is bound only by the browser
 // process and is used to broker connections to more specific device APIs.
 interface DeviceService {
-
   // Binds a Fingerprint endpoint.
   BindFingerprint(pending_receiver<Fingerprint> receiver);
 
@@ -75,7 +74,7 @@ interface DeviceService {
                        pending_remote<VibrationManagerListener> listener);
 
   // Binds a HidManager endpoint.
-  [EnableIf=enable_hid]
+  [EnableIfNot=is_android]
   BindHidManager(pending_receiver<HidManager> receiver);
 
   // Binds a MtpManager endpoint.

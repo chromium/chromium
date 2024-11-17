@@ -73,9 +73,6 @@ class CastToolbarButton : public ToolbarButton,
  private:
   CastToolbarButtonController* GetActionController() const;
 
-  // Updates insets per touch ui mode.
-  void UpdateLayoutInsetDelta();
-
   void ButtonPressed();
 
   void LogIconChange(const gfx::VectorIcon* icon);

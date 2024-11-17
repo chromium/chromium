@@ -21,6 +21,8 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/stringprintf.h"
+#include "base/time/clock.h"
+#include "base/time/tick_clock.h"
 #include "net/base/features.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_change_notifier.h"
@@ -133,9 +135,12 @@ std::unique_ptr<HostCache> CreateHostCache(bool enable_caching) {
 }
 
 std::unique_ptr<HostResolverCache> CreateHostResolverCache(
-    bool enable_caching) {
+    bool enable_caching,
+    const base::Clock& clock,
+    const base::TickClock& tick_clock) {
   if (enable_caching) {
-    return std::make_unique<HostResolverCache>(kDefaultCacheSize);
+    return std::make_unique<HostResolverCache>(kDefaultCacheSize, clock,
+                                               tick_clock);
   } else {
     return nullptr;
   }
@@ -152,10 +157,13 @@ ResolveContext::ServerStats::ServerStats(ServerStats&&) = default;
 ResolveContext::ServerStats::~ServerStats() = default;
 
 ResolveContext::ResolveContext(URLRequestContext* url_request_context,
-                               bool enable_caching)
+                               bool enable_caching,
+                               const base::Clock& clock,
+                               const base::TickClock& tick_clock)
     : url_request_context_(url_request_context),
       host_cache_(CreateHostCache(enable_caching)),
-      host_resolver_cache_(CreateHostResolverCache(enable_caching)),
+      host_resolver_cache_(
+          CreateHostResolverCache(enable_caching, clock, tick_clock)),
       isolation_info_(IsolationInfo::CreateTransient()) {
   max_fallback_period_ = GetMaxFallbackPeriod();
 }
@@ -364,8 +372,12 @@ void ResolveContext::InvalidateCachesAndPerSessionData(
   // to a network change.
   DCHECK(GetTargetNetwork() == handles::kInvalidNetworkHandle ||
          !network_change);
-  if (host_cache_)
+  if (host_cache_) {
     host_cache_->Invalidate();
+  }
+  if (host_resolver_cache_) {
+    host_resolver_cache_->MakeAllResultsStale();
+  }
 
   // DNS config is constant for any given session, so if the current session is
   // unchanged, any per-session data is safe to keep, even if it's dependent on

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_PUSH_NOTIFICATION_NOTIFICATIONS_OPT_IN_ALERT_COORDINATOR_H_
 #define IOS_CHROME_BROWSER_UI_PUSH_NOTIFICATION_NOTIFICATIONS_OPT_IN_ALERT_COORDINATOR_H_
 
+#import <Foundation/Foundation.h>
+
 #import <optional>
 #import <vector>
 
@@ -23,12 +25,18 @@ enum class NotificationsOptInAlertResult {
 };
 
 // A protocol used to communicate the result back to the owning coordinator.
-@protocol NotificationsOptInAlertCoordinatorDelegate
+@protocol NotificationsOptInAlertCoordinatorDelegate <NSObject>
 // Called with the final result of the opt-in request.
 - (void)notificationsOptInAlertCoordinator:
             (NotificationsOptInAlertCoordinator*)alertCoordinator
                                     result:
                                         (NotificationsOptInAlertResult)result;
+
+@optional
+// Called when the user returns from the notification settings page.
+- (void)notificationsOptInAlertCoordinatorReturnedFromSettings:
+    (NotificationsOptInAlertCoordinator*)alertCoordinator;
+
 @end
 
 // Coordinates the presentation of an alert to ask the user for permission to

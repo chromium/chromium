@@ -32,7 +32,6 @@ import androidx.browser.customtabs.CustomTabsSessionToken;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.cached_flags.AllCachedFieldTrialParameters;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
@@ -46,7 +45,7 @@ import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntent
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
-import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIPHController;
+import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabHistoryIphController;
 import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -59,7 +58,6 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
-import org.chromium.chrome.browser.searchwidget.SearchActivityClientImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
@@ -75,11 +73,6 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     private final CustomTabsConnection mConnection = CustomTabsConnection.getInstance();
     private int mNumOmniboxNavigationEventsPerSession;
-
-    /** Contains all the parameters of the EXPERIMENTS_FOR_AGSA feature. */
-    public static final AllCachedFieldTrialParameters EXPERIMENTS_FOR_AGSA_PARAMS =
-            ChromeFeatureList.newAllCachedFieldTrialParameters(
-                    ChromeFeatureList.EXPERIMENTS_FOR_AGSA);
 
     /** Prevents Tapjacking on T-. See crbug.com/1430867 */
     private static final boolean sPreventTouches =
@@ -167,7 +160,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
         mSession = mIntentDataProvider.getSession();
 
-        CustomTabNavigationBarController.update(getWindow(), mIntentDataProvider, this);
+        boolean drawEdgeToEdge =
+                mEdgeToEdgeControllerSupplier.get() != null
+                        && mEdgeToEdgeControllerSupplier.get().isDrawingToEdge()
+                        && mEdgeToEdgeControllerSupplier.get().isPageOptedIntoEdgeToEdge();
+        CustomTabNavigationBarController.update(
+                getWindow(), mIntentDataProvider, this, drawEdgeToEdge);
     }
 
     @Override
@@ -220,7 +218,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             BackupSigninProcessor.start(this);
         }
 
-        mConnection.showSignInToastIfNecessary(mSession, getIntent());
+        mConnection.showSignInToastIfNecessary(mSession, getIntent(), getProfileProviderSupplier());
 
         new CustomTabTrustedCdnPublisherUrlVisibility(
                 getWindowAndroid(),
@@ -294,10 +292,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         } else if (id == R.id.open_in_browser_id) {
             // Need to get tab before calling openCurrentUrlInBrowser or else it will be null.
             Tab tab = mTabProvider.getTab();
-            if (mNavigationController.openCurrentUrlInBrowser()) {
+            if (tab != null) {
                 RecordUserAction.record("CustomTabsMenuOpenInChrome");
-                WebContents webContents = tab == null ? null : tab.getWebContents();
-                mConnection.notifyOpenInBrowser(mSession, webContents);
+                // Need to notify *before* opening in browser, to ensure engagement signal will be
+                // fired correctly.
+                mConnection.notifyOpenInBrowser(mSession, tab);
+                mNavigationController.openCurrentUrlInBrowser();
             }
             return true;
         } else if (id == R.id.info_menu_id) {
@@ -321,10 +321,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                     getTabModelSelector().isIncognitoSelected(),
                     mIntentDataProvider.getClientPackageNameIdentitySharing());
 
-            CustomTabHistoryIPHController historyIPH =
-                    mBaseCustomTabRootUiCoordinator.getHistoryIPHController();
-            if (historyIPH != null) {
-                historyIPH.notifyUserEngaged();
+            CustomTabHistoryIphController historyIph =
+                    mBaseCustomTabRootUiCoordinator.getHistoryIphController();
+            if (historyIph != null) {
+                historyIph.notifyUserEngaged();
             }
             return true;
         }
@@ -443,10 +443,9 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
         if (resultCode != Activity.RESULT_OK) return;
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.SEARCH_IN_CCT)
-                && SearchActivityClientImpl.isOmniboxResult(requestCode, data)) {
-            LoadUrlParams params =
-                    SearchActivityClientImpl.getOmniboxResult(requestCode, resultCode, data);
+        var searchClient = mBaseCustomTabRootUiCoordinator.getCustomTabSearchClient();
+        if (searchClient.isOmniboxResult(requestCode, data)) {
+            LoadUrlParams params = searchClient.getOmniboxResult(requestCode, resultCode, data);
 
             RecordHistogram.recordBooleanHistogram(
                     "CustomTabs.Omnibox.FocusResultedInNavigation", params != null);

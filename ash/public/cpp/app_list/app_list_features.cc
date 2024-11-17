@@ -32,9 +32,6 @@ BASE_FEATURE(kLauncherPlayStoreSearch,
 BASE_FEATURE(kAppsCollections,
              "AppsCollections",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kForceShowAppsCollections,
-             "ForceShowAppsCollections",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAppReinstallZeroStateEnabled() {
   return base::FeatureList::IsEnabled(kEnableAppReinstallZeroState);
@@ -79,10 +76,6 @@ bool IsAppsCollectionsEnabledCounterfactually() {
 bool IsAppsCollectionsEnabledWithModifiedOrder() {
   return IsAppsCollectionsEnabled() &&
          kAppsCollectionsEnabledWithModifiedOrder.Get();
-}
-
-bool IsForceShowAppsCollectionsEnabled() {
-  return base::FeatureList::IsEnabled(kForceShowAppsCollections);
 }
 
 }  // namespace app_list_features

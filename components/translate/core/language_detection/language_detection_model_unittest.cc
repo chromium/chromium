@@ -5,11 +5,13 @@
 #include "components/translate/core/language_detection/language_detection_model.h"
 
 #include <memory>
+#include <string>
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -23,14 +25,12 @@ namespace translate {
 class LanguageDetectionModelValidTest : public testing::Test {
  public:
   LanguageDetectionModelValidTest()
-      : tflite_model_(language_detection::GetValidLanguageModel()),
-        language_detection_model_(
-            std::make_unique<LanguageDetectionModel>(tflite_model_.get())) {}
+      : language_detection_model_(std::make_unique<LanguageDetectionModel>(
+            language_detection::GetValidLanguageModel())) {}
 
  protected:
   base::test::TaskEnvironment environment_;
   base::HistogramTester histogram_tester_;
-  std::unique_ptr<language_detection::LanguageDetectionModel> tflite_model_;
   std::unique_ptr<LanguageDetectionModel> language_detection_model_;
 };
 
@@ -47,6 +47,53 @@ TEST_F(LanguageDetectionModelValidTest, DetectLanguageMetrics) {
   histogram_tester_.ExpectUniqueSample(
       "LanguageDetection.TFLiteModel.DetectPageLanguage.Size",
       contents.length(), 1);
+}
+
+// Pads out `s` with spaces until it is `len` long.
+void pad(std::u16string& s, size_t len) {
+  while (s.length() < len) {
+    s += u" ";
+  }
+}
+
+// This directly tests the sampling method for longer strings. We have 1 piece
+// of text that is unambiguously EN and one that is mixes AR and ZH. We combine
+// these so that they become the samples. Since EN is unambiguous, the result
+// should be EN.
+// This test is highly dependent on the sampling implementation.
+// See https://crbug.com/378011996
+TEST_F(LanguageDetectionModelValidTest, DetectLanguageSampling) {
+  // If this changes, this test needs to be rewritten.
+  ASSERT_EQ(kNumTextSamples, 3);
+  std::string predicted_language;
+  std::u16string en_sample = u"This is a page apparently written in English.";
+  pad(en_sample, kTextSampleLength);
+  std::u16string ar_zh_sample =
+      u"متصفح الويب أو مستعرض الويب هو تطبيق برمجي لاسترجاع المعلومات "
+      "产品的简报和公告 提交该申请后无法进行更改 请确认您的选择是正确的 ";
+  pad(ar_zh_sample, kTextSampleLength);
+
+  ASSERT_EQ(en_sample.length(), kTextSampleLength);
+  ASSERT_EQ(ar_zh_sample.length(), kTextSampleLength);
+
+  // Test against strings where the EN string in the `pos`th sample.
+  for (int pos = 0; pos < 3; pos++) {
+    SCOPED_TRACE(pos);
+    std::u16string s1 = pos == 0 ? en_sample : ar_zh_sample;
+    std::u16string s2 = pos == 1 ? en_sample : ar_zh_sample;
+    std::u16string s3 = pos == 2 ? en_sample : ar_zh_sample;
+    // Construct a string that starts with s1, has s2 starting at mid-point
+    // and then ends with s3. The string will of length `6*kTextSampleLength`.
+    std::u16string contents = s1;
+    pad(contents, kTextSampleLength * 3);
+    contents += s2;
+    pad(contents, kTextSampleLength * 5);
+    contents += s3;
+    ASSERT_EQ(contents.length(), 6 * kTextSampleLength);
+    language_detection::Prediction prediction =
+        language_detection_model_->DetectLanguage(contents);
+    EXPECT_EQ("en", prediction.language);
+  }
 }
 
 TEST_F(LanguageDetectionModelValidTest, ReliableLanguageDetermination) {

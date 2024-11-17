@@ -13,7 +13,9 @@
 #include "base/types/optional_util.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
+#include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/optimization_target_model_observer.h"
+#include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 
@@ -89,6 +91,11 @@ class OnDeviceModelAdaptationLoader
 
   // OnDeviceModelComponentStateManager::Observer.
   void StateChanged(const OnDeviceModelComponentState* state) final;
+  void OnDeviceEligibleFeatureFirstUsed(ModelBasedCapabilityKey feature) final;
+
+  // Registers for adaptation model download, if the conditions are right.
+  void MaybeRegisterModelDownload(const OnDeviceModelComponentState* state,
+                                  bool was_feature_recently_used);
 
   base::expected<std::unique_ptr<on_device_model::AdaptationAssetPaths>,
                  OnDeviceModelAdaptationAvailability>
@@ -96,6 +103,7 @@ class OnDeviceModelAdaptationLoader
       base::optional_ref<const optimization_guide::ModelInfo> model_info);
 
   ModelBasedCapabilityKey feature_;
+  proto::OptimizationTarget target_;
 
   // The model spec of the latest base model, received from the component
   // state manager.
@@ -106,6 +114,9 @@ class OnDeviceModelAdaptationLoader
   base::ScopedObservation<OnDeviceModelComponentStateManager,
                           OnDeviceModelComponentStateManager::Observer>
       component_state_manager_observation_{this};
+
+  base::WeakPtr<OnDeviceModelComponentStateManager>
+      on_device_component_state_manager_;
 
   raw_ptr<PrefService> local_state_;
 

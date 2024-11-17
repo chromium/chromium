@@ -45,7 +45,8 @@
           "builder": "ios-blink-dbg-fyi",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ios-blink-dbg-fyi/targets"
     }
   },
   "$build/reclient": {

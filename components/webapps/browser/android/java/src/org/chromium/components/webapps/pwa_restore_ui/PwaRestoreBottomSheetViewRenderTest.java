@@ -33,7 +33,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -65,15 +64,9 @@ public class PwaRestoreBottomSheetViewRenderTest {
                     .setBugComponent(RenderTestRule.Component.UI_BROWSER_WEB_APP_INSTALLS)
                     .build();
 
-    @Rule public JniMocker mocker = new JniMocker();
-
     @BeforeClass
     public static void setupSuite() {
-        sActivityTestRule.launchActivity(null);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    sActivity = sActivityTestRule.getActivity();
-                });
+        sActivity = sActivityTestRule.launchActivity(null);
     }
 
     @Mock private PwaRestoreBottomSheetMediator.Natives mNativeMock;
@@ -81,7 +74,7 @@ public class PwaRestoreBottomSheetViewRenderTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(PwaRestoreBottomSheetMediatorJni.TEST_HOOKS, mNativeMock);
+        PwaRestoreBottomSheetMediatorJni.setInstanceForTesting(mNativeMock);
         Mockito.when(mNativeMock.initialize(Mockito.any())).thenReturn(0L);
     }
 

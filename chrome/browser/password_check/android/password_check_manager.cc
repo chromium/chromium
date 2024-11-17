@@ -310,8 +310,7 @@ PasswordCheckUIStatus PasswordCheckManager::GetUIStatus(State state) const {
     case State::kServiceError:
       return PasswordCheckUIStatus::kErrorUnknown;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PasswordCheckUIStatus::kIdle;
+  NOTREACHED();
 }
 
 bool PasswordCheckManager::CanUseAccountCheck() const {

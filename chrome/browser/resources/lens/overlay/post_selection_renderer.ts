@@ -159,7 +159,7 @@ export class PostSelectionRendererElement extends PolymerElement {
       this.browserProxy.callbackRouter.clearAllSelections.addListener(
           this.clearSelection.bind(this)),
       this.browserProxy.callbackRouter.clearRegionSelection.addListener(
-          this.clearSelection.bind(this)),
+          this.clearRegionSelection.bind(this)),
       this.browserProxy.callbackRouter.setPostRegionSelection.addListener(
           this.setSelection.bind(this)),
     ];
@@ -180,6 +180,12 @@ export class PostSelectionRendererElement extends PolymerElement {
     this.canvasHeight = height;
     this.canvasPhysicalWidth = width * window.devicePixelRatio;
     this.canvasPhysicalHeight = height * window.devicePixelRatio;
+  }
+
+  clearRegionSelection() {
+    unfocusShimmer(this, ShimmerControlRequester.CURSOR);
+    unfocusShimmer(this, ShimmerControlRequester.MANUAL_REGION);
+    this.clearSelection();
   }
 
   clearSelection() {
@@ -298,6 +304,22 @@ export class PostSelectionRendererElement extends PolymerElement {
   cancelGesture() {
     this.originalBounds = {left: 0, top: 0, width: 0, height: 0};
     this.currentDragTarget = DragTarget.NONE;
+  }
+
+  handleRightClick(event: PointerEvent) {
+    const boundingRect = this.$.postSelection.getBoundingClientRect();
+    if (this.dragTargetFromPoint(event.clientX, event.clientY) !==
+            DragTarget.NONE ||
+        (event.clientX >= boundingRect.left &&
+         event.clientX <= boundingRect.right &&
+         event.clientY >= boundingRect.top &&
+         event.clientY <= boundingRect.bottom)) {
+      this.dispatchEvent(
+          new CustomEvent('restore-selected-region-context-menu', {
+            bubbles: true,
+            composed: true,
+          }));
+    }
   }
 
   private setSelection(region: CenterRotatedBox) {

@@ -101,12 +101,12 @@
   self = [super initWithStyle:style];
   if (self) {
     _browser = browser->AsWeakPtr();
-    _dataManager = [[ClearBrowsingDataManager alloc]
-        initWithBrowserState:self.browserState];
+    _dataManager =
+        [[ClearBrowsingDataManager alloc] initWithProfile:self.profile];
     _dataManager.consumer = self;
     _identityManagerObserverBridge.reset(
         new signin::IdentityManagerObserverBridge(
-            IdentityManagerFactory::GetForProfile(self.browserState), self));
+            IdentityManagerFactory::GetForProfile(self.profile), self));
   }
   return self;
 }
@@ -417,7 +417,7 @@
   CHECK(timePeriod != browsing_data::TimePeriod::LAST_15_MINUTES,
         base::NotFatalUntil::M130);
   Browser* browser = self.browser;
-  ProfileIOS* profile = self.browserState;
+  ProfileIOS* profile = self.profile;
   PrefService* prefService = self.prefService;
   if (!browser || !profile || !prefService) {
     // The C++ model has been destroyed, return early.
@@ -482,7 +482,7 @@
         ->BrowsingHistoryCleared();
   }
 
-  BrowsingDataRemoverFactory::GetForBrowserState(profile)->Remove(
+  BrowsingDataRemoverFactory::GetForProfile(profile)->Remove(
       timePeriod, removeMask,
       base::BindOnce(removeBrowsingDidFinishCompletionBlock));
 }
@@ -565,16 +565,16 @@
   return _browser.get();
 }
 
-- (ChromeBrowserState*)browserState {
+- (ProfileIOS*)profile {
   if (Browser* browser = self.browser) {
-    return browser->GetBrowserState();
+    return browser->GetProfile();
   }
   return nullptr;
 }
 
 - (PrefService*)prefService {
-  if (ChromeBrowserState* browserState = self.browserState) {
-    return browserState->GetPrefs();
+  if (ProfileIOS* profile = self.profile) {
+    return profile->GetPrefs();
   }
   return nullptr;
 }
@@ -673,10 +673,11 @@
                          browser:browser
                             rect:itemView.frame
                             view:itemView
+        forceSnackbarOverToolbar:NO
                       withSource:signout_source_metric];
   _signoutCoordinator.showUnavailableFeatureDialogHeader = YES;
   __weak ClearBrowsingDataTableViewController* weakSelf = self;
-  _signoutCoordinator.completion = ^(BOOL success) {
+  _signoutCoordinator.signoutCompletion = ^(BOOL success) {
     [weakSelf handleAuthenticationOperationDidFinish];
   };
   _signoutCoordinator.delegate = self;

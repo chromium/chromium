@@ -60,8 +60,7 @@ std::string TaskState::ToString() const {
     case Value::kCanceled:
       return "CANCELED";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 void TaskState::DidSchedule() {
@@ -102,11 +101,13 @@ TaskGraph::~TaskGraph() = default;
 TaskGraph::Node::Node(scoped_refptr<Task> new_task,
                       uint16_t category,
                       uint16_t priority,
-                      uint32_t dependencies)
+                      uint32_t dependencies,
+                      bool has_external_dependency)
     : task(std::move(new_task)),
       category(category),
       priority(priority),
-      dependencies(dependencies) {
+      dependencies(dependencies),
+      has_external_dependency(has_external_dependency) {
   // Set a trace task id to use for connecting from where the task was posted.
   if (task) {
     task->set_trace_task_id(base::trace_event::GetNextGlobalTraceId());

@@ -6,6 +6,9 @@ import("../../build_webui_tests.gni")
 
 build_webui_tests("build_webui_tests") {
   ts_path_mappings = [
+    "chrome://personalization/strings.m.js|" +
+        rebase_path("//tools/typescript/definitions/strings.d.ts",
+                    target_gen_dir),
     "chrome://personalization/*|" +
         rebase_path(
             "$root_gen_dir/ash/webui/personalization_app/resources/tsc/*",
@@ -77,6 +80,7 @@ build_webui_tests("build_webui_tests") {
     "//ash/webui/common/resources/cr_elements:build_ts",
     "//ash/webui/common/resources/sea_pen:build_ts",
     "//ash/webui/personalization_app/resources:build_ts",
+    "//chrome/test/data/webui/chromeos:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",

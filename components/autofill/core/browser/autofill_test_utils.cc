@@ -23,9 +23,12 @@
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_test_api.h"
 #include "components/autofill/core/browser/data_model/bank_account.h"
+#include "components/autofill/core/browser/data_model/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_test_api.h"
+#include "components/autofill/core/browser/data_model/ewallet.h"
 #include "components/autofill/core/browser/data_model/iban.h"
+#include "components/autofill/core/browser/data_model/payment_instrument.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/suggestions_list_metrics.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
@@ -424,6 +427,13 @@ CreditCard GetMaskedServerCardEnrolledIntoVirtualCardNumber() {
   return credit_card;
 }
 
+CreditCard GetMaskedServerCardEnrolledIntoRuntimeRetrieval() {
+  CreditCard credit_card = GetMaskedServerCard();
+  credit_card.set_card_info_retrieval_enrollment_state(
+      CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
+  return credit_card;
+}
+
 CreditCard GetFullServerCard() {
   CreditCard credit_card(CreditCard::RecordType::kFullServerCard, "c123");
   test::SetCreditCardInfo(&credit_card, "Full Carter",
@@ -620,8 +630,7 @@ std::vector<CardUnmaskChallengeOption> GetCardUnmaskChallengeOptions(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   return challenge_options;
@@ -858,7 +867,8 @@ void GenerateTestAutofillPopup(
   field.set_bounds(gfx::RectF(100.f, 100.f));
   autofill_external_delegate->OnQuery(
       form, field, /*caret_bounds=*/gfx::Rect(),
-      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+      AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      /*update_datalist=*/false);
 
   std::vector<Suggestion> suggestions;
   suggestions.push_back(Suggestion(u"Test suggestion"));
@@ -996,11 +1006,14 @@ Suggestion CreateAutofillSuggestion(SuggestionType type,
 
 Suggestion CreateAutofillSuggestion(const std::u16string& main_text_value,
                                     const std::u16string& minor_text_value,
-                                    bool apply_deactivated_style) {
+                                    bool has_deactivated_style) {
   Suggestion suggestion;
   suggestion.main_text.value = main_text_value;
   suggestion.minor_text.value = minor_text_value;
-  suggestion.apply_deactivated_style = apply_deactivated_style;
+  suggestion.acceptability =
+      has_deactivated_style
+          ? Suggestion::Acceptability::kUnacceptableWithDeactivatedStyle
+          : Suggestion::Acceptability::kAcceptable;
   return suggestion;
 }
 
@@ -1009,6 +1022,13 @@ BankAccount CreatePixBankAccount(int64_t instrument_id) {
       instrument_id, u"nickname", GURL("http://www.example.com"), u"bank_name",
       u"account_number", BankAccount::AccountType::kChecking);
   return bank_account;
+}
+
+Ewallet CreateEwalletAccount(int64_t instrument_id) {
+  Ewallet ewallet(instrument_id, u"nickname", GURL("http://www.example.com"),
+                  u"ewallet_name", u"account_display_name",
+                  {u"supported_payment_link_uri"}, true);
+  return ewallet;
 }
 
 sync_pb::PaymentInstrument CreatePaymentInstrumentWithBankAccount(
@@ -1035,6 +1055,31 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithIban(
   iban->set_length(27);
   iban->set_nickname("nickname");
   return payment_instrument;
+}
+
+sync_pb::PaymentInstrument CreatePaymentInstrumentWithEwalletAccount(
+    int64_t instrument_id) {
+  sync_pb::PaymentInstrument payment_instrument;
+  payment_instrument.set_instrument_id(instrument_id);
+  sync_pb::DeviceDetails* device_details =
+      payment_instrument.mutable_device_details();
+  device_details->set_is_fido_enrolled(true);
+  sync_pb::EwalletDetails* ewallet =
+      payment_instrument.mutable_ewallet_details();
+  ewallet->set_ewallet_name("ewallet_name");
+  ewallet->set_account_display_name("account_display_name");
+  ewallet->add_supported_payment_link_uris("supported_payment_link_uri_1");
+  return payment_instrument;
+}
+
+BnplIssuer GetTestBnplIssuer() {
+  PaymentInstrument payment_instrument = PaymentInstrument(
+      /*instrument_id=*/12345, /*nickname=*/std::u16string(), GURL::EmptyGURL(),
+      DenseSet<PaymentInstrument::PaymentRail>(
+          {PaymentInstrument::PaymentRail::kCardNumber}));
+  return BnplIssuer(/*issuer_id=*/"test_issuer_id", payment_instrument,
+                    /*price_lower_bound=*/50,
+                    /*price_upper_bound=*/200);
 }
 
 }  // namespace test

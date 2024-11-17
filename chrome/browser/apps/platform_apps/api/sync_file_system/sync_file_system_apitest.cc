@@ -10,6 +10,8 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/apps/platform_apps/api/deprecation_features.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync_file_system/file_status_observer.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_function.h"
+#include "storage/browser/file_system/file_system_features.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -44,15 +47,26 @@ enum class SyncActionMetrics {
   kMaxValue = kDeleted
 };
 
-class SyncFileSystemApiTest : public extensions::ExtensionApiTest {
+class SyncFileSystemApiTest : public extensions::ExtensionApiTest,
+                              public testing::WithParamInterface<bool> {
  public:
   SyncFileSystemApiTest() = default;
+
+  void SetUp() override {
+    std::vector<base::test::FeatureRef> features = {
+        chrome_apps::features::kDeprecateSyncFileSystemApis,
+        storage::features::kDisableSyncableQuota};
+    if (sync_file_system_disabled()) {
+      feature_list_.InitWithFeatures(features, {});
+    } else {
+      feature_list_.InitWithFeatures({}, features);
+    }
+    extensions::ExtensionApiTest::SetUp();
+  }
 
   void SetUpInProcessBrowserTestFixture() override {
     extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
 
-    // TODO(calvinlo): Update test code after default quota is made const
-    // (http://crbug.com/155488).
     real_default_quota_ =
         storage::QuotaManager::kSyncableStorageDefaultStorageKeyQuota;
     storage::QuotaManager::kSyncableStorageDefaultStorageKeyQuota = 123456;
@@ -84,6 +98,12 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest {
         }));
   }
 
+  bool sync_file_system_disabled() { return GetParam(); }
+
+  const char* GetCustomArg() {
+    return sync_file_system_disabled() ? "disabled" : "enabled";
+  }
+
   ::testing::NiceMock<MockRemoteFileSyncService>* mock_remote_service() {
     return mock_remote_service_;
   }
@@ -95,6 +115,7 @@ class SyncFileSystemApiTest : public extensions::ExtensionApiTest {
       mock_remote_service_ = nullptr;
   int64_t real_default_quota_ = 0;
   base::HistogramTester histogram_tester_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 ACTION_P2(UpdateRemoteChangeQueue, origin, mock_remote_service) {
@@ -144,14 +165,14 @@ struct ReturnWithFakeFileAddedStatusFunctor {
 }  // namespace
 
 // Flaky on Win, OS X, and Linux: http://crbug.com/417330.
-IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, DISABLED_GetFileStatus) {
+IN_PROC_BROWSER_TEST_P(SyncFileSystemApiTest, DISABLED_GetFileStatus) {
   ASSERT_TRUE(RunExtensionTest("sync_file_system/get_file_status",
                                {.launch_as_platform_app = true}))
       << message_;
 }
 
 // http://crbug.com/417330
-IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, DISABLED_GetFileStatuses) {
+IN_PROC_BROWSER_TEST_P(SyncFileSystemApiTest, DISABLED_GetFileStatuses) {
   // Mocking to return IsConflicting() == true only for the path "Conflicting".
   base::FilePath conflicting = base::FilePath::FromUTF8Unsafe("Conflicting");
   ASSERT_TRUE(RunExtensionTest("sync_file_system/get_file_statuses",
@@ -159,12 +180,13 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, DISABLED_GetFileStatuses) {
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, GetUsageAndQuota) {
-  ASSERT_TRUE(RunExtensionTest("sync_file_system/get_usage_and_quota"))
+IN_PROC_BROWSER_TEST_P(SyncFileSystemApiTest, GetUsageAndQuota) {
+  ASSERT_TRUE(RunExtensionTest("sync_file_system/get_usage_and_quota",
+                               {.custom_arg = GetCustomArg()}))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChanged) {
+IN_PROC_BROWSER_TEST_P(SyncFileSystemApiTest, OnFileStatusChanged) {
   // Mock a pending remote change to be synced.
   // We ignore the did_respond trait on ExtensionFunction because we mock out
   // the service, which results in the callback never being called. Yuck.
@@ -179,14 +201,17 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChanged) {
           sync_file_system::SYNC_FILE_STATUS_SYNCED,
           sync_file_system::SYNC_ACTION_ADDED,
           sync_file_system::SYNC_DIRECTION_REMOTE_TO_LOCAL))));
-  ASSERT_TRUE(RunExtensionTest("sync_file_system/on_file_status_changed",
-                               {.launch_as_platform_app = true}))
+  ASSERT_TRUE(RunExtensionTest(
+      "sync_file_system/on_file_status_changed",
+      {.custom_arg = GetCustomArg(), .launch_as_platform_app = true}))
       << message_;
-  histogram_tester().ExpectUniqueSample("Storage.SyncFileSystem.FileSyncAction",
-                                        SyncActionMetrics::kAdded, 1);
+  if (!sync_file_system_disabled()) {
+    histogram_tester().ExpectUniqueSample(
+        "Storage.SyncFileSystem.FileSyncAction", SyncActionMetrics::kAdded, 1);
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChangedDeleted) {
+IN_PROC_BROWSER_TEST_P(SyncFileSystemApiTest, OnFileStatusChangedDeleted) {
   // Mock a pending remote change to be synced.
   // We ignore the did_respond trait on ExtensionFunction because we mock out
   // the service, which results in the callback never being called. Yuck.
@@ -201,15 +226,18 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnFileStatusChangedDeleted) {
           sync_file_system::SYNC_FILE_STATUS_SYNCED,
           sync_file_system::SYNC_ACTION_DELETED,
           sync_file_system::SYNC_DIRECTION_REMOTE_TO_LOCAL))));
-  ASSERT_TRUE(
-      RunExtensionTest("sync_file_system/on_file_status_changed_deleted",
-                       {.launch_as_platform_app = true}))
+  ASSERT_TRUE(RunExtensionTest(
+      "sync_file_system/on_file_status_changed_deleted",
+      {.custom_arg = GetCustomArg(), .launch_as_platform_app = true}))
       << message_;
-  histogram_tester().ExpectUniqueSample("Storage.SyncFileSystem.FileSyncAction",
-                                        SyncActionMetrics::kDeleted, 1);
+  if (!sync_file_system_disabled()) {
+    histogram_tester().ExpectUniqueSample(
+        "Storage.SyncFileSystem.FileSyncAction", SyncActionMetrics::kDeleted,
+        1);
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnServiceStatusChanged) {
+IN_PROC_BROWSER_TEST_P(SyncFileSystemApiTest, OnServiceStatusChanged) {
   EXPECT_CALL(*mock_remote_service(), RegisterOrigin(_, _))
       .WillOnce([this](::testing::Unused,
                        sync_file_system::SyncStatusCallback callback) {
@@ -220,34 +248,38 @@ IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, OnServiceStatusChanged) {
                                       sync_file_system::SYNC_STATUS_OK));
       });
 
-  ASSERT_TRUE(RunExtensionTest("sync_file_system/on_service_status_changed",
-                               {.launch_as_platform_app = true}))
+  ASSERT_TRUE(RunExtensionTest(
+      "sync_file_system/on_service_status_changed",
+      {.custom_arg = GetCustomArg(), .launch_as_platform_app = true}))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, RequestFileSystem) {
+IN_PROC_BROWSER_TEST_P(SyncFileSystemApiTest, RequestFileSystem) {
   EXPECT_CALL(*mock_remote_service(), RegisterOrigin(_, _)).Times(1);
   ASSERT_TRUE(RunExtensionTest("sync_file_system/request_file_system",
                                {.launch_as_platform_app = true}))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, WriteFileThenGetUsage) {
+IN_PROC_BROWSER_TEST_P(SyncFileSystemApiTest, WriteFileThenGetUsage) {
   ASSERT_TRUE(RunExtensionTest("sync_file_system/write_file_then_get_usage",
                                {.launch_as_platform_app = true}))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, ConflictResolutionPolicy) {
+IN_PROC_BROWSER_TEST_P(SyncFileSystemApiTest, ConflictResolutionPolicy) {
   ASSERT_TRUE(RunExtensionTest("sync_file_system/conflict_resolution_policy",
                                {.launch_as_platform_app = true}))
       << message_;
 }
 
-IN_PROC_BROWSER_TEST_F(SyncFileSystemApiTest, GetServiceStatus) {
+IN_PROC_BROWSER_TEST_P(SyncFileSystemApiTest, GetServiceStatus) {
   mock_remote_service()->SetServiceState(
       sync_file_system::REMOTE_SERVICE_AUTHENTICATION_REQUIRED);
-  ASSERT_TRUE(RunExtensionTest("sync_file_system/get_service_status",
-                               {.launch_as_platform_app = true}))
+  ASSERT_TRUE(RunExtensionTest(
+      "sync_file_system/get_service_status",
+      {.custom_arg = GetCustomArg(), .launch_as_platform_app = true}))
       << message_;
 }
+
+INSTANTIATE_TEST_SUITE_P(All, SyncFileSystemApiTest, testing::Bool());

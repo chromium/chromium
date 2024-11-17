@@ -36,7 +36,7 @@ URLSyntaxErrorCode IsValidCustomHandlerURLSyntax(
   return URLSyntaxErrorCode::kNoError;
 }
 
-bool IsValidCustomHandlerScheme(const std::string_view scheme,
+bool IsValidCustomHandlerScheme(std::string_view scheme,
                                 ProtocolHandlerSecurityLevel security_level,
                                 bool* has_custom_scheme_prefix) {
   bool allow_scheme_prefix =

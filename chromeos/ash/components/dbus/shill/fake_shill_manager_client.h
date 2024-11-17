@@ -150,6 +150,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   bool GetFastTransitionStatus() override;
   void SetSimulateConfigurationResult(
       FakeShillSimulatedResult configuration_result) override;
+  void SetSimulateConfigurationError(std::string_view error_name,
+                                     std::string_view error_message) override;
   void SetSimulateTetheringEnableResult(
       FakeShillSimulatedResult tethering_enable_result,
       const std::string& result_string) override;
@@ -180,6 +182,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
   static const char kFakeEthernetNetworkGuid[];
 
  private:
+  // Error message for configure service failure.
+  struct ConfigurationError {
+    std::string name;
+    std::string message;
+  };
+
   using ConnectToBestServicesCallbacks =
       std::tuple<base::OnceClosure, ErrorCallback>;
 
@@ -247,6 +255,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillManagerClient
 
   FakeShillSimulatedResult simulate_configuration_result_ =
       FakeShillSimulatedResult::kSuccess;
+  ConfigurationError simulate_configuration_error_ = {"Error",
+                                                      "Simulated failure"};
   FakeShillSimulatedResult simulate_tethering_enable_result_ =
       FakeShillSimulatedResult::kSuccess;
   std::string simulate_enable_tethering_result_string_;

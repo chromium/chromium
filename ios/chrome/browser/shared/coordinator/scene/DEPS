@@ -1,4 +1,5 @@
 include_rules = [
+  "+ios/chrome/browser/ai_prototyping/coordinator",
   "+ios/chrome/browser/app_store_rating/ui_bundled",
   "+ios/chrome/browser/appearance/ui_bundled/appearance_customization.h",
   "+ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h",

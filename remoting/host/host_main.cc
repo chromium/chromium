@@ -19,7 +19,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
-#include "remoting/base/breakpad.h"
+#include "remoting/base/crash/breakpad.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/base/switches.h"
@@ -260,9 +260,12 @@ int HostMain(int argc, char** argv) {
 
   mojo::core::Init({
 #if BUILDFLAG(IS_WIN)
-    .is_broker_process = main_routine == &DaemonProcessMain
+      .is_broker_process = main_routine == &DaemonProcessMain
+#elif BUILDFLAG(IS_MAC)
+      // The broker process on Mac is the agent process broker.
+      .is_broker_process = false
 #else
-    .is_broker_process = main_routine == &HostProcessMain
+      .is_broker_process = main_routine == &HostProcessMain
 #endif
   });
 

@@ -16,7 +16,7 @@ rootWebArea
 ++++++++++staticText name=' ' textPosition=subscript
 ++++++++++++inlineTextBox name=' '
 ++++++++++contentDeletion textPosition=subscript
-++++++++++++genericContainer name='3' textPosition=subscript
+++++++++++++genericContainer textPosition=subscript
 ++++++++++++++genericContainer description='oops' descriptionFrom=title textPosition=subscript
 ++++++++++++++++staticText name='3' textPosition=subscript
 ++++++++++++++++++inlineTextBox name='3'

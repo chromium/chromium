@@ -50,7 +50,6 @@ class ASH_EXPORT DeskButton : public views::Button {
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   void Layout(PassKey) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
   void AboutToRequestFocusFromTabTraversal(bool reverse) override;
@@ -76,6 +75,8 @@ class ASH_EXPORT DeskButton : public views::Button {
 
   // Updates locale-specific settings.
   void UpdateLocaleSpecificSettings();
+
+  void UpdateAccessiblePreviousAndNextFocus();
 
  private:
   enum class SwitchButtonUpdateSource {

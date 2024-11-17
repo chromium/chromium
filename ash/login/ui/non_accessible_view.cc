@@ -7,6 +7,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace ash {
 
@@ -16,16 +17,14 @@ constexpr const char kDefaultName[] = "NonAccessibleView";
 
 NonAccessibleView::NonAccessibleView() : NonAccessibleView(kDefaultName) {}
 
-NonAccessibleView::NonAccessibleView(const std::string& name) : name_(name) {}
+NonAccessibleView::NonAccessibleView(const std::string& name) : name_(name) {
+  GetViewAccessibility().SetIsInvisible(true);
+}
 
 NonAccessibleView::~NonAccessibleView() = default;
 
 std::string NonAccessibleView::GetObjectName() const {
   return name_;
-}
-
-void NonAccessibleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  node_data->AddState(ax::mojom::State::kInvisible);
 }
 
 BEGIN_METADATA(NonAccessibleView)

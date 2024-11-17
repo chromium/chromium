@@ -24,12 +24,12 @@ const base::FilePath::CharType kFileName[] = FILE_PATH_LITERAL("somefile.pb");
 
 class HintsComponentUtilTest : public testing::Test {
  public:
-  HintsComponentUtilTest() {}
+  HintsComponentUtilTest() = default;
 
   HintsComponentUtilTest(const HintsComponentUtilTest&) = delete;
   HintsComponentUtilTest& operator=(const HintsComponentUtilTest&) = delete;
 
-  ~HintsComponentUtilTest() override {}
+  ~HintsComponentUtilTest() override = default;
 
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 

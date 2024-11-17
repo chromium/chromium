@@ -32,9 +32,8 @@ public class WebContentsDelegateAndroid {
     public static final int LOG_LEVEL_ERROR = 3;
 
     /**
-     * @param url
-     * @param disposition         The new tab disposition, defined in
-     *                            //ui/base/mojo/window_open_disposition.mojom.
+     * @param disposition The new tab disposition, defined in
+     *     //ui/base/mojo/window_open_disposition.mojom.
      * @param isRendererInitiated Whether or not the renderer initiated this action.
      */
     @CalledByNative
@@ -52,7 +51,7 @@ public class WebContentsDelegateAndroid {
     public void closeContents() {}
 
     @CalledByNative
-    public void loadingStateChanged(boolean shouldShowLoadingUI) {}
+    public void loadingStateChanged(boolean shouldShowLoadingUi) {}
 
     @CalledByNative
     public void navigationStateChanged(int flags) {}
@@ -236,6 +235,14 @@ public class WebContentsDelegateAndroid {
     public int getBackForwardTransitionFallbackUXPageBackgroundColor() {
         return 0;
     }
+
+    /**
+     * Request the delegate to change the zoom level of the current tab.
+     *
+     * @param zoomIn Whether to zoom in or out.
+     */
+    @CalledByNative
+    public void contentsZoomChange(boolean zoomIn) {}
 
     /**
      * Capture current visible native view as a bitmap.

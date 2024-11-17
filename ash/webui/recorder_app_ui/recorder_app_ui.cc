@@ -9,19 +9,27 @@
 
 #include "ash/webui/recorder_app_ui/recorder_app_ui.h"
 
+#include <cstdint>
+#include <utility>
+#include <vector>
+
 #include "ash/constants/ash_features.h"
 #include "ash/webui/common/trusted_types_util.h"
 #include "ash/webui/metrics/structured_metrics_service_wrapper.h"
+#include "ash/webui/recorder_app_ui/model_constants.h"
 #include "ash/webui/recorder_app_ui/recorder_app_ui_delegate.h"
 #include "ash/webui/recorder_app_ui/resources.h"
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources.h"
 #include "ash/webui/recorder_app_ui/resources/grit/recorder_app_resources_map.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
+#include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "components/media_device_salt/media_device_salt_service.h"
+#include "components/soda/constants.h"
+#include "components/soda/soda_features.h"
 #include "components/soda/soda_installer.h"
 #include "components/soda/soda_util.h"
 #include "content/public/browser/browser_context.h"
@@ -40,9 +48,6 @@
 namespace ash {
 
 namespace {
-
-// TODO(pihsun): Handle multiple languages.
-constexpr speech::LanguageCode kLanguageCode = speech::LanguageCode::kEnUs;
 
 std::string_view SodaInstallerErrorCodeToString(
     speech::SodaInstaller::ErrorCode error) {
@@ -104,7 +109,9 @@ int GetResourceIdFromStringName(const std::string& name) {
 
 bool RecorderAppUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(ash::features::kConch);
+  return base::FeatureList::IsEnabled(ash::features::kConch) ||
+         base::FeatureList::IsEnabled(
+             speech::kFeatureManagementCrosSodaConchLanguages);
 }
 
 RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
@@ -142,18 +149,33 @@ RecorderAppUI::RecorderAppUI(content::WebUI* web_ui,
       std::string("media-src 'self' blob:;"));
 
   if (speech::IsOnDeviceSpeechRecognitionSupported()) {
-    auto* soda_installer = speech::SodaInstaller::GetInstance();
     speech::SodaInstaller::GetInstance()->AddObserver(this);
-    if (soda_installer->IsSodaInstalled(kLanguageCode)) {
-      soda_state_ = {recorder_app::mojom::ModelStateType::kInstalled,
-                     std::nullopt};
+    if (base::FeatureList::IsEnabled(
+            ash::features::kConchExpandTranscriptionLanguage)) {
+      auto language_list = speech::SodaInstaller::GetInstance()
+                               ->GetLiveCaptionEnabledLanguages();
+      for (auto language : language_list) {
+        auto language_code = speech::GetLanguageCode(language);
+        if (language_code != speech::LanguageCode::kNone) {
+          transcription_supported_languages_.insert(language_code);
+        }
+      }
     } else {
-      soda_state_ = {recorder_app::mojom::ModelStateType::kNotInstalled,
-                     std::nullopt};
+      transcription_supported_languages_.insert(kDefaultLanguageCode);
     }
-  } else {
-    soda_state_ = {recorder_app::mojom::ModelStateType::kUnavailable,
-                   std::nullopt};
+
+    if (base::FeatureList::IsEnabled(
+            speech::kFeatureManagementCrosSodaConchLanguages)) {
+      // Currently only en-US is supported.
+      speaker_label_supported_languages_.insert(kDefaultLanguageCode);
+    }
+  }
+
+  if (CanUseGenerativeAi()) {
+    gen_ai_supported_languages_.insert(kDefaultLanguageCode);
+    if (base::FeatureList::IsEnabled(ash::features::kConchLargeModel)) {
+      gen_ai_supported_languages_.insert(speech::LanguageCode::kJaJp);
+    }
   }
 
   // Add salt translator
@@ -212,11 +234,26 @@ void RecorderAppUI::EnsureOnDeviceModelService() {
 #endif
 }
 
+bool RecorderAppUI::CanUseGenerativeAi() {
+  return delegate_->CanUseGenerativeAiForCurrentProfile() &&
+         base::FeatureList::IsEnabled(ash::features::kConchGenAi) &&
+         base::FeatureList::IsEnabled(
+             ash::features::kFeatureManagementConchGenAi);
+}
+
 void RecorderAppUI::AddModelMonitor(
     const base::Uuid& model_id,
     ::mojo::PendingRemote<recorder_app::mojom::ModelStateMonitor> monitor,
     AddModelMonitorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!CanUseGenerativeAi()) {
+    // TODO(pihsun): Return a dedicate error when GenAI can't be used.
+    std::move(callback).Run(recorder_app::mojom::ModelState{
+        recorder_app::mojom::ModelStateType::kUnavailable, std::nullopt}
+                                .Clone());
+    return;
+  }
 
   EnsureOnDeviceModelService();
 
@@ -258,11 +295,46 @@ void RecorderAppUI::AddQuietModeMonitor(
   std::move(callback).Run(in_quiet_mode_);
 }
 
+void RecorderAppUI::GetModelInfo(on_device_model::mojom::FormatFeature feature,
+                                 GetModelInfoCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(feature == on_device_model::mojom::FormatFeature::kAudioSummary ||
+        feature == on_device_model::mojom::FormatFeature::kAudioTitle);
+  recorder_app::mojom::ModelInfoPtr model_info =
+      recorder_app::mojom::ModelInfo::New();
+  model_info->input_token_limit = kInputTokenLimit;
+  if (feature == on_device_model::mojom::FormatFeature::kAudioSummary) {
+    if (base::FeatureList::IsEnabled(ash::features::kConchLargeModel)) {
+      model_info->model_id =
+          base::Uuid::ParseCaseInsensitive(kSummaryXsModelUuid);
+    } else {
+      model_info->model_id =
+          base::Uuid::ParseCaseInsensitive(kSummaryXxsModelUuid);
+    }
+  } else {
+    if (base::FeatureList::IsEnabled(ash::features::kConchLargeModel)) {
+      model_info->model_id =
+          base::Uuid::ParseCaseInsensitive(kTitleSuggestionXsModelUuid);
+    } else {
+      model_info->model_id =
+          base::Uuid::ParseCaseInsensitive(kTitleSuggestionXxsModelUuid);
+    }
+  }
+  std::move(callback).Run(std::move(model_info));
+}
+
 void RecorderAppUI::LoadModel(
     const base::Uuid& model_id,
     mojo::PendingReceiver<on_device_model::mojom::OnDeviceModel> model,
     LoadModelCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!CanUseGenerativeAi()) {
+    // TODO(pihsun): Return a dedicate error when GenAI can't be used.
+    std::move(callback).Run(
+        on_device_model::mojom::LoadModelResult::kFailedToLoadLibrary);
+    return;
+  }
 
   EnsureOnDeviceModelService();
 
@@ -295,6 +367,8 @@ void RecorderAppUI::FormatModelInput(
     FormatModelInputCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  DCHECK(CanUseGenerativeAi());
+
   EnsureOnDeviceModelService();
 
   if (!on_device_model_service_) {
@@ -311,6 +385,8 @@ void RecorderAppUI::ValidateSafetyResult(
     on_device_model::mojom::SafetyInfoPtr safety_info,
     ValidateSafetyResultCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  DCHECK(CanUseGenerativeAi());
 
   EnsureOnDeviceModelService();
 
@@ -407,88 +483,169 @@ RecorderAppUI::GetMlService() {
   return ml_service_;
 }
 
+bool RecorderAppUI::IsSodaAvailable(const speech::LanguageCode& language_code) {
+  if (!speech::IsOnDeviceSpeechRecognitionSupported()) {
+    return false;
+  }
+  return transcription_supported_languages_.contains(language_code);
+}
+
+void RecorderAppUI::GetAvailableLangPacks(
+    GetAvailableLangPacksCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<recorder_app::mojom::LangPackInfoPtr> lang_packs;
+  for (auto config : speech::kLanguageComponentConfigs) {
+    recorder_app::mojom::LangPackInfoPtr lang_pack =
+        recorder_app::mojom::LangPackInfo::New();
+    lang_pack->language_code = config.language_name;
+    lang_pack->display_name =
+        delegate_->GetLanguageDisplayName(config.language_code);
+    lang_pack->is_gen_ai_supported =
+        gen_ai_supported_languages_.contains(config.language_code);
+    lang_pack->is_speaker_label_supported =
+        speaker_label_supported_languages_.contains(config.language_code);
+    lang_packs.push_back(std::move(lang_pack));
+  }
+  std::move(callback).Run(std::move(lang_packs));
+}
+
+recorder_app::mojom::ModelState RecorderAppUI::GetSodaState(
+    const speech::LanguageCode& language_code) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  recorder_app::mojom::ModelState soda_state;
+  auto soda_state_iter = soda_states_.find(language_code);
+  if (soda_state_iter == soda_states_.end()) {
+    if (IsSodaAvailable(language_code)) {
+      if (speech::SodaInstaller::GetInstance()->IsSodaInstalled(
+              language_code)) {
+        soda_state = {recorder_app::mojom::ModelStateType::kInstalled,
+                      std::nullopt};
+      } else {
+        soda_state = {recorder_app::mojom::ModelStateType::kNotInstalled,
+                      std::nullopt};
+      }
+    } else {
+      soda_state = {recorder_app::mojom::ModelStateType::kUnavailable,
+                    std::nullopt};
+    }
+
+    soda_states_.insert({language_code, soda_state});
+  } else {
+    soda_state = soda_state_iter->second;
+  }
+  return soda_state;
+}
+
 void RecorderAppUI::AddSodaMonitor(
+    const std::string& language,
     ::mojo::PendingRemote<recorder_app::mojom::ModelStateMonitor> monitor,
     AddSodaMonitorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  soda_monitors_.Add(std::move(monitor));
-  std::move(callback).Run(soda_state_.Clone());
+  auto language_code = speech::GetLanguageCode(language);
+  CHECK(language_code != speech::LanguageCode::kNone);
+
+  recorder_app::mojom::ModelState soda_state = GetSodaState(language_code);
+  soda_monitors_[language_code].Add(std::move(monitor));
+  std::move(callback).Run(soda_state.Clone());
 }
 
-void RecorderAppUI::InstallSoda(InstallSodaCallback callback) {
+void RecorderAppUI::InstallSoda(const std::string& language,
+                                InstallSodaCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (speech::IsOnDeviceSpeechRecognitionSupported()) {
-    auto state = soda_state_.type;
-    if (state == recorder_app::mojom::ModelStateType::kNotInstalled ||
-        state == recorder_app::mojom::ModelStateType::kError) {
+  auto language_code = speech::GetLanguageCode(language);
+  CHECK(language_code != speech::LanguageCode::kNone);
+
+  if (IsSodaAvailable(language_code)) {
+    // Check Soda state directly from SodaInstaller in case the cached state is
+    // outdated.
+    // TODO: b/375306309 - Check the cached state instead when soda states are
+    // always consistent after having `OnSodaUninstalled` event.
+    auto* soda_installer = speech::SodaInstaller::GetInstance();
+    if (!soda_installer->IsSodaInstalled(language_code) &&
+        !soda_installer->IsSodaDownloading(language_code)) {
       // Update SODA state to installing so the UI will show downloading
       // immediately, since the DLC download might start later.
-      UpdateSodaState({recorder_app::mojom::ModelStateType::kInstalling, 0});
-      delegate_->InstallSoda(kLanguageCode);
+      UpdateSodaState(language_code,
+                      {recorder_app::mojom::ModelStateType::kInstalling, 0});
+      delegate_->InstallSoda(language_code);
     }
   }
   std::move(callback).Run();
 }
 
-void RecorderAppUI::UpdateSodaState(recorder_app::mojom::ModelState state) {
+void RecorderAppUI::UpdateSodaState(const speech::LanguageCode& language_code,
+                                    recorder_app::mojom::ModelState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  soda_state_ = state;
-  for (auto& monitor : soda_monitors_) {
-    monitor->Update(soda_state_.Clone());
+  if (language_code == speech::LanguageCode::kNone) {
+    return;
   }
+
+  for (const auto& monitor : soda_monitors_[language_code]) {
+    monitor->Update(state.Clone());
+  }
+  soda_states_.insert_or_assign(language_code, state);
 }
 
 void RecorderAppUI::OnSodaInstallError(
     speech::LanguageCode language_code,
     speech::SodaInstaller::ErrorCode error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (language_code != kLanguageCode) {
+  if (language_code == speech::LanguageCode::kNone) {
     return;
   }
 
   LOG(ERROR) << "Failed to install Soda library DLC with error "
              << SodaInstallerErrorCodeToString(error_code);
-  UpdateSodaState({recorder_app::mojom::ModelStateType::kError, std::nullopt});
+  UpdateSodaState(language_code,
+                  {recorder_app::mojom::ModelStateType::kError, std::nullopt});
 }
 
 void RecorderAppUI::OnSodaProgress(speech::LanguageCode language_code,
                                    int progress) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (language_code != kLanguageCode) {
+  if (language_code == speech::LanguageCode::kNone) {
     return;
   }
 
-  UpdateSodaState({recorder_app::mojom::ModelStateType::kInstalling, progress});
+  UpdateSodaState(language_code,
+                  {recorder_app::mojom::ModelStateType::kInstalling, progress});
 }
 
 void RecorderAppUI::OnSodaInstalled(speech::LanguageCode language_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (language_code != kLanguageCode) {
+  if (language_code == speech::LanguageCode::kNone) {
     return;
   }
 
   UpdateSodaState(
+      language_code,
       {recorder_app::mojom::ModelStateType::kInstalled, std::nullopt});
 }
 
 void RecorderAppUI::LoadSpeechRecognizer(
+    const std::string& language,
     mojo::PendingRemote<chromeos::machine_learning::mojom::SodaClient>
         soda_client,
     mojo::PendingReceiver<chromeos::machine_learning::mojom::SodaRecognizer>
         soda_recognizer,
     LoadSpeechRecognizerCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!speech::IsOnDeviceSpeechRecognitionSupported()) {
+
+  auto language_code = speech::GetLanguageCode(language);
+  CHECK(language_code != speech::LanguageCode::kNone);
+
+  if (!IsSodaAvailable(language_code)) {
     // TODO(pihsun): Returns different error when soda is not available.
     std::move(callback).Run(false);
     return;
   }
 
   auto* soda_installer = speech::SodaInstaller::GetInstance();
-  if (!soda_installer->IsSodaInstalled(kLanguageCode)) {
+  if (!soda_installer->IsSodaInstalled(language_code)) {
     // TODO(pihsun): Returns different error when soda is not installed.
     std::move(callback).Run(false);
     return;
@@ -496,7 +653,7 @@ void RecorderAppUI::LoadSpeechRecognizer(
 
   auto soda_library_path = soda_installer->GetSodaBinaryPath();
   auto soda_language_path =
-      soda_installer->GetLanguagePath(speech::GetLanguageName(kLanguageCode));
+      soda_installer->GetLanguagePath(speech::GetLanguageName(language_code));
   CHECK(!soda_library_path.empty());
   CHECK(!soda_language_path.empty());
 
@@ -583,11 +740,16 @@ void RecorderAppUI::SetQuietMode(bool quiet_mode) {
   message_center::MessageCenter::Get()->SetQuietMode(quiet_mode);
 }
 
-void RecorderAppUI::CanUseSpeakerLabelForCurrentProfile(
-    CanUseSpeakerLabelForCurrentProfileCallback callback) {
+void RecorderAppUI::CanUseSpeakerLabel(CanUseSpeakerLabelCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::move(callback).Run(delegate_->CanUseSpeakerLabelForCurrentProfile());
+  if (!base::FeatureList::IsEnabled(
+          speech::kFeatureManagementCrosSodaConchLanguages)) {
+    // Large SODA model (which supports speaker label) isn't available.
+    std::move(callback).Run(false);
+  } else {
+    std::move(callback).Run(delegate_->CanUseSpeakerLabelForCurrentProfile());
+  }
 }
 
 void RecorderAppUI::RecordSpeakerLabelConsent(

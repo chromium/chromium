@@ -147,8 +147,7 @@ x11::NotifyMode XI2ModeToXMode(x11::Input::NotifyMode xi2_mode) {
     case x11::Input::NotifyMode::WhileGrabbed:
       return x11::NotifyMode::WhileGrabbed;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return x11::NotifyMode::Normal;
+      NOTREACHED();
   }
 }
 
@@ -1296,8 +1295,7 @@ bool X11Window::HandleAsAtkEvent(const x11::KeyEvent& key_event,
                                  bool transient) {
 #if !BUILDFLAG(USE_ATK)
   // TODO(crbug.com/40653448): Support ATK in Ozone/X11.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 #else
   if (!x11_extension_delegate_) {
     return false;
@@ -1641,7 +1639,9 @@ int X11Window::UpdateDrag(const gfx::Point& connection_point) {
 
   DCHECK(drag_drop_client_);
   auto* target_current_context = drag_drop_client_->target_current_context();
-  DCHECK(target_current_context);
+  if (!target_current_context) {
+    return DragDropTypes::DRAG_NONE;
+  }
 
   auto data = std::make_unique<OSExchangeData>(
       std::make_unique<XOSExchangeDataProvider>(
@@ -1707,10 +1707,11 @@ DragOperation X11Window::PerformDrop() {
     return DragOperation::kNone;
   }
 
-  // The drop data has been supplied on entering the window.  The drop handler
-  // should have it since then.
   auto* target_current_context = drag_drop_client_->target_current_context();
-  DCHECK(target_current_context);
+  if (!target_current_context) {
+    return DragOperation::kNone;
+  }
+
   drop_handler->OnDragDrop(GetKeyModifiers(
       XDragDropClient::GetForWindow(target_current_context->source_window())));
   notified_enter_ = false;

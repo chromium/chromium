@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -21,7 +22,6 @@
 #include "components/sync/base/sync_stop_metadata_fate.h"
 #include "components/sync/model/data_type_controller_delegate.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model/sync_error.h"
 #include "components/sync/service/configure_context.h"
 #include "components/sync/service/data_type_local_data_batch_uploader.h"
 
@@ -30,7 +30,6 @@ namespace syncer {
 struct ConfigureContext;
 struct DataTypeActivationResponse;
 struct TypeEntitiesCount;
-class SyncError;
 
 // DataTypeController are responsible for managing the state of a single data
 // type. They are not thread safe and should only be used on the UI thread.
@@ -54,12 +53,11 @@ class DataTypeController {
   // Note: This seems like it should be a OnceCallback, but it can actually be
   // called multiple times in the case of errors.
   using ModelLoadCallback =
-      base::RepeatingCallback<void(DataType, const SyncError&)>;
+      base::RepeatingCallback<void(const std::optional<ModelError>&)>;
 
   using StopCallback = base::OnceClosure;
 
-  using AllNodesCallback =
-      base::OnceCallback<void(const DataType, base::Value::List)>;
+  using AllNodesCallback = base::OnceCallback<void(base::Value::List)>;
 
   using TypeMap = std::map<DataType, std::unique_ptr<DataTypeController>>;
   using TypeVector = std::vector<std::unique_ptr<DataTypeController>>;
@@ -107,8 +105,8 @@ class DataTypeController {
   virtual std::unique_ptr<DataTypeActivationResponse> Connect();
 
   // Stops the data type. If LoadModels() has not completed it will enter
-  // STOPPING state first and eventually STOPPED. Once stopped, |callback| will
-  // be run. |callback| must not be null.
+  // STOPPING state first and eventually STOPPED. Once stopped, `callback` will
+  // be run. `callback` must not be null.
   //
   // NOTE: Stop() should be called after sync backend machinery has stopped
   // routing changes to this data type. Stop() should ensure the data type
@@ -118,7 +116,7 @@ class DataTypeController {
   virtual void Stop(SyncStopMetadataFate fate, StopCallback callback);
 
   // Current state of the data type controller.
-  virtual State state() const;
+  State state() const;
 
   // Whether preconditions are met for the datatype to start. This is useful for
   // example if the datatype depends on certain user preferences other than the
@@ -134,27 +132,28 @@ class DataTypeController {
   // changes that are waiting to be committed.
   // May be invoked at any time; if the model isn't loaded yet or is in an error
   // state, this should typically return "false".
-  virtual void HasUnsyncedData(base::OnceCallback<void(bool)> callback);
+  void HasUnsyncedData(base::OnceCallback<void(bool)> callback);
 
   // Returns a Value::List representing all nodes for this data type through
-  // |callback| on this thread. Can only be called if state() != NOT_RUNNING.
+  // `callback` on this thread. Can only be called if state() != NOT_RUNNING.
   // Used for populating nodes in Sync Node Browser of chrome://sync-internals.
-  virtual void GetAllNodes(AllNodesCallback callback);
+  // Returns an empty result if state() is anything other than RUNNING.
+  void GetAllNodesForDebugging(AllNodesCallback callback);
 
-  // Collects TypeEntitiesCount for this datatype and passes them to |callback|.
+  // Collects TypeEntitiesCount for this datatype and passes them to `callback`.
   // Used to display entity counts in chrome://sync-internals.
-  virtual void GetTypeEntitiesCount(
+  void GetTypeEntitiesCount(
       base::OnceCallback<void(const TypeEntitiesCount&)> callback) const;
 
   // Records entities count and estimated memory usage of the type into
   // histograms. May do nothing if state() is NOT_RUNNING or FAILED.
-  virtual void RecordMemoryUsageAndCountsHistograms();
+  void RecordMemoryUsageAndCountsHistograms();
 
   // Returns the uploader passed on construction.
   DataTypeLocalDataBatchUploader* GetLocalDataBatchUploader();
 
   // Reports data type error to simulate the error reported by the bridge.
-  virtual void ReportBridgeErrorForTest();
+  void ReportBridgeErrorForTest();
 
   DataTypeControllerDelegate* GetDelegateForTesting(SyncMode sync_mode);
 
@@ -164,14 +163,13 @@ class DataTypeController {
       DataType type,
       std::unique_ptr<DataTypeLocalDataBatchUploader> batch_uploader = nullptr);
 
-  // |delegate_for_transport_mode| may be null if the type does not run in
+  // `delegate_for_transport_mode` may be null if the type does not run in
   // transport mode.
   void InitDataTypeController(
       std::unique_ptr<DataTypeControllerDelegate> delegate_for_full_sync_mode,
       std::unique_ptr<DataTypeControllerDelegate> delegate_for_transport_mode);
 
-  void ReportModelError(SyncError::ErrorType error_type,
-                        const ModelError& error);
+  void ReportModelError(const ModelError& error);
 
   // Allows subclasses to DCHECK that they're on the correct sequence.
   // TODO(crbug.com/41390876): Rename this to CalledOnValidSequence.
@@ -187,7 +185,7 @@ class DataTypeController {
   void RecordRunFailure() const;
   void OnDelegateStarted(
       std::unique_ptr<DataTypeActivationResponse> activation_response);
-  void TriggerCompletionCallbacks(const SyncError& error);
+  void TriggerCompletionCallbacks(const std::optional<ModelError>& error);
   void ClearMetadataIfStopped();
 
   // The type this object is responsible for controlling.
@@ -205,7 +203,7 @@ class DataTypeController {
   // State of this datatype controller.
   State state_ = NOT_RUNNING;
 
-  // Owned by |delegate_map_|. Null while NOT_RUNNING.
+  // Owned by `delegate_map_`. Null while NOT_RUNNING.
   raw_ptr<DataTypeControllerDelegate> delegate_ = nullptr;
 
   // Callback for use when starting the datatype (usually MODEL_STARTING, but
@@ -221,7 +219,7 @@ class DataTypeController {
   std::vector<StopCallback> model_stop_callbacks_;
   SyncStopMetadataFate model_stop_metadata_fate_ = KEEP_METADATA;
 
-  // Controller receives |activation_response_| from
+  // Controller receives `activation_response_` from
   // ClientTagBasedDataTypeProcessor callback and must temporarily own it until
   // Connect is called.
   std::unique_ptr<DataTypeActivationResponse> activation_response_;

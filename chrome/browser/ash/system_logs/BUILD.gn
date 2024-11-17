@@ -16,8 +16,6 @@ static_library("system_logs") {
     "command_line_log_source.h",
     "connected_input_devices_log_source.cc",
     "connected_input_devices_log_source.h",
-    "crosapi_system_log_source.cc",
-    "crosapi_system_log_source.h",
     "dbus_log_source.cc",
     "dbus_log_source.h",
     "debug_daemon_log_source.cc",
@@ -95,7 +93,6 @@ source_set("unit_tests") {
   sources = [
     "app_service_log_source_unittest.cc",
     "connected_input_devices_log_source_unittest.cc",
-    "crosapi_system_log_source_unittest.cc",
     "debug_daemon_log_source_unittest.cc",
     "device_data_manager_input_devices_log_source_unittest.cc",
     "input_event_converter_log_source_unittest.cc",
@@ -109,7 +106,6 @@ source_set("unit_tests") {
     ":system_logs",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:test_support",
-    "//chrome/browser/ash/crosapi:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
@@ -120,19 +116,5 @@ source_set("unit_tests") {
     "//ui/events/devices:test_support",
     "//ui/events/ozone/evdev:event_device_info",
     "//ui/events/ozone/evdev:event_device_info_test_utils",
-  ]
-}
-
-source_set("browser_tests") {
-  testonly = true
-
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-
-  sources = [ "crosapi_system_log_source_browsertest.cc" ]
-
-  deps = [
-    ":system_logs",
-    "//chrome/browser/ash/crosapi",
-    "//chrome/test:test_support",
   ]
 }

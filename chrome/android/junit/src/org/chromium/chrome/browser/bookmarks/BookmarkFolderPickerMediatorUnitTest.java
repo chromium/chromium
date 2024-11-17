@@ -48,6 +48,8 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkItem;
 import org.chromium.components.bookmarks.BookmarkType;
+import org.chromium.components.commerce.core.CommerceFeatureUtils;
+import org.chromium.components.commerce.core.CommerceFeatureUtilsJni;
 import org.chromium.components.commerce.core.ShoppingService;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.sync.SyncFeatureMap;
@@ -236,6 +238,7 @@ public class BookmarkFolderPickerMediatorUnitTest {
     @Mock private Menu mMenu;
     @Mock private MenuItem mMenuItem;
     @Mock private BookmarkAddNewFolderCoordinator mAddNewFolderCoordinator;
+    @Mock private CommerceFeatureUtils.Natives mCommerceFeatureUtilsJniMock;
     @Mock private ShoppingService mShoppingService;
     @Captor private ArgumentCaptor<BookmarkUiPrefs.Observer> mBookmarkUiPrefsObserverCaptor;
 
@@ -247,6 +250,8 @@ public class BookmarkFolderPickerMediatorUnitTest {
     @Before
     public void setUp() throws Exception {
         mActivityScenarioRule.getScenario().onActivity((activity) -> mActivity = activity);
+
+        CommerceFeatureUtilsJni.setInstanceForTesting(mCommerceFeatureUtilsJniMock);
 
         // Setup profile-related factories.
         TrackerFactory.setTrackerForTests(mTracker);
@@ -311,7 +316,7 @@ public class BookmarkFolderPickerMediatorUnitTest {
                         (Callback<Pair<Drawable, Drawable>> callback) ->
                                 callback.onResult(new Pair<>(null, null)))
                 .when(mBookmarkImageFetcher)
-                .fetchFirstTwoImagesForFolder(any(), any());
+                .fetchFirstTwoImagesForFolder(any(), anyInt(), any());
 
         // Setup BookmarkUiPrefs
         doReturn(BookmarkRowDisplayPref.COMPACT).when(mBookmarkUiPrefs).getBookmarkRowDisplayPref();

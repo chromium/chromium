@@ -21,8 +21,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace nearby {
-namespace chrome {
+namespace nearby::chrome {
 
 class BidirectionalStreamTest : public ::testing::Test {
  public:
@@ -135,5 +134,4 @@ TEST_F(BidirectionalStreamTest, CloseCalledFromMultipleThreads) {
   run_loop.Run();
 }
 
-}  // namespace chrome
-}  // namespace nearby
+}  // namespace nearby::chrome

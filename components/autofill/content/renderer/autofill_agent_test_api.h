@@ -41,6 +41,8 @@ class AutofillAgentTestApi {
     agent_->ShowSuggestionsForContentEditable(element, trigger_source);
   }
 
+  void OnFormNoLongerSubmittable() { agent_->OnFormNoLongerSubmittable(); }
+
  private:
   const raw_ref<AutofillAgent> agent_;
 };

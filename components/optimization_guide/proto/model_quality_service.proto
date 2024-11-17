@@ -18,10 +18,12 @@ import "components/optimization_guide/proto/features/forms_annotations.proto";
 import "components/optimization_guide/proto/features/forms_predictions.proto";
 import "components/optimization_guide/proto/features/history_answer.proto";
 import "components/optimization_guide/proto/features/history_query.proto";
+import "components/optimization_guide/proto/features/history_query_intent.proto";
 import "components/optimization_guide/proto/features/model_prototyping.proto";
 import "components/optimization_guide/proto/features/product_specifications.proto";
 import "components/optimization_guide/proto/features/tab_organization.proto";
 import "components/optimization_guide/proto/features/wallpaper_search.proto";
+import "components/optimization_guide/proto/features/bling_prototyping.proto";
 
 // A request to send AI data logs to the model quality server. Data logging for
 // an AI feature with metadata specific to the logging.
@@ -44,6 +46,8 @@ message LogAiDataRequest {
 
     HistoryAnswerLoggingData history_answer = 8;
 
+    HistoryQueryIntentLoggingData history_query_intent = 13;
+
     ProductSpecificationsLoggingData product_specifications = 9;
 
     FormsAnnotationsLoggingData forms_annotations = 10;
@@ -51,6 +55,8 @@ message LogAiDataRequest {
     FormsPredictionsLoggingData forms_predictions = 11;
 
     ModelPrototypingLoggingData model_prototyping = 12;
+
+    BlingPrototypingLoggingData bling_prototyping = 14;
 
     DefaultLoggingData default = 1000;
   }

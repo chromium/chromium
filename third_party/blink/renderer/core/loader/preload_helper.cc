@@ -11,6 +11,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_prescient_networking.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_idle_request_options.h"
 #include "third_party/blink/renderer/core/css/media_list.h"
 #include "third_party/blink/renderer/core/css/media_query_evaluator.h"
@@ -127,9 +128,8 @@ bool IsSupportedType(ResourceType resource_type, const String& mime_type) {
     case ResourceType::kRaw:
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return false;
 }
 
 MediaValuesCached* CreateMediaValues(
@@ -150,7 +150,7 @@ MediaValuesCached* CreateMediaValues(
 
 bool MediaMatches(const String& media,
                   MediaValues* media_values,
-                  const ExecutionContext* execution_context) {
+                  ExecutionContext* execution_context) {
   MediaQuerySet* media_queries =
       MediaQuerySet::Create(media, execution_context);
   MediaQueryEvaluator* evaluator =
@@ -510,7 +510,7 @@ void PreloadHelper::PreloadIfNeeded(
           fetch_priority_message = " with fetchpriority hint 'auto'";
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
@@ -668,9 +668,9 @@ void PreloadHelper::ModulePreloadIfNeeded(
   // settings object, and options. Wait until the algorithm asynchronously
   // completes with result." [spec text]
   //
-  // https://wicg.github.io/import-maps/#wait-for-import-maps
   modulator->SetAcquiringImportMapsState(
       Modulator::AcquiringImportMapsState::kAfterModuleScriptLoad);
+  // Step 2. Fetch a single module script given ...
   modulator->FetchSingle(request, window->Fetcher(),
                          ModuleGraphLevel::kDependentModuleFetch,
                          ModuleScriptCustomFetchType::kNone, client);
@@ -959,15 +959,13 @@ Resource* PreloadHelper::StartPreload(ResourceType type,
 
       params.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
       params.SetRequestDestination(network::mojom::RequestDestination::kScript);
-      const bool v8_compile_hints_magic_comment_runtime_enabled =
-          RuntimeEnabledFeatures::JavaScriptCompileHintsMagicRuntimeEnabled(
-              document.GetExecutionContext());
 
       resource = ScriptResource::Fetch(
           params, resource_fetcher, nullptr, document.GetAgent().isolate(),
           ScriptResource::kAllowStreaming, v8_compile_hints_producer,
           v8_compile_hints_consumer,
-          v8_compile_hints_magic_comment_runtime_enabled);
+          v8_compile_hints::GetMagicCommentMode(
+              document.GetExecutionContext()));
       break;
     }
     case ResourceType::kCSSStyleSheet:
@@ -999,7 +997,7 @@ Resource* PreloadHelper::StartPreload(ResourceType type,
       resource = RawResource::Fetch(params, resource_fetcher, nullptr);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   base::UmaHistogramMicrosecondsTimes("Blink.PreloadRequestStartDuration",

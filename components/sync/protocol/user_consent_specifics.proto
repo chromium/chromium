@@ -81,7 +81,7 @@ message UserConsentSpecifics {
   // is sent over an authenticated channel, so this information would be
   // redundant.
   //
-  // For semantics and usage of the |account_id| in the signin codebase,
+  // For semantics and usage of the `account_id` in the signin codebase,
   // see IdentityManager::GetPrimaryAccountId() or CoreAccountId.
   optional string account_id = 6;
 
@@ -109,6 +109,6 @@ message UserConsentSpecifics {
   repeated int32 description_grd_ids = 2 [deprecated = true];
   // Id of the string of the UI element the user clicked when consenting.
   optional int32 confirmation_grd_id = 3 [deprecated = true];
-  // Was the consent for |feature| given or not given (denied/revoked)?
+  // Was the consent for `feature` given or not given (denied/revoked)?
   optional UserConsentTypes.ConsentStatus status = 5 [deprecated = true];
 }

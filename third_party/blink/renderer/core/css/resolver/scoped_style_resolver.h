@@ -84,7 +84,8 @@ class CORE_EXPORT ScopedStyleResolver final
   }
 
   void AppendActiveStyleSheets(unsigned index, const ActiveStyleSheetVector&);
-  void CollectMatchingElementScopeRules(ElementRuleCollector&);
+  void CollectMatchingElementScopeRules(ElementRuleCollector&,
+                                        PartNames* part_names);
   void CollectMatchingShadowHostRules(ElementRuleCollector&);
   void CollectMatchingSlottedRules(ElementRuleCollector&);
   void CollectMatchingPartPseudoRules(ElementRuleCollector&,

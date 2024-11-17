@@ -255,7 +255,8 @@ void ArcIntentHelperBridge::LaunchCameraApp(uint32_t intent_id,
           << "&shouldHandleResult=" << should_handle_result
           << "&shouldDownScale=" << should_down_scale
           << "&isSecure=" << is_secure;
-  g_control_camera_app_delegate->LaunchCameraApp(queries.str(), task_id);
+  g_control_camera_app_delegate->LaunchCameraApp(queries.str(),
+                                                 should_handle_result, task_id);
 }
 
 void ArcIntentHelperBridge::OnIntentFiltersUpdatedForPackage(
@@ -290,8 +291,7 @@ void ArcIntentHelperBridge::IsChromeAppEnabled(
     return;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unknown chrome app";
-  std::move(callback).Run(false);
+  NOTREACHED() << "Unknown chrome app";
 }
 
 void ArcIntentHelperBridge::OnSupportedLinksChanged(

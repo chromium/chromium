@@ -5,9 +5,10 @@
 module tracing.mojom;
 
 import "mojo/public/mojom/base/byte_string.mojom";
-import "mojo/public/mojom/base/token.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/shared_memory.mojom";
+import "mojo/public/mojom/base/token.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 
 // Producer processes register with the format
 // "kPerfettoProducerNamePrefix-PID" when connecting to Chrome's internal
@@ -25,6 +26,8 @@ const string kSamplerProfilerSourceName = "org.chromium.sampler_profiler";
 const string kJavaHeapProfilerSourceName = "org.chromium.java_heap_profiler";
 const string kNativeHeapProfilerSourceName =
     "org.chromium.native_heap_profiler";
+const string kSystemMetricsSourceName =
+    "org.chromium.system_metrics";
 
 // Brief description of the flow: There's a per-process ProducerClient which
 // connects to the central PerfettoService and establishes a two-way connection
@@ -128,6 +131,7 @@ struct DataSourceConfig {
   string legacy_config;
   mojo_base.mojom.ByteString track_event_config_raw;
   mojo_base.mojom.ByteString etw_config_raw;
+  mojo_base.mojom.ByteString system_metrics_config_raw;
 };
 
 struct DataSourceRegistration {
@@ -157,6 +161,7 @@ interface ProducerHost {
   // Called by the ProducerClient to associate a TraceWriter with a target
   // buffer, which is required to support scraping of the SMB by the service.
   RegisterTraceWriter(uint32 writer_id, uint32 target_buffer);
+
   UnregisterTraceWriter(uint32 writer_id);
 };
 
@@ -170,10 +175,13 @@ interface ProducerClient {
   // Called by Perfetto (via ProducerHost) to request a data source to start
   // logging.
   StartDataSource(uint64 id, DataSourceConfig data_source_config) => ();
+
   // Requesting a data source to stop logging again, with the id previously
   // sent in the StartDataSource call.
   StopDataSource(uint64 id) => ();
+
   Flush(uint64 flush_request_id, array<uint64> data_source_ids);
+
   ClearIncrementalState();
 };
 
@@ -185,10 +193,11 @@ interface ProducerClient {
 interface PerfettoService {
   // Connect a new ProducerClient to a ProducerHost in the tracing service,
   // providing the shared memory buffer that will be used to send trace data.
-  ConnectToProducerHost(pending_remote<ProducerClient> producer_client,
-                        pending_receiver<ProducerHost> producer_host_receiver,
-                        mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory,
-                        uint64 shared_memory_buffer_page_size_bytes);
+  ConnectToProducerHost(
+      pending_remote<ProducerClient> producer_client,
+      pending_receiver<ProducerHost> producer_host_receiver,
+      mojo_base.mojom.UnsafeSharedMemoryRegion shared_memory,
+      uint64 shared_memory_buffer_page_size_bytes);
 };
 
 // The policy for filling the trace buffer.
@@ -197,7 +206,7 @@ enum BufferFillPolicy {
   // Overwrite old chunks for new ones.
   kRingBuffer,
   // Discard all chunks once the buffer is full.
-  kDiscard
+  kDiscard,
 };
 
 struct BufferConfig {
@@ -241,6 +250,7 @@ struct TraceConfig {
   uint32 duration_ms;
   bool write_into_file;
   mojo_base.mojom.Token? trace_uuid;
+  mojo_base.mojom.UnguessableToken? unique_session_name;
 };
 
 // The priority of the incoming EnableTracing request, used to determine
@@ -250,7 +260,7 @@ struct TraceConfig {
 enum TracingClientPriority {
   kUnknown,
   kBackground,
-  kUserInitiated
+  kUserInitiated,
 };
 
 // The ConsumerHost interface is a privileged interface which is implemented
@@ -272,6 +282,14 @@ interface ConsumerHost {
                 pending_remote<TracingSessionClient> tracing_session_client,
                 TraceConfig config,
                 mojo_base.mojom.File? output_file);
+
+  // Clones an existing tracing session and attaches to it. The session is
+  // cloned in read-only mode and can only be used to read a snapshot of an
+  // existing tracing session.
+  CloneSession(pending_receiver<TracingSessionHost> tracing_session_host,
+                pending_remote<TracingSessionClient> tracing_session_client,
+                mojo_base.mojom.UnguessableToken unguessable_name)
+      => (bool success, string error, mojo_base.mojom.Token uuid);
 };
 
 // Represents the host side of an active tracing session. Closing this
@@ -319,6 +337,7 @@ interface TracingSessionHost {
 interface TracingSessionClient {
   // Called when all processes have begun tracing.
   OnTracingEnabled();
+
   // Called when tracing is disabled; initiated either by a call to
   // TracingSessionHost::DisableTracing or by the service itself if a timeout is
   // specified in the tracing config.

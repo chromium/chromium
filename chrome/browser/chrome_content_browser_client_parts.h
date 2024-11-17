@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "components/download/public/common/quarantine_connection.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "storage/browser/file_system/file_system_context.h"
 
@@ -25,6 +26,7 @@ class AssociatedInterfaceRegistry;
 }
 
 namespace content {
+class BrowserChildProcessHost;
 class BrowserContext;
 class BrowserURLHandler;
 class RenderFrameHost;
@@ -87,6 +89,13 @@ class ChromeContentBrowserClientParts {
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
       content::RenderProcessHost* render_process_host) {}
+
+  // Allows to register browser interfaces exposed through the
+  // BrowserChildProcessHost. Note that interface factory callbacks added to
+  // `map` will by default be run immediately on the IO thread, unless a task
+  // runner is provided.
+  virtual void ExposeInterfacesToChild(
+      mojo::BinderMapWithContext<content::BrowserChildProcessHost*>* map) {}
 
   // Allows to register browser interfaces exposed to a ServiceWorker.
   virtual void ExposeInterfacesToRendererForServiceWorker(

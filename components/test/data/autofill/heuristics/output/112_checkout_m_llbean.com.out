@@ -13,7 +13,7 @@ ADDRESS_HOME_LINE2 | _1_address2 | Address Line 2 (optional) |  | _1_country_2
 ADDRESS_HOME_LINE3 | _1_address3 | Address Line 3 (optional) |  | -default
 ADDRESS_HOME_ZIP | _1_zipCode | Enter Zip for City and State |  | _1_zipCode_3
 ADDRESS_HOME_CITY | _1_city | City |  | _1_zipCode_3
-ADDRESS_HOME_STATE | _1_state |  |  | _1_zipCode_3
+ADDRESS_HOME_STATE | _1_state | State |  | _1_zipCode_3
 ADDRESS_HOME_ZIP | _1_CAPostal | Postal Code |  | -default
 ADDRESS_HOME_CITY | _1_CACity | City |  | -default
 ADDRESS_HOME_STATE | _1_CAProvince | Province |  | _1_zipCode_3

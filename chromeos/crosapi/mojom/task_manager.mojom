@@ -10,7 +10,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/image/mojom/image.mojom";
 
-[Stable, Extensible]
+[Extensible]
 enum TaskType {
     [Default] kUnknown = 0,
 
@@ -35,7 +35,6 @@ enum TaskType {
 };
 
 // A struct mirroring blink::MemoryCache::TypeStatistic.
-[Stable]
 struct WebCacheResourceTypeStat {
   uint64 count;
   uint64 size;
@@ -43,7 +42,6 @@ struct WebCacheResourceTypeStat {
 };
 
 // A struct mirroring blink::MemoryCache::Statistics.
-[Stable]
 struct WebCacheResourceTypeStats {
   WebCacheResourceTypeStat images;
   WebCacheResourceTypeStat css_style_sheets;
@@ -54,7 +52,6 @@ struct WebCacheResourceTypeStats {
 };
 
 // A struct represent a task from lacros.
-[Stable]
 struct Task {
   // Uuid that uniquely identifies the task.
   string task_uuid;
@@ -88,7 +85,6 @@ struct Task {
 
 // A struct representing a lacros task group, which is a group of tasks
 // whiche share the same process, and the resources associated with it.
-[Stable]
 struct TaskGroup {
   // Process id of the task group.
   mojo_base.mojom.ProcessId process_id;
@@ -124,7 +120,7 @@ struct TaskGroup {
 // ash-chrome to get lacros task data remotely.
 // Next version: 4
 // Next method id: 5
-[Stable, Uuid="c5073375-8e4b-43c3-85ca-8813adeb0324"]
+[Uuid="c5073375-8e4b-43c3-85ca-8813adeb0324"]
 interface TaskManagerProvider {
   // Deprecated. Use SetRefreshFlags instead.
   DeprecatedSetRefreshArgs@0(mojo_base.mojom.TimeDelta refresh_interval,
@@ -158,7 +154,7 @@ interface TaskManagerProvider {
 // Interface for task manager. Implemented by ash-chrome.
 // Next version: 2
 // Next method id: 2
-[Stable, Uuid="c5073375-8e4b-43c3-85ca-8813adeb0324"]
+[Uuid="c5073375-8e4b-43c3-85ca-8813adeb0324"]
 interface TaskManager {
   // A crosapi client can register itself as a task manager provider. This
   // provides ash a mechanism to get task manager data from lacros.

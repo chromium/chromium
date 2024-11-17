@@ -5,8 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SYNTAX_DEFINITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SYNTAX_DEFINITION_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_syntax_component.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 
 namespace blink {
@@ -16,6 +19,8 @@ class CSSValue;
 
 class CORE_EXPORT CSSSyntaxDefinition {
  public:
+  // https://drafts.csswg.org/css-values-5/#css-syntax
+  static std::optional<CSSSyntaxDefinition> Consume(CSSParserTokenStream&);
   const CSSValue* Parse(StringView,
                         const CSSParserContext&,
                         bool is_animation_tainted) const;
@@ -41,14 +46,14 @@ class CORE_EXPORT CSSSyntaxDefinition {
  private:
   friend class CSSSyntaxStringParser;
   friend class CSSSyntaxStringParserTest;
+  friend class CSSSyntaxDefinitionTest;
 
-  CSSSyntaxDefinition(Vector<CSSSyntaxComponent>, const String& original_text);
+  explicit CSSSyntaxDefinition(Vector<CSSSyntaxComponent>);
 
   // https://drafts.css-houdini.org/css-properties-values-api-1/#universal-syntax-descriptor
   static CSSSyntaxDefinition CreateUniversal();
 
   Vector<CSSSyntaxComponent> syntax_components_;
-  String original_text_;
 };
 
 }  // namespace blink

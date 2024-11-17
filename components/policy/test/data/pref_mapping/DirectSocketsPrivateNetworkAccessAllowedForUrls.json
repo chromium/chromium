@@ -1,0 +1,19 @@
+[
+  {
+    "os": [
+      "win",
+      "linux",
+      "mac",
+      "chromeos_ash"
+    ],
+    "simple_policy_pref_mapping_test": {
+      "pref_name": "profile.managed_direct_sockets_pna_allowed_for_urls",
+      "default_value": [],
+      "values_to_test": [
+        [
+          "isolated-app://aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic"
+        ]
+      ]
+    }
+  }
+]

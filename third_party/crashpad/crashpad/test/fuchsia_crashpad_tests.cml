@@ -46,15 +46,6 @@
     ],
     offer: [
         {
-            protocol: "fuchsia.logger.LogSink",
-            from: "parent",
-            to: [
-                "#crashpad_test",
-                "#dns_resolver",
-                "#netstack",
-            ]
-        },
-        {
             protocol: "fuchsia.net.name.Lookup",
             from: "#dns_resolver",
             to: "#crashpad_test",

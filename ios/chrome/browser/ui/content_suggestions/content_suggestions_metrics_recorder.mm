@@ -59,6 +59,9 @@ const float kMaxModuleEngagementIndex = 50;
           kMagicStackModuleEngagementMostVisitedIndexHistogram, index,
           kMaxModuleEngagementIndex);
       break;
+    case ContentSuggestionsModuleType::kSendTabPromo:
+      // TODO(crbug.com/343495516): log metrics.
+      break;
     case ContentSuggestionsModuleType::kShortcuts:
       UMA_HISTOGRAM_EXACT_LINEAR(
           kMagicStackModuleEngagementShortcutsIndexHistogram, index,
@@ -94,6 +97,11 @@ const float kMaxModuleEngagementIndex = 50;
           kMagicStackModuleEngagementSetUpListIndexHistogram, index,
           kMaxModuleEngagementIndex);
       break;
+    case ContentSuggestionsModuleType::kTipsWithProductImage:
+    case ContentSuggestionsModuleType::kTips:
+      UMA_HISTOGRAM_EXACT_LINEAR(kMagicStackModuleEngagementTipsIndexHistogram,
+                                 index, kMaxModuleEngagementIndex);
+      break;
     case ContentSuggestionsModuleType::kPlaceholder:
     case ContentSuggestionsModuleType::kInvalid:
       break;
@@ -122,8 +130,7 @@ const float kMaxModuleEngagementIndex = 50;
       base::RecordAction(base::UserMetricsAction(kShowWhatsNewAction));
       break;
     case NTPCollectionShortcutTypeCount:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

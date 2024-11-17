@@ -67,9 +67,7 @@ inline void AdvanceStringAndASSERT(SegmentedString& source,
   case prefix::stateName:              \
   stateName:
 #define BEGIN_STATE_NOLABEL(prefix, stateName) case prefix::stateName:
-#define END_STATE()          \
-  NOTREACHED_IN_MIGRATION(); \
-  break;
+#define END_STATE() NOTREACHED();
 
 // We use this macro when the HTML5 spec says "reconsume the current input
 // character in the <mumble> state."

@@ -244,11 +244,10 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
     search_term_cache_.clear();
   } else {
     // Remove any stale SearchTermCacheItems.
-    std::erase_if(
-        search_term_cache_,
-        [](const std::pair<std::u16string, SearchTermCacheItem>& item) {
-          return !item.second.used_;
-        });
+    std::erase_if(search_term_cache_,
+                  [](const SearchTermCacheMap::value_type& item) {
+                    return !item.second.used_;
+                  });
   }
 
   return scored_items;
@@ -885,7 +884,7 @@ void URLIndexPrivateData::RemoveRowWordsFromIndex(const history::URLRow& row) {
       continue;
 
     // The word is no longer in use. Reconcile any changes to character usage.
-    std::u16string word = word_list_[word_id];
+    const std::u16string& word = word_list_[word_id];
     for (char16_t uni_char : Char16SetFromString16(word)) {
       auto char_word_map_iter = char_word_map_.find(uni_char);
       char_word_map_iter->second.erase(word_id);
@@ -964,13 +963,14 @@ URLIndexPrivateData::GetTermsAndWordStartsOffsets(
       base::SplitString(lower_raw_string, base::kWhitespaceUTF16,
                         base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   if (lower_raw_terms.empty()) {
-    return {{}, {}};
+    return {String16Vector(), WordStarts()};
   }
 
   WordStarts lower_terms_to_word_starts_offsets;
   CalculateWordStartsOffsets(lower_raw_terms,
                              &lower_terms_to_word_starts_offsets);
-  return {lower_raw_terms, lower_terms_to_word_starts_offsets};
+  return {std::move(lower_raw_terms),
+          std::move(lower_terms_to_word_starts_offsets)};
 }
 
 URLIndexPrivateData::SearchTermCacheItem::~SearchTermCacheItem() = default;

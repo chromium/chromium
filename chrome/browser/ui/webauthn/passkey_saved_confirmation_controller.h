@@ -11,8 +11,9 @@
 // Manages the bubble which is shown as a confirmation when a passkey is saved.
 class PasskeySavedConfirmationController : public PasswordBubbleControllerBase {
  public:
-  explicit PasskeySavedConfirmationController(
-      base::WeakPtr<PasswordsModelDelegate> delegate);
+  PasskeySavedConfirmationController(
+      base::WeakPtr<PasswordsModelDelegate> delegate,
+      std::string passkey_rp_id);
   ~PasskeySavedConfirmationController() override;
 
   // PasswordBubbleControllerBase:
@@ -29,6 +30,9 @@ class PasskeySavedConfirmationController : public PasswordBubbleControllerBase {
   // Dismissal reason for a password bubble.
   password_manager::metrics_util::UIDismissalReason dismissal_reason_ =
       password_manager::metrics_util::NO_DIRECT_INTERACTION;
+
+  // Relying party identifier for the saved passkey.
+  std::string passkey_rp_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_PASSKEY_SAVED_CONFIRMATION_CONTROLLER_H_

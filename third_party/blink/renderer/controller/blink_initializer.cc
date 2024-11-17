@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/controller/blink_leak_detector.h"
 #include "third_party/blink/renderer/controller/dev_tools_frontend_impl.h"
 #include "third_party/blink/renderer/controller/javascript_call_stack_generator.h"
+#include "third_party/blink/renderer/controller/memory_tracer.h"
 #include "third_party/blink/renderer/controller/performance_manager/renderer_resource_coordinator_impl.h"
 #include "third_party/blink/renderer/controller/performance_manager/v8_detailed_memory_reporter_impl.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
@@ -150,11 +151,10 @@ void InitializeCommon(Platform* platform, mojo::BinderMap* binders) {
   // BlinkInitializer::Initialize() must be called before InitializeMainThread
   GetBlinkInitializer().Initialize();
 
-  std::string js_command_line_flag =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          blink::switches::kJavaScriptFlags);
   blink::V8Initializer::InitializeIsolateHolder(
-      blink::V8ContextSnapshot::GetReferenceTable(), js_command_line_flag);
+      blink::V8ContextSnapshot::GetReferenceTable(),
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          blink::switches::kJavaScriptFlags));
 
   GetBlinkInitializer().RegisterInterfaces(*binders);
 
@@ -307,6 +307,9 @@ void BlinkInitializer::RegisterMemoryWatchers(Platform* platform) {
   // Start reporting the highest private memory footprint after the first
   // navigation.
   HighestPmfReporter::Initialize(main_thread_task_runner);
+
+  // And tracing memory metrics to "system_metrics" when enabled.
+  MemoryTracer::Initialize();
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

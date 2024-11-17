@@ -15,21 +15,23 @@
 namespace task_manager {
 
 FencedFrameTask::FencedFrameTask(content::RenderFrameHost* render_frame_host,
-                                 RendererTask* embedder_task)
+                                 base::WeakPtr<RendererTask> embedder_task)
     : RendererTask(
           /*title=*/u"",
           /*icon=*/nullptr,
           /*subframe=*/render_frame_host),
       site_instance_(render_frame_host->GetSiteInstance()),
-      embedder_task_(embedder_task) {
+      embedder_task_(std::move(embedder_task)) {
   set_title(GetTitle());
 }
+
+FencedFrameTask::~FencedFrameTask() {}
 
 void FencedFrameTask::Activate() {
   embedder_task_->Activate();
 }
 
-const task_manager::Task* FencedFrameTask::GetParentTask() const {
+base::WeakPtr<task_manager::Task> FencedFrameTask::GetParentTask() const {
   return embedder_task_;
 }
 

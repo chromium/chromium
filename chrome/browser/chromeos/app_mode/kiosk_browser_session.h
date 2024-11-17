@@ -62,6 +62,9 @@ class KioskBrowserSession {
   // `web_app_name` is std::nullopt for ash-side of the web kiosk with Lacros.
   void InitForWebKiosk(const std::optional<std::string>& web_app_name);
 
+  // Initializes an app session for Isolated Web App Kiosk.
+  void InitForIwaKiosk(const std::optional<std::string>& app_name);
+
   // Invoked when GuestViewManager adds a guest web contents.
   void OnGuestAdded(content::WebContents* guest_web_contents);
 

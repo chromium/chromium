@@ -27,9 +27,6 @@
 // not display it all.
 - (void)setAvatarImage:(UIImage*)avatarImage;
 
-// Request to dismiss the bottom sheet.
-- (void)dismiss;
-
 // Sets the primary action label.
 - (void)setPrimaryActionString:(NSString*)primaryActionString;
 

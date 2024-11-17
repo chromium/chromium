@@ -33,7 +33,7 @@ class MockTaskScheduler : public TaskScheduler {
 
 class DownloadSchedulerImplTest : public testing::Test {
  public:
-  DownloadSchedulerImplTest() {}
+  DownloadSchedulerImplTest() = default;
 
   DownloadSchedulerImplTest(const DownloadSchedulerImplTest&) = delete;
   DownloadSchedulerImplTest& operator=(const DownloadSchedulerImplTest&) =

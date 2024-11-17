@@ -52,11 +52,12 @@ using base::UserMetricsAction;
 
 OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
                                std::unique_ptr<OmniboxClient> client,
-                               ChromeBrowserState* browser_state,
+                               ProfileIOS* profile,
                                id<OmniboxCommands> omnibox_focuser,
                                id<OmniboxFocusDelegate> focus_delegate,
                                id<ToolbarCommands> toolbar_commands_handler,
-                               id<OmniboxViewConsumer> consumer)
+                               id<OmniboxViewConsumer> consumer,
+                               bool is_lens_overlay)
     : OmniboxView(std::move(client)),
       field_(field),
       omnibox_focuser_(omnibox_focuser),
@@ -64,6 +65,7 @@ OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
       toolbar_commands_handler_(toolbar_commands_handler),
       consumer_(consumer),
       ignore_popup_updates_(false),
+      is_lens_overlay_(is_lens_overlay),
       popup_provider_(nullptr) {
   DCHECK(field_);
 }
@@ -354,8 +356,15 @@ void OmniboxViewIOS::OnDidBeginEditing() {
   OnBeforePossibleChange();
 
   if (model()) {
-    model()->StartZeroSuggestRequest();
     model()->OnSetFocus(/*control_down=*/false);
+
+    if (is_lens_overlay_ && field_.userText.length) {
+      model()->SetUserText(base::SysNSStringToUTF16(field_.userText));
+      model()->StartAutocomplete(/*has_selected_text=*/false,
+                                 /*prevent_inline_autocomplete=*/true);
+    } else {
+      model()->StartZeroSuggestRequest();
+    }
   }
 
   // If the omnibox is displaying a URL and the popup is not showing, set the
@@ -363,9 +372,11 @@ void OmniboxViewIOS::OnDidBeginEditing() {
   // leave the default behavior of positioning the cursor at the end of the
   // text.  If the popup is already open, that means that the omnibox is
   // regaining focus after a popup scroll took focus away, so the pre-edit
-  // behavior should not be invoked.
-  if (!popup_was_open_before_editing_began)
+  // behavior should not be invoked. When `is_lens_overlay_` is true, the
+  // omnibox only display search terms.
+  if (!popup_was_open_before_editing_began && !is_lens_overlay_) {
     [field_ enterPreEditState];
+  }
 
   // `location_bar_` is only forwarding the call to the BVC. This should only
   // happen when the omnibox is being focused and it starts showing the popup;
@@ -507,10 +518,16 @@ void OmniboxViewIOS::OnAccept() {
   base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
   base::RecordAction(UserMetricsAction("IOS.Omnibox.AcceptDefaultSuggestion"));
 
-  // TODO(crbug.com/359150039): handle accept with empty text.
   if (model()) {
     AcceptThumbnailEdits();
-    model()->OpenSelection();
+    // The omnibox edit model doesn't support accepting input with no text.
+    // Delegate the call to the client instead.
+    if (OmniboxClient* client = controller()->client();
+        client && !field_.text.length) {
+      client->OnThumbnailOnlyAccept();
+    } else {
+      model()->OpenSelection();
+    }
   }
   RevertAll();
 }
@@ -558,8 +575,6 @@ void OmniboxViewIOS::OnCopy() {
   }
 
   StoreItemInPasteboard(item);
-
-  [toolbar_commands_handler_ showShareButtonIPHAfterLocationBarUnfocus];
 }
 
 void OmniboxViewIOS::WillPaste() {
@@ -767,10 +782,14 @@ void OmniboxViewIOS::SetThumbnailImage(UIImage* image) {
   thumbnail_image_before_edit_ = image;
   thumbnail_deleted_ = NO;
   [consumer_ setThumbnailImage:image];
+  if (popup_provider_) {
+    popup_provider_->SetHasThumbnail(image != nil);
+  }
 }
 
 void OmniboxViewIOS::AcceptThumbnailEdits() {
   if (thumbnail_deleted_) {
+    base::RecordAction(UserMetricsAction("Mobile.OmniboxThumbnail.Deleted"));
     thumbnail_image_before_edit_ = nil;
     thumbnail_deleted_ = NO;
     if (OmniboxClient* client = controller()->client()) {
@@ -783,10 +802,20 @@ void OmniboxViewIOS::RevertThumbnailEdits() {
   if (thumbnail_deleted_) {
     [consumer_ setThumbnailImage:thumbnail_image_before_edit_];
     thumbnail_deleted_ = NO;
+    if (popup_provider_) {
+      popup_provider_->SetHasThumbnail(thumbnail_image_before_edit_ != nil);
+    }
   }
 }
 
 void OmniboxViewIOS::RemoveThumbnail() {
   thumbnail_deleted_ = YES;
   [consumer_ setThumbnailImage:nil];
+  if (popup_provider_) {
+    popup_provider_->SetHasThumbnail(false);
+  }
+  if (model()) {
+    model()->UpdateInput(/*has_selected_text=*/false,
+                         /*prevent_inline_autocomplete=*/true);
+  }
 }

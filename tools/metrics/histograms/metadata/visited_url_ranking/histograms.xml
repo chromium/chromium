@@ -138,6 +138,19 @@ chromium-metrics-reviews@google.com.
     the visited url ranking service feature is enabled. Only logged when the
     tranform had data to process and when the transform was successful.
   </summary>
+  <token key="URLVisitAggregatesTransformType">
+    <variant name="BookmarkData" summary="Bookmark data"/>
+    <variant name="DefaultAppUrlFilter" summary="Default app URL filter"/>
+    <variant name="HistoryCategoriesFilter"
+        summary="History caetgories filter"/>
+    <variant name="HistoryVisibilityScoreFilter"
+        summary="History visibility score filter"/>
+    <variant name="None" summary="None"/>
+    <variant name="RecencyFilter" summary="Recency filter"/>
+    <variant name="SegmentationMetricsData"
+        summary="Segmentation metrics data"/>
+    <variant name="ShoppingData" summary="Shopping data"/>
+  </token>
 </histogram>
 
 <histogram

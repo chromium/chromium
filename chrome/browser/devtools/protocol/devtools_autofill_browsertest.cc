@@ -98,7 +98,7 @@ std::string GetProfileInfoFromAddressField(const AutofillProfile profile,
 class TestAutofillManager : public autofill::BrowserAutofillManager {
  public:
   explicit TestAutofillManager(autofill::ContentAutofillDriver* driver)
-      : BrowserAutofillManager(driver, "en-US") {}
+      : BrowserAutofillManager(driver) {}
 
   static TestAutofillManager& GetForRenderFrameHost(
       content::RenderFrameHost* rfh) {

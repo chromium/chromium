@@ -52,10 +52,18 @@ void MemoryManagedPaintRecorder::DisableLineDrawingAsPaths() {
 
 cc::PaintRecord MemoryManagedPaintRecorder::ReleaseMainRecording() {
   cc::PaintRecord record = main_canvas_.ReleaseAsRecord();
+  // ReleaseAsRecord() clears the paint ops, so we need initialize the recording
+  // for subsequent draw calls.
   if (client_) {
     client_->InitializeForRecording(&main_canvas_);
   }
   return record;
+}
+
+cc::PaintRecord MemoryManagedPaintRecorder::CopyMainRecording() {
+  // CopyAsRecord() does not clear the paint ops, so we do not need to call
+  // InitializeForRecording().
+  return main_canvas_.CopyAsRecord();
 }
 
 void MemoryManagedPaintRecorder::RestartCurrentLayer() {

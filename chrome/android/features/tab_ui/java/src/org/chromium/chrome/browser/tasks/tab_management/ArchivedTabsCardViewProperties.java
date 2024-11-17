@@ -16,7 +16,10 @@ public class ArchivedTabsCardViewProperties {
             new WritableIntPropertyKey();
     public static final ReadableObjectPropertyKey<Runnable> CLICK_HANDLER =
             new ReadableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey WIDTH = new WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {NUMBER_OF_ARCHIVED_TABS, ARCHIVE_TIME_DELTA_DAYS, CLICK_HANDLER};
+            new PropertyKey[] {
+                NUMBER_OF_ARCHIVED_TABS, ARCHIVE_TIME_DELTA_DAYS, CLICK_HANDLER, WIDTH
+            };
 }

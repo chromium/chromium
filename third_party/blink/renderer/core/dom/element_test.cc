@@ -9,6 +9,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -1180,10 +1181,11 @@ TEST_F(ElementTest, GetPseudoElement) {
   }
 }
 
-TEST_F(ElementTest, ColumnScrollMarkers) {
+TEST_F(ElementTest, ColumnPseudoElements) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style id="test-style">
-    #test::column::scroll-marker { content: "*"; opacity: 0.5; }
+    #test::column { content: "*"; opacity: 0.5; }
+    #test::column::scroll-marker { content: "+"; opacity: 0.3; }
     </style>
     <div id="test"></div>
     )HTML");
@@ -1192,24 +1194,116 @@ TEST_F(ElementTest, ColumnScrollMarkers) {
 
   Element* element = GetElementById("test");
 
-  ScrollMarkerPseudoElement* first_scroll_marker =
-      element->CreateColumnScrollMarker();
-  ASSERT_TRUE(first_scroll_marker);
-  ScrollMarkerPseudoElement* second_scroll_marker =
-      element->CreateColumnScrollMarker();
-  ASSERT_TRUE(second_scroll_marker);
-  ScrollMarkerPseudoElement* third_scroll_marker =
-      element->CreateColumnScrollMarker();
-  ASSERT_TRUE(third_scroll_marker);
+  PhysicalRect dummy_column_rect;
+  PseudoElement* first_column_pseudo_element =
+      element->CreateColumnPseudoElementIfNeeded(0u, dummy_column_rect);
+  ASSERT_TRUE(first_column_pseudo_element);
+  EXPECT_EQ(first_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
+  ASSERT_TRUE(
+      first_column_pseudo_element->GetPseudoElement(kPseudoIdScrollMarker));
+  EXPECT_EQ(first_column_pseudo_element->GetPseudoElement(kPseudoIdScrollMarker)
+                ->GetComputedStyle()
+                ->Opacity(),
+            0.3f);
 
-  ASSERT_TRUE(element->GetColumnScrollMarkers());
-  ASSERT_EQ(element->GetColumnScrollMarkers()->size(), 3u);
+  PseudoElement* second_column_pseudo_element =
+      element->CreateColumnPseudoElementIfNeeded(1u, dummy_column_rect);
+  ASSERT_TRUE(second_column_pseudo_element);
+  EXPECT_EQ(second_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
+  ASSERT_TRUE(
+      second_column_pseudo_element->GetPseudoElement(kPseudoIdScrollMarker));
+  EXPECT_EQ(
+      second_column_pseudo_element->GetPseudoElement(kPseudoIdScrollMarker)
+          ->GetComputedStyle()
+          ->Opacity(),
+      0.3f);
+
+  PseudoElement* third_column_pseudo_element =
+      element->CreateColumnPseudoElementIfNeeded(2u, dummy_column_rect);
+  ASSERT_TRUE(third_column_pseudo_element);
+  EXPECT_EQ(third_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
+  ASSERT_TRUE(
+      third_column_pseudo_element->GetPseudoElement(kPseudoIdScrollMarker));
+  EXPECT_EQ(third_column_pseudo_element->GetPseudoElement(kPseudoIdScrollMarker)
+                ->GetComputedStyle()
+                ->Opacity(),
+            0.3f);
+
+  ASSERT_TRUE(element->GetColumnPseudoElements());
+  EXPECT_EQ(element->GetColumnPseudoElements()->size(), 3u);
 
   Element* style = GetElementById("test-style");
   style->setInnerHTML("");
   GetDocument().UpdateStyleAndLayoutTree();
 
-  ASSERT_EQ(element->GetColumnScrollMarkers()->size(), 0u);
+  EXPECT_EQ(element->GetColumnPseudoElements()->size(), 0u);
+}
+
+TEST_F(ElementTest, TheCheckPseudoElement) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #a-div::check {
+        content: "*";
+      }
+
+      #target::check {
+        content: "*";
+      }
+    </style>
+
+    <div id="a-div"></div>
+
+    <select id="target">
+      <option id="target-option" value="the only option"></option>
+    </select>
+    )HTML");
+
+  // GetPseudoElement() relies on style recalc.
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  Element* div = GetElementById("a-div");
+  EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdCheck));
+
+  Element* target = GetElementById("target");
+  EXPECT_EQ(nullptr, target->GetPseudoElement(kPseudoIdCheck));
+
+  // The `::check` pseudo element should only be created for option elements.
+  Element* target_option = GetElementById("target-option");
+  EXPECT_NE(nullptr, target_option->GetPseudoElement(kPseudoIdCheck));
+}
+
+TEST_F(ElementTest, TheSelectArrowPseudoElement) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <style>
+      #a-div::select-arrow {
+        content: "*";
+      }
+
+      #target::select-arrow {
+        content: "*";
+      }
+    </style>
+
+    <div id="a-div"></div>
+
+    <select id="target">
+      <option id="target-option" value="the only option"></option>
+    </select>
+    )HTML");
+
+  // GetPseudoElement() relies on style recalc.
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  Element* div = GetElementById("a-div");
+  EXPECT_EQ(nullptr, div->GetPseudoElement(kPseudoIdSelectArrow));
+
+  // The `::select-arrow` pseudo element should only be created for select
+  // elements.
+  Element* target = GetElementById("target");
+  EXPECT_NE(nullptr, target->GetPseudoElement(kPseudoIdSelectArrow));
+
+  Element* target_option = GetElementById("target-option");
+  EXPECT_EQ(nullptr, target_option->GetPseudoElement(kPseudoIdSelectArrow));
 }
 
 }  // namespace blink

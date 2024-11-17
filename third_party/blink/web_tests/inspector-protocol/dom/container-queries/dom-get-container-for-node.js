@@ -14,6 +14,9 @@
   const blockSizeContainerQuerySelectorResponse = await dp.DOM.querySelector({nodeId: documentNodeId, selector: '#block-size-container' });
   const blockSizeContainerNodeId = blockSizeContainerQuerySelectorResponse.result.nodeId;
 
+  const scrollStateContainerQuerySelectorResponse = await dp.DOM.querySelector({nodeId: documentNodeId, selector: '#scroll-state-container' });
+  const scrollStateContainerNodeId = scrollStateContainerQuerySelectorResponse.result.nodeId;
+
   const unnamedContainerQuerySelectorResponse = await dp.DOM.querySelector({nodeId: documentNodeId, selector: '#unnamed-container' });
   const unnamedContainerNodeId = unnamedContainerQuerySelectorResponse.result.nodeId;
 
@@ -65,6 +68,14 @@
   testRunner.log(styleContainerResponse);
   testRunner.log('Is the returned container the expected style container?');
   testRunner.log(styleContainerResponse.result.nodeId === styleContainerNodeId);
+
+  const scrollStateContainerResponse = await dp.DOM.getContainerForNode({
+    nodeId: itemNodeId,
+    queriesScrollState: true,
+  });
+  testRunner.log(scrollStateContainerResponse);
+  testRunner.log('Is the returned container the expected scroll-state container?');
+  testRunner.log(scrollStateContainerResponse.result.nodeId === scrollStateContainerNodeId);
 
   // Dynamically add a closer inline-size container to .item and check if this
   // new container can be returned right away.

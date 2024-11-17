@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(
   AddFormToStore(password_store.get(), form);
 
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {kSignonRealm, kUsername}};
+      {kSignonRealm, GURL(kSignonRealm), kUsername}};
 
   service->set_saved_passwords_matching_reused_credentials({credentials});
 
@@ -916,7 +916,7 @@ class ChromePasswordProtectionServiceNavigationDeferralBrowserTest
     const std::string kSignonRealm = "https://example.test";
     const std::u16string kUsername = u"username1";
     std::vector<password_manager::MatchingReusedCredential> credentials = {
-        {kSignonRealm, kUsername}};
+        {kSignonRealm, GURL(kSignonRealm), kUsername}};
 
     service->StartRequestForTesting(
         GetWebContents(), GURL(), GURL(), GURL(), "",

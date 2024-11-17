@@ -93,6 +93,17 @@ PaintImage PaintImageBuilder::TakePaintImage() {
       DCHECK_GT(frame.duration, base::TimeDelta());
   }
 #endif
+  if (paint_image_.reinterpret_as_srgb_) {
+    if (paint_image_.sk_image_) {
+      paint_image_.sk_image_ = paint_image_.sk_image_->reinterpretColorSpace(
+          SkColorSpace::MakeSRGB());
+    }
+    if (paint_image_.cached_sk_image_) {
+      paint_image_.cached_sk_image_ =
+          paint_image_.cached_sk_image_->reinterpretColorSpace(
+              SkColorSpace::MakeSRGB());
+    }
+  }
 
   // We may already have a cached_sk_image_ if this builder was created with a
   // copy.

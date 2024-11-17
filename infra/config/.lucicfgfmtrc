@@ -94,11 +94,15 @@ rules {
         # variant
         arg: "enabled"
         arg: "identifier"
+
+        # variant/mixin
+        arg: "generate_pyl_entry"
         arg: "description"
 
         # tests
         arg: "test"
         arg: "results_handler"
+        arg: "is_android_webview"
         arg: "telemetry_test_name"
         arg: "tast_expr"
         arg: "test_level_retries"
@@ -114,7 +118,6 @@ rules {
         arg: "per_test_modifications"
 
         # mixin/variant/test common fields
-        arg: "generate_pyl_entry"
         arg: "args"
         arg: "precommit_args"
         arg: "android_args"

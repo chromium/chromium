@@ -51,4 +51,8 @@ void PaymentsDataManagerTestBase::TearDownTest() {
   profile_web_database_->ShutdownDatabase();
 }
 
+void PaymentsDataManagerTestBase::AdvanceClock(base::TimeDelta delta) {
+  task_environment_.AdvanceClock(delta);
+}
+
 }  // namespace autofill

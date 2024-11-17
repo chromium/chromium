@@ -10,4 +10,8 @@ BASE_FEATURE(kPolicyBlocklistProceedUntilResponse,
              "PolicyBlocklistProceedUntilResponse",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kProfileSeparationDomainExceptionListRetroactive,
+             "ProfileSeparationDomainExceptionListRetroactive",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace policy::features

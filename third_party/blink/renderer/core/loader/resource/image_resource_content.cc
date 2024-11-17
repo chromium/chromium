@@ -597,7 +597,7 @@ void ImageResourceContent::EmulateLoadStartedForInspector(
 }
 
 void ImageResourceContent::SetIsSufficientContentLoadedForPaint() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool ImageResourceContent::IsSufficientContentLoadedForPaint() const {

@@ -29,8 +29,8 @@
 #include "third_party/blink/public/platform/web_media_key_system_configuration.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/renderer/platform/media/media_player_util.h"
 
 namespace blink {
 namespace {
@@ -47,8 +47,7 @@ EmeConfig::Rule GetDistinctiveIdentifierConfigRule(
     EmeFeatureSupport support,
     EmeFeatureRequirement requirement) {
   if (support == EmeFeatureSupport::INVALID) {
-    NOTREACHED_IN_MIGRATION();
-    return EmeConfig::UnsupportedRule();
+    NOTREACHED();
   }
 
   // For kNotAllowed and kRequired, the result is as expected. For kRecommended,
@@ -88,8 +87,7 @@ EmeConfig::Rule GetPersistentStateConfigRule(
     EmeFeatureSupport support,
     EmeFeatureRequirement requirement) {
   if (support == EmeFeatureSupport::INVALID) {
-    NOTREACHED_IN_MIGRATION();
-    return EmeConfig::UnsupportedRule();
+    NOTREACHED();
   }
 
   // For kNotAllowed and kRequired, the result is as expected. For kRecommended,
@@ -138,8 +136,7 @@ bool IsPersistentSessionType(WebEncryptedMediaSessionType sessionType) {
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool IsSupportedMediaType(const std::string& container_mime_type,
@@ -330,8 +327,7 @@ class KeySystemConfigSelector::ConfigState {
 
     // No rule specified, this should not happen
     if (!rule.has_value()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
 
     // Rule does not require or prohibit anything, so can be skipped.
@@ -485,8 +481,7 @@ EmeConfig::Rule KeySystemConfigSelector::GetEncryptionSchemeConfigRule(
       return EmeConfig::UnsupportedRule();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return EmeConfig::UnsupportedRule();
+  NOTREACHED();
 }
 
 bool KeySystemConfigSelector::GetSupportedCapabilities(
@@ -798,8 +793,7 @@ KeySystemConfigSelector::GetSupportedConfiguration(
     EmeConfig::Rule session_type_rule = EmeConfig::UnsupportedRule();
     switch (session_type) {
       case WebEncryptedMediaSessionType::kUnknown:
-        NOTREACHED_IN_MIGRATION();
-        return CONFIGURATION_NOT_SUPPORTED;
+        NOTREACHED();
       case WebEncryptedMediaSessionType::kTemporary:
         session_type_rule = EmeConfig::SupportedRule();
         break;
@@ -929,8 +923,7 @@ KeySystemConfigSelector::GetSupportedConfiguration(
       config_state->AddRule(required_rule);
     } else {
       // We should not have passed step 6.
-      NOTREACHED_IN_MIGRATION();
-      return CONFIGURATION_NOT_SUPPORTED;
+      NOTREACHED();
     }
   }
 
@@ -968,8 +961,7 @@ KeySystemConfigSelector::GetSupportedConfiguration(
       config_state->AddRule(required_rule);
     } else {
       // We should not have passed step 5.
-      NOTREACHED_IN_MIGRATION();
-      return CONFIGURATION_NOT_SUPPORTED;
+      NOTREACHED();
     }
   }
 

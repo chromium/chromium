@@ -17,7 +17,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -36,7 +35,7 @@
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/view.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/ime/ash/input_method_manager.h"
 #endif
 
@@ -59,7 +58,7 @@ class OSExchangeData;
 class OmniboxViewViews
     : public OmniboxView,
       public views::Textfield,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       public ash::input_method::InputMethodManager::CandidateWindowObserver,
 #endif
       public views::TextfieldController,
@@ -84,9 +83,7 @@ class OmniboxViewViews
 
   // Exposes the RenderText for tests.
 #if defined(UNIT_TEST)
-  gfx::RenderText* GetRenderText() {
-    return views::Textfield::GetRenderText();
-  }
+  gfx::RenderText* GetRenderText() { return views::Textfield::GetRenderText(); }
 #endif
 
   // For use when switching tabs, this saves the current state onto the tab so
@@ -270,7 +267,7 @@ class OmniboxViewViews
   void UpdateAccessibleValue() override;
 
   // ash::input_method::InputMethodManager::CandidateWindowObserver:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void CandidateWindowOpened(
       ash::input_method::InputMethodManager* manager) override;
   void CandidateWindowClosed(
@@ -326,6 +323,10 @@ class OmniboxViewViews
   // Called when the popup view becomes visible.
   void OnPopupOpened();
 
+  // Helper for updating placeholder color depending on whether its a keyword or
+  // DSE placeholder.
+  void UpdatePlaceholderTextColor();
+
   // When true, the location bar view is read only and also is has a slightly
   // different presentation (smaller font size). This is used for popups.
   bool popup_window_mode_;
@@ -348,7 +349,7 @@ class OmniboxViewViews
   // |location_bar_view_| can be NULL in tests.
   raw_ptr<LocationBarView> location_bar_view_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // True if the IME candidate window is open. When this is true, we want to
   // avoid showing the popup. So far, the candidate window is detected only
   // on Chrome OS.

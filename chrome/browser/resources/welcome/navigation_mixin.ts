@@ -12,7 +12,7 @@
  *     or popping history state without actually changing the path.
  */
 
-import '../strings.m.js';
+import '/strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';

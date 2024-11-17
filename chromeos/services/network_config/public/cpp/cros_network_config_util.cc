@@ -32,8 +32,7 @@ std::string GetRequiredString(const base::Value::Dict& onc_apn,
                               const char* key) {
   const std::string* v = onc_apn.FindString(key);
   if (!v) {
-    NOTREACHED_IN_MIGRATION() << "Required key missing: " << key;
-    return std::string();
+    NOTREACHED() << "Required key missing: " << key;
   }
   return *v;
 }
@@ -42,15 +41,13 @@ std::vector<std::string> GetRequiredStringList(const base::Value::Dict& dict,
                                                const char* key) {
   const base::Value::List* v = dict.FindList(key);
   if (!v) {
-    NOTREACHED_IN_MIGRATION() << "Required key missing: " << key;
-    return {};
+    NOTREACHED() << "Required key missing: " << key;
   }
   std::vector<std::string> result;
   result.reserve(v->size());
   for (const base::Value& e : *v) {
     if (!e.is_string()) {
-      NOTREACHED_IN_MIGRATION() << "Expected string, found: " << e;
-      break;
+      NOTREACHED() << "Expected string, found: " << e;
     }
     result.push_back(e.GetString());
   }
@@ -70,9 +67,8 @@ mojom::ApnAuthenticationType OncApnAuthenticationTypeToMojo(
     return mojom::ApnAuthenticationType::kChap;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unexpected ONC APN Authentication type: "
-                            << authentication_type.value();
-  return mojom::ApnAuthenticationType::kAutomatic;
+  NOTREACHED() << "Unexpected ONC APN Authentication type: "
+               << authentication_type.value();
 }
 
 mojom::ApnIpType OncApnIpTypeToMojo(const std::optional<std::string>& ip_type) {
@@ -90,9 +86,7 @@ mojom::ApnIpType OncApnIpTypeToMojo(const std::optional<std::string>& ip_type) {
     return mojom::ApnIpType::kIpv4Ipv6;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Unexpected ONC APN IP type: " << ip_type.value();
-  return mojom::ApnIpType::kAutomatic;
+  NOTREACHED() << "Unexpected ONC APN IP type: " << ip_type.value();
 }
 
 mojom::ApnSource OncApnSourceToMojo(const std::optional<std::string>& source) {
@@ -307,8 +301,7 @@ bool NetworkTypeMatchesType(mojom::NetworkType network_type,
     case mojom::NetworkType::kWiFi:
       return network_type == match_type;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool NetworkStateMatchesType(const mojom::NetworkStateProperties* network,
@@ -326,8 +319,7 @@ bool StateIsConnected(mojom::ConnectionStateType connection_state) {
     case mojom::ConnectionStateType::kNotConnected:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 int GetWirelessSignalStrength(const mojom::NetworkStateProperties* network) {
@@ -347,8 +339,7 @@ int GetWirelessSignalStrength(const mojom::NetworkStateProperties* network) {
     case mojom::NetworkType::kWireless:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 bool IsInhibited(const mojom::DeviceStateProperties* device) {
@@ -390,7 +381,7 @@ std::vector<mojom::ApnType> OncApnTypesToMojo(
       continue;
     }
 
-    NOTREACHED_IN_MIGRATION() << "Unexpected ONC APN Type: " << apn_type;
+    NOTREACHED() << "Unexpected ONC APN Type: " << apn_type;
   }
 
   return apn_types_result;

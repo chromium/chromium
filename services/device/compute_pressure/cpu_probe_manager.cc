@@ -123,8 +123,8 @@ void CpuProbeManager::EnsureStarted() {
 void CpuProbeManager::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  timer_.AbandonAndStop();
-  randomization_timer_.AbandonAndStop();
+  timer_.Stop();
+  randomization_timer_.Stop();
   state_randomization_requested_ = false;
   // Drop the replies to any RequestSample calls that were posted before the
   // timer stopped.
@@ -165,13 +165,12 @@ void CpuProbeManager::OnCpuSampleAvailable(std::optional<CpuSample> sample) {
   // If the timer was stopped, OnCpuSampleAvailable should have been cancelled
   // by InvalidateWeakPtrs().
   CHECK(timer_.IsRunning());
-  sampling_callback_.Run(CalculateState(sample));
+  if (sample.has_value()) {
+    sampling_callback_.Run(CalculateState(sample.value()));
+  }
 }
 
-mojom::PressureState CpuProbeManager::CalculateState(
-    std::optional<CpuSample> maybe_sample) {
-  const CpuSample sample = maybe_sample.value_or(kUnsupportedValue);
-
+mojom::PressureState CpuProbeManager::CalculateState(const CpuSample& sample) {
   // TODO(crbug.com/40231044): A more advanced algorithm that calculates
   // PressureState using CpuSample needs to be determined.
   // At this moment the algorithm is the simplest possible

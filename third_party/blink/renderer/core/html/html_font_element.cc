@@ -169,7 +169,7 @@ bool HTMLFontElement::CssValueFromFontSizeNumber(const String& s,
       size = CSSValueID::kXxxLarge;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return true;
 }

@@ -157,6 +157,10 @@ ShelfShutdownConfirmationBubble::ShelfShutdownConfirmationBubble(
 
   GetViewAccessibility().SetRole(ax::mojom::Role::kDialog);
   GetViewAccessibility().SetName(title_->GetText());
+
+  title_text_changed_subscription_ = title_->AddTextChangedCallback(
+      base::BindRepeating(&ShelfShutdownConfirmationBubble::OnTitleTextChanged,
+                          base::Unretained(this)));
 }
 
 ShelfShutdownConfirmationBubble::~ShelfShutdownConfirmationBubble() {
@@ -232,6 +236,12 @@ bool ShelfShutdownConfirmationBubble::ShouldCloseOnMouseExit() {
 void ShelfShutdownConfirmationBubble::ReportBubbleAction(
     ShelfShutdownConfirmationBubble::BubbleAction action) {
   base::UmaHistogramEnumeration(kActionHistogramName, action);
+}
+
+void ShelfShutdownConfirmationBubble::OnTitleTextChanged() {
+  if (GetWidget()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
 }
 
 }  // namespace ash

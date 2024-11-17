@@ -17,7 +17,7 @@ class PersonalDataManagerObserver {
   virtual void OnPersonalDataChanged() {}
 
  protected:
-  virtual ~PersonalDataManagerObserver() {}
+  virtual ~PersonalDataManagerObserver() = default;
 };
 
 }  // namespace autofill

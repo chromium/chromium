@@ -164,7 +164,7 @@ void InlineBoxState::ComputeTextMetrics(const ComputedStyle& styleref,
   include_used_fonts = styleref.LineHeight().IsAuto();
 }
 
-void InlineBoxState::AdjustEdges(const ComputedStyle& style,
+void InlineBoxState::AdjustEdges(const TextBoxEdge text_box_edge,
                                  const Font& font,
                                  FontBaseline baseline_type,
                                  bool should_apply_over,
@@ -176,7 +176,6 @@ void InlineBoxState::AdjustEdges(const ComputedStyle& style,
     return;
   }
   const FontMetrics& font_metrics = font_data->GetFontMetrics();
-  const TextBoxEdge text_box_edge = style.GetTextBoxEdge();
   if (should_apply_over) {
     switch (text_box_edge.Over()) {
       case TextBoxEdge::Type::kAuto:
@@ -250,8 +249,7 @@ LayoutUnit InlineBoxState::TextTop(FontBaseline baseline_type) const {
     return text_top;
   if (const SimpleFontData* font_data = font->PrimaryFont())
     return -font_data->GetFontMetrics().FixedAscent(baseline_type);
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 bool InlineBoxState::CanAddTextOfStyle(const ComputedStyle& text_style) const {
@@ -1091,15 +1089,14 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
             baseline_shift = text_bottom - child.metrics.descent;
             break;
           }
-          NOTREACHED_IN_MIGRATION();
+          DUMP_WILL_BE_NOTREACHED();
           break;
         case EVerticalAlign::kTop:
         case EVerticalAlign::kBottom:
           has_top_or_bottom = true;
           continue;
         default:
-          NOTREACHED_IN_MIGRATION();
-          continue;
+          NOTREACHED();
       }
       child.metrics.Move(baseline_shift);
       box->metrics.Unite(child.metrics);
@@ -1123,8 +1120,7 @@ InlineLayoutStateStack::ApplyBaselineShift(InlineBoxState* box,
           case EVerticalAlign::kTextBottom:
             continue;
           default:
-            NOTREACHED_IN_MIGRATION();
-            continue;
+            NOTREACHED();
         }
         child.metrics.Move(baseline_shift);
         box->metrics.Unite(child.metrics);

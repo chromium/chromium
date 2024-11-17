@@ -69,7 +69,8 @@
           "builder": "WebRTC Chromium Win10 Tester",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/webrtc/WebRTC Chromium Win10 Tester/targets"
     }
   },
   "$build/reclient": {

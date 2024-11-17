@@ -162,17 +162,12 @@ struct UnionTraits<media::mojom::OptionalMetadataDataView,
       return media::mojom::OptionalMetadataDataView::Tag::kVp8;
     } else if (metadata.vp9) {
       return media::mojom::OptionalMetadataDataView::Tag::kVp9;
-    } else if (metadata.av1) {
-      return media::mojom::OptionalMetadataDataView::Tag::kAv1;
-    } else if (metadata.h265) {
-      return media::mojom::OptionalMetadataDataView::Tag::kH265;
     }
     NOTREACHED();
   }
 
   static bool IsNull(const media::BitstreamBufferMetadata& metadata) {
-    return !metadata.drop && !metadata.h264 && !metadata.vp8 && !metadata.vp9 &&
-           !metadata.av1 && !metadata.h265;
+    return !metadata.drop && !metadata.h264 && !metadata.vp8 && !metadata.vp9;
   }
 
   static void SetToNull(media::BitstreamBufferMetadata* metadata) {
@@ -180,8 +175,6 @@ struct UnionTraits<media::mojom::OptionalMetadataDataView,
     metadata->h264.reset();
     metadata->vp8.reset();
     metadata->vp9.reset();
-    metadata->av1.reset();
-    metadata->h265.reset();
   }
 
   static const media::DropFrameMetadata& drop(
@@ -201,16 +194,6 @@ struct UnionTraits<media::mojom::OptionalMetadataDataView,
   static const media::Vp9Metadata& vp9(
       const media::BitstreamBufferMetadata& metadata) {
     return *metadata.vp9;
-  }
-
-  static const media::Av1Metadata& av1(
-      const media::BitstreamBufferMetadata& metadata) {
-    return *metadata.av1;
-  }
-
-  static const media::H265Metadata& h265(
-      const media::BitstreamBufferMetadata& metadata) {
-    return *metadata.h265;
   }
 
   static bool Read(media::mojom::OptionalMetadataDataView data,
@@ -236,6 +219,10 @@ class StructTraits<media::mojom::BitstreamBufferMetadataDataView,
   static const media::BitstreamBufferMetadata& optional_metadata(
       const media::BitstreamBufferMetadata& bbm) {
     return bbm;
+  }
+  static std::optional<media::SVCGenericMetadata> svc_generic(
+      const media::BitstreamBufferMetadata& bbm) {
+    return bbm.svc_generic;
   }
   static std::optional<gfx::Size> encoded_size(
       const media::BitstreamBufferMetadata& bbm) {
@@ -276,17 +263,6 @@ class StructTraits<media::mojom::H264MetadataDataView, media::H264Metadata> {
 
   static bool Read(media::mojom::H264MetadataDataView data,
                    media::H264Metadata* out_metadata);
-};
-
-template <>
-class StructTraits<media::mojom::H265MetadataDataView, media::H265Metadata> {
- public:
-  static uint8_t temporal_idx(const media::H265Metadata& h265) {
-    return h265.temporal_idx;
-  }
-
-  static bool Read(media::mojom::H265MetadataDataView data,
-                   media::H265Metadata* out_metadata);
 };
 
 template <>
@@ -353,14 +329,28 @@ class StructTraits<media::mojom::Vp9MetadataDataView, media::Vp9Metadata> {
 };
 
 template <>
-class StructTraits<media::mojom::Av1MetadataDataView, media::Av1Metadata> {
+class StructTraits<media::mojom::SVCGenericMetadataDataView,
+                   media::SVCGenericMetadata> {
  public:
-  static uint8_t temporal_idx(const media::Av1Metadata& av1) {
-    return av1.temporal_idx;
+  static bool follow_svc_spec(const media::SVCGenericMetadata& svc_generic) {
+    return svc_generic.follow_svc_spec;
   }
-
-  static bool Read(media::mojom::Av1MetadataDataView data,
-                   media::Av1Metadata* out_metadata);
+  static uint8_t temporal_idx(const media::SVCGenericMetadata& svc_generic) {
+    return svc_generic.temporal_idx;
+  }
+  static uint8_t spatial_idx(const media::SVCGenericMetadata& svc_generic) {
+    return svc_generic.spatial_idx;
+  }
+  static std::optional<uint16_t> reference_flags(
+      const media::SVCGenericMetadata& svc_generic) {
+    return svc_generic.reference_flags;
+  }
+  static std::optional<uint16_t> refresh_flags(
+      const media::SVCGenericMetadata& svc_generic) {
+    return svc_generic.refresh_flags;
+  }
+  static bool Read(media::mojom::SVCGenericMetadataDataView data,
+                   media::SVCGenericMetadata* out_metadata);
 };
 
 template <>

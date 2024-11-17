@@ -19,6 +19,9 @@ enum class TabGroupActionType;
 - (void)showTabGroupIndicatorEditionForGroup:
     (base::WeakPtr<const TabGroup>)tabGroup;
 
+// Shows the recent activity for the shared group.
+- (void)showRecentActivityForGroup:(base::WeakPtr<const TabGroup>)tabGroup;
+
 // Displays a confirmation dialog to confirm that the current group is going to
 // take an `actionType`.
 - (void)showTabGroupIndicatorConfirmationForAction:

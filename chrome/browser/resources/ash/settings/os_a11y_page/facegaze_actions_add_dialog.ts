@@ -16,26 +16,29 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import '../settings_shared.css.js';
 import './facegaze_icons.html.js';
 
-import {CrSliderElement} from '//resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import type {CrSliderElement} from '//resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
+import type {FacialGesture} from 'chrome://resources/ash/common/accessibility/facial_gestures.js';
 import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names.js';
-import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {CrScrollableMixin} from 'chrome://resources/ash/common/cr_elements/cr_scrollable_mixin.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
-import {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
+import type {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 import {ModifierKeyCodes} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {KeyEvent, ShortcutInputProviderInterface} from '../device_page/input_device_settings_types.js';
+import type {KeyEvent, ShortcutInputProviderInterface} from '../device_page/input_device_settings_types.js';
 import {getShortcutInputProvider} from '../device_page/shortcut_input_mojo_interface_provider.js';
 
 import {getTemplate} from './facegaze_actions_add_dialog.html.js';
-import {AssignedKeyCombo, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeUtils, KeyCombination} from './facegaze_constants.js';
-import {FaceGazeSubpageBrowserProxy, FaceGazeSubpageBrowserProxyImpl} from './facegaze_subpage_browser_proxy.js';
+import type {KeyCombination} from './facegaze_constants.js';
+import {AssignedKeyCombo, ComplexActions, ConflictingGestures, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF, FACE_GAZE_GESTURE_TO_CONFIDENCE_PREF_DICT, FACE_GAZE_GESTURE_TO_MACROS_PREF, FACEGAZE_COMMAND_PAIR_ADDED_EVENT_NAME, FaceGazeActions, FaceGazeCommandPair, FaceGazeGestures, FaceGazeLocationDependentActions, FaceGazeLookGestures, FaceGazeUtils} from './facegaze_constants.js';
+import type {FaceGazeSubpageBrowserProxy} from './facegaze_subpage_browser_proxy.js';
+import {FaceGazeSubpageBrowserProxyImpl} from './facegaze_subpage_browser_proxy.js';
 
 export interface FaceGazeAddActionDialogElement {
   $: {
@@ -101,7 +104,7 @@ export const FACEGAZE_CUSTOM_KEYBOARD_SHORTCUT_FLOW:
 
 export type ShortcutInputCompleteEvent = CustomEvent<{keyEvent: KeyEvent}>;
 
-export const FACEGAZE_CONFIDENCE_DEFAULT = 60;
+export const FACEGAZE_CONFIDENCE_DEFAULT = 50;
 export const FACEGAZE_CONFIDENCE_MIN = 1;
 export const FACEGAZE_CONFIDENCE_MAX = 100;
 export const FACEGAZE_CONFIDENCE_BUTTON_STEP = 5;
@@ -139,7 +142,6 @@ export class FaceGazeAddActionDialogElement extends
       leftClickGestures: {
         type: Array,
         value: () => [],
-        observer: 'leftClickGesturesChanged_',
       },
 
       showSelectAction_: {
@@ -177,6 +179,16 @@ export class FaceGazeAddActionDialogElement extends
         type: Object,
       },
 
+      shortcutInputLabel_: {
+        type: String,
+        computed: 'getShortcutInputLabel_(keyCombination_)',
+      },
+
+      keyComboChangeButtonLabel_: {
+        type: String,
+        computed: 'getKeyComboChangeButtonLabel_(keyCombination_)',
+      },
+
       localizedSelectGestureTitle_: {
         type: String,
         computed: 'getLocalizedSelectGestureTitle_(selectedAction_)',
@@ -184,7 +196,7 @@ export class FaceGazeAddActionDialogElement extends
 
       displayedGestures_: {
         type: Array,
-        value: () => [],
+        computed: 'computeAllowedGestures_(selectedAction_, leftClickGestures)',
       },
 
       selectedGesture_: {
@@ -245,7 +257,7 @@ export class FaceGazeAddActionDialogElement extends
   shortcutInput: ShortcutInputElement|null;
 
   // Internal state.
-  private selectedAction_: MacroName|null = null;
+  private selectedAction_: MacroName;
   private keyCombination_: KeyCombination|null = null;
   private selectedGesture_: FacialGesture|null = null;
   private gestureThresholdValue_: number;
@@ -253,11 +265,12 @@ export class FaceGazeAddActionDialogElement extends
   private pageNavigation_: Record<AddDialogPage, PageNavigation> =
       FACEGAZE_DEFINED_MACRO_FLOW;
   private detectedGestureCount_ = 0;
+  private holdingGesture_ = false;
   private eventTracker_: EventTracker = new EventTracker();
+  private stream_: MediaStream|null;
+  private streamTrack_: MediaStreamTrack|null;
 
-  // Computed properties.
   private displayedActions_: MacroName[] = FaceGazeActions;
-  private displayedGestures_: FacialGesture[] = FaceGazeGestures;
 
   private faceGazeSubpageBrowserProxy_: FaceGazeSubpageBrowserProxy;
 
@@ -273,15 +286,6 @@ export class FaceGazeAddActionDialogElement extends
         this, 'shortcut-input-event', this.onShortcutInputEvent_);
   }
 
-  protected onShortcutInputDomChange(): void {
-    // Start observing for input events the moment `shortcutInput` is available.
-    this.shortcutInput =
-        this.shadowRoot!.querySelector<ShortcutInputElement>('#shortcutInput');
-    if (this.shortcutInput) {
-      this.shortcutInput.startObserving();
-    }
-  }
-
   private getItemClass_(selected: boolean): 'selected'|'' {
     return selected ? 'selected' : '';
   }
@@ -292,6 +296,12 @@ export class FaceGazeAddActionDialogElement extends
 
   private onShortcutInputEvent_(e: ShortcutInputCompleteEvent): void {
     this.keyCombination_ = this.formatKeyCombination_(e.detail.keyEvent);
+    if (this.keyCombination_) {
+      this.shortcutInput!.stopObserving();
+      const changeButton = this.shadowRoot!.querySelector<CrButtonElement>(
+          '#faceGazeCustomKeyboardChangeButton');
+      changeButton!.focus();
+    }
   }
 
   private formatKeyCombination_(keyEvent: KeyEvent): KeyCombination|null {
@@ -322,8 +332,6 @@ export class FaceGazeAddActionDialogElement extends
             newKeyCombination.modifiers!.shift = true;
             break;
           case 'meta':
-            // TODO(b:366052411): Investigate support for meta keys other than
-            // search.
             newKeyCombination.modifiers!.search = true;
             break;
         }
@@ -333,12 +341,29 @@ export class FaceGazeAddActionDialogElement extends
     return newKeyCombination;
   }
 
+  private getKeyComboChangeButtonLabel_(): string {
+    return this.keyCombination_ ?
+        this.i18n(
+            'faceGazeActionsDialogKeyCombinationChangeButtonDescription',
+            FaceGazeUtils.getKeyComboDisplayText(this.keyCombination_)) :
+        this.i18n('faceGazeActionsDialogKeyCombinationChangeButtonLabel');
+  }
+
+  private getShortcutInputLabel_(): string {
+    // If there is a user-entered key combination, return the key combination as
+    // a label. Otherwise, return instructions on how to input a key
+    // combination.
+    return this.keyCombination_ ?
+        FaceGazeUtils.getKeyComboDisplayText(this.keyCombination_) :
+        this.i18n('faceGazeActionsDialogKeyCombinationLabel');
+  }
+
   private getLocalizedSelectGestureTitle_(): string {
     return this.i18n(
         'faceGazeActionsDialogSelectGestureTitle',
-        this.selectedAction_ ?
-            FaceGazeUtils.getMacroDisplayText(this.selectedAction_) :
-            '');
+        this.selectedAction_ ? this.i18n(FaceGazeUtils.getMacroDisplayTextName(
+                                   this.selectedAction_)) :
+                               '');
   }
 
   private getLocalizedGestureThresholdTitle_(): string {
@@ -363,15 +388,109 @@ export class FaceGazeAddActionDialogElement extends
   }
 
   private getActionDisplayText_(action: MacroName): string {
-    return FaceGazeUtils.getMacroDisplayText(action);
+    return this.i18n(FaceGazeUtils.getMacroDisplayTextName(action));
   }
 
   private getGestureDisplayText_(gesture: FacialGesture|null): string {
     return this.i18n(FaceGazeUtils.getGestureDisplayTextName(gesture));
   }
 
+  private getComplexActionDisplayText_(action: MacroName|null): string|null {
+    if (!action || !ComplexActions[action]) {
+      return null;
+    }
+
+    return this.i18n(ComplexActions[action]);
+  }
+
+  private getWarningDisplayText_(gesture: FacialGesture|null): string|null {
+    if (!gesture) {
+      return null;
+    }
+
+    let alreadyAssigned = false;
+    const bindings = this.get(FACE_GAZE_GESTURE_TO_MACROS_PREF);
+    const potentialConflicts = ConflictingGestures[gesture];
+    const conflicts: FacialGesture[] = [];
+    for (const assignedGesture of Object.keys(bindings) as FacialGesture[]) {
+      if (assignedGesture === gesture) {
+        alreadyAssigned = true;
+      }
+
+      if (potentialConflicts && potentialConflicts.includes(assignedGesture)) {
+        // Only show conflicts warning if the user has already assigned a
+        // conflicting gesture.
+        conflicts.push(assignedGesture);
+      }
+    }
+
+    if (conflicts.length === 0 && !alreadyAssigned) {
+      return null;
+    }
+
+    let conflictsString = '';
+    if (conflicts.length > 0) {
+      // Compute conflicting gestures string.
+      const substitutions = [];
+      for (const conflict of conflicts) {
+        substitutions.push(this.getGestureDisplayText_(conflict));
+      }
+      substitutions.unshift(this.getGestureDisplayText_(gesture));
+
+      // Decide which localized string to use based on the number of conflicting
+      // gestures.
+      if (conflicts.length === 1) {
+        conflictsString = this.i18n(
+            'faceGazeWarningConflictingGesturesSingleLabel', ...substitutions);
+      } else if (conflicts.length === 2) {
+        conflictsString = this.i18n(
+            'faceGazeWarningConflictingGesturesDoubleLabel', ...substitutions);
+      } else if (conflicts.length === 3) {
+        conflictsString = this.i18n(
+            'faceGazeWarningConflictingGesturesTripleLabel', ...substitutions);
+      } else {
+        throw new Error(`Got an unexpected number of conflicting gestures: ${
+            conflicts.length}`);
+      }
+    }
+
+    const alreadyAssignedString =
+        this.i18n('faceGazeWarningGestureAlreadyAssignedLabel');
+
+    // There are three possible warning messages we can show. Note that we've
+    // already handled the case where both `conflicts` and `assigned` are false.
+    if (conflictsString && !alreadyAssigned) {
+      return conflictsString;
+    } else if (!conflictsString && alreadyAssigned) {
+      return alreadyAssignedString;
+    } else {
+      return this.i18n(
+          'faceGazeWarningCombinedLabel', alreadyAssignedString,
+          conflictsString);
+    }
+  }
+
   private getGestureIconName_(gesture: FacialGesture|null): string {
     return `facegaze:${FaceGazeUtils.getGestureIconName(gesture)}`;
+  }
+
+  private getActionAriaLabel_(macro: MacroName, selected: boolean): string {
+    const label = selected ? 'faceGazeActionsDialogSelectedItemInstruction' :
+                             'faceGazeActionsDialogNotSelectedItemInstruction';
+    return this.i18n(
+        label, this.getActionDisplayText_(macro),
+        this.displayedActions_.indexOf(macro) + 1,
+        this.displayedActions_.length);
+  }
+
+  private getGestureAriaLabel_(gesture: FacialGesture, selected: boolean):
+      string {
+    const displayedGestures = this.get('displayedGestures_');
+    const label = selected ? 'faceGazeActionsDialogSelectedItemInstruction' :
+                             'faceGazeActionsDialogNotSelectedItemInstruction';
+    return this.i18n(
+        label, this.getGestureDisplayText_(gesture),
+        displayedGestures.indexOf(gesture) + 1, displayedGestures.length);
   }
 
   // Dialog page navigation.
@@ -514,15 +633,95 @@ export class FaceGazeAddActionDialogElement extends
     }
   }
 
-  // If left-click action is assigned to a singular gesture then remove it
-  // from the list of available gestures to avoid losing left click
-  // functionality.
-  private leftClickGesturesChanged_(leftClickGestures: FacialGesture[]): void {
-    if (leftClickGestures.length === 1) {
-      this.displayedGestures_ =
-          this.displayedGestures_.filter((gesture: FacialGesture) => {
-            return leftClickGestures[0] !== gesture;
-          });
+  private computeAllowedGestures_(): FacialGesture[] {
+    let displayedGestures: FacialGesture[] = FaceGazeGestures;
+    // If left-click action is assigned to a singular gesture then remove it
+    // from the list of available gestures to avoid losing left click
+    // functionality.
+    if (this.leftClickGestures.length === 1) {
+      displayedGestures = displayedGestures.filter((gesture: FacialGesture) => {
+        return this.leftClickGestures[0] !== gesture;
+      });
+    }
+
+    // If the selected action is dependent on location, then only allow gestures
+    // where the user can be looking at their screen while performing it so they
+    // can be certain of their mouse location.
+    if (FaceGazeLocationDependentActions.includes(this.selectedAction_)) {
+      displayedGestures = displayedGestures.filter((gesture: FacialGesture) => {
+        return !FaceGazeLookGestures.includes(gesture);
+      });
+    }
+
+    return displayedGestures;
+  }
+
+  private focusTitle_(): void {
+    const title = this.shadowRoot!.querySelector<HTMLElement>('#title');
+    if (title) {
+      title.focus();
+    }
+  }
+
+  private onActionPageDomChanged_(): void {
+    if (this.currentPage_ !== AddDialogPage.SELECT_ACTION) {
+      return;
+    }
+    this.focusTitle_();
+  }
+
+  private onShortcutInputPageDomChanged_(): void {
+    if (this.currentPage_ !== AddDialogPage.CUSTOM_KEYBOARD) {
+      return;
+    }
+
+    this.keyCombination_ = null;
+    this.focusTitle_();
+    // Start observing for input events the moment `shortcutInput` is available.
+    this.shortcutInput =
+        this.shadowRoot!.querySelector<ShortcutInputElement>('#shortcutInput');
+    if (this.shortcutInput) {
+      this.shortcutInput.reset();
+      this.shortcutInput.startObserving();
+    }
+  }
+
+  private onChangeButtonClick_(): void {
+    if (this.currentPage_ !== AddDialogPage.CUSTOM_KEYBOARD) {
+      return;
+    }
+
+    this.keyCombination_ = null;
+    this.shortcutInput =
+        this.shadowRoot!.querySelector<ShortcutInputElement>('#shortcutInput');
+    if (this.shortcutInput) {
+      this.shortcutInput.reset();
+      this.shortcutInput.startObserving();
+    }
+  }
+
+  private onGesturePageDomChanged_(): void {
+    if (this.currentPage_ !== AddDialogPage.SELECT_GESTURE) {
+      return;
+    }
+    this.focusTitle_();
+  }
+
+  private async onThresholdPageDomChanged_(): Promise<void> {
+    if (this.currentPage_ !== AddDialogPage.GESTURE_THRESHOLD) {
+      return;
+    }
+    this.focusTitle_();
+    const videoElement =
+        this.shadowRoot!.querySelector<HTMLMediaElement>('#cameraStream');
+
+    if (videoElement) {
+      this.stream_ = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: {facingMode: 'user'},
+      });
+      this.streamTrack_ = this.stream_.getVideoTracks()[0];
+      videoElement!.srcObject = this.stream_;
     }
   }
 
@@ -556,19 +755,36 @@ export class FaceGazeAddActionDialogElement extends
       return;
     }
 
-    info.forEach((entry) => {
-      if (entry.gesture === this.selectedGesture_) {
-        if (entry.confidence >= this.gestureThresholdValue_) {
-          this.detectedGestureCount_++;
-        }
+    const previewContainer =
+        this.shadowRoot!.querySelector<HTMLElement>('#cameraPreviewContainer');
+    assert(previewContainer);
 
-        // Show confidence values for all gestures in dynamic bar.
-        const slider = this.getThresholdSlider();
-        const sliderBar = slider.shadowRoot!.querySelector<HTMLElement>('#bar');
-        assert(sliderBar);
-        sliderBar.style.width = `${entry.confidence}%`;
+    const slider = this.getThresholdSlider();
+    const sliderBar = slider.shadowRoot!.querySelector<HTMLElement>('#bar');
+    assert(sliderBar);
+
+    const gestureInfo =
+        info.find((entry) => entry.gesture === this.selectedGesture_);
+    if (!gestureInfo) {
+      this.holdingGesture_ = false;
+      previewContainer.className = 'gesture-not-detected';
+      sliderBar.style.width = `0%`;
+      return;
+    }
+
+    if (gestureInfo.confidence >= this.gestureThresholdValue_) {
+      if (!this.holdingGesture_) {
+        this.detectedGestureCount_++;
+        this.holdingGesture_ = true;
       }
-    });
+      previewContainer.className = 'gesture-detected';
+    } else {
+      this.holdingGesture_ = false;
+      previewContainer.className = 'gesture-not-detected';
+    }
+
+    // Show confidence values at all levels in dynamic bar.
+    sliderBar.style.width = `${gestureInfo.confidence}%`;
   }
 
   private onSelectedActionChanged_(): void {
@@ -597,6 +813,14 @@ export class FaceGazeAddActionDialogElement extends
   private close_(): void {
     if (this.shortcutInput) {
       this.shortcutInput.stopObserving();
+    }
+
+    if (this.streamTrack_) {
+      this.streamTrack_.stop();
+    }
+
+    if (this.stream_) {
+      this.stream_ = null;
     }
 
     this.commandPairToConfigure = null;

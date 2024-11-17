@@ -11,11 +11,10 @@ import androidx.annotation.Nullable;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
-import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar.CustomTabTabObserver;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -81,23 +80,18 @@ public class CurrentPageVerifier implements NativeInitObserver {
             };
 
     @Inject
-    public CurrentPageVerifier(
-            ActivityLifecycleDispatcher lifecycleDispatcher,
-            TabObserverRegistrar tabObserverRegistrar,
-            CustomTabActivityTabProvider tabProvider,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            Verifier delegate) {
-        mTabProvider = tabProvider;
-        mIntentDataProvider = intentDataProvider;
-        mDelegate = delegate;
+    public CurrentPageVerifier(BaseCustomTabActivity activity) {
+        mTabProvider = activity.getCustomTabActivityTabProvider();
+        mIntentDataProvider = activity.getIntentDataProvider();
+        mDelegate = activity.getVerifier();
 
-        tabObserverRegistrar.registerActivityTabObserver(mVerifyOnPageLoadObserver);
-        lifecycleDispatcher.register(this);
+        activity.getTabObserverRegistrar().registerActivityTabObserver(mVerifyOnPageLoadObserver);
+        activity.getLifecycleDispatcher().register(this);
     }
 
     /**
-     * @return the {@link VerificationState} of the page we are currently on.
-     * Since verification may require native, may return null before native is loaded.
+     * @return the {@link VerificationState} of the page we are currently on. Since verification may
+     *     require native, may return null before native is loaded.
      */
     public @Nullable VerificationState getState() {
         return mState;

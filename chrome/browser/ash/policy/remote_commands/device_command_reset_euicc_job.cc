@@ -93,8 +93,9 @@ void DeviceCommandResetEuiccJob::OnResetMemoryResponse(
   SYSLOG(INFO) << "Successfully cleared EUICC";
   RecordResetEuiccResult(ResetEuiccResult::kSuccess);
   RunResultCallback(std::move(result_callback), ResultType::kSuccess);
-  UMA_HISTOGRAM_MEDIUM_TIMES("Network.Cellular.ESim.Policy.ResetEuicc.Duration",
-                             base::Time::Now() - reset_euicc_start_time);
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
+      "Network.Cellular.ESim.Policy.ResetEuicc.Duration",
+      base::Time::Now() - reset_euicc_start_time);
   ShowResetEuiccNotification();
 }
 

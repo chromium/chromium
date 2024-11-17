@@ -1,0 +1,17 @@
+Tests accessibility in IgnoreList view using the axe-core linter.
+
+Running: testAddPattern
+Opened input box: true
+aXe violations: []
+
+
+Running: testPatternList
+Added a pattern in the list: /node_modules/|/bower_components/,test*
+aXe violations: []
+
+
+Running: testPatternError
+Error message: Rule can't be empty
+aXe violations: []
+
+

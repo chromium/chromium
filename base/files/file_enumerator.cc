@@ -11,8 +11,19 @@ namespace base {
 
 FileEnumerator::FileInfo::~FileInfo() = default;
 
+FileEnumerator::FileInfo::FileInfo(const FileEnumerator::FileInfo&) = default;
+
+FileEnumerator::FileInfo::FileInfo(FileEnumerator::FileInfo&&) = default;
+
+FileEnumerator::FileInfo& FileEnumerator::FileInfo::operator=(
+    const FileEnumerator::FileInfo& that) = default;
+
+FileEnumerator::FileInfo& FileEnumerator::FileInfo::operator=(
+    FileEnumerator::FileInfo&& that) = default;
+
 bool FileEnumerator::ShouldSkip(const FilePath& path) {
-  FilePath::StringType basename = path.BaseName().value();
+  FilePath base_path = path.BaseName();
+  const FilePath::StringType& basename = base_path.value();
   return basename == FILE_PATH_LITERAL(".") ||
          (basename == FILE_PATH_LITERAL("..") &&
           !(INCLUDE_DOT_DOT & file_type_));

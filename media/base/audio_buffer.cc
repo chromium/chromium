@@ -590,8 +590,7 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
         reinterpret_cast<const int32_t*>(source_data), dest_frame_offset,
         frames_to_copy);
   } else {
-    NOTREACHED_IN_MIGRATION()
-        << "Unsupported audio sample type: " << sample_format_;
+    NOTREACHED() << "Unsupported audio sample type: " << sample_format_;
   }
 }
 
@@ -670,7 +669,7 @@ void AudioBuffer::TrimRange(int start, int end) {
       case kSampleFormatDtsxP2:
       case kSampleFormatIECDts:
       case kSampleFormatDtse:
-        NOTREACHED_IN_MIGRATION() << "Invalid sample format!";
+        NOTREACHED() << "Invalid sample format!";
     }
   } else {
     CHECK_EQ(frames_to_copy, 0);

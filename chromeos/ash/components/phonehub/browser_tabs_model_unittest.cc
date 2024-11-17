@@ -7,8 +7,7 @@
 #include "chromeos/ash/components/phonehub/phone_model_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace phonehub {
+namespace ash::phonehub {
 
 TEST(BrowserTabsModelTest, Initialization) {
   std::vector<BrowserTabsModel::BrowserTabMetadata> most_recent_tabs(
@@ -35,5 +34,4 @@ TEST(BrowserTabsModelTest, Initialization) {
             truncated_metadata.most_recent_tabs().size());
 }
 
-}  // namespace phonehub
-}  // namespace ash
+}  // namespace ash::phonehub

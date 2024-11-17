@@ -26,7 +26,6 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/sync/base/features.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -76,15 +75,9 @@ bool WasPasswordSavedLocally(signin_metrics::ReauthAccessPoint access_point) {
 
 int GetReauthDescriptionStringId(
     signin_metrics::ReauthAccessPoint access_point) {
-  bool sync_passkeys =
-      base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
-  if (WasPasswordSavedLocally(access_point)) {
-    return sync_passkeys
-               ? IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_DESC_ALREADY_SAVED_LOCALLY
-               : IDS_ACCOUNT_PASSWORDS_REAUTH_DESC_ALREADY_SAVED_LOCALLY;
-  }
-  return sync_passkeys ? IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_DESC
-                       : IDS_ACCOUNT_PASSWORDS_REAUTH_DESC;
+  return WasPasswordSavedLocally(access_point)
+             ? IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_DESC_ALREADY_SAVED_LOCALLY
+             : IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_DESC;
 }
 
 int GetReauthCloseButtonLabelStringId(
@@ -96,6 +89,12 @@ int GetReauthCloseButtonLabelStringId(
 }
 
 }  // namespace
+
+bool SigninReauthUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return !profile->IsOffTheRecord();
+}
 
 SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
@@ -129,11 +128,8 @@ SigninReauthUI::SigninReauthUI(content::WebUI* web_ui)
       GetReauthAccessPointForReauthConfirmationURL(
           web_ui->GetWebContents()->GetVisibleURL());
 
-  AddStringResource(
-      source, "signinReauthTitle",
-      base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials)
-          ? IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_TITLE
-          : IDS_ACCOUNT_PASSWORDS_REAUTH_TITLE);
+  AddStringResource(source, "signinReauthTitle",
+                    IDS_ACCOUNT_PASSWORDS_WITH_PASSKEYS_REAUTH_TITLE);
   AddStringResource(source, "signinReauthDesc",
                     GetReauthDescriptionStringId(access_point));
   AddStringResource(source, "signinReauthConfirmLabel",

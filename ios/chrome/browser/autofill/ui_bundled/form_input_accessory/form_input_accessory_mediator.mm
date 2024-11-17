@@ -25,9 +25,15 @@
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
+#import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/autofill/model/form_input_accessory_view_handler.h"
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_chromium_text_data.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_consumer.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator_handler.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_suggestion_view.h"
+#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/scoped_form_input_accessory_reauth_module_override.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/passwords/model/password_counter_delegate_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
@@ -39,11 +45,6 @@
 #import "ios/chrome/browser/shared/public/commands/security_alert_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_chromium_text_data.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_consumer.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_input_accessory_mediator_handler.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/form_suggestion_view.h"
-#import "ios/chrome/browser/autofill/ui_bundled/form_input_accessory/scoped_form_input_accessory_reauth_module_override.h"
 #import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
@@ -78,6 +79,17 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   }
 
   return default_value;
+}
+
+// Returns true if refreshing suggestions is allowed.
+bool IsSuggestionRefreshAllowed() {
+  // Do not allow suggestion refresh in the background when throttling is
+  // enabled.
+  return base::FeatureList::IsEnabled(
+             kThrottleFormInputAccessorySuggestionRefresh)
+             ? UIApplication.sharedApplication.applicationState ==
+                   UIApplicationStateActive
+             : true;
 }
 
 }  // namespace
@@ -337,6 +349,11 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   return _lastSeenParams.field_type == autofill::kObfuscatedFieldType;
 }
 
+- (autofill::FillingProduct)currentProviderMainFillingProduct {
+  return self.currentProvider ? self.currentProvider.mainFillingProduct
+                              : autofill::FillingProduct::kNone;
+}
+
 #pragma mark - KeyboardNotification
 
 - (void)keyboardWillShow:(NSNotification*)notification {
@@ -544,8 +561,16 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
   // call above.
   _keyboardHeightChangeNotificationsEnabled = NO;
 
+  BOOL enabledBeforeUpdate = _suggestionsEnabled;
   _suggestionsEnabled = enabled;
-  if (enabled) {
+  if (base::FeatureList::IsEnabled(
+          kThrottleFormInputAccessorySuggestionRefresh)) {
+    if (enabled && !enabledBeforeUpdate) {
+      // Only update suggestions if the suggestions went from disabled to
+      // enabled.
+      [self updateSuggestionsIfNeeded];
+    }
+  } else if (enabled) {
     [self updateSuggestionsIfNeeded];
   }
 }
@@ -592,7 +617,7 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 }
 
 - (void)updateSuggestionsIfNeeded {
-  if (_hasLastSeenParams && _webState) {
+  if (_hasLastSeenParams && _webState && IsSuggestionRefreshAllowed()) {
     [self retrieveSuggestionsForForm:_lastSeenParams webState:_webState];
   }
 }

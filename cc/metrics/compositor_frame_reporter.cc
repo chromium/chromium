@@ -291,9 +291,8 @@ int GetGestureScrollIndex(EventMetrics::EventType type) {
       return 4;
     default:
       // We are only interested in 5 categories of EventType for scroll input
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return kMaxGestureScrollHistogramIndex;
 }
 
 // For measuring the ratio of scrolling event generation, as well as arrival in
@@ -318,8 +317,7 @@ const char* GetVSyncRatioTypeName(
         kGenerationVsVsyncRatioBeforeVSync:
       return "GenerationVsVsyncRatio.BeforeVSync";
     case CompositorFrameReporter::VSyncRatioType::kVSyncRatioTypeCount:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -626,7 +624,9 @@ CompositorFrameReporter::CompositorFrameReporter(
   DCHECK(!active_trackers_.test(static_cast<size_t>(
              FrameSequenceTrackerType::kSETCompositorAnimation)) ||
          active_trackers_.test(static_cast<size_t>(
-             FrameSequenceTrackerType::kCompositorAnimation)));
+             FrameSequenceTrackerType::kCompositorNativeAnimation)) ||
+         active_trackers_.test(static_cast<size_t>(
+             FrameSequenceTrackerType::kCompositorRasterAnimation)));
   DCHECK(!active_trackers_.test(static_cast<size_t>(
              FrameSequenceTrackerType::kSETMainThreadAnimation)) ||
          active_trackers_.test(static_cast<size_t>(
@@ -679,8 +679,7 @@ const char* CompositorFrameReporter::GetStageName(
         case BlinkBreakdown::kBeginMainSentToStarted:
           return "SendBeginMainFrameToCommit.BeginMainSentToStarted";
         case BlinkBreakdown::kBreakdownCount:
-          NOTREACHED_IN_MIGRATION();
-          return "";
+          NOTREACHED();
       }
     case StageType::kCommit:
       return "Commit";
@@ -723,14 +722,12 @@ const char* CompositorFrameReporter::GetStageName(
           return "SubmitCompositorFrameToPresentationCompositorFrame."
                  "LatchToSwapEnd";
         case VizBreakdown::kBreakdownCount:
-          NOTREACHED_IN_MIGRATION();
-          return "";
+          NOTREACHED();
       }
     case StageType::kTotalLatency:
       return "TotalLatency";
     case StageType::kStageTypeCount:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -757,8 +754,7 @@ const char* CompositorFrameReporter::GetVizBreakdownName(
     case VizBreakdown::kLatchToSwapEnd:
       return "LatchToSwapEnd";
     case VizBreakdown::kBreakdownCount:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -1100,10 +1096,17 @@ void CompositorFrameReporter::ReportCompositorLatencyMetrics() const {
           UMA_HISTOGRAM_ENUMERATION(
               "CompositorLatency.Type.SETMainThreadAnimation", report_type);
           break;
+        case FrameSequenceTrackerType::kCompositorNativeAnimation:
+          UMA_HISTOGRAM_ENUMERATION(
+              "CompositorLatency.Type.NativePropertyAnimation", report_type);
+          break;
+        case FrameSequenceTrackerType::kCompositorRasterAnimation:
+          UMA_HISTOGRAM_ENUMERATION("CompositorLatency.Type.RasterAnimation",
+                                    report_type);
+          break;
         case FrameSequenceTrackerType::kCustom:
         case FrameSequenceTrackerType::kMaxType:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
     if (any_active_interaction) {
@@ -1663,7 +1666,7 @@ void CompositorFrameReporter::ReportScrollJankMetrics() const {
         fling_input_count += scroll_update->coalesced_event_count();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -2055,6 +2058,8 @@ base::WeakPtr<CompositorFrameReporter> CompositorFrameReporter::GetWeakPtr() {
 
 FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
   FrameFinalState final_state = FrameFinalState::kNoUpdateDesired;
+  FrameFinalState final_state_raster_property =
+      FrameFinalState::kNoUpdateDesired;
   auto smooth_thread = smooth_thread_;
   auto scrolling_thread = scrolling_thread_;
 
@@ -2067,11 +2072,17 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
       } else {
         final_state = FrameFinalState::kPresentedAll;
       }
+
+      final_state_raster_property = final_state;
+      if (want_new_tree_ && !created_new_tree_) {
+        final_state_raster_property = FrameFinalState::kDropped;
+      }
       break;
 
     case FrameTerminationStatus::kDidNotPresentFrame:
     case FrameTerminationStatus::kReplacedByNewReporter:
       final_state = FrameFinalState::kDropped;
+      final_state_raster_property = FrameFinalState::kDropped;
       break;
 
     case FrameTerminationStatus::kDidNotProduceFrame: {
@@ -2094,12 +2105,20 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
         final_state = FrameFinalState::kNoUpdateDesired;
       }
 
-      // If the compositor-thread is running an animation, and it ends with
-      // 'did not produce frame', then that implies that the compositor
-      // animation did not cause any visual changes. So for such cases, update
-      // the `smooth_thread` for the FrameInfo created to exclude the compositor
-      // thread. However, it is important to keep `final_state` unchanged,
-      // because the main-thread update (if any) did get dropped.
+      final_state_raster_property = final_state;
+      if (want_new_tree_ && !created_new_tree_) {
+        final_state_raster_property = FrameFinalState::kDropped;
+      }
+
+      // TDOD(crbug.com/369633237): The following assumption is no longer
+      // correct. The logic remains while V3 PercentFrameDropped metrics
+      // continue to be exported. If the compositor-thread is running an
+      // animation, and it ends with 'did not produce frame', then that implies
+      // that the compositor animation did not cause any visual changes. So for
+      // such cases, update the `smooth_thread` for the FrameInfo created to
+      // exclude the compositor thread. However, it is important to keep
+      // `final_state` unchanged, because the main-thread update (if any) did
+      // get dropped.
       if (frame_skip_reason_.has_value() &&
           frame_skip_reason() == FrameSkippedReason::kWaitingOnMain) {
         if (smooth_thread == SmoothThread::kSmoothBoth) {
@@ -2122,8 +2141,14 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
   }
 
   FrameInfo info;
+
+  // We separate final state and smooth thread fields while both V3 and V4
+  // metrics are being reported. V3 and V3 metrics make different assumptions
+  // about dropped frames, resulting in different final FrameInfo states.
   info.final_state = final_state;
+  info.final_state_raster_property = final_state_raster_property;
   info.smooth_thread = smooth_thread;
+  info.smooth_thread_raster_property = smooth_thread_;
   info.scroll_thread = scrolling_thread;
   info.checkerboarded_needs_raster = checkerboarded_needs_raster_;
   info.checkerboarded_needs_record = checkerboarded_needs_record_;

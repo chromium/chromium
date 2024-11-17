@@ -187,6 +187,9 @@ void QuickStartScreen::ExitScreen() {
     case ash::quick_start::QuickStartController::EntryPoint::GAIA_SCREEN:
       exit_callback_.Run(Result::CANCEL_AND_RETURN_TO_SIGNIN);
       return;
+    case ash::quick_start::QuickStartController::EntryPoint::
+        AUTO_RESUME_AFTER_UPDATE:
+      NOTREACHED();
   }
 }
 

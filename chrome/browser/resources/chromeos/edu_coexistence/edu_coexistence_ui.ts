@@ -5,7 +5,7 @@
 import './common.css.js';
 import './edu_coexistence_template.js';
 import './edu_coexistence_button.js';
-import '../gaia_action_buttons/gaia_action_buttons.js';
+import 'chrome://chrome-signin/gaia_action_buttons/gaia_action_buttons.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import {AuthParams} from 'chrome://chrome-signin/gaia_auth_host/authenticator.js';

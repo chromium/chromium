@@ -82,8 +82,7 @@ void RecordSessionStorageCachePurgedHistogram(
           purged_size_kib);
       break;
     case SessionStorageCachePurgeReason::kNotNeeded:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -254,7 +253,7 @@ void SessionStorageImpl::CloneNamespace(
       // namespace.
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   namespaces_.emplace(
       std::piecewise_construct, std::forward_as_tuple(clone_to_namespace_id),
@@ -721,13 +720,12 @@ void SessionStorageImpl::RunWhenConnected(base::OnceClosure callback) {
       on_database_opened_callbacks_.push_back(std::move(callback));
       return;
     case CONNECTION_SHUTDOWN:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case CONNECTION_FINISHED:
       std::move(callback).Run();
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void SessionStorageImpl::InitiateConnection(bool in_memory_only) {

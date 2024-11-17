@@ -27,15 +27,34 @@ class OnTaskLockedSessionNavigationThrottle
   // content::NavigationThrottle:
   ThrottleCheckResult WillStartRequest() override;
   ThrottleCheckResult WillRedirectRequest() override;
+  ThrottleCheckResult WillProcessResponse() override;
   const char* GetNameForLogging() override;
 
  private:
   explicit OnTaskLockedSessionNavigationThrottle(
       content::NavigationHandle* handle);
 
-  // Checks that the blocklist filter is applied to the navigation whether it
+  // Checks to see if the url we are currently navigating should be blocked
+  // regardless of restriction levels. This includes special chrome urls, files,
+  // blobs, downloads and other sensitive local schemes.
+  bool ShouldBlockSensitiveUrlNavigation();
+
+  // Checks that the restriction is applied to the navigation whether it
   // happens via redirect or when the navigation is first started.
-  ThrottleCheckResult CheckBlocklistFilter();
+  ThrottleCheckResult CheckRestrictions();
+
+  // Checks to see if we can proceed during a one level deep navigation for the
+  // url. When there is a new tab that is created as a result of
+  // this navigation, we will set that tab's restrictions to
+  // `kLimitedNavigation`.
+  bool MaybeProceedForOneLevelDeep(content::WebContents* tab, const GURL& url);
+
+  // Displays the blocked URL toast when a navigation is cancelled. This should
+  // only be blocked if the navigation was user-initiated.
+  void MaybeShowBlockedURLToast();
+
+  // Checks to see if the navigation is happening outside of the OnTask window.
+  bool IsOutsideOnTaskAppNavigation();
 
   // `should_redirects_pass` allows url redirects to go through without going
   // through the blocklist checks. This should only be flipped to true after the
@@ -51,5 +70,4 @@ class OnTaskLockedSessionNavigationThrottle
 };
 
 }  // namespace ash
-
 #endif  // CHROME_BROWSER_ASH_BOCA_ON_TASK_ON_TASK_LOCKED_SESSION_NAVIGATION_THROTTLE_H_

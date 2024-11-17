@@ -12,7 +12,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/bookmark_manager_private/bookmark_manager_private_api.h"
-#include "chrome/browser/extensions/api/declarative_content/chrome_content_rules_registry.h"
 #include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/extension_util.h"
@@ -43,6 +42,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "extensions/browser/api/declarative/rules_registry_service.h"
+#include "extensions/browser/api/declarative_content/content_rules_registry.h"
 #include "extensions/browser/api/declarative_net_request/web_contents_helper.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -99,8 +99,9 @@ TabHelper::TabHelper(content::WebContents* web_contents)
       content::WebContentsUserData<TabHelper>(*web_contents),
       profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       extension_app_(nullptr),
-      script_executor_(new ScriptExecutor(web_contents)),
-      extension_action_runner_(new ExtensionActionRunner(web_contents)),
+      script_executor_(std::make_unique<ScriptExecutor>(web_contents)),
+      extension_action_runner_(
+          std::make_unique<ExtensionActionRunner>(web_contents)),
       declarative_net_request_helper_(web_contents) {
   // The ActiveTabPermissionManager requires a session ID; ensure this
   // WebContents has one.
@@ -133,9 +134,8 @@ void TabHelper::SetExtensionApp(const Extension* extension) {
     return;
   }
 
-  if (extension) {
-    DCHECK(extension->is_app());
-  }
+  DCHECK(!extension || extension->is_app());
+
   extension_app_ = extension;
 
   UpdateExtensionAppIcon(extension_app_);
@@ -157,8 +157,9 @@ void TabHelper::SetExtensionApp(const Extension* extension) {
 
 void TabHelper::SetExtensionAppById(const ExtensionId& extension_app_id) {
   const Extension* extension = GetExtension(extension_app_id);
-  if (extension)
+  if (extension) {
     SetExtensionApp(extension);
+  }
 }
 
 ExtensionId TabHelper::GetExtensionAppId() const {
@@ -166,8 +167,9 @@ ExtensionId TabHelper::GetExtensionAppId() const {
 }
 
 SkBitmap* TabHelper::GetExtensionAppIcon() {
-  if (extension_app_icon_.empty())
+  if (extension_app_icon_.empty()) {
     return nullptr;
+  }
 
   return &extension_app_icon_;
 }
@@ -251,8 +253,9 @@ void TabHelper::RenderFrameCreated(content::RenderFrameHost* host) {
 void TabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->HasCommitted() ||
-      !navigation_handle->IsInPrimaryMainFrame())
+      !navigation_handle->IsInPrimaryMainFrame()) {
     return;
+  }
 
   InvokeForContentRulesRegistries(
       [this, navigation_handle](ContentRulesRegistry* registry) {
@@ -304,8 +307,9 @@ void TabHelper::WebContentsDestroyed() {
 }
 
 const Extension* TabHelper::GetExtension(const ExtensionId& extension_app_id) {
-  if (extension_app_id.empty())
+  if (extension_app_id.empty()) {
     return nullptr;
+  }
 
   content::BrowserContext* context = web_contents()->GetBrowserContext();
   return ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
@@ -361,10 +365,13 @@ void TabHelper::OnExtensionUnloaded(content::BrowserContext* browser_context,
   // side effects of loading/unloading the extension.
   web_contents()->GetController().GetBackForwardCache().Flush();
 
-  if (!extension_app_)
+  if (!extension_app_) {
     return;
-  if (extension == extension_app_)
+  }
+
+  if (extension == extension_app_) {
     SetExtensionApp(nullptr);
+  }
 
   // Technically, the refresh is no longer needed if the unloaded extension was
   // the only one causing `refresh_required`. However, we would need to track

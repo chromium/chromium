@@ -220,9 +220,9 @@ enum class DataTypeForHistograms {
   // kDeprecatedSyncedNotifications = 20,
   kPriorityPreferences = 21,
   kDictionary = 22,
-  // kFaviconImages = 23,
-  // kFaviconTracking = 24,
-  kProxyTabs = 25,
+  // kDeprecatedFaviconImages = 23,
+  // kDeprecatedFaviconTracking = 24,
+  // kDeprecatedProxyTabs = 25,
   kSupervisedUserSettings = 26,
   // kDeprecatedSupervisedUsers = 27,
   // kDeprecatedArticles = 28,
@@ -440,11 +440,11 @@ DataTypeSet GetDataTypeSetFromSpecificsFieldNumberList(
 int GetSpecificsFieldNumberFromDataType(DataType data_type);
 
 // Returns a string with application lifetime that represents the name of
-// |data_type|.
+// `data_type`.
 const char* DataTypeToDebugString(DataType data_type);
 
 // Returns a string with application lifetime that is used as the histogram
-// suffix for |data_type|.
+// suffix for `data_type`.
 const char* DataTypeToHistogramSuffix(DataType data_type);
 
 // Some histograms take an integer parameter that represents a data type.
@@ -461,7 +461,7 @@ int DataTypeToStableIdentifier(DataType data_type);
 // persistence. It is guaranteed to be lowercase.
 const char* DataTypeToStableLowerCaseString(DataType data_type);
 
-// Returns the comma-separated string representation of |data_types|.
+// Returns the comma-separated string representation of `data_types`.
 std::string DataTypeSetToDebugString(DataTypeSet data_types);
 
 // Necessary for compatibility with EXPECT_EQ and the like.
@@ -475,10 +475,10 @@ std::ostream& operator<<(std::ostream& out, DataTypeSet data_type_set);
 // not return the root entity.
 std::string DataTypeToProtocolRootTag(DataType data_type);
 
-// Returns true if |data_type| is a real datatype
+// Returns true if `data_type` is a real datatype
 bool IsRealDataType(DataType data_type);
 
-// Returns true if |data_type| is an act-once type. Act once types drop
+// Returns true if `data_type` is an act-once type. Act once types drop
 // entities after applying them. Drops are deletes that are not synced to other
 // clients.
 bool IsActOnceDataType(DataType data_type);

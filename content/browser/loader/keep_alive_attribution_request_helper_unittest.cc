@@ -7,15 +7,18 @@
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/to_string.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "components/attribution_reporting/attribution_src_request_status.h"
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
 #include "components/attribution_reporting/suitable_origin.h"
@@ -53,6 +56,7 @@ class KeepAliveAttributionRequestHelperTestPeer {
 
 namespace {
 
+using ::attribution_reporting::AttributionSrcRequestStatus;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::network::mojom::AttributionReportingEligibility;
@@ -500,6 +504,123 @@ TEST_F(KeepAliveAttributionRequestHelperTest, Eligibility) {
 
   // Wait for parsing to complete
   task_environment()->FastForwardBy(base::TimeDelta());
+}
+
+TEST_F(KeepAliveAttributionRequestHelperTest, AttributionSrcRequestStatus) {
+  const struct {
+    const char* desc;
+    // Whether the request should be redirected.
+    bool redirect_request;
+    // Whether the request was redirected upon the first redirect.
+    bool second_redirect_request;
+    // Whether the request should succeed.
+    bool make_request_succeed;
+    std::vector<base::Bucket> expected;
+  } kTestCases[] = {
+      {
+          "succeeded",
+          /*redirect_request=*/false,
+          /*second_redirect_request=*/false,
+          /*make_request_succeed=*/true,
+          {base::Bucket(AttributionSrcRequestStatus::kRequested, 1),
+           base::Bucket(AttributionSrcRequestStatus::kReceived, 1)},
+      },
+      {
+          "failed",
+          /*redirect_request=*/false,
+          /*second_redirect_request=*/false,
+          /*make_request_succeed=*/false,
+          {base::Bucket(AttributionSrcRequestStatus::kRequested, 1),
+           base::Bucket(AttributionSrcRequestStatus::kFailed, 1)},
+      },
+      {
+          "redirected and succeeded",
+          /*redirect_request=*/true,
+          /*second_redirect_request=*/false,
+          /*make_request_succeed=*/true,
+          {base::Bucket(AttributionSrcRequestStatus::kRequested, 1),
+           base::Bucket(AttributionSrcRequestStatus::kRedirected, 1),
+           base::Bucket(AttributionSrcRequestStatus::kReceivedAfterRedirected,
+                        1)},
+      },
+      {
+          "redirected and failed",
+          /*redirect_request=*/true,
+          /*second_redirect_request=*/false,
+          /*make_request_succeed=*/false,
+          {base::Bucket(AttributionSrcRequestStatus::kRequested, 1),
+           base::Bucket(AttributionSrcRequestStatus::kRedirected, 1),
+           base::Bucket(AttributionSrcRequestStatus::kFailedAfterRedirected,
+                        1)},
+      },
+      {
+          "redirected twice and succeeded",
+          /*redirect_request=*/true,
+          /*second_redirect_request=*/true,
+          /*make_request_succeed=*/true,
+          {base::Bucket(AttributionSrcRequestStatus::kRequested, 1),
+           base::Bucket(AttributionSrcRequestStatus::kRedirected, 1),
+           base::Bucket(AttributionSrcRequestStatus::kReceivedAfterRedirected,
+                        1)},
+      },
+      {
+          "redirected twice and failed",
+          /*redirect_request=*/true,
+          /*second_redirect_request=*/true,
+          /*make_request_succeed=*/false,
+          {base::Bucket(AttributionSrcRequestStatus::kRequested, 1),
+           base::Bucket(AttributionSrcRequestStatus::kRedirected, 1),
+           base::Bucket(AttributionSrcRequestStatus::kFailedAfterRedirected,
+                        1)},
+      },
+  };
+
+  const GURL reporting_url("https://report.test");
+  const GURL redirect_url("https://report.test/redirect");
+
+  constexpr char kAttributionSrcNavigationRequestStatusMetric[] =
+      "Conversions.AttributionSrcRequestStatus.Navigation.Browser";
+
+  for (const bool is_navigation : {false, true}) {
+    SCOPED_TRACE(is_navigation);
+    for (const auto& test_case : kTestCases) {
+      SCOPED_TRACE(test_case.desc);
+
+      base::HistogramTester histograms;
+
+      auto helper = CreateValidHelper(
+          reporting_url,
+          is_navigation
+              ? AttributionReportingEligibility::kNavigationSource
+              : AttributionReportingEligibility::kEventSourceOrTrigger);
+
+      if (test_case.redirect_request) {
+        auto headers = net::HttpResponseHeaders::TryToCreate("");
+        helper->OnReceiveRedirect(headers.get(), redirect_url);
+
+        if (test_case.second_redirect_request) {
+          auto second_headers = net::HttpResponseHeaders::TryToCreate("");
+          helper->OnReceiveRedirect(second_headers.get(), redirect_url);
+        }
+      }
+
+      if (test_case.make_request_succeed) {
+        auto headers = net::HttpResponseHeaders::TryToCreate("");
+        helper->OnReceiveResponse(headers.get());
+      } else {
+        helper->OnError();
+      }
+
+      if (is_navigation) {
+        EXPECT_THAT(histograms.GetAllSamples(
+                        kAttributionSrcNavigationRequestStatusMetric),
+                    base::BucketsAreArray(test_case.expected));
+      } else {
+        histograms.ExpectTotalCount(
+            kAttributionSrcNavigationRequestStatusMetric, 0);
+      }
+    }
+  }
 }
 
 }  // namespace

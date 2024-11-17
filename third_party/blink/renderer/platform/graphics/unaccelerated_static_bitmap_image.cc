@@ -110,35 +110,6 @@ void UnacceleratedStaticBitmapImage::Transfer() {
       ThreadScheduler::Current()->CleanupTaskRunner();
 }
 
-scoped_refptr<StaticBitmapImage>
-UnacceleratedStaticBitmapImage::ConvertToColorSpace(
-    sk_sp<SkColorSpace> color_space,
-    SkColorType color_type) {
-  DCHECK(color_space);
-
-  sk_sp<SkImage> skia_image = PaintImageForCurrentFrame().GetSwSkImage();
-  // If we don't need to change the color type, use SkImage::makeColorSpace()
-  if (skia_image->colorType() == color_type) {
-    skia_image = skia_image->makeColorSpace(
-        static_cast<GrDirectContext*>(nullptr), color_space);
-  } else {
-    skia_image = skia_image->makeColorTypeAndColorSpace(
-        static_cast<GrDirectContext*>(nullptr), color_type, color_space);
-  }
-  if (!skia_image) [[unlikely]] {
-    // Null value indicates that skia failed to allocate the destination
-    // bitmap.
-    base::TerminateBecauseOutOfMemory(
-        skia_image->imageInfo().makeColorType(color_type).computeMinByteSize());
-  }
-  return UnacceleratedStaticBitmapImage::Create(skia_image, orientation_);
-}
-
-bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
-    CanvasResourceProvider* resource_provider) {
-  return CopyToResourceProvider(resource_provider, Rect());
-}
-
 bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
     CanvasResourceProvider* resource_provider,
     const gfx::Rect& copy_rect) {
@@ -165,14 +136,8 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
       copy_rect_info.bytesPerPixel() * static_cast<size_t>(copy_rect.width());
   const size_t dest_height = static_cast<size_t>(copy_rect.height());
 
-  // Source image has top left origin but destination resource provider doesn't.
-  // Usually it means resource provider has bottom left origin. Apply flip op
-  // on copy result to fix it.
-  bool dest_flipped = !resource_provider->IsOriginTopLeft();
-
   std::vector<uint8_t> dest_pixels;
-  if (dest_flipped || source_row_bytes != dest_row_bytes ||
-      source_height != dest_height) {
+  if (source_row_bytes != dest_row_bytes || source_height != dest_height) {
     dest_pixels.resize(dest_row_bytes * dest_height);
 
     const size_t x_offset_bytes =
@@ -180,7 +145,7 @@ bool UnacceleratedStaticBitmapImage::CopyToResourceProvider(
     const size_t y_offset = copy_rect.y();
 
     for (size_t dst_y = 0; dst_y < dest_height; ++dst_y) {
-      size_t src_y = dest_flipped ? dest_height - dst_y - 1 : dst_y;
+      const size_t src_y = dst_y;
       memcpy(dest_pixels.data() + dst_y * dest_row_bytes,
              static_cast<const uint8_t*>(pixels) +
                  (y_offset + src_y) * source_row_bytes + x_offset_bytes,

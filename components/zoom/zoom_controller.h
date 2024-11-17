@@ -28,7 +28,7 @@ class ZoomObserver;
 
 class ZoomRequestClient : public base::RefCounted<ZoomRequestClient> {
  public:
-  ZoomRequestClient() {}
+  ZoomRequestClient() = default;
 
   ZoomRequestClient(const ZoomRequestClient&) = delete;
   ZoomRequestClient& operator=(const ZoomRequestClient&) = delete;
@@ -36,7 +36,7 @@ class ZoomRequestClient : public base::RefCounted<ZoomRequestClient> {
   virtual bool ShouldSuppressBubble() const = 0;
 
  protected:
-  virtual ~ZoomRequestClient() {}
+  virtual ~ZoomRequestClient() = default;
 
  private:
   friend class base::RefCounted<ZoomRequestClient>;

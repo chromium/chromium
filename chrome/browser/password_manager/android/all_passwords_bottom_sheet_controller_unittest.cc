@@ -28,8 +28,7 @@
 #include "components/plus_addresses/fake_plus_address_service.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/plus_address_service.h"
-#include "components/plus_addresses/plus_address_test_environment.h"
-#include "components/plus_addresses/settings/fake_plus_address_setting_service.h"
+#include "components/plus_addresses/plus_address_test_utils.h"
 #include "components/safe_browsing/core/browser/password_protection/stub_password_reuse_detection_manager_client.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -51,7 +50,6 @@ using password_manager::PasswordForm;
 using password_manager::TestPasswordStore;
 using password_manager::UiCredential;
 using plus_addresses::FakePlusAddressService;
-using plus_addresses::FakePlusAddressSettingService;
 
 using CallbackFunctionMock = testing::MockFunction<void()>;
 
@@ -176,10 +174,7 @@ class AllPasswordsBottomSheetControllerTest
 
   std::unique_ptr<KeyedService> PlusAddressServiceTestFactory(
       content::BrowserContext* context) {
-    return std::make_unique<FakePlusAddressService>(
-        &plus_environment_.pref_service(),
-        plus_environment_.identity_env().identity_manager(),
-        &plus_environment_.setting_service());
+    return std::make_unique<FakePlusAddressService>();
   }
 
   void TearDown() override {
@@ -225,8 +220,6 @@ class AllPasswordsBottomSheetControllerTest
   }
 
  protected:
-  plus_addresses::test::PlusAddressTestEnvironment plus_environment_;
-
   MockPasswordManagerDriver driver_;
   scoped_refptr<TestPasswordStore> profile_store_;
   scoped_refptr<TestPasswordStore> account_store_;
@@ -479,10 +472,12 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
               ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
                                               /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
-                                     /*called_at_startup=*/false));
+  EXPECT_CALL(*mock_access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet(
+                  profile()->GetPrefs(), _, profile(),
+                  /*called_at_startup=*/false,
+                  password_manager_android_util::
+                      PasswordAccessLossWarningTriggers::kAllPasswords));
   all_passwords_controller()->OnCredentialSelected(
       kUsername1, kPassword, RequestsToFillPassword(false));
 }
@@ -507,10 +502,12 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
               ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
                                               /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
-                                     /*called_at_startup=*/false));
+  EXPECT_CALL(*mock_access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet(
+                  profile()->GetPrefs(), _, profile(),
+                  /*called_at_startup=*/false,
+                  password_manager_android_util::
+                      PasswordAccessLossWarningTriggers::kAllPasswords));
   all_passwords_controller()->OnCredentialSelected(
       kUsername1, kPassword, RequestsToFillPassword(true));
 }
@@ -530,10 +527,12 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
               ShouldShowAccessLossNoticeSheet(profile()->GetPrefs(),
                                               /*called_at_startup=*/false))
       .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(
-      *mock_access_loss_warning_bridge(),
-      MaybeShowAccessLossNoticeSheet(profile()->GetPrefs(), _, profile(),
-                                     /*called_at_startup=*/false));
+  EXPECT_CALL(*mock_access_loss_warning_bridge(),
+              MaybeShowAccessLossNoticeSheet(
+                  profile()->GetPrefs(), _, profile(),
+                  /*called_at_startup=*/false,
+                  password_manager_android_util::
+                      PasswordAccessLossWarningTriggers::kAllPasswords));
   all_passwords_controller()->OnCredentialSelected(
       kUsername1, kPassword, RequestsToFillPassword(true));
 }
@@ -556,36 +555,17 @@ TEST_F(AllPasswordsBottomSheetControllerTest,
       kUsername1, kPassword, RequestsToFillPassword(false));
 }
 
-TEST_F(AllPasswordsBottomSheetControllerTest,
-       IsPlusAddress_ManualFallbackDisabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {password_manager::features::kBiometricTouchToFill,
-       plus_addresses::features::kPlusAddressesEnabled},
-      {plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled});
-
-  // Not a plus address according to the `FakePlusAddressService`.
-  EXPECT_FALSE(all_passwords_controller()->IsPlusAddress("exampe@gmail.com"));
-  // `kPlusAddressAndroidManualFallbackEnabled` is disabled, `IsPlusAddress()`
-  // should return `false` even for existing plus addresses.
-  EXPECT_FALSE(all_passwords_controller()->IsPlusAddress(
-      plus_addresses::FakePlusAddressService::kFakePlusAddress));
-}
-
 TEST_F(AllPasswordsBottomSheetControllerTest, IsPlusAddress) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeatures(
       {password_manager::features::kBiometricTouchToFill,
-       plus_addresses::features::kPlusAddressesEnabled,
-       plus_addresses::features::kPlusAddressAndroidManualFallbackEnabled},
+       plus_addresses::features::kPlusAddressesEnabled},
       {});
 
   // Not a plus address according to the `FakePlusAddressService`.
   EXPECT_FALSE(all_passwords_controller()->IsPlusAddress("exampe@gmail.com"));
-  // `kPlusAddressAndroidManualFallbackEnabled` is disabled, `IsPlusAddress()`
-  // should return `false` even for existing plus addresses.
   EXPECT_TRUE(all_passwords_controller()->IsPlusAddress(
-      plus_addresses::FakePlusAddressService::kFakePlusAddress));
+      plus_addresses::test::kFakePlusAddress));
 }
 
 class AllPasswordsBottomSheetControllerAccountStoreTest

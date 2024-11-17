@@ -14,12 +14,13 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 
+import java.time.Instant;
+
 /** Fake delegate that can be triggered in the app as a debug flag option, or used in tests. */
 public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate {
+    private static final String TAG = "SearchEngineDelefake";
 
-    private static final String TAG = "FakeChoiceDelegate";
-
-    private final Boolean mEnableLogging;
+    private final boolean mEnableLogging;
     private @Nullable ObservableSupplierImpl<Boolean> mIsChoiceRequired;
 
     /**
@@ -33,7 +34,6 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
      */
     @MainThread
     public FakeSearchEngineCountryDelegate(boolean enableLogging) {
-        super(/* context= */ null);
         ThreadUtils.assertOnUiThread();
 
         mEnableLogging = enableLogging;
@@ -69,6 +69,19 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
         return Promise.fulfilled(countryCode);
     }
 
+    @Nullable
+    @Override
+    public Instant getDeviceBrowserSelectedTimestamp() {
+        if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
+            return super.getDeviceBrowserSelectedTimestamp();
+        }
+
+        if (mEnableLogging) {
+            Log.i(TAG, "getDeviceBrowserSelectedTimestamp()");
+        }
+        return null;
+    }
+
     @Override
     @MainThread
     public boolean isDeviceChoiceDialogEligible() {
@@ -102,6 +115,11 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
 
     @Override
     public void refreshDeviceChoiceRequiredNow(int reason) {
+        if (!SearchEnginesFeatures.isEnabled(SearchEnginesFeatures.CLAY_BLOCKING)) {
+            super.refreshDeviceChoiceRequiredNow(reason);
+            return;
+        }
+
         if (mEnableLogging) {
             Log.i(TAG, "refreshDeviceChoiceRequiredNow()");
         }
@@ -151,7 +169,9 @@ public class FakeSearchEngineCountryDelegate extends SearchEngineCountryDelegate
                             }
                             mIsChoiceRequired.set(true);
                         },
-                        dialogTimeoutMillis / 2);
+                        // Don't go beyond 3 seconds timeout, it doesn't help with testing and looks
+                        // broken.
+                        Math.min(dialogTimeoutMillis / 2, 3000));
             } else {
                 mIsChoiceRequired = new ObservableSupplierImpl<>(true);
             }

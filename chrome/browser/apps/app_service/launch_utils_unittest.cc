@@ -4,7 +4,6 @@
 
 #include "chrome/browser/apps/app_service/launch_utils.h"
 
-#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -416,19 +415,10 @@ class MockNewWindowDelegate
 
 class LaunchUtilsNewWindowTest : public LaunchUtilsTest {
  public:
-  void SetUp() override {
-    std::unique_ptr<MockNewWindowDelegate> delegate =
-        std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_ = delegate.get();
-    new_window_delegate_provider_ =
-        std::make_unique<ash::TestNewWindowDelegateProvider>(
-            std::move(delegate));
-  }
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
 
- protected:
-  std::unique_ptr<ash::TestNewWindowDelegateProvider>
-      new_window_delegate_provider_;
-  raw_ptr<MockNewWindowDelegate> new_window_delegate_;
+ private:
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(LaunchUtilsNewWindowTest,
@@ -450,7 +440,7 @@ TEST_F(LaunchUtilsNewWindowTest,
   publisher.PublishAppWithUrlScope("abc", GURL("https://www.example.com/"));
 
   EXPECT_CALL(
-      *new_window_delegate_,
+      new_window_delegate(),
       OpenUrl(GURL("https://www.example.com/foo/"), testing::_, testing::_));
 
   MaybeLaunchPreferredAppForUrl(&profile_, GURL("https://www.example.com/foo/"),
@@ -475,7 +465,7 @@ TEST_F(LaunchUtilsNewWindowTest,
   publisher.PublishAppWithUrlScope("def", GURL("https://www.example.com/app/"));
 
   EXPECT_CALL(
-      *new_window_delegate_,
+      new_window_delegate(),
       OpenUrl(GURL("https://www.example.com/app/"), testing::_, testing::_));
 
   LaunchUrlInInstalledAppOrBrowser(
@@ -501,7 +491,7 @@ TEST_F(LaunchUtilsNewWindowTest,
 
 TEST_F(LaunchUtilsNewWindowTest,
        LaunchUrlInInstalledAppOrBrowser_NoApp_LaunchesInBrowser) {
-  EXPECT_CALL(*new_window_delegate_,
+  EXPECT_CALL(new_window_delegate(),
               OpenUrl(GURL("https://www.example.com"), testing::_, testing::_));
 
   LaunchUrlInInstalledAppOrBrowser(&profile_, GURL("https://www.example.com/"),

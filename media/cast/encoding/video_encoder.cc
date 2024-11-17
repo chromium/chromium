@@ -19,23 +19,20 @@ std::unique_ptr<VideoEncoder> VideoEncoder::Create(
     const FrameSenderConfig& video_config,
     std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
     StatusChangeCallback status_change_cb,
+    FrameEncodedCallback output_cb,
     const CreateVideoEncodeAcceleratorCallback& create_vea_cb) {
   // If the system provides a hardware-accelerated encoder, use it.
   if (video_config.use_hardware_encoder) {
-    return base::WrapUnique<VideoEncoder>(new SizeAdaptableExternalVideoEncoder(
+    return std::make_unique<SizeAdaptableExternalVideoEncoder>(
         cast_environment, video_config, std::move(metrics_provider),
-        std::move(status_change_cb), create_vea_cb));
+        std::move(status_change_cb), std::move(output_cb), create_vea_cb);
   }
 
   // Otherwise we must have a software configuration.
   DCHECK(encoding_support::IsSoftwareEnabled(video_config.video_codec()));
-  return base::WrapUnique<VideoEncoder>(
-      new VideoEncoderImpl(cast_environment, video_config,
-                           std::move(metrics_provider), status_change_cb));
-}
-
-std::unique_ptr<VideoFrameFactory> VideoEncoder::CreateVideoFrameFactory() {
-  return nullptr;
+  return std::make_unique<VideoEncoderImpl>(
+      cast_environment, video_config, std::move(metrics_provider),
+      status_change_cb, std::move(output_cb));
 }
 
 void VideoEncoder::EmitFrames() {}

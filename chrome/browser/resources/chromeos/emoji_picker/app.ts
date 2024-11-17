@@ -22,12 +22,13 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 import {getTemplate} from './app.html.js';
 import * as constants from './constants.js';
 import {EmojiGroupComponent} from './emoji_group.js';
-import {Category, Feature, Status} from './emoji_picker.mojom-webui.js';
+import {Category, Feature} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy} from './emoji_picker_api_proxy.js';
 import {EmojiSearch} from './emoji_search.js';
 import * as events from './events.js';
 import {CATEGORY_METADATA, CATEGORY_TABS, EMOJI_GROUP_TABS, GIF_CATEGORY_METADATA, gifCategoryTabs, SUBCATEGORY_TABS, TABS_CATEGORY_START_INDEX, TABS_CATEGORY_START_INDEX_GIF_SUPPORT} from './metadata_extension.js';
 import {EmojiPreferencesStore, GifNudgeHistoryStore, RecentlyUsedStore} from './store.js';
+import {Status} from './tenor_types.mojom-webui.js';
 import {CategoryEnum, Emoji, EmojiGroupData, EmojiGroupElement, EmojiVariants, Gender, GifSubcategoryData, PreferenceMapping, SubcategoryData, Tone} from './types.js';
 
 export interface EmojiPickerApp {

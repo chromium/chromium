@@ -112,22 +112,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-lacros-clang-tidy-rel",
-    executable = "recipe:tricium_clang_tidy_wrapper",
-    gn_args = gn_args.config(
-        configs = [
-            "lacros_on_linux",
-            "release_try_builder",
-            "remoteexec",
-            "also_build_ash_chrome",
-            "x64",
-        ],
-    ),
-    os = os.LINUX_DEFAULT,
-    siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "mac-clang-tidy-rel",
     executable = "recipe:tricium_clang_tidy_wrapper",
     gn_args = gn_args.config(

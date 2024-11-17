@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] gatherND float32 4D input and 1D minimum indices
+  assert_true: assert_array_approx_equals_ulp: test gatherND float32 actual 0 should be close enough to expected -66.05901336669922 by the acceptable 0 ULP distance, but they have 1031528905 ULP distance expected true got false
+[FAIL] gatherND float32 2D input and 2D negative indices
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': TFLite doesn't support to gather input into one dimension."
+[FAIL] gatherND float32 1D input and 2D out-of-bounds indices
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': TFLite doesn't support to gather input into one dimension."
+Harness: the test ran to completion.
+

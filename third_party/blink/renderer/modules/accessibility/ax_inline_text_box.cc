@@ -213,7 +213,7 @@ AXObject* AXInlineTextBox::NextOnLine() const {
 
   if (inline_text_box_->IsLast()) {
     // Do not serialize nextOnlineID if it can be inferred from the parent.
-    return features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()
+    return ::features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()
                ? nullptr
                : ParentObject()->NextOnLine();
   }
@@ -230,7 +230,7 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
 
   if (inline_text_box_->IsFirst()) {
     // Do not serialize previousOnlineID if it can be inferred from the parent.
-    return features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()
+    return ::features::IsAccessibilityPruneRedundantInlineConnectivityEnabled()
                ? nullptr
                : ParentObject()->PreviousOnLine();
   }

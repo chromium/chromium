@@ -36,7 +36,7 @@ const char* kFlingTraceName = "FlingController::HandlingGestureFling";
 
 namespace input {
 
-FlingController::Config::Config() {}
+FlingController::Config::Config() = default;
 
 FlingController::FlingController(
     FlingControllerEventSenderClient* event_sender_client,
@@ -328,7 +328,7 @@ void FlingController::GenerateAndSendFlingProgressEvents(
       break;
     case blink::WebGestureDevice::kUninitialized:
     case blink::WebGestureDevice::kScrollbar:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "Fling controller doesn't handle flings with source device:"
           << static_cast<int>(current_fling_parameters_.source_device);
   }
@@ -349,7 +349,7 @@ void FlingController::GenerateAndSendFlingEndEvents(
       break;
     case blink::WebGestureDevice::kUninitialized:
     case blink::WebGestureDevice::kScrollbar:
-      NOTREACHED_IN_MIGRATION()
+      NOTREACHED()
           << "Fling controller doesn't handle flings with source device:"
           << static_cast<int>(current_fling_parameters_.source_device);
   }

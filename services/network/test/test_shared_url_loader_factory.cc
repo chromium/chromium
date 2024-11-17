@@ -50,7 +50,7 @@ void TestSharedURLLoaderFactory::CreateLoaderAndStart(
 
 void TestSharedURLLoaderFactory::Clone(
     mojo::PendingReceiver<mojom::URLLoaderFactory> receiver) {
-  NOTIMPLEMENTED();
+  url_loader_factory_->Clone(std::move(receiver));
 }
 
 mojom::NetworkContext* TestSharedURLLoaderFactory::network_context() {

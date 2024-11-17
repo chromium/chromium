@@ -13,21 +13,29 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.IS_INCOGNITO;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.MENU_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_BUTTON_LOOKUP_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.PANE_SWITCHER_INDEX;
-import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_LISTENER;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_BOX_VISIBLE;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LISTENER;
+import static org.chromium.chrome.browser.hub.HubToolbarProperties.SEARCH_LOUPE_VISIBLE;
 import static org.chromium.chrome.browser.hub.HubToolbarProperties.SHOW_ACTION_BUTTON_TEXT;
 
 import android.app.Activity;
+import android.content.res.ColorStateList;
+import android.graphics.drawable.GradientDrawable;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
+import androidx.core.content.ContextCompat;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.filters.MediumTest;
 
@@ -46,7 +54,10 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -70,11 +81,13 @@ public class HubToolbarViewUnitTest {
     @Captor ArgumentCaptor<PaneButtonLookup> mPaneButtonLookupCaptor;
 
     private Activity mActivity;
-    private HubToolbarView mToolbar;
+    private FrameLayout mToolbarContainer;
     private Button mActionButton;
     private TabLayout mPaneSwitcher;
-    private FrameLayout mMenuButtonContainer;
+    private LinearLayout mMenuButtonContainer;
     private View mSearchBox;
+    private View mSearchLoupe;
+    private EditText mSearchBoxText;
     private PropertyModel mPropertyModel;
 
     @Before
@@ -87,15 +100,21 @@ public class HubToolbarViewUnitTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
 
         LayoutInflater inflater = LayoutInflater.from(mActivity);
-        mToolbar = (HubToolbarView) inflater.inflate(R.layout.hub_toolbar_layout, null, false);
-        mActionButton = mToolbar.findViewById(R.id.toolbar_action_button);
-        mPaneSwitcher = mToolbar.findViewById(R.id.pane_switcher);
-        mMenuButtonContainer = mToolbar.findViewById(R.id.menu_button_container);
-        mSearchBox = mToolbar.findViewById(R.id.search_box);
-        mActivity.setContentView(mToolbar);
+        mToolbarContainer =
+                (FrameLayout) inflater.inflate(R.layout.hub_toolbar_layout, null, false);
+        mActionButton = mToolbarContainer.findViewById(R.id.toolbar_action_button);
+        mPaneSwitcher = mToolbarContainer.findViewById(R.id.pane_switcher);
+        mMenuButtonContainer = mToolbarContainer.findViewById(R.id.menu_button_container);
+        mSearchBox = mToolbarContainer.findViewById(R.id.search_box);
+        mSearchLoupe = mToolbarContainer.findViewById(R.id.search_loupe);
+        mSearchBoxText = mToolbarContainer.findViewById(R.id.search_box_text);
+        mActivity.setContentView(mToolbarContainer);
 
         mPropertyModel = new PropertyModel(HubToolbarProperties.ALL_KEYS);
-        PropertyModelChangeProcessor.create(mPropertyModel, mToolbar, HubToolbarViewBinder::bind);
+        PropertyModelChangeProcessor.create(
+                mPropertyModel,
+                mToolbarContainer.findViewById(R.id.hub_toolbar),
+                HubToolbarViewBinder::bind);
     }
 
     private FullButtonData makeTestButtonData() {
@@ -236,8 +255,11 @@ public class HubToolbarViewUnitTest {
     public void testSearchBoxVisibility() {
         // GONE by default (defined in the xml).
         assertEquals(View.GONE, mSearchBox.getVisibility());
+        assertEquals(View.GONE, mSearchLoupe.getVisibility());
         mPropertyModel.set(SEARCH_BOX_VISIBLE, true);
         assertEquals(View.VISIBLE, mSearchBox.getVisibility());
+        mPropertyModel.set(SEARCH_LOUPE_VISIBLE, true);
+        assertEquals(View.VISIBLE, mSearchLoupe.getVisibility());
     }
 
     @Test
@@ -250,8 +272,48 @@ public class HubToolbarViewUnitTest {
                 };
 
         assertEquals(0, callbackHelper.getCallCount());
-        mPropertyModel.set(SEARCH_BOX_LISTENER, testListener);
+        mPropertyModel.set(SEARCH_LISTENER, testListener);
         mSearchBox.performClick();
         assertEquals(1, callbackHelper.getCallCount());
+        mSearchLoupe.performClick();
+        assertEquals(2, callbackHelper.getCallCount());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    public void testUpdateIncognitoElements() {
+        mPropertyModel.set(IS_INCOGNITO, true);
+        assertEquals(
+                mActivity.getString(R.string.hub_search_empty_hint_incognito),
+                mSearchBoxText.getHint());
+
+        mPropertyModel.set(IS_INCOGNITO, false);
+        assertEquals(mActivity.getString(R.string.hub_search_empty_hint), mSearchBoxText.getHint());
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(OmniboxFeatureList.ANDROID_HUB_SEARCH)
+    public void testUpdateSearchBoxColorScheme() {
+        mPropertyModel.set(COLOR_SCHEME, HubColorScheme.INCOGNITO);
+        assertEquals(
+                ContextCompat.getColor(mActivity, R.color.baseline_neutral_60),
+                mSearchBoxText.getCurrentHintTextColor());
+
+        GradientDrawable backgroundDrawable = (GradientDrawable) mSearchBox.getBackground();
+        assertEquals(
+                ColorStateList.valueOf(
+                        ContextCompat.getColor(mActivity, R.color.baseline_neutral_20)),
+                backgroundDrawable.getColor());
+
+        mPropertyModel.set(COLOR_SCHEME, HubColorScheme.DEFAULT);
+        assertEquals(
+                SemanticColorUtils.getDefaultTextColor(mActivity),
+                mSearchBoxText.getCurrentHintTextColor());
+        assertEquals(
+                ColorStateList.valueOf(
+                        ContextCompat.getColor(mActivity, R.color.color_primary_with_alpha_10)),
+                backgroundDrawable.getColor());
     }
 }

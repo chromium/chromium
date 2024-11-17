@@ -65,11 +65,10 @@ class UpdateCheckerTest : public testing::TestWithParam<bool> {
   void SetUp() override;
   void TearDown() override;
 
-  void UpdateCheckComplete(
-      const std::optional<ProtocolParser::Results>& results,
-      ErrorCategory error_category,
-      int error,
-      int retry_after_sec);
+  void UpdateCheckComplete(std::optional<ProtocolParser::Results> results,
+                           ErrorCategory error_category,
+                           int error,
+                           int retry_after_sec);
 
  protected:
   void Quit();
@@ -162,7 +161,7 @@ void UpdateCheckerTest::Quit() {
 }
 
 void UpdateCheckerTest::UpdateCheckComplete(
-    const std::optional<ProtocolParser::Results>& results,
+    std::optional<ProtocolParser::Results> results,
     ErrorCategory error_category,
     int error,
     int retry_after_sec) {
@@ -174,12 +173,10 @@ void UpdateCheckerTest::UpdateCheckComplete(
 }
 
 scoped_refptr<UpdateContext> UpdateCheckerTest::MakeMockUpdateContext() const {
-  CrxCache::Options options(temp_dir_.GetPath());
   return base::MakeRefCounted<UpdateContext>(
-      config_, base::MakeRefCounted<CrxCache>(options), false, false,
-      std::vector<std::string>(), UpdateClient::CrxStateChangeCallback(),
-      UpdateEngine::NotifyObserversCallback(), UpdateEngine::Callback(),
-      nullptr,
+      config_, base::MakeRefCounted<CrxCache>(temp_dir_.GetPath()), false,
+      false, std::vector<std::string>(), UpdateClient::CrxStateChangeCallback(),
+      UpdateEngine::Callback(), nullptr,
       /*is_update_check_only=*/false);
 }
 
@@ -1350,7 +1347,7 @@ TEST_P(UpdateCheckerTest, ParseErrorAppStatusErrorUnknownApplication) {
 }
 
 TEST_P(UpdateCheckerTest, DomainJoined) {
-  for (const auto is_managed :
+  for (const auto& is_managed :
        std::initializer_list<std::optional<bool>>{std::nullopt, false, true}) {
     EXPECT_TRUE(post_interceptor_->ExpectRequest(
         std::make_unique<PartialMatch>("updatecheck"),

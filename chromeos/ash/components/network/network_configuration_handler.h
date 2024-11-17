@@ -32,6 +32,9 @@ class ObjectPath;
 
 namespace ash {
 
+inline constexpr char kTemporaryServiceConfiguredButNotUsable[] =
+    "Temporary service configured but not usable";
+
 // The NetworkConfigurationHandler class is used to create and configure
 // networks in ChromeOS. It mostly calls through to the Shill service API, and
 // most calls are asynchronous for that reason. No calls will block on DBus

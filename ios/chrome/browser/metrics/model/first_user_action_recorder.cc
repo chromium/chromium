@@ -177,8 +177,7 @@ void FirstUserActionRecorder::RecordAction(
       case START_ON_NTP:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 }

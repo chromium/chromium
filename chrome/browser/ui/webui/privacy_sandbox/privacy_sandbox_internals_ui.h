@@ -14,10 +14,26 @@
 #include "chrome/browser/ui/webui/privacy_sandbox/related_website_sets/related_website_sets_handler.h"
 #endif
 
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 namespace privacy_sandbox_internals {
+
+class PrivacySandboxInternalsUI;
+
+class PrivacySandboxInternalsUIConfig
+    : public content::DefaultWebUIConfig<PrivacySandboxInternalsUI> {
+ public:
+  PrivacySandboxInternalsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIPrivacySandboxInternalsHost) {}
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 // MojoWebUIController for Privacy Sandbox Internals DevUI
 class PrivacySandboxInternalsUI : public ui::MojoWebUIController {

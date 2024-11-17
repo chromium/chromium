@@ -71,7 +71,6 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
     private ImageView mEndImageView;
     private @Nullable ViewPropertyAnimator mFadeAnimator;
 
-    private boolean mDragEnabled;
     private boolean mBookmarkIdEditable;
     private boolean mEndImageViewVisible;
     private boolean mMoreButtonVisible;
@@ -236,11 +235,6 @@ public class ImprovedBookmarkRow extends ViewLookupCachingFrameLayout
                         ? IMPORTANT_FOR_ACCESSIBILITY_YES
                         : IMPORTANT_FOR_ACCESSIBILITY_NO);
         updateView();
-    }
-
-    // TODO: Maybe this can be removed.
-    void setDragEnabled(boolean dragEnabled) {
-        mDragEnabled = dragEnabled;
     }
 
     // TODO: Maybe this can be removed.

@@ -1968,8 +1968,8 @@ TEST_F(NoLowResPictureLayerImplTest,
 
   // All tiles in activation rect is ready to draw.
   EXPECT_EQ(0, data.num_missing_tiles);
-  EXPECT_EQ(0, data.num_incompletely_rastered_tiles);
-  EXPECT_EQ(0, data.num_incompletely_recorded_tiles);
+  EXPECT_FALSE(data.checkerboarded_needs_raster);
+  EXPECT_FALSE(data.checkerboarded_needs_record);
   EXPECT_FALSE(active_layer()->only_used_low_res_last_append_quads());
 }
 
@@ -1999,8 +1999,8 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTileIsComplete) {
   // All high res tiles drew, nothing was incomplete.
   EXPECT_EQ(9u, render_pass->quad_list.size());
   EXPECT_EQ(0, data.num_missing_tiles);
-  EXPECT_EQ(0, data.num_incompletely_rastered_tiles);
-  EXPECT_EQ(0, data.num_incompletely_recorded_tiles);
+  EXPECT_FALSE(data.checkerboarded_needs_raster);
+  EXPECT_FALSE(data.checkerboarded_needs_record);
   EXPECT_FALSE(active_layer()->only_used_low_res_last_append_quads());
 }
 
@@ -2023,8 +2023,8 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTileIsIncomplete) {
 
   EXPECT_EQ(1u, render_pass->quad_list.size());
   EXPECT_EQ(1, data.num_missing_tiles);
-  EXPECT_EQ(0, data.num_incompletely_rastered_tiles);
-  EXPECT_EQ(0, data.num_incompletely_recorded_tiles);
+  EXPECT_TRUE(data.checkerboarded_needs_raster);
+  EXPECT_FALSE(data.checkerboarded_needs_record);
   EXPECT_TRUE(active_layer()->only_used_low_res_last_append_quads());
 }
 
@@ -2052,8 +2052,8 @@ TEST_F(LegacySWPictureLayerImplTest, HighResTileIsIncompleteLowResComplete) {
 
   EXPECT_EQ(1u, render_pass->quad_list.size());
   EXPECT_EQ(0, data.num_missing_tiles);
-  EXPECT_EQ(1, data.num_incompletely_rastered_tiles);
-  EXPECT_EQ(0, data.num_incompletely_recorded_tiles);
+  EXPECT_TRUE(data.checkerboarded_needs_raster);
+  EXPECT_FALSE(data.checkerboarded_needs_record);
   EXPECT_TRUE(active_layer()->only_used_low_res_last_append_quads());
 }
 
@@ -2090,8 +2090,8 @@ TEST_F(LegacySWPictureLayerImplTest, LowResTileIsIncomplete) {
   // The missing high res tile was replaced by a low res tile.
   EXPECT_EQ(9u, render_pass->quad_list.size());
   EXPECT_EQ(0, data.num_missing_tiles);
-  EXPECT_EQ(1, data.num_incompletely_rastered_tiles);
-  EXPECT_EQ(0, data.num_incompletely_recorded_tiles);
+  EXPECT_TRUE(data.checkerboarded_needs_raster);
+  EXPECT_FALSE(data.checkerboarded_needs_record);
   EXPECT_FALSE(active_layer()->only_used_low_res_last_append_quads());
 }
 
@@ -2155,8 +2155,8 @@ TEST_F(LegacySWPictureLayerImplTest,
 
   // Neither the high res nor the ideal tiles were considered as incomplete.
   EXPECT_EQ(0, data.num_missing_tiles);
-  EXPECT_EQ(0, data.num_incompletely_rastered_tiles);
-  EXPECT_EQ(0, data.num_incompletely_recorded_tiles);
+  EXPECT_FALSE(data.checkerboarded_needs_raster);
+  EXPECT_FALSE(data.checkerboarded_needs_record);
   EXPECT_FALSE(active_layer()->only_used_low_res_last_append_quads());
 }
 
@@ -2164,18 +2164,21 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
   host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
 
   gfx::Size tile_size(100, 100);
+  gfx::Vector2dF layer_offset(56, 78);
   gfx::Size layer_bounds(500, 500);
   gfx::Rect recorded_bounds(0, 0, 150, 150);
 
   scoped_refptr<FakeRasterSource> pending_raster_source =
       FakeRasterSource::CreatePartiallyFilled(layer_bounds, recorded_bounds);
   SetupPendingTreeWithFixedTileSize(pending_raster_source, tile_size, Region());
+  pending_layer()->SetOffsetToTransformParent(layer_offset);
   host_impl()
       ->pending_tree()
       ->property_trees()
       ->scroll_tree_mutable()
-      .SetScrollingContentsCullRect(pending_layer()->element_id(),
-                                    gfx::Rect(0, 0, 120, 120));
+      .SetScrollingContentsCullRect(
+          pending_layer()->element_id(),
+          gfx::Rect(layer_offset.x(), layer_offset.y(), 120, 120));
   ActivateTree();
 
   auto render_pass = viz::CompositorRenderPass::Create();
@@ -2187,11 +2190,8 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
   EXPECT_EQ(recorded_bounds, active_layer()->HighResTiling()->tiling_rect());
   EXPECT_EQ(1u, render_pass->quad_list.size());
   EXPECT_EQ(1, data.num_missing_tiles);
-  EXPECT_EQ(0, data.num_incompletely_rastered_tiles);
-  EXPECT_EQ(1, data.num_incompletely_recorded_tiles);
-  EXPECT_EQ(22500, data.checkerboarded_visible_content_area);
-  EXPECT_EQ(8100, data.checkerboarded_needs_record_content_area);
-  EXPECT_EQ(22500, data.checkerboarded_needs_raster_content_area);
+  EXPECT_TRUE(data.checkerboarded_needs_raster);
+  EXPECT_TRUE(data.checkerboarded_needs_record);
   EXPECT_TRUE(active_layer()->only_used_low_res_last_append_quads());
 
   recorded_bounds = gfx::Rect(30, 30, 150, 150);
@@ -2210,11 +2210,8 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
             active_layer()->HighResTiling()->tiling_rect());
   EXPECT_EQ(1u, render_pass->quad_list.size());
   EXPECT_EQ(1, data.num_missing_tiles);
-  EXPECT_EQ(0, data.num_incompletely_rastered_tiles);
-  EXPECT_EQ(1, data.num_incompletely_recorded_tiles);
-  EXPECT_EQ(32400, data.checkerboarded_visible_content_area);
-  EXPECT_EQ(18000, data.checkerboarded_needs_record_content_area);
-  EXPECT_EQ(22500, data.checkerboarded_needs_raster_content_area);
+  EXPECT_TRUE(data.checkerboarded_needs_raster);
+  EXPECT_TRUE(data.checkerboarded_needs_record);
   EXPECT_TRUE(active_layer()->only_used_low_res_last_append_quads());
 
   // Initialize all tiles with resources.
@@ -2230,11 +2227,8 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
   active_layer()->DidDraw(nullptr);
   EXPECT_EQ(4u, render_pass->quad_list.size());
   EXPECT_EQ(0, data.num_missing_tiles);
-  EXPECT_EQ(0, data.num_incompletely_rastered_tiles);
-  EXPECT_EQ(3, data.num_incompletely_recorded_tiles);
-  EXPECT_EQ(18000, data.checkerboarded_visible_content_area);
-  EXPECT_EQ(18000, data.checkerboarded_needs_record_content_area);
-  EXPECT_EQ(0, data.checkerboarded_needs_raster_content_area);
+  EXPECT_FALSE(data.checkerboarded_needs_raster);
+  EXPECT_TRUE(data.checkerboarded_needs_record);
   EXPECT_FALSE(active_layer()->only_used_low_res_last_append_quads());
 
   // Now the layer is fully recorded.
@@ -2242,8 +2236,10 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
       ->active_tree()
       ->property_trees()
       ->scroll_tree_mutable()
-      .SetScrollingContentsCullRect(active_layer()->element_id(),
-                                    gfx::Rect(layer_bounds));
+      .SetScrollingContentsCullRect(
+          active_layer()->element_id(),
+          gfx::Rect(layer_offset.x(), layer_offset.y(), layer_bounds.width(),
+                    layer_bounds.height()));
 
   render_pass = viz::CompositorRenderPass::Create();
   active_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
@@ -2252,12 +2248,79 @@ TEST_F(LegacySWPictureLayerImplTest, AppendQuadsDataForCheckerboard) {
   active_layer()->DidDraw(nullptr);
   EXPECT_EQ(4u, render_pass->quad_list.size());
   EXPECT_EQ(0, data.num_missing_tiles);
-  EXPECT_EQ(0, data.num_incompletely_rastered_tiles);
-  EXPECT_EQ(0, data.num_incompletely_recorded_tiles);
-  EXPECT_EQ(0, data.checkerboarded_visible_content_area);
-  EXPECT_EQ(0, data.checkerboarded_needs_record_content_area);
-  EXPECT_EQ(0, data.checkerboarded_needs_raster_content_area);
+  EXPECT_FALSE(data.checkerboarded_needs_raster);
+  EXPECT_FALSE(data.checkerboarded_needs_record);
   EXPECT_FALSE(active_layer()->only_used_low_res_last_append_quads());
+}
+
+TEST_F(LegacySWPictureLayerImplTest, RasterInducingScrollPaintCheckerboarding) {
+  host_impl()->AdvanceToNextFrame(base::Milliseconds(1));
+
+  gfx::Size tile_size(100, 100);
+  gfx::Size layer_bounds(500, 500);
+  // There is a non-composited scroller in the layer.
+  ElementId scroll_element_id(123);
+  gfx::Point scroll_container_origin(10, 20);
+  gfx::Size scroll_container_bounds(200, 200);
+  gfx::Size scroll_contents_bounds(5000, 5000);
+  gfx::Rect cull_rect(scroll_container_origin, gfx::Size(1000, 1000));
+
+  auto scroll_list = base::MakeRefCounted<DisplayItemList>();
+  scroll_list->StartPaint();
+  scroll_list->push<DrawColorOp>(SkColors::kBlack, SkBlendMode::kSrcOver);
+  scroll_list->EndPaintOfUnpaired(
+      gfx::Rect(scroll_container_origin, scroll_contents_bounds));
+  scroll_list->Finalize();
+  auto display_list = base::MakeRefCounted<DisplayItemList>();
+  display_list->PushDrawScrollingContentsOp(
+      scroll_element_id, std::move(scroll_list),
+      gfx::Rect(scroll_container_origin, scroll_container_bounds));
+  display_list->Finalize();
+  ASSERT_EQ(1u, display_list->raster_inducing_scrolls().size());
+
+  FakeContentLayerClient client;
+  client.set_display_item_list(display_list);
+  RecordingSource recording;
+  Region invalidation;
+  recording.Update(layer_bounds, 1, client, invalidation);
+  SetupPendingTreeWithFixedTileSize(
+      FakeRasterSource::CreateFromRecordingSource(recording), tile_size,
+      Region());
+  CreateScrollNodeForNonCompositedScroller(
+      host_impl()->pending_tree()->property_trees(),
+      pending_layer()->scroll_tree_index(), scroll_element_id,
+      scroll_contents_bounds, scroll_container_bounds, scroll_container_origin);
+  ScrollTree& pending_scroll_tree =
+      host_impl()->pending_tree()->property_trees()->scroll_tree_mutable();
+  pending_scroll_tree.SetScrollingContentsCullRect(scroll_element_id,
+                                                   cull_rect);
+  ActivateTree();
+
+  auto check_checkerboarding = [&](bool expected) {
+    auto render_pass = viz::CompositorRenderPass::Create();
+    AppendQuadsData data;
+    active_layer()->WillDraw(DRAW_MODE_SOFTWARE, nullptr);
+    active_layer()->AppendQuads(render_pass.get(), &data);
+    active_layer()->DidDraw(nullptr);
+    EXPECT_EQ(1u, render_pass->quad_list.size());
+    EXPECT_EQ(expected, data.checkerboarded_needs_record);
+  };
+  check_checkerboarding(false);
+
+  // Scroll down just before exceeding the cull rect.
+  ScrollTree& active_scroll_tree =
+      host_impl()->active_tree()->property_trees()->scroll_tree_mutable();
+  active_scroll_tree.SetScrollOffset(scroll_element_id, gfx::PointF(800, 0));
+  check_checkerboarding(false);
+
+  // Scroll beyond the cull rect.
+  active_scroll_tree.SetScrollOffset(scroll_element_id, gfx::PointF(801, 0));
+  check_checkerboarding(true);
+
+  // Now the cull rect is also scrolled down.
+  cull_rect.Offset(500, 0);
+  active_scroll_tree.SetScrollingContentsCullRect(scroll_element_id, cull_rect);
+  check_checkerboarding(false);
 }
 
 TEST_F(LegacySWPictureLayerImplTest, HighResRequiredWhenActiveAllReady) {
@@ -4626,7 +4689,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
         EXPECT_EQ(occluded_tile_count, 2);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -4663,7 +4726,7 @@ TEST_F(OcclusionTrackingPictureLayerImplTest,
         EXPECT_EQ(4, occluded_tile_count);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }
@@ -5926,8 +5989,8 @@ TEST_F(LegacySWPictureLayerImplTest, CompositedImageIgnoreIdealContentsScale) {
   EXPECT_EQ(viz::DrawQuad::Material::kTiledContent,
             render_pass->quad_list.front()->material);
 
-  // Tiles are ready at correct scale, so should not set had_incomplete_tile.
-  EXPECT_EQ(0, data.num_incompletely_rastered_tiles);
+  // Tiles are ready at correct scale. No tiles need raster.
+  EXPECT_FALSE(data.checkerboarded_needs_raster);
 }
 
 TEST_F(LegacySWPictureLayerImplTest, CompositedImageRasterScaleChanges) {

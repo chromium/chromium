@@ -129,7 +129,7 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
 - (void)updateSigninPromoWithConfigurator:
     (SigninPromoViewConfigurator*)configurator {
   [configurator configureSigninPromoView:self.signinPromoView
-                               withStyle:GetTopOfFeedPromoStyle()];
+                               withStyle:SigninPromoViewStyleCompact];
 }
 
 #pragma mark - Properties
@@ -221,8 +221,8 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
 
   SigninPromoViewConfigurator* configurator =
       self.delegate.signinPromoConfigurator;
-  SigninPromoViewStyle promoViewStyle = GetTopOfFeedPromoStyle();
-  [configurator configureSigninPromoView:promoView withStyle:promoViewStyle];
+  [configurator configureSigninPromoView:promoView
+                               withStyle:SigninPromoViewStyleCompact];
 
   promoView.textLabel.text =
       l10n_util::GetNSString(IDS_IOS_SIGNIN_SHEET_LABEL_FOR_FEED_PROMO);

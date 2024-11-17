@@ -80,8 +80,6 @@ class ChromeTestLauncherDelegate : public content::TestLauncherDelegate {
 #if !BUILDFLAG(IS_ANDROID)
   content::ContentMainDelegate* CreateContentMainDelegate() override;
 #endif
-  void CreatedBrowserMainParts(
-      content::BrowserMainParts* browser_main_parts) override;
   void PreSharding() override;
   void OnDoneRunningTests() override;
 

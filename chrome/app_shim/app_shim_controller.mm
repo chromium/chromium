@@ -280,12 +280,14 @@ void AppShimController::PreInitFeatureState(
   base::FeatureList::SetEarlyAccessInstance(
       std::move(feature_list),
       {"AppShimLaunchChromeSilently", "AppShimNotificationAttribution",
-       "DcheckIsFatal", "MojoMessageAlwaysUseLatestVersion",
-       "MojoBindingsInlineSLS", "MojoInlineMessagePayloads", "MojoIpcz",
-       "MojoIpczMemV2", "MojoTaskPerMessage", "StandardCompliantHostCharacters",
+       "DcheckIsFatal", "DisallowSpaceCharacterInURLHostParsing",
+       "MojoMessageAlwaysUseLatestVersion", "MojoBindingsInlineSLS",
+       "MojoInlineMessagePayloads", "MojoIpcz", "MojoIpczMemV2",
+       "MojoTaskPerMessage", "StandardCompliantHostCharacters",
        "StandardCompliantNonSpecialSchemeURLParsing",
        "UseAdHocSigningForWebAppShims", "UseIDNA2008NonTransitional",
-       "SonomaAccessibilityActivationRefinements", "FeatureParamWithCache"});
+       "SonomaAccessibilityActivationRefinements", "FeatureParamWithCache",
+       "UseMachVouchers"});
 }
 
 // static

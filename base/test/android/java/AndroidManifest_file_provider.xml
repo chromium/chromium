@@ -15,5 +15,20 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths_file_provider" />
         </provider>
+        <provider android:name="org.chromium.base.InMemoryContentProvider"
+            android:authorities="org.chromium.native_test.inmemory"
+            android:exported="false"
+            android:grantUriPermissions="true">
+        </provider>
+        <provider
+            android:name="org.chromium.base.TestDocumentsProvider"
+            android:authorities="org.chromium.native_test.docprov"
+            android:exported="true"
+            android:grantUriPermissions="true"
+            android:permission="android.permission.MANAGE_DOCUMENTS">
+            <intent-filter>
+                <action android:name="android.content.action.DOCUMENTS_PROVIDER" />
+            </intent-filter>
+        </provider>
     </application>
 </manifest>

@@ -35,6 +35,9 @@ namespace autofillPrivate {
     NAME_MIDDLE_INITIAL,
     NAME_FULL,
     NAME_SUFFIX,
+    ALTERNATIVE_FULL_NAME,
+    ALTERNATIVE_GIVEN_NAME,
+    ALTERNATIVE_FAMILY_NAME,
     EMAIL_ADDRESS,
     PHONE_HOME_NUMBER,
     PHONE_HOME_CITY_CODE,
@@ -284,6 +287,9 @@ namespace autofillPrivate {
     // Globally unique identifier for this entry.
     DOMString? guid;
 
+    // The IBAN's instrument ID from the GPay server, if applicable.
+    DOMString? instrumentId;
+
     // IBAN value.
     DOMString? value;
 
@@ -311,6 +317,9 @@ namespace autofillPrivate {
   callback GetCreditCardCallback = void(optional CreditCardEntry card);
   callback CheckForDeviceAuthCallback = void(boolean isDeviceAuthAvailable);
   callback GetUserAnnotationsEntriesCallback = void(UserAnnotationsEntry[] items);
+  callback hasUserAnnotationsEntriesCallback = void(boolean hasEntries);
+  callback isUserEligibleForAutofillImprovementsCallback = void(boolean eligible);
+  callback annotationsBootstrappingCallback = void(boolean bootstrapped);
 
   interface Functions {
     // Gets currently signed-in user profile info, no value is returned if
@@ -382,6 +391,9 @@ namespace autofillPrivate {
     // Logs that the server cards edit link was clicked.
     static void logServerCardLinkClicked();
 
+    // Logs that a server IBAN's edit link was clicked.
+    static void logServerIbanLinkClicked();
+
     // Enrolls a credit card into virtual cards.
     // |cardId|: The server side id of the credit card to be enrolled. Note it
     // refers to the legacy server id of credit cards, not the instrument ids.
@@ -421,11 +433,26 @@ namespace autofillPrivate {
     static void getUserAnnotationsEntries(
         GetUserAnnotationsEntriesCallback callback);
 
+    // Returns if there are any saved user annotations entries.
+    static void hasUserAnnotationsEntries(
+        hasUserAnnotationsEntriesCallback callback);
+
+    // Returns if the user is eligible for autofill improvements.
+    static void isUserEligibleForAutofillImprovements(
+        isUserEligibleForAutofillImprovementsCallback callback);
+
     // Deletes the user annotations entry by its id.
     static void deleteUserAnnotationsEntry(long entryId);
 
     // Deletes all user annotations entries.
     static void deleteAllUserAnnotationsEntries();
+
+    // Notifies autofill client about the prediction improvements pre changing.
+    static void predictionImprovementsIphFeatureUsed();
+
+    // Triggers bootstrapping of user annotations. Returns true if
+    // bootstrapping was successful (entries were added), false otherwise.
+    static void triggerAnnotationsBootstrapping(annotationsBootstrappingCallback callback);
   };
 
   interface Events {

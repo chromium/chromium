@@ -32,9 +32,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
+#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
+#include "chrome/browser/browser_process.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #endif
 
 namespace component_updater {
@@ -111,7 +114,7 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // The UserManager must be destroyed before the TestingBrowserProcess
     // because UserManager uses TestingBrowserProcess in its destructor.
-    test_user_manager_.Reset();
+    user_manager_.Reset();
 #endif
 
     // Make sure any pending network events are run before the
@@ -213,8 +216,11 @@ class GalleryWatchManagerTest : public GalleryWatchManagerObserver,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  user_manager::ScopedUserManager test_user_manager_{
-      ash::ChromeUserManagerImpl::CreateChromeUserManager()};
+  user_manager::ScopedUserManager user_manager_{
+      std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<ash::UserManagerDelegateImpl>(),
+          g_browser_process->local_state(),
+          ash::CrosSettings::Get())};
 #endif
 
   raw_ptr<storage_monitor::TestStorageMonitor> monitor_;

@@ -154,7 +154,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             boolean downloadItemVisible = mShowDownload;
             boolean addToHomeScreenVisible = true;
             boolean requestDesktopSiteVisible = true;
-            boolean tryAddingReadAloud = ReadAloudFeatures.isEnabledForOverflowMenuInCCT();
+            boolean tryAddingReadAloud = ReadAloudFeatures.isEnabledForOverflowMenuInCct();
 
             if (mUiType == CustomTabsUiType.MEDIA_VIEWER) {
                 // Most of the menu items don't make sense when viewing media.
@@ -239,7 +239,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
 
             MenuItem bookmarkItem = menu.findItem(R.id.bookmark_this_page_id);
             if (bookmarkItemVisible) {
-                updateBookmarkMenuItemShortcut(bookmarkItem, currentTab, /* fromCCT= */ true);
+                updateBookmarkMenuItemShortcut(bookmarkItem, currentTab, /* fromCct= */ true);
             } else {
                 bookmarkItem.setVisible(false);
             }

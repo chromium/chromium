@@ -8,14 +8,14 @@
  */
 
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
-import {PasspointEventsListenerReceiver, PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {dedupingMixin, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import type {PasspointSubscription} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
+import {PasspointEventsListenerReceiver} from 'chrome://resources/ash/common/connectivity/passpoint.mojom-webui.js';
+import type {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {dedupingMixin} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 
 export interface PasspointListenerMixinInterface {
-  isPasspointSettingsEnabled: boolean;
   onPasspointSubscriptionAdded(subscription: PasspointSubscription): void;
   onPasspointSubscriptionRemoved(subscription: PasspointSubscription): void;
 }
@@ -25,20 +25,6 @@ export const PasspointListenerMixin = dedupingMixin(
     Constructor<PasspointListenerMixinInterface> => {
       class PasspointListenerMixin extends superClass implements
           PasspointListenerMixinInterface {
-        static get properties() {
-          return {
-            isPasspointSettingsEnabled: {
-              type: Boolean,
-              readOnly: true,
-              value() {
-                return loadTimeData.valueExists('isPasspointSettingsEnabled') &&
-                    loadTimeData.getBoolean('isPasspointSettingsEnabled');
-              },
-            },
-          };
-        }
-
-        isPasspointSettingsEnabled: boolean;
         private listener_: PasspointEventsListenerReceiver|null;
 
         constructor(...args: any[]) {
@@ -50,13 +36,11 @@ export const PasspointListenerMixin = dedupingMixin(
         override connectedCallback(): void {
           super.connectedCallback();
 
-          if (this.isPasspointSettingsEnabled) {
-            this.listener_ = new PasspointEventsListenerReceiver(this);
-            MojoConnectivityProvider.getInstance()
-                .getPasspointService()
-                .registerPasspointListener(
-                    this.listener_.$.bindNewPipeAndPassRemote());
-          }
+          this.listener_ = new PasspointEventsListenerReceiver(this);
+          MojoConnectivityProvider.getInstance()
+              .getPasspointService()
+              .registerPasspointListener(
+                  this.listener_.$.bindNewPipeAndPassRemote());
         }
 
         override disconnectedCallback(): void {

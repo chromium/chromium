@@ -10,7 +10,6 @@
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/chromeos/smart_reader/smart_reader_client_impl.h"
 #include "chrome/browser/lacros/magic_boost_state_lacros.h"
-#include "chrome/browser/lacros/sync/sync_crosapi_manager_lacros.h"
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 
 class ArcIconCache;
@@ -33,7 +32,6 @@ class KioskSessionServiceLacros;
 class FieldTrialObserver;
 class NetworkSettingsObserver;
 class TabletModePageBehavior;
-class VpnExtensionTrackerLacros;
 class WebAuthnRequestRegistrarLacros;
 class WebKioskInstallerLacros;
 class MultitaskMenuNudgeDelegateLacros;
@@ -137,9 +135,6 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Sends lacros installation status of force-installed extensions to ash.
   std::unique_ptr<ForceInstalledTrackerLacros> force_installed_tracker_;
 
-  // Sends lacros load/unload events of Vpn extensions to ash.
-  std::unique_ptr<VpnExtensionTrackerLacros> vpn_extension_tracker_;
-
   std::unique_ptr<ChromeKioskLaunchControllerLacros>
       chrome_kiosk_launch_controller_;
   std::unique_ptr<WebKioskInstallerLacros> web_kiosk_installer_;
@@ -207,9 +202,6 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
   // Tracks the content within the current active tab in chrome to provide to
   // the smart reader manager.
   std::unique_ptr<smart_reader::SmartReaderClientImpl> smart_reader_client_;
-
-  // Controls sync-related Crosapi clients.
-  SyncCrosapiManagerLacros sync_crosapi_manager_;
 
   // Handles getting and setting multitask menu nudge related prefs from ash.
   std::unique_ptr<MultitaskMenuNudgeDelegateLacros>

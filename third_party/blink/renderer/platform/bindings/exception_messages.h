@@ -40,7 +40,6 @@
 namespace blink {
 
 class Decimal;
-class ExceptionContext;
 
 class PLATFORM_EXPORT ExceptionMessages {
   STATIC_ONLY(ExceptionMessages);
@@ -51,7 +50,9 @@ class PLATFORM_EXPORT ExceptionMessages {
     kExclusiveBound,
   };
 
-  static String AddContextToMessage(const ExceptionContext&,
+  static String AddContextToMessage(v8::ExceptionContext type,
+                                    const char* class_name,
+                                    const String& property_name,
                                     const String& message);
 
   static String ArgumentNullOrIncorrectType(int argument_index,

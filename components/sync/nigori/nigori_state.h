@@ -47,7 +47,7 @@ struct NigoriState {
   // Serialization to proto as sent to the sync server.
   sync_pb::NigoriSpecifics ToSpecificsProto() const;
 
-  // Makes a deep copy of |this|.
+  // Makes a deep copy of `this`.
   NigoriState Clone() const;
 
   bool NeedsKeystoreReencryption() const;
@@ -61,9 +61,9 @@ struct NigoriState {
 
   // Pending keys represent a remote update that contained a keybag that cannot
   // be decrypted (e.g. user needs to enter a custom passphrase). If pending
-  // keys are present, |*cryptographer| does not have a default encryption key
+  // keys are present, `*cryptographer` does not have a default encryption key
   // set and instead the should-be default encryption key is determined by the
-  // key in |pending_keys_|.
+  // key in `pending_keys_`.
   std::optional<sync_pb::EncryptedData> pending_keys;
 
   // TODO(mmoskvitin): Consider adopting the C++ enum PassphraseType here and
@@ -74,7 +74,7 @@ struct NigoriState {
   base::Time custom_passphrase_time;
 
   // The key derivation params we are using for the custom passphrase. Set iff
-  // |passphrase_type| is CUSTOM_PASSPHRASE, otherwise key derivation method
+  // `passphrase_type` is CUSTOM_PASSPHRASE, otherwise key derivation method
   // is always PBKDF2.
   std::optional<KeyDerivationParams> custom_passphrase_key_derivation_params;
   bool encrypt_everything;
@@ -84,7 +84,7 @@ struct NigoriState {
   // OSCrypt before persisting.
   std::unique_ptr<KeystoreKeysCryptographer> keystore_keys_cryptographer;
 
-  // Represents |keystore_decryptor_token| from NigoriSpecifics in case it
+  // Represents `keystore_decryptor_token` from NigoriSpecifics in case it
   // can't be decrypted right after remote update arrival due to lack of
   // keystore keys. May be set only for keystore Nigori.
   std::optional<sync_pb::EncryptedData> pending_keystore_decryptor_token;

@@ -223,7 +223,8 @@ public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
 
         // It's unlikely that the minimum spacing would guarantee 2.5 items to be shown, but we can
         // verify this fast.
-        assertNotEquals(CONTAINER_SIZE, LEAD_IN_SPACE + itemWidth * 2.5 + MIN_ELEMENT_SPACE * 2);
+        assertNotEquals(
+                CONTAINER_SIZE, (int) (LEAD_IN_SPACE + itemWidth * 2.5 + MIN_ELEMENT_SPACE * 2));
 
         // However, we don't permit dynamic spacing in landscape mode, so this should fall back to
         // MIN_ELEMENT_SPACE.

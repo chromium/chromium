@@ -99,17 +99,17 @@ class ManagePasswordsState {
   void OnKeychainError();
 
   // Move to PASSKEY_SAVED_CONFIRMATION_STATE. Stores whether GPM pin was
-  // created in the same flow.
-  void OnPasskeySaved(bool gpm_pin_created);
+  // created in the same flow and the passkey's RPID.
+  void OnPasskeySaved(bool gpm_pin_created, std::string passkey_rp_id);
 
   // Move to PASSKEY_DELETED_CONFIRMATION_STATE.
   void OnPasskeyDeleted();
 
-  // Move to PASSKEY_UPDATED_CONFIRMATION_STATE.
-  void OnPasskeyUpdated();
+  // Move to PASSKEY_UPDATED_CONFIRMATION_STATE. Stores the passkey's RPID.
+  void OnPasskeyUpdated(std::string passkey_rp_id);
 
-  // Move to PASSKEY_NOT_ACCEPTED_STATE.
-  void OnPasskeyNotAccepted();
+  // Move to PASSKEY_NOT_ACCEPTED_STATE. Stores the passkey's RPID.
+  void OnPasskeyNotAccepted(std::string passkey_rp_id);
 
   // Move to MOVE_CREDENTIAL_AFTER_LOG_IN_STATE. Triggers a bubble to move the
   // just submitted form to the user's account store.
@@ -166,16 +166,11 @@ class ManagePasswordsState {
     return single_credential_mode_credential_;
   }
 
-  bool auth_for_account_storage_opt_in_failed() const {
-    return auth_for_account_storage_opt_in_failed_;
-  }
-  void set_auth_for_account_storage_opt_in_failed(bool failed) {
-    auth_for_account_storage_opt_in_failed_ = failed;
-  }
-
   bool gpm_pin_created_during_recent_passkey_creation() const {
     return gpm_pin_created_during_recent_passkey_creation_;
   }
+
+  const std::string& passkey_rp_id() const { return passkey_rp_id_; }
 
   // Current local forms. ManagePasswordsState is responsible for the forms.
   const std::vector<std::unique_ptr<password_manager::PasswordForm>>&
@@ -188,7 +183,8 @@ class ManagePasswordsState {
   }
 
  private:
-  // Removes all the PasswordForms stored in this object.
+  // Removes all the PasswordForms and resets passkey state stored in this
+  // object.
   void ClearData();
 
   // Adds |form| to the internal state if it's relevant.
@@ -227,12 +223,11 @@ class ManagePasswordsState {
   raw_ptr<password_manager::PasswordManagerClient, AcrossTasksDanglingUntriaged>
       client_;
 
-  // Whether the last attempt to authenticate to opt-in using password account
-  // storage failed.
-  bool auth_for_account_storage_opt_in_failed_ = false;
-
   // Whether GPM pin was created in the same flow as recent passkey creation.
   bool gpm_pin_created_during_recent_passkey_creation_ = false;
+
+  // The passkey relying party identifier used during a recent passkey flow.
+  std::string passkey_rp_id_;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_STATE_H_

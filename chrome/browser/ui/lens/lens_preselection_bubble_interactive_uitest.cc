@@ -25,10 +25,9 @@ class LensPreselectionBubbleInteractiveUiTest : public InteractiveBrowserTest {
   void operator=(const LensPreselectionBubbleInteractiveUiTest&) = delete;
 
   void SetUp() override {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        lens::features::kLensOverlay, {
-                                          {"search-bubble", "false"},
-                                      });
+    feature_list_.InitWithFeaturesAndParameters(
+        {{lens::features::kLensOverlay, {{"search-bubble", "false"}}}},
+        {lens::features::kLensOverlayContextualSearchbox});
     InteractiveBrowserTest::SetUp();
   }
 
@@ -46,11 +45,12 @@ class LensPreselectionBubbleInteractiveUiTest : public InteractiveBrowserTest {
     return Do(base::BindLambdaForTesting([&]() {
       preselection_widget_ = views::BubbleDialogDelegateView::CreateBubble(
           std::make_unique<lens::LensPreselectionBubble>(
-              browser()->TopContainer(),
+              /*lens_overlay_controller=*/nullptr, browser()->TopContainer(),
               net::NetworkChangeNotifier::IsOffline(),
               base::BindRepeating(
                   &LensPreselectionBubbleInteractiveUiTest::ExitClickedCallback,
-                  base::Unretained(this))));
+                  base::Unretained(this)),
+              base::NullCallback()));
       preselection_widget_->Show();
     }));
   }

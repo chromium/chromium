@@ -99,7 +99,7 @@ class TestExtendedDragSourceDelegate : public ExtendedDragSource::Delegate {
 
 class ExtendedDragSourceTest : public test::ExoTestBase {
  public:
-  ExtendedDragSourceTest() {}
+  ExtendedDragSourceTest() = default;
   ExtendedDragSourceTest(const ExtendedDragSourceTest&) = delete;
   ExtendedDragSourceTest& operator=(const ExtendedDragSourceTest&) = delete;
   ~ExtendedDragSourceTest() override = default;
@@ -282,9 +282,6 @@ class WindowObserverHookChecker : public aura::WindowObserver {
     dragged_window_ = surface_window_->GetToplevelWindow();
     dragged_window_->AddObserver(this);
     surface_window_->RemoveObserver(this);
-
-    dragged_window_->SetProperty(chromeos::kAppTypeKey,
-                                 chromeos::AppType::LACROS);
   }
 
   void OnWindowVisibilityChanging(aura::Window* window, bool visible) override {

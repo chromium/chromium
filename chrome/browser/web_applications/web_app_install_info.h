@@ -245,9 +245,24 @@ struct WebAppInstallInfo {
       const GURL& start_url);
 
   // This creates a WebAppInstallInfo where the `manifest_id` is derived from
-  // the `start_url` using `GenerateManifestIdFromStartUrlOnly`.
+  // the `start_url` using `GenerateManifestIdFromStartUrlOnly`, and the `scope`
+  // is generated from the `start_url` without the filename.
   static std::unique_ptr<WebAppInstallInfo> CreateWithStartUrlForTesting(
       const GURL& start_url);
+
+  // Creates a WebAppInstallInfo from a `start_url`, where the `manifest_id` is
+  // derived from the `start_url` using `GenerateManifestIdFromStartUrlOnly`,
+  // and the `scope` is generated from the `start_url` without the filename.
+  // This also populates some common required fields like the title, as well as
+  // allows easy specification of often-modified fields like `display` and
+  // `user_display_mode`.
+  static std::unique_ptr<WebAppInstallInfo> CreateForTesting(
+      const GURL& start_url,
+      blink::mojom::DisplayMode display = blink::mojom::DisplayMode::kMinimalUi,
+      mojom::UserDisplayMode user_display_mode =
+          mojom::UserDisplayMode::kStandalone,
+      blink::mojom::ManifestLaunchHandler_ClientMode client_mode =
+          blink::mojom::ManifestLaunchHandler_ClientMode::kAuto);
 
   // The `manifest_id` and the `start_url` MUST be valid and same-origin. The
   // `manifest_id` MUST NOT contain refs (e.g. '#refs').

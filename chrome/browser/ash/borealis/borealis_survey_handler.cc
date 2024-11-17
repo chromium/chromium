@@ -52,7 +52,7 @@ std::optional<int> BorealisSurveyHandler::GetGameId(const std::string& app_id) {
 
 base::flat_map<std::string, std::string> BorealisSurveyHandler::GetSurveyData(
     std::string owner_id,
-    const std::string app_id,
+    std::string app_id,
     std::string window_title,
     std::optional<int> game_id) {
   // Number of monitors

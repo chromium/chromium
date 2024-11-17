@@ -22,6 +22,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
 import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController.SafeAreaInsetsTracker;
+import org.chromium.components.cached_flags.BooleanCachedFieldTrialParameter;
+import org.chromium.components.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.DeviceFormFactor;
 
@@ -38,6 +40,61 @@ public class EdgeToEdgeUtils {
     private static final String ELIGIBLE_HISTOGRAM = "Android.EdgeToEdge.Eligible";
     private static final String INELIGIBLE_REASON_HISTOGRAM =
             "Android.EdgeToEdge.IneligibilityReason";
+
+    private static final String PARAM_DISABLE_INCOGNITO_NTP_E2E = "disable_incognito_ntp_e2e";
+
+    /** Cached param whether we disable e2e on incognito new tab page. See crbug.com/368675202 */
+    public static BooleanCachedFieldTrialParameter DISABLE_INCOGNITO_NTP_E2E =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+                    PARAM_DISABLE_INCOGNITO_NTP_E2E,
+                    false);
+
+    private static final String PARAM_DISABLE_NTP_E2E = "disable_ntp_e2e";
+
+    /** Cached param whether we disable e2e on new tab page. */
+    public static BooleanCachedFieldTrialParameter DISABLE_NTP_E2E =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE, PARAM_DISABLE_NTP_E2E, false);
+
+    private static final String PARAM_DISABLE_HUB_E2E = "disable_hub_e2e";
+
+    /** Cached param whether we disable e2e on the hub. */
+    public static BooleanCachedFieldTrialParameter DISABLE_HUB_E2E =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE, PARAM_DISABLE_HUB_E2E, false);
+
+    private static final String PARAM_DISABLE_CCT_MEDIA_VIEWER_E2E = "disable_cct_media_viewer_e2e";
+
+    /** Cached param whether we disable e2e on the CCT media viewer. */
+    public static BooleanCachedFieldTrialParameter DISABLE_CCT_MEDIA_VIEWER_E2E =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.DRAW_KEY_NATIVE_EDGE_TO_EDGE,
+                    PARAM_DISABLE_CCT_MEDIA_VIEWER_E2E,
+                    false);
+
+    private static final String PARAM_E2E_FIELD_TRIAL_OEM_LIST = "e2e_field_trial_oem_list";
+    private static final String PARAM_E2E_FIELD_TRIAL_OEM_MIN_VERSIONS =
+            "e2e_field_trial_oem_min_versions";
+
+    /**
+     * Param for the OEMs that need an exception for min versions. Its value should be a comma
+     * separated list of manufacturer, and its index should match {@link
+     * #E2E_FIELD_TRIAL_OEM_MIN_VERSIONS}.
+     */
+    public static StringCachedFieldTrialParameter E2E_FIELD_TRIAL_OEM_LIST =
+            ChromeFeatureList.newStringCachedFieldTrialParameter(
+                    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN, PARAM_E2E_FIELD_TRIAL_OEM_LIST, "");
+
+    /**
+     * Param for the OEMs that need an exception for min versions. Its value should be a comma
+     * separated list of integers, and its index should match {@link #E2E_FIELD_TRIAL_OEM_LIST}.
+     */
+    public static StringCachedFieldTrialParameter E2E_FIELD_TRIAL_OEM_MIN_VERSIONS =
+            ChromeFeatureList.newStringCachedFieldTrialParameter(
+                    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+                    PARAM_E2E_FIELD_TRIAL_OEM_MIN_VERSIONS,
+                    "");
 
     /** The reason of why the current session is not eligible for edge to edge. */
     @IntDef({
@@ -61,22 +118,9 @@ public class EdgeToEdgeUtils {
      * drawing edge to edge on start up.
      */
     public static boolean isEnabled() {
-        return isLegacyWebsiteOptInEnabled()
-                || isEdgeToEdgeBottomChinEnabled()
-                || isEdgeToEdgeWebOptInEnabled();
-    }
-
-    /**
-     * Whether drawing website opt-in is enabled.
-     *
-     * <p>When enabled, Chrome will add bottom padding to the root view if the current tab / UI is
-     * not a tab with `viewport-fit=cover`. Additionally, bottom attached UI will be padded to avoid
-     * drawing into the bottom navigation bar region.
-     *
-     * @deprecated This method will be removed. External references should use {@link #isEnabled()}.
-     */
-    public static boolean isLegacyWebsiteOptInEnabled() {
-        return ChromeFeatureList.sDrawEdgeToEdge.isEnabled();
+        return isEdgeToEdgeBottomChinEnabled()
+                || isEdgeToEdgeWebOptInEnabled()
+                || isEdgeToEdgeEverywhereEnabled();
     }
 
     /**
@@ -95,6 +139,11 @@ public class EdgeToEdgeUtils {
      */
     public static boolean isEdgeToEdgeWebOptInEnabled() {
         return ChromeFeatureList.sEdgeToEdgeWebOptIn.isEnabled();
+    }
+
+    /** Whether edge-to-edge should be enabled everywhere. */
+    public static boolean isEdgeToEdgeEverywhereEnabled() {
+        return ChromeFeatureList.sEdgeToEdgeEverywhere.isEnabled();
     }
 
     /** Whether key native pages should draw to edge. */
@@ -157,9 +206,11 @@ public class EdgeToEdgeUtils {
      */
     static boolean shouldDrawToEdge(
             boolean isPageOptedIntoEdgeToEdge, @LayoutType int layoutType, int bottomInset) {
-        return (isEdgeToEdgeWebOptInEnabled() && isPageOptedIntoEdgeToEdge)
-                || (isEdgeToEdgeBottomChinEnabled()
-                        && isBottomChinAllowed(layoutType, bottomInset));
+        return isPageOptedIntoEdgeToEdge
+                || (isEdgeToEdgeBottomChinEnabled() && isBottomChinAllowed(layoutType, bottomInset))
+                || (isDrawKeyNativePageToEdgeEnabled()
+                        && layoutType == LayoutType.TAB_SWITCHER
+                        && !DISABLE_HUB_E2E.getValue());
     }
 
     /**
@@ -188,6 +239,9 @@ public class EdgeToEdgeUtils {
         if (tab == null || tab.isNativePage()) {
             return isNativeTabDrawingToEdge(tab);
         }
+        if (tab.shouldEnableEmbeddedMediaExperience()) {
+            return isDrawKeyNativePageToEdgeEnabled();
+        }
         if (sAlwaysDrawWebEdgeToEdgeForTesting) {
             return true;
         }
@@ -201,7 +255,13 @@ public class EdgeToEdgeUtils {
     static boolean isPageOptedIntoEdgeToEdge(
             Tab tab, @WebContentsObserver.ViewportFitType int value) {
         if (tab == null || tab.isNativePage()) {
-            return ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled();
+            return isNativeTabDrawingToEdge(tab);
+        }
+        if (sAlwaysDrawWebEdgeToEdgeForTesting) {
+            return true;
+        }
+        if (tab.shouldEnableEmbeddedMediaExperience()) {
+            return isDrawKeyNativePageToEdgeEnabled();
         }
         if (!isEdgeToEdgeWebOptInEnabled()) {
             return false;
@@ -249,5 +309,10 @@ public class EdgeToEdgeUtils {
     public static void setAlwaysDrawWebEdgeToEdgeForTesting(boolean drawWebEdgeToEdge) {
         sAlwaysDrawWebEdgeToEdgeForTesting = drawWebEdgeToEdge;
         ResettersForTesting.register(() -> sAlwaysDrawWebEdgeToEdgeForTesting = false);
+    }
+
+    /** Whether push safe-area-insets-bottom to pages that's not using viewport-fit=cover. */
+    public static boolean pushSafeAreaInsetsForNonOptInPages() {
+        return ChromeFeatureList.sDynamicSafeAreaInsets.isEnabled();
     }
 }

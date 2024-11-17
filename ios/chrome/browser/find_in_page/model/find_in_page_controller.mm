@@ -116,6 +116,21 @@ NSString* gSearchTerm;
   }
 }
 
+- (void)exitFullscreenMode {
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(_webState->GetBrowserState());
+  BOOL incognito = profile->IsOffTheRecord();
+  BrowserList* browserList = BrowserListFactory::GetForProfile(profile);
+
+  Browser* browser = GetBrowserForTabWithCriteria(
+      browserList,
+      WebStateSearchCriteria{.identifier = _webState->GetUniqueIdentifier()},
+      incognito);
+  FullscreenController* fullscreenController =
+      FullscreenController::FromBrowser(browser);
+  fullscreenController->ExitFullscreen();
+}
+
 #pragma mark - CRWFindInPageManagerDelegate
 
 - (void)findInPageManager:(web::AbstractFindInPageManager*)manager
@@ -145,20 +160,7 @@ NSString* gSearchTerm;
     (web::AbstractFindInPageManager*)manager {
   // User dismissed the Find panel so mark the Find UI as inactive.
   self.findInPageModel.enabled = NO;
-
-  if (base::FeatureList::IsEnabled(kDisableFullscreenScrolling)) {
-    ChromeBrowserState* browserState =
-        ChromeBrowserState::FromBrowserState(_webState->GetBrowserState());
-    BOOL incognito = browserState->IsOffTheRecord();
-    BrowserList* browserList =
-        BrowserListFactory::GetForBrowserState(browserState);
-
-    Browser* browser = GetBrowserForTabWithId(
-        browserList, _webState->GetUniqueIdentifier(), incognito);
-    FullscreenController* fullscreenController =
-        FullscreenController::FromBrowser(browser);
-    fullscreenController->ExitFullscreen();
-  }
+  [self exitFullscreenMode];
 }
 
 - (void)detachFromWebState {

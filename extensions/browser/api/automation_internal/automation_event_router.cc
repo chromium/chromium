@@ -96,15 +96,25 @@ void AutomationEventRouter::UnregisterAllListenersWithDesktopPermission() {
 }
 
 void AutomationEventRouter::DispatchAccessibilityLocationChange(
-    const ui::AXLocationChanges& details) {
+    const ui::AXTreeID& tree_id,
+    const ui::AXLocationChange& details) {
   if (remote_router_) {
-    remote_router_->DispatchAccessibilityLocationChange(details);
+    remote_router_->DispatchAccessibilityLocationChange(tree_id, details);
     return;
   }
 
   for (const auto& remote : automation_remote_set_) {
-    remote->DispatchAccessibilityLocationChange(details.ax_tree_id, details.id,
+    remote->DispatchAccessibilityLocationChange(tree_id, details.id,
                                                 details.new_location);
+  }
+}
+
+void AutomationEventRouter::DispatchAccessibilityScrollChange(
+    const ui::AXTreeID& tree_id,
+    const ui::AXScrollChange& details) {
+  for (const auto& remote : automation_remote_set_) {
+    remote->DispatchAccessibilityScrollChange(
+        tree_id, details.id, details.scroll_x, details.scroll_y);
   }
 }
 
@@ -133,7 +143,7 @@ void AutomationEventRouter::DispatchActionResult(
 void AutomationEventRouter::DispatchGetTextLocationDataResult(
     const ui::AXActionData& data,
     const std::optional<gfx::Rect>& rect) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   CHECK(!data.source_extension_id.empty());
 
   for (const auto& remote : automation_remote_set_) {
@@ -141,7 +151,7 @@ void AutomationEventRouter::DispatchGetTextLocationDataResult(
   }
 #else
   NOTREACHED();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AutomationEventRouter::NotifyAllAutomationExtensionsGone() {

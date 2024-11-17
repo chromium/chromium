@@ -38,8 +38,6 @@ class LanguageDetectionModelLoaderServiceIOS : public KeyedService {
   bool IsModelAvailable();
 
  private:
-  class ModelContainer;
-
   // Notifies |this| that the translate model service is available for model
   // requests or is invalidating existing requests specified by |is_available|.
   void OnLanguageDetectionModelFileReceived(base::File model_file);
@@ -51,8 +49,8 @@ class LanguageDetectionModelLoaderServiceIOS : public KeyedService {
   raw_ptr<language_detection::LanguageDetectionModelService>
       language_detection_model_service_;
 
-  // Wraps the TFLite language detection model and its dependencies.
-  std::unique_ptr<ModelContainer> model_container_;
+  // The managed language detection model.
+  std::unique_ptr<translate::LanguageDetectionModel> language_detection_model_;
 
   base::WeakPtrFactory<LanguageDetectionModelLoaderServiceIOS>
       weak_ptr_factory_{this};

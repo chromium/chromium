@@ -4,7 +4,6 @@
 
 #include "chrome/updater/win/ui/complete_wnd.h"
 
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/strings/string_util.h"
 #include "chrome/updater/win/ui/l10n_util.h"

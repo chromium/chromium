@@ -26,7 +26,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy_guide.PrivacyGuideUtils.CustomTabIntentHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
@@ -55,8 +54,6 @@ public class PrivacyGuideFragment extends Fragment
         FragmentType.HISTORY_SYNC,
         FragmentType.SAFE_BROWSING,
         FragmentType.COOKIES,
-        FragmentType.SEARCH_SUGGESTIONS,
-        FragmentType.PRELOAD,
         FragmentType.AD_TOPICS,
         FragmentType.DONE,
     })
@@ -66,10 +63,8 @@ public class PrivacyGuideFragment extends Fragment
         int HISTORY_SYNC = 2;
         int SAFE_BROWSING = 3;
         int COOKIES = 4;
-        int SEARCH_SUGGESTIONS = 5;
-        int PRELOAD = 6;
-        int AD_TOPICS = 7;
-        int DONE = 8;
+        int AD_TOPICS = 5;
+        int DONE = 6;
         int MAX_VALUE = DONE;
     }
 
@@ -81,18 +76,6 @@ public class PrivacyGuideFragment extends Fragment
                             FragmentType.HISTORY_SYNC,
                             FragmentType.SAFE_BROWSING,
                             FragmentType.COOKIES,
-                            FragmentType.AD_TOPICS,
-                            FragmentType.DONE));
-    public static final List<Integer> ALL_FRAGMENT_TYPE_ORDER_PG3 =
-            Collections.unmodifiableList(
-                    Arrays.asList(
-                            FragmentType.WELCOME,
-                            FragmentType.MSBB,
-                            FragmentType.HISTORY_SYNC,
-                            FragmentType.COOKIES,
-                            FragmentType.SAFE_BROWSING,
-                            FragmentType.SEARCH_SUGGESTIONS,
-                            FragmentType.PRELOAD,
                             FragmentType.AD_TOPICS,
                             FragmentType.DONE));
 
@@ -135,11 +118,7 @@ public class PrivacyGuideFragment extends Fragment
         mViewPager = (ViewPager2) mView.findViewById(R.id.review_viewpager);
         mPagerAdapter =
                 new PrivacyGuidePagerAdapter(
-                        this,
-                        new StepDisplayHandlerImpl(mProfile),
-                        ChromeFeatureList.sPrivacyGuideAndroid3.isEnabled()
-                                ? ALL_FRAGMENT_TYPE_ORDER_PG3
-                                : ALL_FRAGMENT_TYPE_ORDER);
+                        this, new StepDisplayHandlerImpl(mProfile), ALL_FRAGMENT_TYPE_ORDER);
         mNavbarVisibilityDelegate = new NavbarVisibilityDelegate(mPagerAdapter.getItemCount());
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setPageTransformer(new PrivacyGuidePageTransformer());
@@ -272,10 +251,6 @@ public class PrivacyGuideFragment extends Fragment
 
         if (childFragment instanceof SafeBrowsingFragment) {
             ((SafeBrowsingFragment) childFragment)
-                    .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
-        }
-        if (childFragment instanceof PreloadFragment) {
-            ((PreloadFragment) childFragment)
                     .setBottomSheetControllerSupplier(mBottomSheetControllerSupplier);
         }
         if (childFragment instanceof DoneFragment) {

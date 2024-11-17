@@ -52,6 +52,7 @@
 #include "net/quic/test_quic_crypto_client_config_handle.h"
 #include "net/socket/datagram_client_socket.h"
 #include "net/socket/socket_test_util.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/spdy/spdy_test_util_common.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/cert_test_util.h"
@@ -120,7 +121,7 @@ class QuicChromiumClientSessionTest
         default_read_(
             std::make_unique<MockRead>(SYNCHRONOUS, ERR_IO_PENDING, 0)),
         socket_data_(std::make_unique<SequencedSocketData>(
-            base::make_span(default_read_.get(), 1u),
+            base::span_from_ref(*default_read_),
             base::span<MockWrite>())),
         helper_(&clock_, &random_),
         transport_security_state_(std::make_unique<TransportSecurityState>()),
@@ -200,6 +201,8 @@ class QuicChromiumClientSessionTest
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, ConnectionEndpointMetadata(),
         /*report_ecn=*/true, /*enable_origin_frame=*/true,
+        /*allow_server_preferred_address=*/true,
+        MultiplexedSessionCreationInitiator::kUnknown,
         NetLogWithSource::Make(NetLogSourceType::NONE));
     if (connectivity_monitor_) {
       connectivity_monitor_->SetInitialDefaultNetwork(default_network_);
@@ -1890,8 +1893,8 @@ TEST_P(QuicChromiumClientSessionTest, RetransmittableOnWireTimeout) {
   EXPECT_TRUE(
       QuicChromiumClientSessionPeer::CreateOutgoingStream(session_.get()));
 
-  quic::QuicAlarm& alarm =
-      quic::test::QuicConnectionPeer::GetPingAlarm(session_->connection());
+  quic::test::QuicTestAlarmProxy alarm(
+      quic::test::QuicConnectionPeer::GetPingAlarm(session_->connection()));
   EXPECT_FALSE(alarm.IsSet());
 
   // Send PING, which will be ACKed by the server. After the ACK, there will be
@@ -1906,7 +1909,7 @@ TEST_P(QuicChromiumClientSessionTest, RetransmittableOnWireTimeout) {
   // Advance clock and simulate the alarm firing. This should cause a PING to be
   // sent.
   clock_.AdvanceTime(quic::QuicTime::Delta::FromMilliseconds(200));
-  alarm_factory_.FireAlarm(&alarm);
+  alarm.Fire();
   base::RunLoop().RunUntilIdle();
 
   quic_data.Resume();

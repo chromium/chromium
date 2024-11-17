@@ -16,7 +16,7 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
-#include "chrome/browser/profiles/profile_impl.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/hats/hats_service_desktop.h"
@@ -29,6 +29,7 @@
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/policy/policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/isolated_world_ids.h"
@@ -275,8 +276,8 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileTooYoungToShow) {
   SetMetricsConsent(true);
   base::HistogramTester histogram_tester;
   // Set creation time to only 15 days.
-  static_cast<ProfileImpl*>(browser()->profile())
-      ->SetCreationTimeForTesting(base::Time::Now() - base::Days(15));
+  browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
+                                                  base::Days(15));
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   histogram_tester.ExpectUniqueSample(
       kHatsShouldShowSurveyReasonHistogram,
@@ -287,8 +288,8 @@ IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileTooYoungToShow) {
 IN_PROC_BROWSER_TEST_F(HatsServiceProbabilityOne, ProfileOldEnoughToShow) {
   SetMetricsConsent(true);
   // Set creation time to 31 days. This is just past the threshold.
-  static_cast<ProfileImpl*>(browser()->profile())
-      ->SetCreationTimeForTesting(base::Time::Now() - base::Days(31));
+  browser()->profile()->SetCreationTimeForTesting(base::Time::Now() -
+                                                  base::Days(31));
   GetHatsService()->LaunchSurvey(kHatsSurveyTriggerSettings);
   EXPECT_TRUE(HatsNextDialogCreated());
 }

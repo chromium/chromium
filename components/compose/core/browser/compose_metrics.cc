@@ -49,6 +49,7 @@ const char kInnerTextNodeOffsetFound[] =
     "Compose.Dialog.InnerTextNodeOffsetFound";
 const char kComposeContextMenuCtr[] = "Compose.ContextMenu.CTR";
 const char kComposeProactiveNudgeCtr[] = "Compose.ProactiveNudge.CTR";
+const char kComposeSelectionNudgeCtr[] = "Compose.SelectionNudge.CTR";
 const char kComposeProactiveNudgeShowStatus[] =
     "Compose.ProactiveNudge.ShowStatus";
 const char kOpenComposeDialogResult[] =
@@ -173,7 +174,7 @@ void PageUkmTracker::MaybeLogUkm() {
       .Record(ukm::UkmRecorder::Get());
 }
 
-ComposeSessionEvents::ComposeSessionEvents() {}
+ComposeSessionEvents::ComposeSessionEvents() = default;
 
 void LogComposeContextMenuCtr(ComposeContextMenuCtrEvent event) {
   base::UmaHistogramEnumeration(kComposeContextMenuCtr, event);
@@ -183,8 +184,12 @@ void LogComposeContextMenuShowStatus(ComposeShowStatus status) {
   base::UmaHistogramEnumeration(kComposeShowStatus, status);
 }
 
-void LogComposeProactiveNudgeCtr(ComposeProactiveNudgeCtrEvent event) {
+void LogComposeProactiveNudgeCtr(ComposeNudgeCtrEvent event) {
   base::UmaHistogramEnumeration(kComposeProactiveNudgeCtr, event);
+}
+
+void LogComposeSelectionNudgeCtr(ComposeNudgeCtrEvent event) {
+  base::UmaHistogramEnumeration(kComposeSelectionNudgeCtr, event);
 }
 
 void LogComposeProactiveNudgeShowStatus(ComposeShowStatus status) {
@@ -346,7 +351,7 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
     case compose::ComposeSessionCloseReason::kEndedAtFre:
     case compose::ComposeSessionCloseReason::kAckedFreEndedAtMsbb:
     case compose::ComposeSessionCloseReason::kEndedAtMsbb:
-      NOTREACHED_NORETURN();
+      NOTREACHED();
   }
 
   // Report all location-agnostic metrics.

@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">ធម្មតា</translation>
 <translation id="1591562245178063882">ខែនេះ</translation>
 <translation id="1637811476055996098">ជ្រើសរើសឯកសារ</translation>
-<translation id="1680090928918677457">ប្រើ​កាមេរ៉ា</translation>
 <translation id="1729654308190250600">សូមបញ្ចូលអាសយដ្ឋានអ៊ីម៉ែលដែលមិនទទេ</translation>
 <translation id="1758486001363313524">ផ្សេងទៀត...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">សូមធ្វើឲ្យអត្ថបទនេះខ្លីទៅ <ph name="MAX_CHARACTERS" /> តួអក្សរ ឫតិចជាងនេះ (ឥឡូវនេះអ្នកកំពុងប្រើ <ph name="CURRENT_LENGTH" /> តួអក្សរ)។</translation>
 <translation id="2247351761944213033">សប្តាហ៍ <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">បទទី <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">បាន​អនុញ្ញាត​ឱ្យប្រើ​កាមេរ៉ា និង​មីក្រូហ្វូន</translation>
 <translation id="2507943997699731163">សូមបំពេញប្រអប់នេះ។</translation>
 <translation id="2613802280814924224">សូមបញ្ចូលតម្លៃដែលមានសុពលភាព។ តម្លៃដែលមានសុពលភាពក្បែរបំផុតគឺ <ph name="VALID_VALUE" />។</translation>
 <translation id="2653659639078652383">ដាក់ស្នើ</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">សូមបន្លាយអត្ថបទនេះឲ្យបាន <ph name="MIN_CHARACTERS" /> តួ ឬច្រើនជាងនេះ (បច្ចុប្បន្ននេះអ្នកកំពុងប្រើ <ph name="CURRENT_LENGTH" /> តួ)។</translation>
 <translation id="383465348367842624">ផ្នែកដែលនៅពីក្រោយ '<ph name="ATSIGN" />' មិនគួរផ្ទុកសញ្ញា '<ph name="INVALIDCHARACTER" />' នេះទេ។</translation>
 <translation id="3846214748874656680">ចាកចេញពីអេក្រង់ពេញ</translation>
-<translation id="4031179711345676612">បាន​អនុញ្ញាត​ឱ្យប្រើ​មីក្រូហ្វូន</translation>
 <translation id="4360991593054037559">សូមបញ្ចូលតម្លៃដែលមានសុពលភាព។ តម្លៃដែលមានសុពលភាពដែលក្បែរបំផុតគឺ <ph name="VALID_VALUE_LOW" /> និង <ph name="VALID_VALUE_HIGHER" />។</translation>
 <translation id="4522570452068850558">ព័ត៌មានលំអិត</translation>
-<translation id="4663373278480897665">បាន​អនុញ្ញាត​ឱ្យប្រើ​កាមេរ៉ា</translation>
 <translation id="4664250907885839816">ផ្នែកដែលនៅពីមុខ '<ph name="ATSIGN" />' មិនគួរផ្ទុកសញ្ញា '<ph name="INVALIDCHARACTER" />' នេះទេ។</translation>
 <translation id="4718048029184481307">កំពុងចាក់​នៅក្នុងមុខងារ​រូបក្នុងរូប</translation>
-<translation id="4792862212177489858">ចែក​រំលែក​ទីតាំង</translation>
 <translation id="4812940957355064477">សូមបញ្ចូលលេខ។</translation>
-<translation id="49269513399674318">ប្រើមីក្រូហ្វូន</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> បានជ្រើសរើស</translation>
 <translation id="4992066212339426712">បើកសម្លេង</translation>
 <translation id="49969490063480558">សូមបញ្ចូលផ្នែកមួយនៅខាងក្រោយ '<ph name="ATSIGN" />'។ '<ph name="INVALIDADDRESS" />' មិនពេញលេញទេ។</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">មិនអាចដំណើរការកម្មវិធីជំនួយទេ។</translation>
 <translation id="6919891270253167948">1.5</translation>
 <translation id="6989848892321993519">សូម​សរសេរ​អក្សរ​នេះឲ្យ​បាន​យ៉ាងហោច <ph name="MIN_CHARACTERS" /> តួ ឬ​ច្រើន​ជាងនេះ (បច្ចុប្បន្ននេះ​អ្នកសរសេរតែ 1 តួ)។</translation>
-<translation id="7080893216867146095">បានអនុញ្ញាតឱ្យចែករំលែកទីតាំង</translation>
 <translation id="709897737746224366">សូមផ្គូផ្គងទម្រង់ដែលបានស្នើ។</translation>
-<translation id="7134810312945846184">ប្រើមីក្រូហ្វូន និងកាមេរ៉ា</translation>
 <translation id="7263440858009898357">សូមជ្រើសរើសធាតុនៅក្នុងបញ្ជី។</translation>
 <translation id="7364796246159120393">ជ្រើសរើសឯកសារ</translation>
 <translation id="739024184232394898">ផ្សេងទៀត...</translation>

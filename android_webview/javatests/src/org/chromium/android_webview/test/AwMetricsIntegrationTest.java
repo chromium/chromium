@@ -491,11 +491,13 @@ public class AwMetricsIntegrationTest extends AwParameterizedTest {
             ChromeComponent expected) {
         return new TypeSafeMatcher<ChromeComponent>() {
             @Override
+            @SuppressWarnings("LiteProtoToString")
             public void describeTo(Description description) {
                 description.appendText(expected.toString());
             }
 
             @Override
+            @SuppressWarnings("LiteProtoToString")
             protected void describeMismatchSafely(
                     ChromeComponent item, Description mismatchDescription) {
                 mismatchDescription.appendText("Doesn't match " + item.toString());

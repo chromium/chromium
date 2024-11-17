@@ -4,7 +4,9 @@
 
 #include "chrome/browser/printing/web_api/web_printing_service_chromeos.h"
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/contains.h"
 #include "base/containers/map_util.h"
@@ -380,13 +382,6 @@ void WebPrintingServiceChromeOS::OnPrintJobCreated(
   in_progress_jobs_storage_.PrintJobAcknowledgedByThePrintSystem(
       printer_id, creation_info->job_id, std::move(observer),
       std::move(controller));
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  NotifyAshJobCreated(
-      creation_info->job_id, *creation_info->document,
-      /*source=*/crosapi::mojom::PrintJob::Source::kIsolatedWebApp,
-      /*source_id=*/app_id_, GetLocalPrinterInterface());
-#endif
 }
 
 }  // namespace printing

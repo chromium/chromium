@@ -14,11 +14,9 @@ TestFormDataImporter::TestFormDataImporter(
     AutofillClient* client,
     std::unique_ptr<CreditCardSaveManager> credit_card_save_manager,
     std::unique_ptr<IbanSaveManager> iban_save_manager,
-    const std::string& app_locale,
     std::unique_ptr<LocalCardMigrationManager> local_card_migration_manager)
     : FormDataImporter(client,
-                       /*history_service=*/nullptr,
-                       app_locale) {
+                       /*history_service=*/nullptr) {
   test_api(*this).set_credit_card_save_manager(
       std::move(credit_card_save_manager));
   test_api(*this).set_iban_save_manager(std::move(iban_save_manager));

@@ -36,10 +36,6 @@ bool WebViewPasswordFeatureManager::ShouldShowAccountStorageReSignin(
   return false;
 }
 
-bool WebViewPasswordFeatureManager::ShouldShowAccountStorageBubbleUi() const {
-  return false;
-}
-
 password_manager::PasswordForm::Store
 WebViewPasswordFeatureManager::GetDefaultPasswordStore() const {
   // ios/web_view should never write to the profile password store.
@@ -62,8 +58,7 @@ bool WebViewPasswordFeatureManager::
     IsBiometricAuthenticationBeforeFillingEnabled() const {
   // This feature is related only to MacOS and Windows, this function
   // shouldn't be called on iOS.
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace ios_web_view

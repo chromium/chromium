@@ -36,6 +36,7 @@ test("ios_components_unittests") {
     ":run_all_unittests",
     "//base",
     "//ios/components/cookie_util:unit_tests",
+    "//ios/components/credential_provider_extension:unit_tests",
     "//ios/components/io_thread:unit_tests",
     "//ios/components/security_interstitials:unit_tests",
     "//ios/components/security_interstitials/https_only_mode:unit_tests",

@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.vr.WebXrArTestFramework.POLL_TIMEOUT_S
 
 import androidx.test.filters.MediumTest;
 
+import org.chromium.base.test.util.DisabledTest;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -123,6 +124,7 @@ public class WebXrArSessionTest {
     @Test
     @MediumTest
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.CTA})
+    @DisabledTest(message = "https://crbug.com/372753398")
     public void testPermissionRequestDuringAr() throws TimeoutException {
         mWebXrArTestFramework.loadFileAndAwaitInitialization(
                 "test_permission_request_during_ar", PAGE_LOAD_TIMEOUT_S);

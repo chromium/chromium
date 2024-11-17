@@ -30,10 +30,7 @@ class CORE_EXPORT InterpolableScrollbarColor : public InterpolableValue {
   void Scale(double scale) final;
   void Add(const InterpolableValue& other) final;
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
-  bool Equals(const InterpolableValue& other) const final {
-    NOTREACHED_IN_MIGRATION();
-    return false;
-  }
+  bool Equals(const InterpolableValue& other) const final { NOTREACHED(); }
 
   void Interpolate(const InterpolableValue& to,
                    const double progress,

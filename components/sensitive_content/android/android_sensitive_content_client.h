@@ -28,6 +28,7 @@ class AndroidSensitiveContentClient
       const AndroidSensitiveContentClient&) = delete;
   ~AndroidSensitiveContentClient() override;
 
+  base::android::JavaRef<jobject>& GetJavaObject();
   // SensitiveContentClient:
   void SetContentSensitivity(bool content_is_sensitive) override;
   std::string_view GetHistogramPrefix() override;
@@ -39,7 +40,7 @@ class AndroidSensitiveContentClient
   std::string histogram_prefix_;
   // Holds a reference to the Java counterpart of the client. Used to update the
   // content sensitivity on the Java view.
-  base::android::ScopedJavaGlobalRef<jobject> java_sensitive_contents_client_;
+  base::android::ScopedJavaGlobalRef<jobject> java_sensitive_content_client_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

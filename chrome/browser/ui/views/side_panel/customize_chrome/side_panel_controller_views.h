@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents_observer.h"
 
 class CustomizeChromeUI;
+class SidePanelEntryScope;
 class SidePanelUI;
 
 namespace tabs {
@@ -64,7 +65,8 @@ class SidePanelControllerViews : public SidePanelController,
 
   // Generates the view for the SidePanel contents. This is the WebUI for the
   // SidePanel. Used by the SidepanelRegistry to create the view.
-  std::unique_ptr<views::View> CreateCustomizeChromeWebView();
+  std::unique_ptr<views::View> CreateCustomizeChromeWebView(
+      SidePanelEntryScope& scope);
 
   // Helper method for getting the SidePanelUI stored in the
   // BrowserWindowFeatures for the tab.

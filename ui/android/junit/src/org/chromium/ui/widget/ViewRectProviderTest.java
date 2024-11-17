@@ -192,6 +192,27 @@ public class ViewRectProviderTest {
                 mOnRectChangeCallback.getCallCount());
     }
 
+    @Test
+    public void testSetMarginPx() {
+        int expectedCounts = 0;
+
+        mView.layout(10, 20, 100, 200);
+        mView.getViewTreeObserver().dispatchOnPreDraw();
+        Assert.assertEquals(
+                "View changing its position on screen should trigger #onRectChanged.",
+                ++expectedCounts,
+                mOnRectChangeCallback.getCallCount());
+        assertRectMatch(10, 20, 100, 200);
+
+        mViewRectProvider.setMarginPx(1, 2, 3, 4);
+        mView.getViewTreeObserver().dispatchOnPreDraw();
+        Assert.assertEquals(
+                "View changing its margin should trigger #onRectChanged.",
+                ++expectedCounts,
+                mOnRectChangeCallback.getCallCount());
+        assertRectMatch(9, 18, 103, 204);
+    }
+
     private void assertRectMatch(int left, int top, int right, int bottom) {
         final Rect expectedRect = new Rect(left, top, right, bottom);
         Assert.assertEquals("Rect does not match.", expectedRect, mViewRectProvider.getRect());

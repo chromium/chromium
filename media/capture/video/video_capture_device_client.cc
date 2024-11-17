@@ -10,6 +10,7 @@
 #include "media/capture/video/video_capture_device_client.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
@@ -19,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/ranges/algorithm.h"
+#include "base/sequence_checker.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -28,6 +30,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_types.h"
+#include "media/capture/capture_switches.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
 #include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom-forward.h"
@@ -282,21 +285,36 @@ VideoCaptureDeviceClient::VideoCaptureDeviceClient(
 VideoCaptureDeviceClient::VideoCaptureDeviceClient(
     std::unique_ptr<VideoFrameReceiver> receiver,
     scoped_refptr<VideoCaptureBufferPool> buffer_pool,
-    VideoEffectsContext video_effects_context)
+    std::optional<VideoEffectsContext> video_effects_context)
     : receiver_(std::move(receiver)),
       buffer_pool_(std::move(buffer_pool)),
       last_captured_pixel_format_(PIXEL_FORMAT_UNKNOWN) {
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  effects_processor_.emplace(video_effects_context.TakeVideoEffectsProcessor());
+  if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
+      video_effects_context) {
+    effects_processor_task_runner_ =
+        base::SequencedTaskRunner::GetCurrentDefault();
+    effects_processor_ = std::make_unique<VideoCaptureEffectsProcessor>(
+        video_effects_context->TakeVideoEffectsProcessor());
+  }
 #endif  // BUILDFLAG(ENABLE_VIDEO_EFFECTS)
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 VideoCaptureDeviceClient::~VideoCaptureDeviceClient() {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
   for (int buffer_id : buffer_ids_known_by_receiver_) {
     receiver_->OnBufferRetired(buffer_id);
   }
   receiver_->OnStopped();
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+  if (effects_processor_) {
+    effects_processor_task_runner_->DeleteSoon(FROM_HERE,
+                                               std::move(effects_processor_));
+  }
+#endif
 }
 
 // static
@@ -312,6 +330,8 @@ VideoCaptureDevice::Client::Buffer VideoCaptureDeviceClient::MakeBufferStruct(
 }
 
 void VideoCaptureDeviceClient::OnCaptureConfigurationChanged() {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
   receiver_->OnCaptureConfigurationChanged();
 }
 
@@ -351,6 +371,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
+    const std::optional<VideoFrameMetadata>& metadata,
     int frame_feedback_id) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
@@ -386,7 +407,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
   if (format.pixel_format == PIXEL_FORMAT_Y16) {
     return OnIncomingCapturedY16Data(data, length, format, reference_time,
                                      timestamp, capture_begin_timestamp,
-                                     frame_feedback_id);
+                                     metadata, frame_feedback_id);
   }
 
   // |new_unrotated_{width,height}| are the dimensions of the output buffer that
@@ -418,17 +439,20 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
   }
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
-    VideoFrameMetadata metadata;
+  if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
+      effects_processor_) {
+    auto data_span = base::make_span(data, base::checked_cast<size_t>(length));
+
     // Note: we are not setting `metadata.is_webgpu_compatible` here since we
     // have not verified whether the buffer pool returns frames that are
     // WebGPU-compatible across all platforms.
-    metadata.frame_rate = format.frame_rate;
-    metadata.reference_time = reference_time;
-    metadata.capture_begin_time = capture_begin_timestamp;
+    auto mutable_metadata = metadata.value_or(VideoFrameMetadata{});
+    mutable_metadata.frame_rate = format.frame_rate;
+    mutable_metadata.reference_time = reference_time;
+    mutable_metadata.capture_begin_time = capture_begin_timestamp;
 
     mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New(
-        timestamp, metadata, format.pixel_format, format.frame_size,
+        timestamp, mutable_metadata, format.pixel_format, format.frame_size,
         gfx::Rect(format.frame_size), buffer.is_premapped, data_color_space,
         mojom::PlaneStridesPtr{});
 
@@ -436,17 +460,38 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
     const VideoCaptureBufferType buffer_type =
         buffer_pool_->GetBufferType(buffer.id);
 
+    auto in_buffer_mapped_region =
+        base::ReadOnlySharedMemoryRegion::Create(data_span.size());
+    if (!in_buffer_mapped_region.IsValid()) {
+      receiver_->OnFrameDropped(
+          VideoCaptureFrameDropReason::kPostProcessingFailed);
+      return;
+    }
+
+    in_buffer_mapped_region.mapping.GetMemoryAsSpan<uint8_t>().copy_from(
+        data_span);
+
     // The `buffer` was already reserved above but has not yet been reported as
     // ready to the `receiver_`. Once the post-processor has completed, we will
     // call `OnPostProcessDone()` & thus notify the receiver from there.
-    effects_processor_->PostProcessData(
-        base::make_span(data, base::checked_cast<size_t>(length)),
-        std::move(info), std::move(buffer),
+    auto post_process_data = base::BindOnce(
+        &VideoCaptureEffectsProcessor::PostProcessData,
+        effects_processor_->GetWeakPtr(),
+        std::move(in_buffer_mapped_region.region), std::move(info),
+        std::move(buffer),
         VideoCaptureFormat(format.frame_size, format.frame_rate,
                            VideoPixelFormat::PIXEL_FORMAT_I420),
         buffer_type,
         base::BindOnce(&VideoCaptureDeviceClient::OnPostProcessDone,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    if (!effects_processor_task_runner_->RunsTasksInCurrentSequence()) {
+      effects_processor_task_runner_->PostTask(FROM_HERE,
+                                               std::move(post_process_data));
+      return;
+    }
+
+    std::move(post_process_data).Run();
     return;
   }
 #endif
@@ -500,7 +545,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
       VideoCaptureFormat(dimensions, format.frame_rate, PIXEL_FORMAT_I420);
   OnIncomingCapturedBufferExt(
       std::move(buffer), output_format, color_space, reference_time, timestamp,
-      capture_begin_timestamp, gfx::Rect(dimensions), VideoFrameMetadata());
+      capture_begin_timestamp, gfx::Rect(dimensions), metadata);
 }
 
 void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
@@ -510,7 +555,9 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
+    const std::optional<VideoFrameMetadata>& metadata,
     int frame_feedback_id) {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer");
 
@@ -587,7 +634,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedGfxBuffer(
   const VideoCaptureFormat output_format = VideoCaptureFormat(
       dimensions, frame_format.frame_rate, PIXEL_FORMAT_I420);
   OnIncomingCapturedBuffer(std::move(output_buffer), output_format,
-                           reference_time, timestamp, capture_begin_timestamp);
+                           reference_time, timestamp, capture_begin_timestamp,
+                           metadata);
 }
 
 void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
@@ -595,11 +643,97 @@ void VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
-    const gfx::Rect& visible_rect) {
+    const gfx::Rect& visible_rect,
+    const std::optional<VideoFrameMetadata>& metadata) {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceClient::OnIncomingCapturedExternalBuffer");
+
+#if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
+  // TODO(https://crbug.com/377955425): Add unittests for enabled
+  // media::kCameraMicEffects flag.
+
+  if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
+      switches::IsVideoCaptureUseGpuMemoryBufferEnabled() &&
+      effects_processor_) {
+    // TODO(https://crbug.com/377532863): Skip effects service overhead when
+    // having no-op effects config.
+
+    // Note: we are not setting `metadata.is_webgpu_compatible` here since we
+    // have not verified whether the buffer pool returns frames that are
+    // WebGPU-compatible across all platforms.
+    auto mutable_metadata = metadata.value_or(VideoFrameMetadata{});
+    mutable_metadata.frame_rate = buffer.format.frame_rate;
+    mutable_metadata.reference_time = reference_time;
+    mutable_metadata.capture_begin_time = capture_begin_timestamp;
+    mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New(
+        timestamp, mutable_metadata, buffer.format.pixel_format,
+        buffer.format.frame_size, visible_rect, /*is_premapped=*/false,
+        buffer.color_space, mojom::PlaneStridesPtr{});
+
+    // We need to allocate the output buffer since the post-processor cannot
+    // operate in-place. This new `out_buffer`, along with original `buffer`,
+    // will be considered as held for producer until the post-processor has
+    // finished processing their contents, after which the `buffer` should be
+    // marked as unused (`RelinquishProducerReservation()`) and `out_buffer`
+    // will be marked as held for consumer.
+    // Note that this means we're allocating 2x as many buffers as we'd have
+    // allocated without the video effects. It may be possible to hold on to
+    // the input buffer for less time than what is needed to post-process it
+    // - it could be released once the processor has imported it into the
+    // graphical API it uses to run the post-processing logic.
+    // TODO(https://crbug.com/339141106): Consider having an additional pool
+    // for post-processing output buffers, separate from the pool used to
+    // allocate the original buffers.
+    Buffer out_buffer;
+    const VideoCaptureDevice::Client::ReserveResult reserve_result =
+        ReserveOutputBuffer(
+            buffer.format.frame_size, buffer.format.pixel_format,
+            /*frame_feedback_id=*/0, &out_buffer, nullptr, nullptr);
+
+    if (reserve_result ==
+        VideoCaptureDevice::Client::ReserveResult::kSucceeded) {
+      // Must happen here since we move out of `out_buffer` in the call to
+      // post-processor:
+      const VideoCaptureBufferType out_buffer_type =
+          buffer_pool_->GetBufferType(out_buffer.id);
+      const auto format = buffer.format;
+
+      // The buffers were reserved but has not yet been reported as ready to the
+      // `receiver_`. Once the post-processor has completed, we will call
+      // `OnPostProcessDone()` & thus notify the receiver from there.
+      // TODO(https://crbug.com/345688428): drop the frame if we're already
+      // waiting for processing to finish for too many. Maybe if pool
+      // utilization is approaching 70%?
+      auto post_process_data = base::BindOnce(
+          &VideoCaptureEffectsProcessor::PostProcessExternalBuffer,
+          effects_processor_->GetWeakPtr(), std::move(buffer), std::move(info),
+          std::move(out_buffer), format, out_buffer_type,
+          base::BindOnce(&VideoCaptureDeviceClient::OnPostProcessDone,
+                         weak_ptr_factory_.GetWeakPtr()));
+      if (!effects_processor_task_runner_->RunsTasksInCurrentSequence()) {
+        effects_processor_task_runner_->PostTask(FROM_HERE,
+                                                 std::move(post_process_data));
+        return;
+      }
+      std::move(post_process_data).Run();
+    } else {
+      // We weren't able to reserve the buffer for the post-processor's
+      // result. We could either drop the frame or deliver the unprocessed
+      // buffer to the consumer, but since post-processing can apply
+      // privacy-preserving effects, we should not deliver unprocessed frames
+      // without user intervention, hence we report failure.
+      receiver_->OnFrameDropped(
+          ConvertReservationFailureToFrameDropReason(reserve_result));
+    }
+    return;
+  }
+#endif
+
   ReadyFrameInBuffer ready_frame;
   if (CreateReadyFrameFromExternalBuffer(
           std::move(buffer), reference_time, timestamp, capture_begin_timestamp,
-          visible_rect, &ready_frame) != ReserveResult::kSucceeded) {
+          visible_rect, metadata, &ready_frame) != ReserveResult::kSucceeded) {
     DVLOG(2) << __func__
              << " CreateReadyFrameFromExternalBuffer failed: reservation "
                 "tracker failed.";
@@ -615,6 +749,7 @@ VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
     const gfx::Rect& visible_rect,
+    const std::optional<VideoFrameMetadata>& metadata,
     ReadyFrameInBuffer* ready_buffer) {
   // Reserve an ID for this buffer that will not conflict with any of the IDs
   // used by |buffer_pool_|.
@@ -663,18 +798,18 @@ VideoCaptureDeviceClient::CreateReadyFrameFromExternalBuffer(
 
   // Construct the ready frame, to be passed on to the |receiver_| by the caller
   // of this method.
-  VideoFrameMetadata metadata;
   // Note: we are not setting `metadata.is_webgpu_compatible` here since we
   // have not verified whether the external buffer is WebGPU-compatible on all
   // platforms.
-  metadata.frame_rate = buffer.format.frame_rate;
-  metadata.reference_time = reference_time;
-  metadata.capture_begin_time = capture_begin_timestamp;
+  auto mutable_metadata = metadata.value_or(VideoFrameMetadata{});
+  mutable_metadata.frame_rate = buffer.format.frame_rate;
+  mutable_metadata.reference_time = reference_time;
+  mutable_metadata.capture_begin_time = capture_begin_timestamp;
 
   mojom::VideoFrameInfoPtr info = mojom::VideoFrameInfo::New(
-      timestamp, metadata, buffer.format.pixel_format, buffer.format.frame_size,
-      visible_rect, /*is_premapped=*/false, buffer.color_space,
-      mojom::PlaneStridesPtr{});
+      timestamp, mutable_metadata, buffer.format.pixel_format,
+      buffer.format.frame_size, visible_rect, /*is_premapped=*/false,
+      buffer.color_space, mojom::PlaneStridesPtr{});
 
   buffer_pool_->HoldForConsumers(buffer_id, 1);
   buffer_pool_->RelinquishProducerReservation(buffer_id);
@@ -695,6 +830,7 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
                                               int* require_new_buffer_id,
                                               int* retire_old_buffer_id) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
   CHECK_GT(frame_size.width(), 0);
   CHECK_GT(frame_size.height(), 0);
   CHECK(IsFormatSupported(pixel_format));
@@ -764,12 +900,13 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBuffer(
     const VideoCaptureFormat& format,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
-    std::optional<base::TimeTicks> capture_begin_timestamp) {
+    std::optional<base::TimeTicks> capture_begin_timestamp,
+    const std::optional<VideoFrameMetadata>& metadata) {
   DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
   OnIncomingCapturedBufferExt(
       std::move(buffer), format, gfx::ColorSpace(), reference_time, timestamp,
-      capture_begin_timestamp, gfx::Rect(format.frame_size),
-      VideoFrameMetadata());
+      capture_begin_timestamp, gfx::Rect(format.frame_size), metadata);
 }
 
 void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
@@ -780,12 +917,12 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
     gfx::Rect visible_rect,
-    const VideoFrameMetadata& additional_metadata) {
+    const std::optional<VideoFrameMetadata>& additional_metadata) {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
                "VideoCaptureDeviceClient::OnIncomingCapturedBufferExt");
-  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
 
-  VideoFrameMetadata metadata = additional_metadata;
+  auto metadata = additional_metadata.value_or(VideoFrameMetadata{});
   // Note: we are not setting `metadata.is_webgpu_compatible` here since we
   // have not verified whether the buffer pool returns frames that are
   // WebGPU-compatible across all platforms.
@@ -798,7 +935,8 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
       buffer.is_premapped, color_space, mojom::PlaneStridesPtr{});
 
 #if BUILDFLAG(ENABLE_VIDEO_EFFECTS)
-  if (base::FeatureList::IsEnabled(media::kCameraMicEffects)) {
+  if (base::FeatureList::IsEnabled(media::kCameraMicEffects) &&
+      effects_processor_) {
     // We need to allocate the output buffer since the post-processor cannot
     // operate in-place. This new `out_buffer`, along with original `buffer`,
     // will be considered as held for producer until the post-processor has
@@ -882,6 +1020,8 @@ void VideoCaptureDeviceClient::OnError(VideoCaptureError error,
 
 void VideoCaptureDeviceClient::OnFrameDropped(
     VideoCaptureFrameDropReason reason) {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
   receiver_->OnFrameDropped(reason);
 }
 
@@ -889,12 +1029,14 @@ void VideoCaptureDeviceClient::OnLog(const std::string& message) {
   receiver_->OnLog(message);
 }
 
-void VideoCaptureDeviceClient::OnStarted() {
-  receiver_->OnStarted();
+double VideoCaptureDeviceClient::GetBufferPoolUtilization() const {
+  DFAKE_SCOPED_RECURSIVE_LOCK(call_from_producer_);
+
+  return buffer_pool_->GetBufferPoolUtilization();
 }
 
-double VideoCaptureDeviceClient::GetBufferPoolUtilization() const {
-  return buffer_pool_->GetBufferPoolUtilization();
+void VideoCaptureDeviceClient::OnStarted() {
+  receiver_->OnStarted();
 }
 
 void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
@@ -904,6 +1046,7 @@ void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_timestamp,
+    const std::optional<VideoFrameMetadata>& metadata,
     int frame_feedback_id) {
   Buffer buffer;
   const auto reservation_result_code = ReserveOutputBuffer(
@@ -925,6 +1068,6 @@ void VideoCaptureDeviceClient::OnIncomingCapturedY16Data(
   const VideoCaptureFormat output_format = VideoCaptureFormat(
       format.frame_size, format.frame_rate, PIXEL_FORMAT_Y16);
   OnIncomingCapturedBuffer(std::move(buffer), output_format, reference_time,
-                           timestamp, capture_begin_timestamp);
+                           timestamp, capture_begin_timestamp, metadata);
 }
 }  // namespace media

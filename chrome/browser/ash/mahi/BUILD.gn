@@ -28,10 +28,6 @@ static_library("mahi_availability") {
 
 static_library("mahi") {
   sources = [
-    "mahi_browser_client_wrapper.cc",
-    "mahi_browser_client_wrapper.h",
-    "mahi_browser_delegate_ash.cc",
-    "mahi_browser_delegate_ash.h",
     "mahi_cache_manager.cc",
     "mahi_cache_manager.h",
     "mahi_manager_impl.cc",
@@ -66,7 +62,6 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "mahi_browser_delegate_ash_unittest.cc",
     "mahi_cache_manager_unittest.cc",
     "mahi_manager_impl_unittest.cc",
   ]
@@ -81,7 +76,9 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser/ash/magic_boost:magic_boost",
     "//chrome/browser/ash/mahi/media_app:unit_tests",
+    "//chrome/browser/ash/mahi/web_contents/test_support",
     "//chromeos/components/magic_boost/public/cpp:cpp",
+    "//chromeos/components/mahi/public/cpp",
     "//chromeos/constants",
     "//chromeos/crosapi/mojom",
     "//components/signin/public/identity_manager:test_support",
@@ -128,8 +125,6 @@ static_library("test_util") {
   testonly = true
 
   sources = [
-    "fake_mahi_browser_delegate_ash.cc",
-    "fake_mahi_browser_delegate_ash.h",
     "mahi_test_util.cc",
     "mahi_test_util.h",
     "mahi_ui_browser_test_base.cc",
@@ -141,6 +136,7 @@ static_library("test_util") {
     "//ash:test_support",
     "//base",
     "//chrome/browser",
+    "//chrome/browser/ash/mahi/web_contents/test_support",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
     "//chrome/browser/ui",
     "//chrome/browser/ui/views/mahi",

@@ -43,7 +43,7 @@ class MockUIManager : public BaseUIManager {
   UnsafeResource GetDisplayedResource() { return displayed_resource_; }
 
  protected:
-  ~MockUIManager() override {}
+  ~MockUIManager() override = default;
 
  private:
   int display_blocking_page_called_times_ = 0;

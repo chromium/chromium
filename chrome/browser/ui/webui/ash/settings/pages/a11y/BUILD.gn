@@ -27,6 +27,7 @@ static_library("a11y") {
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/ui/webui/settings",
     "//components/prefs",
     "//components/soda",
     "//content/public/browser",

@@ -31,9 +31,6 @@ import java.util.List;
 public class FaceDetectionImplGmsCore implements FaceDetection {
     private static final String TAG = "FaceDetectionImpl";
     private static final int MAX_FACES = 32;
-    // Maximum rotation around the z-axis allowed when computing a tighter bounding box for the
-    // detected face.
-    private static final int MAX_EULER_Z = 15;
     private final int mMaxFaces;
     private final boolean mFastMode;
     private final FaceDetector mFaceDetector;

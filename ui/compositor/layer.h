@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -613,11 +612,7 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
     compositor_ = compositor;
   }
 
-  void set_no_mutation(bool no_mutation) { no_mutation_ = no_mutation; }
-
  private:
-  // TODO(crbug.com/40786876): temporary while tracking down crash.
-  friend class Compositor;
   friend class LayerOwner;
   class LayerMirror;
   class SubpixelPositionOffsetCache;
@@ -872,11 +867,6 @@ class COMPOSITOR_EXPORT Layer : public LayerAnimationDelegate,
   // If the value == 0, means we should not perform trilinear filtering on the
   // layer.
   unsigned trilinear_filtering_request_;
-
-  // TODO(crbug.com/40786876): temporary while tracking down crash.
-  bool in_send_damaged_rects_ = false;
-  bool sending_damaged_rects_for_descendants_ = false;
-  bool no_mutation_ = false;  // CHECK on Add/SetMakeLayer if true.
 
   base::WeakPtrFactory<Layer> weak_ptr_factory_{this};
 };

@@ -10,10 +10,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
-#include "base/types/expected.h"
 #include "chromeos/ash/components/boca/babelorca/proto/testing_message.pb.h"
 #include "chromeos/ash/components/boca/babelorca/request_data_wrapper.h"
-#include "chromeos/ash/components/boca/babelorca/tachyon_request_error.h"
+#include "chromeos/ash/components/boca/babelorca/tachyon_response.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -27,7 +26,6 @@
 namespace ash::babelorca {
 namespace {
 
-using ExpectedTestingMessage = base::expected<std::string, TachyonRequestError>;
 using RequestDataPtr = std::unique_ptr<RequestDataWrapper>;
 
 constexpr char kOAuthToken[] = "oauth-token";
@@ -50,13 +48,13 @@ class TachyonClientImplTest : public testing::Test {
     return &auth_failure_future_;
   }
 
-  base::test::TestFuture<ExpectedTestingMessage>* result_future() {
+  base::test::TestFuture<TachyonResponse>* result_future() {
     return &result_future_;
   }
 
  private:
   base::test::TestFuture<RequestDataPtr> auth_failure_future_;
-  base::test::TestFuture<ExpectedTestingMessage> result_future_;
+  base::test::TestFuture<TachyonResponse> result_future_;
   base::test::TaskEnvironment task_env_;
 };
 
@@ -70,10 +68,10 @@ TEST_F(TachyonClientImplTest, SuccessfulRequest) {
   client.StartRequest(request_data(), kOAuthToken,
                       auth_failure_future()->GetCallback());
 
-  auto result = result_future()->Get();
-  ASSERT_TRUE(result.has_value());
+  auto result = result_future()->Take();
+  EXPECT_TRUE(result.ok());
   TestingMessage result_proto;
-  ASSERT_TRUE(result_proto.ParseFromString(result.value()));
+  ASSERT_TRUE(result_proto.ParseFromString(result.response_body()));
   EXPECT_EQ(result_proto.int_field(), 9999);
   EXPECT_FALSE(auth_failure_future()->IsReady());
 }
@@ -88,9 +86,8 @@ TEST_F(TachyonClientImplTest, NetworkFailure) {
   client.StartRequest(request_data(), kOAuthToken,
                       auth_failure_future()->GetCallback());
 
-  auto result = result_future()->Get();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), TachyonRequestError::kNetworkError);
+  auto result = result_future()->Take();
+  EXPECT_EQ(result.status(), TachyonResponse::Status::kNetworkError);
   EXPECT_FALSE(auth_failure_future()->IsReady());
 }
 
@@ -103,9 +100,8 @@ TEST_F(TachyonClientImplTest, HttpError) {
   client.StartRequest(request_data(), kOAuthToken,
                       auth_failure_future()->GetCallback());
 
-  auto result = result_future()->Get();
-  ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), TachyonRequestError::kHttpError);
+  auto result = result_future()->Take();
+  EXPECT_EQ(result.status(), TachyonResponse::Status::kHttpError);
   EXPECT_FALSE(auth_failure_future()->IsReady());
 }
 

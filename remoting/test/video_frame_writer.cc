@@ -33,8 +33,7 @@ const base::FilePath::CharType kDumpFrameFolder[] =
 
 }  // namespace
 
-namespace remoting {
-namespace test {
+namespace remoting::test {
 
 VideoFrameWriter::VideoFrameWriter()
     : instance_creation_time_(base::Time::Now()),
@@ -44,20 +43,18 @@ VideoFrameWriter::~VideoFrameWriter() = default;
 
 void VideoFrameWriter::WriteFrameToPath(const webrtc::DesktopFrame& frame,
                                         const base::FilePath& image_path) {
-  unsigned char* frame_data = reinterpret_cast<unsigned char*>(frame.data());
-  std::vector<unsigned char> png_encoded_data;
+  uint8_t* frame_data = reinterpret_cast<unsigned char*>(frame.data());
 
-  if (!gfx::PNGCodec::Encode(
-          frame_data, gfx::PNGCodec::FORMAT_BGRA,
-          gfx::Size(frame.size().width(), frame.size().height()),
-          frame.stride(), true, std::vector<gfx::PNGCodec::Comment>(),
-          &png_encoded_data)) {
+  std::optional<std::vector<uint8_t>> png_encoded_data = gfx::PNGCodec::Encode(
+      frame_data, gfx::PNGCodec::FORMAT_BGRA,
+      gfx::Size(frame.size().width(), frame.size().height()), frame.stride(),
+      true, std::vector<gfx::PNGCodec::Comment>());
+  if (!png_encoded_data) {
     LOG(WARNING) << "Failed to encode frame to PNG file";
     return;
   }
 
-  // Dump contents (unsigned chars) to a file as a sequence of chars.
-  if (!base::WriteFile(image_path, png_encoded_data)) {
+  if (!base::WriteFile(image_path, png_encoded_data.value())) {
     LOG(WARNING) << "Failed to write frame to disk";
   }
 }
@@ -141,5 +138,4 @@ void VideoFrameWriter::ShiftPixelColor(webrtc::DesktopFrame* frame,
   frame_pos[0] = frame_pos[0] + shift_amount;
 }
 
-}  // namespace test
-}  // namespace remoting
+}  // namespace remoting::test

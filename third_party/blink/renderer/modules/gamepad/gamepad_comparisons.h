@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_COMPARISONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GAMEPAD_GAMEPAD_COMPARISONS_H_
 
+#include <array>
 #include <bitset>
 
 #include "device/gamepad/public/cpp/gamepads.h"
@@ -54,14 +55,18 @@ class MODULES_EXPORT GamepadStateCompareResult {
   bool any_change_ = false;
   std::bitset<device::Gamepads::kItemsLengthCap> gamepad_connected_;
   std::bitset<device::Gamepads::kItemsLengthCap> gamepad_disconnected_;
-  std::bitset<device::Gamepad::kAxesLengthCap>
-      axis_changed_[device::Gamepads::kItemsLengthCap];
-  std::bitset<device::Gamepad::kButtonsLengthCap>
-      button_changed_[device::Gamepads::kItemsLengthCap];
-  std::bitset<device::Gamepad::kButtonsLengthCap>
-      button_down_[device::Gamepads::kItemsLengthCap];
-  std::bitset<device::Gamepad::kButtonsLengthCap>
-      button_up_[device::Gamepads::kItemsLengthCap];
+  std::array<std::bitset<device::Gamepad::kAxesLengthCap>,
+             device::Gamepads::kItemsLengthCap>
+      axis_changed_;
+  std::array<std::bitset<device::Gamepad::kButtonsLengthCap>,
+             device::Gamepads::kItemsLengthCap>
+      button_changed_;
+  std::array<std::bitset<device::Gamepad::kButtonsLengthCap>,
+             device::Gamepads::kItemsLengthCap>
+      button_down_;
+  std::array<std::bitset<device::Gamepad::kButtonsLengthCap>,
+             device::Gamepads::kItemsLengthCap>
+      button_up_;
 };
 
 class MODULES_EXPORT GamepadComparisons {

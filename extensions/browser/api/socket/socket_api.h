@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_set>
 
@@ -50,9 +51,9 @@ class TCPConnectedSocket;
 
 namespace extensions {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 extern const char kCrOSTerminal[];
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 class Socket;
 
@@ -62,7 +63,7 @@ class Socket;
 // "socket" namespace vs new version in "socket.xxx" namespaces).
 class SocketResourceManagerInterface {
  public:
-  virtual ~SocketResourceManagerInterface() {}
+  virtual ~SocketResourceManagerInterface() = default;
 
   virtual bool SetBrowserContext(content::BrowserContext* context) = 0;
   virtual int Add(Socket* socket) = 0;
@@ -123,6 +124,9 @@ class SocketResourceManager : public SocketResourceManagerInterface {
 // Base class for socket API functions, with some helper functions.
 class SocketApiFunction : public ExtensionFunction {
  public:
+  inline static constexpr char kExceedWriteQuotaError[] =
+      "Exceeded write quota.";
+
   SocketApiFunction();
 
  protected:
@@ -148,6 +152,13 @@ class SocketApiFunction : public ExtensionFunction {
   // for CrOS Terminal.
   bool CheckRequest(const content::SocketPermissionRequest& param) const;
 
+  // Adds `bytes_to_write` against the write quota. Returns false if it would
+  // exceed the write quota.
+  bool TakeWriteQuota(size_t bytes_to_write);
+
+  // Returns bytes taken in last `TakeWriteQuota` call to the write quota.
+  void ReturnWriteQuota();
+
   virtual std::unique_ptr<SocketResourceManagerInterface>
   CreateSocketResourceManager();
 
@@ -163,7 +174,18 @@ class SocketApiFunction : public ExtensionFunction {
                         Socket* socket);
 
  private:
+  class ScopedWriteQuota {
+   public:
+    ScopedWriteQuota(SocketApiFunction* owner, size_t bytes_used);
+    ~ScopedWriteQuota();
+
+   private:
+    const raw_ptr<SocketApiFunction> owner_;
+    const size_t bytes_used_;
+  };
+
   std::unique_ptr<SocketResourceManagerInterface> manager_;
+  std::optional<ScopedWriteQuota> write_quota_used_;
 };
 
 class SocketExtensionWithDnsLookupFunction

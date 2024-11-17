@@ -26,10 +26,11 @@ import java.util.ArrayList;
 public class ToolbarUtils {
     /**
      * Sets up feature engagement tracker for the download settings in-product help text bubble.
+     *
      * @param tracker The {@link Tracker} to use for the in-product help.
      * @param toolbar The toolbar that contains the settings menu.
      */
-    public static void setupTrackerForDownloadSettingsIPH(Tracker tracker, View toolbar) {
+    public static void setupTrackerForDownloadSettingsIph(Tracker tracker, View toolbar) {
         tracker.addOnInitializedCallback(
                 success -> ToolbarUtils.maybeShowDownloadSettingsTextBubble(tracker, toolbar));
     }
@@ -48,7 +49,7 @@ public class ToolbarUtils {
         if (dirs.size() < 2) return;
 
         // Check to see if the help UI should be triggered.
-        if (!tracker.shouldTriggerHelpUI(FeatureConstants.DOWNLOAD_SETTINGS_FEATURE)) return;
+        if (!tracker.shouldTriggerHelpUi(FeatureConstants.DOWNLOAD_SETTINGS_FEATURE)) return;
 
         // Build and show text bubble.
         View anchorView = rootView.findViewById(R.id.settings_menu_id);

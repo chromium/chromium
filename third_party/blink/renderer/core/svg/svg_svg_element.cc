@@ -244,12 +244,12 @@ void SVGSVGElement::SvgAttributeChanged(
       // be) an outermost root, so always mark presentation attributes dirty in
       // that case.
       if (!layout_object || layout_object->IsSVGRoot()) {
-        UpdatePresentationAttributeStyle(attr_name);
+        UpdatePresentationAttributeStyle(params.property);
         if (layout_object)
           To<LayoutSVGRoot>(layout_object)->IntrinsicSizingInfoChanged();
       }
     } else {
-      UpdatePresentationAttributeStyle(attr_name);
+      UpdatePresentationAttributeStyle(params.property);
     }
   }
 
@@ -265,7 +265,6 @@ void SVGSVGElement::SvgAttributeChanged(
 
   if (update_relative_lengths_or_view_box ||
       SVGZoomAndPan::IsKnownAttribute(attr_name)) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     if (auto* layout_object = GetLayoutObject())
       MarkForLayoutAndParentResourceInvalidation(*layout_object);
     return;

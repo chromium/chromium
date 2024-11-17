@@ -1,0 +1,29 @@
+Verifies that Cookie raises issue when ports are mismatch.
+
+{
+    issue : {
+        code : CookieIssue
+        details : {
+            cookieIssueDetails : {
+                cookie : {
+                    domain : example.test
+                    name : foo
+                    path : /
+                }
+                cookieExclusionReasons : [
+                    [0] : ExcludePortMismatch
+                ]
+                cookieUrl : https://example.test:8443/inspector-protocol/network/resources/hello-world.html
+                cookieWarningReasons : [
+                ]
+                operation : ReadCookie
+                request : {
+                    requestId : <string>
+                    url : https://example.test:8443/inspector-protocol/network/resources/hello-world.html
+                }
+                siteForCookies : https://example.test/
+            }
+        }
+    }
+}
+

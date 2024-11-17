@@ -53,10 +53,11 @@ void RecordInitializationStatus(
 }
 
 void RecordFileSizeHistogram(const base::FilePath& path_to_database) {
-  if (int64_t size_bytes; base::GetFileSize(path_to_database, &size_bytes)) {
+  std::optional<int64_t> size_bytes = base::GetFileSize(path_to_database);
+  if (size_bytes.has_value()) {
     base::UmaHistogramCounts1M(
         "PrivacySandbox.PrivateAggregation.BudgetStorage.DbSize",
-        base::MakeClampedNum(size_bytes / 1024));
+        base::MakeClampedNum(size_bytes.value() / 1024));
   }
 }
 

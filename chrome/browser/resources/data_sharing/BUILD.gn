@@ -33,7 +33,6 @@ build_webui("build") {
   static_files = [
     "data_sharing.html",
     "data_sharing_api.html",
-    "data_sharing_dev.css",
   ]
 
   web_component_files = [ "data_sharing_app.ts" ]
@@ -46,11 +45,12 @@ build_webui("build") {
   ]
 
   if (is_chrome_branded) {
+    ts_path_mappings = [ "/data_sharing_sdk.js|" +
+                         rebase_path("${preprocess_folder}/data_sharing_sdk.js",
+                                     target_gen_dir) ]
     ts_extra_deps = [ ":copy_data_sharing_sdk" ]
     extra_grdp_deps = [ ":build_data_sharing_sdk_grdp" ]
     extra_grdp_files = [ "$target_gen_dir/data_sharing_sdk.grdp" ]
-
-    ts_definitions = [ "$preprocess_folder/data_sharing_sdk.d.ts" ]
   } else {
     static_files += [ "data_sharing_sdk.css" ]
 
@@ -74,7 +74,6 @@ if (is_chrome_branded) {
   copy("copy_data_sharing_sdk") {
     sources = [
       "//third_party/data_sharing_sdk/data_sharing_sdk.css",
-      "//third_party/data_sharing_sdk/data_sharing_sdk.d.ts",
       "//third_party/data_sharing_sdk/data_sharing_sdk.js",
     ]
 

@@ -31,10 +31,11 @@ public class LanguageItem {
 
     private final boolean mSupportTranslate;
 
-    private boolean mSupportAppUI;
+    private boolean mSupportAppUi;
 
     /**
      * Creates a new LanguageItem getting UI availability from ResourceBundle.
+     *
      * @param code The BCP-47 language tag for this language item.
      * @param displayName The display name of the language in the current app locale.
      * @param nativeDisplayName The display name of the language in the language's locale.
@@ -46,7 +47,7 @@ public class LanguageItem {
         mDisplayName = displayName;
         mNativeDisplayName = nativeDisplayName;
         mSupportTranslate = supportTranslate;
-        mSupportAppUI = AppLocaleUtils.isAvailableExactUiLanguage(code);
+        mSupportAppUi = AppLocaleUtils.isAvailableExactUiLanguage(code);
     }
 
     /**
@@ -107,8 +108,8 @@ public class LanguageItem {
     /**
      * @return Whether this language supports the Chrome UI.
      */
-    public boolean isUISupported() {
-        return mSupportAppUI;
+    public boolean isUiSupported() {
+        return mSupportAppUi;
     }
 
     /**
@@ -143,13 +144,12 @@ public class LanguageItem {
 
     /**
      * Create a LanguageItem representing the system default language.
+     *
      * @return LanguageItem
      */
     public static LanguageItem makeFollowSystemLanguageItem() {
         String displayName =
-                ContextUtils.getApplicationContext()
-                        .getResources()
-                        .getString(R.string.default_lang_subtitle);
+                ContextUtils.getApplicationContext().getString(R.string.default_lang_subtitle);
         String nativeName =
                 GlobalAppLocaleController.getInstance()
                         .getOriginalSystemLocale()

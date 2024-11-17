@@ -41,9 +41,18 @@ JNI_GpuProcessCallback_GetViewSurface(
   absl::visit(
       base::Overloaded{[&](gl::ScopedJavaSurface&& scoped_java_surface) {
                          if (!scoped_java_surface.IsEmpty()) {
-                           j_surface_wrapper = JNI_SurfaceWrapper_create(
-                               env, scoped_java_surface.j_surface(),
-                               surface_record.can_be_used_with_surface_control);
+                           if (surface_record.host_input_token) {
+                             j_surface_wrapper = JNI_SurfaceWrapper_create(
+                                 env, scoped_java_surface.j_surface(),
+                                 surface_record
+                                     .can_be_used_with_surface_control,
+                                 surface_record.host_input_token);
+                           } else {
+                             j_surface_wrapper = JNI_SurfaceWrapper_create(
+                                 env, scoped_java_surface.j_surface(),
+                                 surface_record
+                                     .can_be_used_with_surface_control);
+                           }
                          }
                        },
                        [&](gl::ScopedJavaSurfaceControl&& surface_control) {

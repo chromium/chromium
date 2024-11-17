@@ -29,8 +29,22 @@ struct COMPONENT_EXPORT(GOOGLE_APIS) ListedAccount {
   bool verified = true;
 
   ListedAccount();
-  ListedAccount(const ListedAccount& other);
+  ListedAccount(const ListedAccount&);
+  ListedAccount& operator=(const ListedAccount&);
   ~ListedAccount();
+
+  friend bool operator==(const ListedAccount& lhs,
+                         const ListedAccount& rhs) = default;
+};
+
+struct COMPONENT_EXPORT(GOOGLE_APIS) MultiloginAccountAuthCredentials {
+  std::string gaia_id;
+  std::string token;
+  std::string token_binding_assertion;
+
+  MultiloginAccountAuthCredentials(std::string gaia_id,
+                                   std::string token,
+                                   std::string token_binding_assertion);
 };
 
 // Perform basic canonicalization of |email_address|, taking into account that
@@ -77,12 +91,10 @@ COMPONENT_EXPORT(GOOGLE_APIS) bool HasGaiaSchemeHostPort(const GURL& url);
 // email/valid pairs.  An email addresses is considered valid if a passive
 // login would succeed (i.e. the user does not need to reauthenticate).
 // If there an error parsing the JSON, then false is returned.
-// If either |accounts| or |signed_out_accounts| is null, the corresponding
-// accounts returned from /ListAccounts will be ignored.
+// If |accounts| is null, accounts returned from /ListAccounts will be ignored.
 COMPONENT_EXPORT(GOOGLE_APIS)
 bool ParseListAccountsData(std::string_view data,
-                           std::vector<ListedAccount>* accounts,
-                           std::vector<ListedAccount>* signed_out_accounts);
+                           std::vector<ListedAccount>* accounts);
 
 // Parses base64url encoded protobuf message returned by the remote consent
 // flow, returning whether the consent was approved and the gaia id of the user
@@ -101,6 +113,13 @@ COMPONENT_EXPORT(GOOGLE_APIS)
 std::string CreateBoundOAuthToken(const std::string& gaia_id,
                                   const std::string& refresh_token,
                                   const std::string& binding_key_assertion);
+
+// Creates a base64url encoded value representing a list of bound OAuth tokens
+// that can be used in an Authorization header with the "MultiOAuth" type.
+// Returns an empty string if the header creation fails.
+COMPONENT_EXPORT(GOOGLE_APIS)
+std::string CreateMultiOAuthHeader(
+    const std::vector<MultiloginAccountAuthCredentials>& accounts);
 
 }  // namespace gaia
 

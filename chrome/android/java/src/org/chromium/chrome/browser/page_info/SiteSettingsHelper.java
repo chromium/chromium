@@ -9,10 +9,10 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
@@ -49,17 +49,17 @@ public class SiteSettingsHelper {
     /** Show the single category settings page for given category and type. */
     public static void showCategorySettings(
             Context context, @SiteSettingsCategory.Type int category) {
-        SettingsLauncher settingsLauncher = SettingsLauncherFactory.createSettingsLauncher();
+        SettingsNavigation settingsNavigation =
+                SettingsNavigationFactory.createSettingsNavigation();
         Bundle extras = new Bundle();
         extras.putString(
                 SingleCategorySettings.EXTRA_CATEGORY,
                 SiteSettingsCategory.preferenceKey(category));
         extras.putString(
                 SingleCategorySettings.EXTRA_TITLE,
-                context.getResources()
-                        .getString(ContentSettingsResources.getTitleForCategory(category)));
+                context.getString(ContentSettingsResources.getTitleForCategory(category)));
         Intent preferencesIntent =
-                settingsLauncher.createSettingsActivityIntent(
+                settingsNavigation.createSettingsIntent(
                         context, SingleCategorySettings.class, extras);
         launchIntent(context, preferencesIntent);
     }

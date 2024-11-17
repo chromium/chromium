@@ -49,6 +49,7 @@ import {
 import {isObjectEmpty} from '../core/utils/utils.js';
 
 import {CraMenu} from './cra/cra-menu.js';
+import {withTooltip} from './directives/with-tooltip.js';
 import {RecordingFileListItem} from './recording-file-list-item.js';
 
 interface RecordingSearchResult {
@@ -112,9 +113,10 @@ export class RecordingFileList extends ReactiveLitElement {
       height: 80px;
       padding: 20px 16px 8px 32px;
 
-      & > span {
+      & > h1 {
         flex: 1;
         font: var(--cros-display-7-font);
+        margin: 0;
       }
     }
 
@@ -256,7 +258,7 @@ export class RecordingFileList extends ReactiveLitElement {
       selected: this.sortMenuOpened.value,
     };
     return html`<div id="header">
-        <span>${i18n.recordingListHeader}</span>
+        <h1>${i18n.recordingListHeader}</h1>
         <recording-search-box
           aria-label=${i18n.mainSearchLandmarkAriaLabel}
           role="search"
@@ -269,6 +271,7 @@ export class RecordingFileList extends ReactiveLitElement {
           class="with-toggle-style ${classMap(classes)}"
           @click=${this.toggleSortMenu}
           aria-label=${i18n.recordingListSortButtonTooltip}
+          ${withTooltip()}
         >
           <cra-icon slot="icon" name="sort_by"></cra-icon>
         </cra-icon-button>
@@ -411,7 +414,7 @@ export class RecordingFileList extends ReactiveLitElement {
       (item) => {
         switch (item.kind) {
           case 'header':
-            return html`<div class="section-heading">${item.label}</div>`;
+            return html`<h2 class="section-heading">${item.label}</h2>`;
           case 'recording': {
             const {recording, searchHighlight} = item;
             const [playing, progress] = (() => {

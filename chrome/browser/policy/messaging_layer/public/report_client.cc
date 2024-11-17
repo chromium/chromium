@@ -369,7 +369,9 @@ void ReportingClient::DeliverAsyncStartUploader(
     // EncryptedReportingServiceProvider so it does not need to be
     // enabled here.
     if (!StorageSelector::is_uploader_required() ||
-        StorageSelector::is_use_missive()) {
+        StorageSelector::is_use_missive() ||
+        storage() == nullptr  // report queue provider is not (yet?) ready
+    ) {
       std::move(start_uploader_cb)
           .Run(base::unexpected(
               Status(error::UNAVAILABLE, "Uploader not available")));

@@ -150,8 +150,7 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
     case base::TERMINATION_STATUS_MAX_ENUM:
       break;
   }
-  NOTREACHED_IN_MIGRATION() << "Unknown Termination Status.";
-  return "unknown";
+  NOTREACHED() << "Unknown Termination Status.";
 }
 
 class BrowserToPageConnector;
@@ -651,10 +650,10 @@ class TargetHandler::TargetFilter {
     return base::WrapUnique(new TargetFilter(std::move(default_filter)));
   }
   static std::unique_ptr<TargetFilter> Create(Maybe<Filter> filter) {
-    if (!filter.has_value()) {
+    if (!filter) {
       return CreateDefault();
     }
-    return base::WrapUnique(new TargetFilter(std::move(filter.value())));
+    return base::WrapUnique(new TargetFilter(std::move(*filter)));
   }
 
   bool Match(DevToolsAgentHost& host) const { return Match(host.GetType()); }
@@ -1225,7 +1224,7 @@ Response TargetHandler::GetTargets(
   if (access_mode_ == AccessMode::kAutoAttachOnly)
     return Response::ServerError(kNotAllowedError);
   std::unique_ptr<TargetFilter> passed_filter =
-      filter.has_value() || !discover_target_filter_
+      filter || !discover_target_filter_
           ? TargetFilter::Create(std::move(filter))
           : nullptr;
   const TargetFilter* effective_filter =
@@ -1322,9 +1321,8 @@ void TargetHandler::CreateBrowserContext(
   // Pre-process universal network access origins before actual context creation
   // in case we need to bail out with error.
   std::vector<url::Origin> originsToGrantUniversalNetworkAccess;
-  if (in_originsToGrantUniversalNetworkAccess.has_value()) {
-    for (const auto& origin_str :
-         in_originsToGrantUniversalNetworkAccess.value()) {
+  if (in_originsToGrantUniversalNetworkAccess) {
+    for (const auto& origin_str : *in_originsToGrantUniversalNetworkAccess) {
       GURL url(origin_str);
       url::Origin origin = url::Origin::Create(url);
       if (!url.is_valid() || origin.opaque()) {

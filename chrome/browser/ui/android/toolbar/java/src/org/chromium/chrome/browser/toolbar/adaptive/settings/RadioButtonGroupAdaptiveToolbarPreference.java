@@ -101,6 +101,15 @@ public class RadioButtonGroupAdaptiveToolbarPreference extends Preference
                                             R.string
                                                     .adaptive_toolbar_button_preference_based_on_your_usage_description,
                                             getButtonString(uiState.autoButtonCaption)));
+                    // Description to indicate these buttons only appear on small windows,
+                    // as large windows (tablets) show them elsewhere on UI (strip, omnibox).
+                    String basedOnWindowDesc =
+                            getContext()
+                                    .getString(
+                                            R.string
+                                                    .adaptive_toolbar_button_preference_based_on_window_width_description);
+                    mNewTabButton.setDescriptionText(basedOnWindowDesc);
+                    mAddToBookmarksButton.setDescriptionText(basedOnWindowDesc);
                     updateVoiceButtonVisibility();
                     updateReadAloudButtonVisibility();
                     updatePageSummaryButtonVisibility();

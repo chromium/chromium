@@ -1,0 +1,26 @@
+This is a wdspec test.
+[FAIL] test_state[absent-False]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_state[powered-off-True]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_state[powered-on-True]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_set_twice[absent-False-absent-False]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_set_twice[absent-False-powered-off-True]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_set_twice[absent-False-powered-on-True]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_set_twice[powered-off-True-absent-False]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_set_twice[powered-off-True-powered-off-True]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_set_twice[powered-off-True-powered-on-True]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_set_twice[powered-on-True-absent-False]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_set_twice[powered-on-True-powered-off-True]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+[FAIL] test_set_twice[powered-on-True-powered-on-True]
+  AttributeError: 'BidiSession' object has no attribute 'bluetooth'
+Harness: the test ran to completion.

@@ -50,6 +50,7 @@
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/arc/arc_migration_guide_notification.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/base/locale_util.h"
@@ -59,6 +60,7 @@
 #include "chrome/browser/ash/eol/eol_notification.h"
 #include "chrome/browser/ash/first_run/first_run.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_service.h"
+#include "chrome/browser/ash/floating_workspace/floating_workspace_service_factory.h"
 #include "chrome/browser/ash/floating_workspace/floating_workspace_util.h"
 #include "chrome/browser/ash/hats/hats_config.h"
 #include "chrome/browser/ash/logging/logging.h"
@@ -143,7 +145,6 @@
 #include "chromeos/ash/components/network/portal_detector/network_portal_detector.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
-#include "chromeos/ash/components/standalone_browser/migrator_util.h"
 #include "chromeos/ash/components/tpm/prepare_tpm.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager.pb.h"
 #include "chromeos/dbus/tpm_manager/tpm_manager_client.h"
@@ -1285,6 +1286,12 @@ void UserSessionManager::UpdateArcFileSystemCompatibilityAndPrepareProfile() {
   arc::UpdateArcFileSystemCompatibilityPrefIfNeeded(
       user_context_.GetAccountId(),
       ProfileHelper::GetProfilePathByUserIdHash(user_context_.GetUserIDHash()),
+      base::BindOnce(&UserSessionManager::CheckArcVmDlcImageExist,
+                     GetUserSessionManagerAsWeakPtr()));
+}
+
+void UserSessionManager::CheckArcVmDlcImageExist() {
+  arc::CheckArcVmDlcImageExist(
       base::BindOnce(&UserSessionManager::InitializeAccountManager,
                      GetUserSessionManagerAsWeakPtr()));
 }
@@ -1518,7 +1525,7 @@ void UserSessionManager::InitProfilePreferences(
         token_observers_.emplace(profile,
                                  std::move(device_account_token_observer));
       } else {
-        NOTREACHED_IN_MIGRATION()
+        NOTREACHED()
             << "Found an existing Gaia token observer for this Profile. "
                "Profile is being erroneously initialized twice?";
       }
@@ -1540,8 +1547,7 @@ void UserSessionManager::InitProfilePreferences(
         account_id, is_child ? signin::Tribool::kTrue : signin::Tribool::kFalse,
         is_under_advanced_protection);
 
-    if (is_child &&
-        base::FeatureList::IsEnabled(::features::kDMServerOAuthForChildUser)) {
+    if (is_child) {
       child_policy_observer_ = std::make_unique<ChildPolicyObserver>(profile);
     }
   } else {
@@ -1711,7 +1717,7 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
         password_sync_token_verifier->CheckForPasswordNotInSync();
       } else {
         // SAML user is not expected to go through other authentication flows.
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
 
@@ -1780,16 +1786,13 @@ void UserSessionManager::FinalizePrepareProfile(Profile* profile) {
     VLOG(1) << "Clearing all secrets";
     user_context_.ClearSecrets();
     if (user->GetType() == user_manager::UserType::kChild) {
-      if (base::FeatureList::IsEnabled(
-              ::features::kDMServerOAuthForChildUser)) {
-        VLOG(1) << "Waiting for child policy refresh before showing session UI";
-        DCHECK(child_policy_observer_);
-        child_policy_observer_->NotifyWhenPolicyReady(
-            base::BindOnce(&UserSessionManager::OnChildPolicyReady,
-                           GetUserSessionManagerAsWeakPtr()),
-            kWaitForChildPolicyTimeout);
-        return;
-      }
+      VLOG(1) << "Waiting for child policy refresh before showing session UI";
+      DCHECK(child_policy_observer_);
+      child_policy_observer_->NotifyWhenPolicyReady(
+          base::BindOnce(&UserSessionManager::OnChildPolicyReady,
+                         GetUserSessionManagerAsWeakPtr()),
+          kWaitForChildPolicyTimeout);
+      return;
     }
   }
 
@@ -2325,7 +2328,7 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
         floating_workspace_util::IsFloatingWorkspaceV2Enabled()) {
       // If floating workspace is enabled, it will override full restore.
       FloatingWorkspaceService* floating_workspace_service =
-          FloatingWorkspaceService::GetForProfile(profile);
+          FloatingWorkspaceServiceFactory::GetForProfile(profile);
       if (floating_workspace_util::IsFloatingWorkspaceV1Enabled() &&
           floating_workspace_service) {
         floating_workspace_service->SubscribeToForeignSessionUpdates();
@@ -2334,7 +2337,7 @@ void UserSessionManager::DoBrowserLaunchInternal(Profile* profile,
       LaunchBrowser(profile);
       PerformPostBrowserLaunchOOBEActions(profile);
     } else {
-      full_restore::FullRestoreService::GetForProfile(profile)
+      full_restore::FullRestoreServiceFactory::GetForProfile(profile)
           ->LaunchBrowserWhenReady();
     }
   }
@@ -2592,7 +2595,7 @@ void UserSessionManager::UpdateTokenHandle(Profile* const profile,
 
 bool UserSessionManager::IsFullRestoreEnabled(Profile* profile) {
   auto* full_restore_service =
-      full_restore::FullRestoreService::GetForProfile(profile);
+      full_restore::FullRestoreServiceFactory::GetForProfile(profile);
   return full_restore_service != nullptr;
 }
 

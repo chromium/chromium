@@ -39,8 +39,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
-import org.chromium.ui.test.util.UiDisableIf;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -199,7 +198,7 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE) // See crbug.com/633607
+    @Restriction(DeviceFormFactor.PHONE) // See crbug.com/633607
     public void testSaveStateCommitsUndos() throws TimeoutException, ExecutionException {
         TabModelOrchestrator orchestrator =
                 ThreadUtils.runOnUiThreadBlocking(
@@ -278,7 +277,7 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338997949
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338997949
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2) // https://crbug.com/1297370
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)
     public void testOpenRecentlyClosedTabMultiWindow() throws TimeoutException {
@@ -364,7 +363,7 @@ public class UndoTabModelTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338997949
+    @DisableIf.Device(DeviceFormFactor.TABLET) // https://crbug.com/338997949
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.S_V2) // https://crbug.com/1297370
     @MinAndroidSdkLevel(24)
     @CommandLineFlags.Add(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)

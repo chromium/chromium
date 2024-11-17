@@ -531,8 +531,7 @@ Outputter* GLES2Decoder::outputter() const {
 }
 
 int GLES2Decoder::GetRasterDecoderId() const {
-  NOTREACHED_IN_MIGRATION();
-  return -1;
+  NOTREACHED();
 }
 
 // This class implements GLES2Decoder so we don't have to expose all the GLES2
@@ -1096,27 +1095,12 @@ class GLES2DecoderImpl : public GLES2Decoder,
   void DoBeginSharedImageAccessDirectCHROMIUM(GLuint client_id, GLenum mode);
   void DoEndSharedImageAccessDirectCHROMIUM(GLuint client_id);
 
-  void DoConvertYUVAMailboxesToTextureINTERNAL(
-      GLuint texture,
-      GLenum target,
-      GLuint internal_format,
-      GLenum type,
-      GLint src_x,
-      GLint src_y,
-      GLsizei width,
-      GLsizei height,
-      GLboolean flip_y,
-      GLenum yuv_color_space,
-      GLenum plane_config,
-      GLenum subsampling,
-      const volatile GLbyte* mailboxes_in);
   void DoCopySharedImageINTERNAL(GLint xoffset,
                                  GLint yoffset,
                                  GLint x,
                                  GLint y,
                                  GLsizei width,
                                  GLsizei height,
-                                 GLboolean unpack_flip_y,
                                  const volatile GLbyte* mailboxes);
   void DoCopySharedImageToTextureINTERNAL(GLuint texture,
                                           GLenum target,
@@ -2177,8 +2161,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
       case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
         return GL_TEXTURE_2D_ARRAY;
       default:
-        NOTREACHED_IN_MIGRATION();
-        return 0;
+        NOTREACHED();
     }
   }
 
@@ -2194,8 +2177,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
         framebuffer = framebuffer_state_.bound_read_framebuffer.get();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     return framebuffer;
   }
@@ -2208,8 +2190,7 @@ class GLES2DecoderImpl : public GLES2Decoder,
         renderbuffer = state_.bound_renderbuffer.get();
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     return renderbuffer;
   }
@@ -3678,9 +3659,7 @@ bool GLES2DecoderImpl::InitializeShaderTranslator() {
           features().ext_blend_func_extended ? 1 : 0;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      shader_spec = SH_GLES2_SPEC;
-      break;
+      NOTREACHED();
   }
 
   if (shader_spec == SH_WEBGL_SPEC || shader_spec == SH_WEBGL2_SPEC) {
@@ -4422,7 +4401,7 @@ void GLES2DecoderImpl::MarkDrawBufferAsCleared(
     default:
       // Caller is responsible for breaking GL_DEPTH_STENCIL into GL_DEPTH and
       // GL_STENCIL.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   framebuffer->MarkAttachmentAsCleared(
       renderbuffer_manager(), texture_manager(), attachment, true);
@@ -5059,8 +5038,7 @@ void GLES2DecoderImpl::BindIndexedBufferImpl(
       break;
     }
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   if (function_type == BindIndexedBufferFunctionType::kBindBufferRange) {
@@ -5081,8 +5059,7 @@ void GLES2DecoderImpl::BindIndexedBufferImpl(
         break;
       }
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
 
     if (client_id != 0) {
@@ -5132,8 +5109,7 @@ void GLES2DecoderImpl::BindIndexedBufferImpl(
       bindings = state_.indexed_uniform_buffer_bindings.get();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   DCHECK(bindings);
   switch (function_type) {
@@ -5144,8 +5120,7 @@ void GLES2DecoderImpl::BindIndexedBufferImpl(
       bindings->DoBindBufferRange(index, buffer, offset, size);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   state_.SetBoundBuffer(target, buffer);
 }
@@ -5790,8 +5765,7 @@ void GLES2DecoderImpl::InvalidateFramebufferImpl(
           attachment = GL_STENCIL_ATTACHMENT;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          return;
+          NOTREACHED();
       }
     }
     translated_attachments[i] = attachment;
@@ -5854,8 +5828,7 @@ void GLES2DecoderImpl::InvalidateFramebufferImpl(
           backbuffer_needs_clear_bits_ |= GL_STENCIL_BUFFER_BIT;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
   }
@@ -6549,7 +6522,7 @@ void GLES2DecoderImpl::DoGetIntegerv(GLenum pname,
     DCHECK_EQ(num_written, params_size);
     return;
   }
-  NOTREACHED_IN_MIGRATION() << "Unhandled enum " << pname;
+  NOTREACHED() << "Unhandled enum " << pname;
 }
 
 template <typename TYPE>
@@ -6599,8 +6572,7 @@ void GLES2DecoderImpl::GetIndexedIntegerImpl(
       // decoder
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   DCHECK(bindings);
   switch (target) {
@@ -6630,8 +6602,7 @@ void GLES2DecoderImpl::GetIndexedIntegerImpl(
       // decoder
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -7490,7 +7461,7 @@ void GLES2DecoderImpl::DoFramebufferTextureMultiviewOVR(
     GLint base_view_index,
     GLsizei num_views) {
   // This is only supported in passthrough command buffer.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void GLES2DecoderImpl::DoGetFramebufferAttachmentParameteriv(
@@ -7543,8 +7514,7 @@ void GLES2DecoderImpl::DoGetFramebufferAttachmentParameteriv(
           attachment = GL_STENCIL_ATTACHMENT;
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
-          break;
+          NOTREACHED();
       }
     }
   } else {
@@ -7976,11 +7946,7 @@ void GLES2DecoderImpl::DoBlitFramebufferCHROMIUM(
       unsigned int xoffset, yoffset;
       if (!checked_xoffset.AssignIfValid(&xoffset) ||
           !checked_yoffset.AssignIfValid(&yoffset)) {
-        NOTREACHED_IN_MIGRATION();
-        LOCAL_SET_GL_ERROR(
-            GL_INVALID_VALUE, func_name,
-            "the width or height of src or dst region overflowed");
-        return;
+        NOTREACHED();
       }
 
       // Adjust the src region by the same factor
@@ -10077,9 +10043,7 @@ void GLES2DecoderImpl::DoMultiDrawEndCHROMIUM() {
           result.baseinstances.data(), result.drawcount);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      MarkContextLost(error::kGuilty);
-      group_->LoseContexts(error::kInnocent);
+      NOTREACHED();
   }
 }
 
@@ -10762,8 +10726,7 @@ void GLES2DecoderImpl::GetVertexAttribHelper(
       *params = attrib->integer();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -11821,8 +11784,7 @@ error::Error GLES2DecoderImpl::HandlePixelStorei(
       break;
     default:
       // Validation should have prevented us from getting here.
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return error::kNoError;
 }
@@ -13024,11 +12986,11 @@ error::Error GLES2DecoderImpl::DoCompressedTexImage(
     framebuffer_state_.clear_state_dirty = true;
   }
 
-  std::unique_ptr<int8_t[]> zero;
+  base::HeapArray<int8_t> zero;
   if (!state_.bound_pixel_unpack_buffer && !data) {
-    zero.reset(new int8_t[image_size]);
-    memset(zero.get(), 0, image_size);
-    data = zero.get();
+    // Memory is already zero-initialized:
+    zero = base::HeapArray<int8_t>::WithSize(image_size);
+    data = zero.data();
   }
   LOCAL_COPY_REAL_GL_ERRORS_TO_WRAPPER(func_name);
   const CompressedFormatInfo* format_info =
@@ -14401,8 +14363,7 @@ error::Error GLES2DecoderImpl::HandleGetAttachedShaders(
   for (GLsizei ii = 0; ii < count; ++ii) {
     if (!shader_manager()->GetClientId(result->GetData()[ii],
                                        &result->GetData()[ii])) {
-      NOTREACHED_IN_MIGRATION();
-      return error::kGenericError;
+      NOTREACHED();
     }
   }
   result->SetNumResults(count);
@@ -15168,8 +15129,7 @@ bool GLES2DecoderImpl::CheckResetStatus() {
       MarkContextLost(error::kUnknown);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
   reset_by_robustness_extension_ = true;
   return true;
@@ -16417,23 +16377,6 @@ void GLES2DecoderImpl::DoEndSharedImageAccessDirectCHROMIUM(GLuint client_id) {
   texture_ref->EndAccessSharedImage();
 }
 
-void GLES2DecoderImpl::DoConvertYUVAMailboxesToTextureINTERNAL(
-    GLuint texture,
-    GLenum target,
-    GLuint internal_format,
-    GLenum type,
-    GLint src_x,
-    GLint src_y,
-    GLsizei width,
-    GLsizei height,
-    GLboolean flip_y,
-    GLenum yuv_color_space,
-    GLenum plane_config,
-    GLenum subsampling,
-    const volatile GLbyte* mailboxes_in) {
-  NOTIMPLEMENTED_LOG_ONCE();
-}
-
 void GLES2DecoderImpl::DoCopySharedImageINTERNAL(
     GLint xoffset,
     GLint yoffset,
@@ -16441,7 +16384,6 @@ void GLES2DecoderImpl::DoCopySharedImageINTERNAL(
     GLint y,
     GLsizei width,
     GLsizei height,
-    GLboolean unpack_flip_y,
     const volatile GLbyte* mailboxes) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
@@ -16653,8 +16595,7 @@ error::Error GLES2DecoderImpl::HandleClientWaitSync(
       // If validation is complete, this only happens if the context is lost.
       return error::kLostContext;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   *result_dst = status;
   return error::kNoError;
@@ -16801,8 +16742,7 @@ error::Error GLES2DecoderImpl::HandleGetInternalformativ(
       values = sample_counts.data();
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   uint32_t checked_size = 0;

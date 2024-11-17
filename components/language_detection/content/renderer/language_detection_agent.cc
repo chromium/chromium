@@ -71,10 +71,7 @@ void LanguageDetectionAgent::UpdateLanguageDetectionModel(
 
   language_detection::LanguageDetectionModel& language_detection_model =
       language_detection::GetLanguageDetectionModel();
-#if BUILDFLAG(IS_IOS)
-  language_detection_model.UpdateWithFileAsync(std::move(model_file),
-                                               base::DoNothing());
-#else
+
   // When enabled, we postpone updating the language detection model to avoid
   // congesting the render main thread during navigation critical timing
   // (crbug.com/361215212).
@@ -85,7 +82,6 @@ void LanguageDetectionAgent::UpdateLanguageDetectionModel(
   } else {
     language_detection_model.UpdateWithFile(std::move(model_file));
   }
-#endif
 }
 
 void LanguageDetectionAgent::WasShown() {

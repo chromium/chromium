@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Luna aceasta</translation>
 <translation id="1637811476055996098">Alege fișierele</translation>
-<translation id="1680090928918677457">Folosește camera foto</translation>
 <translation id="1729654308190250600">Introduceți o adresă de e-mail concretă.</translation>
 <translation id="1758486001363313524">Altele...</translation>
 <translation id="1921819250265091946">zz</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Micșorează acest text la cel mult <ph name="MAX_CHARACTERS" /> caractere (în prezent utilizezi <ph name="CURRENT_LENGTH" /> caractere).</translation>
 <translation id="2247351761944213033">Săptămâna <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Melodia <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Camera foto și microfonul sunt permise</translation>
 <translation id="2507943997699731163">Completează acest câmp.</translation>
 <translation id="2613802280814924224">Introduceți o valoare validă. Cea mai apropiată valoare validă este <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Trimite</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Mărește acest text la cel puțin <ph name="MIN_CHARACTERS" /> caractere (în prezent folosești <ph name="CURRENT_LENGTH" /> caractere).</translation>
 <translation id="383465348367842624">Valoarea urmată de semnul „<ph name="ATSIGN" />” nu trebuie să conțină simbolul „<ph name="INVALIDCHARACTER" />”.</translation>
 <translation id="3846214748874656680">Ieși din ecranul complet</translation>
-<translation id="4031179711345676612">Microfonul este permis</translation>
 <translation id="4360991593054037559">Introduceți o valoare validă. Cele mai apropiate valori valide sunt <ph name="VALID_VALUE_LOW" /> și <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detalii</translation>
-<translation id="4663373278480897665">Camera foto este permisă</translation>
 <translation id="4664250907885839816">Valoarea care urmează după semnul „<ph name="ATSIGN" />” nu trebuie să conțină simbolul „<ph name="INVALIDCHARACTER" />”.</translation>
 <translation id="4718048029184481307">Se redă în modul picture-in-picture</translation>
-<translation id="4792862212177489858">Afișează locația</translation>
 <translation id="4812940957355064477">Introduceți un număr.</translation>
-<translation id="49269513399674318">Folosește microfonul</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> selectate</translation>
 <translation id="4992066212339426712">Activează sunetul</translation>
 <translation id="49969490063480558">Introduceți o valoare după semnul „<ph name="ATSIGN" />”. Adresa „<ph name="INVALIDADDRESS" />” nu este completă.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Nu s-a putut încărca pluginul.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Mărește acest text la cel puțin <ph name="MIN_CHARACTERS" /> caractere (în prezent folosești 1 caracter).</translation>
-<translation id="7080893216867146095">Afișarea locației este permisă</translation>
 <translation id="709897737746224366">Respectă formatul solicitat.</translation>
-<translation id="7134810312945846184">Folosește microfonul și camera</translation>
 <translation id="7263440858009898357">Selectează un articol din listă.</translation>
 <translation id="7364796246159120393">Alege fișierul</translation>
 <translation id="739024184232394898">Altele...</translation>

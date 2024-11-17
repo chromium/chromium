@@ -111,6 +111,8 @@ mojom::blink::ResourceTimingInfoPtr CreateResourceTimingInfo(
   if (expose_body_sizes && response) {
     info->encoded_body_size = response->EncodedBodyLength();
     info->decoded_body_size = response->DecodedBodyLength();
+    info->service_worker_response_source =
+        response->GetServiceWorkerResponseSource();
   }
 
   return info;

@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/form_parsing/prediction_improvements_field_parser.h"
 
+#include "base/notreached.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/regex_patterns.h"
@@ -17,27 +18,27 @@ std::unique_ptr<FormFieldParser> PredictionImprovementsFieldParser::Parse(
     AutofillScanner* scanner) {
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   if (context.pattern_file != PatternFile::kPredictionImprovements) {
-    CHECK(false);
-    return nullptr;
+    NOTREACHED();
   }
-  raw_ptr<AutofillField> field;
+  std::optional<FieldAndMatchInfo> match;
   base::span<const MatchPatternRef> patterns = GetMatchPatterns(
       "PREDICTION_IMPROVEMENTS", std::nullopt, context.pattern_file);
-  if (ParseField(context, scanner, patterns, &field,
+  if (ParseField(context, scanner, patterns, &match,
                  "PREDICTION_IMPROVEMENTS")) {
-    return std::make_unique<PredictionImprovementsFieldParser>(field);
+    return std::make_unique<PredictionImprovementsFieldParser>(
+        std::move(*match));
   }
 #endif
   return nullptr;
 }
 
 PredictionImprovementsFieldParser::PredictionImprovementsFieldParser(
-    const AutofillField* field)
-    : field_(field) {}
+    FieldAndMatchInfo match)
+    : match_(std::move(match)) {}
 
 void PredictionImprovementsFieldParser::AddClassifications(
     FieldCandidatesMap& field_candidates) const {
-  AddClassification(field_, IMPROVED_PREDICTION, kBaseImprovedPredictionsScore,
+  AddClassification(match_, IMPROVED_PREDICTION, kBaseImprovedPredictionsScore,
                     field_candidates);
 }
 

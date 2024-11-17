@@ -12,16 +12,25 @@
 @protocol UIBlockerManager;
 @protocol UIBlockerTarget;
 
-// A helper object that increments AppState's blocking UI counter for
-// its entire lifetime.
+enum class UIBlockerExtent {
+  kProfile,
+  kApplication,
+};
+
+// A helper object that increments AppState's or ProfileState's blocking UI
+// counter for its entire lifetime.
 class ScopedUIBlocker {
  public:
-  explicit ScopedUIBlocker(id<UIBlockerTarget> target);
+  // Set `extent` to UIBlockerExtent::kApplication if the entire app should be
+  // block and not only profile related scenes.
+  explicit ScopedUIBlocker(id<UIBlockerTarget> target,
+                           UIBlockerExtent extent = UIBlockerExtent::kProfile);
   ~ScopedUIBlocker();
 
  private:
   // The target showing the blocking UI.
   __weak id<UIBlockerTarget> target_;
+  __weak id<UIBlockerManager> uiBlockerManager_;
 
   ScopedUIBlocker(const ScopedUIBlocker&) = delete;
   ScopedUIBlocker& operator=(const ScopedUIBlocker&) = delete;

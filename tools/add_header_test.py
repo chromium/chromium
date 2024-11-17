@@ -376,27 +376,27 @@ class SerializeIncludesTest(unittest.TestCase):
     primary_header = add_header.Include('"cow.h"', 'include', [], None)
     primary_header.is_primary_header = True
     includes.append(primary_header)
+    includes.append(add_header.Include('<objbase.h>', 'include', [], None))
+    includes.append(add_header.Include('<atlbase.h>', 'include', [], None))
+    includes.append(add_header.Include('<ole2.h>', 'include', [], None))
+    includes.append(add_header.Include('<shobjidl.h>', 'include', [], None))
+    includes.append(add_header.Include('<tchar.h>', 'include', [], None))
+    includes.append(add_header.Include('<unknwn.h>', 'include', [], None))
     includes.append(add_header.Include('<winsock2.h>', 'include', [], None))
     includes.append(add_header.Include('<windows.h>', 'include', [], None))
     includes.append(add_header.Include('<ws2tcpip.h>', 'include', [], None))
-    includes.append(add_header.Include('<shobjidl.h>', 'include', [], None))
-    includes.append(add_header.Include('<atlbase.h>', 'include', [], None))
-    includes.append(add_header.Include('<ole2.h>', 'include', [], None))
-    includes.append(add_header.Include('<unknwn.h>', 'include', [], None))
-    includes.append(add_header.Include('<objbase.h>', 'include', [], None))
-    includes.append(add_header.Include('<tchar.h>', 'include', [], None))
-    includes.append(add_header.Include('<string.h>', 'include', [], None))
     includes.append(add_header.Include('<stddef.h>', 'include', [], None))
     includes.append(add_header.Include('<stdio.h>', 'include', [], None))
+    includes.append(add_header.Include('<string.h>', 'include', [], None))
     includes.append(add_header.Include('"moo.h"', 'include', [], None))
     random.shuffle(includes)
     source = add_header.SerializeIncludes(includes)
     self.assertEqual(source, [
-        '#include "cow.h"', '', '#include <winsock2.h>', '#include <windows.h>',
-        '#include <ws2tcpip.h>', '#include <shobjidl.h>',
-        '#include <atlbase.h>', '#include <ole2.h>', '#include <unknwn.h>',
-        '#include <objbase.h>', '#include <tchar.h>', '#include <stddef.h>',
-        '#include <stdio.h>', '#include <string.h>', '', '#include "moo.h"'
+        '#include "cow.h"', '', '#include <objbase.h>', '#include <atlbase.h>',
+        '#include <ole2.h>', '#include <shobjidl.h>', '#include <tchar.h>',
+        '#include <unknwn.h>', '#include <windows.h>', '#include <winsock2.h>',
+        '#include <ws2tcpip.h>', '#include <stddef.h>', '#include <stdio.h>',
+        '#include <string.h>', '', '#include "moo.h"'
     ])
 
 

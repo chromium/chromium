@@ -64,9 +64,9 @@
 #include "ui/base/menu_source_utils.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/base/text/bytes_formatting.h"
 #include "ui/base/themed_vector_icon.h"
-#include "ui/base/ui_base_types.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/compositor/layer.h"
@@ -471,7 +471,7 @@ std::u16string DownloadItemView::GetTooltipText(const gfx::Point& p) const {
 void DownloadItemView::ShowContextMenuForViewImpl(
     View* source,
     const gfx::Point& point,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   ShowContextMenuImpl(gfx::Rect(point, gfx::Size()), source_type);
 }
 
@@ -1236,8 +1236,9 @@ void DownloadItemView::ShowOpenDialog(content::WebContents* web_contents) {
   }
 }
 
-void DownloadItemView::ShowContextMenuImpl(const gfx::Rect& rect,
-                                           ui::MenuSourceType source_type) {
+void DownloadItemView::ShowContextMenuImpl(
+    const gfx::Rect& rect,
+    ui::mojom::MenuSourceType source_type) {
   // Similar hack as in MenuButtonController.
   // We're about to show the menu from a mouse press. By showing from the
   // mouse press event we block RootView in mouse dispatching. This also

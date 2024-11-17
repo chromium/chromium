@@ -9,6 +9,7 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_ui_model.h"
+#include "chrome/browser/profiles/profile.h"
 #include "components/download/public/common/download_content.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/content/browser/download/download_stats.h"
@@ -168,7 +169,6 @@ DownloadShelfContextMenuAction DownloadCommandToShelfAction(
     case DownloadCommands::Command::BYPASS_DEEP_SCANNING:
     case DownloadCommands::Command::OPEN_WITH_MEDIA_APP:
     case DownloadCommands::Command::EDIT_WITH_MEDIA_APP:
-      NOTREACHED_IN_MIGRATION();
-      return DownloadShelfContextMenuAction::kNotReached;
+      NOTREACHED();
   }
 }

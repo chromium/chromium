@@ -42,16 +42,6 @@
 
 namespace headless {
 
-namespace {
-
-bool DecodePNG(const std::string& png_data, SkBitmap* bitmap) {
-  return gfx::PNGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(png_data.data()), png_data.size(),
-      bitmap);
-}
-
-}  // namespace
-
 class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest {
  public:
   HeadlessModeCommandBrowserTest() = default;
@@ -384,12 +374,11 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandBrowserTest,
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  std::string png_data;
-  ASSERT_TRUE(base::ReadFileToString(screenshot_filename_, &png_data))
-      << screenshot_filename_;
+  std::optional<std::vector<uint8_t>> png_data =
+      base::ReadFileToBytes(screenshot_filename_);
 
-  SkBitmap bitmap;
-  ASSERT_TRUE(DecodePNG(png_data, &bitmap));
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png_data.value());
+  ASSERT_FALSE(bitmap.isNull());
 
   // Expect a centered blue rectangle on white background.
   EXPECT_TRUE(CheckColoredRect(bitmap, SkColorSetRGB(0x00, 0x00, 0xff),
@@ -416,12 +405,11 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandWithWindowSizeBrowserTest,
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  std::string png_data;
-  ASSERT_TRUE(base::ReadFileToString(screenshot_filename_, &png_data))
-      << screenshot_filename_;
+  std::optional<std::vector<uint8_t>> png_data =
+      base::ReadFileToBytes(screenshot_filename_);
 
-  SkBitmap bitmap;
-  ASSERT_TRUE(DecodePNG(png_data, &bitmap));
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png_data.value());
+  ASSERT_FALSE(bitmap.isNull());
 
   EXPECT_EQ(bitmap.width(), 2345);
   EXPECT_EQ(bitmap.height(), 1234);
@@ -451,12 +439,11 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeScreenshotCommandWithBackgroundBrowserTest,
 
   base::ScopedAllowBlockingForTesting allow_blocking;
 
-  std::string png_data;
-  ASSERT_TRUE(base::ReadFileToString(screenshot_filename_, &png_data))
-      << screenshot_filename_;
+  std::optional<std::vector<uint8_t>> png_data =
+      base::ReadFileToBytes(screenshot_filename_);
 
-  SkBitmap bitmap;
-  ASSERT_TRUE(DecodePNG(png_data, &bitmap));
+  SkBitmap bitmap = gfx::PNGCodec::Decode(png_data.value());
+  ASSERT_FALSE(bitmap.isNull());
 
   // Expect a centered blue rectangle on red background.
   EXPECT_TRUE(CheckColoredRect(bitmap, SkColorSetRGB(0x00, 0x00, 0xff),

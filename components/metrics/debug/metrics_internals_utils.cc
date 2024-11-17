@@ -27,7 +27,7 @@ std::string ChannelToString(variations::Study::Channel channel) {
     case variations::Study::STABLE:
       return "Stable";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string PlatformToString(variations::Study::Platform platform) {
@@ -53,7 +53,7 @@ std::string PlatformToString(variations::Study::Platform platform) {
     case variations::Study::PLATFORM_CHROMEOS_LACROS:
       return "ChromeOS Lacros";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string CpuArchitectureToString(
@@ -70,7 +70,7 @@ std::string CpuArchitectureToString(
     case variations::Study::TRANSLATED_X86_64:
       return "translated_x86_64";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string FormFactorToString(variations::Study::FormFactor form_factor) {
@@ -92,7 +92,7 @@ std::string FormFactorToString(variations::Study::FormFactor form_factor) {
     case variations::Study::FOLDABLE:
       return "Foldable";
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 std::string BoolToString(bool val) {

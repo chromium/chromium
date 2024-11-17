@@ -122,7 +122,7 @@ class CORE_EXPORT ReadableByteStreamController
   };
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-close
-  void Close(ScriptState*, ReadableByteStreamController*, ExceptionState&);
+  void Close(ScriptState*, ReadableByteStreamController*);
 
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-error
   static void Error(ScriptState*,
@@ -154,8 +154,7 @@ class CORE_EXPORT ReadableByteStreamController
   // https://streams.spec.whatwg.org/#readable-byte-stream-controller-process-pull-into-descriptors-using-queue
   static void ProcessPullIntoDescriptorsUsingQueue(
       ScriptState*,
-      ReadableByteStreamController*,
-      ExceptionState&);
+      ReadableByteStreamController*);
 
   // https://streams.spec.whatwg.org/#abstract-opdef-readablebytestreamcontrollerprocessreadrequestsusingqueue
   static void ProcessReadRequestsUsingQueue(ScriptState*,

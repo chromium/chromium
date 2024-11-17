@@ -140,11 +140,11 @@ bool IsInstallScriptExecutable(const base::FilePath& script_path) {
 int RunExecutable(const base::FilePath& existence_checker_path,
                   const std::string& ap,
                   const std::string& arguments,
-                  const std::optional<base::FilePath>& installer_data_file,
-                  const UpdaterScope& scope,
+                  std::optional<base::FilePath> installer_data_file,
+                  UpdaterScope scope,
                   const base::Version& pv,
                   bool usage_stats_enabled,
-                  const base::TimeDelta& timeout,
+                  base::TimeDelta timeout,
                   const base::FilePath& unpacked_path) {
   if (!base::PathExists(unpacked_path)) {
     VLOG(1) << "File path (" << unpacked_path << ") does not exist.";
@@ -392,12 +392,12 @@ int InstallFromApp(const base::FilePath& app_file_path,
 int InstallFromArchive(const base::FilePath& file_path,
                        const base::FilePath& existence_checker_path,
                        const std::string& ap,
-                       const UpdaterScope& scope,
+                       UpdaterScope scope,
                        const base::Version& pv,
                        const std::string& arguments,
-                       const std::optional<base::FilePath>& installer_data_file,
+                       std::optional<base::FilePath> installer_data_file,
                        const bool usage_stats_enabled,
-                       const base::TimeDelta& timeout) {
+                       base::TimeDelta timeout) {
   const std::map<std::string,
                  int (*)(const base::FilePath&,
                          base::OnceCallback<int(const base::FilePath&)>)>

@@ -24,6 +24,7 @@ static_library("types") {
     "//base",
     "//chrome/common",
     "//ui/base",
+    "//ui/menus",
     "//url",
   ]
 

@@ -25,7 +25,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(SessionType) -->
 
 <variants name="SessionType">
-  <variant name="Assistant" summary="AI assistant session"/>
+  <variant name="LanguageModel" summary="AI language model session"/>
   <variant name="Rewriter" summary="AI rewriter session"/>
   <variant name="Summarizer" summary="AI summarizer session"/>
   <variant name="Writer" summary="AI writer session"/>
@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.ThenChange(//third_party/blink/renderer/modules/ai/ai_metrics.h:AISessionType) -->
 
 <histogram name="AI.Session.{SessionType}.PromptRequestSize" units="bytes"
-    expires_after="2025-02-10">
+    expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
@@ -45,7 +45,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptResponseCallbackCount"
-    units="times" expires_after="2025-02-10">
+    units="times" expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
@@ -56,7 +56,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptResponseSize" units="bytes"
-    expires_after="2024-12-11">
+    expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
@@ -67,7 +67,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Session.{SessionType}.PromptResponseStatus"
-    enum="AIModelStreamingResponseStatus" expires_after="2025-02-10">
+    enum="AIModelStreamingResponseStatus" expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
@@ -78,7 +78,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Translation.LoadTranslateKitErrorCode"
-    enum="WinGetLastError" expires_after="2025-03-01">
+    enum="WinGetLastError" expires_after="2025-10-27">
   <owner>mych@google.com</owner>
   <owner>fergal@google.com</owner>
   <summary>
@@ -90,7 +90,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.Translation.LoadTranslateKitResult"
-    enum="LoadTranslateKitResult" expires_after="2025-03-01">
+    enum="LoadTranslateKitResult" expires_after="2025-10-27">
   <owner>mych@google.com</owner>
   <owner>fergal@google.com</owner>
   <summary>
@@ -102,7 +102,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.{SessionType}.APIUsage" enum="AIAPI"
-    expires_after="2024-12-11">
+    expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>
@@ -114,7 +114,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AI.{SessionType}.Availability" enum="AICapabilityAvailability"
-    expires_after="2025-02-10">
+    expires_after="2025-10-27">
   <owner>leimy@chromium.org</owner>
   <owner>fergal@chromium.org</owner>
   <summary>

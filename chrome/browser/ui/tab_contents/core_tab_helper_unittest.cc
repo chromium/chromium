@@ -90,9 +90,7 @@ class CoreTabHelperImageProcessingTest
     }
 
     if (content_type == "image/jpeg") {
-      SkBitmap decoded_bitmap = *gfx::JPEGCodec::Decode(&thumbnail_data.front(),
-                                                        thumbnail_data.size())
-                                     .get();
+      SkBitmap decoded_bitmap = gfx::JPEGCodec::Decode(thumbnail_data);
       ASSERT_EQ(expected_downscaled_width, decoded_bitmap.width());
       ASSERT_EQ(expected_downscaled_height, decoded_bitmap.height());
     } else if (content_type == "image/webp") {

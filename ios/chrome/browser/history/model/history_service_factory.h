@@ -9,8 +9,8 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
+class ProfileIOS;
 enum class ServiceAccessType;
 
 namespace history {
@@ -22,11 +22,6 @@ namespace ios {
 // ProfileIOS.
 class HistoryServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358299863): Remove when fully migrated.
-  static history::HistoryService* GetForBrowserState(
-      ProfileIOS* profile,
-      ServiceAccessType access_type);
-
   static history::HistoryService* GetForProfile(ProfileIOS* profile,
                                                 ServiceAccessType access_type);
   static history::HistoryService* GetForProfileIfExists(

@@ -74,10 +74,10 @@ class TouchToFillPaymentMethodProperties {
                         CardImageMetaData, Drawable>
                 CARD_IMAGE =
                         new PropertyModel.ReadableTransformingObjectPropertyKey<>("card_image");
-        static final PropertyModel.ReadableObjectPropertyKey<String> NETWORK_NAME =
-                new PropertyModel.ReadableObjectPropertyKey<>("network_name");
         static final PropertyModel.ReadableObjectPropertyKey<String> MAIN_TEXT =
                 new PropertyModel.ReadableObjectPropertyKey<>("main_text");
+        static final PropertyModel.ReadableObjectPropertyKey<String> MAIN_TEXT_CONTENT_DESCRIPTION =
+                new PropertyModel.ReadableObjectPropertyKey<>("main_text_content_description");
         static final PropertyModel.ReadableObjectPropertyKey<String> MINOR_TEXT =
                 new PropertyModel.ReadableObjectPropertyKey<>("minor_text");
         static final PropertyModel.ReadableObjectPropertyKey<String> FIRST_LINE_LABEL =
@@ -93,8 +93,8 @@ class TouchToFillPaymentMethodProperties {
                         new PropertyModel.ReadableObjectPropertyKey<>("item_collection_info");
 
         static final PropertyKey[] NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS = {
-            NETWORK_NAME,
             MAIN_TEXT,
+            MAIN_TEXT_CONTENT_DESCRIPTION,
             MINOR_TEXT,
             FIRST_LINE_LABEL,
             SECOND_LINE_LABEL,

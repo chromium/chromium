@@ -35,10 +35,6 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-class AccountProfileMapper;
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
 class ProfileManagerAndroid;
 #endif
@@ -115,13 +111,13 @@ class ProfileManager : public Profile::Delegate {
   static Profile* GetActiveUserProfile();
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Load and return the initial profile for browser. On ChromeOS, this returns
   // either the sign-in profile or the active user profile depending on whether
   // browser is started normally or is restarted after crash. On other
   // platforms, this returns the default profile.
   static Profile* CreateInitialProfile();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 
   void AddObserver(ProfileManagerObserver* observer);
   void RemoveObserver(ProfileManagerObserver* observer);
@@ -231,15 +227,10 @@ class ProfileManager : public Profile::Delegate {
   // Returns the full path to be used for guest profiles.
   static base::FilePath GetGuestProfilePath();
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   // Returns the full path to be used for system profiles.
   static base::FilePath GetSystemProfilePath();
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns the full path of the primary profile on lacros.
-  static base::FilePath GetPrimaryUserProfilePath();
-#endif
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
   // Get the path of the next profile directory and increment the internal
   // count.
@@ -262,10 +253,6 @@ class ProfileManager : public Profile::Delegate {
   // Returns a ProfileShortcut Manager that enables the caller to create
   // profile specfic desktop shortcuts.
   ProfileShortcutManager* profile_shortcut_manager();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  AccountProfileMapper* GetAccountProfileMapper();
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
   // Searches for the latest active profile that respects |predicate|, already
@@ -366,11 +353,6 @@ class ProfileManager : public Profile::Delegate {
     do_final_services_init_ = do_final_services_init;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SetAccountProfileMapperForTests(
-      std::unique_ptr<AccountProfileMapper> mapper);
-#endif
-
  private:
   friend class TestingProfileManager;
   FRIEND_TEST_ALL_PREFIXES(ProfileManagerBrowserTest, DeleteAllProfiles);
@@ -461,7 +443,7 @@ class ProfileManager : public Profile::Delegate {
   // The profile used can be overridden by using --login-profile on cros.
   Profile* GetActiveUserOrOffTheRecordProfile();
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // Unloads the `Profile` at `profile_dir` from the manager and destroys the
   // `Profile` C++ object. If it's an ephemeral profile, also deletes the
   // profile permanently and nukes the `profile_dir` directory from disk.
@@ -544,14 +526,6 @@ class ProfileManager : public Profile::Delegate {
   // Handles the communication with the Java ProfileManager.
   std::unique_ptr<ProfileManagerAndroid> profile_manager_android_;
 #endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Object that maintains a mapping between accounts known to the OS and Chrome
-  // profiles. AccountProfileMapper has dependencies on other members of this
-  // class. It must be destroyed after `profiles_info_` and before
-  // `profile_attributes_storage_`.
-  std::unique_ptr<AccountProfileMapper> account_profile_mapper_;
-#endif
 
   base::CallbackListSubscription closing_all_browsers_subscription_;
 

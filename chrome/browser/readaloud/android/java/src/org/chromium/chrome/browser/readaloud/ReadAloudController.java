@@ -30,6 +30,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -40,7 +41,8 @@ import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.device.DeviceConditions;
-import org.chromium.chrome.browser.language.AppLocaleUtils;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
@@ -62,7 +64,7 @@ import org.chromium.chrome.modules.readaloud.PlaybackArgs.PlaybackVoice;
 import org.chromium.chrome.modules.readaloud.PlaybackListener;
 import org.chromium.chrome.modules.readaloud.Player;
 import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooks;
-import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksProvider;
+import org.chromium.chrome.modules.readaloud.ReadAloudPlaybackHooksFactory;
 import org.chromium.chrome.modules.readaloud.contentjs.Extractor;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter;
 import org.chromium.chrome.modules.readaloud.contentjs.Highlighter.Mode;
@@ -82,6 +84,7 @@ import org.chromium.url.GURL;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -120,7 +123,6 @@ public class ReadAloudController
     private final TabModel mIncognitoTabModel;
     @Nullable private Player mPlayerCoordinator;
     private final ObservableSupplier<LayoutManager> mLayoutManagerSupplier;
-    private TapToSeekSelectionManager mTapToSeekSelectionManager;
     private final UserEducationHelper mUserEducationHelper;
 
     private TabModelTabObserver mTabObserver;
@@ -128,14 +130,17 @@ public class ReadAloudController
 
     private boolean mPausedForIncognito;
 
+    /** The fullscreen state of the browser. */
+    private final FullscreenManager mFullscreenManager;
+
+    private final FullscreenManager.Observer mFullscreenObserver;
+
     private final BottomSheetController mBottomSheetController;
     private final BottomControlsStacker mBottomControlsStacker;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private ReadAloudReadabilityHooks mReadabilityHooks;
 
-    @Nullable private static ReadAloudReadabilityHooks sReadabilityHooksForTesting;
     @Nullable private ReadAloudPlaybackHooks mPlaybackHooks;
-    @Nullable private static ReadAloudPlaybackHooks sPlaybackHooksForTesting;
     @Nullable private Highlighter mHighlighter;
     @Nullable private Highlighter.Config mHighlighterConfig;
     @Nullable private Extractor mExtractor;
@@ -189,7 +194,7 @@ public class ReadAloudController
         ResettersForTesting.register(() -> sClock = oldValue);
     }
 
-    private class ReadabilityInfo {
+    private static class ReadabilityInfo {
         private final boolean mIsReadable;
         private final long mResponseTimestamp;
         private final boolean mTimepointsSupported;
@@ -489,7 +494,8 @@ public class ReadAloudController
             ObservableSupplier<LayoutManager> layoutManagerSupplier,
             ActivityWindowAndroid activityWindowAndroid,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
+            OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier,
+            FullscreenManager fullscreenManager) {
         sInstances.add(this);
         mCallbackController = new CallbackController();
         ReadAloudFeatures.init();
@@ -514,8 +520,7 @@ public class ReadAloudController
                         activity, mProfileSupplier, new Handler(Looper.getMainLooper()));
         mActivePlaybackTabSupplier = new ObservableSupplierImpl<>();
         if (ReadAloudFeatures.isTapToSeekEnabled()) {
-            mTapToSeekSelectionManager =
-                    new TapToSeekSelectionManager(this, mActivePlaybackTabSupplier);
+            new TapToSeekSelectionManager(this, mActivePlaybackTabSupplier);
         }
         if (NetworkChangeNotifier.isInitialized()) {
             NetworkChangeNotifier.addConnectionTypeObserver(this);
@@ -523,6 +528,21 @@ public class ReadAloudController
         mLayoutStateProviderSupplier = layoutStateProviderSupplier;
         mLayoutStateProviderSupplier.onAvailable(
                 mCallbackController.makeCancelable(this::addLayoutStateObserver));
+        mFullscreenManager = fullscreenManager;
+        mFullscreenObserver =
+                new FullscreenManager.Observer() {
+                    @Override
+                    public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+                        maybeHidePlayer();
+                    }
+
+                    @Override
+                    public void onExitFullscreen(Tab tab) {
+                        maybeShowPlayer();
+                    }
+                };
+
+        mFullscreenManager.addObserver(mFullscreenObserver);
     }
 
     private void addLayoutStateObserver(LayoutStateProvider layoutStateProvider) {
@@ -549,10 +569,13 @@ public class ReadAloudController
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void onProfileAvailable(Profile profile) {
         TraceEvent.begin("ReadAloudController#onProfileAvailable");
-        mReadabilityHooks =
-                sReadabilityHooksForTesting != null
-                        ? sReadabilityHooksForTesting
-                        : new ReadAloudReadabilityHooksImpl(mActivity, profile);
+        ReadAloudReadabilityHooksFactory factory =
+                ServiceLoaderUtil.maybeCreate(ReadAloudReadabilityHooksFactory.class);
+        if (factory != null) {
+            mReadabilityHooks = factory.create(mActivity, profile);
+        } else {
+            mReadabilityHooks = new ReadAloudReadabilityHooksUpstreamImpl(mActivity, profile);
+        }
         if (mReadabilityHooks.isEnabled()) {
             boolean isAllowed = ReadAloudFeatures.isAllowed(profile);
             ReadAloudMetrics.recordIsUserEligible(isAllowed);
@@ -915,6 +938,10 @@ public class ReadAloudController
         createTabPlayback(tab, dateModified, entrypoint)
                 .then(
                         playback -> {
+                            if (mActivePlaybackTabSupplier.get() == null) {
+                                resetCurrentPlayback(ReasonForStoppingPlayback.MANUAL_CLOSE);
+                                return;
+                            }
                             mDateModified = dateModified;
                             mPlayerCoordinator.playbackReady(playback, PLAYING);
                             playback.play();
@@ -936,10 +963,15 @@ public class ReadAloudController
 
     private void maybeInitializePlaybackHooks() {
         if (mPlaybackHooks == null) {
-            mPlaybackHooks =
-                    sPlaybackHooksForTesting != null
-                            ? sPlaybackHooksForTesting
-                            : ReadAloudPlaybackHooksProvider.getForProfile(mProfileSupplier.get());
+            ReadAloudPlaybackHooksFactory factory =
+                    ServiceLoaderUtil.maybeCreate(ReadAloudPlaybackHooksFactory.class);
+            if (factory != null) {
+                mPlaybackHooks = factory.getForProfile(mProfileSupplier.get());
+            } else {
+                // If no downstream factory exists, use an empty instantiation
+                // of the interface using defaults.
+                mPlaybackHooks = new ReadAloudPlaybackHooks() {};
+            }
             mPlayerCoordinator = mPlaybackHooks.createPlayer(/* delegate= */ this);
             mPlayerCoordinator.addObserver(this);
         }
@@ -1213,7 +1245,7 @@ public class ReadAloudController
         String language =
                 webContents == null ? null : TranslateBridge.getCurrentLanguage(webContents);
         if (language == null || language.isEmpty() || language.equals("und")) {
-            language = AppLocaleUtils.getAppLanguagePref();
+            language = Locale.getDefault().getLanguage();
         }
 
         if (language == null) {
@@ -1744,14 +1776,13 @@ public class ReadAloudController
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setReadabilityHooks(ReadAloudReadabilityHooks hooks) {
-        sReadabilityHooksForTesting = hooks;
-        ResettersForTesting.register(() -> sReadabilityHooksForTesting = null);
+        ServiceLoaderUtil.setInstanceForTesting(
+                ReadAloudReadabilityHooksFactory.class, (a, b) -> hooks);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public static void setPlaybackHooks(ReadAloudPlaybackHooks hooks) {
-        sPlaybackHooksForTesting = hooks;
-        ResettersForTesting.register(() -> sPlaybackHooksForTesting = null);
+        ServiceLoaderUtil.setInstanceForTesting(ReadAloudPlaybackHooksFactory.class, (a) -> hooks);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

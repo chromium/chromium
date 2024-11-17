@@ -32,15 +32,16 @@ public class DataSharingConversionBridge {
     }
 
     @CalledByNative
-    public static DataSharingService.ParseURLResult createParseURLResult(
+    public static DataSharingService.ParseUrlResult createParseUrlResult(
             GroupToken groupToken, int status) {
-        return new DataSharingService.ParseURLResult(groupToken, status);
+        return new DataSharingService.ParseUrlResult(groupToken, status);
     }
 
     @CalledByNative
     public static DataSharingService.SharedDataPreviewOrFailureOutcome
-            createSharedDataPreviewOrFailureOutcome(SharedEntity[] sharedEntities, int status) {
+            createSharedDataPreviewOrFailureOutcome(
+                    SharedTabGroupPreview sharedTabGroupPreview, int status) {
         return new DataSharingService.SharedDataPreviewOrFailureOutcome(
-                new SharedDataPreview(sharedEntities), status);
+                new SharedDataPreview(sharedTabGroupPreview), status);
     }
 }

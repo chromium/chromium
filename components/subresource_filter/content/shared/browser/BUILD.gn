@@ -18,6 +18,8 @@ static_library("browser") {
     "ruleset_service.h",
     "unindexed_ruleset_stream_generator.cc",
     "unindexed_ruleset_stream_generator.h",
+    "utils.cc",
+    "utils.h",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
   public_deps = [

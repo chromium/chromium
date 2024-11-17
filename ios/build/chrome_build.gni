@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/mobile_config.gni")
 import("//build/config/apple/symbols.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
+import("//build/config/ios/config.gni")
 import("//build/config/ios/ios_sdk.gni")
 
 # Xcode 13.1 or higher is required to build Chromium on iOS. This file should
@@ -51,8 +53,13 @@ declare_args() {
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_passkey_keychain_provider_target = "//ios/chrome/credential_provider_extension:passkey_keychain_provider_implementation"
 
+  # Label of the target providing implementation for FontProvider.
+  # Overridden when using the Google-internal repository to build Chrome on iOS.
+  ios_font_provider_target =
+      "//ios/chrome/credential_provider_extension:font_provider_implementation"
+
   # Enable passkey capabilities in the Credential Provider Extension (CPE).
-  ios_cpe_enable_passkey_capabilities = false
+  ios_cpe_enable_passkey_capabilities = true
 
   # Label of the target providing implementation for the PushNotificationServiceExtension.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
@@ -66,6 +73,9 @@ declare_args() {
 
   # Enable background fetch mode for app refresh.
   ios_enable_background_mode = true
+
+  # Enable iOS 17 widgets improvements to support multi profile.
+  ios_enable_widgets_for_mim = false
 
   # Value of the encryption export compliance code. See "Cryptography and
   # U.S. Export Compliance" in "Submitting the App to App Review" in the

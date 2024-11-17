@@ -25,7 +25,6 @@
 #include "base/test/test_discardable_memory_allocator.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -56,7 +55,7 @@
 #include "ui/wm/core/wm_state.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/views/examples/examples_views_delegate_chromeos.h"
 #endif
 
@@ -67,6 +66,10 @@
 #if BUILDFLAG(IS_WIN)
 #include "ui/base/win/scoped_ole_initializer.h"
 #include "ui/views/examples/examples_skia_gold_pixel_diff.h"
+#endif
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/views/examples/examples_main_proc_mac_parts.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
@@ -83,6 +86,10 @@ bool g_initialized_once = false;
 ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
 #if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer;
+#endif
+
+#if BUILDFLAG(IS_MAC)
+  ExamplesMainProcMacParts();
 #endif
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
@@ -164,9 +171,9 @@ ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
   ExamplesExitCode compare_result = ExamplesExitCode::kSucceeded;
 
   {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     ExamplesViewsDelegateChromeOS views_delegate;
-#else  // BUILDFLAG(IS_CHROMEOS_ASH)
+#else  // BUILDFLAG(IS_CHROMEOS)
     views::DesktopTestViewsDelegate views_delegate;
 #if BUILDFLAG(IS_MAC)
     views_delegate.set_context_factory(context_factories->GetContextFactory());
@@ -174,7 +181,7 @@ ExamplesExitCode ExamplesMainProc(bool under_test, ExampleVector examples) {
 #if defined(USE_AURA)
     wm::WMState wm_state;
 #endif
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_MAC)
     display::ScopedNativeScreen desktop_screen;
 #elif BUILDFLAG(ENABLE_DESKTOP_AURA)

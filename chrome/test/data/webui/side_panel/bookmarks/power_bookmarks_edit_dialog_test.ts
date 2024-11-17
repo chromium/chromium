@@ -9,7 +9,8 @@ import type {PowerBookmarksEditDialogElement} from 'chrome://bookmarks-side-pane
 import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_service.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
@@ -128,17 +129,14 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
     let savedUrl;
     let savedParent;
     let savedNewFolderCount = 0;
-    powerBookmarksEditDialog.addEventListener('save', ((e: CustomEvent) => {
-                                                        saveCount++;
-                                                        savedName =
-                                                            e.detail.name;
-                                                        savedUrl = e.detail.url;
-                                                        savedParent =
-                                                            e.detail.folderId;
-                                                        savedNewFolderCount =
-                                                            e.detail.newFolders
-                                                                .length;
-                                                      }) as EventListener);
+    powerBookmarksEditDialog.addEventListener(
+        'save', ((e: CustomEvent) => {
+                  saveCount++;
+                  savedName = e.detail.name;
+                  savedUrl = e.detail.url;
+                  savedParent = e.detail.folderId;
+                  savedNewFolderCount = e.detail.newFolders.length;
+                }) as EventListener);
 
     const topLevelBookmarks = service.getTopLevelBookmarks();
     powerBookmarksEditDialog.showDialog(
@@ -152,8 +150,18 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
         powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderButton')!;
     newFolderButton.click();
 
+    await flushTasks();
+
+    const newFolderInput: CrInputElement =
+        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderInput')!;
+
+    newFolderInput.dispatchEvent(new KeyboardEvent('keydown', {key: 'Enter'}));
+
+    await flushTasks();
+
     const nameInput: CrInputElement =
         powerBookmarksEditDialog.shadowRoot!.querySelector('#nameInput')!;
+
     nameInput.inputElement.value = 'Modified value';
     nameInput.inputElement.dispatchEvent(
         new CustomEvent('input', {composed: true, bubbles: true}));
@@ -162,6 +170,8 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
     const saveButton: HTMLElement =
         powerBookmarksEditDialog.shadowRoot!.querySelector('.action-button')!;
     saveButton.click();
+
+    await flushTasks();
 
     assertEquals(saveCount, 1);
     assertEquals(savedName, 'Modified value');
@@ -206,5 +216,128 @@ suite('SidePanelPowerBookmarksEditDialogTest', () => {
     await new Promise(resolve => setTimeout(resolve, 1));
 
     assertEquals(saveCount, 0);
+  });
+
+  test('ShowsNewFolderNameInput', async () => {
+    const topLevelBookmarks = service.getTopLevelBookmarks();
+    powerBookmarksEditDialog.showDialog(
+        [],
+        topLevelBookmarks,
+        [topLevelBookmarks[0]!],
+        false,
+    );
+
+    const newFolderButton: HTMLElement =
+        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderButton')!;
+    newFolderButton.click();
+
+    await flushTasks();
+
+    const newFolderInput: CrInputElement =
+        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderInput')!;
+
+    assertTrue(!!newFolderInput);
+  });
+
+  test('SavesNewFolderOnNewFolderInputBlur', async () => {
+    let saveCount = 0;
+    let savedUrl;
+    let savedParent;
+    let savedNewFolderCount = 0;
+    powerBookmarksEditDialog.addEventListener(
+        'save', ((e: CustomEvent) => {
+                  saveCount++;
+                  savedUrl = e.detail.url;
+                  savedParent = e.detail.folderId;
+                  savedNewFolderCount = e.detail.newFolders.length;
+                }) as EventListener);
+
+    const topLevelBookmarks = service.getTopLevelBookmarks();
+    powerBookmarksEditDialog.showDialog(
+        [],
+        topLevelBookmarks,
+        [topLevelBookmarks[3]!],
+        false,
+    );
+
+    const newFolderButton: HTMLElement =
+        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderButton')!;
+    newFolderButton.click();
+
+    await flushTasks();
+
+    const newFolderInput: CrInputElement =
+        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderInput')!;
+
+    newFolderInput.dispatchEvent(new Event('blur'));
+
+    await flushTasks();
+
+    const saveButton: HTMLElement =
+        powerBookmarksEditDialog.shadowRoot!.querySelector('.action-button')!;
+    saveButton.click();
+
+    await flushTasks();
+
+    assertEquals(saveCount, 1);
+    assertEquals(savedUrl, 'http://child/bookmark/1/');
+    // Adding a new folder should automatically select that folder.
+    assertEquals(savedParent, 'tmp_new_folder_0');
+    assertEquals(savedNewFolderCount, 1);
+  });
+
+  test('SavesNewFolderWithCustomNamne', async () => {
+    let saveCount = 0;
+    let savedUrl;
+    let savedParent;
+    let savedNewFolderName;
+    let savedNewFolderCount = 0;
+    powerBookmarksEditDialog.addEventListener(
+        'save', ((e: CustomEvent) => {
+                  saveCount++;
+                  savedUrl = e.detail.url;
+                  savedParent = e.detail.folderId;
+                  savedNewFolderName = e.detail.newFolders[0].title;
+                  savedNewFolderCount = e.detail.newFolders.length;
+                }) as EventListener);
+
+    const topLevelBookmarks = service.getTopLevelBookmarks();
+    powerBookmarksEditDialog.showDialog(
+        [],
+        topLevelBookmarks,
+        [topLevelBookmarks[3]!],
+        false,
+    );
+
+    const newFolderButton: HTMLElement =
+        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderButton')!;
+    newFolderButton.click();
+
+    await flushTasks();
+
+    const newFolderInput: CrInputElement =
+        powerBookmarksEditDialog.shadowRoot!.querySelector('#newFolderInput')!;
+
+    newFolderInput.inputElement.value = 'Custom folder name';
+    newFolderInput.inputElement.dispatchEvent(
+        new CustomEvent('input', {composed: true, bubbles: true}));
+    await eventToPromise('value-changed', newFolderInput);
+
+    newFolderInput.dispatchEvent(new Event('blur'));
+
+    await flushTasks();
+
+    const saveButton: HTMLElement =
+        powerBookmarksEditDialog.shadowRoot!.querySelector('.action-button')!;
+    saveButton.click();
+
+    await flushTasks();
+
+    assertEquals(saveCount, 1);
+    assertEquals(savedUrl, 'http://child/bookmark/1/');
+    assertEquals(savedNewFolderName, 'Custom folder name');
+    // Adding a new folder should automatically select that folder.
+    assertEquals(savedParent, 'tmp_new_folder_0');
+    assertEquals(savedNewFolderCount, 1);
   });
 });

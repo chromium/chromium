@@ -7,12 +7,14 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
+#include "base/threading/platform_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "base/traits_bag.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
+#include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/gl_version_info.h"
@@ -92,8 +94,7 @@ GLenum glClientWaitSyncEmulateEGL(GLsync sync,
       return GL_WAIT_FAILED;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 void glWaitSyncEmulateEGL(GLsync sync, GLbitfield flags, GLuint64 timeout) {
@@ -112,8 +113,7 @@ void glWaitSyncEmulateEGL(GLsync sync, GLbitfield flags, GLuint64 timeout) {
 }
 
 GLboolean glIsSyncEmulateEGL(GLsync sync) {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -189,6 +189,11 @@ bind_timed_compile_function(R(GL_BINDING_CALL* func)(GLuint shader, Args...),
                                                   Args... args) -> R {
     gl::ScopedProgressReporter scoped_reporter(progress_reporter);
     SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Gpu.GrCompileShaderUs");
+
+    base::TimeDelta delay = features::GetGLCompileShaderDelay();
+    if (delay.is_positive()) {
+      base::PlatformThread::Sleep(delay);
+    }
 
     func(shader, args...);
 
@@ -431,7 +436,6 @@ sk_sp<GrGLInterface> CreateGrGLInterface(
   BIND(GetFloatv);
   BIND(GetIntegerv);
   BIND(GetMultisamplefv);
-  BIND(GetQueryObjectiv);
   BIND(GetQueryObjectuiv);
   BIND(GetQueryObjecti64v);
   BIND(GetQueryObjectui64v);

@@ -7,26 +7,26 @@
 #include "base/environment.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
-#include "build/chromeos_buildflags.h"
+#include "build/config/linux/dbus/buildflags.h"
 #include "ui/linux/linux_ui.h"
 #include "ui/shell_dialogs/select_file_dialog_linux.h"
 #include "ui/shell_dialogs/select_file_dialog_linux_kde.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
 #include "ui/shell_dialogs/select_file_dialog_linux_portal.h"
 #endif
 
 namespace shell_dialog_linux {
 
 void Initialize() {
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
   ui::SelectFileDialogLinuxPortal::StartAvailabilityTestInBackground();
 #endif
 }
 
 void Finalize() {
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
   ui::SelectFileDialogLinuxPortal::DestroyPortalConnection();
 #endif
 }
@@ -41,7 +41,7 @@ enum FileDialogChoice {
   kUnknown,
   kToolkit,
   kKde,
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
   kPortal,
 #endif
 };
@@ -54,7 +54,7 @@ std::string& KDialogVersion() {
 }
 
 FileDialogChoice GetFileDialogChoice() {
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
   // Check to see if the portal is available.
   if (SelectFileDialogLinuxPortal::IsPortalAvailable())
     return kPortal;
@@ -97,7 +97,7 @@ SelectFileDialog* CreateSelectFileDialog(
       if (!linux_ui)
         break;
       return linux_ui->CreateSelectFileDialog(listener, std::move(policy));
-#if defined(USE_DBUS)
+#if BUILDFLAG(USE_DBUS)
     case kPortal:
       return new SelectFileDialogLinuxPortal(listener, std::move(policy));
 #endif
@@ -109,7 +109,7 @@ SelectFileDialog* CreateSelectFileDialog(
                                          KDialogVersion());
     }
     case kUnknown:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return nullptr;
 }

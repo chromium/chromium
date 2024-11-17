@@ -84,4 +84,11 @@ public final class UnguessableToken extends TokenBase implements Parcelable {
 
         return token;
     }
+
+    // Silences ObjectToString Error Prone warnings when printing instances.
+    @Override
+    @SuppressWarnings("RedundantOverride")
+    public String toString() {
+        return super.toString();
+    }
 }

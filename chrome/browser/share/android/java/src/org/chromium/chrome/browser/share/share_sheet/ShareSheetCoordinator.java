@@ -96,7 +96,6 @@ public class ShareSheetCoordinator
      * @param lifecycleDispatcher Dispatcher for activity lifecycle events, e.g. configuration
      *     changes.
      * @param tabProvider Supplier for the current activity tab.
-     * @param modelBuilder The {@link ShareSheetPropertyModelBuilder} for the share sheet.
      * @param isIncognito Whether the share sheet was opened in incognito mode or not.
      * @param profile The current profile of the User.
      * @param deviceLockActivityLauncher The launcher to start up the device lock page.
@@ -129,13 +128,11 @@ public class ShareSheetCoordinator
                         if (bottomSheet == mBottomSheet) {
                             mBottomSheet
                                     .getContentView()
-                                    .addOnLayoutChangeListener(
-                                            ShareSheetCoordinator.this::onLayoutChange);
+                                    .addOnLayoutChangeListener(ShareSheetCoordinator.this);
                         } else {
                             mBottomSheet
                                     .getContentView()
-                                    .removeOnLayoutChangeListener(
-                                            ShareSheetCoordinator.this::onLayoutChange);
+                                    .removeOnLayoutChangeListener(ShareSheetCoordinator.this);
                         }
                     }
                 };
@@ -279,7 +276,7 @@ public class ShareSheetCoordinator
         boolean shown = mBottomSheetController.requestShowContent(mBottomSheet, true);
         if (shown) {
             long delta = System.currentTimeMillis() - mShareStartTime;
-            RecordHistogram.recordMediumTimesHistogram(
+            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                     "Sharing.SharingHubAndroid.TimeToShowShareSheet", delta);
         }
     }
@@ -429,7 +426,7 @@ public class ShareSheetCoordinator
     }
 
     private static void recordTimeToShare(long shareStartTime) {
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Sharing.SharingHubAndroid.TimeToShare",
                 System.currentTimeMillis() - shareStartTime);
     }

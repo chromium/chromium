@@ -19,9 +19,9 @@
 
 namespace safe_browsing {
 
-PhishingUrlFeatureExtractor::PhishingUrlFeatureExtractor() {}
+PhishingUrlFeatureExtractor::PhishingUrlFeatureExtractor() = default;
 
-PhishingUrlFeatureExtractor::~PhishingUrlFeatureExtractor() {}
+PhishingUrlFeatureExtractor::~PhishingUrlFeatureExtractor() = default;
 
 bool PhishingUrlFeatureExtractor::ExtractFeatures(const GURL& url,
                                                   FeatureMap* features) {

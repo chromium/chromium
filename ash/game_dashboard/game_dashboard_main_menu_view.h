@@ -22,6 +22,7 @@ namespace ash {
 class AnchoredNudge;
 class GameDashboardBatteryView;
 class GameDashboardContext;
+class GameDashboardNetworkView;
 class IconButton;
 class PillButton;
 class Switch;
@@ -200,6 +201,9 @@ class ASH_EXPORT GameDashboardMainMenuView
 
   // The battery displayed in the utility cluster row. Visible for testing.
   raw_ptr<GameDashboardBatteryView> battery_view_ = nullptr;
+
+  // The network icon displayed in the utility cluster row. Visible for testing.
+  raw_ptr<GameDashboardNetworkView> network_view_ = nullptr;
 };
 
 }  // namespace ash

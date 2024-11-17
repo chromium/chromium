@@ -47,11 +47,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.components.browser_ui.modaldialog.test.R;
 import org.chromium.ui.InsetObserver;
@@ -68,6 +70,7 @@ import java.util.concurrent.TimeoutException;
 /** Tests for {@link AppModalPresenter}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@EnableFeatures(ModalDialogFeatureList.MODAL_DIALOG_LAYOUT_WITH_SYSTEM_INSETS)
 public class AppModalPresenterTest {
     @ClassRule
     public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
@@ -86,6 +89,7 @@ public class AppModalPresenterTest {
     private static Activity sActivity;
     private static ModalDialogManager sManager;
     private static InsetObserver sInsetObserver;
+    private static ObservableSupplierImpl<Boolean> sEdgeToEdgeStateSupplier;
     private TestObserver mTestObserver;
     private Integer mExpectedDismissalCause;
 
@@ -95,10 +99,12 @@ public class AppModalPresenterTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     sActivity = activityTestRule.getActivity();
+                    sEdgeToEdgeStateSupplier = new ObservableSupplierImpl<>();
                     sManager =
                             new ModalDialogManager(
                                     new AppModalPresenter(sActivity),
-                                    ModalDialogManager.ModalDialogType.APP);
+                                    ModalDialogManager.ModalDialogType.APP,
+                                    sEdgeToEdgeStateSupplier);
                     sInsetObserver =
                             new InsetObserver(
                                     new ImmutableWeakReference<>(
@@ -275,7 +281,6 @@ public class AppModalPresenterTest {
 
     private void doTestDialogDimensions(
             int leftInset, int topInset, int rightInset, int bottomInset) {
-        ModalDialogFeatureMap.setModalDialogLayoutWithSystemInsetsEnabledForTesting(true);
         PropertyModel dialog =
                 createDialog(
                         sActivity,
@@ -296,7 +301,7 @@ public class AppModalPresenterTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> dialog.set(ModalDialogProperties.CUSTOM_VIEW, customView));
 
-        // Apply window insets before dialog is shown.
+        // Apply window insets before dialog is shown in a simulated edge-to-edge environment.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var windowInsets =
@@ -305,6 +310,7 @@ public class AppModalPresenterTest {
                                             systemBars(),
                                             Insets.of(leftInset, topInset, rightInset, bottomInset))
                                     .build();
+                    sEdgeToEdgeStateSupplier.set(true);
                     sInsetObserver.onApplyWindowInsets(
                             sActivity.getWindow().getDecorView().getRootView(), windowInsets);
                 });
@@ -321,7 +327,8 @@ public class AppModalPresenterTest {
                 "View is taller than expected.",
                 view.getHeight() <= (windowHeight - 2 * Math.max(topInset, bottomInset)));
 
-        ModalDialogFeatureMap.setModalDialogLayoutWithSystemInsetsEnabledForTesting(false);
+        // Exit edge-to-edge state.
+        ThreadUtils.runOnUiThreadBlocking(() -> sEdgeToEdgeStateSupplier.set(false));
     }
 
     private static Matcher<View> hasCurrentTextColor(int expected) {

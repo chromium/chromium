@@ -64,7 +64,7 @@ class UsbMidiDeviceAndroid {
 
     /**
      * Constructs a UsbMidiDeviceAndroid.
-     * @param manager
+     *
      * @param device The USB device which this object is associated with.
      */
     UsbMidiDeviceAndroid(UsbManager manager, UsbDevice device) {

@@ -14,6 +14,7 @@
 #include <unordered_map>
 
 #include "base/containers/small_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "base/unguessable_token.h"
@@ -83,7 +84,7 @@ class FlatlandSysmemBufferManager {
 
   void OnCollectionReleased(zx_koid_t id);
 
-  FlatlandSurfaceFactory* const flatland_surface_factory_;
+  const raw_ptr<FlatlandSurfaceFactory> flatland_surface_factory_;
   fuchsia::sysmem2::AllocatorSyncPtr sysmem_allocator_;
   fuchsia::ui::composition::AllocatorPtr flatland_allocator_;
 

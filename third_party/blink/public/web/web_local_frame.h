@@ -333,6 +333,11 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
       CrossVariantMojoRemote<mojom::BlobURLTokenInterfaceBase>
           blob_url_token) = 0;
 
+  // If `this` is a provisional frame, returns the "owner" frame, i.e. the frame
+  // that would be replaced if a navigation commits in `this`. Otherwise,
+  // returns nullptr.
+  virtual WebFrame* GetProvisionalOwnerFrame() = 0;
+
   // Navigation State -------------------------------------------------------
 
   // Returns true if there is a pending redirect or location change

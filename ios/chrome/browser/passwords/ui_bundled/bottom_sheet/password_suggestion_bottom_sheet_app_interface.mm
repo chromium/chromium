@@ -41,12 +41,12 @@ static std::unique_ptr<ScopedPasswordSuggestionBottomSheetReauthModuleOverride>
 }
 
 + (void)setDismissCount:(int)dismissCount {
-  chrome_test_util::GetOriginalBrowserState()->GetPrefs()->SetInteger(
+  chrome_test_util::GetOriginalProfile()->GetPrefs()->SetInteger(
       prefs::kIosPasswordBottomSheetDismissCount, dismissCount);
 }
 
 + (void)disableBottomSheet {
-  chrome_test_util::GetOriginalBrowserState()->GetPrefs()->SetInteger(
+  chrome_test_util::GetOriginalProfile()->GetPrefs()->SetInteger(
       prefs::kIosPasswordBottomSheetDismissCount,
       AutofillBottomSheetTabHelper::kPasswordBottomSheetMaxDismissCount);
 }

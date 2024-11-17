@@ -42,7 +42,7 @@ struct Dispatcher {
       const std::tuple<Observers*...>& observers) {
     static std::map<std::tuple<Observers*...>, size_t>
         observer_init_counter_map;
-    reseter_[&observer_init_counter_map] = []() {
+    reseter_[&observer_init_counter_map] = [] {
       observer_init_counter_map.clear();
     };
     return observer_init_counter_map[observers];

@@ -277,13 +277,13 @@ TEST(CheckTest, CheckStreamsAreLazy) {
   int called_count = 0;
   int not_called_count = 0;
 
-  auto Called = [&]() {
+  auto Called = [&] {
     ++called_count;
     // This returns a non-constant because returning 42 here directly triggers a
     // dead-code warning when streaming to *CHECK(Called()) << NotCalled();
     return called_count >= 0;
   };
-  auto NotCalled = [&]() {
+  auto NotCalled = [&] {
     ++not_called_count;
     return 42;
   };
@@ -555,10 +555,6 @@ TEST(CheckDeathTest, NotReached) {
   // line.
   EXPECT_DEATH_IF_SUPPORTED(NotReachedInFunction(),
                             CHECK_WILL_STREAM() ? "NOTREACHED hit. " : "");
-}
-
-TEST(CheckDeathTest, NotReachedInMigration) {
-  EXPECT_CHECK_DEATH(NOTREACHED_IN_MIGRATION());
 }
 
 TEST(CheckDeathTest, DumpWillBeCheck) {

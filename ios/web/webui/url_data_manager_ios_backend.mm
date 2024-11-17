@@ -59,8 +59,7 @@ bool CheckURLIsValid(const GURL& url) {
           base::Contains(additional_schemes, url.scheme())));
 
   if (!url.is_valid()) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   return true;

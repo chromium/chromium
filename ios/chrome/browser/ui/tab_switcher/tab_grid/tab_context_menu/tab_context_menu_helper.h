@@ -7,20 +7,20 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_context_menu_provider.h"
 
+class ProfileIOS;
 @protocol TabContextMenuDelegate;
 
 //  TabContextMenuHelper controls the creation of context menus for tab items.
 @interface TabContextMenuHelper : NSObject <TabContextMenuProvider>
 
 // Browser state reference.
-@property(nonatomic, assign) ChromeBrowserState* browserState;
+@property(nonatomic, assign) ProfileIOS* profile;
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-              tabContextMenuDelegate:
-                  (id<TabContextMenuDelegate>)tabContextMenuDelegate
+- (instancetype)initWithProfile:(ProfileIOS*)profile
+         tabContextMenuDelegate:
+             (id<TabContextMenuDelegate>)tabContextMenuDelegate
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

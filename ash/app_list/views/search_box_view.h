@@ -256,6 +256,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // Overridden from SearchBoxModelObserver:
   void SearchEngineChanged() override;
   void ShowAssistantChanged() override;
+  void ShowSunfishChanged() override;
 
   // Updates the visibility of an IPH view.
   // If `can_show_iph` is false, delete the IPH view if it is visible.
@@ -333,8 +334,7 @@ class ASH_EXPORT SearchBoxView : public SearchBoxViewBase,
   // view.
   std::optional<ui::AXPlatformNodeId> a11y_active_descendant_;
 
-  // Owned by SearchResultPageView (for fullscreen launcher) or
-  // ProductivityLauncherSearchPage (for bubble launcher).
+  // Owned by AppListSearchView.
   raw_ptr<ResultSelectionController, DanglingUntriaged>
       result_selection_controller_ = nullptr;
 

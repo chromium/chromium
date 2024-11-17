@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
+#include "chrome/browser/ash/app_mode/fake_cws_mixin.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_system_session.h"
@@ -91,8 +92,6 @@ class KioskBaseTest : public OobeBaseTest {
 
   void TearDownOnMainThread() override;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override;
-
   bool LaunchApp(const std::string& app_id);
 
   void ReloadKioskApps();
@@ -133,7 +132,7 @@ class KioskBaseTest : public OobeBaseTest {
   const std::string& test_app_id() const { return test_app_id_; }
   const std::string& test_app_version() const { return test_app_version_; }
   const std::string& test_crx_file() const { return test_crx_file_; }
-  FakeCWS* fake_cws() { return fake_cws_.get(); }
+  FakeCWS* fake_cws() { return &fake_cws_mixin_.fake_cws(); }
 
   ScopedCrosSettingsTestHelper settings_helper_;
   std::unique_ptr<FakeOwnerSettingsService> owner_settings_service_;
@@ -154,7 +153,9 @@ class KioskBaseTest : public OobeBaseTest {
   std::string test_app_id_;
   std::string test_app_version_;
   std::string test_crx_file_;
-  std::unique_ptr<FakeCWS> fake_cws_;
+
+  // Sets up the `FakeCWS`.
+  FakeCwsMixin fake_cws_mixin_;
 
   base::AutoReset<bool> skip_splash_wait_override_ =
       KioskTestHelper::SkipSplashScreenWait();

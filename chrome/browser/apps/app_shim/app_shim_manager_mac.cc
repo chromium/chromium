@@ -30,6 +30,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
+#include "base/mac/code_signature.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -56,8 +57,10 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -79,13 +82,6 @@
 #include "net/base/filename_util.h"
 
 namespace {
-
-// A feature to control whether or not the profile icons are sent over mojo.
-// This is used to debug crashes that are only seen in release builds.
-// https://crbug.com/1274236
-BASE_FEATURE(kAppShimProfileMenuIcons,
-             "AppShimProfileMenuIcons",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // A crash key that is used when dumping because of errors when building and
 // verifying the app shim requirement.
@@ -168,7 +164,7 @@ bool IsAcceptablyCodeSignedLegacy(audit_token_t app_shim_audit_token) {
     }
   }
 
-  OSStatus status = apps::ProcessIsSignedAndFulfillsRequirement(
+  OSStatus status = base::mac::ProcessIsSignedAndFulfillsRequirement(
       app_shim_audit_token, app_shim_requirement->value().get());
   if (status != errSecSuccess) {
     if (status == errSecCSReqFailed &&
@@ -215,9 +211,7 @@ bool VerifyCodeDirectoryHash(
   }
 
   return AppShimRegistry::Get()->VerifyCdHashForApp(
-      base::SysCFStringRefToUTF8(app_id),
-      base::make_span(CFDataGetBytePtr(cd_hash),
-                      base::checked_cast<size_t>(CFDataGetLength(cd_hash))));
+      base::SysCFStringRefToUTF8(app_id), base::apple::CFDataToSpan(cd_hash));
 }
 
 // Returns whether |app_shim_audit_token|'s code signature is trusted. Since an
@@ -1787,10 +1781,8 @@ void AppShimManager::RebuildProfileMenuItemsFromAvatarMenu() {
     mojo_item->menu_index = item.menu_index;
     mojo_item->active = item.active;
     mojo_item->profile_path = item.profile_path;
-    if (base::FeatureList::IsEnabled(kAppShimProfileMenuIcons)) {
-      mojo_item->icon =
-          profiles::GetAvatarIconForNSMenu(item.profile_path).ToImageSkia()[0];
-    }
+    mojo_item->icon =
+        profiles::GetAvatarIconForNSMenu(item.profile_path).ToImageSkia()[0];
     profile_menu_items_.push_back(std::move(mojo_item));
   }
 }

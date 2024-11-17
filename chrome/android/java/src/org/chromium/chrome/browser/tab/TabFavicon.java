@@ -168,7 +168,7 @@ public class TabFavicon extends TabWebContentsUserData {
 
     @CalledByNative
     @VisibleForTesting
-    boolean shouldUpdateFaviconForBrowserUI(int newIconWidth, int newIconHeight) {
+    boolean shouldUpdateFaviconForBrowserUi(int newIconWidth, int newIconHeight) {
         return pageUrlChanged()
                 || isBetterFavicon(
                         mFaviconWidth,

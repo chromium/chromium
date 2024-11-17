@@ -526,4 +526,14 @@ ParseStatus::Or<AudioChannels> AudioChannels::Parse(ResolvedSourceString str) {
   return AudioChannels(max_channels, std::move(audio_coding_identifiers));
 }
 
+DecimalInteger DecimalResolution::Szudzik() const {
+  if (width > (1 << 16) || height > (1 << 16)) {
+    // resolutions greater than 32768 are not allowed!
+    return 0;
+  }
+  // See http://szudzik.com/ElegantPairing.pdf for the math
+  return (width >= height) ? (width * width + width + height)
+                           : (height * height + width);
+}
+
 }  // namespace media::hls::types

@@ -37,6 +37,7 @@ source_set("browser_tests") {
     "//chrome/browser/media/router:media_router_feature",
     "//chrome/browser/media/router:test_support",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/media_router",
     "//chrome/browser/ui/views:test_support",
     "//chrome/browser/ui/views/toolbar",
     "//chrome/common",

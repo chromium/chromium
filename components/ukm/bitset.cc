@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/ukm/bitset.h"
 
 #include <cstring>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 
 namespace ukm {
 
@@ -24,9 +20,7 @@ BitSet::BitSet(size_t set_size, std::string_view data) : BitSet(set_size) {
   // Copy the passed `data` to the end of the internal `bitset_`. For example,
   // if `data` is {0xAA, 0xBB}, and set_size is 32 (so `bitset_` is a vector of
   // 4 uint8_t's), then the final `bitset_` should be {0x00, 0x00, 0xAA, 0xBB}.
-  CHECK_GE(bitset_.size(), data.size());
-  size_t offset = bitset_.size() - data.size();
-  memcpy(bitset_.data() + offset, data.data(), data.size());
+  base::span(bitset_).last(data.size()).copy_from(base::as_byte_span((data)));
 }
 
 BitSet::~BitSet() = default;
@@ -55,9 +49,9 @@ std::string BitSet::Serialize() const {
     }
   }
 
-  size_t len = bitset_.size() - offset;
-  return std::string(reinterpret_cast<const char*>(bitset_.data()) + offset,
-                     len);
+  base::span<const char> s =
+      base::as_chars(base::span(bitset_).subspan(offset));
+  return std::string(s.begin(), s.end());
 }
 
 size_t BitSet::ToInternalIndex(size_t index) const {

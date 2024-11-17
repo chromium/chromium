@@ -46,6 +46,10 @@ id<GREYAction> TapWebElementWithIdInFrame(const std::string& element_id,
                                           inFrameWithIndex:frame_index]];
 }
 
+id<GREYAction> LongPressOnHiddenElement() {
+  return [ChromeActionsAppInterface longPressOnHiddenElement];
+}
+
 id<GREYAction> ScrollToTop() {
   return [ChromeActionsAppInterface scrollToTop];
 }

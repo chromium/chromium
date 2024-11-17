@@ -40,12 +40,10 @@ enum class AudioGlitchResult {
 
 InputSyncWriter::OverflowData::OverflowData(
     double volume,
-    bool key_pressed,
     base::TimeTicks capture_time,
     const media::AudioGlitchInfo& glitch_info,
     std::unique_ptr<media::AudioBus> audio_bus)
     : volume_(volume),
-      key_pressed_(key_pressed),
       capture_time_(capture_time),
       glitch_info_(glitch_info),
       audio_bus_(std::move(audio_bus)) {}
@@ -147,7 +145,6 @@ base::ReadOnlySharedMemoryRegion InputSyncWriter::TakeSharedMemoryRegion() {
 
 void InputSyncWriter::Write(const media::AudioBus* data,
                             double volume,
-                            bool key_pressed,
                             base::TimeTicks capture_time,
                             const media::AudioGlitchInfo& glitch_info) {
   TRACE_EVENT("audio", "InputSyncWriter::Write", "capture_time (ms)",
@@ -193,8 +190,8 @@ void InputSyncWriter::Write(const media::AudioBus* data,
            number_of_filled_segments_ < segment_count) {
       // Write parameters to shared memory, and report whether it was dropped.
       const bool successful_write = WriteDataToCurrentSegment(
-          *data_it->audio_bus_, data_it->volume_, data_it->key_pressed_,
-          data_it->capture_time_, data_it->glitch_info_);
+          *data_it->audio_bus_, data_it->volume_, data_it->capture_time_,
+          data_it->glitch_info_);
       glitch_counter_->ReportDroppedData(!successful_write);
       if (!successful_write) {
         // The glitch info was not written successfully, we need to keep it to
@@ -219,7 +216,7 @@ void InputSyncWriter::Write(const media::AudioBus* data,
   if (number_of_filled_segments_ < audio_buses_.size()) {
     DCHECK(overflow_data_.empty());
     const bool successful_write = WriteDataToCurrentSegment(
-        *data, volume, key_pressed, capture_time, pending_glitch_info_);
+        *data, volume, capture_time, pending_glitch_info_);
     glitch_counter_->ReportDroppedData(!successful_write);
     if (successful_write) {
       pending_glitch_info_ = {};
@@ -227,8 +224,7 @@ void InputSyncWriter::Write(const media::AudioBus* data,
       pending_glitch_info_ += dropped_buffer_glitch_;
     }
   } else {
-    if (PushDataToFifo(*data, volume, key_pressed, capture_time,
-                       pending_glitch_info_)) {
+    if (PushDataToFifo(*data, volume, capture_time, pending_glitch_info_)) {
       pending_glitch_info_ = {};
     } else {
       glitch_counter_->ReportDroppedData(true);
@@ -272,7 +268,6 @@ void InputSyncWriter::CheckTimeSinceLastWrite() {
 bool InputSyncWriter::PushDataToFifo(
     const media::AudioBus& data,
     double volume,
-    bool key_pressed,
     base::TimeTicks capture_time,
     const media::AudioGlitchInfo& glitch_info) {
   TRACE_EVENT("audio", "InputSyncWriter::PushDataToFifo", "capture time (ms)",
@@ -310,7 +305,7 @@ bool InputSyncWriter::PushDataToFifo(
   std::unique_ptr<media::AudioBus> audio_bus =
       media::AudioBus::Create(data.channels(), data.frames());
   data.CopyTo(audio_bus.get());
-  overflow_data_.emplace_back(volume, key_pressed, capture_time, glitch_info,
+  overflow_data_.emplace_back(volume, capture_time, glitch_info,
                               std::move(audio_bus));
   DCHECK_LE(overflow_data_.size(), static_cast<size_t>(kMaxOverflowBusesSize));
   return true;
@@ -319,7 +314,6 @@ bool InputSyncWriter::PushDataToFifo(
 bool InputSyncWriter::WriteDataToCurrentSegment(
     const media::AudioBus& data,
     double volume,
-    bool key_pressed,
     base::TimeTicks capture_time,
     const media::AudioGlitchInfo& glitch_info) {
   CHECK(number_of_filled_segments_ < audio_buses_.size());
@@ -335,7 +329,6 @@ bool InputSyncWriter::WriteDataToCurrentSegment(
   media::AudioInputBuffer* buffer = GetSharedInputBuffer(current_segment_id_);
   buffer->params.volume = volume;
   buffer->params.size = audio_bus_memory_size_;
-  buffer->params.key_pressed = key_pressed;
   buffer->params.capture_time_us =
       (capture_time - base::TimeTicks()).InMicroseconds();
   buffer->params.id = next_buffer_id_;
@@ -376,7 +369,7 @@ bool InputSyncWriter::SignalDataWrittenAndUpdateCounters() {
 }
 
 media::AudioInputBuffer* InputSyncWriter::GetSharedInputBuffer(
-    uint32_t segment_id) const {
+    uint32_t segment_id) {
   uint8_t* ptr = static_cast<uint8_t*>(shared_memory_mapping_.memory());
   CHECK_LT(segment_id, audio_buses_.size());
   ptr += segment_id * shared_memory_segment_size_;

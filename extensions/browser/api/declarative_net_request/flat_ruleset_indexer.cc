@@ -471,8 +471,7 @@ FlatRulesetIndexer::GetBuilders(const IndexedRule& indexed_rule) {
     case dnr_api::RuleActionType::kNone:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return {};
+  NOTREACHED();
 }
 
 }  // namespace extensions::declarative_net_request

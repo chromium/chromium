@@ -15,7 +15,7 @@ NET_EXPORT bool CanFalloverToNextProxy(const ProxyChain& proxy_chain,
                                        int* final_error,
                                        bool is_for_ip_protection) {
   *final_error = error;
-  auto proxy_servers = proxy_chain.proxy_servers();
+  const auto& proxy_servers = proxy_chain.proxy_servers();
   bool has_quic_proxy = std::any_of(
       proxy_servers.begin(), proxy_servers.end(),
       [](const ProxyServer& proxy_server) { return proxy_server.is_quic(); });

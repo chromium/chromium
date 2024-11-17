@@ -51,6 +51,8 @@ import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.components.embedder_support.util.WebResourceResponseInfo;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.content_public.browser.test.util.HistoryUtils;
@@ -67,6 +69,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.URLEncoder;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -3696,6 +3699,21 @@ public class AwSettingsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
+    @CommandLineFlags.Add({"enable-features=DIPS"})
+    public void testDipsSettingsForWebView() {
+        Map<String, String> mapDipsTtl =
+                ContentFeatureMap.getInstance()
+                        .getFieldTrialParamsForFeature(ContentFeatureList.DIPS_TTL);
+        Assert.assertTrue(mapDipsTtl.size() > 0);
+
+        String expectedTtl = "30d";
+        String gotDipsTtl = mapDipsTtl.get("interaction_ttl");
+        Assert.assertEquals(expectedTtl, gotDipsTtl);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
     public void testUpdatingUserAgentWhileLoadingCausesReload() throws Throwable {
         final TestAwContentsClient contentClient = new TestAwContentsClient();
         final AwTestContainerView testContainerView =
@@ -4015,7 +4033,7 @@ public class AwSettingsTest {
         }
     }
 
-    /**
+    /*
      * Verifies the following statements about a setting:
      *  - initially, the setting has a default value;
      *  - the setting can be switched to an alternate value and back;
@@ -4024,7 +4042,6 @@ public class AwSettingsTest {
      *
      * @param helper0 Test helper for the first ContentView
      * @param helper1 Test helper for the second ContentView
-     * @throws Throwable
      */
     private void runPerViewSettingsTest(
             AwSettingsTestHelper<?> helper0, AwSettingsTestHelper<?> helper1) throws Throwable {
@@ -4096,7 +4113,7 @@ public class AwSettingsTest {
         }
     }
 
-    /**
+    /*
      * Verifies the number of resource requests made to the content provider.
      * @param resource Resource name
      * @param expectedCount Expected resource requests count

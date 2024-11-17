@@ -4,12 +4,16 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_mock_time_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/ozone_buildflags.h"
 #include "ui/base/test/ui_controls.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -23,17 +27,14 @@ class ExclusiveAccessBubbleViewsTest : public ExclusiveAccessTest,
   ExclusiveAccessBubbleViewsTest& operator=(
       const ExclusiveAccessBubbleViewsTest&) = delete;
 
-  ExclusiveAccessBubbleViews* bubble() {
-    BrowserView* browser_view =
-        BrowserView::GetBrowserViewForBrowser(browser());
-    return browser_view->exclusive_access_bubble();
+  void ClearSnooze() {
+    GetExclusiveAccessBubbleView()->snooze_until_ = base::TimeTicks::Min();
   }
-
-  void ClearSnooze() { bubble()->snooze_until_ = base::TimeTicks::Min(); }
 
   // WidgetObserver:
   void OnWidgetDestroying(views::Widget* widget) override {
-    was_observing_in_destroying_ = widget->HasObserver(bubble());
+    was_observing_in_destroying_ =
+        widget->HasObserver(GetExclusiveAccessBubbleView());
     was_destroying_ = true;
     widget->RemoveObserver(this);
   }
@@ -48,17 +49,17 @@ class ExclusiveAccessBubbleViewsTest : public ExclusiveAccessTest,
 // the destructor, animations could still be running that attempt to manipulate
 // a destroyed Widget and crash.
 IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, NativeClose) {
-  EXPECT_FALSE(bubble());
+  EXPECT_FALSE(GetExclusiveAccessBubbleView());
   EnterActiveTabFullscreen();
-  EXPECT_TRUE(bubble());
+  EXPECT_TRUE(GetExclusiveAccessBubbleView());
 
-  bubble()->GetView()->GetWidget()->AddObserver(this);
+  GetExclusiveAccessBubbleView()->GetView()->GetWidget()->AddObserver(this);
 
   // Simulate the bubble being closed out from under its controller, which seems
   // to happen in some odd corner cases, like system log-off while the bubble is
   // showing.
-  bubble()->GetView()->GetWidget()->CloseNow();
-  EXPECT_FALSE(bubble());
+  GetExclusiveAccessBubbleView()->GetView()->GetWidget()->CloseNow();
+  EXPECT_FALSE(GetExclusiveAccessBubbleView());
 
   // Verify that teardown is really happening via OnWidgetDestroyed() rather
   // than the usual path via the ExclusiveAccessBubbleViews destructor. Since
@@ -81,7 +82,8 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, CreateForDownload) {
 
 // Ensure the bubble reshows on mouse move events after a suppression period.
 // TODO(crbug.com/336399260): Enable on macOS
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/372814576): Enable on Wayland
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE_WAYLAND)
 #define MAYBE_ReshowOnMove DISABLED_ReshowOnMove
 #else
 #define MAYBE_ReshowOnMove ReshowOnMove
@@ -91,15 +93,25 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, MAYBE_ReshowOnMove) {
   ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER);
 
   // Show the bubble, wait for it to hide, and clear the 15min snooze signal.
-  base::RunLoop hide_run_loop;
-  ExclusiveAccessBubbleHideCallback callback = base::BindLambdaForTesting(
-      [&](ExclusiveAccessBubbleHideReason) { hide_run_loop.Quit(); });
-  GetExclusiveAccessManager()->context()->UpdateExclusiveAccessBubble(
-      {.url = GURL("http://example.com"),
-       .type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION},
-      std::move(callback));
-  EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
-  hide_run_loop.Run();
+  {
+    auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+    base::TestMockTimeTaskRunner::ScopedContext scoped_context(
+        task_runner.get());
+
+    ExclusiveAccessBubbleHideCallback callback =
+        base::BindLambdaForTesting([&](ExclusiveAccessBubbleHideReason reason) {
+          EXPECT_EQ(reason, ExclusiveAccessBubbleHideReason::kTimeout);
+        });
+    GetExclusiveAccessManager()->context()->UpdateExclusiveAccessBubble(
+        {.url = GURL("http://example.com"),
+         .type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION},
+        std::move(callback));
+    EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
+
+    task_runner->FastForwardBy(ExclusiveAccessBubble::kShowTime * 2);
+  }
+
+  FinishExclusiveAccessBubbleAnimation();
   EXPECT_FALSE(IsExclusiveAccessBubbleDisplayed());
   ClearSnooze();
 
@@ -116,7 +128,8 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, MAYBE_ReshowOnMove) {
 
 // Ensure the bubble reshows on mouse click events after a suppression period.
 // TODO(crbug.com/336399260): Enable on macOS
-#if BUILDFLAG(IS_MAC)
+// TODO(crbug.com/372814576): Enable on Wayland
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_OZONE_WAYLAND)
 #define MAYBE_ReshowOnClick DISABLED_ReshowOnClick
 #else
 #define MAYBE_ReshowOnClick ReshowOnClick
@@ -126,15 +139,26 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessBubbleViewsTest, MAYBE_ReshowOnClick) {
   ui_test_utils::ClickOnView(browser(), VIEW_ID_TAB_CONTAINER);
 
   // Show the bubble, wait for it to hide, and clear the 15min snooze signal.
-  base::RunLoop hide_run_loop;
-  ExclusiveAccessBubbleHideCallback callback = base::BindLambdaForTesting(
-      [&](ExclusiveAccessBubbleHideReason) { hide_run_loop.Quit(); });
-  GetExclusiveAccessManager()->context()->UpdateExclusiveAccessBubble(
-      {.url = GURL("http://example.com"),
-       .type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION},
-      std::move(callback));
-  EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
-  hide_run_loop.Run();
+  {
+    auto task_runner = base::MakeRefCounted<base::TestMockTimeTaskRunner>();
+    base::TestMockTimeTaskRunner::ScopedContext scoped_context(
+        task_runner.get());
+
+    ExclusiveAccessBubbleHideCallback callback =
+        base::BindLambdaForTesting([&](ExclusiveAccessBubbleHideReason reason) {
+          EXPECT_EQ(reason, ExclusiveAccessBubbleHideReason::kTimeout);
+        });
+
+    GetExclusiveAccessManager()->context()->UpdateExclusiveAccessBubble(
+        {.url = GURL("http://example.com"),
+         .type = EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION},
+        std::move(callback));
+    EXPECT_TRUE(IsExclusiveAccessBubbleDisplayed());
+
+    task_runner->FastForwardBy(ExclusiveAccessBubble::kShowTime * 2);
+  }
+
+  FinishExclusiveAccessBubbleAnimation();
   EXPECT_FALSE(IsExclusiveAccessBubbleDisplayed());
   ClearSnooze();
 

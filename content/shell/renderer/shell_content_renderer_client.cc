@@ -99,7 +99,7 @@ class TestRendererServiceImpl : public mojom::TestService {
   }
 
   void DoTerminateProcess(DoTerminateProcessCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void DoCrashImmediately(DoCrashImmediatelyCallback callback) override {
@@ -118,25 +118,25 @@ class TestRendererServiceImpl : public mojom::TestService {
   void CreateReadOnlySharedMemoryRegion(
       const std::string& message,
       CreateReadOnlySharedMemoryRegionCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void CreateWritableSharedMemoryRegion(
       const std::string& message,
       CreateWritableSharedMemoryRegionCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void CreateUnsafeSharedMemoryRegion(
       const std::string& message,
       CreateUnsafeSharedMemoryRegionCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void CloneSharedMemoryContents(
       base::ReadOnlySharedMemoryRegion region,
       CloneSharedMemoryContentsCallback callback) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void IsProcessSandboxed(IsProcessSandboxedCallback callback) override {
@@ -154,7 +154,7 @@ class TestRendererServiceImpl : public mojom::TestService {
     std::move(callback).Run();
   }
 
-  void WriteToPreloadedPipe() override { NOTREACHED_IN_MIGRATION(); }
+  void WriteToPreloadedPipe() override { NOTREACHED(); }
 
   mojo::Receiver<mojom::TestService> receiver_;
 };

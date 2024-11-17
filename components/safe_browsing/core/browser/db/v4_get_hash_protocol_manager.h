@@ -363,14 +363,14 @@ class V4GetHashProtocolManager {
 // Interface of a factory to create V4GetHashProtocolManager.  Useful for tests.
 class V4GetHashProtocolManagerFactory {
  public:
-  V4GetHashProtocolManagerFactory() {}
+  V4GetHashProtocolManagerFactory() = default;
 
   V4GetHashProtocolManagerFactory(const V4GetHashProtocolManagerFactory&) =
       delete;
   V4GetHashProtocolManagerFactory& operator=(
       const V4GetHashProtocolManagerFactory&) = delete;
 
-  virtual ~V4GetHashProtocolManagerFactory() {}
+  virtual ~V4GetHashProtocolManagerFactory() = default;
   virtual std::unique_ptr<V4GetHashProtocolManager> CreateProtocolManager(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const StoresToCheck& stores_to_check,

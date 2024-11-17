@@ -27,6 +27,6 @@ NTPTileImpression::NTPTileImpression(int index,
       icon_type(icon_type),
       url_for_rappor(url_for_rappor) {}
 
-NTPTileImpression::~NTPTileImpression() {}
+NTPTileImpression::~NTPTileImpression() = default;
 
 }  // namespace ntp_tiles

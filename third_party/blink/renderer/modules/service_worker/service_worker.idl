@@ -31,6 +31,7 @@
 // https://w3c.github.io/ServiceWorker/#serviceworker-interface
 
 enum ServiceWorkerState {
+    "parsed",
     "installing",
     "installed",
     "activating",

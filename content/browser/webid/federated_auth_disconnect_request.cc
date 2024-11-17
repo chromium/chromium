@@ -88,8 +88,7 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
       // Intentional fall-through.
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   if (error_disconnect_status) {
     Complete(DisconnectStatus::kError, *error_disconnect_status);
@@ -110,7 +109,7 @@ void FederatedAuthDisconnectRequest::SetCallbackAndStart(
       *render_frame_host_, network_manager_.get());
   GURL config_url = options_->config->config_url;
   provider_fetcher_->Start(
-      {GURL(config_url)}, blink::mojom::RpMode::kWidget, /*icon_ideal_size=*/0,
+      {GURL(config_url)}, blink::mojom::RpMode::kPassive, /*icon_ideal_size=*/0,
       /*icon_minimum_size=*/0,
       base::BindOnce(
           &FederatedAuthDisconnectRequest::OnAllConfigAndWellKnownFetched,

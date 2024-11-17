@@ -36,8 +36,8 @@ enum class BrowsingDataRemoveMask {
                      REMOVE_WEBSQL | REMOVE_VISITED_LINKS,
 
   // Includes all the available remove options. Meant to be used by clients that
-  // wish to wipe as much data as possible from a ChromeBrowserState, to make it
-  // look like a new ChromeBrowserState. Does not include closing tabs as tabs
+  // wish to wipe as much data as possible from a ProfileIOS, to make it
+  // look like a new ProfileIOS. Does not include closing tabs as tabs
   // should only be closed by explicit user action.
   REMOVE_ALL = REMOVE_SITE_DATA | REMOVE_CACHE | REMOVE_DOWNLOADS |
                REMOVE_FORM_DATA | REMOVE_HISTORY | REMOVE_PASSWORDS |

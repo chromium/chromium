@@ -2234,7 +2234,7 @@ TEST_P(PaintControllerTest, DuplicatedSubsequences) {
     }
     {
       // Should not use the cached duplicated subsequence. This currently hits a
-      // DUMP_WILL_BE_NOTREACHED_NORETURN(), crashing in non-official builds.
+      // DUMP_WILL_BE_NOTREACHED(), crashing in non-official builds.
 #if defined(OFFICIAL_BUILD)
       EXPECT_FALSE(paint_controller.UseCachedSubsequenceIfPossible(client));
 #endif  // defined(OFFICIAL_BUILD)

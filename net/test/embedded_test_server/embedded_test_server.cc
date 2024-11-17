@@ -58,7 +58,7 @@
 #include "net/test/key_util.h"
 #include "net/test/revocation_builder.h"
 #include "net/test/test_data_directory.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_frame_builder.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_frame_builder.h"
 #include "third_party/boringssl/src/pki/extended_key_usage.h"
 #include "url/origin.h"
 
@@ -437,6 +437,9 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
       root->SetBasicConstraints(/*is_ca=*/true, /*path_len=*/-1);
       root->SetKeyUsages(
           {bssl::KEY_USAGE_BIT_KEY_CERT_SIGN, bssl::KEY_USAGE_BIT_CRL_SIGN});
+      if (!cert_config_.root_dns_names.empty()) {
+        root->SetSubjectAltNames(cert_config_.root_dns_names, {});
+      }
       break;
   }
 
@@ -459,7 +462,7 @@ bool EmbeddedTestServer::GenerateCertAndKey() {
   std::vector<GURL> leaf_ocsp_urls;
 
   leaf->SetValidity(now - base::Days(1), now + base::Days(20));
-  leaf->SetBasicConstraints(/*is_ca=*/false, /*path_len=*/-1);
+  leaf->SetBasicConstraints(/*is_ca=*/cert_config_.leaf_is_ca, /*path_len=*/-1);
   leaf->SetExtendedKeyUsages({bssl::der::Input(bssl::kServerAuth)});
 
   if (!cert_config_.policy_oids.empty()) {
@@ -720,6 +723,14 @@ void EmbeddedTestServer::HandleRequest(
   HttpConnection* connection = GetConnectionForSocket(socket);
   CHECK(connection);
 
+  if (auth_handler_) {
+    auto auth_result = auth_handler_.Run(*request);
+    if (auth_result) {
+      DispatchResponseToDelegate(std::move(auth_result), delegate);
+      return;
+    }
+  }
+
   for (const auto& upgrade_request_handler : upgrade_request_handlers_) {
     auto upgrade_response = upgrade_request_handler.Run(*request, connection);
     if (upgrade_response.has_value()) {
@@ -941,6 +952,16 @@ base::FilePath EmbeddedTestServer::GetFullPathFromSourceDirectory(
   base::FilePath test_data_dir;
   CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_dir));
   return test_data_dir.Append(relative);
+}
+
+void EmbeddedTestServer::RegisterAuthHandler(
+    const HandleRequestCallback& callback) {
+  CHECK(!io_thread_)
+      << "Handlers must be registered before starting the server.";
+  if (auth_handler_) {
+    DVLOG(2) << "Overwriting existing Auth handler.";
+  }
+  auth_handler_ = callback;
 }
 
 void EmbeddedTestServer::RegisterUpgradeRequestHandler(

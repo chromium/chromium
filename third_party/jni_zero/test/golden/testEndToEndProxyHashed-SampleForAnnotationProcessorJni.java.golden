@@ -10,23 +10,32 @@ import org.jni_zero.GEN_JNI;
 import org.jni_zero.JniStaticTestMocker;
 import org.jni_zero.NativeLibraryLoadedStatus;
 import org.jni_zero.SampleForAnnotationProcessor;
+import org.jni_zero.internal.JniOverrideHolder;
 import org.stubs.MyClass;
 
 @CheckDiscard("crbug.com/993421")
 class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Natives {
-  private static SampleForAnnotationProcessor.Natives testInstance;
+  private static JniOverrideHolder sOverride;
 
-  public static final JniStaticTestMocker<SampleForAnnotationProcessor.Natives> TEST_HOOKS =
-      new JniStaticTestMocker<SampleForAnnotationProcessor.Natives>() {
-    @Override
-    public void setInstanceForTesting(SampleForAnnotationProcessor.Natives instance) {
-      if (!GEN_JNI.TESTING_ENABLED) {
-        throw new RuntimeException(
-            "Tried to set a JNI mock when mocks aren't enabled!");
-      }
-      testInstance = instance;
+  public static SampleForAnnotationProcessor.Natives get() {
+    JniOverrideHolder holder = sOverride;
+    if (holder != null && holder.value != null) {
+      return (SampleForAnnotationProcessor.Natives) holder.value;
     }
-  };
+    NativeLibraryLoadedStatus.checkLoaded();
+    return new SampleForAnnotationProcessorJni();
+  }
+
+  public static void setInstanceForTesting(SampleForAnnotationProcessor.Natives impl) {
+    if (sOverride == null) {
+      sOverride = JniOverrideHolder.create();
+    }
+    sOverride.value = impl;
+  }
+
+  // TODO(crbug.com/329069277): Delete.
+  public static final JniStaticTestMocker TEST_HOOKS = x -> setInstanceForTesting((SampleForAnnotationProcessor.Natives) x);
+
 
   @Override
   public SampleForAnnotationProcessor bar(SampleForAnnotationProcessor sample) {
@@ -175,20 +184,5 @@ class SampleForAnnotationProcessorJni implements SampleForAnnotationProcessor.Na
         view,
         context,
         convertedObjects);
-  }
-
-  public static SampleForAnnotationProcessor.Natives get() {
-    if (GEN_JNI.TESTING_ENABLED) {
-      if (testInstance != null) {
-        return testInstance;
-      }
-      if (GEN_JNI.REQUIRE_MOCK) {
-        throw new UnsupportedOperationException(
-            "No mock found for the native implementation of SampleForAnnotationProcessor.Natives. "
-            + "The current configuration requires implementations be mocked.");
-      }
-    }
-    NativeLibraryLoadedStatus.checkLoaded();
-    return new SampleForAnnotationProcessorJni();
   }
 }

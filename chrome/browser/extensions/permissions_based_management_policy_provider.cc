@@ -26,8 +26,7 @@ PermissionsBasedManagementPolicyProvider::
 std::string
 PermissionsBasedManagementPolicyProvider::GetDebugPolicyProviderName() const {
 #ifdef NDEBUG
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 #else
   return "Controlled by enterprise policy, restricting extension permissions.";
 #endif

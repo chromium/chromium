@@ -9,7 +9,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
-#include "base/types/optional_util.h"
+#include "base/types/optional_ref.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
@@ -68,15 +68,6 @@ ServiceState GetServiceState(Profile* profile, bool pref_enabled) {
           net::features::kForceThirdPartyCookieBlocking)) {
     return ServiceState::kPermanentlyEnabled;
   }
-  auto* tracking_protection_settings =
-      TrackingProtectionSettingsFactory::GetForProfile(profile);
-  if (tracking_protection_settings &&
-      tracking_protection_settings->IsTrackingProtection3pcdEnabled()) {
-    return tracking_protection_settings->AreAllThirdPartyCookiesBlocked()
-               ? ServiceState::kDisabled
-               : ServiceState::kEnabled;
-  }
-
   return pref_enabled ? ServiceState::kEnabled : ServiceState::kDisabled;
 }
 
@@ -111,9 +102,7 @@ void FirstPartySetsPolicyService::Init() {
   CHECK(profile);
 
   service_state_ = GetServiceState(
-      profile, profile->GetPrefs() &&
-                   profile->GetPrefs()->GetBoolean(
-                       prefs::kPrivacySandboxRelatedWebsiteSetsEnabled));
+      profile, privacy_sandbox_settings_->AreRelatedWebsiteSetsEnabled());
 
   if (service_state_ == ServiceState::kPermanentlyDisabled) {
     OnReadyToNotifyDelegates(net::FirstPartySetsContextConfig(),
@@ -138,7 +127,7 @@ void FirstPartySetsPolicyService::Init() {
 
 void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(
     const net::SchemefulSite& site,
-    const net::SchemefulSite* top_frame_site,
+    base::optional_ref<const net::SchemefulSite> top_frame_site,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_enabled()) {
@@ -149,18 +138,18 @@ void FirstPartySetsPolicyService::ComputeFirstPartySetMetadata(
   if (!config_.has_value()) {
     on_ready_callbacks_.push_back(base::BindOnce(
         &FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal,
-        weak_factory_.GetWeakPtr(), site, base::OptionalFromPtr(top_frame_site),
+        weak_factory_.GetWeakPtr(), site, top_frame_site.CopyAsOptional(),
         std::move(callback)));
     return;
   }
 
-  content::FirstPartySetsHandler::GetInstance()->ComputeFirstPartySetMetadata(
-      site, top_frame_site, *config_, std::move(callback));
+  ComputeFirstPartySetMetadataInternal(site, top_frame_site,
+                                       std::move(callback));
 }
 
 void FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal(
     const net::SchemefulSite& site,
-    const std::optional<net::SchemefulSite>& top_frame_site,
+    base::optional_ref<const net::SchemefulSite> top_frame_site,
     base::OnceCallback<void(net::FirstPartySetMetadata)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(config_.has_value());
@@ -171,7 +160,7 @@ void FirstPartySetsPolicyService::ComputeFirstPartySetMetadataInternal(
   }
 
   content::FirstPartySetsHandler::GetInstance()->ComputeFirstPartySetMetadata(
-      site, base::OptionalToPtr(top_frame_site), *config_, std::move(callback));
+      site, top_frame_site, *config_, std::move(callback));
 }
 
 void FirstPartySetsPolicyService::AddRemoteAccessDelegate(
@@ -189,7 +178,8 @@ void FirstPartySetsPolicyService::AddRemoteAccessDelegate(
   access_delegates_.Add(std::move(access_delegate));
 }
 
-void FirstPartySetsPolicyService::OnFirstPartySetsEnabledChanged(bool enabled) {
+void FirstPartySetsPolicyService::OnRelatedWebsiteSetsEnabledChanged(
+    bool enabled) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (service_state_ == ServiceState::kPermanentlyDisabled ||
       service_state_ == ServiceState::kPermanentlyEnabled) {
@@ -311,8 +301,9 @@ std::optional<net::FirstPartySetEntry> FirstPartySetsPolicyService::FindEntry(
 bool FirstPartySetsPolicyService::IsSiteInManagedSet(
     const net::SchemefulSite& site) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!config_.has_value() || !is_enabled())
+  if (!config_.has_value() || !is_enabled()) {
     return false;
+  }
 
   std::optional<net::FirstPartySetEntryOverride> maybe_override =
       config_->FindOverride(site);

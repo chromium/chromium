@@ -79,7 +79,7 @@ const _SYSTEM_INFO& GetSystemInfoStorage() {
 OSInfo** OSInfo::GetInstanceStorage() {
   // Note: we don't use the Singleton class because it depends on AtExitManager,
   // and it's convenient for other modules to use this class without it.
-  static OSInfo* info = []() {
+  static OSInfo* info = [] {
     _OSVERSIONINFOEXW version_info = {sizeof(version_info)};
 
 #pragma clang diagnostic push

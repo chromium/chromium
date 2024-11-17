@@ -231,8 +231,7 @@ TEST_F(TemplateURLTest, URLRefTestImageURLWithPOST) {
   const TemplateURLRef::PostParams& bad_post_params =
       url_bad.image_url_ref().post_params_;
   ASSERT_EQ(2U, bad_post_params.size());
-  ExpectPostParamIs(bad_post_params[0], "unknown_template",
-                    "{UnknownTemplate}");
+  ExpectPostParamIs(bad_post_params[0], "unknown_template", "");
   ExpectPostParamIs(bad_post_params[1], "bad_value", "bad{value}");
 #endif
 
@@ -469,7 +468,7 @@ TEST_F(TemplateURLTest, SetPrepopulatedAndParse) {
   TemplateURLRef::Replacements replacements;
   bool valid = false;
 
-  EXPECT_EQ("http://foo{fhqwhgads}bar",
+  EXPECT_EQ("http://foobar",
             url.url_ref().ParseURL("http://foo{fhqwhgads}bar", &replacements,
                                    nullptr, &valid));
   EXPECT_TRUE(valid);
@@ -500,21 +499,21 @@ TEST_F(TemplateURLTest, SetPrepopulatedAndReplace) {
   const SearchTermsData& stdata = search_terms_data_;
 
   TemplateURL url(data);
-  EXPECT_EQ("http://foo{fhqwhgads}search/?q=X",
+  EXPECT_EQ("http://foosearch/?q=X",
             url.url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo{fhqwhgads}alternate/?q=X",
+  EXPECT_EQ("http://fooalternate/?q=X",
             url.url_refs()[0].ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo{fhqwhgads}search/?q=X",
+  EXPECT_EQ("http://foosearch/?q=X",
             url.url_refs()[1].ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo{fhqwhgads}suggest/?q=X",
+  EXPECT_EQ("http://foosuggest/?q=X",
             url.suggestions_url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo{fhqwhgads}image/",
+  EXPECT_EQ("http://fooimage/",
             url.image_url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo{fhqwhgads}image/?translate",
+  EXPECT_EQ("http://fooimage/?translate",
             url.image_translate_url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo{fhqwhgads}newtab/",
+  EXPECT_EQ("http://foonewtab/",
             url.new_tab_url_ref().ReplaceSearchTerms(args, stdata));
-  EXPECT_EQ("http://foo{fhqwhgads}context/",
+  EXPECT_EQ("http://foocontext/",
             url.contextual_search_url_ref().ReplaceSearchTerms(args, stdata));
 
   data.prepopulate_id = 123;
@@ -981,9 +980,6 @@ TEST_F(TemplateURLTest, ReplaceOmniboxFocusType) {
       {u"foo", metrics::OmniboxFocusType::INTERACTION_FOCUS,
        "{google:baseURL}?{searchTerms}&{google:omniboxFocusType}",
        "http://www.google.com/?foo&oft=1&"},
-      {u"foo", metrics::OmniboxFocusType::INTERACTION_CLOBBER,
-       "{google:baseURL}?{searchTerms}&{google:omniboxFocusType}",
-       "http://www.google.com/?foo&oft=2&"},
   };
   TemplateURLData data;
   data.input_encodings.push_back("UTF-8");
@@ -1402,8 +1398,8 @@ TEST_F(TemplateURLTest, ParseParameterUnknown) {
 
   // By default, TemplateURLRef should not consider itself prepopulated.
   // Therefore we should not replace the unknown parameter.
-  EXPECT_FALSE(url.url_ref().ParseParameter(0, 10, &parsed_url, &replacements));
-  EXPECT_EQ("{fhqwhgads}abc", parsed_url);
+  EXPECT_TRUE(url.url_ref().ParseParameter(0, 10, &parsed_url, &replacements));
+  EXPECT_EQ("abc", parsed_url);
   EXPECT_TRUE(replacements.empty());
 
   // If the TemplateURLRef is prepopulated, we should remove unknown parameters.
@@ -1443,7 +1439,7 @@ TEST_F(TemplateURLTest, ParseURLNoKnownParameters) {
   TemplateURLRef::Replacements replacements;
   bool valid = false;
 
-  EXPECT_EQ("{}", url.url_ref().ParseURL("{}", &replacements, nullptr, &valid));
+  EXPECT_EQ("", url.url_ref().ParseURL("{}", &replacements, nullptr, &valid));
   EXPECT_TRUE(valid);
   EXPECT_TRUE(replacements.empty());
 }
@@ -1454,10 +1450,10 @@ TEST_F(TemplateURLTest, ParseURLTwoParameters) {
   TemplateURL url(data);
   TemplateURLRef::Replacements replacements;
   bool valid = false;
-  EXPECT_EQ("{}{}", url.url_ref().ParseURL("{}{{searchTerms}}", &replacements,
-                                           nullptr, &valid));
+  EXPECT_EQ("{}", url.url_ref().ParseURL("{{searchTerms}}", &replacements,
+                                         nullptr, &valid));
   ASSERT_EQ(1U, replacements.size());
-  EXPECT_EQ(3U, replacements[0].index);
+  EXPECT_EQ(1U, replacements[0].index);
   EXPECT_EQ(TemplateURLRef::SEARCH_TERMS, replacements[0].type);
   EXPECT_TRUE(valid);
 }
@@ -1498,27 +1494,6 @@ TEST_F(TemplateURLTest, SearchSourceId) {
 #else
   EXPECT_EQ("http://google.com/?sourceid=chrome&", result.spec());
 #endif
-
-  // Check that the URL is correct for the lens searchboxes.
-  search_terms_args.request_source = RequestSource::CONTEXTUAL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  // The Lens Overlay url builder will handle setting the correct source.
-  EXPECT_EQ("http://google.com/?", result.spec());
-
-  search_terms_args.request_source = RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?", result.spec());
-
-  search_terms_args.request_source = RequestSource::LENS_SIDE_PANEL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  // The Lens Overlay url builder will handle setting the correct source.
-  EXPECT_EQ("http://google.com/?", result.spec());
 }
 
 TEST_F(TemplateURLTest, SearchClient) {
@@ -1577,25 +1552,6 @@ TEST_F(TemplateURLTest, SuggestClient) {
 #else
   EXPECT_EQ("http://google.com/?client=chrome-omni", result.spec());
 #endif
-
-  // Check that the URL is correct for the lens searchboxes.
-  search_terms_args.request_source = RequestSource::CONTEXTUAL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?client=chrome-contextual", result.spec());
-
-  search_terms_args.request_source = RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?client=chrome-contextual", result.spec());
-
-  search_terms_args.request_source = RequestSource::LENS_SIDE_PANEL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?client=chrome-multimodal", result.spec());
 }
 
 TEST_F(TemplateURLTest, SuggestRequestIdentifier) {
@@ -1624,25 +1580,6 @@ TEST_F(TemplateURLTest, SuggestRequestIdentifier) {
 #else
   EXPECT_EQ("http://google.com/?gs_ri=chrome-ext-ansg", result.spec());
 #endif
-
-  // Check that the URL is correct for the lens searchboxes.
-  search_terms_args.request_source = RequestSource::CONTEXTUAL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?gs_ri=", result.spec());
-
-  search_terms_args.request_source = RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?gs_ri=", result.spec());
-
-  search_terms_args.request_source = RequestSource::LENS_SIDE_PANEL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?gs_ri=", result.spec());
 }
 
 TEST_F(TemplateURLTest, ZeroSuggestCacheDuration) {
@@ -2559,17 +2496,27 @@ TEST_F(TemplateURLTest, GenerateSearchURL) {
 }
 
 TEST_F(TemplateURLTest, GenerateURL_NoRegulatoryExtensions) {
+#if BUILDFLAG(IS_ANDROID)
+  // Disable the chrome_dse_attribution parameter from being added on Android.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kRemoveSearchEngineChoiceAttribution);
+#endif
+
   TemplateURLData data;
   data.SetURL("https://search?q={searchTerms}");
   data.suggestions_url = "https://suggest?q={searchTerms}";
 
+  const char* expected_search_url = "https://search/?q=user+query";
+  const char* expected_suggest_url = "https://suggest/?q=";
+
   {
     TemplateURL t_url(data);
     EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_, u"user query").spec(),
-              "https://search/?q=user+query");
+              expected_search_url);
 
     EXPECT_EQ(t_url.GenerateSuggestionURL(search_terms_data_).spec(),
-              "https://suggest/?q=");
+              expected_suggest_url);
   }
 
   {
@@ -2577,22 +2524,21 @@ TEST_F(TemplateURLTest, GenerateURL_NoRegulatoryExtensions) {
     TemplateURL t_url(data);
 
     EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_, u"user query").spec(),
-              "https://search/?q=user+query"
-#if BUILDFLAG(IS_ANDROID)
-              "&chrome_dse_attribution=1"
-#endif
-    );
+              expected_search_url);
 
     EXPECT_EQ(t_url.GenerateSuggestionURL(search_terms_data_).spec(),
-              "https://suggest/?q="
-#if BUILDFLAG(IS_ANDROID)
-              "&chrome_dse_attribution=1"
-#endif
-    );
+              expected_suggest_url);
   }
 }
 
 TEST_F(TemplateURLTest, GenerateURL_WithEmptyRegulatoryExtensions) {
+#if BUILDFLAG(IS_ANDROID)
+  // Disable the chrome_dse_attribution parameter from being added on Android.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kRemoveSearchEngineChoiceAttribution);
+#endif
+
   TemplateURLData::RegulatoryExtension default_ext{
       .variant = RegulatoryExtensionType::kDefault,
   };
@@ -2607,13 +2553,16 @@ TEST_F(TemplateURLTest, GenerateURL_WithEmptyRegulatoryExtensions) {
   data.regulatory_extensions.emplace(RegulatoryExtensionType::kAndroidEEA,
                                      &android_eea_ext);
 
+  const char* expected_search_url = "https://search/?q=user+query";
+  const char* expected_suggest_url = "https://suggest/?q=";
+
   {
     TemplateURL t_url(data);
     EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_, u"user query").spec(),
-              "https://search/?q=user+query");
+              expected_search_url);
 
     EXPECT_EQ(t_url.GenerateSuggestionURL(search_terms_data_).spec(),
-              "https://suggest/?q=");
+              expected_suggest_url);
   }
 
   {
@@ -2621,22 +2570,21 @@ TEST_F(TemplateURLTest, GenerateURL_WithEmptyRegulatoryExtensions) {
     TemplateURL t_url(data);
 
     EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_, u"user query").spec(),
-              "https://search/?q=user+query"
-#if BUILDFLAG(IS_ANDROID)
-              "&chrome_dse_attribution=1"
-#endif
-    );
+              expected_search_url);
 
     EXPECT_EQ(t_url.GenerateSuggestionURL(search_terms_data_).spec(),
-              "https://suggest/?q="
-#if BUILDFLAG(IS_ANDROID)
-              "&chrome_dse_attribution=1"
-#endif
-    );
+              expected_suggest_url);
   }
 }
 
 TEST_F(TemplateURLTest, GenerateURL_WithFullRegulatoryExtensions) {
+#if BUILDFLAG(IS_ANDROID)
+  // Disable the chrome_dse_attribution parameter from being added on Android.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kRemoveSearchEngineChoiceAttribution);
+#endif
+
   TemplateURLData::RegulatoryExtension default_ext{
       .variant = RegulatoryExtensionType::kDefault,
       .search_params = "default_search_param=123",
@@ -2656,30 +2604,129 @@ TEST_F(TemplateURLTest, GenerateURL_WithFullRegulatoryExtensions) {
 
   {
     TemplateURL t_url(data);
+    const char* expected_search_url =
+        "https://search/?q=user+query&default_search_param=123";
+    const char* expected_suggest_url =
+        "https://suggest/?q=&default_suggest_param=456";
+
     EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_, u"user query").spec(),
-              "https://search/?default_search_param=123&q=user+query");
+              expected_search_url);
 
     EXPECT_EQ(t_url.GenerateSuggestionURL(search_terms_data_).spec(),
-              "https://suggest/?default_suggest_param=456&q=");
+              expected_suggest_url);
+
+    // Ensure ReplaceSearchTerms is performing necessary transformations.
+    TemplateURLRef t_search = t_url.url_ref();
+    TemplateURLRef t_suggest = t_url.suggestions_url_ref();
+
+    EXPECT_EQ(t_search.ReplaceSearchTerms(
+                  TemplateURLRef::SearchTermsArgs(u"user query"), {}, nullptr),
+              expected_search_url);
+    EXPECT_EQ(t_suggest.ReplaceSearchTerms({}, {}, nullptr),
+              expected_suggest_url);
+  }
+
+  {
+    data.created_from_play_api = true;
+    TemplateURL t_url(data);
+    const char* expected_search_url =
+        "https://search/?q=user+query&eea_search_param=abc";
+    const char* expected_suggest_url =
+        "https://suggest/?q=&eea_suggest_param=def";
+
+    EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_, u"user query").spec(),
+              expected_search_url);
+
+    EXPECT_EQ(t_url.GenerateSuggestionURL(search_terms_data_).spec(),
+              expected_suggest_url);
+
+    // Ensure ReplaceSearchTerms is performing necessary transformations.
+    TemplateURLRef t_search = t_url.url_ref();
+    TemplateURLRef t_suggest = t_url.suggestions_url_ref();
+
+    EXPECT_EQ(t_search.ReplaceSearchTerms(
+                  TemplateURLRef::SearchTermsArgs(u"user query"), {}, nullptr),
+              expected_search_url);
+
+    EXPECT_EQ(t_suggest.ReplaceSearchTerms({}, {}, nullptr),
+              expected_suggest_url);
+  }
+}
+
+TEST_F(TemplateURLTest,
+       ReplaceSearchTerms_NoRegulatoryExpansionForUnsupportedUrls) {
+#if BUILDFLAG(IS_ANDROID)
+  // Disable the chrome_dse_attribution parameter from being added on Android.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      switches::kRemoveSearchEngineChoiceAttribution);
+#endif
+
+  TemplateURLData::RegulatoryExtension default_ext{
+      .variant = RegulatoryExtensionType::kDefault,
+      .search_params = "default_search_param=123",
+      .suggest_params = "default_suggest_param=456"};
+  TemplateURLData::RegulatoryExtension android_eea_ext{
+      .variant = RegulatoryExtensionType::kAndroidEEA,
+      .search_params = "eea_search_param=abc",
+      .suggest_params = "eea_suggest_param=def"};
+
+  TemplateURLData data;
+  data.image_url = "https://image?q={searchTerms}";
+  data.image_translate_url = "https://translate?q={searchTerms}";
+  data.new_tab_url = "https://newtab/";
+  data.contextual_search_url = "https://search/";
+  data.regulatory_extensions.emplace(RegulatoryExtensionType::kDefault,
+                                     &default_ext);
+  data.regulatory_extensions.emplace(RegulatoryExtensionType::kAndroidEEA,
+                                     &android_eea_ext);
+
+  const char* expected_image_url = "https://image/?q=";
+  const char* expected_translate_url = "https://translate/?q=";
+  const char* expected_newtab_url = "https://newtab/";
+  const char* expected_search_url = "https://search/";
+
+  {
+    TemplateURL t_url(data);
+
+    base::HistogramTester histogram_tester;
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant", 0);
+
+    EXPECT_EQ(t_url.image_url_ref().ReplaceSearchTerms({}, {}, nullptr),
+              expected_image_url);
+    EXPECT_EQ(
+        t_url.image_translate_url_ref().ReplaceSearchTerms({}, {}, nullptr),
+        expected_translate_url);
+    EXPECT_EQ(t_url.new_tab_url_ref().ReplaceSearchTerms({}, {}, nullptr),
+              expected_newtab_url);
+    EXPECT_EQ(
+        t_url.contextual_search_url_ref().ReplaceSearchTerms({}, {}, nullptr),
+        expected_search_url);
   }
 
   {
     data.created_from_play_api = true;
     TemplateURL t_url(data);
 
-    EXPECT_EQ(t_url.GenerateSearchURL(search_terms_data_, u"user query").spec(),
-              "https://search/?eea_search_param=abc&q=user+query"
-#if BUILDFLAG(IS_ANDROID)
-              "&chrome_dse_attribution=1"
-#endif
-    );
+    base::HistogramTester histogram_tester;
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.TemplateUrl.RegulatoryExtension.SearchVariant", 0);
+    histogram_tester.ExpectTotalCount(
+        "Omnibox.TemplateUrl.RegulatoryExtension.SuggestVariant", 0);
 
-    EXPECT_EQ(t_url.GenerateSuggestionURL(search_terms_data_).spec(),
-              "https://suggest/?eea_suggest_param=def&q="
-#if BUILDFLAG(IS_ANDROID)
-              "&chrome_dse_attribution=1"
-#endif
-    );
+    EXPECT_EQ(t_url.image_url_ref().ReplaceSearchTerms({}, {}, nullptr),
+              expected_image_url);
+    EXPECT_EQ(
+        t_url.image_translate_url_ref().ReplaceSearchTerms({}, {}, nullptr),
+        expected_translate_url);
+    EXPECT_EQ(t_url.new_tab_url_ref().ReplaceSearchTerms({}, {}, nullptr),
+              expected_newtab_url);
+    EXPECT_EQ(
+        t_url.contextual_search_url_ref().ReplaceSearchTerms({}, {}, nullptr),
+        expected_search_url);
   }
 }
 

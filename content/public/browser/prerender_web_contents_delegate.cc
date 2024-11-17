@@ -110,7 +110,6 @@ bool PrerenderWebContentsDelegate::IsFullscreenForTabOrPending(
 void PrerenderWebContentsDelegate::OnDidBlockNavigation(
     WebContents* web_contents,
     const GURL& blocked_url,
-    const GURL& initiator_url,
     blink::mojom::NavigationBlockedReason reason) {
   // DCHECK against LifecycleState in RenderFrameHostImpl::DidBlockNavigation()
   // ensures this is never called during prerendering.

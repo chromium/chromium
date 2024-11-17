@@ -18,10 +18,6 @@
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabPageElementId);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementReadyEvent);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementChildrenReadyEvent);
-
-const char kGooglePageUrl[] = "https://www.google.com/";
 
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 const DeepQuery kModulesV2Container = {"ntp-app", "ntp-modules-v2",
@@ -38,7 +34,7 @@ struct ModuleDetails {
   const base::test::FeatureRef module_feature;
   const std::vector<base::test::FeatureRefAndParams> features;
   const DeepQuery module_query;
-  const DeepQuery more_button_query;
+  const DeepQuery menu_button_query;
   const DeepQuery more_action_menu_query;
   const DeepQuery dismiss_button_query;
   const DeepQuery disable_button_query;
@@ -64,7 +60,7 @@ ModuleDetails kMostRelevantTabResumptionModuleDetails = {
      "ntp-most-relevant-tab-resumption", "ntp-module-header-v2", "#disable"},
     {{{"ntp-app", "ntp-modules-v2", "ntp-module-wrapper",
        "ntp-most-relevant-tab-resumption", "#urlVisits", "a"},
-      kGooglePageUrl}},
+      "https://www.google.com"}},
 };
 
 ModuleDetails kGoogleCalendarModuleDetails = {
@@ -128,14 +124,10 @@ class NewTabPageModulesInteractiveUiBaseTest : public InteractiveBrowserTest {
       const NewTabPageModulesInteractiveUiBaseTest&) = delete;
   void operator=(const NewTabPageModulesInteractiveUiBaseTest&) = delete;
 
-  void SetUpOnMainThread() override {
-    InteractiveBrowserTest::SetUpOnMainThread();
-    embedded_test_server()->StartAcceptingConnections();
-  }
-
-  void TearDownOnMainThread() override {
-    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
-    InteractiveBrowserTest::TearDownOnMainThread();
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InteractiveBrowserTest::SetUpCommandLine(command_line);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kSignedOutNtpModulesSwitch);
   }
 
   InteractiveTestApi::MultiStep LoadNewTabPage() {
@@ -146,54 +138,53 @@ class NewTabPageModulesInteractiveUiBaseTest : public InteractiveBrowserTest {
                                          GURL(chrome::kChromeUINewTabPageURL)));
   }
 
-  InteractiveTestApi::MultiStep WaitForLinkToLoad(const DeepQuery& link) {
-    StateChange tile_loaded;
-    tile_loaded.event = kElementReadyEvent;
-    tile_loaded.type = StateChange::Type::kExistsAndConditionTrue;
-    tile_loaded.where = link;
-    tile_loaded.test_function = base::StrCat(
-        {"(el) => { return el.clientWidth > 0 && el.clientHeight > 0; }"});
-    return WaitForStateChange(kNewTabPageElementId, std::move(tile_loaded));
-  }
-
-  InteractiveTestApi::MultiStep WaitForElementToLoad(const DeepQuery& element) {
-    StateChange element_loaded;
-    element_loaded.event = kElementReadyEvent;
-    element_loaded.type = StateChange::Type::kExists;
-    element_loaded.where = element;
-    return WaitForStateChange(kNewTabPageElementId, std::move(element_loaded));
+  InteractiveTestApi::MultiStep WaitForElementToRender(
+      const WebContentsInteractionTestUtil::DeepQuery& element) {
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementRendered);
+    WebContentsInteractionTestUtil::StateChange element_rendered;
+    element_rendered.event = kElementRendered;
+    element_rendered.where = element;
+    element_rendered.test_function =
+        "(el) => { if (el !== null) { let rect = el.getBoundingClientRect(); "
+        "return rect.width > 0 && rect.height > 0; } return false; }";
+    return WaitForStateChange(kNewTabPageElementId, element_rendered);
   }
 
   InteractiveTestApi::MultiStep WaitForElementChildElementCount(
       const DeepQuery& element,
       int count) {
-    StateChange element_loaded;
-    element_loaded.event = kElementChildrenReadyEvent;
-    element_loaded.type = StateChange::Type::kExistsAndConditionTrue;
-    element_loaded.where = element;
-    element_loaded.test_function = base::StringPrintf(
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementChildrenReadyEvent);
+    StateChange element_children_ready;
+    element_children_ready.event = kElementChildrenReadyEvent;
+    element_children_ready.type = StateChange::Type::kExistsAndConditionTrue;
+    element_children_ready.where = element;
+    element_children_ready.test_function = base::StringPrintf(
         "(el) => { return el.childElementCount == %d; }", count);
-    return WaitForStateChange(kNewTabPageElementId, std::move(element_loaded));
+    return WaitForStateChange(kNewTabPageElementId,
+                              std::move(element_children_ready));
   }
 
   InteractiveTestApi::MultiStep WaitForElementStyleSet(
       const DeepQuery& element) {
-    StateChange element_loaded;
-    element_loaded.event = kElementReadyEvent;
-    element_loaded.type = StateChange::Type::kExistsAndConditionTrue;
-    element_loaded.where = element;
-    element_loaded.test_function = "(el) => { return el.style.length > 0; }";
-    return WaitForStateChange(kNewTabPageElementId, std::move(element_loaded));
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementStyleSetEvent);
+    StateChange element_style_set;
+    element_style_set.event = kElementStyleSetEvent;
+    element_style_set.type = StateChange::Type::kExistsAndConditionTrue;
+    element_style_set.where = element;
+    element_style_set.test_function = "(el) => { return el.style.length > 0; }";
+    return WaitForStateChange(kNewTabPageElementId,
+                              std::move(element_style_set));
   }
 
   InteractiveTestApi::MultiStep WaitForElementHiddenSet(
       const DeepQuery& element) {
-    StateChange element_loaded;
-    element_loaded.event = kElementReadyEvent;
-    element_loaded.type = StateChange::Type::kExistsAndConditionTrue;
-    element_loaded.where = element;
-    element_loaded.test_function = "(el) => { return el.hidden; }";
-    return WaitForStateChange(kNewTabPageElementId, std::move(element_loaded));
+    DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementHiddenEvent);
+    StateChange element_hidden;
+    element_hidden.event = kElementHiddenEvent;
+    element_hidden.type = StateChange::Type::kExistsAndConditionTrue;
+    element_hidden.where = element;
+    element_hidden.test_function = "(el) => { return el.hidden; }";
+    return WaitForStateChange(kNewTabPageElementId, std::move(element_hidden));
   }
 
   InteractiveTestApi::MultiStep ClickElement(
@@ -217,10 +208,6 @@ class NewTabPageModulesInteractiveUiTest
   void operator=(const NewTabPageModulesInteractiveUiTest&) = delete;
 
   void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kSignedOutNtpModulesSwitch);
-
     features.InitWithFeaturesAndParameters(
         ModuleDetails().features,
         /*disabled_features=*/ntp::ComputeDisabledFeaturesList(
@@ -235,9 +222,8 @@ INSTANTIATE_TEST_SUITE_P(All,
                          NewTabPageModulesInteractiveUiTest,
                          ::testing::ValuesIn(kAllModules));
 
-// TODO(crbug.com/335214502): Re-enable this test.
 IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
-                       DISABLED_ClickingHideButtonDismissesModule) {
+                       ClickingHideButtonDismissesModule) {
   RunTestSequence(
       // 1. Wait for new tab page to load.
       LoadNewTabPage(),
@@ -246,17 +232,17 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
       WaitForElementChildElementCount(kModulesV2Container, 1),
       // 3. Ensure the module's "more" button exists, and thus, that the module
       // header loaded successfully.
-      WaitForElementToLoad(ModuleDetails().more_button_query),
+      WaitForElementToRender(ModuleDetails().menu_button_query),
       // 4. Scroll to the "more"  button lement of the NTP module's header.
       // Modules may sometimes load below the fold.
-      ScrollIntoView(kNewTabPageElementId, ModuleDetails().more_button_query),
+      ScrollIntoView(kNewTabPageElementId, ModuleDetails().menu_button_query),
       // 5. Click the "more actions" menu button of the NTP module.
-      ClickElement(kNewTabPageElementId, ModuleDetails().more_button_query),
+      ClickElement(kNewTabPageElementId, ModuleDetails().menu_button_query),
       // 6. Wait for module's menu dialog to be anchored.
       WaitForElementStyleSet(ModuleDetails().more_action_menu_query),
       // 7. Ensure the module's dismiss button exists, and thus, that the module
       // loaded successfully.
-      WaitForElementToLoad(ModuleDetails().dismiss_button_query),
+      WaitForElementToRender(ModuleDetails().dismiss_button_query),
       // 8. Scroll to the dismiss element of the NTP module's header. Modules
       // may sometimes load below the fold.
       ScrollIntoView(kNewTabPageElementId,
@@ -268,16 +254,8 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
       WaitForElementChildElementCount(kModulesV2Container, 0));
 }
 
-// TODO(crbug.com/335214502): Flaky on ChromeOS Tests.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMEOS_LACROS)
-#define MAYBE_ClickingDisableButtonDisablesModule \
-  DISABLED_ClickingDisableButtonDisablesModule
-#else
-#define MAYBE_ClickingDisableButtonDisablesModule \
-  ClickingDisableButtonDisablesModule
-#endif
 IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
-                       MAYBE_ClickingDisableButtonDisablesModule) {
+                       ClickingDisableButtonDisablesModule) {
   const auto& module_details = ModuleDetails();
   RunTestSequence(
       // 1. Wait for new tab page to load.
@@ -287,17 +265,17 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
       WaitForElementChildElementCount(kModulesV2Container, 1),
       // 3. Ensure the module's "more" button exists, and thus, that the module
       // header loaded successfully.
-      WaitForElementToLoad(ModuleDetails().more_button_query),
+      WaitForElementToRender(ModuleDetails().menu_button_query),
       // 4. Scroll to the "more"  button lement of the NTP module's header.
       // Modules may sometimes load below the fold.
-      ScrollIntoView(kNewTabPageElementId, ModuleDetails().more_button_query),
+      ScrollIntoView(kNewTabPageElementId, ModuleDetails().menu_button_query),
       // 5. Click the "more actions" menu button of the NTP module.
-      ClickElement(kNewTabPageElementId, module_details.more_button_query),
+      ClickElement(kNewTabPageElementId, module_details.menu_button_query),
       // 6. Wait for module's menu dialog to be anchored.
       WaitForElementStyleSet(module_details.more_action_menu_query),
       // 7. Ensure the module's dismiss button exists, and thus, that the module
       // loaded successfully.
-      WaitForElementToLoad(module_details.disable_button_query),
+      WaitForElementToRender(module_details.disable_button_query),
       // 8. Scroll to the disable element of the NTP module's header. Modules
       // may sometimes load below the fold.
       ScrollIntoView(kNewTabPageElementId,
@@ -321,10 +299,6 @@ class NewTabPageModulesInteractiveLinkUiTest
   void operator=(const NewTabPageModulesInteractiveLinkUiTest&) = delete;
 
   void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kSignedOutNtpModulesSwitch);
-
     features.InitWithFeaturesAndParameters(GetParam().first, {});
     InteractiveBrowserTest::SetUp();
   }
@@ -332,21 +306,21 @@ class NewTabPageModulesInteractiveLinkUiTest
   ModuleLink ModuleLink() const { return GetParam().second; }
 };
 
+// TODO(crbug.com/347914816): Fix test failure for
+// kMostRelevantTabResumptionModuleDetails.
+#if BUILDFLAG(IS_MAC)
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NewTabPageModulesInteractiveLinkUiTest,
+    ::testing::ValuesIn(GetAllModuleLinks({kGoogleCalendarModuleDetails})));
+#else
 INSTANTIATE_TEST_SUITE_P(All,
                          NewTabPageModulesInteractiveLinkUiTest,
                          ::testing::ValuesIn(GetAllModuleLinks(kAllModules)));
-
-// TODO(crbug.com/347914816): Fix test failure on Mac.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
-#define MAYBE_ClickingEntryNavigatesToCorrectPage \
-  DISABLED_ClickingEntryNavigatesToCorrectPage
-#else
-#define MAYBE_ClickingEntryNavigatesToCorrectPage \
-  ClickingEntryNavigatesToCorrectPage
 #endif
+
 IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveLinkUiTest,
-                       MAYBE_ClickingEntryNavigatesToCorrectPage) {
+                       ClickingEntryNavigatesToCorrectPage) {
   RunTestSequence(
       // 1. Wait for new tab page to load.
       LoadNewTabPage(),
@@ -354,7 +328,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveLinkUiTest,
       // the test setup.
       WaitForElementChildElementCount(kModulesV2Container, 1),
       // 3. Wait for link to load.
-      WaitForLinkToLoad(ModuleLink().query),
+      WaitForElementToRender(ModuleLink().query),
       // 4. Scroll to link. Modules may sometimes load below the fold.
       ScrollIntoView(kNewTabPageElementId, ModuleLink().query),
       // 5. Click the element link.

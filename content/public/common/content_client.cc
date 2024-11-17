@@ -109,6 +109,10 @@ std::u16string ContentClient::GetLocalizedString(
   return std::u16string();
 }
 
+bool ContentClient::HasDataResource(int resource_id) const {
+  return false;
+}
+
 std::string_view ContentClient::GetDataResource(
     int resource_id,
     ui::ResourceScaleFactor scale_factor) {

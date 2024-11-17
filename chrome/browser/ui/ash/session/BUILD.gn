@@ -24,6 +24,7 @@ static_library("session") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/floating_workspace",
+    "//chrome/browser/ash/floating_workspace:utils",
     "//chrome/browser/ash/login/demo_mode",
     "//chrome/browser/ash/login/lock",
     "//chrome/browser/ash/policy/off_hours",

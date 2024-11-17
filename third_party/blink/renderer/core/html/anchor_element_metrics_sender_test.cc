@@ -15,11 +15,14 @@
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/browser_controls.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
+#include "third_party/blink/renderer/core/html/anchor_element_viewport_position_tracker.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -144,24 +147,6 @@ class MockAnchorElementMetricsHost
   mojo::Receiver<mojom::blink::AnchorElementMetricsHost> receiver_{this};
 };
 
-class TestWebFrameWidgetWithScreenInfo
-    : public frame_test_helpers::TestWebFrameWidget {
- public:
-  template <typename... Args>
-  explicit TestWebFrameWidgetWithScreenInfo(
-      display::ScreenInfo initial_screen_info,
-      Args&&... args)
-      : TestWebFrameWidget(std::forward<Args>(args)...),
-        initial_screen_info_(initial_screen_info) {}
-
-  display::ScreenInfo GetInitialScreenInfo() override {
-    return initial_screen_info_;
-  }
-
- private:
-  display::ScreenInfo initial_screen_info_;
-};
-
 class AnchorElementMetricsSenderTest : public SimTest {
  public:
   static constexpr int kViewportWidth = 400;
@@ -218,14 +203,17 @@ class AnchorElementMetricsSenderTest : public SimTest {
       bool is_for_child_local_root,
       bool is_for_nested_main_frame,
       bool is_for_scalable_page) override {
+    auto* test_web_frame_widget =
+        MakeGarbageCollected<frame_test_helpers::TestWebFrameWidget>(
+            std::move(pass_key), std::move(frame_widget_host),
+            std::move(frame_widget), std::move(widget_host), std::move(widget),
+            std::move(task_runner), frame_sink_id, hidden, never_composited,
+            is_for_child_local_root, is_for_nested_main_frame,
+            is_for_scalable_page);
     display::ScreenInfo screen_info;
     screen_info.rect = gfx::Rect(kViewportWidth, kViewportHeight);
-    return MakeGarbageCollected<TestWebFrameWidgetWithScreenInfo>(
-        screen_info, std::move(pass_key), std::move(frame_widget_host),
-        std::move(frame_widget), std::move(widget_host), std::move(widget),
-        std::move(task_runner), frame_sink_id, hidden, never_composited,
-        is_for_child_local_root, is_for_nested_main_frame,
-        is_for_scalable_page);
+    test_web_frame_widget->SetInitialScreenInfo(screen_info);
+    return test_web_frame_widget;
   }
 
   void Bind(mojo::ScopedMessagePipeHandle message_pipe_handle) {
@@ -283,12 +271,29 @@ class AnchorElementMetricsSenderTest : public SimTest {
 
   void ProcessPositionUpdates() {
     platform_->RunForPeriodSeconds(ConvertDOMHighResTimeStampToSeconds(
-        AnchorElementMetricsSender::From(GetDocument())
+        AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(GetDocument())
             ->GetIntersectionObserverForTesting()
             ->delay()));
     GetDocument().View()->UpdateAllLifecyclePhasesForTest();
     platform_->RunForPeriod(AnchorElementMetricsSender::kUpdateMetricsTimeGap);
     base::RunLoop().RunUntilIdle();
+  }
+
+  HTMLAnchorElement* AddAnchor(Document& document,
+                               String inner_text,
+                               int height) {
+    auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(document);
+    anchor->setInnerText(inner_text);
+    anchor->setHref("https://foo.com");
+    anchor->SetInlineStyleProperty(CSSPropertyID::kHeight,
+                                   String::Format("%dpx", height));
+    anchor->SetInlineStyleProperty(CSSPropertyID::kDisplay, "block");
+    document.body()->appendChild(anchor);
+    return anchor;
+  }
+
+  HTMLAnchorElement* AddAnchor(String inner_text, int height) {
+    return AddAnchor(GetDocument(), inner_text, height);
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -796,10 +801,6 @@ TEST_F(AnchorElementMetricsSenderTest, AnchorElementLeftViewport) {
 
 TEST_F(AnchorElementMetricsSenderTest,
        AnchorElementInteractionTrackerSendsPointerEvents) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {features::kSpeculationRulesPointerHoverHeuristics}, {});
-
   String source("https://example.com/p1");
 
   SimRequest main_resource(source, "text/html");
@@ -1064,26 +1065,16 @@ TEST_F(AnchorElementMetricsSenderTest, MaxIntersectionObservations) {
     <body></body>
   )html");
 
-  auto add_anchor = [&](String inner_text, int height) {
-    auto* anchor = MakeGarbageCollected<HTMLAnchorElement>(GetDocument());
-    anchor->setInnerText(inner_text);
-    anchor->setHref("https://foo.com");
-    anchor->SetInlineStyleProperty(CSSPropertyID::kHeight,
-                                   String::Format("%dpx", height));
-    anchor->SetInlineStyleProperty(CSSPropertyID::kDisplay, "block");
-    GetDocument().body()->appendChild(anchor);
-    return anchor;
-  };
-
   // Add 3 anchors; they should all be observed by the IntersectionObserver.
-  auto* anchor_1 = add_anchor("one", 100);
-  auto* anchor_2 = add_anchor("two", 200);
-  auto* anchor_3 = add_anchor("three", 300);
+  auto* anchor_1 = AddAnchor("one", 100);
+  auto* anchor_2 = AddAnchor("two", 200);
+  auto* anchor_3 = AddAnchor("three", 300);
 
   ProcessEvents(3);
   ASSERT_EQ(1u, hosts_.size());
-  auto* intersection_observer = AnchorElementMetricsSender::From(GetDocument())
-                                    ->GetIntersectionObserverForTesting();
+  auto* intersection_observer =
+      AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(GetDocument())
+          ->GetIntersectionObserverForTesting();
   EXPECT_EQ(hosts_[0]->elements_.size(), 3u);
   EXPECT_EQ(intersection_observer->Observations().size(), 3u);
 
@@ -1113,14 +1104,14 @@ TEST_F(AnchorElementMetricsSenderTest, MaxIntersectionObservations) {
 
   // Add a fourth anchor (larger than all existing anchors). It should be
   // observed instead of anchor 1.
-  auto* anchor_4 = add_anchor("four", 400);
+  auto* anchor_4 = AddAnchor("four", 400);
   ProcessEvents(4);
   EXPECT_THAT(observations(),
               ::testing::UnorderedElementsAre(anchor_2, anchor_3, anchor_4));
 
   // Add a fifth anchor (smaller than all existing anchors). The observations
   // should not change (i.e. it should not be observed).
-  auto* anchor_5 = add_anchor("five", 50);
+  auto* anchor_5 = AddAnchor("five", 50);
   ProcessEvents(5);
   EXPECT_THAT(observations(),
               ::testing::UnorderedElementsAre(anchor_2, anchor_3, anchor_4));
@@ -1137,6 +1128,110 @@ TEST_F(AnchorElementMetricsSenderTest, MaxIntersectionObservations) {
               ::testing::UnorderedElementsAre(anchor_1, anchor_3, anchor_4));
 }
 
+TEST_F(AnchorElementMetricsSenderTest, AnchorUnobservedByIntersectionObserver) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kNavigationPredictor, {{"max_intersection_observations", "1"},
+                                       {"random_anchor_sampling_period", "1"}});
+
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(R"html(
+    <body></body>
+  )html");
+
+  auto* intersection_observer =
+      AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(GetDocument())
+          ->GetIntersectionObserverForTesting();
+
+  auto* anchor_1 = AddAnchor("one", 100);
+  ProcessEvents(1);
+  ASSERT_EQ(1u, hosts_.size());
+  auto* host = hosts_[0].get();
+
+  EXPECT_EQ(host->elements_.size(), 1u);
+  EXPECT_EQ(intersection_observer->Observations().size(), 1u);
+  EXPECT_EQ(host->entered_viewport_.size(), 1u);
+
+  host->entered_viewport_.clear();
+  auto* anchor_2 = AddAnchor("two", 200);
+  ProcessEvents(2);
+
+  // `anchor_2` will now be observed by the intersection observer, `anchor_1`
+  // will be unobserved, and should be reported as leaving the viewport.
+  EXPECT_EQ(host->elements_.size(), 2u);
+  EXPECT_EQ(intersection_observer->Observations().size(), 1u);
+  EXPECT_EQ(host->entered_viewport_.size(), 1u);
+  ASSERT_EQ(host->left_viewport_.size(), 1u);
+  EXPECT_EQ(AnchorElementId(*anchor_1), host->left_viewport_[0]->anchor_id);
+
+  host->entered_viewport_.clear();
+  host->left_viewport_.clear();
+  AddAnchor("three", 50);
+  ProcessEvents(3);
+
+  // `anchor_3` will not be observed immediately by the intersection observer
+  // (as it is smaller than anchor_2). No viewport messages should be
+  // dispatched.
+  EXPECT_EQ(host->elements_.size(), 3u);
+  EXPECT_EQ(intersection_observer->Observations().size(), 1u);
+  EXPECT_EQ(host->entered_viewport_.size(), 0u);
+  EXPECT_EQ(host->left_viewport_.size(), 0u);
+
+  anchor_2->remove();
+  ProcessEvents(2);
+
+  // Note: We don't dispatch a "left viewport" message for anchor_2 here
+  // because it was removed from the document; we just report it as a
+  // removed anchor.
+  EXPECT_EQ(intersection_observer->Observations().size(), 1u);
+  ASSERT_EQ(host->entered_viewport_.size(), 1u);
+  EXPECT_EQ(AnchorElementId(*anchor_1), host->entered_viewport_[0]->anchor_id);
+  EXPECT_EQ(host->left_viewport_.size(), 0u);
+  EXPECT_EQ(host->removed_anchor_ids_.size(), 1u);
+}
+
+TEST_F(AnchorElementMetricsSenderTest,
+       AnchorNotInViewportUnobservedByIntersectionObserver) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kNavigationPredictor, {{"max_intersection_observations", "1"},
+                                       {"random_anchor_sampling_period", "1"}});
+
+  String source("https://example.com/p1");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(String::Format(R"html(
+    <body>
+      <div style="height: %dpx;"></div>
+    </body>
+  )html",
+                                        kViewportHeight + 100));
+
+  AddAnchor("one", 100);
+  ProcessEvents(1);
+  ASSERT_EQ(1u, hosts_.size());
+  auto* host = hosts_[0].get();
+  auto* intersection_observer =
+      AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(GetDocument())
+          ->GetIntersectionObserverForTesting();
+
+  EXPECT_EQ(host->elements_.size(), 1u);
+  EXPECT_EQ(intersection_observer->Observations().size(), 1u);
+  EXPECT_EQ(host->entered_viewport_.size(), 0u);
+  EXPECT_EQ(host->left_viewport_.size(), 0u);
+
+  AddAnchor("two", 200);
+  ProcessEvents(2);
+
+  // We don't dispatch "left viewport" for anchor_1 here, because it was
+  // never reported to be in the viewport.
+  EXPECT_EQ(intersection_observer->Observations().size(), 1u);
+  EXPECT_EQ(host->entered_viewport_.size(), 0u);
+  EXPECT_EQ(host->left_viewport_.size(), 0u);
+}
+
 TEST_F(AnchorElementMetricsSenderTest, IntersectionObserverDelay) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -1149,7 +1244,7 @@ TEST_F(AnchorElementMetricsSenderTest, IntersectionObserverDelay) {
   main_resource.Complete("");
 
   IntersectionObserver* intersection_observer =
-      AnchorElementMetricsSender::From(GetDocument())
+      AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(GetDocument())
           ->GetIntersectionObserverForTesting();
   EXPECT_EQ(intersection_observer->delay(), 252.0);
 }
@@ -1724,6 +1819,76 @@ TEST_F(AnchorElementMetricsSenderTest,
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(0u, mock_host->removed_anchor_ids_.size());
+}
+
+// Regression test for crbug.com/374079011.
+TEST_F(AnchorElementMetricsSenderTest,
+       ObservedAnchorInIframeHasHrefUnsetAndIsRemoved) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kNavigationPredictor, {{"max_intersection_observations", "1"},
+                                       {"random_anchor_sampling_period", "1"}});
+
+  // Navigate the main frame.
+  String source("https://foo.com");
+  SimRequest main_resource(source, "text/html");
+  LoadURL(source);
+  main_resource.Complete(String::Format(R"html(
+    <body>
+      <iframe width="400px" height="400px"></iframe>
+    </body>
+  )html"));
+
+  // Navigate the subframe.
+  String subframe_source("https://foo.com/iframe");
+  SimRequest subframe_resource(subframe_source, "text/html");
+  frame_test_helpers::LoadFrameDontWait(
+      MainFrame().FirstChild()->ToWebLocalFrame(), KURL(subframe_source));
+  subframe_resource.Complete(R"html(
+    <body>
+    </body>
+  )html");
+
+  WebLocalFrameImpl* subframe = static_cast<WebLocalFrameImpl*>(
+      MainFrame().FirstChild()->ToWebLocalFrame());
+  WeakPersistent<Document> subframe_document =
+      static_cast<Document*>(subframe->GetDocument());
+
+  // Create a shadow root in the subframe and add an anchor to it.
+  ShadowRoot& shadow_root =
+      subframe_document->body()->AttachShadowRootForTesting(
+          ShadowRootMode::kOpen);
+  WeakPersistent<HTMLAnchorElement> anchor_1 =
+      MakeGarbageCollected<HTMLAnchorElement>(*subframe_document);
+  anchor_1->setHref("example.com");
+  anchor_1->setInnerText("one");
+  shadow_root.AppendChild(anchor_1);
+
+  ProcessEvents(1);
+  ASSERT_EQ(1u, hosts_.size());
+  auto* host = hosts_[0].get();
+  auto* intersection_observer =
+      AnchorElementViewportPositionTracker::MaybeGetOrCreateFor(GetDocument())
+          ->GetIntersectionObserverForTesting();
+  EXPECT_EQ(host->elements_.size(), 1u);
+  EXPECT_EQ(intersection_observer->Observations().size(), 1u);
+
+  // Remove the iframe from the top-level document.
+  GetDocument()
+      .QuerySelector(AtomicString("iframe"), ASSERT_NO_EXCEPTION)
+      ->remove();
+  ASSERT_TRUE(subframe_document->IsDetached());
+
+  // Runs some queued tasks that will eventually allow `subframe_document`
+  // and `anchor_1` to be GCed.
+  platform_->RunForPeriod(base::Milliseconds(1));
+  ThreadState::Current()->CollectAllGarbageForTesting();
+  ASSERT_FALSE(subframe_document);
+  ASSERT_FALSE(anchor_1);
+
+  // Add an anchor (to the main document); it should not crash.
+  AddAnchor("two", 200);
+  ProcessEvents(1);
 }
 
 }  // namespace blink

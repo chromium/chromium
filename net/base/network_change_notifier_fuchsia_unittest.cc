@@ -83,8 +83,8 @@ std::vector<T> MakeSingleItemVec(T item) {
 }
 
 fuchsia::net::interfaces::Properties DefaultInterfaceProperties(
-    fuchsia::hardware::network::DeviceClass device_class =
-        fuchsia::hardware::network::DeviceClass::ETHERNET) {
+    fuchsia::hardware::network::PortClass device_class =
+        fuchsia::hardware::network::PortClass::ETHERNET) {
   // For most tests a live interface with an IPv4 address and ethernet class is
   // sufficient.
   fuchsia::net::interfaces::Properties interface;
@@ -93,7 +93,7 @@ fuchsia::net::interfaces::Properties DefaultInterfaceProperties(
   interface.set_online(true);
   interface.set_has_default_ipv4_route(true);
   interface.set_has_default_ipv6_route(true);
-  interface.set_device_class(fuchsia::net::interfaces::DeviceClass::WithDevice(
+  interface.set_port_class(fuchsia::net::interfaces::PortClass::WithDevice(
       std::move(device_class)));
   interface.set_addresses(MakeSingleItemVec(
       InterfaceAddressFrom(kDefaultIPv4Address, kDefaultIPv4Prefix)));
@@ -109,8 +109,8 @@ fuchsia::net::interfaces::Properties SecondaryInterfaceProperties() {
   interface.set_online(true);
   interface.set_has_default_ipv4_route(false);
   interface.set_has_default_ipv6_route(false);
-  interface.set_device_class(fuchsia::net::interfaces::DeviceClass::WithDevice(
-      fuchsia::hardware::network::DeviceClass::ETHERNET));
+  interface.set_port_class(fuchsia::net::interfaces::PortClass::WithDevice(
+      []() { return fuchsia::hardware::network::PortClass::ETHERNET; } ()));
   interface.set_addresses(MakeSingleItemVec(
       InterfaceAddressFrom(kSecondaryIPv4Address, kSecondaryIPv4Prefix)));
   return interface;
@@ -434,7 +434,7 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, InitialState) {
 TEST_F(NetworkChangeNotifierFuchsiaTest, InterfacesChangeDuringConstruction) {
   // Set a live interface with an IP address.
   watcher_.SetInitial(DefaultInterfaceProperties(
-      fuchsia::hardware::network::DeviceClass::WLAN));
+      fuchsia::hardware::network::PortClass::WLAN_CLIENT));
 
   // Inject an interfaces change event so that the notifier will receive it
   // immediately after the initial state.
@@ -457,7 +457,7 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, InterfacesChangeDuringConstruction) {
 TEST_F(NetworkChangeNotifierFuchsiaTest, NotifyNetworkChangeOnInitialIPChange) {
   // Set a live interface with an IP address and create the notifier.
   watcher_.SetInitial(DefaultInterfaceProperties(
-      fuchsia::hardware::network::DeviceClass::WLAN));
+      fuchsia::hardware::network::PortClass::WLAN_CLIENT));
   CreateNotifier();
 
   // Add the NetworkChangeNotifier, and change the IP address. This should
@@ -655,7 +655,7 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, InterfaceAdded) {
 
   watcher_.PushEvent(
       fuchsia::net::interfaces::Event::WithAdded(DefaultInterfaceProperties(
-          fuchsia::hardware::network::DeviceClass::WLAN)));
+          fuchsia::hardware::network::PortClass::WLAN_CLIENT)));
 
   EXPECT_TRUE(type_observer_->RunAndExpectConnectionTypes(
       {NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI}));
@@ -684,7 +684,7 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, SecondaryInterfaceDeletedNoop) {
 
 TEST_F(NetworkChangeNotifierFuchsiaTest, FoundWiFi) {
   watcher_.SetInitial(DefaultInterfaceProperties(
-      fuchsia::hardware::network::DeviceClass::WLAN));
+      fuchsia::hardware::network::PortClass::WLAN_CLIENT));
   CreateNotifier();
   EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI,
             notifier_->GetCurrentConnectionType());
@@ -692,7 +692,7 @@ TEST_F(NetworkChangeNotifierFuchsiaTest, FoundWiFi) {
 
 TEST_F(NetworkChangeNotifierFuchsiaTest, FindsInterfaceWithRequiredWlan) {
   watcher_.SetInitial(DefaultInterfaceProperties(
-      fuchsia::hardware::network::DeviceClass::WLAN));
+      fuchsia::hardware::network::PortClass::WLAN_CLIENT));
   CreateNotifier(/*require_wlan=*/true);
   EXPECT_EQ(NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI,
             notifier_->GetCurrentConnectionType());

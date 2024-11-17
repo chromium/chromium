@@ -9,7 +9,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -48,15 +48,12 @@ public interface DownloadMessageUiController extends OfflineContentProvider.Obse
         boolean maybeSwitchToFocusedActivity();
 
         /** Called to open the downloads page. */
-        void openDownloadsPage(OTRProfileID otrProfileID, @DownloadOpenSource int source);
+        void openDownloadsPage(OtrProfileId otrProfileId, @DownloadOpenSource int source);
 
-        /**
-         * Called to open the download associated with the given {@link
-         * contentId}.
-         */
+        /** Called to open the download associated with the given {@link OfflineItem}. */
         void openDownload(
-                ContentId contentId,
-                OTRProfileID otrProfileID,
+                OfflineItem offlineItem,
+                OtrProfileId otrProfileId,
                 @DownloadOpenSource int source,
                 Context context);
 

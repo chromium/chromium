@@ -22,7 +22,7 @@ class FileSystemGetDirectoryOptions;
 class FileSystemGetFileOptions;
 class FileSystemRemoveOptions;
 
-class FileSystemDirectoryHandle final
+class MODULES_EXPORT FileSystemDirectoryHandle final
     : public FileSystemHandle,
       public PairAsyncIterable<FileSystemDirectoryHandle> {
   DEFINE_WRAPPERTYPEINFO();

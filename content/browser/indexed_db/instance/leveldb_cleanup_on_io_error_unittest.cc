@@ -50,7 +50,7 @@ TEST(IndexedDBIOErrorTest, CleanUpTest) {
           TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase),
       BackingStore::BlobFilesCleanedCallback(),
       BackingStore::ReportOutstandingBlobsCallback(), task_runner);
-  leveldb::Status s = backing_store->Initialize(false);
+  Status s = backing_store->Initialize(false);
   EXPECT_FALSE(s.ok());
   ASSERT_TRUE(temp_directory.Delete());
 }
@@ -85,7 +85,7 @@ TEST(IndexedDBNonRecoverableIOErrorTest, NuancedCleanupTest) {
             TransactionalLevelDBDatabase::kDefaultMaxOpenIteratorsPerDatabase),
         BackingStore::BlobFilesCleanedCallback(),
         BackingStore::ReportOutstandingBlobsCallback(), task_runner);
-    leveldb::Status s = backing_store->Initialize(false);
+    Status s = backing_store->Initialize(false);
     ASSERT_TRUE(s.IsIOError());
   }
   ASSERT_TRUE(temp_directory.Delete());

@@ -903,11 +903,8 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<UpdateEngineMetricsProvider>());
 
-  if (base::FeatureList::IsEnabled(
-          ::features::kUserTypeByDeviceTypeMetricsProvider)) {
-    metrics_service_->RegisterMetricsProvider(
-        std::make_unique<UserTypeByDeviceTypeMetricsProvider>());
-  }
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<UserTypeByDeviceTypeMetricsProvider>());
 
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<KeyboardBacklightColorMetricsProvider>());

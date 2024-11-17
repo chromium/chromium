@@ -25,7 +25,7 @@ class PrefService;
 
 namespace user_manager {
 
-class UserManagerBase;
+class UserManagerImpl;
 
 // Enum describing whether a user's profile requires policy. If kPolicyRequired,
 // the profile initialization code will ensure that valid policy is loaded
@@ -279,12 +279,6 @@ class USER_MANAGER_EXPORT KnownUser final {
 
   std::string GetPendingOnboardingScreen(const AccountId& account_id);
 
-  // Records whether Lacros is enabled for the user.
-  void SetLacrosEnabled(const AccountId& account_id, bool enabled);
-  // Returns true if at least one user has Lacros enabled, false otherwise.
-  // It defaults to false for users for which there's no information.
-  bool GetLacrosEnabledForAnyUser();
-
   bool UserExists(const AccountId& account_id);
 
   // Register known user prefs.
@@ -292,7 +286,7 @@ class USER_MANAGER_EXPORT KnownUser final {
 
  private:
   friend class KnownUserTest;
-  friend class UserManagerBase;
+  friend class UserManagerImpl;
 
   FRIEND_TEST_ALL_PREFIXES(KnownUserTest,
                            CleanEphemeralUsersRemovesEphemeralAdOnly);

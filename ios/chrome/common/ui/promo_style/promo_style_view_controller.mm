@@ -41,6 +41,7 @@ constexpr CGFloat kTallBannerMultiplier = 0.35;
 constexpr CGFloat kExtraTallBannerMultiplier = 0.5;
 constexpr CGFloat kDefaultBannerMultiplier = 0.25;
 constexpr CGFloat kShortBannerMultiplier = 0.2;
+constexpr CGFloat kExtraShortBannerMultiplier = 0.15;
 constexpr CGFloat kMoreArrowMargin = 4;
 constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 constexpr CGFloat kSeparatorHeight = 1;
@@ -154,6 +155,12 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
 
   return self;
+}
+
+- (UIFontTextStyle)titleLabelFontTextStyle {
+  // Determine which font text style to use depending on the device size, the
+  // size class and if dynamic type is enabled.
+  return GetTitleLabelFontTextStyle(self);
 }
 
 #pragma mark - UIViewController
@@ -993,6 +1000,8 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
 - (CGFloat)bannerMultiplier {
   switch (self.bannerSize) {
+    case BannerImageSizeType::kExtraShort:
+      return kExtraShortBannerMultiplier;
     case BannerImageSizeType::kShort:
       return kShortBannerMultiplier;
     case BannerImageSizeType::kStandard:
@@ -1017,12 +1026,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
   _bannerStyle = currentStyle;
   return ResizeImage([self bannerImage], newSize, ProjectionMode::kAspectFit);
-}
-
-// Determines which font text style to use depending on the device size, the
-// size class and if dynamic type is enabled.
-- (UIFontTextStyle)titleLabelFontTextStyle {
-  return GetTitleLabelFontTextStyle(self);
 }
 
 - (void)setPrimaryActionButtonFont:(UIButton*)button {

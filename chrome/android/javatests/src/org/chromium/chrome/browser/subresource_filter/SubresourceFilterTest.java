@@ -12,6 +12,7 @@ import android.widget.TextView;
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,14 +23,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -39,7 +37,6 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.modaldialog.TabModalPresenter;
-import org.chromium.components.infobars.InfoBar;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
@@ -47,13 +44,12 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessageStateHandler;
 import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
-import org.chromium.components.subresource_filter.AdsBlockedInfoBar;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.EmbeddedTestServerRule;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -121,125 +117,28 @@ public final class SubresourceFilterTest {
         String loaded = mActivityTestRule.runJavaScriptCodeInCurrentTab("imgLoaded");
         Assert.assertEquals("true", loaded);
 
-        // Check that the infobar is not showing.
-        List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
-        CriteriaHelper.pollUiThread(() -> infoBars.isEmpty());
+        verifyNoMessageShown();
     }
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED)
-    public void resourceFilteredClose_InfobarUI() throws Exception {
-        String url = mTestServer.getURL(PAGE_WITH_JPG);
-        Assert.assertFalse(loadPageWithBlockableContentAndTestIfBlocked(url, false));
-
-        // Check that the infobar is showing.
-        List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
-        CriteriaHelper.pollUiThread(() -> infoBars.size() == 1);
-        AdsBlockedInfoBar infobar = (AdsBlockedInfoBar) infoBars.get(0);
-
-        // Click the link once to expand it.
-        ThreadUtils.runOnUiThreadBlocking(infobar::onLinkClicked);
-
-        // Check the checkbox and press the button to reload.
-        ThreadUtils.runOnUiThreadBlocking(() -> infobar.onCheckedChanged(null, true));
-
-        // Think better of it and just close the infobar.
-        ThreadUtils.runOnUiThreadBlocking(infobar::onCloseButtonClicked);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        CriteriaHelper.pollUiThread(() -> !InfoBarContainer.get(tab).hasInfoBars());
-    }
-
-    @Test
-    @LargeTest
-    @DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED)
-    public void resourceFilteredClickLearnMore_InfobarUI() throws Exception {
-        String url = mTestServer.getURL(PAGE_WITH_JPG);
-        Assert.assertFalse(loadPageWithBlockableContentAndTestIfBlocked(url, false));
-
-        Tab originalTab = mActivityTestRule.getActivity().getActivityTab();
-        CallbackHelper tabCreatedCallback = new CallbackHelper();
-        TabModel tabModel = mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        tabModel.addObserver(
-                                new TabModelObserver() {
-                                    @Override
-                                    public void didAddTab(
-                                            Tab tab,
-                                            @TabLaunchType int type,
-                                            @TabCreationState int creationState,
-                                            boolean markedForSelection) {
-                                        if (tab.getUrl().getSpec().equals(LEARN_MORE_PAGE)) {
-                                            tabCreatedCallback.notifyCalled();
-                                        }
-                                    }
-                                }));
-
-        // Check that the infobar is showing.
-        List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
-        CriteriaHelper.pollUiThread(() -> infoBars.size() == 1);
-        AdsBlockedInfoBar infobar = (AdsBlockedInfoBar) infoBars.get(0);
-
-        // Click the link once to expand it.
-        ThreadUtils.runOnUiThreadBlocking(infobar::onLinkClicked);
-
-        // Click again to navigate, which should spawn a new tab.
-        ThreadUtils.runOnUiThreadBlocking(infobar::onLinkClicked);
-
-        // Wait for the tab to be added with the correct URL. Note, do not wait for this URL to be
-        // loaded since it is not controlled by the test instrumentation. Just waiting for the
-        // navigation to start should be OK though.
-        tabCreatedCallback.waitForCallback("Never received tab created event", 0);
-
-        // The infobar should not be removed on the original tab.
-        CriteriaHelper.pollUiThread(() -> InfoBarContainer.get(originalTab).hasInfoBars());
-    }
-
-    @Test
-    @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED})
-    public void resourceFilteredClickLearnMore_MessagesUI_ReshowDialogOnPhoneOnBackPress()
+    @Restriction(DeviceFormFactor.PHONE)
+    public void resourceFilteredClickLearnMore_MessagesUi_ReshowDialogOnPhoneOnBackPress()
             throws Exception {
-        testResourceFilteredClickLearnMore_MessagesUIFlow();
+        testResourceFilteredClickLearnMore_MessagesUiFlow();
     }
 
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
-    @EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED})
-    public void resourceFilteredClickLearnMore_MessagesUI_ReshowDialogOnTabletOnBackPress()
+    @Restriction(DeviceFormFactor.TABLET)
+    public void resourceFilteredClickLearnMore_MessagesUi_ReshowDialogOnTabletOnBackPress()
             throws Exception {
-        testResourceFilteredClickLearnMore_MessagesUIFlow();
+        testResourceFilteredClickLearnMore_MessagesUiFlow();
     }
 
     @Test
     @LargeTest
-    @DisableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED)
-    public void resourceFilteredReload_InfobarUI() throws Exception {
-        String url = mTestServer.getURL(PAGE_WITH_JPG);
-        Assert.assertFalse(loadPageWithBlockableContentAndTestIfBlocked(url, false));
-
-        // Check that the infobar is showing.
-        List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
-        CriteriaHelper.pollUiThread(() -> infoBars.size() == 1);
-        AdsBlockedInfoBar infobar = (AdsBlockedInfoBar) infoBars.get(0);
-
-        // Click the link once to expand it.
-        ThreadUtils.runOnUiThreadBlocking(infobar::onLinkClicked);
-
-        // Check the checkbox and press the button to reload.
-        ThreadUtils.runOnUiThreadBlocking(() -> infobar.onCheckedChanged(null, true));
-        ThreadUtils.runOnUiThreadBlocking(() -> infobar.onButtonClicked(true));
-
-        Assert.assertTrue(verifyPageReloadedWithOriginalContent(url));
-    }
-
-    @Test
-    @LargeTest
-    @EnableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED})
-    public void resourceFilteredReload_MessagesUI() throws Exception {
+    public void resourceFilteredReload_MessagesUi() throws Exception {
         String url = mTestServer.getURL(PAGE_WITH_JPG);
         Assert.assertFalse(loadPageWithBlockableContentAndTestIfBlocked(url, false));
 
@@ -264,12 +163,10 @@ public final class SubresourceFilterTest {
         String url = mTestServer.getURL(PAGE_WITH_JPG);
         Assert.assertTrue(loadPageWithBlockableContentAndTestIfBlocked(url, true));
 
-        // Check that the infobar is not showing.
-        List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
-        CriteriaHelper.pollUiThread(() -> infoBars.isEmpty());
+        verifyNoMessageShown();
     }
 
-    private void testResourceFilteredClickLearnMore_MessagesUIFlow()
+    private void testResourceFilteredClickLearnMore_MessagesUiFlow()
             throws TimeoutException, ExecutionException, InterruptedException {
         String url = mTestServer.getURL(PAGE_WITH_JPG);
         Assert.assertFalse(loadPageWithBlockableContentAndTestIfBlocked(url, false));
@@ -374,9 +271,20 @@ public final class SubresourceFilterTest {
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         ChromeTabUtils.waitForTabPageLoaded(tab, url);
 
-        CriteriaHelper.pollUiThread(() -> !InfoBarContainer.get(tab).hasInfoBars());
+        verifyNoMessageShown();
 
         // Reloading should allowlist the site, so resources should no longer be filtered.
         return Boolean.parseBoolean(mActivityTestRule.runJavaScriptCodeInCurrentTab("imgLoaded"));
+    }
+
+    private void verifyNoMessageShown() {
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    Criteria.checkThat(
+                            "Messages should not be enqueued.",
+                            MessagesTestHelper.getMessageCount(
+                                    mActivityTestRule.getActivity().getWindowAndroid()),
+                            Matchers.is(0));
+                });
     }
 }

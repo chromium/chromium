@@ -13,6 +13,8 @@
 #include <set>
 #include <utility>
 
+#include "ash/components/arc/app/arc_app_constants.h"
+#include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -25,7 +27,6 @@
 #include "chrome/browser/ash/app_list/search/app_service_app_result.h"
 #include "chrome/browser/ash/extensions/gfx_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 #include "chromeos/ash/components/string_matching/tokenized_string_match.h"
@@ -53,8 +54,8 @@ constexpr double kRelevanceThreshold = 0.64;
 
 // Default recommended apps in descending order of priority.
 constexpr const char* const ranked_default_app_ids[] = {
-    web_app::kOsSettingsAppId, web_app::kHelpAppId, arc::kPlayStoreAppId,
-    web_app::kCanvasAppId, web_app::kCameraAppId};
+    ash::kOsSettingsAppId, ash::kHelpAppId, arc::kPlayStoreAppId,
+    ash::kCanvasAppId, ash::kCameraAppId};
 
 // Flag to enable/disable diacritics stripping
 constexpr bool kStripDiacritics = true;
@@ -66,7 +67,7 @@ constexpr bool kStripDiacritics = true;
 // Returns:
 //    The priority rank 0, 1, ... if the app is a default app.
 //    -1 if the app is not a default app.
-int GetDefaultAppRank(const std::string app_id) {
+int GetDefaultAppRank(const std::string& app_id) {
   for (size_t i = 0; i < std::size(ranked_default_app_ids); ++i) {
     if (app_id == ranked_default_app_ids[i]) {
       return i;

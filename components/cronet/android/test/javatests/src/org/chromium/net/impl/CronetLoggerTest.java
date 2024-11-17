@@ -451,7 +451,7 @@ public final class CronetLoggerTest {
                                                 .addConstrainedValues(
                                                         FlagValue.ConstrainedValue.newBuilder()
                                                                 .setFloatValue(
-                                                                        (Float.NEGATIVE_INFINITY)))
+                                                                        Float.NEGATIVE_INFINITY))
                                                 .build())
                                 .putFlags(
                                         "positive_infinity_float_flag_name",

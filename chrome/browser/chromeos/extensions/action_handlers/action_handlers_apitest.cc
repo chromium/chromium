@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "apps/launcher.h"
+#include "base/feature_list.h"
 #include "base/path_service.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/action_handlers_handler.h"
 #include "extensions/test/extension_test_message_listener.h"
 
@@ -16,6 +18,10 @@ namespace app_runtime = extensions::api::app_runtime;
 using ActionHandlersBrowserTest = extensions::ExtensionApiTest;
 
 IN_PROC_BROWSER_TEST_F(ActionHandlersBrowserTest, LaunchAppWithNewNote) {
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kApiRuntimeActionData)) {
+    return;
+  }
   // Load the app. Make sure to wait until it is done loading.
   ExtensionTestMessageListener loader("loaded");
   base::FilePath path =

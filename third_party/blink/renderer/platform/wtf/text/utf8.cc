@@ -35,12 +35,15 @@
 
 #include "base/check.h"
 #include "base/not_fatal_until.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
 namespace WTF {
 namespace unicode {
+
+namespace {
 
 inline int InlineUTF8SequenceLengthNonASCII(char b0) {
   if ((b0 & 0xC0) != 0xC0)
@@ -63,14 +66,14 @@ inline int InlineUTF8SequenceLength(char b0) {
 // as many entries in this table as there are UTF-8 sequence types.
 // (I.e., one byte sequence, two byte... etc.). Remember that sequences
 // for *legal* UTF-8 will be 4 or fewer bytes total.
-static const unsigned char kFirstByteMark[7] = {0x00, 0x00, 0xC0, 0xE0,
-                                                0xF0, 0xF8, 0xFC};
+const unsigned char kFirstByteMark[7] = {0x00, 0x00, 0xC0, 0xE0,
+                                         0xF0, 0xF8, 0xFC};
 
-ConversionResult ConvertLatin1ToUTF8(const LChar** source_start,
+ConversionStatus ConvertLatin1ToUTF8(const LChar** source_start,
                                      const LChar* source_end,
                                      char** target_start,
                                      char* target_end) {
-  ConversionResult result = kConversionOK;
+  ConversionStatus status = kConversionOK;
   const LChar* source = *source_start;
   char* target = *target_start;
   while (source < source_end) {
@@ -92,7 +95,7 @@ ConversionResult ConvertLatin1ToUTF8(const LChar** source_start,
     if (target > target_end) {
       source = old_source;  // Back up source pointer!
       target -= bytes_to_write;
-      result = kTargetExhausted;
+      status = kTargetExhausted;
       break;
     }
     switch (bytes_to_write) {
@@ -107,15 +110,15 @@ ConversionResult ConvertLatin1ToUTF8(const LChar** source_start,
   }
   *source_start = source;
   *target_start = target;
-  return result;
+  return status;
 }
 
-ConversionResult ConvertUTF16ToUTF8(const UChar** source_start,
+ConversionStatus ConvertUTF16ToUTF8(const UChar** source_start,
                                     const UChar* source_end,
                                     char** target_start,
                                     char* target_end,
                                     bool strict) {
-  ConversionResult result = kConversionOK;
+  ConversionStatus status = kConversionOK;
   const UChar* source = *source_start;
   char* target = *target_start;
   while (source < source_end) {
@@ -137,19 +140,19 @@ ConversionResult ConvertUTF16ToUTF8(const UChar** source_start,
           ++source;
         } else if (strict) {  // it's an unpaired high surrogate
           --source;           // return to the illegal value itself
-          result = kSourceIllegal;
+          status = kSourceIllegal;
           break;
         }
       } else {     // We don't have the 16 bits following the high surrogate.
         --source;  // return to the high surrogate
-        result = kSourceExhausted;
+        status = kSourceExhausted;
         break;
       }
     } else if (strict) {
       // UTF-16 surrogate values are illegal in UTF-32
       if (ch >= 0xDC00 && ch <= 0xDFFF) {
         --source;  // return to the illegal value itself
-        result = kSourceIllegal;
+        status = kSourceIllegal;
         break;
       }
     }
@@ -165,7 +168,7 @@ ConversionResult ConvertUTF16ToUTF8(const UChar** source_start,
     } else {
       // TODO(crbug.com/329702346): Surrogate pairs cannot represent codepoints
       // higher than 0x10FFFF, so this should not be reachable.
-      DUMP_WILL_BE_CHECK(base::NotFatalUntil::M127);
+      NOTREACHED(base::NotFatalUntil::M134);
       bytes_to_write = 3;
       ch = kReplacementCharacter;
     }
@@ -174,7 +177,7 @@ ConversionResult ConvertUTF16ToUTF8(const UChar** source_start,
     if (target > target_end) {
       source = old_source;  // Back up source pointer!
       target -= bytes_to_write;
-      result = kTargetExhausted;
+      status = kTargetExhausted;
       break;
     }
     switch (bytes_to_write) {
@@ -197,13 +200,13 @@ ConversionResult ConvertUTF16ToUTF8(const UChar** source_start,
   }
   *source_start = source;
   *target_start = target;
-  return result;
+  return status;
 }
 
 // This must be called with the length pre-determined by the first byte.
 // If presented with a length > 4, this returns false.  The Unicode
 // definition of UTF-8 goes up to 4-byte sequences.
-static bool IsLegalUTF8(const unsigned char* source, int length) {
+bool IsLegalUTF8(const unsigned char* source, int length) {
   unsigned char a;
   const unsigned char* srcptr = source + length;
   switch (length) {
@@ -257,14 +260,14 @@ static bool IsLegalUTF8(const unsigned char* source, int length) {
 // Magic values subtracted from a buffer value during UTF8 conversion.
 // This table contains as many values as there might be trailing bytes
 // in a UTF-8 sequence.
-static const UChar32 kOffsetsFromUTF8[6] = {0x00000000UL,
-                                            0x00003080UL,
-                                            0x000E2080UL,
-                                            0x03C82080UL,
-                                            static_cast<UChar32>(0xFA082080UL),
-                                            static_cast<UChar32>(0x82082080UL)};
+const UChar32 kOffsetsFromUTF8[6] = {0x00000000UL,
+                                     0x00003080UL,
+                                     0x000E2080UL,
+                                     0x03C82080UL,
+                                     static_cast<UChar32>(0xFA082080UL),
+                                     static_cast<UChar32>(0x82082080UL)};
 
-static inline UChar32 ReadUTF8Sequence(const char*& sequence, unsigned length) {
+inline UChar32 ReadUTF8Sequence(const char*& sequence, unsigned length) {
   UChar32 character = 0;
 
   switch (length) {
@@ -295,24 +298,24 @@ static inline UChar32 ReadUTF8Sequence(const char*& sequence, unsigned length) {
   return character - kOffsetsFromUTF8[length - 1];
 }
 
-ConversionResult ConvertUTF8ToUTF16(const char** source_start,
+ConversionStatus ConvertUTF8ToUTF16(const char** source_start,
                                     const char* source_end,
                                     UChar** target_start,
                                     UChar* target_end,
                                     bool strict) {
-  ConversionResult result = kConversionOK;
+  ConversionStatus status = kConversionOK;
   const char* source = *source_start;
   UChar* target = *target_start;
   while (source < source_end) {
     int utf8_sequence_length = InlineUTF8SequenceLength(*source);
     if (source_end - source < utf8_sequence_length) {
-      result = kSourceExhausted;
+      status = kSourceExhausted;
       break;
     }
     // Do this check whether lenient or strict
     if (!IsLegalUTF8(reinterpret_cast<const unsigned char*>(source),
                      utf8_sequence_length)) {
-      result = kSourceIllegal;
+      status = kSourceIllegal;
       break;
     }
 
@@ -320,7 +323,7 @@ ConversionResult ConvertUTF8ToUTF16(const char** source_start,
 
     if (target >= target_end) {
       source -= utf8_sequence_length;  // Back up source pointer!
-      result = kTargetExhausted;
+      status = kTargetExhausted;
       break;
     }
 
@@ -329,7 +332,7 @@ ConversionResult ConvertUTF8ToUTF16(const char** source_start,
       if (U_IS_SURROGATE(character)) {
         if (strict) {
           source -= utf8_sequence_length;  // return to the illegal value itself
-          result = kSourceIllegal;
+          status = kSourceIllegal;
           break;
         }
         *target++ = kReplacementCharacter;
@@ -340,7 +343,7 @@ ConversionResult ConvertUTF8ToUTF16(const char** source_start,
       // target is a character in range 0xFFFF - 0x10FFFF
       if (target + 1 >= target_end) {
         source -= utf8_sequence_length;  // Back up source pointer!
-        result = kTargetExhausted;
+        status = kTargetExhausted;
         break;
       }
       *target++ = U16_LEAD(character);
@@ -349,10 +352,10 @@ ConversionResult ConvertUTF8ToUTF16(const char** source_start,
       // TODO(crbug.com/329702346): This should never happen;
       // InlineUTF8SequenceLength() can never return a value higher than 4, and
       // a 4-byte UTF-8 sequence can never encode anything higher than 0x10FFFF.
-      DUMP_WILL_BE_CHECK(base::NotFatalUntil::M127);
+      NOTREACHED(base::NotFatalUntil::M134);
       if (strict) {
         source -= utf8_sequence_length;  // return to the start
-        result = kSourceIllegal;
+        status = kSourceIllegal;
         break;  // Bail out; shouldn't continue
       } else {
         *target++ = kReplacementCharacter;
@@ -362,7 +365,56 @@ ConversionResult ConvertUTF8ToUTF16(const char** source_start,
   *source_start = source;
   *target_start = target;
 
-  return result;
+  return status;
+}
+
+}  // namespace
+
+ConversionResult<uint8_t> ConvertLatin1ToUTF8(base::span<const LChar> source,
+                                              base::span<uint8_t> target) {
+  const LChar* source_start = source.data();
+  auto target_chars = base::as_writable_chars(target);
+  char* target_start = target_chars.data();
+  auto status =
+      ConvertLatin1ToUTF8(&source_start, source_start + source.size(),
+                          &target_start, target_start + target_chars.size());
+  return {
+      target.first(static_cast<size_t>(target_start - target_chars.data())),
+      static_cast<size_t>(source_start - source.data()),
+      status,
+  };
+}
+
+ConversionResult<uint8_t> ConvertUTF16ToUTF8(base::span<const UChar> source,
+                                             base::span<uint8_t> target,
+                                             bool strict) {
+  const UChar* source_start = source.data();
+  auto target_chars = base::as_writable_chars(target);
+  char* target_start = target_chars.data();
+  auto status = ConvertUTF16ToUTF8(&source_start, source_start + source.size(),
+                                   &target_start,
+                                   target_start + target_chars.size(), strict);
+  return {
+      target.first(static_cast<size_t>(target_start - target_chars.data())),
+      static_cast<size_t>(source_start - source.data()),
+      status,
+  };
+}
+
+ConversionResult<UChar> ConvertUTF8ToUTF16(base::span<const uint8_t> source,
+                                           base::span<UChar> target,
+                                           bool strict) {
+  auto source_chars = base::as_chars(source);
+  const char* source_start = source_chars.data();
+  UChar* target_start = target.data();
+  auto status =
+      ConvertUTF8ToUTF16(&source_start, source_start + source_chars.size(),
+                         &target_start, target_start + target.size(), strict);
+  return {
+      target.first(static_cast<size_t>(target_start - target.data())),
+      static_cast<size_t>(source_start - source_chars.data()),
+      status,
+  };
 }
 
 unsigned CalculateStringLengthFromUTF8(const char* data,

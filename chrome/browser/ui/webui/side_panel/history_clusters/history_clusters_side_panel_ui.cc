@@ -19,10 +19,13 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/cr_components/history_clusters/history_clusters_util.h"
+#include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/history_clusters/history_clusters_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/side_panel_history_clusters_resources.h"
 #include "chrome/grit/side_panel_history_clusters_resources_map.h"
 #include "chrome/grit/side_panel_shared_resources.h"
@@ -42,11 +45,6 @@ HistoryClustersSidePanelUIConfig::HistoryClustersSidePanelUIConfig()
     : DefaultTopChromeWebUIConfig(
           content::kChromeUIScheme,
           chrome::kChromeUIHistoryClustersSidePanelHost) {}
-
-bool HistoryClustersSidePanelUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(history_clusters::kSidePanelJourneys);
-}
 
 bool HistoryClustersSidePanelUIConfig::IsPreloadable() {
   return true;
@@ -72,7 +70,8 @@ HistoryClustersSidePanelUI::HistoryClustersSidePanelUI(content::WebUI* web_ui)
   source->AddBoolean(
       "enableHistoryEmbeddings",
       history_embeddings::IsHistoryEmbeddingsEnabledForProfile(profile) &&
-          history_embeddings::kEnableSidePanel.Get());
+          history_embeddings::GetFeatureParameters().enable_side_panel);
+  history_embeddings::PopulateSourceForWebUI(source, profile);
 
   webui::SetupWebUIDataSource(
       source,
@@ -90,6 +89,10 @@ WEB_UI_CONTROLLER_TYPE_IMPL(HistoryClustersSidePanelUI)
 void HistoryClustersSidePanelUI::SetBrowserWindowInterface(
     BrowserWindowInterface* browser_window_interface) {
   browser_window_interface_ = browser_window_interface;
+  // The page handler may already exist if preloaded.
+  if (history_clusters_handler_) {
+    history_clusters_handler_->SetContextInterface(browser_window_interface);
+  }
 }
 
 void HistoryClustersSidePanelUI::BindInterface(
@@ -121,6 +124,15 @@ void HistoryClustersSidePanelUI::BindInterface(
   image_service_handler_ =
       std::make_unique<page_image_service::ImageServiceHandler>(
           std::move(pending_page_handler), std::move(image_service_weak));
+}
+
+void HistoryClustersSidePanelUI::BindInterface(
+    mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
+        pending_page_handler) {
+  history_embeddings_handler_ = std::make_unique<HistoryEmbeddingsHandler>(
+      std::move(pending_page_handler),
+      Profile::FromWebUI(web_ui())->GetWeakPtr(), web_ui(),
+      /*for_side_panel=*/true);
 }
 
 base::WeakPtr<HistoryClustersSidePanelUI>

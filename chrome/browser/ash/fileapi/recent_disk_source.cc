@@ -206,7 +206,7 @@ void RecentDiskSource::OnReadDirectory(
       }
       ScanDirectory(call_id, subpath, depth + 1);
     } else {
-      if (!MatchesFileType(entry.name, context->params.file_type())) {
+      if (!MatchesFileType(entry.name.path(), context->params.file_type())) {
         continue;
       }
       if (!FileNameMatches(base::UTF8ToUTF16(entry.name.value()), q16)) {

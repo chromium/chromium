@@ -83,6 +83,8 @@ Slider::Slider(SliderListener* listener) : listener_(listener) {
 
   SchedulePaint();
   GetViewAccessibility().SetRole(ax::mojom::Role::kSlider);
+  GetViewAccessibility().AddAction(ax::mojom::Action::kIncrement);
+  GetViewAccessibility().AddAction(ax::mojom::Action::kDecrement);
 }
 
 Slider::~Slider() = default;
@@ -205,9 +207,9 @@ void Slider::SetValueInternal(float value, SliderChangeReason reason) {
   }
 
   if (accessibility_events_enabled_) {
-    if (GetWidget() && GetWidget()->IsVisible()) {
+    if (GetWidget() && GetWidget()->IsVisible() && GetVisible()) {
       DCHECK(!pending_accessibility_value_change_);
-      NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+      UpdateAccessibleValue();
     } else {
       pending_accessibility_value_change_ = true;
     }
@@ -324,14 +326,6 @@ bool Slider::OnKeyPressed(const ui::KeyEvent& event) {
   return true;
 }
 
-void Slider::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  View::GetAccessibleNodeData(node_data);
-  node_data->SetValue(base::UTF8ToUTF16(
-      base::StringPrintf("%d%%", static_cast<int>(value_ * 100 + 0.5))));
-  node_data->AddAction(ax::mojom::Action::kIncrement);
-  node_data->AddAction(ax::mojom::Action::kDecrement);
-}
-
 bool Slider::HandleAccessibleAction(const ui::AXActionData& action_data) {
   if (action_data.action == ax::mojom::Action::kIncrement) {
     SetValueInternal(value_ + keyboard_increment_, SliderChangeReason::kByUser);
@@ -404,20 +398,22 @@ void Slider::OnBlur() {
 }
 
 void Slider::VisibilityChanged(View* starting_from, bool is_visible) {
-  if (is_visible)
-    NotifyPendingAccessibilityValueChanged();
+  if (is_visible && GetWidget() && GetWidget()->IsVisible() && GetVisible()) {
+    ApplyPendingAccessibleValueUpdate();
+  }
 }
 
 void Slider::AddedToWidget() {
-  if (GetWidget()->IsVisible())
-    NotifyPendingAccessibilityValueChanged();
+  if (GetWidget()->IsVisible() && GetVisible()) {
+    ApplyPendingAccessibleValueUpdate();
+  }
 }
 
-void Slider::NotifyPendingAccessibilityValueChanged() {
+void Slider::ApplyPendingAccessibleValueUpdate() {
   if (!pending_accessibility_value_change_)
     return;
 
-  NotifyAccessibilityEvent(ax::mojom::Event::kValueChanged, true);
+  UpdateAccessibleValue();
   pending_accessibility_value_change_ = false;
 }
 
@@ -472,6 +468,11 @@ int Slider::GetSliderExtraPadding() const {
     case RenderingStyle::kMinimalStyle:
       return kSliderPadding;
   }
+}
+
+void Slider::UpdateAccessibleValue() {
+  GetViewAccessibility().SetValue(base::UTF8ToUTF16(
+      base::StringPrintf("%d%%", static_cast<int>(value_ * 100 + 0.5))));
 }
 
 BEGIN_METADATA(Slider)

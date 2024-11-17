@@ -12,6 +12,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <map>
 #include <utility>
 #include <vector>
 
@@ -29,6 +30,7 @@
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/picture_layer.h"
+#include "cc/layers/view_transition_content_layer_impl.h"
 #include "cc/paint/filter_operation.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/effect_node.h"
@@ -980,7 +982,12 @@ void AddSurfaceToRenderSurfaceList(RenderSurfaceImpl* render_surface,
       AddSurfaceToRenderSurfaceList(vt_target, render_surface_list,
                                     property_trees);
     }
-  } else if (!is_root && !target->is_render_surface_list_member()) {
+  }
+
+  // TODO(vmpstr): revisit this later to see if there is a better fix, as this
+  // changes the render list in an incorrect way due to CC assumptions about how
+  // surfaces and view-transition captures interact.
+  if (!is_root && !target->is_render_surface_list_member()) {
     AddSurfaceToRenderSurfaceList(target, render_surface_list, property_trees);
   }
   render_surface->ClearAccumulatedContentRect();
@@ -1059,9 +1066,12 @@ bool SkipForInvertibility(const LayerImpl* layer,
              : !transform_node->ancestors_are_invertible;
 }
 
-void ComputeInitialRenderSurfaceList(LayerTreeImpl* layer_tree_impl,
-                                     PropertyTrees* property_trees,
-                                     RenderSurfaceList* render_surface_list) {
+void ComputeInitialRenderSurfaceList(
+    LayerTreeImpl* layer_tree_impl,
+    PropertyTrees* property_trees,
+    RenderSurfaceList* render_surface_list,
+    std::map<viz::ViewTransitionElementResourceId,
+             ViewTransitionContentLayerImpl*>& view_transition_content_layers) {
   EffectTree& effect_tree = property_trees->effect_tree_mutable();
   for (int i = kContentsRootPropertyNodeId;
        i < static_cast<int>(effect_tree.size()); ++i) {
@@ -1131,12 +1141,27 @@ void ComputeInitialRenderSurfaceList(LayerTreeImpl* layer_tree_impl,
     // The layer contributes its drawable content rect to its render target.
     render_target->AccumulateContentRectFromContributingLayer(layer);
     render_target->increment_num_contributors();
+    if (!layer->ViewTransitionResourceId().IsValid()) {
+      continue;
+    }
+    auto* view_transition_content_layer =
+        static_cast<ViewTransitionContentLayerImpl*>(layer);
+    view_transition_content_layer->SetOriginatingSurfaceContentRect(
+        gfx::Rect());
+    view_transition_content_layers[layer->ViewTransitionResourceId()] =
+        view_transition_content_layer;
   }
 }
 
-void ComputeSurfaceContentRects(PropertyTrees* property_trees,
-                                RenderSurfaceList* render_surface_list,
-                                int max_texture_size) {
+void ComputeSurfaceContentRects(
+    PropertyTrees* property_trees,
+    RenderSurfaceList* render_surface_list,
+    int max_texture_size,
+    const std::map<viz::ViewTransitionElementResourceId,
+                   ViewTransitionContentLayerImpl*>
+        view_transition_content_layers,
+    std::vector<std::pair<viz::ViewTransitionElementResourceId, gfx::RectF>>&
+        view_transition_content_rects) {
   // Walk the list backwards, accumulating each surface's content rect into its
   // target's content rect.
   for (RenderSurfaceImpl* render_surface :
@@ -1159,6 +1184,28 @@ void ComputeSurfaceContentRects(PropertyTrees* property_trees,
     render_target->AccumulateContentRectFromContributingRenderSurface(
         render_surface);
     render_target->increment_num_contributors();
+
+    // Collect the content rects for view transition capture surfaces, and
+    // adjust the geometry for the corresponding content layer (the
+    // pseudo-element's layer).
+    const auto& view_transition_id =
+        render_surface->OwningEffectNode()->view_transition_element_resource_id;
+
+    if (!view_transition_id.IsValid()) {
+      continue;
+    }
+
+    auto unscaled_content_rect =
+        render_surface->SurfaceScale().InverseOrIdentity().MapRect(
+            render_surface->content_rect());
+
+    view_transition_content_rects.emplace_back(
+        view_transition_id, gfx::RectF(unscaled_content_rect));
+
+    if (view_transition_content_layers.contains(view_transition_id)) {
+      view_transition_content_layers.at(view_transition_id)
+          ->SetOriginatingSurfaceContentRect(unscaled_content_rect);
+    }
   }
 }
 
@@ -1170,12 +1217,16 @@ void ComputeListOfNonEmptySurfaces(LayerTreeImpl* layer_tree_impl,
   // surface with a non-empty content rect go into the final render surface
   // layer list. Surfaces with empty content rects or whose target isn't in
   // the final list do not get added to the final list.
+  // Surface which require copy of output (view transition captures) are exempt
+  // because their contents are required regardless of the state of the target
+  // surface.
   bool removed_surface = false;
   for (RenderSurfaceImpl* surface : *initial_surface_list) {
     bool is_root = surface->EffectTreeIndex() == kContentsRootPropertyNodeId;
     RenderSurfaceImpl* target_surface = surface->render_target();
     if (!is_root && (surface->content_rect().IsEmpty() ||
-                     !target_surface->is_render_surface_list_member())) {
+                     (!target_surface->is_render_surface_list_member() &&
+                      !surface->CopyOfOutputRequired()))) {
       surface->set_is_render_surface_list_member(false);
       removed_surface = true;
       target_surface->decrement_num_contributors();
@@ -1201,17 +1252,28 @@ void CalculateRenderSurfaceLayerList(LayerTreeImpl* layer_tree_impl,
                                      RenderSurfaceList* render_surface_list,
                                      const int max_texture_size) {
   RenderSurfaceList initial_render_surface_list;
+  std::vector<std::pair<viz::ViewTransitionElementResourceId, gfx::RectF>>
+      view_transition_content_rects;
+  std::map<viz::ViewTransitionElementResourceId,
+           ViewTransitionContentLayerImpl*>
+      view_transition_content_layers;
 
   // First compute a list that might include surfaces that later turn out to
   // have an empty content rect. After surface content rects are computed,
   // produce a final list that omits empty surfaces.
   ComputeInitialRenderSurfaceList(layer_tree_impl, property_trees,
-                                  &initial_render_surface_list);
+                                  &initial_render_surface_list,
+                                  view_transition_content_layers);
   ComputeSurfaceContentRects(property_trees, &initial_render_surface_list,
-                             max_texture_size);
+                             max_texture_size, view_transition_content_layers,
+                             view_transition_content_rects);
   ComputeListOfNonEmptySurfaces(layer_tree_impl, property_trees,
                                 &initial_render_surface_list,
                                 render_surface_list);
+
+  for (const auto& [id, rect] : view_transition_content_rects) {
+    layer_tree_impl->SetViewTransitionContentRect(id, rect);
+  }
 }
 
 void RecordRenderSurfaceReasonsForTracing(

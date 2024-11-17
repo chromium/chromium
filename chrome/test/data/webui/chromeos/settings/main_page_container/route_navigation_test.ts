@@ -6,8 +6,6 @@
  * @fileoverview
  * Test suite for testing route navigation logic of MainPageMixin, for which
  * <main-page-container> is the primary element.
- *
- * Assumes kOsSettingsRevampWayfinding feature flag is enabled.
  */
 
 import 'chrome://os-settings/os_settings.js';

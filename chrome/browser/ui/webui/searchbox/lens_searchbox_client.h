@@ -31,8 +31,9 @@ class LensSearchboxClient {
   // Returns the thumbnail data (data:image/) or address (chrome://image/).
   virtual std::string& GetThumbnail() = 0;
 
-  // Returns the Lens response. Used to report iil= in the Suggest requests.
-  virtual const lens::proto::LensOverlayInteractionResponse& GetLensResponse()
+  // Returns the Lens autocomplete inputs. Used to report iil=, vsrid=,
+  // gsessionid=, and vsint= in the Suggest requests.
+  virtual const lens::proto::LensOverlaySuggestInputs& GetLensSuggestInputs()
       const = 0;
 
   // Called when the user modifies the text in any way (add, delete, paste,
@@ -47,8 +48,14 @@ class LensSearchboxClient {
                                     AutocompleteMatchType::Type match_type,
                                     bool is_zero_prefix_suggestion) = 0;
 
+  // Called when the user focuses or unfocuses the searchbox.
+  virtual void OnFocusChanged(bool focused) = 0;
+
   // Called when the handler binds to the remote page, aka when SetPage is set.
   virtual void OnPageBound() = 0;
+
+  // Called when autocomplete stop timer is triggered.
+  virtual void OnAutocompleteStopTimerTriggered() = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SEARCHBOX_LENS_SEARCHBOX_CLIENT_H_

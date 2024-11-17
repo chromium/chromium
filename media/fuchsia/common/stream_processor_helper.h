@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -172,7 +173,7 @@ class MEDIA_EXPORT StreamProcessorHelper {
   fuchsia::media::StreamBufferConstraints output_buffer_constraints_;
 
   fuchsia::media::StreamProcessorPtr processor_;
-  Client* const client_;
+  const raw_ptr<Client> client_;
 
   // FIDL interfaces are thread-affine (see crbug.com/1012875).
   THREAD_CHECKER(thread_checker_);

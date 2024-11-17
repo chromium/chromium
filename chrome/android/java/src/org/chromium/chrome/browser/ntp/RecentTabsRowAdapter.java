@@ -581,18 +581,13 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
 
         private void setIconView(ViewHolder viewHolder, @TabGroupColorId int colorId) {
             ImageView iconView = viewHolder.iconView;
+            iconView.setVisibility(View.VISIBLE);
 
-            if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                iconView.setVisibility(View.VISIBLE);
+            final @ColorInt int color =
+                ColorPickerUtils.getTabGroupColorPickerItemColor(
+                    mActivity, colorId, /* isIncognito= */ false);
 
-                final @ColorInt int color =
-                        ColorPickerUtils.getTabGroupColorPickerItemColor(
-                                mActivity, colorId, /* isIncognito= */ false);
-
-                ((GradientDrawable) iconView.getBackground()).setColor(color);
-            } else {
-                iconView.setVisibility(View.GONE);
-            }
+            ((GradientDrawable) iconView.getBackground()).setColor(color);
         }
 
         private void setContentDescription(
@@ -607,35 +602,20 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
             String contentDescription;
 
             if (TextUtils.isEmpty(groupTitle)) {
-                if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                    contentDescription =
-                            res.getQuantityString(
-                                    R.plurals.recent_tabs_group_closure_without_title_accessibility,
-                                    tabCount,
-                                    tabCount);
-                } else {
-                    contentDescription =
-                            res.getQuantityString(
-                                    R.plurals
-                                            .recent_tabs_group_closure_without_title_with_color_accessibility,
-                                    tabCount,
-                                    tabCount,
-                                    colorDesc);
-                }
+                contentDescription =
+                        res.getQuantityString(
+                                R.plurals
+                                        .recent_tabs_group_closure_without_title_with_color_accessibility,
+                                tabCount,
+                                tabCount,
+                                colorDesc);
             } else {
-                if (!ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
-                    contentDescription =
-                            res.getString(
-                                    R.string.recent_tabs_group_closure_with_title_accessibility,
-                                    groupTitle);
-                } else {
-                    contentDescription =
-                            res.getString(
-                                    R.string
-                                            .recent_tabs_group_closure_with_title_with_color_accessibility,
-                                    groupTitle,
-                                    colorDesc);
-                }
+                contentDescription =
+                        res.getString(
+                                R.string
+                                        .recent_tabs_group_closure_with_title_with_color_accessibility,
+                                groupTitle,
+                                colorDesc);
             }
             viewHolder.textView.setContentDescription(contentDescription);
         }

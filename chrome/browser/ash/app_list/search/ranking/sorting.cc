@@ -81,8 +81,7 @@ void SortResults(
           }
           // Any category associated with a result should also be present
           // in |categories_|.
-          NOTREACHED_IN_MIGRATION();
-          return false;
+          NOTREACHED();
         }
 
         if (a->scoring().burn_in_iteration() !=

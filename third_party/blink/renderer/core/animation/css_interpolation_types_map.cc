@@ -512,8 +512,7 @@ CreateInterpolationTypeForCSSSyntax(const CSSSyntaxComponent syntax,
       DCHECK(RuntimeEnabledFeatures::CSSAtPropertyStringSyntaxEnabled());
       return nullptr;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 

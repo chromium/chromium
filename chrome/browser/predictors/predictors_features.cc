@@ -81,10 +81,6 @@ const base::FeatureParam<PrefetchSubresourceType>
         &kLoadingPredictorPrefetch, "subresource_type",
         PrefetchSubresourceType::kAll, &kPrefetchSubresourceTypeParamOptions};
 
-BASE_FEATURE(kLoadingPredictorInflightPredictiveActions,
-             "kLoadingPredictorInflightPredictiveActions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 bool ShouldUseLocalPredictions() {
   return base::FeatureList::IsEnabled(kLoadingPredictorUseLocalPredictions);
 }
@@ -103,12 +99,6 @@ bool ShouldAlwaysRetrieveOptimizationGuidePredictions() {
       false);
 }
 
-size_t GetMaxInflightPrefetches() {
-  return static_cast<size_t>(base::GetFieldTrialParamByFeatureAsInt(
-      kLoadingPredictorInflightPredictiveActions, "max_inflight_prefetches",
-      3));
-}
-
 // If this is enabled, LoadingPredictor avoids prefetching during
 // browser startup.
 BASE_FEATURE(kAvoidLoadingPredictorPrefetchDuringBrowserStartup,
@@ -119,6 +109,10 @@ BASE_FEATURE(kAvoidLoadingPredictorPrefetchDuringBrowserStartup,
 // the same destination to one.
 BASE_FEATURE(kLoadingPredictorLimitPreconnectSocketCount,
              "LoadingPredictorLimitPreconnectSocketCount",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPrefetchManagerUseNetworkContextPrefetch,
+             "PrefetchManagerUseNetworkContextPrefetch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace features

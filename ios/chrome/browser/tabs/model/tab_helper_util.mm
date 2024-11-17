@@ -7,7 +7,6 @@
 #import "base/feature_list.h"
 #import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/commerce/ios/browser/commerce_tab_helper.h"
-#import "components/data_sharing/public/features.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/history/core/browser/top_sites.h"
@@ -24,6 +23,7 @@
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/commerce/model/price_alert_util.h"
 #import "ios/chrome/browser/commerce/model/price_notifications/price_notifications_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/push_notification/push_notification_feature.h"
@@ -174,7 +174,9 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     JavaScriptFindTabHelper::CreateForWebState(web_state);
   }
 
-  HistoryTabHelper::CreateForWebState(web_state);
+  if (!for_bottom_sheet) {
+    HistoryTabHelper::CreateForWebState(web_state);
+  }
   LoadTimingTabHelper::CreateForWebState(web_state);
   OverscrollActionsTabHelper::CreateForWebState(web_state);
   IOSTaskTabHelper::CreateForWebState(web_state);
@@ -304,9 +306,7 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     LinkToTextTabHelper::CreateForWebState(web_state);
   }
 
-  if (IsPartialTranslateEnabled() || IsSearchWithEnabled()) {
-    WebSelectionTabHelper::CreateForWebState(web_state);
-  }
+  WebSelectionTabHelper::CreateForWebState(web_state);
 
   WebPerformanceMetricsTabHelper::CreateForWebState(web_state);
 
@@ -358,9 +358,8 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
     }
   }
 
-  if (base::FeatureList::IsEnabled(
-          data_sharing::features::kDataSharingFeature) &&
-      IsSharedTabGroupsEnabled() && !is_off_the_record && !for_prerender) {
+  if (IsSharedTabGroupsJoinEnabled(profile) && !is_off_the_record &&
+      !for_prerender) {
     DataSharingTabHelper::CreateForWebState(web_state);
   }
 }

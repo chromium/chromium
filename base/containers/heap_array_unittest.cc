@@ -12,7 +12,11 @@
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/gtest_util.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 
 namespace base {
 
@@ -94,8 +98,7 @@ TEST(HeapArray, DataAndIndex) {
   vec[1] = 101u;
   auto span = vec.as_span();
   EXPECT_EQ(span.data(), vec.data());
-  EXPECT_EQ(span[0], 100u);
-  EXPECT_EQ(span[1], 101u);
+  EXPECT_THAT(span, ElementsAre(100u, 101u));
 }
 
 TEST(HeapArray, IteratorAndIndex) {
@@ -149,20 +152,16 @@ TEST(HeapArray, Subspan) {
     vec[i] = i;
   }
   span<uint32_t> empty = vec.subspan(2, 0);
-  EXPECT_TRUE(empty.empty());
+  EXPECT_THAT(empty, IsEmpty());
 
   span<uint32_t> first = vec.subspan(0, 1);
-  EXPECT_EQ(first.size(), 1u);
-  EXPECT_EQ(first[0], 0u);
+  EXPECT_THAT(first, ElementsAre(0u));
 
   span<uint32_t> mids = vec.subspan(1, 2);
-  EXPECT_EQ(mids.size(), 2u);
-  EXPECT_EQ(mids[0], 1u);
-  EXPECT_EQ(mids[1], 2u);
+  EXPECT_THAT(mids, ElementsAre(1u, 2u));
 
   span<uint32_t> rest = vec.subspan(3);
-  EXPECT_EQ(rest.size(), 1u);
-  EXPECT_EQ(rest[0], 3u);
+  EXPECT_THAT(rest, ElementsAre(3u));
 }
 
 TEST(HeapArray, First) {
@@ -171,12 +170,10 @@ TEST(HeapArray, First) {
     vec[i] = i;
   }
   span<uint32_t> empty = vec.first(0u);
-  EXPECT_TRUE(empty.empty());
+  EXPECT_THAT(empty, IsEmpty());
 
   span<uint32_t> some = vec.first(2u);
-  EXPECT_EQ(some.size(), 2u);
-  EXPECT_EQ(some[0], 0u);
-  EXPECT_EQ(some[1], 1u);
+  EXPECT_THAT(some, ElementsAre(0u, 1u));
 }
 
 TEST(HeapArray, Last) {
@@ -185,12 +182,10 @@ TEST(HeapArray, Last) {
     vec[i] = i;
   }
   span<uint32_t> empty = vec.first(0u);
-  EXPECT_TRUE(empty.empty());
+  EXPECT_THAT(empty, IsEmpty());
 
   span<uint32_t> some = vec.first(2u);
-  EXPECT_EQ(some.size(), 2u);
-  EXPECT_EQ(some[0], 0u);
-  EXPECT_EQ(some[1], 1u);
+  EXPECT_THAT(some, ElementsAre(0u, 1u));
 }
 
 TEST(HeapArray, Init) {

@@ -163,7 +163,7 @@ TEST_F(ChromePasswordReuseDetectionManagerClientTest,
       MaybeStartProtectedPasswordEntryRequest(_, _, "username", _, _, true))
       .Times(4);
   std::vector<password_manager::MatchingReusedCredential> credentials = {
-      {"saved_domain.com", u"username"}};
+      {"saved_domain.com", GURL("https://saved_domain.com/"), u"username"}};
 
   client->CheckProtectedPasswordEntry(
       password_manager::metrics_util::PasswordType::SAVED_PASSWORD, "username",

@@ -794,7 +794,7 @@ Window* Window::GetEventHandlerForPoint(const gfx::Point& local_point) {
           return match;
         break;
       case EventTargetingPolicy::kNone:
-        NOTREACHED_IN_MIGRATION();  // This case is handled early on.
+        NOTREACHED();  // This case is handled early on.
     }
   }
 

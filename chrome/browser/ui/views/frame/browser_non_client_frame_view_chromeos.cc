@@ -6,16 +6,20 @@
 
 #include <algorithm>
 
+#include "ash/wm/window_util.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
+#include "chrome/browser/ui/ash/session/session_util.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
@@ -74,18 +78,6 @@
 #include "chrome/browser/ui/views/frame/webui_tab_strip_container_view.h"
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/wm/window_util.h"
-#include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
-#include "chrome/browser/ui/ash/session/session_util.h"
-#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/ui/frame/interior_resize_handler_targeter.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
 DEFINE_UI_CLASS_PROPERTY_TYPE(BrowserNonClientFrameViewChromeOS*)
 
 namespace {
@@ -93,7 +85,6 @@ namespace {
 // The indicator for teleported windows has 8 DIPs before and below it.
 constexpr int kProfileIndicatorPadding = 8;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns the layer for the specified `web_view`'s native view.
 ui::Layer* GetNativeViewLayer(views::WebView* web_view) {
   if (web_view) {
@@ -115,7 +106,6 @@ content::RenderWidgetHost* GetRenderWidgetHost(views::WebView* web_view) {
   }
   return nullptr;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 DEFINE_UI_CLASS_PROPERTY_KEY(BrowserNonClientFrameViewChromeOS*,
                              kBrowserNonClientFrameViewChromeOSKey,
@@ -138,20 +128,9 @@ BrowserNonClientFrameViewChromeOS::BrowserNonClientFrameViewChromeOS(
     BrowserFrame* frame,
     BrowserView* browser_view)
     : BrowserNonClientFrameView(frame, browser_view) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::window_util::InstallResizeHandleWindowTargeterForWindow(
       frame->GetNativeWindow());
-#endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  frame->GetNativeWindow()->SetEventTargeter(
-      std::make_unique<chromeos::InteriorResizeHandleTargeter>(
-          base::BindRepeating([](const aura::Window* window) {
-            return window->GetProperty(chromeos::kWindowStateTypeKey);
-          })));
-#endif
-
-  // TODO: b/330360595 - Confirm if this is needed in Lacros.
   aura::Window* frame_window = frame->GetNativeWindow();
   frame_window->SetProperty(kBrowserNonClientFrameViewChromeOSKey, this);
 
@@ -401,16 +380,6 @@ int BrowserNonClientFrameViewChromeOS::NonClientHitTest(
   return hit_test;
 }
 
-void BrowserNonClientFrameViewChromeOS::GetWindowMask(const gfx::Size& size,
-                                                      SkPath* window_mask) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // The opaque region of surface should be set exactly same as the frame header
-  // path in BrowserFrameHeader.
-  if (frame()->ShouldDrawFrameHeader())
-    *window_mask = frame_header_->GetWindowMaskForFrameHeader(size);
-#endif
-}
-
 void BrowserNonClientFrameViewChromeOS::ResetWindowControls() {
   BrowserNonClientFrameView::ResetWindowControls();
   caption_button_container_->SetVisible(GetShowCaptionButtons());
@@ -493,7 +462,6 @@ void BrowserNonClientFrameViewChromeOS::Layout(PassKey) {
 }
 
 gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // System web apps (e.g. Settings) may have a fixed minimum size.
   Browser* browser = browser_view()->browser();
   if (ash::IsSystemWebApp(browser)) {
@@ -501,7 +469,6 @@ gfx::Size BrowserNonClientFrameViewChromeOS::GetMinimumSize() const {
     if (!minimum_size.IsEmpty())
       return minimum_size;
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // The minimum size of a borderless window is only limited by the window's
   // `highlight_border_overlay_`.
@@ -665,7 +632,7 @@ void BrowserNonClientFrameViewChromeOS::OnTabletModeToggled(bool enabled) {
   // If fullscreen mode is not what it should be, toggle fullscreen mode.
   if (ShouldEnableFullscreenMode(enabled) != was_fullscreen) {
     exclusive_access_manager->fullscreen_controller()
-        ->ToggleBrowserFullscreenMode();
+        ->ToggleBrowserFullscreenMode(/*user_initiated=*/false);
   }
 
   // Set immersive mode to what it should be. Note that we need to call this
@@ -804,17 +771,6 @@ void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealStarted() {
   container->AddChildViewAt(caption_button_container_.get(), 0);
 
   container->DeprecatedLayoutImmediately();
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // In Lacros, when entering in immersive fullscreen, it is possible
-  // that chromeos::FrameHeader::painted_height_ is set to '0', when layout
-  // occurs. This is because the tapstrip gets hidden.
-  //
-  // When it happens, PaintFrameImagesInRoundRect() has an empty rect
-  // to paint onto, and the TabStrip's new theme is not painted.
-  if (frame_header_ && frame_header_->GetHeaderHeightForPainting() == 0)
-    frame_header_->LayoutHeader();
-#endif
 }
 
 void BrowserNonClientFrameViewChromeOS::OnImmersiveRevealEnded() {
@@ -986,7 +942,6 @@ void BrowserNonClientFrameViewChromeOS::UpdateTopViewInset() {
 }
 
 bool BrowserNonClientFrameViewChromeOS::GetShowProfileIndicatorIcon() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   // We only show the profile indicator for the teleported browser windows
   // between multi-user sessions. Note that you can't teleport an incognito
   // window.
@@ -1007,15 +962,9 @@ bool BrowserNonClientFrameViewChromeOS::GetShowProfileIndicatorIcon() const {
 
   return MultiUserWindowManagerHelper::ShouldShowAvatar(
       browser_view()->GetNativeWindow());
-#else
-  // Multi-signin support is deprecated in Lacros.
-  return false;
-#endif
 }
 
 void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
-  // Multi-signin support is deprecated in Lacros, so only do this for ash.
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   View* root_view = frame()->GetRootView();
   if (GetShowProfileIndicatorIcon()) {
     bool needs_layout = !profile_indicator_icon_;
@@ -1039,7 +988,6 @@ void BrowserNonClientFrameViewChromeOS::UpdateProfileIcons() {
     if (root_view)
       root_view->DeprecatedLayoutImmediately();
   }
-#endif
 }
 
 void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
@@ -1112,7 +1060,6 @@ void BrowserNonClientFrameViewChromeOS::OnUpdateFrameColor() {
 }
 
 void BrowserNonClientFrameViewChromeOS::MaybeAnimateThemeChanged() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!browser_view())
     return;
 
@@ -1177,7 +1124,6 @@ void BrowserNonClientFrameViewChromeOS::MaybeAnimateThemeChanged() {
   // repainting theme changes.
   render_widget_host->InsertVisualStateCallback(
       theme_changed_animation_callback_.callback());
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 bool BrowserNonClientFrameViewChromeOS::IsFloated() const {

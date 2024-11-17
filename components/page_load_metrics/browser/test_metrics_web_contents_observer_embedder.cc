@@ -202,7 +202,8 @@ bool TestMetricsWebContentsObserverEmbedder::IsNewTabPageUrl(const GURL& url) {
 }
 
 void TestMetricsWebContentsObserverEmbedder::RegisterObservers(
-    PageLoadTracker* tracker) {
+    PageLoadTracker* tracker,
+    content::NavigationHandle* navigation_handle) {
   tracker->AddObserver(std::make_unique<TimingLoggingPageLoadMetricsObserver>(
       &updated_timings_, &updated_subframe_timings_, &complete_timings_,
       &updated_cpu_timings_, &updated_custom_user_timings_, &loaded_resources_,
@@ -229,12 +230,7 @@ bool TestMetricsWebContentsObserverEmbedder::IsExtensionUrl(const GURL& url) {
   return false;
 }
 
-bool TestMetricsWebContentsObserverEmbedder::IsSidePanel(
-    content::WebContents* web_contents) {
-  return false;
-}
-
-bool TestMetricsWebContentsObserverEmbedder::IsNonTabWebUI() {
+bool TestMetricsWebContentsObserverEmbedder::IsNonTabWebUI(const GURL& url) {
   return false;
 }
 

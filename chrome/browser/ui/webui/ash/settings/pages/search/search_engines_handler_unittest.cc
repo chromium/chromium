@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/settings/search_engines_handler.h"
 
 #include "ash/public/cpp/test/test_new_window_delegate.h"
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/webui_url_constants.h"
@@ -55,35 +54,26 @@ class SearchEnginesHandlerAshTest : public testing::Test {
     web_ui_ = std::make_unique<content::TestWebUI>();
     web_ui_->AddMessageHandler(std::move(handler));
     handler_->AllowJavascriptForTesting();
-
-    // Initialize NewWindowDelegate things.
-    auto instance = std::make_unique<MockNewWindowDelegate>();
-    auto primary = std::make_unique<MockNewWindowDelegate>();
-    new_window_delegate_primary_ = primary.get();
-    new_window_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
-        std::move(instance), std::move(primary));
   }
 
   void TearDown() override {
-    new_window_provider_.reset();
     web_ui_.reset();
   }
 
  protected:
+  MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
   std::unique_ptr<content::TestWebUI> web_ui_;
-  raw_ptr<MockNewWindowDelegate, DanglingUntriaged>
-      new_window_delegate_primary_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   raw_ptr<::settings::SearchEnginesHandler, DanglingUntriaged> handler_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  std::unique_ptr<TestNewWindowDelegateProvider> new_window_provider_;
+  MockNewWindowDelegate new_window_delegate_;
 };
 
 TEST_F(SearchEnginesHandlerAshTest, OpenBrowserSearchSettings) {
   EXPECT_CALL(
-      *new_window_delegate_primary_,
+      new_window_delegate(),
       OpenUrl(
           GURL(chrome::kChromeUISettingsURL).Resolve(chrome::kSearchSubPage),
           ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction,

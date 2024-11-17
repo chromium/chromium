@@ -8,7 +8,7 @@
 
 namespace policy {
 
-PolicyNamespace::PolicyNamespace() {}
+PolicyNamespace::PolicyNamespace() = default;
 
 PolicyNamespace::PolicyNamespace(PolicyDomain domain,
                                  const std::string& component_id)
@@ -19,7 +19,7 @@ PolicyNamespace::PolicyNamespace(const PolicyNamespace& other)
     : domain(other.domain),
       component_id(other.component_id) {}
 
-PolicyNamespace::~PolicyNamespace() {}
+PolicyNamespace::~PolicyNamespace() = default;
 
 PolicyNamespace& PolicyNamespace::operator=(const PolicyNamespace& other) {
   domain = other.domain;

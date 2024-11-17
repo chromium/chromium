@@ -14,6 +14,7 @@
 #import "base/unguessable_token.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_util.h"
+#import "components/autofill/ios/form_util/remote_frame_registration_java_script_feature.h"
 #import "ios/web/public/test/javascript_test.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "testing/gmock/include/gmock/gmock.h"
@@ -31,17 +32,14 @@
 
 - (void)userContentController:(WKUserContentController*)userContentController
       didReceiveScriptMessage:(WKScriptMessage*)message {
-  if ([message.body isKindOfClass:[NSDictionary class]] &&
-      [message.body[@"command"] isKindOfClass:[NSString class]] &&
-      [message.body[@"command"] isEqual:@"registerAsChildFrame"]) {
     ++self.registrationsCount;
-  }
 }
 
 @end
 
 namespace {
 
+using autofill::kRemoteFrameRegistrationMessageHandlerName;
 using ::testing::IsSubsetOf;
 using ::testing::SizeIs;
 
@@ -99,6 +97,8 @@ class ChildFrameRegistrationJavascriptTest : public web::JavascriptTest {
     AddGCrWebScript();
     AddCommonScript();
     AddMessageScript();
+    AddUserScript(
+        base::SysUTF8ToNSString(autofill::kRemoteFrameRegistrationScriptName));
     AddUserScript(@"child_frame_registration_test");
     AddUserScript(@"autofill_form_features");
   }
@@ -135,9 +135,9 @@ TEST_F(ChildFrameRegistrationJavascriptTest, RegisterFrames) {
 
   ASSERT_TRUE(LoadHtml(html));
 
-  id result = web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.childFrameRegistrationTesting."
-                  @"registerAllChildFrames();");
+  id result = web::test::ExecuteJavaScript(web_view(),
+                                           @"__gCrWeb.remoteFrameRegistration."
+                                           @"registerAllChildFrames();");
 
   ASSERT_TRUE(result);
   NSArray<NSString*>* result_array =
@@ -164,18 +164,18 @@ TEST_F(ChildFrameRegistrationJavascriptTest, RegisterFrames_Cache) {
   ASSERT_TRUE(LoadHtml(html));
 
   // Do first registration and extract the tokens.
-  id result1 = web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.childFrameRegistrationTesting."
-                  @"registerAllChildFrames();");
+  id result1 = web::test::ExecuteJavaScript(web_view(),
+                                            @"__gCrWeb.remoteFrameRegistration."
+                                            @"registerAllChildFrames();");
   ASSERT_TRUE(result1);
   std::vector<autofill::RemoteFrameToken> remote_tokens_round1 =
       ExtractTokensFromResult(result1);
   EXPECT_THAT(remote_tokens_round1, SizeIs(2));
 
   // Do second registration and extract the tokens.
-  id result2 = web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.childFrameRegistrationTesting."
-                  @"registerAllChildFrames();");
+  id result2 = web::test::ExecuteJavaScript(web_view(),
+                                            @"__gCrWeb.remoteFrameRegistration."
+                                            @"registerAllChildFrames();");
   ASSERT_TRUE(result2);
   std::vector<autofill::RemoteFrameToken> remote_tokens_round2 =
       ExtractTokensFromResult(result2);
@@ -192,7 +192,8 @@ TEST_F(ChildFrameRegistrationJavascriptTest, RegisterFrames_Deduping) {
       [[FakeScriptMessageHandler alloc] init];
   [web_view().configuration.userContentController
       addScriptMessageHandler:msg_handler
-                         name:@"FormHandlersMessage"];
+                         name:base::SysUTF8ToNSString(
+                                  kRemoteFrameRegistrationMessageHandlerName)];
 
   NSString* const html =
       @"<body> outer frame"
@@ -203,9 +204,9 @@ TEST_F(ChildFrameRegistrationJavascriptTest, RegisterFrames_Deduping) {
 
   SetFramesForTesting();
 
-  ASSERT_TRUE(web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.childFrameRegistrationTesting."
-                  @"registerAllChildFrames();"));
+  ASSERT_TRUE(web::test::ExecuteJavaScript(web_view(),
+                                           @"__gCrWeb.remoteFrameRegistration."
+                                           @"registerAllChildFrames();"));
 
   // Wait for both frames to register.
   ASSERT_TRUE(
@@ -215,9 +216,9 @@ TEST_F(ChildFrameRegistrationJavascriptTest, RegisterFrames_Deduping) {
   EXPECT_EQ(2, GetRegistrationAttemptsCount());
 
   // Try re-registering the same frames.
-  ASSERT_TRUE(web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.childFrameRegistrationTesting."
-                  @"registerAllChildFrames();"));
+  ASSERT_TRUE(web::test::ExecuteJavaScript(web_view(),
+                                           @"__gCrWeb.remoteFrameRegistration."
+                                           @"registerAllChildFrames();"));
 
   // Give enough time for the full registration round trip, if it did happen
   // (which would be an error at this point).
@@ -238,7 +239,8 @@ TEST_F(ChildFrameRegistrationJavascriptTest,
       [[FakeScriptMessageHandler alloc] init];
   [web_view().configuration.userContentController
       addScriptMessageHandler:msg_handler
-                         name:@"FormHandlersMessage"];
+                         name:base::SysUTF8ToNSString(
+                                  kRemoteFrameRegistrationMessageHandlerName)];
 
   NSString* const html =
       @"<body> outer frame"
@@ -301,9 +303,9 @@ TEST_F(ChildFrameRegistrationJavascriptTest,
   const int base_delay_us = 2500;
   const int num_attempts_expected = 9;
 
-  ASSERT_TRUE(web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.childFrameRegistrationTesting."
-                  @"registerAllChildFrames();"));
+  ASSERT_TRUE(web::test::ExecuteJavaScript(web_view(),
+                                           @"__gCrWeb.remoteFrameRegistration."
+                                           @"registerAllChildFrames();"));
 
   // Wait on the expected registration attempts to be done.
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -336,7 +338,8 @@ TEST_F(ChildFrameRegistrationJavascriptTest,
       [[FakeScriptMessageHandler alloc] init];
   [web_view().configuration.userContentController
       addScriptMessageHandler:msg_handler
-                         name:@"FormHandlersMessage"];
+                         name:base::SysUTF8ToNSString(
+                                  kRemoteFrameRegistrationMessageHandlerName)];
 
   // Make page with 120 frames.
   NSMutableString* html =
@@ -353,9 +356,9 @@ TEST_F(ChildFrameRegistrationJavascriptTest,
 
   SetFramesForTesting();
 
-  ASSERT_TRUE(web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.childFrameRegistrationTesting."
-                  @"registerAllChildFrames();"));
+  ASSERT_TRUE(web::test::ExecuteJavaScript(web_view(),
+                                           @"__gCrWeb.remoteFrameRegistration."
+                                           @"registerAllChildFrames();"));
 
   // Wait on the first 100 frames to be registered.
   ASSERT_TRUE(

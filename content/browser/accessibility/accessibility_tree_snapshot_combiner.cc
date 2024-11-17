@@ -39,10 +39,10 @@ void AccessibilityTreeSnapshotCombiner::ReceiveSnapshotFromRenderFrameHost(
 AccessibilityTreeSnapshotCombiner::~AccessibilityTreeSnapshotCombiner() {
   combiner_.Combine();
   CHECK(combiner_.combined());
-  ui::AXTreeUpdate update = std::move(combiner_.combined().value());
 
   // This ensures a move of `combiner_.combined()`. It should be safe to steal
   // `combiner_`'s resources since we're being destroyed.
+  ui::AXTreeUpdate update = std::move(combiner_.combined().value());
   std::move(callback_).Run(update);
 }
 

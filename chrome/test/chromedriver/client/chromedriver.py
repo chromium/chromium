@@ -12,12 +12,16 @@ import command_executor
 from command_executor import Command
 from webelement import WebElement
 from webshadowroot import WebShadowRoot
+from windowreference import WindowReference
+from framereference import FrameReference
 from websocket_connection import WebSocketConnection
 from exceptions import *
 
-ELEMENT_KEY_W3C = "element-6066-11e4-a52e-4f735466cecf"
-ELEMENT_KEY = "ELEMENT"
-SHADOW_KEY = "shadow-6066-11e4-a52e-4f735466cecf"
+ELEMENT_KEY_W3C = 'element-6066-11e4-a52e-4f735466cecf'
+ELEMENT_KEY = 'ELEMENT'
+SHADOW_KEY = 'shadow-6066-11e4-a52e-4f735466cecf'
+FRAME_KEY = 'frame-075b-4da1-b6ba-e579c2d3230a'
+WINDOW_KEY = 'window-fcc6-11e5-b4f8-330a88ab9d7f'
 MAX_RETRY_COUNT = 5
 
 def _ExceptionForLegacyResponse(response):
@@ -257,6 +261,14 @@ class ChromeDriver(object):
     else:
       raise UnknownError("unexpected response")
 
+  def _KeyToTypeMap(self):
+      return [
+        (WINDOW_KEY, WindowReference),
+        (FRAME_KEY, FrameReference),
+        (SHADOW_KEY, WebShadowRoot),
+        (ELEMENT_KEY_W3C if self.w3c_compliant else ELEMENT_KEY, WebElement),
+      ]
+
   def _WrapValue(self, value):
     """Wrap value from client side for chromedriver side."""
     if isinstance(value, dict):
@@ -264,36 +276,25 @@ class ChromeDriver(object):
       for key, val in value.items():
         converted[key] = self._WrapValue(val)
       return converted
-    elif isinstance(value, WebElement):
-      if (self.w3c_compliant):
-        return {ELEMENT_KEY_W3C: value._id}
-      else:
-        return {ELEMENT_KEY: value._id}
-    elif isinstance(value, WebShadowRoot):
-        return {SHADOW_KEY: value._id}
-    elif isinstance(value, list):
+    key_to_type = self._KeyToTypeMap()
+    for key, wrapper_type in key_to_type:
+        if isinstance(value, wrapper_type):
+            return {key: value._id}
+    if isinstance(value, list):
       return list(self._WrapValue(item) for item in value)
-    else:
-      return value
+    return value
 
   def _UnwrapValue(self, value):
     if isinstance(value, dict):
-      if (self.w3c_compliant and len(value) == 1
-          and ELEMENT_KEY_W3C in value
-          and isinstance(
-            value[ELEMENT_KEY_W3C], str)):
-        return WebElement(self, value[ELEMENT_KEY_W3C])
-      elif (len(value) == 1 and SHADOW_KEY in value
-            and isinstance(value[SHADOW_KEY], str)):
-        return WebShadowRoot(self, value[SHADOW_KEY])
-      elif (len(value) == 1 and ELEMENT_KEY in value
-            and isinstance(value[ELEMENT_KEY], str)):
-        return WebElement(self, value[ELEMENT_KEY])
-      else:
-        unwraped = {}
-        for key, val in value.items():
-          unwraped[key] = self._UnwrapValue(val)
-        return unwraped
+      key_to_type = self._KeyToTypeMap()
+      for key, wrapper_type in key_to_type:
+          if (len(value) == 1 and key in value
+              and isinstance(value[key], str)):
+              return wrapper_type(self, value[key])
+      unwraped = {}
+      for key, val in value.items():
+        unwraped[key] = self._UnwrapValue(val)
+      return unwraped
     elif isinstance(value, list):
       return list(self._UnwrapValue(item) for item in value)
     else:
@@ -714,7 +715,8 @@ class ChromeDriver(object):
   def AddCredential(self, authenticatorId=None, credentialId=None,
                     isResidentCredential=None, rpId=None, privateKey=None,
                     userHandle=None, signCount=None, largeBlob=None,
-                    backupState=None, backupEligibility=None):
+                    backupState=None, backupEligibility=None,userName=None,
+                    userDisplayName=None):
     options = {}
     if authenticatorId is not None:
       options['authenticatorId'] = authenticatorId
@@ -736,6 +738,10 @@ class ChromeDriver(object):
       options['backupState'] = backupState
     if backupEligibility is not None:
       options['backupEligibility'] = backupEligibility
+    if userName is not None:
+      options['userName'] = userName
+    if userDisplayName is not None:
+      options['userDisplayName'] = userDisplayName
     return self.ExecuteCommand(Command.ADD_CREDENTIAL, options)
 
   def GetCredentials(self, authenticatorId):

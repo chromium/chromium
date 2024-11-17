@@ -5,6 +5,8 @@ package org.chromium.chrome.browser.feed.componentinterfaces;
 
 import androidx.annotation.IntDef;
 
+import org.chromium.chrome.browser.xsurface.feed.FeedUserInteractionReliabilityLogger.ClosedReason;
+
 /** Interface for referencing FeedSurfaceCoordinator in this library. */
 public interface SurfaceCoordinator {
     /** Observes the SurfaceCoordinator. */
@@ -45,4 +47,7 @@ public interface SurfaceCoordinator {
     void restoreInstanceState(String state);
 
     String getSavedInstanceStateString();
+
+    @ClosedReason
+    int getClosedReason();
 }

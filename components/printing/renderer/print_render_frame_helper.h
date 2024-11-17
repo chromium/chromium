@@ -114,7 +114,7 @@ class PrintRenderFrameHelper
  public:
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Returns the element to be printed. Returns a null WebElement if
     // a pdf plugin element can't be extracted from the frame.
@@ -207,6 +207,8 @@ class PrintRenderFrameHelper
     // kInvalidPrinterSettingsDeprecated = 7,
     // kMetafileCaptureFailedDeprecated = 8,
     kEmptyPrinterSettings = 9,
+    kNoCanvas = 10,
+    kNoRenderFrame = 11,
     kLastEnum  // Always last.
   };
 
@@ -220,6 +222,12 @@ class PrintRenderFrameHelper
   enum class PrintRequestType {
     kRegular,
     kScripted,
+  };
+
+  enum class PrintPageInternalResult {
+    kSuccess,
+    kNoCanvas,
+    kNoRenderFrame,
   };
 
   // Helper to make it easy to correctly call IPCReceived() and IPCProcessed().
@@ -366,13 +374,14 @@ class PrintRenderFrameHelper
   bool RenderPagesForPrint(blink::WebLocalFrame* frame,
                            const blink::WebNode& node);
 
-  // Platform-specific helper function for rendering page(s) to |metafile|.
-  void PrintPageInternal(const mojom::PrintParams& params,
-                         uint32_t page_index,
-                         uint32_t page_count,
-                         blink::WebLocalFrame* frame,
-                         blink::WebLocalFrame* header_footer_frame,
-                         MetafileSkia* metafile);
+  // Helper function for rendering page at `page_index` to `metafile`.
+  PrintPageInternalResult PrintPageInternal(
+      const mojom::PrintParams& params,
+      uint32_t page_index,
+      uint32_t page_count,
+      blink::WebLocalFrame* frame,
+      blink::WebLocalFrame* header_footer_frame,
+      MetafileSkia* metafile);
 
   // Helper methods -----------------------------------------------------------
 

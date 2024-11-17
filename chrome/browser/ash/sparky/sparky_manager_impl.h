@@ -39,7 +39,10 @@ class SparkyManagerImpl : public chromeos::MahiManager, public KeyedService {
   std::u16string GetContentTitle() override;
   gfx::ImageSkia GetContentIcon() override;
   GURL GetContentUrl() override;
+  std::u16string GetSelectedText() override;
+  void GetContent(MahiContentCallback callback) override;
   void GetSummary(MahiSummaryCallback callback) override;
+  void GetElucidation(MahiElucidationCallback callback) override;
   void GetOutlines(MahiOutlinesCallback callback) override;
   void GoToOutlineContent(int outline_id) override;
   void AnswerQuestionRepeating(

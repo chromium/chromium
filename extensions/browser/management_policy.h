@@ -95,10 +95,10 @@ class ManagementPolicy {
                                    std::u16string* error) const;
 
     // Similar to MustRemainEnabled, but for whether an extension must remain
-    // disabled, and returns an error and/or reason if the caller needs it.
-    virtual bool MustRemainDisabled(const Extension* extension,
-                                    disable_reason::DisableReason* reason,
-                                    std::u16string* error) const;
+    // disabled, and populates the reason, if any.
+    virtual bool MustRemainDisabled(
+        const Extension* extension,
+        disable_reason::DisableReason* reason) const;
 
     // Similar to MustRemainEnabled, but for whether an extension must remain
     // installed, and returns an error and/or reason if the caller needs it.
@@ -129,11 +129,11 @@ class ManagementPolicy {
       const std::vector<std::unique_ptr<Provider>>& providers);
 
   // Returns true if the user is permitted to install, load, and run the given
-  // extension. If not, |error| may be set to an appropriate message.
+  // extension.
   // Installed extensions failing this check are disabled with the reason
   // DISABLE_BLOCKED_BY_POLICY.
   // TODO(crbug.com/41159442): Misleading name; see comment in Provider.
-  bool UserMayLoad(const Extension* extension, std::u16string* error) const;
+  bool UserMayLoad(const Extension* extension) const;
 
   // Returns false if the user should not be allowed to install the given
   // |extension|. By default, this forwards to UserMayLoad() (since a user
@@ -162,8 +162,7 @@ class ManagementPolicy {
   // Returns true immediately if any registered provider's UserMayLoad() returns
   // false or MustRemainDisabled() returns true.
   bool MustRemainDisabled(const Extension* extension,
-                          disable_reason::DisableReason* reason,
-                          std::u16string* error) const;
+                          disable_reason::DisableReason* reason) const;
 
   // Returns true immediately if any registered provider's MustRemainInstalled
   // function returns true.

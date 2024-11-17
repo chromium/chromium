@@ -101,7 +101,7 @@ typedef void (^LogLaunchMetricsBlock)(id, const char*, int);
 class MetricsMediatorLogLaunchTest : public PlatformTest {
  protected:
   MetricsMediatorLogLaunchTest()
-      : browser_state_(TestChromeBrowserState::Builder().Build()),
+      : profile_(TestProfileIOS::Builder().Build()),
         num_tabs_has_been_called_(FALSE),
         num_ntp_tabs_has_been_called_(FALSE),
         num_live_ntp_tabs_has_been_called_(FALSE) {}
@@ -152,7 +152,7 @@ class MetricsMediatorLogLaunchTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   NSArray<FakeSceneState*>* connected_scenes_;
   __block BOOL num_tabs_has_been_called_;
   __block BOOL num_ntp_tabs_has_been_called_;
@@ -173,7 +173,7 @@ TEST_F(MetricsMediatorLogLaunchTest,
   initiateMetricsMediator(coldStart, 23);
   // 23 tabs across three scenes.
   connected_scenes_ = [FakeSceneState sceneArrayWithCount:3
-                                             browserState:browser_state_.get()];
+                                                  profile:profile_.get()];
   [connected_scenes_[0] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
                                          count:9];
   [connected_scenes_[1] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
@@ -215,7 +215,7 @@ TEST_F(MetricsMediatorLogLaunchTest, logLaunchMetricsNoBackgroundDate) {
   initiateMetricsMediator(coldStart, 32);
   // 32 tabs across five scenes.
   connected_scenes_ = [FakeSceneState sceneArrayWithCount:5
-                                             browserState:browser_state_.get()];
+                                                  profile:profile_.get()];
   [connected_scenes_[0] appendWebStatesWithURL:GURL(kChromeUINewTabURL)
                                          count:8];
   [connected_scenes_[1] appendWebStatesWithURL:GURL(kChromeUINewTabURL)

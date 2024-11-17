@@ -42,8 +42,7 @@ class ArcMediaSessionBridgeFactory
 
 bool IsArcUnifiedAudioFocusEnabled() {
   return base::FeatureList::IsEnabled(
-             media_session::features::kMediaSessionService) &&
-         base::FeatureList::IsEnabled(kEnableUnifiedAudioFocusFeature);
+      media_session::features::kMediaSessionService);
 }
 
 }  // namespace

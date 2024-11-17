@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/sharing/activity_services/activities/copy_activity.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "base/test/task_environment.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
 #import "ios/chrome/browser/ui/sharing/activity_services/data/share_to_data.h"
 #import "testing/gtest_mac.h"
@@ -30,14 +31,18 @@ class CopyActivityTest : public PlatformTest {
     PlatformTest::SetUp();
 
     // Start with a clean pasteboard.
-    ClearPasteboard();
+    base::RunLoop run_loop;
+    ClearPasteboard(run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   void TearDown() override {
     PlatformTest::TearDown();
 
     // End with a clean pasteboard.
-    ClearPasteboard();
+    base::RunLoop run_loop;
+    ClearPasteboard(run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   // Creates a ShareToData instance with the given `additional_text`.
@@ -77,6 +82,8 @@ class CopyActivityTest : public PlatformTest {
   NSURL* GetSecondaryExpectedURL() {
     return [NSURL URLWithString:GetSecondaryURLString()];
   }
+
+  base::test::TaskEnvironment task_environment_;
 };
 
 // Tests that the activity can be performed.
@@ -92,10 +99,19 @@ TEST_F(CopyActivityTest, ExecuteActivityJustURL) {
   ShareToData* data = CreateData(nil);
   CopyActivity* activity = [[CopyActivity alloc] initWithDataItems:@[ data ]];
 
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+
   id activity_partial_mock = OCMPartialMock(activity);
-  [[activity_partial_mock expect] activityDidFinish:YES];
+  OCMStub([activity_partial_mock activityDidFinish:YES])
+      .andDo(^(NSInvocation* invocation) {
+        run_loop_ptr->Quit();
+      })
+      .andForwardToRealObject();
 
   [activity performActivity];
+
+  run_loop.Run();
 
   [activity_partial_mock verify];
   NSURL* expected_url = GetExpectedURL();
@@ -109,10 +125,19 @@ TEST_F(CopyActivityTest, ExecuteActivityMultipleURLs) {
   CopyActivity* activity =
       [[CopyActivity alloc] initWithDataItems:@[ data, CreateSecondaryData() ]];
 
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+
   id activity_partial_mock = OCMPartialMock(activity);
-  [[activity_partial_mock expect] activityDidFinish:YES];
+  OCMStub([activity_partial_mock activityDidFinish:YES])
+      .andDo(^(NSInvocation* invocation) {
+        run_loop_ptr->Quit();
+      })
+      .andForwardToRealObject();
 
   [activity performActivity];
+
+  run_loop.Run();
 
   [activity_partial_mock verify];
 
@@ -135,10 +160,19 @@ TEST_F(CopyActivityTest, ExecuteActivityURLAndAdditionalText) {
   ShareToData* data = CreateData(kTestAdditionaText);
   CopyActivity* activity = [[CopyActivity alloc] initWithDataItems:@[ data ]];
 
+  base::RunLoop run_loop;
+  base::RunLoop* run_loop_ptr = &run_loop;
+
   id activity_partial_mock = OCMPartialMock(activity);
-  [[activity_partial_mock expect] activityDidFinish:YES];
+  OCMStub([activity_partial_mock activityDidFinish:YES])
+      .andDo(^(NSInvocation* invocation) {
+        run_loop_ptr->Quit();
+      })
+      .andForwardToRealObject();
 
   [activity performActivity];
+
+  run_loop.Run();
 
   [activity_partial_mock verify];
 

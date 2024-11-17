@@ -1287,9 +1287,7 @@ TEST_F(DocumentTest, RejectsHasPrivateTokenCallFromNonHttpNonHttpsDocument) {
 
   Document& document = scope.GetDocument();
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Document",
-                                 "hasPrivateToken");
+  DummyExceptionStateForTesting exception_state;
 
   auto promise = document.hasPrivateToken(
       script_state, "https://issuer.example", exception_state);
@@ -1675,9 +1673,7 @@ TEST_F(DocumentTest,
 
   Document& document = scope.GetDocument();
   ScriptState* script_state = scope.GetScriptState();
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kOperation, "Document",
-                                 "hasRedemptionRecord");
+  DummyExceptionStateForTesting exception_state;
 
   auto promise = document.hasRedemptionRecord(
       script_state, "https://issuer.example", exception_state);

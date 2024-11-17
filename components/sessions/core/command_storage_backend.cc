@@ -16,6 +16,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/files/file.h"
@@ -766,8 +767,7 @@ std::unique_ptr<base::File> CommandStorageBackend::OpenAndWriteHeader(
   header.signature = kFileSignature;
   header.version =
       IsEncrypted() ? kEncryptedFileVersionWithMarker : kFileVersionWithMarker;
-  if (file->WriteAtCurrentPos(reinterpret_cast<char*>(&header),
-                              sizeof(header)) != sizeof(header)) {
+  if (!file->WriteAtCurrentPosAndCheck(base::byte_span_from_ref(header))) {
     return nullptr;
   }
   return file;
@@ -777,24 +777,22 @@ bool CommandStorageBackend::AppendCommandToFile(
     base::File* file,
     const sessions::SessionCommand& command) {
   const size_type total_size = command.GetSerializedSize();
-  if (file->WriteAtCurrentPos(reinterpret_cast<const char*>(&total_size),
-                              sizeof(total_size)) != sizeof(total_size)) {
+  if (!file->WriteAtCurrentPosAndCheck(base::byte_span_from_ref(total_size))) {
     DVLOG(1) << "error writing";
     return false;
   }
   id_type command_id = command.id();
-  if (file->WriteAtCurrentPos(reinterpret_cast<char*>(&command_id),
-                              sizeof(command_id)) != sizeof(command_id)) {
+  if (!file->WriteAtCurrentPosAndCheck(base::byte_span_from_ref(command_id))) {
     DVLOG(1) << "error writing";
     return false;
   }
-
   const size_type content_size = total_size - sizeof(id_type);
-  if (content_size == 0)
+  if (content_size == 0) {
     return true;
-
-  if (file->WriteAtCurrentPos(reinterpret_cast<const char*>(command.contents()),
-                              content_size) != content_size) {
+  }
+  if (!file->WriteAtCurrentPos(
+          base::as_byte_span(command.contents_as_string_piece())
+              .first(content_size))) {
     DVLOG(1) << "error writing";
     return false;
   }
@@ -835,15 +833,12 @@ bool CommandStorageBackend::AppendEncryptedCommandToFile(
   const size_type command_and_id_size =
       static_cast<size_type>(cipher_text.size());
 
-  int wrote = file->WriteAtCurrentPos(
-      reinterpret_cast<const char*>(&command_and_id_size),
-      sizeof(command_and_id_size));
-  if (wrote != sizeof(command_and_id_size)) {
+  if (!file->WriteAtCurrentPosAndCheck(
+          base::byte_span_from_ref(command_and_id_size))) {
     DVLOG(1) << "error writing";
     return false;
   }
-  wrote = file->WriteAtCurrentPos(cipher_text.c_str(), cipher_text.size());
-  if (wrote != static_cast<int>(cipher_text.size())) {
+  if (!file->WriteAtCurrentPosAndCheck(base::as_byte_span(cipher_text))) {
     DVLOG(1) << "error writing";
     return false;
   }

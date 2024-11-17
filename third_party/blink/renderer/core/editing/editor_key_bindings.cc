@@ -55,7 +55,8 @@ bool Editor::HandleEditingKeyboardEvent(KeyboardEvent* evt) {
     node = frame_->GetDocument()->FocusedElement();
   }
   if (node) {
-    if (const ComputedStyle* style = node->GetComputedStyle()) {
+    if (const ComputedStyle* style =
+            node->GetComputedStyleForElementOrLayoutObject()) {
       writing_mode = style->GetWritingMode();
     }
   }

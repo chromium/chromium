@@ -14,6 +14,7 @@
 #include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
 #include "content/browser/compute_pressure/pressure_client_impl.h"
+#include "content/browser/compute_pressure/web_contents_pressure_manager_proxy.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -29,7 +30,8 @@ class RenderFrameHost;
 //
 // This class is not thread-safe, so each instance must be used on one sequence.
 class CONTENT_EXPORT PressureServiceBase
-    : public blink::mojom::WebPressureManager {
+    : public blink::mojom::WebPressureManager,
+      public WebContentsPressureManagerProxy::Observer {
  public:
   ~PressureServiceBase() override;
 
@@ -47,6 +49,10 @@ class CONTENT_EXPORT PressureServiceBase
   // blink::mojom::WebPressureManager implementation.
   void AddClient(device::mojom::PressureSource source,
                  AddClientCallback callback) override;
+
+  // WebContentsPressureManagerProxy::Observer implementation.
+  void DidAddVirtualPressureSource(device::mojom::PressureSource) override;
+  void DidRemoveVirtualPressureSource(device::mojom::PressureSource) override;
 
   // Verifies if the data should be delivered according to focus status.
   virtual bool ShouldDeliverUpdate() const = 0;
@@ -74,9 +80,15 @@ class CONTENT_EXPORT PressureServiceBase
   SEQUENCE_CHECKER(sequence_checker_);
 
  private:
+  WebContentsPressureManagerProxy* GetWebContentsPressureManagerProxy() const;
+  virtual RenderFrameHost* GetRenderFrameHost() const;
+
+  void AddMessageToConsole(const std::string&) const;
+
   void OnPressureManagerDisconnected();
 
   void DidAddClient(device::mojom::PressureSource source,
+                    const std::optional<base::UnguessableToken>&,
                     AddClientCallback client_callback,
                     device::mojom::PressureManagerAddClientResultPtr);
 

@@ -9,8 +9,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.FIRST_LINE_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MAIN_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MAIN_TEXT_CONTENT_DESCRIPTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MINOR_TEXT;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NETWORK_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ON_CREDIT_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.SECOND_LINE_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.DISMISS_HANDLER;
@@ -151,14 +151,10 @@ class TouchToFillPaymentMethodViewBinder {
         }
         if (propertyKey == CARD_IMAGE) {
             icon.setImageDrawable(model.get(CARD_IMAGE));
-        } else if (propertyKey == NETWORK_NAME) {
-            // TODO(b/360440916): Remove NETWORK_NAME and add it to MAIN_TEXT in the native code.
-            if (!model.get(NETWORK_NAME).isEmpty()) {
-                mainText.setContentDescription(
-                        model.get(MAIN_TEXT) + " " + model.get(NETWORK_NAME));
-            }
         } else if (propertyKey == MAIN_TEXT) {
             mainText.setText(model.get(MAIN_TEXT));
+        } else if (propertyKey == MAIN_TEXT_CONTENT_DESCRIPTION) {
+            mainText.setContentDescription(model.get(MAIN_TEXT_CONTENT_DESCRIPTION));
         } else if (propertyKey == MINOR_TEXT) {
             minorText.setText(model.get(MINOR_TEXT));
         } else if (propertyKey == FIRST_LINE_LABEL) {
@@ -264,8 +260,8 @@ class TouchToFillPaymentMethodViewBinder {
             TextView buttonTitleText = view.findViewById(R.id.touch_to_fill_button_title);
             buttonTitleText.setText(R.string.autofill_payment_method_continue_button);
         } else if (propertyKey == CARD_IMAGE
-                || propertyKey == NETWORK_NAME
                 || propertyKey == MAIN_TEXT
+                || propertyKey == MAIN_TEXT_CONTENT_DESCRIPTION
                 || propertyKey == MINOR_TEXT
                 || propertyKey == FIRST_LINE_LABEL
                 || propertyKey == SECOND_LINE_LABEL

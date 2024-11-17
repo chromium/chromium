@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 AuthenticatorClientPinEntrySheetView::AuthenticatorClientPinEntrySheetView(
     std::unique_ptr<AuthenticatorClientPinEntrySheetModel> sheet_model)
@@ -41,3 +42,6 @@ void AuthenticatorClientPinEntrySheetView::OnConfirmationChanged(
     std::u16string pincode) {
   pin_entry_sheet_model()->SetPinConfirmation(std::move(pincode));
 }
+
+BEGIN_METADATA(AuthenticatorClientPinEntrySheetView)
+END_METADATA

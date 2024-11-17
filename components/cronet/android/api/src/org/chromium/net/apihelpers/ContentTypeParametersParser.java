@@ -29,7 +29,6 @@ final class ContentTypeParametersParser {
 
     @Nullable
     Map.Entry<String, String> getNextParameter() throws ContentTypeParametersParserException {
-        int startPos = mCurrentPosition;
         optionallySkipWhitespace();
         String parameterName = getNextToken();
         if (currentChar() != '=') {
@@ -172,7 +171,7 @@ final class ContentTypeParametersParser {
     }
 
     private static boolean isAscii(char ch) {
-        return (char) 0 <= ch && ch <= (char) 127;
+        return ch <= 127;
     }
 
     private static boolean isWhitespace(char c) {

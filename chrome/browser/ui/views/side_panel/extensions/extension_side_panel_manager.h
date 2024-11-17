@@ -8,10 +8,7 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/supports_user_data.h"
-#include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_registry_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
@@ -23,7 +20,10 @@ class SidePanelRegistry;
 
 namespace content {
 class BrowserContext;
-class WebContents;
+}
+
+namespace tabs {
+class TabInterface;
 }
 
 namespace extensions {
@@ -35,25 +35,17 @@ class Extension;
 // when extensions are loaded or unloaded. Registration of an extension's
 // SidePanelEntry and creating the view to be shown are delegated to each
 // extension's ExtensionSidePanelCoordinator.
-class ExtensionSidePanelManager : public SidePanelRegistryObserver,
-                                  public ExtensionRegistryObserver,
-                                  public ProfileObserver,
-                                  public base::SupportsUserData::Data {
+class ExtensionSidePanelManager : public ExtensionRegistryObserver {
  public:
+  ExtensionSidePanelManager(Browser* browser, SidePanelRegistry* registry);
+  ExtensionSidePanelManager(Profile* profile,
+                            tabs::TabInterface* tab_interface,
+                            SidePanelRegistry* tab_registry);
+
   ExtensionSidePanelManager(const ExtensionSidePanelManager&) = delete;
   ExtensionSidePanelManager& operator=(const ExtensionSidePanelManager&) =
       delete;
   ~ExtensionSidePanelManager() override;
-
-  static void CreateForBrowser(Browser* browser,
-                               SidePanelRegistry* window_registry);
-  static ExtensionSidePanelManager* GetForBrowserForTesting(Browser* browser);
-
-  static void CreateForTab(Profile* profile,
-                           content::WebContents* web_contents,
-                           SidePanelRegistry* tab_registry);
-  static ExtensionSidePanelManager* GetForTabForTesting(
-      content::WebContents* web_contents);
 
   ExtensionSidePanelCoordinator* GetExtensionCoordinatorForTesting(
       const ExtensionId& extension_id);
@@ -71,25 +63,7 @@ class ExtensionSidePanelManager : public SidePanelRegistryObserver,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
-  // SidePanelRegistryObserver implementation.
-  void OnRegistryDestroying(SidePanelRegistry* registry) override;
-
-  // Called when the tab is about to be discarded.
-  void WillDiscard();
-
-  // ProfileObserver implementation.
-  // OTR profiles for a browser window can be destroyed before the browser's
-  // UserData, so the profile may need to be reset to prevent a dangling
-  // pointer.
-  void OnProfileWillBeDestroyed(Profile* profile) override;
-
  private:
-  ExtensionSidePanelManager(Profile* profile,
-                            Browser* browser,
-                            content::WebContents* web_contents,
-                            SidePanelRegistry* registry,
-                            bool for_tab);
-
   // Creates an ExtensionSidePanelCoordinator for `extension` and adds it to
   // `coordinators_` if the extension is capable of hosting side panel content.
   void MaybeCreateExtensionSidePanelCoordinator(const Extension* extension);
@@ -110,15 +84,10 @@ class ExtensionSidePanelManager : public SidePanelRegistryObserver,
   // The profile associated with either `browser_` or `web_contents_`.
   raw_ptr<Profile> profile_;
 
-  // The browser that this class is associated with, through its user data. An
-  // instance of this class can only be associated with/in the user data of a
-  // single browser or WebContents, not both at once. Only one of `browser_` or
-  // `web_contents_` should be defined.
+  // The browser or tab that this class is associated with. Only one of
+  // `browser_` or `tab_interface_` should be defined.
   raw_ptr<Browser> browser_;
-
-  // The tab-based WebContents that this class is associated with, through its
-  // user data.
-  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<tabs::TabInterface> tab_interface_;
 
   // The SidePanelRegistry that lives in the same user data that an instance of
   // this class lives in. Owns all extension entries managed by `coordinators_`.
@@ -132,9 +101,6 @@ class ExtensionSidePanelManager : public SidePanelRegistryObserver,
 
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-  base::ScopedObservation<SidePanelRegistry, SidePanelRegistryObserver>
-      side_panel_registry_observation_{this};
-  base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
 };
 
 }  // namespace extensions

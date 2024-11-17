@@ -38,8 +38,7 @@ gfx::OverlayTransform DisplayRotationToOverlayTransform(
     case display::Display::ROTATE_270:
       return gfx::OVERLAY_TRANSFORM_ROTATE_CLOCKWISE_270;
   }
-  NOTREACHED_IN_MIGRATION();
-  return gfx::OVERLAY_TRANSFORM_NONE;
+  NOTREACHED();
 }
 
 }  // namespace display

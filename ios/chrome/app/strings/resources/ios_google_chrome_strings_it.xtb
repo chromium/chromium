@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="1066101356081285416">Chrome rileverà i numeri di riferimento sui siti che visiti e mostrerà gli aggiornamenti relativi ai pacchetti nella pagina Nuova scheda. Il numero di tracciamento della spedizione e il nome del sito web verranno inviati a Google per fornire questa funzionalità e migliorare le funzionalità di Google Shopping per tutti. Puoi aggiornarli in qualsiasi momento nelle <ph name="BEGIN_LINK" />impostazioni di tracciamento della spedizione<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Cerca con Google Lens</translation>
 <translation id="1143896152279775643">La tua password verrà salvata in Gestore delle password di Google per <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Apri nuova scheda in Chrome</translation>
 <translation id="1166460004393506534">Elimina i dati di navigazione in Chrome</translation>
@@ -38,7 +39,9 @@ Aspetti da considerare:
 <translation id="1670609221633730681">Suggerimento per Chrome: scegli la posizione della barra degli indirizzi</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Aggiunge gli URL inseriti ai preferiti in Chrome.</translation>
+<translation id="1799920918471566157">Suggerimenti per Chrome</translation>
 <translation id="1830634592642484976">Al momento questo indirizzo è salvato su Chrome. Per usarlo su tutti i prodotti Google, salvalo nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
+<translation id="1891812034154776216">Nascondi le schede di navigazione in incognito aperte quando esci da Chrome</translation>
 <translation id="1917964099031477364">Questo account e gli eventuali dati non salvati verranno rimossi da Chrome e da altre app Google su questo dispositivo.</translation>
 <translation id="1919130412786645364">Consenti l'accesso a Chrome</translation>
 <translation id="1965935827552890526">Finisci ciò che stavi facendo in un'altra finestra di Chrome aperta.</translation>
@@ -70,6 +73,7 @@ Aspetti da considerare:
 <translation id="2689064829982324496">Per uscire dal tuo Account Google su tutti i siti web, <ph name="BEGIN_LINK" />esci da Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome non ha potuto verificare la disponibilità di aggiornamenti. Riprova più tardi.</translation>
 <translation id="2703746758996815929">Per ricevere suggerimenti utili su Chrome, attiva le notifiche nelle impostazioni di iOS.</translation>
+<translation id="2728851697704606655">Traduci con Google Lens</translation>
 <translation id="2736805085127235148">Le notifiche di Chrome sono attualmente disattivate nelle impostazioni del dispositivo.</translation>
 <translation id="2754428955276778271">Alcuni dati di Chrome non sono ancora stati salvati nel tuo Account Google.
 
@@ -247,6 +251,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="7581063337314642333">Visita la griglia delle schede di Chrome</translation>
 <translation id="7599894504325210080">Visualizzazione espansa della compilazione automatica di Chrome</translation>
 <translation id="7642373780953416937">Ricevi avvisi su eventuali problemi di privacy o di sicurezza rilevati automaticamente da Chrome.</translation>
+<translation id="7660356333829433649">Torna qui per altri suggerimenti utili per usare al meglio Chrome.</translation>
 <translation id="7662994914830945754">Esegui l'accesso su tutti i dispositivi su cui utilizzi Chrome e attiva la sincronizzazione per visualizzare le tue schede</translation>
 <translation id="7693590760643069321">Ora puoi usare Chrome ogni volta che tocchi i link in messaggi, documenti e altre app.</translation>
 <translation id="7698568245838009292">Chrome vorrebbe accedere alla fotocamera</translation>
@@ -261,6 +266,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="7948283758957877064">Novità di Chrome</translation>
 <translation id="8000174216052461231">Suggerimento per Chrome: Usa la funzionalità di sicurezza più efficace di Chrome</translation>
 <translation id="8006014511203279255">Usa Chrome ogni volta che tocchi i link nei messaggi e in altre app.</translation>
+<translation id="8014670471808569312">Chrome ti proporrà di salvare la password.</translation>
 <translation id="8018153653741938705">Resta al sicuro con Google Chrome</translation>
 <translation id="8022947259858476807">Usa Chrome per impostazione predefinita per aprire link, eseguire ricerche dai widget e compilare automaticamente le password in altre app</translation>
 <translation id="804638182476029347">Consenti le notifiche di Chrome per ricevere avvisi relativi ai cali di prezzo</translation>
@@ -292,6 +298,7 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 <translation id="8558480467877843976">Ora puoi usare Chrome ogni volta che navighi o tocchi link in messaggi, documenti e altre app.</translation>
 <translation id="8603022514504485810">Gestore delle password di Google non ha potuto controllare tutte le password. Riprova domani oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Attiva l'opzione "Blocca le schede di navigazione in incognito quando chiudi Chrome".</translation>
+<translation id="8673726683583791503">Acquista con Google Lens</translation>
 <translation id="8727043961453758442">Ottieni il massimo da Chrome</translation>
 <translation id="8765470054473112089">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità di navigazione in incognito</translation>
 <translation id="8772179140489533211">Vengono mostrate richieste di accesso a Chrome.</translation>

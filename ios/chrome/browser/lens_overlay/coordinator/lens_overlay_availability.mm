@@ -22,6 +22,13 @@ bool IsLensOverlayAllowedByPolicy() {
 // Returns whether the lens overlay is enabled.
 bool IsLensOverlayAvailable() {
   bool featureEnabled = base::FeatureList::IsEnabled(kEnableLensOverlay);
+  bool forceIPadEnabled =
+      base::FeatureList::IsEnabled(kLensOverlayEnableIPadCompatibility);
   bool isIPhone = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_PHONE;
-  return featureEnabled && isIPhone && IsLensOverlayAllowedByPolicy();
+  return featureEnabled && (forceIPadEnabled || isIPhone) &&
+         IsLensOverlayAllowedByPolicy();
+}
+
+bool IsLensOverlaySameTabNavigationEnabled() {
+  return base::FeatureList::IsEnabled(kLensOverlayEnableSameTabNavigation);
 }

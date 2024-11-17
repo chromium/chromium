@@ -59,16 +59,18 @@ base::Value::Dict CreateSecureDnsSettingDict(
   dict.Set("mode", SecureDnsConfig::ModeToString(config.mode()));
   dict.Set("config", config.doh_servers().ToString());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::optional<std::string> doh_with_identifiers_servers_for_display;
-  doh_with_identifiers_servers_for_display =
-      g_browser_process->platform_part()
-          ->secure_dns_manager()
-          ->GetDohWithIdentifiersDisplayServers();
-
+  ash::SecureDnsManager* secure_dns_manager =
+      g_browser_process->platform_part()->secure_dns_manager();
+  dict.Set("osMode",
+           SecureDnsConfig::ModeToString(secure_dns_manager->GetOsDohMode()));
+  dict.Set("osConfig", secure_dns_manager->GetOsDohConfig().ToString());
+  std::optional<std::string> doh_with_identifiers_servers_for_display =
+      secure_dns_manager->GetDohWithIdentifiersDisplayServers();
   dict.Set("dohWithIdentifiersActive",
            doh_with_identifiers_servers_for_display.has_value());
   dict.Set("configForDisplay",
            doh_with_identifiers_servers_for_display.value_or(std::string()));
+  dict.Set("dohDomainConfigSet", secure_dns_manager->IsDohDomainConfigSet());
 #endif
   dict.Set("managementMode", static_cast<int>(config.management_mode()));
   return dict;

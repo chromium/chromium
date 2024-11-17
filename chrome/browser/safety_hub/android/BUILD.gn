@@ -32,6 +32,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchTask.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubHatsBridge.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubHatsHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackBuilder.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackCoordinator.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackMediator.java",
@@ -45,6 +46,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleViewBinder.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubNotificationsFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubNotificationsPreference.java",
+    "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPasswordModuleHelper.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsFragment.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubPermissionsPreference.java",
     "java/src/org/chromium/chrome/browser/safety_hub/SafetyHubSubpageFragment.java",
@@ -107,6 +109,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/safety_hub/MagicStackBridgeTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchServiceTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubFetchTaskTest.java",
+    "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubHatsHelperOverallStateTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackMediatorTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubMagicStackViewBinderTest.java",
     "junit/src/org/chromium/chrome/browser/safety_hub/SafetyHubModuleDelegateTest.java",
@@ -137,6 +140,7 @@ robolectric_library("junit") {
     "//components/background_task_scheduler:factory_java",
     "//components/background_task_scheduler:public_java",
     "//components/browser_ui/settings/android:java",
+    "//components/content_settings/core/common:content_settings_types_java",
     "//components/prefs/android:java",
     "//components/sync/android:sync_java",
     "//components/user_prefs/android:java",
@@ -161,7 +165,7 @@ android_library("javatests") {
   sources = [
     "javatests/src/org/chromium/chrome/browser/safety_hub/FakeNotificationPermissionReviewBridge.java",
     "javatests/src/org/chromium/chrome/browser/safety_hub/FakeUnusedSitePermissionsBridge.java",
-    "javatests/src/org/chromium/chrome/browser/safety_hub/SafetyHubHatsBridgeTest.java",
+    "javatests/src/org/chromium/chrome/browser/safety_hub/SafetyHubHatsHelperTest.java",
     "javatests/src/org/chromium/chrome/browser/safety_hub/SafetyHubTest.java",
   ]
   deps = [
@@ -173,6 +177,7 @@ android_library("javatests") {
     "//build/android:build_java",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/omaha/android:java",
     "//chrome/browser/password_manager/android:java",
     "//chrome/browser/password_manager/android:test_support_java",
     "//chrome/browser/preferences:java",
@@ -216,10 +221,13 @@ source_set("android") {
     "unused_site_permissions_bridge.h",
   ]
 
+  public_deps = [ "//chrome/browser/ui/safety_hub" ]
+
   deps = [
     ":jni_headers",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/hats",
     "//chrome/common:constants",
     "//components/content_settings/core/common",
     "//components/page_info:page_info",
@@ -238,8 +246,10 @@ source_set("unit_tests") {
   deps = [
     ":android",
     "//base/test:test_support",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/permissions:permissions",
     "//chrome/browser/ui",
+    "//chrome/browser/ui/safety_hub",
     "//chrome/test:test_support",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",

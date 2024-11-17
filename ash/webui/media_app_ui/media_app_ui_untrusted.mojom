@@ -4,24 +4,29 @@
 
 module ash.media_app_ui.mojom;
 
+import "chromeos/ash/components/mantis/mojom/mantis_processor.mojom";
+import "chromeos/ash/components/mantis/mojom/mantis_service.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
-// Factory interface to create an untrusted page handler (for the
+// Factory interface to create a new untrusted Mojo connection (for the
 // chrome-untrusted:// frame) communicating directly with the browser.
-interface UntrustedPageHandlerFactory {
-  // Create a page handler for the untrusted frame exposing OCR related APIs
-  // between it and the browser via |receiver| and |page|.
-  CreateOcrUntrustedPageHandler(
-  pending_receiver<OcrUntrustedPageHandler> receiver,
-      pending_remote<OcrUntrustedPage> page);
+interface UntrustedServiceFactory {
+  // Exposes OCR related APIs between the untrusted frame and the browser via
+  // `receiver` and `page`.
+  CreateOcrUntrustedService(pending_receiver<OcrUntrustedService> receiver,
+                            pending_remote<OcrUntrustedPage> page);
 
-  // Create a page handler for the untrusted frame exposing Mahi related APIs
-  // between it and the browser via `receiver` and `page`.
-  CreateMahiUntrustedPageHandler(
-  pending_receiver<MahiUntrustedPageHandler> receiver,
-      pending_remote<MahiUntrustedPage> page,
-      string file_name);
+  // Exposes Mahi related APIs between the untrusted frame and the browser via
+  // `receiver` and `page`.
+  CreateMahiUntrustedService(pending_receiver<MahiUntrustedService> receiver,
+                             pending_remote<MahiUntrustedPage> page,
+                             string file_name);
+
+  // Exposes Mantis related APIs betwen the untrusted frame and the browser via
+  // `receiver`.
+  CreateMantisUntrustedService(
+      pending_receiver<MantisMediaAppUntrustedService> receiver);
 };
 
 struct PageMetadata {
@@ -32,7 +37,7 @@ struct PageMetadata {
 
 // Interface implemented in the browser process and called by the
 // chrome-untrusted:// Media App page.
-interface OcrUntrustedPageHandler {
+interface OcrUntrustedService {
   // Provides metadata about the document. Page metadata is always provided for
   // all pages. Called in the following cases:
   //   a) A page is rotated (only the rotated page is dirty, but potentially all
@@ -88,12 +93,11 @@ interface OcrUntrustedPage {
   SetPdfOcrEnabled(bool enabled);
 };
 
-
 // Interfaces for Mahi support
 
 // Interface implemented in the browser process and called by the
 // chrome-untrusted:// Media App page.
-interface MahiUntrustedPageHandler {
+interface MahiUntrustedService {
   // Notifies when media app finishes loading a PDF file. This may be used for
   // Mahi refresh availability.
   OnPdfLoaded();
@@ -104,8 +108,9 @@ interface MahiUntrustedPageHandler {
   OnPdfFileNameUpdated(string new_name);
 
   // Notifies when the PDF context menu is shown. This may be used to show the
-  // Mahi widget card.
-  OnPdfContextMenuShow(gfx.mojom.RectF anchor);
+  // Mahi widget card. `selected_text` contains any currently highlighted /
+  // selected text, with it being an empty string if there is no selected text.
+  OnPdfContextMenuShow(gfx.mojom.RectF anchor, string selected_text);
 
   // Notifies when the PDF context menu is hidden. This may be used to hide the
   // Mahi widget card.
@@ -120,4 +125,69 @@ interface MahiUntrustedPage {
 
   // Requests the text content of the PDF file.
   GetPdfContent(int32 limit) => (string? content);
+};
+
+// Interface implemented in the browser process and called by the
+// chrome-untrusted:// Media App page. This interface is used after Mantis
+// initialization is done and Media App is sending image inference request.
+//
+// All images and masks are in byte array, containing encoded format of an
+// image. This allows us to pass images in various codecs (PNG, JPEG, WebP,...)
+// supported by Mantis. Different encoded image will have different header,
+// body, and length. The request will be passed to a sandboxed process in
+// CrOS where it checks the image header and use different decoder
+// appropriately.
+interface MantisMediaAppUntrustedProcessor {
+  // Performs image segmentation on the `image` based on the prior `selection`.
+  // The `image` and `selection` are byte arrays containing the
+  // encoded format of an image (e.g., PNG, JPEG) with the same dimension.
+  // For more info about segmentation, refer to "Make a sticker" section of
+  // http://go/mantis-bl-dd#heading=h.pbhc0hda5vkz.
+  // TODO(http://crbug.com/370820145): change the opaque `array<uint8>` type.
+  SegmentImage(array<uint8> image, array<uint8> selection)
+      => (mantis.mojom.MantisResult result);
+
+  // Fills the image generatively based on the `text` and `seed`. Pass the same
+  // `seed` across method calls to get identical result. The `image` and `mask`
+  // are byte arrays containing the encoded format of an image (e.g., PNG,
+  // JPEG) with the same dimension. For more info about generative fill, refer
+  // to "Reimagine" section of http://go/mantis-bl-dd#heading=h.3xkb38njxpz1.
+  // TODO(http://crbug.com/370820145): change the opaque `array<uint8>` type.
+  GenerativeFillImage(
+      array<uint8> image, array<uint8> mask, string text, uint32 seed)
+      => (mantis.mojom.MantisResult result);
+
+  // Inpaints the image based on the `mask` and `seed`. Pass the same `seed`
+  // across method calls to get identical result. The `image` and `mask` are
+  // byte arrays containing the encoded format of an image (e.g., PNG, JPEG)
+  // with the same dimension. Inpainting is similar with Generative Fill without
+  // a `text` prompt, where it tries to fill the image by reconstructing the
+  // "lost" part of the `image`. Also refer to "Expand background" section which
+  // is a special case of Inpainting where the mask is in the boundaries of the
+  // `image` http://go/mantis-bl-dd#heading=h.usc6s0rg999w.
+  // TODO(http://crbug.com/370820145): change the opaque `array<uint8>` type.
+  InpaintImage(array<uint8> image, array<uint8> mask, uint32 seed)
+      => (mantis.mojom.MantisResult result);
+
+  // Classifies image for Trust & Safety checking. Refer to "Trust & safety
+  // check" subsection of "Entry point" for more details
+  // http://go/mantis-bl-dd#heading=h.dqo8t5p2bpij.
+  // TODO(http://crbug.com/370820145): change the opaque `array<uint8>` type.
+  ClassifyImageSafety(array<uint8> image)
+      => (mantis.mojom.SafetyClassifierVerdict verdict);
+};
+
+// Interface implemented in the browser process and called by the
+// chrome-untrusted:// Media App page. This interface is used when
+// we click "Edit with AI" in Media App to tell about feature availability
+// and initialize it if so.
+interface MantisMediaAppUntrustedService {
+  // Gets Mantis feature status which can be used to restrict Mantis
+  // functionality by returning a status other than kAvailable.
+  GetMantisFeatureStatus() => (mantis.mojom.MantisFeatureStatus status);
+
+  // Loads the assets from DLC and initializes the processor for subsequent
+  // queries.
+  Initialize(pending_receiver<MantisMediaAppUntrustedProcessor> processor)
+      => (mantis.mojom.InitializeResult result);
 };

@@ -1,0 +1,25 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// The observer will receive the model download progress updates after its
+// registration while the Mojo interface is connected. It won't be notified
+// after the connection is terminated even if there is update. The receiver
+// side should manage the lifetime properly. For example, it should only
+// create the observer and register it when the feature relying on the on-
+// device model is in used, and close the connection as soon as the task
+// completes.
+// Note that this is a passive observer that's not associated with the state
+// of the model. The registration of the observer won't trigger the model
+// download and the completion of model download won't remove the observer or
+// close the connection.
+interface ModelDownloadProgressObserver {
+  // Currently, this will be called when the download progress is updated.
+  // There is no guarantee that it must be called at least once (e.g. if the
+  // model has been fully downloaded in the other tab and is being installed).
+  // See https://github.com/WICG/translation-api/issues/20 for the discussion
+  // about possible future improvements.
+  OnDownloadProgressUpdate(uint64 downloaded_bytes, uint64 total_bytes);
+};

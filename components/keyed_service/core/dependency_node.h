@@ -13,8 +13,8 @@ class DependencyNode {
 
  protected:
   // This is intended to be used by the subclasses, not directly.
-  DependencyNode() {}
-  ~DependencyNode() {}
+  DependencyNode() = default;
+  ~DependencyNode() = default;
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_CORE_DEPENDENCY_NODE_H_

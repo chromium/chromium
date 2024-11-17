@@ -178,7 +178,7 @@ void WindowPreviewView::RemoveWindow(aura::Window* window) {
   if (it == mirror_views_.end())
     return;
 
-  auto* view = it->second;
+  auto* view = it->second.get();
   RemoveChildViewT(view);
   it->first->RemoveObserver(this);
 

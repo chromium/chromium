@@ -69,7 +69,7 @@ class SVGGeometryElement : public SVGGraphicsElement {
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   void GeometryAttributeChanged();
-  void GeometryPresentationAttributeChanged(const QualifiedName&);
+  void GeometryPresentationAttributeChanged(const SVGAnimatedPropertyBase&);
 
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
@@ -83,10 +83,6 @@ class SVGGeometryElement : public SVGGraphicsElement {
   Member<SVGAnimatedNumber> path_length_;
 };
 
-template <>
-inline bool IsElementOfType<const SVGGeometryElement>(const Node& node) {
-  return IsA<SVGGeometryElement>(node);
-}
 template <>
 struct DowncastTraits<SVGGeometryElement> {
   static bool AllowFrom(const Node& node) {

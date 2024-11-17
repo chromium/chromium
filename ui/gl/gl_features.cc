@@ -18,7 +18,9 @@
 #include "base/android/build_info.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/pattern.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
+#include "third_party/angle/src/gpu_info_util/SystemInfo.h"  // nogncheck
 #include "ui/gfx/android/achoreographer_compat.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #endif
@@ -55,12 +57,33 @@ const base::FeatureParam<std::string>
     kPassthroughCommandDecoderBlockListByAndroidBuildFP{
         &kDefaultPassthroughCommandDecoder, "BlockListByAndroidBuildFP", ""};
 
+const base::FeatureParam<std::string>
+    kPassthroughCommandDecoderBlockListByGPUVendorId{
+        &kDefaultPassthroughCommandDecoder, "BlockListByGPUVendorId", ""};
+
 bool IsDeviceBlocked(const char* field, const std::string& block_list) {
   auto disable_patterns = base::SplitString(
       block_list, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   for (const auto& disable_pattern : disable_patterns) {
     if (base::MatchPattern(field, disable_pattern))
       return true;
+  }
+  return false;
+}
+bool IsDeviceBlocked(angle::VendorID vendor_id, const std::string& block_list) {
+  auto disable_vendors = base::SplitString(
+      block_list, "|", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  for (const auto& disable_vendor_str : disable_vendors) {
+    angle::VendorID disable_vendor = 0;
+    if (!base::StringToUint(disable_vendor_str, &disable_vendor)) {
+      DCHECK(false) << "BlockListByGPUVendorId vendor \"" << disable_vendor_str
+                    << "\" failed to parse as a VendorID.";
+      return false;
+    }
+
+    if (vendor_id == disable_vendor) {
+      return true;
+    }
   }
   return false;
 }
@@ -98,8 +121,19 @@ BASE_FEATURE(kGpuVsync, "GpuVsync", base::FEATURE_ENABLED_BY_DEFAULT);
 // platforms that would otherwise not default to using EGL bindings.
 BASE_FEATURE(kDefaultPassthroughCommandDecoder,
              "DefaultPassthroughCommandDecoder",
-             base::FEATURE_ENABLED_BY_DEFAULT
-);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Add a small delay in shader compiling if validating command decoder is used.
+// This is to verify if passthrough command decoder impacting negatively top
+// level metrics could be due to slower shader compiling.
+BASE_FEATURE(kAddDelayToGLCompileShader,
+             "AddDelayToGLCompileShader",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+// Histogram |GrCompileShaderUs| mean is 1.8ms (native) vs 3.1ms (ANGLE).
+// Therefore, we add a 1.3ms delay to shader compiling.
+constexpr base::FeatureParam<base::TimeDelta> kGLCompileShaderDelay = {
+    &kAddDelayToGLCompileShader, /*name=*/"interval",
+    /*default_value=*/base::Microseconds(1300)};
 #endif  // !defined(PASSTHROUGH_COMMAND_DECODER_LAUNCHED)
 
 #if BUILDFLAG(IS_MAC)
@@ -182,6 +216,30 @@ bool UsePassthroughCommandDecoder() {
           build_info->android_build_fp(),
           kPassthroughCommandDecoderBlockListByAndroidBuildFP.Get()))
     return false;
+
+  // Only check system info once and cache if the vendor is blocked.
+  static std::optional<bool> gpu_vendor_blocked;
+  if (!gpu_vendor_blocked.has_value()) {
+    angle::SystemInfo angle_system_info;
+    if (angle::GetSystemInfo(&angle_system_info) &&
+        !angle_system_info.gpus.empty()) {
+      angle::VendorID gpu_vendor_id =
+          angle_system_info.gpus[angle_system_info.activeGPUIndex].vendorId;
+      gpu_vendor_blocked = IsDeviceBlocked(
+          gpu_vendor_id,
+          kPassthroughCommandDecoderBlockListByGPUVendorId.Get());
+    } else {
+      // If system info collection fails, do not blocklist this device by GPU
+      // vendor ID. Instead rely on individual device model or device ID
+      // blocking.
+      gpu_vendor_blocked = false;
+    }
+  }
+
+  DCHECK(gpu_vendor_blocked.has_value());
+  if (gpu_vendor_blocked.value()) {
+    return false;
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
   return true;
@@ -275,5 +333,19 @@ bool IsSwiftShaderAllowedByFeature() {
 bool IsSwiftShaderAllowed(const base::CommandLine* command_line) {
   return IsSwiftShaderAllowedByCommandLine(command_line) ||
          IsSwiftShaderAllowedByFeature();
+}
+
+base::TimeDelta GetGLCompileShaderDelay() {
+#if BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
+  if (UsePassthroughCommandDecoder()) {
+    return base::TimeDelta();
+  }
+  if (!base::FeatureList::IsEnabled(kAddDelayToGLCompileShader)) {
+    return base::TimeDelta();
+  }
+  return kGLCompileShaderDelay.Get();
+#else
+  return base::TimeDelta();
+#endif  // BUILDFLAG(ENABLE_VALIDATING_COMMAND_DECODER)
 }
 }  // namespace features

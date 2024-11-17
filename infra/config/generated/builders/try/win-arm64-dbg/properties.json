@@ -76,7 +76,8 @@
           "builder": "win11-arm64-dbg-tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/win-arm64-dbg/targets"
     }
   },
   "$build/reclient": {

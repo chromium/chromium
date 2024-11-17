@@ -240,14 +240,15 @@ class DeviceSyncSoftwareFeatureManagerImplTest
   }
 
   void OnError(NetworkRequestError error) {
-    if (error == kErrorSettingSoftwareFeatureNetworkRequestError)
+    if (error == kErrorSettingSoftwareFeatureNetworkRequestError) {
       result_ = Result::kErrorSettingSoftwareFeature;
-    else if (error == kErrorSettingFeatureStatusNetworkRequestError)
+    } else if (error == kErrorSettingFeatureStatusNetworkRequestError) {
       result_ = Result::kErrorSettingFeatureStatus;
-    else if (error == kErrorFindingEligibleNetworkRequestError)
+    } else if (error == kErrorFindingEligibleNetworkRequestError) {
       result_ = Result::kErrorFindingEligible;
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   }
 
   void InvokeSetSoftwareFeatureCallback() {

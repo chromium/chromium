@@ -107,4 +107,8 @@ interface PrintCompositor {
 
   // Sets the title of the document.
   SetTitle(string title);
+
+  // Sets the enterprise watermark text. No watermark is drawn if an empty
+  // string is provided.
+  SetWatermarkText(string watermark_text);
 };

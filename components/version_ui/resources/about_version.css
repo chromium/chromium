@@ -92,6 +92,7 @@ body {
 }
 
 #copy-to-clipboard,
+#copy-variations-to-clipboard,
 #copy-os-content-to-clipboard {
   background-color: var(--background-color);
   border: none;
@@ -119,11 +120,13 @@ body {
 }
 
 #copy-to-clipboard:hover,
+#copy-variations-to-clipboard:hover,
 #copy-os-content-to-clipboard:hover {
   background-color: var(--hover-background-color);
 }
 
 #copy-to-clipboard:active,
+#copy-variations-to-clipboard:active,
 #copy-os-content-to-clipboard:active {
   background-color: var(--active-background-color);
 }

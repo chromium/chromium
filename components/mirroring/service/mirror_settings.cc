@@ -81,7 +81,7 @@ MirrorSettings::MirrorSettings()
       max_width_(kMaxWidth),
       max_height_(kMaxHeight) {}
 
-MirrorSettings::~MirrorSettings() {}
+MirrorSettings::~MirrorSettings() = default;
 
 // static
 FrameSenderConfig MirrorSettings::GetDefaultAudioConfig(

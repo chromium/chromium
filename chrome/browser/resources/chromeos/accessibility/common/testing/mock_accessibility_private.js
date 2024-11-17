@@ -171,6 +171,12 @@ class MockAccessibilityPrivate {
      */
     this.dictationBubbleProps_ = null;
 
+    /** @private {?string} */
+    this.faceGazeBubbleText_ = null;
+
+    /** @private {boolean} */
+    this.faceGazeBubbleIsWarning_ = false;
+
     /** @private {Function} */
     this.onUpdateDictationBubble_ = null;
 
@@ -390,7 +396,10 @@ class MockAccessibilityPrivate {
    * Creates a synthetic keyboard event.
    * @param {chrome.accessibilityPrivate.SyntheticKeyboardEvent} event
    */
-  sendSyntheticKeyEvent(event) {
+  sendSyntheticKeyEvent(event, useRewriters, isRepeat) {
+    event.useRewriters = useRewriters;
+    event.repeat = isRepeat;
+
     this.syntheticKeyEvents_.push(event);
   }
 
@@ -566,9 +575,28 @@ class MockAccessibilityPrivate {
     }
   }
 
+  /** @param {string} text */
+  updateFaceGazeBubble(text, isWarning) {
+    this.faceGazeBubbleText_ = text;
+    this.faceGazeBubbleIsWarning_ = isWarning;
+  }
+
+  /** @param {boolean} enabled */
+  enableDragEventRewriter(enabled) {}
+
   /** @return {!chrome.accessibilityPrivate.DictationBubbleProperties|null} */
   getDictationBubbleProps() {
     return this.dictationBubbleProps_;
+  }
+
+  /** @return {?string} */
+  getFaceGazeBubbleText() {
+    return this.faceGazeBubbleText_;
+  }
+
+  /** @return {boolean} */
+  getFaceGazeBubbleIsWarning() {
+    return this.faceGazeBubbleIsWarning_;
   }
 
   /**

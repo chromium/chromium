@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/functional/bind.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/time/default_clock.h"
@@ -66,6 +67,10 @@
 #include "chrome/browser/ui/apps/chrome_app_window_client.h"
 #include "components/storage_monitor/storage_monitor.h"
 #include "components/storage_monitor/test_storage_monitor.h"
+#endif
+
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+#include "chrome/browser/extensions/desktop_android/desktop_android_extensions_browser_client.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
@@ -175,7 +180,11 @@ void TestingBrowserProcess::Init() {
         test_network_connection_tracker_.get());
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
+#if BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+  extensions_browser_client_ =
+      std::make_unique<extensions::DesktopAndroidExtensionsBrowserClient>();
+  extensions::ExtensionsBrowserClient::Set(extensions_browser_client_.get());
+#elif BUILDFLAG(ENABLE_EXTENSIONS)
   extensions_browser_client_ =
       std::make_unique<extensions::ChromeExtensionsBrowserClient>();
   extensions_browser_client_->AddAPIProvider(
@@ -206,7 +215,7 @@ void TestingBrowserProcess::FlushLocalStateAndReply(base::OnceClosure reply) {
   // This could be implemented the same way as in BrowserProcessImpl but it's
   // not currently expected to be used by TestingBrowserProcess users so we
   // don't bother.
-  CHECK(false);
+  NOTREACHED();
 }
 
 void TestingBrowserProcess::EndSession() {
@@ -340,14 +349,14 @@ GpuModeManager* TestingBrowserProcess::gpu_mode_manager() {
   return nullptr;
 }
 
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 BackgroundModeManager* TestingBrowserProcess::background_mode_manager() {
   return nullptr;
 }
 
-#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 void TestingBrowserProcess::set_background_mode_manager_for_test(
     std::unique_ptr<BackgroundModeManager> manager) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 #endif
 
@@ -541,7 +550,7 @@ void TestingBrowserProcess::set_additional_os_crypt_async_provider_for_test(
     size_t precedence,
     std::unique_ptr<os_crypt_async::KeyProvider> provider) {
   // Not implemented.
-  CHECK(false);
+  NOTREACHED();
 }
 
 BuildState* TestingBrowserProcess::GetBuildState() {

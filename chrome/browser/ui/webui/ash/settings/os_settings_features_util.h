@@ -48,6 +48,10 @@ bool ShouldShowMultitasking();
 // `kFasterSplitScreenSetup` is enabled.
 bool ShouldShowMultitaskingInPersonalization();
 
+// Determines if the Graduation user policy is set so that the Graduation app is
+// enabled.
+bool ShouldShowGraduationAppSetting(Profile* profile);
+
 }  // namespace ash::settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_OS_SETTINGS_FEATURES_UTIL_H_

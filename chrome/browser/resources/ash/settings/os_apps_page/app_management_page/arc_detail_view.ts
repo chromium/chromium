@@ -13,17 +13,17 @@ import './permission_item.js';
 import './supported_links_item.js';
 import 'chrome://resources/ash/common/cr_elements/icons.html.js';
 
-import {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
-import {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
-import {getPermission, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
+import type {AppMap} from 'chrome://resources/cr_components/app_management/constants.js';
+import type {PermissionTypeIndex} from 'chrome://resources/cr_components/app_management/permission_constants.js';
+import {getPermission, getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppManagementStoreMixin} from '../../common/app_management/store_mixin.js';
 import {isRevampWayfindingEnabled} from '../../common/load_time_booleans.js';
-import {PrefsState} from '../../common/types.js';
+import type {PrefsState} from '../../common/types.js';
 
 import {getTemplate} from './arc_detail_view.html.js';
 

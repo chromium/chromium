@@ -150,7 +150,7 @@ In the second case, press the promo's action button to start the Tutorial.
 
 To launch a Tutorial directly in an `interactive_ui_tests` test, invoke the
 instance of
-[`TutorialService`](/components/user_education/common/tutorial_service.h) you
+[`TutorialService`](/components/user_education/common/tutorial/tutorial_service.h) you
 get from the current profile's
 [`UserEducationService`](/chrome/browser/user_education/user_education_service.h)
 via `UserEducationServiceFactory::GetForBrowserContext()`.

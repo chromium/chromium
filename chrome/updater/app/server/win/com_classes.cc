@@ -273,7 +273,7 @@ HRESULT UpdaterImpl::RegisterApp(const wchar_t* app_id,
   std::optional<RegistrationRequest> request =
       [app_id, brand_code, brand_path, ap, version,
        existence_checker_path]() -> decltype(request) {
-    for (const auto* str : {app_id, brand_code, brand_path, ap, version,
+    for (const auto& str : {app_id, brand_code, brand_path, ap, version,
                             existence_checker_path}) {
       if (wcsnlen_s(str, kMaxStringLen) == kMaxStringLen) {
         return std::nullopt;
@@ -588,7 +588,7 @@ HRESULT UpdaterImpl::Install(const wchar_t* app_id,
   std::optional<RegistrationRequest> request =
       [app_id, brand_code, brand_path, ap, version, existence_checker_path,
        client_install_data, install_data_index]() -> decltype(request) {
-    for (const auto* str :
+    for (const auto& str :
          {app_id, brand_code, brand_path, ap, version, existence_checker_path,
           client_install_data, install_data_index}) {
       if (wcsnlen_s(str, kMaxStringLen) == kMaxStringLen) {

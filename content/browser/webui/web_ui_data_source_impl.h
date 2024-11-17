@@ -57,6 +57,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   void DisableDenyXFrameOptions() override;
   void EnableReplaceI18nInJS() override;
   std::string GetSource() override;
+  std::string GetScheme() override;
   void SetSupportedScheme(std::string_view scheme) override;
 
   // Add the locale to the load time data defaults. May be called repeatedly.
@@ -64,6 +65,11 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
 
   bool IsWebUIDataSourceImpl() const override;
   void AddFrameAncestor(const GURL& frame_ancestor) override;
+
+  // URL path to resource ID (Grit IDR) map.
+  const std::map<std::string, int>& path_to_idr_map() const {
+    return path_to_idr_map_;
+  }
 
  protected:
   explicit WebUIDataSourceImpl(const std::string& source_name);
@@ -83,8 +89,10 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   class InternalDataSource;
   friend class InternalDataSource;
   friend class URLDataManagerBackend;
+  friend class URLDataManagerBackendTest;
   friend class WebUIDataSource;
   friend class WebUIDataSourceTest;
+  friend class WebUIImplTest;
 
   // Methods that match URLDataSource which are called by
   // InternalDataSource.

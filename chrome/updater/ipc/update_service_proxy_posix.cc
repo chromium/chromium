@@ -225,7 +225,7 @@ void Connect(
 
 UpdateServiceProxyImpl::UpdateServiceProxyImpl(
     UpdaterScope scope,
-    const base::TimeDelta& get_version_timeout)
+    base::TimeDelta get_version_timeout)
     : scope_(scope), get_version_timeout_(get_version_timeout) {}
 
 void UpdateServiceProxyImpl::GetVersion(
@@ -455,9 +455,8 @@ void UpdateServiceProxyImpl::EnsureConnecting() {
               remote_.BindNewPipeAndPassReceiver()))));
 }
 
-scoped_refptr<UpdateService> CreateUpdateServiceProxy(
-    UpdaterScope scope,
-    const base::TimeDelta& timeout) {
+scoped_refptr<UpdateService> CreateUpdateServiceProxy(UpdaterScope scope,
+                                                      base::TimeDelta timeout) {
   return base::MakeRefCounted<UpdateServiceProxy>(
       base::MakeRefCounted<UpdateServiceProxyImpl>(scope, timeout));
 }

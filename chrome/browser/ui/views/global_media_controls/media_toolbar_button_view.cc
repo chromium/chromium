@@ -29,6 +29,7 @@
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/live_caption/caption_util.h"
+#include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "components/vector_icons/vector_icons.h"
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -94,16 +95,14 @@ void MediaToolbarButtonView::Show() {
   SetVisible(true);
   PreferredSizeChanged();
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonShown();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonShown);
 }
 
 void MediaToolbarButtonView::Hide() {
   SetVisible(false);
   PreferredSizeChanged();
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonHidden();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonHidden);
 }
 
 void MediaToolbarButtonView::Enable() {
@@ -118,17 +117,15 @@ void MediaToolbarButtonView::Enable() {
           feature_engagement::kIPHLiveCaptionFeature);
   }
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonEnabled();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonEnabled);
 }
 
 void MediaToolbarButtonView::Disable() {
   SetEnabled(false);
 
-  ClosePromoBubble();
+  ClosePromoBubble(/*engaged=*/false);
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonDisabled();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonDisabled);
 }
 
 void MediaToolbarButtonView::MaybeShowLocalMediaCastingPromo() {
@@ -154,24 +151,32 @@ void MediaToolbarButtonView::ButtonPressed() {
     MediaDialogView::HideDialog();
   } else {
     MediaDialogView::ShowDialogFromToolbar(this, service_, browser_->profile());
-    ClosePromoBubble();
-
-    for (auto& observer : observers_)
-      observer.OnMediaDialogOpened();
+    ClosePromoBubble(/*engaged=*/true);
+    observers_.Notify(&MediaToolbarButtonObserver::OnMediaDialogOpened);
   }
 }
 
-void MediaToolbarButtonView::ClosePromoBubble() {
+void MediaToolbarButtonView::ClosePromoBubble(bool engaged) {
   // This can get called during setup before the window is even added to the
   // browser (and before any bubbles could possibly be shown) so if there is no
   // window, just bail.
-  if (!browser_->window())
+  if (!browser_->window()) {
     return;
+  }
 
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHLiveCaptionFeature);
-  browser_->window()->CloseFeaturePromo(
-      feature_engagement::kIPHGMCCastStartStopFeature);
+  if (engaged) {
+    browser_->window()->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHLiveCaptionFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+    browser_->window()->NotifyFeaturePromoFeatureUsed(
+        feature_engagement::kIPHGMCCastStartStopFeature,
+        FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
+  } else {
+    browser_->window()->AbortFeaturePromo(
+        feature_engagement::kIPHLiveCaptionFeature);
+    browser_->window()->AbortFeaturePromo(
+        feature_engagement::kIPHGMCCastStartStopFeature);
+  }
 }
 
 BEGIN_METADATA(MediaToolbarButtonView)

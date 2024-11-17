@@ -1117,8 +1117,7 @@ TEST_F(RateLimitTableTest, ClearDataForSourceIds) {
                           Pair(5, _), Pair(6, _)));
 
   ASSERT_TRUE(table_.ClearDataForSourceIds(
-      &db_, base::span({StoredSource::Id(5), StoredSource::Id(7),
-                        StoredSource::Id(9)})));
+      &db_, {StoredSource::Id(5), StoredSource::Id(7), StoredSource::Id(9)}));
 
   ASSERT_THAT(GetRateLimitRows(),
               ElementsAre(Pair(1, _), Pair(3, _), Pair(5, _)));
@@ -1578,7 +1577,7 @@ TEST_F(RateLimitTableTest, DeactivateSourcesForDestinationLimit) {
                        &db_, new_source, /*source_time=*/base::Time::Now())
                    ->empty());
   ASSERT_TRUE(table_.DeactivateSourcesForDestinationLimit(
-      &db_, base::span({StoredSource::Id(1)})));
+      &db_, base::span_from_ref(StoredSource::Id(1))));
   EXPECT_TRUE(table_
                   .GetSourcesToDeactivateForDestinationLimit(
                       &db_, new_source, /*source_time=*/base::Time::Now())
@@ -1716,6 +1715,91 @@ TEST_F(RateLimitTableTest, GetAttributionDataKeyList) {
   table_.AppendRateLimitDataKeys(&db_, keys);
 
   EXPECT_THAT(keys, ElementsAre(expected_1, expected_2));
+}
+
+TEST_F(RateLimitTableTest, CountUniqueReportingOriginsPerSiteForAttribution) {
+  constexpr base::TimeDelta kTimeWindow = base::Days(1);
+  delegate_.set_rate_limits([kTimeWindow] {
+    AttributionConfig::RateLimitConfig r;
+    r.origins_per_site_window = kTimeWindow;
+    return r;
+  }());
+
+  const base::Time now = base::Time::Now();
+
+  ASSERT_TRUE(table_.AddRateLimitForAttribution(
+      &db_,
+      AttributionInfoBuilder(*SuitableOrigin::Deserialize("https://a.d1.test"))
+          .SetTime(now)
+          .Build(),
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://a.r1.test"))
+          .BuildStored(),
+      RateLimitScope::kEventLevelAttribution, kReportId));
+  ASSERT_TRUE(table_.AddRateLimitForAttribution(
+      &db_,
+      AttributionInfoBuilder(*SuitableOrigin::Deserialize("https://b.d1.test"))
+          .SetTime(now)
+          .Build(),
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://b.r1.test"))
+          .BuildStored(),
+      RateLimitScope::kEventLevelAttribution, kReportId));
+
+  // Duplicate reporting origin, not counted.
+  ASSERT_TRUE(table_.AddRateLimitForAttribution(
+      &db_,
+      AttributionInfoBuilder(*SuitableOrigin::Deserialize("https://b.d1.test"))
+          .SetTime(now)
+          .Build(),
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://a.r1.test"))
+          .BuildStored(),
+      RateLimitScope::kEventLevelAttribution, kReportId));
+
+  // Different destination site, not counted.
+  ASSERT_TRUE(table_.AddRateLimitForAttribution(
+      &db_,
+      AttributionInfoBuilder(*SuitableOrigin::Deserialize("https://d2.test"))
+          .SetTime(now)
+          .Build(),
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r1.test"))
+          .BuildStored(),
+      RateLimitScope::kEventLevelAttribution, kReportId));
+
+  // Different reporting site, not counted.
+  ASSERT_TRUE(table_.AddRateLimitForAttribution(
+      &db_,
+      AttributionInfoBuilder(*SuitableOrigin::Deserialize("https://d1.test"))
+          .SetTime(now)
+          .Build(),
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://r2.test"))
+          .BuildStored(),
+      RateLimitScope::kEventLevelAttribution, kReportId));
+
+  EXPECT_EQ(table_.CountUniqueReportingOriginsPerSiteForAttribution(
+                &db_,
+                TriggerBuilder()
+                    .SetDestinationOrigin(
+                        *SuitableOrigin::Deserialize("https://d1.test"))
+                    .SetReportingOrigin(
+                        *SuitableOrigin::Deserialize("https://r1.test"))
+                    .Build(),
+                /*trigger_time=*/now + kTimeWindow - base::Milliseconds(1)),
+            2);
+
+  EXPECT_EQ(table_.CountUniqueReportingOriginsPerSiteForAttribution(
+                &db_,
+                TriggerBuilder()
+                    .SetDestinationOrigin(
+                        *SuitableOrigin::Deserialize("https://d1.test"))
+                    .SetReportingOrigin(
+                        *SuitableOrigin::Deserialize("https://r1.test"))
+                    .Build(),
+                /*trigger_time=*/now + kTimeWindow),
+            0);
 }
 
 }  // namespace content

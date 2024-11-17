@@ -27,7 +27,6 @@ _browser_config = enums.enum(
     WEB_ENGINE_SHELL = "web-engine-shell",
 )
 
-# TODO: crbug.com/40258588 - Add support for remaining OS types
 _os_type = enums.enum(
     ANDROID = "android",
     CROS = "chromeos",
@@ -39,25 +38,37 @@ _os_type = enums.enum(
 )
 
 _settings_defaults = args_lib.defaults(
+    allow_script_tests = True,
     browser_config = None,
     os_type = None,
     use_swarming = True,
+    use_android_merge_script_by_default = True,
 )
 
 def _settings(
         *,
+        allow_script_tests = args_lib.DEFAULT,
         browser_config = args_lib.DEFAULT,
         os_type = args_lib.DEFAULT,
-        use_swarming = args_lib.DEFAULT):
+        use_swarming = args_lib.DEFAULT,
+        use_android_merge_script_by_default = args_lib.DEFAULT):
     """Settings that control the expansions of tests for a builder.
 
     Args:
+        allow_script_tests: A bool controlling whether the builder can be
+            configured to run script tests. It is an error if allow_script_tests
+            is False and a builder includes script tests. Supports a
+            module-level default.
         browser_config: One of the values from targets.browser_config that
             indicates the configuration of the browser to execute the test with.
         os_type: One of the values from targets.os_type that indicates the OS
             type that the tests target. Supports a module-level default.
         use_swarming: Whether tests for the builder should be swarmed. Supports
             a module-level default.
+        use_android_merge_script_by_default: Whether tests targeting Android
+            will use the Android merge script by default. Has no effect for
+            non-swarming tests, non-Android tests or tests that have a merge
+            script specified.
 
     Returns:
         A struct that can be passed to the targets_setting argument of the
@@ -69,11 +80,19 @@ def _settings(
     os_type = _settings_defaults.get_value("os_type", os_type)
     if os_type and os_type not in _os_type.values:
         fail("unknown os_type: {}".format(os_type))
+
+    allow_script_tests = _settings_defaults.get_value("allow_script_tests", allow_script_tests)
     use_swarming = _settings_defaults.get_value("use_swarming", use_swarming)
+    use_android_merge_script_by_default = _settings_defaults.get_value(
+        "use_android_merge_script_by_default",
+        use_android_merge_script_by_default,
+    )
     return struct(
+        allow_script_tests = allow_script_tests,
         browser_config = browser_config,
         os_type = os_type,
         use_swarming = use_swarming,
+        use_android_merge_script_by_default = use_android_merge_script_by_default,
 
         # Computed properties
         is_android = os_type == _os_type.ANDROID,
@@ -84,7 +103,7 @@ def _settings(
         is_linux = os_type == _os_type.LINUX,
         is_mac = os_type == _os_type.MAC,
         is_win = os_type == _os_type.WINDOWS,
-        is_win64 = os_type == (_os_type.WINDOWS and browser_config == _browser_config.RELEASE_X64),
+        is_win64 = os_type == _os_type.WINDOWS and browser_config == _browser_config.RELEASE_X64,
     )
 
 def _create_compile_target(*, name):
@@ -235,10 +254,58 @@ def _remove(*, reason):
         __targets_remove__ = reason,
     )
 
-def _per_test_modification(*, mixins = None, remove_mixins = None):
+def _per_test_modification(*, mixins = None, remove_mixins = None, replacements = None):
+    """Per test modifications.
+
+    Args:
+        mixins: Mixins to apply to the test. Can take the form of the name of
+            mixin declared elsewhere, an anonymous mixin declaration or a list
+            of such elements.
+        remove_mixins: A list of mixin names that will be ignored when expanding
+            the test further. This has no effect on mixins that are specified by
+            bundles contained by the bundle where this declaration appears as
+            those have already been applied.
+        replacements: A targets.replacements object providing argument overrides
+            for the test.
+
+    Returns:
+        An object that can be passed as a value in the per_test_modifications
+        dict of a bundle declaration in order to modify the test expansion. In
+        the case that only mixins is set, the mixins value can be set directly
+        as the value in the per_test_modifications dict, so this is only
+        necessary when using other parameters.
+    """
     return struct(
         mixins = args_lib.listify(mixins),
         remove_mixins = args_lib.listify(remove_mixins),
+        replacements = replacements or _replacements(),
+    )
+
+def _replacements(*, args = None, precommit_args = None, non_precommit_args = None):
+    """Replacements for arguments.
+
+    Args:
+        args: A dict mapping flag strings to the replacement value for the args
+            value of a test spec. A replacement value of None will remove the
+            flag but cannot be used to remove a flag where the value is
+            specified in a separate argument. A non-None replacement value will
+            override the value for the flag whether the value is specified as a
+            separate argument or as part of the flag argument (--flag=value).
+        precommit_args: A dict mapping flag strings to the replacement value for
+            the precommit_args value of a test spec. See args for behavior.
+        non_precommit_args: A dict mapping flag strings to the replacement value
+            for the non_precommit_args value of a test spec. See args for
+            behavior.
+
+    Returns:
+        An object that can be passed to the replacements argument of
+        targets.per_test_modifications to perform replacements on the args lists
+        in the test spec.
+    """
+    return struct(
+        args = args or {},
+        precommit_args = precommit_args or {},
+        non_precommit_args = non_precommit_args or {},
     )
 
 def _create_bundle(
@@ -278,17 +345,20 @@ def _create_bundle(
     for v in variants:
         graph.add_edge(bundle_key, _targets_nodes.VARIANT.key(v))
     for test_name, mods in per_test_modifications.items():
-        # Use bundle_key.id here instead of name because an inline bundle will
-        # have None for name
-        modification_key = _targets_nodes.PER_TEST_MODIFICATION.add(bundle_key.id, test_name)
-        graph.add_edge(bundle_key, modification_key)
-
         # mods may be a single unnamed mixin, which would appear here as a
         # keyset, which is also a struct
         if graph.is_keyset(mods) or type(mods) != type(struct()):
             mods = _per_test_modification(
                 mixins = mods,
             )
+
+        # Use bundle_key.id here instead of name because an inline bundle will
+        # have None for name
+        modification_key = _targets_nodes.PER_TEST_MODIFICATION.add(bundle_key.id, test_name, props = dict(
+            replacements = mods.replacements,
+        ))
+        graph.add_edge(bundle_key, modification_key)
+
         for m in mods.mixins:
             graph.add_edge(modification_key, _targets_nodes.MIXIN.key(m))
         for r in mods.remove_mixins:
@@ -332,9 +402,10 @@ def _spec_handler(*, type_name, init, finalize):
             and should return a dict with all keys populated that are supported
             by the type.
         finalize: The function that produces the (mostly-)final value of a spec
-            for a target. The function will be passed the name of the test and
-            the spec value (dict) that has been modified by all applicable
-            mixins. The function should return a 3-tuple:
+            for a target. The function will be passed the name of the builder,
+            the name of the test and the spec value (dict) that has been
+            modified by all applicable mixins. The function should return a
+            3-tuple:
             * The test_suites key that the spec should be added to in the output
                 json file (one of "gtest_tests", "isolated_scripts",
                 "junit_tests", "scripts" or "skylab_tests").
@@ -364,7 +435,7 @@ def _spec_handler_for_unimplemented_target_type(type_name):
     return _spec_handler(
         type_name = type_name,
         init = (lambda node, settings: unimplemented()),
-        finalize = (lambda name, settings, spec: unimplemented()),
+        finalize = (lambda builder_name, test_name, settings, spec: unimplemented()),
     )
 
 def _merge(
@@ -530,16 +601,25 @@ def _spec_init(node, settings, *, additional_fields = {}, binary_node = None):
         **additional_fields
     )
 
-def _update_spec_for_android_presentation(spec_value):
+def _update_spec_for_android_presentation(settings, spec_value):
     results_bucket = "chromium-result-details"
     spec_value["args"] = args_lib.listify(spec_value["args"], "--gs-results-bucket={}".format(results_bucket))
-    if spec_value["swarming"].enable and not spec_value["merge"]:
+    if spec_value["swarming"].enable and not spec_value["merge"] and settings.use_android_merge_script_by_default:
         spec_value["merge"] = _merge(
             script = "//build/android/pylib/results/presentation/test_results_presentation.py",
             args = ["--bucket", results_bucket, "--test-name", spec_value["name"]],
         )
 
-def _spec_finalize(settings, spec_value, default_merge_script):
+def _resolve_magic_args(builder_name, settings, spec_value):
+    new_args = []
+    for arg in spec_value["args"]:
+        if type(arg) == type(struct()):
+            new_args.extend(arg.function(builder_name, settings, spec_value))
+        else:
+            new_args.append(arg)
+    spec_value["args"] = new_args
+
+def _spec_finalize(builder_name, settings, spec_value, default_merge_script):
     swarming = _finalize_swarming(spec_value["swarming"])
     spec_value["swarming"] = swarming
 
@@ -547,7 +627,7 @@ def _spec_finalize(settings, spec_value, default_merge_script):
     # build type was not specified.
     if swarming and settings.is_android:
         dimensions = swarming.get("dimensions", {})
-        if dimensions.get("os") == "Android" and "device_type_os" not in dimensions:
+        if dimensions.get("os") == "Android" and "device_os_type" not in dimensions:
             swarming["dimensions"] = dimensions | {"device_os_type": "userdebug"}
     if swarming and not spec_value["merge"]:
         spec_value["merge"] = _merge(
@@ -555,6 +635,10 @@ def _spec_finalize(settings, spec_value, default_merge_script):
         )
     spec_value["merge"] = _finalize_merge(spec_value["merge"])
     spec_value["resultdb"] = _finalize_resultdb(spec_value["resultdb"])
+
+    if spec_value["args"]:
+        _resolve_magic_args(builder_name, settings, spec_value)
+
     return spec_value
 
 common = struct(
@@ -581,6 +665,7 @@ common = struct(
     create_legacy_test = _create_legacy_test,
     create_test = _create_test,
     per_test_modification = _per_test_modification,
+    replacements = _replacements,
     create_bundle = _create_bundle,
 
     # Functions for defining target spec types
@@ -591,4 +676,5 @@ common = struct(
     spec_init = _spec_init,
     update_spec_for_android_presentation = _update_spec_for_android_presentation,
     spec_finalize = _spec_finalize,
+    finalize_resultdb = _finalize_resultdb,
 )

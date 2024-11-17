@@ -7,13 +7,6 @@
 
 #include "base/functional/callback_forward.h"
 
-template <class T>
-class scoped_refptr;
-
-namespace network {
-class SharedURLLoaderFactory;
-}
-
 namespace ash::system {
 class StatisticsProvider;
 }
@@ -73,7 +66,7 @@ class AutoEnrollmentTypeChecker {
     // These values are persisted to logs. Entries should not be renumbered and
     // numeric values should never be reused.
     kDisabledViaNeverSwitch = 0,
-    kDisabledViaKillSwitch = 1,
+    // Deprecated: kDisabledViaKillSwitch = 1,
     kDisabledOnUnbrandedBuild = 2,
     kDisabledOnNonChromeDevice = 3,
     kEnabledOnOfficialGoogleChrome = 4,
@@ -81,16 +74,6 @@ class AutoEnrollmentTypeChecker {
     kEnabledViaAlwaysSwitch = 6,
     kMaxValue = kEnabledViaAlwaysSwitch
   };
-
-  // Returns true when class has been initialized.
-  static bool Initialized();
-
-  // Perform async initialization of this class, which requires access to the
-  // network. Users must call this method and wait until `init_callback` has
-  // been invoked before calling any other non-testing functions below.
-  static void Initialize(
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-      base::OnceClosure init_callback);
 
   // Returns true when unified state determination is enabled based on
   // command-line switch, official build status and server-based kill-switch.
@@ -141,17 +124,6 @@ class AutoEnrollmentTypeChecker {
       bool is_system_clock_synchronized,
       ash::system::StatisticsProvider* statistics_provider,
       bool dev_disable_boot);
-
-  // Allows to configure unified state determination kill switch. Used for
-  // testing.
-  static void SetUnifiedStateDeterminationKillSwitchForTesting(bool is_killed);
-
-  // Clears unified state determination kill switch. Used for testing.
-  static void ClearUnifiedStateDeterminationKillSwitchForTesting();
-
-  // Checks if unified state determination is disabled using the server-based
-  // kill-switch. Used for testing.
-  static bool IsUnifiedStateDeterminationDisabledByKillSwitchForTesting();
 
  private:
   // Requirement for initial state determination.

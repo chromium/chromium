@@ -65,8 +65,8 @@ void AudioNodeInput::UpdateInternalBus() {
 }
 
 unsigned AudioNodeInput::NumberOfChannels() const {
-  AudioHandler::ChannelCountMode mode = Handler().InternalChannelCountMode();
-  if (mode == AudioHandler::kExplicit) {
+  auto mode = Handler().InternalChannelCountMode();
+  if (mode == V8ChannelCountMode::Enum::kExplicit) {
     return Handler().ChannelCount();
   }
 
@@ -81,7 +81,7 @@ unsigned AudioNodeInput::NumberOfChannels() const {
     max_channels = std::max(max_channels, output->NumberOfChannels());
   }
 
-  if (mode == AudioHandler::kClampedMax) {
+  if (mode == V8ChannelCountMode::Enum::kClampedMax) {
     max_channels =
         std::min(max_channels, static_cast<unsigned>(Handler().ChannelCount()));
   }
@@ -94,7 +94,7 @@ scoped_refptr<AudioBus> AudioNodeInput::Bus() {
 
   // Handle single connection specially to allow for in-place processing.
   if (NumberOfRenderingConnections() == 1 &&
-      Handler().InternalChannelCountMode() == AudioHandler::kMax) {
+      Handler().InternalChannelCountMode() == V8ChannelCountMode::Enum::kMax) {
     return RenderingOutput(0)->Bus();
   }
 
@@ -142,7 +142,7 @@ scoped_refptr<AudioBus> AudioNodeInput::Pull(AudioBus* in_place_bus,
 
   // Handle single connection case.
   if (NumberOfRenderingConnections() == 1 &&
-      Handler().InternalChannelCountMode() == AudioHandler::kMax) {
+      Handler().InternalChannelCountMode() == V8ChannelCountMode::Enum::kMax) {
     // The output will optimize processing using inPlaceBus if it's able.
     AudioNodeOutput* output = RenderingOutput(0);
     return output->Pull(in_place_bus, frames_to_process);

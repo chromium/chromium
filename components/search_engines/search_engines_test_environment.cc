@@ -37,8 +37,11 @@ SearchEnginesTestEnvironment::SearchEnginesTestEnvironment(const Deps& deps) {
                               country_codes::CountryCharsToCountryID('U', 'S'));
   }
 
-  search_engine_choice_service_ =
-      std::make_unique<SearchEngineChoiceService>(*pref_service_, local_state_);
+  search_engine_choice_service_ = std::make_unique<SearchEngineChoiceService>(
+      *pref_service_, local_state_
+      ,
+      /*is_profile_eligible_for_dse_guest_propagation=*/false
+  );
 
   template_url_service_ = std::make_unique<TemplateURLService>(
       *pref_service_, *search_engine_choice_service_,

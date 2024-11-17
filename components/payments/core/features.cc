@@ -62,16 +62,6 @@ BASE_FEATURE(kSecurePaymentConfirmationUseCredentialStoreAPIs,
 #endif
 );
 
-#if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPaymentHandlerWindowInTaskManager,
-             "PaymentHandlerWindowInTaskManager",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
-BASE_FEATURE(kPaymentHandlerAlwaysRefreshIcon,
-             "PaymentHandlerAlwaysRefreshIcon",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPaymentHandlerRequireLinkHeader,
              "PaymentHandlerRequireLinkHeader",
              base::FEATURE_ENABLED_BY_DEFAULT);

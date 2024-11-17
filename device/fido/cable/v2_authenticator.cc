@@ -276,11 +276,11 @@ class TunnelTransport : public Transport {
       GeneratePairingDataCallback generate_pairing_data,
       base::flat_set<Feature> features)
       : platform_(platform),
-        tunnel_id_(device::cablev2::Derive<EXTENT(tunnel_id_)>(
+        tunnel_id_(device::cablev2::Derive<kTunnelIdSize>(
             secret,
             base::span<uint8_t>(),
             DerivedValueType::kTunnelID)),
-        eid_key_(device::cablev2::Derive<EXTENT(eid_key_)>(
+        eid_key_(device::cablev2::Derive<kEIDKeySize>(
             secret,
             base::span<const uint8_t>(),
             device::cablev2::DerivedValueType::kEIDKey)),
@@ -310,7 +310,7 @@ class TunnelTransport : public Transport {
       bssl::UniquePtr<EC_KEY> local_identity)
       : platform_(platform),
         tunnel_id_(fido_parsing_utils::Materialize(tunnel_id)),
-        eid_key_(device::cablev2::Derive<EXTENT(eid_key_)>(
+        eid_key_(device::cablev2::Derive<kEIDKeySize>(
             secret,
             client_nonce,
             device::cablev2::DerivedValueType::kEIDKey)),
@@ -434,7 +434,7 @@ class TunnelTransport : public Transport {
 
     ble_advert_ =
         platform_->SendBLEAdvert(eid::Encrypt(plaintext_eid, eid_key_));
-    psk_ = device::cablev2::Derive<EXTENT(psk_)>(
+    psk_ = device::cablev2::Derive<kPSKSize>(
         secret_, plaintext_eid, device::cablev2::DerivedValueType::kPSK);
 
     update_callback_.Run(Platform::Status::TUNNEL_SERVER_CONNECT);
@@ -608,7 +608,7 @@ class TunnelTransport : public Transport {
       }
 
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 
@@ -908,11 +908,6 @@ class CTAP2Processor : public Transaction {
           }
         }
 
-        // PRF inputs are already hashed when coming via CTAP so, if there are
-        // any PRF inputs, they're hashed.
-        params->extensions->prf_inputs_hashed =
-            !params->extensions->prf_inputs.empty();
-
         transaction_received_ = true;
         const bool empty_allowlist = params->allow_credentials.empty();
         platform_->GetAssertion(
@@ -1204,14 +1199,14 @@ static std::array<uint8_t, 32> DerivePairedSecret(
     // first using the contact ID to derive a secret from the root secret, and
     // then using the pairing ID to generate a secret from that.
     per_contact_id_secret =
-        device::cablev2::Derive<EXTENT(per_contact_id_secret)>(
+        device::cablev2::Derive<per_contact_id_secret.size()>(
             root_secret, *contact_id,
             device::cablev2::DerivedValueType::kPerContactIDSecret);
     secret = per_contact_id_secret;
   }
 
   std::array<uint8_t, 32> paired_secret;
-  paired_secret = device::cablev2::Derive<EXTENT(paired_secret)>(
+  paired_secret = device::cablev2::Derive<paired_secret.size()>(
       secret, pairing_id, device::cablev2::DerivedValueType::kPairedSecret);
 
   return paired_secret;

@@ -4,7 +4,8 @@
 
 source_set("ui") {
   sources = [
-    "docking_promo_consumer.h",
+    "animated_promo_view_controller.h",
+    "animated_promo_view_controller.mm",
     "docking_promo_display_handler.h",
     "docking_promo_display_handler.mm",
     "docking_promo_metrics.h",
@@ -18,10 +19,11 @@ source_set("ui") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/promos_manager/model:types",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/promos_manager:promos",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/common/ui/instruction_view",
     "//ios/public/provider/chrome/browser/lottie:lottie_animation_api",
     "//ui/base",
   ]

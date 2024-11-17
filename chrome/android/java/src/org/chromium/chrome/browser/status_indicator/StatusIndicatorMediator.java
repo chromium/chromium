@@ -237,10 +237,10 @@ class StatusIndicatorMediator
         mTextFadeInAnimation.setInterpolator(Interpolators.FAST_OUT_SLOW_IN_INTERPOLATOR);
         mTextFadeInAnimation.setDuration(FADE_TEXT_DURATION_MS);
         mTextFadeInAnimation.addUpdateListener(
-                (anim -> {
+                anim -> {
                     final float currentAlpha = (float) anim.getAnimatedValue();
                     mModel.set(StatusIndicatorProperties.TEXT_ALPHA, currentAlpha);
-                }));
+                });
         mTextFadeInAnimation.addListener(
                 new CancelAwareAnimatorListener() {
                     @Override

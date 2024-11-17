@@ -32,7 +32,7 @@ TestMultiUserWindowManager* TestMultiUserWindowManager::Create(
 
 void TestMultiUserWindowManager::SetWindowOwner(aura::Window* window,
                                                 const AccountId& account_id) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 const AccountId& TestMultiUserWindowManager::GetWindowOwner(

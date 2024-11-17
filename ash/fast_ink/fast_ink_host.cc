@@ -21,7 +21,9 @@
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
+#include "gpu/command_buffer/common/shared_image_capabilities.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
@@ -116,9 +118,11 @@ void FastInkHost::InitBufferMetadata(aura::Window* host_window) {
   // be done by the compositor.
   window_to_buffer_transform_ = host_window->GetHost()->GetRootTransform();
   gfx::Rect bounds(host_window->GetBoundsInScreen().size());
-  buffer_size_ =
-      cc::MathUtil::MapEnclosingClippedRect(window_to_buffer_transform_, bounds)
-          .size();
+  // TODO(oshima): Make this eplison default.
+  constexpr float kEpsilon = 0.001f;
+  buffer_size_ = cc::MathUtil::MapEnclosingClippedRectIgnoringError(
+                     window_to_buffer_transform_, bounds, kEpsilon)
+                     .size();
 }
 
 void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
@@ -133,10 +137,24 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
 
   // This SharedImage will be used by the display compositor, will be updated
   // in parallel with being read, and will potentially be used in overlays.
-  constexpr gpu::SharedImageUsageSet usage =
+  gpu::SharedImageUsageSet usage =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
-      gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+
+  bool add_scanout_usage = true;
+
+  // Scanout usage should be added only if scanout of SharedImages is supported.
+  // However, historically this was not checked.
+  // TODO(crbug.com/330865436): Remove killswitch post-safe rollout.
+  if (base::FeatureList::IsEnabled(
+          ::features::
+              kFastInkHostAddScanoutUsageOnlyIfSupportedBySharedImage)) {
+    add_scanout_usage &= sii->GetCapabilities().supports_scanout_shared_images;
+  }
+
+  if (add_scanout_usage) {
+    usage |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+  }
 
   CHECK(!client_shared_image_);
   client_shared_image_ = fast_ink_internal::CreateMappableSharedImage(
@@ -151,15 +169,14 @@ void FastInkHost::InitializeFastInkBuffer(aura::Window* host_window) {
       mapping = client_shared_image_->Map();
     }
     LOG_IF(ERROR, !mapping) << "Failed to map MappableSI";
-    uint8_t* memory =
-        mapping ? static_cast<uint8_t*>(mapping->Memory(0)) : nullptr;
-    if (memory != nullptr) {
+    if (mapping) {
       gfx::Size size = mapping->Size();
       int stride = mapping->Stride(0);
       // Clear the buffer before usage, since it may be uninitialized.
       // (http://b/168735625)
       for (int i = 0; i < size.height(); ++i) {
-        memset(memory + i * stride, 0, size.width() * 4);
+        memset(mapping->GetMemoryForPlane(0).data() + i * stride, 0,
+               size.width() * 4);
       }
     }
   }
@@ -212,11 +229,12 @@ void FastInkHost::DrawBitmap(SkBitmap bitmap, const gfx::Rect& damage_rect) {
     TRACE_EVENT1("ui", "FastInkHost::ScopedPaint::Copy", "damage_rect",
                  damage_rect.ToString());
 
-    uint8_t* data = static_cast<uint8_t*>(mapping->Memory(0));
     const int stride = mapping->Stride(0);
     bitmap.readPixels(
         SkImageInfo::MakeN32Premul(damage_rect.width(), damage_rect.height()),
-        data + damage_rect.y() * stride + damage_rect.x() * 4, stride, 0, 0);
+        mapping->GetMemoryForPlane(0).data() + damage_rect.y() * stride +
+            damage_rect.x() * 4,
+        stride, 0, 0);
   }
 
   {

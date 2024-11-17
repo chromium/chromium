@@ -29,22 +29,33 @@ chromium-metrics-reviews@google.com.
 <enum name="AnimationAbortReason">
   <int value="0" label="Render Widget Host Destroyed"/>
   <int value="1" label="Main Commit On Subframe Transition"/>
-  <int value="2" label="New Commit In Primary Main Frame"/>
-  <int value="3" label="Cross Origin Redirect"/>
-  <int value="4" label="New Commit While Displaying Invoke Animation"/>
-  <int value="5" label="New Commit While Displaying Canceled Animation"/>
-  <int value="6" label="New Commit While Waiting For New Renderer To Draw"/>
+  <int value="2" label="[DEPRECATED] New Commit In Primary Main Frame"/>
+  <int value="3" label="[DEPRECATED] Cross Origin Redirect"/>
+  <int value="4"
+      label="[DEPRECATED] New Commit While Displaying Invoke Animation"/>
+  <int value="5"
+      label="[DEPRECATED] New Commit While Displaying Canceled Animation"/>
+  <int value="6"
+      label="[DEPRECATED] New Commit While Waiting For New Renderer To Draw"/>
   <int value="7"
-      label="New Commit While Waiting For Content For Navigation Entry Shown"/>
-  <int value="8" label="New Commit While Displaying Cross Fade Animation"/>
-  <int value="9" label="New Commit While Waiting For Before Unload Response"/>
+      label="[DEPRECATED] New Commit While Waiting For Content For Navigation
+             Entry Shown"/>
+  <int value="8"
+      label="[DEPRECATED] New Commit While Displaying Cross Fade Animation"/>
+  <int value="9"
+      label="[DEPRECATED] New Commit While Waiting For Before Unload Response"/>
   <int value="10" label="Multiple Navigation Requests Created"/>
   <int value="11" label="Navigation Entry Deleted Before Commit"/>
-  <int value="12" label="Post Navigation First Frame Timeout"/>
+  <int value="12" label="[DEPRECATED] Post Navigation First Frame Timeout"/>
   <int value="13" label="Chained Back"/>
   <int value="14" label="Detached From Window"/>
   <int value="15" label="Root Window Visibility Changed"/>
   <int value="16" label="Compositor Detached"/>
+  <int value="17" label="Animation Manager Destroyed"/>
+  <int value="18" label="Physical size changed mid-animation"/>
+  <int value="19" label="Animation successfully finishes"/>
+  <int value="20" label="Primary Main Frame Render Process Is Destroyed"/>
+  <int value="21" label="Same-doc navigation restarts as cross-doc"/>
 </enum>
 
 <enum name="AutomaticBeaconOutcome">
@@ -413,11 +424,13 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/renderer_host/navigation_throttle_runner.h:Event)-->
 
+<!-- LINT.IfChange(NavigationTransitionCacheHitOrMissReason) -->
+
 <enum name="NavigationTransitionCacheHitOrMissReason">
   <int value="0" label="Cache Hit"/>
   <int value="1" label="Sent Screenshot Request"/>
-  <int value="2" label="Captured Empty Bitmap"/>
-  <int value="3" label="Cache Miss Subframe"/>
+  <int value="2" label="Captured Empty Bitmap From Web Pages"/>
+  <int value="3" label="[DEPRECATED] Cache Miss Subframe"/>
   <int value="4" label="Cache Miss Evicted"/>
   <int value="5" label="Cache Miss Purged Memory Pressure"/>
   <int value="6" label="Cache Miss Cold Start"/>
@@ -429,7 +442,13 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Cache Miss Screenshot Orientation"/>
   <int value="13" label="Navigate away from a crashed page"/>
   <int value="14" label="Navigate away from a crashed page (no early swap)"/>
+  <int value="15" label="Window or compositor is detached"/>
+  <int value="16" label="Browser not embedding a valid LocalSurfaceID"/>
+  <int value="17" label="Not capture non primary main frames"/>
+  <int value="18" label="Captured Empty Bitmap From Embedder"/>
 </enum>
+
+<!-- LINT.ThenChange(//content/browser/renderer_host/navigation_transitions/navigation_transition_data.h:CacheHitOrMissReason)-->
 
 <enum name="NavigationWasServedFromCache">
   <int value="0" label="Navigation wasn't served from cache"/>
@@ -1852,6 +1871,15 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Full user agent string"/>
   <int value="1" label="Reduced user agent string"/>
   <int value="2" label="Overridden user agent string"/>
+</enum>
+
+<enum name="WastedSpeculativeRFHCase">
+  <int value="0" label="kNotWasted_WasUnassociated"/>
+  <int value="1" label="kNotWasted_WasUsingCurrentRFH_NowKeepCurrentRFH"/>
+  <int value="2" label="kNotWasted_WasUsingCurrentRFH_NowUseSpeculativeRFH"/>
+  <int value="3" label="kNotWasted_NowKeepSameSpeculativeRFH"/>
+  <int value="4" label="kWasted_NowUseCurrentRFH"/>
+  <int value="5" label="kWasted_NowUseNewSpeculativeRFH"/>
 </enum>
 
 <enum name="WebSchedulerTrackedFeature">

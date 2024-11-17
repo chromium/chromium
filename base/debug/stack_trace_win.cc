@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/debug/stack_trace.h"
 
 #include <windows.h>
@@ -123,10 +118,10 @@ long WINAPI StackDumpExceptionFilter(EXCEPTION_POINTERS* info) {
 }
 
 FilePath GetExePath() {
-  wchar_t system_buffer[MAX_PATH];
-  GetModuleFileName(NULL, system_buffer, MAX_PATH);
-  system_buffer[MAX_PATH - 1] = L'\0';
-  return FilePath(system_buffer);
+  std::array<wchar_t, MAX_PATH> system_buffer;
+  GetModuleFileName(NULL, system_buffer.data(), system_buffer.size());
+  system_buffer.back() = L'\0';
+  return FilePath(system_buffer.data());
 }
 
 constexpr size_t kSymInitializeRetryCount = 3;

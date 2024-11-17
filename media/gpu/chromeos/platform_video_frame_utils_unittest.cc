@@ -67,6 +67,35 @@ scoped_refptr<VideoFrame> CreateMockDmaBufVideoFrame(
 }
 }  // namespace
 
+TEST(PlatformVideoFrameUtilsTest, UniqueTrackingTokenHelperTests) {
+  UniqueTrackingTokenHelper helper;
+
+  VideoFrameMetadata metadata;
+  CHECK(!metadata.tracking_token.has_value());
+
+  // Tests that SetUniqueTrackingToken will set |tracking_token| when passed a
+  // VideoFrameMetadata without |tracking_token| set.
+  helper.SetUniqueTrackingToken(metadata);
+  ASSERT_TRUE(metadata.tracking_token.has_value());
+  ASSERT_FALSE(metadata.tracking_token->is_empty());
+
+  // Tests that SetUniqueTrackingToken will set |tracking_token| when passed a
+  // VideoFrameMetadata an empty, but set |tracking_token|. The constructor
+  // add an empty base::UnguessableToken to avoid users being able to register
+  // empty tokens.
+  metadata.tracking_token = base::UnguessableToken();
+  CHECK(metadata.tracking_token->is_empty());
+  helper.SetUniqueTrackingToken(metadata);
+  EXPECT_FALSE(metadata.tracking_token->is_empty());
+
+  // Check that inserting an already inserted token results in a new token
+  // getting generated.
+  base::UnguessableToken token = *metadata.tracking_token;
+  helper.SetUniqueTrackingToken(metadata);
+  ASSERT_TRUE(metadata.tracking_token.has_value());
+  EXPECT_NE(*metadata.tracking_token, token);
+}
+
 TEST(PlatformVideoFrameUtilsTest, CreateNativePixmapDmaBuf) {
   constexpr VideoPixelFormat kPixelFormat = PIXEL_FORMAT_NV12;
   constexpr gfx::Size kCodedSize(320, 240);
@@ -134,8 +163,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
                                                 kTimeStamp, kBufferUsage);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     };
 
     ASSERT_TRUE(frame);
@@ -154,8 +182,7 @@ TEST(PlatformVideoFrameUtilsTest, CreateVideoFrame) {
         EXPECT_TRUE(frame->GetGpuMemoryBufferForTesting());
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     };
   }
 }

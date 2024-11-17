@@ -16,12 +16,12 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
-import {PrefsState} from '../common/types.js';
+import type {PrefsState} from '../common/types.js';
 import {Router, routes} from '../router.js';
 
 import {getTemplate} from './language_settings_card.html.js';
 import {ACCESSIBILITY_COMMON_IME_ID} from './languages.js';
-import {LanguageHelper, LanguagesModel} from './languages_types.js';
+import type {LanguageHelper, LanguagesModel} from './languages_types.js';
 
 const LanguageSettingsCardElementBase =
     RouteOriginMixin(I18nMixin(PolymerElement));

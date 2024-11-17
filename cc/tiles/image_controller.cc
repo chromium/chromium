@@ -23,8 +23,11 @@ ImageController::ImageDecodeRequestId
 
 ImageController::ImageController(
     scoped_refptr<base::SequencedTaskRunner> origin_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> worker_task_runner)
-    : worker_task_runner_(std::move(worker_task_runner)) {
+    scoped_refptr<base::SequencedTaskRunner> worker_task_runner,
+    base::RepeatingCallback<void(scoped_refptr<TileTask>)>
+        notify_external_dependent)
+    : worker_task_runner_(std::move(worker_task_runner)),
+      notify_external_dependent_(std::move(notify_external_dependent)) {
   worker_state_ = std::make_unique<WorkerState>(std::move(origin_task_runner),
                                                 weak_ptr_factory_.GetWeakPtr());
 }
@@ -53,79 +56,116 @@ void ImageController::StopWorkerTasks() {
   if (!cache_ || !worker_task_runner_)
     return;
 
-  base::AutoLock hold(worker_state_->lock);
+  TileTask::Vector external_dependents;
 
-  // If a worker task is running, post a task and wait for its completion to
-  // "flush" the queue.
-  if (worker_state_->task_state == WorkerTaskState::kRunningTask) {
-    base::AutoUnlock release(worker_state_->lock);
-    CompletionEvent completion_event;
-    worker_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&CompletionEvent::Signal,
-                                  base::Unretained(&completion_event)));
-    completion_event.Wait();
-  }
+  {
+    base::AutoLock hold(worker_state_->lock);
 
-  // Now, begin cleanup.
-
-  // Unlock all of the locked images (note that this vector would only be
-  // populated if we actually need to unref the image.
-  for (auto& image_pair : requested_locked_images_)
-    cache_->UnrefImage(image_pair.second);
-  requested_locked_images_.clear();
-
-  // Now, complete the tasks that already ran but haven't completed. These would
-  // be posted in the run loop, but since we invalidated the weak ptrs, we need
-  // to run everything manually.
-  for (auto& request_to_complete : worker_state_->requests_needing_completion) {
-    ImageDecodeRequest& request = request_to_complete.second;
-
-    // The task (if one exists) would have run already, we just need to make
-    // sure it was completed. Multiple requests for the same image use the same
-    // task so it could have already been completed.
-    if (request.task && !request.task->HasCompleted()) {
-      request.task->OnTaskCompleted();
-      request.task->DidComplete();
+    // If a worker task is running, post a task and wait for its completion to
+    // "flush" the queue.
+    if (worker_state_->task_state == WorkerTaskState::kRunningTask) {
+      base::AutoUnlock release(worker_state_->lock);
+      CompletionEvent completion_event;
+      worker_task_runner_->PostTask(
+          FROM_HERE, base::BindOnce(&CompletionEvent::Signal,
+                                    base::Unretained(&completion_event)));
+      completion_event.Wait();
+      CHECK_NE(worker_state_->task_state, WorkerTaskState::kRunningTask);
     }
 
-    if (request.need_unref)
-      cache_->UnrefImage(request.draw_image);
+    // Now, begin cleanup.
 
-    // Orphan the request so that we can still run it when a new cache is set.
-    request.task = nullptr;
-    request.need_unref = false;
-    orphaned_decode_requests_.push_back(std::move(request));
-  }
-  worker_state_->requests_needing_completion.clear();
+    // Unlock all of the locked images (note that this vector would only be
+    // populated if we actually need to unref the image.
+    for (auto& image_pair : requested_locked_images_) {
+      cache_->UnrefImage(image_pair.second);
+    }
+    requested_locked_images_.clear();
 
-  // Finally, complete all of the tasks that never started running. This is
-  // similar to the |requests_needing_completion_|, but happens at a different
-  // stage in the pipeline.
-  for (auto& request_pair : worker_state_->image_decode_queue) {
-    ImageDecodeRequest& request = request_pair.second;
+    // Now, complete the tasks that already ran but haven't completed. These
+    // would be posted in the run loop, but since we invalidated the weak ptrs,
+    // we need to run everything manually.
+    for (auto& request_to_complete :
+         worker_state_->requests_needing_completion) {
+      ImageDecodeRequest& request = request_to_complete.second;
 
-    if (request.task) {
-      // This task may have run via a different request, so only cancel it if
-      // it's "new". That is, the same task could have been referenced by
-      // several different image deque requests for the same image.
-      if (request.task->state().IsNew())
-        request.task->state().DidCancel();
-
-      if (!request.task->HasCompleted()) {
+      // The task (if one exists) would have run already, we just need to make
+      // sure it was completed. Multiple requests for the same image use the
+      // same task so it could have already been completed.
+      if (request.task && !request.task->HasCompleted()) {
         request.task->OnTaskCompleted();
         request.task->DidComplete();
+        if (auto& dependent = request.task->external_dependent()) {
+          external_dependents.push_back(std::move(dependent));
+        }
       }
+
+      if (request.need_unref) {
+        cache_->UnrefImage(request.draw_image);
+      }
+
+      // Orphan the request so that we can still run it when a new cache is set.
+      request.task = nullptr;
+      request.need_unref = false;
+      orphaned_decode_requests_.push_back(std::move(request));
     }
+    worker_state_->requests_needing_completion.clear();
 
-    if (request.need_unref)
-      cache_->UnrefImage(request.draw_image);
+    // Finally, complete all of the tasks that never started running. This is
+    // similar to the |requests_needing_completion_|, but happens at a different
+    // stage in the pipeline.
+    for (auto& request_pair : worker_state_->image_decode_queue) {
+      ImageDecodeRequest& request = request_pair.second;
 
-    // Orphan the request so that we can still run it when a new cache is set.
-    request.task = nullptr;
-    request.need_unref = false;
-    orphaned_decode_requests_.push_back(std::move(request));
+      if (request.task) {
+        // This task may have run via a different request, so only cancel it if
+        // it's "new". That is, the same task could have been referenced by
+        // several different image deque requests for the same image.
+        if (request.task->state().IsNew()) {
+          request.task->state().DidCancel();
+        }
+
+        if (!request.task->HasCompleted()) {
+          request.task->OnTaskCompleted();
+          request.task->DidComplete();
+          if (auto& dependent = request.task->external_dependent()) {
+            external_dependents.push_back(std::move(dependent));
+          }
+        }
+      }
+
+      if (request.need_unref) {
+        cache_->UnrefImage(request.draw_image);
+      }
+
+      // Orphan the request so that we can still run it when a new cache is set.
+      request.task = nullptr;
+      request.need_unref = false;
+      orphaned_decode_requests_.push_back(std::move(request));
+    }
+    worker_state_->image_decode_queue.clear();
   }
-  worker_state_->image_decode_queue.clear();
+
+  for (auto& dependent : external_dependents) {
+    dependent->ExternalDependencyCompleted();
+    notify_external_dependent_.Run(dependent);
+  }
+}
+
+bool ImageController::HasReadyToRunTask() const {
+  worker_state_->lock.AssertAcquired();
+  return base::ranges::any_of(
+      worker_state_->image_decode_queue.begin(),
+      worker_state_->image_decode_queue.end(),
+      [](const ImageDecodeRequest& request) -> bool {
+        return !request.has_external_dependency;
+      },
+      &std::pair<const ImageDecodeRequestId, ImageDecodeRequest>::second);
+}
+
+bool ImageController::HasReadyToRunTaskForTesting() const {
+  base::AutoLock hold(worker_state_->lock);
+  return HasReadyToRunTask();
 }
 
 void ImageController::SetImageDecodeCache(ImageDecodeCache* cache) {
@@ -160,6 +200,11 @@ void ImageController::ConvertImagesToTasks(
   *has_at_raster_images = false;
   *has_hardware_accelerated_jpeg_candidates = false;
   *has_hardware_accelerated_webp_candidates = false;
+
+  // We may read/write stand-alone decode image tasks if they are duplicates of
+  // raster tasks.
+  base::AutoLock hold(worker_state_->lock);
+
   for (auto it = sync_decoded_images->begin();
        it != sync_decoded_images->end();) {
     // PaintWorklet images should not be included in this set; they have already
@@ -244,12 +289,35 @@ ImageController::ImageDecodeRequestId ImageController::QueueImageDecode(
 
   // Schedule the task and signal that there is more work.
   base::AutoLock hold(worker_state_->lock);
-  worker_state_->image_decode_queue[id] =
-      ImageDecodeRequest(id, draw_image, std::move(callback),
-                         std::move(result.task), result.need_unref);
+  bool has_external_dependency =
+      result.task && !result.task->dependencies().empty();
+  CHECK(!has_external_dependency ||
+        result.task->dependencies()[0]->IsRasterTask());
+  worker_state_->image_decode_queue[id] = ImageDecodeRequest(
+      id, draw_image, std::move(callback), std::move(result.task),
+      result.need_unref, has_external_dependency);
   ScheduleImageDecodeOnWorkerIfNeeded();
 
   return id;
+}
+
+void ImageController::ExternalDependencyCompletedForTask(
+    scoped_refptr<TileTask> task) {
+  base::AutoLock hold(worker_state_->lock);
+  auto external_dependency_completed =
+      [&task](ImageDecodeRequest& request) -> void {
+    if (request.task == task) {
+      request.has_external_dependency = false;
+    }
+  };
+  base::ranges::for_each(
+      worker_state_->image_decode_queue.begin(),
+      worker_state_->image_decode_queue.end(), external_dependency_completed,
+      &std::pair<const ImageDecodeRequestId, ImageDecodeRequest>::second);
+  base::ranges::for_each(orphaned_decode_requests_.begin(),
+                         orphaned_decode_requests_.end(),
+                         external_dependency_completed);
+  ScheduleImageDecodeOnWorkerIfNeeded();
 }
 
 void ImageController::UnlockImageDecode(ImageDecodeRequestId id) {
@@ -281,6 +349,15 @@ void ImageController::ProcessNextImageDecodeOnWorkerThread(
   auto decode_it = worker_state->image_decode_queue.begin();
   CHECK(decode_it != worker_state->image_decode_queue.end(),
         base::NotFatalUntil::M130);
+  // Skip tasks that have an unmet external dependency.
+  while (decode_it != worker_state->image_decode_queue.end() &&
+         decode_it->second.has_external_dependency) {
+    decode_it++;
+  }
+  if (decode_it == worker_state->image_decode_queue.end()) {
+    worker_state->task_state = WorkerTaskState::kNoTask;
+    return;
+  }
   scoped_refptr<TileTask> decode_task = decode_it->second.task;
   ImageDecodeRequestId decode_id = decode_it->second.id;
 
@@ -303,10 +380,12 @@ void ImageController::ProcessNextImageDecodeOnWorkerThread(
   // ordered. So, when we process this task's completion, we won't actually do
   // anything with the task and simply issue the callback.
   if (decode_task && decode_task->state().IsNew()) {
-    base::AutoUnlock release(worker_state->lock);
     decode_task->state().DidSchedule();
     decode_task->state().DidStart();
-    decode_task->RunOnWorkerThread();
+    {
+      base::AutoUnlock release(worker_state->lock);
+      decode_task->RunOnWorkerThread();
+    }
     decode_task->state().DidFinish();
   }
 
@@ -321,6 +400,7 @@ void ImageController::ProcessNextImageDecodeOnWorkerThread(
 void ImageController::ImageDecodeCompleted(ImageDecodeRequestId id) {
   ImageDecodedCallback callback;
   ImageDecodeResult result = ImageDecodeResult::SUCCESS;
+  scoped_refptr<TileTask> external_dependent;
   {
     base::AutoLock hold(worker_state_->lock);
 
@@ -350,9 +430,12 @@ void ImageController::ImageDecodeCompleted(ImageDecodeRequestId id) {
       requested_locked_images_[id] = std::move(request.draw_image);
 
     // If we have a task that isn't completed yet, we need to complete it.
-    if (request.task && !request.task->HasCompleted()) {
-      request.task->OnTaskCompleted();
-      request.task->DidComplete();
+    if (request.task) {
+      if (!request.task->HasCompleted()) {
+        request.task->OnTaskCompleted();
+        request.task->DidComplete();
+      }
+      external_dependent = std::move(request.task->external_dependent());
     }
 
     // Finally, save the callback so we can run it without the lock, and erase
@@ -361,6 +444,11 @@ void ImageController::ImageDecodeCompleted(ImageDecodeRequestId id) {
     worker_state_->requests_needing_completion.erase(request_it);
 
     ScheduleImageDecodeOnWorkerIfNeeded();
+  }
+
+  if (external_dependent) {
+    external_dependent->ExternalDependencyCompleted();
+    notify_external_dependent_.Run(std::move(external_dependent));
   }
 
   // Finally run the requested callback.
@@ -393,7 +481,7 @@ void ImageController::GenerateTasksForOrphanedRequests() {
 
 void ImageController::ScheduleImageDecodeOnWorkerIfNeeded() {
   if (worker_state_->task_state == WorkerTaskState::kNoTask &&
-      !worker_state_->image_decode_queue.empty()) {
+      HasReadyToRunTask()) {
     worker_state_->task_state = WorkerTaskState::kQueuedTask;
     // base::Unretained is safe because `worker_state_` is guaranteed to be
     // deleted from a task posted to `worker_task_runner_` after this (see
@@ -411,12 +499,14 @@ ImageController::ImageDecodeRequest::ImageDecodeRequest(
     const DrawImage& draw_image,
     ImageDecodedCallback callback,
     scoped_refptr<TileTask> task,
-    bool need_unref)
+    bool need_unref,
+    bool has_external_dependency)
     : id(id),
       draw_image(draw_image),
       callback(std::move(callback)),
       task(std::move(task)),
-      need_unref(need_unref) {}
+      need_unref(need_unref),
+      has_external_dependency(has_external_dependency) {}
 ImageController::ImageDecodeRequest::ImageDecodeRequest(
     ImageDecodeRequest&& other) = default;
 ImageController::ImageDecodeRequest::~ImageDecodeRequest() = default;

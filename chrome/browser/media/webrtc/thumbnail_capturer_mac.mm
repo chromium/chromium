@@ -38,120 +38,22 @@
 using SampleCallback =
     base::RepeatingCallback<void(base::apple::ScopedCFTypeRef<CGImageRef> image,
                                  ThumbnailCapturer::SourceId source_id)>;
-using ErrorCallback = base::RepeatingClosure;
-
-API_AVAILABLE(macos(13.2))
-@interface SCKStreamDelegateAndOutput
-    : NSObject <SCStreamDelegate, SCStreamOutput>
-
-- (instancetype)initWithSampleCallback:(SampleCallback)sampleCallback
-                         errorCallback:(ErrorCallback)errorCallback
-                              sourceId:(ThumbnailCapturer::SourceId)sourceId;
-@end
-
-@implementation SCKStreamDelegateAndOutput {
-  SampleCallback _sampleCallback;
-  ErrorCallback _errorCallback;
-  ThumbnailCapturer::SourceId _sourceId;
-}
-
-- (instancetype)initWithSampleCallback:(SampleCallback)sampleCallback
-                         errorCallback:(ErrorCallback)errorCallback
-                              sourceId:(ThumbnailCapturer::SourceId)sourceId {
-  if (self = [super init]) {
-    _sampleCallback = sampleCallback;
-    _errorCallback = errorCallback;
-    _sourceId = sourceId;
-  }
-  return self;
-}
-
-+ (CGRect)cropRegionFromSampleBuffer:(CMSampleBufferRef)sampleBuffer {
-  // Read out the content region from the sample buffer attachment metadata and
-  // use as crop region. The content region is determined from the attachments
-  // SCStreamFrameInfoContentRect and SCStreamFrameInfoScaleFactor.
-
-  CFArrayRef attachmentsArray = CMSampleBufferGetSampleAttachmentsArray(
-      sampleBuffer, /*createIfNecessary=*/false);
-  if (!attachmentsArray || CFArrayGetCount(attachmentsArray) <= 0) {
-    return {};
-  }
-
-  CFDictionaryRef attachment = base::apple::CFCast<CFDictionaryRef>(
-      CFArrayGetValueAtIndex(attachmentsArray, 0));
-  if (!attachment) {
-    return {};
-  }
-
-  CFDictionaryRef contentRectValue = base::apple::CFCast<CFDictionaryRef>(
-      CFDictionaryGetValue(attachment, base::apple::NSToCFPtrCast(
-                                           SCStreamFrameInfoContentRect)));
-  CFNumberRef scaleFactorValue = base::apple::CFCast<CFNumberRef>(
-      CFDictionaryGetValue(attachment, base::apple::NSToCFPtrCast(
-                                           SCStreamFrameInfoScaleFactor)));
-  if (!contentRectValue || !scaleFactorValue) {
-    return {};
-  }
-
-  CGRect contentRect = {};
-  float scaleFactor = 1.0f;
-  if (!CGRectMakeWithDictionaryRepresentation(contentRectValue, &contentRect) ||
-      !CFNumberGetValue(scaleFactorValue, kCFNumberFloatType, &scaleFactor)) {
-    return {};
-  }
-
-  contentRect.size.width *= scaleFactor;
-  contentRect.size.height *= scaleFactor;
-  return contentRect;
-}
-
-- (void)stream:(SCStream*)stream
-    didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
-                   ofType:(SCStreamOutputType)type {
-  CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
-  if (!pixelBuffer) {
-    return;
-  }
-  base::apple::ScopedCFTypeRef<CGImageRef> cgImage;
-  auto result = VTCreateCGImageFromCVPixelBuffer(pixelBuffer, nil,
-                                                 cgImage.InitializeInto());
-
-  if (result != 0) {
-    return;
-  }
-
-  // Avoid having black regions on the sides by cropping the image to the
-  // content region.
-  CGRect cropRegion =
-      [SCKStreamDelegateAndOutput cropRegionFromSampleBuffer:sampleBuffer];
-  if (CGRectIsEmpty(cropRegion)) {
-    return;
-  }
-
-  base::apple::ScopedCFTypeRef<CGImageRef> croppedImage(
-      CGImageCreateWithImageInRect(cgImage.get(), cropRegion));
-  _sampleCallback.Run(croppedImage, _sourceId);
-}
-
-- (void)stream:(SCStream*)stream didStopWithError:(NSError*)error {
-  _errorCallback.Run();
-}
-
-@end
 
 namespace {
 
+// These features enable the use of ScreenCaptureKit to produce thumbnails in
+// the getDisplayMedia picker. The `kScreenCaptureKitStreamPicker*` features are
+// used to produce thumbnails of specific windows, while the
+// `kScreenCaptureKitPickerScreen` feature is used to produce thumbnails of the
+// entire screen. This is distinct from `kUseSCContentSharingPicker`, which uses
+// the native macOS picker.
 BASE_FEATURE(kScreenCaptureKitStreamPickerSonoma,
              "ScreenCaptureKitStreamPickerSonoma",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kScreenCaptureKitStreamPickerVentura,
-             "ScreenCaptureKitStreamPickerVentura",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kScreenCaptureKitPickerScreen,
              "ScreenCaptureKitPickerScreen",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // The enable/disable property of this feature has no impact. The feature is
 // used solely to pass on the parameters below.
@@ -171,31 +73,6 @@ const base::FeatureParam<base::TimeDelta>
                                               "refresh_timer_interval",
                                               base::Milliseconds(250)};
 
-// The capture mode controls how the thumbnails are captured.
-enum class CaptureMode {
-  // Create an SCStream for each selected source. In this mode frames are pushed
-  // by the OS at the specified maximum frame rate.
-  kSCStream = 0,
-  // Use SCScreenshotManager to capture frames. In this mode a timer is used to
-  // periodically capture the selected windows in a pull-based fashion. Please
-  // note that this mode is only available in macOS 14.0 and later.
-  kSCScreenshotManager = 1
-};
-const base::FeatureParam<CaptureMode>::Option capture_mode_options[] = {
-    {CaptureMode::kSCStream, "sc_stream"},
-    {CaptureMode::kSCScreenshotManager, "sc_screenshot_manager"},
-};
-const base::FeatureParam<CaptureMode> kThumbnailCapturerMacCaptureMode{
-    &kThumbnailCapturerMac, "capture_mode", CaptureMode::kSCScreenshotManager,
-    &capture_mode_options};
-
-CaptureMode GetCaptureModeFeatureParam() {
-  if (@available(macOS 14.0, *)) {
-    return kThumbnailCapturerMacCaptureMode.Get();
-  }
-  return CaptureMode::kSCStream;
-}
-
 content::DesktopMediaID::Type ConvertToDesktopMediaIDType(
     DesktopMediaList::Type type) {
   switch (type) {
@@ -209,7 +86,7 @@ content::DesktopMediaID::Type ConvertToDesktopMediaIDType(
     case DesktopMediaList::Type::kNone:
       break;
   }
-  NOTREACHED_NORETURN();
+  NOTREACHED();
 }
 
 // The sort mode controls the order of the source list that is returned from
@@ -548,11 +425,6 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
                      gfx::Size thumbnail_size) override;
 
  private:
-  struct StreamAndDelegate {
-    SCStream* __strong stream;
-    SCKStreamDelegateAndOutput* __strong delegate;
-  };
-
   void UpdateWindowsList();
   void OnRecurrentShareableContent(SCShareableContent* content);
 
@@ -575,13 +447,11 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
 
   bool IsShareable(SCWindow* window) const;
   NSArray<SCWindow*>* FilterOutUnshareable(NSArray<SCWindow*>* windows);
-  void RemoveInactiveStreams();
   void OnCapturedFrame(base::apple::ScopedCFTypeRef<CGImageRef> image,
                        ThumbnailCapturer::SourceId source_id);
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   DesktopMediaList::Type type_;
-  const CaptureMode capture_mode_;
   const SortMode sort_mode_;
   int max_frame_rate_;
   const int minimum_window_size_;
@@ -596,7 +466,6 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
   NSArray<SCWindow*>* __strong shareable_windows_;
   NSArray<SCDisplay*>* __strong shareable_displays_;
 
-  base::flat_map<SourceId, StreamAndDelegate> streams_;
   base::RepeatingTimer refresh_timer_;
 
   std::unique_ptr<ScreenshotManagerCapturer> screenshot_manager_capturer_;
@@ -606,9 +475,6 @@ class API_AVAILABLE(macos(13.2)) ThumbnailCapturerMac
 
 ThumbnailCapturerMac::ThumbnailCapturerMac(DesktopMediaList::Type type)
     : type_(type),
-      capture_mode_(type_ == DesktopMediaList::Type::kScreen
-                        ? CaptureMode::kSCScreenshotManager
-                        : GetCaptureModeFeatureParam()),
       sort_mode_(kThumbnailCapturerMacSortMode.Get()),
       max_frame_rate_(kThumbnailCapturerMacMaxFrameRate.Get()),
       minimum_window_size_(kThumbnailCapturerMacMinWindowSize.Get()),
@@ -638,19 +504,17 @@ void ThumbnailCapturerMac::Start(Consumer* consumer) {
                        kThumbnailCapturerMacRefreshTimerInterval.Get(), this,
                        &ThumbnailCapturerMac::UpdateWindowsList);
 
-  if (capture_mode_ == CaptureMode::kSCScreenshotManager) {
-    CHECK(!screenshot_manager_capturer_);
-    // Unretained is safe because `screenshot_manager_capturer_ ` is owned by
-    // `this`, and hence has a shorter lifetime than `this`.
-    screenshot_manager_capturer_ = std::make_unique<ScreenshotManagerCapturer>(
-        type_, max_frame_rate_,
-        base::BindRepeating(&ThumbnailCapturerMac::GetShareableDisplay,
-                            base::Unretained(this)),
-        base::BindRepeating(&ThumbnailCapturerMac::GetShareableWindow,
-                            base::Unretained(this)),
-        base::BindRepeating(&ThumbnailCapturerMac::OnCapturedFrame,
-                            weak_factory_.GetWeakPtr()));
-  }
+  CHECK(!screenshot_manager_capturer_);
+  // Unretained is safe because `screenshot_manager_capturer_ ` is owned by
+  // `this`, and hence has a shorter lifetime than `this`.
+  screenshot_manager_capturer_ = std::make_unique<ScreenshotManagerCapturer>(
+      type_, max_frame_rate_,
+      base::BindRepeating(&ThumbnailCapturerMac::GetShareableDisplay,
+                          base::Unretained(this)),
+      base::BindRepeating(&ThumbnailCapturerMac::GetShareableWindow,
+                          base::Unretained(this)),
+      base::BindRepeating(&ThumbnailCapturerMac::OnCapturedFrame,
+                          weak_factory_.GetWeakPtr()));
 }
 
 void ThumbnailCapturerMac::SetMaxFrameRate(uint32_t max_frame_rate) {
@@ -776,8 +640,6 @@ void ThumbnailCapturerMac::UpdateShareableWindows(
       shareable_windows_ = SortOrderByNewWindowsLast(content_windows);
       break;
   }
-
-  RemoveInactiveStreams();
 }
 
 SCDisplay* ThumbnailCapturerMac::GetShareableDisplay(SourceId source_id) const {
@@ -878,103 +740,11 @@ NSArray<SCWindow*>* ThumbnailCapturerMac::FilterOutUnshareable(
   return result;
 }
 
-void ThumbnailCapturerMac::RemoveInactiveStreams() {
-  // Remove all streams for windows that are not active anymore. New streams are
-  // created once the consumer calls SelectSources().
-  for (auto it = streams_.begin(); it != streams_.end();) {
-    if (!FindWindow(shareable_windows_, it->first)) {
-      it = streams_.erase(it);
-    } else {
-      ++it;
-    }
-  }
-}
-
 void ThumbnailCapturerMac::SelectSources(const std::vector<SourceId>& ids,
                                          gfx::Size thumbnail_size) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
-  if (capture_mode_ == CaptureMode::kSCScreenshotManager) {
-    CHECK(screenshot_manager_capturer_);
-    screenshot_manager_capturer_->SelectSources(ids, thumbnail_size);
-    return;
-  }
-
-  // Create SCStreamConfiguration.
-  SCStreamConfiguration* config = [[SCStreamConfiguration alloc] init];
-  config.width = thumbnail_size.width();
-  config.height = thumbnail_size.height();
-  config.scalesToFit = YES;
-  config.showsCursor = NO;
-  config.minimumFrameInterval = CMTimeMake(
-      media::kFrameRatePrecision,
-      static_cast<int>(max_frame_rate_ * media::kFrameRatePrecision));
-
-  SampleCallback sample_callback = base::BindPostTask(
-      task_runner_, base::BindRepeating(&ThumbnailCapturerMac::OnCapturedFrame,
-                                        weak_factory_.GetWeakPtr()));
-  ErrorCallback error_callback = base::DoNothing();
-
-  // Create a stream for any source that doesn't have a stream.
-  for (SourceId id : ids) {
-    if (streams_.find(id) != streams_.end()) {
-      continue;
-    }
-    // Find the corresponding SCWindow in the list.
-    SCWindow* selected_window = nil;
-    for (SCWindow* window in shareable_windows_) {
-      if (window.windowID == id) {
-        selected_window = window;
-        break;
-      }
-    }
-
-    if (!selected_window) {
-      continue;
-    }
-    SCContentFilter* filter = [[SCContentFilter alloc]
-        initWithDesktopIndependentWindow:selected_window];
-
-    SCKStreamDelegateAndOutput* delegate = [[SCKStreamDelegateAndOutput alloc]
-        initWithSampleCallback:sample_callback
-                 errorCallback:error_callback
-                      sourceId:selected_window.windowID];
-
-    // Create and start stream.
-    SCStream* stream = [[SCStream alloc] initWithFilter:filter
-                                          configuration:config
-                                               delegate:delegate];
-
-    NSError* error = nil;
-    bool add_stream_output_result =
-        [stream addStreamOutput:delegate
-                           type:SCStreamOutputTypeScreen
-             sampleHandlerQueue:dispatch_get_main_queue()
-                          error:&error];
-    if (error || !add_stream_output_result) {
-      DVLOG(2) << "Something went wrong while adding stream output";
-      continue;
-    }
-
-    auto handler = ^(NSError* e) {
-      if (e) {
-        DVLOG(2) << "Error while starting the capturer.";
-      }
-    };
-    [stream startCaptureWithCompletionHandler:handler];
-
-    // Keep track of the stream and delegate.
-    streams_[id] = StreamAndDelegate{stream, delegate};
-  }
-
-  // Remove any stream that is not in the list of selected sources anymore.
-  for (auto it = streams_.begin(); it != streams_.end();) {
-    if (base::Contains(ids, it->first)) {
-      ++it;
-    } else {
-      it = streams_.erase(it);
-    }
-  }
+  CHECK(screenshot_manager_capturer_);
+  screenshot_manager_capturer_->SelectSources(ids, thumbnail_size);
 }
 
 void ThumbnailCapturerMac::OnCapturedFrame(
@@ -1020,13 +790,10 @@ bool ShouldUseThumbnailCapturerMac(DesktopMediaList::Type type) {
         return false;
     }
   }
-  if (@available(macOS 13.2, *)) {
-    return base::FeatureList::IsEnabled(kScreenCaptureKitStreamPickerVentura);
-  }
   return false;
 }
 
-// Creates a ThumbnailCapturerMac object. Must only be called is
+// Creates a ThumbnailCapturerMac object. Must only be called if
 // ShouldUseThumbnailCapturerMac() returns true.
 std::unique_ptr<ThumbnailCapturer> CreateThumbnailCapturerMac(
     DesktopMediaList::Type type) {
@@ -1036,7 +803,7 @@ std::unique_ptr<ThumbnailCapturer> CreateThumbnailCapturerMac(
         std::make_unique<DelegatedSourceListCapturer>(
             ConvertToDesktopMediaIDType(type)));
   }
-  if (@available(macOS 13.2, *)) {
+  if (@available(macOS 14.4, *)) {
     return std::make_unique<ThumbnailCapturerMac>(type);
   }
   NOTREACHED();

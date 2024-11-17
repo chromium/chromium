@@ -24,7 +24,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_link_row/cr_link_row.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
-import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import '//resources/cr_elements/cr_menu_selector/cr_menu_selector.js';
 import '//resources/cr_elements/cr_nav_menu_item_style.css.js';
@@ -89,6 +89,7 @@ export interface CertificateManagerV2Element {
     clientCertSection: HTMLElement,
     crsCertSection: CrsSectionV2Element,
     adminCertsSection: CertificateSubpageV2Element,
+    userCertsSection: CertificateSubpageV2Element,
     platformCertsSection: CertificateSubpageV2Element,
     platformClientCertsSection: CertificateSubpageV2Element,
   };
@@ -158,7 +159,39 @@ export class CertificateManagerV2Element extends
 
       clientPlatformSubpageLists_: {
         type: Array<SubpageCertificateList>,
-        computed: 'computeClientPlatformSubpageLists_(showClientCertImport_)',
+        // <if expr="chromeos_ash">
+        computed: 'computeClientPlatformSubpageLists_(showClientCertImport_,' +
+            'showClientCertImportAndBind_)',
+        // </if>
+        // <if expr="not chromeos_ash">
+        computed: 'computeClientPlatformSubpageLists_()',
+        // </if>
+      },
+
+      userSubpageLists_: {
+        type: Array<SubpageCertificateList>,
+        value: (): SubpageCertificateList[] => {
+          return [
+            {
+              headerText: loadTimeData.getString(
+                  'certificateManagerV2TrustedCertsList'),
+              certSource: CertificateSource.kUserTrustedCerts,
+              showImport: true,
+            },
+            {
+              headerText: loadTimeData.getString(
+                  'certificateManagerV2IntermediateCertsList'),
+              certSource: CertificateSource.kUserIntermediateCerts,
+              showImport: true,
+            },
+            {
+              headerText: loadTimeData.getString(
+                  'certificateManagerV2DistrustedCertsList'),
+              certSource: CertificateSource.kUserDistrustedCerts,
+              showImport: true,
+            },
+          ];
+        },
       },
 
       toastMessage_: String,
@@ -176,7 +209,21 @@ export class CertificateManagerV2Element extends
         value: false,
       },
 
-      showClientCertImport_: Boolean,
+      // <if expr="chromeos_ash">
+      showClientCertImport_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('clientCertImportAllowed');
+        },
+      },
+
+      showClientCertImportAndBind_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('clientCertImportAndBindAllowed');
+        },
+      },
+      // </if>
 
       certificateSourceEnum_: {
         type: Object,
@@ -205,19 +252,9 @@ export class CertificateManagerV2Element extends
   private enterpriseSubpageLists_: SubpageCertificateList[];
   private platformSubpageLists_: SubpageCertificateList[];
   private clientPlatformSubpageLists_: SubpageCertificateList[];
-  // <if expr="not chromeos_ash">
-  private showClientCertImport_: boolean = false;
-  // </if>
   // <if expr="chromeos_ash">
-  // TODO(crbug.com/40928765): Import should also be disabled in kiosk mode or
-  // when disabled by policy (if there is any policy that applies to client
-  // certs). (And these conditions should be re-checked by the import handler
-  // in C++ code rather than trusting the webui.)
-  // TODO(crbug.com/40928765): This controls both "import" and "import and
-  // bind". If we implement client cert import on Linux too we should make a
-  // separate bool for each so that "import and bind" is only enabled on
-  // chromeos.
-  private showClientCertImport_: boolean = true;
+  private showClientCertImport_: boolean;
+  private showClientCertImportAndBind_: boolean;
   // </if>
 
   override ready() {
@@ -308,6 +345,9 @@ export class CertificateManagerV2Element extends
         case Page.PLATFORM_CLIENT_CERTS:
           this.$.platformClientCertsSection.setInitialFocus();
           break;
+        case Page.USER_CERTS:
+          this.$.userCertsSection.setInitialFocus();
+          break;
         default:
           assertNotReached();
       }
@@ -331,6 +371,12 @@ export class CertificateManagerV2Element extends
           if (route.page === Page.CLIENT_CERTS) {
             await this.$.main.updateComplete;
             focusWithoutInk(this.$.viewOsImportedClientCerts);
+          }
+          break;
+        case Page.USER_CERTS:
+          if (route.page === Page.LOCAL_CERTS) {
+            await this.$.main.updateComplete;
+            this.$.localCertSection.setFocusToLinkRow(oldRoute.page);
           }
           break;
         default:
@@ -373,8 +419,8 @@ export class CertificateManagerV2Element extends
       return;
     }
     if (result.error !== undefined) {
-      // TODO(crbug.com/40928765): localize
-      this.infoDialogTitle_ = 'import result';
+      this.infoDialogTitle_ =
+          loadTimeData.getString('certificateManagerV2ImportErrorTitle');
       this.infoDialogMessage_ = result.error;
       this.showInfoDialog_ = true;
     }
@@ -386,8 +432,8 @@ export class CertificateManagerV2Element extends
       return;
     }
     if (result.error !== undefined) {
-      // TODO(crbug.com/40928765): localize
-      this.infoDialogTitle_ = 'delete result';
+      this.infoDialogTitle_ =
+          loadTimeData.getString('certificateManagerV2DeleteErrorTitle');
       this.infoDialogMessage_ = result.error;
       this.showInfoDialog_ = true;
     }
@@ -405,12 +451,22 @@ export class CertificateManagerV2Element extends
             'certificateManagerV2ClientCertsFromPlatform'),
         certSource: CertificateSource.kPlatformClientCert,
         hideExport: true,
+        // <if expr="chromeos_ash">
         showImport: this.showClientCertImport_,
-        showImportAndBind: this.showClientCertImport_,
+        showImportAndBind: this.showClientCertImportAndBind_,
         // TODO(crbug.com/40928765): Figure out how we want to display the
         // import buttons/etc on this subpage. For now just show the header
         // when we need the import buttons to be visible.
-        hideHeader: !this.showClientCertImport_,
+        hideHeader:
+            !this.showClientCertImport_ && !this.showClientCertImportAndBind_,
+        // </if>
+        // <if expr="is_linux">
+        showImport: true,
+        hideHeader: false,
+        // </if>
+        // <if expr="not chromeos_ash and not is_linux">
+        hideHeader: true,
+        // </if>
       },
     ];
   }

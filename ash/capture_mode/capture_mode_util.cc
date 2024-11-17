@@ -6,7 +6,6 @@
 
 #include "ash/accessibility/accessibility_controller.h"
 #include "ash/capture_mode/capture_mode_camera_controller.h"
-#include "ash/capture_mode/capture_mode_constants.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_types.h"
@@ -16,6 +15,7 @@
 #include "ash/public/cpp/window_finder.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/root_window_controller.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
@@ -25,6 +25,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ui/frame/frame_header.h"
+#include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -149,6 +150,15 @@ void FadeOutWidget(views::Widget* widget,
 }
 
 }  // namespace
+
+PrefService* GetActiveUserPrefService() {
+  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
+
+  auto* pref_service =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  DCHECK(pref_service);
+  return pref_service;
+}
 
 bool IsCaptureModeActive() {
   return CaptureModeController::Get()->IsActive();
@@ -583,6 +593,32 @@ gfx::Rect GetEffectivePartialRegionBounds(
   gfx::Rect result = partial_region_bounds;
   result.AdjustToFit(root_window->bounds());
   return result;
+}
+
+void AddActionButton(views::Button::PressedCallback callback,
+                     std::u16string text,
+                     const gfx::VectorIcon* icon,
+                     const ActionButtonRank rank,
+                     ActionButtonViewID id) {
+  if (auto* controller = CaptureModeController::Get(); controller->IsActive()) {
+    controller->capture_mode_session()->AddActionButton(std::move(callback),
+                                                        text, icon, rank, id);
+  }
+}
+
+void AnimateToOpacity(ui::Layer* layer,
+                      const float opacity,
+                      const base::TimeDelta duration) {
+  if (layer->GetTargetOpacity() == opacity) {
+    return;
+  }
+
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(
+          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .Once()
+      .SetDuration(duration)
+      .SetOpacity(layer, opacity, gfx::Tween::FAST_OUT_SLOW_IN);
 }
 
 }  // namespace ash::capture_mode_util

@@ -5,6 +5,7 @@
 #import <ChromeWebView/ChromeWebView.h>
 #import <Foundation/Foundation.h>
 
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web_view/test/observer.h"
@@ -75,7 +76,7 @@ class WebViewFromWKWebViewConfigurationTest : public WebViewInttestBase {
 @end
 
 @implementation WKUIDelegateForTest {
-  ios_web_view::WebViewFromWKWebViewConfigurationTest* _test;
+  raw_ptr<ios_web_view::WebViewFromWKWebViewConfigurationTest> _test;
 }
 
 - (instancetype)initWithTest:

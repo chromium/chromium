@@ -9,13 +9,11 @@
 #include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
-#include "third_party/blink/renderer/core/streams/promise_handler.h"
 #include "third_party/blink/renderer/core/streams/read_request.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/stream_algorithms.h"
-#include "third_party/blink/renderer/core/streams/stream_promise_resolver.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -90,14 +88,13 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
 
     void ChunkSteps(ScriptState* script_state,
                     v8::Local<v8::Value> chunk,
-                    ExceptionState& exception_state) const override {
+                    ExceptionState&) const override {
       scoped_refptr<scheduler::EventLoop> event_loop =
           ExecutionContext::From(script_state)->GetAgent()->event_loop();
       v8::Global<v8::Value> value(script_state->GetIsolate(), chunk);
       event_loop->EnqueueMicrotask(
           WTF::BindOnce(&TeeReadRequest::ChunkStepsBody, WrapPersistent(this),
-                        WrapPersistent(script_state), std::move(value),
-                        exception_state.GetContext()));
+                        WrapPersistent(script_state), std::move(value)));
     }
 
     void CloseSteps(ScriptState* script_state) const override {
@@ -120,7 +117,7 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
       // 4. If canceled1 is false or canceled2 is false, resolve
       // cancelPromise with undefined.
       if (!engine_->canceled_[0] || !engine_->canceled_[1]) {
-        engine_->cancel_promise_->ResolveWithUndefined(script_state);
+        engine_->cancel_promise_->Resolve();
       }
     }
 
@@ -137,32 +134,30 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
 
    private:
     void ChunkStepsBody(ScriptState* script_state,
-                        v8::Global<v8::Value> value,
-                        const ExceptionContext& exception_context) const {
+                        v8::Global<v8::Value> value) const {
       // This is called in a microtask, the ScriptState needs to be put back
       // in scope.
       ScriptState::Scope scope(script_state);
+      v8::Isolate* isolate = script_state->GetIsolate();
+      v8::TryCatch try_catch(isolate);
       // 1. Set readAgain to false.
       engine_->read_again_ = false;
 
-      ExceptionState exception_state(script_state->GetIsolate(),
-                                     exception_context);
-
       // 2. Let chunk1 and chunk2 be chunk.
       std::array<v8::Local<v8::Value>, 2> chunk;
-      chunk[0] = value.Get(script_state->GetIsolate());
+      chunk[0] = value.Get(isolate);
       chunk[1] = chunk[0];
 
       // 3. If canceled2 is false and cloneForBranch2 is true,
       if (!engine_->canceled_[1] && engine_->clone_for_branch2_) {
         //   a. Let cloneResult be StructuredClone(chunk2).
-        v8::MaybeLocal<v8::Value> clone_result_maybe =
-            engine_->StructuredClone(script_state, chunk[1], exception_state);
+        v8::MaybeLocal<v8::Value> clone_result_maybe = engine_->StructuredClone(
+            script_state, chunk[1], PassThroughException(isolate));
         v8::Local<v8::Value> clone_result;
         //   b. If cloneResult is an abrupt completion,
         if (!clone_result_maybe.ToLocal(&clone_result)) {
-          CHECK(exception_state.HadException());
-          v8::Local<v8::Value> exception = exception_state.GetException();
+          CHECK(try_catch.HasCaught());
+          v8::Local<v8::Value> exception = try_catch.Exception();
           //     i. Perform !
           //     ReadableStreamDefaultControllerError(branch1.[[controller]],
           //     cloneResult.[[Value]]).
@@ -175,15 +170,12 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
               script_state, engine_->controller_[1], exception);
           //     iii. Resolve cancelPromise with !
           //     ReadableStreamCancel(stream, cloneResult.[[Value]]).
-          engine_->cancel_promise_->Resolve(
-              script_state,
-              ReadableStream::Cancel(script_state, engine_->stream_, exception)
-                  .V8Promise());
+          engine_->cancel_promise_->Resolve(ReadableStream::Cancel(
+              script_state, engine_->stream_, exception));
           //     iv. Return.
-          exception_state.ClearException();
           return;
         } else {
-          DCHECK(!exception_state.HadException());
+          DCHECK(!try_catch.HasCaught());
           //   c. Otherwise, set chunk2 to cloneResult.[[Value]].
           chunk[1] = clone_result;
         }
@@ -199,15 +191,14 @@ class TeeEngine::PullAlgorithm final : public StreamAlgorithm {
                 engine_->controller_[branch])) {
           ReadableStreamDefaultController::Enqueue(
               script_state, engine_->controller_[branch], chunk[branch],
-              exception_state);
-          if (exception_state.HadException()) {
+              PassThroughException(isolate));
+          if (try_catch.HasCaught()) {
             // Instead of returning a rejection, which is inconvenient here,
             // call ControllerError(). The only difference this makes is that it
             // happens synchronously, but that should not be observable.
-            ReadableStreamDefaultController::Error(
-                script_state, engine_->controller_[branch],
-                exception_state.GetException());
-            exception_state.ClearException();
+            ReadableStreamDefaultController::Error(script_state,
+                                                   engine_->controller_[branch],
+                                                   try_catch.Exception());
             return;
           }
         }
@@ -267,13 +258,12 @@ class TeeEngine::CancelAlgorithm final : public StreamAlgorithm {
       // ii. Let cancelResult be ! ReadableStreamCancel(stream,
       //    compositeReason).
       auto cancel_result = ReadableStream::Cancel(
-                               script_state, engine_->stream_, composite_reason)
-                               .V8Promise();
+          script_state, engine_->stream_, composite_reason);
 
       // iii. Resolve cancelPromise with cancelResult.
-      engine_->cancel_promise_->Resolve(script_state, cancel_result);
+      engine_->cancel_promise_->Resolve(cancel_result);
     }
-    return engine_->cancel_promise_->V8Promise(isolate);
+    return engine_->cancel_promise_->V8Promise();
   }
 
   void Trace(Visitor* visitor) const override {
@@ -331,7 +321,8 @@ void TeeEngine::Start(ScriptState* script_state,
   DCHECK(!branch_[1]);
 
   // 12. Let cancelPromise be a new promise.
-  cancel_promise_ = MakeGarbageCollected<StreamPromiseResolver>(script_state);
+  cancel_promise_ =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
 
   // 13. Let pullAlgorithm be the following steps:
   // (steps are defined in PullAlgorithm::Run()).
@@ -376,35 +367,34 @@ void TeeEngine::Start(ScriptState* script_state,
     controller_[branch] = To<ReadableStreamDefaultController>(controller);
   }
 
-  class RejectFunction final : public PromiseHandler {
+  class RejectFunction final : public ThenCallable<IDLAny, RejectFunction> {
    public:
     explicit RejectFunction(TeeEngine* engine) : engine_(engine) {}
 
-    void CallWithLocal(ScriptState* script_state,
-                       v8::Local<v8::Value> r) override {
+    void React(ScriptState* script_state, ScriptValue r) {
       // 18. Upon rejection of reader.[[closedPromise]] with reason r,
       //   a. Perform ! ReadableStreamDefaultControllerError(branch1.
       //      [[readableStreamController]], r).
-      ReadableStreamDefaultController::Error(script_state,
-                                             engine_->controller_[0], r);
+      ReadableStreamDefaultController::Error(
+          script_state, engine_->controller_[0], r.V8Value());
 
       //   b. Perform ! ReadableStreamDefaultControllerError(branch2.
       //      [[readableStreamController]], r).
-      ReadableStreamDefaultController::Error(script_state,
-                                             engine_->controller_[1], r);
+      ReadableStreamDefaultController::Error(
+          script_state, engine_->controller_[1], r.V8Value());
 
       // TODO(ricea): Implement https://github.com/whatwg/streams/pull/1045 so
       // this step can be numbered correctly.
       // If canceled1 is false or canceled2 is false, resolve |cancelPromise|
       // with undefined.
       if (!engine_->canceled_[0] || !engine_->canceled_[1]) {
-        engine_->cancel_promise_->ResolveWithUndefined(script_state);
+        engine_->cancel_promise_->Resolve();
       }
     }
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(engine_);
-      PromiseHandler::Trace(visitor);
+      ThenCallable<IDLAny, RejectFunction>::Trace(visitor);
     }
 
    private:
@@ -412,11 +402,8 @@ void TeeEngine::Start(ScriptState* script_state,
   };
 
   // 19. Upon rejection of reader.[[closedPromise]] with reason r,
-  StreamThenPromise(
-      script_state->GetContext(), reader_->closed(script_state).V8Promise(),
-      nullptr,
-      MakeGarbageCollected<ScriptFunction>(
-          script_state, MakeGarbageCollected<RejectFunction>(this)));
+  reader_->closed(script_state)
+      .Catch(script_state, MakeGarbageCollected<RejectFunction>(this));
 
   // Step "20. Return « branch1, branch2 »."
   // is performed by the caller.

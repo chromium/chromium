@@ -4,7 +4,6 @@
 
 #include "ui/views/window/caption_button_layout_constants.h"
 
-#include "build/chromeos_buildflags.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/geometry/size.h"
 

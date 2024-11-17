@@ -6,6 +6,7 @@
 
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -18,9 +19,11 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/common/url_constants.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_prefs/user_prefs.h"
 #include "net/base/url_util.h"
 #include "ui/base/accelerators/menu_label_accelerator_util.h"
 #include "ui/base/window_open_disposition.h"
@@ -126,4 +129,19 @@ bool IsOtherProfileCommand(int command_id) {
          ((command_id - IDC_FIRST_UNBOUNDED_MENU) %
               AppMenuModel::kNumUnboundedMenuTypes ==
           (AppMenuModel::kMinOtherProfileCommandId - IDC_FIRST_UNBOUNDED_MENU));
+}
+
+bool IsOpenLinkOTREnabled(Profile* source_profie, const GURL& url) {
+  if (source_profie->IsOffTheRecord() || !url.is_valid()) {
+    return false;
+  }
+
+  if (!IsURLAllowedInIncognito(url)) {
+    return false;
+  }
+
+  policy::IncognitoModeAvailability incognito_avail =
+      IncognitoModePrefs::GetAvailability(
+          user_prefs::UserPrefs::Get(source_profie));
+  return incognito_avail != policy::IncognitoModeAvailability::kDisabled;
 }

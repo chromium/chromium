@@ -50,8 +50,8 @@
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
-#include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/dips/dips_service_factory.h"
+#include "chrome/browser/dips/dips_service_impl.h"
+#include "chrome/browser/dips/dips_storage.h"
 #include "chrome/browser/domain_reliability/service_factory.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -220,7 +220,7 @@
 #include "components/password_manager/core/browser/split_stores_and_local_upm.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #else
-#include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
+#include "chrome/browser/user_education/browser_user_education_storage_service.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
 #include "content/public/browser/host_zoom_map.h"
@@ -681,8 +681,7 @@ class ClearDomainReliabilityTester {
 class RemoveDIPSEventsTester {
  public:
   explicit RemoveDIPSEventsTester(Profile* profile) {
-    auto* dips_service = DIPSServiceFactory::GetForBrowserContext(profile);
-    storage_ = dips_service->storage();
+    storage_ = DIPSServiceImpl::Get(profile)->storage();
   }
 
   void WriteEventTimes(GURL url,
@@ -1018,7 +1017,7 @@ class MockReportingService : public net::ReportingService {
       const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       const base::flat_map<std::string, std::string>& endpoints) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void SetEnterpriseReportingEndpoints(
@@ -1028,7 +1027,7 @@ class MockReportingService : public net::ReportingService {
 
   void SendReportsAndRemoveSource(
       const base::UnguessableToken& reporting_source) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void QueueReport(
@@ -1041,14 +1040,14 @@ class MockReportingService : public net::ReportingService {
       base::Value::Dict body,
       int depth,
       net::ReportingTargetType target_type) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void ProcessReportToHeader(
       const url::Origin& origin,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       const std::string& header_value) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void RemoveBrowsingData(
@@ -1070,26 +1069,19 @@ class MockReportingService : public net::ReportingService {
 
   const net::ReportingPolicy& GetPolicy() const override {
     static net::ReportingPolicy dummy_policy_;
-    NOTREACHED_IN_MIGRATION();
-    return dummy_policy_;
+    NOTREACHED();
   }
 
-  net::ReportingContext* GetContextForTesting() const override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  net::ReportingContext* GetContextForTesting() const override { NOTREACHED(); }
 
   std::vector<raw_ptr<const net::ReportingReport, VectorExperimental>>
   GetReports() const override {
-    NOTREACHED_IN_MIGRATION();
-    return std::vector<
-        raw_ptr<const net::ReportingReport, VectorExperimental>>();
+    NOTREACHED();
   }
 
   base::flat_map<url::Origin, std::vector<net::ReportingEndpoint>>
   GetV1ReportingEndpointsByOrigin() const override {
-    NOTREACHED_IN_MIGRATION();
-    return base::flat_map<url::Origin, std::vector<net::ReportingEndpoint>>();
+    NOTREACHED();
   }
 
   void AddReportingCacheObserver(
@@ -1130,13 +1122,13 @@ class MockNetworkErrorLoggingService : public net::NetworkErrorLoggingService {
                 const url::Origin& origin,
                 const net::IPAddress& received_ip_address,
                 const std::string& value) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void OnRequest(RequestDetails details) override {}
 
   void QueueSignedExchangeReport(SignedExchangeReportDetails details) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   void RemoveBrowsingData(
@@ -1480,9 +1472,9 @@ class ChromeBrowsingDataRemoverDelegateTest : public testing::Test {
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        ClearUserEducationSessionHistory) {
-  auto& storage_service = static_cast<BrowserFeaturePromoStorageService&>(
+  auto& storage_service = static_cast<BrowserUserEducationStorageService&>(
       UserEducationServiceFactory::GetForBrowserContext(GetProfile())
-          ->feature_promo_storage_service());
+          ->user_education_storage_service());
   RecentSessionData data;
   data.enabled_time = base::Time::Now() - base::Days(90);
   data.recent_session_start_times = {base::Time::Now(),
@@ -3850,6 +3842,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   EXPECT_THAT(language_histogram->GetLanguageFrequency("es"), FloatEq(0.0));
 }
 
+// TODO(crbug.com/371426261)): Enable this for ENABLE_EXTENSIONS_CORE, but first
+// MockExtensionSpecialStoragePolicy must compile on Android.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, OriginTypeMasks) {
   const GURL kOriginProtected("http://protected.com");
@@ -4444,8 +4438,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   auto kTestOrigin1 = url::Origin::Create(GURL("https://a.com"));
   auto kTestOrigin2 = url::Origin::Create(GURL("https://b.com"));
 
-  const base::FilePath kTestPath1 = base::FilePath(FILE_PATH_LITERAL("/a/b"));
-  const base::FilePath kTestPath2 = base::FilePath(FILE_PATH_LITERAL("/a/c"));
+  const content::PathInfo kTestPath1(FILE_PATH_LITERAL("/a/b"));
+  const content::PathInfo kTestPath2(FILE_PATH_LITERAL("/a/c"));
 
   // Populate the `grants` object with permissions.
   auto origin1_file_read_grant =

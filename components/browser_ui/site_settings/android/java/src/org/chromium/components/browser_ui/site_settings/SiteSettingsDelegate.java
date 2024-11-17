@@ -17,6 +17,7 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -69,9 +70,9 @@ public interface SiteSettingsDelegate {
     boolean isPermissionDedicatedCpssSettingAndroidFeatureEnabled();
 
     /**
-     * @return true if the PrivacySandboxFirstPartySetsUI Feature is enabled.
+     * @return true if the PrivacySandboxFirstPartySetsUi Feature is enabled.
      */
-    boolean isPrivacySandboxFirstPartySetsUIFeatureEnabled();
+    boolean isPrivacySandboxFirstPartySetsUiFeatureEnabled();
 
     /**
      * @return The id of the notification channel associated with the given origin.
@@ -131,6 +132,20 @@ public interface SiteSettingsDelegate {
     Set<String> getAllDelegatedNotificationOrigins();
 
     /**
+     * @return The set of all origins that have File System Access grants.
+     */
+    List<String> getOriginsWithFileSystemAccessGrants();
+
+    /**
+     * @return The list of file editing grants. result[0] contains paths, result[1] contains display
+     *     names.
+     */
+    String[][] getFileSystemAccessGrants(String origin);
+
+    /** Revoke the specified file system access grant. */
+    void revokeFileSystemAccessGrant(String origin, String file);
+
+    /**
      * Displays a snackbar, informing the user about the Privacy Sandbox settings page, when the
      * corresponding flag is enabled.
      */
@@ -139,28 +154,28 @@ public interface SiteSettingsDelegate {
     /** Dismisses the Privacy Sandbox snackbar, if active. */
     void dismissPrivacySandboxSnackbar();
 
-    /***
+    /**
      * @return true if Related Website Sets data access is enabled.
      */
     boolean isRelatedWebsiteSetsDataAccessEnabled();
 
-    /***
+    /**
      * @return true if Related Website Sets data access is managed.
      */
     boolean isRelatedWebsiteSetsDataAccessManaged();
 
-    /***
+    /**
      * @param origin to check.
      * @return true if the origin is part of the managed RelatedWebsiteSet.
      */
     boolean isPartOfManagedRelatedWebsiteSet(String origin);
 
-    /***
+    /**
      * @return true if the Tracking Protection UI should be displayed.
      */
-    boolean shouldShowTrackingProtectionUI();
+    boolean shouldShowTrackingProtectionUi();
 
-    /***
+    /**
      * @return true if the IP Protection UI should be displayed in User Bypass.
      */
     boolean shouldDisplayIpProtection();
@@ -171,20 +186,27 @@ public interface SiteSettingsDelegate {
      */
     boolean shouldDisplayFingerprintingProtection();
 
+    /***
+     * @return true if the Tracking Protection branded UI should be shown.
+     */
+    boolean shouldShowTrackingProtectionBrandedUi();
+
     /**
      * @return whether the 100% 3PCD Tracking Protection with ACT features UI should be shown.
      */
-    boolean shouldShowTrackingProtectionACTFeaturesUI();
+    boolean shouldShowTrackingProtectionActFeaturesUi();
 
-    /***
-     * @return true if all third-party cookies are blocked when Tracking Protection
-     *         is on.
+    /**
+     * @return whether all 3pcs should be blocked in incognito.
      */
-    boolean isBlockAll3PCDEnabledInTrackingProtection();
+    boolean isAlwaysBlock3pcsIncognitoEnabled();
 
-    /***
-     * @return Enables/disables Related Website Sets data access.
+    /**
+     * @return true if all third-party cookies are blocked when Tracking Protection is on.
      */
+    boolean isBlockAll3pcEnabledInTrackingProtection();
+
+    /** Enables/disables Related Website Sets data access. */
     void setRelatedWebsiteSetsDataAccessEnabled(boolean enabled);
 
     /**

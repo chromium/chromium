@@ -11,7 +11,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/notification_list.h"
@@ -22,7 +21,7 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "base/time/time.h"
 #endif
 
@@ -48,6 +47,8 @@ class MESSAGE_CENTER_EXPORT MessageView
   METADATA_HEADER(MessageView, views::View)
 
  public:
+  using UpdatedNameCallback = base::RepeatingCallback<void(bool)>;
+
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnSlideStarted(const std::string& notification_id) {}
@@ -160,7 +161,7 @@ class MESSAGE_CENTER_EXPORT MessageView
   virtual void OnSettingsButtonPressed(const ui::Event& event);
   virtual void OnSnoozeButtonPressed(const ui::Event& event);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Gets the animation duration for a recent bounds change.
   virtual base::TimeDelta GetBoundsAnimationDuration(
       const Notification& notification) const;
@@ -233,6 +234,8 @@ class MESSAGE_CENTER_EXPORT MessageView
   MessageView* parent_message_view() { return parent_message_view_; }
 
   void set_scroller(views::ScrollView* scroller) { scroller_ = scroller; }
+
+  void SetUpdatedNameCallback(UpdatedNameCallback callback);
 
   bool inline_settings_enabled() const { return inline_settings_enabled_; }
   void set_inline_settings_enabled(bool inline_settings_enabled) {
@@ -323,6 +326,8 @@ class MESSAGE_CENTER_EXPORT MessageView
   // shape of the notification.
   int top_radius_ = 0;
   int bottom_radius_ = 0;
+
+  UpdatedNameCallback updated_name_callback_;
 
  public:
   base::WeakPtrFactory<MessageView> weak_factory_{this};

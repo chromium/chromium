@@ -275,8 +275,7 @@ bool ParseHTMLClampedNonNegativeInteger(const String& input,
     case WTF::NumberParsingResult::kError:
       return false;
     case WTF::NumberParsingResult::kOverflowMin:
-      NOTREACHED_IN_MIGRATION() << input;
-      return false;
+      NOTREACHED() << input;
     case WTF::NumberParsingResult::kOverflowMax:
       value = max;
       return true;
@@ -446,14 +445,14 @@ bool ThreadSafeMatch(const String& local_name, const QualifiedName& q_name) {
 }
 
 template <typename CharType>
-inline StringImpl* FindStringIfStatic(const CharType* characters,
-                                      unsigned length) {
+inline StringImpl* FindStringIfStatic(base::span<const CharType> characters) {
   // We don't need to try hashing if we know the string is too long.
-  if (length > StringImpl::HighestStaticStringLength())
+  if (characters.size() > StringImpl::HighestStaticStringLength()) {
     return nullptr;
+  }
   // ComputeHashAndMaskTop8Bits is the function StringImpl::Hash() uses.
-  unsigned hash =
-      StringHasher::ComputeHashAndMaskTop8Bits((const char*)characters, length);
+  unsigned hash = StringHasher::ComputeHashAndMaskTop8Bits(
+      reinterpret_cast<const char*>(characters.data()), characters.size());
   const WTF::StaticStringsTable& table = StringImpl::AllStaticStrings();
   DCHECK(!table.empty());
 
@@ -464,30 +463,30 @@ inline StringImpl* FindStringIfStatic(const CharType* characters,
   // identifiers (e.g. "bvvfg" collides with "script"). However ASSERTs in
   // StringImpl::createStatic guard against there ever being collisions between
   // static strings.
-  if (!Equal(it->value, characters, length))
+  if (!Equal(it->value, characters)) {
     return nullptr;
+  }
   return it->value;
 }
 
-String AttemptStaticStringCreation(const LChar* characters, wtf_size_t size) {
-  String string(FindStringIfStatic(characters, size));
+String AttemptStaticStringCreation(base::span<const LChar> characters) {
+  String string(FindStringIfStatic(characters));
   if (string.Impl())
     return string;
-  return String(characters, size);
+  return String(characters);
 }
 
-String AttemptStaticStringCreation(const UChar* characters,
-                                   wtf_size_t size,
+String AttemptStaticStringCreation(base::span<const UChar> characters,
                                    CharacterWidth width) {
-  String string(FindStringIfStatic(characters, size));
+  String string(FindStringIfStatic(characters));
   if (string.Impl())
     return string;
   if (width == kLikely8Bit)
-    string = StringImpl::Create8BitIfPossible(characters, size);
+    string = StringImpl::Create8BitIfPossible(characters);
   else if (width == kForce8Bit)
-    string = String::Make8BitFrom16BitSource({characters, size});
+    string = String::Make8BitFrom16BitSource(characters);
   else
-    string = String(characters, size);
+    string = String(characters);
 
   return string;
 }

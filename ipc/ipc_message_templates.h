@@ -189,11 +189,7 @@ class MessageT<Meta, std::tuple<Ins...>, std::tuple<Outs...>>
     bool ok = ReadSendParam(msg, &send_params);
     Message* reply = SyncMessage::GenerateReply(msg);
     if (!ok) {
-      NOTREACHED_IN_MIGRATION()
-          << "Error deserializing message " << msg->type();
-      reply->set_reply_error();
-      sender->Send(reply);
-      return false;
+      NOTREACHED() << "Error deserializing message " << msg->type();
     }
 
     ReplyParam reply_params;
@@ -214,11 +210,7 @@ class MessageT<Meta, std::tuple<Ins...>, std::tuple<Outs...>>
     bool ok = ReadSendParam(msg, &send_params);
     Message* reply = SyncMessage::GenerateReply(msg);
     if (!ok) {
-      NOTREACHED_IN_MIGRATION()
-          << "Error deserializing message " << msg->type();
-      reply->set_reply_error();
-      obj->Send(reply);
-      return false;
+      NOTREACHED() << "Error deserializing message " << msg->type();
     }
 
     std::tuple<Message&> t = std::tie(*reply);
@@ -237,11 +229,7 @@ class MessageT<Meta, std::tuple<Ins...>, std::tuple<Outs...>>
     bool ok = ReadSendParam(msg, &send_params);
     Message* reply = SyncMessage::GenerateReply(msg);
     if (!ok) {
-      NOTREACHED_IN_MIGRATION()
-          << "Error deserializing message " << msg->type();
-      reply->set_reply_error();
-      obj->Send(reply);
-      return false;
+      NOTREACHED() << "Error deserializing message " << msg->type();
     }
 
     std::tuple<Message&> t = std::tie(*reply);

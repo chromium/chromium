@@ -157,12 +157,13 @@ void DocumentDownloadTabHelper::DidFinishNavigation(
   if (!headers) {
     return;
   }
-  std::string content_size;
-  if (!headers->GetNormalizedHeader("Content-Length", &content_size)) {
+  std::optional<std::string> content_size =
+      headers->GetNormalizedHeader("Content-Length");
+  if (!content_size) {
     return;
   }
   int64_t file_size;
-  if (!base::StringToInt64(content_size, &file_size)) {
+  if (!base::StringToInt64(*content_size, &file_size)) {
     return;
   }
   file_size_ = file_size <= 0 ? -1 : file_size;

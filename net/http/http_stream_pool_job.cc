@@ -28,6 +28,23 @@
 
 namespace net {
 
+namespace {
+
+NextProtoSet CalculateAllowedAlpns(NextProto expected_protocol,
+                                   bool is_http1_allowed) {
+  NextProtoSet allowed_alpns = expected_protocol == NextProto::kProtoUnknown
+                                   ? NextProtoSet::All()
+                                   : NextProtoSet({expected_protocol});
+  if (!is_http1_allowed) {
+    static constexpr NextProtoSet kHttp11Protocols = {NextProto::kProtoUnknown,
+                                                      NextProto::kProtoHTTP11};
+    allowed_alpns.RemoveAll(kHttp11Protocols);
+  }
+  return allowed_alpns;
+}
+
+}  // namespace
+
 HttpStreamPool::Job::Job(Delegate* delegate,
                          AttemptManager* attempt_manager,
                          NextProto expected_protocol,
@@ -35,10 +52,11 @@ HttpStreamPool::Job::Job(Delegate* delegate,
                          ProxyInfo proxy_info)
     : delegate_(delegate),
       attempt_manager_(attempt_manager),
-      expected_protocol_(expected_protocol),
-      is_http1_allowed_(is_http1_allowed),
+      allowed_alpns_(
+          CalculateAllowedAlpns(expected_protocol, is_http1_allowed)),
+      is_h2_or_h3_required_(!is_http1_allowed),
       proxy_info_(std::move(proxy_info)) {
-  CHECK(is_http1_allowed_ || expected_protocol_ != NextProto::kProtoHTTP11);
+  CHECK(is_http1_allowed || expected_protocol != NextProto::kProtoHTTP11);
 }
 
 HttpStreamPool::Job::~Job() {
@@ -65,10 +83,10 @@ void HttpStreamPool::Job::Start(
     return;
   }
 
-  attempt_manager_->group()->StartJob(this, priority, allowed_bad_certs,
-                                      respect_limits, enable_ip_based_pooling,
-                                      enable_alternative_services, quic_version,
-                                      net_log);
+  attempt_manager_->StartJob(this, priority, allowed_bad_certs, respect_limits,
+                             enable_ip_based_pooling,
+                             enable_alternative_services, quic_version,
+                             net_log);
 }
 
 LoadState HttpStreamPool::Job::GetLoadState() const {
@@ -91,13 +109,14 @@ void HttpStreamPool::Job::AddConnectionAttempts(
 void HttpStreamPool::Job::OnStreamReady(std::unique_ptr<HttpStream> stream,
                                         NextProto negotiated_protocol) {
   int result = OK;
-  if (expected_protocol_ != NextProto::kProtoUnknown &&
-      expected_protocol_ != negotiated_protocol) {
-    result = ERR_ALPN_NEGOTIATION_FAILED;
-  } else if (!is_http1_allowed_ &&
-             !(negotiated_protocol == NextProto::kProtoHTTP2 ||
-               negotiated_protocol == NextProto::kProtoQUIC)) {
-    result = ERR_H2_OR_QUIC_REQUIRED;
+  if (!allowed_alpns_.Has(negotiated_protocol)) {
+    const bool is_h2_or_h3 = negotiated_protocol == NextProto::kProtoHTTP2 ||
+                             negotiated_protocol == NextProto::kProtoQUIC;
+    if (is_h2_or_h3_required_ && !is_h2_or_h3) {
+      result = ERR_H2_OR_QUIC_REQUIRED;
+    } else {
+      result = ERR_ALPN_NEGOTIATION_FAILED;
+    }
   }
 
   if (result != OK) {

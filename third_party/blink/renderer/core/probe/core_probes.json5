@@ -46,6 +46,7 @@
         "RecalculateStyle",
         "UpdateLayout",
         "WillHandlePromise",
+        "UserEntryPoint",
       ]
     },
     InspectorIssueReporter: {

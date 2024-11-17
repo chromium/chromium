@@ -20,6 +20,7 @@ static_library("about") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/ash/device_name",
     "//chrome/browser/ui/webui/ash/settings/pages/crostini",
+    "//chrome/browser/ui/webui/settings",
     "//components/prefs",
     "//components/user_manager",
   ]
@@ -31,6 +32,7 @@ static_library("about") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ui/webui:webui_util",
     "//chrome/browser/ui/webui/ash/settings/search",

@@ -210,7 +210,7 @@ class PLATFORM_EXPORT ParkableStringManager : public RAILModeObserver {
       base::Seconds(10);
 
   bool backgrounded_ = false;
-  RAILMode rail_mode_ = RAILMode::kIdle;
+  RAILMode rail_mode_ = RAILMode::kDefault;
   bool has_pending_aging_task_ = false;
   bool has_posted_unparking_time_accounting_task_ = false;
   bool did_register_memory_pressure_listener_ = false;

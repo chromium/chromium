@@ -4,9 +4,11 @@
 
 #include "chrome/browser/component_updater/translate_kit_component_installer.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -19,13 +21,10 @@
 #include "chrome/browser/on_device_translation/pref_names.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
+#include "components/services/on_device_translation/public/cpp/features.h"
 #include "components/update_client/update_client_errors.h"
 #include "content/public/browser/browser_thread.h"
 #include "crypto/sha2.h"
-
-#if !BUILDFLAG(IS_ANDROID)
-#include "components/services/on_device_translation/public/cpp/features.h"
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace component_updater {
 
@@ -108,11 +107,9 @@ void TranslateKitComponentInstallerPolicy::ComponentReady(
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
 
-#if !BUILDFLAG(IS_ANDROID)
   CHECK(pref_service_);
   pref_service_->SetFilePath(prefs::kTranslateKitBinaryPath,
                              GetInstalledPath(install_dir));
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 base::FilePath TranslateKitComponentInstallerPolicy::GetRelativeInstallDir()
@@ -136,19 +133,44 @@ TranslateKitComponentInstallerPolicy::GetInstallerAttributes() const {
   return update_client::InstallerAttributes();
 }
 
+// static
+void TranslateKitComponentInstallerPolicy::UpdateComponentOnDemand() {
+  auto crx_id =
+      crx_file::id_util::GenerateIdFromHash(kTranslateKitPublicKeySHA256);
+  g_browser_process->component_updater()->GetOnDemandUpdater().OnDemandUpdate(
+      crx_id, component_updater::OnDemandUpdater::Priority::FOREGROUND,
+      base::BindOnce([](update_client::Error error) {
+        if (error != update_client::Error::NONE &&
+            error != update_client::Error::UPDATE_IN_PROGRESS) {
+          LOG(ERROR) << "Failed to uppdate TranslateKit:"
+                     << static_cast<int>(error);
+        }
+      }));
+}
+
 void RegisterTranslateKitComponent(ComponentUpdateService* cus,
-                                   PrefService* pref_service) {
+                                   PrefService* pref_service,
+                                   bool force_install,
+                                   base::OnceClosure registered_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!base::FeatureList::IsEnabled(
-          on_device_translation::kEnableTranslateKitComponent)) {
+  VLOG(1) << "Registering TranslateKit component.";
+  if (!force_install &&
+      !pref_service->GetBoolean(prefs::kTranslateKitPreviouslyRegistered)) {
     return;
   }
 
-  VLOG(1) << "Registering TranslateKit component.";
-  // TODO(crbug.com/362123222): Update when adding language model installer.
+  // If the component is already installed, do nothing.
+  const std::vector<std::string> component_ids = cus->GetComponentIDs();
+  if (std::find(component_ids.begin(), component_ids.end(),
+                crx_file::id_util::GenerateIdFromHash(
+                    kTranslateKitPublicKeySHA256)) != component_ids.end()) {
+    return;
+  }
+
+  pref_service->SetBoolean(prefs::kTranslateKitPreviouslyRegistered, true);
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<TranslateKitComponentInstallerPolicy>(pref_service));
-  installer->Register(cus, base::OnceClosure());
+  installer->Register(cus, std::move(registered_callback));
 }
 
 }  // namespace component_updater

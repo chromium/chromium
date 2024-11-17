@@ -12,7 +12,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
-#include "third_party/blink/public/platform/modules/remoteplayback/web_remote_playback_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -52,6 +51,7 @@
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/media/remote_playback_client.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -103,7 +103,7 @@ class StubLocalFrameClientForImpl : public EmptyLocalFrameClient {
     return std::make_unique<MockWebMediaPlayerForImpl>();
   }
 
-  WebRemotePlaybackClient* CreateWebRemotePlaybackClient(
+  RemotePlaybackClient* CreateRemotePlaybackClient(
       HTMLMediaElement& element) override {
     return &RemotePlayback::From(element);
   }
@@ -285,7 +285,7 @@ class MediaControlsImplTest : public PageTestBase,
         AtomicString("https://example.com/foo.mp4"));
     test::RunPendingTasks();
     WebTimeRange time_range(0.0, duration);
-    WebMediaPlayer()->seekable_.Assign(&time_range, 1);
+    WebMediaPlayer()->seekable_.Assign(base::span_from_ref(time_range));
     MediaControls().MediaElement().DurationChanged(duration,
                                                    false /* requestSeek */);
     SimulateLoadedMetadata();

@@ -98,8 +98,8 @@ void OncImportMessageHandler::ImportONCToNSSDB(const std::string& callback_id,
   base::Value::Dict global_network_config;
   base::Value::List certificates;
   if (!chromeos::onc::ParseAndValidateOncForImport(
-          onc_blob, onc_source, /*passphrase=*/std::string(), &network_configs,
-          &global_network_config, &certificates)) {
+          onc_blob, onc_source, &network_configs, &global_network_config,
+          &certificates)) {
     has_error = true;
     result += "Errors occurred during ONC parsing.\n";
   }

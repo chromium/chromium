@@ -47,8 +47,20 @@ class ASH_EXPORT NullCaptureModeSession : public BaseCaptureModeSession {
   void MaybeDismissUserNudgeForever() override;
   void MaybeChangeRoot(aura::Window* new_root,
                        bool root_window_will_shutdown) override;
+  void OnPerformCaptureForSearchStarting(
+      PerformCaptureType capture_type) override;
+  void OnPerformCaptureForSearchEnded(PerformCaptureType capture_type) override;
   std::set<aura::Window*> GetWindowsToIgnoreFromWidgets() override;
-  void ShowSearchResultsPanel(const gfx::ImageSkia& image) override;
+  base::WeakPtr<BaseCaptureModeSession> GetImageSearchToken() override;
+  ActionButtonView* AddActionButton(views::Button::PressedCallback callback,
+                                    std::u16string text,
+                                    const gfx::VectorIcon* icon,
+                                    ActionButtonRank rank,
+                                    ActionButtonViewID id) override;
+  void AddScannerActionButtons(
+      std::vector<ScannerActionViewModel> scanner_actions) override;
+  void OnTextDetected() override;
+  gfx::Rect GetFeedbackWidgetScreenBounds() const override;
 
  private:
   // CaptureModeSession:

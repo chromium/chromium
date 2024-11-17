@@ -61,6 +61,10 @@ ManagePasswordsView::ManagePasswordsView(content::WebContents* web_contents,
 
   page_container_ = AddChildView(
       std::make_unique<PageSwitcherView>(std::make_unique<views::View>()));
+  page_container_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets().set_bottom(ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)));
 
   if (!controller_.GetCredentials().empty()) {
     // The request is cancelled when the |controller_| is destroyed.
@@ -322,10 +326,6 @@ void ManagePasswordsView::RecreateLayout() {
     password_details_view_ = nullptr;
     frame_view->SetTitleView(CreateTitleView(controller_.GetTitle()));
     page_container_->SwitchToPage(CreatePasswordListView());
-    page_container_->SetProperty(
-        views::kMarginsKey,
-        gfx::Insets().set_bottom(ChromeLayoutProvider::Get()->GetDistanceMetric(
-            DISTANCE_CONTENT_LIST_VERTICAL_SINGLE)));
   }
   SetTitle(controller_.GetTitle());
   PreferredSizeChanged();

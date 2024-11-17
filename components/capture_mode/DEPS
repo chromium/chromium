@@ -6,6 +6,7 @@ include_rules = [
   "+gpu/command_buffer/common/context_result.h",
   "+gpu/command_buffer/common/shared_image_capabilities.h",
   "+gpu/command_buffer/common/shared_image_usage.h",
+  "+gpu/config/gpu_finch_features.h",
   "+gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h",
   "+gpu/ipc/common/gpu_memory_buffer_support.h",
   "+media",

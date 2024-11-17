@@ -9,8 +9,8 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.FIRST_LINE_LABEL;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ITEM_COLLECTION_INFO;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MAIN_TEXT;
+import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MAIN_TEXT_CONTENT_DESCRIPTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.MINOR_TEXT;
-import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NETWORK_NAME;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.ON_CREDIT_CARD_CLICK_ACTION;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.CreditCardSuggestionProperties.SECOND_LINE_LABEL;
@@ -32,7 +32,6 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.TermsLabelProperties.CARD_BENEFITS_TERMS_AVAILABLE;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaymentMethodProperties.VISIBLE;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
@@ -61,7 +60,6 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.List;
-import java.util.Locale;
 import java.util.function.Function;
 
 /**
@@ -134,8 +132,6 @@ class TouchToFillPaymentMethodMediator {
     static final String TOUCH_TO_FILL_NUMBER_OF_IBANS_SHOWN =
             "Autofill.TouchToFill.Iban.NumberOfIbansShown";
 
-    // TODO(crbug.com/40246126): Remove the Context from the Mediator.
-    private Context mContext;
     private TouchToFillPaymentMethodComponent.Delegate mDelegate;
     private PropertyModel mModel;
     private List<CreditCard> mCards;
@@ -145,12 +141,8 @@ class TouchToFillPaymentMethodMediator {
     private InputProtector mInputProtector = new InputProtector();
 
     void initialize(
-            Context context,
-            Delegate delegate,
-            PropertyModel model,
-            BottomSheetFocusHelper bottomSheetFocusHelper) {
+            Delegate delegate, PropertyModel model, BottomSheetFocusHelper bottomSheetFocusHelper) {
         assert delegate != null;
-        mContext = context;
         mDelegate = delegate;
         mModel = model;
         mBottomSheetFocusHelper = bottomSheetFocusHelper;
@@ -320,8 +312,10 @@ class TouchToFillPaymentMethodMediator {
         PropertyModel.Builder creditCardSuggestionModelBuilder =
                 new PropertyModel.Builder(NON_TRANSFORMING_CREDIT_CARD_SUGGESTION_KEYS)
                         .withTransformingKey(CARD_IMAGE, cardImageFunction, cardImageMetaData)
-                        .with(NETWORK_NAME, "")
                         .with(MAIN_TEXT, suggestion.getLabel())
+                        .with(
+                                MAIN_TEXT_CONTENT_DESCRIPTION,
+                                suggestion.getLabelContentDescription())
                         .with(MINOR_TEXT, suggestion.getSecondaryLabel())
                         // For virtual cards, show the "Virtual card" label on the second
                         // line, and for non-virtual cards, show the expiration date.
@@ -334,14 +328,6 @@ class TouchToFillPaymentMethodMediator {
                         .with(ON_CREDIT_CARD_CLICK_ACTION, () -> this.onSelectedCreditCard(card))
                         .with(ITEM_COLLECTION_INFO, itemCollectionInfo)
                         .with(APPLY_DEACTIVATED_STYLE, suggestion.applyDeactivatedStyle());
-
-        // If a card has a nickname, the network name should also be announced, otherwise the name
-        // of the card will be the network name and it will be announced.
-        if (!card.getBasicCardIssuerNetwork()
-                .equals(card.getCardNameForAutofillDisplay().toLowerCase(Locale.getDefault()))) {
-            creditCardSuggestionModelBuilder.with(NETWORK_NAME, card.getBasicCardIssuerNetwork());
-        }
-
         return creditCardSuggestionModelBuilder.build();
     }
 

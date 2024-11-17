@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/css/style_rule_keyframe.h"
 #include "third_party/blink/renderer/core/css/style_rule_namespace.h"
 #include "third_party/blink/renderer/core/css/style_rule_nested_declarations.h"
+#include "third_party/blink/renderer/core/css/style_scope.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -166,9 +167,8 @@ std::optional<StyleRuleFontFeature::FeatureType> ToStyleRuleFontFeatureType(
     case CSSAtRuleID::kCSSAtRuleAnnotation:
       return StyleRuleFontFeature::FeatureType::kAnnotation;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return std::nullopt;
 }
 
 }  // namespace
@@ -264,8 +264,8 @@ static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
     // Fast path for the situations where we can trivially detect that there can
     // be no collision between properties, and don't need to reorder, make
     // bitsets, or similar.
-    ImmutableCSSPropertyValueSet* result = ImmutableCSSPropertyValueSet::Create(
-        parsed_properties.data(), parsed_properties.size(), mode);
+    ImmutableCSSPropertyValueSet* result =
+        ImmutableCSSPropertyValueSet::Create(parsed_properties, mode);
     parsed_properties.clear();
     return result;
   }
@@ -309,8 +309,7 @@ static ImmutableCSSPropertyValueSet* CreateCSSPropertyValueSet(
   }
 
   ImmutableCSSPropertyValueSet* result = ImmutableCSSPropertyValueSet::Create(
-      results.data() + unused_entries, results.size() - unused_entries, mode,
-      count_cursor_hand);
+      base::span(results).subspan(unused_entries), mode, count_cursor_hand);
   parsed_properties.clear();
   return result;
 }
@@ -327,11 +326,11 @@ ImmutableCSSPropertyValueSet* CSSParserImpl::ParseInlineStyleDeclaration(
   context->SetMode(mode);
   CSSParserImpl parser(context, document.ElementSheet().Contents());
   CSSParserTokenStream stream(string);
-  parser.ConsumeDeclarationList(stream, StyleRule::kStyle,
-                                CSSNestingType::kNone,
-                                /*parent_rule_for_nesting=*/nullptr,
-                                /*nested_declarations_start_index=*/kNotFound,
-                                /*child_rules=*/nullptr);
+  parser.ConsumeBlockContents(stream, StyleRule::kStyle, CSSNestingType::kNone,
+                              /*parent_rule_for_nesting=*/nullptr,
+                              /*is_within_scope=*/false,
+                              /*nested_declarations_start_index=*/kNotFound,
+                              /*child_rules=*/nullptr);
   return CreateCSSPropertyValueSet(parser.parsed_properties_, mode, &document);
 }
 
@@ -344,11 +343,11 @@ ImmutableCSSPropertyValueSet* CSSParserImpl::ParseInlineStyleDeclaration(
       MakeGarbageCollected<CSSParserContext>(parser_mode, secure_context_mode);
   CSSParserImpl parser(context);
   CSSParserTokenStream stream(string);
-  parser.ConsumeDeclarationList(stream, StyleRule::kStyle,
-                                CSSNestingType::kNone,
-                                /*parent_rule_for_nesting=*/nullptr,
-                                /*nested_declarations_start_index=*/kNotFound,
-                                /*child_rules=*/nullptr);
+  parser.ConsumeBlockContents(stream, StyleRule::kStyle, CSSNestingType::kNone,
+                              /*parent_rule_for_nesting=*/nullptr,
+                              /*is_within_scope=*/false,
+                              /*nested_declarations_start_index=*/kNotFound,
+                              /*child_rules=*/nullptr);
   return CreateCSSPropertyValueSet(parser.parsed_properties_, parser_mode,
                                    document);
 }
@@ -362,10 +361,11 @@ bool CSSParserImpl::ParseDeclarationList(
   CSSParserTokenStream stream(string);
   // See function declaration comment for why parent_rule_for_nesting ==
   // nullptr.
-  parser.ConsumeDeclarationList(stream, rule_type, CSSNestingType::kNone,
-                                /*parent_rule_for_nesting=*/nullptr,
-                                /*nested_declarations_start_index=*/kNotFound,
-                                /*child_rules=*/nullptr);
+  parser.ConsumeBlockContents(stream, rule_type, CSSNestingType::kNone,
+                              /*parent_rule_for_nesting=*/nullptr,
+                              /*is_within_scope=*/false,
+                              /*nested_declarations_start_index=*/kNotFound,
+                              /*child_rules=*/nullptr);
   if (parser.parsed_properties_.empty()) {
     return false;
   }
@@ -388,6 +388,7 @@ StyleRuleBase* CSSParserImpl::ParseNestedDeclarationsRule(
     const CSSParserContext* context,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting,
+    bool is_within_scope,
     StringView text) {
   CSSParserImpl parser(context);
   CSSParserTokenStream stream(text);
@@ -398,12 +399,12 @@ StyleRuleBase* CSSParserImpl::ParseNestedDeclarationsRule(
   // of declarations (the only block) to be wrapped in a CSSNestedDeclarations
   // rule.
   //
-  // See comment above CSSParserImpl::ConsumeDeclarationList (definition)
+  // See comment above CSSParserImpl::ConsumeBlockContents (definition)
   // for more on nested_declarations_start_index.
-  parser.ConsumeDeclarationList(stream, StyleRule::RuleType::kStyle,
-                                nesting_type, parent_rule_for_nesting,
-                                /*nested_declarations_start_index=*/0u,
-                                &child_rules);
+  parser.ConsumeBlockContents(stream, StyleRule::RuleType::kStyle, nesting_type,
+                              parent_rule_for_nesting, is_within_scope,
+                              /*nested_declarations_start_index=*/0u,
+                              &child_rules);
 
   return child_rules.size() == 1u ? child_rules.back().Get() : nullptr;
 }
@@ -412,6 +413,7 @@ StyleRuleBase* CSSParserImpl::ParseRule(const String& string,
                                         const CSSParserContext* context,
                                         CSSNestingType nesting_type,
                                         StyleRule* parent_rule_for_nesting,
+                                        bool is_within_scope,
                                         StyleSheetContents* style_sheet,
                                         AllowedRulesType allowed_rules) {
   CSSParserImpl parser(context, style_sheet);
@@ -422,14 +424,17 @@ StyleRuleBase* CSSParserImpl::ParseRule(const String& string,
   }
   StyleRuleBase* rule;
   if (stream.UncheckedPeek().GetType() == kAtKeywordToken) {
+    // TODO(andruud): Why does this ignore the nesting context?
     rule = parser.ConsumeAtRule(stream, allowed_rules, CSSNestingType::kNone,
-                                /*parent_rule_for_nesting=*/nullptr);
+                                /*parent_rule_for_nesting=*/nullptr,
+                                /* is_within_scope */ false);
   } else if (allowed_rules == kPageMarginRules) {
     // Style rules are not allowed inside @page.
     rule = nullptr;
   } else {
-    rule = parser.ConsumeQualifiedRule(stream, allowed_rules, nesting_type,
-                                       parent_rule_for_nesting);
+    rule =
+        parser.ConsumeQualifiedRule(stream, allowed_rules, nesting_type,
+                                    parent_rule_for_nesting, is_within_scope);
   }
   if (!rule) {
     return nullptr;  // Parse error, failed to consume rule
@@ -471,6 +476,7 @@ ParseSheetResult CSSParserImpl::ParseStyleSheet(
   bool first_rule_valid = parser.ConsumeRuleList(
       stream, kTopLevelRuleList, CSSNestingType::kNone,
       /*parent_rule_for_nesting=*/nullptr,
+      /*is_within_scope=*/false,
       [&style_sheet, &result, &string, allow_import_rules, context](
           StyleRuleBase* rule, wtf_size_t offset) {
         if (rule->IsCharsetRule()) {
@@ -600,11 +606,11 @@ void CSSParserImpl::ParseDeclarationListForInspector(
   observer.EndRuleHeader(1);
   CSSParserTokenStream stream(declaration);
   observer.StartRuleBody(stream.Offset());
-  parser.ConsumeDeclarationList(stream, StyleRule::kStyle,
-                                CSSNestingType::kNone,
-                                /*parent_rule_for_nesting=*/nullptr,
-                                /*nested_declarations_start_index=*/kNotFound,
-                                /*child_rules=*/nullptr);
+  parser.ConsumeBlockContents(stream, StyleRule::kStyle, CSSNestingType::kNone,
+                              /*parent_rule_for_nesting=*/nullptr,
+                              /*is_within_scope=*/false,
+                              /*nested_declarations_start_index=*/kNotFound,
+                              /*child_rules=*/nullptr);
   observer.EndRuleBody(stream.LookAheadOffset());
 }
 
@@ -618,6 +624,7 @@ void CSSParserImpl::ParseStyleSheetForInspector(const String& string,
   bool first_rule_valid =
       parser.ConsumeRuleList(stream, kTopLevelRuleList, CSSNestingType::kNone,
                              /*parent_rule_for_nesting=*/nullptr,
+                             /*is_within_scope=*/false,
                              [&style_sheet](StyleRuleBase* rule, wtf_size_t) {
                                if (rule->IsCharsetRule()) {
                                  return;
@@ -640,11 +647,11 @@ CSSPropertyValueSet* CSSParserImpl::ParseDeclarationListForLazyStyle(
   CSSParserTokenStream stream(string, offset);
   CSSParserTokenStream::BlockGuard guard(stream);
   CSSParserImpl parser(context);
-  parser.ConsumeDeclarationList(stream, StyleRule::kStyle,
-                                CSSNestingType::kNone,
-                                /*parent_rule_for_nesting=*/nullptr,
-                                /*nested_declarations_start_index=*/kNotFound,
-                                /*child_rules=*/nullptr);
+  parser.ConsumeBlockContents(stream, StyleRule::kStyle, CSSNestingType::kNone,
+                              /*parent_rule_for_nesting=*/nullptr,
+                              /*is_within_scope=*/false,
+                              /*nested_declarations_start_index=*/kNotFound,
+                              /*child_rules=*/nullptr);
   return CreateCSSPropertyValueSet(parser.parsed_properties_, context->Mode(),
                                    context->GetDocument());
 }
@@ -681,6 +688,7 @@ bool CSSParserImpl::ConsumeRuleList(CSSParserTokenStream& stream,
                                     RuleListType rule_list_type,
                                     CSSNestingType nesting_type,
                                     StyleRule* parent_rule_for_nesting,
+                                    bool is_within_scope,
                                     const T callback) {
   AllowedRulesType allowed_rules = kRegularRules;
   switch (rule_list_type) {
@@ -697,7 +705,7 @@ bool CSSParserImpl::ConsumeRuleList(CSSParserTokenStream& stream,
       allowed_rules = kFontFeatureRules;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   bool seen_rule = false;
@@ -711,7 +719,7 @@ bool CSSParserImpl::ConsumeRuleList(CSSParserTokenStream& stream,
         continue;
       case kAtKeywordToken:
         rule = ConsumeAtRule(stream, allowed_rules, nesting_type,
-                             parent_rule_for_nesting);
+                             parent_rule_for_nesting, is_within_scope);
         break;
       case kCDOToken:
       case kCDCToken:
@@ -722,7 +730,7 @@ bool CSSParserImpl::ConsumeRuleList(CSSParserTokenStream& stream,
         [[fallthrough]];
       default:
         rule = ConsumeQualifiedRule(stream, allowed_rules, nesting_type,
-                                    parent_rule_for_nesting);
+                                    parent_rule_for_nesting, is_within_scope);
         break;
     }
     if (!seen_rule) {
@@ -806,18 +814,18 @@ void CSSParserImpl::ConsumeErroneousAtRule(CSSParserTokenStream& stream,
   }
 }
 
-StyleRuleBase* CSSParserImpl::ConsumeAtRule(
-    CSSParserTokenStream& stream,
-    AllowedRulesType allowed_rules,
-    CSSNestingType nesting_type,
-    StyleRule* parent_rule_for_nesting) {
+StyleRuleBase* CSSParserImpl::ConsumeAtRule(CSSParserTokenStream& stream,
+                                            AllowedRulesType allowed_rules,
+                                            CSSNestingType nesting_type,
+                                            StyleRule* parent_rule_for_nesting,
+                                            bool is_within_scope) {
   DCHECK_EQ(stream.Peek().GetType(), kAtKeywordToken);
   CSSParserToken name_token =
       stream.ConsumeIncludingWhitespace();  // Must live until CssAtRuleID().
   const StringView name = name_token.Value();
   const CSSAtRuleID id = CssAtRuleID(name);
   return ConsumeAtRuleContents(id, stream, allowed_rules, nesting_type,
-                               parent_rule_for_nesting);
+                               parent_rule_for_nesting, is_within_scope);
 }
 
 StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
@@ -825,7 +833,8 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
     CSSParserTokenStream& stream,
     AllowedRulesType allowed_rules,
     CSSNestingType nesting_type,
-    StyleRule* parent_rule_for_nesting) {
+    StyleRule* parent_rule_for_nesting,
+    bool is_within_scope) {
   if (allowed_rules == kNestedGroupRules) {
     if (id != CSSAtRuleID::kCSSAtRuleMedia &&      // [css-conditional-3]
         id != CSSAtRuleID::kCSSAtRuleSupports &&   // [css-conditional-3]
@@ -886,12 +895,10 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
     }
   } else if (allowed_rules == kPageMarginRules) {
     if (id < CSSAtRuleID::kCSSAtRuleTopLeftCorner ||
-        id > CSSAtRuleID::kCSSAtRuleRightBottom ||
-        !RuntimeEnabledFeatures::PageMarginBoxesEnabled()) {
+        id > CSSAtRuleID::kCSSAtRuleRightBottom) {
       ConsumeErroneousAtRule(stream, id);
       return nullptr;
     }
-
     return ConsumePageMarginRule(id, stream);
   } else {
     DCHECK_LE(allowed_rules, kRegularRules);
@@ -901,15 +908,16 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
         return ConsumeViewTransitionRule(stream);
       case CSSAtRuleID::kCSSAtRuleContainer:
         return ConsumeContainerRule(stream, nesting_type,
-                                    parent_rule_for_nesting);
+                                    parent_rule_for_nesting, is_within_scope);
       case CSSAtRuleID::kCSSAtRuleMedia:
-        return ConsumeMediaRule(stream, nesting_type, parent_rule_for_nesting);
+        return ConsumeMediaRule(stream, nesting_type, parent_rule_for_nesting,
+                                is_within_scope);
       case CSSAtRuleID::kCSSAtRuleSupports:
         return ConsumeSupportsRule(stream, nesting_type,
-                                   parent_rule_for_nesting);
+                                   parent_rule_for_nesting, is_within_scope);
       case CSSAtRuleID::kCSSAtRuleStartingStyle:
-        return ConsumeStartingStyleRule(stream, nesting_type,
-                                        parent_rule_for_nesting);
+        return ConsumeStartingStyleRule(
+            stream, nesting_type, parent_rule_for_nesting, is_within_scope);
       case CSSAtRuleID::kCSSAtRuleFontFace:
         return ConsumeFontFaceRule(stream);
       case CSSAtRuleID::kCSSAtRuleFontPaletteValues:
@@ -921,13 +929,15 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
       case CSSAtRuleID::kCSSAtRuleKeyframes:
         return ConsumeKeyframesRule(false, stream);
       case CSSAtRuleID::kCSSAtRuleLayer:
-        return ConsumeLayerRule(stream, nesting_type, parent_rule_for_nesting);
+        return ConsumeLayerRule(stream, nesting_type, parent_rule_for_nesting,
+                                is_within_scope);
       case CSSAtRuleID::kCSSAtRulePage:
         return ConsumePageRule(stream);
       case CSSAtRuleID::kCSSAtRuleProperty:
         return ConsumePropertyRule(stream);
       case CSSAtRuleID::kCSSAtRuleScope:
-        return ConsumeScopeRule(stream, nesting_type, parent_rule_for_nesting);
+        return ConsumeScopeRule(stream, nesting_type, parent_rule_for_nesting,
+                                is_within_scope);
       case CSSAtRuleID::kCSSAtRuleCounterStyle:
         return ConsumeCounterStyleRule(stream);
       case CSSAtRuleID::kCSSAtRuleFunction:
@@ -974,10 +984,13 @@ StyleRuleBase* CSSParserImpl::ConsumeQualifiedRule(
     CSSParserTokenStream& stream,
     AllowedRulesType allowed_rules,
     CSSNestingType nesting_type,
-    StyleRule* parent_rule_for_nesting) {
+    StyleRule* parent_rule_for_nesting,
+    bool is_within_scope) {
   if (allowed_rules <= kRegularRules) {
+    bool invalid_rule_error_ignored = false;  // Only relevant when nested.
     return ConsumeStyleRule(stream, nesting_type, parent_rule_for_nesting,
-                            /* semicolon_aborts_nested_selector */ false);
+                            is_within_scope,
+                            /* nested */ false, invalid_rule_error_ignored);
   }
 
   if (allowed_rules == kKeyframeRules) {
@@ -1012,8 +1025,7 @@ StyleRuleBase* CSSParserImpl::ConsumeQualifiedRule(
     return nullptr;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 StyleRulePageMargin* CSSParserImpl::ConsumePageMarginRule(
@@ -1034,10 +1046,11 @@ StyleRulePageMargin* CSSParserImpl::ConsumePageMarginRule(
     observer_->StartRuleBody(stream.Offset());
   }
 
-  ConsumeDeclarationList(stream, StyleRule::kPageMargin, CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(stream, StyleRule::kPageMargin, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*is_within_scope=*/false,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
@@ -1135,6 +1148,22 @@ StyleRuleImport* CSSParserImpl::ConsumeImportRule(
   }
   stream.ConsumeWhitespace();
 
+  const StyleScope* style_scope = nullptr;
+  if (RuntimeEnabledFeatures::CSSScopeImportEnabled() &&
+      stream.Peek().FunctionId() == CSSValueID::kScope) {
+    {
+      CSSParserTokenStream::RestoringBlockGuard guard(stream);
+      stream.ConsumeWhitespace();
+      style_scope = StyleScope::Parse(stream, context_, CSSNestingType::kNone,
+                                      /*parent_rule_for_nesting=*/nullptr,
+                                      /*is_within_scope=*/false, style_sheet_);
+      if (!guard.Release()) {
+        style_scope = nullptr;
+      }
+    }
+  }
+  stream.ConsumeWhitespace();
+
   // Parse the rest of the prelude as a media query.
   // TODO(sesse): When the media query parser becomes streaming,
   // we can just parse media queries here instead.
@@ -1160,7 +1189,8 @@ StyleRuleImport* CSSParserImpl::ConsumeImportRule(
   }
 
   return MakeGarbageCollected<StyleRuleImport>(
-      uri, std::move(layer), supported == CSSSupportsParser::Result::kSupported,
+      uri, std::move(layer), style_scope,
+      supported == CSSSupportsParser::Result::kSupported,
       supports_string.ToString(), media_query_set,
       context_->IsOriginClean() ? OriginClean::kTrue : OriginClean::kFalse);
 }
@@ -1195,33 +1225,18 @@ StyleRule* CSSParserImpl::CreateImplicitNestedRule(
   constexpr bool kNotImplicit =
       false;  // The rule is implicit, but the &/:scope is not.
 
-  HeapVector<CSSSelector, 2> selectors;
-
-  switch (nesting_type) {
-    case CSSNestingType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
-    case CSSNestingType::kNesting:
-      // kPseudoParent
-      selectors.push_back(CSSSelector(parent_rule_for_nesting, kNotImplicit));
-      break;
-    case CSSNestingType::kScope: {
-      // See CSSSelector::RelationType::kScopeActivation.
-      CSSSelector selector;
-      selector.SetTrue();
-      selector.SetRelation(CSSSelector::kScopeActivation);
-      selectors.push_back(selector);
-      selectors.push_back(CSSSelector(AtomicString("scope"), kNotImplicit));
-      break;
-    }
-  }
-
-  CHECK(!selectors.empty());
-  selectors.back().SetLastInComplexSelector(true);
-  selectors.back().SetLastInSelectorList(true);
+  CHECK(nesting_type == CSSNestingType::kNesting ||
+        nesting_type == CSSNestingType::kScope);
+  CSSSelector selector =
+      (nesting_type == CSSNestingType::kNesting)
+          ? CSSSelector(parent_rule_for_nesting, kNotImplicit)
+          : CSSSelector(AtomicString("scope"), kNotImplicit);
+  selector.SetLastInComplexSelector(true);
+  selector.SetLastInSelectorList(true);
+  selector.SetScopeContaining(true);
 
   return StyleRule::Create(
-      base::span<CSSSelector>{selectors.data(), selectors.size()},
+      base::span<CSSSelector>(&selector, 1u),
       CreateCSSPropertyValueSet(parsed_properties_, context_->Mode(),
                                 context_->GetDocument()));
 }
@@ -1236,14 +1251,6 @@ namespace {
 HeapVector<CSSSelector> WhereScopeSelector() {
   HeapVector<CSSSelector> selectors;
 
-  // An internal :true pseuo-class with a kScopeActivation relation type
-  // must precede any compound which contains :scope.
-  // See CSSSelector::RelationType::kScopeActivation.
-  CSSSelector true_selector;
-  true_selector.SetTrue();
-  true_selector.SetRelation(CSSSelector::kScopeActivation);
-  selectors.push_back(true_selector);
-
   CSSSelector inner[1] = {
       CSSSelector(AtomicString("scope"), /* implicit */ false)};
   inner[0].SetLastInComplexSelector(true);
@@ -1253,6 +1260,7 @@ HeapVector<CSSSelector> WhereScopeSelector() {
 
   CSSSelector where;
   where.SetWhere(inner_list);
+  where.SetScopeContaining(true);
   selectors.push_back(where);
 
   selectors.back().SetLastInComplexSelector(true);
@@ -1270,7 +1278,7 @@ StyleRuleNestedDeclarations* CSSParserImpl::CreateNestedDeclarationsRule(
     wtf_size_t end_index) {
   DCHECK(RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled());
   DCHECK(selector_list);
-  DCHECK_LT(start_index, end_index);
+  DCHECK_LE(start_index, end_index);
 
   // Create a nested declarations rule containing all declarations
   // in [start_index, end_index).
@@ -1284,8 +1292,7 @@ StyleRuleNestedDeclarations* CSSParserImpl::CreateNestedDeclarationsRule(
 
   switch (nesting_type) {
     case CSSNestingType::kNone:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case CSSNestingType::kNesting:
       // For regular nesting, the nested declarations rule should match
       // exactly what the parent rule matches, with top-level specificity
@@ -1323,8 +1330,15 @@ void CSSParserImpl::EmitNestedDeclarationsRuleIfNeeded(
     return;
   }
   wtf_size_t end_index = parsed_properties_.size();
-  if (start_index >= end_index) {
-    // No need to emit a rule with nothing in it.
+  if (start_index == kNotFound) {
+    return;
+  }
+  // The spec only allows creating non-empty rules, however, the inspector needs
+  // empty rules to appear as well. This has no effect on the styles seen by
+  // the page (the styles parsed with an `observer_` are for local use in the
+  // inspector only).
+  const bool emit_empty_rule = observer_;
+  if (start_index >= end_index && !emit_empty_rule) {
     return;
   }
 
@@ -1348,7 +1362,8 @@ void CSSParserImpl::EmitNestedDeclarationsRuleIfNeeded(
 StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
-    StyleRule* parent_rule_for_nesting) {
+    StyleRule* parent_rule_for_nesting,
+    bool is_within_scope) {
   // Consume the prelude.
 
   // First just get the string for the prelude to see if we've got a cached
@@ -1412,7 +1427,7 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(
   ConsumeRuleListOrNestedDeclarationList(
       stream,
       /* is_nested_group_rule */ nesting_type == CSSNestingType::kNesting,
-      nesting_type, parent_rule_for_nesting, &rules);
+      nesting_type, parent_rule_for_nesting, is_within_scope, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -1426,7 +1441,8 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(
 StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
-    StyleRule* parent_rule_for_nesting) {
+    StyleRule* parent_rule_for_nesting,
+    bool is_within_scope) {
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   CSSSupportsParser::Result supported =
       CSSSupportsParser::ConsumeSupportsCondition(stream, *this);
@@ -1458,7 +1474,7 @@ StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
   ConsumeRuleListOrNestedDeclarationList(
       stream,
       /* is_nested_group_rule */ nesting_type == CSSNestingType::kNesting,
-      nesting_type, parent_rule_for_nesting, &rules);
+      nesting_type, parent_rule_for_nesting, is_within_scope, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -1474,7 +1490,8 @@ StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
 StyleRuleStartingStyle* CSSParserImpl::ConsumeStartingStyleRule(
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
-    StyleRule* parent_rule_for_nesting) {
+    StyleRule* parent_rule_for_nesting,
+    bool is_within_scope) {
   // NOTE: @starting-style prelude should be empty.
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();
@@ -1494,7 +1511,7 @@ StyleRuleStartingStyle* CSSParserImpl::ConsumeStartingStyleRule(
   ConsumeRuleListOrNestedDeclarationList(
       stream,
       /* is_nested_group_rule */ nesting_type == CSSNestingType::kNesting,
-      nesting_type, parent_rule_for_nesting, &rules);
+      nesting_type, parent_rule_for_nesting, is_within_scope, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -1531,10 +1548,11 @@ StyleRuleFontFace* CSSParserImpl::ConsumeFontFaceRule(
   }
 
   base::AutoReset<CSSParserObserver*> disable_observer(&observer_, nullptr);
-  ConsumeDeclarationList(stream, StyleRule::kFontFace, CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(stream, StyleRule::kFontFace, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*is_within_scope=*/false,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   return MakeGarbageCollected<StyleRuleFontFace>(CreateCSSPropertyValueSet(
       parsed_properties_, kCSSFontFaceRuleMode, context_->GetDocument()));
@@ -1576,6 +1594,7 @@ StyleRuleKeyframes* CSSParserImpl::ConsumeKeyframesRule(
   ConsumeRuleList(
       stream, kKeyframesRuleList, CSSNestingType::kNone,
       /*parent_rule_for_nesting=*/nullptr,
+      /*is_within_scope=*/false,
       [keyframe_rule](StyleRuleBase* keyframe, wtf_size_t) {
         keyframe_rule->ParserAppendKeyframe(To<StyleRuleKeyframe>(keyframe));
       });
@@ -1678,7 +1697,7 @@ StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRule(
     }
     stream.ConsumeWhitespace();
 
-    font_feature_rule->UpdateAlias(alias, parsed_numbers);
+    font_feature_rule->UpdateAlias(alias, std::move(parsed_numbers));
   }
 
   return font_feature_rule;
@@ -1731,6 +1750,7 @@ StyleRuleFontFeatureValues* CSSParserImpl::ConsumeFontFeatureValuesRule(
   if (ConsumeRuleList(
           stream, kFontFeatureRuleList, CSSNestingType::kNone,
           /*parent_rule_for_nesting=*/nullptr,
+          /*is_within_scope=*/false,
           [&feature_rules, &had_valid_rules](StyleRuleBase* rule, wtf_size_t) {
             if (rule) {
               had_valid_rules = true;
@@ -1776,8 +1796,8 @@ StyleRuleFontFeatureValues* CSSParserImpl::ConsumeFontFeatureValuesRule(
   }
 
   auto* feature_values_rule = MakeGarbageCollected<StyleRuleFontFeatureValues>(
-      families, stylistic, styleset, character_variant, swash, ornaments,
-      annotation);
+      std::move(families), stylistic, styleset, character_variant, swash,
+      ornaments, annotation);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -1812,10 +1832,11 @@ StyleRulePage* CSSParserImpl::ConsumePageRule(CSSParserTokenStream& stream) {
   }
 
   HeapVector<Member<StyleRuleBase>, 4> child_rules;
-  ConsumeDeclarationList(stream, StyleRule::kPage, CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         &child_rules);
+  ConsumeBlockContents(stream, StyleRule::kPage, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*is_within_scope=*/false,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       &child_rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
@@ -1856,10 +1877,11 @@ StyleRuleProperty* CSSParserImpl::ConsumePropertyRule(
     observer_->StartRuleBody(stream.Offset());
   }
 
-  ConsumeDeclarationList(stream, StyleRule::kProperty, CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(stream, StyleRule::kProperty, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*is_within_scope=*/false,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
@@ -1927,11 +1949,11 @@ StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(
     observer_->StartRuleBody(stream.Offset());
   }
 
-  ConsumeDeclarationList(stream, StyleRule::kCounterStyle,
-                         CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(stream, StyleRule::kCounterStyle, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*is_within_scope=*/false,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
@@ -1972,11 +1994,12 @@ StyleRuleFontPaletteValues* CSSParserImpl::ConsumeFontPaletteValuesRule(
     observer_->StartRuleBody(stream.Offset());
   }
 
-  ConsumeDeclarationList(stream, StyleRule::kFontPaletteValues,
-                         CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(stream, StyleRule::kFontPaletteValues,
+                       CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*is_within_scope=*/false,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
@@ -1991,12 +2014,13 @@ StyleRuleFontPaletteValues* CSSParserImpl::ConsumeFontPaletteValuesRule(
 StyleRuleBase* CSSParserImpl::ConsumeScopeRule(
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
-    StyleRule* parent_rule_for_nesting) {
+    StyleRule* parent_rule_for_nesting,
+    bool is_within_scope) {
   // Parse the prelude.
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   auto* style_scope =
       StyleScope::Parse(stream, context_, nesting_type, parent_rule_for_nesting,
-                        is_within_scope_, style_sheet_);
+                        is_within_scope, style_sheet_);
   if (!style_scope) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleScope);
     return nullptr;
@@ -2016,13 +2040,13 @@ StyleRuleBase* CSSParserImpl::ConsumeScopeRule(
 
   // Parse the actual block.
   CSSParserTokenStream::BlockGuard guard(stream);
-  base::AutoReset<bool> auto_is_within_scope(&is_within_scope_, true);
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
   ConsumeRuleListOrNestedDeclarationList(
       stream,
       /* is_nested_group_rule */ nesting_type == CSSNestingType::kNesting,
-      CSSNestingType::kScope, style_scope->RuleForNesting(), &rules);
+      CSSNestingType::kScope, style_scope->RuleForNesting(),
+      /* is_within_scope */ true, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -2049,11 +2073,12 @@ StyleRuleViewTransition* CSSParserImpl::ConsumeViewTransitionRule(
     observer_->EndRuleHeader(prelude_offset_end);
     observer_->StartRuleBody(stream.Offset());
   }
-  ConsumeDeclarationList(stream, StyleRule::kViewTransition,
-                         CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(stream, StyleRule::kViewTransition,
+                       CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*is_within_scope=*/false,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
@@ -2067,7 +2092,8 @@ StyleRuleViewTransition* CSSParserImpl::ConsumeViewTransitionRule(
 StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
-    StyleRule* parent_rule_for_nesting) {
+    StyleRule* parent_rule_for_nesting,
+    bool is_within_scope) {
   // Consume the prelude.
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   ContainerQueryParser query_parser(*context_);
@@ -2109,7 +2135,7 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
   ConsumeRuleListOrNestedDeclarationList(
       stream,
       /* is_nested_group_rule */ nesting_type == CSSNestingType::kNesting,
-      nesting_type, parent_rule_for_nesting, &rules);
+      nesting_type, parent_rule_for_nesting, is_within_scope, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -2124,7 +2150,8 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
 StyleRuleBase* CSSParserImpl::ConsumeLayerRule(
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
-    StyleRule* parent_rule_for_nesting) {
+    StyleRule* parent_rule_for_nesting,
+    bool is_within_scope) {
   // Consume the prelude.
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
 
@@ -2209,7 +2236,7 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(
   ConsumeRuleListOrNestedDeclarationList(
       stream,
       /* is_nested_group_rule */ nesting_type == CSSNestingType::kNesting,
-      nesting_type, parent_rule_for_nesting, &rules);
+      nesting_type, parent_rule_for_nesting, is_within_scope, &rules);
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -2252,10 +2279,11 @@ StyleRulePositionTry* CSSParserImpl::ConsumePositionTryRule(
     observer_->StartRuleBody(stream.Offset());
   }
 
-  ConsumeDeclarationList(stream, StyleRule::kPositionTry, CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(stream, StyleRule::kPositionTry, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*is_within_scope=*/false,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
@@ -2323,10 +2351,6 @@ static std::optional<StyleRuleFunction::Type> ParseFunctionType(
 
 StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
     CSSParserTokenStream& stream) {
-  if (!RuntimeEnabledFeatures::CSSFunctionsEnabled()) {
-    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleFunction);
-    return nullptr;
-  }
   // Parse the prelude; first a function token (the name), then parameters,
   // then return type.
   if (stream.Peek().GetType() != kFunctionToken) {
@@ -2398,8 +2422,7 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
         stream, /*allow_important_annotation=*/false,
         /*is_animation_tainted=*/false,
         /*must_contain_variable_reference=*/false, /*restricted_value=*/false,
-        /*comma_ends_declaration=*/false, important_ignored,
-        context_->GetExecutionContext());
+        /*comma_ends_declaration=*/false, important_ignored, *context_);
   }
 
   while (!stream.AtEnd()) {
@@ -2413,11 +2436,6 @@ StyleRuleFunction* CSSParserImpl::ConsumeFunctionRule(
 }
 
 StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
-  if (!RuntimeEnabledFeatures::CSSMixinsEnabled()) {
-    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleMixin);
-    return nullptr;
-  }
-
   // @mixin must be top-level, and as such, we need to clear the arena
   // after we're done parsing it (like ConsumeStyleRule() does).
   if (in_nested_style_rule_) {
@@ -2451,12 +2469,12 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
 
   // The destructor expects there to be at least one selector in the StyleRule.
   CSSSelector dummy;
-  StyleRule* fake_parent_rule = StyleRule::Create(std::vector{dummy});
+  StyleRule* fake_parent_rule = StyleRule::Create(base::span_from_ref(dummy));
   HeapVector<Member<StyleRuleBase>, 4> child_rules;
-  ConsumeRuleListOrNestedDeclarationList(stream,
-                                         /*is_nested_group_rule=*/true,
-                                         CSSNestingType::kNesting,
-                                         fake_parent_rule, &child_rules);
+  ConsumeRuleListOrNestedDeclarationList(
+      stream,
+      /*is_nested_group_rule=*/true, CSSNestingType::kNesting, fake_parent_rule,
+      /*is_within_scope=*/false, &child_rules);
   for (StyleRuleBase* child_rule : child_rules) {
     fake_parent_rule->AddChildRule(child_rule);
   }
@@ -2465,10 +2483,6 @@ StyleRuleMixin* CSSParserImpl::ConsumeMixinRule(CSSParserTokenStream& stream) {
 
 StyleRuleApplyMixin* CSSParserImpl::ConsumeApplyMixinRule(
     CSSParserTokenStream& stream) {
-  if (!RuntimeEnabledFeatures::CSSMixinsEnabled()) {
-    ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleApplyMixin);
-    return nullptr;
-  }
   if (stream.Peek().GetType() != kIdentToken) {
     ConsumeErroneousAtRule(stream, CSSAtRuleID::kCSSAtRuleApplyMixin);
     return nullptr;  // Parse error.
@@ -2552,10 +2566,11 @@ StyleRuleKeyframe* CSSParserImpl::ConsumeKeyframeStyleRule(
     observer_->StartRuleBody(block.Offset());
   }
 
-  ConsumeDeclarationList(block, StyleRule::kKeyframe, CSSNestingType::kNone,
-                         /*parent_rule_for_nesting=*/nullptr,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         /*child_rules=*/nullptr);
+  ConsumeBlockContents(block, StyleRule::kKeyframe, CSSNestingType::kNone,
+                       /*parent_rule_for_nesting=*/nullptr,
+                       /*is_within_scope=*/false,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       /*child_rules=*/nullptr);
 
   if (observer_) {
     observer_->EndRuleBody(block.LookAheadOffset());
@@ -2600,11 +2615,12 @@ static bool MayContainNestedRules(const String& text,
   return memchr(text_bytes.data(), '{', text_bytes.size()) != nullptr;
 }
 
-StyleRule* CSSParserImpl::ConsumeStyleRule(
-    CSSParserTokenStream& stream,
-    CSSNestingType nesting_type,
-    StyleRule* parent_rule_for_nesting,
-    bool semicolon_aborts_nested_selector) {
+StyleRule* CSSParserImpl::ConsumeStyleRule(CSSParserTokenStream& stream,
+                                           CSSNestingType nesting_type,
+                                           StyleRule* parent_rule_for_nesting,
+                                           bool is_within_scope,
+                                           bool nested,
+                                           bool& invalid_rule_error) {
   if (!in_nested_style_rule_) {
     DCHECK_EQ(0u, arena_.size());
   }
@@ -2632,16 +2648,17 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(
     stream.Restore(state);
   }
 
+  bool has_visited_pseudo = false;
   // Parse the prelude of the style rule
   base::span<CSSSelector> selector_vector = CSSSelectorParser::ConsumeSelector(
-      stream, context_, nesting_type, parent_rule_for_nesting, is_within_scope_,
-      semicolon_aborts_nested_selector, style_sheet_, observer_, arena_);
+      stream, context_, nesting_type, parent_rule_for_nesting, is_within_scope,
+      /* semicolon_aborts_nested_selector*/ nested, style_sheet_, observer_,
+      arena_, &has_visited_pseudo);
 
   if (selector_vector.empty()) {
     // Read the rest of the prelude if there was an error
     stream.EnsureLookAhead();
-    if (semicolon_aborts_nested_selector &&
-        nesting_type != CSSNestingType::kNone) {
+    if (nested) {
       stream.SkipUntilPeekedTypeIs<kLeftBraceToken, kSemicolonToken>();
     } else {
       stream.SkipUntilPeekedTypeIs<kLeftBraceToken>();
@@ -2652,9 +2669,7 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(
     observer_->EndRuleHeader(stream.LookAheadOffset());
   }
 
-  if (stream.AtEnd() || AbortsNestedSelectorParsing(
-                            stream.UncheckedPeek().GetType(),
-                            semicolon_aborts_nested_selector, nesting_type)) {
+  if (stream.Peek().GetType() != kLeftBraceToken) {
     // Parse error, EOF instead of qualified rule block
     // (or we went into error recovery above).
     // NOTE: If we aborted due to a semicolon, don't consume it here;
@@ -2662,15 +2677,29 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(
     return nullptr;
   }
 
-  DCHECK_EQ(stream.Peek().GetType(), kLeftBraceToken);
-
-  if (RuntimeEnabledFeatures::CSSLazyParsingFastPathEnabled()) {
-    if (selector_vector.empty() || custom_property_ambiguity) {
-      // Parse error, invalid selector list or ambiguous custom property.
-      CSSParserTokenStream::BlockGuard guard(stream);
+  if (custom_property_ambiguity) {
+    if (nested) {
+      // https://drafts.csswg.org/css-syntax/#consume-the-remnants-of-a-bad-declaration
+      // Note that the caller consumes the bad declaration remnants
+      // (see ConsumeBlockContents).
       return nullptr;
     }
+    // "If nested is false, consume a block from input, and return nothing."
+    // https://drafts.csswg.org/css-syntax/#consume-qualified-rule
+    CSSParserTokenStream::BlockGuard guard(stream);
+    return nullptr;
+  }
+  // Check if rule is "valid in current context".
+  // https://drafts.csswg.org/css-syntax/#consume-qualified-rule
+  //
+  // This means checking if the selector parsed successfully.
+  if (selector_vector.empty()) {
+    CSSParserTokenStream::BlockGuard guard(stream);
+    invalid_rule_error = true;
+    return nullptr;
+  }
 
+  if (RuntimeEnabledFeatures::CSSLazyParsingFastPathEnabled()) {
     // TODO(csharrison): How should we lazily parse css that needs the observer?
     if (!observer_ && lazy_state_) {
       DCHECK(style_sheet_);
@@ -2696,17 +2725,10 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(
       }
     }
     CSSParserTokenStream::BlockGuard guard(stream);
-    return ConsumeStyleRuleContents(selector_vector, stream);
+    return ConsumeStyleRuleContents(selector_vector, stream, is_within_scope,
+                                    has_visited_pseudo);
   } else {
     CSSParserTokenStream::BlockGuard guard(stream);
-
-    if (selector_vector.empty()) {
-      // Parse error, invalid selector list.
-      return nullptr;
-    }
-    if (custom_property_ambiguity) {
-      return nullptr;
-    }
 
     // TODO(csharrison): How should we lazily parse css that needs the observer?
     if (!observer_ && lazy_state_) {
@@ -2727,29 +2749,33 @@ StyleRule* CSSParserImpl::ConsumeStyleRule(
                                           block_start_offset);
         CSSParserTokenStream::BlockGuard sub_guard(
             block_stream);  // Consume the {, and open the block stack.
-        return ConsumeStyleRuleContents(selector_vector, block_stream);
+        return ConsumeStyleRuleContents(selector_vector, block_stream,
+                                        is_within_scope, has_visited_pseudo);
       }
 
       return StyleRule::Create(selector_vector,
                                MakeGarbageCollected<CSSLazyPropertyParserImpl>(
                                    block_start_offset, lazy_state_));
     }
-    return ConsumeStyleRuleContents(selector_vector, stream);
+    return ConsumeStyleRuleContents(selector_vector, stream, is_within_scope,
+                                    has_visited_pseudo);
   }
 }
 
 StyleRule* CSSParserImpl::ConsumeStyleRuleContents(
     base::span<CSSSelector> selector_vector,
-    CSSParserTokenStream& stream) {
+    CSSParserTokenStream& stream,
+    bool is_within_scope,
+    bool has_visited_pseudo) {
   StyleRule* style_rule = StyleRule::Create(selector_vector);
   HeapVector<Member<StyleRuleBase>, 4> child_rules;
   if (observer_) {
     observer_->StartRuleBody(stream.Offset());
   }
-  ConsumeDeclarationList(stream, StyleRule::kStyle, CSSNestingType::kNesting,
-                         /*parent_rule_for_nesting=*/style_rule,
-                         /*nested_declarations_start_index=*/kNotFound,
-                         &child_rules);
+  ConsumeBlockContents(stream, StyleRule::kStyle, CSSNestingType::kNesting,
+                       /*parent_rule_for_nesting=*/style_rule, is_within_scope,
+                       /*nested_declarations_start_index=*/kNotFound,
+                       &child_rules, has_visited_pseudo);
   if (observer_) {
     observer_->EndRuleBody(stream.LookAheadOffset());
   }
@@ -2761,25 +2787,10 @@ StyleRule* CSSParserImpl::ConsumeStyleRuleContents(
   return style_rule;
 }
 
-// This function is used for two different but very similarly specified actions
-// in [css-syntax-3], namely “parse a list of declarations” (used for style
-// attributes, @page rules and a few other things) and “consume a style block's
-// contents” (used for the interior of rules, such as in a normal stylesheet).
-// The only real difference between the two is that the latter cannot contain
-// nested rules. In particular, both have the effective behavior that when
-// seeing something that is not an ident and is not a valid selector, we should
-// skip to the next semicolon. (For “consume a style block's contents”, this is
-// explicit, and for “parse a list of declarations”, it happens due to
-// synchronization behavior. Of course, for the latter case, a _valid_ selector
-// would get the same skipping behavior.)
+// https://drafts.csswg.org/css-syntax/#consume-block-contents
 //
-// So as the spec stands, we can unify these cases; we use
-// parent_rule_for_nesting as a marker for which case we are in (see [1]).
-// If it's nullptr, we're parsing a declaration list and not a style block,
-// so non-idents should not begin consuming qualified rules. See also
-// AbortsNestedSelectorParsing(), which uses parent_rule_for_nesting to check
-// whether semicolons should abort parsing (the prelude of) qualified rules;
-// if semicolons always aborted such parsing, we wouldn't need this distinction.
+// Consumes declarations and/or child rules from the block of a style rule
+// or an at-rule (e.g. @media).
 //
 // The `nested_declarations_start_index` parameter controls how this function
 // emits "nested declaration" rules for the leading block of declarations.
@@ -2789,13 +2800,15 @@ StyleRule* CSSParserImpl::ConsumeStyleRuleContents(
 // wrapped). For nested group rules, or generally rules that cannot hold
 // declarations directly (e.g. @media), the parameter value should be 0u,
 // causing the leading declarations to get wrapped as well.
-void CSSParserImpl::ConsumeDeclarationList(
+void CSSParserImpl::ConsumeBlockContents(
     CSSParserTokenStream& stream,
     StyleRule::RuleType rule_type,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting,
+    bool is_within_scope,
     wtf_size_t nested_declarations_start_index,
-    HeapVector<Member<StyleRuleBase>, 4>* child_rules) {
+    HeapVector<Member<StyleRuleBase>, 4>* child_rules,
+    bool has_visited_pseudo) {
   DCHECK(parsed_properties_.empty());
 
   while (true) {
@@ -2825,8 +2838,13 @@ void CSSParserImpl::ConsumeDeclarationList(
         CSSParserToken name_token = stream.ConsumeIncludingWhitespace();
         const StringView name = name_token.Value();
         const CSSAtRuleID id = CssAtRuleID(name);
+        bool invalid_rule_error_ignored = false;
         StyleRuleBase* child = ConsumeNestedRule(
-            id, rule_type, stream, nesting_type, parent_rule_for_nesting);
+            id, rule_type, stream, nesting_type, parent_rule_for_nesting,
+            is_within_scope, invalid_rule_error_ignored);
+        // "Consume an at-rule" can't return invalid-rule-error.
+        // https://drafts.csswg.org/css-syntax/#consume-at-rule
+        DCHECK(!invalid_rule_error_ignored);
         if (child && child_rules) {
           EmitNestedDeclarationsRuleIfNeeded(
               nesting_type, parent_rule_for_nesting,
@@ -2841,7 +2859,8 @@ void CSSParserImpl::ConsumeDeclarationList(
         bool consumed_declaration = false;
         {
           CSSParserTokenStream::Boundary boundary(stream, kSemicolonToken);
-          consumed_declaration = ConsumeDeclaration(stream, rule_type);
+          consumed_declaration =
+              ConsumeDeclaration(stream, rule_type, has_visited_pseudo);
         }
         if (consumed_declaration) {
           if (!stream.AtEnd()) {
@@ -2861,10 +2880,11 @@ void CSSParserImpl::ConsumeDeclarationList(
         [[fallthrough]];
       }
       default:
-        if (parent_rule_for_nesting != nullptr) {  // [1] (see function comment)
-          StyleRuleBase* child =
-              ConsumeNestedRule(std::nullopt, rule_type, stream, nesting_type,
-                                parent_rule_for_nesting);
+        if (nesting_type != CSSNestingType::kNone) {
+          bool invalid_rule_error = false;
+          StyleRuleBase* child = ConsumeNestedRule(
+              std::nullopt, rule_type, stream, nesting_type,
+              parent_rule_for_nesting, is_within_scope, invalid_rule_error);
           if (child) {
             if (child_rules) {
               EmitNestedDeclarationsRuleIfNeeded(
@@ -2873,6 +2893,15 @@ void CSSParserImpl::ConsumeDeclarationList(
               nested_declarations_start_index = parsed_properties_.size();
               child_rules->push_back(child);
             }
+            break;
+          } else if (invalid_rule_error) {
+            // https://drafts.csswg.org/css-syntax/#invalid-rule-error
+            //
+            // This means the rule was valid per the "core" grammar of
+            // css-syntax, but the prelude (i.e. selector list) didn't parse.
+            // We should not fall through to error recovery in this case,
+            // because we should continue parsing immediately after
+            // the {}-block.
             break;
           }
           // Fall through to error recovery.
@@ -2914,12 +2943,13 @@ void CSSParserImpl::ConsumeRuleListOrNestedDeclarationList(
     bool is_nested_group_rule,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting,
+    bool is_within_scope,
     HeapVector<Member<StyleRuleBase>, 4>* child_rules) {
   DCHECK(child_rules);
 
   if (is_nested_group_rule) {
-    // This is a nested group rule, which allows *declarations* to appear
-    // directly within the body of the rule, e.g.:
+    // This is a nested group rule, which (in addition to rules) allows
+    // *declarations* to appear directly within the body of the rule, e.g.:
     //
     // .foo {
     //    @media (width > 800px) {
@@ -2927,29 +2957,28 @@ void CSSParserImpl::ConsumeRuleListOrNestedDeclarationList(
     //    }
     //  }
     //
-    // Note that nested group rules may also contain *rules* within its body.
-    // This is handled by `ConsumeDeclarationList`, see comment near that
-    // function.
     if (RuntimeEnabledFeatures::CSSNestedDeclarationsEnabled()) {
       // Using nested_declarations_start_index=0u here means that the leading
       // declarations will be wrapped in a CSSNestedDeclarations rule.
       // Unlike regular style rules, the leading declarations must be wrapped
       // in something that can hold them, because group rules (e.g. @media)
       // can not hold properties directly.
-      ConsumeDeclarationList(
-          stream, StyleRule::kStyle, nesting_type, parent_rule_for_nesting,
-          /* nested_declarations_start_index */ 0u, child_rules);
+      ConsumeBlockContents(stream, StyleRule::kStyle, nesting_type,
+                           parent_rule_for_nesting, is_within_scope,
+                           /* nested_declarations_start_index */ 0u,
+                           child_rules);
     } else {
       if (observer_) {
         // Observe an empty rule header to ensure the observer has a new rule
-        // data on the stack for the following ConsumeDeclarationList.
+        // data on the stack for the following ConsumeBlockContents.
         observer_->StartRuleHeader(StyleRule::kStyle, stream.Offset());
         observer_->EndRuleHeader(stream.Offset());
         observer_->StartRuleBody(stream.Offset());
       }
-      ConsumeDeclarationList(
-          stream, StyleRule::kStyle, nesting_type, parent_rule_for_nesting,
-          /* nested_declarations_start_index */ kNotFound, child_rules);
+      ConsumeBlockContents(stream, StyleRule::kStyle, nesting_type,
+                           parent_rule_for_nesting, is_within_scope,
+                           /* nested_declarations_start_index */ kNotFound,
+                           child_rules);
       if (observer_) {
         observer_->EndRuleBody(stream.LookAheadOffset());
       }
@@ -2960,7 +2989,7 @@ void CSSParserImpl::ConsumeRuleListOrNestedDeclarationList(
     }
   } else {
     ConsumeRuleList(stream, kRegularRuleList, nesting_type,
-                    parent_rule_for_nesting,
+                    parent_rule_for_nesting, is_within_scope,
                     [child_rules](StyleRuleBase* rule, wtf_size_t) {
                       child_rules->push_back(rule);
                     });
@@ -2972,7 +3001,9 @@ StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
     StyleRule::RuleType parent_rule_type,
     CSSParserTokenStream& stream,
     CSSNestingType nesting_type,
-    StyleRule* parent_rule_for_nesting) {
+    StyleRule* parent_rule_for_nesting,
+    bool is_within_scope,
+    bool& invalid_rule_error) {
   // A nested style rule. Recurse into the parser; we need to move the parsed
   // properties out of the way while we're parsing the child rule, though.
   // TODO(sesse): The spec says that any properties after a nested rule
@@ -2985,13 +3016,14 @@ StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
                                                    true);
   if (!id.has_value()) {
     child = ConsumeStyleRule(stream, nesting_type, parent_rule_for_nesting,
-                             /* semicolon_aborts_nested_selector */ true);
+                             is_within_scope,
+                             /* nested */ true, invalid_rule_error);
   } else {
-    child = ConsumeAtRuleContents(*id, stream,
-                                  parent_rule_type == StyleRule::kPage
-                                      ? kPageMarginRules
-                                      : kNestedGroupRules,
-                                  nesting_type, parent_rule_for_nesting);
+    child = ConsumeAtRuleContents(
+        *id, stream,
+        parent_rule_type == StyleRule::kPage ? kPageMarginRules
+                                             : kNestedGroupRules,
+        nesting_type, parent_rule_for_nesting, is_within_scope);
   }
   parsed_properties_ = std::move(outer_parsed_properties);
   if (child && parent_rule_type != StyleRule::kPage) {
@@ -3011,11 +3043,12 @@ StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
 //
 // Leaving the stream in an awkward states is normally not desirable for
 // Consume functions, but declarations are sometimes parsed speculatively,
-// which may cause a restart at the call site (see ConsumeDeclarationList,
+// which may cause a restart at the call site (see ConsumeBlockContents,
 // kIdentToken branch). If we are anyway going to restart, any work we do
 // to leave the stream in a more consistent state is just wasted.
 bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
-                                       StyleRule::RuleType rule_type) {
+                                       StyleRule::RuleType rule_type,
+                                       bool has_visited_pseudo) {
   const wtf_size_t decl_offset_start = stream.Offset();
 
   DCHECK_EQ(stream.Peek().GetType(), kIdentToken);
@@ -3050,8 +3083,8 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
   if (id) {
     if (parsing_descriptor) {
       const AtRuleDescriptorID atrule_id = static_cast<AtRuleDescriptorID>(id);
-      AtRuleDescriptorParser::ParseAtRule(rule_type, atrule_id, stream,
-                                          *context_, parsed_properties_);
+      AtRuleDescriptorParser::ParseDescriptorValue(
+          rule_type, atrule_id, stream, *context_, parsed_properties_);
     } else {
       const CSSPropertyID unresolved_property = static_cast<CSSPropertyID>(id);
       if (unresolved_property == CSSPropertyID::kVariable) {
@@ -3087,9 +3120,13 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
                 /*is_animation_tainted=*/false,
                 /*must_contain_variable_reference=*/false,
                 /*restricted_value=*/true, /*comma_ends_declaration=*/false,
-                important, context_->GetExecutionContext());
+                important, *context_);
           }
         } else {
+          if (context_->IsUseCounterRecordingEnabled() && has_visited_pseudo &&
+              unresolved_property == CSSPropertyID::kColumnRuleColor) {
+            context_->Count(WebFeature::kVisitedColumnRuleColor);
+          }
           ConsumeDeclarationValue(stream, unresolved_property,
                                   /*is_in_declaration_list=*/true, rule_type);
         }
@@ -3110,7 +3147,7 @@ bool CSSParserImpl::ConsumeDeclaration(CSSParserTokenStream& stream,
           /*is_animation_tainted=*/false,
           /*must_contain_variable_reference=*/false,
           /*restricted_value=*/true, /*comma_ends_declaration=*/false,
-          important, context_->GetExecutionContext());
+          important, *context_);
     }
     // The end offset is the offset of the terminating token, which is peeked
     // but not yet consumed.
@@ -3140,7 +3177,7 @@ bool CSSParserImpl::ConsumeVariableValue(CSSParserTokenStream& stream,
             stream, allow_important_annotation, is_animation_tainted,
             /*must_contain_variable_reference=*/false,
             /*restricted_value=*/false, /*comma_ends_declaration=*/false,
-            important, context_->GetExecutionContext());
+            important, *context_);
     if (!variable_data) {
       return false;
     }

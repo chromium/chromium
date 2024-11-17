@@ -31,6 +31,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/views/notification_view_base.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
@@ -110,10 +111,12 @@ ArcNotificationView::ArcNotificationView(
       views::BoxLayout::Orientation::kVertical, gfx::Insets()));
 
   if (shown_in_popup) {
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-    layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
     layer()->SetRoundedCornerRadius(
         gfx::RoundedCornersF{kMessagePopupCornerRadius});
+    if (chromeos::features::IsSystemBlurEnabled()) {
+      layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+      layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
+    }
   }
 
   UpdateCornerRadius(message_center::kNotificationCornerRadius,
@@ -130,6 +133,10 @@ ArcNotificationView::ArcNotificationView(
         CHECK(v);
         return v->HasFocus();
       }));
+
+  // There is no a11y data for this view since it is never focused when the
+  // content view is focusable.
+  GetViewAccessibility().SetIsIgnored(true);
 }
 
 ArcNotificationView::~ArcNotificationView() {
@@ -169,10 +176,14 @@ void ArcNotificationView::UpdateBackgroundPainter() {
   }
 
   const auto* color_provider = GetColorProvider();
-  const SkColor color_in_popup =
-      color_provider->GetColor(cros_tokens::kCrosSysSystemBaseElevated);
+  const SkColor color_in_popup = color_provider->GetColor(
+      chromeos::features::IsSystemBlurEnabled()
+          ? cros_tokens::kCrosSysSystemBaseElevated
+          : cros_tokens::kCrosSysSystemBaseElevatedOpaque);
   const SkColor color_in_message_center =
-      color_provider->GetColor(cros_tokens::kCrosSysSystemOnBase);
+      color_provider->GetColor(chromeos::features::IsSystemBlurEnabled()
+                                   ? cros_tokens::kCrosSysSystemOnBase
+                                   : cros_tokens::kCrosSysSystemOnBaseOpaque);
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<message_center::NotificationBackgroundPainter>(
           top_radius(), bottom_radius(),
@@ -181,16 +192,6 @@ void ArcNotificationView::UpdateBackgroundPainter() {
 
 void ArcNotificationView::UpdateControlButtonsVisibility() {
   content_view_->UpdateControlButtonsVisibility();
-}
-
-void ArcNotificationView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (content_view_->IsFocusable()) {
-    // This data is never used since this view is never focused when the content
-    // view is focusable.
-    return;
-  }
-  CHECK(features::IsRenderArcNotificationsByChromeEnabled());
-  message_center::MessageView::GetAccessibleNodeData(node_data);
 }
 
 message_center::NotificationControlButtonsView*

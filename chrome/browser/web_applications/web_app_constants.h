@@ -56,6 +56,7 @@ enum Type {
   // user-installed apps without overlaps this is the only source that will be
   // set.
   kSync,
+  kUserInstalled,
   kIwaUserInstalled,
   // Installed by APS (App Preload Service) on ChromeOS as a default app. These
   // have the same UX as kDefault apps, but are are not managed by
@@ -291,6 +292,7 @@ constexpr WebAppManagementTypes kUserUninstallableSources = {
     WebAppManagement::kDefault,
     WebAppManagement::kApsDefault,
     WebAppManagement::kSync,
+    WebAppManagement::kUserInstalled,
     WebAppManagement::kWebAppStore,
     WebAppManagement::kSubApp,
     WebAppManagement::kOem,
@@ -301,6 +303,7 @@ constexpr WebAppManagementTypes kUserUninstallableSources = {
 // Management types that resulted from a user web app install.
 constexpr WebAppManagementTypes kUserDrivenInstallSources = {
     WebAppManagement::kSync,
+    WebAppManagement::kUserInstalled,
     WebAppManagement::kWebAppStore,
     WebAppManagement::kOneDriveIntegration,
     WebAppManagement::kIwaUserInstalled,

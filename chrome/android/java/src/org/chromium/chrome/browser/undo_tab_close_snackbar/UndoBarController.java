@@ -18,10 +18,10 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
@@ -152,7 +152,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
     /**
      * Shows an undo close all bar. Based on user actions, this will cause a call to either {@link
      * TabModel#commitTabClosure(int)} or {@link TabModel#cancelTabClosure(int)} to be called for
-     * each tab in {@code closedTabIds}. This will happen unless {@code
+     * each tab in {@code closedTabs}. This will happen unless {@code
      * SnackbarManager#removeFromStackForData(Object)} is called.
      *
      * @param closedTabs A list of tabs that were closed.
@@ -182,10 +182,7 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
                                                 ? SnackbarManager.DEFAULT_SNACKBAR_DURATION_LONG_MS
                                                 : SnackbarManager.DEFAULT_SNACKBAR_DURATION_MS)
                                 .setTemplateText(templateAndContent.first)
-                                .setAction(mContext.getString(R.string.undo), actionData)
-                                .setActionAccessibilityAnnouncement(
-                                        getUndoneAccessibilityAnnouncement(
-                                                templateAndContent.second, false)));
+                                .setAction(mContext.getString(R.string.undo), actionData));
     }
 
     private static class ClosureMetadata {
@@ -218,10 +215,9 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
         assert !closedTabs.get(0).isIncognito();
 
         TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        mTabModelSelector
-                                .getTabModelFilterProvider()
-                                .getTabModelFilter(/* isIncognito= */ false);
+                mTabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(/* isIncognito= */ false);
         Profile profile = filter.getTabModel().getProfile();
         boolean tabGroupSyncEnabled =
                 profile != null
@@ -280,10 +276,9 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
             if (closureMetadata.ungroupedOrPartialGroupTabs == 0) {
                 int rootId = closureMetadata.fullyClosingRootIds.iterator().next();
                 TabGroupModelFilter filter =
-                        (TabGroupModelFilter)
-                                mTabModelSelector
-                                        .getTabModelFilterProvider()
-                                        .getTabModelFilter(false);
+                        mTabModelSelector
+                                .getTabGroupModelFilterProvider()
+                                .getTabGroupModelFilter(false);
                 @Nullable String tabGroupTitle = filter.getTabGroupTitle(rootId);
                 if (tabGroupTitle == null) {
                     tabGroupTitle =
@@ -345,18 +340,9 @@ public class UndoBarController implements SnackbarManager.SnackbarController {
         return singleTab ? Snackbar.UMA_TAB_CLOSE_UNDO : Snackbar.UMA_TAB_CLOSE_MULTIPLE_UNDO;
     }
 
-    private String getUndoneAccessibilityAnnouncement(String content, boolean isMultiple) {
-        return isMultiple
-                ? mContext.getString(
-                        R.string.accessibility_undo_multiple_closed_tabs_announcement_message,
-                        content)
-                : mContext.getString(
-                        R.string.accessibility_undo_closed_tab_announcement_message, content);
-    }
-
     /**
-     * Calls {@link TabModel#cancelTabClosure(int)} for the tab or for each tab in
-     * the list of closed tabs.
+     * Calls {@link TabModel#cancelTabClosure(int)} for the tab or for each tab in the list of
+     * closed tabs.
      */
     @SuppressWarnings("unchecked")
     @Override

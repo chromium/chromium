@@ -205,8 +205,7 @@ class WaylandSurfaceFactoryTest : public WaylandTest {
         /*supports_viewporter=*/true,
         /*supports_acquire_fence=*/false,
         /*supports_overlays=*/true, kAugmentedSurfaceNotSupportedVersion,
-        /*supports_single_pixel_buffer=*/true,
-        /*server_version=*/{});
+        /*supports_single_pixel_buffer=*/true);
 
     // Wait until initialization and mojo calls go through.
     base::RunLoop().RunUntilIdle();

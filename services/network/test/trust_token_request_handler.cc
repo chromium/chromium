@@ -208,7 +208,7 @@ std::optional<std::string> TrustTokenRequestHandler::Issue(
             issuer_ctx.get(),
             &decoded_issuance_response.mutable_ptr()->AsEphemeralRawAddr(),
             decoded_issuance_response.mutable_len(), &num_tokens_issued,
-            base::as_bytes(base::make_span(decoded_issuance_request)).data(),
+            base::as_byte_span(decoded_issuance_request).data(),
             decoded_issuance_request.size(),
             /*public_metadata=*/static_cast<uint32_t>(i), kPrivateMetadata,
             rep_->batch_size)) {
@@ -250,7 +250,7 @@ std::optional<std::string> TrustTokenRequestHandler::Redeem(
           &received_private_metadata, &redeemed_token,
           &redeemed_client_data.mutable_ptr()->AsEphemeralRawAddr(),
           redeemed_client_data.mutable_len(),
-          base::as_bytes(base::make_span(decoded_redemption_request)).data(),
+          base::as_byte_span(decoded_redemption_request).data(),
           decoded_redemption_request.size())) {
     return std::nullopt;
   }
@@ -259,8 +259,8 @@ std::optional<std::string> TrustTokenRequestHandler::Redeem(
   // leaving scope.
   bssl::UniquePtr<TRUST_TOKEN> redeemed_token_scoper(redeemed_token);
 
-  return base::Base64Encode(base::as_bytes(base::make_span(base::StringPrintf(
-      "%d:%d", received_public_metadata, received_private_metadata))));
+  return base::Base64Encode(base::as_byte_span(base::StringPrintf(
+      "%d:%d", received_public_metadata, received_private_metadata)));
 }
 
 void TrustTokenRequestHandler::RecordSignedRequest(

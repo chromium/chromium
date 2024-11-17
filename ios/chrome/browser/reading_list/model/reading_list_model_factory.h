@@ -9,8 +9,8 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_keyed_service_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 
+class ProfileIOS;
 class ReadingListModel;
 
 namespace reading_list {
@@ -21,9 +21,6 @@ class DualReadingListModel;
 // a profile.
 class ReadingListModelFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/358301380): remove this method.
-  static ReadingListModel* GetForBrowserState(ProfileIOS* profile);
-
   static ReadingListModel* GetForProfile(ProfileIOS* profile);
   static reading_list::DualReadingListModel*
   GetAsDualReadingListModelForProfile(ProfileIOS* profile);

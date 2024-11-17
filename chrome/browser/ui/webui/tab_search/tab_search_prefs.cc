@@ -31,15 +31,32 @@ const char kTabOrganizationShowFRE[] = "tab_organization.show_fre_2";
 // to be organized according to.
 const char kTabOrganizationModelStrategy[] = "tab_organization.model_strategy";
 
+// Integer pref indicating the number of times an user used declutter
+const char kTabDeclutterUsageCount[] = "tab_declutter.usage_count";
+
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterBooleanPref(kTabSearchRecentlyClosedSectionExpanded, true);
-  registry->RegisterIntegerPref(kTabSearchTabIndex, 0);
+  registry->RegisterIntegerPref(
+      kTabSearchTabIndex,
+      GetIntFromTabSearchSection(tab_search::mojom::TabSearchSection::kSearch));
   registry->RegisterIntegerPref(
       kTabOrganizationFeature,
       GetIntFromTabOrganizationFeature(
           tab_search::mojom::TabOrganizationFeature::kSelector));
   registry->RegisterBooleanPref(kTabOrganizationShowFRE, true);
   registry->RegisterIntegerPref(kTabOrganizationModelStrategy, 0);
+  registry->RegisterIntegerPref(kTabDeclutterUsageCount, 0);
+}
+
+tab_search::mojom::TabSearchSection GetTabSearchSectionFromInt(
+    const int section) {
+  return ToKnownEnumValue(
+      static_cast<tab_search::mojom::TabSearchSection>(section));
+}
+
+int GetIntFromTabSearchSection(
+    const tab_search::mojom::TabSearchSection section) {
+  return base::to_underlying(section);
 }
 
 tab_search::mojom::TabOrganizationFeature GetTabOrganizationFeatureFromInt(

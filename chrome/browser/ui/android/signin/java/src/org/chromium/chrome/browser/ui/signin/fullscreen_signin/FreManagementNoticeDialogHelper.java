@@ -79,7 +79,8 @@ final class FreManagementNoticeDialogHelper {
      * Performs signin after confirming account management with the user, if necessary. Also records
      * FRE metrics.
      *
-     * <p>TODO(crbug.com/349787455): Do not record FRE metrics in the upgrade promo.
+     * <p>TODO(crbug.com/349787455): Do not record FRE metrics in the non-FRE fullscreen sign-in
+     * flows.
      */
     static void checkAccountManagementAndSignIn(
             CoreAccountInfo coreAccountInfo,
@@ -94,7 +95,7 @@ final class FreManagementNoticeDialogHelper {
                     new WrappedSigninCallback(callback) {
                         @Override
                         public void onSignInComplete() {
-                            RecordHistogram.recordMediumTimesHistogram(
+                            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                                     UNMANAGED_SIGNIN_DURATION_NAME,
                                     SystemClock.uptimeMillis() - startTimeMillis);
                             recordFREEvent(FRESigninEvents.SIGNIN_COMPLETE_UNMANAGED);
@@ -141,7 +142,7 @@ final class FreManagementNoticeDialogHelper {
                     new WrappedSigninCallback(callback) {
                         @Override
                         public void onSignInComplete() {
-                            RecordHistogram.recordMediumTimesHistogram(
+                            RecordHistogram.deprecatedRecordMediumTimesHistogram(
                                     UNMANAGED_SIGNIN_DURATION_NAME,
                                     SystemClock.uptimeMillis() - startTimeMillis);
                             recordFREEvent(FRESigninEvents.SIGNIN_COMPLETE_UNMANAGED);

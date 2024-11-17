@@ -27,15 +27,14 @@ constexpr net::NetworkTrafficAnnotationTag kGetTokenTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("ip_protection_service_get_token",
                                         R"(
     semantics {
-      sender: "Chrome IP Protection Service Client"
+      sender: "IP Protection Service Client"
       description:
         "Request to a Google auth server to obtain an authorization token "
-        "for Chrome's IP Protection privacy proxies."
+        "for IP Protection privacy proxies."
       trigger:
-        "The Chrome IP Protection Service is out of proxy authorization "
-        "tokens."
+        "The IP Protection Service is out of proxy authorization tokens."
       data:
-        "Chrome sign-in OAuth Token"
+        "Sign-in OAuth Token"
       destination: GOOGLE_OWNED_SERVICE
       internal {
         contacts {
@@ -45,7 +44,7 @@ constexpr net::NetworkTrafficAnnotationTag kGetTokenTrafficAnnotation =
       user_data {
         type: ACCESS_TOKEN
       }
-      last_reviewed: "2023-09-07"
+      last_reviewed: "2024-09-26"
     }
     policy {
       cookies_allowed: NO

@@ -36,8 +36,8 @@ class ChromeWebAuthnCredentialsDelegate final :
 #endif  //! BUILDFLAG(IS_ANDROID)
     public password_manager::WebAuthnCredentialsDelegate {
  public:
-  using AndroidHybridAvailable =
-      base::StrongAlias<struct AndroidHybridAvailableTag, bool>;
+  using SecurityKeyOrHybridFlowAvailable =
+      base::StrongAlias<struct SecurityKeyOrHybridFlowAvailableTag, bool>;
 
   explicit ChromeWebAuthnCredentialsDelegate(
       content::WebContents* web_contents);
@@ -48,14 +48,14 @@ class ChromeWebAuthnCredentialsDelegate final :
       const ChromeWebAuthnCredentialsDelegate&) = delete;
 
   // password_manager::WebAuthnCredentialsDelegate:
-  void LaunchWebAuthnFlow() override;
+  void LaunchSecurityKeyOrHybridFlow() override;
   void SelectPasskey(
       const std::string& backend_id,
       password_manager::WebAuthnCredentialsDelegate::OnPasskeySelectedCallback
           callback) override;
   const std::optional<std::vector<password_manager::PasskeyCredential>>&
   GetPasskeys() const override;
-  bool OfferPasskeysFromAnotherDeviceOption() const override;
+  bool IsSecurityKeyOrHybridFlowAvailable() const override;
   void RetrievePasskeys(base::OnceClosure callback) override;
   bool HasPendingPasskeySelection() override;
   base::WeakPtr<WebAuthnCredentialsDelegate> AsWeakPtr() override;
@@ -67,26 +67,16 @@ class ChromeWebAuthnCredentialsDelegate final :
 
   // Method for providing a list of WebAuthn user entities that can be provided
   // as autofill suggestions. This is called when a WebAuthn Conditional UI
-  // request is received. The `offer_passkey_from_another_device` argument
-  // determines whether an autofill option to use a passkey from another device
-  // should be offered.
+  // request is received. The `security_key_or_hybrid_flow_available`
+  // argument determines whether an autofill option to use a passkey from
+  // another device should be offered.
   void OnCredentialsReceived(
       std::vector<password_manager::PasskeyCredential> credentials,
-      bool offer_passkey_from_another_device);
+      SecurityKeyOrHybridFlowAvailable security_key_or_hybrid_flow_available);
 
   // Lets the delegate know that a WebAuthn request has been aborted, and so
   // WebAuthn options should no longer show up on the autofill popup.
   void NotifyWebAuthnRequestAborted();
-
-#if BUILDFLAG(IS_ANDROID)
-  // password_manager::WebAuthnCredentialsDelegate:
-  void ShowAndroidHybridSignIn() override;
-  bool IsAndroidHybridAvailable() const override;
-
-  // Sets the hybrid availability flag, which can be queried through
-  // `IsAndroidHybridAvailable()`.
-  void SetAndroidHybridAvailable(AndroidHybridAvailable available);
-#endif
 
  protected:
   const raw_ptr<content::WebContents> web_contents_;
@@ -99,7 +89,16 @@ class ChromeWebAuthnCredentialsDelegate final :
   // |passkeys_| is nullopt until populated by a WebAuthn request, and reset
   // to nullopt when the request is cancelled.
   std::optional<std::vector<password_manager::PasskeyCredential>> passkeys_;
-  bool offer_passkey_from_another_device_ = true;
+
+  // TODO(crbug.com/368283817): Check if this is required. While
+  // SecurityKeyOrHybridFlowAvailable flows are always available on desktop
+  // platforms, they still require a conditional request from the RP.
+  SecurityKeyOrHybridFlowAvailable security_key_or_hybrid_flow_available_ =
+#if !BUILDFLAG(IS_ANDROID)
+      SecurityKeyOrHybridFlowAvailable(true);
+#else
+      SecurityKeyOrHybridFlowAvailable(false);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   base::OnceClosure retrieve_passkeys_callback_;
   std::unique_ptr<base::ElapsedTimer> passkey_retrieval_timer_;
@@ -113,11 +112,6 @@ class ChromeWebAuthnCredentialsDelegate final :
       authenticator_observation_{this};
   base::OneShotTimer flickering_timer_;
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-  AndroidHybridAvailable android_hybrid_available_ =
-      AndroidHybridAvailable(false);
-#endif
 
   base::WeakPtrFactory<ChromeWebAuthnCredentialsDelegate> weak_ptr_factory_{
       this};

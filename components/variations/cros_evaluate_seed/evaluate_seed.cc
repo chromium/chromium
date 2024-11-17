@@ -45,6 +45,7 @@ namespace variations::cros_early_boot::evaluate_seed {
 namespace {
 
 constexpr char kDefaultLocalStatePath[] = "/home/chronos/Local State";
+constexpr char kDefaultUserDataDir[] = "/home/chronos/";
 
 bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
                          SafeSeed&& safe_seed,
@@ -95,7 +96,9 @@ bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
       std::vector<base::FeatureList::FeatureOverrideInfo>(),
       std::move(feature_list), metrics_state_manager.get(),
       &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/false);
+      /*add_entropy_source_to_variations_ids=*/false,
+      *metrics_state_manager->CreateEntropyProviders(
+          /*enable_limited_entropy_mode=*/false));
 
   if (used_seed) {
     if (seed_type == SeedType::kRegularSeed) {
@@ -129,7 +132,8 @@ bool DetermineTrialState(std::unique_ptr<PrefService> local_state,
   // We also do not want to mark the trial as active yet, but given that
   // evaluate_seed will not report anything to UMA that isn't urgent.
   EarlyBootFeatureVisitor feature_visitor;
-  base::FeatureList::VisitFeaturesAndParams(feature_visitor);
+  base::FeatureList::VisitFeaturesAndParams(feature_visitor,
+                                            EarlyBootFeatureVisitor::kPrefix);
   google::protobuf::RepeatedPtrField<featured::FeatureOverride> overrides =
       feature_visitor.release_overrides();
   computed_state->mutable_overrides()->Assign(overrides.begin(),
@@ -206,6 +210,15 @@ bool CrosVariationsServiceClient::OverridesRestrictParameter(
   return false;
 }
 
+base::FilePath CrosVariationsServiceClient::GetVariationsSeedFileDir() {
+  return base::FilePath(kDefaultUserDataDir);
+}
+
+bool CrosVariationsServiceClient::IsEnterprise() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kEnterpriseEnrolledSwitch);
+}
+
 // Get the active channel, if applicable.
 version_info::Channel CrosVariationsServiceClient::GetChannel() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -216,11 +229,6 @@ version_info::Channel CrosVariationsServiceClient::GetChannel() {
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return version_info::Channel::UNKNOWN;
-}
-
-bool CrosVariationsServiceClient::IsEnterprise() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      kEnterpriseEnrolledSwitch);
 }
 
 std::optional<SafeSeed> GetSafeSeedData(FILE* stream) {
@@ -250,11 +258,13 @@ std::unique_ptr<CrOSVariationsFieldTrialCreator> GetFieldTrialCreator(
   if (safe_seed_details.has_value()) {
     safe_seed = std::make_unique<EarlyBootSafeSeed>(safe_seed_details.value());
   } else {
-    safe_seed =
-        std::make_unique<VariationsSafeSeedStoreLocalState>(local_state);
+    safe_seed = std::make_unique<VariationsSafeSeedStoreLocalState>(
+        local_state, client->GetVariationsSeedFileDir());
   }
-  auto seed_store =
-      std::make_unique<VariationsSeedStore>(local_state, std::move(safe_seed));
+  auto seed_store = std::make_unique<VariationsSeedStore>(
+      local_state, /*initial_seed=*/nullptr,
+      /*signature_verification_enabled=*/true, std::move(safe_seed),
+      client->GetChannelForVariations(), client->GetVariationsSeedFileDir());
 
   return std::make_unique<CrOSVariationsFieldTrialCreator>(
       client, std::move(seed_store));

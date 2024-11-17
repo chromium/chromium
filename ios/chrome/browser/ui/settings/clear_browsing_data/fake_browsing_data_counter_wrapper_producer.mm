@@ -22,6 +22,16 @@
   return nullptr;
 }
 
+- (std::unique_ptr<BrowsingDataCounterWrapper>)
+    createCounterWrapperWithPrefName:(std::string_view)prefName
+                           beginTime:(base::Time)beginTime
+                    updateUiCallback:
+                        (BrowsingDataCounterWrapper::UpdateUICallback)
+                            updateUiCallback {
+  _prefsCallback.emplace(std::string(prefName), std::move(updateUiCallback));
+  return nullptr;
+}
+
 - (void)triggerUpdateUICallbackForResult:
     (const browsing_data::BrowsingDataCounter::Result&)result {
   auto callback =

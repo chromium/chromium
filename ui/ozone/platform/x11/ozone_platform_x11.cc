@@ -214,6 +214,7 @@ class OzonePlatformX11 : public OzonePlatform,
       properties.supports_native_pixmaps = true;
     }
     properties.supports_subwindows_as_accelerated_widgets = true;
+    properties.supports_system_tray_windowing = true;
 
     return properties;
   }

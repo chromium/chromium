@@ -27,13 +27,6 @@ ChromePasswordProtectionServiceFactory::GetForProfile(ProfileIOS* profile) {
 }
 
 // static
-ChromePasswordProtectionService*
-ChromePasswordProtectionServiceFactory::GetForBrowserState(
-    ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 ChromePasswordProtectionServiceFactory*
 ChromePasswordProtectionServiceFactory::GetInstance() {
   static base::NoDestructor<ChromePasswordProtectionServiceFactory> instance;

@@ -6,7 +6,6 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
-#include "ui/accessibility/accessibility_features.h"
 
 namespace accessibility {
 
@@ -14,7 +13,7 @@ void RecordPDFOpenedWithA11yFeatureWithPdfOcr() {
 #if BUILDFLAG(IS_ANDROID)
   bool is_pdf_ocr_on = false;
 #else
-  bool is_pdf_ocr_on = features::IsPdfOcrEnabled();
+  bool is_pdf_ocr_on = true;
 #endif
 
   if (accessibility_state_utils::IsScreenReaderEnabled()) {

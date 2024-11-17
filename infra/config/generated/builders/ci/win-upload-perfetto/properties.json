@@ -38,7 +38,8 @@
           "builder": "win-upload-perfetto",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/win-upload-perfetto/targets"
     }
   },
   "$build/reclient": {

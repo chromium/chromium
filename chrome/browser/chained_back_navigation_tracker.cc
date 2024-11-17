@@ -8,8 +8,6 @@
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom-shared.h"
 #include "ui/base/page_transition_types.h"
 
-namespace chrome {
-
 ChainedBackNavigationTracker::ChainedBackNavigationTracker(
     content::WebContents* contents)
     : content::WebContentsObserver(contents),
@@ -77,5 +75,3 @@ bool ChainedBackNavigationTracker::
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChainedBackNavigationTracker);
-
-}  // namespace chrome

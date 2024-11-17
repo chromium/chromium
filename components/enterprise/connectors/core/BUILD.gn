@@ -19,6 +19,12 @@ source_set("core") {
     "connectors_service_base.h",
     "enterprise_connectors_policy_handler.cc",
     "enterprise_connectors_policy_handler.h",
+    "enterprise_interstitial_base.cc",
+    "enterprise_interstitial_base.h",
+    "enterprise_interstitial_util.cc",
+    "enterprise_interstitial_util.h",
+    "realtime_reporting_client_base.cc",
+    "realtime_reporting_client_base.h",
     "reporting_constants.h",
     "reporting_service_settings.cc",
     "reporting_service_settings.h",
@@ -31,13 +37,20 @@ source_set("core") {
   deps = [
     "//base",
     "//build:blink_buildflags",
+    "//components/enterprise",
     "//components/enterprise/buildflags",
     "//components/enterprise/device_trust",
+    "//components/keyed_service/core",
     "//components/policy/core/browser",
     "//components/policy/core/common",
     "//components/prefs",
+    "//components/safe_browsing/core/common:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/security_interstitials/core",
+    "//components/security_interstitials/core:unsafe_resource",
     "//components/strings:components_strings_grit",
+    "//ui/base",
     "//ui/gfx/range",
   ]
 
@@ -48,6 +61,21 @@ source_set("core") {
   if (enterprise_client_certificates) {
     deps += [ "//components/enterprise/client_certificates/core" ]
   }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "reporting_test_utils.cc",
+    "reporting_test_utils.h",
+  ]
+
+  deps = [
+    ":core",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+  ]
 }
 
 source_set("unit_tests") {

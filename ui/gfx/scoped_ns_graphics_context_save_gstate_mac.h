@@ -7,12 +7,12 @@
 
 #include <memory>
 
-#include "ui/gfx/gfx_export.h"
+#include "base/component_export.h"
 
 namespace gfx {
 
 // A class to save/restore the state of the current context.
-class GFX_EXPORT ScopedNSGraphicsContextSaveGState {
+class COMPONENT_EXPORT(GFX) ScopedNSGraphicsContextSaveGState {
  public:
   ScopedNSGraphicsContextSaveGState();
 

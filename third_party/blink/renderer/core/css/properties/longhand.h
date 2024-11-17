@@ -38,16 +38,12 @@ class Longhand : public CSSProperty {
       const CSSParserLocalContext& local_tokenizer) const {
     return nullptr;
   }
-  virtual void ApplyInitial(StyleResolverState&) const {
-    NOTREACHED_IN_MIGRATION();
-  }
-  virtual void ApplyInherit(StyleResolverState&) const {
-    NOTREACHED_IN_MIGRATION();
-  }
+  virtual void ApplyInitial(StyleResolverState&) const { NOTREACHED(); }
+  virtual void ApplyInherit(StyleResolverState&) const { NOTREACHED(); }
   virtual void ApplyValue(StyleResolverState&,
                           const CSSValue&,
                           ValueMode) const {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   void ApplyUnset(StyleResolverState& state) const {
     if (state.IsInheritedForUnset(*this)) {
@@ -60,8 +56,7 @@ class Longhand : public CSSProperty {
       bool,
       const ComputedStyle&,
       bool* is_current_color = nullptr) const {
-    NOTREACHED_IN_MIGRATION();
-    return Color();
+    NOTREACHED();
   }
   virtual const CSSValue* InitialValue() const {
     return CSSInitialValue::Create();

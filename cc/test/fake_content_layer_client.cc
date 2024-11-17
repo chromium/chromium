@@ -97,10 +97,7 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
                                    SkClipOp::kIntersect, false);
     display_list->push<DrawImageOp>(
         it->image, static_cast<float>(it->point.x()),
-        static_cast<float>(it->point.y()),
-        PaintFlags::FilterQualityToSkSamplingOptions(
-            it->flags.getFilterQuality()),
-        &it->flags);
+        static_cast<float>(it->point.y()), it->sampling, &it->flags);
     display_list->push<RestoreOp>();
     display_list->EndPaintOfUnpaired(paint_bounds);
 

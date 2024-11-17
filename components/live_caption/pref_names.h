@@ -25,10 +25,6 @@ namespace prefs {
 inline constexpr char kLiveCaptionBubbleExpanded[] =
     "accessibility.captions.live_caption_bubble_expanded";
 
-// Whether the Live Caption bubble is pinned.
-inline constexpr char kLiveCaptionBubblePinned[] =
-    "accessibility.captions.live_caption_bubble_pinned";
-
 // Whether the Live Caption feature is enabled.
 inline constexpr char kLiveCaptionEnabled[] =
     "accessibility.captions.live_caption_enabled";

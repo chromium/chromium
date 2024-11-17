@@ -73,10 +73,10 @@ static String EscapeForHTML(const String& str) {
   if (str.Is8Bit()) {
     auto result = base::EscapeForHTML(
         {reinterpret_cast<const char*>(str.Characters8()), str.length()});
-    return String(result.data(), result.size());
+    return String(result);
   }
   auto result = base::EscapeForHTML({str.Characters16(), str.length()});
-  return String(result.data(), result.size());
+  return String(result);
 }
 
 String URLToImageMarkup(const KURL& url, const String& title) {

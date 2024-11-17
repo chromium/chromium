@@ -125,7 +125,7 @@ const gpu::GpuPreferences GetGpuPreferencesFromCommandLine() {
       command_line->HasSwitch(switches::kDisableVulkanFallbackToGLForTesting);
 
   gpu_preferences.enable_gpu_benchmarking_extension =
-      command_line->HasSwitch(cc::switches::kEnableGpuBenchmarking);
+      command_line->HasSwitch(switches::kEnableGpuBenchmarking);
 
   gpu_preferences.enable_android_surface_control =
       ShouldEnableAndroidSurfaceControl(*command_line);

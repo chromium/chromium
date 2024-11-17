@@ -157,7 +157,7 @@ ClearStorageTask::ClearStorageTask(OfflinePageMetadataStore* store,
   DCHECK(!callback_.is_null());
 }
 
-ClearStorageTask::~ClearStorageTask() {}
+ClearStorageTask::~ClearStorageTask() = default;
 
 void ClearStorageTask::Run() {
   TRACE_EVENT_ASYNC_BEGIN0("offline_pages", "ClearStorageTask running", this);

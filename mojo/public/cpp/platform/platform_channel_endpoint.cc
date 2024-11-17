@@ -19,8 +19,8 @@
 #if BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
 #include <mach/port.h>
 
+#include "base/apple/mach_port_rendezvous.h"
 #include "base/apple/scoped_mach_port.h"
-#include "base/mac/mach_port_rendezvous.h"
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/handle.h>
 #elif BUILDFLAG(IS_POSIX)

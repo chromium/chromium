@@ -27,7 +27,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/linux/dmabuf_uapi.h"
 #include "ui/gfx/switches.h"
@@ -88,7 +87,7 @@ bool AllowCpuMappableBuffers() {
 
 }  // namespace
 
-ClientNativePixmapDmaBuf::PlaneInfo::PlaneInfo() {}
+ClientNativePixmapDmaBuf::PlaneInfo::PlaneInfo() = default;
 
 ClientNativePixmapDmaBuf::PlaneInfo::PlaneInfo(PlaneInfo&& info)
     : data(info.data), offset(info.offset), size(info.size) {
@@ -185,8 +184,7 @@ bool ClientNativePixmapDmaBuf::IsConfigurationSupported(
       return format == gfx::BufferFormat::YVU_420 ||
              format == gfx::BufferFormat::YUV_420_BIPLANAR;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 // static

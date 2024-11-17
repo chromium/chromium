@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/metrics_hashes.h"
@@ -30,7 +31,8 @@ base::File CreateInvalidModelFile() {
   base::File file(file_path, (base::File::FLAG_CREATE | base::File::FLAG_READ |
                               base::File::FLAG_WRITE |
                               base::File::FLAG_CAN_DELETE_ON_CLOSE));
-  EXPECT_TRUE(UNSAFE_TODO(file.WriteAtCurrentPos("12345", 5)));
+  EXPECT_TRUE(
+      file.WriteAtCurrentPosAndCheck(base::byte_span_from_cstring("12345")));
   return file;
 }
 
@@ -55,14 +57,28 @@ TEST_F(LanguageDetectionTest, EmptyFileProvided) {
         *called = true;
       },
       &callback_called));
-#if !BUILDFLAG(IS_IOS)
   language_detection_model.UpdateWithFile(base::File());
-#else
+  EXPECT_TRUE(callback_called);
+  EXPECT_FALSE(language_detection_model.IsAvailable());
+  histogram_tester_.ExpectUniqueSample(
+      "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
+      LanguageDetectionModelState::kModelFileInvalid, 1);
+}
+
+TEST_F(LanguageDetectionTest, EmptyFileProvidedAsync) {
+  LanguageDetectionModel language_detection_model;
+
+  bool callback_called = false;
+  language_detection_model.AddOnModelLoadedCallback(base::BindOnce(
+      [](bool* called, LanguageDetectionModel& model) {
+        EXPECT_FALSE(model.IsAvailable());
+        *called = true;
+      },
+      &callback_called));
   base::RunLoop run_loop;
   language_detection_model.UpdateWithFileAsync(base::File(),
                                                run_loop.QuitClosure());
   run_loop.Run();
-#endif
   EXPECT_TRUE(callback_called);
   EXPECT_FALSE(language_detection_model.IsAvailable());
   histogram_tester_.ExpectUniqueSample(
@@ -80,14 +96,32 @@ TEST_F(LanguageDetectionTest, UnsupportedModelFileProvided) {
         *called = true;
       },
       &callback_called));
-#if !BUILDFLAG(IS_IOS)
   language_detection_model.UpdateWithFile(std::move(file));
-#else
+  EXPECT_TRUE(callback_called);
+  EXPECT_FALSE(language_detection_model.IsAvailable());
+  histogram_tester_.ExpectUniqueSample(
+      "LanguageDetection.TFLiteModel.LanguageDetectionModelState",
+      LanguageDetectionModelState::kModelFileValid, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "LanguageDetection.TFLiteModel.InvalidModelFile", true, 1);
+  histogram_tester_.ExpectTotalCount(
+      "LanguageDetection.TFLiteModel.Create.Duration", 0);
+}
+
+TEST_F(LanguageDetectionTest, UnsupportedModelFileProvidedAsync) {
+  base::File file = CreateInvalidModelFile();
+  LanguageDetectionModel language_detection_model;
+  bool callback_called = false;
+  language_detection_model.AddOnModelLoadedCallback(base::BindOnce(
+      [](bool* called, LanguageDetectionModel& model) {
+        EXPECT_FALSE(model.IsAvailable());
+        *called = true;
+      },
+      &callback_called));
   base::RunLoop run_loop;
   language_detection_model.UpdateWithFileAsync(std::move(file),
                                                run_loop.QuitClosure());
   run_loop.Run();
-#endif
   EXPECT_TRUE(callback_called);
   EXPECT_FALSE(language_detection_model.IsAvailable());
   histogram_tester_.ExpectUniqueSample(
@@ -108,14 +142,24 @@ TEST_F(LanguageDetectionTest, CallbackForValidFile) {
         *called = true;
       },
       &callback_called));
-#if !BUILDFLAG(IS_IOS)
   language_detection_model.UpdateWithFile(GetValidModelFile());
-#else
+  EXPECT_TRUE(callback_called);
+  EXPECT_TRUE(language_detection_model.IsAvailable());
+}
+
+TEST_F(LanguageDetectionTest, CallbackForValidFileAsync) {
+  LanguageDetectionModel language_detection_model;
+  bool callback_called = false;
+  language_detection_model.AddOnModelLoadedCallback(base::BindOnce(
+      [](bool* called, LanguageDetectionModel& model) {
+        EXPECT_TRUE(model.IsAvailable());
+        *called = true;
+      },
+      &callback_called));
   base::RunLoop run_loop;
   language_detection_model.UpdateWithFileAsync(GetValidModelFile(),
                                                run_loop.QuitClosure());
   run_loop.Run();
-#endif
   EXPECT_TRUE(callback_called);
   EXPECT_TRUE(language_detection_model.IsAvailable());
 }

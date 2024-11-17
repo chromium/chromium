@@ -67,7 +67,7 @@ public class ChromeFeedbackCollectorTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Profile profile =
-                            ProfileManager.getLastUsedRegularProfile().getPrimaryOTRProfile(true);
+                            ProfileManager.getLastUsedRegularProfile().getPrimaryOtrProfile(true);
                     InitParams params = new InitParams(profile, FEEDBACK_URL, FEEDBACK_CONSTANT);
                     mCollector =
                             new ChromeFeedbackCollector(

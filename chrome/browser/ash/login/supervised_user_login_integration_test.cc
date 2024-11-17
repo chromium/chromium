@@ -51,9 +51,9 @@ class SupervisedUserLoginIntegrationTest
       (el) => {
         const expectedPolicies = ['ArcPolicy', 'DeveloperToolsAvailability',
           'EduCoexistenceToSVersion', 'ForceGoogleSafeSearch',
-          'LacrosSecondaryProfilesAllowed', 'ParentAccessCodeConfig',
-          'PerAppTimeLimits', 'PerAppTimeLimitsAllowlist',
-          'ReportArcStatusEnabled', 'URLBlocklist', 'UsageTimeLimit'];
+          'ParentAccessCodeConfig', 'PerAppTimeLimits',
+          'PerAppTimeLimitsAllowlist', 'ReportArcStatusEnabled', 'URLBlocklist',
+          'UsageTimeLimit'];
         const policyNodes = el.querySelectorAll('policy-row:not([hidden])');
         const policies = [...policyNodes].map((node) =>
           node.shadowRoot.querySelector('.name').innerText)

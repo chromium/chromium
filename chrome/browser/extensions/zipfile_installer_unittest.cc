@@ -39,7 +39,7 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #endif
 
@@ -199,31 +199,17 @@ class ZipFileInstallerLocationTest : public ZipFileInstallerTest,
  public:
   void SetUp() override {
     ZipFileInstallerTest::SetUp();
-    const bool kFeatureEnabled = GetParam();
-    feature_list_.InitWithFeatureState(
-        extensions_features::kExtensionsZipFileInstalledInProfileDir,
-        kFeatureEnabled);
-    if (kFeatureEnabled) {
-      expected_extension_install_directory_ =
-          service()->unpacked_install_directory();
-    } else {
-      base::FilePath dir_temp;
-      ASSERT_TRUE(base::PathService::Get(base::DIR_TEMP, &dir_temp));
-      expected_extension_install_directory_ = dir_temp;
-    }
+    expected_extension_install_directory_ =
+        service()->unpacked_install_directory();
   }
 
   // Install the .zip in the test directory with `zip_name` and `expect_error`
-  // if it should fail. The method installs the .zip differently based on
-  // whether `extensions_features::kExtensionsZipFileInstalledInProfileDir` is
-  // enabled. `unzip_dir_root` allows passing a custom installation path when
-  // that feature is enabled.
+  // if it should fail.
   void RunInstaller(const std::string& zip_name,
                     bool expect_error,
                     base::FilePath unzip_dir_root = base::FilePath());
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   base::FilePath expected_extension_install_directory_;
 };
 
@@ -241,33 +227,19 @@ void ZipFileInstallerLocationTest::RunInstaller(const std::string& zip_name,
       GetExtensionFileTaskRunner(),
       MakeRegisterInExtensionServiceCallback(service()));
 
-  if (GetParam()) {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ZipFileInstaller::InstallZipFileToUnpackedExtensionsDir,
-                       zipfile_installer_, original_zip_path,
-                       unzip_dir_root.empty()
-                           ? service()->unpacked_install_directory()
-                           : unzip_dir_root));
-  } else {
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(&ZipFileInstaller::InstallZipFileToTempDir,
-                                  zipfile_installer_, original_zip_path));
-  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ZipFileInstaller::InstallZipFileToUnpackedExtensionsDir,
+                     zipfile_installer_, original_zip_path,
+                     unzip_dir_root.empty()
+                         ? service()->unpacked_install_directory()
+                         : unzip_dir_root));
   observer_.WaitForInstall(expect_error);
   task_environment()->RunUntilIdle();
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ZipFileInstallerLocationTest,
-    // extensions_features::kExtensionsZipFileInstalledInProfileDir enabled.
-    testing::Bool(),
-    [](const testing::TestParamInfo<ZipFileInstallerLocationTest::ParamType>&
-           info) { return info.param ? "ProfileDir" : "TempDir"; });
-
 // Tests that a normal .zip is installed into the expected install path.
-TEST_P(ZipFileInstallerLocationTest, GoodZip) {
+TEST_F(ZipFileInstallerLocationTest, GoodZip) {
   RunInstaller(/*zip_name=*/"good.zip",
                /*expect_error=*/false);
 
@@ -285,7 +257,7 @@ TEST_P(ZipFileInstallerLocationTest, GoodZip) {
             absolute_expected_extension_install_directory);
 }
 
-TEST_P(ZipFileInstallerLocationTest, BadZip) {
+TEST_F(ZipFileInstallerLocationTest, BadZip) {
   // Manifestless archive.
   RunInstaller(/*zip_name=*/"bad.zip",
                /*expect_error=*/true);
@@ -293,7 +265,7 @@ TEST_P(ZipFileInstallerLocationTest, BadZip) {
 
 // Tests installing the same .zip twice results in two separate install
 // directories.
-TEST_P(ZipFileInstallerLocationTest, MultipleSameZipInstallSeparately) {
+TEST_F(ZipFileInstallerLocationTest, MultipleSameZipInstallSeparately) {
   RunInstaller(/*zip_name=*/"good.zip",
                /*expect_error=*/false);
 
@@ -334,12 +306,7 @@ TEST_P(ZipFileInstallerLocationTest, MultipleSameZipInstallSeparately) {
 
 // Tests that we error when we cannot create the parent directory of where to
 // install the .zips to.
-TEST_P(ZipFileInstallerLocationTest, CannotCreateContainingDirectoryZip) {
-  // This test is only relevant to the new feature.
-  if (!GetParam()) {
-    return;
-  }
-
+TEST_F(ZipFileInstallerLocationTest, CannotCreateContainingDirectoryZip) {
   // TODO(crbug.com/40875193): Have this expect a specific error rather than
   // just an error since other things can cause an error.
   RunInstaller(
@@ -359,7 +326,7 @@ TEST_P(ZipFileInstallerLocationTest, CannotCreateContainingDirectoryZip) {
 
 // Tests that a .zip with a public key installs with the expected extension ID
 // and to the correct path.
-TEST_P(ZipFileInstallerLocationTest, ZipWithPublicKey) {
+TEST_F(ZipFileInstallerLocationTest, ZipWithPublicKey) {
   RunInstaller(/*zip_name=*/"public_key.zip",
                /*expect_error=*/false);
   const char kIdForPublicKey[] = "ikppjpenhoddphklkpdfdfdabbakkpal";

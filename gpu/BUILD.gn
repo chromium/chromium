@@ -145,11 +145,7 @@ static_library("test_support") {
       "//third_party/fuchsia-sdk/sdk/pkg/sys_cpp",
     ]
   }
-  if (use_static_angle) {
-    deps += [ "//third_party/angle:translator" ]
-  } else {
-    deps += [ "//third_party/angle:translator_gl_d3d_only" ]
-  }
+  deps += [ "//third_party/angle:translator" ]
 }
 
 if (!is_android && !is_fuchsia && !is_chromeos_ash && !is_ios) {
@@ -157,7 +153,6 @@ if (!is_android && !is_fuchsia && !is_chromeos_ash && !is_ios) {
     sources = [ "command_buffer/tests/lpm/gl_lpm_fuzzer.proto" ]
 
     use_protobuf_full = true
-    deps = [ "//third_party/protobuf:protobuf_full" ]
   }
 
   static_library("gl_lpm_shader_to_string") {
@@ -336,11 +331,7 @@ test("gl_tests") {
     "//ui/gl/init",
   ]
 
-  if (use_static_angle) {
-    deps += [ "//third_party/angle:translator" ]
-  } else {
-    deps += [ "//third_party/angle:translator_gl_d3d_only" ]
-  }
+  deps += [ "//third_party/angle:translator" ]
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
@@ -361,6 +352,7 @@ test("gl_tests") {
     frameworks = [ "IOSurface.framework" ]
     sources += [ "command_buffer/service/shared_image/iosurface_image_backing_factory_unittest.cc" ]
   } else if (is_win) {
+    libs += [ "d3d12.lib" ]
     deps += [
       "//third_party/microsoft_dxheaders:dxguids",
       "//ui/platform_window",
@@ -669,17 +661,10 @@ test("gpu_unittests") {
     "//url",
   ]
 
-  if (use_static_angle) {
-    deps += [ "//third_party/angle:translator" ]
-  } else {
-    deps += [ "//third_party/angle:translator_gl_d3d_only" ]
-  }
+  deps += [ "//third_party/angle:translator" ]
 
   if (is_android) {
-    deps += [
-      "//ui/android:ui_java",
-      "//ui/gl:gl_jni_headers",
-    ]
+    deps += [ "//ui/android:ui_java" ]
   }
 
   if (use_dawn) {

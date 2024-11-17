@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/lcp_critical_path_predictor/lcp_critical_path_predictor.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
+#include "third_party/blink/renderer/core/page/autoscroll_controller.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_hidden_state.h"
@@ -126,8 +127,7 @@ AtomicString GetFrameOwnerType(HTMLFrameOwnerElement* frame_owner) {
     case FrameOwnerElementType::kFencedframe:
       return html_names::kFencedframeTag.LocalName();
   }
-  NOTREACHED_IN_MIGRATION();
-  return g_empty_atom;
+  NOTREACHED();
 }
 
 AtomicString GetFrameSrc(HTMLFrameOwnerElement* frame_owner) {
@@ -555,6 +555,19 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
     key_code = DynamicTo<KeyboardEvent>(event)->keyCode();
   }
 
+  bool prevent_counting_as_interaction =
+      pointer_event
+          ? RuntimeEnabledFeaturesBase::
+                    EventTimingTapStopScrollNoInteractionIdEnabled() &&
+                pointer_event->GetPreventCountingAsInteraction()
+          : false;
+  // Set prevent_counting_as_interaction to true for all the event entries when
+  // the selection autoscroll happens at the current event presentation frame
+  // or the previous frame.
+  prevent_counting_as_interaction |=
+      RuntimeEnabledFeaturesBase::
+          EventTimingSelectionAutoScrollNoInteractionIdEnabled() &&
+      IsAutoscrollActive();
   PerformanceEventTiming::EventTimingReportingInfo reporting_info{
       .presentation_index = event_presentation_promise_count_,
       .creation_time = start_time,
@@ -564,9 +577,7 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
       .processing_end_time = processing_end,
       .key_code = key_code,
       .pointer_id = pointer_id,
-      .prevent_counting_as_interaction =
-          pointer_event ? pointer_event->GetPreventCountingAsInteraction()
-                        : false};
+      .prevent_counting_as_interaction = prevent_counting_as_interaction};
 
   PerformanceEventTiming* entry = PerformanceEventTiming::Create(
       event_type, reporting_info, event.cancelable(),
@@ -1010,20 +1021,35 @@ void WindowPerformance::AddElementTiming(const AtomicString& name,
   if (!DomWindow()) {
     return;
   }
+
+  DOMHighResTimeStamp coarsened_load_time =
+      MonotonicTimeToDOMHighResTimeStamp(load_time);
+
+  DOMHighResTimeStamp coarsened_render_time =
+      RenderTimeToDOMHighResTimeStamp(start_time);
+
   PerformanceElementTiming* entry = PerformanceElementTiming::Create(
-      name, url, rect, MonotonicTimeToDOMHighResTimeStamp(start_time),
-      MonotonicTimeToDOMHighResTimeStamp(load_time), identifier,
+      name, url, rect, coarsened_render_time, coarsened_load_time, identifier,
       intrinsic_size.width(), intrinsic_size.height(), id, element,
       DomWindow());
   TRACE_EVENT2("loading", "PerformanceElementTiming", "data",
                entry->ToTracedValue(), "frame",
                GetFrameIdForTracing(DomWindow()->GetFrame()));
-  if (HasObserverFor(PerformanceEntry::kElement)) {
-    NotifyObserversOfEntry(*entry);
-  }
-  if (!IsElementTimingBufferFull()) {
-    AddToElementTimingBuffer(*entry);
-  }
+
+  AddRenderCoarsenedEntry(
+      WTF::BindOnce(
+          [](Persistent<PerformanceElementTiming> entry,
+             Performance& performance) {
+            if (performance.HasObserverFor(PerformanceEntry::kElement)) {
+              static_cast<WindowPerformance&>(performance)
+                  .NotifyObserversOfEntry(*entry);
+            }
+            if (!performance.IsElementTimingBufferFull()) {
+              performance.AddToElementTimingBuffer(*entry);
+            }
+          },
+          WrapPersistent(entry)),
+      coarsened_render_time);
 }
 
 void WindowPerformance::DispatchFirstInputTiming(
@@ -1129,23 +1155,43 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
     const String& url,
     Element* element,
     bool is_triggered_by_soft_navigation) {
-  DOMHighResTimeStamp start_timestamp =
-      MonotonicTimeToDOMHighResTimeStamp(start_time);
-  DOMHighResTimeStamp render_timestamp =
-      MonotonicTimeToDOMHighResTimeStamp(render_time);
   DOMHighResTimeStamp load_timestamp =
       MonotonicTimeToDOMHighResTimeStamp(load_time);
+  DOMHighResTimeStamp start_timestamp =
+      RenderTimeToDOMHighResTimeStamp(start_time);
+  DOMHighResTimeStamp render_timestamp =
+      RenderTimeToDOMHighResTimeStamp(render_time);
   DOMHighResTimeStamp first_animated_frame_timestamp =
-      MonotonicTimeToDOMHighResTimeStamp(first_animated_frame_time);
+      RenderTimeToDOMHighResTimeStamp(first_animated_frame_time);
+
   // TODO(yoav): Should we modify start to represent the animated frame?
   auto* entry = MakeGarbageCollected<LargestContentfulPaint>(
       start_timestamp, render_timestamp, paint_size, load_timestamp,
       first_animated_frame_timestamp, id, url, element, DomWindow(),
       is_triggered_by_soft_navigation);
-  if (HasObserverFor(PerformanceEntry::kLargestContentfulPaint)) {
-    NotifyObserversOfEntry(*entry);
-  }
-  AddLargestContentfulPaint(entry);
+
+  AddRenderCoarsenedEntry(
+      WTF::BindOnce(
+          [](Persistent<LargestContentfulPaint> entry,
+             Performance& performance) {
+            WindowPerformance& window_performance =
+                static_cast<WindowPerformance&>(performance);
+            if (!window_performance.DomWindow()) {
+              return;
+            }
+
+            if (performance.HasObserverFor(
+                    PerformanceEntry::kLargestContentfulPaint)) {
+              window_performance.NotifyObserversOfEntry(*entry);
+            }
+            performance.AddLargestContentfulPaint(entry);
+            window_performance.DomWindow()
+                ->document()
+                ->OnLargestContentfulPaintUpdated();
+          },
+          WrapPersistent(entry)),
+      render_timestamp);
+
   if (HTMLImageElement* image_element = DynamicTo<HTMLImageElement>(element)) {
     image_element->SetIsLCPElement();
     if (image_element->HasLazyLoadingAttribute()) {
@@ -1154,8 +1200,6 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
   }
 
   if (element) {
-    element->GetDocument().OnLargestContentfulPaintUpdated();
-
     if (LocalFrame* local_frame = element->GetDocument().GetFrame()) {
       if (LCPCriticalPathPredictor* lcpp = local_frame->GetLCPP()) {
         std::optional<KURL> maybe_url = std::nullopt;
@@ -1177,6 +1221,15 @@ void WindowPerformance::OnPaintFinished() {
 
 void WindowPerformance::NotifyPotentialDrag(PointerId pointer_id) {
   responsiveness_metrics_->NotifyPotentialDrag(pointer_id);
+}
+
+void WindowPerformance::OnPageScroll() {
+  autoscroll_active_ =
+      GetPage()->GetAutoscrollController().SelectionAutoscrollInProgress();
+}
+
+bool WindowPerformance::IsAutoscrollActive() {
+  return autoscroll_active_;
 }
 
 }  // namespace blink

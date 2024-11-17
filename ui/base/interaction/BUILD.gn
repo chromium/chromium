@@ -1,0 +1,27 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "interaction_test_util.cc",
+    "interaction_test_util.h",
+  ]
+
+  if (is_mac) {
+    sources += [
+      "interaction_test_util_mac.h",
+      "interaction_test_util_mac.mm",
+    ]
+  }
+
+  deps = [
+    "//base",
+    "//ui/base",
+    "//ui/menus",
+  ]
+}

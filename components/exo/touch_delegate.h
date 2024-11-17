@@ -55,7 +55,7 @@ class TouchDelegate {
   virtual void OnTouchCancel() = 0;
 
  protected:
-  virtual ~TouchDelegate() {}
+  virtual ~TouchDelegate() = default;
 };
 
 }  // namespace exo

@@ -14,6 +14,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "components/input/gesture_event_queue.h"
 #include "components/input/input_disposition_handler.h"
 #include "components/input/input_event_ack_state.h"
@@ -31,6 +32,7 @@
 #include "ui/events/blink/web_input_event_traits.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/keyboard_codes.h"
+#include "ui/latency/latency_info.h"
 
 namespace input {
 
@@ -96,7 +98,7 @@ InputRouterImpl::InputRouterImpl(
   UpdateTouchAckTimeoutEnabled();
 }
 
-InputRouterImpl::~InputRouterImpl() {}
+InputRouterImpl::~InputRouterImpl() = default;
 
 void InputRouterImpl::SendMouseEvent(
     const MouseEventWithLatencyInfo& mouse_event,
@@ -576,14 +578,6 @@ void InputRouterImpl::FilterAndSendWebInputEvent(
     blink::mojom::WidgetInputHandler::DispatchEventCallback callback) {
   TRACE_EVENT1("input", "InputRouterImpl::FilterAndSendWebInputEvent", "type",
                WebInputEvent::GetName(input_event.GetType()));
-  TRACE_EVENT("input,benchmark,devtools.timeline,latencyInfo",
-              "LatencyInfo.Flow", [&](perfetto::EventContext ctx) {
-                ui::LatencyInfo::EmitIntermediateLatencyInfoStep(
-                    ctx, latency_info.trace_id(),
-                    perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
-                        STEP_SEND_INPUT_EVENT_UI,
-                    InputEventTypeToProto(input_event.GetType()));
-              });
 
   output_stream_validator_.Validate(input_event);
   blink::mojom::InputEventResultState filtered_state =
@@ -691,10 +685,12 @@ void InputRouterImpl::TouchEventHandled(
     blink::mojom::InputEventResultState state,
     blink::mojom::DidOverscrollParamsPtr overscroll,
     blink::mojom::TouchActionOptionalPtr touch_action) {
+  int64_t trace_id = latency.trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [&](perfetto::EventContext ctx) {
-                ui::LatencyInfo::EmitIntermediateLatencyInfoStep(
-                    ctx, latency.trace_id(),
+                base::TaskAnnotator::EmitTaskTimingDetails(ctx);
+                ui::LatencyInfo::FillTraceEvent(
+                    ctx, trace_id,
                     ChromeLatencyInfo2::Step::STEP_TOUCH_EVENT_HANDLED,
                     InputEventTypeToProto(touch_event.event.GetType()),
                     InputEventResultStateToProto(state));
@@ -728,10 +724,12 @@ void InputRouterImpl::GestureEventHandled(
     blink::mojom::InputEventResultState state,
     blink::mojom::DidOverscrollParamsPtr overscroll,
     blink::mojom::TouchActionOptionalPtr touch_action) {
+  int64_t trace_id = latency.trace_id();
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [&](perfetto::EventContext ctx) {
-                ui::LatencyInfo::EmitIntermediateLatencyInfoStep(
-                    ctx, latency.trace_id(),
+                base::TaskAnnotator::EmitTaskTimingDetails(ctx);
+                ui::LatencyInfo::FillTraceEvent(
+                    ctx, trace_id,
                     ChromeLatencyInfo2::Step::STEP_GESTURE_EVENT_HANDLED,
                     InputEventTypeToProto(gesture_event.event.GetType()),
                     InputEventResultStateToProto(state));

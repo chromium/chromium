@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -31,7 +32,7 @@ struct ExternalMemoryAdapterForTesting : public DecoderBuffer::ExternalMemory {
   const base::span<const uint8_t> Span() const override;
 
  private:
-  const base::span<const uint8_t> span_;
+  const base::raw_span<const uint8_t> span_;
 };
 
 // Returns a file path for a file in the media/test/data directory.

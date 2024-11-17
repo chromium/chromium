@@ -181,8 +181,7 @@ download::DownloadItem::DownloadState OfflineItemModel::GetState() const {
     case OfflineItemState::CANCELLED:
       return download::DownloadItem::CANCELLED;
     case OfflineItemState::NUM_ENTRIES:
-      NOTREACHED_IN_MIGRATION();
-      return download::DownloadItem::CANCELLED;
+      NOTREACHED();
   }
 }
 
@@ -211,21 +210,17 @@ bool OfflineItemModel::IsDone() const {
     return true;
   switch (offline_item_->state) {
     case OfflineItemState::IN_PROGRESS:
-      [[fallthrough]];
     case OfflineItemState::PAUSED:
-      [[fallthrough]];
     case OfflineItemState::PENDING:
       return false;
     case OfflineItemState::INTERRUPTED:
       return !offline_item_->is_resumable;
     case OfflineItemState::FAILED:
-      [[fallthrough]];
     case OfflineItemState::COMPLETE:
-      [[fallthrough]];
     case OfflineItemState::CANCELLED:
       return true;
     case OfflineItemState::NUM_ENTRIES:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return false;
 }
@@ -322,8 +317,7 @@ bool OfflineItemModel::IsCommandEnabled(
     case DownloadCommands::CANCEL_DEEP_SCAN:
       return DownloadUIModel::IsCommandEnabled(download_commands, command);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool OfflineItemModel::IsCommandChecked(

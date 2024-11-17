@@ -85,6 +85,10 @@ bool DummyHistogram::HasConstructionArguments(
   return true;
 }
 
+bool DummyHistogram::AddSamples(const HistogramSamples& samples) {
+  return true;
+}
+
 bool DummyHistogram::AddSamplesFromPickle(PickleIterator* iter) {
   return true;
 }

@@ -25,8 +25,9 @@ import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import 'chrome://resources/ash/common/cr_elements/cr_shared_style.css.js';
 
 import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
-import {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
-import {CrSliderElement, SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import type {CrCheckboxElement} from 'chrome://resources/ash/common/cr_elements/cr_checkbox/cr_checkbox.js';
+import type {SliderTick} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
+import {CrSliderElement} from 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
@@ -37,17 +38,20 @@ import {flush, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/pol
 
 import {assertExists, cast, castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isDisplayBrightnessControlInSettingsEnabled, isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
+import {isDisplayBrightnessControlInSettingsEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
-import {SettingsSliderElement} from '../controls/settings_slider.js';
-import {AmbientLightSensorObserverReceiver, DisplayBrightnessSettingsObserverReceiver, DisplayConfigurationObserverReceiver, DisplaySettingsOrientationOption, DisplaySettingsProviderInterface, DisplaySettingsType, DisplaySettingsValue, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import type {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
+import type {SettingsSliderElement} from '../controls/settings_slider.js';
+import type {DisplaySettingsProviderInterface, DisplaySettingsValue} from '../mojom-webui/display_settings_provider.mojom-webui.js';
+import {AmbientLightSensorObserverReceiver, DisplayBrightnessSettingsObserverReceiver, DisplayConfigurationObserverReceiver, DisplaySettingsOrientationOption, DisplaySettingsType, TabletModeObserverReceiver} from '../mojom-webui/display_settings_provider.mojom-webui.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
-import {DevicePageBrowserProxy, DevicePageBrowserProxyImpl, getDisplayApi} from './device_page_browser_proxy.js';
+import type {DevicePageBrowserProxy} from './device_page_browser_proxy.js';
+import {DevicePageBrowserProxyImpl, getDisplayApi} from './device_page_browser_proxy.js';
 import {getTemplate} from './display.html.js';
-import {SettingsDisplayOverscanDialogElement} from './display_overscan_dialog.js';
+import type {SettingsDisplayOverscanDialogElement} from './display_overscan_dialog.js';
 import {getDisplaySettingsProvider} from './display_settings_mojo_interface_provider.js';
 
 import DisplayLayout = chrome.system.display.DisplayLayout;
@@ -109,14 +113,6 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
 
   static get properties() {
     return {
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-        readOnly: true,
-      },
-
       selectedModePref_: {
         type: Object,
         value() {
@@ -332,10 +328,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   private invalidDisplayId_: string;
   private isAmbientLightSensorEnabled_: boolean;
   private isDisplayPerformanceEnabled_: boolean;
-  private readonly isRevampWayfindingEnabled_: boolean;
   private isTabletMode_: boolean;
   private listAllDisplayModes_: boolean;
-  private excludeDisplayInMirrorModeEnabled_: boolean;
   private logicalResolutionText_: string;
   private mirroringExcludedId_: string;
   private modeToParentModeMap_: Map<number, number>;
@@ -1091,13 +1085,20 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   }
 
   private showExcludeInMirror_(
-      unifiedDesktopMode: boolean, displays: DisplayUnitInfo[],
+      unifiedDesktopMode: boolean,
+      excludeDisplayInMirrorModeEnabled: boolean,
+      allowExcludeDisplayInMirrorModePref: boolean,
+      displays: DisplayUnitInfo[],
       selectedDisplay: DisplayUnitInfo): boolean {
-    if (!this.excludeDisplayInMirrorModeEnabled_ || !selectedDisplay) {
+    if (!selectedDisplay) {
       return false;
     }
     if (this.isMirrored(displays)) {
       return selectedDisplay.id === this.mirroringExcludedId_;
+    }
+    if (!excludeDisplayInMirrorModeEnabled &&
+        !allowExcludeDisplayInMirrorModePref) {
+      return false;
     }
     if (displays.length < 3) {
       return false;
@@ -1502,12 +1503,10 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
   }
 
   private shouldExcludeInMirror_(selectedDisplay: DisplayUnitInfo): boolean {
-    assert(this.excludeDisplayInMirrorModeEnabled_);
     return this.mirroringExcludedId_ === selectedDisplay.id;
   }
 
   private onExcludeInMirrorClick_(event: Event): void {
-    assert(this.excludeDisplayInMirrorModeEnabled_);
     (event.currentTarget as CrToggleElement).blur();
     assertExists(this.selectedDisplay);
     if (this.mirroringExcludedId_ === this.selectedDisplay.id) {

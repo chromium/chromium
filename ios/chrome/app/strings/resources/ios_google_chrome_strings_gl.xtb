@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="gl">
 <translation id="1066101356081285416">Chrome detectará os números de seguimento nos sitios que visites e mostrarache a información actualizada dos paquetes na páxina Nova pestana. O número de seguimento do paquete e o nome do sitio web enviaranse a Google co fin de fornecer este servizo e mellorar as funcións relacionadas coas compras de Google para todo o mundo. Podes modificar esta opción cando queiras na <ph name="BEGIN_LINK" />configuración de seguimento de paquetes<ph name="END_LINK" />.</translation>
+<translation id="1086486568852410168">Buscar con Google Lens</translation>
 <translation id="1143896152279775643">O teu contrasinal gardarase no xestor de contrasinais de Google para <ph name="EMAIL" />.</translation>
 <translation id="1146503048444965320">Abre unha pestana nova en Chrome</translation>
 <translation id="1166460004393506534">Elimina os datos de navegación en Chrome</translation>
@@ -38,7 +39,9 @@ Cuestións que debes ter en conta:
 <translation id="1670609221633730681">Consello de Chrome: Escolle a posición da barra de enderezos</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1790080846677398234">Engade os URL introducidos aos teus marcadores de Chrome.</translation>
+<translation id="1799920918471566157">Consellos de Chrome</translation>
 <translation id="1830634592642484976">Este enderezo está gardado en Chrome. Para usalo nos diferentes produtos de Google, gárdao na túa Conta de Google (<ph name="USER_EMAIL" />).</translation>
+<translation id="1891812034154776216">Ocultar as pestanas do modo de incógnito abertas cando saias de Chrome</translation>
 <translation id="1917964099031477364">Esta conta e os datos que estean sen gardar quitaranse de Chrome e das aplicacións de Google deste dispositivo.</translation>
 <translation id="1919130412786645364">Permitir inicio de sesión en Chrome</translation>
 <translation id="1965935827552890526">Acaba o que estabas facendo na outra ventá de Chrome que tiñas aberta.</translation>
@@ -70,6 +73,7 @@ Cuestións que debes ter en conta:
 <translation id="2689064829982324496">Para pechar sesión na túa Conta de Google en todos os sitios web, <ph name="BEGIN_LINK" />pecha sesión en Chrome<ph name="END_LINK" />.</translation>
 <translation id="2695886661449553974">Chrome non puido buscar actualizacións. Téntao máis tarde.</translation>
 <translation id="2703746758996815929">Se queres recibir consellos útiles sobre Chrome, activa as notificacións na configuración de iOS.</translation>
+<translation id="2728851697704606655">Traduce textos con Google Lens</translation>
 <translation id="2736805085127235148">As notificacións de Chrome están desactivadas actualmente na configuración do dispositivo.</translation>
 <translation id="2754428955276778271">Algúns dos teus datos de Chrome aínda non se gardaron na túa Conta de Google.
 
@@ -247,6 +251,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="7581063337314642333">Visita a grade de pestanas en Chrome</translation>
 <translation id="7599894504325210080">Vista ampliada da función de autocompletar de Chrome</translation>
 <translation id="7642373780953416937">Recibe alertas sobre problemas de privacidade ou seguranza que detecte Chrome automaticamente.</translation>
+<translation id="7660356333829433649">Volve noutro momento para recibir máis consellos útiles e tirar o máximo proveito de Chrome.</translation>
 <translation id="7662994914830945754">Para ver as túas pestanas desde calquera equipo no que utilices Chrome, inicia sesión e activa a sincronización</translation>
 <translation id="7693590760643069321">Xa podes utilizar Chrome sempre que toques ligazóns en mensaxes, en documentos e noutras aplicacións.</translation>
 <translation id="7698568245838009292">Chrome quere acceder á cámara</translation>
@@ -261,6 +266,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="7948283758957877064">Novidades de Chrome</translation>
 <translation id="8000174216052461231">Consello de Chrome: Goza da máxima seguranza de Chrome</translation>
 <translation id="8006014511203279255">Utiliza Chrome sempre que toques ligazóns en mensaxes ou noutras aplicacións.</translation>
+<translation id="8014670471808569312">Chrome ofrecerache gardar o teu contrasinal.</translation>
 <translation id="8018153653741938705">Protéxete con Google Chrome</translation>
 <translation id="8022947259858476807">Usa Chrome de forma predeterminada para abrir ligazóns, realizar buscas desde widgets e autocompletar contrasinais noutras aplicacións</translation>
 <translation id="804638182476029347">Permitir que as notificacións de Chrome avisen sobre as baixadas de prezo</translation>
@@ -292,6 +298,7 @@ Os teus datos encriptáronse coa túa frase de acceso o <ph name="TIME" />. Intr
 <translation id="8558480467877843976">Agora podes usar Chrome sempre que explores contido ou toques ligazóns en mensaxes, documentos e outras aplicacións.</translation>
 <translation id="8603022514504485810">O xestor de contrasinais de Google non puido comprobar todos os contrasinais. Podes tentalo de novo mañá ou ben <ph name="BEGIN_LINK" />comprobar os contrasinais da túa Conta de Google<ph name="END_LINK" />.</translation>
 <translation id="8630122478628016441">Activa a opción Bloquear pestanas do modo de incógnito ao pechar Chrome.</translation>
+<translation id="8673726683583791503">Compra con Google Lens</translation>
 <translation id="8727043961453758442">Tira o máximo proveito de Chrome</translation>
 <translation id="8765470054473112089">Cando escribes algo na barra de enderezos ou na caixa de busca, Chrome envíallo ao motor de busca predeterminado para obter mellores suxestións. Esta opción está desactivada no modo de incógnito.</translation>
 <translation id="8772179140489533211">Mostra solicitudes para iniciar sesión en Chrome.</translation>

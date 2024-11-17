@@ -74,8 +74,7 @@ bool IsValidDefaultWebClientState(DefaultWebClientState state) {
     case NUM_DEFAULT_STATES:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 void RunCallback(DefaultWebClientWorkerCallback callback,

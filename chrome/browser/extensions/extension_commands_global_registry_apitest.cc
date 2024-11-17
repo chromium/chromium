@@ -26,7 +26,7 @@ using GlobalCommandsApiTest = ExtensionApiTest;
 // extension.
 //
 // Doesn't work in CrOS builds, http://crbug.com/619784
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_GlobalCommand DISABLED_GlobalCommand
 #else
 #define MAYBE_GlobalCommand GlobalCommand

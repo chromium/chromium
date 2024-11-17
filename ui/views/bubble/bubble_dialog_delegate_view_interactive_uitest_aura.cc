@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
 #include "ui/views/buildflags.h"
@@ -35,10 +34,8 @@ class BubbleDialogDelegateViewInteractiveTest : public test::WidgetTest {
     test::WidgetTest::SetUp();
     original_nw_factory_ =
         ViewsDelegate::GetInstance()->native_widget_factory();
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
     ViewsDelegate::GetInstance()->set_native_widget_factory(
         base::BindRepeating(CreateNativeWidget));
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
   }
 
   void TearDown() override {

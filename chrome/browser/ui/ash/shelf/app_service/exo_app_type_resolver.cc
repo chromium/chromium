@@ -23,11 +23,6 @@
 
 namespace {
 
-// Returns true, if the given ID represents Lacros.
-bool IsLacrosAppId(std::string_view app_id) {
-  return base::StartsWith(app_id, crosapi::kLacrosAppIdPrefix);
-}
-
 // Adds ARC specific properties.
 void UpdatePropertiesForArc(std::optional<int> task_id,
                             std::optional<int> session_id,
@@ -73,26 +68,6 @@ void UpdatePropertiesForArc(std::optional<int> task_id,
 void ExoAppTypeResolver::PopulateProperties(
     const Params& params,
     ui::PropertyHandler& out_properties_container) {
-  if (IsLacrosAppId(params.app_id)) {
-    out_properties_container.SetProperty(chromeos::kAppTypeKey,
-                                         chromeos::AppType::LACROS);
-    // Lacros is trusted not to abuse window activation, so grant it a
-    // non-expiring permission to activate.
-    out_properties_container.SetProperty(
-        exo::kPermissionKey,
-        new exo::Permission(exo::Permission::Capability::kActivate));
-    // Only Lacros windows should allow restore/fullscreen to kick windows out
-    // of fullscreen.
-    out_properties_container.SetProperty(exo::kRestoreOrMaximizeExitsFullscreen,
-                                         true);
-    out_properties_container.SetProperty(app_restore::kLacrosWindowId,
-                                         params.app_id);
-
-    out_properties_container.SetProperty(ash::kWebAuthnRequestId,
-                                         new std::string(params.app_id));
-    return;
-  }
-
   auto task_id = arc::GetTaskIdFromWindowAppId(params.app_id);
   auto session_id = arc::GetSessionIdFromWindowAppId(params.app_id);
 

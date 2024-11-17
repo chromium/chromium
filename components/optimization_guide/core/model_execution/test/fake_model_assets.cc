@@ -13,6 +13,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
+#include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_test_util.h"
 #include "components/optimization_guide/core/test_model_info_builder.h"
 #include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
@@ -84,13 +85,9 @@ FakeSafetyModelAsset::FakeSafetyModelAsset(
   auto model_path = temp_dir_.GetPath().Append(kTsSpModelFile);
   CHECK(base::WriteFile(data_path, on_device_model::FakeTsData()));
   CHECK(base::WriteFile(model_path, on_device_model::FakeTsSpModel()));
-  proto::Any any;
-  any.set_type_url(
-      "type.googleapis.com/optimization_guide.proto.TextSafetyModelMetadata");
-  content.metadata.SerializeToString(any.mutable_value());
   model_info_ = TestModelInfoBuilder()
                     .SetAdditionalFiles({data_path, model_path})
-                    .SetModelMetadata(any)
+                    .SetModelMetadata(AnyWrapProto(content.metadata))
                     .Build();
 }
 

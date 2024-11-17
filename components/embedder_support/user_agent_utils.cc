@@ -4,6 +4,9 @@
 
 #include "components/embedder_support/user_agent_utils.h"
 
+#include <array>
+#include <cstddef>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -89,8 +92,7 @@ int GetPreRS5UniversalApiContractVersion() {
   }
   // The list above should account for all Windows versions prior to
   // RS5.
-  NOTREACHED_IN_MIGRATION();
-  return 0;
+  NOTREACHED();
 }
 
 // Returns the UniversalApiContract version number, which is available for
@@ -182,7 +184,8 @@ const blink::UserAgentBrandList GetUserAgentBrandList(
     const std::string& major_version,
     bool enable_updated_grease_by_policy,
     const std::string& full_version,
-    blink::UserAgentBrandVersionType output_version_type) {
+    blink::UserAgentBrandVersionType output_version_type,
+    std::optional<blink::UserAgentBrandVersion> additional_brand_version) {
   int major_version_number;
   bool parse_result = base::StringToInt(major_version, &major_version_number);
   DCHECK(parse_result);
@@ -206,34 +209,37 @@ const blink::UserAgentBrandList GetUserAgentBrandList(
           ? full_version
           : major_version;
 
-  return GenerateBrandVersionList(major_version_number, brand, brand_version,
-                                  maybe_brand_override, maybe_version_override,
-                                  enable_updated_grease_by_policy,
-                                  output_version_type);
+  return GenerateBrandVersionList(
+      major_version_number, brand, brand_version, maybe_brand_override,
+      maybe_version_override, enable_updated_grease_by_policy,
+      output_version_type, additional_brand_version);
 }
 
 // Return UserAgentBrandList with the major version populated in the brand
 // `version` value.
 // TODO(crbug.com/1291612): Consolidate *MajorVersionList() methods by using
 // GetVersionNumber()
-const blink::UserAgentBrandList GetUserAgentBrandMajorVersionList(
-    bool enable_updated_grease_by_policy) {
+const blink::UserAgentBrandList GetUserAgentBrandMajorVersionListInternal(
+    bool enable_updated_grease_by_policy,
+    std::optional<blink::UserAgentBrandVersion> additional_brand_version) {
   return GetUserAgentBrandList(version_info::GetMajorVersionNumber(),
                                enable_updated_grease_by_policy,
                                std::string(version_info::GetVersionNumber()),
-                               blink::UserAgentBrandVersionType::kMajorVersion);
+                               blink::UserAgentBrandVersionType::kMajorVersion,
+                               additional_brand_version);
 }
 
 // Return UserAgentBrandList with the full version populated in the brand
 // `version` value.
 // TODO(crbug.com/1291612): Consolidate *FullVersionList() methods by using
 // GetVersionNumber()
-blink::UserAgentBrandList GetUserAgentBrandFullVersionList(
-    bool enable_updated_grease_by_policy) {
-  return GetUserAgentBrandList(version_info::GetMajorVersionNumber(),
-                               enable_updated_grease_by_policy,
-                               std::string(version_info::GetVersionNumber()),
-                               blink::UserAgentBrandVersionType::kFullVersion);
+const blink::UserAgentBrandList GetUserAgentBrandFullVersionListInternal(
+    bool enable_updated_grease_by_policy,
+    std::optional<blink::UserAgentBrandVersion> additional_brand_version) {
+  return GetUserAgentBrandList(
+      version_info::GetMajorVersionNumber(), enable_updated_grease_by_policy,
+      std::string(version_info::GetVersionNumber()),
+      blink::UserAgentBrandVersionType::kFullVersion, additional_brand_version);
 }
 
 std::vector<std::string> GetFormFactorsClientHint(
@@ -247,17 +253,6 @@ std::vector<std::string> GetFormFactorsClientHint(
     form_factors.push_back(blink::kXRFormFactor);
   }
   return form_factors;
-}
-
-}  // namespace
-
-std::string GetProductAndVersion(
-    UserAgentReductionEnterprisePolicyState user_agent_reduction) {
-  return ShouldReduceUserAgentMinorVersion(user_agent_reduction)
-             ? version_info::GetProductNameAndVersionForReducedUserAgent(
-                   blink::features::kUserAgentFrozenBuildVersion.Get())
-             : std::string(
-                   version_info::GetProductNameAndVersionForUserAgent());
 }
 
 // Internal function to handle return the full or "reduced" user agent string,
@@ -284,6 +279,65 @@ std::string GetUserAgentInternal(
              : content::BuildUserAgentFromProduct(product);
 }
 
+// Generate random order list based on the input size and seed.
+// Manually implement a stable permutation shuffle since STL random number
+// engines and generators are banned and helpers in base/rand_util.h not
+// supported seed shuffle.
+std::vector<size_t> GetRandomOrder(int seed, size_t size) {
+  CHECK_GE(size, 2u);
+  CHECK_LE(size, 4u);
+
+  if (size == 2u) {
+    return {seed % size, (seed + 1) % size};
+  } else if (size == 3u) {
+    // Pick a stable permutation seeded by major version number. any values here
+    // and in order should be under three.
+    static constexpr std::array<std::array<size_t, 3>, 6> orders{
+        {{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}}};
+    const std::array<size_t, 3> order = orders[seed % orders.size()];
+    return std::vector<size_t>(order.begin(), order.end());
+  } else {
+    // Pick a stable permutation seeded by major version number. any values
+    // here and in order should be under four.
+    static constexpr std::array<std::array<size_t, 4>, 24> orders{
+        {{0, 1, 2, 3}, {0, 1, 3, 2}, {0, 2, 1, 3}, {0, 2, 3, 1}, {0, 3, 1, 2},
+         {0, 3, 2, 1}, {1, 0, 2, 3}, {1, 0, 3, 2}, {1, 2, 0, 3}, {1, 2, 3, 0},
+         {1, 3, 0, 2}, {1, 3, 2, 0}, {2, 0, 1, 3}, {2, 0, 3, 1}, {2, 1, 0, 3},
+         {2, 1, 3, 0}, {2, 3, 0, 1}, {2, 3, 1, 0}, {3, 0, 1, 2}, {3, 0, 2, 1},
+         {3, 1, 0, 2}, {3, 1, 2, 0}, {3, 2, 0, 1}, {3, 2, 1, 0}}};
+    const std::array<size_t, 4> order = orders[seed % orders.size()];
+    return std::vector<size_t>(order.begin(), order.end());
+  }
+}
+
+// Shuffle the generated brand version list based on the seed.
+blink::UserAgentBrandList ShuffleBrandList(
+    blink::UserAgentBrandList brand_version_list,
+    int seed) {
+  const std::vector<size_t> order =
+      GetRandomOrder(seed, brand_version_list.size());
+  CHECK_EQ(brand_version_list.size(), order.size());
+
+  blink::UserAgentBrandList shuffled_brand_version_list(
+      brand_version_list.size());
+  for (size_t i = 0; i < order.size(); i++) {
+    shuffled_brand_version_list[order[i]] = brand_version_list[i];
+  }
+
+  return shuffled_brand_version_list;
+}
+
+}  // namespace
+
+std::string GetProductAndVersion(
+    UserAgentReductionEnterprisePolicyState user_agent_reduction) {
+  return ShouldReduceUserAgentMinorVersion(user_agent_reduction)
+             ? version_info::GetProductNameAndVersionForReducedUserAgent(
+                   blink::features::kUserAgentFrozenBuildVersion.Get())
+             : std::string(
+                   version_info::GetProductNameAndVersionForUserAgent());
+}
+
 std::optional<std::string> GetUserAgentFromCommandLine() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(kUserAgent)) {
@@ -306,12 +360,25 @@ std::string GetUserAgent(
   return GetUserAgentInternal(user_agent_reduction);
 }
 
+const blink::UserAgentBrandList GetUserAgentBrandMajorVersionList(
+    std::optional<blink::UserAgentBrandVersion> additional_brand_version) {
+  return GetUserAgentBrandMajorVersionListInternal(
+      /*enable_updated_grease_by_policy=*/true, additional_brand_version);
+}
+
+const blink::UserAgentBrandList GetUserAgentBrandFullVersionList(
+    std::optional<blink::UserAgentBrandVersion> additional_brand_version) {
+  return GetUserAgentBrandMajorVersionListInternal(
+      /*enable_updated_grease_by_policy=*/true, additional_brand_version);
+}
+
 // Generate a pseudo-random permutation of the following brand/version pairs:
 //   1. The base project (i.e. Chromium)
 //   2. The browser brand, if available
 //   3. A randomized string containing GREASE characters to ensure proper
 //      header parsing, along with an arbitrarily low version to ensure proper
 //      version checking.
+//   4. Additional brand/version pairs.
 blink::UserAgentBrandList GenerateBrandVersionList(
     int seed,
     std::optional<std::string> brand,
@@ -319,40 +386,25 @@ blink::UserAgentBrandList GenerateBrandVersionList(
     std::optional<std::string> maybe_greasey_brand,
     std::optional<std::string> maybe_greasey_version,
     bool enable_updated_grease_by_policy,
-    blink::UserAgentBrandVersionType output_version_type) {
+    blink::UserAgentBrandVersionType output_version_type,
+    std::optional<blink::UserAgentBrandVersion> additional_brand_version) {
   DCHECK_GE(seed, 0);
-  const int npermutations = 6;  // 3!
-  int permutation = seed % npermutations;
-
-  // Pick a stable permutation seeded by major version number. any values here
-  // and in order should be under three.
-  const std::vector<std::vector<int>> orders{{0, 1, 2}, {0, 2, 1}, {1, 0, 2},
-                                             {1, 2, 0}, {2, 0, 1}, {2, 1, 0}};
-  const std::vector<int> order = orders[permutation];
-  DCHECK_EQ(6u, orders.size());
-  DCHECK_EQ(3u, order.size());
 
   blink::UserAgentBrandVersion greasey_bv = GetGreasedUserAgentBrandVersion(
-      order, seed, maybe_greasey_brand, maybe_greasey_version,
+      seed, maybe_greasey_brand, maybe_greasey_version,
       enable_updated_grease_by_policy, output_version_type);
   blink::UserAgentBrandVersion chromium_bv = {"Chromium", version};
-  blink::UserAgentBrandList greased_brand_version_list(3);
 
+  blink::UserAgentBrandList brand_version_list = {std::move(greasey_bv),
+                                                  std::move(chromium_bv)};
   if (brand) {
-    blink::UserAgentBrandVersion brand_bv = {brand.value(), version};
-
-    greased_brand_version_list[order[0]] = greasey_bv;
-    greased_brand_version_list[order[1]] = chromium_bv;
-    greased_brand_version_list[order[2]] = brand_bv;
-  } else {
-    greased_brand_version_list[seed % 2] = greasey_bv;
-    greased_brand_version_list[(seed + 1) % 2] = chromium_bv;
-
-    // If left, the last element would make a blank "" at the end of the header.
-    greased_brand_version_list.pop_back();
+    brand_version_list.emplace_back(brand.value(), version);
+  }
+  if (additional_brand_version) {
+    brand_version_list.emplace_back(additional_brand_version.value());
   }
 
-  return greased_brand_version_list;
+  return ShuffleBrandList(brand_version_list, seed);
 }
 
 // Process greased overridden brand version which is either major version or
@@ -390,7 +442,6 @@ blink::UserAgentBrandVersion GetProcessedGreasedBrandVersion(
 }
 
 blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
-    std::vector<int> permuted_order,
     int seed,
     std::optional<std::string> maybe_greasey_brand,
     std::optional<std::string> maybe_greasey_version,
@@ -419,6 +470,9 @@ blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
         maybe_greasey_version.value_or(greasey_version), output_version_type);
   } else {
     const std::vector<std::string> greasey_chars = {" ", " ", ";"};
+    const std::vector<size_t> permuted_order =
+        GetRandomOrder(seed, greasey_chars.size());
+    CHECK_EQ(greasey_chars.size(), permuted_order.size());
     greasey_brand = base::StrCat({greasey_chars[permuted_order[0]], "Not",
                                   greasey_chars[permuted_order[1]], "A",
                                   greasey_chars[permuted_order[2]], "Brand"});
@@ -469,8 +523,8 @@ blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service,
   }
 
   // Low entropy client hints.
-  metadata.brand_version_list =
-      GetUserAgentBrandMajorVersionList(enable_updated_grease_by_policy);
+  metadata.brand_version_list = GetUserAgentBrandMajorVersionListInternal(
+      enable_updated_grease_by_policy, std::nullopt);
   metadata.mobile = false;
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   metadata.mobile = base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -496,8 +550,8 @@ blink::UserAgentMetadata GetUserAgentMetadata(const PrefService* pref_service,
   }
 
   // High entropy client hints.
-  metadata.brand_full_version_list =
-      GetUserAgentBrandFullVersionList(enable_updated_grease_by_policy);
+  metadata.brand_full_version_list = GetUserAgentBrandFullVersionListInternal(
+      enable_updated_grease_by_policy, std::nullopt);
   metadata.full_version = std::string(version_info::GetVersionNumber());
   metadata.architecture = content::GetCpuArchitecture();
   metadata.model = content::BuildModelInfo();

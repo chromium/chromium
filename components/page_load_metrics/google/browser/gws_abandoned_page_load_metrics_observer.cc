@@ -11,8 +11,8 @@
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "components/page_load_metrics/common/page_load_timing.h"
+#include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "content/public/browser/navigation_handle.h"
 
 namespace internal {
@@ -44,6 +44,11 @@ const char* GWSAbandonedPageLoadMetricsObserver::GetObserverName() const {
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 GWSAbandonedPageLoadMetricsObserver::OnNavigationEvent(
     content::NavigationHandle* navigation_handle) {
+  auto parent_result =
+      AbandonedPageLoadMetricsObserver::OnNavigationEvent(navigation_handle);
+  if (parent_result != CONTINUE_OBSERVING) {
+    return parent_result;
+  }
   if (page_load_metrics::IsGoogleSearchResultUrl(navigation_handle->GetURL())) {
     involved_srp_url_ = true;
   } else {

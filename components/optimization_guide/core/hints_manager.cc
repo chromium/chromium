@@ -292,8 +292,7 @@ bool ShouldContextResponsePopulateHintCache(
   switch (request_context) {
     case proto::RequestContext::CONTEXT_UNSPECIFIED:
     case proto::RequestContext::CONTEXT_BATCH_UPDATE_MODELS:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     case proto::RequestContext::CONTEXT_PAGE_NAVIGATION:
       return true;
     case proto::RequestContext::CONTEXT_BATCH_UPDATE_GOOGLE_SRP:
@@ -313,8 +312,7 @@ bool ShouldContextResponsePopulateHintCache(
     case proto::RequestContext::CONTEXT_SHOPPING:
       return false;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -1230,11 +1228,9 @@ void HintsManager::ProcessAndInvokeOnDemandHintsCallbacks(
         break;
       case proto::HASHED_HOST:
         // The server should not send hints with hashed host key.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       case proto::REPRESENTATION_UNSPECIFIED:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -1850,7 +1846,7 @@ void HintsManager::AddHintForTesting(
   } else if (metadata->any_metadata()) {
     *optimization->mutable_any_metadata() = *metadata->any_metadata();
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
   hint_cache_->AddHintForTesting(url, std::move(hint));  // IN-TEST
   PrepareToInvokeRegisteredCallbacks(url);
@@ -1868,8 +1864,7 @@ void HintsManager::RemoveFetchedEntriesByHintKeys(
     case proto::KeyRepresentation::FULL_URL:
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
 
   if (key_representation == proto::FULL_URL) {

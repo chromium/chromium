@@ -634,7 +634,6 @@ class TestImporter:
         # Prevent FindIt from auto-reverting import CLs.
         description += 'NOAUTOREVERT=true\n'
         description += 'No-Export: true\n'
-        description += 'Validate-Test-Flakiness: skip\n'
 
         # If this starts blocking the importer unnecessarily, revert
         # https://chromium-review.googlesource.com/c/chromium/src/+/2451504

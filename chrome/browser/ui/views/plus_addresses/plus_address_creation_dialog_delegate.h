@@ -95,10 +95,6 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
   // A single line error message in red.
   raw_ptr<views::Label> create_error_message_label_ = nullptr;
 
-  // Label with link for error reporting.
-  // TODO(crbug.com/363720961): Remove once updated error states are launched.
-  raw_ptr<views::View> error_report_label_ = nullptr;
-
   // The button for confirming the modal dialog.
   raw_ptr<views::MdTextButton> confirm_button_ = nullptr;
 };

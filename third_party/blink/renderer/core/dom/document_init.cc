@@ -337,12 +337,10 @@ Document* DocumentInit::CreateDocument() const {
       return MakeGarbageCollected<TextDocument>(*this);
     }
     case Type::kUnspecified:
-      [[fallthrough]];
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 }  // namespace blink

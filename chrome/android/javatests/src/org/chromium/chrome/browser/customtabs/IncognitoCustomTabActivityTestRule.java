@@ -4,19 +4,17 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.doAnswer;
+
 import android.content.Intent;
 
 import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.mockito.Mockito;
 
-import org.chromium.chrome.browser.AppHooksModule;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.dependency_injection.ModuleOverridesRule;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.concurrent.TimeoutException;
@@ -28,28 +26,6 @@ import java.util.concurrent.TimeoutException;
 public class IncognitoCustomTabActivityTestRule extends CustomTabActivityTestRule {
     private boolean mRemoveFirstPartyOverride;
     private boolean mCustomSessionInitiatedForIntent;
-
-    @Rule
-    private final TestRule mModuleOverridesRule =
-            new ModuleOverridesRule()
-                    .setOverride(AppHooksModule.Factory.class, AppHooksModuleForTest::new);
-
-    /**
-     * To load a fake module in tests we need to bypass a check if package name of module is
-     * Google-signed. This class overrides this check for testing.
-     */
-    class AppHooksModuleForTest extends AppHooksModule {
-        @Override
-        public ExternalAuthUtils provideExternalAuthUtils() {
-            return new ExternalAuthUtils() {
-                @Override
-                public boolean isGoogleSigned(String packageName) {
-                    if (mRemoveFirstPartyOverride) return false;
-                    return true;
-                }
-            };
-        }
-    }
 
     private static void createNewCustomTabSessionForIntent(Intent intent) throws TimeoutException {
         // To emulate first party we create a new session with the session token provided by the
@@ -69,7 +45,7 @@ public class IncognitoCustomTabActivityTestRule extends CustomTabActivityTestRul
             try {
                 createNewCustomTabSessionForIntent(intent);
             } catch (TimeoutException e) {
-                Assert.fail();
+                throw new RuntimeException(e);
             }
         }
         super.startCustomTabActivityWithIntent(intent);
@@ -83,18 +59,23 @@ public class IncognitoCustomTabActivityTestRule extends CustomTabActivityTestRul
         mCustomSessionInitiatedForIntent = true;
     }
 
-    public void buildSessionWithHiddenTab(
-            CustomTabsConnection connection, CustomTabsSessionToken token) {
-        Assert.assertTrue(connection.newSession(token));
+    public void buildSessionWithHiddenTab(CustomTabsSessionToken token) {
+        Assert.assertTrue(CustomTabsConnection.getInstance().newSession(token));
         // Need to set params to reach |CustomTabsConnection#doMayLaunchUrlOnUiThread|.
-        connection.mClientManager.setHideDomainForSession(token, true);
-        connection.setCanUseHiddenTabForSession(token, true);
+        CustomTabsConnection.getInstance().mClientManager.setHideDomainForSession(token, true);
+        CustomTabsConnection.getInstance().setCanUseHiddenTabForSession(token, true);
     }
 
     @Override
-    public Statement apply(Statement base, Description description) {
-        // ModuleOverridesRule must be an outer rule.
-        Statement moduleOverridesStatement = mModuleOverridesRule.apply(base, description);
-        return super.apply(moduleOverridesStatement, description);
+    protected void before() throws Throwable {
+        ExternalAuthUtils spy = Mockito.spy(ExternalAuthUtils.getInstance());
+        doAnswer(
+                        invocation -> {
+                            return !mRemoveFirstPartyOverride;
+                        })
+                .when(spy)
+                .isGoogleSigned(any());
+        ExternalAuthUtils.setInstanceForTesting(spy);
+        super.before();
     }
 }

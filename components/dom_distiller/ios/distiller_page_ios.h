@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/dom_distiller/core/distiller_page.h"
 #include "ios/web/public/web_state_observer.h"
 #include "url/gurl.h"
@@ -78,6 +79,9 @@ class DistillerPageIOS : public DistillerPage, public web::WebStateObserver {
   // blocked. Remove this and use WebState::IsLoading() when WebState has
   // been fixed.
   bool loading_ = false;
+
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
 
   base::WeakPtrFactory<DistillerPageIOS> weak_ptr_factory_;
 };

@@ -6,16 +6,20 @@
 
 #import <ScreenCaptureKit/ScreenCaptureKit.h>
 
+#include <unordered_map>
+#include <utility>
+
 #include "base/features.h"
 #include "base/timer/timer.h"
+#include "content/browser/media/capture/native_screen_capture_picker.h"
 #include "content/browser/media/capture/screen_capture_kit_device_mac.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "media/capture/video/video_capture_device.h"
 
 using Source = webrtc::DesktopCapturer::Source;
 using PickerCallback = base::OnceCallback<void(Source)>;
-using PickerCancelCallback = base::OnceCallback<void()>;
-using PickerErrorCallback = base::OnceCallback<void()>;
+using PickerCancelCallback = base::OnceClosure;
+using PickerErrorCallback = base::OnceClosure;
 
 API_AVAILABLE(macos(14.0))
 @interface PickerObserver : NSObject <SCContentSharingPickerObserver>
@@ -93,8 +97,8 @@ class API_AVAILABLE(macos(14.0)) NativeScreenCapturePickerMac
   void Open(DesktopMediaID::Type type,
             base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
             base::OnceCallback<void(Source)> picker_callback,
-            base::OnceCallback<void()> cancel_callback,
-            base::OnceCallback<void()> error_callback) override;
+            base::OnceClosure cancel_callback,
+            base::OnceClosure error_callback) override;
   void Close(DesktopMediaID device_id) override;
   std::unique_ptr<media::VideoCaptureDevice> CreateDevice(
       const DesktopMediaID& source) override;
@@ -131,8 +135,8 @@ void NativeScreenCapturePickerMac::Open(
     DesktopMediaID::Type type,
     base::OnceCallback<void(DesktopMediaID::Id)> created_callback,
     base::OnceCallback<void(Source)> picker_callback,
-    base::OnceCallback<void()> cancel_callback,
-    base::OnceCallback<void()> error_callback) {
+    base::OnceClosure cancel_callback,
+    base::OnceClosure error_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(type == DesktopMediaID::Type::TYPE_SCREEN ||
         type == DesktopMediaID::Type::TYPE_WINDOW);
@@ -206,9 +210,7 @@ NativeScreenCapturePickerMac::CreateDevice(const DesktopMediaID& source) {
     cached_content_filters_[source_id] = filter;
   }
 
-  std::unique_ptr<media::VideoCaptureDevice> device =
-      CreateScreenCaptureKitDeviceMac(source, filter);
-  return device;
+  return CreateScreenCaptureKitDeviceMac(source, filter);
 }
 
 void NativeScreenCapturePickerMac::ScheduleCleanup(DesktopMediaID::Id id) {

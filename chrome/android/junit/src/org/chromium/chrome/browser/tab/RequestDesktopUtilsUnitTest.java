@@ -30,7 +30,6 @@ import androidx.test.core.app.ApplicationProvider;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -50,7 +49,6 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -99,7 +97,6 @@ import java.util.Map.Entry;
             ShadowDisplayUtil.class
         })
 public class RequestDesktopUtilsUnitTest {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     /** Shadows {@link SysUtils} class for testing. */
     @Implements(SysUtils.class)
@@ -207,8 +204,8 @@ public class RequestDesktopUtilsUnitTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(WebsitePreferenceBridgeJni.TEST_HOOKS, mWebsitePreferenceBridgeJniMock);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
+        WebsitePreferenceBridgeJni.setInstanceForTesting(mWebsitePreferenceBridgeJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJni);
 
         mTab = createTab();
 
@@ -252,7 +249,6 @@ public class RequestDesktopUtilsUnitTest {
         when(mActivity.getResources()).thenReturn(mResources);
 
         TrackerFactory.setTrackerForTests(mTracker);
-        disableGlobalDefaultsExperimentFeatures();
 
         ShadowSysUtils.setMemoryInMB(7000);
         ShadowDisplayAndroid.setDisplayAndroid(mDisplayAndroid);
@@ -309,7 +305,7 @@ public class RequestDesktopUtilsUnitTest {
     public void testSetRequestDesktopSiteContentSettingsForUrl_DefaultBlock_Incognito() {
         // Incognito profile type.
         when(mProfile.isOffTheRecord()).thenReturn(true);
-        when(mProfile.isPrimaryOTRProfile()).thenReturn(true);
+        when(mProfile.isPrimaryOtrProfile()).thenReturn(true);
         mRdsDefaultValue = ContentSettingValues.BLOCK;
 
         RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, true);
@@ -329,7 +325,7 @@ public class RequestDesktopUtilsUnitTest {
     public void testSetRequestDesktopSiteContentSettingsForUrl_DefaultAllow_Incognito() {
         // Incognito profile type.
         when(mProfile.isOffTheRecord()).thenReturn(true);
-        when(mProfile.isPrimaryOTRProfile()).thenReturn(true);
+        when(mProfile.isPrimaryOtrProfile()).thenReturn(true);
         mRdsDefaultValue = ContentSettingValues.ALLOW;
 
         RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(mProfile, mGoogleUrl, false);
@@ -692,7 +688,7 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testMaybeShowDefaultEnableGlobalSettingMessage() {
-        when(mTracker.shouldTriggerHelpUI(FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE))
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE))
                 .thenReturn(true);
 
         // Default-enable the global setting before the message is shown.
@@ -729,7 +725,7 @@ public class RequestDesktopUtilsUnitTest {
 
     @Test
     public void testMaybeShowDefaultEnableGlobalSettingMessage_DoNotShowIfSettingIsDisabled() {
-        when(mTracker.shouldTriggerHelpUI(FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE))
+        when(mTracker.shouldTriggerHelpUi(FeatureConstants.REQUEST_DESKTOP_SITE_DEFAULT_ON_FEATURE))
                 .thenReturn(true);
 
         // Preference is set when the setting is default-enabled.
@@ -923,14 +919,5 @@ public class RequestDesktopUtilsUnitTest {
             }
         }
         FeatureList.setTestValues(mTestValues);
-    }
-
-    private void disableGlobalDefaultsExperimentFeatures() {
-        enableFeatureWithParams("RequestDesktopSiteDefaults", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaultsControl", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaultsControlCohort1", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaultsEnabledCohort1", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaultsControlCohort2", null, false);
-        enableFeatureWithParams("RequestDesktopSiteDefaultsEnabledCohort2", null, false);
     }
 }

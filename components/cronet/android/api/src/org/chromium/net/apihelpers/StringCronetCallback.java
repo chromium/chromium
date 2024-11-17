@@ -49,7 +49,6 @@ public abstract class StringCronetCallback extends InMemoryTransformCronetCallba
                     // Malformed header, continue with the next one
                     break;
                 }
-                String parameterName = parameter.getKey();
                 String parameterValue = parameter.getValue();
 
                 if (charset != null && !parameterValue.equalsIgnoreCase(charset)) {

@@ -34,6 +34,7 @@ HAR:{
     _resourceType : "fetch"
     cache : {
     }
+    connection : undefined
     request : {
         bodySize : 0
         cookies : [

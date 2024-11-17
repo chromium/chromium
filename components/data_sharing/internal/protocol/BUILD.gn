@@ -8,5 +8,5 @@ proto_library("protocol") {
   proto_in_dir = "//"
   sources = [ "group_data_db.proto" ]
 
-  link_deps = [ "//components/data_sharing/public/protocol" ]
+  deps = [ "//components/data_sharing/public/protocol" ]
 }

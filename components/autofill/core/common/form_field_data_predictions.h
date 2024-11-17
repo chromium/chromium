@@ -32,6 +32,7 @@ struct FormFieldDataPredictions {
   std::string html_type;
   std::string overall_type;
   std::string parseable_name;
+  std::string parseable_label;
   std::string section;
   size_t rank = 0;
   size_t rank_in_signature_group = 0;

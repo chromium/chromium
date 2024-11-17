@@ -14,6 +14,7 @@ import '../components/recording-info-dialog.js';
 import '../components/secondary-button.js';
 import '../components/settings-menu.js';
 import '../components/system-audio-consent-dialog.js';
+import '../components/directives/with-tooltip.js';
 
 import {
   createRef,
@@ -25,6 +26,7 @@ import {
 
 import {CraIconButton} from '../components/cra/cra-icon-button.js';
 import {DeleteRecordingDialog} from '../components/delete-recording-dialog.js';
+import {withTooltip} from '../components/directives/with-tooltip.js';
 import {ExportDialog} from '../components/export-dialog.js';
 import {OnboardingDialog} from '../components/onboarding-dialog.js';
 import {RecordingFileList} from '../components/recording-file-list.js';
@@ -119,9 +121,9 @@ export class MainPage extends ReactiveLitElement {
       align-items: center;
       display: flex;
       flex-flow: column;
-      inset-area: top span-all;
       position: absolute;
       position-anchor: --record-button;
+      position-area: top span-all;
 
       & > div {
         background: var(--cros-sys-primary);
@@ -313,6 +315,7 @@ export class MainPage extends ReactiveLitElement {
         @click=${this.onClickRecordButton}
         ${ref(this.startRecordingButton)}
         aria-label=${i18n.mainStartRecordButtonTooltip}
+        ${withTooltip()}
       >
         <cra-icon slot="icon" name="circle_fill"></cra-icon>
       </cra-icon-button>`,
@@ -327,6 +330,7 @@ export class MainPage extends ReactiveLitElement {
       id="settings-header"
       @click=${onClick}
       aria-label=${i18n.settingsHeader}
+      ${withTooltip()}
     >
       <cra-icon slot="icon" name="settings"></cra-icon>
     </secondary-button>`;

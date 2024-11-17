@@ -8,6 +8,10 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 
+#if BUILDFLAG(IS_IOS)
+#include "components/sync/base/ios_cpe_passkey_buildflag.h"
+#endif  // BUILDFLAG(IS_IOS)
+
 namespace syncer {
 
 // Customizes the delay of a deferred sync startup.
@@ -22,11 +26,6 @@ inline constexpr base::FeatureParam<int>
         "DeferredSyncStartupCustomDelayInSeconds", 1};
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kSyncAndroidLimitNTPPromoImpressions);
-inline constexpr base::FeatureParam<int> kSyncAndroidNTPPromoMaxImpressions{
-    &kSyncAndroidLimitNTPPromoImpressions, "SyncAndroidNTPPromoMaxImpressions",
-    5};
-
 // Controls whether to show a batch upload card in Android unified settings
 // panel.
 BASE_DECLARE_FEATURE(kEnableBatchUploadFromSettings);
@@ -51,14 +50,8 @@ BASE_DECLARE_FEATURE(kSyncAutofillWalletCredentialData);
 BASE_DECLARE_FEATURE(kSyncPlusAddressSetting);
 
 #if BUILDFLAG(IS_CHROMEOS)
-// Whether explicit passphrase sharing between Ash and Lacros is enabled.
-BASE_DECLARE_FEATURE(kSyncChromeOSExplicitPassphraseSharing);
-
 // Whether Apps toggle value is exposed by Ash to Lacros.
 BASE_DECLARE_FEATURE(kSyncChromeOSAppsToggleSharing);
-
-// Whether SyncedSessions are updated by Lacros to Ash.
-BASE_DECLARE_FEATURE(kChromeOSSyncedSessionSharing);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 // When enabled, optimization flags (single client and a list of FCM
@@ -69,7 +62,6 @@ BASE_DECLARE_FEATURE(kSkipInvalidationOptimizationsWhenDeviceInfoUpdated);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeInTransportMode);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForCustomPassphraseUsers);
 BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForDasherUsers);
-BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForChildUsers);
 
 // For users who support separate "profile" and "account" password stores -
 // see password_manager::features_util::CanCreateAccountStore() - and have
@@ -79,32 +71,33 @@ BASE_DECLARE_FEATURE(kSyncEnableContactInfoDataTypeForChildUsers);
 //   saves always happen to the profile store.
 // - The account store is synced. When the flag is disabled, the profile one is.
 BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorageForSyncingUsers);
-// For users who support separate "profile" and "account" password stores -
-// see password_manager::features_util::CanCreateAccountStore() - and have
-// sync-the-transport on, enabling this flag means:
-// - New passwords are saved to the account store if the passwords data type is
-//   "selected", and to the profile store otherwise. When the flag is disabled,
-//   saves always happen to the profile store.
-// - The account store is synced. When the flag is disabled, no store is.
-BASE_DECLARE_FEATURE(kEnablePasswordsAccountStorageForNonSyncingUsers);
 
 // Enables a separate account-scoped storage for preferences, for syncing users.
 // (Note that opposed to other "account storage" features, this one does not
 // have any effect for signed-in non-syncing users!)
 BASE_DECLARE_FEATURE(kEnablePreferencesAccountStorage);
 
-#if !BUILDFLAG(IS_ANDROID)
-// Enables syncing the WEBAUTHN_CREDENTIAL data type.
-// Enabled by default on M123. Remove on or after M126 on all platforms,
-// except on iOS, where it has not been enabled by default yet.
-BASE_DECLARE_FEATURE(kSyncWebauthnCredentials);
-#endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_IOS)
+// On iOS, Webauthn Credential Sync is controlled by a build-time flag, because
+// these capabilities are linked to the Credential Provider Extension and must
+// be declared in its Info.plist (manifest).
+constexpr bool IsWebauthnCredentialSyncEnabled() {
+#if BUILDFLAG(IOS_PASSKEYS_ENABLED)
+  return true;
+#else
+  return false;
+#endif  // !BUILDFLAG(IOS_PASSKEYS_ENABLED)
+}
+#endif  // BUILDFLAG(IS_IOS)
 
 // If enabled, ignore GetUpdates retry delay command from the server.
 BASE_DECLARE_FEATURE(kSyncIgnoreGetUpdatesRetryDelay);
 
 // Wrapper flag to control the nudge delay of the #tab-groups-save feature.
 BASE_DECLARE_FEATURE(kTabGroupsSaveNudgeDelay);
+
+// If enabled, keeps local and account search engines separate.
+BASE_DECLARE_FEATURE(kSeparateLocalAndAccountSearchEngines);
 
 // If provided, changes the amount of time before we send messages to the sync
 // service.
@@ -122,6 +115,11 @@ BASE_DECLARE_FEATURE(kReplaceSyncPromosWithSignInPromos);
 // transport mode.
 // TODO(crbug.com/40943550): Remove this.
 BASE_DECLARE_FEATURE(kSyncEnableBookmarksInTransportMode);
+
+// Normally, if kReplaceSyncPromosWithSignInPromos is disabled,
+// UserSelectableType::kBookmarks is disabled by default upon sign-in. This
+// flag makes the type enabled by default, for manual testing.
+BASE_DECLARE_FEATURE(kEnableBookmarksSelectedTypeOnSigninForTesting);
 
 // Feature flag used for enabling sync (transport mode) for signed-in users that
 // haven't turned on full sync.
@@ -166,6 +164,9 @@ inline constexpr base::FeatureParam<base::TimeDelta>
 // sync metadata isn't available (i.e. initial sync never completed).
 BASE_DECLARE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing);
 
+// If enabled, distinguishes between local and account themes.
+BASE_DECLARE_FEATURE(kSeparateLocalAndAccountThemes);
+
 // If enabled, the local change nudge delays for single-client users are
 // increased by some factor, specified via the FeatureParam below.
 BASE_DECLARE_FEATURE(kSyncIncreaseNudgeDelayForSingleClient);
@@ -175,10 +176,6 @@ inline constexpr base::FeatureParam<double>
         &kSyncIncreaseNudgeDelayForSingleClient,
         "SyncIncreaseNudgeDelayForSingleClientFactor", 2.0};
 
-// Guards the registration of synthetic field trials based on information in
-// Nigori's TrustedVaultDebugInfo.
-BASE_DECLARE_FEATURE(kTrustedVaultAutoUpgradeSyntheticFieldTrial);
-
 // If enabled, uses new fields ThemeSpecifics to replace theme prefs, thus
 // avoiding use of preferences to sync themes.
 BASE_DECLARE_FEATURE(kMoveThemePrefsToSpecifics);
@@ -187,11 +184,6 @@ BASE_DECLARE_FEATURE(kMoveThemePrefsToSpecifics);
 // If enabled, WebAPK data will be synced for Backup&Restore purposes.
 BASE_DECLARE_FEATURE(kWebApkBackupAndRestoreBackend);
 #endif  // BUILDFLAG(IS_ANDROID)
-
-// Kill switch for a change in the internal implementation of
-// SyncService::GetLocalDataDescriptions() and TriggerLocalDataMigration(),
-// which is expected to be a no-op.
-BASE_DECLARE_FEATURE(kSyncEnableModelTypeLocalDataBatchUploaders);
 
 // Enables syncing for extensions when in transport mode (when a user is signed
 // in but has not turned on full sync).

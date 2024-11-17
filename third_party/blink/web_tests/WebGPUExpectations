@@ -25,15 +25,12 @@ crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_clear
 # Also, with a native GPU, sometimes R & B channels are incorrectly swapped in
 # texture readback. (Canvas readback does not exhibit this issue.)
 crbug.com/40823053 [ Mac ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.html [ Skip ]
-crbug.com/40823053 [ Mac ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.worker.html [ Skip ]
 
-# Linux does not yet properly support readback on shared images.
+# Linux does not fully support WebGPU yet.
 crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.html [ Skip ]
-crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferToGPUTexture-texture-readback.https.worker.html [ Skip ]
-crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba8.https.html [ Skip ]
-crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba8.https.worker.html [ Skip ]
-crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba16f.https.html [ Skip ]
-crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-canvas-readback-rgba16f.https.worker.html [ Skip ]
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation-offscreen.https.html [ Skip ]
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation-worker.https.html [ Skip ]
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_transfer/transferBackFromGPUTexture-paint-invalidation.https.html [ Skip ]
 
 # Test fails due to scaling precision issues
 crbug.com/1515185 wpt_internal/webgpu/web_platform/reftests/canvas_image_rendering.https.html [ Failure ]

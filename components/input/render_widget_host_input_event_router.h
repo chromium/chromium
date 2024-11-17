@@ -11,19 +11,21 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/input/event_with_latency_info.h"
-#include "components/viz/common/hit_test/hit_test_query.h"
-#include "components/viz/common/hit_test/hit_test_region_observer.h"
-#include "components/viz/common/surfaces/surface_id.h"
-#include "base/component_export.h"
 #include "components/input/render_widget_host_view_input_observer.h"
 #include "components/input/render_widget_targeter.h"
 #include "components/input/touch_emulator_client.h"
+#include "components/viz/common/hit_test/hit_test_query.h"
+#include "components/viz/common/hit_test/hit_test_region_observer.h"
+#include "components/viz/common/surfaces/surface_id.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/mojom/delegated_ink_point_renderer.mojom.h"
@@ -89,17 +91,22 @@ class TouchEventAckQueue;
 viz::HitTestQuery* GetHitTestQuery(viz::HitTestDataProvider* provider,
                                    const viz::FrameSinkId& frame_sink_id);
 
-// Class owned by WebContentsImpl for the purpose of directing input events
-// to the correct RenderWidgetHost on pages with multiple RenderWidgetHosts.
-// It maintains a mapping of RenderWidgetHostViews to Surface IDs that they
-// own. When an input event requires routing based on window coordinates,
-// this class requests a Surface hit test from the provided |root_view| and
-// forwards the event to the owning RWHV of the returned Surface ID.
+// Class owned by WebContentsImpl uniquely for the purpose of directing input
+// events to the correct RenderWidgetHost on pages with multiple
+// RenderWidgetHosts in the browser process. With InputVizard
+// (https://docs.google.com/document/d/1mcydbkgFCO_TT9NuFE962L8PLJWT2XOfXUAPO88VuKE),
+// InputManager uses reference counting to track this class's usage and is
+// responsible for handling its lifecycle on VizCompositor thread. It maintains
+// a mapping of RenderWidgetHostViews to Surface IDs that they own. When an
+// input event requires routing based on window coordinates, this class requests
+// a Surface hit test from the provided |root_view| and forwards the event to
+// the owning RWHV of the returned Surface ID.
 class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
     : public RenderWidgetHostViewInputObserver,
       public RenderWidgetTargeter::Delegate,
       public TouchEmulatorClient,
-      public viz::HitTestRegionObserver {
+      public viz::HitTestRegionObserver,
+      public base::RefCounted<RenderWidgetHostInputEventRouter> {
  public:
   class Delegate {
    public:
@@ -114,8 +121,6 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
       delete;
   RenderWidgetHostInputEventRouter& operator=(
       const RenderWidgetHostInputEventRouter&) = delete;
-
-  ~RenderWidgetHostInputEventRouter() final;
 
   void OnRenderWidgetHostViewInputDestroyed(
       RenderWidgetHostViewInput* view) override;
@@ -213,10 +218,9 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
       const blink::WebTouchEvent& event,
       RenderWidgetHostViewInput* target) override;
   void SetCursor(const ui::Cursor& cursor) override;
-  void ShowContextMenuAtPoint(
-      const gfx::Point& point,
-      const ui::MenuSourceType source_type,
-      RenderWidgetHostViewInput* target) override;
+  void ShowContextMenuAtPoint(const gfx::Point& point,
+                              const ui::mojom::MenuSourceType source_type,
+                              RenderWidgetHostViewInput* target) override;
 
   // HitTestRegionObserver
   void OnAggregatedHitTestRegionListUpdated(
@@ -236,6 +240,10 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
 
   RenderWidgetHostViewInput* GetLastMouseMoveTargetForTest();
   RenderWidgetHostViewInput* GetLastMouseMoveRootViewForTest();
+
+ protected:
+  friend class base::RefCounted<RenderWidgetHostInputEventRouter>;
+  ~RenderWidgetHostInputEventRouter() final;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
@@ -353,7 +361,8 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
       RenderWidgetHostViewInput* target,
       const blink::WebGestureEvent& gesture_event,
       const ui::LatencyInfo& latency,
-      const std::optional<gfx::PointF>& target_location);
+      const std::optional<gfx::PointF>& target_location,
+      bool is_emulated);
 
   // TODO(crbug.com/41380487): Remove once this issue no longer occurs.
   void ReportBubblingScrollToSameView(
@@ -481,6 +490,21 @@ class COMPONENT_EXPORT(INPUT) RenderWidgetHostInputEventRouter final
     PinchState state_;
   };
   TouchscreenPinchState touchscreen_pinch_state_;
+
+  // Logs debug data for https://crbug.com/346629231.
+  struct TouchscreenGestureEventDebugData {
+    blink::mojom::EventType type;
+    blink::mojom::GestureDevice device;
+    bool is_emulated;
+  };
+  std::deque<TouchscreenGestureEventDebugData>
+      touchscreen_gesture_event_debug_queue_;
+  base::debug::CrashKeyString* GetTouchscreenGestureEventHistoryCrashString();
+  void LogTouchscreenEventHistoryForDebug(void* target_view,
+                                          void* resending_view,
+                                          void* touchscreen_gesture_target,
+                                          void* touchpad_gesture_target,
+                                          void* touch_target);
 
   // This is expected to outlive RenderWidgetHostInputEventRouter object.
   const raw_ptr<viz::HitTestDataProvider> hit_test_provider_ = nullptr;

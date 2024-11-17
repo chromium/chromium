@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_parsing/address_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/address_field_parser_ng.h"
+#include "components/autofill/core/browser/form_parsing/alternative_name_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/autofill_parsing_utils.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
 #include "components/autofill/core/browser/form_parsing/credit_card_field_parser.h"
@@ -28,7 +29,6 @@
 #include "components/autofill/core/browser/form_parsing/iban_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/merchant_promo_code_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/name_field_parser.h"
-#include "components/autofill/core/browser/form_parsing/numeric_quantity_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/phone_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/prediction_improvements_field_parser.h"
 #include "components/autofill/core/browser/form_parsing/price_field_parser.h"
@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/common/autocomplete_parsing_util.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_internals/log_message.h"
 #include "components/autofill/core/common/autofill_internals/logging_scope.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -61,6 +62,27 @@ AutofillRegexCache& GetAutofillRegexCache() {
   // use a thread-unsafe parser.
   static base::NoDestructor<AutofillRegexCache> cache(ThreadSafe(true));
   return *cache;
+}
+
+void MaybePrintMatchLogs(LogManager* log_manager,
+                         std::string_view regex_name,
+                         std::string_view match_attribute_str,
+                         std::u16string_view value,
+                         const std::vector<std::u16string>& matches) {
+  if (!log_manager || !IsLoggingActive(log_manager)) {
+    return;
+  }
+  CHECK(!matches.empty());
+  LogBuffer table_rows;
+  LOG_AF(table_rows) << Tr{} << "Match type: Match in " << match_attribute_str;
+  LOG_AF(table_rows) << Tr{} << "RegEx:" << regex_name;
+  LOG_AF(table_rows) << Tr{} << "Value: " << HighlightValue(value, matches[0]);
+  // The matched substring is reported once more as the highlighting is not
+  // particularly copy&paste friendly.
+  LOG_AF(table_rows) << Tr{} << "Matched substring: " << matches[0];
+  LOG_AF(log_manager) << LoggingScope::kParsing
+                      << LogMessage::kLocalHeuristicRegExMatched << Tag{"table"}
+                      << std::move(table_rows) << CTag{"table"};
 }
 
 }  // namespace
@@ -122,7 +144,7 @@ bool FormFieldParser::MatchesRegexWithCache(
   }
   const icu::RegexPattern* regex_pattern =
       context.regex_cache->GetRegexPattern(pattern);
-  bool result = autofill::MatchesRegex(input, *regex_pattern, groups);
+  bool result = MatchesRegex(input, *regex_pattern, groups);
   if (!groups && context.matches_cache) {
     context.matches_cache->Put(key, result);
   }
@@ -167,10 +189,6 @@ void FormFieldParser::ParseFormFields(
                           : AddressFieldParser::Parse,
                       context, processed_fields, field_candidates);
 
-  // Numeric quantity pass.
-  ParseFormFieldsPass(NumericQuantityFieldParser::Parse, context,
-                      processed_fields, field_candidates);
-
   const size_t candidates_size = field_candidates.size();
   // Credit card pass.
   ParseFormFieldsPass(CreditCardFieldParser::Parse, context, processed_fields,
@@ -193,12 +211,24 @@ void FormFieldParser::ParseFormFields(
   ParseFormFieldsPass(NameFieldParser::Parse, context, processed_fields,
                       field_candidates);
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillSupportPhoneticNameForJP)) {
+    // Alternative name (e.g. phonetic name) pass.
+    ParseFormFieldsPass(AlternativeNameFieldParser::Parse, context,
+                        processed_fields, field_candidates);
+  }
+
   // Search pass.
   ParseFormFieldsPass(SearchFieldParser::Parse, context, processed_fields,
                       field_candidates);
 
-  // Single fields pass.
-  ParseSingleFieldForms(context, fields, field_candidates);
+  // Merchant promo code pass.
+  ParseFormFieldsPass(MerchantPromoCodeFieldParser::Parse, context,
+                      processed_fields, field_candidates);
+
+  // IBAN pass.
+  ParseFormFieldsPass(IbanFieldParser::Parse, context, processed_fields,
+                      field_candidates);
 
   ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
       context, fields, field_candidates, is_form_tag);
@@ -306,7 +336,7 @@ void FormFieldParser::ClearCandidatesIfHeuristicsDidNotFindEnoughFields(
   }
 }
 
-void FormFieldParser::ParseSingleFieldForms(
+void FormFieldParser::ParseSingleFields(
     ParsingContext& context,
     const std::vector<std::unique_ptr<AutofillField>>& fields,
     FieldCandidatesMap& field_candidates) {
@@ -365,7 +395,8 @@ void FormFieldParser::ParseStandaloneEmailFields(
 }
 
 // static
-bool FormFieldParser::FieldMatchesMatchPatternRef(
+std::optional<FormFieldParser::MatchInfo>
+FormFieldParser::FieldMatchesMatchPatternRef(
     ParsingContext& context,
     base::span<const MatchPatternRef> patterns,
     const AutofillField& field,
@@ -422,12 +453,13 @@ bool FormFieldParser::FieldMatchesMatchPatternRef(
     }
   }
   for (const auto& [attributes, positive_patterns] : batched_patterns) {
-    if (Match(context, &field, base::JoinString(positive_patterns, u"|"),
-              attributes, regex_name)) {
-      return true;
+    if (auto match_info =
+            Match(context, &field, base::JoinString(positive_patterns, u"|"),
+                  attributes, regex_name)) {
+      return match_info;
     }
   }
-  return false;
+  return std::nullopt;
 }
 
 // static
@@ -435,17 +467,17 @@ bool FormFieldParser::ParseField(
     ParsingContext& context,
     AutofillScanner* scanner,
     base::span<const MatchPatternRef> patterns,
-    raw_ptr<AutofillField>* match,
+    std::optional<FieldAndMatchInfo>* match,
     const char* regex_name,
     MatchParams (*projection)(const MatchParams&)) {
   if (scanner->IsEnd()) {
     return false;
   }
   AutofillField* field = scanner->Cursor();
-  if (FieldMatchesMatchPatternRef(context, patterns, *field, regex_name,
-                                  {projection})) {
+  if (std::optional<MatchInfo> match_info = FieldMatchesMatchPatternRef(
+          context, patterns, *field, regex_name, {projection})) {
     if (match) {
-      *match = field;
+      *match = {.field = field, .match_info = *match_info};
     }
     scanner->Advance();
     return true;
@@ -496,7 +528,7 @@ bool FormFieldParser::ParseInAnyOrder(
 // static
 bool FormFieldParser::ParseEmptyLabel(ParsingContext& context,
                                       AutofillScanner* scanner,
-                                      raw_ptr<AutofillField>* match) {
+                                      std::optional<FieldAndMatchInfo>* match) {
   if (scanner->IsEnd()) {
     return false;
   }
@@ -509,14 +541,13 @@ bool FormFieldParser::ParseEmptyLabel(ParsingContext& context,
           {FormControlType::kInputEmail, FormControlType::kInputNumber,
            FormControlType::kInputPassword, FormControlType::kInputSearch,
            FormControlType::kInputTelephone, FormControlType::kInputText,
-           FormControlType::kSelectOne, FormControlType::kSelectList,
-           FormControlType::kTextArea})) {
+           FormControlType::kSelectOne, FormControlType::kTextArea})) {
     return false;
   }
   if (Match(context, field, kEmptyLabelRegex, {MatchAttribute::kLabel},
             "kEmptyLabelRegex")) {
     if (match) {
-      *match = field;
+      *match = {field, MatchInfo{.matched_attribute = MatchAttribute::kLabel}};
     }
     scanner->Advance();
     return true;
@@ -525,17 +556,18 @@ bool FormFieldParser::ParseEmptyLabel(ParsingContext& context,
 }
 
 // static
-void FormFieldParser::AddClassification(const AutofillField* field,
-                                        FieldType type,
-                                        float score,
-                                        FieldCandidatesMap& field_candidates) {
+void FormFieldParser::AddClassification(
+    const std::optional<FieldAndMatchInfo>& match,
+    FieldType type,
+    float parser_score,
+    FieldCandidatesMap& field_candidates) {
   // Several fields are optional.
-  if (field == nullptr) {
+  if (!match.has_value()) {
     return;
   }
 
-  FieldCandidates& candidates = field_candidates[field->global_id()];
-  candidates.AddFieldCandidate(type, score);
+  FieldCandidates& candidates = field_candidates[match->field->global_id()];
+  candidates.AddFieldCandidate(type, parser_score);
 }
 
 // static
@@ -560,14 +592,12 @@ FormFieldParser::RemoveCheckableFields(
   return processed_fields;
 }
 
-bool FormFieldParser::Match(ParsingContext& context,
-                            const AutofillField* field,
-                            std::u16string_view pattern,
-                            DenseSet<MatchAttribute> match_attributes,
-                            const char* regex_name) {
-  bool found_match = false;
-  std::string_view match_type_string;
-  std::u16string_view value;
+std::optional<FormFieldParser::MatchInfo> FormFieldParser::Match(
+    ParsingContext& context,
+    const AutofillField* field,
+    std::u16string_view pattern,
+    DenseSet<MatchAttribute> match_attributes,
+    const char* regex_name) {
   std::vector<std::u16string> matches;
   std::vector<std::u16string>* capture_destination =
       context.log_manager && context.log_manager->IsLoggingActive() ? &matches
@@ -581,49 +611,19 @@ bool FormFieldParser::Match(ParsingContext& context,
 
   const std::u16string& name = field->parseable_name();
 
-  const bool match_label = match_attributes.contains(MatchAttribute::kLabel);
-  if (match_label &&
+  if (match_attributes.contains(MatchAttribute::kLabel) &&
       MatchesRegexWithCache(context, label, pattern, capture_destination)) {
-    found_match = true;
-    match_type_string = "Match in label";
-    value = label;
-  } else if (match_attributes.contains(MatchAttribute::kName) &&
-             MatchesRegexWithCache(context, name, pattern,
-                                   capture_destination)) {
-    found_match = true;
-    match_type_string = "Match in name";
-    value = name;
-  } else if (match_label && pattern != kEmptyLabelRegex &&
-             context.autofill_always_parse_placeholders &&
-             MatchesRegexWithCache(context, field->placeholder(), pattern,
-                                   capture_destination)) {
-    // Placeholders are matched against the same regexes as labels. However, to
-    // prevent false positives in `ParseEmptyLabel()`, matches in placeholders
-    // are explicitly prevented for `kEmptyLabelRegex`.
-    // TODO(crbug.com/40222716): The label and placeholder cases should
-    // logically be grouped together. Placeholder is currently last, because for
-    // the finch study we want the group assignment to happen as late as
-    // possible. Reorder once the change is rolled out.
-    found_match = true;
-    match_type_string = "Match in placeholder";
-    value = field->placeholder();
+    MaybePrintMatchLogs(context.log_manager, regex_name, "label", label,
+                        matches);
+    return MatchInfo{.matched_attribute = MatchAttribute::kLabel};
+  }
+  if (match_attributes.contains(MatchAttribute::kName) &&
+      MatchesRegexWithCache(context, name, pattern, capture_destination)) {
+    MaybePrintMatchLogs(context.log_manager, regex_name, "name", name, matches);
+    return MatchInfo{.matched_attribute = MatchAttribute::kName};
   }
 
-  if (found_match && capture_destination) {
-    LogBuffer table_rows(IsLoggingActive(context.log_manager));
-    LOG_AF(table_rows) << Tr{} << "Match type:" << match_type_string;
-    LOG_AF(table_rows) << Tr{} << "RegEx:" << regex_name;
-    LOG_AF(table_rows) << Tr{}
-                       << "Value: " << HighlightValue(value, matches[0]);
-    // The matched substring is reported once more as the highlighting is not
-    // particularly copy&paste friendly.
-    LOG_AF(table_rows) << Tr{} << "Matched substring: " << matches[0];
-    LOG_AF(context.log_manager)
-        << LoggingScope::kParsing << LogMessage::kLocalHeuristicRegExMatched
-        << Tag{"table"} << std::move(table_rows) << CTag{"table"};
-  }
-
-  return found_match;
+  return std::nullopt;
 }
 
 // static

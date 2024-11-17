@@ -105,7 +105,7 @@ static String ValueToDateTimeString(double value, InputType::Type type) {
       components.SetMillisecondsSinceEpochForWeek(value);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return components.GetType() == DateComponents::kInvalid
              ? String()
@@ -141,6 +141,16 @@ void DateTimeChooserImpl::WriteDocument(SegmentedBuffer& data) {
 
   data.Append(ChooserResourceLoader::GetPickerCommonStyleSheet());
   data.Append(ChooserResourceLoader::GetSuggestionPickerStyleSheet());
+
+  const String& disabled_color_style =
+      RuntimeEnabledFeatures::
+              CalendarPickerMonthPopupButtonDisabledColorEnabled()
+          ? ":root { --month-popup-button-disabled-color: rgba(16, 16, 16, "
+            "0.9) }"
+          : ":root { --month-popup-button-disabled-color: rgba(16, 16, 16, "
+            "0.3) }";
+  AddString(disabled_color_style, data);
+
   data.Append(ChooserResourceLoader::GetCalendarPickerStyleSheet());
   if (parameters_->type == InputType::Type::kTime ||
       parameters_->type == InputType::Type::kDateTimeLocal) {

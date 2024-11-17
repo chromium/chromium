@@ -18,13 +18,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.layouts.ManagedLayoutManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -45,9 +45,7 @@ public class PlusAddressCreationViewBridgeTest {
                     /* proposedPlusAddressPlaceholder= */ "placeholder",
                     /* confirmText= */ "ok",
                     /* cancelText= */ "cancel",
-                    /* errorReportInstruction= */ "error! <link>test link</link>",
-                    /* learnMoreUrl= */ new GURL("learn.more.com"),
-                    /* errorReportUrl= */ new GURL("bug.com"));
+                    /* learnMoreUrl= */ new GURL("learn.more.com"));
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
     private static final boolean REFRESH_SUPPORTED = true;
     private static final PlusAddressCreationErrorStateInfo ERROR_STATE =
@@ -58,7 +56,7 @@ public class PlusAddressCreationViewBridgeTest {
                     "Ok",
                     "Cancel");
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
     @Mock private PlusAddressCreationViewBridge.Natives mBridgeNatives;
     @Mock private ManagedBottomSheetController mBottomSheetController;
@@ -72,7 +70,6 @@ public class PlusAddressCreationViewBridgeTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mTabModel = new MockTabModel(mProfile, null);
         mPlusAddressCreationViewBridge =
                 new PlusAddressCreationViewBridge(
@@ -83,7 +80,7 @@ public class PlusAddressCreationViewBridgeTest {
                         mTabModel,
                         mTabModelSelector,
                         mCoordinatorFactory);
-        mJniMocker.mock(PlusAddressCreationViewBridgeJni.TEST_HOOKS, mBridgeNatives);
+        PlusAddressCreationViewBridgeJni.setInstanceForTesting(mBridgeNatives);
     }
 
     private void setupCoordinatorFactory() {

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/permissions/permission_decision_auto_blocker.h"
 
 #include <algorithm>
@@ -43,9 +38,10 @@ constexpr int kFederatedIdentityApiDismissalsBeforeBlock = 1;
 // The durations that an origin will stay under embargo for the
 // FEDERATED_IDENTITY_API permission due to the user explicitly dismissing the
 // permission prompt.
-constexpr base::TimeDelta kFederatedIdentityApiEmbargoDurationDismiss[] = {
-    base::Hours(2) /* 1st dismissal */, base::Days(1) /* 2nd dismissal */,
-    base::Days(7), base::Days(28)};
+constexpr auto kFederatedIdentityApiEmbargoDurationDismiss =
+    std::to_array<base::TimeDelta>({base::Hours(2) /* 1st dismissal */,
+                                    base::Days(1) /* 2nd dismissal */,
+                                    base::Days(7), base::Days(28)});
 
 // The duration that an origin will stay under embargo for the
 // FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION permission due to an auto re-authn
@@ -88,14 +84,16 @@ int g_ignore_embargo_days = kDefaultEmbargoDays;
 
 std::string GetStringForContentType(ContentSettingsType content_type) {
   switch (content_type) {
+    case ContentSettingsType::AUTO_PICTURE_IN_PICTURE:
+      return "AutoPictureInPicture";
     case ContentSettingsType::FEDERATED_IDENTITY_API:
       return "FederatedIdentityApi";
     case ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION:
       return "FederatedIdentityAutoReauthn";
     case ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION:
       return "FileSystemAccessRestorePermission";
-    case ContentSettingsType::AUTO_PICTURE_IN_PICTURE:
-      return "AutoPictureInPicture";
+    case ContentSettingsType::FILE_SYSTEM_WRITE_GUARD:
+      return "FileSystemWriteGuard";
     case ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS:
       return "SubAppInstallationPrompts";
     // If you add a new Content Setting here, also add it to
@@ -169,10 +167,10 @@ base::TimeDelta GetEmbargoDurationForContentSettingsType(
     ContentSettingsType permission,
     int dismiss_count) {
   if (permission == ContentSettingsType::FEDERATED_IDENTITY_API) {
-    int duration_index = std::clamp(
-        dismiss_count - 1, 0,
-        static_cast<int>(
-            std::size(kFederatedIdentityApiEmbargoDurationDismiss) - 1));
+    int duration_index =
+        std::clamp(dismiss_count - 1, 0,
+                   static_cast<int>(
+                       kFederatedIdentityApiEmbargoDurationDismiss.size() - 1));
     return kFederatedIdentityApiEmbargoDurationDismiss[duration_index];
   }
 
@@ -259,12 +257,13 @@ const char PermissionDecisionAutoBlocker::kPermissionDisplayEmbargoKey[] =
 bool PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
     ContentSettingsType content_setting) {
   return PermissionUtil::IsPermission(content_setting) ||
+         content_setting == ContentSettingsType::AUTO_PICTURE_IN_PICTURE ||
          content_setting == ContentSettingsType::FEDERATED_IDENTITY_API ||
          content_setting ==
              ContentSettingsType::FEDERATED_IDENTITY_AUTO_REAUTHN_PERMISSION ||
          content_setting ==
              ContentSettingsType::FILE_SYSTEM_ACCESS_RESTORE_PERMISSION ||
-         content_setting == ContentSettingsType::AUTO_PICTURE_IN_PICTURE ||
+         content_setting == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD ||
          content_setting == ContentSettingsType::SUB_APP_INSTALLATION_PROMPTS;
   // If you add a new content setting here, also add it to
   // GetStringForContentType.
@@ -570,7 +569,7 @@ PermissionDecisionAutoBlocker::PermissionDecisionAutoBlocker(
     HostContentSettingsMap* settings_map)
     : settings_map_(settings_map), clock_(base::DefaultClock::GetInstance()) {}
 
-PermissionDecisionAutoBlocker::~PermissionDecisionAutoBlocker() {}
+PermissionDecisionAutoBlocker::~PermissionDecisionAutoBlocker() = default;
 
 void PermissionDecisionAutoBlocker::PlaceUnderEmbargo(
     const GURL& request_origin,

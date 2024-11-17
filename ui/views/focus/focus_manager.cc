@@ -13,7 +13,6 @@
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/input_method.h"
 #include "ui/base/ime/text_input_client.h"
@@ -31,8 +30,6 @@
 #include "ui/views/widget/widget_delegate.h"
 
 namespace views {
-
-bool FocusManager::arrow_key_traversal_enabled_ = false;
 
 FocusManager::FocusManager(Widget* widget,
                            std::unique_ptr<FocusManagerDelegate> delegate)
@@ -315,8 +312,8 @@ void FocusManager::SetFocusedViewWithReason(View* view,
   // Update the reason for the focus change (since this is checked by
   // some listeners), then notify all listeners.
   focus_change_reason_ = reason;
-  for (FocusChangeListener& observer : focus_change_listeners_)
-    observer.OnWillChangeFocus(focused_view_, view);
+  focus_change_listeners_.Notify(&FocusChangeListener::OnWillChangeFocus,
+                                 focused_view_, view);
 
   View* old_focused_view = focused_view_;
   focused_view_ = view;
@@ -340,8 +337,8 @@ void FocusManager::SetFocusedViewWithReason(View* view,
     focused_view_->Focus();
   }
 
-  for (FocusChangeListener& observer : focus_change_listeners_)
-    observer.OnDidChangeFocus(old_focused_view, focused_view_);
+  focus_change_listeners_.Notify(&FocusChangeListener::OnDidChangeFocus,
+                                 old_focused_view, focused_view_);
 }
 
 void FocusManager::SetFocusedView(View* view) {
@@ -583,9 +580,7 @@ bool FocusManager::RedirectAcceleratorToBubbleAnchorWidget(
   if (!focus_manager->IsAcceleratorRegistered(accelerator))
     return false;
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // Processing an accelerator can delete things. Because we
   // need these objects afterwards on Linux, save widget_ as weak pointer and
   // save the close_on_deactivate property value of widget_delegate in a
@@ -600,9 +595,7 @@ bool FocusManager::RedirectAcceleratorToBubbleAnchorWidget(
   const bool accelerator_processed =
       focus_manager->ProcessAccelerator(accelerator);
 
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // Need to manually close the bubble widget on Linux. On Linux when the
   // bubble is shown, the main widget remains active. Because of that when
   // focus is set to the main widget to process accelerator, the main widget
@@ -616,8 +609,9 @@ bool FocusManager::RedirectAcceleratorToBubbleAnchorWidget(
 }
 
 bool FocusManager::IsArrowKeyTraversalEnabledForWidget() const {
-  if (arrow_key_traversal_enabled_)
+  if (delegate_ && delegate_->IsArrowKeyTraversalEnabled()) {
     return true;
+  }
 
   Widget* const widget = (focused_view_ && focused_view_->GetWidget())
                              ? focused_view_->GetWidget()

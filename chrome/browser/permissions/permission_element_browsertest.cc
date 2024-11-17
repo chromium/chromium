@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_stream_device_permission_context.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/views/permissions/embedded_permission_prompt_content_scrim_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/mock_permission_request.h"
@@ -123,8 +125,6 @@ class PermissionElementBrowserTestBase : public InProcessBrowserTest {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
-
- private:
   std::unique_ptr<content::WebContentsConsoleObserver> console_observer_;
 };
 
@@ -176,7 +176,8 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
   permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
-  std::string permission_ids[] = {"microphone", "camera", "camera-microphone"};
+  std::string permission_ids[] = {"geolocation", "microphone", "camera",
+                                  "camera-microphone"};
   for (const auto& id : permission_ids) {
     permissions::PermissionRequestObserver observer(web_contents());
     ClickElementWithId(web_contents(), id);
@@ -285,7 +286,8 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
   permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::AutoResponseType::NONE);
-  std::string permission_ids[] = {"microphone", "camera", "camera-microphone"};
+  std::string permission_ids[] = {"geolocation", "microphone", "camera",
+                                  "camera-microphone"};
   for (const auto& id : permission_ids) {
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
@@ -306,7 +308,8 @@ IN_PROC_BROWSER_TEST_F(PermissionElementBrowserTest,
   permissions::PermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(
           permissions::PermissionRequestManager::AutoResponseType::NONE);
-  std::string permission_ids[] = {"microphone", "camera", "camera-microphone"};
+  std::string permission_ids[] = {"geolocation", "microphone", "camera",
+                                  "camera-microphone"};
   for (const auto& id : permission_ids) {
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
@@ -488,7 +491,8 @@ IN_PROC_BROWSER_TEST_P(PermissionElementStandardizedBrowserZoomTest,
   // the upper bound.
   zoom_controller->SetZoomLevel(2);
 
-  for (const auto& id : {"camera", "microphone", "camera-microphone"}) {
+  for (const auto& id :
+       {"geolocation", "camera", "microphone", "camera-microphone"}) {
     // The permission element still works.
     ClickElementWithId(web_contents(), id);
     WaitForResolveEvent(id);
@@ -523,7 +527,8 @@ IN_PROC_BROWSER_TEST_P(PermissionElementHighDPITest, TestMargins) {
   SkipInvalidElementMessage();
   for (const auto& property :
        {"marginTop", "marginBottom", "marginLeft", "marginRight"}) {
-    for (const auto& id : {"camera", "microphone", "camera-microphone"}) {
+    for (const auto& id :
+         {"geolocation", "camera", "microphone", "camera-microphone"}) {
       EXPECT_EQ(
           "4px",
           content::EvalJs(
@@ -601,4 +606,110 @@ IN_PROC_BROWSER_TEST_F(PermissionElementLegacyPromptBrowserTest,
                        PromptPosition) {
   TestPromptPosition(permissions::feature_params::
                          PermissionElementPromptPosition::kLegacyPrompt);
+}
+
+// This text fixture does not navigate to any particular URL by default, the
+// tests instead decide which URL to navigate the page to.
+class MiscellaneousElementBrowserTest
+    : public PermissionElementBrowserTestBase {
+ public:
+  MiscellaneousElementBrowserTest() {
+    feature_list_.InitWithFeatures(
+        {blink::features::kPermissionElement,
+         blink::features::kBypassPepcSecurityForTesting},
+        {permissions::features::kPermissionElementPromptPositioning});
+  }
+
+  void SetUpOnMainThread() override {
+    ASSERT_TRUE(embedded_test_server()->Start());
+    console_observer_ =
+        std::make_unique<content::WebContentsConsoleObserver>(web_contents());
+  }
+
+  void NavigateToURL(const std::string& url) {
+    ASSERT_TRUE(ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+        browser(), embedded_test_server()->GetURL(url), 1));
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
+                       EventsBubbleAndAreCancelable) {
+  NavigateToURL("/permissions/permission_element_events_tester.html");
+  const char* id = "camera";
+
+  {
+    permissions::PermissionRequestManager::FromWebContents(web_contents())
+        ->set_auto_response_for_test(
+            permissions::PermissionRequestManager::AutoResponseType::DISMISS);
+    permissions::PermissionRequestObserver observer(web_contents());
+    ClickElementWithId(web_contents(), id);
+    observer.Wait();
+
+    // The event is reported by the parent element, then the grandparent
+    // element.
+    WaitForDismissEvent(base::StrCat({"parent-", id}));
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-cancelable-true"}));
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-bubbles-true"}));
+
+    WaitForDismissEvent(base::StrCat({"grandparent-", id}));
+    ExpectConsoleMessage(
+        base::StrCat({"grandparent-", id, "-cancelable-true"}));
+    ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-bubbles-true"}));
+  }
+
+  {
+    permissions::PermissionRequestManager::FromWebContents(web_contents())
+        ->set_auto_response_for_test(permissions::PermissionRequestManager::
+                                         AutoResponseType::ACCEPT_ALL);
+    permissions::PermissionRequestObserver observer(web_contents());
+    ClickElementWithId(web_contents(), id);
+    observer.Wait();
+
+    // The event is reported by the parent element, then the grandparent
+    // element.
+    WaitForResolveEvent(base::StrCat({"parent-", id}));
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-cancelable-true"}));
+    ExpectConsoleMessage(base::StrCat({"parent-", id, "-bubbles-true"}));
+
+    WaitForResolveEvent(base::StrCat({"grandparent-", id}));
+    ExpectConsoleMessage(
+        base::StrCat({"grandparent-", id, "-cancelable-true"}));
+    ExpectConsoleMessage(base::StrCat({"grandparent-", id, "-bubbles-true"}));
+  }
+}
+
+// Test crash reported in crbug.com/374034614, caused by a race condition
+// between HtmlPermissionElement::OnEmbeddedPermissionsDecided and
+// HtmlPermissionElement::OnPermissionStatusChange.
+IN_PROC_BROWSER_TEST_F(MiscellaneousElementBrowserTest,
+                       CrashWhenElementHidesOnGrant) {
+  NavigateToURL("/permissions/permission_element_hide_when_granted.html");
+  permissions::PermissionRequestManager::FromWebContents(web_contents())
+      ->set_auto_response_for_test(
+          permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+  HostContentSettingsMap* map = HostContentSettingsMapFactory::GetForProfile(
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
+
+  // The original crash is a race condition that seems to reproduce about half
+  // the time. Therefore we run this multiple times and with multiple elements
+  // to ensure the chance of this test passing is minimal if the crash root
+  // cause is not fixed.
+  int test_runs = 5;
+  while (test_runs--) {
+    for (const auto& id : {"camera", "microphone", "geolocation"}) {
+      permissions::PermissionRequestObserver observer(web_contents());
+      ClickElementWithId(web_contents(), id);
+      observer.Wait();
+    }
+
+    map->SetContentSettingDefaultScope(
+        embedded_test_server()->base_url(), embedded_test_server()->base_url(),
+        ContentSettingsType::MEDIASTREAM_CAMERA, CONTENT_SETTING_DEFAULT);
+    map->SetContentSettingDefaultScope(
+        embedded_test_server()->base_url(), embedded_test_server()->base_url(),
+        ContentSettingsType::MEDIASTREAM_MIC, CONTENT_SETTING_DEFAULT);
+    map->SetContentSettingDefaultScope(
+        embedded_test_server()->base_url(), embedded_test_server()->base_url(),
+        ContentSettingsType::GEOLOCATION, CONTENT_SETTING_DEFAULT);
+  }
 }

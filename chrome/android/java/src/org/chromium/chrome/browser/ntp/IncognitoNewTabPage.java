@@ -21,10 +21,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab_ui.InvalidationAwareThumbnailProvider;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
-import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
 import org.chromium.chrome.browser.ui.native_page.NativePageHost;
+import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -83,7 +83,7 @@ public class IncognitoNewTabPage extends BasicNativePage
 
         mIncognitoNewTabPageManager = createIncognitoNewTabPageManager();
 
-        mTitle = host.getContext().getResources().getString(R.string.new_incognito_tab_title);
+        mTitle = host.getContext().getString(R.string.new_incognito_tab_title);
 
         LayoutInflater inflater = LayoutInflater.from(host.getContext());
         mIncognitoNewTabPageView =
@@ -156,7 +156,7 @@ public class IncognitoNewTabPage extends BasicNativePage
 
     @Override
     public boolean supportsEdgeToEdge() {
-        return true;
+        return !EdgeToEdgeUtils.DISABLE_INCOGNITO_NTP_E2E.getValue();
     }
 
     // InvalidationAwareThumbnailProvider
@@ -211,7 +211,9 @@ public class IncognitoNewTabPage extends BasicNativePage
             @Override
             public boolean shouldShowTrackingProtectionNtp() {
                 return UserPrefs.get(mProfile).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
-                        || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
+                        || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD)
+                        || ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO);
             }
 
             @Override

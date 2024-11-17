@@ -10,6 +10,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/heap_array.h"
 #include "base/time/time.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_export.h"
@@ -22,14 +23,21 @@ struct MEDIA_EXPORT DecoderBufferSideData {
   DecoderBufferSideData();
   ~DecoderBufferSideData();
 
-  DecoderBufferSideData(const DecoderBufferSideData& other);
+  DecoderBufferSideData(const DecoderBufferSideData&) = delete;
+  DecoderBufferSideData operator=(DecoderBufferSideData&) = delete;
+
+  DecoderBufferSideData& operator=(DecoderBufferSideData&& other);
+  DecoderBufferSideData(DecoderBufferSideData&& other);
 
   // Returns true if all the fields in the other struct match ours.
   bool Matches(const DecoderBufferSideData& other) const;
 
+  // Copies all the fields into a new DecoderBufferSideData and returns it.
+  std::unique_ptr<DecoderBufferSideData> Clone() const;
+
   // VP9 specific information.
   std::vector<uint32_t> spatial_layers;
-  std::vector<uint8_t> alpha_data;
+  base::HeapArray<uint8_t> alpha_data;
 
   // Secure buffer handle corresponding to the decrypted contents of the
   // associated DecoderBuffer. A non-zero value indicates this was set.

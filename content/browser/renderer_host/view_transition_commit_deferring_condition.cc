@@ -41,6 +41,9 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
     case FrameTree::Type::kFencedFrame:
       // TODO(khushalsagar): Enable for fenced frames with a WPT.
       return nullptr;
+    case FrameTree::Type::kGuest:
+      // TODO(crbug.com/40202416): Enable for MPArch based guests.
+      return nullptr;
   };
 
   RenderFrameHostImpl* old_rfh =
@@ -114,7 +117,7 @@ ViewTransitionCommitDeferringCondition::MaybeCreate(
     case blink::mojom::NavigationType::HISTORY_SAME_DOCUMENT:
       // Same document navigations should already be excluded by
       // `ShouldDispatchPageSwapEvent`.
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return base::WrapUnique(
@@ -178,6 +181,10 @@ ViewTransitionCommitDeferringCondition::WillCommitNavigation(
       GetSnapshotCallbackTimeout());
 
   return Result::kDefer;
+}
+
+const char* ViewTransitionCommitDeferringCondition::TraceEventName() const {
+  return "ViewTransitionCommitDeferringCondition";
 }
 
 void ViewTransitionCommitDeferringCondition::OnSnapshotTimeout() {

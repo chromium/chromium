@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_navigation_preload_state.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_service_worker_update_via_cache.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -228,17 +229,20 @@ String ServiceWorkerRegistration::scope() const {
   return scope_.GetString();
 }
 
-String ServiceWorkerRegistration::updateViaCache() const {
+V8ServiceWorkerUpdateViaCache ServiceWorkerRegistration::updateViaCache()
+    const {
   switch (update_via_cache_) {
     case mojom::ServiceWorkerUpdateViaCache::kImports:
-      return "imports";
+      return V8ServiceWorkerUpdateViaCache(
+          V8ServiceWorkerUpdateViaCache::Enum::kImports);
     case mojom::ServiceWorkerUpdateViaCache::kAll:
-      return "all";
+      return V8ServiceWorkerUpdateViaCache(
+          V8ServiceWorkerUpdateViaCache::Enum::kAll);
     case mojom::ServiceWorkerUpdateViaCache::kNone:
-      return "none";
+      return V8ServiceWorkerUpdateViaCache(
+          V8ServiceWorkerUpdateViaCache::Enum::kNone);
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 void ServiceWorkerRegistration::EnableNavigationPreload(

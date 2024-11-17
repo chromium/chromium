@@ -1,0 +1,369 @@
+{
+  "description": "Aggregatable named budgets",
+  "api_config": {
+    "needs_aggregatable_named_budgets": true
+  },
+  "input": {
+    "registrations": [
+      // Budgets wrong type.
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "named_budgets": []
+              }
+            }
+          }
+        ]
+      },
+      // Budget value wrong type.
+      {
+        "timestamp": "1",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "named_budgets": {
+                  "biddable": "100"
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Budget value negative.
+      {
+        "timestamp": "2",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "named_budgets": {
+                  "biddable": -1
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Budget value above max.
+      {
+        "timestamp": "3",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "named_budgets": {
+                  "biddable": 65537
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Budget value not an integer.
+      {
+        "timestamp": "4",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "named_budgets": {
+                  "biddable": 1.5
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Budget key length above max.
+      {
+        "timestamp": "5",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "named_budgets": {
+                  "This string exceeds 25 chars": 65536
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Budgets too many keys.
+      {
+        "timestamp": "6",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-source",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination.test",
+                "named_budgets": {
+                  "a": 1,
+                  "b": 1,
+                  "c": 1,
+                  "d": 1,
+                  "e": 1,
+                  "f": 1,
+                  "g": 1,
+                  "h": 1,
+                  "i": 1,
+                  "j": 1,
+                  "k": 1,
+                  "l": 1,
+                  "m": 1,
+                  "n": 1,
+                  "o": 1,
+                  "p": 1,
+                  "q": 1,
+                  "r": 1,
+                  "s": 1,
+                  "t": 1,
+                  "u": 1,
+                  "v": 1,
+                  "w": 1,
+                  "x": 1,
+                  "y": 1,
+                  "z": 1
+                }
+              }
+            }
+          }
+        ]
+      },
+      // Budgets wrong type.
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Trigger": {
+                "named_budgets": {}
+              }
+            }
+          }
+        ]
+      },
+      // Budgets value wrong type.
+      {
+        "timestamp": "1001",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Trigger": {
+                "named_budgets": [[]]
+              }
+            }
+          }
+        ]
+      },
+      // Budgets value name wrong type.
+      {
+        "timestamp": "1002",
+        "registration_request": {
+          "context_origin": "https://destination.test"
+        },
+        "responses": [
+          {
+            "url": "https://reporter.test/register-trigger",
+            "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
+              "Attribution-Reporting-Register-Trigger": {
+                "named_budgets": [
+                  {
+                    "name": 1
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+       "payload": [ {
+         "body": {
+            "context_site": "https://source.test",
+            "header": "Attribution-Reporting-Register-Source",
+            "value": "{\"destination\":\"https://destination.test\",\"named_budgets\":[]}"
+         },
+         "type": "header-parsing-error"
+       } ],
+       "report_time": "0",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+       "payload": [ {
+         "body": {
+            "context_site": "https://source.test",
+            "header": "Attribution-Reporting-Register-Source",
+            "value": "{\"destination\":\"https://destination.test\",\"named_budgets\":{\"biddable\":\"100\"}}"
+          },
+         "type": "header-parsing-error"
+       } ],
+       "report_time": "1",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+       "payload": [ {
+         "body": {
+            "context_site": "https://source.test",
+            "header": "Attribution-Reporting-Register-Source",
+            "value": "{\"destination\":\"https://destination.test\",\"named_budgets\":{\"biddable\":-1}}"
+          },
+         "type": "header-parsing-error"
+       } ],
+       "report_time": "2",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+       "payload": [ {
+         "body": {
+            "context_site": "https://source.test",
+            "header": "Attribution-Reporting-Register-Source",
+            "value": "{\"destination\":\"https://destination.test\",\"named_budgets\":{\"biddable\":65537}}"
+          },
+         "type": "header-parsing-error"
+       } ],
+       "report_time": "3",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+       "payload": [ {
+         "body": {
+            "context_site": "https://source.test",
+            "header": "Attribution-Reporting-Register-Source",
+            "value": "{\"destination\":\"https://destination.test\",\"named_budgets\":{\"biddable\":1.5}}"
+          },
+         "type": "header-parsing-error"
+       } ],
+       "report_time": "4",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+       "payload": [ {
+         "body": {
+            "context_site": "https://source.test",
+            "header": "Attribution-Reporting-Register-Source",
+            "value": "{\"destination\":\"https://destination.test\",\"named_budgets\":{\"This string exceeds 25 chars\":65536}}"
+          },
+         "type": "header-parsing-error"
+       } ],
+       "report_time": "5",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+       "payload": [ {
+         "body": {
+            "context_site": "https://source.test",
+            "header": "Attribution-Reporting-Register-Source",
+            "value": "{\"destination\":\"https://destination.test\",\"named_budgets\":{\"a\":1,\"b\":1,\"c\":1,\"d\":1,\"e\":1,\"f\":1,\"g\":1,\"h\":1,\"i\":1,\"j\":1,\"k\":1,\"l\":1,\"m\":1,\"n\":1,\"o\":1,\"p\":1,\"q\":1,\"r\":1,\"s\":1,\"t\":1,\"u\":1,\"v\":1,\"w\":1,\"x\":1,\"y\":1,\"z\":1}}"
+          },
+         "type": "header-parsing-error"
+       } ],
+       "report_time": "6",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+       "payload": [ {
+         "body": {
+            "context_site": "https://destination.test",
+            "header": "Attribution-Reporting-Register-Trigger",
+            "value": "{\"named_budgets\":{}}"
+         },
+         "type": "header-parsing-error"
+       } ],
+       "report_time": "1000",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+       "payload": [ {
+         "body": {
+            "context_site": "https://destination.test",
+            "header": "Attribution-Reporting-Register-Trigger",
+            "value": "{\"named_budgets\":[[]]}"
+          },
+         "type": "header-parsing-error"
+       } ],
+       "report_time": "1001",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+       "payload": [ {
+         "body": {
+            "context_site": "https://destination.test",
+            "header": "Attribution-Reporting-Register-Trigger",
+            "value": "{\"named_budgets\":[{\"name\":1}]}"
+          },
+         "type": "header-parsing-error"
+       } ],
+       "report_time": "1002",
+       "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      }
+    ]
+  }
+}

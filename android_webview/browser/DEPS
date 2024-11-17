@@ -116,6 +116,7 @@ include_rules = [
 
   "+third_party/blink/public/common/client_hints/enabled_client_hints.h",
   "+third_party/blink/public/common/features.h",
+  "+third_party/blink/public/common/features_generated.h",
   "+third_party/blink/public/common/navigation/navigation_params.h",
   "+third_party/blink/public/common/origin_trials/origin_trials_settings_provider.h",
   "+third_party/blink/public/common/origin_trials/trial_token_validator.h",
@@ -126,7 +127,7 @@ include_rules = [
   "+third_party/blink/public/common/user_agent/user_agent_metadata.h",
   "+third_party/blink/public/common/web_preferences/web_preferences.h",
   "+third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h",
-  "+third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h",
+  "+third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h",
   "+third_party/blink/public/mojom/permissions/permission_status.mojom-shared.h",
   "+third_party/blink/public/platform/resource_request_blocked_reason.h",
   "+third_party/crashpad/crashpad/client",

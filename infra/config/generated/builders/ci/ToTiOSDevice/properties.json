@@ -42,7 +42,8 @@
           "builder": "ToTiOSDevice",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTiOSDevice/targets"
     }
   },
   "$build/reclient": {
@@ -75,5 +76,5 @@
   "sheriff_rotations": [
     "chromium.clang"
   ],
-  "xcode_build_version": "16a242"
+  "xcode_build_version": "16b40"
 }

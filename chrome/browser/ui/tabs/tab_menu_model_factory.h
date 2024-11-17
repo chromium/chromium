@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 class TabStripModel;
 class TabMenuModelDelegate;

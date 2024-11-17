@@ -4,10 +4,12 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/ai/ai_assistant.mojom";
+import "third_party/blink/public/mojom/ai/ai_language_model.mojom";
 import "third_party/blink/public/mojom/ai/ai_rewriter.mojom";
 import "third_party/blink/public/mojom/ai/ai_writer.mojom";
 import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
+import "third_party/blink/public/mojom/ai/ai_summarizer.mojom";
+import "third_party/blink/public/mojom/ai/model_download_progress_observer.mojom";
 
 // LINT.IfChange(ModelAvailabilityCheckResult)
 enum ModelAvailabilityCheckResult {
@@ -88,40 +90,22 @@ interface AIManagerCreateSummarizerClient {
   OnResult(pending_remote<blink.mojom.AISummarizer>? summarizer);
 };
 
-// The enum describes the possible roles in the initial prompt.
-enum AIAssistantInitialPromptRole {
-  kSystem = 0,
-  kUser = 1,
-  kAssistant = 2,
-
-  // Append new line here
-};
-
-// Each initial prompt contains a role and the actual content.
-struct AIAssistantInitialPrompt {
-  AIAssistantInitialPromptRole role;
-  string content;
-};
-
 // The manager that could create a new session for the model.
 interface AIManager {
-  // Returns if it is possible to create a text session. For example, when
+  // Returns if it is possible to create a language model. For example, when
   // the service in charge of model loading and session creation is not
   // available, this should return false.
-  CanCreateAssistant() => (ModelAvailabilityCheckResult result);
-  // Creates a new session and returns the text session info if the session is
-  // created successfully.
+  CanCreateLanguageModel() => (ModelAvailabilityCheckResult result);
+  // Creates a new language model.
   // Note that this could return nullptr even if the previous
-  // `CanCreateAssistant()` returns `kReadily`, because some errors can only
-  // occur when we actually create the text session.
+  // `CanCreateLanguageModel()` returns `kReadily`, because some errors can only
+  // occur when we actually create the language model.
   // See the explainer (https://github.com/explainers-by-googlers/prompt-api)
   // for more information about the meaning of each parameter.
-  CreateAssistant(
-    pending_receiver<blink.mojom.AIAssistant> session,
-    AIAssistantSamplingParams? sampling_params,
-    string? system_prompt,
-    array<AIAssistantInitialPrompt> initial_prompts
-  ) => (AIAssistantInfo? info);
+  CreateLanguageModel(
+    pending_remote<AIManagerCreateLanguageModelClient> client,
+    AILanguageModelCreateOptions options
+  );
   // Returns if it is possible to create a summarizer. For example, when
   // the service in charge of model loading and session creation is not
   // available, this should return false.
@@ -147,4 +131,9 @@ interface AIManager {
   // AIRewriterCreateOptions when the JS API `ai.rewriter.create()` is called.
   CreateRewriter(pending_remote<AIManagerCreateRewriterClient> client,
                  AIRewriterCreateOptions options);
+  // Registers the observer that will be notified when the on device model
+  // download progress is updated.
+  AddModelDownloadProgressObserver(
+    pending_remote<ModelDownloadProgressObserver> observer_remote
+  );
 };

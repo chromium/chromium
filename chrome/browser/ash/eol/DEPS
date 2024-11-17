@@ -24,9 +24,14 @@ include_rules = [
   "+chrome/browser/notifications",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system",
-  "+chrome/browser/ui/browser.h",
-  "+chrome/browser/ui/browser_finder.h",
   "+chrome/common",
   "+chrome/grit",
   "+chrome/test/base",
 ]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/browser_finder.h",
+  ],
+}

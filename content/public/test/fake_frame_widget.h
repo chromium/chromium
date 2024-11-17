@@ -59,7 +59,12 @@ class FakeFrameWidget : public blink::mojom::FrameWidget {
                          ui::mojom::DragOperation operation,
                          base::OnceClosure callback) override {}
   void DragSourceSystemDragEnded() override {}
-  void OnStartStylusWriting(OnStartStylusWritingCallback callback) override {}
+  void OnStartStylusWriting(
+#if BUILDFLAG(IS_WIN)
+      const gfx::Rect& focus_rect_in_widget,
+#endif  // BUILDFLAG(IS_WIN)
+      OnStartStylusWritingCallback callback) override {
+  }
 #if BUILDFLAG(IS_ANDROID)
   void PassImeRenderWidgetHost(
       mojo::PendingRemote<blink::mojom::ImeRenderWidgetHost>) override {}

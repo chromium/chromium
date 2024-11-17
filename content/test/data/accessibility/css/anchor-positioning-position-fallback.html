@@ -1,0 +1,48 @@
+<!--
+@BLINK-ALLOW:details*
+@EXECUTE-AND-WAIT-FOR:scroll()
+-->
+<html>
+<head><style>
+@position-try --alternative-anchoring {
+  position-anchor: --anchor2;
+  position-area: bottom;
+}
+
+.anchor1 {
+  anchor-name: --anchor1;
+  margin-top: 20px;
+}
+
+.anchor2 {
+  anchor-name: --anchor2;
+}
+
+.target {
+  position: absolute;
+  position-anchor: --anchor1;
+  position-area: top;
+  position-try: --alternative-anchoring;
+}
+
+body {
+  height: 2000px;
+}
+</style></head>
+<body>
+  <div class="target">target</div>
+  <button class="anchor1">anchor1</button>
+  <button class="anchor2">anchor2</button>
+</body>
+</html>
+<script>
+// Before scroll() runs, target is anchored to anchor1, so anchor1 has detailsId set.
+
+// Step 1: Scroll to the bottom of the page so that target is now anchored to anchor2.
+// Expectation: anchor1 does not have detailsId set, anchor2 has detailsId set.
+function scroll() {
+  window.scrollTo(0, document.body.scrollHeight);
+  document.title = "scroll() done";
+  return "scroll() done";
+}
+</script>

@@ -74,7 +74,7 @@ class LocationBarCoordinatorTest : public PlatformTest {
   void SetUp() override {
     PlatformTest::SetUp();
 
-    TestChromeBrowserState::Builder test_cbs_builder;
+    TestProfileIOS::Builder test_cbs_builder;
 
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
@@ -95,14 +95,14 @@ class LocationBarCoordinatorTest : public PlatformTest {
         ios::HistoryServiceFactory::GetInstance(),
         ios::HistoryServiceFactory::GetDefaultFactory());
 
-    browser_state_ = std::move(test_cbs_builder).Build();
+    profile_ = std::move(test_cbs_builder).Build();
 
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
 
     auto web_state = std::make_unique<web::FakeWebState>();
-    web_state->SetBrowserState(browser_state_.get());
+    web_state->SetBrowserState(profile_.get());
     web_state->SetCurrentURL(GURL("http://test/"));
     browser_->GetWebStateList()->InsertWebState(
         std::move(web_state), WebStateList::InsertionParams::AtIndex(0));
@@ -156,7 +156,7 @@ class LocationBarCoordinatorTest : public PlatformTest {
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
       variations::VariationsIdsProvider::Mode::kUseSignedInState};
   LocationBarCoordinator* coordinator_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<Browser> browser_;
   TestOmniboxFocusDelegate* delegate_;
 };

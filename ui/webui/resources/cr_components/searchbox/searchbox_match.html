@@ -132,6 +132,14 @@
     white-space: nowrap;
   }
 
+  :host([is-lens-searchbox_]) #text-container {
+    display: -webkit-box;
+    line-clamp: 2;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    white-space: normal;
+  }
+
   :host([has-action]) #text-container {
     padding-inline-end: 4px;
   }

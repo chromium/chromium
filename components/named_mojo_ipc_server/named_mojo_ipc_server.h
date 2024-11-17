@@ -14,6 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/process/process_handle.h"
 #include "base/sequence_checker.h"
+#include "components/named_mojo_ipc_server/connection_info.h"
 #include "components/named_mojo_ipc_server/endpoint_options.h"
 #include "components/named_mojo_ipc_server/ipc_server.h"
 #include "components/named_mojo_ipc_server/named_mojo_message_pipe_server.h"
@@ -48,8 +49,7 @@ class NamedMojoIpcServerBase : public IpcServer {
  protected:
   NamedMojoIpcServerBase(
       const EndpointOptions& options,
-      base::RepeatingCallback<void*(std::unique_ptr<ConnectionInfo>)>
-          impl_provider);
+      base::RepeatingCallback<void*(const ConnectionInfo&)> impl_provider);
   ~NamedMojoIpcServerBase() override;
 
   void OnIpcDisconnected();
@@ -57,7 +57,7 @@ class NamedMojoIpcServerBase : public IpcServer {
   virtual mojo::ReceiverId TrackMessagePipe(
       mojo::ScopedMessagePipeHandle message_pipe,
       void* impl,
-      base::ProcessId peer_pid) = 0;
+      std::unique_ptr<ConnectionInfo> connection_info) = 0;
 
   virtual void UntrackMessagePipe(mojo::ReceiverId id) = 0;
 
@@ -69,7 +69,7 @@ class NamedMojoIpcServerBase : public IpcServer {
 
  private:
   void OnMessagePipeReady(mojo::ScopedMessagePipeHandle message_pipe,
-                          base::ProcessId peer_pid,
+                          std::unique_ptr<ConnectionInfo> connection_info,
                           void* context,
                           std::unique_ptr<mojo::IsolatedConnection> connection);
 
@@ -95,8 +95,7 @@ class NamedMojoIpcServer final : public NamedMojoIpcServerBase {
   //     or nullptr if the connecting endpoint should be rejected.
   NamedMojoIpcServer(
       const EndpointOptions& options,
-      base::RepeatingCallback<Interface*(std::unique_ptr<ConnectionInfo>)>
-          impl_provider)
+      base::RepeatingCallback<Interface*(const ConnectionInfo&)> impl_provider)
       : NamedMojoIpcServerBase(
             options,
             impl_provider.Then(base::BindRepeating([](Interface* impl) {
@@ -121,8 +120,8 @@ class NamedMojoIpcServer final : public NamedMojoIpcServerBase {
     return receiver_set_.current_receiver();
   }
 
-  base::ProcessId current_peer_pid() const override {
-    return receiver_set_.current_context();
+  const ConnectionInfo& current_connection_info() const override {
+    return *receiver_set_.current_context();
   }
 
   size_t GetNumberOfActiveConnectionsForTesting() const {
@@ -131,14 +130,16 @@ class NamedMojoIpcServer final : public NamedMojoIpcServerBase {
 
  private:
   // NamedMojoIpcServerBase implementation.
-  mojo::ReceiverId TrackMessagePipe(mojo::ScopedMessagePipeHandle message_pipe,
-                                    void* impl,
-                                    base::ProcessId peer_pid) override {
+  mojo::ReceiverId TrackMessagePipe(
+      mojo::ScopedMessagePipeHandle message_pipe,
+      void* impl,
+      std::unique_ptr<ConnectionInfo> connection_info) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     return receiver_set_.Add(
         reinterpret_cast<Interface*>(impl),
-        mojo::PendingReceiver<Interface>(std::move(message_pipe)), peer_pid);
+        mojo::PendingReceiver<Interface>(std::move(message_pipe)),
+        std::move(connection_info));
   }
 
   void UntrackMessagePipe(mojo::ReceiverId id) override {
@@ -149,7 +150,7 @@ class NamedMojoIpcServer final : public NamedMojoIpcServerBase {
 
   void UntrackAllMessagePipes() override { receiver_set_.Clear(); }
 
-  mojo::ReceiverSet<Interface, base::ProcessId> receiver_set_;
+  mojo::ReceiverSet<Interface, std::unique_ptr<ConnectionInfo>> receiver_set_;
 };
 
 }  // namespace named_mojo_ipc_server

@@ -15,7 +15,7 @@ namespace flags_ui {
 // and CrosSettings.
 class FlagsStorage {
  public:
-  virtual ~FlagsStorage() {}
+  virtual ~FlagsStorage() = default;
 
   // Retrieves the flags as a set of strings.
   virtual std::set<std::string> GetFlags() const = 0;

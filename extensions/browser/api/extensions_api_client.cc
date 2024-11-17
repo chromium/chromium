@@ -36,7 +36,8 @@ void ExtensionsAPIClient::AddAdditionalValueStoreCaches(
     content::BrowserContext* context,
     const scoped_refptr<value_store::ValueStoreFactory>& factory,
     SettingsChangedCallback observer,
-    std::map<settings_namespace::Namespace, ValueStoreCache*>* caches) {}
+    std::map<settings_namespace::Namespace,
+             raw_ptr<ValueStoreCache, CtnExperimental>>* caches) {}
 
 void ExtensionsAPIClient::AttachWebContentsHelpers(
     content::WebContents* web_contents) const {
@@ -170,7 +171,7 @@ FeedbackPrivateDelegate* ExtensionsAPIClient::GetFeedbackPrivateDelegate() {
   return nullptr;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 NonNativeFileSystemDelegate*
 ExtensionsAPIClient::GetNonNativeFileSystemDelegate() {
   return nullptr;
@@ -180,9 +181,7 @@ MediaPerceptionAPIDelegate*
 ExtensionsAPIClient::GetMediaPerceptionAPIDelegate() {
   return nullptr;
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS)
 void ExtensionsAPIClient::SaveImageDataToClipboard(
     std::vector<uint8_t> image_data,
     api::clipboard::ImageType type,

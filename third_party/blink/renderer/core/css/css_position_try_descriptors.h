@@ -270,7 +270,6 @@ class CORE_EXPORT CSSPositionTryDescriptors
   void setPositionArea(const ExecutionContext* execution_context,
                        const String& value,
                        ExceptionState& exception_state) {
-    DCHECK(RuntimeEnabledFeatures::CSSPositionAreaPropertyEnabled());
     Set(execution_context, CSSPropertyID::kPositionArea, value,
         exception_state);
   }

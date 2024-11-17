@@ -54,9 +54,9 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
-import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider.AppHeaderObserver;
+import org.chromium.components.browser_ui.desktop_windowing.AppHeaderState;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
+import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager.AppHeaderObserver;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.LocalizationUtils;
@@ -85,7 +85,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
     private final @NonNull HubLayoutScrimController mScrimController;
     private final @NonNull DoubleConsumer mOnToolbarAlphaChange;
     private final @NonNull HubShowPaneHelper mHubShowPaneHelper;
-    private final @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
 
     /**
      * The previous {@link LayoutType}, valid between {@link #show(long, boolean)} and {@link
@@ -124,7 +124,7 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
             @NonNull LayoutStateProvider layoutStateProvider,
             @NonNull HubLayoutDependencyHolder dependencyHolder,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateManager desktopWindowStateManager) {
         super(context, updateHost, renderHost);
         mPreviousLayoutTypeSupplier.set(layoutStateProvider.getActiveLayoutType());
 
@@ -146,9 +146,9 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         mScrimController = dependencyHolder.getScrimController();
         mOnToolbarAlphaChange = dependencyHolder.getOnToolbarAlphaChange();
         mTabModelSelector = tabModelSelectorSupplier.get();
-        mDesktopWindowStateProvider = desktopWindowStateProvider;
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.addObserver(this);
+        mDesktopWindowStateManager = desktopWindowStateManager;
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.addObserver(this);
             maybeUpdateLayout();
         }
     }
@@ -204,8 +204,8 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         }
         mCurrentSceneLayer = null;
         mPaneManager.getFocusedPaneSupplier().removeObserver(mOnPaneFocused);
-        if (mDesktopWindowStateProvider != null) {
-            mDesktopWindowStateProvider.removeObserver(this);
+        if (mDesktopWindowStateManager != null) {
+            mDesktopWindowStateManager.removeObserver(this);
         }
     }
 
@@ -463,8 +463,12 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
         // transition.
         if (background || isStartingToHide()) return;
 
-        // Tablet Hub doesn't handle new tab animations.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+        HubContainerView containerView = mHubController.getContainerView();
+
+        // Skip animation:
+        // * If ContainerView is not laid out there will be no geometry for an animation.
+        // * For LFF devices which don't have new tab animations in the tab switcher.
+        if (!containerView.isLaidOut() || DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
             selectTabAndHideHubLayout(tabId);
             return;
         }
@@ -493,15 +497,19 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
                         EXPAND_NEW_TAB_DURATION_MS,
                         mOnToolbarAlphaChange);
 
-        HubContainerView containerView = mHubController.getContainerView();
-        assert containerView.isLaidOut();
         Rect containerViewRect = new Rect();
         containerView.getGlobalVisibleRect(containerViewRect);
+        int searchBoxHeight =
+                HubUtils.getSearchBoxHeight(
+                        containerView, R.id.hub_toolbar, R.id.toolbar_action_container);
 
         View paneHost = mHubController.getPaneHostView();
         assert paneHost.isLaidOut();
         Rect finalRect = new Rect();
         paneHost.getGlobalVisibleRect(finalRect);
+        // Account for the hub's search box container height.
+        finalRect.offset(0, -searchBoxHeight);
+        finalRect.bottom += searchBoxHeight;
         // Ignore edge offset and just ensure the width is correct. See crbug/1502437.
         finalRect.offset(-finalRect.left, -containerViewRect.top);
 
@@ -763,9 +771,9 @@ public class HubLayout extends Layout implements HubLayoutController, AppHeaderO
      */
     private void maybeUpdateLayout() {
         int appHeaderHeight =
-                (mDesktopWindowStateProvider != null
-                                && mDesktopWindowStateProvider.getAppHeaderState() != null)
-                        ? mDesktopWindowStateProvider.getAppHeaderState().getAppHeaderHeight()
+                (mDesktopWindowStateManager != null
+                                && mDesktopWindowStateManager.getAppHeaderState() != null)
+                        ? mDesktopWindowStateManager.getAppHeaderState().getAppHeaderHeight()
                         : 0;
         mHubManager.setAppHeaderHeight(appHeaderHeight);
         // If the app header height or desktop windowing mode changes while the HubLayout is active,

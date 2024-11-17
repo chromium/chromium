@@ -20,7 +20,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -130,7 +130,7 @@ public class RequestCoordinatorBridgeTest {
                 () -> {
                     mProfile =
                             ProfileManager.getLastUsedRegularProfile()
-                                    .getPrimaryOTRProfile(/* createIfNeeded= */ true);
+                                    .getPrimaryOtrProfile(/* createIfNeeded= */ true);
                 });
         initializeBridgeForProfile();
         Assert.assertEquals(null, mRequestCoordinatorBridge);
@@ -138,14 +138,14 @@ public class RequestCoordinatorBridgeTest {
 
     @Test
     @MediumTest
-    public void testRequestCoordinatorBridgeDisabledInIncognitoCCT() throws Exception {
-        OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
+    public void testRequestCoordinatorBridgeDisabledInIncognitoCct() throws Exception {
+        OtrProfileId otrProfileId = OtrProfileId.createUnique("CCT:Incognito");
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfile =
                             ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
-                                            otrProfileID, /* createIfNeeded= */ true);
+                                            otrProfileId, /* createIfNeeded= */ true);
                 });
         initializeBridgeForProfile();
         Assert.assertEquals(null, mRequestCoordinatorBridge);

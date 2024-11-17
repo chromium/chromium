@@ -515,7 +515,7 @@ void BluetoothDeviceWinrt::UpgradeToFullDiscovery() {
   DCHECK(!observe_gatt_session_status_change_events_ || IsGattConnected());
 
   // Restart discovery.
-  StartGattDiscovery();
+  StartGattDiscovery(/*allow_cache=*/true);
 }
 
 void BluetoothDeviceWinrt::DisconnectGatt() {
@@ -585,7 +585,9 @@ void BluetoothDeviceWinrt::OnBluetoothLEDeviceFromBluetoothAddress(
     if (IsGattConnected()) {
       DidConnectGatt(/*error_code=*/std::nullopt);
     }
-    StartGattDiscovery();
+    // Don't allow cache so the system will make a connection attempt to the BLE
+    // device.
+    StartGattDiscovery(/*allow_cache=*/false);
     return;
   }
 
@@ -673,7 +675,7 @@ void BluetoothDeviceWinrt::OnGattSessionFromDeviceId(
   // because the OS had already established a connection.
   if (IsGattConnected()) {
     DidConnectGatt(/*error_code=*/std::nullopt);
-    StartGattDiscovery();
+    StartGattDiscovery(/*allow_cache=*/true);
   }
 }
 
@@ -706,7 +708,7 @@ void BluetoothDeviceWinrt::OnGattSessionStatusChanged(
 
   if (IsGattConnected()) {
     DidConnectGatt(/*error_code=*/std::nullopt);
-    StartGattDiscovery();
+    StartGattDiscovery(/*allow_cache=*/true);
   } else {
     gatt_discoverer_.reset();
     ClearGattServices();
@@ -761,7 +763,7 @@ void BluetoothDeviceWinrt::OnGattServicesChanged(IBluetoothLEDevice* ble_device,
     // In order to stop a potential ongoing GATT discovery, the GattDiscoverer
     // is reset and a new discovery is initiated.
     BLUETOOTH_LOG(DEBUG) << "Discovering GATT services anew";
-    StartGattDiscovery();
+    StartGattDiscovery(/*allow_cache=*/true);
   }
 }
 
@@ -771,8 +773,8 @@ void BluetoothDeviceWinrt::OnNameChanged(IBluetoothLEDevice* ble_device,
   adapter_->NotifyDeviceChanged(this);
 }
 
-void BluetoothDeviceWinrt::StartGattDiscovery() {
-  BLUETOOTH_LOG(DEBUG) << "StartGattDiscovery()";
+void BluetoothDeviceWinrt::StartGattDiscovery(bool allow_cache) {
+  BLUETOOTH_LOG(DEBUG) << "StartGattDiscovery() allow_cache:" << allow_cache;
   pending_gatt_service_discovery_start_ = false;
   if (!gatt_services_changed_token_) {
     gatt_services_changed_token_ = AddTypedEventHandler(
@@ -783,6 +785,7 @@ void BluetoothDeviceWinrt::StartGattDiscovery() {
   gatt_discoverer_ =
       std::make_unique<BluetoothGattDiscovererWinrt>(ble_device_, target_uuid_);
   gatt_discoverer_->StartGattDiscovery(
+      allow_cache,
       base::BindOnce(&BluetoothDeviceWinrt::OnGattDiscoveryComplete,
                      weak_ptr_factory_.GetWeakPtr()));
 }

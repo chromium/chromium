@@ -146,8 +146,12 @@ FileEnumerator::FileEnumerator(const FilePath& root_path,
 #if BUILDFLAG(IS_ANDROID)
   // Content-URIs have limited support.
   if (root_path.IsContentUri()) {
-    CHECK(!recursive);
     CHECK_EQ(file_type_, FileType::FILES | FileType::DIRECTORIES);
+    // Get display-name of root path.
+    FileInfo root_info;
+    internal::ContentUriGetFileInfo(root_path, &root_info);
+    pending_subdirs_.push(
+        std::vector<std::string>({root_info.GetName().value()}));
   }
 #endif
 
@@ -185,10 +189,22 @@ FilePath FileEnumerator::Next() {
 
 #if BUILDFLAG(IS_ANDROID)
     if (root_path_.IsContentUri()) {
-      directory_entries_ = ListContentUriDirectory(root_path_);
+      subdirs_ = pending_subdirs_.top();
+      pending_subdirs_.pop();
+      directory_entries_ = internal::ListContentUriDirectory(root_path_);
       current_directory_entry_ = 0;
       if (directory_entries_.empty()) {
-        return base::FilePath();
+        continue;
+      }
+      if (recursive_) {
+        for (auto& info : directory_entries_) {
+          info.subdirs_ = subdirs_;
+          if (info.IsDirectory()) {
+            pending_paths_.push(info.content_uri_);
+            pending_subdirs_.push(subdirs_);
+            pending_subdirs_.top().push_back(info.GetName().value());
+          }
+        }
       }
       break;
     }

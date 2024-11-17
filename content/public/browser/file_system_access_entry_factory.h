@@ -27,7 +27,6 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
                                         BrowserThread::DeleteOnUIThread> {
  public:
   using UserAction = FileSystemAccessPermissionContext::UserAction;
-  using PathType = FileSystemAccessPermissionContext::PathType;
 
   // Context from which a created handle is going to be used. This is used for
   // security and permission checks. Pass in the URL most relevant as the url
@@ -64,18 +63,14 @@ class CONTENT_EXPORT FileSystemAccessEntryFactory
   // passed in path is valid and represents a file.
   virtual blink::mojom::FileSystemAccessEntryPtr CreateFileEntryFromPath(
       const BindingContext& binding_context,
-      PathType path_type,
-      const base::FilePath& file_path,
-      const base::FilePath& display_name,
+      const content::PathInfo& path_info,
       UserAction user_action) = 0;
 
   // Creates a new FileSystemAccessEntryPtr from the path to a directory.
   // Assumes the passed in path is valid and represents a directory.
   virtual blink::mojom::FileSystemAccessEntryPtr CreateDirectoryEntryFromPath(
       const BindingContext& binding_context,
-      PathType path_type,
-      const base::FilePath& directory_path,
-      const base::FilePath& display_name,
+      const content::PathInfo& path_info,
       UserAction user_action) = 0;
 
   // Resolve a FileSystemAccessTransferToken to its FileSystemURL. Invokes the

@@ -148,8 +148,24 @@ TEST_F(NetworkTrayViewTest, EthernetVpnIconIsNotClipped) {
 TEST_F(NetworkTrayViewTest, AccessibleProperties) {
   ui::AXNodeData data;
 
+  // Initial Accessible Properties.
   network_tray_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
   EXPECT_EQ(data.role, ax::mojom::Role::kImage);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringUTF16(
+                IDS_ASH_STATUS_TRAY_NETWORK_NOT_CONNECTED_A11Y));
+
+  // Set up an Ethernet network.
+  cros_network()->AddNetworkAndDevice(
+      CrosNetworkConfigTestHelper::CreateStandaloneNetworkProperties(
+          "ethernet", NetworkType::kEthernet, ConnectionStateType::kConnected));
+  data = ui::AXNodeData();
+  network_tray_view()->GetViewAccessibility().GetAccessibleNodeData(&data);
+  EXPECT_EQ(
+      data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+      l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_NETWORK_CONNECTED,
+                                 /* network_name= */ l10n_util::GetStringUTF16(
+                                     IDS_ASH_STATUS_TRAY_ETHERNET)));
 }
 
 }  // namespace ash

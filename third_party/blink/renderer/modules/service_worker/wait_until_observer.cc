@@ -35,66 +35,51 @@ base::TimeDelta WindowInteractionTimeout() {
 
 }  // anonymous namespace
 
-class WaitUntilObserver::ThenFunction final : public ScriptFunction::Callable {
+// According from step 4 of ExtendableEvent::waitUntil() in spec:
+// https://w3c.github.io/ServiceWorker/#dom-extendableevent-waituntil
+// "Upon fulfillment or rejection of f, queue a microtask to run these
+// substeps: Decrement the pending promises count by one."
+class WaitUntilObserver::ThenFulfilled final
+    : public ThenCallable<IDLUndefined, ThenFulfilled> {
  public:
-  enum ResolveType {
-    kFulfilled,
-    kRejected,
-  };
-
-  ThenFunction(WaitUntilObserver* observer,
-               ResolveType type,
-               PromiseSettledCallback callback)
-      : observer_(observer),
-        resolve_type_(type),
-        callback_(std::move(callback)) {}
+  explicit ThenFulfilled(WaitUntilObserver* observer) : observer_(observer) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(observer_);
-    ScriptFunction::Callable::Trace(visitor);
+    ThenCallable<IDLUndefined, ThenFulfilled>::Trace(visitor);
   }
 
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
+  void React(ScriptState*) {
     DCHECK(observer_);
-    DCHECK(resolve_type_ == kFulfilled || resolve_type_ == kRejected);
-    if (callback_)
-      callback_.Run(value);
-    // According from step 4 of ExtendableEvent::waitUntil() in spec:
-    // https://w3c.github.io/ServiceWorker/#dom-extendableevent-waituntil
-    // "Upon fulfillment or rejection of f, queue a microtask to run these
-    // substeps: Decrement the pending promises count by one."
-
-    scoped_refptr<scheduler::EventLoop> event_loop =
-        ExecutionContext::From(script_state)->GetAgent()->event_loop();
-
-    // At this time point the microtask A running resolve/reject function of
-    // this promise has already been queued, in order to allow microtask A to
-    // call waitUntil, we enqueue another microtask B to delay the promise
-    // settled notification to |observer_|, thus A will run before B so A can
-    // call waitUntil well, but any other microtask C possibly enqueued by A
-    // will run after B so C maybe can't call waitUntil if there has no any
-    // extend lifetime promise at that time.
-    if (resolve_type_ == kRejected) {
-      event_loop->EnqueueMicrotask(
-          WTF::BindOnce(&WaitUntilObserver::OnPromiseRejected,
-                        WrapPersistent(observer_.Get())));
-      observer_ = nullptr;
-      return ScriptValue(
-          script_state->GetIsolate(),
-          ScriptPromiseUntyped::Reject(script_state, value).V8Promise());
-    }
-
-    event_loop->EnqueueMicrotask(
-        WTF::BindOnce(&WaitUntilObserver::OnPromiseFulfilled,
-                      WrapPersistent(observer_.Get())));
+    observer_->OnPromiseFulfilled();
     observer_ = nullptr;
-    return value;
   }
 
  private:
   Member<WaitUntilObserver> observer_;
-  ResolveType resolve_type_;
-  PromiseSettledCallback callback_;
+};
+
+class WaitUntilObserver::ThenRejected final
+    : public ThenCallable<IDLAny, ThenRejected, IDLAny> {
+ public:
+  explicit ThenRejected(WaitUntilObserver* observer) : observer_(observer) {}
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(observer_);
+    ThenCallable<IDLAny, ThenRejected, IDLAny>::Trace(visitor);
+  }
+
+  ScriptValue React(ScriptState* script_state, ScriptValue value) {
+    DCHECK(observer_);
+    observer_->OnPromiseRejected();
+    observer_ = nullptr;
+    return ScriptValue(
+        script_state->GetIsolate(),
+        ScriptPromise<IDLUndefined>::Reject(script_state, value).V8Promise());
+  }
+
+ private:
+  Member<WaitUntilObserver> observer_;
 };
 
 void WaitUntilObserver::WillDispatchEvent() {
@@ -122,11 +107,10 @@ void WaitUntilObserver::DidDispatchEvent(bool event_dispatch_failed) {
 }
 
 // https://w3c.github.io/ServiceWorker/#dom-extendableevent-waituntil
-bool WaitUntilObserver::WaitUntil(ScriptState* script_state,
-                                  ScriptPromiseUntyped script_promise,
-                                  ExceptionState& exception_state,
-                                  PromiseSettledCallback on_promise_fulfilled,
-                                  PromiseSettledCallback on_promise_rejected) {
+bool WaitUntilObserver::WaitUntil(
+    ScriptState* script_state,
+    const ScriptPromise<IDLUndefined>& script_promise,
+    ExceptionState& exception_state) {
   DCHECK_NE(event_dispatch_state_, EventDispatchState::kInitial);
 
   // 1. `If the isTrusted attribute is false, throw an "InvalidStateError"
@@ -155,14 +139,8 @@ bool WaitUntilObserver::WaitUntil(ScriptState* script_state,
   // 3. `Add f to the extend lifetime promises.`
   // 4. `Increment the pending promises count by one.`
   IncrementPendingPromiseCount();
-  script_promise.Then(MakeGarbageCollected<ScriptFunction>(
-                          script_state, MakeGarbageCollected<ThenFunction>(
-                                            this, ThenFunction::kFulfilled,
-                                            std::move(on_promise_fulfilled))),
-                      MakeGarbageCollected<ScriptFunction>(
-                          script_state, MakeGarbageCollected<ThenFunction>(
-                                            this, ThenFunction::kRejected,
-                                            std::move(on_promise_rejected))));
+  script_promise.Then(script_state, MakeGarbageCollected<ThenFulfilled>(this),
+                      MakeGarbageCollected<ThenRejected>(this));
   return true;
 }
 
@@ -214,8 +192,7 @@ void WaitUntilObserver::MaybeCompleteEvent() {
 
   switch (event_dispatch_state_) {
     case EventDispatchState::kInitial:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     case EventDispatchState::kDispatching:
       // Still dispatching, do not complete the event.
       return;

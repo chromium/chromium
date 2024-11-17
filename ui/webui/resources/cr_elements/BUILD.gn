@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/chromeos/ui_mode.gni")
-import("//ui/webui/resources/include_polymer.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 
 build_webui("build") {
@@ -16,17 +14,30 @@ build_webui("build") {
   ]
 
   non_web_component_files = [
+    "cr_ripple/cr_ripple_mixin.ts",
     "cr_splitter/cr_splitter.ts",
     "cr_tree/cr_tree_base.ts",
+
+    # Web components files that either
+    #  - don't have a corresponding .html file or
+    #  - have a checked-in *.html.ts wrapper file instead of auto-generated
+    "cr_button/cr_button.html.ts",
+    "cr_button/cr_button.ts",
+    "cr_ripple/cr_ripple.ts",
+    "cr_tabs/cr_tabs.html.ts",
+    "cr_tabs/cr_tabs.ts",
   ]
 
-  if (include_polymer) {
-    web_component_files += [ "cr_a11y_announcer/cr_a11y_announcer.ts" ]
+  css_files = [
+    "cr_button/cr_button.css",
+    "cr_hidden_style_lit.css",
+    "cr_ripple/cr_ripple.css",
+    "cr_shared_vars.css",
+    "cr_tabs/cr_tabs.css",
+  ]
 
-    icons_html_files = [
-      "icons.html",
-      "icons_lit.html",
-    ]
+  if (!is_android && !is_ios) {
+    web_component_files += [ "cr_a11y_announcer/cr_a11y_announcer.ts" ]
 
     non_web_component_files += [
       "cr_container_shadow_mixin.ts",
@@ -34,7 +45,6 @@ build_webui("build") {
       "cr_icon/iconset_map.ts",
       "cr_radio_button/cr_radio_button_mixin.ts",
       "cr_radio_button/cr_radio_button_mixin_lit.ts",
-      "cr_ripple/cr_ripple_mixin.ts",
       "cr_scroll_observer_mixin.ts",
       "cr_scroll_observer_mixin_lit.ts",
       "cr_search_field/cr_search_field_mixin.ts",
@@ -47,6 +57,7 @@ build_webui("build") {
       "focus_row_mixin_lit.ts",
       "i18n_mixin.ts",
       "i18n_mixin_lit.ts",
+      "icons.html.ts",
       "list_property_update_mixin.ts",
       "mouse_hoverable_mixin.ts",
       "mouse_hoverable_mixin_lit.ts",
@@ -61,8 +72,6 @@ build_webui("build") {
       "cr_action_menu/cr_action_menu.html.ts",
       "cr_action_menu/cr_action_menu.ts",
       "cr_auto_img/cr_auto_img.ts",
-      "cr_button/cr_button.html.ts",
-      "cr_button/cr_button.ts",
       "cr_checkbox/cr_checkbox.html.ts",
       "cr_checkbox/cr_checkbox.ts",
       "cr_chip/cr_chip.html.ts",
@@ -110,14 +119,11 @@ build_webui("build") {
       "cr_radio_button/cr_radio_button.ts",
       "cr_radio_group/cr_radio_group.html.ts",
       "cr_radio_group/cr_radio_group.ts",
-      "cr_ripple/cr_ripple.ts",
       "cr_search_field/cr_search_field.html.ts",
       "cr_search_field/cr_search_field.ts",
       "cr_selectable_mixin.ts",
       "cr_slider/cr_slider.html.ts",
       "cr_slider/cr_slider.ts",
-      "cr_tabs/cr_tabs.html.ts",
-      "cr_tabs/cr_tabs.ts",
       "cr_textarea/cr_textarea.html.ts",
       "cr_textarea/cr_textarea.ts",
       "cr_toast/cr_toast.html.ts",
@@ -144,13 +150,12 @@ build_webui("build") {
       "policy/cr_tooltip_icon.ts",
     ]
 
-    css_files = [
+    css_files += [
       "action_link.css",
       "action_link_lit.css",
       "cr_actionable_row_style.css",
       "cr_actionable_row_style_lit.css",
       "cr_hidden_style.css",
-      "cr_hidden_style_lit.css",
       "cr_icons.css",
       "cr_icons_lit.css",
       "cr_nav_menu_item_style.css",
@@ -165,7 +170,8 @@ build_webui("build") {
       "cr_radio_group/cr_radio_group.css",
       "cr_shared_style.css",
       "cr_shared_style_lit.css",
-      "cr_shared_vars.css",
+      "cr_spinner_style.css",
+      "cr_spinner_style_lit.css",
       "md_select.css",
       "md_select_lit.css",
       "mwb_element_shared_style.css",
@@ -175,7 +181,6 @@ build_webui("build") {
       "mwb_shared_vars.css",
       "search_highlight_style.css",
       "cr_action_menu/cr_action_menu.css",
-      "cr_button/cr_button.css",
       "cr_checkbox/cr_checkbox.css",
       "cr_chip/cr_chip.css",
       "cr_collapse/cr_collapse.css",
@@ -197,10 +202,8 @@ build_webui("build") {
       "cr_page_selector/cr_page_selector.css",
       "cr_profile_avatar_selector/cr_profile_avatar_selector.css",
       "cr_progress/cr_progress.css",
-      "cr_ripple/cr_ripple.css",
       "cr_search_field/cr_search_field.css",
       "cr_slider/cr_slider.css",
-      "cr_tabs/cr_tabs.css",
       "cr_textarea/cr_textarea.css",
       "cr_toast/cr_toast.css",
       "cr_toast/cr_toast_manager.css",
@@ -221,12 +224,12 @@ build_webui("build") {
   ts_tsconfig_base = "//tools/typescript/tsconfig_base_lit.json"
   ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_elements"
   ts_composite = true
-  ts_deps = [ "../js:build_ts" ]
-  if (include_polymer) {
-    ts_deps += [
-      "//third_party/lit/v3_0:build_ts",
-      "//third_party/polymer/v3_0:library",
-    ]
+  ts_deps = [
+    "../js:build_ts",
+    "//third_party/lit/v3_0:build_ts",
+  ]
+  if (!is_android && !is_ios) {
+    ts_deps += [ "//third_party/polymer/v3_0:library" ]
   }
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",

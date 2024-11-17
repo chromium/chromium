@@ -257,6 +257,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Saves username value from |pending_credentials_| to votes uploader.
   void SaveSuggestedUsernameValueToVotesUploader();
 
+  // Returns true if WebAuthn credential filling is enabled and there are
+  // credentials available to use.
+  bool WebAuthnCredentialsAvailable() const;
+
 #if defined(UNIT_TEST)
   static void set_wait_for_server_predictions_for_filling(bool value) {
     wait_for_server_predictions_for_filling_ = value;
@@ -333,8 +337,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
     return absl::get_if<PasswordFormDigest>(&observed_form_or_digest_);
   }
 
-  // Calculates FillingAssistance metric for |parsed_submitted_form|.
-  void CalculateFillingAssistanceMetric(
+  // Calculates FillingAssistance and ClassificationCorrectness metrics for
+  // |parsed_submitted_form|.
+  void CalculateFillingAssistanceAndCorrectnessMetrics(
       const PasswordForm& parsed_submitted_form);
 
   // Calculates SubmittedPasswordFormFrame metric value (main frame, iframe,
@@ -364,9 +369,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
       const base::LRUCache<PossibleUsernameFieldIdentifier,
                            PossibleUsernameData>& possible_usernames);
 
-  // Updates the predictions stored in `parser_` with predictions relevant for
-  // `observed_form_or_digest_`.
-  void UpdatePredictionsForObservedForm(
+  // Updates the server predictions stored in `parser_` with predictions
+  // relevant for `observed_form_or_digest_`.
+  void UpdateServerPredictionsForObservedForm(
       const std::map<autofill::FormSignature, FormPredictions>& predictions);
 
   // Creates a timer to wait for server side predictions. On timeout (or on
@@ -376,10 +381,6 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   // Sends fill data to the renderer immediately regardless of whether server
   // predictions are available.
   void FillNow();
-
-  // Returns true if WebAuthn credential filling is enabled and there are
-  // credentials available to use.
-  bool WebAuthnCredentialsAvailable() const;
 
   // Checks if `best_candidate` has better signal than the username
   // found inside the password form.
@@ -407,6 +408,8 @@ class PasswordFormManager : public PasswordFormManagerForUI,
   void RecordProvisionalSaveFailure(
       PasswordManagerMetricsRecorder::ProvisionalSaveFailure failure,
       const GURL& form_origin);
+
+  std::unique_ptr<FormFetcher> CreateFormFetcher();
 
   // The client which implements embedder-specific PasswordManager operations.
   const raw_ptr<PasswordManagerClient> client_;

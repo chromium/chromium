@@ -106,9 +106,8 @@ IncomingPasswordSharingInvitationSyncBridge::GetDataForCommit(
     StorageKeyList storage_keys) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  NOTREACHED_IN_MIGRATION()
+  NOTREACHED()
       << "This data type does not store or commit any data to the server.";
-  return nullptr;
 }
 
 std::unique_ptr<syncer::DataBatch>

@@ -55,8 +55,7 @@ class CORE_EXPORT CSSVariableData : public GarbageCollected<CSSVariableData> {
                                  bool has_line_height_units) {
     if (original_text.length() > kMaxVariableBytes) {
       // This should have been blocked off during variable substitution.
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
     }
 
     return MakeGarbageCollected<CSSVariableData>(

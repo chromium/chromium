@@ -27,7 +27,6 @@ import android.view.MotionEvent.PointerCoords;
 import android.view.View;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -37,14 +36,12 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.ui.MotionEventUtils;
 
 /** Tests logic in the {@link EventForwarder} class. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class EventForwarderTest {
-    @Rule public JniMocker mocker = new JniMocker();
 
     @Mock EventForwarder.Natives mNativeMock;
 
@@ -53,7 +50,7 @@ public class EventForwarderTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mocker.mock(EventForwarderJni.TEST_HOOKS, mNativeMock);
+        EventForwarderJni.setInstanceForTesting(mNativeMock);
     }
 
     @Test
@@ -97,6 +94,14 @@ public class EventForwarderTest {
                 getTrackpadEvent(MotionEvent.ACTION_MOVE, MotionEvent.BUTTON_PRIMARY);
         eventForwarder.onTouchEvent(clickAndDragEvent);
         verifyNativeMouseEventSent(NATIVE_EVENT_FORWARDER_ID, clickAndDragEvent, eventForwarder, 1);
+    }
+
+    @Test
+    public void testSendTrackpadHoverAsMouseEventToNative() {
+        EventForwarder eventForwarder = new EventForwarder(NATIVE_EVENT_FORWARDER_ID, true, true);
+        MotionEvent hoverEvent = getTrackpadEvent(MotionEvent.ACTION_HOVER_MOVE, 0);
+        eventForwarder.onHoverEvent(hoverEvent);
+        verifyNativeMouseEventSent(NATIVE_EVENT_FORWARDER_ID, hoverEvent, eventForwarder, 1);
     }
 
     @Test

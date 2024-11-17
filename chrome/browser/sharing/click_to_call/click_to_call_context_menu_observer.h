@@ -15,7 +15,7 @@
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "components/renderer_context_menu/render_view_context_menu_observer.h"
 #include "components/sharing_message/sharing_target_device_info.h"
-#include "ui/base/models/simple_menu_model.h"
+#include "ui/menus/simple_menu_model.h"
 
 class RenderViewContextMenuProxy;
 

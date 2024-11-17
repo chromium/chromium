@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 
 import com.google.errorprone.annotations.DoNotMock;
 
+import org.chromium.base.Token;
 import org.chromium.chrome.browser.tab.Tab;
 
 import java.util.Arrays;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 /** Parameters to control closing tabs from the {@link TabModel}. */
+// TODO(crbug.com/376710475): Consider prefixing the static methods with for.
 @DoNotMock("Create a real instance instead.")
 public class TabClosureParams {
     /**
@@ -34,6 +36,35 @@ public class TabClosureParams {
     }
 
     /**
+     * Creates a {@link TabClosureParams.CloseTabsBuilder} that represents a tab group.
+     *
+     * @param rootId The root ID of the tab group.
+     * @return A TabClosureParams for the tab group or null if the group is not found.
+     */
+    public static @Nullable TabClosureParams.CloseTabsBuilder forCloseTabGroup(
+            TabGroupModelFilter filter, Token tabGroupId) {
+        return TabClosureParams.forCloseTabGroup(filter, filter.getRootIdFromStableId(tabGroupId));
+    }
+
+    /**
+     * Creates a {@link TabClosureParams.CloseTabsBuilder} that represents a tab group.
+     *
+     * @param rootId The tab group ID of the tab group.
+     * @return A TabClosureParams for the tab group or null if the group is not found.
+     */
+    public static @Nullable TabClosureParams.CloseTabsBuilder forCloseTabGroup(
+            TabGroupModelFilter filter, int rootId) {
+        if (rootId == Tab.INVALID_TAB_ID) return null;
+
+        List<Tab> relatedTabs = filter.getRelatedTabListForRootId(rootId);
+        if (relatedTabs.isEmpty()) return null;
+
+        TabClosureParams.CloseTabsBuilder builder =
+                new TabClosureParams.CloseTabsBuilder(relatedTabs);
+        return builder.isTabGroup(true);
+    }
+
+    /**
      * Returns a new {@link TabClosureParams.CloseAllTabsBuilder} to instantiate {@link
      * TabClosureParams}.
      */
@@ -47,6 +78,7 @@ public class TabClosureParams {
         private boolean mAllowUndo = true;
         private boolean mUponExit;
         private @Nullable Tab mRecommendedNextTab;
+        private @Nullable Runnable mUndoRunnable;
 
         private CloseTabBuilder(Tab tab) {
             mTab = tab;
@@ -70,6 +102,12 @@ public class TabClosureParams {
             return this;
         }
 
+        /** Sets the undo runnable. */
+        public CloseTabBuilder withUndoRunnable(Runnable undoRunnable) {
+            mUndoRunnable = undoRunnable;
+            return this;
+        }
+
         /** Builds the params. */
         public TabClosureParams build() {
             return new TabClosureParams(
@@ -80,7 +118,9 @@ public class TabClosureParams {
                     mAllowUndo,
                     /* hideTabGroups= */ false,
                     /* saveToTabRestoreService= */ true,
-                    TabCloseType.SINGLE);
+                    TabCloseType.SINGLE,
+                    mUndoRunnable,
+                    /* isTabGroup= */ false);
         }
     }
 
@@ -90,6 +130,8 @@ public class TabClosureParams {
         private boolean mAllowUndo = true;
         private boolean mHideTabGroups;
         private boolean mSaveToTabRestoreService = true;
+        private boolean mIsTabGroup;
+        private @Nullable Runnable mUndoRunnable;
 
         private CloseTabsBuilder(List<Tab> tabs) {
             mTabs = tabs;
@@ -113,6 +155,24 @@ public class TabClosureParams {
             return this;
         }
 
+        /** Sets the undo runnable. */
+        public CloseTabsBuilder withUndoRunnable(Runnable undoRunnable) {
+            mUndoRunnable = undoRunnable;
+            return this;
+        }
+
+        /**
+         * Sets whether the closure is for a tab group and came from {@link forCloseTabGroup}. This
+         * is used to identify if the tab closure is for an entire tab group. It is currently used
+         * by {@link TabRemover} to decide which type of dialog to show. It may have other uses in
+         * the future such as ensuring all tabs in a group are closed even if the close operation is
+         * deferred.
+         */
+        private CloseTabsBuilder isTabGroup(boolean isTabGroup) {
+            mIsTabGroup = isTabGroup;
+            return this;
+        }
+
         /** Builds the params. */
         public TabClosureParams build() {
             return new TabClosureParams(
@@ -123,7 +183,9 @@ public class TabClosureParams {
                     mAllowUndo,
                     mHideTabGroups,
                     mSaveToTabRestoreService,
-                    TabCloseType.MULTIPLE);
+                    TabCloseType.MULTIPLE,
+                    mUndoRunnable,
+                    mIsTabGroup);
         }
     }
 
@@ -134,6 +196,7 @@ public class TabClosureParams {
     public static class CloseAllTabsBuilder {
         private boolean mUponExit;
         private boolean mHideTabGroups;
+        private @Nullable Runnable mUndoRunnable;
 
         private CloseAllTabsBuilder() {}
 
@@ -149,6 +212,12 @@ public class TabClosureParams {
             return this;
         }
 
+        /** Sets the undo runnable. */
+        public CloseAllTabsBuilder withUndoRunnable(Runnable undoRunnable) {
+            mUndoRunnable = undoRunnable;
+            return this;
+        }
+
         /** Builds the params. */
         public TabClosureParams build() {
             return new TabClosureParams(
@@ -159,7 +228,9 @@ public class TabClosureParams {
                     /* allowUndo= */ true,
                     mHideTabGroups,
                     /* saveToTabRestoreService= */ true,
-                    TabCloseType.ALL);
+                    TabCloseType.ALL,
+                    mUndoRunnable,
+                    /* isTabGroup= */ false);
         }
     }
 
@@ -173,6 +244,8 @@ public class TabClosureParams {
     public final boolean hideTabGroups;
     public final boolean saveToTabRestoreService;
     public final @TabCloseType int tabCloseType;
+    public final @Nullable Runnable undoRunnable;
+    public final boolean isTabGroup;
 
     private TabClosureParams(
             @Nullable List<Tab> tabs,
@@ -182,7 +255,9 @@ public class TabClosureParams {
             boolean allowUndo,
             boolean hideTabGroups,
             boolean saveToTabRestoreService,
-            @TabCloseType int tabCloseType) {
+            @TabCloseType int tabCloseType,
+            @Nullable Runnable undoRunnable,
+            boolean isTabGroup) {
         this.tabs = tabs;
         this.isAllTabs = isAllTabs;
         this.recommendedNextTab = recommendedNextTab;
@@ -191,6 +266,8 @@ public class TabClosureParams {
         this.hideTabGroups = hideTabGroups;
         this.saveToTabRestoreService = saveToTabRestoreService;
         this.tabCloseType = tabCloseType;
+        this.undoRunnable = undoRunnable;
+        this.isTabGroup = isTabGroup;
     }
 
     @Override
@@ -205,7 +282,9 @@ public class TabClosureParams {
                     && this.allowUndo == otherParams.allowUndo
                     && this.hideTabGroups == otherParams.hideTabGroups
                     && this.saveToTabRestoreService == otherParams.saveToTabRestoreService
-                    && this.tabCloseType == otherParams.tabCloseType;
+                    && this.tabCloseType == otherParams.tabCloseType
+                    && Objects.equals(this.undoRunnable, otherParams.undoRunnable)
+                    && this.isTabGroup == otherParams.isTabGroup;
         }
         return false;
     }
@@ -220,28 +299,32 @@ public class TabClosureParams {
                 this.allowUndo,
                 this.hideTabGroups,
                 this.saveToTabRestoreService,
-                this.tabCloseType);
+                this.tabCloseType,
+                this.undoRunnable,
+                this.isTabGroup);
     }
 
     @Override
     public String toString() {
-        return new StringBuilder()
-                .append("tabs ")
-                .append(this.tabs)
-                .append("\nisAllTabs ")
-                .append(this.isAllTabs)
-                .append("\nrecommendedNextTab ")
-                .append(this.recommendedNextTab)
-                .append("\nuponExit ")
-                .append(this.uponExit)
-                .append("\nallowUndo ")
-                .append(this.allowUndo)
-                .append("\nhideTabGroups ")
-                .append(this.hideTabGroups)
-                .append("\nsaveToTabRestoreService ")
-                .append(this.saveToTabRestoreService)
-                .append("\ntabCloseType ")
-                .append(this.tabCloseType)
-                .toString();
+        return "tabs "
+                + this.tabs
+                + "\nisAllTabs "
+                + this.isAllTabs
+                + "\nrecommendedNextTab "
+                + this.recommendedNextTab
+                + "\nuponExit "
+                + this.uponExit
+                + "\nallowUndo "
+                + this.allowUndo
+                + "\nhideTabGroups "
+                + this.hideTabGroups
+                + "\nsaveToTabRestoreService "
+                + this.saveToTabRestoreService
+                + "\ntabCloseType "
+                + this.tabCloseType
+                + "\nundoRunnable "
+                + this.undoRunnable
+                + "\nisTabGroup "
+                + this.isTabGroup;
     }
 }

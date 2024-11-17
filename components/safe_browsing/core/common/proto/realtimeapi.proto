@@ -197,6 +197,10 @@ message RTLookupResponse {
   // The URL categories associated with the URL in the request. Only populated
   // for Enterprise Protego and only if categories were found for the URL.
   repeated string url_categories = 3;
+
+  // The information of Llama trigger rules that triggered a CSD ping. Set only
+  // if client_side_detection_type = FORCE_REQUEST.
+  optional LlamaForcedTriggerInfo llama_forced_trigger_info = 4;
 }
 
 // mirrors google.protobuf.Timestamp

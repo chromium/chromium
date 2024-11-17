@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/session/test_session_controller.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -48,6 +49,7 @@
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/pref_names.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
@@ -453,7 +455,7 @@ class FloatingWorkspaceServiceTest : public testing::Test {
 
   void TearDown() override {
     auto* floating_workspace_service =
-        FloatingWorkspaceService::GetForProfile(profile());
+        FloatingWorkspaceServiceFactory::GetForProfile(profile());
     if (floating_workspace_service) {
       floating_workspace_service->ShutDownServicesAndObservers();
     }
@@ -737,7 +739,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, RestoreFloatingWorkspaceTemplate) {
   loop.Run();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -755,7 +757,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, NoNetworkForFloatingWorkspaceTemplate) {
   CleanUpTestNetworkDevices();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -769,7 +771,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -792,7 +794,7 @@ TEST_F(
   CleanUpTestNetworkDevices();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -828,7 +830,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   loop.Run();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -862,7 +864,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   test_sync_service()->SetAllowedByEnterprisePolicy(false);
   ASSERT_FALSE(test_sync_service()->IsSyncFeatureEnabled());
   floating_workspace_service->Init(test_sync_service(),
@@ -893,7 +895,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   loop.Run();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -938,7 +940,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
 
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -981,7 +983,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, CanRecordTemplateLoadMetric) {
   base::HistogramTester histogram_tester;
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1016,7 +1018,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, CanRecordTemplateLaunchTimeout) {
   loop.Run();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1043,7 +1045,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, CaptureFloatingWorkspaceTemplate) {
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1075,7 +1077,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, CaptureSameFloatingWorkspaceTemplate) {
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1125,7 +1127,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1189,7 +1191,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, PopulateFloatingWorkspaceTemplate) {
   loop.Run();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1222,7 +1224,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   loop.Run();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1296,7 +1298,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   task_environment().AdvanceClock(base::Days(31));
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1349,7 +1351,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, PerformGarbageCollectionOnStaleEntries) {
   task_environment().AdvanceClock(base::Days(31));
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1372,7 +1374,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1393,7 +1395,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1414,7 +1416,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1448,7 +1450,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
 
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1502,7 +1504,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1519,7 +1521,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, CanRecordTemplateNotFoundMetric) {
   base::HistogramTester histogram_tester;
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1539,7 +1541,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, CanRecordFloatingWorkspaceV2InitMetric) {
   base::HistogramTester histogram_tester;
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1561,7 +1563,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
       base::Seconds(1));
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1604,7 +1606,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   loop.Run();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1632,7 +1634,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
       base::Seconds(1));
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1688,7 +1690,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, CaptureImmediatelyAfterRestore) {
 
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1717,7 +1719,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1746,7 +1748,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1793,7 +1795,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   loop.Run();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1858,7 +1860,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   loop.Run();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1938,7 +1940,7 @@ TEST_F(
   loop.Run();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -1987,7 +1989,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   loop.Run();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -2034,7 +2036,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   loop.Run();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -2065,7 +2067,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, AutoSignoutWithDeviceInfo) {
   base::RunLoop loop;
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -2094,7 +2096,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   base::RunLoop loop;
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -2125,7 +2127,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   base::RunLoop loop;
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -2152,7 +2154,7 @@ TEST_F(FloatingWorkspaceServiceV2Test, AutoSignoutWithWorkspaceDesk) {
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -2205,7 +2207,7 @@ TEST_F(FloatingWorkspaceServiceV2Test,
   PopulateAppsCache();
   CreateFloatingWorkspaceServiceForTesting(profile());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
@@ -2321,7 +2323,7 @@ class FloatingWorkspaceServiceMultiUserTest
 
   void TearDown() override {
     auto* floating_workspace_service2 =
-        FloatingWorkspaceService::GetForProfile(profile2());
+        FloatingWorkspaceServiceFactory::GetForProfile(profile2());
     if (floating_workspace_service2) {
       floating_workspace_service2->ShutDownServicesAndObservers();
     }
@@ -2347,12 +2349,12 @@ TEST_F(FloatingWorkspaceServiceMultiUserTest, TwoUserLoggedInAndCaptureStops) {
   CreateFloatingWorkspaceServiceForTesting(profile());
   CreateFloatingWorkspaceServiceForTesting(profile2());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
   auto* floating_workspace_service2 =
-      FloatingWorkspaceService::GetForProfile(profile2());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile2());
   floating_workspace_service2->Init(test_sync_service2(),
                                     fake_desk_sync_service2(),
                                     fake_device_info_sync_service2());
@@ -2411,12 +2413,12 @@ TEST_F(FloatingWorkspaceServiceMultiUserTest,
   CreateFloatingWorkspaceServiceForTesting(profile());
   CreateFloatingWorkspaceServiceForTesting(profile2());
   auto* floating_workspace_service =
-      FloatingWorkspaceService::GetForProfile(profile());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
   floating_workspace_service->Init(test_sync_service(),
                                    fake_desk_sync_service(),
                                    fake_device_info_sync_service());
   auto* floating_workspace_service2 =
-      FloatingWorkspaceService::GetForProfile(profile2());
+      FloatingWorkspaceServiceFactory::GetForProfile(profile2());
   floating_workspace_service2->Init(test_sync_service2(),
                                     fake_desk_sync_service2(),
                                     fake_device_info_sync_service2());
@@ -2445,4 +2447,102 @@ TEST_F(FloatingWorkspaceServiceMultiUserTest,
   EXPECT_FALSE(
       floating_workspace_service2->GetLatestFloatingWorkspaceTemplate());
 }
+
+class FloatingWorkspaceServiceV2WithCookiesTest
+    : public FloatingWorkspaceServiceTest {
+ protected:
+  FloatingWorkspaceServiceV2WithCookiesTest() = default;
+  ~FloatingWorkspaceServiceV2WithCookiesTest() override = default;
+
+  void SetUp() override {
+    scoped_feature_list().InitWithFeatures(
+        {features::kFloatingWorkspaceV2, features::kDeskTemplateSync,
+         features::kFloatingSso},
+        {});
+    FloatingWorkspaceServiceTest::SetUp();
+    // Set prefs needed for Floating SSO feature (which syncs cookies).
+    profile()->GetPrefs()->SetBoolean(::prefs::kFloatingSsoEnabled, true);
+    profile()->GetPrefs()->SetBoolean(syncer::prefs::internal::kSyncManaged,
+                                      false);
+    profile()->GetPrefs()->SetBoolean(
+        syncer::prefs::internal::kSyncKeepEverythingSynced, true);
+  }
+};
+
+TEST_F(FloatingWorkspaceServiceV2WithCookiesTest,
+       RestoreTemplateAfterWaitingForCookies) {
+  PopulateAppsCache();
+  const std::string template_name = "floating_workspace_template";
+  base::RunLoop loop;
+  fake_desk_sync_service()->GetDeskModel()->AddOrUpdateEntry(
+      MakeTestFloatingWorkspaceDeskTemplate(template_name, base::Time::Now()),
+      base::BindLambdaForTesting(
+          [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
+                      status);
+            loop.Quit();
+          }));
+  loop.Run();
+  CreateFloatingWorkspaceServiceForTesting(profile());
+  auto* floating_workspace_service =
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
+  floating_workspace_service->Init(test_sync_service(),
+                                   fake_desk_sync_service(),
+                                   fake_device_info_sync_service());
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::WORKSPACE_DESK},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::COOKIES},
+      syncer::SyncService::DataTypeDownloadStatus::kWaitingForUpdates);
+  test_sync_service()->FireStateChanged();
+  // Verify that there is no restored desk template yet: when Floating SSO is
+  // enabled, we also wait for cookies to be up to date.
+  EXPECT_FALSE(mock_desks_client()->restored_desk_template());
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::COOKIES},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+  test_sync_service()->FireStateChanged();
+  // Desk template is restored once cookies are up to date.
+  EXPECT_TRUE(mock_desks_client()->restored_desk_template());
+  EXPECT_EQ(mock_desks_client()->restored_desk_template()->template_name(),
+            base::UTF8ToUTF16(template_name));
+}
+
+TEST_F(FloatingWorkspaceServiceV2WithCookiesTest,
+       RestoreTemplateWhenCookiesHaveSyncError) {
+  PopulateAppsCache();
+  const std::string template_name = "floating_workspace_template";
+  base::RunLoop loop;
+  fake_desk_sync_service()->GetDeskModel()->AddOrUpdateEntry(
+      MakeTestFloatingWorkspaceDeskTemplate(template_name, base::Time::Now()),
+      base::BindLambdaForTesting(
+          [&](desks_storage::DeskModel::AddOrUpdateEntryStatus status,
+              std::unique_ptr<ash::DeskTemplate> new_entry) {
+            EXPECT_EQ(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk,
+                      status);
+            loop.Quit();
+          }));
+  loop.Run();
+  CreateFloatingWorkspaceServiceForTesting(profile());
+  auto* floating_workspace_service =
+      FloatingWorkspaceServiceFactory::GetForProfile(profile());
+  floating_workspace_service->Init(test_sync_service(),
+                                   fake_desk_sync_service(),
+                                   fake_device_info_sync_service());
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::WORKSPACE_DESK},
+      syncer::SyncService::DataTypeDownloadStatus::kUpToDate);
+  test_sync_service()->SetDownloadStatusFor(
+      {syncer::DataType::COOKIES},
+      syncer::SyncService::DataTypeDownloadStatus::kError);
+  test_sync_service()->FireStateChanged();
+  // Desk template is restored without waiting for Floating SSO if Sync reports
+  // an error for cookies.
+  EXPECT_TRUE(mock_desks_client()->restored_desk_template());
+  EXPECT_EQ(mock_desks_client()->restored_desk_template()->template_name(),
+            base::UTF8ToUTF16(template_name));
+}
+
 }  // namespace ash::floating_workspace

@@ -30,7 +30,7 @@ namespace features {
 // guaranteed to be retrievable if OSCrypt Async is not used.
 BASE_FEATURE(kUseNewEncryptionKeyForWebData,
              "UseNewEncryptionKeyForWebData",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace features
 
@@ -163,6 +163,13 @@ void WebDatabaseService::CancelRequest(WebDataServiceBase::Handle h) {
 
 void WebDatabaseService::RegisterDBErrorCallback(DBLoadErrorCallback callback) {
   error_callbacks_.push_back(std::move(callback));
+}
+
+bool WebDatabaseService::UsesInMemoryDatabaseForMetrics() const {
+  // This mimics what WebDatabase::Init() does internally, as it would require
+  // significant metric-only boilerplate to actually fetch the authoritative
+  // boolean from the very underlying `sql::Database::in_memory_`.
+  return path_.value() == WebDatabase::kInMemoryPath;
 }
 
 void WebDatabaseService::OnDatabaseLoadDone(sql::InitStatus status,

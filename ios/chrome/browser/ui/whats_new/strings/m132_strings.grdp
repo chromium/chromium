@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+ <!-- Milestone specific strings -->
+<message name="IDS_IOS_WHATS_NEW_PRICETRACKING_TITLE" desc="PriceTracking Title displayed in What's New. [iOS only]">
+  Price Tracking
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICETRACKING_SUBTITLE" desc="PriceTracking Subtitle displayed in What's New. [iOS only]">
+  Track prices of products and get alerts when the price drops on any site
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICETRACKING_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of PriceTracking in What's New. [iOS only]">
+  Go to the page of a product
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICETRACKING_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of PriceTracking in What's New. [iOS only]">
+  In the address bar, tap price history to see price changes over time
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICETRACKING_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of PriceTracking in What's New. [iOS only]">
+  To track the product, tap Track
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICETRACKING_SCREENSHOT_TEXT_1" desc="Text in image displaying: Smart Watch for the feature: PriceTracking in What's New. [iOS only]">
+  Smart Watch
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICETRACKING_SCREENSHOT_TEXT_2" desc="Text in image displaying: Price $100 - $150 for the feature: PriceTracking in What's New. [iOS only]">
+  Price &#36;100 - &#36;150
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICETRACKING_SCREENSHOT_TEXT_3" desc="Text in image displaying: Track Price for the feature: PriceTracking in What's New. [iOS only]">
+  Track Price
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICEHISTORY_TITLE" desc="PriceHistory Title displayed in What's New. [iOS only]">
+  Price History
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICEHISTORY_SUBTITLE" desc="PriceHistory Subtitle displayed in What's New. [iOS only]">
+  See how the prices of products have changed over time
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICEHISTORY_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of PriceHistory in What's New. [iOS only]">
+  Go to the page of a product
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICEHISTORY_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of PriceHistory in What's New. [iOS only]">
+  In the address bar, tap price history icon to see price changes over time
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICEHISTORY_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of PriceHistory in What's New. [iOS only]">
+  To track the product, tap Track
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICEHISTORY_SCREENSHOT_TEXT_1" desc="Text in image displaying: Price History for the feature: PriceHistory in What's New. [iOS only]">
+  Price History
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICEHISTORY_SCREENSHOT_TEXT_2" desc="Text in image displaying: Smart Watch for the feature: PriceHistory in What's New. [iOS only]">
+  Smart Watch
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICEHISTORY_SCREENSHOT_TEXT_3" desc="Text in image displaying: $120 for the feature: PriceHistory in What's New. [iOS only]">
+  &#36;120
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICEHISTORY_SCREENSHOT_TEXT_4" desc="Text in image displaying: $100 for the feature: PriceHistory in What's New. [iOS only]">
+  &#36;100
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICEHISTORY_SCREENSHOT_TEXT_5" desc="Text in image displaying: $150 for the feature: PriceHistory in What's New. [iOS only]">
+  &#36;150
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICEHISTORY_SCREENSHOT_TEXT_6" desc="Text in image displaying: $200 for the feature: PriceHistory in What's New. [iOS only]">
+  &#36;200
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICEHISTORY_SCREENSHOT_TEXT_7" desc="Text in image displaying: Dec for the feature: PriceHistory in What's New. [iOS only]">
+  Dec
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICEHISTORY_SCREENSHOT_TEXT_8" desc="Text in image displaying: Nov for the feature: PriceHistory in What's New. [iOS only]">
+  Nov
+</message>
+<message name="IDS_IOS_WHATS_NEW_PRICEHISTORY_SCREENSHOT_TEXT_9" desc="Text in image displaying: Oct for the feature: PriceHistory in What's New. [iOS only]">
+  Oct
+</message>
+<message name="IDS_IOS_WHATS_NEW_OTHERBUYINGOPTIONS_TITLE" desc="OtherBuyingOptions Title displayed in What's New. [iOS only]">
+  Other Buying Options
+</message>
+<message name="IDS_IOS_WHATS_NEW_OTHERBUYINGOPTIONS_SUBTITLE" desc="OtherBuyingOptions Subtitle displayed in What's New. [iOS only]">
+  Easily find more stores that offer the products you want to buy
+</message>
+<message name="IDS_IOS_WHATS_NEW_OTHERBUYINGOPTIONS_INSTRUCTIONS_STEP_1" desc="Text of the row indicating step 1 of OtherBuyingOptions in What's New. [iOS only]">
+  Go to the page of a product
+</message>
+<message name="IDS_IOS_WHATS_NEW_OTHERBUYINGOPTIONS_INSTRUCTIONS_STEP_2" desc="Text of the row indicating step 2 of OtherBuyingOptions in What's New. [iOS only]">
+  In the address bar, tap the price history icon to see price changes over time
+</message>
+<message name="IDS_IOS_WHATS_NEW_OTHERBUYINGOPTIONS_INSTRUCTIONS_STEP_3" desc="Text of the row indicating step 3 of OtherBuyingOptions in What's New. [iOS only]">
+  Scroll to the bottom and tap Other Buying Options
+</message>
+<message name="IDS_IOS_WHATS_NEW_OTHERBUYINGOPTIONS_SCREENSHOT_TEXT_1" desc="Text in image displaying: See more buying options for the feature: OtherBuyingOptions in What's New. [iOS only]">
+  See more buying options
+</message>
+<message name="IDS_IOS_WHATS_NEW_OTHERBUYINGOPTIONS_SCREENSHOT_TEXT_2" desc="Text in image displaying: Other stores across the web for the feature: OtherBuyingOptions in What's New. [iOS only]">
+        Other stores across the web
+</message>
+</grit-part>

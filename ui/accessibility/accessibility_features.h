@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_base_export.h"
 
 // This file declares base::Features related to the ui/accessibility code.
@@ -48,6 +47,11 @@ namespace features {
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPdfOcrForSelectToSpeak);
 AX_BASE_EXPORT bool IsAccessibilityPdfOcrForSelectToSpeakEnabled();
 
+// A replacement algorithm for AbstractInlineTextBox + InlineCursor for
+// AXInlineTextBox creation.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityBlockFlowIterator);
+AX_BASE_EXPORT bool IsAccessibilityBlockFlowIteratorEnabled();
+
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityPruneRedundantInlineText);
 AX_BASE_EXPORT bool IsAccessibilityPruneRedundantInlineTextEnabled();
 
@@ -68,6 +72,17 @@ AX_BASE_EXPORT bool IsAutoDisableAccessibilityEnabled();
 // Recognize "aria-virtualcontent" as a valid aria property.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kEnableAccessibilityAriaVirtualContent);
 AX_BASE_EXPORT bool IsAccessibilityAriaVirtualContentEnabled();
+
+// Expose <summary>" as a heading instead of a button.
+// Two reasons to try this:
+// 1. Unlike for a button, JAWS will not enforce leafiness for a heading, so
+// that things like child links will still be presented to the user.
+// 2. The user can use heading navigation for summaries.
+// We may decide to scale this back for use cases such as a summary inside of
+// a table or a list.
+// Experiment until we validate the approach with ATs and ARIA WG.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityExposeSummaryAsHeading);
+AX_BASE_EXPORT bool IsAccessibilityExposeSummaryAsHeadingEnabled();
 
 // Use language detection to determine the language
 // of text content in page and exposed to the browser process AXTree.
@@ -101,10 +116,6 @@ AX_BASE_EXPORT bool IsTextBasedAudioDescriptionEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUseAXPositionForDocumentMarkers);
 AX_BASE_EXPORT bool IsUseAXPositionForDocumentMarkersEnabled();
 
-// Performs a move over a copy of merge tree update.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUseMoveNotCopyInMergeTreeUpdate);
-AX_BASE_EXPORT bool IsUseMoveNotCopyInMergeTreeUpdateEnabled();
-
 #if BUILDFLAG(IS_WIN)
 // Use Chrome-specific accessibility COM API.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kIChromeAccessible);
@@ -121,7 +132,7 @@ AX_BASE_EXPORT bool IsSelectiveUIAEnablementEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kUiaProvider);
 #endif  // BUILDFLAG(IS_WIN)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 // TODO(accessibility): Should this be moved to ash_features.cc?
 AX_BASE_EXPORT bool IsDictationOfflineAvailable();
 
@@ -136,9 +147,6 @@ AX_BASE_EXPORT bool IsAccessibilityReducedAnimationsEnabled();
 // Integrate with FaceGaze.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFaceGaze);
 AX_BASE_EXPORT bool IsAccessibilityFaceGazeEnabled();
-
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFaceGazeGravityWells);
-AX_BASE_EXPORT bool IsAccessibilityFaceGazeGravityWellsEnabled();
 
 // Adds reduced animations toggle to kiosk quick settings.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityReducedAnimationsInKiosk);
@@ -161,38 +169,17 @@ IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifierFollowsChromeVox);
 AX_BASE_EXPORT bool IsAccessibilityMagnifierFollowsChromeVoxEnabled();
 
-// Whether the screen magnifier can follow the Select to Speak focus.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifierFollowsSts);
-AX_BASE_EXPORT bool IsAccessibilityMagnifierFollowsStsEnabled();
-
 // Control mouse with keyboard.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMouseKeys);
 AX_BASE_EXPORT bool IsAccessibilityMouseKeysEnabled();
-
-// Control blink rate of text cursor.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityCaretBlinkIntervalSetting);
-AX_BASE_EXPORT bool IsAccessibilityCaretBlinkIntervalSettingEnabled();
-
-// Control whether the overscroll setting is available.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityOverscrollSettingFeature);
-AX_BASE_EXPORT bool IsAccessibilityOverscrollSettingFeatureEnabled();
-
-// Controls whether the Select to Speak keyboard shortcut is enabled.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilitySelectToSpeakShortcut);
-AX_BASE_EXPORT bool IsAccessibilitySelectToSpeakShortcutEnabled();
 
 // Controls whether the shake cursor to locate feature is available.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityShakeToLocate);
 AX_BASE_EXPORT bool IsAccessibilityShakeToLocateEnabled();
 
-// Controls whether the turn on magnifier at accelerator dialog feature is
-// available.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifyAcceleratorDialog);
-AX_BASE_EXPORT bool IsAccessibilityMagnifyAcceleratorDialogEnabled();
-
-// Controls whether the disable trackpad feature is enabled.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityDisableTrackpad);
-AX_BASE_EXPORT bool IsAccessibilityDisableTrackpadEnabled();
+// Controls whether the disable touchpad feature is enabled.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityDisableTouchpad);
+AX_BASE_EXPORT bool IsAccessibilityDisableTouchpadEnabled();
 
 // Controls whether the flash screen for notifications feature is available.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFlashScreenFeature);
@@ -202,7 +189,7 @@ AX_BASE_EXPORT bool IsAccessibilityFlashScreenFeatureEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityFilterKeys);
 AX_BASE_EXPORT bool IsAccessibilityFilterKeysEnabled();
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
 // Disable max node and timeout limits on the
@@ -241,12 +228,6 @@ AX_BASE_EXPORT bool IsDataCollectionModeForScreen2xEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kMainNodeAnnotations);
 AX_BASE_EXPORT bool IsMainNodeAnnotationsEnabled();
 
-// Use OCR to make inaccessible (i.e. untagged) PDFs
-// accessibility. (Note: Due to the size of the OCR component, this feature
-// targets only desktop versions of Chrome for now.)
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kPdfOcr);
-AX_BASE_EXPORT bool IsPdfOcrEnabled();
-
 // Show the Read Aloud feature in Read Anything.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloud);
 AX_BASE_EXPORT bool IsReadAnythingReadAloudEnabled();
@@ -254,15 +235,6 @@ AX_BASE_EXPORT bool IsReadAnythingReadAloudEnabled();
 // Use automatic voice switching in the Read Aloud feature in Read Anything.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAloudAutoVoiceSwitching);
 AX_BASE_EXPORT bool IsReadAloudAutoVoiceSwitchingEnabled();
-
-// Use automatic voice switching in the Read Aloud feature in Read Anything.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAloudLanguagePackDownloading);
-AX_BASE_EXPORT bool IsReadAloudLanguagePackDownloadingEnabled();
-
-// Enable automatic word highlighting in Read Anything Read Aloud.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kReadAnythingReadAloudAutomaticWordHighlighting);
-AX_BASE_EXPORT bool IsReadAnythingReadAloudAutomaticWordHighlightingEnabled();
 
 // Enable phrase highlighting in Read Anything Read Aloud.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloudPhraseHighlighting);

@@ -120,7 +120,6 @@ class BLINK_EXPORT WebAXObject {
   bool IsFocused() const;
   bool IsModal() const;
 
-  bool IsOffScreen() const;
   bool IsVisited() const;
 
   bool CanSetValueAttribute() const;
@@ -298,10 +297,6 @@ class BLINK_EXPORT WebAXObject {
       ui::AXTreeSource<const ui::AXNode*, ui::AXTreeData*, ui::AXNodeData>*
           source);
   void MarkPluginDescendantDirty(ui::AXNodeID node_id);
-
-  // For testing only, returns whether or not we have the permission to
-  // call AOM event listeners.
-  bool CanCallAOMEventListenersForTesting() const;
 
 #if INSIDE_BLINK
   WebAXObject(AXObject*);

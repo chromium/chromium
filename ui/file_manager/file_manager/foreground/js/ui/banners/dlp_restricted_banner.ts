@@ -60,7 +60,7 @@ export class DlpRestrictedBanner extends StateBanner {
       return;
     }
     const text =
-        this.shadowRoot!.querySelector('span[slot="text"]')! as HTMLSpanElement;
+        this.shadowRoot!.querySelector<HTMLSpanElement>('span[slot="text"]')!;
     switch (context.type) {
       case DialogType.SELECT_OPEN_FILE:
       case DialogType.SELECT_OPEN_MULTI_FILE:

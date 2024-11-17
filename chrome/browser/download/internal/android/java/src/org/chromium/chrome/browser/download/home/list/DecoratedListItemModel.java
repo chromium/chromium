@@ -70,8 +70,7 @@ class DecoratedListItemModel extends ListObservableImpl<Void>
     @Override
     public void onItemRangeChanged(
             ListObservable source, int index, int count, @Nullable Void payload) {
-        assert payload == null;
-        notifyItemRangeChanged(convertIndexFromSource(index), count, payload);
+        notifyItemRangeChanged(convertIndexFromSource(index), count, null);
     }
 
     private int convertIndexForSource(int index) {

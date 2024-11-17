@@ -5,7 +5,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -245,8 +244,7 @@ IN_PROC_BROWSER_TEST_F(
 // Tests that iframes can't dynamically load mixed content in a regular browser
 // tab, when the iframe was created in a PWA window.
 // https://crbug.com/1087382: Flaky on Windows, CrOS and ASAN
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || defined(ADDRESS_SANITIZER)
 #define MAYBE_IFrameDynamicMixedContentInPWAOpenInChrome \
   DISABLED_IFrameDynamicMixedContentInPWAOpenInChrome
 #else

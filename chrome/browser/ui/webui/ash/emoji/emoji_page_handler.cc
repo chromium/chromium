@@ -326,27 +326,28 @@ void EmojiPageHandler::GetFeatureList(GetFeatureListCallback callback) {
 }
 
 void EmojiPageHandler::GetCategories(GetCategoriesCallback callback) {
-  gif_tenor_api_fetcher_.FetchCategories(std::move(callback),
-                                         url_loader_factory_);
+  gif_tenor_api_fetcher_.FetchCategories(url_loader_factory_,
+                                         std::move(callback));
 }
 
 void EmojiPageHandler::GetFeaturedGifs(const std::optional<std::string>& pos,
                                        GetFeaturedGifsCallback callback) {
-  gif_tenor_api_fetcher_.FetchFeaturedGifs(std::move(callback),
-                                           url_loader_factory_, pos);
+  gif_tenor_api_fetcher_.FetchFeaturedGifs(url_loader_factory_, pos,
+                                           std::move(callback));
 }
 
 void EmojiPageHandler::SearchGifs(const std::string& query,
                                   const std::optional<std::string>& pos,
                                   SearchGifsCallback callback) {
-  gif_tenor_api_fetcher_.FetchGifSearch(std::move(callback),
-                                        url_loader_factory_, query, pos);
+  gif_tenor_api_fetcher_.FetchGifSearch(url_loader_factory_, query, pos,
+                                        /*limit=*/std::nullopt,
+                                        std::move(callback));
 }
 
 void EmojiPageHandler::GetGifsByIds(const std::vector<std::string>& ids,
                                     GetGifsByIdsCallback callback) {
-  gif_tenor_api_fetcher_.FetchGifsByIds(std::move(callback),
-                                        url_loader_factory_, ids);
+  gif_tenor_api_fetcher_.FetchGifsByIds(url_loader_factory_, ids,
+                                        std::move(callback));
 }
 
 void EmojiPageHandler::InsertEmoji(const std::string& emoji_to_insert,

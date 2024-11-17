@@ -6,15 +6,16 @@ package org.chromium.chrome.browser.tab_group_sync;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Log;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.SavedTabGroupTab;
@@ -22,6 +23,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Responsible for observing local tab model system and notifying sync about tab group changes, tab
@@ -199,9 +201,16 @@ public final class TabGroupSyncLocalObserver {
 
                 // The tab position was changed. Update sync.
                 int positionInGroup = mTabGroupModelFilter.getIndexOfTabInGroup(movedTab);
+                int rootId = movedTab.getRootId();
                 LocalTabGroupId tabGroupId =
-                        TabGroupSyncUtils.getLocalTabGroupId(
-                                mTabGroupModelFilter, movedTab.getRootId());
+                        TabGroupSyncUtils.getLocalTabGroupId(mTabGroupModelFilter, rootId);
+                Log.w(
+                        TAG,
+                        String.format(
+                                Locale.getDefault(),
+                                "movedTab positionInGroup %d out of %d",
+                                positionInGroup,
+                                mTabGroupModelFilter.getRelatedTabCountForRootId(rootId)));
                 mRemoteTabGroupMutationHelper.moveTab(
                         tabGroupId, movedTab.getId(), positionInGroup);
             }

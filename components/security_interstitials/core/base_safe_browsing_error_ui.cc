@@ -28,7 +28,7 @@ BaseSafeBrowsingErrorUI::BaseSafeBrowsingErrorUI(
       time_triggered_(time_triggered),
       controller_(controller) {}
 
-BaseSafeBrowsingErrorUI::~BaseSafeBrowsingErrorUI() {}
+BaseSafeBrowsingErrorUI::~BaseSafeBrowsingErrorUI() = default;
 
 BaseSafeBrowsingErrorUI::SBErrorDisplayOptions::SBErrorDisplayOptions(
     bool is_main_frame_load_pending,

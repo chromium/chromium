@@ -122,6 +122,20 @@ UIImage* DefaultFaviconImage() {
     [self addTarget:self
                   action:@selector(tabWasTapped)
         forControlEvents:UIControlEventTouchUpInside];
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+        UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
+        UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
+        UITraitUserInterfaceLevel.class
+      ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateStyleOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -221,19 +235,15 @@ UIImage* DefaultFaviconImage() {
   return CGRectContainsPoint(CGRectInset([self bounds], inset, 0), point);
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-
-  // As of iOS 13 Beta 4, resizable images are flaky for dark mode.
-  // This triggers the styling again, where the image is resolved instead of
-  // relying in the system's magic. Radar filled:
-  // b/137942721.hasDifferentColorAppearanceComparedToTraitCollection
-  if ([self.traitCollection
-          hasDifferentColorAppearanceComparedToTraitCollection:
-              previousTraitCollection]) {
-    [self updateStyleForSelected:self.selected];
+  if (@available(iOS 17, *)) {
+    return;
   }
+  [self updateStyleOnTraitChange:previousTraitCollection];
 }
+#endif
 
 #pragma mark - Private
 
@@ -455,6 +465,20 @@ UIImage* DefaultFaviconImage() {
   effect.prefersScaledContent = NO;
   effect.prefersShadow = NO;
   return [UIPointerStyle styleWithEffect:effect shape:nil];
+}
+
+// Invokes the `updateStyleForSelected` function if the view's color appearance
+// was changed.
+- (void)updateStyleOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  // As of iOS 13 Beta 4, resizable images are flaky for dark mode.
+  // This triggers the styling again, where the image is resolved instead of
+  // relying in the system's magic. Radar filled:
+  // b/137942721.hasDifferentColorAppearanceComparedToTraitCollection
+  if ([self.traitCollection
+          hasDifferentColorAppearanceComparedToTraitCollection:
+              previousTraitCollection]) {
+    [self updateStyleForSelected:self.selected];
+  }
 }
 
 #pragma mark - Touch events

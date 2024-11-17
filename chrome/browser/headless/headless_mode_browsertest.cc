@@ -14,11 +14,13 @@
 #include <memory>
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
+#include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
@@ -34,6 +36,7 @@
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/headless/clipboard/headless_clipboard.h"     // nogncheck
 #include "components/infobars/content/content_infobar_manager.h"  // nogncheck
@@ -112,13 +115,12 @@ content::WebContents* HeadlessModeBrowserTest::GetActiveWebContents() {
   return browser()->tab_strip_model()->GetActiveWebContents();
 }
 
-void HeadlessModeBrowserTestWithUserDataDir::SetUpCommandLine(
-    base::CommandLine* command_line) {
-  ASSERT_TRUE(user_data_dir_.CreateUniqueTempDir());
-  ASSERT_TRUE(base::IsDirectoryEmpty(user_data_dir()));
-  command_line->AppendSwitchPath(::switches::kUserDataDir, user_data_dir());
-
-  AppendHeadlessCommandLineSwitches(command_line);
+base::FilePath HeadlessModeBrowserTestWithUserDataDir::GetUserDataDir() const {
+  // InProcessBrowserTest class HeadlessModeBrowserTest is derived from
+  // guarantees that user data dir exists.
+  base::FilePath user_data_dir;
+  base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
+  return user_data_dir;
 }
 
 void HeadlessModeBrowserTestWithStartWindowMode::SetUpCommandLine(
@@ -324,6 +326,12 @@ IN_PROC_BROWSER_TEST_F(HeadlessModeUserAgentBrowserTest, UserAgentHasHeadless) {
 
 IN_PROC_BROWSER_TEST_F(HeadlessModeBrowserTestWithUserDataDir,
                        StartWithUserDataDir) {
+  // InProcessBrowserTest always provdies temporary user data dir.
+  const base::CommandLine& command_line =
+      CHECK_DEREF(base::CommandLine::ForCurrentProcess());
+  ASSERT_EQ(command_line.GetSwitchValuePath(::switches::kUserDataDir),
+            GetUserDataDir());
+
   // With user data dir expect to start in non incognito mode.
   EXPECT_FALSE(browser()->profile()->IsOffTheRecord());
 }

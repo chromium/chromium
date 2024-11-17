@@ -59,6 +59,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
   void NotifyCredentialsChangedForTesting(
       base::PassKey<class PasswordStoreBuiltInBackendPasswordLossMetricsTest>,
       const PasswordStoreChangeList& changes);
+  void NotifyDeletionsHaveSyncedForTesting(bool success);
 
  private:
   // Implements PasswordStoreBackend interface.
@@ -91,6 +92,7 @@ class PasswordStoreBuiltInBackend : public PasswordStoreBackend,
       const base::Location& location,
       base::Time delete_begin,
       base::Time delete_end,
+      base::OnceCallback<void(bool)> sync_completion,
       PasswordChangesOrErrorReply callback) override;
   void RemoveLoginsByURLAndTimeAsync(
       const base::Location& location,

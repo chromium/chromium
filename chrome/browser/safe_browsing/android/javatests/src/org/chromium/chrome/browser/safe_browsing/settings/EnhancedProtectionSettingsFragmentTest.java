@@ -55,7 +55,7 @@ public class EnhancedProtectionSettingsFragmentTest {
     private static final String PREF_BULLETSEVEN = "bullet_seven";
     private static final String PREF_BULLETEIGHT = "bullet_eight";
 
-    private void launchSettingsActivity() {
+    private void startSettings() {
         mTestRule.startSettingsActivity();
         EnhancedProtectionSettingsFragment fragment = mTestRule.getFragment();
         mEnhancedProtectionSubtitle = fragment.findPreference(PREF_SUBTITLE);
@@ -84,7 +84,7 @@ public class EnhancedProtectionSettingsFragmentTest {
                     new SafeBrowsingBridge(ProfileManager.getLastUsedRegularProfile())
                             .setSafeBrowsingState(SafeBrowsingState.ENHANCED_PROTECTION);
                 });
-        launchSettingsActivity();
+        startSettings();
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -34,7 +34,7 @@ void Gzipper::Deflate(mojo_base::BigBuffer data, DeflateCallback callback) {
     return;
   }
   compressed_data.resize(compressed_data_size);
-  std::move(callback).Run(std::move(compressed_data));
+  std::move(callback).Run({{compressed_data}});
 }
 
 void Gzipper::Inflate(mojo_base::BigBuffer data,
@@ -49,7 +49,7 @@ void Gzipper::Inflate(mojo_base::BigBuffer data,
     return;
   }
   output.resize(uncompressed_size);
-  std::move(callback).Run(std::move(output));
+  std::move(callback).Run({{output}});
 }
 
 void Gzipper::Compress(mojo_base::BigBuffer data, CompressCallback callback) {

@@ -884,11 +884,7 @@ TEST_F(InterestGroupCachingStorageTest, DontLoadCachedInterestGroupsIfExpired) {
 
 TEST_F(InterestGroupCachingStorageTest, GetCachedOwnerAndSignalsOrigins) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{features::kFledgeUsePreconnectCache,
-                            blink::features::
-                                kFledgePermitCrossOriginTrustedSignals},
-      /*disabled_features=*/{});
+  feature_list.InitAndEnableFeature(features::kFledgeUsePreconnectCache);
   std::unique_ptr<content::InterestGroupCachingStorage> caching_storage =
       CreateCachingStorage();
 

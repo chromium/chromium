@@ -57,8 +57,7 @@ bool IsPropertyAllowedInRule(const CSSProperty& property,
     case StyleRule::kPositionTry:
       return property.IsValidForPositionTry();
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 
@@ -218,7 +217,7 @@ bool CSSPropertyParser::ParseValueStart(CSSPropertyID unresolved_property,
           /*is_animation_tainted=*/false,
           /*must_contain_variable_reference=*/true,
           /*restricted_value=*/true, /*comma_ends_declaration=*/false,
-          important, context_->GetExecutionContext());
+          important, *context_);
   if (!variable_data) {
     return false;
   }
@@ -383,7 +382,7 @@ CSSPropertyID UnresolvedCSSPropertyID(const ExecutionContext* execution_context,
 template <typename CharacterType>
 static CSSValueID CssValueKeywordID(const CharacterType* value_keyword,
                                     unsigned length) {
-  char buffer[maxCSSValueKeywordLength + 1];  // 1 for null character
+  char buffer[kMaxCSSValueKeywordLength + 1];  // 1 for null character
   if (!QuasiLowercaseIntoBuffer(value_keyword, length, buffer)) {
     return CSSValueID::kInvalid;
   }
@@ -405,7 +404,7 @@ CSSValueID CssValueKeywordID(StringView string) {
   if (!length) {
     return CSSValueID::kInvalid;
   }
-  if (length > maxCSSValueKeywordLength) {
+  if (length > kMaxCSSValueKeywordLength) {
     return CSSValueID::kInvalid;
   }
 

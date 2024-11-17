@@ -31,7 +31,7 @@
 namespace gl {
 namespace {
 
-// When in BGRA888 overlay format, wait for this time delta before retrying
+// When in BGRA8888 overlay format, wait for this time delta before retrying
 // YUV format.
 constexpr base::TimeDelta kDelayForRetryingYUVFormat = base::Minutes(10);
 
@@ -44,6 +44,11 @@ BASE_FEATURE(kFallbackBT709VideoToBT601,
 BASE_FEATURE(kDisableVPBLTUpscale,
              "DisableVPBLTUpscale",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This flag attempts to enable MPO for P010 SDR video content. The feature
+// should only enabled when P010 pixel format is detected as displayable
+// surface at the same time.
+BASE_FEATURE(kP010MPOForSDR, "P010MPOForSDR", base::FEATURE_ENABLED_BY_DEFAULT);
 
 gfx::ColorSpace GetOutputColorSpace(const gfx::ColorSpace& input_color_space,
                                     bool is_yuv_swapchain) {
@@ -63,25 +68,6 @@ gfx::ColorSpace GetOutputColorSpace(const gfx::ColorSpace& input_color_space,
 bool IsProtectedVideo(gfx::ProtectedVideoType protected_video_type) {
   return protected_video_type != gfx::ProtectedVideoType::kClear;
 }
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class OverlayFullScreenTypes {
-  kWindowMode,
-  kFullScreenMode,
-  kFullScreenInWidthOnly,
-  kFullScreenInHeightOnly,
-  kOverSizedFullScreen,
-  kNotAvailable,
-  kMaxValue = kNotAvailable,
-};
-
-enum : size_t {
-  kSwapChainImageIndex = 0,
-  kNV12ImageIndex = 0,
-  kYPlaneImageIndex = 0,
-  kUVPlaneImageIndex = 1,
-};
 
 const char* ProtectedVideoTypeToString(gfx::ProtectedVideoType type) {
   switch (type) {
@@ -142,15 +128,18 @@ const char* DxgiFormatToString(DXGI_FORMAT format) {
       return "YUY2";
     case DXGI_FORMAT_NV12:
       return "NV12";
+    case DXGI_FORMAT_P010:
+      return "P010";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "UNKNOWN";
+      NOTREACHED();
   }
 }
 
 bool IsYUVSwapChainFormat(DXGI_FORMAT format) {
-  if (format == DXGI_FORMAT_NV12 || format == DXGI_FORMAT_YUY2)
+  if (format == DXGI_FORMAT_NV12 || format == DXGI_FORMAT_YUY2 ||
+      format == DXGI_FORMAT_P010) {
     return true;
+  }
   return false;
 }
 
@@ -456,6 +445,12 @@ bool TryDisableDesktopPlane(IDXGIDecodeSwapChain* decode_swap_chain,
   return true;
 }
 
+bool IsCompatibleHDRMetadata(const gfx::HDRMetadata& hdr_metadata) {
+  return (
+      (hdr_metadata.smpte_st_2086 && hdr_metadata.smpte_st_2086->IsValid()) ||
+      (hdr_metadata.cta_861_3 && hdr_metadata.cta_861_3->IsValid()));
+}
+
 }  // namespace
 
 SwapChainPresenter::PresentationHistory::PresentationHistory() = default;
@@ -509,11 +504,21 @@ SwapChainPresenter::~SwapChainPresenter() {
 
 DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
     gfx::ProtectedVideoType protected_video_type,
-    bool content_is_hdr) {
-  // Prefer RGB10A2 swapchain when playing HDR content.
-  // Only use rgb10a2 overlay when the hdr monitor is available.
-  if (content_is_hdr && DirectCompositionSystemHDREnabled()) {
+    bool use_hdr_swap_chain,
+    bool use_p010_for_sdr_swap_chain) {
+  // Prefer RGB10A2 swapchain when playing HDR content and system HDR being
+  // enabled. Another scenario is that AutoHDR is enabled even with SDR
+  // content, RGB10A2 is also preferred.
+  // Note that only use RGB10A2 overlay when the hdr monitor is available.
+  if (use_hdr_swap_chain) {
     return DXGI_FORMAT_R10G10B10A2_UNORM;
+  }
+
+  // Prefer P010 swapchain when playing P010 SDR content on SDR system with
+  // P010 displayable.
+  if (base::FeatureList::IsEnabled(kP010MPOForSDR) &&
+      use_p010_for_sdr_swap_chain) {
+    return DXGI_FORMAT_P010;
   }
 
   DXGI_FORMAT yuv_overlay_format = GetDirectCompositionSDROverlayFormat();
@@ -535,7 +540,6 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
   // It's more efficient to use a BGRA backbuffer instead of YUV if overlays
   // aren't being used, as otherwise DWM will use the video processor a second
   // time to convert it to BGRA before displaying it on screen.
-
   if (swap_chain_format_ == yuv_overlay_format) {
     // Switch to BGRA once 3/4 of presents are composed.
     if (composition_count >= (PresentationHistory::kPresentsToStore * 3 / 4)) {
@@ -559,9 +563,9 @@ DXGI_FORMAT SwapChainPresenter::GetSwapChainFormat(
 
 Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
     const gfx::Size& texture_size,
-    const uint8_t* nv12_pixmap,
+    const uint8_t* shm_video_pixmap,
     size_t pixmap_stride) {
-  if (!nv12_pixmap) {
+  if (!shm_video_pixmap) {
     DLOG(ERROR) << "Invalid NV12 pixmap data.";
     return nullptr;
   }
@@ -571,7 +575,9 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
     return nullptr;
   }
 
-  if (pixmap_stride < static_cast<size_t>(texture_size.width())) {
+  const auto cols = static_cast<size_t>(texture_size.width());
+  const auto rows = static_cast<size_t>(texture_size.height());
+  if (pixmap_stride < cols) {
     DLOG(ERROR) << "Invalid NV12 pixmap stride.";
     return nullptr;
   }
@@ -602,8 +608,8 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
     HRESULT hr =
         d3d11_device_->CreateTexture2D(&desc, nullptr, &staging_texture_);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Creating D3D11 video staging texture failed: " << std::hex
-                  << hr;
+      DLOG(ERROR) << "Creating D3D11 video staging texture failed: 0x"
+                  << std::hex << hr;
       DisableDirectCompositionOverlays();
       return nullptr;
     }
@@ -611,7 +617,7 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
     staging_texture_size_ = texture_size;
     hr = SetDebugName(staging_texture_.Get(), "SwapChainPresenter_Staging");
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to label D3D11 texture: " << std::hex << hr;
+      DLOG(ERROR) << "Failed to label D3D11 texture: 0x" << std::hex << hr;
     }
   }
 
@@ -625,40 +631,38 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
   HRESULT hr =
       context->Map(staging_texture_.Get(), 0, map_type, 0, &mapped_resource);
   if (FAILED(hr)) {
-    DLOG(ERROR) << "Mapping D3D11 video staging texture failed: " << std::hex
+    DLOG(ERROR) << "Mapping D3D11 video staging texture failed: 0x" << std::hex
                 << hr;
     return nullptr;
   }
 
   size_t dest_stride = mapped_resource.RowPitch;
-  DCHECK_GE(dest_stride, static_cast<size_t>(texture_size.width()));
+  DCHECK_GE(dest_stride, cols);
   // y-plane size.
-  size_t src_size = pixmap_stride * texture_size.height();
-  size_t dest_size = dest_stride * texture_size.height();
-  if (texture_size.height() / 2 > 0) {
+  size_t src_size = pixmap_stride * rows;
+  size_t dest_size = dest_stride * rows;
+  if (rows / 2 > 0) {
     // uv-plane size. Note that the last row is actual texture width, not
     // the stride.
-    src_size +=
-        pixmap_stride * (texture_size.height() / 2 - 1) + texture_size.width();
-    dest_size +=
-        dest_stride * (texture_size.height() / 2 - 1) + texture_size.width();
+    src_size += pixmap_stride * (rows / 2 - 1) + cols;
+    dest_size += dest_stride * (rows / 2 - 1) + cols;
   }
   base::span<const uint8_t> src =
-      UNSAFE_TODO(base::span(nv12_pixmap, src_size));
+      UNSAFE_TODO(base::span(shm_video_pixmap, src_size));
   // SAFETY: required from Map() call result.
   base::span<uint8_t> dest = UNSAFE_BUFFERS(
       base::span(reinterpret_cast<uint8_t*>(mapped_resource.pData), dest_size));
-  for (int y = 0; y < texture_size.height(); y++) {
-    auto src_row = src.subspan(pixmap_stride * y, texture_size.width());
-    auto dest_row = dest.subspan(dest_stride * y, texture_size.width());
+  for (size_t y = 0; y < rows; ++y) {
+    auto src_row = src.subspan(pixmap_stride * y, cols);
+    auto dest_row = dest.subspan(dest_stride * y, cols);
     dest_row.copy_prefix_from(src_row);
   }
 
-  auto uv_src = src.subspan(pixmap_stride * texture_size.height());
-  auto uv_dest = dest.subspan(dest_stride * texture_size.height());
-  for (int y = 0; y < texture_size.height() / 2; y++) {
-    auto src_row = uv_src.subspan(pixmap_stride * y, texture_size.width());
-    auto dest_row = uv_dest.subspan(dest_stride * y, texture_size.width());
+  auto uv_src = src.subspan(pixmap_stride * rows);
+  auto uv_dest = dest.subspan(dest_stride * rows);
+  for (size_t y = 0; y < rows / 2; ++y) {
+    auto src_row = uv_src.subspan(pixmap_stride * y, cols);
+    auto dest_row = uv_dest.subspan(dest_stride * y, cols);
     dest_row.copy_prefix_from(src_row);
   }
   context->Unmap(staging_texture_.Get(), 0);
@@ -672,15 +676,15 @@ Microsoft::WRL::ComPtr<ID3D11Texture2D> SwapChainPresenter::UploadVideoImage(
     desc.CPUAccessFlags = 0;
     hr = d3d11_device_->CreateTexture2D(&desc, nullptr, &copy_texture_);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Creating D3D11 video upload texture failed: " << std::hex
-                  << hr;
+      DLOG(ERROR) << "Creating D3D11 video upload texture failed: 0x"
+                  << std::hex << hr;
       DisableDirectCompositionOverlays();
       return nullptr;
     }
     DCHECK(copy_texture_);
     hr = SetDebugName(copy_texture_.Get(), "SwapChainPresenter_Copy");
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to label D3D11 texture: " << std::hex << hr;
+      DLOG(ERROR) << "Failed to label D3D11 texture: 0x" << std::hex << hr;
     }
   }
   TRACE_EVENT0("gpu", "SwapChainPresenter::UploadVideoImages::CopyResource");
@@ -1227,7 +1231,7 @@ gfx::Size SwapChainPresenter::CalculateSwapChainSize(
   }
 
   // 4:2:2 subsampled formats like YUY2 must have an even width, and 4:2:0
-  // subsampled formats like NV12 must have an even width and height..
+  // subsampled formats like NV12 or P010 must have an even width and height.
   gfx::Size swap_chain_size_rounded = gfx::ToRoundedSize(swap_chain_size);
   if (swap_chain_size_rounded.width() % 2 == 1) {
     swap_chain_size.set_width(swap_chain_size.width() + 1);
@@ -1490,15 +1494,15 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
                                             gfx::Rect* visual_clip_rect) {
   DCHECK(params.overlay_image);
   DCHECK_NE(params.overlay_image->type(),
-            gl::DCLayerOverlayType::kDCompVisualContent);
+            DCLayerOverlayType::kDCompVisualContent);
   CHECK(gfx::IsNearestRectWithinDistance(params.content_rect, 0.01f));
 
-  gl::DCLayerOverlayType overlay_type = params.overlay_image->type();
+  DCLayerOverlayType overlay_type = params.overlay_image->type();
 
   *visual_transform = params.transform;
   *visual_clip_rect = params.clip_rect.value_or(gfx::Rect());
 
-  if (overlay_type == gl::DCLayerOverlayType::kDCompSurfaceProxy) {
+  if (overlay_type == DCLayerOverlayType::kDCompSurfaceProxy) {
     return PresentDCOMPSurface(params, visual_transform, visual_clip_rect);
   }
 
@@ -1517,13 +1521,13 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   gfx::Size swap_chain_size = CalculateSwapChainSize(
       params, visual_transform, visual_clip_rect, &dest_size, &target_rect);
 
-  if (overlay_type == gl::DCLayerOverlayType::kNV12Texture &&
-      !params.overlay_image->nv12_texture()) {
+  if (overlay_type == DCLayerOverlayType::kD3D11Texture &&
+      !params.overlay_image->d3d11_video_texture()) {
     // We can't proceed if overlay image has no underlying d3d11 texture.  It's
     // unclear how we get into this state, but we do observe crashes due to it.
     // Just stop here instead, and render incorrectly.
     // https://crbug.com/1077645
-    DLOG(ERROR) << "Video NV12 texture is missing";
+    DLOG(ERROR) << "Video D3D11 texture is missing";
     ReleaseSwapChainResources();
     return true;
   }
@@ -1545,21 +1549,40 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
 
   bool content_is_hdr = input_color_space.IsHDR();
 
-  // Enable VideoProcessor-HDR for SDR content if the monitor supports it and
-  // the GPU driver version is not blocked (enable_vp_auto_hdr_). The actual GPU
-  // driver support will be queried right after InitializeVideoProcessor() and
-  // is checked in ToggleVpAutoHDR().
+  // Enable VideoProcessor-HDR for SDR content if the monitor supports it
+  // and the GPU driver version is not blocked (enable_vp_auto_hdr_). The
+  // actual GPU driver support will be queried right after
+  // InitializeVideoProcessor() and is checked in ToggleVpAutoHDR().
   bool use_vp_auto_hdr =
       !content_is_hdr &&
       DirectCompositionMonitorHDREnabled(layer_tree_->window()) &&
       enable_vp_auto_hdr_ && !is_on_battery_power_;
 
-  bool use_hdr_swap_chain =
-      ((content_is_hdr && params.video_params.hdr_metadata.IsValid()) ||
-       use_vp_auto_hdr);
+  // We allow HDR10 swap chains to be created without metadata if the input
+  // stream is BT.2020 and the transfer function is PQ (Perceptual Quantizer).
+  // For this combination, the corresponding DXGI color space is
+  // DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020 (full range RGB),
+  // DXGI_COLOR_SPACE_RGB_STUDIO_G2084_NONE_P2020 (studio range RGB)
+  // DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_TOPLEFT_P2020 (studio range YUV)
+  bool content_is_pq10 =
+      (input_color_space.GetPrimaryID() ==
+       gfx::ColorSpace::PrimaryID::BT2020) &&
+      (input_color_space.GetTransferID() == gfx::ColorSpace::TransferID::PQ);
 
-  DXGI_FORMAT swap_chain_format = GetSwapChainFormat(
-      params.video_params.protected_video_type, use_hdr_swap_chain);
+  bool use_hdr_swap_chain =
+      DirectCompositionMonitorHDREnabled(layer_tree_->window()) &&
+      (content_is_pq10 || use_vp_auto_hdr);
+
+  // Try to use P010 swapchain when playing 10-bit content on SDR monitor where
+  // P010 pixel format is also detected as displayable surface, due to the
+  // better quality over 8-bit swapchain.
+  bool use_p010_for_sdr_swap_chain =
+      !DirectCompositionMonitorHDREnabled(layer_tree_->window()) &&
+      CheckDisplayableSupportForP010() && params.video_params.is_p010_content;
+
+  DXGI_FORMAT swap_chain_format =
+      GetSwapChainFormat(params.video_params.protected_video_type,
+                         use_hdr_swap_chain, use_p010_for_sdr_swap_chain);
 
   bool swap_chain_format_changed = swap_chain_format != swap_chain_format_;
   bool toggle_protected_video = swap_chain_protected_video_type_ !=
@@ -1582,7 +1605,7 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
   }
 
   Microsoft::WRL::ComPtr<ID3D11Texture2D> input_texture =
-      params.overlay_image->nv12_texture();
+      params.overlay_image->d3d11_video_texture();
   unsigned input_level = params.overlay_image->texture_array_slice();
 
   if (TryPresentToDecodeSwapChain(input_texture, input_level, input_color_space,
@@ -1618,16 +1641,28 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
     staging_texture_.Reset();
     copy_texture_.Reset();
   } else {
+    // TODO: Add P010 overlay for software decoder frame pixmap from
+    // crbug.com/338686911.
     input_texture = UNSAFE_TODO(UploadVideoImage(
-        params.overlay_image->size(), params.overlay_image->nv12_pixmap(),
+        params.overlay_image->size(), params.overlay_image->shm_video_pixmap(),
         params.overlay_image->pixmap_stride()));
     input_level = 0;
   }
 
   std::optional<DXGI_HDR_METADATA_HDR10> stream_metadata;
-  if (params.video_params.hdr_metadata.IsValid()) {
-    stream_metadata = gl::HDRMetadataHelperWin::HDRMetadataToDXGI(
-        params.video_params.hdr_metadata);
+  if (content_is_pq10) {
+    gfx::HDRMetadata hdr_metadata = params.video_params.hdr_metadata;
+    // Potential parser bug (https://crbug.com/1362288) if HDR metadata is
+    // incompatible. Missing `smpte_st_2086` or `cta_861_3` can cause Intel
+    // driver crashes in HDR overlay mode. Having at least one of
+    // `smpte_st_2086` or `cta_861_3` can prevent crashes. If HDR metadata is
+    // invalid, set up default metadata (HdrMetadataSmpteSt2086) to avoid
+    // crashes.
+    if (!IsCompatibleHDRMetadata(hdr_metadata)) {
+      hdr_metadata = gfx::HDRMetadata::PopulateUnspecifiedWithDefaults(
+          std::make_optional(params.video_params.hdr_metadata));
+    }
+    stream_metadata = HDRMetadataHelperWin::HDRMetadataToDXGI(hdr_metadata);
   }
 
   if (!VideoProcessorBlt(std::move(input_texture), input_level,
@@ -1682,6 +1717,20 @@ bool SwapChainPresenter::PresentToSwapChain(DCLayerOverlayParams& params,
       device_removed_reason = d3d11_device_->GetDeviceRemovedReason();
       base::debug::Alias(&hr);
       base::debug::Alias(&device_removed_reason);
+
+      // Add a crash key. The minidump might be discarded due to large size.
+      static auto* hr_enqueue_set_event_key =
+          base::debug::AllocateCrashKeyString(
+              "hr-EnqueueSetEvent", base::debug::CrashKeySize::Size64);
+      base::debug::ScopedCrashKeyString scoped_crash_key_1(
+          hr_enqueue_set_event_key, base::StringPrintf("0x%x", hr));
+      static auto* hr_device_removed_reason_key =
+          base::debug::AllocateCrashKeyString(
+              "hr-DeviceRemovedReason", base::debug::CrashKeySize::Size64);
+      base::debug::ScopedCrashKeyString scoped_crash_key_2(
+          hr_device_removed_reason_key,
+          base::StringPrintf("0x%x", device_removed_reason));
+
       base::debug::DumpWithoutCrashing();
     }
   }
@@ -1881,13 +1930,13 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
     Microsoft::WRL::ComPtr<IDCompositionDevice> dcomp_device1;
     HRESULT hr = dcomp_device_.As(&dcomp_device1);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to get DCOMP device. hr=" << hr;
+      DLOG(ERROR) << "Failed to get DCOMP device. hr=0x" << std::hex << hr;
       return false;
     }
 
     hr = dcomp_device1->CreateSurfaceFromHandle(surface_handle, &dcomp_surface);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "Failed to create DCOMP surface. hr=" << hr;
+      DLOG(ERROR) << "Failed to create DCOMP surface. hr=0x" << std::hex << hr;
       return false;
     }
 
@@ -1970,7 +2019,7 @@ bool SwapChainPresenter::VideoProcessorBlt(
     // best effort.
     HRESULT hr = swap_chain3->SetColorSpace1(swap_dxgi_color_space);
     if (FAILED(hr)) {
-      DLOG(ERROR) << " SetColorSpace1 failed with error: " << hr;
+      DLOG(ERROR) << " SetColorSpace1 failed with error: 0x" << std::hex << hr;
     }
     context1->VideoProcessorSetOutputColorSpace1(video_processor.Get(),
                                                  output_dxgi_color_space);
@@ -2281,7 +2330,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
     }
   }
   if (!use_yuv_swap_chain) {
-    TRACE_EVENT1("gpu", "SwapChainPresenter::ReallocateSwapChain::BGRA",
+    TRACE_EVENT1("gpu", "SwapChainPresenter::ReallocateSwapChain::RGB",
                  "format", DxgiFormatToString(swap_chain_format));
 
     desc.Format = swap_chain_format;
@@ -2330,7 +2379,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
     }
   }
 
-  gl::LabelSwapChainAndBuffers(swap_chain_.Get(), "SwapChainPresenter");
+  LabelSwapChainAndBuffers(swap_chain_.Get(), "SwapChainPresenter");
 
   swap_chain_format_ = swap_chain_format;
   SetSwapChainPresentDuration();
@@ -2372,7 +2421,7 @@ void SwapChainPresenter::SetSwapChainPresentDuration() {
       HRESULT hr = swap_chain_media->CheckPresentDurationSupport(
           duration_100ns, &smaller_duration, &larger_duration);
       if (FAILED(hr)) {
-        DLOG(ERROR) << "CheckPresentDurationSupport failed with error "
+        DLOG(ERROR) << "CheckPresentDurationSupport failed with error 0x"
                     << std::hex << hr;
         return;
       }
@@ -2390,7 +2439,8 @@ void SwapChainPresenter::SetSwapChainPresentDuration() {
     }
     HRESULT hr = swap_chain_media->SetPresentDuration(requested_duration);
     if (FAILED(hr)) {
-      DLOG(ERROR) << "SetPresentDuration failed with error " << std::hex << hr;
+      DLOG(ERROR) << "SetPresentDuration failed with error 0x" << std::hex
+                  << hr;
     }
   }
 }
@@ -2426,7 +2476,9 @@ bool SwapChainPresenter::RevertSwapChainToSDR(
   // Restore the SDR swap chain and output view
   if (!ReallocateSwapChain(
           gfx::Size(swap_chain_size_),
-          GetSwapChainFormat(swap_chain_protected_video_type_, /*hdr=*/false),
+          GetSwapChainFormat(swap_chain_protected_video_type_,
+                             /*use_hdr_swap_chain=*/false,
+                             /*use_p010_for_sdr_swap_chain=*/false),
           swap_chain_protected_video_type_)) {
     ReleaseSwapChainResources();
     return false;

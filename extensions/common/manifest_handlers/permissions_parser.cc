@@ -191,10 +191,13 @@ void ParseHostPermissions(Extension* extension,
 
     // It's probably an unknown API permission. Do not throw an error so
     // extensions can retain backwards compatibility (http://crbug.com/42742).
-    extension->AddInstallWarning(InstallWarning(
-        ErrorUtils::FormatErrorMessage(
-            manifest_errors::kPermissionUnknownOrMalformed, permission_str),
-        key, permission_str));
+    extension->AddInstallWarning(
+        InstallWarning(ErrorUtils::FormatErrorMessage(
+                           extension->manifest_version() >= 3
+                               ? manifest_errors::kPatternMalformed
+                               : manifest_errors::kPermissionUnknownOrMalformed,
+                           permission_str),
+                       key, permission_str));
   }
 }
 
@@ -284,8 +287,8 @@ bool ParseHelper(Extension* extension,
     // warning for each.
     for (const auto& permission_str : host_data) {
       extension->AddInstallWarning(InstallWarning(
-          ErrorUtils::FormatErrorMessage(
-              manifest_errors::kPermissionUnknownOrMalformed, permission_str),
+          ErrorUtils::FormatErrorMessage(manifest_errors::kPermissionUnknown,
+                                         permission_str),
           key, permission_str));
     }
   }

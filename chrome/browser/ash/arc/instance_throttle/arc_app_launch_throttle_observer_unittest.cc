@@ -10,11 +10,11 @@
 
 #include "ash/components/arc/mojom/app.mojom.h"
 #include "ash/components/arc/mojom/compatibility_mode.mojom.h"
+#include "ash/components/arc/window/arc_window_watcher.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/idle_manager/arc_throttle_test_observer.h"
-#include "chrome/browser/ash/arc/util/arc_window_watcher.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,7 +23,7 @@ namespace arc {
 namespace {
 
 ArcAppListPrefs::AppInfo CreateAppInfoForPackage(
-    const std::string package_name) {
+    const std::string& package_name) {
   return ArcAppListPrefs::AppInfo(
       package_name, package_name, "" /* activity */, "" /* intent_uri */,
       "" /* icon_resource_id */, std::nullopt /* version_name */,

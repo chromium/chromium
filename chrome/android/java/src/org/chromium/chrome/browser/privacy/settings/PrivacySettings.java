@@ -9,9 +9,11 @@ import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS
 import android.os.Build;
 import android.os.Bundle;
 import android.text.SpannableString;
+import android.text.style.ClickableSpan;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.preference.Preference;
@@ -37,7 +39,7 @@ import org.chromium.chrome.browser.safe_browsing.metrics.SettingsAccessPoint;
 import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.GoogleServicesSettings;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -47,9 +49,11 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.util.TraceEventVectorDrawableCompat;
+import org.chromium.components.content_settings.CookieControlsMode;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
+import org.chromium.device.DeviceFeatureList;
+import org.chromium.device.DeviceFeatureMap;
 import org.chromium.ui.text.SpanApplier;
 
 /** Fragment to keep track of the all the privacy related preferences. */
@@ -60,17 +64,19 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     private static final String PREF_HTTPS_FIRST_MODE = "https_first_mode";
     private static final String PREF_SECURE_DNS = "secure_dns";
     private static final String PREF_USAGE_STATS = "usage_stats_reporting";
-    private static final String PREF_DO_NOT_TRACK = "do_not_track";
     private static final String PREF_SAFE_BROWSING = "safe_browsing";
     private static final String PREF_SYNC_AND_SERVICES_LINK = "sync_and_services_link";
     private static final String PREF_PRIVACY_SANDBOX = "privacy_sandbox";
     private static final String PREF_PRIVACY_GUIDE = "privacy_guide";
     private static final String PREF_INCOGNITO_LOCK = "incognito_lock";
-    private static final String PREF_THIRD_PARTY_COOKIES = "third_party_cookies";
-    private static final String PREF_TRACKING_PROTECTION = "tracking_protection";
+    private static final String PREF_JAVASCRIPT_OPTIMIZER = "javascript_optimizer";
+    private static final String PREF_PHONE_AS_A_SECURITY_KEY = "phone_as_a_security_key";
+    @VisibleForTesting static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data";
+    @VisibleForTesting static final String PREF_DO_NOT_TRACK = "do_not_track";
     @VisibleForTesting static final String PREF_FP_PROTECTION = "fp_protection";
     @VisibleForTesting static final String PREF_IP_PROTECTION = "ip_protection";
-    @VisibleForTesting static final String PREF_CLEAR_BROWSING_DATA = "clear_browsing_data";
+    @VisibleForTesting static final String PREF_THIRD_PARTY_COOKIES = "third_party_cookies";
+    @VisibleForTesting static final String PREF_TRACKING_PROTECTION = "tracking_protection";
 
     @VisibleForTesting
     static final String PREF_CLEAR_BROWSING_DATA_ADVANCED = "clear_browsing_data_advanced";
@@ -85,10 +91,10 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         SettingsUtils.addPreferencesFromResource(this, R.xml.privacy_preferences);
 
         Preference fpProtectionPreference = findPreference(PREF_FP_PROTECTION);
-        fpProtectionPreference.setVisible(shouldShowFpProtectionUI());
+        fpProtectionPreference.setVisible(shouldShowFpProtectionUi());
 
         Preference ipProtectionPreference = findPreference(PREF_IP_PROTECTION);
-        ipProtectionPreference.setVisible(shouldShowIpProtectionUI());
+        ipProtectionPreference.setVisible(shouldShowIpProtectionUi());
         ipProtectionPreference.setOnPreferenceClickListener(
                 preference -> {
                     RecordUserAction.record("Settings.IpProtection.OpenedFromPrivacyPage");
@@ -189,7 +195,6 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         if (new SafeBrowsingBridge(getProfile()).isUnderAdvancedProtection()) {
             httpsFirstModePref.setSummary(
                     getContext()
-                            .getResources()
                             .getString(
                                     R.string
                                             .settings_https_first_mode_with_advanced_protection_summary));
@@ -199,13 +204,16 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
         syncAndServicesLink.setSummary(buildFooterString());
 
         Preference thirdPartyCookies = findPreference(PREF_THIRD_PARTY_COOKIES);
-        Preference doNotTrackPref = findPreference(PREF_DO_NOT_TRACK);
-
-        if (showTrackingProtectionUI()) {
+        if (showTrackingProtectionUi()) {
             if (thirdPartyCookies != null) thirdPartyCookies.setVisible(false);
-            if (doNotTrackPref != null) doNotTrackPref.setVisible(false);
             Preference trackingProtection = findPreference(PREF_TRACKING_PROTECTION);
             trackingProtection.setVisible(true);
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX)) {
+                Preference doNotTrackPref = findPreference(PREF_DO_NOT_TRACK);
+                if (doNotTrackPref != null) doNotTrackPref.setVisible(false);
+            } else {
+                trackingProtection.setTitle(R.string.third_party_cookies_link_row_label);
+            }
         } else if (thirdPartyCookies != null) {
             thirdPartyCookies
                     .getExtras()
@@ -225,6 +233,20 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
             clearBrowsingDataAdvancedPreference.setVisible(true);
         }
 
+        Preference javascriptOptimizerPref = findPreference(PREF_JAVASCRIPT_OPTIMIZER);
+        javascriptOptimizerPref
+                .getExtras()
+                .putString(SingleCategorySettings.EXTRA_CATEGORY, javascriptOptimizerPref.getKey());
+        javascriptOptimizerPref
+                .getExtras()
+                .putString(
+                        SingleCategorySettings.EXTRA_TITLE,
+                        javascriptOptimizerPref.getTitle().toString());
+
+        Preference phoneAsASecurityKey = findPreference(PREF_PHONE_AS_A_SECURITY_KEY);
+        phoneAsASecurityKey.setVisible(
+                DeviceFeatureMap.isEnabled(DeviceFeatureList.WEBAUTHN_ENABLE_PAASK_SETTING));
+
         updatePreferences();
     }
 
@@ -234,24 +256,26 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
     }
 
     private SpannableString buildFooterString() {
-        NoUnderlineClickableSpan servicesLink =
-                new NoUnderlineClickableSpan(
-                        getContext(),
-                        v -> {
-                            SettingsLauncherFactory.createSettingsLauncher()
-                                    .launchSettingsActivity(
-                                            getActivity(), GoogleServicesSettings.class);
-                        });
-        NoUnderlineClickableSpan accountSettingsLink =
-                new NoUnderlineClickableSpan(
-                        getContext(),
-                        v -> {
-                            SettingsLauncherFactory.createSettingsLauncher()
-                                    .launchSettingsActivity(
-                                            getActivity(),
-                                            ManageSyncSettings.class,
-                                            ManageSyncSettings.createArguments(false));
-                        });
+        ClickableSpan servicesLink =
+                new ClickableSpan() {
+                    @Override
+                    public void onClick(View view) {
+                        SettingsNavigationFactory.createSettingsNavigation()
+                                .startSettings(getActivity(), GoogleServicesSettings.class);
+                    }
+                };
+
+        ClickableSpan accountSettingsLink =
+                new ClickableSpan() {
+                    @Override
+                    public void onClick(View view) {
+                        SettingsNavigationFactory.createSettingsNavigation()
+                                .startSettings(
+                                        getActivity(),
+                                        ManageSyncSettings.class,
+                                        ManageSyncSettings.createArguments(false));
+                    }
+                };
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)) {
             if (IdentityServicesProvider.get()
@@ -382,26 +406,40 @@ public class PrivacySettings extends ChromeBaseSettingsFragment
 
         mIncognitoLockSettings.updateIncognitoReauthPreferenceIfNeeded(getActivity());
 
+        Preference trackingProtection = findPreference(PREF_TRACKING_PROTECTION);
+        if (trackingProtection != null
+                && !ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD_UX)) {
+            trackingProtection.setSummary(
+                    ContentSettingsResources.getTrackingProtectionListSummary(
+                            UserPrefs.get(getProfile())
+                                    .getBoolean(Pref.BLOCK_ALL3PC_TOGGLE_ENABLED)));
+        }
+
         Preference thirdPartyCookies = findPreference(PREF_THIRD_PARTY_COOKIES);
         if (thirdPartyCookies != null) {
+            @CookieControlsMode
+            int cookieControlsMode = UserPrefs.get(getProfile()).getInteger(COOKIE_CONTROLS_MODE);
             thirdPartyCookies.setSummary(
-                    ContentSettingsResources.getThirdPartyCookieListSummary(
-                            UserPrefs.get(getProfile()).getInteger(COOKIE_CONTROLS_MODE)));
+                    ChromeFeatureList.isEnabled(ChromeFeatureList.ALWAYS_BLOCK_3PCS_INCOGNITO)
+                                    && cookieControlsMode == CookieControlsMode.INCOGNITO_ONLY
+                            ? R.string.third_party_cookies_link_row_sub_label_enabled
+                            : ContentSettingsResources.getThirdPartyCookieListSummary(
+                                    UserPrefs.get(getProfile()).getInteger(COOKIE_CONTROLS_MODE)));
         }
     }
 
-    private boolean showTrackingProtectionUI() {
+    private boolean showTrackingProtectionUi() {
         return UserPrefs.get(getProfile()).getBoolean(Pref.TRACKING_PROTECTION3PCD_ENABLED)
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.TRACKING_PROTECTION_3PCD);
     }
 
-    private boolean shouldShowIpProtectionUI() {
-        return !showTrackingProtectionUI()
+    private boolean shouldShowIpProtectionUi() {
+        return !showTrackingProtectionUi()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.IP_PROTECTION_UX);
     }
 
-    private boolean shouldShowFpProtectionUI() {
-        return !showTrackingProtectionUI()
+    private boolean shouldShowFpProtectionUi() {
+        return !showTrackingProtectionUi()
                 && ChromeFeatureList.isEnabled(ChromeFeatureList.FINGERPRINTING_PROTECTION_UX);
     }
 

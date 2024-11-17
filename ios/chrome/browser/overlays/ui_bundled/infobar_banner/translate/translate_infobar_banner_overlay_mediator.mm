@@ -150,10 +150,8 @@
       return l10n_util::GetNSString(
           IDS_IOS_TRANSLATE_INFOBAR_TRANSLATE_TRY_AGAIN_ACTION);
     case translate::TranslateStep::TRANSLATE_STEP_NEVER_TRANSLATE:
-      NOTREACHED_IN_MIGRATION()
-          << "Translate infobar should not be presenting anything in "
-             "this state.";
-      return nil;
+      NOTREACHED() << "Translate infobar should not be presenting anything in "
+                      "this state.";
   }
 }
 

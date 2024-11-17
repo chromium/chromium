@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "components/autofill/core/common/aliases.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "url/gurl.h"
@@ -94,6 +95,9 @@ bool IsPlusAddressesManuallyTriggered(
 // not.
 // TODO(crbug.com/339543182): Cleanup after launching on iOS.
 bool IsAddressFieldSwappingEnabled();
+
+// Extracts comma-separated strings from a ButtonTitleList.
+std::u16string GetButtonTitlesString(const ButtonTitleList& titles_list);
 
 }  // namespace autofill
 

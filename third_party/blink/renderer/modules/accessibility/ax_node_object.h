@@ -30,7 +30,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_AX_NODE_OBJECT_H_
 
 #include "base/dcheck_is_on.h"
-#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -131,7 +130,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsLoaded() const override;
   bool IsMultiSelectable() const override;
   bool IsNativeImage() const final;
-  bool IsOffScreen() const override;
   bool IsProgressIndicator() const override;
   bool IsSlider() const override;
   bool IsSpinButton() const override;
@@ -294,10 +292,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   Node* GetNode() const final;
   LayoutObject* GetLayoutObject() const final;
 
-  // DOM and layout tree access.
-  bool HasAttribute(const QualifiedName&) const override;
-  const AtomicString& GetAttribute(const QualifiedName&) const override;
-
   // Modify or take an action on an object.
   bool OnNativeBlurAction() final;
   bool OnNativeFocusAction() final;
@@ -313,12 +307,13 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // exists. Error messages from ARIA will always override native error
   // messages.
   AXObjectVector ErrorMessage() const override;
-  // Gets a list of nodes specified by `aria-errormessage` that form an error
-  // message for this node, if any exist.
-  AXObjectVector ErrorMessageFromAria() const override;
   // Gets a list of nodes created from HTML validation that form an error
   // message for this node, if any exist.
   AXObjectVector ErrorMessageFromHTML() const override;
+  // Gets a list of nodes specified by `aria-errormessage`, `aria-controls`,
+  // etc. that form an error message for this node, if any exist.
+  AXObjectVector RelationVectorFromAria(
+      const QualifiedName& attr_name) const override;
 
   // Position in set and Size of set
   int PosInSet() const override;
@@ -368,10 +363,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   void MaybeResetCache() const;
   AXObject* SetNextOnLine(AXObject* next_on_line) const;
   AXObject* SetPreviousOnLine(AXObject* previous_on_line) const;
-
-  bool HasInternalsAttribute(Element&, const QualifiedName&) const;
-  const AtomicString& GetInternalsAttribute(Element&,
-                                            const QualifiedName&) const;
 
   // This function returns the text of a tooltip associated with the element.
   // Although there are two ways of doing this, it is unlikely that an author

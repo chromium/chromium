@@ -72,7 +72,8 @@
           "builder": "mac11-x64-enterprise-companion-tester-dbg",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac-enterprise-companion-try-builder-dbg/targets"
     }
   },
   "$build/flakiness": {

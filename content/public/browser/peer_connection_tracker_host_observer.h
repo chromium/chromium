@@ -81,17 +81,14 @@ class CONTENT_EXPORT PeerConnectionTrackerHostObserver
       int lid,
       const std::string& message) {}
 
-  // These methods are called when results from
-  // PeerConnectionInterface::GetStats() (legacy or standard API) are available.
+  // This methods is called when results from
+  // PeerConnectionInterface::GetStats() (standard API) are available.
   // - |render_frame_host_id| identifies the RenderFrameHost.
   // - |lid| identifies a peer connection.
   // - |value| is the list of stats reports.
   virtual void OnAddStandardStats(GlobalRenderFrameHostId render_frame_host_id,
                                   int lid,
                                   base::Value::List value) {}
-  virtual void OnAddLegacyStats(GlobalRenderFrameHostId render_frame_host_id,
-                                int lid,
-                                base::Value::List value) {}
 
   // This method is called when getUserMedia is called.
   // - |render_frame_host_id| identifies the RenderFrameHost.

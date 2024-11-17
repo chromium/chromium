@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
-#import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/settings/password/password_checkup/password_checkup_coordinator.h"
@@ -133,31 +132,29 @@ using password_manager::WarningType;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
+  ProfileIOS* profile = self.browser->GetProfile();
   FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
+      IOSChromeFaviconLoaderFactory::GetForProfile(profile);
 
   self.mediator = [[PasswordsMediator alloc]
       initWithPasswordCheckManager:IOSChromePasswordCheckManagerFactory::
-                                       GetForBrowserState(browserState)
+                                       GetForProfile(profile)
                      faviconLoader:faviconLoader
-                       syncService:SyncServiceFactory::GetForBrowserState(
-                                       browserState)
-                       prefService:browserState->GetPrefs()];
+                       syncService:SyncServiceFactory::GetForProfile(profile)
+                       prefService:profile->GetPrefs()];
   self.mediator.tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState);
+      feature_engagement::TrackerFactory::GetForProfile(profile);
 
   self.reauthModule = password_manager::BuildReauthenticationModule(
       /*successfulReauthTimeAccessor=*/self.mediator);
-  ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForProfile(profile);
 
   PasswordManagerViewController* passwordsViewController =
       [[PasswordManagerViewController alloc]
-          initWithChromeAccountManagerService:accountManagerService
-                                  prefService:browserState->GetPrefs()
-                       shouldOpenInSearchMode:
-                           self.openViewControllerForPasswordSearch];
+          initWithIdentityManager:identityManager
+                      prefService:profile->GetPrefs()
+           shouldOpenInSearchMode:self.openViewControllerForPasswordSearch];
   self.passwordsViewController = passwordsViewController;
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();

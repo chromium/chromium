@@ -8,5 +8,7 @@ namespace web_app {
 
 const char kPolicyUpdateManifestUrlKey[] = "update_manifest_url";
 const char kPolicyWebBundleIdKey[] = "web_bundle_id";
+const char kPolicyUpdateChannelKey[] = "update_channel";
+const char kPolicyPinnedVersionKey[] = "pinned_version";
 
 }  // namespace web_app

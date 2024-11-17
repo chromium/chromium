@@ -85,7 +85,9 @@ void AdAuctionURLLoaderInterceptor::OnReceiveResponse(
       document_.AsRenderFrameHostIfValid();
   if (ad_auction_headers_eligible_ && request_initiator_frame) {
     ProcessAdAuctionResponseHeaders(
-        request_origin_, request_initiator_frame->GetPage(), head->headers);
+        request_origin_,
+        *static_cast<RenderFrameHostImpl*>(request_initiator_frame),
+        head->headers);
   } else {
     RemoveAdAuctionResponseHeaders(head->headers);
   }

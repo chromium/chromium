@@ -37,13 +37,14 @@ class TabHelperUnitTest : public ExtensionServiceTestWithInstall {
   }
 
   void TearDown() override {
+    tab_helper_ = nullptr;
+    web_contents_tester_ = nullptr;
     // Remove any tabs in the tab strip to avoid test crashes.
     if (browser_) {
       while (!browser_->tab_strip_model()->empty()) {
         browser_->tab_strip_model()->DetachAndDeleteWebContentsAt(0);
       }
     }
-
     ExtensionServiceTestBase::TearDown();
   }
 
@@ -70,8 +71,8 @@ class TabHelperUnitTest : public ExtensionServiceTestWithInstall {
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<TestBrowserWindow> browser_window_;
 
-  raw_ptr<content::WebContentsTester, DanglingUntriaged> web_contents_tester_;
-  raw_ptr<TabHelper, DanglingUntriaged> tab_helper_;
+  raw_ptr<content::WebContentsTester> web_contents_tester_;
+  raw_ptr<TabHelper> tab_helper_;
   raw_ptr<PermissionsManager> permissions_manager_;
 };
 

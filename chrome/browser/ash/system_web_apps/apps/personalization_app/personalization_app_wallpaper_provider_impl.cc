@@ -32,6 +32,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
@@ -90,13 +91,13 @@ const std::string GetOnlineWallpaperKey(ash::WallpaperInfo info) {
 }
 
 GURL GetBitmapJpegDataUrl(const SkBitmap& bitmap) {
-  std::vector<unsigned char> output;
-  if (!gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &output)) {
+  std::optional<std::vector<uint8_t>> output =
+      gfx::JPEGCodec::Encode(bitmap, /*quality=*/100);
+  if (!output) {
     LOG(ERROR) << "Unable to encode bitmap";
     return GURL();
   }
-  GURL data_url =
-      GetJpegDataUrl({reinterpret_cast<char*>(output.data()), output.size()});
+  GURL data_url = GetJpegDataUrl(base::as_string_view(output.value()));
   // @see `url.mojom` warning about dropping urls that are too long.
   DCHECK_LT(data_url.spec().size(), url::mojom::kMaxURLChars);
   return data_url;
@@ -1132,7 +1133,7 @@ void PersonalizationAppWallpaperProviderImpl::SendGooglePhotosAttribution(
     } else if (info.type == WallpaperType::kDailyGooglePhotos) {
       UpdateDailyRefreshWallpaper(/*callback=*/base::DoNothing());
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     return;
   }

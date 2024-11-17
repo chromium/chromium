@@ -4,9 +4,12 @@
 
 #include "content/browser/utility_sandbox_delegate.h"
 
+#include <optional>
+
 #include "base/check.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "content/common/features.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "content/public/common/zygote/zygote_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -27,6 +30,10 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/assistant/buildflags.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/process_requirement.h"
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace content {
 
@@ -70,7 +77,7 @@ UtilitySandboxedProcessLauncherDelegate::
       sandbox_type_ == sandbox::mojom::Sandbox::kPrintBackend ||
 #endif
       sandbox_type_ == sandbox::mojom::Sandbox::kPrintCompositor ||
-#if BUILDFLAG(ENABLE_PPAPI)
+#if BUILDFLAG(ENABLE_PPAPI) && !BUILDFLAG(IS_WIN)
       sandbox_type_ == sandbox::mojom::Sandbox::kPpapi ||
 #endif
 #if BUILDFLAG(IS_FUCHSIA)
@@ -93,8 +100,11 @@ UtilitySandboxedProcessLauncherDelegate::
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       sandbox_type_ == sandbox::mojom::Sandbox::kScreenAI ||
 #endif
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_LINUX)
       sandbox_type_ == sandbox::mojom::Sandbox::kVideoEffects ||
+#endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+      sandbox_type_ == sandbox::mojom::Sandbox::kOnDeviceTranslation ||
 #endif
       sandbox_type_ == sandbox::mojom::Sandbox::kAudio ||
       sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition;
@@ -160,6 +170,10 @@ ZygoteCommunication* UtilitySandboxedProcessLauncherDelegate::GetZygote() {
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       sandbox_type_ == sandbox::mojom::Sandbox::kScreenAI ||
 #endif
+#if BUILDFLAG(IS_LINUX)
+      sandbox_type_ == sandbox::mojom::Sandbox::kVideoEffects ||
+      sandbox_type_ == sandbox::mojom::Sandbox::kOnDeviceTranslation ||
+#endif  // BUILDFLAG(IS_LINUX)
       sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition) {
     return GetUnsandboxedZygote();
   }
@@ -173,5 +187,20 @@ void UtilitySandboxedProcessLauncherDelegate::SetZygote(
   zygote_ = handle;
 }
 #endif  // BUILDFLAG(USE_ZYGOTE)
+
+#if BUILDFLAG(IS_MAC)
+std::optional<base::mac::ProcessRequirement>
+UtilitySandboxedProcessLauncherDelegate::GetProcessRequirement() {
+  if (sandbox_type_ == sandbox::mojom::Sandbox::kNetwork &&
+      base::FeatureList::IsEnabled(
+          features::kValidateNetworkServiceProcessIdentity)) {
+    return base::mac::ProcessRequirement::Builder()
+        .SignedWithSameIdentity()
+        .Build();
+  }
+
+  return std::nullopt;
+}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace content

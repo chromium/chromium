@@ -4,6 +4,8 @@
 
 #include "components/tab_groups/tab_group_id.h"
 
+#include <ostream>
+
 namespace tab_groups {
 
 // static
@@ -19,6 +21,10 @@ TabGroupId TabGroupId::FromRawToken(base::Token token) {
 // static
 TabGroupId TabGroupId::CreateEmpty() {
   return TabGroupId(base::Token());
+}
+
+std::ostream& operator<<(std::ostream& out, const TabGroupId& tab_group_id) {
+  return out << tab_group_id.ToString();
 }
 
 TabGroupId::TabGroupId(const TabGroupId& other) = default;

@@ -33,6 +33,7 @@
 #include "net/socket/fuzzed_datagram_client_socket.h"
 #include "net/socket/fuzzed_socket_factory.h"
 #include "net/socket/socket_tag.h"
+#include "net/spdy/multiplexed_session_creation_initiator.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -158,6 +159,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       SocketTag(), NetworkAnonymizationKey(), SecureDnsPolicy::kAllow,
       /*require_dns_https_alpn=*/false, kCertVerifyFlags, GURL(kUrl),
       env.net_log, &net_error_details,
+      MultiplexedSessionCreationInitiator::kUnknown,
       /*failed_on_default_network_callback=*/CompletionOnceCallback(),
       callback.callback());
 

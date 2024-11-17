@@ -9,12 +9,12 @@
 #include <optional>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
 #include "ui/base/accelerators/accelerator.h"
-#include "ui/events/ash/modifier_split_dogfood_controller.h"
 #include "ui/events/ash/mojom/meta_key.mojom-shared.h"
 #include "ui/events/ash/mojom/modifier_key.mojom-shared.h"
 #include "ui/events/ash/top_row_action_keys.h"
@@ -388,14 +388,6 @@ class KeyboardCapability : public InputDeviceEventObserver {
     return keyboard_info_map_;
   }
 
-  bool IsModifierSplitEnabled() const {
-    return modifier_split_dogfood_controller_->IsEnabled();
-  }
-
-  void ForceEnableFeature();
-
-  void ResetModifierSplitDogfoodControllerForTesting();
-
  private:
   const KeyboardInfo* GetKeyboardInfo(const KeyboardDevice& keyboard) const;
   void TrimKeyboardInfoMap();
@@ -413,9 +405,6 @@ class KeyboardCapability : public InputDeviceEventObserver {
 
   // Board name of the current ChromeOS device.
   std::string board_name_;
-
-  std::unique_ptr<ModifierSplitDogfoodController>
-      modifier_split_dogfood_controller_;
 };
 
 }  // namespace ui

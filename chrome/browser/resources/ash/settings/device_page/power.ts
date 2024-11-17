@@ -22,14 +22,15 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
+import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {recordSettingChange} from '../metrics_recorder.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {routes} from '../router.js';
 
-import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior, PowerManagementSettings, PowerSource} from './device_page_browser_proxy.js';
+import type {BatteryStatus, DevicePageBrowserProxy, PowerManagementSettings, PowerSource} from './device_page_browser_proxy.js';
+import {DevicePageBrowserProxyImpl, IdleBehavior, LidClosedBehavior} from './device_page_browser_proxy.js';
 import {getTemplate} from './power.html.js';
 
 interface IdleOption {
@@ -179,13 +180,6 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
             'computeBatterySaverHidden_(batteryStatus_, batterySaverFeatureEnabled_)',
       },
 
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
-      },
-
       /**
        * Used by DeepLinkingMixin to focus this page's deep links.
        */
@@ -215,7 +209,6 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
   private batteryStatus_: BatteryStatus|undefined;
   private browserProxy_: DevicePageBrowserProxy;
   private hasLid_: boolean;
-  private isRevampWayfindingEnabled_: boolean;
   private lidClosedLabel_: string;
   private lidClosedPref_: chrome.settingsPrivate.PrefObject<boolean>;
   private isExternalPowerUSB_: boolean;
@@ -530,25 +523,13 @@ export class SettingsPowerElement extends SettingsPowerElementBase {
             !this.adaptiveChargingEnabled_) {
           classes.push('first');
         }
-        if (this.isRevampWayfindingEnabled_) {
-          classes.push('dropdown-row');
-        } else {
-          classes.push('indented');
-        }
+        classes.push('dropdown-row');
         break;
       case 'batteryIdle':
-        if (this.isRevampWayfindingEnabled_) {
-          classes.push('dropdown-row');
-        } else {
-          classes.push('indented');
-        }
+        classes.push('dropdown-row');
         break;
       case 'lidClosed':
-        if (this.isRevampWayfindingEnabled_) {
-          classes.push('dropdown-row');
-        } else {
-          classes.push('first');
-        }
+        classes.push('dropdown-row');
         break;
     }
 

@@ -1292,11 +1292,30 @@ policies:
   1291: TabCompareSettings
   1292: AdHocCodeSigningForPWAsEnabled
   1293: KioskWebAppOfflineEnabled
-  1294: GraduationEnablementStatus
+  1294: ContentTransferEnablementStatus
   1295: HelpMeReadSettings
   1296: GenAiDefaultSettings
   1297: KioskActiveWiFiCredentialsScopeChangeEnabled
   1298: DataURLWhitespacePreservationEnabled
+  1299: AllowExcludeDisplayInMirrorMode
+  1300: AutofillPredictionSettings
+  1301: ArcOpenLinksInBrowserByDefault
+  1302: EnterpriseProfileBadgeToolbarSettings
+  1303: DefaultDirectSocketsPrivateNetworkAccessSetting
+  1304: DirectSocketsPrivateNetworkAccessAllowedForUrls
+  1305: DirectSocketsPrivateNetworkAccessBlockedForUrls
+  1306: SelectParserRelaxationEnabled
+  1307: ClassManagementEnabled
+  1308: EnterpriseSearchAggregatorSettings
+  1309: TranslatorAPIAllowed
+  1310: WebAudioOutputBufferingEnabled
+  1311: NTPOutlookCardVisible
+  1312: NTPSharepointCardVisible
+  1313: SharedWorkerBlobURLFixEnabled
+  1314: DeviceNativeClientForceAllowed
+  1315: GenAiLensOverlaySettings
+  1316: PasswordManagerPasskeysEnabled
+  1317: FilePickerChooseFromDriveSettings
 
 atomic_groups:
   1: Homepage
@@ -1353,3 +1372,4 @@ atomic_groups:
   52: DirectSocketsSettings
   53: SkyVaultSettings
   54: BrowserEventReporting
+  55: DirectSocketsPrivateNetworkAccessSettings

@@ -29,7 +29,7 @@ public class OpenDownloadDialogBridge {
     /**
      * Constructor, taking a pointer to the native instance.
      *
-     * @nativeOpenDownloadDialogBridge Pointer to the native object.
+     * @param nativeOpenDownloadDialogBridge Pointer to the native object.
      */
     public OpenDownloadDialogBridge(long nativeOpenDownloadDialogBridge) {
         mNativeOpenDownloadDialogBridge = nativeOpenDownloadDialogBridge;

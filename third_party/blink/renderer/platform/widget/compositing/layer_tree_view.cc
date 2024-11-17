@@ -23,7 +23,6 @@
 #include "base/values.h"
 #include "cc/animation/animation_host.h"
 #include "cc/animation/animation_timeline.h"
-#include "cc/base/features.h"
 #include "cc/base/region.h"
 #include "cc/benchmarks/micro_benchmark.h"
 #include "cc/debug/layer_tree_debug_state.h"
@@ -135,7 +134,7 @@ void LayerTreeView::Disconnect() {
   delegate_ = nullptr;
 }
 
-void LayerTreeView::ReattachTo(
+void LayerTreeView::ClearPreviousDelegateAndReattachIfNeeded(
     LayerTreeViewDelegate* delegate,
     scoped_refptr<scheduler::WidgetScheduler> scheduler) {
   // Reset state tied to the previous `delegate_`.
@@ -160,6 +159,14 @@ void LayerTreeView::ReattachTo(
 
   // Invalidate weak ptrs so callbacks from the previous delegate are dropped.
   weak_factory_for_delegate_.InvalidateWeakPtrs();
+
+  if (!delegate) {
+    // If we're not reattaching to a new delegate, return early as there's no
+    // need to request a new frame sink. Also, ensure that the LayerTreeHost is
+    // no longer visible.
+    layer_tree_host_->SetVisible(false);
+    return;
+  }
 
   switch (frame_sink_state_) {
     case FrameSinkState::kNoFrameSink:
@@ -384,9 +391,7 @@ void LayerTreeView::WillCommit(const cc::CommitState&) {
   if (!delegate_)
     return;
   delegate_->WillCommitCompositorFrame();
-  if (base::FeatureList::IsEnabled(features::kNonBlockingCommit)) {
-    widget_scheduler_->DidCommitFrameToCompositor();
-  }
+  widget_scheduler_->DidCommitFrameToCompositor();
 }
 
 void LayerTreeView::DidCommit(int source_frame_number,
@@ -397,9 +402,6 @@ void LayerTreeView::DidCommit(int source_frame_number,
     return;
   }
   delegate_->DidCommitCompositorFrame(commit_start_time, commit_finish_time);
-  if (!base::FeatureList::IsEnabled(features::kNonBlockingCommit)) {
-    widget_scheduler_->DidCommitFrameToCompositor();
-  }
 }
 
 void LayerTreeView::DidCommitAndDrawFrame(int source_frame_number) {
@@ -476,7 +478,7 @@ LayerTreeView::GetBeginMainFrameMetrics() {
 
 void LayerTreeView::NotifyThroughputTrackerResults(
     cc::CustomTrackerResults results) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void LayerTreeView::DidObserveFirstScrollDelay(

@@ -1129,7 +1129,6 @@ TEST_F(LineBreakerTest, WideContentInRuby) {
 }
 
 TEST_F(LineBreakerTest, SetInputRange) {
-  ScopedRubyLineBreakableForTest enable_ruby_line_breakable(true);
   InlineNode node = CreateInlineNode(R"HTML(
       <div id=container>before<span>content</span>after</div>)HTML");
   node.PrepareLayoutIfNeeded();

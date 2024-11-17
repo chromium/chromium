@@ -8,15 +8,15 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/block_break_token.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
-#include "third_party/blink/renderer/core/layout/constraint_space.h"
-#include "third_party/blink/renderer/core/layout/grid/grid_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_node.h"
-#include "third_party/blink/renderer/core/layout/grid/grid_placement.h"
 #include "third_party/blink/renderer/core/layout/grid/grid_sizing_tree.h"
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+class ConstraintSpace;
+struct GridItemPlacementData;
 
 // This enum corresponds to each step used to accommodate grid items across
 // intrinsic tracks according to their min and max track sizing functions, as
@@ -29,6 +29,8 @@ enum class GridItemContributionType {
   kForMaxContentMaximums,
   kForFreeSpace,
 };
+
+enum class SizingConstraint { kLayout, kMinContent, kMaxContent };
 
 using GridItemDataPtrVector = Vector<GridItemData*, 16>;
 using GridSetPtrVector = Vector<GridSet*, 16>;

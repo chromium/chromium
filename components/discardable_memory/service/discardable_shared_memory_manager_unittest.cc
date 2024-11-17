@@ -22,7 +22,7 @@ const int kInvalidUniqueID = -1;
 
 class TestDiscardableSharedMemory : public base::DiscardableSharedMemory {
  public:
-  TestDiscardableSharedMemory() {}
+  TestDiscardableSharedMemory() = default;
 
   explicit TestDiscardableSharedMemory(base::UnsafeSharedMemoryRegion region)
       : DiscardableSharedMemory(std::move(region)) {}
@@ -283,7 +283,7 @@ class SetMemoryLimitRunner : public base::DelegateSimpleThread::Delegate {
  public:
   SetMemoryLimitRunner(DiscardableSharedMemoryManager* manager, size_t limit)
       : manager_(manager), limit_(limit) {}
-  ~SetMemoryLimitRunner() override {}
+  ~SetMemoryLimitRunner() override = default;
 
   void Run() override { manager_->SetMemoryLimit(limit_); }
 

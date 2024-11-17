@@ -27,6 +27,10 @@ URL_MATCHER_EXPORT GURL Normalize(const GURL& url);
 // a known format.
 URL_MATCHER_EXPORT GURL GetEmbeddedURL(const GURL& url);
 
+// Helper function to extract the underlying URL wrapped by Google AMP viewer.
+// Returns an empty GURL if `url` doesn't match a known format.
+URL_MATCHER_EXPORT GURL GetGoogleAmpViewerEmbeddedURL(const GURL& url);
+
 // Utility struct used to represent a url filter scheme into its components.
 struct URL_MATCHER_EXPORT FilterComponents {
   FilterComponents();

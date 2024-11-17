@@ -120,6 +120,8 @@ if (is_win || is_linux || is_android || is_chromeos) {
     import_dirs = [ "//components/policy/proto" ]
 
     proto_deps = [ ":policy_code_generate" ]
+    deps =
+        [ "//components/policy/proto:policy_common_definitions_compile_proto" ]
     proto_out_dir = "chrome/browser/privacy"
     generate_cc = false
     generate_library = false

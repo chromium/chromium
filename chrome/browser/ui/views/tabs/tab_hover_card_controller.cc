@@ -30,7 +30,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
-#include "components/user_education/common/help_bubble_factory_registry.h"
+#include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "ui/events/event.h"
@@ -119,7 +119,7 @@ base::TimeDelta GetShowDelay(int tab_width) {
 }
 
 bool IsBrowserForSystemWebApp(const Browser* browser) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const auto* const app_controller = browser->app_controller();
   if (app_controller && app_controller->system_app()) {
     return true;

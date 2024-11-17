@@ -36,8 +36,6 @@ namespace drive_backend {
 
 class SyncEngineTest : public testing::Test {
  public:
-  typedef RemoteFileSyncService::OriginStatusMap RemoteOriginStatusMap;
-
   SyncEngineTest() {}
 
   SyncEngineTest(const SyncEngineTest&) = delete;
@@ -86,22 +84,6 @@ class SyncEngineTest : public testing::Test {
     worker_task_runner_ = nullptr;
   }
 
-  bool FindOriginStatus(const GURL& origin, std::string* status) {
-    std::unique_ptr<RemoteOriginStatusMap> status_map;
-    sync_engine()->GetOriginStatusMap(CreateResultReceiver(&status_map));
-    WaitForWorkerTaskRunner();
-
-    RemoteOriginStatusMap::const_iterator itr = status_map->find(origin);
-    if (itr == status_map->end())
-      return false;
-
-    *status = itr->second;
-    // If an origin is uninstalled, it should not be found actually.
-    if (*status == "Uninstalled")
-      return false;
-    return true;
-  }
-
   void PostUpdateServiceState(RemoteServiceState state,
                               const std::string& description) {
     worker_task_runner_->PostTask(
@@ -148,24 +130,18 @@ TEST_F(SyncEngineTest, OriginTest) {
       CreateResultReceiver(&sync_status));
   WaitForWorkerTaskRunner();
   EXPECT_EQ(SYNC_STATUS_OK, sync_status);
-  ASSERT_TRUE(FindOriginStatus(origin, &status));
-  EXPECT_EQ("Registered", status);
 
   sync_engine()->DisableOrigin(
       origin,
       CreateResultReceiver(&sync_status));
   WaitForWorkerTaskRunner();
   EXPECT_EQ(SYNC_STATUS_OK, sync_status);
-  ASSERT_TRUE(FindOriginStatus(origin, &status));
-  EXPECT_EQ("Disabled", status);
 
   sync_engine()->EnableOrigin(
       origin,
       CreateResultReceiver(&sync_status));
   WaitForWorkerTaskRunner();
   EXPECT_EQ(SYNC_STATUS_OK, sync_status);
-  ASSERT_TRUE(FindOriginStatus(origin, &status));
-  EXPECT_EQ("Enabled", status);
 
   sync_engine()->UninstallOrigin(
       origin,
@@ -173,40 +149,6 @@ TEST_F(SyncEngineTest, OriginTest) {
       CreateResultReceiver(&sync_status));
   WaitForWorkerTaskRunner();
   EXPECT_EQ(SYNC_STATUS_OK, sync_status);
-  EXPECT_FALSE(FindOriginStatus(origin, &status));
-  EXPECT_EQ("Uninstalled", status);
-}
-
-TEST_F(SyncEngineTest, GetOriginStatusMap) {
-  SyncStatusCode sync_status = SYNC_STATUS_UNKNOWN;
-
-  sync_engine()->RegisterOrigin(GURL("chrome-extension://app_0"),
-                                CreateResultReceiver(&sync_status));
-  WaitForWorkerTaskRunner();
-  EXPECT_EQ(SYNC_STATUS_OK, sync_status);
-
-  sync_engine()->RegisterOrigin(GURL("chrome-extension://app_1"),
-                                CreateResultReceiver(&sync_status));
-  WaitForWorkerTaskRunner();
-  EXPECT_EQ(SYNC_STATUS_OK, sync_status);
-
-  std::unique_ptr<RemoteOriginStatusMap> status_map;
-  sync_engine()->GetOriginStatusMap(CreateResultReceiver(&status_map));
-  WaitForWorkerTaskRunner();
-  ASSERT_EQ(2u, status_map->size());
-  EXPECT_EQ("Registered", (*status_map)[GURL("chrome-extension://app_0")]);
-  EXPECT_EQ("Registered", (*status_map)[GURL("chrome-extension://app_1")]);
-
-  sync_engine()->DisableOrigin(GURL("chrome-extension://app_1"),
-                               CreateResultReceiver(&sync_status));
-  WaitForWorkerTaskRunner();
-  EXPECT_EQ(SYNC_STATUS_OK, sync_status);
-
-  sync_engine()->GetOriginStatusMap(CreateResultReceiver(&status_map));
-  WaitForWorkerTaskRunner();
-  ASSERT_EQ(2u, status_map->size());
-  EXPECT_EQ("Registered", (*status_map)[GURL("chrome-extension://app_0")]);
-  EXPECT_EQ("Disabled", (*status_map)[GURL("chrome-extension://app_1")]);
 }
 
 TEST_F(SyncEngineTest, UpdateServiceState) {

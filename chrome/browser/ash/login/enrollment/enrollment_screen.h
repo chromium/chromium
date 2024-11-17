@@ -182,7 +182,7 @@ class EnrollmentScreen
   // Clears auth in `enrollment_launcher_`. Deletes
   // `enrollment_launcher_` and runs `callback` on completion. See the
   // comment for EnrollmentLauncher::ClearAuth for details.
-  void ClearAuth(base::OnceClosure callback, bool revoke_oauth2_tokens = true);
+  void ClearAuth(base::OnceClosure callback);
 
   // Used as a callback for EnrollmentLauncher::ClearAuth.
   virtual void OnAuthCleared(base::OnceClosure callback);
@@ -255,7 +255,7 @@ class EnrollmentScreen
 
   // Stores the signin artifacts and the refresh token in the wizard context
   // if the appropriate conditions are met.
-  bool MaybeStoreUserContextInWizardContext();
+  void MaybeStoreUserContextInWizardContext();
 
   base::WeakPtr<EnrollmentScreenView> view_;
   raw_ptr<ErrorScreen> error_screen_ = nullptr;

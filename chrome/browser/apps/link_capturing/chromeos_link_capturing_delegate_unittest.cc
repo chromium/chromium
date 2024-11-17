@@ -4,10 +4,10 @@
 
 #include "chrome/browser/apps/link_capturing/chromeos_link_capturing_delegate.h"
 
+#include "ash/constants/web_app_id_constants.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/apps/link_capturing/link_capturing_features.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace apps {
@@ -22,7 +22,8 @@ TEST_F(ChromeOsLinkCapturingDelegateTest, GetLaunchAppId_Preferred) {
 
   std::optional<std::string> launch_id =
       ChromeOsLinkCapturingDelegate::GetLaunchAppId(
-          app_ids_to_launch, /*is_navigation_from_link=*/true);
+          app_ids_to_launch, /*is_navigation_from_link=*/true,
+          /*redirection_chain_size=*/1);
 
   ASSERT_EQ(launch_id, "foo");
 }
@@ -33,7 +34,8 @@ TEST_F(ChromeOsLinkCapturingDelegateTest, GetLaunchAppId_NoPreferred) {
 
   std::optional<std::string> launch_id =
       ChromeOsLinkCapturingDelegate::GetLaunchAppId(
-          app_ids_to_launch, /*is_navigation_from_link=*/true);
+          app_ids_to_launch, /*is_navigation_from_link=*/true,
+          /*redirection_chain_size=*/1);
 
   ASSERT_EQ(launch_id, std::nullopt);
 }

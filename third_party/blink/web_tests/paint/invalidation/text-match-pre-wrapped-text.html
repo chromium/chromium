@@ -11,7 +11,6 @@ function highlightRange(id, start, end, active) {
     range.setEnd(elem, end);
     if (window.internals) {
         internals.addTextMatchMarker(range, active);
-        internals.setMarkedTextMatchesAreHighlighted(document, true);
     }
 }
 

@@ -101,6 +101,9 @@ class TestMain {
   std::unique_ptr<TestMain> _testMain;
   std::unique_ptr<TestPluginClient> _testPluginClient;
 }
+
+@property BOOL pluginsEnabled;
+
 @end
 
 @implementation ChromeEGTestBundleMain
@@ -109,6 +112,7 @@ class TestMain {
   if ((self = [super init])) {
     [[XCTestObservationCenter sharedTestObservationCenter]
         addTestObserver:self];
+    self.pluginsEnabled = NO;
   }
 
   // initializing test plugin client iff test plugin server is running on the
@@ -125,23 +129,29 @@ class TestMain {
   if (enabledPlugins.size() == 0) {
     NSLog(@"iOS test runner is not running, or no test plugins are enabled. "
           @"Test plugins feature will not be used.");
+    _testPluginClient.reset();
+
   } else {
-    _testPluginClient->set_is_service_enabled(true);
+    self.pluginsEnabled = YES;
     NSLog(@"At least one test plugin is enabled. Test plugins features will be "
           @"used throughout tests executions");
   }
   return self;
 }
 
-// -waitForQuiescenceIncludingAnimationsIdle tends to introduce a long
+// -waitForQuiescenceIncludingAnimationsIdle:isPreEvent: tends to introduce an
 // unnecessary delay, as EarlGrey already checks for animations to complete.
 // Swizzling and skipping the following call speeds up test runs.
 - (void)disableWaitForIdle {
-  SEL originalSelector =
-      NSSelectorFromString(@"waitForQuiescenceIncludingAnimationsIdle:");
+  SEL originalSelector = NSSelectorFromString(
+      @"waitForQuiescenceIncludingAnimationsIdle:isPreEvent:");
   SEL swizzledSelector = @selector(skipQuiescenceDelay);
   Method originalMethod = class_getInstanceMethod(
       objc_getClass("XCUIApplicationProcess"), originalSelector);
+  if (originalMethod == nil) {
+    NSLog(@"Could not swizzle waitForQuiescenceIncludingAnimationsIdle.");
+    return;
+  }
   Method swizzledMethod =
       class_getInstanceMethod([self class], swizzledSelector);
   method_exchangeImplementations(originalMethod, swizzledMethod);
@@ -182,7 +192,7 @@ class TestMain {
 }
 
 - (void)testBundleDidFinish:(NSBundle*)testBundle {
-  if (_testPluginClient->is_service_enabled()) {
+  if (self.pluginsEnabled) {
     NSLog(@"calling testBundleWillFinish to test plugin server");
     std::string deviceName =
         base::SysNSStringToUTF8(UIDevice.currentDevice.name);
@@ -196,7 +206,7 @@ class TestMain {
 }
 
 - (void)testCaseWillStart:(XCTestCase*)testCase {
-  if (_testPluginClient->is_service_enabled()) {
+  if (self.pluginsEnabled) {
     NSLog(@"calling testCaseWillStart to test plugin server");
     std::string testName = base::SysNSStringToUTF8(testCase.name);
     std::string deviceName =
@@ -207,7 +217,7 @@ class TestMain {
 
 // this is called when test case failed unexpectedly
 - (void)testCase:(XCTestCase*)testCase didRecordIssue:(XCTIssue*)issue {
-  if (_testPluginClient->is_service_enabled()) {
+  if (self.pluginsEnabled) {
     NSLog(@"calling testCaseDidFail to test plugin server");
     std::string testName = base::SysNSStringToUTF8(testCase.name);
     std::string deviceName =
@@ -220,7 +230,7 @@ class TestMain {
 }
 
 - (void)testCaseDidFinish:(XCTestCase*)testCase {
-  if (_testPluginClient->is_service_enabled()) {
+  if (self.pluginsEnabled) {
     NSLog(@"calling testCaseDidFinish to test plugin server");
     std::string testName = base::SysNSStringToUTF8(testCase.name);
     std::string deviceName =

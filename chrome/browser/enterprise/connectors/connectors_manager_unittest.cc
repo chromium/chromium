@@ -120,14 +120,6 @@ class ConnectorsManagerTest : public testing::Test {
     }
   }
 
-  void ValidateSettings(const ReportingSettings& settings) {
-    // For now, the URL is the same for both legacy and new policies, so
-    // checking the specific URL here.  When service providers become
-    // configurable this will change.
-    ASSERT_EQ(GURL("https://chromereporting-pa.googleapis.com/v1/events"),
-              settings.reporting_url);
-  }
-
   class ScopedConnectorPref {
    public:
     ScopedConnectorPref(PrefService* pref_service,
@@ -157,18 +149,6 @@ class ConnectorsManagerTest : public testing::Test {
     raw_ptr<PrefService> pref_service_;
     const char* pref_;
   };
-
-  std::optional<ReportingSettings> GetReportingSettings(
-      const char* settings_value) {
-    auto settings = base::JSONReader::Read(settings_value,
-                                           base::JSON_ALLOW_TRAILING_COMMAS);
-    EXPECT_TRUE(settings.has_value());
-
-    ReportingServiceSettings service_settings(settings.value(),
-                                              *GetServiceProviderConfig());
-
-    return service_settings.GetReportingSettings();
-  }
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
@@ -600,7 +580,7 @@ class ConnectorsManagerConnectorPoliciesSourceDestinationTest
                volume_pair == &kNoDlpMalwareVolumePair2) {
       settings.tags = {{"malware", TagSettings()}};
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
 
     // The "local_user_agent" service provider doesn't support the "malware"
@@ -753,7 +733,7 @@ TEST_P(ConnectorsManagerAnalysisConnectorsTest, NamesAndConfigs) {
     EXPECT_TRUE(configs[0]->region_urls.empty());
     EXPECT_TRUE(configs[0]->local_path);
   } else {
-    NOTREACHED_IN_MIGRATION() << "Unexpected service provider name";
+    NOTREACHED() << "Unexpected service provider name";
   }
 }
 
@@ -974,7 +954,7 @@ TEST_P(ConnectorsManagerDataRegionTest, RegionalizedEndpoint) {
   GURL expected_analysis_url =
       GURL(GetServiceProviderConfig()
                ->at("google")
-               .analysis->region_urls[static_cast<int>(data_region())]);
+               .analysis->region_urls[static_cast<size_t>(data_region())]);
   EXPECT_TRUE(settings_from_manager.has_value());
   if (settings_from_manager.has_value()) {
     EXPECT_EQ(

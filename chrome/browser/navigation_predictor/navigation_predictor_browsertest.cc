@@ -185,8 +185,7 @@ class TestObserver : public NavigationPredictorKeyedService::Observer {
 
  private:
   void OnPredictionUpdated(
-      const std::optional<NavigationPredictorKeyedService::Prediction>
-          prediction) override {
+      const NavigationPredictorKeyedService::Prediction& prediction) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     ++count_predictions_;
     last_prediction_ = prediction;

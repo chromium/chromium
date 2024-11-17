@@ -289,6 +289,8 @@ void AssertPageLoadMetricsObserver::OnParseStop(
 
 void AssertPageLoadMetricsObserver::OnConnectStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {}
+void AssertPageLoadMetricsObserver::OnConnectEnd(
+    const page_load_metrics::mojom::PageLoadTiming& timing) {}
 void AssertPageLoadMetricsObserver::OnDomainLookupStart(
     const page_load_metrics::mojom::PageLoadTiming& timing) {}
 void AssertPageLoadMetricsObserver::OnDomainLookupEnd(

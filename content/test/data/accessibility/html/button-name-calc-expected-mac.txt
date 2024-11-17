@@ -3,8 +3,8 @@ AXWebArea
 ++AXButton AXHelp='Title1' AXTitle='InnerText1'
 ++AXButton AXDescription='AriaLabel2' AXHelp='Title2'
 ++AXButton AXHelp='Title3' AXTitle='LabelledBy3'
-++AXButton AXTitle='LabelledBy4' accessibilityCustomContent=[{label: 'description', value: 'DescribedBy4'}]
-++AXButton AXTitle='InnerText5' accessibilityCustomContent=[{label: 'description', value: 'DescribedBy5'}]
+++AXButton AXCustomContent=[{label: 'description', value: 'DescribedBy4'}] AXTitle='LabelledBy4'
+++AXButton AXCustomContent=[{label: 'description', value: 'DescribedBy5'}] AXTitle='InnerText5'
 ++AXButton AXTitle='Outer inner'
 ++++AXStaticText
 ++++AXGroup
@@ -18,3 +18,15 @@ AXWebArea
 ++++AXGroup
 ++++++AXGroup
 ++++++++AXStaticText
+++AXGroup
+++++AXGroup
+++++++AXStaticText
+++++AXStaticText
+++++AXGroup
+++++++AXStaticText
+++++AXStaticText
+++++AXGroup
+++++++AXStaticText
+++++AXStaticText
+++++AXGroup
+++++++AXStaticText

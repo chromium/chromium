@@ -9,7 +9,6 @@
 
 #include <optional>
 
-#include "base/android/jni_android.h"
 #include "base/base_export.h"
 #include "base/containers/span.h"
 
@@ -27,21 +26,17 @@ namespace base::android {
 //
 // If needed, there are also variants below starting with Maybe that return
 // std::nullopt in that case and do not crash.
-base::span<const uint8_t> BASE_EXPORT
-JavaByteBufferToSpan(JNIEnv* env,
-                     const base::android::JavaRef<jobject>& buffer);
+base::span<const uint8_t> BASE_EXPORT JavaByteBufferToSpan(JNIEnv* env,
+                                                           jobject buffer);
 
-base::span<uint8_t> BASE_EXPORT
-JavaByteBufferToMutableSpan(JNIEnv* env,
-                            const base::android::JavaRef<jobject>& buffer);
+base::span<uint8_t> BASE_EXPORT JavaByteBufferToMutableSpan(JNIEnv* env,
+                                                            jobject buffer);
 
 std::optional<base::span<const uint8_t>> BASE_EXPORT
-MaybeJavaByteBufferToSpan(JNIEnv* env,
-                          const base::android::JavaRef<jobject>& buffer);
+MaybeJavaByteBufferToSpan(JNIEnv* env, jobject buffer);
 
 std::optional<base::span<uint8_t>> BASE_EXPORT
-MaybeJavaByteBufferToMutableSpan(JNIEnv* env,
-                                 const base::android::JavaRef<jobject>& buffer);
+MaybeJavaByteBufferToMutableSpan(JNIEnv* env, jobject buffer);
 
 }  // namespace base::android
 

@@ -52,10 +52,10 @@ class InitializingFrameNodeObserver {
   virtual void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) {}
   virtual void OnIsAudibleChanged(const FrameNode* frame_node) {}
   virtual void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) {}
-  virtual void OnViewportIntersectionStateChanged(const FrameNode* frame_node) {
-  }
+  virtual void OnViewportIntersectionChanged(const FrameNode* frame_node) {}
   virtual void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                         FrameNode::Visibility previous_value) {}
+  virtual void OnIsImportantChanged(const FrameNode* frame_node) {}
   virtual void OnNonPersistentNotificationCreated(const FrameNode* frame_node) {
   }
   virtual void OnFirstContentfulPaint(
@@ -105,9 +105,10 @@ class InitializingFrameNodeObserverManager final : public FrameNodeObserver {
   void OnFrameUsesWebRTCChanged(const FrameNode* frame_node) override;
   void OnIsAudibleChanged(const FrameNode* frame_node) override;
   void OnIsCapturingMediaStreamChanged(const FrameNode* frame_node) override;
-  void OnViewportIntersectionStateChanged(const FrameNode* frame_node) override;
+  void OnViewportIntersectionChanged(const FrameNode* frame_node) override;
   void OnFrameVisibilityChanged(const FrameNode* frame_node,
                                 FrameNode::Visibility previous_value) override;
+  void OnIsImportantChanged(const FrameNode* frame_node) override;
   void OnNonPersistentNotificationCreated(const FrameNode* frame_node) override;
   void OnFirstContentfulPaint(
       const FrameNode* frame_node,

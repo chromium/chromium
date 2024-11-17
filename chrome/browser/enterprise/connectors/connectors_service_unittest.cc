@@ -191,11 +191,9 @@ INSTANTIATE_TEST_SUITE_P(
 #if BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 class ConnectorsServiceReportingFeatureTest
     : public ConnectorsServiceTest,
-      public testing::WithParamInterface<
-          std::tuple<ReportingConnector, const char*>> {
+      public testing::WithParamInterface<const char*> {
  public:
-  ReportingConnector connector() const { return std::get<0>(GetParam()); }
-  const char* pref_value() const { return std::get<1>(GetParam()); }
+  const char* pref_value() const { return GetParam(); }
 
   const char* pref() const { return kOnSecurityEventPref; }
 
@@ -205,14 +203,6 @@ class ConnectorsServiceReportingFeatureTest
 
   bool reporting_enabled() const {
     return pref_value() == kNormalReportingSettingsPref;
-  }
-
-  void ValidateSettings(const ReportingSettings& settings) {
-    // For now, the URL is the same for both legacy and new policies, so
-    // checking the specific URL here.  When service providers become
-    // configurable this will change.
-    ASSERT_EQ(GURL("https://chromereporting-pa.googleapis.com/v1/events"),
-              settings.reporting_url);
   }
 };
 
@@ -290,13 +280,11 @@ TEST_P(ConnectorsServiceReportingFeatureTest, CheckTelemetryPolicyObserver) {
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ConnectorsServiceReportingFeatureTest,
-    testing::Combine(testing::Values(ReportingConnector::SECURITY_EVENT),
-                     testing::Values(nullptr,
-                                     kNormalReportingSettingsPref,
-                                     kEmptySettingsPref)));
+INSTANTIATE_TEST_SUITE_P(,
+                         ConnectorsServiceReportingFeatureTest,
+                         testing::Values(nullptr,
+                                         kNormalReportingSettingsPref,
+                                         kEmptySettingsPref));
 
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 

@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.password_manager;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 
 /** Helper class to check PasswordManager backend availability. */
 public abstract class PasswordManagerBackendSupportHelper {
@@ -15,7 +16,12 @@ public abstract class PasswordManagerBackendSupportHelper {
      * created.
      */
     public static PasswordManagerBackendSupportHelper getInstance() {
-        if (sInstance == null) sInstance = new PasswordManagerBackendSupportHelperImpl();
+        if (sInstance == null) {
+            sInstance = ServiceLoaderUtil.maybeCreate(PasswordManagerBackendSupportHelper.class);
+        }
+        if (sInstance == null) {
+            sInstance = new PasswordManagerBackendSupportHelperUpstreamImpl();
+        }
         return sInstance;
     }
 

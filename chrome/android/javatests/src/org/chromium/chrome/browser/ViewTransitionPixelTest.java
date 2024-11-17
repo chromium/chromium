@@ -42,9 +42,9 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
 import org.chromium.ui.test.util.RenderTestRule;
-import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.util.WindowInsetsUtils;
 
 import java.io.File;
@@ -347,7 +347,7 @@ public class ViewTransitionPixelTest {
     @Feature({"RenderTest"})
     @MinAndroidSdkLevel(VERSION_CODES.R)
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     public void testVirtualKeyboardResizesContent_TSLOEnabled() throws Throwable {
         // Simulate fullscreen window behavior in an environment that supports Android V custom app
         // header APIs.

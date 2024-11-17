@@ -19,13 +19,3 @@ struct File {
   // The URL to navigate to the File Item.
   url.mojom.Url item_url;
 };
-
-// Browser-side handler for requests from NTP Module UI.
-interface FileSuggestionHandler {
-  // Fetches document suggestions from ItemSuggest API.
-  GetFiles() => (array<File> files);
-  // Dismissed module for fixed amount of time.
-  DismissModule();
-  // Restores the module immediately.
-  RestoreModule();
-};

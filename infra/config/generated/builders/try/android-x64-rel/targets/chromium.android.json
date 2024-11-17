@@ -3,10 +3,9 @@
     "gtest_tests": [
       {
         "args": [
-          "--annotation=Restriction=Tablet",
+          "--annotation=Restriction=Tablet,ImportantFormFactors=Tablet",
           "--git-revision=${got_revision}",
           "--avd-config=../../tools/android/avd/proto/android_32_google_apis_x64_foldable.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_12l_rel.chrome_public_test_apk.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -49,7 +48,8 @@
               "caches": "android_32_google_apis_x64_foldable"
             }
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "chrome_public_test_apk",
         "test_id_prefix": "ninja://chrome/android:chrome_public_test_apk/"
@@ -111,7 +111,6 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
-        "ci_only": true,
         "description": "Run with android_33_google_apis_x64",
         "merge": {
           "args": [
@@ -148,7 +147,7 @@
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 4
+          "shards": 18
         },
         "test": "android_browsertests",
         "test_id_prefix": "ninja://chrome/test:android_browsertests/"
@@ -1001,7 +1000,8 @@
               "caches": "android_33_google_apis_x64"
             }
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "components_browsertests",
         "test_id_prefix": "ninja://components:components_browsertests/"
@@ -1295,7 +1295,6 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.device_unittests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -3599,10 +3598,11 @@
     "isolated_scripts": [
       {
         "args": [
+          "--skipped",
+          "always",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
         "description": "Run with android_33_google_apis_x64",
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"
@@ -3681,10 +3681,11 @@
       },
       {
         "args": [
+          "--skipped",
+          "always",
           "--avd-config=../../tools/android/avd/proto/android_33_google_apis_x64.textpb"
         ],
         "description": "Run with android_33_google_apis_x64",
-        "experiment_percentage": 100,
         "merge": {
           "args": [
             "--verbose"

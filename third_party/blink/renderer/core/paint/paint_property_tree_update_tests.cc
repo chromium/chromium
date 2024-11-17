@@ -68,54 +68,54 @@ TEST_P(PaintPropertyTreeUpdateTest,
   Element* overflow_a = GetDocument().getElementById(AtomicString("overflowA"));
   Element* overflow_b = GetDocument().getElementById(AtomicString("overflowB"));
 
-  EXPECT_TRUE(DocScroll()->HasBackgroundAttachmentFixedDescendants());
+  EXPECT_TRUE(DocScroll()->RequiresMainThreadForBackgroundAttachmentFixed());
   EXPECT_TRUE(overflow_a->GetLayoutObject()
                   ->FirstFragment()
                   .PaintProperties()
                   ->ScrollTranslation()
                   ->ScrollNode()
-                  ->HasBackgroundAttachmentFixedDescendants());
+                  ->RequiresMainThreadForBackgroundAttachmentFixed());
   EXPECT_TRUE(overflow_b->GetLayoutObject()
                   ->FirstFragment()
                   .PaintProperties()
                   ->ScrollTranslation()
                   ->ScrollNode()
-                  ->HasBackgroundAttachmentFixedDescendants());
+                  ->RequiresMainThreadForBackgroundAttachmentFixed());
 
   // Removing a main thread scrolling reason should update the entire tree.
   overflow_b->removeAttribute(html_names::kClassAttr);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(DocScroll()->HasBackgroundAttachmentFixedDescendants());
+  EXPECT_FALSE(DocScroll()->RequiresMainThreadForBackgroundAttachmentFixed());
   EXPECT_FALSE(overflow_a->GetLayoutObject()
                    ->FirstFragment()
                    .PaintProperties()
                    ->ScrollTranslation()
                    ->ScrollNode()
-                   ->HasBackgroundAttachmentFixedDescendants());
+                   ->RequiresMainThreadForBackgroundAttachmentFixed());
   EXPECT_FALSE(overflow_b->GetLayoutObject()
                    ->FirstFragment()
                    .PaintProperties()
                    ->ScrollTranslation()
                    ->ScrollNode()
-                   ->HasBackgroundAttachmentFixedDescendants());
+                   ->RequiresMainThreadForBackgroundAttachmentFixed());
 
   // Adding a main thread scrolling reason should update the entire tree.
   overflow_b->setAttribute(html_names::kClassAttr,
                            AtomicString("backgroundAttachmentFixed"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(DocScroll()->HasBackgroundAttachmentFixedDescendants());
+  EXPECT_TRUE(DocScroll()->RequiresMainThreadForBackgroundAttachmentFixed());
   EXPECT_TRUE(overflow_a->GetLayoutObject()
                   ->FirstFragment()
                   .PaintProperties()
                   ->ScrollTranslation()
                   ->ScrollNode()
-                  ->HasBackgroundAttachmentFixedDescendants());
+                  ->RequiresMainThreadForBackgroundAttachmentFixed());
   EXPECT_TRUE(overflow_b->GetLayoutObject()
                   ->FirstFragment()
                   .PaintProperties()
                   ->ScrollTranslation()
                   ->ScrollNode()
-                  ->HasBackgroundAttachmentFixedDescendants());
+                  ->RequiresMainThreadForBackgroundAttachmentFixed());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, ParentFrameMainThreadScrollReasons) {
@@ -136,24 +136,30 @@ TEST_P(PaintPropertyTreeUpdateTest, ParentFrameMainThreadScrollReasons) {
       "<div id='forceScroll' style='height: 8888px;'></div>");
   UpdateAllLifecyclePhasesForTest();
   Document* parent = &GetDocument();
-  EXPECT_TRUE(DocScroll(parent)->HasBackgroundAttachmentFixedDescendants());
+  EXPECT_TRUE(
+      DocScroll(parent)->RequiresMainThreadForBackgroundAttachmentFixed());
   Document* child = &ChildDocument();
-  EXPECT_TRUE(DocScroll(child)->HasBackgroundAttachmentFixedDescendants());
+  EXPECT_TRUE(
+      DocScroll(child)->RequiresMainThreadForBackgroundAttachmentFixed());
 
   // Removing a main thread scrolling reason should update the entire tree.
   auto* fixed_background =
       GetDocument().getElementById(AtomicString("fixedBackground"));
   fixed_background->removeAttribute(html_names::kClassAttr);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(DocScroll(parent)->HasBackgroundAttachmentFixedDescendants());
-  EXPECT_FALSE(DocScroll(child)->HasBackgroundAttachmentFixedDescendants());
+  EXPECT_FALSE(
+      DocScroll(parent)->RequiresMainThreadForBackgroundAttachmentFixed());
+  EXPECT_FALSE(
+      DocScroll(child)->RequiresMainThreadForBackgroundAttachmentFixed());
 
   // Adding a main thread scrolling reason should update the entire tree.
   fixed_background->setAttribute(html_names::kClassAttr,
                                  AtomicString("fixedBackground"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_TRUE(DocScroll(parent)->HasBackgroundAttachmentFixedDescendants());
-  EXPECT_TRUE(DocScroll(child)->HasBackgroundAttachmentFixedDescendants());
+  EXPECT_TRUE(
+      DocScroll(parent)->RequiresMainThreadForBackgroundAttachmentFixed());
+  EXPECT_TRUE(
+      DocScroll(child)->RequiresMainThreadForBackgroundAttachmentFixed());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, ChildFrameMainThreadScrollReasons) {
@@ -176,24 +182,30 @@ TEST_P(PaintPropertyTreeUpdateTest, ChildFrameMainThreadScrollReasons) {
   UpdateAllLifecyclePhasesForTest();
 
   Document* parent = &GetDocument();
-  EXPECT_FALSE(DocScroll(parent)->HasBackgroundAttachmentFixedDescendants());
+  EXPECT_FALSE(
+      DocScroll(parent)->RequiresMainThreadForBackgroundAttachmentFixed());
   Document* child = &ChildDocument();
-  EXPECT_TRUE(DocScroll(child)->HasBackgroundAttachmentFixedDescendants());
+  EXPECT_TRUE(
+      DocScroll(child)->RequiresMainThreadForBackgroundAttachmentFixed());
 
   // Removing a main thread scrolling reason should update the entire tree.
   auto* fixed_background =
       ChildDocument().getElementById(AtomicString("fixedBackground"));
   fixed_background->removeAttribute(html_names::kClassAttr);
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(DocScroll(parent)->HasBackgroundAttachmentFixedDescendants());
-  EXPECT_FALSE(DocScroll(child)->HasBackgroundAttachmentFixedDescendants());
+  EXPECT_FALSE(
+      DocScroll(parent)->RequiresMainThreadForBackgroundAttachmentFixed());
+  EXPECT_FALSE(
+      DocScroll(child)->RequiresMainThreadForBackgroundAttachmentFixed());
 
   // Adding a main thread scrolling reason should update the entire tree.
   fixed_background->setAttribute(html_names::kClassAttr,
                                  AtomicString("fixedBackground"));
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(DocScroll(parent)->HasBackgroundAttachmentFixedDescendants());
-  EXPECT_TRUE(DocScroll(child)->HasBackgroundAttachmentFixedDescendants());
+  EXPECT_FALSE(
+      DocScroll(parent)->RequiresMainThreadForBackgroundAttachmentFixed());
+  EXPECT_TRUE(
+      DocScroll(child)->RequiresMainThreadForBackgroundAttachmentFixed());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest,
@@ -238,7 +250,7 @@ TEST_P(PaintPropertyTreeUpdateTest,
                   .PaintProperties()
                   ->ScrollTranslation()
                   ->ScrollNode()
-                  ->HasBackgroundAttachmentFixedDescendants());
+                  ->RequiresMainThreadForBackgroundAttachmentFixed());
   // This could be false since it's fixed with respect to the layout viewport.
   // However, it would be simpler to avoid the main thread by doing this check
   // on the compositor thread. https://crbug.com/985127.
@@ -247,7 +259,7 @@ TEST_P(PaintPropertyTreeUpdateTest,
                   .PaintProperties()
                   ->ScrollTranslation()
                   ->ScrollNode()
-                  ->HasBackgroundAttachmentFixedDescendants());
+                  ->RequiresMainThreadForBackgroundAttachmentFixed());
   EXPECT_EQ(DocScroll(), overflow_b->GetLayoutObject()
                              ->FirstFragment()
                              .PaintProperties()
@@ -263,20 +275,20 @@ TEST_P(PaintPropertyTreeUpdateTest,
                    .PaintProperties()
                    ->ScrollTranslation()
                    ->ScrollNode()
-                   ->HasBackgroundAttachmentFixedDescendants());
+                   ->RequiresMainThreadForBackgroundAttachmentFixed());
   EXPECT_FALSE(overflow_b->GetLayoutObject()
                    ->FirstFragment()
                    .PaintProperties()
                    ->ScrollTranslation()
                    ->ScrollNode()
-                   ->HasBackgroundAttachmentFixedDescendants());
+                   ->RequiresMainThreadForBackgroundAttachmentFixed());
   EXPECT_FALSE(overflow_b->GetLayoutObject()
                    ->FirstFragment()
                    .PaintProperties()
                    ->ScrollTranslation()
                    ->ScrollNode()
                    ->Parent()
-                   ->HasBackgroundAttachmentFixedDescendants());
+                   ->RequiresMainThreadForBackgroundAttachmentFixed());
 }
 
 TEST_P(PaintPropertyTreeUpdateTest, DescendantNeedsUpdateAcrossFrames) {
@@ -433,7 +445,7 @@ TEST_P(PaintPropertyTreeUpdateTest, BuildingStopsAtThrottledFrames) {
   EXPECT_TRUE(iframe_transform->ShouldCheckForPaintInvalidation());
 
   // Run a force-unthrottled lifecycle update. All flags should be cleared.
-  GetDocument().View()->UpdateLifecycleToPrePaintClean(
+  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
       DocumentUpdateReason::kTest);
   EXPECT_FALSE(
       GetDocument().GetLayoutView()->DescendantNeedsPaintPropertyUpdate());

@@ -96,7 +96,7 @@ namespace blink {
 static const unsigned kMaxXMLTreeDepth = 5000;
 
 static inline String ToString(const xmlChar* string, size_t length) {
-  return String::FromUTF8(reinterpret_cast<const char*>(string), length);
+  return String::FromUTF8(base::span(string, length));
 }
 
 static inline String ToString(const xmlChar* string) {
@@ -476,7 +476,7 @@ bool XMLDocumentParser::ParseDocumentFragment(
     DocumentFragment* fragment,
     Element* context_element,
     ParserContentPolicy parser_content_policy,
-    ExceptionState* exception_state) {
+    ExceptionState& exception_state) {
   if (!chunk.length())
     return true;
 
@@ -490,13 +490,11 @@ bool XMLDocumentParser::ParseDocumentFragment(
     return true;
   }
 
+  TryRethrowScope rethrow_scope(fragment->GetDocument().GetAgent().isolate(),
+                                exception_state);
   auto* parser = MakeGarbageCollected<XMLDocumentParser>(
       fragment, context_element, parser_content_policy);
-  parser->exception_copy_ = ExceptionCopy();
   bool well_formed = parser->AppendFragmentSource(chunk);
-  if (exception_state && parser->exception_copy_->HadException()) {
-    parser->exception_copy_->ApplyTo(*exception_state);
-  }
 
   // Do not call finish(). Current finish() and doEnd() implementations touch
   // the main Document/loader and can cause crashes in the fragment case.
@@ -685,7 +683,8 @@ static int ReadFunc(void* context, char* buffer, int len) {
     return 0;
 
   SharedBufferReader* data = static_cast<SharedBufferReader*>(context);
-  return data->ReadData(buffer, len);
+  auto buffer_span = base::span(buffer, base::checked_cast<size_t>(len));
+  return base::checked_cast<int>(data->ReadData(buffer_span));
 }
 
 static int WriteFunc(void*, const char*, int) {
@@ -911,7 +910,7 @@ struct xmlSAX2Namespace {
   const xmlChar* uri;
 };
 
-static inline void HandleNamespaceAttributes(
+static inline bool HandleNamespaceAttributes(
     Vector<Attribute, kAttributePrealloc>& prefixed_attributes,
     const xmlChar** libxml_namespaces,
     int nb_namespaces,
@@ -928,10 +927,12 @@ static inline void HandleNamespaceAttributes(
     std::optional<QualifiedName> parsed_name = Element::ParseAttributeName(
         xmlns_names::kNamespaceURI, namespace_q_name, exception_state);
     if (!parsed_name) {
-      return;
+      DCHECK(exception_state.HadException());
+      return false;
     }
     prefixed_attributes.push_back(Attribute(*parsed_name, namespace_uri));
   }
+  return true;
 }
 
 struct xmlSAX2Attributes {
@@ -942,7 +943,7 @@ struct xmlSAX2Attributes {
   const xmlChar* end;
 };
 
-static inline void HandleElementAttributes(
+static inline bool HandleElementAttributes(
     Vector<Attribute, kAttributePrealloc>& prefixed_attributes,
     const xmlChar** libxml_attributes,
     int nb_attributes,
@@ -974,7 +975,7 @@ static inline void HandleElementAttributes(
                                             "Namespace prefix " + attr_prefix +
                                                 " for attribute " + attr_value +
                                                 " is not declared.");
-          return;
+          return false;
         }
       }
     }
@@ -986,10 +987,11 @@ static inline void HandleElementAttributes(
     std::optional<QualifiedName> parsed_name =
         Element::ParseAttributeName(attr_uri, attr_q_name, exception_state);
     if (!parsed_name) {
-      return;
+      return false;
     }
     prefixed_attributes.push_back(Attribute(*parsed_name, attr_value));
   }
+  return true;
 }
 
 void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
@@ -1031,16 +1033,26 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
   saw_first_element_ = true;
 
   Vector<Attribute, kAttributePrealloc> prefixed_attributes;
-  DummyExceptionStateForTesting exception_state;
-  HandleNamespaceAttributes(prefixed_attributes, libxml_namespaces,
-                            nb_namespaces, exception_state);
-  if (exception_state.HadException()) {
+  if (!HandleNamespaceAttributes(prefixed_attributes, libxml_namespaces,
+                                 nb_namespaces, IGNORE_EXCEPTION)) {
     StopParsing();
     return;
   }
 
-  HandleElementAttributes(prefixed_attributes, libxml_attributes, nb_attributes,
-                          prefix_to_namespace_map_, exception_state);
+  v8::Isolate* isolate = document_->GetAgent().isolate();
+  v8::TryCatch try_catch(isolate);
+  if (!HandleElementAttributes(prefixed_attributes, libxml_attributes,
+                               nb_attributes, prefix_to_namespace_map_,
+                               parsing_fragment_ ? PassThroughException(isolate)
+                                                 : IGNORE_EXCEPTION)) {
+    StopParsing();
+    if (parsing_fragment_) {
+      DCHECK(try_catch.HasCaught());
+      try_catch.ReThrow();
+    }
+    return;
+  }
+
   AtomicString is;
   for (const auto& attr : prefixed_attributes) {
     if (attr.GetName() == html_names::kIsAttr) {
@@ -1086,13 +1098,6 @@ void XMLDocumentParser::StartElementNs(const AtomicString& local_name,
   }
 
   SetAttributes(new_element, prefixed_attributes, GetParserContentPolicy());
-  if (exception_state.HadException()) {
-    if (exception_copy_) {
-      exception_copy_->CopyFrom(exception_state);
-    }
-    StopParsing();
-    return;
-  }
 
   new_element->BeginParsingChildren();
 
@@ -1469,78 +1474,61 @@ static xmlEntityPtr SharedXHTMLEntity() {
   return &entity;
 }
 
-static size_t ConvertUTF16EntityToUTF8(const UChar* utf16_entity,
-                                       size_t number_of_code_units,
-                                       char* target,
-                                       size_t target_size) {
-  const char* original_target = target;
-  WTF::unicode::ConversionResult conversion_result =
-      WTF::unicode::ConvertUTF16ToUTF8(&utf16_entity,
-                                       utf16_entity + number_of_code_units,
-                                       &target, target + target_size);
-  if (conversion_result != WTF::unicode::kConversionOK)
-    return 0;
+template <size_t N>
+static base::span<const char, N - 1> CopyToEntityBuffer(
+    base::span<const char, N> expanded_entity_chars) {
+  auto entity_buffer =
+      base::as_writable_chars(base::span(g_shared_xhtml_entity_result));
+  entity_buffer.first<N>().copy_from(expanded_entity_chars);
+  return entity_buffer.first<N - 1>();
+}
 
-  DCHECK_GT(target, original_target);
+static base::span<const char> ConvertUTF16EntityToUTF8(
+    const DecodedHTMLEntity& entity) {
+  auto utf16_entity = base::span(entity.data).first(entity.length);
+  auto entity_buffer =
+      base::as_writable_bytes(base::span(g_shared_xhtml_entity_result));
+  WTF::unicode::ConversionResult conversion_result =
+      WTF::unicode::ConvertUTF16ToUTF8(utf16_entity, entity_buffer);
+  if (conversion_result.status != WTF::unicode::kConversionOK) {
+    return {};
+  }
+
+  DCHECK(!conversion_result.converted.empty());
   // Even though we must pass the length, libxml expects the entity string to be
   // null terminated.
-  *target = '\0';
-  return target - original_target;
+  entity_buffer[conversion_result.converted.size()] = '\0';
+  return base::as_chars(conversion_result.converted);
 }
 
 static xmlEntityPtr GetXHTMLEntity(const xmlChar* name) {
-  UChar utf16_decoded_entity[4];
-  size_t number_of_code_units = DecodeNamedEntityToUCharArray(
-      reinterpret_cast<const char*>(name), utf16_decoded_entity);
-  if (!number_of_code_units)
+  std::optional<DecodedHTMLEntity> decoded_entity =
+      DecodeNamedEntity(reinterpret_cast<const char*>(name));
+  if (!decoded_entity) {
     return nullptr;
-
-  constexpr size_t kSharedXhtmlEntityResultLength =
-      std::size(g_shared_xhtml_entity_result);
-  size_t entity_length_in_utf8;
-  // Unlike HTML parser, XML parser parses the content of named
-  // entities. So we need to escape '&' and '<'.
-  if (number_of_code_units == 1 && utf16_decoded_entity[0] == '&') {
-    g_shared_xhtml_entity_result[0] = '&';
-    g_shared_xhtml_entity_result[1] = '#';
-    g_shared_xhtml_entity_result[2] = '3';
-    g_shared_xhtml_entity_result[3] = '8';
-    g_shared_xhtml_entity_result[4] = ';';
-    g_shared_xhtml_entity_result[5] = 0;
-    entity_length_in_utf8 = 5;
-  } else if (number_of_code_units == 1 && utf16_decoded_entity[0] == '<') {
-    g_shared_xhtml_entity_result[0] = '&';
-    g_shared_xhtml_entity_result[1] = '#';
-    g_shared_xhtml_entity_result[2] = '6';
-    g_shared_xhtml_entity_result[3] = '0';
-    g_shared_xhtml_entity_result[4] = ';';
-    g_shared_xhtml_entity_result[5] = 0;
-    entity_length_in_utf8 = 5;
-  } else if (number_of_code_units == 2 && utf16_decoded_entity[0] == '<' &&
-             utf16_decoded_entity[1] == 0x20D2) {
-    g_shared_xhtml_entity_result[0] = '&';
-    g_shared_xhtml_entity_result[1] = '#';
-    g_shared_xhtml_entity_result[2] = '6';
-    g_shared_xhtml_entity_result[3] = '0';
-    g_shared_xhtml_entity_result[4] = ';';
-    g_shared_xhtml_entity_result[5] = 0xE2;
-    g_shared_xhtml_entity_result[6] = 0x83;
-    g_shared_xhtml_entity_result[7] = 0x92;
-    g_shared_xhtml_entity_result[8] = 0;
-    entity_length_in_utf8 = 8;
-  } else {
-    DCHECK_LE(number_of_code_units, 4u);
-    entity_length_in_utf8 = ConvertUTF16EntityToUTF8(
-        utf16_decoded_entity, number_of_code_units,
-        reinterpret_cast<char*>(g_shared_xhtml_entity_result),
-        kSharedXhtmlEntityResultLength);
-    if (entity_length_in_utf8 == 0)
-      return nullptr;
   }
-  DCHECK_LE(entity_length_in_utf8, kSharedXhtmlEntityResultLength);
+
+  base::span<const char> entity_utf8;
+
+  // Unlike the HTML parser, the XML parser parses the content of named
+  // entities. So we need to escape '&' and '<'.
+  if (decoded_entity->length == 1 && decoded_entity->data[0] == '&') {
+    entity_utf8 = CopyToEntityBuffer(base::span_with_nul_from_cstring("&#38;"));
+  } else if (decoded_entity->length == 1 && decoded_entity->data[0] == '<') {
+    entity_utf8 = CopyToEntityBuffer(base::span_with_nul_from_cstring("&#60;"));
+  } else if (decoded_entity->length == 2 && decoded_entity->data[0] == '<' &&
+             decoded_entity->data[1] == 0x20D2) {
+    entity_utf8 = CopyToEntityBuffer(
+        base::span_with_nul_from_cstring("&#60;\xE2\x83\x92"));
+  } else {
+    entity_utf8 = ConvertUTF16EntityToUTF8(*decoded_entity);
+    if (entity_utf8.empty()) {
+      return nullptr;
+    }
+  }
 
   xmlEntityPtr entity = SharedXHTMLEntity();
-  entity->length = base::checked_cast<int>(entity_length_in_utf8);
+  entity->length = static_cast<int>(entity_utf8.size());
   entity->name = name;
   return entity;
 }

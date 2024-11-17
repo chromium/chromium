@@ -538,10 +538,13 @@ void SurfaceManager::SurfaceActivated(Surface* surface) {
     // modified. This will allow frame production to continue for this client
     // leading to the group being unblocked.
     surface->SendAckToClient();
-  } else if (ShouldAckInteractiveFrame(metadata.begin_frame_ack)) {
-    // If we should be early acking during an interaction, do that here. This,
-    // will persist for a number of frames (the cooldown) following an
-    // interaction.
+  } else if (ShouldAckNonInteractiveFrame(metadata)) {
+    // If we should be early acking during an interaction, do that here. We only
+    // ack the non-interactive frames, this allows them to continue being
+    // pipelined, while their most recent frame is queued for the next
+    // aggregation. We do not ack the interactive frame so that back pressure
+    // can be properly applied. This, will persist for a number of frames (the
+    // cooldown) following an interaction.
     surface->SendAckToClient();
   }
 
@@ -549,19 +552,20 @@ void SurfaceManager::SurfaceActivated(Surface* surface) {
     observer.OnSurfaceActivated(surface->surface_id());
 }
 
-bool SurfaceManager::ShouldAckInteractiveFrame(const BeginFrameAck& ack) const {
+bool SurfaceManager::ShouldAckNonInteractiveFrame(
+    const CompositorFrameMetadata& metadata) const {
   if (!cooldown_frames_for_ack_on_activation_during_interaction_ ||
-      !last_interactive_frame_) {
+      !last_interactive_frame_ || metadata.is_handling_interaction) {
     return false;
   }
   // If we get an ack for a previous (i.e., slow) frame while we have a more
   // recent and valid interactive frame, then assume that we should ack it
   // on activation.
-  if (ack.frame_id < last_interactive_frame_.value()) {
+  if (metadata.begin_frame_ack.frame_id < last_interactive_frame_.value()) {
     return true;
   }
   const uint64_t frames_since_interactive =
-      ack.frame_id.sequence_number -
+      metadata.begin_frame_ack.frame_id.sequence_number -
       last_interactive_frame_.value().sequence_number;
   return frames_since_interactive <
          cooldown_frames_for_ack_on_activation_during_interaction_.value();

@@ -40,7 +40,7 @@ class TouchStylusDelegate {
                            const gfx::Vector2dF& tilt) = 0;
 
  protected:
-  virtual ~TouchStylusDelegate() {}
+  virtual ~TouchStylusDelegate() = default;
 };
 
 }  // namespace exo

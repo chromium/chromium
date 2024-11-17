@@ -58,11 +58,12 @@ class PasswordGenerationController {
   virtual base::WeakPtr<password_manager::ContentPasswordManagerDriver>
   GetActiveFrameDriver() const = 0;
 
-  // This signals that the focus has moved. |focused_field_type| tells
-  // the generation controller whether the focus moved to a fillable password
-  // field. This event sets/unsets the active frame for generation.
+  // This signals that the focus has moved.
+  // `is_field_eligible_for_generation` tells the generation controller
+  // whether the focus moved to a field safe for filling a generated password.
+  // This event sets/unsets the active frame for generation.
   virtual void FocusedInputChanged(
-      autofill::mojom::FocusedFieldType focused_field_type,
+      bool is_field_eligible_for_generation,
       base::WeakPtr<password_manager::ContentPasswordManagerDriver> driver) = 0;
 
   // Notifies the UI that automatic password generation is available.
@@ -116,6 +117,9 @@ class PasswordGenerationController {
   CreateTouchToFillGenerationControllerForTesting(
       std::unique_ptr<TouchToFillPasswordGenerationBridge> bridge,
       base::WeakPtr<ManualFillingController> manual_filling_controller) = 0;
+
+  virtual TouchToFillPasswordGenerationController*
+  GetTouchToFillGenerationControllerForTesting() = 0;
 
   // -----------------
   // Member accessors:

@@ -129,6 +129,7 @@ source_set("unit_tests") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/exclusive_access",
+    "//chrome/browser/ui/tabs:test_support",
     "//chrome/browser/web_applications",
     "//chrome/common:constants",
     "//chrome/common:non_code_constants",

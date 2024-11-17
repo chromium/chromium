@@ -49,8 +49,7 @@ constexpr const char* ToString(BluetoothDevice::ConnectErrorCode error_code) {
     case BluetoothDevice::ERROR_UNSUPPORTED_DEVICE:
       return "ERROR_UNSUPPORTED_DEVICE";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -73,8 +72,7 @@ constexpr const char* ToString(BluetoothGattService::GattErrorCode error_code) {
     case BluetoothGattService::GattErrorCode::kNotSupported:
       return "GATT_ERROR_NOT_SUPPORTED";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -89,8 +87,7 @@ std::ostream& operator<<(std::ostream& os,
       return os << "FIDO2";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return os;
+  NOTREACHED();
 }
 
 void OnWriteRemoteCharacteristic(FidoBleConnection::WriteCallback callback) {
@@ -409,7 +406,7 @@ void FidoBleConnection::WriteServiceRevision(ServiceRevision service_revision) {
   DCHECK(service_revision_bitfield_id_);
   fido_service->GetCharacteristic(*service_revision_bitfield_id_)
       ->WriteRemoteCharacteristic(
-          {static_cast<uint8_t>(service_revision)},
+          base::byte_span_from_ref(static_cast<uint8_t>(service_revision)),
           BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
           base::BindOnce(OnWriteRemoteCharacteristic,
                          std::move(split_callback.first)),

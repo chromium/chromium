@@ -4,6 +4,10 @@
 
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 
+#include <utility>
+
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -53,7 +57,11 @@ OpticalCharacterRecognizer::CreateWithStatusCallback(
   CHECK(profile);
   auto ocr = base::MakeRefCounted<screen_ai::OpticalCharacterRecognizer>(
       profile, client_type);
-  ocr->Initialize(std::move(status_callback));
+  // Post a task to initialize the OCR asynchronously, so that `status_callback`
+  // can be called only after `ocr` is created and returned.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&OpticalCharacterRecognizer::Initialize, ocr,
+                                std::move(status_callback)));
   return ocr;
 }
 
@@ -95,17 +103,16 @@ void OpticalCharacterRecognizer::OnOCRInitializationCallback(
     bool successful) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  RunCallback(std::move(status_callback), successful && profile_);
-
   // If the profile is already destroyed, stop here.
   if (!profile_) {
     ready_ = false;
-    return;
+  } else {
+    // This should be called only once.
+    DCHECK(!is_ready());
+    ready_ = successful;
   }
 
-  // This should be called only once.
-  DCHECK(!is_ready());
-  ready_ = successful;
+  RunCallback(std::move(status_callback), *ready_);
 }
 
 void OpticalCharacterRecognizer::MaybeConnectToOcrService() {

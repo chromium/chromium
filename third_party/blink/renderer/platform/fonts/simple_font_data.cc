@@ -64,7 +64,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "v8/include/v8.h"
 
-#if !BUILDFLAG(USE_SYSTEM_FREETYPE)
+#if !BUILDFLAG(USE_SYSTEM_FREETYPE) && BUILDFLAG(ENABLE_FREETYPE)
 #include "third_party/freetype/src/src/autofit/afws-decl.h"
 #endif
 
@@ -73,11 +73,12 @@ namespace blink {
 constexpr float kSmallCapsFontSizeMultiplier = 0.7f;
 constexpr float kEmphasisMarkFontSizeMultiplier = 0.5f;
 
-#if !BUILDFLAG(USE_SYSTEM_FREETYPE)
+#if !BUILDFLAG(USE_SYSTEM_FREETYPE) && BUILDFLAG(ENABLE_FREETYPE)
 constexpr int32_t kFontObjectsMemoryConsumption =
     std::max(sizeof(AF_LatinMetricsRec), sizeof(AF_CJKMetricsRec));
 #else
 // sizeof(AF_LatinMetricsRec) = 2128
+// TODO(drott): Measure a new number for Fontations.
 constexpr int32_t kFontObjectsMemoryConsumption = 2128;
 #endif
 
@@ -405,8 +406,7 @@ LayoutUnit SimpleFontData::VerticalPosition(
     case FontVerticalPositionType::BottomOfEmHeight:
       return -NormalizedTypoDescent(baseline_type);
   }
-  NOTREACHED_IN_MIGRATION();
-  return LayoutUnit();
+  NOTREACHED();
 }
 
 const std::optional<float>& SimpleFontData::IdeographicAdvanceWidth() const {

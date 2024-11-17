@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Security.DataDecoder.Image.DecodingTime" units="ms"
-    expires_after="2025-03-09">
+    expires_after="2025-05-11">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -36,7 +36,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Isolated.EndToEndTime" units="ms"
-    expires_after="2024-11-03">
+    expires_after="2025-03-09">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -60,7 +60,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Isolated.ProcessOverhead"
-    units="ms" expires_after="2024-11-03">
+    units="ms" expires_after="2025-03-09">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -83,7 +83,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Reusable.EndToEndTime" units="ms"
-    expires_after="2024-11-03">
+    expires_after="2025-03-09">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -107,7 +107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Image.Reusable.ProcessOverhead"
-    units="ms" expires_after="2024-11-03">
+    units="ms" expires_after="2025-03-09">
   <owner>lukasza@chromium.org</owner>
   <owner>rsesek@chromium.org</owner>
   <summary>
@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.DataDecoder.Json.DecodingTime" units="ms"
-    expires_after="2025-03-02">
+    expires_after="2025-05-04">
   <owner>djmitche@chromium.org</owner>
   <owner>dadrian@chromium.org</owner>
   <summary>
@@ -140,7 +140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.GwpAsan.Activated.{Allocator}.{Process}"
-    enum="Boolean" expires_after="2025-01-31">
+    enum="Boolean" expires_after="2025-04-06">
   <owner>mpdenton@chromium.org</owner>
   <owner>kdlee@chromium.org</owner>
   <owner>memory-safety-dev@chromium.org</owner>
@@ -163,7 +163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.GwpAsan.AllocatorOom.{Allocator}.{Process}"
-    units="allocations" expires_after="2025-01-31">
+    units="allocations" expires_after="2025-04-06">
   <owner>mpdenton@chromium.org</owner>
   <owner>kdlee@chromium.org</owner>
   <owner>memory-safety-dev@chromium.org</owner>
@@ -187,7 +187,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.GwpAsan.CrashAnalysisResult.{Allocator}"
-    enum="GwpAsanCrashAnalysisResult" expires_after="2025-02-16">
+    enum="GwpAsanCrashAnalysisResult" expires_after="2025-05-04">
   <owner>glazunov@google.com</owner>
   <owner>mpdenton@chromium.org</owner>
   <owner>chrome-memory-tok@google.com</owner>
@@ -203,7 +203,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.InterstitialReason"
-    enum="HttpsFirstModeInterstitialReason" expires_after="2025-02-09">
+    enum="HttpsFirstModeInterstitialReason" expires_after="2025-04-13">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -213,7 +213,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.NavigationEvent"
-    enum="HttpsFirstModeNavigationEvent" expires_after="2025-02-09">
+    enum="HttpsFirstModeNavigationEvent" expires_after="2025-04-13">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.SettingChanged2"
-    enum="HttpsFirstModeSetting" expires_after="2025-02-10">
+    enum="HttpsFirstModeSetting" expires_after="2025-04-13">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -262,7 +262,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstMode.SettingEnabledAtStartup2"
-    enum="HttpsFirstModeSetting" expires_after="2025-02-10">
+    enum="HttpsFirstModeSetting" expires_after="2025-04-13">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -296,7 +296,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstModeWithEngagementHeuristic.HostCount"
-    units="hostnames" expires_after="2025-02-10">
+    units="hostnames" expires_after="2025-04-20">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -308,7 +308,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Security.HttpsFirstModeWithEngagementHeuristic.NavigationEvent"
-    enum="HttpsFirstModeNavigationEvent" expires_after="2025-02-09">
+    enum="HttpsFirstModeNavigationEvent" expires_after="2025-04-13">
   <owner>meacer@chromium.org</owner>
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
@@ -320,7 +320,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.HttpsFirstModeWithEngagementHeuristic.State"
-    enum="SiteEngagementHeuristicState" expires_after="2025-02-10">
+    enum="SiteEngagementHeuristicState" expires_after="2025-04-20">
   <owner>meacer@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -331,7 +331,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.JSONParser.ChromiumExtensionUsage"
-    enum="JsonParserExtension" expires_after="2025-01-12">
+    enum="JsonParserExtension" expires_after="2025-03-23">
   <owner>ellyjones@chromium.org</owner>
   <owner>chrome-platform-security@google.com</owner>
   <summary>
@@ -362,7 +362,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.NavigationRequestSecurityLevel"
-    enum="NavigationRequestSecurityLevel" expires_after="2025-02-09">
+    enum="NavigationRequestSecurityLevel" expires_after="2025-04-13">
   <owner>jdeblasio@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -378,7 +378,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Security.PageEndReason" enum="PageEndReason"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>cthomp@chromium.org</owner>
   <owner>trusty-transport@chromium.org</owner>
   <summary>
@@ -388,7 +388,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.AboutThisSiteInteraction"
-    enum="AboutThisSiteInteraction" expires_after="2025-02-10">
+    enum="AboutThisSiteInteraction" expires_after="2025-04-13">
   <owner>dullweber@chromium.org</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <summary>
@@ -398,7 +398,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.AboutThisSiteLanguageSupported"
-    enum="Boolean" expires_after="2025-03-09">
+    enum="Boolean" expires_after="2025-05-11">
   <owner>dullweber@chromium.org</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <summary>
@@ -408,7 +408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.AboutThisSiteStatus"
-    enum="AboutThisSiteStatus" expires_after="2025-03-10">
+    enum="AboutThisSiteStatus" expires_after="2025-05-11">
   <owner>dullweber@chromium.org</owner>
   <owner>olesiamarukhno@chromium.org</owner>
   <summary>
@@ -469,11 +469,13 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.CheckResult"
-    enum="PrivateNetworkAccessCheckResult" expires_after="2025-03-02">
+    enum="PrivateNetworkAccessCheckResult" expires_after="M136">
   <owner>titouan@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
   <owner>mkwst@chromium.org</owner>
   <owner>lyf@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>jdeblasio@chromium.org</owner>
   <owner>src/chrome/browser/private_network_access/OWNERS</owner>
   <summary>
     Result of the Private Network Access Check on a new connection. Recorded
@@ -483,10 +485,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.PermissionDeviceValidity"
-    enum="PrivateNetworkDeviceValidity" expires_after="M128">
+    enum="PrivateNetworkDeviceValidity" expires_after="M136">
   <owner>lyf@chromium.org</owner>
   <owner>phao@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>jdeblasio@chromium.org</owner>
   <owner>src/chrome/browser/private_network_access/OWNERS</owner>
   <summary>
     The device validity when calling Private Network Permission Prompt. Recorded
@@ -496,10 +500,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.PermissionNewAcceptedDeviceType"
-    enum="NewAcceptedDeviceType" expires_after="M128">
+    enum="NewAcceptedDeviceType" expires_after="M136">
   <owner>lyf@chromium.org</owner>
   <owner>phao@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>jdeblasio@chromium.org</owner>
   <owner>src/chrome/browser/private_network_access/OWNERS</owner>
   <summary>
     The device type of a user accepted request to Private Network device. The
@@ -509,10 +515,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.PrivateIpInferrable"
-    enum="Boolean" expires_after="2024-08-20">
+    enum="Boolean" expires_after="M136">
   <owner>titouan@chromium.org</owner>
   <owner>lyf@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>jdeblasio@chromium.org</owner>
   <owner>src/chrome/browser/private_network_access/OWNERS</owner>
   <summary>
     Records whether a failed PNA check could have been avoided by inferring the
@@ -522,10 +530,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PrivateNetworkAccess.PrivateIpResolveMatch"
-    enum="Boolean" expires_after="2024-09-16">
+    enum="Boolean" expires_after="M136">
   <owner>titouan@chromium.org</owner>
   <owner>lyf@chromium.org</owner>
   <owner>clamy@chromium.org</owner>
+  <owner>estark@chromium.org</owner>
+  <owner>jdeblasio@chromium.org</owner>
   <owner>src/chrome/browser/private_network_access/OWNERS</owner>
   <summary>
     Records whether a request to a literal private IP address resolved to that
@@ -826,7 +836,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.BrowsingInstanceCount" units="units"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <summary>
@@ -834,8 +844,52 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SiteIsolation.CreateOpenerProxiesTime" units="microseconds"
+    expires_after="2025-11-07">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    Time spent in RenderFrameHostmanager::CreateOpenerProxies(), which is a core
+    site isolation function for creating all necessary proxies when navigating
+    cross-site, sending postMessages, etc.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
+<histogram
+    name="SiteIsolation.CrossProcessPostMessage.CreateOpenerProxiesCalled"
+    enum="Boolean" expires_after="2025-11-07">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    True if CreateOpenerProxies(), the logic to create proxies on demand, was
+    called in RenderFrameProxyHost::RouteMessageMessage(), which is used for
+    dispatching cross-process postMessage events in the browser process.
+    Collected once per successfully delivered message; cases that result in
+    blocking the message are excluded.
+  </summary>
+</histogram>
+
+<histogram name="SiteIsolation.CrossProcessPostMessageTime"
+    units="microseconds" expires_after="2025-11-07">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <owner>nasko@chromium.org</owner>
+  <summary>
+    Time spent in RenderFrameProxyHost::RouteMessageMessage(), which is used for
+    dispatching cross-process postMessage events in the browser process.
+    Collected once per successfully delivered message; cases that result in
+    blocking the message are excluded.
+
+    This histogram only records metrics on machines with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="SiteIsolation.IsolatableSandboxedIframes" units="processes"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -854,7 +908,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes.UniqueOrigins"
-    units="processes" expires_after="2025-02-10">
+    units="processes" expires_after="2025-04-13">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -869,7 +923,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.IsolatableSandboxedIframes.UniqueSites"
-    units="processes" expires_after="2025-02-10">
+    units="processes" expires_after="2025-04-13">
   <owner>wjmaclean@chromium.org</owner>
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
@@ -894,7 +948,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SiteIsolation.NewProcessUsedForNavigationWhenSameSiteProcessExists"
-    enum="Boolean" expires_after="2025-02-10">
+    enum="Boolean" expires_after="2025-04-13">
   <owner>bashi@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -942,7 +996,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="SiteIsolation.ProcessPerSiteWithMainFrameThreshold.IsDevToolsUser"
-    enum="Boolean" expires_after="2024-10-30">
+    enum="Boolean" expires_after="M135">
   <owner>dtapuska@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>
@@ -953,7 +1007,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.ProxyCount" units="proxies"
-    expires_after="2025-01-26">
+    expires_after="2025-03-30">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -1013,7 +1067,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SavedUserTriggeredIsolatedOrigins.Size"
-    units="origins" expires_after="2025-02-16">
+    units="origins" expires_after="2025-04-20">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -1026,7 +1080,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SavedWebTriggeredIsolatedOrigins.Size"
-    units="origins" expires_after="2025-02-16">
+    units="origins" expires_after="2025-04-20">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -1039,7 +1093,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SiteInstancesPerBrowsingInstance" units="units"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>

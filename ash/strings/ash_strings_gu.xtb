@@ -114,6 +114,7 @@
 <translation id="132346741904777634">કૅમેરાને ઉપરના ડાબા ખૂણામાં સ્નેપ કર્યો. સિસ્ટમની સપાટીને ઓવરલેપ કરે છે.</translation>
 <translation id="132415371743256095"><ph name="DESK_NAME" /> અને તેની તમામ વિન્ડો બંધ કરો</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> કનેક્ટ થયું</translation>
+<translation id="1337081488893096731">તમારા સ્કૂલ એકાઉન્ટના ડેટાને તમારા વ્યક્તિગત એકાઉન્ટમાં ખસેડવા માટે, Content Transfer ઍપનો ઉપયોગ કરો</translation>
 <translation id="1340378040547539434">પેજને નાનું કરો</translation>
 <translation id="1341651618736211726">ઓવરફ્લો</translation>
 <translation id="1341926407152459446">ઑડિયો ઇનપુટ અને આઉટપુટ માટે "<ph name="DEVICE_NAME" />"નો ઉપયોગ કરો</translation>
@@ -242,6 +243,7 @@
 <translation id="17722141032474077">ગણતરીઓ</translation>
 <translation id="1774796056689732716">કૅલેન્ડર, <ph name="CURRENT_MONTH_YEAR" />, હાલમાં <ph name="DATE" /> પસંદ કરેલી છે.</translation>
 <translation id="178347895271755507">તમારા ફોનના તાજેતરના ફોટા, મીડિયા અને નોટિફિકેશન જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા કરો</translation>
+<translation id="1786487376942610288">ચિત્ર-માં-ચિત્ર વિન્ડોના મહત્તમ અથવા વર્તમાન કદ વચ્ચે સ્વિચ કરો</translation>
 <translation id="1787955149152357925">બંધ છે</translation>
 <translation id="1796561540704213354">વેબસાઇટ જેમાં તમે મુલાકાત લીધેલા પેજ અને ખોલેલા પેજ શામેલ છે</translation>
 <translation id="179842970735685253">Googleની સેવાની શરતો</translation>
@@ -306,7 +308,6 @@
 <translation id="2041220428661959602">બૅટરીનું લેવલ: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="204259843076055848"><ph name="SIX_PACK_KEY_NAME" /> શૉર્ટકટ હાલમાં બંધ છે</translation>
 <translation id="2049240716062114887">ડેસ્કનું નામ બદલીને <ph name="DESK_NAME" /> કરવામાં આવ્યું હતું</translation>
-<translation id="2050339315714019657">પોર્ટ્રેટ</translation>
 <translation id="2064048859448024834">કૅમેરા પ્રીવ્યૂ ચાલુ છે</translation>
 <translation id="2065098273523946419">વધુ જાણવા માટેની લિંક. જ્યારે સક્રિય થાય ત્યારે બ્રાઉઝર પર રીડાયરેક્ટ કરો</translation>
 <translation id="2067220651560163985">સેલ્સિયસમાં તાપમાન બતાવો</translation>
@@ -397,6 +398,7 @@
 <translation id="2412593942846481727">અપડેટ ઉપલબ્ધ છે</translation>
 <translation id="2416438829169535743">શું વ્યૂમાંથી બહાર નીકળીએ?</translation>
 <translation id="2417486498593892439">નેટવર્ક પર સાઇન ઇન કરો</translation>
+<translation id="2423619675829330672">પિન વડે ઘણા બધા પ્રયાસો. <ph name="TIME_LEFT" /> રાહ જુઓ અને ફરી પ્રયાસ કરો.</translation>
 <translation id="2426051945783024481">કૅમેરાની ફ્રેમને ઑટોમૅટિક રીતે મધ્યમાં ગોઠવવામાં આવે છે</translation>
 <translation id="2427507373259914951">લેફ્ટ ક્લિક કરો</translation>
 <translation id="2429753432712299108">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે. સ્વીકારતાં પહેલાં, કૃપા કરીને તે ડિવાઇસ પર બતાવેલ આ પાસકીની પુષ્ટિ કરો: <ph name="PASSKEY" /></translation>
@@ -439,6 +441,7 @@
 <translation id="2530896289327917474">ટેક્સ્ટના કર્સર વડે બ્રાઉઝ કરવાનું ચાલુ અથવા બંધ કરો</translation>
 <translation id="2531025035050312891">ડિવાઇસ ધીમું છે</translation>
 <translation id="2531107890083353124">ટૅબને ખેંચતી વખતે, <ph name="KEY_ONE" /> દબાવો</translation>
+<translation id="2545334090614121435">Home કીનો ઉપયોગ કરવાનો પ્રયાસ કરો છો? ઉપયોગ કરો</translation>
 <translation id="254900897760075745">પસંદ કરેલું કન્ટેન્ટ ક્લિપબોર્ડ પર કૉપિ કરો</translation>
 <translation id="2549711466868162843">લાઇટિંગમાં સુધારો</translation>
 <translation id="2549985041256363841">રેકોર્ડિંગ શરૂ કરો</translation>
@@ -497,6 +500,9 @@
 <translation id="2774348302533424868"><ph name="MODIFIER" /><ph name="DELIMITER" /><ph name="KEY_ONE" />થી <ph name="KEY_TWO" /></translation>
 <translation id="2778197796481941784">ctrl+search+s</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> <ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
+<translation id="2781658180588759579">બિલ્ટ-ઇન ટચપૅડ બંધ કરવામાં આવ્યું છે. ફેરફાર કન્ફર્મ કરવા માટે, તમારા કીબોર્ડ કે કોઈ અન્ય પૉઇન્ટર ડિવાઇસનો ઉપયોગ કરો.
+
+અન્યથા, <ph name="TIMEOUT_SECONDS" />માં બિલ્ટ-ઇન ટચપૅડ ફરીથી ચાલુ કરવામાં આવશે.</translation>
 <translation id="2782591952652094792">કૅપ્ચર મોડમાંથી બહાર નીકળો</translation>
 <translation id="2785499565474703580">1 ડિવાઇસ કનેક્ટ કર્યું</translation>
 <translation id="2791421900609674576">તમને સુઝાવો દેખાશે જેથી તમે જ્યાંથી છોડી દીધું હતું ત્યાંથી ચાલુ રાખી શકો.  સુઝાવો કાઢી નાખવા માટે, તમે ટચ કરીને થોડીવાર દબાવી રાખી શકો છો.</translation>
@@ -557,6 +563,7 @@
 <translation id="2985148236010982088">બધી ઍપ જુઓ</translation>
 <translation id="2992272421330787632">મીડિયાના બધા સૂચનો છુપાવો</translation>
 <translation id="2992327365391326550">ડિવાઇસનું માઇક્રોફોન બટન બંધ છે.</translation>
+<translation id="2993956882370897557">એન્ડ કીનો ઉપયોગ કરવાનો પ્રયાસ કરો છો? ઉપયોગ કરો</translation>
 <translation id="3000461861112256445">મૉનો ઑડિઓ</translation>
 <translation id="3001391739687111021">સ્ક્રીનના કદમાં ફેરફારકરો</translation>
 <translation id="3009178788565917040">આઉટપુટ</translation>
@@ -593,6 +600,9 @@
 <translation id="3113492864356515707">શેલ્ફ પર પાછલી આઇટમ હાઇલાઇટ કરો</translation>
 <translation id="311799651966070385">સંકેત બંધ કરો</translation>
 <translation id="3120421559657122717">શું ડિવાઇસને શટ ડાઉન કરીએ?</translation>
+<translation id="3121411970001795539">કોઈ માઉસ કનેક્ટેડ હોવાને કારણે બિલ્ટ-ઇન ટચપૅડ બંધ કરવામાં આવ્યું છે. ફેરફાર કન્ફર્મ કરવા માટે, માઉસ કે કીબોર્ડનો ઉપયોગ કરો.
+
+અન્યથા, <ph name="TIMEOUT_SECONDS" />માં બિલ્ટ-ઇન ટચપૅડ ફરીથી ચાલુ કરવામાં આવશે.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">ક્લાસવર્કનો પ્રકાર</translation>
 <translation id="3126026824346185272">Ctrl</translation>
@@ -609,6 +619,7 @@
 <translation id="316356270129335934"><ph name="MANAGER" /> તમારા <ph name="DEVICE_TYPE" />ને અગાઉના વર્ઝન પર લઈ જાય છે. તમારું ડિવાઇસ રીસેટ થશે અને બધો ડેટા ડિલીટ કરાશે.</translation>
 <translation id="316798519864381606">Google સ્લાઇડ</translation>
 <translation id="3171170659304083361">ઇનપુટ પદ્ધતિઓના સેટિંગ</translation>
+<translation id="3174897399179348329">Page Up કીનો ઉપયોગ કરવાનો પ્રયાસ કરો છો? ઉપયોગ કરો</translation>
 <translation id="3176221688814061633">તમારી Chromebook દ્વારા કે બ્લૂટૂથ ડિવાઇસ દ્વારા બ્લૂટૂથના કોઈ જૂના વર્ઝનનો ઉપયોગ કરવામાં આવી રહ્યો છે. બહેતર ઑડિયો ક્વૉલિટી માટે બ્લૂટૂથ સુપર રિઝોલ્યુશનની સુવિધા ચાલુ કરો અથવા આંતરિક માઇક્રોફોનનો ઉપયોગ કરો.</translation>
 <translation id="3181441307743005334">ફરી શરૂ થવામાં થોડો સમય લાગી શકે છે</translation>
 <translation id="3202010236269062730">{NUM_DEVICES,plural, =1{ઉપકરણ સાથે કનેક્ટ કર્યું}one{# ઉપકરણો સાથે કનેક્ટ કર્યું}other{# ઉપકરણો સાથે કનેક્ટ કર્યું}}</translation>
@@ -633,7 +644,6 @@
 <translation id="3265032511221679826">શું સચોટ લોકેશનનો ઍક્સેસ ચાલુ કરીએ?</translation>
 <translation id="3269597722229482060">રાઇટ ક્લિક કરો</translation>
 <translation id="3271554781793662131">દાખલ કરવા માટે શોધો</translation>
-<translation id="3273040715184276344">Caps Lock બંધ છે</translation>
 <translation id="3274634049061007184">તમારા ફોનની ઍપ જુઓ</translation>
 <translation id="3289364673986435196">પાવર મેનૂ</translation>
 <translation id="3289544412142055976">હાલમાં Linux ઍપને સપોર્ટ કરવામાં આવતો નથી</translation>
@@ -641,7 +651,6 @@
 <translation id="3290356915286466215">અસુરક્ષિત</translation>
 <translation id="3291862315280588024">પાછલા શબ્દનાં પ્રારંભ પર જાઓ</translation>
 <translation id="3294437725009624529">અતિથિ</translation>
-<translation id="3298690094479023523">તમારો પિન કે પાસવર્ડ હજી પણ ચકાસી શકાયો નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="3300193645498960160">મ્યૂટ કરેલું હોય ત્યારે જો તમે વાત કરો તો તમને સૂચિત કરવામાં આવશે. ઑડિયો ક્યારેય તમારા ડિવાઇસને છોડતું નથી.</translation>
 <translation id="3306386552969601301"><ph name="DEVICECOUNT" /> ડિવાઇસ <ph name="DEVICE_NAME" /> હૉટસ્પૉટ સાથે કનેક્ટેડ છે</translation>
 <translation id="3307642347673023554">લૅપટૉપ મોડ પર સ્વિચ થયા</translation>
@@ -964,13 +973,13 @@
 <translation id="4322742403972824594">Ctrl કી + Alt કી + ઉપરની ઍરો કી કીબોર્ડ શૉર્ટકટ બદલવામાં આવ્યો છે. Home કીનો ઉપયોગ કરવા માટે, <ph name="LAUNCHER_KEY_NAME" /> કી + ડાબી ઍરો કી દબાવો.</translation>
 <translation id="4324840740119394760">આમ કરવાથી કૅમેરાની પરવાનગી ધરાવતી <ph name="APP_NAME" /> તથા બધી ઍપ અને વેબસાઇટ માટે, કૅમેરાના ઍક્સેસની મંજૂરી આપવામાં આવે છે</translation>
 <translation id="4327147325944669226">ગેમ રેકોર્ડ કરો</translation>
-<translation id="4333628967105022692">એકથી વધુ વપરાશકર્તાઓએ સાઇન ઇન કર્યું હોય, ત્યારે Lacros કામ કરતું નથી.</translation>
 <translation id="4338109981321384717">બૃહદદર્શક કાચ</translation>
 <translation id="4348580496249286403"><ph name="VOLUME_LEVEL" />, મ્યૂટ કર્યું છે</translation>
 <translation id="4351244548802238354">સંવાદ બંધ કરો</translation>
 <translation id="4356872429719185452">હૉટસ્પૉટની વિગતો બતાવો. હૉટસ્પૉટ ચાલુ કરવામાં આવ્યું છે.</translation>
 <translation id="4364101114148522660"><ph name="DURATION" />  રેકોર્ડિંગ</translation>
 <translation id="4371348193907997655">કાસ્ટ સેટિંગ</translation>
+<translation id="4371834685492830207">પિનમાં માત્ર માન્ય અક્ષરો હોવા જોઈએ</translation>
 <translation id="4375482231364171368">ઍડ્રેસ બારમાં શોધો</translation>
 <translation id="4378479437904450384"><ph name="WIRELESS_PROVIDER" />, સિગ્નલની પ્રબળતા <ph name="SIGNAL_STRENGTH" /> ટકા</translation>
 <translation id="4378551569595875038">કનેક્ટિંગ...</translation>
@@ -1136,6 +1145,7 @@
 <translation id="4902797682482387055">ફોકસ કરવા માટે સૂચવેલું કાર્ય</translation>
 <translation id="490375751687810070">વર્ટિકલ</translation>
 <translation id="490788395437447240">બૅટરી <ph name="BATTERY_PERCENTAGE" />%</translation>
+<translation id="4911191962826748981">આ પ્રાયોગિક AI સુવિધા છે અને તે હંમેશાં સાચી જ હોય, એવું જરૂરી નથી.</translation>
 <translation id="491504982845934899">ડિવાઇસના સેટઅપ બાદ, <ph name="NETWORK_NAME" />ને સક્રિય કરો</translation>
 <translation id="4917385247580444890">સશક્ત</translation>
 <translation id="4918086044614829423">સ્વીકારો</translation>
@@ -1257,6 +1267,7 @@
 <translation id="5297704307811127955">બંધ</translation>
 <translation id="5300589172476337783">બતાવો</translation>
 <translation id="5302048478445481009">ભાષા</translation>
+<translation id="5302531370473608800">YouTube Musicનો ઉપયોગ કરવા માટે તમારું <ph name="DEVICE_TYPE" /> અપડેટ કરો</translation>
 <translation id="5303319262469238330"><ph name="PERCENTAGE" />% બૅટરી બાકી છે.
 બૅટરી આવરદા વધારવા માટે કેટલીક સુવિધાઓ મર્યાદિત કરી છે.</translation>
 <translation id="5308380583665731573">કનેક્ટ કરો</translation>
@@ -1293,6 +1304,7 @@
 <translation id="5393156353051693207">તમારી ઍપનો ક્રમ બદલવા માટે ગમે ત્યાં ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" />ની સૌથી ઉપર <ph name="DRAGGED_APP_NAME" /> પર, ફોલ્ડર બનાવવા માટે રિલીઝ કરો.</translation>
 <translation id="5397578532367286026">આ વપરાશકર્તાના ઉપયોગ અને ઇતિહાસની chrome.com પર સંચાલક (<ph name="MANAGER_EMAIL" />) દ્વારા સમીક્ષા કરવામાં આવી શકે છે.</translation>
+<translation id="540338817371815859">લૅન્ડસ્કેપ</translation>
 <translation id="540713187982329711">હૉટસ્પૉટ ટૉગલ કરો. હૉટસ્પૉટ ચાલુ છે, કોઈ ડિવાઇસ કનેક્ટેડ નથી.</translation>
 <translation id="5409208741270395213">કાર્યને પૂર્ણ થયેલા તરીકે ચિહ્નિત કરો</translation>
 <translation id="5413656666631274079">સેટિંગ પેજ</translation>
@@ -1414,6 +1426,7 @@
 <translation id="5777841717266010279">સ્ક્રીન શેરિંગ રોકીએ?</translation>
 <translation id="5779721926447984944">પિન કરેલી ફાઇલો</translation>
 <translation id="5785221443435874078">આ સૂચન કાઢી નાખો</translation>
+<translation id="5787431783058088906">લાભ મેળવો</translation>
 <translation id="5788127256798019331">Play ફાઇલો</translation>
 <translation id="5788535737706478207">બંધ કરેલા છેલ્લા ટૅબ અથવા વિન્ડોને ફરીથી ખોલો</translation>
 <translation id="5790085346892983794">સફળતા</translation>
@@ -1463,11 +1476,11 @@
 <translation id="5975235751479998104">windows મારફતે આગળની ઍપ પર જવા સાઇકલ ફૉરવર્ડ કરો</translation>
 <translation id="5978382165065462689">દૂરસ્થ સહાય વડે તમારી સ્ક્રીનનું નિયંત્રણ શેર કરવું.</translation>
 <translation id="5980301590375426705">અતિથિથી બહાર નીકળો</translation>
-<translation id="5982119059638483922">રદ કરવા માટે Fn+Search અથવા Shift દબાવો.</translation>
 <translation id="5983567367406220847">નિષ્ક્રિયતાને કારણે હૉટસ્પૉટની સુવિધા બંધ કરવામાં આવી છે.</translation>
 <translation id="598407983968395253">નમૂનાનો ઉપયોગ કરો</translation>
 <translation id="5986723678596105470">Google Meet વડે જોડાઓ</translation>
 <translation id="598882571027504733">અપડેટ મેળવવા માટે, તમારી Chromebookને જોડાયેલ કીબોર્ડ સાથે ફરીથી શરૂ કરો.</translation>
+<translation id="5990992855591814753">મનગમતા બનાવેલા ફોકસ પ્લેલિસ્ટ વડે ટ્રૅક પર રહો. વિના મૂલ્યે YouTube Premiumના 3 મહિના સાથે જાહેરાતમુક્ત YouTube Music અને YouTube મેળવો. શરતો લાગુ.</translation>
 <translation id="5998374579424866922">ગેમના નિયંત્રણો બંધ કરો</translation>
 <translation id="6000279412553873020">કી, બટન અને વધુ નિયંત્રણો</translation>
 <translation id="6012623610530968780"><ph name="SELECTED_PAGE" /> પેજમાંનું <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1532,7 +1545,6 @@
 <translation id="6166852626429024716">તમારા ડિવાઇસ, ઍપ, સેટિંગ અને વેબ પર શોધો...</translation>
 <translation id="6168318496333165060">Diagnostics ઍપ ખોલો</translation>
 <translation id="6168622430237609329">તમારી ઇન્સ્ટૉલ કરેલી ઍપ</translation>
-<translation id="6173151025443907148">જો Lacros ચાલુ કરવામાં આવ્યું હોય, તો બીજા વપરાશકર્તા દ્વારા સાઇન ઇન કરવાને સપોર્ટ કરવામાં આવતો નથી. કૃપા કરીને તેના બદલે Lacrosમાં બીજી બ્રાઉઝર પ્રોફાઇલનો ઉપયોગ કરો અથવા Lacros બંધ કરો અને ફરી પ્રયાસ કરો.</translation>
 <translation id="6179832488876878285">તમે તમારી મહત્ત્વની ફાઇલો અહીં પિન કરી શકો છો. શરૂ કરવા માટે Files ઍપ ખોલો.</translation>
 <translation id="6180193585172850042">પાછળ બટન</translation>
 <translation id="6180651297859206670">ફૉરવર્ડ કરો બટન</translation>
@@ -1554,6 +1566,7 @@
 <translation id="6232416233079464213"><ph name="SESSION_NAME" />માંથી</translation>
 <translation id="6232891689835436217"><ph name="APP_NAME" /> દ્વારા હાલમાં તમારા કૅમેરા અને માઇક્રોફોનનો ઉપયોગ કરવામાં આવી રહ્યો છે</translation>
 <translation id="6237231532760393653">1X</translation>
+<translation id="6240551054644725950">પાસવર્ડમાં માત્ર માન્ય અક્ષરો હોવા જોઈએ</translation>
 <translation id="6240603910551255087">'સૌથી ઉપર' બટન</translation>
 <translation id="6240821072888636753">દર વખતે પૂછો</translation>
 <translation id="6247728804802644171">નોટિફિકેશન ખોલો</translation>
@@ -1576,12 +1589,14 @@
 <translation id="6330012934079202188">બધી ડેસ્ક પરથી વિન્ડો બતાવી રહ્યાં છીએ, વર્તમાન ડેસ્ક પરની વિન્ડો બતાવવા માટે ઉપરની ઍરો કી દબાવો</translation>
 <translation id="6337159624125741244">પૂર્ણ-સ્ક્રીન મૅગ્નિફાયર ચાલુ છે</translation>
 <translation id="6338485349199627913">મેનેજ કરાયેલું સત્ર <ph name="DISPLAY_NAME" />ને <ph name="MANAGER" /> દ્વારા મેનેજ કરવામાં આવે છે</translation>
+<translation id="6340148837564298498">જો તમે તમારો પિન ભૂલી ગયા હો, તો આ વપરાશકર્તાને રિકવર કરવાનો પ્રયાસ કરો.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> કનેક્ટ થયું</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" />+<ph name="MODIFIER_TWO" />+<ph name="KEY_ONE" /> પછી <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> અથવા <ph name="KEY_THREE" /></translation>
 <translation id="6351032674660237738">ઍપ સૂચનો</translation>
 <translation id="6352082849089527770">અજાણ્યા નેટવર્ક</translation>
 <translation id="6359587239691116345">નવીનતમ સુવિધાઓ અને સુરક્ષા સંબંધિત સુધારણાઓ મેળવો. જો તમે આ અપડેટ નકારશો, તો તમારું ડિવાઇસ હવે કદાચ યોગ્ય રીતે કામ કરશે નહીં અને તમે સુરક્ષા તથા પર્ફોર્મન્સ સંબંધિત સમસ્યાઓ અનુભવી શકો છો.</translation>
 <translation id="6362833380917912748">તમારી બિલ્ટ-ઇન ઍપ વિશે વધુ જાણો</translation>
+<translation id="6364386432014869981">બિલ્ટ-ઇન ટચપૅડ ચાલુ કરવામાં આવ્યું છે</translation>
 <translation id="6376931439017688372">બ્લૂટૂથ ચાલુ છે</translation>
 <translation id="6378515133128829137">વિન્ડોને જમણી બાજુ પિન કરો</translation>
 <translation id="6381109794406942707">ડિવાઇસને અનલૉક કરવા માટે. તમારો પિન દાખલ કરો.</translation>
@@ -1632,6 +1647,7 @@
 <translation id="6539852571005954999">ડાઉનલોડ <ph name="FILENAME" /> સ્કૅન કરી રહ્યું છે</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> પર કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6542891623636520977">ઇમોજી, GIFs અને વધુ</translation>
+<translation id="6545382064335350438">તમારો પિન હજી પણ ચકાસી શકાયો નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="6555373427270923730">ઍડ્રેસ બારમાં વેબ ઍડ્રેસ ટાઇપ કરો, પછી <ph name="MODIFIER" />+<ph name="KEY" /> દબાવો</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 નવી ઇન્સ્ટૉલ કરી છે</translation>
@@ -1645,6 +1661,7 @@
 <translation id="6574587113394758819">જોવા સંબંધિત સુરક્ષા પ્રણાલી ચાલુ હોવાને કારણે <ph name="APP_TITLE" /> નોટિફિકેશન છુપાવેલું છે</translation>
 <translation id="6574622320167699133">તમારા ફોન દ્વારા અનલૉક કરવામાં આવ્યું. દાખલ થવા માટે ટૅપ કરો અથવા ક્લિક કરો.</translation>
 <translation id="6578407462441924264">અનામાંકિત</translation>
+<translation id="6582012689384648647">મનગમતા બનાવેલા ફોકસ પ્લેલિસ્ટ માટે, YouTube Musicના ઍક્સેસની મંજૂરી આપો</translation>
 <translation id="6582034443359256692">બૅટરી ચાર્જના લેવલની ગણતરી કરી રહ્યાં છીએ.</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> માં સત્ર સમાપ્ત થાય છે.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1680,11 +1697,11 @@
 <translation id="6682029141988159141">ક્લિપબોર્ડમાંના કન્ટેન્ટને પેસ્ટ કરો</translation>
 <translation id="6683022854667115063">હૅડફોન</translation>
 <translation id="6686023075541098243">તમારા ફોનના નોટિફિકેશન જોવાની સુવિધા સેટઅપ કરવાની પ્રક્રિયા કરો</translation>
+<translation id="6694462491298752106">બિલ્ટ-ઇન ટચપૅડ બંધ કરવામાં આવ્યું છે</translation>
 <translation id="6694973220096431421">Google Driveમાં શોધો</translation>
 <translation id="6696025732084565524">અલગ પાડી શકાય તેવા તમારા કીબોર્ડ માટે મહત્ત્વપૂર્ણ અપડેટ જરૂરી છે</translation>
 <translation id="6697913454192220372">નવું ડેસ્ક ઉમેરો</translation>
 <translation id="6700713906295497288">IME મેનૂ બટન</translation>
-<translation id="6704375469818246414">જનરેટિવ AIનો ઉપયોગ કરતી વખતે ક્વૉલિટીમાં કદાચ જનરેટિવ AIજનરેટિવ AI ફેરફાર આવી શકે છે.</translation>
 <translation id="6706742084323792866">કીબોર્ડને પિન કરો</translation>
 <translation id="6710213216561001401">પાછલી</translation>
 <translation id="6723839937902243910">પાવર</translation>
@@ -1699,6 +1716,7 @@
 <translation id="6751826523481687655">કાર્યપ્રદર્શનની નોંધ રાખવાનું ચાલુ કરેલું છે</translation>
 <translation id="6752912906630585008">ડેસ્ક <ph name="REMOVED_DESK" /> કાઢી નાખ્યું અને ડેસ્ક <ph name="RECEIVE_DESK" /> સાથે મર્જ કર્યું</translation>
 <translation id="6753390234084146956">ટૅબ</translation>
+<translation id="6754918760968695779">ક્વિક ઇન્સર્ટ</translation>
 <translation id="6757237461819837179">કોઈ મીડિયા ચલાવી રહ્યાં નથી</translation>
 <translation id="6760438044935091345">ગેમ ડૅશબોર્ડ</translation>
 <translation id="6768043681523654438">સ્ટોરેજ</translation>
@@ -1748,6 +1766,7 @@
 <translation id="6921427376813842559">ડિવાઇસ અપડેટ કરો</translation>
 <translation id="6929081673585394903">નિયંત્રણો બતાવો</translation>
 <translation id="6931576957638141829">આમાં સાચવો</translation>
+<translation id="6935857786205183008">પોર્ટ્રેટ</translation>
 <translation id="6942518653766415536">રેકોર્ડિંગ ફૉર્મેટનું મેનૂ</translation>
 <translation id="6945221475159498467">પસંદ કરો</translation>
 <translation id="6945922087561257829">તમારા ફોનમાં મોબાઇલ નેટવર્કનો ઉપયોગ થઈ રહ્યો છે. ખાતરી કરો કે તમારો ફોન અને Chromebook એક જ નેટવર્ક પર છે અને પછી ફરી પ્રયાસ કરો. <ph name="LEARN_MORE" /></translation>
@@ -1808,6 +1827,7 @@
 <translation id="7144942256906679589">બૅટરીનું સ્ટેટસ</translation>
 <translation id="7145639536026937076">બૅટરી <ph name="PERCENTAGE" />% પર છે અને ચાર્જ થઈ રહી છે. બૅટરી સેવર ચાલુ છે.</translation>
 <translation id="7147587499155271409">કોઈ બ્રાઉઝિંગ ઇતિહાસ નથી</translation>
+<translation id="7147657298465433425">F કી ઍક્સેસ કરવા, fn કી + સૌથી ઉપરની પંક્તિવાળી કી દબાવો</translation>
 <translation id="7149149900052329230">તમારી સ્થાનિક ફાઇલો અને તમારી Google Driveની ફાઇલો, એ બધું Files ઍપમાં મેનેજ કરો.</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7167913274352523149"><ph name="HOTSPOT" />,
@@ -1883,6 +1903,7 @@
 <translation id="7477793887173910789">તમારું મ્યુઝિક, વીડિયો અને બીજું ઘણું નિયંત્રિત કરો</translation>
 <translation id="7488762544858401571">ફેરફાર કરેલો</translation>
 <translation id="7489261257412536105">પૂર્ણસ્ક્રીનમાં દાખલ થાઓ અથવા તેમાંથી બહાર નીકળો</translation>
+<translation id="7490157877815329797">જાહેરાતમુક્ત મ્યુઝિક સાંભળવા અને મનગમતા બનાવેલા ફોકસ મ્યુઝિકનો આનંદ માણવા, YouTube Music Premium અજમાવી જુઓ</translation>
 <translation id="7490360161041035804">Google Driveની ફાઇલો સહિત, તમે મહત્ત્વની ફાઇલો પિન કરી શકો છો. પિન કરવા માટે, કોઈ આઇટમ પર કર્સર લઈ જાઓ અથવા Files ખોલો અને કોઈ આઇટમ પર રાઇટ ક્લિક કરો.</translation>
 <translation id="7497767806359279797">ભાષા અને કીબોર્ડ પસંદ કરો</translation>
 <translation id="7507162824403726948">તમારી ઓળખની ચકાસણી પૂર્ણ કરો</translation>
@@ -1913,6 +1934,7 @@
 <translation id="7557816257942363084"><ph name="APP_NAME" /> હાલમાં તમારા માઇક્રોફોનનો ઉપયોગ કરી રહી છે</translation>
 <translation id="7561982940498449837">મેનૂ બંધ કરો</translation>
 <translation id="7564874036684306347">વિંડોને બીજા ડેસ્કટૉપમાં ખસેડવું તે અનપેક્ષિત વર્તણૂકનું કારણ બની શકે છે. અનુગામી નોટિફિકેશન, વિંડો અને સંવાદો ડેસ્કટૉપ વચ્ચે વિભાજિત થઈ શકે છે.</translation>
+<translation id="7568154670718626683">Delete કીનો ઉપયોગ કરવાનો પ્રયાસ કરો છો? ઉપયોગ કરો</translation>
 <translation id="7568790562536448087">અપડેટ થઈ રહ્યું છે</translation>
 <translation id="7569509451529460200">બ્રેઇલ અને ChromeVox સક્ષમ કર્યાં</translation>
 <translation id="7569886975397378678">તમારા ફોનના નોટિફિકેશન અને ઍપ જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા છોડી દો</translation>
@@ -1947,7 +1969,6 @@
 <translation id="7670953955701272011">Google Calendarમાં આ તારીખ ખોલો</translation>
 <translation id="7671610481353807627">ઍપને રંગ અનુસાર સૉર્ટ કરવામાં આવી છે</translation>
 <translation id="7672095158465655885"><ph name="NAME" /> સાથે કનેક્ટેડ, <ph name="SUBTEXT" /></translation>
-<translation id="7680417644536099065">Caps Lock ચાલુ છે</translation>
 <translation id="7682351277038250258">ક્લિપબોર્ડમાંના કન્ટેન્ટને સાદી ટેક્સ્ટ તરીકે પેસ્ટ કરો</translation>
 <translation id="7684531502177797067">કૅમેરા ઇનપુટને <ph name="CAMERA_NAME" /> પર સેટ કર્યું.</translation>
 <translation id="7687172143976244806">તમારા દ્વારા ખોલવામાં આવેલી</translation>
@@ -1988,6 +2009,7 @@
 <translation id="780301667611848630">ના, આભાર</translation>
 <translation id="7807067443225230855">Search અને Assistant</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> અને <ph name="MINUTE" /></translation>
+<translation id="7823946889603375473">થમ્બ્સ અપ દ્વારા આ સૂચન તમને પસંદ હોવાનો પ્રતિસાદ સબમિટ કરવામાં આવશે</translation>
 <translation id="7825412704590278437">આગામી કૅલેન્ડર ઇવેન્ટમાંથી</translation>
 <translation id="7829386189513694949">પ્રબળ સિગ્નલ</translation>
 <translation id="7830453190047749513">તમે તમારા <ph name="PERIPHERAL_NAME" /> માટે બટનની ક્રિયાઓ અને કર્સરની ઝડપ જેવી બીજી ઘણી બાબતોને મનગમતી બનાવી શકો છો</translation>
@@ -2026,6 +2048,7 @@
 <translation id="7904094684485781019">આ એકાઉન્ટ માટે વ્યસ્થાપકે એકથી વધુ સાઇન ઇનને નામંજૂર કર્યું છે.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="7917760201509801422"><ph name="DEVICECOUNT" /> ડિવાઇસ કનેક્ટ કર્યા</translation>
+<translation id="7921565901396407357">તમારો પિન ચકાસી શકાયો નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="7923534281713082605">હવામાન</translation>
 <translation id="7926080067315048321">બધા કાર્યો વેબ પર Google Tasks પર જુઓ</translation>
 <translation id="7930731167419639574">સ્પીચ પર હવે ડિવાઇસમાં જ પ્રક્રિયા કરવામાં આવે છે અને ડિક્ટેશનની સુવિધા ઑફલાઇન કામ કરે છે</translation>
@@ -2115,6 +2138,7 @@
 <translation id="820256110035940528"><ph name="TITLE" /> તમે હમણાં જ <ph name="FOCUSED_TIME" /> માટે ફોકસ કર્યું છે. ફરીથી ફોકસ કરવા માટે ઝડપી સેટિંગ ખોલો.</translation>
 <translation id="8203224998425013577">વધુ ઇમોજી અને GIFs બતાવો</translation>
 <translation id="8203795194971602413">રાઇટ ક્લિક કરો</translation>
+<translation id="8205469348819768313">Page Down કીનો ઉપયોગ કરવાનો પ્રયાસ કરો છો? ઉપયોગ કરો</translation>
 <translation id="8214996719228530800">Canary ચૅનલ</translation>
 <translation id="8219451629189078428">આ સમય દરમ્યાન, તમારું Chromebook ચાલુ રહેવું અને પાવરથી કનેક્ટ થયેલું હોવું આવશ્યક છે. ખાતરી કરો કે ચાર્જર અથવા અડૅપ્ટર કેબલ તમારા Chromebook અને પાવર આઉટલેટ, એમ બન્નેમાં યોગ્ય રીતે પ્લગ-ઇન કરવામાં આવ્યા હોય. તમારું Chromebook બંધ કરશો નહીં.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> ઉમેરો</translation>
@@ -2140,6 +2164,7 @@
 <translation id="830868413617744215">બીટા</translation>
 <translation id="8314772463905284467">Caps Lock ચાલુ છે</translation>
 <translation id="8315514906653279104">ચાલુ કરી રહ્યાં છીએ…</translation>
+<translation id="8319634750346253957">થમ્બ્સ અપ દ્વારા આ સૂચન તમને નાપસંદ હોવાનો પ્રતિસાદ સબમિટ કરવામાં આવશે</translation>
 <translation id="8331351032546853669">ડાઉનલોડ બાકી</translation>
 <translation id="8339706171276328417"><ph name="ACTION_DESCRIPTION" /> · <ph name="TIME" /></translation>
 <translation id="8341451174107936385"><ph name="UNLOCK_MORE_FEATURES" />  <ph name="GET_STARTED" /></translation>
@@ -2158,6 +2183,7 @@
 <translation id="8380784334203145311">ગુડ નાઇટ,</translation>
 <translation id="8382715499079447151">જોવા સંબંધિત સુરક્ષા પ્રણાલી</translation>
 <translation id="8383614331548401927">Recapમાં સ્વાગત છે</translation>
+<translation id="838540623579162843">Music Premium મેળવો</translation>
 <translation id="8388750414311082622">છેલ્લું ડેસ્ક કાઢી નાખી શકાતું નથી.</translation>
 <translation id="8394567579869570560">તમારા માતાપિતાએ આ ડિવાઇસને લૉક કર્યું છે</translation>
 <translation id="8401850874595457088">ભાષાનું મેનૂ ખોલો</translation>
@@ -2284,11 +2310,11 @@
 <translation id="8845001906332463065">સહાય મેળવો</translation>
 <translation id="8847100217801213944">ફૅરન્હાઇટમાં તાપમાન બતાવો</translation>
 <translation id="8849001918648564819">છુપાવેલી</translation>
-<translation id="8853703225951107899">તમારો પિન કે પાસવર્ડ હજી પણ ચકાસી શકાયો નથી. નોંધ: જો તમે તમારો પાસવર્ડ તાજેતરમાં બદલ્યો હોય, તો તમારા જૂના પાસવર્ડનો ઉપયોગ કરો. એકવાર તમે સાઇન આઉટ કરો, તે પછી તમારો નવો પાસવર્ડ લાગુ કરવામાં આવશે.</translation>
 <translation id="8855885154700222542">પૂર્ણસ્ક્રીન કી</translation>
 <translation id="8858369206579825206">પ્રાઇવસીને લગતાં નિયંત્રણ</translation>
 <translation id="8860366331836346216">ઇ-સિમ ઉમેરો</translation>
 <translation id="8870509716567206129">ઍપ સ્ક્રીન-વિભાજનને સહાય કરતી નથી.</translation>
+<translation id="8873203135446552888">તમે બિલ્ટ-ઇન ટચપૅડ બંધ કરવા માગો છો, તે કન્ફર્મ કરો</translation>
 <translation id="8874184842967597500">કનેક્ટ નથી</translation>
 <translation id="8875021410787719674">સૌથી નીચેના જમણા ખૂણા, લૉન્ચર, ઍડ્રેસ બાર, બુકમાર્ક બાર, ખુલ્લી હોય તે વેબસાઇટ અને ડાઉનલોડ વચ્ચે ખસેડો</translation>
 <translation id="8876148469852588625"><ph name="EVENT_TOTAL_COUNT" />માંથી ઇવેન્ટ <ph name="EVENT_POSITION" /></translation>
@@ -2306,6 +2332,7 @@
 <translation id="8921554779039049422">H+</translation>
 <translation id="8921624153894383499">Google Assistant આ ભાષા બોલતું નથી.</translation>
 <translation id="8926951137623668982">શેલ્ફ હંમેશાં છુપાવવામાં આવે છે</translation>
+<translation id="8929566928381252430">Caps Lockનો ઉપયોગ કરવાનો પ્રયાસ કરો છો? ઉપયોગ કરો</translation>
 <translation id="8934926665751933910">{NUM_FILES,plural, =1{1 ફાઇલ}one{# ફાઇલ}other{# ફાઇલ}}</translation>
 <translation id="8936501819958976551">નિષ્ક્રિય કરેલું</translation>
 <translation id="8938800817013097409">USB-C ડિવાઇસ (પાછળની બાજુએ જમણું પોર્ટ)</translation>
@@ -2323,6 +2350,7 @@
 <translation id="8982906748181120328">નજીકની દૃશ્યતા</translation>
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" />નો ઉપયોગ કરી રહ્યા છે</translation>
+<translation id="8991648557324317894">રદ કરવા માટે fn + ક્વિક ઇન્સર્ટ અથવા Shift કી દબાવો.</translation>
 <translation id="899350903320462459">નોટિફિકેશન ક્રિયા કરવા માટે ઉપકરણને <ph name="LOGIN_ID" /> તરીકે અનલૉક કરો</translation>
 <translation id="8993733019280019776">શું તમે વાત કરી રહ્યાં છો? તમારું માઇક બંધ છે. માઇક ચાલુ કરવા માટે તેને પસંદ કરો.</translation>
 <translation id="9000771174482730261">સ્ટોરેજ મેનેજ કરો</translation>
@@ -2405,9 +2433,9 @@
 <translation id="974545358917229949"><ph name="QUERY" /> માટે <ph name="RESULT_COUNT" /> પરિણામ બતાવી રહ્યાં છીએ</translation>
 <translation id="981011780479609956">નિયત તારીખ વગરના</translation>
 <translation id="98120814841227350">દસ્તાવેજના અંતે જાઓ</translation>
-<translation id="98515147261107953">લૅન્ડસ્કેપ</translation>
 <translation id="987589956647469042">મોબાઇલ ડેટા ચાલુ કરેલો છે</translation>
 <translation id="989374776391122812">કૅમેરા અને ઑડિયો નિયંત્રણો</translation>
+<translation id="990263227494928142">ટચપૅડ ચાલુ કરવા માટે, 5 વાર Shift કી દબાવો</translation>
 <translation id="990277280839877440">વિંડો <ph name="WINDOW_TITILE" /> બંધ કરેલી છે.</translation>
 <translation id="993398562350683614">ટૂરના <ph name="TOTAL_STEPS" />માંથી પગલું <ph name="STEP" />. તમારી <ph name="PRODUCT_NAME" /> પર તમને જે પણ કરવાની જરૂર હોય તે દરેક વસ્તુ કરવા માટે ઍપનો ઉપયોગ કરો. તમે લૉન્ચરમાં તમારી ઍપ જોઈ શકો છો. લૉન્ચર બટન પર ફોકસ કરવા માટે Alt + Shift + L દબાવો.</translation>
 <translation id="994354411665877646"><ph name="NETWORK_NAME" />, <ph name="SUBTEXT" /></translation>

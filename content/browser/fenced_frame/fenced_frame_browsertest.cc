@@ -385,12 +385,11 @@ IN_PROC_BROWSER_TEST_F(FencedFrameMPArchBrowserTest, FrameIteration) {
 
   // WebContentsImpl::ForEachFrameTree should include fenced frames.
   bool visited_fenced_frame_frame_tree = false;
-  web_contents()->ForEachFrameTree(
-      base::BindLambdaForTesting([&](FrameTree& frame_tree) {
-        if (&frame_tree == fenced_frame_rfh->frame_tree()) {
-          visited_fenced_frame_frame_tree = true;
-        }
-      }));
+  web_contents()->ForEachFrameTree([&](FrameTree& frame_tree) {
+    if (&frame_tree == fenced_frame_rfh->frame_tree()) {
+      visited_fenced_frame_frame_tree = true;
+    }
+  });
   EXPECT_TRUE(visited_fenced_frame_frame_tree);
 }
 
@@ -2300,8 +2299,7 @@ class FencedFrameNestedModesTest
         return "opaque-ads";
     }
 
-    NOTREACHED_IN_MIGRATION();
-    return "";
+    NOTREACHED();
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -2407,6 +2405,7 @@ class FledgeFencedFrameOriginContentBrowserClient
   // This is needed so that the interest group related APIs can run without
   // failing with the result AuctionResult::kSellerRejected.
   bool IsInterestGroupAPIAllowed(
+      content::BrowserContext* browser_context,
       content::RenderFrameHost* render_frame_host,
       ContentBrowserClient::InterestGroupApiOperation operation,
       const url::Origin& top_frame_origin,
@@ -2417,8 +2416,7 @@ class FledgeFencedFrameOriginContentBrowserClient
   bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
       const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api,
-      bool post_impression_reporting) override {
+      content::PrivacySandboxInvokingAPI invoking_api) override {
     return true;
   }
 
@@ -2471,7 +2469,6 @@ class FencedFrameParameterizedBrowserTest : public FencedFrameBrowserTestBase {
          // `FencedFrameConfig` object upon developer request.
          {blink::features::kFencedFramesAPIChanges, {}},
          {blink::features::kFencedFramesAutomaticBeaconCredentials, {}},
-         {blink::features::kFencedFramesReportingAttestationsChanges, {}},
          {blink::features::kFencedFramesLocalUnpartitionedDataAccess, {}},
          {blink::features::
               kFencedFramesCrossOriginEventReportingUnlabeledTraffic,

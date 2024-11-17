@@ -9,6 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/apdu/apdu_response.h"
 #include "components/cbor/writer.h"
@@ -131,8 +132,8 @@ void MockFidoDevice::StubGetId() {
   // Use a counter to keep the device ID unique.
   static size_t i = 0;
   EXPECT_CALL(*this, GetId())
-      .WillRepeatedly(
-          testing::Return(base::StrCat({"mockdevice", std::to_string(i++)})));
+      .WillRepeatedly(testing::Return(
+          base::StrCat({"mockdevice", base::NumberToString(i++)})));
 }
 
 void MockFidoDevice::ExpectCtap2CommandAndRespondWith(

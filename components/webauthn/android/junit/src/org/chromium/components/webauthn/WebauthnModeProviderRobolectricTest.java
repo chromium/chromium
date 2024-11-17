@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verify;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -20,7 +19,6 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.webauthn.cred_man.AppCredManRequestDecorator;
 import org.chromium.components.webauthn.cred_man.BrowserCredManRequestDecorator;
 import org.chromium.components.webauthn.cred_man.GpmCredManRequestDecorator;
@@ -35,12 +33,10 @@ public class WebauthnModeProviderRobolectricTest {
     @Mock WebContents mWebContents;
     @Mock WebauthnModeProvider.Natives mNatives;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
-
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(WebauthnModeProviderJni.TEST_HOOKS, mNatives);
+        WebauthnModeProviderJni.setInstanceForTesting(mNatives);
     }
 
     @Test

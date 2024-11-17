@@ -16,12 +16,14 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
+#include "chrome/browser/ash/bruschetta/bruschetta_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
+#include "chrome/browser/ash/guest_os/guest_os_session_tracker_factory.h"
 #include "chrome/browser/ash/guest_os/guest_os_terminal.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -40,8 +42,8 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "third_party/blink/public/common/features.h"
-#include "ui/base/models/simple_menu_model.h"
 #include "ui/display/display.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/vector_icons.h"
 
 class AppServiceShelfContextMenuBrowserTest : public InProcessBrowserTest {
@@ -445,11 +447,11 @@ IN_PROC_BROWSER_TEST_F(AppServiceShelfContextMenuCrostiniAppBrowserTest,
 
   guest_os::GuestId id(guest_os::VmType::BRUSCHETTA,
                        bruschetta::kBruschettaVmName, "");
-  guest_os::GuestOsSessionTracker::GetForProfile(browser()->profile())
+  guest_os::GuestOsSessionTrackerFactory::GetForProfile(browser()->profile())
       ->AddGuestForTesting(id, guest_os::GuestInfo{id, 0, {}, {}, {}, {}});
 
   auto* bruschetta_service =
-      bruschetta::BruschettaService::GetForProfile(browser()->profile());
+      bruschetta::BruschettaServiceFactory::GetForProfile(browser()->profile());
   bruschetta_service->RegisterVmLaunch(bruschetta::kBruschettaVmName,
                                        bruschetta::RunningVmPolicy{false});
   base::RunLoop run_loop;

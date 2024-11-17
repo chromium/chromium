@@ -51,6 +51,26 @@ class TestableTtsController : public content::TtsController {
   void Stop(const GURL& source_url) override {}
   void Pause() override {}
   void Resume() override {}
+  void UpdateLanguageStatus(const std::string& lang,
+                            content::LanguageInstallStatus install_status,
+                            const std::string& error) override {}
+  void AddUpdateLanguageStatusDelegate(
+      content::UpdateLanguageStatusDelegate* delegate) override {}
+  void RemoveUpdateLanguageStatusDelegate(
+      content::UpdateLanguageStatusDelegate* delegate) override {}
+  void UninstallLanguageRequest(content::BrowserContext* browser_context,
+                                const std::string& lang,
+                                const std::string& client_id,
+                                int source,
+                                bool uninstall_immediately) override {}
+  void InstallLanguageRequest(content::BrowserContext* browser_context,
+                              const std::string& lang,
+                              const std::string& client_id,
+                              int source) override {}
+  void LanguageStatusRequest(content::BrowserContext* browser_context,
+                             const std::string& lang,
+                             const std::string& client_id,
+                             int source) override {}
   void GetVoices(content::BrowserContext* browser_context,
                  const GURL& source_url,
                  std::vector<content::VoiceData>* out_voices) override {}

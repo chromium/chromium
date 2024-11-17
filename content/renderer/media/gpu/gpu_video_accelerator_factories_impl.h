@@ -96,6 +96,8 @@ class CONTENT_EXPORT GpuVideoAcceleratorFactoriesImpl
       media::RequestOverlayInfoCB request_overlay_info_cb) override;
   std::optional<media::VideoEncodeAccelerator::SupportedProfiles>
   GetVideoEncodeAcceleratorSupportedProfiles() override;
+  std::optional<media::SupportedVideoDecoderConfigs>
+  GetSupportedVideoDecoderConfigs() override;
   bool IsEncoderSupportKnown() override;
   void NotifyEncoderSupportKnown(base::OnceClosure callback) override;
   std::unique_ptr<media::VideoEncodeAccelerator> CreateVideoEncodeAccelerator()

@@ -1,0 +1,9 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++comboBoxSelect collapsed name='choose a car' value='Volvo'
+++++++++menuListPopup invisible ispopup=auto
+++++++++++menuListOption name='Volvo' selected=true
+++++++++++menuListOption invisible name='Saab' selected=false
+++++++++++menuListOption invisible name='Opel' selected=false
+++++++++++menuListOption invisible name='Audi' selected=false

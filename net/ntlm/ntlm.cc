@@ -79,8 +79,7 @@ void UpdateTargetInfoAvPairs(bool is_mic_enabled,
         // the list. Additionally |kChannelBindings| and |kTargetName| pairs
         // would have been rejected during the initial parsing. See
         // |NtlmBufferReader::ReadTargetInfo|.
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       default:
         // Ignore entries we don't care about.
         break;
@@ -303,7 +302,7 @@ void GenerateNtlmHashV2(const std::u16string& domain,
   // uppercase ASCII characters, so the hash does not change depending on the
   // user's locale.
   std::u16string upper_username;
-  bool result = ToUpper(username, &upper_username);
+  bool result = ToUpperUsingLocale(username, &upper_username);
   DCHECK(result);
 
   uint8_t v1_hash[kNtlmHashLen];

@@ -30,6 +30,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_binary_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
@@ -40,6 +41,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_deque.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "third_party/blink/renderer/platform/heap/self_keep_alive.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_scheduler.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/webrtc/api/data_channel_interface.h"
@@ -51,6 +53,8 @@ class Blob;
 class DOMArrayBuffer;
 class DOMArrayBufferView;
 class ExceptionState;
+class V8RTCDataChannelState;
+class V8RTCPriorityType;
 
 class MODULES_EXPORT RTCDataChannel final
     : public EventTarget,
@@ -81,16 +85,16 @@ class MODULES_EXPORT RTCDataChannel final
   String protocol() const;
   bool negotiated() const;
   std::optional<uint16_t> id() const;
-  String readyState() const;
+  V8RTCDataChannelState readyState() const;
   unsigned bufferedAmount() const;
 
   unsigned bufferedAmountLowThreshold() const;
   void setBufferedAmountLowThreshold(unsigned);
 
-  String binaryType() const;
-  void setBinaryType(const String&, ExceptionState&);
+  V8BinaryType binaryType() const;
+  void setBinaryType(const V8BinaryType&);
 
-  String priority() const;
+  V8RTCPriorityType priority() const;
 
   // Functions called from RTCPeerConnection's DidAddRemoteDataChannel
   // in order to make things happen in the specified order when announcing
@@ -197,8 +201,7 @@ class MODULES_EXPORT RTCDataChannel final
   webrtc::DataChannelInterface::DataState state_ =
       webrtc::DataChannelInterface::kConnecting;
 
-  enum BinaryType { kBinaryTypeBlob, kBinaryTypeArrayBuffer };
-  BinaryType binary_type_ = kBinaryTypeArrayBuffer;
+  V8BinaryType::Enum binary_type_ = V8BinaryType::Enum::kArraybuffer;
 
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Open);
   FRIEND_TEST_ALL_PREFIXES(RTCDataChannelTest, Close);
@@ -251,10 +254,13 @@ class MODULES_EXPORT RTCDataChannel final
     void Trace(Visitor*) const override;
 
    private:
+    void Dispose();
+
     Member<FileReaderLoader> loader_;
     Member<RTCDataChannel> data_channel_;
     Member<PendingMessage> message_;
 
+    SelfKeepAlive<BlobReader> keep_alive_;
     SEQUENCE_CHECKER(sequence_checker_);
   };
 

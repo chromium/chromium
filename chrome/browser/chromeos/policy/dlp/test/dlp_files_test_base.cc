@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/test/base/testing_profile.h"
 
 namespace policy {
 
@@ -16,42 +17,36 @@ DlpFilesTestBase::DlpFilesTestBase(
 DlpFilesTestBase::~DlpFilesTestBase() = default;
 
 void DlpFilesTestBase::SetUp() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-  scoped_profile_ = std::make_unique<TestingProfile>();
-  profile_ = scoped_profile_.get();
   AccountId account_id =
       AccountId::FromUserEmailGaiaId("test@example.com", "12345");
-  profile_->SetIsNewProfile(true);
+
+  auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
+  {
+    auto testing_profile = std::make_unique<TestingProfile>();
+    testing_profile->SetIsNewProfile(true);
+    profile_ = std::move(testing_profile);
+  }
   user_manager::User* user =
       user_manager->AddUserWithAffiliationAndTypeAndProfile(
           account_id,
-          /*is_affiliated=*/false, user_manager::UserType::kRegular, profile_);
+          /*is_affiliated=*/false, user_manager::UserType::kRegular,
+          profile_.get());
   user_manager->UserLoggedIn(account_id, user->username_hash(),
                              /*browser_restart=*/false,
                              /*is_child=*/false);
   user_manager->SimulateUserProfileLoad(account_id);
-  scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+  user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
       std::move(user_manager));
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  ASSERT_TRUE(profile_manager_.SetUp());
-  profile_ = profile_manager_.CreateTestingProfile("user", true);
-#endif
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-      profile_, base::BindRepeating(&DlpFilesTestBase::SetDlpRulesManager,
-                                    base::Unretained(this)));
+      profile_.get(), base::BindRepeating(&DlpFilesTestBase::SetDlpRulesManager,
+                                          base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
   ASSERT_TRUE(rules_manager_);
 }
 
 void DlpFilesTestBase::TearDown() {
-  profile_ = nullptr;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  scoped_user_manager_.reset();
-  scoped_profile_.reset();
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  profile_manager_.DeleteAllTestingProfiles();
-#endif
+  user_manager_.reset();
+  profile_.reset();
 }
 
 std::unique_ptr<KeyedService> DlpFilesTestBase::SetDlpRulesManager(

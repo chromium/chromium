@@ -105,14 +105,92 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     signin_metrics::AccessPoint access_point) {
   std::string_view access_point_string;
   switch (access_point) {
-    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
       access_point_string = "ProfileMenu";
       break;
     case signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE:
       access_point_string = "PasswordSigninPromo";
       break;
-    default:
-      // All other access point should not record this metric.
+    // All other access point should not record this metric.
+    case signin_metrics::AccessPoint::ACCESS_POINT_START_PAGE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_LINK:
+    case signin_metrics::AccessPoint::ACCESS_POINT_MENU:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SUPERVISED_USER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSION_INSTALL_BUBBLE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_BUBBLE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_USER_MANAGER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_DEVICES_PAGE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_AUTOFILL_DROPDOWN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_RESIGNIN_INFOBAR:
+    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_SWITCHER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON:
+    case signin_metrics::AccessPoint::ACCESS_POINT_GOOGLE_SERVICES_SETTINGS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SYNC_ERROR_CARD:
+    case signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
+    case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SAFETY_CHECK:
+    case signin_metrics::AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_TOP_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
+    case signin_metrics::AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
+    case signin_metrics::AccessPoint::ACCESS_POINT_FOR_YOU_FRE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_CREATOR_FEED_FOLLOW:
+    case signin_metrics::AccessPoint::ACCESS_POINT_READING_LIST:
+    case signin_metrics::AccessPoint::ACCESS_POINT_REAUTH_INFO_BAR:
+    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_CONSISTENCY_SERVICE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SEARCH_COMPANION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SET_UP_LIST:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_PHOTOS_IOS:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_RESTORE_PRIMARY_ACCOUNT_ON_PROFILE_LOAD:
+    case signin_metrics::AccessPoint::ACCESS_POINT_TAB_ORGANIZATION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SAVE_TO_DRIVE_IOS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_TIPS_NOTIFICATION:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE:
+    case signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_PROFILE_MENU_SIGNOUT_CONFIRMATION_PROMPT:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_SETTINGS_SIGNOUT_CONFIRMATION_PROMPT:
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_IDENTITY_DISC:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_OIDC_REDIRECTION_INTERCEPTION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_WEBAUTHN_MODAL_DIALOG:
+    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
+    case signin_metrics::AccessPoint::ACCESS_POINT_PRODUCT_SPECIFICATIONS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU_FAILED_SWITCH:
+    case signin_metrics::AccessPoint::ACCESS_POINT_ADDRESS_BUBBLE:
+    case signin_metrics::AccessPoint::
+        ACCESS_POINT_CCT_ACCOUNT_MISMATCH_NOTIFICATION:
+    case signin_metrics::AccessPoint::ACCESS_POINT_DRIVE_FILE_PICKER_IOS:
+    case signin_metrics::AccessPoint::ACCESS_POINT_COLLABORATION_TAB_GROUP:
+    case signin_metrics::AccessPoint::ACCESS_POINT_MAX:
       return;
   }
 

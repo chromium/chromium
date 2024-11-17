@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.partnercustomizations;
 
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
-import android.os.SystemClock;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,6 +16,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -39,7 +39,6 @@ import java.util.Objects;
 /** Reads and caches partner browser customizations information if it exists. */
 public class PartnerBrowserCustomizations {
     private static final String TAG = "PartnerCustomize";
-    private static final String PROVIDER_AUTHORITY = "com.android.partnerbrowsercustomizations";
 
     /** Default timeout in ms for reading PartnerBrowserCustomizations provider. */
     private static final int DEFAULT_TIMEOUT_MS = 10_000;
@@ -53,9 +52,6 @@ public class PartnerBrowserCustomizations {
 
     @VisibleForTesting
     static final String PARTNER_DISABLE_INCOGNITO_MODE_PATH = "disableincognitomode";
-
-    private static Boolean sIgnoreSystemPackageCheck;
-    private static Boolean sValid;
 
     private static volatile PartnerBrowserCustomizations sInstance;
 
@@ -82,7 +78,10 @@ public class PartnerBrowserCustomizations {
         CustomizationProviderDelegate mDelegate;
 
         public ProviderPackage() {
-            mDelegate = new CustomizationProviderDelegateImpl();
+            mDelegate = ServiceLoaderUtil.maybeCreate(CustomizationProviderDelegate.class);
+            if (mDelegate == null) {
+                mDelegate = new CustomizationProviderDelegateUpstreamImpl();
+            }
         }
 
         @Override
@@ -201,7 +200,6 @@ public class PartnerBrowserCustomizations {
         final AsyncTask<Void> initializeAsyncTask =
                 new AsyncTask<Void>() {
                     private boolean mHomepageUriChanged;
-                    private long mStartTime = SystemClock.elapsedRealtime();
 
                     @Override
                     protected Void doInBackground() {
@@ -219,8 +217,13 @@ public class PartnerBrowserCustomizations {
                             }
 
                             if (isCancelled()) return null;
-                            CustomizationProviderDelegateImpl delegate =
-                                    new CustomizationProviderDelegateImpl();
+
+                            CustomizationProviderDelegate delegate =
+                                    ServiceLoaderUtil.maybeCreate(
+                                            CustomizationProviderDelegate.class);
+                            if (delegate == null) {
+                                delegate = new CustomizationProviderDelegateUpstreamImpl();
+                            }
 
                             // Refresh the homepage first, as it has potential impact on the URL to
                             // use for the initial tab.

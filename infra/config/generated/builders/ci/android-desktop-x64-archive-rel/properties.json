@@ -54,6 +54,12 @@
           "project": "chromium"
         }
       ],
+      "mirroring_builder_group_and_names": [
+        {
+          "builder": "android-desktop-x64-clobber-rel",
+          "group": "tryserver.chromium.android"
+        }
+      ],
       "targets_spec_directory": "src/infra/config/generated/builders/ci/android-desktop-x64-archive-rel/targets"
     }
   },

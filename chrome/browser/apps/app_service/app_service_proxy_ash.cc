@@ -31,6 +31,7 @@
 #include "chrome/browser/apps/browser_instance/browser_app_instance_registry.h"
 #include "chrome/browser/apps/browser_instance/browser_app_instance_tracker.h"
 #include "chrome/browser/ash/app_restore/full_restore_service.h"
+#include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/child_accounts/time_limits/app_time_limit_interface.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_registry_service_factory.h"
@@ -652,8 +653,7 @@ bool AppServiceProxyAsh::MaybeShowLaunchPreventionDialog(
     auto time_limit =
         app_limit->GetTimeLimitForApp(update.AppId(), update.AppType());
     if (!time_limit.has_value()) {
-      NOTREACHED_IN_MIGRATION();
-      return true;
+      NOTREACHED();
     }
     PauseData pause_data;
     pause_data.hours = time_limit.value().InHours();
@@ -811,8 +811,14 @@ void AppServiceProxyAsh::PerformPostUninstallTasks(
 
 void AppServiceProxyAsh::PerformPostLaunchTasks(
     apps::LaunchSource launch_source) {
-  if (apps_util::IsHumanLaunch(launch_source)) {
-    ash::full_restore::FullRestoreService::MaybeCloseNotification(profile_);
+  if (!apps_util::IsHumanLaunch(launch_source)) {
+    return;
+  }
+
+  if (auto* full_restore_service =
+          ash::full_restore::FullRestoreServiceFactory::GetForProfile(
+              profile_)) {
+    full_restore_service->MaybeCloseNotification();
   }
 }
 

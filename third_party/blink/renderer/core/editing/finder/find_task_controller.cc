@@ -38,7 +38,7 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
   FindTask(FindTaskController* controller,
            Document* document,
            int identifier,
-           const WebString& search_text,
+           const String& search_text,
            const mojom::blink::FindOptions& options)
       : document_(document),
         controller_(controller),
@@ -124,11 +124,12 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
 
     while (search_start < search_end) {
       // Find in the whole block.
-      FindBuffer buffer(EphemeralRangeInFlatTree(search_start, search_end));
+      FindBuffer buffer(EphemeralRangeInFlatTree(search_start, search_end),
+                        RubySupport::kEnabledIfNecessary);
       FindResults match_results =
           buffer.FindMatches(search_text_, find_options);
       bool yielded_while_iterating_results = false;
-      for (FindResults::BufferMatchResult match : match_results) {
+      for (MatchResultICU match : match_results) {
         const EphemeralRangeInFlatTree ephemeral_match_range =
             buffer.RangeFromBufferIndex(match.start,
                                         match.start + match.length);
@@ -197,7 +198,7 @@ class FindTaskController::FindTask final : public GarbageCollected<FindTask> {
   Member<Document> document_;
   Member<FindTaskController> controller_;
   const int identifier_;
-  const WebString search_text_;
+  const String search_text_;
   mojom::blink::FindOptionsPtr options_;
 };
 
@@ -214,7 +215,7 @@ int FindTaskController::GetMatchYieldCheckInterval() const {
 
 void FindTaskController::StartRequest(
     int identifier,
-    const WebString& search_text,
+    const String& search_text,
     const mojom::blink::FindOptions& options) {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "blink", "FindInPageRequest",
@@ -242,7 +243,7 @@ void FindTaskController::CancelPendingRequest() {
 
 void FindTaskController::RequestFindTask(
     int identifier,
-    const WebString& search_text,
+    const String& search_text,
     const mojom::blink::FindOptions& options) {
   DCHECK_EQ(find_task_, nullptr);
   DCHECK_EQ(identifier, current_find_identifier_);
@@ -252,7 +253,7 @@ void FindTaskController::RequestFindTask(
 
 void FindTaskController::DidFinishTask(
     int identifier,
-    const WebString& search_text,
+    const String& search_text,
     const mojom::blink::FindOptions& options,
     bool finished_whole_request,
     PositionInFlatTree next_starting_position,

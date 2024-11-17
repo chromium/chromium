@@ -22,8 +22,6 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/trusted_vault/command_line_switches.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
-#include "components/trusted_vault/recovery_key_store_connection_impl.h"
-#include "components/trusted_vault/recovery_key_store_controller.h"
 #include "components/trusted_vault/standalone_trusted_vault_backend.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
 #include "components/trusted_vault/trusted_vault_connection_impl.h"
@@ -120,9 +118,8 @@ void IdentityManagerObserver::OnAccountsCookieDeletedByUserAction() {
   // TODO(crbug.com/40156992): remove this handler once tests can mimic
   // OnAccountInCookieUpdated() properly.
   UpdateAccountsInCookieJarInfoIfNeeded(
-      signin::AccountsInCookieJarInfo(/*accounts_are_fresh_param=*/true,
-                                      /*signed_in_accounts_param=*/{},
-                                      /*signed_out_accounts_param=*/{}));
+      signin::AccountsInCookieJarInfo(/*accounts_are_fresh=*/true,
+                                      /*accounts=*/{}));
   notify_keys_changed_callback_.Run();
 }
 
@@ -192,7 +189,7 @@ void IdentityManagerObserver::UpdatePrimaryAccountIfNeeded() {
 
 void IdentityManagerObserver::UpdateAccountsInCookieJarInfoIfNeeded(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info) {
-  if (accounts_in_cookie_jar_info.accounts_are_fresh) {
+  if (accounts_in_cookie_jar_info.AreAccountsFresh()) {
     backend_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -267,9 +264,7 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
     SecurityDomainId security_domain,
     const base::FilePath& base_dir,
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    std::unique_ptr<RecoveryKeyStoreController::RecoveryKeyProvider>
-        recovery_key_provider)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : backend_task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(kBackendTaskTraits)),
       access_token_fetcher_frontend_(identity_manager) {
@@ -284,17 +279,8 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
             access_token_fetcher_frontend_.GetWeakPtr()));
   }
 
-  std::unique_ptr<RecoveryKeyStoreConnection> recovery_key_store_connection;
-  if (recovery_key_provider) {
-    recovery_key_store_connection =
-        std::make_unique<RecoveryKeyStoreConnectionImpl>(
-            url_loader_factory->Clone(),
-            std::make_unique<TrustedVaultAccessTokenFetcherImpl>(
-                access_token_fetcher_frontend_.GetWeakPtr()));
-  }
-
   backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-      GetBackendFilePath(base_dir, security_domain),
+      security_domain, GetBackendFilePath(base_dir, security_domain),
       std::make_unique<BackendDelegate>(
           base::BindPostTaskToCurrentDefault(
               base::BindRepeating(&StandaloneTrustedVaultClient::
@@ -303,8 +289,7 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
           base::BindPostTaskToCurrentDefault(base::BindRepeating(
               &StandaloneTrustedVaultClient::NotifyBackendStateChanged,
               weak_ptr_factory_.GetWeakPtr()))),
-      std::move(connection), std::move(recovery_key_provider),
-      std::move(recovery_key_store_connection));
+      std::move(connection));
   backend_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&StandaloneTrustedVaultBackend::ReadDataFromDisk,
@@ -318,17 +303,6 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
           base::Unretained(this)),
       identity_manager);
 }
-
-StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
-    SecurityDomainId security_domain,
-    const base::FilePath& base_dir,
-    signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : StandaloneTrustedVaultClient(security_domain,
-                                   base_dir,
-                                   identity_manager,
-                                   url_loader_factory,
-                                   /*recovery_key_provider=*/nullptr) {}
 
 StandaloneTrustedVaultClient::~StandaloneTrustedVaultClient() {
   // |backend_| needs to be destroyed inside backend sequence, not the current

@@ -9,7 +9,6 @@
 
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_ui.h"
 
-#include "chrome/browser/companion/core/utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/data_sharing/data_sharing_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -72,6 +71,7 @@ DataSharingUI::DataSharingUI(content::WebUI* web_ui)
       network::mojom::CSPDirectiveName::StyleSrc,
       "style-src "
       "chrome-untrusted://theme "
+      "chrome-untrusted://resources "
       "'unsafe-inline' "
       "'self';");
 

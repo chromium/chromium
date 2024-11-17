@@ -59,10 +59,10 @@ source_set("model") {
 
 source_set("capabilities") {
   sources = [
+    "family_link_user_capabilities_observer_bridge.h",
+    "family_link_user_capabilities_observer_bridge.mm",
     "supervised_user_capabilities.h",
     "supervised_user_capabilities.mm",
-    "supervised_user_capabilities_observer_bridge.h",
-    "supervised_user_capabilities_observer_bridge.mm",
   ]
   deps = [
     "//base",
@@ -137,6 +137,7 @@ source_set("eg2_tests") {
   ]
   deps = [
     "//base",
+    "//components/browsing_data/core",
     "//components/policy:policy_code_generate",
     "//components/signin/internal/identity_manager",
     "//components/strings",
@@ -157,6 +158,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/clear_browsing_data:features",
     "//ios/chrome/browser/ui/settings/google_services:constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_metrics",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",

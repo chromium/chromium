@@ -179,13 +179,24 @@ void ChildNodePart::replaceChildren(
       return;
     }
   }
-  // Insert new contents.
-  Node* nodes_as_node = Node::ConvertNodeUnionsIntoNode(
-      parent, nodes, parent->GetDocument(), "replaceChildren", exception_state);
-  if (exception_state.HadException()) {
-    return;
+  if (RuntimeEnabledFeatures::SkipTemporaryDocumentFragmentEnabled()) {
+    // Insert new contents.
+    VectorOf<Node> node_vector =
+        Node::ConvertNodeUnionsIntoNodes(parent, nodes, parent->GetDocument(),
+                                         "replaceChildren", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    parent->InsertBefore(node_vector, next_sibling_, exception_state);
+  } else {
+    Node* nodes_as_node =
+        Node::ConvertNodeUnionsIntoNode(parent, nodes, parent->GetDocument(),
+                                        "replaceChildren", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    parent->InsertBefore(nodes_as_node, next_sibling_, exception_state);
   }
-  parent->InsertBefore(nodes_as_node, next_sibling_, exception_state);
 }
 
 void ChildNodePart::Trace(Visitor* visitor) const {

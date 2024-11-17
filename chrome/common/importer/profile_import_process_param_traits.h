@@ -29,8 +29,7 @@ struct EnumTraits<chrome::mojom::ImportedPasswordForm::Scheme,
       default:
         break;
     }
-    NOTREACHED_IN_MIGRATION();
-    return chrome::mojom::ImportedPasswordForm::Scheme::kHtml;
+    NOTREACHED();
   }
 
   static bool FromMojom(chrome::mojom::ImportedPasswordForm::Scheme input,
@@ -43,8 +42,7 @@ struct EnumTraits<chrome::mojom::ImportedPasswordForm::Scheme,
         *out = importer::ImportedPasswordForm::Scheme::kBasic;
         return true;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 };
 

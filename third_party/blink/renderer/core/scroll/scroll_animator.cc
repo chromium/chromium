@@ -78,12 +78,6 @@ ScrollOffset ScrollAnimator::DesiredTargetOffset() const {
              : CurrentOffset();
 }
 
-bool ScrollAnimator::HasRunningAnimation() const {
-  return run_state_ != RunState::kPostAnimationCleanup &&
-         (animation_curve_ ||
-          run_state_ == RunState::kWaitingToSendToCompositor);
-}
-
 ScrollOffset ScrollAnimator::ComputeDeltaToConsume(
     const ScrollOffset& delta) const {
   ScrollOffset pos = DesiredTargetOffset();

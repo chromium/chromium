@@ -37,6 +37,8 @@ using content::WebContents;
 
 namespace {
 
+constexpr char kSecFetchStorageAccess[] = "Sec-Fetch-Storage-Access";
+
 class ContentSettingChangeObserver : public content_settings::Observer {
  public:
   ContentSettingChangeObserver(content::BrowserContext* browser_context,
@@ -276,8 +278,7 @@ class StorageAccessHeaderServiceBrowserTest : public PlatformBrowserTest {
       return base::JoinString({header_name, value}, ":");
     };
 
-    http_response->set_content(
-        lookup_header_value(net::HttpRequestHeaders::kSecFetchStorageAccess));
+    http_response->set_content(lookup_header_value(kSecFetchStorageAccess));
 
     return http_response;
   }
@@ -442,8 +443,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
   // Subsequent requests should include the header.
   NavigateFrameTo(GetURL(kDomainEnabledForTrial));
   EXPECT_THAT(MostRecentRequestHeaders(),
-              testing::Contains(testing::Pair(
-                  net::HttpRequestHeaders::kSecFetchStorageAccess, "none")));
+              testing::Contains(testing::Pair(kSecFetchStorageAccess, "none")));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
@@ -462,8 +462,7 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
   NavigateFrameTo(GetURL(kDomainEnabledForTrial));
   EXPECT_THAT(
       MostRecentRequestHeaders(),
-      testing::Contains(testing::Pair(
-          net::HttpRequestHeaders::kSecFetchStorageAccess, "inactive")));
+      testing::Contains(testing::Pair(kSecFetchStorageAccess, "inactive")));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
@@ -480,9 +479,9 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
   ASSERT_TRUE(storage::test::RequestAndCheckStorageAccessForFrame(
       content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0)));
   NavigateFrameTo(GetURL(kDomainEnabledForTrial, kRetryPath));
-  EXPECT_THAT(MostRecentRequestHeaders(),
-              testing::Contains(testing::Pair(
-                  net::HttpRequestHeaders::kSecFetchStorageAccess, "active")));
+  EXPECT_THAT(
+      MostRecentRequestHeaders(),
+      testing::Contains(testing::Pair(kSecFetchStorageAccess, "active")));
 }
 
 IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
@@ -517,13 +516,12 @@ IN_PROC_BROWSER_TEST_F(StorageAccessHeaderServiceBrowserTest,
       GetURL(kDomainEnabledForTrial, {base::StrCat({"/", kIframePath})}));
   NavigateFrameTo(GetURL(kDomainEnabledForTrial));
   ASSERT_THAT(MostRecentRequestHeaders(),
-              testing::Contains(testing::Pair(
-                  net::HttpRequestHeaders::kSecFetchStorageAccess, "none")));
+              testing::Contains(testing::Pair(kSecFetchStorageAccess, "none")));
   // The previous navigation did not contain an OT token, subsequent navigations
   // should not contain the header.
   NavigateFrameTo(GetURL(kDomainEnabledForTrial));
-  EXPECT_THAT(MostRecentRequestHeaders(),
-              testing::Not(testing::Contains(testing::Key(
-                  net::HttpRequestHeaders::kSecFetchStorageAccess))));
+  EXPECT_THAT(
+      MostRecentRequestHeaders(),
+      testing::Not(testing::Contains(testing::Key(kSecFetchStorageAccess))));
 }
 }  // namespace storage_access_api::trial

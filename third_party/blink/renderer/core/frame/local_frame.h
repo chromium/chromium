@@ -46,6 +46,7 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom-blink.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/confidence_level.mojom-blink.h"
 #include "third_party/blink/public/mojom/device_posture/device_posture_provider.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink-forward.h"
@@ -678,6 +679,11 @@ class CORE_EXPORT LocalFrame final
   const mojom::blink::BackForwardCacheNotRestoredReasonsPtr&
   GetNotRestoredReasons();
 
+  // Sets navigation confidence for this frame. Only set for outermost
+  // main frame.
+  void SetNavigationConfidence(double randomized_trigger_rate,
+                               mojom::blink::ConfidenceLevel confidence);
+
   const AtomicString& GetReducedAcceptLanguage() const {
     return reduced_accept_language_;
   }
@@ -844,6 +850,9 @@ class CORE_EXPORT LocalFrame final
   // to FrameFirstPaint.
   void OnFirstPaint(bool text_painted, bool image_painted);
 
+  // Invoked on first contentful paint on this frame.
+  void OnFirstContentfulPaint();
+
 #if BUILDFLAG(IS_MAC)
   void ResetTextInputHostForTesting();
   void RebindTextInputHostForTesting();
@@ -929,6 +938,10 @@ class CORE_EXPORT LocalFrame final
   bool ScriptEnabled();
 
   const WebPrintParams& GetPrintParams() const;
+
+  // Returns the `Frame` for which `provisional_frame_ == this`. May only be
+  // called on a provisional frame.
+  Frame* GetProvisionalOwnerFrame();
 
   // Return a keep alive handle for the browser side NavigationStateKeepAlive.
   // The NavigationStateKeepAlive is created by a RenderFrameHost. Holding the
@@ -1018,10 +1031,6 @@ class CORE_EXPORT LocalFrame final
       const gfx::Point& pos_in_viewport);
 
   bool ShouldThrottleDownload();
-
-  // Returns the `Frame` for which `provisional_frame_ == this`. May only be
-  // called on a provisional frame.
-  Frame* GetProvisionalOwnerFrame();
 
   void ExtractSmartClipDataInternal(const gfx::Rect& rect_in_viewport,
                                     String& clip_text,

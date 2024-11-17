@@ -36,7 +36,7 @@
   // Coordinator to show the folder chooser UI.
   BookmarksFolderChooserCoordinator* _folderChooserCoordinator;
   // The parent of current folder when the view was opened.
-  const bookmarks::BookmarkNode* _originalFolder;
+  raw_ptr<const bookmarks::BookmarkNode> _originalFolder;
   // Parent folder to `_folderNode`. Should never be `nullptr`.
   raw_ptr<const bookmarks::BookmarkNode> _parentFolderNode;
   // If `_folderNode` is `nullptr`, the user is adding a new folder. Otherwise

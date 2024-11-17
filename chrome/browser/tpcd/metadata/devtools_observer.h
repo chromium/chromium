@@ -5,13 +5,24 @@
 #ifndef CHROME_BROWSER_TPCD_METADATA_DEVTOOLS_OBSERVER_H_
 #define CHROME_BROWSER_TPCD_METADATA_DEVTOOLS_OBSERVER_H_
 
-#include "chrome/browser/dips/dips_service.h"
-#include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_contents_user_data.h"
+
+namespace content_settings {
+class CookieSettings;
+}
+
+namespace content_settings {
+class CookieSettings;
+}
 
 namespace tpcd::metadata {
+
+class Manager;
 
 class TpcdMetadataDevtoolsObserver
     : public content::WebContentsObserver,
@@ -41,7 +52,7 @@ class TpcdMetadataDevtoolsObserver
       const content::CookieAccessDetails::Type cookie_access_type);
 
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
-  raw_ptr<tpcd::metadata::Manager> tpcd_metadata_manager_;
+  raw_ptr<Manager> tpcd_metadata_manager_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

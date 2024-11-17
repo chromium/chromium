@@ -35,14 +35,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.content.browser.RenderCoordinatesImpl;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -77,7 +77,7 @@ public class AutofillProviderTest {
     private int mDialogVirtualId;
     private SparseArray<VirtualViewFillInfo> mPrefillRequestInfos;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private AutofillProvider.Natives mNativeMock;
     @Mock private RenderCoordinatesImpl mRenderCoordinates;
     @Mock private AutofillManager mAutofillManager;
@@ -111,7 +111,6 @@ public class AutofillProviderTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.openMocks(this);
         mContext = Mockito.mock(Context.class);
         when(mContext.getSystemService(AutofillManager.class)).thenReturn(mAutofillManager);
         when(mAutofillManager.isEnabled()).thenReturn(true);
@@ -156,7 +155,7 @@ public class AutofillProviderTest {
         RenderCoordinatesImpl.setInstanceForTesting(mRenderCoordinates);
         when(mRenderCoordinates.getContentOffsetYPixInt()).thenReturn(0);
 
-        mJniMocker.mock(AutofillProviderJni.TEST_HOOKS, mNativeMock);
+        AutofillProviderJni.setInstanceForTesting(mNativeMock);
     }
 
     @Test

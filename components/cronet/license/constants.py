@@ -1,16 +1,6 @@
-# Copyright (C) 2024 The Android Open Source Project
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#      http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 from typing import Callable, Dict, List, Union
 from mapper import Mapper
@@ -18,7 +8,7 @@ from mapper import Mapper
 
 def create_license_post_processing(*args: Mapper) -> Callable:
   def __update_metadata(metadata: Dict[str, Union[str, List[str]]]) -> Dict[
-      str, Union[str, List[str]]]:
+    str, Union[str, List[str]]]:
     for mapper in args:
       mapper.write(metadata)
     return metadata
@@ -65,6 +55,10 @@ POST_PROCESS_OPERATION = {
             'Public Domain: United States Government Work under 17 U.S.C. 105'],
                ["unencumbered"]),
         Mapper("License File", "", "N/A")),
+    "third_party/rust/unicode_ident/v1/README.chromium": create_license_post_processing(
+        Mapper("License", [
+            'Apache 2.0 AND Unicode License Agreement - Data Files and Software (2016)'],
+               ["Apache 2.0", "Unicode"])),
 }
 
 # This is relative to the repo_directory passed in |update_license|
@@ -73,4 +67,11 @@ IGNORED_README = {
     "testing/android/native_test/README.chromium",
     # Not a third-party.
     "build/internal/README.chromium",
+    # b/369075726, those crates are missing LICENSE files upstream, once fixed
+    # and imported, we will create a README for those.
+    "third_party/rust/rstest/v0_17/README.chromium",
+    "third_party/rust/rustc_demangle_capi/v0_1/README.chromium",
+    "third_party/rust/rstest_macros/v0_17/README.chromium",
+    "third_party/rust/codespan_reporting/v0_11/README.chromium",
+    "third_party/rust/rstest_reuse/v0_5/README.chromium",
 }

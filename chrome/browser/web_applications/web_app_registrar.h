@@ -16,6 +16,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -70,10 +71,28 @@ struct ValueWithPolicy {
 using DiyAppCount = base::StrongAlias<class DiyAppCountTag, int>;
 using InstallableAppCount =
     base::StrongAlias<class InstallableAppCountTag, int>;
+using NonSyncingAppCount = base::StrongAlias<class NonSyncingAppCountTag, int>;
+
+// Enabling this will force all apps that are exclusively preinstalled and open
+// in a browser tab to have the default navigation capturing setting be 'on'.
+// This is needed for use-cases where a preinstalled app needs to capture
+// navigations by default even though other apps do not.
+BASE_DECLARE_FEATURE(kPreinstalledBrowserTabWebAppsCaptureOnDefault);
+
+// Enabling this will force all apps that are exclusively preinstalled and open
+// in a browser tab to have the default navigation capturing setting be 'off'.
+// This is a safety switch in case something goes wrong with navigation
+// capturing launch.
+BASE_DECLARE_FEATURE(kPreinstalledBrowserTabWebAppsForcedDefaultCaptureOff);
 
 // A registry model. This is a read-only container, which owns WebApp objects.
 class WebAppRegistrar {
  public:
+  // Returns if the given display mode is supported for navigation capturing.
+  // TODO(crbug.com/375504532): Support tabbed mode on desktop.
+  static bool IsSupportedDisplayModeForNavigationCapture(
+      blink::mojom::DisplayMode display_mode);
+
   explicit WebAppRegistrar(Profile* profile);
   WebAppRegistrar(const WebAppRegistrar&) = delete;
   WebAppRegistrar& operator=(const WebAppRegistrar&) = delete;
@@ -200,12 +219,6 @@ class WebAppRegistrar {
   // Returns true if an installed app was installed via policy, regardless of
   // other install sources.
   bool IsInstalledByPolicy(const webapps::AppId& app_id) const;
-
-  // Returns true if the app was preinstalled and NOT installed via any other
-  // mechanism.
-  // TODO(crbug.com/340952100): Remove after os integration isn't based on
-  // management.
-  bool WasInstalledByDefaultOnly(const webapps::AppId& app_id) const;
 
   // Returns true if the app was installed by user, false if default installed.
   bool WasInstalledByUser(const webapps::AppId& app_id) const;
@@ -676,8 +689,9 @@ class WebAppRegistrar {
   int CountUserInstalledNotLocallyInstalledApps() const;
 
   // Count number of all apps which are installed by user, including DIY apps.
+  // Also counts which ones of these are not included in sync.
   // Requires app registry to be in a ready state.
-  std::tuple<DiyAppCount, InstallableAppCount>
+  std::tuple<DiyAppCount, InstallableAppCount, NonSyncingAppCount>
   CountTotalUserInstalledAppsIncludingDiy() const;
 
   const raw_ptr<Profile> profile_;

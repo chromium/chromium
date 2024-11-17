@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/guest_view/buildflags/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//services/device/public/cpp/geolocation/buildflags.gni")
 
@@ -29,8 +30,6 @@ source_set("permissions") {
     "bluetooth_delegate_impl.h",
     "chooser_controller.cc",
     "chooser_controller.h",
-    "contexts/accessibility_permission_context.cc",
-    "contexts/accessibility_permission_context.h",
     "contexts/automatic_fullscreen_permission_context.cc",
     "contexts/automatic_fullscreen_permission_context.h",
     "contexts/bluetooth_chooser_context.cc",
@@ -129,6 +128,7 @@ source_set("permissions") {
     "//components/content_settings/core/browser",
     "//components/content_settings/core/browser:cookie_settings",
     "//components/favicon/core:core",
+    "//components/guest_view/buildflags",
     "//components/keyed_service/content",
     "//components/permissions/prediction_service",
     "//components/permissions/vector_icons",
@@ -162,7 +162,7 @@ source_set("permissions") {
       "contexts/geolocation_permission_context_system.h",
     ]
   }
-  if (!is_android) {
+  if (enable_guest_view) {
     deps += [ "//components/guest_view/browser" ]
   }
   if (is_android) {
@@ -291,6 +291,7 @@ source_set("unit_tests") {
   sources = [
     "contexts/camera_pan_tilt_zoom_permission_context_unittest.cc",
     "contexts/geolocation_permission_context_unittest.cc",
+    "contexts/keyboard_and_pointer_lock_prompt_unittest.cc",
     "contexts/midi_permission_context_unittest.cc",
     "contexts/midi_sysex_permission_context_unittest.cc",
     "contexts/nfc_permission_context_unittest.cc",
@@ -302,6 +303,7 @@ source_set("unit_tests") {
     "permission_auditing_service_unittest.cc",
     "permission_context_base_unittest.cc",
     "permission_decision_auto_blocker_unittest.cc",
+    "permission_indicators_tab_data_unittest.cc",
     "permission_manager_unittest.cc",
     "permission_request_manager_unittest.cc",
     "permission_request_queue_unittest.cc",

@@ -19,7 +19,6 @@ import androidx.appcompat.widget.DialogTitle;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -31,15 +30,14 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -61,8 +59,6 @@ public class TabGroupVisualDataDialogManagerUnitTest {
             EventConstants.TAB_GROUP_CREATION_DIALOG_SHOWN;
     private static final String TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE =
             FeatureConstants.TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE;
-
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
     @Mock private Tracker mTracker;
@@ -89,7 +85,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
                         mModalDialogManager,
                         TabGroupVisualDataDialogManager.DialogType.TAB_GROUP_CREATION,
                         R.string.tab_group_creation_dialog_title);
-        mJniMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
+        TabGroupSyncFeaturesJni.setInstanceForTesting(mTabGroupSyncFeaturesJniMock);
         SyncServiceFactory.setInstanceForTesting(mSyncService);
 
         doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
@@ -148,7 +144,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
         doReturn(true).when(mTabModel).isIncognitoBranded();
         doReturn(false)
                 .when(mTracker)
-                .shouldTriggerHelpUI(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
+                .shouldTriggerHelpUi(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
 
         mTabGroupVisualDataDialogManager.showDialog(
                 TAB1_ID, mTabGroupModelFilter, mDialogController);
@@ -171,7 +167,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
         doReturn(false).when(mTabModel).isIncognitoBranded();
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
+                .shouldTriggerHelpUi(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
         when(mSyncService.getActiveDataTypes()).thenReturn(Collections.emptySet());
 
         mTabGroupVisualDataDialogManager.showDialog(
@@ -200,7 +196,7 @@ public class TabGroupVisualDataDialogManagerUnitTest {
         doReturn(false).when(mTabModel).isIncognitoBranded();
         doReturn(true)
                 .when(mTracker)
-                .shouldTriggerHelpUI(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
+                .shouldTriggerHelpUi(TAB_GROUP_CREATION_DIALOG_SYNC_TEXT_FEATURE);
         when(mSyncService.getActiveDataTypes())
                 .thenReturn(Collections.singleton(DataType.SAVED_TAB_GROUP));
 

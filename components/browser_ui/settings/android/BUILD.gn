@@ -7,15 +7,16 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/components/browser_ui/settings/CustomDividerFragment.java",
-    "java/src/org/chromium/components/browser_ui/settings/FragmentSettingsLauncher.java",
+    "java/src/org/chromium/components/browser_ui/settings/EmbeddableSettingsPage.java",
+    "java/src/org/chromium/components/browser_ui/settings/FragmentSettingsNavigation.java",
     "java/src/org/chromium/components/browser_ui/settings/ManagedPreferenceDelegate.java",
     "java/src/org/chromium/components/browser_ui/settings/ManagedPreferencesUtils.java",
     "java/src/org/chromium/components/browser_ui/settings/SearchUtils.java",
-    "java/src/org/chromium/components/browser_ui/settings/SettingsLauncher.java",
-    "java/src/org/chromium/components/browser_ui/settings/SettingsPage.java",
+    "java/src/org/chromium/components/browser_ui/settings/SettingsNavigation.java",
     "java/src/org/chromium/components/browser_ui/settings/SettingsUtils.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ButtonPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/CardPreference.java",
+    "widget/java/src/org/chromium/components/browser_ui/settings/CardWithButtonPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBaseCheckBoxPreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBasePreference.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeImageViewPreference.java",
@@ -77,6 +78,7 @@ android_resources("java_resources") {
     "java/res/layout/button_preference_button.xml",
     "java/res/layout/button_preference_layout.xml",
     "java/res/layout/card_preference.xml",
+    "java/res/layout/card_with_button_preference_layout.xml",
     "java/res/layout/checkable_image_view_widget.xml",
     "java/res/layout/clickable_spans_text_message_preference_layout.xml",
     "java/res/layout/image_button_widget.xml",
@@ -112,6 +114,7 @@ android_resources("managed_prefs_java_resources") {
 android_library("unit_device_javatests") {
   testonly = true
   sources = [
+    "widget/java/src/org/chromium/components/browser_ui/settings/CardWithButtonPreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBaseCheckBoxPreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeBasePreferenceTest.java",
     "widget/java/src/org/chromium/components/browser_ui/settings/ChromeImageViewPreferenceTest.java",

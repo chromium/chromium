@@ -234,6 +234,43 @@ void FakeCrasAudioClient::SetInputMute(bool mute_on) {
   }
 }
 
+void FakeCrasAudioClient::SetAudioEffectDlcsForTesting(
+    const std::string& audio_effect_dlcs) {
+  audio_effect_dlcs_ = audio_effect_dlcs;
+}
+
+void FakeCrasAudioClient::GetAudioEffectDlcs(
+    chromeos::DBusMethodCallback<std::string> callback) {
+  std::move(callback).Run(audio_effect_dlcs_);
+}
+
+void FakeCrasAudioClient::SetVoiceIsolationUIAppearance(
+    VoiceIsolationUIAppearance appearance) {
+  voice_isolation_ui_appearance_ = appearance;
+}
+
+void FakeCrasAudioClient::GetVoiceIsolationUIAppearance(
+    chromeos::DBusMethodCallback<VoiceIsolationUIAppearance> callback) {
+  std::move(callback).Run(voice_isolation_ui_appearance_);
+}
+
+void FakeCrasAudioClient::SetVoiceIsolationUIEnabled(bool voice_isolation_on) {
+  voice_isolation_ui_enabled_ = voice_isolation_on;
+}
+
+bool FakeCrasAudioClient::GetVoiceIsolationUIEnabled() {
+  return voice_isolation_ui_enabled_;
+}
+
+void FakeCrasAudioClient::SetVoiceIsolationUIPreferredEffect(
+    uint32_t effect_mode) {
+  voice_isolation_preferred_effect_ = effect_mode;
+}
+
+uint32_t FakeCrasAudioClient::GetVoiceIsolationUIPreferredEffect() {
+  return voice_isolation_preferred_effect_;
+}
+
 void FakeCrasAudioClient::SetNoiseCancellationSupported(
     bool noise_cancellation_supported) {
   noise_cancellation_supported_ = noise_cancellation_supported;
@@ -241,7 +278,7 @@ void FakeCrasAudioClient::SetNoiseCancellationSupported(
 
 void FakeCrasAudioClient::SetNoiseCancellationEnabled(
     bool noise_cancellation_on) {
-  noise_cancellation_enabled_ = noise_cancellation_on;
+  SetVoiceIsolationUIEnabled(noise_cancellation_on);
   ++noise_cancellation_enabled_counter_;
 }
 
@@ -251,7 +288,7 @@ void FakeCrasAudioClient::GetNoiseCancellationSupported(
 }
 
 uint32_t FakeCrasAudioClient::GetNoiseCancellationEnabledCount() {
-  return noise_cancellation_enabled_counter_;
+  return GetVoiceIsolationUIEnabled();
 }
 
 void FakeCrasAudioClient::SetStyleTransferSupported(
@@ -260,7 +297,7 @@ void FakeCrasAudioClient::SetStyleTransferSupported(
 }
 
 void FakeCrasAudioClient::SetStyleTransferEnabled(bool style_transfer_on) {
-  style_transfer_enabled_ = style_transfer_on;
+  SetVoiceIsolationUIEnabled(style_transfer_on);
 }
 
 void FakeCrasAudioClient::GetStyleTransferSupported(
@@ -269,7 +306,7 @@ void FakeCrasAudioClient::GetStyleTransferSupported(
 }
 
 bool FakeCrasAudioClient::GetStyleTransferEnabled() {
-  return style_transfer_enabled_;
+  return GetVoiceIsolationUIEnabled();
 }
 
 void FakeCrasAudioClient::SetNumberOfNonChromeOutputStreams(int32_t streams) {
@@ -523,6 +560,20 @@ void FakeCrasAudioClient::SetNumberOfArcStreams(int32_t streams) {
 void FakeCrasAudioClient::GetNumberOfArcStreams(
     chromeos::DBusMethodCallback<int32_t> callback) {
   std::move(callback).Run(number_arc_streams_);
+}
+
+void FakeCrasAudioClient::SetSpatialAudioSupported(
+    bool spatial_audio_supported) {
+  spatial_audio_supported_ = spatial_audio_supported;
+}
+
+void FakeCrasAudioClient::SetSpatialAudio(bool spatial_audio_enabled) {
+  spatial_audio_enabled_ = spatial_audio_enabled;
+}
+
+void FakeCrasAudioClient::GetSpatialAudioSupported(
+    chromeos::DBusMethodCallback<bool> callback) {
+  std::move(callback).Run(spatial_audio_supported_);
 }
 
 }  // namespace ash

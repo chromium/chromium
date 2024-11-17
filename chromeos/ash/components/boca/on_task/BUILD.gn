@@ -8,32 +8,63 @@ assert(is_chromeos_ash, "OnTask is only supported in Ash")
 
 static_library("on_task") {
   sources = [
+    "notification_constants.cc",
+    "notification_constants.h",
     "on_task_blocklist.cc",
     "on_task_blocklist.h",
+    "on_task_extensions_manager.h",
+    "on_task_notification_blocker.cc",
+    "on_task_notification_blocker.h",
+    "on_task_notifications_manager.cc",
+    "on_task_notifications_manager.h",
+    "on_task_prefs.cc",
+    "on_task_prefs.h",
     "on_task_session_manager.cc",
     "on_task_session_manager.h",
     "on_task_system_web_app_manager.h",
   ]
 
   deps = [
+    ":activity",
     "//ash/constants:constants",
+    "//ash/public/cpp",
+    "//ash/resources/vector_icons",
     "//base",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/proto",
+    "//chromeos/strings:strings_grit",
     "//components/google/core/common",
     "//components/policy/core/browser",
+    "//components/pref_registry",
     "//components/sessions",
     "//components/sessions:session_id",
     "//content/public/browser",
+    "//ui/message_center",
+  ]
+}
+
+static_library("activity") {
+  sources = [
+    "activity/active_tab_tracker.cc",
+    "activity/active_tab_tracker.h",
+  ]
+  deps = [
+    "//base",
+    "//chromeos/ash/components/boca",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "on_task_session_manager_unittest.cc" ]
+  sources = [
+    "on_task_notification_blocker_unittest.cc",
+    "on_task_notifications_manager_unittest.cc",
+    "on_task_session_manager_unittest.cc",
+  ]
 
   deps = [
+    ":activity",
     ":on_task",
     "//base",
     "//chrome/test:test_support",

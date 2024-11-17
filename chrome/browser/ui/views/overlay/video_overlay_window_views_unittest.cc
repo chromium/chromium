@@ -12,7 +12,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/picture_in_picture/auto_pip_setting_overlay_view.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
@@ -22,12 +21,16 @@
 #include "chrome/browser/ui/views/overlay/simple_overlay_window_image_button.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/global_media_controls/public/views/media_progress_view.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "media/base/media_switches.h"
+#include "services/media_session/public/cpp/media_position.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/models/image_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/events/base_event_utils.h"
@@ -36,6 +39,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/image_view.h"
+#include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget_utils.h"
@@ -63,7 +68,6 @@ class MockOverlayView : public AutoPipSettingOverlayView {
   explicit MockOverlayView(views::View* anchor_view)
       : AutoPipSettingOverlayView(base::DoNothing(),
                                   GURL{"https://example.com"},
-                                  gfx::Rect(),
                                   anchor_view,
                                   views::BubbleBorder::Arrow::FLOAT) {}
   MOCK_METHOD(void, ShowBubble, (gfx::NativeView parent), (override));
@@ -107,6 +111,8 @@ class TestVideoPictureInPictureWindowController
   content::WebContents* GetWebContents() override { return web_contents_; }
   content::WebContents* GetChildWebContents() override { return nullptr; }
   bool TogglePlayPause() override { return false; }
+  void Play() override {}
+  void Pause() override {}
   void SkipAd() override {}
   void NextTrack() override {}
   void PreviousTrack() override {}
@@ -115,7 +121,21 @@ class TestVideoPictureInPictureWindowController
   void ToggleMicrophone() override {}
   void ToggleCamera() override {}
   void HangUp() override {}
+  MOCK_METHOD(void, SeekTo, (base::TimeDelta time));
   const gfx::Rect& GetSourceBounds() const override { return source_bounds_; }
+  void GetMediaImage(
+      const media_session::MediaImage& image,
+      int minimum_size_px,
+      int desired_size_px,
+      content::MediaSession::GetMediaImageBitmapCallback callback) override {
+    std::move(callback).Run(
+        GetMediaImageImpl(image, minimum_size_px, desired_size_px));
+  }
+  MOCK_METHOD(SkBitmap,
+              GetMediaImageImpl,
+              (const media_session::MediaImage& image,
+               int minimum_size_px,
+               int desired_size_px));
   std::optional<gfx::Rect> GetWindowBounds() override { return std::nullopt; }
   std::optional<url::Origin> GetOrigin() override { return std::nullopt; }
   void SetOnWindowCreatedNotifyObserversCallback(base::OnceClosure) override {}
@@ -469,7 +489,6 @@ TEST_F(VideoOverlayWindowViewsTest, HitTestFrameView) {
   EXPECT_EQ(non_client_view->HitTestPoint(point), true);
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // With pillarboxing, the close button doesn't cover the video area. Make sure
 // hovering the button doesn't get handled like normal mouse exit events
 // causing the controls to hide.
@@ -497,8 +516,6 @@ TEST_F(VideoOverlayWindowViewsTest, DISABLED_NoMouseExitWithinWindowBounds) {
   overlay_window().OnMouseEvent(&exited_event);
   EXPECT_TRUE(overlay_window().AreControlsVisible());
 }
-
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 TEST_F(VideoOverlayWindowViewsTest, ShowControlsOnFocus) {
   EXPECT_FALSE(overlay_window().AreControlsVisible());
@@ -733,6 +750,42 @@ TEST_F(VideoOverlayWindowViewsTest, IsTrackedByTheOcclusionObserver) {
   EXPECT_EQ(0u, tracker->GetPictureInPictureWidgetsForTesting().size());
 }
 
+TEST_F(VideoOverlayWindowViewsTest, ProgressBarNotDrawnWhen2024UIIsDisabled) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  global_media_controls::MediaProgressView* progress_view =
+      overlay_window().progress_view_for_testing();
+  ASSERT_EQ(nullptr, progress_view);
+}
+
+TEST_F(VideoOverlayWindowViewsTest, TimestampNotDrawnWhen2024UIIsDisabled) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  views::Label* timestamp = overlay_window().timestamp_for_testing();
+  ASSERT_EQ(nullptr, timestamp);
+}
+
+TEST_F(VideoOverlayWindowViewsTest,
+       ReplayAndForward10SecondsNotDrawnWhen2024UIIsDisabled) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  SimpleOverlayWindowImageButton* replay_10_seconds_button =
+      overlay_window().replay_10_seconds_button_for_testing();
+  SimpleOverlayWindowImageButton* forward_10_seconds_button =
+      overlay_window().forward_10_seconds_button_for_testing();
+  ASSERT_EQ(nullptr, replay_10_seconds_button);
+  ASSERT_EQ(nullptr, forward_10_seconds_button);
+}
+
+TEST_F(VideoOverlayWindowViewsTest, FaviconNotDrawnWhen2024UIIsDisabled) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  views::ImageView* favicon = overlay_window().favicon_view_for_testing();
+  ASSERT_EQ(nullptr, favicon);
+}
+
+TEST_F(VideoOverlayWindowViewsTest, OriginNotDrawnWhen2024UIIsDisabled) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  views::Label* origin = overlay_window().origin_for_testing();
+  ASSERT_EQ(nullptr, origin);
+}
+
 class VideoOverlayWindowViewsWith2024UITest
     : public VideoOverlayWindowViewsTest {
  public:
@@ -774,4 +827,153 @@ TEST_F(VideoOverlayWindowViewsWith2024UITest, ShowsBackToTabImageButton) {
   EXPECT_CALL(pip_window_controller(), CloseAndFocusInitiator());
   button_clicker.NotifyClick(dummy_event);
   testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest, ProgressBarSeeksVideo) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  global_media_controls::MediaProgressView* progress_view =
+      overlay_window().progress_view_for_testing();
+  ASSERT_NE(nullptr, progress_view);
+  EXPECT_TRUE(progress_view->IsDrawn());
+
+  gfx::Point point(progress_view->width() / 2, progress_view->height() / 2);
+  ui::MouseEvent pressed_event(ui::EventType::kMousePressed, point, point,
+                               ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                               ui::EF_LEFT_MOUSE_BUTTON);
+  EXPECT_CALL(pip_window_controller(), SeekTo(_));
+  progress_view->OnMousePressed(pressed_event);
+
+  ui::MouseEvent released_event = ui::MouseEvent(
+      ui::EventType::kMouseReleased, point, point, ui::EventTimeForNow(),
+      ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
+  progress_view->OnMouseReleased(released_event);
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest, TimestampDisplaysCurrentTime) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  media_session::MediaPosition media_position(/*playback_rate=*/0,
+                                              /*duration=*/base::Seconds(100),
+                                              /*position=*/base::Seconds(42),
+                                              /*end_of_media=*/false);
+  overlay_window().SetMediaPosition(media_position);
+
+  views::Label* timestamp = overlay_window().timestamp_for_testing();
+  ASSERT_NE(nullptr, timestamp);
+  EXPECT_TRUE(timestamp->IsDrawn());
+  EXPECT_EQ(u"0:42 / 1:40", timestamp->GetText());
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest,
+       ReplayAndForward10SecondsSeekVideo) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  media_session::MediaPosition media_position(/*playback_rate=*/0,
+                                              /*duration=*/base::Seconds(100),
+                                              /*position=*/base::Seconds(42),
+                                              /*end_of_media=*/false);
+  overlay_window().SetMediaPosition(media_position);
+  SimpleOverlayWindowImageButton* replay_10_seconds_button =
+      overlay_window().replay_10_seconds_button_for_testing();
+  SimpleOverlayWindowImageButton* forward_10_seconds_button =
+      overlay_window().forward_10_seconds_button_for_testing();
+  ASSERT_NE(nullptr, replay_10_seconds_button);
+  ASSERT_NE(nullptr, forward_10_seconds_button);
+  EXPECT_TRUE(replay_10_seconds_button->IsDrawn());
+  EXPECT_TRUE(forward_10_seconds_button->IsDrawn());
+
+  views::test::ButtonTestApi replay_button_clicker(replay_10_seconds_button);
+  views::test::ButtonTestApi forward_button_clicker(forward_10_seconds_button);
+  ui::MouseEvent dummy_event(ui::EventType::kMousePressed, gfx::Point(0, 0),
+                             gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
+
+  // Clicking the replay 10 seconds button should seek backwards 10 seconds.
+  PictureInPictureWindowManager::GetInstance()
+      ->set_window_controller_for_testing(&pip_window_controller());
+  EXPECT_CALL(pip_window_controller(), SeekTo(base::Seconds(32)));
+  replay_button_clicker.NotifyClick(dummy_event);
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+
+  // Clicking the forward 10 seconds button should seek forwards 10 seconds.
+  PictureInPictureWindowManager::GetInstance()
+      ->set_window_controller_for_testing(&pip_window_controller());
+  EXPECT_CALL(pip_window_controller(), SeekTo(base::Seconds(52)));
+  forward_button_clicker.NotifyClick(dummy_event);
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+
+  // Clicking the replay 10 seconds button less than 10 seconds into the video
+  // should seek to the beginning.
+  media_session::MediaPosition early_media_position(
+      /*playback_rate=*/0,
+      /*duration=*/base::Seconds(100),
+      /*position=*/base::Seconds(4),
+      /*end_of_media=*/false);
+  overlay_window().SetMediaPosition(early_media_position);
+  EXPECT_CALL(pip_window_controller(), SeekTo(base::Seconds(0)));
+  replay_button_clicker.NotifyClick(dummy_event);
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+
+  // Clicking the forward 10 seconds button with less than 10 seconds left in
+  // the video should seek to the end.
+  media_session::MediaPosition late_media_position(
+      /*playback_rate=*/0,
+      /*duration=*/base::Seconds(100),
+      /*position=*/base::Seconds(97),
+      /*end_of_media=*/false);
+  overlay_window().SetMediaPosition(late_media_position);
+  EXPECT_CALL(pip_window_controller(), SeekTo(base::Seconds(100)));
+  forward_button_clicker.NotifyClick(dummy_event);
+  testing::Mock::VerifyAndClearExpectations(&pip_window_controller());
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest, DisplaysFavicon) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  views::ImageView* favicon_view = overlay_window().favicon_view_for_testing();
+  ASSERT_NE(nullptr, favicon_view);
+  EXPECT_TRUE(favicon_view->IsDrawn());
+
+  // Before any favicon is set, the default favicon should be displayed.
+  {
+    ui::ImageModel image_model = favicon_view->GetImageModel();
+    EXPECT_TRUE(image_model.IsVectorIcon());
+    EXPECT_EQ(image_model.GetVectorIcon().vector_icon(),
+              &vector_icons::kGlobeIcon);
+  }
+
+  // Setting the favicon should use that instead.
+  {
+    media_session::MediaImage test_favicon;
+    test_favicon.src = GURL("https://google.com");
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(100, 100);
+    bitmap.eraseColor(SK_ColorBLUE);
+    PictureInPictureWindowManager::GetInstance()
+        ->set_window_controller_for_testing(&pip_window_controller());
+    EXPECT_CALL(pip_window_controller(),
+                GetMediaImageImpl(test_favicon, 16, 16))
+        .WillOnce(testing::Return(bitmap));
+
+    overlay_window().SetFaviconImages({test_favicon});
+    ui::ImageModel image_model = favicon_view->GetImageModel();
+    EXPECT_FALSE(image_model.IsVectorIcon());
+    EXPECT_TRUE(image_model.IsImage());
+  }
+
+  // Setting the favicon back to empty should change back to the default
+  // favicon.
+  {
+    overlay_window().SetFaviconImages({});
+    ui::ImageModel image_model = favicon_view->GetImageModel();
+    EXPECT_TRUE(image_model.IsVectorIcon());
+    EXPECT_EQ(image_model.GetVectorIcon().vector_icon(),
+              &vector_icons::kGlobeIcon);
+  }
+}
+
+TEST_F(VideoOverlayWindowViewsWith2024UITest, DisplaysOrigin) {
+  overlay_window().ForceControlsVisibleForTesting(true);
+  views::Label* origin = overlay_window().origin_for_testing();
+  ASSERT_NE(nullptr, origin);
+  EXPECT_TRUE(origin->IsDrawn());
+
+  overlay_window().SetSourceTitle(u"google.com");
+  EXPECT_EQ(origin->GetText(), u"google.com");
 }

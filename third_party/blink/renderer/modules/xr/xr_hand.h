@@ -20,7 +20,7 @@ class XRJointSpace;
 class XRHand : public ScriptWrappable, public PairSyncIterable<XRHand> {
   DEFINE_WRAPPERTYPEINFO();
 
-  static const unsigned kNumJoints =
+  static constexpr unsigned kNumJoints =
       static_cast<unsigned>(device::mojom::blink::XRHandJoint::kMaxValue) + 1u;
 
  public:
@@ -28,7 +28,7 @@ class XRHand : public ScriptWrappable, public PairSyncIterable<XRHand> {
                   XRInputSource* input_source);
   ~XRHand() override = default;
 
-  size_t size() const { return joints_.size(); }
+  size_t size() const { return joints_->size(); }
 
   XRJointSpace* get(const V8XRHandJoint& key) const;
 
@@ -44,7 +44,7 @@ class XRHand : public ScriptWrappable, public PairSyncIterable<XRHand> {
   IterationSource* CreateIterationSource(ScriptState*,
                                          ExceptionState&) override;
 
-  HeapVector<Member<XRJointSpace>> joints_;
+  Member<HeapVector<Member<XRJointSpace>>> joints_;
   bool has_missing_poses_ = true;
 };
 

@@ -37,7 +37,7 @@ public class PlayerFrameScaleControllerTest {
     @Mock private PlayerFrameMediatorDelegate mMediatorDelegateMock;
     private boolean mDidScale;
 
-    private class MatrixMatcher implements ArgumentMatcher<Matrix> {
+    private static class MatrixMatcher implements ArgumentMatcher<Matrix> {
         private Matrix mLeft;
 
         MatrixMatcher(Matrix left) {

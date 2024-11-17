@@ -11,7 +11,7 @@
 #include "ash/user_education/user_education_util.h"
 #include "base/check_op.h"
 #include "components/account_id/account_id.h"
-#include "components/user_education/common/tutorial_description.h"
+#include "components/user_education/common/tutorial/tutorial_description.h"
 
 namespace ash {
 namespace {

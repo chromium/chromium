@@ -12,16 +12,39 @@
 #include "chrome/browser/ui/toasts/api/toast_registry.h"
 #include "chrome/browser/ui/toasts/toast_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/plus_addresses/features.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
 
 namespace {
-using ToastIdEnumSet = base::EnumSet<ToastId, ToastId::kMin, ToastId::kMax>;
+
+using ToastIdEnumSet =
+    base::EnumSet<ToastId, ToastId::kMinValue, ToastId::kMaxValue>;
+
+// Toast IDs that have been deprecated and no longer have a registered
+// specification.
+constexpr auto kDeprecatedToastIds =
+    std::to_array<std::underlying_type_t<ToastId>>({/*kLensOverlay=*/4});
+
+ToastIdEnumSet GetActiveToastIds() {
+  auto result = ToastIdEnumSet::All();
+  for (auto toast_id : kDeprecatedToastIds) {
+    result.Remove(static_cast<ToastId>(toast_id));
+  }
+  return result;
 }
 
 class ToastServiceBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(toast_features::kToastFramework);
+    feature_list_.InitWithFeatures(
+        {toast_features::kToastFramework, commerce::kCompareConfirmationToast,
+         commerce::kProductSpecifications,
+         plus_addresses::features::kPlusAddressesEnabled,
+         plus_addresses::features::kPlusAddressFullFormFill,
+         safe_browsing::kEsbAsASyncedSetting},
+        /*disabled_features*/ {});
     InProcessBrowserTest::SetUp();
   }
 
@@ -36,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, RegisterAllToastIds) {
       browser()->browser_window_features()->toast_service();
   const ToastRegistry* const toast_registry = toast_service->toast_registry();
 
-  for (ToastId id : ToastIdEnumSet::All()) {
+  for (ToastId id : GetActiveToastIds()) {
     EXPECT_NE(toast_registry->GetToastSpecification(id), nullptr);
   }
 }
@@ -74,3 +97,5 @@ IN_PROC_BROWSER_TEST_F(ToastServiceBrowserTest, ServiceExistForBrowserTypes) {
   EXPECT_FALSE(devtools_window_features->toast_service());
   EXPECT_FALSE(devtools_window_features->toast_controller());
 }
+
+}  // namespace

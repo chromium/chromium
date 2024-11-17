@@ -23,7 +23,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.FakeTimeTestRule;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -32,7 +31,6 @@ import java.util.HashSet;
 /** Tests for InputContext. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class InputContextTest {
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Rule public FakeTimeTestRule mFakeTimeTestRule = new FakeTimeTestRule();
 
@@ -41,7 +39,7 @@ public class InputContextTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(InputContextJni.TEST_HOOKS, mNativeMock);
+        InputContextJni.setInstanceForTesting(mNativeMock);
     }
 
     @Test

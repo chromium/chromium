@@ -35,66 +35,11 @@ int GetFieldTypeAutofillPreFilledFieldsStatus(
   return (field_type << 4) | static_cast<int>(prefilled_status);
 }
 
-// Traverses `field_log_events` in reverse order to find a `FillFieldLogEvent`
-// entry where its field
-// `value_that_would_have_been_filled_in_a_prefilled_field_hash` has a value,
-// then returns that field.
-std::optional<size_t>
-FindLatestValueThatWouldHaveBeenFilledInAPreFilledFieldHash(
-    const std::vector<AutofillField::FieldLogEventType>& field_log_events) {
-  for (const auto& log_event : base::Reversed(field_log_events)) {
-    if (const FillFieldLogEvent* e =
-            absl::get_if<FillFieldLogEvent>(&log_event)) {
-      if (e->value_that_would_have_been_filled_in_a_prefilled_field_hash
-              .has_value()) {
-        return *e->value_that_would_have_been_filled_in_a_prefilled_field_hash;
-      }
-    }
-  }
-  return std::nullopt;
-}
-
-// Returns `true` if the field was skipped during filling because it was
-// pre-filled and the user has edited the field such that, at form submission,
-// it contained the value that would have been filled.  Note that this also
-// returns `true` if Autofill was triggered from the field (e.g. a second time
-// after the field wasn't filled the first time Autofill was triggered).
-bool SkippedFieldValueChangedToWhatWouldHaveBeenFilled(
-    const std::vector<AutofillField::FieldLogEventType>& field_log_events,
-    const std::u16string& value) {
-  DCHECK(!value.empty());
-  std::optional<size_t> hash =
-      FindLatestValueThatWouldHaveBeenFilledInAPreFilledFieldHash(
-          field_log_events);
-  return hash && base::FastHash(base::UTF16ToUTF8(value)) == *hash;
-}
-
-// Returns `true` if the field was autofilled before but isn't autofilled at
-// form submission.
-bool WasAutofilledAndThenEdited(
-    const std::vector<AutofillField::FieldLogEventType>& field_log_events,
-    const bool is_autofilled) {
-  if (is_autofilled) {
-    return false;
-  }
-  for (const AutofillField::FieldLogEventType& field_log_event :
-       field_log_events) {
-    if (const FillFieldLogEvent* e =
-            absl::get_if<FillFieldLogEvent>(&field_log_event)) {
-      if (e->autofill_skipped_status == FieldFillingSkipReason::kNotSkipped &&
-          e->had_value_after_filling == OptionalBoolean::kTrue) {
-        return true;
-      }
-    }
-  }
-  return false;
-}
-
 }  // namespace
 
 void LogPreFilledFieldStatus(std::string_view form_type_name,
                              std::optional<bool> initial_value_changed,
-                             autofill::FieldType field_type) {
+                             FieldType field_type) {
   const AutofillPreFilledFieldStatus prefilled_status =
       initial_value_changed.has_value()
           ? AutofillPreFilledFieldStatus::kPreFilledOnPageLoad
@@ -105,44 +50,6 @@ void LogPreFilledFieldStatus(std::string_view form_type_name,
   base::UmaHistogramSparse(
       "Autofill.PreFilledFieldStatus.ByFieldType",
       GetFieldTypeAutofillPreFilledFieldsStatus(field_type, prefilled_status));
-}
-
-void LogPreFilledValueChanged(
-    std::string_view form_type_name,
-    std::optional<bool> initial_value_changed,
-    const std::u16string& value,
-    const std::vector<AutofillField::FieldLogEventType>& field_log_events,
-    const FieldTypeSet& possible_types,
-    FieldType field_type,
-    bool is_autofilled) {
-  if (!initial_value_changed.has_value()) {
-    return;
-  }
-  AutofillPreFilledValueStatus value_status =
-      AutofillPreFilledValueStatus::kPreFilledValueChanged;
-  if (!initial_value_changed.value()) {
-    if (WasAutofilledAndThenEdited(field_log_events, is_autofilled)) {
-      value_status = AutofillPreFilledValueStatus::
-          kPreFilledValueWasManuallyRestoredAfterAutofill;
-    } else if (is_autofilled) {
-      value_status =
-          AutofillPreFilledValueStatus::kPreFilledValueWasRestoredByAutofill;
-    } else {
-      value_status = AutofillPreFilledValueStatus::kPreFilledValueNotChanged;
-    }
-  } else if (value.empty()) {
-    value_status = AutofillPreFilledValueStatus::kPreFilledValueChangedToEmpty;
-  } else if (SkippedFieldValueChangedToWhatWouldHaveBeenFilled(field_log_events,
-                                                               value)) {
-    value_status = AutofillPreFilledValueStatus::
-        kPreFilledValueChangedToWhatWouldHaveBeenFilled;
-  } else if (possible_types.contains(field_type)) {
-    value_status = AutofillPreFilledValueStatus::
-        kPreFilledValueChangedToCorrespondingFieldType;
-  }
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Autofill.PreFilledValueStatus.", form_type_name}),
-      value_status);
 }
 
 void LogPreFilledFieldClassifications(

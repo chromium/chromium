@@ -10,6 +10,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/base_requests.h"
 
 namespace google_apis::youtube_music {
@@ -146,6 +147,17 @@ class SignedRequest : public UrlFetchRequestBase {
  private:
   std::vector<std::string> headers_;
 };
+
+struct ApiError {
+  google_apis::ApiErrorCode error_code;
+
+  // A localized error string if included with the response.
+  std::string error_message;
+};
+
+// Returns the localized error message from the error JSON if it can be found.
+// If a localized error message is not found, returns an empty string.
+std::string ParseErrorJson(const std::string& response_body);
 
 }  // namespace google_apis::youtube_music
 

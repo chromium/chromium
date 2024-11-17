@@ -1,0 +1,210 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=chrome://resources/cr_elements/cr_shared_style_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
+ * #import=chrome://resources/cr_elements/action_link_lit.css.js
+ * #import=chrome://resources/cr_elements/cr_spinner_style_lit.css.js
+ * #import=./shared_style.css.js
+ * #import=./shared_vars.css.js
+ * #include=cr-shared-style-lit action-link-lit cr-spinner-style-lit shared-style
+ * #css_wrapper_metadata_end */
+
+:host {
+  --iron-icon-fill-color: var(--cr-secondary-text-color);
+  display: block;
+  height: 100%;
+}
+
+#enable-section {
+  margin-bottom: 8px;
+}
+
+#enable-section cr-tooltip-icon {
+  margin-inline-end: 20px;
+}
+
+#enable-section span {
+  color: var(--cr-secondary-text-color);
+  font-weight: 500;
+}
+
+#enable-section .enabled-text {
+  color: var(--google-blue-500);
+}
+
+@media (prefers-color-scheme: dark) {
+  #enable-section .enabled-text {
+    color: var(--google-blue-300);
+  }
+}
+
+#icon {
+  height: 24px;
+  margin-inline-end: 12px;
+  margin-inline-start: 16px;
+  width: 24px;
+}
+
+#name {
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.section {
+  box-sizing: border-box;
+  padding: var(--cr-section-vertical-padding) var(--cr-section-padding);
+}
+
+.message-container {
+  align-items: center;
+  background-color: var(--google-grey-50);
+  display: flex;
+  padding: 15px;
+  margin-top: 2px;
+}
+
+.message-icon {
+  align-items: center;
+  align-self: flex-start;
+  display: flex;
+  height: var(--cr-icon-size);
+  width: var(--cr-icon-size);
+  fill: var(--panel-icon-color);
+}
+
+.message-container cr-icon {
+  height: var(--cr-icon-size);
+  padding: 6px;
+  width: var(--cr-icon-size);
+}
+
+.message-text {
+  flex: 1;
+  margin-inline-start: 15px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .message-container {
+    background-color: var(--google-grey-800);
+  }
+}
+
+.keep-button {
+  margin-inline-end: 10px;
+  margin-inline-start: 40px;
+}
+
+.cr-row.control-line {
+  justify-content: space-between;
+}
+
+.section-content {
+  color: var(--cr-secondary-text-color);
+}
+
+.actionable {
+  cursor: pointer;
+}
+
+.inspectable-view {
+  display: inline;
+  height: 20px;
+  overflow-wrap: anywhere;
+  width: auto;  /* override the default button size of 24x24 */
+  word-break: normal;
+}
+
+@media (prefers-color-scheme: light) {
+  .warning .action-button {
+    background: white;
+    color: var(--google-blue-500);
+  }
+
+  #reload-button {
+    color: var(--google-blue-500);
+  }
+}
+
+.warning span {
+  color: var(--error-color);
+  flex: 1;
+}
+
+.warning-icon {
+  --iron-icon-fill-color: var(--error-color);
+  flex-shrink: 0;
+  height: 18px;
+  margin-inline-end: 8px;
+  width: 18px;
+}
+
+.link-icon-button {
+  --iron-icon-height: var(--cr-icon-size);
+  --iron-icon-width: var(--cr-icon-size);
+  margin-inline-start: 6px;
+}
+
+#allowlist-warning {
+  flex: 1;
+}
+
+#allowlist-warning .warning-icon {
+  --iron-icon-fill-color: var(--warning-color);
+}
+
+ul {
+  margin: 0;
+  padding-inline-start: 20px;
+}
+
+#options-section .control-line:first-child {
+  border-top: var(--cr-separator-line);
+}
+
+extensions-toggle-row {
+  box-sizing: border-box;
+  padding: var(--cr-section-vertical-padding) var(--cr-section-padding);
+}
+
+#show-access-requests-toggle {
+  margin-inline-start: var(--cr-section-indent-width);
+  min-height: var(--cr-section-min-height);
+  padding: 0;
+}
+
+#access-toggle-and-link {
+  color: var(--cr-primary-text-color);
+  display: flex;
+}
+
+#load-path {
+  word-break: break-all;
+}
+
+#load-path > a[is='action-link'] {
+  display: inline;
+}
+
+#size {
+  align-items: center;
+  display: flex;
+}
+
+.spinner {
+  --cr-spinner-size: var(--cr-icon-size);
+}
+
+#a11yAssociation {
+  height: 0;
+  overflow: hidden;
+}
+
+.layout-horizontal {
+  display: flex;
+  flex-direction: row;
+}

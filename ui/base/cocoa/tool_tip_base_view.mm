@@ -63,15 +63,6 @@
   NSString* __strong _toolTip;
 }
 
-#ifndef MAC_OS_VERSION_13_0
-#define MAC_OS_VERSION_13_0 130000
-#endif
-
-// Remove these methods once macOS 13 becomes the minimum deployment version
-// (see comment in -setToolTipAtMousePoint: below). Consider moving the
-// remainder into BaseView.
-#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_13_0
-
 // Any non-zero value will do, but using something recognizable might help us
 // debug some day.
 const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
@@ -163,7 +154,7 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
                           eventNumber:0
                        trackingNumber:kTrackingRectTag
                              userData:_trackingRectUserData];
-  [_trackingRectOwner mouseExited:fakeEvent];
+  [self._toolTipOwnerForSendingMouseEvents mouseExited:fakeEvent];
 }
 
 // Sends a fake NSEventTypeMouseEntered event to the view for its current
@@ -189,10 +180,32 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
                           eventNumber:0
                        trackingNumber:kTrackingRectTag
                              userData:_trackingRectUserData];
-  [_trackingRectOwner mouseEntered:fakeEvent];
+  [self._toolTipOwnerForSendingMouseEvents mouseEntered:fakeEvent];
 }
 
-#endif  // MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_13_0
+// Identifies the owner responsible for handling mouse events related to
+// tooltips. This method ensures correct tooltip behavior by checking the
+// primary tracking rect owner and, if not found, searching through
+// `NSTrackingArea` objects to find the tooltip manager.
+- (id)_toolTipOwnerForSendingMouseEvents {
+  if (id owner = _trackingRectOwner) {
+    return owner;
+  }
+
+  static Class managerClass = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    managerClass = NSClassFromString(@"NSToolTipManager");
+  });
+
+  for (CrTrackingArea* trackingArea in self.trackingAreas) {
+    id owner = trackingArea.owner;
+    if ([owner isKindOfClass:managerClass]) {
+      return owner;
+    }
+  }
+  return nil;
+}
 
 // Sets the view's current tooltip, to be displayed at the current mouse
 // location. (This does not make the tooltip appear -- as usual, it only
@@ -204,25 +217,12 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
     return;
   }
 
-#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_13_0
   if (_toolTip) {
     [self _sendToolTipMouseExited];
   }
-#endif  // MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_13_0
 
   _toolTip = [toolTip copy];
 
-  // It appears that as of macOS 13, tooltips are no longer set up with
-  // calls to addTrackingRect:... or removeTrackingRect:. As a result,
-  // _trackingRectOwner remains nil, which means the calls to
-  // [_trackingRectOwner mouseEntered:] in _sendToolTipMouseEntered and
-  // [_trackingRectOwner mouseExited:] in _sendToolTipMouseExited do nothing.
-  // It looks like this doesn't affect tooltip display, but the call to
-  // _sendToolTipMouseExited no longer orders it out. Therefore, when the user
-  // moves the mouse away from a tooltip on Ventura, the call to
-  // setToolTipAtMousePoint:nil initiated by the target view leaves the
-  // tooltip onscreen.
-  //
   // The logic below was
   //
   //   if (tooltip) {
@@ -243,9 +243,7 @@ const NSTrackingRectTag kTrackingRectTag = 0xBADFACE;
     _lastToolTipTag = [self addToolTipRect:wideOpenRect
                                      owner:self
                                   userData:nullptr];
-#if MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_13_0
     [self _sendToolTipMouseEntered];
-#endif  // MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_VERSION_13_0
   }
 }
 

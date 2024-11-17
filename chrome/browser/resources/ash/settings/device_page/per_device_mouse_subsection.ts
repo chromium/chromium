@@ -23,21 +23,22 @@ import './per_device_install_row.js';
 import './per_device_subsection_header.js';
 import 'chrome://resources/ash/common/cr_elements/cr_slider/cr_slider.js';
 
-import {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
+import type {CrLinkRowElement} from 'chrome://resources/ash/common/cr_elements/cr_link_row/cr_link_row.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
+import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
-import {Route, Router, routes} from '../router.js';
+import type {Route} from '../router.js';
+import {Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {CompanionAppState, CustomizationRestriction, InputDeviceSettingsProviderInterface, Mouse, MousePolicies, MouseSettings} from './input_device_settings_types.js';
+import type {InputDeviceSettingsProviderInterface, Mouse, MousePolicies, MouseSettings} from './input_device_settings_types.js';
+import {CompanionAppState, CustomizationRestriction} from './input_device_settings_types.js';
 import {getPrefPolicyFields, settingsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './per_device_mouse_subsection.html.js';
 
@@ -155,13 +156,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
         type: Array,
         value: [1, 2, 3, 4, 5],
         readOnly: true,
-      },
-
-      isRevampWayfindingEnabled_: {
-        type: Boolean,
-        value: () => {
-          return isRevampWayfindingEnabled();
-        },
       },
 
       mouse: {
@@ -282,7 +276,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       getInputDeviceSettingsProvider();
   private mouseIndex: number;
   private isLastDevice: boolean;
-  private isRevampWayfindingEnabled_: boolean;
   private customizationRestriction: CustomizationRestriction;
   private currentMouseChanged: boolean;
 
@@ -415,13 +408,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
         routes.CUSTOMIZE_MOUSE_BUTTONS,
         /* dynamicParams= */ url, /* removeSearch= */ true);
     this.currentMouseChanged = true;
-  }
-
-  private getMouseAccelerationDescription(): string {
-    if (this.isRevampWayfindingEnabled_) {
-      return this.i18n('mouseAccelerationDescription');
-    }
-    return '';
   }
 
   private isCompanionAppInstalled(): boolean {

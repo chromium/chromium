@@ -23,9 +23,10 @@ class WebAuthnCredentialsDelegate {
   using OnPasskeySelectedCallback = base::OnceClosure;
   virtual ~WebAuthnCredentialsDelegate() = default;
 
-  // Launches the normal WebAuthn flow that lets users use their phones or
-  // security keys to sign-in.
-  virtual void LaunchWebAuthnFlow() = 0;
+  // Launches the WebAuthn flow that lets users use their phones (hybrid) or
+  // security keys to sign-in. On Android this will trigger Google Play
+  // Services.
+  virtual void LaunchSecurityKeyOrHybridFlow() = 0;
 
   // Called when the user selects a passkey from the autofill suggestion list
   // The selected credential must be from the list returned by the last call to
@@ -40,9 +41,10 @@ class WebAuthnCredentialsDelegate {
   virtual const std::optional<std::vector<PasskeyCredential>>& GetPasskeys()
       const = 0;
 
-  // Returns whether a "Use a passkey from a different device" option should
-  // be offered.
-  virtual bool OfferPasskeysFromAnotherDeviceOption() const = 0;
+  // Returns whether an option to use a passkey on a security key or another
+  // device (e.g. phone via hybrid) should be offered. This option can be used
+  // to trigger `LaunchSecurityKeyOrHybridFlow`.
+  virtual bool IsSecurityKeyOrHybridFlowAvailable() const = 0;
 
   // Initiates retrieval of passkeys from the platform authenticator.
   // |callback| is invoked when credentials have been received, which could be
@@ -52,15 +54,6 @@ class WebAuthnCredentialsDelegate {
   // Returns true iff a passkey was selected via `SelectPasskey` and
   // `OnPasskeySelectedCallback` has not been called yet.
   virtual bool HasPendingPasskeySelection() = 0;
-
-#if BUILDFLAG(IS_ANDROID)
-  // Called to start the hybrid sign-in flow in Play Services.
-  virtual void ShowAndroidHybridSignIn() = 0;
-
-  // Returns true if hybrid sign-in is available, and the option should be
-  // shown on conditional UI autofill surfaces.
-  virtual bool IsAndroidHybridAvailable() const = 0;
-#endif
 
   // Get a WeakPtr to the instance.
   virtual base::WeakPtr<WebAuthnCredentialsDelegate> AsWeakPtr() = 0;

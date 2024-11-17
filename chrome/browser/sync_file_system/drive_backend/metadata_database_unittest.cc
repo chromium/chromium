@@ -1147,45 +1147,6 @@ TEST_P(MetadataDatabaseTest, PopulateInitialDataTest) {
   VerifyReloadConsistency();
 }
 
-TEST_P(MetadataDatabaseTest, DumpFiles) {
-  TrackedFile sync_root(CreateTrackedSyncRoot());
-  TrackedFile app_root(CreateTrackedAppRoot(sync_root, "app_id"));
-  app_root.tracker.set_app_id(app_root.metadata.details().title());
-
-  TrackedFile folder_0(CreateTrackedFolder(app_root, "folder_0"));
-  TrackedFile file_0(CreateTrackedFile(folder_0, "file_0"));
-
-  const TrackedFile* tracked_files[] = {&sync_root, &app_root, &folder_0,
-                                        &file_0};
-
-  SetUpDatabaseByTrackedFiles(tracked_files, std::size(tracked_files));
-  EXPECT_EQ(SYNC_STATUS_OK, InitializeMetadataDatabase());
-  VerifyTrackedFiles(tracked_files, std::size(tracked_files));
-
-  base::Value::List files =
-      metadata_database()->DumpFiles(app_root.tracker.app_id());
-  ASSERT_EQ(2u, files.size());
-
-  const std::string* str;
-  const base::Value& folder_val = files[0];
-  ASSERT_TRUE(folder_val.is_dict());
-  const base::Value::Dict& folder = folder_val.GetDict();
-  str = folder.FindString("title");
-  EXPECT_TRUE(str && *str == "folder_0");
-  str = folder.FindString("type");
-  EXPECT_TRUE(str && *str == "folder");
-  EXPECT_TRUE(folder.contains("details"));
-
-  const base::Value& file_val = files[1];
-  ASSERT_TRUE(file_val.is_dict());
-  const base::Value::Dict& file = file_val.GetDict();
-  str = file.FindString("title");
-  EXPECT_TRUE(str && *str == "file_0");
-  str = file.FindString("type");
-  EXPECT_TRUE(str && *str == "file");
-  EXPECT_TRUE(file.contains("details"));
-}
-
 TEST_P(MetadataDatabaseTest, ClearDatabase) {
   const bool db_on_disk = enable_on_disk_index();
   leveldb::Env* env = db_on_disk ? leveldb::Env::Default() : in_memory_env();

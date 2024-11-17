@@ -14,6 +14,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.GoogleActivityController;
@@ -82,7 +83,7 @@ public class PersonalizeGoogleServicesSettings extends ChromeBaseSettingsFragmen
                                 .getPrimaryAccountInfo(ConsentLevel.SIGNIN));
         // May happen if account is removed from the device while this screen is shown.
         if (signedInAccountName == null) {
-            if (getActivity() != null) getActivity().finish();
+            SettingsNavigationFactory.createSettingsNavigation().finishCurrentSettings(this);
             return;
         }
 

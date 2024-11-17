@@ -1,5 +1,0 @@
-# words only in compounds (see also fogemorpheme example)
-ONLYINCOMPOUND O
-COMPOUNDFLAG A
-SFX B Y 1
-SFX B 0 s .

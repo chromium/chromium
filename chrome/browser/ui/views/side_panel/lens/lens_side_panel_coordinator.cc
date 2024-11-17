@@ -42,7 +42,6 @@
 
 LensSidePanelCoordinator::LensSidePanelCoordinator(Browser* browser)
     : BrowserUserData(*browser) {
-  GetSidePanelCoordinator()->AddSidePanelViewStateObserver(this);
   lens_side_panel_view_ = nullptr;
   auto* profile = browser->profile();
   favicon_cache_ = std::make_unique<FaviconCache>(
@@ -94,12 +93,6 @@ void LensSidePanelCoordinator::DeregisterLensFromSidePanel() {
   }
 }
 
-void LensSidePanelCoordinator::OnSidePanelDidClose() {
-  DeregisterLensFromSidePanel();
-  base::RecordAction(
-      base::UserMetricsAction("LensUnifiedSidePanel.HideSidePanel"));
-}
-
 void LensSidePanelCoordinator::OnFaviconFetched(const gfx::Image& favicon) {
   // Update the action item with the new favicon.
   GetActionItem()->SetImage(ui::ImageModel::FromImage(favicon));
@@ -130,8 +123,15 @@ void LensSidePanelCoordinator::OnEntryShown(SidePanelEntry* entry) {
 }
 
 void LensSidePanelCoordinator::OnEntryHidden(SidePanelEntry* entry) {
+  DeregisterLensFromSidePanel();
+
   base::RecordAction(
       base::UserMetricsAction("LensUnifiedSidePanel.LensEntryHidden"));
+
+  if (!GetSidePanelCoordinator()->IsSidePanelShowing()) {
+    base::RecordAction(
+        base::UserMetricsAction("LensUnifiedSidePanel.HideSidePanel"));
+  }
 }
 
 bool LensSidePanelCoordinator::IsLaunchButtonEnabledForTesting() {
@@ -242,7 +242,8 @@ bool LensSidePanelCoordinator::OpenResultsInNewTabForTesting() {
 }
 
 std::unique_ptr<views::View> LensSidePanelCoordinator::CreateLensWebView(
-    const content::OpenURLParams& params) {
+    const content::OpenURLParams& params,
+    SidePanelEntryScope& scope) {
   auto side_panel_view_ = std::make_unique<lens::LensUnifiedSidePanelView>(
       GetBrowserView(),
       base::BindRepeating(&LensSidePanelCoordinator::UpdateNewTabButtonState,

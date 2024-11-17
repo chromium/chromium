@@ -35,10 +35,6 @@ static_library("file_system_provider") {
   if (is_chromeos_ash) {
     deps += [ "//chrome/browser/ash/guest_os" ]
   }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
-  }
 }
 
 source_set("unit_tests") {

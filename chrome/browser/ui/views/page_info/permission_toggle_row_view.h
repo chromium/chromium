@@ -69,6 +69,8 @@ class PermissionToggleRowView : public views::View {
   friend class test::PageInfoBubbleViewTestApi;
 
   void OnToggleButtonPressed();
+  void AddToggleButton(const std::u16string& toggle_accessible_name,
+                       int icon_label_spacing);
   void InitForUserSource(bool should_show_spacer_view,
                          const std::u16string& toggle_accessible_name);
   void InitForManagedSource(ChromePageInfoUiDelegate* delegate);

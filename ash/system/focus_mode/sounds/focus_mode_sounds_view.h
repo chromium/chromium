@@ -11,6 +11,7 @@
 #include "ash/system/focus_mode/focus_mode_util.h"
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "base/containers/flat_set.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace ash {
@@ -53,8 +54,27 @@ class ASH_EXPORT FocusModeSoundsView
   }
 
  private:
+  struct ToastData {
+    // Returns a `ToastData` for the YouTube Music update error.
+    static ToastData CreateYouTubeMusicUpdateToast();
+
+    ToastData();
+    ToastData(const ToastData&);
+    ~ToastData();
+
+    constexpr std::partial_ordering operator<=>(const ToastData& other) const;
+
+    focus_mode_util::SoundType source;
+    absl::variant<int, std::u16string> message;
+    ErrorMessageToast::ButtonActionType action_type;
+    bool fatal;
+  };
+
   // Updates this view based on `is_soundscape_type`.
-  void UpdateSoundsView(bool is_soundscape_type);
+  void UpdateSoundsView(
+      bool is_soundscape_type,
+      const std::vector<std::unique_ptr<FocusModeSoundsController::Playlist>>&
+          playlists);
 
   // Updates the playback state for all of the playlists under
   // `soundscape_container_` and `youtube_music_container_`.
@@ -79,6 +99,9 @@ class ASH_EXPORT FocusModeSoundsView
   // non-premium account.
   void ToggleYouTubeMusicAlternateView(bool show);
 
+  // Handles an error from the YouTube Music backend.
+  void YouTubeMusicError(const FocusModeApiError& api_error);
+
   // Called to show YouTube Music soundscape playlists.
   void OnSoundscapeButtonToggled();
 
@@ -93,9 +116,17 @@ class ASH_EXPORT FocusModeSoundsView
   void DownloadPlaylistsForType(bool is_soundscape_type);
 
   void MaybeDismissErrorMessage();
+
+  // Handles errors for display represented by `data`. In order to handle a
+  // series of errors, we guarantee that the most severe error is shown. As a
+  // consequence, less severe errors may not be displayed.
+  void ProcessError(const ToastData& data);
+
   void ShowErrorMessageForType(bool is_soundscape_type,
-                               const int message_id,
+                               const std::u16string& message,
                                ErrorMessageToast::ButtonActionType type);
+
+  std::optional<ToastData> youtube_music_api_error_;
 
   // The slider buttons on the sound view.
   raw_ptr<TabSliderButton> soundscape_button_ = nullptr;

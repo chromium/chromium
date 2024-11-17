@@ -32,9 +32,6 @@ import("//build/config/sanitizers/sanitizers.gni")
 # WARNING: This may cause unexpected disablement and is strongly discouraged.
 # You should specify the tests one-by-one in most cases, instead of this.
 tast_disabled_tests_from_chrome_all = [
-  # https://crbug.com/1282372
-  "security.NetworkListenersARC",
-
   # https://crbug.com/1307940
   "policy.URLCheck.blocklist",
 
@@ -56,9 +53,6 @@ tast_disabled_tests_from_chrome_all = [
   "arc.CheckAndroidVersion",
   "arc.Downloads",
 
-  # b/344853253
-  "borealis.FontCheck@volteer",
-
   # b/296913657
   "secagentd.ProcessEvents@amd64-generic",
 
@@ -71,13 +65,6 @@ tast_disabled_tests_from_chrome_all = [
   # b/338111076
   "crostini.AppAndroidStudio.bookworm_clamshell_stable@octopus",
 
-  # b/344945274
-  "nacl.Pnacl.lacros@jacuzzi",
-  "nacl.Pnacl.lacros@volteer",
-
-  # b/344964853
-  "apps.LaunchHelpAppInBrowserMenu.stable_fieldtrial_testing_config_on@betty",
-
   # b/346793249, b/330290054
   "videoconferencing.OpenCLCacher",
 
@@ -85,29 +72,14 @@ tast_disabled_tests_from_chrome_all = [
   "nacl.Pnacl@brya",
   "terminal.SSH@brya",
 
-  # b/354218429
-  "crostini.LaunchBrowser.bookworm_stable_lacros@betty",
-
   # b/354660409, tests will be re-enabled after the tast test is updated to work with the new change. Disabling these to unblock uprev and LKGM.
   "inputs.PhysicalKeyboardEmojiSuggestion",
   "inputs.PhysicalKeyboardEmojiSuggestion.guest",
-  "inputs.PhysicalKeyboardEmojiSuggestion.guest_lacros",
   "inputs.PhysicalKeyboardEmojiSuggestion.incognito",
-  "inputs.PhysicalKeyboardEmojiSuggestion.incognito_lacros",
-  "inputs.PhysicalKeyboardEmojiSuggestion.lacros",
 
   # b/355351792, b/352703668: tests failing on jacuzzi and trogdor.
   "security.SELinuxFilesDataDir.arcvm_user@jacuzzi",
   "security.SELinuxFilesDataDir.arcvm_user@trogdor",
-
-  # b/358376069, b/359411206: These lacros tests are failing at this
-  # moment but they will be removed soon.
-  "lacros.Activate.keep_alive",
-  "lacros.Activate.no_keep_alive",
-  "login.Chrome.lacros",
-  "security.ChromeSandboxed.lacros",
-  "security.GPUSandboxed.lacros",
-  "ui.StackSampledMetricsV2.lacros",
 
   # b/359336803: These tests are failing on brya (specifically kano) and
   # blocking LKGM.
@@ -115,17 +87,54 @@ tast_disabled_tests_from_chrome_all = [
   "shimlessrma.WelcomeNextCancel.critical@brya",
   "shimlessrma.WelcomeCancel.critical@brya",
 
-  # b/362288747, test is failing on brya.
-  "a11y.LiveCaption.fieldtrial_testing_config_off@brya",
+  # b/374043687
+  "crostini.AppFirefox.bookworm_clamshell_stable@volteer",
+  "crostini.AppFirefoxWindowOperations.maximize_bookworm_clamshell_stable@volteer",
+  "crostini.AppFirefoxWindowOperations.minimize_bookworm_clamshell_stable@volteer",
+  "crostini.AppFirefoxWindowOperations.switch_tablet_bookworm_clamshell_stable@volteer",
 
-  # b/362457684: test is failing on betty, blocking LKGM.
-  "cryptohome.UssMigrationChallengeCredential.rsassa_all@betty",
-
-  # b/367545244: test is failing on brya, blocking LKGM.
-  "audio.CrasDLCManager@brya",
+  # b/376898784
+  "a11y.LiveCaption.fieldtrial_testing_config_on",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
+
+# Entries only for the public builders (chromeos-XXX-rel)
+if (!is_chrome_branded) {
+  tast_disabled_tests_from_chrome_all += [
+    # b/377802615: "runtime variable XXX is missing" error
+    "bruschetta.AppVscodeWindowOperations.minimize",
+    "crostini.AppAudacity.bookworm_clamshell_stable",
+    "crostini.AppAudacityWindowOperations.maximize_bookworm_clamshell_stable",
+    "crostini.AppAudacityWindowOperations.minimize_bookworm_clamshell_stable",
+    "crostini.AppAudacityWindowOperations.switch_tablet_bookworm_clamshell_stable",
+    "crostini.AppEmacs.bookworm_clamshell_stable",
+    "crostini.AppEmacsWindowOperations.maximize_bookworm_clamshell_stable",
+    "crostini.AppEmacsWindowOperations.minimize_bookworm_clamshell_stable",
+    "crostini.AppEmacsWindowOperations.switch_tablet_bookworm_clamshell_stable",
+    "crostini.AppFirefox.bookworm_clamshell_stable",
+    "crostini.AppFirefoxNonalphanumericInput.bookworm_clamshell_stable",
+    "crostini.AppFirefoxWindowOperations.maximize_bookworm_clamshell_stable",
+    "crostini.AppFirefoxWindowOperations.minimize_bookworm_clamshell_stable",
+    "crostini.AppFirefoxWindowOperations.switch_tablet_bookworm_clamshell_stable",
+    "crostini.AppGedit.bookworm_clamshell_stable",
+    "crostini.AppGedit.bullseye_clamshell_stable",
+    "crostini.AppGeditFilesharing.bookworm_clamshell_stable",
+    "crostini.AppGeditUnshareFolder.bookworm_clamshell_stable",
+    "crostini.AppGeditNonalphanumericInput.bookworm_clamshell_stable",
+    "crostini.AppVSCodeNonalphanumericInput.bookworm_clamshell_stable",
+    "crostini.AppVscode.bookworm_clamshell_stable",
+    "crostini.AppVscode.bullseye_clamshell_stable",
+    "crostini.AppVscodeFromFileManager.bookworm_clamshell_stable",
+    "crostini.AppVscodeWindowOperations.maximize_bookworm_clamshell_stable",
+    "crostini.AppVscodeWindowOperations.minimize_bookworm_clamshell_stable",
+    "crostini.AppVscodeWindowOperations.switch_tablet_bookworm_clamshell_stable",
+    "crostini.RestartApp.bookworm_clamshell_stable",
+    "shimlessrma.SelectComponentsNoneNextCancel.critical",
+    "shimlessrma.WelcomeCancel.critical",
+    "shimlessrma.WelcomeNextCancel.critical",
+  ]
+}
 
 if (is_cfi) {
   # b/350872890: pending investigation and fixes for is_cfi builders on betty.

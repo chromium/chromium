@@ -17,12 +17,8 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
-#include "components/crash/core/common/crash_key.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/screen_ai/buildflags/buildflags.h"
 #include "services/screen_ai/proto/main_content_extractor_proto_convertor.h"
 #include "services/screen_ai/proto/visual_annotator_proto_convertor.h"
@@ -52,14 +48,16 @@ constexpr base::TimeDelta kCoolDownTime = base::Seconds(10);
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// See `screen_ai_service.mojom` for more info.
 enum class OcrClientTypeForMetrics {
   kTest = 0,
   kPdfViewer = 1,
   kLocalSearch = 2,
   kCameraApp = 3,
-  kPdfSearchify = 4,
+  kNotUsed = 4,  // Can be used for a new client.
   kMediaApp = 5,
-  kMaxValue = kMediaApp
+  kScreenshotTextDetection,
+  kMaxValue = kScreenshotTextDetection
 };
 
 OcrClientTypeForMetrics GetClientType(mojom::OcrClientType client_type) {
@@ -73,10 +71,10 @@ OcrClientTypeForMetrics GetClientType(mojom::OcrClientType client_type) {
       return OcrClientTypeForMetrics::kLocalSearch;
     case mojom::OcrClientType::kCameraApp:
       return OcrClientTypeForMetrics::kCameraApp;
-    case mojom::OcrClientType::kPdfSearchify:
-      return OcrClientTypeForMetrics::kPdfSearchify;
     case mojom::OcrClientType::kMediaApp:
       return OcrClientTypeForMetrics::kMediaApp;
+    case mojom::OcrClientType::kScreenshotTextDetection:
+      return OcrClientTypeForMetrics::kScreenshotTextDetection;
   }
 }
 
@@ -145,13 +143,6 @@ class ModelDataHolder {
     int64_t length = model_file->GetLength();
     CHECK_GE(buffer_size, length);
     CHECK_EQ(UNSAFE_TODO(model_file->Read(0, buffer, length)), length);
-
-    // TODO(crbug.com/361733242): Remove after the crash is fixed.
-    // `relative_file_path` is from `files_list_main_content_extraction.txt`
-    // or `files_list_ocr.txt` and under 100 characters long.
-    static crash_reporter::CrashKeyString<100> crash_info(
-        "last_loaded_screen_ai_file");
-    crash_info.Set(relative_file_path);
   }
 
   void AddModelFiles(base::flat_map<base::FilePath, base::File> model_files) {
@@ -397,15 +388,11 @@ void ScreenAIService::PerformOcrAndReturnAXTreeUpdate(
 }
 
 void ScreenAIService::ExtractMainContent(const ui::AXTreeUpdate& snapshot,
-                                         ukm::SourceId ukm_source_id,
                                          ExtractMainContentCallback callback) {
   main_content_extraction_last_used_ = base::TimeTicks::Now();
   ui::AXTree tree;
   std::optional<std::vector<int32_t>> content_node_ids;
   bool success = ExtractMainContentInternal(snapshot, tree, content_node_ids);
-  base::TimeDelta elapsed_time =
-      base::TimeTicks::Now() - main_content_extraction_last_used_;
-  RecordMetrics(ukm_source_id, ukm::UkmRecorder::Get(), elapsed_time, success);
 
   if (success) {
     std::move(callback).Run(*content_node_ids);
@@ -446,17 +433,6 @@ bool ScreenAIService::ExtractMainContentInternal(
     return false;
   }
 
-  // Report request specifications in case the call crashes.
-  static crash_reporter::CrashKeyString<95> crash_info(
-      "main_content_extraction_info");
-  crash_info.Set(base::StringPrintf(
-      "TD:%i, TR:%i, SNC:%10zu, SBS:%10zu, TS:%10i, TW:%6i, TH:%6i, SS:%10zu",
-      snapshot.has_tree_data, snapshot.root_id != ui::kInvalidAXNodeID,
-      snapshot.nodes.size(), snapshot.ByteSize(), tree.size(),
-      static_cast<int>(converted_snapshot->tree_dimensions.width()),
-      static_cast<int>(converted_snapshot->tree_dimensions.height()),
-      converted_snapshot->serialized_proto.size()));
-
   content_node_ids =
       library_->ExtractMainContent(converted_snapshot->serialized_proto);
   base::UmaHistogramBoolean(
@@ -475,32 +451,6 @@ ui::AXNodeID ScreenAIService::ComputeMainNodeForTesting(
     const ui::AXTree* tree,
     const std::vector<ui::AXNodeID>& content_node_ids) {
   return ComputeMainNode(tree, content_node_ids);
-}
-
-// static
-void ScreenAIService::RecordMetrics(ukm::SourceId ukm_source_id,
-                                    ukm::UkmRecorder* ukm_recorder,
-                                    base::TimeDelta elapsed_time,
-                                    bool success) {
-  if (success) {
-    base::UmaHistogramTimes(
-        "Accessibility.ScreenAI.Screen2xDistillationTime.Success",
-        elapsed_time);
-    if (ukm_source_id != ukm::kInvalidSourceId) {
-      ukm::builders::Accessibility_ScreenAI(ukm_source_id)
-          .SetScreen2xDistillationTime_Success(elapsed_time.InMilliseconds())
-          .Record(ukm_recorder);
-    }
-  } else {
-    base::UmaHistogramTimes(
-        "Accessibility.ScreenAI.Screen2xDistillationTime.Failure",
-        elapsed_time);
-    if (ukm_source_id != ukm::kInvalidSourceId) {
-      ukm::builders::Accessibility_ScreenAI(ukm_source_id)
-          .SetScreen2xDistillationTime_Failure(elapsed_time.InMilliseconds())
-          .Record(ukm_recorder);
-    }
-  }
 }
 
 void ScreenAIService::OcrReceiverDisconnected() {

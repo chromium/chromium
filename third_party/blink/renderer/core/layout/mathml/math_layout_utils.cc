@@ -135,8 +135,7 @@ bool IsValidMathMLScript(const BlockNode& node) {
     case MathScriptType::kMultiscripts:
       return IsValidMultiscript(node);
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 }
 

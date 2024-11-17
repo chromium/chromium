@@ -25,6 +25,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
@@ -32,10 +33,12 @@
 #include "components/policy/core/common/fake_async_policy_loader.h"
 #include "components/policy/policy_constants.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/oauth_token_getter.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/it2me/it2me_helpers.h"
 #include "remoting/host/native_messaging/log_message_handler.h"
+#include "remoting/host/native_messaging/native_messaging_constants.h"
 #include "remoting/host/native_messaging/native_messaging_pipe.h"
 #include "remoting/host/native_messaging/pipe_messaging_channel.h"
 #include "remoting/host/policy_watcher.h"
@@ -52,10 +55,12 @@ using protocol::ErrorCode;
 
 namespace {
 
-const char kTestAccessCode[] = "888888";
+constexpr char kTestAccessCode[] = "888888";
 constexpr base::TimeDelta kTestAccessCodeLifetime = base::Seconds(666);
-const char kTestClientUsername[] = "some_user@gmail.com";
-const char kTestStunServer[] = "test_relay_server.com";
+constexpr char kTestClientUsername[] = "some_user@gmail.com";
+constexpr char kTestStunServer[] = "test_relay_server.com";
+constexpr char kTestSignalingAccessToken[] = "signaling_token";
+constexpr char kTestApiAccessToken[] = "api_token";
 
 void VerifyId(const base::Value::Dict& response, int expected_value) {
   std::optional<int> value = response.FindInt(kMessageId);
@@ -89,7 +94,8 @@ base::Value::Dict CreateConnectMessage(int id) {
   connect_message.Set(kMessageId, id);
   connect_message.Set(kMessageType, kConnectMessage);
   connect_message.Set(kUserName, kTestClientUsername);
-  connect_message.Set(kAuthServiceWithToken, "oauth2:sometoken");
+  connect_message.Set(kSignalingAccessToken, kTestSignalingAccessToken);
+  connect_message.Set(kApiAccessToken, kTestApiAccessToken);
   connect_message.Set(
       kIceConfig,
       base::test::ParseJsonDict("{ \"iceServers\": [ { \"urls\": [ \"stun:" +
@@ -103,6 +109,18 @@ base::Value::Dict CreateDisconnectMessage(int id) {
   disconnect_message.Set(kMessageId, id);
   disconnect_message.Set(kMessageType, kDisconnectMessage);
   return disconnect_message;
+}
+
+std::string GetOAuthAccessToken(OAuthTokenGetter& token_getter) {
+  base::RunLoop run_loop;
+  std::string access_token;
+  token_getter.CallWithToken(base::BindLambdaForTesting(
+      [&](OAuthTokenGetter::Status status, const OAuthTokenInfo& token_info) {
+        access_token = token_info.access_token();
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+  return access_token;
 }
 
 }  // namespace
@@ -124,6 +142,12 @@ class MockIt2MeHost : public It2MeHost {
                const protocol::IceConfig& ice_config) override;
   void Disconnect() override;
 
+  OAuthTokenGetter* signaling_token_getter() {
+    return signaling_token_getter_.get();
+  }
+
+  OAuthTokenGetter* api_token_getter() { return api_token_getter_.get(); }
+
  private:
   ~MockIt2MeHost() override = default;
 
@@ -131,6 +155,9 @@ class MockIt2MeHost : public It2MeHost {
       CreateDeferredConnectContext create_connection_context);
 
   void RunSetState(It2MeHostState state);
+
+  std::unique_ptr<OAuthTokenGetter> signaling_token_getter_;
+  std::unique_ptr<OAuthTokenGetter> api_token_getter_;
 };
 
 void MockIt2MeHost::Connect(
@@ -197,6 +224,8 @@ void MockIt2MeHost::CreateConnectionContextOnNetworkThread(
   log_to_server_ = std::move(context->log_to_server);
   register_request_ = std::move(context->register_request);
   signal_strategy_ = std::move(context->signal_strategy);
+  signaling_token_getter_ = std::move(context->signaling_token_getter);
+  api_token_getter_ = std::move(context->api_token_getter);
 }
 
 void MockIt2MeHost::RunSetState(It2MeHostState state) {
@@ -254,6 +283,8 @@ class It2MeNativeMessagingHostTest : public testing::Test {
   void TestBadRequest(const base::Value::Dict& message,
                       bool expect_error_response);
   void TestConnect();
+
+  MockIt2MeHost* mock_it2me_host() { return factory_raw_ptr_->host.get(); }
 
   const std::optional<ChromeOsEnterpriseParams>
   get_chrome_os_enterprise_params() {
@@ -789,6 +820,51 @@ TEST_F(It2MeNativeMessagingHostTest, BadPoliciesAfterConnect) {
   VerifyConnectResponses(1);
   SetPolicies(std::move(bad_policy));
   VerifyPolicyErrorResponse();
+}
+
+TEST_F(It2MeNativeMessagingHostTest, PlumbsAccessTokensFromConnectMessage) {
+  WriteMessageToInputPipe(CreateConnectMessage(1));
+  VerifyConnectResponses(1);
+
+  ASSERT_EQ(GetOAuthAccessToken(*mock_it2me_host()->signaling_token_getter()),
+            kTestSignalingAccessToken);
+  ASSERT_EQ(GetOAuthAccessToken(*mock_it2me_host()->api_token_getter()),
+            kTestApiAccessToken);
+}
+
+TEST_F(It2MeNativeMessagingHostTest,
+       PlumbsLegacyAccessTokenFromConnectMessage) {
+  base::Value::Dict connect_message = CreateConnectMessage(1);
+  connect_message.Remove(kSignalingAccessToken);
+  connect_message.Remove(kApiAccessToken);
+  connect_message.Set(kAccessToken, "legacy_access_token");
+  WriteMessageToInputPipe(connect_message);
+  VerifyConnectResponses(1);
+
+  ASSERT_EQ(GetOAuthAccessToken(*mock_it2me_host()->signaling_token_getter()),
+            "legacy_access_token");
+  ASSERT_EQ(GetOAuthAccessToken(*mock_it2me_host()->api_token_getter()),
+            "legacy_access_token");
+}
+
+TEST_F(It2MeNativeMessagingHostTest,
+       PlumbsAccessTokensFromUpdateAccessTokensMessage) {
+  WriteMessageToInputPipe(CreateConnectMessage(1));
+  VerifyConnectResponses(1);
+
+  base::Value::Dict update_access_tokens_message;
+  update_access_tokens_message.Set(kMessageType, kUpdateAccessTokensMessage);
+  update_access_tokens_message.Set(kSignalingAccessToken,
+                                   "new_signaling_token");
+  update_access_tokens_message.Set(kApiAccessToken, "new_api_access_token");
+  WriteMessageToInputPipe(update_access_tokens_message);
+
+  std::optional<base::Value::Dict> response = ReadMessageFromOutputPipe();
+  ASSERT_TRUE(response);
+  ASSERT_EQ(GetOAuthAccessToken(*mock_it2me_host()->signaling_token_getter()),
+            "new_signaling_token");
+  ASSERT_EQ(GetOAuthAccessToken(*mock_it2me_host()->api_token_getter()),
+            "new_api_access_token");
 }
 
 }  // namespace remoting

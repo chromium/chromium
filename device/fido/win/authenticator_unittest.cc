@@ -11,12 +11,14 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/ctap_make_credential_request.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_test_data.h"
@@ -26,6 +28,7 @@
 #include "device/fido/public_key_credential_rp_entity.h"
 #include "device/fido/public_key_credential_user_entity.h"
 #include "device/fido/win/fake_webauthn_api.h"
+#include "device/fido/win/webauthn_api.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,6 +53,7 @@ using EnumeratePlatformCredentialsFuture =
 const std::vector<uint8_t> kCredentialId = {1, 2, 3, 4};
 const std::vector<uint8_t> kCredentialId2 = {9, 0, 1, 2};
 constexpr char kRpId[] = "project-altdeus.example.com";
+constexpr char kRpId2[] = "meteora.example.com";
 const std::vector<uint8_t> kUserId = {5, 6, 7, 8};
 constexpr char kUserName[] = "unit-aarc-noa";
 constexpr char kUserDisplayName[] = "Noa";
@@ -58,13 +62,19 @@ const std::vector<uint8_t> kUserId2 = {1, 1, 1, 1};
 constexpr char kUserName2[] = "chloe";
 constexpr char kUserDisplayName2[] = "Chloe";
 
-class WinAuthenticatorTest : public testing::Test {
+class WinAuthenticatorTest : public testing::Test,
+                             WinWebAuthnApiAuthenticator::TestObserver {
  public:
   void SetUp() override {
     fake_webauthn_api_ = std::make_unique<FakeWinWebAuthnApi>();
     fake_webauthn_api_->set_supports_silent_discovery(true);
     authenticator_ = std::make_unique<WinWebAuthnApiAuthenticator>(
         /*current_window=*/nullptr, fake_webauthn_api_.get());
+    WinWebAuthnApiAuthenticator::SetGlobalObserverForTesting(this);
+  }
+
+  void TearDown() override {
+    WinWebAuthnApiAuthenticator::SetGlobalObserverForTesting(nullptr);
   }
 
   void SetVersion(int version) {
@@ -76,10 +86,31 @@ class WinAuthenticatorTest : public testing::Test {
         /*current_window=*/nullptr, fake_webauthn_api_.get());
   }
 
+  void WaitForSignalUnknownCredential() {
+    signal_unknown_credential_run_loop_.Run();
+  }
+
+  void WaitForSignalAllAcceptedCredentials() {
+    signal_all_accepted_credentials_run_loop_.Run();
+  }
+
+  // WinWebAuthnApiAuthenticator::TestObserver:
+  void OnSignalUnknownCredential() override {
+    signal_unknown_credential_run_loop_.Quit();
+  }
+
+  void OnSignalAllAcceptedCredentials() override {
+    signal_all_accepted_credentials_run_loop_.Quit();
+  }
+
  protected:
   std::unique_ptr<FidoAuthenticator> authenticator_;
   std::unique_ptr<FakeWinWebAuthnApi> fake_webauthn_api_;
   base::test::TaskEnvironment task_environment;
+  base::RunLoop signal_unknown_credential_run_loop_;
+  base::RunLoop signal_all_accepted_credentials_run_loop_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnHelloSignal};
 };
 
 // Tests getting credential information for an empty allow-list request that has
@@ -326,22 +357,6 @@ TEST_F(WinAuthenticatorTest, EnumeratePlatformCredentials_Supported) {
   EXPECT_EQ(cred.user.display_name, kUserDisplayName);
 }
 
-TEST_F(WinAuthenticatorTest, IsConditionalMediationAvailable) {
-  for (bool silent_discovery : {false, true}) {
-    SCOPED_TRACE(silent_discovery);
-    fake_webauthn_api_->set_supports_silent_discovery(silent_discovery);
-    base::test::TestFuture<bool> future;
-    base::RunLoop run_loop;
-    WinWebAuthnApiAuthenticator::IsConditionalMediationAvailable(
-        fake_webauthn_api_.get(),
-        base::BindLambdaForTesting([&](bool is_available) {
-          EXPECT_EQ(is_available, silent_discovery);
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-  }
-}
-
 TEST_F(WinAuthenticatorTest, MakeCredentialLargeBlob) {
   enum Availability : bool {
     kNotAvailable = false,
@@ -535,6 +550,153 @@ TEST_F(WinAuthenticatorTest, GetAssertionLargeBlobSuccess) {
     EXPECT_EQ(*std::get<1>(future.Get()).at(0).large_blob, kLargeBlob);
     EXPECT_FALSE(std::get<1>(future.Get()).at(0).large_blob_written);
   }
+}
+
+// Tests signalling an unknown credential ID for a credential that is not
+// present.
+TEST_F(WinAuthenticatorTest, SignalUnknownCredential_NotFound) {
+  SetVersion(WEBAUTHN_API_VERSION_4);
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
+                                                   std::move(user));
+  ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+
+  WinWebAuthnApiAuthenticator::SignalUnknownCredential(fake_webauthn_api_.get(),
+                                                       kCredentialId2, kRpId);
+  WaitForSignalUnknownCredential();
+  EXPECT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+}
+
+// Tests signalling an unknown credential ID for a credential that exists but
+// belongs to a different RP ID.
+TEST_F(WinAuthenticatorTest, SignalUnknownCredential_WrongRpId) {
+  SetVersion(WEBAUTHN_API_VERSION_4);
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
+                                                   std::move(user));
+  ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+
+  WinWebAuthnApiAuthenticator::SignalUnknownCredential(fake_webauthn_api_.get(),
+                                                       kCredentialId, kRpId2);
+  WaitForSignalUnknownCredential();
+  EXPECT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+}
+
+// Tests signalling an unknown credential ID when the WebAuthn API does not
+// support the feature.
+TEST_F(WinAuthenticatorTest, SignalUnknownCredential_NotSupported) {
+  SetVersion(WEBAUTHN_API_VERSION_3);
+  fake_webauthn_api_->set_supports_silent_discovery(false);
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
+                                                   std::move(user));
+  ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+
+  WinWebAuthnApiAuthenticator::SignalUnknownCredential(fake_webauthn_api_.get(),
+                                                       kCredentialId, kRpId);
+  WaitForSignalUnknownCredential();
+  EXPECT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+}
+
+// Tests signalling an unknown credential ID that belongs to Hello. It should be
+// deleted.
+TEST_F(WinAuthenticatorTest, SignalUnknownCredential) {
+  SetVersion(WEBAUTHN_API_VERSION_4);
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
+                                                   std::move(user));
+  ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+
+  WinWebAuthnApiAuthenticator::SignalUnknownCredential(fake_webauthn_api_.get(),
+                                                       kCredentialId, kRpId);
+  WaitForSignalUnknownCredential();
+  EXPECT_TRUE(fake_webauthn_api_->registrations().empty());
+}
+
+// Tests passing a known credential to SignalAllAcceptedCredentials. It should
+// not be deleted.
+TEST_F(WinAuthenticatorTest, SignalAllAcceptedCredentials_Found) {
+  SetVersion(WEBAUTHN_API_VERSION_4);
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
+                                                   std::move(user));
+  ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+
+  WinWebAuthnApiAuthenticator::SignalAllAcceptedCredentials(
+      fake_webauthn_api_.get(), kRpId, kUserId, {kCredentialId});
+  WaitForSignalAllAcceptedCredentials();
+  EXPECT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+}
+
+// Tests passing a user id that doesn't match any known credentials to
+// SignalAllAcceptedCredentials. The credentials should not be deleted.
+TEST_F(WinAuthenticatorTest, SignalAllAcceptedCredentials_NoMatchingUserId) {
+  SetVersion(WEBAUTHN_API_VERSION_4);
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
+                                                   std::move(user));
+  ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+
+  WinWebAuthnApiAuthenticator::SignalAllAcceptedCredentials(
+      fake_webauthn_api_.get(), kRpId, kUserId2, {});
+  WaitForSignalAllAcceptedCredentials();
+  EXPECT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+}
+
+// Tests passing an RP id that doesn't match any known credentials to
+// SignalAllAcceptedCredentials. The credentials should not be deleted.
+TEST_F(WinAuthenticatorTest, SignalAllAcceptedCredentials_NoMatchingRpId) {
+  SetVersion(WEBAUTHN_API_VERSION_4);
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
+                                                   std::move(user));
+  ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+
+  WinWebAuthnApiAuthenticator::SignalAllAcceptedCredentials(
+      fake_webauthn_api_.get(), kRpId2, kUserId, {});
+  WaitForSignalAllAcceptedCredentials();
+  EXPECT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+}
+
+// Tests trying to call SignalAllAcceptedCredentials when not supported by
+// Windows Hello.
+TEST_F(WinAuthenticatorTest, SignalAllAcceptedCredentials_NotSupported) {
+  SetVersion(WEBAUTHN_API_VERSION_3);
+  fake_webauthn_api_->set_supports_silent_discovery(false);
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
+                                                   std::move(user));
+  ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+
+  WinWebAuthnApiAuthenticator::SignalAllAcceptedCredentials(
+      fake_webauthn_api_.get(), kRpId, kUserId, {kCredentialId2});
+  WaitForSignalAllAcceptedCredentials();
+  EXPECT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+}
+
+// Tests passing the RP id and user id matching a credential to
+// SignalAllAcceptedCredentials, but the list of credential IDs doesn't contain
+// it. The credential should be deleted.
+TEST_F(WinAuthenticatorTest, SignalAllAcceptedCredentials_NotFound) {
+  SetVersion(WEBAUTHN_API_VERSION_4);
+  PublicKeyCredentialRpEntity rp(kRpId);
+  PublicKeyCredentialUserEntity user(kUserId, kUserName, kUserDisplayName);
+  fake_webauthn_api_->InjectDiscoverableCredential(kCredentialId, std::move(rp),
+                                                   std::move(user));
+  ASSERT_EQ(fake_webauthn_api_->registrations().size(), 1u);
+
+  WinWebAuthnApiAuthenticator::SignalAllAcceptedCredentials(
+      fake_webauthn_api_.get(), kRpId, kUserId, {kCredentialId2});
+  WaitForSignalAllAcceptedCredentials();
+  EXPECT_TRUE(fake_webauthn_api_->registrations().empty());
 }
 
 }  // namespace

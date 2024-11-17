@@ -23,7 +23,7 @@ mojom("mojo_bindings") {
         },
       ]
       traits_headers = [ "tab_strip_mojom_traits.h" ]
-      traits_public_deps = [ "//chrome/browser/ui/tabs" ]
+      traits_public_deps = [ "//chrome/browser/ui/tabs:tabs_public" ]
     },
   ]
 }

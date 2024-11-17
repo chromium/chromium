@@ -24,8 +24,8 @@ class DocumentDownloadTabHelperTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder test_cbs_builder;
-    browser_state_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
 
     download_manager_delegate_ =
         [[FakeDownloadManagerTabHelperDelegate alloc] init];
@@ -34,12 +34,12 @@ class DocumentDownloadTabHelperTest : public PlatformTest {
         ->SetDelegate(download_manager_delegate_);
 
     DocumentDownloadTabHelper::CreateForWebState(&web_state_);
-    web_state_.SetBrowserState(browser_state_.get());
+    web_state_.SetBrowserState(profile_.get());
     web_state_.WasShown();
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   FakeDownloadManagerTabHelperDelegate* download_manager_delegate_;
   web::FakeWebState web_state_;
 };

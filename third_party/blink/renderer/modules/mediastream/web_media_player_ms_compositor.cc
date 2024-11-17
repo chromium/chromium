@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/hash/hash.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/not_fatal_until.h"
 #include "base/ranges/algorithm.h"
@@ -59,12 +60,23 @@ namespace blink {
 
 namespace {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ReasonToClearRenderBuffer)
+enum class ReasonToClearRenderBuffer {
+  kOutOfOrder = 0,
+  kUpdateOverdue = 1,
+  kMaxValue = kUpdateOverdue,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/media/enums.xml)
+
 // This function copies |frame| to a new I420 or YV12A media::VideoFrame.
 scoped_refptr<media::VideoFrame> CopyFrame(
     scoped_refptr<media::VideoFrame> frame,
     media::PaintCanvasVideoRenderer* video_renderer) {
   scoped_refptr<media::VideoFrame> new_frame;
-  if (frame->HasTextures()) {
+  if (frame->HasSharedImage()) {
     DCHECK(frame->format() == media::PIXEL_FORMAT_ARGB ||
            frame->format() == media::PIXEL_FORMAT_XRGB ||
            frame->format() == media::PIXEL_FORMAT_ABGR ||
@@ -418,14 +430,8 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
     return;
   }
 
-  const bool is_out_of_order =
-      pending_frames_info_.empty()
-          ? false
-          : frame->timestamp() < pending_frames_info_.back().timestamp;
-
-  // If we detect a bad frame (out of order or without |reference_time|), we
-  // switch off algorithm. Without |reference_time|, algorithm cannot work and
-  // if frames are out of order the frame source is unusual.
+  // If we detect a bad frame without |reference_time|, we switch off algorithm,
+  // because without |reference_time|, algorithm cannot work.
   //
   // |reference_time| is not set for low-latency video streams and are therefore
   // rendered without algorithm, unless |maximum_composition_delay_in_frames| is
@@ -433,11 +439,10 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
   // note that this is an experimental feature that is only active if certain
   // experimental parameters are specified in WebRTC. See crbug.com/1138888 for
   // more information.
-  if ((!frame->metadata().reference_time.has_value() || is_out_of_order) &&
+  if (!frame->metadata().reference_time.has_value() &&
       !frame->metadata().maximum_composition_delay_in_frames) {
-    DLOG(WARNING)
-        << "Incoming VideoFrames have no reference_time or are out of order, "
-           "switching off super sophisticated rendering algorithm";
+    DLOG(WARNING) << "Incoming VideoFrames have no reference_time, "
+                     "switching off super sophisticated rendering algorithm";
     rendering_frame_buffer_.reset();
     pending_frames_info_.clear();
     RenderWithoutAlgorithm(std::move(frame), is_copy);
@@ -446,21 +451,33 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
   base::TimeTicks render_time =
       frame->metadata().reference_time.value_or(base::TimeTicks());
 
-  // The code below handles the case where UpdateCurrentFrame() callbacks stop.
-  // These callbacks can stop when the tab is hidden or the page area containing
-  // the video frame is scrolled out of view.
-  // Since some hardware decoders only have a limited number of output frames,
-  // we must aggressively release frames in this case.
-  const base::TimeTicks now = base::TimeTicks::Now();
-  const base::TimeDelta vsync_delay = now - last_deadline_max_;
+  // WebRTC can sometimes submit frames with out-of-order timestamps. This
+  // occurs because the mapping between RTP timestamps and presentation
+  // timestamps might not have stabilized yet.
+  // See https://issues.webrtc.org/370818168.
+  const bool is_out_of_order =
+      pending_frames_info_.empty()
+          ? false
+          : frame->timestamp() < pending_frames_info_.back().timestamp;
 
-  // TODO(crbug.com/353554171): This is incorrect. It's using a delay value of
-  // zero which means the algorithm is always overridden.
-  auto max_delay = maximum_vsync_delay_for_renderer_reset_.value_or(
-      frame->metadata().maximum_composition_delay_in_frames
-          ? kMaximumVsyncDelayForLowLatencyRenderer
-          : base::TimeDelta());
-  if (vsync_delay > max_delay) {
+  const base::TimeTicks now = base::TimeTicks::Now();
+  // |last_deadline_max_| is typically in the future in which case
+  // |deadline_offset| is negative. If |deadline_offset| is positive, it means
+  // that UpdateCurrentFrame() hasn't been called in a while. These callbacks
+  // can stop when the tab is hidden or the page area containing the video frame
+  // is scrolled out of view. Since some hardware decoders only have a limited
+  // number of output frames, we must aggressively release frames in this case.
+  const base::TimeDelta deadline_offset = now - last_deadline_max_;
+  auto max_frame_delay = frame->metadata().maximum_composition_delay_in_frames
+                             ? kMaximumVsyncDelayForLowLatencyRenderer
+                             : base::TimeDelta();
+  const bool is_update_overdue = deadline_offset > max_frame_delay;
+
+  if (is_out_of_order || is_update_overdue) {
+    base::UmaHistogramEnumeration(
+        UmaPrefix() + ".ReasonToClearRenderBuffer",
+        is_out_of_order ? ReasonToClearRenderBuffer::kOutOfOrder
+                        : ReasonToClearRenderBuffer::kUpdateOverdue);
     // Note: the frame in |rendering_frame_buffer_| with lowest index is the
     // same as |current_frame_|. Function SetCurrentFrame() handles whether
     // to increase |dropped_frame_count_| for that frame, so here we should
@@ -511,7 +528,7 @@ bool WebMediaPlayerMSCompositor::UpdateCurrentFrame(
 #if DCHECK_IS_ON()
     tracing_or_dcheck_enabled = true;
 #endif  // DCHECK_IS_ON()
-    if (tracing_or_dcheck_enabled) {
+    if (tracing_or_dcheck_enabled && current_frame_) {
       base::TimeTicks render_time =
           current_frame_->metadata().reference_time.value_or(base::TimeTicks());
       DCHECK(current_frame_->metadata().reference_time.has_value() ||
@@ -600,7 +617,7 @@ void WebMediaPlayerMSCompositor::OnContextLost() {
   // is not valid any more. current_frame_ should be reset. Now the compositor
   // has no concept of resetting current_frame_, so a black frame is set.
   base::AutoLock auto_lock(current_frame_lock_);
-  if (!current_frame_ || (!current_frame_->HasTextures() &&
+  if (!current_frame_ || (!current_frame_->HasSharedImage() &&
                           !current_frame_->HasMappableGpuBuffer())) {
     return;
   }
@@ -963,15 +980,15 @@ WebMediaPlayerMSCompositor::GetLastPresentedFrameMetadata() {
     frame_metadata->presentation_time = last_presentation_time_;
     frame_metadata->expected_display_time = last_expected_display_time_;
     frame_metadata->presented_frames = static_cast<uint32_t>(presented_frames_);
-
     frame_metadata->average_frame_duration = last_preferred_render_interval_;
     frame_metadata->rendering_interval = last_render_length_;
   }
 
-  frame_metadata->width = last_frame->visible_rect().width();
-  frame_metadata->height = last_frame->visible_rect().height();
-
-  frame_metadata->media_time = last_frame->timestamp();
+  if (last_frame) {
+    frame_metadata->width = last_frame->visible_rect().width();
+    frame_metadata->height = last_frame->visible_rect().height();
+    frame_metadata->media_time = last_frame->timestamp();
+  }
 
   frame_metadata->metadata.MergeMetadataFrom(last_frame->metadata());
 

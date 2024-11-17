@@ -59,6 +59,10 @@ std::optional<GURL> ProfilePreloadCandidateSelector::GetURLToPreload(
       continue;
     }
 
+    if (IsUrlExcludedByFlag(url)) {
+      continue;
+    }
+
     // Update the result if we find a URL with higher score.
     double engagement_score = engagement_service->GetScore(url);
     if (engagement_score > highest_engagement_score) {

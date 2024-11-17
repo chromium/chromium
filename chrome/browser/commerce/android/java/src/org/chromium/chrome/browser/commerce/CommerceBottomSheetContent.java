@@ -4,8 +4,10 @@
 
 package org.chromium.chrome.browser.commerce;
 
+import android.content.Context;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -50,6 +52,11 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
+    public int getPeekHeight() {
+        return HeightMode.DISABLED;
+    }
+
+    @Override
     public float getHalfHeightRatio() {
         if (mExpectedContentItemCount > 2) {
             return 0.5f;
@@ -68,8 +75,8 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.commerce_bottom_sheet_content_description;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.commerce_bottom_sheet_content_description);
     }
 
     @Override
@@ -91,5 +98,11 @@ public class CommerceBottomSheetContent implements BottomSheetContent {
     @Override
     public int getSheetClosedAccessibilityStringId() {
         return R.string.commerce_bottom_sheet_content_closed;
+    }
+
+    @Override
+    public boolean hasCustomScrimLifecycle() {
+        // Don't show a scrim (gray overlay on page) when open the bottom sheet.
+        return true;
     }
 }

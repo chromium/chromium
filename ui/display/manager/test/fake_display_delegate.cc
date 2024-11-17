@@ -252,8 +252,7 @@ void FakeDisplayDelegate::OnConfigurationChanged() {
   if (!initialized_)
     return;
 
-  for (NativeDisplayObserver& observer : observers_)
-    observer.OnConfigurationChanged();
+  observers_.Notify(&NativeDisplayObserver::OnConfigurationChanged);
 }
 
 void FakeDisplayDelegate::ConfigureDone() {

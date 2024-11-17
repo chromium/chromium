@@ -38,7 +38,8 @@ void TestAutofillExternalDelegate::OnQuery(
     const FormData& form,
     const FormFieldData& field,
     const gfx::Rect& caret_bounds,
-    AutofillSuggestionTriggerSource trigger_source) {
+    AutofillSuggestionTriggerSource trigger_source,
+    bool update_datalist) {
   on_query_seen_ = true;
   on_suggestions_returned_seen_ = false;
   trigger_source_ = trigger_source;
@@ -46,8 +47,8 @@ void TestAutofillExternalDelegate::OnQuery(
   // If necessary, call the superclass's OnQuery to set up its other fields
   // properly.
   if (call_parent_methods_)
-    AutofillExternalDelegate::OnQuery(form, field, caret_bounds,
-                                      trigger_source);
+    AutofillExternalDelegate::OnQuery(form, field, caret_bounds, trigger_source,
+                                      update_datalist);
 }
 
 void TestAutofillExternalDelegate::OnSuggestionsReturned(
@@ -107,8 +108,8 @@ void TestAutofillExternalDelegate::CheckSuggestions(
     EXPECT_EQ(expected_suggestions[i].labels, suggestions_[i].labels);
     EXPECT_EQ(expected_suggestions[i].icon, suggestions_[i].icon);
     EXPECT_EQ(expected_suggestions[i].type, suggestions_[i].type);
-    EXPECT_EQ(expected_suggestions[i].is_acceptable,
-              suggestions_[i].is_acceptable);
+    EXPECT_EQ(expected_suggestions[i].IsAcceptable(),
+              suggestions_[i].IsAcceptable());
   }
 }
 

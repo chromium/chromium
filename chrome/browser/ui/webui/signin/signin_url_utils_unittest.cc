@@ -122,4 +122,4 @@ INSTANTIATE_TEST_SUITE_P(
     SigninURLUtilsReauthConfirmationURLTest,
     ::testing::Range(
         static_cast<int>(signin_metrics::ReauthAccessPoint::kUnknown),
-        static_cast<int>(signin_metrics::ReauthAccessPoint::kMaxValue) + 1));
+        static_cast<int>(signin_metrics::ReauthAccessPoint::kMax) + 1));

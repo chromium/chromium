@@ -121,7 +121,8 @@ class RegexRulesMatcher final : public RulesetMatcherBase {
 
     // Map from re2 ID (as used by `filtered_re2_`) to the flat::RegexRule in
     // `regex_list_`.
-    std::map<int, const flat::RegexRule*> re2_id_to_rules_map_;
+    std::map<int, raw_ptr<const flat::RegexRule, CtnExperimental>>
+        re2_id_to_rules_map_;
 
     // Structure for fast substring matching. Given a string S and a set of
     // candidate strings, returns the sub-set of candidate strings that are a

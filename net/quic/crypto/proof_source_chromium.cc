@@ -187,19 +187,18 @@ void ProofSourceChromium::ComputeTlsSignature(
                             reinterpret_cast<const uint8_t*>(in.data()),
                             in.size()) ||
       !EVP_DigestSignFinal(sign_context.get(), nullptr, &siglen)) {
-    callback->Run(false, sig, nullptr);
+    callback->Run(false, std::move(sig), nullptr);
     return;
   }
   sig.resize(siglen);
   if (!EVP_DigestSignFinal(
           sign_context.get(),
           reinterpret_cast<uint8_t*>(const_cast<char*>(sig.data())), &siglen)) {
-    callback->Run(false, sig, nullptr);
+    callback->Run(false, std::move(sig), nullptr);
     return;
   }
   sig.resize(siglen);
-
-  callback->Run(true, sig, nullptr);
+  callback->Run(true, std::move(sig), nullptr);
 }
 
 absl::InlinedVector<uint16_t, 8>

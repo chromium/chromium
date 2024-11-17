@@ -1,0 +1,46 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++staticText name='before' nextOnLineId=genericContainer
+++++++++inlineTextBox name='before' nextOnLineId=genericContainer
+++++++genericContainer nextOnLineId=inlineTextBox:"after" previousOnLineId=inlineTextBox:"before"
+++++++++staticText name='inside'
+++++++++++inlineTextBox name='inside'
+++++++staticText name='after' previousOnLineId=genericContainer
+++++++++inlineTextBox name='after' previousOnLineId=genericContainer
+++++++genericContainer ignored
+++++++++genericContainer
+++++++++++staticText name='first line'
+++++++++++++inlineTextBox name='first line'
+++++++++genericContainer nextOnLineId=inlineTextBox:"blue"
+++++++++++staticText name='go ' nextOnLineId=inlineTextBox:"blue"
+++++++++++++inlineTextBox name='go ' nextOnLineId=inlineTextBox:"blue"
+++++++++staticText name='blue' previousOnLineId=inlineTextBox:"go "
+++++++++++inlineTextBox name='blue' previousOnLineId=inlineTextBox:"go "
+++++++++genericContainer
+++++++++++staticText name='last line'
+++++++++++++inlineTextBox name='last line'
+++++++paragraph
+++++++++staticText name='The ' nextOnLineId=inlineTextBox:"quick"
+++++++++++inlineTextBox name='The ' nextOnLineId=inlineTextBox:"quick"
+++++++++genericContainer nextOnLineId=inlineTextBox:" brown fox" previousOnLineId=inlineTextBox:"The "
+++++++++++staticText name='quick' nextOnLineId=inlineTextBox:" brown fox" previousOnLineId=inlineTextBox:"The "
+++++++++++++inlineTextBox name='quick' nextOnLineId=inlineTextBox:" brown fox" previousOnLineId=inlineTextBox:"The "
+++++++++staticText name=' brown fox' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=inlineTextBox:"quick"
+++++++++++inlineTextBox name=' brown fox' nextOnLineId=inlineTextBox:"<newline>" previousOnLineId=inlineTextBox:"quick"
+++++++++lineBreak name='<newline>' previousOnLineId=inlineTextBox:" brown fox"
+++++++++++inlineTextBox name='<newline>' previousOnLineId=inlineTextBox:" brown fox"
+++++++++staticText name='jumps over the lazy ' nextOnLineId=inlineTextBox:"dog"
+++++++++++inlineTextBox name='jumps over the lazy ' nextOnLineId=inlineTextBox:"dog"
+++++++++genericContainer nextOnLineId=inlineTextBox:"." previousOnLineId=inlineTextBox:"jumps over the lazy "
+++++++++++staticText name='dog' nextOnLineId=inlineTextBox:"." previousOnLineId=inlineTextBox:"jumps over the lazy "
+++++++++++++inlineTextBox name='dog' nextOnLineId=inlineTextBox:"." previousOnLineId=inlineTextBox:"jumps over the lazy "
+++++++++staticText name='.' previousOnLineId=inlineTextBox:"dog"
+++++++++++inlineTextBox name='.' previousOnLineId=inlineTextBox:"dog"
+++++++paragraph
+++++++++staticText name='Example 1: ' nextOnLineId=inlineTextBox:"hello"
+++++++++++inlineTextBox name='Example 1: ' nextOnLineId=inlineTextBox:"hello"
+++++++++staticText name='hello' nextOnLineId=inlineTextBox:" world" previousOnLineId=inlineTextBox:"Example 1: "
+++++++++++inlineTextBox name='hello' nextOnLineId=inlineTextBox:" world" previousOnLineId=inlineTextBox:"Example 1: "
+++++++++staticText name=' world' previousOnLineId=inlineTextBox:"hello"
+++++++++++inlineTextBox name=' world' previousOnLineId=inlineTextBox:"hello"

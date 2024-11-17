@@ -9,7 +9,7 @@
 import '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import '//resources/cr_elements/icons_lit.html.js';
+import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_shared_style.css.js';
 import '//resources/cr_elements/cr_shared_vars.css.js';
 import '//resources/cr_elements/cr_icon/cr_icon.js';
@@ -353,13 +353,6 @@ export class SettingsSyncAccountControlElement extends
   }
 
   private shouldAllowAccountSwitch_(): boolean {
-    // <if expr="chromeos_lacros">
-    if (!loadTimeData.getBoolean('isSecondaryUser')) {
-      // Sync account can't be changed in the main profile, it is always the
-      // device account.
-      return false;
-    }
-    // </if>
     return !this.hideButtons && !this.isSyncing_() &&
         this.syncStatus.signedInState !== SignedInState.SIGNED_IN_PAUSED &&
         (!loadTimeData.getBoolean('turnOffSyncAllowedForManagedProfiles') ||

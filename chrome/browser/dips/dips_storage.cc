@@ -84,12 +84,13 @@ bool DIPSStorage::WritePopup(const std::string& first_party_site,
                              const std::string& tracking_site,
                              const uint64_t access_id,
                              const base::Time& popup_time,
-                             bool is_current_interaction) {
+                             bool is_current_interaction,
+                             bool is_authentication_interaction) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(db_);
 
   return db_->WritePopup(first_party_site, tracking_site, access_id, popup_time,
-                         is_current_interaction);
+                         is_current_interaction, is_authentication_interaction);
 }
 
 void DIPSStorage::RemoveEvents(base::Time delete_begin,
@@ -262,18 +263,46 @@ std::vector<std::string> DIPSStorage::GetSitesToClear(
 
 bool DIPSStorage::DidSiteHaveInteractionSince(const GURL& url,
                                               base::Time bound) {
-  auto last_user_interaction_time = LastInteractionTime(url);
+  auto last_user_interaction_time = LastUserActivationTime(url);
   return last_user_interaction_time.has_value() &&
          last_user_interaction_time >= bound;
 }
 
-std::optional<base::Time> DIPSStorage::LastInteractionTime(const GURL& url) {
+std::optional<base::Time> DIPSStorage::LastUserActivationTime(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   const DIPSState state = Read(url);
   if (!state.user_interaction_times().has_value()) {
     return std::nullopt;
   }
   return state.user_interaction_times()->second;
+}
+
+std::optional<base::Time> DIPSStorage::LastWebAuthnAssertionTime(
+    const GURL& url) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const DIPSState state = Read(url);
+  if (!state.web_authn_assertion_times().has_value()) {
+    return std::nullopt;
+  }
+  return state.web_authn_assertion_times()->second;
+}
+
+std::optional<base::Time> DIPSStorage::LastUserActivationOrAuthnAssertionTime(
+    const GURL& url) {
+  return LastInteractionTimeAndType(url).first;
+}
+
+std::pair<std::optional<base::Time>, bool>
+DIPSStorage::LastInteractionTimeAndType(const GURL& url) {
+  std::optional<base::Time> last_user_activation_time =
+      LastUserActivationTime(url);
+  std::optional<base::Time> last_web_authn_assertion_time =
+      LastWebAuthnAssertionTime(url);
+
+  if (last_user_activation_time >= last_web_authn_assertion_time) {
+    return std::make_pair(last_user_activation_time, true);
+  }
+  return std::make_pair(last_web_authn_assertion_time, false);
 }
 
 /* static */

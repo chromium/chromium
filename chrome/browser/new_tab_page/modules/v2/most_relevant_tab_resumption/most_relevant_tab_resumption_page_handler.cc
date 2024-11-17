@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/hash/hash.h"
+#include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
@@ -30,6 +31,7 @@
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/visited_url_ranking/public/features.h"
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
@@ -48,9 +50,10 @@ using visited_url_ranking::URLVisitAggregatesTransformType;
 using Source = visited_url_ranking::URLVisit::Source;
 
 namespace {
-// Name of preference to track list of dismissed tabs.
-const char kDismissedTabsPrefName[] =
-    "NewTabPage.MostRelevantTabResumption.DismissedTabs";
+
+// Name of preference to track list of dismissed visits.
+const char kDismissedVisitsPrefName[] =
+    "NewTabPage.MostRelevantTabResumption.DismissedVisits";
 
 std::u16string FormatRelativeTime(const base::Time& time) {
   // Return a time like "1 hour ago", "2 days ago", etc.
@@ -110,13 +113,13 @@ URLVisitAggregate::Tab CreateSampleURLVisitAggregateTab(
       "Sample Session Tag", "Test Session");
 }
 
-FetchOptions::URLTypeSet AsURLTypeSet(
+URLVisitAggregate::URLTypeSet AsURLTypeSet(
     const std::vector<std::string>& url_type_entries) {
-  FetchOptions::URLTypeSet result_url_types = {};
+  URLVisitAggregate::URLTypeSet result_url_types = {};
   for (const auto& url_type_entry : url_type_entries) {
     int url_type;
     if (base::StringToInt(url_type_entry, &url_type)) {
-      result_url_types.Put(static_cast<FetchOptions::URLType>(url_type));
+      result_url_types.Put(static_cast<URLVisitAggregate::URLType>(url_type));
     }
   }
 
@@ -125,7 +128,7 @@ FetchOptions::URLTypeSet AsURLTypeSet(
 
 // Return the desired fetch result types as specified via feature params or the
 // defaults if not specified.
-FetchOptions::URLTypeSet GetFetchResultURLTypes() {
+URLVisitAggregate::URLTypeSet GetFetchResultURLTypes() {
   const std::string module_data_param = base::GetFieldTrialParamValueByFeature(
       ntp_features::kNtpMostRelevantTabResumptionModule,
       ntp_features::kNtpMostRelevantTabResumptionModuleDataParam);
@@ -134,7 +137,7 @@ FetchOptions::URLTypeSet GetFetchResultURLTypes() {
         base::SplitString(module_data_param, ",:;", base::TRIM_WHITESPACE,
                           base::SPLIT_WANT_NONEMPTY);
 
-    FetchOptions::URLTypeSet result_url_types =
+    URLVisitAggregate::URLTypeSet result_url_types =
         AsURLTypeSet(data_param_url_types);
     if (!result_url_types.empty()) {
       return result_url_types;
@@ -148,8 +151,8 @@ FetchOptions::URLTypeSet GetFetchResultURLTypes() {
       ",:;", base::WhitespaceHandling::TRIM_WHITESPACE,
       base::SplitResult::SPLIT_WANT_NONEMPTY);
   if (url_type_entries.empty()) {
-    return {FetchOptions::URLType::kActiveRemoteTab,
-            FetchOptions::URLType::kRemoteVisit};
+    return {URLVisitAggregate::URLType::kActiveRemoteTab,
+            URLVisitAggregate::URLType::kRemoteVisit};
   }
 
   return AsURLTypeSet(url_type_entries);
@@ -172,9 +175,8 @@ MostRelevantTabResumptionPageHandler::MostRelevantTabResumptionPageHandler(
   DCHECK(web_contents_);
 }
 
-MostRelevantTabResumptionPageHandler::~MostRelevantTabResumptionPageHandler() {
-  RemoveOldDismissedTabs();
-}
+MostRelevantTabResumptionPageHandler::~MostRelevantTabResumptionPageHandler() =
+    default;
 
 void MostRelevantTabResumptionPageHandler::GetURLVisits(
     GetURLVisitsCallback callback) {
@@ -189,6 +191,8 @@ void MostRelevantTabResumptionPageHandler::GetURLVisits(
     for (int i = 0; i < kSampleVisitsCount; i++) {
       auto url_visit_mojom = TabToMojom(
           CreateSampleURLVisitAggregateTab(GURL("https://www.google.com")));
+      url_visit_mojom->source =
+          ntp::most_relevant_tab_resumption::mojom::VisitSource::kTab;
       url_visit_mojom->url = GURL("https://www.google.com");
       url_visit_mojom->url_key = "https://www.google.com";
       url_visit_mojom->training_request_id = 0;
@@ -246,17 +250,31 @@ void MostRelevantTabResumptionPageHandler::GetURLVisits(
 void MostRelevantTabResumptionPageHandler::DismissModule(
     const std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
         url_visits) {
+  DismissURLVisits(url_visits);
+}
+
+void MostRelevantTabResumptionPageHandler::DismissURLVisit(
+    ntp::most_relevant_tab_resumption::mojom::URLVisitPtr url_visit) {
+  std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
+      url_visits_mojom;
+  url_visits_mojom.push_back(std::move(url_visit));
+  DismissURLVisits(url_visits_mojom);
+}
+
+void MostRelevantTabResumptionPageHandler::DismissURLVisits(
+    const std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>&
+        url_visits) {
   RemoveOldDismissedTabs();
-  ScopedListPrefUpdate url_visit_list(profile_->GetPrefs(),
-                                      kDismissedTabsPrefName);
+  ScopedDictPrefUpdate url_visit_dict(profile_->GetPrefs(),
+                                      kDismissedVisitsPrefName);
   auto* visited_url_ranking_service =
       visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
           profile_);
   for (const auto& url_visit : url_visits) {
-    url_visit_list->Append(base::Value(
-        url_visit->url_key + ' ' +
-        base::NumberToString(url_visit->timestamp->ToDeltaSinceWindowsEpoch()
-                                 .InMicroseconds())));
+    DCHECK(!url_visit->url_key.empty());
+    url_visit_dict->Set(
+        url_visit->url_key,
+        base::TimeToValue(base::Time::Now() + base::Seconds(30)));
     visited_url_ranking_service->RecordAction(
         visited_url_ranking::ScoredURLUserAction::kDismissed,
         url_visit->url_key,
@@ -265,62 +283,43 @@ void MostRelevantTabResumptionPageHandler::DismissModule(
   }
 }
 
-void MostRelevantTabResumptionPageHandler::DismissURLVisit(
-    const ntp::most_relevant_tab_resumption::mojom::URLVisitPtr url_visit) {
-  RemoveOldDismissedTabs();
-  ScopedListPrefUpdate url_visit_list(profile_->GetPrefs(),
-                                      kDismissedTabsPrefName);
-  url_visit_list->Append(base::Value(
-      url_visit->url_key + ' ' +
-      base::NumberToString(
-          url_visit->timestamp->ToDeltaSinceWindowsEpoch().InMicroseconds())));
-  auto* visited_url_ranking_service =
-      visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
-          profile_);
-  visited_url_ranking_service->RecordAction(
-      visited_url_ranking::ScoredURLUserAction::kDismissed, url_visit->url_key,
-      segmentation_platform::TrainingRequestId(url_visit->training_request_id));
-}
-
 void MostRelevantTabResumptionPageHandler::RestoreModule(
     const std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
         url_visits) {
-  ScopedListPrefUpdate url_visit_list(profile_->GetPrefs(),
-                                      kDismissedTabsPrefName);
-  auto* visited_url_ranking_service =
-      visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
-          profile_);
-  for (const auto& url_visit : url_visits) {
-    url_visit_list->EraseValue(base::Value(
-        url_visit->url_key + ' ' +
-        base::NumberToString(url_visit->timestamp->ToDeltaSinceWindowsEpoch()
-                                 .InMicroseconds())));
-    visited_url_ranking_service->RecordAction(
-        visited_url_ranking::ScoredURLUserAction::kSeen, url_visit->url_key,
-        segmentation_platform::TrainingRequestId(
-            url_visit->training_request_id));
-  }
+  RestoreURLVisits(std::move(url_visits));
 }
 
 void MostRelevantTabResumptionPageHandler::RestoreURLVisit(
     ntp::most_relevant_tab_resumption::mojom::URLVisitPtr url_visit) {
-  ScopedListPrefUpdate url_visit_list(profile_->GetPrefs(),
-                                      kDismissedTabsPrefName);
-  url_visit_list->EraseValue(base::Value(
-      url_visit->url_key + ' ' +
-      base::NumberToString(
-          url_visit->timestamp->ToDeltaSinceWindowsEpoch().InMicroseconds())));
+  std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>
+      url_visits_mojom;
+  url_visits_mojom.push_back(std::move(url_visit));
+  RestoreURLVisits(url_visits_mojom);
+}
+
+void MostRelevantTabResumptionPageHandler::RestoreURLVisits(
+    const std::vector<ntp::most_relevant_tab_resumption::mojom::URLVisitPtr>&
+        url_visits) {
+  ScopedDictPrefUpdate url_visit_dict(profile_->GetPrefs(),
+                                      kDismissedVisitsPrefName);
   auto* visited_url_ranking_service =
       visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
           profile_);
-  visited_url_ranking_service->RecordAction(
-      visited_url_ranking::ScoredURLUserAction::kSeen, url_visit->url_key,
-      segmentation_platform::TrainingRequestId(url_visit->training_request_id));
+  for (const auto& url_visit : url_visits) {
+    if (url_visit_dict->Find(url_visit->url_key)) {
+      url_visit_dict->Remove(url_visit->url_key);
+      visited_url_ranking_service->RecordAction(
+          visited_url_ranking::ScoredURLUserAction::kSeen, url_visit->url_key,
+          segmentation_platform::TrainingRequestId(
+              url_visit->training_request_id));
+    }
+  }
 }
 
 void MostRelevantTabResumptionPageHandler::OnURLVisitAggregatesFetched(
     GetURLVisitsCallback callback,
     visited_url_ranking::ResultStatus status,
+    visited_url_ranking::URLVisitsMetadata url_visits_metadata,
     std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates) {
   if (status == visited_url_ranking::ResultStatus::kError) {
     std::move(callback).Run({});
@@ -335,11 +334,13 @@ void MostRelevantTabResumptionPageHandler::OnURLVisitAggregatesFetched(
       std::move(url_visit_aggregates),
       base::BindOnce(
           &MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+          std::move(url_visits_metadata)));
 }
 
 void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
     GetURLVisitsCallback callback,
+    visited_url_ranking::URLVisitsMetadata url_visits_metadata,
     visited_url_ranking::ResultStatus status,
     std::vector<visited_url_ranking::URLVisitAggregate> url_visit_aggregates) {
   base::UmaHistogramEnumeration("NewTabPage.TabResumption.ResultStatus",
@@ -351,7 +352,7 @@ void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
 
   int max_visits = base::GetFieldTrialParamByFeatureAsInt(
       ntp_features::kNtpMostRelevantTabResumptionModule,
-      ntp_features::kNtpMostRelevantTabResumptionModuleMaxVisitsParam, 5);
+      ntp_features::kNtpMostRelevantTabResumptionModuleMaxVisitsParam, 10);
 
   const size_t num_visits =
       std::min(static_cast<size_t>(max_visits), url_visit_aggregates.size());
@@ -367,7 +368,7 @@ void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
           profile_);
   visited_url_ranking_service->DecorateURLVisitAggregates(
       {.key = visited_url_ranking::kTabResumptionRankerKey},
-      std::move(url_visit_aggregates),
+      std::move(url_visits_metadata), std::move(url_visit_aggregates),
       base::BindOnce(&MostRelevantTabResumptionPageHandler::
                          OnGotDecoratedURLVisitAggregates,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
@@ -385,20 +386,33 @@ void MostRelevantTabResumptionPageHandler::OnGotDecoratedURLVisitAggregates(
     if (tab_data) {
       const URLVisitAggregate::Tab* tab = &tab_data->last_active_tab;
       auto url_visit_mojom = TabToMojom(*tab, tab_data->last_active);
+      url_visit_mojom->source =
+          ntp::most_relevant_tab_resumption::mojom::VisitSource::kTab;
       url_visit_mojom->url = **url_visit_aggregate.GetAssociatedURLs().begin();
       url_visit_mojom->url_key = url_visit_aggregate.url_key;
       url_visit_mojom->training_request_id =
           url_visit_aggregate.request_id.GetUnsafeValue();
       url_visit_mojom->decoration =
           ntp::most_relevant_tab_resumption::mojom::Decoration::New();
-      auto decoration = GetMostRelevantDecoration(url_visit_aggregate);
-      url_visit_mojom->decoration->type =
-          ntp::most_relevant_tab_resumption::mojom::DecorationType(
-              static_cast<int>(decoration.GetType()));
-      url_visit_mojom->decoration->display_string =
-          base::UTF16ToUTF8(decoration.GetDisplayString());
+      if (base::FeatureList::IsEnabled(
+              visited_url_ranking::features::kVisitedURLRankingDecorations)) {
+        auto decoration = GetMostRelevantDecoration(url_visit_aggregate);
+        url_visit_mojom->decoration->type =
+            ntp::most_relevant_tab_resumption::mojom::DecorationType(
+                static_cast<int>(decoration.GetType()));
+        url_visit_mojom->decoration->display_string =
+            base::UTF16ToUTF8(decoration.GetDisplayString());
+      } else {
+        url_visit_mojom->decoration->type = ntp::most_relevant_tab_resumption::
+            mojom::DecorationType::kVisitedXAgo;
+        url_visit_mojom->decoration->display_string = base::UTF16ToUTF8(
+            visited_url_ranking::GetStringForRecencyDecorationWithTime(
+                url_visit_aggregate.GetLastVisitTime()));
+      }
+
       url_visit_mojom->timestamp = url_visit_aggregate.GetLastVisitTime();
-      if (IsNewURL(url_visit_mojom)) {
+      if (IsNewURL(url_visit_aggregate.url_key,
+                   url_visit_aggregate.GetLastVisitTime())) {
         url_visits_mojom.push_back(std::move(url_visit_mojom));
         base::UmaHistogramEnumeration(
             "NewTabPage.TabResumption.URLVisitAggregateDataTypeDisplayed",
@@ -411,6 +425,8 @@ void MostRelevantTabResumptionPageHandler::OnGotDecoratedURLVisitAggregates(
         auto history_url_visit_mojom = HistoryEntryVisitToMojom(
             history_data->last_visited, history_data->visit.client_name,
             history_data->visit.device_type);
+        history_url_visit_mojom->source =
+            ntp::most_relevant_tab_resumption::mojom::VisitSource::kHistory;
         history_url_visit_mojom->url =
             **url_visit_aggregate.GetAssociatedURLs().begin();
         history_url_visit_mojom->url_key = url_visit_aggregate.url_key;
@@ -418,15 +434,27 @@ void MostRelevantTabResumptionPageHandler::OnGotDecoratedURLVisitAggregates(
             url_visit_aggregate.request_id.GetUnsafeValue();
         history_url_visit_mojom->decoration =
             ntp::most_relevant_tab_resumption::mojom::Decoration::New();
-        auto decoration = GetMostRelevantDecoration(url_visit_aggregate);
-        history_url_visit_mojom->decoration->type =
-            ntp::most_relevant_tab_resumption::mojom::DecorationType(
-                static_cast<int>(decoration.GetType()));
-        history_url_visit_mojom->decoration->display_string =
-            base::UTF16ToUTF8(decoration.GetDisplayString());
+        if (base::FeatureList::IsEnabled(
+                visited_url_ranking::features::kVisitedURLRankingDecorations)) {
+          auto decoration = GetMostRelevantDecoration(url_visit_aggregate);
+          history_url_visit_mojom->decoration->type =
+              ntp::most_relevant_tab_resumption::mojom::DecorationType(
+                  static_cast<int>(decoration.GetType()));
+          history_url_visit_mojom->decoration->display_string =
+              base::UTF16ToUTF8(decoration.GetDisplayString());
+        } else {
+          history_url_visit_mojom->decoration->type = ntp::
+              most_relevant_tab_resumption::mojom::DecorationType::kVisitedXAgo;
+          history_url_visit_mojom->decoration->display_string =
+              base::UTF16ToUTF8(
+                  visited_url_ranking::GetStringForRecencyDecorationWithTime(
+                      url_visit_aggregate.GetLastVisitTime()));
+        }
+
         history_url_visit_mojom->timestamp =
             url_visit_aggregate.GetLastVisitTime();
-        if (IsNewURL(history_url_visit_mojom)) {
+        if (IsNewURL(url_visit_aggregate.url_key,
+                     url_visit_aggregate.GetLastVisitTime())) {
           url_visits_mojom.push_back(std::move(history_url_visit_mojom));
           base::UmaHistogramEnumeration(
               "NewTabPage.TabResumption.URLVisitAggregateDataTypeDisplayed",
@@ -442,41 +470,43 @@ void MostRelevantTabResumptionPageHandler::OnGotDecoratedURLVisitAggregates(
 // static
 void MostRelevantTabResumptionPageHandler::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterListPref(kDismissedTabsPrefName, base::Value::List());
+  registry->RegisterDictionaryPref(kDismissedVisitsPrefName,
+                                   base::Value::Dict());
 }
 
 bool MostRelevantTabResumptionPageHandler::IsNewURL(
-    ntp::most_relevant_tab_resumption::mojom::URLVisitPtr& url_visit) {
-  const base::Value::List& cached_urls =
-      profile_->GetPrefs()->GetList(kDismissedTabsPrefName);
-  auto it = std::find_if(
-      cached_urls.begin(), cached_urls.end(),
-      [&url_visit](const base::Value& cached_url) {
-        return cached_url.GetString() ==
-               url_visit->url_key + ' ' +
-                   base::NumberToString(
-                       url_visit->timestamp->ToDeltaSinceWindowsEpoch()
-                           .InMicroseconds());
-      });
-  return it == cached_urls.end();
+    const std::string& url_key,
+    const base::Time& timestamp) {
+  const base::Value::Dict& cached_urls =
+      profile_->GetPrefs()->GetDict(kDismissedVisitsPrefName);
+  auto* val = cached_urls.Find(url_key);
+  if (val) {
+    auto dismissed_time = base::ValueToTime(val);
+    if (dismissed_time.has_value()) {
+      return timestamp > dismissed_time.value();
+    }
+  }
+
+  return true;
 }
 
 void MostRelevantTabResumptionPageHandler::RemoveOldDismissedTabs() {
-  ScopedListPrefUpdate tab_list(profile_->GetPrefs(), kDismissedTabsPrefName);
-  for (const auto& entry : tab_list.Get().Clone()) {
-    const std::string dismissed_tab_string = entry.GetString();
-    size_t delimiter_pos = dismissed_tab_string.find(' ');
-    if (delimiter_pos != std::string::npos) {
-      int64_t timestamp_microseconds;
-      base::StringToInt64(dismissed_tab_string.substr(delimiter_pos),
-                          &timestamp_microseconds);
-      base::Time timestamp = base::Time::FromDeltaSinceWindowsEpoch(
-          base::Microseconds(timestamp_microseconds));
-      if (base::Time::Now() - timestamp >
-          base::Days(dismissal_duration_days_)) {
-        tab_list->EraseValue(entry);
+  std::set<std::string> urls_to_remove;
+  ScopedDictPrefUpdate visit_dict(profile_->GetPrefs(),
+                                  kDismissedVisitsPrefName);
+  for (auto it = visit_dict->begin(); it != visit_dict->end(); ++it) {
+    DCHECK(!it->first.empty());
+    auto timestamp = base::ValueToTime(it->second);
+    if (timestamp.has_value()) {
+      if (timestamp.value() <
+          base::Time::Now() - base::Days(dismissal_duration_days_)) {
+        urls_to_remove.insert(it->first);
       }
     }
+  }
+
+  for (const auto& url : urls_to_remove) {
+    visit_dict->Remove(url);
   }
 }
 

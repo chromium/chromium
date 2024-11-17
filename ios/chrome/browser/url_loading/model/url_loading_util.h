@@ -8,11 +8,11 @@
 #import <Foundation/Foundation.h>
 
 #import "components/sessions/core/session_id.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ui/base/window_open_disposition.h"
 
 class Browser;
 class GURL;
+class ProfileIOS;
 
 namespace web {
 class WebState;

@@ -18,6 +18,10 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
+#if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+#include "chrome/browser/ui/webui/certificate_manager/client_cert_sources.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/webui/certificate_provisioning_ui_handler.h"
 #include "chrome/browser/ui/webui/certificates_handler.h"
@@ -96,6 +100,20 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_LABEL},
       {"certificateManagerV2ExportButtonAriaLabel",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_EXPORT_BUTTON_ARIA_LABEL},
+      {"certificateManagerV2DeleteErrorTitle",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_DELETE_ERROR_TITLE},
+      {"certificateManagerV2ImportErrorTitle",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_ERROR_TITLE},
+      {"certificateManagerV2ImportButtonLabel",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_BUTTON_LABEL},
+      {"certificateManagerV2ImportButtonAriaLabel",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_BUTTON_ARIA_LABEL},
+      {"certificateManagerV2ImportAndBindButtonLabel",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_AND_BIND_BUTTON_LABEL},
+      {"certificateManagerV2ImportAndBindButtonAriaLabel",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_IMPORT_AND_BIND_BUTTON_ARIA_LABEL},
+      {"certificateManagerV2EnterPasswordTitle",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_ENTER_PASSWORD_TITLE},
       {"certificateManagerV2PlatformCertsTitle",
        IDS_SETTINGS_CERTIFICATE_MANAGER_V2_PLATFORM_CERTS_TITLE},
       {"certificateManagerV2PlatformCertsToggleLabel",
@@ -120,7 +138,8 @@ void AddCertificateManagerV2Strings(content::WebUIDataSource* html_source) {
        IDS_CERTIFICATE_MANAGER_V2_CERT_ENTRY_DELETE_ARIA_LABEL},
       {"certificateManagerV2CertHashCopyAriaLabel",
        IDS_CERTIFICATE_MANAGER_V2_CERT_HASH_COPY_ARIA_LABEL},
-  };
+      {"certificateManagerV2UserCertsTitle",
+       IDS_SETTINGS_CERTIFICATE_MANAGER_V2_USER_CERTS_TITLE}};
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
@@ -167,6 +186,17 @@ CertificateManagerUI::CertificateManagerUI(content::WebUI* web_ui)
     source->AddResourcePath("", IDR_CERT_MANAGER_DIALOG_V2_HTML);
     AddCertificateManagerV2Strings(source);
     source->AddString("crsLearnMoreUrl", kCRSLearnMoreLink);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    ClientCertManagementAccessControls client_cert_policy(profile);
+    source->AddBoolean(
+        "clientCertImportAllowed",
+        client_cert_policy.IsManagementAllowed(
+            ClientCertManagementAccessControls::kSoftwareBacked));
+    source->AddBoolean(
+        "clientCertImportAndBindAllowed",
+        client_cert_policy.IsManagementAllowed(
+            ClientCertManagementAccessControls::kHardwareBacked));
+#endif
 
     auto plural_string_handler = std::make_unique<PluralStringHandler>();
     plural_string_handler->AddLocalizedString(

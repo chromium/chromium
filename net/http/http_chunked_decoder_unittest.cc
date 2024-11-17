@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/format_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/net_errors.h"
 #include "net/test/gtest_util.h"
@@ -41,7 +42,7 @@ void RunTest(const char* const inputs[],
 
   for (size_t i = 0; i < num_inputs; ++i) {
     std::string input = inputs[i];
-    int n = decoder.FilterBuf(&input[0], static_cast<int>(input.size()));
+    int n = decoder.FilterBuf(base::as_writable_byte_span(input));
     EXPECT_GE(n, 0);
     if (n > 0)
       result.append(input.data(), n);
@@ -61,7 +62,7 @@ void RunTestUntilFailure(const char* const inputs[],
 
   for (size_t i = 0; i < num_inputs; ++i) {
     std::string input = inputs[i];
-    int n = decoder.FilterBuf(&input[0], static_cast<int>(input.size()));
+    int n = decoder.FilterBuf(base::as_writable_byte_span(input));
     if (n < 0) {
       EXPECT_THAT(n, IsError(ERR_INVALID_CHUNKED_ENCODING));
       EXPECT_EQ(fail_index, i);
@@ -303,7 +304,7 @@ TEST(HttpChunkedDecoderTest, InvalidConsecutiveCRLFs) {
 TEST(HttpChunkedDecoderTest, ReallyBigChunks) {
   // Number of bytes sent through the chunked decoder per loop iteration. To
   // minimize runtime, should be the square root of the chunk lengths, below.
-  const int64_t kWrittenBytesPerIteration = 0x10000;
+  const size_t kWrittenBytesPerIteration = 0x10000;
 
   // Length of chunks to test. Must be multiples of kWrittenBytesPerIteration.
   int64_t kChunkLengths[] = {
@@ -321,7 +322,7 @@ TEST(HttpChunkedDecoderTest, ReallyBigChunks) {
     std::string chunk_header =
         base::StringPrintf("%" PRIx64 "\r\n", chunk_length);
     std::vector<char> data(chunk_header.begin(), chunk_header.end());
-    EXPECT_EQ(OK, decoder.FilterBuf(data.data(), data.size()));
+    EXPECT_EQ(OK, decoder.FilterBuf(base::as_writable_byte_span(data)));
     EXPECT_FALSE(decoder.reached_eof());
 
     // Set |data| to be kWrittenBytesPerIteration long, and have a repeating
@@ -338,13 +339,15 @@ TEST(HttpChunkedDecoderTest, ReallyBigChunks) {
     for (int64_t total_written = 0; total_written < chunk_length;
          total_written += kWrittenBytesPerIteration) {
       EXPECT_EQ(kWrittenBytesPerIteration,
-                decoder.FilterBuf(data.data(), kWrittenBytesPerIteration));
+                base::checked_cast<size_t>(
+                    decoder.FilterBuf(base::as_writable_byte_span(data).first(
+                        kWrittenBytesPerIteration))));
       EXPECT_FALSE(decoder.reached_eof());
     }
 
     // Chunk terminator and the final chunk.
     char final_chunk[] = "\r\n0\r\n\r\n";
-    EXPECT_EQ(OK, decoder.FilterBuf(final_chunk, std::size(final_chunk)));
+    EXPECT_EQ(OK, decoder.FilterBuf(base::as_writable_byte_span(final_chunk)));
     EXPECT_TRUE(decoder.reached_eof());
 
     // Since |data| never included any chunk headers, it should not have been

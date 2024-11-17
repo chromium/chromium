@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+[FAIL] quantizeLinear float32 1D constant tensor broadcasting zeroPoint
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Only support pre-node quantize at current stage."
+[FAIL] quantizeLinear float32 4D constant tensor broadcasting scale and zeroPoint
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Only support pre-node quantize at current stage."
+[FAIL] quantizeLinear float32 3D input with implicit block_size = [1, 2, 1].
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': Only support pre-node quantize at current stage."
+[FAIL] quantizeLinear float32 tensor with int4 zeroPoint which has odd size
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'quantizeLinear' on 'MLGraphBuilder': Unsupported data type int4 for argument input, must be one of [int8, uint8]."
+[FAIL] quantizeLinear float32 tensor with int4 zeroPoint which has even size
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'quantizeLinear' on 'MLGraphBuilder': Unsupported data type int4 for argument input, must be one of [int8, uint8]."
+[FAIL] quantizeLinear float32 2D tensor with int4 zeroPoint which has even size
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'quantizeLinear' on 'MLGraphBuilder': Unsupported data type int4 for argument input, must be one of [int8, uint8]."
+[FAIL] quantizeLinear int4 zeroPoint with block_size = [3, 2]
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'quantizeLinear' on 'MLGraphBuilder': Unsupported data type int4 for argument input, must be one of [int8, uint8]."
+[FAIL] quantizeLinear float32 tensor with uint4 zeroPoint which has odd size
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint4 for output, must be one of [float32, float16, int32, uint32, int64, int8, uint8]."
+[FAIL] quantizeLinear float32 tensor with uint4 zeroPoint which has even size
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint4 for output, must be one of [float32, float16, int32, uint32, int64, int8, uint8]."
+[FAIL] quantizeLinear uint4 zeroPoint with block_size = 3
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'cast' on 'MLGraphBuilder': Unsupported data type uint4 for output, must be one of [float32, float16, int32, uint32, int64, int8, uint8]."
+Harness: the test ran to completion.
+

@@ -26,6 +26,7 @@
 #include "ash/wm/window_state.h"
 #include "base/strings/strcat.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/app_constants/constants.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/window.h"
@@ -43,7 +44,7 @@ class WmPixelDiffTest : public AshTestBase {
   WmPixelDiffTest() {
     scoped_features_.InitWithFeatures(
         {features::kForestFeature, features::kSavedDeskUiRevamp,
-         features::kDeskBarWindowOcclusionOptimization},
+         chromeos::features::kOverviewSessionInitOptimizations},
         {});
   }
 
@@ -171,7 +172,7 @@ TEST_F(WmPixelDiffTest, WindowCycleBasic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       "window_cycle_basic",
-      /*revision_number=*/21, widget));
+      /*revision_number=*/22, widget));
 }
 
 TEST_F(WmPixelDiffTest, InformedRestoreNoScreenshotDialog) {
@@ -181,8 +182,8 @@ TEST_F(WmPixelDiffTest, InformedRestoreNoScreenshotDialog) {
   // chrome info with some example favicons.
   InformedRestoreContentsData::AppInfo chrome_app_info(
       app_constants::kChromeAppId, "Chrome", /*window_id=*/1);
-  chrome_app_info.tab_urls = std::vector<GURL>(5, GURL("http://example.com"));
-  chrome_app_info.tab_count = 23;
+  chrome_app_info.tab_infos = std::vector<InformedRestoreContentsData::TabInfo>(
+      23, InformedRestoreContentsData::TabInfo(GURL("http://example.com")));
 
   auto data = std::make_unique<InformedRestoreContentsData>();
   data->apps_infos.push_back(chrome_app_info);

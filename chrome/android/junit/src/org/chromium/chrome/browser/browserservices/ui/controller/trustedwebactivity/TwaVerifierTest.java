@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -33,7 +31,6 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvid
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.components.content_relationship_verification.OriginVerifier.OriginVerificationListener;
 import org.chromium.components.embedder_support.util.Origin;
-import org.chromium.components.externalauth.ExternalAuthUtils;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -48,11 +45,9 @@ public class TwaVerifierTest {
 
     @Mock ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock CustomTabIntentDataProvider mIntentDataProvider;
-    @Mock ChromeOriginVerifierFactory mOriginVerifierFactory;
     @Mock ChromeOriginVerifier mOriginVerifier;
     @Mock CustomTabActivityTabProvider mActivityTabProvider;
     @Mock ClientPackageNameProvider mClientPackageNameProvider;
-    @Mock ExternalAuthUtils mExternalAuthUtils;
 
     private TwaVerifier mDelegate;
 
@@ -65,9 +60,7 @@ public class TwaVerifierTest {
         Collections.addAll(
                 trustedOrigins, Origin.create(INITIAL_URL), Origin.create(ADDITIONAL_ORIGIN));
         when(mIntentDataProvider.getAllTrustedWebActivityOrigins()).thenReturn(trustedOrigins);
-
-        when(mOriginVerifierFactory.create(anyString(), anyInt(), any(), any()))
-                .thenReturn(mOriginVerifier);
+        ChromeOriginVerifierFactory.setInstanceForTesting(mOriginVerifier);
 
         when(mClientPackageNameProvider.get()).thenReturn("some.package.name");
 
@@ -75,10 +68,8 @@ public class TwaVerifierTest {
                 new TwaVerifier(
                         mLifecycleDispatcher,
                         mIntentDataProvider,
-                        mOriginVerifierFactory,
-                        mActivityTabProvider,
                         mClientPackageNameProvider,
-                        mExternalAuthUtils);
+                        mActivityTabProvider);
     }
 
     @Test

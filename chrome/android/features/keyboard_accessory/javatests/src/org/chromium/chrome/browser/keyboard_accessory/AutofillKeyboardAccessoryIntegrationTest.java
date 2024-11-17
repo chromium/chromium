@@ -19,6 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.ViewActionOnDescendant.performOnRecyclerViewNthItem;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createClickActionWithFlags;
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.singleMouseClickView;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.selectTabAtPosition;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.waitToBeHidden;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingTestHelper.whenDisplayed;
@@ -37,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.chromium.autofill.mojom.FocusedFieldType;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -51,7 +53,7 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.content_public.browser.test.util.DOMUtils;
-import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.ui.base.DeviceFormFactor;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
@@ -59,7 +61,12 @@ import java.util.concurrent.TimeoutException;
 
 /** Integration tests for autofill keyboard accessory. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@DisableFeatures({
+    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN,
+    ChromeFeatureList.EDGE_TO_EDGE_WEB_OPT_IN
+})
 public class AutofillKeyboardAccessoryIntegrationTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -149,7 +156,7 @@ public class AutofillKeyboardAccessoryIntegrationTest {
      */
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     public void testSelectSuggestionHidesKeyboardAccessory()
             throws ExecutionException, TimeoutException {
         loadTestPage(FakeKeyboard::new);
@@ -234,6 +241,22 @@ public class AutofillKeyboardAccessoryIntegrationTest {
     }
 
     @Test
+    @MediumTest
+    public void testMouseClicksConsumedByAccessoryBar()
+            throws ExecutionException, TimeoutException, InterruptedException {
+        mHelper.loadTestPage(false);
+        mHelper.registerSheetDataProvider(AccessoryTabType.CREDIT_CARDS);
+        // Register a sheet data provider so that sheet is available when needed.
+
+        // Focus the field to bring up the accessory.
+        mHelper.focusPasswordField();
+        mHelper.waitForKeyboardAccessoryToBeShown();
+
+        whenDisplayed(isAssignableFrom(KeyboardAccessoryButtonGroupView.class))
+                .check((v, e) -> assertTrue("Didn't catch the click!", singleMouseClickView(v)));
+    }
+
+    @Test
     @SmallTest
     public void testPressingBackButtonHidesAccessoryWithAutofillSuggestions()
             throws TimeoutException, ExecutionException {
@@ -249,6 +272,9 @@ public class AutofillKeyboardAccessoryIntegrationTest {
                                 selectTabAtPosition(0)));
 
         whenDisplayed(withChild(withId(R.id.keyboard_accessory_sheet_frame)));
+
+        whenDisplayed(withId(R.id.keyboard_accessory_sheet_frame))
+                .check((v, e) -> assertTrue("Catch click to stay open!", singleMouseClickView(v)));
 
         assertTrue(
                 ThreadUtils.runOnUiThreadBlocking(

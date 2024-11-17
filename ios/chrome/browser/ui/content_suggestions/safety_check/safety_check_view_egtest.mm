@@ -4,6 +4,7 @@
 
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "components/segmentation_platform/public/features.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -66,20 +67,21 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
   [NewTabPageAppInterface disableSetUpList];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [[self class] closeAllTabs];
 
   [ChromeEarlGrey resetDataForLocalStatePref:
                       safety_check_prefs::kSafetyCheckInMagicStackDisabledPref];
 
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  config.features_enabled.push_back(kSafetyCheckNotifications);
-  config.features_enabled.push_back(kSafetyCheckMagicStack);
+  config.features_disabled.push_back(
+      segmentation_platform::features::kSegmentationPlatformTipsEphemeralCard);
+  config.features_disabled.push_back(kSafetyCheckNotifications);
   config.additional_args.push_back("--test-ios-module-ranker=safety_check");
 
   return config;

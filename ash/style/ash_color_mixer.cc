@@ -713,7 +713,10 @@ void AddAshColorMixer(ui::ColorProvider* provider,
 
   mixer[ui::kColorAshSystemUIMenuBackground] = {
       is_jelly_enabled
-          ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)
+          ? static_cast<ui::ColorId>(
+                chromeos::features::IsSystemBlurEnabled()
+                    ? cros_tokens::kCrosSysSystemBaseElevated
+                    : cros_tokens::kCrosSysSystemBaseElevatedOpaque)
           : kColorAshShieldAndBase80};
   mixer[ui::kColorAshSystemUIMenuIcon] = {kColorAshIconColorPrimary};
   mixer[ui::kColorAshSystemUIMenuItemBackgroundSelected] = {

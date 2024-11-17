@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+[FAIL] gelu float16 1D tensor
+  assert_true: assert_array_approx_equals_ulp: test gelu float16 actual 43353 should be close enough to expected -0.044769287109375 by the acceptable 18 ULP distance, but they have 98 ULP distance expected true got false
+[FAIL] gelu float16 2D tensor
+  assert_true: assert_array_approx_equals_ulp: test gelu float16 actual 43353 should be close enough to expected -0.044769287109375 by the acceptable 18 ULP distance, but they have 98 ULP distance expected true got false
+[FAIL] gelu float16 3D tensor
+  assert_true: assert_array_approx_equals_ulp: test gelu float16 actual 43353 should be close enough to expected -0.044769287109375 by the acceptable 18 ULP distance, but they have 98 ULP distance expected true got false
+[FAIL] gelu float16 4D tensor
+  assert_true: assert_array_approx_equals_ulp: test gelu float16 actual 43353 should be close enough to expected -0.044769287109375 by the acceptable 18 ULP distance, but they have 98 ULP distance expected true got false
+[FAIL] gelu float16 5D tensor
+  assert_true: assert_array_approx_equals_ulp: test gelu float16 actual 43353 should be close enough to expected -0.044769287109375 by the acceptable 18 ULP distance, but they have 98 ULP distance expected true got false
+Harness: the test ran to completion.
+

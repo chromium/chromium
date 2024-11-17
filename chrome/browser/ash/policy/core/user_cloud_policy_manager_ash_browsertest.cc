@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "components/invalidation/invalidation_factory.h"
+#include "components/policy/core/common/remote_commands/remote_commands_constants.h"
 #include "components/policy/proto/policy_common_definitions.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -174,10 +174,11 @@ class UserCloudPolicyManagerNewChildUserTest
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     UserCloudPolicyManagerNewChildUserTest,
-    testing::Values(FeaturesTestParam{},
-                    FeaturesTestParam{
-                        .enabled_features = {
-                            invalidation::kInvalidationsWithDirectMessages}}));
+    testing::Values(
+        FeaturesTestParam{},
+        FeaturesTestParam{
+            .enabled_features = {
+                kUserRemoteCommandsInvalidationWithDirectMessagesEnabled}}));
 
 IN_PROC_BROWSER_TEST_F(UserCloudPolicyManagerNewManagedUserTest, StartSession) {
   // User hasn't signed in yet, so shouldn't know if the user requires policy.

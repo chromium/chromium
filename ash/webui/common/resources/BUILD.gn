@@ -30,10 +30,8 @@ web_component_files = [
   "multidevice_setup/setup_succeeded_page.js",
   "multidevice_setup/start_setup_page.js",
   "multidevice_setup/ui_page.js",
-  "network/apn_list.js",
   "network/apn_list_item.js",
   "network/cr_policy_network_indicator_mojo.js",
-  "network/network_apnlist.js",
   "network/network_choose_mobile.js",
   "network/network_config_input.js",
   "network/network_config.js",
@@ -43,14 +41,10 @@ web_component_files = [
   "network/network_ip_config.js",
   "network/network_list_item.js",
   "network/network_list.js",
-  "network/network_nameservers.js",
   "network/network_password_input.js",
   "network/network_property_list_mojo.js",
   "network/network_proxy_exclusions.js",
   "network/network_proxy_input.js",
-  "network/network_proxy.js",
-  "network/network_select.js",
-  "network/network_siminfo.js",
   "network/sim_lock_dialogs.js",
   "network/apn_detail_dialog.js",
   "network/apn_selection_dialog.js",
@@ -114,15 +108,21 @@ web_component_files_ts = [
   "bluetooth/bluetooth_pairing_request_code_page.ts",
   "bluetooth/bluetooth_pairing_ui.ts",
   "bluetooth/bluetooth_spinner_page.ts",
-  "quick_unlock/fingerprint_progress.ts",
+  "network/network_apnlist.ts",
+  "network/apn_list.ts",
+  "network/network_nameservers.ts",
+  "network/network_select.ts",
+  "network/network_proxy.ts",
+  "network/network_siminfo.ts",
   "network_health/network_diagnostics.ts",
   "network_health/network_health_container.ts",
   "network_health/network_health_summary.ts",
   "network_health/routine_group.ts",
+  "quick_unlock/fingerprint_progress.ts",
   "quick_unlock/pin_keyboard.ts",
   "quick_unlock/setup_pin_keyboard.ts",
-  "shortcut_input_ui/shortcut_input_key.ts",
   "shortcut_input_ui/shortcut_input.ts",
+  "shortcut_input_ui/shortcut_input_key.ts",
   "traffic_counters/traffic_counters.ts",
 ]
 
@@ -265,7 +265,7 @@ preprocess_if_expr("preprocess_ts") {
 }
 
 webui_ts_library("build_ts") {
-  tsconfig_base = "//tools/typescript/tsconfig_base_polymer.json"
+  tsconfig_base = "//tools/typescript/tsconfig_base_polymer_cros.json"
   root_dir = preprocessed_dir
   out_dir = preprocessed_dir
   in_files = non_web_component_files_ts + web_component_files_ts +
@@ -309,6 +309,11 @@ webui_ts_library("build_ts") {
         rebase_path(
             "$root_gen_dir/ash/webui/common/resources/preprocessed/network/*",
             target_gen_dir) ]
+  if (is_chrome_branded) {
+    path_mappings += [ "chrome://resources/ash/common/internal/ash_internal_icons.html.js|" + rebase_path(
+                           "$root_gen_dir/ash/webui/common/resources/preprocessed/internal/ash_internal_icons.html.d.ts",
+                           target_gen_dir) ]
+  }
 }
 
 generate_grd("build_html_css_wrapper_files_grdp") {
@@ -435,20 +440,35 @@ generate_definitions_js_files = [
   "focus_row_js.js",
   "focus_without_ink_js.js",
   "keyboard_shortcut_list_js.js",
-  "multidevice_setup/multidevice_setup_shared.css.js",
+  "multidevice_setup/fake_mojo_service.js",
+  "multidevice_setup/icons.html.js",
+  "multidevice_setup/multidevice_setup_browser_proxy.js",
   "multidevice_setup/multidevice_setup_delegate.js",
+  "multidevice_setup/multidevice_setup_shared.css.js",
+  "multidevice_setup/setup_succeeded_page.html.js",
+  "multidevice_setup/setup_succeeded_page.js",
+  "multidevice_setup/start_setup_page.html.js",
+  "multidevice_setup/start_setup_page.js",
+  "multidevice_setup/ui_page_container_behavior.js",
+  "multidevice_setup/ui_page.html.js",
+  "multidevice_setup/ui_page.js",
   "navigation_shared_vars.css.js",
   "network/cellular_utils.js",
   "network/cr_policy_network_behavior_mojo.js",
   "network/mojo_interface_provider.js",
+  "network/network_apnlist.html.js",
   "network/network_config_element_behavior.js",
   "network/network_listener_behavior.js",
+  "network/apn_list.html.js",
+  "network/network_nameservers.html.js",
+  "network/network_proxy.html.js",
   "network/network_proxy_exclusions.html.js",
   "network/network_proxy_exclusions.js",
   "network/network_proxy_input.html.js",
   "network/network_proxy_input.js",
   "network/network_select.html.js",
   "network/network_shared.css.js",
+  "network/network_siminfo.html.js",
   "network/onc_mojo.js",
   "network_health/network_diagnostics.html.js",
   "network_health/network_health_container.html.js",
@@ -476,6 +496,7 @@ ts_definitions("generate_definitions") {
   js_files = generate_definitions_js_files
   deps = [
     "//ash/webui/common/resources/cr_elements:build_ts",
+    "//third_party/cros-components:cros_components_ts",
     "//ui/webui/resources/js:build_ts",
     "//ui/webui/resources/mojo:build_ts",
   ]
@@ -517,10 +538,8 @@ checked_in_dts_files = [
   "network/apn_detail_dialog.d.ts",
   "network/apn_selection_dialog.d.ts",
   "network/apn_selection_dialog_list_item.d.ts",
-  "network/apn_list.d.ts",
   "network/apn_list_item.d.ts",
   "network/cr_policy_network_indicator_mojo.d.ts",
-  "network/network_apnlist.d.ts",
   "network/network_choose_mobile.d.ts",
   "network/network_config.d.ts",
   "network/network_config_input.d.ts",
@@ -531,12 +550,8 @@ checked_in_dts_files = [
   "network/network_list.d.ts",
   "network/network_list_item.d.ts",
   "network/network_list_types.d.ts",
-  "network/network_nameservers.d.ts",
   "network/network_password_input.d.ts",
   "network/network_property_list_mojo.d.ts",
-  "network/network_proxy.d.ts",
-  "network/network_select.d.ts",
-  "network/network_siminfo.d.ts",
   "network/sim_lock_dialogs.d.ts",
 
   "post_message_api/post_message_api_client.d.ts",

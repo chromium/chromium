@@ -12,9 +12,10 @@ namespace blink {
 namespace touch_action_util {
 
 TouchAction ComputeEffectiveTouchAction(const Node& node) {
-  if (node.GetComputedStyle())
-    return node.GetComputedStyle()->EffectiveTouchAction();
-
+  if (const ComputedStyle* style =
+          node.GetComputedStyleForElementOrLayoutObject()) {
+    return style->EffectiveTouchAction();
+  }
   return TouchAction::kAuto;
 }
 

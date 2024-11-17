@@ -4,6 +4,7 @@
 
 #include "chrome/browser/signin/header_modification_delegate_impl.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -99,10 +100,10 @@ void HeaderModificationDelegateImpl::ProcessRequest(
     // enabled.
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     CHECK(switches::IsBoundSessionCredentialsEnabled(profile_->GetPrefs()));
-#else
-    CHECK(false);
-#endif
     return;
+#else
+    NOTREACHED();
+#endif
   }
 
   const PrefService* prefs = profile_->GetPrefs();
@@ -192,10 +193,10 @@ void HeaderModificationDelegateImpl::ProcessResponse(
     // enabled.
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
     CHECK(switches::IsBoundSessionCredentialsEnabled(profile_->GetPrefs()));
-#else
-    CHECK(false);
-#endif
     return;
+#else
+    NOTREACHED();
+#endif
   }
 
   ProcessAccountConsistencyResponseHeaders(response_adapter, redirect_url,

@@ -8,12 +8,15 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/passwords/bubble_controllers/auto_sign_in_bubble_controller.h"
 #include "chrome/browser/ui/views/passwords/password_bubble_view_base.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
 // A view containing just one credential that was used for for automatic signing
 // in.
 class PasswordAutoSignInView : public PasswordBubbleViewBase {
+  METADATA_HEADER(PasswordAutoSignInView, PasswordBubbleViewBase)
+
  public:
   PasswordAutoSignInView(content::WebContents* web_contents,
                          views::View* anchor_view);

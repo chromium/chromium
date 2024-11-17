@@ -74,7 +74,7 @@ class FedCmModalDialogView : public content::WebContentsObserver {
   virtual void ClosePopupWindow();
   virtual void ResizeAndFocusPopupWindow();
   virtual void SetCustomYPosition(int y);
-  virtual void SetButtonModeSheetType(
+  virtual void SetActiveModeSheetType(
       AccountSelectionView::SheetType sheet_type);
 
   // content::WebContentsObserver
@@ -92,7 +92,7 @@ class FedCmModalDialogView : public content::WebContentsObserver {
 
   // If set, this will be the y-coordinate position of the pop-up window.
   // Otherwise, the pop-up window is centred vertically and horizontally. Used
-  // to position the pop-up window directly over the button mode modal dialog.
+  // to position the pop-up window directly over the active mode modal dialog.
   std::optional<int> custom_y_position_;
 
   // Whether one of Blink.FedCm.Button.LoadingStatePopupInteraction or
@@ -101,9 +101,9 @@ class FedCmModalDialogView : public content::WebContentsObserver {
   // `ClosePopupWindow` and `WebContentsDestroyed` to be called.
   bool popup_interaction_metric_recorded_{false};
 
-  // The sheet type of the button mode dialog which opened this pop-up.
-  // `std::nullopt` for non-button mode cases.
-  std::optional<AccountSelectionView::SheetType> button_mode_sheet_type_;
+  // The sheet type of the active mode dialog which opened this pop-up.
+  // `std::nullopt` for non-active mode cases.
+  std::optional<AccountSelectionView::SheetType> active_mode_sheet_type_;
 
   // Number of times the user lost focus of the pop-up. i.e. number of times
   // `OnWebContentsLostFocus` is called. This is an int because when the user

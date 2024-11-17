@@ -106,7 +106,7 @@ public class SafetyHubPermissionsFragment extends SafetyHubSubpageFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.safety_hub_subpage_menu_item) {
-            launchSettingsActivity(SiteSettings.class);
+            startSettings(SiteSettings.class);
             recordRevokedPermissionsInteraction(PermissionsModuleInteractions.GO_TO_SETTINGS);
             return true;
         }

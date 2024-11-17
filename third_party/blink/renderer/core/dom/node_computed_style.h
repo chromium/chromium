@@ -32,7 +32,8 @@
 
 namespace blink {
 
-inline const ComputedStyle* Node::GetComputedStyle() const {
+inline const ComputedStyle* Node::GetComputedStyleForElementOrLayoutObject()
+    const {
   if (const auto* element = DynamicTo<Element>(this)) {
     return element->GetComputedStyle();
   }

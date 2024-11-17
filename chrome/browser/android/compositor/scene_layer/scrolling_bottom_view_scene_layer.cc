@@ -6,8 +6,10 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
+#include "cc/input/android/offset_tag_android.h"
 #include "cc/slim/layer.h"
 #include "cc/slim/ui_resource_layer.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "ui/android/resources/resource_manager_impl.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -45,7 +47,8 @@ void ScrollingBottomViewSceneLayer::UpdateScrollingBottomViewLayer(
     jint shadow_height,
     jfloat x_offset,
     jfloat y_offset,
-    bool show_shadow) {
+    bool show_shadow,
+    const JavaParamRef<jobject>& joffset_tag) {
   ui::ResourceManager* resource_manager =
       ui::ResourceManagerImpl::FromJavaObject(jresource_manager);
   ui::Resource* bottom_view_resource = resource_manager->GetResource(
@@ -71,6 +74,9 @@ void ScrollingBottomViewSceneLayer::UpdateScrollingBottomViewLayer(
   view_container_->SetBounds(
       gfx::Size(bottom_view_resource->size().width(), container_height));
   view_container_->SetPosition(gfx::PointF(0, y_offset - container_height));
+
+  viz::OffsetTag offset_tag = cc::android::FromJavaOffsetTag(env, joffset_tag);
+  view_container_->SetOffsetTag(offset_tag);
 
   // The view's layer should be the same size as the texture.
   view_layer_->SetBounds(gfx::Size(bottom_view_resource->size().width(),

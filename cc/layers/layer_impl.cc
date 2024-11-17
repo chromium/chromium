@@ -325,8 +325,7 @@ void LayerImpl::AppendDebugBorderQuad(
 void LayerImpl::GetContentsResourceId(viz::ResourceId* resource_id,
                                       gfx::Size* resource_size,
                                       gfx::SizeF* resource_uv_size) const {
-  NOTREACHED_IN_MIGRATION();
-  *resource_id = viz::kInvalidResourceId;
+  NOTREACHED();
 }
 
 gfx::Vector2dF LayerImpl::ScrollBy(const gfx::Vector2dF& scroll) {

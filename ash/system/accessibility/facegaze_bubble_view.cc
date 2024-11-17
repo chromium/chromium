@@ -6,69 +6,130 @@
 
 #include <memory>
 
+#include "ash/ash_element_identifiers.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/background.h"
+#include "ui/views/bubble/bubble_frame_view.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
 namespace {
 
+constexpr ui::ColorId kBackgroundColor =
+    cros_tokens::kCrosSysSystemBaseElevatedOpaque;
+constexpr ui::ColorId kWarningBackgroundColor =
+    cros_tokens::kCrosSysWarningContainer;
+constexpr ui::ColorId kWarningForegroundColor =
+    cros_tokens::kCrosSysOnWarningContainer;
+constexpr int kIconSizeDip = 24;
+constexpr int kLeftRightMarginDip = 20;
+constexpr int kRoundedCornerRadius = 24.f;
+constexpr int kSpaceBetweenIconAndTextDip = 16;
+constexpr int kTopBottomMarginDip = 12;
+const ui::ResourceBundle::FontStyle kKeyLabelFontStyle =
+    ui::ResourceBundle::MediumFont;
+
 std::unique_ptr<views::Label> CreateLabelView(
     raw_ptr<views::Label>* destination_view,
     const std::u16string& text,
     ui::ColorId enabled_color_id) {
+  ui::ResourceBundle* rb = &ui::ResourceBundle::GetSharedInstance();
+
   return views::Builder<views::Label>()
       .CopyAddressTo(destination_view)
       .SetText(text)
       .SetEnabledColorId(enabled_color_id)
-      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
+      .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER)
       .SetMultiLine(false)
+      .SetFontList(rb->GetFontList(kKeyLabelFontStyle))
+      .Build();
+}
+
+std::unique_ptr<views::ImageView> CreateImageView(
+    raw_ptr<views::ImageView>* destination_view,
+    const gfx::VectorIcon& icon) {
+  return views::Builder<views::ImageView>()
+      .CopyAddressTo(destination_view)
+      .SetImage(ui::ImageModel::FromVectorIcon(icon, kColorAshTextColorPrimary,
+                                               kIconSizeDip))
       .Build();
 }
 
 }  // namespace
 
 FaceGazeBubbleView::FaceGazeBubbleView() {
-  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
   set_parent_window(
       Shell::GetContainer(Shell::GetPrimaryRootWindow(),
                           kShellWindowId_AccessibilityBubbleContainer));
 
+  auto layout = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal);
+  layout->set_between_child_spacing(kSpaceBetweenIconAndTextDip);
+  SetLayoutManager(std::move(layout));
+  set_margins(gfx::Insets()
+                  .set_top(kTopBottomMarginDip)
+                  .set_bottom(kTopBottomMarginDip)
+                  .set_left(kLeftRightMarginDip)
+                  .set_right(kLeftRightMarginDip));
+  set_corner_radius(kRoundedCornerRadius);
+  set_highlight_button_when_shown(false);
+  SetCanActivate(false);
   GetViewAccessibility().SetRole(ax::mojom::Role::kGenericContainer);
-}
+  SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
+  SetProperty(views::kElementIdentifierKey, kFaceGazeBubbleElementId);
 
-FaceGazeBubbleView::~FaceGazeBubbleView() = default;
-
-void FaceGazeBubbleView::Update(const std::u16string& text) {
-  label_->SetVisible(true);
-  label_->SetText(text);
-  SizeToContents();
-}
-
-void FaceGazeBubbleView::Init() {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
-  UseCompactMargins();
+  AddChildView(CreateImageView(&image_, kFacegazeIcon));
   AddChildView(
       CreateLabelView(&label_, std::u16string(), kColorAshTextColorPrimary));
 }
 
-void FaceGazeBubbleView::OnBeforeBubbleWidgetInit(
-    views::Widget::InitParams* params,
-    views::Widget* widget) const {
-  params->type = views::Widget::InitParams::TYPE_BUBBLE;
-  params->opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
-  params->activatable = views::Widget::InitParams::Activatable::kNo;
-  params->shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-  params->name = "FaceGazeBubbleView";
+FaceGazeBubbleView::~FaceGazeBubbleView() = default;
+
+void FaceGazeBubbleView::Update(const std::u16string& text, bool is_warning) {
+  UpdateColor(is_warning);
+  label_->SetVisible(text != u"");
+  label_->SetText(text);
+  SizeToContents();
+}
+
+void FaceGazeBubbleView::OnThemeChanged() {
+  BubbleDialogDelegateView::OnThemeChanged();
+  set_color(GetColorProvider()->GetColor(kBackgroundColor));
+}
+
+void FaceGazeBubbleView::UpdateColor(bool is_warning) {
+  ui::ColorId background_color_id =
+      is_warning ? kWarningBackgroundColor : kBackgroundColor;
+  SkColor background_color = GetColorProvider()->GetColor(background_color_id);
+  ui::ColorId foreground_color =
+      is_warning ? kWarningForegroundColor : kColorAshTextColorPrimary;
+
+  set_color(background_color);
+  View* const contents_view = GetContentsView();
+  DCHECK(contents_view);
+  contents_view->SetBackground(
+      (views::CreateSolidBackground(background_color)));
+  views::BubbleFrameView* frame_view = GetBubbleFrameView();
+  if (frame_view) {
+    frame_view->SetBackgroundColor(background_color);
+  }
+  image_->SetImage(ui::ImageModel::FromVectorIcon(
+      kFacegazeIcon, foreground_color, kIconSizeDip));
+  label_->SetEnabledColor(GetColorProvider()->GetColor(foreground_color));
 }
 
 const std::u16string& FaceGazeBubbleView::GetTextForTesting() const {

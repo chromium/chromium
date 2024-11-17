@@ -6,10 +6,11 @@
 load("//lib/branches.star", "branches")
 load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "cpu", "os", "siso")
-load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/html.star", "linkify_builder")
+load("//lib/targets.star", "targets")
+load("//lib/try.star", "try_")
 load("//lib/xcode.star", "xcode")
 
 try_.defaults.set(
@@ -33,6 +34,12 @@ def ios_builder(*, name, **kwargs):
     kwargs.setdefault("ssd", None)
     kwargs.setdefault("xcode", xcode.xcode_default)
     return try_.builder(name = name, **kwargs)
+
+targets.builder_defaults.set(
+    mixins = [
+        "chromium-tester-service-account",
+    ],
+)
 
 consoles.list_view(
     name = "tryserver.chromium.mac",
@@ -113,6 +120,7 @@ try_.builder(
         "ci/mac-fieldtrial-tester",
     ],
     gn_args = "ci/mac-arm64-rel",
+    execution_timeout = 6 * time.hour,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 
@@ -687,6 +695,15 @@ ios_builder(
 )
 
 ios_builder(
+    name = "ios-vm",
+    mirrors = ["ci/ios-vm"],
+    gn_args = "ci/ios-vm",
+    builderless = True,
+    cpu = cpu.ARM64,
+    contact_team_email = "bling-engprod@google.com",
+)
+
+ios_builder(
     name = "ios17-beta-simulator",
     mirrors = ["ci/ios17-beta-simulator"],
     gn_args = "ci/ios17-beta-simulator",
@@ -698,7 +715,7 @@ ios_builder(
     mirrors = ["ci/ios17-sdk-simulator"],
     gn_args = "ci/ios17-sdk-simulator",
     cpu = cpu.ARM64,
-    xcode = xcode.x16_1betabots,
+    xcode = xcode.x16betabots,
 )
 
 ios_builder(
@@ -765,6 +782,16 @@ try_.gpu.optional_tests_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        targets = [
+            "mac_optional_gpu_tests_rel_gtests",
+            "mac_optional_gpu_tests_rel_gpu_telemetry_tests",
+        ],
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.MAC,
+    ),
     cpu = cpu.ARM64,
     ssd = None,
     main_list_view = "try",
@@ -793,7 +820,6 @@ try_.gpu.optional_tests_builder(
             cq.location_filter(path_regexp = "third_party/blink/renderer/modules/webgpu/.+"),
             cq.location_filter(path_regexp = "third_party/blink/renderer/platform/graphics/gpu/.+"),
             cq.location_filter(path_regexp = "tools/clang/scripts/update.py"),
-            cq.location_filter(path_regexp = "tools/mb/mb_config_expectations/tryserver.chromium.mac.json"),
             cq.location_filter(path_regexp = "ui/gl/.+"),
 
             # Exclusion filters.

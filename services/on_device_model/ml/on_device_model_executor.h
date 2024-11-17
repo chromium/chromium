@@ -73,6 +73,21 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final {
 // |Create()|. This is the main interface for interacting with the model.
 class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final {
  public:
+  // A handle for an adaptation ID that takes care of erasing the session when
+  // it is destroyed.
+  class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) ScopedAdaptation {
+   public:
+    ScopedAdaptation(base::WeakPtr<OnDeviceModelExecutor> executor,
+                     uint32_t adaptation_id);
+    ~ScopedAdaptation();
+
+    uint32_t adaptation_id() const { return adaptation_id_; }
+
+   private:
+    base::WeakPtr<OnDeviceModelExecutor> executor_;
+    uint32_t adaptation_id_;
+  };
+
   explicit OnDeviceModelExecutor(base::PassKey<OnDeviceModelExecutor>,
                                  const ChromeML& chrome_ml);
   ~OnDeviceModelExecutor();
@@ -83,10 +98,10 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final {
                    on_device_model::mojom::LoadModelParamsPtr params,
                    base::OnceClosure on_complete);
 
-  // on_device_model::OnDeviceModel:
   std::unique_ptr<SessionImpl> CreateSession(
-      std::optional<uint32_t> adaptation_id);
-  base::expected<uint32_t, on_device_model::mojom::LoadModelResult>
+      const ScopedAdaptation* adaptation);
+  base::expected<std::unique_ptr<ScopedAdaptation>,
+                 on_device_model::mojom::LoadModelResult>
   LoadAdaptation(on_device_model::mojom::LoadAdaptationParamsPtr params,
                  base::OnceClosure on_complete);
 
@@ -99,15 +114,13 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final {
 
   const raw_ref<const ChromeML> chrome_ml_;
 
-  // TODO(b/323572952): Allow disposing of adaptation weights.
-  std::vector<std::unique_ptr<base::MemoryMappedFile>> adaptation_data_;
-
   // Empty sessions keyed by the adaptation ID that can be cloned from.
   std::map<std::optional<uint32_t>, SessionAccessor::Ptr> base_sessions_;
 
   ChromeMLModel model_ = 0;
   scoped_refptr<base::SequencedTaskRunner> model_task_runner_;
   uint32_t max_tokens_ = 0;
+  base::WeakPtrFactory<OnDeviceModelExecutor> weak_ptr_factory_{this};
 };
 
 }  // namespace ml

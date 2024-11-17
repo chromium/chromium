@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/leveldb_proto/internal/proto_database_impl.h"
@@ -467,7 +468,7 @@ void FakeDB<P, T>::InvokingInvalidCallback(const std::string& callback_name) {
   if (destroy_callback_)
     present_callbacks += " DestroyCallback";
 
-  CHECK(false) << "Test tried to invoke FakeDB " << callback_name
+  NOTREACHED() << "Test tried to invoke FakeDB " << callback_name
                << ", but this callback is not present. Did you mean to invoke "
                   "one of the present callbacks: ("
                << present_callbacks << ")?";

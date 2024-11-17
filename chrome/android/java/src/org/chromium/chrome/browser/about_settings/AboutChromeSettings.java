@@ -18,7 +18,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.ui.widget.Toast;
 
@@ -26,7 +26,7 @@ import java.util.Calendar;
 
 /** Settings fragment that displays information about Chrome. */
 public class AboutChromeSettings extends PreferenceFragmentCompat
-        implements SettingsPage, Preference.OnPreferenceClickListener {
+        implements EmbeddableSettingsPage, Preference.OnPreferenceClickListener {
     private static final int TAPS_FOR_DEVELOPER_SETTINGS = 7;
 
     private static final String PREF_APPLICATION_VERSION = "application_version";
@@ -34,8 +34,10 @@ public class AboutChromeSettings extends PreferenceFragmentCompat
     private static final String PREF_LEGAL_INFORMATION = "legal_information";
 
     // Non-translated strings:
+    @SuppressWarnings("InlineFormatString")
     private static final String MSG_DEVELOPER_ENABLE_COUNTDOWN =
             "%s more taps to enable Developer options.";
+
     private static final String MSG_DEVELOPER_ENABLE_COUNTDOWN_LAST_TAP =
             "1 more tap to enable Developer options.";
     private static final String MSG_DEVELOPER_ENABLED = "Developer options are now enabled.";

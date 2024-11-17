@@ -34,15 +34,15 @@ OptionalBoolean ToOptionalBoolean(bool value);
 bool OptionalBooleanToBool(OptionalBoolean value);
 
 // Enum for different data types filled during autofill filling events,
-// including those of the SingleFieldFormFiller.
+// including those of the SingleFieldFiller.
 // Values are recorded as metrics and must not change or be reused.
 enum class FillDataType : uint8_t {
   kUndefined = 0,
   kAutofillProfile = 1,
   kCreditCard = 2,
-  kSingleFieldFormFillerAutocomplete = 3,
-  kSingleFieldFormFillerIban = 4,
-  kSingleFieldFormFillerPromoCode = 5,
+  kSingleFieldFillerAutocomplete = 3,
+  kSingleFieldFillerIban = 4,
+  kSingleFieldFillerPromoCode = 5,
 };
 
 // AreCollapsible(..., ...) are a set of functions that checks whether two
@@ -101,12 +101,9 @@ struct FillFieldLogEvent {
   // autofill security policy that applies to credit cards.
   OptionalBoolean filling_prevented_by_iframe_security_policy =
       OptionalBoolean::kUndefined;
-  // The hash of the value that would have been filled if the field wasn't
-  // skipped because it was pre-filled on page load. In all other cases this
-  // member is set to `std::nullopt`.
-  std::optional<size_t>
-      value_that_would_have_been_filled_in_a_prefilled_field_hash =
-          std::nullopt;
+  // Indicates whether the filling was triggered due to a change in a dynamic
+  // form. (see FormFiller::TriggerRefill()).
+  OptionalBoolean was_refill = OptionalBoolean::kUndefined;
 };
 
 bool AreCollapsible(const FillFieldLogEvent& event1,

@@ -23,17 +23,18 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Scanning.CombinedImageSizeInKbBeforePdf" units="KB"
-    expires_after="2024-01-04">
+    expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the total size of the scanned images stored in memory right before
-    they are converted into the final PDF.
+    they are converted into the final PDF. Warning: this histogram was expired
+    from 2024-01-04 to M130; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Scanning.DiscoverySession.MaxInterval" units="ms"
-    expires_after="2025-03-01">
+    expires_after="2025-05-04">
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
   <summary>
@@ -62,70 +63,76 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.MultiPageScan.CombinedImageSizeInKbBeforePdf"
-    units="KB" expires_after="2024-01-04">
+    units="KB" expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     During a multi-page scan session, records the total size of the scanned
     images stored in memory at the moment the user clicks save to convert them
-    into the final PDF.
+    into the final PDF. Warning: this histogram was expired from 2024-01-04 to
+    M130; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Scanning.MultiPageScan.NumPagesScanned" units="pages"
-    expires_after="2024-01-04">
+    expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of pages scanned in a saved multi-page scan session.
+    Warning: this histogram was expired from 2024-01-04 to M130; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Scanning.MultiPageScan.PageScanResult"
     enum="ScanJobFailureReason" expires_after="2025-03-10">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the success status of each page scan in a multi-page scan session.
   </summary>
 </histogram>
 
 <histogram name="Scanning.MultiPageScan.PDFGenerationTime" units="ms"
-    expires_after="2024-01-04">
+    expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the amount of time it takes from the user clicking save on their
-    multi-page scan session to the PDF file being generated and saved.
+    multi-page scan session to the PDF file being generated and saved. Warning:
+    this histogram was expired from 2024-01-04 to M130; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Scanning.MultiPageScan.SessionDuration" units="ms"
-    expires_after="2024-01-04">
+    expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the time between a user starting the first scan in a multi-page scan
     session to the time the user clicks save to end the session. This does not
     record when a multi-page scan session ends prematurely without the PDF being
-    saved.
+    saved. Warning: this histogram was expired from 2024-01-04 to M130; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="Scanning.MultiPageScan.ToolbarAction"
-    enum="ScanMultiPageToolbarAction" expires_after="2024-01-04">
+    enum="ScanMultiPageToolbarAction" expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records when a user clicks an action on the action toolbar in a multi-page
-    scan session.
+    scan session. Warning: this histogram was expired from 2024-01-04 to M130;
+    data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Scanning.NumCompletedScansInSession" units="scans"
     expires_after="2025-03-10">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of completed scans in a single session of the Scan app
     being open. This value gets recorded whenever the Scan app is closed or
@@ -134,9 +141,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumDetectedScanners" units="scanners"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of detected scanners. Recorded each time detected
     scanners are received.
@@ -144,10 +151,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumDetectedScannersAtLogin" units="scanners"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>gavinwill@chromium.org</owner>
   <owner>masonwilde@google.com</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of detected scanners. Recorded after a 5 minute delay
     after login when the CupsPrintersManager is created.
@@ -155,41 +162,50 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.NumFilesCreated" units="files"
-    expires_after="2024-01-04">
+    expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>Records the number of files created in a successful scan.</summary>
+  <owner>cros-device-enablement@google.com</owner>
+  <summary>
+    Records the number of files created in a successful scan. Warning: this
+    histogram was expired from 2024-01-04 to M130; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Scanning.NumPagesScanned" units="pages"
-    expires_after="2024-01-04">
+    expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>Records the number of pages scanned in a successful scan.</summary>
+  <owner>cros-device-enablement@google.com</owner>
+  <summary>
+    Records the number of pages scanned in a successful scan. Warning: this
+    histogram was expired from 2024-01-04 to M130; data may be missing.
+  </summary>
 </histogram>
 
 <histogram name="Scanning.NumScanSettingChanges" units="changes"
-    expires_after="2024-01-04">
+    expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the number of scan setting changes before a scan is initiated.
+    Warning: this histogram was expired from 2024-01-04 to M130; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Scanning.PDFGenerationTime" units="ms"
-    expires_after="2024-01-04">
+    expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the amount of time it takes from the final document in a scan job
-    being scanned to the PDF file being generated and saved.
+    being scanned to the PDF file being generated and saved. Warning: this
+    histogram was expired from 2024-01-04 to M130; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Scanning.ReadyTime" units="ms" expires_after="2025-03-10">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the time between sending a request for scanners and receiving
     capabilities for the selected scanner, which is essentially the time between
@@ -199,70 +215,77 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scanning.ScanCompleteAction" enum="ScanCompleteAction"
-    expires_after="2024-01-04">
+    expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records the action taken by a user after a successful scan job on Chrome OS.
+    Warning: this histogram was expired from 2024-01-04 to M130; data may be
+    missing.
   </summary>
 </histogram>
 
 <histogram name="Scanning.ScanJobFailureReason" enum="ScanJobFailureReason"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>Records the reason a scan job failed.</summary>
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.ColorMode"
-    enum="ScanJobSettingsColorMode" expires_after="2024-01-04">
+    enum="ScanJobSettingsColorMode" expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
-    Records the selected Color Mode setting for a submitted scan job.
+    Records the selected Color Mode setting for a submitted scan job. Warning:
+    this histogram was expired from 2024-01-04 to M130; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.FileType"
-    enum="ScanJobSettingsFileType" expires_after="2024-01-04">
+    enum="ScanJobSettingsFileType" expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
-    Records the selected File Type setting for a submitted scan job.
+    Records the selected File Type setting for a submitted scan job. Warning:
+    this histogram was expired from 2024-01-04 to M130; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.PageSize"
-    enum="ScanJobSettingsPageSize" expires_after="2024-01-04">
+    enum="ScanJobSettingsPageSize" expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
-    Records the selected Page Size setting for a submitted scan job.
+    Records the selected Page Size setting for a submitted scan job. Warning:
+    this histogram was expired from 2024-01-04 to M130; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.Resolution"
-    enum="ScanJobSettingsResolution" expires_after="2024-01-04">
+    enum="ScanJobSettingsResolution" expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
-    Records the selected Resolution setting for a submitted scan job.
+    Records the selected Resolution setting for a submitted scan job. Warning:
+    this histogram was expired from 2024-01-04 to M130; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Scanning.ScanJobSettings.Source" enum="ScanJobSettingsSource"
-    expires_after="2024-01-04">
+    expires_after="2025-09-27">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
-    Records the selected Source setting for a submitted scan job.
+    Records the selected Source setting for a submitted scan job. Warning: this
+    histogram was expired from 2024-01-04 to M130; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Scanning.ScanJobSuccessful" enum="Boolean"
-    expires_after="2025-02-10">
+    expires_after="2025-04-13">
   <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
+  <owner>cros-device-enablement@google.com</owner>
   <summary>
     Records true if the attempted scan job completed successfully and false if
     the scan job failed for any reason. This metric will not include canceled

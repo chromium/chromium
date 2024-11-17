@@ -16,18 +16,21 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.browsing_data.DeleteBrowsingDataAction;
 
 /** Shows the permissions and other settings for a group of websites. */
 public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
-        implements SettingsPage, Preference.OnPreferenceClickListener, CustomDividerFragment {
+        implements EmbeddableSettingsPage,
+                Preference.OnPreferenceClickListener,
+                CustomDividerFragment {
     public static final String EXTRA_GROUP = "org.chromium.chrome.preferences.site_group";
 
     // Preference keys, see grouped_websites_preferences.xml.
@@ -37,30 +40,27 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
     public static final String PREF_SITES_IN_GROUP = "sites_in_group";
     public static final String PREF_RESET_GROUP = "reset_group_button";
 
+    private static GroupedWebsitesSettings sPausedInstance;
+
     private WebsiteGroup mSiteGroup;
 
     private Dialog mConfirmationDialog;
 
     private final ObservableSupplierImpl<String> mPageTitle = new ObservableSupplierImpl<>();
 
+    /**
+     * Returns a paused instance of GroupedWebsitesSettings, if any.
+     *
+     * <p>This is used by {@link SingleWebsiteSettings} to go to the 'All Sites' level when clearing
+     * data.
+     */
+    public static GroupedWebsitesSettings getPausedInstance() {
+        ThreadUtils.assertOnUiThread();
+        return sPausedInstance;
+    }
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
-        // Handled in init. Moving the addPreferencesFromResource call up to here causes animation
-        // jank (crbug.com/985734).
-    }
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        init();
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
-    public boolean hasDivider() {
-        return false;
-    }
-
-    private void init() {
         // Remove this Preference if it gets restored without a valid SiteSettingsDelegate. This
         // can happen e.g. when it is included in PageInfo.
         if (!hasSiteSettingsDelegate()) {
@@ -91,16 +91,36 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
     }
 
     @Override
+    public boolean hasDivider() {
+        return false;
+    }
+
+    @Override
     public ObservableSupplier<String> getPageTitle() {
         return mPageTitle;
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        sPausedInstance = null;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        sPausedInstance = this;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        sPausedInstance = null;
+    }
+
+    @Override
     public boolean onPreferenceTreeClick(Preference preference) {
         if (preference instanceof WebsiteRowPreference) {
-            // Handle a click on one of the sites in this group.
-            // Save the current activity, so it's accessible from the SingleWebsiteSettings.
-            GroupedWebsitesActivityHolder.getInstance().setActivity(getActivity());
             ((WebsiteRowPreference) preference)
                     .handleClick(getArguments(), /* fromGrouped= */ true);
         }
@@ -167,17 +187,13 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
 
     private final Runnable mDataClearedCallback =
             () -> {
-                Activity activity = getActivity();
-                if (activity == null || activity.isFinishing()) {
-                    return;
-                }
                 // TODO(crbug.com/40231223): This always navigates the user back to the "All sites"
                 // page regardless of whether there are any non-resettable permissions left in the
                 // sites within the group. Consider calculating those and refreshing the screen in
                 // place for a slightly smoother user experience. However, due to the complexity
                 // involved in refreshing the already fetched data and a very marginal benefit, it
                 // may not be worth it.
-                getActivity().finish();
+                getSettingsNavigation().finishCurrentSettings(this);
             };
 
     @VisibleForTesting
@@ -229,22 +245,22 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
         PreferenceCategory relatedSitesHeader = findPreference(PREF_RELATED_SITES);
         TextMessagePreference relatedSitesText = new TextMessagePreference(getContext(), null);
         boolean shouldRelatedSitesPrefBeVisible =
-                getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUIFeatureEnabled()
+                getSiteSettingsDelegate().isPrivacySandboxFirstPartySetsUiFeatureEnabled()
                         && getSiteSettingsDelegate().isRelatedWebsiteSetsDataAccessEnabled()
-                        && mSiteGroup.getRWSInfo() != null;
+                        && mSiteGroup.getRwsInfo() != null;
         relatedSitesText.setVisible(shouldRelatedSitesPrefBeVisible);
         relatedSitesHeader.setVisible(shouldRelatedSitesPrefBeVisible);
 
         if (shouldRelatedSitesPrefBeVisible) {
-            var rwsInfo = mSiteGroup.getRWSInfo();
+            var rwsInfo = mSiteGroup.getRwsInfo();
 
             relatedSitesText.setTitle(
                     getContext()
                             .getResources()
                             .getQuantityString(
                                     R.plurals.allsites_rws_summary,
-                                    mSiteGroup.getRWSInfo().getMembersCount(),
-                                    Integer.toString(mSiteGroup.getRWSInfo().getMembersCount()),
+                                    mSiteGroup.getRwsInfo().getMembersCount(),
+                                    Integer.toString(mSiteGroup.getRwsInfo().getMembersCount()),
                                     rwsInfo.getOwner()));
             relatedSitesText.setManagedPreferenceDelegate(
                     new ForwardingManagedPreferenceDelegate(
@@ -266,7 +282,7 @@ public class GroupedWebsitesSettings extends BaseSiteSettingsFragment
             if (getSiteSettingsDelegate().shouldShowPrivacySandboxRwsUi()) {
                 relatedSitesHeader.removeAll();
                 relatedSitesHeader.addPreference(relatedSitesText);
-                for (Website site : mSiteGroup.getRWSInfo().getMembers()) {
+                for (Website site : mSiteGroup.getRwsInfo().getMembers()) {
                     WebsiteRowPreference preference =
                             new RwsRowPreference(
                                     relatedSitesHeader.getContext(),

@@ -13,6 +13,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
  * Class handling the communication with the C++ part of the reauthentication based on device lock.
@@ -31,23 +32,17 @@ public class ReauthenticatorBridge {
     }
 
     /**
-     * Checks if biometric authentication can be used.
-     *
-     * @return Whether authentication can be used.
+     * Checks biometric auth availability status. It returns one of the following:
+     * <li>REQUIRED - biometric is mandatory,
+     * <li>BIOMETRICS_AVAILABLE - biometric auth is available but not mandatory,
+     * <li>ONLY_LSKF_AVAILABLE - auth with pin or patter is available,
+     * <li>UNAVAILABLE - no authentication method is available.
      */
-    public boolean canUseAuthenticationWithBiometric() {
-        return ReauthenticatorBridgeJni.get()
-                .canUseAuthenticationWithBiometric(mNativeReauthenticatorBridge);
-    }
+    public @BiometricStatus int getBiometricAvailabilityStatus() {
+        if (mNativeReauthenticatorBridge == 0) return BiometricStatus.UNAVAILABLE;
 
-    /**
-     * Checks if biometric or screen lock authentication can be used.
-     *
-     * @return Whether authentication can be used.
-     */
-    public boolean canUseAuthenticationWithBiometricOrScreenLock() {
         return ReauthenticatorBridgeJni.get()
-                .canUseAuthenticationWithBiometricOrScreenLock(mNativeReauthenticatorBridge);
+                .getBiometricAvailabilityStatus(mNativeReauthenticatorBridge);
     }
 
     /**
@@ -73,13 +68,32 @@ public class ReauthenticatorBridge {
     /**
      * Create an instance of {@link ReauthenticatorBridge} based on the provided {@link
      * DeviceAuthSource}.
+     *
+     * @param activity Used to display the biometric prompt and modal dialogs.
+     * @param profile The profile to which the device authenticator service belongs.
+     * @param unused_modalDialogManager Used to display error dialogs during mandatory auth steps.
+     * @param source The feature invoking the authentication.
      */
     public static ReauthenticatorBridge create(
-            Activity activity, Profile profile, @DeviceAuthSource int source) {
+            Activity activity,
+            Profile profile,
+            ModalDialogManager unused_modalDialogManager,
+            @DeviceAuthSource int source) {
         if (sReauthenticatorBridgeForTesting != null) {
             return sReauthenticatorBridgeForTesting;
         }
         return new ReauthenticatorBridge(activity, profile, source);
+    }
+
+    /**
+     * Create an instance of {@link ReauthenticatorBridge} based on the provided {@link
+     * DeviceAuthSource}.
+     *
+     * <p>// TODO(crbug.com/370467784) Remove once all callers have switched to the one above.
+     */
+    public static ReauthenticatorBridge create(
+            Activity activity, Profile profile, @DeviceAuthSource int source) {
+        return ReauthenticatorBridge.create(activity, profile, null, source);
     }
 
     /** For testing only. */
@@ -103,9 +117,8 @@ public class ReauthenticatorBridge {
                 @JniType("Profile*") Profile profile,
                 int source);
 
-        boolean canUseAuthenticationWithBiometric(long nativeReauthenticatorBridge);
-
-        boolean canUseAuthenticationWithBiometricOrScreenLock(long nativeReauthenticatorBridge);
+        @BiometricStatus
+        int getBiometricAvailabilityStatus(long nativeReauthenticatorBridge);
 
         void reauthenticate(long nativeReauthenticatorBridge);
 

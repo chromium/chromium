@@ -18,8 +18,8 @@
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/user_education/common/help_bubble.h"
-#include "components/user_education/common/help_bubble_params.h"
+#include "components/user_education/common/help_bubble/help_bubble.h"
+#include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/webui/help_bubble_webui.h"
 #include "components/user_education/webui/tracked_element_webui.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -178,7 +178,7 @@ help_bubble::mojom::HelpBubbleClient* HelpBubbleHandlerBase::GetClient() {
 }
 
 void HelpBubbleHandlerBase::ReportBadMessage(std::string_view error) {
-  NOTREACHED_IN_MIGRATION() << error;
+  NOTREACHED() << error;
 }
 
 std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
@@ -186,9 +186,7 @@ std::unique_ptr<HelpBubbleWebUI> HelpBubbleHandlerBase::CreateHelpBubble(
     HelpBubbleParams params) {
   const auto it = element_data_.find(identifier);
   if (it == element_data_.end()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Identifier " << identifier << " was never registered.";
-    return nullptr;
+    NOTREACHED() << "Identifier " << identifier << " was never registered.";
   }
 
   auto& data = it->second;
@@ -244,9 +242,7 @@ void HelpBubbleHandlerBase::OnHelpBubbleClosing(
     ui::ElementIdentifier anchor_id) {
   const auto it = element_data_.find(anchor_id);
   if (it == element_data_.end()) {
-    NOTREACHED_IN_MIGRATION()
-        << "Identifier " << anchor_id << " was never registered.";
-    return;
+    NOTREACHED() << "Identifier " << anchor_id << " was never registered.";
   }
   if (!it->second.closing)
     GetClient()->HideHelpBubble(anchor_id.GetName());

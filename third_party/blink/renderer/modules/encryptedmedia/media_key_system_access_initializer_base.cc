@@ -114,12 +114,12 @@ MediaKeySystemAccessInitializerBase::MediaKeySystemAccessInitializerBase(
     DCHECK(config->hasDistinctiveIdentifier());
     web_config.distinctive_identifier =
         EncryptedMediaUtils::ConvertToMediaKeysRequirement(
-            config->distinctiveIdentifier());
+            config->distinctiveIdentifier().AsEnum());
 
     DCHECK(config->hasPersistentState());
     web_config.persistent_state =
         EncryptedMediaUtils::ConvertToMediaKeysRequirement(
-            config->persistentState());
+            config->persistentState().AsEnum());
 
     if (config->hasSessionTypes()) {
       web_config.session_types = ConvertSessionTypes(config->sessionTypes());

@@ -6,25 +6,12 @@ module blink.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
+import "services/network/public/mojom/shared_storage.mojom";
 import "third_party/blink/public/mojom/fenced_frame/fenced_frame_config.mojom";
 import "third_party/blink/public/mojom/messaging/cloneable_message.mojom";
-import "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom";
+import "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
-
-// The input argument of the shared storage key. The data will be checked at
-// mojom boundary to ensure it meets the length requirement. Avoid using this
-// type if you don't intend to check the key's length.
-struct SharedStorageKeyArgument {
-  mojo_base.mojom.String16 data;
-};
-
-// The input argument of the shared storage value. The data will be checked at
-// mojom boundary to ensure it meets the length requirement. Avoid using this
-// type if you don't intend to check the value's length.
-struct SharedStorageValueArgument {
-  mojo_base.mojom.String16 data;
-};
 
 // Bundles a candidate URL for `RunURLSelectionOperationOnWorklet()` with any
 // `reporting metadata` (map of each report event type to report URL) for
@@ -68,12 +55,16 @@ interface SharedStorageWorkletHost {
   // `keep_alive_after_operation` indicates whether or not the worklet should be
   // kept alive after this operation finishes. `private_aggregation_config`
   // contains (optional) parameters that are passed to Private Aggregation (if
-  // enabled).
+  // enabled). `saved_query_name`, if non-empty, is the name of this reusable
+  // query, whose index that results in `config`'s mapped URL will be cached in
+  // the browser process for future uses, or else will be retrieved for this use
+  // if the index for a query of name `saved_query_name` was previously cached.
   SelectURL(string name,
             array<SharedStorageUrlWithMetadata> urls_with_metadata,
             CloneableMessage serialized_data,
             bool keep_alive_after_operation,
-            PrivateAggregationConfig private_aggregation_config)
+            PrivateAggregationConfig private_aggregation_config,
+            mojo_base.mojom.String16 saved_query_name)
       => (bool success,
           string error_message,
           FencedFrameConfig? config);
@@ -125,40 +116,12 @@ interface SharedStorageDocumentService {
   // if `key` is not present. May only be called from a fenced frame with
   // network access restricted. Returns an error if the API is disabled, or if
   // the state of the fenced frame is invalid.
-  SharedStorageGet(blink.mojom.SharedStorageKeyArgument key)
+  SharedStorageGet(network.mojom.SharedStorageKeyArgument key)
       => (SharedStorageGetStatus status, string error_message,
           mojo_base.mojom.String16 value);
 
-  // Handle sharedStorage.set(): set `key`’s entry to `value`. If
-  // `ignore_if_present` is true, the entry is not updated if `key` already
-  // exists. The only error reported is if the API is disabled; other errors are
-  // suppressed and reported as success.
-  SharedStorageSet(blink.mojom.SharedStorageKeyArgument key,
-                   blink.mojom.SharedStorageValueArgument value,
-                   bool ignore_if_present)
-      => (bool success,
-          string error_message);
-
-  // Handle sharedStorage.append(): append `value` to the entry for `key`.
-  // Equivalent to "set" if the `key` is not present. The only error reported
-  // is if the API is disabled; other errors are suppressed and reported as
-  // success.
-  SharedStorageAppend(blink.mojom.SharedStorageKeyArgument key,
-                      blink.mojom.SharedStorageValueArgument value)
-      => (bool success,
-          string error_message);
-
-  // Handle sharedStorage.delete(): delete the entry at the given `key`. The
-  // only error reported is if the API is disabled; other errors are suppressed
-  // and reported as success.
-  SharedStorageDelete(blink.mojom.SharedStorageKeyArgument key)
-      => (bool success,
-          string error_message);
-
-  // Handle sharedStorage.clear(): delete all entries. The only error reported
-  // is if the API is disabled; other errors are suppressed and reported as
-  // success.
-  SharedStorageClear()
-      => (bool success,
-          string error_message);
+  // Handle the modifier method `method`. Return an empty `error_message` on
+  // success, and return an non-empty `error_message` on failure.
+  SharedStorageUpdate(network.mojom.SharedStorageModifierMethod method)
+      => (string error_message);
 };

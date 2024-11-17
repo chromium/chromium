@@ -197,4 +197,26 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_JSON) {
       ParsedAnyMetadata<proto::ComposeResponse>(*maybe_metadata)->output());
 }
 
+TEST(OnDeviceModelFeatureAdapterTest, ShouldParseResponseCompleteOnly) {
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  config.mutable_output_config()->set_parser_kind(proto::PARSER_KIND_SIMPLE);
+  config.mutable_output_config()->set_suppress_parsing_incomplete_output(true);
+  auto adapter =
+      base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
+
+  EXPECT_FALSE(adapter->ShouldParseResponse(/*is_complete=*/false));
+  EXPECT_TRUE(adapter->ShouldParseResponse(/*is_complete=*/true));
+}
+
+TEST(OnDeviceModelFeatureAdapterTest, ShouldParseResponseAlways) {
+  proto::OnDeviceModelExecutionFeatureConfig config;
+  config.mutable_output_config()->set_parser_kind(proto::PARSER_KIND_SIMPLE);
+  config.mutable_output_config()->set_suppress_parsing_incomplete_output(false);
+  auto adapter =
+      base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
+
+  EXPECT_TRUE(adapter->ShouldParseResponse(/*is_complete=*/false));
+  EXPECT_TRUE(adapter->ShouldParseResponse(/*is_complete=*/true));
+}
+
 }  // namespace optimization_guide

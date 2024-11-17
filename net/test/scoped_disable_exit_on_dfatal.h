@@ -32,8 +32,8 @@ class ScopedDisableExitOnDFatal {
   // Called when there is a check failure.
   static void LogAssertHandler(const char* file,
                                int line,
-                               const std::string_view message,
-                               const std::string_view stack_trace);
+                               std::string_view message,
+                               std::string_view stack_trace);
 
   logging::ScopedLogAssertHandler assert_handler_;
 };

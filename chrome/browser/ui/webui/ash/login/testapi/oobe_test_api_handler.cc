@@ -128,6 +128,8 @@ void OobeTestAPIHandler::GetAdditionalParameters(base::Value::Dict* dict) {
             !features::IsOobeGaiaInfoScreenEnabled());
   dict->Set("testapi_isOobeQuickStartEnabled",
             features::IsOobeQuickStartEnabled());
+  dict->Set("testapi_isCrossDeviceFeatureSuiteAllowed",
+            features::IsCrossDeviceFeatureSuiteAllowed());
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // The current method is called early, before the user logs-in,

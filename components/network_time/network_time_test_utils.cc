@@ -68,9 +68,9 @@ std::unique_ptr<net::test_server::HttpResponse> GoodTimeResponseHandler(
   return std::unique_ptr<net::test_server::HttpResponse>(response);
 }
 
-FieldTrialTest::FieldTrialTest() {}
+FieldTrialTest::FieldTrialTest() = default;
 
-FieldTrialTest::~FieldTrialTest() {}
+FieldTrialTest::~FieldTrialTest() = default;
 
 void FieldTrialTest::SetFeatureParams(
     bool enable,
@@ -89,9 +89,7 @@ void FieldTrialTest::SetFeatureParams(
   std::string fetch_behavior_param;
   switch (fetch_behavior) {
     case NetworkTimeTracker::FETCH_BEHAVIOR_UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      fetch_behavior_param = "unknown";
-      break;
+      NOTREACHED();
     case NetworkTimeTracker::FETCHES_IN_BACKGROUND_ONLY:
       fetch_behavior_param = "background-only";
       break;

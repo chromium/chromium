@@ -89,6 +89,13 @@ void AddMetricsTestData(TestPasswordStore* store) {
   password_form.times_used_in_html_form = 20;
   store->AddLogin(password_form);
 
+  password_form.url = GURL("http://imported.via.cx.example.com");
+  password_form.username_value = u"imported-via-cx@gmail.com";
+  password_form.type = PasswordForm::Type::kImportedViaCredentialExchange;
+  password_form.scheme = PasswordForm::Scheme::kHtml;
+  password_form.times_used_in_html_form = 23;
+  store->AddLogin(password_form);
+
   password_form.url = GURL("http://fourth.example.com/");
   password_form.signon_realm = "http://fourth.example.com/";
   password_form.type = PasswordForm::Type::kFormSubmission;
@@ -407,7 +414,7 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordLossMetricForAccount) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStore.PasswordLoss", 10, 1);
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.AccountStore.PasswordLossPotentialReason.WIP", 0, 1);
+      "PasswordManager.AccountStore.PasswordLossPotentialReasonBitmask", 0, 1);
   histogram_tester.ExpectTotalCount("PasswordManager.ProfileStore.PasswordLoss",
                                     0);
 
@@ -448,7 +455,7 @@ TEST_F(StoreMetricsReporterTest, ReportPasswordLossMetricForProfile) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ProfileStore.PasswordLoss", 10, 1);
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.ProfileStore.PasswordLossPotentialReason.WIP", 0, 1);
+      "PasswordManager.ProfileStore.PasswordLossPotentialReasonBitmask", 0, 1);
 
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount), 0);
@@ -497,6 +504,12 @@ TEST_F(StoreMetricsReporterTest, ReportAccountsPerSiteHiResMetricsTest) {
       "WithoutCustomPassphrase",
       1, 1);
 
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProfileStore.AccountsPerSiteHiRes3."
+      "ImportedViaCredentialExchange."
+      "WithoutCustomPassphrase",
+      1, 1);
+
   histogram_tester.ExpectBucketCount(
       "PasswordManager.ProfileStore.AccountsPerSiteHiRes3."
       "UserCreated."
@@ -512,7 +525,7 @@ TEST_F(StoreMetricsReporterTest, ReportAccountsPerSiteHiResMetricsTest) {
       "PasswordManager.ProfileStore.AccountsPerSiteHiRes3."
       "Overall."
       "WithoutCustomPassphrase",
-      1, 6);
+      1, 7);
   histogram_tester.ExpectBucketCount(
       "PasswordManager.ProfileStore.AccountsPerSiteHiRes3."
       "Overall."
@@ -523,10 +536,10 @@ TEST_F(StoreMetricsReporterTest, ReportAccountsPerSiteHiResMetricsTest) {
   // credentials.
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount),
-      10);
+      11);
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile),
-      10);
+      11);
 
   account_store->ShutdownOnUIThread();
   profile_store->ShutdownOnUIThread();
@@ -713,14 +726,21 @@ TEST_F(StoreMetricsReporterTest, ReportTotalAccountsHiResMetricsTest) {
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ProfileStore.TotalAccountsHiRes3."
+      "ByType."
+      "ImportedViaCredentialExchange."
+      "WithoutCustomPassphrase",
+      1, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.ProfileStore.TotalAccountsHiRes3."
       "ByType.Overall."
       "WithoutCustomPassphrase",
-      10, 1);
+      11, 1);
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ProfileStore.TotalAccountsHiRes3."
       "ByType.Overall",
-      10, 1);
+      11, 1);
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ProfileStore.TotalAccountsHiRes3."
@@ -734,7 +754,7 @@ TEST_F(StoreMetricsReporterTest, ReportTotalAccountsHiResMetricsTest) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ProfileStore.TotalAccountsHiRes3."
       "WithScheme.Http",
-      6, 1);
+      7, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ProfileStore.TotalAccountsHiRes3."
       "WithScheme.Https",
@@ -748,10 +768,10 @@ TEST_F(StoreMetricsReporterTest, ReportTotalAccountsHiResMetricsTest) {
   // credentials.
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount),
-      10);
+      11);
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile),
-      10);
+      11);
 
   account_store->ShutdownOnUIThread();
   profile_store->ShutdownOnUIThread();
@@ -819,6 +839,12 @@ TEST_F(StoreMetricsReporterTest, ReportTimesPasswordUsedMetricsTest) {
 
   histogram_tester.ExpectBucketCount(
       "PasswordManager.ProfileStore.TimesPasswordUsed3."
+      "ImportedViaCredentialExchange."
+      "WithoutCustomPassphrase",
+      23, 1);
+
+  histogram_tester.ExpectBucketCount(
+      "PasswordManager.ProfileStore.TimesPasswordUsed3."
       "Overall."
       "WithoutCustomPassphrase",
       0, 1);
@@ -843,10 +869,10 @@ TEST_F(StoreMetricsReporterTest, ReportTimesPasswordUsedMetricsTest) {
   // credentials.
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount),
-      10);
+      11);
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile),
-      10);
+      11);
 
   account_store->ShutdownOnUIThread();
   profile_store->ShutdownOnUIThread();
@@ -916,21 +942,21 @@ TEST_F(StoreMetricsReporterTest,
       "PasswordManager.AccountStore.AccountsPerSiteHiRes3."
       "Overall."
       "WithoutCustomPassphrase",
-      1, 6);
+      1, 7);
   histogram_tester.ExpectBucketCount(
       "PasswordManager.AccountStore.AccountsPerSiteHiRes3."
       "Overall."
       "WithoutCustomPassphrase",
       2, 2);
 
-  // In this test both profile and account store contained the same 10 test
+  // In this test both profile and account store contained the same 11 test
   // credentials.
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount),
-      10);
+      11);
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile),
-      10);
+      11);
 
   account_store->ShutdownOnUIThread();
   profile_store->ShutdownOnUIThread();
@@ -991,12 +1017,12 @@ TEST_F(StoreMetricsReporterTest,
       "PasswordManager.AccountStore.TotalAccountsHiRes3."
       "ByType.Overall."
       "WithoutCustomPassphrase",
-      10, 1);
+      11, 1);
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStore.TotalAccountsHiRes3."
       "ByType.Overall",
-      10, 1);
+      11, 1);
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStore.TotalAccountsHiRes3."
@@ -1009,7 +1035,7 @@ TEST_F(StoreMetricsReporterTest,
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStore.TotalAccountsHiRes3."
       "WithScheme.Http",
-      6, 1);
+      7, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.AccountStore.TotalAccountsHiRes3."
       "WithScheme.Https",
@@ -1023,10 +1049,10 @@ TEST_F(StoreMetricsReporterTest,
   // credentials.
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount),
-      10);
+      11);
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile),
-      10);
+      11);
 
   account_store->ShutdownOnUIThread();
   profile_store->ShutdownOnUIThread();
@@ -1124,10 +1150,10 @@ TEST_F(StoreMetricsReporterTest,
   // credentials.
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount),
-      10);
+      11);
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForProfile),
-      10);
+      11);
 
   account_store->ShutdownOnUIThread();
   profile_store->ShutdownOnUIThread();
@@ -1310,10 +1336,8 @@ TEST_F(StoreMetricsReporterTest, DuplicatesMetrics_MismatchedDuplicates) {
 // StoreMetricsReporter directly.
 TEST_F(StoreMetricsReporterTest, MultiStoreMetrics) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {syncer::kEnablePasswordsAccountStorageForNonSyncingUsers,
-       syncer::kEnablePasswordsAccountStorageForSyncingUsers},
-      {});
+  feature_list.InitAndEnableFeature(
+      syncer::kEnablePasswordsAccountStorageForSyncingUsers);
 #if BUILDFLAG(IS_ANDROID)
   prefs_.SetInteger(
       prefs::kPasswordsUseUPMLocalAndSeparateStores,

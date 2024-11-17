@@ -10,6 +10,8 @@ static_library("isolated_web_app") {
   sources = [
     "kiosk_iwa_data.cc",
     "kiosk_iwa_data.h",
+    "kiosk_iwa_launcher.cc",
+    "kiosk_iwa_launcher.h",
     "kiosk_iwa_manager.cc",
     "kiosk_iwa_manager.h",
   ]
@@ -18,8 +20,47 @@ static_library("isolated_web_app") {
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/chromeos/app_mode",
     "//chrome/browser/web_applications",
+    "//chromeos/ash/components/settings",
     "//components/prefs",
     "//components/web_package",
+    "//url",
+  ]
+}
+
+# A separate library is needed to avoid circular dependency between
+# //c/b/web_applications and //c/b/ash/app_mode/isolated_web_app.
+static_library("trust_check") {
+  sources = [
+    "kiosk_iwa_trust_check.cc",
+    "kiosk_iwa_trust_check.h",
+  ]
+  public_deps = []
+  deps = [
+    "//ash/constants",
+    "//chrome/browser/ash/policy/core",
+    "//chromeos/ash/components/settings",
+    "//components/account_id",
+    "//components/prefs",
+    "//components/user_manager",
+    "//components/web_package",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "kiosk_iwa_data_unittest.cc",
+    "kiosk_iwa_manager_unittest.cc",
+  ]
+  deps = [
+    ":isolated_web_app",
+    "//base/test:test_support",
+    "//chrome/browser/ash/settings",
+    "//chrome/browser/web_applications",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/settings",
+    "//components/policy/core/common",
+    "//testing/gtest",
     "//url",
   ]
 }

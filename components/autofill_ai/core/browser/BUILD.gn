@@ -1,0 +1,101 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+static_library("features") {
+  sources = [
+    "autofill_ai_features.cc",
+    "autofill_ai_features.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/optimization_guide/core",
+    "//components/prefs",
+  ]
+}
+
+if (is_win || is_mac || is_linux || is_chromeos) {
+  static_library("browser") {
+    sources = [
+      "autofill_ai_annotation_prompt_strike_database.h",
+      "autofill_ai_client.h",
+      "autofill_ai_logger.cc",
+      "autofill_ai_logger.h",
+      "autofill_ai_manager.cc",
+      "autofill_ai_manager.h",
+      "autofill_ai_utils.cc",
+      "autofill_ai_utils.h",
+      "autofill_ai_value_filter.cc",
+      "autofill_ai_value_filter.h",
+      "suggestion/autofill_ai_model_executor.cc",
+      "suggestion/autofill_ai_model_executor.h",
+      "suggestion/autofill_ai_model_executor_impl.cc",
+      "suggestion/autofill_ai_model_executor_impl.h",
+      "suggestion/autofill_ai_suggestions.cc",
+      "suggestion/autofill_ai_suggestions.h",
+    ]
+
+    public_deps = [ ":features" ]
+
+    deps = [
+      "//base",
+      "//components/autofill/core/browser",
+      "//components/autofill/core/common",
+      "//components/keyed_service/core",
+      "//components/optimization_guide/core",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/strings",
+      "//components/user_annotations",
+      "//ui/native_theme:native_theme",
+    ]
+  }
+
+  static_library("test_support") {
+    testonly = true
+    sources = [
+      "autofill_ai_manager_test_api.h",
+      "autofill_ai_test_utils.cc",
+      "autofill_ai_test_utils.h",
+      "mock_autofill_ai_client.cc",
+      "mock_autofill_ai_client.h",
+    ]
+    deps = [
+      ":browser",
+      "//base",
+      "//components/autofill/core/browser:test_support",
+      "//components/autofill/core/common",
+      "//testing/gmock",
+    ]
+  }
+
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "autofill_ai_features_unittest.cc",
+      "autofill_ai_logger_unittest.cc",
+      "autofill_ai_manager_unittest.cc",
+      "autofill_ai_utils_unittest.cc",
+      "autofill_ai_value_filter_unittest.cc",
+      "suggestion/autofill_ai_model_executor_impl_unittest.cc",
+    ]
+    deps = [
+      ":browser",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//components/autofill/core/browser:test_support",
+      "//components/autofill/core/common",
+      "//components/optimization_guide/core",
+      "//components/optimization_guide/core:test_support",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/prefs:test_support",
+      "//components/user_annotations:test_support",
+      "//components/user_annotations:user_annotations",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}

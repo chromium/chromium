@@ -9,7 +9,7 @@
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/sync/base/features.h"
-#include "components/sync/base/hash_util.h"
+#include "components/sync/base/unique_position.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/processor_entity.h"
 #include "components/sync/protocol/unique_position.pb.h"
@@ -112,7 +112,7 @@ UpdateResponseData GenerateSharedTabGroupDataUpdate(
 }
 
 sync_pb::UniquePosition GenerateUniquePosition(const ClientTagHash& hash) {
-  return UniquePosition::InitialPosition(GenerateUniquePositionSuffix(hash))
+  return UniquePosition::InitialPosition(UniquePosition::GenerateSuffix(hash))
       .ToProto();
 }
 

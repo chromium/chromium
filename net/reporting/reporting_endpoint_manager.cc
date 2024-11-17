@@ -125,8 +125,7 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
     }
 
     // TODO(juliatuttle): Can we reach this in some weird overflow case?
-    NOTREACHED_IN_MIGRATION();
-    return ReportingEndpoint();
+    NOTREACHED();
   }
 
   void InformOfEndpointRequest(

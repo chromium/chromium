@@ -612,8 +612,24 @@ void BubbleFrameView::Layout(PassKey) {
       title_label_x, bounds.y() + (title_height - title_preferred_height) / 2,
       title_available_width, title_preferred_height);
 
-  title_icon_->SetBounds(bounds.x(), bounds.y(), title_icon_pref_size.width(),
-                         title_height);
+  // For default titles, align the icon with the first line of the title if the
+  // icon height is equal to or smaller than the line height. Otherwise, align
+  // the title with the center of the icon.
+  if (default_title_ &&
+      title_icon_pref_size.height() <= default_title_->GetLineHeight()) {
+    // Offsets the y bounds by half the difference of the first line height and
+    // icon height which essentially centers the icon with the middle of the
+    // first line.
+    title_icon_->SetBounds(
+        bounds.x(),
+        bounds.y() +
+            (default_title_->GetLineHeight() - title_icon_pref_size.height()) /
+                2,
+        title_icon_pref_size.width(), title_icon_pref_size.height());
+  } else {
+    title_icon_->SetBounds(bounds.x(), bounds.y(), title_icon_pref_size.width(),
+                           title_height);
+  }
 
   main_image_->SetBounds(0, 0, main_image_->GetPreferredSize({}).width(),
                          main_image_->GetPreferredSize({}).height());

@@ -193,7 +193,8 @@ class GraphImpl : public Graph {
   };
 
   using ProcessByPidMap = std::map<base::ProcessId, ProcessNodeImpl*>;
-  using FrameById = std::map<ProcessAndFrameId, FrameNodeImpl*>;
+  using FrameById =
+      std::map<ProcessAndFrameId, raw_ptr<FrameNodeImpl, CtnExperimental>>;
 
   void DispatchNodeAddedNotifications(NodeBase* node);
   void DispatchNodeRemovedNotifications(NodeBase* node);

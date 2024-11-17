@@ -14,7 +14,7 @@ namespace ash {
 namespace input_method {
 
 // Checks if domain is a sub-domain of url
-bool IsSubDomain(const GURL& url, const std::string_view domain) {
+bool IsSubDomain(const GURL& url, std::string_view domain) {
   const size_t registryLength =
       net::registry_controlled_domains::GetRegistryLength(
           url, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
@@ -32,8 +32,8 @@ bool IsSubDomain(const GURL& url, const std::string_view domain) {
 
 // Checks if url belongs to domain and has the path_prefix
 bool IsSubDomainWithPathPrefix(const GURL& url,
-                               const std::string_view domain,
-                               const std::string_view path_prefix) {
+                               std::string_view domain,
+                               std::string_view path_prefix) {
   return IsSubDomain(url, domain) && url.has_path() &&
          base::StartsWith(url.path(), path_prefix);
 }

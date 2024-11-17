@@ -23,40 +23,24 @@
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 
 namespace safe_browsing {
-namespace {
-
-const char* MigrateResultToString(HashPrefixMap::MigrateResult result) {
-  switch (result) {
-    case HashPrefixMap::MigrateResult::kUnknown:
-      return "Unknown";
-    case HashPrefixMap::MigrateResult::kSuccess:
-      return "Success";
-    case HashPrefixMap::MigrateResult::kFailure:
-      return "Failure";
-    case HashPrefixMap::MigrateResult::kNotNeeded:
-      return "NotNeeded";
-  }
-}
-
-}  // namespace
 
 // static
 std::unique_ptr<ServicesDelegate> ServicesDelegate::Create(
-    SafeBrowsingService* safe_browsing_service) {
+    SafeBrowsingServiceImpl* safe_browsing_service) {
   return base::WrapUnique(
       new ServicesDelegateDesktop(safe_browsing_service, nullptr));
 }
 
 // static
 std::unique_ptr<ServicesDelegate> ServicesDelegate::CreateForTest(
-    SafeBrowsingService* safe_browsing_service,
+    SafeBrowsingServiceImpl* safe_browsing_service,
     ServicesDelegate::ServicesCreator* services_creator) {
   return base::WrapUnique(
       new ServicesDelegateDesktop(safe_browsing_service, services_creator));
 }
 
 ServicesDelegateDesktop::ServicesDelegateDesktop(
-    SafeBrowsingService* safe_browsing_service,
+    SafeBrowsingServiceImpl* safe_browsing_service,
     ServicesDelegate::ServicesCreator* services_creator)
     : ServicesDelegate(safe_browsing_service, services_creator) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -147,12 +131,11 @@ DownloadProtectionService* ServicesDelegateDesktop::GetDownloadService() {
 scoped_refptr<SafeBrowsingDatabaseManager>
 ServicesDelegateDesktop::CreateDatabaseManager() {
   return V4LocalDatabaseManager::Create(
-      SafeBrowsingService::GetBaseFilename(),
+      SafeBrowsingServiceImpl::GetBaseFilename(),
       content::GetUIThreadTaskRunner({}), content::GetIOThreadTaskRunner({}),
       base::BindRepeating(
           &ServicesDelegateDesktop::GetEstimatedExtendedReportingLevel,
-          base::Unretained(this)),
-      base::BindOnce(&UpdateSyntheticFieldTrial));
+          base::Unretained(this)));
 }
 
 DownloadProtectionService*
@@ -177,14 +160,6 @@ void ServicesDelegateDesktop::StopOnUIThread(bool shutdown) {
 
 void ServicesDelegateDesktop::OnProfileWillBeDestroyed(Profile* profile) {
   download_service_->RemovePendingDownloadRequests(profile);
-}
-
-// static
-void ServicesDelegateDesktop::UpdateSyntheticFieldTrial(
-    HashPrefixMap::MigrateResult result) {
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      "SafeBrowsingMigrateResult", MigrateResultToString(result),
-      variations::SyntheticTrialAnnotationMode::kCurrentLog);
 }
 
 }  // namespace safe_browsing

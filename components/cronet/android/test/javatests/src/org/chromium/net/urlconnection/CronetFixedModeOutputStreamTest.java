@@ -237,13 +237,7 @@ public class CronetFixedModeOutputStreamTest {
                 assertThrows(
                         IOException.class,
                         () -> out.write(TestUtil.UPLOAD_DATA[TestUtil.UPLOAD_DATA.length - 1]));
-        String expectedVariant = "expected 0 bytes but received 1";
-        String expectedVariantOnLollipop =
-                "expected "
-                        + (TestUtil.UPLOAD_DATA.length - 1)
-                        + " bytes but received "
-                        + TestUtil.UPLOAD_DATA.length;
-        assertThat(e).hasMessageThat().isAnyOf(expectedVariant, expectedVariantOnLollipop);
+        assertThat(e).hasMessageThat().isEqualTo("expected 0 bytes but received 1");
     }
 
     @Test

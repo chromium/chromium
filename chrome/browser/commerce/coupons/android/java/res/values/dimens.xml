@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <dimen name="discount_item_container_background_radius">16dp</dimen>
+    <dimen name="discount_item_container_padding">12dp</dimen>
+    <dimen name="discount_code_background_radius">4dp</dimen>
+    <dimen name="discount_code_bottom_margin">4dp</dimen>
+    <dimen name="discount_code_horizontal_padding">8dp</dimen>
+    <dimen name="discount_code_vertical_padding">2dp</dimen>
+    <dimen name="discount_item_divider_height">2dp</dimen>
+</resources>

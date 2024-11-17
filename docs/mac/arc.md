@@ -261,8 +261,10 @@ remain, however they should not (or sometimes cannot) be used from ARC:
   Counting](https://en.wikipedia.org/wiki/Automatic_Reference_Counting)
 - Clang documentation (very technical): [Objective-C Automatic Reference
   Counting (ARC)](https://clang.llvm.org/docs/AutomaticReferenceCounting.html)
-  - There’s a specialized tool named
-    [`objc_precise_lifetime`](https://clang.llvm.org/docs/AutomaticReferenceCounting.html#precise-lifetime-semantics)
+  - There’s a specialized tool named [`NS_VALID_UNTIL_END_OF_SCOPE` (the
+    preferred spelling and available in `.mm` files that use Foundation) a.k.a.
+    `objc_precise_lifetime` (for use
+    otherwise)](https://clang.llvm.org/docs/AutomaticReferenceCounting.html#precise-lifetime-semantics)
     that might be useful in specific situations where the compiler cannot fully
     deduce what lifetime is needed for a local variable. It’s not usually
     needed, but if you have gotten to this point in this document, you should

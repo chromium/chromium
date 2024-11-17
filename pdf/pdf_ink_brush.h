@@ -5,7 +5,6 @@
 #ifndef PDF_PDF_INK_BRUSH_H_
 #define PDF_PDF_INK_BRUSH_H_
 
-#include <memory>
 #include <optional>
 #include <string>
 
@@ -19,7 +18,7 @@ class PointF;
 
 namespace chrome_pdf {
 
-// A class used to create ink brushes for PDF annotation mode and support
+// A class used to create Ink brushes for PDF annotation mode and support
 // invalidation for rendering.
 class PdfInkBrush {
  public:
@@ -29,14 +28,7 @@ class PdfInkBrush {
     kPen,
   };
 
-  // Parameters for the brush.
-  struct Params {
-    SkColor color;
-    float size;
-  };
-
-  PdfInkBrush(Type brush_type, Params brush_params);
-
+  PdfInkBrush(Type brush_type, SkColor color, float size);
   PdfInkBrush(const PdfInkBrush&) = delete;
   PdfInkBrush& operator=(const PdfInkBrush&) = delete;
   ~PdfInkBrush();
@@ -52,14 +44,18 @@ class PdfInkBrush {
   // does not correspond to any `Type`.
   static std::optional<Type> StringToType(const std::string& brush_type);
 
-  // Validates `size` is in range.
-  static void CheckToolSizeIsInRange(float size);
+  static std::string TypeToString(Type brush_type);
 
-  // Returns the `ink::Brush` that `this` represents.
-  const ink::Brush& GetInkBrush() const;
+  // Returns whether `size` is in range or not.
+  static bool IsToolSizeInRange(float size);
+
+  const ink::Brush& ink_brush() const { return ink_brush_; }
+
+  void SetColor(SkColor color);
+
+  void SetSize(float size);
 
  private:
-  // The ink brush of type `type_` with params` params_`.
   ink::Brush ink_brush_;
 };
 

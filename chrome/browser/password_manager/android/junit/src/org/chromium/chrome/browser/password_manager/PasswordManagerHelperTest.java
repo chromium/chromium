@@ -42,7 +42,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
@@ -57,7 +58,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.access_loss.PasswordAccessLossWarningType;
 import org.chromium.chrome.browser.access_loss.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -68,10 +68,10 @@ import org.chromium.chrome.browser.password_manager.PasswordCheckupClientHelper.
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper.PasswordCheckOperation;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
-import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.components.browser_ui.settings.SettingsNavigation;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
@@ -101,7 +101,7 @@ public class PasswordManagerHelperTest {
     private static final String TEST_EMAIL_ADDRESS = "test@email.com";
     private static final String TEST_NO_EMAIL_ADDRESS = null;
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     // TODO(crbug.com/40854050): Use fakes for CredentialManagerLauncher,
     // PasswordCheckupClientHelper and corresponding factories
@@ -120,7 +120,7 @@ public class PasswordManagerHelperTest {
 
     @Mock private SyncService mSyncServiceMock;
 
-    @Mock private SettingsLauncher mSettingsLauncherMock;
+    @Mock private SettingsNavigation mSettingsNavigationMock;
 
     @Mock private PendingIntent mPendingIntentMock;
 
@@ -145,9 +145,8 @@ public class PasswordManagerHelperTest {
     @Before
     public void setUp() throws PasswordCheckBackendException, CredentialManagerBackendException {
         // TODO(crbug.com/40940922): Parametrise the tests for local and account.
-        MockitoAnnotations.initMocks(this);
-        mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJniMock);
-        mJniMocker.mock(PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeJniMock);
+        UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
+        PasswordManagerUtilBridgeJni.setInstanceForTesting(mPasswordManagerUtilBridgeJniMock);
         mPasswordManagerHelper = new PasswordManagerHelper(mProfile);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
         when(mPrefService.getBoolean(Pref.UNENROLLED_FROM_GOOGLE_MOBILE_SERVICES_DUE_TO_ERRORS))
@@ -183,7 +182,7 @@ public class PasswordManagerHelperTest {
         CredentialManagerLauncherFactory.setFactoryForTesting(
                 mCredentialManagerLauncherFactoryMock);
 
-        SettingsLauncherFactory.setInstanceForTesting(mSettingsLauncherMock);
+        SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigationMock);
     }
 
     @Test
@@ -466,7 +465,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    public void testShowPasswordSettingsSyncingPasswordsLaunchesNewUIForAccount() {
+    public void testShowPasswordSettingsSyncingPasswordsLaunchesNewUiForAccount() {
         chooseToSyncPasswords();
 
         mPasswordManagerHelper.showPasswordSettings(
@@ -486,7 +485,7 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
-    public void testShowPasswordSettingsSyncingUserNotSyncingPasswordsLaunchesOldUI() {
+    public void testShowPasswordSettingsSyncingUserNotSyncingPasswordsLaunchesOldUi() {
         chooseToSyncButNotSyncPasswords();
         Context mockContext = mock(Context.class);
         // Set the adequate PasswordManagerUtilBridge response for shouldUseUpmWiring for a syncing
@@ -503,13 +502,13 @@ public class PasswordManagerHelperTest {
                 mCustomTabIntentHelper);
 
         verify(mockContext).startActivity(any());
-        verify(mSettingsLauncherMock)
-                .createSettingsActivityIntent(
+        verify(mSettingsNavigationMock)
+                .createSettingsIntent(
                         eq(mockContext), eq(SettingsFragment.PASSWORDS), any(Bundle.class));
     }
 
     @Test
-    public void testShowPasswordSettingsNotSyncingPasswordsCanNotUseUPMLaunchesOldUI() {
+    public void testShowPasswordSettingsNotSyncingPasswordsCanNotUseUPMLaunchesOldUi() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         Context mockContext = mock(Context.class);
 
@@ -522,13 +521,13 @@ public class PasswordManagerHelperTest {
                 mCustomTabIntentHelper);
 
         verify(mockContext).startActivity(any());
-        verify(mSettingsLauncherMock)
-                .createSettingsActivityIntent(
+        verify(mSettingsNavigationMock)
+                .createSettingsIntent(
                         eq(mockContext), eq(SettingsFragment.PASSWORDS), any(Bundle.class));
     }
 
     @Test
-    public void testShowPasswordSettingsNotSyncingPasswordsCanUseUPMLaunchesNewUIForLocal() {
+    public void testShowPasswordSettingsNotSyncingPasswordsCanUseUPMLaunchesNewUiForLocal() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
         when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(mSyncServiceMock, mPrefService))
                 .thenReturn(true);
@@ -890,7 +889,7 @@ public class PasswordManagerHelperTest {
         HistogramWatcher.Builder builder =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
                         PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
-                        CredentialManagerError.API_ERROR,
+                        CredentialManagerError.API_EXCEPTION,
                         OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
         HistogramWatcher histogram =
                 builder.expectNoRecords(
@@ -917,7 +916,7 @@ public class PasswordManagerHelperTest {
         HistogramWatcher.Builder builder =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
                         PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT,
-                        CredentialManagerError.API_ERROR,
+                        CredentialManagerError.API_EXCEPTION,
                         OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR));
         HistogramWatcher histogram =
                 builder.expectNoRecords(
@@ -984,7 +983,7 @@ public class PasswordManagerHelperTest {
         HistogramWatcher histogram =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
                                 PasswordCheckOperation.RUN_PASSWORD_CHECKUP,
-                                CredentialManagerError.API_ERROR,
+                                CredentialManagerError.API_EXCEPTION,
                                 OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR))
                         .build();
 
@@ -1021,6 +1020,44 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    public void testRecordsSuccessMetricsForGetWeakCredentialsCount() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupSuccessHistogramsForOperation(
+                                PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT)
+                        .build();
+
+        chooseToSyncPasswords();
+        setUpSuccessfulGetWeakCredentialsCount();
+
+        mPasswordManagerHelper.getWeakCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testRecordsSuccessMetricsForGetReusedCredentialsCount() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupSuccessHistogramsForOperation(
+                                PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT)
+                        .build();
+
+        chooseToSyncPasswords();
+        setUpSuccessfulGetReusedCredentialsCount();
+
+        mPasswordManagerHelper.getReusedCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+
+        histogram.assertExpected();
+    }
+
+    @Test
     public void testRecordsErrorMetricsForGetBreachedCredentialsCount() {
         HistogramWatcher histogram =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
@@ -1042,11 +1079,53 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    public void testRecordsErrorMetricsForGetWeakCredentialsCount() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                                PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT,
+                                CredentialManagerError.UNCATEGORIZED,
+                                OptionalInt.empty())
+                        .build();
+        chooseToSyncPasswords();
+        returnErrorWhenGettingWeakCredentialsCount(
+                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED));
+
+        mPasswordManagerHelper.getWeakCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testRecordsErrorMetricsForGetReusedCredentialsCount() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                                PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT,
+                                CredentialManagerError.UNCATEGORIZED,
+                                OptionalInt.empty())
+                        .build();
+        chooseToSyncPasswords();
+        returnErrorWhenGettingReusedCredentialsCount(
+                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED));
+
+        mPasswordManagerHelper.getReusedCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+
+        histogram.assertExpected();
+    }
+
+    @Test
     public void testRecordsApiErrorMetricsForGetBreachedCredentialsCount() {
         HistogramWatcher histogram =
                 histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
                                 PasswordCheckOperation.GET_BREACHED_CREDENTIALS_COUNT,
-                                CredentialManagerError.API_ERROR,
+                                CredentialManagerError.API_EXCEPTION,
                                 OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR))
                         .build();
         chooseToSyncPasswords();
@@ -1054,6 +1133,48 @@ public class PasswordManagerHelperTest {
                 new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR)));
 
         mPasswordManagerHelper.getBreachedCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testRecordsApiErrorMetricsForGetWeakCredentialsCount() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                                PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT,
+                                CredentialManagerError.API_EXCEPTION,
+                                OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR))
+                        .build();
+        chooseToSyncPasswords();
+        returnErrorWhenGettingWeakCredentialsCount(
+                new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR)));
+
+        mPasswordManagerHelper.getWeakCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testRecordsApiErrorMetricsForGetReusedCredentialsCount() {
+        HistogramWatcher histogram =
+                histogramWatcherBuilderOfPasswordCheckupFailureHistogramsForOperation(
+                                PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT,
+                                CredentialManagerError.API_EXCEPTION,
+                                OptionalInt.of(CommonStatusCodes.DEVELOPER_ERROR))
+                        .build();
+        chooseToSyncPasswords();
+        returnErrorWhenGettingReusedCredentialsCount(
+                new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR)));
+
+        mPasswordManagerHelper.getReusedCredentialsCount(
                 PasswordCheckReferrer.SAFETY_CHECK,
                 TEST_EMAIL_ADDRESS,
                 mock(Callback.class),
@@ -1260,7 +1381,7 @@ public class PasswordManagerHelperTest {
     public void testDismissesLoadingDialogOnPasswordSettingsIntentGetError()
             throws CanceledException {
         chooseToSyncPasswords();
-        returnErrorWhenFetchingIntentForAccount(CredentialManagerError.API_ERROR);
+        returnErrorWhenFetchingIntentForAccount(CredentialManagerError.API_EXCEPTION);
 
         mPasswordManagerHelper.launchTheCredentialManager(
                 ManagePasswordsReferrer.CHROME_SETTINGS,
@@ -1475,7 +1596,7 @@ public class PasswordManagerHelperTest {
     public void testRecordsSettingsLoadingDialogMetricsOnIntentFetchError()
             throws CanceledException {
         chooseToSyncPasswords();
-        returnErrorWhenFetchingIntentForAccount(CredentialManagerError.API_ERROR);
+        returnErrorWhenFetchingIntentForAccount(CredentialManagerError.API_EXCEPTION);
         when(mLoadingModalDialogCoordinator.getState())
                 .thenReturn(LoadingModalDialogCoordinator.State.PENDING);
 
@@ -1707,6 +1828,34 @@ public class PasswordManagerHelperTest {
     }
 
     @Test
+    public void testRecordsErrorMetricsWhenGetWeakCredentialsCountFails() {
+        chooseToSyncPasswords();
+        Exception expectedException =
+                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED);
+        returnErrorWhenGettingWeakCredentialsCount(expectedException);
+
+        mPasswordManagerHelper.getWeakCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+    }
+
+    @Test
+    public void testRecordsErrorMetricsWhenGetReusedCredentialsCountFails() {
+        chooseToSyncPasswords();
+        Exception expectedException =
+                new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED);
+        returnErrorWhenGettingReusedCredentialsCount(expectedException);
+
+        mPasswordManagerHelper.getReusedCredentialsCount(
+                PasswordCheckReferrer.SAFETY_CHECK,
+                TEST_EMAIL_ADDRESS,
+                mock(Callback.class),
+                mock(Callback.class));
+    }
+
+    @Test
     public void testRecordsApiErrorWhenFetchingAccountCredentialManagerIntent() {
         HistogramWatcher histogram =
                 HistogramWatcher.newBuilder()
@@ -1714,7 +1863,7 @@ public class PasswordManagerHelperTest {
                                 PasswordMetricsUtil.ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0)
                         .expectIntRecord(
                                 PasswordMetricsUtil.ACCOUNT_GET_INTENT_ERROR_HISTOGRAM,
-                                CredentialManagerError.API_ERROR)
+                                CredentialManagerError.API_EXCEPTION)
                         .expectIntRecord(
                                 PasswordMetricsUtil.ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM,
                                 CommonStatusCodes.INTERNAL_ERROR)
@@ -1728,7 +1877,39 @@ public class PasswordManagerHelperTest {
         chooseToSyncPasswords();
         ApiException returnedException =
                 new ApiException(new Status(CommonStatusCodes.INTERNAL_ERROR));
-        returnApiExceptionWhenFetchingIntentForAccount(returnedException);
+        returnExceptionWhenFetchingIntentForAccount(returnedException);
+
+        mPasswordManagerHelper.showPasswordSettings(
+                ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mModalDialogManagerSupplier,
+                /* managePasskeys= */ false,
+                TEST_EMAIL_ADDRESS,
+                mCustomTabIntentHelper);
+
+        histogram.assertExpected();
+    }
+
+    @Test
+    public void testRecordsOtherApiErrorWhenFetchingAccountCredentialManagerIntent() {
+        HistogramWatcher histogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                PasswordMetricsUtil.ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0)
+                        .expectIntRecord(
+                                PasswordMetricsUtil.ACCOUNT_GET_INTENT_ERROR_HISTOGRAM,
+                                CredentialManagerError.OTHER_API_ERROR)
+                        .expectNoRecords(PasswordMetricsUtil.ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM)
+                        .expectNoRecords(
+                                PasswordMetricsUtil
+                                        .ACCOUNT_GET_INTENT_ERROR_CONNECTION_RESULT_CODE_HISTOGRAM)
+                        .expectNoRecords(
+                                PasswordMetricsUtil
+                                        .ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
+                        .build();
+        chooseToSyncPasswords();
+        NullPointerException returnedException = new NullPointerException();
+        returnExceptionWhenFetchingIntentForAccount(returnedException);
 
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
@@ -1748,7 +1929,7 @@ public class PasswordManagerHelperTest {
                         .expectIntRecord(PasswordMetricsUtil.LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 0)
                         .expectIntRecord(
                                 PasswordMetricsUtil.LOCAL_GET_INTENT_ERROR_HISTOGRAM,
-                                CredentialManagerError.API_ERROR)
+                                CredentialManagerError.API_EXCEPTION)
                         .expectNoRecords(
                                 PasswordMetricsUtil
                                         .LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
@@ -1759,7 +1940,7 @@ public class PasswordManagerHelperTest {
 
         ApiException returnedException =
                 new ApiException(new Status(CommonStatusCodes.INTERNAL_ERROR));
-        returnApiExceptionWhenFetchingIntentForLocal(returnedException);
+        returnExceptionWhenFetchingIntentForLocal(returnedException);
 
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
@@ -1780,7 +1961,7 @@ public class PasswordManagerHelperTest {
                                 PasswordMetricsUtil.ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM, 0)
                         .expectIntRecord(
                                 PasswordMetricsUtil.ACCOUNT_GET_INTENT_ERROR_HISTOGRAM,
-                                CredentialManagerError.API_ERROR)
+                                CredentialManagerError.API_EXCEPTION)
                         .expectIntRecord(
                                 PasswordMetricsUtil.ACCOUNT_GET_INTENT_API_ERROR_HISTOGRAM,
                                 CommonStatusCodes.API_NOT_CONNECTED)
@@ -1797,7 +1978,7 @@ public class PasswordManagerHelperTest {
         ApiException returnedException =
                 new ApiException(
                         new Status(new ConnectionResult(ConnectionResult.API_UNAVAILABLE), ""));
-        returnApiExceptionWhenFetchingIntentForAccount(returnedException);
+        returnExceptionWhenFetchingIntentForAccount(returnedException);
 
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
@@ -1817,7 +1998,7 @@ public class PasswordManagerHelperTest {
                         .expectIntRecord(PasswordMetricsUtil.LOCAL_GET_INTENT_SUCCESS_HISTOGRAM, 0)
                         .expectIntRecord(
                                 PasswordMetricsUtil.LOCAL_GET_INTENT_ERROR_HISTOGRAM,
-                                CredentialManagerError.API_ERROR)
+                                CredentialManagerError.API_EXCEPTION)
                         .expectNoRecords(
                                 PasswordMetricsUtil
                                         .LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
@@ -1829,7 +2010,7 @@ public class PasswordManagerHelperTest {
         ApiException returnedException =
                 new ApiException(
                         new Status(new ConnectionResult(ConnectionResult.API_UNAVAILABLE), ""));
-        returnApiExceptionWhenFetchingIntentForLocal(returnedException);
+        returnExceptionWhenFetchingIntentForLocal(returnedException);
 
         mPasswordManagerHelper.showPasswordSettings(
                 ContextUtils.getApplicationContext(),
@@ -1861,39 +2042,6 @@ public class PasswordManagerHelperTest {
     @Test
     @EnableFeatures(
             ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
-    public void testPasswordAccessLossDialogNoGmsCore() {
-        when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))
-                .thenReturn(PasswordAccessLossWarningType.NO_GMS_CORE);
-
-        mPasswordManagerHelper.showPasswordSettings(
-                mContext,
-                ManagePasswordsReferrer.CHROME_SETTINGS,
-                mModalDialogManagerSupplier,
-                /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper);
-
-        PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
-        View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
-        Context context = RuntimeEnvironment.getApplication().getApplicationContext();
-        assertEquals(
-                context.getString(R.string.access_loss_no_gms_title),
-                ((TextView) customView.findViewById(R.id.title)).getText());
-        assertEquals(
-                context.getString(R.string.access_loss_no_gms_desc),
-                ((TextView) customView.findViewById(R.id.details)).getText());
-        assertTrue(customView.findViewById(R.id.help_button).getVisibility() == View.VISIBLE);
-        assertEquals(
-                context.getString(R.string.access_loss_no_gms_positive_button_text),
-                dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
-        assertEquals(
-                context.getString(R.string.close),
-                dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
-    }
-
-    @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
     public void testPasswordAccessLossDialogNoUpm() {
         when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))
                 .thenReturn(PasswordAccessLossWarningType.NO_UPM);
@@ -1912,49 +2060,6 @@ public class PasswordManagerHelperTest {
         assertEquals(
                 context.getString(R.string.access_loss_update_gms_title),
                 ((TextView) customView.findViewById(R.id.title)).getText());
-        assertEquals(
-                context.getString(R.string.access_loss_update_gms_desc),
-                ((TextView) customView.findViewById(R.id.details)).getText());
-        assertTrue(customView.findViewById(R.id.help_button).getVisibility() == View.VISIBLE);
-        assertEquals(
-                context.getString(R.string.password_manager_outdated_gms_positive_button),
-                dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
-        assertEquals(
-                context.getString(R.string.password_manager_outdated_gms_negative_button),
-                dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
-    }
-
-    @Test
-    @EnableFeatures(
-            ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PASSWORDS_ANDROID_ACCESS_LOSS_WARNING)
-    public void testPasswordAccessLossDialogNewGmsMigrationFailed() {
-        when(mPasswordManagerUtilBridgeJniMock.getPasswordAccessLossWarningType(mPrefService))
-                .thenReturn(PasswordAccessLossWarningType.NEW_GMS_CORE_MIGRATION_FAILED);
-
-        mPasswordManagerHelper.showPasswordSettings(
-                mContext,
-                ManagePasswordsReferrer.CHROME_SETTINGS,
-                mModalDialogManagerSupplier,
-                /* managePasskeys= */ false,
-                TEST_NO_EMAIL_ADDRESS,
-                mCustomTabIntentHelper);
-
-        PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
-        View customView = dialogModel.get(ModalDialogProperties.CUSTOM_VIEW);
-        Context context = RuntimeEnvironment.getApplication().getApplicationContext();
-        assertEquals(
-                context.getString(R.string.access_loss_fix_problem_title),
-                ((TextView) customView.findViewById(R.id.title)).getText());
-        assertEquals(
-                context.getString(R.string.access_loss_fix_problem_desc),
-                ((TextView) customView.findViewById(R.id.details)).getText());
-        assertTrue(customView.findViewById(R.id.help_button).getVisibility() == View.GONE);
-        assertEquals(
-                context.getString(R.string.access_loss_fix_problem_positive_button_text),
-                dialogModel.get(ModalDialogProperties.POSITIVE_BUTTON_TEXT));
-        assertEquals(
-                context.getString(R.string.password_manager_outdated_gms_negative_button),
-                dialogModel.get(ModalDialogProperties.NEGATIVE_BUTTON_TEXT));
     }
 
     @Test
@@ -2069,7 +2174,7 @@ public class PasswordManagerHelperTest {
                         any(Callback.class));
     }
 
-    private void returnApiExceptionWhenFetchingIntentForAccount(ApiException exception) {
+    private void returnExceptionWhenFetchingIntentForAccount(Exception exception) {
         doAnswer(
                         invocation -> {
                             Callback<Exception> cb = invocation.getArgument(3);
@@ -2084,7 +2189,7 @@ public class PasswordManagerHelperTest {
                         any(Callback.class));
     }
 
-    private void returnApiExceptionWhenFetchingIntentForLocal(ApiException exception) {
+    private void returnExceptionWhenFetchingIntentForLocal(Exception exception) {
         doAnswer(
                         invocation -> {
                             Callback<Exception> cb = invocation.getArgument(2);
@@ -2138,6 +2243,30 @@ public class PasswordManagerHelperTest {
                         anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
+    private void setUpSuccessfulGetWeakCredentialsCount() {
+        doAnswer(
+                        invocation -> {
+                            Callback<Integer> cb = invocation.getArgument(2);
+                            cb.onResult(0);
+                            return true;
+                        })
+                .when(mPasswordCheckupClientHelperMock)
+                .getWeakCredentialsCount(
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
+    }
+
+    private void setUpSuccessfulGetReusedCredentialsCount() {
+        doAnswer(
+                        invocation -> {
+                            Callback<Integer> cb = invocation.getArgument(2);
+                            cb.onResult(0);
+                            return true;
+                        })
+                .when(mPasswordCheckupClientHelperMock)
+                .getReusedCredentialsCount(
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
+    }
+
     private void returnErrorWhenRunningPasswordCheckup(Exception error) {
         doAnswer(
                         invocation -> {
@@ -2159,6 +2288,30 @@ public class PasswordManagerHelperTest {
                         })
                 .when(mPasswordCheckupClientHelperMock)
                 .getBreachedCredentialsCount(
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
+    }
+
+    private void returnErrorWhenGettingWeakCredentialsCount(Exception error) {
+        doAnswer(
+                        invocation -> {
+                            Callback<Exception> cb = invocation.getArgument(3);
+                            cb.onResult(error);
+                            return true;
+                        })
+                .when(mPasswordCheckupClientHelperMock)
+                .getWeakCredentialsCount(
+                        anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
+    }
+
+    private void returnErrorWhenGettingReusedCredentialsCount(Exception error) {
+        doAnswer(
+                        invocation -> {
+                            Callback<Exception> cb = invocation.getArgument(3);
+                            cb.onResult(error);
+                            return true;
+                        })
+                .when(mPasswordCheckupClientHelperMock)
+                .getReusedCredentialsCount(
                         anyInt(), eq(TEST_EMAIL_ADDRESS), any(Callback.class), any(Callback.class));
     }
 
@@ -2209,6 +2362,10 @@ public class PasswordManagerHelperTest {
                 return "GetBreachedCredentialsCount";
             case PasswordCheckOperation.GET_PASSWORD_CHECKUP_INTENT:
                 return "GetIntent";
+            case PasswordCheckOperation.GET_WEAK_CREDENTIALS_COUNT:
+                return "GetWeakCredentialsCount";
+            case PasswordCheckOperation.GET_REUSED_CREDENTIALS_COUNT:
+                return "GetReusedCredentialsCount";
             default:
                 throw new AssertionError();
         }

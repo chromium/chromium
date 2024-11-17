@@ -88,7 +88,7 @@ public class AwDisplayModeControllerTest {
                         new Answer<Void>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) throws Throwable {
-                                int[] loc = (int[]) (invocation.getArguments()[0]);
+                                int[] loc = (int[]) invocation.getArguments()[0];
                                 loc[0] = mLocationOnScreen[0];
                                 loc[1] = mLocationOnScreen[1];
                                 return null;
@@ -103,7 +103,7 @@ public class AwDisplayModeControllerTest {
                         new Answer<Void>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) throws Throwable {
-                                Matrix matrix = (Matrix) (invocation.getArguments()[0]);
+                                Matrix matrix = (Matrix) invocation.getArguments()[0];
                                 matrix.set(mGlobalTransformMatrix);
                                 return null;
                             }
@@ -116,7 +116,7 @@ public class AwDisplayModeControllerTest {
                         new Answer<Void>() {
                             @Override
                             public Void answer(InvocationOnMock invocation) throws Throwable {
-                                int[] loc = (int[]) (invocation.getArguments()[0]);
+                                int[] loc = (int[]) invocation.getArguments()[0];
                                 loc[0] = mLocationOnScreen[0];
                                 loc[1] = mLocationOnScreen[1];
                                 return null;

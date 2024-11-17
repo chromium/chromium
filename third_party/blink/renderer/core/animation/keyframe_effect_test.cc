@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_composite_operation.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_effect_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
@@ -184,11 +185,13 @@ TEST_F(AnimationKeyframeEffectV8Test, SetAndRetrieveEffectComposite) {
       script_state, element.Get(), js_keyframes, effect_options_dictionary);
   EXPECT_EQ("add", effect->composite());
 
-  effect->setComposite("replace");
-  EXPECT_EQ("replace", effect->composite());
+  effect->setComposite(
+      V8CompositeOperation(V8CompositeOperation::Enum::kReplace));
+  EXPECT_EQ("replace", effect->composite().AsString());
 
-  effect->setComposite("accumulate");
-  EXPECT_EQ("accumulate", effect->composite());
+  effect->setComposite(
+      V8CompositeOperation(V8CompositeOperation::Enum::kAccumulate));
+  EXPECT_EQ("accumulate", effect->composite().AsString());
 }
 
 TEST_F(AnimationKeyframeEffectV8Test, KeyframeCompositeOverridesEffect) {

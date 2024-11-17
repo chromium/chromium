@@ -10,6 +10,8 @@ static_library("on_task") {
   sources = [
     "locked_session_window_tracker_factory.cc",
     "locked_session_window_tracker_factory.h",
+    "on_task_extensions_manager_impl.cc",
+    "on_task_extensions_manager_impl.h",
     "on_task_locked_session_navigation_throttle.cc",
     "on_task_locked_session_navigation_throttle.h",
     "on_task_locked_session_window_tracker.cc",
@@ -34,17 +36,25 @@ static_library("on_task") {
 
     # Explicitly depend on boca to get around with circular dependency on
     # //chrome/browser/apps/almanac_api_client:almanac_api_client
+    "//chrome/browser:primitives",
     "//chrome/browser/ash/boca",
+    "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/ash/system_web_apps",
-    "//chrome/browser/ui/chromeos",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chromeos/ash/components/boca",
     "//chromeos/ash/components/boca/on_task",
+    "//chromeos/ash/components/boca/on_task:activity",
     "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/strings:strings_grit",
     "//components/keyed_service/content",
     "//components/policy/core/browser",
     "//components/policy/core/common",
+    "//components/prefs",
+    "//components/sessions",
+    "//components/user_manager",
     "//components/user_prefs",
+    "//extensions/browser",
     "//ui/base",
     "//ui/chromeos",
   ]
@@ -55,7 +65,10 @@ static_library("on_task") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "on_task_locked_session_window_tracker_unittest.cc" ]
+  sources = [
+    "on_task_extensions_manager_impl_unittest.cc",
+    "on_task_locked_session_window_tracker_unittest.cc",
+  ]
 
   deps = [
     ":on_task",
@@ -66,10 +79,12 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/browser",
+    "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/ui/ash",
-    "//chrome/browser/ui/ash:test_support",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/boca:boca",
+    "//chromeos/ash/components/boca/on_task",
+    "//chromeos/ash/components/boca/on_task:activity",
     "//content/test:test_support",
   ]
 }
@@ -79,12 +94,19 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "on_task_system_web_app_manager_impl_browsertest.cc" ]
+  sources = [
+    "on_task_locked_session_window_tracker_browsertest.cc",
+    "on_task_system_web_app_manager_impl_browsertest.cc",
+  ]
 
   deps = [
     ":on_task",
+    "//ash/webui/boca_ui",
     "//base/test:test_support",
+    "//chrome/browser/ash/boca",
     "//chrome/browser/ui/ash/system_web_apps",
     "//chrome/test:test_support",
+    "//chromeos/ash/components/boca/on_task",
+    "//chromeos/ash/components/boca/proto",
   ]
 }

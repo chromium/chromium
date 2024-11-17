@@ -16,29 +16,25 @@ using testing::Not;
 class UrlLanguageHistogramFactoryTest : public PlatformTest {
  public:
   UrlLanguageHistogramFactoryTest() {
-    TestChromeBrowserState::Builder browser_state_builder;
-    chrome_browser_state_ = std::move(browser_state_builder).Build();
+    TestProfileIOS::Builder profile_builder;
+    profile_ = std::move(profile_builder).Build();
   }
 
-  ~UrlLanguageHistogramFactoryTest() override { chrome_browser_state_.reset(); }
+  ~UrlLanguageHistogramFactoryTest() override { profile_.reset(); }
 
-  ChromeBrowserState* chrome_browser_state() {
-    return chrome_browser_state_.get();
-  }
+  ProfileIOS* profile() { return profile_.get(); }
 
  private:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 TEST_F(UrlLanguageHistogramFactoryTest, NotCreatedInIncognito) {
-  EXPECT_THAT(
-      UrlLanguageHistogramFactory::GetForBrowserState(chrome_browser_state()),
-      Not(IsNull()));
+  EXPECT_THAT(UrlLanguageHistogramFactory::GetForProfile(profile()),
+              Not(IsNull()));
 
-  ChromeBrowserState* otr_browser_state =
-      chrome_browser_state()->GetOffTheRecordChromeBrowserState();
+  ProfileIOS* otr_profile = profile()->GetOffTheRecordProfile();
   language::UrlLanguageHistogram* language_histogram =
-      UrlLanguageHistogramFactory::GetForBrowserState(otr_browser_state);
+      UrlLanguageHistogramFactory::GetForProfile(otr_profile);
   EXPECT_THAT(language_histogram, IsNull());
 }

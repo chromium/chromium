@@ -183,7 +183,8 @@ export class SettingsSecurityPageElement extends
           // The phones subpage is linked from the security keys subpage, if
           // it exists. Thus the phones subpage is only linked from this page
           // if the security keys subpage is disabled.
-          return !loadTimeData.getBoolean('enableSecurityKeysSubpage');
+          return !loadTimeData.getBoolean('enableSecurityKeysSubpage') &&
+              loadTimeData.getBoolean('enableSecurityKeysManagePhones');
         },
       },
       // </if>
@@ -200,12 +201,27 @@ export class SettingsSecurityPageElement extends
         },
       },
 
+      enableEsbAiStringUpdate_: {
+        type: Boolean,
+        readOnly: true,
+        value() {
+          return loadTimeData.getBoolean('enableEsbAiStringUpdate');
+        },
+      },
+
       hideExtendedReportingRadioButton_: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean(
                      'extendedReportingRemovePrefDependency') &&
               loadTimeData.getBoolean('hashPrefixRealTimeLookupsSamplePing');
+        },
+      },
+
+      enablePasswordLeakToggleMove_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enablePasswordLeakToggleMove');
         },
       },
 
@@ -259,7 +275,9 @@ export class SettingsSecurityPageElement extends
   private safeBrowsingStateOnOpen_: SafeBrowsingSetting;
   private isRouteSecurity_: boolean;
   private eventTracker_: EventTracker = new EventTracker();
+  private enableEsbAiStringUpdate_: boolean;
   private hideExtendedReportingRadioButton_: boolean;
+  private enablePasswordLeakToggleMove_: boolean;
 
   private browserProxy_: PrivacyPageBrowserProxy =
       PrivacyPageBrowserProxyImpl.getInstance();
@@ -451,6 +469,11 @@ export class SettingsSecurityPageElement extends
         SafeBrowsingSetting.STANDARD;
   }
 
+  private getSafeBrowsingEnhancedSubLabel_(): string {
+    return this.i18n(
+        this.enableEsbAiStringUpdate_ ? 'safeBrowsingEnhancedDescUpdated' :
+                                        'safeBrowsingEnhancedDesc');
+  }
 
   private getSafeBrowsingStandardSubLabel_(): string {
     return this.i18n(
@@ -475,6 +498,11 @@ export class SettingsSecurityPageElement extends
       }
     }
     return subLabel;
+  }
+
+  private computeSafeBrowsingStandardNoCollapse_(): boolean {
+    return this.hideExtendedReportingRadioButton_ &&
+        this.enablePasswordLeakToggleMove_;
   }
 
   // Conversion helper for binding Integer pref values as String values.

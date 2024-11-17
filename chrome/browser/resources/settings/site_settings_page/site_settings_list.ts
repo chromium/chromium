@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
+import 'chrome://resources/cr_elements/icons.html.js';
 import '../icons.html.js';
 import '../settings_shared.css.js';
 
@@ -80,7 +80,9 @@ class SettingsSiteSettingsListElement extends
       'updateNotificationsLabel_(prefs.generated.notification.*)',
       'updateLocationLabel_(prefs.generated.geolocation.*)',
       'updateSiteDataLabel_(prefs.generated.cookie_default_content_setting.*)',
-      'updateThirdPartyCookiesLabel_(prefs.profile.cookie_controls_mode.*)',
+      'updateThirdPartyCookiesLabel_(prefs.profile.cookie_controls_mode.*,' +
+          'prefs.tracking_protection.block_all_3pc_toggle_enabled.*,' +
+          'prefs.generated.third_party_cookie_blocking_setting.*)',
       'updateOfferWritingHelpLabel_(prefs.compose.proactive_nudge_enabled.*)',
     ];
   }
@@ -155,7 +157,8 @@ class SettingsSiteSettingsListElement extends
     }
 
     if (category === ContentSettingsTypes.COOKIES) {
-      if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+      if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled') &&
+          loadTimeData.getBoolean('isTrackingProtectionUxEnabled')) {
         const index = this.categoryList.map(e => e.id).indexOf(
             ContentSettingsTypes.COOKIES);
         this.set(
@@ -227,9 +230,6 @@ class SettingsSiteSettingsListElement extends
    * description changes.
    */
   private updateLocationLabel_() {
-    if (!loadTimeData.getBoolean('permissionDedicatedCpssSettings')) {
-      return;
-    }
     const state = this.getPref('generated.geolocation').value;
     const index = this.categoryList.map(e => e.id).indexOf(
         ContentSettingsTypes.GEOLOCATION);
@@ -310,14 +310,13 @@ class SettingsSiteSettingsListElement extends
    * Update the third-party cookies link row label when the pref changes.
    */
   private updateThirdPartyCookiesLabel_() {
-    if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+    if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled') &&
+        loadTimeData.getBoolean('isTrackingProtectionUxEnabled')) {
       return;
     }
 
-    const state = this.getPref('profile.cookie_controls_mode').value;
     const index =
         this.categoryList.map(e => e.id).indexOf(ContentSettingsTypes.COOKIES);
-
     // The third-party cookies might not be part of the current
     // site-settings-list but the class always observes the preference.
     if (index === -1) {
@@ -325,13 +324,26 @@ class SettingsSiteSettingsListElement extends
     }
 
     let label;
-    if (state === CookieControlsMode.OFF) {
-      label = 'thirdPartyCookiesLinkRowSublabelEnabled';
-    } else if (state === CookieControlsMode.INCOGNITO_ONLY) {
-      label = 'thirdPartyCookiesLinkRowSublabelDisabledIncognito';
-    } else if (state === CookieControlsMode.BLOCK_THIRD_PARTY) {
-      label = 'thirdPartyCookiesLinkRowSublabelDisabled';
+    if (loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')) {
+      if (this.getPref('tracking_protection.block_all_3pc_toggle_enabled')
+              .value) {
+        label = 'thirdPartyCookiesLinkRowSublabelDisabled';
+      } else {
+        label = 'thirdPartyCookiesLinkRowSublabelLimited';
+      }
+    } else {
+      const state = this.getPref('profile.cookie_controls_mode').value;
+      if (state === CookieControlsMode.OFF) {
+        label = 'thirdPartyCookiesLinkRowSublabelEnabled';
+      } else if (state === CookieControlsMode.INCOGNITO_ONLY) {
+        label = loadTimeData.getBoolean('isAlwaysBlock3pcsIncognitoEnabled') ?
+            'thirdPartyCookiesLinkRowSublabelEnabled' :
+            'thirdPartyCookiesLinkRowSublabelDisabledIncognito';
+      } else if (state === CookieControlsMode.BLOCK_THIRD_PARTY) {
+        label = 'thirdPartyCookiesLinkRowSublabelDisabled';
+      }
     }
+
     assert(!!label);
     this.set(`categoryList.${index}.subLabel`, this.i18n(label));
   }

@@ -178,7 +178,7 @@ class DisplayTest : public testing::Test {
         task_runner_(new base::NullTaskRunner),
         client_(std::make_unique<StubDisplayClient>()) {}
 
-  ~DisplayTest() override {}
+  ~DisplayTest() override = default;
 
   void SetUpSoftwareDisplay(const RendererSettings& settings) {
     std::unique_ptr<FakeSoftwareOutputSurface> output_surface;
@@ -230,8 +230,8 @@ class DisplayTest : public testing::Test {
     // well, so there is no need to pass in a real
     // DisplayCompositorMemoryAndTaskController.
     auto display = std::make_unique<Display>(
-        &shared_bitmap_manager_, &shared_image_manager_, &sync_point_manager_,
-        &gpu_scheduler_, settings, &debug_settings_, frame_sink_id,
+        &shared_bitmap_manager_, &shared_image_manager_, &gpu_scheduler_,
+        settings, &debug_settings_, frame_sink_id,
         nullptr /* DisplayCompositorMemoryAndTaskController */,
         std::move(output_surface), std::move(overlay_processor),
         std::move(scheduler), task_runner_);
@@ -1720,7 +1720,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
         ink_points_[pointer_id][index].point(), diameter, color.toSkColor(),
         ink_points_[pointer_id][index].timestamp(), presentation_area,
         base::TimeTicks::Now(),
-        /*hovering*/ false);
+        /*hovering*/ false, /*render_pass_id=*/0);
     SendMetadata(metadata);
     return metadata;
   }
@@ -1754,7 +1754,7 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
   void DrawDelegatedInkTrail() {
     SkCanvas canvas;
     static_cast<DelegatedInkPointRendererSkia*>(ink_renderer())
-        ->DrawDelegatedInkTrail(&canvas);
+        ->DrawDelegatedInkTrail(&canvas, gfx::Transform());
   }
 
   int GetPathPointCount() { return ink_renderer()->GetPathPointCountForTest(); }
@@ -1840,14 +1840,6 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
   EXPECT_EQ(1, UniqueStoredPointerIds());
   EXPECT_EQ(kInitialDelegatedPoints, StoredPointsForPointerId(kPointerId));
 
-  // No metadata has been provided yet, so filtering shouldn't occur and all
-  // points should still exist after a FinalizePath() call.
-  FinalizePathAndCheckHistograms(base::TimeDelta::Min(),
-                                 base::TimeDelta::Min());
-
-  EXPECT_EQ(1, UniqueStoredPointerIds());
-  EXPECT_EQ(kInitialDelegatedPoints, StoredPointsForPointerId(kPointerId));
-
   // Now provide metadata with a timestamp matching one of the points to
   // confirm that earlier points are removed and later points remain.
   const int kInkPointForMetadata = 1;
@@ -1856,14 +1848,14 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
       kInkPointForMetadata, kDiameter, SkColors::kBlack, gfx::RectF());
 
   // The histogram should count one in the bucket that is the difference between
-  // the latest point stored and the metadata. No prediction should occur with
-  // 3 provided points, so the *WithoutPrediction histogram should count
-  // the difference between the last point and the metadata, while the
-  // *WithPrediction* histogram should count 1 in the 0 bucket.
+  // the latest point stored and the metadata. The *WithoutPrediction histogram
+  // should count the difference between the last point and the metadata, while
+  // the *WithPrediction* histogram should count 1 in the 7ms bucket because
+  // prediction can occer with linear resampling and 2 input points.
   base::TimeDelta bucket_without_prediction =
       last_ink_point(kPointerId).timestamp() - metadata.timestamp();
   FinalizePathAndCheckHistograms(bucket_without_prediction,
-                                 base::Milliseconds(0));
+                                 base::Milliseconds(7));
 
   EXPECT_EQ(kInitialDelegatedPoints - kInkPointForMetadata,
             StoredPointsForPointerId(kPointerId));
@@ -1983,7 +1975,8 @@ TEST_F(SkiaDelegatedInkRendererTest,
   // *WithPrediction* shouldn't record anything due to no valid pointer id.
   SendMetadata(gfx::DelegatedInkMetadata(
       gfx::PointF(100, 100), 5.6f, SK_ColorBLACK, base::TimeTicks::Min(),
-      gfx::RectF(), base::TimeTicks::Min(), /*hovering*/ false));
+      gfx::RectF(), base::TimeTicks::Min(), /*hovering*/ false,
+      /*render_pass_id=*/0));
   FinalizePathAndCheckHistograms(base::Milliseconds(0), base::TimeDelta::Min());
   EXPECT_EQ(kNumPointsForPointerId0 - kInkPointForMetadata,
             StoredPointsForPointerId(kPointerIds[0]));
@@ -1998,7 +1991,7 @@ TEST_F(SkiaDelegatedInkRendererTest,
   SendMetadata(gfx::DelegatedInkMetadata(
       gfx::PointF(100, 100), 5.6f, SK_ColorBLACK,
       base::TimeTicks::Now() + base::Milliseconds(1000), gfx::RectF(),
-      base::TimeTicks::Now(), /*hovering*/ false));
+      base::TimeTicks::Now(), /*hovering*/ false, /*render_pass_id=*/0));
   FinalizePathAndCheckHistograms(base::Milliseconds(0), base::TimeDelta::Min());
   for (int i : kPointerIds)
     EXPECT_EQ(0, StoredPointsForPointerId(i));
@@ -2088,7 +2081,7 @@ TEST_F(SkiaDelegatedInkRendererTest, DrawTrailWhenMetadataIsCloseEnough) {
   gfx::DelegatedInkMetadata metadata(
       gfx::PointF(point.x() - 1.0f, point.y() - 1.0f), 45.f, SK_ColorBLACK,
       timestamp, gfx::RectF(0, 0, 100, 100), base::TimeTicks::Now(),
-      /*hovering*/ false);
+      /*hovering*/ false, /*render_pass_id=*/0);
   SendMetadata(metadata);
 
   // If the metadata was close enough, then a trail should be drawn with all
@@ -2103,7 +2096,7 @@ TEST_F(SkiaDelegatedInkRendererTest, DrawTrailWhenMetadataIsCloseEnough) {
   metadata = gfx::DelegatedInkMetadata(
       gfx::PointF(point2.x() - 1.01f, point2.y() - 1.0f), 45.f, SK_ColorBLACK,
       timestamp2, gfx::RectF(0, 0, 100, 100), base::TimeTicks::Now(),
-      /*hovering*/ false);
+      /*hovering*/ false, /*render_pass_id=*/0);
   SendMetadata(metadata);
 
   ink_renderer()->FinalizePathForDraw();
@@ -2129,7 +2122,7 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkOutstandingPointsToDraw) {
   SendMetadata(gfx::DelegatedInkMetadata(
       gfx::PointF(point.x(), point.y()), 45.f, SK_ColorBLACK, timestamp,
       gfx::RectF(0, 0, 100, 100), base::TimeTicks::Now(),
-      /*hovering=*/false));
+      /*hovering=*/false, /*render_pass_id=*/0));
   ink_renderer()->ReportPointsDrawn();
   histogram_tester.ExpectUniqueSample(kHistogramName, 1, 1);
 
@@ -2167,7 +2160,7 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkTimeToDrawMillis) {
   SendMetadata(gfx::DelegatedInkMetadata(
       gfx::PointF(point.x(), point.y()), 45.f, SK_ColorBLACK, timestamp,
       gfx::RectF(0, 0, 100, 100), base::TimeTicks::Now(),
-      /*hovering=*/false));
+      /*hovering=*/false, /*render_pass_id=*/0));
   ink_renderer()->ReportPointsDrawn();
   histogram_tester.ExpectTotalCount(kHistogramName, 1);
 
@@ -2193,7 +2186,7 @@ TEST_F(SkiaDelegatedInkRendererTest,
   const auto create_metadata = [](gfx::PointF& p, base::TimeTicks& t) {
     return gfx::DelegatedInkMetadata(p, /*diameter=*/45.f, SK_ColorBLACK, t,
                                      gfx::RectF(0, 0, 100, 100), t,
-                                     /*hovering=*/false);
+                                     /*hovering=*/false, /*render_pass_id=*/0);
   };
   SetUpRenderers();
 
@@ -2336,7 +2329,8 @@ TEST_P(DelegatedInkDisplayTest, MetadataOnlySentToSkiaRendererOrOutputSurface) {
 
   gfx::DelegatedInkMetadata metadata(
       gfx::PointF(5, 5), 3.5f, SK_ColorBLACK, base::TimeTicks::Now(),
-      gfx::RectF(0, 0, 20, 20), base::TimeTicks::Now(), false);
+      gfx::RectF(0, 0, 20, 20), base::TimeTicks::Now(), false,
+      /*render_pass_id=*/0);
 
   SubmitCompositorFrameWithInkMetadata(
       &pass_list, id_allocator_.GetCurrentLocalSurfaceId(), metadata);

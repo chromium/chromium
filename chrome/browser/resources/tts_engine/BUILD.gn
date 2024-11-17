@@ -1,0 +1,14 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(is_win || is_mac || is_linux)
+
+build_webui("build") {
+  grd_prefix = "tts_engine"
+
+  non_web_component_files = [ "background.ts" ]
+  ts_out_dir = "$root_out_dir/resources/tts_engine"
+}

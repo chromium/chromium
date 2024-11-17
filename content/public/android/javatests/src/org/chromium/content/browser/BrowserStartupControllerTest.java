@@ -135,7 +135,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, false, callback);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
 
@@ -167,7 +167,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, false, callback1);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         ThreadUtils.runOnUiThreadBlocking(
@@ -176,7 +176,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, false, callback2);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         ThreadUtils.runOnUiThreadBlocking(
@@ -215,7 +215,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, false, callback1);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         ThreadUtils.runOnUiThreadBlocking(
@@ -246,7 +246,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, false, callback3);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         ThreadUtils.runOnUiThreadBlocking(
@@ -277,7 +277,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, false, callback);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
 
@@ -308,7 +308,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, false, callback1);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         ThreadUtils.runOnUiThreadBlocking(
@@ -339,7 +339,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, false, callback3);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         ThreadUtils.runOnUiThreadBlocking(
@@ -368,7 +368,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesSync(
                                 LibraryProcessType.PROCESS_BROWSER, false, false);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
 
@@ -392,7 +392,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, false, callback);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                     // To ensure that the async startup doesn't complete too soon we have
                     // to do both these in a since Runnable instance. This avoids the
@@ -401,7 +401,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesSync(
                                 LibraryProcessType.PROCESS_BROWSER, false, true);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
 
@@ -428,7 +428,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesSync(
                                 LibraryProcessType.PROCESS_BROWSER, false, true);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
 
@@ -444,7 +444,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, false, callback);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
 
@@ -502,7 +502,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, true, callback1);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         ThreadUtils.runOnUiThreadBlocking(
@@ -538,7 +538,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, false, callback3);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         ThreadUtils.runOnUiThreadBlocking(
@@ -578,13 +578,13 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, true, callback1);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                     try {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, true, callback2);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         ThreadUtils.runOnUiThreadBlocking(
@@ -629,7 +629,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, true, callback1);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         ThreadUtils.runOnUiThreadBlocking(
@@ -638,7 +638,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, true, callback2);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         ThreadUtils.runOnUiThreadBlocking(
@@ -683,13 +683,13 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, true, callback1);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                     try {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, false, callback2);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         ThreadUtils.runOnUiThreadBlocking(
@@ -739,7 +739,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, true, callback1);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         ThreadUtils.runOnUiThreadBlocking(
@@ -748,7 +748,7 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesSync(
                                 LibraryProcessType.PROCESS_BROWSER, false, true);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         // Wait for callbacks to complete.
@@ -787,14 +787,14 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, true, callback1);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
 
                     try {
                         mController.startBrowserProcessesSync(
                                 LibraryProcessType.PROCESS_BROWSER, false, true);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         // Wait for callbacks to complete.
@@ -833,13 +833,13 @@ public class BrowserStartupControllerTest {
                         mController.startBrowserProcessesSync(
                                 LibraryProcessType.PROCESS_BROWSER, false, true);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                     try {
                         mController.startBrowserProcessesAsync(
                                 LibraryProcessType.PROCESS_BROWSER, true, true, callback1);
                     } catch (Exception e) {
-                        Assert.fail("Browser should have started successfully");
+                        throw new AssertionError("Browser should have started successfully", e);
                     }
                 });
         // Wait for callbacks to complete.

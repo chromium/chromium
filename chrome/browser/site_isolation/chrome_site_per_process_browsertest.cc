@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstddef>
 #include <utility>
 #include <vector>
 
@@ -293,6 +294,11 @@ class ChromeSitePerProcessGuestViewPDFTest : public ChromeSitePerProcessTest {
                                   ->CreateGuestViewManagerDelegate());
   }
 
+  void TearDownOnMainThread() override {
+    test_guest_view_manager_ = nullptr;
+    ChromeSitePerProcessTest::TearDownOnMainThread();
+  }
+
  protected:
   guest_view::TestGuestViewManager* test_guest_view_manager() const {
     return test_guest_view_manager_;
@@ -300,8 +306,7 @@ class ChromeSitePerProcessGuestViewPDFTest : public ChromeSitePerProcessTest {
 
  private:
   guest_view::TestGuestViewManagerFactory factory_;
-  raw_ptr<guest_view::TestGuestViewManager, DanglingUntriaged>
-      test_guest_view_manager_;
+  raw_ptr<guest_view::TestGuestViewManager> test_guest_view_manager_;
 };
 
 // This test verifies that when navigating an OOPIF to a page with <embed>-ed

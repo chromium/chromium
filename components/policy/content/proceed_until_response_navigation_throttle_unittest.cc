@@ -310,6 +310,36 @@ TEST_F(ProceedUntilResponseNavigationThrottleTest, DeferOnStartAndRedirect) {
 }
 
 // Test a case, the internal throttle asks DEFER on WillStartRequest and resumes
+// the request before WillRedirectRequest with a junk action, but intended to
+// proceed.
+TEST_F(ProceedUntilResponseNavigationThrottleTest,
+       DeferOnStartAndResolveToProceedWithJunkAction) {
+  // Defer on WillStartRequest.
+  // This will be observed as PROCEED in the throttle runner.
+  event_expectation().ExpectWillStartRequest(
+      content::NavigationThrottle::DEFER);
+  auto navigation_simulator = StartNavigation(GURL("http://example.com/"));
+  ASSERT_FALSE(navigation_simulator->IsDeferred());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            navigation_simulator->GetLastThrottleCheckResult());
+  event_expectation().CheckExpectations();
+
+  // Resolve the deferred request to proceed, but with a junk action, `CANCEL`.
+  // If the `proceed` is true, the given action should be ignored.
+  event_expectation().Resolve(/*proceed=*/true,
+                              content::NavigationThrottle::CANCEL);
+
+  // Proceed on WillProcessResponse.
+  event_expectation().ExpectWillProcessResponse();
+  navigation_simulator->ReadyToCommit();
+  ASSERT_FALSE(navigation_simulator->IsDeferred());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            navigation_simulator->GetLastThrottleCheckResult());
+  EXPECT_FALSE(navigation_simulator->HasFailed());
+  event_expectation().CheckExpectations();
+}
+
+// Test a case, the internal throttle asks DEFER on WillStartRequest and resumes
 // the request to cancel before WillRedirectRequest.
 TEST_F(ProceedUntilResponseNavigationThrottleTest,
        DeferOnStartAndResolveToCancelOnRedirect) {

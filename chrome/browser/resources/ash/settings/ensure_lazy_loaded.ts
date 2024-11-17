@@ -12,11 +12,9 @@ import {getTrustedScriptURL} from 'chrome://resources/js/static_types.js';
 
 const ADVANCED_SECTION_PAGES = [
   'settings-crostini-page',
-  'settings-date-time-page',
   'os-settings-files-page',
   'os-settings-languages-section',
   'os-settings-printing-page',
-  'os-settings-reset-page',
 ];
 
 let lazyLoadPromise: Promise<CustomElementConstructor[]>|null = null;

@@ -14,6 +14,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
@@ -22,6 +23,12 @@ namespace blink {
 // third_party/blink/public/mojom/frame/view_transition_state.mojom for more
 // comments.
 struct BLINK_COMMON_EXPORT ViewTransitionElement {
+  struct LayeredBoxProperties {
+    gfx::RectF content_box;
+    gfx::RectF padding_box;
+    mojom::ViewTransitionElementBoxSizing box_sizing;
+  };
+
  private:
   // IMPORTANT:
   // This is private + friends, because it is not meant to be used anywhere
@@ -34,7 +41,7 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
                                    ViewTransitionElement>;
 
   std::string tag_name;
-  gfx::SizeF border_box_size_in_css_space;
+  gfx::RectF border_box_rect_in_enclosing_layer_css_space;
   gfx::Transform viewport_matrix;
   gfx::RectF overflow_rect_in_layout_space;
   viz::ViewTransitionElementResourceId snapshot_id;
@@ -45,6 +52,8 @@ struct BLINK_COMMON_EXPORT ViewTransitionElement {
 
   std::vector<std::string> class_list;
   std::string containing_group_name;
+
+  std::optional<LayeredBoxProperties> layered_box_properties;
 };
 
 struct BLINK_COMMON_EXPORT ViewTransitionState {

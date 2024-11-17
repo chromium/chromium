@@ -56,7 +56,7 @@ FileSystemAccessRestorePermissionBubbleView::
   // Add file/directory list.
   std::vector<base::FilePath> file_paths;
   for (auto file : file_data) {
-    file_paths.push_back(file.path);
+    file_paths.push_back(file.path_info.path);
   }
   AddChildView(FileSystemAccessScrollPanel::Create(file_paths));
 
@@ -187,7 +187,7 @@ void FileSystemAccessRestorePermissionBubbleView::OnButtonPressed(
       std::move(callback_).Run(permissions::PermissionAction::DENIED);
       return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FileSystemAccessRestorePermissionBubbleView::OnPromptDismissed() {

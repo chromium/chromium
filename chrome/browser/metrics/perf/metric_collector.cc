@@ -110,7 +110,7 @@ void MetricCollector::RecordUserLogin(base::TimeTicks login_time) {
 }
 void MetricCollector::StopTimer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  timer_.AbandonAndStop();
+  timer_.Stop();
 }
 
 void MetricCollector::ScheduleSuspendDoneCollection(

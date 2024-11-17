@@ -116,10 +116,6 @@ class CrostiniPortForwarder : public KeyedService {
   void ActiveNetworksChanged(const std::string& interface,
                              const std::string& ip_address);
 
-  static CrostiniPortForwarder* GetForProfile(Profile* profile);
-
-  static void EnsureFactoryBuilt();
-
   explicit CrostiniPortForwarder(Profile* profile);
 
   CrostiniPortForwarder(const CrostiniPortForwarder&) = delete;

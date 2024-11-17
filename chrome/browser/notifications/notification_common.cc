@@ -55,7 +55,7 @@ void NotificationCommon::OpenNotificationSettings(Profile* profile,
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // Android settings are handled through Java. Chrome OS settings are handled
   // through the tray's setting panel.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 #else
   chrome::ScopedTabbedBrowserDisplayer browser_displayer(profile);
   chrome::ShowContentSettingsExceptions(browser_displayer.browser(),

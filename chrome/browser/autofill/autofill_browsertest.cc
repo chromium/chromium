@@ -18,6 +18,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -76,16 +77,13 @@ namespace {
 
 using ::base::ASCIIToUTF16;
 using ::base::UTF16ToASCII;
+using ::base::test::RunClosure;
 using ::testing::_;
 using ::testing::AssertionResult;
 using ::testing::MockFunction;
 using ::testing::Sequence;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
-
-ACTION_P(InvokeClosure, closure) {
-  closure.Run();
-}
 
 // Default JavaScript code used to submit the forms.
 const char kDocumentClickHandlerSubmitJS[] =
@@ -98,7 +96,7 @@ class AutofillTest : public InProcessBrowserTest {
   class TestAutofillManager : public BrowserAutofillManager {
    public:
     explicit TestAutofillManager(ContentAutofillDriver* driver)
-        : BrowserAutofillManager(driver, "en-US") {}
+        : BrowserAutofillManager(driver) {}
 
     [[nodiscard]] AssertionResult WaitForFormsSeen(int min_num_awaited_calls) {
       return forms_seen_waiter_.Wait(min_num_awaited_calls);
@@ -811,7 +809,7 @@ class AutofillTestPrerendering : public InProcessBrowserTest {
   class MockAutofillManager : public BrowserAutofillManager {
    public:
     explicit MockAutofillManager(ContentAutofillDriver* driver)
-        : BrowserAutofillManager(driver, "en-US") {
+        : BrowserAutofillManager(driver) {
       // We need to set these expectations immediately to catch any premature
       // calls while prerendering.
       if (driver->render_frame_host()->GetLifecycleState() ==
@@ -894,7 +892,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTestPrerendering, DeferWhilePrerendering) {
   EXPECT_CALL(on_forms_seen.check_point, Call).InSequence(on_forms_seen.seq);
   EXPECT_CALL(*mock, OnFormsSeen)
       .InSequence(on_forms_seen.seq)
-      .WillOnce(InvokeClosure(on_forms_seen.run_loop.QuitClosure()));
+      .WillOnce(RunClosure(on_forms_seen.run_loop.QuitClosure()));
 
   struct {
     Sequence seq;
@@ -908,8 +906,7 @@ IN_PROC_BROWSER_TEST_F(AutofillTestPrerendering, DeferWhilePrerendering) {
       .InSequence(on_focus_on_form_field_impl.seq);
   EXPECT_CALL(*mock, OnFocusOnFormFieldImpl)
       .InSequence(on_focus_on_form_field_impl.seq)
-      .WillOnce(
-          InvokeClosure(on_focus_on_form_field_impl.run_loop.QuitClosure()));
+      .WillOnce(RunClosure(on_focus_on_form_field_impl.run_loop.QuitClosure()));
 
   // During prerendering, no events should be fired by AutofillAgent.
   ASSERT_TRUE(content::ExecJs(rfh,

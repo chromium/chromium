@@ -969,10 +969,13 @@ class WPTResultsProcessorTest(LoggingTestCase):
         log_path = self.fs.join('/mock-checkout', 'out', 'Default',
                                 'layout-test-results', 'external', 'wpt',
                                 'test-leak-log.txt')
-        self.assertEqual(json.loads(self.fs.read_text_file(log_path)), {
-            'live_documents': [1, 1],
-            'live_nodes': [4, 5],
-        })
+        self.assertEqual(
+            self.fs.read_text_file(log_path),
+            textwrap.dedent("""\
+                Some DOM objects associated with the test page are still alive after navigating to about:blank:
+                  live_documents: Expected 1, got 1
+                  live_nodes: Expected 4, got 5
+                """))
 
     def test_extract_command(self):
         self._event(action='test_start', test='/test.html')

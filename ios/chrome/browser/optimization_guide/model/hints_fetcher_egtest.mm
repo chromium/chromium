@@ -75,7 +75,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
              optimization_guide::HintsFetcherRemoteResponseType::kHung) {
     return std::make_unique<net::test_server::HungResponse>();
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   return std::move(response);
@@ -158,11 +158,11 @@ std::unique_ptr<net::test_server::HttpResponse> HandleGetHintsRequest(
                                    NOSCRIPT];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Failed to release histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Tests

@@ -7,26 +7,18 @@
 
 #include <stdint.h>
 
-#include <map>
+#include <cstddef>
+#include <iterator>
 #include <memory>
 #include <optional>
-#include <ostream>
-#include <set>
 #include <string>
-#include <utility>
 #include <vector>
 
-#include "base/memory/raw_ptr.h"
-#include "base/strings/string_split.h"
-#include "build/build_config.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node.h"
-#include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_node_position.h"
-#include "ui/accessibility/ax_range.h"
-#include "ui/accessibility/ax_text_attributes.h"
-#include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_id.h"
 #include "ui/accessibility/platform/child_iterator.h"
 #include "ui/base/buildflags.h"
@@ -38,6 +30,7 @@ namespace content {
 class DumpAccessibilityTestBase;
 }
 namespace ui {
+class AXPlatformNode;
 class BrowserAccessibilityManager;
 // A `BrowserAccessibility` object represents one node in the accessibility tree
 // on the browser side. It wraps an `AXNode` and assists in exposing

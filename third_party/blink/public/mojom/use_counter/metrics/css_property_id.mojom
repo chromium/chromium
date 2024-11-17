@@ -813,10 +813,10 @@ enum CSSSampleId {
     kScrollStartX = 754,
     kScrollStartY = 755,
     kScrollStart = 756,
-    kScrollStartTargetBlock = 757,
-    kScrollStartTargetInline = 758,
-    kScrollStartTargetX = 759,
-    kScrollStartTargetY = 760,
+    // kScrollStartTargetBlock = 757,
+    // kScrollStartTargetInline = 758,
+    // kScrollStartTargetX = 759,
+    // kScrollStartTargetY = 760,
     kScrollStartTarget = 761,
     kTimelineScope = 762,
     kScrollbarColor = 763,
@@ -840,7 +840,7 @@ enum CSSSampleId {
     kInsetArea = 781,
     kViewTransitionClass = 782,
     kPositionTryOrder = 783,
-    kPositionTryOptions = 784,
+    // kPositionTryOptions = 784,
     kPositionTry = 785,
     kTextBoxEdge = 786,
     kReadingFlow = 787,
@@ -865,6 +865,9 @@ enum CSSSampleId {
     kTextWrapStyle = 806,
     kMasonryTrack = 807,
     kMasonrySlack = 808,
+    kCaretAnimation = 809,
+    kViewTransitionCaptureMode = 810,
+    kInteractivity = 811,
 
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).

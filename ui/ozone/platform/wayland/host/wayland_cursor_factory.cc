@@ -85,8 +85,7 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::CreateImageCursor(
   // must upscale cursor images with non-integer scales to integer scaled
   // images so that the cursor is displayed correctly.
   float rounded_scale = GetRoundedScale(scale);
-  if (std::abs(rounded_scale - scale) > std::numeric_limits<float>::epsilon() &&
-      !connection_->surface_submission_in_pixel_coordinates()) {
+  if (std::abs(rounded_scale - scale) > std::numeric_limits<float>::epsilon()) {
     const SkBitmap scaled_bitmap = skia::ImageOperations::Resize(
         bitmap, skia::ImageOperations::RESIZE_LANCZOS3,
         std::round(bitmap.width() * (rounded_scale / scale)),
@@ -111,8 +110,7 @@ scoped_refptr<PlatformCursor> WaylandCursorFactory::CreateAnimatedCursor(
   scoped_refptr<BitmapCursor> bitmap_cursor;
 
   float rounded_scale = GetRoundedScale(scale);
-  if (std::abs(rounded_scale - scale) > std::numeric_limits<float>::epsilon() &&
-      !connection_->surface_submission_in_pixel_coordinates()) {
+  if (std::abs(rounded_scale - scale) > std::numeric_limits<float>::epsilon()) {
     std::vector<SkBitmap> scaled_bitmaps;
     for (const auto& bitmap : bitmaps) {
       scaled_bitmaps.push_back(skia::ImageOperations::Resize(
@@ -140,10 +138,7 @@ void WaylandCursorFactory::FinishCursorLoad(
     wl_cursor* theme_cursor = GetCursorFromTheme(loaded_theme, name);
     if (theme_cursor) {
       cursor->SetBitmapCursor(base::MakeRefCounted<BitmapCursor>(
-          type, theme_cursor,
-          connection_->surface_submission_in_pixel_coordinates()
-              ? scale
-              : GetRoundedScale(scale)));
+          type, theme_cursor, GetRoundedScale(scale)));
       return;
     }
   }
@@ -271,14 +266,7 @@ void WaylandCursorFactory::FlushThemeCache(bool force) {
 }
 
 int WaylandCursorFactory::GetScaledSize(float scale) const {
-  if (connection_->surface_submission_in_pixel_coordinates()) {
-    // When surface submission in pixel coordinates is enabled, true
-    // fractional scaled cursors can be represented without scaling, so
-    // load the cursor with its proper size.
-    return base::checked_cast<int>(size_ * scale);
-  } else {
-    return base::checked_cast<int>(size_ * GetRoundedScale(scale));
-  }
+  return base::checked_cast<int>(size_ * GetRoundedScale(scale));
 }
 
 void WaylandCursorFactory::FinishThemeLoad(base::WeakPtr<ThemeData> cache_entry,

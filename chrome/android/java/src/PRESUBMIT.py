@@ -85,7 +85,7 @@ def _CheckAlertDialogBuilder(input_api, output_api):
       BROWSER_ROOT + 'browsing_data/ConfirmImportantSitesDialogFragment.java',
       BROWSER_ROOT + 'browsing_data/OtherFormsOfHistoryDialogFragment.java',
       BROWSER_ROOT + 'dom_distiller/DistilledPagePrefsView.java',
-      BROWSER_ROOT + 'dom_distiller/DomDistillerUIUtils.java',
+      BROWSER_ROOT + 'dom_distiller/DomDistillerUiUtils.java',
       BROWSER_ROOT + 'download/OMADownloadHandler.java',
       BROWSER_ROOT + 'init/LaunchFailedActivity.java',
       BROWSER_ROOT + 'password_manager/AccountChooserDialog.java',

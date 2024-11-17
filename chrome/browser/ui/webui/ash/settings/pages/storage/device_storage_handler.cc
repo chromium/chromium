@@ -69,8 +69,7 @@ const char* CalculationTypeToEventName(SizeCalculator::CalculationType x) {
     case SizeCalculator::CalculationType::kSystem:
       return "storage-system-size-changed";
     default:
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
   }
 }
 
@@ -123,9 +122,7 @@ void StorageHandler::RegisterMessages() {
 }
 
 void StorageHandler::OnJavascriptAllowed() {
-  if (base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature)) {
-    arc_observation_.Observe(arc::ArcSessionManager::Get());
-  }
+  arc_observation_.Observe(arc::ArcSessionManager::Get());
 
   // Start observing mount/unmount events to update the connected device list.
   DiskMountManager::GetInstance()->AddObserver(this);
@@ -145,10 +142,8 @@ void StorageHandler::OnJavascriptDisallowed() {
   // Ensure that pending callbacks do not complete and cause JS to be evaluated.
   weak_ptr_factory_.InvalidateWeakPtrs();
 
-  if (base::FeatureList::IsEnabled(arc::kUsbStorageUIFeature)) {
-    DCHECK(arc_observation_.IsObservingSource(arc::ArcSessionManager::Get()));
-    arc_observation_.Reset();
-  }
+  DCHECK(arc_observation_.IsObservingSource(arc::ArcSessionManager::Get()));
+  arc_observation_.Reset();
 
   StopObservingEvents();
 }
@@ -313,8 +308,7 @@ void StorageHandler::OnSizeCalculated(
       UpdateStorageItem(calculation_type);
       break;
     default:
-      NOTREACHED_IN_MIGRATION()
-          << "Unexpected calculation type: " << item_index;
+      NOTREACHED() << "Unexpected calculation type: " << item_index;
   }
   UpdateSystemSizeItem();
 }

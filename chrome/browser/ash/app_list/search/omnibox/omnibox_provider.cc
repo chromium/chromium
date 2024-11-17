@@ -21,7 +21,6 @@
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/chromeos/launcher_search/search_util.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -121,7 +120,7 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
     }
 
     if (match.type == AutocompleteMatchType::OPEN_TAB) {
-      // Filters out open tab results if web in disabled in launcher search
+      // Filters out open tab results if web is disabled in launcher search
       // controls.
       if (ash::features::IsLauncherSearchControlEnabled() &&
           !IsControlCategoryEnabled(profile_, ControlCategory::kWeb)) {
@@ -130,12 +129,12 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
       DCHECK(last_tokenized_query_.has_value());
       new_results.emplace_back(std::make_unique<OpenTabResult>(
           profile_, list_controller_,
-          crosapi::CreateResult(
-              match, controller_.get(), &favicon_cache_,
-              BookmarkModelFactory::GetForBrowserContext(profile_), input_),
+          CreateResult(match, controller_.get(), &favicon_cache_,
+                       BookmarkModelFactory::GetForBrowserContext(profile_),
+                       input_),
           last_tokenized_query_.value()));
     } else if (!IsAnswer(match)) {
-      // Filters out omnibox results if web in disabled in launcher search
+      // Filters out omnibox results if web is disabled in launcher search
       // controls.
       if (ash::features::IsLauncherSearchControlEnabled() &&
           !IsControlCategoryEnabled(profile_, ControlCategory::kWeb)) {
@@ -143,15 +142,14 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
       }
       list_results.emplace_back(std::make_unique<OmniboxResult>(
           profile_, list_controller_,
-          crosapi::CreateResult(
-              match, controller_.get(), &favicon_cache_,
-              BookmarkModelFactory::GetForBrowserContext(profile_), input_),
+          CreateResult(match, controller_.get(), &favicon_cache_,
+                       BookmarkModelFactory::GetForBrowserContext(profile_),
+                       input_),
           last_query_));
     } else {
       new_results.emplace_back(std::make_unique<OmniboxAnswerResult>(
           profile_, list_controller_,
-          crosapi::CreateAnswerResult(match, controller_.get(), last_query_,
-                                      input_),
+          CreateAnswerResult(match, controller_.get(), last_query_, input_),
           last_query_));
     }
   }

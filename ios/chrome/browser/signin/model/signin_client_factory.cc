@@ -13,11 +13,6 @@
 #include "ios/chrome/browser/signin/model/ios_chrome_signin_client.h"
 
 // static
-SigninClient* SigninClientFactory::GetForBrowserState(ProfileIOS* profile) {
-  return GetForProfile(profile);
-}
-
-// static
 SigninClient* SigninClientFactory::GetForProfile(ProfileIOS* profile) {
   return static_cast<SigninClient*>(
       GetInstance()->GetServiceForBrowserState(profile, true));
@@ -41,11 +36,8 @@ SigninClientFactory::~SigninClientFactory() {}
 
 std::unique_ptr<KeyedService> SigninClientFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ChromeBrowserState* chrome_browser_state =
-      ChromeBrowserState::FromBrowserState(context);
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(context);
   return std::make_unique<IOSChromeSigninClient>(
-      chrome_browser_state,
-      ios::CookieSettingsFactory::GetForBrowserState(chrome_browser_state),
-      ios::HostContentSettingsMapFactory::GetForBrowserState(
-          chrome_browser_state));
+      profile, ios::CookieSettingsFactory::GetForProfile(profile),
+      ios::HostContentSettingsMapFactory::GetForProfile(profile));
 }

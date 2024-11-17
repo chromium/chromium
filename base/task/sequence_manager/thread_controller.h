@@ -13,6 +13,7 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/features.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
@@ -331,7 +332,9 @@ class BASE_EXPORT ThreadController {
       // track event.
       void MaybeEmitIncomingWakeupFlow(perfetto::EventContext& ctx);
 
-      const std::string& thread_name() const { return thread_name_; }
+      const std::string& thread_name() const LIFETIME_BOUND {
+        return thread_name_;
+      }
 
       bool wall_time_based_metrics_enabled_for_testing() const {
         return wall_time_based_metrics_enabled_for_testing_;

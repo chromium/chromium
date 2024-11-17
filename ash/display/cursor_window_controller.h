@@ -81,6 +81,10 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   // |is_active| is false when user stops hovering and is no longer resizing.
   void OnDockedMagnifierResizingStateChanged(bool is_active);
 
+  // When entering/exiting fullscreen magnifier, reset the container and
+  // switch between cursor view and cursor aura window depends on the status.
+  void OnFullscreenMagnifierEnabled(bool enabled);
+
   // Sets cursor location, shape, set and visibility.
   void UpdateLocation();
   void SetCursor(gfx::NativeCursor cursor);
@@ -121,7 +125,17 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   // Updates cursor view based on current cursor state.
   void UpdateCursorView();
 
+  // Update cursor aura window.
+  void UpdateCursorWindow();
+
   const gfx::ImageSkia& GetCursorImageForTest() const;
+
+  // Determines if fast ink cursor should be used.
+  bool ShouldUseFastInk() const;
+
+  // If using fast ink, create `cursor_view_widget_`; otherwise,
+  // create `cursor_window_`.
+  void UpdateCursorMode();
 
   base::ObserverList<Observer> observers_;
 
@@ -160,7 +174,6 @@ class ASH_EXPORT CursorWindowController : public aura::WindowObserver {
   // directly to the front buffer that is overlay candidate.
   views::UniqueWidgetPtr cursor_view_widget_;
 
-  const bool is_fast_ink_enabled_;
   base::ScopedObservation<aura::Window, aura::WindowObserver>
       scoped_container_observer_{this};
 };

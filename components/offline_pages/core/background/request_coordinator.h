@@ -65,7 +65,7 @@ class RequestCoordinator : public KeyedService,
 
   class ActiveTabInfo {
    public:
-    virtual ~ActiveTabInfo() {}
+    virtual ~ActiveTabInfo() = default;
     // Returns true if the active tab's URL matches |url|. If Chrome is in the
     // background, this should return false.
     virtual bool DoesActiveTabMatch(const GURL& url) = 0;

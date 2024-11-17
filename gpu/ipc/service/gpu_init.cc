@@ -142,8 +142,9 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
   DCHECK(gpu_info);
   CollectHardwareOverlayInfo(&gpu_info->overlay_info);
 #elif BUILDFLAG(IS_ANDROID)
-  if (gpu_info->gpu.vendor_string == "Qualcomm")
+  if (gpu_info->gpu.vendor_string.find("Qualcomm") != std::string::npos) {
     gfx::SurfaceControl::EnableQualcommUBWC();
+  }
 #endif
 }
 
@@ -466,8 +467,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     return false;
   }
 #if BUILDFLAG(IS_WIN)
-  UMA_HISTOGRAM_BOOLEAN("GPU.AppHelpIsLoaded",
-                        static_cast<bool>(::GetModuleHandle(L"apphelp.dll")));
   if (gpu_preferences_.gr_context_type == GrContextType::kGraphiteDawn &&
       features::kSkiaGraphiteDawnBackendValidation.Get()) {
     // Enable ANGLE debug layer if we need backend validation for Graphite since
@@ -757,6 +756,11 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
           ->GetSupportedFormatsForTexturing();
+  std::vector<gfx::BufferFormat>
+      supported_buffer_formats_for_gl_native_pixmap_import =
+          ui::OzonePlatform::GetInstance()
+              ->GetSurfaceFactoryOzone()
+              ->GetSupportedFormatsForGLNativePixmapImport();
 #endif  // BUILDFLAG(IS_OZONE)
 
   InitializePlatformOverlaySettings(&gpu_info_, gpu_feature_info_);
@@ -799,8 +803,8 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     gpu_preferences_.disable_accelerated_video_encode = true;
   }
 
-  UMA_HISTOGRAM_MEDIUM_TIMES("GPU.InitializeOneOffMediumTime",
-                             elapsed_timer.Elapsed());
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES("GPU.InitializeOneOffMediumTime",
+                                        elapsed_timer.Elapsed());
 
   bool recreate_watchdog = false;
   if (!gl_use_swiftshader_ && command_line->HasSwitch(switches::kUseGL)) {
@@ -876,6 +880,8 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
   gpu_feature_info_.supported_buffer_formats_for_allocation_and_texturing =
       std::move(supported_buffer_formats_for_texturing);
+  gpu_feature_info_.supported_buffer_formats_for_gl_native_pixmap_import =
+      std::move(supported_buffer_formats_for_gl_native_pixmap_import);
   [[maybe_unused]] auto* factory =
       ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
   bool filter_set = false;
@@ -1091,8 +1097,15 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
           ->GetSupportedFormatsForTexturing();
+  const std::vector<gfx::BufferFormat>
+      supported_buffer_formats_for_gl_native_pixmap_import =
+          ui::OzonePlatform::GetInstance()
+              ->GetSurfaceFactoryOzone()
+              ->GetSupportedFormatsForGLNativePixmapImport();
   gpu_feature_info_.supported_buffer_formats_for_allocation_and_texturing =
       std::move(supported_buffer_formats_for_texturing);
+  gpu_feature_info_.supported_buffer_formats_for_gl_native_pixmap_import =
+      std::move(supported_buffer_formats_for_gl_native_pixmap_import);
 #endif
 
   DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);
@@ -1162,6 +1175,14 @@ bool GpuInit::InitializeDawn() {
       if (!CheckVulkanCompatibilities(device_properties, gpu_info_)) {
         return false;
       }
+
+      gpu_info_.hardware_supports_vulkan = true;
+
+      // Limit the use of Vulkan's vendorID and deviceID to Android. This is
+      // because other platforms, for example, Linux, collect such information
+      // somewhere else and we don't want to overwrite it.
+      gpu_info_.gpu.vendor_id = device_properties.vendor_id;
+      gpu_info_.gpu.device_id = device_properties.device_id;
     }
     return true;
   };
@@ -1236,6 +1257,7 @@ bool GpuInit::InitializeVulkan() {
     return false;
   }
 
+  gpu_info_.hardware_supports_vulkan = true;
   gpu_info_.vulkan_info =
       vulkan_implementation_->GetVulkanInstance()->vulkan_info();
   // Limit the use of Vulkan's vendorID and deviceID to Android.

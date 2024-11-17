@@ -103,7 +103,8 @@ class VIZ_SERVICE_EXPORT OverlayCandidateFactory {
       const OverlayCandidate& candidate,
       QuadList::ConstIterator quad_list_begin,
       QuadList::ConstIterator quad_list_end,
-      const base::flat_map<AggregatedRenderPassId, cc::FilterOperations*>&
+      const base::flat_map<AggregatedRenderPassId,
+                           raw_ptr<cc::FilterOperations, CtnExperimental>>&
           render_pass_backdrop_filters) const;
 
   // Returns true if any of the quads in the list given by |quad_list_begin|

@@ -7,9 +7,13 @@
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
+#include "chrome/browser/extensions/extension_sync_service.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync/base/features.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extension_util.h"
@@ -23,6 +27,15 @@ constexpr char kGoodCrx[] = "ldnnhddmnhbkjipkidpdiheffobcpfmf";
 }  // namespace
 
 class AccountExtensionTrackerUnitTest : public ExtensionServiceTestWithInstall {
+ public:
+  void SetUp() override {
+    ExtensionServiceTestWithInstall::SetUp();
+    InitializeEmptyExtensionService();
+
+    service()->Init();
+    ASSERT_TRUE(extension_system()->is_ready());
+  }
+
  protected:
   ExtensionSystem* extension_system() {
     return ExtensionSystem::Get(profile());
@@ -30,19 +43,13 @@ class AccountExtensionTrackerUnitTest : public ExtensionServiceTestWithInstall {
 
   AccountExtensionTracker::AccountExtensionType GetAccountExtensionType(
       const ExtensionId& id) {
-    return AccountExtensionTracker::Get(profile())
-        ->GetAccountExtensionTypeForTesting(id);
+    return AccountExtensionTracker::Get(profile())->GetAccountExtensionType(id);
   }
 };
 
 // Test that an extension's AccountExtensionType is set to the right value based
 // on whether it was installed when there is a signed in user with sync enabled.
 TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeSignedIn) {
-  InitializeEmptyExtensionService();
-
-  service()->Init();
-  ASSERT_TRUE(extension_system()->is_ready());
-
   base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
   InstallCRX(good_crx_path, INSTALL_NEW);
   EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
@@ -89,18 +96,15 @@ TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeTransportMode) {
   scoped_feature_list.InitAndEnableFeature(
       syncer::kSyncEnableExtensionsInTransportMode);
 
-  InitializeEmptyExtensionService();
-
-  service()->Init();
-  ASSERT_TRUE(extension_system()->is_ready());
-
   // Use a test identity environment to mimic signing a user in with sync
   // disabled (transport mode).
   auto identity_test_env_profile_adaptor =
       std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
-  identity_test_env_profile_adaptor->identity_test_env()
-      ->MakePrimaryAccountAvailable("testy@mctestface.com",
-                                    signin::ConsentLevel::kSignin);
+  identity_test_env_profile_adaptor->identity_test_env()->MakeAccountAvailable(
+      signin::AccountAvailabilityOptionsBuilder()
+          .AsPrimary(signin::ConsentLevel::kSignin)
+          .WithAccessPoint(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN)
+          .Build("testy@mctestface.com"));
 
   // The extension's AccountExtensionType is `kLocal` because the user has not
   // explicitly signed in yet.
@@ -135,5 +139,39 @@ TEST_F(AccountExtensionTrackerUnitTest, AccountExtensionTypeTransportMode) {
   EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
             GetAccountExtensionType(external_extension->id()));
 }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+TEST_F(AccountExtensionTrackerUnitTest,
+       AccountExtensionTypeResetWhenSignedOut) {
+  // Enable extension syncing in transport mode.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      syncer::kSyncEnableExtensionsInTransportMode);
+
+  // Use a test identity environment to mimic signing a user in with sync
+  // disabled (transport mode).
+  auto identity_test_env_profile_adaptor =
+      std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile());
+  auto account_info =
+      identity_test_env_profile_adaptor->identity_test_env()
+          ->MakePrimaryAccountAvailable("testy@mctestface.com",
+                                        signin::ConsentLevel::kSignin);
+
+  // Pretend the user has now explcitly signed in.
+  profile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+
+  base::FilePath good_crx_path = data_dir().AppendASCII("good.crx");
+  InstallCRX(good_crx_path, INSTALL_NEW);
+  EXPECT_EQ(
+      AccountExtensionTracker::AccountExtensionType::kAccountInstalledSignedIn,
+      GetAccountExtensionType(kGoodCrx));
+
+  // Sign the user out and verify that `kGoodCrx` is now treated as a local
+  // extension again.
+  identity_test_env_profile_adaptor->identity_test_env()->ClearPrimaryAccount();
+  EXPECT_EQ(AccountExtensionTracker::AccountExtensionType::kLocal,
+            GetAccountExtensionType(kGoodCrx));
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

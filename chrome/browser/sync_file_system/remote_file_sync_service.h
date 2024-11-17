@@ -108,14 +108,6 @@ class RemoteFileSyncService {
     UNINSTALL_AND_KEEP_REMOTE,
   };
 
-  // For GetOriginStatusMap.
-  using OriginStatusMap = std::map<GURL, std::string>;
-  using StatusMapCallback =
-      base::OnceCallback<void(std::unique_ptr<OriginStatusMap> status_map)>;
-
-  // For DumpFile.
-  using ListCallback = base::OnceCallback<void(base::Value::List list)>;
-
   // Creates an initialized RemoteFileSyncService for backend |version|
   // for |context|.
   static std::unique_ptr<RemoteFileSyncService> CreateForBrowserContext(
@@ -178,16 +170,6 @@ class RemoteFileSyncService {
   // Returns the current remote service state (should equal to the value
   // returned by the last OnRemoteServiceStateUpdated notification.
   virtual RemoteServiceState GetCurrentState() const = 0;
-
-  // Returns all origins along with an arbitrary string description of their
-  // corresponding sync statuses.
-  virtual void GetOriginStatusMap(StatusMapCallback callback) = 0;
-
-  // Returns file metadata for |origin| to call |callback|.
-  virtual void DumpFiles(const GURL& origin, ListCallback callback) = 0;
-
-  // Returns the dump of internal database.
-  virtual void DumpDatabase(ListCallback callback) = 0;
 
   // Enables or disables the background sync.
   // Setting this to false should disable the synchronization (and make

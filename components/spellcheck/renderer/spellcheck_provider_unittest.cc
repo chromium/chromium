@@ -63,7 +63,7 @@ class HybridSpellCheckTest
     : public testing::TestWithParam<HybridSpellCheckTestCase> {
  public:
   HybridSpellCheckTest() : provider_(&embedder_provider_) {}
-  ~HybridSpellCheckTest() override {}
+  ~HybridSpellCheckTest() override = default;
 
   void SetUp() override {
     // Don't delay initialization of the SpellcheckService on browser launch.
@@ -99,7 +99,7 @@ class CombineSpellCheckResultsTest
     : public testing::TestWithParam<CombineSpellCheckResultsTestCase> {
  public:
   CombineSpellCheckResultsTest() : provider_(&embedder_provider_) {}
-  ~CombineSpellCheckResultsTest() override {}
+  ~CombineSpellCheckResultsTest() override = default;
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;

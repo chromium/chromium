@@ -18,7 +18,9 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/on_device_translation/language_pack_util.h"
+#include "chrome/browser/on_device_translation/pref_names.h"
 #include "components/component_updater/mock_component_updater_service.h"
+#include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/on_device_translation/public/cpp/features.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -42,6 +44,7 @@ class TranslateKitLanguagePackComponentTest : public ::testing::Test {
   void SetUp() override {
     ASSERT_TRUE(fake_install_dir_.CreateUniqueTempDir());
     SetVersion(kFakeTranslateKitVersion);
+    on_device_translation::RegisterLocalStatePrefs(pref_service_.registry());
   }
 
   // Not Copyable.
@@ -76,10 +79,28 @@ TEST_F(TranslateKitLanguagePackComponentTest, ComponentRegistration) {
   auto service = std::make_unique<MockComponentUpdateService>();
   base::RunLoop run_loop;
   EXPECT_CALL(*service, RegisterComponent(_)).Times(1);
+  EXPECT_CALL(*service, GetComponentIDs()).Times(1);
   RegisterTranslateKitLanguagePackComponent(
       service.get(), pref_service(),
       on_device_translation::LanguagePackKey::kEn_Es, run_loop.QuitClosure());
   run_loop.Run();
+}
+
+TEST_F(TranslateKitLanguagePackComponentTest,
+       ComponentRegistrationAlreadyRegistered) {
+  auto service = std::make_unique<MockComponentUpdateService>();
+  base::RunLoop run_loop;
+  EXPECT_CALL(*service, GetComponentIDs())
+      .WillOnce(testing::Return(
+          std::vector<std::string>({crx_file::id_util::GenerateIdFromHash(
+              on_device_translation::GetLanguagePackComponentConfig(
+                  on_device_translation::LanguagePackKey::kEn_Es)
+                  .public_key_sha)})));
+  RegisterTranslateKitLanguagePackComponent(
+      service.get(), pref_service(),
+      on_device_translation::LanguagePackKey::kEn_Es,
+      /*registered_callback=*/base::BindOnce([]() { NOTREACHED(); }));
+  env().RunUntilIdle();
 }
 
 TEST_F(TranslateKitLanguagePackComponentTest, VerifyInstallation) {

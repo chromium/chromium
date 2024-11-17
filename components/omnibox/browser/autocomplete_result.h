@@ -39,7 +39,10 @@ class AutocompleteResult {
  public:
   typedef ACMatches::const_iterator const_iterator;
   typedef ACMatches::iterator iterator;
-  using MatchDedupComparator = ACMatchKey<std::string, bool, bool>;
+  using MatchDedupComparator = ACMatchKey<std::string,  // URL
+                                          bool,         // Is Calculator type?
+                                          bool,         // Is Verbatim Match?
+                                          bool>;        // Is Answer card?
 
   // Max number of matches we'll show from the various providers. This limit
   // may be different for zero suggest and non zero suggest. Does not take into
@@ -290,7 +293,7 @@ class AutocompleteResult {
   // Returns false if |suggestion_group_id| is not found in
   // |suggestion_groups_map_| or if the suggestion group does not contain the
   // original server provided group ID.
-  bool IsSuggestionGroupHidden(PrefService* prefs,
+  bool IsSuggestionGroupHidden(const PrefService* prefs,
                                omnibox::GroupId suggestion_group_id) const;
 
   // Sets the UI collapsed/expanded state of the |suggestion_group_id| in the

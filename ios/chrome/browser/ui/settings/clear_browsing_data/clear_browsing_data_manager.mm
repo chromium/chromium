@@ -51,8 +51,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/scoped_ui_blocker/ui_blocker_manager.h"
@@ -106,8 +104,7 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
                                                   kSymbolPointSize);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return symbol;
 }
@@ -116,14 +113,14 @@ UIImage* SymbolForItemType(ClearBrowsingDataItemType itemType) {
 // task to start.
 BOOL UIIsBlocking(Browser* browser) {
   SceneState* sceneState = browser->GetSceneState();
-  return [sceneState.uiBlockerManager currentUIBlocker];
+  return sceneState.isUIBlocked;
 }
 
 }  // namespace
 
 @interface ClearBrowsingDataManager () <BrowsingDataRemoverObserving,
                                         PrefObserverDelegate> {
-  base::WeakPtr<ChromeBrowserState> _browserState;
+  base::WeakPtr<ProfileIOS> _profile;
 
   // Access to the kDeleteTimePeriod preference.
   IntegerPrefMember _timeRangePref;
@@ -175,22 +172,21 @@ BOOL UIIsBlocking(Browser* browser) {
 @synthesize shouldPopupDialogAboutOtherFormsOfBrowsingHistory =
     _shouldPopupDialogAboutOtherFormsOfBrowsingHistory;
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
-  return [self initWithBrowserState:browserState
+- (instancetype)initWithProfile:(ProfileIOS*)profile {
+  return [self initWithProfile:profile
                      browsingDataRemover:BrowsingDataRemoverFactory::
-                                             GetForBrowserState(browserState)
-      browsingDataCounterWrapperProducer:
-          [[BrowsingDataCounterWrapperProducer alloc]
-              initWithBrowserState:browserState]];
+                                             GetForProfile(profile)
+      browsingDataCounterWrapperProducer:[[BrowsingDataCounterWrapperProducer
+                                             alloc] initWithProfile:profile]];
 }
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
+- (instancetype)initWithProfile:(ProfileIOS*)profile
                    browsingDataRemover:(BrowsingDataRemover*)remover
     browsingDataCounterWrapperProducer:
         (BrowsingDataCounterWrapperProducer*)producer {
   self = [super init];
   if (self) {
-    _browserState = browserState->AsWeakPtr();
+    _profile = profile->AsWeakPtr();
     _counterWrapperProducer = producer;
 
     _timeRangePref.Init(browsing_data::prefs::kDeleteTimePeriod,
@@ -263,7 +259,7 @@ BOOL UIIsBlocking(Browser* browser) {
   _browsingDataRemoverObserver.reset();
   _countersByMasks.clear();
   _counterWrapperProducer = nil;
-  _browserState.reset();
+  _profile.reset();
 }
 
 // Add items for types of browsing data to clear.
@@ -418,8 +414,8 @@ BOOL UIIsBlocking(Browser* browser) {
 
 // Add footers about user's account data.
 - (void)addSyncProfileItemsToModel:(ListModel*)model {
-  ChromeBrowserState* browserState = self.browserState;
-  if (!browserState) {
+  ProfileIOS* profile = self.profile;
+  if (!profile) {
     // The C++ model has been destroyed, return early.
     return;
   }
@@ -427,7 +423,7 @@ BOOL UIIsBlocking(Browser* browser) {
   // Google Account footer.
   const BOOL loggedIn = [self loggedIn];
   const TemplateURLService* templateURLService =
-      ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
   const TemplateURL* defaultSearchEngine =
       templateURLService->GetDefaultSearchProvider();
   const BOOL isDefaultSearchEngineGoogle =
@@ -452,7 +448,7 @@ BOOL UIIsBlocking(Browser* browser) {
   [self addSavedSiteDataSectionWithModel:model];
 
   history::WebHistoryService* historyService =
-      ios::WebHistoryServiceFactory::GetForBrowserState(browserState);
+      ios::WebHistoryServiceFactory::GetForProfile(profile);
 
   __weak ClearBrowsingDataManager* weakSelf = self;
 
@@ -495,9 +491,9 @@ BOOL UIIsBlocking(Browser* browser) {
                   titleID:(int)titleMessageID
                      mask:(BrowsingDataRemoveMask)mask
                  prefName:(const char*)prefName {
-  ChromeBrowserState* browserState = self.browserState;
+  ProfileIOS* profile = self.profile;
   PrefService* prefService = self.prefService;
-  if (!browserState || !prefService) {
+  if (!profile || !prefService) {
     // The C++ model has been destroyed, return early.
     return nullptr;
   }
@@ -679,21 +675,20 @@ BOOL UIIsBlocking(Browser* browser) {
     case ItemTypeDataTypeAutofill:
       return kClearAutofillCellAccessibilityIdentifier;
     default: {
-      NOTREACHED_IN_MIGRATION();
-      return nil;
+      NOTREACHED();
     }
   }
 }
 
 #pragma mark - Properties
 
-- (ChromeBrowserState*)browserState {
-  return _browserState.get();
+- (ProfileIOS*)profile {
+  return _profile.get();
 }
 
 - (PrefService*)prefService {
-  if (ChromeBrowserState* browserState = self.browserState) {
-    return browserState->GetPrefs();
+  if (ProfileIOS* profile = self.profile) {
+    return profile->GetPrefs();
   }
   return nullptr;
 }
@@ -702,7 +697,7 @@ BOOL UIIsBlocking(Browser* browser) {
 
 // An identity manager
 - (signin::IdentityManager*)identityManager {
-  return IdentityManagerFactory::GetForProfile(self.browserState);
+  return IdentityManagerFactory::GetForProfile(self.profile);
 }
 
 // Whether user is currently logged-in.
@@ -713,7 +708,7 @@ BOOL UIIsBlocking(Browser* browser) {
 
 // A sync service
 - (syncer::SyncService*)syncService {
-  return SyncServiceFactory::GetForBrowserState(self.browserState);
+  return SyncServiceFactory::GetForProfile(self.profile);
 }
 
 // Add at the end of the list model the elements related to signing-out.
@@ -726,9 +721,9 @@ BOOL UIIsBlocking(Browser* browser) {
 }
 
 - (void)clearDataForDataTypes:(BrowsingDataRemoveMask)mask {
-  ChromeBrowserState* browserState = self.browserState;
+  ProfileIOS* profile = self.profile;
   PrefService* prefService = self.prefService;
-  if (!browserState || !prefService) {
+  if (!profile || !prefService) {
     // The C++ model has been destroyed, return early.
     return;
   }
@@ -744,8 +739,8 @@ BOOL UIIsBlocking(Browser* browser) {
   // Send the "Cleared Browsing Data" event to the feature_engagement::Tracker
   // when the user initiates a clear browsing data action. No event is sent if
   // the browsing data is cleared without the user's input.
-  feature_engagement::TrackerFactory::GetForBrowserState(browserState)
-      ->NotifyEvent(feature_engagement::events::kClearedBrowsingData);
+  feature_engagement::TrackerFactory::GetForProfile(profile)->NotifyEvent(
+      feature_engagement::events::kClearedBrowsingData);
 
   if (IsRemoveDataMaskSet(mask, BrowsingDataRemoveMask::REMOVE_HISTORY)) {
     int noticeShownTimes = prefService->GetInteger(
@@ -761,9 +756,6 @@ BOOL UIIsBlocking(Browser* browser) {
     if (!showDialog) {
       return;
     }
-    UMA_HISTOGRAM_BOOLEAN(
-        "History.ClearBrowsingData.ShownHistoryNoticeAfterClearing",
-        showDialog);
 
     // Increment the preference.
     prefService->SetInteger(
@@ -776,11 +768,11 @@ BOOL UIIsBlocking(Browser* browser) {
 - (void)enhancedSafeBrowsingInlinePromoTriggerCriteriaMet {
   if (!base::FeatureList::IsEnabled(
           feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature) ||
-      !self.browserState) {
+      !self.profile) {
     return;
   }
   feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(self.browserState);
+      feature_engagement::TrackerFactory::GetForProfile(self.profile);
   tracker->NotifyEvent(
       feature_engagement::events::kEnhancedSafeBrowsingPromoCriterionMet);
 }

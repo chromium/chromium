@@ -63,10 +63,6 @@ TEST_F(ReportingServiceSettingsTest, TestNormalSettingsWithoutEvents) {
   std::optional<ReportingSettings> reporting_settings =
       GetReportingSettings(kNormalSettingsWithoutEvents);
   ASSERT_TRUE(reporting_settings.has_value());
-
-  ASSERT_TRUE(reporting_settings->reporting_url.is_valid());
-  ASSERT_EQ(GURL("https://chromereporting-pa.googleapis.com/v1/events"),
-            reporting_settings.value().reporting_url);
 }
 
 TEST_F(ReportingServiceSettingsTest, TestNormalSettingsWithEvents) {

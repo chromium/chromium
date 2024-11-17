@@ -22,8 +22,7 @@ NativeTheme* NativeTheme::GetInstanceForWeb() {
 }
 
 NativeTheme* NativeTheme::GetInstanceForNativeUi() {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 // static

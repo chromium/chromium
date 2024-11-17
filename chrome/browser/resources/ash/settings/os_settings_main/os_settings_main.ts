@@ -21,8 +21,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {assertExists} from '../assert_extras.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
-import {OsPageAvailability} from '../os_page_availability.js';
-import {isAboutRoute, Route} from '../router.js';
+import type {OsPageAvailability} from '../os_page_availability.js';
+import type {Route} from '../router.js';
+import {isAboutRoute} from '../router.js';
 
 import {getTemplate} from './os_settings_main.html.js';
 

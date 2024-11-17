@@ -99,7 +99,7 @@ found in the LICENSE file.
                     android:layout_toEndOf="@id/issuer_icon"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:textAlignment="center"
+                    android:textAlignment="viewStart"
                     style="@style/TextAppearance.TextMedium.Secondary" />
 
                 <!-- "Virtual card" label -->
@@ -109,7 +109,7 @@ found in the LICENSE file.
                     android:layout_toEndOf="@id/issuer_icon"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:textAlignment="center"
+                    android:textAlignment="viewStart"
                     style="@style/TextAppearance.TextMedium.Secondary" />
             </RelativeLayout>
 

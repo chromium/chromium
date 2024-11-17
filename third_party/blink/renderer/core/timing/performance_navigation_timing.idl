@@ -32,6 +32,7 @@ enum NavigationEntropy {
     readonly attribute unsigned short redirectCount;
     [RuntimeEnabled=BackForwardCacheNotRestoredReasons] readonly attribute NotRestoredReasons? notRestoredReasons;
     [RuntimeEnabled=PerformanceNavigateSystemEntropy] readonly attribute NavigationEntropy systemEntropy;
+    [RuntimeEnabled=PerformanceNavigationTimingConfidence] readonly attribute PerformanceTimingConfidence confidence;
     [CallWith=ScriptState] readonly attribute DOMHighResTimeStamp criticalCHRestart;
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

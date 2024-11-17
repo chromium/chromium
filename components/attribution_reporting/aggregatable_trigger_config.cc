@@ -11,14 +11,12 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/aggregatable_filtering_id_max_bytes.h"
 #include "components/attribution_reporting/constants.h"
-#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom.h"
 
@@ -28,11 +26,6 @@ namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationTimeConfig;
 using ::attribution_reporting::mojom::TriggerRegistrationError;
-
-bool FilteringIdEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kAttributionReportingAggregatableFilteringIds);
-}
 
 base::expected<SourceRegistrationTimeConfig, TriggerRegistrationError>
 ParseAggregatableSourceRegistrationTime(const base::Value* value) {
@@ -140,13 +133,11 @@ AggregatableTriggerConfig::Parse(base::Value::Dict& dict) {
   }
 
   AggregatableFilteringIdsMaxBytes max_bytes;
-  if (FilteringIdEnabled()) {
-    ASSIGN_OR_RETURN(max_bytes, AggregatableFilteringIdsMaxBytes::Parse(dict));
-    if (!IsMaxBytesAllowed(max_bytes, source_registration_time_config)) {
-      return base::unexpected(
-          TriggerRegistrationError::
-              kAggregatableFilteringIdsMaxBytesInvalidSourceRegistrationTimeConfig);
-    }
+  ASSIGN_OR_RETURN(max_bytes, AggregatableFilteringIdsMaxBytes::Parse(dict));
+  if (!IsMaxBytesAllowed(max_bytes, source_registration_time_config)) {
+    return base::unexpected(
+        TriggerRegistrationError::
+            kAggregatableFilteringIdsMaxBytesInvalidSourceRegistrationTimeConfig);
   }
 
   return AggregatableTriggerConfig(source_registration_time_config,
@@ -200,9 +191,7 @@ void AggregatableTriggerConfig::Serialize(base::Value::Dict& dict) const {
   if (trigger_context_id_.has_value()) {
     dict.Set(kTriggerContextId, *trigger_context_id_);
   }
-  if (FilteringIdEnabled()) {
-    aggregatable_filtering_id_max_bytes_.Serialize(dict);
-  }
+  aggregatable_filtering_id_max_bytes_.Serialize(dict);
 }
 
 bool AggregatableTriggerConfig::ShouldCauseAReportToBeSentUnconditionally()

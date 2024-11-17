@@ -257,7 +257,7 @@ RenderPassBuilder& RenderPassBuilder::SetQuadDamageRect(
     auto* texture_quad = static_cast<TextureDrawQuad*>(quad);
     texture_quad->damage_rect = damage_rect;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   pass_->has_per_quad_damage = true;
@@ -287,6 +287,13 @@ RenderPassBuilder& RenderPassBuilder::SetQuadLayerId(uint32_t layer_id) {
 RenderPassBuilder& RenderPassBuilder::SetQuadOffsetTag(const OffsetTag& tag) {
   auto* sqs = GetLastQuadSharedQuadState();
   sqs->offset_tag = tag;
+  return *this;
+}
+
+RenderPassBuilder& RenderPassBuilder::SetQuadMaskFilterInfo(
+    const gfx::MaskFilterInfo& mask_filter_info) {
+  auto* sqs = GetLastQuadSharedQuadState();
+  sqs->mask_filter_info = mask_filter_info;
   return *this;
 }
 

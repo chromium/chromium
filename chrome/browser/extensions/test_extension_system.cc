@@ -35,7 +35,8 @@
 #include "extensions/browser/state_store.h"
 #include "extensions/browser/user_script_manager.h"
 #include "services/data_decoder/data_decoder_service.h"
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS)
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
@@ -125,13 +126,13 @@ ExtensionService* TestExtensionSystem::CreateExtensionService(
     bool extensions_enabled) {
   if (CWSInfoService::Get(profile_) == nullptr) {
     Profile* profile = profile_;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     // TODO(crbug.com/40891982): Refactor this convenience upstream to test
     // callers. Possibly just BuiltInAppTest.BuildGuestMode.
     if (profile_->IsGuestSession()) {
       profile = profile_->GetOriginalProfile();
     }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     // Associate a dummy CWSInfoService with this profile if necessary.
     CWSInfoServiceFactory::GetInstance()->SetTestingFactory(
         profile, base::BindRepeating(&BuildFakeCWSService));
@@ -227,7 +228,7 @@ void TestExtensionSystem::InstallUpdate(
     const base::FilePath& temp_dir,
     bool install_immediately,
     InstallUpdateCallback install_update_callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestExtensionSystem::PerformActionBasedOnOmahaAttributes(
@@ -237,8 +238,7 @@ void TestExtensionSystem::PerformActionBasedOnOmahaAttributes(
 bool TestExtensionSystem::FinishDelayedInstallationIfReady(
     const std::string& extension_id,
     bool install_immediately) {
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 value_store::TestingValueStore* TestExtensionSystem::value_store() {

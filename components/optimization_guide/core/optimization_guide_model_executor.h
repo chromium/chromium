@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
@@ -17,9 +18,20 @@
 namespace optimization_guide {
 
 // The result type of model execution.
-using OptimizationGuideModelExecutionResult =
-    base::expected<const proto::Any /*response_metadata*/,
-                   OptimizationGuideModelExecutionError>;
+struct OptimizationGuideModelExecutionResult {
+  OptimizationGuideModelExecutionResult();
+  explicit OptimizationGuideModelExecutionResult(
+      base::expected<const proto::Any /*response_metadata*/,
+                     OptimizationGuideModelExecutionError> response,
+      std::unique_ptr<proto::ModelExecutionInfo> execution_info);
+  OptimizationGuideModelExecutionResult(
+      OptimizationGuideModelExecutionResult&& other);
+  ~OptimizationGuideModelExecutionResult();
+  base::expected<const proto::Any /*response_metadata*/,
+                 OptimizationGuideModelExecutionError>
+      response;
+  std::unique_ptr<proto::ModelExecutionInfo> execution_info;
+};
 
 // A response type used for OptimizationGuideModelExecutor::Session.
 struct StreamingResponse {
@@ -39,7 +51,9 @@ struct OptimizationGuideModelStreamingExecutionResult {
       base::expected<const StreamingResponse,
                      OptimizationGuideModelExecutionError> response,
       bool provided_by_on_device,
-      std::unique_ptr<ModelQualityLogEntry> log_entry = nullptr);
+      // TODO(372535824): remove this parameter.
+      std::unique_ptr<ModelQualityLogEntry> log_entry = nullptr,
+      std::unique_ptr<proto::ModelExecutionInfo> execution_info = nullptr);
 
   ~OptimizationGuideModelStreamingExecutionResult();
   OptimizationGuideModelStreamingExecutionResult(
@@ -51,12 +65,16 @@ struct OptimizationGuideModelStreamingExecutionResult {
   bool provided_by_on_device = false;
   // The log entry will be null until `StreamingResponse.is_complete` is true.
   std::unique_ptr<ModelQualityLogEntry> log_entry;
+  // The execution info will be null until `StreamingResponse.is_complete` is
+  // true.
+  std::unique_ptr<proto::ModelExecutionInfo> execution_info;
 };
 
 // The callback for receiving the model execution result and model quality log
 // entry.
 using OptimizationGuideModelExecutionResultCallback =
     base::OnceCallback<void(OptimizationGuideModelExecutionResult,
+                            // TODO(372535824): remove this parameter.
                             std::unique_ptr<ModelQualityLogEntry>)>;
 
 // A callback for receiving a score from the model, or nullopt if the model
@@ -95,6 +113,21 @@ struct SessionConfigParams {
 
   // How the execution of this feature should be configured.
   ExecutionMode execution_mode = ExecutionMode::kDefault;
+
+  // The amount of time to wait before the initial response is received from the
+  // on device model. If unset, a default value will be used.
+  //
+  // If `execution_mode` allows, model execution will fall back to the server
+  // instead of failing entirely when this timeout is reached.
+  std::optional<base::TimeDelta> on_device_execution_timeout;
+
+  enum class LoggingMode {
+    // Enable logging if it's enabled for ModelBasedCapability.
+    kDefault,
+    // Always disable logging.
+    kAlwaysDisable,
+  };
+  LoggingMode logging_mode = LoggingMode::kDefault;
 };
 
 // Reasons why the on-device model was not available for use.
@@ -163,6 +196,9 @@ class OnDeviceModelAvailabilityObserver : public base::CheckedObserver {
 struct TokenLimits {
   // The full combined limit for input and output tokens.
   uint32_t max_tokens = 0;
+  // The number of context tokens guaranteed to be processed before context
+  // processing can be cancelled to begin execution.
+  uint32_t min_context_tokens = 0;
   // The maximum number of tokens that can be used by AddContext.
   uint32_t max_context_tokens = 0;
   // The maximum number of tokens that can be used by ExecuteModel.
@@ -213,6 +249,13 @@ class OptimizationGuideModelExecutor {
         const std::string& text,
         OptimizationGuideModelSizeInTokenCallback callback) = 0;
 
+    // Gets the size in tokens used by request_metadata in tokens as it would be
+    // formatted by a call to `ExecuteModel()`. The result will be passed back
+    // through the callback.
+    virtual void GetExecutionInputSizeInTokens(
+        const google::protobuf::MessageLite& request_metadata,
+        OptimizationGuideModelSizeInTokenCallback callback) = 0;
+
     // Gets the size in tokens used by request_metadata as it would be formatted
     // by a call to `AddContext()`. The result will be passed back through the
     // callback.
@@ -247,6 +290,7 @@ class OptimizationGuideModelExecutor {
   virtual void ExecuteModel(
       ModelBasedCapabilityKey feature,
       const google::protobuf::MessageLite& request_metadata,
+      const std::optional<base::TimeDelta>& execution_timeout,
       OptimizationGuideModelExecutionResultCallback callback) = 0;
 
   // Observer for on-device model availability changes.

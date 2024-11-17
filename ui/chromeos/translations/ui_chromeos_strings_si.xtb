@@ -19,6 +19,7 @@
 <translation id="115443833402798225">හැන්ගුල් ආමතේ</translation>
 <translation id="1155759005174418845">කැටලන්</translation>
 <translation id="1168100932582989117">Google නම් සේවාදායක</translation>
+<translation id="1170788066030116158">ලබාගත් දවස</translation>
 <translation id="1172970565351728681"><ph name="REMAINING_TIME" /> පමණ ඉතිරියි</translation>
 <translation id="1173894706177603556">ප්‍රතිනම්</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, දුරකථන බැටරිය <ph name="BATTERY_STATUS" />%, විස්තර</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">අවසරදීම් සහතිකය දුරස්ථව පිළිකෙව් විය</translation>
 <translation id="4394214039309501350">බාහිර සබැඳිය</translation>
 <translation id="4394980935660306080">මෙම සතියේ මුල</translation>
+<translation id="4397435965699247285">නොබැඳි අතරේ OneDrive ලබා ගත නොහැක</translation>
 <translation id="4398096759193130964">අයිතම ප්‍රතිසාධනය කරන්න නැතහොත් කුණු කූඩයෙන් පිටත නව ෆෝල්ඩරයකට ඇද දමන්න</translation>
 <translation id="4401287888955153199">සියල්ල උපුටා ගන්න</translation>
 <translation id="4410695710508688828">උපුටා ගැනීමේ මෙහෙයුම අසාර්ථක විය. <ph name="ERROR_MESSAGE" /></translation>

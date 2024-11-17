@@ -1,6 +1,5 @@
 include_rules = [
   "+ash/webui/file_manager/url_constants.h",
-  "+chrome/common/accessibility",
   "+chrome/grit",
   "+chrome/services/speech/buildflags/buildflags.h",
   "+chromeos/constants/chromeos_features.h",
@@ -26,7 +25,11 @@ include_rules = [
   "+components/facilitated_payments/core/features",
   "+components/feed/content/renderer",
   "+components/feed/feed_feature_list.h",
+  "+components/fingerprinting_protection_filter/browser",
+  "+components/fingerprinting_protection_filter/common",
+  "+components/fingerprinting_protection_filter/renderer",
   "+components/grit",
+  "+components/guest_view/buildflags",
   "+components/guest_view/renderer",
   "+components/history_clusters/core/config.h",
   "+components/heap_profiling/in_process/heap_profiler_controller.h",
@@ -65,7 +68,7 @@ include_rules = [
   "+components/safe_browsing/content/renderer",
   "+components/safe_browsing/content/common",
   "+components/safe_browsing/core/common",
-  "+components/sampling_profiler/thread_profiler.h",
+  "+components/sampling_profiler",
   "+components/security_interstitials/content/renderer",
   "+components/signin/public/base/signin_buildflags.h",
   "+components/signin/public/base/signin_switches.h",
@@ -129,13 +132,6 @@ specific_include_rules = {
     "+chrome/browser/ui",
     "+chrome/browser/ui/tabs",
     "+content/public/browser/browser_thread.h",
-  ],
-  "commerce_hint_agent_browsertest\.cc": [
-    "+chrome/browser/cart",
-    "+chrome/browser/persisted_state_db/session_proto_db.h",
-  ],
-  "read_anything_app_controller\.cc": [
-    "+third_party/re2/src/re2/re2.h",
   ],
   "ash_merge_session_loader_throttle\.cc": [
     "+components/google/core/common/google_util.h",

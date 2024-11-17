@@ -11,9 +11,19 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
+#include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/effects/SkImageFilters.h"
+#include "third_party/skia/src/core/SkBitmapDevice.h"
+#include "third_party/skia/src/core/SkDraw.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
+#include "ui/gfx/skia_util.h"
+
+namespace {
+const float kCornerRadiusFactor = 0.22f;
+}
 
 namespace web_app {
 
@@ -200,4 +210,72 @@ NSImageRep* OverlayImageRep(NSImage* background, NSImageRep* overlay) {
   return canvas;
 }
 
+bool HasSolidColorBorder(const gfx::Image& icon) {
+  SkBitmap bitmap = icon.AsBitmap();
+  int width = bitmap.width();
+  int height = bitmap.height();
+
+  SkColor reference_color = bitmap.getColor(0, 0);
+
+  for (int x = 0; x < width; ++x) {
+    if (bitmap.getColor(x, 0) != reference_color ||
+        bitmap.getColor(x, height - 1) != reference_color) {
+      return false;
+    }
+  }
+
+  for (int y = 0; y < height; ++y) {
+    if (bitmap.getColor(0, y) != reference_color ||
+        bitmap.getColor(width - 1, y) != reference_color) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+// TODO(https://crbug.com/372688523): Implement masking without zooming.
+gfx::Image MaskDiyAppIcon(const gfx::Image& icon) {
+  SkBitmap bitmap = icon.AsBitmap();
+  int width = bitmap.width();
+  int height = bitmap.height();
+
+  bool is_solid_color_border = HasSolidColorBorder(icon);
+
+  SkBitmap output_bitmap;
+  output_bitmap.allocN32Pixels(width, height);
+  SkCanvas canvas(output_bitmap);
+
+  canvas.clear(SK_ColorTRANSPARENT);
+
+  float corner_radius = width * kCornerRadiusFactor;
+  int background_margin = width * 0.1;  // 10% margin
+  int background_offset_x = background_margin;
+  int background_width = width - 2 * background_margin;
+  SkRect rect = SkRect::MakeXYWH(background_offset_x, background_offset_x,
+                                 background_width, background_width);
+  SkRRect rrect = SkRRect::MakeRectXY(rect, corner_radius, corner_radius);
+  SkPaint paint;
+  paint.setColor(SK_ColorWHITE);
+  if (is_solid_color_border) {
+    paint.setColor(bitmap.getColor(0, 0));
+    // Create a mask with rounded corners
+    SkPath path;
+    path.addRRect(rrect);
+    canvas.clipPath(path, SkClipOp::kIntersect, true);
+  }
+  paint.setAntiAlias(true);
+  canvas.drawRRect(rrect, paint);
+  SkRect src_rect = SkRect::MakeWH(width, height);
+  int image_margin = background_width * 0.1;  // 10% margin
+  int image_offset_x = background_offset_x + image_margin;
+  int image_width = background_width - 2 * image_margin;
+  SkRect dst_rect = SkRect::MakeXYWH(image_offset_x, image_offset_x,
+                                     image_width, image_width);
+  canvas.drawImageRect(bitmap.asImage(), src_rect, dst_rect,
+                       SkSamplingOptions(), nullptr,
+                       SkCanvas::kFast_SrcRectConstraint);
+
+  return gfx::Image::CreateFrom1xBitmap(output_bitmap);
+}
 }  // namespace web_app

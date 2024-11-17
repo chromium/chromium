@@ -79,6 +79,11 @@ public class FullscreenVideoPictureInPictureController {
     // area, complete with rounded corners.  See https://crbug.com/1421703 for more details.
     /* package */ static final long MIN_EXIT_DELAY_MILLIS = 50;
 
+    // Short delay after we're notified that video is being unstashed until we unpause it, if it was
+    // paused because of the stash.  This (a) prevents some awful issues with android'd unstashing
+    // animation, and also (b) looks a little better since the window isn't moving anymore.
+    /* package */ static final long UNSTASH_DELAY_MILLIS = 500;
+
     // TODO(crbug.com/40853653): Auto-enter seems to be causing a very bad
     // display issue on S (31 or 32), so turn this off for S.
     private static final boolean ENABLE_AUTO_ENTER =
@@ -88,6 +93,11 @@ public class FullscreenVideoPictureInPictureController {
     // trigger pip.
     private static final Set<String> NO_PIP_COMPONENT_NAMES =
             Collections.singleton(NotificationIntentInterceptor.TrampolineActivity.class.getName());
+
+    // If true, then we will use `setSourceRectHint()` to enable fancy transitions into pip.
+    // However, since this also causes visible flicker especially when transitioning from landscape
+    // to portrait, this is off by default.
+    private static final boolean sUseSourceRectHint = false;
 
     /** Callbacks to cleanup after leaving PiP. */
     private final List<Runnable> mOnLeavePipCallbacks = new LinkedList<>();
@@ -232,8 +242,10 @@ public class FullscreenVideoPictureInPictureController {
         Rect bounds = getVideoBounds(webContents, mActivity);
         PictureInPictureParams.Builder builder = new PictureInPictureParams.Builder();
         if (bounds != null) {
-            builder.setAspectRatio(new Rational(bounds.width(), bounds.height()));
-            builder.setSourceRectHint(bounds);
+            if (sUseSourceRectHint) {
+                builder.setAspectRatio(new Rational(bounds.width(), bounds.height()));
+                builder.setSourceRectHint(bounds);
+            }
         }
 
         try {
@@ -270,9 +282,31 @@ public class FullscreenVideoPictureInPictureController {
         } else if (!mIsPlaying && !stashed && mIsSuspendedForStash) {
             // Don't resume if we didn't pause it on the transition into stash.  For example, don't
             // start playing media that was already paused when the user stashed the pip window.
-            mediaSession.resume();
-            mIsSuspendedForStash = false;
+            //
+            // Also, don't resume right away.  Sometimes, this causes the android unstash animation
+            // to do awful things.  Not unpausing immediately also looks a little nicer, because
+            // that way the animation is finished before it restarts.  Note that this isn't really a
+            // a race if the user re-stashes, since android's `onStashReported` calling is already
+            // prone to being skipped sometimes.  At worst, if the user somehow restashes the video,
+            // then we might start playing while stashed.  Some additional extra state could prevent
+            // this, but the extra complexity doesn't buy us much in practice given that the user
+            // would have to be trying to make this happen.  Note that, because we're already fairly
+            // robust against android forgetting to call back, unstashing the video again will get
+            // us back into a good state.
+            PostTask.postDelayedTask(
+                    TaskTraits.UI_USER_BLOCKING,
+                    this::unpauseVideoDuringUnstashIfNeeded,
+                    UNSTASH_DELAY_MILLIS);
         }
+    }
+
+    private void unpauseVideoDuringUnstashIfNeeded() {
+        final MediaSession mediaSession = getMediaSession();
+        if (mediaSession == null || mIsPlaying || !mIsSuspendedForStash) {
+            return;
+        }
+        mediaSession.resume();
+        mIsSuspendedForStash = false;
     }
 
     /**
@@ -464,8 +498,10 @@ public class FullscreenVideoPictureInPictureController {
 
             final Rect bounds = getVideoBounds(webContents, mActivity);
             if (bounds != null) {
-                builder.setAspectRatio(new Rational(bounds.width(), bounds.height()));
-                builder.setSourceRectHint(bounds);
+                if (sUseSourceRectHint) {
+                    builder.setAspectRatio(new Rational(bounds.width(), bounds.height()));
+                    builder.setSourceRectHint(bounds);
+                }
             }
         }
         builder.setAutoEnterEnabled(allowed);

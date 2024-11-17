@@ -89,11 +89,11 @@ bool SkiaOutputDeviceX11::Reshape(const ReshapeParams& params) {
   if (!SkiaOutputDeviceOffscreen::Reshape(params)) {
     return false;
   }
-  auto ii =
+  auto image_info =
       SkImageInfo::MakeN32(params.image_info.width(),
                            params.image_info.height(), kOpaque_SkAlphaType);
-  std::vector<uint8_t> mem(ii.computeMinByteSize());
-  pixels_ = base::RefCountedBytes::TakeVector(&mem);
+  pixels_ = base::MakeRefCounted<base::RefCountedBytes>(
+      image_info.computeMinByteSize());
   return true;
 }
 

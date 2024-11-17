@@ -4,6 +4,9 @@
 
 #include "chrome/browser/content_settings/generated_cookie_prefs.h"
 
+#include <memory>
+#include <tuple>
+
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/api/settings_private/generated_pref.h"
@@ -20,428 +23,18 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace settings_api = extensions::api::settings_private;
-namespace settings_private = extensions::settings_private;
-
 namespace content_settings {
-
 namespace {
 
-// Sets the value of |generated_pref| to |pref_value| and then ensures that
-// the cookie content settings and preferences match |expected_content_setting|,
-// |expected_block_third_party|, and |expected_cookie_controls_mode|.
-// The value of the new PrefObject returned by the |generated_pref| is then
-// checked against |expected_pref_value|.
-void ValidatePrimarySettingPrefValue(
-    HostContentSettingsMap* map,
-    sync_preferences::TestingPrefServiceSyncable* prefs,
-    GeneratedCookiePrimarySettingPref* generated_pref,
-    CookiePrimarySetting pref_value,
-    ContentSetting expected_content_setting,
-    CookieControlsMode expected_cookie_controls_mode) {
-  base::Value pref(static_cast<int>(pref_value));
-  EXPECT_EQ(generated_pref->SetPref(&pref),
-            extensions::settings_private::SetPrefResult::SUCCESS);
-  EXPECT_EQ(map->GetDefaultContentSetting(ContentSettingsType::COOKIES),
-            expected_content_setting);
-  EXPECT_EQ(static_cast<CookieControlsMode>(
-                prefs->GetUserPref(prefs::kCookieControlsMode)->GetInt()),
-            expected_cookie_controls_mode);
-  EXPECT_EQ(static_cast<CookiePrimarySetting>(
-                generated_pref->GetPrefObject().value->GetInt()),
-            pref_value);
-}
-
-// Define additional unused values of Enforcement, ControlledBy and
-// CookiePrimarySetting, to support testing not set values.
-const settings_api::ControlledBy kNoControlledBy =
-    static_cast<settings_api::ControlledBy>(-1);
-const settings_api::Enforcement kNoEnforcement =
-    static_cast<settings_api::Enforcement>(-1);
-const CookiePrimarySetting kNoRecommendedValue =
-    static_cast<CookiePrimarySetting>(-1);
-
-// Represents a set of settings, preferences and the associated expected
-// fields for the returned preference object.
-struct PrimaryCookieSettingManagedTestCase {
-  ContentSetting default_content_setting;
-  content_settings::SettingSource default_content_setting_source;
-  settings_private::PrefSetting block_third_party;
-  settings_private::PrefSource block_third_party_source;
-  settings_api::ControlledBy expected_controlled_by;
-  settings_api::Enforcement expected_enforcement;
-  CookiePrimarySetting expected_recommended_value;
-  std::vector<CookiePrimarySetting> expected_user_selectable_values;
-};
-
-const std::vector<PrimaryCookieSettingManagedTestCase> managed_test_cases = {
-    {CONTENT_SETTING_DEFAULT,
-     SettingSource::kNone,
-     settings_private::PrefSetting::kEnforcedOff,
-     settings_private::PrefSource::kExtension,
-     settings_api::ControlledBy::kExtension,
-     settings_api::Enforcement::kEnforced,
-     kNoRecommendedValue,
-     {CookiePrimarySetting::ALLOW_ALL, CookiePrimarySetting::BLOCK_ALL}},
-    {CONTENT_SETTING_DEFAULT,
-     SettingSource::kNone,
-     settings_private::PrefSetting::kEnforcedOn,
-     settings_private::PrefSource::kDevicePolicy,
-     settings_api::ControlledBy::kDevicePolicy,
-     settings_api::Enforcement::kEnforced,
-     kNoRecommendedValue,
-     {CookiePrimarySetting::BLOCK_THIRD_PARTY,
-      CookiePrimarySetting::BLOCK_ALL}},
-    {CONTENT_SETTING_DEFAULT,
-     SettingSource::kNone,
-     settings_private::PrefSetting::kRecommendedOff,
-     settings_private::PrefSource::kRecommended,
-     kNoControlledBy,
-     settings_api::Enforcement::kRecommended,
-     CookiePrimarySetting::ALLOW_ALL,
-     {}},
-    {CONTENT_SETTING_DEFAULT,
-     SettingSource::kNone,
-     settings_private::PrefSetting::kRecommendedOn,
-     settings_private::PrefSource::kRecommended,
-     kNoControlledBy,
-     settings_api::Enforcement::kRecommended,
-     CookiePrimarySetting::BLOCK_THIRD_PARTY,
-     {}},
-    {CONTENT_SETTING_DEFAULT,
-     SettingSource::kNone,
-     settings_private::PrefSetting::kNotSet,
-     settings_private::PrefSource::kNone,
-     kNoControlledBy,
-     kNoEnforcement,
-     kNoRecommendedValue,
-     {}},
-    {CONTENT_SETTING_ALLOW,
-     SettingSource::kPolicy,
-     settings_private::PrefSetting::kEnforcedOff,
-     settings_private::PrefSource::kExtension,
-     settings_api::ControlledBy::kExtension,
-     settings_api::Enforcement::kEnforced,
-     kNoRecommendedValue,
-     {}},
-    {CONTENT_SETTING_ALLOW,
-     SettingSource::kExtension,
-     settings_private::PrefSetting::kEnforcedOn,
-     settings_private::PrefSource::kDevicePolicy,
-     settings_api::ControlledBy::kDevicePolicy,
-     settings_api::Enforcement::kEnforced,
-     kNoRecommendedValue,
-     {}},
-    {CONTENT_SETTING_ALLOW,
-     SettingSource::kSupervised,
-     settings_private::PrefSetting::kRecommendedOff,
-     settings_private::PrefSource::kRecommended,
-     settings_api::ControlledBy::kChildRestriction,
-     settings_api::Enforcement::kEnforced,
-     CookiePrimarySetting::ALLOW_ALL,
-     {CookiePrimarySetting::ALLOW_ALL,
-      CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO,
-      CookiePrimarySetting::BLOCK_THIRD_PARTY}},
-    {CONTENT_SETTING_ALLOW,
-     SettingSource::kPolicy,
-     settings_private::PrefSetting::kRecommendedOn,
-     settings_private::PrefSource::kRecommended,
-     settings_api::ControlledBy::kDevicePolicy,
-     settings_api::Enforcement::kEnforced,
-     CookiePrimarySetting::BLOCK_THIRD_PARTY,
-     {CookiePrimarySetting::ALLOW_ALL,
-      CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO,
-      CookiePrimarySetting::BLOCK_THIRD_PARTY}},
-    {CONTENT_SETTING_ALLOW,
-     SettingSource::kExtension,
-     settings_private::PrefSetting::kNotSet,
-     settings_private::PrefSource::kNone,
-     settings_api::ControlledBy::kExtension,
-     settings_api::Enforcement::kEnforced,
-     kNoRecommendedValue,
-     {CookiePrimarySetting::ALLOW_ALL,
-      CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO,
-      CookiePrimarySetting::BLOCK_THIRD_PARTY}},
-    {CONTENT_SETTING_BLOCK,
-     SettingSource::kSupervised,
-     settings_private::PrefSetting::kEnforcedOff,
-     settings_private::PrefSource::kDevicePolicy,
-     settings_api::ControlledBy::kChildRestriction,
-     settings_api::Enforcement::kEnforced,
-     kNoRecommendedValue,
-     {}},
-    {CONTENT_SETTING_BLOCK,
-     SettingSource::kPolicy,
-     settings_private::PrefSetting::kEnforcedOn,
-     settings_private::PrefSource::kExtension,
-     settings_api::ControlledBy::kDevicePolicy,
-     settings_api::Enforcement::kEnforced,
-     kNoRecommendedValue,
-     {}},
-    {CONTENT_SETTING_BLOCK,
-     SettingSource::kExtension,
-     settings_private::PrefSetting::kRecommendedOff,
-     settings_private::PrefSource::kRecommended,
-     settings_api::ControlledBy::kExtension,
-     settings_api::Enforcement::kEnforced,
-     kNoRecommendedValue,
-     {}},
-    {CONTENT_SETTING_BLOCK,
-     SettingSource::kSupervised,
-     settings_private::PrefSetting::kRecommendedOn,
-     settings_private::PrefSource::kRecommended,
-     settings_api::ControlledBy::kChildRestriction,
-     settings_api::Enforcement::kEnforced,
-     kNoRecommendedValue,
-     {}},
-    {CONTENT_SETTING_BLOCK,
-     SettingSource::kPolicy,
-     settings_private::PrefSetting::kNotSet,
-     settings_private::PrefSource::kNone,
-     settings_api::ControlledBy::kDevicePolicy,
-     settings_api::Enforcement::kEnforced,
-     kNoRecommendedValue,
-     {}},
-    {CONTENT_SETTING_SESSION_ONLY,
-     SettingSource::kExtension,
-     settings_private::PrefSetting::kEnforcedOff,
-     settings_private::PrefSource::kDevicePolicy,
-     settings_api::ControlledBy::kDevicePolicy,
-     settings_api::Enforcement::kEnforced,
-     kNoRecommendedValue,
-     {}},
-    {CONTENT_SETTING_SESSION_ONLY,
-     SettingSource::kSupervised,
-     settings_private::PrefSetting::kEnforcedOn,
-     settings_private::PrefSource::kExtension,
-     settings_api::ControlledBy::kExtension,
-     settings_api::Enforcement::kEnforced,
-     kNoRecommendedValue,
-     {}},
-    {CONTENT_SETTING_SESSION_ONLY,
-     SettingSource::kPolicy,
-     settings_private::PrefSetting::kRecommendedOff,
-     settings_private::PrefSource::kRecommended,
-     settings_api::ControlledBy::kDevicePolicy,
-     settings_api::Enforcement::kEnforced,
-     CookiePrimarySetting::ALLOW_ALL,
-     {CookiePrimarySetting::ALLOW_ALL,
-      CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO,
-      CookiePrimarySetting::BLOCK_THIRD_PARTY}},
-    {CONTENT_SETTING_SESSION_ONLY,
-     SettingSource::kExtension,
-     settings_private::PrefSetting::kRecommendedOn,
-     settings_private::PrefSource::kRecommended,
-     settings_api::ControlledBy::kExtension,
-     settings_api::Enforcement::kEnforced,
-     CookiePrimarySetting::BLOCK_THIRD_PARTY,
-     {CookiePrimarySetting::ALLOW_ALL,
-      CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO,
-      CookiePrimarySetting::BLOCK_THIRD_PARTY}},
-    {CONTENT_SETTING_SESSION_ONLY,
-     SettingSource::kSupervised,
-     settings_private::PrefSetting::kNotSet,
-     settings_private::PrefSource::kNone,
-     settings_api::ControlledBy::kChildRestriction,
-     settings_api::Enforcement::kEnforced,
-     kNoRecommendedValue,
-     {CookiePrimarySetting::ALLOW_ALL,
-      CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO,
-      CookiePrimarySetting::BLOCK_THIRD_PARTY}},
-};
-
-void SetupManagedTestConditions(
-    HostContentSettingsMap* map,
-    sync_preferences::TestingPrefServiceSyncable* prefs,
-    const PrimaryCookieSettingManagedTestCase& test_case) {
-  auto provider = std::make_unique<content_settings::MockProvider>();
-  provider->SetWebsiteSetting(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES,
-      base::Value(test_case.default_content_setting), /*constraints=*/{},
-      PartitionKey::GetDefaultForTesting());
-
-  if (test_case.default_content_setting != CONTENT_SETTING_DEFAULT) {
-    auto mock_provider = std::make_unique<MockProvider>();
-    mock_provider->SetWebsiteSetting(
-        ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        ContentSettingsType::COOKIES,
-        base::Value(test_case.default_content_setting), /*constraints=*/{},
-        PartitionKey::GetDefaultForTesting());
-    ProviderType provider_type;
-    switch (test_case.default_content_setting_source) {
-      case SettingSource::kPolicy:
-        provider_type = ProviderType::kPolicyProvider;
-        break;
-      case SettingSource::kExtension:
-        provider_type = ProviderType::kCustomExtensionProvider;
-        break;
-      case SettingSource::kSupervised:
-        provider_type = ProviderType::kSupervisedProvider;
-        break;
-      case SettingSource::kNone:
-      default:
-        provider_type = ProviderType::kDefaultProvider;
-    }
-    TestUtils::OverrideProvider(map, std::move(mock_provider), provider_type);
-  }
-  if (test_case.block_third_party != settings_private::PrefSetting::kNotSet) {
-    CookieControlsMode cookie_controls_mode = CookieControlsMode::kOff;
-    if (test_case.block_third_party ==
-            settings_private::PrefSetting::kRecommendedOn ||
-        test_case.block_third_party ==
-            settings_private::PrefSetting::kEnforcedOn) {
-      cookie_controls_mode = CookieControlsMode::kBlockThirdParty;
-    }
-    auto cookie_controls_mode_value =
-        std::make_unique<base::Value>(static_cast<int>(cookie_controls_mode));
-
-    if (test_case.block_third_party_source ==
-        settings_private::PrefSource::kExtension) {
-      prefs->SetExtensionPref(prefs::kCookieControlsMode,
-                              std::move(cookie_controls_mode_value));
-    } else if (test_case.block_third_party_source ==
-               settings_private::PrefSource::kDevicePolicy) {
-      prefs->SetManagedPref(prefs::kCookieControlsMode,
-                            std::move(cookie_controls_mode_value));
-    } else if (test_case.block_third_party_source ==
-               settings_private::PrefSource::kRecommended) {
-      prefs->SetRecommendedPref(prefs::kCookieControlsMode,
-                                std::move(cookie_controls_mode_value));
-    }
-  }
-}
-
-void ValidateManagedPreference(
-    settings_api::PrefObject& pref,
-    const PrimaryCookieSettingManagedTestCase& test_case) {
-  if (test_case.expected_controlled_by != kNoControlledBy)
-    EXPECT_EQ(pref.controlled_by, test_case.expected_controlled_by);
-
-  if (test_case.expected_enforcement != kNoEnforcement)
-    EXPECT_EQ(pref.enforcement, test_case.expected_enforcement);
-
-  if (test_case.expected_recommended_value != kNoRecommendedValue)
-    EXPECT_EQ(
-        static_cast<CookiePrimarySetting>(pref.recommended_value->GetInt()),
-        test_case.expected_recommended_value);
-
-  // Ensure user selectable values are as expected. Ordering is enforced here
-  // despite not being required by the SettingsPrivate API.
-  // First convert std::vector<std::unique_ptr<base::value(T)>> to
-  // std::vector<T> for easier comparison.
-  std::vector<CookiePrimarySetting> pref_user_selectable_values;
-  if (pref.user_selectable_values) {
-    for (const auto& value : *pref.user_selectable_values) {
-      pref_user_selectable_values.push_back(
-          static_cast<CookiePrimarySetting>(value.GetInt()));
-    }
-  }
-
-  EXPECT_TRUE(base::ranges::equal(pref_user_selectable_values,
-                                  test_case.expected_user_selectable_values));
-}
-
-}  // namespace
+namespace settings_api = ::extensions::api::settings_private;
+namespace settings_private = ::extensions::settings_private;
+using settings_api::ControlledBy;
+using enum settings_api::Enforcement;
 
 typedef extensions::settings_private::GeneratedPrefTestBase
     GeneratedCookiePrefsTest;
 
-TEST_F(GeneratedCookiePrefsTest, PrimarySettingPref) {
-  auto pref =
-      std::make_unique<content_settings::GeneratedCookiePrimarySettingPref>(
-          profile());
-  HostContentSettingsMap* map =
-      HostContentSettingsMapFactory::GetForProfile(profile());
-
-  // Setup a baseline content setting and preference state.
-  map->SetDefaultContentSetting(ContentSettingsType::COOKIES,
-                                ContentSetting::CONTENT_SETTING_ALLOW);
-  prefs()->SetDefaultPrefValue(
-      prefs::kCookieControlsMode,
-      base::Value(static_cast<int>(CookieControlsMode::kOff)));
-
-  // Check that each of the four possible preference values sets the correct
-  // state and is correctly reflected in a newly returned PrefObject.
-  // First test this without the improved cookie controls enabled.
-  ValidatePrimarySettingPrefValue(map, prefs(), pref.get(),
-                                  CookiePrimarySetting::BLOCK_ALL,
-                                  ContentSetting::CONTENT_SETTING_BLOCK,
-                                  CookieControlsMode::kBlockThirdParty);
-  ValidatePrimarySettingPrefValue(map, prefs(), pref.get(),
-                                  CookiePrimarySetting::BLOCK_THIRD_PARTY,
-                                  ContentSetting::CONTENT_SETTING_ALLOW,
-                                  CookieControlsMode::kBlockThirdParty);
-  ValidatePrimarySettingPrefValue(
-      map, prefs(), pref.get(), CookiePrimarySetting::ALLOW_ALL,
-      ContentSetting::CONTENT_SETTING_ALLOW, CookieControlsMode::kOff);
-  ValidatePrimarySettingPrefValue(
-      map, prefs(), pref.get(),
-      CookiePrimarySetting::BLOCK_THIRD_PARTY_INCOGNITO,
-      ContentSetting::CONTENT_SETTING_ALLOW,
-      CookieControlsMode::kIncognitoOnly);
-
-  // Confirm that a type mismatch is reported as such.
-  EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>(true).get()),
-            extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
-  // Check a numerical value outside of the acceptable range.
-  EXPECT_EQ(
-      pref->SetPref(std::make_unique<base::Value>(
-                        static_cast<int>(CookiePrimarySetting::BLOCK_ALL) + 1)
-                        .get()),
-      extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
-
-  // Confirm that when content settings are managed, un-managed preferences are
-  // still set.
-  auto provider = std::make_unique<content_settings::MockProvider>();
-  provider->SetWebsiteSetting(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES,
-      base::Value(ContentSetting::CONTENT_SETTING_ALLOW), /*constraints=*/{},
-      content_settings::PartitionKey::GetDefaultForTesting());
-  content_settings::TestUtils::OverrideProvider(map, std::move(provider),
-                                                ProviderType::kPolicyProvider);
-  ValidatePrimarySettingPrefValue(map, prefs(), pref.get(),
-                                  CookiePrimarySetting::BLOCK_THIRD_PARTY,
-                                  ContentSetting::CONTENT_SETTING_ALLOW,
-                                  CookieControlsMode::kBlockThirdParty);
-
-  // Update source preferences and ensure that an observer is fired.
-  settings_private::TestGeneratedPrefObserver test_observer;
-  pref->AddObserver(&test_observer);
-  prefs()->SetUserPref(prefs::kCookieControlsMode,
-                       std::make_unique<base::Value>(static_cast<int>(
-                           CookieControlsMode::kIncognitoOnly)));
-  EXPECT_EQ(test_observer.GetUpdatedPrefName(), kCookiePrimarySetting);
-
-  test_observer.Reset();
-  prefs()->SetUserPref(prefs::kCookieControlsMode,
-                       std::make_unique<base::Value>(
-                           static_cast<int>(CookieControlsMode::kOff)));
-  EXPECT_EQ(test_observer.GetUpdatedPrefName(), kCookiePrimarySetting);
-}
-
-TEST_F(GeneratedCookiePrefsTest, PrimarySettingPrefManagedState) {
-  for (const auto& test_case : managed_test_cases) {
-    TestingProfile profile;
-    HostContentSettingsMap* map =
-        HostContentSettingsMapFactory::GetForProfile(&profile);
-
-    testing::Message scope_message;
-    scope_message << "Content Setting:" << test_case.default_content_setting
-                  << " Block Third Party:"
-                  << static_cast<int>(test_case.block_third_party);
-    SCOPED_TRACE(scope_message);
-    SetupManagedTestConditions(map, profile.GetTestingPrefService(), test_case);
-    auto pref =
-        std::make_unique<content_settings::GeneratedCookiePrimarySettingPref>(
-            &profile);
-    auto pref_object = pref->GetPrefObject();
-    ValidateManagedPreference(pref_object, test_case);
-  }
-}
-
-TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref) {
+TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPrefValidType) {
   auto pref = std::make_unique<
       content_settings::GeneratedCookieDefaultContentSettingPref>(profile());
   HostContentSettingsMap* map =
@@ -478,7 +71,7 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref) {
   EXPECT_EQ(pref_object->value->GetString(), "block");
 }
 
-TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_TypeMismatch) {
+TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPrefTypeMismatch) {
   auto pref = std::make_unique<
       content_settings::GeneratedCookieDefaultContentSettingPref>(profile());
 
@@ -497,7 +90,7 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_TypeMismatch) {
             extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
 }
 
-TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_Enforced) {
+TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPrefEnforced) {
   auto pref = std::make_unique<
       content_settings::GeneratedCookieDefaultContentSettingPref>(profile());
   HostContentSettingsMap* map =
@@ -515,8 +108,8 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_Enforced) {
       map, std::move(provider), ProviderType::kCustomExtensionProvider);
   std::optional<extensions::api::settings_private::PrefObject> pref_object =
       pref->GetPrefObject();
-  EXPECT_EQ(pref_object->controlled_by, settings_api::ControlledBy::kExtension);
-  EXPECT_EQ(pref_object->enforcement, settings_api::Enforcement::kEnforced);
+  EXPECT_EQ(pref_object->controlled_by, ControlledBy::kExtension);
+  EXPECT_EQ(pref_object->enforcement, kEnforced);
 
   provider = std::make_unique<content_settings::MockProvider>();
   provider->SetWebsiteSetting(
@@ -527,9 +120,8 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_Enforced) {
   content_settings::TestUtils::OverrideProvider(
       map, std::move(provider), ProviderType::kSupervisedProvider);
   pref_object = pref->GetPrefObject();
-  EXPECT_EQ(pref_object->controlled_by,
-            settings_api::ControlledBy::kChildRestriction);
-  EXPECT_EQ(pref_object->enforcement, settings_api::Enforcement::kEnforced);
+  EXPECT_EQ(pref_object->controlled_by, ControlledBy::kChildRestriction);
+  EXPECT_EQ(pref_object->enforcement, kEnforced);
 
   provider = std::make_unique<content_settings::MockProvider>();
   provider->SetWebsiteSetting(
@@ -540,9 +132,8 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_Enforced) {
   content_settings::TestUtils::OverrideProvider(map, std::move(provider),
                                                 ProviderType::kPolicyProvider);
   pref_object = pref->GetPrefObject();
-  EXPECT_EQ(pref_object->controlled_by,
-            settings_api::ControlledBy::kDevicePolicy);
-  EXPECT_EQ(pref_object->enforcement, settings_api::Enforcement::kEnforced);
+  EXPECT_EQ(pref_object->controlled_by, ControlledBy::kDevicePolicy);
+  EXPECT_EQ(pref_object->enforcement, kEnforced);
 
   // Ensure the preference cannot be changed when it is enforced.
   EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>("block").get()),
@@ -551,4 +142,157 @@ TEST_F(GeneratedCookiePrefsTest, DefaultContentSettingPref_Enforced) {
             CONTENT_SETTING_ALLOW);
 }
 
+typedef std::tuple<ThirdPartyCookieBlockingSetting, CookieControlsMode>
+    CookieSettingPair;
+
+class GeneratedThirdPartyCookieBlockingSettingSetPrefTest
+    : public GeneratedCookiePrefsTest,
+      public testing::WithParamInterface<CookieSettingPair> {
+ public:
+  GeneratedThirdPartyCookieBlockingSettingSetPrefTest() = default;
+  ~GeneratedThirdPartyCookieBlockingSettingSetPrefTest() override = default;
+};
+
+TEST_P(GeneratedThirdPartyCookieBlockingSettingSetPrefTest,
+       SetPrefSucceedsWithValidPrefValue) {
+  auto pref = std::make_unique<
+      content_settings::GeneratedThirdPartyCookieBlockingSettingPref>(
+      profile());
+
+  auto [third_party_blocking_setting, cookie_controls_mode] = GetParam();
+  EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>(
+                              static_cast<int>(third_party_blocking_setting))
+                              .get()),
+            extensions::settings_private::SetPrefResult::SUCCESS);
+  EXPECT_EQ(static_cast<CookieControlsMode>(
+                prefs()->GetUserPref(prefs::kCookieControlsMode)->GetInt()),
+            cookie_controls_mode);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    Validation,
+    GeneratedThirdPartyCookieBlockingSettingSetPrefTest,
+    testing::Values(
+        CookieSettingPair(ThirdPartyCookieBlockingSetting::INCOGNITO_ONLY,
+                          CookieControlsMode::kIncognitoOnly),
+        CookieSettingPair(ThirdPartyCookieBlockingSetting::BLOCK_THIRD_PARTY,
+                          CookieControlsMode::kBlockThirdParty)));
+
+using GeneratedThirdPartyCookieBlockingSettingPrefTest =
+    GeneratedCookiePrefsTest;
+
+TEST_F(GeneratedThirdPartyCookieBlockingSettingPrefTest,
+       SetPrefFailsWithTypeMismatchForInvalidInteger) {
+  auto pref = std::make_unique<
+      content_settings::GeneratedThirdPartyCookieBlockingSettingPref>(
+      profile());
+  EXPECT_EQ(pref->SetPref(std::make_unique<base::Value>(123).get()),
+            extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
+}
+
+TEST_F(GeneratedThirdPartyCookieBlockingSettingPrefTest,
+       SetPrefFailsWithTypeMismatchForNonIntegerType) {
+  auto pref = std::make_unique<
+      content_settings::GeneratedThirdPartyCookieBlockingSettingPref>(
+      profile());
+  EXPECT_EQ(
+      pref->SetPref(std::make_unique<base::Value>("default string").get()),
+      extensions::settings_private::SetPrefResult::PREF_TYPE_MISMATCH);
+}
+
+class GeneratedThirdPartyCookieBlockingSettingGetPrefTest
+    : public GeneratedCookiePrefsTest,
+      public testing::WithParamInterface<CookieSettingPair> {
+ public:
+  GeneratedThirdPartyCookieBlockingSettingGetPrefTest() = default;
+  ~GeneratedThirdPartyCookieBlockingSettingGetPrefTest() override = default;
+};
+
+TEST_P(GeneratedThirdPartyCookieBlockingSettingGetPrefTest,
+       GetPrefSucceedsForAllValuesOfCookieControlsMode) {
+  auto pref = std::make_unique<
+      content_settings::GeneratedThirdPartyCookieBlockingSettingPref>(
+      profile());
+
+  auto [third_party_blocking_setting, cookie_controls_mode] = GetParam();
+  prefs()->SetUserPref(prefs::kCookieControlsMode,
+                       base::Value(static_cast<int>(cookie_controls_mode)));
+  settings_api::PrefObject pref_object = pref->GetPrefObject();
+  EXPECT_EQ(
+      static_cast<ThirdPartyCookieBlockingSetting>(pref_object.value->GetInt()),
+      third_party_blocking_setting);
+  EXPECT_EQ(pref_object.enforcement, settings_api::Enforcement::kNone);
+  EXPECT_EQ(pref_object.controlled_by, ControlledBy::kNone);
+}
+
+TEST_F(GeneratedThirdPartyCookieBlockingSettingGetPrefTest,
+       GetPrefSucceedsForExtensionPref) {
+  auto pref = std::make_unique<
+      content_settings::GeneratedThirdPartyCookieBlockingSettingPref>(
+      profile());
+
+  prefs()->SetExtensionPref(
+      prefs::kCookieControlsMode,
+      base::Value(static_cast<int>(CookieControlsMode::kBlockThirdParty)));
+  settings_api::PrefObject pref_object = pref->GetPrefObject();
+  EXPECT_EQ(pref_object.enforcement, kEnforced);
+  EXPECT_EQ(pref_object.controlled_by, ControlledBy::kExtension);
+}
+
+TEST_F(GeneratedThirdPartyCookieBlockingSettingGetPrefTest,
+       GetPrefSucceedsForManagedPref) {
+  auto pref = std::make_unique<
+      content_settings::GeneratedThirdPartyCookieBlockingSettingPref>(
+      profile());
+
+  prefs()->SetManagedPref(
+      prefs::kCookieControlsMode,
+      base::Value(static_cast<int>(CookieControlsMode::kBlockThirdParty)));
+  settings_api::PrefObject pref_object = pref->GetPrefObject();
+  EXPECT_EQ(pref_object.enforcement, kEnforced);
+  EXPECT_EQ(pref_object.controlled_by, ControlledBy::kDevicePolicy);
+}
+
+TEST_F(GeneratedThirdPartyCookieBlockingSettingGetPrefTest,
+       GetPrefSucceedsForSupervisedPref) {
+  auto pref = std::make_unique<
+      content_settings::GeneratedThirdPartyCookieBlockingSettingPref>(
+      profile());
+
+  prefs()->SetSupervisedUserPref(
+      prefs::kCookieControlsMode,
+      base::Value(static_cast<int>(CookieControlsMode::kBlockThirdParty)));
+  settings_api::PrefObject pref_object = pref->GetPrefObject();
+  EXPECT_EQ(pref_object.enforcement, kParentSupervised);
+  EXPECT_EQ(pref_object.controlled_by, ControlledBy::kChildRestriction);
+}
+
+TEST_F(GeneratedThirdPartyCookieBlockingSettingGetPrefTest,
+       GetPrefSucceedsForRecommendedPref) {
+  auto pref = std::make_unique<
+      content_settings::GeneratedThirdPartyCookieBlockingSettingPref>(
+      profile());
+
+  prefs()->SetRecommendedPref(
+      prefs::kCookieControlsMode,
+      base::Value(static_cast<int>(CookieControlsMode::kBlockThirdParty)));
+  settings_api::PrefObject pref_object = pref->GetPrefObject();
+  EXPECT_EQ(pref_object.enforcement, kRecommended);
+  EXPECT_EQ(pref_object.controlled_by, ControlledBy::kNone);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    Validation,
+    GeneratedThirdPartyCookieBlockingSettingGetPrefTest,
+    testing::Values(
+        CookieSettingPair(ThirdPartyCookieBlockingSetting::INCOGNITO_ONLY,
+                          CookieControlsMode::kIncognitoOnly),
+        CookieSettingPair(ThirdPartyCookieBlockingSetting::INCOGNITO_ONLY,
+                          CookieControlsMode::kOff),
+        CookieSettingPair(ThirdPartyCookieBlockingSetting::INCOGNITO_ONLY,
+                          CookieControlsMode::kLimited),
+        CookieSettingPair(ThirdPartyCookieBlockingSetting::BLOCK_THIRD_PARTY,
+                          CookieControlsMode::kBlockThirdParty)));
+
+}  // namespace
 }  // namespace content_settings

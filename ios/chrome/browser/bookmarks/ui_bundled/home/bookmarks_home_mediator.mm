@@ -165,7 +165,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   DCHECK(self.consumer);
 
   // Set up observers.
-  ProfileIOS* profile = [self originalBrowserState];
+  ProfileIOS* profile = [self originalProfile];
   _bookmarkModelBridge =
       std::make_unique<BookmarkModelBridge>(self, _bookmarkModel.get());
   _syncedBookmarksObserver =
@@ -249,7 +249,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 // Generate the table view data when the current currently displayed node is the
 // outermost root.
 - (void)generateTableViewDataForRootNode {
-  ProfileIOS* profile = [self originalBrowserState];
+  ProfileIOS* profile = [self originalProfile];
   bookmarks::ManagedBookmarkService* managedBookmarkService =
       ManagedBookmarkServiceFactory::GetForProfile(profile);
   const BookmarkNode* managedNode = managedBookmarkService->managed_node();
@@ -430,7 +430,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   self.syncService->TriggerLocalDataMigration(
       syncer::DataTypeSet({syncer::BOOKMARKS}));
 
-  ProfileIOS* profile = [self originalBrowserState];
+  ProfileIOS* profile = [self originalProfile];
   PrefService* prefService = profile->GetPrefs();
   prefService->SetBoolean(prefs::kIosBookmarkUploadSyncLeftBehindCompleted,
                           true);
@@ -500,7 +500,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 // Instances of this class automatically observe the bookmark model.
 // The bookmark model has loaded.
 - (void)bookmarkModelLoaded {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // The node has changed, but not its children.
@@ -751,7 +751,7 @@ bool IsABookmarkNodeSectionForIdentifier(
   // covered here, so check the "migrated syncing user" pref too.
   // This implicitly covers the case when SyncDisabled policy is enabled, as
   // kGoogleServicesLastSyncingGaiaId will be empty.
-  ProfileIOS* profile = [self originalBrowserState];
+  ProfileIOS* profile = [self originalProfile];
   const std::string lastSyncingGaiaId =
       profile->GetPrefs()->GetString(prefs::kGoogleServicesLastSyncingGaiaId);
   const std::string migratedGaiaId = profile->GetPrefs()->GetString(
@@ -855,7 +855,7 @@ bool IsABookmarkNodeSectionForIdentifier(
 
 // The original chrome profile used for services that don't exist in
 // incognito mode. E.g., `_syncService` and `ManagedBookmarkService`.
-- (ProfileIOS*)originalBrowserState {
+- (ProfileIOS*)originalProfile {
   return _browser->GetProfile()->GetOriginalProfile();
 }
 

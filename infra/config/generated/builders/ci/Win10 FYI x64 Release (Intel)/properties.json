@@ -69,7 +69,8 @@
           "builder": "gpu-fyi-try-win10-intel-rel-64",
           "group": "tryserver.chromium.win"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/Win10 FYI x64 Release (Intel)/targets"
     }
   },
   "$recipe_engine/resultdb/test_presentation": {

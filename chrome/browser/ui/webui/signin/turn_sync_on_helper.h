@@ -110,6 +110,12 @@ class TurnSyncOnHelper {
     // Defaults to false.
     virtual bool ShouldAbortBeforeShowSyncDisabledConfirmation();
 
+    // Returns whether the account for which sync is being turned on requires a
+    // profile.
+    // TODO(b/375053564): Revisit this function to find a better way  to convey
+    // that profile creation is required by policy.
+    virtual bool IsProfileCreationRequiredByPolicy() const;
+
     // Shows a screen informing that sync is disabled for the user.
     // |is_managed_account| is true if the account (where sync is being set up)
     // is managed (which may influence the UI or strings). |callback| must be
@@ -292,19 +298,6 @@ class TurnSyncOnHelper {
   CoreAccountId initial_primary_account_;
   base::CallbackListSubscription shutdown_subscription_;
   bool enterprise_account_confirmed_ = false;
-
-  // The time at which all user input has been collected, prior to this helper
-  // running heuristics for displaying the sync consent screen.
-  //
-  // When in the flow this is set depends on the properties - for example it
-  // could be:
-  // * At the start of the flow
-  // * After the user completes the user merge choice dialog
-  // * After the user acknowledge enterprise management
-  //
-  // Used for metrics, to output the timing histograms.
-  std::optional<base::ElapsedTimer> user_input_complete_timer_;
-
   base::WeakPtrFactory<TurnSyncOnHelper> weak_pointer_factory_{this};
 };
 

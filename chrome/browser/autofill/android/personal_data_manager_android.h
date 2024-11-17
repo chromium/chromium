@@ -17,6 +17,8 @@ class PrefService;
 
 namespace autofill {
 
+class PaymentInstrument;
+
 // Android wrapper of the PersonalDataManager which provides access from the
 // Java layer. Note that on Android, there's only a single profile, and
 // therefore a single instance of this wrapper.
@@ -160,19 +162,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcard);
 
-  // Adds a server credit card. Used only in tests.
-  void AddServerCreditCardForTest(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcard);
-
-  // Adds a server credit card and sets the additional fields, for example,
-  // card_issuer, nickname. Used only in tests.
-  void AddServerCreditCardForTestWithAdditionalFields(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcard,
-      const base::android::JavaParamRef<jstring>& jnickname,
-      jint jcard_issuer);
-
   // Removes the profile or credit card represented by |jguid|.
   void RemoveByGUID(JNIEnv* env,
                     const base::android::JavaParamRef<jstring>& jguid);
@@ -193,73 +182,12 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& jguid);
 
-  // Sets the use count and number of days since last use of the profile
-  // associated to the `jguid`. Both `count` and `days_since_last_used` should
-  // be non-negative. `days_since_last_used` represents the numbers of days
-  // since the profile was last used.
-  void SetProfileUseStatsForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jguid,
-      jint count,
-      jint days_since_last_used);
-
-  // Returns the use count of the profile associated to the |jguid|.
-  jint GetProfileUseCountForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jguid);
-
-  // Returns the use date of the profile associated to the |jguid|. It
-  // represents an absolute point in coordinated universal time (UTC)
-  // represented as microseconds since the Windows epoch. For more details see
-  // the comment header in time.h.
-  jlong GetProfileUseDateForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jguid);
-
   // Records the use and log usage metrics for the credit card associated with
   // the |jguid|. Increments the use count of the credit card and sets its use
   // date to the current time.
   void RecordAndLogCreditCardUse(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& jguid);
-
-  // Sets the use count and number of days since last use of the credit card
-  // associated to the`jguid`. Both `count` and `days_since_last_used` should be
-  // non-negative. `days_since_last_used` represents the numbers of days since
-  // the card was last used.
-  void SetCreditCardUseStatsForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jguid,
-      jint count,
-      jint days_since_last_used);
-
-  // Returns the use count of the credit card associated to the |jguid|.
-  jint GetCreditCardUseCountForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jguid);
-
-  // Returns the use date of the credit card associated to the |jguid|. It
-  // represents an absolute point in coordinated universal time (UTC)
-  // represented as microseconds since the Windows epoch. For more details see
-  // the comment header in time.h.
-  jlong GetCreditCardUseDateForTesting(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jstring>& jguid);
-
-  // Returns the current date represented as an absolute point in coordinated
-  // universal time (UTC) represented as microseconds since the Unix epoch. For
-  // more details see the comment header in time.h
-  jlong GetCurrentDateForTesting(JNIEnv* env);
-
-  // Calculates a point in time `days` days ago from the current
-  // time. Returns the result as an absolute point in coordinated universal time
-  // (UTC) represented as microseconds since the Windows epoch.
-  jlong GetDateNDaysAgoForTesting(
-      JNIEnv* env,
-      jint days);
-
-  // Clears server profiles and cards, to be used in tests only.
-  void ClearServerDataForTesting(JNIEnv* env);
 
   // Checks whether the Autofill PersonalDataManager has profiles.
   jboolean HasProfiles(JNIEnv* env);
@@ -269,8 +197,6 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
 
   // Checks whether FIDO authentication is available.
   jboolean IsFidoAuthenticationAvailable(JNIEnv* env);
-
-  void SetSyncServiceForTesting(JNIEnv* env);
 
   // Get Java AutofillImageFetcher.
   base::android::ScopedJavaLocalRef<jobject> GetOrCreateJavaImageFetcher(
@@ -285,14 +211,18 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       JNIEnv* env,
       Iban* iban);
 
+  // Add a server IBAN. Used only in tests.
+  void AddServerIbanForTest(JNIEnv* env,
+                            const base::android::JavaParamRef<jobject>& jiban);
+
   // Return IBAN with the specified `jguid`, or Null if there is no IBAN with
   // the specified `jguid`.
   base::android::ScopedJavaLocalRef<jobject> GetIbanByGuid(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& jguid);
 
-  // Returns an array of stored local IBANs.
-  base::android::ScopedJavaLocalRef<jobjectArray> GetLocalIbansForSettings(
+  // Returns an array of all stored IBANs.
+  base::android::ScopedJavaLocalRef<jobjectArray> GetIbansForSettings(
       JNIEnv* env);
 
   // Adds or modifies a local IBAN. If `jiban`'s GUID is an empty string we
@@ -306,6 +236,10 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   static jboolean IsValidIban(
       JNIEnv* env,
       const base::android::JavaParamRef<jstring>& jiban_value);
+
+  // Returns whether the `Add IBAN` button should be shown on the payment
+  // methods settings page.
+  jboolean ShouldShowAddIbanButtonOnSettingsPage(JNIEnv* env);
 
   // Returns whether the Autofill feature is managed.
   jboolean IsAutofillManaged(JNIEnv* env);
@@ -321,23 +255,30 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   base::android::ScopedJavaLocalRef<jobjectArray> GetMaskedBankAccounts(
       JNIEnv* env);
 
-  // Add a BankAccount object to the existing list of BankAccounts stored in
-  // PersonalDataManager.
-  void AddMaskedBankAccountForTest(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jbank_account);
-
   // Create an object of Java BankAccount from native BankAccount.
   static base::android::ScopedJavaLocalRef<jobject>
   CreateJavaBankAccountFromNative(JNIEnv* env, const BankAccount& bank_account);
-
- private:
-  ~PersonalDataManagerAndroid() override;
 
   // Create an object of native BankAccount from Java BankAccount.
   static BankAccount CreateNativeBankAccountFromJava(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jbank_account);
+
+  // Returns an array of Ewallet objects retrieved from the PersonalDataManager.
+  base::android::ScopedJavaLocalRef<jobjectArray> GetEwallets(JNIEnv* env);
+
+  // Create an object of Java Ewallet from native Ewallet.
+  static base::android::ScopedJavaLocalRef<jobject> CreateJavaEwalletFromNative(
+      JNIEnv* env,
+      const Ewallet& ewallet);
+
+  // Create an object of native Ewallet from Java Ewallet.
+  static Ewallet CreateNativeEwalletFromJava(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jewallet);
+
+ private:
+  ~PersonalDataManagerAndroid() override;
 
   // Returns the GUIDs of the |profiles| passed as parameter.
   base::android::ScopedJavaLocalRef<jobjectArray> GetProfileGUIDs(
@@ -363,6 +304,10 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
       bool include_organization_in_label,
       bool include_country_in_label,
       std::vector<const AutofillProfile*> profiles);
+
+  // Shared method used when creating Java PaymentInstrument.
+  static std::vector<int> GetPaymentRailsFromPaymentInstrument(
+      const PaymentInstrument& payment_instrument);
 
   // Pointer to the java counterpart.
   JavaObjectWeakGlobalRef weak_java_obj_;

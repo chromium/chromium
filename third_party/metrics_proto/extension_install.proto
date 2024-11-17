@@ -11,8 +11,9 @@ option java_outer_classname = "ExtensionInstallProtos";
 
 package metrics;
 
-// Stores information about an extension installed on a user's machine.
-// Next tag: 17.
+// Stores information about an extension installed on a fully-initialized
+// profile. If a single extension is installed in multiple profiles, it will be
+// recorded multiple times. Next tag: 18.
 message ExtensionInstallProto {
   // The type of extension item this is.
   enum Type {
@@ -26,6 +27,7 @@ message ExtensionInstallProto {
     SHARED_MODULE = 7;           // A shared module
     LOGIN_SCREEN_EXTENSION = 8;  // An extension running on the login screen
   }
+
   optional Type type = 1;
 
   // The source of the extension.
@@ -50,6 +52,7 @@ message ExtensionInstallProto {
     EXTERNAL_COMPONENT = 10;  // A component extension that was downloaded
                               // externally via an update url.
   }
+
   optional InstallLocation install_location = 2;
 
   // The manifest version in the extension. Note: this refers to the
@@ -65,6 +68,7 @@ message ExtensionInstallProto {
     PAGE_ACTION = 2;
     SYSTEM_INDICATOR = 3;
   }
+
   optional ActionType action_type = 4;
 
   // If the extension has been granted file access.
@@ -117,6 +121,7 @@ message ExtensionInstallProto {
     SERVICE_WORKER = 3;              // The extension has a service worker based
                                      // background context.
   }
+
   optional BackgroundScriptType background_script_type = 13;
 
   // The reasons an extension may be disabled.
@@ -143,20 +148,31 @@ message ExtensionInstallProto {
                                        // approval for a supervised user.
     BLOCKED_BY_POLICY = 13;  // The extension is disabled because it's blocked
                              // by enterprise policy.
+
     // The extension is being reinstalled.
     REINSTALL = 16;
+
     // The extension has been disabled because it's not allowlisted and the Safe
     // Browsing allowlist is enforced in the user profile.
     NOT_ALLOWLISTED = 17;
+
     // The extension is disabled because it is not in 1st party ash keep list
     // and the 1st party ash extension keep list is enforced in ash.
     NOT_ASH_KEEPLISTED = 18;
+
     // Policy requires the extension to be published and available for download
     // from the web store.
     PUBLISHED_IN_STORE_REQUIRED_BY_POLICY = 19;
+
     // The extension is using an unsupported manifest version.
     UNSUPPORTED_MANIFEST_VERSION = 20;
+
+    // The extension is disabled because it is a "developer extension" (for
+    // example, an unpacked extension) while the developer mode in
+    // chrome://extensions is OFF.
+    UNSUPPORTED_DEVELOPER_EXTENSION = 21;
   }
+
   // Any DisableReasons in effect for the extension. An empty list means the
   // extension is not disabled. Note that an extension that is not disabled may
   // nonetheless not be running, e.g., terminated because the extension process
@@ -169,17 +185,23 @@ message ExtensionInstallProto {
   enum BlacklistState {
     // The extension is not in the blacklist.
     NOT_BLACKLISTED = 0;
+
     // The extension is malware.
     BLACKLISTED_MALWARE = 1;
+
     // The extension has a serious security vulnerability.
     BLACKLISTED_SECURITY_VULNERABILITY = 2;
+
     // The extension violated CWS policy.
     BLACKLISTED_CWS_POLICY_VIOLATION = 3;
+
     // The extension is considered potentially unwanted.
     BLACKLISTED_POTENTIALLY_UNWANTED = 4;
+
     // Used when we couldn't connect to server, e.g. when offline.
     BLACKLISTED_UNKNOWN = 5;
   }
+
   optional BlacklistState blacklist_state = 15;
 
   // Whether the extension was installed in the current sampling period. This
@@ -188,4 +210,9 @@ message ExtensionInstallProto {
   // have the extension installed and others won't, these records can be
   // discarded for that analysis.
   optional bool installed_in_this_sample_period = 16;
+
+  // Whether the profile this extension is installed on has developer mode in
+  // chrome://extensions toggled ON. Note: this refers to the current developer
+  // mode status of the profile, not when the extension was installed.
+  optional bool in_extensions_developer_mode = 17;
 }

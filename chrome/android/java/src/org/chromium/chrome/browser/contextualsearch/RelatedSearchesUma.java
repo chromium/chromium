@@ -46,17 +46,18 @@ public class RelatedSearchesUma {
         int NO_SCROLL_CLICKED = 1;
         int SCROLLED_NO_CLICK = 2;
         int SCROLLED_CLICKED = 3;
-        int NUM_ENTRIES = 4;
     }
 
     /**
      * Logs a histogram indicating which privacy permissions are available that Related Searches
      * cares about. This ignores any language constraint.
+     *
      * <p>This can be called multiple times for each user from any part of the code that's freqently
      * executed.
+     *
      * @param canSendUrl Whether this user has allowed sending page URL info to Google.
      * @param canSendContent Whether the user can send page content to Google (has accepted the
-     *        Contextual Search opt-in).
+     *     Contextual Search opt-in).
      */
     static void logRelatedSearchesPermissionsForAllUsers(
             boolean canSendUrl, boolean canSendContent) {

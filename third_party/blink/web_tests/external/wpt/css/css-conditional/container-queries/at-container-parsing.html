@@ -8,7 +8,7 @@
   <main id="cq-main"></main>
 </div>
 <script>
-  setup(() => assert_implements_container_queries());
+  setup(() => assert_implements_size_container_queries());
 
   test_cq_condition_known('(width)');
   test_cq_condition_known('(min-width: 0px)');
@@ -92,11 +92,19 @@
   test_cq_condition_invalid('screen or (width: 100px)');
   test_cq_condition_invalid('not screen and (width: 100px)');
   test_cq_condition_invalid('not screen or (width: 100px)');
-  test_cq_condition_invalid('(width: 100px), (height: 100px)');
   test_cq_condition_invalid('foo (width: 100px)');
 
   test_cq_rule_valid('name not (width <= 500px)');
   test_cq_rule_valid('not (width <= 500px)');
+  test_cq_rule_valid('(width: 100px), (height: 100px)');
+  test_cq_rule_valid('(width),(height)  , (inline-size > 20px)');
+  test_cq_rule_valid('(width), name (height)');
+  test_cq_rule_valid('--foo');
+  test_cq_rule_valid('container');
+
+  test_cq_rule_invalid('');
+  test_cq_rule_invalid('(width),');
+  test_cq_rule_invalid('(width),,(height)');
 
   test_container_name_valid('foo');
   test_container_name_valid(' foo');

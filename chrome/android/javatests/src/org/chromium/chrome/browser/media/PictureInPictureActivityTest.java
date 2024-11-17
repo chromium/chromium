@@ -43,7 +43,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -70,8 +69,6 @@ import java.util.concurrent.TimeoutException;
 public class PictureInPictureActivityTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule public JniMocker mMocker = new JniMocker();
 
     private static final long NATIVE_OVERLAY = 100L;
     private static final long PIP_TIMEOUT_MILLISECONDS = 10000L;
@@ -106,7 +103,7 @@ public class PictureInPictureActivityTest {
         MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityOnBlankPage();
         mTab = mActivityTestRule.getActivity().getActivityTab();
-        mMocker.mock(PictureInPictureActivityJni.TEST_HOOKS, mNativeMock);
+        PictureInPictureActivityJni.setInstanceForTesting(mNativeMock);
         mOriginalHelper = PictureInPictureActivity.setLaunchIntoPipHelper(mLaunchIntoPipHelper);
     }
 

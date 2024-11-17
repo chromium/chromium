@@ -4,18 +4,14 @@
 
 #include "headless/lib/browser/headless_screen.h"
 
-#include <stdint.h>
-
-#include "ui/base/ime/input_method.h"
-#include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/native_widget_types.h"
+#include "base/check_deref.h"
 
 namespace headless {
 
 // static
-HeadlessScreen* HeadlessScreen::Create(const gfx::Size& size) {
-  return new HeadlessScreen(gfx::Rect(size));
+HeadlessScreen* HeadlessScreen::Create(const gfx::Size& size,
+                                       float scale_factor) {
+  return new HeadlessScreen(gfx::Rect(size), scale_factor);
 }
 
 HeadlessScreen::~HeadlessScreen() = default;
@@ -44,11 +40,67 @@ display::Display HeadlessScreen::GetDisplayNearestWindow(
   return GetPrimaryDisplay();
 }
 
-HeadlessScreen::HeadlessScreen(const gfx::Rect& screen_bounds) {
+HeadlessScreen::HeadlessScreen(const gfx::Rect& bounds, float scale_factor)
+    : natural_portrait_(bounds.height() > bounds.width()) {
   static int64_t synthesized_display_id = 2000;
   display::Display display(synthesized_display_id++);
-  display.SetScaleAndBounds(1.0f, screen_bounds);
-  ProcessDisplayChanged(display, true /* is_primary */);
+  display.SetScaleAndBounds(scale_factor, bounds);
+  ProcessDisplayChanged(display, /*is_primary=*/true);
+}
+
+// static
+void HeadlessScreen::UpdateScreenSizeForScreenOrientation(
+    display::mojom::ScreenOrientation screen_orientation) {
+  auto& headless_screen =
+      CHECK_DEREF(static_cast<HeadlessScreen*>(GetScreen()));
+  headless_screen.UpdateScreenSizeForScreenOrientationImpl(screen_orientation);
+}
+
+void HeadlessScreen::UpdateScreenSizeForScreenOrientationImpl(
+    display::mojom::ScreenOrientation screen_orientation) {
+  display::Display display = GetPrimaryDisplay();
+
+  bool needs_swap = false;
+  switch (screen_orientation) {
+    case display::mojom::ScreenOrientation::kUndefined:
+      break;
+    case display::mojom::ScreenOrientation::kPortraitPrimary:
+      needs_swap = display.is_landscape();
+      display.set_panel_rotation(IsNaturalPortrait()
+                                     ? display::Display::ROTATE_0
+                                     : display::Display::ROTATE_90);
+      break;
+    case display::mojom::ScreenOrientation::kPortraitSecondary:
+      needs_swap = display.is_landscape();
+      display.set_panel_rotation(IsNaturalPortrait()
+                                     ? display::Display::ROTATE_180
+                                     : display::Display::ROTATE_270);
+      break;
+    case display::mojom::ScreenOrientation::kLandscapePrimary:
+      needs_swap = !display.is_landscape();
+      display.set_panel_rotation(IsNaturalLandscape()
+                                     ? display::Display::ROTATE_0
+                                     : display::Display::ROTATE_90);
+      break;
+    case display::mojom::ScreenOrientation::kLandscapeSecondary:
+      needs_swap = !display.is_landscape();
+      display.set_panel_rotation(IsNaturalLandscape()
+                                     ? display::Display::ROTATE_180
+                                     : display::Display::ROTATE_270);
+      break;
+  }
+
+  // Swap display width and height to change its orientation.
+  if (needs_swap) {
+    gfx::Rect bounds = display.bounds();
+    int old_width = bounds.width();
+    bounds.set_width(bounds.height());
+    bounds.set_height(old_width);
+    display.set_bounds(bounds);
+  }
+
+  // Update display even if there was no swap.
+  ProcessDisplayChanged(display, /*is_primary=*/true);
 }
 
 }  // namespace headless

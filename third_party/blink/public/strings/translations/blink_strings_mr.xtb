@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1591562245178063882">या महिन्यात</translation>
 <translation id="1637811476055996098">फाइल निवडा</translation>
-<translation id="1680090928918677457">कॅमेरा वापरा</translation>
 <translation id="1729654308190250600">कृपया एक रिक्त नसलेला ईमेल ॲड्रेस एंटर करा.</translation>
 <translation id="1758486001363313524">अन्य...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">कृपया हा मजकूर <ph name="MAX_CHARACTERS" /> वर्ण लहान किंवा कमी करा (तुम्ही सध्या <ph name="CURRENT_LENGTH" /> वर्ण वापरत आहात).</translation>
 <translation id="2247351761944213033">आठवडा <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">ट्रॅक <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">कॅमेरा आणि मायक्रोफोनला अनुमती आहे</translation>
 <translation id="2507943997699731163">कृपया हे फील्ड भरा.</translation>
 <translation id="2613802280814924224">कृपया एक वैध मूल्य एंटर करा. जवळील वैध मूल्य <ph name="VALID_VALUE" /> आहे.</translation>
 <translation id="2653659639078652383">सबमिट करा</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">कृपया हा मजकूर <ph name="MIN_CHARACTERS" /> वर्ण किंवा त्यापेक्षा अधिक मोठा करा (तुम्ही सध्‍या <ph name="CURRENT_LENGTH" /> वर्ण वापरत आहात).</translation>
 <translation id="383465348367842624">'<ph name="ATSIGN" />' मागुन येणार्‍या भागामध्ये '<ph name="INVALIDCHARACTER" />' चिन्ह नसावे.</translation>
 <translation id="3846214748874656680">क्षेत्रेमधून बाहेर पडा</translation>
-<translation id="4031179711345676612">मायक्रोफोनला अनुमती आहे</translation>
 <translation id="4360991593054037559">कृपया एक वैध मूल्य एंटर करा. दोन जवळील वैध मूल्ये <ph name="VALID_VALUE_LOW" /> आणि <ph name="VALID_VALUE_HIGHER" /> आहेत.</translation>
 <translation id="4522570452068850558">तपशील</translation>
-<translation id="4663373278480897665">कॅमेऱ्याला अनुमती आहे</translation>
 <translation id="4664250907885839816">'<ph name="ATSIGN" />' चे फॉलो करणार्‍या भागामध्ये '<ph name="INVALIDCHARACTER" />' चिन्ह नसावे.</translation>
 <translation id="4718048029184481307">चित्रात-चित्र मध्ये प्ले करत आहे</translation>
-<translation id="4792862212177489858">स्थान शेअर करा</translation>
 <translation id="4812940957355064477">कृपया एक नंबर एंटर करा.</translation>
-<translation id="49269513399674318">मायक्रोफोन वापरा</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> निवडले</translation>
 <translation id="4992066212339426712">अनम्यूट करा</translation>
 <translation id="49969490063480558">कृपया '<ph name="ATSIGN" />' चे फॉलो करणारा भाग एंटर करा. '<ph name="INVALIDADDRESS" />' अपूर्ण आहे.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">प्लग-इन लोड करणे शक्य झाले नाही.</translation>
 <translation id="6919891270253167948">१.५</translation>
 <translation id="6989848892321993519">कृपया हा मजकूर <ph name="MIN_CHARACTERS" /> वर्ण किंवा त्यापेक्षा अधिक मोठा करा (तुम्ही सध्‍या 1 वर्ण वापरत आहात).</translation>
-<translation id="7080893216867146095">स्थान शेअर करण्याची अनुमती आहे</translation>
 <translation id="709897737746224366">कृपया विनंती केलेले स्वरूपन जुळवा.</translation>
-<translation id="7134810312945846184">मायक्रोफोन आणि कॅमेरा वापरा</translation>
 <translation id="7263440858009898357">कृपया सूचीमधील आयटम निवडा.</translation>
 <translation id="7364796246159120393">फाइल निवडा</translation>
 <translation id="739024184232394898">अन्य...</translation>

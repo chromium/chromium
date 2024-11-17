@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/ui/autofill_image_fetcher.h"
 
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
@@ -157,7 +158,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_Success) {
       .Times(1);
   std::vector<GURL> urls = {fake_url1, fake_url2};
   autofill_image_fetcher()->FetchImagesForURLs(
-      urls, base::span({AutofillImageFetcherBase::ImageSize::kSmall}),
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
       base::DoNothing());
 
   // Advance the time to make the latency values more realistic.
@@ -192,7 +193,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ResolveCardArtURL) {
       .Times(1);
   std::vector<GURL> urls = {fake_url1};
   autofill_image_fetcher()->FetchImagesForURLs(
-      urls, base::span({AutofillImageFetcherBase::ImageSize::kSmall}),
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
       base::DoNothing());
 }
 
@@ -252,7 +253,7 @@ TEST_F(AutofillImageFetcherTest, FetchImage_ServerFailure) {
   EXPECT_CALL(*mock_image_fetcher(), FetchImageAndData_(_, _, _, _)).Times(1);
   std::vector<GURL> urls = {fake_url1};
   autofill_image_fetcher()->FetchImagesForURLs(
-      urls, base::span({AutofillImageFetcherBase::ImageSize::kSmall}),
+      urls, base::span_from_ref(AutofillImageFetcherBase::ImageSize::kSmall),
       base::DoNothing());
 
   task_environment().FastForwardBy(base::Milliseconds(200));

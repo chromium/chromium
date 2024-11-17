@@ -18,6 +18,7 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/shared_storage/shared_storage_features.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/peak_gpu_memory_tracker_factory.h"
 #include "content/public/browser/render_view_host.h"
@@ -36,13 +37,11 @@ PageImpl::PageImpl(RenderFrameHostImpl& rfh, PageDelegate& delegate)
     : main_document_(rfh),
       delegate_(delegate),
       text_autosizer_page_info_({0, 0, 1.f}) {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSharedStorageSelectURLLimit)) {
-    select_url_overall_budget_ = static_cast<double>(
-        blink::features::kSharedStorageSelectURLBitBudgetPerPageLoad.Get());
-    select_url_max_bits_per_site_ = static_cast<double>(
-        blink::features::kSharedStorageSelectURLBitBudgetPerSitePerPageLoad
-            .Get());
+  if (base::FeatureList::IsEnabled(features::kSharedStorageSelectURLLimit)) {
+    select_url_overall_budget_ =
+        features::kSharedStorageSelectURLBitBudgetPerPageLoad.Get();
+    select_url_max_bits_per_site_ =
+        features::kSharedStorageSelectURLBitBudgetPerSitePerPageLoad.Get();
   }
 }
 
@@ -79,8 +78,9 @@ void PageImpl::UpdateManifestUrl(const GURL& manifest_url) {
 
   // If |main_document_| is not active, the notification is sent on the page
   // activation.
-  if (!main_document_->IsActive())
+  if (!main_document_->IsActive()) {
     return;
+  }
 
   main_document_->delegate()->OnManifestUrlChanged(*this);
 }
@@ -154,8 +154,9 @@ void PageImpl::DidInferColorScheme(
 }
 
 void PageImpl::NotifyPageBecameCurrent() {
-  if (!IsPrimary())
+  if (!IsPrimary()) {
     return;
+  }
   delegate_->NotifyPageBecamePrimary(*this);
 }
 
@@ -176,14 +177,12 @@ void PageImpl::OnTextAutosizerPageInfoChanged(
   text_autosizer_page_info_.device_scale_adjustment =
       page_info->device_scale_adjustment;
 
-  auto remote_frames_broadcast_callback = base::BindRepeating(
-      [](const blink::mojom::TextAutosizerPageInfo& page_info,
-         RenderFrameProxyHost* proxy_host) {
+  auto remote_frames_broadcast_callback =
+      [this](RenderFrameProxyHost* proxy_host) {
         DCHECK(proxy_host);
         proxy_host->GetAssociatedRemoteMainFrame()->UpdateTextAutosizerPageInfo(
-            page_info.Clone());
-      },
-      text_autosizer_page_info_);
+            text_autosizer_page_info_.Clone());
+      };
 
   main_document_->frame_tree()
       ->root()
@@ -267,19 +266,26 @@ void PageImpl::MaybeDispatchLoadEventsOnPrerenderActivation() {
   // prerender last load progress value if the value is not equal to
   // blink::kFinalLoadProgress, whose notification is dispatched during call
   // to DidStopLoading.
-  if (load_progress() != blink::kFinalLoadProgress)
+  if (load_progress() != blink::kFinalLoadProgress) {
     main_document_->DidChangeLoadProgress(load_progress());
+  }
 
   // Dispatch PrimaryMainDocumentElementAvailable before dispatching following
   // load complete events.
-  if (is_main_document_element_available())
+  if (is_main_document_element_available()) {
     main_document_->MainDocumentElementAvailable(uses_temporary_zoom_level());
+  }
 
   main_document_->ForEachRenderFrameHost(
       &RenderFrameHostImpl::MaybeDispatchDOMContentLoadedOnPrerenderActivation);
 
-  if (is_on_load_completed_in_main_document())
+  if (is_on_load_completed_in_main_document()) {
     main_document_->DocumentOnLoadCompleted();
+  }
+
+  if (did_first_contentful_paint_in_main_document()) {
+    main_document_->OnFirstContentfulPaint();
+  }
 
   main_document_->ForEachRenderFrameHost(
       &RenderFrameHostImpl::MaybeDispatchDidFinishLoadOnPrerenderActivation);
@@ -317,17 +323,12 @@ void PageImpl::UpdateBrowserControlsState(
     const std::optional<cc::BrowserControlsOffsetTagsInfo>& offset_tags_info) {
   // TODO(crbug.com/40159655): Asking for the LocalMainFrame interface
   // before the RenderFrame is created is racy.
-  if (!GetMainDocument().IsRenderFrameLive())
+  if (!GetMainDocument().IsRenderFrameLive()) {
     return;
-
-  if (base::FeatureList::IsEnabled(
-          features::kUpdateBrowserControlsWithoutProxy)) {
-    GetMainDocument().GetRenderWidgetHost()->UpdateBrowserControlsState(
-        constraints, current, animate, offset_tags_info);
-  } else {
-    GetMainDocument().GetAssociatedLocalMainFrame()->UpdateBrowserControlsState(
-        constraints, current, animate, offset_tags_info);
   }
+
+  GetMainDocument().GetRenderWidgetHost()->UpdateBrowserControlsState(
+      constraints, current, animate, offset_tags_info);
 }
 
 float PageImpl::GetPageScaleFactor() const {
@@ -335,8 +336,9 @@ float PageImpl::GetPageScaleFactor() const {
 }
 
 void PageImpl::UpdateEncoding(const std::string& encoding_name) {
-  if (encoding_name == last_reported_encoding_)
+  if (encoding_name == last_reported_encoding_) {
     return;
+  }
   last_reported_encoding_ = encoding_name;
 
   canonical_encoding_ =
@@ -354,8 +356,9 @@ void PageImpl::NotifyVirtualKeyboardOverlayRect(
 }
 
 void PageImpl::SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode) {
-  if (virtual_keyboard_mode_ == mode)
+  if (virtual_keyboard_mode_ == mode) {
     return;
+  }
 
   virtual_keyboard_mode_ = mode;
 
@@ -364,6 +367,49 @@ void PageImpl::SetVirtualKeyboardMode(ui::mojom::VirtualKeyboardMode mode) {
 
 base::flat_map<std::string, std::string> PageImpl::GetKeyboardLayoutMap() {
   return GetMainDocument().GetRenderWidgetHost()->GetKeyboardLayoutMap();
+}
+
+int32_t PageImpl::GetSavedQueryResultIndexOrStoreCallback(
+    const url::Origin& origin,
+    const GURL& script_url,
+    const std::string& operation_name,
+    const std::u16string& query_name,
+    base::OnceCallback<void(uint32_t)> callback) {
+  auto key = std::make_tuple(origin, script_url, operation_name, query_name);
+  auto it = select_url_saved_query_index_results_.find(key);
+  if (it == select_url_saved_query_index_results_.end()) {
+    select_url_saved_query_index_results_[key] = SharedStorageSavedQueryData();
+    // The result index will be determined by running the registered worklet
+    // operation upon return to the SHaredStorageWorkletHost.
+    return -2;
+  }
+  if (it->second.index == -1) {
+    // The result index will be determined when a previously initiated worklet
+    // operation finishes running. We save a callback that will notify us of the
+    // result.
+    it->second.callbacks.push(std::move(callback));
+    return -1;
+  }
+  // The result index has been stored from a previously resolved worklet
+  // operation.
+  return it->second.index;
+}
+
+void PageImpl::SetSavedQueryResultIndexAndRunCallbacks(
+    const url::Origin& origin,
+    const GURL& script_url,
+    const std::string& operation_name,
+    const std::u16string& query_name,
+    uint32_t index) {
+  auto key = std::make_tuple(origin, script_url, operation_name, query_name);
+  auto it = select_url_saved_query_index_results_.find(key);
+  CHECK(it != select_url_saved_query_index_results_.end());
+  CHECK_EQ(it->second.index, -1L);
+  it->second.index = index;
+  while (!it->second.callbacks.empty()) {
+    std::move(it->second.callbacks.front()).Run(index);
+    it->second.callbacks.pop();
+  }
 }
 
 blink::SharedStorageSelectUrlBudgetStatus

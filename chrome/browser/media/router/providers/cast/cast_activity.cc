@@ -11,6 +11,8 @@
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 #include "chrome/browser/media/router/providers/cast/cast_session_client_impl.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
+#include "components/media_router/common/mojom/debugger.mojom.h"
+#include "components/media_router/common/mojom/logger.mojom.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 
 namespace media_router {
@@ -18,11 +20,15 @@ namespace media_router {
 CastActivity::CastActivity(const MediaRoute& route,
                            const std::string& app_id,
                            cast_channel::CastMessageHandler* message_handler,
-                           CastSessionTracker* session_tracker)
+                           CastSessionTracker* session_tracker,
+                           mojo::Remote<mojom::Logger>& logger,
+                           mojo::Remote<mojom::Debugger>& debugger)
     : route_(route),
       app_id_(app_id),
       message_handler_(message_handler),
-      session_tracker_(session_tracker) {}
+      session_tracker_(session_tracker),
+      logger_(logger),
+      debugger_(debugger) {}
 
 CastActivity::~CastActivity() = default;
 
@@ -42,7 +48,8 @@ mojom::RoutePresentationConnectionPtr CastActivity::AddClient(
                 client_id, origin, frame_tree_node_id)
           : std::make_unique<CastSessionClientImpl>(
                 client_id, origin, frame_tree_node_id,
-                source.auto_join_policy(), this);
+                source.auto_join_policy(), this, logger_.get(),
+                debugger_.get());
   auto presentation_connection = client->Init();
   connected_clients_.emplace(client_id, std::move(client));
 

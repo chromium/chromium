@@ -104,9 +104,8 @@ class PasswordsClientUIDelegate {
 
   // Called when user credentials were leaked. This triggers the UI to prompt
   // the user whether they would like to check their passwords.
-  virtual void OnCredentialLeak(password_manager::CredentialLeakType leak_type,
-                                const GURL& url,
-                                const std::u16string& username) = 0;
+  virtual void OnCredentialLeak(
+      password_manager::LeakedPasswordDetails details) = 0;
 
   // Called after a form was submitted. This triggers a bubble that allows to
   // move the just used profile credential in |form| to the user's account.
@@ -126,7 +125,8 @@ class PasswordsClientUIDelegate {
   // Called when a passkey has just been saved to display a confirmation of that
   // to the user. If GPM pin was created in the same flow, then the confirmation
   // of that is also displayed in the title.
-  virtual void OnPasskeySaved(bool gpm_pin_created) = 0;
+  virtual void OnPasskeySaved(bool gpm_pin_created,
+                              std::string passkey_rp_id) = 0;
 
   // Called when a passkey has just been deleted to display a confirmation of
   // that to the user.
@@ -134,11 +134,11 @@ class PasswordsClientUIDelegate {
 
   // Called when a passkey has just been updated to display a confirmation of
   // that to the user.
-  virtual void OnPasskeyUpdated() = 0;
+  virtual void OnPasskeyUpdated(std::string passkey_rp_id) = 0;
 
   // Called when a passkey has just been deleted because it was not present on
   // an all accepted credentials report.
-  virtual void OnPasskeyNotAccepted() = 0;
+  virtual void OnPasskeyNotAccepted(std::string passkey_rp_id) = 0;
 
  protected:
   virtual ~PasswordsClientUIDelegate() = default;

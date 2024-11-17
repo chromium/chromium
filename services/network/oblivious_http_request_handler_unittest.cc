@@ -454,6 +454,18 @@ TEST_F(TestObliviousHttpRequestHandler, TestInvalidArguments) {
   }
 }
 
+TEST_F(TestObliviousHttpRequestHandler, TestEmptyKeyConfig) {
+  std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
+      CreateHandler();
+  network::mojom::ObliviousHttpRequestPtr request = CreateRequest();
+  request->key_config = "";
+
+  TestOhttpClient client;
+  client.SetExpectedNetError(net::ERR_INVALID_ARGUMENT);
+  handler->StartRequest(std::move(request), client.CreatePendingRemote());
+  client.WaitForCall();
+}
+
 TEST_F(TestObliviousHttpRequestHandler, TestRequestFormat) {
   std::unique_ptr<network::ObliviousHttpRequestHandler> handler =
       CreateHandler();

@@ -76,7 +76,6 @@
 #if BUILDFLAG(IS_CHROMEOS)
 // TODO(http://b/333583704): Revert CL which added this include after migration.
 #include "chrome/browser/chromeos/echo/echo_util.h"
-#include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -783,8 +782,9 @@ void PreinstalledWebAppManager::LoadConfigs(ConsumeLoadedConfigs callback) {
     LoadedConfigs loaded_configs;
     for (const base::Value& config : *g_configs_for_testing) {
       auto file = base::FilePath(FILE_PATH_LITERAL("test.json"));
-      if (GetPreinstalledWebAppConfigDirForTesting()) {
-        file = GetPreinstalledWebAppConfigDirForTesting()->Append(file);
+      if (test::GetPreinstalledWebAppConfigDirForTesting()) {  //  IN-TEST
+        file = test::GetPreinstalledWebAppConfigDirForTesting()->Append(
+            file);  // IN-TEST
       }
 
       loaded_configs.configs.push_back(
@@ -798,16 +798,6 @@ void PreinstalledWebAppManager::LoadConfigs(ConsumeLoadedConfigs callback) {
     std::move(callback).Run({});
     return;
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Don't load configs from /usr/share/google-chrome/extensions/web_apps when
-  // preinstalling core apps only.
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kPreinstalledWebAppsCoreOnly)) {
-    std::move(callback).Run({});
-    return;
-  }
-#endif
 
   base::FilePath config_dir = GetPreinstalledWebAppConfigDir(profile_);
   if (config_dir.empty()) {

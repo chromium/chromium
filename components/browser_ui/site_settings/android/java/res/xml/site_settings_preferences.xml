@@ -52,6 +52,10 @@ The order of the following items is from: http://crbug.com/610358.
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="usb" />
+    <!-- File editing -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="file_editing" />
     <!-- Clipboard API -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
@@ -92,10 +96,10 @@ The order of the following items is from: http://crbug.com/610358.
     <!-- Tracking protection settings -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="tracking_protection"
-        android:icon="@drawable/ic_eye_crossed"
+        android:icon="@drawable/permission_cookie"
         app:iconTint="@macro/default_icon_color"
         android:fragment="org.chromium.components.privacy_sandbox.TrackingProtectionSettings"
-        android:title="@string/tracking_protection_settings_title"
+        android:title="@string/third_party_cookies_link_row_label"
         app:isPreferenceVisible="false" />
     <!-- JavaScript -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
@@ -145,11 +149,15 @@ The order of the following items is from: http://crbug.com/610358.
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
         android:key="automatic_downloads" />
+    <!-- V8 Optimizer -->
+    <org.chromium.components.browser_ui.settings.ChromeBasePreference
+        android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"
+        android:key="javascript_optimizer" />
     <!-- Zoom -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.AllSiteSettings"
         android:key="zoom"
-        android:title="@string/page_zoom_menu_title"
+        android:title="@string/zoom_info_preference_title"
         android:icon="@drawable/ic_zoom"
         app:iconTint="@macro/default_icon_color" />
 

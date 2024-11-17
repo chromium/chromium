@@ -18,9 +18,7 @@
 namespace {
 
 int64_t GetFileSizeBlocking(const base::FilePath& file_path) {
-  int64_t size = 0;
-  bool success = base::GetFileSize(file_path, &size);
-  return success ? size : -1;
+  return base::GetFileSize(file_path).value_or(-1);
 }
 
 }  // namespace

@@ -40,7 +40,8 @@
           "builder": "mac-rel-cft",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac-rel-cft/targets"
     }
   },
   "$build/reclient": {

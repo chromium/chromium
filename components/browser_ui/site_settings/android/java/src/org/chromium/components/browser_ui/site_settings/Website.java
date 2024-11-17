@@ -41,8 +41,9 @@ public final class Website implements WebsiteEntry {
     private Map<Integer, List<ContentSettingException>> mEmbeddedPermissionInfos = new HashMap<>();
 
     private LocalStorageInfo mLocalStorageInfo;
-    private RWSCookieInfo mRWSCookieInfo;
+    private RwsCookieInfo mRwsCookieInfo;
     private CookiesInfo mCookiesInfo;
+    private FileEditingInfo mFileEditingInfo;
     private double mZoomFactor;
     private final List<StorageInfo> mStorageInfo = new ArrayList<>();
     private final List<SharedDictionaryInfo> mSharedDictionaryInfo = new ArrayList<>();
@@ -376,12 +377,12 @@ public final class Website implements WebsiteEntry {
         return mLocalStorageInfo;
     }
 
-    public RWSCookieInfo getRWSCookieInfo() {
-        return mRWSCookieInfo;
+    public RwsCookieInfo getRwsCookieInfo() {
+        return mRwsCookieInfo;
     }
 
-    public void setRWSCookieInfo(RWSCookieInfo rwsCookieInfo) {
-        mRWSCookieInfo = rwsCookieInfo;
+    public void setRwsCookieInfo(RwsCookieInfo rwsCookieInfo) {
+        mRwsCookieInfo = rwsCookieInfo;
     }
 
     public void addStorageInfo(StorageInfo info) {
@@ -415,6 +416,14 @@ public final class Website implements WebsiteEntry {
 
     public CookiesInfo getCookiesInfo() {
         return mCookiesInfo;
+    }
+
+    public void setFileEditingInfo(FileEditingInfo info) {
+        mFileEditingInfo = info;
+    }
+
+    public FileEditingInfo getFileEditingInfo() {
+        return mFileEditingInfo;
     }
 
     public void clearAllStoredData(
@@ -525,19 +534,19 @@ public final class Website implements WebsiteEntry {
     /** {@inheritDoc} */
     @Override
     public boolean isPartOfRws() {
-        return getRWSCookieInfo() != null;
+        return getRwsCookieInfo() != null;
     }
 
     /** {@inheritDoc} */
     @Override
     public String getRwsOwner() {
-        return isPartOfRws() ? getRWSCookieInfo().getOwner() : null;
+        return isPartOfRws() ? getRwsCookieInfo().getOwner() : null;
     }
 
     /** {@inheritDoc} */
     @Override
     public int getRwsSize() {
-        return isPartOfRws() ? getRWSCookieInfo().getMembersCount() : 0;
+        return isPartOfRws() ? getRwsCookieInfo().getMembersCount() : 0;
     }
 
     @Override

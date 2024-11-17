@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/policy/dlp/dlp_files_controller_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
-#include "chrome/browser/chromeos/policy/dlp/dlp_files_controller_lacros.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_scoped_file_access_delegate.h"
@@ -324,10 +323,6 @@ void DlpRulesManagerImpl::OnDataLeakPreventionRulesUpdate() {
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   files_controller_ = nullptr;
 #endif
-
-  if (!base::FeatureList::IsEnabled(features::kDataLeakPreventionPolicy)) {
-    return;
-  }
 
   const base::Value::List& rules_list =
       g_browser_process->local_state()->GetList(policy_prefs::kDlpRulesList);

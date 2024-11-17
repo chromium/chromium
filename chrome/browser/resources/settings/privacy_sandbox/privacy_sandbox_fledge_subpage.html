@@ -82,8 +82,7 @@
     sub-label="$i18n{fledgePageToggleSubLabel}"
     on-settings-boolean-control-change="onToggleChange_">
 </settings-toggle-button>
-<div id="secondDescription" class="cr-secondary-text"
-    hidden="[[!shouldShowV2_]]">
+<div id="secondDescription" class="cr-secondary-text">
   $i18n{fledgePageExplanation}
 </div>
 <template is="dom-if" if="[[!isFledgePrefManaged_(
@@ -162,13 +161,9 @@
     </template>
   </div>
 </cr-collapse>
-<div id="footer" class="cr-secondary-text hr footer"
-    hidden="[[shouldShowV2_]]">
+
+<div id="footer" class="cr-secondary-text hr footer">
   $i18nRaw{fledgePageFooter}
-</div>
-<div id="footerV2" class="cr-secondary-text hr footer"
-    hidden="[[!shouldShowV2_]]">
-  $i18nRaw{fledgePageFooterV2}
 </div>
 <template is="dom-if" if="[[isLearnMoreDialogOpen_]]" restamp>
   <cr-dialog id="dialog" on-close="onCloseDialog_" show-on-attach>

@@ -5,6 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SYSTEM_STATE_PROVIDER_H_
 #define CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SYSTEM_STATE_PROVIDER_H_
 
+#include "base/memory/raw_ptr.h"
+
+class Profile;
+
 namespace ash {
 struct LobsterSystemState;
 }  // namespace ash
@@ -12,10 +16,13 @@ struct LobsterSystemState;
 // TODO(b/348280621): Complete enable/disable logic.
 class LobsterSystemStateProvider {
  public:
-  LobsterSystemStateProvider();
+  explicit LobsterSystemStateProvider(Profile* profile);
   ~LobsterSystemStateProvider();
 
   ash::LobsterSystemState GetSystemState();
+
+ private:
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_ASH_LOBSTER_LOBSTER_SYSTEM_STATE_PROVIDER_H_

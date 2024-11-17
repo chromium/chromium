@@ -23,11 +23,15 @@ namespace {
 
 String ToPlatformString(const v8_inspector::StringView& string) {
   if (string.is8Bit()) {
-    return String(reinterpret_cast<const LChar*>(string.characters8()),
-                  base::checked_cast<wtf_size_t>(string.length()));
+    // SAFETY: v8_inspector::StringView guarantees characters8() and length()
+    // are safe.
+    return String(
+        UNSAFE_BUFFERS(base::span(string.characters8(), string.length())));
   }
-  return String(reinterpret_cast<const UChar*>(string.characters16()),
-                base::checked_cast<wtf_size_t>(string.length()));
+  // SAFETY: v8_inspector::StringView guarantees characters16() and length()
+  // are safe.
+  return String(UNSAFE_BUFFERS(base::span(
+      reinterpret_cast<const UChar*>(string.characters16()), string.length())));
 }
 
 String ToPlatformString(std::unique_ptr<v8_inspector::StringBuffer> buffer) {

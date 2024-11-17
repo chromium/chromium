@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"
-#include "ui/gfx/gfx_export.h"
 
 class SkBitmap;
 
@@ -40,7 +40,7 @@ class TestOnThread;
 // potentially many different densities for high-DPI displays.
 //
 // ImageSkia is cheap to copy and intentionally supports copy semantics.
-class GFX_EXPORT ImageSkia {
+class COMPONENT_EXPORT(GFX) ImageSkia {
  public:
   typedef std::vector<ImageSkiaRep> ImageSkiaReps;
 

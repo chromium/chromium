@@ -195,8 +195,7 @@ ui::ImageModel OmniboxView::GetIcon(int dip_size,
                                     bool dark_mode) const {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // This is used on desktop only.
-  NOTREACHED_IN_MIGRATION();
-  return ui::ImageModel();
+  NOTREACHED();
 #else
 
   if (model()->ShouldShowCurrentPageIcon()) {

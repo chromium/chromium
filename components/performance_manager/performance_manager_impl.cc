@@ -454,8 +454,7 @@ void PerformanceManagerImpl::BatchDeleteNodesImpl(
         break;
       }
       case SystemNodeImpl::Type(): {
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
       }
     }
   }

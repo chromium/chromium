@@ -8,6 +8,7 @@
 #   chrome/common/extensions/OWNERS
 #   chrome/renderer/extensions/OWNERS
 #   chrome/renderer/resources/extensions/OWNERS
+#   chrome/test/data/extensions/OWNERS
 
 set noparent
 rdevlin.cronin@chromium.org

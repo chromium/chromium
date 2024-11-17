@@ -18,7 +18,7 @@ class FrameSinkId;
 
 class DisplayClient {
  public:
-  virtual ~DisplayClient() {}
+  virtual ~DisplayClient() = default;
   virtual void DisplayOutputSurfaceLost() = 0;
   // It is expected that |render_pass| would only be modified to insert debug
   // quads.

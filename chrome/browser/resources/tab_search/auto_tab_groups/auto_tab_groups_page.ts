@@ -4,8 +4,8 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import 'chrome://resources/cr_elements/icons_lit.html.js';
-import '../strings.m.js';
+import 'chrome://resources/cr_elements/icons.html.js';
+import '/strings.m.js';
 import './auto_tab_groups_failure.js';
 import './auto_tab_groups_in_progress.js';
 import './auto_tab_groups_not_started.js';
@@ -46,27 +46,28 @@ export class AutoTabGroupsPageElement extends CrLitElement {
 
   static override get properties() {
     return {
+      availableHeight: {type: Number},
+      showBackButton: {type: Boolean},
+
       state_: {type: Number},
       session_: {type: Object},
-      availableHeight_: {type: Number},
       showFRE_: {type: Boolean},
       multiTabOrganization_: {type: Boolean},
-      declutterEnabled_: {type: Boolean},
       modelStrategy_: {type: Number, notify: true},
     };
   }
 
+  availableHeight: number = 0;
+  showBackButton: boolean = false;
+
   private apiProxy_: TabSearchApiProxy = TabSearchApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private state_: TabOrganizationState = TabOrganizationState.kInitializing;
-  protected availableHeight_: number = 0;
   protected session_: TabOrganizationSession|null = null;
   protected showFRE_: boolean =
       loadTimeData.getBoolean('showTabOrganizationFRE');
   protected multiTabOrganization_: boolean =
       loadTimeData.getBoolean('multiTabOrganizationEnabled');
-  protected declutterEnabled_: boolean =
-      loadTimeData.getBoolean('declutterEnabled');
   protected modelStrategy_: TabOrganizationModelStrategy =
       TabOrganizationModelStrategy.kTopic;
   private documentVisibilityChangedListener_: () => void;
@@ -118,7 +119,7 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     document.removeEventListener(
         'visibilitychange', this.documentVisibilityChangedListener_);
 
-    if (!this.session_) {
+    if (!this.session_ || this.session_.organizations.length === 0) {
       return;
     }
     if (this.multiTabOrganization_) {
@@ -133,28 +134,19 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     }
   }
 
+  override focus() {
+    if (this.showBackButton) {
+      const backButton = this.shadowRoot!.querySelector('cr-icon-button')!;
+      backButton.focus();
+    } else {
+      super.focus();
+    }
+  }
+
   private onVisible_() {
-    this.updateAvailableHeight_();
     // When the UI goes from not shown to shown, bypass any state change
     // animations.
     this.classList.toggle('changed-state', false);
-  }
-
-  // TODO(emshack): Consider moving the available height calculation into
-  // app.ts and reusing across both tab search and tab organization.
-  private updateAvailableHeight_() {
-    this.apiProxy_.getProfileData().then(({profileData}) => {
-      // In rare cases there is no browser window. I suspect this happens during
-      // browser shutdown.
-      if (!profileData.windows) {
-        return;
-      }
-      // TODO(crbug.com/c/1349350): Determine why no active window is reported
-      // in some cases on ChromeOS and Linux.
-      const activeWindow = profileData.windows.find((t) => t.active);
-      this.availableHeight_ =
-          activeWindow ? activeWindow!.height : profileData.windows[0]!.height;
-    });
   }
 
   private setShowFre_(show: boolean) {
@@ -352,7 +344,8 @@ export class AutoTabGroupsPageElement extends CrLitElement {
     }
 
     const id = this.session_.activeTabId;
-    if (id === -1) {
+    // Id 0 is a sentinel value that indicates 'no tab'.
+    if (id === 0) {
       return false;
     }
     let foundTab = false;
@@ -411,6 +404,10 @@ export class AutoTabGroupsPageElement extends CrLitElement {
       default:
         return '';
     }
+  }
+
+  protected getBackButtonAriaLabel_(): string {
+    return loadTimeData.getStringF('backButtonAriaLabel', this.getTitle_());
   }
 }
 

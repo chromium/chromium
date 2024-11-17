@@ -5,7 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_LOCAL_CARD_MIGRATION_BUBBLE_CONTROLLER_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_PAYMENTS_LOCAL_CARD_MIGRATION_BUBBLE_CONTROLLER_H_
 
-#include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
+#include "components/autofill/core/browser/ui/payments/payments_ui_closed_reasons.h"
 
 namespace autofill {
 
@@ -16,18 +16,18 @@ class LocalCardMigrationBubble;
 // to upload credit cards stored in browser to Google Payments.
 class LocalCardMigrationBubbleController {
  public:
-  LocalCardMigrationBubbleController() {}
+  LocalCardMigrationBubbleController() = default;
 
   LocalCardMigrationBubbleController(
       const LocalCardMigrationBubbleController&) = delete;
   LocalCardMigrationBubbleController& operator=(
       const LocalCardMigrationBubbleController&) = delete;
 
-  virtual ~LocalCardMigrationBubbleController() {}
+  virtual ~LocalCardMigrationBubbleController() = default;
 
   virtual void OnConfirmButtonClicked() = 0;
   virtual void OnCancelButtonClicked() = 0;
-  virtual void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) = 0;
+  virtual void OnBubbleClosed(PaymentsUiClosedReason closed_reason) = 0;
 };
 
 }  // namespace autofill

@@ -35,6 +35,7 @@
 #include "extensions/browser/browsertest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
@@ -742,7 +743,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
     AppsGridView* grid_view = AppListTestApi().GetTopLevelAppsGridView();
     EXPECT_TRUE(grid_view);
     grid_view->ShowContextMenu(grid_view->GetBoundsInScreen().CenterPoint(),
-                               ui::MENU_SOURCE_KEYBOARD);
+                               ui::mojom::MenuSourceType::kKeyboard);
   });
   sm_.ExpectSpeech("menu opened");
 
@@ -762,7 +763,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackAppListTest,
     AppsGridView* grid_view = AppListTestApi().GetTopLevelAppsGridView();
     EXPECT_TRUE(grid_view);
     grid_view->ShowContextMenu(grid_view->GetBoundsInScreen().CenterPoint(),
-                               ui::MENU_SOURCE_KEYBOARD);
+                               ui::mojom::MenuSourceType::kKeyboard);
   });
   sm_.ExpectSpeech("menu opened");
 

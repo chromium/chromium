@@ -672,8 +672,7 @@ HRESULT ValidateResult(const base::Value::Dict& result, BSTR* status_text) {
         return E_ABORT;
       case kUiecTimeout:
       case kUiecKilled:
-        NOTREACHED_IN_MIGRATION() << "Internal codes, not returned by GLS";
-        break;
+        NOTREACHED() << "Internal codes, not returned by GLS";
       case kUiecEMailMissmatch:
         *status_text =
             CGaiaCredentialBase::AllocErrorString(IDS_EMAIL_MISMATCH_BASE);

@@ -141,6 +141,16 @@ LcppStringFrequencyStatData MakeData(std::map<std::string, double> main_buckets,
   return data;
 }
 
+void InitializeSubresourceUrlDestinationsBucket(
+    LcppData& lcpp_data,
+    const std::vector<std::pair<std::string, int32_t>>& urls) {
+  for (const auto& url : urls) {
+    lcpp_data.mutable_lcpp_stat()
+        ->mutable_fetched_subresource_url_destination()
+        ->insert({url.first, url.second});
+  }
+}
+
 }  // namespace
 
 TEST(UpdateLcppStringFrequencyStatDataTest, Base) {
@@ -187,6 +197,12 @@ TEST(UpdateLcppStringFrequencyStatDataTest, Base) {
   // "others" = (1 + 1)/5 * 4
   // See lcp_critical_path_predictor_util.cc for detail.
   EXPECT_EQ(updater.Data(), MakeData({{"foo", 2.4}, {"foobar", 1}}, 1.6))
+      << updater.Data();
+
+  // Increase existing frequency when the bucket is full.
+  updater.Update("foo", dropped_entry);
+  EXPECT_FALSE(dropped_entry);
+  EXPECT_EQ(updater.Data(), MakeData({{"foo", 2.92}, {"foobar", 0.8}}, 1.28))
       << updater.Data();
 }
 
@@ -1091,9 +1107,7 @@ TEST(LcppKeyTest, InvalidURLs) {
 }
 
 size_t GetLCPPMultipleKeyMaxPathLength() {
-  static const size_t max_length = base::checked_cast<size_t>(
-      blink::features::kLCPPMultipleKeyMaxPathLength.Get());
-  return max_length;
+  return blink::features::kLCPPMultipleKeyMaxPathLength.Get();
 }
 
 TEST(LcppMultipleKeyTest, GetFirstLevelPath) {
@@ -1225,7 +1239,10 @@ class LcppDataMapTest : public testing::Test {
 
   void LearnSubresourceUrls(
       const GURL& url,
-      const std::map<GURL, base::TimeDelta>& subresource_urls) {
+      const std::map<
+          GURL,
+          std::pair<base::TimeDelta, network::mojom::RequestDestination>>&
+          subresource_urls) {
     LcppDataInputs inputs;
     inputs.subresource_urls = subresource_urls;
     LearnLcpp(url, inputs);
@@ -1524,41 +1541,81 @@ TEST_P(LcppDataMapFeatures, LearnSubresourceUrls) {
   EXPECT_EQ(2U, config.max_lcpp_histogram_buckets);
   InitializeDB(config);
   EXPECT_TRUE(GetDataMap().empty());
+  const network::mojom::RequestDestination kEmpty =
+      network::mojom::RequestDestination::kEmpty;
+  const int32_t kEmptyValue = static_cast<int32_t>(kEmpty);
+  const network::mojom::RequestDestination kImage =
+      network::mojom::RequestDestination::kImage;
+  const int32_t kImageValue = static_cast<int32_t>(kImage);
+  const std::string kUrl = "example.test";
+  const GURL kGURL = GURL("http://" + kUrl);
+  const std::string kJpegA = "https://" + kUrl + "/a.jpeg";
+  const std::string kJpegB = "https://" + kUrl + "/b.jpeg";
 
   auto SumOfFontUrlFrequency = [this](const LcppData& data) {
     return SumOfLcppStringFrequencyStatData(
         data.lcpp_stat().fetched_subresource_url_stat());
   };
   for (int i = 0; i < 2; ++i) {
-    LearnSubresourceUrls(GURL("http://example.test"),
-                         {
-                             {GURL("https://a.test/a.jpeg"), base::Seconds(1)},
-                             {GURL("https://b.test/b.jpeg"), base::Seconds(2)},
-                         });
+    LearnSubresourceUrls(
+        kGURL, {
+                   {GURL(kJpegA), std::make_pair(base::Seconds(1), kEmpty)},
+                   {GURL(kJpegB), std::make_pair(base::Seconds(2), kImage)},
+               });
   }
   {
-    LcppData data = CreateLcppData("example.test", 10);
-    InitializeSubresourceUrlsBucket(
-        data, {GURL("https://a.test/a.jpeg"), GURL("https://b.test/b.jpeg")},
-        2);
-    InitializeSubresourceUrlsOtherBucket(data, 0);
-    EXPECT_EQ(data, GetDataMap().at("example.test"));
-    EXPECT_DOUBLE_EQ(4, SumOfFontUrlFrequency(data));
+    LcppData expected = CreateLcppData(kUrl, 10);
+    InitializeSubresourceUrlsBucket(expected, {GURL(kJpegA), GURL(kJpegB)}, 2);
+    InitializeSubresourceUrlsOtherBucket(expected, 0);
+    InitializeSubresourceUrlDestinationsBucket(
+        expected, {std::make_pair(kJpegA, kEmptyValue),
+                   std::make_pair(kJpegB, kImageValue)});
+    const LcppData& result = GetDataMap().at(kUrl);
+    EXPECT_EQ(expected, result) << expected << result;
+    EXPECT_DOUBLE_EQ(4, SumOfFontUrlFrequency(result));
   }
-  for (int i = 0; i < 3; ++i) {
-    LearnSubresourceUrls(GURL("http://example.test"),
-                         {
-                             {GURL("https://c.test/a.jpeg"), base::Seconds(1)},
-                             {GURL("https://d.test/b.jpeg"), base::Seconds(2)},
-                         });
+
+  const std::string kJpegC = "https://" + kUrl + "/c.jpeg";
+  const std::string kJpegD = "https://" + kUrl + "/d.jpeg";
+
+  LearnSubresourceUrls(
+      kGURL, {
+                 {GURL(kJpegC), std::make_pair(base::Seconds(1), kEmpty)},
+                 {GURL(kJpegD), std::make_pair(base::Seconds(2), kImage)},
+             });
+  {
+    // New URLs are not recorded due to less frequency.
+    LcppData expected = CreateLcppData(kUrl, 10);
+    InitializeSubresourceUrlsBucket(expected, {GURL(kJpegA), GURL(kJpegB)},
+                                    1.6);
+    InitializeSubresourceUrlsOtherBucket(expected, 1.8);
+    InitializeSubresourceUrlDestinationsBucket(
+        expected, {std::make_pair(kJpegA, kEmptyValue),
+                   std::make_pair(kJpegB, kImageValue)});
+    const LcppData& result = GetDataMap().at(kUrl);
+    EXPECT_EQ(expected, result) << expected << result;
+    EXPECT_DOUBLE_EQ(5, SumOfFontUrlFrequency(result));
+  }
+
+  for (int i = 0; i < 2; ++i) {
+    LearnSubresourceUrls(
+        kGURL, {
+                   {GURL(kJpegC), std::make_pair(base::Seconds(1), kEmpty)},
+                   {GURL(kJpegD), std::make_pair(base::Seconds(2), kImage)},
+               });
   }
   {
-    LcppData data = CreateLcppData("example.test", 10);
-    InitializeSubresourceUrlsBucket(data, {GURL("https://c.test/a.jpeg")}, 1);
-    InitializeSubresourceUrlsBucket(data, {GURL("https://d.test/b.jpeg")}, 0.8);
-    InitializeSubresourceUrlsOtherBucket(data, 3.2);
-    EXPECT_EQ(data, GetDataMap().at("example.test"));
-    EXPECT_DOUBLE_EQ(5, SumOfFontUrlFrequency(data));
+    // Now they are recorded.
+    LcppData expected = CreateLcppData(kUrl, 10);
+    InitializeSubresourceUrlsBucket(expected, {GURL(kJpegC)}, 1);
+    InitializeSubresourceUrlsBucket(expected, {GURL(kJpegD)}, 0.8);
+    InitializeSubresourceUrlsOtherBucket(expected, 3.2);
+    InitializeSubresourceUrlDestinationsBucket(
+        expected, {std::make_pair(kJpegC, kEmptyValue),
+                   std::make_pair(kJpegD, kImageValue)});
+    const LcppData& result = GetDataMap().at("example.test");
+    EXPECT_EQ(expected, result) << expected << result;
+    EXPECT_DOUBLE_EQ(5, SumOfFontUrlFrequency(result));
   }
 }
 
@@ -1717,8 +1774,7 @@ TEST_P(LcppMultipleKeyTest, LearnURL) {
   const std::string long_host =
       std::string(ResourcePrefetchPredictorTables::kMaxStringLength - 10, 'a') +
       ".test";
-  const size_t max_path_length = base::checked_cast<size_t>(
-      blink::features::kLCPPMultipleKeyMaxPathLength.Get());
+  const size_t max_path_length = GetLCPPMultipleKeyMaxPathLength();
   const std::string long_path = "/" + std::string(max_path_length - 1, 'b');
   const std::string too_long_path =
       "/" + std::string(max_path_length + 1, 'c') + "/bar";
@@ -2240,7 +2296,7 @@ TEST_F(LcppInitiatorOriginTest, CanonicalizeBrokenDataOnStartUp) {
   }
 }
 
-TEST_F(LcppDataMapTest, ResetInitiatorOriginDBOverFlag) {
+TEST_F(LcppDataMapTest, KeepDataBaseOverTearnDown) {
   LoadingPredictorConfig config;
   PopulateTestConfig(&config);
 
@@ -2272,27 +2328,71 @@ TEST_F(LcppDataMapTest, ResetInitiatorOriginDBOverFlag) {
               MakeLcppStatWithLCPElementLocator("/#lcp1"));
     TearDownDB();
   }
+}
 
-  {
-    InitializeDB(config);
-
-    EXPECT_EQ(*GetLcppStat(std::nullopt, url),
-              MakeLcppStatWithLCPElementLocator("/#lcp0"));
-    // LcppStat associated to an initiator origin is removed.
-    EXPECT_FALSE(GetLcppStat(origin, url2));
-    TearDownDB();
+class LCPPPrefetchSubresourceTest : public LcppDataMapTest {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kLCPPPrefetchSubresource);
+    LcppDataMapTest::SetUp();
   }
 
-  {
-    [[maybe_unused]] ScopedInitiatorOriginFeature scoped_feature;
-    InitializeDB(config);
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
-    EXPECT_EQ(*GetLcppStat(std::nullopt, url),
-              MakeLcppStatWithLCPElementLocator("/#lcp0"));
-    // LcppStat associated to an initiator origin is removed.
-    EXPECT_FALSE(GetLcppStat(origin, url2));
-    TearDownDB();
+TEST_F(LCPPPrefetchSubresourceTest, BrokenDBShouldNotCrash) {
+  LoadingPredictorConfig config;
+  PopulateTestConfig(&config);
+  InitializeDB(config);
+  ASSERT_TRUE(GetDataMap().empty());
+
+  const std::string kUrl = "example.test";
+  const std::string kJpegA = "https://" + kUrl + "/a.jpeg";
+  // Case #1:
+  // LcppStat in LcppData should have corresponding
+  // fetched_subresource_url_destination;
+  {
+    LcppData lcpp_data = CreateLcppData(kUrl, 10);
+    InitializeSubresourceUrlsBucket(lcpp_data, {GURL(kJpegA)}, 2);
+    UpdateKeyValueDataDirectly(kUrl, lcpp_data);
+    ASSERT_FALSE(GetDataMap().empty());
   }
+  PreconnectPrediction prediction;
+  lcpp_data_map_->GetPreconnectAndPrefetchRequest(
+      /*initiator_origin=*/std::nullopt, GURL("https://" + kUrl), prediction);
+  EXPECT_TRUE(GetDataMap().empty());
+
+  // Case #2:
+  // fetched_subresource_url_destination has minus value;
+  {
+    LcppData lcpp_data = CreateLcppData(kUrl, 10);
+    InitializeSubresourceUrlsBucket(lcpp_data, {GURL(kJpegA)}, 2);
+    InitializeSubresourceUrlDestinationsBucket(lcpp_data,
+                                               {std::make_pair(kJpegA, -1)});
+    UpdateKeyValueDataDirectly(kUrl, lcpp_data);
+    ASSERT_FALSE(GetDataMap().empty());
+  }
+  lcpp_data_map_->GetPreconnectAndPrefetchRequest(
+      /*initiator_origin=*/std::nullopt, GURL("https://" + kUrl), prediction);
+  EXPECT_TRUE(GetDataMap().empty());
+
+  // Case #3:
+  // fetched_subresource_url_destination has over-max value;
+  const int32_t kMaxValue =
+      static_cast<int32_t>(network::mojom::RequestDestination::kMaxValue);
+  {
+    LcppData lcpp_data = CreateLcppData(kUrl, 10);
+    InitializeSubresourceUrlsBucket(lcpp_data, {GURL(kJpegA)}, 2);
+    InitializeSubresourceUrlDestinationsBucket(
+        lcpp_data, {std::make_pair(kJpegA, kMaxValue + 1)});
+    UpdateKeyValueDataDirectly(kUrl, lcpp_data);
+    ASSERT_FALSE(GetDataMap().empty());
+  }
+  lcpp_data_map_->GetPreconnectAndPrefetchRequest(
+      /*initiator_origin=*/std::nullopt, GURL("https://" + kUrl), prediction);
+  EXPECT_TRUE(GetDataMap().empty());
 }
 
 }  // namespace predictors

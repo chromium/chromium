@@ -7,12 +7,12 @@
 #include "chrome/browser/sync/test/integration/saved_tab_groups_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
-#include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
-#include "components/saved_tab_groups/features.h"
-#include "components/saved_tab_groups/saved_tab_group.h"
-#include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
-#include "components/saved_tab_groups/saved_tab_group_tab.h"
-#include "components/saved_tab_groups/tab_group_sync_service.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
+#include "components/saved_tab_groups/internal/saved_tab_group_sync_bridge.h"
+#include "components/saved_tab_groups/public/features.h"
+#include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "components/saved_tab_groups/public/saved_tab_group_tab.h"
+#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
 #include "components/sync/protocol/saved_tab_group_specifics.pb.h"
@@ -32,8 +32,10 @@ sync_pb::SavedTabGroupSpecifics CreateSavedTabGroupSpecific(base::Uuid guid,
                                                             int position) {
   sync_pb::SavedTabGroupSpecifics pb_specific;
   pb_specific.set_guid(guid.AsLowercaseString());
-  pb_specific.set_creation_time_windows_epoch_micros(10);
-  pb_specific.set_update_time_windows_epoch_micros(10);
+  pb_specific.set_creation_time_windows_epoch_micros(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  pb_specific.set_update_time_windows_epoch_micros(
+      base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   sync_pb::SavedTabGroup* pb_group = pb_specific.mutable_group();
   pb_group->set_color(sync_pb::SavedTabGroup::SAVED_TAB_GROUP_COLOR_GREY);
   pb_group->set_title("Test");
@@ -51,14 +53,9 @@ class SingleClientSavedTabGroupsSyncTest
  public:
   SingleClientSavedTabGroupsSyncTest() : SyncTest(SINGLE_CLIENT) {
     if (IsV2UIEnabled()) {
-      features_.InitWithFeatures(
-          {tab_groups::kTabGroupsSaveUIUpdate,
-           tab_groups::kTabGroupSyncServiceDesktopMigration},
-          {});
+      features_.InitWithFeatures({tab_groups::kTabGroupsSaveUIUpdate}, {});
     } else {
-      features_.InitWithFeatures(
-          {tab_groups::kTabGroupSyncServiceDesktopMigration},
-          {tab_groups::kTabGroupsSaveUIUpdate});
+      features_.InitWithFeatures({}, {tab_groups::kTabGroupsSaveUIUpdate});
     }
   }
   ~SingleClientSavedTabGroupsSyncTest() override = default;
@@ -113,7 +110,7 @@ class SingleClientSavedTabGroupsSyncTest
       }
     }
 
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   bool ContainsUuidInFakeServer(base::Uuid uuid) {
@@ -132,7 +129,7 @@ class SingleClientSavedTabGroupsSyncTest
   }
 
   TabGroupSyncService* GetService() {
-    return TabGroupSyncServiceFactory::GetForProfile(GetProfile(0));
+    return tab_groups::SavedTabGroupUtils::GetServiceForProfile(GetProfile(0));
   }
 
  private:

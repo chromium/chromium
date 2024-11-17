@@ -161,7 +161,7 @@ void StartupBrowserCreatorImpl::MaybeToggleFullscreen(Browser* browser) {
   // In kiosk mode, we want to always be fullscreen.
   if (IsKioskModeEnabled() || base::CommandLine::ForCurrentProcess()->HasSwitch(
                                   switches::kStartFullscreen)) {
-    chrome::ToggleFullscreenMode(browser);
+    chrome::ToggleFullscreenMode(browser, /*user_initiated=*/false);
   }
 }
 
@@ -336,9 +336,7 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   if (StartupBrowserCreator::ShouldLoadProfileWithoutWindow(*command_line_)) {
     // Checking the flags this late in the launch should be redundant.
     // TODO(crbug.com/40216113): Remove by M104.
-    NOTREACHED_IN_MIGRATION();
-    base::debug::DumpWithoutCrashing();
-    return;
+    NOTREACHED();
   }
 
   const bool is_incognito_or_guest = profile_->IsOffTheRecord();

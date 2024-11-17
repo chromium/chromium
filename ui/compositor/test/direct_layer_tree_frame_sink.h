@@ -39,7 +39,8 @@ class DirectLayerTreeFrameSink : public cc::LayerTreeFrameSink,
       scoped_refptr<cc::RasterContextProviderWrapper>
           worker_context_provider_wrapper,
       scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
-      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager);
+      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+      gfx::AcceleratedWidget widget = gfx::kNullAcceleratedWidget);
 
   DirectLayerTreeFrameSink(const DirectLayerTreeFrameSink& other) = delete;
   DirectLayerTreeFrameSink& operator=(const DirectLayerTreeFrameSink& other) =
@@ -65,7 +66,7 @@ class DirectLayerTreeFrameSink : public cc::LayerTreeFrameSink,
       viz::AggregatedRenderPassList* render_passes) override;
   void DisplayDidDrawAndSwap() override {}
   void DisplayDidReceiveCALayerParams(
-      const gfx::CALayerParams& ca_layer_params) override {}
+      const gfx::CALayerParams& ca_layer_params) override;
   void DisplayDidCompleteSwapWithSize(const gfx::Size& pixel_size) override {}
   void DisplayAddChildWindowToBrowser(
       gpu::SurfaceHandle child_window) override {}
@@ -105,6 +106,7 @@ class DirectLayerTreeFrameSink : public cc::LayerTreeFrameSink,
   raw_ptr<viz::FrameSinkManagerImpl> frame_sink_manager_;
   viz::ParentLocalSurfaceIdAllocator parent_local_surface_id_allocator_;
   raw_ptr<viz::Display> display_;
+  gfx::AcceleratedWidget widget_;
   gfx::Size last_swap_frame_size_;
   float device_scale_factor_ = 1.f;
   bool is_lost_ = false;

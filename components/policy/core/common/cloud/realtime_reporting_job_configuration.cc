@@ -117,8 +117,7 @@ bool RealtimeReportingJobConfiguration::ShouldRecordUma() const {
 }
 
 std::string RealtimeReportingJobConfiguration::GetUmaString() const {
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 std::set<std::string> RealtimeReportingJobConfiguration::GetFailedUploadIds(

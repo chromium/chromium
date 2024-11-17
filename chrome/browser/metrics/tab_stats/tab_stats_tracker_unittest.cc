@@ -117,7 +117,15 @@ class TestTabStatsTracker : public TabStatsTracker {
                             bool is_discarded) {
     std::unique_ptr<content::WebContents> tab =
         test_harness->CreateTestWebContents();
-    OnDiscardedStateChange(tab.get(), reason, is_discarded);
+    if (is_discarded) {
+      OnTabLifecycleStateChange(
+          tab.get(), /*previous_state=*/::mojom::LifecycleUnitState::ACTIVE,
+          /*new_state=*/::mojom::LifecycleUnitState::DISCARDED, reason);
+    } else {
+      OnTabLifecycleStateChange(
+          tab.get(), /*previous_state=*/::mojom::LifecycleUnitState::DISCARDED,
+          /*new_state=*/::mojom::LifecycleUnitState::ACTIVE, reason);
+    }
   }
 
   void CheckDailyEventInterval() { daily_event_for_testing()->CheckInterval(); }
@@ -424,14 +432,16 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
   // Daily report is skipped when there is no tab. Adds tabs to avoid that.
   tab_stats_tracker_->AddTabs(1, this, tab_strip_model_);
 
-  constexpr size_t kExpectedDiscardsExternal = 3;
-  constexpr size_t kExpectedDiscardsUrgent = 5;
-  constexpr size_t kExpectedDiscardsProactive = 11;
-  constexpr size_t kExpectedDiscardsSuggested = 8;
-  constexpr size_t kExpectedReloadsExternal = 7;
-  constexpr size_t kExpectedReloadsUrgent = 9;
-  constexpr size_t kExpectedReloadsProactive = 10;
-  constexpr size_t kExpectedReloadsSuggested = 6;
+  constexpr size_t kExpectedDiscardsExternal = 1;
+  constexpr size_t kExpectedDiscardsUrgent = 2;
+  constexpr size_t kExpectedDiscardsProactive = 3;
+  constexpr size_t kExpectedDiscardsSuggested = 4;
+  constexpr size_t kExpectedDiscardsFrozenWithGrowingMemory = 5;
+  constexpr size_t kExpectedReloadsExternal = 6;
+  constexpr size_t kExpectedReloadsUrgent = 7;
+  constexpr size_t kExpectedReloadsProactive = 8;
+  constexpr size_t kExpectedReloadsSuggested = 9;
+  constexpr size_t kExpectedReloadsFrozenWithGrowingMemory = 10;
   for (size_t i = 0; i < kExpectedDiscardsExternal; ++i) {
     tab_stats_tracker_->DiscardedStateChange(
         this, LifecycleUnitDiscardReason::EXTERNAL, /*is_discarded*/ true);
@@ -443,6 +453,11 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
   for (size_t i = 0; i < kExpectedDiscardsProactive; ++i) {
     tab_stats_tracker_->DiscardedStateChange(
         this, LifecycleUnitDiscardReason::PROACTIVE, /*is_discarded*/ true);
+  }
+  for (size_t i = 0; i < kExpectedDiscardsFrozenWithGrowingMemory; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY,
+        /*is_discarded*/ true);
   }
   for (size_t i = 0; i < kExpectedDiscardsSuggested; ++i) {
     tab_stats_tracker_->DiscardedStateChange(
@@ -464,6 +479,11 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
     tab_stats_tracker_->DiscardedStateChange(
         this, LifecycleUnitDiscardReason::SUGGESTED, /*is_discarded*/ false);
   }
+  for (size_t i = 0; i < kExpectedReloadsFrozenWithGrowingMemory; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY,
+        /*is_discarded*/ false);
+  }
 
   // Triggers the daily event.
   tab_stats_tracker_->TriggerDailyEvent();
@@ -482,6 +502,10 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
       UmaStatsReportingDelegate::kDailyDiscardsSuggestedHistogramName,
       kExpectedDiscardsSuggested, 1);
   histogram_tester_.ExpectUniqueSample(
+      UmaStatsReportingDelegate::
+          kDailyDiscardsFrozenWithGrowingMemoryHistogramName,
+      kExpectedDiscardsFrozenWithGrowingMemory, 1);
+  histogram_tester_.ExpectUniqueSample(
       UmaStatsReportingDelegate::kDailyReloadsExternalHistogramName,
       kExpectedReloadsExternal, 1);
   histogram_tester_.ExpectUniqueSample(
@@ -493,16 +517,22 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
   histogram_tester_.ExpectUniqueSample(
       UmaStatsReportingDelegate::kDailyReloadsSuggestedHistogramName,
       kExpectedReloadsSuggested, 1);
+  histogram_tester_.ExpectUniqueSample(
+      UmaStatsReportingDelegate::
+          kDailyReloadsFrozenWithGrowingMemoryHistogramName,
+      kExpectedReloadsFrozenWithGrowingMemory, 1);
 
   // Checks that the second report also updates the histograms properly.
-  constexpr size_t kExpectedDiscardsExternal2 = 15;
-  constexpr size_t kExpectedDiscardsUrgent2 = 25;
-  constexpr size_t kExpectedDiscardsProactive2 = 55;
-  constexpr size_t kExpectedDiscardsSuggested2 = 70;
-  constexpr size_t kExpectedReloadsExternal2 = 35;
-  constexpr size_t kExpectedReloadsUrgent2 = 45;
-  constexpr size_t kExpectedReloadsProactive2 = 40;
-  constexpr size_t kExpectedReloadsSuggested2 = 27;
+  constexpr size_t kExpectedDiscardsExternal2 = 11;
+  constexpr size_t kExpectedDiscardsUrgent2 = 12;
+  constexpr size_t kExpectedDiscardsProactive2 = 13;
+  constexpr size_t kExpectedDiscardsSuggested2 = 14;
+  constexpr size_t kExpectedDiscardsFrozenWithGrowingMemory2 = 15;
+  constexpr size_t kExpectedReloadsExternal2 = 16;
+  constexpr size_t kExpectedReloadsUrgent2 = 17;
+  constexpr size_t kExpectedReloadsProactive2 = 18;
+  constexpr size_t kExpectedReloadsSuggested2 = 19;
+  constexpr size_t kExpectedReloadsFrozenWithGrowingMemory2 = 20;
   for (size_t i = 0; i < kExpectedDiscardsExternal2; ++i) {
     tab_stats_tracker_->DiscardedStateChange(
         this, LifecycleUnitDiscardReason::EXTERNAL, /*is_discarded=*/true);
@@ -519,6 +549,11 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
     tab_stats_tracker_->DiscardedStateChange(
         this, LifecycleUnitDiscardReason::SUGGESTED, /*is_discarded=*/true);
   }
+  for (size_t i = 0; i < kExpectedDiscardsFrozenWithGrowingMemory2; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY,
+        /*is_discarded=*/true);
+  }
   for (size_t i = 0; i < kExpectedReloadsExternal2; ++i) {
     tab_stats_tracker_->DiscardedStateChange(
         this, LifecycleUnitDiscardReason::EXTERNAL, /*is_discarded=*/false);
@@ -534,6 +569,11 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
   for (size_t i = 0; i < kExpectedReloadsSuggested2; ++i) {
     tab_stats_tracker_->DiscardedStateChange(
         this, LifecycleUnitDiscardReason::SUGGESTED, /*is_discarded=*/false);
+  }
+  for (size_t i = 0; i < kExpectedReloadsFrozenWithGrowingMemory2; ++i) {
+    tab_stats_tracker_->DiscardedStateChange(
+        this, LifecycleUnitDiscardReason::FROZEN_WITH_GROWING_MEMORY,
+        /*is_discarded=*/false);
   }
 
   // Triggers the daily event again.
@@ -553,6 +593,10 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
       UmaStatsReportingDelegate::kDailyDiscardsSuggestedHistogramName,
       kExpectedDiscardsSuggested2, 1);
   histogram_tester_.ExpectBucketCount(
+      UmaStatsReportingDelegate::
+          kDailyDiscardsFrozenWithGrowingMemoryHistogramName,
+      kExpectedDiscardsFrozenWithGrowingMemory2, 1);
+  histogram_tester_.ExpectBucketCount(
       UmaStatsReportingDelegate::kDailyReloadsExternalHistogramName,
       kExpectedReloadsExternal2, 1);
   histogram_tester_.ExpectBucketCount(
@@ -564,6 +608,10 @@ TEST_F(TabStatsTrackerTest, DailyDiscards) {
   histogram_tester_.ExpectBucketCount(
       UmaStatsReportingDelegate::kDailyReloadsSuggestedHistogramName,
       kExpectedReloadsSuggested2, 1);
+  histogram_tester_.ExpectBucketCount(
+      UmaStatsReportingDelegate::
+          kDailyReloadsFrozenWithGrowingMemoryHistogramName,
+      kExpectedReloadsFrozenWithGrowingMemory2, 1);
 }
 
 TEST_F(TabStatsTrackerTest, HeartbeatMetrics) {

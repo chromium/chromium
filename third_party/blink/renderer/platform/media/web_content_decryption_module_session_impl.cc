@@ -32,10 +32,10 @@
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/modules/media/web_media_player_util.h"
 #include "third_party/blink/renderer/platform/media/cdm_result_promise.h"
 #include "third_party/blink/renderer/platform/media/cdm_result_promise_helper.h"
 #include "third_party/blink/renderer/platform/media/cdm_session_adapter.h"
+#include "third_party/blink/renderer/platform/media/media_player_util.h"
 
 namespace blink {
 
@@ -60,8 +60,7 @@ media::CdmSessionType ConvertSessionType(
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return media::CdmSessionType::kTemporary;
+  NOTREACHED();
 }
 
 bool SanitizeInitData(media::EmeInitDataType init_data_type,
@@ -118,9 +117,7 @@ bool SanitizeInitData(media::EmeInitDataType init_data_type,
       break;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  error_message->assign("Initialization data type is not supported.");
-  return false;
+  NOTREACHED();
 }
 
 bool SanitizeSessionId(const WebString& session_id,

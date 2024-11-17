@@ -207,7 +207,7 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
   // Requests are cancelled in OnResponseStarted() once response headers are
   // read, without reading the body, so this is not needed.
   void OnReadCompleted(net::URLRequest* request, int bytes_read) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:
@@ -224,8 +224,8 @@ class DomainReliabilityUploaderImpl : public DomainReliabilityUploader,
   int discarded_upload_count_;
 };
 
-DomainReliabilityUploader::DomainReliabilityUploader() {}
-DomainReliabilityUploader::~DomainReliabilityUploader() {}
+DomainReliabilityUploader::DomainReliabilityUploader() = default;
+DomainReliabilityUploader::~DomainReliabilityUploader() = default;
 
 // static
 std::unique_ptr<DomainReliabilityUploader> DomainReliabilityUploader::Create(

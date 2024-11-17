@@ -103,8 +103,7 @@ std::string GetBlockingDecisionString(
   // startup.
   switch (blocking_state.blocking_decision) {
     case BlockingDecision::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case BlockingDecision::kNotLoaded:
       return kNotLoaded;
     case BlockingDecision::kAllowedInProcessType:
@@ -174,8 +173,7 @@ std::string GetModuleWarningDecisionString(
       return "Incompatible";
     case WarningDecision::kAddedToBlocklist:
     case WarningDecision::kUnknown:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 
   return std::string();
@@ -273,8 +271,7 @@ ThirdPartyFeaturesStatus GetThirdPartyFeaturesStatus(
 
   // The above 3 cases are the only possible reasons why the manager wouldn't
   // exist.
-  NOTREACHED_IN_MIGRATION();
-  return kFeatureDisabled;
+  NOTREACHED();
 }
 #endif
 

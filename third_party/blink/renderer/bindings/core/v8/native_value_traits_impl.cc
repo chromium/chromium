@@ -101,18 +101,6 @@ EventListener* NativeValueTraits<IDLOnErrorEventHandler>::NativeValue(
 
 namespace bindings::internal {
 
-base::span<const uint8_t> GetViewData(
-    v8::Local<v8::ArrayBufferView> view,
-    base::span<uint8_t, ByteSpanWithInlineStorage::kInlineStorageSize>
-        inline_storage) {
-  const size_t length = view->ByteLength();
-  if (!view->HasBuffer() && length < inline_storage.size_bytes()) {
-    view->CopyContents(inline_storage.data(), inline_storage.size_bytes());
-    return base::make_span(inline_storage.data(), length);
-  }
-  return GetArrayData(view->Buffer()).subspan(view->ByteOffset(), length);
-}
-
 ByteSpanWithInlineStorage& ByteSpanWithInlineStorage::operator=(
     const ByteSpanWithInlineStorage& r) {
   if (r.span_.data() == r.inline_storage_) {

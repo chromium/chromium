@@ -33,7 +33,7 @@ public class FeedSliceViewTracker implements ViewTreeObserver.OnPreDrawListener 
     private static final float GOOD_VISITS_COVERAGE_THRESHOLD = 0.25f;
     private static final float VISIBLE_CHANGE_LOG_THRESHOLD = 0.05f;
 
-    private class VisibilityObserver {
+    private static class VisibilityObserver {
         final float mVisibilityThreshold;
         final Runnable mCallback;
 

@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+
 #include <cstring>
+
 #include "base/memory/values_equivalent.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/renderer/core/css/anchor_evaluator.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
@@ -163,7 +165,6 @@ TEST_F(CSSPropertyTest, VisitedPropertiesCanParseValues) {
         initial_style, nullptr /* layout_object */,
         false /* allow_visited_style */, CSSValuePhase::kComputedValue);
     ASSERT_TRUE(initial_value);
-    String css_text = initial_value->CssText();
 
     // Parse the initial value using both the regular property, and the
     // accompanying 'visited' property.
@@ -471,62 +472,36 @@ TEST_F(CSSPropertyTest, AnchorModeHeight) {
             ComputedValue("max-height", "anchor-size(width, 0px)", context));
 }
 
-TEST_F(CSSPropertyTest, PositionTryFallbacksAlternativeEnabled) {
-  ScopedCSSPositionTryFallbacksForTest fallbacks_enabled(true);
-  ScopedCSSPositionTryOptionsForTest options_enabled(true);
-  const CSSPropertyValueSet* declarations =
-      ParseShorthand("position-try", "most-width flip-block");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 2u);
-  EXPECT_EQ(declarations->PropertyAt(0).Id(), CSSPropertyID::kPositionTryOrder);
-  EXPECT_EQ(declarations->PropertyAt(1).Id(),
-            CSSPropertyID::kPositionTryFallbacks);
-}
-
-TEST_F(CSSPropertyTest, PositionTryFallbacksAlternativeDisabled) {
-  ScopedCSSPositionTryFallbacksForTest fallbacks_enabled(false);
-  ScopedCSSPositionTryOptionsForTest options_enabled(true);
-  const CSSPropertyValueSet* declarations =
-      ParseShorthand("position-try", "most-width flip-block");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 2u);
-  EXPECT_EQ(declarations->PropertyAt(0).Id(), CSSPropertyID::kPositionTryOrder);
-  EXPECT_EQ(declarations->PropertyAt(1).Id(),
-            CSSPropertyID::kPositionTryOptions);
-}
-
-TEST_F(CSSPropertyTest, PositionTryOptionsDisabled) {
-  ScopedCSSPositionTryFallbacksForTest fallbacks_enabled(true);
-  ScopedCSSPositionTryOptionsForTest options_enabled(false);
-  const CSSPropertyValueSet* declarations =
-      ParseShorthand("position-try", "most-width flip-block");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 2u);
-  EXPECT_EQ(declarations->PropertyAt(0).Id(), CSSPropertyID::kPositionTryOrder);
-  EXPECT_EQ(declarations->PropertyAt(1).Id(),
-            CSSPropertyID::kPositionTryFallbacks);
-}
-
-TEST_F(CSSPropertyTest, PositionAreaDisabled) {
-  ScopedCSSInsetAreaPropertyForTest inset_area_enabled(true);
-  ScopedCSSPositionAreaPropertyForTest position_area_enabled(false);
-  auto* declarations = ParseShorthand("position-area", "center top");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 0u);
-  declarations = ParseShorthand("inset-area", "center top");
-  ASSERT_TRUE(declarations);
-  ASSERT_EQ(declarations->PropertyCount(), 1u);
-}
-
 TEST_F(CSSPropertyTest, InsetAreaDisabled) {
   ScopedCSSInsetAreaPropertyForTest inset_area_enabled(false);
-  ScopedCSSPositionAreaPropertyForTest position_area_enabled(true);
   auto* declarations = ParseShorthand("position-area", "center top");
   ASSERT_TRUE(declarations);
   ASSERT_EQ(declarations->PropertyCount(), 1u);
   declarations = ParseShorthand("inset-area", "center top");
   ASSERT_TRUE(declarations);
   ASSERT_EQ(declarations->PropertyCount(), 0u);
+}
+
+TEST_F(CSSPropertyTest, AnchorSizeInsetsMarginsDisabled) {
+  ScopedCSSAnchorSizeInsetsMarginsForTest enabled(false);
+
+  String anchor_size_value("anchor-size(width)");
+  EXPECT_EQ(Parse("top", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("left", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("bottom", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("right", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("inset-block-start", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("inset-block-end", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("inset-inline-start", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("inset-inline-end", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-top", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-left", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-bottom", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-right", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-block-start", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-block-end", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-inline-start", anchor_size_value), nullptr);
+  EXPECT_EQ(Parse("margin-inline-end", anchor_size_value), nullptr);
 }
 
 }  // namespace blink

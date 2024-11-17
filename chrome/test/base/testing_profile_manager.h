@@ -155,7 +155,8 @@ class TestingProfileManager : public ProfileObserver {
   friend class ProfileAttributesStorageTest;
   friend class ProfileNameVerifierObserver;
 
-  typedef std::map<std::string, TestingProfile*> TestingProfilesMap;
+  typedef std::map<std::string, raw_ptr<TestingProfile, CtnExperimental>>
+      TestingProfilesMap;
 
   // Does the actual ASSERT-checked SetUp work. This function cannot have a
   // return value, so it sets the |called_set_up_| flag on success and that is

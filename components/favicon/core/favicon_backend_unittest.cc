@@ -139,10 +139,10 @@ class FaviconBackendTest : public testing::Test, public FaviconBackendDelegate {
   // Returns true if `bitmap_data` is of `color`.
   bool BitmapColorEqual(SkColor expected_color,
                         scoped_refptr<base::RefCountedMemory> bitmap_data) {
-    SkBitmap bitmap;
-    if (!gfx::PNGCodec::Decode(bitmap_data->front(), bitmap_data->size(),
-                               &bitmap))
+    SkBitmap bitmap = gfx::PNGCodec::Decode(*bitmap_data);
+    if (bitmap.isNull()) {
       return false;
+    }
     return expected_color == bitmap.getColor(0, 0);
   }
 
@@ -656,10 +656,10 @@ TEST_F(FaviconBackendTest, MergeFaviconPageURLInDB) {
   EXPECT_EQ(kSmallSize, favicon_bitmap.pixel_size);
 
   // 1) Merge identical favicon bitmap.
-  std::vector<unsigned char> data;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmaps[0], false, &data);
+  std::optional<std::vector<uint8_t>> data = gfx::PNGCodec::EncodeBGRASkBitmap(
+      bitmaps[0], /*discard_transparency=*/false);
   scoped_refptr<base::RefCountedBytes> bitmap_data(
-      new base::RefCountedBytes(data));
+      new base::RefCountedBytes(data.value()));
   backend_->MergeFavicon(page_url, icon_url1, IconType::kFavicon, bitmap_data,
                          kSmallSize);
 
@@ -677,9 +677,9 @@ TEST_F(FaviconBackendTest, MergeFaviconPageURLInDB) {
   EXPECT_EQ(kSmallSize, favicon_bitmap.pixel_size);
 
   // 2) Merge favicon bitmap of the same size.
-  data.clear();
-  data.push_back('b');
-  bitmap_data = new base::RefCountedBytes(data);
+  data->clear();
+  data->push_back('b');
+  bitmap_data = new base::RefCountedBytes(data.value());
   backend_->MergeFavicon(page_url, icon_url1, IconType::kFavicon, bitmap_data,
                          kSmallSize);
 
@@ -697,8 +697,8 @@ TEST_F(FaviconBackendTest, MergeFaviconPageURLInDB) {
 
   // 3) Merge favicon for the same icon URL, but a pixel size for which there is
   // no favicon bitmap.
-  data[0] = 'c';
-  bitmap_data = new base::RefCountedBytes(data);
+  data.value()[0] = 'c';
+  bitmap_data = new base::RefCountedBytes(data.value());
   backend_->MergeFavicon(page_url, icon_url1, IconType::kFavicon, bitmap_data,
                          kTinySize);
 
@@ -722,8 +722,8 @@ TEST_F(FaviconBackendTest, MergeFaviconPageURLInDB) {
 
   // 4) Merge favicon for an icon URL different from the icon URLs already
   // mapped to page URL.
-  data[0] = 'd';
-  bitmap_data = new base::RefCountedBytes(data);
+  data.value()[0] = 'd';
+  bitmap_data = new base::RefCountedBytes(data.value());
   backend_->MergeFavicon(page_url, icon_url2, IconType::kFavicon, bitmap_data,
                          kSmallSize);
 
@@ -774,10 +774,10 @@ TEST_F(FaviconBackendTest, MergeFaviconIconURLMappedToDifferentPageURL) {
   EXPECT_EQ(kSmallSize, favicon_bitmap.pixel_size);
 
   // 1) Merge in an identical favicon bitmap data but for a different page URL.
-  std::vector<unsigned char> data;
-  gfx::PNGCodec::EncodeBGRASkBitmap(bitmaps[0], false, &data);
+  std::optional<std::vector<uint8_t>> data = gfx::PNGCodec::EncodeBGRASkBitmap(
+      bitmaps[0], /*discard_transparency=*/false);
   scoped_refptr<base::RefCountedBytes> bitmap_data(
-      new base::RefCountedBytes(data));
+      new base::RefCountedBytes(data.value()));
 
   backend_->MergeFavicon(page_url2, icon_url, IconType::kFavicon, bitmap_data,
                          kSmallSize);
@@ -793,9 +793,9 @@ TEST_F(FaviconBackendTest, MergeFaviconIconURLMappedToDifferentPageURL) {
 
   // 2) Merging a favicon bitmap with different bitmap data for the same icon
   // URL should overwrite the small favicon bitmap at `icon_url`.
-  data.clear();
-  data.push_back('b');
-  bitmap_data = new base::RefCountedBytes(data);
+  data->clear();
+  data->push_back('b');
+  bitmap_data = new base::RefCountedBytes(data.value());
   backend_->MergeFavicon(page_url3, icon_url, IconType::kFavicon, bitmap_data,
                          kSmallSize);
 
@@ -837,8 +837,8 @@ TEST_F(FaviconBackendTest, MergeFaviconMaxFaviconBitmapsPerIconURL) {
 
   std::vector<unsigned char> data;
   data.push_back('a');
-  scoped_refptr<base::RefCountedMemory> bitmap_data =
-      base::RefCountedBytes::TakeVector(&data);
+  auto bitmap_data =
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(data));
 
   int pixel_size = 1;
   for (size_t i = 0; i < kMaxFaviconBitmapsPerIconURL + 1; ++i) {
@@ -1244,8 +1244,8 @@ TEST_F(FaviconBackendTest, GetFaviconsForUrlExpired) {
 
   std::vector<unsigned char> data;
   data.push_back('a');
-  scoped_refptr<base::RefCountedBytes> bitmap_data(
-      base::RefCountedBytes::TakeVector(&data));
+  auto bitmap_data =
+      base::MakeRefCounted<base::RefCountedBytes>(std::move(data));
   base::Time last_updated = base::Time::FromTimeT(0);
   favicon_base::FaviconID icon_id = backend_->db()->AddFavicon(
       icon_url, IconType::kFavicon, bitmap_data, FaviconBitmapType::ON_VISIT,

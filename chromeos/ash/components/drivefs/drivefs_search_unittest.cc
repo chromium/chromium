@@ -54,10 +54,7 @@ class MockDriveFs : public mojom::DriveFsInterceptorForTesting {
   MockDriveFs(const MockDriveFs&) = delete;
   MockDriveFs& operator=(const MockDriveFs&) = delete;
 
-  DriveFs* GetForwardingInterface() override {
-    NOTREACHED_IN_MIGRATION();
-    return nullptr;
-  }
+  DriveFs* GetForwardingInterface() override { NOTREACHED(); }
 
   MOCK_METHOD(void,
               StartSearchQuery,

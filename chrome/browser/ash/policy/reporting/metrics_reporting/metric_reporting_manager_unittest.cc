@@ -1196,6 +1196,10 @@ class KioskHeartbeatTelemetryTest : public MetricReportingManagerTest {
 };
 
 TEST_F(KioskHeartbeatTelemetryTest, Disabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      chromeos::features::kKioskHeartbeatsViaERP);
+
   auto* const mock_delegate_ptr = mock_delegate_.get();
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate_), nullptr);
@@ -1232,10 +1236,6 @@ TEST_F(KioskHeartbeatTelemetryTest, Disabled) {
 }
 
 TEST_F(KioskHeartbeatTelemetryTest, Init) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::features::kKioskHeartbeatsViaERP);
-
   auto* const mock_delegate_ptr = mock_delegate_.get();
   auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
       std::move(mock_delegate_), nullptr);
@@ -1470,6 +1470,12 @@ class EventDrivenTelemetryCollectorPoolTest
 
 TEST_P(EventDrivenTelemetryCollectorPoolTest,
        SettingBasedTelemetry_AffiliatedOnly) {
+  // TODO(crbug.com/375383880): Temporarily disable kKioskHeartbeatsViaERP as
+  // this test assumes that CreatePeriodicUploadReportQueue is only called once.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      chromeos::features::kKioskHeartbeatsViaERP);
+
   EventDrivenTelemetryCollectorPoolTestCase test_case = GetParam();
 
   base::Value::List telemetry_list;

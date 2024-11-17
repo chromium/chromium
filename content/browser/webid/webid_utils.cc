@@ -297,10 +297,10 @@ std::string GetConsoleErrorMessageFromResult(
              "#fedcm-without-third-party-cookies flag.";
     }
     case FederatedAuthRequestResult::kMissingTransientUserActivation: {
-      return "FedCM button mode requires transient user activation.";
+      return "FedCM active mode requires transient user activation.";
     }
-    case FederatedAuthRequestResult::kReplacedByButtonMode: {
-      return "The request is replaced by a new one with button mode.";
+    case FederatedAuthRequestResult::kReplacedByActiveMode: {
+      return "The request is replaced by a new one with active mode.";
     }
     case FederatedAuthRequestResult::kNotSignedInWithIdp: {
       return "Not signed in with the identity provider.";
@@ -329,8 +329,7 @@ std::string GetDisconnectConsoleErrorMessage(
     FedCmDisconnectStatus disconnect_status_for_metrics) {
   switch (disconnect_status_for_metrics) {
     case FedCmDisconnectStatus::kSuccess: {
-      NOTREACHED_IN_MIGRATION();
-      return "";
+      NOTREACHED();
     }
     case FedCmDisconnectStatus::kTooManyRequests: {
       return "There is a pending disconnect() call.";

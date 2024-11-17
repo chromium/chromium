@@ -11,6 +11,7 @@
 #include <optional>
 #include <string>
 
+#include "ash/public/cpp/accelerator_actions.h"
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/mojom/accelerator_info.mojom.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -25,7 +26,7 @@
 // Key Shortcuts app, please follow the instructions below:
 //    1.    Determine the correct category and subcategory the accelerator
 //          belongs to. You can view the categories at `accelerator_info.mojom`.
-//          Reach out to cros-peripherals@ if you are unsure about which
+//          Reach out to cros-device-enablement@ if you are unsure about which
 //          category to use.
 //    2.    If you are adding a browser/ambient [1] accelerator, add a new
 //          enum to `NonConfigurableActions`. Then add an entry to
@@ -263,6 +264,7 @@ constexpr auto kAshAcceleratorsWithoutLayout =
         AcceleratorAction::kPrintUiHierarchies,
         AcceleratorAction::kRestoreTab,
         AcceleratorAction::kRotateWindow,
+        AcceleratorAction::kToggleGameDashboard,
         AcceleratorAction::kToggleProjectorMarker,
         AcceleratorAction::kToggleWifi,
         AcceleratorAction::kTouchHudClear,
@@ -322,6 +324,7 @@ inline constexpr uint32_t kAcceleratorLayouts[] = {
     AcceleratorAction::kMediaPrevTrack,
     AcceleratorAction::kMediaFastForward,
     AcceleratorAction::kFocusPip,
+    AcceleratorAction::kResizePipWindow,
 
     // Device > Input
     AcceleratorAction::kKeyboardBacklightToggle,

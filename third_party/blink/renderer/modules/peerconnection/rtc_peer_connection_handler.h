@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/modules/peerconnection/transceiver_state_surfacer.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
@@ -106,10 +105,10 @@ class MODULES_EXPORT ParsedSessionDescription {
   webrtc::SdpParseError error_;
 };
 
-// RTCPeerConnectionHandler is a delegate for the RTC PeerConnection API
-// messages going between WebKit and native PeerConnection in libjingle. It's
-// owned by WebKit.
-// WebKit calls all of these methods on the main render thread.
+// RTCPeerConnectionHandler is a delegate for the RTCPeerConnection API
+// messages going between WebKit and native PeerConnection in WebRTC. It's
+// owned by Blink.
+// Blink calls all of these methods on the main render thread.
 // Callbacks to the webrtc::PeerConnectionObserver implementation also occur on
 // the main render thread.
 class MODULES_EXPORT RTCPeerConnectionHandler {
@@ -125,6 +124,9 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
 
   virtual ~RTCPeerConnectionHandler();
 
+  base::WeakPtr<RTCPeerConnectionHandler> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
   // Initialize method only used for unit test.
   bool InitializeForTest(
       const webrtc::PeerConnectionInterface::RTCConfiguration&
@@ -224,6 +226,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   virtual scoped_refptr<base::SingleThreadTaskRunner> signaling_thread() const;
 
   bool encoded_insertable_streams() { return encoded_insertable_streams_; }
+  blink::WebLocalFrame* frame() const { return frame_; }
 
  protected:
   // Constructor to be used for constructing mocks only.
@@ -411,7 +414,7 @@ class MODULES_EXPORT RTCPeerConnectionHandler {
   // they have to come first.
   CrossThreadPersistent<Observer> peer_connection_observer_;
 
-  // |native_peer_connection_| is the libjingle native PeerConnection object.
+  // |native_peer_connection_| is the WebRTC native PeerConnection object.
   rtc::scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection_;
 
   // The last applied configuration. Used so that the constraints

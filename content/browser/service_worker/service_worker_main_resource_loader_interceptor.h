@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_MAIN_RESOURCE_LOADER_INTERCEPTOR_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
@@ -22,7 +21,6 @@
 #include "net/base/isolation_info.h"
 #include "services/network/public/cpp/single_request_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
-#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 
 namespace content {
@@ -88,12 +86,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
 
   ServiceWorkerMainResourceLoaderInterceptor(
       base::WeakPtr<ServiceWorkerMainResourceHandle> handle,
-      network::mojom::RequestDestination request_destination,
       bool skip_service_worker,
-      bool are_ancestors_secure,
       FrameTreeNodeId frame_tree_node_id,
-      int process_id,
-      const DedicatedOrSharedWorkerToken* worker_token,
       const net::IsolationInfo& isolation_info);
 
   // Returns true if a ServiceWorkerMainResourceLoaderInterceptor should be
@@ -110,32 +104,6 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
-  // Attempts to get the |StorageKey|, using a |RenderFrameHostImpl|, which is
-  // obtained from the associated |FrameTreeNode|, if it exists. This allows to
-  // correctly account for extension URLs.
-  std::optional<blink::StorageKey> GetStorageKeyFromRenderFrameHost(
-      const url::Origin& origin,
-      const base::UnguessableToken* nonce);
-
-  // Attempts to get the |StorageKey| from the Dedicated or Shared WorkerHost,
-  // retrieving the host based on |process_id_| and |worker_token_|. If a
-  // storage key is returned, it will have its origin replaced by |origin|. This
-  // would mean that the origin of the WorkerHost and the origin as used by the
-  // service worker code don't match, however in cases where these wouldn't
-  // match the load will be aborted later anyway.
-  std::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
-      const url::Origin& origin);
-
-  std::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
-      content::StoragePartition* storage_partition,
-      blink::DedicatedWorkerToken dedicated_worker_token,
-      const url::Origin& origin);
-
-  std::optional<blink::StorageKey> GetStorageKeyFromWorkerHost(
-      content::StoragePartition* storage_partition,
-      blink::SharedWorkerToken shared_worker_token,
-      const url::Origin& origin);
-
   // For navigations, |handle_| outlives |this|. It's owned by
   // NavigationRequest which outlives NavigationURLLoaderImpl which owns |this|.
   // For workers, |handle_| may be destroyed during interception. It's owned by
@@ -145,27 +113,15 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoaderInterceptor final
   const base::WeakPtr<ServiceWorkerMainResourceHandle> handle_;
 
   // For all clients:
-  const network::mojom::RequestDestination request_destination_;
   const bool skip_service_worker_;
 
   // Updated on redirects.
   net::IsolationInfo isolation_info_;
 
   // For window clients:
-  // Whether all ancestor frames of the frame that is navigating have a secure
-  // origin. True for main frames.
-  const bool are_ancestors_secure_;
   // If the intercepted resource load is on behalf
-  // of a window, the |frame_tree_node_id_| will be set, |worker_token_| will be
-  // std::nullopt, and |process_id_| will be invalid.
+  // of a window, the |frame_tree_node_id_| will be set.
   const FrameTreeNodeId frame_tree_node_id_;
-
-  // For web worker clients:
-  // If the intercepted resource load is on behalf of a worker the
-  // |frame_tree_node_id_| will be invalid, and both |process_id_| and
-  // |worker_token_| will be set.
-  const int process_id_;
-  const std::optional<DedicatedOrSharedWorkerToken> worker_token_;
 
   // Handles a single request. Set to a new instance on redirects.
   std::unique_ptr<ServiceWorkerControlleeRequestHandler> request_handler_;

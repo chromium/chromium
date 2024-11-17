@@ -89,7 +89,7 @@ public class MessageQueueManagerTest {
                 }
             };
 
-    private class EmptyMessageStateHandler implements MessageStateHandler {
+    private static class EmptyMessageStateHandler implements MessageStateHandler {
 
         private int mId = MessageIdentifier.TEST_MESSAGE;
 

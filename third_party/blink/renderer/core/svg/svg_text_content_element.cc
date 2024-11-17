@@ -51,10 +51,10 @@ bool IsNGTextOrInline(const LayoutObject* object) {
 
 template <>
 const SVGEnumerationMap& GetEnumerationMap<SVGLengthAdjustType>() {
-  static const SVGEnumerationMap::Entry enum_items[] = {
-      {kSVGLengthAdjustSpacing, "spacing"},
-      {kSVGLengthAdjustSpacingAndGlyphs, "spacingAndGlyphs"},
-  };
+  static constexpr auto enum_items = std::to_array<const char* const>({
+      "spacing",
+      "spacingAndGlyphs",
+  });
   static const SVGEnumerationMap entries(enum_items);
   return entries;
 }
@@ -306,8 +306,6 @@ void SVGTextContentElement::SvgAttributeChanged(
   if (attr_name == svg_names::kTextLengthAttr ||
       attr_name == svg_names::kLengthAdjustAttr ||
       attr_name == xml_names::kSpaceAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
-
     if (LayoutObject* layout_object = GetLayoutObject()) {
       if (auto* ng_text =
               LayoutSVGText::LocateLayoutSVGTextAncestor(layout_object)) {

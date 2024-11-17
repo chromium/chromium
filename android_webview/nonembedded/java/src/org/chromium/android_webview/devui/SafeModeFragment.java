@@ -17,10 +17,10 @@ import android.widget.TextView;
 import org.chromium.android_webview.devui.util.SafeModeActionInfo;
 import org.chromium.android_webview.devui.util.SafeModeInfo;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.stream.Collectors;
 
 /** A fragment to show WebView SafeMode status. */
 public class SafeModeFragment extends DevUiBaseFragment {
@@ -68,10 +68,10 @@ public class SafeModeFragment extends DevUiBaseFragment {
                                         Locale.US, "Enabled on %s", new Date(activationTime)));
                     });
 
-            List<SafeModeActionInfo> actions =
-                    safeModeInfo.getActionsForUI().stream()
-                            .map(SafeModeActionInfo::new)
-                            .collect(Collectors.toList());
+            ArrayList<SafeModeActionInfo> actions = new ArrayList<>();
+            for (String action : safeModeInfo.getActionsForUI()) {
+                actions.add(new SafeModeActionInfo(action));
+            }
             mActionsListView.setAdapter(new ActionsListAdapter(actions));
         }
     }

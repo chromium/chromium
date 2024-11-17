@@ -38,7 +38,8 @@
 - (instancetype)initWithFrame:(CGRect)frame
                     textColor:(UIColor*)textColor
                 textFieldTint:(UIColor*)textFieldTint
-                     iconTint:(UIColor*)iconTint NS_DESIGNATED_INITIALIZER;
+                     iconTint:(UIColor*)iconTint
+                isLensOverlay:(BOOL)isLensOverlay NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;

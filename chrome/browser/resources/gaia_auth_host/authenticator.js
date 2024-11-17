@@ -177,8 +177,6 @@ export const SUPPORTED_PARAMS = [
                    // window.
   'clientId',      // Chrome client id.
   'needPassword',  // Whether the host is interested in getting a password.
-                   // If this set to |false|, |confirmPasswordCallback| is
-                   // not called before dispatching |authCopleted|.
                    // Default is |true|.
   'flow',          // One of 'default', 'enterprise', or
                    // 'cfm' or 'enterpriseLicense'.
@@ -443,7 +441,6 @@ export class Authenticator extends EventTarget {
 
     this.clientId_ = null;
 
-    this.confirmPasswordCallback = null;
     this.noPasswordCallback = null;
     this.onePasswordCallback = null;
     this.insecureContentBlockedCallback = null;
@@ -1100,20 +1097,6 @@ export class Authenticator extends EventTarget {
   }
 
   /**
-   * Invoked by the hosting page to verify the Saml password.
-   */
-  verifyConfirmedPassword(password) {
-    if (!this.samlHandler_.verifyConfirmedPassword(password)) {
-      this.confirmPasswordCallback(
-          this.email_, this.samlHandler_.scrapedPasswordCount);
-      return;
-    }
-
-    this.password_ = password;
-    this.onAuthCompleted_();
-  }
-
-  /**
    * Check Saml flow and start password confirmation flow if needed.
    * Otherwise, continue with auto completion.
    * @private
@@ -1190,14 +1173,6 @@ export class Authenticator extends EventTarget {
           this.onePasswordCallback();
         }
         this.onAuthCompleted_();
-        return;
-      }
-
-      if (this.confirmPasswordCallback) {
-        // Confirm scraped password. The flow follows in
-        // verifyConfirmedPassword.
-        this.confirmPasswordCallback(
-            this.email_, this.samlHandler_.scrapedPasswordCount);
         return;
       }
     }

@@ -368,13 +368,8 @@ bool AddProfileMetadataToTable(sql::Database* db,
   s.BindInt(index++, static_cast<int>(profile.record_type()));
   s.BindInt64(index++, profile.use_count());
   s.BindInt64(index++, profile.use_date().ToTimeT());
-  if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
-    bind_optional_time(index++, profile.use_date(2));
-    bind_optional_time(index++, profile.use_date(3));
-  } else {
-    s.BindNull(index++);
-    s.BindNull(index++);
-  }
+  bind_optional_time(index++, profile.use_date(2));
+  bind_optional_time(index++, profile.use_date(3));
   s.BindInt64(index++, profile.modification_date().ToTimeT());
   s.BindString(index++, profile.language_code());
   s.BindString(index++, profile.profile_label());
@@ -390,6 +385,11 @@ bool AddProfileTypeTokensToTable(sql::Database* db,
   for (FieldType type : GetDatabaseStoredTypesOfAutofillProfile()) {
     if (!base::FeatureList::IsEnabled(features::kAutofillUseINAddressModel) &&
         type == ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY) {
+      continue;
+    }
+    if (!base::FeatureList::IsEnabled(
+            features::kAutofillSupportPhoneticNameForJP) &&
+        IsAlternativeNameType(type)) {
       continue;
     }
     sql::Statement s;
@@ -535,12 +535,8 @@ std::optional<AutofillProfile> GetProfileFromMetadataTable(
   };
   profile.set_use_count(s.ColumnInt64(index++));
   profile.set_use_date(base::Time::FromTimeT(s.ColumnInt64(index++)), 1);
-  if (base::FeatureList::IsEnabled(features::kAutofillTrackMultipleUseDates)) {
-    profile.set_use_date(as_optional_time(index++), 2);
-    profile.set_use_date(as_optional_time(index++), 3);
-  } else {
-    index += 2;
-  }
+  profile.set_use_date(as_optional_time(index++), 2);
+  profile.set_use_date(as_optional_time(index++), 3);
   profile.set_modification_date(base::Time::FromTimeT(s.ColumnInt64(index++)));
   profile.set_language_code(s.ColumnString(index++));
   profile.set_profile_label(s.ColumnString(index++));

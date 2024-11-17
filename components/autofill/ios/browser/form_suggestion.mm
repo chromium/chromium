@@ -4,6 +4,10 @@
 
 #import "components/autofill/ios/browser/form_suggestion.h"
 
+#import <optional>
+
+#import "components/autofill/ios/form_util/form_activity_params.h"
+
 @implementation FormSuggestion
 
 - (instancetype)initWithValue:(NSString*)value
@@ -11,11 +15,15 @@
              displayDescription:(NSString*)displayDescription
                            icon:(UIImage*)icon
                            type:(autofill::SuggestionType)type
-              backendIdentifier:(NSString*)backendIdentifier
+                        payload:(autofill::Suggestion::Payload)payload
     fieldByFieldFillingTypeUsed:(autofill::FieldType)fieldByFieldFillingTypeUsed
                  requiresReauth:(BOOL)requiresReauth
      acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
-                       metadata:(FormSuggestionMetadata)metadata {
+                       metadata:(FormSuggestionMetadata)metadata
+                         params:
+                             (std::optional<autofill::FormActivityParams>)params
+                       provider:(id<FormSuggestionProvider>)provider
+                  featureForIPH:(SuggestionFeatureForIPH)featureForIPH {
   self = [super init];
   if (self) {
     _value = [value copy];
@@ -23,11 +31,14 @@
     _displayDescription = [displayDescription copy];
     _icon = [icon copy];
     _type = type;
-    _backendIdentifier = backendIdentifier;
+    _payload = payload;
     _fieldByFieldFillingTypeUsed = fieldByFieldFillingTypeUsed;
     _requiresReauth = requiresReauth;
     _acceptanceA11yAnnouncement = [acceptanceA11yAnnouncement copy];
     _metadata = metadata;
+    _params = params;
+    _provider = provider;
+    _featureForIPH = featureForIPH;
   }
   return self;
 }
@@ -36,20 +47,24 @@
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
                                   type:(autofill::SuggestionType)type
-                     backendIdentifier:(NSString*)backendIdentifier
+                               payload:(autofill::Suggestion::Payload)payload
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
                               metadata:(FormSuggestionMetadata)metadata {
-  return [[FormSuggestion alloc] initWithValue:value
-                                    minorValue:nil
-                            displayDescription:displayDescription
-                                          icon:icon
-                                          type:type
-                             backendIdentifier:backendIdentifier
-                   fieldByFieldFillingTypeUsed:autofill::FieldType::EMPTY_TYPE
-                                requiresReauth:requiresReauth
-                    acceptanceA11yAnnouncement:acceptanceA11yAnnouncement
-                                      metadata:metadata];
+  return
+      [[FormSuggestion alloc] initWithValue:value
+                                 minorValue:nil
+                         displayDescription:displayDescription
+                                       icon:icon
+                                       type:type
+                                    payload:payload
+                fieldByFieldFillingTypeUsed:autofill::FieldType::EMPTY_TYPE
+                             requiresReauth:requiresReauth
+                 acceptanceA11yAnnouncement:acceptanceA11yAnnouncement
+                                   metadata:metadata
+                                     params:std::nullopt
+                                   provider:nil
+                              featureForIPH:SuggestionFeatureForIPH::kUnknown];
 }
 
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
@@ -57,39 +72,68 @@
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
                                   type:(autofill::SuggestionType)type
-                     backendIdentifier:(NSString*)backendIdentifier
+                               payload:(autofill::Suggestion::Payload)payload
            fieldByFieldFillingTypeUsed:
                (autofill::FieldType)fieldByFieldFillingTypeUsed
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement {
-  return [[FormSuggestion alloc] initWithValue:value
-                                    minorValue:minorValue
-                            displayDescription:displayDescription
-                                          icon:icon
-                                          type:type
-                             backendIdentifier:backendIdentifier
-                   fieldByFieldFillingTypeUsed:fieldByFieldFillingTypeUsed
-                                requiresReauth:requiresReauth
-                    acceptanceA11yAnnouncement:acceptanceA11yAnnouncement
-                                      metadata:FormSuggestionMetadata()];
+  return
+      [[FormSuggestion alloc] initWithValue:value
+                                 minorValue:minorValue
+                         displayDescription:displayDescription
+                                       icon:icon
+                                       type:type
+                                    payload:payload
+                fieldByFieldFillingTypeUsed:fieldByFieldFillingTypeUsed
+                             requiresReauth:requiresReauth
+                 acceptanceA11yAnnouncement:acceptanceA11yAnnouncement
+                                   metadata:FormSuggestionMetadata()
+                                     params:std::nullopt
+                                   provider:nil
+                              featureForIPH:SuggestionFeatureForIPH::kUnknown];
 }
 
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
                                   type:(autofill::SuggestionType)type
-                     backendIdentifier:(NSString*)backendIdentifier
+                               payload:(autofill::Suggestion::Payload)payload
                         requiresReauth:(BOOL)requiresReauth {
-  return [[FormSuggestion alloc] initWithValue:value
-                                    minorValue:nil
-                            displayDescription:displayDescription
-                                          icon:icon
-                                          type:type
-                             backendIdentifier:backendIdentifier
-                   fieldByFieldFillingTypeUsed:autofill::FieldType::EMPTY_TYPE
-                                requiresReauth:requiresReauth
-                    acceptanceA11yAnnouncement:nil
-                                      metadata:FormSuggestionMetadata()];
+  return
+      [[FormSuggestion alloc] initWithValue:value
+                                 minorValue:nil
+                         displayDescription:displayDescription
+                                       icon:icon
+                                       type:type
+                                    payload:payload
+                fieldByFieldFillingTypeUsed:autofill::FieldType::EMPTY_TYPE
+                             requiresReauth:requiresReauth
+                 acceptanceA11yAnnouncement:nil
+                                   metadata:FormSuggestionMetadata()
+                                     params:std::nullopt
+                                   provider:nil
+                              featureForIPH:SuggestionFeatureForIPH::kUnknown];
+}
+
++ (FormSuggestion*)copy:(FormSuggestion*)formSuggestionToCopy
+           andSetParams:(std::optional<autofill::FormActivityParams>)params
+               provider:(id<FormSuggestionProvider>)provider {
+  return [[FormSuggestion alloc]
+                    initWithValue:formSuggestionToCopy.value
+                       minorValue:formSuggestionToCopy.minorValue
+               displayDescription:formSuggestionToCopy.displayDescription
+                             icon:formSuggestionToCopy.icon
+                             type:formSuggestionToCopy.type
+                          payload:formSuggestionToCopy.payload
+      fieldByFieldFillingTypeUsed:formSuggestionToCopy
+                                      .fieldByFieldFillingTypeUsed
+                   requiresReauth:formSuggestionToCopy.requiresReauth
+       acceptanceA11yAnnouncement:formSuggestionToCopy
+                                      .acceptanceA11yAnnouncement
+                         metadata:formSuggestionToCopy.metadata
+                           params:params
+                         provider:provider
+                    featureForIPH:formSuggestionToCopy.featureForIPH];
 }
 
 @end

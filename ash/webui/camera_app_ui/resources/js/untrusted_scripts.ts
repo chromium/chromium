@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertExists} from './assert.js';
-import * as Comlink from './lib/comlink.js';
+import * as comlink from './lib/comlink.js';
 import {isLocalDev} from './models/load_time_data.js';
 import {
   Ga4EventParams,
@@ -15,7 +15,7 @@ import {VideoProcessorHelper} from './untrusted_video_processor_helper.js';
 import {expandPath} from './util.js';
 import {WaitableEvent} from './waitable_event.js';
 
-interface UntrustedIFrame {
+interface UntrustedIframe {
   iframe: HTMLIFrameElement;
   pageReadyEvent: WaitableEvent;
 }
@@ -24,7 +24,7 @@ interface UntrustedIFrame {
  * Creates the iframe to host the untrusted scripts under
  * chrome-untrusted://camera-app and append to the document.
  */
-export function createUntrustedIframe(): UntrustedIFrame {
+export function createUntrustedIframe(): UntrustedIframe {
   const untrustedPageReady = new WaitableEvent();
   const iframe = document.createElement('iframe');
   iframe.addEventListener('load', () => untrustedPageReady.signal());
@@ -48,7 +48,7 @@ interface UntrustedScriptLoader {
   measureMemoryUsage(): Promise<MemoryMeasurement>;
 }
 
-let memoryMeasurementHelper: Comlink.Remote<UntrustedScriptLoader>|null = null;
+let memoryMeasurementHelper: comlink.Remote<UntrustedScriptLoader>|null = null;
 
 /**
  * Creates JS module by given |scriptUrl| under untrusted context with given
@@ -58,13 +58,13 @@ let memoryMeasurementHelper: Comlink.Remote<UntrustedScriptLoader>|null = null;
  * @param scriptUrl The URL of the script to load.
  */
 export async function injectUntrustedJSModule<T>(
-    untrustedIframe: UntrustedIFrame,
-    scriptUrl: string): Promise<Comlink.Remote<T>> {
+    untrustedIframe: UntrustedIframe,
+    scriptUrl: string): Promise<comlink.Remote<T>> {
   const {iframe, pageReadyEvent} = untrustedIframe;
   await pageReadyEvent.wait();
   assert(iframe.contentWindow !== null);
-  const untrustedRemote = Comlink.wrap<UntrustedScriptLoader>(
-      Comlink.windowEndpoint(iframe.contentWindow, self));
+  const untrustedRemote = comlink.wrap<UntrustedScriptLoader>(
+      comlink.windowEndpoint(iframe.contentWindow, self));
 
   // Memory measurement for all untrusted scripts can be done on any single
   // untrusted frame.
@@ -77,11 +77,11 @@ export async function injectUntrustedJSModule<T>(
   // loadScript adds the script exports to what's exported by the
   // untrustedRemote, so we manually cast it to the expected type.
   // eslint-disable-next-line @typescript-eslint/consistent-type-assertions
-  return untrustedRemote as unknown as Comlink.Remote<T>;
+  return untrustedRemote as unknown as comlink.Remote<T>;
 }
 
-let gaHelper: Promise<Comlink.Remote<GaHelper>>|null = null;
-let videoProcessorHelper: Promise<Comlink.Remote<VideoProcessorHelper>>|null =
+let gaHelper: Promise<comlink.Remote<GaHelper>>|null = null;
+let videoProcessorHelper: Promise<comlink.Remote<VideoProcessorHelper>>|null =
     null;
 
 /**
@@ -96,7 +96,7 @@ export async function measureUntrustedScriptsMemory():
 /**
  * Gets the singleton GaHelper instance that is located in an untrusted iframe.
  */
-export function getGaHelper(): Promise<Comlink.Remote<GaHelper>> {
+export function getGaHelper(): Promise<comlink.Remote<GaHelper>> {
   return assertExists(gaHelper);
 }
 
@@ -104,7 +104,7 @@ export function getGaHelper(): Promise<Comlink.Remote<GaHelper>> {
  * Sets the singleton GaHelper instance. This should only be called on
  * initialize by init.ts.
  */
-export function setGaHelper(newGaHelper: Promise<Comlink.Remote<GaHelper>>):
+export function setGaHelper(newGaHelper: Promise<comlink.Remote<GaHelper>>):
     void {
   assert(gaHelper === null, 'gaHelper should only be initialize once on init');
   gaHelper = newGaHelper;
@@ -121,7 +121,7 @@ export type {Ga4EventParams, MemoryUsageEventDimension};
  * untrusted iframe.
  */
 export function getVideoProcessorHelper():
-    Promise<Comlink.Remote<VideoProcessorHelper>> {
+    Promise<comlink.Remote<VideoProcessorHelper>> {
   return assertExists(videoProcessorHelper);
 }
 
@@ -130,7 +130,7 @@ export function getVideoProcessorHelper():
  * on initialize by init.ts.
  */
 export function setVideoProcessorHelper(
-    newVideoProcessorHelper: Promise<Comlink.Remote<VideoProcessorHelper>>):
+    newVideoProcessorHelper: Promise<comlink.Remote<VideoProcessorHelper>>):
     void {
   assert(
       videoProcessorHelper === null,

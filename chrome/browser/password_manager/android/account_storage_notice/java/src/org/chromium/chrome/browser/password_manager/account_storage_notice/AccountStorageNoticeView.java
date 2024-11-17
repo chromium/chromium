@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
@@ -85,8 +86,8 @@ class AccountStorageNoticeView implements BottomSheetContent {
     }
 
     @Override
-    public int getSheetContentDescriptionStringId() {
-        return R.string.passwords_account_storage_notice_title;
+    public @NonNull String getSheetContentDescription(Context context) {
+        return context.getString(R.string.passwords_account_storage_notice_title);
     }
 
     @Override

@@ -104,7 +104,11 @@ pub fn next(input: &[u8]) -> Option<(u8, &[u8], &[u8])> {
 /// remaining input, if the element has the expected tag. Otherwise `None`.
 pub fn next_tagged(input: &[u8], expected_tag: u8) -> Option<(&[u8], &[u8])> {
     let (tag, element, rest) = next(input)?;
-    if tag == expected_tag { Some((element, rest)) } else { None }
+    if tag == expected_tag {
+        Some((element, rest))
+    } else {
+        None
+    }
 }
 
 /// Returns the body of the next ASN.1 DER element, and the remainder, from
@@ -115,5 +119,9 @@ pub fn next_optional(input: &[u8], expected_tag: u8) -> Option<(Option<&[u8]>, &
         return Some((None, input));
     }
     let (tag, body, rest) = next(input)?;
-    if expected_tag == tag { Some((Some(body), rest)) } else { Some((None, input)) }
+    if expected_tag == tag {
+        Some((Some(body), rest))
+    } else {
+        Some((None, input))
+    }
 }

@@ -17,6 +17,7 @@ const char* GetHistogramName(ash::DeskTemplateType type) {
       return kSaveAndRecallTemplateSizeHistogramName;
     case ash::DeskTemplateType::kFloatingWorkspace:
       return kFloatingWorkspaceTemplateSizeHistogramName;
+    case ash::DeskTemplateType::kCoral:
     case ash::DeskTemplateType::kUnknown:
       return nullptr;
   }

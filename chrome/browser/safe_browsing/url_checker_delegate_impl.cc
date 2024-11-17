@@ -172,6 +172,14 @@ void UrlCheckerDelegateImpl::SendUrlRealTimeAndHashRealTimeDiscrepancyReport(
                                  std::move(report));
 }
 
+bool UrlCheckerDelegateImpl::AreBackgroundHashRealTimeSampleLookupsAllowed(
+    const base::RepeatingCallback<content::WebContents*()>&
+        web_contents_getter) {
+  Profile* profile = Profile::FromBrowserContext(
+      web_contents_getter.Run()->GetBrowserContext());
+  return safe_browsing::IsEnhancedProtectionEnabled(*profile->GetPrefs());
+}
+
 const SBThreatTypeSet& UrlCheckerDelegateImpl::GetThreatTypes() {
   return threat_types_;
 }

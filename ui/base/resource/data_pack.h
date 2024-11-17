@@ -21,7 +21,6 @@
 #include "base/files/file.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/memory/raw_ptr.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/base/resource/resource_handle.h"
 
 namespace base {
@@ -68,7 +67,7 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
   };
 #pragma pack(pop)
 
-  // Pair of resource id and string piece data.
+  // Pair of resource id and string view data.
   struct ResourceData {
     explicit ResourceData(uint16_t id, std::string_view data)
         : id(id), data(data) {}
@@ -137,12 +136,6 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
   static std::unique_ptr<DataSource> LoadFromPathInternal(
       const base::FilePath& path);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Load a pack file for shared resource from |path|, returning false on error.
-  // Similar to LoadFromPath(), but the file format is different.
-  bool LoadSharedResourceFromPath(const base::FilePath& path);
-#endif
-
   // Invokes LoadFromFileRegion with the entire contents of |file|. Compressed
   // files are not supported.
   bool LoadFromFile(base::File file);
@@ -167,7 +160,7 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
 
   // ResourceHandle implementation:
   bool HasResource(uint16_t resource_id) const override;
-  std::optional<std::string_view> GetStringPiece(
+  std::optional<std::string_view> GetStringView(
       uint16_t resource_id) const override;
   base::RefCountedStaticMemory* GetStaticMemory(
       uint16_t resource_id) const override;
@@ -216,9 +209,9 @@ class COMPONENT_EXPORT(UI_DATA_PACK) DataPack : public ResourceHandle {
                                            size_t data_length);
 
   // Returns the string between `target_offset` and `next_offset` in data pack.
-  static std::string_view GetStringPieceFromOffset(uint32_t target_offset,
-                                                   uint32_t next_offset,
-                                                   const uint8_t* data_source);
+  static std::string_view GetStringViewFromOffset(uint32_t target_offset,
+                                                  uint32_t next_offset,
+                                                  const uint8_t* data_source);
 
   std::unique_ptr<DataSource> data_source_;
 

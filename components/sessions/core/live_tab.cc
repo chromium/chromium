@@ -6,7 +6,7 @@
 
 namespace sessions {
 
-LiveTab::~LiveTab() {}
+LiveTab::~LiveTab() = default;
 
 std::unique_ptr<tab_restore::PlatformSpecificTabData>
 LiveTab::GetPlatformSpecificTabData() {

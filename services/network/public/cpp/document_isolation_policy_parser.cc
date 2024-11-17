@@ -63,13 +63,14 @@ Parse(std::string_view header_value) {
 DocumentIsolationPolicy ParseDocumentIsolationPolicy(
     const net::HttpResponseHeaders& headers) {
   DocumentIsolationPolicy dip;
-  std::string header_value;
-  if (headers.GetNormalizedHeader(kHeaderName, &header_value)) {
-    std::tie(dip.value, dip.reporting_endpoint) = Parse(header_value);
+  if (std::optional<std::string> header_value =
+          headers.GetNormalizedHeader(kHeaderName)) {
+    std::tie(dip.value, dip.reporting_endpoint) = Parse(*header_value);
   }
-  if (headers.GetNormalizedHeader(kReportOnlyHeaderName, &header_value)) {
+  if (std::optional<std::string> header_value =
+          headers.GetNormalizedHeader(kReportOnlyHeaderName)) {
     std::tie(dip.report_only_value, dip.report_only_reporting_endpoint) =
-        Parse(header_value);
+        Parse(*header_value);
   }
   return dip;
 }

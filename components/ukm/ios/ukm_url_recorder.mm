@@ -27,7 +27,8 @@ SourceUrlRecorderWebStateObserver::SourceUrlRecorderWebStateObserver(
   web_state->AddObserver(this);
 }
 
-SourceUrlRecorderWebStateObserver::~SourceUrlRecorderWebStateObserver() {}
+SourceUrlRecorderWebStateObserver::~SourceUrlRecorderWebStateObserver() =
+    default;
 
 void SourceUrlRecorderWebStateObserver::WebStateDestroyed(
     web::WebState* web_state) {

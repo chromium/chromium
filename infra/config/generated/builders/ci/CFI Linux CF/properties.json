@@ -43,7 +43,8 @@
           "builder": "CFI Linux CF",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/CFI Linux CF/targets"
     }
   },
   "$build/reclient": {

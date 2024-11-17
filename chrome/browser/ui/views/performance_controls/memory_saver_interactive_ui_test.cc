@@ -69,6 +69,10 @@ DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAudioIsAudible);
 
 constexpr char kSkipPixelTestsReason[] = "Should only run in pixel_tests.";
 
+constexpr char kDocumentWithAudio[] = "/autoplay_audio.html";
+constexpr char kDocumentWithVideo[] = "/media/bigbuck-player.html";
+constexpr char kDocumentWithForm[] = "/form_search.html";
+
 }  // namespace
 
 
@@ -82,6 +86,21 @@ class MemorySaverDiscardPolicyInteractiveTest
                                               GetParam());
   }
   ~MemorySaverDiscardPolicyInteractiveTest() override = default;
+
+  void SetUp() override {
+    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
+    InteractiveBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    embedded_test_server()->StartAcceptingConnections();
+  }
+
+  void TearDownOnMainThread() override {
+    EXPECT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+    InteractiveBrowserTest::TearDownOnMainThread();
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MemorySaverInteractiveTestMixin<InteractiveBrowserTest>::SetUpCommandLine(
@@ -133,7 +152,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents,
-                          GetURL("example.com", "/media/bigbuck-player.html")),
+                          embedded_test_server()->GetURL(kDocumentWithVideo)),
       ExecuteJsAt(kFirstTabContents, video, kPlayVideo),
       WaitForStateChange(kFirstTabContents, video_is_playing),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
@@ -156,7 +175,7 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
       NavigateWebContents(kFirstTabContents,
-                          GetURL("example.com", "/autoplay_audio.html")),
+                          embedded_test_server()->GetURL(kDocumentWithAudio)),
       ExecuteJsAt(kFirstTabContents, audio, "(el) => { el.play(); }"),
       WaitForEvent(kFirstTabContents, kAudioIsAudible),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
@@ -185,12 +204,12 @@ IN_PROC_BROWSER_TEST_P(MemorySaverDiscardPolicyInteractiveTest,
   input_value_updated.type = StateChange::Type::kExistsAndConditionTrue;
   input_value_updated.test_function = "(el) => { return !!el.value; }";
 
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithForm);
+
   RunTestSequence(
       InstrumentTab(kFirstTabContents, 0),
-      NavigateWebContents(kFirstTabContents,
-                          GetURL("example.com", "/form_search.html")),
-      WaitForWebContentsReady(kFirstTabContents,
-                              GetURL("example.com", "/form_search.html")),
+      NavigateWebContents(kFirstTabContents, url),
+      WaitForWebContentsReady(kFirstTabContents, url),
 
       // Move focus off of the omnibox
       MoveMouseTo(kFirstTabContents, input_text_box), ClickMouse(),

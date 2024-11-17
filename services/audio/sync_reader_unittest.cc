@@ -76,7 +76,7 @@ TEST_P(SyncReaderBitstreamTest, BitstreamBufferOverflow_DoesNotWriteOOB) {
   auto socket = std::make_unique<base::CancelableSyncSocket>();
   SyncReader reader(base::BindRepeating(&NoLog), params, socket.get());
   ASSERT_TRUE(reader.IsValid());
-  const base::WritableSharedMemoryMapping shmem =
+  base::WritableSharedMemoryMapping shmem =
       reader.TakeSharedMemoryRegion().Map();
   ASSERT_TRUE(shmem.IsValid());
   auto* const buffer = shmem.GetMemoryAs<media::AudioOutputBuffer>();

@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -173,7 +175,7 @@ class DriveUploader : public DriveUploaderInterface {
   void StartUploadFileAfterGetFileSize(
       std::unique_ptr<UploadFileInfo> upload_file_info,
       StartInitiateUploadCallback start_initiate_upload_callback,
-      bool get_file_size_result);
+      std::optional<int64_t> maybe_file_size);
 
   // Checks file size and call InitiateUploadNewFile or MultipartUploadNewFile
   // API.  Upon completion, OnUploadLocationReceived (for InitiateUploadNewFile)

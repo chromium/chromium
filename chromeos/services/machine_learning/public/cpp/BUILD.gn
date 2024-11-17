@@ -50,7 +50,6 @@ component("stub") {
   deps = [
     "//base",
     "//chromeos/services/machine_learning/public/mojom",
-    "//components/ml/mojom",
     "//mojo/public/cpp/bindings",
   ]
   public_deps = [ ":cpp" ]
@@ -65,7 +64,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/dbus/machine_learning",
     "//chromeos/services/machine_learning/public/mojom",
-    "//components/ml/mojom",
     "//mojo/core/embedder",
     "//mojo/public/cpp/bindings",
     "//testing/gtest",

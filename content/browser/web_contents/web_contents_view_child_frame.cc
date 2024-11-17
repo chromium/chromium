@@ -102,12 +102,11 @@ gfx::Rect WebContentsViewChildFrame::GetContainerBounds() const {
 }
 
 void WebContentsViewChildFrame::SetInitialFocus() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 gfx::Rect WebContentsViewChildFrame::GetViewBounds() const {
-  NOTREACHED_IN_MIGRATION();
-  return gfx::Rect();
+  NOTREACHED();
 }
 
 void WebContentsViewChildFrame::CreateView(gfx::NativeView context) {
@@ -157,25 +156,27 @@ WebContentsViewChildFrame::GetBackForwardTransitionAnimationManager() {
   return nullptr;
 }
 
+void WebContentsViewChildFrame::DestroyBackForwardTransitionAnimationManager() {
+}
+
 void WebContentsViewChildFrame::RestoreFocus() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WebContentsViewChildFrame::Focus() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WebContentsViewChildFrame::StoreFocus() {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WebContentsViewChildFrame::FocusThroughTabTraversal(bool reverse) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 DropData* WebContentsViewChildFrame::GetDropData() const {
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 void WebContentsViewChildFrame::UpdateDragOperation(
@@ -188,19 +189,19 @@ void WebContentsViewChildFrame::UpdateDragOperation(
 
 void WebContentsViewChildFrame::GotFocus(
     RenderWidgetHostImpl* render_widget_host) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WebContentsViewChildFrame::TakeFocus(bool reverse) {
   // This is handled in RenderFrameHostImpl::TakeFocus we shouldn't
   // end up here.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void WebContentsViewChildFrame::ShowContextMenu(
     RenderFrameHost& render_frame_host,
     const ContextMenuParams& params) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 #if BUILDFLAG(USE_EXTERNAL_POPUP_MENU)

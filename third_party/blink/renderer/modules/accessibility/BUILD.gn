@@ -8,6 +8,8 @@ blink_modules_sources("accessibility") {
   sources = [
     "aria_notification.cc",
     "aria_notification.h",
+    "ax_block_flow_iterator.cc",
+    "ax_block_flow_iterator.h",
     "ax_enums.cc",
     "ax_enums.h",
     "ax_image_map_link.cc",
@@ -38,12 +40,8 @@ blink_modules_sources("accessibility") {
     "ax_selection.h",
     "ax_slider.cc",
     "ax_slider.h",
-    "ax_sparse_attribute_setter.cc",
-    "ax_sparse_attribute_setter.h",
     "ax_validation_message.cc",
     "ax_validation_message.h",
-    "ax_virtual_object.cc",
-    "ax_virtual_object.h",
     "blink_ax_tree_source.cc",
     "blink_ax_tree_source.h",
     "inspector_accessibility_agent.cc",
@@ -54,12 +52,14 @@ blink_modules_sources("accessibility") {
 
   deps = [
     "//build:chromeos_buildflags",
+    "//services/metrics/public/cpp:ukm_builders",
     "//third_party/blink/public/strings:strings_grit",
     "//third_party/blink/renderer/modules/media_controls:media_controls",
     "//third_party/blink/renderer/modules/permissions:permissions",
     "//ui/accessibility",
     "//ui/accessibility:ax_base",
     "//ui/accessibility:ax_enums_mojo_blink",
+    "//ui/accessibility/mojom:mojom_blink",
   ]
 
   # The modules/accessibility/ depends closely on core/ --

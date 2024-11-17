@@ -30,8 +30,6 @@ public class JsReplyProxy extends AwSupportLibIsomorphic {
     /**
      * Post message to the injected JavaScript object. Note that it will drop message if the
      * injected object is gone.
-     *
-     * @param message a non-null String message post to the JavaScript object.
      */
     public void postMessage(@NonNull final MessagePayload payload) {
         if (mNativeJsReplyProxy == 0) return;

@@ -7,18 +7,18 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
+
+class ProfileIOS;
 
 @interface HistoryMediator : NSObject<TableViewFaviconDataSource>
 
-// The coordinator's BrowserState.
-@property(nonatomic, assign) ChromeBrowserState* browserState;
+// The coordinator's profile.
+@property(nonatomic, assign) ProfileIOS* profile;
 
 - (instancetype)init NS_UNAVAILABLE;
-// Init method. `browserState` can't be nil.
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
-    NS_DESIGNATED_INITIALIZER;
+// Init method. `profile` can't be nil.
+- (instancetype)initWithProfile:(ProfileIOS*)profile NS_DESIGNATED_INITIALIZER;
 
 @end
 

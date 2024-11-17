@@ -4,11 +4,12 @@
 
 source_set("manage_accounts") {
   sources = [
-    "accounts_coordinator.h",
-    "accounts_coordinator.mm",
-    "accounts_mediator.h",
-    "accounts_mediator.mm",
-    "accounts_mediator_delegate.h",
+    "manage_accounts_coordinator.h",
+    "manage_accounts_coordinator.mm",
+    "manage_accounts_coordinator_delegate.h",
+    "manage_accounts_mediator.h",
+    "manage_accounts_mediator.mm",
+    "manage_accounts_mediator_delegate.h",
   ]
   deps = [
     ":constants",
@@ -19,6 +20,7 @@ source_set("manage_accounts") {
     "//components/strings",
     "//components/sync/base",
     "//components/sync/service",
+    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/ntp/ui_bundled:feature_flags",
@@ -36,6 +38,9 @@ source_set("manage_accounts") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:constants",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/chrome/browser/sync/model",
@@ -55,15 +60,15 @@ source_set("manage_accounts") {
 
 source_set("manage_accounts_ui") {
   sources = [
-    "accounts_consumer.h",
-    "accounts_model_identity_data_source.h",
-    "accounts_mutator.h",
-    "accounts_table_view_controller.h",
-    "accounts_table_view_controller.mm",
     "identity_view_item.h",
     "identity_view_item.mm",
     "legacy_accounts_table_view_controller.h",
     "legacy_accounts_table_view_controller.mm",
+    "manage_accounts_consumer.h",
+    "manage_accounts_model_identity_data_source.h",
+    "manage_accounts_mutator.h",
+    "manage_accounts_table_view_controller.h",
+    "manage_accounts_table_view_controller.mm",
   ]
   deps = [
     ":constants",
@@ -75,11 +80,13 @@ source_set("manage_accounts_ui") {
     "//components/strings",
     "//components/sync/base:features",
     "//components/sync/service",
+    "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/net/model:crurl",
     "//ios/chrome/browser/settings/model/sync/utils",
     "//ios/chrome/browser/settings/model/sync/utils:identity_error_util",
     "//ios/chrome/browser/shared/coordinator/alert",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
@@ -92,6 +99,9 @@ source_set("manage_accounts_ui") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
+    "//ios/chrome/browser/signin/model:constants",
     "//ios/chrome/browser/signin/model:system_identity",
     "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/chrome/browser/sync/model",
@@ -116,8 +126,8 @@ source_set("protocols") {
 
 source_set("constants") {
   sources = [
-    "accounts_table_view_controller_constants.h",
-    "accounts_table_view_controller_constants.mm",
+    "manage_accounts_table_view_controller_constants.h",
+    "manage_accounts_table_view_controller_constants.mm",
   ]
   deps = [ "//ios/chrome/browser/shared/ui/list_model" ]
 }
@@ -126,8 +136,8 @@ source_set("eg2_tests") {
   configs += [ "//build/config/ios:xctest_config" ]
   testonly = true
   sources = [
-    "accounts_table_egtest.mm",
     "legacy_accounts_table_egtest.mm",
+    "manage_accounts_table_egtest.mm",
   ]
   deps = [
     "//base/test:test_support",
@@ -157,8 +167,8 @@ source_set("eg2_tests") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "accounts_table_view_controller_unittest.mm",
     "legacy_accounts_table_view_controller_unittest.mm",
+    "manage_accounts_table_view_controller_unittest.mm",
   ]
   deps = [
     ":manage_accounts_ui",
@@ -187,6 +197,8 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:fake_system_identity",
     "//ios/chrome/browser/signin/model:fake_system_identity_manager",
     "//ios/chrome/browser/signin/model:test_support",

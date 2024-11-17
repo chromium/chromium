@@ -80,9 +80,19 @@
 
   <div id="illustration" aria-hidden="true"></div>
   <div id="text">
-    <h2 id="title">$i18n{historyEmbeddingsPromoHeading}</h2>
+    <h2 id="title" hidden="[[isAnswersEnabled_]]">
+      $i18n{historyEmbeddingsPromoHeading}
+    </h2>
+    <h2 id="title" hidden="[[!isAnswersEnabled_]]">
+      $i18n{historyEmbeddingsAnswersPromoHeading}
+    </h2>
     <div id="description">
-      <div id="description-first-block">$i18n{historyEmbeddingsPromoBody}</div>
+      <div id="description-first-block" hidden="[[isAnswersEnabled_]]">
+        $i18n{historyEmbeddingsPromoBody}
+      </div>
+      <div id="description-first-block" hidden="[[!isAnswersEnabled_]]">
+        $i18n{historyEmbeddingsAnswersPromoBody}
+      </div>
       <div>
         $i18n{historyEmbeddingsDisclaimer}
         <a href="$i18n{historyEmbeddingsSettingsUrl}" target="_blank">

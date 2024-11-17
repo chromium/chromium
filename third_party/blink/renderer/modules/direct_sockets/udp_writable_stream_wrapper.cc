@@ -9,6 +9,7 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/mojom/direct_sockets/direct_sockets.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
@@ -184,6 +185,9 @@ void UDPWritableStreamWrapper::ErrorStream(int32_t error_code) {
     return;
   }
   SetState(State::kAborted);
+
+  // Error codes are negative.
+  base::UmaHistogramSparse("DirectSockets.UDPWritableStreamError", -error_code);
 
   auto* script_state = write_promise_resolver_
                            ? write_promise_resolver_->GetScriptState()

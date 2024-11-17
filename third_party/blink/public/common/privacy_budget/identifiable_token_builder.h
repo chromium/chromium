@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_PRIVACY_BUDGET_IDENTIFIABLE_TOKEN_BUILDER_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_PRIVACY_BUDGET_IDENTIFIABLE_TOKEN_BUILDER_H_
 
@@ -105,8 +100,7 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
   IdentifiableTokenBuilder& AddValue(T in) {
     AlignPartialBuffer();
     int64_t clean_buffer = internal::DigestOfObjectRepresentation(in);
-    return AddBytes(base::make_span(
-        reinterpret_cast<const uint8_t*>(&clean_buffer), sizeof(clean_buffer)));
+    return AddBytes(base::byte_span_from_ref(clean_buffer));
   }
 
   // Conversion operator captures an intermediate digest.

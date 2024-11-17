@@ -111,6 +111,16 @@ TEST_F(WebNodeTest, CannotFindTextInElementThatIsNotAContainer) {
                   .IsEmpty());
 }
 
+TEST_F(WebNodeTest, CannotFindTextNodesThatAreNotContainers) {
+  SetInnerHTML(R"HTML(
+    <div><br class="not-a-container"/> Hello world! </div>
+  )HTML");
+  WebElement element = Root().QuerySelector(AtomicString(".not-a-container"));
+
+  EXPECT_FALSE(element.IsNull());
+  EXPECT_TRUE(element.FindAllTextNodesMatchingRegex(".*").empty());
+}
+
 TEST_F(WebNodeTest, CanFindTextInElementThatIsAContainer) {
   SetInnerHTML(R"HTML(
     <body class="container"><div> Hello world! </div></body>
@@ -121,6 +131,20 @@ TEST_F(WebNodeTest, CanFindTextInElementThatIsAContainer) {
   EXPECT_EQ(WebString(" Hello world! "),
             element.FindTextInElementWith(
                 "Hello world", [](const WebString&) { return true; }));
+}
+
+TEST_F(WebNodeTest, CanFindTextNodesThatAreContainers) {
+  SetInnerHTML(R"HTML(
+    <body class="container"><div id="id"> Hello world! </div></body>
+  )HTML");
+  WebElement element = Root().QuerySelector(AtomicString(".container"));
+
+  EXPECT_FALSE(element.IsNull());
+
+  WebVector<WebNode> nodes =
+      element.FindAllTextNodesMatchingRegex("^ Hello world! $");
+  ASSERT_EQ(nodes.size(), 1U);
+  EXPECT_EQ(element.GetDocument().GetElementById("id").FirstChild(), nodes[0]);
 }
 
 TEST_F(WebNodeTest, CanFindCaseInsensitiveTextInElement) {
@@ -146,6 +170,16 @@ TEST_F(WebNodeTest, CannotFindTextInElementIfValidatorRejectsIt) {
                   .FindTextInElementWith("Hello world",
                                          [](const WebString&) { return false; })
                   .IsEmpty());
+}
+
+TEST_F(WebNodeTest, CannotFindTextNodesIfMatcherRejectsIt) {
+  SetInnerHTML(R"HTML(
+    <body class="container"><div> Hello world! </div></body>
+  )HTML");
+  WebElement element = Root().QuerySelector(AtomicString(".container"));
+
+  EXPECT_FALSE(element.IsNull());
+  EXPECT_TRUE(element.FindAllTextNodesMatchingRegex("(?!.*)").empty());
 }
 
 TEST_F(WebNodeTest, CanFindTextInReadonlyTextInputElement) {
@@ -177,6 +211,19 @@ TEST_F(WebNodeTest, CannotFindTextInNonTextInputElement) {
                   .IsEmpty());
 }
 
+TEST_F(WebNodeTest, CannotFindTextNodesInNonTextInputElement) {
+  SetInnerHTML(R"HTML(
+    <body class="container">
+      <input type="url" readonly="" value=" HeLLo WoRLd! ">
+    </body>
+  )HTML");
+  WebElement element = Root().QuerySelector(AtomicString(".container"));
+
+  EXPECT_FALSE(element.IsNull());
+  EXPECT_TRUE(
+      element.FindAllTextNodesMatchingRegex("^ HeLLo WoRLd! $").empty());
+}
+
 TEST_F(WebNodeTest, CannotFindTextInNonReadonlyTextInputElement) {
   SetInnerHTML(R"HTML(
     <body class="container">
@@ -190,6 +237,19 @@ TEST_F(WebNodeTest, CannotFindTextInNonReadonlyTextInputElement) {
                   .FindTextInElementWith("hello world",
                                          [](const WebString&) { return true; })
                   .IsEmpty());
+}
+
+TEST_F(WebNodeTest, CannotFindTextNodesInNonReadonlyTextInputElement) {
+  SetInnerHTML(R"HTML(
+    <body class="container">
+      <input type="text" value=" HeLLo WoRLd! ">
+    </body>
+  )HTML");
+  WebElement element = Root().QuerySelector(AtomicString(".container"));
+
+  EXPECT_FALSE(element.IsNull());
+  EXPECT_TRUE(
+      element.FindAllTextNodesMatchingRegex("^ HeLLo WoRLd! $").empty());
 }
 
 // Tests that AddEventListener() registers and deregisters a listener.

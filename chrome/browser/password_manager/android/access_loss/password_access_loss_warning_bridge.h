@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ACCESS_LOSS_PASSWORD_ACCESS_LOSS_WARNING_BRIDGE_H_
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ACCESS_LOSS_PASSWORD_ACCESS_LOSS_WARNING_BRIDGE_H_
 
+#include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/prefs/pref_service.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -23,10 +25,13 @@ class PasswordAccessLossWarningBridge {
   // BottomSheetcontroller suppresses the sheet. Content is suppressed if higher
   // priority content is in the sheet, the sheet is expanded beyond the peeking
   // state, or the browser is in a mode that does not support showing the sheet.
-  virtual void MaybeShowAccessLossNoticeSheet(PrefService* pref_service,
-                                              const gfx::NativeWindow window,
-                                              Profile* profile,
-                                              bool called_at_startup) = 0;
+  virtual void MaybeShowAccessLossNoticeSheet(
+      PrefService* pref_service,
+      const gfx::NativeWindow window,
+      Profile* profile,
+      bool called_at_startup,
+      password_manager_android_util::PasswordAccessLossWarningTriggers
+          trigger_source) = 0;
 };
 
 #endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_ACCESS_LOSS_PASSWORD_ACCESS_LOSS_WARNING_BRIDGE_H_

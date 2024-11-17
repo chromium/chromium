@@ -4,12 +4,21 @@
 
 #include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 
+#include "base/i18n/time_formatting.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/hats/hats_service.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/url_constants.h"
+#include "components/history_clusters/core/history_clusters_util.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/history_embeddings_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -37,18 +46,22 @@ OptimizationFeedbackFromMojoUserFeedback(
 history_embeddings::mojom::AnswerStatus AnswererAnswerStatusToMojoAnswerStatus(
     history_embeddings::ComputeAnswerStatus status) {
   switch (status) {
-    case history_embeddings::ComputeAnswerStatus::UNSPECIFIED:
+    case history_embeddings::ComputeAnswerStatus::kUnspecified:
       return history_embeddings::mojom::AnswerStatus::kUnspecified;
-    case history_embeddings::ComputeAnswerStatus::SUCCESS:
+    case history_embeddings::ComputeAnswerStatus::kSuccess:
       return history_embeddings::mojom::AnswerStatus::kSuccess;
-    case history_embeddings::ComputeAnswerStatus::UNANSWERABLE:
+    case history_embeddings::ComputeAnswerStatus::kUnanswerable:
       return history_embeddings::mojom::AnswerStatus::kUnanswerable;
-    case history_embeddings::ComputeAnswerStatus::MODEL_UNAVAILABLE:
+    case history_embeddings::ComputeAnswerStatus::kModelUnavailable:
       return history_embeddings::mojom::AnswerStatus::kModelUnavailable;
-    case history_embeddings::ComputeAnswerStatus::EXECUTION_FAILURE:
+    case history_embeddings::ComputeAnswerStatus::kExecutionFailure:
       return history_embeddings::mojom::AnswerStatus::kExecutionFailure;
-    case history_embeddings::ComputeAnswerStatus::EXECUTION_CANCELLED:
+    case history_embeddings::ComputeAnswerStatus::kExecutionCancelled:
       return history_embeddings::mojom::AnswerStatus::kExecutionCanceled;
+    case history_embeddings::ComputeAnswerStatus::kLoading:
+      return history_embeddings::mojom::AnswerStatus::kLoading;
+    case history_embeddings::ComputeAnswerStatus::kFiltered:
+      return history_embeddings::mojom::AnswerStatus::kFiltered;
   }
 }
 
@@ -58,8 +71,10 @@ HistoryEmbeddingsHandler::HistoryEmbeddingsHandler(
     mojo::PendingReceiver<history_embeddings::mojom::PageHandler>
         pending_page_handler,
     base::WeakPtr<Profile> profile,
-    content::WebUI* web_ui)
+    content::WebUI* web_ui,
+    bool for_side_panel)
     : page_handler_(this, std::move(pending_page_handler)),
+      for_side_panel_(for_side_panel),
       profile_(std::move(profile)),
       web_ui_(web_ui) {}
 
@@ -83,9 +98,11 @@ void HistoryEmbeddingsHandler::Search(
   CHECK(service);
   last_result_ = service->Search(
       &last_result_, query->query, query->time_range_start,
-      history_embeddings::kSearchResultItemCount.Get(),
+      history_embeddings::GetFeatureParameters().search_result_item_count,
       base::BindRepeating(&HistoryEmbeddingsHandler::OnReceivedSearchResult,
                           weak_ptr_factory_.GetWeakPtr()));
+  VLOG(3) << "HistoryEmbeddingsHandler::Search started for '"
+          << last_result_.query << "'";
 }
 
 void HistoryEmbeddingsHandler::PublishResultToPageForTesting(
@@ -102,7 +119,7 @@ void HistoryEmbeddingsHandler::PublishResultToPage(
   mojom_search_result->query = native_search_result.query;
 
   bool has_answer = false;
-  if (history_embeddings::kEnableAnswers.Get()) {
+  if (history_embeddings::IsHistoryEmbeddingsAnswersEnabled()) {
     mojom_search_result->answer_status = AnswererAnswerStatusToMojoAnswerStatus(
         native_search_result.answerer_result.status);
     if (!native_search_result.AnswerText().empty()) {
@@ -120,16 +137,14 @@ void HistoryEmbeddingsHandler::PublishResultToPage(
     item->relative_time = base::UTF16ToUTF8(ui::TimeFormat::Simple(
         ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
         base::Time::Now() - scored_url_row.row.last_visit()));
+    item->short_date_time = base::UTF16ToUTF8(
+        base::TimeFormatShortDate(scored_url_row.row.last_visit()));
     item->last_url_visit_timestamp =
         scored_url_row.row.last_visit().InMillisecondsFSinceUnixEpoch();
-
-    url_formatter::FormatUrlTypes format_types =
-        url_formatter::kFormatUrlOmitDefaults |
-        url_formatter::kFormatUrlOmitHTTPS |
-        url_formatter::kFormatUrlOmitTrivialSubdomains;
-    item->url_for_display = base::UTF16ToUTF8(url_formatter::FormatUrl(
-        scored_url_row.row.url(), format_types, base::UnescapeRule::SPACES,
-        nullptr, nullptr, nullptr));
+    item->url_for_display =
+        base::UTF16ToUTF8(history_clusters::ComputeURLForDisplay(
+            scored_url_row.row.url(), history_embeddings::GetFeatureParameters()
+                                          .trim_after_host_in_results));
     if (has_answer && i == native_search_result.AnswerIndex()) {
       item->answer_data = history_embeddings::mojom::AnswerData::New();
       item->answer_data->answer_text_directives.assign(
@@ -137,7 +152,7 @@ void HistoryEmbeddingsHandler::PublishResultToPage(
           native_search_result.answerer_result.text_directives.end());
     }
 
-    if (history_embeddings::kShowSourcePassages.Get()) {
+    if (history_embeddings::GetFeatureParameters().show_source_passages) {
       item->source_passage = scored_url_row.GetBestPassage();
     }
 
@@ -150,8 +165,14 @@ void HistoryEmbeddingsHandler::OnReceivedSearchResult(
     history_embeddings::SearchResult native_search_result) {
   // Ignore results for outdated queries; only update results for current query.
   if (!native_search_result.IsContinuationOf(last_result_)) {
+    VLOG(3) << "HistoryEmbeddingsHandler::OnReceivedSearchResult for '"
+            << native_search_result.query
+            << "' (dropped as not a continuation of '" << last_result_.query
+            << "')";
     return;
   }
+  VLOG(3) << "HistoryEmbeddingsHandler::OnReceivedSearchResult for '"
+          << native_search_result.query << "' (published as continuation)";
   last_result_ = std::move(native_search_result);
   PublishResultToPage(last_result_);
 }
@@ -163,25 +184,75 @@ void HistoryEmbeddingsHandler::SendQualityLog(
       HistoryEmbeddingsServiceFactory::GetForProfile(profile_.get());
   std::set<size_t> indices_set(selected_indices.begin(),
                                selected_indices.end());
-  service->SendQualityLog(last_result_, user_feedback_, indices_set,
-                          num_chars_for_query, false);
+  service->SendQualityLog(
+      last_result_, indices_set, num_chars_for_query, user_feedback_,
+      for_side_panel_
+          ? optimization_guide::proto::UiSurface::UI_SURFACE_SIDE_PANEL
+          : optimization_guide::proto::UiSurface::UI_SURFACE_HISTORY_PAGE);
 }
 
 void HistoryEmbeddingsHandler::RecordSearchResultsMetrics(
     bool non_empty_results,
-    bool user_clicked_results) {
-  base::UmaHistogramEnumeration(
-      "History.Embeddings.UserActions",
-      HistoryEmbeddingsUserActions::kEmbeddingsSearch);
-  if (non_empty_results) {
+    bool user_clicked_results,
+    bool answer_shown,
+    bool answer_citation_clicked,
+    bool other_history_result_clicked,
+    uint32_t query_word_count) {
+  auto record_histograms = [&](const std::string& histogram_name) {
     base::UmaHistogramEnumeration(
-        "History.Embeddings.UserActions",
-        HistoryEmbeddingsUserActions::kEmbeddingsNonEmptyResultsShown);
+        histogram_name, HistoryEmbeddingsUserActions::kEmbeddingsSearch);
+    if (non_empty_results) {
+      base::UmaHistogramEnumeration(
+          histogram_name,
+          HistoryEmbeddingsUserActions::kEmbeddingsNonEmptyResultsShown);
+    }
+    if (user_clicked_results) {
+      base::UmaHistogramEnumeration(
+          histogram_name,
+          HistoryEmbeddingsUserActions::kEmbeddingsResultClicked);
+    }
+    if (answer_shown) {
+      base::UmaHistogramEnumeration(histogram_name,
+                                    HistoryEmbeddingsUserActions::kAnswerShown);
+    }
+    if (answer_citation_clicked) {
+      base::UmaHistogramEnumeration(
+          histogram_name, HistoryEmbeddingsUserActions::kAnswerCitationClicked);
+    }
+    if (other_history_result_clicked) {
+      base::UmaHistogramEnumeration(
+          histogram_name,
+          HistoryEmbeddingsUserActions::kOtherHistoryResultClicked);
+    }
+  };
+
+  // Unsliced original user actions histogram.
+  record_histograms("History.Embeddings.UserActions");
+
+  // Sliced versions for side panel and history page.
+  if (for_side_panel_) {
+    record_histograms("History.Embeddings.UserActions.SidePanel");
+  } else {
+    record_histograms("History.Embeddings.UserActions.HistoryPage");
   }
-  if (user_clicked_results) {
-    base::UmaHistogramEnumeration(
-        "History.Embeddings.UserActions",
-        HistoryEmbeddingsUserActions::kEmbeddingsResultClicked);
+
+  if (answer_shown &&
+      base::FeatureList::IsEnabled(
+          features::kHappinessTrackingSurveysForHistoryEmbeddings)) {
+    HatsService* hats_service = HatsServiceFactory::GetForProfile(
+        profile_.get(), /*create_if_necessary=*/true);
+    CHECK(hats_service);
+
+    base::TimeDelta delay_time =
+        features::kHappinessTrackingSurveysForHistoryEmbeddingsDelayTime.Get();
+    hats_service->LaunchDelayedSurvey(
+        kHatsSurveyTriggerHistoryEmbeddings, delay_time.InMilliseconds(),
+        {{"non empty results", non_empty_results},
+         {"best matches result clicked", user_clicked_results},
+         {"result clicked", other_history_result_clicked},
+         {"answer shown", answer_shown},
+         {"answer citation clicked", answer_citation_clicked}},
+        {{"query word count", base::NumberToString(query_word_count)}});
   }
 }
 
@@ -204,6 +275,15 @@ void HistoryEmbeddingsHandler::SetUserFeedback(
         /*extra_diagnostics=*/std::string(),
         /*autofill_metadata=*/base::Value::Dict(), base::Value::Dict());
   }
+}
+
+void HistoryEmbeddingsHandler::OpenSettingsPage() {
+  NavigateParams navigate_params(profile_.get(),
+                                 GURL(chrome::kHistorySearchSettingURL),
+                                 ui::PAGE_TRANSITION_LINK);
+  navigate_params.window_action = NavigateParams::WindowAction::SHOW_WINDOW;
+  navigate_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  Navigate(&navigate_params);
 }
 
 void HistoryEmbeddingsHandler::MaybeShowFeaturePromo() {

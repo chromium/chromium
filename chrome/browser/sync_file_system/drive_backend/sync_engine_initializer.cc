@@ -171,11 +171,7 @@ void SyncEngineInitializer::DidFindSyncRoot(
   }
 
   if (!file_list) {
-    NOTREACHED_IN_MIGRATION();
-    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
-              "[Initialize] Got invalid resource list.");
-    SyncTaskManager::NotifyTaskDone(std::move(token), SYNC_STATUS_FAILED);
-    return;
+    NOTREACHED();
   }
 
   std::vector<std::unique_ptr<google_apis::FileResource>>* items =
@@ -304,11 +300,7 @@ void SyncEngineInitializer::DidListAppRootFolders(
   }
 
   if (!file_list) {
-    NOTREACHED_IN_MIGRATION();
-    util::Log(logging::LOGGING_VERBOSE, FROM_HERE,
-              "[Initialize] Got invalid initial app-root list.");
-    SyncTaskManager::NotifyTaskDone(std::move(token), SYNC_STATUS_FAILED);
-    return;
+    NOTREACHED();
   }
 
   std::vector<std::unique_ptr<google_apis::FileResource>>* new_entries =

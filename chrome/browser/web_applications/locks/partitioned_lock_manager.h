@@ -47,8 +47,6 @@ struct PartitionedLockHolder : public base::SupportsUserData {
     return weak_factory.GetWeakPtr();
   }
 
-  void AbortLockRequest() { weak_factory.InvalidateWeakPtrs(); }
-
   std::vector<PartitionedLock> locks;
   base::WeakPtrFactory<PartitionedLockHolder> weak_factory{this};
 };
@@ -89,13 +87,14 @@ class PartitionedLockManager {
     LockType type;
   };
   // Acquires locks for the given requests. Lock partitions are treated as
-  // completely independent domains.
+  // completely independent domains. The request is aborted and the `callback`
+  // is not called if `locks_holder` is destroyed.
   // The `callback` is guaranteed to be called asynchronously when all locks are
   // granted. Locks are requested and granted in order according to the sorting
   // order of `lock_id` in the request, where requesting the next lock does not
   // occur until the previous lock is granted.
   void AcquireLocks(base::flat_set<PartitionedLockRequest> lock_requests,
-                    base::WeakPtr<PartitionedLockHolder> locks_holder,
+                    PartitionedLockHolder& locks_holder,
                     LocksAcquiredCallback callback,
                     const base::Location& location = FROM_HERE);
 

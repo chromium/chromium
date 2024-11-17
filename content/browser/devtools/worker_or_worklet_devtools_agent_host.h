@@ -37,6 +37,8 @@ class WorkerOrWorkletDevToolsAgentHost : public DevToolsAgentHostImpl {
       mojo::PendingRemote<blink::mojom::DevToolsAgent> agent_remote,
       mojo::PendingReceiver<blink::mojom::DevToolsAgentHost> host_receiver);
 
+  // This is only ever used for the DedicatedWorkerToolsAgentHost (the subclass)
+  // and it should be moved to the subclass.
   void ChildWorkerCreated(
       const GURL& url,
       const std::string& name,
@@ -57,9 +59,9 @@ class WorkerOrWorkletDevToolsAgentHost : public DevToolsAgentHostImpl {
 
   ~WorkerOrWorkletDevToolsAgentHost() override;
 
- private:
   void Disconnected();
 
+ private:
   const base::UnguessableToken devtools_worker_token_;
   const std::string parent_id_;
   const int process_id_;

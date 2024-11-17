@@ -52,8 +52,7 @@ public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, Module
                         profile,
                         mTabModelSelector,
                         moduleDelegate,
-                        mModalDialogManagerSupplier,
-                        this::showProactiveSurvey);
+                        mModalDialogManagerSupplier);
         onModuleBuiltCallback.onResult(coordinator);
         return true;
     }
@@ -75,15 +74,10 @@ public class SafetyHubMagicStackBuilder implements ModuleProviderBuilder, Module
         if (!mProfileSupplier.hasValue()) return false;
 
         if (!ChromeFeatureList.sSafetyHub.isEnabled()) {
-            SafetyHubHatsBridge.getForProfile(getRegularProfile())
+            SafetyHubHatsHelper.getForProfile(getRegularProfile())
                     .triggerControlHatsSurvey(mTabModelSelector);
         }
         return ChromeFeatureList.sSafetyHub.isEnabled();
-    }
-
-    private void showProactiveSurvey(String moduleType) {
-        SafetyHubHatsBridge.getForProfile(getRegularProfile())
-                .triggerProactiveHatsSurvey(mTabModelSelector, moduleType);
     }
 
     private Profile getRegularProfile() {

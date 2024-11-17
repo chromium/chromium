@@ -1,0 +1,13 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++button name='anchor1'
+++++++++staticText name='anchor1'
+++++++++++inlineTextBox name='anchor1'
+++++++button name='anchor2' detailsFrom=cssAnchor detailsIds=paragraph
+++++++++staticText name='anchor2'
+++++++++++inlineTextBox name='anchor2'
+++++++genericContainer
+++++++++paragraph
+++++++++++staticText name='target'
+++++++++++++inlineTextBox name='target'

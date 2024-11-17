@@ -19,6 +19,8 @@ TextClassifierModelService::TextClassifierModelService(
   opt_guide_service_->AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OPTIMIZATION_TARGET_TEXT_CLASSIFIER,
       /*model_metadata=*/std::nullopt, this);
+  opt_guide_service_->RegisterOptimizationTypes(
+      {optimization_guide::proto::TEXT_CLASSIFIER_ENTITY_DETECTION});
 }
 
 TextClassifierModelService::~TextClassifierModelService() {

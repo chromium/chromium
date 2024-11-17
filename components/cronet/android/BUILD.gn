@@ -24,6 +24,7 @@ import("//url/features.gni")
 
 _templates_dir = "$target_gen_dir/templates"
 _gn_path = "//buildtools/linux64/gn"
+_ninja_path = "//third_party/ninja/ninja"
 
 assert(!is_component_build)
 assert(is_cronet_build)
@@ -232,9 +233,10 @@ source_set("cronet_static") {
 }
 
 config("hide_all_but_jni_onload_and_cronet") {
-  ldflags = [ "-Wl,--version-script=" +
-              rebase_path("android_only_jni_onload_and_cronet_exports.lst",
-                          root_out_dir) ]
+  _version_script = "android_only_jni_onload_and_cronet_exports.lst"
+  inputs = [ _version_script ]
+  ldflags =
+      [ "-Wl,--version-script=" + rebase_path(_version_script, root_out_dir) ]
 }
 
 _cronet_shared_lib_name = "cronet.$chrome_version_full"
@@ -260,7 +262,10 @@ sizes_test("cronet_sizes") {
   ]
 }
 
-cronet_shared_java_deps_to_package = [ ":cronet_stats_log_java" ]
+cronet_shared_java_deps_to_package = [
+  ":cronet_stats_log_java",
+  "//base:metrics_ScopedSysTraceEvent_java",
+]
 
 # Common Cronet code that is used in Cronet API *and* implementations.
 #
@@ -334,6 +339,7 @@ android_library("cronet_api_java") {
   deps = [
     ":api_version",
     ":cronet_shared_java",
+    "//base:metrics_ScopedSysTraceEvent_java",
     "//third_party/androidx:androidx_annotation_annotation_experimental_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
@@ -430,6 +436,7 @@ android_library("cronet_impl_java_util_java") {
   deps = [
     ":cronet_api_java",
     ":cronet_impl_common_java",
+    "//base:metrics_ScopedSysTraceEvent_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
@@ -449,6 +456,7 @@ android_library("cronet_impl_platform_java") {
     ":cronet_impl_common_java",
     ":cronet_impl_java_util_java",
     ":cronet_shared_java",
+    "//base:metrics_ScopedSysTraceEvent_java",
     "//net/android:net_thread_stats_uid_java",
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -580,6 +588,7 @@ android_library("httpengine_native_provider_java") {
     ":cronet_api_java",
     ":cronet_impl_common_java",
     ":cronet_shared_java",
+    "//base:metrics_ScopedSysTraceEvent_java",
     "//build/android:build_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -786,7 +795,14 @@ java_prebuilt("package_impl_native_java") {
     "//third_party/androidx:androidx_drawerlayout_drawerlayout_java",
     "//third_party/androidx:androidx_interpolator_interpolator_java",
   ]
-  jar_excluded_patterns = [ "androidx/*/R*" ]
+  jar_excluded_patterns = [
+    "androidx/*/R*",
+
+    # This class is already in package_shared_java, which is always shipped as a
+    # required dependency of this jar. Including it in this jar would cause
+    # duplicate class errors.
+    "org/chromium/base/metrics/ScopedSysTraceEvent.class",
+  ]
 }
 
 android_java_prebuilt("package_impl_util_java") {
@@ -1396,7 +1412,7 @@ cronet_instrumentation_test_apk("cronet_test_instrumentation_apk") {
   lint_baseline_file = "lint-baseline.xml"
   lint_suppressions_file = "lint-suppressions.xml"
 
-  lint_min_sdk_version = 21
+  lint_min_sdk_version = 23
 
   apk_name = "CronetTestInstrumentation"
   android_manifest = "test/javatests/AndroidManifest.xml"
@@ -1971,28 +1987,42 @@ action("api_static_checks") {
   ]
 }
 
+GN2BP_SOURCES = [
+  "//components/cronet/gn2bp/gen_android_bp.py",
+  "//components/cronet/gn2bp/generate_build_scripts_output.py",
+  "//components/cronet/gn2bp/gn_utils.py",
+  "//tools/mb/mb.py",
+  "$_gn_path",
+  "$_ninja_path",
+]
+
+LICENSE_SOURCES = [
+  "//components/cronet/license/constants.py",
+  "//components/cronet/license/create_android_metadata_license.py",
+  "//components/cronet/license/license_type.py",
+  "//components/cronet/license/license_utils.py",
+  "//components/cronet/license/mapper.py",
+  "//components/cronet/license/metadata.py",
+  "//components/cronet/license/metadata_dictionary.py",
+]
+
+script_test("generate_build_script_test") {
+  script = "//testing/scripts/run_isolated_script_test.py"
+  data = [ "//components/cronet/gn2bp/tests/generate_build_scripts_output_test.py" ] + GN2BP_SOURCES
+  args = [ "@WrappedPath(" + rebase_path(
+               "//components/cronet/gn2bp/tests/generate_build_scripts_output_test.py",
+               root_build_dir) + ")" ]
+}
+
 action("gn2bp_check") {
   script = "//components/cronet/gn2bp/validate_gn2bp.py"
-  sources = [
-    "$_gn_path",
-    "//components/cronet/gn2bp/gen_android_bp.py",
-    "//components/cronet/gn2bp/gen_desc_json.sh",
-    "//components/cronet/gn2bp/gn_utils.py",
-    "//components/cronet/gn2bp/update_results.sh",
-    "//components/cronet/license/constants.py",
-    "//components/cronet/license/create_android_metadata_license.py",
-    "//components/cronet/license/license_type.py",
-    "//components/cronet/license/license_utils.py",
-    "//components/cronet/license/mapper.py",
-    "//components/cronet/license/metadata.py",
-    "//components/cronet/license/metadata_dictionary.py",
-    "//tools/mb/mb.py",
-  ]
+  sources = GN2BP_SOURCES + LICENSE_SOURCES
   outputs = [ "$target_gen_dir/$target_name.stamp" ]
   args = [
     "--stamp",
     rebase_path(outputs[0], root_build_dir),
   ]
+  testonly = true
 }
 
 if (!using_sanitizer) {
@@ -2098,7 +2128,12 @@ group("cronet_package_android") {
 
 # Everything added here will be executed in the CI.
 group("cronet_package_ci") {
-  deps = [ ":gn2bp_check" ]
+  testonly = true
+  deps = [
+    ":generate_build_script_test",
+    ":gn2bp_check",
+    "//components/cronet/gn2bp/tests/test_rlib_crate:rust_test_targets",
+  ]
 }
 
 group("cronet_android_mainline") {

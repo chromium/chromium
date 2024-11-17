@@ -13,7 +13,6 @@
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
-#include "components/javascript_dialogs/app_modal_dialog_manager.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -37,11 +36,6 @@ void ChromeExtensionHostDelegate::OnMainFrameCreatedForBackgroundPage(
       ExtensionSystem::Get(host->browser_context())->extension_service();
   if (service)
     service->DidCreateMainFrameForBackgroundPage(host);
-}
-
-content::JavaScriptDialogManager*
-ChromeExtensionHostDelegate::GetJavaScriptDialogManager() {
-  return javascript_dialogs::AppModalDialogManager::GetInstance();
 }
 
 void ChromeExtensionHostDelegate::CreateTab(

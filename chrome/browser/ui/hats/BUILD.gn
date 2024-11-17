@@ -1,0 +1,170 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_win || is_mac || is_linux || is_chromeos || is_android)
+
+source_set("hats") {
+  sources = [
+    "hats_service.h",
+    "hats_service_factory.h",
+    "survey_config.h",
+  ]
+  public_deps = [
+    "//base",
+    "//build:branding_buildflags",
+    "//chrome/browser/download",
+    "//chrome/browser/profiles:profile",
+    "//components/browsing_data/core",
+    "//components/compose:buildflags",
+    "//components/download/public/common:public",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/password_protection:password_protection_metrics_util",
+    "//content/public/browser",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "hats_helper.h",
+      "hats_service_desktop.h",
+      "trust_safety_sentiment_service.h",
+      "trust_safety_sentiment_service_factory.h",
+    ]
+    public_deps += [ "//chrome/browser/metrics/desktop_session_duration" ]
+  } else {
+    public_deps += [ "//components/messages/android" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "hats_service.cc",
+    "hats_service_factory.cc",
+    "survey_config.cc",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "hats_helper.cc",
+      "hats_service_desktop.cc",
+      "trust_safety_sentiment_service.cc",
+      "trust_safety_sentiment_service_factory.cc",
+    ]
+  }
+  deps = [
+    ":hats",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/content_settings:content_settings_factory",
+    "//chrome/browser/prefs",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/safety_hub",
+    "//chrome/common",
+    "//chrome/common:channel_info",
+    "//chrome/common:chrome_features",
+    "//chrome/common:constants",
+    "//components/autofill/core/common:features",
+    "//components/compose/core/browser:features",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/browser:cookie_settings",
+    "//components/content_settings/core/common",
+    "//components/lens:features",
+    "//components/metrics_services_manager",
+    "//components/password_manager/core/common",
+    "//components/permissions",
+    "//components/permissions:permissions_common",
+    "//components/plus_addresses:features",
+    "//components/plus_addresses:hats_utils",
+    "//components/policy/core/common:common_constants",
+    "//components/prefs",
+    "//components/privacy_sandbox:features",
+    "//components/privacy_sandbox:privacy_sandbox_prefs",
+    "//components/privacy_sandbox:tracking_protection_prefs",
+    "//components/safe_browsing/core/common:features",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/signin/public/base",
+    "//components/unified_consent",
+    "//components/version_info",
+    "//components/version_info:channel",
+    "//net",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+if (!is_android) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "hats_helper_unittest.cc",
+      "survey_config_unittest.cc",
+      "trust_safety_sentiment_service_factory_unittest.cc",
+      "trust_safety_sentiment_service_unittest.cc",
+    ]
+
+    deps = [
+      ":hats",
+      ":test_support",
+      "//base/test:test_support",
+      "//chrome/browser/content_settings:content_settings_factory",
+      "//chrome/browser/extensions",
+      "//chrome/common",
+      "//chrome/common:chrome_features",
+      "//chrome/test:test_support",
+      "//components/content_settings/core/test:test_support",
+      "//components/privacy_sandbox:tracking_protection_prefs",
+      "//components/signin/public/base",
+      "//components/unified_consent",
+      "//content/test:test_support",
+    ]
+  }
+
+  source_set("test_support") {
+    testonly = true
+    sources = [
+      "mock_hats_service.cc",
+      "mock_hats_service.h",
+      "mock_trust_safety_sentiment_service.cc",
+      "mock_trust_safety_sentiment_service.h",
+    ]
+
+    deps = [
+      ":hats",
+      "//testing/gmock",
+    ]
+  }
+
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "hats_service_browsertest.cc",
+      "trust_safety_sentiment_service_browsertest.cc",
+    ]
+
+    deps = [
+      ":hats",
+      ":test_support",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser:browser_process",
+      "//chrome/browser/policy:test_support",
+      "//chrome/browser/prefs",
+      "//chrome/browser/ui/page_info",
+      "//chrome/common",
+      "//chrome/common:chrome_features",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/content_settings/core/common",
+      "//components/metrics_services_manager",
+      "//components/policy:generated",
+      "//components/policy:policy_code_generate",
+      "//components/policy/core/common:common_constants",
+      "//components/version_info",
+      "//content/public/browser",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net:test_support",
+    ]
+  }
+}

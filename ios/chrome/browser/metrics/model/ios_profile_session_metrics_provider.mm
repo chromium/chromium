@@ -20,12 +20,12 @@ class IOSProfileSessionMetricsProvider : public metrics::MetricsProvider {
       metrics::ChromeUserMetricsExtension* /*uma_proto*/) override {
     const bool session_is_active = base::ranges::any_of(
         GetLoadedProfiles(), &IOSProfileSessionMetricsProvider::IsSessionActive,
-        &IOSProfileSessionDurationsServiceFactory::GetForBrowserState);
+        &IOSProfileSessionDurationsServiceFactory::GetForProfile);
     base::UmaHistogramBoolean("Session.IsActive", session_is_active);
   }
 
  private:
-  static std::vector<ChromeBrowserState*> GetLoadedProfiles() {
+  static std::vector<ProfileIOS*> GetLoadedProfiles() {
     return GetApplicationContext()->GetProfileManager()->GetLoadedProfiles();
   }
 

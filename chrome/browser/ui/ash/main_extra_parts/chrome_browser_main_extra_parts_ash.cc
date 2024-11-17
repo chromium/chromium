@@ -8,9 +8,11 @@
 #include <utility>
 
 #include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/window/arc_window_watcher.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/refresh_rate_controller.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/quick_pair/keyed_service/quick_pair_mediator.h"
@@ -20,6 +22,8 @@
 #include "ash/system/video_conference/fake_video_conference_tray_controller.h"
 #include "ash/system/video_conference/video_conference_tray_controller.h"
 #include "ash/webui/annotator/annotator_client_impl.h"
+#include "ash/webui/sanitize_ui/url_constants.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
@@ -28,19 +32,21 @@
 #include "base/scoped_observation.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
-#include "chrome/browser/ash/arc/util/arc_window_watcher.h"
+#include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/auth/active_session_fingerprint_client_impl.h"
 #include "chrome/browser/ash/boca/boca_app_client_impl.h"
 #include "chrome/browser/ash/geolocation/system_geolocation_source.h"
 #include "chrome/browser/ash/growth/campaigns_manager_client_impl.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session.h"
 #include "chrome/browser/ash/input_device_settings/peripherals_app_delegate_impl.h"
+#include "chrome/browser/ash/login/demo_mode/demo_login_controller.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier_factory.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ash/mahi/mahi_manager_impl.h"
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_content_manager_impl.h"
 #include "chrome/browser/ash/mahi/media_app/mahi_media_app_events_proxy_impl.h"
 #include "chrome/browser/ash/net/vpn_list_forwarder.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/display/display_resolution_handler.h"
 #include "chrome/browser/ash/policy/display/display_rotation_default_handler.h"
 #include "chrome/browser/ash/policy/display/display_settings_handler.h"
@@ -55,40 +61,43 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/ash/ash_attestation_cleanup_manager.h"
 #include "chrome/browser/exo_parts.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/accessibility/accessibility_controller_client.h"
 #include "chrome/browser/ui/ash/app_access/app_access_notifier.h"
 #include "chrome/browser/ui/ash/arc/arc_open_url_delegate_impl.h"
 #include "chrome/browser/ui/ash/cast_config/cast_config_controller_media_router.h"
 #include "chrome/browser/ui/ash/desks/desks_client.h"
-#include "chrome/browser/ui/ash/graduation/graduation_manager.h"
+#include "chrome/browser/ui/ash/graduation/graduation_manager_impl.h"
 #include "chrome/browser/ui/ash/in_session_auth/in_session_auth_dialog_client.h"
 #include "chrome/browser/ui/ash/in_session_auth/in_session_auth_token_provider_impl.h"
 #include "chrome/browser/ui/ash/input_method/ime_controller_client_impl.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/ash/login/oobe_dialog_util_impl.h"
+#include "chrome/browser/ui/ash/management_disclosure/management_disclosure_client_impl.h"
 #include "chrome/browser/ui/ash/media_client/media_client_impl.h"
 #include "chrome/browser/ui/ash/network/mobile_data_notifications.h"
 #include "chrome/browser/ui/ash/network/network_connect_delegate.h"
 #include "chrome/browser/ui/ash/network/network_portal_notification_controller.h"
 #include "chrome/browser/ui/ash/new_window/chrome_new_window_client.h"
-#include "chrome/browser/ui/ash/new_window/chrome_new_window_delegate_provider.h"
-#include "chrome/browser/ui/ash/picker/picker_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_app_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_client_impl.h"
+#include "chrome/browser/ui/ash/quick_insert/quick_insert_client_impl.h"
+#include "chrome/browser/ui/ash/read_write_cards/read_write_cards_manager_impl.h"
 #include "chrome/browser/ui/ash/screen_orientation_delegate_chromeos.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 #include "chrome/browser/ui/ash/shell_init/ash_shell_init.h"
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/ash/web_view/ash_web_view_factory_impl.h"
 #include "chrome/browser/ui/ash/wm/tab_cluster_ui_client.h"
-#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_manager_impl.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension.h"
 #include "chrome/browser/ui/views/select_file_dialog_extension/select_file_dialog_extension_factory.h"
 #include "chrome/browser/ui/views/tabs/tab_scrubber_chromeos.h"
-#include "chromeos/ash/components/boca/boca_role_util.h"
+#include "chrome/browser/ui/webui/ash/settings/pref_names.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/resourced/resourced_client.h"
 #include "chromeos/ash/components/game_mode/game_mode_controller.h"
@@ -100,6 +109,8 @@
 #include "chromeos/ash/services/bluetooth_config/in_process_instance.h"
 #include "chromeos/components/mahi/public/cpp/mahi_switches.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
@@ -233,13 +244,9 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   accessibility_controller_client_ =
       std::make_unique<AccessibilityControllerClient>();
 
-  {
-    auto chrome_new_window_client = std::make_unique<ChromeNewWindowClient>();
-    new_window_delegate_provider_ =
-        std::make_unique<ChromeNewWindowDelegateProvider>(
-            std::move(chrome_new_window_client));
-    arc_open_url_delegate_impl_ = std::make_unique<ArcOpenUrlDelegateImpl>();
-  }
+  chrome_new_window_client_ = std::make_unique<ChromeNewWindowClient>();
+
+  arc_open_url_delegate_impl_ = std::make_unique<ArcOpenUrlDelegateImpl>();
 
   ime_controller_client_ = std::make_unique<ImeControllerClientImpl>(
       ash::input_method::InputMethodManager::Get());
@@ -258,7 +265,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   // session controller, because the session controller triggers the loading
   // of users, which itself calls a code path which eventually reaches the
   // WallpaperControllerClientImpl singleton instance via
-  // ash::ChromeUserManagerImpl.
+  // user_manager::UserManagerImpl.
   wallpaper_controller_client_ =
       std::make_unique<WallpaperControllerClientImpl>(
           std::make_unique<wallpaper_handlers::WallpaperFetcherDelegateImpl>());
@@ -273,7 +280,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   system_tray_client_ = std::make_unique<SystemTrayClientImpl>();
   network_connect_delegate_->SetSystemTrayClient(system_tray_client_.get());
 
-  if (ash::features::IsTabClusterUIEnabled()) {
+  if (ash::features::IsCoralFeatureEnabled()) {
     ash::TabClusterUIController* tab_cluster_ui_controller =
         ash::Shell::Get()->tab_cluster_ui_controller();
     DCHECK(tab_cluster_ui_controller);
@@ -302,9 +309,7 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
 
   annotator_client_ = std::make_unique<AnnotatorClientImpl>();
 
-  if (ash::boca_util::IsEnabled()) {
-    boca_client_ = std::make_unique<ash::boca::BocaAppClientImpl>();
-  }
+  boca_client_ = std::make_unique<ash::boca::BocaAppClientImpl>();
 
   projector_app_client_ = std::make_unique<ProjectorAppClientImpl>();
   projector_client_ = std::make_unique<ProjectorClientImpl>();
@@ -363,9 +368,18 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
     return;
   }
 
-  g_browser_process->platform_part()
-      ->InitializeDeviceRestrictionScheduleController();
   login_screen_client_ = std::make_unique<LoginScreenClientImpl>();
+  if (ash::features::IsDemoModeSignInEnabled()) {
+    demo_login_controller_ =
+        std::make_unique<ash::DemoLoginController>(login_screen_client_.get());
+  }
+
+  management_disclosure_client_ =
+      std::make_unique<ManagementDisclosureClientImpl>(
+          g_browser_process->platform_part()->browser_policy_connector_ash(),
+          Profile::FromBrowserContext(
+              ash::BrowserContextHelper::Get()->GetSigninBrowserContext())
+              ->GetOriginalProfile());
   // https://crbug.com/884127 ensuring that LoginScreenClientImpl is initialized
   // before using it InitializeDeviceDisablingManager.
   g_browser_process->platform_part()->InitializeDeviceDisablingManager();
@@ -399,10 +413,9 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 
   ash_web_view_factory_ = std::make_unique<AshWebViewFactoryImpl>();
 
-  if (auto* picker_controller = ash::Shell::Get()->picker_controller()) {
-    picker_client_ = std::make_unique<PickerClientImpl>(
-        picker_controller, user_manager::UserManager::Get());
-  }
+  quick_insert_client_ = std::make_unique<QuickInsertClientImpl>(
+      ash::Shell::Get()->quick_insert_controller(),
+      user_manager::UserManager::Get());
 
   oobe_dialog_util_ = std::make_unique<ash::OobeDialogUtilImpl>();
 
@@ -416,7 +429,7 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
 
   if (ash::features::IsGraduationEnabled()) {
     graduation_manager_ =
-        std::make_unique<ash::graduation::GraduationManager>();
+        std::make_unique<ash::graduation::GraduationManagerImpl>();
   }
 
   if (ash::features::IsWelcomeExperienceEnabled()) {
@@ -443,10 +456,30 @@ void ChromeBrowserMainExtraPartsAsh::PostBrowserStart() {
       mahi_manager_ = std::make_unique<ash::MahiManagerImpl>();
     }
   }
+  CheckIfSanitizeCompleted();
 
   did_post_browser_start_ = true;
   if (post_browser_start_callback_) {
     std::move(post_browser_start_callback_).Run();
+  }
+}
+
+void ChromeBrowserMainExtraPartsAsh::CheckIfSanitizeCompleted() {
+  PrefService* prefs = ProfileManager::GetPrimaryUserProfile()->GetPrefs();
+  if (base::FeatureList::IsEnabled(ash::features::kSanitize) &&
+      prefs->GetBoolean(ash::settings::prefs::kSanitizeCompleted)) {
+    prefs->SetBoolean(ash::settings::prefs::kSanitizeCompleted, false);
+    prefs->CommitPendingWrite();
+
+    // Blocks full restore UI from showing up. `FullRestoreService` object is
+    // not created yet, so we use this static function.
+    ash::full_restore::FullRestoreService::SetLastSessionSanitized();
+
+    ash::SystemAppLaunchParams params;
+    params.url = GURL(base::StrCat({ash::kChromeUISanitizeAppURL, "?done"}));
+    params.launch_source = apps::LaunchSource::kUnknown;
+    ash::LaunchSystemWebAppAsync(ProfileManager::GetPrimaryUserProfile(),
+                                 ash::SystemWebAppType::OS_SANITIZE, params);
   }
 }
 
@@ -462,6 +495,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   // uninstall correctly.
   exo_parts_.reset();
 
+  demo_login_controller_.reset();
   mahi_manager_.reset();
   mobile_data_notifications_.reset();
   chrome_shelf_controller_initializer_.reset();
@@ -484,12 +518,13 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   // Initialized in PostProfileInit (which may not get called in some tests).
   game_mode_controller_.reset();
   oobe_dialog_util_.reset();
-  picker_client_.reset();
+  quick_insert_client_.reset();
   ash_web_view_factory_.reset();
   network_portal_notification_controller_.reset();
   display_settings_handler_.reset();
   media_client_.reset();
   login_screen_client_.reset();
+  management_disclosure_client_.reset();
   graduation_manager_.reset();
 
   ash::privacy_hub_util::SetAppAccessNotifier(nullptr);
@@ -502,7 +537,7 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   ime_controller_client_.reset();
   in_session_auth_dialog_client_.reset();
   arc_open_url_delegate_impl_.reset();
-  new_window_delegate_provider_.reset();
+  chrome_new_window_client_.reset();
   accessibility_controller_client_.reset();
   // AppListClientImpl indirectly holds WebContents for answer card and
   // needs to be released before destroying the profile.
@@ -528,8 +563,8 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
   arc_window_watcher_.reset();
 }
 
-void ChromeBrowserMainExtraPartsAsh::ResetNewWindowDelegateProviderForTest() {
-  new_window_delegate_provider_.reset();
+void ChromeBrowserMainExtraPartsAsh::ResetChromeNewWindowClientForTesting() {
+  chrome_new_window_client_.reset();
 }
 
 class ChromeBrowserMainExtraPartsAsh::UserProfileLoadedObserver

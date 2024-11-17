@@ -146,13 +146,6 @@ gfx::Size FloatingMenuButton::CalculatePreferredSize(
   return gfx::Size(size_, size_);
 }
 
-void FloatingMenuButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
-  if (!GetEnabled()) {
-    return;
-  }
-  views::ImageButton::GetAccessibleNodeData(node_data);
-}
-
 void FloatingMenuButton::UpdateImage() {
   DCHECK(icon_);
   const ui::ColorId icon_color_id =

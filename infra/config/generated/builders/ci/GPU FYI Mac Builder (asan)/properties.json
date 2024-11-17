@@ -117,7 +117,8 @@
           "builder": "gpu-fyi-try-mac-intel-asan",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Mac Builder (asan)/targets"
     }
   },
   "$build/reclient": {

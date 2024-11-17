@@ -81,6 +81,7 @@ class MockSessionController : public ash::SessionController {
   MOCK_METHOD(bool, IsScreenLocked, (), (const, override));
   MOCK_METHOD(std::optional<int>, GetExistingUsersCount, (), (const, override));
   MOCK_METHOD(void, NotifyFirstSessionReady, (), (override));
+  MOCK_METHOD(void, NotifyUserToBeRemoved, (const AccountId&), (override));
 };
 
 }  // namespace ash

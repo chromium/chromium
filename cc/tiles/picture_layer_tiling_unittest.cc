@@ -1360,7 +1360,7 @@ TEST_F(PictureLayerTilingIteratorTest,
         EXPECT_EQ(gfx::RectF(1.125f, 0.125f, 156, 3), texture_rect);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   EXPECT_EQ(3, i);
@@ -1562,13 +1562,12 @@ TEST_F(PictureLayerTilingIteratorTest,
   gfx::Rect skewport_rect(0, 0, 200, 200);
   gfx::Rect soon_border_rect(0, 0, 400, 280);
   gfx::Rect eventually_rect(0, 0, 400, 400);
-  tiling_->ComputeTilePriorityRects(
-      gfx::Rect(visible_rect),      // visible rect
-      gfx::Rect(skewport_rect),     // skewport
-      gfx::Rect(soon_border_rect),  // soon border rect
-      gfx::Rect(eventually_rect),   // eventually rect
-      1.f,                          // current contents scale
-      Occlusion());
+  tiling_->ComputeTilePriorityRects(visible_rect,      // visible rect
+                                    skewport_rect,     // skewport
+                                    soon_border_rect,  // soon border rect
+                                    eventually_rect,   // eventually rect
+                                    1.f,               // current contents scale
+                                    Occlusion());
   if (features::IsCCSlimmingEnabled()) {
     EXPECT_EQ(soon_border_rect, tiling_->live_tiles_rect());
   } else {
@@ -1588,6 +1587,43 @@ TEST_F(PictureLayerTilingIteratorTest,
         }
       } else {
         EXPECT_TRUE(tile);
+      }
+    }
+  }
+
+  visible_rect = gfx::Rect(0, 0, 0, 0);
+  skewport_rect = gfx::Rect(0, 0, 0, 0);
+  soon_border_rect = gfx::Rect(0, 0, 0, 0);
+  tiling_->ComputeTilePriorityRects(visible_rect,      // visible rect
+                                    skewport_rect,     // skewport
+                                    soon_border_rect,  // soon border rect
+                                    eventually_rect,   // eventually rect
+                                    1.f,               // current contents scale
+                                    Occlusion());
+  if (features::IsCCSlimmingEnabled()) {
+    EXPECT_EQ(gfx::Rect(0, 0, 0, 0), tiling_->live_tiles_rect());
+  } else {
+    EXPECT_EQ(eventually_rect, tiling_->live_tiles_rect());
+  }
+
+  Region layer_invalidation(gfx::Rect(350, 250, 10, 10));
+  tiling_->RemoveTilesInRegion(layer_invalidation, false);
+  // Verify the invalidated tile is ejected.
+  for (int i = 0; i < 4; ++i) {
+    for (int j = 0; j < 4; ++j) {
+      Tile* tile = tiling_->TileAt(i, j);
+      if (features::IsCCSlimmingEnabled()) {
+        if (j == 3 || (i == 3 && j == 2)) {
+          EXPECT_FALSE(tile);
+        } else {
+          EXPECT_TRUE(tile);
+        }
+      } else {
+        if (i == 3 && j == 2) {
+          EXPECT_FALSE(tile);
+        } else {
+          EXPECT_TRUE(tile);
+        }
       }
     }
   }

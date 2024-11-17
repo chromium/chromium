@@ -33,6 +33,8 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog.h"
 #include "chrome/browser/ui/tab_modal_confirm_dialog_delegate.h"
+#include "chrome/browser/ui/tabs/public/tab_interface.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -314,12 +316,14 @@ void SearchTabHelper::CloseNTPCustomizeChromeFeaturePromo() {
       GURL(chrome::kChromeUINewTabPageURL)) {
     return;
   }
-  Browser* const browser = chrome::FindBrowserWithTab(web_contents());
-  if (browser && browser->window() &&
-      browser->tab_strip_model()->GetActiveWebContents() == web_contents()) {
-    browser->window()->CloseFeaturePromo(
-        customize_chrome_feature,
-        user_education::EndFeaturePromoReason::kAbortPromo);
+  auto* const tab = tabs::TabInterface::MaybeGetFromContents(web_contents());
+  if (!tab || !tab->IsInForeground()) {
+    return;
+  }
+  if (auto* const interface =
+          BrowserUserEducationInterface::MaybeGetForWebContentsInTab(
+              web_contents())) {
+    interface->AbortFeaturePromo(customize_chrome_feature);
   }
 }
 

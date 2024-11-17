@@ -26,14 +26,6 @@ bool ActionHandlersInfo::HasActionHandler(
   return info && info->action_handlers.count(action_type) > 0;
 }
 
-bool ActionHandlersInfo::HasLockScreenActionHandler(
-    const Extension* extension,
-    api::app_runtime::ActionType action_type) {
-  ActionHandlersInfo* info = static_cast<ActionHandlersInfo*>(
-      extension->GetManifestData(keys::kActionHandlers));
-  return info && info->lock_screen_action_handlers.count(action_type) > 0;
-}
-
 ActionHandlersInfo::ActionHandlersInfo() = default;
 
 ActionHandlersInfo::~ActionHandlersInfo() = default;
@@ -52,7 +44,6 @@ bool ActionHandlersHandler::Parse(Extension* extension, std::u16string* error) {
   auto info = std::make_unique<ActionHandlersInfo>();
   for (const base::Value& wrapped_value : entries->GetList()) {
     std::string value;
-    bool enabled_on_lock_screen = false;
     if (wrapped_value.is_dict()) {
       const base::Value::Dict& wrapped_dict = wrapped_value.GetDict();
       const std::string* action =
@@ -62,11 +53,6 @@ bool ActionHandlersHandler::Parse(Extension* extension, std::u16string* error) {
         return false;
       }
       value = *action;
-      std::optional<bool> enabled =
-          wrapped_dict.FindBool(keys::kActionHandlerEnabledOnLockScreenKey);
-      if (enabled) {
-        enabled_on_lock_screen = *enabled;
-      }
     } else if (wrapped_value.is_string()) {
       value = wrapped_value.GetString();
     } else {
@@ -87,8 +73,6 @@ bool ActionHandlersHandler::Parse(Extension* extension, std::u16string* error) {
       return false;
     }
     info->action_handlers.insert(action_type);
-    if (enabled_on_lock_screen)
-      info->lock_screen_action_handlers.insert(action_type);
   }
 
   extension->SetManifestData(keys::kActionHandlers, std::move(info));

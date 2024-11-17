@@ -25,6 +25,7 @@ class OmniboxClient;
                                    browser:(Browser*)browser
                              omniboxClient:
                                  (std::unique_ptr<OmniboxClient>)client
+                             isLensOverlay:(BOOL)isLensOverlay
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController

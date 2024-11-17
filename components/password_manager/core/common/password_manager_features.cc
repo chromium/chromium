@@ -57,7 +57,7 @@ BASE_FEATURE(kPasswordSuggestionBottomSheetV2,
 // local_passwords_migration_warning_util::ShouldShowWarning.
 BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsMigrationWarning,
              "UnifiedPasswordManagerLocalPasswordsMigrationWarning",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

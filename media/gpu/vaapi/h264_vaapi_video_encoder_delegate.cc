@@ -69,6 +69,9 @@ constexpr int kChromaFormatIDC = 1;
 constexpr uint8_t kMinSupportedH264TemporalLayers = 2;
 constexpr uint8_t kMaxSupportedH264TemporalLayers = 3;
 
+// Maximum number of temporal layers supported by software bitrate controller.
+constexpr uint8_t kMaxSupportedH264TemporalLayersBySWBRC = 2;
+
 template <typename VAEncMiscParam>
 VAEncMiscParam& AllocateMiscParameterBuffer(
     std::vector<uint8_t>& misc_buffer,
@@ -482,7 +485,11 @@ std::vector<gfx::Size> H264VaapiVideoEncoderDelegate::GetSVCLayerResolutions() {
 
 bool H264VaapiVideoEncoderDelegate::UseSoftwareRateController(
     const VideoEncodeAccelerator::Config& config) {
-  // TODO(b/362266573): Use the software bitrate controller for L1T2.
+  // Software bitrate controller is not supported on AMD backend,
+  // crbug.com/365106092.
+  const bool is_sw_bitrate_controller_supported =
+      VaapiWrapper::GetImplementationType() != VAImplementation::kMesaGallium;
+
   uint8_t num_temporal_layers = 1;
   if (config.HasTemporalLayer()) {
     DCHECK(!config.spatial_layers.empty());
@@ -494,7 +501,12 @@ bool H264VaapiVideoEncoderDelegate::UseSoftwareRateController(
 #else
       false;
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  return num_temporal_layers == 1 && is_sw_bitrate_controller_enabled;
+  const bool is_constant_bitrate_mode =
+      config.bitrate.mode() == Bitrate::Mode::kConstant;
+
+  return is_sw_bitrate_controller_supported &&
+         num_temporal_layers <= kMaxSupportedH264TemporalLayersBySWBRC &&
+         is_sw_bitrate_controller_enabled && is_constant_bitrate_mode;
 }
 
 BitstreamBufferMetadata H264VaapiVideoEncoderDelegate::GetMetadata(
@@ -765,8 +777,7 @@ void H264VaapiVideoEncoderDelegate::UpdateSPS() {
       current_sps_.cbr_flag[0] = false;
       break;
     case Bitrate::Mode::kExternal:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   current_sps_.initial_cpb_removal_delay_length_minus_1 =
       H264SPS::kDefaultInitialCPBRemovalDelayLength - 1;

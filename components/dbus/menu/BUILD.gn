@@ -22,6 +22,7 @@ component("menu") {
     "//skia",
     "//ui/base",
     "//ui/gfx",
+    "//ui/menus",
   ]
   if (use_ozone) {
     deps += [ "//ui/ozone" ]

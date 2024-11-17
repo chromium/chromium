@@ -84,9 +84,6 @@ class CSSDefaultStyleSheets final
 
   StyleSheetContents* DefaultStyleSheet() { return default_style_sheet_.Get(); }
   StyleSheetContents* QuirksStyleSheet() { return quirks_style_sheet_.Get(); }
-  StyleSheetContents* SelectListStyleSheet() {
-    return selectlist_style_sheet_.Get();
-  }
   StyleSheetContents* CustomizableSelectStyleSheet() {
     return customizable_select_style_sheet_.Get();
   }
@@ -178,7 +175,6 @@ class CSSDefaultStyleSheets final
   Member<StyleSheetContents> permission_element_style_sheet_;
   Member<StyleSheetContents> text_track_style_sheet_;
   Member<StyleSheetContents> fullscreen_style_sheet_;
-  Member<StyleSheetContents> selectlist_style_sheet_;
   Member<StyleSheetContents> customizable_select_style_sheet_;
   Member<StyleSheetContents> customizable_select_forced_colors_style_sheet_;
   Member<StyleSheetContents> marker_style_sheet_;

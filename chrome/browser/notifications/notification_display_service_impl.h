@@ -63,7 +63,8 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
       const std::string& notification_id,
       const std::optional<int>& action_index,
       const std::optional<std::u16string>& reply,
-      const std::optional<bool>& by_user);
+      const std::optional<bool>& by_user,
+      base::OnceClosure on_completed_cb);
 
   // Registers an implementation object to handle notification operations
   // for |notification_type|.
@@ -95,6 +96,7 @@ class NotificationDisplayServiceImpl : public NotificationDisplayService {
                                     const std::optional<int>& action_index,
                                     const std::optional<std::u16string>& reply,
                                     const std::optional<bool>& by_user,
+                                    base::OnceClosure on_completed_cb,
                                     Profile* profile);
 
   // Sets the list of |blockers| to be used by the |notification_queue_|. Only

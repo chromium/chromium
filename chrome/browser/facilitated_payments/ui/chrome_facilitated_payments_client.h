@@ -5,10 +5,18 @@
 #ifndef CHROME_BROWSER_FACILITATED_PAYMENTS_UI_CHROME_FACILITATED_PAYMENTS_CLIENT_H_
 #define CHROME_BROWSER_FACILITATED_PAYMENTS_UI_CHROME_FACILITATED_PAYMENTS_CLIENT_H_
 
+#include "base/containers/span.h"
+#include "base/functional/callback_forward.h"
 #include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+#include "components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+namespace autofill {
+class BankAccount;
+class Ewallet;
+}  // namespace autofill
 
 namespace content {
 class WebContents;
@@ -58,13 +66,20 @@ class ChromeFacilitatedPaymentsClient
   // This returns std::nullopt if the `Profile` associated is null.
   std::optional<CoreAccountInfo> GetCoreAccountInfo() override;
   bool IsInLandscapeMode() override;
-  bool ShowPixPaymentPrompt(
+  void ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
+      base::OnceCallback<void(bool, int64_t)> on_user_decision_callback)
+      override;
+  void ShowEwalletPaymentPrompt(
+      base::span<const autofill::Ewallet> ewallet_suggestions,
       base::OnceCallback<void(bool, int64_t)> on_user_decision_callback)
       override;
   void ShowProgressScreen() override;
   void ShowErrorScreen() override;
   void DismissPrompt() override;
+  void SetUiEventListener(
+      base::RepeatingCallback<void(payments::facilitated::UiEvent)>
+          ui_event_listener) override;
 
   payments::facilitated::ContentFacilitatedPaymentsDriverFactory
       driver_factory_;

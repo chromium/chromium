@@ -376,8 +376,7 @@ bool GetResponseInfoForEntry(disk_cache::Entry* entry,
     bytes_read += rv;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::string GetMD5ForResponseBody(disk_cache::Entry* entry) {
@@ -412,8 +411,7 @@ std::string GetMD5ForResponseBody(disk_cache::Entry* entry) {
     base::MD5Update(&ctx, std::string_view(buffer->data(), rv));
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 void PersistResponseInfo(CommandMarshal* command_marshal,

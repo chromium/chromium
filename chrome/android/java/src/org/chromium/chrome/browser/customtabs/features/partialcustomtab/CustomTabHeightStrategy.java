@@ -21,6 +21,8 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.widget.TouchEventProvider;
 
+import java.util.function.BooleanSupplier;
+
 /** The default strategy for setting the height of the custom tab. */
 public class CustomTabHeightStrategy implements FindToolbarObserver {
     /** A callback to be called once the Custom Tab has been resized. */
@@ -45,9 +47,9 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
             BrowserServicesIntentDataProvider intentData,
             Supplier<TouchEventProvider> touchEventProvider,
             Supplier<Tab> tab,
-            CustomTabsConnection connection,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             FullscreenManager fullscreenManager,
+            BooleanSupplier isEnteringPip,
             boolean isTablet) {
         if (!intentData.isPartialCustomTab()) {
             return new CustomTabHeightStrategy();
@@ -55,10 +57,12 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
 
         CustomTabsSessionToken session = intentData.getSession();
         OnResizedCallback resizeCallback =
-                (height, width) -> connection.onResized(session, height, width);
+                (height, width) ->
+                        CustomTabsConnection.getInstance().onResized(session, height, width);
         OnActivityLayoutCallback layoutCallback =
                 (left, top, right, bottom, state) ->
-                        connection.onActivityLayout(session, left, top, right, bottom, state);
+                        CustomTabsConnection.getInstance()
+                                .onActivityLayout(session, left, top, right, bottom, state);
         return new PartialCustomTabDisplayManager(
                 activity,
                 intentData,
@@ -68,6 +72,7 @@ public class CustomTabHeightStrategy implements FindToolbarObserver {
                 layoutCallback,
                 lifecycleDispatcher,
                 fullscreenManager,
+                isEnteringPip,
                 isTablet);
     }
 

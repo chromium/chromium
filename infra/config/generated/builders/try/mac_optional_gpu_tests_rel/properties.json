@@ -39,7 +39,8 @@
           "builder": "mac_optional_gpu_tests_rel",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac_optional_gpu_tests_rel/targets"
     }
   },
   "$build/flakiness": {

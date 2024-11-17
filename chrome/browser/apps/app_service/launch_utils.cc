@@ -17,6 +17,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/file_utils.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
+#include "chrome/browser/apps/link_capturing/link_capturing_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -73,10 +74,9 @@ crosapi::mojom::LaunchContainer ConvertAppServiceToCrosapiLaunchContainer(
     case apps::LaunchContainer::kLaunchContainerNone:
       return crosapi::mojom::LaunchContainer::kLaunchContainerNone;
     case apps::LaunchContainer::kLaunchContainerPanelDeprecated:
-      NOTREACHED_IN_MIGRATION();
-      return crosapi::mojom::LaunchContainer::kLaunchContainerNone;
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 apps::LaunchContainer ConvertCrosapiToAppServiceLaunchContainer(
@@ -89,7 +89,7 @@ apps::LaunchContainer ConvertCrosapiToAppServiceLaunchContainer(
     case crosapi::mojom::LaunchContainer::kLaunchContainerNone:
       return apps::LaunchContainer::kLaunchContainerNone;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 crosapi::mojom::WindowOpenDisposition ConvertWindowOpenDispositionToCrosapi(
@@ -113,11 +113,10 @@ crosapi::mojom::WindowOpenDisposition ConvertWindowOpenDispositionToCrosapi(
     case WindowOpenDisposition::OFF_THE_RECORD:
     case WindowOpenDisposition::IGNORE_ACTION:
     case WindowOpenDisposition::SWITCH_TO_TAB:
-      NOTREACHED_IN_MIGRATION();
-      return crosapi::mojom::WindowOpenDisposition::kUnknown;
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 WindowOpenDisposition ConvertWindowOpenDispositionFromCrosapi(
@@ -137,7 +136,7 @@ WindowOpenDisposition ConvertWindowOpenDispositionFromCrosapi(
       return WindowOpenDisposition::NEW_POPUP;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 }  // namespace
@@ -336,6 +335,8 @@ extensions::AppLaunchSource GetAppLaunchSource(LaunchSource launch_source) {
     case LaunchSource::kFromProfileMenu:
     case LaunchSource::kFromSysTrayCalendar:
     case LaunchSource::kFromInstaller:
+    case LaunchSource::kFromNavigationCapturing:
+    case LaunchSource::kFromWebInstallApi:
       return extensions::AppLaunchSource::kSourceNone;
   }
 }
@@ -353,8 +354,7 @@ int GetEventFlags(WindowOpenDisposition disposition, bool prefer_container) {
     case WindowOpenDisposition::NEW_FOREGROUND_TAB:
       return ui::EF_MIDDLE_MOUSE_BUTTON | ui::EF_SHIFT_DOWN;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return ui::EF_NONE;
+      NOTREACHED();
   }
 }
 
@@ -474,8 +474,11 @@ AppIdsToLaunchForUrl::~AppIdsToLaunchForUrl() = default;
 
 AppIdsToLaunchForUrl FindAppIdsToLaunchForUrl(AppServiceProxy* proxy,
                                               const GURL& url) {
+  // Navigation Capturing also enables launching of browser-tab apps.
+  bool exclude_browser_tab_apps = !features::IsNavigationCapturingReimplEnabled();
   AppIdsToLaunchForUrl result;
-  result.candidates = proxy->GetAppIdsForUrl(url, /*exclude_browsers=*/true);
+  result.candidates =
+      proxy->GetAppIdsForUrl(url, /*exclude_browsers=*/true, exclude_browser_tab_apps);
   if (result.candidates.empty()) {
     return result;
   }

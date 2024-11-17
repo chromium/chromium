@@ -15,8 +15,11 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"
 #include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
@@ -121,9 +124,13 @@ std::vector<std::string> SodaInstallerImpl::GetAvailableLanguages() const {
 }
 
 void SodaInstallerImpl::UninstallSoda(PrefService* global_prefs) {
+  base::ThreadPool::PostTask(FROM_HERE,
+                             {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+                              base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+                             base::BindOnce(&SodaInstallerImpl::DeleteSodaFiles,
+                                            weak_factory_.GetWeakPtr()));
+
   SodaInstaller::UnregisterLanguages(global_prefs);
-  base::DeletePathRecursively(speech::GetSodaDirectory());
-  base::DeletePathRecursively(speech::GetSodaLanguagePacksDirectory());
   global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
 
   soda_binary_installed_ = false;
@@ -133,28 +140,28 @@ void SodaInstallerImpl::UninstallSoda(PrefService* global_prefs) {
   language_pack_progress_.clear();
 }
 
-void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
+void SodaInstallerImpl::OnEvent(const update_client::CrxUpdateItem& item) {
   if (!component_updater::SodaLanguagePackComponentInstallerPolicy::
            GetExtensionIds()
-               .contains(id) &&
-      id != component_updater::SodaComponentInstallerPolicy::GetExtensionId()) {
+               .contains(item.id) &&
+      item.id !=
+          component_updater::SodaComponentInstallerPolicy::GetExtensionId()) {
     return;
   }
 
   LanguageCode language_code = LanguageCode::kNone;
-  if (id != component_updater::SodaComponentInstallerPolicy::GetExtensionId()) {
-    language_code = GetLanguageCodeByComponentId(id);
+  if (item.id !=
+      component_updater::SodaComponentInstallerPolicy::GetExtensionId()) {
+    language_code = GetLanguageCodeByComponentId(item.id);
     DCHECK_NE(language_code, LanguageCode::kNone);
   }
 
-  switch (event) {
-    case Events::COMPONENT_UPDATE_FOUND:
-    case Events::COMPONENT_UPDATE_READY:
-    case Events::COMPONENT_WAIT:
-    case Events::COMPONENT_UPDATE_DOWNLOADING:
-    case Events::COMPONENT_UPDATE_UPDATING: {
-      update_client::CrxUpdateItem item;
-      g_browser_process->component_updater()->GetComponentDetails(id, &item);
+  switch (item.state) {
+    case update_client::ComponentState::kCanUpdate:
+    case update_client::ComponentState::kDownloading:
+    case update_client::ComponentState::kDownloadingDiff:
+    case update_client::ComponentState::kUpdating:
+    case update_client::ComponentState::kUpdatingDiff:
       downloading_components_[language_code] = item;
 
       if (language_code == LanguageCode::kNone &&
@@ -165,8 +172,8 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
       } else {
         UpdateAndNotifyOnSodaProgress(language_code);
       }
-    } break;
-    case Events::COMPONENT_UPDATE_ERROR:
+      break;
+    case update_client::ComponentState::kUpdateError:
       is_soda_downloading_ = false;
 
       if (language_code != LanguageCode::kNone) {
@@ -189,9 +196,12 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
       NotifyOnSodaInstallError(
           language_code, speech::SodaInstaller::ErrorCode::kUnspecifiedError);
       break;
-    case Events::COMPONENT_CHECKING_FOR_UPDATES:
-    case Events::COMPONENT_UPDATED:
-    case Events::COMPONENT_ALREADY_UP_TO_DATE:
+    case update_client::ComponentState::kNew:
+    case update_client::ComponentState::kChecking:
+    case update_client::ComponentState::kUpdated:
+    case update_client::ComponentState::kUpToDate:
+    case update_client::ComponentState::kLastStatus:
+    case update_client::ComponentState::kRun:
       // Do nothing.
       break;
   }
@@ -223,6 +233,11 @@ void SodaInstallerImpl::OnSodaLanguagePackInstalled(
       base::Time::Now() - language_pack_install_start_time_[language_code]);
   base::UmaHistogramBoolean(
       GetInstallationResultMetricForLanguagePack(language_code), true);
+}
+
+void SodaInstallerImpl::DeleteSodaFiles() {
+  base::DeletePathRecursively(speech::GetSodaDirectory());
+  base::DeletePathRecursively(speech::GetSodaLanguagePacksDirectory());
 }
 
 void SodaInstallerImpl::UpdateAndNotifyOnSodaProgress(

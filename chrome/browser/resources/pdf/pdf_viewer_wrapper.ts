@@ -15,13 +15,20 @@ export {BrowserApi, ZoomBehavior} from './browser_api.js';
 // <if expr="enable_pdf_ink2">
 export {AnnotationBrush, AnnotationBrushType} from './constants.js';
 // </if>
-export {Attachment, FittingType, Point, Rect, SaveRequestType} from './constants.js';
+export {Attachment, FittingType, FormFieldFocusType, Point, Rect, SaveRequestType} from './constants.js';
 export {PluginController} from './controller.js';
 // <if expr="enable_pdf_ink2">
 export {PluginControllerEventType} from './controller.js';
+export {InkBrushSelectorElement} from './elements/ink_brush_selector.js';
+export {InkColorSelectorElement} from './elements/ink_color_selector.js';
+export {InkSizeSelectorElement} from './elements/ink_size_selector.js';
 // </if>
 export {ViewerAttachmentElement} from './elements/viewer_attachment.js';
 export {ViewerAttachmentBarElement} from './elements/viewer_attachment_bar.js';
+// <if expr="enable_pdf_ink2">
+export {ViewerBottomToolbarElement} from './elements/viewer_bottom_toolbar.js';
+export {ViewerBottomToolbarDropdownElement} from './elements/viewer_bottom_toolbar_dropdown.js';
+// </if>
 export {ChangePageAndXyDetail, ChangePageDetail, ChangePageOrigin, ChangeZoomDetail, NavigateDetail, ViewerBookmarkElement} from './elements/viewer_bookmark.js';
 export {ViewerDocumentOutlineElement} from './elements/viewer_document_outline.js';
 export {ViewerDownloadControlsElement} from './elements/viewer_download_controls.js';

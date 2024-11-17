@@ -6,11 +6,11 @@
 
 #import "base/check.h"
 #import "base/metrics/histogram_macros.h"
-#import "ios/chrome/browser/shared/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/password/create_password_manager_title_view.h"
 #import "ios/chrome/browser/ui/settings/password/reauthentication/reauthentication_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/branded_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -60,21 +60,16 @@
   // Restore navigation bar background color to its default value.
   // The view controller under self in the stack could have changed it.
   self.navigationController.navigationBar.backgroundColor = nil;
-
-  if (_reauthUponPresentation) {
-    [self recordAuthenticationEvent:ReauthenticationEvent::kAttempt];
-    [self triggerLocalAuthentication];
-  }
 }
 
 - (void)viewDidAppear:(BOOL)animated {
   [super viewDidAppear:animated];
-
-  // Wait until the view is in the hierarchy to present the alert, otherwise it
-  // won't be shown.
+  // Wait until the presentation is done to request authentication. This avoids
+  // race conditions that occur if we try to pop self
+  // from its navigation controller before it is fully pushed.
   if (_reauthUponPresentation) {
     _reauthUponPresentation = NO;
-    [self showSetUpPasscodeDialogIfNeeded];
+    [self requestAuthentication];
   }
 }
 

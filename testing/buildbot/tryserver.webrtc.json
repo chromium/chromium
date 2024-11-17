@@ -53,6 +53,7 @@
       {
         "args": [
           "--num-retries=3",
+          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json",
           "-t",
           "Release",
           "external/wpt/webrtc",
@@ -60,8 +61,7 @@
           "external/wpt/webrtc-extensions",
           "external/wpt/webrtc-priority",
           "external/wpt/webrtc-stats",
-          "external/wpt/webrtc-svc",
-          "--write-run-histories-to=${ISOLATED_OUTDIR}/run_histories.json"
+          "external/wpt/webrtc-svc"
         ],
         "merge": {
           "args": [

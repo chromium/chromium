@@ -105,7 +105,8 @@ TEST_F(AcceleratedStaticBitmapImageTest, CopyToTextureSynchronization) {
   // Anterior synchronization. Wait on the sync token for the mailbox on the
   // dest context.
   EXPECT_CALL(destination_gl, WaitSyncTokenCHROMIUM(Pointee(SyncTokenMatcher(
-                                  bitmap->GetMailboxHolder().sync_token))));
+                                  bitmap->GetMailboxHolder().sync_token))))
+      .Times(testing::Between(1, 2));
 
   // Posterior synchronization. Generate a sync token on the destination context
   // to ensure mailbox is destroyed after the copy.

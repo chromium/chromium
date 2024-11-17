@@ -25,22 +25,20 @@
 
 class QuickDeleteUtilTest : public PlatformTest {
  public:
-  QuickDeleteUtilTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
-  }
+  QuickDeleteUtilTest() { profile_ = TestProfileIOS::Builder().Build(); }
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 // Tests the construction of the counter string for cache in for the all time
 // period range.
 TEST_F(QuickDeleteUtilTest, TestCacheCounterFormattingForAllTime) {
-  PrefService* prefs = browser_state_->GetPrefs();
+  PrefService* prefs = profile_->GetPrefs();
   prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
                     static_cast<int>(browsing_data::TimePeriod::ALL_TIME));
-  CacheCounter counter(browser_state_.get());
+  CacheCounter counter(profile_.get());
 
   NSByteCountFormatter* formatter = [[NSByteCountFormatter alloc] init];
   formatter.allowedUnits = NSByteCountFormatterUseAll &
@@ -84,10 +82,10 @@ TEST_F(QuickDeleteUtilTest, TestCacheCounterFormattingForAllTime) {
 // Tests the construction of the counter string for cache in less than all time
 // time period range.
 TEST_F(QuickDeleteUtilTest, TestCacheCounterFormattingForLessThanAllTime) {
-  PrefService* prefs = browser_state_->GetPrefs();
+  PrefService* prefs = profile_->GetPrefs();
   prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
                     static_cast<int>(browsing_data::TimePeriod::LAST_HOUR));
-  CacheCounter counter(browser_state_.get());
+  CacheCounter counter(profile_.get());
 
   NSByteCountFormatter* formatter = [[NSByteCountFormatter alloc] init];
   formatter.allowedUnits = NSByteCountFormatterUseAll &
@@ -143,7 +141,7 @@ TEST_F(QuickDeleteUtilTest, TestCacheCounterFormattingForLessThanAllTime) {
 // Tests the construction of the counter string for tabs in single window and
 // multiwindow formats.
 TEST_F(QuickDeleteUtilTest, TestTabsCounter) {
-  PrefService* prefs = browser_state_->GetPrefs();
+  PrefService* prefs = profile_->GetPrefs();
   prefs->SetInteger(browsing_data::prefs::kDeleteTimePeriod,
                     static_cast<int>(browsing_data::TimePeriod::LAST_HOUR));
   std::u16string two_tabs = l10n_util::GetPluralStringFUTF16(IDS_TABS_COUNT, 2);
@@ -165,9 +163,8 @@ TEST_F(QuickDeleteUtilTest, TestTabsCounter) {
   };
 
   TabsCounter counter(
-      BrowserListFactory::GetForBrowserState(browser_state_.get()),
-      SessionRestorationServiceFactory::GetForBrowserState(
-          browser_state_.get()));
+      BrowserListFactory::GetForProfile(profile_.get()),
+      SessionRestorationServiceFactory::GetForProfile(profile_.get()));
 
   for (const TestCase& test_case : kTestCases) {
     const TabsCounter::TabsResult result(&counter, test_case.num_tabs,

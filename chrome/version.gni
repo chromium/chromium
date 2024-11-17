@@ -35,7 +35,9 @@ if (is_mac) {
     "-e",
     "PATCH_LO=int(PATCH)%256",
   ]
-} else if (target_os == "android") {
+}
+
+if (target_os == "android") {
   import("//build/config/android/config.gni")
   import("//build/config/chrome_build.gni")
 

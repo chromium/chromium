@@ -184,7 +184,7 @@ bool CheckForDuplicates(
       return;
     }
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 - (void)didCancelAddPasswordDetails {

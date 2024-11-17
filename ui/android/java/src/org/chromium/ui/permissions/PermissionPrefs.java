@@ -6,10 +6,6 @@ package org.chromium.ui.permissions;
 
 import android.Manifest;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.pm.PermissionInfo;
-import android.os.Build;
 import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
@@ -42,41 +38,9 @@ public class PermissionPrefs {
             "AndroidPermissionRequestTimestamp::";
 
     /**
-     * Returns normalized permission name for the given permission considering OS versions.
-     * @param permission The permission name.
-     * @return Normalized permission name.
-     */
-    public static String normalizePermissionName(String permission) {
-        // Prior to O, permissions were granted at the group level.  Post O, each permission is
-        // granted individually.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            try {
-                // Runtime permissions are controlled at the group level.  So when determining
-                // whether we have requested a particular permission before, we should check whether
-                // we have requested any permission in that group as that mimics the logic in the
-                // Android framework.
-                //
-                // e.g. Requesting first the permission ACCESS_FINE_LOCATION will result in Chrome
-                //      treating ACCESS_COARSE_LOCATION as if it had already been requested as well.
-                PermissionInfo permissionInfo =
-                        ContextUtils.getApplicationContext()
-                                .getPackageManager()
-                                .getPermissionInfo(permission, PackageManager.GET_META_DATA);
-
-                if (!TextUtils.isEmpty(permissionInfo.group)) {
-                    return permissionInfo.group;
-                }
-            } catch (NameNotFoundException e) {
-                // Unknown permission.  Default back to the permission name instead of the group.
-            }
-        }
-
-        return permission;
-    }
-
-    /**
-     * NOTE: Use this method with caution. The pref is aggressively cleared on
-     * permission grant, or on shouldShowRequestPermissionRationale returning true.
+     * NOTE: Use this method with caution. The pref is aggressively cleared on permission grant, or
+     * on shouldShowRequestPermissionRationale returning true.
+     *
      * @return Whether the request was denied by the user for the given {@code permission}
      */
     static boolean wasPermissionDenied(String permission) {
@@ -117,8 +81,7 @@ public class PermissionPrefs {
     public static long getAndroidNotificationPermissionRequestTimestamp() {
         String prefName =
                 ANDROID_PERMISSION_REQUEST_TIMESTAMP_KEY_PREFIX
-                        + PermissionPrefs.normalizePermissionName(
-                                Manifest.permission.POST_NOTIFICATIONS);
+                        + Manifest.permission.POST_NOTIFICATIONS;
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         return prefs.getLong(prefName, 0);
     }
@@ -136,17 +99,16 @@ public class PermissionPrefs {
 
         String prefName =
                 ANDROID_PERMISSION_REQUEST_TIMESTAMP_KEY_PREFIX
-                        + PermissionPrefs.normalizePermissionName(
-                                Manifest.permission.POST_NOTIFICATIONS);
+                        + Manifest.permission.POST_NOTIFICATIONS;
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         prefs.edit().putLong(prefName, TimeUtils.currentTimeMillis()).apply();
     }
 
     /**
-     * Returns the name of a shared preferences key used to store whether Chrome was denied
-     * {@code permission}.
+     * Returns the name of a shared preferences key used to store whether Chrome was denied {@code
+     * permission}.
      */
     private static String getPermissionWasDeniedKey(String permission) {
-        return PERMISSION_WAS_DENIED_KEY_PREFIX + normalizePermissionName(permission);
+        return PERMISSION_WAS_DENIED_KEY_PREFIX + permission;
     }
 }

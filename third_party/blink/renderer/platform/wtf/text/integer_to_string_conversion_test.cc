@@ -12,8 +12,7 @@ namespace WTF {
 
 TEST(IntegerToStringConversionTest, SimpleIntConversion) {
   const IntegerToStringConverter<int> conv(100500);
-  EXPECT_EQ(StringView(conv.Characters8(), conv.length()),
-            StringView("100500"));
+  EXPECT_EQ(StringView(conv.Span()), StringView("100500"));
 }
 
 template <typename T>
@@ -35,8 +34,7 @@ TYPED_TEST(IntegerToStringConversionBoundsTest, LowerBound) {
   constexpr auto value = std::numeric_limits<TypeParam>::min();
   const IntegerToStringConverter<TypeParam> conv(value);
   std::string expected = base::NumberToString(value);
-  EXPECT_EQ(StringView(expected.c_str()),
-            StringView(conv.Characters8(), conv.length()));
+  EXPECT_EQ(StringView(expected.c_str()), StringView(conv.Span()));
 }
 
 // Test that the maximum value for a given integer type is converted accurately.
@@ -44,8 +42,7 @@ TYPED_TEST(IntegerToStringConversionBoundsTest, UpperBound) {
   constexpr auto value = std::numeric_limits<TypeParam>::max();
   const IntegerToStringConverter<TypeParam> conv(value);
   std::string expected = base::NumberToString(value);
-  EXPECT_EQ(StringView(expected.c_str()),
-            StringView(conv.Characters8(), conv.length()));
+  EXPECT_EQ(StringView(expected.c_str()), StringView(conv.Span()));
 }
 
 }  // namespace WTF

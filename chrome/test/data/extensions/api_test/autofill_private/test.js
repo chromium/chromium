@@ -749,6 +749,86 @@ var availableTests = [
     chrome.test.succeed();
   },
 
+  function hasUserAnnotationsEntries_NoEntries() {
+    chrome.autofillPrivate.hasUserAnnotationsEntries(function(hasEntries) {
+      chrome.test.assertFalse(hasEntries, 'Expected no entries');
+      chrome.test.succeed();
+    });
+  },
+
+  function hasUserAnnotationsEntries_WithEntries() {
+    chrome.autofillPrivate.hasUserAnnotationsEntries(function(hasEntries) {
+      chrome.test.assertTrue(hasEntries, 'Expected entries to exist');
+      chrome.test.succeed();
+    });
+  },
+
+  function isUserEligibleForAutofillImprovements() {
+    chrome.autofillPrivate.isUserEligibleForAutofillImprovements(function(
+        isEligible) {
+      // TODO(crbug.com/373609897): Override account info status in the test
+      // setup to verify this properly.
+      chrome.test.assertFalse(isEligible, "Expected not eligible");
+      chrome.test.succeed();
+    });
+  },
+
+  function predictionImprovementsIphFeatureUsed() {
+    chrome.autofillPrivate.predictionImprovementsIphFeatureUsed();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
+  function migrateCreditCards() {
+    chrome.autofillPrivate.migrateCreditCards();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
+  function logServerCardLinkClicked() {
+    chrome.autofillPrivate.logServerCardLinkClicked();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
+  function addVirtualCard() {
+    chrome.autofillPrivate.addVirtualCard(/*card_id=*/"a123");
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
+  function removeVirtualCard() {
+    chrome.autofillPrivate.removeVirtualCard(/*card_id=*/"a123");
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
+  function setAutofillSyncToggleEnabled() {
+    chrome.autofillPrivate.setAutofillSyncToggleEnabled(true);
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
+  function triggerAnnotationsBootstrapping_ExpectTrue() {
+    chrome.autofillPrivate.triggerAnnotationsBootstrapping(function(success) {
+      chrome.test.assertTrue(success, 'Expected bootstrapping to succeed');
+      chrome.test.succeed();
+    });
+  },
+
+  function triggerAnnotationsBootstrapping_ExpectFalse() {
+    chrome.autofillPrivate.triggerAnnotationsBootstrapping(function(success) {
+      chrome.test.assertFalse(success, 'Expected bootstrapping to fail');
+      chrome.test.succeed();
+    });
+  },
+
+  function logServerIbanLinkClicked() {
+    chrome.autofillPrivate.logServerIbanLinkClicked();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  }
+
 ];
 
 /** @const */
@@ -786,6 +866,24 @@ var TESTS_FOR_CONFIG = {
   'deleteAllUserAnnotationsEntries': ['deleteAllUserAnnotationsEntries'],
   'deleteUserAnnotationsEntries': ['deleteUserAnnotationsEntries'],
   'getUserAnnotationsEntries': ['getUserAnnotationsEntries'],
+  'hasUserAnnotationsEntries_NoEntries':
+      ['hasUserAnnotationsEntries_NoEntries'],
+  'hasUserAnnotationsEntries_WithEntries':
+      ['hasUserAnnotationsEntries_WithEntries'],
+  'isUserEligibleForAutofillImprovements':
+      ['isUserEligibleForAutofillImprovements'],
+  'predictionImprovementsIphFeatureUsed':
+      ['predictionImprovementsIphFeatureUsed'],
+  'migrateCreditCards': ['migrateCreditCards'],
+  'logServerCardLinkClicked': ['logServerCardLinkClicked'],
+  'addVirtualCard': ['addVirtualCard'],
+  'removeVirtualCard': ['removeVirtualCard'],
+  'setAutofillSyncToggleEnabled': ['setAutofillSyncToggleEnabled'],
+  'TriggerAnnotationsBootstrapping_Success':
+      ['triggerAnnotationsBootstrapping_ExpectTrue'],
+  'TriggerAnnotationsBootstrapping_Failure':
+      ['triggerAnnotationsBootstrapping_ExpectFalse'],
+  'logServerIbanLinkClicked': ['logServerIbanLinkClicked'],
 };
 
 var testConfig = window.location.search.substring(1);

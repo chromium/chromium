@@ -224,9 +224,9 @@ void EditContext::updateSelection(uint32_t start,
 }
 
 void EditContext::updateCharacterBounds(
-    unsigned long range_start,
-    HeapVector<Member<DOMRect>>& character_bounds) {
-  character_bounds_range_start_ = static_cast<uint32_t>(range_start);
+    uint32_t range_start,
+    const HeapVector<Member<DOMRect>>& character_bounds) {
+  character_bounds_range_start_ = range_start;
 
   TRACE_EVENT1("ime", "EditContext::updateCharacterBounds", "range_start, size",
                std::to_string(range_start) + ", " +
@@ -413,7 +413,7 @@ bool EditContext::SetCompositionFromExistingText(
   if (composition_start < 0 || composition_end < 0)
     return false;
 
-  CHECK_GT(composition_end, composition_start);
+  CHECK_GE(composition_end, composition_start);
 
   if (!has_composition_) {
     if (!DispatchCompositionStartEvent(""))

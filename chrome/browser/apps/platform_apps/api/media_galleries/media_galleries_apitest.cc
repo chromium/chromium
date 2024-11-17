@@ -92,10 +92,10 @@ class MediaGalleriesPlatformAppBrowserTest : public PlatformAppBrowserTest {
     extensions::ProcessManager::SetEventPageIdleTimeForTesting(
         TestTimeouts::action_max_timeout().InMilliseconds());
 
-    int64_t file_size;
-    ASSERT_TRUE(base::GetFileSize(GetCommonDataDir().AppendASCII("test.jpg"),
-                                  &file_size));
-    test_jpg_size_ = base::checked_cast<int>(file_size);
+    std::optional<int64_t> file_size =
+        base::GetFileSize(GetCommonDataDir().AppendASCII("test.jpg"));
+    ASSERT_TRUE(file_size.has_value());
+    test_jpg_size_ = base::checked_cast<int>(file_size.value());
   }
 
   void TearDownOnMainThread() override {

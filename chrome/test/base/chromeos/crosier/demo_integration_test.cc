@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/run_loop.h"
 #include "base/test/gtest_tags.h"
 #include "base/test/test_switches.h"
@@ -16,65 +17,15 @@
 #include "net/dns/mock_host_resolver.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
-#endif
-
 // This is a demo to run a browser test on a ChromeOS device or VM.
 //
-// To run the test for lacros:
-//
-// Environment and device setup:
-//   Follow //docs/lacros/build_dut_lacros.md so you can build Lacros
-//   and deploy on a VM or ChromeOS device under test(DUT).
-// 1 Use DUT gn args
-//   Following is an example gn args for Lacros:
-//   '''
-//   import("//build/args/chromeos/amd64-generic-crostoolchain.gni")
-//   chromeos_is_browser_only= true
-//   dcheck_always_on = true
-//   is_chromeos_device= true
-//   is_debug= false
-//   symbol_level= 0
-//   target_os= "chromeos"
-//   use_remoteexec=true
-//   '''
-// 2 Build chromeos_integration_tests target
-//   Example commandline:
-//   $ autoninja -C out/lacrosdut chromeos_integration_tests
-// 3 Run test on DUT/VM
-//   For VM, follow
-//   https://chromium.googlesource.com/chromiumos/docs/+/HEAD/cros_vm.md#run-a-chrome-gtest-binary-in-the-vm
-//   For DUT, example commandline:
-//   $ out/lacros_amd64/bin/run_chromeos_integration_tests --board=<DUT_board> \
-//     --device=<device_ip> --gtest_filter=DemoIntegrationTest.NewTab
-//   This test should pass.
-// 4 Run test in interactive mode
-//   This is helpful if you want to see the browser and interact with it.
-//   First prepare the device to show the main screen, in either guest mode
-//   or signed in.
-//   Then run test in interactive mode:
-//   $ out/lacros_amd64/bin/run_chromeos_integration_tests --board=<DUT_board> \
-//     --device=<device_id> --enable-pixel-output-in-tests \
-//     --test-launcher-interactive
-//   You should see a browser open with tab direct to chrome://version.
-//   You can now interact with the browser freely. There might be some
-//   limitations, like the browser is only allowed to access certain websites.
-//
-// To run the test for ash:
+// To run the test:
 //
 // 1. See http://go/crosint-run for instructions.
 // 2. You can optionally add --test-launcher-interactive to play with the
 //    browser after the test finishes.
 class DemoIntegrationTest : public MixinBasedInProcessBrowserTest {
  public:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void SetUpCommandLine(base::CommandLine* cmd_line) override {
-    // On ash this test exercises the built-in browser, not lacros.
-    cmd_line->AppendSwitch(ash::switches::kDisallowLacros);
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
   void SetUpInProcessBrowserTestFixture() override {
     // You don't need this in your test.
     // By default, we don't allow any network access in tests to
@@ -90,7 +41,6 @@ class DemoIntegrationTest : public MixinBasedInProcessBrowserTest {
     InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   void TearDownOnMainThread() override {
     // Close any browsers we opened otherwise the test may hang on shutdown.
     // This happens because chromeos_integration_tests is not started by session
@@ -106,14 +56,12 @@ class DemoIntegrationTest : public MixinBasedInProcessBrowserTest {
 
     InProcessBrowserTest::TearDownOnMainThread();
   }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
  protected:
   ChromeOSIntegrationTestMixin chromeos_integration_test_mixin_{&mixin_host_};
 };
 
-// TODO(crbug.com/342512743): Re-enable this test
-IN_PROC_BROWSER_TEST_F(DemoIntegrationTest, DISABLED_NewTab) {
+IN_PROC_BROWSER_TEST_F(DemoIntegrationTest, NewTab) {
   chrome_test_base_chromeos_crosier::TestInfo info;
   info.set_description(R"(
 This test verifies Chrome can launch and open version page.

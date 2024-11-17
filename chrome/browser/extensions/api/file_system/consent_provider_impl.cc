@@ -26,9 +26,9 @@
 #include "extensions/common/manifest_handlers/kiosk_mode_info.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/file_manager/app_id.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/file_manager/app_id.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace extensions {
 
@@ -37,9 +37,9 @@ namespace {
 // List of allowlisted component apps and extensions by their ids for
 // chrome.fileSystem.requestFileSystem.
 const char* const kRequestFileSystemComponentAllowlist[] = {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     file_manager::kFileManagerAppId, file_manager::kImageLoaderExtensionId,
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
     // TODO(henryhsu,b/110126438): Remove this extension id, and add it only
     // for tests.
     "pkplfbidichfdicaijlchgnapepdginl"  // Testing extensions.
@@ -132,8 +132,7 @@ void ConsentProviderImpl::RequestConsent(content::RenderFrameHost* host,
     return;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "Cannot request consent for non-grantable extensions.";
+  NOTREACHED() << "Cannot request consent for non-grantable extensions.";
 }
 
 bool ConsentProviderImpl::IsGrantable(const Extension& extension) {

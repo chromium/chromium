@@ -50,10 +50,10 @@ class BrowserActionFactoryTest : public PlatformTest {
   BrowserActionFactoryTest() : test_title_(@"SomeTitle") {}
 
   void SetUp() override {
-    TestChromeBrowserState::Builder test_cbs_builder;
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
 
-    test_browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
+    test_browser_ = std::make_unique<TestBrowser>(profile_.get());
 
     mock_application_commands_handler_ =
         OCMStrictProtocolMock(@protocol(ApplicationCommands));
@@ -96,7 +96,7 @@ class BrowserActionFactoryTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   NSString* test_title_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> test_browser_;
   id mock_application_commands_handler_;
   id mock_settings_commands_handler_;
@@ -248,7 +248,7 @@ TEST_F(BrowserActionFactoryTest, OpenNewTabAction) {
   EXPECT_EQ(expectedImage, action.image);
   EXPECT_EQ(0U, action.attributes);
 
-  chrome_browser_state_->GetTestingPrefService()->SetManagedPref(
+  profile_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kForced)));
@@ -274,7 +274,7 @@ TEST_F(BrowserActionFactoryTest, OpenNewIncognitoTabAction) {
   EXPECT_EQ(expectedImage, action.image);
   EXPECT_EQ(0U, action.attributes);
 
-  chrome_browser_state_->GetTestingPrefService()->SetManagedPref(
+  profile_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kDisabled)));
@@ -352,7 +352,7 @@ TEST_F(BrowserActionFactoryTest, StartNewSearchAction) {
   EXPECT_EQ(expectedImage, action.image);
   EXPECT_EQ(0U, action.attributes);
 
-  chrome_browser_state_->GetTestingPrefService()->SetManagedPref(
+  profile_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kForced)));
@@ -378,7 +378,7 @@ TEST_F(BrowserActionFactoryTest, NewIncognitoSearchAction) {
   EXPECT_EQ(expectedImage, action.image);
   EXPECT_EQ(0U, action.attributes);
 
-  chrome_browser_state_->GetTestingPrefService()->SetManagedPref(
+  profile_->GetTestingPrefService()->SetManagedPref(
       policy::policy_prefs::kIncognitoModeAvailability,
       std::make_unique<base::Value>(
           static_cast<int>(IncognitoModePrefs::kDisabled)));

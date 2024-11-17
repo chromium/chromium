@@ -173,6 +173,7 @@ bool ArCoreGl::CanRenderDOMContent() {
 }
 
 void ArCoreGl::Initialize(
+    const scoped_refptr<base::SingleThreadTaskRunner>& main_thread_task_runner,
     XrJavaCoordinator* session_utils,
     ArCoreFactory* arcore_factory,
     XrFrameSinkClient* xr_frame_sink_client,
@@ -275,14 +276,21 @@ void ArCoreGl::Initialize(
   enabled_features_ = maybe_initialize_result->enabled_features;
   depth_configuration_ = maybe_initialize_result->depth_configuration;
 
+  // Set whether or not the session produces frames with WebGPU based on in the
+  // 'webgpu' feature was requested.
+  const bool webgpu_session =
+      enabled_features_.contains(device::mojom::XRSessionFeature::WEBGPU);
+
   DVLOG(3) << "ar_image_transport_->Initialize()...";
   ar_image_transport_->Initialize(
-      webxr_.get(), base::BindOnce(&ArCoreGl::OnArImageTransportReady,
-                                   weak_ptr_factory_.GetWeakPtr()));
+      webxr_.get(),
+      base::BindOnce(&ArCoreGl::OnArImageTransportReady,
+                     weak_ptr_factory_.GetWeakPtr()),
+      webgpu_session);
 
   if (use_ar_compositor_) {
-    InitializeArCompositor(surface_handle, root_window, xr_frame_sink_client,
-                           dom_setup);
+    InitializeArCompositor(main_thread_task_runner, surface_handle, root_window,
+                           xr_frame_sink_client, dom_setup);
     webxr_->SetStateMachineType(
         WebXrPresentationState::StateMachineType::kVizComposited);
   } else {
@@ -297,10 +305,12 @@ void ArCoreGl::Initialize(
   arcore_->SetDisplayGeometry(kDefaultFrameSize, kDefaultRotation);
 }
 
-void ArCoreGl::InitializeArCompositor(gpu::SurfaceHandle surface_handle,
-                                      ui::WindowAndroid* root_window,
-                                      XrFrameSinkClient* xr_frame_sink_client,
-                                      device::DomOverlaySetup dom_setup) {
+void ArCoreGl::InitializeArCompositor(
+    const scoped_refptr<base::SingleThreadTaskRunner>& main_thread_task_runner,
+    gpu::SurfaceHandle surface_handle,
+    ui::WindowAndroid* root_window,
+    XrFrameSinkClient* xr_frame_sink_client,
+    device::DomOverlaySetup dom_setup) {
   ArCompositorFrameSink::BeginFrameCallback begin_frame_callback =
       base::BindRepeating(&ArCoreGl::OnBeginFrame,
                           weak_ptr_factory_.GetWeakPtr());
@@ -334,8 +344,8 @@ void ArCoreGl::InitializeArCompositor(gpu::SurfaceHandle surface_handle,
       can_issue_new_frame_callback);
 
   ar_compositor_->Initialize(
-      surface_handle, root_window, screen_size_, xr_frame_sink_client,
-      dom_setup,
+      main_thread_task_runner, surface_handle, root_window, screen_size_,
+      xr_frame_sink_client, dom_setup,
       base::BindOnce(&ArCoreGl::OnArCompositorInitialized,
                      weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ArCoreGl::OnBindingDisconnect,
@@ -1350,11 +1360,16 @@ void ArCoreGl::SubmitFrameDrawnIntoTexture(int16_t frame_index,
   webxr_->GetAnimatingFrame()->camera_image_shared_buffer->sync_token =
       sync_token;
 
+  const ArCompositorFrameSink::FrameType frame_type =
+      ar_image_transport_->IsWebGPUSession()
+          ? ArCompositorFrameSink::FrameType::kHasWebGpuContent
+          : ArCompositorFrameSink::FrameType::kHasWebGlContent;
+
   // Start processing the frame now if possible. If there's already a current
   // processing frame, defer it until that frame calls TryDeferredProcessing.
-  webxr_->ProcessOrDefer(base::BindOnce(
-      &ArCoreGl::SubmitVizFrame, weak_ptr_factory_.GetWeakPtr(), frame_index,
-      ArCompositorFrameSink::FrameType::kHasWebXrContent));
+  webxr_->ProcessOrDefer(base::BindOnce(&ArCoreGl::SubmitVizFrame,
+                                        weak_ptr_factory_.GetWeakPtr(),
+                                        frame_index, frame_type));
 }
 
 void ArCoreGl::SubmitVizFrame(int16_t frame_index,
@@ -1380,7 +1395,7 @@ void ArCoreGl::SubmitVizFrame(int16_t frame_index,
   }
 
   if (submit_client_ &&
-      frame_type == ArCompositorFrameSink::FrameType::kHasWebXrContent) {
+      frame_type != ArCompositorFrameSink::FrameType::kMissingWebXrContent) {
     // Create a local GpuFence and pass it to the Renderer via IPC.
     std::unique_ptr<gl::GLFence> gl_fence = gl::GLFence::CreateForGpuFence();
     std::unique_ptr<gfx::GpuFence> gpu_fence2 = gl_fence->GetGpuFence();

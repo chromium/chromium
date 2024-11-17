@@ -16,13 +16,13 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import static org.chromium.base.test.util.CallbackHelper.WAIT_TIMEOUT_SECONDS;
 import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
@@ -39,7 +39,6 @@ import android.view.ViewGroup;
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -77,9 +76,9 @@ import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -175,7 +174,7 @@ public class TabUiTestHelper {
         try {
             finishedHidingCallbackHelper.waitForOnly();
         } catch (TimeoutException e) {
-            fail("LayoutType.TAB_SWITCHER never finished hiding.");
+            throw new AssertionError("LayoutType.TAB_SWITCHER never finished hiding.", e);
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -402,14 +401,10 @@ public class TabUiTestHelper {
             tabGroup.add(tabModel.getTabAt(i));
         }
         createTabGroup(cta, isIncognito, tabGroup);
-        assertTrue(
-                cta.getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
-                        instanceof TabGroupModelFilter);
         TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        cta.getTabModelSelector()
-                                .getTabModelFilterProvider()
-                                .getTabModelFilter(isIncognito);
+                cta.getTabModelSelector()
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(isIncognito);
         assertEquals(1, filter.getCount());
     }
 
@@ -473,20 +468,18 @@ public class TabUiTestHelper {
 
     /**
      * Create a tab group using {@code tabs}.
-     * @param cta             The current running activity.
-     * @param isIncognito     Whether the group is in normal model or incognito model.
-     * @param tabs            A list of {@link Tab} to create group.
+     *
+     * @param cta The current running activity.
+     * @param isIncognito Whether the group is in normal model or incognito model.
+     * @param tabs A list of {@link Tab} to create group.
      */
     public static void createTabGroup(
             ChromeTabbedActivity cta, boolean isIncognito, List<Tab> tabs) {
         if (tabs.size() == 0) return;
-        assert cta.getTabModelSelector().getTabModelFilterProvider().getCurrentTabModelFilter()
-                instanceof TabGroupModelFilter;
         TabGroupModelFilter filter =
-                (TabGroupModelFilter)
-                        cta.getTabModelSelector()
-                                .getTabModelFilterProvider()
-                                .getTabModelFilter(isIncognito);
+                cta.getTabModelSelector()
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(isIncognito);
         Tab rootTab = tabs.get(0);
         for (int i = 1; i < tabs.size(); i++) {
             Tab tab = tabs.get(i);
@@ -757,16 +750,17 @@ public class TabUiTestHelper {
         assertTrue(isIncognito != cta.getTabModelSelector().isIncognitoSelected());
         assertTrue(cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER));
 
-        @StringRes
-        int contentDescription =
+        // The non-incognito contentDescription is a substring found in the following string:
+        // R.string.accessibility_tab_switcher_standard_stack.
+        String contentDescription =
                 isIncognito
-                        ? R.string.accessibility_tab_switcher_incognito_stack
-                        : R.string.accessibility_tab_switcher_standard_stack;
+                        ? cta.getString(R.string.accessibility_tab_switcher_incognito_stack)
+                        : "standard tab";
         onView(
                         allOf(
                                 isDescendantOfA(
                                         withId(org.chromium.chrome.browser.hub.R.id.hub_toolbar)),
-                                withContentDescription(contentDescription)))
+                                withContentDescription(containsString(contentDescription))))
                 .perform(click());
 
         CriteriaHelper.pollUiThread(

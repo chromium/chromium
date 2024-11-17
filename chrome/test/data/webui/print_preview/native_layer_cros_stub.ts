@@ -51,7 +51,6 @@ export class NativeLayerCrosStub extends TestBrowserProxy implements
       'setupPrinter',
       'choosePrintServers',
       'getPrintServersConfig',
-      'recordPrinterStatusRetrySuccessHistogram',
       'getShowManagePrinters',
       'observeLocalPrinters',
     ]);
@@ -144,11 +143,6 @@ export class NativeLayerCrosStub extends TestBrowserProxy implements
   getPrintServersConfig() {
     this.methodCalled('getPrintServersConfig');
     return Promise.resolve(this.printServersConfig_!);
-  }
-
-  recordPrinterStatusRetrySuccessHistogram(retrySuccessful: boolean) {
-    this.methodCalled(
-        'recordPrinterStatusRetrySuccessHistogram', retrySuccessful);
   }
 
   recordPrintAttemptOutcome() {}

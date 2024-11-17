@@ -74,7 +74,6 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
     kComponentTransfer,
     kConvolveMatrix,
     kTurbulence,
-    kNone
   };
 
   static bool CanInterpolate(FilterOperation::OperationType type) {
@@ -98,11 +97,8 @@ class CORE_EXPORT FilterOperation : public GarbageCollected<FilterOperation> {
       case OperationType::kConvolveMatrix:
       case OperationType::kBoxReflect:
         return false;
-      case OperationType::kNone:
-        break;
     }
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   virtual ~FilterOperation() = default;

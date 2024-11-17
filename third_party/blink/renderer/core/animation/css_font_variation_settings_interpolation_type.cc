@@ -53,7 +53,7 @@ struct DowncastTraits<CSSFontVariationSettingsNonInterpolableValue> {
   }
 };
 
-static const Vector<uint32_t> GetTags(
+static Vector<uint32_t> GetTags(
     const NonInterpolableValue& non_interpolable_value) {
   return To<CSSFontVariationSettingsNonInterpolableValue>(
              non_interpolable_value)

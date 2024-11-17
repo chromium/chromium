@@ -6,13 +6,14 @@
 
 #import "base/feature_list.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
-#import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/elements/instruction_view.h"
-#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_constants.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/instruction_view/instruction_view.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @implementation DefaultBrowserScreenViewController
@@ -33,14 +34,16 @@
     // set.
     CHECK(![self.titleText length]);
     CHECK(![self.subtitleText length]);
-    [self setPromoTitle:
-              l10n_util::GetNSString(
-                  UseIPadTailoredStringForDefaultBrowserPromo()
-                      ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
-                      : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE)];
+    BOOL usesTablet =
+        ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+    [self
+        setPromoTitle:
+            l10n_util::GetNSString(
+                usesTablet ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
+                           : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE)];
     [self setPromoSubtitle:
               l10n_util::GetNSString(
-                  UseIPadTailoredStringForDefaultBrowserPromo()
+                  usesTablet
                       ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
                       : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE)];
   }

@@ -2,15 +2,20 @@
 -- Use of this source code is governed by a BSD-style license that can be
 -- found in the LICENSE file.
 
--- List Speedometer 2.1 tests.
-CREATE PERFETTO VIEW _chrome_speedometer_2_1_test_name(
+-- List Speedometer 2.1 test marks. Used to find relevant slices.
+CREATE PERFETTO VIEW _chrome_speedometer_2_1_mark_name(
+  -- Expected slice name
+  name STRING,
   -- Suite name
   suite_name STRING,
   -- Test name
-  test_name STRING)
+  test_name STRING,
+  -- Mark type
+  mark_type STRING)
 AS
 WITH
-  data(suite_name, test_name) AS (
+  data(suite_name, test_name)
+  AS (
     VALUES('Angular2-TypeScript-TodoMVC', 'Adding100Items'),
     ('Angular2-TypeScript-TodoMVC', 'CompletingAllItems'),
     ('Angular2-TypeScript-TodoMVC', 'DeletingItems'),
@@ -59,8 +64,14 @@ WITH
     ('jQuery-TodoMVC', 'Adding100Items'),
     ('jQuery-TodoMVC', 'CompletingAllItems'),
     ('jQuery-TodoMVC', 'DeletingAllItems')
-  )
-SELECT suite_name, test_name FROM data;
+  ),
+  mark_type(mark_type) AS (VALUES('start'), ('sync-end'), ('async-end'))
+SELECT
+  suite_name || '.' || test_name || '-' || mark_type AS name,
+  suite_name,
+  test_name,
+  mark_type
+FROM data, mark_type;
 
 -- Augmented slices for Speedometer measurements.
 -- These are the intervals of time Speedometer uses to compute the final score.
@@ -84,22 +95,6 @@ CREATE PERFETTO TABLE chrome_speedometer_2_1_measure(
   measure_type STRING)
 AS
 WITH
-  mark_type(mark_type) AS (
-    VALUES('start'),
-    ('sync-end'),
-    ('async-end')
-  ),
-  -- Make sure we only look at slices with names we expect.
-  mark_name AS (
-    SELECT
-      suite_name || '.' || test_name || '-' || mark_type AS name,
-      suite_name,
-      test_name,
-      mark_type
-    FROM
-      _chrome_speedometer_2_1_test_name,
-      mark_type
-  ),
   mark AS (
     SELECT
       s.id AS slice_id,
@@ -108,7 +103,8 @@ WITH
       m.test_name,
       m.mark_type
     FROM slice AS s
-    JOIN mark_name AS m
+    -- Make sure we only look at slices with names we expect.
+    JOIN _chrome_speedometer_2_1_mark_name AS m
       USING (name)
     WHERE category = 'blink.user_timing'
   ),
@@ -218,3 +214,18 @@ CREATE PERFETTO FUNCTION chrome_speedometer_2_1_score()
 RETURNS DOUBLE
 AS
 SELECT AVG(score) FROM chrome_speedometer_2_1_iteration;
+
+-- Returns the utid for the main thread that ran Speedometer 2.1
+CREATE PERFETTO FUNCTION chrome_speedometer_2_1_renderer_main_utid()
+-- Renderer main utid
+RETURNS INT
+AS
+SELECT utid
+FROM thread_track
+WHERE
+  id IN (
+    SELECT track_id
+    FROM slice, _chrome_speedometer_2_1_mark_name
+    USING (name)
+    WHERE category = 'blink.user_timing'
+  );

@@ -21,7 +21,6 @@ import android.content.Context;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -39,7 +38,6 @@ import org.chromium.base.library_loader.LoaderErrors;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.init.BrowserParts;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
@@ -129,8 +127,6 @@ public class NativeBackgroundTaskTest {
     private TestBrowserStartupController mBrowserStartupController;
     private TaskFinishedCallback mCallback;
     private TestNativeBackgroundTask mTask;
-
-    @Rule public final JniMocker mocker = new JniMocker();
     @Mock private ChromeBrowserInitializer mChromeBrowserInitializer;
     @Captor ArgumentCaptor<BrowserParts> mBrowserParts;
 

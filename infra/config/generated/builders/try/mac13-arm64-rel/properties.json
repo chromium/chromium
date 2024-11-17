@@ -77,7 +77,8 @@
           "builder": "mac13-arm64-rel-tests",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/mac13-arm64-rel/targets"
     }
   },
   "$build/reclient": {

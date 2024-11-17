@@ -23,7 +23,38 @@ reviewer.
 
 <enums>
 
+<!-- LINT.IfChange(FacilitatedPayments.FopSelectorAction) -->
+
+<enum name="FacilitatedPayments.FopSelectorAction">
+  <int value="0" label="FOP selected."/>
+  <int value="1" label="Turn off payment prompt link clicked."/>
+  <int value="2" label="Manage payment methods option selected."/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h:FopSelectorAction) -->
+
+<enum name="FacilitatedPayments.PayFlowExitedReason">
+  <int value="0" label="Code validator failed"/>
+  <int value="1" label="Invalid code"/>
+  <int value="2"
+      label="User opted out of the flow using the Settings page pref"/>
+  <int value="3" label="No linked account"/>
+  <int value="4"
+      label="The device was in landscape orientation when the payflow was
+             triggered"/>
+  <int value="5" label="API client not available"/>
+  <int value="6" label="Risk data not available"/>
+  <int value="7" label="Client token not available"/>
+  <int value="8" label="InitiatePayment request failed"/>
+  <int value="9" label="Action token not available"/>
+  <int value="10" label="User logged out after selecting payment method"/>
+</enum>
+
 <enum name="FacilitatedPayments.PaymentNotOfferedReason">
+  <obsolete>
+    Replaced by FacilitatedPayments.PayFlowExitedReason. To be removed after
+    implementation is finished.
+  </obsolete>
   <int value="0" label="Api not available"/>
   <int value="1" label="Risk data empty"/>
   <int value="2" label="Code validtor failed"/>
@@ -36,6 +67,17 @@ reviewer.
   <int value="1" label="Succeeded"/>
   <int value="2" label="Abandoned"/>
 </enum>
+
+<!-- LINT.IfChange(FacilitatedPayments.UiScreen) -->
+
+<enum name="FacilitatedPayments.UiScreen">
+  <int value="0" label="Hidden"/>
+  <int value="1" label="FOP selector"/>
+  <int value="2" label="Progress screen"/>
+  <int value="3" label="Error screen"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/facilitated_payments/core/ui_utils/facilitated_payments_ui_utils.h:UiState) -->
 
 </enums>
 

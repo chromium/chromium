@@ -114,6 +114,7 @@ abstract class HandleBase implements Handle {
      * @see java.lang.Object#finalize()
      */
     @Override
+    @SuppressWarnings("Finalize") // TODO(crbug.com/40286193): Use LifetimeAssert instead.
     protected final void finalize() throws Throwable {
         if (isValid()) {
             // This should not happen, as the user of this class should close the handle. Adding a

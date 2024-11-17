@@ -325,8 +325,7 @@ bool EmojiSuggester::AcceptSuggestion(size_t index) {
   std::string error;
   suggestion_handler_->AcceptSuggestionCandidate(
       *focused_context_id_, candidates_[index],
-      /* delete_previous_utf16_len=*/0, /*use_replace_surrounding_text=*/false,
-      &error);
+      /* delete_previous_utf16_len=*/0, &error);
 
   if (!error.empty()) {
     LOG(ERROR) << "Failed to accept suggestion. " << error;

@@ -122,12 +122,6 @@ class WebAppInstallFinalizer {
   virtual void FinalizeUpdate(const WebAppInstallInfo& web_app_info,
                               InstallFinalizedCallback callback);
 
-  bool CanReparentTab(const webapps::AppId& app_id,
-                      bool shortcut_created) const;
-  void ReparentTab(const webapps::AppId& app_id,
-                   bool shortcut_created,
-                   content::WebContents* web_contents);
-
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
   void Start();
   void Shutdown();
@@ -182,8 +176,6 @@ class WebAppInstallFinalizer {
   void OnInstallHooksFinished(InstallFinalizedCallback callback,
                               webapps::AppId app_id);
   void NotifyWebAppInstalledWithOsHooks(webapps::AppId app_id);
-
-  bool ShouldUpdateOsHooks(const webapps::AppId& app_id);
 
   void OnDatabaseCommitCompletedForUpdate(
       InstallFinalizedCallback callback,

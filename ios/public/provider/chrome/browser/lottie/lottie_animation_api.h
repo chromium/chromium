@@ -18,6 +18,9 @@
 // Called to stop the lottie animation.
 - (void)stop;
 
+// Called to pause the lottie animation.
+- (void)pause;
+
 // Called to set a color for a key path.
 - (void)setColorValue:(UIColor*)color forKeypath:(NSString*)keypath;
 

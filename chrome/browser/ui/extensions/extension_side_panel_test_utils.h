@@ -9,20 +9,11 @@
 
 class Browser;
 
-namespace content {
-class WebContents;
-}  // namespace content
-
 namespace extensions {
 
 // Opens the side panel for `browser` for the given extension's `id`.
 // Implemented by extension_side_panel_test_utils.cc in views/.
 void OpenExtensionSidePanel(Browser& browser, const ExtensionId& id);
-
-// Returns the WebContents for the given extension `id`'s side panel view.
-// Implemented by extension_side_panel_test_utils.cc in views/.
-content::WebContents* GetExtensionSidePanelWebContents(Browser& browser,
-                                                       const ExtensionId& id);
 
 }  // namespace extensions
 

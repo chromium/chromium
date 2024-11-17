@@ -77,7 +77,12 @@ class MockAutomationEventRouter
   }
 
   void DispatchAccessibilityLocationChange(
-      const ui::AXLocationChanges& details) override {}
+      const ui::AXTreeID& tree_id,
+      const ui::AXLocationChange& details) override {}
+
+  void DispatchAccessibilityScrollChange(
+      const ui::AXTreeID& tree_id,
+      const ui::AXScrollChange& details) override {}
 
   void DispatchTreeDestroyedEvent(ui::AXTreeID tree_id) override {}
 
@@ -1537,9 +1542,10 @@ TEST_F(AXTreeSourceAndroidTest, AutoComplete) {
   CallNotifyAccessibilityEvent(event.get());
 
   data = GetSerializedNode(editable->id);
-  int32_t active_descendant;
-  ASSERT_TRUE(data.GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
-                                   &active_descendant));
+  ASSERT_TRUE(
+      data.HasIntAttribute(ax::mojom::IntAttribute::kActivedescendantId));
+  int32_t active_descendant =
+      data.GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId);
   ASSERT_EQ(list_item->id, active_descendant);
 
   // Delete popup window.

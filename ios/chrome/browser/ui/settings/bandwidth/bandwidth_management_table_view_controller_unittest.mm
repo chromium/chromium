@@ -40,10 +40,10 @@ class BandwidthManagementTableViewControllerTest
         new user_prefs::PrefRegistrySyncable);
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs(
         factory.CreateSyncable(registry.get()));
-    RegisterBrowserStatePrefs(registry.get());
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.SetPrefService(std::move(prefs));
-    chrome_browser_state_ = std::move(test_cbs_builder).Build();
+    RegisterProfilePrefs(registry.get());
+    TestProfileIOS::Builder builder;
+    builder.SetPrefService(std::move(prefs));
+    profile_ = std::move(builder).Build();
 
     CreateController();
   }
@@ -55,13 +55,13 @@ class BandwidthManagementTableViewControllerTest
 
   LegacyChromeTableViewController* InstantiateController() override {
     return [[BandwidthManagementTableViewController alloc]
-        initWithBrowserState:chrome_browser_state_.get()];
+        initWithProfile:profile_.get()];
   }
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
 
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 TEST_F(BandwidthManagementTableViewControllerTest, TestModel) {
@@ -73,7 +73,7 @@ TEST_F(BandwidthManagementTableViewControllerTest, TestModel) {
   NSString* expected_title =
       l10n_util::GetNSString(IDS_IOS_OPTIONS_PRELOAD_WEBPAGES);
   NSString* expected_subtitle = [DataplanUsageTableViewController
-      currentLabelForPreference:chrome_browser_state_->GetPrefs()
+      currentLabelForPreference:profile_->GetPrefs()
                     settingPref:prefs::kNetworkPredictionSetting];
   CheckTextCellTextAndDetailText(expected_title, expected_subtitle, 0, 0);
   EXPECT_NE(nil, [controller().tableViewModel footerForSectionIndex:0]);

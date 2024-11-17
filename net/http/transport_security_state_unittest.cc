@@ -99,7 +99,7 @@ const char* const kBadPath[] = {
 class MockRequireCTDelegate : public TransportSecurityState::RequireCTDelegate {
  public:
   MOCK_METHOD3(IsCTRequiredForHost,
-               CTRequirementLevel(const std::string& hostname,
+               CTRequirementLevel(std::string_view hostname,
                                   const X509Certificate* chain,
                                   const HashValueVector& hashes));
 };

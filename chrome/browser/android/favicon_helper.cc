@@ -334,9 +334,7 @@ void FaviconHelper::OnFaviconBitmapResultAvailable(
   // Convert favicon_image_result to java objects.
   ScopedJavaLocalRef<jobject> j_favicon_bitmap;
   if (result.is_valid()) {
-    SkBitmap favicon_bitmap;
-    gfx::PNGCodec::Decode(result.bitmap_data->front(),
-                          result.bitmap_data->size(), &favicon_bitmap);
+    SkBitmap favicon_bitmap = gfx::PNGCodec::Decode(*result.bitmap_data);
     if (!favicon_bitmap.isNull()) {
       j_favicon_bitmap = gfx::ConvertToJavaBitmap(favicon_bitmap);
     }
@@ -354,15 +352,12 @@ void FaviconHelper::OnComposedFaviconBitmapResultsAvailable(
   JNIEnv* env = AttachCurrentThread();
   std::vector<SkBitmap> result_bitmaps;
   std::vector<GURL> icon_url_vector;
-  for (size_t i = 0; i < results.size(); i++) {
-    favicon_base::FaviconRawBitmapResult result = results[i];
+  for (auto result : results) {
     if (!result.is_valid()) {
       continue;
     }
-    SkBitmap favicon_bitmap;
     icon_url_vector.push_back(result.icon_url);
-    gfx::PNGCodec::Decode(result.bitmap_data->front(),
-                          result.bitmap_data->size(), &favicon_bitmap);
+    SkBitmap favicon_bitmap = gfx::PNGCodec::Decode(*result.bitmap_data);
     result_bitmaps.push_back(std::move(favicon_bitmap));
   }
   ScopedJavaLocalRef<jobject> j_favicon_bitmap;

@@ -35,7 +35,6 @@
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/data_transfer_policy/data_transfer_endpoint_serializer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/event_utils.h"
@@ -236,23 +235,10 @@ void Seat::SetSelection(DataSource* source) {
 
   size_t num_data_read_callbacks = DataSource::kMaxDataTypes;
 
-  // Lacros sends additional metadata, in a custom MIME type, to sync clipboard
-  // source metadata,
-  if (endpoint_type == ui::EndpointType::kLacros)
-    ++num_data_read_callbacks;
-
   base::RepeatingClosure data_read_callback = base::BarrierClosure(
       num_data_read_callbacks,
       base::BindOnce(&Seat::OnAllReadsFinished, weak_ptr_factory_.GetWeakPtr(),
                      writer));
-
-  if (endpoint_type == ui::EndpointType::kLacros) {
-    source->ReadDataTransferEndpoint(
-        base::BindOnce(&Seat::OnDataTransferEndpointRead,
-                       weak_ptr_factory_.GetWeakPtr(), writer,
-                       data_read_callback),
-        data_read_callback);
-  }
 
   source->GetDataForPreferredMimeTypes(
       base::BindOnce(&Seat::OnTextRead, weak_ptr_factory_.GetWeakPtr(), writer,
@@ -284,18 +270,6 @@ class Seat::RefCountedScopedClipboardWriter
   friend class base::RefCounted<RefCountedScopedClipboardWriter>;
   virtual ~RefCountedScopedClipboardWriter() = default;
 };
-
-void Seat::OnDataTransferEndpointRead(
-    scoped_refptr<RefCountedScopedClipboardWriter> writer,
-    base::OnceClosure callback,
-    const std::string& mime_type,
-    std::u16string data) {
-  std::string utf8_json = base::UTF16ToUTF8(data);
-  auto clipboard_source = ui::ConvertJsonToDataTransferEndpoint(utf8_json);
-
-  writer->SetDataSource(std::move(clipboard_source));
-  std::move(callback).Run();
-}
 
 void Seat::OnTextRead(scoped_refptr<RefCountedScopedClipboardWriter> writer,
                       base::OnceClosure callback,
@@ -467,8 +441,7 @@ void Seat::OnKeyEvent(ui::KeyEvent* event) {
         pressed_keys_.erase(physical_code_for_currently_processing_event_);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 

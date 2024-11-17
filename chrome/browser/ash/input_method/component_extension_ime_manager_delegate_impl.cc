@@ -24,7 +24,6 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -103,21 +102,22 @@ struct AllowlistedComponentExtensionIME {
 
 const char kImePathKeyName[] = "ime_path";
 
-extensions::ComponentLoader* GetComponentLoader(Profile* profile) {
+extensions::ComponentLoader* GetComponentLoader(
+    content::BrowserContext* context) {
   extensions::ExtensionSystem* extension_system =
-      extensions::ExtensionSystem::Get(profile);
+      extensions::ExtensionSystem::Get(context);
   extensions::ExtensionService* extension_service =
       extension_system->extension_service();
   return extension_service->component_loader();
 }
 
-void DoLoadExtension(Profile* profile,
+void DoLoadExtension(content::BrowserContext* context,
                      const std::string& extension_id,
                      const std::string& manifest,
                      const base::FilePath& file_path) {
   TRACE_EVENT1("ime", "DoLoadExtension", "ext_id", extension_id);
   extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(profile);
+      extensions::ExtensionRegistry::Get(context);
   DCHECK(extension_registry);
   if (extension_registry->enabled_extensions().GetByID(extension_id)) {
     VLOG(1) << "the IME extension(id=\"" << extension_id
@@ -125,7 +125,7 @@ void DoLoadExtension(Profile* profile,
     return;
   }
   const std::string loaded_extension_id =
-      GetComponentLoader(profile)->Add(manifest, file_path);
+      GetComponentLoader(context)->Add(manifest, file_path);
   if (loaded_extension_id.empty()) {
     LOG(ERROR) << "Failed to add an IME extension(id=\"" << extension_id
                << ", path=\"" << file_path.LossyDisplayName()
@@ -133,14 +133,14 @@ void DoLoadExtension(Profile* profile,
     return;
   }
   // Register IME extension with ExtensionPrefValueMap.
-  ExtensionPrefValueMapFactory::GetForBrowserContext(profile)
+  ExtensionPrefValueMapFactory::GetForBrowserContext(context)
       ->RegisterExtension(extension_id,
                           base::Time(),  // install_time.
                           true,          // is_enabled.
                           true);         // is_incognito_enabled.
   DCHECK_EQ(loaded_extension_id, extension_id);
   extensions::ExtensionSystem* extension_system =
-      extensions::ExtensionSystem::Get(profile);
+      extensions::ExtensionSystem::Get(context);
   extensions::ExtensionService* extension_service =
       extension_system->extension_service();
   DCHECK(extension_service);
@@ -154,13 +154,13 @@ bool CheckFilePath(const base::FilePath* file_path) {
   return base::PathExists(*file_path);
 }
 
-void OnFilePathChecked(Profile* profile,
+void OnFilePathChecked(content::BrowserContext* context,
                        const std::string* extension_id,
                        const std::string* manifest,
                        const base::FilePath* file_path,
                        bool result) {
   if (result) {
-    DoLoadExtension(profile, *extension_id, *manifest, *file_path);
+    DoLoadExtension(context, *extension_id, *manifest, *file_path);
   } else {
     LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
         << "IME extension file path does not exist: " << file_path->value();
@@ -186,7 +186,7 @@ ComponentExtensionIMEManagerDelegateImpl::ListIME() {
 }
 
 void ComponentExtensionIMEManagerDelegateImpl::Load(
-    Profile* profile,
+    content::BrowserContext* context,
     const std::string& extension_id,
     const std::string& manifest,
     const base::FilePath& file_path) {
@@ -198,7 +198,7 @@ void ComponentExtensionIMEManagerDelegateImpl::Load(
   // will improve the IME extension load latency a lot.
   // See http://b/192032670 for more details.
   if (extension_id == extension_ime_util::kXkbExtensionId) {
-    DoLoadExtension(profile, extension_id, *manifest_cp, file_path);
+    DoLoadExtension(context, extension_id, *manifest_cp, file_path);
     return;
   }
 #endif
@@ -211,7 +211,7 @@ void ComponentExtensionIMEManagerDelegateImpl::Load(
       // virtual keyboard. See https://crbug.com/976542
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&CheckFilePath, base::Unretained(copied_file_path)),
-      base::BindOnce(&OnFilePathChecked, base::Unretained(profile),
+      base::BindOnce(&OnFilePathChecked, base::Unretained(context),
                      base::Owned(new std::string(extension_id)),
                      base::Owned(manifest_cp), base::Owned(copied_file_path)));
 }
@@ -417,11 +417,9 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
   DCHECK(out_imes);
   for (auto& extension : allowlisted_component_extensions) {
     ComponentExtensionIME component_ime;
-    ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
-    std::string_view manifest_string =
-        rb.GetRawDataResource(extension.manifest_resource_id);
-    component_ime.manifest = std::string(manifest_string);
-
+    component_ime.manifest =
+        ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+            extension.manifest_resource_id);
     if (component_ime.manifest.empty()) {
       LOG(ERROR) << "Couldn't get manifest from resource_id("
                  << extension.manifest_resource_id << ")";
@@ -429,7 +427,7 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
     }
 
     std::optional<base::Value::Dict> maybe_manifest =
-        ParseManifest(manifest_string);
+        ParseManifest(component_ime.manifest);
     if (!maybe_manifest.has_value()) {
       LOG(ERROR) << "Failed to load invalid manifest: "
                  << component_ime.manifest;
@@ -447,7 +445,7 @@ void ComponentExtensionIMEManagerDelegateImpl::ReadComponentExtensionsInfo(
     if (!component_ime.path.IsAbsolute()) {
       base::FilePath resources_path;
       if (!base::PathService::Get(chrome::DIR_RESOURCES, &resources_path)) {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
       component_ime.path = resources_path.Append(component_ime.path);
     }

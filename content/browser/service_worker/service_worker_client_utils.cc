@@ -39,6 +39,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/page_visibility_state.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom.h"
@@ -486,7 +487,15 @@ void OpenWindow(const GURL& url,
           ? WindowOpenDisposition::NEW_POPUP
           : WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, true /* is_renderer_initiated */);
-  params.open_app_window_if_possible = type == WindowType::NEW_TAB_WINDOW;
+  // Disable the hack that always opens pwa windows if navigation capturing
+  // (reimplementation) is enabled.
+  if (!base::FeatureList::IsEnabled(features::kPwaNavigationCapturing) ||
+      (features::kNavigationCapturingDefaultState.Get() !=
+           features::CapturingState::kReimplDefaultOn &&
+       features::kNavigationCapturingDefaultState.Get() !=
+           features::CapturingState::kReimplDefaultOff)) {
+    params.open_app_window_if_possible = type == WindowType::NEW_TAB_WINDOW;
+  }
   params.initiator_origin =
       url::Origin::Create(script_url.DeprecatedGetOriginAsURL());
 

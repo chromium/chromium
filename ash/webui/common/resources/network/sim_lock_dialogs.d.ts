@@ -6,6 +6,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 export class SimLockDialogsElement extends PolymerElement {
   isDialogOpen: boolean;
+  closeDialogsForTest(): void;
 }
 
 declare global {

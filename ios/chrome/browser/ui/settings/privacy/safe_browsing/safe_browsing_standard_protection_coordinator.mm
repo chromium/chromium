@@ -47,11 +47,11 @@
       initWithStyle:ChromeTableViewStyle()];
   self.viewController.presentationDelegate = self;
   self.mediator = [[SafeBrowsingStandardProtectionMediator alloc]
-      initWithUserPrefService:self.browser->GetBrowserState()->GetPrefs()
-                  authService:AuthenticationServiceFactory::GetForBrowserState(
-                                  self.browser->GetBrowserState())
+      initWithUserPrefService:self.browser->GetProfile()->GetPrefs()
+                  authService:AuthenticationServiceFactory::GetForProfile(
+                                  self.browser->GetProfile())
               identityManager:IdentityManagerFactory::GetForProfile(
-                                  self.browser->GetBrowserState())];
+                                  self.browser->GetProfile())];
   self.mediator.consumer = self.viewController;
   self.viewController.modelDelegate = self.mediator;
   DCHECK(self.baseNavigationController);

@@ -7,8 +7,9 @@
 
 #include "third_party/s2cellid/src/s2/s2cellid.h"
 
-S2LangQuadTreeNode::S2LangQuadTreeNode() {}
-S2LangQuadTreeNode::S2LangQuadTreeNode(const S2LangQuadTreeNode& other) =
+S2LangQuadTreeNode::S2LangQuadTreeNode() = default;
+S2LangQuadTreeNode::S2LangQuadTreeNode(S2LangQuadTreeNode&& other) = default;
+S2LangQuadTreeNode& S2LangQuadTreeNode::operator=(S2LangQuadTreeNode&& other) =
     default;
 S2LangQuadTreeNode::~S2LangQuadTreeNode() = default;
 
@@ -57,7 +58,7 @@ size_t S2LangQuadTreeNode::DeserializeSubtree(
       subtree_size +=
           DeserializeSubtree(serialized_langtree, bits_per_lang_index,
                              bit_offset + subtree_size, &child);
-      root->children_.push_back(child);
+      root->children_.push_back(std::move(child));
     }
     return subtree_size;
   }

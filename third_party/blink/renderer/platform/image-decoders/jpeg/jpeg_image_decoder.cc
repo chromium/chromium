@@ -291,9 +291,8 @@ class JPEGImageReader final {
       UpdateRestartPosition();
     }
 
-    const char* segment;
-    const size_t bytes = data_->GetSomeData(segment, next_read_position_);
-    if (bytes == 0) {
+    base::span<const uint8_t> segment = data_->GetSomeData(next_read_position_);
+    if (segment.empty()) {
       // We had to suspend. When we resume, we will need to start from the
       // restart position.
       needs_restart_ = true;
@@ -301,9 +300,9 @@ class JPEGImageReader final {
       return false;
     }
 
-    next_read_position_ += bytes;
-    info_.src->bytes_in_buffer = bytes;
-    const JOCTET* next_byte = reinterpret_cast_ptr<const JOCTET*>(segment);
+    next_read_position_ += segment.size();
+    info_.src->bytes_in_buffer = segment.size();
+    auto* next_byte = reinterpret_cast_ptr<const JOCTET*>(segment.data());
     info_.src->next_input_byte = next_byte;
     last_set_byte_ = next_byte;
     return true;
@@ -1255,10 +1254,8 @@ bool JPEGImageDecoder::OutputScanlines() {
     case JCS_CMYK:
       return OutputRows<JCS_CMYK>(reader_.get(), buffer);
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-
-  return SetFailed();
 }
 
 void JPEGImageDecoder::Complete() {

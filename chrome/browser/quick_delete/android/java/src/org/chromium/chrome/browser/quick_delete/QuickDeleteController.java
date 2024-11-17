@@ -27,7 +27,6 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabSwitcherUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.Tracker;
@@ -86,17 +85,15 @@ public class QuickDeleteController {
         mTabModel = tabModelSelector.getModel(/* incognito= */ false);
         mDeleteRegularTabsFilter =
                 new QuickDeleteTabsFilter(
-                        (TabGroupModelFilter)
-                                tabModelSelector
-                                        .getTabModelFilterProvider()
-                                        .getTabModelFilter(/* incognito= */ false));
+                        tabModelSelector
+                                .getTabGroupModelFilterProvider()
+                                .getTabGroupModelFilter(/* incognito= */ false));
         if (archivedTabModelSelector != null) {
             mDeleteArchivedTabsFilter =
                     new QuickDeleteTabsFilter(
-                            (TabGroupModelFilter)
-                                    archivedTabModelSelector
-                                            .getTabModelFilterProvider()
-                                            .getTabModelFilter(/* incognito= */ false));
+                            archivedTabModelSelector
+                                    .getTabGroupModelFilterProvider()
+                                    .getTabGroupModelFilter(/* incognito= */ false));
         } else {
             mDeleteArchivedTabsFilter = null;
         }
@@ -153,11 +150,27 @@ public class QuickDeleteController {
         return ChromeFeatureList.sQuickDeleteForAndroid.isEnabled();
     }
 
-    /**
-     * @return True, if quick delete follow up is enabled, false otherwise
-     */
+    /** returns True, if quick delete follow up is enabled, false otherwise */
     public static boolean isQuickDeleteFollowupEnabled() {
         return isQuickDeleteEnabled() && ChromeFeatureList.sQuickDeleteAndroidFollowup.isEnabled();
+    }
+
+    /** returns True, if quick delete follow up open a new tab on empty tab switch arm is enabled */
+    public static boolean isQuickDeleteFollowupEnabledOpenNewTabOnEmptyState() {
+        return isQuickDeleteFollowupEnabled()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP,
+                        "open_tab_on_empty_state",
+                        true);
+    }
+
+    /** returns True, if the quick delete follow up tab deletion arm is enabled */
+    public static boolean isQuickDeleteFollowupEnabledWithTabClosure() {
+        return isQuickDeleteFollowupEnabled()
+                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                        ChromeFeatureList.QUICK_DELETE_ANDROID_FOLLOWUP,
+                        "enable_tab_closure",
+                        true);
     }
 
     /**

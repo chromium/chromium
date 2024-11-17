@@ -8,6 +8,7 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/types/pass_key.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service.h"
@@ -28,9 +29,16 @@ AuthenticationErrorCategory AuthenticationErrorCategoryFromError(
     id<SystemIdentity> identity,
     NSError* error) {
   DCHECK(error);
-  if ([error.domain isEqualToString:kAuthenticationErrorDomain]) {
-    if (error.code == NO_AUTHENTICATED_USER) {
-      return kAuthenticationErrorCategoryUnknownIdentityErrors;
+  if ([error.domain isEqualToString:kSystemIdentityManagerErrorDomain]) {
+    SystemIdentityManagerErrorCode error_code =
+        static_cast<SystemIdentityManagerErrorCode>(error.code);
+    switch (error_code) {
+      case SystemIdentityManagerErrorCode::kNoAuthenticatedIdentity:
+        return kAuthenticationErrorCategoryUnknownIdentityErrors;
+      case SystemIdentityManagerErrorCode::kClientIDMismatch:
+        return kAuthenticationErrorCategoryUnknownIdentityErrors;
+      case SystemIdentityManagerErrorCode::kInvalidTokenIdentity:
+        return kAuthenticationErrorCategoryAuthorizationErrors;
     }
   }
 
@@ -53,8 +61,8 @@ AuthenticationErrorCategory AuthenticationErrorCategoryFromError(
       return kAuthenticationErrorCategoryUserCancellationErrors;
   }
 
-  NOTREACHED_IN_MIGRATION()
-      << "unexpected error: " << base::SysNSStringToUTF8([error description]);
+  NOTREACHED() << "unexpected error: "
+               << base::SysNSStringToUTF8([error description]);
 }
 
 // Helper function converting the result of fetching the access token from
@@ -75,6 +83,37 @@ AccessTokenResult AccessTokenResultFrom(
     };
     return base::ok(std::move(info));
   }
+}
+
+std::vector<DeviceAccountsProvider::AccountInfo>
+ConvertSystemIdentitiesToAccountInfos(NSArray<id<SystemIdentity>>* identities) {
+  std::vector<AccountInfo> result;
+  result.reserve(identities.count);
+
+  SystemIdentityManager* system_identity_manager =
+      GetApplicationContext()->GetSystemIdentityManager();
+
+  for (id<SystemIdentity> identity : identities) {
+    CHECK(identity);
+    AccountInfo account_info;
+    account_info.gaia = base::SysNSStringToUTF8(identity.gaiaID);
+    account_info.email = base::SysNSStringToUTF8(identity.userEmail);
+
+    // If hosted domain is nil, then it means the information has not been
+    // fetched from gaia; in that case, set account_info.hosted_domain to
+    // an empty string. Otherwise, set it to the value of the hostedDomain
+    // or kNoHostedDomainFound if the string is empty.
+    NSString* hosted_domain =
+        system_identity_manager->GetCachedHostedDomainForIdentity(identity);
+    if (hosted_domain) {
+      account_info.hosted_domain = hosted_domain.length
+                                       ? base::SysNSStringToUTF8(hosted_domain)
+                                       : kNoHostedDomainFound;
+    }
+    result.push_back(std::move(account_info));
+  }
+
+  return result;
 }
 
 }  // anonymous namespace
@@ -114,35 +153,16 @@ void DeviceAccountsProviderImpl::GetAccessToken(
 }
 
 std::vector<DeviceAccountsProvider::AccountInfo>
-DeviceAccountsProviderImpl::GetAllAccounts() const {
+DeviceAccountsProviderImpl::GetAccountsForProfile() const {
   NSArray<id<SystemIdentity>>* identities =
       account_manager_service_->GetAllIdentities();
+  return ConvertSystemIdentitiesToAccountInfos(identities);
+}
 
-  std::vector<AccountInfo> result;
-  result.reserve(identities.count);
-
-  SystemIdentityManager* system_identity_manager =
-      GetApplicationContext()->GetSystemIdentityManager();
-
-  for (id<SystemIdentity> identity : identities) {
-    DCHECK(identity);
-    AccountInfo account_info;
-    account_info.gaia = base::SysNSStringToUTF8(identity.gaiaID);
-    account_info.email = base::SysNSStringToUTF8(identity.userEmail);
-
-    // If hosted domain is nil, then it means the information has not been
-    // fetched from gaia; in that case, set account_info.hosted_domain to
-    // an empty string. Otherwise, set it to the value of the hostedDomain
-    // or kNoHostedDomainFound if the string is empty.
-    NSString* hosted_domain =
-        system_identity_manager->GetCachedHostedDomainForIdentity(identity);
-    if (hosted_domain) {
-      account_info.hosted_domain = hosted_domain.length
-                                       ? base::SysNSStringToUTF8(hosted_domain)
-                                       : kNoHostedDomainFound;
-    }
-    result.push_back(std::move(account_info));
-  }
-
-  return result;
+std::vector<DeviceAccountsProvider::AccountInfo>
+DeviceAccountsProviderImpl::GetAccountsOnDevice() const {
+  NSArray<id<SystemIdentity>>* identities =
+      account_manager_service_->GetAllIdentitiesOnDevice(
+          base::PassKey<DeviceAccountsProviderImpl>());
+  return ConvertSystemIdentitiesToAccountInfos(identities);
 }

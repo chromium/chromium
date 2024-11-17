@@ -90,7 +90,8 @@ void MockVideoCaptureDeviceClient::OnIncomingCapturedBuffer(
     const media::VideoCaptureFormat& format,
     base::TimeTicks reference_time,
     base::TimeDelta timestamp,
-    std::optional<base::TimeTicks> capture_begin_time) {
+    std::optional<base::TimeTicks> capture_begin_time,
+    const std::optional<VideoFrameMetadata>& metadata) {
   DoOnIncomingCapturedBuffer(buffer, format, reference_time, timestamp);
 }
 void MockVideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
@@ -101,7 +102,7 @@ void MockVideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
     base::TimeDelta timestamp,
     std::optional<base::TimeTicks> capture_begin_time,
     gfx::Rect visible_rect,
-    const media::VideoFrameMetadata& additional_metadata) {
+    const std::optional<VideoFrameMetadata>& additional_metadata) {
   DoOnIncomingCapturedBufferExt(buffer, format, color_space, reference_time,
                                 timestamp, visible_rect, additional_metadata);
 }

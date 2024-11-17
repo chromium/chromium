@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<link rel="match" href="transferBackFromGPUTexture-paint-invalidation-expected.https.html">
+<script src="./transferBackFromGPUTexture-paint-invalidation-impl.js"></script>
+
+<html class="reftest-wait">
+<h1>Canvas2D WebGPU Transfer: transferBackFromGPUTexture-paint-invalidation</h1>
+<p>
+  transferBackFromGPUTexture() should trigger the canvas to repaint, showing
+  the content from WebGPU.
+</p>
+<canvas id="canvas" width="50" height="50"></canvas>
+
+<script id="myWorker" type="text/worker">
+  self.onmessage = async function(e) {
+    const offscreen = e.data;
+    await transferBackFromGPUTexture_paintInvalidation(offscreen);
+    self.postMessage(null);
+  };
+</script>
+
+<script type="module">
+  const helpers = await fetch('webgpu-helpers.js');
+  const impl = await fetch(
+      'transferBackFromGPUTexture-paint-invalidation-impl.js');
+  const blob = new Blob([
+      await helpers.text(),
+      await impl.text(),
+      document.getElementById('myWorker').textContent]);
+  const worker = new Worker(URL.createObjectURL(blob));
+  const canvas = document.getElementById('canvas');
+  const offscreen = canvas.transferControlToOffscreen();
+  worker.addEventListener('message', async msg => {
+    await waitForCanvasUpdate(canvas);
+    document.documentElement.classList.remove('reftest-wait');
+  });
+  worker.postMessage(offscreen, [offscreen]);
+</script>
+
+</html>

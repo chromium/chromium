@@ -12,6 +12,11 @@
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
 #include "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
 
+#if defined(TOOLKIT_VIEWS)
+#include "ui/views/widget/any_widget_observer_singleton.h"
+#include "ui/views/widget/widget.h"
+#endif  // TOOLKIT_VIEWS
+
 namespace breadcrumbs {
 
 namespace {
@@ -32,11 +37,18 @@ ApplicationBreadcrumbsLogger::ApplicationBreadcrumbsLogger(
           FROM_HERE,
           base::BindRepeating(&ApplicationBreadcrumbsLogger::OnMemoryPressure,
                               base::Unretained(this)))),
+#if defined(TOOLKIT_VIEWS)
+      any_widget_observer_(views::AnyWidgetPasskey{}),
+#endif  // TOOLKIT_VIEWS
       persistent_storage_manager_(
           std::make_unique<BreadcrumbPersistentStorageManager>(
               storage_dir,
               std::move(is_metrics_enabled_callback))) {
   base::AddActionCallback(user_action_callback_);
+#if defined(TOOLKIT_VIEWS)
+  any_widget_observer_.set_closing_callback(base::BindRepeating(
+      &ApplicationBreadcrumbsLogger::OnWidgetClosed, base::Unretained(this)));
+#endif  // TOOLKIT_VIEWS
   AddEvent("Startup");
 }
 
@@ -83,6 +95,12 @@ void ApplicationBreadcrumbsLogger::OnMemoryPressure(
 
   AddEvent(base::StringPrintf("Memory Pressure: %s", pressure_string));
 }
+
+#if defined(TOOLKIT_VIEWS)
+void ApplicationBreadcrumbsLogger::OnWidgetClosed(views::Widget* widget) {
+  AddEvent(base::StringPrintf("Widget Closed: %s", widget->GetName().c_str()));
+}
+#endif  // TOOLKIT_VIEWS
 
 bool ApplicationBreadcrumbsLogger::IsUserTriggeredAction(
     const std::string& action) {

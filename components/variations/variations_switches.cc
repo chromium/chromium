@@ -99,5 +99,13 @@ const char kEnableFinchSeedDeltaCompression[] =
 const char kAcceptEmptySeedSignatureForTesting[] =
     "accept-empty-variations-seed-signature";
 
+// Use features defined in the value. Use this flag to reproduce experiments
+// related issues.
+// Copy 'Command-line Variations' value from chrome://version page. Save it
+// to a file and pass it via this flag.
+// The value is a base64 encoded JSON format produced by
+// `variations::VariationsCommandLine::WriteToString`.
+const char kVariationsStateFile[] = "variations-state-file";
+
 }  // namespace switches
 }  // namespace variations

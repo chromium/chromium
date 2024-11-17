@@ -37,9 +37,9 @@
 #include "net/spdy/bidirectional_stream_spdy_impl.h"
 #include "net/spdy/spdy_http_stream.h"
 #include "net/ssl/ssl_config.h"
+#include "net/third_party/quiche/src/quiche/http2/core/spdy_alt_svc_wire_format.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_server_id.h"
-#include "net/third_party/quiche/src/quiche/spdy/core/spdy_alt_svc_wire_format.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -135,9 +135,9 @@ void HttpStreamFactory::ProcessAlternativeServices(
   if (!headers->HasHeader(kAlternativeServiceHeader))
     return;
 
-  std::string alternative_service_str;
-  headers->GetNormalizedHeader(kAlternativeServiceHeader,
-                               &alternative_service_str);
+  std::string alternative_service_str =
+      headers->GetNormalizedHeader(kAlternativeServiceHeader)
+          .value_or(std::string());
   spdy::SpdyAltSvcWireFormat::AlternativeServiceVector
       alternative_service_vector;
   if (!spdy::SpdyAltSvcWireFormat::ParseHeaderFieldValue(
@@ -280,7 +280,7 @@ void HttpStreamFactory::OnJobControllerComplete(JobController* controller) {
   if (it != job_controller_set_.end()) {
     job_controller_set_.erase(it);
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 

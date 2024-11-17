@@ -7,16 +7,16 @@ package org.chromium.chrome.browser.ui.cars;
 import org.chromium.base.Callback;
 
 /** Base class that exposes methods for starting and stopping monitoring. */
-class DrivingRestrictionsDelegate {
-    private Callback<Boolean> mRequiresDrivingOptimizationsCallback;
+public abstract class DrivingRestrictionsDelegate {
+    private final Callback<Boolean> mRequiresDrivingOptimizationsCallback;
 
     DrivingRestrictionsDelegate(Callback<Boolean> requiresDrivingOptimizationsCallback) {
         mRequiresDrivingOptimizationsCallback = requiresDrivingOptimizationsCallback;
     }
 
-    void startMonitoring() {}
+    abstract void startMonitoring();
 
-    void stopMonitoring() {}
+    abstract void stopMonitoring();
 
     protected void notifyCallback(boolean requiresOptimization) {
         mRequiresDrivingOptimizationsCallback.onResult(requiresOptimization);

@@ -32,9 +32,6 @@ class ASH_EXPORT ShelfTooltipBubble : public ShelfBubble {
   bool ShouldCloseOnMouseExit() override;
 
  private:
-  // views::View overrides:
-  void OnThemeChanged() override;
-
   // BubbleDialogDelegateView overrides:
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;

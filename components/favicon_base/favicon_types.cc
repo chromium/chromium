@@ -11,9 +11,9 @@ namespace favicon_base {
 // ---------------------------------------------------------
 // FaviconImageResult
 
-FaviconImageResult::FaviconImageResult() {}
+FaviconImageResult::FaviconImageResult() = default;
 
-FaviconImageResult::~FaviconImageResult() {}
+FaviconImageResult::~FaviconImageResult() = default;
 
 // --------------------------------------------------------
 // FaviconRawBitmapResult
@@ -24,7 +24,7 @@ FaviconRawBitmapResult::FaviconRawBitmapResult()
 FaviconRawBitmapResult::FaviconRawBitmapResult(
     const FaviconRawBitmapResult& other) = default;
 
-FaviconRawBitmapResult::~FaviconRawBitmapResult() {}
+FaviconRawBitmapResult::~FaviconRawBitmapResult() = default;
 
 // --------------------------------------------------------
 // LargeIconResult
@@ -35,7 +35,7 @@ LargeIconResult::LargeIconResult(const FaviconRawBitmapResult& bitmap_in)
 LargeIconResult::LargeIconResult(FallbackIconStyle* fallback_icon_style_in)
     : fallback_icon_style(fallback_icon_style_in) {}
 
-LargeIconResult::~LargeIconResult() {}
+LargeIconResult::~LargeIconResult() = default;
 
 LargeIconResult::LargeIconResult(LargeIconResult&& result) = default;
 
@@ -50,6 +50,6 @@ LargeIconImageResult::LargeIconImageResult(
     FallbackIconStyle* fallback_icon_style_in)
     : fallback_icon_style(fallback_icon_style_in) {}
 
-LargeIconImageResult::~LargeIconImageResult() {}
+LargeIconImageResult::~LargeIconImageResult() = default;
 
 }  // namespace favicon_base

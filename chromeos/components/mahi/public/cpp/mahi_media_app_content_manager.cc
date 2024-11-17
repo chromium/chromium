@@ -33,8 +33,7 @@ ScopedMahiMediaAppContentManagerSetter::ScopedMahiMediaAppContentManagerSetter(
     MahiMediaAppContentManager* proxy) {
   // Only allow one scoped instance at a time.
   if (instance_) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   instance_ = this;
 
@@ -46,8 +45,7 @@ ScopedMahiMediaAppContentManagerSetter::ScopedMahiMediaAppContentManagerSetter(
 ScopedMahiMediaAppContentManagerSetter::
     ~ScopedMahiMediaAppContentManagerSetter() {
   if (instance_ != this) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   instance_ = nullptr;

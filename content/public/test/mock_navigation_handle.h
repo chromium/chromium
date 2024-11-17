@@ -17,6 +17,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/web_contents.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/isolation_info.h"
 #include "net/http/http_connection_info.h"
@@ -83,7 +84,14 @@ class MockNavigationHandle : public NavigationHandle {
   bool IsInOutermostMainFrame() override {
     return !GetParentFrameOrOuterDocument();
   }
-  MOCK_METHOD0(GetFrameTreeNodeId, FrameTreeNodeId());
+  content::FrameTreeNodeId GetFrameTreeNodeId() override {
+    if (IsInPrimaryMainFrame()) {
+      CHECK(web_contents_);
+      return web_contents_->GetPrimaryMainFrame()->GetFrameTreeNodeId();
+    }
+    CHECK(render_frame_host_);
+    return render_frame_host_->GetFrameTreeNodeId();
+  }
   MOCK_METHOD0(GetPreviousRenderFrameHostId, GlobalRenderFrameHostId());
   MOCK_METHOD(int, GetExpectedRenderProcessHostId, ());
   bool IsServedFromBackForwardCache() override {

@@ -142,7 +142,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
     bool set_can_activate_on_click_or_tap = false;
     // Indicates whether tray bubble view should add a pre target event handler.
     bool reroute_event_handler = false;
-    int corner_radius = GetBubbleCornerRadius();
+    int corner_radius = kBubbleCornerRadius;
     std::optional<gfx::Insets> insets;
     std::optional<gfx::Insets> margin;
     // If the view has a large corner radius(e.g. slider bubble), we should
@@ -244,7 +244,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
       const views::SizeBounds& available_size) const override;
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
 
   // views::MouseWatcherListener:
@@ -279,6 +278,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   void NotifyTrayBubbleClosed();
 
   void CloseBubbleView();
+
+  void UpdateAccessibleName();
 
   views::BoxLayout* box_layout() { return layout_; }
   const views::BoxLayout* box_layout() const { return layout_; }
@@ -317,6 +318,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   };
 
   void UpdateAccessibleIgnoredState();
+  void OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                       const std::optional<std::string>& name);
 
   InitParams params_;
   raw_ptr<views::BoxLayout, DanglingUntriaged> layout_;
@@ -337,6 +340,8 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   std::unique_ptr<EventHandler> reroute_event_handler_;
 
   std::unique_ptr<SystemShadow> shadow_;
+
+  base::CallbackListSubscription name_changed_subscription_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, TrayBubbleView, views::BubbleDialogDelegateView)

@@ -73,8 +73,7 @@ inline D3D12FeatureLevel ConvertToHistogramFeatureLevel(
     case D3D_FEATURE_LEVEL_11_1:
       return D3D12FeatureLevel::kD3DFeatureLevel_11_1;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return D3D12FeatureLevel::kD3DFeatureLevelUnknown;
+      NOTREACHED();
   }
 }
 
@@ -118,8 +117,7 @@ D3D12ShaderModel ConvertToHistogramShaderVersion(uint32_t version) {
       return D3D12ShaderModel::kD3DShaderModel_6_7;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return D3D12ShaderModel::kUnknownOrNoD3D12Devices;
+      NOTREACHED();
   }
 }
 
@@ -736,9 +734,6 @@ uint32_t GetGpuSupportedVulkanVersion(
 void RecordGpuSupportedDx12VersionHistograms(
     uint32_t d3d12_feature_level,
     uint32_t highest_shader_model_version) {
-  bool supports_dx12 =
-      (d3d12_feature_level >= D3D_FEATURE_LEVEL_12_0) ? true : false;
-  UMA_HISTOGRAM_BOOLEAN("GPU.SupportsDX12", supports_dx12);
   UMA_HISTOGRAM_ENUMERATION(
       "GPU.D3D12FeatureLevel",
       ConvertToHistogramFeatureLevel(d3d12_feature_level));

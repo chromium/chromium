@@ -131,7 +131,8 @@ void IdentityManagerFactory::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
-KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+IdentityManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
@@ -164,9 +165,11 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
 #endif  // #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  params.account_manager_facade =
-      GetAccountManagerFacade(profile->GetPath().value());
-  params.is_regular_profile = ash::ProfileHelper::IsUserProfile(profile);
+  if (ash::ProfileHelper::IsUserProfile(profile)) {
+    params.account_manager_facade =
+        GetAccountManagerFacade(profile->GetPath().value());
+    params.is_regular_profile = true;
+  }
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -200,5 +203,5 @@ KeyedService* IdentityManagerFactory::BuildServiceInstanceFor(
   for (Observer& observer : observer_list_)
     observer.IdentityManagerCreated(identity_manager.get());
 
-  return identity_manager.release();
+  return identity_manager;
 }

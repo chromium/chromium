@@ -51,13 +51,13 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillAddress;
 import org.chromium.chrome.browser.autofill.AutofillProfileBridge;
@@ -147,7 +147,7 @@ public class AddressEditorTest {
                     .setLanguageCode("en-US")
                     .build();
 
-    @Rule public JniMocker mJniMocker = new JniMocker();
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private AutofillProfileBridge.Natives mAutofillProfileBridgeJni;
     @Mock private PhoneNumberUtil.Natives mPhoneNumberUtilJni;
@@ -173,12 +173,11 @@ public class AddressEditorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         Locale.setDefault(Locale.US);
 
         // PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
-        mJniMocker.mock(AutofillProfileBridgeJni.TEST_HOOKS, mAutofillProfileBridgeJni);
+        AutofillProfileBridgeJni.setInstanceForTesting(mAutofillProfileBridgeJni);
         doAnswer(
                         invocation -> {
                             List<Integer> requiredFields =
@@ -193,7 +192,7 @@ public class AddressEditorTest {
                         })
                 .when(mAutofillProfileBridgeJni)
                 .getRequiredFields(anyString(), anyList());
-        mJniMocker.mock(PhoneNumberUtilJni.TEST_HOOKS, mPhoneNumberUtilJni);
+        PhoneNumberUtilJni.setInstanceForTesting(mPhoneNumberUtilJni);
         when(mPhoneNumberUtilJni.isPossibleNumber(anyString(), anyString())).thenReturn(true);
 
         mActivity = Robolectric.setupActivity(TestActivity.class);

@@ -9,11 +9,11 @@
 
 #import "base/ios/block_types.h"
 #import "components/signin/public/base/signin_metrics.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios_forward.h"
 #import "ios/chrome/browser/ui/authentication/authentication_flow_performer_delegate.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 class Browser;
+class ProfileIOS;
 @protocol SystemIdentity;
 
 // Performs the sign-in steps and user interactions as part of the sign-in flow.
@@ -35,7 +35,7 @@ class Browser;
 - (void)fetchManagedStatus:(ProfileIOS*)profile
                forIdentity:(id<SystemIdentity>)identity;
 
-// Signs `identity` with `hostedDomain` into `browserState`.
+// Signs `identity` with `hostedDomain` into `profile`.
 - (void)signInIdentity:(id<SystemIdentity>)identity
          atAccessPoint:(signin_metrics::AccessPoint)accessPoint
       withHostedDomain:(NSString*)hostedDomain

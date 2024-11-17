@@ -75,8 +75,7 @@ std::u16string OfferNotificationBubbleControllerImpl::GetWindowTitle() const {
           IDS_AUTOFILL_GPAY_PROMO_CODE_OFFERS_REMINDER_TITLE);
     case AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER:
     case AutofillOfferData::OfferType::UNKNOWN:
-      NOTREACHED_IN_MIGRATION();
-      return std::u16string();
+      NOTREACHED();
   }
 }
 
@@ -125,7 +124,7 @@ void OfferNotificationBubbleControllerImpl::OnIconExpanded() {
 }
 
 void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
-    PaymentsBubbleClosedReason closed_reason) {
+    PaymentsUiClosedReason closed_reason) {
   set_bubble_view(nullptr);
   promo_code_button_clicked_ = false;
   UpdatePageActionIcon();
@@ -133,25 +132,24 @@ void OfferNotificationBubbleControllerImpl::OnBubbleClosed(
   // Log bubble result according to the closed reason.
   autofill_metrics::OfferNotificationBubbleResultMetric metric;
   switch (closed_reason) {
-    case PaymentsBubbleClosedReason::kAccepted:
+    case PaymentsUiClosedReason::kAccepted:
       metric = autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_ACKNOWLEDGED;
       break;
-    case PaymentsBubbleClosedReason::kClosed:
+    case PaymentsUiClosedReason::kClosed:
       metric = autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_CLOSED;
       break;
-    case PaymentsBubbleClosedReason::kNotInteracted:
+    case PaymentsUiClosedReason::kNotInteracted:
       metric = autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_NOT_INTERACTED;
       break;
-    case PaymentsBubbleClosedReason::kLostFocus:
+    case PaymentsUiClosedReason::kLostFocus:
       metric = autofill_metrics::OfferNotificationBubbleResultMetric::
           OFFER_NOTIFICATION_BUBBLE_LOST_FOCUS;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   autofill_metrics::LogOfferNotificationBubbleResultMetric(
       offer_.GetOfferType(), metric, is_user_gesture_);

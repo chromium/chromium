@@ -75,7 +75,8 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
                                       void* value,
                                       EGLsizeiANDROID value_size);
 
-  void Set(Key&& key, Value&& value);
+  size_t Get(const Key& key, void* out_value, size_t value_size);
+  void Set(Key&& key, Value&& value, CacheProgramCallback callback);
 
  private:
   class ProgramCacheValue {
@@ -104,11 +105,14 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
   void ClearBackend() override;
   bool CacheEnabled() const;
 
-  const ProgramCacheValue* Get(const Key& key);
   EGLsizeiANDROID BlobCacheGetImpl(const void* key,
                                    EGLsizeiANDROID key_size,
                                    void* value,
                                    EGLsizeiANDROID value_size);
+  void BlobCacheSetImpl(const void* key,
+                        EGLsizeiANDROID key_size,
+                        const void* value,
+                        EGLsizeiANDROID value_size);
 
   friend class ProgramCacheValue;
 

@@ -1,0 +1,23 @@
+<!--
+@BLINK-ALLOW:descri*
+@EXECUTE-AND-WAIT-FOR:setDescribedBy()
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <x-description id="date-desc" style="display:none">
+    <template shadowrootmode="open" shadowrootreferencetarget="target">
+      <div id="target" aria-label="mmddyy">Targeted element</div>
+    </template>
+  </x-description>
+  <input type="text">
+  <script>
+    function setDescribedBy() {
+      const input = document.querySelector("input");
+      input.setAttribute("aria-describedby", "date-desc");
+      document.title = "set-describedby";
+      return "set-describedby";
+    }
+  </script>
+</body>
+</html>

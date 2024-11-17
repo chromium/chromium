@@ -47,7 +47,7 @@ public class DefaultSearchEngineDialogHelperTest {
         }
     }
 
-    private class TestTemplateUrl extends TemplateUrl {
+    private static class TestTemplateUrl extends TemplateUrl {
         private String mShortName;
         private String mKeyword;
 
@@ -76,7 +76,7 @@ public class DefaultSearchEngineDialogHelperTest {
         }
     }
 
-    private class TestDialogHelper extends DefaultSearchEngineDialogHelper {
+    private static class TestDialogHelper extends DefaultSearchEngineDialogHelper {
         public final TestDelegate delegate;
 
         public TestDialogHelper(

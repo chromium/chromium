@@ -237,7 +237,7 @@ void TestResponseProvider::GetResponseHeadersAndBody(
     *response_body = kTranslateScript;
     return;
   }
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void TestResponseProvider::GetLanguageResponse(
@@ -286,9 +286,9 @@ void TestResponseProvider::GetLanguageResponse(
   [TranslateAppInterface setUpWithScriptServer:translateScriptSwitchValue];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   [TranslateAppInterface tearDown];
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 #pragma mark - Test Cases
@@ -540,12 +540,8 @@ void TestResponseProvider::GetLanguageResponse(
 
 // Tests that the infobar banner persists as the page scrolls mode and that the
 // banner can be dimissed.
-- (void)testInfobarShowHideDismiss {
-  // TODO(crbug.com/334867767): Test fails when run on iOS 17 iPad simulator.
-  if (base::ios::IsRunningOnIOS17OrLater() && [ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Fails on iOS 17 iPad simulator.");
-  }
-
+// TODO(crbug.com/334867767): Test fails on random devices and simulator.
+- (void)FLAKY_testInfobarShowHideDismiss {
   // Start the HTTP server.
   std::unique_ptr<web::DataResponseProvider> provider(new TestResponseProvider);
   web::test::SetUpHttpServer(std::move(provider));

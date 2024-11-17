@@ -29,6 +29,10 @@
 #include "base/android/jni_android.h"
 #endif
 
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+#include "components/signin/internal/identity_manager/token_binding_helper.h"
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -83,19 +87,42 @@ class ProfileOAuth2TokenServiceDelegate {
                                bool fire_auth_error_changed = true);
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  // Returns true iff (a) a refresh token exists for `account_id`, and (b) the
+  // refresh token is bound to a device.
+  virtual bool IsRefreshTokenBound(const CoreAccountId& account_id) const = 0;
+
   // Returns the wrapped binding key of a refresh token associated with
   // `account_id`, if any.
   // Returns a non-empty vector iff (a) a refresh token exists for `account_id`,
   // and (b) the refresh token is bound to a device.
   virtual std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const = 0;
+
+  // Asynchronously generates a binding key assertion for a refresh token
+  // associated with `account_id` to be sent to the Gaia Multilogin endpoint.
+  // The result is returned through `callback`.
+  // Returns an empty string if the refresh token cannot used in Multilogin, the
+  // refresh token is not bound, or the assertion generation fails.
+  virtual void GenerateRefreshTokenBindingKeyAssertionForMultilogin(
+      const CoreAccountId& account_id,
+      std::string_view challenge,
+      TokenBindingHelper::GenerateAssertionCallback callback) = 0;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   // Returns a list of accounts for which a refresh token is maintained by
-  // |this| instance, in the order the refresh tokens were added.
+  // |this| instance, i.e. the accounts available in this profile, in the order
+  // the refresh tokens were added.
   // Note: If tokens have not been fully loaded yet, an empty list is returned.
   // Also, see |RefreshTokenIsAvailable|.
+  // TODO(crbug.com/368409110): Rename to GetAccountsInProfile(), to distinguish
+  // from GetAccountsOnDevice().
   virtual std::vector<CoreAccountId> GetAccounts() const;
+
+#if BUILDFLAG(IS_IOS)
+  // Returns a list of accounts that exist on the device, including those that
+  // are assigned to different profiles.
+  virtual std::vector<AccountInfo> GetAccountsOnDevice() const;
+#endif  // BUILDFLAG(IS_IOS)
 
   virtual void OnAccessTokenInvalidated(
       const CoreAccountId& account_id,

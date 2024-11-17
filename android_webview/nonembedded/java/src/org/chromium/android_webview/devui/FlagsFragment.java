@@ -450,7 +450,7 @@ public class FlagsFragment extends DevUiBaseFragment {
                     };
         }
 
-        private View getToggleableFlag(@NonNull Flag flag, View view, ViewGroup parent) {
+        private View getToggleableFlag(@NonNull Flag flag, View view) {
             // If the the old view is already created then reuse it, else create a new one by layout
             // inflation.
             if (view == null) {
@@ -497,7 +497,7 @@ public class FlagsFragment extends DevUiBaseFragment {
             return view;
         }
 
-        private View getWarningMessage(View view, ViewGroup parent) {
+        private View getWarningMessage(View view) {
             // If the the old view is already created then reuse it, else create a new one by layout
             // inflation.
             if (view == null) {
@@ -539,9 +539,9 @@ public class FlagsFragment extends DevUiBaseFragment {
         public View getView(int position, View view, ViewGroup parent) {
             Flag flag = getItem(position);
             if (getItemViewType(position) == LayoutType.WARNING_MESSAGE) {
-                return getWarningMessage(view, parent);
+                return getWarningMessage(view);
             } else {
-                return getToggleableFlag(flag, view, parent);
+                return getToggleableFlag(flag, view);
             }
         }
 

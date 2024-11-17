@@ -23,10 +23,11 @@
 #include "third_party/blink/renderer/platform/graphics/filters/fe_merge.h"
 
 #include <memory>
+#include <vector>
 
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -35,18 +36,18 @@ FEMerge::FEMerge(Filter* filter) : FilterEffect(filter) {}
 sk_sp<PaintFilter> FEMerge::CreateImageFilter() {
   unsigned size = NumberOfEffectInputs();
 
-  auto input_refs = std::make_unique<sk_sp<PaintFilter>[]>(size);
+  std::vector<sk_sp<PaintFilter>> input_refs(size);
   for (unsigned i = 0; i < size; ++i) {
     input_refs[i] = paint_filter_builder::Build(InputEffect(i),
                                                 OperatingInterpolationSpace());
   }
   std::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
-  return sk_make_sp<MergePaintFilter>(input_refs.get(), size,
+  return sk_make_sp<MergePaintFilter>(input_refs,
                                       base::OptionalToPtr(crop_rect));
 }
 
-WTF::TextStream& FEMerge::ExternalRepresentation(WTF::TextStream& ts,
-                                                 int indent) const {
+StringBuilder& FEMerge::ExternalRepresentation(StringBuilder& ts,
+                                               wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feMerge";
   FilterEffect::ExternalRepresentation(ts);

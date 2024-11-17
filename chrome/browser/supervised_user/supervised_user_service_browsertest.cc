@@ -38,6 +38,7 @@ class SupervisedUserServiceBrowserTest
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
       this,
+      embedded_test_server(),
       {.sign_in_mode = GetSignInMode()}};
 
  private:

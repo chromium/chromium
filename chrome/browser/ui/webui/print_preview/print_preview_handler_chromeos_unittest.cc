@@ -15,7 +15,6 @@
 #include "base/run_loop.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
-#include "chrome/browser/ash/crosapi/test_crosapi_dependency_registry.h"
 #include "chrome/browser/printing/print_test_utils.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_handler.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
@@ -228,7 +227,7 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
     ASSERT_TRUE(testing_profile_manager_.SetUp());
     crosapi::IdleServiceAsh::DisableForTesting();
     ash::LoginState::Initialize();
-    manager_ = crosapi::CreateCrosapiManagerWithTestRegistry();
+    manager_ = std::make_unique<crosapi::CrosapiManager>();
 #endif
     preview_web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(&profile_));
@@ -298,12 +297,6 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
     handler_->OnLocalPrintersUpdated(
         ConvertToLocalDestinationInfo(printer_ids));
   }
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  int LocalPrinterVersion() {
-    return handler_->GetLocalPrinterVersionForTesting();
-  }
-#endif
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -477,14 +470,6 @@ TEST_F(PrintPreviewHandlerChromeOSTest, HandleGetCanShowManagePrinters) {
 
 // Verify 'observeLocalPrinters' can be called.
 TEST_F(PrintPreviewHandlerChromeOSTest, HandleObserveLocalPrinters) {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (int{crosapi::mojom::LocalPrinter::MethodMinVersions::
-              kAddLocalPrintersObserverMinVersion} > LocalPrinterVersion()) {
-    LOG(ERROR) << "Local printer version incompatible";
-    return;
-  }
-#endif
-
   const std::vector<std::string> printers{"Printer1", "Printer2", "Printer3"};
   SetLocalPrinters(printers);
 

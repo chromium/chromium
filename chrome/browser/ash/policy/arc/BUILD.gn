@@ -70,6 +70,7 @@ source_set("browser_tests") {
     "//base",
     "//chrome/browser",
     "//chrome/browser/ash/arc",
+    "//chrome/browser/ash/arc:arc_util",
     "//chrome/browser/ash/arc/session",
     "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/policy/affiliation:test_support",

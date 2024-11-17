@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.BaseButtonDataProvider;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
+import org.chromium.chrome.browser.user_education.IphCommandBuilder;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -165,14 +165,15 @@ public class OptionalNewTabButtonController extends BaseButtonDataProvider
     /**
      * Returns an IPH for this button. Only called once native is initialized and when {@code
      * AdaptiveToolbarFeatures.isCustomizationEnabled()} is true.
+     *
      * @param tab Current tab.
      */
     @Override
-    protected IPHCommandBuilder getIphCommandBuilder(Tab tab) {
+    protected IphCommandBuilder getIphCommandBuilder(Tab tab) {
         HighlightParams params = new HighlightParams(HighlightShape.CIRCLE);
         params.setBoundsRespectPadding(true);
-        IPHCommandBuilder iphCommandBuilder =
-                new IPHCommandBuilder(
+        IphCommandBuilder iphCommandBuilder =
+                new IphCommandBuilder(
                                 tab.getContext().getResources(),
                                 FeatureConstants
                                         .ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION_NEW_TAB_FEATURE,

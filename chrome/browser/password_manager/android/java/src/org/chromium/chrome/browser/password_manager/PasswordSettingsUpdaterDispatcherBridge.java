@@ -46,7 +46,7 @@ public class PasswordSettingsUpdaterDispatcherBridge {
             PasswordSettingsUpdaterReceiverBridge settingsUpdaterReceiverBridge) {
         return new PasswordSettingsUpdaterDispatcherBridge(
                 settingsUpdaterReceiverBridge,
-                PasswordSettingsAccessorFactoryImpl.getOrCreate().createAccessor());
+                PasswordSettingsAccessorFactory.getOrCreate().createAccessor());
     }
 
     @CalledByNative

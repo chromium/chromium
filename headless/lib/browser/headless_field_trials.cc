@@ -106,7 +106,10 @@ void SetUpFieldTrials(PrefService* local_state,
           local_state, /*initial_seed=*/nullptr,
           /*signature_verification_enabled=*/true,
           std::make_unique<variations::VariationsSafeSeedStoreLocalState>(
-              local_state)),
+              local_state,
+              variations_service_client.GetVariationsSeedFileDir()),
+          variations_service_client.GetChannelForVariations(),
+          variations_service_client.GetVariationsSeedFileDir()),
       variations::UIStringOverrider(),
       /*limited_entropy_synthetic_trial=*/nullptr);
 
@@ -130,7 +133,9 @@ void SetUpFieldTrials(PrefService* local_state,
           variations::switches::kForceVariationIds),
       feature_overrides, std::move(feature_list), metrics_state_manager.get(),
       &synthetic_trial_registry, &platform_field_trials, &safe_seed_manager,
-      /*add_entropy_source_to_variations_ids=*/false);
+      /*add_entropy_source_to_variations_ids=*/false,
+      *metrics_state_manager->CreateEntropyProviders(
+          /*enable_limited_entropy_mode=*/false));
 }
 
 }  // namespace headless

@@ -71,6 +71,10 @@ void CredentialManagerImpl::Store(const CredentialInfo& credential,
   // only available on HTTPS origins.
   auto form_fetcher = std::make_unique<FormFetcherImpl>(
       observed_digest, client_, /*should_migrate_http_passwords=*/false);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordFormGroupedAffiliations)) {
+    form_fetcher->set_filter_grouped_credentials(false);
+  }
   form_manager_ = std::make_unique<CredentialManagerPasswordFormManager>(
       client_, std::move(form), this, nullptr, std::move(form_fetcher));
 }
@@ -97,7 +101,6 @@ void CredentialManagerImpl::PreventSilentAccess(
 }
 
 void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
-                                bool include_passwords,
                                 int requested_credential_type_flags,
                                 const std::vector<GURL>& federations,
                                 GetCallback callback) {
@@ -146,8 +149,12 @@ void CredentialManagerImpl::Get(CredentialMediationRequirement mediation,
   }
   pending_request_ = std::make_unique<CredentialManagerPendingRequestTask>(
       this, base::BindOnce(&RunGetCallback, std::move(callback)), mediation,
-      include_passwords, requested_credential_type_flags, federations,
+      requested_credential_type_flags, federations,
       GetSynthesizedFormForOrigin());
+}
+
+void CredentialManagerImpl::ResetPendingRequest() {
+  pending_request_.reset();
 }
 
 bool CredentialManagerImpl::IsZeroClickAllowed() const {
@@ -167,8 +174,6 @@ url::Origin CredentialManagerImpl::GetOrigin() const {
 
 void CredentialManagerImpl::SendCredential(SendCredentialCallback send_callback,
                                            const CredentialInfo& info) {
-  DCHECK(pending_request_);
-
   if (password_manager_util::IsLoggingActive(client_)) {
     CredentialManagerLogger(client_->GetLogManager())
         .LogSendCredential(GetOrigin(), info.type);
@@ -234,6 +239,7 @@ void CredentialManagerImpl::OnProvisionalSaveComplete() {
     // exactly matching origin and username. In order to avoid showing a save
     // bubble to the user Save() is called directly. Save prompt is still
     // offered for grouped credentials.
+    // TODO: crbug.com/372635361 - Handle grouped credentials.
     GetLoginMatchType match_type = GetMatchType(form);
     if (match_type == GetLoginMatchType::kPSL ||
         (match_type == GetLoginMatchType::kAffiliated &&

@@ -2,6 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/updater/updater_process_version_rc_template.gni")
+
 executable("qualification_app") {
   sources = [ "main.cc" ]
+
+  if (is_win) {
+    configs += [ "//build/config/win:windowed" ]
+
+    deps = [
+      ":version",
+      "//build/win:default_exe_manifest",
+    ]
+  }
+}
+
+if (is_win) {
+  updater_process_version_rc_template("version") {
+    original_filename = "qualification_app.exe"
+    rc = "qualification_app_version.rc"
+  }
 }

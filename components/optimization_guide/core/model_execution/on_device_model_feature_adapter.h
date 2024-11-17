@@ -41,6 +41,8 @@ class OnDeviceModelFeatureAdapter final
       const google::protobuf::MessageLite& request,
       bool want_input_context) const;
 
+  bool ShouldParseResponse(bool is_complete) const;
+
   // Converts model response into this feature's expected response type.
   // Replies with std::nullopt on error.
   void ParseResponse(const google::protobuf::MessageLite& request,
@@ -59,6 +61,8 @@ class OnDeviceModelFeatureAdapter final
 
   const proto::Any& GetFeatureMetadata() const;
 
+  const TokenLimits& GetTokenLimits() const;
+
  private:
   friend class base::RefCounted<OnDeviceModelFeatureAdapter>;
   ~OnDeviceModelFeatureAdapter();
@@ -72,6 +76,7 @@ class OnDeviceModelFeatureAdapter final
       const google::protobuf::MessageLite& message) const;
 
   proto::OnDeviceModelExecutionFeatureConfig config_;
+  TokenLimits token_limits_;
   Redactor redactor_;
   std::unique_ptr<ResponseParser> parser_;
 };

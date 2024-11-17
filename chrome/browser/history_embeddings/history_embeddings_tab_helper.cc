@@ -108,7 +108,8 @@ bool HistoryEmbeddingsTabHelper::ScheduleExtraction(
       FROM_HERE,
       base::BindOnce(&HistoryEmbeddingsTabHelper::ExtractPassages,
                      weak_ptr_factory_.GetWeakPtr(), weak_render_frame_host),
-      base::Milliseconds(history_embeddings::kPassageExtractionDelay.Get()));
+      base::Milliseconds(
+          history_embeddings::GetFeatureParameters().passage_extraction_delay));
   return true;
 }
 

@@ -57,7 +57,10 @@
             prefs="{{prefs}}">
         </parental-controls-settings-card>
       </template>
-    </div>
+      <template is="dom-if" if="[[showGraduationApp_]]">
+        <graduation-settings-card></graduation-settings-card>
+      </template>
+  </div>
   </template>
 
   <template is="dom-if" if="[[!isRevampWayfindingEnabled_]]">

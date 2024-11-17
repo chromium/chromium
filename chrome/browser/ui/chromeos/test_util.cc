@@ -4,9 +4,16 @@
 
 #include "chrome/browser/ui/chromeos/test_util.h"
 
+#include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/shelf_test_api.h"
+#include "ash/public/cpp/split_view_test_api.h"
+#include "ash/shell.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/splitview/split_view_types.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_pin_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
-#include "chrome/browser/ui/chromeos/window_pin_util.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view_chromeos.h"
@@ -24,78 +31,10 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_switches.h"
-#include "ash/public/cpp/shelf_test_api.h"
-#include "ash/public/cpp/split_view_test_api.h"
-#include "ash/shell.h"
-#include "ash/wm/overview/overview_controller.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
-#include "chrome/browser/ash/crosapi/test_controller_ash.h"
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/functional/callback_helpers.h"
-#include "base/run_loop.h"
-#include "base/test/run_until.h"
-#include "chrome/browser/ui/lacros/window_properties.h"
-#include "chrome/browser/ui/lacros/window_utility.h"
-#include "chromeos/crosapi/mojom/test_controller.mojom-test-utils.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "ui/display/display_observer.h"
-#endif
-
-namespace {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-
-bool IsCrosApiSupported(uint32_t min_version) {
-  return chromeos::LacrosService::Get()
-             ->GetInterfaceVersion<crosapi::mojom::TestController>() >=
-         static_cast<int>(min_version);
-}
-
-chromeos::WindowStateType WindowStateTypeFromSnapPosition(
-    crosapi::mojom::SnapPosition position) {
-  switch (position) {
-    case crosapi::mojom::SnapPosition::kPrimary:
-      return chromeos::WindowStateType::kPrimarySnapped;
-    case crosapi::mojom::SnapPosition::kSecondary:
-      return chromeos::WindowStateType::kSecondarySnapped;
-  }
-}
-
-// Runs the specified callback when a change to tablet state is detected.
-// TODO(b/323790202): Make this more robust.
-class TabletModeWatcher : public display::DisplayObserver {
- public:
-  explicit TabletModeWatcher(base::RepeatingClosure cb,
-                             display::TabletState current_tablet_state)
-      : cb_(cb), current_tablet_state_(current_tablet_state) {}
-  void OnDisplayTabletStateChanged(display::TabletState state) override {
-    // Skip if the notified TabletState is same as the current state.
-    // This required since it may notify the current tablet state when the
-    // observer is added (e.g. WaylandScreen::AddObserver()). In such cases, we
-    // need to ignore the initial notification so that we can only catch
-    // meaningful notifications for testing.
-    if (current_tablet_state_ == state) {
-      return;
-    }
-
-    cb_.Run();
-  }
-
- private:
-  base::RepeatingClosure cb_;
-  display::TabletState current_tablet_state_;
-};
-
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}  // namespace
-
 void ChromeOSBrowserUITest::SetUpDefaultCommandLine(
     base::CommandLine* command_line) {
   MixinBasedInProcessBrowserTest::SetUpDefaultCommandLine(command_line);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   command_line->AppendSwitch(ash::switches::kAshEnableTabletMode);
-#endif
 }
 
 void ChromeOSBrowserUITest::TearDownOnMainThread() {
@@ -119,29 +58,11 @@ void ChromeOSBrowserUITest::ExitTabletMode() {
 
 void ChromeOSBrowserUITest::SetTabletMode(bool enable) {
   CHECK_NE(InTabletMode(), enable);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (enable) {
     ash::TabletModeControllerTestApi().EnterTabletMode();
   } else {
     ash::TabletModeControllerTestApi().LeaveTabletMode();
   }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::RunLoop run_loop;
-  TabletModeWatcher watcher(run_loop.QuitClosure(),
-                            display::Screen::GetScreen()->GetTabletState());
-  display::Screen::GetScreen()->AddObserver(&watcher);
-  auto& test_controller = chromeos::LacrosService::Get()
-                              ->GetRemote<crosapi::mojom::TestController>();
-  auto waiter =
-      crosapi::mojom::TestControllerAsyncWaiter(test_controller.get());
-  if (enable) {
-    waiter.EnterTabletMode();
-  } else {
-    waiter.ExitTabletMode();
-  }
-  run_loop.Run();
-  display::Screen::GetScreen()->RemoveObserver(&watcher);
-#endif
   CHECK_EQ(InTabletMode(), enable);
 }
 
@@ -154,7 +75,6 @@ void ChromeOSBrowserUITest::ExitOverviewMode() {
 }
 
 void ChromeOSBrowserUITest::SetOverviewMode(bool enable) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (enable) {
     ash::Shell::Get()->overview_controller()->StartOverview(
         ash::OverviewStartAction::kTests);
@@ -162,84 +82,33 @@ void ChromeOSBrowserUITest::SetOverviewMode(bool enable) {
     ash::Shell::Get()->overview_controller()->EndOverview(
         ash::OverviewEndAction::kTests);
   }
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto& test_controller = chromeos::LacrosService::Get()
-                              ->GetRemote<crosapi::mojom::TestController>();
-  auto waiter =
-      crosapi::mojom::TestControllerAsyncWaiter(test_controller.get());
-  if (enable) {
-    waiter.EnterOverviewMode();
-  } else {
-    waiter.ExitOverviewMode();
-  }
-#endif
 }
 
 bool ChromeOSBrowserUITest::IsSnapWindowSupported() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
-#else
-  return IsCrosApiSupported(
-      crosapi::mojom::TestController::MethodMinVersions::kSnapWindowMinVersion);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 void ChromeOSBrowserUITest::SnapWindow(aura::Window* window,
-                                       crosapi::mojom::SnapPosition position) {
+                                       ash::SnapPosition position) {
   CHECK(IsSnapWindowSupported());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  ash::SplitViewTestApi().SnapWindow(
-      window, mojo::ConvertTo<ash::SnapPosition>(position));
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto& test_controller = chromeos::LacrosService::Get()
-                              ->GetRemote<crosapi::mojom::TestController>();
-  crosapi::mojom::TestControllerAsyncWaiter(test_controller.get())
-      .SnapWindow(lacros_window_utility::GetRootWindowUniqueId(window),
-                  position);
-  auto expected_state = WindowStateTypeFromSnapPosition(position);
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return window->GetProperty(chromeos::kWindowStateTypeKey) == expected_state;
-  }));
-#endif
+  ash::SplitViewTestApi().SnapWindow(window, position);
 }
 
 void ChromeOSBrowserUITest::PinWindow(aura::Window* window, bool trusted) {
   ::PinWindow(window, trusted);
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto expected_type = trusted ? chromeos::WindowPinType::kTrustedPinned
-                               : chromeos::WindowPinType::kPinned;
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return window->GetProperty(lacros::kWindowPinTypeKey) == expected_type;
-  }));
-#endif
 }
 
 bool ChromeOSBrowserUITest::IsIsShelfVisibleSupported() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  return IsCrosApiSupported(crosapi::mojom::TestController::MethodMinVersions::
-                                kIsShelfVisibleMinVersion);
-#endif
 }
 
 bool ChromeOSBrowserUITest::IsShelfVisible() {
   CHECK(IsIsShelfVisibleSupported());
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::ShelfTestApi().IsVisible();
-#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto& test_controller = chromeos::LacrosService::Get()
-                              ->GetRemote<crosapi::mojom::TestController>();
-  return crosapi::mojom::TestControllerAsyncWaiter(test_controller.get())
-      .IsShelfVisible();
-#endif
 }
 
 void ChromeOSBrowserUITest::DeactivateWidget(views::Widget* widget) {
   widget->Deactivate();
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  views::test::WaitForWidgetActive(widget, false);
-#endif
 }
 
 void ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(Browser* browser) {

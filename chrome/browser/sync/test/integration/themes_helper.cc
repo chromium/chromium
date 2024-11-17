@@ -41,6 +41,10 @@ bool UsingCustomThemeFunc(ThemeService* theme_service) {
   return theme_service->GetThemeID() != ThemeHelper::kDefaultThemeID;
 }
 
+bool UsingGrayscaleThemeFunc(ThemeService* theme_service) {
+  return theme_service->GetIsGrayscale();
+}
+
 }  // namespace
 
 namespace themes_helper {
@@ -67,6 +71,10 @@ bool UsingDefaultTheme(Profile* profile) {
 
 bool UsingSystemTheme(Profile* profile) {
   return UsingSystemThemeFunc(GetThemeService(profile));
+}
+
+bool UsingGrayscaleTheme(Profile* profile) {
+  return UsingGrayscaleThemeFunc(GetThemeService(profile));
 }
 
 bool ThemeIsPendingInstall(Profile* profile, const std::string& id) {
@@ -147,3 +155,9 @@ CustomThemeChecker::CustomThemeChecker(Profile* profile)
     : ThemeConditionChecker(profile,
                             "Waiting until profile is using a custom theme",
                             base::BindRepeating(&UsingCustomThemeFunc)) {}
+
+GrayscaleThemeChecker::GrayscaleThemeChecker(Profile* profile)
+    : ThemeConditionChecker(
+          profile,
+          "Waiting until profile is using the grayscale theme",
+          base::BindRepeating(&UsingGrayscaleThemeFunc)) {}

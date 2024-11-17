@@ -13,9 +13,10 @@ export function getHtml(this: TraceReportElement) {
     ${this.isLoading_ ? html`<div class="spinner"></div>` :
     html`
     <div class="trace-id-container">
-      <button class="clickable-field copiable" title="${this.getTokenAsString_()}"
+      <button class="clickable-field copiable"
+          title="${this.getTokenAsUuidString_()}"
           @click="${this.onCopyUuidClick_}">
-        ${this.getTokenAsString_()}
+        ${this.getTokenAsUuidString_()}
       </button>
       <div class="info">Trace ID</div>
     </div>
@@ -26,10 +27,12 @@ export function getHtml(this: TraceReportElement) {
       <div class="info">Date created</div>
     </div>
     <div class="trace-scenario-container">
-      <button class="clickable-field copiable" title="${this.trace.scenarioName}"
+      <button class="clickable-field copiable"
+          title="${this.trace.scenarioName}"
           @click="${this.onCopyScenarioClick_}">
         ${this.trace.scenarioName}
       </button>
+      <div class="info">Scenario</div>
     </div>
     <div class="trace-trigger-container">
       <button class="clickable-field copiable" title="${this.trace.uploadRuleName}"

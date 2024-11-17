@@ -10,6 +10,7 @@ load("//lib/consoles.star", "consoles")
 load("//lib/gn_args.star", "gn_args")
 load("//lib/html.star", "linkify_builder")
 load("//lib/structs.star", "structs")
+load("//lib/targets.star", "targets")
 load("//lib/xcode.star", "xcode")
 
 luci.bucket(
@@ -64,6 +65,12 @@ luci.bucket(
         ),
     ],
     dynamic = True,
+)
+
+targets.builder_defaults.set(
+    mixins = [
+        "chromium-tester-service-account",
+    ],
 )
 
 consoles.console_view(
@@ -180,6 +187,16 @@ fyi_reclient_staging_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "isolate_profile_data",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
 )
@@ -206,6 +223,16 @@ fyi_reclient_test_builder(
             "remoteexec",
             "linux",
             "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=4844-4854;drc=75f767e92e86611728189739fb26f4e2cdf212d9
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "isolate_profile_data",
         ],
     ),
     os = os.LINUX_DEFAULT,
@@ -287,6 +314,11 @@ fyi_reclient_staging_builder(
             "minimal_symbols",
             "mac",
             "x64",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
         ],
     ),
     builderless = True,
@@ -386,6 +418,13 @@ fyi_reclient_staging_builder(
         ),
     ),
     gn_args = "reclient/Simple Chrome Builder reclient test",
+    targets = targets.bundle(
+        # Copied from
+        # https://source.chromium.org/chromium/chromium/src/+/main:testing/buildbot/waterfalls.pyl;l=1567;drc=e8a03fce50115b247a6032f8ed922b6db62f11f6
+        additional_compile_targets = [
+            "chromiumos_preflight",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
 )
@@ -419,6 +458,11 @@ fyi_reclient_test_builder(
             "x64",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "chromiumos_preflight",
+        ],
+    ),
     os = os.LINUX_DEFAULT,
     console_view_category = "linux",
     execution_timeout = 4 * time.hour,
@@ -447,6 +491,20 @@ fyi_reclient_staging_builder(
             "remoteexec",
             "ios_simulator",
             "x64",
+            "xctest",
+        ],
+    ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
+        ],
+        mixins = [
+            "has_native_resultdb_integration",
+            "isolate_profile_data",
+            "mac_default_x64",
+            "mac_toolchain",
+            "out_dir_arg",
+            "xcode_16_main",
             "xctest",
         ],
     ),
@@ -486,6 +544,11 @@ fyi_reclient_staging_builder(
             "mac",
         ],
     ),
+    targets = targets.bundle(
+        additional_compile_targets = [
+            "all",
+        ],
+    ),
     builderless = True,
     cores = None,
     os = os.MAC_DEFAULT,
@@ -495,46 +558,6 @@ fyi_reclient_staging_builder(
     reclient_bootstrap_env = {
         "GLOG_vmodule": "depsscannerclient.go=2,main.go=2",
     },
-)
-
-ci.builder(
-    name = "Comparison Linux (reclient vs reclient remote links)",
-    executable = "recipe:reclient_reclient_comparison",
-    gn_args = {
-        "build1": gn_args.config(
-            configs = [
-                "gpu_tests",
-                "release_builder",
-                "remoteexec",
-                "linux",
-                "x64",
-            ],
-        ),
-        "build2": gn_args.config(
-            configs = [
-                "gpu_tests",
-                "release_builder",
-                "reclient_with_remoteexec_links",
-                "linux",
-                "x64",
-            ],
-        ),
-    },
-    os = os.LINUX_DEFAULT,
-    console_view_entry = consoles.console_view_entry(
-        category = "linux",
-        short_name = "cmp",
-    ),
-    execution_timeout = 6 * time.hour,
-    reclient_bootstrap_env = {
-        "GOMA_DEPS_CACHE_TABLE_THRESHOLD": "40000",
-        "RBE_ip_reset_min_delay": "-1s",
-        "RBE_clang_depscan_archive": "true",
-        "RBE_fast_log_collection": "true",
-    },
-    reclient_cache_silo = "Comparison Linux remote links - cache siloed",
-    siso_project = siso.project.TEST_TRUSTED,
-    siso_remote_jobs = siso.remote_jobs.DEFAULT,
 )
 
 # The following 2 builders use the untrusted RBE instance because each instance has its own

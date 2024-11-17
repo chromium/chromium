@@ -26,7 +26,7 @@ void ScreenshotHandler::TakeScreenshot(ScreenshotDataCallback done_callback) {
   aura::Window* root = ash::Shell::GetRootWindowForNewWindows();
   DCHECK(root);
 
-  ui::GrabWindowSnapshotAsJPEG(
+  ui::GrabWindowSnapshotAsPNG(
       root,
       /*source_rect=*/gfx::Rect(gfx::Point(), root->bounds().size()),
       base::BindOnce(std::move(done_callback)));

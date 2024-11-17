@@ -78,6 +78,22 @@ void MagicBoostStateAsh::AsyncWriteHMREnabled(bool enabled) {
   pref_change_registrar_->prefs()->SetBoolean(ash::prefs::kHmrEnabled, enabled);
 }
 
+void MagicBoostStateAsh::ShouldIncludeOrcaInOptIn(
+    base::OnceCallback<void(bool)> callback) {
+  GetEditorPanelManager()->GetEditorPanelContext(base::BindOnce(
+      [](base::OnceCallback<void(bool)> callback,
+         crosapi::mojom::EditorPanelContextPtr panel_context) {
+        // If the mode is not `kHardBlocked` and consent status is not set, it
+        // means that we should include Orca in this opt-in flow.
+        bool should_include_orca =
+            panel_context->editor_panel_mode !=
+                crosapi::mojom::EditorPanelMode::kHardBlocked &&
+            !panel_context->consent_status_settled;
+        std::move(callback).Run(should_include_orca);
+      },
+      std::move(callback)));
+}
+
 void MagicBoostStateAsh::DisableOrcaFeature() {
   GetEditorPanelManager()->OnMagicBoostPromoCardDeclined();
 }

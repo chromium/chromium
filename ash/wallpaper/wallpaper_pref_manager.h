@@ -128,7 +128,7 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
 
   // Returns the cached KMeans color value for the wallpaper at `location`.
   virtual std::optional<SkColor> GetCachedKMeanColor(
-      const std::string_view location) const = 0;
+      std::string_view location) const = 0;
 
   virtual void RemoveKMeanColor(const AccountId& account_id) = 0;
 
@@ -137,7 +137,7 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
                                 SkColor celebi_color) = 0;
   // Returns the cached celebi color for the wallpaper at `location`.
   virtual std::optional<SkColor> GetCelebiColor(
-      const std::string_view location) const = 0;
+      std::string_view location) const = 0;
   virtual void RemoveCelebiColor(const AccountId& account_id) = 0;
 
   virtual bool SetDailyGooglePhotosWallpaperIdCache(
@@ -182,4 +182,4 @@ class ASH_EXPORT WallpaperPrefManager : public SessionObserver {
 
 }  // namespace ash
 
-#endif  //  ASH_WALLPAPER_WALLPAPER_PREF_MANAGER_H_
+#endif  // ASH_WALLPAPER_WALLPAPER_PREF_MANAGER_H_

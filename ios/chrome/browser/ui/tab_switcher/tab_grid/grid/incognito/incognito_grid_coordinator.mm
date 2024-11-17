@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/disabled_grid_view_controller.h"
@@ -65,10 +66,8 @@
                                 toolbarsMutator:toolbarsMutator
                            gridMediatorDelegate:delegate])) {
     _browser = browser->AsWeakPtr();
-    _incognitoEnabled =
-        !IsIncognitoModeDisabled(self.browser->GetBrowserState()
-                                     ->GetOriginalChromeBrowserState()
-                                     ->GetPrefs());
+    _incognitoEnabled = !IsIncognitoModeDisabled(
+        self.browser->GetProfile()->GetOriginalProfile()->GetPrefs());
   }
   return self;
 }
@@ -127,7 +126,7 @@
   self.gridContainerViewController = container;
 
   _tabContextMenuHelper = [[TabContextMenuHelper alloc]
-        initWithBrowserState:self.browser->GetBrowserState()
+             initWithProfile:self.browser->GetProfile()
       tabContextMenuDelegate:self.tabContextMenuDelegate];
 
   if (_incognitoEnabled) {
@@ -163,14 +162,15 @@
   _browser.reset();
   if (incognitoBrowser) {
     _browser = incognitoBrowser->AsWeakPtr();
-    _tabContextMenuHelper.browserState = incognitoBrowser->GetBrowserState();
+    _tabContextMenuHelper.profile = incognitoBrowser->GetProfile();
     [incognitoBrowser->GetCommandDispatcher()
         startDispatchingToTarget:self
                      forProtocol:@protocol(TabGroupsCommands)];
-
     _mediator.tabGroupsHandler = self;
+    _mediator.tabGridHandler = HandlerForProtocol(
+        incognitoBrowser->GetCommandDispatcher(), TabGridCommands);
   } else {
-    _tabContextMenuHelper.browserState = nullptr;
+    _tabContextMenuHelper.profile = nullptr;
   }
 }
 
@@ -214,6 +214,7 @@
   gridViewController.dragDropHandler = _mediator;
   gridViewController.mutator = _mediator;
   gridViewController.gridProvider = _mediator;
+  gridViewController.gridHandler = _mediator;
   // TODO(crbug.com/40273478): Move the following lines to the grid itself when
   // specific grid file will be created.
   gridViewController.view.accessibilityIdentifier = kIncognitoTabGridIdentifier;

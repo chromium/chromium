@@ -1,0 +1,16 @@
+<html>
+<head>
+  <title>Supervised User test: page with embedded YouTube videos</title>
+</head>
+<body>
+  <script>
+    var iframe1loaded = false;
+    var iframe2loaded = false;
+
+    function loaded1() { return iframe1loaded; }
+    function loaded2() { return iframe2loaded; }
+  </script>
+  <iframe name="iframe1" src="https://www.youtube.com/embed/lJIrF4YjHfQ" onload="iframe1loaded=true;"></iframe>
+  <iframe name="iframe2" src="https://www.youtube.com/embed/Ya_4rht4DG8" onload="iframe2loaded=true;"></iframe>
+</body>
+</html>

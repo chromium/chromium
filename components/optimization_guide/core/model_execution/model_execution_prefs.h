@@ -15,11 +15,13 @@ class PrefService;
 namespace optimization_guide::model_execution::prefs {
 
 // The possible values for the model execution enterprise policy.
+// LINT.IfChange(ModelExecutionEnterprisePolicyValue)
 enum class ModelExecutionEnterprisePolicyValue {
   kAllow = 0,
   kAllowWithoutLogging = 1,
   kDisable = 2,
 };
+// LINT.ThenChange(/chrome/browser/resources/settings/ai_page/constants.ts:ModelExecutionEnterprisePolicyValue)
 
 enum class GenAILocalFoundationalModelEnterprisePolicySettings {
   kAllowed = 0,
@@ -44,6 +46,8 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDeviceModelValidationResult[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kOnDevicePerformanceClass[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const char kOnDevicePerformanceClassVersion[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const char kLastTimeComposeWasUsed[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)

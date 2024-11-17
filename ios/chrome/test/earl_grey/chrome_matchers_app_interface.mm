@@ -40,7 +40,7 @@
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
-#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/accounts_table_view_controller_constants.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_accounts/manage_accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_constants.h"
 #import "ios/chrome/browser/ui/settings/notifications/tracking_price/tracking_price_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings/password_settings_constants.h"
@@ -533,7 +533,7 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)openNewTabButton {
   return grey_allOf(
       [ChromeMatchersAppInterface
-          buttonWithAccessibilityLabelID:(IDS_IOS_TOOLS_MENU_NEW_TAB)],
+          buttonWithAccessibilityLabelID:(IDS_IOS_TOOLBAR_OPEN_NEW_TAB)],
       grey_sufficientlyVisible(), nil);
 }
 
@@ -971,13 +971,17 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 }
 
 + (id<GREYMatcher>)ntpFeedMenuEnableButton {
-  return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:IDS_IOS_DISCOVER_FEED_MENU_TURN_ON_ITEM];
+  return grey_allOf(
+      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:
+                                      IDS_IOS_DISCOVER_FEED_MENU_TURN_ON_ITEM],
+      grey_interactable(), nil);
 }
 
 + (id<GREYMatcher>)ntpFeedMenuDisableButton {
-  return [ChromeMatchersAppInterface
-      buttonWithAccessibilityLabelID:IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM];
+  return grey_allOf(
+      [ChromeMatchersAppInterface buttonWithAccessibilityLabelID:
+                                      IDS_IOS_DISCOVER_FEED_MENU_TURN_OFF_ITEM],
+      grey_interactable(), nil);
 }
 
 // TODO(crbug.com/40106317): Remove this stub.
@@ -1697,6 +1701,18 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
 + (id<GREYMatcher>)closeGroupButton {
   return [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
                                          IDS_IOS_CONTENT_CONTEXT_CLOSEGROUP];
+}
+
++ (id<GREYMatcher>)shareGroupButton {
+  return
+      [ChromeMatchersAppInterface contextMenuItemWithAccessibilityLabelID:
+                                      IDS_IOS_CONTENT_CONTEXT_SHARELOCALGROUP];
+}
+
++ (id<GREYMatcher>)manageGroupButton {
+  return [ChromeMatchersAppInterface
+      contextMenuItemWithAccessibilityLabelID:
+          IDS_IOS_CONTENT_CONTEXT_MANAGESHAREDGROUP];
 }
 
 #pragma mark - Tab Groups Panel

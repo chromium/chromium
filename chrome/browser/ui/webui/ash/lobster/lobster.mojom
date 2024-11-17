@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next MinVersion: 3
+// Next MinVersion: 6
 
 module lobster.mojom;
 
@@ -45,8 +45,25 @@ union Response {
     Error error@1;
 };
 
-// The UI uses this interface to communicate with the service.
-interface LobsterPageHandler {
+[Stable, Extensible]
+enum WebUIMetricEvent {
+  [Default] kUnknown = 0,
+  kQueryPageImpression = 1,
+  kRequestInitialCandidates = 2,
+  kRequestInitialCandidatesSuccess = 3,
+  kRequestInitialCandidatesError = 4,
+  kInitialCandidatesImpression = 5,
+  kRequestMoreCandidates = 6,
+  kRequestMoreCandidatesSuccess = 7,
+  kRequestMoreCandidatesError = 8,
+  kMoreCandidatesAppended = 9,
+  kFeedbackThumbsUp = 10,
+  kFeedbackThumbsDown = 11,
+};
+
+// This interface is used from an untrusted UI to communicate with the service.
+[RenamedFrom="lobster.mojom.LobsterPageHandler"]
+interface UntrustedLobsterPageHandler {
   // Returns any image candidates generated.
   RequestCandidates@0(string query, uint32 num_candidates)
     => (Response response);
@@ -64,8 +81,19 @@ interface LobsterPageHandler {
   [MinVersion=2] PreviewFeedback@4(uint32 candidate_id)
     => (FeedbackPreview preview);
 
-  // Construct and submits a feedback report for the given candidate
+  // Constructs and submits a feedback report for the given candidate
   [MinVersion=2] SubmitFeedback@5(uint32 candidate_id,
                    string description) => (bool status);
 
+  // Requests the Lobster UI to show.
+  [MinVersion=3] ShowUI@6();
+
+  // Requests the Lobster UI to close.
+  [MinVersion=3] CloseUI@7();
+
+  // Sends a metric event for recording.
+  [MinVersion=4] EmitMetricEvent@8(WebUIMetricEvent metric_event);
+
+  // Open a URL in a new browser window.
+  [MinVersion=5] OpenUrlInNewWindow@9(url.mojom.Url url);
 };

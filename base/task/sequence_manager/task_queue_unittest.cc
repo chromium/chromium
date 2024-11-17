@@ -117,8 +117,7 @@ TEST(TaskQueueTest, CanceledTaskRemoved) {
   DelayedTaskHandle delayed_task_handle =
       task_runner->PostCancelableDelayedTask(
           subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
-          BindLambdaForTesting([&task_ran]() { task_ran = true; }),
-          Seconds(20));
+          BindLambdaForTesting([&task_ran] { task_ran = true; }), Seconds(20));
   EXPECT_EQ(queue->GetNumberOfPendingTasks(), 1u);
 
   // The task is only removed from the queue if the feature is enabled.

@@ -44,8 +44,13 @@ class FakeProfileOAuth2TokenServiceDelegate
   bool RefreshTokenIsAvailable(const CoreAccountId& account_id) const override;
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  bool IsRefreshTokenBound(const CoreAccountId& account_id) const override;
   std::vector<uint8_t> GetWrappedBindingKey(
       const CoreAccountId& account_id) const override;
+  void GenerateRefreshTokenBindingKeyAssertionForMultilogin(
+      const CoreAccountId& account_id,
+      std::string_view challenge,
+      TokenBindingHelper::GenerateAssertionCallback callback) override;
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
   std::vector<CoreAccountId> GetAccounts() const override;

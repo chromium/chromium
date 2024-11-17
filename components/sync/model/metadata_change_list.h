@@ -24,8 +24,8 @@ namespace syncer {
 // same metadata record the last one is supposed to win.
 class MetadataChangeList {
  public:
-  MetadataChangeList() {}
-  virtual ~MetadataChangeList() {}
+  MetadataChangeList() = default;
+  virtual ~MetadataChangeList() = default;
 
   // Requests DataTypeState to be updated in the storage.
   virtual void UpdateDataTypeState(

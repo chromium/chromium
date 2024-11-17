@@ -32,6 +32,7 @@ namespace ash {
 
 namespace {
 constexpr int kDetailedViewHeight = 464;
+constexpr int kSystemTrayBubbleCornerRadius = 24;
 }  // namespace
 
 UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
@@ -45,7 +46,7 @@ UnifiedSystemTrayBubble::UnifiedSystemTrayBubble(UnifiedSystemTray* tray)
       CreateInitParamsForTrayBubble(tray, /*anchor_to_shelf_corner=*/true);
   init_params.preferred_width = kWideTrayMenuWidth;
   init_params.close_on_deactivate = false;
-
+  init_params.corner_radius = kSystemTrayBubbleCornerRadius;
   bubble_view_ = new TrayBubbleView(init_params);
 
   // Max height calculated from the maximum available height of the screen.

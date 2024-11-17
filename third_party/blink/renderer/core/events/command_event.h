@@ -25,14 +25,14 @@ class CommandEvent final : public Event {
 
   static CommandEvent* Create(const AtomicString& type,
                               const AtomicString& command,
-                              Element* invoker) {
-    return MakeGarbageCollected<CommandEvent>(type, command, invoker);
+                              Element* source) {
+    return MakeGarbageCollected<CommandEvent>(type, command, source);
   }
 
   CommandEvent(const AtomicString& type, const CommandEventInit* initializer);
   CommandEvent(const AtomicString& type,
                const String& command,
-               Element* invoker);
+               Element* source);
 
   const AtomicString& InterfaceName() const override {
     return event_interface_names::kCommandEvent;
@@ -42,11 +42,11 @@ class CommandEvent final : public Event {
 
   const String& command() const { return command_; }
 
-  Element* invoker() const;
-  void SetInvoker(Element* invoker) { invoker_ = invoker; }
+  Element* source() const;
+  void SetSource(Element* source) { source_ = source; }
 
  private:
-  Member<Element> invoker_;
+  Member<Element> source_;
   String command_;
 };
 

@@ -111,7 +111,8 @@
           "builder": "Dawn Win10 x64 DEPS Release (NVIDIA)",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/try/dawn-win10-x64-deps-rel/targets"
     }
   },
   "$build/reclient": {

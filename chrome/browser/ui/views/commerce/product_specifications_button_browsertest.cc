@@ -182,6 +182,17 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
+                       ShowNotBlockedByCurrentPageEligibility) {
+  EXPECT_CALL(*controller(), ShouldExecuteEntryPointShow()).Times(0);
+
+  ShowButton();
+
+  ASSERT_TRUE(product_specifications_button()
+                  ->expansion_animation_for_testing()
+                  ->IsShowing());
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                        ImmediatelyHidesWhenButtonDismissed) {
   EXPECT_CALL(*controller(), OnEntryPointDismissed()).Times(1);
   EXPECT_CALL(*controller(), OnEntryPointHidden()).Times(1);
@@ -286,4 +297,23 @@ IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
                   ->IsShowing());
   ASSERT_EQ(product_specifications_button()->GetText(), u"title");
   ASSERT_EQ(product_specifications_button()->GetTooltipText(), u"title");
+}
+
+IN_PROC_BROWSER_TEST_F(ProductSpecificationsButtonBrowserTest,
+                       NotifyHideEntryPoint) {
+  product_specifications_button()->ShowEntryPointWithTitle(u"title");
+
+  ShowButton();
+  product_specifications_button()->expansion_animation_for_testing()->Reset(1);
+  ASSERT_TRUE(product_specifications_button()
+                  ->expansion_animation_for_testing()
+                  ->IsShowing());
+
+  product_specifications_button()->HideEntryPoint();
+
+  EXPECT_TRUE(product_specifications_button()
+                  ->expansion_animation_for_testing()
+                  ->IsClosing());
+  EXPECT_EQ(1, user_action_tester_.GetActionCount(
+                   "Commerce.Compare.ProactiveChipDisqualified"));
 }

@@ -100,8 +100,7 @@ uint64_t GetMachTimeFromSeconds(CFTimeInterval seconds) {
 }
 
 - (id)init {
-  NOTREACHED_IN_MIGRATION();
-  return nil;
+  NOTREACHED();
 }
 
 - (void)setEnabled:(bool)enabled {
@@ -214,7 +213,7 @@ void ExternalBeginFrameSourceIOS::SetPreferredInterval(
   [objc_storage_->display_link_impl setPreferredInterval:interval];
 }
 
-base::TimeDelta ExternalBeginFrameSourceIOS::GetMaximumRefreshFrameInterval() {
+base::TimeDelta ExternalBeginFrameSourceIOS::GetMinimumFrameInterval() {
   const int64_t max_refresh_rate =
       [objc_storage_->display_link_impl maximumRefreshRate];
   if (max_refresh_rate <= 0) [[unlikely]] {

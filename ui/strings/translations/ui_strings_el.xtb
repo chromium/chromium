@@ -129,6 +129,7 @@
 <translation id="5528053674512161860">Η φόρτωση σελίδας απέτυχε επειδή δεν είναι εγκατεστημένη η λειτουργική μονάδα διεπαφής χρήστη προγραμματιστή (dev_ui)</translation>
 <translation id="5574202486608032840">Σύστημα <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="5583640892426849032">Πλήκτρο Backspace</translation>
+<translation id="5606865426897221650">Καρτέλα</translation>
 <translation id="5613020302032141669">Αριστερό βέλος</translation>
 <translation id="5633029987065897167">Κενό</translation>
 <translation id="5754277640426581776">{MINUTES,plural, =1{1 λεπτό}other{# λεπτά}}</translation>
@@ -200,7 +201,6 @@
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8210608804940886430">Επόμενη σελίδα</translation>
 <translation id="822964464349305906"><ph name="TYPE_1" />, <ph name="TYPE_2" /></translation>
-<translation id="8245914219290430011">Πλήκτρο tab</translation>
 <translation id="8259556432390118667">Δεκαεξαδική τιμή χρώματος</translation>
 <translation id="8328145009876646418">Αριστερή άκρη</translation>
 <translation id="8331626408530291785">Κύλιση επάνω</translation>
@@ -224,6 +224,8 @@
 <translation id="9044832324875206639">{SECONDS,plural, =1{1 δευτ.}other{# δευτ.}}</translation>
 <translation id="9059834730836941392">Σύμπτυξη ειδοποίησης</translation>
 <translation id="9170848237812810038">Αναί&amp;ρεση</translation>
+<translation id="9195990613383871904">Αύριο</translation>
+<translation id="928628199082367701">Super</translation>
 <translation id="932327136139879170">Αρχική σελίδα</translation>
 <translation id="944069440740578670">Μη αναγνωσμένες ειδοποιήσεις</translation>
 <translation id="966963601246348639">{SECONDS,plural, =1{Πριν από 1 δευτερόλεπτο}other{Πριν από # δευτερόλεπτα}}</translation>

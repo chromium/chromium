@@ -1,14 +1,21 @@
 include_rules = [
-  "+components/data_sharing",
   "+components/keyed_service",
   "+components/optimization_guide",
   "+components/prefs",
   "+components/pref_registry",
   "+components/tab_groups",
   "+components/signin/public/base",
+  "+components/signin/public/identity_manager",
   "+components/strings",
   "+components/sync",
   "+components/sync_device_info",
+  "+components/ukm/test_ukm_recorder.h",
+  "+components/url_formatter/url_formatter.h",
+  "+services/metrics/public/cpp",
   "+ui/base/l10n",
   "+ui/gfx",
+
+  # Allow inclusion of features.h from //components/data_sharing to be able to
+  # check whether sharing functionality should be available.
+  "!components/data_sharing/public/features.h",
 ]

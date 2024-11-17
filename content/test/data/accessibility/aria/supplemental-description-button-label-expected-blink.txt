@@ -1,0 +1,6 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++button name='Submit form'
+++++++++staticText name='Click here to submit'
+++++++++++inlineTextBox name='Click here to submit'

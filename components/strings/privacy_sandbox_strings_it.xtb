@@ -3,18 +3,25 @@
 <translationbundle lang="it">
 <translation id="1444443021901415601">Chrome rileva argomenti di interesse in base alla tua cronologia di navigazione recente</translation>
 <translation id="2252052615723281030">Quando hai eseguito l'accesso a Chrome, questa impostazione consente di mantenere privato il tuo indirizzo IP. Se Chrome sospetta che un sito potrebbe monitorarti, una parte del tuo traffico potrebbe essere inviata tramite server di tutela della privacy.</translation>
+<translation id="235789365079050412">Norme sulla privacy di Google</translation>
 <translation id="2793385791865768072">Chromium rileva argomenti di interesse in base alla tua cronologia di navigazione recente</translation>
+<translation id="2979365474350987274">I cookie di terze parti sono limitati</translation>
 <translation id="33479675708419823">Quando hai eseguito l'accesso a Chrome, questa impostazione consente di mantenere privato il tuo indirizzo IP. Se Chrome sospetta che un sito potrebbe monitorarti, una parte del tuo traffico potrebbe essere inviata tramite server di tutela della privacy. Scopri di più su <ph name="LINK_BEGIN" />come funziona la protezione IP<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">Scopri di più su come nascondere il tuo indirizzo IP</translation>
+<translation id="385051799172605136">Indietro</translation>
 <translation id="4041687306270459969">Gli argomenti degli annunci più vecchi di 4 settimane vengono eliminati automaticamente. Gli argomenti includono, ad esempio, Sport, Abbigliamento e altro</translation>
 <translation id="4177501066905053472">Argomenti degli annunci</translation>
 <translation id="4301151630239508244">Gli argomenti degli annunci sono solo uno dei tanti elementi che un sito può utilizzare per personalizzare gli annunci. Anche senza gli argomenti degli annunci, i siti possono continuare a mostrarti annunci, che però potrebbero essere meno personalizzati Scopri di più sulla <ph name="BEGIN_LINK_1" />gestione della privacy per gli annunci<ph name="END_LINK_1" />.</translation>
+<translation id="4501357987281382712">Scopri di più su come Google protegge i tuoi dati nelle nostre <ph name="BEGIN_LINK" />Norme sulla privacy<ph name="END_LINK" />.</translation>
 <translation id="453692855554576066">Puoi vedere gli argomenti degli annunci nelle impostazioni di Chromium e bloccare quelli che non vuoi condividere con i siti</translation>
 <translation id="4598427486995631491">Nascondi il tuo indirizzo IP</translation>
 <translation id="4692439979815346597">Puoi vedere gli argomenti degli annunci nelle impostazioni di Chrome e bloccare quelli che non vuoi condividere con i siti</translation>
 <translation id="5413586988657235240">I siti che visiti possono chiedere a Chromium argomenti per mostrarti annunci pertinenti, proteggendo allo stesso tempo la tua cronologia di navigazione e la tua identità</translation>
+<translation id="6053735090575989697">Scopri di più su come Google protegge i tuoi dati nelle nostre Norme sulla privacy.</translation>
 <translation id="6186536480878693792">I siti che visiti possono chiedere a Chrome argomenti per mostrarti annunci pertinenti, proteggendo allo stesso tempo la tua cronologia di navigazione e la tua identità</translation>
+<translation id="6195163219142236913">Cookie di terze parti limitati</translation>
 <translation id="6371812158043974664">Quando hai eseguito l'accesso a Chromium, questa impostazione consente di mantenere privato il tuo indirizzo IP. Se Chromium sospetta che un sito potrebbe monitorarti, una parte del tuo traffico potrebbe essere inviata tramite server di tutela della privacy. Scopri di più su <ph name="LINK_BEGIN" />come funziona la protezione IP<ph name="LINK_END" /></translation>
+<translation id="6398358690696005758">Scopri di più su come Google protegge i tuoi dati nelle nostre <ph name="BEGIN_LINK1" />Norme sulla privacy<ph name="LINK_END1" />.</translation>
 <translation id="7040031291654706261">Scopri <ph name="BEGIN_LINK" />come funziona la protezione IP<ph name="END_LINK" /></translation>
 <translation id="7475768947023614021">Rivedi l'impostazione degli argomenti degli annunci</translation>
 </translationbundle>

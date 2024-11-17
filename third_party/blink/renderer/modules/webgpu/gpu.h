@@ -42,6 +42,7 @@ class GPURequestAdapterOptions;
 class NavigatorBase;
 class ScriptState;
 class DawnControlClientHolder;
+class V8GPUTextureFormat;
 class WGSLLanguageFeatures;
 
 struct BoxedMappableWGPUBufferHandles
@@ -84,7 +85,7 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
   ScriptPromise<IDLNullable<GPUAdapter>> requestAdapter(
       ScriptState* script_state,
       const GPURequestAdapterOptions* options);
-  String getPreferredCanvasFormat();
+  V8GPUTextureFormat getPreferredCanvasFormat();
   WGSLLanguageFeatures* wgslLanguageFeatures() const;
 
   static wgpu::TextureFormat preferred_canvas_format();
@@ -110,7 +111,7 @@ class MODULES_EXPORT GPU final : public ScriptWrappable,
       ScriptPromiseResolver<IDLNullable<GPUAdapter>>* resolver,
       wgpu::RequestAdapterStatus status,
       wgpu::Adapter adapter,
-      const char* error_message);
+      wgpu::StringView error_message);
 
   void RecordAdapterForIdentifiability(ScriptState* script_state,
                                        const GPURequestAdapterOptions* options,

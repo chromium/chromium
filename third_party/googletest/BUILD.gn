@@ -60,8 +60,9 @@ config("gmock_config") {
   ]
 
   if (is_clang) {
-    # TODO(tikuta): remove this when the issue is fixed.
-    # https://github.com/google/googletest/issues/533
+    # TODO(crbug.com/40616204): remove this when we migrated to new MOCK_METHOD
+    # macro.
+    # ref: https://google.github.io/googletest/gmock_cook_book.html#old-style-mock_methodn-macros
     cflags = [ "-Wno-inconsistent-missing-override" ]
   }
 }

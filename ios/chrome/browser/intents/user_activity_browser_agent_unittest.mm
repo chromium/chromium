@@ -14,6 +14,7 @@
 #import "base/test/scoped_command_line.h"
 #import "base/test/task_environment.h"
 #import "base/test/with_feature_override.h"
+#import "base/types/cxx23_to_underlying.h"
 #import "base/values.h"
 #import "components/handoff/handoff_utility.h"
 #import "components/policy/core/common/policy_pref_names.h"
@@ -24,6 +25,8 @@
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/application_mode.h"
 #import "ios/chrome/app/main_controller.h"
+#import "ios/chrome/app/profile/profile_init_stage.h"
+#import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/spotlight/actions_spotlight_manager.h"
 #import "ios/chrome/app/spotlight/spotlight_util.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
@@ -109,20 +112,17 @@
 class UserActivityBrowserAgentTest : public PlatformTest {
  public:
   UserActivityBrowserAgentTest() {
-    browser_state_ = TestChromeBrowserState::Builder().Build();
+    profile_ = TestProfileIOS::Builder().Build();
 
-    AppState* app_state = CreateMockAppState(InitStageFinal);
-
-    scene_state_ =
-        [[FakeSceneState alloc] initWithAppState:app_state
-                                    browserState:browser_state_.get()];
+    scene_state_ = [[FakeSceneState alloc] initWithAppState:nil
+                                                    profile:profile_.get()];
+    InstallMockProfileState(ProfileInitStage::kFinal);
 
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
     scene_controller_ =
         [[FakeSceneController alloc] initWithSceneState:scene_state_];
     scene_state_.controller = scene_controller_;
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), scene_state_);
+    browser_ = std::make_unique<TestBrowser>(profile_.get(), scene_state_);
 
     // Create the UserActivity Browser Agent.
     UserActivityBrowserAgent::CreateForBrowser(browser_.get());
@@ -152,17 +152,18 @@ class UserActivityBrowserAgentTest : public PlatformTest {
     return mock_user_activity;
   }
 
-  // Mock & stub an AppState object with an arbitrary `init_stage` property.
-  id CreateMockAppState(InitStage init_stage) {
-    id mock_app_state = OCMClassMock([AppState class]);
-    OCMStub([(AppState*)mock_app_state initStage]).andReturn(init_stage);
-    return mock_app_state;
+  // Mock & stub a ProfileState object with a given `init_stage` and install
+  // as the SceneState's ProfileState.
+  void InstallMockProfileState(ProfileInitStage init_stage) {
+    profile_state_ = OCMClassMock([ProfileState class]);
+    OCMStub([profile_state_ initStage]).andReturn(init_stage);
+    scene_state_.profileState = profile_state_;
   }
 
   // Set pref kIncognitoModeAvailability to kForced and make it a managed pref.
   void ForceIncognitoMode() {
-    PrefService* pref_service = browser_state_->GetPrefs();
-    browser_state_->GetTestingPrefService()->SetManagedPref(
+    PrefService* pref_service = profile_->GetPrefs();
+    profile_->GetTestingPrefService()->SetManagedPref(
         policy::policy_prefs::kIncognitoModeAvailability,
         std::make_unique<base::Value>(true));
 
@@ -177,8 +178,8 @@ class UserActivityBrowserAgentTest : public PlatformTest {
   // Set pref kIncognitoModeAvailability to kDisabled and make it a managed
   // pref.
   void DisableIncognitoMode() {
-    PrefService* pref_service = browser_state_->GetPrefs();
-    browser_state_->GetTestingPrefService()->SetManagedPref(
+    PrefService* pref_service = profile_->GetPrefs();
+    profile_->GetTestingPrefService()->SetManagedPref(
         policy::policy_prefs::kIncognitoModeAvailability,
         std::make_unique<base::Value>(true));
 
@@ -191,6 +192,7 @@ class UserActivityBrowserAgentTest : public PlatformTest {
   }
 
   raw_ptr<UserActivityBrowserAgent> user_activity_browser_agent_;
+  ProfileState* profile_state_;
   FakeSceneState* scene_state_;
   FakeSceneController* scene_controller_;
   id<ConnectionInformation> connection_information_;
@@ -198,7 +200,7 @@ class UserActivityBrowserAgentTest : public PlatformTest {
  private:
   std::unique_ptr<TestBrowser> browser_;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
 };
 
 #pragma mark - Tests.
@@ -728,7 +730,8 @@ TEST_F(UserActivityBrowserAgentTest,
 TEST_F(UserActivityBrowserAgentTest,
        PerformActionForShortcutItemWithFirstRunUI) {
   // Setup.
-  scene_state_.appState = CreateMockAppState(InitStageFirstRun);
+  InstallMockProfileState(static_cast<ProfileInitStage>(
+      base::to_underlying(ProfileInitStage::kFinal) - 1));
   UIApplicationShortcutItem* shortcut =
       [[UIApplicationShortcutItem alloc] initWithType:kShortcutNewSearch
                                        localizedTitle:kShortcutNewSearch];
@@ -766,7 +769,8 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityBookmarks) {
 // due to still being in first run.
 TEST_F(UserActivityBrowserAgentTest,
        ContinueUserActivityBookmarksFailsFirstRun) {
-  scene_state_.appState = CreateMockAppState(InitStageFirstRun);
+  InstallMockProfileState(static_cast<ProfileInitStage>(
+      base::to_underlying(ProfileInitStage::kFinal) - 1));
   NSUserActivity* user_activity = [[NSUserActivity alloc]
       initWithActivityType:kSiriShortcutAddBookmarkToChrome];
 
@@ -854,7 +858,8 @@ TEST_F(UserActivityBrowserAgentTest, ContinueUserActivityAddToReadingList) {
 // items intent due to still being in first run.
 TEST_F(UserActivityBrowserAgentTest,
        ContinueUserActivityAddToReadingListFailsFirstRun) {
-  scene_state_.appState = CreateMockAppState(InitStageFirstRun);
+  InstallMockProfileState(static_cast<ProfileInitStage>(
+      base::to_underlying(ProfileInitStage::kFinal) - 1));
   NSUserActivity* user_activity = [[NSUserActivity alloc]
       initWithActivityType:kSiriShortcutAddReadingListItemToChrome];
 

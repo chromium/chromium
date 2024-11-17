@@ -18,8 +18,9 @@ static int JNI_TestDummyImpl_Execute(JNIEnv* env, jboolean arg) {
 
 static base::android::ScopedJavaLocalRef<jstring>
 JNI_TestDummyImpl_LoadResource(JNIEnv* env) {
-  auto resource = ui::ResourceBundle::GetSharedInstance().GetRawDataResource(
-      IDR_TEST_DUMMY_TEST_RESOURCE);
+  auto resource =
+      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+          IDR_TEST_DUMMY_TEST_RESOURCE);
   LOG(INFO) << "Loading dummy native resource: " << resource;
   return base::android::ConvertUTF8ToJavaString(env, resource);
 }

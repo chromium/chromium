@@ -19,7 +19,7 @@ class LanguageModelManager;
 @interface LanguageSettingsMediator
     : NSObject <LanguageSettingsDataSource, LanguageSettingsCommands>
 
-// The designated initializer. `browserState` must not be nil.
+// The designated initializer. `profile` must not be nil.
 - (instancetype)initWithLanguageModelManager:
                     (language::LanguageModelManager*)languageModelManager
                                  prefService:(PrefService*)prefService

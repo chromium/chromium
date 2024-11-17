@@ -104,7 +104,7 @@ class MockSyncService : public SyncService {
               GetLastCycleSnapshotForDebugging,
               (),
               (const override));
-  MOCK_METHOD(base::Value::List,
+  MOCK_METHOD(TypeStatusMapForDebugging,
               GetTypeStatusMapForDebugging,
               (),
               (const override));
@@ -149,6 +149,12 @@ class MockSyncService : public SyncService {
            callback),
       (override));
   MOCK_METHOD(void, TriggerLocalDataMigration, (DataTypeSet types), (override));
+  MOCK_METHOD(
+      void,
+      TriggerLocalDataMigration,
+      ((std::map<syncer::DataType,
+                 std::vector<syncer::LocalDataItemModel::DataId>> items)),
+      (override));
 
   // KeyedService implementation.
   MOCK_METHOD(void, Shutdown, (), (override));

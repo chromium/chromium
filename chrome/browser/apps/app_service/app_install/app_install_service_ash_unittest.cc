@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/components/arc/test/fake_app_instance.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/apps/intent_helper/preferred_apps_test_util.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_test.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
+#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/arc/intent_helper/intent_constants.h"

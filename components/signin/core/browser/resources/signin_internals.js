@@ -7,7 +7,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 // </if>
 
 import 'chrome://resources/js/jstemplate_compiled.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import {addWebUiListener, sendWithPromise} from 'chrome://resources/js/cr.js';
 import {$} from 'chrome://resources/js/util.js';

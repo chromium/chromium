@@ -29,14 +29,21 @@ void FakeBlobURLStore::ResolveAsURLLoaderFactory(
     const KURL&,
     mojo::PendingReceiver<network::mojom::blink::URLLoaderFactory>,
     ResolveAsURLLoaderFactoryCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void FakeBlobURLStore::ResolveForNavigation(
     const KURL&,
     mojo::PendingReceiver<mojom::blink::BlobURLToken>,
     ResolveForNavigationCallback callback) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
+}
+
+void FakeBlobURLStore::ResolveForWorkerScriptFetch(
+    const KURL&,
+    mojo::PendingReceiver<mojom::blink::BlobURLToken>,
+    ResolveForNavigationCallback callback) {
+  NOTREACHED();
 }
 
 }  // namespace blink

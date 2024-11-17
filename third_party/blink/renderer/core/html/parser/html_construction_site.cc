@@ -294,6 +294,7 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   if (task.operation == HTMLConstructionSiteTask::kInsert) {
     ExecuteInsertTask(task);
     if (pending_dom_parts_) {
+      DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
       if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
         if (task.dom_parts_needed.needs_node_part) {
           // Just mark the node as having a node part.
@@ -310,6 +311,7 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   if (task.operation == HTMLConstructionSiteTask::kInsertText) {
     ExecuteInsertTextTask(task);
     if (pending_dom_parts_) {
+      DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
       if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
         if (task.dom_parts_needed.needs_node_part) {
           // Just mark the node as having a node part.
@@ -335,7 +337,7 @@ void HTMLConstructionSite::ExecuteTask(HTMLConstructionSiteTask& task) {
   if (task.operation == HTMLConstructionSiteTask::kTakeAllChildren)
     return ExecuteTakeAllChildrenTask(task);
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // This is only needed for TextDocuments where we might have text nodes
@@ -355,15 +357,13 @@ static unsigned FindBreakIndexBetween(const StringBuilder& string,
   if (string.Is8Bit())
     return proposed_break_index;
 
-  const UChar* break_search_characters =
-      string.Characters16() + current_position;
   // We need at least two characters look-ahead to account for UTF-16
   // surrogates, but can't search off the end of the buffer!
   unsigned break_search_length =
       std::min(proposed_break_index - current_position + 2,
                string.length() - current_position);
-  NonSharedCharacterBreakIterator it(break_search_characters,
-                                     break_search_length);
+  NonSharedCharacterBreakIterator it(
+      string.Span16().subspan(current_position, break_search_length));
 
   if (it.IsBreak(proposed_break_index - current_position))
     return proposed_break_index;
@@ -1408,7 +1408,8 @@ void HTMLConstructionSite::FinishedTemplateElement(
   if (!pending_dom_parts_) {
     return;
   }
-  if (!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
+  if (RuntimeEnabledFeatures::DOMPartsAPIEnabled() &&
+      !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
     PartRoot* last_root = pending_dom_parts_->PopPartRoot();
     CHECK_EQ(&content_fragment->getPartRoot(), last_root);
   }
@@ -1439,9 +1440,11 @@ void HTMLConstructionSite::PendingDOMParts::AddChildNodePartStart(
   // then update its `next_sibling` later when we find it, rendering it (and
   // any dependant Parts) valid.
   ChildNodePart* new_part = MakeGarbageCollected<ChildNodePart>(
-      *CurrentPartRoot(), previous_sibling, previous_sibling, metadata);
+      *CurrentPartRoot(), previous_sibling, previous_sibling,
+      std::move(metadata));
   part_root_stack_.push_back(new_part);
 }
+
 void HTMLConstructionSite::PendingDOMParts::AddChildNodePartEnd(
     Node& next_sibling) {
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
@@ -1481,17 +1484,20 @@ void HTMLConstructionSite::PendingDOMParts::ConstructDOMPartsIfNeeded(
 }
 
 PartRoot* HTMLConstructionSite::PendingDOMParts::CurrentPartRoot() const {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   CHECK(!part_root_stack_.empty());
   return part_root_stack_.back().Get();
 }
 
 void HTMLConstructionSite::PendingDOMParts::PushPartRoot(PartRoot* root) {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   return part_root_stack_.push_back(root);
 }
 
 PartRoot* HTMLConstructionSite::PendingDOMParts::PopPartRoot() {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   CHECK(!part_root_stack_.empty());
   PartRoot* popped = part_root_stack_.back();

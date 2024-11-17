@@ -475,10 +475,12 @@ std::optional<SkColor> TypeConverter<UNIQUE_TYPE_NAME(SkColor)>::GetNextColor(
     std::u16string::const_iterator& next_token) {
   std::u16string color;
   if (GetNextColor(start, end, color, next_token)) {
-    if (base::StartsWith(color, u"hsl", base::CompareCase::SENSITIVE))
+    if (color.starts_with(u"hsl")) {
       return ParseHslString(color);
-    if (base::StartsWith(color, u"rgb", base::CompareCase::SENSITIVE))
+    }
+    if (color.starts_with(u"rgb")) {
       return ParseRgbString(color);
+    }
     if (base::StartsWith(color, u"0x", base::CompareCase::INSENSITIVE_ASCII))
       return ParseHexString(color);
     SkColor value;

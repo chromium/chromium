@@ -67,23 +67,12 @@ base::expected<int, ParseError> ParseValue(const base::Value::Dict& dict,
   return int_value;
 }
 
-base::expected<int, AggregatableDebugReportingConfigError> ParseBudget(
-    const base::Value::Dict& dict) {
+base::expected<int, ParseError> ParseBudget(const base::Value::Dict& dict) {
   const base::Value* value = dict.Find(kBudget);
   if (!value) {
-    return base::unexpected(
-        AggregatableDebugReportingConfigError::kBudgetInvalid);
+    return base::unexpected(ParseError());
   }
-
-  ASSIGN_OR_RETURN(int int_value, ParseInt(*value), [](ParseError) {
-    return AggregatableDebugReportingConfigError::kBudgetInvalid;
-  });
-
-  if (!IsAggregatableValueInRange(int_value)) {
-    return base::unexpected(
-        AggregatableDebugReportingConfigError::kBudgetInvalid);
-  }
-  return int_value;
+  return ParseAggregatableValue(*value);
 }
 
 base::expected<absl::uint128, ParseError> ParseKeyPiece(
@@ -227,7 +216,7 @@ void SerializeConfig(base::Value::Dict& dict,
 
 bool IsValid(int budget,
              const AggregatableDebugReportingConfig::DebugData& data) {
-  if (!IsRemainingAggregatableBudgetInRange(budget)) {
+  if (!IsAggregatableBudgetInRange(budget)) {
     return false;
   }
 
@@ -273,7 +262,9 @@ ParseSourceConfig(base::Value::Dict& dict) {
         AggregatableDebugReportingConfigError::kRootInvalid);
   }
 
-  ASSIGN_OR_RETURN(int budget, ParseBudget(*d));
+  ASSIGN_OR_RETURN(int budget, ParseBudget(*d), [](ParseError) {
+    return AggregatableDebugReportingConfigError::kBudgetInvalid;
+  });
 
   ASSIGN_OR_RETURN(auto config, ParseConfig(*d, budget, SourceDebugDataTypes(),
                                             &ParseSourceDebugDataType));

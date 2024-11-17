@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#import "base/memory/raw_ptr.h"
 #include "components/signin/public/base/signin_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -63,7 +64,7 @@ class IOSWebViewSigninClient : public SigninClient {
   // Helper to delay callbacks until connection becomes online again.
   std::unique_ptr<WaitForNetworkCallbackHelperIOS> network_callback_helper_;
   // The PrefService associated with this service.
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
   // The browser_state_ associated with this service.
   ios_web_view::WebViewBrowserState* browser_state_;
 };

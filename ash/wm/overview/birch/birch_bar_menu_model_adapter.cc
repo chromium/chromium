@@ -14,6 +14,7 @@
 #include "ash/wm/overview/birch/birch_bar_controller.h"
 #include "ash/wm/overview/birch/birch_bar_util.h"
 #include "base/types/cxx23_to_underlying.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_config.h"
@@ -34,7 +35,7 @@ using CommandId = BirchBarContextMenuModel::CommandId;
 BirchBarMenuModelAdapter::BirchBarMenuModelAdapter(
     std::unique_ptr<ui::SimpleMenuModel> birch_menu_model,
     views::Widget* widget_owner,
-    ui::MenuSourceType source_type,
+    ui::mojom::MenuSourceType source_type,
     base::OnceClosure on_menu_closed_callback,
     bool is_tablet_mode,
     bool for_chip_menu)

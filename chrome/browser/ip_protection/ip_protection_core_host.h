@@ -20,6 +20,7 @@
 #include "components/ip_protection/common/ip_protection_proxy_config_direct_fetcher.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/ip_protection_token_direct_fetcher.h"
+#include "components/ip_protection/mojom/core.mojom.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -32,7 +33,6 @@
 #include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/status/status.h"
 
 class Profile;
@@ -50,7 +50,7 @@ struct BlindSignToken;
 // UI thread.
 class IpProtectionCoreHost
     : public KeyedService,
-      public network::mojom::IpProtectionConfigGetter,
+      public ip_protection::mojom::CoreHost,
       public signin::IdentityManager::Observer,
       public privacy_sandbox::TrackingProtectionSettingsObserver {
  public:
@@ -67,10 +67,10 @@ class IpProtectionCoreHost
   // Get a batch of blind-signed auth tokens. It is forbidden for two calls to
   // this method for the same proxy layer to be outstanding at the same time.
   void TryGetAuthTokens(uint32_t batch_size,
-                        network::mojom::IpProtectionProxyLayer proxy_layer,
+                        ip_protection::mojom::ProxyLayer proxy_layer,
                         TryGetAuthTokensCallback callback) override;
   // Get the list of IP Protection proxies.
-  void GetProxyList(GetProxyListCallback callback) override;
+  void GetProxyConfig(GetProxyConfigCallback callback) override;
 
   static bool CanIpProtectionBeEnabled();
 
@@ -79,24 +79,19 @@ class IpProtectionCoreHost
 
   // Add bidirectional pipes to a new network service.
   void AddNetworkService(
-      mojo::PendingReceiver<network::mojom::IpProtectionConfigGetter>
-          pending_receiver,
-      mojo::PendingRemote<network::mojom::IpProtectionProxyDelegate>
-          pending_remote);
+      mojo::PendingReceiver<ip_protection::mojom::CoreHost> pending_receiver,
+      mojo::PendingRemote<ip_protection::mojom::CoreControl> pending_remote);
 
   // KeyedService:
   void Shutdown() override;
 
-  static IpProtectionCoreHost* Get(Profile* profile);
-
-  mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter>&
-  receivers_for_testing() {
+  mojo::ReceiverSet<ip_protection::mojom::CoreHost>& receivers_for_testing() {
     return receivers_;
   }
   mojo::ReceiverId receiver_id_for_testing() {
     return receiver_id_for_testing_;
   }
-  network::mojom::IpProtectionProxyDelegate* last_remote_for_testing() {
+  ip_protection::mojom::CoreControl* last_remote_for_testing() {
     return remotes_.Get(remote_id_for_testing_);
   }
 
@@ -156,7 +151,7 @@ class IpProtectionCoreHost
           AuthenticateDoneCallback);
 
   // Creating a generic callback in order for `RequestOAuthToken()` to work for
-  // `TryGetAuthTokens()` and `GetProxyList()`.
+  // `TryGetAuthTokens()` and `GetProxyConfig()`.
   using RequestOAuthTokenCallback =
       base::OnceCallback<void(GoogleServiceAuthError error,
                               signin::AccessTokenInfo access_token_info)>;
@@ -260,11 +255,11 @@ class IpProtectionCoreHost
   // If one of the corresponding Network Contexts restarts, the
   // corresponding receiver will automatically be removed and a new one
   // bound as part of the Network Context initialization flow.
-  mojo::ReceiverSet<network::mojom::IpProtectionConfigGetter> receivers_;
+  mojo::ReceiverSet<ip_protection::mojom::CoreHost> receivers_;
 
   // Similar to `receivers_`, but containing remotes for all existing
   // IpProtectionProxyDelegates.
-  mojo::RemoteSet<network::mojom::IpProtectionProxyDelegate> remotes_;
+  mojo::RemoteSet<ip_protection::mojom::CoreControl> remotes_;
 
   // The `mojo::ReceiverId` of the most recently added `mojo::Receiver`, for
   // testing.

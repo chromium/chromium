@@ -34,6 +34,7 @@ class AidaClient {
   void PrepareRequestOrFail(
       base::OnceCallback<
           void(absl::variant<network::ResourceRequest, std::string>)> callback);
+  void RemoveAccessToken();
 
   // Needed because VariationsService is not available for unit tests.
   static ScopedOverride OverrideCountryForTesting(std::string country_code);

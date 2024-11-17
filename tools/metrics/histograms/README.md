@@ -179,7 +179,7 @@ enum class NewTabPageAction {
 // LINT.ThenChange(//path/to/enums.xml:NewTabPageActionEnum)
 ```
 
-The `LINT.IfChange / LINT.ThenChange` comments point between the code and XML
+The `LINT``.IfChange` / `LINT``.ThenChange` comments point between the code and XML
 definitions of the enum, to encourage them to be kept in sync. See
 [guide](https://www.chromium.org/chromium-os/developer-library/guides/development/keep-files-in-sync/)
 and [more details](http://go/gerrit-ifthisthenthat).
@@ -313,8 +313,8 @@ You can alternatively follow these steps:
 You can also use `tools/metrics/histograms/validate_format.py` to check the
 ordering (but not that the value is correct).
 
-Don't remove entries when removing a flag; they are still used to decode data
-from previous Chrome versions.
+Don't remove or modify entries when removing a flag; they are still used to
+decode data from previous Chrome versions.
 
 ### Count Histograms
 

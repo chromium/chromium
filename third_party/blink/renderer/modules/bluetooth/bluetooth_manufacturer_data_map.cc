@@ -24,7 +24,7 @@ class BluetoothManufacturerDataMapIterationSource final
       return false;
     map_key = iterator_->key->id;
     map_value = NotShared<DOMDataView>(
-        BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(iterator_->value));
+        BluetoothRemoteGATTUtils::ConvertSpanToDataView(iterator_->value));
     ++iterator_;
     return true;
   }
@@ -68,7 +68,7 @@ bool BluetoothManufacturerDataMap::GetMapEntry(ScriptState*,
     return false;
 
   DOMDataView* dom_data_view =
-      BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(it->value);
+      BluetoothRemoteGATTUtils::ConvertSpanToDataView(it->value);
 
   value = NotShared<DOMDataView>(dom_data_view);
   return true;

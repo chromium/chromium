@@ -42,6 +42,7 @@ class ExternalVideoEncoder final : public VideoEncoder {
       const gfx::Size& frame_size,
       FrameId first_frame_id,
       StatusChangeCallback status_change_cb,
+      FrameEncodedCallback output_cb,
       const CreateVideoEncodeAcceleratorCallback& create_vea_cb);
 
   ExternalVideoEncoder(const ExternalVideoEncoder&) = delete;
@@ -51,8 +52,7 @@ class ExternalVideoEncoder final : public VideoEncoder {
 
   // VideoEncoder implementation.
   bool EncodeVideoFrame(scoped_refptr<media::VideoFrame> video_frame,
-                        base::TimeTicks reference_time,
-                        FrameEncodedCallback frame_encoded_callback) final;
+                        base::TimeTicks reference_time) final;
   void SetBitRate(int new_bit_rate) final;
   void GenerateKeyFrame() final;
 
@@ -79,6 +79,8 @@ class ExternalVideoEncoder final : public VideoEncoder {
 
   raw_ref<VideoEncoderMetricsProvider> metrics_provider_;
 
+  FrameEncodedCallback output_cb_;
+
   // The size of the visible region of the video frames to be encoded.
   const gfx::Size frame_size_;
 
@@ -102,6 +104,7 @@ class SizeAdaptableExternalVideoEncoder final
       const FrameSenderConfig& video_config,
       std::unique_ptr<VideoEncoderMetricsProvider> metrics_provider,
       StatusChangeCallback status_change_cb,
+      FrameEncodedCallback output_cb,
       const CreateVideoEncodeAcceleratorCallback& create_vea_cb);
 
   SizeAdaptableExternalVideoEncoder(const SizeAdaptableExternalVideoEncoder&) =

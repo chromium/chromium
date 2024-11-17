@@ -13,16 +13,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
-#include "build/chromeos_buildflags.h"
+#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service.h"
 #include "chrome/browser/ui/platform_keys_certificate_selector_chromeos.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "net/cert/x509_certificate.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/keystore_service_factory_ash.h"
-#endif
 
 namespace chromeos {
 namespace {
@@ -32,7 +28,7 @@ namespace {
 class DefaultSelectDelegate
     : public chromeos::ExtensionPlatformKeysService::SelectDelegate {
  public:
-  DefaultSelectDelegate() {}
+  DefaultSelectDelegate() = default;
   DefaultSelectDelegate(const DefaultSelectDelegate&) = delete;
   auto operator=(const DefaultSelectDelegate&) = delete;
   ~DefaultSelectDelegate() override {}
@@ -98,18 +94,17 @@ ExtensionPlatformKeysServiceFactory::ExtensionPlatformKeysServiceFactory()
               // Ash Internals.
               .WithAshInternals(ProfileSelection::kRedirectedToOriginal)
               .Build()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   DependsOn(crosapi::KeystoreServiceFactoryAsh::GetInstance());
-#endif
 }
 
 ExtensionPlatformKeysServiceFactory::~ExtensionPlatformKeysServiceFactory() =
     default;
 
-KeyedService* ExtensionPlatformKeysServiceFactory::BuildServiceInstanceFor(
+std::unique_ptr<KeyedService>
+ExtensionPlatformKeysServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  ExtensionPlatformKeysService* const service =
-      new ExtensionPlatformKeysService(context);
+  std::unique_ptr<ExtensionPlatformKeysService> service =
+      std::make_unique<ExtensionPlatformKeysService>(context);
 
   service->SetSelectDelegate(std::make_unique<DefaultSelectDelegate>());
   return service;

@@ -284,7 +284,8 @@ int LoadOperations(const base::FilePath& path, RankCrashes action,
 
   // Work with a tiny index table (16 entries).
   disk_cache::BackendImpl* cache = new disk_cache::BackendImpl(
-      path, 0xf, cache_thread->task_runner().get(), net::DISK_CACHE, nullptr);
+      path, 0xf, /*cleanup_tracker=*/nullptr, cache_thread->task_runner().get(),
+      net::DISK_CACHE, nullptr);
   if (!cache->SetMaxSize(0x100000))
     return GENERIC;
 

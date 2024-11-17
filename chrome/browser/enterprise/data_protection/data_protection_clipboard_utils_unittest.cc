@@ -8,7 +8,6 @@
 #include "base/test/test_future.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "components/enterprise/data_controls/core/browser/features.h"
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/content_browser_client.h"
@@ -73,8 +72,6 @@ class DataProtectionClipboardTest : public testing::Test {
       : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     EXPECT_TRUE(profile_manager_.SetUp());
     profile_ = profile_manager_.CreateTestingProfile("test-user");
-    scoped_features_.InitAndEnableFeature(
-        data_controls::kEnableDesktopDataControls);
   }
 
   void SetUp() override { ui::TestClipboard::CreateForCurrentThread(); }
@@ -122,7 +119,6 @@ class DataProtectionClipboardTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  base::test::ScopedFeatureList scoped_features_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
   std::unique_ptr<content::WebContents> web_contents_;
@@ -218,6 +214,21 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, Default) {
       future;
   IsClipboardCopyAllowedByPolicy(
       CopyEndpoint(GURL("https://source.com")), CopyMetadata(),
+      MakeClipboardPasteData("foo", "", {}), future.GetCallback());
+  auto data = future.Get<content::ClipboardPasteData>();
+  EXPECT_EQ(data.text, u"foo");
+
+  auto replacement = future.Get<std::optional<std::u16string>>();
+  EXPECT_FALSE(replacement);
+}
+
+TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, NoEndpoint) {
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      future;
+  IsClipboardCopyAllowedByPolicy(
+      content::ClipboardEndpoint(std::nullopt), CopyMetadata(),
       MakeClipboardPasteData("foo", "", {}), future.GetCallback());
   auto data = future.Get<content::ClipboardPasteData>();
   EXPECT_EQ(data.text, u"foo");
@@ -589,9 +600,8 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, BitmapReplacement) {
   EXPECT_TRUE(first_paste_data->html.empty());
 
   // The pasted bitmap should be in the PNG field instead of the bitmap one.
-  SkBitmap pasted_bitmap;
-  gfx::PNGCodec::Decode(first_paste_data->png.data(),
-                        first_paste_data->png.size(), &pasted_bitmap);
+  SkBitmap pasted_bitmap = gfx::PNGCodec::Decode(first_paste_data->png);
+  ASSERT_FALSE(pasted_bitmap.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(kBitmap, pasted_bitmap));
   EXPECT_TRUE(first_paste_data->bitmap.empty());
 
@@ -599,9 +609,8 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, BitmapReplacement) {
   content::ClipboardPasteData same_tab_data;
   ReplaceSameTabClipboardDataIfRequiredByPolicy(metadata.seqno, same_tab_data);
 
-  pasted_bitmap = SkBitmap();
-  gfx::PNGCodec::Decode(same_tab_data.png.data(), same_tab_data.png.size(),
-                        &pasted_bitmap);
+  pasted_bitmap = gfx::PNGCodec::Decode(same_tab_data.png);
+  ASSERT_FALSE(pasted_bitmap.isNull());
   EXPECT_TRUE(gfx::BitmapsAreEqual(kBitmap, pasted_bitmap));
   EXPECT_TRUE(same_tab_data.bitmap.empty());
 

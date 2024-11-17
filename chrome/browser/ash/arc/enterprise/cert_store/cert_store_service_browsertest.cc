@@ -7,6 +7,8 @@
 #pragma allow_unsafe_buffers
 #endif
 
+#include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
+
 #include <stdint.h>
 
 #include <map>
@@ -27,11 +29,12 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service.h"
+#include "chrome/browser/ash/arc/enterprise/cert_store/cert_store_service_factory.h"
 #include "chrome/browser/ash/arc/keymaster/arc_keymaster_bridge.h"
 #include "chrome/browser/ash/arc/keymint/arc_keymint_bridge.h"
 #include "chrome/browser/ash/arc/session/arc_service_launcher.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
+#include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_service_factory.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_mixin.h"
@@ -152,8 +155,9 @@ class FakeArcCertInstaller : public ArcCertInstaller {
   }
 
   void Stop() {
-    if (run_loop_)
+    if (run_loop_) {
       run_loop_->QuitWhenIdle();
+    }
   }
 
   std::map<std::string, std::string> certs() const { return certs_; }
@@ -275,7 +279,7 @@ void IsSystemSlotAvailableWithDbGetterOnIO(
   }
 }
 
-// Returns trus if the test system slot was setup correctly and is available.
+// Returns true if the test system slot was setup correctly and is available.
 bool IsSystemSlotAvailable(Profile* profile) {
   // |profile| must be accessed on the UI thread.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -323,10 +327,13 @@ void RegisterCorporateKeyWithService(
   std::vector<uint8_t> client_cert_spki(
       cert->derPublicKey.data,
       cert->derPublicKey.data + cert->derPublicKey.len);
+
+  // Mimics the behaviour of the ExtensionPlatformKeysService, which sets the
+  // one-time signing permission when the key is registered for corporate usage.
+  service->RegisterOneTimeSigningPermissionForKey(client_cert_spki);
   service->RegisterKeyForCorporateUsage(
-      std::move(client_cert_spki),
-      base::BindOnce(&OnKeyRegisteredForCorporateUsage,
-                     std::move(done_callback)));
+      client_cert_spki, base::BindOnce(&OnKeyRegisteredForCorporateUsage,
+                                       std::move(done_callback)));
 }
 
 }  // namespace
@@ -423,6 +430,9 @@ class CertStoreServiceTest
 
 CertStoreServiceTest::CertStoreServiceTest() : test_data_(GetParam()) {
   cryptohome_mixin_.MarkUserAsExisting(affiliation_mixin_.account_id());
+  cryptohome_mixin_.ApplyAuthConfig(
+      affiliation_mixin_.account_id(),
+      ash::test::UserAuthConfig::Create(ash::test::kDefaultAuthSetup));
 }
 
 void CertStoreServiceTest::SetUp() {
@@ -460,8 +470,9 @@ void CertStoreServiceTest::SetUpOnMainThread() {
   MixinBasedInProcessBrowserTest::SetUpOnMainThread();
 
   // Pre tests need no further setup.
-  if (content::IsPreTest())
+  if (content::IsPreTest()) {
     return;
+  }
 
   policy::AffiliationTestHelper::LoginUser(affiliation_mixin_.account_id());
 
@@ -478,7 +489,7 @@ void CertStoreServiceTest::SetUpOnMainThread() {
   }
 
   // Use fake ArcCertInstaller in CertStoreService.
-  CertStoreService::GetFactory()->SetTestingSubclassFactoryAndUse(
+  CertStoreServiceFactory::GetInstance()->SetTestingSubclassFactoryAndUse(
       profile(),
       base::BindOnce(
           [](raw_ptr<FakeArcCertInstaller, DanglingUntriaged>* out_installer,
@@ -536,8 +547,9 @@ void CertStoreServiceTest::SetUpCerts(
   for (size_t i = initial_size; i < installed_certs_.size(); ++i) {
     const InstalledTestCert& cert = installed_certs_[i];
     // Register cert for corporate usage if needed.
-    if (cert.test_data.is_corporate_usage)
+    if (cert.test_data.is_corporate_usage) {
       RegisterCorporateKey(cert.nss_cert.get());
+    }
     // Import cert to NSS cert database.
     base::RunLoop loop;
     NssServiceFactory::GetForContext(profile())
@@ -591,8 +603,9 @@ void CertStoreServiceTest::CheckInstalledCerts(
 
   // Verify |test_certs| and |installed_certs_| have matching elements.
   ASSERT_EQ(test_certs.size(), installed_certs_.size());
-  for (size_t i = 0; i < installed_certs_.size(); ++i)
+  for (size_t i = 0; i < installed_certs_.size(); ++i) {
     EXPECT_EQ(test_certs[i], installed_certs_[i].test_data);
+  }
 
   for (const auto& cert_name : service->get_required_cert_names()) {
     bool found = false;
@@ -603,8 +616,9 @@ void CertStoreServiceTest::CheckInstalledCerts(
       const net::ScopedCERTCertificate& nss_cert = cert.nss_cert;
 
       // Skip until |cert| corresponds to the current |cert_name|.
-      if (GetDerCert64(nss_cert.get()) != installer_->certs()[cert_name])
+      if (GetDerCert64(nss_cert.get()) != installer_->certs()[cert_name]) {
         continue;
+      }
 
       // Check nickname.
       EXPECT_EQ(x509_certificate_model::GetCertNameOrNickname(nss_cert.get()),
@@ -691,8 +705,9 @@ void CertStoreServiceTest::SetUpTestSystemSlot() {
 }
 
 void CertStoreServiceTest::TearDownTestSystemSlot() {
-  if (!test_system_slot_)
+  if (!test_system_slot_) {
     return;
+  }
 
   base::RunLoop loop;
   content::GetIOThreadTaskRunner({})->PostTaskAndReply(
@@ -713,7 +728,8 @@ IN_PROC_BROWSER_TEST_P(CertStoreServiceTest, PRE_HandlesCorporateUsageCerts) {
 }
 
 IN_PROC_BROWSER_TEST_P(CertStoreServiceTest, HandlesCorporateUsageCerts) {
-  CertStoreService* service = CertStoreService::GetForBrowserContext(profile());
+  CertStoreService* service =
+      CertStoreServiceFactory::GetForBrowserContext(profile());
   ASSERT_TRUE(service);
 
   // Install all certs from parameter at once.
@@ -730,7 +746,8 @@ IN_PROC_BROWSER_TEST_P(CertStoreServiceTest,
 
 IN_PROC_BROWSER_TEST_P(CertStoreServiceTest,
                        InstallsAndDeletesCorporateUsageCerts) {
-  CertStoreService* service = CertStoreService::GetForBrowserContext(profile());
+  CertStoreService* service =
+      CertStoreServiceFactory::GetForBrowserContext(profile());
   ASSERT_TRUE(service);
 
   // Install certs from parameter one by one.

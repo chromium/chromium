@@ -130,6 +130,11 @@ message ContactInfoSpecifics {
   reserved 14;
   reserved "name_full_with_honorific";
 
+  // Contact info alternative name fields (e.g. phonetic names in Japan).
+  optional StringToken alternative_full_name = 57;
+  optional StringToken alternative_given_name = 58;
+  optional StringToken alternative_family_name = 59;
+
   // Contact info additional fields.
   optional StringToken email_address = 15;
   optional StringToken company_name = 16;

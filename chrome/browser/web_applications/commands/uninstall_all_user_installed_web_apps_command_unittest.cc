@@ -12,6 +12,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/mock_file_utils_wrapper.h"
@@ -184,9 +185,10 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest,
           .origin()
           .GetURL(),
       "iwa from installer",
-      WebApp::IsolationData(
+      IsolationData::Builder(
           IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
-          base::Version("1")),
+          base::Version("1"))
+          .Build(),
       webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER);
 
   webapps::AppId app_id4 = AddDummyIsolatedAppToRegistry(
@@ -196,9 +198,10 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest,
           .origin()
           .GetURL(),
       "iwa from dev ui",
-      WebApp::IsolationData(
+      IsolationData::Builder(
           IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/true},
-          base::Version("1")),
+          base::Version("1"))
+          .Build(),
       webapps::WebappInstallSource::IWA_DEV_UI);
 
   webapps::AppId app_id5 = AddDummyIsolatedAppToRegistry(
@@ -208,9 +211,10 @@ TEST_F(UninstallAllUserInstalledWebAppsCommandTest,
           .origin()
           .GetURL(),
       "iwa from dev command line",
-      WebApp::IsolationData(
+      IsolationData::Builder(
           IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/true},
-          base::Version("1")),
+          base::Version("1"))
+          .Build(),
       webapps::WebappInstallSource::IWA_DEV_COMMAND_LINE);
 
   base::test::TestFuture<const std::optional<std::string>&> future;

@@ -98,6 +98,8 @@ target(tracing_lib_type, "cpp") {
       "perfetto/track_name_recorder.h",
       "stack_sampling/tracing_sampler_profiler.cc",
       "stack_sampling/tracing_sampler_profiler.h",
+      "system_metrics_sampler.cc",
+      "system_metrics_sampler.h",
       "trace_event_agent.cc",
       "trace_event_agent.h",
       "trace_event_args_allowlist.cc",
@@ -147,14 +149,13 @@ target(tracing_lib_type, "cpp") {
       ":buildflags",
       "//build:chromecast_buildflags",
       "//build:chromeos_buildflags",
+      "//components/system_cpu:system_cpu",
       "//third_party/perfetto/protos/perfetto/trace/chrome:minimal_complete_lite",
     ]
 
-   if (!(is_chromeos_ash && target_cpu == "arm64" && current_cpu == "arm")) {
-     deps += [
-       "//components/variations",
-     ]
-   }
+    if (!(is_chromeos_ash && target_cpu == "arm64" && current_cpu == "arm")) {
+      deps += [ "//components/variations" ]
+    }
 
     # Add the SystemProducer implementations.
     if (is_posix || is_fuchsia) {

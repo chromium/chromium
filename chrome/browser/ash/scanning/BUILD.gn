@@ -106,7 +106,6 @@ static_library("test_support") {
 
   deps = [
     "//base",
-    "//chrome/browser/ui/ash:test_support",
     "//skia",
     "//third_party/re2",
     "//ui/gfx/codec",

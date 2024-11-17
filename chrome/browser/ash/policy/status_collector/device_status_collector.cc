@@ -104,6 +104,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_names.h"
 #include "components/user_manager/user_type.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_thread.h"
@@ -225,8 +226,7 @@ std::string ReadCPUStatistics() {
       }
     }
     // First line should always start with "cpu ".
-    NOTREACHED_IN_MIGRATION()
-        << "Could not parse /proc/stat contents: " << contents;
+    NOTREACHED() << "Could not parse /proc/stat contents: " << contents;
   }
   LOG(WARNING) << "Unable to read CPU statistics from " << kProcStat;
   return std::string();
@@ -601,7 +601,7 @@ em::CrashReportInfo::CrashReportUploadStatus GetCrashReportUploadStatus(
       return em::CrashReportInfo::UPLOAD_STATUS_UNKNOWN;
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 // Filter the loaded crash reports.
@@ -661,29 +661,37 @@ em::ActiveTimePeriod::SessionType GetSessionType(
     case DeviceLocalAccountType::kWebKioskApp:
       return em::ActiveTimePeriod::SESSION_WEB_KIOSK;
 
+    case DeviceLocalAccountType::kKioskIsolatedWebApp:
+      // TODO(crbug.com/369516363): add ActiveTimePeriod value for IWA.
+      return em::ActiveTimePeriod::SESSION_WEB_KIOSK;
+
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return em::ActiveTimePeriod::SESSION_UNKNOWN;
+  NOTREACHED();
 }
 
 // Remap GscVersion using switch-case even though the values match
 // to ensure that the compiler complains if a new value has been added.
-em::TpmVersionInfo_GscVersion ConvertTpmGscVersion(
-    tpm_manager::GscVersion gsc_version) {
-  switch (gsc_version) {
-    case tpm_manager::GscVersion::GSC_VERSION_NOT_GSC:
+em::TpmVersionInfo_GscVersion ConvertTpmGscDevice(
+    tpm_manager::GscDevice gsc_device) {
+  switch (gsc_device) {
+    case tpm_manager::GscDevice::GSC_DEVICE_NOT_GSC:
       return em::TpmVersionInfo::GSC_VERSION_NOT_GSC;
-    case tpm_manager::GscVersion::GSC_VERSION_CR50:
+    case tpm_manager::GscDevice::GSC_DEVICE_H1:
       return em::TpmVersionInfo::GSC_VERSION_CR50;
-    case tpm_manager::GscVersion::GSC_VERSION_TI50:
+    case tpm_manager::GscDevice::GSC_DEVICE_DT:
       return em::TpmVersionInfo::GSC_VERSION_TI50;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return em::TpmVersionInfo::GSC_VERSION_UNSPECIFIED;
+  NOTREACHED();
+}
+
+// Do not report session type and email for deprecated user types.
+bool IsDeprecatedArcKioskAccount(std::string_view user_email) {
+  return gaia::ExtractDomainName(gaia::SanitizeEmail(user_email)) ==
+         user_manager::kArcKioskDomain;
 }
 
 }  // namespace
@@ -2293,8 +2301,9 @@ bool DeviceStatusCollector::GetActivityTimes(
       period->set_end_timestamp(end_timestamp);
       active_period->set_active_duration(activity_period.end_timestamp() -
                                          activity_period.start_timestamp());
-      // Report user email and session_type only if users reporting is on.
-      if (!user_email.empty()) {
+      // Report user email and session_type for non-deprecated accounts only
+      // if users reporting is on.
+      if (!user_email.empty() && !IsDeprecatedArcKioskAccount(user_email)) {
         em::ActiveTimePeriod::SessionType session_type =
             GetSessionType(user_email);
         // Don't report the email address for MGS / Kiosk apps
@@ -2338,7 +2347,7 @@ bool DeviceStatusCollector::GetVersionInfo(
   tpm_version_info->set_firmware_version(tpm_version_reply_.firmware_version());
   tpm_version_info->set_vendor_specific(tpm_version_reply_.vendor_specific());
   tpm_version_info->set_gsc_version(
-      ConvertTpmGscVersion(tpm_version_reply_.gsc_version()));
+      ConvertTpmGscDevice(tpm_version_reply_.gsc_device()));
   return true;
 }
 
@@ -2719,7 +2728,7 @@ bool DeviceStatusCollector::GetRunningKioskApp(
       break;
     case DeviceLocalAccountType::kPublicSession:
     case DeviceLocalAccountType::kSamlPublicSession:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return true;
 }
@@ -3011,7 +3020,7 @@ bool DeviceStatusCollector::GetKioskSessionStatus(
       break;
     case DeviceLocalAccountType::kPublicSession:
     case DeviceLocalAccountType::kSamlPublicSession:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   return true;

@@ -21,6 +21,7 @@ source_set("default_browser") {
     "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/common/ui/promo_style",
   ]
@@ -40,9 +41,9 @@ source_set("default_browser_ui") {
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/segmentation_platform/model",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/instruction_view",
     "//ios/chrome/common/ui/promo_style",
     "//ui/base",
   ]

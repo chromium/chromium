@@ -76,7 +76,9 @@ class FullscreenController : public ExclusiveAccessControllerBase {
   // transition.
   bool IsFullscreenForBrowser() const;
 
-  void ToggleBrowserFullscreenMode();
+  // Toggle in or out of browser fullscreen mode. Certain windows will block
+  // `user_initiated` requests; see `CanUserEnterFullscreen()` for details.
+  void ToggleBrowserFullscreenMode(bool user_initiated);
 
   // Extension API implementation uses this method to toggle fullscreen mode.
   // The extension's name is displayed in the full screen bubble UI to attribute
@@ -187,7 +189,8 @@ class FullscreenController : public ExclusiveAccessControllerBase {
 
   void ToggleFullscreenModeInternal(FullscreenInternalOption option,
                                     content::RenderFrameHost* requesting_frame,
-                                    const int64_t display_id);
+                                    const int64_t display_id,
+                                    bool user_initiated);
   void EnterFullscreenModeInternal(FullscreenInternalOption option,
                                    content::RenderFrameHost* requesting_frame,
                                    int64_t display_id);

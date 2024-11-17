@@ -1,0 +1,244 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD - style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
+}
+
+source_set("internal") {
+  sources = [
+    "startup_helper.cc",
+    "startup_helper.h",
+    "tab_group_sync_coordinator.h",
+    "tab_group_sync_coordinator_impl.cc",
+    "tab_group_sync_coordinator_impl.h",
+    "tab_group_sync_metrics_logger_impl.cc",
+    "tab_group_sync_metrics_logger_impl.h",
+    "tab_group_sync_service_factory_helper.cc",
+    "tab_group_sync_service_impl.cc",
+    "tab_group_sync_service_impl.h",
+  ]
+  deps = [
+    ":tab_group_sync_bridge",
+    "//base",
+    "//components/data_sharing/public:features",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/core",
+    "//components/saved_tab_groups/delegate",
+    "//components/saved_tab_groups/proto",
+    "//components/saved_tab_groups/public",
+    "//components/signin/public/base",
+    "//components/signin/public/identity_manager",
+    "//components/sync",
+    "//components/sync_device_info",
+    "//components/tab_groups",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [
+      "android/tab_group_sync_service_android.cc",
+      "android/tab_group_sync_service_android.h",
+    ]
+
+    deps += [
+      ":jni_headers",
+      "//components/saved_tab_groups/public:conversion_utils",
+    ]
+  }
+
+  public_deps = [ ":model" ]
+}
+
+source_set("model") {
+  sources = [
+    "saved_tab_group_model.cc",
+    "saved_tab_group_model.h",
+    "saved_tab_group_model_observer.h",
+    "stats.cc",
+    "stats.h",
+  ]
+  deps = [
+    "//base",
+    "//components/saved_tab_groups/public",
+    "//components/saved_tab_groups/public:features",
+    "//components/sync",
+    "//components/tab_groups",
+    "//ui/gfx",
+    "//url",
+  ]
+}
+
+if (is_android) {
+  android_library("java") {
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceImpl.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//components/saved_tab_groups/public:java",
+      "//components/tab_groups:tab_groups_java",
+      "//net/android:net_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//url:gurl_java",
+    ]
+
+    srcjar_deps = [ ":jni_headers" ]
+  }
+
+  generate_jni("jni_headers") {
+    visibility = [
+      ":*",
+      "//chrome/browser",
+    ]
+
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceImpl.java" ]
+  }
+
+  android_library("native_java_unittests_java") {
+    testonly = true
+    deps = [
+      ":java",
+      "//base:base_java",
+      "//base:base_java_test_support",
+      "//components/saved_tab_groups/public:conversion_utils_java",
+      "//components/saved_tab_groups/public:java",
+      "//components/tab_groups:tab_groups_java",
+      "//third_party/jni_zero:jni_zero_java",
+      "//third_party/junit",
+      "//third_party/mockito:mockito_java",
+      "//url:url_java",
+    ]
+
+    srcjar_deps = [ ":native_j_unittests_jni_headers" ]
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceAndroidUnitTest.java" ]
+  }
+
+  generate_jni("native_j_unittests_jni_headers") {
+    testonly = true
+    sources = [ "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceAndroidUnitTest.java" ]
+  }
+}
+
+source_set("service_test_utils") {
+  testonly = true
+  sources = [
+    "tab_group_sync_service_test_utils.cc",
+    "tab_group_sync_service_test_utils.h",
+  ]
+  deps = [
+    ":internal",
+    ":model",
+    ":tab_group_sync_bridge",
+    "//base",
+    "//base/test:test_support",
+    "//components/data_sharing/public:features",
+    "//components/optimization_guide/core",
+    "//components/saved_tab_groups/delegate",
+    "//components/saved_tab_groups/public",
+    "//components/sync_device_info",
+    "//components/tab_groups",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "saved_tab_group_model_unittest.cc",
+    "saved_tab_group_proto_conversion_unittest.cc",
+    "saved_tab_group_sync_bridge_unittest.cc",
+    "shared_tab_group_data_sync_bridge_unittest.cc",
+    "startup_helper_unittest.cc",
+    "tab_group_sync_bridge_mediator_unittest.cc",
+    "tab_group_sync_coordinator_unittest.cc",
+    "tab_group_sync_metrics_logger_unittest.cc",
+    "tab_group_sync_service_unittest.cc",
+  ]
+  deps = [
+    ":internal",
+    ":model",
+    ":tab_group_sync_bridge",
+    "//base",
+    "//base/test:test_support",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:test_support",
+    "//components/pref_registry:pref_registry",
+    "//components/prefs:test_support",
+    "//components/saved_tab_groups/delegate",
+    "//components/saved_tab_groups/proto",
+    "//components/saved_tab_groups/public",
+    "//components/saved_tab_groups/test_support",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/sync",
+    "//components/sync:test_support",
+    "//components/sync_device_info",
+    "//components/sync_device_info:test_support",
+    "//components/tab_groups",
+    "//components/ukm:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [ "android/tab_group_sync_service_android_unittest.cc" ]
+    deps += [
+      ":native_j_unittests_jni_headers",
+      ":native_java_unittests_java",
+      "//components/saved_tab_groups/public:conversion_utils",
+    ]
+  }
+}
+
+source_set("tab_group_sync_bridge") {
+  visibility = [
+    ":*",
+
+    # This is allowed until usage of SavedTabGroupKeyedService has been migrated
+    # to TabGroupSyncService.
+    "//chrome/browser",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/tabs:tab_group_impl",
+    "//chrome/test:browser_tests",
+    "//chrome/test:sync_integration_tests",
+    "//ios/chrome/browser/saved_tab_groups/model",
+  ]
+
+  sources = [
+    "saved_tab_group_proto_conversions.cc",
+    "saved_tab_group_proto_conversions.h",
+    "saved_tab_group_sync_bridge.cc",
+    "saved_tab_group_sync_bridge.h",
+    "shared_tab_group_data_sync_bridge.cc",
+    "shared_tab_group_data_sync_bridge.h",
+    "sync_bridge_tab_group_model_wrapper.cc",
+    "sync_bridge_tab_group_model_wrapper.h",
+    "sync_data_type_configuration.cc",
+    "sync_data_type_configuration.h",
+    "tab_group_sync_bridge_mediator.cc",
+    "tab_group_sync_bridge_mediator.h",
+  ]
+
+  deps = [
+    ":model",
+    "//components/saved_tab_groups/proto",
+    "//components/saved_tab_groups/public",
+    "//components/tab_groups:tab_groups",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/saved_tab_groups/proto:proto",
+    "//components/sync/base",
+    "//components/sync/model",
+  ]
+}

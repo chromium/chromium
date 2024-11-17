@@ -452,11 +452,13 @@ void ContentAutofillDriver::ExtractForm(FormGlobalId form_id,
 }
 
 void ContentAutofillDriver::SendTypePredictionsToRenderer(
-    const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
+    base::span<const raw_ptr<FormStructure, VectorExperimental>> forms) {
+  if (!base::FeatureList::IsEnabled(
+          features::test::kAutofillShowTypePredictions)) {
+    return;
+  }
   std::vector<FormDataPredictions> type_predictions =
       FormStructure::GetFieldTypePredictions(forms);
-  // TODO(crbug.com/40753022) Send the FormDataPredictions object only if the
-  // debugging flag is enabled.
   RouteToAgent(router(), &AutofillDriverRouter::SendTypePredictionsToRenderer,
                &mojom::AutofillAgent::FieldTypePredictionsAvailable,
                type_predictions);
@@ -502,11 +504,9 @@ void ContentAutofillDriver::FormsSeen(
 
 void ContentAutofillDriver::FormSubmitted(
     const FormData& form,
-    bool known_success,
     mojom::SubmissionSource submission_source) {
   RouteToManager(*this, router(), &AutofillDriverRouter::FormSubmitted,
-                 &AutofillManager::OnFormSubmitted, form, known_success,
-                 submission_source);
+                 &AutofillManager::OnFormSubmitted, form, submission_source);
 }
 
 void ContentAutofillDriver::CaretMovedInFormField(
@@ -581,12 +581,10 @@ void ContentAutofillDriver::DidEndTextFieldEditing() {
                  &AutofillManager::OnDidEndTextFieldEditing);
 }
 
-void ContentAutofillDriver::SelectOrSelectListFieldOptionsDidChange(
-    const FormData& form) {
+void ContentAutofillDriver::SelectFieldOptionsDidChange(const FormData& form) {
   RouteToManager(*this, router(),
-                 &AutofillDriverRouter::SelectOrSelectListFieldOptionsDidChange,
-                 &AutofillManager::OnSelectOrSelectListFieldOptionsDidChange,
-                 form);
+                 &AutofillDriverRouter::SelectFieldOptionsDidChange,
+                 &AutofillManager::OnSelectFieldOptionsDidChange, form);
 }
 
 void ContentAutofillDriver::JavaScriptChangedAutofilledValue(

@@ -12,6 +12,7 @@
 
 @class AdaptiveToolbarViewController;
 class Browser;
+@protocol ToolbarHeightDelegate;
 
 namespace web {
 class WebState;
@@ -23,6 +24,9 @@ class WebState;
 
 // The Toolbar view controller owned by this coordinator.
 @property(nonatomic, strong) AdaptiveToolbarViewController* viewController;
+
+/// Delegate that handles the toolbars height.
+@property(nonatomic, weak) id<ToolbarHeightDelegate> toolbarHeightDelegate;
 
 // Initializes this Coordinator with its `browser` and a nil base view
 // controller.

@@ -28,8 +28,7 @@
 namespace ash {
 namespace {
 
-constexpr int kErrorMessageViewSize = 34;
-constexpr int kErrorMessageRoundedCornerRadius = kErrorMessageViewSize / 2;
+constexpr int kErrorMessageRoundedCornerRadius = 17;
 constexpr gfx::Insets kButtonInsets = gfx::Insets::TLBR(8, 4, 8, 10);
 constexpr gfx::Insets kLabelInsets = gfx::Insets::TLBR(0, 16, 0, 0);
 
@@ -47,6 +46,9 @@ class ActionLabelButton : public views::LabelButton {
         break;
       case ErrorMessageToast::ButtonActionType::kReload:
         string_id = IDS_ASH_ERROR_MESSAGE_TOAST_RELOAD;
+        break;
+      case ErrorMessageToast::ButtonActionType::kSettings:
+        string_id = IDS_ASH_ERROR_MESSAGE_TOAST_SETTINGS;
         break;
     }
     SetText(l10n_util::GetStringUTF16(string_id));
@@ -84,6 +86,8 @@ ErrorMessageToast::ErrorMessageToast(views::Button::PressedCallback callback,
               TypographyToken::kCrosAnnotation1))
           .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
           .SetText(error_message)
+          .SetMultiLine(true)
+          .SetMaxLines(3)
           .SetProperty(views::kMarginsKey, kLabelInsets)
           .SetProperty(
               views::kFlexBehaviorKey,
@@ -96,14 +100,38 @@ ErrorMessageToast::ErrorMessageToast(views::Button::PressedCallback callback,
       std::make_unique<ActionLabelButton>(std::move(callback), type));
 }
 
+gfx::Size ErrorMessageToast::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  views::SizeBounds restricted_bounds(available_size);
+  // Always request the minimum height.
+  restricted_bounds.set_height(0);
+  gfx::Size measured =
+      views::FlexLayoutView::CalculatePreferredSize(restricted_bounds);
+  return measured;
+}
+
 void ErrorMessageToast::UpdateBoundsToContainer(
     const gfx::Rect& container_bounds,
     const gfx::Insets& padding) {
+  // Positions the view at the bottom of `container_bounds` surrounded by
+  // `padding`.
   gfx::Rect preferred_bounds(container_bounds);
+  preferred_bounds.Inset(padding);
 
-  preferred_bounds.Inset(gfx::Insets::TLBR(
-      preferred_bounds.height() - kErrorMessageViewSize - padding.bottom(),
-      padding.left(), padding.bottom(), padding.right()));
+  // Save the bottom of the bounds for use later.
+  int inset_bottom = preferred_bounds.bottom();
+
+  gfx::Size preferred_size =
+      GetPreferredSize(views::SizeBounds(preferred_bounds.size()));
+
+  // Reduce the height to the view height or the available space (whichever is
+  // smaller).
+  preferred_bounds.set_height(
+      std::min(preferred_size.height(), preferred_bounds.height()));
+
+  // Position the view at the bottom of `container_bounds` adjusted for
+  // `padding`.
+  preferred_bounds.set_y(inset_bottom - preferred_size.height());
 
   SetBoundsRect(preferred_bounds);
 }

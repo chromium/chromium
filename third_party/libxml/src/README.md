@@ -45,9 +45,9 @@ The following options disable or enable code modules and relevant symbols:
 
     --with-c14n             Canonical XML 1.0 support (on)
     --with-catalog          XML Catalogs support (on)
-    --with-debug            debugging module and shell (on)
-    --with-history          history support for shell (off)
-    --with-readline[=DIR]   use readline in DIR (for shell history)
+    --with-debug            debugging module (on)
+    --with-history          history support for xmllint shell (off)
+    --with-readline[=DIR]   use readline in DIR for shell (off)
     --with-html             HTML parser (on)
     --with-http             HTTP support (off)
     --with-iconv[=DIR]      iconv support (on)
@@ -123,20 +123,26 @@ directly in various IDEs such as CLion, QtCreator, or Visual Studio.
 
 Libxml can also be built with meson. Without option, simply call
 
-meson setup builddir
-ninja -C builddir
+    meson setup builddir
+    ninja -C builddir
 
 To add options, see the meson_options.txt file. For example:
 
-meson setup -Dprefix=$prefix -Dftp=true -Dhistory=true -Dicu=true -Dhttp=true builddir
+    meson setup \
+        -Dprefix=$prefix \
+        -Dhistory=enabled \
+        -Dhttp=enabled \
+        -Dschematron=disabled \
+        -Dzlib=enabled \
+        builddir
 
 To install libxml:
 
-ninja -C builddir install
+    ninja -C builddir install
 
 To launch tests:
 
-meson test -C builddir
+    meson test -C builddir
 
 ## Dependencies
 

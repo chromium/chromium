@@ -7,6 +7,7 @@ module lens.mojom;
 import "chrome/browser/lens/core/mojom/geometry.mojom";
 import "chrome/browser/lens/core/mojom/overlay_object.mojom";
 import "chrome/browser/lens/core/mojom/text.mojom";
+import "chrome/browser/lens/core/mojom/translate.mojom";
 import "mojo/public/mojom/base/big_string.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "skia/public/mojom/skcolor.mojom";
@@ -43,6 +44,12 @@ enum UserAction {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/lens/enums.xml:LensOverlayUserAction)
 
+// Enumerates the semantic events that can be logged by the Lens Overlay.
+enum SemanticEvent {
+  kTextGleamsViewStart = 0,
+  kTextGleamsViewEnd = 1,
+};
+
 // TODO(crbug.com/365448173): Split into separate mojom files for overlay
 // and side panel.
 // Factory method for creating a new WebUI page handler for lens overlay.
@@ -58,6 +65,12 @@ interface LensSidePanelPageHandlerFactory {
   CreateSidePanelPageHandler(
       pending_receiver<LensSidePanelPageHandler> handler,
       pending_remote<LensSidePanelPage> page);
+};
+
+// Factory method for creating a new WebUI page handler for lens ghost loader.
+interface LensGhostLoaderPageHandlerFactory {
+  // The ghost loader WebUI calls this method when the page is first initialized.
+  CreateGhostLoaderPage(pending_remote<LensGhostLoaderPage> page);
 };
 
 // Dynamic theme colors.
@@ -131,9 +144,11 @@ interface LensPageHandler {
   // browser-side UI solely for the purposes of maintaining a history stack.
   // They do not and will not be used to be indexed into anything in the
   // browser; when the user traverses history, the indices may be passed back to
-  // the WebUI.
+  // the WebUI. The function also passed an `is_translate` boolean for logging
+  // purposes but it does not change any functionality.
   IssueTextSelectionRequest(
-      string query, int32 selection_start_index, int32 selection_end_index);
+      string query, int32 selection_start_index, int32 selection_end_index,
+      bool is_translate);
 
   // Similar to IssueTextSelectionRequest(), but requests that the selected
   // text be translated.
@@ -155,11 +170,6 @@ interface LensPageHandler {
   // request with the auto filter, which is necessary to update the overlay
   // state to the default non-translate mode.
   IssueEndTranslateModeRequest();
-
-  // When called, the C++ coordinator closes the lens search bubble. When the
-  // user selects text or thumbnail on the WebUI overlay, the search bubble
-  // must close.
-  CloseSearchBubble();
 
   // Copies the given text to the users clipboard using the browser process.
   // This is different than using navigator.clipboard.writeText since
@@ -184,6 +194,31 @@ interface LensPageHandler {
   // Records UKM metrics and task completion for lens overlay interactions.
   RecordUkmAndTaskCompletionForLensOverlayInteraction(
       UserAction user_action);
+
+  // Records a semantic event for the lens overlay.
+  RecordLensOverlaySemanticEvent(SemanticEvent event);
+
+  // Requests to show a feature promo on the translate button. This is a no-op
+  // if the promo show fails for reasons listed out at
+  // //components/user_education/common/feature_promo/feature_promo_result.h. The most common
+  // failures are due to the anchor not being visible or it has already been
+  // shown and dismissed.
+  MaybeShowTranslateFeaturePromo();
+
+  // Requests to close the feature promo on the translate button with a
+  // parameter denoting whether the feature was engaged. A no-op if no promo is
+  // showing.
+  MaybeCloseTranslateFeaturePromo(bool feature_engaged);
+
+  // Requests to fetch the supported languages from the translate server.
+  // Returns the supported source and target languages to translate from and to.
+  // Also returns the browser locale as that determines the browser UI language.
+  // This can't be retrieved from the `navigator.language` call in TS because
+  // the user's browser UI language can differ from the language used for web
+  // content.
+  FetchSupportedLanguages() => (string browser_locale,
+                                array<Language> source_languages,
+                                array<Language> target_languages);
 };
 
 // WebUI page handler for request from Browser side. (C++ -> TypeScript)
@@ -208,11 +243,18 @@ interface LensPage {
   // Passes the dynamic theme to WebUI.
   ThemeReceived(OverlayTheme theme);
 
+  // Sets whether the contextual searchbox should be shown to the user.
+  ShouldShowContextualSearchBox(bool should_show);
+
   // Sets a post selection region to be rendered as selected on the page.
   SetPostRegionSelection(CenterRotatedBox region);
 
   // Sets text to be rendered as selected on the page.
   SetTextSelection(int32 selection_start_index, int32 selection_end_index);
+
+  // Sets the overlay to translate mode with the specified languages.
+  SetTranslateMode(
+      string source_language, string target_language);
 
   // Clears any post region selection on the page. No-op if none selected.
   ClearRegionSelection();
@@ -235,6 +277,8 @@ interface LensSidePanelPageHandler {
   // Pops the most recent search query from the history stack to load in the
   // side panel.
   PopAndLoadQueryFromHistory();
+  // Gets whether the current searchbox is contextual.
+  GetIsContextualSearchbox() => (bool is_contextual_searchbox);
 };
 
 // Side Panel WebUI page handler for request from Browser side.
@@ -257,4 +301,16 @@ interface LensSidePanelPage {
   // used when the user opens the side panel in an offline state or the full
   // image request times out.
   SetShowErrorPage(bool should_show_error_page);
+
+  // Updates the ghost loader state. Loading state is reset on page navigation.
+  // |suppress_ghost_loader| is true when the page bytes can't be uploaded.
+  UpdateGhostLoaderState(bool suppress_ghost_loader, bool reset_loading_state);
+};
+
+// WebUI page handler for request from Browser side.
+// (C++ -> TypeScript)
+interface LensGhostLoaderPage {
+  // Notify the ghost loader that the autocomplete stop timer has triggered.
+  // This will hide the ghost loader and show the error state.
+  NotifyAutocompleteStopTimerTriggered();
 };

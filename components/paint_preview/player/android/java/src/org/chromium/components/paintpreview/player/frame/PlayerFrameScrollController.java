@@ -73,9 +73,10 @@ public class PlayerFrameScrollController {
 
     /**
      * Handles flinging of the viewport.
+     *
      * @param velocityX The velocity in the x-direction.
      * @param velocityY The velocity in the y-direction.
-     * @returns Whether the fling was consumed.
+     * @return Whether the fling was consumed.
      */
     public boolean onFling(float velocityX, float velocityY) {
         if (!mAcceptUserInput) return false;

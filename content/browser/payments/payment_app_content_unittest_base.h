@@ -36,6 +36,8 @@ class PaymentAppContentUnitTestBase : public testing::Test {
   ~PaymentAppContentUnitTestBase() override;
 
   BrowserContext* browser_context();
+  PaymentManager* CreateUninitializedPaymentManager(const GURL& scope_url,
+                                                    const GURL& sw_script_url);
   PaymentManager* CreatePaymentManager(const GURL& scope_url,
                                        const GURL& sw_script_url);
   void UnregisterServiceWorker(const GURL& scope_url,

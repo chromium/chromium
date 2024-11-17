@@ -619,7 +619,7 @@ void UpdateButtonForLeftSide(const Gamepad& src_pad,
       case BUTTON_INDEX_LEFT_THUMBSTICK:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        DUMP_WILL_BE_NOTREACHED();
         break;
     }
   }
@@ -675,8 +675,7 @@ void UpdateButtonForRightSide(const Gamepad& src_pad,
       case BUTTON_INDEX_RIGHT_TRIGGER:
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   dst_pad.buttons[remapped_index] = src_pad.buttons[button_index];
@@ -708,8 +707,7 @@ void UpdateAxisForLeftSide(const Gamepad& src_pad,
         remapped_index = AXIS_INDEX_LEFT_STICK_X;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   dst_pad.axes[remapped_index] = axis_value;
@@ -741,8 +739,7 @@ void UpdateAxisForRightSide(const Gamepad& src_pad,
         remapped_index = AXIS_INDEX_LEFT_STICK_X;
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
   dst_pad.axes[remapped_index] = axis_value;
@@ -997,8 +994,7 @@ GamepadHand NintendoController::GetGamepadHand() const {
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return GamepadHand::kNone;
+  NOTREACHED();
 }
 
 bool NintendoController::IsUsable() const {
@@ -1018,8 +1014,7 @@ bool NintendoController::IsUsable() const {
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool NintendoController::HasGuid(const std::string& guid) const {
@@ -1116,8 +1111,7 @@ void NintendoController::UpdateGamepadState(Gamepad& pad) const {
         UpdateRightGamepadState(pad, false);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
     pad.connected = pad_.connected;
   }
@@ -1239,8 +1233,7 @@ void NintendoController::StartInitSequence() {
       MakeInitSequenceRequests(kPendingSetPlayerLights);
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
@@ -1480,8 +1473,7 @@ void NintendoController::ContinueInitSequence(
       break;
     case kInitialized:
     case kUninitialized:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     default:
       break;
   }
@@ -1539,8 +1531,7 @@ void NintendoController::MakeInitSequenceRequests(InitializationState state) {
     case kInitialized:
     case kUninitialized:
     default:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 

@@ -11,7 +11,7 @@ import androidx.preference.PreferenceScreen;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.TextMessagePreference;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -23,7 +23,7 @@ import java.util.List;
  * if they are allowed or blocked. This fragment is opened on top of {@link SingleCategorySettings}.
  */
 public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
-        implements SettingsPage,
+        implements EmbeddableSettingsPage,
                 CustomDividerFragment,
                 StorageAccessWebsitePreference.OnStorageAccessWebsiteReset {
     public static final String SUBTITLE_KEY = "subtitle";
@@ -110,7 +110,7 @@ public class StorageAccessSubpageSettings extends BaseSiteSettingsFragment
 
         if (exceptions.isEmpty()) {
             // Return to parent fragment if there are no embedded exceptions.
-            getActivity().finish();
+            getSettingsNavigation().finishCurrentSettings(this);
             return;
         }
     }

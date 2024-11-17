@@ -745,12 +745,16 @@ Ref<Router> Router::Deserialize(const RouterDescriptor& descriptor,
               ? descriptor.decaying_incoming_sequence_length
               : descriptor.next_incoming_sequence_number);
 
+      auto link_state =
+          from_node_link.memory().AdoptFragmentRefIfValid<RouterLinkState>(
+              descriptor.new_link_state_fragment);
+      if (link_state.is_null()) {
+        // Central links require a valid link state fragment.
+        return nullptr;
+      }
       new_outward_link = from_node_link.AddRemoteRouterLink(
-          descriptor.new_sublink,
-          from_node_link.memory().AdoptFragmentRef<RouterLinkState>(
-              from_node_link.memory().GetFragment(
-                  descriptor.new_link_state_fragment)),
-          LinkType::kCentral, LinkSide::kB, router);
+          descriptor.new_sublink, std::move(link_state), LinkType::kCentral,
+          LinkSide::kB, router);
       if (!new_outward_link) {
         return nullptr;
       }

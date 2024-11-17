@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_proxy.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_manager_type_converters.h"  // IWYU pragma: keep
+#include "third_party/blink/renderer/modules/credentialmanagement/credential_metrics.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential_utils.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/digital_identity_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/federated_credential.h"
@@ -448,8 +449,7 @@ DOMException* CredentialManagerErrorToDOMException(
           "An unknown error occurred while talking "
           "to the credential manager.");
     case CredentialManagerError::SUCCESS:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return nullptr;
 }
@@ -515,7 +515,7 @@ void OnRequestToken(std::unique_ptr<ScopedPromiseResolver> scoped_resolver,
       return;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 }
@@ -1008,8 +1008,7 @@ DOMException* AuthenticatorStatusToDOMException(
             dom_exception_details.is_null());
   switch (status) {
     case AuthenticatorStatus::SUCCESS:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
     case AuthenticatorStatus::PENDING_REQUEST:
       return MakeGarbageCollected<DOMException>(
           DOMExceptionCode::kOperationError, "A request is already pending.");
@@ -1256,6 +1255,19 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   auto promise = resolver->Promise();
   ExecutionContext* context = ExecutionContext::From(script_state);
 
+  if (options->hasSignal() && options->signal()->aborted()) {
+    resolver->Reject(options->signal()->reason(script_state));
+    return promise;
+  }
+
+  if (IsDigitalIdentityCredentialType(*options) &&
+      RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
+          resolver->GetExecutionContext())) {
+    DiscoverDigitalIdentityCredentialFromExternalSource(
+        resolver, exception_state, *options);
+    return promise;
+  }
+
   auto required_origin_type = RequiredOriginType::kSecureAndSameWithAncestors;
   // hasPublicKey() implies that this is a WebAuthn request.
   if (options->hasPublicKey()) {
@@ -1284,10 +1296,6 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
       options->federated()->providers().size() > 0 && !options->hasIdentity()) {
     UseCounter::Count(
         context, WebFeature::kCredentialManagerGetLegacyFederatedCredential);
-  }
-  if (options->hasPassword() && options->password()) {
-    UseCounter::Count(context,
-                      WebFeature::kCredentialManagerGetPasswordCredential);
     requested_credential_types |=
         static_cast<int>(mojom::blink::CredentialTypeFlags::kFederated);
   }
@@ -1298,6 +1306,8 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   }
 
   if (options->hasPassword() && options->password()) {
+    UseCounter::Count(context,
+                      WebFeature::kCredentialManagerGetPasswordCredential);
     requested_credential_types |=
         static_cast<int>(mojom::blink::CredentialTypeFlags::kPassword);
   }
@@ -1306,7 +1316,7 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   if (RuntimeEnabledFeatures::WebAuthenticationAmbientEnabled() &&
       options->hasPublicKey() && options->hasPassword() &&
       options->password() && options->mediation() == "conditional") {
-    // TODO(358119268): For prototyping we allow this for all
+    // TODO(crbug.com/358119268): For prototyping we allow this for all
     // conditionally-mediated requests that contain both credential types. This
     // will change.
     ambient_request_enabled = true;
@@ -1440,10 +1450,6 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
 
     std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
     if (auto* signal = options->getSignalOr(nullptr)) {
-      if (signal->aborted()) {
-        resolver->Reject(signal->reason(script_state));
-        return promise;
-      }
       auto* handle = signal->AddAlgorithm(
           MakeGarbageCollected<PublicKeyRequestAbortAlgorithm>(script_state));
       scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
@@ -1453,6 +1459,7 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
 
     if (is_conditional_ui_request) {
       UseCounter::Count(context, WebFeature::kWebAuthnConditionalUiGet);
+      CredentialMetrics::From(script_state).RecordWebAuthnConditionalUiCall();
     }
 
     auto mojo_options =
@@ -1493,10 +1500,6 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
 
     std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
     if (auto* signal = options->getSignalOr(nullptr)) {
-      if (signal->aborted()) {
-        resolver->Reject(signal->reason(script_state));
-        return promise;
-      }
       auto* handle = signal->AddAlgorithm(
           MakeGarbageCollected<OtpRequestAbortAlgorithm>(script_state));
       scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
@@ -1514,14 +1517,6 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
 
   if (options->hasIdentity() && options->identity()->hasProviders()) {
     GetForIdentity(script_state, resolver, *options, *options->identity());
-    return promise;
-  }
-
-  if (IsDigitalIdentityCredentialType(*options) &&
-      RuntimeEnabledFeatures::WebIdentityDigitalCredentialsEnabled(
-          resolver->GetExecutionContext())) {
-    DiscoverDigitalIdentityCredentialFromExternalSource(
-        resolver, exception_state, *options);
     return promise;
   }
 
@@ -1995,13 +1990,6 @@ void AuthenticationCredentialsContainer::GetForIdentity(
     return;
   }
 
-  auto* signal = options.getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError, "Request has been aborted."));
-    return;
-  }
-
   ExecutionContext* context = ExecutionContext::From(script_state);
 
   // TODO(https://crbug.com/1441075): Ideally the logic should be handled in
@@ -2052,12 +2040,31 @@ void AuthenticationCredentialsContainer::GetForIdentity(
                         WebFeature::kFedCmDomainHint);
     }
 
+    if (!provider->hasConfigURL()) {
+      resolver->RejectWithTypeError("Missing the provider's configURL.");
+      return;
+    }
+
+    mojom::blink::IdentityProviderRequestOptionsPtr identity_provider;
+    {
+      // It is possible that serializing the custom parameters to JSON fails
+      // due to a JS exception, e.g. a custom getter throwing an exception.
+      // Catch it here and rethrow so the caller knows what went wrong.
+      v8::TryCatch try_catch(script_state->GetIsolate());
+      identity_provider =
+          blink::mojom::blink::IdentityProviderRequestOptions::From(*provider);
+      if (!identity_provider) {
+        DCHECK(try_catch.HasCaught())
+            << "Converting to mojo should only fail due to JS exception";
+        resolver->Reject(try_catch.Exception());
+        return;
+      }
+    }
+
     if (blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled() &&
         blink::RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
             context) &&
-        provider->hasConfigURL() && provider->configURL() == "any") {
-      mojom::blink::IdentityProviderRequestOptionsPtr identity_provider =
-          blink::mojom::blink::IdentityProviderRequestOptions::From(*provider);
+        provider->configURL() == "any") {
       identity_provider_ptrs.push_back(std::move(identity_provider));
       continue;
     }
@@ -2065,10 +2072,6 @@ void AuthenticationCredentialsContainer::GetForIdentity(
     // TODO(kenrb): Add some renderer-side validation here, such as
     // validating |provider|, and making sure the calling context is legal.
     // Some of this has not been spec'd yet.
-    if (!provider->hasConfigURL()) {
-      resolver->RejectWithTypeError("Missing the provider's configURL.");
-      return;
-    }
 
     KURL provider_url(provider->configURL());
 
@@ -2094,8 +2097,6 @@ void AuthenticationCredentialsContainer::GetForIdentity(
       return;
     }
 
-    mojom::blink::IdentityProviderRequestOptionsPtr identity_provider =
-        blink::mojom::blink::IdentityProviderRequestOptions::From(*provider);
     identity_provider_ptrs.push_back(std::move(identity_provider));
   }
 
@@ -2133,30 +2134,45 @@ void AuthenticationCredentialsContainer::GetForIdentity(
             "the FedCM API call."));
   }
 
-  mojom::blink::RpMode rp_mode = mojom::blink::RpMode::kWidget;
+  mojom::blink::RpMode rp_mode = mojom::blink::RpMode::kPassive;
   if (blink::RuntimeEnabledFeatures::FedCmButtonModeEnabled(
           resolver->GetExecutionContext())) {
-    rp_mode = mojo::ConvertTo<mojom::blink::RpMode>(identity_options.mode());
-    if (rp_mode == mojom::blink::RpMode::kButton) {
+    auto v8_rp_mode = identity_options.mode();
+    // TODO(crbug.com/372198646): remove the debugging aid enums after shipping
+    // active mode.
+    if (v8_rp_mode ==
+            blink::V8IdentityCredentialRequestOptionsMode::Enum::kWidget ||
+        v8_rp_mode ==
+            blink::V8IdentityCredentialRequestOptionsMode::Enum::kButton) {
+      resolver->GetExecutionContext()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::blink::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "The mode button/widget are renamed to active/passive "
+              "respectively and will be deprecated soon."));
+    }
+
+    rp_mode = mojo::ConvertTo<mojom::blink::RpMode>(v8_rp_mode);
+    if (rp_mode == mojom::blink::RpMode::kActive) {
       if (identity_provider_ptrs.size() > 1u) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
-            "Button mode is not currently supported with multiple identity "
+            "Active mode is not currently supported with multiple identity "
             "providers."));
         return;
       }
       if (mediation_requirement == CredentialMediationRequirement::kSilent) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotSupportedError,
-            "mediation:silent is not supported in button mode"));
+            "mediation:silent is not supported in active mode"));
         return;
       }
     }
   }
 
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
-  if (signal) {
-    // Checked signal->aborted() at the top of the function.
+  if (auto* signal = options.getSignalOr(nullptr)) {
+    // Checked signal->aborted() at the top of get().
 
     auto callback = WTF::BindOnce(&AbortIdentityCredentialRequest,
                                   WrapPersistent(script_state));

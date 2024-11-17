@@ -2081,8 +2081,11 @@ IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
 // Check that the Heavy Ad Intervention fires the correct number of times to
 // protect privacy, and that after that limit is hit, the Ads Intervention
 // Framework takes over for future navigations.
-IN_PROC_BROWSER_TEST_P(AdsPageLoadMetricsObserverResourceBrowserTest,
-                       HeavyAdInterventionBlocklistFull_InterventionBlocked) {
+
+// TODO(crbug.com/361671258): Flaky on multiple platforms
+IN_PROC_BROWSER_TEST_P(
+    AdsPageLoadMetricsObserverResourceBrowserTest,
+    DISABLED_HeavyAdInterventionBlocklistFull_InterventionBlocked) {
   std::vector<std::unique_ptr<net::test_server::ControllableHttpResponse>>
       http_responses(4);
   for (auto& http_response : http_responses) {

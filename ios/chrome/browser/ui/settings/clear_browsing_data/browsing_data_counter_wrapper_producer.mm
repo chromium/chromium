@@ -8,13 +8,13 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
 @implementation BrowsingDataCounterWrapperProducer {
-  base::WeakPtr<ChromeBrowserState> _browserState;
+  base::WeakPtr<ProfileIOS> _profile;
 }
 
-- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
+- (instancetype)initWithProfile:(ProfileIOS*)profile {
   self = [super init];
   if (self) {
-    _browserState = browserState->AsWeakPtr();
+    _profile = profile->AsWeakPtr();
   }
   return self;
 }
@@ -24,18 +24,34 @@
                     updateUiCallback:
                         (BrowsingDataCounterWrapper::UpdateUICallback)
                             updateUiCallback {
-  ChromeBrowserState* browserState = _browserState.get();
-  if (!browserState) {
+  ProfileIOS* profile = _profile.get();
+  if (!profile) {
     return nullptr;
   }
 
-  PrefService* prefService = browserState->GetPrefs();
-  if (!prefService) {
-    return nullptr;
-  }
+  PrefService* prefService = profile->GetPrefs();
+  CHECK(prefService);
 
   return BrowsingDataCounterWrapper::CreateCounterWrapper(
-      prefName, browserState, prefService, updateUiCallback);
+      prefName, profile, prefService, updateUiCallback);
+}
+
+- (std::unique_ptr<BrowsingDataCounterWrapper>)
+    createCounterWrapperWithPrefName:(std::string_view)prefName
+                           beginTime:(base::Time)beginTime
+                    updateUiCallback:
+                        (BrowsingDataCounterWrapper::UpdateUICallback)
+                            updateUiCallback {
+  ProfileIOS* profile = _profile.get();
+  if (!profile) {
+    return nullptr;
+  }
+
+  PrefService* prefService = profile->GetPrefs();
+  CHECK(prefService);
+
+  return BrowsingDataCounterWrapper::CreateCounterWrapper(
+      prefName, profile, prefService, beginTime, updateUiCallback);
 }
 
 @end

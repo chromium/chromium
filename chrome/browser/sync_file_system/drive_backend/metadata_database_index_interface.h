@@ -100,7 +100,6 @@ class MetadataDatabaseIndexInterface {
   virtual void DemoteDirtyTracker(int64_t tracker_id) = 0;
 
   virtual bool HasDemotedDirtyTracker() const = 0;
-  virtual bool IsDemotedDirtyTracker(int64_t tracker_id) const = 0;
 
   // Promotes single demoted dirty tracker to a normal dirty tracker.
   virtual void PromoteDemotedDirtyTracker(int64_t tracker_id) = 0;
@@ -122,8 +121,6 @@ class MetadataDatabaseIndexInterface {
   virtual int64_t GetLargestChangeID() const = 0;
   virtual int64_t GetNextTrackerID() const = 0;
   virtual std::vector<std::string> GetRegisteredAppIDs() const = 0;
-  virtual std::vector<int64_t> GetAllTrackerIDs() const = 0;
-  virtual std::vector<std::string> GetAllMetadataIDs() const = 0;
 };
 
 }  // namespace drive_backend

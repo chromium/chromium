@@ -44,7 +44,7 @@ class PredictionModelFetcherTest : public testing::Test {
   PredictionModelFetcherTest& operator=(const PredictionModelFetcherTest&) =
       delete;
 
-  ~PredictionModelFetcherTest() override {}
+  ~PredictionModelFetcherTest() override = default;
 
   void OnModelsFetched(std::optional<std::unique_ptr<proto::GetModelsResponse>>
                            get_models_response) {

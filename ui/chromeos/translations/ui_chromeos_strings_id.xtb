@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalan</translation>
 <translation id="1168100932582989117">Server nama Google</translation>
+<translation id="1170788066030116158">Tanggal diambil</translation>
 <translation id="1172970565351728681">Sekitar <ph name="REMAINING_TIME" /> lagi</translation>
 <translation id="1173894706177603556">Ganti nama</translation>
 <translation id="1173916544412572294">Jaringan <ph name="NETWORK_INDEX" /> dari <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Kekuatan Sinyal <ph name="SIGNAL_STRENGTH" />%, Baterai Ponsel <ph name="BATTERY_STATUS" />%, Detail</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Sertifikat atutentikasi ditolak dari jarak jauh</translation>
 <translation id="4394214039309501350">Link eksternal</translation>
 <translation id="4394980935660306080">Awal minggu ini</translation>
+<translation id="4397435965699247285">OneDrive tidak tersedia saat offline</translation>
 <translation id="4398096759193130964">Pulihkan item atau tarik ke folder baru di luar sampah</translation>
 <translation id="4401287888955153199">Ekstrak semua</translation>
 <translation id="4410695710508688828">Operasi pengekstrakan gagal. <ph name="ERROR_MESSAGE" /></translation>

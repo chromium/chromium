@@ -21,6 +21,7 @@
 #include "ash/components/arc/mojom/chrome_feature_flags.mojom.h"
 #include "ash/components/arc/mojom/compatibility_mode.mojom.h"
 #include "ash/components/arc/mojom/crash_collector.mojom.h"
+#include "ash/components/arc/mojom/crosh.mojom.h"
 #include "ash/components/arc/mojom/digital_goods.mojom.h"
 #include "ash/components/arc/mojom/disk_space.mojom.h"
 #include "ash/components/arc/mojom/enterprise_reporting.mojom.h"
@@ -30,7 +31,6 @@
 #include "ash/components/arc/mojom/ime.mojom.h"
 #include "ash/components/arc/mojom/input_method_manager.mojom.h"
 #include "ash/components/arc/mojom/intent_helper.mojom.h"
-#include "ash/components/arc/mojom/keyboard_shortcut.mojom.h"
 #include "ash/components/arc/mojom/keymaster.mojom.h"
 #include "ash/components/arc/mojom/keymint.mojom.h"
 #include "ash/components/arc/mojom/media_session.mojom.h"
@@ -42,6 +42,7 @@
 #include "ash/components/arc/mojom/notifications.mojom.h"
 #include "ash/components/arc/mojom/obb_mounter.mojom.h"
 #include "ash/components/arc/mojom/oemcrypto.mojom.h"
+#include "ash/components/arc/mojom/on_device_safety.mojom.h"
 #include "ash/components/arc/mojom/pip.mojom.h"
 #include "ash/components/arc/mojom/policy.mojom.h"
 #include "ash/components/arc/mojom/power.mojom.h"
@@ -127,6 +128,13 @@ void ArcBridgeHostImpl::OnAppPermissionsInstanceReady(
 void ArcBridgeHostImpl::OnAppfuseInstanceReady(
     mojo::PendingRemote<mojom::AppfuseInstance> appfuse_remote) {
   OnInstanceReady(arc_bridge_service_->appfuse(), std::move(appfuse_remote));
+}
+
+void ArcBridgeHostImpl::OnArcShellExecutionInstanceReady(
+    mojo::PendingRemote<mojom::ArcShellExecutionInstance>
+        arc_shell_execution_remote) {
+  OnInstanceReady(arc_bridge_service_->arc_shell_execution(),
+                  std::move(arc_shell_execution_remote));
 }
 
 void ArcBridgeHostImpl::OnArcWifiInstanceReady(
@@ -244,13 +252,6 @@ void ArcBridgeHostImpl::OnIntentHelperInstanceReady(
                   std::move(intent_helper_remote));
 }
 
-void ArcBridgeHostImpl::OnKeyboardShortcutInstanceReady(
-    mojo::PendingRemote<mojom::KeyboardShortcutInstance>
-        keyboard_shortcut_remote) {
-  OnInstanceReady(arc_bridge_service_->keyboard_shortcut(),
-                  std::move(keyboard_shortcut_remote));
-}
-
 void ArcBridgeHostImpl::OnKeymasterInstanceReady(
     mojo::PendingRemote<mojom::KeymasterInstance> keymaster_remote) {
   OnInstanceReady(arc_bridge_service_->keymaster(),
@@ -320,6 +321,13 @@ void ArcBridgeHostImpl::OnOemCryptoInstanceReady(
     mojo::PendingRemote<mojom::OemCryptoInstance> oemcrypto_remote) {
   OnInstanceReady(arc_bridge_service_->oemcrypto(),
                   std::move(oemcrypto_remote));
+}
+
+void ArcBridgeHostImpl::OnOnDeviceSafetyInstanceReady(
+    mojo::PendingRemote<mojom::OnDeviceSafetyInstance>
+        on_device_safety_remote) {
+  OnInstanceReady(arc_bridge_service_->on_device_safety(),
+                  std::move(on_device_safety_remote));
 }
 
 void ArcBridgeHostImpl::OnPaymentAppInstanceReady(

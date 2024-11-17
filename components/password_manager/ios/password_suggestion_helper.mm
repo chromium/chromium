@@ -4,16 +4,20 @@
 
 #import "components/password_manager/ios/password_suggestion_helper.h"
 
-#include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/form_data.h"
-#include "components/autofill/core/common/password_form_fill_data.h"
+#import "base/feature_list.h"
+#import "base/not_fatal_until.h"
+#import "base/strings/sys_string_conversions.h"
+#import "base/time/time.h"
+#import "components/autofill/core/common/form_data.h"
+#import "components/autofill/core/common/password_form_fill_data.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
-#include "components/password_manager/core/browser/password_ui_utils.h"
-#include "components/password_manager/ios/account_select_fill_data.h"
+#import "components/password_manager/core/browser/features/password_features.h"
+#import "components/password_manager/core/browser/password_ui_utils.h"
+#import "components/password_manager/ios/account_select_fill_data.h"
 #import "components/password_manager/ios/password_manager_ios_util.h"
 #import "components/password_manager/ios/password_manager_java_script_feature.h"
-#include "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
 
@@ -29,12 +33,32 @@ using password_manager::AccountSelectFillData;
 using password_manager::FillData;
 using password_manager::IsCrossOriginIframe;
 
+namespace {
+
 // Status of form extraction for a given frame.
 enum class FormExtractionStatus {
   kNotRequested = 0,
   kRequested = 1,
   kCompleted = 2
 };
+
+// Gets the maximal period of time the form extraction queries can be hanging
+// before timing out.
+base::TimeDelta GetFormExtractionTimeoutMs() {
+  return base::Milliseconds(
+      password_manager::features::kIosPasswordFormExtractionRequestsTimeoutMs
+          .Get());
+}
+
+// Gets the period of time between the scheduled cleanup tasks that completes
+// the timed out form extraction queries. Set to be slightly more than
+// GetFormExtractionTimeoutMs() to make sure that the hanging extraction query
+// that originally triggered the cleanup task has the time to expire.
+base::TimeDelta GetCleanupTaskPeriodMs() {
+  return GetFormExtractionTimeoutMs() + base::Milliseconds(50);
+}
+
+}  // namespace
 
 @protocol FillDataProvider <NSObject>
 
@@ -54,6 +78,9 @@ enum class FormExtractionStatus {
 // ID of the frame targeted by the query.
 @property(nonatomic, strong, readonly) NSString* frameId;
 
+// Timestamp when the query was created.
+@property(nonatomic, readonly) base::TimeTicks creationTimestamp;
+
 // Initializes the object with a `query` to complete with `completion` for
 // frame with id `frameId`.
 - (instancetype)initWithQuery:(FormSuggestionProviderQuery*)query
@@ -64,6 +91,9 @@ enum class FormExtractionStatus {
 // Runs the completion callback with the available fill data. This can only be
 // done once in the lifetime of the query object.
 - (void)runCompletion;
+
+// Returns YES if the query is expired.
+- (BOOL)isExpired;
 
 @end
 
@@ -85,6 +115,7 @@ enum class FormExtractionStatus {
     _fillDataProvider = fillDataProvider;
     _frameId = query.frameID;
     _isPasswordField = isPasswordField;
+    _creationTimestamp = base::TimeTicks::Now();
   }
   return self;
 }
@@ -100,6 +131,11 @@ enum class FormExtractionStatus {
                         fieldRendererId:_query.fieldRendererID
                         isPasswordField:_isPasswordField]);
   _completion = nil;
+}
+
+- (BOOL)isExpired {
+  return base::TimeTicks::Now() >=
+         _creationTimestamp + GetFormExtractionTimeoutMs();
 }
 
 @end
@@ -120,6 +156,9 @@ enum class FormExtractionStatus {
 
   // Map of frame ids to the form extraction status for that frame.
   std::map<std::string, FormExtractionStatus> _framesFormExtractionStatus;
+
+  // YES if there is pending queries cleanup task that was already scheduled.
+  BOOL _cleanupScheduled;
 }
 
 #pragma mark - Initialization
@@ -129,6 +168,7 @@ enum class FormExtractionStatus {
   if (self) {
     _webState = webState->GetWeakPtr();
     _pendingFormQueries = [NSMutableArray array];
+    _cleanupScheduled = NO;
   }
   return self;
 }
@@ -170,20 +210,28 @@ enum class FormExtractionStatus {
       FormSuggestionMetadata metadata;
       metadata.is_single_username_form = is_single_username_form;
       [results
-          addObject:[FormSuggestion
-                               suggestionWithValue:username
-                                displayDescription:realm
-                                              icon:nil
-                                              type:autofill::SuggestionType::
-                                                       kPasswordEntry
-                                 backendIdentifier:nil
-                                    requiresReauth:YES
-                        acceptanceA11yAnnouncement:nil
-                                          metadata:std::move(metadata)]];
+          addObject:
+              [FormSuggestion
+                         suggestionWithValue:username
+                          displayDescription:realm
+                                        icon:nil
+                                        type:autofill::SuggestionType::
+                                                 kPasswordEntry
+                                     payload:autofill::Suggestion::Payload()
+                              requiresReauth:YES
+                  acceptanceA11yAnnouncement:nil
+                                    metadata:std::move(metadata)]];
     }
   }
 
   return [results copy];
+}
+
+// Adds a pending form extraction query and schedules a cleanup task in the case
+// the query hangs.
+- (void)addPendingQuery:(PendingFormQuery*)query {
+  [_pendingFormQueries addObject:query];
+  [self scheduleCleanupIfNeeded];
 }
 
 - (void)checkIfSuggestionsAvailableForForm:
@@ -229,7 +277,7 @@ enum class FormExtractionStatus {
   // Queue the form query until the fill data is processed. The queue can handle
   // concurent calls to -checkIfSuggestionsAvailableForForm, which may happen
   // when there is more than one consumer of suggestions.
-  [_pendingFormQueries addObject:query];
+  [self addPendingQuery:query];
 
   // Try to extract password forms from the frame's renderer content
   // because there is no knowledge of any extraction done yet. If
@@ -405,6 +453,61 @@ enum class FormExtractionStatus {
       .insert(
           std::make_pair(frameId, std::make_unique<AccountSelectFillData>()))
       .first->second.get();
+}
+
+// Completes, if needed, frame extraction for `frameId`.
+- (void)completeFormExtractionForFrame:(const std::string&)frameId {
+  if (const auto it = _framesFormExtractionStatus.find(frameId);
+      it != _framesFormExtractionStatus.end() &&
+      it->second == FormExtractionStatus::kRequested) {
+    _framesFormExtractionStatus[frameId] = FormExtractionStatus::kCompleted;
+  }
+}
+
+// Schedules a cleanup task to clean up the expired queries for which no
+// response was ever received within the time limit. Only schedules the task if
+// there isn't already a task scheduled and there are still pending form queries
+// that are subject to hanging. Is no op if the feature isn't enabled.
+- (void)scheduleCleanupIfNeeded {
+  if (_cleanupScheduled || _pendingFormQueries.count == 0 ||
+      !base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIosCleanupHangingPasswordFormExtractionRequests)) {
+    return;
+  }
+
+  _cleanupScheduled = YES;
+
+  __weak __typeof(self) weakSelf = self;
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](__typeof(self) strongSelf) {
+            [strongSelf completeExpiredQueries];
+          },
+          weakSelf),
+      GetCleanupTaskPeriodMs());
+}
+
+// Completes all expired queries, across frames. Called by the scheduled cleanup
+// task. Automatically reassesses if a follow-up cleanup task is required after
+// this cleanup in the case there as still pending not yet expired queries.
+- (void)completeExpiredQueries {
+  _cleanupScheduled = NO;
+  NSMutableArray<PendingFormQuery*>* remainingQueries = [NSMutableArray array];
+  for (PendingFormQuery* query in _pendingFormQueries) {
+    if ([query isExpired]) {
+      [query runCompletion];
+      // Complete the extraction for the frame targeted by this expired
+      // `query`.
+      std::string frameId = SysNSStringToUTF8(query.frameId);
+      [self completeFormExtractionForFrame:frameId];
+    } else {
+      [remainingQueries addObject:query];
+    }
+  }
+  _pendingFormQueries = remainingQueries;
+  [self scheduleCleanupIfNeeded];
 }
 
 @end

@@ -100,10 +100,8 @@ const int NetworkSpeechRecognitionEngineImpl::kWebserviceStatusNoError = 0;
 const int NetworkSpeechRecognitionEngineImpl::kWebserviceStatusErrorNoMatch = 5;
 
 NetworkSpeechRecognitionEngineImpl::NetworkSpeechRecognitionEngineImpl(
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-    const std::string& accept_language)
-    : shared_url_loader_factory_(std::move(shared_url_loader_factory)),
-      accept_language_(accept_language) {}
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory)
+    : shared_url_loader_factory_(std::move(shared_url_loader_factory)) {}
 
 NetworkSpeechRecognitionEngineImpl::~NetworkSpeechRecognitionEngineImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -395,8 +393,8 @@ NetworkSpeechRecognitionEngineImpl::ConnectBothStreams(const FSMEventArgs&) {
       "key=" + base::EscapeQueryParamValue(google_apis::GetAPIKey(), true));
   upstream_args.push_back("pair=" + request_key);
   upstream_args.push_back("output=pb");
-  upstream_args.push_back(
-      "lang=" + base::EscapeQueryParamValue(GetAcceptedLanguages(), true));
+  upstream_args.push_back("lang=" +
+                          base::EscapeQueryParamValue(config_.language, true));
   upstream_args.push_back(config_.filter_profanities ? "pFilter=2"
                                                      : "pFilter=0");
   if (config_.max_hypotheses > 0U) {
@@ -698,26 +696,8 @@ NetworkSpeechRecognitionEngineImpl::DoNothing(const FSMEventArgs&) {
 NetworkSpeechRecognitionEngineImpl::FSMState
 NetworkSpeechRecognitionEngineImpl::NotFeasible(
     const FSMEventArgs& event_args) {
-  NOTREACHED_IN_MIGRATION()
-      << "Unfeasible event " << event_args.event << " in state " << state_;
-  return state_;
-}
-
-std::string NetworkSpeechRecognitionEngineImpl::GetAcceptedLanguages() const {
-  std::string langs = config_.language;
-  if (langs.empty() && !accept_language_.empty()) {
-    // If no language is provided then we use the first from the accepted
-    // language list. If this list is empty then it defaults to "en-US".
-    // Example of the contents of this list: "es,en-GB;q=0.8", ""
-    size_t separator = accept_language_.find_first_of(",;");
-    if (separator != std::string::npos) {
-      langs = accept_language_.substr(0, separator);
-    }
-  }
-  if (langs.empty()) {
-    langs = "en-US";
-  }
-  return langs;
+  NOTREACHED() << "Unfeasible event " << event_args.event << " in state "
+               << state_;
 }
 
 // TODO(primiano): Is there any utility in the codebase that already does this?

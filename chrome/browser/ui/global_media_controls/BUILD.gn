@@ -1,0 +1,144 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_win || is_mac || is_linux || is_chromeos)
+
+source_set("global_media_controls") {
+  sources = [
+    "cast_device_list_host.h",
+    "cast_media_notification_item.h",
+    "cast_media_notification_producer.h",
+    "cast_media_session_controller.h",
+    "live_translate_combobox_model.h",
+    "media_item_ui_device_selector_delegate.h",
+    "media_item_ui_metrics.h",
+    "media_notification_device_monitor.h",
+    "media_notification_device_provider.h",
+    "media_notification_device_provider_impl.h",
+    "media_notification_service.h",
+    "media_notification_service_factory.h",
+    "media_toolbar_button_controller.h",
+    "media_toolbar_button_controller_delegate.h",
+    "media_toolbar_button_observer.h",
+    "presentation_request_notification_item.h",
+    "presentation_request_notification_producer.h",
+    "supplemental_device_picker_item.h",
+    "supplemental_device_picker_producer.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/bitmap_fetcher",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/media_router",
+    "//components/global_media_controls",
+    "//components/global_media_controls/public/mojom:device_service",
+    "//components/keyed_service/core",
+    "//components/media_message_center",
+    "//components/media_router/browser",
+    "//components/media_router/common",
+    "//components/media_router/common/mojom:media_controller",
+    "//components/translate/core/browser",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/media_session/public/cpp:base_cpp",
+    "//services/media_session/public/mojom",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "cast_device_list_host.cc",
+    "cast_media_notification_item.cc",
+    "cast_media_notification_producer.cc",
+    "cast_media_session_controller.cc",
+    "live_translate_combobox_model.cc",
+    "media_item_ui_metrics.cc",
+    "media_notification_device_monitor.cc",
+    "media_notification_device_provider_impl.cc",
+    "media_notification_service_factory.cc",
+    "media_toolbar_button_controller.cc",
+    "media_toolbar_button_controller_delegate.cc",
+    "presentation_request_notification_item.cc",
+    "presentation_request_notification_producer.cc",
+    "supplemental_device_picker_item.cc",
+    "supplemental_device_picker_producer.cc",
+  ]
+  deps = [
+    ":global_media_controls",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/ui:browser_list",
+    "//components/favicon/content",
+    "//components/favicon/core",
+    "//components/feature_engagement/public",
+    "//components/live_caption:constants",
+    "//components/sessions",
+    "//media/remoting:remoting_device_capability",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_helper.cc",
+    "test_helper.h",
+  ]
+  public_deps = [
+    ":global_media_controls",
+    "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "cast_device_list_host_unittest.cc",
+    "cast_media_notification_item_unittest.cc",
+    "cast_media_notification_producer_unittest.cc",
+    "cast_media_session_controller_unittest.cc",
+    "media_notification_device_provider_impl_unittest.cc",
+    "media_notification_service_unittest.cc",
+    "media_toolbar_button_controller_unittest.cc",
+    "presentation_request_notification_item_unittest.cc",
+    "presentation_request_notification_producer_unittest.cc",
+    "supplemental_device_picker_item_unittest.cc",
+    "supplemental_device_picker_producer_unittest.cc",
+  ]
+
+  if (is_linux) {
+    sources += [ "media_notification_device_monitor_unittest.cc" ]
+  }
+
+  deps = [
+    "//base/test:test_support",
+    "//chrome/browser/bitmap_fetcher",
+    "//chrome/browser/media/router",
+    "//chrome/browser/media/router:media_router_feature",
+    "//chrome/browser/ui/global_media_controls:test_support",
+    "//chrome/test:test_support",
+    "//components/global_media_controls:test_support",
+    "//components/media_message_center:test_support",
+    "//components/media_router/browser:test_support",
+    "//components/media_router/common/mojom:media_router",
+    "//components/sync_preferences:test_support",
+    "//components/vector_icons",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//media",
+    "//net",
+    "//skia",
+    "//ui/gfx:test_support",
+  ]
+
+  if (is_chromeos) {
+    deps += [ "//chrome/browser/ash/crosapi:test_support" ]
+  }
+}

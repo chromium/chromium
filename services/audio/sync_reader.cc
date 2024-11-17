@@ -31,12 +31,9 @@ namespace audio {
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
     !BUILDFLAG(IS_CHROMEOS_LACROS)
-BASE_FEATURE(kDynamicAudioTimeout,
-             "DynamicAudioTimeout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-const base::FeatureParam<double> kBufferDurationPercent{
-    &kDynamicAudioTimeout, "buffer_duration_percent", 0.95};
+constexpr double kBufferDurationPercent = 0.95;
+#else
+constexpr double kBufferDurationPercent = 0.5;
 #endif
 
 SyncReader::SyncReader(
@@ -60,36 +57,9 @@ SyncReader::SyncReader(
       output_bus_buffer_size_(
           media::AudioBus::CalculateMemorySize(params.channels(),
                                                params.frames_per_buffer())),
+      maximum_wait_time_(params.GetBufferDuration() * kBufferDurationPercent),
       read_timeout_glitch_{.duration = params.GetBufferDuration(), .count = 1},
       glitch_counter_(std::move(glitch_counter)) {
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH) || \
-    BUILDFLAG(IS_CHROMEOS_LACROS)
-  maximum_wait_time_ = params.GetBufferDuration() / 2;
-  maximum_wait_time_for_mixing_ = maximum_wait_time_;
-#else
-  if (base::FeatureList::IsEnabled(kDynamicAudioTimeout)) {
-    maximum_wait_time_ =
-        params.GetBufferDuration() * kBufferDurationPercent.Get();
-  } else {
-    maximum_wait_time_ = base::Milliseconds(20);
-  }
-  maximum_wait_time_for_mixing_ = maximum_wait_time_;
-
-#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
-  if (media::IsChromeWideEchoCancellationEnabled()) {
-    double mixing_timeout_percent =
-        media::kChromeWideEchoCancellationDynamicMixingTimeout.Get();
-
-    // The default negative value means we should ignore this parameter.
-    if (mixing_timeout_percent > 0) {
-      maximum_wait_time_for_mixing_ =
-          params.GetBufferDuration() * mixing_timeout_percent;
-    }
-  }
-#endif
-
-#endif
-
   base::CheckedNumeric<size_t> memory_size =
       media::ComputeAudioOutputBufferSizeChecked(params);
   if (!memory_size.IsValid())
@@ -138,6 +108,10 @@ base::UnsafeSharedMemoryRegion SyncReader::TakeSharedMemoryRegion() {
 void SyncReader::RequestMoreData(base::TimeDelta delay,
                                  base::TimeTicks delay_timestamp,
                                  const media::AudioGlitchInfo& glitch_info) {
+  TRACE_EVENT("audio", "SyncReader::RequestMoreData", "this",
+              static_cast<void*>(this), "delay_timestamp (ms)",
+              (delay_timestamp - base::TimeTicks()).InMillisecondsF(),
+              "playout_delay (ms)", delay.InMillisecondsF());
   // We don't send arguments over the socket since sending more than 4
   // bytes might lead to being descheduled. The reading side will zero
   // them when consumed.
@@ -190,7 +164,7 @@ void SyncReader::RequestMoreData(base::TimeDelta delay,
 }
 
 bool SyncReader::Read(media::AudioBus* dest, bool is_mixing) {
-  bool missed_callback = !WaitUntilDataIsReady(is_mixing);
+  bool missed_callback = !WaitUntilDataIsReady();
   glitch_counter_->ReportMissedCallback(missed_callback, is_mixing);
   if (missed_callback) {
     ++renderer_missed_callback_count_;
@@ -243,10 +217,9 @@ void SyncReader::Close() {
   output_bus_.reset();
 }
 
-bool SyncReader::WaitUntilDataIsReady(bool is_mixing) {
+bool SyncReader::WaitUntilDataIsReady() {
   TRACE_EVENT0("audio", "SyncReader::WaitUntilDataIsReady");
-  base::TimeDelta timeout =
-      is_mixing ? maximum_wait_time_for_mixing_ : maximum_wait_time_;
+  base::TimeDelta timeout = maximum_wait_time_;
   const base::TimeTicks start_time = base::TimeTicks::Now();
   const base::TimeTicks finish_time = start_time + timeout;
 

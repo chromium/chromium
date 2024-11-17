@@ -93,8 +93,7 @@ proto::UrlPatternPart::PartType UrlPatternPartTypeToProto(
     liburlpattern::PartType part_type) {
   switch (part_type) {
     case liburlpattern::PartType::kRegex:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case liburlpattern::PartType::kFullWildcard:
       return proto::UrlPatternPart_PartType_FULL_WILDCARD;
     case liburlpattern::PartType::kSegmentWildcard:

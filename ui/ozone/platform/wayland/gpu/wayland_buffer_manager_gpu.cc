@@ -25,7 +25,7 @@
 
 #if defined(WAYLAND_GBM)
 #include "ui/gfx/linux/gbm_wrapper.h"  // nogncheck
-#include "ui/ozone/platform/wayland/gpu/drm_render_node_handle.h"
+#include "ui/ozone/platform/wayland/common/drm_render_node_handle.h"
 #endif
 
 namespace ui {
@@ -79,8 +79,7 @@ void WaylandBufferManagerGpu::Initialize(
     bool supports_acquire_fence,
     bool supports_overlays,
     uint32_t supported_surface_augmentor_version,
-    bool supports_single_pixel_buffer,
-    const base::Version& server_version) {
+    bool supports_single_pixel_buffer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(gpu_sequence_checker_);
 
   // See the comment in the constructor.
@@ -110,15 +109,20 @@ void WaylandBufferManagerGpu::Initialize(
 
   // HitTestMask fix landed in https://crrev.com/c/5252908. This is required to
   // support DnD behavior when the target window has out-of-window frames.
-  supports_out_of_window_clip_rect_ =
-      server_version.IsValid() &&
-      server_version >= base::Version("123.0.6274.0");
+  // TODO(crbug.com/375523817): remove this.
+  supports_out_of_window_clip_rect_ = false;
 
   // Exo transformation fix landed in https://crrev.com/c/4961473
-  has_transformation_fix_ = server_version.IsValid() &&
-                            server_version >= base::Version("121.0.6113.0");
+  // TODO(crbug.com/375523817): remove this.
+  has_transformation_fix_ = false;
 
   supports_single_pixel_buffer_ = supports_single_pixel_buffer;
+
+  // Allow to rebind the interface if it hasn't been destroyed yet. Used, for
+  // example, by tests which use buffer manager to emulate frames presentation.
+  if (remote_host_.is_bound() || associated_receiver_.is_bound()) {
+    OnHostDisconnected();
+  }
   BindHostInterface(std::move(remote_host));
 
   ProcessPendingTasks();

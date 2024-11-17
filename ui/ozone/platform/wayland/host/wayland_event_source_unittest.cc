@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
+
 #include <linux/input.h>
 
 #include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
+#include "ui/ozone/common/features.h"
 #include "ui/ozone/platform/wayland/host/wayland_seat.h"
 #include "ui/ozone/platform/wayland/test/mock_pointer.h"
 #include "ui/ozone/platform/wayland/test/mock_surface.h"
@@ -24,24 +26,70 @@ namespace {
 
 constexpr gfx::Rect kDefaultBounds(0, 0, 100, 100);
 
+namespace {
+
+struct FeatureState {
+  bool dispatch_mouse_events_on_frame_event = false;
+  bool dispatch_touch_events_on_frame_event = false;
+};
+
 }  // namespace
 
-class WaylandEventSourceTest : public WaylandTestSimple {
+}  // namespace
+
+class WaylandEventSourceTest
+    : public ::testing::WithParamInterface<FeatureState>,
+      public WaylandTestSimple {
  public:
   void SetUp() override {
+    CHECK(
+        !base::Contains(enabled_features_, kDispatchPointerEventsOnFrameEvent));
+    CHECK(!base::Contains(disabled_features_,
+                          kDispatchPointerEventsOnFrameEvent));
+    if (GetParam().dispatch_mouse_events_on_frame_event) {
+      enabled_features_.push_back(kDispatchPointerEventsOnFrameEvent);
+    } else {
+      disabled_features_.push_back(kDispatchPointerEventsOnFrameEvent);
+    }
+
+    if (GetParam().dispatch_touch_events_on_frame_event) {
+      enabled_features_.push_back(kDispatchTouchEventsOnFrameEvent);
+    } else {
+      disabled_features_.push_back(kDispatchTouchEventsOnFrameEvent);
+    }
+
     WaylandTestSimple::SetUp();
 
     pointer_delegate_ = connection_->event_source();
     ASSERT_TRUE(pointer_delegate_);
   }
 
+  void TearDown() override {
+    if (GetParam().dispatch_touch_events_on_frame_event) {
+      CHECK(enabled_features_.back() == kDispatchTouchEventsOnFrameEvent);
+      enabled_features_.pop_back();
+    } else {
+      CHECK(disabled_features_.back() == kDispatchTouchEventsOnFrameEvent);
+      disabled_features_.pop_back();
+    }
+
+    if (GetParam().dispatch_mouse_events_on_frame_event) {
+      CHECK(enabled_features_.back() == kDispatchPointerEventsOnFrameEvent);
+      enabled_features_.pop_back();
+    } else {
+      CHECK(disabled_features_.back() == kDispatchPointerEventsOnFrameEvent);
+      disabled_features_.pop_back();
+    }
+  }
+
  protected:
+  base::test::ScopedFeatureList features_;
   raw_ptr<WaylandPointer::Delegate> pointer_delegate_ = nullptr;
 };
 
 // Verify WaylandEventSource properly manages its internal state as pointer
 // button events are sent. More specifically - pointer flags.
-TEST_F(WaylandEventSourceTest, CheckPointerButtonHandling) {
+TEST_P(WaylandEventSourceTest, CheckPointerButtonHandling) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl_seat_send_capabilities(server->seat()->resource(),
                               WL_SEAT_CAPABILITY_POINTER);
@@ -110,7 +158,7 @@ TEST_F(WaylandEventSourceTest, CheckPointerButtonHandling) {
 
 // Verify WaylandEventSource properly manages its internal state as pointer
 // button events are sent. More specifically - pointer flags.
-TEST_F(WaylandEventSourceTest, DeleteBeforeTouchFrame) {
+TEST_P(WaylandEventSourceTest, DeleteBeforeTouchFrame) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl_seat_send_capabilities(server->seat()->resource(),
                               WL_SEAT_CAPABILITY_TOUCH);
@@ -147,7 +195,7 @@ TEST_F(WaylandEventSourceTest, DeleteBeforeTouchFrame) {
 
 // Verify WaylandEventSource ignores release events for mouse buttons that
 // aren't pressed. Regression test for crbug.com/1376393.
-TEST_F(WaylandEventSourceTest, IgnoreReleaseWithoutPress) {
+TEST_P(WaylandEventSourceTest, IgnoreReleaseWithoutPress) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl_seat_send_capabilities(server->seat()->resource(),
                               WL_SEAT_CAPABILITY_POINTER);
@@ -173,7 +221,7 @@ TEST_F(WaylandEventSourceTest, IgnoreReleaseWithoutPress) {
   });
 }
 
-TEST_F(WaylandEventSourceTest, ReleasesAllPressedPointerButtons) {
+TEST_P(WaylandEventSourceTest, ReleasesAllPressedPointerButtons) {
   PostToServerAndWait([](wl::TestWaylandServerThread* server) {
     wl_seat_send_capabilities(server->seat()->resource(),
                               WL_SEAT_CAPABILITY_POINTER);
@@ -227,5 +275,14 @@ TEST_F(WaylandEventSourceTest, ReleasesAllPressedPointerButtons) {
   EXPECT_FALSE(
       pointer_delegate_->IsPointerButtonPressed(EF_MIDDLE_MOUSE_BUTTON));
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    EventsDispatchPolicyTest,
+    WaylandEventSourceTest,
+    ::testing::Values(
+        FeatureState{.dispatch_mouse_events_on_frame_event = false,
+                     .dispatch_touch_events_on_frame_event = false},
+        FeatureState{.dispatch_mouse_events_on_frame_event = true,
+                     .dispatch_touch_events_on_frame_event = true}));
 
 }  // namespace ui

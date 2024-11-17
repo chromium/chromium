@@ -24,9 +24,9 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithRestrictions) {
   list.Append("*google.com");
   auto restriction = PatternAccountRestrictionFromValue(list);
 
-  EXPECT_EQ(restriction->IsAccountRestricted(email1), false);
-  EXPECT_EQ(restriction->IsAccountRestricted(email2), false);
-  EXPECT_EQ(restriction->IsAccountRestricted(email3), true);
+  EXPECT_EQ(restriction.IsAccountRestricted(email1), false);
+  EXPECT_EQ(restriction.IsAccountRestricted(email2), false);
+  EXPECT_EQ(restriction.IsAccountRestricted(email3), true);
 }
 
 // Tests that the PatternAccountRestriction does not filter emails when
@@ -35,9 +35,9 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithoutRestriction) {
   base::Value::List list;
   auto restriction = PatternAccountRestrictionFromValue(list);
 
-  EXPECT_EQ(restriction->IsAccountRestricted(email1), false);
-  EXPECT_EQ(restriction->IsAccountRestricted(email2), false);
-  EXPECT_EQ(restriction->IsAccountRestricted(email3), false);
+  EXPECT_EQ(restriction.IsAccountRestricted(email1), false);
+  EXPECT_EQ(restriction.IsAccountRestricted(email2), false);
+  EXPECT_EQ(restriction.IsAccountRestricted(email3), false);
 }
 
 // Tests that the PatternAccountRestriction does not filter emails when the
@@ -48,9 +48,9 @@ TEST_F(PatternAccountRestrictionTest, FilterEmailsWithBadPattern) {
   list.Append("*google.com");
   auto restriction = PatternAccountRestrictionFromValue(list);
 
-  EXPECT_EQ(restriction->IsAccountRestricted(email1), true);
-  EXPECT_EQ(restriction->IsAccountRestricted(email2), false);
-  EXPECT_EQ(restriction->IsAccountRestricted(email3), true);
+  EXPECT_EQ(restriction.IsAccountRestricted(email1), true);
+  EXPECT_EQ(restriction.IsAccountRestricted(email2), false);
+  EXPECT_EQ(restriction.IsAccountRestricted(email3), true);
 }
 
 // Tests that the pattern created by PatternFromString(chunk) correctlty matches

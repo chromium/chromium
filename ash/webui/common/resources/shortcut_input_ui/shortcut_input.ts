@@ -17,10 +17,6 @@ import {getTemplate} from './shortcut_input.html.js';
 import {ShortcutInputObserverReceiver, ShortcutInputProviderInterface} from './shortcut_input_provider.mojom-webui.js';
 import {getSortedModifiers, KeyInputState, KeyToIconNameMap, MetaKey, Modifier, ModifierKeyCodes, Modifiers} from './shortcut_utils.js';
 
-// <if expr="_google_chrome" >
-import {KeyToInternalIconNameMap} from './shortcut_utils.js';
-// </if>
-
 export interface ShortcutInputElement {
   $: {
     container: HTMLDivElement,
@@ -289,11 +285,7 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
       if (keyDisplay in KeyToIconNameMap) {
         return keyDisplay;
       }
-      // <if expr="_google_chrome" >
-      if (keyDisplay in KeyToInternalIconNameMap) {
-        return keyDisplay;
-      }
-      // </if>
+
       return keyDisplay.toLowerCase();
     }
     return this.i18n('inputKeyPlaceholder');
@@ -314,11 +306,7 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
       if (keyDisplay in KeyToIconNameMap) {
         return keyDisplay;
       }
-      // <if expr="_google_chrome" >
-      if (keyDisplay in KeyToInternalIconNameMap) {
-        return keyDisplay;
-      }
-      // </if>
+
       return keyDisplay.toLowerCase();
     }
     return this.i18n('inputKeyPlaceholder');

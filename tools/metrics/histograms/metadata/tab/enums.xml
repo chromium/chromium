@@ -61,7 +61,7 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="IOS Tablet"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/saved_tab_groups/tab_group_sync_metrics_logger.h:DeviceType) -->
+<!-- LINT.ThenChange(//components/saved_tab_groups/internal/tab_group_sync_metrics_logger_impl.h:DeviceType) -->
 
 <enum name="ExternalLauncherOption">
   <int value="0" label="Cancel"/>
@@ -83,29 +83,42 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Found"/>
 </enum>
 
-<!-- LINT.IfChange(GroupCloseReason) -->
+<!-- LINT.IfChange(GroupClosingSource) -->
 
-<enum name="GroupCloseReason">
+<enum name="GroupClosingSource">
   <int value="0" label="Unknown"/>
   <int value="1" label="Closed by user"/>
   <int value="2" label="Deleted by user"/>
   <int value="3" label="Deleted from sync"/>
   <int value="4" label="Cleaned up on startup"/>
   <int value="5" label="Cleaned up on last instance closure"/>
+  <int value="6" label="Group closed due to Close All Tabs operation"/>
+  <int value="7"
+      label="Group closed when Close Other Tabs option was selected"/>
+  <int value="8"
+      label="Group closed when the last tab in the strip was closed"/>
+  <int value="9" label="Converted to shared group from UI"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/saved_tab_groups/types.h:ClosingSource) -->
+<!-- LINT.ThenChange(//components/saved_tab_groups/public/types.h:ClosingSource) -->
 
-<!-- LINT.IfChange(GroupOpenReason) -->
+<!-- LINT.IfChange(GroupOpeningSource) -->
 
-<enum name="GroupOpenReason">
+<enum name="GroupOpeningSource">
   <int value="0" label="Unknown"/>
   <int value="1" label="Opened from revisit UI"/>
   <int value="2" label="Auto-opened from sync"/>
-  <int value="3" label="Opened from Tab or Session Restore"/>
+  <int value="3" label="Restored from tab restore UI"/>
+  <int value="4" label="Opened after a undo close all tabs operation"/>
+  <int value="5"
+      label="Opened after closing the last tab in the strip was cancelled"/>
+  <int value="6" label="Invoked from session restore after reconnect"/>
+  <int value="7"
+      label="Invoked from session restore after autosave of a V1 group"/>
+  <int value="8" label="Group shared from UI"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/saved_tab_groups/types.h:OpeningSource) -->
+<!-- LINT.ThenChange(//components/saved_tab_groups/public/types.h:OpeningSource) -->
 
 <enum name="HistoricalSaverCloseType">
   <int value="0" label="Tab"/>
@@ -176,6 +189,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/saved_tab_groups/stats.h:MigrationResult) -->
 
+<!-- LINT.IfChange(SharedTabGroupDataLoadFromDiskResult) -->
+
+<enum name="SharedTabGroupDataLoadFromDiskResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to parse"/>
+  <int value="2" label="Unexpected guid"/>
+  <int value="3" label="Missing collaboration id"/>
+  <int value="4" label="Missing group and tab"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/saved_tab_groups/internal/stats.h:SharedTabGroupDataLoadFromDiskResult) -->
+
 <enum name="TabActivationTypes">
   <int value="0" label="Activate a tab"/>
   <int value="1" label="Activate the context menu of a tab"/>
@@ -185,6 +210,12 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Loaded on creation and shown"/>
   <int value="1" label="Loaded on creation and lost"/>
   <int value="2" label="Not loaded on creation"/>
+</enum>
+
+<enum name="TabDeclutterEntryPoint">
+  <int value="0" label="Nudge"/>
+  <int value="1" label="AppMenu"/>
+  <int value="2" label="Selector"/>
 </enum>
 
 <!-- LINT.IfChange(TabGroupEvent) -->
@@ -202,7 +233,55 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Tab selected"/>
 </enum>
 
-<!-- LINT.ThenChange(//components/saved_tab_groups/types.h:TabGroupEvent) -->
+<!-- LINT.ThenChange(//components/saved_tab_groups/public/types.h:TabGroupEvent) -->
+
+<!-- LINT.IfChange(TabGroupLoadedEmptiness)-->
+
+<enum name="TabGroupLoadedEmptiness">
+  <int value="0" label="Not empty"/>
+  <int value="1" label="Already empty"/>
+  <int value="2" label="Became empty after removing duplicates"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/saved_tab_groups/internal/stats.cc:TabGroupLoadedEmptiness) -->
+
+<enum name="TabOrganizationDeclutterCTREvent">
+  <int value="0" label="Declutter Shown"/>
+  <int value="1" label="Close Tabs Clicked"/>
+</enum>
+
+<!-- LINT.IfChange(TabOrganizationDeclutterTriggerCTRBucket) -->
+
+<enum name="TabOrganizationDeclutterTriggerCTRBucket">
+  <int value="0" label="Shown: under 15 tabs"/>
+  <int value="1" label="Shown: 15-19 tabs, under 2 inactive"/>
+  <int value="2" label="Shown: 15-19 tabs, 2-4 inactive"/>
+  <int value="3" label="Shown: 15-19 tabs, 5-7 inactive"/>
+  <int value="4" label="Shown: 15-19 tabs, over 7 inactive"/>
+  <int value="5" label="Shown: 20-24 tabs, under 2 inactive"/>
+  <int value="6" label="Shown: 20-24 tabs, 2-4 inactive"/>
+  <int value="7" label="Shown: 20-24 tabs, 5-7 inactive"/>
+  <int value="8" label="Shown: 20-24 tabs, over 7 inactive"/>
+  <int value="9" label="Shown: over 24 tabs"/>
+  <int value="10" label="Clicked: under 15 tabs"/>
+  <int value="11" label="Clicked: 15-19 tabs, under 2 inactive"/>
+  <int value="12" label="Clicked: 15-19 tabs, 2-4 inactive"/>
+  <int value="13" label="Clicked: 15-19 tabs, 5-7 inactive"/>
+  <int value="14" label="Clicked: 15-19 tabs, over 7 inactive"/>
+  <int value="15" label="Clicked: 20-24 tabs, under 2 inactive"/>
+  <int value="16" label="Clicked: 20-24 tabs, 2-4 inactive"/>
+  <int value="17" label="Clicked: 20-24 tabs, 5-7 inactive"/>
+  <int value="18" label="Clicked: 20-24 tabs, over 7 inactive"/>
+  <int value="19" label="Clicked: over 24 tabs"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/views/tabs/tab_search_container.h:DeclutterTriggerCTRBucket) -->
+
+<enum name="TabOrganizationSelectorCTREvent">
+  <int value="0" label="Selector Shown"/>
+  <int value="1" label="Auto Tab Groups Clicked"/>
+  <int value="2" label="Declutter Clicked"/>
+</enum>
 
 <enum name="TabOrganizationTriggerOutcome">
   <int value="0" label="Accepted">User clicked through the nudge UI.</int>

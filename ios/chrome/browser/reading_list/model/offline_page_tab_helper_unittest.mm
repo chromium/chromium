@@ -44,14 +44,14 @@ class OfflinePageTabHelperTest : public PlatformTest {
     initial_entries.push_back(base::MakeRefCounted<ReadingListEntry>(
         GURL(kTestURL), kTestTitle, base::Time::Now()));
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::move(initial_entries)));
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
-    fake_web_state_.SetBrowserState(browser_state_.get());
+    fake_web_state_.SetBrowserState(profile_.get());
     fake_web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
 
@@ -60,12 +60,12 @@ class OfflinePageTabHelperTest : public PlatformTest {
   }
 
   ReadingListModel* reading_list_model() {
-    return ReadingListModelFactory::GetForBrowserState(browser_state_.get());
+    return ReadingListModelFactory::GetForProfile(profile_.get());
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState fake_web_state_;
 };
 
@@ -79,7 +79,7 @@ class OfflinePageTabHelperDelayedModelTest : public PlatformTest {
     auto storage = std::make_unique<FakeReadingListModelStorage>();
     fake_reading_list_model_storage_ = storage->AsWeakPtr();
 
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(
@@ -92,9 +92,9 @@ class OfflinePageTabHelperDelayedModelTest : public PlatformTest {
                   base::DefaultClock::GetInstance());
             },
             base::OwnedRef(std::move(storage))));
-    browser_state_ = std::move(builder).Build();
+    profile_ = std::move(builder).Build();
 
-    fake_web_state_.SetBrowserState(browser_state_.get());
+    fake_web_state_.SetBrowserState(profile_.get());
     fake_web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
 
@@ -103,7 +103,7 @@ class OfflinePageTabHelperDelayedModelTest : public PlatformTest {
   }
 
   ReadingListModel* reading_list_model() {
-    return ReadingListModelFactory::GetForBrowserState(browser_state_.get());
+    return ReadingListModelFactory::GetForProfile(profile_.get());
   }
 
   FakeReadingListModelStorage* fake_reading_list_model_storage() {
@@ -112,7 +112,7 @@ class OfflinePageTabHelperDelayedModelTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState fake_web_state_;
   base::WeakPtr<FakeReadingListModelStorage> fake_reading_list_model_storage_;
 };

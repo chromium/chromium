@@ -1,0 +1,63 @@
+<!--
+Copyright 2024 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+
+This file describes the enumerations referenced by entries in histograms.xml for
+this directory. Some enums may instead be listed in the central enums.xml file
+at src/tools/metrics/histograms/enums.xml when multiple files use them.
+
+For best practices on writing enumerations descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md#Enum-Histograms
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<!-- Enum types -->
+
+<enums>
+
+<enum name="ToastCloseReason">
+  <int value="0" label="Auto Dismissed"/>
+  <int value="1" label="Action Button"/>
+  <int value="2" label="Close Button"/>
+  <int value="3" label="Prempted by another toast"/>
+  <int value="4" label="Menu Item Clicked"/>
+  <int value="5" label="Feature explicitly dismiss toast"/>
+  <int value="6" label="Aborted"/>
+</enum>
+
+<!-- LINT.IfChange(ToastId) -->
+
+<enum name="ToastId">
+  <int value="0" label="Link Copied"/>
+  <int value="1" label="Image Copied"/>
+  <int value="2" label="Link to Highlight Copied"/>
+  <int value="3" label="Added to Reading List"/>
+  <int value="4" label="(Deprecated) Lens Overlay"/>
+  <int value="5" label="Non-milestone Update"/>
+  <int value="6" label="Added to comparison table"/>
+  <int value="7" label="Clear Browsing Data"/>
+  <int value="8" label="Automatic plus address replacement during Autofill"/>
+  <int value="9"
+      label="ESB value was synced to 'turned on' - for non security settings
+             page"/>
+  <int value="10"
+      label="ESB value was synced to 'turned on' - for security settings page"/>
+  <int value="11" label="ESB value is synced to 'turned off'"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/ui/toasts/api/toast_id.h:ToastId) -->
+
+</enums>
+
+</histogram-configuration>

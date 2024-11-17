@@ -18,6 +18,7 @@ import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
+import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.customtabs.content.TabObserverRegistrar;
@@ -74,23 +75,18 @@ public class CustomTabToolbarColorController {
     private boolean mUseTabThemeColor;
 
     @Inject
-    public CustomTabToolbarColorController(
-            BrowserServicesIntentDataProvider intentDataProvider,
-            Activity activity,
-            CustomTabActivityTabProvider tabProvider,
-            TabObserverRegistrar tabObserverRegistrar,
-            TopUiThemeColorProvider topUiThemeColorProvider) {
-        mIntentDataProvider = intentDataProvider;
+    public CustomTabToolbarColorController(BaseCustomTabActivity activity) {
+        mIntentDataProvider = activity.getIntentDataProvider();
         mActivity = activity;
-        mTabProvider = tabProvider;
-        mTabObserverRegistrar = tabObserverRegistrar;
-        mTopUiThemeColorProvider = topUiThemeColorProvider;
+        mTabProvider = activity.getCustomTabActivityTabProvider();
+        mTabObserverRegistrar = activity.getTabObserverRegistrar();
+        mTopUiThemeColorProvider = activity.getTopUiThemeColorProvider();
     }
 
     /**
-     * Computes the toolbar color type.
-     * Returns a 'type' instead of a color so that the function can be used by non-toolbar UI
-     * surfaces with different values for {@link ToolbarColorType.DEFAULT_COLOR}.
+     * Computes the toolbar color type. Returns a 'type' instead of a color so that the function can
+     * be used by non-toolbar UI surfaces with different values for {@link
+     * ToolbarColorType.DEFAULT_COLOR}.
      */
     public static int computeToolbarColorType(
             BrowserServicesIntentDataProvider intentDataProvider,

@@ -81,7 +81,12 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // https://html.spec.whatwg.org/C/#the-document-object
 
     // https://github.com/whatwg/html/pull/9538
-    [CallWith=ExecutionContext,MeasureAs=ParseHTMLUnsafe] static Document parseHTMLUnsafe(HTMLString html);
+    [CallWith=ExecutionContext,RaisesException,MeasureAs=ParseHTMLUnsafe] static Document parseHTMLUnsafe(HTMLString html);
+   // https://wicg.github.io/sanitizer-api/#sanitizer-api
+    // TODO(356601280): Merge the two setHTMLUnsafe variants into one, once the
+    //   different RuntimeEnabled flags are both perma-enabled.
+    [RuntimeEnabled=SanitizerAPI,RaisesException,CallWith=ExecutionContext,MeasureAs=ParseHTMLUnsafe,CEReactions] static Document parseHTMLUnsafe(HTMLString html, SetHTMLOptions options);
+    [RuntimeEnabled=SanitizerAPI,RaisesException,CallWith=ExecutionContext,MeasureAs=ParseHTMLSafe,CEReactions] static Document parseHTML(DOMString html, optional SetHTMLOptions options = {});
 
     // resource metadata management
 
@@ -196,7 +201,7 @@ typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
     // Deprecated prefixed page visibility API.
     // TODO(davidben): This is a property so attaching a deprecation warning results in false positives when outputting
     // document in the console. It's possible https://crbug.com/43394 will resolve this.
-    [MeasureAs=PrefixedPageVisibility, ImplementedAs=visibilityState] readonly attribute DOMString webkitVisibilityState;
+    [MeasureAs=PrefixedPageVisibility, ImplementedAs=visibilityStateAsString] readonly attribute DOMString webkitVisibilityState;
     [MeasureAs=PrefixedPageVisibility, ImplementedAs=hidden] readonly attribute boolean webkitHidden;
 
     // Private Token API (https://github.com/wicg/trust-token-api)

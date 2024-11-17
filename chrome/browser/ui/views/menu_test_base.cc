@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/views/accessibility/ax_event_manager.h"
 #include "ui/views/controls/button/menu_button.h"
@@ -35,7 +36,7 @@ int MenuTestBase::GetAXEventCount(ax::mojom::Event event_type) const {
 }
 
 void MenuTestBase::Click(views::View* view, base::OnceClosure next) {
-  ui_test_utils::MoveMouseToCenterAndPress(view, ui_controls::LEFT,
+  ui_test_utils::MoveMouseToCenterAndClick(view, ui_controls::LEFT,
                                            ui_controls::DOWN | ui_controls::UP,
                                            std::move(next));
   views::test::WaitForMenuClosureAnimation();
@@ -95,7 +96,7 @@ void MenuTestBase::ButtonPressed() {
   menu_runner_->RunMenuAt(button_->GetWidget(), button_->button_controller(),
                           button_->GetBoundsInScreen(),
                           views::MenuAnchorPosition::kTopLeft,
-                          ui::MENU_SOURCE_NONE);
+                          ui::mojom::MenuSourceType::kNone);
 }
 
 void MenuTestBase::ExecuteCommand(int id) {

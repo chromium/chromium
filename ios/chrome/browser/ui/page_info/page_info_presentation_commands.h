@@ -25,6 +25,9 @@
 // Method invoked in order to get the latest site security description.
 - (PageInfoSiteSecurityDescription*)updatedSiteSecurityDescription;
 
+// Method invoked when the user requests to see the Last Visited page.
+- (void)showLastVisitedPage;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_PAGE_INFO_PAGE_INFO_PRESENTATION_COMMANDS_H_

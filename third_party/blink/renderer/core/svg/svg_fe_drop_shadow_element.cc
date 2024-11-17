@@ -90,7 +90,6 @@ void SVGFEDropShadowElement::SvgAttributeChanged(
   if (attr_name == svg_names::kInAttr ||
       attr_name == svg_names::kStdDeviationAttr ||
       attr_name == svg_names::kDxAttr || attr_name == svg_names::kDyAttr) {
-    SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }

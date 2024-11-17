@@ -38,7 +38,6 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
@@ -86,8 +85,6 @@ public class RestoreTabsUiRenderTest {
     public BaseActivityTestRule<BlankUiTestActivity> mActivityTestRule =
             new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
-    @Rule public JniMocker jniMocker = new JniMocker();
-
     @Mock ForeignSessionHelper.Natives mForeignSessionHelperJniMock;
     @Mock FaviconHelper.Natives mFaviconHelperJniMock;
     @Mock private Profile mProfile;
@@ -108,8 +105,8 @@ public class RestoreTabsUiRenderTest {
     public void setUp() throws InterruptedException {
         MockitoAnnotations.initMocks(this);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
-        jniMocker.mock(ForeignSessionHelperJni.TEST_HOOKS, mForeignSessionHelperJniMock);
-        jniMocker.mock(FaviconHelperJni.TEST_HOOKS, mFaviconHelperJniMock);
+        ForeignSessionHelperJni.setInstanceForTesting(mForeignSessionHelperJniMock);
+        FaviconHelperJni.setInstanceForTesting(mFaviconHelperJniMock);
         mActivityTestRule.launchActivity(null);
         when(mFaviconHelperJniMock.init()).thenReturn(1L);
 

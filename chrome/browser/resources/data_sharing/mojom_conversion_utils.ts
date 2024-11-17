@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // <if expr="_google_chrome">
-import './data_sharing_sdk.js';
+import '/data_sharing_sdk.js';
 // </if>
 // <if expr="not _google_chrome">
 import './dummy_data_sharing_sdk.js';
@@ -36,6 +36,9 @@ function toMojomGroupMember(member: DataSharingSdkGroupMember): GroupMember {
     email: member.email,
     role: toMojomRole(member.role),
     avatarUrl: {url: member.avatarUrl},
+    // Bandage for crbug.com/372249284, clean this up after the root cause is
+    // addressed.
+    givenName: member.givenName || '',
   };
 }
 

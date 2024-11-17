@@ -87,7 +87,7 @@ std::unique_ptr<net::CanonicalCookie> ToCanonicalCookie(
                                  options->expiresNonNull())
                            : base::Time();
 
-  String cookie_url_host = cookie_url.Host();
+  String cookie_url_host = cookie_url.Host().ToString();
   String domain;
   if (!options->domain().IsNull()) {
     if (name.StartsWith("__Host-")) {

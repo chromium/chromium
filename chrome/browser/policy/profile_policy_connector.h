@@ -221,16 +221,6 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
   base::RetainingOneShotTimer management_status_metrics_timer_;
 
   base::flat_set<std::string> user_affiliation_ids_for_testing_;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // Returns |true| when this is the main profile.
-  bool IsMainProfile() const;
-
-  // The |browser_policy_connector_| is owned by the |BrowserProcess| whereas
-  // the |ProfilePolicyConnector| is owned by the Profile - which gets deleted
-  // first - so the lifetime of the pointer is guaranteed.
-  raw_ptr<ChromeBrowserPolicyConnector> browser_policy_connector_ = nullptr;
-#endif
 };
 }  // namespace policy
 

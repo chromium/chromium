@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_history_entry.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -25,7 +26,7 @@ class CORE_EXPORT NavigationActivation final : public ScriptWrappable {
 
   void Update(NavigationHistoryEntry* entry,
               NavigationHistoryEntry* from,
-              const String& navigation_type) {
+              V8NavigationType::Enum navigation_type) {
     entry_ = entry;
     from_ = from;
     navigation_type_ = navigation_type;
@@ -33,7 +34,9 @@ class CORE_EXPORT NavigationActivation final : public ScriptWrappable {
 
   NavigationHistoryEntry* entry() const { return entry_; }
   NavigationHistoryEntry* from() const { return from_; }
-  String navigationType() { return navigation_type_; }
+  V8NavigationType navigationType() {
+    return V8NavigationType(navigation_type_);
+  }
 
   void Trace(Visitor* visitor) const override {
     ScriptWrappable::Trace(visitor);
@@ -44,7 +47,7 @@ class CORE_EXPORT NavigationActivation final : public ScriptWrappable {
  private:
   Member<NavigationHistoryEntry> entry_;
   Member<NavigationHistoryEntry> from_;
-  String navigation_type_;
+  V8NavigationType::Enum navigation_type_ = V8NavigationType::Enum::kPush;
 };
 
 }  // namespace blink

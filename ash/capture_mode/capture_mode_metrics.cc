@@ -51,8 +51,15 @@ constexpr char kConsecutiveScreenshotRootWord[] = "ConsecutiveScreenshots";
 constexpr char kQuickActionRootWord[] = "QuickAction";
 constexpr char kScreenshotsPerDayRootWord[] = "ScreenshotsPerDay";
 constexpr char kScreenshotsPerWeekRootWord[] = "ScreenshotsPerWeek";
+constexpr char kSearchButtonPressedRootWord[] = "SearchButtonPressed";
+constexpr char kSearchButtonShownRootWord[] = "SearchButtonShown";
 constexpr char kSwitchesFromInitialModeRootWord[] =
     "SwitchesFromInitialCaptureMode";
+constexpr char kSearchResultsPanelEntryPointHistogramRootWord[] =
+    "SearchResultsPanelEntryPoint";
+constexpr char kSearchResultsPanelShown[] = "SearchResultsPanelShown";
+constexpr char kSearchResultClickedRootWord[] = "SearchResultClicked";
+constexpr char kMultimodalSearchRequest[] = "MultimodalSearchRequest";
 
 void RecordCaptureModeRecordingDurationInternal(
     const std::string& histogram_name,
@@ -312,6 +319,51 @@ void RecordRecordingStartsWithDemoTools(bool demo_tools_enabled,
       BuildHistogramName(kDemoToolsEnabledOnRecordingStartRootWord, behavior,
                          /*append_ui_mode_suffix=*/true),
       demo_tools_enabled);
+}
+
+void RecordSearchButtonPressed() {
+  base::UmaHistogramBoolean(BuildHistogramName(kSearchButtonPressedRootWord,
+                                               /*behavior=*/nullptr,
+                                               /*append_ui_mode_suffix=*/true),
+                            true);
+}
+
+void RecordSearchButtonShown() {
+  base::UmaHistogramBoolean(BuildHistogramName(kSearchButtonShownRootWord,
+                                               /*behavior=*/nullptr,
+                                               /*append_ui_mode_suffix=*/true),
+                            true);
+}
+
+void RecordSearchResultsPanelEntryType(const CaptureModeBehavior* behavior) {
+  base::UmaHistogramEnumeration(
+      BuildHistogramName(kSearchResultsPanelEntryPointHistogramRootWord,
+                         /*behavior=*/nullptr,
+                         /*append_ui_mode_suffix=*/true),
+      behavior->behavior_type() == BehaviorType::kSunfish
+          ? SearchResultsPanelEntryType::kSunfishRegionSelection
+          : SearchResultsPanelEntryType::kDefaultSearchButton);
+}
+
+void RecordSearchResultsPanelShown() {
+  base::UmaHistogramBoolean(BuildHistogramName(kSearchResultsPanelShown,
+                                               /*behavior=*/nullptr,
+                                               /*append_ui_mode_suffix=*/true),
+                            true);
+}
+
+void RecordSearchResultClicked() {
+  base::UmaHistogramBoolean(BuildHistogramName(kSearchResultClickedRootWord,
+                                               /*behavior=*/nullptr,
+                                               /*append_ui_mode_suffix=*/true),
+                            true);
+}
+
+void RecordMultimodalSearchRequest() {
+  base::UmaHistogramBoolean(BuildHistogramName(kMultimodalSearchRequest,
+                                               /*behavior=*/nullptr,
+                                               /*append_ui_mode_suffix=*/true),
+                            true);
 }
 
 std::string BuildHistogramName(const char* const root_word,

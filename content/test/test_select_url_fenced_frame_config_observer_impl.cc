@@ -64,8 +64,8 @@ TestSelectURLFencedFrameConfigObserver::TestSelectURLFencedFrameConfigObserver(
     StoragePartition* storage_partition)
     : storage_partition_(storage_partition),
       impl_(std::make_unique<TestSelectURLFencedFrameConfigObserverImpl>()) {
-  SharedStorageWorkletHostManager* manager =
-      GetSharedStorageWorkletHostManagerForStoragePartition(storage_partition_);
+  SharedStorageRuntimeManager* manager =
+      GetSharedStorageRuntimeManagerForStoragePartition(storage_partition_);
   DCHECK(manager);
 
   manager->AddSharedStorageObserver(impl_.get());
@@ -73,8 +73,8 @@ TestSelectURLFencedFrameConfigObserver::TestSelectURLFencedFrameConfigObserver(
 
 TestSelectURLFencedFrameConfigObserver::
     ~TestSelectURLFencedFrameConfigObserver() {
-  SharedStorageWorkletHostManager* manager =
-      GetSharedStorageWorkletHostManagerForStoragePartition(storage_partition_);
+  SharedStorageRuntimeManager* manager =
+      GetSharedStorageRuntimeManagerForStoragePartition(storage_partition_);
 
   manager->RemoveSharedStorageObserver(impl_.get());
 }

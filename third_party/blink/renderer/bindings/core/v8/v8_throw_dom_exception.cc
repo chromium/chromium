@@ -47,6 +47,17 @@ v8::Local<v8::Value> V8ThrowDOMException::CreateOrDie(
   return v8_value;
 }
 
+void V8ThrowDOMException::Throw(v8::Isolate* isolate,
+                                DOMExceptionCode exception_code,
+                                const String& sanitized_message,
+                                const String& unsanitized_message) {
+  v8::Local<v8::Value> v8_value = CreateOrEmpty(
+      isolate, exception_code, sanitized_message, unsanitized_message);
+  if (!v8_value.IsEmpty()) {
+    V8ThrowException::ThrowException(isolate, v8_value);
+  }
+}
+
 v8::Local<v8::Value> V8ThrowDOMException::AttachStackProperty(
     v8::Isolate* isolate,
     DOMException* dom_exception) {

@@ -52,13 +52,14 @@ def __step_config(ctx, step_config):
             "command_prefix": "python3 ../../build/android/gyp/compile_resources.py",
             "handler": "android_compile_resources",
             "exclude_input_patterns": [
-                "*.h",
-                "*.o",
-                "*.cc",
                 "*.a",
-                "*.info",
-                "*.pak",
+                "*.cc",
+                "*.h",
                 "*.inc",
+                "*.info",
+                "*.o",
+                "*.pak",
+                "*.sql",
             ],
             "remote": remote_run,
             "canonicalize_dir": True,
@@ -79,6 +80,20 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
+            "name": "android/compile_kt",
+            "command_prefix": "python3 ../../build/android/gyp/compile_kt.py",
+            "handler": "android_compile_java",
+            # Don't include files under --generated-dir.
+            # This is probably optimization for local incrmental builds.
+            # However, this is harmful for remote build cache hits.
+            "ignore_extra_input_pattern": ".*srcjars.*\\.java",
+            "ignore_extra_output_pattern": ".*srcjars.*\\.java",
+            "remote": remote_run,
+            "platform_ref": "large",
+            "canonicalize_dir": True,
+            "timeout": "2m",
+        },
+        {
             "name": "android/dex",
             "command_prefix": "python3 ../../build/android/gyp/dex.py",
             "handler": "android_dex",
@@ -86,6 +101,16 @@ def __step_config(ctx, step_config):
             "indirect_inputs": {
                 "includes": ["*.dex", "*.ijar.jar", "*.turbine.jar"],
             },
+            "exclude_input_patterns": [
+                "*.a",
+                "*.cc",
+                "*.h",
+                "*.inc",
+                "*.info",
+                "*.o",
+                "*.pak",
+                "*.sql",
+            ],
             # *.dex files are intermediate files used in incremental builds.
             # Fo remote actions, let's ignore them, assuming remote cache hits compensate.
             "ignore_extra_input_pattern": ".*\\.dex",
@@ -103,9 +128,33 @@ def __step_config(ctx, step_config):
             "timeout": "2m",
         },
         {
+            "name": "android/generate_resource_allowlist",
+            "command_prefix": "python3 ../../tools/resources/generate_resource_allowlist.py",
+            "indirect_inputs": {
+                "includes": ["*.o", "*.a"],
+            },
+            # When remote linking without bytes enabled, .o, .a files don't
+            # exist on the local file system.
+            # This step also should run remortely to avoid downloading them.
+            "remote": config.get(ctx, "remote-link"),
+            "platform_ref": "large",
+            "canonicalize_dir": True,
+            "timeout": "2m",
+        },
+        {
             "name": "android/proguard",
             "command_prefix": "python3 ../../build/android/gyp/proguard.py",
             "handler": "android_proguard",
+            "exclude_input_patterns": [
+                "*.a",
+                "*.cc",
+                "*.h",
+                "*.inc",
+                "*.info",
+                "*.o",
+                "*.pak",
+                "*.sql",
+            ],
             "canonicalize_dir": True,
             "remote": remote_run,
             "platform_ref": "large",
@@ -265,7 +314,7 @@ def __android_proguard_handler(ctx, cmd):
             for f in v:
                 f, _, _ = f.partition(":")
                 inputs.append(ctx.fs.canonpath(f))
-            break
+            continue
         if arg.startswith("--dex-dest="):
             arg = arg.removeprefix("--dex-dest=")
             fn, v = __filearg(ctx, arg)
@@ -274,6 +323,7 @@ def __android_proguard_handler(ctx, cmd):
             for f in v:
                 f, _, _ = f.partition(":")
                 outputs.append(ctx.fs.canonpath(f))
+            continue
 
     ctx.actions.fix(
         inputs = cmd.inputs + inputs,

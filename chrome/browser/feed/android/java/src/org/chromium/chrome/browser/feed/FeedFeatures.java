@@ -26,7 +26,6 @@ public final class FeedFeatures {
     private static final long ONE_DAY_DELTA_MILLIS = TimeUnit.DAYS.toMillis(1L);
 
     private static PrefService sFakePrefServiceForTest;
-    private static boolean sIsFirstFeedTabStickinessCheckSinceLaunch = true;
 
     /**
      * @param profile the profile of the current user.
@@ -62,7 +61,7 @@ public final class FeedFeatures {
         return getPrefService(profile).getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE);
     }
 
-    public static boolean shouldUseWebFeedAwarenessIPH() {
+    public static boolean shouldUseWebFeedAwarenessIph() {
         String awarenessStyleParam =
                 ChromeFeatureList.getFieldTrialParamByFeature(
                         ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style");
@@ -152,15 +151,10 @@ public final class FeedFeatures {
         // Note: the "first check" flag is updated here to make sure that if setLastSeenFeedTabId is
         // called before getFeedTabIdToRestore, the value set here is taken into account in by the
         // latter at least for some of the restore logic atlernatives.
-        sIsFirstFeedTabStickinessCheckSinceLaunch = false;
         getPrefService(profile).setInteger(Pref.LAST_SEEN_FEED_TYPE, tabId);
     }
 
     private static @StreamTabId int getLastSeenFeedTabId(Profile profile) {
         return getPrefService(profile).getInteger(Pref.LAST_SEEN_FEED_TYPE);
-    }
-
-    static void resetInternalStateForTesting() {
-        sIsFirstFeedTabStickinessCheckSinceLaunch = true;
     }
 }

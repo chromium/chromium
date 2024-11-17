@@ -20,11 +20,6 @@ build_webui("build") {
   static_files = [
     "new_tab_page.html",
     "shared_vars.css",
-    "untrusted/background_image.html",
-    "untrusted/background_image.js",
-    "untrusted/image.html",
-    "untrusted/one_google_bar.html",
-    "untrusted/one_google_bar.js",
   ]
 
   extra_grdp_files = [
@@ -55,6 +50,7 @@ build_webui("build") {
     "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_ts__generator",
   ]
   mojo_files = [
+    "$root_gen_dir/chrome/browser/new_tab_page/modules/file_suggestion/drive_suggestion.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/file_suggestion/file_suggestion.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/calendar/calendar_data.mojom-webui.ts",
     "$root_gen_dir/chrome/browser/new_tab_page/modules/v2/calendar/outlook_calendar.mojom-webui.ts",

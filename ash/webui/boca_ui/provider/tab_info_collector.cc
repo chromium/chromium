@@ -14,6 +14,7 @@
 #include "base/base64.h"
 #include "base/check_is_test.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/components/boca/boca_role_util.h"
 #include "components/app_constants/constants.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "content/public/browser/web_contents.h"
@@ -42,8 +43,7 @@ std::string EncodePNGAndMakeDataURI(gfx::ImageSkia image, float scale_factor) {
   const bool encoding_succeeded =
       SkPngEncoder::Encode(&stream, bitmap.pixmap(), {});
   DCHECK(encoding_succeeded);
-  return MakeDataURIForImage(
-      base::as_bytes(base::make_span(stream.TakeBuffer())), "png");
+  return MakeDataURIForImage(base::as_byte_span(stream.TakeBuffer()), "png");
 }
 // End of image lib
 
@@ -69,16 +69,38 @@ std::string TabInfoCollector::ImageGenerator::StringifyImage(
                                  web_ui_->GetDeviceScaleFactor());
 }
 
-TabInfoCollector::TabInfoCollector(content::WebUI* web_ui) {
+TabInfoCollector::TabInfoCollector(content::WebUI* web_ui, bool is_producer)
+    : is_producer_(is_producer), web_ui_(web_ui) {
   image_generator_ = std::make_unique<ImageGenerator>(web_ui);
 }
 
 TabInfoCollector::TabInfoCollector(
-    std::unique_ptr<TabInfoCollector::ImageGenerator> image_generator)
-    : image_generator_(std::move(image_generator)) {}
+    std::unique_ptr<TabInfoCollector::ImageGenerator> image_generator,
+    bool is_producer)
+    : is_producer_(is_producer), image_generator_(std::move(image_generator)) {}
 TabInfoCollector::~TabInfoCollector() = default;
 
 void TabInfoCollector::GetWindowTabInfo(GetWindowsTabsListCallback callback) {
+  if (!is_producer_) {
+    GetWindowTabInfoForTarget(
+        web_ui_->GetWebContents()->GetTopLevelNativeWindow(),
+        std::move(callback));
+    return;
+  }
+  GetWindowTabInfoForAllBrowserWindows(std::move(callback));
+}
+
+void TabInfoCollector::GetWindowTabInfoForTarget(
+    aura::Window* target_window,
+    GetWindowsTabsListCallback callback) {
+  auto* delegate = Shell::Get()->tab_strip_delegate();
+  std::vector<std::vector<ash::TabInfo>> windows = {
+      delegate->GetTabsListForWindow(target_window)};
+  std::move(callback).Run(AshToPageWindows(windows));
+}
+
+void TabInfoCollector::GetWindowTabInfoForAllBrowserWindows(
+    GetWindowsTabsListCallback callback) {
   auto* const shell = Shell::Get();
   auto mru_windows =
       shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
@@ -113,14 +135,15 @@ void TabInfoCollector::SortWindowList(
     std::vector<std::vector<ash::TabInfo>>& windows_list) {
   for (std::vector<ash::TabInfo>& window : windows_list) {
     // Sort tab on non-ascending order of last access time.
-    base::ranges::sort(window, [](const ash::TabInfo a, const ash::TabInfo b) {
-      return a.last_access_timetick > b.last_access_timetick;
-    });
+    base::ranges::sort(window,
+                       [](const ash::TabInfo& a, const ash::TabInfo& b) {
+                         return a.last_access_timetick > b.last_access_timetick;
+                       });
   }
 
   // Sort window on non-ascending order of last access time.
-  base::ranges::sort(windows_list, [](const std::vector<ash::TabInfo> a,
-                                      const std::vector<ash::TabInfo> b) {
+  base::ranges::sort(windows_list, [](const std::vector<ash::TabInfo>& a,
+                                      const std::vector<ash::TabInfo>& b) {
     return a[0].last_access_timetick > b[0].last_access_timetick;
   });
 }

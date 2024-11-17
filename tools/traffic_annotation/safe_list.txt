@@ -27,8 +27,9 @@ all,chrome/services/cups_proxy/socket_manager.cc
 missing,ash/birch/birch_item.cc
 missing,chrome/browser/ash/lobster/image_fetcher.cc
 missing,chrome/browser/ui/webui/ash/emoji/seal.cc
-missing,components/manta/mahi_provider.cc
+missing,components/manta/scanner_provider.cc
 missing,components/manta/sparky/sparky_provider.cc
+missing,components/manta/walrus_provider.cc
 
 # Android-specific annotations.
 # TODO(crbug.com/40641204): Complete these.
@@ -158,7 +159,6 @@ missing_new_fields,chrome/browser/ui/ash/assistant/search_and_assistant_enabled_
 missing_new_fields,chrome/browser/ui/global_media_controls/cast_media_notification_item.cc
 missing_new_fields,chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.cc
 missing_new_fields,chrome/browser/ui/passwords/account_avatar_fetcher.cc
-missing_new_fields,chrome/browser/ui/side_search/side_search_tab_contents_helper.cc
 missing_new_fields,chrome/browser/ui/views/qrcode_generator/qrcode_generator_bubble.cc
 missing_new_fields,chrome/browser/ui/views/sharing_hub/screenshot/screenshot_captured_bubble.cc
 missing_new_fields,chrome/browser/ui/views/webid/account_selection_bubble_view.cc
@@ -346,7 +346,6 @@ missing_new_fields,components/live_caption/live_translate_controller.cc
 missing_new_fields,net/proxy_resolution/win/windows_system_proxy_resolution_request.cc
 missing_new_fields,chrome/browser/ash/net/network_diagnostics/http_request_manager.cc
 missing_new_fields,chrome/browser/ash/wallpaper/wallpaper_drivefs_delegate_impl.cc
-missing_new_fields,chrome/browser/ui/webui/ash/emoji/gif_tenor_api_fetcher.cc
 missing_new_fields,chromeos/ash/components/trial_group/trial_group_checker.cc
 missing_new_fields,chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.cc
 missing_new_fields,chrome/browser/ash/net/network_diagnostics/tls_prober.cc

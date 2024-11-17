@@ -20,8 +20,7 @@ std::unique_ptr<FormStructure> GetFormStructure(
     const test::FormDescription& form_description) {
   auto form_structure =
       std::make_unique<FormStructure>(test::GetFormData(form_description));
-  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                          nullptr);
+  form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
   return form_structure;
 }
 
@@ -226,6 +225,11 @@ TEST_F(QualityMetricsFillingTest,
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.DataUtilization.ByPossibleType", (NAME_FIRST << 6) | 0, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.NoPrediction.ByPossibleType",
+      (NAME_FIRST << 6) | 0, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.DataUtilization.HadPrediction.ByPossibleType", 0);
 
   EXPECT_TRUE(
       histogram_tester_
@@ -275,6 +279,11 @@ TEST_F(QualityMetricsFillingTest,
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.DataUtilization.ByPossibleType", (NAME_FIRST << 6) | 1, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.HadPrediction.ByPossibleType",
+      (NAME_FIRST << 6) | 1, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.DataUtilization.NoPrediction.ByPossibleType", 0);
 
   EXPECT_TRUE(
       histogram_tester_
@@ -327,6 +336,11 @@ TEST_F(QualityMetricsFillingTest,
   histogram_tester_.ExpectUniqueSample(
       "Autofill.DataUtilization.ByPossibleType",
       (CREDIT_CARD_EXP_MONTH << 6) | 0, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.NoPrediction.ByPossibleType",
+      (CREDIT_CARD_EXP_MONTH << 6) | 0, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.DataUtilization.HadPrediction.ByPossibleType", 0);
 
   EXPECT_TRUE(
       histogram_tester_
@@ -409,6 +423,11 @@ TEST_F(QualityMetricsFillingTest,
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.DataUtilization.ByPossibleType", (NAME_FIRST << 6) | 0, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Autofill.DataUtilization.HadPrediction.ByPossibleType",
+      (NAME_FIRST << 6) | 0, 1);
+  histogram_tester_.ExpectTotalCount(
+      "Autofill.DataUtilization.NoPrediction.ByPossibleType", 0);
 
   EXPECT_TRUE(
       histogram_tester_

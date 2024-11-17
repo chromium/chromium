@@ -29,6 +29,8 @@ source_set("policy") {
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/common",
     "//ios/web/public/webui",
     "//ui/base",

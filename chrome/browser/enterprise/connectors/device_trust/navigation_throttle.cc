@@ -216,9 +216,8 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
   // Get challenge.
   const net::HttpResponseHeaders* headers =
       navigation_handle()->GetResponseHeaders();
-  std::string challenge;
-  if (headers->GetNormalizedHeader(kVerifiedAccessChallengeHeader,
-                                   &challenge)) {
+  if (std::optional<std::string> challenge =
+          headers->GetNormalizedHeader(kVerifiedAccessChallengeHeader)) {
     LogAttestationFunnelStep(DTAttestationFunnelStep::kChallengeReceived);
 
     // Create callback for `ReplyChallengeResponseAndResume` which will
@@ -249,7 +248,7 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
                     challenge, levels, std::move(resume_navigation_callback));
               }
             },
-            weak_ptr_factory_.GetWeakPtr(), challenge, levels,
+            weak_ptr_factory_.GetWeakPtr(), *challenge, levels,
             std::move(resume_navigation_callback)));
 
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(

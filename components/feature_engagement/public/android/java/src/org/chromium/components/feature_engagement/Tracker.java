@@ -30,53 +30,54 @@ public interface Tracker {
 
     /**
      * This function must be called whenever the triggering condition for a specific feature
-     * happens. Returns true iff the display of the in-product help must happen.
-     * If {@code true} is returned, the caller *must* call {@link #dismissed(String)} when display
-     * of feature enlightenment ends.
+     * happens. Returns true iff the display of the in-product help must happen. If {@code true} is
+     * returned, the caller *must* call {@link #dismissed(String)} when display of feature
+     * enlightenment ends.
+     *
      * @param feature The name of the feature requesting in-product help.
      * @return Whether feature enlightenment should be displayed.
      */
     @CheckResult
-    boolean shouldTriggerHelpUI(String feature);
+    boolean shouldTriggerHelpUi(String feature);
 
     /**
      * For callers interested in showing a snooze button. For other callers, use the
      * ShouldTriggerHelpUI(..) method.
+     *
      * @param feature The name of the feature requesting in-product help.
      * @return Whether feature enlightenment should be displayed and whether snooze button should be
-     *         shown.
+     *     shown.
      */
     @CheckResult
-    TriggerDetails shouldTriggerHelpUIWithSnooze(String feature);
+    TriggerDetails shouldTriggerHelpUiWithSnooze(String feature);
 
     /**
      * Invoking this is basically the same as being allowed to invoke {@link
-     * #shouldTriggerHelpUI(String)} without requiring to show the in-product help. This function
+     * #shouldTriggerHelpUi(String)} without requiring to show the in-product help. This function
      * may be called to inspect if the current state would allow the given {@code feature} to pass
      * all its conditions and display the feature enlightenment.
      *
-     * NOTE: It is still required to invoke ShouldTriggerHelpUI(...) if feature enlightenment should
-     * be shown.
+     * <p>NOTE: It is still required to invoke ShouldTriggerHelpUI(...) if feature enlightenment
+     * should be shown.
      *
-     * NOTE: It is not guaranteed that invoking {@link #shouldTriggerHelpUI(String)} after this
+     * <p>NOTE: It is not guaranteed that invoking {@link #shouldTriggerHelpUi(String)} after this
      * would yield the same result. The state might change in-between the calls because time has
      * passed, other events might have been triggered, and other state might have changed.
      *
      * @return Whether feature enlightenment would be displayed if {@link
-     * #shouldTriggerHelpUI(String)} had been invoked instead.
+     *     #shouldTriggerHelpUi(String)} had been invoked instead.
      */
-    boolean wouldTriggerHelpUI(String feature);
+    boolean wouldTriggerHelpUi(String feature);
 
     /**
-     * This function can be called to query if a particular |feature| has ever been
-     * displayed at least once in the past. The days counted is controlled by the
-     * EventConfig of "event_trigger".
-     * If |from_window| is set to true, the search window size will be set to
-     * event_trigger.window; otherwise, the window size will be event_trigger.storage.
+     * This function can be called to query if a particular |feature| has ever been displayed at
+     * least once in the past. The days counted is controlled by the EventConfig of "event_trigger".
+     * If |from_window| is set to true, the search window size will be set to event_trigger.window;
+     * otherwise, the window size will be event_trigger.storage.
      *
-     * Calling this method requires the Tracker to already have been initialized.
-     * See IsInitialized() and AddOnInitializedCallback(...) for how to ensure
-     * the call to this is delayed.
+     * <p>Calling this method requires the Tracker to already have been initialized. See
+     * IsInitialized() and AddOnInitializedCallback(...) for how to ensure the call to this is
+     * delayed.
      *
      * @return Whether feature enlightenment has been displayed at least once.
      */

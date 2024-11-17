@@ -16,7 +16,7 @@ bool StructTraits<::display::mojom::GammaCurveDataView, ::display::GammaCurve>::
   if (!data.ReadLut(&lut)) {
     return false;
   }
-  *out = ::display::GammaCurve(lut);
+  *out = ::display::GammaCurve(std::move(lut));
   return true;
 }
 

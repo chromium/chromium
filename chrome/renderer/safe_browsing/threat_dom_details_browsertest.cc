@@ -5,6 +5,7 @@
 #include "components/safe_browsing/content/renderer/threat_dom_details.h"
 
 #include <memory>
+
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -16,7 +17,7 @@
 #include "components/variations/variations_associated_data.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
-#include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/native_theme_utils.h"
 
 namespace {
 
@@ -394,4 +395,3 @@ TEST_F(ThreatDOMDetailsTest, CheckTagAndAttributeListIsSorted) {
   is_sorted = std::is_sorted(tag_names.begin(), tag_names.end());
   EXPECT_TRUE(is_sorted);
 }
-

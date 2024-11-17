@@ -17,6 +17,7 @@ namespace blink {
 
 class ExceptionState;
 class ExecutionContext;
+class PaymentDetailsUpdate;
 class PaymentRequestDelegate;
 class ScriptState;
 
@@ -38,7 +39,9 @@ class MODULES_EXPORT PaymentRequestUpdateEvent : public Event,
 
   void SetPaymentRequest(PaymentRequestDelegate* request);
 
-  void updateWith(ScriptState*, ScriptPromiseUntyped, ExceptionState&);
+  void updateWith(ScriptState*,
+                  ScriptPromise<PaymentDetailsUpdate>,
+                  ExceptionState&);
 
   void start_waiting_for_update(bool value) { wait_for_update_ = value; }
   bool is_waiting_for_update() const { return wait_for_update_; }

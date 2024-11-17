@@ -44,7 +44,7 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
 
     /**
      * Creates a new button and appends it to the end of the button group at the end of the bar.
-     * @param id The id of the tab
+     *
      * @param icon The icon to be displayed in the button.
      * @param contentDescription The contentDescription to be used for the button.
      */

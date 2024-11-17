@@ -7,10 +7,13 @@
 #include <array>
 
 #include "pdf/page_orientation.h"
+#include "pdf/pdf_ink_conversions.h"
 #include "pdf/test/pdf_ink_test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/ink/src/ink/geometry/affine_transform.h"
+#include "third_party/ink/src/ink/geometry/envelope.h"
+#include "ui/gfx/geometry/axis_transform2d.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -32,6 +35,9 @@ constexpr gfx::Size kPageSizeLandscape2x(kPageSizeLandscape.width() * 2,
 // Scale factors used in tests.
 constexpr float kScaleFactor1x = 1.0f;
 constexpr float kScaleFactor2x = 2.0f;
+
+// Non-identity page scroll used in tests.
+constexpr gfx::Point kPageScrollOffset(15, 25);
 
 // Standard page content area for tests.
 constexpr gfx::Rect kPageContentAreaPortraitNoOffset(gfx::Point(),
@@ -279,6 +285,216 @@ TEST(PdfInkTransformTest, RenderTransformOffsetZoomScrolledClockwise90) {
       kScaleFactor2x);
   EXPECT_THAT(transform,
               InkAffineTransformEq(0.0f, -2.0f, 137.0f, 2.0f, 0.0f, -4.0f));
+}
+
+TEST(PdfInkTransformTest,
+     CanonicalInkEnvelopeToInvalidationScreenRectIdentity) {
+  // Representation of page contents in screen coordinates without scale or
+  // rotation.
+  constexpr gfx::Rect kPageContentRect(kPageSizePortrait);
+
+  {
+    // Envelope that covers the entire page contents, in canonical coordinates.
+    ink::Envelope envelope(InkPointFromGfxPoint(kCanonicalPositionTopLeft));
+    envelope.Add(InkPointFromGfxPoint(kCanonicalPositionBottomRight));
+
+    // Invalidation rectangle for `envelope` should result in the same value as
+    // the entire page contents.
+    gfx::Rect screen_rect = CanonicalInkEnvelopeToInvalidationScreenRect(
+        envelope, PageOrientation::kOriginal, kPageContentRect, kScaleFactor1x);
+    EXPECT_EQ(screen_rect, kPageContentRect);
+  }
+
+  {
+    // Envelope that covers a portion of page contents, in canonical
+    // coordinates.
+    ink::Envelope envelope(InkPointFromGfxPoint({20.0f, 35.0f}));
+    envelope.Add(InkPointFromGfxPoint({40.0f, 45.0f}));
+
+    // Invalidation rectangle for `envelope` should result in same value as
+    // input.
+    gfx::Rect screen_rect = CanonicalInkEnvelopeToInvalidationScreenRect(
+        envelope, PageOrientation::kOriginal, kPageContentRect, kScaleFactor1x);
+    EXPECT_EQ(screen_rect, gfx::Rect(20.0f, 35.0f, 21.0f, 11.0f));
+  }
+}
+
+TEST(PdfInkTransformTest,
+     CanonicalInkEnvelopeToInvalidationScreenRectScaledAndRotated90) {
+  // Scaled and rotated representation of page contents in screen coordinates.
+  constexpr gfx::Rect kPageContentRect({0, 0}, kPageSizeLandscape2x);
+
+  {
+    // Envelope that covers the entire page contents, in canonical coordinates.
+    ink::Envelope envelope(InkPointFromGfxPoint(kCanonicalPositionTopLeft));
+    envelope.Add(InkPointFromGfxPoint(kCanonicalPositionBottomRight +
+                                      kCanonicalPositionHalf));
+
+    // Invalidation rectangle for `envelope` should be scaled and rotated,
+    // resulting in the same value as the entire page contents.
+    gfx::Rect screen_rect = CanonicalInkEnvelopeToInvalidationScreenRect(
+        envelope, PageOrientation::kClockwise90, kPageContentRect,
+        kScaleFactor2x);
+    EXPECT_EQ(screen_rect, kPageContentRect);
+  }
+
+  {
+    // Envelope that covers a portion of page contents, in canonical
+    // coordinates.
+    ink::Envelope envelope(InkPointFromGfxPoint({20.0f, 35.0f}));
+    envelope.Add(InkPointFromGfxPoint({40.0f, 45.0f}));
+
+    // Invalidation rectangle for `envelope` should be scaled and rotated.
+    gfx::Rect screen_rect = CanonicalInkEnvelopeToInvalidationScreenRect(
+        envelope, PageOrientation::kClockwise90, kPageContentRect,
+        kScaleFactor2x);
+    EXPECT_EQ(screen_rect, gfx::Rect(29.0f, 40.0f, 21.0f, 41.0f));
+  }
+}
+
+TEST(PdfInkTransformTest,
+     CanonicalInkEnvelopeToInvalidationScreenRectScaledAndRotated180) {
+  // Scaled and rotated representation of page contents in screen coordinates.
+  constexpr gfx::Rect kPageContentRect({0, 0}, kPageSizePortrait2x);
+
+  {
+    // Envelope that covers the entire page contents, in canonical coordinates.
+    ink::Envelope envelope(InkPointFromGfxPoint(kCanonicalPositionTopLeft));
+    envelope.Add(InkPointFromGfxPoint(kCanonicalPositionBottomRight +
+                                      kCanonicalPositionHalf));
+
+    // Invalidation rectangle for `envelope` should be scaled and rotated,
+    // resulting in the same value as the entire page contents.
+    gfx::Rect screen_rect = CanonicalInkEnvelopeToInvalidationScreenRect(
+        envelope, PageOrientation::kClockwise180, kPageContentRect,
+        kScaleFactor2x);
+    EXPECT_EQ(screen_rect, kPageContentRect);
+  }
+
+  {
+    // Envelope that covers a portion of page contents, in canonical
+    // coordinates.
+    ink::Envelope envelope(InkPointFromGfxPoint({20.0f, 35.0f}));
+    envelope.Add(InkPointFromGfxPoint({40.0f, 45.0f}));
+
+    // Invalidation rectangle for `envelope` should be scaled and rotated.
+    gfx::Rect screen_rect = CanonicalInkEnvelopeToInvalidationScreenRect(
+        envelope, PageOrientation::kClockwise180, kPageContentRect,
+        kScaleFactor2x);
+    EXPECT_EQ(screen_rect, gfx::Rect(19.0f, 29.0f, 41.0f, 21.0f));
+  }
+}
+
+TEST(PdfInkTransformTest,
+     CanonicalInkEnvelopeToInvalidationScreenRectScaledAndRotated270) {
+  // Scaled and rotated representation of page contents in screen coordinates.
+  constexpr gfx::Rect kPageContentRect({0, 0}, kPageSizeLandscape2x);
+
+  {
+    // Envelope that covers the entire page contents, in canonical coordinates.
+    ink::Envelope envelope(InkPointFromGfxPoint(kCanonicalPositionTopLeft));
+    envelope.Add(InkPointFromGfxPoint(kCanonicalPositionBottomRight +
+                                      kCanonicalPositionHalf));
+
+    // Invalidation rectangle for `envelope` should be scaled and rotated,
+    // resulting in the same value as the entire page contents.
+    gfx::Rect screen_rect = CanonicalInkEnvelopeToInvalidationScreenRect(
+        envelope, PageOrientation::kClockwise270, kPageContentRect,
+        kScaleFactor2x);
+    EXPECT_EQ(screen_rect, kPageContentRect);
+  }
+
+  {
+    // Envelope that covers a portion of page contents, in canonical
+    // coordinates.
+    ink::Envelope envelope(InkPointFromGfxPoint({20.0f, 35.0f}));
+    envelope.Add(InkPointFromGfxPoint({40.0f, 45.0f}));
+
+    // Invalidation rectangle for `envelope` should be scaled and rotated.
+    gfx::Rect screen_rect = CanonicalInkEnvelopeToInvalidationScreenRect(
+        envelope, PageOrientation::kClockwise270, kPageContentRect,
+        kScaleFactor2x);
+    EXPECT_EQ(screen_rect, gfx::Rect(70.0f, 19.0f, 21.0f, 41.0f));
+  }
+}
+
+TEST(PdfInkTransformTest,
+     CanonicalInkEnvelopeToInvalidationScreenRectScrolled) {
+  // Representation of page contents in screen coordinates without scale or
+  // rotation, but with a scroll.
+  constexpr gfx::Rect kPageContentRect(kPageScrollOffset, kPageSizePortrait);
+
+  {
+    // Envelope that covers the entire page contents, in canonical coordinates.
+    ink::Envelope envelope(InkPointFromGfxPoint(kCanonicalPositionTopLeft));
+    envelope.Add(InkPointFromGfxPoint(kCanonicalPositionBottomRight));
+
+    // Invalidation rectangle for `envelope` should result in the same value as
+    // the entire page contents.
+    gfx::Rect screen_rect = CanonicalInkEnvelopeToInvalidationScreenRect(
+        envelope, PageOrientation::kOriginal, kPageContentRect, kScaleFactor1x);
+    EXPECT_EQ(screen_rect, kPageContentRect);
+  }
+
+  {
+    // Envelope that covers a portion of page contents, in canonical
+    // coordinates.
+    ink::Envelope envelope(InkPointFromGfxPoint({20.0f, 35.0f}));
+    envelope.Add(InkPointFromGfxPoint({40.0f, 45.0f}));
+
+    // Invalidation rectangle for `envelope` should result in same value as
+    // input but shifted for the scroll amount.
+    gfx::Rect screen_rect = CanonicalInkEnvelopeToInvalidationScreenRect(
+        envelope, PageOrientation::kOriginal, kPageContentRect, kScaleFactor1x);
+    EXPECT_EQ(screen_rect, gfx::Rect(35.0f, 60.0f, 21.0f, 11.0f));
+  }
+}
+
+TEST(PdfInkTransformTest,
+     CanonicalInkEnvelopeToInvalidationScreenRectScrolledScaledAndRotated) {
+  // Scaled and rotated representation of page contents in screen coordinates.
+  constexpr gfx::Rect kPageContentRect(kPageScrollOffset, kPageSizeLandscape2x);
+
+  {
+    // Envelope that covers the entire page contents, in canonical coordinates.
+    ink::Envelope envelope(InkPointFromGfxPoint(kCanonicalPositionTopLeft));
+    envelope.Add(InkPointFromGfxPoint(kCanonicalPositionBottomRight +
+                                      kCanonicalPositionHalf));
+
+    // Invalidation rectangle for `envelope` should be scaled and rotated,
+    // resulting in the same value as the entire page contents.
+    gfx::Rect screen_rect = CanonicalInkEnvelopeToInvalidationScreenRect(
+        envelope, PageOrientation::kClockwise90, kPageContentRect,
+        kScaleFactor2x);
+    EXPECT_EQ(screen_rect, kPageContentRect);
+  }
+
+  {
+    // Envelope that covers a portion of page contents, in canonical
+    // coordinates.
+    ink::Envelope envelope(InkPointFromGfxPoint({20.0f, 35.0f}));
+    envelope.Add(InkPointFromGfxPoint({40.0f, 45.0f}));
+
+    // Invalidation rectangle for `envelope` should be scaled and rotated, and
+    // shifted for the scroll amount.
+    gfx::Rect screen_rect = CanonicalInkEnvelopeToInvalidationScreenRect(
+        envelope, PageOrientation::kClockwise90, kPageContentRect,
+        kScaleFactor2x);
+    EXPECT_EQ(screen_rect, gfx::Rect(44.0f, 65.0f, 21.0f, 41.0f));
+  }
+}
+
+TEST(PdfInkTransformTest, GetCanonicalToPdfTransform) {
+  {
+    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(/*page_height=*/0);
+    EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
+    EXPECT_EQ(gfx::Vector2dF(0, 0), tr.translation());
+  }
+  {
+    gfx::AxisTransform2d tr = GetCanonicalToPdfTransform(/*page_height=*/712);
+    EXPECT_EQ(gfx::Vector2dF(0.75f, -0.75f), tr.scale());
+    EXPECT_EQ(gfx::Vector2dF(0, 712), tr.translation());
+  }
 }
 
 }  // namespace chrome_pdf

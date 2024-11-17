@@ -8,6 +8,7 @@ import("//build/config/sysroot.gni")
 import("//chrome/common/features.gni")
 import("//chrome/services/speech/buildflags/buildflags.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
+import("//components/services/on_device_translation/buildflags/features.gni")
 import("//crypto/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//pdf/features.gni")
@@ -46,8 +47,7 @@ static_library("utility") {
     "//components/password_manager/services/csv_password:lib",
     "//components/safe_browsing:buildflags",
     "//components/search_engines",
-    "//components/services/language_detection",
-    "//components/services/on_device_translation:on_device_translation_service",
+    "//components/services/on_device_translation/buildflags",
     "//components/services/paint_preview_compositor",
     "//components/services/patch:lib",
     "//components/services/unzip:lib",
@@ -191,6 +191,8 @@ static_library("utility") {
       "//chromeos/ash/components/mojo_service_manager",
       "//chromeos/ash/components/trash_service",
       "//chromeos/ash/components/trash_service/public/mojom",
+      "//chromeos/ash/services/boca/babelorca/cpp",
+      "//chromeos/ash/services/boca/babelorca/mojom",
       "//chromeos/ash/services/ime:lib",
       "//chromeos/ash/services/ime/public/mojom",
       "//chromeos/ash/services/nearby/public/mojom:mojom",
@@ -266,5 +268,9 @@ static_library("utility") {
 
   if (enable_browser_speech_service) {
     deps += [ "//chrome/services/speech:lib" ]
+  }
+
+  if (enable_on_device_translation) {
+    deps += [ "//components/services/on_device_translation:on_device_translation_service" ]
   }
 }

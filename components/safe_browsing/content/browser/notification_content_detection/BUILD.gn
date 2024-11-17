@@ -1,0 +1,73 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("notification_content_detection") {
+  sources = [
+    "notification_content_detection_constants.cc",
+    "notification_content_detection_constants.h",
+    "notification_content_detection_model.cc",
+    "notification_content_detection_model.h",
+    "notification_content_detection_service.cc",
+    "notification_content_detection_service.h",
+  ]
+
+  deps = [
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core:features",
+    "//components/permissions:permissions",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/common:features",
+    "//third_party/blink/public/common:headers",
+    "//url:url",
+  ]
+}
+
+source_set("test_utils") {
+  testonly = true
+  sources = [
+    "mock_safe_browsing_database_manager.cc",
+    "mock_safe_browsing_database_manager.h",
+    "test_model_observer_tracker.cc",
+    "test_model_observer_tracker.h",
+    "test_notification_content_detection_model.cc",
+    "test_notification_content_detection_model.h",
+  ]
+
+  deps = [
+    ":notification_content_detection",
+    "//components/optimization_guide/core:core",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/core:test_support",
+    "//components/safe_browsing/core/browser/db:test_database_manager",
+  ]
+}
+
+source_set("unittests") {
+  testonly = true
+  sources = [
+    "notification_content_detection_model_unittest.cc",
+    "notification_content_detection_service_unittest.cc",
+  ]
+
+  deps = [
+    ":notification_content_detection",
+    ":test_utils",
+    "//base:base",
+    "//base/test:test_support",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/core:model_executor",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/permissions:test_support",
+    "//components/prefs:prefs",
+    "//components/safe_browsing/core/browser/db:test_database_manager",
+    "//components/safe_browsing/core/common:features",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+  ]
+}

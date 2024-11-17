@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <optional>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/public/cpp/overview_test_api.h"
@@ -176,9 +178,9 @@ class InformedRestoreTest : public InformedRestoreTestBase {
     SetInformedRestoreImagePathForTest(file_path);
 
     TakePrimaryDisplayScreenshotAndSave(file_path);
-    int64_t file_size = 0;
-    ASSERT_TRUE(base::GetFileSize(file_path, &file_size));
-    EXPECT_GT(file_size, 0);
+    std::optional<int64_t> file_size = base::GetFileSize(file_path);
+    ASSERT_TRUE(file_size.has_value());
+    EXPECT_GT(file_size.value(), 0);
   }
 
   static base::Time FakeTimeNow() { return fake_time_; }
@@ -686,7 +688,8 @@ TEST_F(InformedRestoreTest, ClickRestoreToExit) {
 TEST_F(InformedRestoreTest, InformedRestoreItemView) {
   InformedRestoreContentsData::AppInfo app_info(
       "TEST_ID", "TEST_TITLE", /*window_id=*/0,
-      std::vector<GURL>{GURL(), GURL(), GURL(), GURL()}, 4u, 0);
+      std::vector<InformedRestoreContentsData::TabInfo>(
+          4, InformedRestoreContentsData::TabInfo(GURL())));
 
   // Test when the tab count is within regular limits.
   auto item_view = std::make_unique<InformedRestoreItemView>(
@@ -697,8 +700,11 @@ TEST_F(InformedRestoreTest, InformedRestoreItemView) {
                 .size());
   item_view.reset();
 
-  // Test the when the tab count has overflow.
-  app_info.tab_count = 10u;
+  // Test that even with ten tabs, we have five favicons.
+  app_info.tab_infos.insert(app_info.tab_infos.begin(), 6u,
+                            InformedRestoreContentsData::TabInfo(GURL()));
+  ASSERT_EQ(10u, app_info.tab_infos.size());
+
   item_view = std::make_unique<InformedRestoreItemView>(
       app_info, /*inside_screenshot=*/false);
   EXPECT_EQ(5u,

@@ -20,7 +20,10 @@ class OmniboxView;
 // omnibox, including `AutocompleteController` and `OmniboxEditModel`.
 class OmniboxController : public AutocompleteController::Observer {
  public:
-  OmniboxController(OmniboxView* view, std::unique_ptr<OmniboxClient> client);
+  OmniboxController(OmniboxView* view,
+                    std::unique_ptr<OmniboxClient> client,
+                    base::TimeDelta autocomplete_stop_timer_duration =
+                        kAutocompleteDefaultStopTimerDuration);
   ~OmniboxController() override;
   OmniboxController(const OmniboxController&) = delete;
   OmniboxController& operator=(const OmniboxController&) = delete;

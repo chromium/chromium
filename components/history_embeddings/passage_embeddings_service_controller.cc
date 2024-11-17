@@ -6,6 +6,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
+#include "components/history_embeddings/cpu_histogram_logger.h"
 #include "components/history_embeddings/embedder.h"
 #include "components/history_embeddings/history_embeddings_features.h"
 #include "components/history_embeddings/vector_database.h"
@@ -158,7 +159,7 @@ void PassageEmbeddingsServiceController::GetEmbeddings(
         base::BindOnce(&PassageEmbeddingsServiceController::OnDisconnected,
                        weak_ptr_factory_.GetWeakPtr()));
     embedder_remote_.set_idle_handler(
-        history_embeddings::kEmbeddingsServiceTimeout.Get(),
+        history_embeddings::GetFeatureParameters().embeddings_service_timeout,
         base::BindRepeating(&PassageEmbeddingsServiceController::ResetRemotes,
                             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -191,6 +192,7 @@ bool PassageEmbeddingsServiceController::EmbedderReady() {
 void PassageEmbeddingsServiceController::ResetRemotes() {
   service_remote_.reset();
   embedder_remote_.reset();
+  cpu_logger_.reset();
 }
 
 void PassageEmbeddingsServiceController::OnDisconnected() {

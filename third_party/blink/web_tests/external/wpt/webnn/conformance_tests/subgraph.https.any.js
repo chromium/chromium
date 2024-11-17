@@ -61,6 +61,156 @@ const subgraphTests = [
     }
   },
   {
+    'name': 'conv2d default + relu / float16',
+    'graph': {
+      'inputs': {
+        'conv2dInput': {
+          'data': [
+            0.6123046875,    0.8857421875,      0.13671875,
+            0.564453125,     0.896484375,       0.367919921875,
+            0.68115234375,   0.047943115234375, 0.33349609375,
+            0.1988525390625, 0.41162109375,     0.079345703125,
+            0.42724609375,   0.53564453125,     0.59130859375,
+            0.2841796875,    0.414794921875,    0.0269012451171875,
+            0.362060546875,  0.99462890625,     0.07183837890625,
+            0.1220703125,    0.84228515625,     0.453857421875,
+            0.21533203125
+          ],
+          'descriptor': {shape: [1, 1, 5, 5], dataType: 'float16'}
+        },
+        'conv2dFilter': {
+          'data': [
+            0.38037109375, 0.52783203125, 0.219482421875, 0.366943359375,
+            0.33984375, 0.419921875, 0.380615234375, 0.1944580078125,
+            0.56884765625
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'},
+        }
+      },
+      'operators': [
+        {
+          'name': 'conv2d',
+          'arguments': [{'input': 'conv2dInput'}, {'filter': 'conv2dFilter'}],
+          'outputs': 'conv2dOutput'
+        },
+        {
+          'name': 'relu',
+          'arguments': [{'input': 'conv2dOutput'}],
+          'outputs': 'output'
+        },
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            1.5322265625, 1.357421875, 1.3642578125, 1.0712890625, 1.1259765625,
+            1.4716796875, 1.0791015625, 1.1552734375, 1.6572265625
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'conv2d default + reshape / float16',
+    'graph': {
+      'inputs': {
+        'conv2dInput': {
+          'data': [
+            0.6123046875,    0.8857421875,      0.13671875,
+            0.564453125,     0.896484375,       0.367919921875,
+            0.68115234375,   0.047943115234375, 0.33349609375,
+            0.1988525390625, 0.41162109375,     0.079345703125,
+            0.42724609375,   0.53564453125,     0.59130859375,
+            0.2841796875,    0.414794921875,    0.0269012451171875,
+            0.362060546875,  0.99462890625,     0.07183837890625,
+            0.1220703125,    0.84228515625,     0.453857421875,
+            0.21533203125
+          ],
+          'descriptor': {shape: [1, 1, 5, 5], dataType: 'float16'}
+        },
+        'conv2dFilter': {
+          'data': [
+            0.38037109375, 0.52783203125, 0.219482421875, 0.366943359375,
+            0.33984375, 0.419921875, 0.380615234375, 0.1944580078125,
+            0.56884765625
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'},
+        }
+      },
+      'operators': [
+        {
+          'name': 'conv2d',
+          'arguments': [{'input': 'conv2dInput'}, {'filter': 'conv2dFilter'}],
+          'outputs': 'conv2dOutput'
+        },
+        {
+          'name': 'reshape',
+          'arguments': [{'input': 'conv2dOutput'}, {'newShape': [9]}],
+          'outputs': 'output'
+        },
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            1.5322265625, 1.357421875, 1.3642578125, 1.0712890625, 1.1259765625,
+            1.4716796875, 1.0791015625, 1.1552734375, 1.6572265625
+          ],
+          'descriptor': {shape: [9], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
+    'name': 'reshape + conv2d default/ float16',
+    'graph': {
+      'inputs': {
+        'reshapeInput': {
+          'data': [
+            0.38037109375, 0.52783203125, 0.219482421875, 0.366943359375,
+            0.33984375, 0.419921875, 0.380615234375, 0.1944580078125,
+            0.56884765625
+          ],
+          'descriptor': {shape: [9], dataType: 'float16'},
+        },
+        'conv2dInput': {
+          'data': [
+            0.6123046875,    0.8857421875,      0.13671875,
+            0.564453125,     0.896484375,       0.367919921875,
+            0.68115234375,   0.047943115234375, 0.33349609375,
+            0.1988525390625, 0.41162109375,     0.079345703125,
+            0.42724609375,   0.53564453125,     0.59130859375,
+            0.2841796875,    0.414794921875,    0.0269012451171875,
+            0.362060546875,  0.99462890625,     0.07183837890625,
+            0.1220703125,    0.84228515625,     0.453857421875,
+            0.21533203125
+          ],
+          'descriptor': {shape: [1, 1, 5, 5], dataType: 'float16'}
+        },
+      },
+      'operators': [
+        {
+          'name': 'reshape',
+          'arguments': [{'input': 'reshapeInput'}, {'newShape': [1, 1, 3, 3]}],
+          'outputs': 'reshapeOutput'
+        },
+        {
+          'name': 'conv2d',
+          'arguments': [{'input': 'conv2dInput'}, {'filter': 'reshapeOutput'}],
+          'outputs': 'output'
+        },
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [
+            1.5322265625, 1.357421875, 1.3642578125, 1.0712890625, 1.1259765625,
+            1.4716796875, 1.0791015625, 1.1552734375, 1.6572265625
+          ],
+          'descriptor': {shape: [1, 1, 3, 3], dataType: 'float16'}
+        }
+      }
+    }
+  },
+  {
     'name': 'conv2d default + sigmoid',
     'graph': {
       'inputs': {
@@ -2314,11 +2464,70 @@ const subgraphTests = [
       }
     }
   },
+  {
+    'name': 'add + sub + mul + gather default',
+    'graph': {
+      'inputs': {
+        'addA': {
+          'data': [10],
+          'descriptor': {shape: [], dataType: 'int32'},
+          'constant': true
+        },
+        'addB': {
+          'data': [20],
+          'descriptor': {shape: [], dataType: 'int32'},
+          'constant': true
+        },
+        'subB': {
+          'data': [40],
+          'descriptor': {shape: [], dataType: 'int32'},
+        },
+        'divA': {
+          'data': [-20],
+          'descriptor': {shape: [], dataType: 'int32'},
+          'constant': true
+        },
+        'gatherInput': {
+          'data': [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2],
+          'descriptor': {shape: [3, 4], dataType: 'float32'},
+          'constant': true
+        },
+      },
+      'operators': [
+        {
+          'name': 'add',
+          'arguments': [{'a': 'addA'}, {'b': 'addB'}],
+          'outputs': 'addOutput'
+        },
+        {
+          'name': 'sub',
+          'arguments': [{'a': 'addOutput'}, {'b': 'subB'}],
+          'outputs': 'subOutput'
+        },
+        {
+          'name': 'div',
+          'arguments': [{'a': 'divA'}, {'b': 'subOutput'}],
+          'outputs': 'divOutput'
+        },
+        {
+          'name': 'gather',
+          'arguments': [{'input': 'gatherInput'}, {'indices': 'divOutput'}],
+          'outputs': 'output'
+        },
+      ],
+      'expectedOutputs': {
+        'output': {
+          'data': [0.9, 1.0, 1.1, 1.2],
+          'descriptor': {shape: [4], dataType: 'float32'}
+        }
+      }
+    }
+  },
 ];
 
 if (navigator.ml) {
   subgraphTests.forEach((test) => {
-    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
+    webnn_conformance_test(buildAndExecuteGraph, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

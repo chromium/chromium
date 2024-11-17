@@ -46,7 +46,7 @@ class TestCoepReporter final : public mojom::CrossOriginEmbedderPolicyReporter {
   void Clone(
       mojo::PendingReceiver<network::mojom::CrossOriginEmbedderPolicyReporter>
           receiver) override {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   const std::vector<Report>& reports() const { return reports_; }

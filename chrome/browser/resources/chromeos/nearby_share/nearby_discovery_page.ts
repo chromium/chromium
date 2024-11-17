@@ -15,7 +15,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '/shared/nearby_device.js';
 import '/shared/nearby_page_template.js';
 import '/shared/nearby_preview.js';
-import './strings.m.js';
+import '/strings.m.js';
 
 import type {NearbyDeviceElement} from '/shared/nearby_device.js';
 import type {ConfirmationManagerInterface, DiscoveryObserverReceiver, PayloadPreview, ShareTarget, TransferUpdateListenerPendingReceiver} from '/shared/nearby_share.mojom-webui.js';

@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normálny</translation>
 <translation id="1591562245178063882">Tento mesiac</translation>
 <translation id="1637811476055996098">Vybrať súbory</translation>
-<translation id="1680090928918677457">Používať kameru</translation>
 <translation id="1729654308190250600">Zadajte e-mailovú adresu, ktorá nie je prázdna hodnota.</translation>
 <translation id="1758486001363313524">Iné...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Tento text musíte skrátiť na <ph name="MAX_CHARACTERS" /> znakov alebo menej (súčasný počet znakov: <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="2247351761944213033"><ph name="WEEKNUMBER" />. týždeň, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Skladba <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Kamera a mikrofón sú povolené</translation>
 <translation id="2507943997699731163">Vyplňte toto pole.</translation>
 <translation id="2613802280814924224">Zadajte platnú hodnotu. Najbližšia platná hodnota je <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Odoslať</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Predĺžte tento text aspoň na <ph name="MIN_CHARACTERS" /> alebo viac znakov (momentálny počet znakov je <ph name="CURRENT_LENGTH" />).</translation>
 <translation id="383465348367842624">Časť pred znakom <ph name="ATSIGN" /> by nemala obsahovať symbol <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="3846214748874656680">Ukončiť režim celej obrazovky</translation>
-<translation id="4031179711345676612">Mikrofón je povolený</translation>
 <translation id="4360991593054037559">Zadajte platnú hodnotu. Najbližšie platné hodnoty sú <ph name="VALID_VALUE_LOW" /> a <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Podrobnosti</translation>
-<translation id="4663373278480897665">Kamera je povolená</translation>
 <translation id="4664250907885839816">Časť za znakom <ph name="ATSIGN" /> by nemala obsahovať symbol <ph name="INVALIDCHARACTER" />.</translation>
 <translation id="4718048029184481307">Prehráva sa v režime obrazu v obraze</translation>
-<translation id="4792862212177489858">Zdieľať polohu</translation>
 <translation id="4812940957355064477">Zadajte číslo.</translation>
-<translation id="49269513399674318">Používať mikrofón</translation>
 <translation id="4975562563186953947">Počet vybraných položiek: <ph name="SELECTED_COUNT" /></translation>
 <translation id="4992066212339426712">Zapnúť zvuk</translation>
 <translation id="49969490063480558">Zadajte časť za znakom <ph name="ATSIGN" />. Adresa <ph name="INVALIDADDRESS" /> je neúplná.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Doplnok sa nepodarilo načítať.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Predĺžte tento text aspoň na <ph name="MIN_CHARACTERS" /> alebo viac znakov (momentálne používate jeden znak).</translation>
-<translation id="7080893216867146095">Zdieľanie polohy je povolené</translation>
 <translation id="709897737746224366">Zadajte hodnotu zodpovedajúcu požadovanému formátu.</translation>
-<translation id="7134810312945846184">Používať mikrofón a kameru</translation>
 <translation id="7263440858009898357">Vyberte položku zo zoznamu.</translation>
 <translation id="7364796246159120393">Vybrať súbor</translation>
 <translation id="739024184232394898">Iné...</translation>

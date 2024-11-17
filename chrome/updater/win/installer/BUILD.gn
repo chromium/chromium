@@ -4,9 +4,8 @@
 
 import("//build/config/python.gni")
 import("//build/timestamp.gni")
-import("//chrome/enterprise_companion/buildflags.gni")
-import("//chrome/process_version_rc_template.gni")
 import("//chrome/updater/branding.gni")
+import("//chrome/updater/updater_process_version_rc_template.gni")
 import("//testing/test.gni")
 
 source_set("msi_custom_action_sources") {
@@ -31,9 +30,11 @@ shared_library("msi_custom_action") {
   deps = [
     ":msi_custom_action_sources",
     ":version",
+    "//chrome/updater:constants_prod",
   ]
 
   configs += [ "//build/config/win:windowed" ]
+  libs = [ "rpcrt4.lib" ]
 }
 
 source_set("lib") {
@@ -53,6 +54,8 @@ source_set("lib") {
     "installer_resource.h",
     "pe_resource.cc",
     "pe_resource.h",
+    "splash_wnd.cc",
+    "splash_wnd.h",
     "string.cc",
     "string.h",
   ]
@@ -73,26 +76,13 @@ source_set("lib_with_resources") {
   visibility = [ ":*" ]
   sources = [ "installer.rc" ]
   public_deps = [ ":lib" ]
+  deps = [ "//build:branding_buildflags" ]
 }
 
-# `process_version_rc_template` invokes `process_version` with the default
-# template rc file which is at //chrome/app/chrome_version.rc.version.
-process_version_rc_template("version") {
-  _internal_name = "$updater_metainstaller_name" + "($current_cpu)"
-  if (is_debug) {
-    _internal_name += " (debug)"
-  }
-  extra_args = [
-    "-e",
-    "PRODUCT_FULLNAME=\"$updater_metainstaller_name\"",
-    "-e",
-    "INTERNAL_NAME=\"$_internal_name\"",
-    "-e",
-    "ORIGINAL_FILENAME=\"UpdaterSetup.exe\"",
-    "-e",
-    "PRODUCT_SHORTNAME=\"$updater_product_full_name\"",
-  ]
-  output = "$root_out_dir/installer_version.rc"
+updater_process_version_rc_template("version") {
+  original_filename = "UpdaterSetup.exe"
+  rc = "installer_version.rc"
+  product_fullname = "$updater_metainstaller_name"
 }
 
 # This target creats a list of runtime dependencies for the component
@@ -151,12 +141,9 @@ template("generate_installer") {
 
     deps = invoker.archive_deps
 
-    if (is_component_build) {
+    if (is_component_build || is_asan) {
+      # Include component build / ASan DLLs in the installer.
       args += [ "--component_build=1" ]
-    }
-
-    if (include_enterprise_companion_in_installer) {
-      args += [ "--include_enterprise_companion" ]
     }
   }
 
@@ -194,10 +181,6 @@ generate_installer("installer") {
   deps = [ "//chrome/updater:constants_prod" ]
   release_file = "updater.release"
   runtime_deps = updater_runtime_deps
-
-  if (include_enterprise_companion_in_installer) {
-    archive_deps += [ "//chrome/enterprise_companion" ]
-  }
 }
 
 generate_installer("installer_test") {
@@ -210,9 +193,4 @@ generate_installer("installer_test") {
   deps = [ "//chrome/updater:constants_test" ]
   release_file = "updater_test.release"
   runtime_deps = updater_test_runtime_deps
-
-  if (include_enterprise_companion_in_installer) {
-    archive_deps +=
-        [ "//chrome/enterprise_companion:enterprise_companion_test" ]
-  }
 }

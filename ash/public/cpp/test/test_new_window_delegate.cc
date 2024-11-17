@@ -41,23 +41,4 @@ void TestNewWindowDelegate::OpenPersonalizationHub() {}
 void TestNewWindowDelegate::OpenCaptivePortalSignin(const GURL& url) {}
 void TestNewWindowDelegate::OpenFile(const base::FilePath& file_path) {}
 
-TestNewWindowDelegateProvider::TestNewWindowDelegateProvider(
-    std::unique_ptr<TestNewWindowDelegate> delegate)
-    : ash_(std::move(delegate)) {}
-
-TestNewWindowDelegateProvider::TestNewWindowDelegateProvider(
-    std::unique_ptr<TestNewWindowDelegate> ash,
-    std::unique_ptr<TestNewWindowDelegate> lacros)
-    : ash_(std::move(ash)), lacros_(std::move(lacros)) {}
-
-TestNewWindowDelegateProvider::~TestNewWindowDelegateProvider() = default;
-
-NewWindowDelegate* TestNewWindowDelegateProvider::GetInstance() {
-  return ash_.get();
-}
-
-NewWindowDelegate* TestNewWindowDelegateProvider::GetPrimary() {
-  return lacros_ ? lacros_.get() : ash_.get();
-}
-
 }  // namespace ash

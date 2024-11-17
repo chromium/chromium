@@ -29,6 +29,7 @@ public class BankAccountTest {
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                                         .setSupportedPaymentRails(new int[] {1})
+                                        .setIsFidoEnrolled(true)
                                         .build())
                         .build();
 
@@ -39,6 +40,7 @@ public class BankAccountTest {
         assertThat(bankAccount.getNickname()).isEqualTo("nickname");
         assertThat(bankAccount.getDisplayIconUrl()).isEqualTo(new GURL("http://www.example.com"));
         assertThat(bankAccount.getSupportedPaymentRails()).isEqualTo(new int[] {1});
+        assertThat(bankAccount.getIsFidoEnrolled()).isTrue();
     }
 
     @Test
@@ -49,6 +51,7 @@ public class BankAccountTest {
                         "nickname",
                         new GURL("http://www.example.com"),
                         /* supportedPaymentRails= */ new int[] {1},
+                        /* isFidoEnrolled= */ true,
                         "bank name",
                         "account number suffix",
                         /* accountType= */ 1);
@@ -60,6 +63,7 @@ public class BankAccountTest {
         assertThat(bankAccount.getNickname()).isEqualTo("nickname");
         assertThat(bankAccount.getDisplayIconUrl()).isEqualTo(new GURL("http://www.example.com"));
         assertThat(bankAccount.getSupportedPaymentRails()).isEqualTo(new int[] {1});
+        assertThat(bankAccount.getIsFidoEnrolled()).isTrue();
     }
 
     @Test
@@ -75,6 +79,7 @@ public class BankAccountTest {
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                                         .setSupportedPaymentRails(new int[] {1})
+                                        .setIsFidoEnrolled(true)
                                         .build())
                         .build();
 
@@ -89,6 +94,7 @@ public class BankAccountTest {
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                                         .setSupportedPaymentRails(new int[] {1})
+                                        .setIsFidoEnrolled(true)
                                         .build())
                         .build();
 
@@ -108,6 +114,7 @@ public class BankAccountTest {
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                                         .setSupportedPaymentRails(new int[] {1})
+                                        .setIsFidoEnrolled(true)
                                         .build())
                         .build();
 
@@ -122,6 +129,7 @@ public class BankAccountTest {
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                                         .setSupportedPaymentRails(new int[] {1})
+                                        .setIsFidoEnrolled(true)
                                         .build())
                         .build();
 
@@ -141,6 +149,7 @@ public class BankAccountTest {
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                                         .setSupportedPaymentRails(new int[] {1})
+                                        .setIsFidoEnrolled(true)
                                         .build())
                         .build();
 
@@ -155,6 +164,7 @@ public class BankAccountTest {
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                                         .setSupportedPaymentRails(new int[] {1})
+                                        .setIsFidoEnrolled(true)
                                         .build())
                         .build();
 
@@ -174,6 +184,7 @@ public class BankAccountTest {
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                                         .setSupportedPaymentRails(new int[] {1})
+                                        .setIsFidoEnrolled(true)
                                         .build())
                         .build();
 
@@ -188,6 +199,7 @@ public class BankAccountTest {
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                                         .setSupportedPaymentRails(new int[] {1})
+                                        .setIsFidoEnrolled(true)
                                         .build())
                         .build();
 
@@ -207,6 +219,7 @@ public class BankAccountTest {
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                                         .setSupportedPaymentRails(new int[] {1})
+                                        .setIsFidoEnrolled(true)
                                         .build())
                         .build();
 
@@ -221,6 +234,7 @@ public class BankAccountTest {
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                                         .setSupportedPaymentRails(new int[] {1})
+                                        .setIsFidoEnrolled(true)
                                         .build())
                         .build();
 
@@ -240,6 +254,7 @@ public class BankAccountTest {
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                                         .setSupportedPaymentRails(new int[] {1})
+                                        .setIsFidoEnrolled(true)
                                         .build())
                         .build();
 
@@ -259,6 +274,7 @@ public class BankAccountTest {
                                         .setNickname("nickname")
                                         .setDisplayIconUrl(new GURL("http://www.example.com"))
                                         .setSupportedPaymentRails(new int[] {1})
+                                        .setIsFidoEnrolled(true)
                                         .build())
                         .build();
 

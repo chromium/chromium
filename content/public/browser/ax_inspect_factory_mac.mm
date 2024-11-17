@@ -36,9 +36,8 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
     case ui::AXApiType::kMac:
       return std::make_unique<ui::AXTreeFormatterMac>();
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported API type " << type;
+      NOTREACHED() << "Unsupported API type " << type;
   }
-  return nullptr;
 }
 
 // static
@@ -57,9 +56,8 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
       return std::make_unique<ui::AXEventRecorderMac>(manager->GetWeakPtr(),
                                                       pid, selector);
     default:
-      NOTREACHED_IN_MIGRATION() << "Unsupported API type " << type;
+      NOTREACHED() << "Unsupported API type " << type;
   }
-  return nullptr;
 }
 
 // static

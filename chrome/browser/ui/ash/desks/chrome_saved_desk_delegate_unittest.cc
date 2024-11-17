@@ -38,22 +38,6 @@ using ::testing::Return;
 
 namespace {
 constexpr char kTestProfileEmail[] = "test@test.com";
-constexpr int32_t kLacrosWindowId = 123456;
-constexpr int32_t kActivationIndex1 = 100;
-
-std::unique_ptr<aura::Window> CreateLacrosWindow(
-    const std::string& lacros_window_id) {
-  auto window =
-      std::make_unique<aura::Window>(nullptr, aura::client::WINDOW_TYPE_NORMAL);
-
-  window->SetProperty(chromeos::kAppTypeKey, chromeos::AppType::LACROS);
-  window->SetProperty(app_restore::kLacrosWindowId,
-                      std::string(lacros_window_id));
-
-  window->Init(ui::LAYER_NOT_DRAWN);
-
-  return window;
-}
 
 class MockBrowserManager : public crosapi::BrowserManager {
  public:
@@ -100,11 +84,6 @@ class ChromeSavedDeskDelegateTest : public testing::Test {
 
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, profile_.get());
-
-    // Set up `FullRestoreSaveHandler` so that `ChromeSavedDeskDelegate` can get
-    // launch info for a lacros window.
-    full_restore::FullRestoreSaveHandler* save_handler = GetSaveHandler();
-    save_handler->SetPrimaryProfilePath(profile_dir_.GetPath());
 
     chrome_saved_desk_delegate_ = std::make_unique<ChromeSavedDeskDelegate>();
   }
@@ -163,22 +142,6 @@ TEST_F(ChromeSavedDeskDelegateTest, NullWindowReturnsEmptyAppLaunchData) {
   base::test::TestFuture<std::unique_ptr<app_restore::AppLaunchInfo>> future;
   chrome_saved_desk_delegate()->GetAppLaunchDataForSavedDesk(
       /*window=*/nullptr, future.GetCallback());
-  auto app_launch_info = future.Take();
-  EXPECT_FALSE(app_launch_info);
-}
-
-TEST_F(ChromeSavedDeskDelegateTest,
-       EmptyLacrosWindowInfoReturnsEmptyAppLaunchData) {
-  std::unique_ptr<aura::Window> window =
-      CreateLacrosWindow(base::NumberToString(kLacrosWindowId));
-
-  // Saves window info so that `GetAppLaunchDataForSavedDesk` will attempt to
-  // get lacros window information.
-  SaveWindowInfo(window.get(), kActivationIndex1);
-
-  base::test::TestFuture<std::unique_ptr<app_restore::AppLaunchInfo>> future;
-  chrome_saved_desk_delegate()->GetAppLaunchDataForSavedDesk(
-      window.get(), future.GetCallback());
   auto app_launch_info = future.Take();
   EXPECT_FALSE(app_launch_info);
 }

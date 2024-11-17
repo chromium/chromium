@@ -67,6 +67,7 @@ android_library("java") {
     "java/src/org/chromium/components/stylus_handwriting/StylusApiOption.java",
     "java/src/org/chromium/components/stylus_handwriting/StylusHandwritingInitiator.java",
     "java/src/org/chromium/components/stylus_handwriting/StylusWritingController.java",
+    "java/src/org/chromium/components/stylus_handwriting/StylusWritingSettingsState.java",
   ]
 }
 

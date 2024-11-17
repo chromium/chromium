@@ -33,13 +33,20 @@ message CertificateTrust {
   optional CertificateTrustType trust_type = 1;
 }
 
+// A CIDR stored as an IP address and its prefix length.
+message CIDR {
+  bytes ip = 1;
+  uint32 prefix_length = 2;
+}
+
 // A set of constraints. If no constraints of a given type is present, any name
 // of that type is allowed.
 message Constraints {
   // DNS name constraint (e.g. "example.com", "*.dev.example.com").
   repeated string dns_names = 1;
   // A CIDR name constraint (e.g. "198.51.100.14/24", "198.51.100.0/22")
-  repeated string CIDRs = 2;
+  repeated CIDR CIDRs = 3;
+  reserved 2;
 }
 
 // Metadata about a certificate.

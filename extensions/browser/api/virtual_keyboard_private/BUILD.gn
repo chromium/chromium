@@ -20,12 +20,8 @@ source_set("virtual_keyboard_private") {
     "//extensions/common/api",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     deps += [ "//ash" ]
-  }
-
-  if (is_chromeos_lacros) {
-    deps += [ "//chromeos/crosapi/mojom" ]
   }
 
   public_deps = [

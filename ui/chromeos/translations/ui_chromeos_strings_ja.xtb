@@ -19,6 +19,7 @@
 <translation id="115443833402798225">ハングル（Ahnmatae 式）</translation>
 <translation id="1155759005174418845">カタロニア語</translation>
 <translation id="1168100932582989117">Google ネーム サーバー</translation>
+<translation id="1170788066030116158">撮影日</translation>
 <translation id="1172970565351728681">残り約 <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">名前を変更</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="PHONE_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、電池残量 <ph name="BATTERY_STATUS" />%、詳細</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">認証証明書がリモートで拒否されました</translation>
 <translation id="4394214039309501350">外部リンク</translation>
 <translation id="4394980935660306080">今週</translation>
+<translation id="4397435965699247285">オフラインで OneDrive を使用することはできません</translation>
 <translation id="4398096759193130964">アイテムを復元するか、ゴミ箱から新しいフォルダにドラッグしてください</translation>
 <translation id="4401287888955153199">すべて解凍</translation>
 <translation id="4410695710508688828">抽出操作が失敗しました。<ph name="ERROR_MESSAGE" /></translation>

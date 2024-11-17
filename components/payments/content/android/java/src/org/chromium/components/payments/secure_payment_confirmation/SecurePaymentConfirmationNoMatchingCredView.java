@@ -74,9 +74,7 @@ public class SecurePaymentConfirmationNoMatchingCredView {
 
         String formattedDescription =
                 String.format(
-                        context.getResources()
-                                .getString(R.string.no_matching_credential_description),
-                        origin);
+                        context.getString(R.string.no_matching_credential_description), origin);
         mDescription.setText(formattedDescription);
         mOptOutText.setText(getOptOutText(context, rpId, optOutCallback));
         mOptOutText.setMovementMethod(LinkMovementMethod.getInstance());
@@ -103,17 +101,13 @@ public class SecurePaymentConfirmationNoMatchingCredView {
 
     private SpannableString getOptOutText(Context context, String rpId, Runnable optOutCallback) {
         String deviceString =
-                context.getResources()
-                        .getString(
-                                isTablet(context)
-                                        ? R.string.secure_payment_confirmation_this_tablet_label
-                                        : R.string.secure_payment_confirmation_this_phone_label);
+                context.getString(
+                        isTablet(context)
+                                ? R.string.secure_payment_confirmation_this_tablet_label
+                                : R.string.secure_payment_confirmation_this_phone_label);
         String optOut =
-                context.getResources()
-                        .getString(
-                                R.string.secure_payment_confirmation_opt_out_label,
-                                deviceString,
-                                rpId);
+                context.getString(
+                        R.string.secure_payment_confirmation_opt_out_label, deviceString, rpId);
         NoUnderlineClickableSpan requestToDeleteSpan =
                 new NoUnderlineClickableSpan(context, (widget) -> optOutCallback.run());
         return SpanApplier.applySpans(

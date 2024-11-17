@@ -1,6 +1,7 @@
 Name: R8
 URL: https://r8.googlesource.com/r8
-Version: unknown
+Version: N/A
+Revision: DEPS
 License: BSD 3-Clause
 License File: LICENSE
 Security Critical: no
@@ -74,24 +75,23 @@ tools/gradle.py r8
 java -jar build/libs/r8.jar --debug --classfile --output r8.jar \
     --lib $CHROMIUM_SRC/third_party/jdk/current --pg-conf src/main/keep.txt \
     --no-minification --no-desugaring build/libs/r8.jar
-mv $CHROMIUM_SRC/third_party/r8/lib/r8.jar{,.bak}
-cp r8.jar $CHROMIUM_SRC/third_party/r8/lib/r8.jar
+mv $CHROMIUM_SRC/third_party/r8/cipd/lib/r8.jar{,.bak}
+cp r8.jar $CHROMIUM_SRC/third_party/r8/cipd/lib/r8.jar
 
 * Update backported methods list (used by lint):
 cd $CHROMIUM_SRC
-java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --min-api 26 > third_party/r8/backported_methods.txt
+java -cp third_party/r8/cipd/lib/r8.jar com.android.tools.r8.BackportedMethodList --min-api 26 > third_party/r8/backported_methods.txt
 
 How to file bugs against R8:
-* Copy & paste the failing ninja command (starts with proguard.py), and add --dump-inputs.
-  * On siso you may need to find it at the beginning of `out/<Directory>/siso_output`.
-  * This also works for dex.py, it produces d8inputs.zip
-  * As a shortcut: third_party/r8/dump_inputs.py out/Release/apks/ChromePublic.apk.mapping
+* Create a dump (snapshot of R8 inputs):
+  * For R8: third_party/r8/dump_inputs.py out/Release/apks/ChromePublic.apk.mapping
+  * For D8: third_party/r8/dump_inputs.py out/Release/obj/.../foo_java.dex.jar
 * File bug at go/r8bug
 * Things to include (use discretion if some are not relevant):
   * src revision bug reproduces at
   * Repro steps (gn gen & autoninja commands)
     * Prefer enable_chrome_android_internal=false
-  * The r8inputs.zip from --dump-inputs
+  * The r8inputs.zip / d8inputs.zip
   * Any relevant dexdump analysis
 
 Example R8 git-bisect script:
@@ -99,9 +99,9 @@ Example R8 git-bisect script:
 set -x
 CHROMIUM_SRC=/media/mheikal/code/clankium/src
 tools/gradle.py r8 || exit -1
-chmod +r $CHROMIUM_SRC/third_party/r8/lib/r8.jar
-rm -f $CHROMIUM_SRC/third_party/r8/lib/r8.jar
-cp build/libs/r8.jar $CHROMIUM_SRC/third_party/r8/lib/r8.jar
+chmod +r $CHROMIUM_SRC/third_party/r8/cipd/lib/r8.jar
+rm -f $CHROMIUM_SRC/third_party/r8/cipd/lib/r8.jar
+cp build/libs/r8.jar $CHROMIUM_SRC/third_party/r8/cipd/lib/r8.jar
 
 cd $CHROMIUM_SRC
 exec tools/autotest.py --out-dir out/Release <Test Here>
@@ -115,7 +115,7 @@ git bisect run bash <path_to_script.sh>
 ```
 Tip: When you are done, you can delete the r8 jar and gclient sync to get back
      to ToT R8.
-     `rm -f $CHROMIUM_SRC/third_party/r8/lib/r8.jar && gclient sync`
+     `rm -f $CHROMIUM_SRC/third_party/r8/cipd/lib/r8.jar && gclient sync`
 
 How to submit CLs to R8:
 * Request to be added to their allowlist in order to upload CLs.
@@ -127,3 +127,7 @@ How to check the size impact of recent R8 rolls:
 tools/binary_size/print_trybot_sizes.py --grep "Roll R8" -n 20
 # To internal APK:
 tools/binary_size/print_trybot_sizes.py --grep "Roll R8" -n 20 --internal
+
+R8's Chrome Benchmark
+R8 team periodically snapshots chrome's java for benchmarking, which you can find here:
+https://storage.googleapis.com/r8-perf-results/r8.html#ChromeApp

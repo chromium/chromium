@@ -379,6 +379,15 @@ TEST_F(PageInfoTest, PermissionStringsHaveMidSentenceVersion) {
         EXPECT_EQ(base::ToLowerASCII(normal), base::ToLowerASCII(mid_sentence));
         break;
 #endif
+      case ContentSettingsType::CAPTURED_SURFACE_CONTROL:
+        // The mid sentence for 'CAPTURED_SURFACE_CONTROL' type is different
+        // from the normal text and instead matches the submenu text which is
+        // "scrolling & zooming".
+        normal = l10n_util::GetStringUTF16(
+            IDS_SITE_SETTINGS_TYPE_CAPTURED_SURFACE_CONTROL_SUB_MENU);
+        EXPECT_NE(normal, mid_sentence);
+        EXPECT_EQ(base::ToLowerASCII(normal), mid_sentence);
+        break;
       default:
         EXPECT_NE(normal, mid_sentence);
         EXPECT_EQ(base::ToLowerASCII(normal), mid_sentence);
@@ -2492,4 +2501,42 @@ TEST_F(PageInfoTest, CustomExceptionScope) {
   EXPECT_EQ(info.primary_pattern,
             ContentSettingsPattern::FromURLNoWildcard(url()));
   EXPECT_EQ(info.secondary_pattern, ContentSettingsPattern::Wildcard());
+}
+
+TEST_F(PageInfoTest, SiteExceptionScopeTypeMetrics) {
+  SetURL("https://www.example.com:443");
+
+  constexpr char kScopeTypeHistogram[] =
+      "Privacy.PageInfo.SiteExceptionsScopeType";
+  base::HistogramTester tester;
+  tester.ExpectTotalCount(kScopeTypeHistogram, 0);
+
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromString("https://www.example.com"),
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::JAVASCRIPT,
+      CONTENT_SETTING_BLOCK);
+  map->SetContentSettingCustomScope(
+      ContentSettingsPattern::FromString("https://*"),
+      ContentSettingsPattern::Wildcard(), ContentSettingsType::MIDI_SYSEX,
+      CONTENT_SETTING_ALLOW);
+
+  page_info()->PresentSitePermissionsForTesting();
+
+  tester.ExpectBucketCount(kScopeTypeHistogram,
+                           ContentSettingsPattern::Scope::kWithPortWildcard,
+                           1 /* expected_count */);
+  tester.ExpectBucketCount(kScopeTypeHistogram,
+                           ContentSettingsPattern::Scope::kCustomScope,
+                           1 /* expected_count */);
+
+  // Repeated calls of PresentSitePermissions won't rerecord metrics within the
+  // same page info instance.
+  page_info()->PresentSitePermissionsForTesting();
+  tester.ExpectBucketCount(kScopeTypeHistogram,
+                           ContentSettingsPattern::Scope::kWithPortWildcard,
+                           1 /* expected_count */);
+  tester.ExpectBucketCount(kScopeTypeHistogram,
+                           ContentSettingsPattern::Scope::kCustomScope,
+                           1 /* expected_count */);
 }

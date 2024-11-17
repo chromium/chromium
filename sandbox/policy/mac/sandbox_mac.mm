@@ -31,6 +31,7 @@
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "sandbox/policy/mac/screen_ai.sb.h"
 #endif
+#include "sandbox/policy/mac/on_device_translation.sb.h"
 #include "sandbox/policy/mac/speech_recognition.sb.h"
 #include "sandbox/policy/mac/utility.sb.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
@@ -85,14 +86,14 @@ std::string GetSandboxProfile(sandbox::mojom::Sandbox sandbox_type) {
       profile += kSeatbeltPolicyString_screen_ai;
       break;
 #endif
-    case sandbox::mojom::Sandbox::kVideoEffects:
-      // TODO(crbug.com/361128453): Implement this.
-      NOTREACHED() << "kVideoEffects sandbox not implemented.";
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       profile += kSeatbeltPolicyString_speech_recognition;
       break;
     case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
       profile += kSeatbeltPolicyString_on_device_model_execution;
+      break;
+    case sandbox::mojom::Sandbox::kOnDeviceTranslation:
+      profile += kSeatbeltPolicyString_on_device_translation;
       break;
     // kService and kUtility are the same on OS_MAC, so fallthrough.
     case sandbox::mojom::Sandbox::kService:

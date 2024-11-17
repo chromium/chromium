@@ -19,13 +19,16 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/network_change_notifier.h"
 #include "remoting/base/auto_thread_task_runner.h"
+#include "remoting/base/errors.h"
 #include "remoting/base/local_session_policies_provider.h"
+#include "remoting/base/session_policies.h"
 #include "remoting/host/audio_capturer.h"
 #include "remoting/host/chromoting_host_context.h"
 #include "remoting/host/fake_desktop_environment.h"
@@ -96,7 +99,7 @@ class ChromotingHostTest : public testing::Test {
         task_runner_,  // Audio
         task_runner_,
         DesktopEnvironmentOptions::CreateDefault(),  // Video encode
-        &local_session_policies_provider_);
+        base::NullCallback(), &local_session_policies_provider_);
     host_->status_monitor()->AddStatusObserver(&host_status_observer_);
 
     owner_email_ = "host@domain";
@@ -164,6 +167,11 @@ class ChromotingHostTest : public testing::Test {
     host_->clients_.push_back(std::move(client));
 
     if (authenticate) {
+      if (reject) {
+        // Free the corresponding client pointer to prevent a dangling pointer
+        // crash.
+        PrepareForClientDisconnection(connection_index);
+      }
       client_ptr->OnConnectionAuthenticated(nullptr);
       if (!reject) {
         client_ptr->OnConnectionChannelsConnected();
@@ -251,6 +259,11 @@ class ChromotingHostTest : public testing::Test {
                 OnClientDisconnected(get_session_jid(connection_index)))
         .RetiresOnSaturation();
     return PrepareForClientDisconnection(connection_index);
+  }
+
+  void SetPerSessionPoliciesValidator(
+      const ChromotingHost::SessionPoliciesValidator& validator) {
+    host_->per_session_policies_validator_ = validator;
   }
 
   mojo::Remote<mojom::ChromotingHostServices> BindChromotingHostServices() {
@@ -513,6 +526,21 @@ TEST_F(ChromotingHostTest, DISABLED_OnSessionRouteChange) {
   EXPECT_CALL(host_status_observer_,
               OnClientRouteChange(session_jid1_, channel_name, _));
   host_->OnSessionRouteChange(get_client(0), channel_name, route);
+}
+
+TEST_F(ChromotingHostTest, ExtraSessionPoliciesValidator) {
+  SessionPolicies session_policies{.host_username_match_required = true};
+  local_session_policies_provider_.set_local_policies(session_policies);
+  base::MockCallback<ChromotingHost::SessionPoliciesValidator> mock_validator;
+  EXPECT_CALL(mock_validator, Run(session_policies))
+      .WillOnce(Return(ErrorCode::DISALLOWED_BY_POLICY));
+  SetPerSessionPoliciesValidator(mock_validator.Get());
+
+  StartHost();
+
+  EXPECT_CALL(host_status_observer_, OnClientDisconnected(get_session_jid(0)));
+
+  SimulateClientConnection(0, /* authenticate= */ true, /* reject= */ true);
 }
 
 TEST_F(ChromotingHostTest, BindSessionServicesWithNoConnectedSession_Rejected) {

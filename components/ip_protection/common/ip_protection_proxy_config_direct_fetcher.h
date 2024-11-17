@@ -20,7 +20,6 @@
 #include "net/base/proxy_chain.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 #include "url/gurl.h"
 
 namespace network {
@@ -63,7 +62,7 @@ class IpProtectionProxyConfigDirectFetcher
         AuthenticateCallback authenticate_callback);
     virtual ~Retriever();
     using RetrieveCallback = base::OnceCallback<void(
-        base::expected<ip_protection::GetProxyConfigResponse, std::string>)>;
+        base::expected<GetProxyConfigResponse, std::string>)>;
     virtual void RetrieveProxyConfig(RetrieveCallback callback);
 
    private:
@@ -107,6 +106,12 @@ class IpProtectionProxyConfigDirectFetcher
     return no_get_proxy_config_until_;
   }
 
+  base::TimeDelta GetNextGetProxyConfigBackoffForTesting() {
+    return next_get_proxy_config_backoff_;
+  }
+
+  void ClearNoGetProxyConfigUntilTime();
+
   // Timeout for failures from GetProxyConfig. This is doubled for
   // each subsequent failure.
   static constexpr base::TimeDelta kGetProxyConfigFailureTimeout =
@@ -115,8 +120,7 @@ class IpProtectionProxyConfigDirectFetcher
  private:
   void OnGetProxyConfigCompleted(
       GetProxyConfigCallback callback,
-      base::expected<ip_protection::GetProxyConfigResponse, std::string>
-          response);
+      base::expected<GetProxyConfigResponse, std::string> response);
 
   // Returns true if the GetProxyConfigResponse contains an error or is invalid.
   // In order for a response to be valid, the following must be true:
@@ -124,17 +128,16 @@ class IpProtectionProxyConfigDirectFetcher
   //    2. If a response has a value and the proxy chain is NOT empty and the
   //       GeoHint MUST be present.
   bool IsProxyConfigResponseError(
-      const base::expected<ip_protection::GetProxyConfigResponse, std::string>&
-          response);
+      const base::expected<GetProxyConfigResponse, std::string>& response);
 
   // Creates a list of ProxyChains from GetProxyConfigResponse.
   std::vector<net::ProxyChain> GetProxyListFromProxyConfigResponse(
-      ip_protection::GetProxyConfigResponse response);
+      GetProxyConfigResponse response);
 
   // Creates a GeoHint by converting the GeoHint from the
   // `GetProxyConfigResponse` to a `network::GeoHint`.
-  std::optional<ip_protection::GeoHint> GetGeoHintFromProxyConfigResponse(
-      ip_protection::GetProxyConfigResponse& response);
+  std::optional<GeoHint> GetGeoHintFromProxyConfigResponse(
+      GetProxyConfigResponse& response);
 
   std::unique_ptr<Retriever> ip_protection_proxy_config_retriever_;
 

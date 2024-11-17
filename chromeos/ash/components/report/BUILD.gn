@@ -32,7 +32,7 @@ proto_library("fresnel_service_proto") {
 
   proto_in_dir = "//"
 
-  link_deps = [ "//third_party/private_membership:private_membership_proto" ]
+  deps = [ "//third_party/private_membership:private_membership_proto" ]
 }
 
 source_set("utils") {

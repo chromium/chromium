@@ -19,7 +19,9 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
+#include "net/dns/public/secure_dns_mode.h"
 
 namespace ash {
 
@@ -71,8 +73,15 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
   // plain text version of the URI templates. Otherwise returns nullopt.
   std::optional<std::string> GetDohWithIdentifiersDisplayServers() const;
 
+  // Returns the OS' secure DNS configuration.
+  net::DnsOverHttpsConfig GetOsDohConfig() const;
+  net::SecureDnsMode GetOsDohMode() const;
+
   void SetPrimaryProfilePropertiesForTesting(PrefService* profile_prefs,
                                              bool is_profile_managed);
+
+  // Whether or not DoHIncludedDomains or DoHExcludedDomains is set.
+  bool IsDohDomainConfigSet() const { return cached_domain_config_set_; }
 
  private:
   void DefaultNetworkChanged(const NetworkState* network) override;
@@ -101,6 +110,14 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
   void OnDoHIncludedDomainsPrefChanged();
   void OnDoHExcludedDomainsPrefChanged();
 
+  // When moving between profiles (and login screen), SecureDnsManager instance
+  // is destroyed. A new instance is created on the new user session. On login
+  // screen, the class is not instantiated. In order to have the correct Shill
+  // state on login screen, Shill's state needs to be reset whenever the class
+  // is destroyed. This is done by propagating all the default values of the
+  // states.
+  void ResetShillState();
+
   // If the DoH template URIs contain network identifiers, this method will
   // instantiate `network_state_handler_observer_` to start monitoring
   // network changes. Otherwise, it will reset
@@ -108,10 +125,31 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
   void ToggleNetworkMonitoring();
   void UpdateTemplateUri();
 
-  // If either the template URIs or the mode have been modified,
-  // inform all registered observers in the 'observers_' list and
-  // also notify Lacros and the shill service about the new values.
-  void BroadcastUpdates(bool template_uris_changed, bool mode_changed) const;
+  // Update the internal cached DoH config. If either the template URIs or the
+  // mode have been modified, inform all registered observers in the
+  // 'observers_' list and also notify Lacros and the shill service about the
+  // new values.
+  // `new_template_uris` is a space separated DoH template URI. The value is
+  // expected to be fetched from Chrome's kDnsOverHttpsTemplates prefs.
+  // When `force_update` is true, always send the updates to the observer
+  // regardless of any value changes.
+  // The DoH config for Chrome and shill might differ in the case where
+  // DoHIncludedDomains or DoHExcludedDomains is set. On such cases, DoH in
+  // Chrome is always disabled in order for ChromeOS DNS proxy to be able to
+  // listen for Chrome DNS requests.
+  void UpdateDoHConfig(const std::string& new_mode,
+                       const std::string& new_template_uris,
+                       bool force_update = false);
+  void UpdateChromeDoHConfig(const std::string& new_mode,
+                             const std::string& new_template_uris,
+                             bool force_update = false);
+  void UpdateShillDoHConfig(const std::string& new_mode,
+                            const std::string& new_template_uris);
+
+  // Updates `cached_domain_config_set_`. If DoH domain config changed, also
+  // trigger a DoH config update to the observers in order for the UI to be
+  // updated.
+  void UpdateCachedDomainConfigSet();
 
   base::ScopedObservation<NetworkStateHandler, NetworkStateHandlerObserver>
       network_state_handler_observer_{this};
@@ -128,8 +166,19 @@ class SecureDnsManager : public NetworkStateHandlerObserver {
   std::unique_ptr<dns_over_https::TemplatesUriResolver>
       doh_templates_uri_resolver_;
 
+  // Cached OS-wide DoH provider URIs and mode. The value is expected to match
+  // Chrome's secure DNS prefs.
   std::string cached_template_uris_;
   std::string cached_mode_;
+
+  // Cached DoH provider URIs and mode for Chrome.
+  // The values might differ with the actual values in the case where
+  // DoHIncludedDomains or DoHExcludedDomains is set.
+  std::string cached_chrome_template_uris_;
+  std::string cached_chrome_mode_;
+
+  // Whether or not DoHIncludedDomains or DoHExcludedDomains is set.
+  bool cached_domain_config_set_ = false;
 
   bool cached_is_config_managed_ = false;
   bool is_profile_managed_ = false;

@@ -207,12 +207,18 @@ crbug.com/329138770 [ win graphite-enabled ] SwapChainTraceTest_CanvasLowLatency
 crbug.com/329138770 [ win graphite-enabled ] SwapChainTraceTest_CanvasLowLatencyWebGLDrawImage [ Failure ]
 crbug.com/329138770 [ win graphite-enabled ] SwapChainTraceTest_CanvasLowLatencyWebGLRoundedCorners [ Failure ]
 crbug.com/329138770 [ graphite-enabled release-x64 win10 ] WebGPUCachingTraceTest_ComputePipelineCrossOriginsCacheMisses [ Failure ]
-crbug.com/329138770 [ win graphite-enabled ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
+crbug.com/329138770 [ graphite-enabled release-x64 win10 ] WebGPUCachingTraceTest_ComputePipelineDifferentOrigins [ Failure ]
 crbug.com/329138770 [ graphite-enabled release-x64 win10 ] WebGPUCachingTraceTest_ComputePipelineIncognito [ Failure ]
 crbug.com/329138770 [ graphite-enabled release-x64 win10 ] WebGPUCachingTraceTest_RenderPipelineCrossOriginsCacheMisses [ Failure ]
 crbug.com/329138770 [ graphite-enabled release-x64 win10 ] WebGPUCachingTraceTest_RenderPipelineDifferentOrigins [ Failure ]
 crbug.com/329138770 [ graphite-enabled release-x64 win10 ] WebGPUCachingTraceTest_RenderPipelineIncognito [ Failure ]
 
+# Fail or flaky on Windows and Linux. Flaky timeout on Mac.
+crbug.com/371949935 [ graphite-disabled win10 ] TraceTest_ViewTransitionsCapture [ Failure ]
+crbug.com/371949935 [ graphite-enabled intel-0x4680 no-clang-coverage release-x64 target-cpu-64 win10 ] TraceTest_ViewTransitionsCapture [ Failure ]
+crbug.com/371949935 [ graphite-enabled no-clang-coverage qualcomm-0x41333430 release target-cpu-64 win11 ] TraceTest_ViewTransitionsCapture [ Failure ]
+crbug.com/371949935 [ linux renderer-skia-gl ] TraceTest_ViewTransitionsCapture [ Failure ]
+crbug.com/371949935 [ mac ] TraceTest_ViewTransitionsCapture [ Failure ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #

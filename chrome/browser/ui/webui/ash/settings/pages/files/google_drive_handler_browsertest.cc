@@ -177,9 +177,7 @@ class GoogleDriveHandlerBulkPinningTest : public GoogleDriveHandlerBaseTest {
  public:
   GoogleDriveHandlerBulkPinningTest() {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kDriveFsBulkPinning,
-         ash::features::kFeatureManagementDriveFsBulkPinning},
-        {});
+        {ash::features::kFeatureManagementDriveFsBulkPinning}, {});
   }
 };
 
@@ -275,8 +273,7 @@ const TestParam kTestParams[] = {
     {
         .test_suffix = "BulkPinning",
         .enabled_features =
-            {ash::features::kDriveFsBulkPinning,
-             ash::features::kFeatureManagementDriveFsBulkPinning},
+            {ash::features::kFeatureManagementDriveFsBulkPinning},
         .disabled_features = {},
     },
 
@@ -284,9 +281,7 @@ const TestParam kTestParams[] = {
     {
         .test_suffix = "BulkPinning_Revamp",
         .enabled_features =
-            {ash::features::kOsSettingsRevampWayfinding,
-             ash::features::kDriveFsBulkPinning,
-             ash::features::kFeatureManagementDriveFsBulkPinning},
+            {ash::features::kFeatureManagementDriveFsBulkPinning},
         .disabled_features = {},
     },
 };

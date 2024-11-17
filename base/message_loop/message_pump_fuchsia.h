@@ -73,10 +73,10 @@ class BASE_EXPORT MessagePumpFuchsia : public MessagePump,
     // the callback. The pump sets |was_stopped_| to a location on the stack,
     // and the Watcher writes to it, if set, when deleted, allowing the pump
     // to check the value on the stack to short-cut any post-callback work.
-    bool* was_stopped_ = nullptr;
+    raw_ptr<bool> was_stopped_ = nullptr;
 
     // Set directly from the inputs to WatchFileDescriptor.
-    ZxHandleWatcher* watcher_ = nullptr;
+    raw_ptr<ZxHandleWatcher> watcher_ = nullptr;
 
     // Used to safely access resources owned by the associated message pump.
     WeakPtr<MessagePumpFuchsia> weak_pump_;
@@ -110,13 +110,16 @@ class BASE_EXPORT MessagePumpFuchsia : public MessagePump,
     void OnZxHandleSignalled(zx_handle_t handle, zx_signals_t signals) override;
 
     // Set directly from the inputs to WatchFileDescriptor.
-    FdWatcher* watcher_ = nullptr;
+    raw_ptr<FdWatcher> watcher_ = nullptr;
     int fd_ = -1;
     uint32_t desired_events_ = 0;
 
     // Set by WatchFileDescriptor() to hold a reference to the descriptor's
     // fdio.
-    fdio_t* io_ = nullptr;
+    // TODO(366045345) This is actually an owning reference, so we should
+    // probably turn it into a ScopedGeneric<> that calls fdio_unsafe_release()
+    // on destruction.
+    raw_ptr<fdio_t> io_ = nullptr;
   };
 
   enum Mode {

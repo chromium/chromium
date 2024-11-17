@@ -14,12 +14,14 @@ class SharedImageTilesProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.ReadableIntPropertyKey COLOR_THEME =
             new PropertyModel.ReadableIntPropertyKey();
+    public static final PropertyModel.WritableIntPropertyKey TYPE =
+            new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey ICON_TILES =
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel.WritableIntPropertyKey REMAINING_TILES =
             new PropertyModel.WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = {
-        IS_LOADING, COLOR_THEME, ICON_TILES, REMAINING_TILES
+        IS_LOADING, COLOR_THEME, TYPE, ICON_TILES, REMAINING_TILES
     };
 }

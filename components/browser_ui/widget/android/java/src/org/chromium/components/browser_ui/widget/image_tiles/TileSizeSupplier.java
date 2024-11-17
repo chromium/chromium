@@ -42,9 +42,8 @@ class TileSizeSupplier implements Supplier<TileSize> {
     }
 
     /**
-     * Given a desired cell width, computes the actual item width feasible. Should be
-     * invoked after a orientation change as well.
-     * @return The {@link TileSize} containing results of the computation.
+     * Given a desired cell width, computes the actual item width feasible. Should be invoked after
+     * a orientation change as well.
      */
     public void recompute() {
         double idealSpanCount =

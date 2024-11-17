@@ -17,15 +17,14 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_manager.account_storage_toggle.AccountStorageToggleFragmentArgs;
 import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
-import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.components.browser_ui.settings.SettingsNavigation.SettingsFragment;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -88,9 +87,7 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
                 && !prefService.getBoolean(Pref.ACCOUNT_STORAGE_NOTICE_SHOWN)
                 && windowAndroid != null
                 && BottomSheetControllerProvider.from(windowAndroid) != null
-                && windowAndroid.getContext().get() != null
-                && ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS);
+                && windowAndroid.getContext().get() != null;
     }
 
     @CalledByNative
@@ -177,16 +174,9 @@ class AccountStorageNoticeCoordinator extends EmptyBottomSheetObserver {
 
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putBoolean(AccountStorageToggleFragmentArgs.HIGHLIGHT, true);
-        // The toggle to disable account storage lives on different fragments depending on the flag.
-        @SettingsFragment
-        int fragment =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                        ? SettingsFragment.MANAGE_SYNC
-                        : SettingsFragment.GOOGLE_SERVICES;
         Intent intent =
-                SettingsLauncherFactory.createSettingsLauncher()
-                        .createSettingsActivityIntent(context, fragment, fragmentArgs);
+                SettingsNavigationFactory.createSettingsNavigation()
+                        .createSettingsIntent(context, SettingsFragment.MANAGE_SYNC, fragmentArgs);
         mWindowAndroid.showIntent(intent, this::onSettingsClosed, /* errorId= */ null);
     }
 

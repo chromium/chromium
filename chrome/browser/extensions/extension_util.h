@@ -50,9 +50,6 @@ void SetAllowFileAccess(const std::string& extension_id,
                         content::BrowserContext* context,
                         bool allow);
 
-// Returns true if |extension| should be synced.
-bool ShouldSync(const Extension* extension, content::BrowserContext* context);
-
 // Returns true if |extension_id| is idle and it is safe to perform actions such
 // as updating.
 bool IsExtensionIdle(const std::string& extension_id,
@@ -81,6 +78,8 @@ void SetDeveloperModeForProfile(Profile* profile, bool in_developer_mode);
 // Returns the extension name to be used in UI surfaces. Name will be truncated
 // if its very long, preventing extension name to spoof or break UI surfaces
 // (see crbug.com/40063885).
+std::u16string GetFixupExtensionNameForUIDisplay(
+    const std::u16string& extension_name);
 std::u16string GetFixupExtensionNameForUIDisplay(
     const std::string& extension_name);
 

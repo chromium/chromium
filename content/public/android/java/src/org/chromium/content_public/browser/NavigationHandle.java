@@ -19,7 +19,6 @@ import org.chromium.url.Origin;
 /** JNI bridge with content::NavigationHandle */
 @JNINamespace("content")
 public class NavigationHandle {
-    private long mNativeNavigationHandleProxy;
     private long mNativeNavigationHandle;
     private boolean mIsInPrimaryMainFrame;
     private boolean mIsRendererInitiated;
@@ -123,7 +122,7 @@ public class NavigationHandle {
 
     @CalledByNative
     private void initialize(
-            long nativeNavigationHandleProxy,
+            long unused_nativeNavigationHandleProxy,
             @NonNull GURL url,
             @NonNull GURL referrerUrl,
             @NonNull GURL baseUrlForDataUrl,
@@ -142,7 +141,6 @@ public class NavigationHandle {
             boolean isPdf,
             String mimeType,
             boolean isSaveableNavigation) {
-        mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
         mReferrerUrl = referrerUrl;
         mBaseUrlForDataUrl = baseUrlForDataUrl;
@@ -212,7 +210,6 @@ public class NavigationHandle {
     @CalledByNative
     private void release() {
         mNativeNavigationHandle = 0;
-        mNativeNavigationHandleProxy = 0;
     }
 
     public long nativeNavigationHandlePtr() {

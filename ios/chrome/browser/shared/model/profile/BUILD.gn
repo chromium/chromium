@@ -29,12 +29,6 @@ source_set("profile") {
     "//ios/web/webui",
     "//net",
   ]
-
-  public_deps = [ ":forward" ]
-}
-
-source_set("forward") {
-  sources = [ "profile_ios_forward.h" ]
 }
 
 source_set("profile_keyed_service_factory") {

@@ -18,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
-#include "build/chromeos_buildflags.h"
 #include "components/url_formatter/elide_url.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "ui/base/class_property.h"
@@ -109,11 +108,11 @@ std::unique_ptr<views::View> CreateItemView(const NotificationItem& item) {
 }
 
 bool IsForAshNotification() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // anonymous namespace
@@ -314,6 +313,7 @@ views::Builder<views::BoxLayoutView>
 NotificationViewBase::CreateLeftContentBuilder() {
   DCHECK(!left_content_);
   return views::Builder<views::BoxLayoutView>()
+      .SetID(ViewId::kLeftContent)
       .CopyAddressTo(&left_content_)
       .SetOrientation(views::BoxLayout::Orientation::kVertical);
 }
@@ -336,6 +336,7 @@ views::Builder<views::BoxLayoutView>
 NotificationViewBase::CreateInlineSettingsBuilder() {
   DCHECK(!settings_row_);
   return views::Builder<views::BoxLayoutView>()
+      .SetID(ViewId::kInlineSettingsRow)
       .CopyAddressTo(&settings_row_)
       .SetVisible(false);
 }
@@ -352,6 +353,7 @@ views::Builder<views::View>
 NotificationViewBase::CreateImageContainerBuilder() {
   DCHECK(!image_container_view_);
   return views::Builder<views::View>()
+      .SetID(ViewId::kImageContainerView)
       .CopyAddressTo(&image_container_view_)
       .SetUseDefaultFillLayout(true);
 }
@@ -582,12 +584,13 @@ void NotificationViewBase::CreateOrUpdateIconView(
   if (!icon_view_) {
     icon_view_ = right_content_->AddChildView(
         std::make_unique<ProportionalImageView>(GetIconViewSize()));
+    icon_view_->SetID(ViewId::kIconView);
   }
 
   bool apply_rounded_corners = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   apply_rounded_corners = for_ash_notification_;
-#endif  // IS_CHROMEOS_ASH
+#endif  // BUILDFLAG(IS_CHROMEOS)
   icon_view_->SetImage(icon, icon.Size(), apply_rounded_corners);
 
   // Hide the icon on the right side when the notification is expanded.

@@ -71,6 +71,7 @@ export class SettingsPinSettingsElement extends SettingsPinSettingsElementBase {
   private showSetPinDialog_: boolean;
   private showPinAutosubmitDialog_: boolean;
   private quickUnlockDisabledByPolicy_: boolean;
+  private hasPassword_: boolean;
 
   override ready(): void {
     super.ready();
@@ -98,11 +99,20 @@ export class SettingsPinSettingsElement extends SettingsPinSettingsElementBase {
   onFactorChanged(factor: AuthFactor): void {
     switch (factor) {
       case AuthFactor.kPin:
+      case AuthFactor.kGaiaPassword:
+      case AuthFactor.kLocalPassword:
         this.updatePinState_();
         break;
       default:
         return;
     }
+  }
+
+  // Remove pin is disabled when pin is the only factor available, or
+  // in other words, when there is no password available.
+  // Remove can also be disabled by then the QuickUnlock policy disallows it.
+  private removeDisabled_(): boolean {
+    return !this.hasPassword_ || this.quickUnlockDisabledByPolicy_;
   }
 
   private moreButton_(): CrIconButtonElement {
@@ -135,16 +145,34 @@ export class SettingsPinSettingsElement extends SettingsPinSettingsElementBase {
 
   /**
    * Fetches the state of the pin factor and updates the corresponding
-   * property.
+   * property. It also updates the fact that there is another knowledge factor
+   * present or not. This will help with logic of removal.
    */
   private async updatePinState_(): Promise<void> {
+    if (!this.authToken) {
+      return;
+    }
+
     if (typeof this.authToken !== 'string') {
       return;
     }
 
+    const authToken = this.authToken;
+
     const pfe = AuthFactorConfig.getRemote();
-    this.hasPin_ =
-        (await pfe.isConfigured(this.authToken, AuthFactor.kPin)).configured;
+    const [
+      { configured: hasGaiaPassword },
+      { configured: hasLocalPassword },
+      { configured: hasPin },
+    ] =
+        await Promise.all([
+          pfe.isConfigured(authToken, AuthFactor.kGaiaPassword),
+          pfe.isConfigured(authToken, AuthFactor.kLocalPassword),
+          pfe.isConfigured(authToken, AuthFactor.kPin),
+        ]);
+
+    this.hasPin_ = hasPin;
+    this.hasPassword_ = hasGaiaPassword || hasLocalPassword;
   }
 
   private onSetPinButtonClicked_(): void {

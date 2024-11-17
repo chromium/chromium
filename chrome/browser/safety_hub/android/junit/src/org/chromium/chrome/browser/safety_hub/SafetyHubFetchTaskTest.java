@@ -28,7 +28,6 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.components.background_task_scheduler.BackgroundTask;
@@ -40,7 +39,6 @@ import org.chromium.components.background_task_scheduler.TaskParameters;
 @RunWith(BaseRobolectricTestRunner.class)
 public class SafetyHubFetchTaskTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Rule public JniMocker mJniMocker = new JniMocker();
 
     @Mock private Context mContext;
     @Mock private Profile mProfile;
@@ -60,7 +58,7 @@ public class SafetyHubFetchTaskTest {
                                     return null;
                                 })
                 .when(mSafetyHubFetchService)
-                .fetchBreachedCredentialsCount(any());
+                .fetchCredentialsCount(any());
     }
 
     @Test
@@ -72,7 +70,7 @@ public class SafetyHubFetchTaskTest {
                         .onStartTaskBeforeNativeLoaded(mContext, params, mTaskFinishedCallback);
 
         assertEquals(NativeBackgroundTask.StartBeforeNativeResult.LOAD_NATIVE, result);
-        verify(mSafetyHubFetchService, never()).fetchBreachedCredentialsCount(any());
+        verify(mSafetyHubFetchService, never()).fetchCredentialsCount(any());
         verify(mTaskFinishedCallback, never()).taskFinished(anyBoolean());
     }
 
@@ -82,7 +80,7 @@ public class SafetyHubFetchTaskTest {
 
         new SafetyHubFetchTask().onStartTaskWithNative(mContext, params, mTaskFinishedCallback);
 
-        verify(mSafetyHubFetchService, times(1)).fetchBreachedCredentialsCount(any());
+        verify(mSafetyHubFetchService, times(1)).fetchCredentialsCount(any());
         verify(mTaskFinishedCallback, times(1)).taskFinished(anyBoolean());
     }
 

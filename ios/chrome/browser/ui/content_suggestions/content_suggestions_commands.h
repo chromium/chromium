@@ -9,7 +9,9 @@
 @protocol ContentSuggestionsCommands
 
 // Show the "See More" Set Up List view, which shows all items in the list.
-- (void)showSetUpListSeeMoreMenu;
+// If `expanded` is YES, the view will use the "large" detent by default,
+// otherwise the "medium" detent will be used.
+- (void)showSetUpListSeeMoreMenuExpanded:(BOOL)expanded;
 
 @end
 

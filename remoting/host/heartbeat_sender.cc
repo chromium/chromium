@@ -13,14 +13,12 @@
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringize_macros.h"
-#include "base/system/sys_info.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/network_interfaces.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "remoting/base/constants.h"
-#include "remoting/base/fqdn.h"
 #include "remoting/base/logging.h"
 #include "remoting/base/protobuf_http_client.h"
 #include "remoting/base/protobuf_http_request.h"
@@ -28,7 +26,6 @@
 #include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/host/host_config.h"
-#include "remoting/host/host_details.h"
 #include "remoting/host/server_log_entry_host.h"
 #include "remoting/signaling/ftl_signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
@@ -38,10 +35,8 @@ namespace remoting {
 
 namespace {
 
-constexpr char kLegacyHeartbeatPath[] = "/v1/directory:heartbeat";
-constexpr char kSendHeartbeatPath[] = "/v1/directory:sendheartbeat";
-
-constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+// TODO garykac: Remove this unused traffic annotation in a separate cl.
+constexpr net::NetworkTrafficAnnotationTag kUnusedTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("heartbeat_sender",
                                         R"(
         semantics {
@@ -67,8 +62,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "Not implemented."
         })");
 
+void IgnoreTrafficAnnotation(
+    const net::NetworkTrafficAnnotationTag& traffic_annotation) {}
+
 constexpr base::TimeDelta kMinimumHeartbeatInterval = base::Minutes(3);
-constexpr base::TimeDelta kHeartbeatResponseTimeout = base::Seconds(30);
 constexpr base::TimeDelta kResendDelayOnHostNotFound = base::Seconds(10);
 constexpr base::TimeDelta kResendDelayOnUnauthenticated = base::Seconds(10);
 
@@ -105,80 +102,6 @@ const net::BackoffEntry::Policy kBackoffPolicy = {
 
 }  // namespace
 
-class HeartbeatSender::OldHeartbeatClientImpl final
-    : public HeartbeatSender::OldHeartbeatClient {
- public:
-  explicit OldHeartbeatClientImpl(
-      OAuthTokenGetter* oauth_token_getter,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
-
-  OldHeartbeatClientImpl(const OldHeartbeatClientImpl&) = delete;
-  OldHeartbeatClientImpl& operator=(const OldHeartbeatClientImpl&) = delete;
-
-  ~OldHeartbeatClientImpl() override;
-
-  void LegacyHeartbeat(std::unique_ptr<apis::v1::HeartbeatRequest> request,
-                       LegacyHeartbeatResponseCallback callback) override;
-  void SendHeartbeat(std::unique_ptr<apis::v1::SendHeartbeatRequest> request,
-                     SendHeartbeatResponseCallback callback) override;
-
-  void CancelPendingRequests() override;
-
- private:
-  ProtobufHttpClient http_client_;
-};
-
-HeartbeatSender::OldHeartbeatClientImpl::OldHeartbeatClientImpl(
-    OAuthTokenGetter* oauth_token_getter,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : http_client_(ServiceUrls::GetInstance()->remoting_server_endpoint(),
-                   oauth_token_getter,
-                   url_loader_factory) {}
-
-HeartbeatSender::OldHeartbeatClientImpl::~OldHeartbeatClientImpl() = default;
-
-void HeartbeatSender::OldHeartbeatClientImpl::LegacyHeartbeat(
-    std::unique_ptr<apis::v1::HeartbeatRequest> request,
-    LegacyHeartbeatResponseCallback callback) {
-  std::string host_offline_reason =
-      request->has_host_offline_reason()
-          ? (" host_offline_reason: " + request->host_offline_reason())
-          : "";
-  HOST_LOG << "Sending outgoing legacy heartbeat." << host_offline_reason;
-
-  auto request_config =
-      std::make_unique<ProtobufHttpRequestConfig>(kTrafficAnnotation);
-  request_config->path = kLegacyHeartbeatPath;
-  request_config->request_message = std::move(request);
-  auto http_request =
-      std::make_unique<ProtobufHttpRequest>(std::move(request_config));
-  http_request->SetTimeoutDuration(kHeartbeatResponseTimeout);
-  http_request->SetResponseCallback(std::move(callback));
-  http_client_.ExecuteRequest(std::move(http_request));
-}
-
-void HeartbeatSender::OldHeartbeatClientImpl::SendHeartbeat(
-    std::unique_ptr<apis::v1::SendHeartbeatRequest> request,
-    SendHeartbeatResponseCallback callback) {
-  HOST_LOG << "Sending outgoing heartbeat.";
-
-  auto request_config =
-      std::make_unique<ProtobufHttpRequestConfig>(kTrafficAnnotation);
-  request_config->path = kSendHeartbeatPath;
-  request_config->request_message = std::move(request);
-  auto http_request =
-      std::make_unique<ProtobufHttpRequest>(std::move(request_config));
-  http_request->SetTimeoutDuration(kHeartbeatResponseTimeout);
-  http_request->SetResponseCallback(std::move(callback));
-  http_client_.ExecuteRequest(std::move(http_request));
-}
-
-void HeartbeatSender::OldHeartbeatClientImpl::CancelPendingRequests() {
-  http_client_.CancelPendingRequests();
-}
-
-// end of HeartbeatSender::OldHeartbeatClientImpl
-
 HeartbeatSender::HeartbeatSender(
     Delegate* delegate,
     const std::string& host_id,
@@ -191,8 +114,6 @@ HeartbeatSender::HeartbeatSender(
     : delegate_(delegate),
       host_id_(host_id),
       signal_strategy_(signal_strategy),
-      old_client_(std::make_unique<OldHeartbeatClientImpl>(oauth_token_getter,
-                                                           url_loader_factory)),
       oauth_token_getter_(oauth_token_getter),
       service_client_(std::move(heartbeat_service)),
       observer_(observer),
@@ -204,6 +125,9 @@ HeartbeatSender::HeartbeatSender(
   signal_strategy_->AddListener(this);
   OnSignalStrategyStateChange(signal_strategy_->GetState());
   set_fqdn_ = set_fqdn;
+
+  // Touch the unused traffic annotation value to avoid complaints.
+  IgnoreTrafficAnnotation(kUnusedTrafficAnnotation);
 }
 
 HeartbeatSender::~HeartbeatSender() {
@@ -234,8 +158,8 @@ void HeartbeatSender::OnSignalStrategyStateChange(SignalStrategy::State state) {
       SendFullHeartbeat();
       break;
     case SignalStrategy::State::DISCONNECTED:
-      old_client_->CancelPendingRequests();
-      heartbeat_timer_.AbandonAndStop();
+      service_client_->CancelPendingRequests();
+      heartbeat_timer_.Stop();
       break;
     default:
       // Do nothing
@@ -263,7 +187,7 @@ void HeartbeatSender::OnHostOfflineReasonAck() {
   }
 
   DCHECK(host_offline_reason_timeout_timer_.IsRunning());
-  host_offline_reason_timeout_timer_.AbandonAndStop();
+  host_offline_reason_timeout_timer_.Stop();
 
   std::move(host_offline_reason_ack_callback_).Run(true);
 }
@@ -271,8 +195,8 @@ void HeartbeatSender::OnHostOfflineReasonAck() {
 void HeartbeatSender::ClearHeartbeatTimer() {
   // Drop previous heartbeat and timer so that it doesn't interfere with the
   // current one.
-  old_client_->CancelPendingRequests();
-  heartbeat_timer_.AbandonAndStop();
+  service_client_->CancelPendingRequests();
+  heartbeat_timer_.Stop();
 }
 
 void HeartbeatSender::SendFullHeartbeat() {
@@ -284,14 +208,26 @@ void HeartbeatSender::SendFullHeartbeat() {
     return;
   }
 
-  VLOG(1) << "About to send full heartbeat.";
+  HOST_LOG << "Sending full heartbeat.";
 
   ClearHeartbeatTimer();
 
-  old_client_->LegacyHeartbeat(
-      CreateLegacyHeartbeatRequest(),
+  std::optional<std::string> offline_reason;
+  if (!host_offline_reason_.empty()) {
+    offline_reason = host_offline_reason_;
+    HOST_LOG << "Sending offline reason: " << host_offline_reason_;
+  }
+  std::optional<std::string> signaling_id;
+  auto signaling_id_str = signal_strategy_->GetLocalAddress().id();
+  if (!signaling_id_str.empty()) {
+    signaling_id = signaling_id_str;
+  }
+  service_client_->SendFullHeartbeat(
+      !initial_heartbeat_sent_, std::move(signaling_id),
+      std::move(offline_reason),
       base::BindOnce(&HeartbeatSender::OnLegacyHeartbeatResponse,
                      base::Unretained(this)));
+
   observer_->OnHeartbeatSent();
 }
 
@@ -304,18 +240,26 @@ void HeartbeatSender::SendLiteHeartbeat(bool useLiteHeartbeat) {
     return;
   }
 
-  VLOG(1) << "About to send lite heartbeat.";
+  HOST_LOG << "Sending heartbeat.";
 
   ClearHeartbeatTimer();
 
   if (useLiteHeartbeat) {
-    old_client_->SendHeartbeat(
-        CreateSendHeartbeatRequest(),
-        base::BindOnce(&HeartbeatSender::OnSendHeartbeatResponse,
-                       base::Unretained(this)));
+    service_client_->SendLiteHeartbeat(base::BindOnce(
+        &HeartbeatSender::OnSendHeartbeatResponse, base::Unretained(this)));
   } else {
-    old_client_->LegacyHeartbeat(
-        CreateLegacyHeartbeatRequest(),
+    std::optional<std::string> offline_reason;
+    if (!host_offline_reason_.empty()) {
+      offline_reason = host_offline_reason_;
+    }
+    std::optional<std::string> signaling_id;
+    auto signaling_id_str = signal_strategy_->GetLocalAddress().id();
+    if (!signaling_id_str.empty()) {
+      signaling_id = signaling_id_str;
+    }
+    service_client_->SendFullHeartbeat(
+        !initial_heartbeat_sent_, std::move(signaling_id),
+        std::move(offline_reason),
         base::BindOnce(&HeartbeatSender::OnLegacyHeartbeatResponse,
                        base::Unretained(this)));
   }
@@ -382,8 +326,8 @@ base::TimeDelta HeartbeatSender::CalculateDelay(
   switch (status.error_code()) {
     case ProtobufHttpStatus::Code::OK:
       if (optMinDelay.has_value()) {
-        LOG_IF(WARNING, optMinDelay.value() < kMinimumHeartbeatInterval)
-            << "Received suspicious interval_seconds: " << optMinDelay.value()
+        LOG_IF(WARNING, *optMinDelay < kMinimumHeartbeatInterval)
+            << "Received suspicious interval_seconds: " << *optMinDelay
             << ". Using minimum interval: " << kMinimumHeartbeatInterval;
       }
       delay = optMinDelay.value_or(kMinimumHeartbeatInterval);
@@ -405,25 +349,26 @@ base::TimeDelta HeartbeatSender::CalculateDelay(
 
 void HeartbeatSender::OnLegacyHeartbeatResponse(
     const ProtobufHttpStatus& status,
-    std::unique_ptr<apis::v1::HeartbeatResponse> response) {
+    std::optional<base::TimeDelta> wait_interval,
+    const std::string& primary_user_email,
+    std::optional<bool> require_session_authorization,
+    std::optional<bool> use_lite_heartbeat) {
   if (CheckHttpStatus(status)) {
-    std::optional<base::TimeDelta> optMinDelay;
     bool useLiteHeartbeat = false;
     if (status.error_code() == ProtobufHttpStatus::Code::OK) {
-      optMinDelay = base::Seconds(response->set_interval_seconds());
-      if (response->use_lite_heartbeat()) {
-        useLiteHeartbeat = true;
+      if (use_lite_heartbeat.has_value()) {
+        useLiteHeartbeat = *use_lite_heartbeat;
       }
-      if (!response->primary_user_email().empty()) {
-        delegate_->OnUpdateHostOwner(response->primary_user_email());
+      if (!primary_user_email.empty()) {
+        delegate_->OnUpdateHostOwner(primary_user_email);
       }
-      if (response->has_require_session_authorization()) {
-        bool require = response->require_session_authorization();
+      if (require_session_authorization.has_value()) {
+        bool require = *require_session_authorization;
         delegate_->OnUpdateRequireSessionAuthorization(require);
       }
     }
     heartbeat_timer_.Start(
-        FROM_HERE, CalculateDelay(status, std::move(optMinDelay)),
+        FROM_HERE, CalculateDelay(status, std::move(wait_interval)),
         base::BindOnce(&HeartbeatSender::SendLiteHeartbeat,
                        base::Unretained(this), useLiteHeartbeat));
   }
@@ -431,53 +376,16 @@ void HeartbeatSender::OnLegacyHeartbeatResponse(
 
 void HeartbeatSender::OnSendHeartbeatResponse(
     const ProtobufHttpStatus& status,
-    std::unique_ptr<apis::v1::SendHeartbeatResponse> response) {
+    std::optional<base::TimeDelta> wait_interval,
+    const std::string& primary_user_email,
+    std::optional<bool> require_session_authorization,
+    std::optional<bool> use_lite_heartbeat) {
   if (CheckHttpStatus(status)) {
-    std::optional<base::TimeDelta> optMinDelay;
-    if (status.error_code() == ProtobufHttpStatus::Code::OK) {
-      optMinDelay = base::Seconds(response->wait_interval_seconds());
-    }
     heartbeat_timer_.Start(FROM_HERE,
-                           CalculateDelay(status, std::move(optMinDelay)),
+                           CalculateDelay(status, std::move(wait_interval)),
                            base::BindOnce(&HeartbeatSender::SendLiteHeartbeat,
                                           base::Unretained(this), true));
   }
-}
-
-std::unique_ptr<apis::v1::HeartbeatRequest>
-HeartbeatSender::CreateLegacyHeartbeatRequest() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto heartbeat = std::make_unique<apis::v1::HeartbeatRequest>();
-  heartbeat->set_tachyon_id(signal_strategy_->GetLocalAddress().id());
-  heartbeat->set_host_id(host_id_);
-  if (!host_offline_reason_.empty()) {
-    heartbeat->set_host_offline_reason(host_offline_reason_);
-  }
-  heartbeat->set_host_version(STRINGIZE(VERSION));
-  heartbeat->set_host_os_name(GetHostOperatingSystemName());
-  heartbeat->set_host_os_version(GetHostOperatingSystemVersion());
-  heartbeat->set_host_cpu_type(base::SysInfo::OperatingSystemArchitecture());
-  heartbeat->set_is_initial_heartbeat(!initial_heartbeat_sent_);
-
-  if (set_fqdn_) {
-    std::string fqdn = GetFqdn();
-    if (!fqdn.empty()) {
-      heartbeat->set_hostname(fqdn);
-    }
-  }
-
-  return heartbeat;
-}
-
-std::unique_ptr<apis::v1::SendHeartbeatRequest>
-HeartbeatSender::CreateSendHeartbeatRequest() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto heartbeat = std::make_unique<apis::v1::SendHeartbeatRequest>();
-  heartbeat->set_host_id(host_id_);
-
-  return heartbeat;
 }
 
 }  // namespace remoting

@@ -113,8 +113,12 @@ config("key_defines") {
 
 component("google_apis") {
   sources = [
+    "api_key_cache.cc",
+    "api_key_cache.h",
     "credentials_mode.cc",
     "credentials_mode.h",
+    "default_api_keys-inc.cc",
+    "default_api_keys.h",
     "gaia/core_account_id.cc",
     "gaia/core_account_id.h",
     "gaia/gaia_access_token_fetcher.cc",
@@ -159,10 +163,8 @@ component("google_apis") {
     "gaia/oauth_multilogin_result.h",
     "gaia/oauth_request_signer.cc",
     "gaia/oauth_request_signer.h",
-    "google_api_keys-inc.cc",
+    "google_api_keys.cc",
     "google_api_keys.h",
-    "google_api_keys_utils.cc",
-    "google_api_keys_utils.h",
   ]
 
   configs += [
@@ -314,7 +316,9 @@ test("google_apis_unittests") {
   if (is_chromeos) {
     deps += [
       "//google_apis/classroom:classroom_unittests",
+      "//google_apis/people:people_unittest_sources",
       "//google_apis/tasks:tasks_unittests",
+      "//google_apis/youtube_music:youtube_music_unittests",
     ]
   }
 }

@@ -50,6 +50,7 @@ All changes to this list should go through Blink's feature review process: http:
     alignment-baseline
     all
     anchor-name
+    anchor-scope
     animation-composition
     animation-delay
     animation-direction
@@ -193,6 +194,7 @@ All changes to this list should go through Blink's feature review process: http:
     font-variant-alternates
     font-variant-caps
     font-variant-east-asian
+    font-variant-emoji
     font-variant-ligatures
     font-variant-numeric
     font-variant-position
@@ -217,7 +219,6 @@ All changes to this list should go through Blink's feature review process: http:
     image-rendering
     initial-letter
     inline-size
-    inset-area
     inset-block-end
     inset-block-start
     inset-inline-end
@@ -611,6 +612,7 @@ All changes to this list should go through Blink's feature review process: http:
         font-variant-alternates
         font-variant-caps
         font-variant-east-asian
+        font-variant-emoji
         font-variant-ligatures
         font-variant-numeric
         font-variant-position
@@ -625,6 +627,7 @@ All changes to this list should go through Blink's feature review process: http:
         font-variant-alternates
         font-variant-caps
         font-variant-east-asian
+        font-variant-emoji
         font-variant-ligatures
         font-variant-numeric
         font-variant-position

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/core/fetch/form_data_bytes_consumer.h"
 
 #include "base/containers/span.h"
@@ -30,6 +25,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
+#include "third_party/blink/renderer/platform/network/wrapped_data_pipe_getter.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -83,7 +79,7 @@ class SimpleDataPipeGetter : public network::mojom::blink::DataPipeGetter {
 scoped_refptr<EncodedFormData> ComplexFormData() {
   scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
 
-  data->AppendData("foo", 3);
+  data->AppendData(base::span_from_cstring("foo"));
   data->AppendFileRange("/foo/bar/baz", 3, 4,
                         base::Time::FromSecondsSinceUnixEpoch(5));
   auto blob_data = std::make_unique<BlobData>();
@@ -91,7 +87,7 @@ scoped_refptr<EncodedFormData> ComplexFormData() {
   auto size = blob_data->length();
   scoped_refptr<BlobDataHandle> blob_data_handle =
       BlobDataHandle::Create(std::move(blob_data), size);
-  data->AppendBlob(blob_data_handle->Uuid(), blob_data_handle);
+  data->AppendBlob(blob_data_handle);
   Vector<char> boundary;
   boundary.Append("\0", 1);
   data->SetBoundary(boundary);
@@ -144,6 +140,30 @@ class FormDataBytesConsumerTest : public PageTestBase {
         GetFrame().GetDocument()->GetExecutionContext());
   }
 
+  String DrainAsString(scoped_refptr<EncodedFormData> input_form_data) {
+    auto* consumer = MakeGarbageCollected<FormDataBytesConsumer>(
+        GetFrame().DomWindow(), input_form_data);
+    auto* reader = MakeGarbageCollected<BytesConsumerTestReader>(consumer);
+    std::pair<BytesConsumer::Result, Vector<char>> result = reader->Run();
+    EXPECT_EQ(Result::kDone, result.first);
+    return String(result.second);
+  }
+
+  scoped_refptr<EncodedFormData> DrainAsFormData(
+      scoped_refptr<EncodedFormData> input_form_data) {
+    auto* consumer = MakeGarbageCollected<FormDataBytesConsumer>(
+        GetFrame().DomWindow(), input_form_data);
+    return consumer->DrainAsFormData();
+  }
+
+  scoped_refptr<BlobDataHandle> DrainAsBlobDataHandle(
+      scoped_refptr<EncodedFormData> input_form_data) {
+    auto* consumer = MakeGarbageCollected<FormDataBytesConsumer>(
+        GetFrame().DomWindow(), input_form_data);
+    return consumer->DrainAsBlobDataHandle(
+        BytesConsumer::BlobSizePolicy::kAllowBlobWithInvalidSize);
+  }
+
  private:
   std::unique_ptr<FileBackedBlobFactoryTestHelper> file_factory_helper_;
 };
@@ -154,8 +174,7 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromString) {
            MakeGarbageCollected<FormDataBytesConsumer>("hello, world")))
           ->Run();
   EXPECT_EQ(Result::kDone, result.first);
-  EXPECT_EQ("hello, world",
-            BytesConsumerTestUtil::CharVectorToString(result.second));
+  EXPECT_EQ("hello, world", String(result.second));
 }
 
 TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromStringNonLatin) {
@@ -164,8 +183,7 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromStringNonLatin) {
                      MakeGarbageCollected<FormDataBytesConsumer>(String(kCs))))
                     ->Run();
   EXPECT_EQ(Result::kDone, result.first);
-  EXPECT_EQ("\xe3\x81\x82",
-            BytesConsumerTestUtil::CharVectorToString(result.second));
+  EXPECT_EQ("\xe3\x81\x82", String(result.second));
 }
 
 TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromArrayBuffer) {
@@ -192,7 +210,7 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromArrayBufferView) {
                          DOMUint8Array::Create(buffer, kOffset, kSize))))
                     ->Run();
   Vector<char> expected;
-  expected.Append(kData + kOffset, kSize);
+  expected.AppendSpan(base::span(kData).subspan(kOffset, kSize));
 
   EXPECT_EQ(Result::kDone, result.first);
   EXPECT_EQ(expected, result.second);
@@ -200,16 +218,15 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromArrayBufferView) {
 
 TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromSimpleFormData) {
   scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
-  data->AppendData("foo", 3);
-  data->AppendData("hoge", 4);
+  data->AppendData(base::span_from_cstring("foo"));
+  data->AppendData(base::span_from_cstring("hoge"));
 
   auto result = (MakeGarbageCollected<BytesConsumerTestReader>(
                      MakeGarbageCollected<FormDataBytesConsumer>(
                          GetFrame().DomWindow(), data)))
                     ->Run();
   EXPECT_EQ(Result::kDone, result.first);
-  EXPECT_EQ("foohoge",
-            BytesConsumerTestUtil::CharVectorToString(result.second));
+  EXPECT_EQ("foohoge", String(result.second));
 }
 
 TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromComplexFormData) {
@@ -219,19 +236,17 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromComplexFormData) {
       GetFrame().DomWindow(), data, underlying);
   Checkpoint checkpoint;
 
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer;
 
   InSequence s;
   EXPECT_CALL(checkpoint, Call(1));
-  EXPECT_CALL(*underlying, BeginRead(&buffer, &available))
-      .WillOnce(Return(Result::kOk));
+  EXPECT_CALL(*underlying, BeginRead(buffer)).WillOnce(Return(Result::kOk));
   EXPECT_CALL(checkpoint, Call(2));
   EXPECT_CALL(*underlying, EndRead(0)).WillOnce(Return(Result::kOk));
   EXPECT_CALL(checkpoint, Call(3));
 
   checkpoint.Call(1);
-  ASSERT_EQ(Result::kOk, consumer->BeginRead(&buffer, &available));
+  ASSERT_EQ(Result::kOk, consumer->BeginRead(buffer));
   checkpoint.Call(2);
   EXPECT_EQ(Result::kOk, consumer->EndRead(0));
   checkpoint.Call(3);
@@ -240,14 +255,13 @@ TEST_F(FormDataBytesConsumerTest, TwoPhaseReadFromComplexFormData) {
 TEST_F(FormDataBytesConsumerTest, EndReadCanReturnDone) {
   BytesConsumer* consumer =
       MakeGarbageCollected<FormDataBytesConsumer>("hello, world");
-  const char* buffer = nullptr;
-  size_t available = 0;
-  ASSERT_EQ(Result::kOk, consumer->BeginRead(&buffer, &available));
-  ASSERT_EQ(12u, available);
-  EXPECT_EQ("hello, world", String(buffer, available));
+  base::span<const char> buffer;
+  ASSERT_EQ(Result::kOk, consumer->BeginRead(buffer));
+  ASSERT_EQ(12u, buffer.size());
+  EXPECT_EQ("hello, world", String(base::as_bytes(buffer)));
   EXPECT_EQ(BytesConsumer::PublicState::kReadableOrWaiting,
             consumer->GetPublicState());
-  EXPECT_EQ(Result::kDone, consumer->EndRead(available));
+  EXPECT_EQ(Result::kDone, consumer->EndRead(buffer.size()));
   EXPECT_EQ(BytesConsumer::PublicState::kClosed, consumer->GetPublicState());
 }
 
@@ -261,9 +275,8 @@ TEST_F(FormDataBytesConsumerTest, DrainAsBlobDataHandleFromString) {
   EXPECT_EQ(String(), blob_data_handle->GetType());
   EXPECT_EQ(12u, blob_data_handle->size());
   EXPECT_FALSE(consumer->DrainAsFormData());
-  const char* buffer = nullptr;
-  size_t available = 0;
-  EXPECT_EQ(Result::kDone, consumer->BeginRead(&buffer, &available));
+  base::span<const char> buffer;
+  EXPECT_EQ(Result::kDone, consumer->BeginRead(buffer));
   EXPECT_EQ(BytesConsumer::PublicState::kClosed, consumer->GetPublicState());
 }
 
@@ -277,9 +290,8 @@ TEST_F(FormDataBytesConsumerTest, DrainAsBlobDataHandleFromArrayBuffer) {
   EXPECT_EQ(String(), blob_data_handle->GetType());
   EXPECT_EQ(3u, blob_data_handle->size());
   EXPECT_FALSE(consumer->DrainAsFormData());
-  const char* buffer = nullptr;
-  size_t available = 0;
-  EXPECT_EQ(Result::kDone, consumer->BeginRead(&buffer, &available));
+  base::span<const char> buffer;
+  EXPECT_EQ(Result::kDone, consumer->BeginRead(buffer));
   EXPECT_EQ(BytesConsumer::PublicState::kClosed, consumer->GetPublicState());
 }
 
@@ -300,9 +312,8 @@ TEST_F(FormDataBytesConsumerTest, DrainAsBlobDataHandleFromSimpleFormData) {
   EXPECT_EQ(input_form_data->FlattenToString().Utf8().length(),
             blob_data_handle->size());
   EXPECT_FALSE(consumer->DrainAsFormData());
-  const char* buffer = nullptr;
-  size_t available = 0;
-  EXPECT_EQ(Result::kDone, consumer->BeginRead(&buffer, &available));
+  base::span<const char> buffer;
+  EXPECT_EQ(Result::kDone, consumer->BeginRead(buffer));
   EXPECT_EQ(BytesConsumer::PublicState::kClosed, consumer->GetPublicState());
 }
 
@@ -316,9 +327,8 @@ TEST_F(FormDataBytesConsumerTest, DrainAsBlobDataHandleFromComplexFormData) {
   ASSERT_TRUE(blob_data_handle);
 
   EXPECT_FALSE(consumer->DrainAsFormData());
-  const char* buffer = nullptr;
-  size_t available = 0;
-  EXPECT_EQ(Result::kDone, consumer->BeginRead(&buffer, &available));
+  base::span<const char> buffer;
+  EXPECT_EQ(Result::kDone, consumer->BeginRead(buffer));
   EXPECT_EQ(BytesConsumer::PublicState::kClosed, consumer->GetPublicState());
 }
 
@@ -330,9 +340,8 @@ TEST_F(FormDataBytesConsumerTest, DrainAsFormDataFromString) {
   EXPECT_EQ("hello, world", form_data->FlattenToString());
 
   EXPECT_FALSE(consumer->DrainAsBlobDataHandle());
-  const char* buffer = nullptr;
-  size_t available = 0;
-  EXPECT_EQ(Result::kDone, consumer->BeginRead(&buffer, &available));
+  base::span<const char> buffer;
+  EXPECT_EQ(Result::kDone, consumer->BeginRead(buffer));
   EXPECT_EQ(BytesConsumer::PublicState::kClosed, consumer->GetPublicState());
 }
 
@@ -345,9 +354,8 @@ TEST_F(FormDataBytesConsumerTest, DrainAsFormDataFromArrayBuffer) {
   EXPECT_EQ("foo", form_data->FlattenToString());
 
   EXPECT_FALSE(consumer->DrainAsBlobDataHandle());
-  const char* buffer = nullptr;
-  size_t available = 0;
-  EXPECT_EQ(Result::kDone, consumer->BeginRead(&buffer, &available));
+  base::span<const char> buffer;
+  EXPECT_EQ(Result::kDone, consumer->BeginRead(buffer));
   EXPECT_EQ(BytesConsumer::PublicState::kClosed, consumer->GetPublicState());
 }
 
@@ -362,9 +370,8 @@ TEST_F(FormDataBytesConsumerTest, DrainAsFormDataFromSimpleFormData) {
       GetFrame().DomWindow(), input_form_data);
   EXPECT_EQ(input_form_data, consumer->DrainAsFormData());
   EXPECT_FALSE(consumer->DrainAsBlobDataHandle());
-  const char* buffer = nullptr;
-  size_t available = 0;
-  EXPECT_EQ(Result::kDone, consumer->BeginRead(&buffer, &available));
+  base::span<const char> buffer;
+  EXPECT_EQ(Result::kDone, consumer->BeginRead(buffer));
   EXPECT_EQ(BytesConsumer::PublicState::kClosed, consumer->GetPublicState());
 }
 
@@ -375,19 +382,17 @@ TEST_F(FormDataBytesConsumerTest, DrainAsFormDataFromComplexFormData) {
       GetFrame().DomWindow(), input_form_data);
   EXPECT_EQ(input_form_data, consumer->DrainAsFormData());
   EXPECT_FALSE(consumer->DrainAsBlobDataHandle());
-  const char* buffer = nullptr;
-  size_t available = 0;
-  EXPECT_EQ(Result::kDone, consumer->BeginRead(&buffer, &available));
+  base::span<const char> buffer;
+  EXPECT_EQ(Result::kDone, consumer->BeginRead(buffer));
   EXPECT_EQ(BytesConsumer::PublicState::kClosed, consumer->GetPublicState());
 }
 
 TEST_F(FormDataBytesConsumerTest, BeginReadAffectsDraining) {
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer;
   BytesConsumer* consumer =
       MakeGarbageCollected<FormDataBytesConsumer>("hello, world");
-  ASSERT_EQ(Result::kOk, consumer->BeginRead(&buffer, &available));
-  EXPECT_EQ("hello, world", String(buffer, available));
+  ASSERT_EQ(Result::kOk, consumer->BeginRead(buffer));
+  EXPECT_EQ("hello, world", String(base::as_bytes(buffer)));
 
   ASSERT_EQ(Result::kOk, consumer->EndRead(0));
   EXPECT_FALSE(consumer->DrainAsFormData());
@@ -401,14 +406,12 @@ TEST_F(FormDataBytesConsumerTest, BeginReadAffectsDrainingWithComplexFormData) {
   BytesConsumer* consumer = MakeGarbageCollected<FormDataBytesConsumer>(
       GetFrame().DomWindow(), ComplexFormData(), underlying);
 
-  const char* buffer = nullptr;
-  size_t available = 0;
+  base::span<const char> buffer;
   Checkpoint checkpoint;
 
   InSequence s;
   EXPECT_CALL(checkpoint, Call(1));
-  EXPECT_CALL(*underlying, BeginRead(&buffer, &available))
-      .WillOnce(Return(Result::kOk));
+  EXPECT_CALL(*underlying, BeginRead(buffer)).WillOnce(Return(Result::kOk));
   EXPECT_CALL(*underlying, EndRead(0)).WillOnce(Return(Result::kOk));
   EXPECT_CALL(checkpoint, Call(2));
   // drainAsFormData should not be called here.
@@ -421,7 +424,7 @@ TEST_F(FormDataBytesConsumerTest, BeginReadAffectsDrainingWithComplexFormData) {
   EXPECT_CALL(checkpoint, Call(5));
 
   checkpoint.Call(1);
-  ASSERT_EQ(Result::kOk, consumer->BeginRead(&buffer, &available));
+  ASSERT_EQ(Result::kOk, consumer->BeginRead(buffer));
   ASSERT_EQ(Result::kOk, consumer->EndRead(0));
   checkpoint.Call(2);
   EXPECT_FALSE(consumer->DrainAsFormData());
@@ -482,7 +485,7 @@ TEST_F(FormDataBytesConsumerTest, DataPipeFormData) {
   std::pair<BytesConsumer::Result, Vector<char>> result = reader->Run();
   EXPECT_EQ(Result::kDone, result.first);
   EXPECT_EQ("foo hello world here's another data pipe bar baz",
-            BytesConsumerTestUtil::CharVectorToString(result.second));
+            String(result.second));
 }
 
 // Tests DrainAsFormData() on an EncodedFormData with data pipe elements.
@@ -504,11 +507,9 @@ TEST_F(FormDataBytesConsumerTest,
   scoped_refptr<EncodedFormData> input_form_data = DataPipeFormData();
   auto* consumer = MakeGarbageCollected<FormDataBytesConsumer>(
       GetFrame().DomWindow(), input_form_data);
-  const char* buffer = nullptr;
-  size_t available = 0;
-  EXPECT_EQ(BytesConsumer::Result::kOk,
-            consumer->BeginRead(&buffer, &available));
-  EXPECT_EQ("foo", String(buffer, available));
+  base::span<const char> buffer;
+  EXPECT_EQ(BytesConsumer::Result::kOk, consumer->BeginRead(buffer));
+  EXPECT_EQ("foo", String(base::as_bytes(buffer)));
 
   // Try to drain form data. It should return null since we started reading.
   scoped_refptr<EncodedFormData> drained_form_data =
@@ -516,15 +517,91 @@ TEST_F(FormDataBytesConsumerTest,
   EXPECT_FALSE(drained_form_data);
   EXPECT_EQ(BytesConsumer::PublicState::kReadableOrWaiting,
             consumer->GetPublicState());
-  EXPECT_EQ(BytesConsumer::Result::kOk, consumer->EndRead(available));
+  EXPECT_EQ(BytesConsumer::Result::kOk, consumer->EndRead(buffer.size()));
 
   // The consumer should still be readable. Finish reading.
   auto* reader = MakeGarbageCollected<BytesConsumerTestReader>(consumer);
   std::pair<BytesConsumer::Result, Vector<char>> result = reader->Run();
   EXPECT_EQ(Result::kDone, result.first);
   EXPECT_EQ(" hello world here's another data pipe bar baz",
-            BytesConsumerTestUtil::CharVectorToString(result.second));
+            String(result.second));
 }
+
+void AppendDataPipe(scoped_refptr<EncodedFormData> data, String content) {
+  mojo::PendingRemote<network::mojom::blink::DataPipeGetter> data_pipe_getter;
+  // Object deletes itself.
+  new SimpleDataPipeGetter(content,
+                           data_pipe_getter.InitWithNewPipeAndPassReceiver());
+  auto wrapped =
+      base::MakeRefCounted<WrappedDataPipeGetter>(std::move(data_pipe_getter));
+  data->AppendDataPipe(std::move(wrapped));
+}
+
+scoped_refptr<BlobDataHandle> CreateBlobHandle(const String& content) {
+  auto blob_data = std::make_unique<BlobData>();
+  blob_data->AppendText(content, false);
+  auto size = blob_data->length();
+  return BlobDataHandle::Create(std::move(blob_data), size);
+}
+
+scoped_refptr<EncodedFormData> CreateDataPipeData() {
+  scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
+  Vector<char> boundary;
+  boundary.Append("\0", 1);
+  data->SetBoundary(boundary);
+
+  data->AppendData(base::span_from_cstring("foo"));
+  AppendDataPipe(data, " hello world");
+  return data;
+}
+
+TEST_F(FormDataBytesConsumerTest, InvalidType1) {
+  const String kExpected = "foo hello world";
+  ASSERT_EQ(kExpected, DrainAsString(CreateDataPipeData()));
+
+  scoped_refptr<EncodedFormData> data = CreateDataPipeData();
+  data->AppendBlob(CreateBlobHandle("bar"));
+  ASSERT_EQ(EncodedFormData::FormDataType::kInvalid, data->GetType());
+
+  // sizeof("foo" + "bar") ignoring the mid "hello world" datapipe.
+  // TODO(crbug.com/374124998): Unfortunately BytesConsumerTestReader can not
+  // work with blob to drain string. We should fix it.
+  EXPECT_EQ(6u, DrainAsBlobDataHandle(data)->size());
+}
+
+scoped_refptr<EncodedFormData> CreateBlobData() {
+  scoped_refptr<EncodedFormData> data = EncodedFormData::Create();
+  Vector<char> boundary;
+  boundary.Append("\0", 1);
+  data->SetBoundary(boundary);
+
+  data->AppendData(base::span_from_cstring("foo"));
+  data->AppendBlob(CreateBlobHandle("bar"));
+  return data;
+}
+
+TEST_F(FormDataBytesConsumerTest, InvalidType2) {
+  scoped_refptr<EncodedFormData> data = CreateBlobData();
+  AppendDataPipe(data, " datapipe");
+  ASSERT_EQ(EncodedFormData::FormDataType::kInvalid, data->GetType());
+
+  auto* consumer =
+      MakeGarbageCollected<FormDataBytesConsumer>(GetFrame().DomWindow(), data);
+  Vector<char> str;
+  {
+    base::span<const char> buffer;
+    EXPECT_EQ(BytesConsumer::Result::kOk, consumer->BeginRead(buffer));
+    str.AppendSpan(buffer);
+    EXPECT_EQ(BytesConsumer::Result::kOk, consumer->EndRead(buffer.size()));
+  }
+  EXPECT_EQ("foo", String(str));
+
+  {
+    base::span<const char> buffer;
+    EXPECT_EQ(BytesConsumer::Result::kError, consumer->BeginRead(buffer));
+  }
+}
+// TODO(crbug.com/374124998): We should add more testing.
 
 }  // namespace
 }  // namespace blink

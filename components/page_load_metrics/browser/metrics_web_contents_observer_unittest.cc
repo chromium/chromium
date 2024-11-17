@@ -413,33 +413,6 @@ TEST_F(MetricsWebContentsObserverTest, SameDocumentNoTrigger) {
   CheckNoErrorEvents();
 }
 
-TEST_F(MetricsWebContentsObserverTest, DontLogNewTabPage) {
-  mojom::PageLoadTiming timing;
-  page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromSecondsSinceUnixEpoch(1);
-
-  embedder_interface_->set_is_ntp(true);
-
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl));
-  SimulateTimingUpdate(timing);
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl2));
-  ASSERT_EQ(0, CountUpdatedTimingReported());
-  ASSERT_EQ(0, CountCompleteTimingReported());
-
-  // Ensure that NTP and other untracked loads are still accounted for as part
-  // of keeping track of the first navigation in the WebContents.
-  embedder_interface_->set_is_ntp(false);
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl));
-  ASSERT_TRUE(is_first_navigation_in_web_contents().has_value());
-  ASSERT_FALSE(is_first_navigation_in_web_contents().value());
-
-  CheckErrorEvent(ERR_IPC_WITH_NO_RELEVANT_LOAD, 1);
-  CheckTotalErrorEvents();
-}
-
 TEST_F(MetricsWebContentsObserverTest, DontLogIrrelevantNavigation) {
   mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
@@ -1092,19 +1065,6 @@ TEST_F(MetricsWebContentsObserverTest,
   EXPECT_TRUE(loaded_resources().empty());
 }
 
-TEST_F(MetricsWebContentsObserverTest,
-       OnLoadedResource_IgnoreNonHttpOrHttpsScheme) {
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(
-      web_contents(), GURL(kDefaultTestUrl));
-  GURL loaded_resource_url("data:text/html,Hello world");
-  observer()->ResourceLoadComplete(
-      web_contents()->GetPrimaryMainFrame(), content::GlobalRequestID(),
-      *CreateResourceLoadInfo(loaded_resource_url,
-                              network::mojom::RequestDestination::kScript));
-
-  EXPECT_TRUE(loaded_resources().empty());
-}
-
 TEST_F(MetricsWebContentsObserverTest, RecordFeatureUsage) {
   content::NavigationSimulator::NavigateAndCommitFromBrowser(
       web_contents(), GURL(kDefaultTestUrl));
@@ -1367,8 +1327,11 @@ class MetricsWebContentsObserverNonPrimaryPageTest
     explicit Embedder(MetricsWebContentsObserverNonPrimaryPageTest* owner)
         : owner_(owner) {}
 
-    void RegisterObservers(PageLoadTracker* tracker) override {
-      TestMetricsWebContentsObserverEmbedder::RegisterObservers(tracker);
+    void RegisterObservers(
+        PageLoadTracker* tracker,
+        content::NavigationHandle* navigation_handle) override {
+      TestMetricsWebContentsObserverEmbedder::RegisterObservers(
+          tracker, navigation_handle);
       tracker->AddObserver(std::make_unique<MetricsObserver>(owner_));
     }
 

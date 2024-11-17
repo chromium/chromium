@@ -55,10 +55,6 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
     description_class_styles.push_back(description_class_item.style);
   }
 
-  base::android::ScopedJavaLocalRef<jobject> janswer;
-  if (answer)
-    janswer = answer->CreateJavaObject(answer_type);
-
   ScopedJavaLocalRef<jbyteArray> j_answer_template;
   if (answer_template) {
     std::string str_answer_template;
@@ -99,15 +95,14 @@ ScopedJavaLocalRef<jobject> AutocompleteMatch::GetOrCreateJavaObject(
   java_match_ = std::make_unique<ScopedJavaGlobalRef<jobject>>(
       Java_AutocompleteMatch_build(
           env, reinterpret_cast<intptr_t>(this), type,
-          ToJavaIntArray(env, temp_subtypes), IsSearchType(type), relevance,
-          transition, ConvertUTF16ToJavaString(env, contents),
+          ToJavaIntArray(env, temp_subtypes), IsSearchType(type), transition,
+          ConvertUTF16ToJavaString(env, contents),
           ToJavaIntArray(env, contents_class_offsets),
           ToJavaIntArray(env, contents_class_styles),
           ConvertUTF16ToJavaString(env, description),
           ToJavaIntArray(env, description_class_offsets),
-          ToJavaIntArray(env, description_class_styles), janswer,
-          j_answer_template, answer_type,
-          ConvertUTF16ToJavaString(env, fill_into_edit),
+          ToJavaIntArray(env, description_class_styles), j_answer_template,
+          answer_type, ConvertUTF16ToJavaString(env, fill_into_edit),
           url::GURLAndroid::FromNativeGURL(env, destination_url),
           url::GURLAndroid::FromNativeGURL(env, image_url),
           j_image_dominant_color, SupportsDeletion(), j_post_content_type,
@@ -218,21 +213,15 @@ void AutocompleteMatch::UpdateJavaDestinationUrl() {
 void AutocompleteMatch::UpdateJavaAnswer() {
   if (java_match_) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled) {
+    if (answer_template) {
       ScopedJavaLocalRef<jbyteArray> j_answer_template;
-      if (answer_template) {
-        std::string str_answer_template;
-        if (answer_template->SerializeToString(&str_answer_template)) {
-          j_answer_template =
-              base::android::ToJavaByteArray(env, str_answer_template);
-        }
+      std::string str_answer_template;
+      if (answer_template->SerializeToString(&str_answer_template)) {
+        j_answer_template =
+            base::android::ToJavaByteArray(env, str_answer_template);
       }
       Java_AutocompleteMatch_setAnswerTemplate(
           env, *java_match_, answer_template ? j_answer_template : nullptr);
-    } else {
-      Java_AutocompleteMatch_setAnswer(
-          env, *java_match_,
-          answer ? answer->CreateJavaObject(answer_type) : nullptr);
     }
     Java_AutocompleteMatch_setAnswerType(env, *java_match_, answer_type);
   }

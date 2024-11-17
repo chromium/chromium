@@ -41,6 +41,7 @@
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/signin/dice_response_handler.h"
+#include "chrome/browser/signin/dice_response_handler_factory.h"
 #include "chrome/browser/signin/dice_web_signin_interceptor.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_util.h"
@@ -87,7 +88,7 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/sync_user_events/user_event_service.h"
-#include "components/user_education/common/feature_promo_controller.h"
+#include "components/user_education/views/help_bubble_view.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
@@ -714,10 +715,6 @@ class DiceBrowserTest : public InProcessBrowserTest,
     EXPECT_EQ(count, token_revoked_count_);
   }
 
-  DiceResponseHandler* GetDiceResponseHandler() {
-    return DiceResponseHandler::GetForProfile(browser()->profile());
-  }
-
   void CloseBrowser() {
     identity_manager_observation_.Reset();
     account_reconcilor_observation_.Reset();
@@ -828,7 +825,8 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithBoundSessionCredentialsEnabled,
 // Checks that the account reconcilor is blocked when where was OAuth
 // outage in Dice, and unblocked after the timeout.
 IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SupportOAuthOutageInDice) {
-  DiceResponseHandler* dice_response_handler = GetDiceResponseHandler();
+  DiceResponseHandler* dice_response_handler =
+      DiceResponseHandlerFactory::GetForProfile(browser()->profile());
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner =
       new base::TestMockTimeTaskRunner();
   dice_response_handler->SetTaskRunner(task_runner);
@@ -1460,9 +1458,9 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninRollbackBrowserTest,
       account_info.account_id));
   signin::AccountsInCookieJarInfo cookie_jar =
       GetIdentityManager()->GetAccountsInCookieJar();
-  ASSERT_TRUE(cookie_jar.accounts_are_fresh);
-  ASSERT_EQ(cookie_jar.signed_in_accounts.size(), 1u);
-  EXPECT_TRUE(gaia::AreEmailsSame(cookie_jar.signed_in_accounts[0].email,
+  ASSERT_TRUE(cookie_jar.AreAccountsFresh());
+  ASSERT_EQ(cookie_jar.GetSignedInAccounts().size(), 1u);
+  EXPECT_TRUE(gaia::AreEmailsSame(cookie_jar.GetSignedInAccounts()[0].email,
                                   kMainGmailEmail));
 }
 
@@ -1483,9 +1481,9 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninRollbackBrowserTest,
       primary_account.account_id));
   signin::AccountsInCookieJarInfo cookie_jar =
       GetIdentityManager()->GetAccountsInCookieJar();
-  ASSERT_TRUE(cookie_jar.accounts_are_fresh);
-  ASSERT_EQ(cookie_jar.signed_in_accounts.size(), 1u);
-  EXPECT_TRUE(gaia::AreEmailsSame(cookie_jar.signed_in_accounts[0].email,
+  ASSERT_TRUE(cookie_jar.AreAccountsFresh());
+  ASSERT_EQ(cookie_jar.GetSignedInAccounts().size(), 1u);
+  EXPECT_TRUE(gaia::AreEmailsSame(cookie_jar.GetSignedInAccounts()[0].email,
                                   kMainGmailEmail));
 }
 
@@ -1827,13 +1825,17 @@ class DiceBrowserTestWithChromeSigninIPH
   }
 
   void CloseIPH() {
-    EXPECT_TRUE(browser()->window()->GetFeaturePromoController()->EndPromo(
-        feature_engagement::
-            kIPHExplicitBrowserSigninPreferenceRememberedFeature,
-        user_education::EndFeaturePromoReason::kFeatureEngaged));
-    EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
-        feature_engagement::
-            kIPHExplicitBrowserSigninPreferenceRememberedFeature));
+    RunTestSequence(
+        PressButton(user_education::HelpBubbleView::kCloseButtonIdForTesting),
+        WaitForHide(
+            user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+        CheckResult(
+            [this]() {
+              return browser()->window()->IsFeaturePromoActive(
+                  feature_engagement::
+                      kIPHExplicitBrowserSigninPreferenceRememberedFeature);
+            },
+            false));
   }
 
   void SignoutAndResetState() {

@@ -126,8 +126,7 @@ class TestDisplayLayoutManager : public DisplayLayoutManager {
   }
 
   DisplayConfigurator::DisplayStateList GetDisplayStates() const override {
-    NOTREACHED_IN_MIGRATION();
-    return DisplayConfigurator::DisplayStateList();
+    NOTREACHED();
   }
 
   bool IsMirroring() const override {

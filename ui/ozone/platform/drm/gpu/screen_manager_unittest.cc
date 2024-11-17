@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "ui/ozone/platform/drm/gpu/screen_manager.h"
 
 #include <drm_fourcc.h>
@@ -860,12 +865,13 @@ TEST_F(ScreenManagerTest, CheckMirrorModeModesettingWithDisplaysMode) {
   HardwareDisplayController* controller =
       screen_manager_->GetDisplayController(GetPrimaryBounds());
   for (const auto& crtc : controller->crtc_controllers()) {
-    if (crtc->crtc() == primary_crtc_id)
+    if (crtc->crtc() == primary_crtc_id) {
       EXPECT_EQ(kDefaultMode.clock, crtc->mode().clock);
-    else if (crtc->crtc() == secondary_crtc_id)
+    } else if (crtc->crtc() == secondary_crtc_id) {
       EXPECT_EQ(secondary_mode.clock, crtc->mode().clock);
-    else
-      NOTREACHED_IN_MIGRATION();
+    } else {
+      NOTREACHED();
+    }
   }
 }
 

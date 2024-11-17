@@ -94,7 +94,7 @@ class BASE_EXPORT TestComponentContextForProcess {
 
   // Allows the specified service(s) from the original ComponentContext to be
   // exposed via the test default ComponentContext.
-  void AddService(const std::string_view service);
+  void AddService(std::string_view service);
   void AddServices(base::span<const std::string_view> services);
 
   // Returns the directory of services that the code under test has published

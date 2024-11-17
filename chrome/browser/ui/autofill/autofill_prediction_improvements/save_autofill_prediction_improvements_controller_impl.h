@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_controller.h"
+#include "components/autofill/core/browser/autofill_ai_delegate.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -19,6 +20,8 @@ namespace autofill {
 
 // Implementation of per-tab class to control the save prediction improvements
 // bubble.
+// TODO(crbug.com/361434879): Introduce tests when this class has more than
+// simple forwarding method.
 class SaveAutofillPredictionImprovementsControllerImpl
     : public AutofillBubbleControllerBase,
       public SaveAutofillPredictionImprovementsController,
@@ -32,17 +35,22 @@ class SaveAutofillPredictionImprovementsControllerImpl
   ~SaveAutofillPredictionImprovementsControllerImpl() override;
 
   // SaveAutofillPredictionImprovementsController:
-  void OfferSave(std::vector<optimization_guide::proto::UserAnnotationsEntry>
-                     prediction_improvements,
-                 PromptAcceptanceCallback prompt_acceptance_callback) override;
+  void OfferSave(
+      std::vector<optimization_guide::proto::UserAnnotationsEntry>
+          prediction_improvements,
+      user_annotations::PromptAcceptanceCallback prompt_acceptance_callback,
+      LearnMoreClickedCallback learn_more_clicked_callback,
+      UserFeedbackCallback user_feedback_callback) override;
   void OnSaveButtonClicked() override;
   const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
   GetPredictionImprovements() const override;
   void OnBubbleClosed(
-
       PredictionImprovementsBubbleClosedReason closed_reason) override;
   base::WeakPtr<SaveAutofillPredictionImprovementsController> GetWeakPtr()
       override;
+  void OnThumbsUpClicked() override;
+  void OnThumbsDownClicked() override;
+  void OnLearnMoreClicked() override;
 
  protected:
   explicit SaveAutofillPredictionImprovementsControllerImpl(
@@ -66,8 +74,19 @@ class SaveAutofillPredictionImprovementsControllerImpl
 
   // Callback to notify the data provider about the user decision for the save
   // prompt.
-  PromptAcceptanceCallback prompt_acceptance_callback_ = base::NullCallback();
+  user_annotations::PromptAcceptanceCallback prompt_acceptance_callback_ =
+      base::NullCallback();
 
+  // Represents whether the user interacted with the thumbs up/down buttons.
+  bool did_trigger_thumbs_up_ = false;
+  bool did_trigger_thumbs_down_ = false;
+
+  // Callback to notify that the user clicked the button to learn more about the
+  // feature.
+  LearnMoreClickedCallback learn_more_clicked_callback_ = base::NullCallback();
+
+  // Callback to notify that the user has given feedback about Autofill with AI.
+  UserFeedbackCallback user_feedback_callback_ = base::NullCallback();
   // Weak pointer factory for this save prediction improvements bubble
   // controller.
   base::WeakPtrFactory<SaveAutofillPredictionImprovementsControllerImpl>

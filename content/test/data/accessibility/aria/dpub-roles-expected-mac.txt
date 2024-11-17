@@ -37,6 +37,6 @@ AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXDescription='doc-prologue' AXRoleDescription='prologue'
 ++AXGroup AXDescription='doc-pullquote' AXRoleDescription='pullquote'
 ++AXGroup AXDescription='doc-qna' AXRoleDescription='Q&A'
-++AXHeading AXDescription='doc-subtitle' AXRoleDescription='subtitle'
+++AXHeading AXDescription='doc-subtitle' AXRoleDescription='subtitle' AXValue=5
 ++AXGroup AXDescription='doc-tip' AXRoleDescription='tip'
 ++AXGroup AXDescription='doc-toc' AXRoleDescription='table of contents'

@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/app/arc_app_constants.h"
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/hash/sha1.h"
@@ -165,10 +166,7 @@ std::ostream& operator<<(std::ostream& os, ArcSupportHost::UIPage ui_page) {
       return os << "ERROR";
   }
 
-  // Some compiler reports an error even if all values of an enum-class are
-  // covered individually in a switch statement.
-  NOTREACHED_IN_MIGRATION();
-  return os;
+  NOTREACHED();
 }
 
 std::ostream& operator<<(std::ostream& os, ArcSupportHost::Error error) {
@@ -195,10 +193,7 @@ std::ostream& operator<<(std::ostream& os, ArcSupportHost::Error error) {
   }
 #undef MAP_ERROR
 
-  // Some compiler reports an error even if all values of an enum-class are
-  // covered individually in a switch statement.
-  NOTREACHED_IN_MIGRATION();
-  return os;
+  NOTREACHED();
 }
 
 }  // namespace
@@ -304,8 +299,7 @@ void ArcSupportHost::ShowPage(UIPage ui_page) {
       message.Set(kPage, "arc-loading");
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
   }
   message_host_->SendMessage(message);
 }
@@ -674,8 +668,7 @@ void ArcSupportHost::SetWindowBound(const display::Display& display) {
 void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
   const std::string* event = message.FindString(kEvent);
   if (!event) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (*event == kEventOnWindowClosed) {
@@ -707,8 +700,7 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
         !is_backup_restore_managed.has_value() ||
         !is_location_service_enabled.has_value() ||
         !is_location_service_managed.has_value()) {
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     }
 
     bool accepted = *event == kEventOnAgreed;
@@ -828,7 +820,6 @@ void ArcSupportHost::OnMessage(const base::Value::Dict& message) {
   } else if (*event == kEventRequestWindowBounds) {
     SetWindowBound(display::Screen::GetScreen()->GetDisplayForNewWindows());
   } else {
-    LOG(ERROR) << "Unknown message: " << *event;
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED() << "Unknown message: " << *event;
   }
 }

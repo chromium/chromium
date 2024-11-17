@@ -15,9 +15,29 @@ namespace mojo {
 template <>
 struct StructTraits<cc::mojom::BrowserControlsOffsetTagsInfoDataView,
                     cc::BrowserControlsOffsetTagsInfo> {
+  static const viz::OffsetTag& bottom_controls_offset_tag(
+      const cc::BrowserControlsOffsetTagsInfo& input) {
+    return input.bottom_controls_offset_tag;
+  }
+
+  static const viz::OffsetTag& content_offset_tag(
+      const cc::BrowserControlsOffsetTagsInfo& input) {
+    return input.content_offset_tag;
+  }
+
   static const viz::OffsetTag& top_controls_offset_tag(
       const cc::BrowserControlsOffsetTagsInfo& input) {
     return input.top_controls_offset_tag;
+  }
+
+  static int bottom_controls_height(
+      const cc::BrowserControlsOffsetTagsInfo& input) {
+    return input.bottom_controls_height;
+  }
+
+  static int bottom_controls_additional_height(
+      const cc::BrowserControlsOffsetTagsInfo& input) {
+    return input.bottom_controls_additional_height;
   }
 
   static int top_controls_height(
@@ -25,9 +45,21 @@ struct StructTraits<cc::mojom::BrowserControlsOffsetTagsInfoDataView,
     return input.top_controls_height;
   }
 
+  static int top_controls_hairline_height(
+      const cc::BrowserControlsOffsetTagsInfo& input) {
+    return input.top_controls_hairline_height;
+  }
+
   static bool Read(cc::mojom::BrowserControlsOffsetTagsInfoDataView data,
                    cc::BrowserControlsOffsetTagsInfo* out) {
-    return data.ReadTopControlsOffsetTag(&out->top_controls_offset_tag);
+    out->bottom_controls_height = data.bottom_controls_height();
+    out->bottom_controls_additional_height =
+        data.bottom_controls_additional_height();
+    out->top_controls_height = data.top_controls_height();
+    out->top_controls_hairline_height = data.top_controls_hairline_height();
+    return data.ReadBottomControlsOffsetTag(&out->bottom_controls_offset_tag) &&
+           data.ReadContentOffsetTag(&out->content_offset_tag) &&
+           data.ReadTopControlsOffsetTag(&out->top_controls_offset_tag);
   }
 };
 

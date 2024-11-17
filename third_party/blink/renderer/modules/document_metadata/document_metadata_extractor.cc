@@ -218,7 +218,8 @@ void ExtractEntity(const JSONObject& val, int recursion_level, Entity& entity) {
         add_property = ParseRepeatedValue(*(val.GetArray(entry.first)),
                                           recursion_level, property->values);
         break;
-      default:
+      case JSONValue::ValueType::kTypeNull:
+        add_property = false;
         break;
     }
     if (add_property)

@@ -44,7 +44,8 @@
           "builder": "mac-ubsan-fyi-rel",
           "group": "tryserver.chromium.mac"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/mac-ubsan-fyi-rel/targets"
     }
   },
   "$build/reclient": {

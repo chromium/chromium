@@ -47,7 +47,10 @@ bool WebSocketExtension::Equivalent(const WebSocketExtension& other) const {
   std::vector<Parameter> other_sorted = other.parameters_;
 
   auto comparator = std::less<std::string>();
-  auto extract_name = [](const Parameter& param) { return param.name(); };
+  auto extract_name = [](const Parameter& param) -> const std::string& {
+    return param.name();
+  };
+
   // Sort by key, preserving order of values.
   base::ranges::stable_sort(mine_sorted, comparator, extract_name);
   base::ranges::stable_sort(other_sorted, comparator, extract_name);

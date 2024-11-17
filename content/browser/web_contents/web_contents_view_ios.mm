@@ -289,4 +289,6 @@ WebContentsViewIOS::GetBackForwardTransitionAnimationManager() {
   return nullptr;
 }
 
+void WebContentsViewIOS::DestroyBackForwardTransitionAnimationManager() {}
+
 }  // namespace content

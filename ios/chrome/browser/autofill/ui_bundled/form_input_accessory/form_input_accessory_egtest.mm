@@ -153,7 +153,7 @@ void CheckPasswordAutofillSuggestionAcceptedIndexMetricsCount(
   [MetricsAppInterface overrideMetricsAndCrashReportingForTesting];
 }
 
-- (void)tearDown {
+- (void)tearDownHelper {
   // Close tabs  before clearing the stores in the case the
   // stores are needed when the tabs are closing (e.g. to upload votes).
   [[self class] closeAllTabs];
@@ -167,7 +167,7 @@ void CheckPasswordAutofillSuggestionAcceptedIndexMetricsCount(
   [MetricsAppInterface stopOverridingMetricsAndCrashReportingForTesting];
   GREYAssertNil([MetricsAppInterface releaseHistogramTester],
                 @"Failed to release histogram tester.");
-  [super tearDown];
+  [super tearDownHelper];
 }
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {

@@ -42,7 +42,7 @@ TestUkmRecorder::TestUkmRecorder() {
   SetSamplingForTesting(1);  // 1-in-1 == unsampled
 }
 
-TestUkmRecorder::~TestUkmRecorder() {}
+TestUkmRecorder::~TestUkmRecorder() = default;
 
 void TestUkmRecorder::AddEntry(mojom::UkmEntryPtr entry) {
   const bool should_run_callback =

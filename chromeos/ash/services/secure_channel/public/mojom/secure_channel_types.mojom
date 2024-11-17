@@ -5,7 +5,6 @@
 module ash.secure_channel.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
-import "mojo/public/mojom/base/read_only_file.mojom";
 
 // A pair of input and output file created for handling incoming file payload
 // transfer from a remote device.
@@ -49,4 +48,3 @@ interface FilePayloadListener {
   // Called when a file payload transfer has an update.
   OnFileTransferUpdate(FileTransferUpdate update);
 };
-

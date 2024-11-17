@@ -839,7 +839,7 @@ TEST(CommandLineDeathTest, ThreadChecks) {
   RunLoop run_loop;
   EXPECT_DEATH_IF_SUPPORTED(
       {
-        ThreadPool::PostTask(FROM_HERE, BindLambdaForTesting([&run_loop]() {
+        ThreadPool::PostTask(FROM_HERE, BindLambdaForTesting([&run_loop] {
                                auto* command_line =
                                    CommandLine::ForCurrentProcess();
                                command_line->AppendSwitch("test");

@@ -38,6 +38,7 @@ source_set("web") {
     "//ios/web/download",
     "//ios/web/favicon",
     "//ios/web/init",
+    "//ios/web/js_image_transcoder",
     "//ios/web/navigation",
     "//ios/web/navigation:proto_util",
     "//ios/web/navigation:wk_navigation_util",
@@ -187,6 +188,7 @@ test("ios_web_unittests") {
     "//ios/web/js_features/context_menu:unittests",
     "//ios/web/js_features/fullscreen:unittests",
     "//ios/web/js_features/window_error:unittests",
+    "//ios/web/js_image_transcoder:unittests",
     "//ios/web/js_messaging:unittests",
     "//ios/web/public/session/proto:unittests",
     "//ios/web/public/web_view_only:unittests",
@@ -669,7 +671,6 @@ bundle_data("navigation_resources") {
     "navigation/resources/error_page_injected.html",
     "navigation/resources/error_page_loaded.html",
     "navigation/resources/error_page_reloaded.html",
-    "navigation/resources/restore_session.html",
   ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }

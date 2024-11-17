@@ -40,6 +40,7 @@
 #include "net/base/features.h"
 #include "net/base/hash_value.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/url_util.h"
 #include "net/cert/ct_policy_status.h"
 #include "net/cert/x509_certificate.h"
 #include "net/dns/dns_names_util.h"
@@ -87,7 +88,7 @@ bool AddHash(const char* sha256_hash, HashValueVector* out) {
 // Converts |hostname| from dotted form ("www.google.com") to the form
 // used in DNS: "\x03www\x06google\x03com", lowercases that, and returns
 // the result.
-std::vector<uint8_t> CanonicalizeHost(const std::string& host) {
+std::vector<uint8_t> CanonicalizeHost(std::string_view host) {
   // We cannot perform the operations as detailed in the spec here as `host`
   // has already undergone IDN processing before it reached us. Thus, we
   // lowercase the input (probably redudnant since most input here has been
@@ -105,7 +106,7 @@ std::vector<uint8_t> CanonicalizeHost(const std::string& host) {
     return std::vector<uint8_t>();
   }
 
-  return new_host.value();
+  return std::move(new_host).value();
 }
 
 // PreloadResult is the result of resolving a specific name in the preloaded
@@ -284,10 +285,16 @@ SSLUpgradeDecision TransportSecurityState::GetSSLUpgradeDecision(
       NetLogEventType::TRANSPORT_SECURITY_STATE_SHOULD_UPGRADE_TO_SSL,
       [&] { return NetLogUpgradeToSSLParam(host); });
   STSState sts_state;
+  // Check the dynamic list first (removing the entry if expired).
   if (GetDynamicSTSState(host, &sts_state)) {
-    if (sts_state.ShouldUpgradeToSSL()) {
-      // If the static state also requires an upgrade, the dynamic state didn't
-      // need to be used in the decision.
+    // [*.]localhost hosts now ignore Strict-Transport-Security response
+    // headers, but an entry may have been stored before this restriction
+    // was introduced (crbug.com/41251622).
+    if (sts_state.ShouldUpgradeToSSL() &&
+        !(net::IsLocalHostname(host) &&
+          base::FeatureList::IsEnabled(features::kIgnoreHSTSForLocalhost))) {
+      // If the static state also requires an upgrade, the dynamic state
+      // didn't need to be used in the decision.
       STSState static_sts_state;
       if (GetStaticSTSState(host, &static_sts_state) &&
           static_sts_state.ShouldUpgradeToSSL()) {
@@ -335,7 +342,6 @@ TransportSecurityState::CheckCTRequirements(
     const X509Certificate* validated_certificate_chain,
     ct::CTPolicyCompliance policy_compliance) {
   using CTRequirementLevel = RequireCTDelegate::CTRequirementLevel;
-  std::string hostname = host_port_pair.host();
 
   // If CT is emergency disabled, we don't require CT for any host.
   if (ct_emergency_disable_) {
@@ -361,7 +367,7 @@ TransportSecurityState::CheckCTRequirements(
   if (require_ct_delegate_) {
     // Allow the delegate to override the CT requirement state.
     ct_required = require_ct_delegate_->IsCTRequiredForHost(
-        hostname, validated_certificate_chain, public_key_hashes);
+        host_port_pair.host(), validated_certificate_chain, public_key_hashes);
   }
   switch (ct_required) {
     case CTRequirementLevel::REQUIRED:
@@ -405,7 +411,7 @@ void TransportSecurityState::UpdatePinList(
 }
 
 void TransportSecurityState::AddHSTSInternal(
-    const std::string& host,
+    std::string_view host,
     TransportSecurityState::STSState::UpgradeMode upgrade_mode,
     const base::Time& expiry,
     bool include_subdomains) {
@@ -434,7 +440,7 @@ void TransportSecurityState::AddHSTSInternal(
   DirtyNotify();
 }
 
-void TransportSecurityState::AddHPKPInternal(const std::string& host,
+void TransportSecurityState::AddHPKPInternal(std::string_view host,
                                              const base::Time& last_observed,
                                              const base::Time& expiry,
                                              bool include_subdomains,
@@ -565,8 +571,8 @@ void TransportSecurityState::DirtyNotify() {
     delegate_->StateIsDirty(this);
 }
 
-bool TransportSecurityState::AddHSTSHeader(const std::string& host,
-                                           const std::string& value) {
+bool TransportSecurityState::AddHSTSHeader(std::string_view host,
+                                           std::string_view value) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   base::Time now = base::Time::Now();
@@ -588,14 +594,14 @@ bool TransportSecurityState::AddHSTSHeader(const std::string& host,
   return true;
 }
 
-void TransportSecurityState::AddHSTS(const std::string& host,
+void TransportSecurityState::AddHSTS(std::string_view host,
                                      const base::Time& expiry,
                                      bool include_subdomains) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   AddHSTSInternal(host, STSState::MODE_FORCE_HTTPS, expiry, include_subdomains);
 }
 
-void TransportSecurityState::AddHPKP(const std::string& host,
+void TransportSecurityState::AddHPKP(std::string_view host,
                                      const base::Time& expiry,
                                      bool include_subdomains,
                                      const HashValueVector& hashes) {
@@ -685,7 +691,7 @@ bool TransportSecurityState::GetStaticPKPState(const std::string& host,
         pkp_result->last_observed = key_pins_list_last_update_time_;
         pkp_result->include_subdomains = iter->second.second;
         const PinSet* pinset = iter->second.first;
-        for (auto hash : pinset->static_spki_hashes()) {
+        for (const auto& hash : pinset->static_spki_hashes()) {
           // If the update is malformed, it's preferable to skip the hash than
           // crash.
           if (hash.size() == 32) {
@@ -693,7 +699,7 @@ bool TransportSecurityState::GetStaticPKPState(const std::string& host,
                     &pkp_result->spki_hashes);
           }
         }
-        for (auto hash : pinset->bad_static_spki_hashes()) {
+        for (const auto& hash : pinset->bad_static_spki_hashes()) {
           // If the update is malformed, it's preferable to skip the hash than
           // crash.
           if (hash.size() == 32) {

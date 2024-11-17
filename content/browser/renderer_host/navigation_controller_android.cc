@@ -343,7 +343,8 @@ base::android::ScopedJavaLocalRef<jobject> NavigationControllerAndroid::LoadUrl(
   }
 
   if (j_initiator_origin) {
-    params.initiator_origin = url::Origin::FromJavaObject(j_initiator_origin);
+    params.initiator_origin =
+        url::Origin::FromJavaObject(env, j_initiator_origin);
   }
 
   if (input_start != 0)

@@ -92,9 +92,9 @@ void MemorySaverModePolicy::OnTakenFromGraph(Graph* graph) {
 }
 
 void MemorySaverModePolicy::OnMemorySaverModeChanged(bool enabled) {
-  high_efficiency_mode_enabled_ = enabled;
+  memory_saver_mode_enabled_ = enabled;
 
-  if (high_efficiency_mode_enabled_) {
+  if (memory_saver_mode_enabled_) {
     DCHECK(active_discard_timers_.empty());
     StartAllDiscardTimers();
   } else {
@@ -108,14 +108,14 @@ base::TimeDelta MemorySaverModePolicy::GetTimeBeforeDiscardForTesting() const {
 
 void MemorySaverModePolicy::SetMode(MemorySaverModeAggressiveness mode) {
   mode_ = mode;
-  if (high_efficiency_mode_enabled_) {
+  if (memory_saver_mode_enabled_) {
     active_discard_timers_.clear();
     StartAllDiscardTimers();
   }
 }
 
 bool MemorySaverModePolicy::IsMemorySaverDiscardingEnabled() const {
-  return high_efficiency_mode_enabled_;
+  return memory_saver_mode_enabled_;
 }
 
 void MemorySaverModePolicy::StartAllDiscardTimers() {

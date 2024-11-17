@@ -106,11 +106,6 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   // Returns whether the StorageKey is set (e.g. using the method above).
   virtual bool HasStorageKey() const = 0;
 
-  // Returns whether the filter's StorageKey matches the given one.
-  // Note: the StorageKey in the filter has to be set.
-  virtual bool MatchesWithSavedStorageKey(
-      const blink::StorageKey& other_key) const = 0;
-
   // Returns true if we're an empty preserve list, where we delete everything.
   virtual bool MatchesAllOriginsAndDomains() = 0;
 

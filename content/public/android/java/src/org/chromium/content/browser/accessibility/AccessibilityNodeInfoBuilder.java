@@ -265,7 +265,7 @@ public class AccessibilityNodeInfoBuilder {
             boolean hasNonEmptyValue,
             boolean hasNonEmptyInnerText,
             boolean isSeekControl,
-            boolean isForm) {
+            boolean unused_isForm) {
         node.addAction(ACTION_NEXT_HTML_ELEMENT);
         node.addAction(ACTION_PREVIOUS_HTML_ELEMENT);
         node.addAction(ACTION_SHOW_ON_SCREEN);
@@ -369,7 +369,7 @@ public class AccessibilityNodeInfoBuilder {
             boolean canOpenPopup,
             boolean multiLine,
             int inputType,
-            int liveRegion,
+            int unused_liveRegion,
             String errorMessage,
             int clickableScore,
             String display,

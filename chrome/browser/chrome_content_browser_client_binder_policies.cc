@@ -5,6 +5,8 @@
 #include "chrome/browser/chrome_content_browser_client_binder_policies.h"
 
 #include "components/autofill/content/common/mojom/autofill_driver.mojom.h"
+#include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
+#include "components/fingerprinting_protection_filter/mojom/fingerprinting_protection_filter.mojom.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 #include "components/subresource_filter/content/mojom/subresource_filter.mojom.h"
 #include "extensions/buildflags/buildflags.h"
@@ -43,6 +45,12 @@ void RegisterPoliciesForChannelAssociatedInterfaces(
   policy_map
       .SetAssociatedPolicy<subresource_filter::mojom::SubresourceFilterHost>(
           content::MojoBinderAssociatedPolicy::kGrant);
+  if (fingerprinting_protection_filter::features::
+          IsFingerprintingProtectionFeatureEnabled()) {
+    policy_map.SetAssociatedPolicy<
+        fingerprinting_protection_filter::mojom::FingerprintingProtectionHost>(
+        content::MojoBinderAssociatedPolicy::kGrant);
+  }
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // LocalFrameHost supports content scripts related APIs, which are
   // RequestScriptInjectionPermission, GetInstallState, SendRequestIPC, and

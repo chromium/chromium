@@ -57,32 +57,12 @@ struct FieldTemplate {
   std::optional<AutocompleteParsingResult> parsed_autocomplete = std::nullopt;
   bool is_focusable = true;
   size_t max_length = std::numeric_limits<int>::max();
-  FormFieldData::RoleAttribute role = FormFieldData::RoleAttribute::kOther;
   std::optional<url::Origin> subframe_origin;
   std::optional<FormGlobalId> host_form;
   bool field_type_is_override = false;
   // Only appled if BuildFormStructure is called with run_heuristics=false.
   FieldType heuristic_type = UNKNOWN_TYPE;
 };
-
-// These are helper functions that set a special flag in a field_template.
-// They only exist because the output of clang-format for function calls is
-// more compact than if we switched to designated initializer lists.
-FieldTemplate ToNotFocusable(FieldTemplate field_template) {
-  // This is often set because a field is hidden.
-  field_template.is_focusable = false;
-  return field_template;
-}
-
-FieldTemplate ToSelectOne(FieldTemplate field_template) {
-  field_template.form_control_type = FormControlType::kSelectOne;
-  return field_template;
-}
-
-FieldTemplate SetRolePresentation(FieldTemplate field_template) {
-  field_template.role = FormFieldData::RoleAttribute::kPresentation;
-  return field_template;
-}
 
 std::pair<FormData, std::string> CreateFormAndServerClassification(
     std::vector<FieldTemplate> fields) {
@@ -105,7 +85,6 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
     field.set_is_focusable(field_template.is_focusable);
     field.set_max_length(field_template.max_length);
     field.set_parsed_autocomplete(field_template.parsed_autocomplete);
-    field.set_role(field_template.role);
     field.set_origin(
         field_template.subframe_origin.value_or(form.main_frame_origin()));
     field.set_host_frame(
@@ -141,8 +120,7 @@ std::unique_ptr<FormStructure> BuildFormStructure(
   auto form_structure = std::make_unique<FormStructure>(form);
   // Identifies the sections based on the heuristics types.
   if (run_heuristics) {
-    form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
-                                            nullptr);
+    form_structure->DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr);
   } else {
     for (size_t i = 0; i < fields.size(); ++i) {
       form_structure->field(i)->set_heuristic_type(GetActiveHeuristicSource(),
@@ -152,7 +130,7 @@ std::unique_ptr<FormStructure> BuildFormStructure(
   // Calls RationalizeFieldTypePredictions.
   ParseServerPredictionsQueryResponse(
       response_string, {form_structure.get()},
-      test::GetEncodedSignatures({form_structure.get()}), nullptr, nullptr);
+      test::GetEncodedSignatures({form_structure.get()}), nullptr);
   return form_structure;
 }
 
@@ -266,28 +244,6 @@ TEST_F(FormStructureRationalizerTest,
                           CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, UNKNOWN_TYPE));
 }
 
-TEST_F(FormStructureRationalizerTest,
-       RationalizePhoneNumber_RunsOncePerSection) {
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      {
-          {"Full Name", "fullName", NAME_FULL},
-          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-          {"Home Phone", "homePhoneNumber", PHONE_HOME_WHOLE_NUMBER},
-          {"Cell Phone", "cellPhoneNumber", PHONE_HOME_WHOLE_NUMBER},
-      },
-      /*run_heuristics=*/false);
-  Section s = form_structure->field(0)->section();
-  EXPECT_FALSE(test_api(*form_structure).phone_rationalized(s));
-  form_structure->RationalizePhoneNumbersInSection(s);
-  EXPECT_TRUE(test_api(*form_structure).phone_rationalized(s));
-  EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
-                          PHONE_HOME_WHOLE_NUMBER, PHONE_HOME_WHOLE_NUMBER));
-
-  EXPECT_FALSE(form_structure->field(2)->only_fill_when_focused());
-  EXPECT_TRUE(form_structure->field(3)->only_fill_when_focused());
-}
-
 TEST_F(FormStructureRationalizerTest, RationalizeStreetAddressAndAddressLine) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
@@ -352,7 +308,8 @@ TEST_F(FormStructureRationalizerTest, RationalizePhoneNumberTrunkTypes) {
 
 // Tests that a form that has only one address predicted as
 // ADDRESS_HOME_STREET_ADDRESS is not modified by the address rationalization.
-TEST_F(FormStructureRationalizerTest, RationalizeRepeatedFields_OneAddress) {
+TEST_F(FormStructureRationalizerTest,
+       RationalizeRepeatedStreetAddressFields_OneAddress) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           {"Full Name", "fullName", NAME_FULL},
@@ -368,7 +325,8 @@ TEST_F(FormStructureRationalizerTest, RationalizeRepeatedFields_OneAddress) {
 // Tests that a form that has two address predicted as
 // ADDRESS_HOME_STREET_ADDRESS is modified by the address rationalization to be
 // ADDRESS_HOME_LINE1 and ADDRESS_HOME_LINE2 instead.
-TEST_F(FormStructureRationalizerTest, RationalizeRepreatedFields_TwoAddresses) {
+TEST_F(FormStructureRationalizerTest,
+       RationalizeRepeatedStreetAddressFields_TwoAddresses) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           {"Full Name", "fullName", NAME_FULL},
@@ -386,7 +344,7 @@ TEST_F(FormStructureRationalizerTest, RationalizeRepreatedFields_TwoAddresses) {
 // ADDRESS_HOME_STREET_ADDRESS is modified by the address rationalization to be
 // ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2 and ADDRESS_HOME_LINE3 instead.
 TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_ThreeAddresses) {
+       RationalizeRepeatedStreetAddressFields_ThreeAddresses) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           {"Full Name", "fullName", NAME_FULL},
@@ -406,7 +364,7 @@ TEST_F(FormStructureRationalizerTest,
 // This doesn't happen in real world, because four address lines mean multiple
 // sections according to the heuristics.
 TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_FourAddresses) {
+       RationalizeRepeatedStreetAddressFields_FourAddresses) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           {"Full Name", "fullName", NAME_FULL},
@@ -427,7 +385,7 @@ TEST_F(FormStructureRationalizerTest,
 // Tests that a form that has only one address in each section predicted as
 // ADDRESS_HOME_STREET_ADDRESS is not modified by the address rationalization.
 TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_OneAddressEachSection) {
+       RationalizeRepeatedStreetAddressFields_OneAddressEachSection) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           // Billing
@@ -454,7 +412,7 @@ TEST_F(FormStructureRationalizerTest,
 // heuristics, and is only made for testing.
 TEST_F(
     FormStructureRationalizerTest,
-    RationalizeRepreatedFields_SectionTwoAddress_SectionThreeAddress_SectionFourAddresses) {
+    RationalizeRepeatedStreetAddressFields_SectionTwoAddress_SectionThreeAddress_SectionFourAddresses) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           // Shipping.
@@ -494,8 +452,9 @@ TEST_F(
 // Tests that a form that has only one address in each section predicted as
 // ADDRESS_HOME_STREET_ADDRESS is not modified by the address rationalization,
 // while the sections are previously determined by the heuristics.
-TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_MultipleSectionsByHeuristics_OneAddressEach) {
+TEST_F(
+    FormStructureRationalizerTest,
+    RationalizeRepeatedStreetAddressFields_MultipleSectionsByHeuristics_OneAddressEach) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           // Billing.
@@ -521,7 +480,7 @@ TEST_F(FormStructureRationalizerTest,
 // identified by heuristics.
 TEST_F(
     FormStructureRationalizerTest,
-    RationalizeRepreatedFields_MultipleSectionsByHeuristics_TwoAddress_ThreeAddress) {
+    RationalizeRepeatedStreetAddressFields_MultipleSectionsByHeuristics_TwoAddress_ThreeAddress) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
           // Shipping
@@ -545,164 +504,6 @@ TEST_F(
           // Billing.
           NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3,
           ADDRESS_HOME_CITY));
-}
-
-TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_StateCountry_NoRationalization) {
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      {
-          // First Section
-          {"Full Name", "fullName", NAME_FULL},
-          {"State", "state", ADDRESS_HOME_STATE},
-          {"Country", "country", ADDRESS_HOME_COUNTRY},
-          // Second Section
-          {"Country", "country", ADDRESS_HOME_COUNTRY},
-          {"Full Name", "fullName", NAME_FULL},
-          {"State", "state", ADDRESS_HOME_STATE},
-          // Third Section
-          {"Full Name", "fullName", NAME_FULL},
-          {"State", "state", ADDRESS_HOME_STATE},
-          // Fourth Section
-          {"Full Name", "fullName", NAME_FULL},
-          {"Country", "country", ADDRESS_HOME_COUNTRY},
-      },
-      /*run_heuristics=*/true);
-  EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(
-                  // First section.
-                  NAME_FULL, ADDRESS_HOME_STATE, ADDRESS_HOME_COUNTRY,
-                  // Second section.
-                  ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_STATE,
-                  // Third section.
-                  NAME_FULL, ADDRESS_HOME_STATE,
-                  // Fourth section.
-                  NAME_FULL, ADDRESS_HOME_COUNTRY));
-}
-
-TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_CountryStateNoHeuristics) {
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      {
-          // Shipping.
-          {"Full Name", "fullName", NAME_FULL, "shipping"},
-          {"City", "city", ADDRESS_HOME_CITY, "shipping"},
-          {"State", "state", ADDRESS_HOME_STATE, "shipping"},
-          {"Country", "country", ADDRESS_HOME_STATE, "shipping"},
-
-          // Billing.
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
-          ToSelectOne({"Country", "country", ADDRESS_HOME_STATE, "billing"}),
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
-          ToSelectOne({"Full Name", "fullName", NAME_FULL, "billing"}),
-          {"State", "state", ADDRESS_HOME_STATE, "billing"},
-
-          // Billing-2.
-          {"Country", "country", ADDRESS_HOME_STATE, "billing-2"},
-          {"Full Name", "fullName", NAME_FULL, "billing-2"},
-          {"State", "state", ADDRESS_HOME_STATE, "billing-2"},
-      },
-      /*run_heuristics=*/false);
-  EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(
-                  // Shipping.
-                  NAME_FULL, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
-                  ADDRESS_HOME_COUNTRY,
-                  // Billing.
-                  ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
-                  ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
-                  ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_STATE,
-                  // Billing-2.
-                  ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_STATE));
-}
-
-TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_StateCountryWithHeuristics) {
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      {
-          // First section.
-          {"Full Name", "fullName", NAME_FULL},
-          ToSelectOne(
-              ToNotFocusable({"Country", "country", ADDRESS_HOME_COUNTRY})),
-          {"Country", "country2", ADDRESS_HOME_COUNTRY},
-          {"city", "City", ADDRESS_HOME_CITY},
-          ToSelectOne(
-              SetRolePresentation({"State", "state2", ADDRESS_HOME_COUNTRY})),
-          {"State", "state", ADDRESS_HOME_COUNTRY},
-
-          // Second Section
-          {"Full Name", "fullName", NAME_FULL},
-          {"Country", "country", ADDRESS_HOME_COUNTRY},
-          {"city", "City", ADDRESS_HOME_CITY},
-          {"State", "state", ADDRESS_HOME_COUNTRY},
-
-          // Third Section
-          {"Full Name", "fullName", NAME_FULL},
-          {"city", "City", ADDRESS_HOME_CITY},
-          ToSelectOne(
-              SetRolePresentation({"State", "state2", ADDRESS_HOME_COUNTRY})),
-          {"State", "state", ADDRESS_HOME_COUNTRY},
-          {"Country", "country", ADDRESS_HOME_COUNTRY},
-          ToSelectOne(
-              ToNotFocusable({"Country", "country2", ADDRESS_HOME_COUNTRY})),
-      },
-      /*run_heuristics=*/true);
-  EXPECT_THAT(
-      GetTypes(*form_structure),
-      ElementsAre(
-          // First section.
-          NAME_FULL, ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
-          ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_STATE,
-          // Second section
-          NAME_FULL, ADDRESS_HOME_COUNTRY, ADDRESS_HOME_CITY,
-          ADDRESS_HOME_STATE,
-          // Third section
-          NAME_FULL, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_STATE,
-          ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY));
-}
-
-TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_FirstFieldRationalized) {
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      {
-          {"Country", "country", ADDRESS_HOME_STATE, "billing"},
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country2", ADDRESS_HOME_STATE, "billing"})),
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country3", ADDRESS_HOME_STATE, "billing"})),
-          {"Full Name", "fullName", NAME_FULL, "billing"},
-          {"State", "state", ADDRESS_HOME_STATE, "billing"},
-      },
-      /*run_heuristics=*/false);
-  EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
-                          ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_STATE));
-}
-
-TEST_F(FormStructureRationalizerTest,
-       RationalizeRepreatedFields_LastFieldRationalized) {
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      {
-          {"Country", "country", ADDRESS_HOME_COUNTRY, "billing"},
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country2", ADDRESS_HOME_COUNTRY, "billing"})),
-          ToSelectOne(ToNotFocusable(
-              {"Country", "country3", ADDRESS_HOME_COUNTRY, "billing"})),
-          ToSelectOne({"Full Name", "fullName", NAME_FULL, "billing"}),
-          ToSelectOne(ToNotFocusable(
-              {"State", "state", ADDRESS_HOME_COUNTRY, "billing"})),
-          ToSelectOne({"State", "state2", ADDRESS_HOME_COUNTRY, "billing"}),
-      },
-      /*run_heuristics=*/false);
-  EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(ADDRESS_HOME_COUNTRY, ADDRESS_HOME_COUNTRY,
-                          ADDRESS_HOME_COUNTRY, NAME_FULL, ADDRESS_HOME_STATE,
-                          ADDRESS_HOME_STATE));
 }
 
 TEST_F(FormStructureRationalizerTest, RationalizeStandaloneCVCField) {
@@ -1188,73 +989,211 @@ TEST_P(RationalizeAutocompleteTest, RationalizeAutocompleteAttribute) {
   EXPECT_THAT(GetTypes(*form_structure), GetParam().final_types);
 }
 
-struct RationalizationTypeRelationshipsTestParams {
-  FieldType server_type;
-  FieldType required_type;
-};
-class RationalizationFieldTypeFilterTest
-    : public testing::Test,
-      public testing::WithParamInterface<FieldType> {
-  test::AutofillUnitTestEnvironment autofill_test_environment_;
-};
-class RationalizationFieldTypeRelationshipsTest
-    : public testing::Test,
-      public testing::WithParamInterface<
-          RationalizationTypeRelationshipsTestParams> {
-  test::AutofillUnitTestEnvironment autofill_test_environment_;
-};
-
-INSTANTIATE_TEST_SUITE_P(FormStructureRationalizerTest,
-                         RationalizationFieldTypeFilterTest,
-                         testing::Values(PHONE_HOME_COUNTRY_CODE));
-
-INSTANTIATE_TEST_SUITE_P(FormStructureRationalizerTest,
-                         RationalizationFieldTypeRelationshipsTest,
-                         testing::Values(
-                             RationalizationTypeRelationshipsTestParams{
-                                 PHONE_HOME_COUNTRY_CODE, PHONE_HOME_NUMBER},
-                             RationalizationTypeRelationshipsTestParams{
-                                 PHONE_HOME_COUNTRY_CODE,
-                                 PHONE_HOME_CITY_AND_NUMBER}));
-
-// Tests that the rationalization logic will filter out fields of type |param|
-// when there is no other required type.
-TEST_P(RationalizationFieldTypeFilterTest, Rationalization_Rules_Filter_Out) {
-  FieldType filtered_off_field = GetParam();
-
-  // Just adding >=3 random fields to trigger rationalization.
+// Tests that PHONE_HOME_COUNTRY_CODE fields are rationalized to UNKNOWN_TYPE
+// if no other phone number fields are present.
+TEST_F(FormStructureRationalizerTest,
+       RationalizePhoneCountryCode_NoPhoneFields) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {{"First Name", "firstName", NAME_FIRST},
        {"Last Name", "lastName", NAME_LAST},
        {"Address", "address", ADDRESS_HOME_LINE1},
-       {"Something under test", "tested-thing", filtered_off_field}},
+       {"misclassified field", "name", PHONE_HOME_COUNTRY_CODE}},
       /*run_heuristics=*/true);
   EXPECT_THAT(
       GetTypes(*form_structure),
-      ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1,
-                  // Last field's type should have been overwritten to expected.
-                  UNKNOWN_TYPE));
+      ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1, UNKNOWN_TYPE));
 }
 
-// Tests that the rationalization logic will not filter out fields of type
-// |param| when there is another field with a required type.
-TEST_P(RationalizationFieldTypeRelationshipsTest,
-       Rationalization_Rules_Relationships) {
-  RationalizationTypeRelationshipsTestParams test_params = GetParam();
+// Tests that PHONE_HOME_COUNTRY_CODE fields are not rationalized to
+// UNKNOWN_TYPE when other phone number fields are present.
+TEST_F(FormStructureRationalizerTest, RationalizePhoneCountryCode_PhoneFields) {
+  std::unique_ptr<FormStructure> form_structure =
+      BuildFormStructure({{"First Name", "firstName", NAME_FIRST},
+                          {"Last Name", "lastName", NAME_LAST},
+                          {"Phone", "tel-country", PHONE_HOME_COUNTRY_CODE},
+                          {"Phone", "tel-national",
+                           PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}},
+                         /*run_heuristics=*/true);
+  EXPECT_THAT(GetTypes(*form_structure),
+              ElementsAre(NAME_FIRST, NAME_LAST, PHONE_HOME_COUNTRY_CODE,
+                          PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX));
+}
 
-  // Just adding >=3 random fields to trigger rationalization.
-  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
-      {{"First Name", "firstName", NAME_FIRST},
-       {"Last Name", "lastName", NAME_LAST},
-       {"Some field with required type", "some-name",
-        test_params.required_type},
-       {"Something under test", "tested-thing", test_params.server_type}},
-      /*run_heuristics=*/true);
-  EXPECT_THAT(
-      GetTypes(*form_structure),
-      ElementsAre(NAME_FIRST, NAME_LAST, test_params.required_type,
-                  // Last field's type should have been overwritten to expected.
-                  test_params.server_type));
+class RationalizePhoneNumbersForFillingTest : public testing::Test {
+ public:
+  struct FieldTemplate {
+    // Description of the field passed to the rationalization.
+    FieldType type;
+    // Expectation of field after rationalization.
+    bool only_fill_when_focused;
+  };
+
+  // Returns a tuple of test input and expectations.
+  // The input is the vector of fields. The expectations indicate whether
+  // the fields will have the only_fill_when_focused flag set to true.
+  std::tuple<std::vector<std::unique_ptr<AutofillField>>, std::vector<bool>>
+  CreateTest(std::vector<FieldTemplate> field_templates) {
+    std::vector<std::unique_ptr<AutofillField>> fields;
+    for (const auto& f : field_templates) {
+      fields.push_back(std::make_unique<AutofillField>());
+      fields.back()->SetTypeTo(AutofillType(f.type));
+    }
+
+    std::vector<bool> expected_only_fill_when_focused;
+    for (const auto& f : field_templates) {
+      expected_only_fill_when_focused.push_back(f.only_fill_when_focused);
+    }
+
+    return std::make_tuple(std::move(fields),
+                           std::move(expected_only_fill_when_focused));
+  }
+
+  std::vector<AutofillField*> ToPointers(
+      std::vector<std::unique_ptr<AutofillField>>& fields) {
+    std::vector<AutofillField*> result;
+    for (const auto& f : fields) {
+      result.push_back(f.get());
+    }
+    return result;
+  }
+
+  std::vector<bool> GetOnlyFilledWhenFocused(
+      const std::vector<std::unique_ptr<AutofillField>>& fields) {
+    std::vector<bool> result;
+    for (const auto& f : fields) {
+      result.push_back(f->only_fill_when_focused());
+    }
+    return result;
+  }
+};
+
+TEST_F(RationalizePhoneNumbersForFillingTest, FirstNumberIsWholeNumber) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  {PHONE_HOME_WHOLE_NUMBER, false},
+                  {PHONE_HOME_CITY_AND_NUMBER, true}});
+  FormStructureRationalizer rationalizer(&fields);
+  rationalizer.RationalizePhoneNumbersForFilling();
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
+}
+
+TEST_F(RationalizePhoneNumbersForFillingTest, FirstNumberIsComponentized) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  {PHONE_HOME_COUNTRY_CODE, false},
+                  {PHONE_HOME_CITY_CODE, false},
+                  {PHONE_HOME_NUMBER, false},
+                  {PHONE_HOME_COUNTRY_CODE, true},
+                  {PHONE_HOME_CITY_CODE, true},
+                  {PHONE_HOME_NUMBER, true}});
+  FormStructureRationalizer rationalizer(&fields);
+  rationalizer.RationalizePhoneNumbersForFilling();
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
+}
+
+TEST_F(RationalizePhoneNumbersForFillingTest,
+       BestEffortWhenNoCompleteNumberIsFound) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  {PHONE_HOME_COUNTRY_CODE, false},
+                  {PHONE_HOME_CITY_CODE, false}});
+  FormStructureRationalizer rationalizer(&fields);
+  rationalizer.RationalizePhoneNumbersForFilling();
+  // Even though we did not find the PHONE_HOME_NUMBER finishing the phone
+  // number, the remaining fields are filled.
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
+}
+
+TEST_F(RationalizePhoneNumbersForFillingTest, FillPhonePartsOnceOnly) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  {PHONE_HOME_COUNTRY_CODE, false},
+                  {PHONE_HOME_CITY_CODE, false},
+                  {PHONE_HOME_NUMBER, false},
+                  // The following represent a second number and an incomplete
+                  // third number that are not filled.
+                  {PHONE_HOME_WHOLE_NUMBER, true},
+                  {PHONE_HOME_CITY_CODE, true}});
+  FormStructureRationalizer rationalizer(&fields);
+  rationalizer.RationalizePhoneNumbersForFilling();
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
+}
+
+TEST_F(RationalizePhoneNumbersForFillingTest, SkipHiddenPhoneNumberFields) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  // This one is not focusable (e.g. hidden) and does not get
+                  // filled for that reason.
+                  {PHONE_HOME_CITY_AND_NUMBER, true},
+                  {PHONE_HOME_WHOLE_NUMBER, false}});
+  // With the `kAutofillUseParameterizedSectioning` `!FormFieldData::is_visible`
+  // fields are skipped.
+  fields[2]->set_is_visible(false);
+  fields[2]->set_is_focusable(false);
+  FormStructureRationalizer rationalizer(&fields);
+  rationalizer.RationalizePhoneNumbersForFilling();
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
+}
+
+TEST_F(RationalizePhoneNumbersForFillingTest, ProcessNumberPrefixAndSuffix) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  {PHONE_HOME_CITY_CODE, false},
+                  {PHONE_HOME_NUMBER_PREFIX, false},
+                  {PHONE_HOME_NUMBER_SUFFIX, false},
+                  // This would be a second number.
+                  {PHONE_HOME_CITY_CODE, true},
+                  {PHONE_HOME_NUMBER_PREFIX, true},
+                  {PHONE_HOME_NUMBER_SUFFIX, true}});
+  FormStructureRationalizer rationalizer(&fields);
+  rationalizer.RationalizePhoneNumbersForFilling();
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
+}
+
+TEST_F(RationalizePhoneNumbersForFillingTest, IncorrectPrefix) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  // Let's assume this field was incorrectly classified as a
+                  // prefix and there is no suffix but a local phone number.
+                  {PHONE_HOME_NUMBER_PREFIX, true},
+                  {PHONE_HOME_CITY_CODE, false},
+                  {PHONE_HOME_NUMBER, false},
+                  // This would be a second number.
+                  {PHONE_HOME_CITY_AND_NUMBER, true}});
+  FormStructureRationalizer rationalizer(&fields);
+  rationalizer.RationalizePhoneNumbersForFilling();
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
+}
+
+TEST_F(RationalizePhoneNumbersForFillingTest, IncorrectSuffix) {
+  auto [fields, expected_only_fill_when_focused] =
+      CreateTest({{NAME_FULL, false},
+                  {ADDRESS_HOME_LINE1, false},
+                  // Let's assume this field was incorrectly classified as a
+                  // suffix and there is no prefix but a local phone number.
+                  {PHONE_HOME_NUMBER_SUFFIX, true},
+                  {PHONE_HOME_CITY_CODE, false},
+                  {PHONE_HOME_NUMBER, false},
+                  // This would be a second number.
+                  {PHONE_HOME_CITY_AND_NUMBER, true}});
+  FormStructureRationalizer rationalizer(&fields);
+  rationalizer.RationalizePhoneNumbersForFilling();
+  EXPECT_THAT(GetOnlyFilledWhenFocused(fields),
+              ::testing::Eq(expected_only_fill_when_focused));
 }
 
 }  // namespace

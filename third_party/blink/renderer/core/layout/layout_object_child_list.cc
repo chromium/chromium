@@ -164,8 +164,7 @@ void LayoutObjectChildList::InsertChildNode(LayoutObject* owner,
   // where child->parent() ends up being owner but
   // child->nextSibling()->parent() is not owner.
   if (before_child && before_child->Parent() != owner) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   if (!owner->DocumentBeingDestroyed() &&

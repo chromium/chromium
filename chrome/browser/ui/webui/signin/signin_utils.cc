@@ -19,6 +19,7 @@
 #include "content/public/browser/web_ui.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "ui/base/webui/web_ui_util.h"
 
 namespace signin {
 
@@ -29,6 +30,25 @@ const int kMinorModeRestrictionsFetchDeadlineMs = 1000;
 #endif
 
 }  // namespace
+
+EnterpriseProfileCreationDialogParams::EnterpriseProfileCreationDialogParams(
+    AccountInfo account_info,
+    bool is_oidc_account,
+    bool profile_creation_required_by_policy,
+    bool show_link_data_option,
+    SigninChoiceCallbackVariant process_user_choice_callback,
+    base::OnceClosure done_callback,
+    base::RepeatingClosure retry_callback)
+    : account_info(account_info),
+      is_oidc_account(is_oidc_account),
+      profile_creation_required_by_policy(profile_creation_required_by_policy),
+      show_link_data_option(show_link_data_option),
+      process_user_choice_callback(std::move(process_user_choice_callback)),
+      done_callback(std::move(done_callback)),
+      retry_callback(std::move(retry_callback)) {}
+
+EnterpriseProfileCreationDialogParams::
+    ~EnterpriseProfileCreationDialogParams() = default;
 
 content::RenderFrameHost* GetAuthFrame(content::WebContents* web_contents,
                                        const std::string& parent_frame_name) {
@@ -95,5 +115,11 @@ void ClearProfileWithManagedAccounts(Profile* profile) {
   }
 }
 #endif
+
+std::string GetAccountPictureUrl(const AccountInfo& account_info) {
+  return account_info.account_image.IsEmpty()
+             ? profiles::GetPlaceholderAvatarIconUrl()
+             : webui::GetBitmapDataUrl(account_info.account_image.AsBitmap());
+}
 
 }  // namespace signin

@@ -24,7 +24,7 @@ parser.add_argument('--output', help='Path to generated files.')
 def main(argv):
   args = parser.parse_args()
   data = ReadData(args.input)
-  relpath = 'services/dwa_metrics/public/cpp/'
+  relpath = 'components/metrics/dwa/'
   builders_template.WriteFiles(args.output, relpath, data)
   decode_template.WriteFiles(args.output, relpath, data)
   return 0

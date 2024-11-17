@@ -162,12 +162,12 @@ class MockSurfaceDelegate : public SurfaceDelegate {
 class ZAuraSurfaceTest : public test::ExoTestBase,
                          public ::wm::ActivationChangeObserver {
  public:
-  ZAuraSurfaceTest() {}
+  ZAuraSurfaceTest() = default;
 
   ZAuraSurfaceTest(const ZAuraSurfaceTest&) = delete;
   ZAuraSurfaceTest& operator=(const ZAuraSurfaceTest&) = delete;
 
-  ~ZAuraSurfaceTest() override {}
+  ~ZAuraSurfaceTest() override = default;
 
   // test::ExoTestBase overrides:
   void SetUp() override {

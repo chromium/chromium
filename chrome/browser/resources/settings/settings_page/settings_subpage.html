@@ -61,11 +61,6 @@
         margin-inline-start: -10px;
       }
 
-      paper-spinner-lite {
-        height: var(--cr-icon-size);
-        width: var(--cr-icon-size);
-      }
-
       h1 {
         flex: 1;  /* Push other items to the end. */
       }
@@ -102,10 +97,6 @@
             on-search-changed="onSearchChanged_"
             clear-label="$i18n{clearSearch}">
         </cr-search-field>
-      </template>
-      <template is="dom-if" if="[[showSpinner]]">
-        <paper-spinner-lite active title$="[[spinnerTitle]]">
-        </paper-spinner-lite>
       </template>
     </div>
     <slot></slot>

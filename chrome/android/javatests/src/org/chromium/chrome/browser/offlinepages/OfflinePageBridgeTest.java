@@ -33,7 +33,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.OfflinePageModelObserver;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge.SavePageCallback;
 import org.chromium.chrome.browser.offlinepages.downloads.OfflinePageDownloadBridge;
-import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -231,7 +231,7 @@ public class OfflinePageBridgeTest {
                 () -> {
                     mProfile =
                             ProfileManager.getLastUsedRegularProfile()
-                                    .getPrimaryOTRProfile(/* createIfNeeded= */ true);
+                                    .getPrimaryOtrProfile(/* createIfNeeded= */ true);
                 });
         initializeBridgeForProfile();
         Assert.assertEquals(null, mOfflinePageBridge);
@@ -245,7 +245,7 @@ public class OfflinePageBridgeTest {
                 () -> {
                     mProfile =
                             ProfileManager.getLastUsedRegularProfile()
-                                    .getPrimaryOTRProfile(/* createIfNeeded= */ true);
+                                    .getPrimaryOtrProfile(/* createIfNeeded= */ true);
                 });
         OfflinePageBridge offlinePageBridgeRetrievedByKey = getBridgeForProfileKey();
         Assert.assertNull(offlinePageBridgeRetrievedByKey);
@@ -253,16 +253,16 @@ public class OfflinePageBridgeTest {
 
     @Test
     @MediumTest
-    public void testOfflinePageBridgeDisabled_InIncognitoCCT() throws Exception {
+    public void testOfflinePageBridgeDisabled_InIncognitoCct() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
+                    OtrProfileId otrProfileId = OtrProfileId.createUnique("CCT:Incognito");
                     mProfile =
                             ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
-                                            otrProfileID, /* createIfNeeded= */ true);
+                                            otrProfileId, /* createIfNeeded= */ true);
                     Assert.assertTrue(mProfile.isOffTheRecord());
-                    Assert.assertFalse(mProfile.isPrimaryOTRProfile());
+                    Assert.assertFalse(mProfile.isPrimaryOtrProfile());
                 });
         initializeBridgeForProfile();
         Assert.assertEquals(null, mOfflinePageBridge);
@@ -270,16 +270,16 @@ public class OfflinePageBridgeTest {
 
     @Test
     @MediumTest
-    public void testOfflinePageBridgeForProfileKeyDisabled_InIncognitoCCT() throws Exception {
+    public void testOfflinePageBridgeForProfileKeyDisabled_InIncognitoCct() throws Exception {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
+                    OtrProfileId otrProfileId = OtrProfileId.createUnique("CCT:Incognito");
                     mProfile =
                             ProfileManager.getLastUsedRegularProfile()
                                     .getOffTheRecordProfile(
-                                            otrProfileID, /* createIfNeeded= */ true);
+                                            otrProfileId, /* createIfNeeded= */ true);
                     Assert.assertTrue(mProfile.isOffTheRecord());
-                    Assert.assertFalse(mProfile.isPrimaryOTRProfile());
+                    Assert.assertFalse(mProfile.isPrimaryOtrProfile());
                 });
         OfflinePageBridge offlinePageBridgeRetrievedByKey = getBridgeForProfileKey();
         Assert.assertNull(offlinePageBridgeRetrievedByKey);

@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/check_op.h"
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
@@ -70,7 +70,12 @@ namespace {
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 // Used for `SEARCH_SUGGEST_TAIL` and `NULL_RESULT_MESSAGE` (e.g. starter pack)
 // type suggestion icons.
-static gfx::VectorIcon empty_icon;
+
+const gfx::VectorIcon& GetEmptyIcon() {
+  static const gfx::VectorIcon instance;
+  return instance;
+}
+
 #endif
 
 bool IsTrivialClassification(const ACMatchClassifications& classifications) {
@@ -130,8 +135,8 @@ int GetDeduplicationProviderPreferenceScore(
   }
   const AutocompleteProvider::Type type = provider->type();
 
-  using ProviderPrefMap = base::flat_map<AutocompleteProvider::Type, int>;
-  static const base::NoDestructor<ProviderPrefMap> provider_prefs({
+  constexpr auto kProviderPrefMap =
+    base::MakeFixedFlatMap<AutocompleteProvider::Type, int>({
       // Prefer live document suggestions. We check provider type instead
       // of match type in order to distinguish live suggestions from the
       // document provider from stale suggestions from the shortcuts
@@ -149,19 +154,12 @@ int GetDeduplicationProviderPreferenceScore(
       // Prefer non-shorcut matches over shortcuts, the latter of which may
       // have stale or missing URL titles (the latter from what-you-typed
       // matches).
-      //
-      // If the value here becomes a fixed value, then change `provider_prefs`
-      // from a NoDestructor to a FixedFlatMap.
-      {AutocompleteProvider::TYPE_SHORTCUTS,
-       base::FeatureList::IsEnabled(
-           omnibox::kPreferNonShortcutMatchesWhenDeduping)
-           ? -1
-           : 0},
+      {AutocompleteProvider::TYPE_SHORTCUTS, -1},
       // Prefer non-fuzzy matches over fuzzy matches.
       {AutocompleteProvider::TYPE_HISTORY_FUZZY, -2},
   });
-  const auto it = provider_prefs->find(type);
-  return it != provider_prefs->end() ? it->second : 0;
+  const auto it = kProviderPrefMap.find(type);
+  return it != kProviderPrefMap.end() ? it->second : 0;
 }
 
 // Implementation of boost::hash_combine
@@ -189,7 +187,11 @@ size_t ACMatchKeyHash<Args...>::operator()(
 // declaration here.
 template struct ACMatchKeyHash<std::u16string,
                                std::string>;  // base_search_provider
-template struct ACMatchKeyHash<std::string, bool, bool>;  // autocomplete_result
+// Deduplication key hash for AutocompleteResult.
+template struct ACMatchKeyHash<std::string,  // URL
+                               bool,         // Is Calculator type?
+                               bool,         // Is Verbatim Match?
+                               bool>;        // Is Answer card?
 
 // RichAutocompletionParams ---------------------------------------------------
 
@@ -304,7 +306,6 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       description_class_for_shortcuts(match.description_class_for_shortcuts),
       suggestion_group_id(match.suggestion_group_id),
       swap_contents_and_description(match.swap_contents_and_description),
-      answer(match.answer),
       answer_template(match.answer_template),
       answer_type(match.answer_type),
       transition(match.transition),
@@ -336,6 +337,10 @@ AutocompleteMatch::AutocompleteMatch(const AutocompleteMatch& match)
       iph_type(match.iph_type),
       iph_link_text(match.iph_link_text),
       iph_link_url(match.iph_link_url),
+      history_embeddings_answer_header_text(
+          match.history_embeddings_answer_header_text),
+      history_embeddings_answer_header_loading(
+          match.history_embeddings_answer_header_loading),
       feedback_type(match.feedback_type) {}
 
 AutocompleteMatch::AutocompleteMatch(AutocompleteMatch&& match) noexcept {
@@ -374,7 +379,6 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   suggestion_group_id = std::move(match.suggestion_group_id);
   swap_contents_and_description =
       std::move(match.swap_contents_and_description);
-  answer = std::move(match.answer);
   answer_template = std::move(match.answer_template);
   answer_type = std::move(match.answer_type);
   transition = std::move(match.transition);
@@ -399,6 +403,10 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   iph_type = std::move(match.iph_type);
   iph_link_text = std::move(match.iph_link_text);
   iph_link_url = std::move(match.iph_link_url);
+  history_embeddings_answer_header_text =
+      std::move(match.history_embeddings_answer_header_text);
+  history_embeddings_answer_header_loading =
+      std::move(match.history_embeddings_answer_header_loading);
   feedback_type = std::move(match.feedback_type);
 #if BUILDFLAG(IS_ANDROID)
   DestroyJavaObject();
@@ -447,7 +455,6 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   description_class_for_shortcuts = match.description_class_for_shortcuts;
   suggestion_group_id = match.suggestion_group_id;
   swap_contents_and_description = match.swap_contents_and_description;
-  answer = match.answer;
   answer_template = match.answer_template;
   answer_type = match.answer_type;
   transition = match.transition;
@@ -480,6 +487,10 @@ AutocompleteMatch& AutocompleteMatch::operator=(
   iph_type = match.iph_type;
   iph_link_text = match.iph_link_text;
   iph_link_url = match.iph_link_url;
+  history_embeddings_answer_header_text =
+      match.history_embeddings_answer_header_text;
+  history_embeddings_answer_header_loading =
+      match.history_embeddings_answer_header_loading;
   feedback_type = match.feedback_type;
 
 #if BUILDFLAG(IS_ANDROID)
@@ -498,8 +509,9 @@ AutocompleteMatch& AutocompleteMatch::operator=(
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 // static
-const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(int type) {
-  switch (static_cast<omnibox::AnswerType>(type)) {
+const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(
+    omnibox::AnswerType type) {
+  switch (type) {
     case omnibox::ANSWER_TYPE_CURRENCY:
       return omnibox::kAnswerCurrencyChromeRefreshIcon;
     case omnibox::ANSWER_TYPE_DICTIONARY:
@@ -520,7 +532,9 @@ const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(int type) {
 const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     bool is_bookmark,
     const TemplateURL* turl) const {
-  if (is_bookmark)
+  // If the user bookmarks 'chrome://history/q=query', a/ corresponding answer
+  // match shouldn't show the bookmark star.
+  if (is_bookmark && type != Type::HISTORY_EMBEDDINGS_ANSWER)
     return omnibox::kBookmarkChromeRefreshIcon;
   if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
     return AnswerTypeToAnswerIcon(answer_type);
@@ -582,7 +596,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       // Found), fallthrough to use the empty icon.
       switch (iph_type) {
         case IphType::kNone:
-          return empty_icon;
+          return GetEmptyIcon();
         case IphType::kGemini:
           return omnibox::kSparkIcon;
         case IphType::kFeaturedEnterpriseSearch:
@@ -590,7 +604,7 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
         case IphType::kHistoryEmbeddingsSettingsPromo:
           return omnibox::kSparkIcon;
         case IphType::kHistoryEmbeddingsDisclaimer:
-          return empty_icon;
+          return GetEmptyIcon();
         case IphType::kHistoryScopePromo:
           return vector_icons::kHistoryChromeRefreshIcon;
         case IphType::kHistoryEmbeddingsScopePromo:
@@ -598,7 +612,8 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
       }
 
     case Type::SEARCH_SUGGEST_TAIL:
-      return empty_icon;
+    case Type::HISTORY_EMBEDDINGS_ANSWER:
+      return GetEmptyIcon();
 
     case Type::DOCUMENT_SUGGESTION:
       switch (document_type) {
@@ -804,8 +819,7 @@ ACMatchClassifications AutocompleteMatch::ClassificationsFromString(
     int classification_style = ACMatchClassification::NONE;
     if (!base::StringToInt(tokens[i], &classification_offset) ||
         !base::StringToInt(tokens[i + 1], &classification_style)) {
-      NOTREACHED_IN_MIGRATION();
-      return classifications;
+      NOTREACHED();
     }
     classifications.push_back(
         ACMatchClassification(classification_offset, classification_style));
@@ -1129,8 +1143,15 @@ void AutocompleteMatch::LogSearchEngineUsed(
             search_engine_type, SEARCH_ENGINE_MAX);
         break;
 
+      case TemplateURLData::CreatedByPolicy::kSearchAggregator:
+        UMA_HISTOGRAM_ENUMERATION(
+            "Omnibox.SearchEngineType.SetByEnterprisePolicy."
+            "EnterpriseSearchAggregatorSettings",
+            search_engine_type, SEARCH_ENGINE_MAX);
+        break;
+
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   } else if (template_url->type() ==
              TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION) {
@@ -1253,12 +1274,14 @@ std::u16string AutocompleteMatch::GetKeywordPlaceholder(
   // are disabled on iOS.
   return u"";
 #else
-  if (!history_embeddings::kOmniboxScoped.Get())
+  if (!history_embeddings::GetFeatureParameters().omnibox_scoped) {
     return u"";
+  }
 
   const TemplateURL* t_url = GetTemplateURL(template_url_service, false);
-  if (!t_url)
+  if (!t_url) {
     return u"";
+  }
   int message_id;
   switch (t_url->starter_pack_id()) {
     case TemplateURLStarterPackData::kBookmarks:
@@ -1292,11 +1315,9 @@ TemplateURL* AutocompleteMatch::GetTemplateURL(
 }
 
 GURL AutocompleteMatch::ImageUrl() const {
-  if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
-      answer_template.has_value()) {
-    return GURL(answer_template->answers(0).image().url());
-  }
-  return answer ? answer->image_url() : image_url;
+  return answer_template.has_value()
+             ? GURL(answer_template->answers(0).image().url())
+             : image_url;
 }
 
 void AutocompleteMatch::RecordAdditionalInfo(const std::string& property,
@@ -1374,8 +1395,7 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
         break;
       case OmniboxActionId::UNKNOWN:
       case OmniboxActionId::LAST:
-        NOTREACHED_IN_MIGRATION();
-        break;
+        NOTREACHED();
     }
   }
 
@@ -1446,6 +1466,8 @@ AutocompleteMatch::GetOmniboxEventResultType(int action_index) const {
       return OmniboxEventProto::Suggestion::FEATURED_ENTERPRISE_SEARCH;
     case AutocompleteMatchType::NULL_RESULT_MESSAGE:
       return OmniboxEventProto::Suggestion::NULL_RESULT_MESSAGE;
+    case AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER:
+      return OmniboxEventProto::Suggestion::HISTORY_EMBEDDINGS_ANSWER;
     case AutocompleteMatchType::CONTACT_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_DEPRECATED:
     case AutocompleteMatchType::PHYSICAL_WEB_OVERFLOW_DEPRECATED:
@@ -1521,14 +1543,16 @@ int AutocompleteMatch::GetSortingOrder() const {
       shortcut_boosted) {
     return 2;
   }
-  if (IsIPHSuggestion())
+  if (type == AutocompleteMatchType::HISTORY_EMBEDDINGS_ANSWER)
     return 5;
+  if (IsIPHSuggestion())
+    return 6;
   return 4;
 }
 
 bool AutocompleteMatch::IsMlSignalLoggingEligible() const {
   const auto& ml_config = OmniboxFieldTrial::GetMLConfig();
-  if (answer.has_value()) {
+  if (answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
     return false;
   }
   return type == AutocompleteMatchType::URL_WHAT_YOU_TYPED ||
@@ -1553,7 +1577,8 @@ bool AutocompleteMatch::IsMlScoringEligible() const {
   // Do not apply ML scoring to calculator or answer suggestions as the ML model
   // currently doesn't provide accurate scores for suggestions that have a low
   // click-through rate.
-  if (type == AutocompleteMatchType::CALCULATOR || answer.has_value()) {
+  if (type == AutocompleteMatchType::CALCULATOR ||
+      answer_type != omnibox::ANSWER_TYPE_UNSPECIFIED) {
     return false;
   }
 
@@ -1758,10 +1783,6 @@ size_t AutocompleteMatch::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(description_for_shortcuts);
   res +=
       base::trace_event::EstimateMemoryUsage(description_class_for_shortcuts);
-  if (answer)
-    res += base::trace_event::EstimateMemoryUsage(answer.value());
-  else
-    res += sizeof(SuggestionAnswer);
   res += base::trace_event::EstimateMemoryUsage(associated_keyword);
   res += base::trace_event::EstimateMemoryUsage(keyword);
   res += base::trace_event::EstimateMemoryUsage(search_terms_args);

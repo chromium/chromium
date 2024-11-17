@@ -176,8 +176,8 @@ class PropertyTreeManager {
   static void DropCompositorScrollDeltaNextCommit(cc::LayerTreeHost&,
                                                   CompositorElementId);
 
-  static uint32_t GetMainThreadScrollingReasons(const cc::LayerTreeHost&,
-                                                const ScrollPaintPropertyNode&);
+  static uint32_t GetMainThreadRepaintReasons(const cc::LayerTreeHost&,
+                                              const ScrollPaintPropertyNode&);
   // TODO(crbug.com/40517276): Remove this function after launching
   // RasterInducingScroll.
   static bool UsesCompositedScrolling(const cc::LayerTreeHost&,
@@ -358,7 +358,7 @@ class PropertyTreeManager {
 
   void UpdatePixelMovingFilterClipExpanders();
 
-  uint32_t NonCompositedMainThreadScrollingReasons(
+  uint32_t NonCompositedMainThreadRepaintReasons(
       const TransformPaintPropertyNode& scroll_translation) const;
 
   PropertyTreeManagerClient& client_;

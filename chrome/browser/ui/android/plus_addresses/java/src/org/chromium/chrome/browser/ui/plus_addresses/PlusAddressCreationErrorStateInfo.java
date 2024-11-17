@@ -10,8 +10,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 
-@JNINamespace("plus_addresses")
 /** Contains necessary information to show a meaningful error message to the user. */
+@JNINamespace("plus_addresses")
 class PlusAddressCreationErrorStateInfo {
     private final @PlusAddressCreationBottomSheetErrorType int mErrorType;
     private final String mTitle;

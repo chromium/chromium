@@ -10,15 +10,15 @@
 
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_network_interface.h"
+#include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
 class GURL;
 
@@ -39,9 +39,9 @@ class PaymentsWindowUserConsentDialogControllerImpl;
 // WebContents of the original tab that the pop-up is created in. If there is a
 // pop-up currently present, `this` will observe the WebContents of that pop-up.
 class DesktopPaymentsWindowManager : public PaymentsWindowManager,
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
                                      public BrowserListObserver,
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
                                      public content::WebContentsObserver {
  public:
   explicit DesktopPaymentsWindowManager(ContentAutofillClient* client);
@@ -58,10 +58,10 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
       content::NavigationHandle* navigation_handle) override;
   void WebContentsDestroyed() override;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
  private:
   friend class DesktopPaymentsWindowManagerTestApi;
@@ -97,7 +97,7 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   // UnmaskCardRequest, triggered after the authentication has completed.
   void OnVcn3dsAuthenticationResponseReceived(
       payments::PaymentsAutofillClient::PaymentsRpcResult result,
-      const PaymentsNetworkInterface::UnmaskResponseDetails& response_details);
+      const UnmaskResponseDetails& response_details);
 
   // Resets the state of `this` in relation to the ongoing UnmaskCardRequest.
   // Called if the user clicks cancel on the progress dialog, which is shown
@@ -136,10 +136,10 @@ class DesktopPaymentsWindowManager : public PaymentsWindowManager,
   std::unique_ptr<PaymentsWindowUserConsentDialogControllerImpl>
       payments_window_user_consent_dialog_controller_;
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
   base::ScopedObservation<BrowserList, BrowserListObserver> scoped_observation_{
       this};
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX)
 
   base::WeakPtrFactory<DesktopPaymentsWindowManager> weak_ptr_factory_{this};
 };

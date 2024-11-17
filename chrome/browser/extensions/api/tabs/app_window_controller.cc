@@ -8,10 +8,10 @@
 #include <utility>
 
 #include "chrome/browser/extensions/api/tabs/app_base_window.h"
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/extensions/window_controller.h"
 #include "chrome/browser/extensions/window_controller_list.h"
+#include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/url_constants.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -38,7 +38,7 @@ int AppWindowController::GetWindowId() const {
 }
 
 std::string AppWindowController::GetWindowTypeText() const {
-  return tabs_constants::kWindowTypeValueApp;
+  return api::tabs::ToString(api::tabs::WindowType::kApp);
 }
 
 void AppWindowController::SetFullscreenMode(bool is_fullscreen,

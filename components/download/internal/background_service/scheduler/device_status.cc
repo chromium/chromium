@@ -62,7 +62,7 @@ DeviceStatus::Result DeviceStatus::MeetsCondition(
           battery_status == BatteryStatus::CHARGING;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   switch (params.network_requirements) {
     case SchedulingParams::NetworkRequirements::NONE:
@@ -75,7 +75,7 @@ DeviceStatus::Result DeviceStatus::MeetsCondition(
           network_status == NetworkStatus::UNMETERED;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
   return result;
 }

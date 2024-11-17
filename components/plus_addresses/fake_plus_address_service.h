@@ -16,44 +16,96 @@
 #include "components/plus_addresses/plus_address_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-class PrefService;
-
-namespace signin {
-class IdentityManager;
-}  // namespace signin
-
 namespace plus_addresses {
-
-class PlusAddressSettingService;
 
 class FakePlusAddressService : public PlusAddressService {
  public:
-  FakePlusAddressService(PrefService* pref_service,
-                         signin::IdentityManager* identity_manager,
-                         PlusAddressSettingService* setting_service);
+  FakePlusAddressService();
   ~FakePlusAddressService() override;
 
   static constexpr char kFakeProfileId[] = "123";
-  static constexpr char kFakePlusAddress[] = "plus+remote@plus.plus";
-  static constexpr char16_t kFakePlusAddress16[] = u"plus+remote@plus.plus";
   static constexpr char kFacet[] = "https://facet.bar";
 
-  // PlusAddressService:
+  // autofill::AutofillPlusAddressDelegate:
+  bool IsPlusAddress(const std::string& potential_plus_address) const override;
   bool IsPlusAddressFillingEnabled(const url::Origin& origin) const override;
+  bool IsPlusAddressFullFormFillingEnabled() const override;
+  void GetAffiliatedPlusAddresses(
+      const url::Origin& origin,
+      base::OnceCallback<void(std::vector<std::string>)> callback) override;
+  std::vector<autofill::Suggestion> GetSuggestionsFromPlusAddresses(
+      const std::vector<std::string>& plus_addresses,
+      const url::Origin& origin,
+      bool is_off_the_record,
+      const autofill::FormData& focused_form,
+      const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
+          form_field_type_groups,
+      const autofill::PasswordFormClassification& focused_form_classification,
+      const autofill::FieldGlobalId& focused_field_id,
+      autofill::AutofillSuggestionTriggerSource trigger_source) override;
+  autofill::Suggestion GetManagePlusAddressSuggestion() const override;
+  void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
+  void OnPlusAddressSuggestionShown(
+      autofill::AutofillManager& manager,
+      autofill::FormGlobalId form,
+      autofill::FieldGlobalId field,
+      SuggestionContext suggestion_context,
+      autofill::PasswordFormClassification::Type form_type,
+      autofill::SuggestionType suggestion_type) override;
+  void DidFillPlusAddress(bool did_show_email_suggestion,
+                          bool is_manual_fallback) override;
+  void DidChooseEmailOverPlusAddress() override;
+  void OnClickedRefreshInlineSuggestion(
+      const url::Origin& last_committed_primary_main_frame_origin,
+      base::span<const autofill::Suggestion> current_suggestions,
+      size_t current_suggestion_index,
+      UpdateSuggestionsCallback update_suggestions_callback) override;
+  void OnShowedInlineSuggestion(
+      const url::Origin& primary_main_frame_origin,
+      base::span<const autofill::Suggestion> current_suggestions,
+      UpdateSuggestionsCallback update_suggestions_callback) override;
+  void OnAcceptedInlineSuggestion(
+      const url::Origin& primary_main_frame_origin,
+      base::span<const autofill::Suggestion> current_suggestions,
+      size_t current_suggestion_index,
+      bool is_manual_fallback,
+      UpdateSuggestionsCallback update_suggestions_callback,
+      HideSuggestionsCallback hide_suggestions_callback,
+      PlusAddressCallback fill_field_callback,
+      ShowAffiliationErrorDialogCallback show_affiliation_error_dialog,
+      ShowErrorDialogCallback show_error_dialog,
+      base::OnceClosure reshow_suggestions) override;
+
+  // PlusAddressService:
+  void AddObserver(PlusAddressService::Observer* o) override;
+  void RemoveObserver(PlusAddressService::Observer* o) override;
   bool IsPlusAddressCreationEnabled(const url::Origin& origin,
                                     bool is_off_the_record) const override;
-  bool IsPlusAddress(const std::string& potential_plus_address) const override;
   void GetAffiliatedPlusProfiles(const url::Origin& origin,
                                  GetPlusProfilesCallback callback) override;
+  base::span<const PlusProfile> GetPlusProfiles() const override;
   void ReservePlusAddress(const url::Origin& origin,
-                          PlusAddressRequestCallback on_completed) override;
-  void ConfirmPlusAddress(const url::Origin& origin,
-                          const PlusAddress& plus_address,
                           PlusAddressRequestCallback on_completed) override;
   void RefreshPlusAddress(const url::Origin& origin,
                           PlusAddressRequestCallback on_completed) override;
+  void ConfirmPlusAddress(const url::Origin& origin,
+                          const PlusAddress& plus_address,
+                          bool is_manual_fallback,
+                          PlusAddressRequestCallback on_completed) override;
+  bool IsRefreshingSupported(const url::Origin& origin) override;
+  std::optional<PlusAddress> GetPlusAddress(
+      const affiliations::FacetURI& facet) const override;
+  std::optional<PlusProfile> GetPlusProfile(
+      const affiliations::FacetURI& facet) const override;
   std::optional<std::string> GetPrimaryEmail() override;
-  base::span<const PlusProfile> GetPlusProfiles() const override;
+  bool ShouldShowManualFallback(const url::Origin& origin,
+                                bool is_off_the_record) const override;
+  void SavePlusProfile(const PlusProfile& profile) override;
+  bool IsEnabled() const override;
+  void TriggerUserPerceptionSurvey(hats::SurveyType survey_type) override;
+
+  // Resets the state of the class.
+  void ClearState();
 
   void add_plus_profile(PlusProfile profile) {
     plus_profiles_.emplace_back(std::move(profile));
@@ -98,11 +150,38 @@ class FakePlusAddressService : public PlusAddressService {
         should_return_no_affiliated_plus_profiles;
   }
 
+  void set_should_return_affiliated_plus_profile_on_confirm(
+      bool should_return_affiliated_plus_profile_on_confirm) {
+    should_return_affiliated_plus_profile_on_confirm_ =
+        should_return_affiliated_plus_profile_on_confirm;
+  }
+
+  void set_should_return_quota_error(bool should_return_quota_error) {
+    should_return_quota_error_ = should_return_quota_error;
+  }
+
+  void set_should_return_timeout_error(bool should_return_timeout_error) {
+    should_return_timeout_error_ = should_return_timeout_error;
+  }
+
+  bool was_plus_address_suggestion_filled() {
+    return did_fill_plus_address_suggestion_;
+  }
+
+  bool was_email_chosen_over_plus_address() {
+    return was_email_chosen_over_plus_address_;
+  }
+
+  std::optional<hats::SurveyType> get_triggered_survey_type() {
+    return triggered_survey_;
+  }
+
  private:
   PlusAddressRequestCallback on_confirmed_;
   testing::NiceMock<affiliations::MockAffiliationService>
       mock_affiliation_service_;
   std::vector<PlusProfile> plus_profiles_;
+  std::optional<hats::SurveyType> triggered_survey_;
   bool is_confirmed_ = false;
   bool should_fail_to_confirm_ = false;
   bool should_fail_to_reserve_ = false;
@@ -110,6 +189,11 @@ class FakePlusAddressService : public PlusAddressService {
   bool is_plus_address_filling_enabled_ = false;
   bool should_offer_creation_ = false;
   bool should_return_no_affiliated_plus_profiles_ = false;
+  bool should_return_affiliated_plus_profile_on_confirm_ = false;
+  bool should_return_quota_error_ = false;
+  bool should_return_timeout_error_ = false;
+  bool did_fill_plus_address_suggestion_ = false;
+  bool was_email_chosen_over_plus_address_ = false;
 };
 
 }  // namespace plus_addresses

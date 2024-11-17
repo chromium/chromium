@@ -266,7 +266,7 @@ bool DawnFallbackImageRepresentation::UploadToBacking() {
     wgpu::FutureWaitInfo wait_info = {staging_buffer_entry.buffer.MapAsync(
         wgpu::MapMode::Read, 0, wgpu::kWholeMapSize,
         wgpu::CallbackMode::WaitAnyOnly,
-        [](wgpu::MapAsyncStatus status, const char*, bool* success) {
+        [](wgpu::MapAsyncStatus status, wgpu::StringView, bool* success) {
           *success = status == wgpu::MapAsyncStatus::Success;
         },
         &success)};
@@ -310,21 +310,8 @@ wgpu::Texture DawnFallbackImageRepresentation::BeginAccess(
   // texture as the dest and source of copies for readback from and upload to
   // the backing respectively.
   wgpu::DawnTextureInternalUsageDescriptor internalDesc;
-  if (base::FeatureList::IsEnabled(
-          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-    internalDesc.internalUsage = internal_usage | wgpu::TextureUsage::CopySrc |
-                                 wgpu::TextureUsage::CopyDst;
-  } else {
-    // If texture is not for video frame import, we need RenderAttachment usage
-    // for clears, and TextureBinding for copyTextureForBrowser.
-    internalDesc.internalUsage = wgpu::TextureUsage::CopySrc |
-                                 wgpu::TextureUsage::CopyDst |
-                                 wgpu::TextureUsage::TextureBinding;
-
-    if (wgpu_format_ != wgpu::TextureFormat::R8BG8Biplanar420Unorm) {
-      internalDesc.internalUsage |= wgpu::TextureUsage::RenderAttachment;
-    }
-  }
+  internalDesc.internalUsage = internal_usage | wgpu::TextureUsage::CopySrc |
+                               wgpu::TextureUsage::CopyDst;
 
   texture_descriptor.nextInChain = &internalDesc;
 

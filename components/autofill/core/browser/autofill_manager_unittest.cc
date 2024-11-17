@@ -9,6 +9,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/containers/to_vector.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -26,12 +27,13 @@
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-#include "components/autofill/core/browser/ml_model/autofill_ml_prediction_model_handler.h"
+#include "components/autofill/core/browser/ml_model/field_classification_model_handler.h"
 #endif
 
 namespace autofill {
@@ -67,13 +69,16 @@ class MockAutofillDriver : public TestAutofillDriver {
 };
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-class MockAutofillMlPredictionModelHandler
-    : public AutofillMlPredictionModelHandler {
+class MockFieldClassificationModelHandler
+    : public FieldClassificationModelHandler {
  public:
-  explicit MockAutofillMlPredictionModelHandler(
+  explicit MockFieldClassificationModelHandler(
       optimization_guide::OptimizationGuideModelProvider* provider)
-      : AutofillMlPredictionModelHandler(provider) {}
-  ~MockAutofillMlPredictionModelHandler() override = default;
+      : FieldClassificationModelHandler(
+            provider,
+            optimization_guide::proto::OptimizationTarget::
+                OPTIMIZATION_TARGET_AUTOFILL_FIELD_CLASSIFICATION) {}
+  ~MockFieldClassificationModelHandler() override = default;
 
   MOCK_METHOD(
       void,
@@ -96,10 +101,7 @@ std::vector<FormData> CreateTestForms(size_t num_forms) {
 
 // Returns the FormGlobalIds of the specified |forms|.
 std::vector<FormGlobalId> GetFormIds(const std::vector<FormData>& forms) {
-  std::vector<FormGlobalId> ids;
-  ids.reserve(forms.size());
-  base::ranges::transform(forms, std::back_inserter(ids), &FormData::global_id);
-  return ids;
+  return base::ToVector(forms, &FormData::global_id);
 }
 
 // Matches a std::map<FormGlobalId, std::unique_ptr<FormStructure>>::value_type
@@ -239,9 +241,77 @@ TEST_F(AutofillManagerTest, UpdateAndRemoveSameForms) {
   OnFormsSeenWithExpectations(manager(), forms, GetFormIds(forms), forms);
 }
 
+// Tests that events update the form cache. Since there are so many events and
+// so many properties of forms that may change, the test only covers a small
+// fraction:
+// - Events: OnFormsSeen(), OnTextFieldDidChange(), OnFocusOnFormField()
+// - Properties: AutofillField::value(ValueSemantics::kCurrent)
+TEST_F(AutofillManagerTest, FormCacheUpdatesValue) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillFixValueSemantics);
+  EXPECT_CALL(manager(), ShouldParseForms)
+      .Times(AtLeast(0))
+      .WillRepeatedly(Return(true));
+  TestAutofillManagerWaiter waiter(manager());
+
+  FormData form = test::CreateTestAddressFormData();
+  FormGlobalId form_id = form.global_id();
+  auto current_cached_value = [this,
+                               &form_id]() -> std::optional<std::u16string> {
+    FormStructure* cached_form = manager().FindCachedFormById(form_id);
+    if (!cached_form || cached_form->fields().empty()) {
+      return std::nullopt;
+    }
+    return cached_form->fields()[0]->value(ValueSemantics::kCurrent);
+  };
+
+  EXPECT_EQ(current_cached_value(), std::nullopt);
+
+  // Triggers a parse.
+  test_api(form).field(0).set_value(u"first seen value");
+  manager().OnFormsSeen({form}, {});
+  ASSERT_TRUE(waiter.Wait());
+  EXPECT_EQ(current_cached_value(), u"first seen value");
+
+  // Triggers a reparse.
+  test_api(form).field(0).set_value(u"second seen value");
+  manager().OnFormsSeen({form}, {});
+  ASSERT_TRUE(waiter.Wait());
+  EXPECT_EQ(current_cached_value(), u"second seen value");
+
+  // Triggers no reparse.
+  test_api(form).field(0).set_value(u"first changed value");
+  manager().OnTextFieldDidChange(form, form.fields()[0].global_id(), {});
+  ASSERT_TRUE(waiter.Wait());
+  EXPECT_EQ(current_cached_value(), u"first changed value");
+
+  // Triggers no reparse.
+  test_api(form).field(0).set_value(u"second changed value");
+  manager().OnTextFieldDidChange(form, form.fields()[0].global_id(), {});
+  ASSERT_TRUE(waiter.Wait());
+  EXPECT_EQ(current_cached_value(), u"second changed value");
+
+  // Triggers a reparse.
+  test_api(form).Remove(-1);
+  test_api(form).field(0).set_value(u"first reparse value");
+  manager().OnFocusOnFormField(form, form.fields()[0].global_id());
+  ASSERT_TRUE(waiter.Wait());
+  EXPECT_EQ(current_cached_value(), u"first reparse value");
+
+  // Triggers a second reparse.
+  test_api(form).Remove(-1);
+  test_api(form).field(0).set_value(u"second reparse value");
+  manager().OnFocusOnFormField(form, form.fields()[0].global_id());
+  ASSERT_TRUE(waiter.Wait());
+  EXPECT_EQ(current_cached_value(), u"second reparse value");
+}
+
 TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
-  base::test::ScopedFeatureList feature_list{
-      features::kAutofillPageLanguageDetection};
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillPageLanguageDetection,
+                            features::kAutofillFixValueSemantics},
+      /*disabled_features=*/{});
 
   std::vector<FormData> forms = CreateTestForms(2);
   FormData form = forms[0];
@@ -294,8 +364,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(manager(), OnFocusOnNonFormFieldImpl).Times(AtLeast(0));
   EXPECT_CALL(manager(), OnDidFillAutofillFormDataImpl).Times(AtLeast(0));
   EXPECT_CALL(manager(), OnDidEndTextFieldEditingImpl).Times(AtLeast(0));
-  EXPECT_CALL(manager(), OnSelectOrSelectListFieldOptionsDidChangeImpl)
-      .Times(AtLeast(0));
+  EXPECT_CALL(manager(), OnSelectFieldOptionsDidChangeImpl).Times(AtLeast(0));
   EXPECT_CALL(manager(), OnJavaScriptChangedAutofilledValueImpl)
       .Times(AtLeast(0));
   EXPECT_CALL(manager(), OnFormSubmittedImpl).Times(AtLeast(0));
@@ -400,8 +469,7 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   // FillOrPreviewForm() triggers OnFillOrPreviewDataModelForm().
 
   EXPECT_CALL(observer, OnFormSubmitted(m, Ref(form)));
-  manager().OnFormSubmitted(form, true,
-                            mojom::SubmissionSource::FORM_SUBMISSION);
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
 
   // OnBeforeLoadedServerPredictions(), OnAfterLoadedServerPredictions() are
   // tested in AutofillManagerTest_OnLoadedServerPredictionsObserver.
@@ -424,39 +492,102 @@ TEST_F(AutofillManagerTest, TriggerFormExtractionInAllFrames) {
   manager().TriggerFormExtractionInAllFrames(base::DoNothing());
 }
 
-// Ensure that `AutofillMlPredictionModelHandler` is called when parsing the
-// form in `ParseFormsAsync()`
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-TEST_F(AutofillManagerTest, GetMlModelPredictionsForForm) {
-  base::test::ScopedFeatureList features(features::kAutofillModelPredictions);
+// Ensure that `FieldClassificationModelHandler`s are called when parsing the
+// form in `ParseFormsAsync()`. These tests intentionally don't associate
+// predictions to the `FormStructure`, they only verify that
+// `GetModelPredictionsForForms` gets called.
+class AutofillManagerTestForModelPredictions : public AutofillManagerTest {
+ public:
+  void SetUp() override {
+    AutofillManagerTest::SetUp();
+    observation_.Observe(&manager());
+  }
 
-  auto provider = std::make_unique<
-      optimization_guide::TestOptimizationGuideModelProvider>();
-  auto mock_handler =
-      std::make_unique<MockAutofillMlPredictionModelHandler>(provider.get());
-  // This test intentionally doesn't associate predictions to the
-  // `FormStructure`, it only expects that `GetModelPredictionsForForms` gets
-  // called.
-  ON_CALL(*mock_handler, GetModelPredictionsForForms)
-      .WillByDefault(
-          [](std::vector<std::unique_ptr<FormStructure>> forms,
-             base::OnceCallback<void(
-                 std::vector<std::unique_ptr<FormStructure>>)> callback) {
-            std::move(callback).Run(std::move(forms));
-          });
-  EXPECT_CALL(*mock_handler, GetModelPredictionsForForms);
-  client_.set_ml_prediction_model_handler(std::move(mock_handler));
+  void TearDown() override {
+    // The handler owns the model executor, which operates on a background
+    // thread and is destroyed asynchronously. Resetting handlers owned by the
+    // client triggers their destruction. Wait for it to complete. This needs to
+    // happen before the `provider` is destroyed.
+    observation_.Reset();
+    client_.set_autofill_ml_prediction_model_handler(nullptr);
+    client_.set_password_ml_prediction_model_handler(nullptr);
+    task_environment_.RunUntilIdle();
+    AutofillManagerTest::TearDown();
+  }
 
+  // Creates a model handler that is just runs the final callback upon receiving
+  // forms that need to be parsed.
+  std::unique_ptr<MockFieldClassificationModelHandler>
+  CreateMockModelHandler() {
+    auto handler =
+        std::make_unique<MockFieldClassificationModelHandler>(&model_provider_);
+    ON_CALL(*handler, GetModelPredictionsForForms)
+        .WillByDefault(
+            [](std::vector<std::unique_ptr<FormStructure>> forms,
+               base::OnceCallback<void(
+                   std::vector<std::unique_ptr<FormStructure>>)> callback) {
+              std::move(callback).Run(std::move(forms));
+            });
+    return handler;
+  }
+
+  MockAutofillManagerObserver& observer() { return observer_; }
+
+ private:
+  optimization_guide::TestOptimizationGuideModelProvider model_provider_;
+  MockAutofillManagerObserver observer_;
+  base::ScopedObservation<AutofillManager, MockAutofillManagerObserver>
+      observation_{&observer_};
+};
+
+TEST_F(AutofillManagerTestForModelPredictions,
+       GetMlModelPredictionsForForm_AutofillOnly) {
+  client_.set_autofill_ml_prediction_model_handler(CreateMockModelHandler());
+
+  EXPECT_CALL(static_cast<MockFieldClassificationModelHandler&>(
+                  *client_.GetAutofillFieldClassificationModelHandler()),
+              GetModelPredictionsForForms);
+  // Check that AutofillManager's observer is notified after parsing using
+  // models is done.
+  EXPECT_CALL(observer(), OnFieldTypesDetermined);
   FormData form = test::CreateTestAddressFormData();
   OnFormsSeenWithExpectations(manager(), /*updated_forms=*/{form},
                               /*removed_forms=*/{}, /*expectation=*/{form});
+}
 
-  // The handler own the model executor, which operates on a background thread
-  // and is destroyed asynchronously. Resetting the `client_`'s handler triggers
-  // the deletion. Wait for it to complete. This needs to happen before the
-  // `provider` goes out of scope.
-  client_.set_ml_prediction_model_handler(nullptr);
-  task_environment_.RunUntilIdle();
+TEST_F(AutofillManagerTestForModelPredictions,
+       GetMlModelPredictionsForForm_PasswordManagerOnly) {
+  client_.set_password_ml_prediction_model_handler(CreateMockModelHandler());
+
+  EXPECT_CALL(static_cast<MockFieldClassificationModelHandler&>(
+                  *client_.GetPasswordManagerFieldClassificationModelHandler()),
+              GetModelPredictionsForForms);
+  // Check that AutofillManager's observer is notified after parsing using
+  // models is done.
+  EXPECT_CALL(observer(), OnFieldTypesDetermined);
+  FormData form = test::CreateTestAddressFormData();
+  OnFormsSeenWithExpectations(manager(), /*updated_forms=*/{form},
+                              /*removed_forms=*/{}, /*expectation=*/{form});
+}
+
+TEST_F(AutofillManagerTestForModelPredictions,
+       GetMlModelPredictionsForForm_BothAutofillAndPasswordManager) {
+  client_.set_autofill_ml_prediction_model_handler(CreateMockModelHandler());
+  client_.set_password_ml_prediction_model_handler(CreateMockModelHandler());
+
+  EXPECT_CALL(static_cast<MockFieldClassificationModelHandler&>(
+                  *client_.GetAutofillFieldClassificationModelHandler()),
+              GetModelPredictionsForForms);
+  EXPECT_CALL(static_cast<MockFieldClassificationModelHandler&>(
+                  *client_.GetPasswordManagerFieldClassificationModelHandler()),
+              GetModelPredictionsForForms);
+  // Check that AutofillManager's observer is notified after parsing using
+  // models is done.
+  EXPECT_CALL(observer(), OnFieldTypesDetermined);
+  FormData form = test::CreateTestAddressFormData();
+  OnFormsSeenWithExpectations(manager(), /*updated_forms=*/{form},
+                              /*removed_forms=*/{}, /*expectation=*/{form});
 }
 #endif
 

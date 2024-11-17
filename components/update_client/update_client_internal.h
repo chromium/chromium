@@ -67,7 +67,7 @@ class UpdateClientImpl : public UpdateClient {
 
   void RunTask(scoped_refptr<Task> task);
   void OnTaskComplete(Callback callback, scoped_refptr<Task> task, Error error);
-  void NotifyObservers(Observer::Events event, const std::string& id);
+  void NotifyObservers(const CrxUpdateItem& item);
   void RunOrEnqueueTask(scoped_refptr<Task> task);
 
   SEQUENCE_CHECKER(sequence_checker_);

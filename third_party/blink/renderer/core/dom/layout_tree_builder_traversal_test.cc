@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/dom/column_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -163,6 +164,97 @@ TEST_F(LayoutTreeBuilderTraversalTest, limits) {
   LayoutObject* next_sibling =
       LayoutTreeBuilderTraversal::NextSiblingLayoutObject(*first, 2);
   EXPECT_FALSE(next_sibling);  // Should not overrecurse
+}
+
+TEST_F(LayoutTreeBuilderTraversalTest, ColumnScrollMarkers) {
+  SetupSampleHTML(R"(
+      <style>
+        #test {
+          overflow: hidden;
+          scroll-marker-group: before;
+          columns: 1;
+          height: 100px;
+          width: 100px;
+        }
+        #test::scroll-marker-group {
+          content: 'smg';
+          display: flex;
+          height: 100px;
+          width: 100px;
+        }
+        #test::marker {
+          content: 'm';
+        }
+        #test::column::scroll-marker {
+          content: 'csm';
+          height: 100px;
+          width: 30px;
+        }
+        #test::before {
+          content: 'b';
+        }
+        #test div {
+          height: 100px;
+          width: 100px;
+        }
+      </style>
+      <li id='test'>
+        <div></div>
+        <div></div>
+      </li>
+      )");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* body = GetDocument().body();
+  Element* test = body->QuerySelector(AtomicString("#test"));
+  PseudoElement* before = test->GetPseudoElement(kPseudoIdBefore);
+  PseudoElement* marker = test->GetPseudoElement(kPseudoIdMarker);
+  PseudoElement* scroll_marker_group =
+      test->GetPseudoElement(kPseudoIdScrollMarkerGroupBefore);
+  PseudoElement* first_column = test->GetColumnPseudoElements()->front();
+  PseudoElement* first_column_scroll_marker =
+      first_column->GetPseudoElement(kPseudoIdScrollMarker);
+  PseudoElement* second_column = test->GetColumnPseudoElements()->at(1u);
+  PseudoElement* second_column_scroll_marker =
+      second_column->GetPseudoElement(kPseudoIdScrollMarker);
+  PseudoElement* third_column = test->GetColumnPseudoElements()->back();
+  PseudoElement* third_column_scroll_marker =
+      third_column->GetPseudoElement(kPseudoIdScrollMarker);
+  EXPECT_EQ(test->GetColumnPseudoElements()->size(), 3u);
+
+  EXPECT_EQ(scroll_marker_group, LayoutTreeBuilderTraversal::FirstChild(*test));
+  EXPECT_EQ(marker,
+            LayoutTreeBuilderTraversal::Next(*scroll_marker_group, nullptr));
+  EXPECT_EQ(first_column, LayoutTreeBuilderTraversal::Next(*marker, nullptr));
+  EXPECT_EQ(first_column_scroll_marker,
+            LayoutTreeBuilderTraversal::Next(*first_column, nullptr));
+  EXPECT_EQ(second_column, LayoutTreeBuilderTraversal::Next(
+                               *first_column_scroll_marker, nullptr));
+  EXPECT_EQ(second_column_scroll_marker,
+            LayoutTreeBuilderTraversal::Next(*second_column, nullptr));
+  EXPECT_EQ(third_column, LayoutTreeBuilderTraversal::Next(
+                              *second_column_scroll_marker, nullptr));
+  EXPECT_EQ(third_column_scroll_marker,
+            LayoutTreeBuilderTraversal::Next(*third_column, nullptr));
+  EXPECT_EQ(before, LayoutTreeBuilderTraversal::Next(
+                        *third_column_scroll_marker, nullptr));
+
+  EXPECT_EQ(third_column_scroll_marker,
+            LayoutTreeBuilderTraversal::Previous(*before, nullptr));
+  EXPECT_EQ(third_column, LayoutTreeBuilderTraversal::Previous(
+                              *third_column_scroll_marker, nullptr));
+  EXPECT_EQ(second_column_scroll_marker,
+            LayoutTreeBuilderTraversal::Previous(*third_column, nullptr));
+  EXPECT_EQ(second_column, LayoutTreeBuilderTraversal::Previous(
+                               *second_column_scroll_marker, nullptr));
+  EXPECT_EQ(first_column_scroll_marker,
+            LayoutTreeBuilderTraversal::Previous(*second_column, nullptr));
+  EXPECT_EQ(first_column, LayoutTreeBuilderTraversal::Previous(
+                              *first_column_scroll_marker, nullptr));
+  EXPECT_EQ(marker,
+            LayoutTreeBuilderTraversal::Previous(*first_column, nullptr));
+  EXPECT_EQ(scroll_marker_group,
+            LayoutTreeBuilderTraversal::Previous(*marker, nullptr));
 }
 
 }  // namespace blink

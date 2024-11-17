@@ -51,8 +51,8 @@ class CaptivePortalClient {
 class CaptivePortalDetectorTest : public testing::Test,
                                   public CaptivePortalDetectorTestBase {
  public:
-  CaptivePortalDetectorTest() {}
-  ~CaptivePortalDetectorTest() override {}
+  CaptivePortalDetectorTest() = default;
+  ~CaptivePortalDetectorTest() override = default;
 
   void SetUp() override {
     detector_ = std::make_unique<CaptivePortalDetector>(test_loader_factory());

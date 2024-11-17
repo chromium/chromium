@@ -14,7 +14,6 @@
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/menu_separator_types.h"
@@ -62,9 +61,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   // The part to be painted / sized.
   enum Part {
     kCheckbox,
-// TODO(crbug.com/40118868): Revisit the macro expression once build flag switch
-// of lacros-chrome is complete.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX)
     kFrameTopArea,
 #endif
     kInnerSpinButton,
@@ -125,10 +122,11 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kOff = 0,
     kDusk = 1,
     kDesert = 2,
-    kBlack = 3,
+    kNightSky = 3,
     kWhite = 4,
     kHighContrast = 5,
-    kMaxValue = kHighContrast,
+    kAquatic = 6,
+    kMaxValue = kAquatic,
   };
 
   // OS-level preferred color scheme. (Ex. high contrast or dark mode color
@@ -148,10 +146,6 @@ class NATIVE_THEME_EXPORT NativeTheme {
     kMaxValue = kCustom,
   };
 
-  // IMPORTANT!
-  // This enum is reported in metrics. Do not reorder; add additional values at
-  // the end.
-  //
   // This represents the OS-level high contrast theme. kNone unless the default
   // system color scheme is kPlatformHighContrast.
   enum class PlatformHighContrastColorScheme {
@@ -578,6 +572,11 @@ class NATIVE_THEME_EXPORT NativeTheme {
     return should_use_system_accent_color_;
   }
 
+  bool use_overlay_scrollbar() const { return use_overlay_scrollbars_; }
+  void set_use_overlay_scrollbar(bool use_overlay_scrollbar) {
+    use_overlay_scrollbars_ = use_overlay_scrollbar;
+  }
+
   // On certain platforms, currently only Mac, there is a unique visual for
   // pressed states.
   virtual SkColor GetSystemButtonPressedColor(SkColor base_color) const;
@@ -607,6 +606,9 @@ class NATIVE_THEME_EXPORT NativeTheme {
 
   // Whether dark mode is forced via command-line flag.
   static bool IsForcedDarkMode();
+
+  // Calculates and returns the use overlay scrollbar setting.
+  static bool CalculateUseOverlayScrollbar();
 
  protected:
   explicit NativeTheme(
@@ -677,6 +679,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
   PreferredColorScheme preferred_color_scheme_ = PreferredColorScheme::kLight;
   PreferredContrast preferred_contrast_ = PreferredContrast::kNoPreference;
   std::optional<base::TimeDelta> caret_blink_interval_;
+  bool use_overlay_scrollbars_ = false;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

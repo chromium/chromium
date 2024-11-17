@@ -74,8 +74,8 @@
   DCHECK(!_viewController);
   Browser* browser = self.browser;
   WebStateList* webStateList = browser->GetWebStateList();
-  ChromeBrowserState* browserState = browser->GetBrowserState();
-  BOOL incognito = browserState->IsOffTheRecord();
+  ProfileIOS* profile = browser->GetProfile();
+  BOOL incognito = profile->IsOffTheRecord();
   self.viewController = [[BrowserContainerViewController alloc] init];
   self.webContentAreaOverlayContainerCoordinator =
       [[OverlayContainerCoordinator alloc]
@@ -94,40 +94,35 @@
   self.browserEditMenuHandler.linkToTextDelegate = self.linkToTextMediator;
   self.viewController.linkToTextDelegate = self.linkToTextMediator;
 
-  if (IsPartialTranslateEnabled()) {
-    PrefService* prefService =
-        browserState->GetOriginalChromeBrowserState()->GetPrefs();
-    FullscreenController* fullscreenController =
-        FullscreenController::FromBrowser(self.browser);
+  PrefService* prefService = profile->GetOriginalProfile()->GetPrefs();
+  FullscreenController* fullscreenController =
+      FullscreenController::FromBrowser(self.browser);
 
-    self.partialTranslateMediator = [[PartialTranslateMediator alloc]
-          initWithWebStateList:webStateList
-        withBaseViewController:self.viewController
-                   prefService:prefService
-          fullscreenController:fullscreenController
-                     incognito:incognito];
-    self.partialTranslateMediator.alertDelegate = self;
-    CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
-    id<BrowserCoordinatorCommands> handler =
-        HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
-    self.partialTranslateMediator.browserHandler = handler;
-    self.browserEditMenuHandler.partialTranslateDelegate =
-        self.partialTranslateMediator;
-  }
+  self.partialTranslateMediator = [[PartialTranslateMediator alloc]
+        initWithWebStateList:webStateList
+      withBaseViewController:self.viewController
+                 prefService:prefService
+        fullscreenController:fullscreenController
+                   incognito:incognito];
+  self.partialTranslateMediator.alertDelegate = self;
+  CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
+  id<BrowserCoordinatorCommands> browserCommandsHandler =
+      HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
+  self.partialTranslateMediator.browserHandler = browserCommandsHandler;
+  self.browserEditMenuHandler.partialTranslateDelegate =
+      self.partialTranslateMediator;
 
-  if (IsSearchWithEnabled()) {
-    TemplateURLService* templateURLService =
-        ios::TemplateURLServiceFactory::GetForBrowserState(browserState);
-    self.searchWithMediator =
-        [[SearchWithMediator alloc] initWithWebStateList:webStateList
-                                      templateURLService:templateURLService
-                                               incognito:incognito];
-    CommandDispatcher* dispatcher = browser->GetCommandDispatcher();
-    id<ApplicationCommands> handler =
-        HandlerForProtocol(dispatcher, ApplicationCommands);
-    self.searchWithMediator.applicationCommandHandler = handler;
-    self.browserEditMenuHandler.searchWithDelegate = self.searchWithMediator;
-  }
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForProfile(profile);
+  self.searchWithMediator =
+      [[SearchWithMediator alloc] initWithWebStateList:webStateList
+                                    templateURLService:templateURLService
+                                             incognito:incognito];
+  id<ApplicationCommands> applicationCommandsHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  self.searchWithMediator.applicationCommandHandler =
+      applicationCommandsHandler;
+  self.browserEditMenuHandler.searchWithDelegate = self.searchWithMediator;
 
   [self.webContentAreaOverlayContainerCoordinator start];
   self.viewController.webContentsOverlayContainerViewController =

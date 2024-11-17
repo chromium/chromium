@@ -9,7 +9,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -236,6 +238,7 @@ class MockDriveServiceWithUploadExpectation : public DummyDriveService {
 
   CancelCallbackOnce MultipartUploadNewFile(
       const std::string& content_type,
+      std::optional<std::string_view> converted_mime_type,
       int64_t content_length,
       const std::string& parent_resource_id,
       const std::string& title,
@@ -245,6 +248,7 @@ class MockDriveServiceWithUploadExpectation : public DummyDriveService {
       google_apis::ProgressCallback progress_callback) override {
     EXPECT_EQ(kTestMimeType, content_type);
     EXPECT_EQ(expected_content_length_, content_length);
+    EXPECT_EQ(converted_mime_type, std::nullopt);
     EXPECT_EQ(kTestInitiateUploadParentResourceId, parent_resource_id);
     EXPECT_EQ(kTestDocumentTitle, title);
     EXPECT_EQ(expected_upload_file_, local_file_path);
@@ -323,12 +327,12 @@ class MockDriveServiceNoConnectionAtInitiate : public DummyDriveService {
                                   const base::FilePath& local_file_path,
                                   UploadRangeCallback callback,
                                   ProgressCallback progress_callback) override {
-    NOTREACHED_IN_MIGRATION();
-    return CancelCallbackOnce();
+    NOTREACHED();
   }
 
   CancelCallbackOnce MultipartUploadNewFile(
       const std::string& content_type,
+      std::optional<std::string_view> converted_mime_type,
       int64_t content_length,
       const std::string& parent_resource_id,
       const std::string& title,
@@ -776,6 +780,7 @@ class MockDriveServiceForBatchProcessing : public DummyDriveService {
   struct UploadFileInfo {
     enum { NEW_FILE, EXISTING_FILE } type;
     std::string content_type;
+    std::optional<std::string> converted_mime_type;
     uint64_t content_length;
     std::string parent_resource_id;
     std::string resource_id;
@@ -793,6 +798,7 @@ class MockDriveServiceForBatchProcessing : public DummyDriveService {
 
     CancelCallbackOnce MultipartUploadNewFile(
         const std::string& content_type,
+        std::optional<std::string_view> converted_mime_type,
         int64_t content_length,
         const std::string& parent_resource_id,
         const std::string& title,
@@ -803,6 +809,7 @@ class MockDriveServiceForBatchProcessing : public DummyDriveService {
       UploadFileInfo info;
       info.type = UploadFileInfo::NEW_FILE;
       info.content_type = content_type;
+      info.converted_mime_type = converted_mime_type;
       info.content_length = content_length;
       info.parent_resource_id = parent_resource_id;
       info.title = title;

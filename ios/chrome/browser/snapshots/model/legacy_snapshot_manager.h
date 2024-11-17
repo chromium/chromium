@@ -59,6 +59,9 @@ class SnapshotID;
 // delegate will fail. The delegate is not owned by the tab helper.
 - (void)setDelegate:(id<SnapshotGeneratorDelegate>)delegate;
 
+// Updates the snapshot storage with `snapshot`.
+- (void)updateSnapshotStorageWithImage:(UIImage*)snapshot;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SNAPSHOTS_MODEL_LEGACY_SNAPSHOT_MANAGER_H_

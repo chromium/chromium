@@ -12,7 +12,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.settings.SettingsLauncherFactory;
+import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -87,8 +87,8 @@ public class HomeModulesConfigManager {
      * @param context {@link Context} used for launching a settings activity.
      */
     public void onMenuClick(Context context) {
-        SettingsLauncherFactory.createSettingsLauncher()
-                .launchSettingsActivity(context, HomeModulesConfigSettings.class);
+        SettingsNavigationFactory.createSettingsNavigation()
+                .startSettings(context, HomeModulesConfigSettings.class);
     }
 
     /**

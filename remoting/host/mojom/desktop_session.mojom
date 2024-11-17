@@ -566,6 +566,8 @@ enum ProtocolErrorCode {
   kUnauthorizedAccount = 20,
   kReauthzPolicyCheckFailed = 21,
   kNoCommonAuthMethod = 22,
+  kLoginScreenNotSupported = 23,
+  kSessionPoliciesChanged = 24,
 };
 
 // Provides the desktop integration process with a mechanism for controlling the

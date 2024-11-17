@@ -580,7 +580,7 @@ void Scheduler::BeginImplFrameWithDeadline(const viz::BeginFrameArgs& args) {
   bool main_thread_response_expected_soon;
   // Allow the main thread to delay N impl frame before we decide to give up
   // and create a pending tree instead.
-  time_since_main_frame_sent -=
+  bmf_to_activate_threshold +=
       args.interval * settings_.delay_impl_invalidation_frames;
   if (time_since_main_frame_sent > bmf_to_activate_threshold) {
     // If the response to a main frame is pending past the desired duration

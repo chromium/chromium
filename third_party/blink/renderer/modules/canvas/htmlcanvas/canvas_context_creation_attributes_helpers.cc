@@ -40,7 +40,20 @@ bool ToCanvasContextCreationAttributes(
   }
   result.premultiplied_alpha = attrs->premultipliedAlpha();
   result.preserve_drawing_buffer = attrs->preserveDrawingBuffer();
-  result.power_preference = attrs->powerPreference();
+  switch (attrs->powerPreference().AsEnum()) {
+    case V8CanvasPowerPreference::Enum::kDefault:
+      result.power_preference =
+          CanvasContextCreationAttributesCore::PowerPreference::kDefault;
+      break;
+    case V8CanvasPowerPreference::Enum::kLowPower:
+      result.power_preference =
+          CanvasContextCreationAttributesCore::PowerPreference::kLowPower;
+      break;
+    case V8CanvasPowerPreference::Enum::kHighPerformance:
+      result.power_preference = CanvasContextCreationAttributesCore::
+          PowerPreference::kHighPerformance;
+      break;
+  }
   result.stencil = attrs->stencil();
   switch (attrs->willReadFrequently().AsEnum()) {
     case V8CanvasWillReadFrequently::Enum::kTrue:

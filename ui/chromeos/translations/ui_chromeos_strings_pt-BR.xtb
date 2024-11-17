@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hangul ahnmatae</translation>
 <translation id="1155759005174418845">Catalão</translation>
 <translation id="1168100932582989117">Servidores de nome do Google</translation>
+<translation id="1170788066030116158">Data da foto</translation>
 <translation id="1172970565351728681">Tempo restante aproximado: <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Renomear</translation>
 <translation id="1173916544412572294">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, bateria do smartphone em <ph name="BATTERY_STATUS" />%, detalhes</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Certificado de autenticação rejeitado remotamente</translation>
 <translation id="4394214039309501350">Link externo</translation>
 <translation id="4394980935660306080">No início desta semana</translation>
+<translation id="4397435965699247285">O OneDrive não está disponível off-line</translation>
 <translation id="4398096759193130964">Restaure ou arraste os itens para uma nova pasta fora da lixeira</translation>
 <translation id="4401287888955153199">Extrair tudo</translation>
 <translation id="4410695710508688828">A operação de extração falhou. <ph name="ERROR_MESSAGE" /></translation>

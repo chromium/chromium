@@ -468,7 +468,7 @@ class Value : public InternalHeapHandleStorage {
     if (h.IsValid())
       SetHeapHandle(h);
   }
-  ~Value() override {}
+  ~Value() override = default;
 
   Value& operator=(Value&& other) noexcept {
     InternalHeapHandleStorage::operator=(std::move(other));
@@ -1174,7 +1174,7 @@ TEST(IntrusiveHeapTest, EraseIf_Reentrancy) {
 
   // The task that will post a new element inside the heap upon destruction of
   // the first.
-  OnceClosure insert_task = BindLambdaForTesting([&]() {
+  OnceClosure insert_task = BindLambdaForTesting([&] {
     // Insert a null callback so it can be differentiated.
     heap.insert(OnceClosure());
   });

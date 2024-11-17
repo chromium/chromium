@@ -7,9 +7,12 @@
 
 #import <UIKit/UIKit.h>
 #import <UserNotifications/UserNotifications.h>
+
 #import <memory>
 #import <unordered_map>
 
+#import "base/memory/scoped_refptr.h"
+#import "base/task/sequenced_task_runner.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client_id.h"
 
@@ -21,10 +24,11 @@ class PushNotificationClient;
 // the notification. The PushNotificationClientManager routes each notification
 // to its appropriate PushNotificationClient based on the incoming
 // notification's `push_notification_client_id` property.
-// TODO(crbug.com/325254943): Inject a browser state to pass in to clients.
+// TODO(crbug.com/325254943): Inject a profile to pass in to clients.
 class PushNotificationClientManager {
  public:
-  PushNotificationClientManager();
+  explicit PushNotificationClientManager(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~PushNotificationClientManager();
 
   // This function dynamically adds a mapping between a PushNotificationClientId
@@ -81,6 +85,8 @@ class PushNotificationClientManager {
   void OnSceneActiveForegroundBrowserReady();
 
  private:
+  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
   using ClientMap = std::unordered_map<PushNotificationClientId,
                                        std::unique_ptr<PushNotificationClient>>;
   // A map of client ids to the features that support push notifications.

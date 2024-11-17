@@ -127,8 +127,8 @@ class MediaCodecLoopTest : public testing::Test {
   void ExpectQueueInputBuffer(int input_buffer_index,
                               const MediaCodecLoop::InputData& data,
                               MediaCodecResult status = OkStatus()) {
-    EXPECT_CALL(Codec(), QueueInputBuffer(input_buffer_index, data.memory.get(),
-                                          data.length, data.presentation_time))
+    EXPECT_CALL(Codec(), QueueInputBuffer(input_buffer_index, data.memory,
+                                          data.presentation_time))
         .Times(1)
         .WillOnce(Return(status));
   }
@@ -139,8 +139,7 @@ class MediaCodecLoopTest : public testing::Test {
 
   MediaCodecLoop::InputData BigBuckBunny() {
     MediaCodecLoop::InputData data;
-    data.memory = reinterpret_cast<const uint8_t*>("big buck bunny");
-    data.length = 14;
+    data.memory = base::as_byte_span("big buck bunny");
     data.presentation_time = base::Seconds(1);
     return data;
   }
@@ -464,7 +463,7 @@ TEST_F(MediaCodecLoopTest, TestOnKeyAdded) {
   {
     InSequence _s;
     // MCL should not retain the original pointer.
-    data.memory = nullptr;
+    data.memory = {};
     ExpectQueueInputBuffer(input_buffer_index, data);
     ExpectInputDataQueued(true);
     ExpectDequeueOutputBuffer(MediaCodecResult::Codes::kTryAgainLater);

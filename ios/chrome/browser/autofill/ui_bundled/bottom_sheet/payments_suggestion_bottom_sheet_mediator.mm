@@ -4,17 +4,21 @@
 
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 
+#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
+#import "components/autofill/core/browser/autofill_manager.h"
 #import "components/autofill/core/browser/payments_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/core/browser/personal_data_manager_observer.h"
 #import "components/autofill/core/common/autofill_payments_features.h"
+#import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/browser/credit_card_util.h"
 #import "components/autofill/ios/browser/form_suggestion.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
+#import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
@@ -28,6 +32,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
+#import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "ui/base/l10n/l10n_util.h"
 #import "ui/base/resource/resource_bundle.h"
@@ -214,10 +219,8 @@ base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
     // If the current card is enrolled to be a virtual card, create the virtual
     // card and add it to creditCardData array directly before the original
     // card.
-    if (base::FeatureList::IsEnabled(
-            autofill::features::kAutofillEnableVirtualCards) &&
-        creditCard->virtual_card_enrollment_state() ==
-            autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled) {
+    if (creditCard->virtual_card_enrollment_state() ==
+        autofill::CreditCard::VirtualCardEnrollmentState::kEnrolled) {
       const autofill::CreditCard virtualCard =
           autofill::CreditCard::CreateVirtualCard(*creditCard);
       [creditCardData
@@ -241,11 +244,7 @@ base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
 
 - (void)didSelectCreditCard:(CreditCardData*)creditCardData
                     atIndex:(NSInteger)index {
-  if (!_webStateList) {
-    return;
-  }
-
-  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  web::WebState* activeWebState = [self getActiveWebState];
   if (!activeWebState) {
     return;
   }
@@ -275,17 +274,16 @@ base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
                        minorValue:nil
                displayDescription:nil
                              icon:nil
-                             type:((base::FeatureList::IsEnabled(
-                                        autofill::features::
-                                            kAutofillEnableVirtualCards) &&
-                                    ([creditCardData recordType] ==
-                                     autofill::CreditCard::RecordType::
-                                         kVirtualCard))
+                             type:([creditCardData recordType] ==
+                                           autofill::CreditCard::RecordType::
+                                               kVirtualCard
                                        ? autofill::SuggestionType::
                                              kVirtualCreditCardEntry
                                        : autofill::SuggestionType::
                                              kCreditCardEntry)
-                backendIdentifier:[creditCardData backendIdentifier]
+                          payload:autofill::Suggestion::Guid(
+                                      base::SysNSStringToUTF8(
+                                          [creditCardData backendIdentifier]))
       fieldByFieldFillingTypeUsed:autofill::EMPTY_TYPE
                    requiresReauth:NO
        acceptanceA11yAnnouncement:
@@ -295,11 +293,22 @@ base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
   [provider didSelectSuggestion:suggestion atIndex:index params:_params];
 }
 
-- (void)disableBottomSheetAndRefocus:(BOOL)refocus {
-  if (_webStateList) {
-    web::WebState* activeWebState = _webStateList->GetActiveWebState();
-    AutofillBottomSheetTabHelper::FromWebState(activeWebState)
-        ->DetachPaymentsListenersForAllFrames(refocus);
+- (void)disableBottomSheetAndRefocus:(BOOL)shouldRefocus {
+  bool useV2 = base::FeatureList::IsEnabled(kAutofillPaymentsSheetV2Ios);
+  if (useV2) {
+    // Do not remove the listeners for the bottom sheet (aka disable) in V2
+    // since the listeners were already removed, as soon as the presentation
+    // started. Hence, just refocus if needed.
+    if (shouldRefocus) {
+      [self refocus];
+    }
+    return;
+  }
+
+  CHECK(!useV2);
+
+  if (AutofillBottomSheetTabHelper* tabHelper = [self tabHelper]) {
+    tabHelper->DetachPaymentsListenersForAllFrames(shouldRefocus);
   }
 }
 
@@ -371,7 +380,7 @@ base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
 // credit card suggestion is selected.
 // TODO(crbug.com/40929827): Remove this dependency on suggestions.
 - (void)setupSuggestionsProvider {
-  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  web::WebState* activeWebState = [self getActiveWebState];
   if (!activeWebState) {
     return;
   }
@@ -415,6 +424,28 @@ base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
                    .GetNativeImageNamed(
                        autofill::CreditCard::IconResourceId(icon))
                    .ToUIImage();
+}
+
+// Returns the AutofillBottomSheetTabHelper for the active webstate or nil if
+// it can't be retrieved.
+- (AutofillBottomSheetTabHelper*)tabHelper {
+  web::WebState* activeWebState = [self getActiveWebState];
+  return activeWebState
+             ? AutofillBottomSheetTabHelper::FromWebState(activeWebState)
+             : nullptr;
+}
+
+// Refocuses the field that was blurred to show the payments suggestion
+// bottom sheet, if deemded needed.
+- (void)refocus {
+  if (AutofillBottomSheetTabHelper* tabHelper = [self tabHelper]) {
+    tabHelper->RefocusElementIfNeeded(_params.frame_id);
+  }
+}
+
+// Returns the currently active WebState. Returns nullptr if there is none.
+- (web::WebState*)getActiveWebState {
+  return _webStateList ? _webStateList->GetActiveWebState() : nullptr;
 }
 
 @end

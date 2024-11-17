@@ -199,8 +199,8 @@ class CONTENT_EXPORT VideoCaptureManager
       const std::string& device_id);
 
   // If there is a capture session associated with |session_id|, and the
-  // captured entity a tab, return the GlobalRenderFrameHostId of
-  // the captured tab.
+  // captured entity is a tab, return the GlobalRenderFrameHostId of the
+  // captured tab.
   // Otherwise, returns an empty GlobalRenderFrameHostId.
   GlobalRenderFrameHostId GetGlobalRenderFrameHostId(
       const base::UnguessableToken& session_id) const;

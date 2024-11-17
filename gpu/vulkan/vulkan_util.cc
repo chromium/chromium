@@ -567,8 +567,7 @@ VkImageLayout GLImageLayoutToVkImageLayout(uint32_t layout) {
     default:
       break;
   }
-  NOTREACHED_IN_MIGRATION() << "Invalid image layout " << layout;
-  return VK_IMAGE_LAYOUT_UNDEFINED;
+  NOTREACHED() << "Invalid image layout " << layout;
 }
 
 uint32_t VkImageLayoutToGLImageLayout(VkImageLayout layout) {
@@ -594,8 +593,7 @@ uint32_t VkImageLayoutToGLImageLayout(VkImageLayout layout) {
     case VK_IMAGE_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_OPTIMAL_KHR:
       return GL_LAYOUT_DEPTH_ATTACHMENT_STENCIL_READ_ONLY_EXT;
     default:
-      NOTREACHED_IN_MIGRATION() << "Invalid image layout " << layout;
-      return GL_NONE;
+      NOTREACHED() << "Invalid image layout " << layout;
   }
 }
 

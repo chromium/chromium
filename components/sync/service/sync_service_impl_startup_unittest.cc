@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -182,8 +183,9 @@ class SyncServiceImplStartupTest : public testing::Test {
   SyncServiceImplBundle sync_service_impl_bundle_;
   SyncPrefs sync_prefs_;
   std::unique_ptr<SyncServiceImpl> sync_service_;
-  // The controllers are owned by |sync_service_|.
-  std::map<DataType, FakeDataTypeController*> controller_map_;
+  // The controllers are owned by `sync_service_`.
+  std::map<DataType, raw_ptr<FakeDataTypeController, CtnExperimental>>
+      controller_map_;
 };
 
 // ChromeOS does not support sign-in after startup

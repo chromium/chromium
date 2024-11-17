@@ -23,7 +23,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
  * (options menu and voice menu on the same sheet).
  */
 abstract class SingleMenuSheetContent extends MenuSheetContent {
-    private final Context mContext;
     protected final Menu mMenu;
 
     SingleMenuSheetContent(
@@ -42,7 +41,6 @@ abstract class SingleMenuSheetContent extends MenuSheetContent {
             int titleStringId,
             LayoutInflater layoutInflater) {
         super(parent, bottomSheetController);
-        mContext = context;
 
         mMenu = (Menu) layoutInflater.inflate(R.layout.readaloud_menu, null);
         mMenu.afterInflating(

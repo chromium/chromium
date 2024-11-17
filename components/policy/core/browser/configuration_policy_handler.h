@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -285,10 +286,11 @@ class POLICY_EXPORT StringMappingListPolicyHandler
   // matching pref values.
   class POLICY_EXPORT MappingEntry {
    public:
-    MappingEntry(const char* policy_value, std::unique_ptr<base::Value> map);
+    MappingEntry(std::string_view policy_value,
+                 std::unique_ptr<base::Value> map);
     ~MappingEntry();
 
-    const char* enum_value;
+    std::string_view enum_value;
     std::unique_ptr<base::Value> mapped_value;
   };
 

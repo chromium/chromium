@@ -34,7 +34,9 @@ bool LcppEnabled() {
             blink::features::kLCPPAutoPreconnectLcpOrigin) ||
         base::FeatureList::IsEnabled(
             blink::features::kLCPTimingPredictorPrerender2) ||
-        base::FeatureList::IsEnabled(blink::features::kLCPPDeferUnusedPreload);
+        base::FeatureList::IsEnabled(
+            blink::features::kLCPPDeferUnusedPreload) ||
+        base::FeatureList::IsEnabled(blink::features::kLCPPPrefetchSubresource);
   }
 
   return *g_enabled;

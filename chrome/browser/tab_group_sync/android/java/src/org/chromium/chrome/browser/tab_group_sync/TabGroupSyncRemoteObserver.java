@@ -10,8 +10,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.ClosingSource;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
@@ -76,6 +76,17 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
     public void onTabGroupAdded(SavedTabGroup tabGroup, @TriggerSource int source) {
         if (source != TriggerSource.REMOTE) return;
         if (!mIsActiveWindowSupplier.get()) return;
+
+        if (tabGroup.collaborationId != null && tabGroup.localId != null) {
+            // This is a shared group which has replaced previously existing saved
+            // tab group after transitioning to shared. This is similar to update
+            // event. If the group is not open yet, then the originating saved tab
+            // group was not open (or may be missing), and hence just open the new
+            // shared tab group.
+            // TODO(crbug.com/370745855): introduce a new observer method.
+            onTabGroupUpdated(tabGroup, source);
+            return;
+        }
 
         LogUtils.log(TAG, "onTabGroupAdded, tabGroup = " + tabGroup);
         assert tabGroup.localId == null;

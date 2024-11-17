@@ -42,7 +42,8 @@
           "builder": "ToTLinuxUBSanVptr",
           "project": "chromium"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/ToTLinuxUBSanVptr/targets"
     }
   },
   "$build/reclient": {

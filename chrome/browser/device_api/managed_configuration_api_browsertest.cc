@@ -340,8 +340,9 @@ IN_PROC_BROWSER_TEST_F(ManagedConfigurationAPIGuestTest, Disabled) {
   EXPECT_THAT(
       GetValuesFromJsApi({kKey1}),
       testing::Field("error", &content::EvalJsResult::error,
-                     Eq("a JavaScript error: \"NotAllowedError: This API is "
-                        "available only for managed apps.\"\n")));
+                     Eq("a JavaScript error: \"NotAllowedError: Service "
+                        "connection error. This API is available only for "
+                        "managed apps.\"\n")));
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

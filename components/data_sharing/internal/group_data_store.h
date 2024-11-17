@@ -24,8 +24,7 @@
 
 namespace data_sharing {
 
-// TODO(crbug.com/301390275): figure out what precisely this should be
-// (ConsistencyToken, timestamp, etc.).
+// Opaque (at this level) token that represents the version of the GroupData.
 using VersionToken = base::StrongAlias<class VersionTokenTag, std::string>;
 
 // In-memory cache and persistent storage for GroupData.
@@ -41,7 +40,7 @@ class GroupDataStore {
 
   // Public methods must not be called until `db_loaded_callback` is invoked
   // with kSuccess.
-  GroupDataStore(const base::FilePath& db_path,
+  GroupDataStore(const base::FilePath& db_dir_path,
                  DBLoadedCallback db_loaded_callback);
 
   GroupDataStore(const GroupDataStore& other) = delete;

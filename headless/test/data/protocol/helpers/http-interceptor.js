@@ -27,11 +27,11 @@
    * @return {!object} HttpInterceptor reference.
    */
   async init() {
-    await this.dp_.Network.enable();
-    await this.dp_.Network.setRequestInterception(
-        { patterns: [{ urlPattern: '*' }] });
+    await this.dp_.Fetch.enable({
+      patterns: [{ urlPattern: '*' }]
+    });
 
-    this.dp_.Network.onRequestIntercepted(event => {
+    this.dp_.Fetch.onRequestPaused(event => {
       const method = event.params.request.method;
       this.requestedMethods_.push(method);
 
@@ -46,14 +46,15 @@
         }
       } else {
         this.testRunner_.log(`requested url: ${url} is not known`);
-        this.logResponses();
       }
       const body = (response && response.body) || '';
       const headers = (response && response.headers) || [];
-      const headers_with_body = headers.join('\r\n') + '\r\n\r\n' + body;
-      this.dp_.Network.continueInterceptedRequest({
-        interceptionId: event.params.interceptionId,
-        rawResponse: btoa(headers_with_body)
+      this.dp_.Fetch.fulfillRequest({
+        requestId: event.params.requestId,
+        responseCode: response.responseCode,
+        responsePhrase: response.responsePhrase,
+        binaryResponseHeaders: btoa(headers.join('\0')),
+        body: btoa(body)
       });
     });
 
@@ -80,18 +81,19 @@
    * @param {?[string]} headers Request response headers, optional.
    */
   addResponse(url, body, headers) {
-    this.responses_.set(url, {body, headers});
-  }
+    let responseCode = 200;
+    let responsePhrase = "OK"
 
-  /**
-   * Logs registered request responses.
-   */
-  logResponses() {
-    this.testRunner_.log(`Responses: ${this.responses_.size}`);
-    for (const [url, value] of this.responses_.entries()) {
-      this.testRunner_.log(
-          `url=${url}\nbody=${value.body}\nheaders=${value.headers}`);
+    if (headers) {
+      const statusLine = headers[0];
+      const match = statusLine.match(/HTTP\/1.1 (\d{1,3}) *(.*)/);
+      if (match) {
+        headers.shift();
+        responseCode = +match[1];
+        responsePhrase = match[2];
+      }
     }
+    this.responses_.set(url, {body, headers, responseCode, responsePhrase});
   }
 
   /**
@@ -105,13 +107,12 @@
   }
 
   /**
-   * Logs requested urls in the order requests have been received.
+   * Returns the array of requested URLs.
+   *
+   * @return {!Array<string>}
    */
-  logRequestedUrls() {
-    this.testRunner_.log(`Requested urls: ${this.requestedUrls_.length}`);
-    for (const url of this.requestedUrls_) {
-      this.testRunner_.log(` ${url}`);
-    }
+  requestedUrls() {
+    return this.requestedUrls_;
   }
 
   /**
@@ -129,5 +130,4 @@
       }
     }
   }
-
 });

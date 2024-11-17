@@ -27,10 +27,24 @@ class ChromeDriverAdapter(common.BaseIsolatedScriptArgsAdapter):
   def generate_test_output_args(self, output):
     return ['--isolated-script-test-output', output]
 
+  def generate_test_launcher_retry_limit_args(self, retry_limit):
+    if any('--retry-limit' in arg for arg in self.rest_args):
+      self.parser.error("can't have the test call filter with the "
+                        '--isolated-script-test-launcher-retry-limit argument '
+                        'to the wrapper script')
+    return ['--retry-limit=%d' % retry_limit]
+
+  def generate_test_repeat_args(self, repeat_count):
+    if any('--repeat' in arg for arg in self.rest_args):
+      self.parser.error(
+          "can't have the test call filter with the "
+          '--isolated-script-test-repeat argument to the wrapper script')
+    return ['--repeat=%d' % repeat_count]
+
   def generate_test_filter_args(self, test_filter_str):
     if any('--filter' in arg for arg in self.rest_args):
       self.parser.error(
-          "can't have the test call filter with the"
+          "can't have the test call filter with the "
           '--isolated-script-test-filter argument to the wrapper script')
 
     return ['--filter', test_filter_str.replace('::', ':')]

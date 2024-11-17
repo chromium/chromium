@@ -22,7 +22,7 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
     scoped_feature_list_.InitWithFeatures(
         {features::kReadAnythingReadAloud,
-         features::kReadAloudLanguagePackDownloading},
+         features::kReadAnythingImagesViaAlgorithm},
         {});
   }
 
@@ -55,6 +55,10 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Common) {
   RunSidePanelTest("side_panel/read_anything/common_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Images) {
+  RunSidePanelTest("side_panel/read_anything/image_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Logger) {
   RunSidePanelTest("side_panel/read_anything/read_anything_logger_test.js",
                    "mocha.run()");
@@ -73,6 +77,12 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceSelectionMenu) {
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceLanguageUtil) {
   RunSidePanelTest("side_panel/read_anything/voice_language_util_test.js",
                    "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, VoiceNotificationManager) {
+  RunSidePanelTest(
+      "side_panel/read_anything/voice_notification_manager_test.js",
+      "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudFlag) {
@@ -125,6 +135,11 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, AppStyleUpdater) {
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LanguageMenu) {
   RunSidePanelTest("side_panel/read_anything/language_menu_test.js",
+                   "mocha.run()");
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, LanguageToast) {
+  RunSidePanelTest("side_panel/read_anything/language_toast_test.js",
                    "mocha.run()");
 }
 
@@ -270,8 +285,7 @@ class ReadAnythingReadAloudWordHighlightingMochaTest
  protected:
   ReadAnythingReadAloudWordHighlightingMochaTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud,
-         features::kReadAnythingReadAloudAutomaticWordHighlighting},
+        {features::kReadAnythingReadAloud},
         {features::kReadAnythingReadAloudPhraseHighlighting});
   }
 
@@ -285,31 +299,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudWordHighlightingMochaTest,
                    "mocha.run()");
 }
 
-// TODO(b/301131238): Remove this test once the word highlighting flag is
-// removed.
-// Integration tests that need the actual Read Aloud flag enabled and the word
-// highlighting flag because they use the full C++ pipeline
-class ReadAnythingReadAloudWordHighlightingDisabledMochaTest
-    : public ReadAnythingMochaBrowserTest {
- protected:
-  ReadAnythingReadAloudWordHighlightingDisabledMochaTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingReadAloud},
-        {features::kReadAnythingReadAloudAutomaticWordHighlighting});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudWordHighlightingDisabledMochaTest,
-                       WordHighlighting) {
-  RunSidePanelTest(
-      "side_panel/read_anything/word_highlighting_disabled_test.js",
-      "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudWordHighlightingDisabledMochaTest,
+IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudWordHighlightingMochaTest,
                        HighlightToggle) {
   RunSidePanelTest("side_panel/read_anything/highlight_toggle_test.js",
                    "mocha.run()");
@@ -321,7 +311,6 @@ class ReadAnythingReadAloudPhraseHighlightingMochaTest
   ReadAnythingReadAloudPhraseHighlightingMochaTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kReadAnythingReadAloud,
-         features::kReadAnythingReadAloudAutomaticWordHighlighting,
          features::kReadAnythingReadAloudPhraseHighlighting},
         {});
   }

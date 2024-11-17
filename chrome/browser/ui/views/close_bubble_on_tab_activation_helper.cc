@@ -10,17 +10,16 @@
 
 CloseBubbleOnTabActivationHelper::CloseBubbleOnTabActivationHelper(
     views::BubbleDialogDelegateView* owner_bubble,
-    Browser* browser)
-    : owner_bubble_(owner_bubble), browser_(browser) {
-  DCHECK(owner_bubble_);
-  DCHECK(browser_);
-  browser_->tab_strip_model()->AddObserver(this);
+    TabStripModel* tab_strip_model)
+    : owner_bubble_(owner_bubble) {
+  CHECK(owner_bubble_);
+  CHECK(tab_strip_model);
+  // `AddObserver` called asymmetrically, with no `RemoveObserver` call in this
+  // class as `TabStripModel` removes itself.
+  tab_strip_model->AddObserver(this);
 }
 
-CloseBubbleOnTabActivationHelper::~CloseBubbleOnTabActivationHelper() {
-  if (browser_)
-    browser_->tab_strip_model()->RemoveObserver(this);
-}
+CloseBubbleOnTabActivationHelper::~CloseBubbleOnTabActivationHelper() = default;
 
 void CloseBubbleOnTabActivationHelper::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
@@ -35,11 +34,4 @@ void CloseBubbleOnTabActivationHelper::OnTabStripModelChanged(
       bubble_widget->Close();
     owner_bubble_ = nullptr;
   }
-}
-
-void CloseBubbleOnTabActivationHelper::OnTabStripModelDestroyed(
-    TabStripModel* tab_strip_model) {
-  DCHECK(browser_);
-  browser_->tab_strip_model()->RemoveObserver(this);
-  browser_ = nullptr;
 }

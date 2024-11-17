@@ -60,12 +60,12 @@ const char* FontStyleToString(FontSelectionValue slope) {
   return "normal";
 }
 
-const char* TextTransformToString(ETextTransform transform) {
-  return getValueName(PlatformEnumToCSSValueID(transform));
+StringView TextTransformToString(ETextTransform transform) {
+  return GetCSSValueNameAs<StringView>(PlatformEnumToCSSValueID(transform));
 }
 
-const char* TextAlignToString(ETextAlign align) {
-  return getValueName(PlatformEnumToCSSValueID(align));
+StringView TextAlignToString(ETextAlign align) {
+  return GetCSSValueNameAs<StringView>(PlatformEnumToCSSValueID(align));
 }
 
 const String SerializeComputedStyleForProperty(const ComputedStyle& style,
@@ -197,10 +197,8 @@ class InternalPopupMenu::ItemIterationContext {
                   buffer_);
     }
     AddProperty("textTransform",
-                String(TextTransformToString(BaseStyle().TextTransform())),
-                buffer_);
-    AddProperty("textAlign",
-                String(TextAlignToString(BaseStyle().GetTextAlign(false))),
+                TextTransformToString(BaseStyle().TextTransform()), buffer_);
+    AddProperty("textAlign", TextAlignToString(BaseStyle().GetTextAlign(false)),
                 buffer_);
     AddProperty("fontSize", BaseFont().ComputedPixelSize(), buffer_);
     AddProperty("fontStyle", String(FontStyleToString(BaseFont().Style())),
@@ -414,7 +412,7 @@ void InternalPopupMenu::AddElementStyle(ItemIterationContext& context,
   // TODO(tkent): We generate unnecessary "style: {\n},\n" even if no
   // additional style.
   PagePopupClient::AddString("style: {\n", data);
-  if (style->UsedVisibility() == EVisibility::kHidden) {
+  if (style->Visibility() == EVisibility::kHidden) {
     AddProperty("visibility", String("hidden"), data);
   }
   if (style->Display() == EDisplay::kNone) {
@@ -480,12 +478,12 @@ void InternalPopupMenu::AddElementStyle(ItemIterationContext& context,
     AddProperty("fontVariant", String("small-caps"), data);
 
   if (base_style.TextTransform() != style->TextTransform()) {
-    AddProperty("textTransform",
-                String(TextTransformToString(style->TextTransform())), data);
+    AddProperty("textTransform", TextTransformToString(style->TextTransform()),
+                data);
   }
   if (base_style.GetTextAlign(false) != style->GetTextAlign(false)) {
-    AddProperty("textAlign",
-                String(TextAlignToString(style->GetTextAlign(false))), data);
+    AddProperty("textAlign", TextAlignToString(style->GetTextAlign(false)),
+                data);
   }
 
   PagePopupClient::AddString("},\n", data);

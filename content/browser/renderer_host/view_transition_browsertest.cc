@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "cc/test/pixel_comparator.h"
+#include "cc/test/pixel_test_utils.h"
 #include "components/viz/host/host_frame_sink_manager.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/view_transition_opt_in_state.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -20,6 +24,8 @@
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "services/viz/privileged/mojom/compositing/features.mojom-features.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/features_generated.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace content {
 
@@ -35,6 +41,8 @@ class ViewTransitionBrowserTest : public ContentBrowserTest {
       GetUIThreadTaskRunner()->PostTask(FROM_HERE, run_loop_->QuitClosure());
       return Result::kDefer;
     }
+
+    const char* TraceEventName() const override { return "TestCondition"; }
 
    private:
     raw_ptr<base::RunLoop> run_loop_;
@@ -319,12 +327,10 @@ IN_PROC_BROWSER_TEST_P(ViewTransitionBrowserTestTraverse,
   GURL test_url(
       embedded_test_server()->GetURL("/view_transitions/basic-vt-opt-in.html"));
   ASSERT_TRUE(NavigateToURL(shell()->web_contents(), test_url));
-
   GURL second_url(embedded_test_server()->GetURL(
       "/view_transitions/basic-vt-opt-in.html?new"));
   ASSERT_TRUE(NavigateToURL(shell()->web_contents(), second_url));
   WaitForCopyableViewInWebContents(shell()->web_contents());
-
   auto& nav_controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
   ASSERT_TRUE(nav_controller.CanGoBack());
@@ -388,5 +394,71 @@ IN_PROC_BROWSER_TEST_P(ViewTransitionBrowserTestTraverse,
 INSTANTIATE_TEST_SUITE_P(P,
                          ViewTransitionBrowserTestTraverse,
                          ::testing::Bool());
+
+class ViewTransitionCaptureTest
+    : public ContentBrowserTest,
+      public ::testing::WithParamInterface<std::string> {
+ public:
+  ViewTransitionCaptureTest() { EnablePixelOutput(); }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    embedded_test_server()->ServeFilesFromSourceDirectory(
+        GetTestDataFilePath());
+    net::test_server::RegisterDefaultHandlers(embedded_test_server());
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+ protected:
+  SkBitmap TakeScreenshot() {
+    WaitForCopyableViewInWebContents(shell()->web_contents());
+    base::test::TestFuture<const SkBitmap&> future_bitmap;
+    shell()->web_contents()->GetRenderWidgetHostView()->CopyFromSurface(
+        gfx::Rect(), gfx::Size(), future_bitmap.GetCallback());
+    return future_bitmap.Take();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(ViewTransitionCaptureTest,
+                       ViewTransitionNoArtifactDuringCapture) {
+  GURL test_url(embedded_test_server()->GetURL(GetParam()));
+  auto* web_contents = shell()->web_contents();
+  web_contents->Resize({0, 0, 20, 20});
+  ASSERT_TRUE(NavigateToURL(web_contents, test_url));
+  ASSERT_EQ(EvalJs(web_contents, JsReplace(R"(
+            new Promise(resolve => {
+              requestAnimationFrame(() => resolve("ok"));
+            }))")),
+            "ok");
+  SkBitmap before_bitmap = TakeScreenshot();
+
+  // Sanity to see that we've captured something.
+  ASSERT_NE(before_bitmap.getColor(5, 5), 0u);
+  // This starts a view transition with a "hanging" promise that never resolves.
+  // When the view-transition callback is called, we resolve the external
+  // promise that signals us that it's time to capture.
+  ASSERT_EQ(EvalJs(web_contents, JsReplace(R"(
+              new Promise(ready_to_capture => {
+                document.startViewTransition(() => new Promise(() => {
+                    ready_to_capture('ok');
+                }));
+              }))")),
+            "ok");
+  auto after_bitmap = TakeScreenshot();
+  ASSERT_EQ(before_bitmap.width(), after_bitmap.width());
+  ASSERT_EQ(before_bitmap.height(), after_bitmap.height());
+  EXPECT_TRUE(cc::MatchesBitmap(before_bitmap, after_bitmap,
+                                cc::ExactPixelComparator()));
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    P,
+    ViewTransitionCaptureTest,
+    testing::Values("/view_transitions/parent-child.html",
+                    "/view_transitions/parent-child-opacity.html"));
 
 }  // namespace content

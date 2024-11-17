@@ -47,7 +47,7 @@ void RegisterProfilePrefs(bool is_signin_profile,
                           user_prefs::PrefRegistrySyncable* pref_registry);
 
 // Creates the PrefService.
-std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService(
+std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefService(
     scoped_refptr<user_prefs::PrefRegistrySyncable> pref_registry,
     PrefStore* extension_pref_store,
     policy::PolicyService* policy_service,
@@ -56,7 +56,7 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService(
         pref_validation_delegate,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     SimpleFactoryKey* key,
-    const base::FilePath& path,
+    const base::FilePath& profile_path,
     bool async_prefs);
 
 #endif  // CHROME_BROWSER_PROFILES_PREF_SERVICE_BUILDER_UTILS_H_

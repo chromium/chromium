@@ -83,8 +83,8 @@ void RequestHeaderIntegrityURLLoaderThrottle::WillStartRequest(
   }
 
   const std::string digest =
-      base::Base64Encode(base::SHA1Hash(base::as_bytes(base::make_span(
-          google_apis::GetAPIKey() + embedder_support::GetUserAgent()))));
+      base::Base64Encode(base::SHA1Hash(base::as_byte_span(
+          google_apis::GetAPIKey() + embedder_support::GetUserAgent())));
   const std::string channel_name = GetChannelName();
   if (!channel_name.empty()) {
     request->headers.SetHeader(CHANNEL_NAME_HEADER_NAME, channel_name);

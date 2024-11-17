@@ -33,7 +33,7 @@
   _viewController = [[ParcelTrackingSettingsViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   _mediator = [[ParcelTrackingSettingsMediator alloc]
-      initWithPrefs:self.browser->GetBrowserState()->GetPrefs()];
+      initWithPrefs:self.browser->GetProfile()->GetPrefs()];
 
   _mediator.consumer = _viewController;
   _viewController.modelDelegate = _mediator;

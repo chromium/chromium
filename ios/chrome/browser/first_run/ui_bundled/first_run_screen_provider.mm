@@ -6,7 +6,6 @@
 
 #import "base/notreached.h"
 #import "ios/chrome/app/tests_hook.h"
-#import "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #import "ios/chrome/browser/search_engine_choice/model/search_engine_choice_util.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_choice_service_factory.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
@@ -19,13 +18,13 @@
 
 @implementation FirstRunScreenProvider
 
-- (instancetype)initForBrowserState:(ChromeBrowserState*)browserState {
+- (instancetype)initForProfile:(ProfileIOS*)profile {
   NSMutableArray* screens = [NSMutableArray array];
   [screens addObject:@(kSignIn)];
   [screens addObject:@(kHistorySync)];
 
   if (ShouldDisplaySearchEngineChoiceScreen(
-          *browserState, /*is_first_run_entrypoint=*/true,
+          *profile, /*is_first_run_entrypoint=*/true,
           /*app_started_via_external_intent=*/false)) {
     [screens addObject:@(kChoice)];
   }

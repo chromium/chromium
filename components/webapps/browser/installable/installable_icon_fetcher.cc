@@ -88,10 +88,11 @@ int GetMinimumFaviconForPrimaryIconSizeInPx() {
     CHECK_IS_TEST();
     return test::g_minimum_favicon_size_for_testing;
   } else {
-#if !BUILDFLAG(IS_ANDROID)
-    NOTREACHED_IN_MIGRATION();
-#endif
+#if BUILDFLAG(IS_ANDROID)
     return features::kMinimumFaviconSize;
+#else
+    NOTREACHED();
+#endif
   }
 }
 
@@ -103,12 +104,12 @@ void ProcessFaviconInBackground(
   SkBitmap decoded;
   if (bitmap_result.is_valid()) {
     base::AssertLongCPUWorkAllowed();
-    gfx::PNGCodec::Decode(bitmap_result.bitmap_data->data(),
-                          bitmap_result.bitmap_data->size(), &decoded);
+    decoded = gfx::PNGCodec::Decode(*bitmap_result.bitmap_data);
   }
 
   int min_size = GetMinimumFaviconForPrimaryIconSizeInPx();
-  if (decoded.width() < min_size || decoded.height() < min_size) {
+  if (decoded.isNull() || decoded.width() < min_size ||
+      decoded.height() < min_size) {
     ui_thread_task_runner->PostTask(
         FROM_HERE, base::BindOnce(std::move(failed_callback),
                                   InstallableStatusCode::NO_ACCEPTABLE_ICON));

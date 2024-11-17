@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_CRASH_REPORTING_CONTEXT_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_REPORTING_CRASH_REPORTING_CONTEXT_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/enterprise/connectors/reporting/browser_crash_event_router.h"
@@ -47,7 +48,9 @@ class CrashReportingContext
   CrashReportingContext();
 
   base::RepeatingTimer repeating_crash_report_;
-  std::unordered_map<BrowserCrashEventRouter*, Profile*> active_profiles_;
+  std::unordered_map<BrowserCrashEventRouter*,
+                     raw_ptr<Profile, CtnExperimental>>
+      active_profiles_;
 #endif
 };
 

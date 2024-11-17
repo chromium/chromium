@@ -51,10 +51,9 @@ import * as Timeline from 'devtools/panels/timeline/timeline.js';
   const mainThreadEvents = traceEngineData.Renderer.processes.get(100).threads.get(1).entries;
 
   view.setModelWithEvents(null, mainThreadEvents, traceEngineData);
-  view.updateContents(Timeline.TimelineSelection.TimelineSelection.fromRange(
-      // traceBounds are in microseconds, but fromRange expects milliseconds
-      traceEngineData.Meta.traceBounds.min / 1000,
-      traceEngineData.Meta.traceBounds.max / 1000
+  view.updateContents(Timeline.TimelineSelection.selectionFromRangeMicroSeconds(
+      traceEngineData.Meta.traceBounds.min,
+      traceEngineData.Meta.traceBounds.max
   ));
 
   TestRunner.addResult('Running aXe on the event log pane.');

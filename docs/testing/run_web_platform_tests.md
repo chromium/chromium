@@ -45,9 +45,9 @@ Supported values are:
 * `headless_shell` (default if `--product` is not specified)
 * `chrome`
 * `chrome_android` (aliased as `clank`; see
-  [additional instructions](#Running-Web-Platform-Tests-with-Chrome-Android))
+  [additional instructions](#Running-Web-Platform-Tests-on-Android))
 * `android_webview` (aliased as `webview`; see
-  [additional instructions](#Running-Web-Platform-Tests-with-WebView))
+  [additional instructions](#Running-Web-Platform-Tests-on-Android))
 
 Also, consider using `-v` to get browser logs.
 It can be provided multiple times to increase verbosity.
@@ -106,18 +106,9 @@ The `linux-blink-rel` builder can provide results for rebaselining.
 
 [wdspec tests]: https://web-platform-tests.org/writing-tests/wdspec.html
 
-## Running Web Platform Tests with Chrome Android
+## Running Web Platform Tests on Android
 
-*** note
-Android support is currently experimental and not on CQ/CI yet.
-See https://crbug.com/40279492 for updates.
-***
-
-See [here](./run_web_platform_tests_with_chrome_android.md) for Android specific instructions.
-
-## Running Web Platform Tests with WebView
-
-To be updated.
+See [here](./run_web_platform_tests_on_android.md) for Android specific instructions.
 
 ## Debugging Support
 
@@ -136,9 +127,10 @@ For other use cases, see [these debugging tips].
     * Yes.
       `run_wpt_tests.py` enables the `MojoJS` and `MojoJSTest` features and
       serves `//out/<target>/gen/` as `/gen/` in wptserve.
-      However, in the public WPT suite, testdriver.js APIs backed by standard
-      WebDriver endpoints should be preferred over polyfills backed by MojoJS,
-      which are Chromium-specific.
+      However, in the public WPT suite, testdriver.js APIs must be backed by
+      fully-specified testing APIs (preferably implemented with WebDriver or
+      alternatively with MojoJS). Tests that rely on unspecified testing APIs
+      cannot be put in WPT, but may live in chromium's own wpt_internal.
       See https://github.com/web-platform-tests/rfcs/issues/172 for additional
       discussion.
 

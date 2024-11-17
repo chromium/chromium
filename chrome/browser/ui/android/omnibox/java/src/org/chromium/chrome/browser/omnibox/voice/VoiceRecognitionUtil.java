@@ -93,8 +93,6 @@ public class VoiceRecognitionUtil {
     /**
      * Set whether voice search is enabled. Should be reset back to null after the test has
      * finished.
-     *
-     * @param isVoiceSearchEnabled
      */
     public static void setIsVoiceSearchEnabledForTesting(@Nullable Boolean isVoiceSearchEnabled) {
         sIsVoiceSearchEnabledForTesting = isVoiceSearchEnabled;

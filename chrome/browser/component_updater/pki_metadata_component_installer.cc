@@ -26,6 +26,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/sequence_checker.h"
 #include "base/task/thread_pool.h"
@@ -104,6 +105,22 @@ std::string LoadBinaryProtoFromDisk(const base::FilePath& pb_path) {
     result.clear();
   }
   return result;
+}
+
+// Ideally we'd use EnumTraits for this method, but the conversion is only done
+// once here so it's not worth it.
+network::mojom::CTLogInfo::LogType ProtoLogTypeToLogType(
+    ::chrome_browser_certificate_transparency::CTLog_LogType log_type) {
+  switch (log_type) {
+    case ::chrome_browser_certificate_transparency::CTLog::LOG_TYPE_UNSPECIFIED:
+      return network::mojom::CTLogInfo::LogType::kUnspecified;
+    case ::chrome_browser_certificate_transparency::CTLog::RFC6962:
+      return network::mojom::CTLogInfo::LogType::kRFC6962;
+    case ::chrome_browser_certificate_transparency::CTLog::STATIC_CT_API:
+      return network::mojom::CTLogInfo::LogType::kStaticCTAPI;
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
@@ -190,15 +207,13 @@ void PKIMetadataComponentInstallerService::ReconfigureAfterNetworkRestart() {
                            UpdateNetworkServiceCTListOnUI,
                        weak_factory_.GetWeakPtr()));
   }
-  if (base::FeatureList::IsEnabled(features::kKeyPinningComponentUpdater)) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
-        base::BindOnce(&LoadBinaryProtoFromDisk,
-                       install_dir_.Append(kKPConfigProtoFileName)),
-        base::BindOnce(&PKIMetadataComponentInstallerService::
-                           UpdateNetworkServiceKPListOnUI,
-                       weak_factory_.GetWeakPtr()));
-  }
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce(&LoadBinaryProtoFromDisk,
+                     install_dir_.Append(kKPConfigProtoFileName)),
+      base::BindOnce(
+          &PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI,
+          weak_factory_.GetWeakPtr()));
 }
 
 void PKIMetadataComponentInstallerService::OnComponentReady(
@@ -279,7 +294,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
   // included logs are of the CTLog type, but include only the information
   // required by Chrome to enforce its CT policy. Non Chrome used fields are
   // left unset.
-  for (auto log : proto->log_list().logs()) {
+  for (const auto& log : proto->log_list().logs()) {
     std::string decoded_id;
     if (!base::Base64Decode(log.log_id(), &decoded_id)) {
       continue;
@@ -336,6 +351,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceCTListOnUI(
     }
 
     log_ptr->mmd = base::Seconds(log.mmd_secs());
+    log_ptr->log_type = ProtoLogTypeToLogType(log.log_type());
     log_list_mojo_clone_network_service.push_back(log_ptr.Clone());
     log_list_mojo.push_back(std::move(log_ptr));
   }
@@ -381,7 +397,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
 
   network::mojom::PinListPtr pinlist_ptr = network::mojom::PinList::New();
 
-  for (auto pinset : proto->pinsets()) {
+  for (const auto& pinset : proto->pinsets()) {
     network::mojom::PinSetPtr pinset_ptr = network::mojom::PinSet::New();
     pinset_ptr->name = pinset.name();
     pinset_ptr->static_spki_hashes =
@@ -394,7 +410,7 @@ void PKIMetadataComponentInstallerService::UpdateNetworkServiceKPListOnUI(
     pinlist_ptr->pinsets.push_back(std::move(pinset_ptr));
   }
 
-  for (auto info : proto->host_pins()) {
+  for (const auto& info : proto->host_pins()) {
     network::mojom::PinSetInfoPtr pininfo_ptr =
         network::mojom::PinSetInfo::New();
     pininfo_ptr->hostname = info.hostname();
@@ -498,34 +514,6 @@ PKIMetadataComponentInstallerPolicy::GetInstallerAttributes() const {
 }
 
 void MaybeRegisterPKIMetadataComponent(ComponentUpdateService* cus) {
-  bool should_install =
-      base::FeatureList::IsEnabled(features::kKeyPinningComponentUpdater);
-
-#if BUILDFLAG(IS_CT_SUPPORTED)
-  should_install |= base::FeatureList::IsEnabled(
-      features::kCertificateTransparencyAskBeforeEnabling);
-#endif  // BUILDFLAG(IS_CT_SUPPORTED)
-
-#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
-  // If Chrome Root Store is supported, always install the component.
-  // Note that if CRS is supported but optional, the CRS setting can change
-  // during runtime based on the enterprise policy, so we still have to install
-  // the component now so that CRS updates will be processed in case we need
-  // them later. (Might be possible to refactor to only install component later
-  // when it's needed and if it's not already installed? Probably not worth the
-  // trouble though since CRS being optional is only a temporary state.)
-  // Note: On Android CRS will continue to be optional in code since chrome
-  // browser and webview use the same binary, but eventually it will just be
-  // unconditionally enabled in chrome and disabled in webview. This component
-  // is not registered in webview so setting it to always install here isn't a
-  // problem.
-  should_install = true;
-#endif
-
-  if (!should_install) {
-    return;
-  }
-
   auto installer = base::MakeRefCounted<ComponentInstaller>(
       std::make_unique<PKIMetadataComponentInstallerPolicy>());
   installer->Register(cus, base::OnceClosure());

@@ -18,10 +18,6 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-namespace autofill_prediction_improvements {
-class AutofillPredictionImprovementsFillingEngineImpl;
-}  // namespace autofill_prediction_improvements
-
 namespace autofill {
 
 class LogBuffer;
@@ -125,9 +121,6 @@ struct FrameTokenWithPredecessor {
 // The input B is an unassociated and unowned field.
 // The input C is an unassociated but an owned field.
 //
-// TODO(crbug.com/40195555): Currently, Autofill ignores unowned fields in
-// shadow DOMs.
-//
 // The unowned fields of the frame constitute that frame's *unowned form*.
 //
 // Forms from different frames of the same WebContents may furthermore be
@@ -156,7 +149,6 @@ class FormData {
   // - FormData::submission_event,
   // - FormData::username_predictions,
   // - FormData::is_gaia_with_skip_save_password_form,
-  // - FormData::frame_id,
   // - some fields of FormFieldData (see FormFieldData::Equal()).
   static bool DeepEqual(const FormData& a, const FormData& b);
 
@@ -185,11 +177,6 @@ class FormData {
   // FormData::fields.
   const FormFieldData* FindFieldByGlobalId(
       const FieldGlobalId& global_id) const;
-
-  // Finds a field in the FormData by its name or id.
-  // Returns a pointer to the field if found, otherwise returns nullptr.
-  // TODO(crbug.com/40100455): Move to FormDataTestApi.
-  FormFieldData* FindFieldByNameForTest(std::u16string_view name_or_id);
 
   // The id attribute of the form.
   const std::u16string& id_attribute() const { return id_attribute_; }
@@ -328,13 +315,10 @@ class FormData {
   }
   class MutableFieldsPassKey {
     constexpr MutableFieldsPassKey() = default;
-    friend class AutofillAgent;
     friend class FormDataAndroid;
-    friend class FormFiller;
     friend class internal::FormForest;
-    friend class autofill_prediction_improvements::
-        AutofillPredictionImprovementsFillingEngineImpl;
   };
+  // Use `ExtractFields()` and `set_fields()` instead if possible.
   std::vector<FormFieldData>& mutable_fields(MutableFieldsPassKey pass_key) {
     return fields_;
   }
@@ -369,11 +353,6 @@ class FormData {
     likely_contains_captcha_ = likely_contains_captcha;
   }
 
-#if BUILDFLAG(IS_IOS)
-  const std::string& frame_id() const { return frame_id_; }
-  void set_frame_id(std::string frame_id) { frame_id_ = std::move(frame_id); }
-#endif
-
  private:
   friend class FormDataTestApi;
 
@@ -396,9 +375,6 @@ class FormData {
   std::vector<FieldRendererId> username_predictions_;
   bool is_gaia_with_skip_save_password_form_ = false;
   bool likely_contains_captcha_ = false;
-#if BUILDFLAG(IS_IOS)
-  std::string frame_id_;
-#endif
 };
 
 // Whether any of the fields in |form| is a non-empty password field.

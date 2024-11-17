@@ -70,45 +70,12 @@ struct InitGlobals {
 
 InitGlobals* init_globals = new InitGlobals();
 
-base::test::TaskEnvironment& GetEnvironment() {
-  return *init_globals->task_environment;
-}
 
 #if BUILDFLAG(IS_WIN)
 scoped_refptr<webnn::dml::Adapter> GetAdapter() {
   return init_globals->adapter;
 }
 #endif
-
-webnn::mojom::GraphInfoPtr CloneGraphInfo(
-    const webnn::mojom::GraphInfo& graph_info) {
-  webnn::mojom::GraphInfoPtr cloned_graph_info = webnn::mojom::GraphInfo::New();
-
-  cloned_graph_info->id_to_operand_map.reserve(
-      graph_info.id_to_operand_map.size());
-  for (auto& [operand_id, operand_info] : graph_info.id_to_operand_map) {
-    cloned_graph_info->id_to_operand_map[operand_id] = operand_info.Clone();
-  }
-  cloned_graph_info->input_operands = graph_info.input_operands;
-  cloned_graph_info->output_operands = graph_info.output_operands;
-
-  cloned_graph_info->operations.reserve(graph_info.operations.size());
-  for (auto& operation : graph_info.operations) {
-    cloned_graph_info->operations.push_back(operation.Clone());
-  }
-
-  cloned_graph_info->constant_id_to_buffer_map.reserve(
-      graph_info.constant_id_to_buffer_map.size());
-  for (const auto& [constant_id, buffer] :
-       graph_info.constant_id_to_buffer_map) {
-    cloned_graph_info->constant_id_to_buffer_map[constant_id] = buffer.Clone();
-  }
-  return cloned_graph_info;
-}
-
-scoped_refptr<base::SingleThreadTaskRunner> GetFuzzerTaskRunner() {
-  return GetEnvironment().GetMainThreadTaskRunner();
-}
 
 class WebnnGraphLPMFuzzer {
  public:
@@ -120,26 +87,24 @@ class WebnnGraphLPMFuzzer {
     const auto& action = testcase_->actions(action_index_);
     const auto& create_graph = action.create_graph();
 
-    auto graph_info_ptr = webnn::mojom::GraphInfo::New();
-    mojolpm::FromProto(create_graph.graph_info(), graph_info_ptr);
-
 #if BUILDFLAG(IS_POSIX)
+    auto graph_info_ptr_coreml = webnn::mojom::GraphInfo::New();
+    mojolpm::FromProto(create_graph.graph_info(), graph_info_ptr_coreml);
     auto coreml_properties =
         webnn::WebNNContextImpl::IntersectWithBaseProperties(
             webnn::coreml::GraphBuilderCoreml::GetContextProperties());
     if (webnn::WebNNGraphBuilderImpl::ValidateGraph(coreml_properties,
-                                                    *graph_info_ptr)
+                                                    *graph_info_ptr_coreml)
             .has_value()) {
       // Test the Core ML graph builder.
       base::ScopedTempDir temp_dir;
       CHECK(temp_dir.CreateUniqueTempDir());
 
-      auto cloned_graph_info_ptr = CloneGraphInfo(*graph_info_ptr);
       auto constant_operands =
-          webnn::WebNNGraphBuilderImpl::TakeConstants(*cloned_graph_info_ptr);
+          webnn::WebNNGraphBuilderImpl::TakeConstants(*graph_info_ptr_coreml);
       auto coreml_graph_builder =
           webnn::coreml::GraphBuilderCoreml::CreateAndBuild(
-              *cloned_graph_info_ptr, std::move(coreml_properties),
+              *graph_info_ptr_coreml, std::move(coreml_properties),
               constant_operands, temp_dir.GetPath());
     }
 #endif
@@ -149,16 +114,18 @@ class WebnnGraphLPMFuzzer {
     auto dml_properties = webnn::WebNNContextImpl::IntersectWithBaseProperties(
         webnn::dml::ContextImplDml::GetProperties(
             GetAdapter()->max_supported_feature_level()));
+
+    auto graph_info_ptr_dml = webnn::mojom::GraphInfo::New();
+    mojolpm::FromProto(create_graph.graph_info(), graph_info_ptr_dml);
     if (webnn::WebNNGraphBuilderImpl::ValidateGraph(dml_properties,
-                                                    *graph_info_ptr)
+                                                    *graph_info_ptr_dml)
             .has_value()) {
       // Graph compilation relies on IDMLDevice1::CompileGraph introduced in
       // DirectML version 1.2 (DML_FEATURE_LEVEL_2_1).
       CHECK(GetAdapter()->IsDMLDeviceCompileGraphSupportedForTesting());
 
-      auto cloned_graph_info_ptr = CloneGraphInfo(*graph_info_ptr);
       auto constant_operands =
-          webnn::WebNNGraphBuilderImpl::TakeConstants(*cloned_graph_info_ptr);
+          webnn::WebNNGraphBuilderImpl::TakeConstants(*graph_info_ptr_dml);
 
       webnn::dml::GraphBuilderDml graph_builder(GetAdapter()->dml_device());
       std::unordered_map<uint64_t, uint32_t> constant_id_to_input_index_map;
@@ -166,7 +133,7 @@ class WebnnGraphLPMFuzzer {
           graph_buffer_binding_info;
       auto create_operator_result =
           webnn::dml::GraphImplDml::CreateAndBuildInternal(
-              dml_properties, GetAdapter(), cloned_graph_info_ptr,
+              dml_properties, GetAdapter(), graph_info_ptr_dml,
               constant_operands, graph_builder, constant_id_to_input_index_map,
               graph_buffer_binding_info);
       if (create_operator_result.has_value()) {
@@ -178,18 +145,18 @@ class WebnnGraphLPMFuzzer {
     auto tflite_properties =
         webnn::WebNNContextImpl::IntersectWithBaseProperties(
             webnn::tflite::GraphBuilderTflite::GetContextProperties());
+    auto graph_info_ptr_tflite = webnn::mojom::GraphInfo::New();
+    mojolpm::FromProto(create_graph.graph_info(), graph_info_ptr_tflite);
     if (webnn::WebNNGraphBuilderImpl::ValidateGraph(tflite_properties,
-                                                    *graph_info_ptr)
+                                                    *graph_info_ptr_tflite)
             .has_value()) {
       // Test the TFLite graph builder.
-      //
-      // No need to clone `graph_info_ptr` since this is the last use.
       auto constant_operands =
-          webnn::WebNNGraphBuilderImpl::TakeConstants(*graph_info_ptr);
+          webnn::WebNNGraphBuilderImpl::TakeConstants(*graph_info_ptr_tflite);
       auto flatbuffer = webnn::tflite::GraphBuilderTflite::CreateAndBuild(
-          std::move(tflite_properties), *graph_info_ptr, constant_operands);
+          std::move(tflite_properties), *graph_info_ptr_tflite,
+          constant_operands);
     }
-
     ++action_index_;
   }
 
@@ -201,44 +168,12 @@ class WebnnGraphLPMFuzzer {
   int action_index_ = 0;
 };
 
-void NextAction(WebnnGraphLPMFuzzer* testcase,
-                base::OnceClosure fuzzer_run_loop) {
-  if (!testcase->IsFinished()) {
-    testcase->NextAction();
-    GetFuzzerTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(NextAction, base::Unretained(testcase),
-                                  std::move(fuzzer_run_loop)));
-  } else {
-    std::move(fuzzer_run_loop).Run();
-  }
-}
-
-void RunTestcase(WebnnGraphLPMFuzzer* testcase) {
-  base::RunLoop fuzzer_run_loop;
-  GetFuzzerTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(NextAction, base::Unretained(testcase),
-                                fuzzer_run_loop.QuitClosure()));
-  // Make sure that all callbacks have completed.
-  constexpr base::TimeDelta kTimeout = base::Seconds(5);
-  GetEnvironment().FastForwardBy(kTimeout);
-  fuzzer_run_loop.Run();
-}
-
 DEFINE_BINARY_PROTO_FUZZER(
     const services::fuzzing::webnn_graph::proto::Testcase& testcase) {
-  if (!testcase.actions_size()) {
-    return;
-  }
-
   WebnnGraphLPMFuzzer webnn_graph_fuzzer_instance(testcase);
-  base::RunLoop main_run_loop;
-
-  GetFuzzerTaskRunner()->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(RunTestcase,
-                     base::Unretained(&webnn_graph_fuzzer_instance)),
-      main_run_loop.QuitClosure());
-  main_run_loop.Run();
+  while (!webnn_graph_fuzzer_instance.IsFinished()) {
+    webnn_graph_fuzzer_instance.NextAction();
+  }
 }
 
 }  // namespace

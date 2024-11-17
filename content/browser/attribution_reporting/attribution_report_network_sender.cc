@@ -84,6 +84,10 @@ AttributionReportNetworkSender::AttributionReportNetworkSender(
 
 AttributionReportNetworkSender::~AttributionReportNetworkSender() = default;
 
+void AttributionReportNetworkSender::SetInFirstBatch(bool in_first_batch) {
+  in_first_batch_ = in_first_batch;
+}
+
 void AttributionReportNetworkSender::SendReport(
     AttributionReport report,
     bool is_debug_report,
@@ -106,7 +110,7 @@ void AttributionReportNetworkSender::SendReport(
   }
 
   url::Origin origin(report.reporting_origin());
-  SendReport(std::move(url), std::move(origin), body,
+  SendReport(std::move(url), std::move(origin), std::move(body),
              base::BindOnce(&AttributionReportNetworkSender::OnReportSent,
                             base::Unretained(this), std::move(report),
                             is_debug_report, std::move(sent_callback)));
@@ -119,7 +123,7 @@ void AttributionReportNetworkSender::SendReport(
   url::Origin origin(report.reporting_origin());
   std::string body = SerializeAttributionJson(report.ReportBody());
   SendReport(
-      std::move(url), std::move(origin), body,
+      std::move(url), std::move(origin), std::move(body),
       base::BindOnce(&AttributionReportNetworkSender::OnVerboseDebugReportSent,
                      base::Unretained(this),
                      base::BindOnce(std::move(callback), std::move(report))));
@@ -132,7 +136,7 @@ void AttributionReportNetworkSender::SendReport(
   GURL url(report.ReportUrl());
   url::Origin origin(report.reporting_origin());
   std::string body = SerializeAttributionJson(report_body);
-  SendReport(std::move(url), std::move(origin), body,
+  SendReport(std::move(url), std::move(origin), std::move(body),
              base::BindOnce(
                  &AttributionReportNetworkSender::OnAggregatableDebugReportSent,
                  base::Unretained(this),
@@ -142,7 +146,7 @@ void AttributionReportNetworkSender::SendReport(
 
 void AttributionReportNetworkSender::SendReport(GURL url,
                                                 url::Origin origin,
-                                                const std::string& body,
+                                                std::string body,
                                                 UrlLoaderCallback callback) {
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = std::move(url);
@@ -198,7 +202,8 @@ void AttributionReportNetworkSender::SendReport(GURL url,
                                         std::move(simple_url_loader));
   simple_url_loader_ptr->SetTimeoutDuration(base::Seconds(30));
 
-  simple_url_loader_ptr->AttachStringForUpload(body, "application/json");
+  simple_url_loader_ptr->AttachStringForUpload(std::move(body),
+                                               "application/json");
 
   // Retry once on network change. A network change during DNS resolution
   // results in a DNS error rather than a network change error, so retry in
@@ -238,6 +243,11 @@ void AttributionReportNetworkSender::OnReportSent(
       loader->GetNumRetries() > 0
           ? std::make_optional<bool>(status == Status::kOk)
           : std::nullopt;
+  if (in_first_batch_) {
+    base::UmaHistogramSparse(
+        "Conversions.FirstBatch.HttpResponseOrNetErrorCode",
+        response_or_net_error);
+  }
 
   std::optional<bool> has_trigger_context_id;
 
@@ -256,34 +266,31 @@ void AttributionReportNetworkSender::OnReportSent(
                                has_trigger_context_id, *retry_succeed);
             }
           },
-          [&](const AttributionReport::AggregatableAttributionData& data) {
-            has_trigger_context_id =
-                data.common_data.aggregatable_trigger_config
-                    .trigger_context_id()
-                    .has_value();
-            NetworkHistogram("ReportStatusAggregatable",
-                             &base::UmaHistogramEnumeration, is_debug_report,
-                             has_trigger_context_id, status);
-            NetworkHistogram("HttpResponseOrNetErrorCodeAggregatable",
-                             &base::UmaHistogramSparse, is_debug_report,
-                             has_trigger_context_id, response_or_net_error);
-            if (retry_succeed.has_value()) {
-              NetworkHistogram("ReportRetrySucceedAggregatable",
-                               &base::UmaHistogramBoolean, is_debug_report,
-                               has_trigger_context_id, *retry_succeed);
+          [&](const AttributionReport::AggregatableData& data) {
+            has_trigger_context_id = data.aggregatable_trigger_config()
+                                         .trigger_context_id()
+                                         .has_value();
+
+            if (data.is_null()) {
+              NetworkHistogram("ReportStatusAggregatableNull",
+                               &base::UmaHistogramEnumeration, is_debug_report,
+                               has_trigger_context_id, status);
+              NetworkHistogram("HttpResponseOrNetErrorCodeAggregatableNull",
+                               &base::UmaHistogramSparse, is_debug_report,
+                               has_trigger_context_id, response_or_net_error);
+            } else {
+              NetworkHistogram("ReportStatusAggregatable",
+                               &base::UmaHistogramEnumeration, is_debug_report,
+                               has_trigger_context_id, status);
+              NetworkHistogram("HttpResponseOrNetErrorCodeAggregatable",
+                               &base::UmaHistogramSparse, is_debug_report,
+                               has_trigger_context_id, response_or_net_error);
+              if (retry_succeed.has_value()) {
+                NetworkHistogram("ReportRetrySucceedAggregatable",
+                                 &base::UmaHistogramBoolean, is_debug_report,
+                                 has_trigger_context_id, *retry_succeed);
+              }
             }
-          },
-          [&](const AttributionReport::NullAggregatableData& data) {
-            has_trigger_context_id =
-                data.common_data.aggregatable_trigger_config
-                    .trigger_context_id()
-                    .has_value();
-            NetworkHistogram("ReportStatusAggregatableNull",
-                             &base::UmaHistogramEnumeration, is_debug_report,
-                             has_trigger_context_id, status);
-            NetworkHistogram("HttpResponseOrNetErrorCodeAggregatableNull",
-                             &base::UmaHistogramSparse, is_debug_report,
-                             has_trigger_context_id, response_or_net_error);
           },
       },
       report.data());

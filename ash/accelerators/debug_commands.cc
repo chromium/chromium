@@ -15,6 +15,7 @@
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/public/cpp/debug_utils.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/resources/vector_icons/vector_icons.h"
@@ -187,10 +188,8 @@ void HandleTogglePowerButtonMenu() {
 }
 
 void HandleToggleKeyboardBacklight() {
-  if (ash::features::IsKeyboardBacklightToggleEnabled()) {
-    base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
-    accelerators::ToggleKeyboardBacklight();
-  }
+  base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
+  accelerators::ToggleKeyboardBacklight();
 }
 
 void HandleToggleMicrophoneMute() {
@@ -325,7 +324,7 @@ void HandleShowSystemNudge() {
 }
 
 void HandleStartSunfishSession() {
-  if (features::IsSunfishFeatureEnabled() &&
+  if (IsSunfishAllowedAndEnabled() &&
       !Shell::Get()->session_controller()->IsUserSessionBlocked()) {
     CaptureModeController::Get()->StartSunfishSession();
   }

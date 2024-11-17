@@ -33,7 +33,7 @@ void ProcessPriorityAggregatorData::Decrement(base::TaskPriority priority) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void ProcessPriorityAggregatorData::Increment(base::TaskPriority priority) {
@@ -55,7 +55,7 @@ void ProcessPriorityAggregatorData::Increment(base::TaskPriority priority) {
     }
   }
 
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool ProcessPriorityAggregatorData::IsEmpty() const {

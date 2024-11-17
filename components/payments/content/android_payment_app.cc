@@ -88,8 +88,7 @@ bool AndroidPaymentApp::CanPreselect() const {
 }
 
 std::u16string AndroidPaymentApp::GetMissingInfoLabel() const {
-  NOTREACHED_IN_MIGRATION();
-  return std::u16string();
+  NOTREACHED();
 }
 
 bool AndroidPaymentApp::HasEnrolledInstrument() const {
@@ -176,12 +175,13 @@ bool AndroidPaymentApp::IsPreferred() const {
   // available is the trusted web application (TWA) that launched this instance
   // of Chrome with a TWA specific payment method, so this app should be
   // preferred.
-#if !BUILDFLAG(IS_CHROMEOS)
-  NOTREACHED_IN_MIGRATION();
-#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   DCHECK_EQ(1U, GetAppMethodNames().size());
   DCHECK_EQ(methods::kGooglePlayBilling, *GetAppMethodNames().begin());
   return true;
+#else
+  NOTREACHED();
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 void AndroidPaymentApp::OnPaymentAppResponse(

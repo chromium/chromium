@@ -57,7 +57,7 @@ class MODULES_EXPORT WakeLockSentinel final
   // This function, which only has any effect once, detaches this sentinel from
   // its |manager_|, and fires a "release" event.
   // It is implemented separately from release() itself so that |manager_| can
-  // call it without triggering the creation of a new ScriptPromiseUntyped, as
+  // call it without triggering the creation of a new ScriptPromise, as
   // it is not relevant to |manager_| and this function may be called from a
   // context where |script_state_|'s context is no longer valid.
   void DoRelease();

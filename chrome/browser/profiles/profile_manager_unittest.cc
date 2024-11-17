@@ -68,33 +68,29 @@
 #include "chrome/test/base/test_browser_window.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_prefs.h"
 #include "ash/components/arc/session/arc_management_transition.h"
 #include "ash/constants/ash_switches.h"
 #include "chrome/browser/ash/login/users/avatar/user_image_manager_impl.h"
-#include "chrome/browser/ash/login/users/chrome_user_manager_impl.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/users/user_manager_delegate_impl.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
+#include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_impl.h"
 #include "components/user_manager/user_names.h"
 #include "extensions/common/features/feature_session_type.h"
 #include "extensions/common/mojom/feature_session_type.mojom.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_test_helper.h"
-#include "chromeos/startup/browser_init_params.h"
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 using base::ASCIIToUTF16;
 
@@ -192,24 +188,12 @@ class ProfileManagerTest : public testing::Test {
   ~ProfileManagerTest() override = default;
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
-    lacros_service_test_helper_ =
-        std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
-
-    create_services_subscription_ =
-        BrowserContextDependencyManager::GetInstance()
-            ->RegisterCreateServicesCallbackForTesting(base::BindRepeating(
-                &ProfileManagerTest::OnWillCreateBrowserContextServices,
-                base::Unretained(this)));
-#endif
-
     // Create a new temporary directory, and store the path
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     TestingBrowserProcess::GetGlobal()->SetProfileManager(
         CreateProfileManagerForTest());
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kTestType);
     ash::UserImageManagerImpl::SkipDefaultUserImageDownloadForTesting();
     wallpaper_controller_client_ = std::make_unique<
@@ -233,7 +217,7 @@ class ProfileManagerTest : public testing::Test {
   void TearDown() override {
     TestingBrowserProcess::GetGlobal()->SetProfileManager(nullptr);
     content::RunAllTasksUntilIdle();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     session_type_.reset();
     wallpaper_controller_client_.reset();
 #endif
@@ -304,14 +288,7 @@ class ProfileManagerTest : public testing::Test {
 
   TestingPrefServiceSimple* local_state() { return local_state_.Get(); }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  void OnWillCreateBrowserContextServices(content::BrowserContext* context) {
-    IdentityTestEnvironmentProfileAdaptor::
-        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
-  }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // Helper function to register an user with id |user_id| and create profile
   // with a correct path.
   void RegisterUser(const AccountId& account_id) {
@@ -378,21 +355,17 @@ class ProfileManagerTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  user_manager::ScopedUserManager test_user_manager_{
-      ash::ChromeUserManagerImpl::CreateChromeUserManager()};
+#if BUILDFLAG(IS_CHROMEOS)
+  user_manager::ScopedUserManager user_manager_{
+      std::make_unique<user_manager::UserManagerImpl>(
+          std::make_unique<ash::UserManagerDelegateImpl>(),
+          local_state_.Get(),
+          ash::CrosSettings::Get())};
   std::unique_ptr<base::AutoReset<extensions::mojom::FeatureSessionType>>
       session_type_;
   std::unique_ptr<WallpaperControllerClientImpl> wallpaper_controller_client_;
   TestWallpaperController test_wallpaper_controller_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  std::unique_ptr<chromeos::ScopedLacrosServiceTestHelper>
-      lacros_service_test_helper_;
-
-  base::CallbackListSubscription create_services_subscription_;
 #endif
 };
 
@@ -424,7 +397,7 @@ MATCHER(SameNotNull, "The same non-NULL value for all calls.") {
   return arg && arg == g_created_profile;
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 
 // This functionality only exists on Chrome OS.
 TEST_F(ProfileManagerTest, LoggedInProfileDir) {
@@ -507,7 +480,7 @@ TEST_F(ProfileManagerTest, UserProfileLoading) {
       ProfileManager::GetLastUsedProfile()->IsSameOrParent(user_profile));
 }
 
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(ProfileManagerTest, CreateAndUseTwoProfiles) {
   base::FilePath dest_path1 = temp_dir_.GetPath();
@@ -909,14 +882,14 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
   EXPECT_FALSE(entry->IsOmitted());
 }
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 TEST_F(ProfileManagerTest, GetSystemProfilePath) {
   base::FilePath system_profile_path = ProfileManager::GetSystemProfilePath();
   base::FilePath expected_path = temp_dir_.GetPath();
   expected_path = expected_path.Append(chrome::kSystemProfileDir);
   EXPECT_EQ(expected_path, system_profile_path);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
 
 // Test profile manager that creates all profiles as guest by default.
 class UnittestGuestProfileManager : public FakeProfileManager {
@@ -953,7 +926,7 @@ class ProfileManagerGuestTest : public ProfileManagerTest {
   ~ProfileManagerGuestTest() override = default;
 
   void SetUp() override {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
     cl->AppendSwitch(ash::switches::kGuestSession);
     cl->AppendSwitch(::switches::kIncognito);
@@ -961,7 +934,7 @@ class ProfileManagerGuestTest : public ProfileManagerTest {
 
     ProfileManagerTest::SetUp();
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
     RegisterUser(user_manager::GuestAccountId());
 #endif
   }
@@ -980,7 +953,7 @@ class ProfileManagerGuestTest : public ProfileManagerTest {
     return profile_manager_unique;
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ash::FakeChromeUserManager* GetFakeUserManager() const {
     return static_cast<ash::FakeChromeUserManager*>(
         user_manager::UserManager::Get());
@@ -1002,7 +975,7 @@ TEST_F(ProfileManagerGuestTest, GetLastUsedProfileAllowedByPolicy) {
   EXPECT_TRUE(profile->IsOffTheRecord());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileManagerGuestTest, GuestProfileIncognito) {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   EXPECT_TRUE(primary_profile->IsOffTheRecord());
@@ -1173,7 +1146,7 @@ TEST_F(ProfileManagerTest, InitProfileAttributesStorageForAProfile) {
   EXPECT_EQ(avatar_index, entry->GetAvatarIconIndex());
 }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(ProfileManagerTest, InitProfileForChildOnFirstSignIn) {
   std::unique_ptr<Profile> profile = InitProfileForArcTransitionTest(
       true /* profile_is_new */, false /* arc_signed_in */,
@@ -1294,7 +1267,7 @@ TEST_F(ProfileManagerTest, GetLastUsedProfileAllowedByPolicy) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ASSERT_TRUE(profile_manager);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On CrOS, profile returned by GetLastUsedProfile is a sign-in profile that
   // is forced to be off-the-record. That's why we need to create at least one
   // user to get a regular profile.
@@ -1509,7 +1482,7 @@ TEST_F(ProfileManagerTest, LastOpenedProfilesDoesNotContainIncognito) {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 // There's no Browser object on Android and there's no multi-profiles on Chrome.
 TEST_F(ProfileManagerTest, EphemeralProfilesDontEndUpAsLastProfile) {
   base::FilePath dest_path = temp_dir_.GetPath();
@@ -2121,7 +2094,7 @@ TEST_F(ProfileManagerTest, ProfileDisplayNamePreservesSignedInName) {
   EXPECT_EQ(gaia_given_name,
             profiles::GetAvatarNameForProfile(profile1->GetPath()));
 }
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
 // GetAvatarNameForProfile() is not defined on Android.
 #if !BUILDFLAG(IS_ANDROID)
@@ -2157,13 +2130,13 @@ TEST_F(ProfileManagerTest, ProfileDisplayNameIsEmailIfDefaultName) {
 
   entry = storage.GetProfileAttributesWithPath(profile2->GetPath());
   ASSERT_NE(entry, nullptr);
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS)
   // (Default profile, Batman,..) are legacy profile names on Desktop and are
   // not considered default profile names for newly created profiles.
   // We use "Person %n" as the default profile name. Set |SetIsUsingDefaultName|
   // manually to mimick pre-existing profiles.
   entry->SetLocalProfileName(u"Default Profile", true);
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 
   entry->SetAuthInfo("23456", email2, true);
   entry->SetGAIAGivenName(std::u16string());
@@ -2390,63 +2363,18 @@ TEST_F(ProfileManagerTest, ScopedProfileKeepAlive) {
   }
 
   base::RunLoop().RunUntilIdle();
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   // Profile* should've been destroyed by now.
   EXPECT_EQ(nullptr, profile_manager->GetProfileByPath(dest_path));
-#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-TEST_F(ProfileManagerTest, RegularSession) {
-  // Setup regular session in LaCrOS.
-  crosapi::mojom::BrowserInitParamsPtr init_params =
-      crosapi::mojom::BrowserInitParams::New();
-  init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-
-  base::FilePath dest_path = temp_dir_.GetPath();
-  dest_path = dest_path.Append(FILE_PATH_LITERAL("Regular Profile"));
-
-  // Create and initialize a profile.
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  Profile* profile = profile_manager->GetProfile(dest_path);
-
-  ASSERT_TRUE(profile);
-  EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
-            std::string());
-  EXPECT_FALSE(profile->IsChild());
-}
-
-TEST_F(ProfileManagerTest, ChildSession) {
-  // Setup child session in LaCrOS.
-  crosapi::mojom::BrowserInitParamsPtr init_params =
-      crosapi::mojom::BrowserInitParams::New();
-  init_params->session_type = crosapi::mojom::SessionType::kChildSession;
-  chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
-
-  // Create and initialize a profile.
-  base::FilePath dest_path = temp_dir_.GetPath();
-  dest_path = dest_path.Append(FILE_PATH_LITERAL("New Profile"));
-
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  const Profile* profile = profile_manager->GetProfile(dest_path);
-
-  ASSERT_TRUE(profile);
-  EXPECT_EQ(profile->GetPrefs()->GetString(prefs::kSupervisedUserId),
-            supervised_user::kChildAccountSUID);
-  EXPECT_TRUE(profile->IsChild());
-}
-#endif
-
-// Tests that a new profile's entry in the profile attributes storage is setup
-// with the same values that are in the profile prefs.
 TEST_F(ProfileManagerTest, ProfileCountRecordedAtProfileInit) {
   using base::Bucket;
   using base::BucketsAre;
 
   base::HistogramTester histogram_tester;
-  const std::string kHistogramName =
-      "Profile.NumberOfProfilesAtProfileCreation";
+  const std::string kHistogramName = "Profile.NumberOfProfilesAtProfileInit";
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath dest_path = temp_dir_.GetPath();
 

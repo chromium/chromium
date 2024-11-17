@@ -277,6 +277,36 @@ if (current_cpu == "arm64") {
     sources = aom_av1_common_intrin_neon_i8mm
     sources += aom_dsp_common_intrin_neon_i8mm
   }
+
+  # There are known problems with LLVM-based compilers targeting Windows for
+  # SVE code generation. Since there are no client Windows devices that
+  # support SVE(2) at this time, disable SVE(2) on AArch64 Windows targets.
+  if (!is_win) {
+    source_set("libaom_intrinsics_sve") {
+      check_includes = false
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ ":libaom_config" ]
+      configs -= [ "//build/config/compiler:default_init_stack_vars" ]
+      if (!is_win || is_clang) {
+        cflags = [ "-march=armv8.2-a+dotprod+i8mm+sve" ]
+      }
+      sources = aom_av1_encoder_intrin_sve
+      sources += aom_dsp_encoder_intrin_sve
+    }
+
+    source_set("libaom_intrinsics_sve2") {
+      check_includes = false
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [ "//build/config/compiler:no_chromium_code" ]
+      configs += [ ":libaom_config" ]
+      configs -= [ "//build/config/compiler:default_init_stack_vars" ]
+      if (!is_win || is_clang) {
+        cflags = [ "-march=armv9-a+i8mm+sve2" ]
+      }
+      sources = aom_av1_common_intrin_sve2
+    }
+  }
 }
 
 static_library("libaom") {
@@ -337,6 +367,12 @@ static_library("libaom") {
       ":libaom_intrinsics_neon_dotprod",
       ":libaom_intrinsics_neon_i8mm",
     ]
+    if (!is_win) {
+      deps += [
+        ":libaom_intrinsics_sve",
+        ":libaom_intrinsics_sve2",
+      ]
+    }
   }
   if (current_cpu == "arm") {
     # This is needed by all arm boards due to aom_arm_cpu_caps()

@@ -12,9 +12,13 @@
 // Protocol to communicate HistoryTableViewController actions to its
 // coordinator.
 @protocol HistoryTableViewControllerDelegate
-// Notifies the coordinator that history should be dismissed.
+// Notifies the coordinator that history should be dismissed and calls the
+// completion handler block. The completion handler block is called after the
+// view controller has been dismissed.
 - (void)dismissViewController:(BaseHistoryViewController*)controller
                withCompletion:(ProceduralBlock)completionHandler;
+// Notifies the coordinator that history should be dismissed.
+- (void)dismissViewController:(BaseHistoryViewController*)controller;
 // Notifies the coordinator that Privacy Settings should be displayed.
 - (void)displayClearHistoryData;
 @end

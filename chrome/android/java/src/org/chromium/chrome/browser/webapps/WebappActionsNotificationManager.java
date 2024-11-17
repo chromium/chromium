@@ -23,8 +23,6 @@ import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabLocator;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
-import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -40,17 +38,12 @@ import org.chromium.ui.base.Clipboard;
 
 import java.lang.ref.WeakReference;
 
-import javax.inject.Inject;
-
 /**
- * Manages the notification shown by Chrome when running standalone Web Apps. It accomplishes
- * number of goals:
- * - Presents the current URL.
- * - Exposes 'Share' and 'Open in Chrome' actions.
- * - Messages that Web App runs in Chrome.
+ * Manages the notification shown by Chrome when running standalone Web Apps. It accomplishes number
+ * of goals: - Presents the current URL. - Exposes 'Share' and 'Open in Chrome' actions. - Messages
+ * that Web App runs in Chrome.
  */
-@ActivityScope
-class WebappActionsNotificationManager implements PauseResumeWithNativeObserver {
+public class WebappActionsNotificationManager implements PauseResumeWithNativeObserver {
     private static final String ACTION_SHARE =
             "org.chromium.chrome.browser.webapps.NOTIFICATION_ACTION_SHARE";
     private static final String ACTION_OPEN_IN_CHROME =
@@ -61,14 +54,10 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
     private final CustomTabActivityTabProvider mTabProvider;
     private final BrowserServicesIntentDataProvider mIntentDataProvider;
 
-    @Inject
-    public WebappActionsNotificationManager(
-            CustomTabActivityTabProvider tabProvider,
-            BrowserServicesIntentDataProvider intentDataProvider,
-            ActivityLifecycleDispatcher lifecycleDispatcher) {
-        mTabProvider = tabProvider;
-        mIntentDataProvider = intentDataProvider;
-        lifecycleDispatcher.register(this);
+    public WebappActionsNotificationManager(BaseCustomTabActivity activity) {
+        mTabProvider = activity.getCustomTabActivityTabProvider();
+        mIntentDataProvider = activity.getIntentDataProvider();
+        activity.getLifecycleDispatcher().register(this);
     }
 
     @Override
@@ -93,7 +82,7 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
 
         Context appContext = ContextUtils.getApplicationContext();
         NotificationWrapper notification = createNotification(appContext, tab, webappExtras);
-        BaseNotificationManagerProxyFactory.create(appContext).notify(notification);
+        BaseNotificationManagerProxyFactory.create().notify(notification);
 
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(
@@ -130,12 +119,12 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
                 .setContentIntent(focusIntent)
                 .addAction(
                         R.drawable.ic_share_white_24dp,
-                        appContext.getResources().getString(R.string.share),
+                        appContext.getString(R.string.share),
                         shareIntent,
                         NotificationUmaTracker.ActionType.WEB_APP_ACTION_SHARE)
                 .addAction(
                         R.drawable.ic_exit_to_app_white_24dp,
-                        appContext.getResources().getString(R.string.menu_open_in_chrome),
+                        appContext.getString(R.string.menu_open_in_chrome),
                         openInChromeIntent,
                         NotificationUmaTracker.ActionType.WEB_APP_ACTION_OPEN_IN_CHROME)
                 .buildNotificationWrapper();

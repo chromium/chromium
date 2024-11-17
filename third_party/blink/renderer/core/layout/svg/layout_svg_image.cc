@@ -149,10 +149,6 @@ SVGLayoutResult LayoutSVGImage::UpdateSVGLayout(
     result.bounds_changed = true;
   }
 
-  if (result.bounds_changed) {
-    DeprecatedInvalidateIntersectionObserverCachedRects();
-  }
-
   DCHECK(!needs_transform_update_);
   ClearNeedsLayout();
   return result;
@@ -202,7 +198,7 @@ bool LayoutSVGImage::NodeAtPoint(HitTestResult& result,
                                   result.GetHitTestRequest(),
                                   style.UsedPointerEvents());
   if (hit_rules.require_visible &&
-      style.UsedVisibility() != EVisibility::kVisible) {
+      style.Visibility() != EVisibility::kVisible) {
     return false;
   }
 

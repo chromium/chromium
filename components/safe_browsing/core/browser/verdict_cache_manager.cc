@@ -254,8 +254,7 @@ std::string GetKeyOfTypeFromTriggerType(
 // interpret it as exact match only.
 template <typename T>
 bool IsOnlyExactMatchAllowed(T verdict) {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 template <>
 bool IsOnlyExactMatchAllowed<RTLookupResponse::ThreatInfo>(
@@ -272,8 +271,7 @@ bool IsOnlyExactMatchAllowed<LoginReputationClientResponse>(
 
 template <typename T>
 std::string GetCacheExpression(T verdict) {
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 template <>
@@ -1179,7 +1177,7 @@ void VerdictCacheManager::
 
 void VerdictCacheManager::StopCleanUpTimerForTesting() {
   if (cleanup_timer_.IsRunning()) {
-    cleanup_timer_.AbandonAndStop();
+    cleanup_timer_.Stop();
   }
 }
 

@@ -49,7 +49,6 @@ class ArcNotificationView : public message_center::MessageView,
   void UpdateWithNotification(
       const message_center::Notification& notification) override;
   void UpdateControlButtonsVisibility() override;
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   message_center::NotificationControlButtonsView* GetControlButtonsView()
       const override;
   bool IsExpanded() const override;

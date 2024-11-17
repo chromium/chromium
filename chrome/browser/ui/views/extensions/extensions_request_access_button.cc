@@ -22,11 +22,13 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
+#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_utils.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_hover_card_coordinator.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_chip_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -108,7 +110,7 @@ void ExtensionsRequestAccessButton::MaybeShowHoverCard() {
 void ExtensionsRequestAccessButton::ResetConfirmation() {
   SetVisible(false);
   confirmation_origin_ = std::nullopt;
-  collapse_timer_.AbandonAndStop();
+  collapse_timer_.Stop();
 }
 
 bool ExtensionsRequestAccessButton::IsShowingConfirmation() const {
@@ -160,9 +162,9 @@ bool ExtensionsRequestAccessButton::ShouldShowInkdropAfterIphInteraction() {
 
 void ExtensionsRequestAccessButton::OnButtonPressed() {
   // Record IPH usage.
-  browser_->window()->NotifyFeatureEngagementEvent(
-      feature_engagement::events::kExtensionsRequestAccessButtonClicked);
-
+  browser_->window()->NotifyFeaturePromoFeatureUsed(
+      feature_engagement::kIPHExtensionsRequestAccessButtonFeature,
+      FeaturePromoFeatureUsedAction::kClosePromoIfPresent);
   content::WebContents* web_contents = GetActiveWebContents();
   extensions::ExtensionActionRunner* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
@@ -176,17 +178,14 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
   confirmation_origin_ =
       web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
-  // Grant tab permission to all extensions.
+  // Always grant access to this site to all extensions.
   DCHECK_GT(extension_ids_.size(), 0u);
   std::vector<const extensions::Extension*> extensions_to_run =
       GetExtensions(browser_->profile(), extension_ids_);
-
-  base::RecordAction(base::UserMetricsAction(
-      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"));
-  UMA_HISTOGRAM_COUNTS_100(
-      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton",
-      extension_ids_.size());
-  action_runner->GrantTabPermissions(extensions_to_run);
+  extensions::SitePermissionsHelper(browser_->profile())
+      .UpdateSiteAccess(
+          extensions_to_run, web_contents,
+          extensions::PermissionsManager::UserSiteAccess::kOnSite);
 
   // Show confirmation message, and disable the button, for a specific duration.
   std::optional<SkColor> color;
@@ -198,12 +197,18 @@ void ExtensionsRequestAccessButton::OnButtonPressed() {
   base::TimeDelta collapse_duration = remove_confirmation_for_testing_
                                           ? base::Seconds(0)
                                           : kConfirmationDisplayDuration;
-  // base::Unretained() below is safe because this view is tied to the lifetime
-  // of `extensions_container_`.
+  // base::Unretained() below is safe because this view is tied to the
+  // lifetime of `extensions_container_`.
   collapse_timer_.Start(
       FROM_HERE, collapse_duration,
       base::BindOnce(&ExtensionsContainer::CollapseConfirmation,
                      base::Unretained(extensions_container_)));
+
+  base::RecordAction(base::UserMetricsAction(
+      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton"));
+  UMA_HISTOGRAM_COUNTS_100(
+      "Extensions.Toolbar.ExtensionsActivatedFromRequestAccessButton",
+      extension_ids_.size());
 }
 
 content::WebContents* ExtensionsRequestAccessButton::GetActiveWebContents()

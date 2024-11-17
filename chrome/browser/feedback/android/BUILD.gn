@@ -55,9 +55,11 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/feedback/AsyncFeedbackSourceAdapter.java",
     "java/src/org/chromium/chrome/browser/feedback/DeviceInfoFeedbackSource.java",
+    "java/src/org/chromium/chrome/browser/feedback/FallbackHelpAndFeedbackLauncherDelegate.java",
     "java/src/org/chromium/chrome/browser/feedback/FamilyInfoFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/FeedbackContextFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncher.java",
+    "java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncherDelegate.java",
     "java/src/org/chromium/chrome/browser/feedback/IMEFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/InterestFeedFeedbackSource.java",
     "java/src/org/chromium/chrome/browser/feedback/LowEndDeviceFeedbackSource.java",
@@ -68,7 +70,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feedback/VariationsFeedbackSource.java",
   ]
   deps = [
-    ":delegate_java",
     ":feedback_collector_java",
     ":java_resources",
     "//base:base_java",
@@ -84,10 +85,7 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
-  public_deps = [
-    ":delegate_java",
-    ":feedback_collector_java",
-  ]
+  public_deps = [ ":feedback_collector_java" ]
 
   resources_package = "org.chromium.chrome.browser.feedback"
 }
@@ -109,34 +107,6 @@ android_library("feedback_collector_java") {
     "//components/browser_ui/util/android:java",
     "//components/signin/public/android:java",
     "//third_party/android_deps:guava_android_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-  ]
-}
-
-android_library("delegate_java") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncherDelegate.java",
-    "java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncherDelegateImpl.java",
-  ]
-
-  deps = [
-    ":feedback_collector_java",
-    "//base:base_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-  ]
-
-  # Add the actual implementation where necessary so that downstream targets
-  # can provide their own implementations.
-  jar_excluded_patterns = [ "*/HelpAndFeedbackLauncherDelegateImpl.class" ]
-}
-
-android_library("delegate_public_impl_java") {
-  sources = [ "java/src/org/chromium/chrome/browser/feedback/HelpAndFeedbackLauncherDelegateImpl.java" ]
-
-  deps = [
-    ":delegate_java",
-    ":feedback_collector_java",
-    "//base:base_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

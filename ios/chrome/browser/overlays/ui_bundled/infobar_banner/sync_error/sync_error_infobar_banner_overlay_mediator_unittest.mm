@@ -37,14 +37,14 @@ const std::u16string kButtonLabelText = u"button_label_text";
 class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
  public:
   SyncErrorInfobarBannerOverlayMediatorTest() {
-    TestChromeBrowserState::Builder builder;
-    chrome_browser_state_ = std::move(builder).Build();
+    TestProfileIOS::Builder builder;
+    profile_ = std::move(builder).Build();
 
     // Create an InfoBarIOS with a MockSyncErrorInfobarDelegate.
     id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
     std::unique_ptr<MockSyncErrorInfoBarDelegate> delegate =
         std::make_unique<MockSyncErrorInfoBarDelegate>(
-            chrome_browser_state_.get(), presenter, kTitleText, kMessageText,
+            profile_.get(), presenter, kTitleText, kMessageText,
             kButtonLabelText,
             /*use_icon_background_tint=*/true);
     // Create an InfoBarIOS with a MockSyncErrorInfoBarDelegate.
@@ -72,7 +72,7 @@ class SyncErrorInfobarBannerOverlayMediatorTest : public PlatformTest {
  protected:
   raw_ptr<MockSyncErrorInfoBarDelegate> delegate_ = nil;
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<InfoBarIOS> infobar_;
   std::unique_ptr<OverlayRequest> request_;
   SyncErrorInfobarBannerOverlayMediator* mediator_;

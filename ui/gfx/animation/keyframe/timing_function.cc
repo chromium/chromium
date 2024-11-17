@@ -36,8 +36,7 @@ CubicBezierTimingFunction::CreatePreset(EaseType ease_type) {
       return base::WrapUnique(
           new CubicBezierTimingFunction(ease_type, 0.42, 0.0, 0.58, 1));
     default:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 std::unique_ptr<CubicBezierTimingFunction>
@@ -130,8 +129,7 @@ int StepsTimingFunction::NumberOfJumps() const {
       return steps_ - 1;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return steps_;
+      NOTREACHED();
   }
 }
 
@@ -148,8 +146,7 @@ float StepsTimingFunction::GetStepsStartOffset() const {
       return 0;
 
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 1;
+      NOTREACHED();
   }
 }
 

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2021 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dino_quick_action_area"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:ignore="UselessParent,MergeRootFrame">
+
+  <!-- Notes:
+    - the parent layout is not "useless". We use it to enforce a particular
+      aspect ratio of the Dino widget. There are very few layouts that are permitted to be
+      used with RemoteViews, ConstraintLayout and is sadly not one of them.
+      Please check the QuickActionSearchWidgetProviderDelegate to see how the sizes are
+      enforced for this widget.
+    - root frame merging is not really feasible, because this layout, and the preview layout
+      currently serve different purposes. the layout here is intended to be able to encompass
+      the entire area assigned to the widget on the launcher screen, while the preview layout
+      has fixed size for preview purposes.
+      In other words: we want the widget to cover the entier available area, but we want to
+      confine its bounds for the preview.
+  -->
+
+  <LinearLayout
+      android:id="@+id/dino_quick_action_button"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:background="@drawable/quick_action_search_widget_dino_background"
+      android:paddingTop="@dimen/quick_action_search_widget_dino_padding_vertical"
+      android:paddingBottom="@dimen/quick_action_search_widget_dino_padding_vertical"
+      android:paddingStart="@dimen/quick_action_search_widget_dino_padding_start"
+      android:gravity="fill"
+      android:orientation="vertical">
+
+      <ImageView
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:importantForAccessibility="no"
+          android:scaleType="fitCenter"
+          android:adjustViewBounds="true"
+          android:src="@drawable/quick_action_search_widget_dino_content" />
+
+      <TextView
+          android:id="@+id/dino_quick_action_text"
+          android:layout_width="match_parent"
+          android:layout_height="0dp"
+          android:layout_weight="1"
+          android:maxLines="1"
+          android:textAppearance="@style/TextAppearance.TextSmall.Primary.Baseline"
+          android:textAlignment="viewStart"
+          android:gravity="bottom"
+          android:text="@string/dino_widget_text" />
+
+  </LinearLayout>
+</FrameLayout>

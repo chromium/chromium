@@ -11,6 +11,7 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/functional/callback.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 
 namespace ash {
 namespace test {
@@ -124,7 +125,7 @@ void AppListTestViewDelegate::GetContextMenuModel(
 
 void AppListTestViewDelegate::ShowWallpaperContextMenu(
     const gfx::Point& onscreen_location,
-    ui::MenuSourceType source_type) {
+    ui::mojom::MenuSourceType source_type) {
   ++show_wallpaper_context_menu_count_;
 }
 

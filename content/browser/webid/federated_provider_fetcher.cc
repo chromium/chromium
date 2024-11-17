@@ -138,7 +138,7 @@ void FederatedProviderFetcher::OnWellKnownFetched(
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kSuccess: {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
   }
@@ -190,12 +190,10 @@ void FederatedProviderFetcher::OnConfigFetched(
         return;
       }
       case IdpNetworkRequestManager::ParseStatus::kEmptyListError: {
-        NOTREACHED_IN_MIGRATION()
-            << "kEmptyListError is undefined for OnConfigFetched";
-        return;
+        NOTREACHED() << "kEmptyListError is undefined for OnConfigFetched";
       }
       case IdpNetworkRequestManager::ParseStatus::kSuccess: {
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
       }
     }
   }

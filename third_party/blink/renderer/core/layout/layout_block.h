@@ -256,9 +256,7 @@ class CORE_EXPORT LayoutBlock : public LayoutBox {
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
  private:
-  PhysicalRect LocalCaretRect(
-      int caret_offset,
-      LayoutUnit* extra_width_to_end_of_line = nullptr) const final;
+  PhysicalRect LocalCaretRect(int caret_offset) const final;
   bool IsInlineBoxWrapperActuallyChild() const;
 
   // End helper functions and structs used by layoutBlockChildren.

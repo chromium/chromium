@@ -27,9 +27,7 @@ bool ListItemOrdinal::IsListOwner(const Node& node) {
   // See https://html.spec.whatwg.org/#the-li-element and
   // https://drafts.csswg.org/css-contain-2/#containment-style for more details.
   return IsA<HTMLUListElement>(node) || IsA<HTMLOListElement>(node) ||
-         (RuntimeEnabledFeatures::HTMLMenuElementIsListOwnerEnabled() &&
-          IsA<HTMLMenuElement>(node)) ||
-         HasStyleContainment(node);
+         IsA<HTMLMenuElement>(node) || HasStyleContainment(node);
 }
 
 bool ListItemOrdinal::IsListItem(const LayoutObject* layout_object) {
@@ -152,15 +150,18 @@ ListItemOrdinal::NodeAndOrdinal ListItemOrdinal::NextOrdinalItem(
 }
 
 std::optional<int> ListItemOrdinal::ExplicitValue() const {
-  if (!HasExplicitValue())
+  if (RuntimeEnabledFeatures::
+          ListItemWithCounterSetNotSetExplicitValueEnabled()) {
+    return explicit_value_;
+  }
+  if (!UseExplicitValue()) {
     return {};
+  }
   return value_;
 }
 
 int ListItemOrdinal::CalcValue(const Node& item_node) const {
-  if (HasExplicitValue())
-    return value_;
-
+  DCHECK_EQ(Type(), kNeedsUpdate);
   Node* list = EnclosingList(&item_node);
   auto* o_list_element = DynamicTo<HTMLOListElement>(list);
   const bool is_reversed = o_list_element && o_list_element->IsReversed();
@@ -172,6 +173,14 @@ int ListItemOrdinal::CalcValue(const Node& item_node) const {
       return directives.CombinedValue();
     if (directives.IsIncrement())
       value_step = directives.CombinedValue();
+  }
+
+  // If the element does not have the `counter-set` CSS property set, return
+  // `explicit_value_`.
+  if (RuntimeEnabledFeatures::
+          ListItemWithCounterSetNotSetExplicitValueEnabled() &&
+      ExplicitValue().has_value()) {
+    return explicit_value_.value();
   }
 
   int64_t base_value = 0;
@@ -236,17 +245,42 @@ void ListItemOrdinal::InvalidateOrdinalsAfter(bool is_reversed,
   }
 }
 
-void ListItemOrdinal::SetExplicitValue(int value, const Node& item_node) {
-  if (HasExplicitValue() && value_ == value)
+void ListItemOrdinal::SetExplicitValue(int value, const Element& element) {
+  if (UseExplicitValue() && value_ == value) {
     return;
+  }
+  // The value attribute on li elements, and the stylesheet is as follows:
+  // - li[value] {
+  // -   counter-set: list-item attr(value integer, 1);
+  // - }
+  // See https://drafts.csswg.org/css-lists-3/#ua-stylesheet for more details.
+  // If the element has the `counter-set` CSS property set, the `value_` is not
+  // explicitly updated.
+  if (RuntimeEnabledFeatures::
+          ListItemWithCounterSetNotSetExplicitValueEnabled()) {
+    explicit_value_ = value;
+    if (const auto* style = element.GetComputedStyle()) {
+      const auto directives =
+          style->GetCounterDirectives(AtomicString("list-item"));
+      if (directives.IsSet()) {
+        return;
+      }
+    }
+  }
+
   value_ = value;
-  InvalidateSelf(item_node, kExplicit);
-  InvalidateAfter(EnclosingList(&item_node), &item_node);
+  InvalidateSelf(element, kExplicit);
+  InvalidateAfter(EnclosingList(&element), &element);
 }
 
 void ListItemOrdinal::ClearExplicitValue(const Node& item_node) {
-  if (!HasExplicitValue())
+  if (RuntimeEnabledFeatures::
+          ListItemWithCounterSetNotSetExplicitValueEnabled()) {
+    explicit_value_.reset();
+  }
+  if (!UseExplicitValue()) {
     return;
+  }
   InvalidateSelf(item_node);
   InvalidateAfter(EnclosingList(&item_node), &item_node);
 }

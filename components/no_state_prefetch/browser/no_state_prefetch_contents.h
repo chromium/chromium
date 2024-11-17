@@ -19,9 +19,9 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents_delegate.h"
+#include "components/no_state_prefetch/common/no_state_prefetch_canceler.mojom.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_final_status.h"
 #include "components/no_state_prefetch/common/no_state_prefetch_origin.h"
-#include "components/no_state_prefetch/common/prerender_canceler.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -48,19 +48,20 @@ namespace prerender {
 
 class NoStatePrefetchManager;
 
-class NoStatePrefetchContents : public content::WebContentsObserver,
-                                public prerender::mojom::PrerenderCanceler {
+class NoStatePrefetchContents
+    : public content::WebContentsObserver,
+      public prerender::mojom::NoStatePrefetchCanceler {
  public:
   // NoStatePrefetchContents::Create uses the currently registered Factory to
   // create the NoStatePrefetchContents. Factory is intended for testing.
   class Factory {
    public:
-    Factory() {}
+    Factory() = default;
 
     Factory(const Factory&) = delete;
     Factory& operator=(const Factory&) = delete;
 
-    virtual ~Factory() {}
+    virtual ~Factory() = default;
 
     // Ownership is not transferred through this interface as
     // no_state_prefetch_manager and browser_context are stored as weak
@@ -89,7 +90,7 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
     virtual void OnPrefetchStop(NoStatePrefetchContents* contents) {}
 
    protected:
-    Observer() {}
+    Observer() = default;
     virtual ~Observer() = 0;
   };
 
@@ -188,8 +189,9 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
     return prefetching_has_been_cancelled_;
   }
 
-  void AddPrerenderCancelerReceiver(
-      mojo::PendingReceiver<prerender::mojom::PrerenderCanceler> receiver);
+  void AddNoStatePrefetchCancelerReceiver(
+      mojo::PendingReceiver<prerender::mojom::NoStatePrefetchCanceler>
+          receiver);
 
  protected:
   NoStatePrefetchContents(
@@ -245,12 +247,12 @@ class NoStatePrefetchContents : public content::WebContentsObserver,
   // |attempt_|.
   void SetPreloadingFailureReason(FinalStatus status);
 
-  // prerender::mojom::PrerenderCanceler:
-  void CancelPrerenderForUnsupportedScheme() override;
-  void CancelPrerenderForNoStatePrefetch() override;
+  // prerender::mojom::NoStatePrefetchCanceler:
+  void CancelNoStatePrefetchForUnsupportedScheme() override;
+  void CancelNoStatePrefetchAfterSubresourcesDiscovered() override;
 
-  mojo::ReceiverSet<prerender::mojom::PrerenderCanceler>
-      prerender_canceler_receiver_set_;
+  mojo::ReceiverSet<prerender::mojom::NoStatePrefetchCanceler>
+      no_state_prefetch_canceler_receiver_set_;
 
   base::ObserverList<Observer>::UncheckedAndDanglingUntriaged observer_list_;
 

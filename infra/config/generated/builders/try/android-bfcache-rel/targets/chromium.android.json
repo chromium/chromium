@@ -4,7 +4,7 @@
       {
         "args": [
           "--disable-features=BackForwardCache",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -33,17 +33,17 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_28_google_apis_x86",
+              "path": ".android_emulator/android_28_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_28_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 2
+          "shards": 4
         },
         "test": "android_browsertests",
         "test_id_prefix": "ninja://chrome/test:android_browsertests/"
@@ -51,8 +51,8 @@
       {
         "args": [
           "--disable-features=BackForwardCache",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_o.content_browsertests.filter",
+          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
+          "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.content_browsertests.filter",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -81,17 +81,17 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_28_google_apis_x86",
+              "path": ".android_emulator/android_28_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_28_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
+          "shards": 30
         },
         "test": "content_browsertests",
         "test_id_prefix": "ninja://content/test:content_browsertests/"
@@ -101,7 +101,7 @@
           "--use-apk-under-test-flags-file",
           "--enable-features=WebViewBackForwardCache",
           "--store-tombstones",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -137,13 +137,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_28_google_apis_x86",
+              "path": ".android_emulator/android_28_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_28_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
@@ -156,7 +156,7 @@
         "args": [
           "--use-apk-under-test-flags-file",
           "--enable-features=WebViewBackForwardCache",
-          "--avd-config=../../tools/android/avd/proto/generic_android26.textpb",
+          "--avd-config=../../tools/android/avd/proto/android_28_google_apis_x86.textpb",
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices"
         ],
@@ -185,13 +185,13 @@
           },
           "named_caches": [
             {
-              "name": "generic_android26",
-              "path": ".android_emulator/generic_android26"
+              "name": "android_28_google_apis_x86",
+              "path": ".android_emulator/android_28_google_apis_x86"
             }
           ],
           "optional_dimensions": {
             "60": {
-              "caches": "generic_android26"
+              "caches": "android_28_google_apis_x86"
             }
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",

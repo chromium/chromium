@@ -340,16 +340,10 @@ class AttributionAggregatableReportGoldenLatestVersionTest
     ASSERT_TRUE(request);
 
     const auto get_report_body = [&](AggregatableReport assembled_report) {
-      auto* data = absl::get_if<AttributionReport::AggregatableAttributionData>(
-          &report.data());
-      if (data) {
-        data->common_data.assembled_report = std::move(assembled_report);
-      } else {
-        auto* null_data = absl::get_if<AttributionReport::NullAggregatableData>(
-            &report.data());
-        CHECK(null_data);
-        null_data->common_data.assembled_report = std::move(assembled_report);
-      }
+      auto* data =
+          absl::get_if<AttributionReport::AggregatableData>(&report.data());
+      CHECK(data);
+      data->SetAssembledReport(std::move(assembled_report));
       return report.ReportBody();
     };
 
@@ -373,7 +367,7 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
                                        1234483200000))
                          .SetDebugKey(123)
-                         .SetDebugCookieSet(true)
+                         .SetCookieBasedDebugAllowed(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(
@@ -403,7 +397,7 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
                                        1234483300000))
                          .SetDebugKey(123)
-                         .SetDebugCookieSet(true)
+                         .SetCookieBasedDebugAllowed(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(
@@ -439,7 +433,7 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
                                        1234483400000))
                          .SetDebugKey(123)
-                         .SetDebugCookieSet(true)
+                         .SetCookieBasedDebugAllowed(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(
@@ -538,7 +532,7 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
                                        1234483200000))
                          .SetDebugKey(123)
-                         .SetDebugCookieSet(true)
+                         .SetCookieBasedDebugAllowed(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(
@@ -570,7 +564,7 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
                                        1234483300000))
                          .SetDebugKey(123)
-                         .SetDebugCookieSet(true)
+                         .SetCookieBasedDebugAllowed(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(
@@ -608,7 +602,7 @@ TEST_F(AttributionAggregatableReportGoldenLatestVersionTest,
                      SourceBuilder(base::Time::FromMillisecondsSinceUnixEpoch(
                                        1234483400000))
                          .SetDebugKey(123)
-                         .SetDebugCookieSet(true)
+                         .SetCookieBasedDebugAllowed(true)
                          .BuildStored())
                      .SetAggregatableHistogramContributions(
                          {AggregatableReportHistogramContribution(

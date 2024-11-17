@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/lens_overlay/ui/lens_overlay_entrypoint_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/badges_container_view.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
+#import "ios/chrome/browser/location_bar/ui_bundled/location_bar_metrics.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_steady_view.h"
 #import "ios/chrome/browser/orchestrator/ui_bundled/location_bar_offset_provider.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -26,6 +27,7 @@
 #import "ios/chrome/browser/shared/public/commands/activity_service_commands.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -114,7 +116,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 @implementation LocationBarViewController {
   BOOL _isNTP;
 
-  UIButton* _lensOverlayPlaceholderView;
+  LensOverlayEntrypointButton* _lensOverlayPlaceholderView;
 }
 
 #pragma mark - public
@@ -210,8 +212,6 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 
 - (void)setHelpCommandsHandler:(id<HelpCommands>)helpCommandsHandler {
   _helpCommandsHandler = helpCommandsHandler;
-  self.locationBarSteadyView.badgesContainerView.helpCommandsHandler =
-      helpCommandsHandler;
 }
 
 #pragma mark - UIViewController
@@ -232,7 +232,7 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   [self.locationBarSteadyView setBadgeView:self.badgeView];
 
   if (IsLensOverlayAvailable()) {
-    _lensOverlayPlaceholderView = LensOverlay::NewEntrypointButton();
+    _lensOverlayPlaceholderView = [[LensOverlayEntrypointButton alloc] init];
     [self.layoutGuideCenter referenceView:_lensOverlayPlaceholderView
                                 underName:kLensOverlayEntrypointGuide];
     [_lensOverlayPlaceholderView addTarget:self
@@ -265,6 +265,13 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
   [self updatePlaceholderView];
   [self updateTrailingButtonState];
   [self switchToEditing:NO];
+
+  if (@available(iOS 17, *)) {
+    NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+        @[ UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class ]);
+    [self registerForTraitChanges:traits
+                       withAction:@selector(updateTrailingButtonState)];
+  }
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -281,10 +288,15 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
               object:nil];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [self updateTrailingButtonState];
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+  [self updateTrailingButtonState];
 }
+#endif
 
 #pragma mark - FullscreenUIElement
 
@@ -371,6 +383,21 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
 - (void)setLocationBarLabelCenteredBetweenContent:(BOOL)centered {
   [self.locationBarSteadyView
       setLocationBarLabelCenteredBetweenContent:centered];
+}
+
+- (void)attemptShowingLensOverlayIPH {
+  if (IsLensOverlayAvailable() &&
+      !self.locationBarSteadyView.badgesContainerView.placeholderView.hidden) {
+    [self.helpCommandsHandler
+        presentInProductHelpWithType:InProductHelpType::kLensOverlayEntrypoint];
+  }
+}
+
+- (void)recordLensOverlayAvailability {
+  // Record lens overlay placeholder available.
+  if (_placeholderType == LocationBarPlaceholderType::kLensOverlay) {
+    RecordLensEntrypointAvailable();
+  }
 }
 
 #pragma mark - LocationBarAnimatee
@@ -861,6 +888,8 @@ const NSString* kScribbleOmniboxElementId = @"omnibox";
     self.tracker->NotifyEvent(
         feature_engagement::events::kLensOverlayEntrypointUsed);
   }
+  RecordAction(UserMetricsAction("MobileToolbarLensOverlayTap"));
+  TriggerHapticFeedbackForSelectionChange();
   [self.dispatcher createAndShowLensUI:YES
                             entrypoint:LensOverlayEntrypoint::kLocationBar
                             completion:nil];

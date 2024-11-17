@@ -4,8 +4,15 @@
 
 #include "base/android/pre_freeze_background_memory_trimmer.h"
 
+#include <sys/fcntl.h>
+#include <sys/mman.h>
+#include <sys/utsname.h>
+
 #include <optional>
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_file.h"
+#include "base/memory/page_size.h"
 #include "base/task/thread_pool.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -47,6 +54,44 @@ class MockMetric : public PreFreezeBackgroundMemoryTrimmer::PreFreezeMetric {
 };
 
 size_t MockMetric::count_ = 0;
+
+std::optional<const debug::MappedMemoryRegion> GetMappedMemoryRegion(
+    uintptr_t addr) {
+  std::vector<debug::MappedMemoryRegion> regions;
+
+  std::string proc_maps;
+  if (!debug::ReadProcMaps(&proc_maps) || !ParseProcMaps(proc_maps, &regions)) {
+    return std::nullopt;
+  }
+
+  for (const auto& region : regions) {
+    if (region.start == addr) {
+      return region;
+    }
+  }
+
+  return std::nullopt;
+}
+
+std::optional<const debug::MappedMemoryRegion> GetMappedMemoryRegion(
+    void* addr) {
+  return GetMappedMemoryRegion(reinterpret_cast<uintptr_t>(addr));
+}
+
+size_t CountResidentPagesInRange(void* addr, size_t size) {
+  DCHECK((reinterpret_cast<uintptr_t>(addr) & (base::GetPageSize() - 1)) == 0);
+  DCHECK(size % base::GetPageSize() == 0);
+
+  std::vector<unsigned char> pages(size / base::GetPageSize());
+
+  mincore(addr, size, &pages[0]);
+  size_t tmp = 0;
+  for (const auto& v : pages) {
+    tmp += v & 0x01;
+  }
+
+  return tmp;
+}
 
 }  // namespace
 
@@ -601,6 +646,121 @@ TEST_F(PreFreezeBackgroundMemoryTrimmerTest, TimerBoolTaskRunFromPreFreeze) {
 
   ASSERT_EQ(pending_task_count(), 0u);
   EXPECT_EQ(called_task_type.value(), MemoryReductionTaskContext::kProactive);
+}
+
+TEST(PreFreezeSelfCompactionTest, Simple) {
+  // MADV_PAGEOUT is only supported starting from Linux 5.4. So, on devices
+  // don't support it, we bail out early. This is a known problem on some 32
+  // bit devices.
+  if (!PreFreezeBackgroundMemoryTrimmer::SelfCompactionIsSupported()) {
+    GTEST_SKIP() << "No kernel support";
+  }
+
+  const size_t kPageSize = base::GetPageSize();
+  const size_t kNumPages = 24;
+  const size_t size = kNumPages * kPageSize;
+
+  void* addr = nullptr;
+  addr = mmap(nullptr, size, PROT_WRITE | PROT_READ, MAP_PRIVATE | MAP_ANON, -1,
+              0);
+  ASSERT_NE(addr, MAP_FAILED);
+
+  // we touch the memory here to dirty it, so that it is definitely resident.
+  memset((void*)addr, 1, size);
+
+  EXPECT_EQ(CountResidentPagesInRange(addr, size), kNumPages);
+
+  const auto region = GetMappedMemoryRegion(addr);
+  ASSERT_TRUE(region);
+
+  const auto result =
+      PreFreezeBackgroundMemoryTrimmer::CompactRegion(std::move(*region));
+  ASSERT_EQ(result, size);
+
+  EXPECT_EQ(CountResidentPagesInRange(addr, size), 0u);
+
+  munmap(addr, size);
+}
+
+TEST(PreFreezeSelfCompactionTest, File) {
+  // MADV_PAGEOUT is only supported starting from Linux 5.4. So, on devices
+  // don't support it, we bail out early. This is a known problem on some 32
+  // bit devices.
+  if (!PreFreezeBackgroundMemoryTrimmer::SelfCompactionIsSupported()) {
+    GTEST_SKIP() << "No kernel support";
+  }
+
+  const size_t kPageSize = base::GetPageSize();
+  const size_t kNumPages = 2;
+  const size_t size = kNumPages * kPageSize;
+
+  ScopedTempFile file;
+
+  ASSERT_TRUE(file.Create());
+
+  int fd = open(file.path().value().c_str(), O_RDWR);
+  ASSERT_NE(fd, -1);
+
+  ASSERT_TRUE(base::WriteFile(file.path(), std::string(size, 1)));
+
+  void* addr = nullptr;
+  addr = mmap(nullptr, size, PROT_WRITE | PROT_READ, MAP_PRIVATE, fd, 0);
+  ASSERT_NE(addr, MAP_FAILED);
+
+  // we touch the memory here to dirty it, so that it is definitely resident.
+  memset((void*)addr, 2, size);
+
+  EXPECT_EQ(CountResidentPagesInRange(addr, size), kNumPages);
+
+  const auto region = GetMappedMemoryRegion(addr);
+  ASSERT_TRUE(region);
+
+  const auto result =
+      PreFreezeBackgroundMemoryTrimmer::CompactRegion(std::move(*region));
+  ASSERT_EQ(result, 0);
+
+  EXPECT_EQ(CountResidentPagesInRange(addr, size), kNumPages);
+
+  munmap(addr, size);
+}
+
+TEST(PreFreezeSelfCompactionTest, Locked) {
+  // MADV_PAGEOUT is only supported starting from Linux 5.4. So, on devices
+  // don't support it, we bail out early. This is a known problem on some 32
+  // bit devices.
+  if (!PreFreezeBackgroundMemoryTrimmer::SelfCompactionIsSupported()) {
+    GTEST_SKIP() << "No kernel support";
+  }
+
+  const size_t kPageSize = base::GetPageSize();
+  // We use a small number of pages here because Android has a low limit on
+  // the max locked size allowed (~64 KiB on many devices).
+  const size_t kNumPages = 2;
+  const size_t size = kNumPages * kPageSize;
+
+  void* addr = nullptr;
+  addr = mmap(nullptr, size, PROT_WRITE | PROT_READ, MAP_PRIVATE | MAP_ANON, -1,
+              0);
+  ASSERT_NE(addr, MAP_FAILED);
+
+  ASSERT_EQ(mlock(addr, size), 0);
+
+  // we touch the memory here to dirty it, so that it is definitely resident.
+  memset((void*)addr, 1, size);
+
+  EXPECT_EQ(CountResidentPagesInRange(addr, size), kNumPages);
+
+  const auto region = GetMappedMemoryRegion(addr);
+  ASSERT_TRUE(region);
+
+  const auto result =
+      PreFreezeBackgroundMemoryTrimmer::CompactRegion(std::move(*region));
+  ASSERT_EQ(result, 0);
+
+  EXPECT_EQ(CountResidentPagesInRange(addr, size), kNumPages);
+
+  munlock(addr, size);
+  munmap(addr, size);
 }
 
 }  // namespace base::android

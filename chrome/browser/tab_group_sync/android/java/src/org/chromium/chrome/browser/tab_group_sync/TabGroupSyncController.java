@@ -9,15 +9,15 @@ import androidx.annotation.Nullable;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
-import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.OpeningSource;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
+import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.url.GURL;
 
 /**
@@ -65,7 +65,6 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
     private final Supplier<Boolean> mIsActiveWindowSupplier;
     private final TabGroupModelFilter mTabGroupModelFilter;
     private final NavigationTracker mNavigationTracker;
-    private final TabCreatorManager mTabCreatorManager;
     private final TabCreationDelegate mTabCreationDelegate;
     private final LocalTabGroupMutationHelper mLocalMutationHelper;
     private final RemoteTabGroupMutationHelper mRemoteMutationHelper;
@@ -105,31 +104,26 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
     /** Constructor. */
     public TabGroupSyncController(
             TabModelSelector tabModelSelector,
-            TabCreatorManager tabCreatorManager,
             TabGroupSyncService tabGroupSyncService,
             PrefService prefService,
             Supplier<Boolean> isActiveWindowSupplier) {
         mTabModelSelector = tabModelSelector;
-        mTabCreatorManager = tabCreatorManager;
         mTabGroupSyncService = tabGroupSyncService;
         mPrefService = prefService;
         mIsActiveWindowSupplier = isActiveWindowSupplier;
 
         mNavigationTracker = new NavigationTracker();
+        mTabGroupModelFilter =
+                tabModelSelector
+                        .getTabGroupModelFilterProvider()
+                        .getTabGroupModelFilter(/* isIncognito= */ false);
         mTabCreationDelegate =
                 new TabCreationDelegateImpl(
-                        mTabCreatorManager.getTabCreator(/* incognito= */ false),
-                        mNavigationTracker);
-        mTabGroupModelFilter =
-                ((TabGroupModelFilter)
-                        tabModelSelector.getTabModelFilterProvider().getTabModelFilter(false));
+                        mTabGroupModelFilter.getTabModel().getTabCreator(), mNavigationTracker);
 
         mLocalMutationHelper =
                 new LocalTabGroupMutationHelper(
-                        mTabGroupModelFilter,
-                        mTabGroupSyncService,
-                        mTabCreationDelegate,
-                        mNavigationTracker);
+                        mTabGroupModelFilter, mTabGroupSyncService, mTabCreationDelegate);
         mRemoteMutationHelper =
                 new RemoteTabGroupMutationHelper(mTabGroupModelFilter, mTabGroupSyncService);
 
@@ -147,7 +141,8 @@ public final class TabGroupSyncController implements TabGroupUiActionHandler {
 
     @Override
     public void openTabGroup(String syncId) {
-        assert mSyncBackendInitialized;
+        // It's possible that the sync backend isn't initialized but we get a request to open tab
+        // group from the revisit surface. In that case, simply ignore the request.
         if (!mSyncBackendInitialized) return;
 
         // Skip groups that are open in another window, or have been deleted.

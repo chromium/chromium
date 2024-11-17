@@ -8,18 +8,12 @@
 
 @implementation ShowSigninCommand
 
-@synthesize operation = _operation;
-@synthesize identity = _identity;
-@synthesize accessPoint = _accessPoint;
-@synthesize promoAction = _promoAction;
-@synthesize callback = _callback;
-
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
                          identity:(id<SystemIdentity>)identity
                       accessPoint:(signin_metrics::AccessPoint)accessPoint
                       promoAction:(signin_metrics::PromoAction)promoAction
-                         callback:
-                             (ShowSigninCommandCompletionCallback)callback {
+                       completion:
+                           (ShowSigninCommandCompletionCallback)completion {
   if ((self = [super init])) {
     // Only `InstantSignin` can be opened with an identity selected.
     DCHECK(operation == AuthenticationOperation::kInstantSignin || !identity);
@@ -27,7 +21,7 @@
     _identity = identity;
     _accessPoint = accessPoint;
     _promoAction = promoAction;
-    _callback = [callback copy];
+    _completion = [completion copy];
   }
   return self;
 }
@@ -39,7 +33,7 @@
                         identity:nil
                      accessPoint:accessPoint
                      promoAction:promoAction
-                        callback:nil];
+                      completion:nil];
 }
 
 - (instancetype)initWithOperation:(AuthenticationOperation)operation
@@ -49,7 +43,7 @@
                      accessPoint:accessPoint
                      promoAction:signin_metrics::PromoAction::
                                      PROMO_ACTION_NO_SIGNIN_PROMO
-                        callback:nil];
+                      completion:nil];
 }
 
 @end

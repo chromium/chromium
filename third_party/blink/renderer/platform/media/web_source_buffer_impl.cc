@@ -37,8 +37,7 @@ static WebSourceBufferClient::ParseWarning ParseWarningToBlink(
         kGroupEndTimestampDecreaseWithinMediaSegment);
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return WebSourceBufferClient::ParseWarning::kKeyframeTimeGreaterThanDependant;
+  NOTREACHED();
 
 #undef CHROMIUM_PARSE_WARNING_TO_BLINK_ENUM_CASE
 }
@@ -110,8 +109,7 @@ bool WebSourceBufferImpl::SetMode(WebSourceBuffer::AppendMode mode) {
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 WebTimeRanges WebSourceBufferImpl::Buffered() {

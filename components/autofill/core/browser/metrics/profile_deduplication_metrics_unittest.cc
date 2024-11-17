@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/metrics/profile_deduplication_metrics.h"
 
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -24,10 +25,12 @@ class ProfileDeduplicationMetricsTest : public testing::Test {
  public:
   ProfileDeduplicationMetricsTest() = default;
 
+  void FastForward() { task_environment.FastForwardBy(base::Seconds(10)); }
+
  protected:
+  base::test::SingleThreadTaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillLogDeduplicationMetricsFollowup};
 };
 
 TEST_F(ProfileDeduplicationMetricsTest,
@@ -37,9 +40,11 @@ TEST_F(ProfileDeduplicationMetricsTest,
   AutofillProfile b = test::GetFullProfile();
   b.SetRawInfo(COMPANY_NAME, u"different company");
   b.SetRawInfo(EMAIL_ADDRESS, u"different-email@gmail.com");
-  const std::vector<const AutofillProfile*> profiles = {&a, &b};
+  std::vector<AutofillProfile> profiles = {a, b};
 
   LogDeduplicationStartupMetrics(profiles, kLocale);
+  FastForward();
+
   // The same sample is emitted once for each profile.
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Deduplication.ExistingProfiles."
@@ -51,7 +56,7 @@ TEST_F(ProfileDeduplicationMetricsTest,
 TEST_F(ProfileDeduplicationMetricsTest,
        Startup_RankOfStoredQuasiDuplicateProfiles_NoProfiles) {
   AutofillProfile a = test::GetFullProfile();
-  const std::vector<const AutofillProfile*> profiles = {&a};
+  std::vector<AutofillProfile> profiles = {a};
 
   LogDeduplicationStartupMetrics(profiles, kLocale);
   histogram_tester_.ExpectTotalCount(
@@ -63,9 +68,11 @@ TEST_F(ProfileDeduplicationMetricsTest,
 TEST_F(ProfileDeduplicationMetricsTest,
        Startup_PercentageOfNonQuasiDuplicates_NotEnoughProfiles) {
   AutofillProfile a = test::GetFullProfile();
-  const std::vector<const AutofillProfile*> profiles = {&a};
+  std::vector<AutofillProfile> profiles = {a};
 
   LogDeduplicationStartupMetrics(profiles, kLocale);
+  FastForward();
+
   histogram_tester_.ExpectTotalCount(
       "Autofill.Deduplication.ExistingProfiles."
       "PercentageOfNonQuasiDuplicates.1",
@@ -99,9 +106,11 @@ TEST_F(ProfileDeduplicationMetricsTest,
   AutofillProfile d = test::GetFullProfile();
   d.SetRawInfo(COMPANY_NAME, u"testing company");
   d.SetRawInfo(EMAIL_ADDRESS, u"test-email@gmail.com");
-  const std::vector<const AutofillProfile*> profiles = {&a, &b, &c, &d};
+  std::vector<AutofillProfile> profiles = {a, b, c, d};
 
   LogDeduplicationStartupMetrics(profiles, kLocale);
+  FastForward();
+
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Deduplication.ExistingProfiles.PercentageOfNonQuasiDuplicates."
       "1",
@@ -129,8 +138,9 @@ TEST_F(ProfileDeduplicationMetricsTest, Startup_EditDistance) {
   a.SetRawInfo(COMPANY_NAME, u"A company");
   AutofillProfile b = test::GetFullProfile();
   b.SetRawInfo(COMPANY_NAME, u"B company");
-  const std::vector<const AutofillProfile*> profiles = {&a, &b};
+  std::vector<AutofillProfile> profiles = {a, b};
   LogDeduplicationStartupMetrics(profiles, kLocale);
+  FastForward();
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Deduplication.ExistingProfiles."
@@ -144,8 +154,9 @@ TEST_F(ProfileDeduplicationMetricsTest, Startup_EditDistanceNormalized) {
   AutofillProfile b = test::GetFullProfile();
   // The normalized distance should be 2 as only the suffix is different.
   b.SetRawInfo(COMPANY_NAME, u"jean francoiska");
-  const std::vector<const AutofillProfile*> profiles = {&a, &b};
+  std::vector<AutofillProfile> profiles = {a, b};
   LogDeduplicationStartupMetrics(profiles, kLocale);
+  FastForward();
 
   histogram_tester_.ExpectUniqueSample(
       "Autofill.Deduplication.ExistingProfiles."
@@ -160,9 +171,11 @@ TEST_F(ProfileDeduplicationMetricsTest, Startup_TypeOfQuasiDuplicateToken) {
   b.SetRawInfo(COMPANY_NAME, u"different company");
   AutofillProfile c = test::GetFullProfile();
   c.SetRawInfo(EMAIL_ADDRESS, u"different-email@gmail.com");
-  const std::vector<const AutofillProfile*> profiles = {&a, &b, &c};
+  std::vector<AutofillProfile> profiles = {a, b, c};
 
   LogDeduplicationStartupMetrics(profiles, kLocale);
+  FastForward();
+
   // Expect two samples for `kCompany` and `kEmailAddress`, since:
   // - `kCompany` and `kEmailAddress` are each emitted once by `a`.
   // - `kCompany` is emitted once by `b`.
@@ -201,8 +214,9 @@ TEST_F(ProfileDeduplicationMetricsTest,
       .AddObservation(COMPANY_NAME, ProfileTokenQuality::ObservationType::
                                         kEditedToDifferentTokenOfSameProfile);
 
-  const std::vector<const AutofillProfile*> profiles = {&a, &b};
+  std::vector<AutofillProfile> profiles = {a, b};
   LogDeduplicationStartupMetrics(profiles, kLocale);
+  FastForward();
 
   // Lower score = -2 + 10(offset) => 8(coming from the profile b) should be
   // recorded.
@@ -238,8 +252,9 @@ TEST_F(ProfileDeduplicationMetricsTest,
       .AddObservation(COMPANY_NAME, ProfileTokenQuality::ObservationType::
                                         kEditedToDifferentTokenOfSameProfile);
 
-  const std::vector<const AutofillProfile*> profiles = {&a, &b};
+  std::vector<AutofillProfile> profiles = {a, b};
   LogDeduplicationStartupMetrics(profiles, kLocale);
+  FastForward();
 
   // Lower score = 1 + 10(offset) => 11 (coming from the profile a) should be
   // recorded.
@@ -258,8 +273,9 @@ TEST_F(ProfileDeduplicationMetricsTest, Startup_QuasiDuplicateAdoption) {
   a.set_use_count(50);
   b.set_use_count(100);
 
-  const std::vector<const AutofillProfile*> profiles = {&a, &b};
+  std::vector<AutofillProfile> profiles = {a, b};
   LogDeduplicationStartupMetrics(profiles, kLocale);
+  FastForward();
 
   // Lower score is equal 50, the total count is 150, but all entries are capped
   // at 99. The score is shifted 8 bits left to create space for the total use

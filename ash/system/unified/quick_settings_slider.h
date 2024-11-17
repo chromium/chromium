@@ -74,16 +74,15 @@ class ASH_EXPORT QuickSettingsSlider : public views::Slider {
   gfx::Rect GetInactiveRadioSliderRect();
   int GetInactiveRadioSliderRoundedCornerRadius();
 
-  void set_is_toggleable_volume_slider(bool is_toggleable_volume_slider) {
-    is_toggleable_volume_slider_ = is_toggleable_volume_slider;
-  }
+  void SetIsToggleableVolumeSlider(bool is_toggleable_volume_slider);
   bool is_toggleable_volume_slider() { return is_toggleable_volume_slider_; }
 
  private:
   // views::Slider:
-  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   SkColor GetThumbColor() const override;
   SkColor GetTroughColor() const override;
+  void AddedToWidget() override;
+  void UpdateAccessibleValue() override;
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;

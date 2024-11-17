@@ -1261,20 +1261,24 @@ TEST_F(LocalCaretRectTest, LocalCaretAtEndOfNonEditableInFlatTree) {
   const Node* foo2 = foo2_span->firstChild();
 
   const Position& position = Position::LastPositionInNode(*target);
+  // The old code had a bug that the caret inline offset was greater than the
+  // inline size of `target`.  The inline size of `target` is 10px + 70px + 10px
+  // => 90px, and the caret should be between 10 to 80.
+  PhysicalRect expected = RuntimeEnabledFeatures::SidewaysWritingModesEnabled()
+                              ? PhysicalRect(79, 10, 1, 10)
+                              : PhysicalRect(99, 10, 1, 10);
   // TODO(abotella): The coordinates should be (50, 20) and the layout object
   // should probably be |foo2|'s.
   // TODO(abotella): We should avoid using LayoutBox::LocalCaretRect in
   // LayoutNG.
-  EXPECT_EQ(
-      LocalCaretRect(target->GetLayoutObject(), PhysicalRect(99, 10, 1, 10)),
-      LocalCaretRectOf(position, kCanCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(target->GetLayoutObject(), expected),
+            LocalCaretRectOf(position, kCanCrossEditingBoundary));
   // TODO(abotella): The coordinates should be (49, 20) and the layout object
   // should probably be |foo2_span|'s.
   // TODO(abotella): We should avoid using LayoutBox::LocalCaretRect in
   // LayoutNG.
-  EXPECT_EQ(
-      LocalCaretRect(target->GetLayoutObject(), PhysicalRect(99, 10, 1, 10)),
-      LocalCaretRectOf(position, kCannotCrossEditingBoundary));
+  EXPECT_EQ(LocalCaretRect(target->GetLayoutObject(), expected),
+            LocalCaretRectOf(position, kCannotCrossEditingBoundary));
 
   const PositionInFlatTree& position_in_flat_tree =
       PositionInFlatTree::LastPositionInNode(*target);
@@ -1305,14 +1309,12 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretAtEndOfNonEditable) {
 
   const Element* div = GetDocument().QuerySelector(AtomicString("div"));
   const Position& position = Position::LastPositionInNode(*div);
-  EXPECT_EQ("60,5 1x10",
-            AbsoluteCaretBoundsOf(PositionWithAffinity(position), nullptr,
-                                  kCanCrossEditingBoundary)
-                .ToString());
-  EXPECT_EQ("59,5 1x10",
-            AbsoluteCaretBoundsOf(PositionWithAffinity(position), nullptr,
-                                  kCannotCrossEditingBoundary)
-                .ToString());
+  EXPECT_EQ("60,5 1x10", AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                               kCanCrossEditingBoundary)
+                             .ToString());
+  EXPECT_EQ("59,5 1x10", AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                               kCannotCrossEditingBoundary)
+                             .ToString());
 }
 
 // http://crbug.com/688015
@@ -1327,14 +1329,12 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretAtBeginningOfNonEditable) {
 
   const Element* div = GetDocument().QuerySelector(AtomicString("div"));
   const Position& position = Position::FirstPositionInNode(*div);
-  EXPECT_EQ("30,5 1x10",
-            AbsoluteCaretBoundsOf(PositionWithAffinity(position), nullptr,
-                                  kCanCrossEditingBoundary)
-                .ToString());
-  EXPECT_EQ("15,5 1x10",
-            AbsoluteCaretBoundsOf(PositionWithAffinity(position), nullptr,
-                                  kCannotCrossEditingBoundary)
-                .ToString());
+  EXPECT_EQ("30,5 1x10", AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                               kCanCrossEditingBoundary)
+                             .ToString());
+  EXPECT_EQ("15,5 1x10", AbsoluteCaretBoundsOf(PositionWithAffinity(position),
+                                               kCannotCrossEditingBoundary)
+                             .ToString());
 }
 
 // https://crbug.com/1155399
@@ -1567,21 +1567,21 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretAtStartOrEndOfNonEditableBidi) {
 
   const Position& startPosition = Position::FirstPositionInNode(div);
   EXPECT_EQ("95,10 1x10",
-            AbsoluteCaretBoundsOf(PositionWithAffinity(startPosition), nullptr,
+            AbsoluteCaretBoundsOf(PositionWithAffinity(startPosition),
                                   kCanCrossEditingBoundary)
                 .ToString());
   EXPECT_EQ("94,10 1x10",
-            AbsoluteCaretBoundsOf(PositionWithAffinity(startPosition), nullptr,
+            AbsoluteCaretBoundsOf(PositionWithAffinity(startPosition),
                                   kCannotCrossEditingBoundary)
                 .ToString());
 
   const Position& endPosition = Position::LastPositionInNode(div);
   EXPECT_EQ("25,10 1x10",
-            AbsoluteCaretBoundsOf(PositionWithAffinity(endPosition), nullptr,
+            AbsoluteCaretBoundsOf(PositionWithAffinity(endPosition),
                                   kCanCrossEditingBoundary)
                 .ToString());
   EXPECT_EQ("25,10 1x10",
-            AbsoluteCaretBoundsOf(PositionWithAffinity(endPosition), nullptr,
+            AbsoluteCaretBoundsOf(PositionWithAffinity(endPosition),
                                   kCannotCrossEditingBoundary)
                 .ToString());
 }
@@ -1599,22 +1599,22 @@ TEST_F(LocalCaretRectTest, AbsoluteCaretAtStartOrEndOfNonEditableBidiCulled) {
 
   const Position& startPosition = Position::FirstPositionInNode(div);
   EXPECT_EQ("95,10 1x10",
-            AbsoluteCaretBoundsOf(PositionWithAffinity(startPosition), nullptr,
+            AbsoluteCaretBoundsOf(PositionWithAffinity(startPosition),
                                   kCanCrossEditingBoundary)
                 .ToString());
   // TODO(abotella): Should this be 95,10?
   EXPECT_EQ("65,10 1x10",
-            AbsoluteCaretBoundsOf(PositionWithAffinity(startPosition), nullptr,
+            AbsoluteCaretBoundsOf(PositionWithAffinity(startPosition),
                                   kCannotCrossEditingBoundary)
                 .ToString());
 
   const Position& endPosition = Position::LastPositionInNode(div);
   EXPECT_EQ("25,10 1x10",
-            AbsoluteCaretBoundsOf(PositionWithAffinity(endPosition), nullptr,
+            AbsoluteCaretBoundsOf(PositionWithAffinity(endPosition),
                                   kCanCrossEditingBoundary)
                 .ToString());
   EXPECT_EQ("25,10 1x10",
-            AbsoluteCaretBoundsOf(PositionWithAffinity(endPosition), nullptr,
+            AbsoluteCaretBoundsOf(PositionWithAffinity(endPosition),
                                   kCannotCrossEditingBoundary)
                 .ToString());
 }

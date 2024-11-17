@@ -66,7 +66,7 @@ void ValueMapPrefStore::SetValueSilently(std::string_view key,
   prefs_.SetValue(key, std::move(value));
 }
 
-ValueMapPrefStore::~ValueMapPrefStore() {}
+ValueMapPrefStore::~ValueMapPrefStore() = default;
 
 void ValueMapPrefStore::NotifyInitializationCompleted() {
   for (Observer& observer : observers_)

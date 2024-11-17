@@ -1,0 +1,5 @@
+Tests window outer size is properly adjusted upon Browser.setWindowSize.
+Outer window size: {
+    outerHeight : 500
+    outerWidth : 700
+}

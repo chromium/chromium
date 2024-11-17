@@ -95,8 +95,12 @@ namespace commerce {
 
 DialogArgs::DialogArgs(std::vector<GURL> urls,
                        std::string name,
+                       std::string set_id,
                        bool in_new_tab)
-    : urls(std::move(urls)), name(std::move(name)), in_new_tab(in_new_tab) {}
+    : urls(std::move(urls)),
+      name(std::move(name)),
+      set_id(std::move(set_id)),
+      in_new_tab(in_new_tab) {}
 DialogArgs::~DialogArgs() = default;
 DialogArgs::DialogArgs(const DialogArgs&) = default;
 DialogArgs& DialogArgs::operator=(const DialogArgs&) = default;
@@ -109,6 +113,7 @@ base::Value::Dict DialogArgs::ToValue() {
   }
   dialog_args_value.Set(kDialogArgsName, std::move(name));
   dialog_args_value.Set(kDialogArgsUrls, std::move(product_spec_urls));
+  dialog_args_value.Set(kDialogArgsSetId, std::move(set_id));
   dialog_args_value.Set(kDialogArgsInNewTab, in_new_tab);
   return dialog_args_value;
 }
@@ -162,7 +167,7 @@ ProductSpecificationsDisclosureDialog::ProductSpecificationsDisclosureDialog(
   set_dialog_size(kDialogSize);
   set_can_close(true);
   set_allow_default_context_menu(false);
-  set_dialog_modal_type(ui::mojom::ModalType::kChild);
+  set_dialog_modal_type(ui::mojom::ModalType::kNone);
   set_dialog_args(base::WriteJson(dialog_args.ToValue()).value());
 }
 

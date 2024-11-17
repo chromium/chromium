@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/attestation/platform_verification_flow.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/browser/profiles/profile_impl.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/attestation/fake_certificate.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"

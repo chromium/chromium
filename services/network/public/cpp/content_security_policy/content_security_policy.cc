@@ -270,8 +270,7 @@ const char* ErrorMessage(CSPDirectiveName directive) {
     case CSPDirectiveName::UpgradeInsecureRequests:
     case CSPDirectiveName::WorkerSrc:
     case CSPDirectiveName::Unknown:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   };
 }
 
@@ -1228,8 +1227,7 @@ CSPDirectiveName CSPFallbackDirective(CSPDirectiveName directive,
     case CSPDirectiveName::UpgradeInsecureRequests:
       return CSPDirectiveName::Unknown;
     case CSPDirectiveName::Unknown:
-      NOTREACHED_IN_MIGRATION();
-      return CSPDirectiveName::Unknown;
+      NOTREACHED();
   }
 }
 
@@ -1238,22 +1236,23 @@ void AddContentSecurityPolicyFromHeaders(
     const GURL& base_url,
     std::vector<mojom::ContentSecurityPolicyPtr>* out) {
   size_t iter = 0;
-  std::string header_value;
-  while (headers.EnumerateHeader(&iter, "content-security-policy",
-                                 &header_value)) {
+
+  while (std::optional<std::string_view> header_value =
+             headers.EnumerateHeader(&iter, "content-security-policy")) {
     std::vector<mojom::ContentSecurityPolicyPtr> parsed =
         ParseContentSecurityPolicies(
-            header_value, mojom::ContentSecurityPolicyType::kEnforce,
+            *header_value, mojom::ContentSecurityPolicyType::kEnforce,
             mojom::ContentSecurityPolicySource::kHTTP, base_url);
     out->insert(out->end(), std::make_move_iterator(parsed.begin()),
                 std::make_move_iterator(parsed.end()));
   }
+
   iter = 0;
-  while (headers.EnumerateHeader(&iter, "content-security-policy-report-only",
-                                 &header_value)) {
+  while (std::optional<std::string_view> header_value = headers.EnumerateHeader(
+             &iter, "content-security-policy-report-only")) {
     std::vector<mojom::ContentSecurityPolicyPtr> parsed =
         ParseContentSecurityPolicies(
-            header_value, mojom::ContentSecurityPolicyType::kReport,
+            *header_value, mojom::ContentSecurityPolicyType::kReport,
             mojom::ContentSecurityPolicySource::kHTTP, base_url);
     out->insert(out->end(), std::make_move_iterator(parsed.begin()),
                 std::make_move_iterator(parsed.end()));
@@ -1284,12 +1283,14 @@ std::vector<mojom::ContentSecurityPolicyPtr> ParseContentSecurityPolicies(
 
 mojom::AllowCSPFromHeaderValuePtr ParseAllowCSPFromHeader(
     const net::HttpResponseHeaders& headers) {
-  std::string allow_csp_from;
-  if (!headers.GetNormalizedHeader("Allow-CSP-From", &allow_csp_from))
+  std::optional<std::string> allow_csp_from =
+      headers.GetNormalizedHeader("Allow-CSP-From");
+  if (!allow_csp_from) {
     return nullptr;
+  }
 
   std::string_view trimmed =
-      base::TrimWhitespaceASCII(allow_csp_from, base::TRIM_ALL);
+      base::TrimWhitespaceASCII(*allow_csp_from, base::TRIM_ALL);
 
   if (trimmed == "*")
     return mojom::AllowCSPFromHeaderValue::NewAllowStar(true);
@@ -1616,8 +1617,7 @@ std::string ToString(CSPDirectiveName name) {
     case CSPDirectiveName::Unknown:
       return "";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 bool AllowCspFromAllowOrigin(

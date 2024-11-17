@@ -52,9 +52,11 @@ from urllib.parse import urljoin
 
 from blinkpy.common import exit_codes
 from blinkpy.common import find_files
-from blinkpy.common import read_checksum_from_png
 from blinkpy.common import path_finder
+from blinkpy.common import read_checksum_from_png
+from blinkpy.common.host import Host
 from blinkpy.common.memoized import memoized
+from blinkpy.common.net.web_test_results import BASELINE_EXTENSIONS
 from blinkpy.common.system.executive import ScriptError
 from blinkpy.common.system.path import abspath_to_uri
 from blinkpy.w3c.wpt_manifest import (
@@ -236,9 +238,6 @@ class Port(object):
     BASELINE_SUFFIX = '-expected'
     BASELINE_MISMATCH_SUFFIX = '-expected-mismatch'
 
-    # All of the non-reftest baseline extensions we use.
-    BASELINE_EXTENSIONS = ('.wav', '.txt', '.png')
-
     FLAG_EXPECTATIONS_PREFIX = 'FlagExpectations'
 
     # The following two constants must match. When adding a new WPT root, also
@@ -295,7 +294,7 @@ class Port(object):
         assert port_name.startswith(cls.port_name)
         return port_name
 
-    def __init__(self, host, port_name, options=None, **kwargs):
+    def __init__(self, host: Host, port_name, options=None, **kwargs):
 
         # This value is the "full port name", and may be different from
         # cls.port_name by having version modifiers appended to it.
@@ -448,6 +447,9 @@ class Port(object):
             ','.join(known_fingerprints),
             # Required for WebTransport tests.
             '--webtransport-developer-mode',
+            # Enable `ontouch*` event handlers for testing, even if no
+            # touchscreen is actually detected.
+            '--touch-events=enabled',
         ])
         return flags
 
@@ -481,6 +483,13 @@ class Port(object):
         return bool(
             re.search(r'^\s*dcheck_always_on\s*=\s*true\s*(#.*)?$', contents,
                       re.MULTILINE))
+
+    @memoized
+    def _build_is_incremental_install(self):
+        contents = self._build_args_gn_content()
+        return bool(
+            re.search(r'^\s*incremental_install\s*=\s*true\s*(#.*)?$',
+                      contents, re.MULTILINE))
 
     @memoized
     def _build_is_chrome_branded(self):
@@ -743,9 +752,10 @@ class Port(object):
             baseline_dict['.' + reference_files[0][0]] = \
                 self.relative_test_filename(reference_files[0][1])
 
-        for extension in self.BASELINE_EXTENSIONS:
-            path = self.expected_filename(
-                test_name, extension, return_default=False)
+        for extension in BASELINE_EXTENSIONS:
+            path = self.expected_filename(test_name,
+                                          extension,
+                                          return_default=False)
             baseline_dict[extension] = self.relative_test_filename(
                 path) if path else path
 
@@ -1663,6 +1673,7 @@ class Port(object):
         return (self.skipped_due_to_smoke_tests(test)
                 or self.skipped_in_never_fix_tests(test)
                 or self.virtual_test_skipped_due_to_platform_config(test)
+                or self.virtual_test_skipped_due_to_disabled(test)
                 or self.skipped_due_to_exclusive_virtual_tests(test)
                 or self.skipped_due_to_skip_base_tests(test))
 
@@ -1763,6 +1774,17 @@ class Port(object):
         suite = self._lookup_virtual_suite(test)
         if suite is not None:
             return self.operating_system() not in suite.platforms
+        return False
+
+    def virtual_test_skipped_due_to_disabled(self, test):
+        """Checks if the virtual test is skipped based on the 'disabled' config.
+
+        Returns True if the virtual test is marked as disabled, due to config in
+        VirtualTestSuites; returns False otherwise.
+        """
+        suite = self._lookup_virtual_suite(test)
+        if suite is not None:
+            return suite.disabled
         return False
 
     @memoized
@@ -2689,8 +2711,6 @@ class Port(object):
                 # Strings are treated as comments.
                 if isinstance(json_config, str):
                     continue
-                # expired VTSs are loaded and continue to run. We will have a separate
-                # process to delete expired VTSs.
                 vts = VirtualTestSuite(**json_config)
                 if any(vts.full_prefix == s.full_prefix
                        for s in virtual_test_suites):
@@ -2937,10 +2957,12 @@ class Port(object):
 
     def build_path(self, *comps: str, target: Optional[str] = None):
         """Returns a path from the build directory."""
-        return self._filesystem.join(
-            self._path_from_chromium_base(),
-            self.get_option('build_directory') or 'out', target
-            or self._options.target, *comps)
+        build_path = self.get_option('build_directory')
+        if build_path:
+            return self._filesystem.join(self._filesystem.abspath(build_path),
+                                         *comps)
+        return self._filesystem.join(self._path_from_chromium_base(), 'out',
+                                     target or self._options.target, *comps)
 
     def _check_driver_build_up_to_date(self, target):
         # FIXME: We should probably get rid of this check altogether as it has
@@ -3008,7 +3030,8 @@ class VirtualTestSuite(object):
                  skip_base_tests=None,
                  args=None,
                  owners=None,
-                 expires=None):
+                 expires=None,
+                 disabled=False):
         assert VALID_FILE_NAME_REGEX.match(prefix), \
             "Virtual test suite prefix '{}' contains invalid characters".format(prefix)
         assert isinstance(platforms, list)
@@ -3034,6 +3057,7 @@ class VirtualTestSuite(object):
         self.exclusive_tests = exclusive_tests
         self.skip_base_tests = skip_base_tests
         self.expires = expires
+        self.disabled = disabled
         self.args = sorted(args)
         self.owners = owners
         # always put --enable-threaded-compositing at the end of list, so that after appending

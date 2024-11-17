@@ -14,9 +14,6 @@ export function createDummyProfileState(): ProfileState {
     userName: '',
     avatarBadge: '',
     avatarIcon: '',
-    // <if expr="chromeos_lacros">
-    isPrimaryLacrosProfile: false,
-    // </if>
   };
 }
 

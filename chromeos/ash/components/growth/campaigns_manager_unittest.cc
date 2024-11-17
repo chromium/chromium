@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -30,8 +31,10 @@
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/version_info/version_info.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
@@ -351,6 +354,11 @@ class CampaignsManagerTest : public testing::Test {
         .WillRepeatedly(testing::Return(std::string(country)));
   }
 
+  void MockHotseatAppIconAvailable(bool is_icon_on_shelf) {
+    EXPECT_CALL(mock_client_, IsAppIconOnShelf)
+        .WillRepeatedly(testing::Return(is_icon_on_shelf));
+  }
+
   void MockFeatueEngagementCheckOnCaps(bool reach_impression_cap,
                                        bool reach_dismissal_cap,
                                        bool reach_group_impression_cap,
@@ -447,7 +455,7 @@ class CampaignsManagerTest : public testing::Test {
         kValidCampaignsFileTemplate, device_targeting.c_str()));
   }
 
-  void LoadComponentWithCountryTargetings(const std::string& countries) {
+  void LoadComponentWithDeviceTargetings(const std::string& countries) {
     std::string feature_aware_targeting = "";
     auto device_targeting = base::StringPrintf(R"(
             "device": {
@@ -619,7 +627,7 @@ class CampaignsManagerTest : public testing::Test {
   }
 
   void InitializeUserManager() {
-    user_manager::UserManagerBase::RegisterPrefs(local_state_->registry());
+    user_manager::UserManagerImpl::RegisterPrefs(local_state_->registry());
     fake_user_manager_ =
         std::make_unique<user_manager::FakeUserManager>(local_state_.get());
     fake_user_manager_->Initialize();
@@ -1201,7 +1209,7 @@ TEST_F(CampaignsManagerTest, GetCampaignUserLocaleTargetingMismatch) {
 TEST_F(CampaignsManagerTest, GetCampaignWithIncludedCountryTargeting) {
   MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB",
               /*country=*/"in");
-  LoadComponentWithCountryTargetings(R"("includedCountries": ["us", "in"])");
+  LoadComponentWithDeviceTargetings(R"("includedCountries": ["us", "in"])");
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -1210,7 +1218,7 @@ TEST_F(CampaignsManagerTest, GetCampaignWithIncludedCountryTargeting) {
 TEST_F(CampaignsManagerTest, GetCampaignIncludedCountryTargetingMismatch) {
   MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB",
               /*country=*/"in");
-  LoadComponentWithCountryTargetings(R"("includedCountries": ["us", "ca"])");
+  LoadComponentWithDeviceTargetings(R"("includedCountries": ["us", "ca"])");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
@@ -1218,7 +1226,7 @@ TEST_F(CampaignsManagerTest, GetCampaignIncludedCountryTargetingMismatch) {
 TEST_F(CampaignsManagerTest, CampaignWithExcludedCountryTargeting) {
   MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB",
               /*country=*/"in");
-  LoadComponentWithCountryTargetings(R"("excludedCountries": ["us", "ca"])");
+  LoadComponentWithDeviceTargetings(R"("excludedCountries": ["us", "ca"])");
 
   VerifyDemoModePayload(
       campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
@@ -1227,7 +1235,7 @@ TEST_F(CampaignsManagerTest, CampaignWithExcludedCountryTargeting) {
 TEST_F(CampaignsManagerTest, GetCampaignExcludedCountryTargetingMismatch) {
   MockLocales(/*user_locale=*/"en-IN", /*application_locale=*/"en-GB",
               /*country=*/"in");
-  LoadComponentWithCountryTargetings(R"("excludedCountries": ["us", "in"])");
+  LoadComponentWithDeviceTargetings(R"("excludedCountries": ["us", "in"])");
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
@@ -1584,6 +1592,54 @@ TEST_F(CampaignsManagerTest, GetCampaignTargetDeviceAgeEndOnlyMismatch) {
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
+TEST_F(CampaignsManagerTest, GetCampaignWithMatchedIncludedChannelTargeting) {
+  constexpr char kLsbRelease[] = "CHROMEOS_RELEASE_TRACK=stable-channel";
+  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, base::Time());
+
+  LoadComponentWithDeviceTargeting(R"({
+              "channels": {"includes": ["unknown", "stable"]}
+          })");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       GetCampaignWithMismatchedIncludedChannelTargeting) {
+  constexpr char kLsbRelease[] = "CHROMEOS_RELEASE_TRACK=stable-channel";
+  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, base::Time());
+
+  LoadComponentWithDeviceTargeting(R"({
+              "channels": {"includes": ["canary", "dev", "beta"]}
+          })");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithMatchedExcludedChannelTargeting) {
+  constexpr char kLsbRelease[] = "CHROMEOS_RELEASE_TRACK=stable-channel";
+  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, base::Time());
+
+  LoadComponentWithDeviceTargeting(R"({
+              "channels": {"excludes": ["canary", "dev", "beta"]}
+          })");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       GetCampaignWithMismatchedExcludedChannelTargeting) {
+  constexpr char kLsbRelease[] = "CHROMEOS_RELEASE_TRACK=stable-channel";
+  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, base::Time());
+
+  LoadComponentWithDeviceTargeting(R"({
+              "channels": {"excludes": ["unknown", "stable"]}
+          })");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
 TEST_F(CampaignsManagerTest, GetCampaignExperimentTag) {
   InitilizeCampaignsExperimentTag(
       /*feature*/ ash::features::kGrowthCampaignsExperiment2, /*exp_tag=*/"1");
@@ -1723,6 +1779,69 @@ TEST_F(CampaignsManagerTest, GetCampaignForNonOwnerMismatch) {
   })");
 
   campaigns_manager_->SetIsUserOwner(true);
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignForMinorUsers) {
+  LoadComponentWithSessionTargeting(R"({
+    "isMinorUser": true
+  })");
+
+  campaigns_manager_->SetMantaCapabilityForTesting(signin::Tribool::kFalse);
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignForMinorUsersMismatch) {
+  LoadComponentWithSessionTargeting(R"({
+    "isMinorUser": true
+  })");
+
+  campaigns_manager_->SetMantaCapabilityForTesting(signin::Tribool::kTrue);
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignForNonMinorUser) {
+  LoadComponentWithSessionTargeting(R"({
+    "isMinorUser": false
+  })");
+
+  campaigns_manager_->SetMantaCapabilityForTesting(signin::Tribool::kTrue);
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignForNonMinorUserMismatch) {
+  LoadComponentWithSessionTargeting(R"({
+    "isMinorUser": true
+  })");
+
+  campaigns_manager_->SetMantaCapabilityForTesting(signin::Tribool::kTrue);
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignForMantaCapabilityUnknownTargetMinor) {
+  LoadComponentWithSessionTargeting(R"({
+    "isMinorUser": true
+  })");
+
+  campaigns_manager_->SetMantaCapabilityForTesting(signin::Tribool::kUnknown);
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest,
+       GetCampaignForMantaCapabilityUnknownTargetNonMinor) {
+  LoadComponentWithSessionTargeting(R"({
+    "isMinorUser": false
+  })");
+
+  campaigns_manager_->SetMantaCapabilityForTesting(signin::Tribool::kUnknown);
 
   ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
@@ -2623,6 +2742,162 @@ TEST_F(CampaignsManagerTest, GetTestingRegisteredTimeWithSwitch) {
 TEST_F(CampaignsManagerTest, GetTestingRegisteredTimeWithoutSwitch) {
   auto registered_time = campaigns_manager_->GetRegisteredTimeForTesting();
   EXPECT_FALSE(registered_time);
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithNoHotseatTargeting) {
+  MockHotseatAppIconAvailable(false);
+  LoadComponentWithRunTimeTargeting(R"({})");
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithAppOnHotseat) {
+  MockHotseatAppIconAvailable(true);
+  LoadComponentWithRunTimeTargeting(R"(
+          {
+            "hotseat": {
+              "appIcon": {"appId": "app_id"}
+            }
+          })");
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithoutAppOnHotseat) {
+  MockHotseatAppIconAvailable(false);
+  LoadComponentWithRunTimeTargeting(R"(
+          {
+            "hotseat": {
+              "appIcon": {"appId": "app_id"}
+            }
+          })");
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, RecordEventWithQueuedEventWithFeatureEnabled) {
+  scoped_feature_list_.InitAndEnableFeature(
+      ash::features::kGrowthCampaignsTriggerByRecordEvent);
+
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", false)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", false)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", true)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", true)).Times(0);
+
+  campaigns_manager_->RecordEvent("event_1", false);
+  campaigns_manager_->RecordEvent("event_2", true);
+  EXPECT_TRUE(
+      campaigns_manager_->queued_events_record_only_for_testing().contains(
+          "event_1"));
+  EXPECT_FALSE(
+      campaigns_manager_->queued_events_record_only_for_testing().contains(
+          "event_2"));
+  EXPECT_FALSE(
+      campaigns_manager_->queued_events_record_and_trigger_for_testing()
+          .contains("event_1"));
+  EXPECT_TRUE(campaigns_manager_->queued_events_record_and_trigger_for_testing()
+                  .contains("event_2"));
+  testing::Mock::VerifyAndClearExpectations(&mock_client_);
+
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", false)).Times(1);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", false)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", true)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", true)).Times(1);
+
+  LoadComponentAndVerifyLoadComplete(
+      base::StringPrintf(kValidCampaignsFileTemplate, ""));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+
+  EXPECT_TRUE(
+      campaigns_manager_->queued_events_record_only_for_testing().empty());
+  EXPECT_TRUE(campaigns_manager_->queued_events_record_and_trigger_for_testing()
+                  .empty());
+}
+
+TEST_F(CampaignsManagerTest, RecordEventWithQueuedEventWithoutFeatureEnabled) {
+  scoped_feature_list_.InitAndDisableFeature(
+      ash::features::kGrowthCampaignsTriggerByRecordEvent);
+
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", false)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", false)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", true)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", true)).Times(0);
+
+  campaigns_manager_->RecordEvent("event_1", false);
+  campaigns_manager_->RecordEvent("event_2", true);
+  EXPECT_TRUE(
+      campaigns_manager_->queued_events_record_only_for_testing().contains(
+          "event_1"));
+
+  // Because the feature is disabled, the `event_2` will be record only.
+  EXPECT_TRUE(
+      campaigns_manager_->queued_events_record_only_for_testing().contains(
+          "event_2"));
+  EXPECT_FALSE(
+      campaigns_manager_->queued_events_record_and_trigger_for_testing()
+          .contains("event_1"));
+  EXPECT_FALSE(
+      campaigns_manager_->queued_events_record_and_trigger_for_testing()
+          .contains("event_2"));
+  testing::Mock::VerifyAndClearExpectations(&mock_client_);
+
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", false)).Times(1);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", false)).Times(1);
+  EXPECT_CALL(mock_client_, RecordEvent("event_1", true)).Times(0);
+  EXPECT_CALL(mock_client_, RecordEvent("event_2", true)).Times(0);
+
+  LoadComponentAndVerifyLoadComplete(
+      base::StringPrintf(kValidCampaignsFileTemplate, ""));
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+
+  EXPECT_TRUE(
+      campaigns_manager_->queued_events_record_only_for_testing().empty());
+  EXPECT_TRUE(campaigns_manager_->queued_events_record_and_trigger_for_testing()
+                  .empty());
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignWithIncludedBoardsTargeting) {
+  campaigns_manager_->SetBoardForTesting("brya");
+  LoadComponentWithDeviceTargetings(
+      R"("boards": {"includes": ["brya"], "excludes": ["zork"]})");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+  campaigns_manager_->SetBoardForTesting(std::nullopt);
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignIncludedBoardsTargetingEmptyMismatch) {
+  campaigns_manager_->SetBoardForTesting("betty");
+  LoadComponentWithDeviceTargetings(
+      R"("boards": {"includes": [], "excludes": ["zork"]})");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignIncludedBoardsTargetingMismatch) {
+  campaigns_manager_->SetBoardForTesting("betty");
+  LoadComponentWithDeviceTargetings(
+      R"("boards": {"includes": ["brya"], "excludes": ["zork"]})");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, CampaignWithExcludedBoardTargetingMismatch) {
+  campaigns_manager_->SetBoardForTesting("brya");
+  LoadComponentWithDeviceTargetings(R"("boards": {"excludes": ["flex"]})");
+
+  VerifyDemoModePayload(
+      campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
+}
+
+TEST_F(CampaignsManagerTest, GetCampaignExcludedBoardsTargeting) {
+  campaigns_manager_->SetBoardForTesting("flex");
+  LoadComponentWithDeviceTargetings(R"("boards": {"excludes": ["flex"]})");
+
+  ASSERT_EQ(nullptr, campaigns_manager_->GetCampaignBySlot(Slot::kDemoModeApp));
 }
 
 }  // namespace growth

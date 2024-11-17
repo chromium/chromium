@@ -41,7 +41,7 @@ ManagedBookmarksTracker::ManagedBookmarksTracker(
       prefs_(prefs),
       get_management_domain_callback_(std::move(callback)) {}
 
-ManagedBookmarksTracker::~ManagedBookmarksTracker() {}
+ManagedBookmarksTracker::~ManagedBookmarksTracker() = default;
 
 base::Value::List ManagedBookmarksTracker::GetInitialManagedBookmarks() {
   const base::Value::List& list = prefs_->GetList(prefs::kManagedBookmarks);
@@ -53,7 +53,7 @@ int64_t ManagedBookmarksTracker::LoadInitial(BookmarkNode* folder,
                                              const base::Value::List& list,
                                              int64_t next_node_id) {
   for (size_t i = 0; i < list.size(); ++i) {
-    // Extract the data for the next bookmark from the |list|.
+    // Extract the data for the next bookmark from the `list`.
     std::u16string title;
     GURL url;
     const base::Value::List* children = nullptr;
@@ -125,16 +125,16 @@ void ManagedBookmarksTracker::UpdateBookmarks(const BookmarkNode* folder,
                                               const base::Value::List& list) {
   size_t folder_index = 0;
   for (size_t i = 0; i < list.size(); ++i) {
-    // Extract the data for the next bookmark from the |list|.
+    // Extract the data for the next bookmark from the `list`.
     std::u16string title;
     GURL url;
     const base::Value::List* children = nullptr;
     if (!LoadBookmark(list, i, &title, &url, &children)) {
-      // Skip this bookmark from |list| but don't advance |folder_index|.
+      // Skip this bookmark from `list` but don't advance `folder_index`.
       continue;
     }
 
-    // Look for a bookmark at |folder_index| or ahead that matches the current
+    // Look for a bookmark at `folder_index` or ahead that matches the current
     // bookmark from the pref.
     const auto matches_current = [&title, &url, children](const auto& node) {
       return node->GetTitle() == title &&
@@ -143,8 +143,8 @@ void ManagedBookmarksTracker::UpdateBookmarks(const BookmarkNode* folder,
     const auto j = std::find_if(folder->children().cbegin() + folder_index,
                                 folder->children().cend(), matches_current);
     if (j != folder->children().cend()) {
-      // Reuse the existing node. The Move() is a nop if |existing| is already
-      // at |folder_index|.
+      // Reuse the existing node. The Move() is a nop if `existing` is already
+      // at `folder_index`.
       const BookmarkNode* existing = j->get();
       model_->Move(existing, folder, folder_index);
       if (children)
@@ -156,11 +156,11 @@ void ManagedBookmarksTracker::UpdateBookmarks(const BookmarkNode* folder,
       model_->AddURL(folder, folder_index, title, url);
     }
 
-    // The |folder_index| index of |folder| has been updated, so advance it.
+    // The `folder_index` index of `folder` has been updated, so advance it.
     ++folder_index;
   }
 
-  // Remove any extra children of |folder| that haven't been reused.
+  // Remove any extra children of `folder` that haven't been reused.
   while (folder->children().size() != folder_index)
     model_->Remove(folder->children()[folder_index].get(),
                    bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
@@ -177,16 +177,14 @@ bool ManagedBookmarksTracker::LoadBookmark(const base::Value::List& list,
   const base::Value::Dict* dict = list[index].GetIfDict();
   if (!dict) {
     // Should never happen after policy validation.
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   const std::string* name = dict->FindString(kName);
   const std::string* spec = dict->FindString(kUrl);
   const base::Value::List* children_list = dict->FindList(kChildren);
   if (!name || (!spec && !children_list)) {
     // Should never happen after policy validation.
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
 
   *title = base::UTF8ToUTF16(*name);

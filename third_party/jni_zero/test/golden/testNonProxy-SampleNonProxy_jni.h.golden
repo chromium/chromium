@@ -299,4 +299,5 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeSetRec
 }
 
 
+
 #endif  // org_jni_1zero_SampleNonProxy_JNI

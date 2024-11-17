@@ -41,7 +41,7 @@ class MockTranslateClient : public TranslateClient {
   MOCK_METHOD0(GetAcceptLanguagesService, language::AcceptLanguagesService*());
   MOCK_CONST_METHOD0(GetInfobarIconID, int());
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_IOS)
   std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<TranslateInfoBarDelegate> delegate) const override {
     return std::make_unique<infobars::InfoBar>(std::move(delegate));

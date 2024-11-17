@@ -18,11 +18,11 @@ class NET_EXPORT FirstPartySetMetadata {
  public:
   FirstPartySetMetadata();
 
-  // `frame_entry` and `top_frame_entry` must live for the duration of the ctor;
-  // nullptr indicates that there's no First-Party Set that's associated with
-  // the current frame or the top frame, respectively, in the given context.
-  FirstPartySetMetadata(const FirstPartySetEntry* frame_entry,
-                        const FirstPartySetEntry* top_frame_entry);
+  // std::nullopt indicates that there's no First-Party Set that's associated
+  // with the current frame or the top frame, respectively, in the given
+  // context.
+  FirstPartySetMetadata(std::optional<FirstPartySetEntry> frame_entry,
+                        std::optional<FirstPartySetEntry> top_frame_entry);
 
   FirstPartySetMetadata(FirstPartySetMetadata&&);
   FirstPartySetMetadata& operator=(FirstPartySetMetadata&&);

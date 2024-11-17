@@ -352,9 +352,13 @@ void OverviewTracingHandler::UpdateActiveArcWindowInfo() {
   const gfx::ImageSkia* app_icon =
       arc_active_window_->GetProperty(aura::client::kAppIconKey);
   if (app_icon) {
-    gfx::PNGCodec::EncodeBGRASkBitmap(
-        app_icon->GetRepresentation(1.0f).GetBitmap(),
-        false /* discard_transparency */, &active_trace_->task_icon_png);
+    std::optional<std::vector<uint8_t>> data =
+        gfx::PNGCodec::EncodeBGRASkBitmap(
+            app_icon->GetRepresentation(1.0f).GetBitmap(),
+            false /* discard_transparency */);
+    if (data) {
+      active_trace_->task_icon_png = std::move(data).value();
+    }
   }
 }
 

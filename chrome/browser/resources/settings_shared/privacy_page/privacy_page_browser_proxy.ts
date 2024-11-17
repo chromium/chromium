@@ -44,12 +44,20 @@ export interface SecureDnsSetting {
   config: string;
   managementMode: SecureDnsUiManagementMode;
   // <if expr="chromeos_ash">
+  // Secure DNS mode and config of ChromeOS might differ with Chrome. This is
+  // necessary when the DoH included or excluded domains config is set
+  // (b/351091814).
+  osMode: SecureDnsMode;
+  osConfig: string;
   // Indicates if the templates URI contain user identifiers configured via
   // policy.
   dohWithIdentifiersActive: boolean;
   // The template URI with plain text identifiers. In the effective template
   // URI `config` the identifiers are hashed and hex encoded.
   configForDisplay: string;
+  // Indicates if the DoH included or excluded domains config is configured via
+  // policy.
+  dohDomainConfigSet: boolean;
   // </if>
 }
 

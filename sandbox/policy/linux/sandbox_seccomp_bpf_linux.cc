@@ -75,6 +75,10 @@
 #include "sandbox/policy/linux/bpf_hardware_video_decoding_policy_linux.h"
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_LINUX)
+#include "sandbox/policy/linux/bpf_on_device_translation_policy_linux.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 using sandbox::bpf_dsl::Allow;
 using sandbox::bpf_dsl::ResultExpr;
 
@@ -214,15 +218,18 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
       return std::make_unique<ServiceProcessPolicy>();
     case sandbox::mojom::Sandbox::kSpeechRecognition:
       return std::make_unique<SpeechRecognitionProcessPolicy>();
+#if BUILDFLAG(IS_LINUX)
+    case sandbox::mojom::Sandbox::kOnDeviceTranslation:
+      return std::make_unique<OnDeviceTranslationProcessPolicy>();
+#endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     case sandbox::mojom::Sandbox::kScreenAI:
       return std::make_unique<ScreenAIProcessPolicy>();
 #endif
 #if BUILDFLAG(IS_LINUX)
     case sandbox::mojom::Sandbox::kVideoEffects:
-      // TODO(crbug.com/361128453): Implement this.
-      NOTREACHED() << "kVideoEffects sandbox not implemented.";
-#endif
+      return std::make_unique<ServiceProcessPolicy>();
+#endif  // BUILDFLAG(IS_LINUX)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
       return std::make_unique<HardwareVideoDecodingProcessPolicy>(
@@ -248,8 +255,7 @@ std::unique_ptr<BPFBasePolicy> SandboxSeccompBPF::PolicyForSandboxType(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kZygoteIntermediateSandbox:
     case sandbox::mojom::Sandbox::kNoSandbox:
-      NOTREACHED_IN_MIGRATION();
-      return nullptr;
+      NOTREACHED();
   }
 }
 
@@ -292,11 +298,6 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
       CHECK_EQ(EPERM, errno);
 #endif  // !defined(NDEBUG)
     } break;
-#if BUILDFLAG(IS_LINUX)
-    case sandbox::mojom::Sandbox::kVideoEffects:
-      // TODO(crbug.com/361128453): Implement this.
-      NOTREACHED() << "kVideoEffects sandbox not implemented.";
-#endif
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
     case sandbox::mojom::Sandbox::kHardwareVideoDecoding:
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_ASH)
@@ -313,6 +314,9 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
     case sandbox::mojom::Sandbox::kScreenAI:
 #endif
     case sandbox::mojom::Sandbox::kAudio:
+#if BUILDFLAG(IS_LINUX)
+    case sandbox::mojom::Sandbox::kVideoEffects:
+#endif  // BUILDFLAG(IS_LINUX)
     case sandbox::mojom::Sandbox::kService:
     case sandbox::mojom::Sandbox::kServiceWithJit:
     case sandbox::mojom::Sandbox::kSpeechRecognition:
@@ -321,6 +325,9 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
     case sandbox::mojom::Sandbox::kPrintBackend:
 #endif
     case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
+#if BUILDFLAG(IS_LINUX)
+    case sandbox::mojom::Sandbox::kOnDeviceTranslation:
+#endif  // BUILDFLAG(IS_LINUX)
     case sandbox::mojom::Sandbox::kUtility:
     case sandbox::mojom::Sandbox::kNoSandbox:
     case sandbox::mojom::Sandbox::kZygoteIntermediateSandbox:
@@ -332,8 +339,7 @@ void SandboxSeccompBPF::RunSandboxSanityChecks(
 bool SandboxSeccompBPF::StartSandboxWithExternalPolicy(
     std::unique_ptr<bpf_dsl::Policy> policy,
     base::ScopedFD proc_fd,
-    SandboxBPF::SeccompLevel seccomp_level,
-    bool force_disable_spectre_variant2_mitigation) {
+    SandboxBPF::SeccompLevel seccomp_level) {
 #if BUILDFLAG(USE_SECCOMP_BPF)
   if (IsSeccompBPFDesired() && SupportsSandbox()) {
     CHECK(policy);
@@ -346,16 +352,8 @@ bool SandboxSeccompBPF::StartSandboxWithExternalPolicy(
     sandbox.SetProcFd(std::move(proc_fd));
     bool enable_ibpb = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (force_disable_spectre_variant2_mitigation) {
-      enable_ibpb = false;
-    } else {
-      enable_ibpb =
-          base::FeatureList::IsEnabled(features::kSpectreVariant2Mitigation);
-    }
-#else   // BUILDFLAG(IS_CHROMEOS_ASH)
-    // On Linux desktop and Lacros, the Spectre variant 2 mitigation is
-    // on by default unless force disabled by the caller.
-    enable_ibpb = !force_disable_spectre_variant2_mitigation;
+    enable_ibpb =
+        base::FeatureList::IsEnabled(features::kSpectreVariant2Mitigation);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     CHECK(sandbox.StartSandbox(seccomp_level, enable_ibpb));
     return true;

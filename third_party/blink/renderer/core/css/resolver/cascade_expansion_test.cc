@@ -690,7 +690,7 @@ TEST_F(CascadeExpansionTest, MatchedDeclarationsLimit) {
 
   // Actually give the indexes a value, such that the calls to
   // ExpansionAt() does not crash.
-  for (wtf_size_t i = 0; i < max + 1; ++i) {
+  for (wtf_size_t i = 0; i < max + 2; ++i) {
     declarations[i] = CSSPropertyValue(CSSPropertyName(CSSPropertyID::kColor),
                                        *cssvalue::CSSUnsetValue::Create());
   }
@@ -698,12 +698,12 @@ TEST_F(CascadeExpansionTest, MatchedDeclarationsLimit) {
   MatchResult result;
   result.BeginAddingAuthorRulesForTreeScope(GetDocument());
   result.AddMatchedProperties(
-      ImmutableCSSPropertyValueSet::Create(declarations.data(), max + 1,
-                                           kHTMLStandardMode),
+      ImmutableCSSPropertyValueSet::Create(
+          base::span(declarations).first(max + 1), kHTMLStandardMode),
       {.origin = CascadeOrigin::kAuthor});
   result.AddMatchedProperties(
-      ImmutableCSSPropertyValueSet::Create(declarations.data(), max + 2,
-                                           kHTMLStandardMode),
+      ImmutableCSSPropertyValueSet::Create(
+          base::span(declarations).first(max + 2), kHTMLStandardMode),
       {.origin = CascadeOrigin::kAuthor});
 
   EXPECT_GT(ExpansionAt(result, 0).size(), 0u);

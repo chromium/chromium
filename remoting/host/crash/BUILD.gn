@@ -18,7 +18,7 @@ source_set("crash_uploader") {
   deps = [
     "//base",
     "//remoting/base",
-    "//remoting/base:breakpad",
+    "//remoting/base/crash",
     "//remoting/host:common_headers",
     "//remoting/host/base",
     "//services/network:network_service",
@@ -41,7 +41,7 @@ source_set("crash_uploader_main") {
     "//base",
     "//mojo/core/embedder:embedder",
     "//remoting/base",
-    "//remoting/base:breakpad",
+    "//remoting/base/crash",
     "//remoting/host:common_headers",
     "//remoting/host/base",
   ]

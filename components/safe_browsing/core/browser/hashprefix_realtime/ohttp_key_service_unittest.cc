@@ -82,7 +82,8 @@ class OhttpKeyServiceTest : public ::testing::Test {
     ohttp_key_service_ = std::make_unique<OhttpKeyService>(
         test_shared_loader_factory_, &pref_service_, &local_state_,
         base::BindRepeating(&OhttpKeyServiceTest::GetCountry,
-                            base::Unretained(this)));
+                            base::Unretained(this)),
+        /*are_background_lookups_allowed=*/true);
     std::string key = google_apis::GetAPIKey();
     key_param_ =
         !key.empty()
@@ -295,6 +296,36 @@ TEST_F(OhttpKeyServiceTest, GetOhttpKey_SafeBrowsingDisabled) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(OhttpKeyServiceTest, GetOhttpKey_BackgroundLookupsForbidden) {
+  SetupSuccessResponse();
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  base::MockCallback<OhttpKeyService::Callback> response_callback;
+  EXPECT_CALL(response_callback, Run(Eq(std::nullopt))).Times(1);
+
+  auto ohttp_key_service = std::make_unique<OhttpKeyService>(
+      test_shared_loader_factory_, &pref_service_, &local_state_,
+      base::BindRepeating(&OhttpKeyServiceTest::GetCountry,
+                          base::Unretained(this)),
+      /*are_background_lookups_allowed=*/false);
+
+  ohttp_key_service->GetOhttpKey(response_callback.Get());
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(OhttpKeyServiceTest, GetOhttpKey_BackgroundLookupsAllowed) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kHashPrefixRealTimeLookupsSamplePing},
+                                       {});
+  SetupSuccessResponse();
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  base::MockCallback<OhttpKeyService::Callback> response_callback;
+  EXPECT_CALL(response_callback, Run(Optional(std::string(kTestOhttpKey))))
+      .Times(1);
+
+  ohttp_key_service_->GetOhttpKey(response_callback.Get());
+  task_environment_.RunUntilIdle();
+}
+
 TEST_F(OhttpKeyServiceLocationDisabledTest, GetOhttpKey_LocationDisabled) {
   SetupSuccessResponse();
   base::MockCallback<OhttpKeyService::Callback> response_callback;
@@ -350,7 +381,8 @@ TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_ValidKey) {
   auto ohttp_key_service = std::make_unique<OhttpKeyService>(
       test_shared_loader_factory_, &pref_service_, &local_state_,
       base::BindRepeating(&OhttpKeyServiceTest::GetCountry,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      true);
 
   std::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
       ohttp_key_service->get_ohttp_key_for_testing();
@@ -364,7 +396,8 @@ TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_ValidKey) {
   ohttp_key_service = std::make_unique<OhttpKeyService>(
       test_shared_loader_factory_, &pref_service_, &local_state_,
       base::BindRepeating(&OhttpKeyServiceTest::GetCountry,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      true);
   ohttp_key = ohttp_key_service->get_ohttp_key_for_testing();
   EXPECT_FALSE(ohttp_key.has_value());
 }
@@ -376,7 +409,8 @@ TEST_F(OhttpKeyServiceTest, PopulateKeyFromPref_EmptyKey) {
   auto ohttp_key_service = std::make_unique<OhttpKeyService>(
       test_shared_loader_factory_, &pref_service_, &local_state_,
       base::BindRepeating(&OhttpKeyServiceTest::GetCountry,
-                          base::Unretained(this)));
+                          base::Unretained(this)),
+      true);
 
   std::optional<OhttpKeyService::OhttpKeyAndExpiration> ohttp_key =
       ohttp_key_service->get_ohttp_key_for_testing();
@@ -413,6 +447,78 @@ TEST_F(OhttpKeyServiceTest, AsyncFetch) {
 }
 
 TEST_F(OhttpKeyServiceTest, AsyncFetch_PrefChanges) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kHashPrefixRealTimeLookupsSamplePing},
+                                       {});
+  SetupSuccessResponse();
+
+  task_environment_.RunUntilIdle();
+  auto expiration1 = base::Time::Now() + base::Days(3);
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            expiration1);
+
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::NO_SAFE_BROWSING);
+  task_environment_.FastForwardBy(base::Days(2));
+  task_environment_.RunUntilIdle();
+  // The expiration is not extended because the service is disabled.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            expiration1);
+
+  auto expiration2 = base::Time::Now() + base::Days(3);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::ENHANCED_PROTECTION);
+  task_environment_.RunUntilIdle();
+  // The expiration is updated because the service is enabled under enhanced
+  // protection.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            expiration2);
+
+  auto expiration3 = base::Time::Now() + base::Days(3);
+  SetSafeBrowsingState(&pref_service_, SafeBrowsingState::STANDARD_PROTECTION);
+  task_environment_.RunUntilIdle();
+  // The service is re-enabled, so the expiration date is updated.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            expiration3);
+
+  pref_service_.SetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
+                           false);
+  task_environment_.FastForwardBy(base::Days(2));
+  task_environment_.RunUntilIdle();
+  // The expiration is not extended because the service is disabled.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            expiration3);
+
+  auto expiration4 = base::Time::Now() + base::Days(3);
+  pref_service_.SetBoolean(prefs::kHashPrefixRealTimeChecksAllowedByPolicy,
+                           true);
+  task_environment_.RunUntilIdle();
+  // The service is re-enabled, so the expiration date is updated.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            expiration4);
+
+  country_ = "cn";
+  local_state_.SetString(variations::prefs::kVariationsCountry,
+                         country_.value());
+  task_environment_.FastForwardBy(base::Days(2));
+  task_environment_.RunUntilIdle();
+  // The expiration is not extended because the service is disabled.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            expiration4);
+
+  country_ = "us";
+  local_state_.SetString(variations::prefs::kVariationsCountry,
+                         country_.value());
+  task_environment_.RunUntilIdle();
+  // The service is re-enabled, so the expiration date is updated.
+  EXPECT_EQ(ohttp_key_service_->get_ohttp_key_for_testing()->expiration,
+            base::Time::Now() + base::Days(3));
+}
+
+// TODO(crbug.com/336547987): Remove this test case when
+// kHashPrefixRealTimeLookupsSamplePing feature is fully rolled out.
+TEST_F(OhttpKeyServiceTest, AsyncFetch_PrefChanges_BackgroundHprtDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({},
+                                       {kHashPrefixRealTimeLookupsSamplePing});
   SetupSuccessResponse();
 
   task_environment_.RunUntilIdle();

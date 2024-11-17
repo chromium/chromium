@@ -93,7 +93,7 @@ struct HUPScoringParams {
     bool use_decay_factor_;
   };
 
-  HUPScoringParams() {}
+  HUPScoringParams() = default;
 
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
@@ -295,45 +295,11 @@ bool IsOnDeviceHeadSuggestEnabledForIncognito();
 bool IsOnDeviceHeadSuggestEnabledForNonIncognito();
 bool IsOnDeviceHeadSuggestEnabledForAnyMode();
 bool IsOnDeviceHeadSuggestEnabledForLocale(const std::string& locale);
-bool IsOnDeviceTailSuggestEnabled();
+bool IsOnDeviceTailSuggestEnabled(const std::string& locale);
 bool ShouldEncodeLeadingSpaceForOnDeviceTailSuggest();
 bool ShouldApplyOnDeviceHeadModelSelectionFix();
 // Functions can be used in both non-incognito and incognito.
 std::string OnDeviceHeadModelLocaleConstraint(bool is_incognito);
-
-// Omnibox UI Simplification - Square icon backgrounds.
-// Blue rounded rect background icons for answers e.g. '1+1' and 'define x'.
-// Does not apply to weather answers. Also updates the shade of blue and the
-// stroke color.
-extern const base::FeatureParam<bool> kSquareSuggestIconAnswers;
-// Gray rounded rect background for search loop and nav fav icons.
-extern const base::FeatureParam<bool> kSquareSuggestIconIcons;
-// Gray rounded rect background for entities.
-extern const base::FeatureParam<bool> kSquareSuggestIconEntities;
-// The entity size relative to the background. 0.5 means the entity
-// takes up half of the space. Should be (0, 1). No effect if
-// `kSquareSuggestIconEntities` is false or this is 1.
-extern const base::FeatureParam<double> kSquareSuggestIconEntitiesScale;
-// Gray rounded rect background for weather icons.
-extern const base::FeatureParam<bool> kSquareSuggestIconWeather;
-
-// Omnibox UI simplification - uniform row heights.
-// Returns true if the feature to enable uniform row height is enabled.
-bool IsUniformRowHeightEnabled();
-
-// Specifies the row height in pixels for omnibox suggestions.
-extern const base::FeatureParam<int> kSuggestionRowHeight;
-// Specifies the vertical margin to use in one-line rich entity and answer
-// suggestions.
-extern const base::FeatureParam<int> kRichSuggestionVerticalMargin;
-
-// Omnibox GM3 - text style.
-// Returns true if the feature to enable GM3 text styling is enabled.
-bool IsGM3TextStyleEnabled();
-// Specifies the omnibox font size (Touch UI).
-extern const base::FeatureParam<int> kFontSizeTouchUI;
-// Specifies the omnibox font size (non-Touch UI).
-extern const base::FeatureParam<int> kFontSizeNonTouchUI;
 
 // ---------------------------------------------------------
 // Clipboard URL suggestions:
@@ -719,6 +685,20 @@ std::vector<std::pair<double, int>> GetPiecewiseMappingBreakPoints(
     PiecewiseMappingVariant mapping_variant =
         PiecewiseMappingVariant::kRegular);
 
+// Ipad suggestions limit ->
+
+constexpr base::FeatureParam<int> kIpadAdditionalTrendingQueries(
+    &omnibox::kIpadZeroSuggestMatches,
+    "IpadAdditionalTrendingQueries",
+    0);
+
+constexpr base::FeatureParam<int> kIpadZPSLimit(
+    &omnibox::kIpadZeroSuggestMatches,
+    "IpadZPSSuggestionsLimit",
+    10);
+
+// <- Ipad suggestions limit
+// ---------------------------------------------------------
 // <- ML Relevance Scoring
 // ---------------------------------------------------------
 // Actions In Suggest ->
@@ -791,12 +771,19 @@ bool IsStarterPackExpansionEnabled();
 // directing users to certain starter pack engines.
 bool IsStarterPackIPHEnabled();
 
-// When true, enables an informational IPH message at the bottom of the Omnibox
-// directing users to featured Enterprise search created by policy.
-bool IsFeaturedEnterpriseSearchIPHEnabled();
-
 // <- Site Search Starter Pack
 // ---------------------------------------------------------
+// Android Hub Search -->
+//
+// Controls different variations of android hub search including what
+// primitives are included.
+#if BUILDFLAG(IS_ANDROID)
+constexpr base::FeatureParam<bool> kAndroidHubSearchEnableBookmarkProvider{
+    &omnibox::kAndroidHubSearch, "enable_bookmark_provider", false};
+
+constexpr base::FeatureParam<bool> kAndroidHubSearchEnableHistoryProvider{
+    &omnibox::kAndroidHubSearch, "enable_history_provider", false};
+#endif
 
 // New params should be inserted above this comment. They should be ordered
 // consistently with `omnibox_features.h`. They should be formatted as:

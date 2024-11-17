@@ -96,17 +96,16 @@ bool PartitionedPopinsNavigationThrottle::DoesPopinPolicyBlockResponse() {
       !response_headers->HasHeader("Popin-Policy")) {
     return true;
   }
-  std::string untrusted_popin_policy;
-  response_headers->GetNormalizedHeader("Popin-Policy",
-                                        &untrusted_popin_policy);
+  std::string untrusted_popin_policy =
+      response_headers->GetNormalizedHeader("Popin-Policy")
+          .value_or(std::string());
   PartitionedPopinsPolicy policy(untrusted_popin_policy);
   if (policy.wildcard) {
     return false;
   }
   for (const url::Origin& policy_origin : policy.origins) {
-    if (policy_origin == web_contents->PartitionedPopinOpener()
-                             ->GetMainFrame()
-                             ->GetLastCommittedOrigin()) {
+    if (policy_origin ==
+        web_contents->GetPartitionedPopinOpenerProperties().top_frame_origin) {
       return false;
     }
   }

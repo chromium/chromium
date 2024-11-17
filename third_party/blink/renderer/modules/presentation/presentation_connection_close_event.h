@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_CONNECTION_CLOSE_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_CONNECTION_CLOSE_EVENT_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_presentation_connection_close_reason.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -24,9 +25,10 @@ class PresentationConnectionCloseEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  PresentationConnectionCloseEvent(const AtomicString& event_type,
-                                   const String& reason,
-                                   const String& message);
+  PresentationConnectionCloseEvent(
+      const AtomicString& event_type,
+      const V8PresentationConnectionCloseReason& reason,
+      const String& message);
   PresentationConnectionCloseEvent(
       const AtomicString& event_type,
       const PresentationConnectionCloseEventInit* initializer);
@@ -34,10 +36,10 @@ class PresentationConnectionCloseEvent final : public Event {
 
   static PresentationConnectionCloseEvent* Create(
       const AtomicString& event_type,
-      const String& reason,
+      V8PresentationConnectionCloseReason::Enum reason,
       const String& message) {
     return MakeGarbageCollected<PresentationConnectionCloseEvent>(
-        event_type, reason, message);
+        event_type, V8PresentationConnectionCloseReason(reason), message);
   }
 
   static PresentationConnectionCloseEvent* Create(
@@ -47,7 +49,7 @@ class PresentationConnectionCloseEvent final : public Event {
                                                                   initializer);
   }
 
-  const String& reason() const { return reason_; }
+  const V8PresentationConnectionCloseReason& reason() const { return reason_; }
   const String& message() const { return message_; }
 
   const AtomicString& InterfaceName() const override;
@@ -55,7 +57,7 @@ class PresentationConnectionCloseEvent final : public Event {
   void Trace(Visitor*) const override;
 
  private:
-  String reason_;
+  V8PresentationConnectionCloseReason reason_;
   String message_;
 };
 

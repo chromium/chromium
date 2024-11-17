@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_record_array.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
@@ -64,9 +65,6 @@ class MODULES_EXPORT IDBRequestQueueItem {
                       std::unique_ptr<IDBValue>,
                       base::OnceClosure on_load_complete);
   IDBRequestQueueItem(IDBRequest*,
-                      Vector<std::unique_ptr<IDBValue>>,
-                      base::OnceClosure on_result_ready);
-  IDBRequestQueueItem(IDBRequest*,
                       std::unique_ptr<IDBKey>,
                       std::unique_ptr<IDBKey> primary_key,
                       std::unique_ptr<IDBValue>,
@@ -81,7 +79,7 @@ class MODULES_EXPORT IDBRequestQueueItem {
   // Asynchronous fetching of multiple results.
   IDBRequestQueueItem(
       IDBRequest*,
-      bool key_only,
+      mojom::blink::IDBGetAllResultType get_all_result_type,
       mojo::PendingAssociatedReceiver<mojom::blink::IDBDatabaseGetAllResultSink>
           receiver,
       base::OnceClosure on_result_ready);
@@ -124,7 +122,9 @@ class MODULES_EXPORT IDBRequestQueueItem {
     kError,
     kNumber,
     kKey,
+    kKeyArray,
     kKeyPrimaryKeyValue,
+    kRecordArray,
     kValue,
     kValueArray,
     kVoid,
@@ -147,21 +147,35 @@ class MODULES_EXPORT IDBRequestQueueItem {
 
   // The error argument to the IDBRequest callback.
   //
-  // Only used if the mode_ is kError.
+  // Only used if the `response_type_` is `kError`.
   Persistent<DOMException> error_;
 
   // The key argument to the IDBRequest callback.
   //
-  // Only used if mode_ is kKeyPrimaryKeyValue.
+  // Only used if `response_type_` is `kKey`, `kKeyPrimaryKeyValue` or
+  // `kCursorKeyPrimaryKeyValue`.
   std::unique_ptr<IDBKey> key_;
 
   // The primary_key argument to the IDBRequest callback.
   //
-  // Only used if mode_ is kKeyPrimaryKeyValue.
+  // Only used if `response_type_` is `kKeyPrimaryKeyValue` or
+  // `kCursorKeyPrimaryKeyValue`.
   std::unique_ptr<IDBKey> primary_key_;
 
-  // All the values that will be passed back to the IDBRequest.
-  Vector<std::unique_ptr<IDBValue>> values_;
+  // Contains 3 vectors: 1 for primary keys, 1 for values and 1 for index keys.
+  // Several kinds of `response_type_` use 1 or more of these vectors:
+  //
+  // (1) `kValue`, `kKeyPrimaryKeyValue` and `kCursorKeyPrimaryKeyValue` store
+  //     a single value in `records_.values`:
+  //
+  // (2) `kKeyArray` stores keys in `records_.primary_keys` for `getAllKeys()`.
+  //
+  // (3) `kValueArray` stores values in `records_.values` for `getAll()`.
+  //
+  // (4) `kRecordArray` stores primary keys, index keys and values in
+  //     `records_` for `getAllRecords()`.  The vectors are parallel.
+  //     `IDBObject::getAllRecords()` leaves `records_.index_keys` empty.
+  IDBRecordArray records_;
 
   // The cursor argument to the IDBRequest callback.
   mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> pending_cursor_;

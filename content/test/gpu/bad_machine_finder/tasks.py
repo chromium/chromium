@@ -4,7 +4,8 @@
 """Datatypes for locally storing Swarming task data."""
 
 import collections
-from typing import Generator, Tuple
+import functools
+from typing import Generator, List, Tuple
 
 
 class BotStats:
@@ -25,14 +26,19 @@ class BotStats:
   # Accessors
 
   @property
-  def total_tasks(self):
+  def total_tasks(self) -> int:
     assert self._frozen
     return self._total_tasks
 
   @property
-  def failed_tasks(self):
+  def failed_tasks(self) -> int:
     assert self._frozen
     return self._failed_tasks
+
+  @functools.cached_property
+  def overall_failure_rate(self) -> float:
+    assert self._frozen
+    return float(self._failed_tasks) / self._total_tasks
 
   def GetTotalTasksForSuite(self, test_suite: str) -> int:
     assert self._frozen
@@ -96,6 +102,14 @@ class MixinStats:
     assert self._frozen
     for bot_id, stats in self._bots.items():
       yield bot_id, stats
+
+  @functools.lru_cache(maxsize=None)
+  def GetOverallFailureRates(self) -> List[float]:
+    assert self._frozen
+    failure_rates = []
+    for _, stats in self._bots.items():
+      failure_rates.append(stats.overall_failure_rate)
+    return failure_rates
 
   # Mutators
 

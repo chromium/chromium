@@ -71,32 +71,27 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.omnibox.OmniboxFeatureList;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
 
 /** End-to-end tests for TabGridIph component. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({
-    ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-    "enable-features=IPH_TabGroupsDragAndDrop<TabGroupsDragAndDrop",
-    "force-fieldtrials=TabGroupsDragAndDrop/Enabled",
-    "force-fieldtrial-params=TabGroupsDragAndDrop.Enabled:availability/any/"
-            + "event_trigger/"
-            + "name%3Aiph_tabgroups_drag_and_drop;comparator%3A==0;window%3A30;storage%3A365/"
-            + "event_trigger2/"
-            + "name%3Aiph_tabgroups_drag_and_drop;comparator%3A<2;window%3A90;storage%3A365/"
-            + "event_used/"
-            + "name%3Atab_drag_and_drop_to_group;comparator%3A==0;window%3A365;storage%3A365/"
-            + "session_rate/<1"
-})
-@Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+@CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
+@Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+@EnableFeatures(
+        "IPH_TabGroupsDragAndDrop:availability/any"
+            + "/event_trigger/name%3Aiph_tabgroups_drag_and_drop;comparator%3A==0;window%3A30;storage%3A365"
+            + "/event_trigger2/name%3Aiph_tabgroups_drag_and_drop;comparator%3A<2;window%3A90;storage%3A365"
+            + "/event_used/name%3Atab_drag_and_drop_to_group;comparator%3A==0;window%3A365;storage%3A365"
+            + "/session_rate/<1")
 // Remove the ANDROID_HUB_FLOATING_ACTION_BUTTON restriction and regenerate goldens when launching.
 @DisableFeatures({
     ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON,
-    ChromeFeatureList.ANDROID_HUB_SEARCH
+    OmniboxFeatureList.ANDROID_HUB_SEARCH
 })
 @DoNotBatch(reason = "Batching can cause message state to leak between tests.")
 public class TabGridIphTest {
@@ -111,7 +106,7 @@ public class TabGridIphTest {
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setBugComponent(
                             ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_TAB_SWITCHER_GRID)
-                    .setRevision(2)
+                    .setRevision(3)
                     .build();
 
     @Before
@@ -133,7 +128,7 @@ public class TabGridIphTest {
         CriteriaHelper.pollUiThread(mTracker::isInitialized);
         CriteriaHelper.pollUiThread(
                 () -> {
-                    return mTracker.wouldTriggerHelpUI(
+                    return mTracker.wouldTriggerHelpUi(
                             FeatureConstants.TAB_GROUPS_DRAG_AND_DROP_FEATURE);
                 });
     }
@@ -393,7 +388,7 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @DisabledTest(message = "Consistent failures despite revival effort in b/341267765")
-    public void testSwipeToDismiss_IPH() {
+    public void testSwipeToDismiss_Iph() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
         onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));
@@ -417,7 +412,7 @@ public class TabGridIphTest {
     @Test
     @MediumTest
     @DisabledTest(message = "Still flaky on arm builds despite revival effort in b/341267765")
-    public void testNotShowIPHInMultiWindowMode() {
+    public void testNotShowIphInMultiWindowMode() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         enterTabSwitcher(cta);
         onViewWaiting(withId(R.id.tab_grid_message_item)).check(matches(isDisplayed()));

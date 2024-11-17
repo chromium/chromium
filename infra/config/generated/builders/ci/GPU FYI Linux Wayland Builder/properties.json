@@ -117,7 +117,8 @@
           "builder": "gpu-fyi-try-linux-wayland-intel-rel",
           "group": "tryserver.chromium.linux"
         }
-      ]
+      ],
+      "targets_spec_directory": "src/infra/config/generated/builders/ci/GPU FYI Linux Wayland Builder/targets"
     }
   },
   "$build/reclient": {

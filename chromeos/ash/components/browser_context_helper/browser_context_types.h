@@ -34,10 +34,6 @@ namespace ash {
 COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
 extern const char kSigninBrowserContextBaseName[];
 
-// Base name of the lock-screen-app browser context.
-COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
-extern const char kLockScreenAppBrowserContextBaseName[];
-
 // Base name of the lock-screen browser context.
 COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
 extern const char kLockScreenBrowserContextBaseName[];
@@ -50,11 +46,6 @@ extern const char kShimlessRmaAppBrowserContextBaseName[];
 // Returns false if nullptr is given.
 COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
 bool IsSigninBrowserContext(content::BrowserContext* browser_context);
-
-// Returns true if given |browser_context| is for Lock-screen-app.
-// Returns false if nullptr is given.
-COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER)
-bool IsLockScreenAppBrowserContext(content::BrowserContext* browser_context);
 
 // Returns true if given |browser_context| is for Lock-screen.
 // Returns false if nullptr is given.

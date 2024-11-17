@@ -93,6 +93,12 @@ export class QuickStartScreen extends QuickStartScreenBase {
         type: Boolean,
         value: false,
       },
+
+      // Show a debug notice when the OOBE overlay debugger is enabled.
+      isOobeOverlayDebuggerEnabled: {
+        type: Boolean,
+        value: loadTimeData.getBoolean('isOobeDevOverlayEnabled'),
+      },
     };
   }
 
@@ -104,6 +110,7 @@ export class QuickStartScreen extends QuickStartScreenBase {
   private canCancelSignin: boolean;
   private willRequestWiFi: boolean;
   private qrCodeAvailable: boolean;
+  private isOobeOverlayDebuggerEnabled: boolean;
   private qrCodeCanvas: QrCodeCanvas|null;
   private didTransferWiFi: boolean;
 

@@ -1,0 +1,152 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+static_library("quick_insert") {
+  sources = [
+    "quick_insert_client_impl.cc",
+    "quick_insert_client_impl.h",
+    "quick_insert_file_suggester.cc",
+    "quick_insert_file_suggester.h",
+    "quick_insert_link_suggester.cc",
+    "quick_insert_link_suggester.h",
+    "quick_insert_thumbnail_loader.cc",
+    "quick_insert_thumbnail_loader.h",
+  ]
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+
+  deps = [
+    "//ash",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//chrome/browser/ash/app_list",
+    "//chrome/browser/ash/app_list/search",
+    "//chrome/browser/ash/app_list/search/files",
+    "//chrome/browser/ash/app_list/search/omnibox",
+    "//chrome/browser/ash/app_list/search/ranking",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/ash/lobster",
+    "//chrome/browser/ash/login/session",
+    "//chrome/browser/favicon:favicon",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/ash/thumbnail_loader",
+    "//chrome/common",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/drivefs/mojom",
+    "//chromeos/components/editor_menu/public/cpp",
+    "//chromeos/constants",
+    "//components/favicon/core:core",
+    "//components/optimization_guide/core",
+    "//components/user_manager",
+    "//content/public/browser",
+    "//google_apis",
+    "//ipc",
+    "//services/data_decoder/public/cpp",
+    "//storage/browser",
+    "//storage/common",
+    "//ui/base",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "quick_insert_client_impl_unittest.cc" ]
+
+  deps = [
+    ":quick_insert",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/app_list/search/test:test_support",
+    "//chrome/browser/ash/crosapi",
+    "//chrome/browser/ash/drive",
+    "//chrome/browser/ash/drive:test_support",
+    "//chrome/browser/ash/fileapi",
+    "//chrome/browser/ash/fileapi/test:test_support",
+    "//chrome/browser/ash/input_method",
+    "//chrome/browser/search_engines",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/mako",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//chromeos/ash/components/disks",
+    "//chromeos/ash/components/disks:test_support",
+    "//chromeos/ash/components/drivefs:test_support",
+    "//chromeos/constants",
+    "//chromeos/crosapi/mojom",
+    "//components/bookmarks/browser",
+    "//components/favicon/core/test:test_support",
+    "//components/history/core/browser",
+    "//components/history/core/test",
+    "//components/user_manager:test_support",
+    "//content/test:test_support",
+    "//mojo/public/cpp/bindings",
+    "//services/network/public/cpp",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/base:test_support",
+    "//ui/display:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "quick_insert_accessibility_browsertest.cc" ]
+
+  deps = [
+    ":quick_insert",
+    "//ash",
+    "//ash:test_support",
+    "//ash/public/cpp",
+    "//ash/strings",
+    "//chrome/browser/ash/accessibility",
+    "//chrome/browser/ash/accessibility:test_support",
+    "//chrome/test:test_support",
+    "//content/test:test_support",
+    "//extensions/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/events:test_support",
+  ]
+}
+
+if (!is_chromeos_device) {
+  source_set("interactive_ui_tests") {
+    testonly = true
+
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+    sources = [ "quick_insert_interactive_uitest.cc" ]
+
+    deps = [
+      ":quick_insert",
+      "//ash",
+      "//base",
+      "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/accessibility:test_support",
+      "//chrome/browser/ui",
+      "//chrome/test/base/ash/interactive:test_support",
+      "//content/test:test_support",
+      "//extensions/browser:test_support",
+      "//ui/base",
+      "//ui/base:test_support",
+    ]
+  }
+}

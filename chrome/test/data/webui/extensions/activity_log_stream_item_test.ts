@@ -6,8 +6,8 @@
 
 import type {ActivityLogStreamItemElement, StreamItem} from 'chrome://extensions/extensions.js';
 import {ARG_URL_PLACEHOLDER} from 'chrome://extensions/extensions.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {testVisible} from './test_util.js';
 
@@ -46,8 +46,6 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
   test(
       'item not expandable if it has no page URL, args or web request info',
       function() {
-        flush();
-
         boundTestVisible('cr-expand-button', true);
 
         // Since |cr-expand-button| is always visible, we test that the
@@ -57,7 +55,7 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
 
   test(
       'page URL, args and web request info visible when item is expanded',
-      function() {
+      async () => {
         testStreamItem = {
           name: 'testAPI.testMethod',
           timestamp: 1550101623113,
@@ -70,20 +68,20 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
           expanded: false,
         };
 
-        activityLogStreamItem.set('data', testStreamItem);
+        activityLogStreamItem.data = testStreamItem;
 
-        flush();
+        await microtasksFinished();
         boundTestVisible('cr-expand-button', true);
         activityLogStreamItem.shadowRoot!.querySelector(
                                              'cr-expand-button')!.click();
 
-        flush();
+        await microtasksFinished();
         boundTestVisible('#page-url-link', true);
         boundTestVisible('#args-list', true);
         boundTestVisible('#web-request-section', true);
       });
 
-  test('placeholder arg values are replaced by the argUrl', function() {
+  test('placeholder arg values are replaced by the argUrl', async () => {
     const argUrl = 'arg.url';
     const placeholder = ARG_URL_PLACEHOLDER;
     // The <arg_url> placeholder except the '<' is escaped into a unicode
@@ -104,14 +102,14 @@ suite('ExtensionsActivityLogStreamItemTest', function() {
       expanded: false,
     };
 
-    activityLogStreamItem.set('data', testStreamItem);
+    activityLogStreamItem.data = testStreamItem;
 
-    flush();
+    await microtasksFinished();
     boundTestVisible('cr-expand-button', true);
     activityLogStreamItem.shadowRoot!.querySelector(
                                          'cr-expand-button')!.click();
 
-    flush();
+    await microtasksFinished();
     boundTestVisible('#args-list', true);
 
     const argsDisplayed =

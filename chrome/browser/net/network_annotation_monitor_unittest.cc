@@ -31,11 +31,6 @@ TEST(NetworkAnnotationMonitorTest, ReportTest) {
       base::Value::Dict().Set(base::NumberToString(kTestDisabledHashCode),
                               true));
 
-  // Disable secondary profiles pref since we skip reporting on lacros when this
-  // is enabled.
-  profile_manager_.local_state()->Get()->SetBoolean(
-      prefs::kLacrosSecondaryProfilesAllowed, false);
-
   // Initialize fake Regmon D-Bus client. This fake client is used below to
   // verify that violations are reported.
   chromeos::RegmonClient::InitializeFake();

@@ -58,6 +58,9 @@ class UrlLoadingBrowserAgent;
 @property(nonatomic, strong, readonly)
     MostVisitedTilesConfig* mostVisitedConfig;
 
+// Whether the most visited tiles should be located within the magic stack.
+@property(nonatomic, readonly) BOOL inMagicStack;
+
 // Recorder for content suggestions metrics.
 @property(nonatomic, weak)
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;

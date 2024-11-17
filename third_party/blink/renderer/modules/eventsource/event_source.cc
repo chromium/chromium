@@ -170,8 +170,7 @@ void EventSource::Connect() {
     std::string last_event_id_utf8 = parser_->LastEventId().Utf8();
     request.SetHttpHeaderField(
         http_names::kLastEventID,
-        AtomicString(reinterpret_cast<const LChar*>(last_event_id_utf8.c_str()),
-                     last_event_id_utf8.length()));
+        AtomicString(base::as_byte_span(last_event_id_utf8)));
   }
 
   ResourceLoaderOptions resource_loader_options(world_);

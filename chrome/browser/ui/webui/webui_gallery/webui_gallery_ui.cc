@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
 
 #include "chrome/browser/profiles/profile.h"
@@ -34,7 +29,7 @@ void CreateAndAddWebuiGalleryUIHtmlSource(Profile* profile) {
 
   webui::SetupWebUIDataSource(
       source,
-      base::make_span(kWebuiGalleryResources, kWebuiGalleryResourcesSize),
+      base::span(kWebuiGalleryResources),
       IDR_WEBUI_GALLERY_WEBUI_GALLERY_HTML);
 
   source->OverrideContentSecurityPolicy(
@@ -50,8 +45,7 @@ void CreateAndAddWebuiGalleryUIHtmlSource(Profile* profile) {
 
   // Add shared SidePanel resources so that those elements can be demonstrated
   // as well.
-  source->AddResourcePaths(base::make_span(kSidePanelSharedResources,
-                                           kSidePanelSharedResourcesSize));
+  source->AddResourcePaths(base::span(kSidePanelSharedResources));
 
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(

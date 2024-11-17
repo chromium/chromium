@@ -136,7 +136,7 @@ class TestBubbleDialogDelegateView : public views::BubbleDialogDelegateView {
   TestBubbleDialogDelegateView& operator=(const TestBubbleDialogDelegateView&) =
       delete;
 
-  ~TestBubbleDialogDelegateView() override {}
+  ~TestBubbleDialogDelegateView() override = default;
 };
 
 // Helper class to simulate the text input field in a window. When the text
@@ -195,12 +195,7 @@ class TestTextInputClient : public ui::DummyTextInputClient {
 
 class SplitViewControllerTest : public AshTestBase {
  public:
-  SplitViewControllerTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding},
-        /*disabled_features=*/{});
-  }
+  SplitViewControllerTest() = default;
   SplitViewControllerTest(const SplitViewControllerTest&) = delete;
   SplitViewControllerTest& operator=(const SplitViewControllerTest&) = delete;
   ~SplitViewControllerTest() override = default;
@@ -341,8 +336,6 @@ class SplitViewControllerTest : public AshTestBase {
   std::vector<std::string> trace_names_;
 
   base::HistogramTester histograms_;
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests the basic functionalities.

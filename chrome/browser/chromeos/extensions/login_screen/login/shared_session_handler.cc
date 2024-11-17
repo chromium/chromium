@@ -199,12 +199,8 @@ void SharedSessionHandler::UnlockSharedSession(
     return;
   }
 
-  const std::string& hash_key = *scrypt_result;
-
-  CHECK(hash_key.length() == user_secret_hash_.length());
-
-  if (!crypto::SecureMemEqual(hash_key.data(), user_secret_hash_.data(),
-                              user_secret_hash_.size())) {
+  if (!crypto::SecureMemEqual(base::as_byte_span(*scrypt_result),
+                              base::as_byte_span(user_secret_hash_))) {
     std::move(callback).Run(
         extensions::login_api_errors::kAuthenticationFailed);
     return;
@@ -270,6 +266,8 @@ void SharedSessionHandler::ResetStateForTesting() {
   user_secret_salt_.clear();
 }
 
+// TODO(https://issues.chromium.org/issues/372283556): migrate to the new
+// //crypto KDF API and make this infallible.
 std::optional<std::string> SharedSessionHandler::GetHashFromScrypt(
     const std::string& password,
     const std::string& salt) {

@@ -1,6 +1,7 @@
 # Please consult components/viz/README.md about allowable dependencies.
 
 include_rules = [
+  "+cc/base",
   "+components/startup_metric_utils",
   "-components/viz",
   "+components/viz/common",

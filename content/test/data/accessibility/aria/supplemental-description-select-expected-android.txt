@@ -1,0 +1,8 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.view.View role_description='menu pop up button' clickable collapsed focusable name='Volvo' hint='choose a car'
+++++++android.view.View invisible
+++++++++android.view.View clickable focusable selected name='Volvo'
+++++++++android.view.View clickable focusable invisible name='Saab' item_index=1 row_index=1
+++++++++android.view.View clickable focusable invisible name='Opel' item_index=2 row_index=2
+++++++++android.view.View clickable focusable invisible name='Audi' item_index=3 row_index=3

@@ -15,12 +15,10 @@ public class ContentFeatureList {
     public static final String ACCESSIBILITY_INCLUDE_LONG_CLICK_ACTION =
             "AccessibilityIncludeLongClickAction";
 
-    public static final String ACCESSIBILITY_PAGE_ZOOM = "AccessibilityPageZoom";
-    // Field trial param associated with the Page Zoom feature.
-    public static final String ACCESSIBILITY_PAGE_ZOOM_PARAM = "AdjustForOSLevel";
-
     public static final String ACCESSIBILITY_PAGE_ZOOM_ENHANCEMENTS =
             "AccessibilityPageZoomEnhancements";
+
+    public static final String ACCESSIBILITY_PAGE_ZOOM_V2 = "AccessibilityPageZoomV2";
 
     public static final String ACCESSIBILITY_UNIFIED_SNAPSHOTS = "AccessibilityUnifiedSnapshots";
     public static final String ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND =
@@ -31,6 +29,8 @@ public class ContentFeatureList {
     public static final String HIDE_PASTE_POPUP_ON_GSB = "HidePastePopupOnGSB";
 
     public static final String MOUSE_AND_TRACKPAD_DROPDOWN_MENU = "MouseAndTrackpadDropdownMenu";
+
+    public static final String INPUT_ON_VIZ = "InputOnViz";
 
     public static final String OPTIMIZE_IMM_HIDE_CALLS = "OptimizeImmHideCalls";
 
@@ -49,4 +49,9 @@ public class ContentFeatureList {
     public static final String WEB_NFC = "WebNFC";
 
     public static final String WEB_IDENTITY_DIGITAL_CREDENTIALS = "WebIdentityDigitalCredentials";
+
+    public static final String PREFETCH_BROWSER_INITIATED_TRIGGERS =
+            "PrefetchBrowserInitiatedTriggers";
+
+    public static final String DIPS_TTL = "DIPSTtl";
 }

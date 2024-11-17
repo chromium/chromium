@@ -68,8 +68,8 @@ namespace base {
 template <typename T>
 class optional_ref {
  private:
-  // Disallowed because `std::optional` (and `std::optional`) do not allow
-  // their template argument to be a reference type.
+  // Disallowed because `std::optional` does not allow its template argument to
+  // be a reference type.
   static_assert(!std::is_reference_v<T>,
                 "T must not be a reference type (use a pointer?)");
 

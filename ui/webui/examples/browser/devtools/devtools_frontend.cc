@@ -164,10 +164,12 @@ class DevToolsFrontend::AgentHostClient
       CallClientFunction("DevToolsAPI", "setUseSoftMenu", base::Value(true));
     } else if (*method == "loadNetworkResource" && params.size() == 3) {
       // TODO(robliao): Add support for this if necessary.
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED();
     } else if (*method == "getPreferences") {
       SendMessageAck(request_id, base::Value(std::move(preferences_)));
+      return;
+    } else if (*method == "getHostConfig") {
+      SendMessageAck(request_id, {});
       return;
     } else if (*method == "setPreference") {
       if (params.size() < 2)

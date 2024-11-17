@@ -15,13 +15,13 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.android_webview.common.Lifetime;
+import org.chromium.build.annotations.DoNotInline;
 
 /**
  * Export the android webview as a PDF.
  *
- * Owned by Java-side AwContents. This object is lazy-instantiated when needed
- * and receives a pointer to the native counterpart, which is owned by the
- * native side of AwContents.
+ * <p>Owned by Java-side AwContents. This object is lazy-instantiated when needed and receives a
+ * pointer to the native counterpart, which is owned by the native side of AwContents.
  */
 @Lifetime.WebView
 @JNINamespace("android_webview")
@@ -36,9 +36,7 @@ public class AwPdfExporter {
     // Maintain a reference to the top level object (i.e. WebView) since in a common
     // use case (offscreen webview) application may expect the framework's print manager
     // to own the Webview (via PrintDocumentAdapter).
-    // NOTE: it looks unused, but please do not remove this reference. There is also a proguard
-    // configuration to prevent this variable to be optimized away. Any name changes should
-    // be reflected there.
+    @DoNotInline // Causes R8 to not remove this.
     private ViewGroup mContainerView;
 
     /** AwPdfExporter callback used to call onWrite* callbacks in Android framework. */

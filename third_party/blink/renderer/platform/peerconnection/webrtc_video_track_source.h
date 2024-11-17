@@ -6,13 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_WEBRTC_VIDEO_TRACK_SOURCE_H_
 
 #include "base/feature_list.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread_checker.h"
 #include "media/base/video_frame_pool.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/webrtc/webrtc_video_frame_adapter.h"
+#include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/webrtc/media/base/adapted_video_track_source.h"
 #include "third_party/webrtc/rtc_base/timestamp_aligner.h"
 
@@ -39,11 +41,13 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
     int scale_to_height;
   };
 
-  WebRtcVideoTrackSource(bool is_screencast,
-                         std::optional<bool> needs_denoising,
-                         media::VideoCaptureFeedbackCB feedback_callback,
-                         base::RepeatingClosure request_refresh_frame_callback,
-                         media::GpuVideoAcceleratorFactories* gpu_factories);
+  WebRtcVideoTrackSource(
+      bool is_screencast,
+      std::optional<bool> needs_denoising,
+      media::VideoCaptureFeedbackCB feedback_callback,
+      base::RepeatingClosure request_refresh_frame_callback,
+      media::GpuVideoAcceleratorFactories* gpu_factories,
+      scoped_refptr<WebRtcVideoFrameAdapter::SharedResources> = nullptr);
   WebRtcVideoTrackSource(const WebRtcVideoTrackSource&) = delete;
   WebRtcVideoTrackSource& operator=(const WebRtcVideoTrackSource&) = delete;
   ~WebRtcVideoTrackSource() override;
@@ -65,30 +69,63 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
   using webrtc::VideoTrackSourceInterface::RemoveSink;
   void RequestRefreshFrame() override;
 
+  void Dispose();
+
  private:
+  // Need a separate ref-counted part for posting map callbacks because
+  // WebrtcVideoTrackSource is used on network thread and destroyed on the
+  // main thread and it's risky to move the destruction to the network
+  // thread too. Also, callbacks must not extend the lifetime of the object.
+  // Therefore can't use WeakPtr nor scoped_refptr, because the first one
+  // requires destruction on the same thread, while the second one extends
+  // the lifetime of the object.
+  class CallbackProxy : public ThreadSafeRefCounted<CallbackProxy> {
+   public:
+    explicit CallbackProxy(WebRtcVideoTrackSource* track_source);
+    void ProcessMappedFrame(int64_t id,
+                            scoped_refptr<media::VideoFrame> mapped_frame);
+    void Reset();
+
+   private:
+    base::Lock lock_;
+    raw_ptr<WebRtcVideoTrackSource> parent_ GUARDED_BY(lock_);
+  };
+
   void SendFeedback();
 
   FrameAdaptationParams ComputeAdaptationParams(int width,
                                                 int height,
                                                 int64_t time_us);
 
+  // Applies adaptation parameters and updates all the metadata: e.g.
+  // `update_rect` and timestamps. Calls `DeliverFrame()`.
+  void ComputeMetadataAndDeliverFrame(scoped_refptr<media::VideoFrame> frame,
+                                      int64_t time_posted_us);
+
   // Delivers |frame| to base class method
   // rtc::AdaptedVideoTrackSource::OnFrame(). If the cropping (given via
-  // |frame->visible_rect()|) has changed since the last delivered frame, the
-  // whole frame is marked as updated.
-  // |timestamp_us| is |frame->timestamp()| in Microseconds but clipped to
-  // ensure that it doesn't exceed the current system time. However,
+  // |frame->visible_rect()|) has changed since the last delivered frame,
+  // the whole frame is marked as updated. |timestamp_us| is
+  // |frame->timestamp()| in Microseconds but clipped to ensure that it
+  // doesn't exceed the current system time. However,
   // |capture_time_identifier| is just |frame->timestamp()|.
   // |reference_time| corresponds to a monotonically increasing clock time
   // and represents the time when the frame was captured. Not all platforms
   // provide the "true" sample capture time in |reference_time| but might
-  // instead use a somewhat delayed (by the time it took to capture the frame)
-  // version of it.
+  // instead use a somewhat delayed (by the time it took to capture the
+  // frame) version of it.
   void DeliverFrame(scoped_refptr<media::VideoFrame> frame,
-                    gfx::Rect* update_rect,
+                    std::optional<gfx::Rect> update_rect,
                     int64_t timestamp_us,
                     std::optional<webrtc::Timestamp> capture_time_identifier,
                     std::optional<webrtc::Timestamp> reference_time);
+
+  // Receives result of asynchronous mapping of a frame.
+  // It will then be passed to `ComputeMetadataAndDeliverFrame()`;
+  void ProcessMappedFrame(int64_t id,
+                          scoped_refptr<media::VideoFrame> mapped_frame);
+
+  void TryProcessPendingFrames();
 
   // This checks if the colorspace information should be passed to webrtc. Avoid
   // sending unknown or unnecessary color space.
@@ -115,6 +152,20 @@ class PLATFORM_EXPORT WebRtcVideoTrackSource
 
   const media::VideoCaptureFeedbackCB feedback_callback_;
   const base::RepeatingClosure request_refresh_frame_callback_;
+
+  struct PendingFrame {
+    scoped_refptr<media::VideoFrame> frame;
+    int64_t time_posted_us;
+    int64_t id;
+    bool can_be_delivered = false;
+  };
+  WTF::Deque<PendingFrame> pending_frames_;
+
+  scoped_refptr<CallbackProxy> callback_proxy_;
+
+  int64_t next_frame_id_ = 0;
+
+  bool require_mapped_frame_for_testing_ = false;
 };
 
 }  // namespace blink

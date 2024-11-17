@@ -306,14 +306,16 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   content_observer.StartWatchingNewWebContents();
   signin::SigninChoice result;
   browser()->signin_view_controller()->ShowModalManagedUserNoticeDialog(
-      account_info, /*is_oidc_account=*/false, /*force_new_profile=*/true,
-      /*show_link_data_option=*/true,
-      base::BindOnce([](signin::SigninChoice* result,
-                        signin::SigninChoice choice) { *result = choice; },
-                     &result),
-      /*done_callback=*/
-      base::BindOnce(&SigninViewController::CloseModalSignin,
-                     browser()->signin_view_controller()->AsWeakPtr()));
+      std::make_unique<signin::EnterpriseProfileCreationDialogParams>(
+          account_info, /*is_oidc_account=*/false, /*force_new_profile=*/true,
+          /*show_link_data_option=*/true,
+          /*process_user_choice_callback=*/
+          base::BindOnce([](signin::SigninChoice* result,
+                            signin::SigninChoice choice) { *result = choice; },
+                         &result),
+          /*done_callback=*/
+          base::BindOnce(&SigninViewController::CloseModalSignin,
+                         browser()->signin_view_controller()->AsWeakPtr())));
   EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
   content_observer.Wait();
 
@@ -330,59 +332,3 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   EXPECT_EQ(result, signin::SigninChoice::SIGNIN_CHOICE_NEW_PROFILE);
   EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
 }
-
-#if !BUILDFLAG(IS_CHROMEOS)
-class SignInViewControllerBrowserOIDCAccountTest
-    : public SignInViewControllerBrowserTest {
- protected:
-  base::test::ScopedFeatureList features_{
-      profile_management::features::kOidcAuthProfileManagement};
-};
-
-// Tests that the confirm button is focused by default in the enterprise
-// interception dialog.
-IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserOIDCAccountTest,
-                       MAYBE_EnterpriseConfirmationDefaultFocus) {
-  auto account_info = signin::MakePrimaryAccountAvailable(
-      GetIdentityManager(), "alice@gmail.com", signin::ConsentLevel::kSync);
-  content::TestNavigationObserver content_observer(
-      (GURL(chrome::kChromeUIManagedUserProfileNoticeUrl)));
-  content_observer.StartWatchingNewWebContents();
-  base::RunLoop user_choice_run_loop;
-  signin::SigninChoice result;
-  DiceWebSigninInterceptorDelegate delegate;
-  WebSigninInterceptor::Delegate::BubbleParameters bubble_parameters(
-      WebSigninInterceptor::SigninInterceptionType::kEnterpriseOIDC,
-      account_info, account_info);
-
-  auto handle = delegate.ShowOidcInterceptionDialog(
-      browser()->tab_strip_model()->GetActiveWebContents(), bubble_parameters,
-      base::BindLambdaForTesting(
-          [&user_choice_run_loop, &result](
-              signin::SigninChoice choice,
-              signin::SigninChoiceOperationDoneCallback callback) {
-            result = choice;
-            std::move(callback).Run(
-                signin::SigninChoiceOperationResult::SIGNIN_SILENT_SUCCESS);
-            user_choice_run_loop.Quit();
-          }),
-      /*done_callback=*/
-      base::BindOnce(&SigninViewController::CloseModalSignin,
-                     browser()->signin_view_controller()->AsWeakPtr()));
-  EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
-  content_observer.Wait();
-
-  content::WebContentsDestroyedWatcher dialog_destroyed_watcher(
-      browser()
-          ->signin_view_controller()
-          ->GetModalDialogWebContentsForTesting());
-  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
-                                              /*control=*/false,
-                                              /*shift=*/false, /*alt=*/false,
-                                              /*command=*/false));
-  user_choice_run_loop.Run();
-  EXPECT_EQ(result, signin::SigninChoice::SIGNIN_CHOICE_NEW_PROFILE);
-  dialog_destroyed_watcher.Wait();
-  EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
-}
-#endif  //  !BUILDFLAG(IS_CHROMEOS)

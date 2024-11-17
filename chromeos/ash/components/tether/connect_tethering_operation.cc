@@ -126,11 +126,10 @@ void ConnectTetheringOperation::OnMessageReceived(
         response->response_code());
   }
 
-  // UMA_HISTOGRAM_MEDIUM_TIMES is used because UMA_HISTOGRAM_TIMES has a max
-  // of 10 seconds, and it can take up to 90 seconds for a
-  // ConnectTetheringResponse.
+  // UMA_HISTOGRAM_TIMES is not used because that has a max of 10 seconds,
+  // and it can take up to 90 seconds for a ConnectTetheringResponse.
   DCHECK(!connect_tethering_request_start_time_.is_null());
-  UMA_HISTOGRAM_MEDIUM_TIMES(
+  DEPRECATED_UMA_HISTOGRAM_MEDIUM_TIMES(
       "InstantTethering.Performance.ConnectTetheringResponseDuration",
       clock_->Now() - connect_tethering_request_start_time_);
 

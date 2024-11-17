@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Este mes</translation>
 <translation id="1637811476055996098">Seleccionar ficheiros</translation>
-<translation id="1680090928918677457">Usar cámara</translation>
 <translation id="1729654308190250600">Introduce un enderezo de correo electrónico que non estea baleiro.</translation>
 <translation id="1758486001363313524">Outras...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Acurta este texto a <ph name="MAX_CHARACTERS" /> caracteres como máximo (actualmente estás utilizando <ph name="CURRENT_LENGTH" /> caracteres).</translation>
 <translation id="2247351761944213033">Semana <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Pista <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Permítense a cámara e o micrófono</translation>
 <translation id="2507943997699731163">Completa este campo.</translation>
 <translation id="2613802280814924224">Introduce un valor válido. O valor válido máis próximo é <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Enviar</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Amplía este texto a <ph name="MIN_CHARACTERS" /> caracteres ou máis. Actualmente estás utilizando <ph name="CURRENT_LENGTH" /> caracteres.</translation>
 <translation id="383465348367842624">O texto seguido do signo "<ph name="ATSIGN" />" non debe conter o símbolo "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Saír da pantalla completa</translation>
-<translation id="4031179711345676612">Permítese o micrófono</translation>
 <translation id="4360991593054037559">Introduce un valor válido. Os dous valores válidos máis próximos son <ph name="VALID_VALUE_LOW" /> e <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detalles</translation>
-<translation id="4663373278480897665">Permítese a cámara</translation>
 <translation id="4664250907885839816">A parte que vai a continuación de "<ph name="ATSIGN" />" non debe conter o símbolo "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Reproducindo no modo de pantalla superposta</translation>
-<translation id="4792862212177489858">Compartir localización</translation>
 <translation id="4812940957355064477">Introduce un número.</translation>
-<translation id="49269513399674318">Usar micrófono</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> seleccionados</translation>
 <translation id="4992066212339426712">Activar o son</translation>
 <translation id="49969490063480558">Introduce texto despois de "<ph name="ATSIGN" />". O enderezo electrónico "<ph name="INVALIDADDRESS" />" está incompleto.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Non se puido cargar o plugin.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Amplía este texto a <ph name="MIN_CHARACTERS" /> caracteres ou máis. Actualmente estás utilizando 1 carácter.</translation>
-<translation id="7080893216867146095">Permítese compartir a localización</translation>
 <translation id="709897737746224366">Utiliza un formato que coincida co solicitado.</translation>
-<translation id="7134810312945846184">Usar micrófono e cámara</translation>
 <translation id="7263440858009898357">Selecciona un elemento da lista.</translation>
 <translation id="7364796246159120393">Seleccionar ficheiro</translation>
 <translation id="739024184232394898">Outras...</translation>

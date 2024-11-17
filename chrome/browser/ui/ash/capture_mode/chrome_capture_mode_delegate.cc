@@ -5,15 +5,27 @@
 #include "chrome/browser/ui/ash/capture_mode/chrome_capture_mode_delegate.h"
 
 #include <memory>
+#include <string>
+#include <utility>
+#include <vector>
 
+#include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/web_app_id_constants.h"
+#include "ash/public/cpp/capture_mode/capture_mode_api.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/i18n/time_formatting.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -31,16 +43,20 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/policy/system_features_disable_list_policy_handler.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 #include "chrome/browser/ui/ash/capture_mode/search_results_view.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/lens/lens_overlay_image_helper.h"
+#include "chrome/browser/ui/lens/lens_overlay_query_controller.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
-#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/ash/experiences/screenshot_area/screenshot_area.h"
 #include "chromeos/ash/services/recording/public/mojom/recording_service.mojom.h"
 #include "components/drive/file_errors.h"
+#include "components/lens/lens_overlay_page_content_mime_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "content/public/browser/audio_service.h"
@@ -48,7 +64,9 @@
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/video_capture_service.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
@@ -254,6 +272,11 @@ void ChromeCaptureModeDelegate::BindAudioStreamFactory(
 
 void ChromeCaptureModeDelegate::OnSessionStateChanged(bool started) {
   is_session_active_ = started;
+
+  if (!is_session_active_) {
+    // Release the OCR handle to save memory.
+    ResetOcr();
+  }
 }
 
 void ChromeCaptureModeDelegate::OnServiceRemoteReset() {}
@@ -383,7 +406,8 @@ void ChromeCaptureModeDelegate::NotifyDeviceUsedWhileDisabled(
 void ChromeCaptureModeDelegate::FinalizeSavedFile(
     base::OnceCallback<void(bool, const base::FilePath&)> callback,
     const base::FilePath& path,
-    const gfx::Image& thumbnail) {
+    const gfx::Image& thumbnail,
+    bool for_video) {
   auto* profile = ProfileManager::GetActiveUserProfile();
   if (!odfs_temp_dir_.GetPath().empty() &&
       odfs_temp_dir_.GetPath().IsParent(path) && profile) {
@@ -391,11 +415,10 @@ void ChromeCaptureModeDelegate::FinalizeSavedFile(
     // file upload finishes.
     auto notification =
         std::make_unique<policy::skyvault::SkyvaultCaptureUploadNotification>(
-            path);
+            path, for_video);
     auto notification_ptr = notification.get();
     auto uploader = ash::cloud_upload::OdfsSkyvaultUploader::Upload(
-        profile, path,
-        ash::cloud_upload::OdfsSkyvaultUploader::FileType::kScreenCapture,
+        profile, path, policy::local_user_files::UploadTrigger::kScreenCapture,
         base::BindRepeating(
             &policy::skyvault::SkyvaultCaptureUploadNotification::
                 UpdateProgress,
@@ -433,6 +456,140 @@ ChromeCaptureModeDelegate::CreateSearchResultsView() const {
   return std::make_unique<ash::SearchResultsView>();
 }
 
+void ChromeCaptureModeDelegate::DetectTextInImage(
+    const SkBitmap& image,
+    ash::OnTextDetectionComplete callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(ash::features::IsScannerEnabled());
+
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile) {
+    std::move(callback).Run("");
+    return;
+  }
+
+  if (optical_character_recognizer_ &&
+      optical_character_recognizer_->is_ready()) {
+    // Request `PerformOcr` asynchronously, so that it can be handled similarly
+    // to the case where the OCR is not ready yet.
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ChromeCaptureModeDelegate::PerformOcr,
+                                  weak_ptr_factory_.GetWeakPtr(), image,
+                                  std::move(callback)));
+    return;
+  }
+
+  // Set a pending request to be fulfilled after the OCR service is ready. We
+  // only need to fulfill the latest request when the OCR service becomes ready,
+  // so if there is a previous request then respond to it with an empty string
+  // and create a new request with the new `image` and `callback`.
+  if (!pending_ocr_request_callback_.is_null()) {
+    std::move(pending_ocr_request_callback_).Run("");
+  }
+  pending_ocr_request_image_ = image;
+  pending_ocr_request_callback_ = std::move(callback);
+
+  if (!optical_character_recognizer_) {
+    optical_character_recognizer_ =
+        screen_ai::OpticalCharacterRecognizer::CreateWithStatusCallback(
+            profile, screen_ai::mojom::OcrClientType::kScreenshotTextDetection,
+            base::BindOnce(&ChromeCaptureModeDelegate::OnOcrServiceInitialized,
+                           weak_ptr_factory_.GetWeakPtr()));
+  }
+}
+
+void ChromeCaptureModeDelegate::SendRegionSearch(
+    const SkBitmap& image,
+    const gfx::Rect& region,
+    ash::OnSearchUrlFetchedCallback callback) {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile || image.empty() || region.IsEmpty()) {
+    return;
+  }
+  DCHECK(ash::IsSunfishFeatureEnabledWithFeatureKey());
+  if (!gen204_controller_) {
+    gen204_controller_ = std::make_unique<lens::LensOverlayGen204Controller>();
+  }
+  if (!lens_overlay_query_controller_) {
+    lens_overlay_query_controller_ =
+        std::make_unique<lens::LensOverlayQueryController>(
+            base::BindRepeating(
+                &ChromeCaptureModeDelegate::HandleStartQueryResponse,
+                weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(
+                &ChromeCaptureModeDelegate::HandleInteractionURLResponse,
+                weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(
+                &ChromeCaptureModeDelegate::HandleSuggestInputsResponse,
+                weak_ptr_factory_.GetWeakPtr()),
+            base::BindRepeating(
+                &ChromeCaptureModeDelegate::HandleThumbnailCreated,
+                weak_ptr_factory_.GetWeakPtr()),
+            profile->GetVariationsClient(), /*identity_manager=*/nullptr,
+            profile, lens::LensOverlayInvocationSource(),
+            /*use_dark_mode=*/false,
+            /*gen204_controller=*/gen204_controller_.get());
+  }
+  on_search_url_fetched_callback_ = std::move(callback);
+  lens_overlay_query_controller_->StartQueryFlow(
+      /*screenshot=*/image,
+      /*page_url=*/GURL(),
+      /*page_title=*/std::nullopt, /*significant_region_boxes=*/
+      std::vector<lens::mojom::CenterRotatedBoxPtr>(),
+      /*underlying_content_bytes=*/base::span<const uint8_t>(),
+      /*underlying_content_type=*/lens::PageContentMimeType(),
+      /*ui_scale_factor=*/1.f);
+  lens_overlay_query_controller_->SendRegionSearch(
+      lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
+          /*tab_bounds=*/region, /*view_bounds=*/region,
+          /*image_bounds=*/region),
+      lens::LensOverlaySelectionType::REGION_SEARCH,
+      /*additional_search_query_params=*/std::map<std::string, std::string>(),
+      /*region_bytes=*/image);
+}
+
+void ChromeCaptureModeDelegate::SendMultimodalSearch(
+    const SkBitmap& image,
+    const gfx::Rect& region,
+    const std::string& text,
+    ash::OnSearchUrlFetchedCallback callback) {
+  // TODO(crbug.com/375670205): Investigate edge cases when the region is
+  // adjusted or `SendMultimodalSearch()` is called before `StartQueryFlow()`.
+  if (!lens_overlay_query_controller_ || image.empty() || region.IsEmpty() ||
+      text.empty()) {
+    return;
+  }
+  on_search_url_fetched_callback_ = std::move(callback);
+  lens_overlay_query_controller_->SendMultimodalRequest(
+      lens::GetCenterRotatedBoxFromTabViewAndImageBounds(
+          /*tab_bounds=*/region, /*view_bounds=*/region,
+          /*image_bounds=*/region),
+      text,
+      lens::LensOverlaySelectionType::
+          MULTIMODAL_SEARCH, /*additional_search_query_params=*/
+      std::map<std::string, std::string>(),
+      /*region_bytes=*/image);
+}
+
+void ChromeCaptureModeDelegate::HandleStartQueryResponse(
+    std::vector<lens::mojom::OverlayObjectPtr> objects,
+    lens::mojom::TextPtr text,
+    bool is_error) {}
+
+void ChromeCaptureModeDelegate::HandleInteractionURLResponse(
+    lens::proto::LensOverlayUrlResponse response) {
+  if (on_search_url_fetched_callback_ && response.IsInitialized() &&
+      response.has_url()) {
+    std::move(on_search_url_fetched_callback_).Run(GURL(response.url()));
+  }
+}
+
+void ChromeCaptureModeDelegate::HandleSuggestInputsResponse(
+    lens::proto::LensOverlaySuggestInputs suggest_inputs) {}
+
+void ChromeCaptureModeDelegate::HandleThumbnailCreated(
+    const std::string& thumbnail_bytes) {}
+
 void ChromeCaptureModeDelegate::OnGetDriveQuotaUsage(
     ash::OnGotDriveFsFreeSpace callback,
     drive::FileError error,
@@ -448,4 +605,62 @@ void ChromeCaptureModeDelegate::OnGetDriveQuotaUsage(
 void ChromeCaptureModeDelegate::SetOdfsTempDir(base::ScopedTempDir temp_dir) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   odfs_temp_dir_ = std::move(temp_dir);
+}
+
+void ChromeCaptureModeDelegate::OnOcrServiceInitialized(bool is_successful) {
+  if (is_successful) {
+    PerformOcrOnPendingRequest();
+  } else {
+    ResetOcr();
+  }
+}
+
+void ChromeCaptureModeDelegate::PerformOcrOnPendingRequest() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(!pending_ocr_request_callback_.is_null());
+  PerformOcr(pending_ocr_request_image_,
+             std::move(pending_ocr_request_callback_));
+}
+
+void ChromeCaptureModeDelegate::PerformOcr(
+    const SkBitmap& image,
+    ash::OnTextDetectionComplete callback) {
+  // Since `PerformOcr` is called asynchronously, it's possible that OCR becomes
+  // unavailable before this point, e.g. if the capture mode session is closed
+  // before OCR finishes initialization or if the OCR service is disconnected.
+  if (!optical_character_recognizer_ ||
+      !optical_character_recognizer_->is_ready()) {
+    std::move(callback).Run("");
+    ResetOcr();
+    return;
+  }
+
+  optical_character_recognizer_->PerformOCR(
+      image,
+      base::BindOnce(&ChromeCaptureModeDelegate::OnOcrPerformed,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ChromeCaptureModeDelegate::OnOcrPerformed(
+    ash::OnTextDetectionComplete callback,
+    screen_ai::mojom::VisualAnnotationPtr visual_annotation) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Reset the pending request image to save memory.
+  pending_ocr_request_image_.reset();
+
+  std::vector<std::string> text_lines;
+  text_lines.reserve(visual_annotation->lines.size());
+  for (screen_ai::mojom::LineBoxPtr& line : visual_annotation->lines) {
+    text_lines.push_back(std::move(line->text_line));
+  }
+  std::move(callback).Run(base::JoinString(text_lines, "\n"));
+}
+
+void ChromeCaptureModeDelegate::ResetOcr() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  optical_character_recognizer_ = nullptr;
+  pending_ocr_request_image_.reset();
+  if (!pending_ocr_request_callback_.is_null()) {
+    std::move(pending_ocr_request_callback_).Run("");
+  }
 }

@@ -49,6 +49,10 @@ class TabListContainerProperties {
     public static final PropertyModel.WritableIntPropertyKey BOTTOM_PADDING =
             new PropertyModel.WritableIntPropertyKey();
 
+    /** Call {@link android.view.ViewGroup#setClipToPadding(boolean)} for the view. */
+    public static final PropertyModel.WritableBooleanPropertyKey IS_CLIP_TO_PADDING =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     /** Get root view for a given recycler view index. Can be null. */
     public static final ReadableObjectPropertyKey<Callback<Function<Integer, View>>>
             FETCH_VIEW_BY_INDEX_CALLBACK = new ReadableObjectPropertyKey<>();
@@ -61,6 +65,10 @@ class TabListContainerProperties {
     public static final ReadableObjectPropertyKey<Callback<ObservableSupplier<Boolean>>>
             IS_SCROLLING_SUPPLIER_CALLBACK = new WritableObjectPropertyKey<>();
 
+    /** Whether the tab switcher pane has sensitive content. */
+    public static final PropertyModel.WritableBooleanPropertyKey IS_CONTENT_SENSITIVE =
+            new PropertyModel.WritableBooleanPropertyKey();
+
     /** Keys for {@link TabSwitcherPaneCoordinator}. */
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
@@ -70,8 +78,10 @@ class TabListContainerProperties {
                 MODE,
                 FOCUS_TAB_INDEX_FOR_ACCESSIBILITY,
                 BOTTOM_PADDING,
+                IS_CLIP_TO_PADDING,
                 FETCH_VIEW_BY_INDEX_CALLBACK,
                 GET_VISIBLE_RANGE_CALLBACK,
                 IS_SCROLLING_SUPPLIER_CALLBACK,
+                IS_CONTENT_SENSITIVE,
             };
 }

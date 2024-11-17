@@ -55,13 +55,13 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
     browser_->GetWebStateList()->InsertWebState(
@@ -155,7 +155,7 @@ class SaveToPhotosCoordinatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   FakeUIViewController* base_view_controller_;
 
@@ -173,13 +173,12 @@ TEST_F(SaveToPhotosCoordinatorTest, StartsAndDisconnectsMediator) {
   SaveToPhotosCoordinator* coordinator = CreateSaveToPhotosCoordinator();
 
   PhotosService* photosService =
-      PhotosServiceFactory::GetForBrowserState(browser_state_.get());
-  PrefService* prefService = browser_state_->GetPrefs();
+      PhotosServiceFactory::GetForProfile(profile_.get());
+  PrefService* prefService = profile_->GetPrefs();
   ChromeAccountManagerService* accountManagerService =
-      ChromeAccountManagerServiceFactory::GetForBrowserState(
-          browser_state_.get());
+      ChromeAccountManagerServiceFactory::GetForProfile(profile_.get());
   signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForProfile(browser_state_.get());
+      IdentityManagerFactory::GetForProfile(profile_.get());
 
   OCMExpect([mock_save_to_photos_mediator_ alloc])
       .andReturn(mock_save_to_photos_mediator_);
@@ -428,7 +427,7 @@ TEST_F(SaveToPhotosCoordinatorTest, ShowsAddAccount) {
               showSignin:[OCMArg checkWithBlock:^BOOL(
                                      ShowSigninCommand* command) {
                 if (command) {
-                  command.callback(
+                  command.completion(
                       SigninCoordinatorResultSuccess,
                       [SigninCompletionInfo
                           signinCompletionInfoWithIdentity:added_identity]);

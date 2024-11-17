@@ -6,86 +6,67 @@
 
 #include <optional>
 #include <string>
+#include <type_traits>
+#include <utility>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/crosapi_ash.h"
-#include "chrome/browser/ash/crosapi/crosapi_manager.h"
-#include "chrome/browser/ash/crosapi/local_printer_ash.h"
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "base/check_op.h"
-#include "base/functional/callback_helpers.h"
-#include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/printing/print_job.h"
-#include "chrome/grit/generated_resources.h"
-#include "chromeos/lacros/lacros_service.h"
-#include "printing/print_settings.h"
-#include "printing/printed_document.h"
-#include "printing/printing_utils.h"
-#include "ui/base/l10n/l10n_util.h"
-#endif
-
 namespace printing {
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace {
 
-crosapi::mojom::PrintJobPtr PrintJobToMojom(int job_id,
-                                            const PrintedDocument& document,
-                                            PrintJob::Source source,
-                                            const std::string& source_id) {
-  std::u16string title = SimplifyDocumentTitle(document.name());
-  if (title.empty()) {
-    title = SimplifyDocumentTitle(
-        l10n_util::GetStringUTF16(IDS_DEFAULT_PRINT_DOCUMENT_TITLE));
-  }
-  const PrintSettings& settings = document.settings();
-  int duplex = static_cast<int>(settings.duplex_mode());
-  CHECK_GE(duplex, 0);
-  CHECK_LT(duplex, 3);
+template <typename MojoOptionType,
+          typename MojoOptionValueType,
+          typename ChromeOsOptionValueType>
+mojo::StructPtr<MojoOptionType> PrintOptionToMojom(
+    const chromeos::Printer::PrintOption<ChromeOsOptionValueType>& print_option,
+    base::RepeatingCallback<MojoOptionValueType(const ChromeOsOptionValueType&)>
+        get_mojo_option_value) {
+  auto result = MojoOptionType::New();
 
-  CHECK_NE(settings.color(), mojom::ColorModel::kUnknownColorModel);
-  return crosapi::mojom::PrintJob::New(
-      base::UTF16ToUTF8(settings.device_name()), base::UTF16ToUTF8(title),
-      job_id, document.page_count(), source, source_id, settings.color(),
-      static_cast<crosapi::mojom::PrintJob::DuplexMode>(duplex),
-      settings.requested_media().size_microns,
-      settings.requested_media().vendor_id, settings.copies());
+  if (print_option.default_value.has_value()) {
+    result->default_value =
+        get_mojo_option_value.Run(print_option.default_value.value());
+  }
+
+  if (!print_option.allowed_values.empty()) {
+    result->allowed_values = std::vector<MojoOptionValueType>();
+    result->allowed_values->reserve(print_option.allowed_values.size());
+    for (const auto& allowed_value : print_option.allowed_values) {
+      result->allowed_values->push_back(
+          get_mojo_option_value.Run(allowed_value));
+    }
+  }
+
+  return result;
+}
+
+template <typename MojoOptionType,
+          typename MojoOptionValueType = std::remove_reference_t<
+              decltype(MojoOptionType().default_value.value())>,
+          typename ChromeOsOptionValueType>
+mojo::StructPtr<MojoOptionType> PrintOptionToMojom(
+    const chromeos::Printer::PrintOption<ChromeOsOptionValueType>&
+        print_option) {
+  return PrintOptionToMojom<MojoOptionType>(
+      print_option,
+      base::BindRepeating([](const ChromeOsOptionValueType& value) {
+        return static_cast<MojoOptionValueType>(value);
+      }));
 }
 
 }  // namespace
 
-void NotifyAshJobCreated(int job_id,
-                         const PrintedDocument& document,
-                         const crosapi::mojom::PrintJob::Source& source,
-                         const std::string& source_id,
-                         crosapi::mojom::LocalPrinter* local_printer) {
-  CHECK(local_printer);
-  local_printer->CreatePrintJob(
-      PrintJobToMojom(job_id, document, source, source_id), base::DoNothing());
-}
-
-void NotifyAshJobCreated(const PrintJob& job,
-                         int job_id,
-                         const PrintedDocument& document) {
-  NotifyAshJobCreated(job_id, document, job.source(), job.source_id(),
-                      GetLocalPrinterInterface());
-}
-
-#endif
-
 crosapi::mojom::LocalPrinter* GetLocalPrinterInterface() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   CHECK(crosapi::CrosapiManager::IsInitialized());
   return crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();
-#else
-  auto* service = chromeos::LacrosService::Get();
-  CHECK(service->IsAvailable<crosapi::mojom::LocalPrinter>());
-  return service->GetRemote<crosapi::mojom::LocalPrinter>().get();
-#endif
 }
 
 crosapi::mojom::CapabilitiesResponsePtr PrinterWithCapabilitiesToMojom(
@@ -107,7 +88,8 @@ crosapi::mojom::LocalDestinationInfoPtr PrinterToMojom(
       printer.id(), printer.display_name(), printer.description(),
       printer.source() == chromeos::Printer::SRC_POLICY,
       printer.uri().GetNormalized(/*always_print_port=*/true),
-      StatusToMojom(printer.printer_status()));
+      StatusToMojom(printer.printer_status()),
+      ManagedPrintOptionsToMojom(printer.print_job_options()));
 }
 
 crosapi::mojom::PrinterStatusPtr StatusToMojom(
@@ -123,6 +105,64 @@ crosapi::mojom::PrinterStatusPtr StatusToMojom(
         reason.GetReason(), reason.GetSeverity()));
   }
   return ptr;
+}
+
+crosapi::mojom::ManagedPrintOptionsPtr ManagedPrintOptionsToMojom(
+    const chromeos::Printer::ManagedPrintOptions& managed_print_options) {
+  auto result = crosapi::mojom::ManagedPrintOptions::New();
+
+  result->media_size = PrintOptionToMojom<crosapi::mojom::SizeOption>(
+      managed_print_options.media_size,
+      base::BindRepeating([](const chromeos::Printer::Size& value) {
+        return crosapi::mojom::Size::New(value.width, value.height);
+      }));
+
+  result->media_type = PrintOptionToMojom<crosapi::mojom::StringOption>(
+      managed_print_options.media_type);
+
+  result->duplex = PrintOptionToMojom<crosapi::mojom::DuplexOption>(
+      managed_print_options.duplex,
+      base::BindRepeating([](const chromeos::Printer::DuplexType& value) {
+        switch (value) {
+          case chromeos::Printer::DuplexType::kOneSided:
+            return crosapi::mojom::DuplexType::kOneSided;
+          case chromeos::Printer::DuplexType::kShortEdge:
+            return crosapi::mojom::DuplexType::kShortEdge;
+          case chromeos::Printer::DuplexType::kLongEdge:
+            return crosapi::mojom::DuplexType::kLongEdge;
+          default:
+            return crosapi::mojom::DuplexType::kUnknownDuplex;
+        }
+      }));
+
+  result->color = PrintOptionToMojom<crosapi::mojom::BoolOption>(
+      managed_print_options.color);
+
+  result->dpi = PrintOptionToMojom<crosapi::mojom::DpiOption>(
+      managed_print_options.dpi,
+      base::BindRepeating([](const chromeos::Printer::Dpi& value) {
+        return crosapi::mojom::Dpi::New(value.horizontal, value.vertical);
+      }));
+
+  result->quality = PrintOptionToMojom<crosapi::mojom::QualityOption>(
+      managed_print_options.quality,
+      base::BindRepeating([](const chromeos::Printer::QualityType& value) {
+        switch (value) {
+          case chromeos::Printer::QualityType::kDraft:
+            return crosapi::mojom::QualityType::kDraft;
+          case chromeos::Printer::QualityType::kNormal:
+            return crosapi::mojom::QualityType::kNormal;
+          case chromeos::Printer::QualityType::kHigh:
+            return crosapi::mojom::QualityType::kHigh;
+          default:
+            return crosapi::mojom::QualityType::kUnknownQuality;
+        }
+      }));
+
+  result->print_as_image = PrintOptionToMojom<crosapi::mojom::BoolOption>(
+      managed_print_options.print_as_image);
+
+  return result;
 }
 
 }  // namespace printing

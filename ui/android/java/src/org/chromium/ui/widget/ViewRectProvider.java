@@ -21,6 +21,7 @@ public class ViewRectProvider extends RectProvider
                 ViewTreeObserver.OnPreDrawListener {
     private final int[] mCachedWindowCoordinates = new int[2];
     private final Rect mInsetRect = new Rect();
+    private final Rect mMarginRect = new Rect();
     private final View mView;
 
     private int mCachedViewWidth;
@@ -63,7 +64,27 @@ public class ViewRectProvider extends RectProvider
     }
 
     /**
+     * Specifies the margin values in pixels that determine how to expand the {@link View} bounds
+     * when creating the {@link Rect}.
+     */
+    public void setMarginPx(int left, int top, int right, int bottom) {
+        setMarginPx(new Rect(left, top, right, bottom));
+    }
+
+    /**
+     * Specifies the margin values in pixels that determine how to expand the {@link View} bounds
+     * when creating the {@link Rect}.
+     */
+    public void setMarginPx(Rect marginRect) {
+        if (marginRect.equals(mMarginRect)) return;
+
+        mMarginRect.set(marginRect);
+        refreshRectBounds(/* forceRefresh= */ true);
+    }
+
+    /**
      * Whether padding should be included in the {@link Rect} for the {@link View}.
+     *
      * @param includePadding Whether padding should be included. Defaults to false.
      */
     public void setIncludePadding(boolean includePadding) {
@@ -159,6 +180,11 @@ public class ViewRectProvider extends RectProvider
         mRect.top += mInsetRect.top;
         mRect.right -= mInsetRect.right;
         mRect.bottom -= mInsetRect.bottom;
+
+        mRect.left -= mMarginRect.left;
+        mRect.top -= mMarginRect.top;
+        mRect.right += mMarginRect.right;
+        mRect.bottom += mMarginRect.bottom;
 
         // Account for the padding.
         if (!mIncludePadding) {

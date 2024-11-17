@@ -321,7 +321,7 @@ suite('SafetyCheckChildTests', function() {
     flush();
     assertTrue(!!page.shadowRoot!.querySelector('#rowClickableIndicator'));
     assertEquals(
-        'cr:arrow-right',
+        'cr:chevron-right',
         page.shadowRoot!.querySelector('#rowClickableIndicator')!.getAttribute(
             'iron-icon'));
   });

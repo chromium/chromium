@@ -22,23 +22,81 @@
  * Boston, MA 02110-1301, USA.
  */
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/platform/graphics/filters/fe_component_transfer.h"
 
 #include <algorithm>
+#include <array>
 
+#include "base/containers/span.h"
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
-typedef void (*TransferType)(unsigned char*, const ComponentTransferFunction&);
+namespace {
+
+typedef void (*TransferType)(ComponentTransferLutType,
+                             const ComponentTransferFunction&);
+
+uint8_t ClampToU8(double v) {
+  return static_cast<uint8_t>(ClampTo(v, 0.0, 255.0));
+}
+
+void Identity(ComponentTransferLutType, const ComponentTransferFunction&) {}
+
+void Table(ComponentTransferLutType values,
+           const ComponentTransferFunction& transfer_function) {
+  const Vector<float>& table_values = transfer_function.table_values;
+  unsigned n = table_values.size();
+  if (n < 1)
+    return;
+  for (unsigned i = 0; i < 256; ++i) {
+    double c = i / 255.0;
+    unsigned k = static_cast<unsigned>(c * (n - 1));
+    double v1 = table_values[k];
+    double v2 = table_values[std::min((k + 1), (n - 1))];
+    double val = 255.0 * (v1 + (c * (n - 1) - k) * (v2 - v1));
+    values[i] = ClampToU8(val);
+  }
+}
+
+void Discrete(ComponentTransferLutType values,
+              const ComponentTransferFunction& transfer_function) {
+  const Vector<float>& table_values = transfer_function.table_values;
+  unsigned n = table_values.size();
+  if (n < 1)
+    return;
+  for (unsigned i = 0; i < 256; ++i) {
+    unsigned k = static_cast<unsigned>((i * n) / 255.0);
+    k = std::min(k, n - 1);
+    double val = 255 * table_values[k];
+    values[i] = ClampToU8(val);
+  }
+}
+
+void Linear(ComponentTransferLutType values,
+            const ComponentTransferFunction& transfer_function) {
+  for (unsigned i = 0; i < 256; ++i) {
+    double val =
+        transfer_function.slope * i + 255 * transfer_function.intercept;
+    values[i] = ClampToU8(val);
+  }
+}
+
+void Gamma(ComponentTransferLutType values,
+           const ComponentTransferFunction& transfer_function) {
+  for (unsigned i = 0; i < 256; ++i) {
+    double exponent = transfer_function.exponent;
+    double val =
+        255.0 * (transfer_function.amplitude * pow((i / 255.0), exponent) +
+                 transfer_function.offset);
+    values[i] = ClampToU8(val);
+  }
+}
+
+}  // namespace
 
 FEComponentTransfer::FEComponentTransfer(
     Filter* filter,
@@ -51,62 +109,6 @@ FEComponentTransfer::FEComponentTransfer(
       green_func_(green_func),
       blue_func_(blue_func),
       alpha_func_(alpha_func) {}
-
-static void Identity(unsigned char*, const ComponentTransferFunction&) {}
-
-static void Table(unsigned char* values,
-                  const ComponentTransferFunction& transfer_function) {
-  const Vector<float>& table_values = transfer_function.table_values;
-  unsigned n = table_values.size();
-  if (n < 1)
-    return;
-  for (unsigned i = 0; i < 256; ++i) {
-    double c = i / 255.0;
-    unsigned k = static_cast<unsigned>(c * (n - 1));
-    double v1 = table_values[k];
-    double v2 = table_values[std::min((k + 1), (n - 1))];
-    double val = 255.0 * (v1 + (c * (n - 1) - k) * (v2 - v1));
-    val = ClampTo(val, 0.0, 255.0);
-    values[i] = static_cast<unsigned char>(val);
-  }
-}
-
-static void Discrete(unsigned char* values,
-                     const ComponentTransferFunction& transfer_function) {
-  const Vector<float>& table_values = transfer_function.table_values;
-  unsigned n = table_values.size();
-  if (n < 1)
-    return;
-  for (unsigned i = 0; i < 256; ++i) {
-    unsigned k = static_cast<unsigned>((i * n) / 255.0);
-    k = std::min(k, n - 1);
-    double val = 255 * table_values[k];
-    val = ClampTo(val, 0.0, 255.0);
-    values[i] = static_cast<unsigned char>(val);
-  }
-}
-
-static void Linear(unsigned char* values,
-                   const ComponentTransferFunction& transfer_function) {
-  for (unsigned i = 0; i < 256; ++i) {
-    double val =
-        transfer_function.slope * i + 255 * transfer_function.intercept;
-    val = ClampTo(val, 0.0, 255.0);
-    values[i] = static_cast<unsigned char>(val);
-  }
-}
-
-static void Gamma(unsigned char* values,
-                  const ComponentTransferFunction& transfer_function) {
-  for (unsigned i = 0; i < 256; ++i) {
-    double exponent = transfer_function.exponent;
-    double val =
-        255.0 * (transfer_function.amplitude * pow((i / 255.0), exponent) +
-                 transfer_function.offset);
-    val = ClampTo(val, 0.0, 255.0);
-    values[i] = static_cast<unsigned char>(val);
-  }
-}
 
 bool FEComponentTransfer::AffectsTransparentPixels() const {
   double intercept = 0;
@@ -133,39 +135,39 @@ sk_sp<PaintFilter> FEComponentTransfer::CreateImageFilter() {
   sk_sp<PaintFilter> input(paint_filter_builder::Build(
       InputEffect(0), OperatingInterpolationSpace()));
 
-  unsigned char r_values[256], g_values[256], b_values[256], a_values[256];
+  std::array<uint8_t, 256> r_values, g_values, b_values, a_values;
   GetValues(r_values, g_values, b_values, a_values);
 
   std::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
-  sk_sp<cc::ColorFilter> color_filter =
-      cc::ColorFilter::MakeTableARGB(a_values, r_values, g_values, b_values);
+  sk_sp<cc::ColorFilter> color_filter = cc::ColorFilter::MakeTableARGB(
+      a_values.data(), r_values.data(), g_values.data(), b_values.data());
   return sk_make_sp<ColorFilterPaintFilter>(std::move(color_filter),
                                             std::move(input),
                                             base::OptionalToPtr(crop_rect));
 }
 
-void FEComponentTransfer::GetValues(unsigned char r_values[256],
-                                    unsigned char g_values[256],
-                                    unsigned char b_values[256],
-                                    unsigned char a_values[256]) {
+void FEComponentTransfer::GetValues(ComponentTransferLutType r_values,
+                                    ComponentTransferLutType g_values,
+                                    ComponentTransferLutType b_values,
+                                    ComponentTransferLutType a_values) {
   for (unsigned i = 0; i < 256; ++i)
     r_values[i] = g_values[i] = b_values[i] = a_values[i] = i;
-  unsigned char* tables[] = {r_values, g_values, b_values, a_values};
-  ComponentTransferFunction transfer_function[] = {red_func_, green_func_,
-                                                   blue_func_, alpha_func_};
-  TransferType call_effect[] = {Identity, Identity, Table,
-                                Discrete, Linear,   Gamma};
+  const std::array<ComponentTransferLutType, 4> tables = {r_values, g_values,
+                                                          b_values, a_values};
+  const std::array<ComponentTransferFunction, 4> transfer_function = {
+      red_func_, green_func_, blue_func_, alpha_func_};
+  constexpr std::array<TransferType, 6> call_effect = {
+      Identity, Identity, Table, Discrete, Linear, Gamma};
 
   for (unsigned channel = 0; channel < 4; channel++) {
-    SECURITY_DCHECK(static_cast<size_t>(transfer_function[channel].type) <
-                    std::size(call_effect));
-    (*call_effect[transfer_function[channel].type])(tables[channel],
-                                                    transfer_function[channel]);
+    const auto& func = transfer_function[channel];
+    CHECK_LT(static_cast<size_t>(func.type), std::size(call_effect));
+    (*call_effect[func.type])(tables[channel], func);
   }
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const ComponentTransferType& type) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const ComponentTransferType& type) {
   switch (type) {
     case FECOMPONENTTRANSFER_TYPE_UNKNOWN:
       ts << "UNKNOWN";
@@ -189,8 +191,8 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
   return ts;
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const ComponentTransferFunction& function) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const ComponentTransferFunction& function) {
   ts << "type=\"" << function.type << "\" slope=\"" << function.slope
      << "\" intercept=\"" << function.intercept << "\" amplitude=\""
      << function.amplitude << "\" exponent=\"" << function.exponent
@@ -198,9 +200,9 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
   return ts;
 }
 
-WTF::TextStream& FEComponentTransfer::ExternalRepresentation(
-    WTF::TextStream& ts,
-    int indent) const {
+StringBuilder& FEComponentTransfer::ExternalRepresentation(
+    StringBuilder& ts,
+    wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feComponentTransfer";
   FilterEffect::ExternalRepresentation(ts);

@@ -90,7 +90,7 @@ TEST(URLMatcherCidrBlocksFilter, TestMatching_IPv4) {
   CreateAndAddCidrBlock("129.0.0.1/32", blocks);
   ASSERT_EQ(blocks.size(), 2u);
 
-  URLMatcherCidrBlockFilter filter(blocks);
+  URLMatcherCidrBlockFilter filter(std::move(blocks));
   EXPECT_TRUE(filter.IsMatch(GURL("http://129.0.0.1/test.html")));
   EXPECT_TRUE(filter.IsMatch(GURL("http://129.0.0.1:80/test.html")));
   EXPECT_TRUE(filter.IsMatch(GURL("http://127.0.0.1:81/test.html")));
@@ -110,7 +110,7 @@ TEST(URLMatcherCidrBlocksFilter, TestMatching_IPv6) {
   CreateAndAddCidrBlock("::ffff:192.168.1.1/112", blocks);
   ASSERT_EQ(blocks.size(), 2u);
 
-  URLMatcherCidrBlockFilter filter(blocks);
+  URLMatcherCidrBlockFilter filter(std::move(blocks));
   EXPECT_TRUE(filter.IsMatch(GURL("http://[A:b:C:9::]/test.html")));
   EXPECT_FALSE(filter.IsMatch(GURL("http://foobar.com/test.html")));
   EXPECT_FALSE(filter.IsMatch(GURL("http://192.169.1.1/test.html")));
@@ -126,7 +126,7 @@ TEST(URLMatcherCidrBlocksFilter, TestMatching_IPv6) {
   CreateAndAddCidrBlock("::fffe:192.168.1.1/112", blocks);
   ASSERT_EQ(blocks.size(), 1u);
 
-  URLMatcherCidrBlockFilter close_filter(blocks);
+  URLMatcherCidrBlockFilter close_filter(std::move(blocks));
   EXPECT_TRUE(
       close_filter.IsMatch(GURL("http://[::fffe:192.168.1.3]/test.html")));
   EXPECT_FALSE(

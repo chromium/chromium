@@ -27,7 +27,7 @@
 #include "base/types/optional_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
-#include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder_stream.h"
 
 namespace blink {
 
@@ -98,8 +98,8 @@ sk_sp<PaintFilter> FEMorphology::CreateImageFilter() {
                                            base::OptionalToPtr(crop_rect));
 }
 
-static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const MorphologyOperatorType& type) {
+static StringBuilder& operator<<(StringBuilder& ts,
+                                 const MorphologyOperatorType& type) {
   switch (type) {
     case FEMORPHOLOGY_OPERATOR_UNKNOWN:
       ts << "UNKNOWN";
@@ -114,8 +114,8 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
   return ts;
 }
 
-WTF::TextStream& FEMorphology::ExternalRepresentation(WTF::TextStream& ts,
-                                                      int indent) const {
+StringBuilder& FEMorphology::ExternalRepresentation(StringBuilder& ts,
+                                                    wtf_size_t indent) const {
   WriteIndent(ts, indent);
   ts << "[feMorphology";
   FilterEffect::ExternalRepresentation(ts);

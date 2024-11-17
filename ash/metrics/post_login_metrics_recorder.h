@@ -24,11 +24,29 @@ class LoginUnlockThroughputRecorder;
 // trace events.
 class ASH_EXPORT PostLoginMetricsRecorder : public PostLoginEventObserver {
  public:
+  // The post login UI gives users a snapshot of what apps and tabs they had
+  // open in the previous session. There are animations involved that may affect
+  // login performance metrics.
+  enum class PostLoginUIStatus {
+    // The post login UI is not shown; the settings has been turned off or there
+    // were no windows open in the previous session.
+    kNotShown = 0,
+    // The post login UI is shown, and the birch bar which has chips such as
+    // weather, media, etc. is visible.
+    kShownWithBirchBar,
+    // The post login UI is shown, but the birch bar has been hidden.
+    kShownWithoutBirchBar,
+  };
+
   explicit PostLoginMetricsRecorder(
       LoginUnlockThroughputRecorder* login_unlock_throughput_recorder);
   PostLoginMetricsRecorder(const PostLoginMetricsRecorder&) = delete;
   PostLoginMetricsRecorder& operator=(const PostLoginMetricsRecorder&) = delete;
   ~PostLoginMetricsRecorder() override;
+
+  void set_post_login_ui_status(PostLoginUIStatus val) {
+    post_login_ui_status_ = val;
+  }
 
   // PostLoginEventObserver overrides:
   void OnAuthSuccess(base::TimeTicks ts) override;
@@ -87,6 +105,10 @@ class ASH_EXPORT PostLoginMetricsRecorder : public PostLoginEventObserver {
   // Used for reporting metrics with different names depending on the session
   // restore flow.
   DeferredMetricsReporter uma_login_perf_;
+
+  // Post login UI can affect login metrics. Log metrics differently depending
+  // on the status. See crbug.com/362380831 for more details.
+  std::optional<PostLoginUIStatus> post_login_ui_status_;
 
   base::ScopedObservation<LoginUnlockThroughputRecorder, PostLoginEventObserver>
       post_login_event_observation_{this};

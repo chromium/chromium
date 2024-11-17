@@ -17,7 +17,7 @@
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom-forward.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-shared.h"
-#include "ui/base/ui_base_types.h"
+#include "ui/base/mojom/menu_source_type.mojom-forward.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
@@ -127,7 +127,7 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   GURL link_followed;
   std::vector<blink::mojom::CustomContextMenuItemPtr> custom_items;
 
-  ui::MenuSourceType source_type;
+  ui::mojom::MenuSourceType source_type;
 
   // For the outermost main frame's widget, this will be the selection rect in
   // viewport space. For a local root, this is in the coordinates of the local
@@ -160,11 +160,6 @@ struct BLINK_COMMON_EXPORT UntrustworthyContextMenuParams {
   // associated.
   // See `autofill::FormRendererId` for the semantics of renderer IDs.
   uint64_t form_renderer_id = 0;
-
-  // True iff a field's type is plain text but heuristics (e.g. the name
-  // attribute contains 'password' as a substring) recognize it as a password
-  // field.
-  bool is_password_type_by_heuristics = false;
 
  private:
   void Assign(const UntrustworthyContextMenuParams& other);

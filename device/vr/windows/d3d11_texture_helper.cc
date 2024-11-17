@@ -189,9 +189,10 @@ bool D3D11TextureHelper::CompositeToBackBuffer(
 
   // Source texture is optional depending on whether we're using
   // shared images for the destination.
-  if (!render_state_.source_.source_texture_ &&
-      !render_state_.overlay_.source_texture_)
+  if ((backbuffer_contains_source_ || !render_state_.source_.source_texture_) &&
+      !render_state_.overlay_.source_texture_) {
     return true;
+  }
 
   gpu::gles2::GLES2Interface* gl = context_provider->ContextGL();
   if (!gl) {
@@ -252,7 +253,9 @@ bool D3D11TextureHelper::CompositeToBackBuffer(
   }
 
   if (render_state_.overlay_.source_texture_ &&
-      (!render_state_.source_.source_texture_ || !source_visible_)) {
+      ((!backbuffer_contains_source_ &&
+        !render_state_.source_.source_texture_) ||
+       !source_visible_)) {
     // If we have an overlay, but no WebXR texture under it, clear the target
     // first, since overlay may assume transparency.
     float color_rgba[4] = {0, 0, 0, 1};
@@ -410,51 +413,59 @@ bool D3D11TextureHelper::BindTarget() {
 void PushVertRect(std::vector<Vertex2D>& data,
                   const gfx::RectF& rect,
                   const gfx::RectF& uv,
-                  int target) {
+                  int target,
+                  bool y_flip) {
   Vertex2D vert;
   vert.target = target;
 
+  // If the texture is being flipped, the top and bottom Y UV coordinates need
+  // to be swapped.
+  float y_top = y_flip ? uv.y() + uv.height() : uv.y();
+  float y_bottom = y_flip ? uv.y() : uv.y() + uv.height();
+
   vert.x = rect.x() * 2 - 1;
   vert.y = rect.y() * 2 - 1;
   vert.u = uv.x();
-  vert.v = uv.y();
+  vert.v = y_top;
   data.push_back(vert);
 
   vert.x = rect.x() * 2 - 1;
   vert.y = (rect.y() + rect.height()) * 2 - 1;
   vert.u = uv.x();
-  vert.v = uv.y() + uv.height();
+  vert.v = y_bottom;
   data.push_back(vert);
 
   vert.x = (rect.x() + rect.width()) * 2 - 1;
   vert.y = (rect.y() + rect.height()) * 2 - 1;
   vert.u = uv.x() + uv.width();
-  vert.v = uv.y() + uv.height();
+  vert.v = y_bottom;
   data.push_back(vert);
 
   vert.x = rect.x() * 2 - 1;
   vert.y = rect.y() * 2 - 1;
   vert.u = uv.x();
-  vert.v = uv.y();
+  vert.v = y_top;
   data.push_back(vert);
 
   vert.x = (rect.x() + rect.width()) * 2 - 1;
   vert.y = (rect.y() + rect.height()) * 2 - 1;
   vert.u = uv.x() + uv.width();
-  vert.v = uv.y() + uv.height();
+  vert.v = y_bottom;
   data.push_back(vert);
 
   vert.x = (rect.x() + rect.width()) * 2 - 1;
   vert.y = rect.y() * 2 - 1;
   vert.u = uv.x() + uv.width();
-  vert.v = uv.y();
+  vert.v = y_top;
   data.push_back(vert);
 }
 
 bool D3D11TextureHelper::UpdateVertexBuffer(LayerData& layer) {
   std::vector<Vertex2D> vertex_data;
-  PushVertRect(vertex_data, target_left_, layer.left_, 0);
-  PushVertRect(vertex_data, target_right_, layer.right_, 1);
+  PushVertRect(vertex_data, target_left_, layer.left_, 0,
+               backbuffer_y_flipped_);
+  PushVertRect(vertex_data, target_right_, layer.right_, 1,
+               backbuffer_y_flipped_);
   render_state_.d3d11_device_context_->UpdateSubresource(
       render_state_.vertex_buffer_.Get(), 0, nullptr, vertex_data.data(),
       sizeof(Vertex2D), vertex_data.size());
@@ -619,11 +630,15 @@ bool D3D11TextureHelper::UpdateBackbufferSizes() {
 }
 
 void D3D11TextureHelper::SetBackbuffer(
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer) {
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer,
+    bool contains_source,
+    bool y_flipped) {
   if (render_state_.target_texture_ != back_buffer) {
     render_state_.render_target_view_ = nullptr;
   }
   render_state_.target_texture_ = back_buffer;
+  backbuffer_contains_source_ = contains_source;
+  backbuffer_y_flipped_ = y_flipped;
 }
 
 Microsoft::WRL::ComPtr<IDXGIAdapter> D3D11TextureHelper::GetAdapter() {
@@ -644,6 +659,12 @@ Microsoft::WRL::ComPtr<IDXGIAdapter> D3D11TextureHelper::GetAdapter() {
 Microsoft::WRL::ComPtr<ID3D11Device> D3D11TextureHelper::GetDevice() {
   EnsureInitialized();
   return render_state_.d3d11_device_;
+}
+
+Microsoft::WRL::ComPtr<ID3D11DeviceContext>
+D3D11TextureHelper::GetDeviceContext() {
+  EnsureInitialized();
+  return render_state_.d3d11_device_context_;
 }
 
 bool D3D11TextureHelper::EnsureInitialized() {

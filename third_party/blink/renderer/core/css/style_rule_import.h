@@ -33,6 +33,7 @@
 namespace blink {
 
 class MediaQuerySet;
+class StyleScope;
 class StyleSheetContents;
 
 class StyleRuleImport : public StyleRuleBase {
@@ -41,6 +42,7 @@ class StyleRuleImport : public StyleRuleBase {
  public:
   StyleRuleImport(const String& href,
                   LayerName&& layer,
+                  const StyleScope*,
                   bool supported,
                   String supports,
                   const MediaQuerySet*,
@@ -74,6 +76,8 @@ class StyleRuleImport : public StyleRuleBase {
   bool IsLayered() const { return layer_.size(); }
   const LayerName& GetLayerName() const { return layer_; }
   String GetLayerNameAsString() const;
+
+  const StyleScope* GetScope() const { return scope_.Get(); }
 
   bool IsSupported() const { return supported_; }
   String GetSupportsString() const { return supports_string_; }
@@ -117,6 +121,7 @@ class StyleRuleImport : public StyleRuleBase {
   Member<ImportedStyleSheetClient> style_sheet_client_;
   String str_href_;
   LayerName layer_;
+  Member<const StyleScope> scope_;
   String supports_string_;
   Member<const MediaQuerySet> media_queries_;
   Member<StyleSheetContents> style_sheet_;

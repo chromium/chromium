@@ -5,11 +5,15 @@
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 
 #import "base/ios/ios_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/optimization_guide/core/optimization_guide_enums.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/identity_test_environment.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider+Testing.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
+#import "ios/chrome/browser/optimization_guide/model/optimization_guide_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -48,6 +52,9 @@ const char kImageUrl[] = "https://www.example.com/image.jpg";
 // Link URL for the context menu params.
 const char kLinkUrl[] = "https://www.example.com";
 
+constexpr char kTestUrl[] = "https://allowed.com";
+constexpr char kTestDisallowedUrl[] = "https://disallowed.com";
+
 // Returns context menu params with `src_url` set to `image_url`.
 web::ContextMenuParams GetContextMenuParamsWithImageUrl(const char* image_url) {
   web::ContextMenuParams params;
@@ -72,15 +79,19 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
  protected:
   void SetUp() final {
     PlatformTest::SetUp();
-    TestChromeBrowserState::Builder builder;
+    TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         IdentityManagerFactory::GetInstance(),
         base::BindRepeating(IdentityTestEnvironmentBrowserStateAdaptor::
                                 BuildIdentityManagerForTests));
-    browser_state_ = std::move(builder).Build();
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    builder.AddTestingFactory(
+        OptimizationGuideServiceFactory::GetInstance(),
+        OptimizationGuideServiceFactory::GetDefaultFactory());
+    profile_ = std::move(builder).Build();
+    browser_ = std::make_unique<TestBrowser>(profile_.get());
     std::unique_ptr<web::FakeWebState> web_state =
         std::make_unique<web::FakeWebState>();
+    web_state->SetBrowserState(profile_.get());
     browser_->GetWebStateList()->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate());
@@ -125,7 +136,7 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
   // Sign-in with a fake account.
   void SignIn() {
     signin::MakePrimaryAccountAvailable(
-        IdentityManagerFactory::GetForProfile(browser_state_.get()),
+        IdentityManagerFactory::GetForProfile(profile_.get()),
         kPrimaryAccountEmail, signin::ConsentLevel::kSignin);
   }
 
@@ -152,7 +163,7 @@ class ContextMenuConfigurationProviderTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
   ContextMenuConfigurationProvider* configuration_provider_;
@@ -234,4 +245,48 @@ TEST_F(ContextMenuConfigurationProviderTest, HasShareInWebContextMenuElement) {
   EXPECT_NSEQ(found_menu_element.subtitle, expected_menu_element.subtitle);
   // Test that the element has the expected image.
   EXPECT_NSEQ(found_menu_element.image, expected_menu_element.image);
+}
+
+TEST_F(ContextMenuConfigurationProviderTest, EntityDetectionAllowedURL) {
+  base::HistogramTester histogram_tester;
+  web::ContextMenuParams params;
+
+  OptimizationGuideService* optimization_guide_service =
+      OptimizationGuideServiceFactory::GetForProfile(profile_.get());
+  optimization_guide::proto::Any any_metadata;
+  optimization_guide::OptimizationMetadata metadata;
+  metadata.set_any_metadata(any_metadata);
+  optimization_guide_service->AddHintForTesting(
+      GURL(kTestUrl),
+      optimization_guide::proto::TEXT_CLASSIFIER_ENTITY_DETECTION, metadata);
+
+  SignIn();
+  GetActiveWebState()->SetCurrentURL(GURL(kTestUrl));
+
+  [configuration_provider_
+      contextMenuActionProviderForWebState:GetActiveWebState()
+                                    params:params];
+  histogram_tester.ExpectUniqueSample(
+      "IOS.Mobile.ContextMenu.EntitySelectionAllowed", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.TextClassifierEntityDetection",
+      optimization_guide::OptimizationTypeDecision::kAllowedByHint, 1);
+}
+
+TEST_F(ContextMenuConfigurationProviderTest, NoEntityDetectionOnDisallowedURL) {
+  base::HistogramTester histogram_tester;
+  web::ContextMenuParams params;
+
+  SignIn();
+  GetActiveWebState()->SetCurrentURL(GURL(kTestDisallowedUrl));
+
+  [configuration_provider_
+      contextMenuActionProviderForWebState:GetActiveWebState()
+                                    params:params];
+  histogram_tester.ExpectTotalCount(
+      "IOS.Mobile.ContextMenu.EntitySelectionAllowed", 0);
+  histogram_tester.ExpectUniqueSample(
+      "OptimizationGuide.ApplyDecision.TextClassifierEntityDetection",
+      optimization_guide::OptimizationTypeDecision::kRequestedUnregisteredType,
+      1);
 }

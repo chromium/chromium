@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
-#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/install_bounce_metric.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -800,17 +799,15 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);
 
-  BrowserFeaturePromoController* controller =
-      BrowserFeaturePromoController::GetForView(pwa_install_view_);
   // IPH is not shown when the site is not highly engaged.
-  EXPECT_FALSE(controller->IsPromoActive(
+  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
       feature_engagement::kIPHDesktopPwaInstallFeature));
 
   // Manually set engagement score to be above IPH triggering threshold.
   site_engagement::SiteEngagementService::Get(profile())->AddPointsForTesting(
       app_url, web_app::kIphFieldTrialParamDefaultSiteEngagementThreshold + 1);
   OpenTab(app_url);
-  EXPECT_TRUE(controller->IsPromoActive(
+  EXPECT_TRUE(browser()->window()->IsFeaturePromoActive(
       feature_engagement::kIPHDesktopPwaInstallFeature));
 }
 
@@ -827,10 +824,8 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, PwaIntallIphIgnored) {
   bool installable = OpenTab(app_url).installable;
   ASSERT_TRUE(installable);
 
-  BrowserFeaturePromoController* controller =
-      BrowserFeaturePromoController::GetForView(pwa_install_view_);
   // IPH is not shown when the IPH is ignored recently.
-  EXPECT_FALSE(controller->IsPromoActive(
+  EXPECT_FALSE(browser()->window()->IsFeaturePromoActive(
       feature_engagement::kIPHDesktopPwaInstallFeature));
 }
 

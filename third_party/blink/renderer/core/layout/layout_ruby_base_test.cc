@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/layout_ruby_base.h"
+// #include "third_party/blink/renderer/core/layout/layout_ruby_base.h"
 
-#include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
+// #include "third_party/blink/renderer/core/layout/layout_ruby_column.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 
 namespace blink {
@@ -19,9 +19,6 @@ TEST_F(LayoutRubyBaseTest, AddChildNoBlockChildren) {
       )HTML");
   auto* ruby_object = GetLayoutObjectByElementId("target");
   auto* first_child = ruby_object->SlowFirstChild();
-  if (!RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
-    first_child = To<LayoutRubyColumn>(first_child)->RubyBase()->FirstChild();
-  }
   // Adding a table-cell should not move the prior Text to an anonymous block.
   EXPECT_TRUE(first_child->IsText());
   EXPECT_EQ(EDisplay::kInlineTable,
@@ -40,10 +37,6 @@ TEST_F(LayoutRubyBaseTest, AddImageNoBlockChildren) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* first_child = GetLayoutObjectByElementId("target")->SlowFirstChild();
-  if (!RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
-    auto* run_box = To<LayoutRubyColumn>(first_child);
-    first_child = run_box->RubyBase()->FirstChild();
-  }
   // Adding a LayoutImage with display:table-caption should not move the prior
   // Text to an anonymous block.
   EXPECT_TRUE(first_child->IsText());
@@ -65,9 +58,6 @@ TEST_F(LayoutRubyBaseTest, AddSpecialWithTableInternalDisplayNoBlockChildren) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* first_child = GetLayoutObjectByElementId("target")->SlowFirstChild();
-  if (!RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
-    first_child = To<LayoutRubyColumn>(first_child)->RubyBase()->FirstChild();
-  }
   // Adding a table-column should not move the prior Text to an anonymous block.
   EXPECT_TRUE(first_child->IsText());
   // The input is not wrapped by an inline-table though it has
@@ -87,9 +77,6 @@ TEST_F(LayoutRubyBaseTest, ChangeToRubyNoBlockChildren) {
   UpdateAllLifecyclePhasesForTest();
 
   auto* first_child = GetLayoutObjectByElementId("target")->SlowFirstChild();
-  if (!RuntimeEnabledFeatures::RubyLineBreakableEnabled()) {
-    first_child = To<LayoutRubyColumn>(first_child)->RubyBase()->FirstChild();
-  }
   // <p> should be inlinified.
   EXPECT_TRUE(first_child->IsInline()) << first_child;
 }

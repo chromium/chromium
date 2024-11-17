@@ -38,6 +38,7 @@
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/download/download_dir_util.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -247,7 +248,7 @@ class LoggingObserver : public VolumeManagerObserver {
     // by the time VolumeManager shuts down, and this handler is never reached.
     // In fact, it's more likely for UAF crash to happen before this code is
     // reached.
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
  private:
@@ -1466,7 +1467,8 @@ class VolumeManagerLocalUserFilesTest : public VolumeManagerArcTest {
       : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kSkyVault);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kSkyVault, features::kSkyVaultV2}, {});
     VolumeManagerArcTest::SetUp();
   }
 
@@ -1475,6 +1477,12 @@ class VolumeManagerLocalUserFilesTest : public VolumeManagerArcTest {
   void SetLocalUserFilesPolicy(bool allowed) {
     scoped_testing_local_state_.Get()->SetBoolean(prefs::kLocalUserFilesAllowed,
                                                   allowed);
+  }
+
+  void SetLocalUserFilesMigrationPolicy(const std::string& destination) {
+    scoped_testing_local_state_.Get()->SetString(
+        prefs::kLocalUserFilesMigrationDestination, destination);
+    volume_manager()->OnMigrationSucceededForTesting();
   }
 
   bool ContainsDownloads() {
@@ -1517,8 +1525,13 @@ TEST_F(VolumeManagerLocalUserFilesTest, DisableEnable) {
   EXPECT_TRUE(ContainsDownloads());
   EXPECT_TRUE(ContainsPlayFiles());
 
-  // Setting the policy to false removes local volumes.
+  // Setting the policy to false removes only "Play Files".
   SetLocalUserFilesPolicy(/*allowed=*/false);
+  EXPECT_TRUE(ContainsDownloads());
+  EXPECT_FALSE(ContainsPlayFiles());
+
+  // Setting the migration policy removes also "Downloads".
+  SetLocalUserFilesMigrationPolicy(download_dir_util::kLocationGoogleDrive);
   EXPECT_FALSE(ContainsDownloads());
   EXPECT_FALSE(ContainsPlayFiles());
 

@@ -5,13 +5,12 @@
 #ifndef IOS_WEB_CONTENT_WEB_STATE_CONTENT_WEB_STATE_H_
 #define IOS_WEB_CONTENT_WEB_STATE_CONTENT_WEB_STATE_H_
 
-#import "ios/web/public/web_state.h"
+#import <UIKit/UIKit.h>
 
 #import <memory>
 #import <optional>
 
-#import <UIKit/UIKit.h>
-
+#import "base/memory/raw_ptr.h"
 #import "base/observer_list.h"
 #import "build/blink_buildflags.h"
 #import "content/public/browser/web_contents_delegate.h"
@@ -20,6 +19,7 @@
 #import "ios/web/content/navigation/content_navigation_manager.h"
 #import "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/session/session_certificate_policy_cache.h"
+#import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
 
 @class CRCWebViewportContainerView;
@@ -234,7 +234,7 @@ class ContentWebState : public WebState,
   void OnKeyboardShow(NSNotification* notification);
   void OnKeyboardHide(NSNotification* notification);
 
-  WebStateDelegate* delegate_ = nullptr;
+  raw_ptr<WebStateDelegate> delegate_ = nullptr;
   CRCWebViewportContainerView* web_view_;
   CRWSessionStorage* session_storage_;
   std::unique_ptr<content::WebContents> web_contents_;

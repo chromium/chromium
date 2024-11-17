@@ -55,8 +55,7 @@ NavigationThrottle::ThrottleCheckResult ExecuteNavigationEvent(
     case NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader:
       return throttle->WillCommitWithoutUrlLoader();
   }
-  NOTREACHED_IN_MIGRATION();
-  return NavigationThrottle::CANCEL_AND_IGNORE;
+  NOTREACHED();
 }
 
 const char* GetEventName(NavigationThrottleRunner::Event event) {
@@ -75,8 +74,7 @@ const char* GetEventName(NavigationThrottleRunner::Event event) {
     case NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader:
       return "NavigationThrottle::WillCommitWithoutUrlLoader";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 const char* GetEventNameForHistogram(NavigationThrottleRunner::Event event) {
@@ -95,8 +93,7 @@ const char* GetEventNameForHistogram(NavigationThrottleRunner::Event event) {
     case NavigationThrottleRunner::Event::kWillCommitWithoutUrlLoader:
       return "WillCommitWithoutUrlLoader";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 base::TimeDelta RecordHistogram(NavigationThrottleRunner::Event event,

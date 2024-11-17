@@ -9,6 +9,7 @@
 #import "components/variations/pref_names.h"
 #import "ios/chrome/browser/ui/push_notification/scoped_notification_auth_swizzler.h"
 #import "ios/chrome/browser/ui/settings/notifications/notifications_constants.h"
+#import "ios/chrome/browser/ui/settings/notifications/notifications_earl_grey_app_interface.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -60,10 +61,6 @@ id<GREYMatcher> NotificationsSettingsMatcher() {
   AppLaunchConfiguration config;
   // Feature parameters follow a key/value format to enable or disable
   // parameters.
-  std::string params =
-      ":enable_price_tracking/true/enable_price_notification/true";
-  std::string priceNotificationsFlag =
-      std::string(commerce::kCommercePriceTracking.name) + params;
   std::string shoppingListFlag = std::string("ShoppingList");
   std::string notificationMenuItemFlag =
       std::string("NotificationSettingsMenuItem");
@@ -95,6 +92,8 @@ id<GREYMatcher> NotificationsSettingsMatcher() {
   [ChromeEarlGrey setStringValue:"us"
                forLocalStatePref:variations::prefs::
                                      kVariationsPermanentOverriddenCountry];
+
+  [NotificationsEarlGreyAppInterface setUpMockShoppingService];
 
   // Opens price notifications setting.
   [ChromeEarlGreyUI openSettingsMenu];

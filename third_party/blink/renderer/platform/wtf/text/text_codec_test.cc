@@ -37,30 +37,21 @@ namespace WTF {
 namespace {
 
 TEST(TextCodec, HTMLEntityEncoding) {
-  UnencodableReplacementArray replacement;
-  int size = TextCodec::GetUnencodableReplacement(
-      0xE003, kEntitiesForUnencodables, replacement);
-  EXPECT_EQ(size, 8);
-  EXPECT_EQ(std::string(replacement), "&#57347;");
-  EXPECT_EQ(replacement[8], 0);
+  std::string replacement =
+      TextCodec::GetUnencodableReplacement(0xE003, kEntitiesForUnencodables);
+  EXPECT_EQ(replacement, "&#57347;");
 }
 
 TEST(TextCodec, URLEntityEncoding) {
-  UnencodableReplacementArray replacement;
-  int size = TextCodec::GetUnencodableReplacement(
-      0xE003, kURLEncodedEntitiesForUnencodables, replacement);
-  EXPECT_EQ(size, 14);
-  EXPECT_EQ(std::string(replacement), "%26%2357347%3B");
-  EXPECT_EQ(replacement[14], 0);
+  std::string replacement = TextCodec::GetUnencodableReplacement(
+      0xE003, kURLEncodedEntitiesForUnencodables);
+  EXPECT_EQ(replacement, "%26%2357347%3B");
 }
 
 TEST(TextCodec, CSSEntityEncoding) {
-  UnencodableReplacementArray replacement;
-  int size = TextCodec::GetUnencodableReplacement(
-      0xE003, kCSSEncodedEntitiesForUnencodables, replacement);
-  EXPECT_EQ(size, 6);
-  EXPECT_EQ(std::string(replacement), "\\e003 ");
-  EXPECT_EQ(replacement[6], 0);
+  std::string replacement = TextCodec::GetUnencodableReplacement(
+      0xE003, kCSSEncodedEntitiesForUnencodables);
+  EXPECT_EQ(replacement, "\\e003 ");
 }
 
 }  // anonymous namespace

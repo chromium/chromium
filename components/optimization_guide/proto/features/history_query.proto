@@ -19,17 +19,19 @@ option java_outer_classname = "HistoryQueryProto";
 // refer to http://go/chrome-intelligence-feature-protos (Google-internal link),
 // and then changes will be synced with Chrome automatically.
 
+// Protos for the AiData representing the flow where Chrome sends the user query
+// to the server, the server returns an embedding and the client computes a
+// ranking of the documents.
+
 message HistoryQueryLoggingData {
   HistoryQueryRequest request = 1;
 
   HistoryQueryResponse response = 2;
 
   HistoryQueryQuality quality = 3;
-}
 
-// Protos for the AiData representing the flow where Chrome sends the user query
-// to the server, the server returns an embedding and the client computes a
-// ranking of the documents.
+  reserved 4, 5;
+}
 
 // Next ID: 2
 message HistoryQueryRequest {
@@ -41,7 +43,7 @@ message HistoryQueryResponse {
   reserved 1, 2;
 }
 
-// Next Id: 10
+// Next Id: 11
 message HistoryQueryQuality {
   // The history search query entered by the user.
   string query = 4;
@@ -75,9 +77,13 @@ message HistoryQueryQuality {
   // The session id of the user query. Use this to join with HistoryAnswer
   // protos from the same session.
   string session_id = 9;
+
+  // The final model status of the query. Used to determine if the query result
+  // is successful/accepted or not.
+  FinalModelStatus final_model_status = 10;
 }
 
-// Next ID: 5
+// Next ID: 7
 message DocumentShown {
   // The full URL of the document shown to the user.
   string url = 2;
@@ -86,6 +92,14 @@ message DocumentShown {
 
   // Whether the user clicked the shown document.
   bool was_clicked = 4;
+
+  // Best score from passages, replicated for convenient summary.
+  float best_embedding_score = 5;
+
+  // Total score for the document including best passage embedding score
+  // plus any holistic (across all passages) text search score boost.
+  // Also here for convenience as it can in theory be computed from passages.
+  float total_document_score = 6;
 
   reserved 1;
 }
@@ -102,11 +116,13 @@ message PassageData {
   float score = 3;
 }
 
-// Next ID: 3
+// Next ID: 4
 enum UiSurface {
   UI_SURFACE_UNSPECIFIED = 0;
 
   UI_SURFACE_HISTORY_PAGE = 1;
 
   UI_SURFACE_OMNIBOX_HISTORY_SCOPE = 2;
+
+  UI_SURFACE_SIDE_PANEL = 3;
 }

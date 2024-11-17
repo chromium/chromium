@@ -4,25 +4,22 @@ include_rules = [
   "+components/signin/internal/identity_manager/account_capabilities_fetcher_factory.h",
   "+components/signin/internal/identity_manager/account_tracker_service.h",
   "+components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_ios.h",
-  "+ios/chrome/browser/browser_state/model/constants.h",
   "+components/trusted_vault",
-  "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/bookmarks/model",
+  "+ios/chrome/browser/browser_state/model/constants.h",
+  "+ios/chrome/browser/browsing_data/model",
+  "+ios/chrome/browser/content_settings/model",
   "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/policy/model",
   "+ios/chrome/browser/sync/model",
-  "+ios/chrome/browser/web_state_list/model",
   "+ios/chrome/browser/web/model",
+  "+ios/chrome/browser/web_state_list/model",
   "+ios/chrome/browser/webdata_services/model",
 ]
 
 specific_include_rules = {
-  # TODO(crbug.com/40820398): Remove these dependencies.
-  "^authentication_service.mm": [
-    "+ios/chrome/browser/ui/authentication/signin/signin_utils.h",
-  ],
-  "^chrome_account_manager_service.mm": [
-    "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",
+  # TODO(crbug.com/331781927): remove when kIdentityDiscAccountMenu launches.
+  "^authentication_service_delegate_impl.cc": [
+    "+ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h",
   ],
 }
-

@@ -11,9 +11,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/types/pass_key.h"
-#include "mojo/public/cpp/base/big_buffer.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
-#include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 
@@ -32,6 +30,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
                             input_names_to_descriptors,
                         base::flat_map<std::string, OperandDescriptor>
                             output_names_to_descriptors,
+                        base::flat_map<uint64_t, base::flat_set<size_t>>
+                            operand_to_dependent_operations,
                         base::PassKey<WebNNGraphBuilderImpl> pass_key);
     ~ComputeResourceInfo();
 
@@ -43,6 +43,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
 
     base::flat_map<std::string, OperandDescriptor> input_names_to_descriptors;
     base::flat_map<std::string, OperandDescriptor> output_names_to_descriptors;
+    base::flat_map<uint64_t, base::flat_set<size_t>>
+        operand_to_dependent_operations;
   };
 
   // Constructs a graph where the receiever and implementation is owned by the
@@ -69,19 +71,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
   const raw_ptr<WebNNContextImpl> context_;
 
   // mojom::WebNNGraph
-  void Compute(base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
-               mojom::WebNNGraph::ComputeCallback callback) override;
-
   void Dispatch(
       const base::flat_map<std::string, blink::WebNNTensorToken>& named_inputs,
       const base::flat_map<std::string, blink::WebNNTensorToken>& named_outputs)
       override;
-
-  // An WebNNGraph backend should implement this method to execute the compiled
-  // platform graph asynchronously.
-  virtual void ComputeImpl(
-      base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
-      mojom::WebNNGraph::ComputeCallback callback) = 0;
 
   // Execute the compiled platform graph. The `named_inputs` and `named_outputs`
   // were validated in base class.

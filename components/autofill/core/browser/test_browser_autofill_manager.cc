@@ -12,24 +12,22 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/form_structure_test_api.h"
-#include "components/autofill/core/browser/mock_single_field_form_fill_router.h"
-#include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/browser/mock_single_field_fill_router.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
 #include "components/autofill/core/browser/test_form_filler.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "components/autofill/core/common/autofill_prefs.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
 
 TestBrowserAutofillManager::TestBrowserAutofillManager(AutofillDriver* driver)
-    : BrowserAutofillManager(driver, "en-US") {
+    : BrowserAutofillManager(driver) {
   test_api(*this).set_form_filler(
-      std::make_unique<TestFormFiller>(*this, log_manager(), "en-US"));
+      std::make_unique<TestFormFiller>(*this, log_manager()));
 }
 
 TestBrowserAutofillManager::~TestBrowserAutofillManager() = default;
@@ -113,18 +111,9 @@ void TestBrowserAutofillManager::OnJavaScriptChangedAutofilledValue(
 
 void TestBrowserAutofillManager::OnFormSubmitted(
     const FormData& form,
-    const bool known_success,
     const mojom::SubmissionSource source) {
-  AutofillManager::OnFormSubmitted(form, known_success, source);
+  AutofillManager::OnFormSubmitted(form, source);
   ASSERT_TRUE(waiter_.Wait(0));
-}
-
-bool TestBrowserAutofillManager::IsAutofillProfileEnabled() const {
-  return autofill_profile_enabled_;
-}
-
-bool TestBrowserAutofillManager::IsAutofillPaymentMethodsEnabled() const {
-  return autofill_payment_methods_enabled_;
 }
 
 void TestBrowserAutofillManager::UploadVotesAndLogQuality(
@@ -252,37 +241,6 @@ void TestBrowserAutofillManager::OnAskForValuesToFillTest(
   BrowserAutofillManager::OnAskForValuesToFill(form, field_id, caret_bounds,
                                                trigger_source);
   ASSERT_TRUE(waiter_.Wait(0));
-}
-
-void TestBrowserAutofillManager::SetAutofillProfileEnabled(
-    TestAutofillClient& client,
-    bool autofill_profile_enabled) {
-  autofill_profile_enabled_ = autofill_profile_enabled;
-  if (PrefService* prefs = client.GetPrefs()) {
-    prefs->SetBoolean(prefs::kAutofillProfileEnabled, autofill_profile_enabled);
-  }
-  if (!autofill_profile_enabled_) {
-    // Profile data is refreshed when this pref is changed.
-    client.GetPersonalDataManager()
-        ->test_address_data_manager()
-        .ClearProfiles();
-  }
-}
-
-void TestBrowserAutofillManager::SetAutofillPaymentMethodsEnabled(
-    TestAutofillClient& client,
-    bool autofill_payment_methods_enabled) {
-  autofill_payment_methods_enabled_ = autofill_payment_methods_enabled;
-  if (PrefService* prefs = client.GetPrefs()) {
-    prefs->SetBoolean(prefs::kAutofillCreditCardEnabled,
-                      autofill_payment_methods_enabled);
-  }
-  if (!autofill_payment_methods_enabled) {
-    // Credit card data is refreshed when this pref is changed.
-    client.GetPersonalDataManager()
-        ->test_payments_data_manager()
-        .ClearCreditCards();
-  }
 }
 
 void TestBrowserAutofillManager::SetExpectedSubmittedFieldTypes(

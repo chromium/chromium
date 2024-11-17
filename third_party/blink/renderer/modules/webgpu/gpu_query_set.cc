@@ -42,7 +42,7 @@ void GPUQuerySet::destroy() {
   GetHandle().Destroy();
 }
 
-String GPUQuerySet::type() const {
+V8GPUQueryType GPUQuerySet::type() const {
   return FromDawnEnum(GetHandle().GetType());
 }
 

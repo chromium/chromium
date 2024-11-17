@@ -16,7 +16,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
-import org.chromium.components.browser_ui.settings.SettingsPage;
+import org.chromium.components.browser_ui.settings.EmbeddableSettingsPage;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 
 /**
@@ -27,7 +27,7 @@ import org.chromium.components.browser_ui.settings.SettingsUtils;
 public class ImageDescriptionsSettings extends PreferenceFragmentCompat
         implements Preference.OnPreferenceChangeListener,
                 CustomDividerFragment,
-                SettingsPage,
+                EmbeddableSettingsPage,
                 ProfileDependentSetting {
     public static final String IMAGE_DESCRIPTIONS = "image_descriptions_switch";
     public static final String IMAGE_DESCRIPTIONS_DATA_POLICY = "image_descriptions_data_policy";

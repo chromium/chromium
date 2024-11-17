@@ -14,7 +14,7 @@ namespace ash {
 // In Ash, most of the profile has corresponding ChromeOS User.
 // This class is to support their mapping.
 // On Profile creation, AccountId for the corresponding User is annotated.
-// See also ChromeUserManagerImpl.
+// See also ProfileUserManagerController.
 class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) AnnotatedAccountId
     : public base::SupportsUserData::Data {
  public:

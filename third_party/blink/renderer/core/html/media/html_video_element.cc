@@ -369,7 +369,7 @@ void HTMLVideoElement::OnPlay() {
     return;
   }
 
-  webkitEnterFullscreen();
+  EnterFullscreen();
 }
 
 void HTMLVideoElement::OnLoadStarted() {
@@ -474,26 +474,13 @@ void HTMLVideoElement::OnFirstFrame(base::TimeTicks frame_time,
   }
 }
 
-void HTMLVideoElement::webkitEnterFullscreen() {
+void HTMLVideoElement::EnterFullscreen() {
   if (!IsFullscreen()) {
     FullscreenOptions* options = FullscreenOptions::Create();
     options->setNavigationUI("hide");
     Fullscreen::RequestFullscreen(*this, options,
                                   FullscreenRequestType::kPrefixed);
   }
-}
-
-void HTMLVideoElement::webkitExitFullscreen() {
-  if (IsFullscreen())
-    Fullscreen::ExitFullscreen(GetDocument());
-}
-
-bool HTMLVideoElement::webkitSupportsFullscreen() {
-  return Fullscreen::FullscreenEnabled(GetDocument());
-}
-
-bool HTMLVideoElement::webkitDisplayingFullscreen() {
-  return IsFullscreen();
 }
 
 void HTMLVideoElement::DidEnterFullscreen() {
@@ -575,7 +562,8 @@ bool HTMLVideoElement::IsDefaultPosterImageURL() const {
 
 scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
     bool allow_accelerated_images,
-    std::optional<gfx::Size> size) {
+    std::optional<gfx::Size> size,
+    bool reinterpret_as_srgb) {
   media::PaintCanvasVideoRenderer* video_renderer = nullptr;
   scoped_refptr<media::VideoFrame> media_video_frame;
   if (auto* wmp = GetWebMediaPlayer()) {
@@ -595,7 +583,9 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   // is inappropriate in many circumstances.
   const auto resource_provider_info = SkImageInfo::Make(
       gfx::SizeToSkISize(dest_size), kN32_SkColorType, kPremul_SkAlphaType,
-      media_video_frame->CompatRGBColorSpace().ToSkColorSpace());
+      reinterpret_as_srgb
+          ? SkColorSpace::MakeSRGB()
+          : media_video_frame->CompatRGBColorSpace().ToSkColorSpace());
   if (!resource_provider_ ||
       (resource_provider_->IsAccelerated() &&
        resource_provider_->IsGpuContextLost()) ||
@@ -620,10 +610,11 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   cache_deleting_timer_.StartOneShot(kTemporaryResourceDeletionDelay,
                                      FROM_HERE);
 
-  auto image = CreateImageFromVideoFrame(std::move(media_video_frame),
-                                         /*allow_zero_copy_images=*/true,
-                                         resource_provider_.get(),
-                                         video_renderer, gfx::Rect(dest_size));
+  auto image = CreateImageFromVideoFrame(
+      std::move(media_video_frame),
+      /*allow_zero_copy_images=*/true, resource_provider_.get(), video_renderer,
+      gfx::Rect(dest_size),
+      /*prefer_tagged_orientation=*/true, reinterpret_as_srgb);
   if (image)
     image->SetOriginClean(!WouldTaintOrigin());
   return image;

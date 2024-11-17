@@ -19,12 +19,12 @@ class BlockingTask : public CancelationSignal::Observer {
   explicit BlockingTask(CancelationSignal* cancel_signal);
   ~BlockingTask() override;
 
-  // Starts the |exec_thread_| and uses it to execute DoRun().
+  // Starts the `exec_thread_` and uses it to execute DoRun().
   void RunAsync(base::WaitableEvent* task_start_signal,
                 base::WaitableEvent* task_done_signal);
 
-  // Blocks until canceled.  Signals |task_done_signal| when finished (either
-  // via early cancel or cancel after start).  Signals |task_start_signal| if
+  // Blocks until canceled.  Signals `task_done_signal` when finished (either
+  // via early cancel or cancel after start).  Signals `task_start_signal` if
   // and when the task starts successfully (which will not happen if the task
   // was cancelled early).
   void Run(base::WaitableEvent* task_start_signal,
@@ -34,7 +34,7 @@ class BlockingTask : public CancelationSignal::Observer {
   // Wakes up the thread blocked in Run().
   void OnCancelationSignalReceived() override;
 
-  // Checks if we ever did successfully start waiting for |event_|.  Be careful
+  // Checks if we ever did successfully start waiting for `event_`.  Be careful
   // with this.  The flag itself is thread-unsafe, and the event that flips it
   // is racy.
   bool WasStarted();

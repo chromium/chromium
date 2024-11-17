@@ -40,7 +40,8 @@ const char* const kSkipShowNotificationLanguages[4] = {"en", "de", "fr", "it"};
 
 }  // anonymous namespace
 
-LocaleChangeGuard::LocaleChangeGuard(Profile* profile) : profile_(profile) {
+LocaleChangeGuard::LocaleChangeGuard(Profile* profile, PrefService* local_state)
+    : profile_(profile), local_state_(local_state) {
   DCHECK(profile_);
   DeviceSettingsService::Get()->AddObserver(this);
 }
@@ -65,8 +66,7 @@ void LocaleChangeGuard::OnLogin() {
 
 void LocaleChangeGuard::RevertLocaleChange() {
   if (from_locale_.empty() || to_locale_.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   if (reverted_)
     return;
@@ -83,31 +83,33 @@ void LocaleChangeGuard::OnUserSessionStarted(bool is_primary_user) {
 }
 
 void LocaleChangeGuard::OwnershipStatusChanged() {
-  if (!DeviceSettingsService::Get()->HasPrivateOwnerKey())
+  if (!DeviceSettingsService::Get()->HasPrivateOwnerKey()) {
     return;
-  PrefService* local_state = g_browser_process->local_state();
-  if (!local_state)
+  }
+
+  if (!local_state_) {
     return;
+  }
+
   PrefService* prefs = profile_->GetPrefs();
   DCHECK(prefs);
   std::string owner_locale =
       prefs->GetString(language::prefs::kApplicationLocale);
   language::ConvertToActualUILocale(&owner_locale);
-  if (!owner_locale.empty())
-    local_state->SetString(prefs::kOwnerLocale, owner_locale);
+  if (!owner_locale.empty()) {
+    local_state_->SetString(prefs::kOwnerLocale, owner_locale);
+  }
 }
 
 void LocaleChangeGuard::Check() {
   std::string cur_locale = g_browser_process->GetApplicationLocale();
   if (cur_locale.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   PrefService* prefs = profile_->GetPrefs();
   if (prefs == nullptr) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   std::string to_locale = prefs->GetString(language::prefs::kApplicationLocale);
@@ -164,8 +166,7 @@ void LocaleChangeGuard::OnResult(LocaleNotificationResult result) {
 
 void LocaleChangeGuard::AcceptLocaleChange() {
   if (from_locale_.empty() || to_locale_.empty()) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   // Check whether locale has been reverted or changed.
@@ -174,8 +175,7 @@ void LocaleChangeGuard::AcceptLocaleChange() {
     return;
   PrefService* prefs = profile_->GetPrefs();
   if (prefs == nullptr) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
   if (prefs->GetString(language::prefs::kApplicationLocale) != to_locale_)
     return;

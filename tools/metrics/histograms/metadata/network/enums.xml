@@ -234,6 +234,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Aborted"/>
 </enum>
 
+<enum name="CreateCustomApnResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Network not found"/>
+  <int value="2" label="Shill error"/>
+</enum>
+
 <enum name="DnsProxy.DnsOverHttpsMode">
   <int value="0" label="Unknown"/>
   <int value="1" label="Off"/>
@@ -524,6 +530,9 @@ chromium-metrics-reviews@google.com.
              not available."/>
   <int value="13"
       label="kUnknownError: Hotspot disabled due to an unknown error."/>
+  <int value="14"
+      label="kResourceBusy: Hotspot disabled due to concurrency resource
+             conflict."/>
 </enum>
 
 <enum name="HotspotSetConfigResult">
@@ -580,6 +589,15 @@ chromium-metrics-reviews@google.com.
   <int value="13"
       label="kInvalid: The enable hotspot operation is invalid due to an
              ongoing disable operation."/>
+  <int value="14"
+      label="kBusy: The enable hotspot operation failed due to an ongoing
+             request."/>
+  <int value="15"
+      label="kConcurrencyNotSupported: The enable hotspot operation failed
+             due to concurrency conflict."/>
+  <int value="16"
+      label="kOperationFailure: The enable hotspot operation failed
+             internally."/>
 </enum>
 
 <enum name="HotspotSupport">
@@ -637,6 +655,22 @@ chromium-metrics-reviews@google.com.
 <enum name="IpProtectionProxyLayer">
   <int value="0" label="Proxy A"/>
   <int value="1" label="Proxy B"/>
+</enum>
+
+<enum name="IpProtectionProxyResolutionResult">
+  <int value="0"
+      label="The MDL is not populated, so an eligility decision could not be
+             made"/>
+  <int value="1" label="The request did not match the MDL"/>
+  <int value="2" label="The EnableIpProtectionProxy feature is not enabled"/>
+  <int value="3" label="The IP Protection setting is disabled"/>
+  <int value="4" label="Proxy List is unavailable"/>
+  <int value="5"
+      label="Proxy List is available but tokens have never been available"/>
+  <int value="6"
+      label="Proxy List is available but tokens in the cache have been
+             exhausted"/>
+  <int value="7" label="The request was resolved to the IP Protection proxies"/>
 </enum>
 
 <enum name="IpProtectionTokenBatchRequestError">
@@ -779,6 +813,7 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="eSIM profile not found"/>
   <int value="6" label="Enable profile failed"/>
   <int value="7" label="Timeout waiting for connectable"/>
+  <int value="8" label="SIM locked"/>
 </enum>
 
 <enum name="NetworkCellularPSimActivationResult">
@@ -1395,6 +1430,76 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="No Connectivity"/>
   <int value="12" label="Online"/>
 </enum>
+
+<!-- LINT.IfChange(PrefetchMatchesResourceRequestField) -->
+
+<enum name="PrefetchMatchesResourceRequestField">
+  <int value="0" label="unknown"/>
+  <int value="1" label="method"/>
+  <int value="2" label="url"/>
+  <int value="3" label="site_for_cookies"/>
+  <int value="4" label="update_first_party_url_on_redirect"/>
+  <int value="5" label="request_initiator"/>
+  <int value="6" label="isolated_world_origin"/>
+  <int value="7" label="navigation_redirect_chain"/>
+  <int value="8" label="referrer"/>
+  <int value="9" label="referrer_policy"/>
+  <int value="10" label="headers"/>
+  <int value="11" label="cors_exempt_headers"/>
+  <int value="12" label="load_flags"/>
+  <int value="13" label="resource_type"/>
+  <int value="14" label="priority"/>
+  <int value="15" label="priority_incremental"/>
+  <int value="16" label="cors_preflight_policy"/>
+  <int value="17" label="originated_from_service_worker"/>
+  <int value="18" label="skip_service_worker"/>
+  <int value="19" label="mode"/>
+  <int value="20" label="required_ip_address_space"/>
+  <int value="21" label="credentials_mode"/>
+  <int value="22" label="redirect_mode"/>
+  <int value="23" label="fetch_integrity"/>
+  <int value="24" label="destination"/>
+  <int value="25" label="original_destination"/>
+  <int value="26" label="request_body"/>
+  <int value="27" label="keepalive"/>
+  <int value="28" label="browsing_topics"/>
+  <int value="29" label="ad_auction_headers"/>
+  <int value="30" label="shared_storage_writable_eligible"/>
+  <int value="31" label="has_user_gesture"/>
+  <int value="32" label="enable_load_timing"/>
+  <int value="33" label="enable_upload_progress"/>
+  <int value="34" label="do_not_prompt_for_login"/>
+  <int value="35" label="is_outermost_main_frame"/>
+  <int value="36" label="transition_type"/>
+  <int value="37" label="previews_state"/>
+  <int value="38" label="upgrade_if_insecure"/>
+  <int value="39" label="is_revalidating"/>
+  <int value="40" label="throttling_profile_id"/>
+  <int value="41" label="custom_proxy_pre_cache_headers"/>
+  <int value="42" label="custom_proxy_post_cache_headers"/>
+  <int value="43" label="fetch_window_id"/>
+  <int value="44" label="devtools_request_id"/>
+  <int value="45" label="devtools_stack_id"/>
+  <int value="46" label="is_fetch_like_api"/>
+  <int value="47" label="is_fetch_later_api"/>
+  <int value="48" label="is_favicon"/>
+  <int value="49" label="recursive_prefetch_token"/>
+  <int value="50" label="trusted_params"/>
+  <int value="51" label="trust_token_params"/>
+  <int value="52" label="web_bundle_token_params"/>
+  <int value="53" label="devtools_accepted_stream_types"/>
+  <int value="54" label="net_log_create_info"/>
+  <int value="55" label="net_log_reference_info"/>
+  <int value="56" label="target_ip_address_space"/>
+  <int value="57" label="storage_access_api_status"/>
+  <int value="58" label="attribution_reporting_support"/>
+  <int value="59" label="attribution_reporting_eligibility"/>
+  <int value="60" label="shared_dictionary_writer_enabled"/>
+  <int value="61" label="attribution_reporting_src_token"/>
+  <int value="62" label="is_ad_tagged"/>
+</enum>
+
+<!-- LINT.ThenChange() -->
 
 <enum name="PSimSetupFlowResult">
   <int value="0" label="SUCCESS"/>

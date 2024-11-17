@@ -48,6 +48,7 @@ constexpr char kEmptyDocumentURL[] = "/empty.html";
 constexpr char kDocumentWithTitle1URL[] = "/title1.html";
 constexpr char kDocumentWithTitle2URL[] = "/title2.html";
 constexpr char kDocumentWithLinksURL[] = "/links.html";
+constexpr char kDocumentWithIframe[] = "/iframe_elements.html";
 
 }  // namespace
 
@@ -2489,6 +2490,85 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
 
   EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
   EXPECT_EQ(url, util2->web_contents()->GetURL());
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest, ExistsInIframe) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const WebContentsInteractionTestUtil::DeepQuery kQuery1{"#container",
+                                                          "iframe"};
+  const WebContentsInteractionTestUtil::DeepQuery kQuery2{"#container",
+                                                          "iframe", "#ref"};
+  const WebContentsInteractionTestUtil::DeepQuery kQuery3{"#iframe", "#title1"};
+  const WebContentsInteractionTestUtil::DeepQuery kQuery4{"#iframe",
+                                                          "#not-present"};
+
+  auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+      browser(), kWebContentsElementId);
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithIframe);
+  util->LoadPage(url);
+
+  auto sequence =
+      DefaultBuilder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+
+          .AddStep(ui::InteractionSequence::StepBuilder()
+                       .SetType(ui::InteractionSequence::StepType::kShown)
+                       .SetElementID(kWebContentsElementId)
+                       .SetStartCallback(base::BindLambdaForTesting(
+                           [&](ui::InteractionSequence* sequence,
+                               ui::TrackedElement* element) {
+                             EXPECT_TRUE(util->Exists(kQuery1));
+                             EXPECT_TRUE(util->Exists(kQuery2));
+                             EXPECT_TRUE(util->Exists(kQuery3));
+
+                             std::string failed;
+                             EXPECT_FALSE(util->Exists(kQuery4, &failed));
+                             EXPECT_EQ(kQuery4[1], failed);
+                           }))
+                       .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
+}
+
+IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilTest,
+                       ExecuteAndEvaluateAtInIframe) {
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
+  UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
+
+  const WebContentsInteractionTestUtil::DeepQuery kQuery1{"iframe", "#ref"};
+  const WebContentsInteractionTestUtil::DeepQuery kQuery2{"#iframe", "#title1"};
+
+  auto util = WebContentsInteractionTestUtil::ForExistingTabInBrowser(
+      browser(), kWebContentsElementId);
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithIframe);
+  util->LoadPage(url);
+
+  auto sequence =
+      DefaultBuilder()
+          .SetCompletedCallback(completed.Get())
+          .SetAbortedCallback(aborted.Get())
+
+          .AddStep(
+              ui::InteractionSequence::StepBuilder()
+                  .SetType(ui::InteractionSequence::StepType::kShown)
+                  .SetElementID(kWebContentsElementId)
+                  .SetStartCallback(base::BindLambdaForTesting(
+                      [&](ui::InteractionSequence* sequence,
+                          ui::TrackedElement* element) {
+                        EXPECT_EQ(
+                            "ref link",
+                            util->EvaluateAt(kQuery1, "el => el.innerText"));
+                        util->ExecuteAt(kQuery2, "el => el.foo = 2");
+                        EXPECT_EQ(2, util->EvaluateAt(kQuery2, "el => el.foo"));
+                      }))
+                  .Build())
+          .Build();
+
+  EXPECT_CALL_IN_SCOPE(completed, Run, sequence->RunSynchronouslyForTesting());
 }
 
 class WebContentsInteractionTestUtilInteractiveTest

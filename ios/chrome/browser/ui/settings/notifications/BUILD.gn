@@ -19,8 +19,8 @@ source_set("notifications") {
     "//components/sync_device_info",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_notification/model:util",
-    "//ios/chrome/browser/push_notification/model:browser_state_service",
-    "//ios/chrome/browser/push_notification/model:browser_state_service_factory",
+    "//ios/chrome/browser/push_notification/model:profile_service",
+    "//ios/chrome/browser/push_notification/model:profile_service_factory",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_service",
     "//ios/chrome/browser/push_notification/model:push_notification_service_header",
@@ -38,7 +38,8 @@ source_set("notifications") {
     "//ios/chrome/browser/shared/ui/table_view",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/chrome/browser/shared/ui/table_view/cells",
-    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:authentication_service",
+    "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui_util",
     "//ios/chrome/browser/ui/push_notification:notifications_opt_in_ui",
@@ -130,6 +131,7 @@ source_set("eg2_tests") {
   sources = [ "notifications_egtest.mm" ]
   deps = [
     ":constants",
+    ":eg_test_support+eg2",
     "//base",
     "//base/test:test_support",
     "//components/commerce/core:feature_list",
@@ -141,4 +143,33 @@ source_set("eg2_tests") {
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("eg_app_support+eg2") {
+  testonly = true
+  sources = [
+    "notifications_earl_grey_app_interface.h",
+    "notifications_earl_grey_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/commerce/core:shopping_service_test_support",
+    "//ios/chrome/browser/commerce/model:shopping_service",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/test/app:test_support",
+    "//ios/web/public",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  testonly = true
+  sources = [
+    "notifications_earl_grey_app_interface.h",
+    "notifications_earl_grey_app_interface_stub.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
 }

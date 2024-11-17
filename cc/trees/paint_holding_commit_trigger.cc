@@ -15,8 +15,7 @@ PaintHoldingCommitTrigger ReasonToTimeoutTrigger(PaintHoldingReason reason) {
     case PaintHoldingReason::kViewTransition:
       return PaintHoldingCommitTrigger::kTimeoutViewTransition;
   }
-  NOTREACHED_IN_MIGRATION();
-  return PaintHoldingCommitTrigger::kTimeoutFCP;
+  NOTREACHED();
 }
 
 }  // namespace cc

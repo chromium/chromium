@@ -10,9 +10,9 @@
 #include "base/check.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "components/user_education/common/feature_promo_idle_observer.h"
-#include "components/user_education/common/feature_promo_idle_policy.h"
-#include "components/user_education/common/feature_promo_session_manager.h"
+#include "components/user_education/common/session/user_education_idle_observer.h"
+#include "components/user_education/common/session/user_education_idle_policy.h"
+#include "components/user_education/common/session/user_education_session_manager.h"
 #include "components/user_education/common/user_education_features.h"
 #include "ui/base/idle/idle.h"
 #include "ui/base/idle/idle_polling_service.h"
@@ -29,7 +29,7 @@ static constexpr base::TimeDelta kStaleDataThreshold =
 }  // namespace
 
 // Function called by `UserEducationServiceFactory` to create an idle observer.
-std::unique_ptr<user_education::FeaturePromoIdleObserver>
+std::unique_ptr<user_education::UserEducationIdleObserver>
 CreatePollingIdleObserver() {
   return std::make_unique<PollingIdleObserver>();
 }

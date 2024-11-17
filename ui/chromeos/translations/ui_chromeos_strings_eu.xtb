@@ -19,6 +19,7 @@
 <translation id="115443833402798225">Hangul ahnmatae</translation>
 <translation id="1155759005174418845">Katalana</translation>
 <translation id="1168100932582989117">Google izen-zerbitzariak</translation>
+<translation id="1170788066030116158">Ateratako data</translation>
 <translation id="1172970565351728681"><ph name="REMAINING_TIME" /> inguru geratzen dira</translation>
 <translation id="1173894706177603556">Aldatu izena</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea, <ph name="PHONE_NAME" />. <ph name="CONNECTION_STATUS" />. Seinalearen indarra: % <ph name="SIGNAL_STRENGTH" />. Telefonoaren bateria: % <ph name="BATTERY_STATUS" />. Xehetasunak.</translation>
@@ -421,6 +422,7 @@
 <translation id="4387004326333427325">Autentifikazio-ziurtagiria urrunetik baztertu da</translation>
 <translation id="4394214039309501350">Kanpoko esteka</translation>
 <translation id="4394980935660306080">Aste honetan lehenago</translation>
+<translation id="4397435965699247285">OneDrive ezin da erabili konexiorik gabe</translation>
 <translation id="4398096759193130964">Leheneratu elementuak edo arrasta itzazu zaborrontzitik kanpoko beste karpeta batera</translation>
 <translation id="4401287888955153199">Atera guztia</translation>
 <translation id="4410695710508688828">Ezin izan da atera. <ph name="ERROR_MESSAGE" /></translation>
@@ -491,7 +493,7 @@
 <translation id="485316830061041779">Alemana</translation>
 <translation id="4862885579661885411">Fitxategien ezarpenak</translation>
 <translation id="4867079195717347957">Egin klik zutabea beheranzko ordenan ezartzeko.</translation>
-<translation id="4867297348137739678">Aurreko astea</translation>
+<translation id="4867297348137739678">Joan den astea</translation>
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
 <translation id="4874569719830985133">Ezabatu betiko</translation>
 <translation id="4880214202172289027">Bolumen-graduatzailea</translation>
@@ -616,7 +618,7 @@
 <translation id="5700087501958648444">Audioari buruzko informazioa</translation>
 <translation id="5720028165859493293">Eraman da zaborrontzira <ph name="FILE_NAME" /></translation>
 <translation id="5724172041621205163">Thailandiarra, Pattachote teklatuarekin</translation>
-<translation id="57383366388012121">Aurreko hilabetea</translation>
+<translation id="57383366388012121">Joan den hilabetea</translation>
 <translation id="575175778971367197">Une honetan ezin da sinkronizatu fitxategi hau</translation>
 <translation id="5756666464756035725">QWERTY teklatu hungariarra</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> elementu hautatu dira</translation>
@@ -718,7 +720,7 @@
 <translation id="6503285896705205014">Administratzailearen gidalerroek ez dute uzten <ph name="COUNT" /> fitxategi kopiatzen</translation>
 <translation id="6509122719576673235">Norvegiarra</translation>
 <translation id="6528513914570774834">Baimendu sare hau erabiltzea gailu hau darabiltenei</translation>
-<translation id="6549689063733911810">Azkenak</translation>
+<translation id="6549689063733911810">Azkenaldikoak</translation>
 <translation id="6558280019477628686">Errore bat gertatu da. Agian ez dira ezabatu elementu batzuk.</translation>
 <translation id="656398493051028875">"<ph name="FILENAME" />" ezabatzen…</translation>
 <translation id="6581162200855843583">Google Drive esteka</translation>
@@ -825,7 +827,7 @@
 <translation id="7339898014177206373">Leiho berria</translation>
 <translation id="7343393116438664539">Vietnamdarra (telex)</translation>
 <translation id="7347346221088620549">Fitxategi enkriptatua</translation>
-<translation id="7357762654218998920">Fitxategi mota hau ez da bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
+<translation id="7357762654218998920">Fitxategi mota hau ez da onartzen. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
 <translation id="7359359531237882347"><ph name="NUMBER_OF_ITEMS" /> elementu kopiatzen…</translation>
 <translation id="7375951387215729722">"<ph name="COLUMN_NAME" />" zutabearen arabera ageri da fitxategien zerrenda, beherantz ordenatuta.</translation>
 <translation id="7377161162143020057">Administratzailearen gidalerroek ez dute uzten fitxategia kopiatzen</translation>
@@ -953,7 +955,7 @@
 <translation id="8261506727792406068">Ezabatu</translation>
 <translation id="8261561378965667560">Txinatarra (matriziala)</translation>
 <translation id="8262872909443689080">Administratzailearen gidalerroak</translation>
-<translation id="8264024885325823677">Administratzaileak kudeatzen du ezarpen hau.</translation>
+<translation id="8264024885325823677">Administratzaileak ezarpen hau kudeatzen du.</translation>
 <translation id="8269755669432358899">Tolestu fitxategien oharren panelak</translation>
 <translation id="8280151743281770066">Armeniar fonetikoa</translation>
 <translation id="8285791779547722821"><ph name="ORIGINAL_MIME_TYPE" /> enkriptatu da</translation>

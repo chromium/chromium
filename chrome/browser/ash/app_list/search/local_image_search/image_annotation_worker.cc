@@ -34,6 +34,7 @@
 #include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
+#include "chromeos/services/machine_learning/public/mojom/image_content_annotation.mojom.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 
 namespace app_list {
@@ -42,8 +43,8 @@ namespace {
 using TokenizedString = ::ash::string_matching::TokenizedString;
 using Mode = ::ash::string_matching::TokenizedString::Mode;
 
-constexpr int kMaxFileSizeBytes = 2e+7;   // ~ 20MiB
-constexpr int kConfidenceThreshold = 79;  // 30% of 255 (max of ICA)
+constexpr int kMaxFileSizeBytes = 2e+7;  // ~ 20MiB
+constexpr float kConfidenceThreshold = 0.3f;
 constexpr int kOcrMinWordLength = 3;
 constexpr int kRetryDelay = 2;              // For exponential delays.
 constexpr int kMaxNumRetries = 12;          // Over 2 hrs.
@@ -82,12 +83,6 @@ void LogIndexingUma(IndexingStatus status) {
   base::UmaHistogramEnumeration(
       "Apps.AppList.AnnotationStorage.ImageAnnotationWorker.IndexingStatus",
       status);
-}
-
-int GetConfidenceThreshold() {
-  return base::GetFieldTrialParamByFeatureAsInt(
-      search_features::kLauncherLocalImageSearchConfidence,
-      "confidence_threshold", kConfidenceThreshold);
 }
 
 // Exclude animated WebPs.
@@ -438,12 +433,22 @@ bool ImageAnnotationWorker::ProcessNextImage() {
   }
   DCHECK(file_info);
 
-  const base::Time last_modified_time =
-      annotation_storage_->GetLastModifiedTime(image_path);
-  // Annotations are updated on a file change and have the file's last
-  // modified time. So skip inserting the image annotations if the file
-  // has not changed since the last update.
-  if (file_info->last_modified == last_modified_time) {
+  // If all conditions meet:
+  //  1. The image exists in the database and has not been modified since
+  //  the last indexing.
+  //  2. The ocr is not enabled or the ocr indexing in database is up-to-date.
+  //  3. The ica is not enabled or the ica indexing in database is up-to-date.
+  //  4. It's not in the test environment.
+  // Then an indexing is not expected and skip the process. Otherwise, clear
+  // this image from database and redo the indexing.
+  const ImageStatus image_status =
+      annotation_storage_->GetImageStatus(image_path);
+  bool ocr_up_to_date = !use_ocr_ || image_status.ocr_version == kOcrVersion;
+  bool ica_up_to_date = !use_ica_ || image_status.ica_version == kIcaVersion;
+  if (file_info->last_modified ==
+          image_status.last_modified.value_or(base::Time()) &&
+      ocr_up_to_date && ica_up_to_date &&
+      !image_processing_delay_for_test_.has_value()) {
     return false;
   }
 
@@ -495,6 +500,8 @@ void ImageAnnotationWorker::OnDecodeImageFile(
     MaybeProcessNextItem(image_info.path);
     return;
   }
+  image_info.width = image_skia.width();
+  image_info.height = image_skia.height();
 
   if (search_features::IsLauncherImageSearchDebugEnabled()) {
     LOG(ERROR) << "Image decoding succeed.";
@@ -571,9 +578,9 @@ void ImageAnnotationWorker::OnPerformOcr(
     }
   }
   // Always insert the `image_info` because even if there is no annotation for
-  // this image, we need to save the image last modification time so that we
+  // this image, we need to update the image status in the database so that we
   // won't re-process this image in the next user session.
-  annotation_storage_->Insert(std::move(image_info));
+  annotation_storage_->Insert(std::move(image_info), IndexingSource::kOcr);
 
   // OCR is the first in the pipeline.
   if (!use_ica_) {
@@ -591,7 +598,7 @@ void ImageAnnotationWorker::OnPerformIca(
   DVLOG(1) << "OnPerformIca. Status: " << ptr->status
            << " Size: " << ptr->annotations.size();
   for (const auto& a : ptr->annotations) {
-    if (a->confidence < GetConfidenceThreshold() || !a->name.has_value() ||
+    if (a->score < kConfidenceThreshold || !a->name.has_value() ||
         a->name->empty()) {
       continue;
     }
@@ -599,21 +606,41 @@ void ImageAnnotationWorker::OnPerformIca(
     TokenizedString tokens(base::UTF8ToUTF16(a->name.value()), Mode::kWords);
     for (const auto& word : tokens.tokens()) {
       DVLOG(1) << "Id: " << a->id << " MId: " << a->mid
-               << " Confidence: " << (int)a->confidence << " Name: " << word;
-      image_info.annotations.insert(base::UTF16ToUTF8(word));
+               << " Confidence score: " << static_cast<float>(a->score)
+               << " Name: " << word;
+      std::string annotation = base::UTF16ToUTF8(word);
+      // If duplication occurs, keep the one with higher confidence score.
+      if (image_info.annotation_map.contains(annotation) &&
+          image_info.annotation_map[annotation].score >= a->score) {
+        continue;
+      }
+
+      AnnotationInfo annotation_info;
+      annotation_info.score = a->score;
+      if (a->bounding_box.has_value() && image_info.width > 0 &&
+          image_info.height > 0) {
+        annotation_info.x =
+            static_cast<float>(a->bounding_box->x()) / image_info.width;
+        annotation_info.y =
+            static_cast<float>(a->bounding_box->y()) / image_info.height;
+        annotation_info.area =
+            static_cast<float>(a->bounding_box->width()) / image_info.width *
+            static_cast<float>(a->bounding_box->height()) / image_info.height;
+      }
+      image_info.annotation_map[annotation] = annotation_info;
     }
   }
   // Always insert the `image_info` because even if there is no annotation for
-  // this image, we need to save the image last modification time so that we
+  // this image, we need to update the image status in the database so that we
   // won't re-process this image in the next user session.
-  annotation_storage_->Insert(image_info);
+  annotation_storage_->Insert(image_info, IndexingSource::kIca);
 
   // ICA is the last in the pipeline.
   MaybeProcessNextItem(image_info.path, /*use_timer=*/true);
 }
 
 void ImageAnnotationWorker::FindAndRemoveDeletedFiles(
-    const std::vector<base::FilePath> files) {
+    std::vector<base::FilePath> files) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOG(1) << "FindAndRemoveDeletedImages.";
   task_runner_->PostTaskAndReplyWithResult(
@@ -653,7 +680,7 @@ void ImageAnnotationWorker::RunFakeImageAnnotator(ImageInfo image_info) {
   const std::string annotation =
       image_info.path.BaseName().RemoveFinalExtension().value();
   image_info.annotations.insert(std::move(annotation));
-  annotation_storage_->Insert(std::move(image_info));
+  annotation_storage_->Insert(std::move(image_info), source_for_test_);
   MaybeProcessNextItem(image_info.path, /*use_timer=*/true);
 }
 

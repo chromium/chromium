@@ -9,7 +9,6 @@
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Denne måned</translation>
 <translation id="1637811476055996098">Vælg filer</translation>
-<translation id="1680090928918677457">Brug kamera</translation>
 <translation id="1729654308190250600">Angiv en mailadresse, der ikke er tom.</translation>
 <translation id="1758486001363313524">Andet...</translation>
 <translation id="1921819250265091946">dd</translation>
@@ -21,7 +20,6 @@
 <translation id="2226276347425096477">Forkort denne tekst til <ph name="MAX_CHARACTERS" /> tegn eller færre (du bruger i øjeblikket <ph name="CURRENT_LENGTH" /> tegn).</translation>
 <translation id="2247351761944213033">Uge <ph name="WEEKNUMBER" />, <ph name="YEAR" /></translation>
 <translation id="2277199496770840904">Spor <ph name="NUMBER" /></translation>
-<translation id="2353297238722298836">Der er givet adgang til kameraet og mikrofonen</translation>
 <translation id="2507943997699731163">Udfyld dette felt.</translation>
 <translation id="2613802280814924224">Angiv en gyldig værdi. Den nærmeste gyldige værdi er <ph name="VALID_VALUE" />.</translation>
 <translation id="2653659639078652383">Send</translation>
@@ -39,15 +37,11 @@
 <translation id="3822383571486410024">Forlæng denne tekst til <ph name="MIN_CHARACTERS" /> eller flere tegn (du bruger i øjeblikket <ph name="CURRENT_LENGTH" /> tegn).</translation>
 <translation id="383465348367842624">Den del, der kommer før "<ph name="ATSIGN" />", må ikke indeholde "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="3846214748874656680">Afslut fuld skærm</translation>
-<translation id="4031179711345676612">Der er givet adgang til mikrofonen</translation>
 <translation id="4360991593054037559">Angiv en gyldig værdi. De to nærmeste gyldige værdier er <ph name="VALID_VALUE_LOW" /> og <ph name="VALID_VALUE_HIGHER" />.</translation>
 <translation id="4522570452068850558">Detaljer</translation>
-<translation id="4663373278480897665">Der er givet adgang til kameraet</translation>
 <translation id="4664250907885839816">Den del, der kommer efter "<ph name="ATSIGN" />", må ikke indeholde symbolet "<ph name="INVALIDCHARACTER" />".</translation>
 <translation id="4718048029184481307">Afspiller i integreret billede</translation>
-<translation id="4792862212177489858">Del lokation</translation>
 <translation id="4812940957355064477">Angiv et nummer.</translation>
-<translation id="49269513399674318">Brug mikrofon</translation>
 <translation id="4975562563186953947"><ph name="SELECTED_COUNT" /> er valgt</translation>
 <translation id="4992066212339426712">Slå lyden til</translation>
 <translation id="49969490063480558">Angiv den del, der kommer efter "<ph name="ATSIGN" />". "<ph name="INVALIDADDRESS" />" er ufuldstændig.</translation>
@@ -79,9 +73,7 @@
 <translation id="6820355525329141109">Pluginnet kunne ikke indlæses.</translation>
 <translation id="6919891270253167948">1,5</translation>
 <translation id="6989848892321993519">Forlæng denne tekst til <ph name="MIN_CHARACTERS" /> eller flere tegn (du bruger i øjeblikket ét tegn).</translation>
-<translation id="7080893216867146095">Deling af lokation er tilladt</translation>
 <translation id="709897737746224366">Find et match til det anmodede format.</translation>
-<translation id="7134810312945846184">Brug mikrofon og kamera</translation>
 <translation id="7263440858009898357">Vælg et punkt på listen.</translation>
 <translation id="7364796246159120393">Vælg fil</translation>
 <translation id="739024184232394898">Andet...</translation>

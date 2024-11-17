@@ -18,7 +18,7 @@ source_set("file_handlers") {
     "mime_util.h",
   ]
 
-  if (is_chromeos_ash) {
+  if (is_chromeos) {
     sources += [ "non_native_file_system_delegate.h" ]
   }
 

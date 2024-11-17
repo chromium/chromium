@@ -70,7 +70,7 @@ public final class ShareMetricsUtils {
                 "Sharing.SharingHubAndroid.CustomAction",
                 actionType,
                 ShareCustomAction.NUM_ENTRIES);
-        RecordHistogram.recordMediumTimesHistogram(
+        RecordHistogram.deprecatedRecordMediumTimesHistogram(
                 "Sharing.SharingHubAndroid.TimeToCustomAction",
                 System.currentTimeMillis() - shareStartTime);
     }

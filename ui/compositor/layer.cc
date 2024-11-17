@@ -14,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
@@ -54,10 +53,6 @@
 
 namespace ui {
 namespace {
-
-// TODO(crbug.com/40786876): temporary while tracking down crash.
-// Minimum interval between no mutation debug dumps.
-constexpr base::TimeDelta kMinNoMutationDumpInterval = base::Days(1);
 
 const Layer* GetRoot(const Layer* layer) {
   // Parent walk cannot be done on a layer that is being used as a mask. Get the
@@ -226,11 +221,7 @@ Layer::Layer(LayerType type)
 }
 
 Layer::~Layer() {
-  CHECK(!in_send_damaged_rects_);
-  CHECK(!sending_damaged_rects_for_descendants_);
-
-  for (auto& observer : observer_list_)
-    observer.LayerDestroyed(this);
+  observer_list_.Notify(&LayerObserver::LayerDestroyed, this);
 
   // Destroying the animator may cause observers to use the layer. Destroy the
   // animator first so that the layer is still around.
@@ -403,11 +394,6 @@ void Layer::RemoveObserver(LayerObserver* observer) {
 }
 
 void Layer::Add(Layer* child) {
-  // TODO(crbug.com/40786876): temporary while tracking down crash.
-  if (no_mutation_) {
-    base::debug::DumpWithoutCrashing(FROM_HERE, kMinNoMutationDumpInterval);
-  }
-
   DCHECK(!child->compositor_);
   if (child->parent_)
     child->parent_->Remove(child);
@@ -685,9 +671,6 @@ void Layer::SetMaskLayer(Layer* layer_mask) {
   // We need to de-reference the currently linked object so that no problem
   // arises if the mask layer gets deleted before this object.
   if (layer_mask_) {
-    // Changing the layer mask while it's in the middle of painting is likely
-    // to lead to very unusual behavior, and not supported.
-    CHECK(!layer_mask_->in_send_damaged_rects_);
     layer_mask_->layer_mask_back_link_ = nullptr;
   }
   layer_mask_ = layer_mask;
@@ -696,15 +679,8 @@ void Layer::SetMaskLayer(Layer* layer_mask) {
   // We need to reference the linked object so that it can properly break the
   // link to us when it gets deleted.
   if (layer_mask) {
-    // Changing the layer mask while it's in the middle of painting is likely
-    // to lead to very unusual behavior, and not supported.
-    CHECK(!layer_mask->in_send_damaged_rects_);
-    // TODO(crbug.com/40786876): temporary while tracking down crash.
     // A `layer_mask` of this would lead to recursion.
     CHECK(layer_mask != this);
-    if (no_mutation_) {
-      base::debug::DumpWithoutCrashing(FROM_HERE, kMinNoMutationDumpInterval);
-    }
 
     // Clears out other reference to `layer_mask` if there is one.
     if (layer_mask->layer_mask_back_link_) {
@@ -1347,8 +1323,6 @@ void Layer::ScheduleDraw() {
 }
 
 void Layer::SendDamagedRects() {
-  CHECK(!in_send_damaged_rects_);
-  base::AutoReset<bool> setter(&in_send_damaged_rects_, true);
   if (layer_mask_)
     layer_mask_->SendDamagedRects();
   if (delegate_)

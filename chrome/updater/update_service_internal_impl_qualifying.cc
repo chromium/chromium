@@ -30,6 +30,7 @@ namespace updater {
 namespace {
 
 constexpr char kQualificationInitialVersion[] = "0.1";
+constexpr char kQualificationUpdatesSuppressedVersion[] = "0.2";
 
 class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
  public:
@@ -89,7 +90,15 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     RegistrationRequest registration;
     registration.app_id = kQualificationAppId;
-    registration.version = base::Version(kQualificationInitialVersion);
+
+    // If the update check period is set to zero, the updater is pre-qualified
+    // by registering a higher version of the qualification app. This is because
+    // the qualification app update will not happen if the update check period
+    // is set to zero.
+    registration.version =
+        base::Version(config_->NextCheckDelay().is_zero()
+                          ? kQualificationUpdatesSuppressedVersion
+                          : kQualificationInitialVersion);
     base::MakeRefCounted<UpdateServiceImpl>(GetUpdaterScope(), config_)
         ->RegisterApp(registration,
                       base::BindOnce(&UpdateServiceInternalQualifyingImpl::
@@ -114,6 +123,7 @@ class UpdateServiceInternalQualifyingImpl : public UpdateServiceInternal {
     // an `Update` task for `kQualificationAppId`.
     base::MakeRefCounted<CheckForUpdatesTask>(
         config_, GetUpdaterScope(),
+        /*task_name=*/"Update(kQualificationAppId)",
         base::BindOnce(
             &UpdateServiceImpl::Update,
             base::MakeRefCounted<UpdateServiceImpl>(GetUpdaterScope(), config_),

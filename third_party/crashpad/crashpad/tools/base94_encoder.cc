@@ -14,6 +14,7 @@
 
 #include <getopt.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "base/files/file_path.h"
 #include "build/build_config.h"

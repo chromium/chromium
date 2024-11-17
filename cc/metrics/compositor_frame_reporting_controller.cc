@@ -163,6 +163,7 @@ void CompositorFrameReportingController::WillBeginImplFrame(
   reporter->set_tick_clock(tick_clock_);
   reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
                        begin_time);
+  reporter->set_want_new_tree(needs_raster_properties_animated_);
   reporters_[PipelineStage::kBeginImplFrame] = std::move(reporter);
 }
 
@@ -387,6 +388,7 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
         is_activated_frame_new);
     impl_reporter->set_reporter_type_to_impl();
     impl_reporter->set_top_controls_moved(submit_info.top_controls_moved);
+    impl_reporter->set_created_new_tree(submit_info.drawn_with_new_layer_tree);
     submitted_compositor_frames_.emplace_back(submit_info.frame_token,
                                               std::move(impl_reporter));
   }

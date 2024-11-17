@@ -162,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCommonSyncTest,
   // Force bookmark saved to the account to be unsynced.
   GetFakeServer()->SetHttpError(net::HTTP_BAD_REQUEST);
 
-  bookmarks_helper::AddURL(/*profile=*/0, "title1",
+  bookmarks_helper::AddURL(/*profile=*/0, u"title1",
                            GURL("https://example.com"));
 
   // BOOKMARKS now has local changes not yet synced with the server.

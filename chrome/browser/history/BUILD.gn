@@ -65,6 +65,7 @@ android_library("unit_device_javatests") {
     "//components/browser_ui/bottomsheet/android:factory_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/browser_ui/desktop_windowing/android:java",
     "//components/browser_ui/widget/android:java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_test_monitor_java",

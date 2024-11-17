@@ -30,6 +30,31 @@ GenAiDefaultSettingsPolicyHandler::GenAiDefaultSettingsPolicyHandler(
 GenAiDefaultSettingsPolicyHandler::~GenAiDefaultSettingsPolicyHandler() =
     default;
 
+bool GenAiDefaultSettingsPolicyHandler::CheckPolicySettings(
+    const policy::PolicyMap& policies,
+    policy::PolicyErrorMap* errors) {
+  if (!base::FeatureList::GetInstance() ||
+      !base::FeatureList::IsEnabled(kApplyGenAiPolicyDefaults)) {
+    return true;
+  }
+
+  if (!policies.IsPolicySet(policy_name())) {
+    return true;
+  }
+
+  if (!TypeCheckingPolicyHandler::CheckPolicySettings(policies, errors)) {
+    return false;
+  }
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (!CloudOnlyPolicyHandler::CheckCloudOnlyPolicySettings(policy_name(),
+                                                            policies, errors)) {
+    return false;
+  }
+#endif // !BUILDFLAG(IS_CHROMEOS)
+
+  return true;
+}
 void GenAiDefaultSettingsPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
@@ -47,7 +72,7 @@ void GenAiDefaultSettingsPolicyHandler::ApplyPolicySettings(
     return;
   }
 
-  for (auto policy : gen_ai_policies_) {
+  for (const auto& policy : gen_ai_policies_) {
     // If a policy value is already set for the feature policy, skip it as
     // it will be mapped to prefs by its own handler.
     if (policies.Get(policy.name)) {

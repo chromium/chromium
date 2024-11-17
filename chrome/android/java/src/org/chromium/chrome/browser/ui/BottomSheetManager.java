@@ -248,7 +248,6 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
                     .releasePersistentShowingToken(mPersistentControlsToken);
         }
 
-        BottomSheetContent content = mSheetController.getCurrentSheetContent();
         // If the content has a custom scrim, it wasn't obscuring tabs.
         if (mContentHasCustomScrimLifecycle) {
             mContentHasCustomScrimLifecycle = false;

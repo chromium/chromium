@@ -485,38 +485,6 @@ TEST_F(GeolocationProviderTest, MultipleDiagnosticsObservers) {
   }
 }
 
-TEST_F(GeolocationProviderTest, DiagnosticsObserverDisabled) {
-  // Disable the diagnostics observer feature.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{features::kGeolocationDiagnosticsObserver});
-  base::RunLoop loop;
-  SetFakeLocationProviderManager();
-  SetSystemPermission(LocationSystemPermissionStatus::kAllowed);
-
-  // Add a subscription so the provider will be started.
-  base::CallbackListSubscription subscription =
-      provider()->AddLocationUpdateCallback(base::DoNothing(),
-                                            /*enable_high_accuracy=*/true);
-  EXPECT_TRUE(ProvidersStarted());
-
-  // Add an observer. The initial diagnostics are null.
-  MockGeolocationInternalsObserver observer;
-  mojo::PendingRemote<mojom::GeolocationInternalsObserver> remote;
-  observer.Bind(remote.InitWithNewPipeAndPassReceiver());
-  TestFuture<mojom::GeolocationDiagnosticsPtr> future;
-  provider()->AddInternalsObserver(std::move(remote), future.GetCallback());
-  EXPECT_FALSE(future.Get());
-
-  // Call OnInternalsUpdated. The observer is not notified.
-  EXPECT_CALL(observer, OnDiagnosticsChanged).Times(0);
-  provider()->SimulateInternalsUpdatedForTesting();
-  loop.RunUntilIdle();
-
-  observer.Disconnect();
-}
-
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 TEST_F(GeolocationProviderTest, StartProviderAfterSystemPermissionGranted) {
   SetFakeLocationProviderManager();

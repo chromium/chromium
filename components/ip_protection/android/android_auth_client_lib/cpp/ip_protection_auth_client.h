@@ -40,8 +40,8 @@ class IpProtectionAuthClient : public IpProtectionAuthClientInterface {
   // system-installed. Callback will be invoked on the calling process's main
   // thread.
   static void CreateConnectedInstanceForTesting(
-      const std::string_view packageName,
-      const std::string_view className,
+      std::string_view packageName,
+      std::string_view className,
       base::OnceCallback<ClientCreated> callback);
 
   // Asynchronously send a GetInitialDataRequest to the signing server.

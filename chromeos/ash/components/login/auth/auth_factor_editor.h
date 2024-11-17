@@ -168,6 +168,13 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH) AuthFactorEditor {
                              const cryptohome::KeyLabel& new_label,
                              AuthOperationCallback callback);
 
+  // Removes the user's password factor . A password must already be
+  // configured prior to calling this. The caller needs to be careful in calling
+  // this since this may delete the last knowledge factor.
+  void RemovePasswordFactor(std::unique_ptr<UserContext> context,
+                            const cryptohome::KeyLabel& label,
+                            AuthOperationCallback callback);
+
   // Updates the user's PIN factor's metadata. The PIN must already
   // be configured prior to calling this. On success, as this will modify the
   // auth factor configurations of the user, the context auth factor

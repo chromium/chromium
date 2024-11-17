@@ -93,8 +93,7 @@ class InterestGroupEnabledContentBrowserClient
   bool IsPrivacySandboxReportingDestinationAttested(
       content::BrowserContext* browser_context,
       const url::Origin& destination_origin,
-      content::PrivacySandboxInvokingAPI invoking_api,
-      bool post_impression_reporting) override {
+      content::PrivacySandboxInvokingAPI invoking_api) override {
     return true;
   }
 };
@@ -138,7 +137,10 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
     EXPECT_TRUE(request.trusted_params->isolation_info.network_isolation_key()
                     .IsTransient());
     EXPECT_EQ(request.referrer, main_frame_origin_.GetURL());
-    EXPECT_EQ(request.referrer_policy, net::ReferrerPolicy::ORIGIN);
+    EXPECT_NE(request.referrer, main_frame_url_);
+    EXPECT_EQ(
+        request.referrer_policy,
+        net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN);
 
     // Checks specific to DestinationURL events.
     if (!event_data.has_value()) {
@@ -182,7 +184,7 @@ class FencedFrameReporterTest : public RenderViewHostTestHarness {
 
   network::TestURLLoaderFactory test_url_loader_factory_;
 
-  const GURL main_frame_url_{"https://main_frame.test/"};
+  const GURL main_frame_url_{"https://main_frame.test/mypage.html"};
   const GURL report_url_declarer_{"https://report_declarer.test/"};
   const GURL report_destination_{"https://report_destination.test"};
   const GURL report_destination2_{"https://report_destination2.test"};

@@ -40,10 +40,15 @@ inline constexpr char kBottomOmniboxByDefault[] =
 inline constexpr char kBrowserLockdownModeEnabled[] =
     "ios.browser_lockdown_mode_enabled";
 
-// A map of browser state data directory to cached information. This cache can
-// be used to display information about browser states without actually having
+// A map of profile data directory to cached information. This cache can
+// be used to display information about profiles without actually having
 // to load them.
 inline constexpr char kProfileInfoCache[] = "profile.info_cache";
+
+// The name of the profile that's used as the "personal" profile (used for
+// consumer accounts), as opposed to managed profiles (linked to a managed aka
+// Enterprise account).
+inline constexpr char kPersonalProfileName[] = "profile.personal";
 
 // Name of the last used profile.
 // TODO(crbug.com/325921947): Remove use of this key, kLastActiveProfiles
@@ -56,17 +61,23 @@ inline constexpr char kLastActiveProfiles[] = "profile.last_active_profiles";
 // Total number of profile created for this Chrome installation.
 inline constexpr char kNumberOfProfiles[] = "profile.profiles_created";
 
-// A map of a scene and a browser state.
+// A map of a scene and a profile.
 inline constexpr char kProfileForScene[] = "ios.multiprofile.profile_for_scene";
 
-// A string of NSUUID used to access the WebKit storage per BrowserState.
+// A string of NSUUID used to access the WebKit storage per Profile.
 inline constexpr char kBrowserStateStorageIdentifier[] = "profile.storage_id";
+
+// A map of legacy profile names to their information.
+inline constexpr char kLegacyProfileMap[] = "profile.legacy_profiles.map";
+
+// A boolean recording whether the legacy profiles have been marked as such.
+inline constexpr char kLegacyProfileHidden[] = "profile.legacy_profiles.hidden";
 
 inline constexpr char kClearBrowsingDataHistoryNoticeShownTimes[] =
     "browser.clear_data.history_notice_shown_times";
 
 // A dictionary mapping content notification enrollment eligibilities. This is
-// stored in BrowserState prefs.
+// stored in Profile prefs.
 inline constexpr char kContentNotificationsEnrollmentEligibility[] =
     "ios.content_notification.enrollment_eligibility";
 
@@ -80,10 +91,6 @@ inline constexpr char kDetectAddressesAccepted[] =
 inline constexpr char kDetectAddressesEnabled[] =
     "ios.settings.detect_addresses_enabled";
 
-// Whether to send the DNT header.
-// Note: The pref name is identical to the non-ios `kEnableDoNotTrack`.
-inline constexpr char kEnableDoNotTrackIos[] = "enable_do_not_track";
-
 // Number of times the First Follow UI has been shown.
 inline constexpr char kFirstFollowUIShownCount[] =
     "follow.first_follow_ui_modal_count";
@@ -94,7 +101,7 @@ inline constexpr char kFirstFollowUpdateUIShownCount[] =
     "follow.first_follow_update_ui_modal_count";
 
 // A dictionary mapping push notification enabled features to their permission
-// to send notifications to the user. This is stored in BrowserState prefs.
+// to send notifications to the user. This is stored in Profile prefs.
 inline constexpr char kFeaturePushNotificationPermissions[] =
     "push_notifications.feature_permissions";
 
@@ -230,6 +237,11 @@ inline constexpr char kIosDockingPromoEligibilityMet[] =
 // A list of the latest fetched Most Visited Sites.
 inline constexpr char kIosLatestMostVisitedSites[] = "ios.most_visited_sites";
 
+// The last saved index of an NTP WebState. Only updated on app background, so
+// it does not always reflect the current WebStateList.
+inline constexpr char kIOSLastKnownNTPWebStateIndex[] =
+    "ios.last_known_ntp_web_state_index";
+
 // Integer representing the number of impressions of the Most Visited Site since
 // a freshness signal.
 inline constexpr char kIosMagicStackSegmentationMVTImpressionsSinceFreshness[] =
@@ -350,6 +362,11 @@ inline constexpr char kIosSaveToDriveDefaultGaiaId[] =
 // policy.
 inline constexpr char kIosSaveToDriveDownloadManagerPolicySettings[] =
     "ios.save_to_drive.download_manager_policy";
+
+// Integer preference indicating whether Choose from Drive is enabled by
+// enterprise policy.
+inline constexpr char kIosChooseFromDriveFilePickerPolicySettings[] =
+    "ios.choose_from_drive.file_picker_policy";
 
 // String preference containing the default account to use for saving images to
 // Google Photos.
@@ -561,6 +578,14 @@ inline constexpr char kPushNotificationAuthorizationStatus[] =
 inline constexpr char kIncognitoAuthenticationSetting[] =
     "ios.settings.incognito_authentication_enabled";
 
+// Bool used for the incognito soft lock setting.
+inline constexpr char kIncognitoSoftLockSetting[] =
+    "ios.settings.incognito_soft_lock_enabled";
+
+// Timestamp tracking the time in which Chrome was last backgrounded for the
+// purposes of locking incognito content.
+inline constexpr char kLastBackgroundedTime[] = "ios.last_backgrounded_time";
+
 // Timestamp set when a user signs in. It is used for policies that clear data
 // on sign-out only for the duration the user was signed in. It is also used for
 // user policies that should clear data only from the time of sign-in and not
@@ -655,6 +680,8 @@ inline constexpr char kHomeCustomizationMagicStackTabResumptionEnabled[] =
     "ios.home_customization.magic_stack.tab_resumption.enabled";
 inline constexpr char kHomeCustomizationMagicStackParcelTrackingEnabled[] =
     "ios.home_customization.magic_stack.parcel_tracking.enabled";
+inline constexpr char kHomeCustomizationMagicStackTipsEnabled[] =
+    "ios.home_customization.magic_stack.tips.enabled";
 
 // List preference that stores the positions in the Magic Stack where the Safety
 // Check module with the notifications opt-in button is shown.
@@ -680,6 +707,11 @@ inline constexpr char kIdentityConfirmationSnackbarDisplayCount[] =
 // Customization menu's entrypoint.
 inline constexpr char kNTPHomeCustomizationNewBadgeImpressionCount[] =
     "ios.home_customization.new_badge_impressions";
+
+// The number of times that the prominence alert about the user's push
+// notification silent authorization state has been shown.
+inline constexpr char kProminenceNotificationAlertImpressionCount[] =
+    "ios.push_notification.prominence_alert_impressions";
 
 }  // namespace prefs
 

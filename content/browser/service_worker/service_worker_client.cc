@@ -11,6 +11,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/functional/overloaded.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/optional_util.h"
 #include "base/uuid.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -18,6 +19,10 @@
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_security_utils.h"
+#include "content/browser/worker_host/dedicated_worker_host.h"
+#include "content/browser/worker_host/dedicated_worker_service_impl.h"
+#include "content/browser/worker_host/shared_worker_host.h"
+#include "content/browser/worker_host/shared_worker_service_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/common/content_client.h"
@@ -533,6 +538,109 @@ void ServiceWorkerClient::UpdateUrlsInternal(
   }
 
   SyncMatchingRegistrations();
+}
+
+namespace {
+
+// Attempt to get the storage key from |RenderFrameHostImpl|. This correctly
+// accounts for extension URLs. The absence of this logic was a potential cause
+// for https://crbug.com/1346450.
+std::optional<blink::StorageKey> GetStorageKeyFromRenderFrameHost(
+    FrameTreeNodeId frame_tree_node_id,
+    const url::Origin& origin,
+    const base::UnguessableToken* nonce) {
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (!frame_tree_node) {
+    return std::nullopt;
+  }
+  RenderFrameHostImpl* frame_host = frame_tree_node->current_frame_host();
+  if (!frame_host) {
+    return std::nullopt;
+  }
+
+  return frame_host->CalculateStorageKey(origin, nonce);
+}
+
+// For dedicated/shared worker cases, if a storage key is returned, it will have
+// its origin replaced by |origin|. This would mean that the origin of the
+// WorkerHost and the origin as used by the service worker code don't match,
+// however in cases where these wouldn't match the load will be aborted later
+// anyway.
+std::optional<blink::StorageKey> GetStorageKeyFromDedicatedWorkerHost(
+    content::StoragePartition* storage_partition,
+    blink::DedicatedWorkerToken dedicated_worker_token,
+    const url::Origin& origin) {
+  auto* worker_service = static_cast<DedicatedWorkerServiceImpl*>(
+      storage_partition->GetDedicatedWorkerService());
+  auto* worker_host =
+      worker_service->GetDedicatedWorkerHostFromToken(dedicated_worker_token);
+  if (worker_host) {
+    return worker_host->GetStorageKey().WithOrigin(origin);
+  }
+  return std::nullopt;
+}
+
+std::optional<blink::StorageKey> GetStorageKeyFromSharedWorkerHost(
+    content::StoragePartition* storage_partition,
+    blink::SharedWorkerToken shared_worker_token,
+    const url::Origin& origin) {
+  auto* worker_service = static_cast<SharedWorkerServiceImpl*>(
+      storage_partition->GetSharedWorkerService());
+  auto* worker_host =
+      worker_service->GetSharedWorkerHostFromToken(shared_worker_token);
+  if (worker_host) {
+    return worker_host->GetStorageKey().WithOrigin(origin);
+  }
+  return std::nullopt;
+}
+
+}  // namespace
+
+blink::StorageKey ServiceWorkerClient::CalculateStorageKeyForUpdateUrls(
+    const GURL& url,
+    const net::IsolationInfo& isolation_info_from_interceptor) const {
+  CHECK(!is_response_committed());
+
+  const url::Origin origin = url::Origin::Create(url);
+
+  const std::optional<blink::StorageKey> storage_key = absl::visit(
+      base::Overloaded(
+          [&](GlobalRenderFrameHostId render_frame_host_id) {
+            // We use `ongoing_navigation_frame_tree_node_id_` instead of
+            // `render_frame_host_id` because this method is called before
+            // response commit.
+            return GetStorageKeyFromRenderFrameHost(
+                ongoing_navigation_frame_tree_node_id_, origin,
+                base::OptionalToPtr(isolation_info_from_interceptor.nonce()));
+          },
+          [&](blink::DedicatedWorkerToken dedicated_worker_token) {
+            auto* process = RenderProcessHost::FromID(GetProcessId());
+            return process ? GetStorageKeyFromDedicatedWorkerHost(
+                                 process->GetStoragePartition(),
+                                 dedicated_worker_token, origin)
+                           : std::nullopt;
+          },
+          [&](blink::SharedWorkerToken shared_worker_token) {
+            auto* process = RenderProcessHost::FromID(GetProcessId());
+            return process ? GetStorageKeyFromSharedWorkerHost(
+                                 process->GetStoragePartition(),
+                                 shared_worker_token, origin)
+                           : std::nullopt;
+          }),
+      *client_info_);
+
+  if (storage_key) {
+    return *storage_key;
+  }
+
+  // If we're in this case then we couldn't get the StorageKey from the RFH,
+  // which means we also can't get the storage partitioning status from
+  // RuntimeFeatureState(Read)Context. Using
+  // CreateFromOriginAndIsolationInfo() will create a key based on
+  // net::features::kThirdPartyStoragePartitioning state.
+  return blink::StorageKey::CreateFromOriginAndIsolationInfo(
+      origin, isolation_info_from_interceptor);
 }
 
 void ServiceWorkerClient::UpdateUrls(

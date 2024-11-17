@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
+
 source_set("model") {
   sources = [
     "ios_chrome_bulk_leak_check_service_factory.cc",
@@ -35,6 +37,12 @@ source_set("model") {
     "well_known_change_password_tab_helper.h",
     "well_known_change_password_tab_helper.mm",
   ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "ios_password_field_classification_model_handler_factory.h",
+      "ios_password_field_classification_model_handler_factory.mm",
+    ]
+  }
   deps = [
     ":infobar_delegates",
     ":password_checkup_metrics",
@@ -106,6 +114,9 @@ source_set("model") {
     "//ui/base",
     "//url",
   ]
+  if (build_with_tflite_lib) {
+    deps += [ "//ios/chrome/browser/optimization_guide/model" ]
+  }
   public_deps = [
     ":password_controller_delegate",
     ":store_factory",
@@ -153,7 +164,7 @@ source_set("store_factory") {
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/signin/model:signin_util",
     "//ios/chrome/browser/sync/model/glue",
     "//ios/chrome/browser/webdata_services/model",
     "//ios/web/public",
@@ -177,7 +188,6 @@ source_set("infobar_delegates") {
     "//ios/chrome/app/strings",
     "//ios/chrome/app/theme",
     "//ios/chrome/browser/shared/public/commands",
-    "//ios/chrome/browser/signin/model",
     "//ui/base",
   ]
 }
@@ -314,6 +324,7 @@ source_set("eg2_tests") {
     "//components/autofill/ios/common",
     "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common",
+    "//components/plus_addresses:features",
     "//components/strings",
     "//components/sync/base",
     "//components/sync/service",

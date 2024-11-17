@@ -46,8 +46,7 @@ RequestHandlerForDeviceAttributeUpdatePermission::HandleRequest(
   device_management_response
       .mutable_device_attribute_update_permission_response()
       ->set_result(result);
-  return CreateHttpResponse(net::HTTP_OK,
-                            device_management_response.SerializeAsString());
+  return CreateHttpResponse(net::HTTP_OK, device_management_response);
 }
 
 }  // namespace policy

@@ -56,8 +56,7 @@ WebNavigationType WebPerformanceMetricsForReporting::GetNavigationType() const {
     case PerformanceNavigation::kTypeReserved:
       return kWebNavigationTypeOther;
   }
-  NOTREACHED_IN_MIGRATION();
-  return kWebNavigationTypeOther;
+  NOTREACHED();
 }
 
 double WebPerformanceMetricsForReporting::NavigationStart() const {
@@ -112,6 +111,10 @@ double WebPerformanceMetricsForReporting::DomainLookupEnd() const {
 
 double WebPerformanceMetricsForReporting::ConnectStart() const {
   return base::Milliseconds(private_->timing()->connectStart()).InSecondsF();
+}
+
+double WebPerformanceMetricsForReporting::ConnectEnd() const {
+  return base::Milliseconds(private_->timing()->connectEnd()).InSecondsF();
 }
 
 double WebPerformanceMetricsForReporting::DomContentLoadedEventStart() const {

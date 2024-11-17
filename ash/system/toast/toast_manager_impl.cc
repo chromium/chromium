@@ -132,6 +132,8 @@ void ToastManagerImpl::Show(ToastData data) {
   auto existing_toast = base::ranges::find(queue_, id, &ToastData::id);
 
   if (existing_toast != queue_.end()) {
+    LOG(ERROR)
+        << "Toast requested show with a matching ID toast already queued.";
     // Assigns given `data` to existing queued toast, but keeps the existing
     // toast's `time_created` value.
     const base::TimeTicks old_time_created = existing_toast->time_created;
@@ -139,21 +141,26 @@ void ToastManagerImpl::Show(ToastData data) {
     existing_toast->time_created = old_time_created;
   } else {
     if (IsToastShown(id)) {
+      LOG(ERROR) << "Toast with matching ID requested show while it was "
+                    "already shown.";
       // Replace the visible toast by adding the new toast data to the front of
       // the queue and hiding the visible toast. Once the visible toast finishes
       // hiding, the new toast will be displayed.
       queue_.emplace_front(std::move(data));
 
       CloseAllToastsWithAnimation();
-
       return;
     }
 
+    LOG(ERROR) << "Placing Toast in the back of the queue.";
     queue_.emplace_back(std::move(data));
   }
 
-  if (queue_.size() == 1 && !HasActiveToasts())
+  if (queue_.size() == 1 && !HasActiveToasts()) {
+    LOG(ERROR) << "Toast is the only one in the queue after being requested, "
+                  "so showing it.";
     ShowLatest();
+  }
 }
 
 void ToastManagerImpl::Cancel(std::string_view id) {
@@ -246,8 +253,10 @@ void ToastManagerImpl::ShowLatest() {
   auto it = locked_ ? base::ranges::find(queue_, true,
                                          &ToastData::visible_on_lock_screen)
                     : queue_.begin();
-  if (it == queue_.end())
+  if (it == queue_.end()) {
+    LOG(ERROR) << "Toast Queue empty.";
     return;
+  }
 
   current_toast_data_ = std::move(*it);
   queue_.erase(it);

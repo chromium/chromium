@@ -161,7 +161,7 @@ class LastRequestResultCache {
 
 class AwPermissionManager::PendingRequest {
  public:
-  PendingRequest(const std::vector<PermissionType> permissions,
+  PendingRequest(const std::vector<PermissionType>& permissions,
                  GURL requesting_origin,
                  GURL embedding_origin,
                  int render_process_id,
@@ -336,24 +336,29 @@ void AwPermissionManager::RequestPermissions(
         break;
       case PermissionType::CLIPBOARD_SANITIZED_WRITE:
         // This is the permission for writing vetted data (such as plain text or
-        // sanitized images) using the async clipboard API. Chrome automatically
-        // grants access with a user gesture, and alternatively queries for
-        // gesture-less access with a popup bubble. For now, just grant based on
-        // user gesture.
-        // Reading from the clipboard or writing custom data is represented with
-        // the CLIPBOARD_READ_WRITE permission, and that requires an explicit
-        // user approval, which is not implemented yet. See crbug.com/1271620
-        pending_request_raw->SetPermissionStatus(
-            permissions[i], request_description.user_gesture
-                                ? PermissionStatus::GRANTED
-                                : PermissionStatus::DENIED);
+        // sanitized images) using the async clipboard API.
+        // This permission type implies that user gesture is present, and as
+        // such, it can be auto-granted to conform with Chrome logic.
+        // Reading from the clipboard or writing
+        // custom data is represented with the CLIPBOARD_READ_WRITE permission,
+        // and that requires an explicit user approval, which is not implemented
+        // yet. See crbug.com/1271620
+        if (base::FeatureList::IsEnabled(
+                features::kWebViewAutoGrantSanitizedClipboardWrite)) {
+          pending_request_raw->SetPermissionStatus(permissions[i],
+                                                   PermissionStatus::GRANTED);
+        } else {
+          pending_request_raw->SetPermissionStatus(
+              permissions[i], request_description.user_gesture
+                                  ? PermissionStatus::GRANTED
+                                  : PermissionStatus::DENIED);
+        }
         break;
       case PermissionType::AUDIO_CAPTURE:
       case PermissionType::VIDEO_CAPTURE:
       case PermissionType::NOTIFICATIONS:
       case PermissionType::DURABLE_STORAGE:
       case PermissionType::BACKGROUND_SYNC:
-      case PermissionType::ACCESSIBILITY_EVENTS:
       case PermissionType::CLIPBOARD_READ_WRITE:
       case PermissionType::PAYMENT_HANDLER:
       case PermissionType::BACKGROUND_FETCH:
@@ -557,6 +562,15 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
     case blink::PermissionType::GEOLOCATION:
       return GetGeolocationPermission(requesting_origin, web_contents);
 
+    case blink::PermissionType::CLIPBOARD_SANITIZED_WRITE:
+      // These permissions are auto-granted by WebView.
+      if (base::FeatureList::IsEnabled(
+              features::kWebViewAutoGrantSanitizedClipboardWrite)) {
+        return PermissionStatus::GRANTED;
+      } else {
+        return PermissionStatus::ASK;
+      }
+
     case blink::PermissionType::MIDI:
     case blink::PermissionType::SENSORS:
       // These permissions are auto-granted by WebView.
@@ -567,11 +581,7 @@ PermissionStatus AwPermissionManager::GetPermissionStatusInternal(
     case blink::PermissionType::VIDEO_CAPTURE:
       // These permissions are always forwarded to the app to handle.
       return PermissionStatus::ASK;
-    case blink::PermissionType::CLIPBOARD_SANITIZED_WRITE:
-      // This permission depends on user_gesture, so should always ask.
-      return PermissionStatus::ASK;
 
-    case blink::PermissionType::ACCESSIBILITY_EVENTS:
     case blink::PermissionType::AR:
     case blink::PermissionType::AUTOMATIC_FULLSCREEN:
     case blink::PermissionType::BACKGROUND_FETCH:
@@ -725,7 +735,6 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::AUDIO_CAPTURE:
       case PermissionType::VIDEO_CAPTURE:
       case PermissionType::BACKGROUND_SYNC:
-      case PermissionType::ACCESSIBILITY_EVENTS:
       case PermissionType::CLIPBOARD_READ_WRITE:
       case PermissionType::CLIPBOARD_SANITIZED_WRITE:
       case PermissionType::PAYMENT_HANDLER:

@@ -72,6 +72,9 @@ class FakeSystemIdentityManager final : public SystemIdentityManager {
   // Simulates an updated notification for `identity`.
   void FireIdentityUpdatedNotification(id<SystemIdentity> identity);
 
+  // Simulates a refresh token updated notification for `identity`.
+  void FireIdentityRefreshTokenUpdatedNotification(id<SystemIdentity> identity);
+
   // Waits until all asynchronous callbacks have been completed.
   void WaitForServiceCallbacksToComplete();
 

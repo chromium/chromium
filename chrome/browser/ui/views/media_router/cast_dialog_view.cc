@@ -17,6 +17,8 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
@@ -40,6 +42,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
+#include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -58,11 +61,13 @@ CastDialogView::CastDialogView(
     CastDialogController* controller,
     Profile* profile,
     const base::Time& start_time,
-    MediaRouterDialogActivationLocation activation_location)
+    MediaRouterDialogActivationLocation activation_location,
+    actions::ActionItem* action_item)
     : BubbleDialogDelegateView(anchor_view, anchor_position),
       controller_(controller),
       profile_(profile),
-      metrics_(start_time, activation_location, profile) {
+      metrics_(start_time, activation_location, profile),
+      action_item_(action_item) {
   DCHECK(profile);
   SetShowCloseButton(true);
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
@@ -74,8 +79,14 @@ CastDialogView::CastDialogView(
 }
 
 CastDialogView::~CastDialogView() {
-  if (controller_)
+  if (controller_) {
     controller_->RemoveObserver(this);
+  }
+  if (features::IsToolbarPinningEnabled()) {
+    if (action_item_) {
+      action_item_->SetIsShowingBubble(false);
+    }
+  }
 }
 
 std::u16string CastDialogView::GetWindowTitle() const {
@@ -119,8 +130,7 @@ void CastDialogView::OnModelUpdated(const CastDialogModel& model) {
   MaybeSizeToContents();
   // Update the main action button.
   DialogModelChanged();
-  for (Observer& observer : observers_)
-    observer.OnDialogModelUpdated(this);
+  observers_.Notify(&Observer::OnDialogModelUpdated, this);
 }
 
 void CastDialogView::OnControllerDestroying() {
@@ -171,9 +181,7 @@ void CastDialogView::Init() {
 }
 
 void CastDialogView::WindowClosing() {
-  for (Observer& observer : observers_) {
-    observer.OnDialogWillClose(this);
-  }
+  observers_.Notify(&Observer::OnDialogWillClose, this);
 }
 
 void CastDialogView::ShowAccessCodeCastDialog() {
@@ -330,7 +338,7 @@ void CastDialogView::ShowSourcesMenu() {
   const gfx::Rect& screen_bounds = sources_button_->GetBoundsInScreen();
   sources_menu_runner_->RunMenuAt(
       sources_button_->GetWidget(), nullptr, screen_bounds,
-      views::MenuAnchorPosition::kTopLeft, ui::MENU_SOURCE_MOUSE);
+      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kMouse);
 }
 
 void CastDialogView::SelectSource(SourceType source) {
@@ -458,8 +466,7 @@ void CastDialogView::RecordSinkCount() {
 }
 
 bool CastDialogView::IsAccessCodeCastingEnabled() const {
-  return base::FeatureList::IsEnabled(features::kAccessCodeCastUI) &&
-         GetAccessCodeCastEnabledPref(profile_);
+  return GetAccessCodeCastEnabledPref(profile_);
 }
 
 BEGIN_METADATA(CastDialogView)

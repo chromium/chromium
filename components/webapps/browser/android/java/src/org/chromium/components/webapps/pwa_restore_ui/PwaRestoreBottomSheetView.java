@@ -34,9 +34,6 @@ import java.util.List;
  */
 @SuppressLint("ClickableViewAccessibility")
 public class PwaRestoreBottomSheetView {
-    private static final int APP_ICON_SIZE_DP = 40;
-    private static final int APP_ICON_CORNER_RADIUS_DP = 20;
-    private static final int APP_ICON_TEXT_SIZE_DP = 24;
 
     // The current context.
     private final Context mContext;

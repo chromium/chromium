@@ -29,7 +29,7 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "components/search_engines/choice_made_location.h"
 #include "components/search_engines/default_search_manager.h"
-#include "components/search_engines/enterprise/enterprise_site_search_manager.h"
+#include "components/search_engines/enterprise/enterprise_search_manager.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_host_to_urls_map.h"
 #include "components/search_engines/search_terms_data.h"
@@ -64,6 +64,10 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
+namespace url {
+class Origin;
+}
+
 // TemplateURLService is the backend for keywords. It's used by
 // KeywordAutocomplete.
 //
@@ -92,7 +96,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
   using OwnedTemplateURLVector = TemplateURL::OwnedTemplateURLVector;
   using SyncDataMap = std::map<std::string, syncer::SyncData>;
   using OwnedTemplateURLDataVector =
-      EnterpriseSiteSearchManager::OwnedTemplateURLDataVector;
+      EnterpriseSearchManager::OwnedTemplateURLDataVector;
 
   static constexpr char kSiteSearchPolicyConflictCountHistogramName[] =
       "Search.SiteSearchPolicyConflict";
@@ -376,6 +380,11 @@ class TemplateURLService final : public WebDataServiceConsumer,
   //       2.) The default search engine is disabled by policy.
   const TemplateURL* GetDefaultSearchProvider() const;
 
+  // Returns the Origin of the user's default search engine. If a default search
+  // engine is set and its URL is valid, the Origin of that URL is returned.
+  // Otherwise, an opaque Origin with a unique nonce is returned.
+  url::Origin GetDefaultSearchProviderOrigin() const;
+
   // Returns the default search provider, ignoring any that were provided by an
   // extension.
   const TemplateURL* GetDefaultSearchProviderIgnoringExtensions() const;
@@ -628,7 +637,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
   friend class TemplateURLServiceTestUtil;
   friend class TemplateUrlServiceAndroid;
 
-  using GUIDToTURL = std::map<std::string, TemplateURL*>;
+  using GUIDToTURL =
+      std::map<std::string, raw_ptr<TemplateURL, CtnExperimental>>;
 
   // A mapping from keywords to the corresponding TemplateURLs.
   // This is a multimap, so the system can
@@ -638,7 +648,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // The values for any given keyword are not sorted. Users that want the best
   // value for each key must traverse through all matching items. The vast
   // majority of keywords should only have one item.
-  using KeywordToTURL = std::multimap<std::u16string, TemplateURL*>;
+  using KeywordToTURL =
+      std::multimap<std::u16string, raw_ptr<TemplateURL, CtnExperimental>>;
 
   // Declaration of values to be used in an enumerated histogram to tally
   // changes to the default search provider from various entry points. In
@@ -867,9 +878,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
   void EmitTemplateURLActiveOnStartupHistogram(
       OwnedTemplateURLVector* template_urls);
 
-  // Returns an instance of |EnterpriseSiteSearchManager| if feature
-  // |kSiteSearchSettingsPolicy| or nullptr otherwise.
-  std::unique_ptr<EnterpriseSiteSearchManager> GetEnterpriseSiteSearchManager(
+  // Returns an instance of |EnterpriseSearchManager|.
+  std::unique_ptr<EnterpriseSearchManager> GetEnterpriseSearchManager(
       PrefService* prefs);
 
   // Logs a histogram to track keyword conflicts between search engines created
@@ -906,7 +916,7 @@ class TemplateURLService final : public WebDataServiceConsumer,
 
   // Mapping from keyword to TemplateURLs created by the `SiteSearchSettings`
   // policy.
-  base::flat_map<std::u16string, TemplateURL*>
+  base::flat_map<std::u16string, raw_ptr<TemplateURL, CtnExperimental>>
       enterprise_site_search_keyword_to_turl_;
 
   OwnedTemplateURLVector template_urls_;
@@ -996,9 +1006,8 @@ class TemplateURLService final : public WebDataServiceConsumer,
   // Helper class to manage the default search engine.
   DefaultSearchManager default_search_manager_;
 
-  // Site search engines defined by enterprise policy. Set as nullptr if feature
-  // |kSiteSearchSettingsPolicy| is not enabled.
-  std::unique_ptr<EnterpriseSiteSearchManager> enterprise_site_search_manager_;
+  // Site search engines defined by enterprise policy.
+  std::unique_ptr<EnterpriseSearchManager> enterprise_site_search_manager_;
 
   // This tracks how many Scoper handles exist. When the number of handles drops
   // to zero, a notification is made to observers if

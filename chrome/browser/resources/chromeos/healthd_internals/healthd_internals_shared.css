@@ -7,14 +7,26 @@
  * #import=//resources/ash/common/cr_elements/cr_shared_style.css.js
  * #import=//resources/ash/common/cr_elements/cr_shared_vars.css.js
  * #import=//resources/ash/common/cr_elements/cr_nav_menu_item_style.css.js
- * #include=cr-shared-style cr-nav-menu-item-style
+ * #import=//resources/ash/common/cr_elements/md_select.css.js
+ * #include=cr-shared-style cr-nav-menu-item-style md-select
  * #css_wrapper_metadata_end */
 
-h1 {
+h1, h2 {
   color: var(--cr-primary-text-color);
-  font-size: 170%;
   font-weight: 500;
   padding-inline-start: 24px;
+}
+
+h1 {
+  font-size: 22px;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+label {
+  color: var(--cr-primary-text-color);
 }
 
 .full-page {

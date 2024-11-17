@@ -15,17 +15,6 @@ class TabStripNewTabButton: UIView {
   /// View used for by the `layoutGuideCenter`.
   public var layoutGuideView: UIView { return button }
 
-  /// `IPHHighlighted` state of the button.
-  public var IPHHighlighted: Bool = false {
-    didSet {
-      button.configuration?.baseForegroundColor =
-        IPHHighlighted ? UIColor.init(named: kSolidWhiteColor) : UIColor(named: kTextSecondaryColor)
-      button.backgroundColor =
-        IPHHighlighted
-        ? UIColor(named: kBlueColor) : UIColor(named: kGroupedSecondaryBackgroundColor)
-    }
-  }
-
   /// `true` if the user is in incognito.
   public var isIncognito: Bool {
     didSet {
@@ -43,7 +32,7 @@ class TabStripNewTabButton: UIView {
     addSubview(button)
     button.accessibilityIdentifier = TabStripConstants.NewTabButton.accessibilityIdentifier
 
-    if TabStripFeaturesUtils.isTabStripV2 {
+    if TabStripFeaturesUtils.hasBiggerNTB {
       NSLayoutConstraint.activate([
         button.leadingAnchor.constraint(
           equalTo: self.leadingAnchor, constant: TabStripConstants.NewTabButton.leadingInset),
@@ -80,7 +69,7 @@ class TabStripNewTabButton: UIView {
   /// Configures the `UIButton`.
   private func configureButton() {
     let symbolSize =
-      TabStripFeaturesUtils.isTabStripV2
+      TabStripFeaturesUtils.hasBiggerNTB
       ? TabStripConstants.NewTabButton.symbolBiggerPointSize
       : TabStripConstants.NewTabButton.symbolPointSize
     let closeSymbol = DefaultSymbolWithPointSize(
@@ -88,19 +77,18 @@ class TabStripNewTabButton: UIView {
 
     var configuration = UIButton.Configuration.borderless()
     configuration.contentInsets = .zero
-
     configuration.image = closeSymbol
     configuration.baseForegroundColor = TabStripHelper.newTabButtonSymbolColor
+
     button.configuration = configuration
+    button.contentMode = .center
     button.imageView?.contentMode = .center
-    if TabStripFeaturesUtils.isTabStripV2 {
+    if TabStripFeaturesUtils.hasBiggerNTB {
       button.layer.cornerRadius = TabStripConstants.NewTabButton.diameter / 2.0
     } else {
       button.layer.cornerRadius = TabStripConstants.NewTabButton.legacyCornerRadius
     }
-    if !TabStripFeaturesUtils.isTabStripNTBNoBackgroundEnabled
-      && !TabStripFeaturesUtils.isTabStripBlackBackgroundEnabled
-    {
+    if !TabStripFeaturesUtils.hasNoNTBBackground {
       button.backgroundColor = UIColor(named: kGroupedSecondaryBackgroundColor)
     }
 
@@ -117,7 +105,7 @@ class TabStripNewTabButton: UIView {
   private func updateAccessibilityIdentifier() {
     button.accessibilityLabel = L10nUtils.stringWithFixup(
       messageId: isIncognito
-        ? IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB
-        : IDS_IOS_TOOLS_MENU_NEW_TAB)
+        ? IDS_IOS_TOOLBAR_OPEN_NEW_TAB_INCOGNITO
+        : IDS_IOS_TOOLBAR_OPEN_NEW_TAB)
   }
 }

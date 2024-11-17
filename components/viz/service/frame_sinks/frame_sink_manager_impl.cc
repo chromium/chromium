@@ -97,7 +97,7 @@ FrameSinkManagerImpl::FrameSinkManagerImpl(const InitParams& params)
   surface_manager_.AddObserver(&hit_test_manager_);
   surface_manager_.AddObserver(this);
 
-  if (input::TransferInputToViz()) {
+  if (input::IsTransferInputToVizSupported()) {
     input_manager_ = std::make_unique<InputManager>(this);
   }
 }
@@ -163,7 +163,7 @@ void FrameSinkManagerImpl::SetLocalClient(
 
 void FrameSinkManagerImpl::SetInputManagerForTesting(
     std::unique_ptr<InputManager> input_manager) {
-  if (!input::TransferInputToViz()) {
+  if (!input::IsTransferInputToVizSupported()) {
     return;
   }
 
@@ -322,6 +322,11 @@ void FrameSinkManagerImpl::RegisterFrameSinkHierarchy(
   DCHECK(!base::Contains(children, child_frame_sink_id));
   children.insert(child_frame_sink_id);
 
+  // Add `parent_frame_sink_id` as parent to the list tracking parents of
+  // `child_frame_sink_id`.
+  FrameSinkSourceMapping& mapping = frame_sink_source_map_[child_frame_sink_id];
+  mapping.parent.emplace_back(parent_frame_sink_id);
+
   // Now the hierarchy has been updated, update throttling.
   UpdateThrottling();
 
@@ -355,11 +360,30 @@ void FrameSinkManagerImpl::UnregisterFrameSinkHierarchy(
                                               child_frame_sink_id);
   }
 
-  auto iter = frame_sink_source_map_.find(parent_frame_sink_id);
-  CHECK(iter != frame_sink_source_map_.end());
+  auto iter_child = frame_sink_source_map_.find(child_frame_sink_id);
+  CHECK(iter_child != frame_sink_source_map_.end());
+
+  auto& child_mapping = iter_child->second;
+  DCHECK(base::Contains(child_mapping.parent, parent_frame_sink_id));
+
+  // Delete `parent_frame_sink_id` from parent list of `child_frame_sink_id` in
+  // `frame_sink_source_map_`.
+  auto iter_find_parent =
+      std::find(child_mapping.parent.begin(), child_mapping.parent.end(),
+                parent_frame_sink_id);
+  child_mapping.parent.erase(iter_find_parent);
+
+  // Delete `child_frame_sink_id` entry from `frame_sink_source_map_` if empty.
+  if (child_mapping.children.empty() && child_mapping.parent.empty() &&
+      !child_mapping.source) {
+    frame_sink_source_map_.erase(iter_child);
+  }
+
+  auto iter_parent = frame_sink_source_map_.find(parent_frame_sink_id);
+  CHECK(iter_parent != frame_sink_source_map_.end());
 
   // Remove |child_frame_sink_id| from parents list of children.
-  auto& mapping = iter->second;
+  auto& mapping = iter_parent->second;
   DCHECK(base::Contains(mapping.children, child_frame_sink_id));
   mapping.children.erase(child_frame_sink_id);
 
@@ -367,14 +391,14 @@ void FrameSinkManagerImpl::UnregisterFrameSinkHierarchy(
   UpdateThrottling();
 
   // Delete the FrameSinkSourceMapping for |parent_frame_sink_id| if empty.
-  if (mapping.children.empty() && !mapping.source) {
-    frame_sink_source_map_.erase(iter);
+  if (mapping.children.empty() && mapping.parent.empty() && !mapping.source) {
+    frame_sink_source_map_.erase(iter_parent);
     return;
   }
 
   // If the parent does not have a begin frame source, then disconnecting it
   // will not change any of its children.
-  BeginFrameSource* parent_source = iter->second.source;
+  BeginFrameSource* parent_source = iter_parent->second.source;
   if (!parent_source)
     return;
 
@@ -669,8 +693,9 @@ void FrameSinkManagerImpl::RecursivelyDetachBeginFrameSource(
       client_iter->second->SetBeginFrameSource(nullptr);
   }
 
-  // Delete the FrameSinkSourceMapping for |frame_sink_id| if empty.
-  if (mapping.children.empty()) {
+  // Delete the FrameSinkSourceMapping for `frame_sink_id` if both parent and
+  // children lists are empty.
+  if (mapping.children.empty() && mapping.parent.empty()) {
     frame_sink_source_map_.erase(iter);
     return;
   }
@@ -804,6 +829,28 @@ std::vector<FrameSinkId> FrameSinkManagerImpl::GetRegisteredFrameSinkIds()
   for (auto& map_entry : frame_sink_data_)
     frame_sink_ids.push_back(map_entry.first);
   return frame_sink_ids;
+}
+
+FrameSinkId FrameSinkManagerImpl::GetOldestParentByChildFrameId(
+    const FrameSinkId& child_frame_sink_id) const {
+  CHECK(root_sink_map_.find(child_frame_sink_id) == root_sink_map_.end());
+
+  auto it = frame_sink_source_map_.find(child_frame_sink_id);
+  if (it == frame_sink_source_map_.end() || it->second.parent.empty()) {
+    return FrameSinkId();
+  }
+  return it->second.parent.front();
+}
+
+FrameSinkId FrameSinkManagerImpl::GetOldestRootCompositorFrameSinkId(
+    const FrameSinkId& child_frame_sink_id) const {
+  auto parent_id = GetOldestParentByChildFrameId(child_frame_sink_id);
+
+  while (parent_id.is_valid() &&
+         root_sink_map_.find(parent_id) == root_sink_map_.end()) {
+    parent_id = GetOldestParentByChildFrameId(parent_id);
+  }
+  return parent_id;
 }
 
 base::flat_set<FrameSinkId> FrameSinkManagerImpl::GetChildrenByParent(
@@ -974,7 +1021,7 @@ void FrameSinkManagerImpl::ClearThrottling(const FrameSinkId& id) {
 
 void FrameSinkManagerImpl::MaybeEraseHitTestQuery(
     const FrameSinkId& frame_sink_id) {
-  if (!input::TransferInputToViz()) {
+  if (!input::IsTransferInputToVizSupported()) {
     return;
   }
   display_hit_test_query_.erase(frame_sink_id);
@@ -982,7 +1029,7 @@ void FrameSinkManagerImpl::MaybeEraseHitTestQuery(
 
 void FrameSinkManagerImpl::MaybeAddHitTestQuery(
     const FrameSinkId& frame_sink_id) {
-  if (!input::TransferInputToViz()) {
+  if (!input::IsTransferInputToVizSupported()) {
     return;
   }
   auto it = support_map_.find(frame_sink_id);
@@ -1033,6 +1080,11 @@ void FrameSinkManagerImpl::OnScreenshotCaptured(
     std::unique_ptr<CopyOutputResult> copy_output_result) {
   client_->OnScreenshotCaptured(destination_token,
                                 std::move(copy_output_result));
+}
+
+bool FrameSinkManagerImpl::IsFrameSinkIdInRootSinkMap(
+    const FrameSinkId& frame_sink_id) {
+  return root_sink_map_.find(frame_sink_id) != root_sink_map_.end();
 }
 
 gpu::SharedImageInterface* FrameSinkManagerImpl::GetSharedImageInterface() {
@@ -1126,6 +1178,14 @@ void FrameSinkManagerImpl::EnableFrameSinkManagerTestApi(
     mojo::PendingReceiver<mojom::FrameSinkManagerTestApi> receiver) {
   CHECK(!test_api_receiver_.is_bound());
   test_api_receiver_.Bind(std::move(receiver));
+}
+
+void FrameSinkManagerImpl::SetupRenderInputRouterDelegateConnection(
+    uint32_t grouping_id,
+    mojo::PendingRemote<input::mojom::RenderInputRouterDelegateClient>
+        rir_delegate_client_remote) {
+  input_manager_->SetupRenderInputRouterDelegateConnection(
+      grouping_id, std::move(rir_delegate_client_remote));
 }
 
 void FrameSinkManagerImpl::RequestBeginFrameForGpuService(bool toggle) {

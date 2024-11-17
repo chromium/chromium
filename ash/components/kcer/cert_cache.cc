@@ -44,7 +44,7 @@ CertCache::CertCache(CertCache&&) = default;
 CertCache& CertCache::operator=(CertCache&&) = default;
 CertCache::~CertCache() = default;
 
-CertCache::CertCache(base::span<scoped_refptr<const Cert>> certs)
+CertCache::CertCache(base::span<const scoped_refptr<const Cert>> certs)
     : certs_(certs.begin(), certs.end()) {}
 
 scoped_refptr<const Cert> CertCache::FindCert(

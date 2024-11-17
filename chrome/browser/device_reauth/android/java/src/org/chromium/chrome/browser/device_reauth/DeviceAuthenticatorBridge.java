@@ -100,6 +100,7 @@ class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegat
 
     @CalledByNative
     void cancel() {
+        if (mController == null) return;
         mController.cancel();
     }
 

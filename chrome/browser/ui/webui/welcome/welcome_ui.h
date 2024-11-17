@@ -11,9 +11,27 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/welcome/ntp_background_fetcher.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "url/gurl.h"
+
+class WelcomeUI;
+
+class WelcomeUIConfig : public content::DefaultWebUIConfig<WelcomeUI> {
+ public:
+  WelcomeUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIWelcomeHost) {}
+
+  // content::WebUIConfig:
+  std::unique_ptr<content::WebUIController> CreateWebUIController(
+      content::WebUI* web_ui,
+      const GURL& url) override;
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 // The WebUI for chrome://welcome, the page which greets new Desktop users and
 // promotes sign-in. By default, this page uses the "Welcome to Chrome" language

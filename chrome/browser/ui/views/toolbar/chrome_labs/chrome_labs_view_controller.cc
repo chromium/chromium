@@ -16,7 +16,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/flag_descriptions.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
@@ -33,11 +32,11 @@
 #include "components/flags_ui/flags_state.h"
 #include "components/flags_ui/flags_storage.h"
 #include "components/prefs/scoped_user_pref_update.h"
-#include "components/user_education/common/new_badge_controller.h"
+#include "components/user_education/common/new_badge/new_badge_controller.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/settings/about_flags.h"
 #include "chrome/browser/profiles/profile.h"
 #else
@@ -86,7 +85,7 @@ void EmitToHistogram(const std::u16string& selected_lab_state,
     if (internal_name == flag_descriptions::kScrollableTabStripFlagId)
       return ChromeLabsSelectedLab::kTabScrollingSelected;
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP) && \
-    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH))
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS))
     if (internal_name == flag_descriptions::kWebUITabStripFlagId)
       return ChromeLabsSelectedLab::kWebUITabStripSelected;
 #endif
@@ -177,7 +176,7 @@ void ChromeLabsViewController::ParseModelDataAndAddLabs() {
 }
 
 void ChromeLabsViewController::RestartToApplyFlags() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS be less intrusive and restart inside the user session after
   // we apply the newly selected flags.
   VLOG(1) << "Restarting to apply per-session flags...";
@@ -208,7 +207,7 @@ user_education::DisplayNewBadge ChromeLabsViewController::ShouldLabShowNewBadge(
     return user_education::DisplayNewBadge();
   }
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   ScopedDictPrefUpdate update(
       profile->GetPrefs(), chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
 #else

@@ -102,7 +102,6 @@ public class WebFeedMainMenuItem extends FrameLayout {
      * @param tab The current {@link Tab}.
      * @param appMenuHandler {@link AppMenuHandler} to control hiding the app menu.
      * @param feedLauncher {@link FeedLauncher}
-     * @param largeIconBridge {@link LargeIconBridge} to get the favicon of the page.
      * @param dialogManager {@link ModalDialogManager} for managing the dialog.
      * @param snackbarManager {@link SnackbarManager} to display snackbars.
      * @param creatorActivityClass {@link CreatorActivity} for launching the Creator Activity.
@@ -275,7 +274,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
                         boolean mCalled;
 
                         @Override
-                        public void onShowLoadingUIComplete() {
+                        public void onShowLoadingUiComplete() {
                             if (mCalled) {
                                 return;
                             }
@@ -284,7 +283,7 @@ public class WebFeedMainMenuItem extends FrameLayout {
                         }
 
                         @Override
-                        public void onHideLoadingUIComplete() {}
+                        public void onHideLoadingUiComplete() {}
                     });
         }
         postDelayed(
@@ -305,10 +304,10 @@ public class WebFeedMainMenuItem extends FrameLayout {
                         boolean mCalled;
 
                         @Override
-                        public void onShowLoadingUIComplete() {}
+                        public void onShowLoadingUiComplete() {}
 
                         @Override
-                        public void onHideLoadingUIComplete() {
+                        public void onHideLoadingUiComplete() {
                             if (mCalled) {
                                 return;
                             }

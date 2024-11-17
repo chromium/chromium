@@ -50,8 +50,7 @@ public class InvalidStateOfflineItemFilter extends OfflineItemFilter {
         if (ContentUriUtils.isContentUri(path)) return true;
 
         // Check if the file path contains the external public directory.
-        File primaryDir = null;
-        primaryDir = Environment.getExternalStorageDirectory();
+        File primaryDir = Environment.getExternalStorageDirectory();
         if (primaryDir == null || path == null) return false;
         String primaryPath = primaryDir.getAbsolutePath();
         return primaryPath == null ? false : path.contains(primaryPath);

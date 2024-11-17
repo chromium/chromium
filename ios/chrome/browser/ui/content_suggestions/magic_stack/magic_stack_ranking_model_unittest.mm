@@ -4,24 +4,30 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model.h"
 
+#import <memory>
+
+#import "base/memory/raw_ptr.h"
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_command_line.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_timeouts.h"
 #import "base/threading/thread_restrictions.h"
+#import "components/bookmarks/browser/bookmark_model.h"
+#import "components/bookmarks/test/test_bookmark_client.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/mock_shopping_service.h"
 #import "components/feature_engagement/test/mock_tracker.h"
+#import "components/image_fetcher/core/image_data_fetcher.h"
 #import "components/ntp_tiles/icon_cacher.h"
 #import "components/ntp_tiles/most_visited_sites.h"
 #import "components/segmentation_platform/embedder/home_modules/constants.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/segmentation_platform/public/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
-#import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_large_icon_cache_factory.h"
@@ -30,9 +36,11 @@
 #import "ios/chrome/browser/first_run/model/first_run.h"
 #import "ios/chrome/browser/first_run/ui_bundled/first_run_util.h"
 #import "ios/chrome/browser/ntp/model/set_up_list_prefs.h"
+#import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_model_factory.h"
 #import "ios/chrome/browser/reading_list/model/reading_list_test_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_factory.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/coordinator/scene/test/fake_scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -47,6 +55,8 @@
 #import "ios/chrome/browser/start_surface/ui_bundled/start_surface_recent_tab_browser_agent.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_action_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_shortcut_tile_view.h"
@@ -60,6 +70,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/parcel_tracking/parcel_tracking_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_item.h"
+#import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_mediator+testing.h"
 #import "ios/chrome/browser/ui/content_suggestions/price_tracking_promo/price_tracking_promo_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_mediator.h"
@@ -67,6 +79,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
+#import "ios/chrome/browser/ui/content_suggestions/tips/tips_magic_stack_mediator.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_notifier_browser_agent.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -153,8 +166,13 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
     _config = [[MostVisitedTilesConfig alloc] init];
     _config.mostVisitedItems =
         @[ [[ContentSuggestionsMostVisitedItem alloc] init] ];
+    _config.inMagicStack = self.inMagicStack;
   }
   return _config;
+}
+
+- (BOOL)inMagicStack {
+  return ShouldPutMostVisitedSitesInMagicStack(FeedActivityBucket::kNoActivity);
 }
 
 @end
@@ -204,6 +222,7 @@ std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
     MostVisitedTilesMediatorDelegate,
     ParcelTrackingMediatorDelegate,
     SafetyCheckMagicStackMediatorDelegate,
+    TipsMagicStackMediatorDelegate,
     TabResumptionHelperDelegate>
 @property(nonatomic, assign, readonly) BOOL hasReceivedMagicStackResponse;
 @property(nonatomic, assign, readonly) BOOL hasReceivedEphemericalCardResponse;
@@ -219,39 +238,38 @@ class MagicStackRankingModelTest : public PlatformTest {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}}}, {});
 
-    TestChromeBrowserState::Builder test_cbs_builder;
-    test_cbs_builder.AddTestingFactory(
+    TestProfileIOS::Builder builder;
+    builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        AuthenticationServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
-        SyncServiceFactory::GetInstance(),
-        base::BindRepeating(&CreateMockSyncService));
-    test_cbs_builder.AddTestingFactory(
+        AuthenticationServiceFactory::GetFactoryWithDelegate(
+            std::make_unique<FakeAuthenticationServiceDelegate>()));
+    builder.AddTestingFactory(SyncServiceFactory::GetInstance(),
+                              base::BindRepeating(&CreateMockSyncService));
+    builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
         base::BindRepeating(&BuildReadingListModelWithFakeStorage,
                             std::vector<scoped_refptr<ReadingListEntry>>()));
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         feature_engagement::TrackerFactory::GetInstance(),
         base::BindRepeating(&BuildFeatureEngagementMockTracker));
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         IOSChromeLargeIconServiceFactory::GetInstance(),
         IOSChromeLargeIconServiceFactory::GetDefaultFactory());
-    test_cbs_builder.AddTestingFactory(
+    builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(
             [](web::BrowserState*) -> std::unique_ptr<KeyedService> {
               return commerce::MockShoppingService::Build();
             }));
 
-    browser_state_ =
-        profile_manager_.AddProfileWithBuilder(std::move(test_cbs_builder));
+    profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
 
-    browser_ = std::make_unique<TestBrowser>(GetBrowserState());
+    browser_ = std::make_unique<TestBrowser>(GetProfile());
 
     // Necessary set up for kIOSSetUpList.
     GetLocalState()->ClearPref(set_up_list_prefs::kDisabled);
@@ -263,15 +281,12 @@ class MagicStackRankingModelTest : public PlatformTest {
         std::make_unique<IOSChromeScopedTestingVariationsService>();
     scoped_variations_service_->Get()->OverrideStoredPermanentCountry("us");
 
-    AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
-        GetBrowserState(),
-        std::make_unique<FakeAuthenticationServiceDelegate>());
     syncer::SyncService* syncService =
-        SyncServiceFactory::GetForBrowserState(GetBrowserState());
+        SyncServiceFactory::GetForProfile(GetProfile());
     AuthenticationService* authenticationService =
-        AuthenticationServiceFactory::GetForBrowserState(GetBrowserState());
+        AuthenticationServiceFactory::GetForProfile(GetProfile());
     signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForProfile(GetBrowserState());
+        IdentityManagerFactory::GetForProfile(GetProfile());
 
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     FakeUrlLoadingBrowserAgent::InjectForBrowser(browser_.get());
@@ -280,18 +295,17 @@ class MagicStackRankingModelTest : public PlatformTest {
     StartSurfaceRecentTabBrowserAgent::CreateForBrowser(browser_.get());
 
     ReadingListModel* readingListModel =
-        ReadingListModelFactory::GetForBrowserState(GetBrowserState());
+        ReadingListModelFactory::GetForProfile(GetProfile());
     feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForBrowserState(
-            GetBrowserState());
+        feature_engagement::TrackerFactory::GetForProfile(GetProfile());
     AuthenticationService* authentication_service =
-        AuthenticationServiceFactory::GetForBrowserState(GetBrowserState());
+        AuthenticationServiceFactory::GetForProfile(GetProfile());
     _shortcutsMediator = [[ShortcutsMediator alloc]
         initWithReadingListModel:readingListModel
         featureEngagementTracker:(feature_engagement::Tracker*)tracker
                      authService:authentication_service];
     _setUpListMediator = [[FakeSetUpListMediator alloc]
-                   initWithPrefService:GetBrowserState()->GetPrefs()
+                   initWithPrefService:GetProfile()->GetPrefs()
                            syncService:syncService
                        identityManager:identityManager
                  authenticationService:authenticationService
@@ -301,19 +315,19 @@ class MagicStackRankingModelTest : public PlatformTest {
         deviceSwitcherResultDispatcher:nullptr];
     _setUpListMediator.shouldShowSetUpList = YES;
     _parcelTrackingMediator = [[FakeParcelTrackingMediator alloc]
-        initWithShoppingService:commerce::ShoppingServiceFactory::
-                                    GetForBrowserState(GetBrowserState())
+        initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
+                                    GetProfile())
          URLLoadingBrowserAgent:url_loader_
                     prefService:GetLocalState()];
     _tabResumptionMediator = [[FakeTabResumptionMediator alloc]
         initWithLocalState:GetLocalState()
-               prefService:GetBrowserState()->GetPrefs()
+               prefService:GetProfile()->GetPrefs()
            identityManager:identityManager
                    browser:browser_.get()];
     favicon::LargeIconService* large_icon_service =
-        IOSChromeLargeIconServiceFactory::GetForBrowserState(GetBrowserState());
+        IOSChromeLargeIconServiceFactory::GetForProfile(GetProfile());
     LargeIconCache* cache =
-        IOSChromeLargeIconCacheFactory::GetForBrowserState(GetBrowserState());
+        IOSChromeLargeIconCacheFactory::GetForProfile(GetProfile());
     std::unique_ptr<ntp_tiles::MostVisitedSites> most_visited_sites =
         std::make_unique<ntp_tiles::MostVisitedSites>(
             &pref_service_, /*identity_manager*/ nullptr,
@@ -322,34 +336,51 @@ class MagicStackRankingModelTest : public PlatformTest {
             /*custom_links*/ nullptr, /*icon_cacher*/ nullptr, true);
     _mostVisitedTilesMediator = [[FakeMostVisitedTilesMediator alloc]
         initWithMostVisitedSite:std::move(most_visited_sites)
-                    prefService:GetBrowserState()->GetPrefs()
+                    prefService:GetProfile()->GetPrefs()
                largeIconService:large_icon_service
                  largeIconCache:cache
          URLLoadingBrowserAgent:url_loader_];
 
-    id mockAppState = OCMClassMock([AppState class]);
-
     _safetyCheckMediator = [[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:IOSChromeSafetyCheckManagerFactory::
-                                       GetForBrowserState(GetBrowserState())
+                                       GetForProfile(GetProfile())
                         localState:GetLocalState()
-                         userState:GetBrowserState()->GetPrefs()
-                          appState:mockAppState];
+                         userState:GetProfile()->GetPrefs()
+                      profileState:nil];
+
+    shopping_service_ = std::make_unique<commerce::MockShoppingService>();
+    bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
+
+    _tipsMediator = [[TipsMagicStackMediator alloc]
+        initWithIdentifier:segmentation_platform::TipIdentifier::kUnknown
+        profilePrefService:GetProfile()->GetPrefs()
+           shoppingService:shopping_service_.get()
+             bookmarkModel:bookmark_model_.get()
+              imageFetcher:std::make_unique<image_fetcher::ImageDataFetcher>(
+                               GetProfile()->GetSharedURLLoaderFactory())];
 
     _priceTrackingPromoMediator = [[PriceTrackingPromoMediator alloc]
-        initWithShoppingService:commerce::ShoppingServiceFactory::
-                                    GetForBrowserState(GetBrowserState())
-                    prefService:GetBrowserState()->GetPrefs()
+        initWithShoppingService:commerce::ShoppingServiceFactory::GetForProfile(
+                                    GetProfile())
+                  bookmarkModel:nil
+                   imageFetcher:nil
+                    prefService:GetProfile()->GetPrefs()
+                     localState:GetLocalState()
         pushNotificationService:nil
-          authenticationService:nil];
+          authenticationService:nil
+                  faviconLoader:nil];
+
+    PriceTrackingPromoItem* item = [[PriceTrackingPromoItem alloc] init];
+    [_priceTrackingPromoMediator setPriceTrackingPromoItemForTesting:item];
 
     _magicStackRankingModel = [[MagicStackRankingModel alloc]
         initWithSegmentationService:segmentation_platform::
                                         SegmentationPlatformServiceFactory::
-                                            GetForProfile(GetBrowserState())
+                                            GetForProfile(GetProfile())
                     shoppingService:commerce::ShoppingServiceFactory::
-                                        GetForBrowserState(GetBrowserState())
-                        prefService:GetBrowserState()->GetPrefs()
+                                        GetForProfile(GetProfile())
+                        authService:authenticationService
+                        prefService:GetProfile()->GetPrefs()
                          localState:GetLocalState()
                     moduleMediators:@[
                       _shortcutsMediator,
@@ -358,8 +389,13 @@ class MagicStackRankingModelTest : public PlatformTest {
                       _tabResumptionMediator,
                       _mostVisitedTilesMediator,
                       _safetyCheckMediator,
+                      _tipsMediator,
                       _priceTrackingPromoMediator,
-                    ]];
+                    ]
+                        tipsManager:TipsManagerIOSFactory::GetForProfile(
+                                        browser_->GetProfile())
+                 templateURLService:ios::TemplateURLServiceFactory::
+                                        GetForProfile(browser_->GetProfile())];
 
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
         initWithLocalState:GetLocalState()];
@@ -370,7 +406,7 @@ class MagicStackRankingModelTest : public PlatformTest {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
   }
 
-  ChromeBrowserState* GetBrowserState() { return browser_state_.get(); }
+  ProfileIOS* GetProfile() { return profile_.get(); }
 
   PrefService* GetLocalState() {
     return GetApplicationContext()->GetLocalState();
@@ -383,6 +419,7 @@ class MagicStackRankingModelTest : public PlatformTest {
     [_shortcutsMediator disconnect];
     [_mostVisitedTilesMediator disconnect];
     [_safetyCheckMediator disconnect];
+    [_tipsMediator disconnect];
     [_priceTrackingPromoMediator disconnect];
   }
 
@@ -410,11 +447,13 @@ class MagicStackRankingModelTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   TestProfileManagerIOS profile_manager_;
-  raw_ptr<ChromeBrowserState> browser_state_;
+  raw_ptr<ProfileIOS> profile_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   FakeSceneState* scene_state_;
   std::unique_ptr<Browser> browser_;
-  FakeUrlLoadingBrowserAgent* url_loader_;
+  std::unique_ptr<commerce::MockShoppingService> shopping_service_;
+  std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
+  raw_ptr<FakeUrlLoadingBrowserAgent> url_loader_;
   std::unique_ptr<IOSChromeScopedTestingVariationsService>
       scoped_variations_service_;
   FakeSetUpListMediator* _setUpListMediator;
@@ -422,6 +461,7 @@ class MagicStackRankingModelTest : public PlatformTest {
   FakeTabResumptionMediator* _tabResumptionMediator;
   ShortcutsMediator* _shortcutsMediator;
   SafetyCheckMagicStackMediator* _safetyCheckMediator;
+  TipsMagicStackMediator* _tipsMediator;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   PriceTrackingPromoMediator* _priceTrackingPromoMediator;
   MagicStackRankingModel* _magicStackRankingModel;
@@ -492,7 +532,7 @@ TEST_F(MagicStackRankingModelTest, TestOnServiceStatusChanged) {
   EXPECT_EQ(item_state, SetUpListItemState::kNotComplete);
 
   // Simulate the user disabling signin.
-  GetBrowserState()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kSigninAllowed, false);
   // Verify that the signin item is complete.
   item_state = set_up_list_prefs::GetItemState(GetLocalState(),
                                                SetUpListItemType::kSignInSync);
@@ -630,6 +670,33 @@ TEST_F(MagicStackRankingModelTest,
   EXPECT_OCMOCK_VERIFY(mockDelegate);
 }
 
+// Verifies that the ranking model correctly emits removal signals to its
+// delegate in response to feature delegate signals.
+TEST_F(MagicStackRankingModelTest, TestTipsMediatorDelegateCallsRemoval) {
+  // Assert that delegate API isn't called if rank has not been received yet.
+  id mockDelegate =
+      OCMStrictProtocolMock(@protocol(MagicStackRankingModelDelegate));
+  _magicStackRankingModel.delegate = mockDelegate;
+  [_magicStackRankingModel removeTipsModule];
+  EXPECT_OCMOCK_VERIFY(mockDelegate);
+
+  FakeMagicStackRankingModelDelegate* fakeDelegate =
+      [[FakeMagicStackRankingModelDelegate alloc] init];
+  _magicStackRankingModel.delegate = fakeDelegate;
+  [_magicStackRankingModel fetchLatestMagicStackRanking];
+  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      TestTimeouts::action_timeout(), true, ^bool() {
+        base::RunLoop().RunUntilIdle();
+        return [fakeDelegate.rank count] > 0;
+      }));
+
+  _magicStackRankingModel.delegate = mockDelegate;
+  OCMExpect([mockDelegate magicStackRankingModel:[OCMArg any]
+                                   didRemoveItem:[OCMArg any]]);
+  [_magicStackRankingModel removeTipsModule];
+  EXPECT_OCMOCK_VERIFY(mockDelegate);
+}
+
 // Test that disabling the Magic Stack ranking model doesn't crash and doesn't
 // perform a valid fetch.
 TEST_F(MagicStackRankingModelTest, TestDisabledSegmentationRanking) {
@@ -657,12 +724,11 @@ TEST_F(MagicStackRankingModelTest, TestEphemeralModelDidGetCardToShow) {
             kSegmentationPlatformEphemeralCardRanker,
         {{segmentation_platform::features::
               kEphemeralCardRankerForceShowCardParam,
-          segmentation_platform::features::kPriceTrackingPromoForceOverride}}}},
+          segmentation_platform::kPriceTrackingNotificationPromo}}}},
       {});
   commerce::MockShoppingService* shopping_service =
       static_cast<commerce::MockShoppingService*>(
-          commerce::ShoppingServiceFactory::GetForBrowserState(
-              GetBrowserState()));
+          commerce::ShoppingServiceFactory::GetForProfile(GetProfile()));
   shopping_service->SetIsShoppingListEligible(true);
 
   FakeMagicStackRankingModelDelegate* delegate_ =
